@@ -24,6 +24,7 @@
 #include "base/types/expected.h"
 #include "base/win/atl.h"
 #include "base/win/scoped_handle.h"
+#include "base/win/win_util.h"
 #include "base/win/windows_types.h"
 #include "chrome/updater/updater_scope.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -369,6 +370,10 @@ void ForEachServiceWithPrefix(
 
 // Deletes `service_name` system service and returns `true` on success.
 [[nodiscard]] bool DeleteService(const std::wstring& service_name);
+
+// Logs CLSID entries in HKLM and HKCU under both the 64-bit and 32-bit hives
+// for the given CLSID.
+void LogClsidEntries(REFCLSID clsid);
 
 }  // namespace updater
 

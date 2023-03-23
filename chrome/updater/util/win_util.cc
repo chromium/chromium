@@ -51,6 +51,7 @@
 #include "base/win/scoped_process_information.h"
 #include "base/win/scoped_variant.h"
 #include "base/win/startup_information.h"
+#include "base/win/win_util.h"
 #include "chrome/updater/constants.h"
 #include "chrome/updater/updater_branding.h"
 #include "chrome/updater/updater_scope.h"
@@ -1097,6 +1098,29 @@ void ForEachServiceWithPrefix(
 bool WrongUser(UpdaterScope scope) {
   return IsSystemInstall(scope) ? !::IsUserAnAdmin()
                                 : ::IsUserAnAdmin() && IsUACOn();
+}
+
+void LogClsidEntries(REFCLSID clsid) {
+  const std::wstring local_server32_reg_path(
+      base::StrCat({base::StrCat({L"Software\\Classes\\CLSID\\",
+                                  base::win::WStringFromGUID(clsid)}),
+                    L"\\LocalServer32"}));
+
+  for (const HKEY root : {HKEY_LOCAL_MACHINE, HKEY_CURRENT_USER}) {
+    for (const REGSAM key_flag : {KEY_WOW64_32KEY, KEY_WOW64_64KEY}) {
+      base::win::RegKey key;
+      if (ERROR_SUCCESS == key.Open(root, local_server32_reg_path.c_str(),
+                                    KEY_QUERY_VALUE | key_flag)) {
+        std::wstring val;
+        if (ERROR_SUCCESS == key.ReadValue(L"", &val)) {
+          LOG(ERROR) << __func__ << ": CLSID entry found: "
+                     << (root == HKEY_LOCAL_MACHINE ? "HKEY_LOCAL_MACHINE\\"
+                                                    : "HKEY_CURRENT_USER\\")
+                     << local_server32_reg_path << ": " << val;
+        }
+      }
+    }
+  }
 }
 
 }  // namespace updater
