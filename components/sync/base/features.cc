@@ -136,7 +136,7 @@ BASE_FEATURE(kSyncPollImmediatelyOnEveryStartup,
 
 #if BUILDFLAG(IS_IOS)
 BASE_FEATURE(kIndicateAccountStorageErrorInAccountCell,
-             "IndicatePassphraseErrorForSignedInUser",
+             "IndicateAccountStorageErrorInAccountCell",
              base::FEATURE_DISABLED_BY_DEFAULT);
 #endif  // BUILDFLAG(IS_IOS)
 
