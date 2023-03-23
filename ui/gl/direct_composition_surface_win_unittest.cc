@@ -1350,10 +1350,22 @@ TEST_F(DirectCompositionPixelTest, RootSurfaceDrawOffset) {
 
   constexpr gfx::Point draw_offset(50, 50);
   auto root_surface = surface_->GetRootSurfaceForTesting();
+  Microsoft::WRL::ComPtr<IDCompositionSurface> orig_dcomp_surface =
+      root_surface->dcomp_surface();
   auto dcomp_surface =
       Microsoft::WRL::Make<DrawOffsetOverridingDCompositionSurface>(
           root_surface->dcomp_surface(), draw_offset);
-  root_surface->SetDCompSurfaceForTesting(std::move(dcomp_surface));
+
+  // Although |dcomp_surface| is not used beyond this point, it should not be
+  // freed. This is because surface_->SetDrawRectangle sets |dcomp_surface|
+  // as a row pointer to DirectCompositionChildSurfaceWin::g_current_surface,
+  // and later, root_surface->SetDCompSurfaceForTesting releases dcomp_surface
+  // without nullifying DirectCompositionChildSurfaceWin::g_current_surface.
+  // As a result, accessing the invalid
+  // DirectCompositionChildSurfaceWin::g_current_surface in
+  // DirectCompositionChildSurfaceWin::OnMakeCurrent leads to
+  // EXCEPTION_ACCESS_VIOLATION.
+  root_surface->SetDCompSurfaceForTesting(dcomp_surface);
 
   // Even though draw_rect is the first quadrant, the rendering will be limited
   // to the third quadrant because the dcomp surface will return that offset.
@@ -1363,6 +1375,10 @@ TEST_F(DirectCompositionPixelTest, RootSurfaceDrawOffset) {
   glClearColor(1.0, 0.0, 0.0, 1.0);
   glClear(GL_COLOR_BUFFER_BIT);
 
+  // Reset the original dcomp surface so it can be successfully set to a visual
+  // in dcomp tree. Passing DrawOffsetOverridingDCompositionSurface to
+  // Visual::SetContent returns an error.
+  root_surface->SetDCompSurfaceForTesting(std::move(orig_dcomp_surface));
   EXPECT_EQ(gfx::SwapResult::SWAP_ACK,
             surface_->SwapBuffers(base::DoNothing(), gfx::FrameData()));
 

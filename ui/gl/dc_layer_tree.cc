@@ -280,13 +280,7 @@ bool DCLayerTree::VisualTree::VisualSubtree::Update(
     dcomp_visual_content_ = std::move(dcomp_visual_content);
     needs_commit = true;
     hr = content_visual_->SetContent(dcomp_visual_content_.Get());
-    if (FAILED(hr)) {
-      // This can be changed back to a CHECK_EQ once
-      // DirectCompositionPixelTest.RootSurfaceDrawOffset in
-      // ui/gl/direct_composition_surface_win_unittest.cc is removed.
-      DLOG(ERROR) << "SetContent failed: "
-                  << logging::SystemErrorCodeToString(hr);
-    }
+    CHECK_EQ(hr, S_OK);
   }
 
   if (dcomp_surface_serial_ != dcomp_surface_serial) {
