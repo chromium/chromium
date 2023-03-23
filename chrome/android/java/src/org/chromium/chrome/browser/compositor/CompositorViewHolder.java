@@ -547,8 +547,6 @@ public class CompositorViewHolder extends FrameLayout
             if (controlContainerVG != null) {
                 controlContainerVG.setBackgroundResource(0);
             }
-
-            mSetBackgroundRunnable = null;
         };
     }
 
@@ -1220,12 +1218,7 @@ public class CompositorViewHolder extends FrameLayout
     public void didSwapFrame(int pendingFrameCount) {
         TraceEvent.instant("didSwapFrame");
 
-        if (mHasDrawnOnce && mSetBackgroundRunnable != null) {
-            post(mSetBackgroundRunnable);
-        }
-
         mHasDrawnOnce = true;
-
         mPendingFrameCount = pendingFrameCount;
 
         if (!mSkipInvalidation || pendingFrameCount == 0) flushInvalidation();
@@ -1237,7 +1230,12 @@ public class CompositorViewHolder extends FrameLayout
     }
 
     @Override
-    public void didSwapBuffers(boolean swappedCurrentSize) {
+    public void didSwapBuffers(boolean swappedCurrentSize, int framesUntilHideBackground) {
+        if (mSetBackgroundRunnable != null && mHasDrawnOnce && framesUntilHideBackground == 0) {
+            post(mSetBackgroundRunnable);
+            mSetBackgroundRunnable = null;
+        }
+
         for (Runnable runnable : mDidSwapBuffersCallbacks) {
             runnable.run();
         }
@@ -1765,7 +1763,7 @@ public class CompositorViewHolder extends FrameLayout
 
     // Should be called any time inputs used to compute `needsSwapCallback` changes.
     private void updateNeedsSwapBuffersCallback() {
-        boolean needsSwapCallback = !mOnCompositorLayoutCallbacks.isEmpty()
+        boolean needsSwapCallback = !mHasDrawnOnce || !mOnCompositorLayoutCallbacks.isEmpty()
                 || !mDidSwapFrameCallbacks.isEmpty() || !mDidSwapBuffersCallbacks.isEmpty();
         mCompositorView.setRenderHostNeedsDidSwapBuffersCallback(needsSwapCallback);
     }

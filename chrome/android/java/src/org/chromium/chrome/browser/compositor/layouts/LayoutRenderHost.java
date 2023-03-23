@@ -31,8 +31,10 @@ public interface LayoutRenderHost {
     /**
      * Indicates that the compositor swapped buffers.
      * @param swappedCurrentSize Whether the swapped buffer size is the same as the current one.
+     * @param framesUntilHideBackground The number of buffer swaps needed until the incoming surface
+     *         has a frame ready. Zero if no incoming surface or if the incoming surface is ready.
      */
-    default void didSwapBuffers(boolean swappedCurrentSize) {}
+    default void didSwapBuffers(boolean swappedCurrentSize, int framesUntilHideBackground) {}
 
     /**
      * Indicates that the rendering surface has just been created.

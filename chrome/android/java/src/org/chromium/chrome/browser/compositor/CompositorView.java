@@ -610,7 +610,7 @@ public class CompositorView
         }
         mHaveSwappedFramesSinceSurfaceCreated = true;
 
-        mRenderHost.didSwapBuffers(swappedCurrentSize);
+        mRenderHost.didSwapBuffers(swappedCurrentSize, mFramesUntilHideBackground);
 
         updateNeedsDidSwapBuffersCallback();
     }
