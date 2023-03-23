@@ -33,11 +33,13 @@ AttributionReport::EventLevelData::EventLevelData(
     uint64_t trigger_data,
     int64_t priority,
     double randomized_trigger_rate,
-    Id id)
+    Id id,
+    base::Time initial_report_time)
     : trigger_data(trigger_data),
       priority(priority),
       randomized_trigger_rate(randomized_trigger_rate),
-      id(id) {
+      id(id),
+      initial_report_time(initial_report_time) {
   DCHECK_GE(randomized_trigger_rate, 0);
   DCHECK_LE(randomized_trigger_rate, 1);
 }
@@ -232,20 +234,11 @@ void AttributionReport::SetExternalReportIdForTesting(
   external_report_id_ = std::move(external_report_id);
 }
 
+// TODO(tquintanilla): Return `initial_report_time` once field is moved to
+// top level.
 base::Time AttributionReport::OriginalReportTime() const {
-  return absl::visit(
-      base::Overloaded{
-          [this](const EventLevelData&) {
-            return ComputeReportTime(
-                this->attribution_info_.source.common_info(),
-                this->attribution_info_.source.event_report_window_time(),
-                this->attribution_info_.time);
-          },
-          [](const AggregatableAttributionData& data) {
-            return data.initial_report_time;
-          },
-      },
-      data_);
+  return absl::visit([](const auto& v) { return v.initial_report_time; },
+                     data_);
 }
 
 // static

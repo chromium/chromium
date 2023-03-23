@@ -1199,7 +1199,7 @@ EventLevelResult AttributionStorageSql::MaybeCreateEventLevelReport(
       AttributionReport::EventLevelData(
           delegate_->SanitizeTriggerData(event_trigger->data, source_type),
           event_trigger->priority, randomized_response_rate,
-          AttributionReport::EventLevelData::Id(kUnsetReportId)));
+          AttributionReport::EventLevelData::Id(kUnsetReportId), report_time));
 
   dedup_key = event_trigger->dedup_key;
 
@@ -1331,19 +1331,20 @@ AttributionStorageSql::StoreEventLevelReport(
   static constexpr char kStoreReportSql[] =
       "INSERT INTO event_level_reports"
       "(source_id,trigger_data,trigger_time,report_time,"
-      "priority,failed_send_attempts,external_report_id,debug_key,"
-      "context_origin)"
-      "VALUES(?,?,?,?,?,0,?,?,?)";
+      "initial_report_time,priority,failed_send_attempts,"
+      "external_report_id,debug_key,context_origin)"
+      "VALUES(?,?,?,?,?,?,0,?,?,?)";
   sql::Statement store_report_statement(
       db_->GetCachedStatement(SQL_FROM_HERE, kStoreReportSql));
   store_report_statement.BindInt64(0, *source_id);
   store_report_statement.BindInt64(1, SerializeUint64(trigger_data));
   store_report_statement.BindTime(2, trigger_time);
   store_report_statement.BindTime(3, report_time);
-  store_report_statement.BindInt64(4, priority);
-  store_report_statement.BindString(5, external_report_id.AsLowercaseString());
-  BindUint64OrNull(store_report_statement, 6, trigger_debug_key);
-  store_report_statement.BindString(7, context_origin.Serialize());
+  store_report_statement.BindTime(4, report_time);
+  store_report_statement.BindInt64(5, priority);
+  store_report_statement.BindString(6, external_report_id.AsLowercaseString());
+  BindUint64OrNull(store_report_statement, 7, trigger_debug_key);
+  store_report_statement.BindString(8, context_origin.Serialize());
   if (!store_report_statement.Run()) {
     return absl::nullopt;
   }
@@ -1355,7 +1356,7 @@ AttributionStorageSql::StoreEventLevelReport(
 // ordering of columns used for the input to this function.
 absl::optional<AttributionReport>
 AttributionStorageSql::ReadReportFromStatement(sql::Statement& statement) {
-  DCHECK_EQ(statement.ColumnCount(), kSourceColumnCount + 9);
+  DCHECK_EQ(statement.ColumnCount(), kSourceColumnCount + 10);
 
   absl::optional<StoredSourceData> source_data =
       ReadSourceFromStatement(statement, *db_);
@@ -1373,6 +1374,7 @@ AttributionStorageSql::ReadReportFromStatement(sql::Statement& statement) {
       ColumnUint64OrNull(statement, col++);
   auto context_origin =
       SuitableOrigin::Deserialize(statement.ColumnString(col++));
+  base::Time initial_report_time = statement.ColumnTime(col++);
 
   // Ensure data is valid before continuing. This could happen if there is
   // database corruption.
@@ -1390,7 +1392,8 @@ AttributionStorageSql::ReadReportFromStatement(sql::Statement& statement) {
                       trigger_debug_key, std::move(*context_origin)),
       report_time, std::move(external_report_id), failed_send_attempts,
       AttributionReport::EventLevelData(trigger_data, conversion_priority,
-                                        randomized_response_rate, report_id));
+                                        randomized_response_rate, report_id,
+                                        initial_report_time));
 }
 
 std::vector<AttributionReport> AttributionStorageSql::GetAttributionReports(
@@ -2264,6 +2267,7 @@ bool AttributionStorageSql::CreateSchema() {
       "trigger_data INTEGER NOT NULL,"
       "trigger_time INTEGER NOT NULL,"
       "report_time INTEGER NOT NULL,"
+      "initial_report_time INTEGER NOT NULL,"
       "priority INTEGER NOT NULL,"
       "failed_send_attempts INTEGER NOT NULL,"
       "external_report_id TEXT NOT NULL,"

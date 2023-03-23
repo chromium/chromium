@@ -5,12 +5,15 @@
 #include "content/browser/attribution_reporting/attribution_storage_sql_migrations.h"
 
 #include "base/check.h"
+#include "base/containers/span.h"
 #include "base/functional/function_ref.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/time/time.h"
 #include "components/aggregation_service/aggregation_service.mojom.h"
+#include "components/attribution_reporting/source_type.mojom-shared.h"
 #include "content/browser/attribution_reporting/attribution_report.h"
 #include "content/browser/attribution_reporting/attribution_storage_sql.h"
+#include "content/browser/attribution_reporting/attribution_utils.h"
 #include "content/browser/attribution_reporting/common_source_info.h"
 #include "content/browser/attribution_reporting/rate_limit_table.h"
 #include "sql/database.h"
@@ -577,6 +580,107 @@ bool To47(sql::Database* db) {
   return true;
 }
 
+bool To48(sql::Database* db) {
+  static constexpr char kConversionTableSql[] =
+      "CREATE TABLE new_event_level_reports("
+      "report_id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,"
+      "source_id INTEGER NOT NULL,"
+      "trigger_data INTEGER NOT NULL,"
+      "trigger_time INTEGER NOT NULL,"
+      "report_time INTEGER NOT NULL,"
+      "initial_report_time INTEGER NOT NULL,"
+      "priority INTEGER NOT NULL,"
+      "failed_send_attempts INTEGER NOT NULL,"
+      "external_report_id TEXT NOT NULL,"
+      "debug_key INTEGER,"
+      "context_origin TEXT NOT NULL)";
+  if (!db->Execute(kConversionTableSql)) {
+    return false;
+  }
+
+  static constexpr char kInsertReportsSql[] =
+      "INSERT INTO new_event_level_reports "
+      "SELECT report_id,source_id,trigger_data,trigger_time,"
+      "report_time,report_time,priority,failed_send_attempts,"
+      "external_report_id,"
+      "debug_key,context_origin "
+      "FROM event_level_reports";
+  if (!db->Execute(kInsertReportsSql)) {
+    return false;
+  }
+
+  static constexpr char kRetrieveReportTimes[] =
+      "SELECT I.source_time,I.event_report_window_time,"
+      "R.trigger_time,I.source_type,R.report_id "
+      "FROM event_level_reports R "
+      "JOIN sources I "
+      "ON I.source_id=R.source_id";
+  sql::Statement select_statement(db->GetUniqueStatement(kRetrieveReportTimes));
+
+  static constexpr char kUpdateOriginalTime[] =
+      "UPDATE new_event_level_reports SET initial_report_time=? "
+      "WHERE report_id=?";
+  sql::Statement update_statement(db->GetUniqueStatement(kUpdateOriginalTime));
+
+  while (select_statement.Step()) {
+    base::Time initial_report_time;
+    int source_type = select_statement.ColumnInt(3);
+    base::Time source_time = select_statement.ColumnTime(0);
+    base::Time event_report_window_time = select_statement.ColumnTime(1);
+    base::Time trigger_time = select_statement.ColumnTime(2);
+    switch (source_type) {
+      case static_cast<int>(
+          attribution_reporting::mojom::SourceType::kNavigation):
+        initial_report_time = ComputeReportTime(
+            source_time, event_report_window_time, trigger_time,
+            /*early_deadlines=*/
+            base::span<const base::TimeDelta>({base::Days(2), base::Days(7)}));
+        break;
+      case static_cast<int>(attribution_reporting::mojom::SourceType::kEvent):
+        initial_report_time = ComputeReportTime(
+            source_time, event_report_window_time, trigger_time,
+            /*early_deadlines=*/{});
+        break;
+      default:
+        continue;
+    }
+
+    update_statement.Reset(/*clear_bound_vars=*/true);
+    update_statement.BindTime(0, initial_report_time);
+    update_statement.BindInt64(1, select_statement.ColumnInt64(4));
+    if (!update_statement.Run()) {
+      return false;
+    }
+  }
+
+  if (!db->Execute("DROP TABLE event_level_reports")) {
+    return false;
+  }
+
+  static constexpr char kRenameSql[] =
+      "ALTER TABLE new_event_level_reports "
+      "RENAME TO event_level_reports";
+  if (!db->Execute(kRenameSql)) {
+    return false;
+  }
+
+  static constexpr char kConversionReportTimeIndexSql[] =
+      "CREATE INDEX event_level_reports_by_report_time "
+      "ON event_level_reports(report_time)";
+  if (!db->Execute(kConversionReportTimeIndexSql)) {
+    return false;
+  }
+
+  static constexpr char kConversionImpressionIdIndexSql[] =
+      "CREATE INDEX event_level_reports_by_source_id "
+      "ON event_level_reports(source_id)";
+  if (!db->Execute(kConversionImpressionIdIndexSql)) {
+    return false;
+  }
+
+  return true;
+}
+
 }  // namespace
 
 bool UpgradeAttributionStorageSqlSchema(sql::Database* db,
@@ -603,12 +707,13 @@ bool UpgradeAttributionStorageSqlSchema(sql::Database* db,
             MaybeMigrate(db, meta_table, 43, &To44) &&
             MaybeMigrate(db, meta_table, 44, &To45) &&
             MaybeMigrate(db, meta_table, 45, &To46) &&
-            MaybeMigrate(db, meta_table, 46, &To47);
+            MaybeMigrate(db, meta_table, 46, &To47) &&
+            MaybeMigrate(db, meta_table, 47, &To48);
   if (!ok) {
     return false;
   }
 
-  static_assert(AttributionStorageSql::kCurrentVersionNumber == 47,
+  static_assert(AttributionStorageSql::kCurrentVersionNumber == 48,
                 "Add migration(s) above.");
 
   if (base::ThreadTicks::IsSupported()) {

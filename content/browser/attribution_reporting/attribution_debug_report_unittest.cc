@@ -29,6 +29,7 @@ AttributionReport DefaultEventLevelReport(
   return ReportBuilder(
              AttributionInfoBuilder(SourceBuilder(source_time).BuildStored())
                  .Build())
+      .SetReportTime(base::Time::UnixEpoch() + base::Hours(1))
       .Build();
 }
 

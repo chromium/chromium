@@ -476,7 +476,8 @@ AttributionReport ReportBuilder::Build() const {
       attribution_info_, report_time_, external_report_id_,
       /*failed_send_attempts=*/0,
       AttributionReport::EventLevelData(trigger_data_, priority_,
-                                        randomized_trigger_rate_, report_id_));
+                                        randomized_trigger_rate_, report_id_,
+                                        report_time_));
 }
 
 AttributionReport ReportBuilder::BuildAggregatableAttribution() const {

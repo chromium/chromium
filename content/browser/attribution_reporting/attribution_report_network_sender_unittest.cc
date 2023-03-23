@@ -180,6 +180,7 @@ TEST_F(AttributionReportNetworkSenderTest,
               .Build())
           .SetTriggerData(5)
           .SetRandomizedTriggerRate(0.2)
+          .SetReportTime(base::Time::UnixEpoch() + base::Hours(1))
           .Build();
 
   for (const auto& test_case : kTestCases) {

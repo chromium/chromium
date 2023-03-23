@@ -54,6 +54,7 @@ data/attribution_reporting/databases/version_44.sql
 data/attribution_reporting/databases/version_45.sql
 data/attribution_reporting/databases/version_46.sql
 data/attribution_reporting/databases/version_47.sql
+data/attribution_reporting/databases/version_48.sql
 data/attribution_reporting/interop/aggregatable_budget.json
 data/attribution_reporting/interop/aggregatable_contributions_creation.json
 data/attribution_reporting/interop/aggregatable_dedup_key.json

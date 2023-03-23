@@ -169,7 +169,7 @@ inline constexpr const char kGetActiveSourcesSql[] =
   ATTRIBUTION_SOURCE_COLUMNS_SQL("I.")                                  \
   ",C.trigger_data,C.trigger_time,C.report_time,C.report_id,"           \
   "C.priority,C.failed_send_attempts,C.external_report_id,C.debug_key," \
-  "C.context_origin "                                                   \
+  "C.context_origin,C.initial_report_time "                             \
   "FROM event_level_reports C "                                         \
   "JOIN sources I ON C.source_id=I.source_id "
 

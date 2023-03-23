@@ -92,6 +92,7 @@ TEST(AttributionReportTest, ReportBody) {
                 .Build())
             .SetTriggerData(5)
             .SetRandomizedTriggerRate(0.2)
+            .SetReportTime(base::Time::UnixEpoch() + base::Hours(1))
             .Build();
 
     EXPECT_THAT(report.ReportBody(), IsJson(test_case.expected));
@@ -142,6 +143,7 @@ TEST(AttributionReportTest, ReportBody_MultiDestination) {
                               .BuildStored())
                           .SetTime(base::Time::UnixEpoch() + base::Seconds(1))
                           .Build())
+            .SetReportTime(base::Time::UnixEpoch() + base::Hours(1))
             .Build();
 
     EXPECT_THAT(report.ReportBody(), IsJson(test_case.expected));
@@ -208,6 +210,7 @@ TEST(AttributionReportTest, ReportBody_DebugKeys) {
                 .Build())
             .SetTriggerData(5)
             .SetRandomizedTriggerRate(0.2)
+            .SetReportTime(base::Time::UnixEpoch() + base::Hours(1))
             .Build();
 
     EXPECT_THAT(report.ReportBody(), IsJson(test_case.expected));

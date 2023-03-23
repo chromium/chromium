@@ -84,9 +84,14 @@ struct CONTENT_EXPORT AttributionConfig {
     // should also be updated.
     int64_t aggregatable_budget_per_source = 65536;
 
+    // Default constants for the report delivery time to be used when declaring
+    // field trial params.
+    static constexpr base::TimeDelta kDefaultMinDelay = base::Minutes(10);
+    static constexpr base::TimeDelta kDefaultDelaySpan = base::Minutes(50);
+
     // Controls the report delivery time.
-    base::TimeDelta min_delay = base::Minutes(10);
-    base::TimeDelta delay_span = base::Minutes(50);
+    base::TimeDelta min_delay = kDefaultMinDelay;
+    base::TimeDelta delay_span = kDefaultDelaySpan;
 
     // When adding new members, the corresponding `Validate()` definition and
     // `operator==()` definition in `attribution_interop_parser_unittest.cc`

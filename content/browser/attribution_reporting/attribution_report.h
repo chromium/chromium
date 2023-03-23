@@ -45,7 +45,8 @@ class CONTENT_EXPORT AttributionReport {
     EventLevelData(uint64_t trigger_data,
                    int64_t priority,
                    double randomized_trigger_rate,
-                   Id id);
+                   Id id,
+                   base::Time initial_report_time);
     EventLevelData(const EventLevelData&);
     EventLevelData& operator=(const EventLevelData&);
     EventLevelData(EventLevelData&&);
@@ -66,6 +67,10 @@ class CONTENT_EXPORT AttributionReport {
 
     // Id assigned by storage to uniquely identify a completed conversion.
     Id id;
+
+    // The initial report time scheduled by the browser.
+    // TODO(tquintanilla): Move to top level with aggregatable equivalent.
+    base::Time initial_report_time;
 
     // When adding new members, the corresponding `operator==()` definition in
     // `attribution_test_utils.h` should also be updated.
