@@ -51,13 +51,6 @@ gpu::raster::RasterInterface* GetSharedGpuRasterInterface() {
   return nullptr;
 }
 
-// Controls how asyc VideoFrame.copyTo() works
-// Enabled - RI::ReadbackARGBPixelsAsync()
-// Disabled - simply call sync readback on a separate thread.
-BASE_FEATURE(kTrullyAsyncRgbVideoFrameCopyTo,
-             "TrullyAsyncRgbVideoFrameCopyTo",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 }  // namespace
 
 namespace WTF {
@@ -148,8 +141,7 @@ void BackgroundReadback::ReadbackTextureBackedFrameToBuffer(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(txt_frame);
 
-  if (base::FeatureList::IsEnabled(kTrullyAsyncRgbVideoFrameCopyTo) &&
-      CanUseRgbReadback(*txt_frame)) {
+  if (CanUseRgbReadback(*txt_frame)) {
     ReadbackRGBTextureBackedFrameToBuffer(txt_frame, src_rect, dest_layout,
                                           dest_buffer, std::move(done_cb));
     return;
