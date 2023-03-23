@@ -1423,56 +1423,53 @@ bool ComputedStyle::HasFilters() const {
   return FilterInternal().Get() && !FilterInternal()->operations_.IsEmpty();
 }
 
+PointAndTangent ComputedStyle::CalculatePointAndTangentOnRay() const {
+  PointAndTangent path_position;
+  float float_distance = FloatValueForLength(OffsetDistance(), 0);
+  // Use ClampTo() to convert infinite values to min/max finite ones.
+  path_position.tangent_in_degrees =
+      ClampTo<float, float>(To<StyleRay>(*OffsetPath()).Angle() - 90);
+  float tangent_in_radians = Deg2rad(path_position.tangent_in_degrees);
+  path_position.point.set_x(float_distance * cos(tangent_in_radians));
+  path_position.point.set_y(float_distance * sin(tangent_in_radians));
+  return path_position;
+}
+
+PointAndTangent ComputedStyle::CalculatePointAndTangentOnPath() const {
+  float zoom = EffectiveZoom();
+  const StylePath& path = To<StylePath>(*OffsetPath());
+  float path_length = path.length();
+  float float_distance =
+      FloatValueForLength(OffsetDistance(), path_length * zoom) / zoom;
+  float computed_distance;
+  if (path.IsClosed() && path_length > 0) {
+    computed_distance = fmod(float_distance, path_length);
+    if (computed_distance < 0) {
+      computed_distance += path_length;
+    }
+  } else {
+    computed_distance = ClampTo<float>(float_distance, 0, path_length);
+  }
+  PointAndTangent path_position =
+      path.GetPath().PointAndNormalAtLength(computed_distance);
+  path_position.point.Scale(zoom, zoom);
+  return path_position;
+}
+
 void ComputedStyle::ApplyMotionPathTransform(float origin_x,
                                              float origin_y,
                                              const LayoutBox* box,
                                              const gfx::RectF& bounding_box,
                                              gfx::Transform& transform) const {
   // TODO(ericwilligers): crbug.com/638055 Apply offset-position.
-  if (!OffsetPath()) {
+  const BasicShape* path = OffsetPath();
+  if (!path) {
     return;
   }
-  const LengthPoint& position = OffsetPosition();
+
   const LengthPoint& anchor = OffsetAnchor();
-  const Length& distance = OffsetDistance();
-  const BasicShape* path = OffsetPath();
+  const LengthPoint& position = OffsetPosition();
   const StyleOffsetRotation& rotate = OffsetRotate();
-
-  PointAndTangent path_position;
-  if (path->GetType() == BasicShape::kStyleRayType) {
-    // TODO(ericwilligers): crbug.com/641245 Support <size> for ray paths.
-    float float_distance = FloatValueForLength(distance, 0);
-
-    // Use ClampTo() to convert infinite values to min/max finite ones.
-    path_position.tangent_in_degrees =
-        ClampTo<float, float>(To<StyleRay>(*path).Angle() - 90);
-    float tangent_in_radians = Deg2rad(path_position.tangent_in_degrees);
-    path_position.point.set_x(float_distance * cos(tangent_in_radians));
-    path_position.point.set_y(float_distance * sin(tangent_in_radians));
-  } else {
-    float zoom = EffectiveZoom();
-    const StylePath& motion_path = To<StylePath>(*path);
-    float path_length = motion_path.length();
-    float float_distance =
-        FloatValueForLength(distance, path_length * zoom) / zoom;
-    float computed_distance;
-    if (motion_path.IsClosed() && path_length > 0) {
-      computed_distance = fmod(float_distance, path_length);
-      if (computed_distance < 0) {
-        computed_distance += path_length;
-      }
-    } else {
-      computed_distance = ClampTo<float>(float_distance, 0, path_length);
-    }
-
-    path_position =
-        motion_path.GetPath().PointAndNormalAtLength(computed_distance);
-    path_position.point.Scale(zoom, zoom);
-  }
-
-  if (rotate.type == OffsetRotationType::kFixed) {
-    path_position.tangent_in_degrees = 0;
-  }
 
   float origin_shift_x = 0;
   float origin_shift_y = 0;
@@ -1486,6 +1483,23 @@ void ComputedStyle::ApplyMotionPathTransform(float origin_x,
     // Shift the origin from transform-origin to offset-anchor.
     origin_shift_x = anchor_point.x() - origin_x;
     origin_shift_y = anchor_point.y() - origin_y;
+  }
+
+  PointAndTangent path_position;
+  switch (path->GetType()) {
+    case BasicShape::kStylePathType:
+      path_position = CalculatePointAndTangentOnPath();
+      break;
+    case BasicShape::kStyleRayType:
+      path_position = CalculatePointAndTangentOnRay();
+      break;
+    default:
+      NOTREACHED();
+      break;
+  }
+
+  if (rotate.type == OffsetRotationType::kFixed) {
+    path_position.tangent_in_degrees = 0;
   }
 
   transform.Translate(
