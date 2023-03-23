@@ -18,6 +18,9 @@ class PrefRegistrySimple;
 
 namespace ash {
 
+class DarkLightModeController;
+class WallpaperControllerImpl;
+
 // Types of ColorSchemes. For a given seed color, each ColorScheme will generate
 // a different color palette/set of ref colors.
 enum class ASH_EXPORT ColorScheme {
@@ -69,7 +72,12 @@ class ASH_EXPORT ColorPaletteController {
     virtual void OnColorPaletteChanging(const ColorPaletteSeed& seed) = 0;
   };
 
-  static ASH_EXPORT std::unique_ptr<ColorPaletteController> Create();
+  // Temporary factory for migration.  DO NOT USE.
+  static std::unique_ptr<ColorPaletteController> Create();
+
+  static std::unique_ptr<ColorPaletteController> Create(
+      DarkLightModeController* dark_light_mode_controller,
+      WallpaperControllerImpl* wallpaper_controller);
 
   ColorPaletteController() = default;
 
