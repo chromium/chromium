@@ -276,7 +276,7 @@ ClipboardHistoryControllerImpl::~ClipboardHistoryControllerImpl() {
 
 void ClipboardHistoryControllerImpl::Shutdown() {
   if (IsMenuShowing()) {
-    context_menu_->Cancel();
+    context_menu_->Cancel(/*will_paste_item=*/false);
   }
   nudge_controller_.reset();
 }
@@ -326,6 +326,14 @@ void ClipboardHistoryControllerImpl::ShowMenu(
     const gfx::Rect& anchor_rect,
     ui::MenuSourceType source_type,
     crosapi::mojom::ClipboardHistoryControllerShowSource show_source) {
+  ShowMenu(anchor_rect, source_type, show_source, OnMenuClosingCallback());
+}
+
+void ClipboardHistoryControllerImpl::ShowMenu(
+    const gfx::Rect& anchor_rect,
+    ui::MenuSourceType source_type,
+    crosapi::mojom::ClipboardHistoryControllerShowSource show_source,
+    OnMenuClosingCallback callback) {
   if (IsMenuShowing() || !CanShowMenu())
     return;
 
@@ -335,8 +343,9 @@ void ClipboardHistoryControllerImpl::ShowMenu(
   if (active_menu_instance)
     active_menu_instance->Cancel(views::MenuController::ExitType::kAll);
 
+  // `Unretained()` is safe because `this` owns `context_menu_`.
   context_menu_ = ClipboardHistoryMenuModelAdapter::Create(
-      menu_delegate_.get(),
+      menu_delegate_.get(), std::move(callback),
       base::BindRepeating(&ClipboardHistoryControllerImpl::OnMenuClosed,
                           base::Unretained(this)),
       clipboard_history_.get(), resource_manager_.get());
@@ -570,7 +579,7 @@ void ClipboardHistoryControllerImpl::OnClipboardHistoryCleared() {
   weak_ptr_factory_.InvalidateWeakPtrs();
   if (!IsMenuShowing())
     return;
-  context_menu_->Cancel();
+  context_menu_->Cancel(/*will_paste_item=*/false);
 }
 
 void ClipboardHistoryControllerImpl::OnOperationConfirmed(bool copy) {
@@ -725,8 +734,11 @@ void ClipboardHistoryControllerImpl::PasteMenuItemData(
 
   // Force close the context menu. Failure to do so before dispatching our
   // synthetic key event will result in the context menu consuming the event.
+  // When closing the menu, indicate that the menu is closing because of an
+  // imminent paste. Note that in some cases, this will indicate paste intent
+  // for pastes that ultimately fail. For now, this is an acceptable inaccuracy.
   DCHECK(context_menu_);
-  context_menu_->Cancel();
+  context_menu_->Cancel(/*will_paste_item=*/true);
 
   auto* active_window = window_util::GetActiveWindow();
   if (!active_window)
@@ -920,7 +932,7 @@ void ClipboardHistoryControllerImpl::DeleteItemWithCommandId(int command_id) {
 
   // If the item to be deleted is the last one, close the whole menu.
   if (context_menu_->GetMenuItemsCount() == 1) {
-    context_menu_->Cancel();
+    context_menu_->Cancel(/*will_paste_item=*/false);
     return;
   }
 

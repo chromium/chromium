@@ -95,6 +95,11 @@ class ASH_EXPORT ClipboardHistoryControllerImpl
                 ui::MenuSourceType source_type,
                 crosapi::mojom::ClipboardHistoryControllerShowSource
                     show_source) override;
+  void ShowMenu(
+      const gfx::Rect& anchor_rect,
+      ui::MenuSourceType source_type,
+      crosapi::mojom::ClipboardHistoryControllerShowSource show_source,
+      OnMenuClosingCallback callback) override;
   void GetHistoryValues(GetHistoryValuesCallback callback) const override;
 
   // Returns bounds for the contextual menu in screen coordinates.

@@ -7,6 +7,7 @@
 #include "ash/clipboard/clipboard_history.h"
 #include "ash/clipboard/clipboard_history_util.h"
 #include "ash/clipboard/views/clipboard_history_item_view.h"
+#include "ash/public/cpp/clipboard_history_controller.h"
 #include "ash/public/cpp/clipboard_image_model_factory.h"
 #include "ash/wm/window_util.h"
 #include "base/functional/bind.h"
@@ -15,6 +16,7 @@
 #include "base/task/sequenced_task_runner.h"
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/models/simple_menu_model.h"
 #include "ui/base/ui_base_types.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/strings/grit/ui_strings.h"
@@ -26,6 +28,36 @@
 #include "ui/views/widget/widget.h"
 
 namespace ash {
+
+// ClipboardHistoryMenuModelAdapter::MenuModelWithWillCloseCallback ------------
+
+// Utility class that allows `ClipboardHistoryMenuModelAdapter` to run a task
+// before its menu closes.
+class ClipboardHistoryMenuModelAdapter::MenuModelWithWillCloseCallback
+    : public ui::SimpleMenuModel {
+ public:
+  MenuModelWithWillCloseCallback(
+      ui::SimpleMenuModel::Delegate* delegate,
+      ClipboardHistoryController::OnMenuClosingCallback callback)
+      : ui::SimpleMenuModel(delegate), callback_(std::move(callback)) {}
+
+  // ui::SimpleMenuModel:
+  void MenuWillClose() override {
+    if (callback_) {
+      std::move(callback_).Run(will_paste_item_);
+    }
+
+    ui::SimpleMenuModel::MenuWillClose();
+  }
+
+  void set_will_paste_item(bool will_paste_item) {
+    will_paste_item_ = will_paste_item;
+  }
+
+ private:
+  ClipboardHistoryController::OnMenuClosingCallback callback_;
+  bool will_paste_item_ = false;
+};
 
 // ClipboardHistoryMenuModelAdapter::ScopedA11yIgnore --------------------------
 
@@ -57,11 +89,13 @@ class ClipboardHistoryMenuModelAdapter::ScopedA11yIgnore {
 std::unique_ptr<ClipboardHistoryMenuModelAdapter>
 ClipboardHistoryMenuModelAdapter::Create(
     ui::SimpleMenuModel::Delegate* delegate,
+    ClipboardHistoryController::OnMenuClosingCallback on_menu_closing_callback,
     base::RepeatingClosure menu_closed_callback,
     const ClipboardHistory* clipboard_history,
     const ClipboardHistoryResourceManager* resource_manager) {
   return base::WrapUnique(new ClipboardHistoryMenuModelAdapter(
-      std::make_unique<ui::SimpleMenuModel>(delegate),
+      std::make_unique<MenuModelWithWillCloseCallback>(
+          delegate, std::move(on_menu_closing_callback)),
       std::move(menu_closed_callback), clipboard_history, resource_manager));
 }
 
@@ -115,7 +149,8 @@ bool ClipboardHistoryMenuModelAdapter::IsRunning() const {
   return menu_runner_ && menu_runner_->IsRunning();
 }
 
-void ClipboardHistoryMenuModelAdapter::Cancel() {
+void ClipboardHistoryMenuModelAdapter::Cancel(bool will_paste_item) {
+  model_->set_will_paste_item(will_paste_item);
   DCHECK(menu_runner_);
   menu_runner_->Cancel();
 }
@@ -283,7 +318,7 @@ views::MenuItemView* ClipboardHistoryMenuModelAdapter::GetMenuItemViewAtForTest(
 }
 
 ClipboardHistoryMenuModelAdapter::ClipboardHistoryMenuModelAdapter(
-    std::unique_ptr<ui::SimpleMenuModel> model,
+    std::unique_ptr<MenuModelWithWillCloseCallback> model,
     base::RepeatingClosure menu_closed_callback,
     const ClipboardHistory* clipboard_history,
     const ClipboardHistoryResourceManager* resource_manager)
