@@ -10,6 +10,7 @@
 #include <vector>
 
 #include "base/feature_list.h"
+#include "base/notreached.h"
 #include "components/viz/common/features.h"
 #include "components/viz/common/gpu/vulkan_context_provider.h"
 #include "components/viz/common/resources/resource_format_utils.h"
@@ -23,106 +24,6 @@
 
 namespace viz {
 
-namespace {
-
-class PresenterImageFuchsia : public OutputPresenter::Image {
- public:
-  PresenterImageFuchsia(
-      gpu::SharedImageFactory* factory,
-      gpu::SharedImageRepresentationFactory* representation_factory,
-      SkiaOutputSurfaceDependency* deps)
-      : Image(factory, representation_factory, deps) {}
-  ~PresenterImageFuchsia() override;
-
-  // OutputPresenter::Image implementation.
-  void BeginPresent() final;
-  void EndPresent(gfx::GpuFenceHandle release_fence) final;
-  int GetPresentCount() const final;
-  void OnContextLost() final;
-
-  // Must only be called in between BeginPresent() and EndPresent().
-  scoped_refptr<gfx::NativePixmap> GetNativePixmap() {
-    DCHECK(scoped_overlay_read_access_);
-    return scoped_overlay_read_access_->GetNativePixmap();
-  }
-
-  // Must be called after BeginPresent() to get fences for frame.
-  void TakePresentationFences(
-      std::vector<gfx::GpuFenceHandle>& read_begin_fences,
-      std::vector<gfx::GpuFenceHandle>& read_end_fences);
-
- private:
-  std::vector<gfx::GpuFenceHandle> read_begin_fences_;
-  gfx::GpuFenceHandle read_end_fence_;
-};
-
-PresenterImageFuchsia::~PresenterImageFuchsia() {
-  DCHECK(read_begin_fences_.empty());
-  DCHECK(read_end_fence_.is_null());
-}
-
-void PresenterImageFuchsia::BeginPresent() {
-  DCHECK(read_end_fence_.is_null());
-
-  ++present_count_;
-
-  if (present_count_ == 1) {
-    DCHECK(!scoped_overlay_read_access_);
-    DCHECK(read_begin_fences_.empty());
-
-    scoped_overlay_read_access_ =
-        overlay_representation_->BeginScopedReadAccess();
-    DCHECK(scoped_overlay_read_access_);
-
-    // Take ownership of acquire fence.
-    gfx::GpuFenceHandle gpu_fence_handle =
-        scoped_overlay_read_access_->TakeAcquireFence();
-    if (!gpu_fence_handle.is_null())
-      read_begin_fences_.push_back(std::move(gpu_fence_handle));
-  }
-
-  // A new release fence is generated for each present. The fence for the last
-  // present gets waited on before giving up read access to the shared image.
-  gpu::ExternalSemaphore semaphore =
-      gpu::ExternalSemaphore::Create(deps_->GetVulkanContextProvider());
-  DCHECK(semaphore.is_valid());
-  read_end_fence_ = semaphore.TakeSemaphoreHandle().ToGpuFenceHandle();
-
-  scoped_overlay_read_access_->SetReleaseFence(read_end_fence_.Clone());
-}
-
-void PresenterImageFuchsia::EndPresent(gfx::GpuFenceHandle release_fence) {
-  DCHECK(present_count_);
-  DCHECK(release_fence.is_null());
-  --present_count_;
-  if (!present_count_) {
-    DCHECK(scoped_overlay_read_access_);
-    scoped_overlay_read_access_.reset();
-  }
-}
-
-int PresenterImageFuchsia::GetPresentCount() const {
-  return present_count_;
-}
-
-void PresenterImageFuchsia::OnContextLost() {
-  if (overlay_representation_)
-    overlay_representation_->OnContextLost();
-}
-
-void PresenterImageFuchsia::TakePresentationFences(
-    std::vector<gfx::GpuFenceHandle>& read_begin_fences,
-    std::vector<gfx::GpuFenceHandle>& read_end_fences) {
-  DCHECK(read_begin_fences.empty());
-  std::swap(read_begin_fences, read_begin_fences_);
-
-  DCHECK(read_end_fences.empty());
-  DCHECK(!read_end_fence_.is_null());
-  read_end_fences.push_back(std::move(read_end_fence_));
-}
-
-}  // namespace
-
 OutputPresenterFuchsia::PendingFrame::PendingFrame() = default;
 OutputPresenterFuchsia::PendingFrame::~PendingFrame() = default;
 
@@ -133,28 +34,21 @@ OutputPresenterFuchsia::PendingFrame::operator=(PendingFrame&&) = default;
 // static
 std::unique_ptr<OutputPresenterFuchsia> OutputPresenterFuchsia::Create(
     ui::PlatformWindowSurface* window_surface,
-    SkiaOutputSurfaceDependency* deps,
-    gpu::SharedImageFactory* shared_image_factory,
-    gpu::SharedImageRepresentationFactory* representation_factory) {
+    SkiaOutputSurfaceDependency* deps) {
   if (!base::FeatureList::IsEnabled(
           features::kUseSkiaOutputDeviceBufferQueue)) {
     return {};
   }
 
-  return std::make_unique<OutputPresenterFuchsia>(
-      window_surface, deps, shared_image_factory, representation_factory);
+  return std::make_unique<OutputPresenterFuchsia>(window_surface, deps);
 }
 
 OutputPresenterFuchsia::OutputPresenterFuchsia(
     ui::PlatformWindowSurface* window_surface,
-    SkiaOutputSurfaceDependency* deps,
-    gpu::SharedImageFactory* shared_image_factory,
-    gpu::SharedImageRepresentationFactory* representation_factory)
-    : window_surface_(window_surface),
-      dependency_(deps),
-      shared_image_factory_(shared_image_factory),
-      shared_image_representation_factory_(representation_factory) {
-  DCHECK(window_surface_);
+    SkiaOutputSurfaceDependency* deps)
+    : window_surface_(window_surface), dependency_(deps) {
+  CHECK(window_surface_);
+  CHECK(features::ShouldRendererAllocateImages());
 }
 
 OutputPresenterFuchsia::~OutputPresenterFuchsia() = default;
@@ -177,7 +71,6 @@ bool OutputPresenterFuchsia::Reshape(
     const gfx::ColorSpace& color_space,
     float device_scale_factor,
     gfx::OverlayTransform transform) {
-  frame_size_ = gfx::SkISizeToSize(characterization.dimensions());
   return true;
 }
 
@@ -185,63 +78,31 @@ std::vector<std::unique_ptr<OutputPresenter::Image>>
 OutputPresenterFuchsia::AllocateImages(gfx::ColorSpace color_space,
                                        gfx::Size image_size,
                                        size_t num_images) {
-  DCHECK(!features::ShouldRendererAllocateImages());
-
-  // Fuchsia allocates images in batches and does not support allocating and
-  // releasing images on demand.
-  CHECK_NE(num_images, 1u);
-
-  // Create PresenterImageFuchsia for each buffer in the collection.
-  constexpr uint32_t image_usage = gpu::SHARED_IMAGE_USAGE_DISPLAY_READ |
-                                   gpu::SHARED_IMAGE_USAGE_DISPLAY_WRITE |
-                                   gpu::SHARED_IMAGE_USAGE_SCANOUT;
-
-  std::vector<std::unique_ptr<OutputPresenter::Image>> images;
-  images.reserve(num_images);
-
-  // Create an image for each buffer in the collection.
-  for (size_t i = 0; i < num_images; ++i) {
-    auto image = std::make_unique<PresenterImageFuchsia>(
-        shared_image_factory_, shared_image_representation_factory_,
-        dependency_);
-    if (!image->Initialize(frame_size_, color_space, si_format_, image_usage)) {
-      return {};
-    }
-    images.push_back(std::move(image));
-  }
-
-  return images;
+  NOTREACHED();
+  return {};
 }
 
 void OutputPresenterFuchsia::Present(
     SwapCompletionCallback completion_callback,
     BufferPresentedCallback presentation_callback,
     gfx::FrameData data) {
-  // SwapBuffer() should be called only after SchedulePrimaryPlane().
+  // SwapBuffer() should be called only after scheduling primary plane.
   DCHECK(next_frame_ && next_frame_->native_pixmap);
 
-  next_frame_->completion_callback = std::move(completion_callback);
-  next_frame_->presentation_callback = std::move(presentation_callback);
+  PendingFrame& frame = next_frame_.value();
+  window_surface_->Present(
+      std::move(frame.native_pixmap), std::move(frame.overlays),
+      std::move(frame.acquire_fences), std::move(frame.release_fences),
+      std::move(completion_callback), std::move(presentation_callback));
 
-  PresentNextFrame();
+  next_frame_.reset();
 }
 
 void OutputPresenterFuchsia::SchedulePrimaryPlane(
     const OverlayProcessorInterface::OutputSurfaceOverlayPlane& plane,
     Image* image,
     bool is_submitted) {
-  auto* image_fuchsia = static_cast<PresenterImageFuchsia*>(image);
-
-  if (!next_frame_)
-    next_frame_.emplace();
-  DCHECK(!next_frame_->native_pixmap);
-  next_frame_->native_pixmap = image_fuchsia->GetNativePixmap();
-
-  // Take semaphores for the image to be passed to ImagePipe::PresentImage().
-  image_fuchsia->TakePresentationFences(next_frame_->acquire_fences,
-                                        next_frame_->release_fences);
-  DCHECK(!next_frame_->acquire_fences.empty());
-  DCHECK(!next_frame_->release_fences.empty());
+  NOTREACHED();
 }
 
 void OutputPresenterFuchsia::ScheduleOverlayPlane(
@@ -257,7 +118,6 @@ void OutputPresenterFuchsia::ScheduleOverlayPlane(
 
   if (!next_frame_)
     next_frame_.emplace();
-  DCHECK(next_frame_->overlays.empty());
 
   DCHECK(overlay_plane_candidate.mailbox.IsSharedImage());
   auto pixmap = access ? access->GetNativePixmap() : nullptr;
@@ -268,7 +128,6 @@ void OutputPresenterFuchsia::ScheduleOverlayPlane(
   }
 
   if (overlay_plane_candidate.is_root_render_pass) {
-    DCHECK(features::ShouldRendererAllocateImages());
     DCHECK(!next_frame_->native_pixmap);
     next_frame_->native_pixmap = std::move(pixmap);
 
@@ -289,8 +148,10 @@ void OutputPresenterFuchsia::ScheduleOverlayPlane(
     // for the current access directly.
     access->SetReleaseFence(std::move(release_fence));
   } else {
-    next_frame_->overlays.emplace_back();
-    auto& overlay = next_frame_->overlays.back();
+    // Max one overlay plane supported.
+    DCHECK(next_frame_->overlays.empty());
+
+    auto& overlay = next_frame_->overlays.emplace_back();
     overlay.pixmap = std::move(pixmap);
     overlay.overlay_plane_data = gfx::OverlayPlaneData(
         overlay_plane_candidate.plane_z_order,
@@ -303,19 +164,6 @@ void OutputPresenterFuchsia::ScheduleOverlayPlane(
         overlay_plane_candidate.color_space,
         overlay_plane_candidate.hdr_metadata);
   }
-}
-
-void OutputPresenterFuchsia::PresentNextFrame() {
-  DCHECK(next_frame_);
-
-  PendingFrame& frame = next_frame_.value();
-  window_surface_->Present(
-      std::move(frame.native_pixmap), std::move(frame.overlays),
-      std::move(frame.acquire_fences), std::move(frame.release_fences),
-      std::move(frame.completion_callback),
-      std::move(frame.presentation_callback));
-
-  next_frame_.reset();
 }
 
 }  // namespace viz

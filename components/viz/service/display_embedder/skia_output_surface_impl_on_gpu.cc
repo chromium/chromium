@@ -1843,9 +1843,8 @@ bool SkiaOutputSurfaceImplOnGpu::InitializeForVulkan() {
 #if !BUILDFLAG(IS_WIN)
   std::unique_ptr<OutputPresenter> output_presenter;
 #if BUILDFLAG(IS_FUCHSIA)
-  output_presenter = OutputPresenterFuchsia::Create(
-      window_surface_.get(), dependency_, shared_image_factory_.get(),
-      shared_image_representation_factory_.get());
+  output_presenter =
+      OutputPresenterFuchsia::Create(window_surface_.get(), dependency_);
 #else
   presenter_ = dependency_->CreatePresenter(weak_ptr_factory_.GetWeakPtr(),
                                             gl::GLSurfaceFormat());
