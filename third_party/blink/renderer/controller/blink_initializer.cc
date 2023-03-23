@@ -276,7 +276,7 @@ void BlinkInitializer::RegisterMemoryWatchers(Platform* platform) {
   HighestPmfReporter::Initialize(main_thread_task_runner);
 #endif
 
-#if BUILDFLAG(IS_ANDROID) && !defined(ARCH_CPU_64_BITS)
+#if BUILDFLAG(IS_ANDROID)
   // Initialize PrivateMemoryFootprintProvider to start providing the value
   // for the browser process.
   PrivateMemoryFootprintProvider::Initialize(main_thread_task_runner);

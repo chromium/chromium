@@ -36,12 +36,6 @@ namespace memory_pressure {
 
 namespace {
 constexpr uint64_t k1MB = 1024ull * 1024;
-}
-
-#if !defined(ARCH_CPU_64_BITS)
-
-namespace {
-
 constexpr base::TimeDelta kDefaultMeasurementInterval = base::Seconds(1);
 
 // Time interval between measuring total private memory footprint.
@@ -76,11 +70,9 @@ uint64_t MemoryThresholdParamFor6GbDevices() {
 }
 
 }  // namespace
-#endif  // !defined(ARCH_CPU_64_BITS)
 
 // static
 void UserLevelMemoryPressureSignalGenerator::Initialize() {
-#if !defined(ARCH_CPU_64_BITS)
   uint64_t physical_memory = base::SysInfo::AmountOfPhysicalMemory();
   constexpr uint64_t k1GB = 1024ull * k1MB;
 
@@ -117,7 +109,6 @@ void UserLevelMemoryPressureSignalGenerator::Initialize() {
   }
 
   // No group defined for >6 GB devices.
-#endif  // !defined(ARCH_CPU_64_BITS)
 }
 
 // static
