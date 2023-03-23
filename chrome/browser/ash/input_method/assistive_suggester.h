@@ -208,6 +208,10 @@ class AssistiveSuggester : public SuggestionsSource {
 
   std::u16string last_surrounding_text_ = u"";
 
+  // Keeps track if there is a key being held down currently which was already
+  // recorded for the auto repeat suppressed metric.
+  bool auto_repeat_suppress_metric_emitted_ = false;
+
   int last_cursor_pos_ = 0;
 
   base::WeakPtrFactory<AssistiveSuggester> weak_ptr_factory_{this};

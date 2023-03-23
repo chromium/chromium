@@ -51947,6 +51947,7 @@ Called by update_gpu_driver_bug_workaround_entries.py.-->
   <int value="0" label="SHOW_WINDOW"/>
   <int value="1" label="ACCEPT"/>
   <int value="2" label="DISMISS"/>
+  <int value="3" label="AUTOREPEAT_SUPPRESSED"/>
 </enum>
 
 <enum name="IMEPKLongpressDiacriticUnicodeCharacterCode">

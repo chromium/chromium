@@ -113,6 +113,12 @@ void RecordAssistiveSuccess(AssistiveType type) {
   base::UmaHistogramEnumeration("InputMethod.Assistive.Success", type);
 }
 
+void RecordLongPressDiacriticAutoRepeatSuppressedMetric() {
+  base::UmaHistogramEnumeration(
+      "InputMethod.PhysicalKeyboard.LongpressDiacritics.Action",
+      IMEPKLongpressDiacriticAction::kAutoRepeatSuppressed);
+}
+
 bool IsTopResultMultiWord(const std::vector<AssistiveSuggestion>& suggestions) {
   if (suggestions.empty())
     return false;
@@ -381,6 +387,12 @@ bool AssistiveSuggester::OnKeyEvent(const ui::KeyEvent& event) {
   if (!focused_context_id_.has_value())
     return false;
 
+  // Auto repeat resets whenever a key is pressed/released as long as its not a
+  // repeat event.
+  if (!event.is_repeat()) {
+    auto_repeat_suppress_metric_emitted_ = false;
+  }
+
   // We only track keydown event because the suggesting action is triggered by
   // surrounding text change, which is triggered by a keydown event. As a
   // result, the next key event after suggesting would be a keyup event of the
@@ -427,6 +439,14 @@ bool AssistiveSuggester::HandleLongpressEnabledKeyEvent(
   // behaviour for alphabetical keys.
   if (event.is_repeat() &&
       kDefaultLongpressEnabledKeys.contains(event.GetCharacter())) {
+    // Only emit the metric if `auto_repeat_suppress_metric_emitted_` is false
+    // as the metric should only be emitted once per Press->Release cycle.
+    if (!auto_repeat_suppress_metric_emitted_ &&
+        !longpress_diacritics_suggester_.HasDiacriticSuggestions(
+            event.GetCharacter())) {
+      auto_repeat_suppress_metric_emitted_ = true;
+      RecordLongPressDiacriticAutoRepeatSuppressedMetric();
+    }
     return true;  // Do not propagate this event.
   }
 
