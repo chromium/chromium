@@ -7,6 +7,9 @@
 #include <string>
 
 #include "ash/constants/ash_features.h"
+#include "ash/root_window_controller.h"
+#include "ash/shell.h"
+#include "ash/system/eche/eche_tray.h"
 #include "ash/webui/eche_app_ui/apps_access_manager_impl.h"
 #include "ash/webui/eche_app_ui/eche_app_manager.h"
 #include "ash/webui/eche_app_ui/eche_tray_stream_status_observer.h"
@@ -260,7 +263,7 @@ KeyedService* EcheAppManagerFactory::BuildServiceInstanceFor(
           secure_channel::PresenceMonitorClientImpl::Factory::Create(
               std::move(presence_monitor));
 
-  return new EcheAppManager(
+  auto* eche_app_manager = new EcheAppManager(
       profile->GetPrefs(), GetSystemInfo(profile), phone_hub_manager,
       device_sync_client, multidevice_setup_client, secure_channel_client,
       std::move(presence_monitor_client),
@@ -269,6 +272,17 @@ KeyedService* EcheAppManagerFactory::BuildServiceInstanceFor(
                           weak_ptr_factory_.GetMutableWeakPtr(), profile),
       base::BindRepeating(&EcheAppManagerFactory::CloseNotification,
                           weak_ptr_factory_.GetMutableWeakPtr(), profile));
+
+  EcheTray* eche_tray = Shell::GetPrimaryRootWindowController()
+                            ->GetStatusAreaWidget()
+                            ->eche_tray();
+
+  if (features::IsEcheNetworkConnectionStateEnabled() && eche_tray) {
+    eche_tray->SetEcheConnectionStatusHandler(
+        eche_app_manager->GetEcheConnectionStatusHandler());
+  }
+
+  return eche_app_manager;
 }
 
 std::unique_ptr<SystemInfo> EcheAppManagerFactory::GetSystemInfo(

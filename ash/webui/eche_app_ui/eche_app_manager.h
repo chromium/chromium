@@ -103,6 +103,8 @@ class EcheAppManager : public KeyedService {
 
   AppsAccessManager* GetAppsAccessManager();
 
+  EcheConnectionStatusHandler* GetEcheConnectionStatusHandler();
+
   // This trigger Eche Web to release connection resource.
   void CloseStream();
 
@@ -114,8 +116,8 @@ class EcheAppManager : public KeyedService {
 
  private:
   std::unique_ptr<secure_channel::ConnectionManager> connection_manager_;
-  std::unique_ptr<EcheFeatureStatusProvider> feature_status_provider_;
   std::unique_ptr<EcheConnectionStatusHandler> eche_connection_status_handler_;
+  std::unique_ptr<EcheFeatureStatusProvider> feature_status_provider_;
   std::unique_ptr<LaunchAppHelper> launch_app_helper_;
   std::unique_ptr<AppsLaunchInfoProvider> apps_launch_info_provider_;
   std::unique_ptr<EcheStreamStatusChangeHandler> stream_status_change_handler_;

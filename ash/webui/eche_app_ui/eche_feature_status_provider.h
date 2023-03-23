@@ -5,6 +5,7 @@
 #ifndef ASH_WEBUI_ECHE_APP_UI_ECHE_FEATURE_STATUS_PROVIDER_H_
 #define ASH_WEBUI_ECHE_APP_UI_ECHE_FEATURE_STATUS_PROVIDER_H_
 
+#include "ash/webui/eche_app_ui/eche_connection_status_handler.h"
 #include "ash/webui/eche_app_ui/feature_status_provider.h"
 #include "base/memory/weak_ptr.h"
 #include "chromeos/ash/components/phonehub/feature_status_provider.h"
@@ -23,6 +24,8 @@ class PhoneHubManager;
 
 namespace eche_app {
 
+class EcheConnectionStatusHandler;
+
 // FeatureStatusProvider implementation which observes PhoneHub's state, then
 // layers in Eche's state.
 class EcheFeatureStatusProvider
@@ -35,7 +38,8 @@ class EcheFeatureStatusProvider
       phonehub::PhoneHubManager* phone_hub_manager,
       device_sync::DeviceSyncClient* device_sync_client,
       multidevice_setup::MultiDeviceSetupClient* multidevice_setup_client,
-      secure_channel::ConnectionManager* connection_manager);
+      secure_channel::ConnectionManager* connection_manager,
+      EcheConnectionStatusHandler* eche_connection_status_handler);
   ~EcheFeatureStatusProvider() override;
 
   // FeatureStatusProvider:
@@ -63,6 +67,7 @@ class EcheFeatureStatusProvider
   device_sync::DeviceSyncClient* device_sync_client_;
   multidevice_setup::MultiDeviceSetupClient* multidevice_setup_client_;
   secure_channel::ConnectionManager* connection_manager_;
+  EcheConnectionStatusHandler* eche_connection_status_handler_;
   phonehub::FeatureStatus current_phone_hub_feature_status_;
   absl::optional<FeatureStatus> status_;
   base::WeakPtrFactory<EcheFeatureStatusProvider> weak_ptr_factory_{this};

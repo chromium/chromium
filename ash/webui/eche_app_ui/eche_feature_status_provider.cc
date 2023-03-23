@@ -69,12 +69,14 @@ EcheFeatureStatusProvider::EcheFeatureStatusProvider(
     phonehub::PhoneHubManager* phone_hub_manager,
     device_sync::DeviceSyncClient* device_sync_client,
     multidevice_setup::MultiDeviceSetupClient* multidevice_setup_client,
-    secure_channel::ConnectionManager* connection_manager)
+    secure_channel::ConnectionManager* connection_manager,
+    EcheConnectionStatusHandler* eche_connection_status_handler)
     : phone_hub_feature_status_provider_(
           phone_hub_manager->GetFeatureStatusProvider()),
       device_sync_client_(device_sync_client),
       multidevice_setup_client_(multidevice_setup_client),
       connection_manager_(connection_manager),
+      eche_connection_status_handler_(eche_connection_status_handler),
       current_phone_hub_feature_status_(
           phone_hub_feature_status_provider_->GetStatus()),
       status_(ComputeStatus()) {
@@ -127,6 +129,9 @@ void EcheFeatureStatusProvider::UpdateStatus() {
                << computed_status;
   *status_ = computed_status;
   NotifyStatusChanged();
+
+  // TODO(b/274530047): refactor to make this a normal observer.
+  eche_connection_status_handler_->OnFeatureStatusChanged(computed_status);
 }
 
 FeatureStatus EcheFeatureStatusProvider::ComputeStatus() {

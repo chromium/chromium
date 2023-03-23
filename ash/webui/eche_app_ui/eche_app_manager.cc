@@ -55,13 +55,14 @@ EcheAppManager::EcheAppManager(
               secure_channel_client,
               kSecureChannelFeatureName,
               std::make_unique<EcheConnectionMetricsRecorder>())),
+      eche_connection_status_handler_(
+          std::make_unique<EcheConnectionStatusHandler>()),
       feature_status_provider_(std::make_unique<EcheFeatureStatusProvider>(
           phone_hub_manager,
           device_sync_client,
           multidevice_setup_client,
-          connection_manager_.get())),
-      eche_connection_status_handler_(
-          std::make_unique<EcheConnectionStatusHandler>()),
+          connection_manager_.get(),
+          eche_connection_status_handler_.get())),
       launch_app_helper_(
           std::make_unique<LaunchAppHelper>(phone_hub_manager,
                                             launch_eche_app_function,
@@ -127,8 +128,8 @@ EcheAppManager::EcheAppManager(
   signaler_->SetSystemInfoProvider(system_info_provider_.get());
 
   if (features::IsEcheNetworkConnectionStateEnabled()) {
-    phone_hub_manager->GetRecentAppsInteractionHandler()
-        ->SetConnectionStatusHandler(eche_connection_status_handler_.get());
+    phone_hub_manager->SetEcheConnectionStatusHandler(
+        eche_connection_status_handler_.get());
   }
 }
 
@@ -173,6 +174,10 @@ AppsAccessManager* EcheAppManager::GetAppsAccessManager() {
   return apps_access_manager_.get();
 }
 
+EcheConnectionStatusHandler* EcheAppManager::GetEcheConnectionStatusHandler() {
+  return eche_connection_status_handler_.get();
+}
+
 void EcheAppManager::CloseStream() {
   stream_status_change_handler_->CloseStream();
 }
@@ -202,6 +207,7 @@ void EcheAppManager::Shutdown() {
   launch_app_helper_.reset();
   eche_connection_status_handler_.reset();
   feature_status_provider_.reset();
+  eche_connection_status_handler_.reset();
   connection_manager_.reset();
 }
 

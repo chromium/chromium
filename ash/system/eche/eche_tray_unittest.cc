@@ -64,6 +64,38 @@ gfx::Image CreateTestImage() {
 
 }  // namespace
 
+using ConnectionStatus = eche_app::mojom::ConnectionStatus;
+
+class FakeConnectionStatusObserver
+    : public eche_app::EcheConnectionStatusHandler::Observer {
+ public:
+  FakeConnectionStatusObserver() = default;
+  ~FakeConnectionStatusObserver() override = default;
+
+  size_t num_connection_status_for_ui_changed_calls() const {
+    return num_connection_status_for_ui_changed_calls_;
+  }
+
+  ConnectionStatus last_connection_changed_for_ui_status() const {
+    return last_connection_changed_for_ui_status_;
+  }
+
+  // eche_app::EcheConnectionStatusObserver::Observer:
+  void OnConnectionStatusForUiChanged(
+      ConnectionStatus connection_status) override {
+    if (last_connection_changed_for_ui_status_ == connection_status) {
+      return;
+    }
+    ++num_connection_status_for_ui_changed_calls_;
+    last_connection_changed_for_ui_status_ = connection_status;
+  }
+
+ private:
+  size_t num_connection_status_for_ui_changed_calls_ = 0;
+  ConnectionStatus last_connection_changed_for_ui_status_ =
+      ConnectionStatus::kConnectionStatusDisconnected;
+};
+
 class EcheTrayTest : public AshTestBase {
  public:
   EcheTrayTest() = default;
@@ -76,7 +108,8 @@ class EcheTrayTest : public AshTestBase {
   // AshTestBase:
   void SetUp() override {
     feature_list_.InitWithFeatures(
-        /*enabled_features=*/{features::kEcheSWA},
+        /*enabled_features=*/{features::kEcheSWA,
+                              features::kEcheNetworkConnectionState},
         /*disabled_features=*/{});
 
     DCHECK(test_web_view_factory_.get());
@@ -86,6 +119,10 @@ class EcheTrayTest : public AshTestBase {
 
     AshTestBase::SetUp();
 
+    eche_connection_status_handler_ =
+        std::make_unique<eche_app::EcheConnectionStatusHandler>();
+    eche_connection_status_handler_->AddObserver(
+        &fake_connection_status_observer_);
     eche_tray_ = StatusAreaWidgetTestHelper::GetStatusAreaWidget()->eche_tray();
     phone_hub_tray_ =
         StatusAreaWidgetTestHelper::GetStatusAreaWidget()->phone_hub_tray();
@@ -107,19 +144,33 @@ class EcheTrayTest : public AshTestBase {
         button->GetBoundsInScreen().CenterPoint());
   }
 
+  size_t GetNumConnectionStatusForUiChangedCalls() {
+    return fake_connection_status_observer_
+        .num_connection_status_for_ui_changed_calls();
+  }
+
+  ConnectionStatus GetLastConnectionChangedForUiStatus() {
+    return fake_connection_status_observer_
+        .last_connection_changed_for_ui_status();
+  }
+
   EcheTray* eche_tray() { return eche_tray_; }
   PhoneHubTray* phone_hub_tray() { return phone_hub_tray_; }
   ToastManagerImpl* toast_manager() { return toast_manager_; }
 
+  base::test::ScopedFeatureList feature_list_;
+
  private:
+  FakeConnectionStatusObserver fake_connection_status_observer_;
   EcheTray* eche_tray_ = nullptr;  // Not owned
   PhoneHubTray* phone_hub_tray_ = nullptr;  // Not owned
-  base::test::ScopedFeatureList feature_list_;
   ToastManagerImpl* toast_manager_ = nullptr;
 
   // Calling the factory constructor is enough to set it up.
   std::unique_ptr<TestAshWebViewFactory> test_web_view_factory_ =
       std::make_unique<TestAshWebViewFactory>();
+  std::unique_ptr<eche_app::EcheConnectionStatusHandler>
+      eche_connection_status_handler_;
 };
 
 // Verify the Eche tray button exists and but is not visible initially.
@@ -569,6 +620,56 @@ TEST_F(EcheTrayTest, EcheTrayOnStreamOrientationChanged) {
   EXPECT_EQ(
       expected_eche_size.height(),
       eche_tray()->get_web_view_for_test()->height() + kBubbleMenuPadding * 2);
+}
+
+TEST_F(EcheTrayTest, OnRequestBackgroundConnectionAttempt) {
+  ResetUnloadWebContent();
+
+  EXPECT_FALSE(eche_tray()->is_active());
+  EXPECT_FALSE(eche_tray()->get_initializer_webview_for_test());
+
+  eche_tray()->OnRequestBackgroundConnectionAttempt();
+
+  EXPECT_TRUE(eche_tray()->get_initializer_webview_for_test());
+  EXPECT_FALSE(eche_tray()->is_active());
+}
+
+TEST_F(EcheTrayTest, OnRequestBackgroundConnectionAttemptFlagDisabled) {
+  feature_list_.Reset();
+  feature_list_.InitWithFeatures(
+      /*enabled_features=*/{features::kEcheSWA},
+      /*disabled_features=*/{features::kEcheNetworkConnectionState});
+
+  ResetUnloadWebContent();
+
+  EXPECT_FALSE(eche_tray()->is_active());
+  EXPECT_FALSE(eche_tray()->get_initializer_webview_for_test());
+
+  eche_tray()->OnRequestBackgroundConnectionAttempt();
+
+  EXPECT_FALSE(eche_tray()->get_initializer_webview_for_test());
+  EXPECT_FALSE(eche_tray()->is_active());
+}
+
+TEST_F(EcheTrayTest, OnConnectionStatusChanged) {
+  EXPECT_EQ(GetLastConnectionChangedForUiStatus(),
+            ConnectionStatus::kConnectionStatusDisconnected);
+  EXPECT_EQ(GetNumConnectionStatusForUiChangedCalls(), 0u);
+
+  eche_tray()->OnRequestBackgroundConnectionAttempt();
+
+  eche_tray()->OnConnectionStatusChanged(
+      ConnectionStatus::kConnectionStatusConnecting);
+
+  EXPECT_EQ(GetLastConnectionChangedForUiStatus(),
+            ConnectionStatus::kConnectionStatusDisconnected);
+  EXPECT_EQ(GetNumConnectionStatusForUiChangedCalls(), 0u);
+  EXPECT_TRUE(eche_tray()->get_initializer_webview_for_test());
+
+  eche_tray()->OnConnectionStatusChanged(
+      ConnectionStatus::kConnectionStatusDisconnected);
+  EXPECT_EQ(GetNumConnectionStatusForUiChangedCalls(), 0u);
+  EXPECT_TRUE(eche_tray()->get_initializer_webview_for_test());
 }
 
 TEST_F(EcheTrayTest, DISABLED_OnThemeChanged) {

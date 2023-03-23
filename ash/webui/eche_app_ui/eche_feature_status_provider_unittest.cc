@@ -80,9 +80,12 @@ class EcheFeatureStatusProviderTest : public testing::Test {
   void SetUp() override {
     fake_phone_hub_manager.fake_feature_status_provider()->SetStatus(
         phonehub::FeatureStatus::kEnabledAndConnected);
+    eche_connection_status_handler_ =
+        std::make_unique<EcheConnectionStatusHandler>();
     provider_ = std::make_unique<EcheFeatureStatusProvider>(
         &fake_phone_hub_manager, &fake_device_sync_client_,
-        &fake_multidevice_setup_client_, &fake_connection_manager_);
+        &fake_multidevice_setup_client_, &fake_connection_manager_,
+        eche_connection_status_handler_.get());
     provider_->AddObserver(&fake_observer_);
   }
 
@@ -159,6 +162,7 @@ class EcheFeatureStatusProviderTest : public testing::Test {
   device_sync::FakeDeviceSyncClient fake_device_sync_client_;
   multidevice_setup::FakeMultiDeviceSetupClient fake_multidevice_setup_client_;
   secure_channel::FakeConnectionManager fake_connection_manager_;
+  std::unique_ptr<EcheConnectionStatusHandler> eche_connection_status_handler_;
 
   phonehub::FakePhoneHubManager fake_phone_hub_manager;
   FakeObserver fake_observer_;
