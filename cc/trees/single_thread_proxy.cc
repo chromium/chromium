@@ -363,8 +363,6 @@ void SingleThreadProxy::SetPauseRendering(bool pause_rendering) {
         "cc", "SingleThreadProxy::SetPauseRendering", TRACE_ID_LOCAL(this));
   }
 
-  layer_tree_host_->OnPauseRenderingChanged(pause_rendering_);
-
   // The scheduler needs to know that it should not issue BeginFrame.
   DebugScopedSetImplThread impl(task_runner_provider_);
   scheduler_on_impl_thread_->SetPauseRendering(pause_rendering_);

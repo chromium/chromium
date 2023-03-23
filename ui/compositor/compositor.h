@@ -393,7 +393,6 @@ class COMPOSITOR_EXPORT Compositor : public base::PowerSuspendObserver,
       bool,
       cc::PaintHoldingReason,
       absl::optional<cc::PaintHoldingCommitTrigger>) override {}
-  void OnPauseRenderingChanged(bool) override {}
   void OnCommitRequested() override {}
   void WillUpdateLayers() override {}
   void DidUpdateLayers() override;

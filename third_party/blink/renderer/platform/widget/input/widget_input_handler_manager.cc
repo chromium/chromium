@@ -783,16 +783,6 @@ void WidgetInputHandlerManager::OnDeferCommitsChanged(
   }
 }
 
-void WidgetInputHandlerManager::OnPauseRenderingChanged(bool paused) {
-  if (paused) {
-    suppressing_input_events_state_ |=
-        static_cast<uint16_t>(SuppressingInputEventsBits::kRenderingPaused);
-  } else {
-    suppressing_input_events_state_ &=
-        ~static_cast<uint16_t>(SuppressingInputEventsBits::kRenderingPaused);
-  }
-}
-
 void WidgetInputHandlerManager::InitOnInputHandlingThread(
     const base::WeakPtr<cc::CompositorDelegateForInput>& compositor_delegate,
     bool sync_compositing) {

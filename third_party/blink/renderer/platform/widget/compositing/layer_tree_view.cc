@@ -199,12 +199,6 @@ void LayerTreeView::OnDeferMainFrameUpdatesChanged(bool status) {
   delegate_->OnDeferMainFrameUpdatesChanged(status);
 }
 
-void LayerTreeView::OnPauseRenderingChanged(bool paused) {
-  if (!delegate_)
-    return;
-  delegate_->OnPauseRenderingChanged(paused);
-}
-
 void LayerTreeView::OnCommitRequested() {
   if (!delegate_)
     return;

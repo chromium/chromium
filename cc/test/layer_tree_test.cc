@@ -427,7 +427,6 @@ class LayerTreeHostClientForTesting : public LayerTreeHostClient,
       bool,
       PaintHoldingReason,
       absl::optional<PaintHoldingCommitTrigger>) override {}
-  void OnPauseRenderingChanged(bool) override {}
   void OnCommitRequested() override {}
 
   void RecordStartOfFrameMetrics() override {}

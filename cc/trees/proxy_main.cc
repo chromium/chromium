@@ -634,8 +634,6 @@ void ProxyMain::SetPauseRendering(bool pause_rendering) {
                                     TRACE_ID_LOCAL(this));
   }
 
-  layer_tree_host_->OnPauseRenderingChanged(pause_rendering_);
-
   // The impl thread needs to know that it should not issue BeginFrames.
   ImplThreadTaskRunner()->PostTask(
       FROM_HERE,

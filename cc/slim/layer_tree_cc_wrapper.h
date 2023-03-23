@@ -64,7 +64,6 @@ class LayerTreeCcWrapper : public LayerTree,
       bool,
       cc::PaintHoldingReason,
       absl::optional<cc::PaintHoldingCommitTrigger>) override {}
-  void OnPauseRenderingChanged(bool) override {}
   void OnCommitRequested() override {}
   void BeginMainFrameNotExpectedSoon() override {}
   void BeginMainFrameNotExpectedUntil(base::TimeTicks time) override {}

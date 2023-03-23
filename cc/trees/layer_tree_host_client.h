@@ -131,9 +131,6 @@ class LayerTreeHostClient {
       PaintHoldingReason reason,
       absl::optional<PaintHoldingCommitTrigger> trigger) = 0;
 
-  // Notification that rendering has been paused or resumed.
-  virtual void OnPauseRenderingChanged(bool) = 0;
-
   // Notification that a compositing update has been requested.
   virtual void OnCommitRequested() = 0;
 

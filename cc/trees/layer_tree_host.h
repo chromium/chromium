@@ -319,9 +319,6 @@ class CC_EXPORT LayerTreeHost : public MutatorHostClient {
   // during the main frame) updates are presented before rendering is paused.
   [[nodiscard]] std::unique_ptr<ScopedPauseRendering> PauseRendering();
 
-  // Notification that the proxy paused or resumed rendering.
-  void OnPauseRenderingChanged(bool);
-
   // Returns whether main frame updates are deferred. See conditions above.
   bool MainFrameUpdatesAreDeferred() const;
 
