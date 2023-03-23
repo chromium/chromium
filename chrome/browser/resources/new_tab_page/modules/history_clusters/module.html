@@ -46,7 +46,9 @@
     grid-row: 2 / 3;
   }
 
-  @media (max-width: 879px) {
+  /* At less than 768px + 2*18px side gaps, switch to the one column
+     presentation. */
+  @media (max-width: 803px) {
     .small-tiles,
     .secondary-tile,
     .related-searches-tile {
