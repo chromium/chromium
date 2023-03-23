@@ -13,12 +13,9 @@ source_set("recent_tabs") {
     "recent_tabs_mediator.mm",
     "recent_tabs_menu_helper.h",
     "recent_tabs_menu_helper.mm",
-    "synced_sessions_bridge.h",
-    "synced_sessions_bridge.mm",
   ]
   deps = [
     ":recent_tabs_ui",
-    ":synced_sessions",
     "resources:show_history",
     "//base",
     "//components/sessions",
@@ -34,6 +31,7 @@ source_set("recent_tabs") {
     "//ios/chrome/browser/shared/ui/table_view",
     "//ios/chrome/browser/signin",
     "//ios/chrome/browser/sync",
+    "//ios/chrome/browser/synced_sessions",
     "//ios/chrome/browser/ui/menu",
     "//ios/chrome/browser/ui/menu:tab_context_menu_delegate",
     "//ios/chrome/browser/ui/ntp",
@@ -68,7 +66,6 @@ source_set("recent_tabs_ui") {
   ]
   deps = [
     ":recent_tabs_ui_constants",
-    ":synced_sessions",
     "resources:recent_tabs_other_devices_empty",
     "//base",
     "//components/prefs",
@@ -93,6 +90,7 @@ source_set("recent_tabs_ui") {
     "//ios/chrome/browser/shared/ui/table_view:utils",
     "//ios/chrome/browser/signin",
     "//ios/chrome/browser/sync",
+    "//ios/chrome/browser/synced_sessions",
     "//ios/chrome/browser/tabs_search",
     "//ios/chrome/browser/tabs_search:tabs_search_factory",
     "//ios/chrome/browser/ui/alert_coordinator",
@@ -114,22 +112,6 @@ source_set("recent_tabs_ui") {
     "//ios/public/provider/chrome/browser/modals:modals_api",
     "//ui/base",
   ]
-}
-
-source_set("synced_sessions") {
-  configs += [ "//build/config/compiler:enable_arc" ]
-  sources = [
-    "synced_sessions.h",
-    "synced_sessions.mm",
-    "synced_sessions_util.h",
-    "synced_sessions_util.mm",
-  ]
-  deps = [
-    "//ios/chrome/browser/sync",
-    "//ios/chrome/browser/url_loading",
-    "//ios/chrome/browser/url_loading:url_loading_params_header",
-  ]
-  public_deps = [ "//components/sync_sessions" ]
 }
 
 source_set("unit_tests") {

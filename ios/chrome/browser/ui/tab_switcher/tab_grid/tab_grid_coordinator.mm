@@ -34,6 +34,8 @@
 #import "ios/chrome/browser/shared/ui/util/named_guide.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/chrome/browser/shared/ui/util/util_swift.h"
+#import "ios/chrome/browser/synced_sessions/distant_session.h"
+#import "ios/chrome/browser/synced_sessions/synced_sessions_util.h"
 #import "ios/chrome/browser/tabs/features.h"
 #import "ios/chrome/browser/tabs/inactive_tabs/features.h"
 #import "ios/chrome/browser/ui/alert_coordinator/action_sheet_coordinator.h"
@@ -55,8 +57,6 @@
 #import "ios/chrome/browser/ui/recent_tabs/recent_tabs_menu_helper.h"
 #import "ios/chrome/browser/ui/recent_tabs/recent_tabs_presentation_delegate.h"
 #import "ios/chrome/browser/ui/recent_tabs/recent_tabs_table_view_controller.h"
-#import "ios/chrome/browser/ui/recent_tabs/synced_sessions.h"
-#import "ios/chrome/browser/ui/recent_tabs/synced_sessions_util.h"
 #import "ios/chrome/browser/ui/sharing/sharing_coordinator.h"
 #import "ios/chrome/browser/ui/sharing/sharing_params.h"
 #import "ios/chrome/browser/ui/snackbar/snackbar_coordinator.h"
@@ -1155,8 +1155,8 @@
       session->tabs.size());
 
   BOOL inIncognito = self.regularBrowser->GetBrowserState()->IsOffTheRecord();
-  OpenDistantTabsInBackground(
-      session->tabs, inIncognito,
+  OpenDistantSessionInBackground(
+      session, inIncognito,
       UrlLoadingBrowserAgent::FromBrowser(self.regularBrowser),
       self.baseViewController.remoteTabsViewController.loadStrategy);
 

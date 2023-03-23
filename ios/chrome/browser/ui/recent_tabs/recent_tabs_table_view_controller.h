@@ -13,7 +13,7 @@ class Browser;
 enum class UrlLoadStrategy;
 
 namespace synced_sessions {
-class DistantSession;
+struct DistantSession;
 }
 
 @protocol ApplicationCommands;

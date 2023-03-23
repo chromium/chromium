@@ -17,9 +17,9 @@ source_set("tabs_search") {
     "//components/sync_sessions",
     "//ios/chrome/browser/history:history_utils",
     "//ios/chrome/browser/main:public",
+    "//ios/chrome/browser/synced_sessions",
     "//ios/chrome/browser/tabs",
     "//ios/chrome/browser/ui/history:history_driver",
-    "//ios/chrome/browser/ui/recent_tabs:synced_sessions",
     "//ios/chrome/browser/web_state_list",
   ]
 }

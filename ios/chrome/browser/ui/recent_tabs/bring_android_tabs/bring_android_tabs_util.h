@@ -5,7 +5,7 @@
 #ifndef IOS_CHROME_BROWSER_UI_RECENT_TABS_BRING_ANDROID_TABS_BRING_ANDROID_TABS_UTIL_H_
 #define IOS_CHROME_BROWSER_UI_RECENT_TABS_BRING_ANDROID_TABS_BRING_ANDROID_TABS_UTIL_H_
 
-#include "ios/chrome/browser/ui/recent_tabs/synced_sessions.h"
+#include "ios/chrome/browser/synced_sessions/distant_tab.h"
 
 class ChromeBrowserState;
 class PrefService;

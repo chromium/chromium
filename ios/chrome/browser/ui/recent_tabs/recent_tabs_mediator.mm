@@ -13,6 +13,7 @@
 #import "ios/chrome/browser/favicon/ios_chrome_favicon_loader_factory.h"
 #import "ios/chrome/browser/net/crurl.h"
 #import "ios/chrome/browser/sessions/ios_chrome_tab_restore_service_factory.h"
+#import "ios/chrome/browser/signin/identity_manager_factory.h"
 #import "ios/chrome/browser/sync/session_sync_service_factory.h"
 #import "ios/chrome/browser/sync/sync_setup_service.h"
 #import "ios/chrome/browser/sync/sync_setup_service_factory.h"
@@ -69,9 +70,13 @@
 
 - (void)initObservers {
   if (!_syncedSessionsObserver) {
+    signin::IdentityManager* identityManager =
+        IdentityManagerFactory::GetForBrowserState(_browserState);
+    sync_sessions::SessionSyncService* syncService =
+        SessionSyncServiceFactory::GetForBrowserState(_browserState);
     _syncedSessionsObserver =
         std::make_unique<synced_sessions::SyncedSessionsObserverBridge>(
-            self, _browserState);
+            self, identityManager, syncService);
   }
   if (!_closedTabsObserver) {
     _closedTabsObserver =

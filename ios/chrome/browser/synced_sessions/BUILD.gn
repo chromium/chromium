@@ -1,0 +1,31 @@
+# Copyright 2023 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("synced_sessions") {
+  configs += [ "//build/config/compiler:enable_arc" ]
+  sources = [
+    "distant_session.h",
+    "distant_session.mm",
+    "distant_tab.h",
+    "distant_tab.mm",
+    "synced_sessions.h",
+    "synced_sessions.mm",
+    "synced_sessions_bridge.h",
+    "synced_sessions_bridge.mm",
+    "synced_sessions_util.h",
+    "synced_sessions_util.mm",
+  ]
+  deps = [
+    "//components/sessions",
+    "//components/signin/public/identity_manager",
+    "//components/sync",
+    "//components/sync_device_info",
+    "//ios/chrome/browser/signin",
+    "//ios/chrome/browser/sync",
+    "//ios/chrome/browser/url_loading",
+    "//ios/chrome/browser/url_loading:url_loading_params_header",
+    "//third_party/abseil-cpp:absl",
+  ]
+  public_deps = [ "//components/sync_sessions" ]
+}

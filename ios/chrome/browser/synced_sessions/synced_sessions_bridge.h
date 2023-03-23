@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef IOS_CHROME_BROWSER_UI_RECENT_TABS_SYNCED_SESSIONS_BRIDGE_H_
-#define IOS_CHROME_BROWSER_UI_RECENT_TABS_SYNCED_SESSIONS_BRIDGE_H_
+#ifndef IOS_CHROME_BROWSER_SYNCED_SESSIONS_SYNCED_SESSIONS_BRIDGE_H_
+#define IOS_CHROME_BROWSER_SYNCED_SESSIONS_SYNCED_SESSIONS_BRIDGE_H_
 
 #import <Foundation/Foundation.h>
 
@@ -11,10 +11,11 @@
 #include "base/scoped_observation.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 
-class ChromeBrowserState;
-
 namespace signin {
 class IdentityManager;
+}
+namespace sync_sessions {
+class SessionSyncService;
 }
 
 @protocol SyncedSessionsObserver
@@ -29,7 +30,8 @@ namespace synced_sessions {
 class SyncedSessionsObserverBridge : public signin::IdentityManager::Observer {
  public:
   SyncedSessionsObserverBridge(id<SyncedSessionsObserver> owner,
-                               ChromeBrowserState* browserState);
+                               signin::IdentityManager* identity_manager,
+                               sync_sessions::SessionSyncService* sync_service);
 
   SyncedSessionsObserverBridge(const SyncedSessionsObserverBridge&) = delete;
   SyncedSessionsObserverBridge& operator=(const SyncedSessionsObserverBridge&) =
@@ -56,4 +58,4 @@ class SyncedSessionsObserverBridge : public signin::IdentityManager::Observer {
 
 }  // namespace synced_sessions
 
-#endif  // IOS_CHROME_BROWSER_UI_RECENT_TABS_SYNCED_SESSIONS_BRIDGE_H_
+#endif  // IOS_CHROME_BROWSER_SYNCED_SESSIONS_SYNCED_SESSIONS_BRIDGE_H_

@@ -17,8 +17,10 @@
 #import "ios/chrome/browser/history/history_utils.h"
 #import "ios/chrome/browser/main/browser.h"
 #import "ios/chrome/browser/main/browser_list.h"
+#import "ios/chrome/browser/synced_sessions/distant_session.h"
+#import "ios/chrome/browser/synced_sessions/distant_tab.h"
+#import "ios/chrome/browser/synced_sessions/synced_sessions.h"
 #import "ios/chrome/browser/tabs/tab_title_util.h"
-#import "ios/chrome/browser/ui/recent_tabs/synced_sessions.h"
 #import "ios/chrome/browser/web_state_list/web_state_list.h"
 #import "ios/web/public/web_state.h"
 

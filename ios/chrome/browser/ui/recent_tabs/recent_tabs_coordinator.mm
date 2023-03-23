@@ -15,6 +15,8 @@
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_url_item.h"
 #import "ios/chrome/browser/shared/ui/table_view/table_view_navigation_controller.h"
 #import "ios/chrome/browser/shared/ui/table_view/table_view_navigation_controller_constants.h"
+#import "ios/chrome/browser/synced_sessions/distant_session.h"
+#import "ios/chrome/browser/synced_sessions/synced_sessions_util.h"
 #import "ios/chrome/browser/ui/menu/action_factory.h"
 #import "ios/chrome/browser/ui/menu/menu_histograms.h"
 #import "ios/chrome/browser/ui/menu/tab_context_menu_delegate.h"
@@ -23,8 +25,6 @@
 #import "ios/chrome/browser/ui/recent_tabs/recent_tabs_menu_provider.h"
 #import "ios/chrome/browser/ui/recent_tabs/recent_tabs_presentation_delegate.h"
 #import "ios/chrome/browser/ui/recent_tabs/recent_tabs_table_view_controller.h"
-#import "ios/chrome/browser/ui/recent_tabs/synced_sessions.h"
-#import "ios/chrome/browser/ui/recent_tabs/synced_sessions_util.h"
 #import "ios/chrome/browser/ui/sharing/sharing_coordinator.h"
 #import "ios/chrome/browser/ui/sharing/sharing_params.h"
 #import "ios/chrome/browser/url_loading/url_loading_browser_agent.h"
@@ -149,8 +149,8 @@
   BOOL inIncognito = self.browser->GetBrowserState()->IsOffTheRecord();
   UrlLoadingBrowserAgent* URLLoader =
       UrlLoadingBrowserAgent::FromBrowser(self.browser);
-  OpenDistantTabsInBackground(session->tabs, inIncognito, URLLoader,
-                              self.loadStrategy);
+  OpenDistantSessionInBackground(session, inIncognito, URLLoader,
+                                 self.loadStrategy);
 
   [self showActiveRegularTabFromRecentTabs];
 }

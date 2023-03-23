@@ -8,7 +8,7 @@
 #import <UIKit/UIKit.h>
 
 namespace synced_sessions {
-class DistantSession;
+struct DistantSession;
 }
 
 // Presentation commands that depend on the context from which they are

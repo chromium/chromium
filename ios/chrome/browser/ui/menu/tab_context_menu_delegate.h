@@ -12,7 +12,7 @@
 class GURL;
 
 namespace synced_sessions {
-class DistantSession;
+struct DistantSession;
 }
 
 // Methods used to create context menu actions for tabs.
