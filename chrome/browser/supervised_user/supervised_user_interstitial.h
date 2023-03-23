@@ -23,16 +23,8 @@ namespace supervised_user {
 class WebContentHandler;
 }
 
-namespace favicon {
-class LargeIconService;
-}  // namespace favicon
-
 class PrefService;
 class SupervisedUserService;
-
-#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
-class SupervisedUserFaviconRequestHandler;
-#endif
 
 // This class is used by SupervisedUserNavigationObserver to handle requests
 // from supervised user error page. The error page is shown when a page is
@@ -87,7 +79,6 @@ class SupervisedUserInterstitial {
       content::WebContents* web_contents,
       std::unique_ptr<supervised_user::WebContentHandler> web_content_handler,
       SupervisedUserService& supervised_user_service,
-      favicon::LargeIconService* large_icon_service,
       const GURL& url,
       supervised_user::FilteringBehaviorReason reason,
       int frame_id,
@@ -118,7 +109,6 @@ class SupervisedUserInterstitial {
       content::WebContents* web_contents,
       std::unique_ptr<supervised_user::WebContentHandler> web_content_handler,
       SupervisedUserService& supervised_user_service,
-      favicon::LargeIconService* large_icon_service,
       const GURL& url,
       supervised_user::FilteringBehaviorReason reason,
       int frame_id,
@@ -132,10 +122,6 @@ class SupervisedUserInterstitial {
   void OutputRequestPermissionSourceMetric();
 
   const raw_ref<SupervisedUserService> supervised_user_service_;
-
-  // Can be null depending on the Platform. An actual instance
-  // is needed only for local web approvals on Chrome OS.
-  const raw_ptr<favicon::LargeIconService> large_icon_service_;
 
   std::unique_ptr<supervised_user::WebContentHandler> web_content_handler_;
 
@@ -151,10 +137,6 @@ class SupervisedUserInterstitial {
 
   // The Navigation ID of the navigation that last triggered the interstitial.
   int64_t interstitial_navigation_id_;
-
-#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
-  std::unique_ptr<SupervisedUserFaviconRequestHandler> favicon_handler_;
-#endif
 };
 
 #endif  // CHROME_BROWSER_SUPERVISED_USER_SUPERVISED_USER_INTERSTITIAL_H_

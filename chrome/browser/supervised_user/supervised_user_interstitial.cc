@@ -38,7 +38,6 @@
 #include "content/public/browser/web_contents_user_data.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/resource/resource_bundle.h"
-#include "ui/gfx/image/image_skia.h"
 
 #if BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/supervised_user/child_accounts/child_account_feedback_reporter_android.h"
@@ -52,10 +51,6 @@
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "components/user_manager/user.h"
 #include "components/user_manager/user_manager.h"
-#endif
-
-#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
-#include "chrome/browser/supervised_user/chromeos/supervised_user_favicon_request_handler.h"
 #endif
 
 using content::WebContents;
@@ -159,7 +154,6 @@ std::unique_ptr<SupervisedUserInterstitial> SupervisedUserInterstitial::Create(
     WebContents* web_contents,
     std::unique_ptr<supervised_user::WebContentHandler> web_content_handler,
     SupervisedUserService& supervised_user_service,
-    favicon::LargeIconService* large_icon_service,
     const GURL& url,
     supervised_user::FilteringBehaviorReason reason,
     int frame_id,
@@ -167,8 +161,7 @@ std::unique_ptr<SupervisedUserInterstitial> SupervisedUserInterstitial::Create(
   std::unique_ptr<SupervisedUserInterstitial> interstitial =
       base::WrapUnique(new SupervisedUserInterstitial(
           web_contents, std::move(web_content_handler), supervised_user_service,
-          large_icon_service, url, reason, frame_id,
-          interstitial_navigation_id));
+          url, reason, frame_id, interstitial_navigation_id));
 
   if (web_contents->GetPrimaryMainFrame()->GetFrameTreeNodeId() == frame_id)
     CleanUpInfoBar(web_contents);
@@ -181,31 +174,17 @@ SupervisedUserInterstitial::SupervisedUserInterstitial(
     WebContents* web_contents,
     std::unique_ptr<supervised_user::WebContentHandler> web_content_handler,
     SupervisedUserService& supervised_user_service,
-    favicon::LargeIconService* large_icon_service,
     const GURL& url,
     supervised_user::FilteringBehaviorReason reason,
     int frame_id,
     int64_t interstitial_navigation_id)
     : supervised_user_service_(supervised_user_service),
-      large_icon_service_(large_icon_service),
       web_content_handler_(std::move(web_content_handler)),
       web_contents_(web_contents),
       url_(url),
       reason_(reason),
       frame_id_(frame_id),
-      interstitial_navigation_id_(interstitial_navigation_id) {
-#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
-  if (supervised_user::IsLocalWebApprovalsEnabled()) {
-    favicon_handler_ = std::make_unique<SupervisedUserFaviconRequestHandler>(
-        url_.GetWithEmptyPath(), large_icon_service_);
-    // Prefetch the favicon which will be rendered as part of the web approvals
-    // ParentAccessDialog. Pass in DoNothing() for the favicon fetched callback
-    // because if the favicon is by the time the user triggers the opening of
-    // the ParentAccessDialog, we show the default favicon.
-    favicon_handler_->StartFaviconFetch(base::DoNothing());
-  }
-#endif
-}
+      interstitial_navigation_id_(interstitial_navigation_id) {}
 
 SupervisedUserInterstitial::~SupervisedUserInterstitial() {}
 
@@ -268,12 +247,8 @@ void SupervisedUserInterstitial::RequestUrlAccessLocal(
                             Commands::HISTOGRAM_BOUNDING_VALUE);
   OutputRequestPermissionSourceMetric();
 
-  gfx::ImageSkia favicon;
-#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
-  favicon = favicon_handler_->GetFaviconOrFallback();
-#endif
   web_content_handler_->RequestLocalApproval(url_, GetActiveUserFirstName(),
-                                             favicon, std::move(callback));
+                                             std::move(callback));
 }
 
 void SupervisedUserInterstitial::ShowFeedback() {

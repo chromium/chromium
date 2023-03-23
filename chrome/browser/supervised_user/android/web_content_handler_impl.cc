@@ -40,7 +40,6 @@ WebContentHandlerImpl::~WebContentHandlerImpl() = default;
 void WebContentHandlerImpl::RequestLocalApproval(
     const GURL& url,
     const std::u16string& child_display_name,
-    const gfx::ImageSkia& favicon,
     ApprovalRequestInitiatedCallback callback) {
   supervised_user::SupervisedUserSettingsService* settings_service =
       SupervisedUserSettingsServiceFactory::GetForKey(

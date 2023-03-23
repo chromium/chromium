@@ -35,6 +35,7 @@
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/web_contents.h"
+#include "url/gurl.h"
 
 #if BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/supervised_user/android/web_content_handler_impl.h"
@@ -47,9 +48,13 @@
 namespace {
 
 std::unique_ptr<supervised_user::WebContentHandler> CreateWebContentHandler(
-    content::WebContents* web_contents) {
+    content::WebContents* web_contents,
+    GURL url,
+    Profile* profile) {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  return std::make_unique<WebContentHandlerImpl>(*web_contents);
+  return std::make_unique<WebContentHandlerImpl>(
+      *web_contents, url,
+      *LargeIconServiceFactory::GetForBrowserContext(profile));
 #elif BUILDFLAG(IS_ANDROID)
   return std::make_unique<WebContentHandlerImpl>(*web_contents);
 #else
@@ -307,10 +312,8 @@ void SupervisedUserNavigationObserver::MaybeShowInterstitial(
       Profile::FromBrowserContext(web_contents()->GetBrowserContext());
   std::unique_ptr<SupervisedUserInterstitial> interstitial =
       SupervisedUserInterstitial::Create(
-          web_contents(), CreateWebContentHandler(web_contents()),
-          *supervised_user_service_,
-          LargeIconServiceFactory::GetForBrowserContext(profile), url, reason,
-          frame_id, navigation_id);
+          web_contents(), CreateWebContentHandler(web_contents(), url, profile),
+          *supervised_user_service_, url, reason, frame_id, navigation_id);
 
   supervised_user_interstitials_[frame_id] = std::move(interstitial);
 

@@ -9097,6 +9097,12 @@ test("unit_tests") {
       "../browser/supervised_user/supervised_user_pref_store_unittest.cc",
       "../browser/supervised_user/supervised_user_service_unittest.cc",
     ]
+    if (is_chromeos) {
+      sources += [
+        "../browser/supervised_user/chromeos/mock_large_icon_service.cc",
+        "../browser/supervised_user/chromeos/mock_large_icon_service.h",
+      ]
+    }
     if (is_chromeos_ash) {
       sources += [ "../browser/supervised_user/chromeos/web_content_handler_impl_unittest.cc" ]
       deps += [ "//chrome/browser/ash/crosapi" ]

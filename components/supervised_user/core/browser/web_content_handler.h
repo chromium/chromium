@@ -10,12 +10,7 @@
 #include "base/functional/callback.h"
 #include "base/time/time.h"
 
-namespace gfx {
-class ImageSkia;
-}  // namespace gfx
-
 class GURL;
-
 namespace supervised_user {
 
 class SupervisedUserSettingsService;
@@ -49,7 +44,6 @@ class WebContentHandler {
   virtual void RequestLocalApproval(
       const GURL& url,
       const std::u16string& child_display_name,
-      const gfx::ImageSkia& favicon,
       ApprovalRequestInitiatedCallback callback) = 0;
 
   static const char* GetLocalApprovalDurationMillisecondsHistogram();

@@ -12,9 +12,13 @@
 #include "chrome/browser/ash/crosapi/parent_access_ash.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_key.h"
+#include "chrome/browser/supervised_user/chromeos/supervised_user_favicon_request_handler.h"
 #include "chrome/browser/supervised_user/supervised_user_settings_service_factory.h"
+#include "components/favicon/core/large_icon_service.h"
 #include "components/supervised_user/core/browser/supervised_user_settings_service.h"
+#include "components/supervised_user/core/common/features.h"
 #include "content/public/browser/web_contents.h"
+#include "ui/gfx/image/image_skia.h"
 
 namespace {
 
@@ -57,15 +61,28 @@ void HandleChromeOSErrorResult(
 
 }  // namespace
 
-WebContentHandlerImpl::WebContentHandlerImpl(content::WebContents& web_contents)
-    : web_contents_(web_contents) {}
+WebContentHandlerImpl::WebContentHandlerImpl(
+    content::WebContents& web_contents,
+    const GURL& url,
+    favicon::LargeIconService& large_icon_service)
+    : web_contents_(web_contents),
+      favicon_handler_(std::make_unique<SupervisedUserFaviconRequestHandler>(
+          url.GetWithEmptyPath(),
+          &large_icon_service)) {
+  if (supervised_user::IsLocalWebApprovalsEnabled()) {
+    // Prefetch the favicon which will be rendered as part of the web approvals
+    // ParentAccessDialog. Pass in DoNothing() for the favicon fetched callback
+    // because if the favicon is by the time the user triggers the opening of
+    // the ParentAccessDialog, we show the default favicon.
+    favicon_handler_->StartFaviconFetch(base::DoNothing());
+  }
+}
 
 WebContentHandlerImpl::~WebContentHandlerImpl() = default;
 
 void WebContentHandlerImpl::RequestLocalApproval(
     const GURL& url,
     const std::u16string& child_display_name,
-    const gfx::ImageSkia& favicon,
     ApprovalRequestInitiatedCallback callback) {
   supervised_user::SupervisedUserSettingsService* settings_service =
       SupervisedUserSettingsServiceFactory::GetForKey(
@@ -75,6 +92,8 @@ void WebContentHandlerImpl::RequestLocalApproval(
   crosapi::mojom::ParentAccess* parent_access =
       crosapi::CrosapiManager::Get()->crosapi_ash()->parent_access_ash();
   DCHECK(parent_access);
+
+  gfx::ImageSkia favicon = favicon_handler_->GetFaviconOrFallback();
 
   parent_access->GetWebsiteParentApproval(
       url.GetWithEmptyPath(), child_display_name, favicon,

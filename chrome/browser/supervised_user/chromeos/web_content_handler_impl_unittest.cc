@@ -9,6 +9,8 @@
 
 #include "base/test/metrics/histogram_tester.h"
 #include "base/time/time.h"
+#include "chrome/browser/supervised_user/chromeos/mock_large_icon_service.h"
+#include "chrome/browser/supervised_user/chromeos/supervised_user_favicon_request_handler.h"
 #include "chromeos/crosapi/mojom/parent_access.mojom.h"
 #include "components/supervised_user/core/browser/supervised_user_settings_service.h"
 #include "content/public/test/browser_task_environment.h"
@@ -39,9 +41,13 @@ class WebContentHandlerImplTest : public ::testing::Test {
     return task_environment_;
   }
 
+  MockLargeIconService& large_icon_service() { return large_icon_service_; }
+
  private:
   content::BrowserTaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
+
+  MockLargeIconService large_icon_service_;
 };
 
 TEST_F(WebContentHandlerImplTest, LocalWebApprovalApprovedChromeOSTest) {
@@ -63,8 +69,11 @@ TEST_F(WebContentHandlerImplTest, LocalWebApprovalApprovedChromeOSTest) {
   const base::TimeDelta approval_duration = base::Seconds(35);
   task_environment().FastForwardBy(approval_duration);
 
+  // TODO(b/273692421): The content will need to be a raw_ptr.
   content::WebContents* content = nullptr;
-  WebContentHandlerImpl web_content_handler = WebContentHandlerImpl(*content);
+  WebContentHandlerImpl web_content_handler(*content, url,
+                                            large_icon_service());
+
   web_content_handler.OnLocalApprovalRequestCompleted(
       supervisedUserSettingsServiceMock, url, start_time, std::move(result));
 
@@ -100,8 +109,11 @@ TEST_F(WebContentHandlerImplTest, LocalWebApprovalDeclinedChromeOSTest) {
   const base::TimeDelta approval_duration = base::Seconds(35);
   task_environment().FastForwardBy(approval_duration);
 
+  // TODO(b/273692421): The content will need to be a raw_ptr.
   content::WebContents* content = nullptr;
-  WebContentHandlerImpl web_content_handler = WebContentHandlerImpl(*content);
+  WebContentHandlerImpl web_content_handler(*content, url,
+                                            large_icon_service());
+
   web_content_handler.OnLocalApprovalRequestCompleted(
       supervisedUserSettingsServiceMock, url, start_time, std::move(result));
 
@@ -137,8 +149,11 @@ TEST_F(WebContentHandlerImplTest, LocalWebApprovalCanceledChromeOSTest) {
   const base::TimeDelta approval_duration = base::Seconds(35);
   task_environment().FastForwardBy(approval_duration);
 
+  // TODO(b/273692421): The content will need to be a raw_ptr.
   content::WebContents* content = nullptr;
-  WebContentHandlerImpl web_content_handler = WebContentHandlerImpl(*content);
+  WebContentHandlerImpl web_content_handler(*content, url,
+                                            large_icon_service());
+
   web_content_handler.OnLocalApprovalRequestCompleted(
       supervisedUserSettingsServiceMock, url, start_time, std::move(result));
 
@@ -172,8 +187,11 @@ TEST_F(WebContentHandlerImplTest, LocalWebApprovalErrorChromeOSTest) {
   const base::TimeDelta approval_duration = base::Seconds(35);
   task_environment().FastForwardBy(approval_duration);
 
+  // TODO(b/273692421): The content will need to be a raw_ptr.
   content::WebContents* content = nullptr;
-  WebContentHandlerImpl web_content_handler = WebContentHandlerImpl(*content);
+  WebContentHandlerImpl web_content_handler(*content, url,
+                                            large_icon_service());
+
   web_content_handler.OnLocalApprovalRequestCompleted(
       supervisedUserSettingsServiceMock, url, start_time, std::move(result));
 

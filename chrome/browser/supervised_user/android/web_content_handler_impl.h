@@ -29,7 +29,6 @@ class WebContentHandlerImpl : public supervised_user::WebContentHandler {
   // supervised_user::WebContentHandler:
   void RequestLocalApproval(const GURL& url,
                             const std::u16string& child_display_name,
-                            const gfx::ImageSkia& favicon,
                             ApprovalRequestInitiatedCallback callback) override;
 
  private:
