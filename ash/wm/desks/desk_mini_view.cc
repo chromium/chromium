@@ -134,7 +134,7 @@ DeskMiniView::DeskMiniView(DesksBarView* owner_bar,
             IsPointOnMiniView(
                 owner_bar_->last_dragged_item_screen_location())) ||
            desk_preview_->IsViewHighlighted() ||
-           (desk_ && desk_->is_active() &&
+           (desk_ && desk_->is_active() && owner_bar_->overview_grid() &&
             !owner_bar_->overview_grid()->IsShowingSavedDeskLibrary());
   });
 
@@ -233,7 +233,7 @@ void DeskMiniView::UpdateFocusColor() {
        IsPointOnMiniView(owner_bar_->last_dragged_item_screen_location())) ||
       desk_preview_->IsViewHighlighted()) {
     new_focus_color_id = ui::kColorAshFocusRing;
-  } else if (desk_->is_active() &&
+  } else if (desk_->is_active() && owner_bar_->overview_grid() &&
              !owner_bar_->overview_grid()->IsShowingSavedDeskLibrary()) {
     new_focus_color_id = kColorAshCurrentDeskColor;
   } else {

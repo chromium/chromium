@@ -482,19 +482,6 @@ OverviewGrid::~OverviewGrid() = default;
 void OverviewGrid::Shutdown(OverviewEnterExitType exit_type) {
   EndNudge();
 
-  if (chromeos::features::IsJellyrollEnabled() && desks_widget_ &&
-      exit_type != OverviewEnterExitType::kImmediateExit) {
-    // When applying the slide out animation to the `desks_widget_` during
-    // overview grid shutdown phase, we need to make the lifetime of the
-    // `desks_widget_` longer than its owner (overview grid). Thus move the
-    // ownership of `desks_widget_` from the overview grid to
-    // `DesksBarSlideAnimation` which is a self-deleting object, when the
-    // animation is done, it will delete itself and destroy `desks_widget_` as
-    // well.
-    new DesksBarSlideAnimation(std::move(desks_widget_),
-                               desks_bar_view_->IsZeroState());
-  }
-
   SplitViewController::Get(root_window_)->RemoveObserver(this);
   ScreenRotationAnimator::GetForRootWindow(root_window_)->RemoveObserver(this);
   Shell::Get()->wallpaper_controller()->RemoveObserver(this);
@@ -544,6 +531,26 @@ void OverviewGrid::Shutdown(OverviewEnterExitType exit_type) {
     // lifetime of |this|.
     FadeOutWidgetFromOverview(std::move(no_windows_widget_),
                               OVERVIEW_ANIMATION_RESTORE_WINDOW);
+  }
+
+  // After this, the desk bar widget will not be owned by this overview grid
+  // anymore. It's either owned by the slide animation for a short period of
+  // time for the animation, or destroyed right away. When applying the slide
+  // out animation to the `desks_widget_` during overview grid shutdown phase,
+  // we need to make the lifetime of the `desks_widget_` longer than its owner
+  // (overview grid). Thus move the ownership of `desks_widget_` from the
+  // overview grid to `DesksBarSlideAnimation` which is a self-deleting object,
+  // when the animation is done, it will delete itself and destroy
+  // `desks_widget_` as well.
+  if (chromeos::features::IsJellyrollEnabled() && desks_widget_ &&
+      exit_type != OverviewEnterExitType::kImmediateExit) {
+    bool is_zero_state = desks_bar_view_->IsZeroState();
+    desks_bar_view_->set_overview_grid(nullptr);
+    desks_bar_view_ = nullptr;
+    new DesksBarSlideAnimation(std::move(desks_widget_), is_zero_state);
+  } else {
+    desks_bar_view_ = nullptr;
+    desks_widget_.reset();
   }
 }
 

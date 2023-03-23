@@ -957,6 +957,10 @@ void DesksBarView::Layout() {
   if (is_bounds_animation_on_going_)
     return;
 
+  if (!overview_grid_) {
+    return;
+  }
+
   // Scroll buttons are kept |kScrollViewMinimumHorizontalPadding| away from
   // the edge of the scroll view. So the horizontal padding of the scroll view
   // is set to guarantee enough space for the scroll buttons.

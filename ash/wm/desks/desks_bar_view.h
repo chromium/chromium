@@ -117,6 +117,9 @@ class ASH_EXPORT DesksBarView : public views::View,
   bool dragged_item_over_bar() const { return dragged_item_over_bar_; }
 
   OverviewGrid* overview_grid() const { return overview_grid_; }
+  void set_overview_grid(OverviewGrid* overview_grid) {
+    overview_grid_ = overview_grid;
+  }
 
   // Initializes and creates mini_views for any pre-existing desks, before the
   // bar was created. This should only be called after this view has been added

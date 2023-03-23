@@ -6252,6 +6252,23 @@ TEST_P(DesksTest, VisibleOnAllDesksWindowDestruction) {
   EXPECT_EQ(0u, desk_1->GetDeskContainerForRoot(root)->children().size());
 }
 
+// Tests that the desk bar exit animation would not cause any crash or UAF.
+// Please refer to b/274497402.
+TEST_P(DesksTest, DesksBarExitAnimation) {
+  // Create another desk so that the desk bar is not zero state.
+  NewDesk();
+
+  // Set to non-zero animation.
+  ui::ScopedAnimationDurationScaleMode animation(
+      ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
+
+  // Enter then exit overview. When shutting down overview grid, the desk bar
+  // slide animation will take over the ownership of the desk bar widget. This
+  // is to ensure no crash or UAF after the ownership change.
+  EnterOverview();
+  ExitOverview();
+}
+
 TEST_P(DesksTest, EnterOverviewWithCorrectDesksBarState) {
   auto* controller = DesksController::Get();
   ASSERT_EQ(1u, controller->desks().size());
