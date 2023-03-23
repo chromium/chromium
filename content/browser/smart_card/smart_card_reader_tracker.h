@@ -13,6 +13,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "base/supports_user_data.h"
+#include "content/common/content_export.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "services/device/public/mojom/smart_card.mojom.h"
 #include "third_party/blink/public/mojom/smart_card/smart_card.mojom-forward.h"
@@ -26,7 +27,8 @@ class SmartCardDelegate;
 //
 // Translates the winscard.h level constructs involving reader state into the
 // higher-level `SmartCardReaderInfo`.
-class SmartCardReaderTracker : public base::SupportsUserData::Data {
+class CONTENT_EXPORT SmartCardReaderTracker
+    : public base::SupportsUserData::Data {
  public:
   // Observer class for changes to smart card readers.
   class Observer : public base::CheckedObserver {

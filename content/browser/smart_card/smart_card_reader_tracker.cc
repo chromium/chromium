@@ -574,6 +574,20 @@ void SmartCardReaderTracker::WaitReadersList::OnListReadersDone(
 
   std::vector<std::string> new_readers = IdentifyNewReaders(current_readers);
 
+  if (new_readers.empty()) {
+    // We already know about all existing readers and their states.
+    // The cache can be considered still up to date.
+    while (!pending_get_readers_requests_.empty()) {
+      tracker_->GetReadersFromCache(
+          std::move(pending_get_readers_requests_.front()));
+      pending_get_readers_requests_.pop();
+    }
+    // And we can go straight to Tracking (skipping WaitInitialReaderStatus).
+    tracker_->ChangeState(
+        std::make_unique<Tracking>(*tracker_, std::move(context_)));
+    return;
+  }
+
   tracker_->ChangeState(std::make_unique<WaitInitialReaderStatus>(
       *tracker_, std::move(context_), std::move(pending_get_readers_requests_),
       new_readers));
