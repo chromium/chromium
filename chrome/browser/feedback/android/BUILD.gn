@@ -28,38 +28,32 @@ source_set("android") {
 
 android_library("java") {
   sources = [
-    "java/src/org/chromium/chrome/browser/feedback/AsyncFeedbackSource.java",
     "java/src/org/chromium/chrome/browser/feedback/AsyncFeedbackSourceAdapter.java",
     "java/src/org/chromium/chrome/browser/feedback/DeviceInfoFeedbackSource.java",
     "java/src/org/chromium/chrome/browser/feedback/FamilyInfoFeedbackSource.java",
-    "java/src/org/chromium/chrome/browser/feedback/FeedbackCollector.java",
     "java/src/org/chromium/chrome/browser/feedback/FeedbackContextFeedbackSource.java",
     "java/src/org/chromium/chrome/browser/feedback/FeedbackReporter.java",
-    "java/src/org/chromium/chrome/browser/feedback/FeedbackSource.java",
     "java/src/org/chromium/chrome/browser/feedback/FragmentHelpAndFeedbackLauncher.java",
     "java/src/org/chromium/chrome/browser/feedback/HelpAndFeedbackLauncher.java",
-    "java/src/org/chromium/chrome/browser/feedback/HistogramFeedbackSource.java",
     "java/src/org/chromium/chrome/browser/feedback/IMEFeedbackSource.java",
     "java/src/org/chromium/chrome/browser/feedback/InterestFeedFeedbackSource.java",
     "java/src/org/chromium/chrome/browser/feedback/LowEndDeviceFeedbackSource.java",
     "java/src/org/chromium/chrome/browser/feedback/PermissionFeedbackSource.java",
     "java/src/org/chromium/chrome/browser/feedback/ProcessIdFeedbackSource.java",
-    "java/src/org/chromium/chrome/browser/feedback/ScreenshotSource.java",
-    "java/src/org/chromium/chrome/browser/feedback/StaticScreenshotSource.java",
     "java/src/org/chromium/chrome/browser/feedback/SystemInfoFeedbackSource.java",
     "java/src/org/chromium/chrome/browser/feedback/UrlFeedbackSource.java",
     "java/src/org/chromium/chrome/browser/feedback/VariationsFeedbackSource.java",
   ]
   deps = [
+    ":delegate_java",
+    ":feedback_collector_java",
     ":java_resources",
     "//base:base_java",
     "//base:jni_java",
     "//build/android:build_java",
     "//chrome/browser/flags:java",
     "//chrome/browser/profiles/android:java",
-    "//chrome/browser/signin/services/android:java",
     "//components/browser_ui/util/android:java",
-    "//components/signin/public/android:java",
     "//components/variations/android:variations_java",
     "//content/public/android:content_java",
     "//net/android:net_java",
@@ -67,8 +61,61 @@ android_library("java") {
     "//third_party/androidx:androidx_annotation_annotation_java",
     "//ui/android:ui_no_recycler_view_java",
   ]
+  public_deps = [
+    ":delegate_java",
+    ":feedback_collector_java",
+  ]
   annotation_processor_deps = [ "//base/android/jni_generator:jni_processor" ]
   resources_package = "org.chromium.chrome.browser.feedback"
+}
+
+android_library("feedback_collector_java") {
+  sources = [
+    "java/src/org/chromium/chrome/browser/feedback/AsyncFeedbackSource.java",
+    "java/src/org/chromium/chrome/browser/feedback/FeedbackCollector.java",
+    "java/src/org/chromium/chrome/browser/feedback/FeedbackSource.java",
+    "java/src/org/chromium/chrome/browser/feedback/HistogramFeedbackSource.java",
+    "java/src/org/chromium/chrome/browser/feedback/ScreenshotSource.java",
+    "java/src/org/chromium/chrome/browser/feedback/StaticScreenshotSource.java",
+  ]
+  deps = [
+    "//base:base_java",
+    "//build/android:build_java",
+    "//chrome/browser/profiles/android:java",
+    "//chrome/browser/signin/services/android:java",
+    "//components/browser_ui/util/android:java",
+    "//components/signin/public/android:java",
+    "//third_party/android_deps:guava_android_java",
+    "//third_party/androidx:androidx_annotation_annotation_java",
+  ]
+}
+
+android_library("delegate_java") {
+  sources = [
+    "java/src/org/chromium/chrome/browser/feedback/HelpAndFeedbackLauncherDelegate.java",
+    "java/src/org/chromium/chrome/browser/feedback/HelpAndFeedbackLauncherDelegateImpl.java",
+  ]
+
+  deps = [
+    ":feedback_collector_java",
+    "//base:base_java",
+    "//third_party/androidx:androidx_annotation_annotation_java",
+  ]
+
+  # Add the actual implementation where necessary so that downstream targets
+  # can provide their own implementations.
+  jar_excluded_patterns = [ "*/HelpAndFeedbackLauncherDelegateImpl.class" ]
+}
+
+android_library("delegate_public_impl_java") {
+  sources = [ "java/src/org/chromium/chrome/browser/feedback/HelpAndFeedbackLauncherDelegateImpl.java" ]
+
+  deps = [
+    ":delegate_java",
+    ":feedback_collector_java",
+    "//base:base_java",
+    "//third_party/androidx:androidx_annotation_annotation_java",
+  ]
 }
 
 android_resources("java_resources") {
