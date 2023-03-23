@@ -49,7 +49,8 @@ class V8IdleTask : public IdleTask {
     if (auto* tracker =
             ThreadScheduler::Current()->GetTaskAttributionTracker()) {
       DOMTaskSignal* signal = nullptr;
-      if (RuntimeEnabledFeatures::SchedulerYieldEnabled()) {
+      if (RuntimeEnabledFeatures::SchedulerYieldEnabled(
+              ExecutionContext::From(script_state))) {
         auto* context = ExecutionContext::From(script_state);
         CHECK(context);
         signal = DOMScheduler::scheduler(*context)->GetFixedPriorityTaskSignal(

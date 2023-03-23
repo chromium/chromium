@@ -54,7 +54,7 @@ DOMScheduler::DOMScheduler(ExecutionContext* context)
   CHECK(context->GetScheduler());
   CreateFixedPriorityTaskQueues(context, WebSchedulingQueueType::kTaskQueue,
                                 fixed_priority_task_queues_);
-  if (RuntimeEnabledFeatures::SchedulerYieldEnabled()) {
+  if (RuntimeEnabledFeatures::SchedulerYieldEnabled(context)) {
     CreateFixedPriorityTaskQueues(context,
                                   WebSchedulingQueueType::kContinuationQueue,
                                   fixed_priority_continuation_queues_);
@@ -246,7 +246,8 @@ DOMTaskSignal* DOMScheduler::GetTaskSignalFromOptions(
   DOMTaskSignal* inherited_signal = nullptr;
   if (absl::holds_alternative<InheritOption>(signal_option) ||
       absl::holds_alternative<InheritOption>(priority_option)) {
-    CHECK(RuntimeEnabledFeatures::SchedulerYieldEnabled());
+    CHECK(RuntimeEnabledFeatures::SchedulerYieldEnabled(
+        ExecutionContext::From(script_state)));
     if (auto* inherited_state =
             ScriptWrappableTaskState::GetCurrent(script_state)) {
       inherited_signal = inherited_state->GetSignal();

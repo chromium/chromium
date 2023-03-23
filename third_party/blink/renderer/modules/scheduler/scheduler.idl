@@ -19,7 +19,7 @@ enum AncestorStatus {
     ImplementedAs=DOMScheduler
 ] interface Scheduler {
     [CallWith=ScriptState, MeasureAs=SchedulerPostTask, RaisesException] Promise<any> postTask(SchedulerPostTaskCallback callback, optional SchedulerPostTaskOptions options = {});
-    [RuntimeEnabled=SchedulerYield, CallWith=ScriptState, RaisesException] Promise<undefined> yield(optional SchedulerYieldOptions options = {});
+    [RuntimeEnabled=SchedulerYield, MeasureAs=SchedulerYield, CallWith=ScriptState, RaisesException] Promise<undefined> yield(optional SchedulerYieldOptions options = {});
     [RuntimeEnabled=UnexposedTaskIds, CallWith=ScriptState, Exposed=Window] readonly attribute unsigned long taskId;
     [RuntimeEnabled=UnexposedTaskIds, CallWith=ScriptState, Exposed=Window] AncestorStatus isAncestor(unsigned long parentId);
 };

@@ -2901,6 +2901,7 @@
     },
     {
       name: "SchedulerYield",
+      origin_trial_feature_name: "SchedulerYield",
       depends_on: ["AbortSignalComposition"],
       status: "experimental",
     },
