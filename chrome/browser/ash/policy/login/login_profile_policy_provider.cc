@@ -18,6 +18,7 @@
 #include "components/policy/core/common/policy_map.h"
 #include "components/policy/core/common/policy_types.h"
 #include "components/policy/policy_constants.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace policy {
 
@@ -104,24 +105,20 @@ const DevicePolicyToUserPolicyMapEntry kRecommendedDevicePoliciesMap[] = {
      key::kVirtualKeyboardEnabled},
 };
 
-std::unique_ptr<base::Value> GetAction(const std::string& action) {
+absl::optional<base::Value> GetAction(const std::string& action) {
   if (action == kActionSuspend) {
-    return std::make_unique<base::Value>(
-        chromeos::PowerPolicyController::ACTION_SUSPEND);
+    return base::Value(chromeos::PowerPolicyController::ACTION_SUSPEND);
   }
   if (action == kActionLogout) {
-    return std::make_unique<base::Value>(
-        chromeos::PowerPolicyController::ACTION_STOP_SESSION);
+    return base::Value(chromeos::PowerPolicyController::ACTION_STOP_SESSION);
   }
   if (action == kActionShutdown) {
-    return std::make_unique<base::Value>(
-        chromeos::PowerPolicyController::ACTION_SHUT_DOWN);
+    return base::Value(chromeos::PowerPolicyController::ACTION_SHUT_DOWN);
   }
   if (action == kActionDoNothing) {
-    return std::make_unique<base::Value>(
-        chromeos::PowerPolicyController::ACTION_DO_NOTHING);
+    return base::Value(chromeos::PowerPolicyController::ACTION_DO_NOTHING);
   }
-  return nullptr;
+  return absl::nullopt;
 }
 
 // Applies |value| as the recommended value of |user_policy| in
@@ -251,7 +248,7 @@ void LoginProfilePolicyProvider::UpdateFromDevicePolicy() {
         policy_dict.FindString(kLidCloseAction);
 
     if (lid_close_action) {
-      std::unique_ptr<base::Value> action = GetAction(*lid_close_action);
+      absl::optional<base::Value> action = GetAction(*lid_close_action);
       if (action) {
         ApplyValueAsMandatoryPolicy(*action, key::kLidCloseAction,
                                     &user_policy_map);
