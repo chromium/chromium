@@ -12,7 +12,7 @@
 #import "ios/chrome/browser/ui/ntp/logo_animation_controller.h"
 
 @protocol ApplicationCommands;
-@protocol BrowserCommands;
+@protocol BrowserCoordinatorCommands;
 @protocol ContentSuggestionsCommands;
 @protocol ContentSuggestionsHeaderCommands;
 @protocol ContentSuggestionsHeaderViewControllerDelegate;
@@ -37,7 +37,7 @@
 - (instancetype)initWithCoder:(NSCoder*)aDecoder NS_UNAVAILABLE;
 
 @property(nonatomic, weak) id<ApplicationCommands,
-                              BrowserCommands,
+                              BrowserCoordinatorCommands,
                               OmniboxCommands,
                               FakeboxFocuser,
                               LensCommands>

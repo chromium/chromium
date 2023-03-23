@@ -15,7 +15,7 @@
 #import "ios/chrome/browser/infobars/infobar_metrics_recorder.h"
 #import "ios/chrome/browser/shared/public/commands/activity_service_commands.h"
 #import "ios/chrome/browser/shared/public/commands/application_commands.h"
-#import "ios/chrome/browser/shared/public/commands/browser_commands.h"
+#import "ios/chrome/browser/shared/public/commands/browser_coordinator_commands.h"
 #import "ios/chrome/browser/shared/public/commands/load_query_commands.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/ui/util/layout_guide_names.h"
@@ -146,7 +146,7 @@ const NSString* kScribbleOmniboxElementId = @"omnibox";
 }
 
 - (void)setDispatcher:(id<ActivityServiceCommands,
-                          BrowserCommands,
+                          BrowserCoordinatorCommands,
                           ApplicationCommands,
                           LoadQueryCommands,
                           OmniboxCommands>)dispatcher {

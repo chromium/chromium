@@ -2967,13 +2967,6 @@ NSString* const kBrowserViewControllerSnackbarCategory =
   [self addURLsToReadingList:command.URLs];
 }
 
-// TODO(crbug.com/1329104): Move voice search handling to BrowserCoordinator
-- (void)preloadVoiceSearch {
-  // Preload VoiceSearchController and views and view controllers needed
-  // for voice search.
-  [_voiceSearchController prepareToAppear];
-}
-
 - (void)prepareForPopupMenuPresentation:(PopupMenuCommandType)type {
   DCHECK(self.browserState);
   DCHECK(self.visible || self.dismissingModal);

@@ -8,7 +8,7 @@
 #import "base/metrics/user_metrics.h"
 #import "base/metrics/user_metrics_action.h"
 #import "ios/chrome/browser/shared/public/commands/application_commands.h"
-#import "ios/chrome/browser/shared/public/commands/browser_commands.h"
+#import "ios/chrome/browser/shared/public/commands/browser_coordinator_commands.h"
 #import "ios/chrome/browser/shared/public/commands/lens_commands.h"
 #import "ios/chrome/browser/shared/public/commands/qr_scanner_commands.h"
 #import "ios/chrome/browser/shared/ui/util/layout_guide_names.h"
@@ -25,7 +25,8 @@
 @implementation OmniboxAssistiveKeyboardDelegateImpl
 
 @synthesize applicationCommandsHandler = _applicationCommandsHandler;
-@synthesize browserCommandsHandler = _browserCommandsHandler;
+@synthesize browserCoordinatorCommandsHandler =
+    _browserCoordinatorCommandsHandler;
 @synthesize layoutGuideCenter = _layoutGuideCenter;
 @synthesize qrScannerCommandsHandler = _qrScannerCommandsHandler;
 @synthesize omniboxTextField = _omniboxTextField;
@@ -34,7 +35,7 @@
 
 - (void)keyboardAccessoryVoiceSearchTapped:(id)sender {
   if (ios::provider::IsVoiceSearchEnabled()) {
-    [self.browserCommandsHandler preloadVoiceSearch];
+    [self.browserCoordinatorCommandsHandler preloadVoiceSearch];
     base::RecordAction(base::UserMetricsAction("MobileCustomRowVoiceSearch"));
     // Voice Search will query kVoiceSearchButtonGuide to know from where to
     // start its animation, so reference the sender under that name. The sender

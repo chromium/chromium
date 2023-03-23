@@ -1568,6 +1568,12 @@ enum class ToolbarKind {
   [self.spotlightDebuggerCoordinator start];
 }
 
+- (void)preloadVoiceSearch {
+  // Preload VoiceSearchController and views and view controllers needed
+  // for voice search.
+  [_voiceSearchController prepareToAppear];
+}
+
 #pragma mark - DefaultPromoCommands
 
 - (void)showTailoredPromoStaySafe {

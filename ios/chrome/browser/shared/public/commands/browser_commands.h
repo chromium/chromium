@@ -20,9 +20,6 @@
 // TODO(crbug.com/1272540): Remove this command.
 - (void)addToReadingList:(ReadingListAddCommand*)command;
 
-// Preloads voice search on the current BVC.
-- (void)preloadVoiceSearch;
-
 // Prepares the browser to display a popup menu.
 - (void)prepareForPopupMenuPresentation:(PopupMenuCommandType)type;
 

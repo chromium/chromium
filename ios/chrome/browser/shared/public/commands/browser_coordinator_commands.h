@@ -95,6 +95,9 @@ class GURL;
 // Shows the spotlight debugger.
 - (void)showSpotlightDebugger;
 
+// Preloads voice search in the current BVC.
+- (void)preloadVoiceSearch;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_SHARED_PUBLIC_COMMANDS_BROWSER_COORDINATOR_COMMANDS_H_

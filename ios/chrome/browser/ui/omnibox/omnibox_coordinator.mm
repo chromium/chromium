@@ -162,8 +162,9 @@
       LayoutGuideCenterForBrowser(self.browser);
   // TODO(crbug.com/1045047): Use HandlerForProtocol after commands protocol
   // clean up.
-  self.keyboardDelegate.browserCommandsHandler =
-      static_cast<id<BrowserCommands>>(self.browser->GetCommandDispatcher());
+  self.keyboardDelegate.browserCoordinatorCommandsHandler =
+      static_cast<id<BrowserCoordinatorCommands>>(
+          self.browser->GetCommandDispatcher());
   self.keyboardDelegate.omniboxTextField = self.textField;
   self.keyboardAccessoryView = ConfigureAssistiveKeyboardViews(
       self.textField, kDotComTLD, self.keyboardDelegate, templateURLService);
