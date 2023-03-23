@@ -100,7 +100,6 @@ class PrinterProviderApiTest : public ExtensionApiTest,
                                    PrinterProviderAPI::PrintCallback callback) {
     PrinterProviderPrintJob job;
     job.printer_id = extension_id + ":printer_id";
-    job.ticket = base::Value(base::Value::Type::DICT);
     job.content_type = "application/pdf";
 
     PrinterProviderAPIFactory::GetInstance()
@@ -114,7 +113,6 @@ class PrinterProviderApiTest : public ExtensionApiTest,
     PrinterProviderPrintJob job;
     job.printer_id = extension_id + ":printer_id";
     job.job_title = u"Print job";
-    job.ticket = base::Value(base::Value::Type::DICT);
     job.content_type = "application/pdf";
     const unsigned char kDocumentBytes[] = {'b', 'y', 't', 'e', 's'};
     job.document_bytes =

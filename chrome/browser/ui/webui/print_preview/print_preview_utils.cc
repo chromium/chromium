@@ -263,7 +263,7 @@ bool ParseSettings(const base::Value::Dict& settings,
                    std::string* out_destination_id,
                    std::string* out_capabilities,
                    gfx::Size* out_page_size,
-                   base::Value* out_ticket) {
+                   base::Value::Dict* out_ticket) {
   const std::string* ticket_opt = settings.FindString(kSettingTicket);
   const std::string* capabilities_opt =
       settings.FindString(kSettingCapabilities);
@@ -275,12 +275,13 @@ bool ParseSettings(const base::Value::Dict& settings,
   }
   absl::optional<base::Value> ticket_value =
       base::JSONReader::Read(*ticket_opt);
-  if (!ticket_value)
+  if (!ticket_value || !ticket_value->is_dict()) {
     return false;
+  }
 
   *out_destination_id = *settings.FindString(kSettingDeviceName);
   *out_capabilities = *capabilities_opt;
-  *out_ticket = std::move(*ticket_value);
+  *out_ticket = std::move(*ticket_value).TakeDict();
   return true;
 }
 

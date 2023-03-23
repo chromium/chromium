@@ -26,7 +26,7 @@ class CloudDeviceDescription {
   ~CloudDeviceDescription();
 
   bool InitFromString(const std::string& json);
-  bool InitFromValue(base::Value value);
+  bool InitFromValue(base::Value::Dict value);
 
   std::string ToStringForTesting() const;
 

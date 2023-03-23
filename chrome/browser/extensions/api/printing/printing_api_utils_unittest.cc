@@ -155,7 +155,7 @@ TEST(PrintingApiUtilsTest, PrinterToIdl) {
 }
 
 TEST(PrintingApiUtilsTest, ParsePrintTicket) {
-  base::Value cjt_ticket = base::test::ParseJson(kCjt);
+  base::Value::Dict cjt_ticket = base::test::ParseJsonDict(kCjt);
   std::unique_ptr<printing::PrintSettings> settings =
       ParsePrintTicket(std::move(cjt_ticket));
 
@@ -172,7 +172,8 @@ TEST(PrintingApiUtilsTest, ParsePrintTicket) {
 }
 
 TEST(PrintingApiUtilsTest, ParsePrintTicket_IncompleteCjt) {
-  base::Value incomplete_cjt_ticket = base::test::ParseJson(kIncompleteCjt);
+  base::Value::Dict incomplete_cjt_ticket =
+      base::test::ParseJsonDict(kIncompleteCjt);
   EXPECT_FALSE(ParsePrintTicket(std::move(incomplete_cjt_ticket)));
 }
 

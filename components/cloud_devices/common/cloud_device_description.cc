@@ -30,16 +30,15 @@ CloudDeviceDescription::~CloudDeviceDescription() = default;
 
 bool CloudDeviceDescription::InitFromString(const std::string& json) {
   absl::optional<base::Value> value = base::JSONReader::Read(json);
-  if (!value)
+  if (!value || !value->is_dict()) {
     return false;
+  }
 
-  return InitFromValue(std::move(*value));
+  return InitFromValue(std::move(*value).TakeDict());
 }
 
-bool CloudDeviceDescription::InitFromValue(base::Value ticket) {
-  if (!ticket.is_dict())
-    return false;
-  root_ = std::move(ticket).TakeDict();
+bool CloudDeviceDescription::InitFromValue(base::Value::Dict ticket) {
+  root_ = std::move(ticket);
   return IsValidTicket(root_);
 }
 

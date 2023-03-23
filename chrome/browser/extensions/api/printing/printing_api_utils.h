@@ -10,14 +10,11 @@
 #include <vector>
 
 #include "base/containers/flat_map.h"
+#include "base/values.h"
 #include "chrome/browser/chromeos/printing/printer_error_codes.h"
 #include "chrome/common/extensions/api/printing.h"
 #include "chromeos/crosapi/mojom/local_printer.mojom.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
-
-namespace base {
-class Value;
-}  // namespace base
 
 namespace chromeos {
 class Printer;
@@ -54,7 +51,8 @@ api::printing::PrinterStatus PrinterStatusToIdl(
 // (https://developers.google.com/cloud-print/docs/cdd#cjt) format to
 // printing::PrintSettings.
 // Returns nullptr in case of invalid ticket.
-std::unique_ptr<printing::PrintSettings> ParsePrintTicket(base::Value ticket);
+std::unique_ptr<printing::PrintSettings> ParsePrintTicket(
+    base::Value::Dict ticket);
 
 // Checks if given print job settings are compatible with printer capabilities.
 bool CheckSettingsAndCapabilitiesCompatibility(

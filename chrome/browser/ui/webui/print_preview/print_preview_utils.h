@@ -62,7 +62,7 @@ bool ParseSettings(const base::Value::Dict& settings,
                    std::string* out_destination_id,
                    std::string* out_capabilities,
                    gfx::Size* out_page_size,
-                   base::Value* out_ticket);
+                   base::Value::Dict* out_ticket);
 
 }  // namespace printing
 

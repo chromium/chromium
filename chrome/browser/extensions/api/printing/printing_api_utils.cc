@@ -125,7 +125,8 @@ idl::PrinterStatus PrinterStatusToIdl(chromeos::PrinterErrorCode status) {
   return idl::PRINTER_STATUS_GENERIC_ISSUE;
 }
 
-std::unique_ptr<printing::PrintSettings> ParsePrintTicket(base::Value ticket) {
+std::unique_ptr<printing::PrintSettings> ParsePrintTicket(
+    base::Value::Dict ticket) {
   cloud_devices::CloudDeviceDescription description;
   if (!description.InitFromValue(std::move(ticket)))
     return nullptr;
