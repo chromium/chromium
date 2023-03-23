@@ -1,5 +1,5 @@
 {
-  "android-pie-arm64-rel-swarming": {
+  "android-pie-arm64-rel-dev": {
     "gn_args": {
       "dcheck_always_on": false,
       "debuggable_apks": false,
@@ -15,7 +15,7 @@
       "use_remoteexec": true
     }
   },
-  "linux-rel-swarming": {
+  "linux-rel-dev": {
     "gn_args": {
       "dcheck_always_on": false,
       "devtools_skip_typecheck": false,
@@ -26,7 +26,7 @@
       "use_remoteexec": true
     }
   },
-  "linux-ssd-rel-swarming": {
+  "linux-ssd-rel-dev": {
     "gn_args": {
       "dcheck_always_on": false,
       "devtools_skip_typecheck": false,
@@ -37,7 +37,7 @@
       "use_remoteexec": true
     }
   },
-  "mac-arm-rel-swarming": {
+  "mac-arm-rel-dev": {
     "gn_args": {
       "dcheck_always_on": false,
       "enable_nacl": false,
@@ -49,7 +49,7 @@
       "use_remoteexec": true
     }
   },
-  "mac-rel-swarming": {
+  "mac-rel-dev": {
     "gn_args": {
       "dcheck_always_on": false,
       "enable_nacl": false,
@@ -61,7 +61,7 @@
       "use_remoteexec": true
     }
   },
-  "win-rel-swarming": {
+  "win-rel-dev": {
     "gn_args": {
       "dcheck_always_on": false,
       "ffmpeg_branding": "Chrome",
@@ -72,7 +72,7 @@
       "use_remoteexec": true
     }
   },
-  "win11-rel-swarming": {
+  "win11-rel-dev": {
     "gn_args": {
       "dcheck_always_on": false,
       "ffmpeg_branding": "Chrome",

@@ -1454,7 +1454,7 @@
         ],
         'ci_only': True, # https://crbug.com/1233700
       },
-      'android-pie-arm64-rel-swarming': {
+      'android-pie-arm64-rel-dev': {
         'swarming': {
           'service_account': 'chrome-gold-dev@chops-service-accounts.iam.gserviceaccount.com'
         },
@@ -2052,7 +2052,7 @@
         },
       },
       # https://crbug.com/1255940
-      'mac-rel-swarming': {
+      'mac-rel-dev': {
         'swarming': {
           'dimension_sets': [
             {
@@ -3935,7 +3935,7 @@
           '--test-launcher-filter-file=../../testing/buildbot/filters/android.asan.unit_tests.filter',
         ],
       },
-      'android-pie-arm64-rel-swarming': {
+      'android-pie-arm64-rel-dev': {
         'swarming': {
           'shards': 8,
         },

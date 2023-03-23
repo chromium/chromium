@@ -2577,7 +2577,7 @@
     'name': 'chromium.dev',
     'mixins': ['chromium-tester-dev-service-account'],
     'machines': {
-      'android-pie-arm64-rel-swarming': {
+      'android-pie-arm64-rel-dev': {
         'mixins': [
           'has_native_resultdb_integration',
           'pie_fleet',
@@ -2596,7 +2596,7 @@
         },
         'os_type': 'android',
       },
-      'linux-rel-swarming': {
+      'linux-rel-dev': {
         'mixins': [
           'linux-bionic',
         ],
@@ -2604,12 +2604,12 @@
            'gtest_tests': 'chromium_dev_linux_gtests',
         },
       },
-      'linux-ssd-rel-swarming': {
+      'linux-ssd-rel-dev': {
         'mixins': [
           'linux-bionic',
         ],
       },
-      'mac-arm-rel-swarming': {
+      'mac-arm-rel-dev': {
         'mixins': [
           'mac_12_arm64',
         ],
@@ -2617,7 +2617,7 @@
            'gtest_tests': 'chromium_dev_desktop_gtests',
         },
       },
-      'mac-rel-swarming': {
+      'mac-rel-dev': {
         'mixins': [
           'mac_x64',
         ],
@@ -2625,12 +2625,12 @@
            'gtest_tests': 'chromium_dev_desktop_gtests',
         },
       },
-      'win-rel-swarming': {
+      'win-rel-dev': {
         'test_suites': {
            'gtest_tests': 'chromium_dev_desktop_gtests',
         },
       },
-      'win11-rel-swarming': {
+      'win11-rel-dev': {
         'mixins': [
           'win11',
         ],
