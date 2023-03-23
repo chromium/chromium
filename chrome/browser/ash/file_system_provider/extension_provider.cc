@@ -83,7 +83,8 @@ std::unique_ptr<ProviderInterface> ExtensionProvider::Create(
                    .watchable = capabilities->watchable(),
                    .multiple_mounts = capabilities->multiple_mounts(),
                    .source = capabilities->source()},
-      extension->name());
+      extension->name(),
+      /*icon_set=*/absl::nullopt);
 }
 
 std::unique_ptr<ProvidedFileSystemInterface>
@@ -136,11 +137,13 @@ bool ExtensionProvider::RequestMount(Profile* profile,
 ExtensionProvider::ExtensionProvider(Profile* profile,
                                      ProviderId id,
                                      Capabilities capabilities,
-                                     std::string name)
+                                     std::string name,
+                                     absl::optional<IconSet> icon_set)
     : provider_id_(std::move(id)),
       capabilities_(std::move(capabilities)),
       name_(std::move(name)),
-      icon_set_(DefaultIconSet(provider_id_.GetExtensionId())) {
+      icon_set_(
+          icon_set.value_or(DefaultIconSet(provider_id_.GetExtensionId()))) {
   request_dispatcher_ = std::make_unique<RequestDispatcherImpl>(
       provider_id_.GetExtensionId(), extensions::EventRouter::Get(profile),
       base::BindRepeating(&ExtensionProvider::OnLacrosOperationForwarded,

@@ -330,7 +330,7 @@ void FileSystemProviderServiceAsh::ExtensionLoaded(
   auto provider =
       std::make_unique<ash::file_system_provider::ExtensionProvider>(
           ProfileManager::GetPrimaryUserProfile(), std::move(provider_id),
-          std::move(capabilities), name);
+          std::move(capabilities), name, /*icon_set=*/absl::nullopt);
   service->RegisterProvider(std::move(provider));
 }
 

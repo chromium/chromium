@@ -61,7 +61,8 @@ class TerminalFileSystemProvider
                 .watchable = false,
                 .multiple_mounts = true,
                 .source = extensions::FileSystemProviderSource::SOURCE_NETWORK},
-            l10n_util::GetStringUTF8(IDS_CROSTINI_TERMINAL_APP_NAME)) {}
+            l10n_util::GetStringUTF8(IDS_CROSTINI_TERMINAL_APP_NAME),
+            /*icon_set=*/absl::nullopt) {}
   bool RequestMount(
       Profile* profile,
       ash::file_system_provider::RequestMountCallback callback) override {
