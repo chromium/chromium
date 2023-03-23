@@ -123,7 +123,8 @@ export function testModel() {
   assertEquals(1, myFilesEntryList.getUIChildren().length);
   assertEquals('linux-files-label', myFilesEntryList.getUIChildren()[0].name);
 
-  // Trash is displayed as a root when feature is enabled.
+  // Trash is displayed as a root when feature is enabled and should be the last
+  // item in the model.
   loadTimeData.overrideValues({FILES_TRASH_ENABLED: true});
   model.fakeTrashItem = new NavigationModelFakeItem(
       'trash-label', NavigationModelItemType.TRASH, new TrashRootEntry());
@@ -131,7 +132,7 @@ export function testModel() {
   assertEquals(7, model.length);
   assertEquals(
       'fake-entry://trash', /** @type {!NavigationModelFakeItem} */
-      (model.item(4)).entry.toURL());
+      (model.item(6)).entry.toURL());
 }
 
 /**

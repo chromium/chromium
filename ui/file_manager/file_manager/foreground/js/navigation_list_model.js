@@ -752,18 +752,6 @@ export class NavigationListModel extends EventTarget {
       this.fakeDriveItem_.section = NavigationSection.CLOUD;
     }
 
-    // Add Trash.
-    // This should only show when Files app is open as a standalone app. The ARC
-    // file selector, however, opens Files app as a standalone app but passes a
-    // query parameter to indicate the mode. As Trash is a fake volume, it is
-    // not filtered out in the filtered volume manager so perform it here
-    // instead.
-    if (util.isTrashEnabled() && this.dialogType_ === DialogType.FULL_PAGE &&
-        !this.volumeManager_.getMediaStoreFilesOnlyFilterEnabled() &&
-        this.trashItem_) {
-      this.navigationItems_.push(this.trashItem_);
-    }
-
     // Add SMB.
     for (const provided of getVolumes(VolumeManagerCommon.VolumeType.SMB)) {
       this.navigationItems_.push(provided);
@@ -861,6 +849,18 @@ export class NavigationListModel extends EventTarget {
       const androidAppItem = new NavigationModelAndroidAppItem(androidApp);
       androidAppItem.section = NavigationSection.ANDROID_APPS;
       this.navigationItems_.push(androidAppItem);
+    }
+
+    // Add Trash.
+    // This should only show when Files app is open as a standalone app. The ARC
+    // file selector, however, opens Files app as a standalone app but passes a
+    // query parameter to indicate the mode. As Trash is a fake volume, it is
+    // not filtered out in the filtered volume manager so perform it here
+    // instead.
+    if (util.isTrashEnabled() && this.dialogType_ === DialogType.FULL_PAGE &&
+        !this.volumeManager_.getMediaStoreFilesOnlyFilterEnabled() &&
+        this.trashItem_) {
+      this.navigationItems_.push(this.trashItem_);
     }
   }
 

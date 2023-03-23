@@ -208,18 +208,19 @@ export async function testNavigationRoots(done: () => void) {
   //      * Android files - won't be included as root because it's inside
   //      MyFiles.
   //  5.  Drive
-  //  6.  Trash
-  //  7.  smb:file-share
-  //  8.  provided:prov1
-  //  9.  provided:prov2
+  //  6.  smb:file-share
+  //  7.  provided:prov1
+  //  8.  provided:prov2
   //
-  // 10.  removable:hoge
-  // 11.  removable:fuga
-  // 12.  archive:a-rar  - mounted as archive
-  // 13.  mtp:a-phone
+  //  9.  removable:hoge
+  // 10.  removable:fuga
+  // 11.  archive:a-rar  - mounted as archive
+  // 12.  mtp:a-phone
   //
-  // 14.  android:app1
-  // 15.  android:app2
+  // 13.  android:app1
+  // 14.  android:app2
+  //
+  // 15.  Trash
 
   // Check items order and that MTP/Archive/Removable respect the original
   // order.
@@ -258,13 +259,6 @@ export async function testNavigationRoots(done: () => void) {
       section: NavigationSection.CLOUD,
       separator: true,
       type: NavigationType.DRIVE,
-    },
-    // Trash.
-    {
-      key: trashEntryFileData.entry.toURL(),
-      section: NavigationSection.TRASH,
-      separator: true,
-      type: NavigationType.TRASH,
     },
     // FSP, and SMB are grouped together.
     // smb:file-share.
@@ -330,6 +324,13 @@ export async function testNavigationRoots(done: () => void) {
       section: NavigationSection.ANDROID_APPS,
       separator: false,
       type: NavigationType.ANDROID_APPS,
+    },
+    // Trash.
+    {
+      key: trashEntryFileData.entry.toURL(),
+      section: NavigationSection.TRASH,
+      separator: true,
+      type: NavigationType.TRASH,
     },
   ];
   await waitDeepEquals(store, want, (state) => state.navigation.roots);
