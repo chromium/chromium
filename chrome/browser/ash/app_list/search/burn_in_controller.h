@@ -15,7 +15,7 @@
 namespace app_list {
 
 // Manages operations related to the burn-in period. Owned by the
-// SearchControllerImplNew.
+// SearchController.
 class BurnInController {
  public:
   using BurnInPeriodElapsedCallback = base::RepeatingCallback<void()>;
@@ -25,9 +25,6 @@ class BurnInController {
 
   BurnInController(const BurnInController&) = delete;
   BurnInController& operator=(const BurnInController&) = delete;
-
-  // True if the burn-in period has elapsed.
-  bool is_post_burn_in();
 
   // Called at the beginning of a query search. Initiates the burn-in/ period.
   void Start();
@@ -43,11 +40,14 @@ class BurnInController {
   //
   // Performs house-keeping related to burn-in iteration numbers for categories
   // and individual results. These are later important for sorting purposes in
-  // the SearchControllerImplNew - see further documentation below.
+  // the SearchController - see further documentation below.
   //
   // Triggers the BurnInPeriodElapsedCallback if it is the first time
   // UpdateResults() has been called since the burn-in period has elapsed.
-  void UpdateResults(ResultsMap& results,
+  //
+  // Returns true if results are updated before `burn_in_period_`, and false
+  // otherwise.
+  bool UpdateResults(ResultsMap& results,
                      CategoriesList& categories,
                      ash::AppListSearchResultType result_type);
 

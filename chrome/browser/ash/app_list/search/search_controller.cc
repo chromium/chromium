@@ -276,11 +276,11 @@ void SearchController::SetSearchResults(const SearchProvider* provider) {
     metrics_manager_->OnSearchResultsUpdated(result->scoring());
   }
 
-  burn_in_controller_->UpdateResults(results_, categories_,
-                                     provider->ResultType());
+  bool is_post_burn_in = burn_in_controller_->UpdateResults(
+      results_, categories_, provider->ResultType());
   // If the burn-in period has not yet elapsed, don't call Publish here (this
   // case is covered by a call scheduled within the burn-in controller).
-  if (!last_query_.empty() && burn_in_controller_->is_post_burn_in()) {
+  if (!last_query_.empty() && is_post_burn_in) {
     Publish();
   }
 }
