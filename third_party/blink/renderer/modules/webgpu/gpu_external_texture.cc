@@ -51,10 +51,16 @@ GPUExternalTexture* ExternalTextureCache::Import(
       auto cache = from_html_video_element_.find(video);
       if (cache != from_html_video_element_.end()) {
         external_texture = cache->value;
-      } else {
-        external_texture = GPUExternalTexture::FromHTMLVideoElement(
-            this, video, descriptor, exception_state);
+        if (external_texture->ContinueCheckingCurrentVideoFrame()) {
+          break;
+        }
       }
+      // If we got a cache miss, or `ContinueCheckingCurrentVideoFrame` returned
+      // false, make a new external texture. `ContinueCheckingCurrentVideoFrame`
+      // returns false if the frame has expired and it no longer needs to be
+      // checked for expiry.
+      external_texture = GPUExternalTexture::FromHTMLVideoElement(
+          this, video, descriptor, exception_state);
       break;
     }
     case V8UnionHTMLVideoElementOrVideoFrame::ContentType::kVideoFrame: {
@@ -372,11 +378,11 @@ void GPUExternalTexture::ListenToHTMLVideoElement(HTMLVideoElement* video) {
 }
 
 bool GPUExternalTexture::ContinueCheckingCurrentVideoFrame() {
-  DCHECK(video_);
   DCHECK(media_video_frame_unique_id_.has_value());
 
-  if (destroyed())
+  if (destroyed() || !video_) {
     return false;
+  }
 
   WebMediaPlayer* media_player = video_->GetWebMediaPlayer();
 
