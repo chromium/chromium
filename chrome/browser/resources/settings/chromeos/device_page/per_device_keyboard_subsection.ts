@@ -91,7 +91,6 @@ export class SettingsPerDeviceKeyboardSubsectionElement extends
         type: Object,
         value: () => new Set<Setting>([
           Setting.kKeyboardFunctionKeys,
-          Setting.kKeyboardAutoRepeat,
         ]),
       },
 

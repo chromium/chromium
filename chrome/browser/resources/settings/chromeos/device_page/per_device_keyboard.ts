@@ -51,8 +51,36 @@ export class SettingsPerDeviceKeyboardElement extends
 
   static get properties(): PolymerElementProperties {
     return {
+      /** Preferences state. Used for auto repeat settings. */
+      prefs: {
+        type: Object,
+        notify: true,
+      },
+
       keyboards: {
         type: Array,
+      },
+
+      /**
+       * Auto-repeat delays (in ms) for the corresponding slider values, from
+       * long to short. The values were chosen to provide a large range while
+       * giving several options near the defaults.
+       */
+      autoRepeatDelays: {
+        type: Array,
+        value: [2000, 1500, 1000, 500, 300, 200, 150],
+        readOnly: true,
+      },
+
+      /**
+       * Auto-repeat intervals (in ms) for the corresponding slider values, from
+       * long to short. The slider itself is labeled "rate", the inverse of
+       * interval, and goes from slow (long interval) to fast (short interval).
+       */
+      autoRepeatIntervals: {
+        type: Array,
+        value: [2000, 1000, 500, 300, 200, 100, 50, 30, 20],
+        readOnly: true,
       },
 
       /**
@@ -61,6 +89,7 @@ export class SettingsPerDeviceKeyboardElement extends
       supportedSettingIds: {
         type: Object,
         value: () => new Set<Setting>([
+          Setting.kKeyboardAutoRepeat,
           Setting.kKeyboardShortcuts,
         ]),
       },
@@ -68,6 +97,9 @@ export class SettingsPerDeviceKeyboardElement extends
   }
 
   protected keyboards: Keyboard[];
+  private prefs: chrome.settingsPrivate.PrefObject;
+  private autoRepeatDelays: number[];
+  private autoRepeatIntervals: number[];
   private browserProxy: DevicePageBrowserProxy =
       DevicePageBrowserProxyImpl.getInstance();
 
