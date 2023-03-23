@@ -521,28 +521,37 @@ testcase.searchDriveWithTypeOptions = async () => {
 };
 
 /**
+ * @param {boolean} withPartitions Whether or not USB has partitions.
+ * @return {string} The label that can be used to query for elements.
+ */
+function getUsbVolumeQuery(withPartitions) {
+  return `#directory-tree [entry-label=${
+      withPartitions ? '"Drive Label"' : '"fake-usb"'}]`;
+}
+
+/**
+ * @param {string} appId The ID of the files app under test.
+ * @param {boolean} withPartitions Whether or not USB has partitions.
+ */
+async function mountUsb(appId, withPartitions) {
+  const nameSuffix = withPartitions ? 'UsbWithPartitions' : 'FakeUsb';
+  await sendTestMessage({name: `mount${nameSuffix}`});
+  await remoteCall.waitForElement(appId, getUsbVolumeQuery(withPartitions));
+}
+
+/**
  * Checks that the new search correctly finds files on a USB drive.
  */
 testcase.searchRemovableDevice = async () => {
   const appId = await setupAndWaitUntilReady(RootPath.DOWNLOADS);
-  const USB_VOLUME_QUERY = '#directory-tree [volume-type-icon="removable"]';
+  // Mount a USB with no partitions.
+  mountUsb(appId, false);
 
-  // Mount a USB volume.
-  await sendTestMessage({name: 'mountFakeUsb'});
+  // Navigate to the root of the USB.
+  await remoteCall.callRemoteTestUtil(
+      'fakeMouseClick', appId, [getUsbVolumeQuery(false)]);
 
-  // Wait for the USB volume to mount.
-  await remoteCall.waitForElement(appId, USB_VOLUME_QUERY);
-
-  // Click to open the USB volume.
-  await navigateWithDirectoryTree(appId, '/fake-usb');
-
-  // Check: the USB files should appear in the file list.
-  const files = TestEntryInfo.getExpectedRows(BASIC_FAKE_ENTRY_SET);
-  await remoteCall.waitForFiles(appId, files, {ignoreLastModifiedTime: true});
-
-  // Search the USB for all files with "hello" in their name.
   await remoteCall.typeSearchText(appId, 'hello');
-
   await remoteCall.waitForFiles(
       appId, TestEntryInfo.getExpectedRows([
         ENTRIES.hello,
@@ -550,6 +559,40 @@ testcase.searchRemovableDevice = async () => {
       {ignoreLastModifiedTime: true});
 };
 
+/**
+ * Checks that the new search correctly finds files on a USB drive with multiple
+ * partitions.
+ */
+testcase.searchPartitionedRemovableDevice = async () => {
+  const appId = await setupAndWaitUntilReady(RootPath.DOWNLOADS);
+  mountUsb(appId, true);
+
+  // Wait for removable partition-1 to appear in the directory tree.
+  const partitionOne = await remoteCall.waitForElement(
+      appId, '#directory-tree [entry-label="partition-1"]');
+  chrome.test.assertEq(
+      'removable', partitionOne.attributes['volume-type-for-testing']);
+
+  // Wait for removable partition-2 to appear in the directory tree.
+  const partitionTwo = await remoteCall.waitForElement(
+      appId, '#directory-tree [entry-label="partition-2"]');
+  chrome.test.assertEq(
+      'removable', partitionTwo.attributes['volume-type-for-testing']);
+
+  // Navigate to the root of the USB.
+  await remoteCall.callRemoteTestUtil(
+      'fakeMouseClick', appId, [getUsbVolumeQuery(true)]);
+
+  // Search for the 'hello' and expect two files; ignore the modified time
+  // as these were copied when mounting the USB.
+  await remoteCall.typeSearchText(appId, 'hello');
+  await remoteCall.waitForFiles(
+      appId, TestEntryInfo.getExpectedRows([
+        ENTRIES.hello,
+        ENTRIES.hello,
+      ]),
+      {ignoreLastModifiedTime: true});
+};
 /**
  * Checks that the search options are reset to default on folder change.
  */

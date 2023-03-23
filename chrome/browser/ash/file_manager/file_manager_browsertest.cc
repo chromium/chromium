@@ -2181,6 +2181,7 @@ WRAPPED_INSTANTIATE_TEST_SUITE_P(
         TestCase("searchWithRecencyOptions").EnableSearchV2(),
         TestCase("searchDriveWithRecencyOptions").EnableSearchV2(),
         TestCase("searchRemovableDevice").EnableSearchV2(),
+        TestCase("searchPartitionedRemovableDevice").EnableSearchV2(),
         TestCase("resetSearchOptionsOnFolderChange").EnableSearchV2(),
         TestCase("showSearchResultMessageWhenSearching").EnableSearchV2(),
         TestCase("showsEducationNudge").EnableSearchV2(),

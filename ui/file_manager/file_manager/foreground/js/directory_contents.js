@@ -10,6 +10,7 @@ import {mountGuest} from '../../common/js/api.js';
 import {AsyncQueue, ConcurrentQueue} from '../../common/js/async_util.js';
 import {createDOMError} from '../../common/js/dom_utils.js';
 import {FileType} from '../../common/js/file_type.js';
+import {EntryList} from '../../common/js/files_app_entry_types.js';
 import {metrics} from '../../common/js/metrics.js';
 import {getEarliestTimestamp} from '../../common/js/recent_date_bucket.js';
 import {createTrashReaders} from '../../common/js/trash.js';
@@ -229,6 +230,18 @@ export class LocalSearchContentScanner extends ContentScanner {
 }
 
 /**
+ * What we consider to be local (this chromebook) volume types.
+ * TODO(b:273843598) Refine this list.
+ */
+const LOCAL_VOLUME_TYPES = new Set([
+  VolumeManagerCommon.VolumeType.DOWNLOADS,
+  VolumeManagerCommon.VolumeType.REMOVABLE,
+  VolumeManagerCommon.VolumeType.CROSTINI,
+  VolumeManagerCommon.VolumeType.MY_FILES,
+  VolumeManagerCommon.VolumeType.ANDROID_FILES,
+]);
+
+/**
  * A content scanner capable of scanning both the local file system and Google
  * Drive. When created you need to specify the root type, current entry
  * in the directory tree, the search query and options. The `rootType` together
@@ -252,7 +265,7 @@ export class SearchV2ContentScanner extends ContentScanner {
   constructor(volumeManager, entry, query, options = undefined) {
     super();
     this.volumeManager_ = volumeManager;
-    this.entry_ = /** @type {!DirectoryEntry} */ (util.unwrapEntry(entry));
+    this.entry_ = entry;
     const locationInfo = this.volumeManager_.getLocationInfo(this.entry_);
     this.rootType_ = locationInfo ? locationInfo.rootType : null;
     this.query_ = query.toLowerCase();
@@ -318,15 +331,6 @@ export class SearchV2ContentScanner extends ContentScanner {
   }
 
   /**
-   * @return {boolean} Whether or not the search is from the root of My files.
-   * @private
-   */
-  isMyFilesRoot_() {
-    return this.rootType_ == VolumeManagerCommon.RootType.DOWNLOADS &&
-        this.entry_.fullPath == '/';
-  }
-
-  /**
    * @param {!chrome.fileManagerPrivate.SearchMetadataParams} params
    * @return {!Promise<!Array<!Entry>>}
    * @private
@@ -355,6 +359,40 @@ export class SearchV2ContentScanner extends ContentScanner {
   }
 
   /**
+   * @param {!FilesAppEntry|DirectoryEntry} dirEntry
+   * @return {!Array<!DirectoryEntry>}
+   */
+  getRoots_(dirEntry) {
+    const typeName = dirEntry.type_name;
+    if (typeName === 'EntryList' || typeName == 'VolumeEntry') {
+      const allRoots = [dirEntry].concat(
+          /** @type {EntryList} */ (dirEntry).getUIChildren());
+      return allRoots.filter(entry => !util.isFakeEntry(entry))
+          .map(entry => entry.filesystem.root);
+    }
+    return [dirEntry];
+  }
+
+  /**
+   * Returns a list of roots for local search, when searching from
+   * the root of the file system.
+   * @return {!Array<DirectoryEntry>}
+   * @private
+   */
+  getLocalRootList_() {
+    const localRootDirs = [];
+    const volumeInfoList = this.volumeManager_.volumeInfoList;
+    for (let index = 0; index < volumeInfoList.length; ++index) {
+      const volumeInfo = volumeInfoList.item(index);
+      if (LOCAL_VOLUME_TYPES.has(volumeInfo.volumeType)) {
+        const root = volumeInfo.displayRoot;
+        localRootDirs.push(...this.getRoots_(root));
+      }
+    }
+    return localRootDirs;
+  }
+
+  /**
    * @param {number} modifiedTimestamp
    * @param {chrome.fileManagerPrivate.FileCategory} category
    * @param {number} maxResults
@@ -370,28 +408,18 @@ export class SearchV2ContentScanner extends ContentScanner {
       timestamp: modifiedTimestamp,
       category: category,
     };
-    const rootSearch = this.isSearchingRoot_();
-    const promises = [this.makeLocalSearchPromise_(
-        /** @type {!chrome.fileManagerPrivate.SearchMetadataParams} */ ({
-          ...baseParams,
-          rootDir: rootSearch ? this.entry_.filesystem.root : this.entry_,
-        }))];
-    // Linux files is positioned under My files, looking like one of its
-    // directories. Thus if the user searches from the My Files root
-    // or everywhere, include Linux search.
-    if (rootSearch || this.isMyFilesRoot_()) {
-      const crostini = this.volumeManager_.getCurrentProfileVolumeInfo(
-          VolumeManagerCommon.VolumeType.CROSTINI);
-      if (crostini !== null) {
-        promises.push(this.makeLocalSearchPromise_(
+    let searchDirList = [];
+    if (this.isSearchingRoot_()) {
+      searchDirList = this.getLocalRootList_();
+    } else {
+      searchDirList = this.getRoots_(this.entry_);
+    }
+    return searchDirList.map(
+        searchDir => this.makeLocalSearchPromise_(
             /** @type {!chrome.fileManagerPrivate.SearchMetadataParams} */ ({
               ...baseParams,
-              rootDir: crostini.displayRoot,
+              rootDir: searchDir,
             })));
-      }
-    }
-
-    return promises;
   }
 
   /**
