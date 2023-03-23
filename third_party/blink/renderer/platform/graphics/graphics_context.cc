@@ -53,7 +53,6 @@
 #include "third_party/skia/include/core/SkRefCnt.h"
 #include "third_party/skia/include/pathops/SkPathOps.h"
 #include "third_party/skia/include/utils/SkNullCanvas.h"
-#include "ui/base/ui_base_features.h"
 #include "ui/gfx/geometry/point_conversions.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/rect_conversions.h"
@@ -219,7 +218,7 @@ unsigned GraphicsContext::SaveCount() const {
 #endif
 
 void GraphicsContext::SetInDrawingRecorder(bool val) {
-  // Nested drawing recorers are not allowed.
+  // Nested drawing recorders are not allowed.
   DCHECK(!val || !in_drawing_recorder_);
   in_drawing_recorder_ = val;
 }
