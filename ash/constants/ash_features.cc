@@ -1071,12 +1071,6 @@ BASE_FEATURE(kHandwritingLegacyRecognition,
              "HandwritingLegacyRecognition",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Enables new on-device recognition for legacy handwriting input in all
-// supported languages.
-BASE_FEATURE(kHandwritingLegacyRecognitionAllLang,
-             "HandwritingLegacyRecognitionAllLang",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 // Enables downloading the handwriting libraries via DLC.
 BASE_FEATURE(kHandwritingLibraryDlc,
              "HandwritingLibraryDlc",
@@ -2825,8 +2819,7 @@ bool IsKeyboardBacklightToggleEnabled() {
 }
 
 bool IsLanguagePacksEnabled() {
-  return base::FeatureList::IsEnabled(kHandwritingLegacyRecognition) ||
-         base::FeatureList::IsEnabled(kHandwritingLegacyRecognitionAllLang);
+  return base::FeatureList::IsEnabled(kHandwritingLegacyRecognition);
 }
 
 bool IsLauncherNudgeShortIntervalEnabled() {

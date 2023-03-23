@@ -500,10 +500,6 @@ void ChromeVirtualKeyboardDelegate::OnHasInputDevices(
                           base::FeatureList::IsEnabled(
                               ash::features::kHandwritingLegacyRecognition)));
   features.Append(GenerateFeatureFlag(
-      "handwritinglegacyrecognitionall",
-      base::FeatureList::IsEnabled(
-          ash::features::kHandwritingLegacyRecognitionAllLang)));
-  features.Append(GenerateFeatureFlag(
       "hindiinscriptlayout",
       base::FeatureList::IsEnabled(ash::features::kHindiInscriptLayout)));
   features.Append(GenerateFeatureFlag(
