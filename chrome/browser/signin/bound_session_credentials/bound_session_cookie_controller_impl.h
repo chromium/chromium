@@ -21,20 +21,6 @@ class SigninClient;
 class BoundSessionCookieFetcher;
 class BoundSessionCookieObserver;
 
-// This class is responsible for tracking a single bound session cookie:
-// - It observers cookie changes
-// - Caches cookie expiry date
-// - Initiates a cookie refresh at creation time
-// - Receives requests to refresh cookie [on demand cookie refresh]
-// - Proactively schedule cookie refresh before it expires
-// - To execute a the refresh:
-//      (1) It requests an async signature from the [future] token binding
-//      service.
-//      (2) After receiving the signature, it creates a
-//      'BoundSessionRefreshCookieFetcher' to do the network refresh request.
-// - It is responsible on resuming blocked request for the managed domain on
-// cookie updates, persistent refresh errors or timeout.
-// - Monitors cookie changes and update the renderers
 class BoundSessionCookieControllerImpl : public BoundSessionCookieController {
  public:
   BoundSessionCookieControllerImpl(SigninClient* client,
@@ -43,6 +29,9 @@ class BoundSessionCookieControllerImpl : public BoundSessionCookieController {
                                    Delegate* delegate);
 
   void Initialize() override;
+
+  void OnRequestBlockedOnCookie(
+      base::OnceClosure resume_blocked_request) override;
 
   ~BoundSessionCookieControllerImpl() override;
 
@@ -65,9 +54,10 @@ class BoundSessionCookieControllerImpl : public BoundSessionCookieController {
   std::unique_ptr<BoundSessionRefreshCookieFetcher> CreateRefreshCookieFetcher()
       const;
 
-  void StartRefreshCookieRequest();
+  void MaybeRefreshCookie();
   void SetCookieExpirationTimeAndNotify(base::Time expiration_time);
   void OnCookieRefreshFetched(absl::optional<base::Time> expiration_time);
+  void ResumeBlockedRequests();
 
   void set_refresh_cookie_fetcher_factory_for_testing(
       RefreshCookieFetcherFactoryForTesting
@@ -79,6 +69,8 @@ class BoundSessionCookieControllerImpl : public BoundSessionCookieController {
   const raw_ptr<SigninClient> client_;
   std::unique_ptr<BoundSessionCookieObserver> cookie_observer_;
   std::unique_ptr<BoundSessionRefreshCookieFetcher> refresh_cookie_fetcher_;
+  std::vector<base::OnceClosure> resume_blocked_requests_;
+
   RefreshCookieFetcherFactoryForTesting
       refresh_cookie_fetcher_factory_for_testing_;
 };

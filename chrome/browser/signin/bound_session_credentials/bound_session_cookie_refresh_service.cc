@@ -182,6 +182,18 @@ bool BoundSessionCookieRefreshService::IsBoundSession() const {
   return bound_session_tracker_->is_bound_session();
 }
 
+void BoundSessionCookieRefreshService::OnRequestBlockedOnCookie(
+    base::OnceClosure resume_blocked_request) {
+  if (!IsBoundSession()) {
+    // Session has been terminated.
+    std::move(resume_blocked_request).Run();
+    return;
+  }
+  DCHECK(cookie_controller_);
+  cookie_controller_->OnRequestBlockedOnCookie(
+      std::move(resume_blocked_request));
+}
+
 void BoundSessionCookieRefreshService::OnCookieExpirationDateChanged() {
   UpdateAllRenderers();
 }

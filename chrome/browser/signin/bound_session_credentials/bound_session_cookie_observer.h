@@ -31,8 +31,7 @@ class BoundSessionCookieObserver : public network::mojom::CookieChangeListener {
   ~BoundSessionCookieObserver() override;
 
  private:
-  FRIEND_TEST_ALL_PREFIXES(BoundSessionCookieControllerImplTest,
-                           CookieObserver);
+  friend class BoundSessionCookieControllerImplTest;
 
   void AddCookieChangeListener();
   void OnCookieChangeListenerConnectionError();

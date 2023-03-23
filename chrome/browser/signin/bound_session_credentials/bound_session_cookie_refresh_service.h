@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_SIGNIN_BOUND_SESSION_CREDENTIALS_BOUND_SESSION_COOKIE_REFRESH_SERVICE_H_
 
 #include <memory>
+#include "base/functional/callback_forward.h"
 #include "chrome/browser/signin/bound_session_credentials/bound_session_cookie_controller.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
@@ -42,6 +43,13 @@ class BoundSessionCookieRefreshService
 
   // Returns true if session is bound.
   bool IsBoundSession() const;
+
+  // Called when a network request requires a fresh SIDTS cookie. This function
+  // is intended to be called by network requests throttlers.
+  // The callback will be called once the cookie is fresh or the session is
+  // terminated. Note: The callback might be called synchronously if the
+  // previous conditions apply.
+  void OnRequestBlockedOnCookie(base::OnceClosure resume_blocked_request);
 
  private:
   class BoundSessionStateTracker;
