@@ -233,8 +233,40 @@ void AddSpacerWithSize(views::View& view,
                         /*use_min_size=*/true);
 }
 
-// TODO(crbug.com/1417187): Add ASCII art to explain the reason for the
-// arithmetic below.
+// Returns the padding for a content cell.
+//
+// For content cells that make up the entire Autofill popup row (i.e. there is
+// no control element), the following reasoning applies:
+// * If `kAutofillShowAutocompleteDeleteButton` is on, then there is padding
+//   with distance `DISTANCE_CONTENT_LIST_VERTICAL_SINGLE` between the edge of
+//   the Autofill popup row and the start of the content cell.
+// * In addition, there is also padding inside the content cell. Together, these
+//   two paddings need to add up to `PopupBaseView::GetHorizontalMargin`, since
+//   to ensure that the content inside the content cell is aligned with the
+//   popup bubble's arrow.
+// * Similarly, the right padding of the content cell needs to be adjusted.
+//
+//           / \
+//          /   \
+//         /     \
+//        / arrow \
+// ┌─────/         \────────────────────────┐
+// │  ┌──────────────────────────────────┐  │
+// │  │  ┌─────────┐ ┌────────────────┐  │  │
+// ├──┼──┤         │ │                │  │  │
+// ├──┤▲ │  Icon   │ │ Text labels    │  │  │
+// │▲ │| │         │ │                │  │  │
+// ││ ││ └─────────┘ └────────────────┘  │  │
+// ││ └┼─────────────────────────────────┘  │
+// └┼──┼────────────────────────────────────┘
+//  │  │
+//  │  PopupBaseView::GetHorizontalMargin()
+//  │
+//  DISTANCE_CONTENT_LIST_VERTICAL_SINGLE
+//
+// If the popup row has a control element, then the adjustment does not need
+// to be made for the right padding, since the right side of the content cell
+// borders another cell and not the right padding area of the popup row.
 gfx::Insets GetMarginsForContentCell(bool has_control_element) {
   int left_margin = PopupBaseView::GetHorizontalMargin();
   int right_margin = left_margin;
