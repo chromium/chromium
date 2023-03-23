@@ -51,7 +51,10 @@
 #include "third_party/blink/renderer/core/html/html_body_element.h"
 #include "third_party/blink/renderer/core/html/html_html_element.h"
 #include "third_party/blink/renderer/core/html/html_progress_element.h"
+#include "third_party/blink/renderer/core/layout/layout_block.h"
+#include "third_party/blink/renderer/core/layout/layout_box.h"
 #include "third_party/blink/renderer/core/layout/layout_theme.h"
+#include "third_party/blink/renderer/core/layout/map_coordinates_flags.h"
 #include "third_party/blink/renderer/core/layout/ng/custom/layout_worklet.h"
 #include "third_party/blink/renderer/core/layout/text_autosizer.h"
 #include "third_party/blink/renderer/core/paint/compositing/compositing_reason_finder.h"
@@ -87,6 +90,7 @@
 #include "third_party/blink/renderer/platform/wtf/text/case_map.h"
 #include "third_party/blink/renderer/platform/wtf/text/math_transform.h"
 #include "ui/base/ui_base_features.h"
+#include "ui/gfx/geometry/point_f.h"
 
 namespace blink {
 
@@ -1423,16 +1427,53 @@ bool ComputedStyle::HasFilters() const {
   return FilterInternal().Get() && !FilterInternal()->operations_.IsEmpty();
 }
 
-PointAndTangent ComputedStyle::CalculatePointAndTangentOnRay() const {
-  PointAndTangent path_position;
-  float float_distance = FloatValueForLength(OffsetDistance(), 0);
-  // Use ClampTo() to convert infinite values to min/max finite ones.
-  path_position.tangent_in_degrees =
-      ClampTo<float, float>(To<StyleRay>(*OffsetPath()).Angle() - 90);
-  float tangent_in_radians = Deg2rad(path_position.tangent_in_degrees);
-  path_position.point.set_x(float_distance * cos(tangent_in_radians));
-  path_position.point.set_y(float_distance * sin(tangent_in_radians));
-  return path_position;
+namespace {
+
+gfx::SizeF GetReferenceBoxSize(const LayoutBox* box,
+                               const gfx::RectF& bounding_box) {
+  if (box) {
+    if (const LayoutBlock* containing_block = box->ContainingBlock()) {
+      // TODO(sakhapov): return based on <coord-box>.
+      return gfx::SizeF(containing_block->BorderBoxRect().Size());
+    }
+  }
+  return bounding_box.size();
+}
+
+gfx::PointF GetOffsetFromContainingBlock(const LayoutBox* box) {
+  if (box) {
+    if (const LayoutBlock* containing_block = box->ContainingBlock()) {
+      gfx::PointF offset = box->LocalToAncestorPoint(
+          gfx::PointF(), containing_block, kIgnoreTransforms);
+      return offset;
+    }
+  }
+  return {0, 0};
+}
+
+// https://drafts.fxtf.org/motion/#offset-position-property
+gfx::PointF GetStartingPointOfThePath(const LayoutBox* box,
+                                      const LengthPoint& offset_position,
+                                      const gfx::SizeF& reference_box_size) {
+  if (offset_position.X().IsAuto()) {
+    return GetOffsetFromContainingBlock(box);
+  }
+  return PointForLengthPoint(offset_position, reference_box_size);
+}
+
+}  // namespace
+
+PointAndTangent ComputedStyle::CalculatePointAndTangentOnRay(
+    const LayoutBox* box,
+    const gfx::RectF& bounding_box) const {
+  const auto& ray = To<StyleRay>(*OffsetPath());
+  const gfx::SizeF reference_box_size = GetReferenceBoxSize(box, bounding_box);
+  const gfx::PointF starting_point =
+      GetStartingPointOfThePath(box, OffsetPosition(), reference_box_size);
+  const float ray_length =
+      ray.CalculateRayPathLength(starting_point, reference_box_size);
+  float path_length = FloatValueForLength(OffsetDistance(), ray_length);
+  return ray.PointAndNormalAtLength(path_length);
 }
 
 PointAndTangent ComputedStyle::CalculatePointAndTangentOnPath() const {
@@ -1491,7 +1532,7 @@ void ComputedStyle::ApplyMotionPathTransform(float origin_x,
       path_position = CalculatePointAndTangentOnPath();
       break;
     case BasicShape::kStyleRayType:
-      path_position = CalculatePointAndTangentOnRay();
+      path_position = CalculatePointAndTangentOnRay(box, bounding_box);
       break;
     default:
       NOTREACHED();

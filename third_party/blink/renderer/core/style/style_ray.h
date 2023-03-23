@@ -8,7 +8,13 @@
 #include "third_party/blink/renderer/core/style/basic_shapes.h"
 #include "third_party/blink/renderer/platform/wtf/casting.h"
 
+namespace gfx {
+class PointF;
+}
+
 namespace blink {
+
+struct PointAndTangent;
 
 class StyleRay : public BasicShape {
  public:
@@ -23,7 +29,11 @@ class StyleRay : public BasicShape {
   static scoped_refptr<StyleRay> Create(float angle, RaySize, bool contain);
   ~StyleRay() override = default;
 
-  float Angle() const { return angle_; }
+  float CalculateRayPathLength(const gfx::PointF& starting_point,
+                               const gfx::SizeF& reference_box_size) const;
+  PointAndTangent PointAndNormalAtLength(float length) const;
+
+  float Angle() const { return ClampTo<float, float>(angle_); }
   RaySize Size() const { return size_; }
   bool Contain() const { return contain_; }
 

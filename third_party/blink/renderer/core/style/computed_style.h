@@ -2561,7 +2561,9 @@ class ComputedStyle : public ComputedStyleBase,
                                 const LayoutBox* box,
                                 const gfx::RectF& bounding_box,
                                 gfx::Transform&) const;
-  PointAndTangent CalculatePointAndTangentOnRay() const;
+  PointAndTangent CalculatePointAndTangentOnRay(
+      const LayoutBox* box,
+      const gfx::RectF& bounding_box) const;
   PointAndTangent CalculatePointAndTangentOnPath() const;
 
   bool ScrollAnchorDisablingPropertyChanged(const ComputedStyle& other,
