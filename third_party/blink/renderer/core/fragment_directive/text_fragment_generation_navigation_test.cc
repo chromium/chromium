@@ -212,16 +212,8 @@ TextFragmentGenerationNavigationTest::GenerateAndNavigate(
           expected_highlighted_text == actual_highlighted_text};
 }
 
-#if BUILDFLAG(IS_IOS)
-// TODO(crbug.com/1141478)
-#define MAYBE_DataDrivenGenerationAndNavigation \
-  DISABLED_DataDrivenGenerationAndNavigation
-#else
-#define MAYBE_DataDrivenGenerationAndNavigation \
-  DataDrivenGenerationAndNavigation
-#endif  // BUILDFLAG(IS_IOS)
 TEST_P(TextFragmentGenerationNavigationTest,
-       MAYBE_DataDrivenGenerationAndNavigation) {
+       DataDrivenGenerationAndNavigation) {
   RunOneDataDrivenTest(GetParam(), GetOutputDirectory(),
                        /* kIsExpectedToPass */ true);
 }

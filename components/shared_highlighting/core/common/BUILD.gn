@@ -68,6 +68,16 @@ source_set("data_driven_testing") {
   ]
 }
 
+if (is_ios) {
+  bundle_data("data_driven_testing_data") {
+    testonly = true
+    sources = [ "//components/test/data/shared_highlighting/generate_navigate/output/basic_test.out" ]
+
+    outputs = [ "{{bundle_resources_dir}}/" +
+                "{{source_root_relative_dir}}/{{source_file_part}}" ]
+  }
+}
+
 if (is_android) {
   java_cpp_enum("shared_highlighting_android_enums") {
     sources = [ "shared_highlighting_metrics.h" ]

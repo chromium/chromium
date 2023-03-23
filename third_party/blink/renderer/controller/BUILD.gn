@@ -152,11 +152,13 @@ test("blink_unittests") {
     bundle_deps = [
       ":blink_unittests_bundle_data",
       ":blink_unittests_pak_bundle_data",
+      "//components/shared_highlighting/core/common:data_driven_testing_data",
       "//media/test:media_bundle_data",
       "//third_party/blink/renderer/core:animation_test_bundle_data",
       "//third_party/blink/renderer/core:core_test_bundle_data",
       "//third_party/blink/renderer/core:paint_test_bundle_data",
       "//third_party/blink/renderer/modules:accessibility_selection_test_bundle_data",
+      "//third_party/text-fragments-polyfill:test_bundle_data",
     ]
   } else {
     data_deps = [
