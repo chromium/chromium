@@ -28,7 +28,7 @@ bool CounterRulesEqual(const CounterDirectiveMap* a_map,
     return false;
   }
 
-  base::ranges::equal(*a_map, *b_map, [](const auto& a, const auto& b) {
+  return base::ranges::equal(*a_map, *b_map, [](const auto& a, const auto& b) {
     switch (property) {
       case CSSPropertyID::kCounterIncrement:
         if (a.value.IncrementValue() != b.value.IncrementValue()) {
@@ -53,7 +53,6 @@ bool CounterRulesEqual(const CounterDirectiveMap* a_map,
     }
     return true;
   });
-  return true;
 }
 
 template <CSSPropertyID property>
