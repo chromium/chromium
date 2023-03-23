@@ -165,8 +165,12 @@ NSString* GetActiveTabId(WebStateList* web_state_list) {
 
 - (void)faviconForIdentifier:(NSString*)identifier
                   completion:(void (^)(UIImage*))completion {
-  web::WebState* webState =
-      GetWebState(_webStateList, identifier, /*pinned=*/NO);
+  web::WebState* webState = GetWebState(
+      _webStateList,
+      WebStateSearchCriteria{
+          .identifier = identifier,
+          .pinned_state = WebStateSearchCriteria::PinnedState::kNonPinned,
+      });
   if (!webState) {
     return;
   }
@@ -219,7 +223,12 @@ NSString* GetActiveTabId(WebStateList* web_state_list) {
 }
 
 - (void)closeItemWithID:(NSString*)itemID {
-  int index = GetTabIndex(self.webStateList, itemID, /*pinned=*/NO);
+  int index = GetTabIndex(
+      self.webStateList,
+      WebStateSearchCriteria{
+          .identifier = itemID,
+          .pinned_state = WebStateSearchCriteria::PinnedState::kNonPinned,
+      });
   if (index >= 0)
     self.webStateList->CloseWebStateAt(index, WebStateList::CLOSE_USER_ACTION);
 }

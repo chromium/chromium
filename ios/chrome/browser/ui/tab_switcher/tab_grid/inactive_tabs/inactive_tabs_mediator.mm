@@ -126,7 +126,9 @@ NSArray* CreateItemsOrderedByRecency(WebStateList* web_state_list) {
 
 - (void)closeItemWithID:(NSString*)itemID {
   // TODO(crbug.com/1418021): Add metrics when the user closes an inactive tab.
-  int index = GetTabIndex(_webStateList, itemID, /*pinned=*/NO);
+  int index = GetTabIndex(_webStateList, WebStateSearchCriteria{
+                                             .identifier = itemID,
+                                         });
   if (index != WebStateList::kInvalidIndex) {
     _webStateList->CloseWebStateAt(index, WebStateList::CLOSE_USER_ACTION);
   }
@@ -160,7 +162,9 @@ NSArray* CreateItemsOrderedByRecency(WebStateList* web_state_list) {
     return;
   }
   web::WebState* webState =
-      GetWebState(_webStateList, identifier, /*pinned=*/NO);
+      GetWebState(_webStateList, WebStateSearchCriteria{
+                                     .identifier = identifier,
+                                 });
   if (webState) {
     SnapshotTabHelper::FromWebState(webState)->RetrieveColorSnapshot(
         ^(UIImage* image) {
@@ -172,7 +176,9 @@ NSArray* CreateItemsOrderedByRecency(WebStateList* web_state_list) {
 - (void)faviconForIdentifier:(NSString*)identifier
                   completion:(void (^)(UIImage*))completion {
   web::WebState* webState =
-      GetWebState(_webStateList, identifier, /*pinned=*/NO);
+      GetWebState(_webStateList, WebStateSearchCriteria{
+                                     .identifier = identifier,
+                                 });
   if (!webState) {
     return;
   }
@@ -222,7 +228,9 @@ NSArray* CreateItemsOrderedByRecency(WebStateList* web_state_list) {
     didUpdateSnapshotForIdentifier:(NSString*)identifier {
   [_appearanceCache removeObjectForKey:identifier];
   web::WebState* webState =
-      GetWebState(_webStateList, identifier, /*pinned=*/NO);
+      GetWebState(_webStateList, WebStateSearchCriteria{
+                                     .identifier = identifier,
+                                 });
   if (webState) {
     // It is possible to observe an updated snapshot for a WebState before
     // observing that the WebState has been added to the WebStateList. It is the

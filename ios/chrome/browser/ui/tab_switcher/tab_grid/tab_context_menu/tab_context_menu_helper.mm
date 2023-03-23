@@ -82,11 +82,10 @@
 
   ActionFactory* actionFactory =
       [[ActionFactory alloc] initWithScenario:scenario];
-
   const BOOL pinned = scenario == MenuScenarioHistogram::kPinnedTabsEntry;
   const BOOL inactive = scenario == MenuScenarioHistogram::kInactiveTabsEntry;
 
-  TabItem* item = [self tabItemForIdentifier:cell.itemIdentifier pinned:pinned];
+  TabItem* item = [self tabItemForIdentifier:cell.itemIdentifier];
 
   if (!item) {
     return @[];
@@ -184,16 +183,15 @@
 }
 
 // Returns the TabItem object representing the tab with `identifier.
-// `pinned` tracks the pinned state of
-// the tab we are looking for.
-- (TabItem*)tabItemForIdentifier:(NSString*)identifier pinned:(BOOL)pinned {
+- (TabItem*)tabItemForIdentifier:(NSString*)identifier {
   BrowserList* browserList =
       BrowserListFactory::GetForBrowserState(_browserState);
   std::set<Browser*> browsers = _incognito ? browserList->AllIncognitoBrowsers()
                                            : browserList->AllRegularBrowsers();
   for (Browser* browser : browsers) {
     WebStateList* webStateList = browser->GetWebStateList();
-    TabItem* item = GetTabItem(webStateList, identifier, /*pinned=*/pinned);
+    TabItem* item = GetTabItem(
+        webStateList, WebStateSearchCriteria{.identifier = identifier});
     if (item != nil) {
       return item;
     }

@@ -979,11 +979,11 @@ const CGFloat kSymbolSize = 18;
 }
 
 - (void)pinTabWithIdentifier:(NSString*)identifier {
-  SetWebStatePinnedState(_webStateList, identifier, YES);
+  SetWebStatePinnedState(_webStateList, identifier, /*pin_state=*/YES);
 }
 
 - (void)unpinTabWithIdentifier:(NSString*)identifier {
-  SetWebStatePinnedState(_webStateList, identifier, NO);
+  SetWebStatePinnedState(_webStateList, identifier, /*pin_state=*/NO);
 }
 
 - (void)closeTabWithIdentifier:(NSString*)identifier {

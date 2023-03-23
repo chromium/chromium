@@ -39,6 +39,8 @@
 #error "This file requires ARC support."
 #endif
 
+using PinnedState = WebStateSearchCriteria::PinnedState;
+
 namespace {
 
 // Constructs an array of TabSwitcherItems from a `web_state_list`.
@@ -136,15 +138,22 @@ NSArray* CreatePinnedTabConsumerItems(WebStateList* web_state_list) {
   }
 
   if (!webStateList->IsWebStatePinnedAt(index)) {
-    [self.consumer selectItemWithID:GetActiveWebStateIdentifier(
-                                        webStateList, /*pinned=*/YES)];
+    [self.consumer
+        selectItemWithID:GetActiveWebStateIdentifier(
+                             webStateList,
+                             WebStateSearchCriteria{
+                                 .pinned_state = PinnedState::kPinned,
+                             })];
     return;
   }
 
   [self.consumer
           insertItem:GetTabSwitcherItem(webState)
              atIndex:index
-      selectedItemID:GetActiveWebStateIdentifier(webStateList, /*pinned=*/YES)];
+      selectedItemID:GetActiveWebStateIdentifier(
+                         webStateList, WebStateSearchCriteria{
+                                           .pinned_state = PinnedState::kPinned,
+                                       })];
 
   _scopedWebStateObservation->AddObservation(webState);
 }
@@ -202,14 +211,21 @@ NSArray* CreatePinnedTabConsumerItems(WebStateList* web_state_list) {
   }
 
   if (!webStateList->IsWebStatePinnedAt(index)) {
-    [self.consumer selectItemWithID:GetActiveWebStateIdentifier(
-                                        webStateList, /*pinned=*/YES)];
+    [self.consumer
+        selectItemWithID:GetActiveWebStateIdentifier(
+                             webStateList,
+                             WebStateSearchCriteria{
+                                 .pinned_state = PinnedState::kPinned,
+                             })];
     return;
   }
 
   [self.consumer removeItemWithID:webState->GetStableIdentifier()
-                   selectedItemID:GetActiveWebStateIdentifier(webStateList,
-                                                              /*pinned=*/YES)];
+                   selectedItemID:GetActiveWebStateIdentifier(
+                                      webStateList,
+                                      WebStateSearchCriteria{
+                                          .pinned_state = PinnedState::kPinned,
+                                      })];
 
   _scopedWebStateObservation->RemoveObservation(webState);
 }
@@ -252,14 +268,21 @@ NSArray* CreatePinnedTabConsumerItems(WebStateList* web_state_list) {
   if (webStateList->IsWebStatePinnedAt(index)) {
     [self.consumer insertItem:GetTabSwitcherItem(webState)
                       atIndex:index
-               selectedItemID:GetActiveWebStateIdentifier(webStateList,
-                                                          /*pinned=*/YES)];
+               selectedItemID:GetActiveWebStateIdentifier(
+                                  webStateList,
+                                  WebStateSearchCriteria{
+                                      .pinned_state = PinnedState::kPinned,
+                                  })];
 
     _scopedWebStateObservation->AddObservation(webState);
   } else {
-    [self.consumer removeItemWithID:webState->GetStableIdentifier()
-                     selectedItemID:GetActiveWebStateIdentifier(
-                                        webStateList, /*pinned=*/YES)];
+    [self.consumer
+        removeItemWithID:webState->GetStableIdentifier()
+          selectedItemID:GetActiveWebStateIdentifier(
+                             webStateList,
+                             WebStateSearchCriteria{
+                                 .pinned_state = PinnedState::kPinned,
+                             })];
 
     _scopedWebStateObservation->RemoveObservation(webState);
   }
@@ -302,7 +325,10 @@ NSArray* CreatePinnedTabConsumerItems(WebStateList* web_state_list) {
 - (void)snapshotForIdentifier:(NSString*)identifier
                    completion:(void (^)(UIImage*))completion {
   web::WebState* webState =
-      GetWebState(self.webStateList, identifier, /*pinned=*/YES);
+      GetWebState(self.webStateList, WebStateSearchCriteria{
+                                         .identifier = identifier,
+                                         .pinned_state = PinnedState::kPinned,
+                                     });
   if (webState) {
     SnapshotTabHelper::FromWebState(webState)->RetrieveColorSnapshot(
         ^(UIImage* image) {
@@ -314,7 +340,10 @@ NSArray* CreatePinnedTabConsumerItems(WebStateList* web_state_list) {
 - (void)faviconForIdentifier:(NSString*)identifier
                   completion:(void (^)(UIImage*))completion {
   web::WebState* webState =
-      GetWebState(self.webStateList, identifier, /*pinned=*/YES);
+      GetWebState(self.webStateList, WebStateSearchCriteria{
+                                         .identifier = identifier,
+                                         .pinned_state = PinnedState::kPinned,
+                                     });
 
   if (!webState) {
     return;
@@ -353,7 +382,11 @@ NSArray* CreatePinnedTabConsumerItems(WebStateList* web_state_list) {
 - (void)selectItemWithID:(NSString*)itemID {
   base::RecordAction(base::UserMetricsAction("MobileTabGridPinnedTabSelected"));
 
-  int index = GetTabIndex(self.webStateList, itemID, /*pinned=*/YES);
+  int index =
+      GetTabIndex(self.webStateList, WebStateSearchCriteria{
+                                         .identifier = itemID,
+                                         .pinned_state = PinnedState::kPinned,
+                                     });
   WebStateList* itemWebStateList = self.webStateList;
 
   if (index == WebStateList::kInvalidIndex) {
@@ -377,7 +410,11 @@ NSArray* CreatePinnedTabConsumerItems(WebStateList* web_state_list) {
 }
 
 - (void)closeItemWithID:(NSString*)itemID {
-  int index = GetTabIndex(self.webStateList, itemID, /*pinned=*/YES);
+  int index =
+      GetTabIndex(self.webStateList, WebStateSearchCriteria{
+                                         .identifier = itemID,
+                                         .pinned_state = PinnedState::kPinned,
+                                     });
   if (index == WebStateList::kInvalidIndex) {
     return;
   }
@@ -386,11 +423,15 @@ NSArray* CreatePinnedTabConsumerItems(WebStateList* web_state_list) {
 }
 
 - (void)setPinState:(BOOL)pinState forItemWithIdentifier:(NSString*)identifier {
-  SetWebStatePinnedState(self.webStateList, identifier, /*pin_state=*/pinState);
+  SetWebStatePinnedState(self.webStateList, identifier, pinState);
 }
 
 - (void)moveItemWithID:(NSString*)itemID toIndex:(NSUInteger)destinationIndex {
-  int sourceIndex = GetTabIndex(self.webStateList, itemID, /*pinned=*/YES);
+  int sourceIndex =
+      GetTabIndex(self.webStateList, WebStateSearchCriteria{
+                                         .identifier = itemID,
+                                         .pinned_state = PinnedState::kPinned,
+                                     });
   if (sourceIndex != WebStateList::kInvalidIndex) {
     int destinationWebStateListIndex =
         [self webStateListIndexFromItemIndex:destinationIndex];
@@ -404,7 +445,10 @@ NSArray* CreatePinnedTabConsumerItems(WebStateList* web_state_list) {
 - (UIDragItem*)dragItemForItemWithID:(NSString*)itemID {
   _dragItemID = [itemID copy];
   web::WebState* webState =
-      GetWebState(self.webStateList, itemID, /*pinned=*/YES);
+      GetWebState(self.webStateList, WebStateSearchCriteria{
+                                         .identifier = itemID,
+                                         .pinned_state = PinnedState::kPinned,
+                                     });
 
   return CreateTabDragItem(webState);
 }
@@ -519,9 +563,12 @@ NSArray* CreatePinnedTabConsumerItems(WebStateList* web_state_list) {
 }
 
 - (void)populateConsumerItems {
-  [self.consumer
-       populateItems:CreatePinnedTabConsumerItems(self.webStateList)
-      selectedItemID:GetActiveWebStateIdentifier(self.webStateList, YES)];
+  [self.consumer populateItems:CreatePinnedTabConsumerItems(self.webStateList)
+                selectedItemID:GetActiveWebStateIdentifier(
+                                   self.webStateList,
+                                   WebStateSearchCriteria{
+                                       .pinned_state = PinnedState::kPinned,
+                                   })];
 }
 
 // Returns the `UIDropOperation` corresponding to the given `tabInfo`.
@@ -530,8 +577,10 @@ NSArray* CreatePinnedTabConsumerItems(WebStateList* web_state_list) {
   // cancel the drop operation.
   if (_dragItemID == tabInfo.tabID) {
     const BOOL tabExists =
-        GetTabIndex(self.webStateList, tabInfo.tabID,
-                    /*pinned=*/YES) != WebStateList::kInvalidIndex;
+        GetTabIndex(self.webStateList, WebStateSearchCriteria{
+                                           .identifier = tabInfo.tabID,
+                                           .pinned_state = PinnedState::kPinned,
+                                       }) != WebStateList::kInvalidIndex;
     if (!tabExists) {
       return UIDropOperationCancel;
     }
