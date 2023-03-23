@@ -41,11 +41,6 @@ void AuthFactorConfig::NotifyFactorObservers(mojom::AuthFactor changed_factor) {
 void AuthFactorConfig::IsSupported(const std::string& auth_token,
                                    mojom::AuthFactor factor,
                                    base::OnceCallback<void(bool)> callback) {
-  if (!features::IsCryptohomeRecoveryEnabled()) {
-    std::move(callback).Run(false);
-    return;
-  }
-
   const auto* user = ::user_manager::UserManager::Get()->GetPrimaryUser();
   auto* user_context = quick_unlock_storage_->GetUserContext(user, auth_token);
   if (!user_context) {
@@ -53,25 +48,33 @@ void AuthFactorConfig::IsSupported(const std::string& auth_token,
     std::move(callback).Run(false);
     return;
   }
+  const cryptohome::AuthFactorsSet cryptohome_supported_factors =
+      user_context->GetAuthFactorsConfiguration().get_supported_factors();
 
-  const bool is_supported_by_cryptohome =
-      user_context->GetAuthFactorsConfiguration().get_supported_factors().Has(
-          cryptohome::AuthFactorType::kRecovery);
-  std::move(callback).Run(is_supported_by_cryptohome);
+  switch (factor) {
+    case mojom::AuthFactor::kRecovery: {
+      if (!features::IsCryptohomeRecoveryEnabled()) {
+        std::move(callback).Run(false);
+        return;
+      }
+
+      std::move(callback).Run(cryptohome_supported_factors.Has(
+          cryptohome::AuthFactorType::kRecovery));
+      return;
+    }
+    case mojom::AuthFactor::kPin: {
+      std::move(callback).Run(
+          cryptohome_supported_factors.Has(cryptohome::AuthFactorType::kPin));
+      return;
+    }
+  }
+
+  NOTREACHED();
 }
 
 void AuthFactorConfig::IsConfigured(const std::string& auth_token,
                                     mojom::AuthFactor factor,
                                     base::OnceCallback<void(bool)> callback) {
-  DCHECK(features::IsCryptohomeRecoveryEnabled());
-
-  if (factor != mojom::AuthFactor::kRecovery) {
-    LOG(ERROR) << "AuthFactorConfig::IsConfigured supports recovery only";
-    NOTIMPLEMENTED();
-    std::move(callback).Run(false);
-    return;
-  }
-
   const auto* user = ::user_manager::UserManager::Get()->GetPrimaryUser();
   auto* user_context = quick_unlock_storage_->GetUserContext(user, auth_token);
   if (!user_context) {
@@ -79,11 +82,23 @@ void AuthFactorConfig::IsConfigured(const std::string& auth_token,
     std::move(callback).Run(false);
     return;
   }
-
   const auto& config = user_context->GetAuthFactorsConfiguration();
-  const bool is_configured =
-      config.HasConfiguredFactor(cryptohome::AuthFactorType::kRecovery);
-  std::move(callback).Run(is_configured);
+
+  switch (factor) {
+    case mojom::AuthFactor::kRecovery: {
+      DCHECK(features::IsCryptohomeRecoveryEnabled());
+      std::move(callback).Run(
+          config.HasConfiguredFactor(cryptohome::AuthFactorType::kRecovery));
+      return;
+    }
+    case mojom::AuthFactor::kPin: {
+      std::move(callback).Run(
+          config.HasConfiguredFactor(cryptohome::AuthFactorType::kPin));
+      return;
+    }
+  }
+
+  NOTREACHED();
 }
 
 void AuthFactorConfig::GetManagementType(
@@ -125,6 +140,8 @@ void AuthFactorConfig::GetManagementType(
       return;
     }
   }
+
+  NOTREACHED();
 }
 
 void AuthFactorConfig::IsEditable(const std::string& auth_token,
@@ -176,6 +193,8 @@ void AuthFactorConfig::IsEditable(const std::string& auth_token,
       return;
     }
   }
+
+  NOTREACHED();
 }
 
 }  // namespace ash::auth
