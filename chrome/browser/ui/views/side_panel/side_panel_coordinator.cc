@@ -25,6 +25,7 @@
 #include "chrome/browser/ui/views/side_panel/side_panel_toolbar_container.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_web_ui_view.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_view.h"
+#include "chrome/common/pref_names.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/feature_engagement/public/feature_constants.h"
@@ -279,13 +280,26 @@ void SidePanelCoordinator::Close() {
 }
 
 void SidePanelCoordinator::Toggle() {
-  if (IsSidePanelShowing()) {
+  auto* side_panel_container = browser_view_->toolbar()->side_panel_container();
+  if (IsSidePanelShowing() &&
+      (!side_panel_container ||
+       !side_panel_container->IsActiveEntryPinnedAndVisible())) {
     Close();
   } else {
     absl::optional<SidePanelEntry::Id> entry_id = absl::nullopt;
     if (browser_view_->browser()->window()->IsFeaturePromoActive(
             feature_engagement::kIPHPowerBookmarksSidePanelFeature)) {
       entry_id = absl::make_optional(SidePanelEntry::Id::kBookmarks);
+    } else if (side_panel_container &&
+               side_panel_container->IsActiveEntryPinnedAndVisible()) {
+      // Update entry_id here since otherwise the entry triggered in 'Show' will
+      // be the CSC entry when instead this should toggle away from the CSC
+      // entry and show the last active global entry or the default entry if
+      // there is no last active global entry.
+      entry_id = absl::make_optional(
+          GetLastActiveGlobalEntryKey()
+              .value_or(SidePanelEntry::Key(GetDefaultEntry()))
+              .id());
     }
     Show(entry_id, SidePanelUtil::SidePanelOpenTrigger::kToolbarButton);
   }
@@ -306,6 +320,16 @@ void SidePanelCoordinator::OpenInNewTab() {
                                 /*is_renderer_initiated=*/false);
   browser_view_->browser()->OpenURL(params);
   Close();
+}
+
+void SidePanelCoordinator::UpdatePinState() {
+  PrefService* pref_service = browser_view_->GetProfile()->GetPrefs();
+  if (pref_service) {
+    bool current_state = pref_service->GetBoolean(
+        prefs::kSidePanelCompanionEntryPinnedToToolbar);
+    pref_service->SetBoolean(prefs::kSidePanelCompanionEntryPinnedToToolbar,
+                             !current_state);
+  }
 }
 
 absl::optional<SidePanelEntry::Id> SidePanelCoordinator::GetCurrentEntryId()
@@ -492,6 +516,12 @@ void SidePanelCoordinator::PopulateSidePanel(
   header_open_in_new_tab_button_->SetVisible(
       current_entry_->SupportsNewTabButton());
   UpdateNewTabButtonState();
+  header_pin_button_->SetVisible(current_entry_->key().id() ==
+                                 SidePanelEntry::Id::kSearchCompanion);
+  if (auto* side_panel_container =
+          browser_view_->toolbar()->side_panel_container()) {
+    side_panel_container->UpdateSidePanelContainerButtonsState();
+  }
 }
 
 void SidePanelCoordinator::ClearCachedEntryViews() {
@@ -516,6 +546,13 @@ SidePanelCoordinator::GetLastActiveEntryKey() const {
     return GetActiveContextualRegistry()->active_entry().value()->key();
   }
 
+  return GetLastActiveGlobalEntryKey();
+}
+
+absl::optional<SidePanelEntry::Key>
+SidePanelCoordinator::GetLastActiveGlobalEntryKey() const {
+  // Return the last active global entry. If neither exist, fall back to the
+  // default entry.
   if (global_registry_->active_entry().has_value())
     return global_registry_->active_entry().value()->key();
 
@@ -575,6 +612,20 @@ std::unique_ptr<views::View> SidePanelCoordinator::CreateHeader() {
   header_combobox_->SetFocusBehavior(views::View::FocusBehavior::ALWAYS);
   header_combobox_->SetProperty(views::kElementIdentifierKey,
                                 kSidePanelComboboxElementId);
+
+  // TODO(corising): Update icon and tooltip once provided by UX.
+  header_pin_button_ = header->AddChildView(CreateControlButton(
+      header.get(),
+      base::BindRepeating(&SidePanelCoordinator::UpdatePinState,
+                          base::Unretained(this)),
+      views::kPinIcon,
+      l10n_util::GetStringUTF16(IDS_SIDE_PANEL_TOOLBAR_BUTTON_CXMENU_UNPIN),
+      kSidePanelPinButtonElementId,
+      ChromeLayoutProvider::Get()->GetDistanceMetric(
+          ChromeDistanceMetric::DISTANCE_SIDE_PANEL_HEADER_VECTOR_ICON_SIZE)));
+  header_pin_button_->SetFocusBehavior(views::View::FocusBehavior::ALWAYS);
+  // The icon is later set as visible for side panels that support it.
+  header_pin_button_->SetVisible(false);
 
   header_open_in_new_tab_button_ = header->AddChildView(CreateControlButton(
       header.get(),

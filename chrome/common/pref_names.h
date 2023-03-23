@@ -1240,6 +1240,7 @@ extern const char kLastWhatsNewVersion[];
 #if !BUILDFLAG(IS_ANDROID)
 extern const char kLensRegionSearchEnabled[];
 extern const char kSidePanelHorizontalAlignment[];
+extern const char kSidePanelCompanionEntryPinnedToToolbar[];
 extern const char kLensDesktopNTPSearchEnabled[];
 #endif
 

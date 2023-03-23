@@ -8,60 +8,98 @@
 
 #include "base/functional/bind.h"
 #include "chrome/app/vector_icons/vector_icons.h"
+#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/side_panel/search_companion/search_companion_side_panel_coordinator.h"
+#include "chrome/browser/ui/views/side_panel/side_panel.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_coordinator.h"
+#include "chrome/browser/ui/views/side_panel/side_panel_entry.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_util.h"
 #include "chrome/browser/ui/views/toolbar/side_panel_toolbar_button.h"
-#include "chrome/browser/ui/views/toolbar/toolbar_button.h"
+#include "chrome/common/pref_names.h"
+#include "chrome/grit/generated_resources.h"
+#include "components/prefs/pref_service.h"
+#include "ui/base/l10n/l10n_util.h"
+#include "ui/base/models/dialog_model_menu_model_adapter.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/controls/button/button_controller.h"
 #include "ui/views/layout/animating_layout_manager.h"
 #include "ui/views/layout/flex_layout.h"
 #include "ui/views/layout/flex_layout_types.h"
 
-namespace {
+///////////////////////////////////////////////////////////////////////////////
+// SidePanelToolbarContainer::PinnedSidePanelToolbarButton:
+SidePanelToolbarContainer::PinnedSidePanelToolbarButton::
+    PinnedSidePanelToolbarButton(BrowserView* browser_view,
+                                 SidePanelEntry::Id id,
+                                 std::u16string name,
+                                 const gfx::VectorIcon& icon)
+    : ToolbarButton(
+          base::BindRepeating(&PinnedSidePanelToolbarButton::ButtonPressed,
+                              base::Unretained(this)),
+          CreateMenuModel(),
+          nullptr),
+      browser_view_(browser_view),
+      id_(id) {
+  SetTooltipText(name);
+  SetVectorIcon(icon);
 
-class PinnedSidePanelToolbarButton : public ToolbarButton {
- public:
-  PinnedSidePanelToolbarButton(BrowserView* browser_view,
-                               SidePanelEntry::Id id,
-                               std::u16string name,
-                               const gfx::VectorIcon& icon)
-      : ToolbarButton(
-            base::BindRepeating(&PinnedSidePanelToolbarButton::ButtonPressed,
-                                base::Unretained(this))),
-        browser_view_(browser_view),
-        id_(id) {
-    SetTooltipText(name);
-    SetVectorIcon(icon);
+  button_controller()->set_notify_action(
+      views::ButtonController::NotifyAction::kOnPress);
 
-    button_controller()->set_notify_action(
-        views::ButtonController::NotifyAction::kOnPress);
+  // Do not flip the icon for RTL languages.
+  SetFlipCanvasOnPaintForRTLUI(false);
+}
 
-    // Do not flip the icon for RTL languages.
-    SetFlipCanvasOnPaintForRTLUI(false);
-  }
+SidePanelToolbarContainer::PinnedSidePanelToolbarButton::
+    ~PinnedSidePanelToolbarButton() = default;
 
-  ~PinnedSidePanelToolbarButton() override = default;
-
-  void ButtonPressed() {
-    browser_view_->side_panel_coordinator()->Show(
+void SidePanelToolbarContainer::PinnedSidePanelToolbarButton::ButtonPressed() {
+  auto* coordinator = browser_view_->side_panel_coordinator();
+  if (coordinator->GetCurrentEntryId() ==
+      SidePanelEntry::Id::kSearchCompanion) {
+    coordinator->Close();
+  } else {
+    coordinator->Show(
         id_, SidePanelUtil::SidePanelOpenTrigger::kPinnedEntryToolbarButton);
   }
+}
 
- private:
-  BrowserView* browser_view_;
-  SidePanelEntry::Id id_;
-};
+void SidePanelToolbarContainer::PinnedSidePanelToolbarButton::Unpin(
+    int event_flags) {
+  PrefService* pref_service = browser_view_->GetProfile()->GetPrefs();
+  if (pref_service) {
+    pref_service->SetBoolean(prefs::kSidePanelCompanionEntryPinnedToToolbar,
+                             false);
+  }
+}
 
-}  // namespace
+std::unique_ptr<ui::MenuModel>
+SidePanelToolbarContainer::PinnedSidePanelToolbarButton::CreateMenuModel() {
+  ui::DialogModel::Builder dialog_model = ui::DialogModel::Builder();
+  dialog_model.AddMenuItem(
+      ui::ImageModel(),
+      l10n_util::GetStringUTF16(IDS_SIDE_PANEL_TOOLBAR_BUTTON_CXMENU_UNPIN),
+      base::BindRepeating(&PinnedSidePanelToolbarButton::Unpin,
+                          base::Unretained(this)));
+  return std::make_unique<ui::DialogModelMenuModelAdapter>(
+      dialog_model.Build());
+}
+
+///////////////////////////////////////////////////////////////////////////////
+// SidePanelToolbarContainer:
 
 SidePanelToolbarContainer::SidePanelToolbarContainer(BrowserView* browser_view)
     : ToolbarIconContainerView(/*uses_highlight=*/true),
       browser_view_(browser_view),
       side_panel_button_(new SidePanelToolbarButton(browser_view->browser())) {
+  pref_change_registrar_.Init(browser_view->GetProfile()->GetPrefs());
+  pref_change_registrar_.Add(
+      prefs::kSidePanelCompanionEntryPinnedToToolbar,
+      base::BindRepeating(
+          &SidePanelToolbarContainer::UpdatePinnedButtonsVisibility,
+          base::Unretained(this)));
   // So we only get enter/exit messages when the mouse enters/exits the whole
   // container, even if it is entering/exiting a specific toolbar pinned entry
   // button view, too.
@@ -84,6 +122,17 @@ SidePanelToolbarContainer::SidePanelToolbarContainer(BrowserView* browser_view)
 
 SidePanelToolbarContainer::~SidePanelToolbarContainer() {}
 
+bool SidePanelToolbarContainer::IsActiveEntryPinnedAndVisible() {
+  absl::optional<SidePanelEntry::Id> active_id =
+      browser_view_->side_panel_coordinator()->GetCurrentEntryId();
+  for (auto* pinned_button : pinned_entry_buttons_) {
+    if (pinned_button->id() == active_id) {
+      return pinned_button->GetVisible();
+    }
+  }
+  return false;
+}
+
 void SidePanelToolbarContainer::UpdateAllIcons() {
   GetSidePanelButton()->UpdateIcon();
 
@@ -94,6 +143,13 @@ void SidePanelToolbarContainer::UpdateAllIcons() {
 
 SidePanelToolbarButton* SidePanelToolbarContainer::GetSidePanelButton() const {
   return side_panel_button_.get();
+}
+
+void SidePanelToolbarContainer::ObserveSidePanelView(views::View* side_panel) {
+  side_panel_visibility_change_subscription_ =
+      side_panel->AddVisibleChangedCallback(base::BindRepeating(
+          &SidePanelToolbarContainer::UpdateSidePanelContainerButtonsState,
+          base::Unretained(this)));
 }
 
 void SidePanelToolbarContainer::CreatePinnedEntryButtons() {
@@ -116,12 +172,54 @@ void SidePanelToolbarContainer::CreatePinnedEntryButtons() {
       browser_view_, SidePanelEntry::Id::kSearchCompanion,
       search_companion_coordinator->name(),
       search_companion_coordinator->icon());
+  ObserveButton(button.get());
+  pinned_button_visibility_change_subscription_ =
+      button->AddVisibleChangedCallback(base::BindRepeating(
+          &SidePanelToolbarContainer::UpdateSidePanelContainerButtonsState,
+          base::Unretained(this)));
   pinned_entry_buttons_.push_back(AddChildView(std::move(button)));
 
   ReorderViews();
+  UpdatePinnedButtonsVisibility();
+}
+
+void SidePanelToolbarContainer::UpdateSidePanelContainerButtonsState() {
+  bool side_panel_button_highlighted =
+      browser_view_->unified_side_panel()->GetVisible();
+  absl::optional<SidePanelEntry::Id> current_active_id =
+      browser_view_->side_panel_coordinator()->GetCurrentEntryId();
+  for (PinnedSidePanelToolbarButton* pinned_button : pinned_entry_buttons_) {
+    if (browser_view_->unified_side_panel()->GetVisible() &&
+        pinned_button->GetVisible() &&
+        pinned_button->id() == current_active_id) {
+      pinned_button->SetHighlighted(true);
+      side_panel_button_highlighted = false;
+    } else {
+      pinned_button->SetHighlighted(false);
+    }
+  }
+  // TODO(corising): Update tooltip for case when pinned button is highlighted
+  // once provided by UX.
+  GetSidePanelButton()->SetHighlighted(side_panel_button_highlighted);
+  GetSidePanelButton()->SetTooltipText(l10n_util::GetStringUTF16(
+      side_panel_button_highlighted ? IDS_TOOLTIP_SIDE_PANEL_HIDE
+                                    : IDS_TOOLTIP_SIDE_PANEL_SHOW));
 }
 
 void SidePanelToolbarContainer::ReorderViews() {
   // The main button is always last.
   ReorderChildView(main_item(), children().size());
+}
+
+void SidePanelToolbarContainer::UpdatePinnedButtonsVisibility() {
+  PrefService* pref_service = browser_view_->GetProfile()->GetPrefs();
+  if (pref_service) {
+    bool should_be_pinned = pref_service->GetBoolean(
+        prefs::kSidePanelCompanionEntryPinnedToToolbar);
+    if (should_be_pinned && !pinned_entry_buttons_[0]->GetVisible()) {
+      GetAnimatingLayoutManager()->FadeIn(pinned_entry_buttons_[0]);
+    } else if (!should_be_pinned && pinned_entry_buttons_[0]->GetVisible()) {
+      GetAnimatingLayoutManager()->FadeOut(pinned_entry_buttons_[0]);
+    }
+  }
 }

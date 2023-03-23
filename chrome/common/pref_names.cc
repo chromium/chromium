@@ -1641,6 +1641,10 @@ const char kForceMajorVersionToMinorPositionInUserAgent[] =
 // Boolean determining the side the side panel will be appear on (left / right).
 // True when the side panel is aligned to the right.
 const char kSidePanelHorizontalAlignment[] = "side_panel.is_right_aligned";
+// Boolean determining whether the companion side panel should be pinned to have
+// a button in the toolbar.
+const char kSidePanelCompanionEntryPinnedToToolbar[] =
+    "side_panel.companion_pinned_to_toolbar";
 #endif
 
 // Number of minutes of inactivity before running actions from

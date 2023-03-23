@@ -64,6 +64,10 @@ class SidePanelCoordinator final : public SidePanelRegistryObserver,
   // header button, when it's visible.
   void OpenInNewTab();
 
+  // Toggle the pin state. This is called by the header button, when it's
+  // visible.
+  void UpdatePinState();
+
   // Prevent content swapping delays from happening for testing.
   // This should be called before the side panel is first shown.
   void SetNoDelaysForTesting(bool no_delays_for_testing) {
@@ -78,6 +82,10 @@ class SidePanelCoordinator final : public SidePanelRegistryObserver,
 
   SidePanelComboboxModel* GetComboboxModelForTesting() {
     return combobox_model_.get();
+  }
+
+  views::ImageButton* GetHeaderPinButtonForTesting() {
+    return header_pin_button_;
   }
 
   absl::optional<SidePanelEntry::Id> GetCurrentEntryId() const;
@@ -154,9 +162,13 @@ class SidePanelCoordinator final : public SidePanelRegistryObserver,
   void OnViewVisibilityChanged(views::View* observed_view,
                                views::View* starting_from) override;
 
-  // Returns the last active entry or the reading list entry if no last active
+  // Returns the last active entry or the default entry if no last active
   // entry exists.
   absl::optional<SidePanelEntry::Key> GetLastActiveEntryKey() const;
+
+  // Returns the last active global entry or the default entry if no last active
+  // global entry exists.
+  absl::optional<SidePanelEntry::Key> GetLastActiveGlobalEntryKey() const;
 
   // Returns the currently selected id in the combobox, if one is shown.
   absl::optional<SidePanelEntry::Key> GetSelectedKey() const;
@@ -240,6 +252,9 @@ class SidePanelCoordinator final : public SidePanelRegistryObserver,
   // Used to update the visibility of the 'Open in New Tab' header button.
   raw_ptr<views::ImageButton, DanglingUntriaged>
       header_open_in_new_tab_button_ = nullptr;
+
+  // Used to update the visibility of the pin header button.
+  raw_ptr<views::ImageButton, DanglingUntriaged> header_pin_button_ = nullptr;
 
   base::ObserverList<SidePanelViewStateObserver> view_state_observers_;
 

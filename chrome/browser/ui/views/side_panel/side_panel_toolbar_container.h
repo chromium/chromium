@@ -8,7 +8,10 @@
 #include <vector>
 
 #include "base/memory/raw_ptr.h"
+#include "chrome/browser/ui/views/side_panel/side_panel_entry.h"
+#include "chrome/browser/ui/views/toolbar/toolbar_button.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_icon_container_view.h"
+#include "components/prefs/pref_change_registrar.h"
 
 class BrowserView;
 class SidePanelToolbarButton;
@@ -27,22 +30,53 @@ class SidePanelToolbarContainer : public ToolbarIconContainerView {
   // Gets the side panel button for the toolbar.
   SidePanelToolbarButton* GetSidePanelButton() const;
 
+  void ObserveSidePanelView(views::View* side_panel);
+
   // Creates any pinned side panel entry toolbar buttons.
   void CreatePinnedEntryButtons();
+
+  void UpdateSidePanelContainerButtonsState();
+
+  bool IsActiveEntryPinnedAndVisible();
 
   // ToolbarIconContainerView:
   void UpdateAllIcons() override;
 
  private:
+  class PinnedSidePanelToolbarButton : public ToolbarButton {
+   public:
+    PinnedSidePanelToolbarButton(BrowserView* browser_view,
+                                 SidePanelEntry::Id id,
+                                 std::u16string name,
+                                 const gfx::VectorIcon& icon);
+    ~PinnedSidePanelToolbarButton() override;
+
+    SidePanelEntry::Id id() { return id_; }
+
+    void ButtonPressed();
+    void Unpin(int event_flags);
+
+   private:
+    std::unique_ptr<ui::MenuModel> CreateMenuModel();
+
+    BrowserView* browser_view_;
+    SidePanelEntry::Id id_;
+  };
+
   // Sorts child views to display them in the correct order (pinned buttons,
   // side panel button).
   void ReorderViews();
+
+  void UpdatePinnedButtonsVisibility();
 
   const raw_ptr<BrowserView> browser_view_;
 
   const raw_ptr<SidePanelToolbarButton> side_panel_button_;
 
-  std::vector<ToolbarButton*> pinned_entry_buttons_;
+  std::vector<PinnedSidePanelToolbarButton*> pinned_entry_buttons_;
+  base::CallbackListSubscription side_panel_visibility_change_subscription_;
+  base::CallbackListSubscription pinned_button_visibility_change_subscription_;
+  PrefChangeRegistrar pref_change_registrar_;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_SIDE_PANEL_SIDE_PANEL_TOOLBAR_CONTAINER_H_

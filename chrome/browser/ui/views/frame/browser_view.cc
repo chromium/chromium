@@ -142,6 +142,7 @@
 #include "chrome/browser/ui/views/side_panel/side_panel.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_coordinator.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_registry.h"
+#include "chrome/browser/ui/views/side_panel/side_panel_toolbar_container.h"
 #include "chrome/browser/ui/views/status_bubble_views.h"
 #include "chrome/browser/ui/views/sync/one_click_signin_dialog_view.h"
 #include "chrome/browser/ui/views/tab_contents/chrome_web_contents_view_focus_helper.h"
@@ -3805,7 +3806,12 @@ void BrowserView::AddedToWidget() {
   // the ToolbarView does not create a button for them. This specifically seems
   // to hit web apps. See https://crbug.com/1267781.
   if (toolbar_->GetSidePanelButton() && unified_side_panel_) {
-    unified_side_panel_->AddObserver(side_panel_coordinator_.get());
+    if (toolbar()->side_panel_container()) {
+      toolbar()->side_panel_container()->ObserveSidePanelView(
+          unified_side_panel_);
+    } else {
+      unified_side_panel_->AddObserver(side_panel_coordinator_.get());
+    }
   }
 
 #if BUILDFLAG(IS_CHROMEOS)

@@ -16,7 +16,11 @@
 #include "chrome/browser/ui/views/toolbar/side_panel_toolbar_button.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_button.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_view.h"
+#include "chrome/common/pref_names.h"
 #include "ui/events/base_event_utils.h"
+#include "ui/views/animation/ink_drop.h"
+#include "ui/views/controls/button/image_button.h"
+#include "ui/views/layout/animating_layout_manager_test_util.h"
 
 class SidePanelToolbarContainerTest : public TestWithBrowserView {
  public:
@@ -41,6 +45,16 @@ class SidePanelToolbarContainerTest : public TestWithBrowserView {
         base::BindRepeating([]() { return std::make_unique<views::View>(); })));
 
     browser_view()->side_panel_coordinator()->SetNoDelaysForTesting(true);
+  }
+
+  void WaitForAnimation() {
+#if BUILDFLAG(IS_MAC)
+    // TODO(crbug.com/1045212): we avoid using animations on Mac due to the lack
+    // of support in unit tests. Therefore this is a no-op.
+#else
+    views::test::WaitForAnimatingLayoutManager(
+        browser_view()->toolbar()->side_panel_container());
+#endif
   }
 
   void ClickButton(views::Button* button) const {
@@ -73,6 +87,7 @@ class SidePanelToolbarContainerTest : public TestWithBrowserView {
 TEST_F(SidePanelToolbarContainerTest, CompanionPinnedByDefault) {
   auto pinned_buttons = GetPinnedEntryButtons();
   ASSERT_EQ(pinned_buttons.size(), 1u);
+  ASSERT_TRUE(pinned_buttons[0]->GetVisible());
   auto* search_companion_coordinator =
       SearchCompanionSidePanelCoordinator::GetOrCreateForBrowser(
           browser_view()->browser());
@@ -86,4 +101,57 @@ TEST_F(SidePanelToolbarContainerTest, ClickingPinnedEntryOpensSidePanel) {
   ASSERT_TRUE(browser_view()->unified_side_panel()->GetVisible());
   ASSERT_EQ(browser_view()->side_panel_coordinator()->GetCurrentEntryId(),
             SidePanelEntry::Id::kSearchCompanion);
+  ASSERT_TRUE(views::InkDrop::Get(search_companion_button)->GetHighlighted());
+}
+
+TEST_F(SidePanelToolbarContainerTest,
+       HighlightSidePanelButtonIfPinButtonNotVisible) {
+  auto* search_companion_button = GetPinnedEntryButtons()[0];
+  auto* side_panel_button = browser_view()->toolbar()->GetSidePanelButton();
+  browser_view()->GetProfile()->GetPrefs()->SetBoolean(
+      prefs::kSidePanelCompanionEntryPinnedToToolbar, false);
+  search_companion_button->SetVisible(false);
+  browser_view()->side_panel_coordinator()->Show(
+      SidePanelEntry::Id::kSearchCompanion);
+  ASSERT_TRUE(browser_view()->unified_side_panel()->GetVisible());
+  ASSERT_EQ(browser_view()->side_panel_coordinator()->GetCurrentEntryId(),
+            SidePanelEntry::Id::kSearchCompanion);
+  ASSERT_TRUE(views::InkDrop::Get(side_panel_button)->GetHighlighted());
+}
+
+TEST_F(SidePanelToolbarContainerTest, PinButtonOnlyVisibleForCompanion) {
+  auto* side_panel_button = browser_view()->toolbar()->GetSidePanelButton();
+  ClickButton(side_panel_button);
+  views::ImageButton* header_pin_button =
+      browser_view()->side_panel_coordinator()->GetHeaderPinButtonForTesting();
+  // Verify that the pin button is not visible for entries other than the
+  // companion.
+  ASSERT_TRUE(browser_view()->unified_side_panel()->GetVisible());
+  ASSERT_NE(browser_view()->side_panel_coordinator()->GetCurrentEntryId(),
+            SidePanelEntry::Id::kSearchCompanion);
+  ASSERT_FALSE(header_pin_button->GetVisible());
+
+  // Switch to the companion side panel and verify the header pin button is
+  // visible.
+  auto* search_companion_button = GetPinnedEntryButtons()[0];
+  ClickButton(search_companion_button);
+  ASSERT_TRUE(browser_view()->unified_side_panel()->GetVisible());
+  ASSERT_EQ(browser_view()->side_panel_coordinator()->GetCurrentEntryId(),
+            SidePanelEntry::Id::kSearchCompanion);
+  ASSERT_TRUE(header_pin_button->GetVisible());
+}
+
+TEST_F(SidePanelToolbarContainerTest, PinStateUpdatesOnPrefChange) {
+  auto pinned_buttons = GetPinnedEntryButtons();
+  ASSERT_EQ(pinned_buttons.size(), 1u);
+  ASSERT_TRUE(pinned_buttons[0]->GetVisible());
+  browser_view()->GetProfile()->GetPrefs()->SetBoolean(
+      prefs::kSidePanelCompanionEntryPinnedToToolbar, false);
+  WaitForAnimation();
+#if BUILDFLAG(IS_MAC)
+  // TODO(crbug.com/1045212): GetVisible() relies on an
+  // animation running, which is not reliable in unit tests on Mac.
+#else
+  ASSERT_FALSE(pinned_buttons[0]->GetVisible());
+#endif
 }
