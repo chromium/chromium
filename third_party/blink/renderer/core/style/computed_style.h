@@ -2071,12 +2071,14 @@ class ComputedStyle : public ComputedStyleBase,
     kExcludeTransformOperations
   };
   void ApplyTransform(gfx::Transform&,
+                      const LayoutBox* box,
                       const LayoutSize& border_box_data_size,
                       ApplyTransformOperations,
                       ApplyTransformOrigin,
                       ApplyMotionPath,
                       ApplyIndependentTransformProperties) const;
   void ApplyTransform(gfx::Transform&,
+                      const LayoutBox* box,
                       const gfx::RectF& bounding_box,
                       ApplyTransformOperations,
                       ApplyTransformOrigin,
@@ -2555,6 +2557,7 @@ class ComputedStyle : public ComputedStyleBase,
 
   void ApplyMotionPathTransform(float origin_x,
                                 float origin_y,
+                                const LayoutBox* box,
                                 const gfx::RectF& bounding_box,
                                 gfx::Transform&) const;
 

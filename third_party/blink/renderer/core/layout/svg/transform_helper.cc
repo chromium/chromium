@@ -80,10 +80,11 @@ AffineTransform TransformHelper::ComputeTransform(
   // https://svgwg.org/svg2-draft/coords.html#ObjectBoundingBoxUnits
   gfx::Transform transform;
   gfx::RectF reference_box = ComputeReferenceBox(layout_object);
-  style.ApplyTransform(
-      transform, reference_box, ComputedStyle::kIncludeTransformOperations,
-      apply_transform_origin, ComputedStyle::kIncludeMotionPath,
-      ComputedStyle::kIncludeIndependentTransformProperties);
+  style.ApplyTransform(transform, nullptr, reference_box,
+                       ComputedStyle::kIncludeTransformOperations,
+                       apply_transform_origin,
+                       ComputedStyle::kIncludeMotionPath,
+                       ComputedStyle::kIncludeIndependentTransformProperties);
   const float zoom = style.EffectiveZoom();
   if (zoom != 1)
     transform.Zoom(1 / zoom);

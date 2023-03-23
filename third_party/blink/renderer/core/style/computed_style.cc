@@ -1343,19 +1343,21 @@ void ComputedStyle::LoadDeferredImages(Document& document) const {
 
 void ComputedStyle::ApplyTransform(
     gfx::Transform& result,
+    const LayoutBox* box,
     const LayoutSize& border_box_size,
     ApplyTransformOperations apply_operations,
     ApplyTransformOrigin apply_origin,
     ApplyMotionPath apply_motion_path,
     ApplyIndependentTransformProperties apply_independent_transform_properties)
     const {
-  ApplyTransform(result, gfx::RectF(gfx::SizeF(border_box_size)),
+  ApplyTransform(result, box, gfx::RectF(gfx::SizeF(border_box_size)),
                  apply_operations, apply_origin, apply_motion_path,
                  apply_independent_transform_properties);
 }
 
 void ComputedStyle::ApplyTransform(
     gfx::Transform& result,
+    const LayoutBox* box,
     const gfx::RectF& bounding_box,
     ApplyTransformOperations apply_operations,
     ApplyTransformOrigin apply_origin,
@@ -1403,7 +1405,7 @@ void ComputedStyle::ApplyTransform(
   }
 
   if (apply_motion_path == kIncludeMotionPath) {
-    ApplyMotionPathTransform(origin_x, origin_y, bounding_box, result);
+    ApplyMotionPathTransform(origin_x, origin_y, box, bounding_box, result);
   }
 
   if (apply_operations == kIncludeTransformOperations) {
@@ -1423,6 +1425,7 @@ bool ComputedStyle::HasFilters() const {
 
 void ComputedStyle::ApplyMotionPathTransform(float origin_x,
                                              float origin_y,
+                                             const LayoutBox* box,
                                              const gfx::RectF& bounding_box,
                                              gfx::Transform& transform) const {
   // TODO(ericwilligers): crbug.com/638055 Apply offset-position.

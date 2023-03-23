@@ -2675,11 +2675,16 @@ CSSValue* ComputedStyleUtils::ResolvedTransform(
 
   gfx::RectF reference_box = ReferenceBoxForTransform(*layout_object);
 
+  const auto* layout_box = layout_object->IsSVGChild()
+                               ? nullptr
+                               : DynamicTo<LayoutBox>(*layout_object);
+
   gfx::Transform transform;
-  style.ApplyTransform(
-      transform, reference_box, ComputedStyle::kIncludeTransformOperations,
-      ComputedStyle::kExcludeTransformOrigin, ComputedStyle::kExcludeMotionPath,
-      ComputedStyle::kExcludeIndependentTransformProperties);
+  style.ApplyTransform(transform, layout_box, reference_box,
+                       ComputedStyle::kIncludeTransformOperations,
+                       ComputedStyle::kExcludeTransformOrigin,
+                       ComputedStyle::kExcludeMotionPath,
+                       ComputedStyle::kExcludeIndependentTransformProperties);
 
   // FIXME: Need to print out individual functions
   // (https://bugs.webkit.org/show_bug.cgi?id=23924)
