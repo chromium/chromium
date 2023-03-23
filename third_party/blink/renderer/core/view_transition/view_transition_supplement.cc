@@ -15,6 +15,7 @@
 #include "third_party/blink/renderer/core/view_transition/view_transition_utils.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/graphics/compositing/paint_artifact_compositor.h"
+#include "third_party/blink/renderer/platform/scheduler/public/thread_scheduler.h"
 
 namespace blink {
 namespace {
@@ -86,7 +87,18 @@ ViewTransition* ViewTransitionSupplement::startViewTransition(
     Document& document,
     V8ViewTransitionCallback* callback,
     ExceptionState& exception_state) {
+  DCHECK(script_state);
+  DCHECK(ThreadScheduler::Current());
   auto* supplement = From(document);
+  if (callback) {
+    auto* tracker = ThreadScheduler::Current()->GetTaskAttributionTracker();
+    // Set the parent task ID if we're not in an extension task (as extensions
+    // are not currently supported in TaskAttributionTracker).
+    if (tracker && script_state->World().IsMainWorld()) {
+      auto id = tracker->RunningTaskAttributionId(script_state);
+      callback->SetParentTaskId(id);
+    }
+  }
   return supplement->StartTransition(script_state, document, callback,
                                      exception_state);
 }
