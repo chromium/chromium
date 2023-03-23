@@ -2,8 +2,6 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("../settings.gni")
-
 ts_definition_files = [
   "//tools/typescript/definitions/bluetooth.d.ts",
   "//tools/typescript/definitions/bluetooth_private.d.ts",
