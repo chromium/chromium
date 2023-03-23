@@ -1356,31 +1356,53 @@ const FeatureEntry::FeatureVariation
          kSidePanelJourneysOpensFromOmniboxParams,
          std::size(kSidePanelJourneysOpensFromOmniboxParams), nullptr},
 };
-const FeatureEntry::FeatureParam
-    kJourneysCosineSimilarityNoPairwiseMergeParams[] = {
+const FeatureEntry::FeatureParam kJourneysAllVisitsNoPairwiseMergeParams[] = {
+    {"collections_blocklist",
+     "/collection/it_glossary,/collection/periodicals,/collection/"
+     "software,/collection/websites"},
+    {"exclude_entities_that_have_no_collections", "true"},
+    {"use_pairwise_merge", "false"},
+    {"search_visits_only", "false"},
+};
+const FeatureEntry::FeatureParam kJourneysAllVisitsWithPairwiseMergeParams[] = {
+    {"collections_blocklist",
+     "/collection/it_glossary,/collection/periodicals,/collection/"
+     "software,/collection/websites"},
+    {"exclude_entities_that_have_no_collections", "true"},
+    {"use_pairwise_merge", "true"},
+    {"search_visits_only", "false"},
+};
+const FeatureEntry::FeatureParam kJourneysSearchVisitsNoPairwiseMergeParams[] =
+    {
         {"collections_blocklist",
          "/collection/it_glossary,/collection/periodicals,/collection/"
          "software,/collection/websites"},
         {"exclude_entities_that_have_no_collections", "true"},
-        {"use_content_clustering_cosine_similarity", "true"},
         {"use_pairwise_merge", "false"},
+        {"search_visits_only", "true"},
 };
 const FeatureEntry::FeatureParam
-    kJourneysCosineSimilarityWithPairwiseMergeParams[] = {
+    kJourneysSearchVisitsWithPairwiseMergeParams[] = {
         {"collections_blocklist",
          "/collection/it_glossary,/collection/periodicals,/collection/"
          "software,/collection/websites"},
         {"exclude_entities_that_have_no_collections", "true"},
-        {"use_content_clustering_cosine_similarity", "true"},
         {"use_pairwise_merge", "true"},
+        {"search_visits_only", "true"},
 };
 const FeatureEntry::FeatureVariation kJourneysContentClusteringVariations[] = {
-    {"Cosine Similarity With Blocklist and No Pairwise Merge",
-     kJourneysCosineSimilarityNoPairwiseMergeParams,
-     std::size(kJourneysCosineSimilarityNoPairwiseMergeParams), nullptr},
-    {"Cosine Similarity With Blocklist and Pairwise Merge",
-     kJourneysCosineSimilarityWithPairwiseMergeParams,
-     std::size(kJourneysCosineSimilarityWithPairwiseMergeParams), nullptr},
+    {"All Visits With Blocklist and No Pairwise Merge",
+     kJourneysAllVisitsNoPairwiseMergeParams,
+     std::size(kJourneysAllVisitsNoPairwiseMergeParams), nullptr},
+    {"All Visits With Blocklist and Pairwise Merge",
+     kJourneysAllVisitsWithPairwiseMergeParams,
+     std::size(kJourneysAllVisitsWithPairwiseMergeParams), nullptr},
+    {"Search Visits With Blocklist and No Pairwise Merge",
+     kJourneysSearchVisitsNoPairwiseMergeParams,
+     std::size(kJourneysSearchVisitsNoPairwiseMergeParams), nullptr},
+    {"Search Visits With Blocklist and Pairwise Merge",
+     kJourneysSearchVisitsWithPairwiseMergeParams,
+     std::size(kJourneysSearchVisitsWithPairwiseMergeParams), nullptr},
 };
 const FeatureEntry::FeatureParam
     kJourneysLabelsWithSearchVisitEntitiesParams[] = {
