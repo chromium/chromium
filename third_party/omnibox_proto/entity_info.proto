@@ -46,6 +46,9 @@ message EntityInfo {
 
   // List of categories this entity belongs to.
   repeated CategoryInfo.Category category = 14;
+
+  // The entity's official website uri.
+  optional string website_uri = 17;
 }
 
 // Entity Suggestion Action descriptor.
@@ -68,6 +71,15 @@ message ActionInfo {
   // When present, specifies the intent to send to the package to execute the
   // Action.
   optional string intent_name = 7;
+
+  // Kesem Action Type.
+  optional KesemActionType kesem_action_type = 8;
+
+  enum KesemActionType {
+    DIRECTIONS = 2;
+    CALL = 3;
+    WEBSITE = 6;
+  }
 }
 
 // Entity Suggestion Category info.
