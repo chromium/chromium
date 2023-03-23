@@ -184,9 +184,8 @@ blink_core_sources_bindings =
                   "abspath")
 
 declare_args() {
-  # Enable V8 to produce & consume hints regarding which functions to compile
-  # eagerly.
-  enable_v8_compile_hints = true
+  # Enable V8 to produce hints regarding which functions to compile eagerly.
+  enable_v8_compile_hints = !is_android
 }
 
 # Source files to be part of
