@@ -2196,9 +2196,11 @@ void MenuController::OpenMenuImpl(MenuItemView* item, bool show) {
     params.do_capture = do_capture;
     params.native_view_for_gestures = native_view_for_gestures_;
     params.owned_window_anchor = anchor;
-
     if (item->GetParentMenuItem()) {
-      params.context = state_.item->GetWidget();
+      params.context = item->GetWidget();
+      // (crbug.com/1414232) The item to be open is a submenu. Make sure
+      // params.context is set.
+      DCHECK(params.context);
       params.menu_type = ui::MenuType::kChildMenu;
     } else if (state_.context_menu) {
       if (!menu_stack_.empty()) {
@@ -2900,6 +2902,10 @@ void MenuController::OpenSubmenuChangeSelectionIfCan() {
   MenuItemView* item = pending_state_.item;
   if (!item->HasSubmenu() || !item->GetEnabled())
     return;
+
+  // Show the sub-menu.
+  SetSelection(item, SELECTION_OPEN_SUBMENU | SELECTION_UPDATE_IMMEDIATELY);
+
   MenuItemView* to_select = nullptr;
   if (!item->GetSubmenu()->GetMenuItems().empty())
     to_select = FindInitialSelectableMenuItem(item, INCREMENT_SELECTION_DOWN);
@@ -2909,10 +2915,7 @@ void MenuController::OpenSubmenuChangeSelectionIfCan() {
     if (item->type_ == MenuItemView::Type::kActionableSubMenu)
       item->SetSelectionOfActionableSubmenu(true);
     SetSelection(to_select, SELECTION_UPDATE_IMMEDIATELY);
-    return;
   }
-  // No menu items, just show the sub-menu.
-  SetSelection(item, SELECTION_OPEN_SUBMENU | SELECTION_UPDATE_IMMEDIATELY);
 }
 
 void MenuController::CloseSubmenu() {
