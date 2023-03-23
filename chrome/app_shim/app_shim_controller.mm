@@ -182,7 +182,20 @@ bool AppShimController::FindOrLaunchChrome() {
             runningApplicationWithProcessIdentifier:chrome_pid],
         base::scoped_policy::RETAIN);
     if (!chrome_to_connect_to_) {
-      LOG(FATAL) << "Failed to open process with PID: " << chrome_pid;
+      // Sometimes runningApplicationWithProcessIdentifier fails to return the
+      // application, even though it exists. If that happens, try to find the
+      // running application in the full list of running applications manually.
+      // See https://crbug.com/1426897.
+      NSArray<NSRunningApplication*>* apps =
+          [NSWorkspace sharedWorkspace].runningApplications;
+      for (unsigned i = 0; i < [apps count]; ++i) {
+        if (apps[i].processIdentifier == chrome_pid) {
+          chrome_to_connect_to_.reset(apps[i], base::scoped_policy::RETAIN);
+        }
+      }
+      if (!chrome_to_connect_to_) {
+        LOG(FATAL) << "Failed to open process with PID: " << chrome_pid;
+      }
     }
 
     return true;
