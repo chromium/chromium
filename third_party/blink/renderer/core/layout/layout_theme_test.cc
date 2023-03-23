@@ -42,13 +42,7 @@ inline EBorderStyle OutlineStyle(Element* element) {
   return element->GetComputedStyle()->OutlineStyle();
 }
 
-#if BUILDFLAG(IS_IOS)
-// TODO(crbug.com/1141478)
-#define MAYBE_ChangeFocusRingColor DISABLED_ChangeFocusRingColor
-#else
-#define MAYBE_ChangeFocusRingColor ChangeFocusRingColor
-#endif  // BUILDFLAG(IS_IOS)
-TEST_F(LayoutThemeTest, MAYBE_ChangeFocusRingColor) {
+TEST_F(LayoutThemeTest, ChangeFocusRingColor) {
   SetHtmlInnerHTML("<span id=span tabIndex=0>Span</span>");
 
   Element* span = GetDocument().getElementById(AtomicString("span"));
