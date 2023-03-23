@@ -912,9 +912,12 @@ bool PinManager::OnSyncingEvent(mojom::ItemEvent& event) {
   using State = mojom::ItemEvent::State;
   switch (event.state) {
     case State::kQueued:
-      // kQueued events come with a bytes_to_transfer field incorrectly set to
-      // zero (b/266462624). So we set it to -1 to ignore it.
-      event.bytes_to_transfer = -1;
+      // (TODO b/266462624) kQueued events come with a bytes_to_transfer field
+      // incorrectly set to zero. So we set it to -1 to ignore it.
+      if (event.bytes_to_transfer == 0) {
+        VLOG(3) << "Zero bytes_to_transfer in " << Quote(event);
+        event.bytes_to_transfer = -1;
+      }
       [[fallthrough]];
 
     case State::kInProgress:
