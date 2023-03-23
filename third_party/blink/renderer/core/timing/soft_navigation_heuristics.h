@@ -16,8 +16,7 @@
 namespace blink {
 
 // This class contains the logic for calculating Single-Page-App soft navigation
-// heuristics. See
-// https://docs.google.com/document/d/1W5Yfcxq5zKgmW5ZCao9FDH85xw3B1K1OrRhSZu0U_IQ/edit#
+// heuristics. See https://github.com/WICG/soft-navigations
 class SoftNavigationHeuristics
     : public GarbageCollected<SoftNavigationHeuristics>,
       public Supplement<LocalDOMWindow>,
