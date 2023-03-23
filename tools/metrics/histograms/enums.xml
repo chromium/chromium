@@ -54002,6 +54002,13 @@ Unsupported non-ascii characters will cause issues with xml presubmits.
   <int value="40" label="UnknownMenuAction"/>
 </enum>
 
+<enum name="IOSEditMenuError">
+  <int value="0" label="First method install failed"/>
+  <int value="1" label="Second method install failed"/>
+  <int value="2" label="Unexpected paramters on dismiss"/>
+  <int value="3" label="Unexpected object structure on dismiss"/>
+</enum>
+
 <enum name="IOSEditMenuPage">
   <int value="0" label="Invalid"/>
   <int value="1" label="1 out of 1"/>

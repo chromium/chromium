@@ -643,6 +643,14 @@ chromium-metrics-reviews@google.com.
   <summary>Page on which the iOS web edit menu is dismissed.</summary>
 </histogram>
 
+<histogram name="IOS.EditMenu.Error" enum="IOSEditMenuError"
+    expires_after="2024-03-21">
+  <owner>olivierrobin@chromium.org</owner>
+  <owner>djean@chromium.org</owner>
+  <owner>bling-team@google.com</owner>
+  <summary>Report errors when reporting metrics for web edit menu.</summary>
+</histogram>
+
 <histogram name="IOS.EditMenu.SelectedAction" enum="IOSEditMenuActions"
     expires_after="2024-03-21">
   <owner>olivierrobin@chromium.org</owner>
