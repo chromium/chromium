@@ -159,9 +159,6 @@ GaiaIdToPushNotificationPreferenceMapFromCache(
   notificationService->GetPushNotificationClientManager()
       ->RegisterActionableNotifications();
 
-  notificationService->InitializeAccountContextManager(
-      GetApplicationContext()->GetChromeBrowserStateManager());
-
   PushNotificationConfiguration* config =
       [[PushNotificationConfiguration alloc] init];
 

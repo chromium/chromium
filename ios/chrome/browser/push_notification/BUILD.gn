@@ -9,13 +9,16 @@ source_set("push_notification_browser_state_service") {
     "push_notification_browser_state_service.mm",
   ]
   deps = [
+    ":push_notification_client",
     ":push_notification_service",
     "//base",
     "//components/keyed_service/core",
+    "//components/prefs",
     "//components/signin/public/identity_manager",
     "//ios/chrome/browser/application_context",
     "//ios/chrome/browser/browser_state",
     "//ios/chrome/browser/commerce",
+    "//ios/chrome/browser/prefs:pref_names",
   ]
 }
 
@@ -81,6 +84,7 @@ source_set("unit_tests") {
   configs += [ "//build/config/compiler:enable_arc" ]
   testonly = true
   sources = [
+    "push_notification_account_context_manager+testing.h",
     "push_notification_account_context_manager_unittest.mm",
     "push_notification_client_manager_unittest.mm",
   ]

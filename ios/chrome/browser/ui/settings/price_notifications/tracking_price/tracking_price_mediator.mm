@@ -54,12 +54,15 @@ typedef NS_ENUM(NSInteger, ItemType) {
 // signed-in user.
 @property(nonatomic, assign) AuthenticationService* authService;
 
-//
+// Pref service to retrieve preference values.
 @property(nonatomic, assign) PrefService* prefService;
 
 @end
 
-@implementation TrackingPriceMediator
+@implementation TrackingPriceMediator {
+  // Identity object that contains the user's account details.
+  id<SystemIdentity> _identity;
+}
 
 - (instancetype)
     initWithShoppingService:(commerce::ShoppingService*)shoppingService
@@ -73,6 +76,8 @@ typedef NS_ENUM(NSInteger, ItemType) {
     _shoppingService = shoppingService;
     _authService = authenticationService;
     _prefService = prefService;
+    _shoppingService->FetchPriceEmailPref();
+    _identity = _authService->GetPrimaryIdentity(signin::ConsentLevel::kSignin);
   }
 
   return self;
@@ -97,18 +102,15 @@ typedef NS_ENUM(NSInteger, ItemType) {
 
 - (TableViewSwitchItem*)emailNotificationItem {
   if (!_emailNotificationItem) {
-    id<SystemIdentity> identity =
-        _authService->GetPrimaryIdentity(signin::ConsentLevel::kSignin);
     _emailNotificationItem =
         [[TableViewSwitchItem alloc] initWithType:ItemTypeEmailNotifications];
     _emailNotificationItem.text = l10n_util::GetNSString(
         IDS_IOS_TRACKING_PRICE_EMAIL_NOTIFICATIONS_TITLE);
     _emailNotificationItem.detailText = l10n_util::GetNSStringF(
         IDS_IOS_TRACKING_PRICE_EMAIL_NOTIFICATIONS_DETAILS,
-        base::SysNSStringToUTF16(identity.userEmail));
+        base::SysNSStringToUTF16(_identity.userEmail));
     _emailNotificationItem.accessibilityIdentifier =
         kSettingsTrackingPriceEmailNotificationsCellId;
-    _shoppingService->FetchPriceEmailPref();
     _emailNotificationItem.on =
         _prefService->GetBoolean(commerce::kPriceEmailNotificationsEnabled);
   }
@@ -142,7 +144,9 @@ typedef NS_ENUM(NSInteger, ItemType) {
   ItemType type = static_cast<ItemType>(item.type);
   switch (type) {
     case ItemTypeMobileNotifications: {
-      self.mobileNotificationItem.on = value;
+      [self setPreferenceFor:PushNotificationClientId::kCommerce to:value];
+      self.mobileNotificationItem.on =
+          [self prefValueForClient:PushNotificationClientId::kCommerce];
       if (!value) {
         break;
       }
@@ -179,9 +183,21 @@ typedef NS_ENUM(NSInteger, ItemType) {
 // Returns whether the push notification enabled feature's, `client_id`,
 // permission status is enabled or disabled for the current user.
 - (BOOL)prefValueForClient:(PushNotificationClientId)clientID {
-  // TODO (crbug.com/1369616): This function is being re-implemented by CL
-  // (crrev.com/c/4133444).
-  return YES;
+  PushNotificationService* service =
+      GetApplicationContext()->GetPushNotificationService();
+  PushNotificationAccountContextManager* manager =
+      service->GetAccountContextManager();
+
+  return [manager isPushNotificationEnabledForClient:clientID
+                                          forAccount:base::SysNSStringToUTF8(
+                                                         _identity.gaiaID)];
+}
+
+// Updates the current user's permission preference for the given `client_id`.
+- (void)setPreferenceFor:(PushNotificationClientId)clientID to:(BOOL)enabled {
+  PushNotificationService* service =
+      GetApplicationContext()->GetPushNotificationService();
+  service->SetPreference(_identity.gaiaID, clientID, enabled);
 }
 
 @end

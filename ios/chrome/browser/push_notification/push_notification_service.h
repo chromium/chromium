@@ -15,8 +15,8 @@ class PrefRegistrySyncable;
 namespace ios {
 class ChromeBrowserStateManager;
 }
-@class PushNotificationAccountContext;
 @class PushNotificationAccountContextManager;
+enum class PushNotificationClientId;
 class PushNotificationClientManager;
 
 // Service responsible for establishing connection and interacting
@@ -46,11 +46,14 @@ class PushNotificationService {
   // Returns PushNotificationService's PushNotificationClientManager.
   PushNotificationClientManager* GetPushNotificationClientManager();
 
-  // Returns PushNotificationService's PushNotificationAccountContext for the
-  // given `account_id`.
-  PushNotificationAccountContext* GetAccountContext(NSString* account_id);
+  // Returns PushNotificationService's PushNotificationAccountContextManager.
+  PushNotificationAccountContextManager* GetAccountContextManager();
 
-  void InitializeAccountContextManager(ios::ChromeBrowserStateManager* manager);
+  // Enables/disables `client_id` ability to send push notifications to the
+  // primary account signed into Chrome across synced iOS devices.
+  void SetPreference(NSString* account_id,
+                     PushNotificationClientId client_id,
+                     bool enabled);
 
   // Registers the new account to the push notification server. In a multi
   // BrowserState environment, the PushNotificationService tracks the signed in
@@ -63,13 +66,6 @@ class PushNotificationService {
   // signed out across BrowserStates.
   void UnregisterAccount(NSString* account_id,
                          CompletionHandler completion_handler);
-
-  // Updates the current user's push notification preferences with the push
-  // notification server.
-  void UpdateFeaturePushNotificationPreferences(
-      NSString* account_id,
-      PreferenceMap preference_map,
-      CompletionHandler completion_handler) {}
 
   // Registers each PushNotificationClient's prefs. Each
   // PushNotificationClient's ability to send push notifications to the user is
@@ -90,6 +86,12 @@ class PushNotificationService {
   // that is intended to be unregistered.
   virtual void SetAccountsToDevice(NSArray<NSString*>* account_ids,
                                    CompletionHandler completion_handler) {}
+
+  // Updates the current user's push notification preferences with the push
+  // notification server.
+  virtual void SetPreferences(NSString* account_id,
+                              PreferenceMap preference_map,
+                              CompletionHandler completion_handler);
 
  private:
   // The PushNotificationClientManager manages all interactions between the

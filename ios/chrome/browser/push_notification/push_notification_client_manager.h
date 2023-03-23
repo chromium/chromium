@@ -65,6 +65,12 @@ class PushNotificationClientManager {
   // that support push notifications.
   static std::vector<PushNotificationClientId> GetClients();
 
+  // This function returns a the `client_id`'s string representation which is
+  // used to store the client's push notification permission settings in the
+  // pref service and preference key on the push notification server.
+  static std::string PushNotificationClientIdToString(
+      PushNotificationClientId client_id);
+
  private:
   using ClientMap = std::unordered_map<PushNotificationClientId,
                                        std::unique_ptr<PushNotificationClient>>;

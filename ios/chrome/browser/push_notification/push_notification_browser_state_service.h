@@ -9,8 +9,6 @@
 #import "components/keyed_service/core/keyed_service.h"
 #import "components/signin/public/identity_manager/identity_manager.h"
 
-@class PushNotificationAccountContext;
-
 // This is a KeyedService that encapsulates the push notification functionality
 // that is coupled with a user profile.
 class PushNotificationBrowserStateService
@@ -27,10 +25,6 @@ class PushNotificationBrowserStateService
   // signin::IdentityManager::Observer:
   void OnPrimaryAccountChanged(
       const signin::PrimaryAccountChangeEvent& event) override;
-
-  // Returns the PushNotificationContext object of the browser state associated
-  // with the PushNotificationBrowserStateService instance.
-  const PushNotificationAccountContext* GetAccountContext();
 
  private:
   // This object notifies the PushNotificationProfileService of the signin and

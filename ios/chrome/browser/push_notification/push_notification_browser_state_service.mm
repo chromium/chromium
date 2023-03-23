@@ -105,18 +105,3 @@ void PushNotificationBrowserStateService::OnPrimaryAccountChanged(
     }
   }
 }
-
-const PushNotificationAccountContext*
-PushNotificationBrowserStateService::GetAccountContext() {
-  PushNotificationService* service =
-      GetApplicationContext()->GetPushNotificationService();
-
-  BrowserStateInfoCache* info_cache = GetApplicationContext()
-                                          ->GetChromeBrowserStateManager()
-                                          ->GetBrowserStateInfoCache();
-  size_t index =
-      info_cache->GetIndexOfBrowserStateWithPath(browser_state_path_);
-  NSString* gaia_id = base::SysUTF8ToNSString(
-      info_cache->GetGAIAIdOfBrowserStateAtIndex(index));
-  return service->GetAccountContext(gaia_id);
-}

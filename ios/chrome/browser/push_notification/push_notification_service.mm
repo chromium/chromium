@@ -5,6 +5,7 @@
 #import "ios/chrome/browser/push_notification/push_notification_service.h"
 
 #import "base/strings/string_number_conversions.h"
+#import "base/strings/sys_string_conversions.h"
 #import "base/values.h"
 #import "components/pref_registry/pref_registry_syncable.h"
 #import "ios/chrome/browser/application_context/application_context.h"
@@ -18,7 +19,12 @@
 #endif
 
 PushNotificationService::PushNotificationService()
-    : client_manager_(std::make_unique<PushNotificationClientManager>()) {}
+    : client_manager_(std::make_unique<PushNotificationClientManager>()) {
+  ios::ChromeBrowserStateManager* manager =
+      GetApplicationContext()->GetChromeBrowserStateManager();
+  context_manager_ = [[PushNotificationAccountContextManager alloc]
+      initWithChromeBrowserStateManager:manager];
+}
 
 PushNotificationService::~PushNotificationService() = default;
 
@@ -27,45 +33,58 @@ PushNotificationService::GetPushNotificationClientManager() {
   return client_manager_.get();
 }
 
-PushNotificationAccountContext* PushNotificationService::GetAccountContext(
-    NSString* account_id) {
-  return context_manager_.contextMap[account_id];
+PushNotificationAccountContextManager*
+PushNotificationService::GetAccountContextManager() {
+  return context_manager_;
 }
 
-void PushNotificationService::InitializeAccountContextManager(
-    ios::ChromeBrowserStateManager* manager) {
-  context_manager_ = [[PushNotificationAccountContextManager alloc]
-      initWithChromeBrowserStateManager:manager];
+void PushNotificationService::SetPreference(NSString* account_id,
+                                            PushNotificationClientId client_id,
+                                            bool enabled) {
+  DCHECK(context_manager_);
+  if (enabled) {
+    [context_manager_
+        enablePushNotification:client_id
+                    forAccount:base::SysNSStringToUTF8(account_id)];
+  } else {
+    [context_manager_
+        disablePushNotification:client_id
+                     forAccount:base::SysNSStringToUTF8(account_id)];
+  }
+
+  SetPreferences(
+      account_id,
+      [context_manager_
+          preferenceMapForAccount:base::SysNSStringToUTF8(account_id)],
+      ^(NSError* error){
+      });
 }
 
 void PushNotificationService::RegisterAccount(
     NSString* account_id,
     CompletionHandler completion_handler) {
-  if ([context_manager_ addAccount:account_id]) {
-    SetAccountsToDevice(context_manager_.contextMap.allKeys,
-                        completion_handler);
+  if ([context_manager_ addAccount:base::SysNSStringToUTF8(account_id)]) {
+    SetAccountsToDevice([context_manager_ accountIDs], completion_handler);
   }
 }
 
 void PushNotificationService::UnregisterAccount(
     NSString* account_id,
     CompletionHandler completion_handler) {
-  if ([context_manager_ removeAccount:account_id]) {
-    SetAccountsToDevice(context_manager_.contextMap.allKeys,
-                        completion_handler);
+  if ([context_manager_ removeAccount:base::SysNSStringToUTF8(account_id)]) {
+    SetAccountsToDevice([context_manager_ accountIDs], completion_handler);
   }
 }
 
 void PushNotificationService::RegisterBrowserStatePrefs(
     user_prefs::PrefRegistrySyncable* registry) {
   base::Value::Dict feature_push_notification_permission = base::Value::Dict();
-  std::vector<PushNotificationClientId> clients =
-      PushNotificationClientManager::GetClients();
-  for (PushNotificationClientId client_id : clients) {
-    feature_push_notification_permission.Set(
-        base::NumberToString(static_cast<int>(client_id)), false);
-  }
   registry->RegisterDictionaryPref(
       prefs::kFeaturePushNotificationPermissions,
       std::move(feature_push_notification_permission));
 }
+
+void PushNotificationService::SetPreferences(
+    NSString* account_id,
+    PreferenceMap preference_map,
+    CompletionHandler completion_handler) {}

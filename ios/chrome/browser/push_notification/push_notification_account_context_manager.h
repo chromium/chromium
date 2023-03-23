@@ -11,21 +11,8 @@
 
 namespace ios {
 class ChromeBrowserStateManager;
-
 }
-
-// This class is intended to store the permissions for each push notification
-// enabled feature for a given account and the number of times the account is
-// signed in across BrowserStates.
-@interface PushNotificationAccountContext : NSObject
-// A dictionary that maps the string value of a push notification client id to
-// the pref service value for that push notification enable feature.
-@property(nonatomic, readonly)
-    NSDictionary<NSString*, NSNumber*>* preferenceMap;
-// A counter that stores the number of times a given account is used across
-// BrowserStates.
-@property(nonatomic, readonly) NSUInteger occurrencesAcrossBrowserStates;
-@end
+enum class PushNotificationClientId;
 
 // The purpose of this class is to manage the mapping between GaiaIDs and its
 // context data related to push notifications.
@@ -40,19 +27,36 @@ class ChromeBrowserStateManager;
 // Adds the account to the manager if the account is not signed into the device
 // in any BrowserState. This function returns a BOOL value indicating whether
 // the account was added to the manager.
-- (BOOL)addAccount:(NSString*)gaiaID;
+- (BOOL)addAccount:(const std::string&)gaiaID;
 
 // Removes the account from the manager if the account is not signed into the
 // device in any BrowserState. This function returns a BOOL value indicating
 // whether the account was removed from the manager.
-- (BOOL)removeAccount:(NSString*)gaiaID;
+- (BOOL)removeAccount:(const std::string&)gaiaID;
 
-// A dictionary that maps a user's GAIA ID to an object containing the account's
-// preferences for all push notification enabled features and an number
-// representing the number of times the account is signed in across
-// BrowserStates.
-@property(nonatomic, readonly)
-    NSDictionary<NSString*, PushNotificationAccountContext*>* contextMap;
+// Enables the user with the given `gaiaID` to begin receiving push
+// notifications from `clientID`.
+- (void)enablePushNotification:(PushNotificationClientId)clientID
+                    forAccount:(const std::string&)gaiaID;
+
+// Prevents the user with the given `gaiaID` from receiving push notifications
+// from `clientID`.
+- (void)disablePushNotification:(PushNotificationClientId)clientID
+                     forAccount:(const std::string&)gaiaID;
+
+// Returns the user with the given `gaiaID` can receive push notifications from
+// `clientID`.
+- (BOOL)isPushNotificationEnabledForClient:(PushNotificationClientId)clientID
+                                forAccount:(const std::string&)gaiaID;
+
+// Returns a dictionary that maps PushNotificationClientIDs, stored as
+// NSString, to a boolean value, stored as NSNumber, indicating whether the
+// client has push notification permission for the given user.
+- (NSDictionary<NSString*, NSNumber*>*)preferenceMapForAccount:
+    (const std::string&)gaiaID;
+
+// Returns a list of GAIA IDs registered with context manager.
+- (NSArray<NSString*>*)accountIDs;
 
 @end
 

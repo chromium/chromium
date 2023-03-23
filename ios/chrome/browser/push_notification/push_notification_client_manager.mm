@@ -89,3 +89,12 @@ std::vector<PushNotificationClientId>
 PushNotificationClientManager::GetClients() {
   return {PushNotificationClientId::kCommerce};
 }
+
+std::string PushNotificationClientManager::PushNotificationClientIdToString(
+    PushNotificationClientId client_id) {
+  switch (client_id) {
+    case PushNotificationClientId::kCommerce: {
+      return "PRICE_DROP";
+    }
+  }
+}

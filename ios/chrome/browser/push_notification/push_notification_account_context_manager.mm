@@ -5,32 +5,27 @@
 #import "ios/chrome/browser/push_notification/push_notification_account_context_manager.h"
 
 #import "base/strings/sys_string_conversions.h"
+#import "base/values.h"
 #import "components/prefs/pref_service.h"
+#import "components/prefs/scoped_user_pref_update.h"
 #import "ios/chrome/browser/browser_state/browser_state_info_cache.h"
 #import "ios/chrome/browser/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/browser_state/chrome_browser_state_manager.h"
 #import "ios/chrome/browser/prefs/pref_names.h"
+#import "ios/chrome/browser/push_notification/push_notification_client_id.h"
+#import "ios/chrome/browser/push_notification/push_notification_client_manager.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
 #endif
 
-@interface PushNotificationAccountContext ()
-
-@property(nonatomic, assign) NSUInteger occurrencesAcrossBrowserStates;
-
-@property(nonatomic, strong) NSDictionary<NSString*, NSNumber*>* preferenceMap;
-
-@end
-
-@implementation PushNotificationAccountContext
-@end
-
 @implementation PushNotificationAccountContextManager {
   // Used to retrieve BrowserStates located at a given path.
   ios::ChromeBrowserStateManager* _chromeBrowserStateManager;
-  // Maps a GaiaID to the given account's AccountContext object.
-  NSMutableDictionary<NSString*, PushNotificationAccountContext*>* _contextMap;
+
+  // A dictionary that maps a user's GAIA ID to an unsigned integer representing
+  // the number of times the account is signed in across BrowserStates.
+  std::map<std::string, size_t> _contextMap;
 }
 
 - (instancetype)initWithChromeBrowserStateManager:
@@ -38,87 +33,107 @@
   self = [super init];
 
   if (self) {
-    _contextMap = [[NSMutableDictionary alloc] init];
     _chromeBrowserStateManager = manager;
     BrowserStateInfoCache* infoCache = manager->GetBrowserStateInfoCache();
-
     const size_t numberOfBrowserStates = infoCache->GetNumberOfBrowserStates();
     for (size_t i = 0; i < numberOfBrowserStates; i++) {
-      NSString* gaiaID =
-          base::SysUTF8ToNSString(infoCache->GetGAIAIdOfBrowserStateAtIndex(i));
-      base::FilePath path = infoCache->GetPathOfBrowserStateAtIndex(i);
-      ChromeBrowserState* chromeBrowserState =
-          _chromeBrowserStateManager->GetBrowserState(path);
-      [self addAccount:gaiaID withBrowserState:chromeBrowserState];
+      std::string gaiaID = infoCache->GetGAIAIdOfBrowserStateAtIndex(i);
+      [self addAccount:gaiaID];
     }
   }
 
   return self;
 }
 
-- (BOOL)addAccount:(NSString*)gaiaID {
-  ChromeBrowserState* chromeBrowserState = [self chromeBrowserStateFrom:gaiaID];
-  if (!chromeBrowserState) {
+- (BOOL)addAccount:(const std::string&)gaiaID {
+  if (gaiaID.empty()) {
     return NO;
   }
 
-  return [self addAccount:gaiaID withBrowserState:chromeBrowserState];
-}
-
-- (BOOL)removeAccount:(NSString*)gaiaID {
-  PushNotificationAccountContext* context = _contextMap[gaiaID];
-  DCHECK(context);
-
-  context.occurrencesAcrossBrowserStates--;
-  if (context.occurrencesAcrossBrowserStates > 0)
-    return NO;
-
-  [_contextMap removeObjectForKey:gaiaID];
+  _contextMap[gaiaID] += 1;
   return YES;
 }
 
-#pragma mark - Properties
+- (BOOL)removeAccount:(const std::string&)gaiaID {
+  auto iterator = _contextMap.find(gaiaID);
+  DCHECK(iterator != _contextMap.end());
+  size_t& occurrencesAcrossBrowserStates = iterator->second;
 
-- (NSDictionary<NSString*, PushNotificationAccountContext*>*)contextMap {
-  return _contextMap;
+  occurrencesAcrossBrowserStates--;
+  if (occurrencesAcrossBrowserStates > 0) {
+    return NO;
+  }
+
+  _contextMap.erase(iterator);
+  return YES;
+}
+
+- (void)enablePushNotification:(PushNotificationClientId)clientID
+                    forAccount:(const std::string&)gaiaID {
+  ChromeBrowserState* browserState = [self chromeBrowserStateFrom:gaiaID];
+  DCHECK(browserState);
+  ScopedDictPrefUpdate update(browserState->GetPrefs(),
+                              prefs::kFeaturePushNotificationPermissions);
+  std::string key =
+      PushNotificationClientManager::PushNotificationClientIdToString(clientID);
+  update->Set(key, true);
+}
+
+- (void)disablePushNotification:(PushNotificationClientId)clientID
+                     forAccount:(const std::string&)gaiaID {
+  ChromeBrowserState* browserState = [self chromeBrowserStateFrom:gaiaID];
+  DCHECK(browserState);
+  ScopedDictPrefUpdate update(browserState->GetPrefs(),
+                              prefs::kFeaturePushNotificationPermissions);
+  std::string key =
+      PushNotificationClientManager::PushNotificationClientIdToString(clientID);
+  update->Set(key, false);
+}
+
+- (BOOL)isPushNotificationEnabledForClient:(PushNotificationClientId)clientID
+                                forAccount:(const std::string&)gaiaID {
+  ChromeBrowserState* browserState = [self chromeBrowserStateFrom:gaiaID];
+  DCHECK(browserState);
+  std::string key =
+      PushNotificationClientManager::PushNotificationClientIdToString(clientID);
+  return browserState->GetPrefs()
+      ->GetDict(prefs::kFeaturePushNotificationPermissions)
+      .FindBool(key)
+      .value_or(false);
+}
+
+- (NSDictionary<NSString*, NSNumber*>*)preferenceMapForAccount:
+    (const std::string&)gaiaID {
+  ChromeBrowserState* browserState = [self chromeBrowserStateFrom:gaiaID];
+  NSMutableDictionary<NSString*, NSNumber*>* result =
+      [[NSMutableDictionary alloc] init];
+  if (!browserState) {
+    return result;
+  }
+
+  const base::Value::Dict& pref = browserState->GetPrefs()->GetDict(
+      prefs::kFeaturePushNotificationPermissions);
+  for (const auto&& [key, value] : pref) {
+    [result setObject:@(value.GetBool()) forKey:base::SysUTF8ToNSString(key)];
+  }
+  return result;
+}
+
+- (NSArray<NSString*>*)accountIDs {
+  NSMutableArray<NSString*>* keys =
+      [[NSMutableArray alloc] initWithCapacity:_contextMap.size()];
+  for (auto const& context : _contextMap) {
+    [keys addObject:base::SysUTF8ToNSString(context.first)];
+  }
+  return keys;
+}
+
+- (NSUInteger)registrationCountForAccount:(const std::string&)gaiaID {
+  DCHECK(base::Contains(_contextMap, gaiaID));
+  return _contextMap[gaiaID];
 }
 
 #pragma mark - Private
-
-// Create a new AccountContext object for the given gaiaID, if the gaia id does
-// not already exist in the dictionary, and maps the gaiaID to the new context
-// object.
-- (BOOL)addAccount:(NSString*)gaiaID
-    withBrowserState:(ChromeBrowserState*)browserState {
-  DCHECK(browserState);
-
-  if (!gaiaID.length)
-    return NO;
-
-  PushNotificationAccountContext* context = _contextMap[gaiaID];
-  if (context) {
-    context.occurrencesAcrossBrowserStates++;
-    return NO;
-  }
-
-  PrefService* prefService = browserState->GetPrefs();
-  NSMutableDictionary<NSString*, NSNumber*>* preferenceMap =
-      [[NSMutableDictionary alloc] init];
-  const base::Value::Dict& permissions =
-      prefService->GetDict(prefs::kFeaturePushNotificationPermissions);
-
-  for (const auto pair : permissions) {
-    preferenceMap[base::SysUTF8ToNSString(pair.first)] =
-        [NSNumber numberWithBool:pair.second.GetBool()];
-  }
-
-  context = [[PushNotificationAccountContext alloc] init];
-  context.preferenceMap = preferenceMap;
-  context.occurrencesAcrossBrowserStates = 1;
-  _contextMap[gaiaID] = context;
-
-  return YES;
-}
 
 // Returns the ChromeBrowserState that has the given gaiaID set as the primary
 // account. TODO(crbug.com/1400732) Implement policy that computes correct
@@ -127,16 +142,15 @@
 // where the given gaiaID is signed into multiple profiles, it is possible that
 // the push notification enabled features' permissions may be incorrectly
 // applied.
-- (ChromeBrowserState*)chromeBrowserStateFrom:(NSString*)gaiaID {
+- (ChromeBrowserState*)chromeBrowserStateFrom:(const std::string&)gaiaID {
   BrowserStateInfoCache* infoCache =
       _chromeBrowserStateManager->GetBrowserStateInfoCache();
   const size_t numberOfBrowserStates = infoCache->GetNumberOfBrowserStates();
 
   for (size_t i = 0; i < numberOfBrowserStates; i++) {
-    NSString* browserStateGaiaID =
-        base::SysUTF8ToNSString(infoCache->GetGAIAIdOfBrowserStateAtIndex(i));
-
-    if ([gaiaID isEqualToString:browserStateGaiaID]) {
+    std::string browserStateGaiaID =
+        infoCache->GetGAIAIdOfBrowserStateAtIndex(i);
+    if (gaiaID == browserStateGaiaID) {
       base::FilePath path = infoCache->GetPathOfBrowserStateAtIndex(i);
       return _chromeBrowserStateManager->GetBrowserState(path);
     }

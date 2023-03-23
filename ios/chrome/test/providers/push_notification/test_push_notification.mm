@@ -2,8 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "base/task/sequenced_task_runner.h"
 #import "ios/public/provider/chrome/browser/push_notification/push_notification_api.h"
+
+#import "base/task/sequenced_task_runner.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -16,6 +17,20 @@ namespace {
 // Domain for test push_notification error API.
 NSString* const kTestPushNotificationErrorDomain =
     @"test_push_notification_error_domain";
+
+// Helper method that asynchronously invoke `completion_handler`
+// with an `NSFeatureUnsupportedError` on the current sequence.
+void FailWithUnsupportedFeatureError(
+    PushNotificationService::CompletionHandler completion_handler) {
+  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE, base::BindOnce(^() {
+        NSError* error =
+            [NSError errorWithDomain:kTestPushNotificationErrorDomain
+                                code:NSFeatureUnsupportedError
+                            userInfo:nil];
+        completion_handler(error);
+      }));
+}
 
 }  // namespace
 
@@ -32,6 +47,9 @@ class TestPushNotificationService final : public PushNotificationService {
   // PushNotificationService implementation.
   void SetAccountsToDevice(NSArray<NSString*>* account_ids,
                            CompletionHandler completion_handler) final;
+  void SetPreferences(NSString* account_id,
+                      PreferenceMap preference_map,
+                      CompletionHandler completion_handler) final;
 };
 
 void TestPushNotificationService::RegisterDevice(
@@ -39,29 +57,14 @@ void TestPushNotificationService::RegisterDevice(
     void (^completion_handler)(NSError* error)) {
   // Test implementation does nothing. As a result, the `completion_handler` is
   // called with a NSFeatureUnsupportedError.
-
-  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-      FROM_HERE, base::BindOnce(^() {
-        NSError* error =
-            [NSError errorWithDomain:kTestPushNotificationErrorDomain
-                                code:NSFeatureUnsupportedError
-                            userInfo:nil];
-        completion_handler(error);
-      }));
+  FailWithUnsupportedFeatureError(completion_handler);
 }
 
 void TestPushNotificationService::UnregisterDevice(
     void (^completion_handler)(NSError* error)) {
   // Test implementation does nothing. As a result, the `completion_handler` is
   // called with a NSFeatureUnsupportedError.
-  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-      FROM_HERE, base::BindOnce(^() {
-        NSError* error =
-            [NSError errorWithDomain:kTestPushNotificationErrorDomain
-                                code:NSFeatureUnsupportedError
-                            userInfo:nil];
-        completion_handler(error);
-      }));
+  FailWithUnsupportedFeatureError(completion_handler);
 }
 
 bool TestPushNotificationService::DeviceTokenIsSet() const {
@@ -73,15 +76,16 @@ void TestPushNotificationService::SetAccountsToDevice(
     void (^completion_handler)(NSError* error)) {
   // Test implementation does nothing. As a result, the `completion_handler` is
   // called with a NSFeatureUnsupportedError.
+  FailWithUnsupportedFeatureError(completion_handler);
+}
 
-  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-      FROM_HERE, base::BindOnce(^() {
-        NSError* error =
-            [NSError errorWithDomain:kTestPushNotificationErrorDomain
-                                code:NSFeatureUnsupportedError
-                            userInfo:nil];
-        completion_handler(error);
-      }));
+void TestPushNotificationService::SetPreferences(
+    NSString* account_id,
+    PreferenceMap preference_map,
+    CompletionHandler completion_handler) {
+  // Test implementation does nothing. As a result, the `completion_handler` is
+  // called with a NSFeatureUnsupportedError.
+  FailWithUnsupportedFeatureError(completion_handler);
 }
 
 std::unique_ptr<PushNotificationService> CreatePushNotificationService() {
