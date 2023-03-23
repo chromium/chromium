@@ -59,10 +59,7 @@ SystemNotificationController::SystemNotificationController()
       tracing_(std::make_unique<TracingNotificationController>()),
       update_(std::make_unique<UpdateNotificationController>()),
       wifi_toggle_(std::make_unique<WifiToggleNotificationController>()) {
-  if (features::IsSimLockPolicyEnabled()) {
-    managed_sim_lock_notifier_ =
-        std::make_unique<ash::ManagedSimLockNotifier>();
-  }
+  managed_sim_lock_notifier_ = std::make_unique<ash::ManagedSimLockNotifier>();
   if (features::IsHotspotEnabled()) {
     hotspot_notifier_ = std::make_unique<ash::HotspotNotifier>();
   }

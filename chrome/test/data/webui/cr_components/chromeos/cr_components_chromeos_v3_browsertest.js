@@ -106,15 +106,6 @@ function registerTest(componentName, webuiHost, testName, module) {
           webuiHost}/test_loader.html?module=cr_components/chromeos/${
           module}&host=test`;
     }
-
-    /** @override */
-    get featureList() {
-      return {
-        enabled: [
-          'ash::features::kSimLockPolicy',
-        ],
-      };
-    }
   };
 
   TEST_F(className, 'All', () => mocha.run());
@@ -130,15 +121,6 @@ function registerWebUiTest(componentName, webuiHost, testName, module) {
       return `chrome://${
           webuiHost}/test_loader.html?module=cr_components/chromeos/${
           module}`;
-    }
-
-    /** @override */
-    get featureList() {
-      return {
-        enabled: [
-          'ash::features::kSimLockPolicy',
-        ],
-      };
     }
   };
 

@@ -2889,11 +2889,6 @@ const char kShowOverdrawFeedbackDescription[] =
     "Visualize overdraw by color-coding elements based on if they have other "
     "elements drawn underneath.";
 
-extern const char kSimLockPolicyName[] = "SIM Lock Policy";
-extern const char kSimLockPolicyDescription[] =
-    "Enable the support for policy controlled enabling or disabling of PIN "
-    "Locking SIMs on managed devices.";
-
 const char kIsolateOriginsName[] = "Isolate additional origins";
 const char kIsolateOriginsDescription[] =
     "Requires dedicated processes for an additional set of origins, "

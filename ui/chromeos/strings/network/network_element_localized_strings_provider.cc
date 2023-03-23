@@ -493,8 +493,6 @@ void AddDetailsLocalizedStrings(content::WebUIDataSource* html_source) {
   };
   html_source->AddLocalizedStrings(kLocalizedStrings);
 
-  html_source->AddBoolean("isSimLockPolicyEnabled",
-                          ash::features::IsSimLockPolicyEnabled());
   html_source->AddBoolean("isApnRevampEnabled",
                           ash::features::IsApnRevampEnabled());
 }

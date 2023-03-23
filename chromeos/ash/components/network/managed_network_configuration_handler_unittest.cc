@@ -11,7 +11,6 @@
 #include "base/functional/callback_helpers.h"
 #include "base/logging.h"
 #include "base/run_loop.h"
-#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/test/values_test_util.h"
 #include "base/values.h"
@@ -1404,9 +1403,6 @@ TEST_F(ManagedNetworkConfigurationHandlerTest,
 }
 
 TEST_F(ManagedNetworkConfigurationHandlerTest, AllowCellularSimLock) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(features::kSimLockPolicy);
-
   // Set 'AllowCellularSimLock' policy.
   EXPECT_TRUE(SetPolicy(::onc::ONC_SOURCE_DEVICE_POLICY, std::string(),
                         "policy/policy_allow_cellular_sim_lock.onc"));

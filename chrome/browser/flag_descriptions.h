@@ -3515,9 +3515,6 @@ extern const char kShowTapsDescription[];
 extern const char kShowTouchHudName[];
 extern const char kShowTouchHudDescription[];
 
-extern const char kSimLockPolicyName[];
-extern const char kSimLockPolicyDescription[];
-
 extern const char kSnoopingProtectionName[];
 extern const char kSnoopingProtectionDescription[];
 

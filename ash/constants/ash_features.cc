@@ -1929,9 +1929,6 @@ BASE_FEATURE(kShutdownConfirmationBubble,
              "ShutdownConfirmationBubble",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-// Enables or disables enterprise policy control for SIM PIN Lock.
-BASE_FEATURE(kSimLockPolicy, "SimLockPolicy", base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Uses experimental component version for smart dim.
 BASE_FEATURE(kSmartDimExperimentalComponent,
              "SmartDimExperimentalComponent",
@@ -3217,10 +3214,6 @@ bool IsShimlessRMADiagnosticPageEnabled() {
 
 bool IsSmdsDbusMigrationEnabled() {
   return base::FeatureList::IsEnabled(kSmdsDbusMigration);
-}
-
-bool IsSimLockPolicyEnabled() {
-  return base::FeatureList::IsEnabled(kSimLockPolicy);
 }
 
 bool IsSmartReaderEnabled() {

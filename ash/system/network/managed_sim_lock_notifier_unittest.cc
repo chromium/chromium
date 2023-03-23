@@ -10,7 +10,6 @@
 #include "base/functional/bind.h"
 #include "base/run_loop.h"
 #include "base/test/metrics/histogram_tester.h"
-#include "base/test/scoped_feature_list.h"
 #include "chromeos/ash/components/network/cellular_metrics_logger.h"
 #include "chromeos/ash/components/network/network_handler.h"
 #include "chromeos/ash/components/network/network_handler_test_helper.h"
@@ -38,9 +37,7 @@ const char kTestEid[] = "123456789012345678901234567890123";
 
 class ManagedSimLockNotifierTest : public NoSessionAshTestBase {
  protected:
-  ManagedSimLockNotifierTest() {
-    scoped_feature_list_.InitAndEnableFeature(features::kSimLockPolicy);
-  }
+  ManagedSimLockNotifierTest() = default;
   ManagedSimLockNotifierTest(const ManagedSimLockNotifierTest&) = delete;
   ManagedSimLockNotifierTest& operator=(const ManagedSimLockNotifierTest&) =
       delete;
@@ -162,7 +159,6 @@ class ManagedSimLockNotifierTest : public NoSessionAshTestBase {
         ManagedSimLockNotifier::kManagedSimLockNotificationId);
   }
 
-  base::test::ScopedFeatureList scoped_feature_list_;
   std::unique_ptr<network_config::CrosNetworkConfigTestHelper>
       network_config_helper_;
   std::unique_ptr<NetworkHandlerTestHelper> network_handler_test_helper_;

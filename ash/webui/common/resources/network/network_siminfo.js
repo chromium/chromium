@@ -119,20 +119,11 @@ Polymer({
     },
 
     /** @private {boolean} */
-    isSimLockPolicyEnabled_: {
-      type: Boolean,
-      value() {
-        return loadTimeData.valueExists('isSimLockPolicyEnabled') &&
-            loadTimeData.getBoolean('isSimLockPolicyEnabled');
-      },
-    },
-
-    /** @private {boolean} */
     isSimPinLockRestricted_: {
       type: Boolean,
       value: false,
-      computed: 'computeIsSimPinLockRestricted_(isSimLockPolicyEnabled_,' +
-          'globalPolicy, globalPolicy.*, lockEnabled_)',
+      computed: 'computeIsSimPinLockRestricted_(globalPolicy,' +
+          'globalPolicy.*, lockEnabled_)',
     },
   },
 
@@ -346,8 +337,7 @@ Polymer({
    * @private
    */
   computeIsSimPinLockRestricted_() {
-    return this.isSimLockPolicyEnabled_ && !!this.globalPolicy &&
-        !this.globalPolicy.allowCellularSimLock;
+    return !!this.globalPolicy && !this.globalPolicy.allowCellularSimLock;
   },
 
   /**
