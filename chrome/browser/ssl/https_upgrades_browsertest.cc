@@ -243,7 +243,7 @@ IN_PROC_BROWSER_TEST_P(HttpsUpgradesBrowserTest,
                                     1);
 
     // Also record general request metrics.
-    histograms()->ExpectTotalCount(kNavigationRequestSecurityLevelHistogram, 2);
+    histograms()->ExpectTotalCount(kNavigationRequestSecurityLevelHistogram, 3);
     histograms()->ExpectBucketCount(kNavigationRequestSecurityLevelHistogram,
                                     NavigationRequestSecurityLevel::kSecure, 1);
     histograms()->ExpectBucketCount(kNavigationRequestSecurityLevelHistogram,
@@ -256,7 +256,7 @@ IN_PROC_BROWSER_TEST_P(HttpsUpgradesBrowserTest,
                                     Event::kUpgradeNotAttempted, 1);
 
     // Also record general request metrics.
-    histograms()->ExpectTotalCount(kNavigationRequestSecurityLevelHistogram, 1);
+    histograms()->ExpectTotalCount(kNavigationRequestSecurityLevelHistogram, 2);
     histograms()->ExpectBucketCount(kNavigationRequestSecurityLevelHistogram,
                                     NavigationRequestSecurityLevel::kInsecure,
                                     1);
@@ -297,6 +297,38 @@ IN_PROC_BROWSER_TEST_P(HttpsUpgradesBrowserTest, Localhost_ShouldNotUpgrade) {
   histograms()->ExpectBucketCount(kNavigationRequestSecurityLevelHistogram,
                                   NavigationRequestSecurityLevel::kLocalhost,
                                   1);
+}
+
+// If the user navigates to a non-unique hostname, the navigation should be
+// upgraded, but record insecure metrics.
+IN_PROC_BROWSER_TEST_P(HttpsUpgradesBrowserTest, NonUniqueHost_RecordsMetrics) {
+  GURL nonunique_url1 = http_server()->GetURL("test.local", "/simple.html");
+  GURL nonunique_url2 = http_server()->GetURL("test", "/simple.html");
+  // Note that we don't test with an RFC1918 IP because the test server
+  // wouldn't receive the traffic (since it relies on DNS).
+
+  auto* contents = browser()->tab_strip_model()->GetActiveWebContents();
+  if (IsHttpUpgradingEnabled()) {
+    EXPECT_FALSE(content::NavigateToURL(contents, nonunique_url1));
+    EXPECT_FALSE(content::NavigateToURL(contents, nonunique_url2));
+    // Other histograms are still recorded.
+    histograms()->ExpectBucketCount(kNavigationRequestSecurityLevelHistogram,
+                                    NavigationRequestSecurityLevel::kUpgraded,
+                                    2);
+    histograms()->ExpectBucketCount(kNavigationRequestSecurityLevelHistogram,
+                                    NavigationRequestSecurityLevel::kSecure, 2);
+  } else {
+    EXPECT_TRUE(content::NavigateToURL(contents, nonunique_url1));
+    EXPECT_TRUE(content::NavigateToURL(contents, nonunique_url2));
+    // Other histograms are still recorded.
+    histograms()->ExpectBucketCount(kNavigationRequestSecurityLevelHistogram,
+                                    NavigationRequestSecurityLevel::kInsecure,
+                                    2);
+  }
+
+  histograms()->ExpectBucketCount(
+      kNavigationRequestSecurityLevelHistogram,
+      NavigationRequestSecurityLevel::kNonUniqueHostname, 2);
 }
 
 // If the user navigates to an HTTPS URL, the navigation should end up on that
@@ -1159,10 +1191,13 @@ IN_PROC_BROWSER_TEST_P(HttpsUpgradesBrowserTest, PreferHstsOverHttpsFirstMode) {
   histograms()->ExpectTotalCount(kEventHistogram, 0);
 
   // Verify that general navigation request metrics were recorded.
-  histograms()->ExpectTotalCount(kNavigationRequestSecurityLevelHistogram, 2);
+  histograms()->ExpectTotalCount(kNavigationRequestSecurityLevelHistogram, 3);
   histograms()->ExpectBucketCount(kNavigationRequestSecurityLevelHistogram,
                                   NavigationRequestSecurityLevel::kHstsUpgraded,
                                   1);
+  histograms()->ExpectBucketCount(
+      kNavigationRequestSecurityLevelHistogram,
+      NavigationRequestSecurityLevel::kNonUniqueHostname, 1);
   histograms()->ExpectBucketCount(kNavigationRequestSecurityLevelHistogram,
                                   NavigationRequestSecurityLevel::kSecure, 1);
 }
@@ -1332,7 +1367,7 @@ IN_PROC_BROWSER_TEST_P(HttpsUpgradesBrowserTest,
   EXPECT_EQ(https_url, contents->GetLastCommittedURL());
 
   // Navigate to HTTP URL on the HTTP test server's IP address. It should not
-  // get upgraded ot HTTPS and no interstitial should be shown.
+  // get upgraded to HTTPS and no interstitial should be shown.
   http_url = http_server()->GetURL("/simple.html");
   https_url = https_server()->GetURL("/simple.html");
   EXPECT_TRUE(content::NavigateToURL(contents, http_url));

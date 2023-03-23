@@ -85,7 +85,12 @@ enum class NavigationRequestSecurityLevel {
   // (NOT by clicking through the HFM interstitial / an upgrade failing).
   kAllowlisted = 7,
 
-  kMaxValue = kAllowlisted,
+  // Request was insecure (HTTP), but was to a hostname that isn't globally
+  // unique (e.g. a bare RFC1918 IP address, single-label or .local hostname).
+  // This bucket is recorded IN ADDITION to kInsecure/kAllowlisted.
+  kNonUniqueHostname = 8,
+
+  kMaxValue = kNonUniqueHostname,
 };
 
 // Helper to record an HTTPS-First Mode navigation event.

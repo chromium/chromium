@@ -255,6 +255,14 @@ void HttpsUpgradesInterceptor::MaybeCreateLoader(
     return;
   }
 
+  // Don't exclude local-network requests (for now) but record metrics for them.
+  // TODO(crbug.com/1394910): Extend the exemption list for HTTPS-Upgrades
+  // beyond just localhost.
+  if (net::IsHostnameNonUnique(tentative_resource_request.url.host())) {
+    RecordNavigationRequestSecurityLevel(
+        NavigationRequestSecurityLevel::kNonUniqueHostname);
+  }
+
   // Check whether this host would be upgraded to HTTPS by HSTS. This requires a
   // Mojo call to the network service, so set up a callback to continue the rest
   // of the MaybeCreateLoader() logic (passing along the necessary state). The

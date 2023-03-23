@@ -71044,6 +71044,7 @@ Called by update_use_counter_css.py.-->
   <int value="7"
       label="HTTP allowed by content/enterprise setting (NOT by failing
              auto-upgrade or clicking through warning)."/>
+  <int value="8" label="HTTP request to non-unique host."/>
 </enum>
 
 <enum name="NavigationRequiresDedicatedProcess">
