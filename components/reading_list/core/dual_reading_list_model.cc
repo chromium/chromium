@@ -97,17 +97,9 @@ base::flat_set<GURL> DualReadingListModel::GetKeys() const {
 
 size_t DualReadingListModel::size() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  // While an efficient universal solution isn't implemented, at least optimize
-  // for the trivial (and most common) cases, which is the case where at least
-  // one of the underlying instances is empty.
-  if (local_or_syncable_model_->size() == 0) {
-    return account_model_->size();
-  }
-  if (account_model_->size() == 0) {
-    return local_or_syncable_model_->size();
-  }
-  // TODO(crbug.com/1402196): Implement more efficiently.
-  return GetKeys().size();
+  DCHECK_EQ(unread_entry_count_ + read_entry_count_, GetKeys().size());
+
+  return unread_entry_count_ + read_entry_count_;
 }
 
 size_t DualReadingListModel::unread_size() const {
