@@ -194531,9 +194531,6 @@
     { "name": "go.microsoft.com", "policy": "custom", "mode": "force-https", "include_subdomains": true },
     { "name": "airbnb.com", "policy": "custom", "mode": "force-https", "include_subdomains": true },
     { "name": "airbnb.tools", "policy": "custom", "mode": "force-https", "include_subdomains": true },
-    { "name": "account.bbc.com", "policy": "custom", "mode": "force-https", "include_subdomains": true },
-    { "name": "session.bbc.com", "policy": "custom", "mode": "force-https", "include_subdomains": true },
-    { "name": "session.bbc.co.uk", "policy": "custom", "mode": "force-https", "include_subdomains": true },
     { "name": "bank.barclays.co.uk", "policy": "custom", "mode": "force-https", "include_subdomains": true },
     { "name": "www.raiffeisen.ch", "policy": "custom", "mode": "force-https", "include_subdomains": true },
     { "name": "ebanking.raiffeisen.ch", "policy": "custom", "mode": "force-https", "include_subdomains": true },
@@ -194680,6 +194677,13 @@
       "policy": "custom",
       "mode": "force-https", "include_subdomains": true
     },
+    { "name": "account.bbc.com", "policy": "custom", "mode": "force-https", "include_subdomains": true },
+    { "name": "session.bbc.com", "policy": "custom", "mode": "force-https", "include_subdomains": true },
+    { "name": "session.bbc.co.uk", "policy": "custom", "mode": "force-https", "include_subdomains": true },
+    { "name": "bbc.com", "policy": "custom", "mode": "force-https", "include_subdomains": false },
+    { "name": "www.bbc.com", "policy": "custom", "mode": "force-https", "include_subdomains": false },
+    { "name": "bbc.co.uk", "policy": "custom", "mode": "force-https", "include_subdomains": false },
+    { "name": "www.bbc.co.uk", "policy": "custom", "mode": "force-https", "include_subdomains": false },
     // END OF MANUAL CUSTOM ENTRIES
 
     // eTLD owners who are working towards wide HSTS adoption can request to
