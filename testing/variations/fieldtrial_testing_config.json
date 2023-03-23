@@ -11249,7 +11249,7 @@
             ]
         }
     ],
-    "ServiceWorkerBypassFetchHandlerForMainResources": [
+    "ServiceWorkerBypassFetchHandler": [
         {
             "platforms": [
                 "android",
@@ -11262,7 +11262,7 @@
             ],
             "experiments": [
                 {
-                    "name": "ServiceWorkerBypassFetchHandlerForMainResource_20230322",
+                    "name": "ServiceWorkerBypassFetchHandlerForMainResource_20230323",
                     "params": {
                         "bypass_for": "main_resource",
                         "script_checksum_to_bypass": "144B3D5485B621F5896FD51D6A6FE66A07B6DBC3ACF6404748A833C2D592F900",
