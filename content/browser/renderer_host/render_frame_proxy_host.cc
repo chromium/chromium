@@ -694,8 +694,10 @@ void RenderFrameProxyHost::OpenURL(blink::mojom::OpenURLParamsPtr params) {
 
   // Verify that we are in the same BrowsingInstance as the current
   // RenderFrameHost.
-  if (!site_instance_->IsRelatedSiteInstance(current_rfh->GetSiteInstance()))
+  if (!site_instance_group()->IsRelatedSiteInstanceGroup(
+          current_rfh->GetSiteInstance()->group())) {
     return;
+  }
 
   // Since this navigation targeted a specific RenderFrameProxy, it should stay
   // in the current tab.
