@@ -4,6 +4,7 @@
 
 #import "ios/chrome/browser/ui/link_to_text/link_to_text_mediator.h"
 
+#import "base/memory/weak_ptr.h"
 #import "components/shared_highlighting/core/common/shared_highlighting_metrics.h"
 #import "ios/chrome/browser/link_to_text/link_to_text_payload.h"
 #import "ios/chrome/browser/link_to_text/link_to_text_response.h"
@@ -21,42 +22,42 @@ using shared_highlighting::LinkGenerationError;
 
 @interface LinkToTextMediator ()
 
-// The Browser's WebStateList.
-@property(nonatomic, readonly) WebStateList* webStateList;
-
 // Instance in charge of handling link-to-text updates.
 @property(nonatomic, readonly, weak) id<LinkToTextConsumer> consumer;
 
 @end
 
-@implementation LinkToTextMediator
+@implementation LinkToTextMediator {
+  // The Browser's WebStateList.
+  base::WeakPtr<WebStateList> _webStateList;
+}
 
 - (instancetype)initWithWebStateList:(WebStateList*)webStateList
                             consumer:(id<LinkToTextConsumer>)consumer {
   if (self = [super init]) {
     DCHECK(webStateList);
     DCHECK(consumer);
-    _webStateList = webStateList;
+    _webStateList = webStateList->AsWeakPtr();
     _consumer = consumer;
   }
   return self;
 }
 
-- (void)dealloc {
-  if (_webStateList) {
-    _webStateList = nullptr;
-  }
-}
-
 - (BOOL)shouldOfferLinkToText {
   DCHECK(base::FeatureList::IsEnabled(kSharedHighlightingIOS));
-  return [self linkToTextTabHelper]->ShouldOffer();
+  LinkToTextTabHelper* tabHelper = [self linkToTextTabHelper];
+  if (!tabHelper) {
+    return NO;
+  }
+  return tabHelper->ShouldOffer();
 }
 
 - (void)handleLinkToTextSelection {
   DCHECK(base::FeatureList::IsEnabled(kSharedHighlightingIOS));
   LinkToTextTabHelper* tabHelper = [self linkToTextTabHelper];
-
+  if (!tabHelper) {
+    return;
+  }
   __weak __typeof(self) weakSelf = self;
   tabHelper->GetLinkToText(base::BindOnce(^(LinkToTextResponse* response) {
     [weakSelf receivedLinkToTextResponse:response];
@@ -93,9 +94,12 @@ using shared_highlighting::LinkGenerationError;
 }
 
 - (LinkToTextTabHelper*)linkToTextTabHelper {
-  web::WebState* web_state = _webStateList->GetActiveWebState();
-  DCHECK(web_state);
-  LinkToTextTabHelper* helper = LinkToTextTabHelper::FromWebState(web_state);
+  web::WebState* webState =
+      _webStateList ? _webStateList->GetActiveWebState() : nullptr;
+  if (!webState) {
+    return nullptr;
+  }
+  LinkToTextTabHelper* helper = LinkToTextTabHelper::FromWebState(webState);
   DCHECK(helper);
   return helper;
 }
