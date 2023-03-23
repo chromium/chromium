@@ -16,6 +16,7 @@
 #include "components/feature_engagement/public/feature_constants.h"
 #include "components/feature_engagement/public/tracker.h"
 #include "components/feature_engagement/test/scoped_iph_feature_list.h"
+#include "components/safe_browsing/core/common/features.h"
 #include "components/user_education/test/feature_promo_test_util.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/download_test_observer.h"
@@ -25,7 +26,9 @@ class DownloadBubbleTest : public InProcessBrowserTest {
  public:
   DownloadBubbleTest() {
     test_features_.InitAndEnableFeatures(
-        {feature_engagement::kIPHDownloadToolbarButtonFeature}, {});
+        {feature_engagement::kIPHDownloadToolbarButtonFeature,
+         safe_browsing::kDownloadBubble, safe_browsing::kDownloadBubbleV2},
+        {});
   }
 
   void SetUpOnMainThread() override {
