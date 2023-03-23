@@ -268,7 +268,13 @@ export class SearchContainer extends EventTarget {
     if (!this.pathDisplay_) {
       return;
     }
-    this.pathDisplay_.path = this.getSelectedPath_(state);
+    const path = this.getSelectedPath_(state);
+    if (path) {
+      this.pathDisplay_.removeAttribute('hidden');
+      this.pathDisplay_.path = path;
+    } else {
+      this.pathDisplay_.setAttribute('hidden', '');
+    }
   }
 
   /**
