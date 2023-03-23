@@ -305,14 +305,7 @@ class EnterpriseWelcomeUIDialogPixelTest
   std::unique_ptr<base::ScopedEnvironmentVariableOverride> scoped_env_override_;
 };
 
-// TODO(crbug.com/1427075): Re-enable this test
-#if BUILDFLAG(IS_WIN)
-#define MAYBE_InvokeUi_default DISABLED_InvokeUi_default
-#else
-#define MAYBE_InvokeUi_default InvokeUi_default
-#endif
-IN_PROC_BROWSER_TEST_P(EnterpriseWelcomeUIDialogPixelTest,
-                       MAYBE_InvokeUi_default) {
+IN_PROC_BROWSER_TEST_P(EnterpriseWelcomeUIDialogPixelTest, InvokeUi_default) {
   ShowAndVerifyUi();
 }
 
