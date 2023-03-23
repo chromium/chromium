@@ -48,11 +48,13 @@ std::set<std::string> GetUniqueSuffixes(
   for (const auto& file_url : file_urls) {
     const storage::FileSystemURL url =
         context->CrackURLInFirstPartyContext(GURL{file_url});
-    if (!url.is_valid() || url.path().empty())
+    if (!url.is_valid() || url.path().empty()) {
       return {};
+    }
     // We'll skip empty suffixes.
-    if (!url.path().Extension().empty())
+    if (!url.path().Extension().empty()) {
       suffixes.insert(url.path().Extension());
+    }
   }
   return suffixes;
 }
@@ -63,8 +65,9 @@ std::set<std::string> GetUniqueMimeTypes(
   std::set<std::string> mime_types;
   for (const auto& mime_type : mime_type_list) {
     // We'll skip empty MIME types and existing MIME types.
-    if (!mime_type.empty())
+    if (!mime_type.empty()) {
       mime_types.insert(mime_type);
+    }
   }
   return mime_types;
 }
@@ -167,8 +170,9 @@ FileManagerPrivateInternalGetFileTasksFunction::Run() {
   const absl::optional<Params> params = Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(params);
 
-  if (params->urls.empty())
+  if (params->urls.empty()) {
     return RespondNow(Error("No URLs provided"));
+  }
 
   if (params->dlp_source_urls.size() != params->urls.size()) {
     return RespondNow(Error("Mismatching URLs and DLP source URLs provided"));
@@ -185,8 +189,9 @@ FileManagerPrivateInternalGetFileTasksFunction::Run() {
     const GURL url{url_param};
     storage::FileSystemURL file_system_url(
         file_system_context->CrackURLInFirstPartyContext(url));
-    if (!ash::FileSystemBackend::CanHandleURL(file_system_url))
+    if (!ash::FileSystemBackend::CanHandleURL(file_system_url)) {
       continue;
+    }
     urls_.push_back(url);
     local_paths_.push_back(file_system_url.path());
   }
@@ -245,8 +250,9 @@ void FileManagerPrivateInternalGetFileTasksFunction::OnFileTasksListed(
     converted.descriptor.task_type =
         TaskTypeToString(task.task_descriptor.task_type);
     converted.descriptor.action_id = task.task_descriptor.action_id;
-    if (!task.icon_url.is_empty())
+    if (!task.icon_url.is_empty()) {
       converted.icon_url = task.icon_url.spec();
+    }
     converted.title = task.task_title;
     converted.is_default = task.is_default;
     converted.is_generic_file_handler = task.is_generic_file_handler;

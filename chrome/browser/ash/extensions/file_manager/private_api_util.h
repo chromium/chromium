@@ -29,7 +29,7 @@ class Profile;
 namespace base {
 class File;
 class FilePath;
-}
+}  // namespace base
 
 namespace content {
 class RenderFrameHost;
@@ -46,8 +46,8 @@ struct EntryProperties;
 struct IconSet;
 struct VolumeMetadata;
 struct MountableGuest;
-}
-}
+}  // namespace file_manager_private
+}  // namespace api
 }  // namespace extensions
 
 namespace ui {

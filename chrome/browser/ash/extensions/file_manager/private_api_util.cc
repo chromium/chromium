@@ -626,8 +626,9 @@ base::FilePath GetLocalPathFromURL(content::RenderFrameHost* render_frame_host,
   const storage::FileSystemURL filesystem_url(
       file_system_context->CrackURLInFirstPartyContext(url));
   base::FilePath path;
-  if (!ash::FileSystemBackend::CanHandleURL(filesystem_url))
+  if (!ash::FileSystemBackend::CanHandleURL(filesystem_url)) {
     return base::FilePath();
+  }
   return filesystem_url.path();
 }
 
@@ -658,8 +659,9 @@ void GetSelectedFileInfo(content::RenderFrameHost* render_frame_host,
 }
 
 drive::EventLogger* GetLogger(Profile* profile) {
-  if (!profile)
+  if (!profile) {
     return nullptr;
+  }
   drive::DriveIntegrationService* service =
       drive::DriveIntegrationServiceFactory::FindForProfile(profile);
   return service ? service->event_logger() : nullptr;

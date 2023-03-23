@@ -88,8 +88,9 @@ ExtensionFunction::ResponseAction FileManagerPrivateAddMountFunction::Run() {
 
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
-  if (params->password)
+  if (params->password) {
     options_.push_back("password=" + *params->password);
+  }
 
   extension_ = base::ToLowerASCII(path_.Extension());
 
@@ -279,8 +280,9 @@ void FileManagerPrivateRemoveMountFunction::OnDiskUnmounted(
 
 ExtensionFunction::ResponseAction
 FileManagerPrivateGetVolumeMetadataListFunction::Run() {
-  if (!args().empty())
+  if (!args().empty()) {
     return RespondNow(Error("Invalid arguments"));
+  }
 
   Profile* const profile = Profile::FromBrowserContext(browser_context());
   const std::vector<base::WeakPtr<file_manager::Volume>>& volume_list =
@@ -293,8 +295,9 @@ FileManagerPrivateGetVolumeMetadataListFunction::Run() {
     file_manager::util::VolumeToVolumeMetadata(profile, *volume,
                                                &volume_metadata);
     result.push_back(std::move(volume_metadata));
-    if (!log_string.empty())
+    if (!log_string.empty()) {
       log_string += ", ";
+    }
     log_string += volume->mount_path().AsUTF8Unsafe();
   }
 

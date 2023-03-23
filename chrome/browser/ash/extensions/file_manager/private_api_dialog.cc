@@ -223,8 +223,9 @@ FileManagerPrivateGetAndroidPickerAppsFunction::Run() {
   auto* intent_helper = ARC_GET_INSTANCE_FOR_METHOD(
       arc::ArcServiceManager::Get()->arc_bridge_service()->intent_helper(),
       RequestIntentHandlerList);
-  if (!intent_helper)
+  if (!intent_helper) {
     return RespondNow(Error("Can't get ARC intent helper"));
+  }
 
   arc::mojom::IntentInfoPtr intent = arc::mojom::IntentInfo::New();
   intent->action = "android.intent.action.GET_CONTENT";
@@ -287,8 +288,9 @@ void FileManagerPrivateGetAndroidPickerAppsFunction::OnIconsLoaded(
   using api::file_manager_private::FileTask;
   std::vector<api::file_manager_private::AndroidApp> results;
   for (const auto& handler : handlers) {
-    if (arc::IsPickerPackageToExclude(handler->package_name))
+    if (arc::IsPickerPackageToExclude(handler->package_name)) {
       continue;
+    }
 
     api::file_manager_private::AndroidApp app;
     app.name = handler->name;

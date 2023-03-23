@@ -63,8 +63,9 @@ class TestNotificationPlatformBridgeDelegator
     notification_ids_.insert(notification.id());
     strings.title = notification.title();
     strings.message = notification.message();
-    for (const message_center::ButtonInfo& button : notification.buttons())
+    for (const message_center::ButtonInfo& button : notification.buttons()) {
       strings.buttons.push_back(button.title);
+    }
     notifications_[notification.id()] = strings;
     delegates_[notification.id()] = notification.delegate();
   }

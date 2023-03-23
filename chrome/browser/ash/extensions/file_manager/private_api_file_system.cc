@@ -131,11 +131,13 @@ void GetSizeStatsAsync(const base::FilePath& mount_path,
                        uint64_t* total_size,
                        uint64_t* remaining_size) {
   int64_t size = base::SysInfo::AmountOfTotalDiskSpace(mount_path);
-  if (size >= 0)
+  if (size >= 0) {
     *total_size = size;
+  }
   size = base::SysInfo::AmountOfFreeDiskSpace(mount_path);
-  if (size >= 0)
+  if (size >= 0) {
     *remaining_size = size;
+  }
 }
 
 // Retrieves the maximum file name length of the file system of |path|.
@@ -370,8 +372,9 @@ ExtensionFunction::ResponseAction FileManagerPrivateGrantAccessFunction::Run() {
   const std::vector<Profile*>& profiles =
       g_browser_process->profile_manager()->GetLoadedProfiles();
   for (auto* profile : profiles) {
-    if (profile->IsOffTheRecord())
+    if (profile->IsOffTheRecord()) {
       continue;
+    }
     storage::FileSystemContext* const context =
         file_manager::util::GetFileSystemContextForSourceURL(profile,
                                                              source_url());
@@ -426,12 +429,15 @@ void FileWatchFunctionBase::RespondWith(bool success) {
 ExtensionFunction::ResponseAction FileWatchFunctionBase::Run() {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
-  if (!render_frame_host() || !render_frame_host()->GetProcess())
+  if (!render_frame_host() || !render_frame_host()->GetProcess()) {
     return RespondNow(Error("Invalid state"));
+  }
 
   // First param is url of a file to watch.
-  if (args().empty() || !args()[0].is_string() || args()[0].GetString().empty())
+  if (args().empty() || !args()[0].is_string() ||
+      args()[0].GetString().empty()) {
     return RespondNow(Error("Empty watch URL"));
+  }
   const std::string& url = args()[0].GetString();
 
   Profile* const profile = Profile::FromBrowserContext(browser_context());
@@ -449,17 +455,20 @@ ExtensionFunction::ResponseAction FileWatchFunctionBase::Run() {
   // been unmounted.
   if (IsAddWatch()) {
     VolumeManager* const volume_manager = VolumeManager::Get(profile);
-    if (!volume_manager)
+    if (!volume_manager) {
       return RespondNow(Error("Cannot find VolumeManager"));
+    }
 
     const base::WeakPtr<Volume> volume =
         volume_manager->FindVolumeFromPath(file_system_url.path());
-    if (!volume)
+    if (!volume) {
       return RespondNow(
           Error("Cannot find volume *", Redact(file_system_url.path())));
+    }
 
-    if (!volume->watchable())
+    if (!volume->watchable()) {
       return RespondNow(Error("Volume is not watchable"));
+    }
   }
 
   file_manager::EventRouter* const event_router =
@@ -577,13 +586,15 @@ FileManagerPrivateGetSizeStatsFunction::Run() {
 
   VolumeManager* const volume_manager =
       VolumeManager::Get(Profile::FromBrowserContext(browser_context()));
-  if (!volume_manager)
+  if (!volume_manager) {
     return RespondNow(Error("Cannot find VolumeManager"));
+  }
 
   base::WeakPtr<Volume> volume =
       volume_manager->FindVolumeById(params->volume_id);
-  if (!volume.get())
+  if (!volume.get()) {
     return RespondNow(Error("Cannot find volume with ID *", params->volume_id));
+  }
 
   // For fusebox volumes, get the underlying (aka regular) volume.
   const auto fusebox = base::StringPiece(file_manager::util::kFuseBox);
@@ -813,8 +824,9 @@ FileManagerPrivateInternalValidatePathNameLengthFunction::Run() {
   const storage::FileSystemURL file_system_url(
       file_system_context->CrackURLInFirstPartyContext(
           GURL(params->parent_url)));
-  if (!ash::FileSystemBackend::CanHandleURL(file_system_url))
+  if (!ash::FileSystemBackend::CanHandleURL(file_system_url)) {
     return RespondNow(Error("Invalid URL"));
+  }
 
   base::ThreadPool::PostTaskAndReplyWithResult(
       FROM_HERE, {base::MayBlock(), base::TaskPriority::USER_BLOCKING},
@@ -839,13 +851,15 @@ FileManagerPrivateFormatVolumeFunction::Run() {
 
   VolumeManager* const volume_manager =
       VolumeManager::Get(Profile::FromBrowserContext(browser_context()));
-  if (!volume_manager)
+  if (!volume_manager) {
     return RespondNow(Error("Cannot find VolumeManager"));
+  }
 
   const base::WeakPtr<Volume> volume =
       volume_manager->FindVolumeById(params->volume_id);
-  if (!volume)
+  if (!volume) {
     return RespondNow(Error("Cannot find volume with ID *", params->volume_id));
+  }
 
   DiskMountManager::GetInstance()->FormatMountedDevice(
       volume->mount_path().AsUTF8Unsafe(),
@@ -897,13 +911,15 @@ FileManagerPrivateRenameVolumeFunction::Run() {
 
   VolumeManager* const volume_manager =
       VolumeManager::Get(Profile::FromBrowserContext(browser_context()));
-  if (!volume_manager)
+  if (!volume_manager) {
     return RespondNow(Error("Cannot find VolumeManager"));
+  }
 
   const base::WeakPtr<Volume> volume =
       volume_manager->FindVolumeById(params->volume_id);
-  if (!volume)
+  if (!volume) {
     return RespondNow(Error("Cannot find volume with ID *", params->volume_id));
+  }
 
   DiskMountManager::GetInstance()->RenameMountedDevice(
       volume->mount_path().AsUTF8Unsafe(), params->new_name);
@@ -1372,8 +1388,9 @@ FileManagerPrivateSearchFilesByHashesFunction::SearchByAttribute(
     const base::FilePath& prefix) {
   std::vector<drive::HashAndFilePath> results;
 
-  if (hashes.empty())
+  if (hashes.empty()) {
     return results;
+  }
 
   std::set<std::string> remaining = hashes;
   std::vector<char> attribute;
@@ -1388,8 +1405,9 @@ FileManagerPrivateSearchFilesByHashesFunction::SearchByAttribute(
         bool success = dir.AppendRelativePath(path, &drive_path);
         DCHECK(success);
         results.push_back({md5, drive_path});
-        if (remaining.empty())
+        if (remaining.empty()) {
           break;
+        }
       }
     }
   }
@@ -1562,8 +1580,9 @@ FileManagerPrivateInternalStartIOTaskFunction::Run() {
 
   VolumeManager* const volume_manager =
       VolumeManager::Get(Profile::FromBrowserContext(browser_context()));
-  if (!volume_manager || !volume_manager->io_task_controller())
+  if (!volume_manager || !volume_manager->io_task_controller()) {
     return RespondNow(Error("Cannot find VolumeManager"));
+  }
 
   std::vector<storage::FileSystemURL> source_urls;
   for (const std::string& url : params->urls) {
@@ -1682,8 +1701,9 @@ FileManagerPrivateCancelIOTaskFunction::Run() {
 
   VolumeManager* const volume_manager =
       VolumeManager::Get(Profile::FromBrowserContext(browser_context()));
-  if (!volume_manager || !volume_manager->io_task_controller())
+  if (!volume_manager || !volume_manager->io_task_controller()) {
     return RespondNow(Error("Cannot find VolumeManager"));
+  }
 
   if (params->task_id <= 0) {
     return RespondNow(Error("Invalid task id"));

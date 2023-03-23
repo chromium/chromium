@@ -74,8 +74,9 @@ void DeviceEventRouter::OnDiskAdded(const ash::disks::Disk& disk,
 void DeviceEventRouter::OnDiskRemoved(const ash::disks::Disk& disk) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
 
-  if (is_resuming_ || is_starting_up_)
+  if (is_resuming_ || is_starting_up_) {
     return;
+  }
 
   const std::string& device_path = disk.storage_device_path();
   if (!disk.is_read_only() && disk.is_mounted() &&
@@ -202,8 +203,9 @@ void DeviceEventRouter::SetDeviceState(const std::string& device_path,
   } else {
     const std::map<std::string, DeviceState>::iterator it =
         device_states_.find(device_path);
-    if (it != device_states_.end())
+    if (it != device_states_.end()) {
       device_states_.erase(it);
+    }
   }
 }
 

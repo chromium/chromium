@@ -271,8 +271,9 @@ class FileManagerPrivateApiTest : public extensions::ExtensionApiTest {
       int disk_info_index = mp.disk_info_index;
       if (mp.disk_info_index >= 0) {
         EXPECT_GT(std::size(kTestDisks), static_cast<size_t>(disk_info_index));
-        if (static_cast<size_t>(disk_info_index) >= std::size(kTestDisks))
+        if (static_cast<size_t>(disk_info_index) >= std::size(kTestDisks)) {
           return;
+        }
 
         std::unique_ptr<Disk> disk =
             Disk::Builder()

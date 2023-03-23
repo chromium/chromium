@@ -37,8 +37,9 @@ FileManagerPrivateInternalToggleAddedToHoldingSpaceFunction::Run() {
   ash::HoldingSpaceKeyedService* const holding_space =
       ash::HoldingSpaceKeyedServiceFactory::GetInstance()->GetService(
           browser_context());
-  if (!holding_space)
+  if (!holding_space) {
     return RespondNow(Error("Not enabled"));
+  }
 
   scoped_refptr<storage::FileSystemContext> file_system_context =
       file_manager::util::GetFileSystemContextForRenderFrameHost(
@@ -48,8 +49,9 @@ FileManagerPrivateInternalToggleAddedToHoldingSpaceFunction::Run() {
   for (const auto& item_url : params->urls) {
     const storage::FileSystemURL file_system_url =
         file_system_context->CrackURLInFirstPartyContext(GURL(item_url));
-    if (!file_system_url.is_valid())
+    if (!file_system_url.is_valid()) {
       return RespondNow(Error("Invalid item URL " + item_url));
+    }
     file_system_urls.push_back(file_system_url);
   }
 
@@ -83,14 +85,16 @@ FileManagerPrivateGetHoldingSpaceStateFunction::Run() {
   ash::HoldingSpaceKeyedService* const holding_space =
       ash::HoldingSpaceKeyedServiceFactory::GetInstance()->GetService(
           browser_context());
-  if (!holding_space)
+  if (!holding_space) {
     return RespondNow(Error("Not enabled"));
+  }
 
   std::vector<GURL> items = holding_space->GetPinnedFiles();
 
   api::file_manager_private::HoldingSpaceState holding_space_state;
-  for (const auto& item : items)
+  for (const auto& item : items) {
     holding_space_state.item_urls.push_back(item.spec());
+  }
 
   return RespondNow(ArgumentList(
       api::file_manager_private::GetHoldingSpaceState::Results::Create(

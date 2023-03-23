@@ -58,8 +58,9 @@ FileManagerPrivateInternalSharesheetHasTargetsFunction::Run() {
   const absl::optional<Params> params = Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(params);
 
-  if (params->urls.empty())
+  if (params->urls.empty()) {
     return RespondNow(Error("No URLs provided"));
+  }
 
   profile_ = Profile::FromBrowserContext(browser_context());
 
@@ -76,8 +77,9 @@ FileManagerPrivateInternalSharesheetHasTargetsFunction::Run() {
     if (drive::util::HasHostedDocumentExtension(file_system_url.path())) {
       contains_hosted_document_ = true;
     }
-    if (!ash::FileSystemBackend::CanHandleURL(file_system_url))
+    if (!ash::FileSystemBackend::CanHandleURL(file_system_url)) {
       continue;
+    }
     urls_.push_back(url);
     file_system_urls_.push_back(file_system_url);
   }
@@ -187,8 +189,9 @@ FileManagerPrivateInternalInvokeSharesheetFunction::Run() {
   const absl::optional<Params> params = Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(params);
 
-  if (params->urls.empty())
+  if (params->urls.empty()) {
     return RespondNow(Error("No URLs provided"));
+  }
 
   if (params->dlp_source_urls.size() != params->urls.size()) {
     return RespondNow(Error("Mismatching URLs and DLP source URLs provided"));
@@ -206,10 +209,12 @@ FileManagerPrivateInternalInvokeSharesheetFunction::Run() {
     const GURL url(url_string);
     storage::FileSystemURL file_system_url(
         file_system_context->CrackURLInFirstPartyContext(url));
-    if (drive::util::HasHostedDocumentExtension(file_system_url.path()))
+    if (drive::util::HasHostedDocumentExtension(file_system_url.path())) {
       contains_hosted_document_ = true;
-    if (!ash::FileSystemBackend::CanHandleURL(file_system_url))
+    }
+    if (!ash::FileSystemBackend::CanHandleURL(file_system_url)) {
       continue;
+    }
     urls_.push_back(url);
     file_system_urls_.push_back(file_system_url);
   }
