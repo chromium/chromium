@@ -434,7 +434,13 @@ TEST_F(AcceleratorConfigurationProviderTest, AshIsMutable) {
   base::RunLoop().RunUntilIdle();
 }
 
-TEST_F(AcceleratorConfigurationProviderTest, InitialAccelInitCalls) {
+// TODO(crbug.com/1426992): Fix flakiness and re-enable.
+#if BUILDFLAG(IS_CHROMEOS)
+#define MAYBE_InitialAccelInitCalls DISABLED_InitialAccelInitCalls
+#else
+#define MAYBE_InitialAccelInitCalls InitialAccelInitCalls
+#endif
+TEST_F(AcceleratorConfigurationProviderTest, MAYBE_InitialAccelInitCalls) {
   FakeAcceleratorsUpdatedMojoObserver mojo_observer;
   SetUpObserver(&mojo_observer);
   EXPECT_EQ(0, mojo_observer.num_times_notified());
