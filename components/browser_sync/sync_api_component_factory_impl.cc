@@ -300,10 +300,11 @@ SyncApiComponentFactoryImpl::CreateCommonDataTypeControllers(
     if (base::FeatureList::IsEnabled(syncer::kSyncAutofillWalletUsageData) &&
         !disabled_types.Has(syncer::AUTOFILL_WALLET_DATA) &&
         !disabled_types.Has(syncer::AUTOFILL_WALLET_USAGE)) {
-      controllers.push_back(CreateWalletModelTypeController(
-          syncer::AUTOFILL_WALLET_USAGE,
-          base::BindRepeating(&AutofillWalletUsageDataDelegateFromDataService),
-          sync_service));
+      controllers.push_back(
+          CreateWalletModelTypeControllerWithInMemorySupport(
+              syncer::AUTOFILL_WALLET_USAGE,
+              base::BindRepeating(&AutofillWalletUsageDataDelegateFromDataService),
+              sync_service));
     }
   }
 
