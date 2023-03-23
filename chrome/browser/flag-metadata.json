@@ -7089,11 +7089,6 @@
     "expiry_milestone": 90
   },
   {
-    "name": "trusted-web-activity-notification-permission-delegation",
-    "owners": [ "mvanouwerkerk", "//chrome/android/java/src/org/chromium/chrome/browser/browserservices/OWNERS" ],
-    "expiry_milestone": 108
-  },
-  {
     "name": "turn-off-streaming-media-caching-always",
     "owners": [ "wicarr@microsoft.com", "cassew@google.com" ],
     "expiry_milestone": 99
