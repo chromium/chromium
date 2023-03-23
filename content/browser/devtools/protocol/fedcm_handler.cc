@@ -8,6 +8,7 @@
 #include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/browser/webid/federated_auth_request_impl.h"
 #include "content/browser/webid/federated_auth_request_page_data.h"
+#include "content/public/browser/federated_identity_api_permission_context_delegate.h"
 #include "content/public/browser/identity_request_dialog_controller.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
@@ -140,7 +141,8 @@ DispatchResponse FedCmHandler::SelectAccount(const String& in_dialogId,
   return DispatchResponse::InvalidParams("Invalid account index");
 }
 
-DispatchResponse FedCmHandler::DismissDialog(const String& in_dialogId) {
+DispatchResponse FedCmHandler::DismissDialog(const String& in_dialogId,
+                                             Maybe<bool> in_triggerCooldown) {
   if (in_dialogId != dialog_id_) {
     return DispatchResponse::InvalidParams(
         "Dialog ID does not match current dialog");
@@ -153,8 +155,24 @@ DispatchResponse FedCmHandler::DismissDialog(const String& in_dialogId) {
         "cancelDialog called while no FedCm dialog is shown");
   }
 
-  auth_request->DismissAccountsDialogForDevtools();
+  auth_request->DismissAccountsDialogForDevtools(
+      in_triggerCooldown.fromMaybe(false));
   return DispatchResponse::Success();
+}
+
+DispatchResponse FedCmHandler::ResetCooldown() {
+  auto* context = GetApiPermissionContext();
+  if (!context) {
+    return DispatchResponse::ServerError("no frame host");
+  }
+  context->RemoveEmbargoAndResetCounts(GetEmbeddingOrigin());
+  return DispatchResponse::Success();
+}
+
+url::Origin FedCmHandler::GetEmbeddingOrigin() {
+  CHECK(frame_host_);
+  CHECK(frame_host_->GetMainFrame());
+  return frame_host_->GetMainFrame()->GetLastCommittedOrigin();
 }
 
 FederatedAuthRequestPageData* FedCmHandler::GetPageData() {
@@ -184,6 +202,15 @@ const std::vector<IdentityProviderData>* FedCmHandler::GetIdentityProviderData(
     return nullptr;
   }
   return &idp_data;
+}
+
+FederatedIdentityApiPermissionContextDelegate*
+FedCmHandler::GetApiPermissionContext() {
+  if (!frame_host_) {
+    return nullptr;
+  }
+  return frame_host_->GetBrowserContext()
+      ->GetFederatedIdentityApiPermissionContext();
 }
 
 }  // namespace content::protocol

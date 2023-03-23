@@ -100,6 +100,9 @@ class ShellFederatedPermissionContext
 
   // A vector of registered IdPs.
   std::vector<GURL> idp_registry_;
+
+  // A set of embargoed origins.
+  std::set<url::Origin> embargoed_origins_;
 };
 
 }  // namespace content

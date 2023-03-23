@@ -17,17 +17,27 @@ ShellFederatedPermissionContext::~ShellFederatedPermissionContext() = default;
 content::FederatedIdentityApiPermissionContextDelegate::PermissionStatus
 ShellFederatedPermissionContext::GetApiPermissionStatus(
     const url::Origin& relying_party_embedder) {
-  return base::FeatureList::IsEnabled(features::kFedCm)
-             ? PermissionStatus::GRANTED
-             : PermissionStatus::BLOCKED_VARIATIONS;
+  if (!base::FeatureList::IsEnabled(features::kFedCm)) {
+    return PermissionStatus::BLOCKED_VARIATIONS;
+  }
+
+  if (embargoed_origins_.count(relying_party_embedder)) {
+    return PermissionStatus::BLOCKED_EMBARGO;
+  }
+
+  return PermissionStatus::GRANTED;
 }
 
 // FederatedIdentityApiPermissionContextDelegate
 void ShellFederatedPermissionContext::RecordDismissAndEmbargo(
-    const url::Origin& relying_party_embedder) {}
+    const url::Origin& relying_party_embedder) {
+  embargoed_origins_.insert(relying_party_embedder);
+}
 
 void ShellFederatedPermissionContext::RemoveEmbargoAndResetCounts(
-    const url::Origin& relying_party_embedder) {}
+    const url::Origin& relying_party_embedder) {
+  embargoed_origins_.erase(relying_party_embedder);
+}
 
 bool ShellFederatedPermissionContext::ShouldCompleteRequestImmediately() const {
   return switches::IsRunWebTestsSwitchPresent();

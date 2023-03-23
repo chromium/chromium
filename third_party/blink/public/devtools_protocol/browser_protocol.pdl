@@ -10969,3 +10969,9 @@ experimental domain FedCm
   command dismissDialog
     parameters
       string dialogId
+      optional boolean triggerCooldown
+
+  # Resets the cooldown time, if any, to allow the next FedCM call to show
+  # a dialog even if one was recently dismissed by the user.
+  command resetCooldown
+

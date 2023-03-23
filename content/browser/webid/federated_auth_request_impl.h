@@ -129,7 +129,7 @@ class CONTENT_EXPORT FederatedAuthRequestImpl
 
   void AcceptAccountsDialogForDevtools(const GURL& config_url,
                                        const IdentityRequestAccount& account);
-  void DismissAccountsDialogForDevtools();
+  void DismissAccountsDialogForDevtools(bool should_embargo);
 
  private:
   friend class FederatedAuthRequestImplTest;

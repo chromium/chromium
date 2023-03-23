@@ -1,0 +1,5 @@
+Check that the cooldown APIs work with FedCM
+NetworkError: Error retrieving a token.
+NetworkError: Error retrieving a token.
+1234
+
