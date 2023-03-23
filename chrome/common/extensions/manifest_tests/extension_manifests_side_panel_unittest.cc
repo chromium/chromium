@@ -4,10 +4,12 @@
 
 #include "chrome/common/extensions/api/side_panel/side_panel_info.h"
 
+#include "base/command_line.h"
 #include "base/strings/stringprintf.h"
 #include "chrome/common/extensions/manifest_tests/chrome_manifest_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "extensions/common/manifest.h"
+#include "extensions/common/switches.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace extensions {
@@ -79,13 +81,13 @@ class SidePanelExtensionsTest : public testing::Test {
   base::ScopedTempDir temp_dir_;
 };
 
-#if defined(OFFICIAL_BUILD)
-#define MAYBE_FileDoesntExist DISABLED_FileDoesntExist
-#else
-#define MAYBE_FileDoesntExist FileDoesntExist
-#endif  // defined(OFFICIAL_BUILD)
 // Error loading extension when filepath doesn't exist or is empty.
-TEST_F(SidePanelExtensionsTest, MAYBE_FileDoesntExist) {
+TEST_F(SidePanelExtensionsTest, FileDoesntExist) {
+  // This switch is required to make this test pass on official build bots.
+  // TODO(crbug.com/1413908): Remove once side panel is not experimental.
+  base::CommandLine::ForCurrentProcess()->AppendSwitch(
+      extensions::switches::kEnableExperimentalExtensionApis);
+
   for (const auto* default_path : {"", "error"}) {
     std::string error;
     std::vector<InstallWarning> warnings;
