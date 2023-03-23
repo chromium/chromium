@@ -1902,14 +1902,20 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Net.HttpJob.PrefilterBytesRead" units="bytes"
-    expires_after="2023-04-16">
+<histogram name="Net.HttpJob.PrefilterBytesRead{Source}" units="bytes"
+    expires_after="2024-03-22">
   <owner>jkarlin@chromium.org</owner>
   <owner>shivanisha@chromium.org</owner>
+  <owner>src/net/OWNERS</owner>
   <summary>
     Total prefilter (e.g., before decompression) bytes read for an HttpJob
     request.
   </summary>
+  <token key="Source">
+    <variant name=""/>
+    <variant name=".Cache" summary="For requests served from the cache."/>
+    <variant name=".Net" summary="For requests served from the network."/>
+  </token>
 </histogram>
 
 <histogram name="Net.HttpJob.ProxyTypeFailed" enum="ProxyScheme"

@@ -2312,12 +2312,6 @@ chromium-metrics-reviews@google.com.
   <affected-histogram name="HttpCache.BeforeSend"/>
 </histogram_suffixes>
 
-<histogram_suffixes name="HttpJobBytes" separator=".">
-  <suffix name="Cache" label="For requests served from the cache."/>
-  <suffix name="Net" label="For requests served from the network."/>
-  <affected-histogram name="Net.HttpJob.PrefilterBytesRead"/>
-</histogram_suffixes>
-
 <histogram_suffixes name="IMEAutoCorrect" separator=".">
   <suffix name="AC0" label="The auto-correct level is 0"/>
   <suffix name="AC1" label="The auto-correct level is 1"/>
