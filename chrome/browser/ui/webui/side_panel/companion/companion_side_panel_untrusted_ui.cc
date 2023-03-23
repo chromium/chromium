@@ -12,6 +12,7 @@
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_ui.h"
 #include "content/public/browser/web_ui_data_source.h"
+#include "url/gurl.h"
 
 CompanionSidePanelUntrustedUI::CompanionSidePanelUntrustedUI(
     content::WebUI* web_ui)
@@ -31,10 +32,15 @@ CompanionSidePanelUntrustedUI::CompanionSidePanelUntrustedUI(
       network::mojom::CSPDirectiveName::ScriptSrc,
       "script-src chrome-untrusted://resources 'self';");
   // Allow the companion homepage URL to be embedded in this WebUI.
-  std::string frameSrc = std::string("frame-src ") +
-                         features::kHomepageURLForCompanion.Get() + ";";
+  GURL frameSrcUrl =
+      GURL(features::kHomepageURLForCompanion.Get()).GetWithEmptyPath();
+  std::string frameSrcString = frameSrcUrl.is_valid()
+                                   ? frameSrcUrl.spec()
+                                   : features::kHomepageURLForCompanion.Get();
+  std::string frameSrcDirective =
+      std::string("frame-src ") + frameSrcString + ";";
   html_source->OverrideContentSecurityPolicy(
-      network::mojom::CSPDirectiveName::FrameSrc, frameSrc);
+      network::mojom::CSPDirectiveName::FrameSrc, frameSrcDirective);
 }
 
 CompanionSidePanelUntrustedUI::~CompanionSidePanelUntrustedUI() = default;
