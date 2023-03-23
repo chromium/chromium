@@ -514,8 +514,8 @@ void MessageService::OpenChannelToNativeApp(
   channel->receiver = std::move(receiver);
 
   // Keep the opener alive until the channel is closed.
-  channel->opener->IncrementLazyKeepaliveCount(
-      /* should_have_strong_keepalive= */ true);
+  channel->opener->set_should_have_strong_keepalive(true);
+  channel->opener->IncrementLazyKeepaliveCount();
 
   AddChannel(std::move(channel), receiver_port_id);
 #else   // !(BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) ||
@@ -715,29 +715,20 @@ void MessageService::OpenChannelImpl(BrowserContext* browser_context,
   url::Origin target_origin =
       Extension::CreateOriginFromExtensionId(params->target_extension_id);
 
-  bool should_grant_opener_strong_keepalive = false;
-  bool should_grant_receiver_strong_keepalive = false;
-
   for (const url::Origin& origin : extended_lifetime_origins) {
     if (origin == source_origin) {
       // Opener found in allowlist, keep receiver SW alive.
-      should_grant_receiver_strong_keepalive = true;
+      channel->receiver->set_should_have_strong_keepalive(true);
     }
     if (origin == target_origin) {
       // Receiver found in allowlist, keep opener SW alive.
-      should_grant_opener_strong_keepalive = true;
+      channel->opener->set_should_have_strong_keepalive(true);
     }
   }
 
   // Keep both ends of the channel alive until the channel is closed.
-  channel->opener->IncrementLazyKeepaliveCount(
-      /* should_have_strong_keepalive= */ should_grant_opener_strong_keepalive);
-  // Note: Though the receiver can be SW for native hosts connecting to it, we
-  // don't support long lived SW for this particular case yet and specify false
-  // below.
-  channel->receiver->IncrementLazyKeepaliveCount(
-      /* should_have_strong_keepalive= */
-      should_grant_receiver_strong_keepalive);
+  channel->opener->IncrementLazyKeepaliveCount();
+  channel->receiver->IncrementLazyKeepaliveCount();
 }
 
 void MessageService::AddChannel(std::unique_ptr<MessageChannel> channel,

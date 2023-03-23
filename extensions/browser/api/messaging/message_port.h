@@ -89,15 +89,24 @@ class MessagePort {
 
   // MessagePorts that target extensions will need to adjust their keepalive
   // counts for their lazy background page.
-  virtual void IncrementLazyKeepaliveCount(bool should_have_strong_keepalive);
+  virtual void IncrementLazyKeepaliveCount();
   virtual void DecrementLazyKeepaliveCount();
 
   // Notifies the message port that one of the receivers intents to respond
   // later.
   virtual void NotifyResponsePending();
 
+  bool should_have_strong_keepalive() { return should_have_strong_keepalive_; }
+  void set_should_have_strong_keepalive(bool should_have_strong_keepalive) {
+    should_have_strong_keepalive_ = should_have_strong_keepalive;
+  }
+
  protected:
   MessagePort();
+
+ private:
+  // This port should keep the service worker alive while it is open.
+  bool should_have_strong_keepalive_ = false;
 };
 
 }  // namespace extensions
