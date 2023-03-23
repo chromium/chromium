@@ -429,7 +429,9 @@ bool AssistiveSuggester::HandleLongpressEnabledKeyEvent(
       event.type() == ui::EventType::ET_KEY_PRESSED) {
     current_longpress_keydown_ = event;
 
-    // TODO(b/267694199): Set the suggester's pre-paste input field state.
+    if (IsLongpressEnabledControlV(event)) {
+      longpress_control_v_suggester_.CachePastedTextStart();
+    }
 
     longpress_timer_.Start(
         FROM_HERE, kLongpressActivationDelay,

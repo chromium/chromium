@@ -5,10 +5,12 @@
 #ifndef CHROME_BROWSER_ASH_INPUT_METHOD_LONGPRESS_CONTROL_V_SUGGESTER_H_
 #define CHROME_BROWSER_ASH_INPUT_METHOD_LONGPRESS_CONTROL_V_SUGGESTER_H_
 
+#include <cstddef>
 #include <string>
 
 #include "chrome/browser/ash/input_method/longpress_suggester.h"
 #include "chrome/browser/ash/input_method/suggestion_enums.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/events/event.h"
 #include "ui/gfx/range/range.h"
 
@@ -22,6 +24,8 @@ class LongpressControlVSuggester : public LongpressSuggester {
       SuggestionHandlerInterface* suggestion_handler);
   ~LongpressControlVSuggester() override;
 
+  void CachePastedTextStart();
+
   // Suggester overrides:
   SuggestionStatus HandleKeyEvent(const ui::KeyEvent& event) override;
   bool TrySuggestWithSurroundingText(const std::u16string& text,
@@ -29,6 +33,14 @@ class LongpressControlVSuggester : public LongpressSuggester {
   bool AcceptSuggestion(size_t index) override;
   void DismissSuggestion() override;
   AssistiveType GetProposeActionType() override;
+
+ private:
+  // LongpressSuggester:
+  void Reset() override;
+
+  // Starting index of the text pasted when Ctrl+V was first pressed, if there
+  // is an active long press.
+  absl::optional<size_t> pasted_text_start_;
 };
 
 }  // namespace ash::input_method
