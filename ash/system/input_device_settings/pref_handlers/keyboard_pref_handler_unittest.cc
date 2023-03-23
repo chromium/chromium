@@ -470,6 +470,19 @@ TEST_F(KeyboardPrefHandlerTest, ModifierRemappingsFromGlobalPrefs) {
             ui::mojom::ModifierKey::kEscape);
 }
 
+TEST_F(KeyboardPrefHandlerTest, SwichControlAndCommandForAppleKeyboard) {
+  mojom::Keyboard keyboard;
+  keyboard.device_key = kKeyboardKey1;
+  keyboard.meta_key = mojom::MetaKey::kCommand;
+  mojom::KeyboardSettingsPtr settings =
+      CallInitializeKeyboardSettings(keyboard);
+
+  ASSERT_EQ(settings->modifier_remappings.at(ui::mojom::ModifierKey::kControl),
+            ui::mojom::ModifierKey::kMeta);
+  ASSERT_EQ(settings->modifier_remappings.at(ui::mojom::ModifierKey::kMeta),
+            ui::mojom::ModifierKey::kControl);
+}
+
 TEST_F(KeyboardPrefHandlerTest, DefaultNotPersistedUntilUpdated) {
   CallUpdateKeyboardSettings(kKeyboardKey1, kKeyboardSettingsDefault);
 

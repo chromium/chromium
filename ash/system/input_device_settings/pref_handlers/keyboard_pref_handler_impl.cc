@@ -58,12 +58,20 @@ static constexpr auto kMetaKeyMapping =
          {mojom::MetaKey::kCommand,
           ::prefs::kLanguageRemapExternalCommandKeyTo}});
 
-mojom::KeyboardSettingsPtr GetDefaultKeyboardSettings(bool is_external) {
+mojom::KeyboardSettingsPtr GetDefaultKeyboardSettings(bool is_external,
+                                                      mojom::MetaKey meta_key) {
   mojom::KeyboardSettingsPtr settings = mojom::KeyboardSettings::New();
   settings->suppress_meta_fkey_rewrites = kDefaultSuppressMetaFKeyRewrites;
   // This setting should be enabled by default for external keyboards.
   settings->top_row_are_fkeys =
       is_external ? kDefaultTopRowAreFKeysExternal : kDefaultTopRowAreFKeys;
+  // Switch control and command for Apple keyboards.
+  if (meta_key == mojom::MetaKey::kCommand) {
+    settings->modifier_remappings[ui::mojom::ModifierKey::kControl] =
+        ui::mojom::ModifierKey::kMeta;
+    settings->modifier_remappings[ui::mojom::ModifierKey::kMeta] =
+        ui::mojom::ModifierKey::kControl;
+  }
   return settings;
 }
 
@@ -245,7 +253,8 @@ void KeyboardPrefHandlerImpl::InitializeKeyboardSettings(
     PrefService* pref_service,
     mojom::Keyboard* keyboard) {
   if (!pref_service) {
-    keyboard->settings = GetDefaultKeyboardSettings(keyboard->is_external);
+    keyboard->settings =
+        GetDefaultKeyboardSettings(keyboard->is_external, keyboard->meta_key);
     return;
   }
 
@@ -263,7 +272,8 @@ void KeyboardPrefHandlerImpl::InitializeKeyboardSettings(
     keyboard->settings = GetKeyboardSettingsFromGlobalPrefs(
         pref_service, *keyboard, force_persistence);
   } else {
-    keyboard->settings = GetDefaultKeyboardSettings(keyboard->is_external);
+    keyboard->settings =
+        GetDefaultKeyboardSettings(keyboard->is_external, keyboard->meta_key);
   }
   DCHECK(keyboard->settings);
 
