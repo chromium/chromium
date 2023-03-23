@@ -231,6 +231,13 @@ class CORE_EXPORT ObjectPaintProperties {
   // [ FragmentClip ]
   // |    Clips to a fragment's bounds.
   // |    This is only present for content under a fragmentation container.
+  // +-[ ViewTransitionClip ]
+  //   |  Clip created only when there is an active ViewTransition. This is used
+  //   |  to clip the element's painting to a subset close to the viewport.
+  //   |  See
+  //   |
+  //   https://drafts.csswg.org/css-view-transitions-1/#compute-the-interest-rectangle-algorithm
+  //  /   for details.
   // +-[ ClipPathClip ]
   //   |  Clip created by path-based CSS clip-path. Only exists if the
   //  /   clip-path is "simple" that can be applied geometrically. This and

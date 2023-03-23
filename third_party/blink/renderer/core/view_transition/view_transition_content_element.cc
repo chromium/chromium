@@ -27,11 +27,13 @@ ViewTransitionContentElement::ViewTransitionContentElement(
 ViewTransitionContentElement::~ViewTransitionContentElement() = default;
 
 void ViewTransitionContentElement::SetIntrinsicSize(
-    const LayoutSize& intrinsic_size) {
-  intrinsic_size_ = intrinsic_size;
+    const gfx::RectF& ink_overflow_rect,
+    const gfx::RectF& captured_subrect) {
+  ink_overflow_rect_ = ink_overflow_rect;
+  captured_subrect_ = captured_subrect;
   if (auto* layout_object = GetLayoutObject()) {
     static_cast<LayoutViewTransitionContent*>(layout_object)
-        ->OnIntrinsicSizeUpdated(intrinsic_size_);
+        ->OnIntrinsicSizeUpdated(ink_overflow_rect_, captured_subrect_);
   }
 }
 

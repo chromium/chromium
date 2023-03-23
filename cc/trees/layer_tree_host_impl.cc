@@ -3894,13 +3894,19 @@ bool LayerTreeHostImpl::InitializeFrameSink(
   has_valid_layer_tree_frame_sink_ = true;
 
   auto* context_provider = layer_tree_frame_sink_->context_provider();
+  auto* worker_context_provider =
+      layer_tree_frame_sink_->worker_context_provider();
 
-  if (context_provider) {
+  if (worker_context_provider) {
+    viz::RasterContextProvider::ScopedRasterContextLock scoped_context(
+        worker_context_provider);
+    max_texture_size_ =
+        worker_context_provider->ContextCapabilities().max_texture_size;
+  } else if (context_provider) {
     max_texture_size_ =
         context_provider->ContextCapabilities().max_texture_size;
   } else {
-    // Pick an arbitrary limit here similar to what hardware might.
-    max_texture_size_ = 16 * 1024;
+    max_texture_size_ = settings_.max_render_buffer_bounds_for_sw;
   }
 
   resource_pool_ = std::make_unique<ResourcePool>(

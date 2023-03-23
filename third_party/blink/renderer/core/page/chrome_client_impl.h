@@ -84,6 +84,7 @@ class CORE_EXPORT ChromeClientImpl final : public ChromeClient {
                             cc::PaintHoldingCommitTrigger) override;
   std::unique_ptr<cc::ScopedPauseRendering> PauseRendering(
       LocalFrame&) override;
+  absl::optional<int> GetMaxRenderBufferBounds(LocalFrame&) const override;
   void StartDragging(LocalFrame*,
                      const WebDragData&,
                      DragOperationsMask,

@@ -136,6 +136,7 @@ class LayerTreePixelTest : public LayerTreeTest {
   std::vector<scoped_refptr<TextureLayer>> texture_layers_;
   int pending_texture_mailbox_callbacks_;
   gfx::Size enlarge_texture_amount_;
+  int max_texture_size_ = 0;
 
   // Used to create SkiaOutputSurfaceImpl.
   std::unique_ptr<base::test::ScopedFeatureList> scoped_feature_list_;

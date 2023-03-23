@@ -97,7 +97,16 @@ LayerTreePixelTest::CreateLayerTreeFrameSink(
     // the impl thread in LayerTreeFrameSink::BindToCurrentSequence().
     gpu::ContextResult result =
         worker_context_provider->BindToCurrentSequence();
+    {
+      viz::RasterContextProvider::ScopedRasterContextLock scoped_context(
+          worker_context_provider.get());
+      max_texture_size_ =
+          worker_context_provider->ContextCapabilities().max_texture_size;
+    }
     DCHECK_EQ(result, gpu::ContextResult::kSuccess);
+  } else {
+    max_texture_size_ =
+        layer_tree_host()->GetSettings().max_render_buffer_bounds_for_sw;
   }
   static constexpr bool disable_display_vsync = false;
   bool synchronous_composite =

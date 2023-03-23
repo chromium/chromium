@@ -118,6 +118,8 @@ class CORE_EXPORT EmptyChromeClient : public ChromeClient {
   void WillCommitCompositorFrame() override {}
   std::unique_ptr<cc::ScopedPauseRendering> PauseRendering(
       LocalFrame&) override;
+  absl::optional<int> GetMaxRenderBufferBounds(
+      LocalFrame& frame) const override;
   bool StartDeferringCommits(LocalFrame& main_frame,
                              base::TimeDelta timeout,
                              cc::PaintHoldingReason reason) override;

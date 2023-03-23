@@ -273,6 +273,7 @@ class FragmentPaintPropertyTreeBuilder {
   ALWAYS_INLINE bool NeedsEffect() const;
   ALWAYS_INLINE bool EffectCanUseCurrentClipAsOutputClip() const;
   ALWAYS_INLINE void UpdateViewTransitionEffect();
+  ALWAYS_INLINE void UpdateViewTransitionClip();
   ALWAYS_INLINE void UpdateEffect();
   ALWAYS_INLINE void UpdateFilter();
   ALWAYS_INLINE void UpdateFragmentClip();
@@ -1558,7 +1559,7 @@ void FragmentPaintPropertyTreeBuilder::UpdateEffect() {
       animation_state.is_running_backdrop_filter_animation_on_compositor =
           style.IsRunningBackdropFilterAnimationOnCompositor();
 
-      auto* parent_effect = context_.current_effect;
+      const auto* parent_effect = context_.current_effect;
       // The transition pseudo element doesn't draw into the LayoutView's
       // effect, but rather as its sibling. So this re-parents the effect to
       // whatever the grand-parent effect was. Note that it doesn't matter
@@ -1664,6 +1665,25 @@ void FragmentPaintPropertyTreeBuilder::UpdateViewTransitionEffect() {
                                               context_.current.clip,
                                               context_.current.transform));
       context_.current_effect = transition->GetEffect(object_);
+    }
+  }
+}
+
+void FragmentPaintPropertyTreeBuilder::UpdateViewTransitionClip() {
+  if (NeedsPaintPropertyUpdate()) {
+    if (full_context_.direct_compositing_reasons &
+        CompositingReason::kViewTransitionElement) {
+      auto* transition =
+          ViewTransitionUtils::GetActiveTransition(object_.GetDocument());
+      DCHECK(transition);
+
+      if (!transition->NeedsViewTransitionClipNode(object_)) {
+        return;
+      }
+
+      OnUpdateClip(transition->UpdateCaptureClip(object_, context_.current.clip,
+                                                 context_.current.transform));
+      context_.current.clip = transition->GetCaptureClip(object_);
     }
   }
 }
@@ -3125,6 +3145,7 @@ void FragmentPaintPropertyTreeBuilder::UpdateForSelf() {
       UpdateTransform();
     }
     UpdateViewTransitionEffect();
+    UpdateViewTransitionClip();
     UpdateClipPathClip();
     UpdateEffect();
     UpdateCssClip();

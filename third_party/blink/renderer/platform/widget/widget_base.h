@@ -379,6 +379,11 @@ class PLATFORM_EXPORT WidgetBase : public mojom::blink::Widget,
 
   bool is_embedded() const { return is_embedded_; }
 
+  // Returns the maximum bounds for buffers allocated for rasterization and
+  // compositing.
+  // Returns null if the compositing stack has not been initialized yet.
+  absl::optional<int> GetMaxRenderBufferBounds() const;
+
  private:
   bool CanComposeInline();
   void UpdateTextInputStateInternal(bool show_virtual_keyboard,
@@ -552,6 +557,11 @@ class PLATFORM_EXPORT WidgetBase : public mojom::blink::Widget,
   // The task runner on the main thread used for compositor tasks.
   scoped_refptr<base::SingleThreadTaskRunner>
       main_thread_compositor_task_runner_;
+
+  // The maximum bounds for buffers allocated for rasterization and compositing.
+  // Set when the compositor is initialized.
+  absl::optional<int> max_render_buffer_bounds_gpu_;
+  absl::optional<int> max_render_buffer_bounds_sw_;
 
   base::WeakPtrFactory<WidgetBase> weak_ptr_factory_{this};
 };

@@ -14,16 +14,24 @@ LayoutViewTransitionContent::LayoutViewTransitionContent(
     : LayoutReplaced(element),
       layer_(cc::ViewTransitionContentLayer::Create(
           element->resource_id(),
-          element->is_live_content_element())) {
-  SetIntrinsicSize(element->intrinsic_size());
+          element->is_live_content_element())),
+      ink_overflow_rect_(element->ink_overflow_rect()),
+      captured_subrect_(element->captured_subrect()) {
+  SetIntrinsicSize(LayoutSize(LayoutUnit(ink_overflow_rect_.width()),
+                              LayoutUnit(ink_overflow_rect_.height())));
 }
 
 LayoutViewTransitionContent::~LayoutViewTransitionContent() = default;
 
 void LayoutViewTransitionContent::OnIntrinsicSizeUpdated(
-    const LayoutSize& intrinsic_size) {
+    const gfx::RectF& ink_overflow_rect,
+    const gfx::RectF& captured_subrect) {
   NOT_DESTROYED();
-  SetIntrinsicSize(intrinsic_size);
+  SetIntrinsicSize(LayoutSize(LayoutUnit(ink_overflow_rect.width()),
+                              LayoutUnit(ink_overflow_rect.height())));
+  ink_overflow_rect_ = ink_overflow_rect;
+  captured_subrect_ = captured_subrect;
+
   SetIntrinsicLogicalWidthsDirty();
   SetNeedsLayout(layout_invalidation_reason::kSizeChanged);
 }
@@ -33,13 +41,21 @@ PaintLayerType LayoutViewTransitionContent::LayerTypeRequired() const {
   return kNormalPaintLayer;
 }
 
+PhysicalRect
+LayoutViewTransitionContent::ReplacedContentRectForCapturedContent() const {
+  gfx::RectF paint_rect = gfx::RectF(ReplacedContentRect());
+  gfx::RectF clipped_paint_rect =
+      gfx::MapRect(captured_subrect_, ink_overflow_rect_, paint_rect);
+  return PhysicalRect::EnclosingRect(clipped_paint_rect);
+}
+
 void LayoutViewTransitionContent::PaintReplaced(
     const PaintInfo& paint_info,
     const PhysicalOffset& paint_offset) const {
   NOT_DESTROYED();
   GraphicsContext& context = paint_info.context;
 
-  PhysicalRect paint_rect = ReplacedContentRect();
+  PhysicalRect paint_rect = ReplacedContentRectForCapturedContent();
   paint_rect.Move(paint_offset);
   gfx::Rect pixel_snapped_rect = ToPixelSnappedRect(paint_rect);
   layer_->SetBounds(

@@ -1075,6 +1075,13 @@ std::unique_ptr<cc::ScopedPauseRendering> ChromeClientImpl::PauseRendering(
       ->PauseRendering();
 }
 
+absl::optional<int> ChromeClientImpl::GetMaxRenderBufferBounds(
+    LocalFrame& frame) const {
+  return WebLocalFrameImpl::FromFrame(frame)
+      ->LocalRootFrameWidget()
+      ->GetMaxRenderBufferBounds();
+}
+
 bool ChromeClientImpl::StartDeferringCommits(LocalFrame& main_frame,
                                              base::TimeDelta timeout,
                                              cc::PaintHoldingReason reason) {

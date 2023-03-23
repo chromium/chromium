@@ -1815,6 +1815,13 @@ std::unique_ptr<cc::ScopedPauseRendering> WebFrameWidgetImpl::PauseRendering() {
   return widget_base_->LayerTreeHost()->PauseRendering();
 }
 
+absl::optional<int> WebFrameWidgetImpl::GetMaxRenderBufferBounds() const {
+  if (!View()->does_composite()) {
+    return absl::nullopt;
+  }
+  return widget_base_->GetMaxRenderBufferBounds();
+}
+
 std::unique_ptr<cc::ScopedDeferMainFrameUpdate>
 WebFrameWidgetImpl::DeferMainFrameUpdate() {
   return widget_base_->LayerTreeHost()->DeferMainFrameUpdate();

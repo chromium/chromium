@@ -197,6 +197,7 @@ void WidgetBase::InitializeCompositing(
     settings = &default_settings.value();
   }
   screen_infos_ = screen_infos;
+  max_render_buffer_bounds_sw_ = settings->max_render_buffer_bounds_for_sw;
   layer_tree_view_->Initialize(
       *settings, main_thread_compositor_task_runner_,
       compositing_thread_scheduler
@@ -711,6 +712,15 @@ void WidgetBase::FinishRequestNewLayerTreeFrameSink(
     // Cause the compositor to wait and try again.
     std::move(callback).Run(nullptr, nullptr);
     return;
+  }
+
+  {
+    viz::RasterContextProvider::ScopedRasterContextLock scoped_context(
+        worker_context_provider_wrapper->GetContext().get());
+    max_render_buffer_bounds_gpu_ =
+        worker_context_provider_wrapper->GetContext()
+            ->ContextCapabilities()
+            .max_texture_size;
   }
 
   // The renderer compositor context doesn't do a lot of stuff, so we don't
@@ -1705,6 +1715,12 @@ gfx::Rect WidgetBase::BlinkSpaceToEnclosedDIPs(const gfx::Rect& rect) {
 gfx::RectF WidgetBase::BlinkSpaceToDIPs(const gfx::RectF& rect) {
   float reverse = 1 / GetOriginalDeviceScaleFactor();
   return gfx::ScaleRect(rect, reverse);
+}
+
+absl::optional<int> WidgetBase::GetMaxRenderBufferBounds() const {
+  return Platform::Current()->IsGpuCompositingDisabled()
+             ? max_render_buffer_bounds_sw_
+             : max_render_buffer_bounds_gpu_;
 }
 
 }  // namespace blink

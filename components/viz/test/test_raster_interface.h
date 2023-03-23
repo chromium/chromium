@@ -51,6 +51,9 @@ class TestRasterInterface : public gpu::raster::RasterInterface {
   void set_multisample_compatibility(bool multisample_compatibility) {
     caps_.multisample_compatibility = multisample_compatibility;
   }
+  void set_max_texture_size(int max_texture_size) {
+    caps_.max_texture_size = max_texture_size;
+  }
 
   // gpu::raster::RasterInterface implementation.
   void Finish() override;

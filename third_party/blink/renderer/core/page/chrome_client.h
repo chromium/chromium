@@ -208,6 +208,13 @@ class CORE_EXPORT ChromeClient : public GarbageCollected<ChromeClient> {
   virtual std::unique_ptr<cc::ScopedPauseRendering> PauseRendering(
       LocalFrame& main_frame) = 0;
 
+  // Returns the maximum bounds for buffers allocated for rasterization and
+  // compositing.
+  // Returns null if the compositing stack has not been initialized yet.
+  // |frame| must be a local frame.
+  virtual absl::optional<int> GetMaxRenderBufferBounds(
+      LocalFrame& frame) const = 0;
+
   // Start a system drag and drop operation.
   //
   // The `cursor_offset` is the offset of the drag-point from the top-left of

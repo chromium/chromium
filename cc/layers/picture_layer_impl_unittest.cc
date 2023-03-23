@@ -1483,10 +1483,15 @@ TEST_F(LegacySWPictureLayerImplTest, ClampTilesToMaxTileSize) {
   ResetTilingsAndRasterScales();
 
   // Change the max texture size on the output surface context.
-  auto gl_owned = std::make_unique<viz::TestGLES2Interface>();
-  gl_owned->set_max_texture_size(140);
-  ResetLayerTreeFrameSink(
-      FakeLayerTreeFrameSink::Create3d(std::move(gl_owned)));
+  auto worker_context_provider = viz::TestContextProvider::CreateWorker();
+  {
+    viz::RasterContextProvider::ScopedRasterContextLock scoped_context(
+        worker_context_provider.get());
+    worker_context_provider->GetTestRasterInterface()->set_max_texture_size(
+        140);
+  }
+  ResetLayerTreeFrameSink(FakeLayerTreeFrameSink::Create3d(
+      viz::TestContextProvider::Create(), std::move(worker_context_provider)));
 
   SetupDrawPropertiesAndUpdateTiles(pending_layer(), 1.f, 1.f, 1.f);
   ASSERT_EQ(1u, pending_layer()->tilings()->num_tilings());
@@ -1517,10 +1522,15 @@ TEST_F(LegacySWPictureLayerImplTest, ClampSingleTileToToMaxTileSize) {
   ResetTilingsAndRasterScales();
 
   // Change the max texture size on the output surface context.
-  auto gl_owned = std::make_unique<viz::TestGLES2Interface>();
-  gl_owned->set_max_texture_size(140);
-  ResetLayerTreeFrameSink(
-      FakeLayerTreeFrameSink::Create3d(std::move(gl_owned)));
+  auto worker_context_provider = viz::TestContextProvider::CreateWorker();
+  {
+    viz::RasterContextProvider::ScopedRasterContextLock scoped_context(
+        worker_context_provider.get());
+    worker_context_provider->GetTestRasterInterface()->set_max_texture_size(
+        140);
+  }
+  ResetLayerTreeFrameSink(FakeLayerTreeFrameSink::Create3d(
+      viz::TestContextProvider::Create(), std::move(worker_context_provider)));
 
   SetupDrawPropertiesAndUpdateTiles(active_layer(), 1.f, 1.f, 1.f);
   ASSERT_LE(1u, active_layer()->tilings()->num_tilings());

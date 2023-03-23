@@ -156,17 +156,10 @@ TEST_P(LayerTreeHostScrollbarsPixelTest, MAYBE_HugeTransformScale) {
   layer->SetBounds(gfx::Size(10, 400));
   background->AddChild(layer);
 
-  auto context = base::MakeRefCounted<viz::TestInProcessContextProvider>(
-      viz::TestContextType::kGLES2, /*support_locking=*/false);
-  gpu::ContextResult result = context->BindToCurrentSequence();
-  DCHECK_EQ(result, gpu::ContextResult::kSuccess);
-  int max_texture_size = 0;
-  context->ContextGL()->GetIntegerv(GL_MAX_TEXTURE_SIZE, &max_texture_size);
-
   // We want a scale that creates a texture taller than the max texture size. If
   // there's no clamping, the texture will be invalid and we'll just get black.
   double scale = 64.0;
-  ASSERT_GT(scale * layer->bounds().height(), max_texture_size);
+  ASSERT_GT(scale * layer->bounds().height(), max_texture_size_);
 
   // Let's show the bottom right of the layer, so we know the texture wasn't
   // just cut off.

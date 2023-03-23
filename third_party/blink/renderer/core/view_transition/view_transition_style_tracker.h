@@ -130,19 +130,28 @@ class ViewTransitionStyleTracker
   // Updates an effect node with the given state. The return value is a result
   // of updating the effect node.
   PaintPropertyChangeType UpdateEffect(
-      Element* element,
+      const Element& element,
       EffectPaintPropertyNode::State state,
       const EffectPaintPropertyNodeOrAlias& current_effect);
   PaintPropertyChangeType UpdateRootEffect(
       EffectPaintPropertyNode::State state,
       const EffectPaintPropertyNodeOrAlias& current_effect);
 
-  EffectPaintPropertyNode* GetEffect(Element* element) const;
-  EffectPaintPropertyNode* GetRootEffect() const;
+  const EffectPaintPropertyNode* GetEffect(const Element& element) const;
+  const EffectPaintPropertyNode* GetRootEffect() const;
+
+  // Updates a clip node with the given state. The return value is a result of
+  // updating the clip node.
+  PaintPropertyChangeType UpdateCaptureClip(
+      const Element& element,
+      const ClipPaintPropertyNodeOrAlias* current_clip,
+      const TransformPaintPropertyNodeOrAlias* current_transform);
+  const ClipPaintPropertyNode* GetCaptureClip(const Element& element) const;
 
   int CapturedTagCount() const { return captured_name_count_; }
 
-  bool IsTransitionElement(Node* node) const;
+  bool IsTransitionElement(const Node* node) const;
+  bool NeedsCaptureClipNode(const Element& node) const;
 
   // This function represents whether root itself is participating in the
   // transition (i.e. it has a name in the current phase). Note that we create
@@ -193,7 +202,8 @@ class ViewTransitionStyleTracker
     void Trace(Visitor* visitor) const;
 
     // Returns the intrinsic size for the element's snapshot.
-    LayoutSize GetIntrinsicSize(bool use_cached_data);
+    gfx::RectF GetInkOverflowRect(bool use_cached_data) const;
+    gfx::RectF GetCapturedSubrect(bool use_cached_data) const;
 
     // Caches the current geometry state for the old snapshot.
     void CacheGeometryState();
@@ -220,6 +230,10 @@ class ViewTransitionStyleTracker
     // any of element's own effects, in a pseudo element layer.
     scoped_refptr<EffectPaintPropertyNode> effect_node;
 
+    // A clip used to specify the subset of the `target_element`'s visual
+    // overflow rect rendered into the element's snapshot.
+    scoped_refptr<ClipPaintPropertyNode> clip_node;
+
     // Index to add to the view transition element id.
     int element_index;
 
@@ -228,6 +242,12 @@ class ViewTransitionStyleTracker
     // This rect is in layout space.
     PhysicalRect visual_overflow_rect_in_layout_space;
     PhysicalRect cached_visual_overflow_rect_in_layout_space;
+
+    // A subset of the element's visual overflow rect which is painted into its
+    // snapshot. Only populated if the element's painting needs to be clipped.
+    // This rect is in layout space.
+    absl::optional<gfx::RectF> captured_rect_in_layout_space;
+    absl::optional<gfx::RectF> cached_captured_rect_in_layout_space;
 
     // The writing mode to use for the container. Note that initially this is
     // the outgoing element's (if any) writing mode, and then switches to the

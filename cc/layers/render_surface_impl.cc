@@ -285,6 +285,15 @@ void RenderSurfaceImpl::CalculateContentRectFromAccumulatedContentRect(
   // use accumulated content rect, and then try to clip it.
   gfx::Rect surface_content_rect = CalculateClippedAccumulatedContentRect();
 
+  // Render passes induced for elements participating in a ViewTransition
+  // shouldn't be larger than max texture size.
+#if DCHECK_IS_ON()
+  if (OwningEffectNode()->view_transition_element_resource_id.IsValid()) {
+    DCHECK_LE(surface_content_rect.width(), max_texture_size);
+    DCHECK_LE(surface_content_rect.height(), max_texture_size);
+  }
+#endif
+
   // The RenderSurfaceImpl backing texture cannot exceed the maximum supported
   // texture size.
   surface_content_rect.set_width(

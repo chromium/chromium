@@ -220,6 +220,11 @@ class CC_EXPORT LayerTreeSettings {
   // Enables shared image cache for gpu.
   // TODO(crbug.com/1378251): not ready to be used by renderer cc instance yet.
   bool enable_shared_image_cache_for_gpu = false;
+
+  // Maximum size for buffers allocated for rendering when GPU compositing is
+  // disabled. This size is equivalent to the max texture size in GPU mode.
+  // This is an arbitrary limit here similar to what hardware might have.
+  int max_render_buffer_bounds_for_sw = 16 * 1024;
 };
 
 class CC_EXPORT LayerListSettings : public LayerTreeSettings {
