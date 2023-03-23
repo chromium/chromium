@@ -19,23 +19,7 @@ the Hangout Services component extension and the APIs it uses.
 
 // Populates UI elements with initial contents.
 function populate() {
-  populateSinks();
   navigator.mediaDevices.enumerateDevices().then(populateSources);
-}
-
-// Populates the select box with information on all sinks.
-function populateSinks() {
-  var select = document.getElementById('select');
-  while (select.length > 0)
-    select.remove(0);
-  getSinks(function(sinks) {
-      for (var i = 0; i < sinks.length; ++i) {
-        var option = document.createElement('option');
-        option.value = sinks[i].sinkId;
-        option.text = sinks[i].sinkLabel + ' (' + sinks[i].sinkId + ')';
-        select.add(option);
-      }
-    });
 }
 
 function populateSources(devices) {
@@ -51,13 +35,6 @@ function populateSources(devices) {
   }
 }
 
-function getAssociatedDeviceFromSelection() {
-  var select = document.getElementById('selectSource');
-  getAssociatedSink(select.value, function(sinkId) {
-      alert('Associated sink ID: ' + sinkId);
-    });
-}
-
 //
 // Manual tests.
 //
@@ -66,13 +43,6 @@ function manualTestChooseDesktopMedia() {
   chooseDesktopMedia(function(results) {
       alert('Cancel ID: ' + results.cancelId +
             ', stream ID: ' + results.streamId);
-    });
-}
-
-function manualTestListenForSinksChangedEvent() {
-  listenForSinksChangedEvent(function(msg) {
-      if (msg['eventName'] && msg['eventName'] == 'onSinksChanged')
-        alert('Got onSinksChanged event.');
     });
 }
 
@@ -96,14 +66,6 @@ function browsertestRunAllTests() {
 <audio id="audio" src="long_audio.ogg" controls autoplay></audio>
 <br/>
 
-Audio output devices<br/>
-<select style="width:100%" id="select" size=10></select>
-<br/>
-
-Audio input devices. Click to get associated output device ID:<br/>
-<select size=10 id="selectSource" onClick="getAssociatedDeviceFromSelection()">
-</select>
-
 <p>
 Run all automated tests manually (empty results indicate success):
 <input type="submit" value="Run"
@@ -112,8 +74,5 @@ Run all automated tests manually (empty results indicate success):
 Manually test choosing desktop media:
 <input type="submit" value="Choose Media"
        onclick="manualTestChooseDesktopMedia();"><br/>
-Start listening for onSinksChanged event (manual test):
-<input type="submit" value="Start listening"
-       onclick="manualTestListenForSinksChangedEvent();"><br/>
 </body>
 </html>

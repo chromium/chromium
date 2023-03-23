@@ -22,15 +22,6 @@ function sendMessage(message, callback) {
 // If connected, this port will receive events from the extension.
 var callbackPort;
 
-// Connects callbackPort to the extension, with a connectInfo.name that
-// indicates we want to receive the onSinksChanged event, and sets its
-// onMessage to |callback|.
-function listenForSinksChangedEvent(callback) {
-  callbackPort = window.top.chrome.runtime.connect(
-      EXTENSION_ID, {'name': 'onSinksChangedListener'});
-  callbackPort.onMessage.addListener(callback);
-}
-
 //
 // Helpers to invoke functions on the extension.
 //
@@ -69,12 +60,6 @@ function loggingUploadOnRenderClose() {
   sendMessage({'method': 'logging.uploadOnRenderClose'});
 }
 
-// Will call |callback()| when API method has been called (it will
-// complete later).
-function loggingNoUploadOnRenderClose() {
-  sendMessage({'method': 'logging.noUploadOnRenderClose'});
-}
-
 // Will call |callback()| on completion.
 function loggingStop(callback) {
   sendMessage({'method': 'logging.stop'}, callback);
@@ -105,27 +90,9 @@ function loggingDiscard(callback) {
   sendMessage({'method': 'logging.discard'}, callback);
 }
 
-// Will call |callback(sinkList)| on completion.
-function getSinks(callback) {
-  sendMessage({'method': 'getSinks'}, callback);
-}
-
-// Will call |callback(sinkId)| on completion.
-function getAssociatedSink(sourceId, callback) {
-  sendMessage({'method': 'getAssociatedSink', 'sourceId': sourceId},
-              callback);
-}
-
 // Will call |callback(hardwarePlatformInfo)| on completion.
 function getHardwarePlatformInfo(callback) {
   sendMessage({'method': 'getHardwarePlatformInfo'}, callback);
-}
-
-// Will call |callback()| on completion. If the extension you send to
-// is not loaded, the extension system will still call |callback()|
-// but will set lastError.
-function isExtensionEnabled(callback) {
-  sendMessage({'method': 'isExtensionEnabled'}, callback);
 }
 
 //
@@ -139,14 +106,7 @@ var TESTS = [
   testCpuGetInfo,
   testLogging,
   testLoggingSetMetaDataAfterStart,
-  testDisabledLogging,
-  testDisabledLoggingButUpload,
-  testDisabledLoggingWithStopAndUpload,
   testEnabledLoggingButDiscard,
-  testGetSinks,
-  testGetAssociatedSink,
-  testIsExtensionEnabled,
-  testSendingToInvalidExtension,
   testStoreLog,
 
   // Uncomment to manually test timeout logic.
@@ -260,48 +220,6 @@ function testLoggingSetMetaDataAfterStart(callback) {
     });
 }
 
-// Starts and stops logging while auto-upload is disabled.
-function testDisabledLogging(callback) {
-  loggingNoUploadOnRenderClose();
-  loggingStart(function() {
-      loggingStop(function() {
-          callback('');
-        });
-    });
-}
-
-// Starts and stops logging while auto-upload is disabled, but
-// requests logs upload after stopping logging.
-function testDisabledLoggingButUpload(callback) {
-  loggingNoUploadOnRenderClose();
-  loggingStart(function() {
-      loggingStop(function() {
-          loggingUpload(function(loggingResult) {
-              if (loggingResult != '') {
-                callback('');
-              } else {
-                callback('Got empty upload result.');
-              }
-            });
-        });
-    });
-}
-
-// Starts logging while auto-upload is disabled. Uses the
-// stopAndUpload function to stop, then upload, the results.
-function testDisabledLoggingWithStopAndUpload(callback) {
-  loggingNoUploadOnRenderClose();
-  loggingStart(function() {
-      loggingStopAndUpload(function(loggingResult) {
-          if (loggingResult != '') {
-            callback('');
-          } else {
-            callback('Got empty upload result.');
-          }
-      });
-  });
-}
-
 // Starts and stops logging while auto-upload is enabled, but
 // requests logs be discarded after stopping logging.
 function testEnabledLoggingButDiscard(callback) {
@@ -313,50 +231,6 @@ function testEnabledLoggingButDiscard(callback) {
             });
         });
     });
-}
-
-function testGetSinks(callback) {
-  getSinks(function(sinks) {
-      // Some bots may have no audio sinks installed, in which case we
-      // will get an empty list here.
-      callback('');
-    });
-}
-
-function testGetAssociatedSink(callback) {
-  getAssociatedSink('noSuchSourceId', function(sinkId) {
-      if (sinkId != '') {
-        callback('Got non-empty sink ID for nonexistent source ID.');
-      } else {
-        callback('');
-      }
-    });
-}
-
-function testIsExtensionEnabled(callback) {
-  isExtensionEnabled(function() {
-      callback('');
-    });
-}
-
-function testSendingToInvalidExtension(callback) {
-  // This test verifies that client code can always determine whether
-  // or not the component extension is available without resorting to
-  // timeouts, by sending it the 'isExtensionEnabled' message. If the
-  // extension is there, it will respond (see testIsExtensionEnabled)
-  // and if it's not, the extension framework will send a callback and
-  // set lastError.
-  var NON_EXISTENT_EXTENSION_ID = "aaaaaaagjdpnpccoofpliimaaeeeeeee";
-  window.top.chrome.runtime.sendMessage(
-      NON_EXISTENT_EXTENSION_ID, {'method': 'isExtensionEnabled'},
-      function() {
-          if (window.top.chrome.runtime.lastError.message.indexOf(
-                  'Could not establish connection') == -1) {
-            callback('lastError is not set correctly.');
-          } else {
-            callback('');
-          }
-        });
 }
 
 function testStoreLog(callback) {
