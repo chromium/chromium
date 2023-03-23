@@ -33,7 +33,6 @@ import org.chromium.components.variations.LoadSeedResult;
 
 import java.io.File;
 import java.io.FileNotFoundException;
-import java.io.IOException;
 import java.util.Date;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.FutureTask;
@@ -330,16 +329,11 @@ public class VariationsSeedLoader {
     // Returns false if it didn't connect to the service.
     protected boolean requestSeedFromService(long oldSeedDate) {
         File newSeedFile = VariationsUtils.getNewSeedFile();
-        try {
-            newSeedFile.createNewFile(); // Silently returns false if already exists.
-        } catch (IOException e) {
-            Log.e(TAG, "Failed to create seed file " + newSeedFile);
-            return false;
-        }
         ParcelFileDescriptor newSeedFd = null;
         try {
-            newSeedFd =
-                    ParcelFileDescriptor.open(newSeedFile, ParcelFileDescriptor.MODE_WRITE_ONLY);
+            newSeedFd = ParcelFileDescriptor.open(newSeedFile,
+                    ParcelFileDescriptor.MODE_WRITE_ONLY | ParcelFileDescriptor.MODE_TRUNCATE
+                            | ParcelFileDescriptor.MODE_CREATE);
         } catch (FileNotFoundException e) {
             Log.e(TAG, "Failed to open seed file " + newSeedFile);
             return false;
