@@ -138,10 +138,27 @@ async def wait_for_event(websocket, event_method):
 
 
 def AnyExtending(expected):
+    """
+    When compared to an actual value, `AnyExtending` will verify that the expected
+    object is a subset of the actual object, except the arrays, which should be equal.
+
+    # Lists should not be extendable.
+    >>> assert [1, 2] != AnyExtending([1])
+    >>> assert [1] != AnyExtending([1, 2])
+
+    # Equal dicts should pass.
+    >>> assert {"a": 1} == AnyExtending({"a": 1})
+
+    # Extra fields are allowed in actual dict.
+    >>> assert {"a": 1, "b": 2} == AnyExtending({"a": 1})
+
+    # Missing fields are not allowed in actual dict.
+    >>> assert {"a": 1, "b": 2} != AnyExtending({"a": 1, "c": 3})
+    """
     if type(expected) is list:
         result = []
         for index, _ in enumerate(expected):
-            result[index] = AnyExtending(expected[index])
+            result.append(AnyExtending(expected[index]))
         return result
 
     if type(expected) is dict:

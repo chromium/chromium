@@ -80,13 +80,13 @@ async def another_context_id(create_context):
 
 @pytest_asyncio.fixture
 def create_context(websocket):
+    """Return a function that creates a new browsing context."""
 
-    async def _(createType="tab"):
-        """Create a browsing context and return its id."""
+    async def _():
         result = await execute_command(websocket, {
             "method": "browsingContext.create",
             "params": {
-                "type": createType
+                "type": "tab"
             }
         })
         return result['context']
