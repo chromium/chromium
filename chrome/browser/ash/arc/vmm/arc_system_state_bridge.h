@@ -7,6 +7,8 @@
 
 #include "ash/components/arc/mojom/system_state.mojom.h"
 #include "base/memory/weak_ptr.h"
+#include "base/observer_list.h"
+#include "base/observer_list_types.h"
 #include "components/keyed_service/core/keyed_service.h"
 
 class Profile;
@@ -23,6 +25,16 @@ class ArcBridgeService;
 class ArcSystemStateBridge : public KeyedService,
                              public mojom::SystemStateHost {
  public:
+  class Observer : public base::CheckedObserver {
+   public:
+    // Observer for ARC SystemAppRunningState change.
+    virtual void OnArcSystemAppRunningStateChange(
+        const mojom::SystemAppRunningState& state) {}
+
+   protected:
+    ~Observer() override = default;
+  };
+
   // Returns singleton instance for the given BrowserContext,
   // or nullptr if the browser |context| is not allowed to use ARC.
   static ArcSystemStateBridge* GetForBrowserContext(
@@ -35,6 +47,9 @@ class ArcSystemStateBridge : public KeyedService,
   ArcSystemStateBridge(const ArcSystemStateBridge&) = delete;
   ArcSystemStateBridge& operator=(const ArcSystemStateBridge&) = delete;
   ~ArcSystemStateBridge() override;
+
+  void AddObserver(Observer* observer);
+  void RemoveObserver(Observer* observer);
 
   const mojom::SystemAppRunningState& system_app_running_state() {
     return *state_;
@@ -49,6 +64,8 @@ class ArcSystemStateBridge : public KeyedService,
   mojom::SystemAppRunningStatePtr state_;
 
   Profile* const profile_;
+
+  base::ObserverList<Observer> observer_list_;
 
   base::WeakPtrFactory<ArcSystemStateBridge> weak_ptr_factory_{this};
 };

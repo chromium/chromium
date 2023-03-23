@@ -56,9 +56,23 @@ ArcSystemStateBridge::~ArcSystemStateBridge() {
   arc_bridge_service_->system_state()->SetHost(nullptr);
 }
 
+void ArcSystemStateBridge::AddObserver(Observer* observer) {
+  observer_list_.AddObserver(observer);
+}
+
+void ArcSystemStateBridge::RemoveObserver(Observer* observer) {
+  observer_list_.RemoveObserver(observer);
+}
+
 void ArcSystemStateBridge::UpdateAppRunningState(
     mojom::SystemAppRunningStatePtr state) {
-  state_ = state.Clone();
+  if (!state.Equals(state_)) {
+    state_ = state.Clone();
+
+    for (auto& observer : observer_list_) {
+      observer.OnArcSystemAppRunningStateChange(*state_);
+    }
+  }
 }
 
 }  // namespace arc
