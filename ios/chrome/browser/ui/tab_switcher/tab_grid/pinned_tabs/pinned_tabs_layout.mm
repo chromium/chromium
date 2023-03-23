@@ -52,4 +52,8 @@
       kPinnedCellVerticalLayoutInsets, availableHorizontalLayoutInsets};
 }
 
+- (BOOL)shouldInvalidateLayoutForBoundsChange:(CGRect)newBounds {
+  return YES;
+}
+
 @end
