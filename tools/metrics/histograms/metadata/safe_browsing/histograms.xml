@@ -1503,7 +1503,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="SafeBrowsing.PakIntegrity.{PakFile}" enum="BooleanSuccess"
-    expires_after="2023-05-01">
+    expires_after="2024-05-01">
   <owner>drubery@chromium.org</owner>
   <owner>rsesek@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
