@@ -107,6 +107,16 @@ class SANDBOX_EXPORT BrokerFilePermission {
             kBlockInotifyAddWatchWithIntermediates);
   }
 
+  static BrokerFilePermission AllPermissionsRecursive(const std::string& path) {
+    return BrokerFilePermission(
+        path, RecursionOption::kRecursive, PersistenceOption::kPermanent,
+        ReadPermission::kAllowRead, WritePermission::kAllowWrite,
+        CreatePermission::kAllowCreate,
+        StatWithIntermediatesPermission::kAllowStatWithIntermediates,
+        InotifyAddWatchWithIntermediatesPermission::
+            kAllowInotifyAddWatchWithIntermediates);
+  }
+
   // Temporary files must always be newly created and do not confer rights to
   // use pre-existing files of the same name.
   static BrokerFilePermission ReadWriteCreateTemporary(

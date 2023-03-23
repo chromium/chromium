@@ -23,12 +23,12 @@ sandbox::syscall_broker::BrokerCommandSet GetNetworkBrokerCommandSet() {
       sandbox::syscall_broker::COMMAND_RMDIR,
       sandbox::syscall_broker::COMMAND_STAT,
       sandbox::syscall_broker::COMMAND_UNLINK,
+      sandbox::syscall_broker::COMMAND_INOTIFY_ADD_WATCH,
   });
 }
 
 std::vector<BrokerFilePermission> GetNetworkFilePermissions() {
-  // TODO(tsepez): remove universal permission under filesystem root.
-  return {BrokerFilePermission::ReadWriteCreateRecursive("/")};
+  return {BrokerFilePermission::AllPermissionsRecursive("/")};
 }
 
 bool NetworkPreSandboxHook(sandbox::policy::SandboxLinux::Options options) {
@@ -38,7 +38,6 @@ bool NetworkPreSandboxHook(sandbox::policy::SandboxLinux::Options options) {
       GetNetworkBrokerCommandSet(), GetNetworkFilePermissions(),
       sandbox::policy::SandboxLinux::PreSandboxHook(), options);
 
-  instance->EngageNamespaceSandboxIfPossible();
   return true;
 }
 
