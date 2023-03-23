@@ -221,6 +221,11 @@ class CONTENT_EXPORT GpuDataManagerImpl : public GpuDataManager,
   void OnDisplayMetricsChanged(const display::Display& display,
                                uint32_t changed_metrics) override;
 
+#if BUILDFLAG(IS_LINUX)
+  bool IsGpuMemoryBufferNV12Supported();
+  void SetGpuMemoryBufferNV12Supported(bool supported);
+#endif  // BUILDFLAG(IS_LINUX)
+
   // Binds a new Mojo receiver to handle requests from a renderer.
   static void BindReceiver(
       mojo::PendingReceiver<blink::mojom::GpuDataManager> receiver);

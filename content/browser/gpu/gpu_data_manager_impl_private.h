@@ -151,6 +151,11 @@ class CONTENT_EXPORT GpuDataManagerImplPrivate {
   void OnDisplayMetricsChanged(const display::Display& display,
                                uint32_t changed_metrics);
 
+#if BUILDFLAG(IS_LINUX)
+  bool IsGpuMemoryBufferNV12Supported();
+  void SetGpuMemoryBufferNV12Supported(bool supported);
+#endif  // BUILDFLAG(IS_LINUX)
+
  private:
   friend class GpuDataManagerImplPrivateTest;
   friend class GpuDataManagerImplPrivateTestP;
@@ -302,6 +307,9 @@ class CONTENT_EXPORT GpuDataManagerImplPrivate {
   bool application_is_visible_ = true;
 
   bool disable_gpu_compositing_ = false;
+#if BUILDFLAG(IS_LINUX)
+  bool is_gpu_memory_buffer_NV12_supported_ = false;
+#endif  // BUILDFLAG(IS_LINUX)
 };
 
 }  // namespace content

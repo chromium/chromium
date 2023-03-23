@@ -1723,4 +1723,14 @@ void GpuDataManagerImplPrivate::RecordCompositingMode() {
   UMA_HISTOGRAM_ENUMERATION("GPU.CompositingMode", compositing_mode);
 }
 
+#if BUILDFLAG(IS_LINUX)
+bool GpuDataManagerImplPrivate::IsGpuMemoryBufferNV12Supported() {
+  return is_gpu_memory_buffer_NV12_supported_;
+}
+void GpuDataManagerImplPrivate::SetGpuMemoryBufferNV12Supported(
+    bool supported) {
+  is_gpu_memory_buffer_NV12_supported_ = supported;
+}
+#endif  // BUILDFLAG(IS_LINUX)
+
 }  // namespace content
