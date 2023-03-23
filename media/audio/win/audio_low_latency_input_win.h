@@ -82,6 +82,7 @@
 #include "media/audio/win/audio_manager_win.h"
 #include "media/base/amplitude_peak_detector.h"
 #include "media/base/audio_converter.h"
+#include "media/base/audio_glitch_info.h"
 #include "media/base/audio_parameters.h"
 #include "media/base/media_export.h"
 
@@ -214,6 +215,9 @@ class MEDIA_EXPORT WASAPIAudioInputStream
   // Used to aggregate and report glitch metrics to UMA (periodically) and to
   // text logs (when a stream ends).
   SystemGlitchReporter glitch_reporter_;
+
+  // Accumulates glitch info to be passed on to OnData().
+  media::AudioGlitchInfo::Accumulator glitch_accumulator_;
 
   AmplitudePeakDetector peak_detector_;
 
