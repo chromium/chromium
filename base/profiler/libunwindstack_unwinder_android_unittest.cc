@@ -74,10 +74,7 @@ std::vector<Frame> CaptureScenario(
 }  // namespace
 
 // Checks that the expected information is present in sampled frames.
-// TODO(https://crbug.com/1147315): Fix, re-enable  on all ASAN bots.
-// TODO(https://crbug.com/1368981): After fix, re-enable on all bots except
-// if defined(ADDRESS_SANITIZER).
-TEST(LibunwindstackUnwinderAndroidTest, DISABLED_PlainFunction) {
+TEST(LibunwindstackUnwinderAndroidTest, PlainFunction) {
   UnwindScenario scenario(BindRepeating(&CallWithPlainFunction));
 
   ModuleCache module_cache;
@@ -107,10 +104,7 @@ TEST(LibunwindstackUnwinderAndroidTest, DISABLED_PlainFunction) {
 
 // Checks that the unwinder handles stacks containing dynamically-allocated
 // stack memory.
-// TODO(https://crbug.com/1147315): Fix, re-enable  on all ASAN bots.
-// TODO(https://crbug.com/1368981): After fix, re-enable on all bots except
-// if defined(ADDRESS_SANITIZER).
-TEST(LibunwindstackUnwinderAndroidTest, DISABLED_Alloca) {
+TEST(LibunwindstackUnwinderAndroidTest, Alloca) {
   UnwindScenario scenario(BindRepeating(&CallWithAlloca));
 
   ModuleCache module_cache;
@@ -140,10 +134,7 @@ TEST(LibunwindstackUnwinderAndroidTest, DISABLED_Alloca) {
 
 // Checks that a stack that runs through another library produces a stack with
 // the expected functions.
-// TODO(https://crbug.com/1147315): Fix, re-enable  on all ASAN bots.
-// TODO(https://crbug.com/1368981): After fix, re-enable on all bots except
-// if defined(ADDRESS_SANITIZER).
-TEST(LibunwindstackUnwinderAndroidTest, DISABLED_OtherLibrary) {
+TEST(LibunwindstackUnwinderAndroidTest, OtherLibrary) {
   NativeLibrary other_library = LoadOtherLibrary();
   UnwindScenario scenario(
       BindRepeating(&CallThroughOtherLibrary, Unretained(other_library)));
@@ -177,8 +168,6 @@ TEST(LibunwindstackUnwinderAndroidTest, JavaFunction) {
   // https://android.googlesource.com/platform/system/unwinding/+/refs/heads/master/libunwindstack/AndroidVersions.md#android-9-pie_api-level-28
   // The libunwindstack doc mentions in Android 9 it got the support for
   // unwinding through JIT'd frames.
-  // TODO(crbug/1370137): Figure out more accurate bound to where we will
-  // always succeed to unwind.
   bool can_unwind = build_info->sdk_int() >= base::android::SDK_VERSION_P;
   if (!can_unwind) {
     GTEST_SKIP() << "Unwind info is not available on older version of Android";
