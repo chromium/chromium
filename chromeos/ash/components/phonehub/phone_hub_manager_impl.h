@@ -91,6 +91,12 @@ class PhoneHubManagerImpl : public PhoneHubManager, public KeyedService {
   void GetHostLastSeenTimestamp(
       base::OnceCallback<void(absl::optional<base::Time>)> callback) override;
 
+  eche_app::EcheConnectionStatusHandler* GetEcheConnectionStatusHandler()
+      override;
+  void SetEcheConnectionStatusHandler(
+      eche_app::EcheConnectionStatusHandler* eche_connection_status_handler)
+      override;
+
  private:
   // KeyedService:
   void Shutdown() override;
@@ -130,6 +136,8 @@ class PhoneHubManagerImpl : public PhoneHubManager, public KeyedService {
   std::unique_ptr<FeatureSetupResponseProcessor>
       feature_setup_response_processor_;
   std::unique_ptr<PingManager> ping_manager_;
+  eche_app::EcheConnectionStatusHandler* eche_connection_status_handler_ =
+      nullptr;
 };
 
 }  // namespace phonehub

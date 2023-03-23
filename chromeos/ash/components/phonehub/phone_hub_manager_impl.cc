@@ -279,6 +279,18 @@ void PhoneHubManagerImpl::GetHostLastSeenTimestamp(
   connection_manager_->GetHostLastSeenTimestamp(std::move(callback));
 }
 
+eche_app::EcheConnectionStatusHandler*
+PhoneHubManagerImpl::GetEcheConnectionStatusHandler() {
+  return eche_connection_status_handler_;
+}
+
+void PhoneHubManagerImpl::SetEcheConnectionStatusHandler(
+    eche_app::EcheConnectionStatusHandler* eche_connection_status_handler) {
+  eche_connection_status_handler_ = eche_connection_status_handler;
+  recent_apps_interaction_handler_->SetConnectionStatusHandler(
+      eche_connection_status_handler_);
+}
+
 // NOTE: These should be destroyed in the opposite order of how these objects
 // are initialized in the constructor.
 void PhoneHubManagerImpl::Shutdown() {

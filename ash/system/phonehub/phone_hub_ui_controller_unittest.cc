@@ -3,7 +3,9 @@
 // found in the LICENSE file.
 
 #include "ash/system/phonehub/phone_hub_ui_controller.h"
+#include <memory>
 
+#include "ash/constants/ash_features.h"
 #include "ash/shell.h"
 #include "ash/system/eche/eche_tray.h"
 #include "ash/system/phonehub/phone_hub_view_ids.h"
@@ -45,11 +47,14 @@ class PhoneHubUiControllerTest : public AshTestBase,
 
   // AshTestBase:
   void SetUp() override {
-    feature_list_.InitWithFeatures({features::kEcheSWA}, {});
+    feature_list_.InitWithFeatures(
+        {features::kEcheSWA, features::kEcheNetworkConnectionState}, {});
 
     AshTestBase::SetUp();
 
+    handler_ = std::make_unique<eche_app::EcheConnectionStatusHandler>();
     phone_hub_manager_.set_host_last_seen_timestamp(absl::nullopt);
+    phone_hub_manager_.set_eche_connection_hander(handler_.get());
 
     // Create user 1 session and simulate its login.
     SimulateUserLogin(kUser1Email);
@@ -112,6 +117,7 @@ class PhoneHubUiControllerTest : public AshTestBase,
     ui_state_changed_ = true;
   }
 
+  std::unique_ptr<eche_app::EcheConnectionStatusHandler> handler_;
   std::unique_ptr<PhoneHubUiController> controller_;
   phonehub::FakePhoneHubManager phone_hub_manager_;
   bool ui_state_changed_ = false;
