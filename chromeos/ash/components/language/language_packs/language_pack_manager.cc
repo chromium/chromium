@@ -91,7 +91,6 @@ const base::flat_map<PackSpecPair, std::string>& GetAllLanguagePackDlcIds() {
           {{kHandwritingFeatureId, "te"}, "handwriting-te"},
           {{kHandwritingFeatureId, "th"}, "handwriting-th"},
           {{kHandwritingFeatureId, "ti"}, "handwriting-ti"},
-          {{kHandwritingFeatureId, "tl"}, "handwriting-tl"},
           {{kHandwritingFeatureId, "tr"}, "handwriting-tr"},
           {{kHandwritingFeatureId, "uk"}, "handwriting-uk"},
           {{kHandwritingFeatureId, "ur"}, "handwriting-ur"},
