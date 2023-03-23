@@ -99,32 +99,16 @@ template("cargo_crate") {
     _rustenv = invoker.rustenv
   }
   if (defined(invoker.cargo_pkg_authors)) {
-    _rustenv += [ string_join("=",
-                              [
-                                "CARGO_PKG_AUTHORS",
-                                invoker.cargo_pkg_authors,
-                              ]) ]
+    _rustenv += [ "CARGO_PKG_AUTHORS=${invoker.cargo_pkg_authors}" ]
   }
   if (defined(invoker.cargo_pkg_version)) {
-    _rustenv += [ string_join("=",
-                              [
-                                "CARGO_PKG_VERSION",
-                                invoker.cargo_pkg_version,
-                              ]) ]
+    _rustenv += [ "CARGO_PKG_VERSION=${invoker.cargo_pkg_version}" ]
   }
   if (defined(invoker.cargo_pkg_name)) {
-    _rustenv += [ string_join("=",
-                              [
-                                "CARGO_PKG_NAME",
-                                invoker.cargo_pkg_name,
-                              ]) ]
+    _rustenv += [ "CARGO_PKG_NAME=${invoker.cargo_pkg_name}" ]
   }
   if (defined(invoker.cargo_pkg_description)) {
-    _rustenv += [ string_join("=",
-                              [
-                                "CARGO_PKG_DESCRIPTION",
-                                invoker.cargo_pkg_description,
-                              ]) ]
+    _rustenv += [ "CARGO_PKG_DESCRIPTION=${invoker.cargo_pkg_description}" ]
   }
 
   # The main target, either a Rust source set or an executable.

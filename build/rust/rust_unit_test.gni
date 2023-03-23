@@ -63,11 +63,7 @@ template("rust_unit_test") {
   if (defined(invoker.edition)) {
     _edition = invoker.edition
   }
-  _configs += [ string_join("",
-                            [
-                              "//build/rust:edition_",
-                              _edition,
-                            ]) ]
+  _configs += [ "//build/rust:edition_${_edition}" ]
 
   # We require that all source files are listed, even though this is
   # not a requirement for rustc. The reason is to ensure that tools

@@ -113,11 +113,7 @@ template("rust_target") {
   if (defined(invoker.edition)) {
     _edition = invoker.edition
   }
-  _configs = [ string_join("",
-                           [
-                             "//build/rust:edition_",
-                             _edition,
-                           ]) ]
+  _configs = [ "//build/rust:edition_${_edition}" ]
   _test_configs = []
   if (invoker.target_type == "executable") {
     if (defined(invoker.executable_configs)) {
@@ -302,11 +298,7 @@ template("rust_target") {
       aliased_deps = _rust_aliased_deps
       public_deps = _rust_public_deps
       rustflags = _rustflags
-      rustflags += [ string_join("",
-                                 [
-                                   "-Cmetadata=",
-                                   _metadata,
-                                 ]) ]
+      rustflags += [ "-Cmetadata=${_metadata}" ]
       rustenv = _rustenv
 
       # The Rust tool() declarations, like C++ ones, use the output_name and
