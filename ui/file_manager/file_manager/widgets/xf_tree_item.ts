@@ -544,6 +544,8 @@ function getCSS() {
       flex: auto;
       font-weight: 500;
       margin: 0 12px;
+      margin-inline-end: 2px;
+      min-width: 0;
       overflow: hidden;
       text-overflow: ellipsis;
       white-space: pre;
@@ -670,7 +672,7 @@ function getCSS() {
       background-color: currentColor;
       flex: none;
       height: 20px;
-      margin-inline-start: 28px;
+      margin-inline-start: 8px;
       position: relative;
       transform: rotate(-90deg);
       transition: all 150ms;
@@ -707,7 +709,9 @@ function getCSS() {
       display: block;
       flex: auto;
       font-weight: 500;
+      margin-inline-end: 2px;
       margin-inline-start: 8px;
+      min-width: 0;
       overflow: hidden;
       text-overflow: ellipsis;
       white-space: pre;

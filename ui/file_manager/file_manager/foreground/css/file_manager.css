@@ -110,6 +110,8 @@ html.breadcrumb-elider-expanded #directory-tree {
   overflow-y: hidden;
 }
 
+/* Can be removed after new directory replacement. -- BEGIN */
+
 #directory-tree .tree-item[section-start]::before {
   border-bottom: 1px solid var(--cros-separator-color);
   content: '';
@@ -365,6 +367,49 @@ html.col-resize #directory-tree .tree-row > .file-row > .root-eject:hover {
   pointer-events: none;
 }
 
+/* Can be removed after new directory replacement. -- END */
+
+/* These changes are for the new directory to work with FilesLegacy style. */
+#directory-tree .align-right-icon {
+  --iron-icon-height: 20px;
+  --iron-icon-width: 20px;
+  border-radius: 16px;
+  border-style: none;
+  box-sizing: border-box;
+  flex: none;
+  height: 32px;
+  left: 1px;
+  position: relative;
+  right: 1px;
+  width: 32px;
+  z-index: 1;
+}
+
+#directory-tree .root-eject {
+  --text-color: currentColor;
+  --hover-bg-color: var(--cros-ripple-color);
+  min-width: 32px;
+  padding: 0;
+}
+
+html.col-resize #directory-tree .root-eject:hover {
+  --hover-bg-color: none;
+}
+
+#directory-tree .root-eject:focus {
+  outline: 1px auto var(--cros-focus-ring-color);
+}
+
+#directory-tree .root-eject:active {
+  --ink-color: var(--cros-ripple-color);
+  border-radius: 20px;
+  outline-width: 0;
+}
+
+#directory-tree .external-link-icon iron-icon {
+  padding: 6px;
+}
+
 /* A vertical splitter between the directory tree and the file list. It is
    a transparent area centered on the directory tree right border. */
 div.splitter {
@@ -591,8 +636,8 @@ body.check-select .dialog-header
 }
 
 .dialog-header #cloud-wrapper {
-  position: relative;
   display: flex;
+  position: relative;
 }
 
 .dialog-header #search-wrapper {

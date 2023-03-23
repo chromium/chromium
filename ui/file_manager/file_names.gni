@@ -280,6 +280,7 @@ ts_files = [
   "file_manager/containers/breadcrumb_container.ts",
   "file_manager/containers/nudge_container.ts",
   "file_manager/containers/search_container.ts",
+  "file_manager/containers/directory_tree_container.ts",
 
   # Widgets.
   "file_manager/widgets/xf_base.ts",
@@ -323,6 +324,7 @@ ts_templates = [
 ts_test_files = [
   # Containers
   "file_manager/containers/breadcrumb_container_unittest.ts",
+  "file_manager/containers/directory_tree_container_unittest.ts",
   "file_manager/containers/nudge_container_unittest.ts",
   "file_manager/containers/search_container_unittest.ts",
 

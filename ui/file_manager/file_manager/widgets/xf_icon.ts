@@ -204,6 +204,10 @@ function getCSS() {
       -webkit-mask-image: url(../foreground/images/volumes/downloads.svg);
     }
 
+    :host([type="drive"]) span {
+      -webkit-mask-image: url(../foreground/images/volumes/drive.svg);
+    }
+
     :host([type="drive_offline"]) span {
       -webkit-mask-image: url(../foreground/images/volumes/offline.svg);
     }
@@ -306,7 +310,7 @@ function getCSS() {
       -webkit-mask-image: url(../foreground/images/volumes/sd.svg);
     }
 
-    :host([type="service_drive"]) span, :host([type="drive"]) span {
+    :host([type="service_drive"]) span {
       -webkit-mask-image: url(../foreground/images/volumes/service_drive.svg);
     }
 

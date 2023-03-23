@@ -259,7 +259,7 @@ export class MetadataModel {
   /**
    * Adds event listener to internal cache object.
    * @param {string} type
-   * @param {function(Event):undefined} callback
+   * @param {function(Event):void} callback
    */
   addEventListener(type, callback) {
     this.cache_.addEventListener(type, callback);
@@ -268,7 +268,7 @@ export class MetadataModel {
   /**
    * Removes event listener from internal cache object.
    * @param {string} type Name of the event to removed.
-   * @param {function(Event):undefined} callback Event listener.
+   * @param {function(Event):void} callback Event listener.
    */
   removeEventListener(type, callback) {
     this.cache_.removeEventListener(type, callback);
