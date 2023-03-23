@@ -15,6 +15,8 @@
 namespace ash {
 namespace eche_app {
 
+class AppsLaunchInfoProvider;
+
 // Implements the DisplayStreamHandler interface to allow the WebUI to sync the
 // status of the video streaming for Eche, e.g. When the video streaming is
 // started in the Eche Web, we can register `Observer` and get this status via
@@ -29,7 +31,8 @@ class EcheStreamStatusChangeHandler : public mojom::DisplayStreamHandler {
     virtual void OnStreamStatusChanged(mojom::StreamStatus status) = 0;
   };
 
-  EcheStreamStatusChangeHandler();
+  explicit EcheStreamStatusChangeHandler(
+      AppsLaunchInfoProvider* apps_launch_info_provider);
   ~EcheStreamStatusChangeHandler() override;
 
   EcheStreamStatusChangeHandler(const EcheStreamStatusChangeHandler&) = delete;
@@ -55,6 +58,7 @@ class EcheStreamStatusChangeHandler : public mojom::DisplayStreamHandler {
   void NotifyStreamStatusChanged(mojom::StreamStatus status);
 
  private:
+  AppsLaunchInfoProvider* apps_launch_info_provider_;
   mojo::Receiver<mojom::DisplayStreamHandler> display_stream_receiver_{this};
   mojo::Remote<mojom::StreamActionObserver> observer_remote_;
   base::ObserverList<Observer> observer_list_;

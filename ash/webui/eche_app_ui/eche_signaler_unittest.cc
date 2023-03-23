@@ -10,6 +10,8 @@
 #include "ash/constants/ash_features.h"
 #include "ash/system/eche/eche_tray.h"
 #include "ash/test/ash_test_base.h"
+#include "ash/webui/eche_app_ui/apps_launch_info_provider.h"
+#include "ash/webui/eche_app_ui/eche_connection_status_handler.h"
 #include "ash/webui/eche_app_ui/proto/exo_messages.pb.h"
 #include "ash/webui/eche_app_ui/system_info.h"
 #include "ash/webui/eche_app_ui/system_info_provider.h"
@@ -165,8 +167,13 @@ class EcheSignalerTest : public testing::Test {
 
   // testing::Test:
   void SetUp() override {
-    signaler_ = std::make_unique<EcheSignaler>(&fake_connector_,
-                                               &fake_connection_manager_);
+    connection_status_handler_ =
+        std::make_unique<eche_app::EcheConnectionStatusHandler>();
+    apps_launch_info_provider_ = std::make_unique<AppsLaunchInfoProvider>(
+        connection_status_handler_.get());
+    signaler_ = std::make_unique<EcheSignaler>(
+        &fake_connector_, &fake_connection_manager_,
+        apps_launch_info_provider_.get());
   }
 
   std::vector<uint8_t> getSignal(std::string data) {
@@ -215,7 +222,8 @@ class EcheSignalerTest : public testing::Test {
   TaskRunner task_runner_;
   FakeEcheConnector fake_connector_{&task_runner_};
   secure_channel::FakeConnectionManager fake_connection_manager_;
-
+  std::unique_ptr<EcheConnectionStatusHandler> connection_status_handler_;
+  std::unique_ptr<AppsLaunchInfoProvider> apps_launch_info_provider_;
   std::unique_ptr<EcheSignaler> signaler_;
   base::test::ScopedFeatureList feature_list_;
 };

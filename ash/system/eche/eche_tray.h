@@ -17,6 +17,7 @@
 #include "ash/system/screen_layout_observer.h"
 #include "ash/system/tray/tray_background_view.h"
 #include "ash/webui/eche_app_ui/eche_connection_status_handler.h"
+#include "ash/webui/eche_app_ui/mojom/eche_app.mojom-shared.h"
 #include "ash/webui/eche_app_ui/mojom/eche_app.mojom.h"
 #include "base/gtest_prod_util.h"
 #include "base/timer/timer.h"
@@ -201,7 +202,9 @@ class ASH_EXPORT EcheTray
   bool LoadBubble(const GURL& url,
                   const gfx::Image& icon,
                   const std::u16string& visible_name,
-                  const std::u16string& phone_name);
+                  const std::u16string& phone_name,
+                  eche_app::mojom::ConnectionStatus last_connection_status,
+                  eche_app::mojom::AppStreamLaunchEntryPoint entry_point);
 
   // Destroys the view inclusing the web view.
   // Note: `CloseBubble` only hides the view.
@@ -222,7 +225,9 @@ class ASH_EXPORT EcheTray
   // Set up the params and init the bubble.
   // Note: This function makes the bubble active and makes the
   // TrayBackgroundView's background inkdrop activate.
-  void InitBubble(const std::u16string& phone_name);
+  void InitBubble(const std::u16string& phone_name,
+                  eche_app::mojom::ConnectionStatus last_connection_status,
+                  eche_app::mojom::AppStreamLaunchEntryPoint entry_point);
 
   // Starts graceful close to ensure the connection resource is released before
   // the window is closed.

@@ -4,6 +4,7 @@
 
 #include "ash/webui/eche_app_ui/eche_notification_click_handler.h"
 
+#include <memory>
 #include <string>
 
 #include "ash/constants/ash_features.h"
@@ -68,12 +69,14 @@ class EcheNotificationClickHandlerTest : public testing::Test {
     handler_.reset();
   }
 
-  void FakeLaunchEcheAppFunction(const absl::optional<int64_t>& notification_id,
-                                 const std::string& package_name,
-                                 const std::u16string& visible_name,
-                                 const absl::optional<int64_t>& user_id,
-                                 const gfx::Image& icon,
-                                 const std::u16string& phone_name) {
+  void FakeLaunchEcheAppFunction(
+      const absl::optional<int64_t>& notification_id,
+      const std::string& package_name,
+      const std::u16string& visible_name,
+      const absl::optional<int64_t>& user_id,
+      const gfx::Image& icon,
+      const std::u16string& phone_name,
+      AppsLaunchInfoProvider* apps_launch_info_provider) {
     num_app_launch_++;
   }
 

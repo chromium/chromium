@@ -93,7 +93,8 @@ void EcheRecentAppClickHandler::OnRecentAppClicked(
           app_metadata.visible_app_name, app_metadata.user_id,
           app_metadata.icon,
           phone_hub_manager_->GetPhoneModel()->phone_name().value_or(
-              std::u16string()));
+              std::u16string()),
+          apps_launch_info_provider_);
       break;
     case LaunchAppHelper::AppLaunchProhibitedReason::kDisabledByScreenLock:
       launch_app_helper_->ShowNotification(

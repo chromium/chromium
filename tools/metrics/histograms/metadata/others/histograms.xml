@@ -5485,6 +5485,33 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram
+    name="Eche.StreamEvent.FromNotification.PreviousNetworkCheckFailed.ConnectionFail"
+    enum="ConnectionFailReason" expires_after="2023-09-20">
+  <owner>pushi@google.com</owner>
+  <owner>jonmann@google.com</owner>
+  <owner>chromeos-cross-device-eng@google.com</owner>
+  <summary>
+    Events logged the root cause of Eche connection failure. when triggered from
+    notificaiton and failed in last network connection check. Records when
+    signaling timeout on EcheSignaler or the tablet mode check on EcheTray
+    Separate from normal Eche.StreamEvent.ConnectionFail.
+  </summary>
+</histogram>
+
+<histogram
+    name="Eche.StreamEvent.FromNotification.PreviousNetworkCheckFailed.Result"
+    enum="StreamState" expires_after="2023-09-20">
+  <owner>pushi@google.com</owner>
+  <owner>jonmann@google.com</owner>
+  <owner>chromeos-cross-device-eng@google.com</owner>
+  <summary>
+    Records the success rate of app streaming when triggered from notificaiton
+    and failed in last network connection check. Separate from normal
+    Eche.StreamEvent histogram.
+  </summary>
+</histogram>
+
 <histogram name="Eche.UniqueAppsStreamed.PerDay" units="count"
     expires_after="2023-08-08">
   <owner>crisrael@google.com</owner>

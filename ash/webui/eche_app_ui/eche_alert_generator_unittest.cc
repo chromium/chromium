@@ -5,6 +5,7 @@
 #include "ash/webui/eche_app_ui/eche_alert_generator.h"
 
 #include "ash/constants/ash_pref_names.h"
+#include "ash/webui/eche_app_ui/apps_launch_info_provider.h"
 #include "ash/webui/eche_app_ui/launch_app_helper.h"
 #include "chromeos/ash/components/phonehub/fake_phone_hub_manager.h"
 #include "components/prefs/pref_registry_simple.h"
@@ -77,12 +78,14 @@ class EcheAlertGeneratorTest : public testing::Test {
     alert_generator_.reset();
   }
 
-  void FakeLaunchEcheAppFunction(const absl::optional<int64_t>& notification_id,
-                                 const std::string& package_name,
-                                 const std::u16string& visible_name,
-                                 const absl::optional<int64_t>& user_id,
-                                 const gfx::Image& icon,
-                                 const std::u16string& phone_name) {
+  void FakeLaunchEcheAppFunction(
+      const absl::optional<int64_t>& notification_id,
+      const std::string& package_name,
+      const std::u16string& visible_name,
+      const absl::optional<int64_t>& user_id,
+      const gfx::Image& icon,
+      const std::u16string& phone_name,
+      AppsLaunchInfoProvider* apps_launch_info_provider) {
     // Do nothing.
   }
 

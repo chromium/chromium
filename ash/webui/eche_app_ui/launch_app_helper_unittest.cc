@@ -4,6 +4,7 @@
 
 #include "ash/webui/eche_app_ui/launch_app_helper.h"
 
+#include <memory>
 #include <ostream>
 #include <string>
 
@@ -11,6 +12,7 @@
 #include "ash/shell.h"
 #include "ash/system/toast/toast_manager_impl.h"
 #include "ash/test/ash_test_base.h"
+#include "ash/webui/eche_app_ui/apps_launch_info_provider.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
@@ -41,7 +43,8 @@ class Callback {
       const std::u16string& visible_name,
       const absl::optional<int64_t>& user_id,
       const gfx::Image& icon,
-      const std::u16string& phone_name) {
+      const std::u16string& phone_name,
+      AppsLaunchInfoProvider* apps_launch_info_provider) {
     launchEcheApp_ = true;
   }
 
@@ -88,6 +91,9 @@ class LaunchAppHelperTest : public ash::AshTestBase {
         /*disabled_features=*/{});
 
     fake_phone_hub_manager_ = std::make_unique<phonehub::FakePhoneHubManager>();
+    connection_handler_ = std::make_unique<EcheConnectionStatusHandler>();
+    apps_launch_info_provider_ =
+        std::make_unique<AppsLaunchInfoProvider>(connection_handler_.get());
     launch_app_helper_ = std::make_unique<LaunchAppHelper>(
         fake_phone_hub_manager_.get(),
         base::BindRepeating(&Callback::LaunchEcheAppFunction),
@@ -125,7 +131,8 @@ class LaunchAppHelperTest : public ash::AshTestBase {
                      const gfx::Image& icon,
                      const std::u16string& phone_name) {
     launch_app_helper_->LaunchEcheApp(notification_id, package_name,
-                                      visible_name, user_id, icon, phone_name);
+                                      visible_name, user_id, icon, phone_name,
+                                      apps_launch_info_provider_.get());
   }
 
   void ShowNotification(
@@ -146,6 +153,8 @@ class LaunchAppHelperTest : public ash::AshTestBase {
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
   std::unique_ptr<phonehub::FakePhoneHubManager> fake_phone_hub_manager_;
+  std::unique_ptr<EcheConnectionStatusHandler> connection_handler_;
+  std::unique_ptr<AppsLaunchInfoProvider> apps_launch_info_provider_;
   std::unique_ptr<LaunchAppHelper> launch_app_helper_;
   ToastManagerImpl* toast_manager_ = nullptr;
 };

@@ -6,6 +6,7 @@
 #define ASH_WEBUI_ECHE_APP_UI_ECHE_SIGNALER_H_
 
 #include "ash/system/eche/eche_tray.h"
+#include "ash/webui/eche_app_ui/apps_launch_info_provider.h"
 #include "ash/webui/eche_app_ui/eche_connector.h"
 #include "ash/webui/eche_app_ui/mojom/eche_app.mojom.h"
 #include "ash/webui/eche_app_ui/system_info_provider.h"
@@ -25,7 +26,8 @@ class EcheSignaler : public mojom::SignalingMessageExchanger,
                      public secure_channel::ConnectionManager::Observer {
  public:
   EcheSignaler(EcheConnector* eche_connector,
-               secure_channel::ConnectionManager* connection_manager);
+               secure_channel::ConnectionManager* connection_manager,
+               AppsLaunchInfoProvider* apps_launch_info_provider);
   ~EcheSignaler() override;
 
   EcheSignaler(const EcheSignaler&) = delete;
@@ -72,6 +74,7 @@ class EcheSignaler : public mojom::SignalingMessageExchanger,
 
   SystemInfoProvider* system_info_provider_ = nullptr;
   EcheConnector* eche_connector_ = nullptr;
+  AppsLaunchInfoProvider* apps_launch_info_provider_ = nullptr;
   secure_channel::ConnectionManager* connection_manager_ = nullptr;
   mojo::Remote<mojom::SignalingMessageObserver> observer_;
   mojo::Receiver<mojom::SignalingMessageExchanger> exchanger_{this};

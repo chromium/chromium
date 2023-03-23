@@ -58,7 +58,8 @@ class EcheRecentAppClickHandlerTest : public testing::Test {
     apps_launch_info_provider_ = std::make_unique<AppsLaunchInfoProvider>(
         connection_status_handler_.get());
     stream_status_change_handler_ =
-        std::make_unique<EcheStreamStatusChangeHandler>();
+        std::make_unique<EcheStreamStatusChangeHandler>(
+            apps_launch_info_provider_.get());
     handler_ = std::make_unique<EcheRecentAppClickHandler>(
         &fake_phone_hub_manager_, &fake_feature_status_provider_,
         launch_app_helper_.get(), stream_status_change_handler_.get(),
@@ -73,12 +74,14 @@ class EcheRecentAppClickHandlerTest : public testing::Test {
     stream_status_change_handler_.reset();
   }
 
-  void FakeLaunchEcheAppFunction(const absl::optional<int64_t>& notification_id,
-                                 const std::string& package_name,
-                                 const std::u16string& visible_name,
-                                 const absl::optional<int64_t>& user_id,
-                                 const gfx::Image& icon,
-                                 const std::u16string& phone_name) {
+  void FakeLaunchEcheAppFunction(
+      const absl::optional<int64_t>& notification_id,
+      const std::string& package_name,
+      const std::u16string& visible_name,
+      const absl::optional<int64_t>& user_id,
+      const gfx::Image& icon,
+      const std::u16string& phone_name,
+      AppsLaunchInfoProvider* apps_launch_info_provider) {
     package_name_ = package_name;
     visible_name_ = visible_name;
     user_id_ = user_id.value();

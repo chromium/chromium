@@ -25,6 +25,8 @@ class PhoneHubManager;
 
 namespace eche_app {
 
+class AppsLaunchInfoProvider;
+
 // A helper class for launching/closing the app or show a notification.
 class LaunchAppHelper {
  public:
@@ -71,7 +73,8 @@ class LaunchAppHelper {
       const std::u16string& visible_name,
       const absl::optional<int64_t>& user_id,
       const gfx::Image& icon,
-      const std::u16string& phone_name)>;
+      const std::u16string& phone_name,
+      AppsLaunchInfoProvider* apps_launch_info_provider)>;
 
   // Enum representing potential reasons why an app is forbidden to launch.
   enum class AppLaunchProhibitedReason {
@@ -116,7 +119,8 @@ class LaunchAppHelper {
                      const std::u16string& visible_name,
                      const absl::optional<int64_t>& user_id,
                      const gfx::Image& icon,
-                     const std::u16string& phone_name);
+                     const std::u16string& phone_name,
+                     AppsLaunchInfoProvider* apps_launch_info_provider);
 
   const base::flat_set<std::string> GetSessionPackagesLaunchedForTest() const {
     return session_packages_launched_;

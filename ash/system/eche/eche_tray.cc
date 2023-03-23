@@ -7,6 +7,7 @@
 #include <algorithm>
 
 #include "ash/accessibility/accessibility_controller_impl.h"
+#include "ash/constants/ash_features.h"
 #include "ash/constants/notifier_catalogs.h"
 #include "ash/constants/tray_background_view_catalog.h"
 #include "ash/keyboard/ui/keyboard_ui_controller.h"
@@ -34,6 +35,7 @@
 #include "ash/system/tray/tray_container.h"
 #include "ash/system/tray/tray_popup_utils.h"
 #include "ash/system/tray/tray_utils.h"
+#include "ash/webui/eche_app_ui/mojom/eche_app.mojom-shared.h"
 #include "ash/webui/eche_app_ui/mojom/eche_app.mojom.h"
 #include "ash/wm/tablet_mode/tablet_mode_controller.h"
 #include "ash/wm/window_state.h"
@@ -473,10 +475,13 @@ void EcheTray::SetIcon(const gfx::Image& icon,
   }
 }
 
-bool EcheTray::LoadBubble(const GURL& url,
-                          const gfx::Image& icon,
-                          const std::u16string& visible_name,
-                          const std::u16string& phone_name) {
+bool EcheTray::LoadBubble(
+    const GURL& url,
+    const gfx::Image& icon,
+    const std::u16string& visible_name,
+    const std::u16string& phone_name,
+    eche_app::mojom::ConnectionStatus last_connection_status,
+    eche_app::mojom::AppStreamLaunchEntryPoint entry_point) {
   if (Shell::Get()->IsInTabletMode()) {
     ash::ToastManager::Get()->Show(ash::ToastData(
         kEcheTrayTabletModeNotSupportedId,
@@ -498,7 +503,7 @@ bool EcheTray::LoadBubble(const GURL& url,
     ShowBubble();
     return true;
   }
-  InitBubble(phone_name);
+  InitBubble(phone_name, last_connection_status, entry_point);
   StartLoadingAnimation();
   auto* phone_hub_tray = GetPhoneHubTray();
   if (phone_hub_tray) {
@@ -559,10 +564,22 @@ void EcheTray::HideBubble() {
   shelf()->UpdateAutoHideState();
 }
 
-void EcheTray::InitBubble(const std::u16string& phone_name) {
-  base::UmaHistogramEnumeration(
-      "Eche.StreamEvent",
-      eche_app::mojom::StreamStatus::kStreamStatusInitializing);
+void EcheTray::InitBubble(
+    const std::u16string& phone_name,
+    eche_app::mojom::ConnectionStatus last_connection_status,
+    eche_app::mojom::AppStreamLaunchEntryPoint entry_point) {
+  if (features::IsEcheNetworkConnectionStateEnabled() &&
+      last_connection_status ==
+          eche_app::mojom::ConnectionStatus::kConnectionStatusFailed &&
+      entry_point == eche_app::mojom::AppStreamLaunchEntryPoint::NOTIFICATION) {
+    base::UmaHistogramEnumeration(
+        "Eche.StreamEvent.FromNotification.PreviousNetworkCheckFailed.Result",
+        eche_app::mojom::StreamStatus::kStreamStatusInitializing);
+  } else {
+    base::UmaHistogramEnumeration(
+        "Eche.StreamEvent",
+        eche_app::mojom::StreamStatus::kStreamStatusInitializing);
+  }
   init_stream_timestamp_ = base::TimeTicks::Now();
   TrayBubbleView::InitParams init_params;
   init_params.delegate = GetWeakPtr();

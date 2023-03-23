@@ -9,6 +9,7 @@
 #include "ash/public/cpp/system/toast_manager.h"
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
+#include "ash/webui/eche_app_ui/apps_launch_info_provider.h"
 #include "ash/webui/eche_app_ui/eche_alert_generator.h"
 #include "base/check.h"
 #include "base/metrics/histogram_functions.h"
@@ -92,14 +93,17 @@ void LaunchAppHelper::ShowToast(const std::u16string& text) const {
       kEcheAppToastId, ash::ToastCatalogName::kEcheAppToast, text));
 }
 
-void LaunchAppHelper::LaunchEcheApp(absl::optional<int64_t> notification_id,
-                                    const std::string& package_name,
-                                    const std::u16string& visible_name,
-                                    const absl::optional<int64_t>& user_id,
-                                    const gfx::Image& icon,
-                                    const std::u16string& phone_name) {
+void LaunchAppHelper::LaunchEcheApp(
+    absl::optional<int64_t> notification_id,
+    const std::string& package_name,
+    const std::u16string& visible_name,
+    const absl::optional<int64_t>& user_id,
+    const gfx::Image& icon,
+    const std::u16string& phone_name,
+    AppsLaunchInfoProvider* apps_launch_info_provider) {
   launch_eche_app_function_.Run(notification_id, package_name, visible_name,
-                                user_id, icon, phone_name);
+                                user_id, icon, phone_name,
+                                apps_launch_info_provider);
 
   // Sessions can last for well over a day, so this check exists to cover that
   // corner case and clears the |session_packages_launched_| set so we can

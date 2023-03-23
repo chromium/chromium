@@ -6,6 +6,8 @@
 
 #include "ash/constants/ash_features.h"
 #include "ash/system/eche/eche_tray.h"
+#include "ash/webui/eche_app_ui/apps_launch_info_provider.h"
+#include "ash/webui/eche_app_ui/mojom/eche_app.mojom-shared.h"
 #include "ash/webui/eche_app_ui/proto/exo_messages.pb.h"
 #include "ash/webui/eche_app_ui/system_info_provider.h"
 #include "base/metrics/histogram_functions.h"
@@ -28,8 +30,11 @@ namespace eche_app {
 
 EcheSignaler::EcheSignaler(
     EcheConnector* eche_connector,
-    secure_channel::ConnectionManager* connection_manager)
-    : eche_connector_(eche_connector), connection_manager_(connection_manager) {
+    secure_channel::ConnectionManager* connection_manager,
+    AppsLaunchInfoProvider* apps_launch_info_provider)
+    : eche_connector_(eche_connector),
+      apps_launch_info_provider_(apps_launch_info_provider),
+      connection_manager_(connection_manager) {
   connection_manager_->AddObserver(this);
 }
 
@@ -167,8 +172,19 @@ void EcheSignaler::RecordSignalingTimeout() {
 
   PA_LOG(INFO) << "echeapi EcheSignaler timeout: "
                << probably_connection_failed_reason_;
-  base::UmaHistogramEnumeration("Eche.StreamEvent.ConnectionFail",
-                                probably_connection_failed_reason_);
+  if (features::IsEcheNetworkConnectionStateEnabled() &&
+      apps_launch_info_provider_->GetConnectionStatusForUi() ==
+          mojom::ConnectionStatus::kConnectionStatusFailed &&
+      apps_launch_info_provider_->entry_point() ==
+          mojom::AppStreamLaunchEntryPoint::NOTIFICATION) {
+    base::UmaHistogramEnumeration(
+        "Eche.StreamEvent.FromNotification.PreviousNetworkCheckFailed."
+        "ConnectionFail",
+        probably_connection_failed_reason_);
+  } else {
+    base::UmaHistogramEnumeration("Eche.StreamEvent.ConnectionFail",
+                                  probably_connection_failed_reason_);
+  }
 }
 
 std::ostream& operator<<(
