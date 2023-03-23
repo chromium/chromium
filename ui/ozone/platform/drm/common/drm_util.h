@@ -140,8 +140,7 @@ display::DisplaySnapshot::DisplayModeList ExtractDisplayModes(
 std::unique_ptr<display::DisplaySnapshot> CreateDisplaySnapshot(
     const DrmWrapper& drm,
     HardwareDisplayControllerInfo* info,
-    uint8_t device_index,
-    const display::DrmFormatsAndModifiers& drm_formats_and_modifiers);
+    uint8_t device_index);
 
 int GetFourCCFormatForOpaqueFramebuffer(gfx::BufferFormat format);
 

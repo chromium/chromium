@@ -507,6 +507,11 @@ absl::optional<std::string> DrmWrapper::GetDriverName() const {
   return std::string(version->name, version->name_len);
 }
 
+display::DrmFormatsAndModifiers DrmWrapper::GetFormatsAndModifiersForCrtc(
+    uint32_t crtc_id) const {
+  return display::DrmFormatsAndModifiers();
+}
+
 base::ScopedFD DrmWrapper::ToScopedFD(std::unique_ptr<DrmWrapper> drm) {
   return std::move(drm->drm_fd_);
 }

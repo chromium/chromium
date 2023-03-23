@@ -68,6 +68,9 @@ class DrmDevice : public DrmWrapper,
   // Adds trace records to |context|.
   void WriteIntoTrace(perfetto::TracedDictionary dict) const override;
 
+  display::DrmFormatsAndModifiers GetFormatsAndModifiersForCrtc(
+      uint32_t crtc_id) const override;
+
   virtual int modeset_sequence_id() const;
   HardwareDisplayPlaneManager* plane_manager() { return plane_manager_.get(); }
   GbmDevice* gbm_device() const { return gbm_.get(); }

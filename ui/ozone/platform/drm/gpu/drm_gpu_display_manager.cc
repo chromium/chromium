@@ -153,18 +153,8 @@ MovableDisplaySnapshots DrmGpuDisplayManager::GetDisplays() {
     // Create new DisplaySnapshots and resolve display ID collisions.
     auto display_infos = GetDisplayInfosAndUpdateCrtcs(*drm);
     for (const auto& display_info : display_infos) {
-      // Create list of supported drm formats and modifiers
-      display::DrmFormatsAndModifiers drm_formats_and_modifiers;
-      for (uint32_t format : drm->plane_manager()->GetSupportedFormats()) {
-        std::vector<uint64_t> modifiers =
-            drm->plane_manager()->GetFormatModifiers(
-                display_info->crtc()->crtc_id, format);
-        drm_formats_and_modifiers.emplace(format, modifiers);
-      }
-
       display_snapshots.emplace_back(CreateDisplaySnapshot(
-          *drm, display_info.get(), static_cast<uint8_t>(device_index),
-          drm_formats_and_modifiers));
+          *drm, display_info.get(), static_cast<uint8_t>(device_index)));
 
       display::DisplaySnapshot* current_display_snapshot =
           display_snapshots.back().get();

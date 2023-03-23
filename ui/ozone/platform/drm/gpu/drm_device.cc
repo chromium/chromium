@@ -267,6 +267,17 @@ void DrmDevice::WriteIntoTrace(perfetto::TracedDictionary dict) const {
   DrmWrapper::WriteIntoTrace(std::move(dict));
 }
 
+display::DrmFormatsAndModifiers DrmDevice::GetFormatsAndModifiersForCrtc(
+    uint32_t crtc_id) const {
+  display::DrmFormatsAndModifiers drm_formats_and_modifiers;
+  for (uint32_t format : plane_manager_->GetSupportedFormats()) {
+    std::vector<uint64_t> modifiers =
+        plane_manager_->GetFormatModifiers(crtc_id, format);
+    drm_formats_and_modifiers.emplace(format, modifiers);
+  }
+  return drm_formats_and_modifiers;
+}
+
 int DrmDevice::modeset_sequence_id() const { return modeset_sequence_id_; }
 
 }  // namespace ui

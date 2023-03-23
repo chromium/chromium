@@ -539,8 +539,7 @@ display::DisplaySnapshot::DisplayModeList ExtractDisplayModes(
 std::unique_ptr<display::DisplaySnapshot> CreateDisplaySnapshot(
     const DrmWrapper& drm,
     HardwareDisplayControllerInfo* info,
-    uint8_t device_index,
-    const display::DrmFormatsAndModifiers& drm_formats_and_modifiers) {
+    uint8_t device_index) {
   const uint8_t display_index =
       display::ConnectorIndex8(device_index, info->index());
   const uint16_t connector_index =
@@ -627,6 +626,9 @@ std::unique_ptr<display::DisplaySnapshot> CreateDisplaySnapshot(
   const display::DisplayMode* native_mode = nullptr;
   display::DisplaySnapshot::DisplayModeList modes =
       ExtractDisplayModes(info, active_pixel_size, &current_mode, &native_mode);
+
+  const display::DrmFormatsAndModifiers drm_formats_and_modifiers =
+      drm.GetFormatsAndModifiersForCrtc(info->crtc()->crtc_id);
 
   return std::make_unique<display::DisplaySnapshot>(
       port_display_id, port_display_id, edid_display_id, connector_index,
