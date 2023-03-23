@@ -41,6 +41,7 @@
 #include "third_party/blink/renderer/core/css/css_scope_rule.h"
 #include "third_party/blink/renderer/core/css/css_style_rule.h"
 #include "third_party/blink/renderer/core/css/css_style_sheet.h"
+#include "third_party/blink/renderer/core/css/css_style_sheet_ids.h"
 #include "third_party/blink/renderer/core/css/css_supports_rule.h"
 #include "third_party/blink/renderer/core/css/parser/css_parser.h"
 #include "third_party/blink/renderer/core/css/parser/css_parser_local_context.h"
@@ -991,8 +992,8 @@ void InspectorStyle::Trace(Visitor* visitor) const {
   visitor->Trace(source_data_);
 }
 
-InspectorStyleSheetBase::InspectorStyleSheetBase(Listener* listener)
-    : id_(IdentifiersFactory::CreateIdentifier()),
+InspectorStyleSheetBase::InspectorStyleSheetBase(Listener* listener, String id)
+    : id_(id),
       listener_(listener),
       line_endings_(std::make_unique<LineEndings>()) {}
 
@@ -1046,7 +1047,9 @@ InspectorStyleSheet::InspectorStyleSheet(
     const String& document_url,
     InspectorStyleSheetBase::Listener* listener,
     InspectorResourceContainer* resource_container)
-    : InspectorStyleSheetBase(listener),
+    : InspectorStyleSheetBase(
+          listener,
+          CSSStyleSheetIds::IdForCSSStyleSheet(page_style_sheet)),
       resource_container_(resource_container),
       network_agent_(network_agent),
       page_style_sheet_(page_style_sheet),
@@ -2298,7 +2301,8 @@ bool InspectorStyleSheet::InspectorStyleSheetText(String* result) {
 InspectorStyleSheetForInlineStyle::InspectorStyleSheetForInlineStyle(
     Element* element,
     Listener* listener)
-    : InspectorStyleSheetBase(listener), element_(element) {
+    : InspectorStyleSheetBase(listener, IdentifiersFactory::CreateIdentifier()),
+      element_(element) {
   DCHECK(element_);
 }
 

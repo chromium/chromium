@@ -44,6 +44,7 @@
 #include "third_party/blink/renderer/core/css/css_selector.h"
 #include "third_party/blink/renderer/core/css/css_style_rule.h"
 #include "third_party/blink/renderer/core/css/css_style_sheet.h"
+#include "third_party/blink/renderer/core/css/css_style_sheet_ids.h"
 #include "third_party/blink/renderer/core/css/css_supports_rule.h"
 #include "third_party/blink/renderer/core/css/resolver/scoped_style_resolver.h"
 #include "third_party/blink/renderer/core/css/resolver/style_resolver.h"
@@ -58,6 +59,25 @@
 #include "third_party/blink/renderer/core/html/html_document.h"
 #include "third_party/blink/renderer/core/page/scrolling/fragment_anchor.h"
 #include "third_party/blink/renderer/core/style/computed_style.h"
+
+namespace blink {
+namespace {
+struct CumulativeRulePerfKey {
+  String selector;
+  String style_sheet_id;
+  CumulativeRulePerfKey(const String& selector, const String& style_sheet_id)
+      : selector(selector), style_sheet_id(style_sheet_id) {}
+};
+}  // namespace
+}  // namespace blink
+
+namespace WTF {
+template <>
+struct HashTraits<blink::CumulativeRulePerfKey>
+    : TwoFieldsHashTraits<blink::CumulativeRulePerfKey,
+                          &blink::CumulativeRulePerfKey::selector,
+                          &blink::CumulativeRulePerfKey::style_sheet_id> {};
+}  // namespace WTF
 
 namespace blink {
 
@@ -222,22 +242,26 @@ struct CumulativeRulePerfData {
 };
 
 using SelectorStatisticsRuleMap =
-    HashMap<const RuleData*, CumulativeRulePerfData>;
+    HashMap<CumulativeRulePerfKey, CumulativeRulePerfData>;
 SelectorStatisticsRuleMap& GetSelectorStatisticsRuleMap() {
   DEFINE_STATIC_LOCAL(SelectorStatisticsRuleMap, rule_map, {});
   return rule_map;
 }
 
 void AggregateRulePerfData(
-    const HeapVector<RulePerfDataPerRequest>& rules_statistics) {
+    const HeapVector<RulePerfDataPerRequest>& rules_statistics,
+    const CSSStyleSheet* style_sheet) {
   SelectorStatisticsRuleMap& map = GetSelectorStatisticsRuleMap();
   for (const auto& rule_stats : rules_statistics) {
-    auto it = map.find(rule_stats.rule);
+    CumulativeRulePerfKey key{
+        rule_stats.rule->Selector().SelectorText(),
+        CSSStyleSheetIds::IdForCSSStyleSheet(style_sheet)};
+    auto it = map.find(key);
     if (it == map.end()) {
       CumulativeRulePerfData data{
           /*match_attempts*/ 1, (rule_stats.fast_reject) ? 1 : 0,
           (rule_stats.did_match) ? 1 : 0, rule_stats.elapsed};
-      map.insert(rule_stats.rule, data);
+      map.insert(key, data);
     } else {
       it->value.elapsed += rule_stats.elapsed;
       it->value.match_attempts++;
@@ -519,8 +543,10 @@ void ElementRuleCollector::CollectMatchingRulesForListInternal(
   }
 
   if (perf_trace_enabled) {
+    DCHECK_EQ(mode_, SelectorChecker::kResolvingStyle);
     selector_statistics_collector.EndCollectionForCurrentRule();
-    AggregateRulePerfData(selector_statistics_collector.PerRuleStatistics());
+    AggregateRulePerfData(selector_statistics_collector.PerRuleStatistics(),
+                          style_sheet);
   }
 
   StyleEngine& style_engine =
@@ -1013,8 +1039,8 @@ void ElementRuleCollector::DumpAndClearRulesPerfMap() {
             perfetto::TracedValue item = array.AppendItem();
             perfetto::TracedDictionary item_dict =
                 std::move(item).WriteDictionary();
-            const CSSSelector& selector = it.key->Selector();
-            item_dict.Add("selector", selector.SelectorText());
+            item_dict.Add("selector", it.key.selector);
+            item_dict.Add("style_sheet_id", it.key.style_sheet_id);
             item_dict.Add("elapsed (us)", it.value.elapsed);
             item_dict.Add("match_attempts", it.value.match_attempts);
             item_dict.Add("fast_reject_count", it.value.fast_reject_count);

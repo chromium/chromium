@@ -115,7 +115,7 @@ class InspectorStyleSheetBase
   virtual bool IsInlineStyle() = 0;
 
  protected:
-  explicit InspectorStyleSheetBase(Listener*);
+  explicit InspectorStyleSheetBase(Listener*, String id);
 
   Listener* GetListener() { return listener_; }
   void OnStyleSheetTextChanged();

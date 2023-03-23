@@ -703,6 +703,8 @@ blink_core_sources_css = [
   "vision_deficiency.h",
   "white_space.h",
   "zoom_adjusted_pixel_value.h",
+  "css_style_sheet_ids.cc",
+  "css_style_sheet_ids.h",
 ]
 
 blink_core_tests_css = [
