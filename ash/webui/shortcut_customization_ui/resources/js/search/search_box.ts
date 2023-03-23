@@ -4,6 +4,8 @@
 
 import 'chrome://resources/cr_elements/cr_toolbar/cr_toolbar_search_field.js';
 import './search_result_row.js';
+import 'chrome://resources/polymer/v3_0/iron-dropdown/iron-dropdown.js';
+import 'chrome://resources/polymer/v3_0/iron-list/iron-list.js';
 
 import {strictQuery} from 'chrome://resources/ash/common/typescript_utils/strict_query.js';
 import {CrToolbarSearchFieldElement} from 'chrome://resources/cr_elements/cr_toolbar/cr_toolbar_search_field.js';
@@ -50,11 +52,24 @@ export class SearchBoxElement extends SearchBoxElementBase {
         value: false,
         reflectToAttribute: true,
       },
+
+      searchResultsExist: {
+        type: Boolean,
+        value: false,
+        computed: 'computeSearchResultsExist(searchResults)',
+      },
+
+      hasSearchQuery: {
+        type: Boolean,
+        value: false,
+        reflectToAttribute: true,
+      },
     };
   }
 
   searchResults: MojoSearchResult[];
   shouldShowDropdown: boolean;
+  hasSearchQuery: true;
   private shortcutSearchHandler: ShortcutSearchHandlerInterface;
 
   constructor() {
@@ -62,10 +77,26 @@ export class SearchBoxElement extends SearchBoxElementBase {
     this.shortcutSearchHandler = getShortcutSearchHandler();
   }
 
+  override ready(): void {
+    super.ready();
+
+    this.addEventListener('blur', this.onBlur);
+  }
+
+  private onBlur(event: UIEvent): void {
+    event.stopPropagation();
+    // Close the dropdown because a region outside the search box was clicked.
+    this.shouldShowDropdown = false;
+  }
+
+  private computeSearchResultsExist(): boolean {
+    return this.searchResults.length !== 0;
+  }
+
   private getCurrentQuery(): string {
-    const searchField =
-        strictQuery('#search', this.shadowRoot, CrToolbarSearchFieldElement);
-    return searchField.getSearchInput().value;
+    return strictQuery('#search', this.shadowRoot, CrToolbarSearchFieldElement)
+        .getSearchInput()
+        .value;
   }
 
   // TODO(longbowei): Query the search results as user is typing. Add some
@@ -74,11 +105,12 @@ export class SearchBoxElement extends SearchBoxElementBase {
     if (e.key === 'Enter') {
       this.shouldShowDropdown = true;
       const query: string = this.getCurrentQuery();
-      this.getSearchResult(query);
+      this.hasSearchQuery = true;
+      this.fetchSearchResults(query);
     }
   }
 
-  protected getSearchResult(query: string): void {
+  protected fetchSearchResults(query: string): void {
     this.shortcutSearchHandler
         .search(stringToMojoString16(query), MAX_NUM_RESULTS)
         .then((result) => {

@@ -1,8 +1,88 @@
 <style>
-  /** TODO(cambickel) Replace this with the actual results implementation. */
-  #searchResultList {
-    background: white;
-    position: fixed;
+  :host {
+    --cr-toolbar-search-field-background:
+        var(--cros-toolbar-search-bg-color);
+
+    --separator-height: 8px;
+    -webkit-tap-highlight-color: transparent;
+    display: flex;
+    flex-basis: var(--cr-toolbar-field-width);
+    transition: width 150ms cubic-bezier(0.4, 0, 0.2, 1);
+    width: var(--cr-toolbar-field-width);
+  }
+
+  cr-toolbar-search-field {
+    --cr-toolbar-search-field-border-radius: 20px;
+    --cr-toolbar-search-field-paper-spinner-margin: 0 12px;
+    --cr-toolbar-search-field-input-icon-color:
+        var(--cros-icon-color-primary);
+    --cr-toolbar-search-field-input-text-color:
+        var(--cros-text-color-primary);
+    --cr-toolbar-search-field-input-caret-color: currentColor;
+    --cr-toolbar-search-field-prompt-color:
+        var(--cros-text-color-secondary);
+    --cr-toolbar-icon-button-focus-outline-color:
+        var(--cros-focus-ring-color);
+  }
+
+  :host(:focus-within) cr-toolbar-search-field {
+    --cr-toolbar-search-field-background: var(--cros-bg-color-elevation-3);
+    box-shadow: var(--cr-elevation-1);
+    min-height: var(--cr-toolbar-focused-min-height);
+  }
+
+  :host(:not(:focus-within)) cr-toolbar-search-field {
+    --cr-toolbar-search-field-cursor: pointer;
+  }
+
+  :host([has-search-query]) cr-toolbar-search-field {
+    min-height: 40px;
+  }
+
+  :host(:focus-within[should-show-dropdown]) cr-toolbar-search-field {
+    --cr-toolbar-search-field-border-radius: 20px 20px 0 0;
+    box-shadow: var(--cr-elevation-3);
+    height: 56px;
+    margin-top: var(--separator-height);
+    padding-bottom: var(--separator-height);
+  }
+
+  iron-dropdown {
+    margin-top: 72px;
+  }
+
+  iron-dropdown [slot='dropdown-content'] {
+    background-color: var(--cros-bg-color-elevation-3);
+    border-radius: 0 0 20px 20px;
+    box-shadow: var(--cr-elevation-3);
+    display: table;
+    padding-bottom: 8px;
+    width: var(--cr-toolbar-field-width);
+  }
+
+  iron-list {
+    max-height: 50vh;
+  }
+
+  #noSearchResultsContainer {
+    height: 32px;
+    line-height: 32px;
+    margin-inline-start: 24px;
+  }
+
+  /* The separator covers the top box shadow of the dropdown so that
+   * var(--cr-elevation-3) can be used instead of custom values.
+   */
+  .separator {
+    background-color: var(--cros-bg-color-elevation-3);
+    border-bottom: none;
+    border-inline-end: none;
+    border-inline-start: none;
+    border-top: 1px solid var(--cros-separator-color);
+    height: var(--separator-height);
+    margin-inline-end: 0;
+    margin-inline-start: 0;
+    margin-top: -9px;
   }
 </style>
 
@@ -11,8 +91,23 @@
         label="Search for keyboard shortcuts"
         on-keydown="onKeyDown">
 </cr-toolbar-search-field>
-<div id="searchResultList" hidden="[[!shouldShowDropdown]]">
-  <template is="dom-repeat" items="[[searchResults]]">
-    <search-result-row search-result="[[item]]"></search-result-row>
-  </template>
-</div>
+<iron-dropdown id="searchResults" opened="[[shouldShowDropdown]]"
+    allow-outside-scroll no-cancel-on-outside-click>
+  <!--  As part of iron-dropdown's behavior, the slot 'dropdown-content' is
+        hidden until iron-dropdown's opened attribute is set true, or when
+        iron-dropdown's open() is called on the JS side. -->
+  <div slot="dropdown-content">
+    <div class="separator"></div>
+    <iron-list id="searchResultList" selection-enabled
+        items="[[searchResults]]">
+      <template>
+        <search-result-row search-result="[[item]]"></search-result-row>
+      </template>
+    </iron-list>
+    <div id="noSearchResultsContainer" hidden="[[searchResultsExist]]">
+      <!-- TODO(cambickel) localize this string -->
+      No search results!
+    </div>
+  </div>
+</iron-dropdown>
+

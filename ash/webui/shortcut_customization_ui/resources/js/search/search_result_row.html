@@ -1,3 +1,21 @@
+<style>
+  :host {
+    width: 100%;
+  }
+
+  #searchResultRow {
+    align-items: center;
+    display: flex;
+    height: 48px;
+    justify-content: center;
+    margin-inline-start: 24px;
+  }
+
+  #searchResultText {
+    flex-grow: 1;
+  }
+</style>
+
 <div id="searchResultRow">
-  <li id="searchResultText">[[getSearchResultText(searchResult)]]</li>
+  <div id="searchResultText">[[getSearchResultText(searchResult)]]</div>
 </div>
