@@ -304,8 +304,9 @@ class ServicesCustomizationDocument : public CustomizationDocument {
   // Manifest fetch is already in progress.
   bool load_started_;
 
-  // Delay between checks for network online state.
-  base::TimeDelta network_delay_;
+  // Delay between checks for network online state. If the optional is empty,
+  // the default value for delay is used.
+  absl::optional<base::TimeDelta> custom_network_delay_ = absl::nullopt;
 
   // Known external loaders.
   ExternalLoaders external_loaders_;

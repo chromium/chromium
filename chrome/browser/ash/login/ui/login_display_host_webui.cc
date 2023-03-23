@@ -1130,8 +1130,7 @@ void ShowLoginWizard(OobeScreenId first_screen) {
   }
 
   if (StartupUtils::IsEulaAccepted()) {
-    DelayNetworkCall(base::Milliseconds(kDefaultNetworkRetryDelayMS),
-                     ServicesCustomizationDocument::GetInstance()
+    DelayNetworkCall(ServicesCustomizationDocument::GetInstance()
                          ->EnsureCustomizationAppliedClosure());
 
     g_browser_process->platform_part()

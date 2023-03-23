@@ -2160,8 +2160,7 @@ void WizardController::StartNetworkTimezoneResolve() {
     return;
   }
 
-  DelayNetworkCall(base::Milliseconds(kDefaultNetworkRetryDelayMS),
-                   base::BindOnce(&WizardController::StartTimezoneResolve,
+  DelayNetworkCall(base::BindOnce(&WizardController::StartTimezoneResolve,
                                   weak_factory_.GetWeakPtr()));
 }
 
@@ -2189,8 +2188,7 @@ void WizardController::StartTimezoneResolve() {
 
 void WizardController::PerformPostNetworkScreenActions() {
   StartNetworkTimezoneResolve();
-  DelayNetworkCall(base::Milliseconds(kDefaultNetworkRetryDelayMS),
-                   ServicesCustomizationDocument::GetInstance()
+  DelayNetworkCall(ServicesCustomizationDocument::GetInstance()
                        ->EnsureCustomizationAppliedClosure());
 
   GetAutoEnrollmentController()->Start();

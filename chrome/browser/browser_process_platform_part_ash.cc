@@ -235,9 +235,7 @@ ash::TimeZoneResolver* BrowserProcessPlatformPart::GetTimezoneResolver() {
         g_browser_process->shared_url_loader_factory(),
         ash::SimpleGeolocationProvider::DefaultGeolocationProviderURL(),
         base::BindRepeating(&ash::system::ApplyTimeZone),
-        base::BindRepeating(
-            &ash::DelayNetworkCall,
-            base::Milliseconds(ash::kDefaultNetworkRetryDelayMS)),
+        base::BindRepeating(&ash::DelayNetworkCall),
         g_browser_process->local_state());
   }
   return timezone_resolver_.get();

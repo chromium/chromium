@@ -63,8 +63,7 @@ void InitializeAccountManager(const base::FilePath& cryptohome_root_dir,
       cryptohome_root_dir,
       g_browser_process->system_network_context_manager()
           ->GetSharedURLLoaderFactory(),
-      base::BindRepeating(&DelayNetworkCall,
-                          base::Milliseconds(kDefaultNetworkRetryDelayMS)),
+      base::BindRepeating(&DelayNetworkCall),
       std::move(initialization_callback));
 
   crosapi::AccountManagerMojoService* account_manager_mojo_service =

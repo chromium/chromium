@@ -19,9 +19,9 @@
 
 namespace ash {
 
-const unsigned kDefaultNetworkRetryDelayMS = 3000;
-
 namespace {
+
+constexpr base::TimeDelta kDefaultRetryDelay = base::Seconds(3);
 
 bool IsCaptivePortal(const NetworkState* default_network) {
   if (!network_portal_detector::IsInitialized()) {
@@ -69,11 +69,18 @@ bool AreNetworkCallsDelayed() {
   return false;
 }
 
-void DelayNetworkCall(base::TimeDelta retry, base::OnceClosure callback) {
+void DelayNetworkCall(base::OnceClosure callback) {
+  DelayNetworkCallWithCustomDelay(std::move(callback), kDefaultRetryDelay);
+}
+
+void DelayNetworkCallWithCustomDelay(base::OnceClosure callback,
+                                     base::TimeDelta retry_delay) {
   if (AreNetworkCallsDelayed()) {
     content::GetUIThreadTaskRunner({})->PostDelayedTask(
         FROM_HERE,
-        base::BindOnce(&DelayNetworkCall, retry, std::move(callback)), retry);
+        base::BindOnce(&DelayNetworkCallWithCustomDelay, std::move(callback),
+                       retry_delay),
+        retry_delay);
     return;
   }
 

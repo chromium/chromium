@@ -270,8 +270,7 @@ void ChromeSigninClient::DelayNetworkCall(base::OnceClosure callback) {
   }
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  ash::DelayNetworkCall(base::Milliseconds(ash::kDefaultNetworkRetryDelayMS),
-                        std::move(callback));
+  ash::DelayNetworkCall(std::move(callback));
 #else
   // This queue will be processed in `OnConnectionChanged()`.
   delayed_callbacks_.push_back(std::move(callback));

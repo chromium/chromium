@@ -15,15 +15,17 @@ class TimeDelta;
 
 namespace ash {
 
-// Default delay to be used as an argument to DelayNetworkCall().
-extern const unsigned kDefaultNetworkRetryDelayMS;
-
 // Returns `true` if network calls will be delayed by `DelayNetworkCall()`.
 bool AreNetworkCallsDelayed();
 
 // Delay callback until the network is connected or while on a captive portal.
 // Also see `AreNetworkCallsDelayed()`.
-void DelayNetworkCall(base::TimeDelta retry, base::OnceClosure callback);
+void DelayNetworkCall(base::OnceClosure callback);
+
+// Same as above `DelayNetworkCall()` except it allows a custom `retry_delay` to
+// be passed.
+void DelayNetworkCallWithCustomDelay(base::OnceClosure callback,
+                                     base::TimeDelta retry_delay);
 
 }  // namespace ash
 
