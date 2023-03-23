@@ -144,20 +144,6 @@ const NonConfigurableActionsMap& GetNonConfigurableActionsMap() {
                 TextAcceleratorPart(TextAcceleratorDelimiter::kPlusSign),
                 TextAcceleratorPart(ui::KeyboardCode::VKEY_1),
                 TextAcceleratorPart(ui::KeyboardCode::VKEY_8)})},
-          {NonConfigurableActions::kBrowserFindNext,
-           NonConfigurableAcceleratorDetails(
-               IDS_AMBIENT_ACCELERATOR_FIND_NEXT,
-               {TextAcceleratorPart(ui::EF_CONTROL_DOWN),
-                TextAcceleratorPart(ui::KeyboardCode::VKEY_G),
-                TextAcceleratorPart(ui::KeyboardCode::VKEY_RETURN)})},
-          {NonConfigurableActions::kBrowserFindPrevious,
-           NonConfigurableAcceleratorDetails(
-               IDS_AMBIENT_ACCELERATOR_FIND_PREVIOUS,
-               {TextAcceleratorPart(ui::EF_CONTROL_DOWN),
-                TextAcceleratorPart(ui::EF_SHIFT_DOWN),
-                TextAcceleratorPart(ui::KeyboardCode::VKEY_G),
-                TextAcceleratorPart(ui::EF_SHIFT_DOWN),
-                TextAcceleratorPart(ui::KeyboardCode::VKEY_RETURN)})},
           {NonConfigurableActions::kAmbientOpenLinkInTab,
            NonConfigurableAcceleratorDetails(
                IDS_AMBIENT_ACCELERATOR_OPEN_LINK_IN_TAB,
@@ -182,28 +168,10 @@ const NonConfigurableActionsMap& GetNonConfigurableActionsMap() {
                {TextAcceleratorPart(ui::EF_ALT_DOWN),
                 TextAcceleratorPart(ui::EF_SHIFT_DOWN),
                 TextAcceleratorPart(ui::KeyboardCode::VKEY_TAB)})},
-          {NonConfigurableActions::kBrowserFocusSearch,
-           NonConfigurableAcceleratorDetails(
-               IDS_AMBIENT_ACCELERATOR_FOCUS_SEARCH,
-               {TextAcceleratorPart(ui::EF_CONTROL_DOWN),
-                TextAcceleratorPart(ui::KeyboardCode::VKEY_K),
-                TextAcceleratorPart(ui::KeyboardCode::VKEY_E)})},
-          {NonConfigurableActions::kBrowserReload,
-           NonConfigurableAcceleratorDetails(
-               IDS_AMBIENT_ACCELERATOR_RELOAD,
-               {TextAcceleratorPart(ui::KeyboardCode::VKEY_BROWSER_REFRESH),
-                TextAcceleratorPart(ui::EF_CONTROL_DOWN),
-                TextAcceleratorPart(ui::KeyboardCode::VKEY_R)})},
           {NonConfigurableActions::kBrowserRightClick,
            NonConfigurableAcceleratorDetails(
                IDS_AMBIENT_ACCELERATOR_RIGHT_CLICK,
                {TextAcceleratorPart(ui::EF_ALT_DOWN)})},
-          {NonConfigurableActions::kBrowserShowAppMenu,
-           NonConfigurableAcceleratorDetails(
-               IDS_AMBIENT_ACCELERATOR_SHOW_APP_MENU,
-               {TextAcceleratorPart(ui::EF_CONTROL_DOWN),
-                TextAcceleratorPart(ui::KeyboardCode::VKEY_E),
-                TextAcceleratorPart(ui::KeyboardCode::VKEY_F)})},
           {NonConfigurableActions::kAmbientLaunchNumberedApp,
            NonConfigurableAcceleratorDetails(
                IDS_AMBIENT_ACCELERATOR_LAUNCH_NUMBERED_APP,
@@ -498,6 +466,31 @@ const NonConfigurableActionsMap& GetNonConfigurableActionsMap() {
           {NonConfigurableActions::kAmbientMoveToEndOfWord,
            NonConfigurableAcceleratorDetails(
                {ui::Accelerator(ui::VKEY_RIGHT, ui::EF_CONTROL_DOWN)})},
+          {NonConfigurableActions::kBrowserFindNext,
+           NonConfigurableAcceleratorDetails(
+               {ui::Accelerator(ui::VKEY_G, ui::EF_CONTROL_DOWN),
+                // TODO(longbowei): Confirm if we want to keep this accelerator
+                // or remove it.
+                ui::Accelerator(ui::VKEY_RETURN, ui::EF_NONE)})},
+          {NonConfigurableActions::kBrowserFindPrevious,
+           NonConfigurableAcceleratorDetails(
+               {ui::Accelerator(ui::VKEY_G,
+                                ui::EF_CONTROL_DOWN | ui::EF_SHIFT_DOWN),
+                // TODO(longbowei): Confirm if we want to keep this accelerator
+                // or remove it.
+                ui::Accelerator(ui::VKEY_RETURN, ui::EF_SHIFT_DOWN)})},
+          {NonConfigurableActions::kBrowserFocusSearch,
+           NonConfigurableAcceleratorDetails(
+               {ui::Accelerator(ui::VKEY_K, ui::EF_CONTROL_DOWN),
+                ui::Accelerator(ui::VKEY_E, ui::EF_CONTROL_DOWN)})},
+          {NonConfigurableActions::kBrowserShowAppMenu,
+           NonConfigurableAcceleratorDetails(
+               {ui::Accelerator(ui::VKEY_E, ui::EF_ALT_DOWN),
+                ui::Accelerator(ui::VKEY_F, ui::EF_ALT_DOWN)})},
+          {NonConfigurableActions::kBrowserReload,
+           NonConfigurableAcceleratorDetails(
+               {ui::Accelerator(ui::VKEY_BROWSER_REFRESH, ui::EF_NONE),
+                ui::Accelerator(ui::VKEY_R, ui::EF_CONTROL_DOWN)})},
       });
   return *nonConfigurableActionsMap;
 }

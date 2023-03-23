@@ -3983,26 +3983,11 @@ Connect your device to power.
       <message name="IDS_AMBIENT_ACCELERATOR_CYCLE_BACKWARD_MRU" translateable="false" desc="Action for accelerator action - Open the window that has been unused for the longest time.">
         Press and hold <ph name="MODIFIER_1">$1<ex>alt</ex></ph><ph name="MODIFIER_2">$2<ex>shift</ex></ph>, tap <ph name="KEY">$3<ex>tab</ex></ph> until you get to the window you want to open, then release
       </message>
-      <message name="IDS_AMBIENT_ACCELERATOR_FIND_NEXT" translateable="false" desc="Action for accelerator action - Go to the next match for your search.">
-        <ph name="MODIFIER">$1<ex>ctrl</ex></ph><ph name="KEY_ONE">$2<ex>g</ex></ph> or <ph name="KEY_TWO">$3<ex>enter</ex></ph>
-      </message>
-      <message name="IDS_AMBIENT_ACCELERATOR_FIND_PREVIOUS" translateable="false" desc="Action for accelerator action - Go to the previous match for your search.">
-        <ph name="MODIFIER_ONE">$1<ex>ctrl</ex></ph><ph name="MODIFIER_TWO">$2<ex>shift</ex></ph><ph name="KEY_ONE">$3<ex>g</ex></ph> or <ph name="MODIFIER_THREE">$4<ex>shift</ex></ph><ph name="KEY_TWO">$5<ex>enter</ex></ph>
-      </message>
-      <message name="IDS_AMBIENT_ACCELERATOR_FOCUS_SEARCH" translateable="false" desc="Action for accelerator action - Place focus in search address bar.">
-        <ph name="MODIFIER">$1<ex>ctrl</ex></ph><ph name="KEY_ONE">$2<ex>k</ex></ph> or <ph name="KEY_TWO">$3<ex>e</ex></ph>
-      </message>
-      <message name="IDS_AMBIENT_ACCELERATOR_RELOAD" translateable="false" desc="Action for accelerator action - Reload your current page.">
-        <ph name="KEY_ONE">$1<ex>browser_refresh</ex></ph> or <ph name="MODIFIER">$2<ex>ctrl</ex></ph><ph name="KEY_TWO">$3<ex>r</ex></ph>
-      </message>
       <message name="IDS_AMBIENT_ACCELERATOR_RIGHT_CLICK" translateable="false" desc="Action for accelerator action - Right-click a link.">
         Press <ph name="MODIFIER">$1<ex>alt</ex></ph> and click a link
       </message>
       <message name="IDS_AMBIENT_ACCELERATOR_SAVE_LINK_AS_BOOKMARK" translateable="false" desc="Action for accelerator action - Drag link to bookmarks bar.">
         Drag link to bookmarks bar
-      </message>
-      <message name="IDS_AMBIENT_ACCELERATOR_SHOW_APP_MENU" translateable="false" desc="Action for accelerator action - Show app menu.">
-        <ph name="MODIFIER">$1<ex>alt</ex></ph><ph name="KEY_ONE">$2<ex>e</ex></ph> or <ph name="KEY_TWO">$3<ex>f</ex></ph>
       </message>
       <message name="IDS_AMBIENT_ACCELERATOR_LAUNCH_NUMBERED_APP" translateable="false" desc="Action for accelerator action - Click icons 1-8 on your shelf.">
         <ph name="MODIFIER">$1<ex>alt</ex></ph> <ph name="DELIMITER">$2<ex>+</ex></ph> <ph name="KEY_ONE">$3<ex>1</ex></ph> through <ph name="KEY_TWO">$4<ex>8</ex></ph>
