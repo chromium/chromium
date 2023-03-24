@@ -76,7 +76,6 @@ class ApplicationContextImpl : public ApplicationContext {
   SafeBrowsingService* GetSafeBrowsingService() override;
   network::NetworkConnectionTracker* GetNetworkConnectionTracker() override;
   BrowserPolicyConnectorIOS* GetBrowserPolicyConnector() override;
-  PromosManager* GetPromosManager() override;
   id<SingleSignOnService> GetSSOService() override;
   SystemIdentityManager* GetSystemIdentityManager() override;
   segmentation_platform::OTRWebStateObserver*
@@ -104,9 +103,6 @@ class ApplicationContextImpl : public ApplicationContext {
   // hard dependency on the policy infrastructure. In order to outlive the pref
   // service, the policy connector must live outside the keyed services.
   std::unique_ptr<BrowserPolicyConnectorIOS> browser_policy_connector_;
-
-  // Promos Manager which coordinates the display of app-wide promos.
-  std::unique_ptr<PromosManager> promos_manager_;
 
   std::unique_ptr<PrefService> local_state_;
   std::unique_ptr<net_log::NetExportFileWriter> net_export_file_writer_;

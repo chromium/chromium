@@ -26,6 +26,7 @@
 #import "ios/chrome/browser/ntp_tiles/ios_most_visited_sites_factory.h"
 #import "ios/chrome/browser/policy/policy_util.h"
 #import "ios/chrome/browser/prefs/pref_names.h"
+#import "ios/chrome/browser/promos_manager/promos_manager_factory.h"
 #import "ios/chrome/browser/reading_list/reading_list_model_factory.h"
 #import "ios/chrome/browser/shared/public/commands/application_commands.h"
 #import "ios/chrome/browser/shared/public/commands/browser_coordinator_commands.h"
@@ -138,6 +139,8 @@ BASE_FEATURE(kNoRecentTabIfNullWebState,
   ReadingListModel* readingListModel =
       ReadingListModelFactory::GetForBrowserState(
           self.browser->GetBrowserState());
+  PromosManager* promosManager =
+      PromosManagerFactory::GetForBrowserState(self.browser->GetBrowserState());
 
   BOOL isGoogleDefaultSearchProvider =
       [self.ntpDelegate isGoogleDefaultSearchEngine];
@@ -151,6 +154,7 @@ BASE_FEATURE(kNoRecentTabIfNullWebState,
       isGoogleDefaultSearchProvider:isGoogleDefaultSearchProvider
                             browser:self.browser];
   self.contentSuggestionsMediator.feedDelegate = self.feedDelegate;
+  self.contentSuggestionsMediator.promosManager = promosManager;
   // TODO(crbug.com/1045047): Use HandlerForProtocol after commands protocol
   // clean up.
   self.contentSuggestionsMediator.dispatcher =

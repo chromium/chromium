@@ -17,8 +17,26 @@ source_set("promos_manager") {
     ":constants",
     ":features",
     ":types",
+    "//components/keyed_service/core",
     "//components/prefs",
     "//ios/chrome/browser/prefs:pref_names",
+  ]
+}
+
+source_set("factory") {
+  sources = [
+    "promos_manager_factory.h",
+    "promos_manager_factory.mm",
+  ]
+  frameworks = [ "Foundation.framework" ]
+  configs += [ "//build/config/compiler:enable_arc" ]
+  deps = [
+    ":internal",
+    ":promos_manager",
+    "//components/keyed_service/core",
+    "//components/keyed_service/ios",
+    "//ios/chrome/browser/application_context",
+    "//ios/chrome/browser/browser_state",
   ]
 }
 

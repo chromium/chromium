@@ -52,8 +52,6 @@ source_set("application_context_impl") {
     "//ios/chrome/browser/prefs",
     "//ios/chrome/browser/prefs:browser_prefs",
     "//ios/chrome/browser/prefs:pref_names",
-    "//ios/chrome/browser/promos_manager:features",
-    "//ios/chrome/browser/promos_manager:internal",
     "//ios/chrome/browser/push_notification:push_notification_service",
     "//ios/chrome/browser/segmentation_platform",
     "//ios/chrome/browser/update_client",

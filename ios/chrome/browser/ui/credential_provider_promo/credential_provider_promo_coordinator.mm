@@ -9,6 +9,7 @@
 #import "ios/chrome/browser/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/main/browser.h"
 #import "ios/chrome/browser/prefs/pref_names.h"
+#import "ios/chrome/browser/promos_manager/promos_manager_factory.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/commands/credential_provider_promo_commands.h"
 #import "ios/chrome/browser/shared/public/commands/promos_manager_commands.h"
@@ -57,8 +58,10 @@ using credential_provider_promo::IOSCredentialProviderPromoAction;
   [self.browser->GetCommandDispatcher()
       startDispatchingToTarget:self
                    forProtocol:@protocol(CredentialProviderPromoCommands)];
+  PromosManager* promosManager =
+      PromosManagerFactory::GetForBrowserState(self.browser->GetBrowserState());
   self.mediator = [[CredentialProviderPromoMediator alloc]
-      initWithPromosManager:GetApplicationContext()->GetPromosManager()
+      initWithPromosManager:promosManager
                 prefService:self.browser->GetBrowserState()->GetPrefs()];
 }
 

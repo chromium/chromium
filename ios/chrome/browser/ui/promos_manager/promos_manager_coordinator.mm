@@ -19,6 +19,7 @@
 #import "ios/chrome/browser/main/browser.h"
 #import "ios/chrome/browser/promos_manager/promo_config.h"
 #import "ios/chrome/browser/promos_manager/promos_manager.h"
+#import "ios/chrome/browser/promos_manager/promos_manager_factory.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/commands/credential_provider_promo_commands.h"
 #import "ios/chrome/browser/shared/public/commands/promos_manager_commands.h"
@@ -109,8 +110,10 @@
     if (promosExist) {
       // Don't create PromosManagerMediator unless promos exist that are
       // registered with PromosManagerCoordinator via `registerPromos`.
+      PromosManager* promosManager =
+          PromosManagerFactory::GetForBrowserState(browser->GetBrowserState());
       _mediator = [[PromosManagerMediator alloc]
-          initWithPromosManager:GetApplicationContext()->GetPromosManager()
+          initWithPromosManager:promosManager
           promoImpressionLimits:[self promoImpressionLimits]];
     }
   }
@@ -504,7 +507,9 @@
   // WhatsNewPromoHandler promo below:
   if (IsWhatsNewEnabled()) {
     _displayHandlerPromos[promos_manager::Promo::WhatsNew] =
-        [[WhatsNewPromoDisplayHandler alloc] init];
+        [[WhatsNewPromoDisplayHandler alloc]
+            initWithPromosManager:PromosManagerFactory::GetForBrowserState(
+                                      self.browser->GetBrowserState())];
   }
 
   // CredentialProvider Promo handler

@@ -15,9 +15,19 @@
 #error "This file requires ARC support."
 #endif
 
-@implementation WhatsNewPromoDisplayHandler
+@implementation WhatsNewPromoDisplayHandler {
+  // Promos Manager to alert if the user uses What's New.
+  PromosManager* _promosManager;
+}
 
 #pragma mark - StandardPromoDisplayHandler
+
+- (instancetype)initWithPromosManager:(PromosManager*)promosManager {
+  if (self = [super init]) {
+    _promosManager = promosManager;
+  }
+  return self;
+}
 
 - (void)handleDisplay {
   // Don't show the promo if What's New has been previously open.
@@ -26,7 +36,7 @@
   }
 
   DCHECK(self.handler);
-  SetWhatsNewUsed();
+  SetWhatsNewUsed(_promosManager);
   [self.handler showWhatsNewPromo];
 }
 

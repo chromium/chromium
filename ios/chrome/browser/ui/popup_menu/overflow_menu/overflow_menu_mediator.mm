@@ -1661,7 +1661,7 @@ NSArray<OverflowMenuDestination*>* SortBadgedDestinations(
 // Dismisses the menu and opens What's New.
 - (void)openWhatsNew {
   if (!WasWhatsNewUsed()) {
-    SetWhatsNewUsed();
+    SetWhatsNewUsed(self.promosManager);
   }
 
   if (self.engagementTracker) {

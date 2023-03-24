@@ -22,6 +22,7 @@
 #import "ios/chrome/browser/main/browser.h"
 #import "ios/chrome/browser/ntp/features.h"
 #import "ios/chrome/browser/overlays/public/overlay_presenter.h"
+#import "ios/chrome/browser/promos_manager/promos_manager_factory.h"
 #import "ios/chrome/browser/reading_list/reading_list_model_factory.h"
 #import "ios/chrome/browser/search_engines/template_url_service_factory.h"
 #import "ios/chrome/browser/shared/public/commands/bookmarks_commands.h"
@@ -263,6 +264,9 @@ enum class IOSOverflowMenuActionType {
           GetApplicationContext()->GetBrowserPolicyConnector();
       self.overflowMenuMediator.syncService =
           SyncServiceFactory::GetForBrowserState(
+              self.browser->GetBrowserState());
+      self.overflowMenuMediator.promosManager =
+          PromosManagerFactory::GetForBrowserState(
               self.browser->GetBrowserState());
 
       if (IsWebChannelsEnabled()) {

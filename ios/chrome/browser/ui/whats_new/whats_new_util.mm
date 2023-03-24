@@ -78,15 +78,13 @@ bool WasWhatsNewUsed() {
       [[NSUserDefaults standardUserDefaults] boolForKey:kWhatsNewUsageEntryKey];
 }
 
-void SetWhatsNewUsed() {
+void SetWhatsNewUsed(PromosManager* promosManager) {
   if (WasWhatsNewUsed()) {
     return;
   }
 
   // Deregister What's New promo.
-  PromosManager* promosManager = GetApplicationContext()->GetPromosManager();
   DCHECK(promosManager);
-
   promosManager->DeregisterPromo(promos_manager::Promo::WhatsNew);
 
   [[NSUserDefaults standardUserDefaults] setBool:YES

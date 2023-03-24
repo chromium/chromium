@@ -179,6 +179,7 @@ source_set("scene") {
     "//ios/chrome/browser/policy",
     "//ios/chrome/browser/policy:policy_util",
     "//ios/chrome/browser/prefs:pref_names",
+    "//ios/chrome/browser/promos_manager:factory",
     "//ios/chrome/browser/promos_manager:features",
     "//ios/chrome/browser/screenshot",
     "//ios/chrome/browser/sessions:scene_util",

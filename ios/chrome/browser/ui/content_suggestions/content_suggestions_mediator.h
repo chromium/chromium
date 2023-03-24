@@ -34,6 +34,7 @@ class Browser;
 @protocol FeedDelegate;
 class GURL;
 class LargeIconCache;
+class PromosManager;
 class ReadingListModel;
 @protocol SnackbarCommands;
 class WebStateList;
@@ -82,6 +83,9 @@ class WebStateList;
 
 // The web state associated with this NTP.
 @property(nonatomic, assign) web::WebState* webState;
+
+// The promos manager to alert if the user uses What's New.
+@property(nonatomic, assign) PromosManager* promosManager;
 
 // Disconnects the mediator.
 - (void)disconnect;

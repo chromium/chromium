@@ -337,7 +337,7 @@ const NSInteger kMaxNumMostVisitedTiles = 4;
         [self.dispatcher showHistory];
         break;
       case NTPCollectionShortcutTypeWhatsNew:
-        SetWhatsNewUsed();
+        SetWhatsNewUsed(self.promosManager);
         base::RecordAction(base::UserMetricsAction("MobileNTPShowWhatsNew"));
         [self.dispatcher showWhatsNew];
         break;

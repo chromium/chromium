@@ -35,6 +35,7 @@ class OverlayPresenter;
 @protocol PopupMenuCommands;
 @protocol PriceNotificationsCommands;
 class PrefService;
+class PromosManager;
 @protocol FindInPageCommands;
 @protocol TextZoomCommands;
 class WebNavigationBrowserAgent;
@@ -106,6 +107,9 @@ class FollowBrowserAgent;
 
 // The Sync Service that provides the status of Sync.
 @property(nonatomic, assign) syncer::SyncService* syncService;
+
+// The Promos Manager to alert if the user uses What's New.
+@property(nonatomic, assign) PromosManager* promosManager;
 
 // Updates the pin state of the tab corresponding to the given `webState` in
 // `webStateList`.

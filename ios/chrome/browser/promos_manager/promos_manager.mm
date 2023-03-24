@@ -11,7 +11,6 @@
 #pragma mark - Constructor/Destructor
 
 PromosManager::PromosManager() {}
-PromosManager::~PromosManager() {}
 
 #pragma mark - Internal APIs
 

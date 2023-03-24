@@ -7,6 +7,8 @@
 
 #import <Foundation/Foundation.h>
 
+class PromosManager;
+
 // Key to store whether the What's New promo has been register.
 extern NSString* const kWhatsNewPromoRegistrationKey;
 
@@ -25,7 +27,7 @@ extern NSString* const kWhatsNewUsageEntryKey;
 bool WasWhatsNewUsed();
 
 // Set that What's New was used in the overflow menu.
-void SetWhatsNewUsed();
+void SetWhatsNewUsed(PromosManager* promosManager);
 
 // Returns whether What's New is enabled.
 bool IsWhatsNewEnabled();

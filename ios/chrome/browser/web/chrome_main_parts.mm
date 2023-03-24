@@ -360,12 +360,6 @@ void IOSChromeMainParts::PreMainMessageLoopRun() {
   safe_browsing_service->Initialize(last_used_browser_state->GetPrefs(),
                                     user_data_path,
                                     safe_browsing_metrics_collector);
-
-  // Ensure the Fullscren Promos Manager is initialized.
-  PromosManager* promos_manager = application_context_->GetPromosManager();
-  if (promos_manager) {
-    promos_manager->Init();
-  }
 }
 
 void IOSChromeMainParts::PostMainMessageLoopRun() {

@@ -12,6 +12,7 @@
 #import "base/containers/flat_set.h"
 #import "base/containers/small_map.h"
 #import "base/time/time.h"
+#import "components/keyed_service/core/keyed_service.h"
 #import "ios/chrome/browser/promos_manager/promo_config.h"
 #import "third_party/abseil-cpp/absl/types/optional.h"
 
@@ -45,10 +46,9 @@ using PromoConfigsSet = base::flat_set<PromoConfig, PromoConfigComparator>;
 // 1. RegisterPromoForSingleDisplay
 // 2. RegisterPromoForContinuousDisplay
 // 3. DeregisterPromo
-class PromosManager {
+class PromosManager : public KeyedService {
  public:
   PromosManager();
-  virtual ~PromosManager();
 
 #pragma mark - Public-facing APIs
 

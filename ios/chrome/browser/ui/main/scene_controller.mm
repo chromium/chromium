@@ -67,6 +67,7 @@
 #import "ios/chrome/browser/policy/policy_watcher_browser_agent_observer_bridge.h"
 #import "ios/chrome/browser/prefs/pref_names.h"
 #import "ios/chrome/browser/promos_manager/features.h"
+#import "ios/chrome/browser/promos_manager/promos_manager_factory.h"
 #import "ios/chrome/browser/screenshot/screenshot_delegate.h"
 #import "ios/chrome/browser/sessions/session_saving_scene_agent.h"
 #import "ios/chrome/browser/sessions/session_service_ios.h"
@@ -956,28 +957,25 @@ void InjectNTP(Browser* browser) {
         addAgent:[[PromosManagerSceneAgent alloc]
                      initWithCommandDispatcher:mainCommandDispatcher]];
 
-  if (IsAppStoreRatingEnabled()) {
-    [self.sceneState
-        addAgent:[[AppStoreRatingSceneAgent alloc]
-                     initWithPromosManager:GetApplicationContext()
-                                               ->GetPromosManager()]];
-  }
+    PromosManager* promosManager =
+        PromosManagerFactory::GetForBrowserState(browserState);
+
+    if (IsAppStoreRatingEnabled()) {
+    [self.sceneState addAgent:[[AppStoreRatingSceneAgent alloc]
+                                  initWithPromosManager:promosManager]];
+    }
 
   if (IsWhatsNewEnabled()) {
-    [self.sceneState
-        addAgent:[[WhatsNewSceneAgent alloc]
-                     initWithPromosManager:GetApplicationContext()
-                                               ->GetPromosManager()]];
+    [self.sceneState addAgent:[[WhatsNewSceneAgent alloc]
+                                  initWithPromosManager:promosManager]];
   }
 
   // Do not gate by feature flag so it can run for enabled -> disabled
   // scenarios.
   [self.sceneState
       addAgent:[[CredentialProviderPromoSceneAgent alloc]
-                   initWithPromosManager:GetApplicationContext()
-                                             ->GetPromosManager()
-                             prefService:self.sceneState.appState
-                                             .mainBrowserState->GetPrefs()]];
+                   initWithPromosManager:promosManager
+                             prefService:browserState->GetPrefs()]];
 }
 
 // Determines the mode (normal or incognito) the initial UI should be in.

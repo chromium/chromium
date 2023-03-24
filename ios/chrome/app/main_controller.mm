@@ -90,6 +90,7 @@
 #import "ios/chrome/browser/omaha/omaha_service.h"
 #import "ios/chrome/browser/passwords/password_manager_util_ios.h"
 #import "ios/chrome/browser/paths/paths.h"
+#import "ios/chrome/browser/promos_manager/promos_manager_factory.h"
 #import "ios/chrome/browser/screenshot/screenshot_metrics_recorder.h"
 #import "ios/chrome/browser/search_engines/extension_search_engine_data_updater.h"
 #import "ios/chrome/browser/search_engines/search_engines_util.h"
@@ -498,15 +499,16 @@ void MainControllerAuthenticationServiceDelegate::ClearBrowsingData(
 
   [NSURLCache setSharedURLCache:[EmptyNSURLCache emptyNSURLCache]];
 
+  ChromeBrowserState* browserState = self.appState.mainBrowserState;
+  DCHECK(browserState);
   [self.appState
-      addAgent:[[PostRestoreAppAgent alloc]
-                   initWithPromosManager:GetApplicationContext()
-                                             ->GetPromosManager()
-                   authenticationService:AuthenticationServiceFactory::
-                                             GetForBrowserState(
-                                                 self.appState.mainBrowserState)
-                              localState:GetApplicationContext()
-                                             ->GetLocalState()]];
+      addAgent:
+          [[PostRestoreAppAgent alloc]
+              initWithPromosManager:PromosManagerFactory::GetForBrowserState(
+                                        browserState)
+              authenticationService:AuthenticationServiceFactory::
+                                        GetForBrowserState(browserState)
+                         localState:GetApplicationContext()->GetLocalState()]];
 }
 
 // This initialization must happen before any windows are created.

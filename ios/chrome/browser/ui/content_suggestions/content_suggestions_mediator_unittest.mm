@@ -20,6 +20,7 @@
 #import "ios/chrome/browser/main/browser.h"
 #import "ios/chrome/browser/main/test_browser.h"
 #import "ios/chrome/browser/ntp/new_tab_page_tab_helper.h"
+#import "ios/chrome/browser/promos_manager/mock_promos_manager.h"
 #import "ios/chrome/browser/reading_list/reading_list_model_factory.h"
 #import "ios/chrome/browser/reading_list/reading_list_test_utils.h"
 #import "ios/chrome/browser/search_engines/template_url_service_factory.h"
@@ -110,6 +111,9 @@ class ContentSuggestionsMediatorTest : public PlatformTest {
     mediator_.webStateList = browser_.get()->GetWebStateList();
     mediator_.webState = fake_web_state_.get();
 
+    promos_manager_ = std::make_unique<MockPromosManager>();
+    mediator_.promosManager = promos_manager_.get();
+
     StartSurfaceRecentTabBrowserAgent::CreateForBrowser(browser_.get());
     UrlLoadingNotifierBrowserAgent::CreateForBrowser(browser_.get());
     FakeUrlLoadingBrowserAgent::InjectForBrowser(browser_.get());
@@ -140,6 +144,7 @@ class ContentSuggestionsMediatorTest : public PlatformTest {
   id dispatcher_;
   id consumer_;
   std::unique_ptr<favicon::LargeIconServiceImpl> large_icon_service_;
+  std::unique_ptr<MockPromosManager> promos_manager_;
   ContentSuggestionsMediator* mediator_;
   FakeUrlLoadingBrowserAgent* url_loader_;
   std::unique_ptr<base::HistogramTester> histogram_tester_;
