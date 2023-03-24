@@ -248,27 +248,41 @@ def CargoVendor(cargo_bin):
     '''Runs `cargo vendor` to pull down dependencies.'''
     os.chdir(RUST_SRC_DIR)
 
-    # Some Submodules are part of the workspace and need to exist (so we can
-    # read their Cargo.toml files) before we can vendor their deps.
-    RunCommand([
-        'git', 'submodule', 'update', '--init', '--recursive', '--depth', '1'
-    ])
+    for i in range(0, 3):
+        # Some Submodules are part of the workspace and need to exist (so we can
+        # read their Cargo.toml files) before we can vendor their deps.
+        submod_cmd = [
+            'git', 'submodule', 'update', '--init', '--recursive', '--depth',
+            '1'
+        ]
+        if not RunCommand(submod_cmd, fail_hard=False):
+            if i < 2:
+                print('Failed git submodule, retrying...')
+                continue
+            else:
+                sys.exit(1)
 
-    # From https://github.com/rust-lang/rust/blob/master/src/bootstrap/dist.rs#L986-L995
-    # The additional `--sync` Cargo.toml files are not part of the top level
-    # workspace.
-    RunCommand([
-        cargo_bin,
-        'vendor',
-        '--locked',
-        '--versioned-dirs',
-        '--sync',
-        'src/tools/rust-analyzer/Cargo.toml',
-        '--sync',
-        'compiler/rustc_codegen_cranelift/Cargo.toml',
-        '--sync',
-        'src/bootstrap/Cargo.toml',
-    ])
+        # From https://github.com/rust-lang/rust/blob/master/src/bootstrap/dist.rs#L986-L995:
+        # The additional `--sync` Cargo.toml files are not part of the top level
+        # workspace.
+        vendor_cmd = [
+            cargo_bin,
+            'vendor',
+            '--locked',
+            '--versioned-dirs',
+            '--sync',
+            'src/tools/rust-analyzer/Cargo.toml',
+            '--sync',
+            'compiler/rustc_codegen_cranelift/Cargo.toml',
+            '--sync',
+            'src/bootstrap/Cargo.toml',
+        ]
+        if not RunCommand(vendor_cmd, fail_hard=False):
+            if i < 2:
+                print('Failed cargo vendor, retrying...')
+                continue
+            else:
+                sys.exit(1)
 
     # Make a `.cargo/config.toml` the points to the `vendor` directory for all
     # dependency crates.
