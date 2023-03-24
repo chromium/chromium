@@ -10631,6 +10631,31 @@
             ]
         }
     ],
+    "RenderBlockingFonts": [
+        {
+            "platforms": [
+                "android",
+                "android_webview",
+                "chromeos",
+                "chromeos_lacros",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "EnabledWith1000BlockingAnd100Delay",
+                    "params": {
+                        "max-blocking-time": "1000",
+                        "max-fcp-delay": "100"
+                    },
+                    "enable_features": [
+                        "RenderBlockingFonts"
+                    ]
+                }
+            ]
+        }
+    ],
     "ReportCertificateErrors": [
         {
             "platforms": [
