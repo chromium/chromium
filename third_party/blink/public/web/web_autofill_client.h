@@ -71,7 +71,10 @@ class WebAutofillClient {
       const WebFormControlElement& element,
       const WebString& old_value) {}
 
+  // Called when the focused node has changed. This is not called if the focus
+  // moves outside the frame.
   virtual void DidCompleteFocusChangeInFrame() {}
+
   virtual void DidReceiveLeftMouseDownOrGestureTapInNode(const WebNode&) {}
 
   // Asks the client whether to suppess the keyboard for the given control

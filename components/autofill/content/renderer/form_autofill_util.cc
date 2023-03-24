@@ -2119,6 +2119,10 @@ bool IsAutofillableElement(const WebFormControlElement& element) {
          IsSelectElement(element) || IsTextAreaElement(element);
 }
 
+bool IsElementEditable(const WebInputElement& element) {
+  return element.IsEnabled() && !element.IsReadOnly();
+}
+
 bool IsWebElementFocusable(const blink::WebElement& element) {
   return element.IsFocusable();
 }

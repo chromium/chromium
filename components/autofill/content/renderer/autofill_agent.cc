@@ -87,10 +87,12 @@ namespace autofill {
 
 using form_util::ExtractMask;
 using form_util::FindFormAndFieldForFormControlElement;
+using form_util::IsElementEditable;
 using form_util::IsOwnedByFrame;
 using mojom::SubmissionSource;
 using ShowAll = PasswordAutofillAgent::ShowAll;
 using GenerationShowing = PasswordAutofillAgent::GenerationShowing;
+using mojom::FocusedFieldType;
 
 namespace {
 
@@ -215,6 +217,74 @@ class AutofillAgent::DeferringAutofillDriver : public mojom::AutofillDriver {
   base::WeakPtrFactory<DeferringAutofillDriver> weak_ptr_factory_{this};
 };
 
+AutofillAgent::FocusStateNotifier::FocusStateNotifier(AutofillAgent* agent)
+    : agent_(agent) {}
+
+AutofillAgent::FocusStateNotifier::~FocusStateNotifier() = default;
+
+void AutofillAgent::FocusStateNotifier::FocusedInputChanged(
+    const WebNode& node) {
+  CHECK(!node.IsNull());
+
+  FocusedFieldType new_focused_field_type = FocusedFieldType::kUnknown;
+  FieldRendererId new_focused_field_id = FieldRendererId();
+  if (auto form_control_element = node.DynamicTo<WebFormControlElement>();
+      !form_control_element.IsNull()) {
+    new_focused_field_type = GetFieldType(form_control_element);
+    new_focused_field_id = form_util::GetFieldRendererId(form_control_element);
+  }
+  NotifyIfChanged(new_focused_field_type, new_focused_field_id);
+}
+
+void AutofillAgent::FocusStateNotifier::ResetFocus() {
+  FieldRendererId new_focused_field_id = FieldRendererId();
+  FocusedFieldType new_focused_field_type = FocusedFieldType::kUnknown;
+  NotifyIfChanged(new_focused_field_type, new_focused_field_id);
+}
+
+FocusedFieldType AutofillAgent::FocusStateNotifier::GetFieldType(
+    const WebFormControlElement& node) {
+  if (form_util::IsTextAreaElement(node.To<WebFormControlElement>())) {
+    return FocusedFieldType::kFillableTextArea;
+  }
+
+  WebInputElement input_element = node.DynamicTo<WebInputElement>();
+  if (input_element.IsNull() || !input_element.IsTextField() ||
+      !IsElementEditable(input_element)) {
+    return FocusedFieldType::kUnfillableElement;
+  }
+
+  if (WebString type = input_element.FormControlType();
+      !type.IsNull() && type.Utf8() == "search") {
+    return FocusedFieldType::kFillableSearchField;
+  }
+  if (input_element.IsPasswordFieldForAutofill()) {
+    return FocusedFieldType::kFillablePasswordField;
+  }
+  if (agent_->password_autofill_agent_->IsUsernameInputField(input_element)) {
+    return FocusedFieldType::kFillableUsernameField;
+  }
+  return FocusedFieldType::kFillableNonSearchField;
+}
+
+void AutofillAgent::FocusStateNotifier::NotifyIfChanged(
+    mojom::FocusedFieldType new_focused_field_type,
+    FieldRendererId new_focused_field_id) {
+  // Forward the request if the focused field is different from the previous
+  // one.
+  if (focused_field_id_ == new_focused_field_id &&
+      focused_field_type_ == new_focused_field_type) {
+    return;
+  }
+
+  // TODO(crbug.com/1425166): Move FocusedInputChanged to AutofillDriver.
+  agent_->GetPasswordManagerDriver().FocusedInputChanged(
+      new_focused_field_id, new_focused_field_type);
+
+  focused_field_type_ = new_focused_field_type;
+  focused_field_id_ = new_focused_field_id;
+}
+
 AutofillAgent::AutofillAgent(content::RenderFrame* render_frame,
                              PasswordAutofillAgent* password_autofill_agent,
                              PasswordGenerationAgent* password_generation_agent,
@@ -229,7 +299,8 @@ AutofillAgent::AutofillAgent(content::RenderFrame* render_frame,
       is_user_gesture_required_(true),
       is_secure_context_required_(false),
       form_tracker_(render_frame),
-      field_data_manager_(password_autofill_agent->GetFieldDataManager()) {
+      field_data_manager_(password_autofill_agent->GetFieldDataManager()),
+      focus_state_notifier_(this) {
   render_frame->GetWebFrame()->SetAutofillClient(this);
   password_autofill_agent->SetAutofillAgent(this);
   AddFormObserver(this);
@@ -411,7 +482,7 @@ void AutofillAgent::TextFieldDidEndEditing(const WebInputElement& element) {
     return;
   }
   GetAutofillDriver().DidEndTextFieldEditing();
-  password_autofill_agent_->DidEndTextFieldEditing();
+  focus_state_notifier_.ResetFocus();
   if (password_generation_agent_)
     password_generation_agent_->DidEndTextFieldEditing(element);
 
@@ -996,8 +1067,9 @@ void AutofillAgent::DidCompleteFocusChangeInFrame() {
   if (!doc.IsNull())
     focused_element = doc.FocusedElement();
 
-  if (!focused_element.IsNull() && password_autofill_agent_)
-    password_autofill_agent_->FocusedNodeHasChanged(focused_element);
+  if (!focused_element.IsNull()) {
+    SendFocusedInputChangedNotificationToBrowser(focused_element);
+  }
 
   // PasswordGenerationAgent needs to know about focus changes, even if there is
   // no focused element.
@@ -1149,6 +1221,18 @@ void AutofillAgent::HandleFocusChangeComplete() {
   focused_node_was_last_clicked_ = false;
 
   SendPotentiallySubmittedFormToBrowser();
+}
+
+void AutofillAgent::SendFocusedInputChangedNotificationToBrowser(
+    const WebElement& node) {
+  focus_state_notifier_.FocusedInputChanged(node);
+
+  auto input_element = node.DynamicTo<WebInputElement>();
+  if (!input_element.IsNull()) {
+    field_data_manager_->UpdateFieldDataMapWithNullValue(
+        form_util::GetFieldRendererId(input_element),
+        FieldPropertiesFlags::kHadFocus);
+  }
 }
 
 void AutofillAgent::AjaxSucceeded() {

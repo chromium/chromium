@@ -146,6 +146,10 @@ class AutofillAgent : public content::RenderFrameObserver,
 
   bool IsPrerendering() const;
 
+  const blink::WebFormControlElement& focused_element() const {
+    return element_;
+  }
+
  protected:
   // blink::WebAutofillClient:
   void DidAddOrRemoveFormRelatedElementsDynamically() override;
@@ -178,6 +182,37 @@ class AutofillAgent : public content::RenderFrameObserver,
     // element. The signal is used to understand whether other surfaces (e.g.
     // TouchToFill, FastCheckout) can be triggered.
     FormElementWasClicked form_element_was_clicked{false};
+  };
+
+  // This class ensures that the driver will only receive notifications only
+  // when a focused field or its type (FocusedFieldType) change.
+  class FocusStateNotifier {
+   public:
+    // Creates a new notifier that uses the agent which owns it to access the
+    // real driver implementation.
+    explicit FocusStateNotifier(AutofillAgent* agent);
+
+    FocusStateNotifier(const FocusStateNotifier&) = delete;
+    FocusStateNotifier& operator=(const FocusStateNotifier&) = delete;
+
+    ~FocusStateNotifier();
+
+    // Notifies the driver about focusing the node.
+    void FocusedInputChanged(const blink::WebNode& node);
+    // Notifies the password manager driver about removing the focus from the
+    // currently focused node (with no setting it to a new one).
+    void ResetFocus();
+
+   private:
+    mojom::FocusedFieldType GetFieldType(
+        const blink::WebFormControlElement& node);
+    void NotifyIfChanged(mojom::FocusedFieldType new_focused_field_type,
+                         FieldRendererId new_focused_field_id);
+
+    FieldRendererId focused_field_id_;
+    mojom::FocusedFieldType focused_field_type_ =
+        mojom::FocusedFieldType::kUnknown;
+    AutofillAgent* agent_ = nullptr;
   };
 
   // content::RenderFrameObserver:
@@ -226,6 +261,8 @@ class AutofillAgent : public content::RenderFrameObserver,
   void PasswordFieldReset(const blink::WebInputElement& element) override;
 
   void HandleFocusChangeComplete();
+  void SendFocusedInputChangedNotificationToBrowser(
+      const blink::WebElement& node);
 
   // Helper method which collects unowned elements (i.e., those not inside a
   // form tag) and writes them into |output|. Returns true if the process is
@@ -391,6 +428,10 @@ class AutofillAgent : public content::RenderFrameObserver,
   bool is_heavy_form_data_scraping_enabled_ = false;
 
   const scoped_refptr<FieldDataManager> field_data_manager_;
+
+  // This notifier is used to avoid sending redundant messages to the password
+  // manager driver mojo interface.
+  FocusStateNotifier focus_state_notifier_;
 
   base::WeakPtrFactory<AutofillAgent> weak_ptr_factory_{this};
 };

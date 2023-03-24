@@ -48,6 +48,7 @@
 #include "third_party/blink/public/web/web_form_element.h"
 #include "third_party/blink/public/web/web_frame_widget.h"
 #include "third_party/blink/public/web/web_local_frame.h"
+#include "third_party/blink/public/web/web_local_frame_client.h"
 #include "ui/events/keycodes/keyboard_codes.h"
 
 #if BUILDFLAG(IS_WIN)
@@ -349,6 +350,7 @@ class PasswordAutofillAgentTest : public ChromeRenderViewTest {
 
     // TODO(crbug/862989): Remove workaround preventing non-test classes to bind
     // fake_driver_ or fake_pw_client_.
+    password_autofill_agent_->SetAutofillAgent(autofill_agent_);
     password_autofill_agent_->GetPasswordManagerDriver();
     password_generation_->RequestPasswordManagerClientForTesting();
     base::RunLoop().RunUntilIdle();  // Executes binding the interfaces.
@@ -430,6 +432,7 @@ class PasswordAutofillAgentTest : public ChromeRenderViewTest {
     std::string script =
         "document.getElementById('" + element_id + "').focus()";
     ExecuteJavaScriptForTests(script.c_str());
+    GetMainFrame()->Client()->FocusedElementChanged(GetElementByID(element_id));
     GetMainFrame()->AutofillClient()->DidCompleteFocusChangeInFrame();
   }
 
@@ -492,13 +495,16 @@ class PasswordAutofillAgentTest : public ChromeRenderViewTest {
     UpdateRendererIDsInFillData();
   }
 
-  WebInputElement GetInputElementByID(const std::string& id) {
+  WebElement GetElementByID(const std::string& id) {
     WebDocument document = GetMainFrame()->GetDocument();
     WebElement element =
         document.GetElementById(WebString::FromUTF8(id.c_str()));
     EXPECT_FALSE(element.IsNull());
+    return element;
+  }
 
-    WebInputElement input_element = element.To<WebInputElement>();
+  WebInputElement GetInputElementByID(const std::string& id) {
+    WebInputElement input_element = GetElementByID(id).To<WebInputElement>();
     EXPECT_FALSE(input_element.IsNull());
     return input_element;
   }
@@ -1830,6 +1836,7 @@ TEST_F(PasswordAutofillAgentTest, TouchToFillClosed) {
   auto previous_state = password_element_.GetAutofillState();
   // Touch to fill will be shown multiple times until TouchToFillClosed()
   // gets called.
+  FocusElement(kPasswordName);
   EXPECT_TRUE(
       password_autofill_agent_->TryToShowTouchToFill(password_element_));
   EXPECT_TRUE(password_autofill_agent_->ShouldSuppressKeyboard());

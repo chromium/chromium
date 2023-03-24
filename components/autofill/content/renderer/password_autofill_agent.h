@@ -156,11 +156,6 @@ class PasswordAutofillAgent : public content::RenderFrameObserver,
   // be used for any other autofill activity.
   bool TextDidChangeInTextField(const blink::WebInputElement& element);
 
-  // Event forwarded by AutofillAgent from WebAutofillClient, informing that
-  // the text field editing has ended, which means that the field is not
-  // focused anymore.
-  void DidEndTextFieldEditing();
-
   // Function that should be called whenever the value of |element| changes due
   // to user input. This is separate from TextDidChangeInTextField() as that
   // function may trigger UI and should only be called when other UI won't be
@@ -221,10 +216,6 @@ class PasswordAutofillAgent : public content::RenderFrameObserver,
   // JavaScript.
   void UserGestureObserved();
 
-  // Called when the focused node has changed. This is not called if the focus
-  // moves outside the frame.
-  void FocusedNodeHasChanged(const blink::WebNode& node);
-
   std::unique_ptr<FormData> GetFormDataFromWebForm(
       const blink::WebFormElement& web_form);
 
@@ -260,6 +251,9 @@ class PasswordAutofillAgent : public content::RenderFrameObserver,
   }
 
   bool IsPrerendering() const;
+
+  // Check if the given element is a username input field.
+  bool IsUsernameInputField(const blink::WebInputElement& input_element) const;
 
  private:
   using OnPasswordField = base::StrongAlias<class OnPasswordFieldTag, bool>;
@@ -309,29 +303,6 @@ class PasswordAutofillAgent : public content::RenderFrameObserver,
 
     FormRendererId unique_renderer_id;
     std::vector<FormFieldInfo> fields;
-  };
-
-  // This class ensures that the driver will only receive relevant signals by
-  // caching the parameters of the last message sent to the driver.
-  class FocusStateNotifier {
-   public:
-    // Creates a new notifier that uses the agent which owns it to access the
-    // real driver implementation.
-    explicit FocusStateNotifier(PasswordAutofillAgent* agent);
-
-    FocusStateNotifier(const FocusStateNotifier&) = delete;
-    FocusStateNotifier& operator=(const FocusStateNotifier&) = delete;
-
-    ~FocusStateNotifier();
-
-    void FocusedInputChanged(FieldRendererId focused_field_id,
-                             mojom::FocusedFieldType focused_field_type);
-
-   private:
-    FieldRendererId focused_field_id_;
-    mojom::FocusedFieldType focused_field_type_ =
-        mojom::FocusedFieldType::kUnknown;
-    PasswordAutofillAgent* agent_ = nullptr;
   };
 
   // This class keeps track of autofilled username and password input elements
@@ -523,10 +494,6 @@ class PasswordAutofillAgent : public content::RenderFrameObserver,
 
   PasswordValueGatekeeper gatekeeper_;
 
-  // The currently focused input field. Not null if its a valid input that can
-  // be filled with a suggestions.
-  blink::WebInputElement focused_input_element_;
-
   // True indicates that user debug information should be logged.
   bool logging_state_active_;
 
@@ -551,10 +518,6 @@ class PasswordAutofillAgent : public content::RenderFrameObserver,
 
   // Records the username typed before suggestions preview.
   std::u16string username_query_prefix_;
-
-  // This notifier is used to avoid sending redundant messages to the password
-  // manager driver mojo interface.
-  FocusStateNotifier focus_state_notifier_;
 
   base::WeakPtr<AutofillAgent> autofill_agent_;
 
