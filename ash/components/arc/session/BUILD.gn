@@ -48,7 +48,6 @@ static_library("session") {
     "//ash/components/arc:arc_base_utils",
     "//ash/components/arc:arc_features",
     "//ash/components/arc:prefs",
-    "//ash/components/arc/enterprise",
     "//ash/components/arc/mojom",
     "//ash/constants:constants",
     "//ash/public/cpp",

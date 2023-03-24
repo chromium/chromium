@@ -309,8 +309,6 @@ static_library("arc_test_support") {
     "test/fake_app_host.h",
     "test/fake_app_instance.cc",
     "test/fake_app_instance.h",
-    "test/fake_apps_tracker.cc",
-    "test/fake_apps_tracker.h",
     "test/fake_arc_bridge_host.cc",
     "test/fake_arc_bridge_host.h",
     "test/fake_arc_session.cc",
@@ -378,7 +376,6 @@ static_library("arc_test_support") {
 
   deps = [
     ":arc",
-    "//ash/components/arc/enterprise",
     "//ash/constants",
     "//base",
     "//components/keyed_service/content",
@@ -415,7 +412,6 @@ source_set("unit_tests") {
     "compat_mode/resize_util_unittest.cc",
     "compat_mode/touch_mode_mouse_rewriter_unittest.cc",
     "crash_collector/arc_crash_collector_bridge_unittest.cc",
-    "enterprise/arc_data_remove_requested_pref_handler_unittest.cc",
     "ime/arc_ime_service_unittest.cc",
     "ime/key_event_result_receiver_unittest.cc",
     "lock_screen/arc_lock_screen_bridge_unittest.cc",
@@ -449,7 +445,6 @@ source_set("unit_tests") {
     ":arc",
     "//ash:test_support",
     "//ash/components/arc:arc_test_support",
-    "//ash/components/arc/enterprise",
     "//ash/components/arc/media_session",
     "//ash/components/arc/video_accelerator:common",
     "//ash/constants",

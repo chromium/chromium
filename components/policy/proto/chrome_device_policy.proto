@@ -1714,10 +1714,10 @@ message DeviceFamilyLinkAccountsAllowedProto {
 
 // Setting that controls whether ARC data snapshotting is enabled for the device
 // and time intervals of updating ARC data snapshot.
-message DeviceArcDataSnapshotHoursProto {
+message OBSOLETE_DeviceArcDataSnapshotHoursProto {
   // This is a JSON string, for details see
   // "DeviceArcDataSnapshotHours" in policy_template.json
-  optional string arc_data_snapshot_hours = 1;
+  optional string OBSOLETE_arc_data_snapshot_hours = 1 [deprecated = true];
 }
 
 // Setting that controls whether system-wide trace collection using the Perfetto
@@ -1948,7 +1948,8 @@ message ChromeDeviceSettingsProto {
   optional UsbDetachableAllowlistProto usb_detachable_allowlist = 113;
   optional DeviceFamilyLinkAccountsAllowedProto family_link_accounts_allowed =
       114;
-  optional DeviceArcDataSnapshotHoursProto arc_data_snapshot_hours = 115;
+  optional OBSOLETE_DeviceArcDataSnapshotHoursProto arc_data_snapshot_hours =
+      115 [deprecated = true];
   optional BooleanPolicyProto device_allow_mgs_to_store_display_properties =
       116;
   optional DeviceSystemWideTracingEnabledProto

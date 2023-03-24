@@ -4337,7 +4337,6 @@ if (!is_android) {
         "//ash/components/arc:arc_metrics_constants",
         "//ash/components/arc:arc_test_support",
         "//ash/components/arc:prefs",
-        "//ash/components/arc/enterprise",
         "//ash/components/arc/session:arc_base_enums",
         "//ash/constants:constants",
         "//ash/keyboard/ui:test_support",

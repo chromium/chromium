@@ -4965,7 +4965,6 @@ static_library("browser") {
       "//ash/components/arc",
       "//ash/components/arc:arc_base",
       "//ash/components/arc:arc_base_utils",
-      "//ash/components/arc/enterprise",
       "//ash/components/arc/mojom",
       "//ash/constants",
       "//ash/public/cpp",

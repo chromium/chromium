@@ -110,7 +110,6 @@ class ArcPolicyBridge : public KeyedService,
   static const char kApplications[];
   static const char kPackageName[];
   static const char kManagedConfiguration[];
-  static const char kResetAndroidIdEnabled[];
 
   // Returns singleton instance for the given BrowserContext,
   // or nullptr if the browser |context| is not allowed to use ARC.

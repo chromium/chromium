@@ -9,6 +9,7 @@ desc: 'If "DeviceArcDataSnapshotHours" policy is set, then the ARC data snapshot
   update process. Note: a device is blocked for usage during the ARC data snapshot
   update process.'
 device_only: true
+deprecated: true
 example_value:
   intervals:
   - end:
@@ -40,6 +41,6 @@ schema:
       type: string
   type: object
 supported_on:
-- chrome_os:88-
+- chrome_os:88-113
 tags: []
 type: dict

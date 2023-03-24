@@ -155,9 +155,6 @@ const char kStabilityMetrics[] = "arc.metrics.stability";
 // Android properties. Used only in ARCVM.
 const char kArcSerialNumberSalt[] = "arc.serialno_salt";
 
-// A preference to keep time intervals when snapshotting is allowed.
-const char kArcSnapshotHours[] = "arc.snapshot_hours";
-
 // A preferece to keep ARC snapshot related info in dictionary.
 const char kArcSnapshotInfo[] = "arc.snapshot";
 
@@ -174,7 +171,6 @@ void RegisterLocalStatePrefs(PrefRegistrySimple* registry) {
   // Sorted in lexicographical order.
   RegisterDailyMetricsPrefs(registry);
   registry->RegisterStringPref(kArcSerialNumberSalt, std::string());
-  registry->RegisterDictionaryPref(kArcSnapshotHours);
   registry->RegisterDictionaryPref(kArcSnapshotInfo);
   registry->RegisterTimePref(kArcVmmSwapOutTime, base::Time());
   registry->RegisterDictionaryPref(kStabilityMetrics);

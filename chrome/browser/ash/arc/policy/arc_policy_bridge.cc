@@ -467,9 +467,6 @@ const char ArcPolicyBridge::kPackageName[] = "packageName";
 const char ArcPolicyBridge::kManagedConfiguration[] = "managedConfiguration";
 
 // static
-const char ArcPolicyBridge::kResetAndroidIdEnabled[] = "resetAndroidIdEnabled";
-
-// static
 ArcPolicyBridge* ArcPolicyBridge::GetForBrowserContext(
     content::BrowserContext* context) {
   return ArcPolicyBridgeFactory::GetForBrowserContext(context);

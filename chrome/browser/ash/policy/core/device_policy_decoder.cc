@@ -1971,15 +1971,6 @@ void DecodeGenericPolicies(const em::ChromeDeviceSettingsProto& policy,
     }
   }
 
-  if (policy.has_arc_data_snapshot_hours()) {
-    const em::DeviceArcDataSnapshotHoursProto& container(
-        policy.arc_data_snapshot_hours());
-    if (container.has_arc_data_snapshot_hours()) {
-      SetJsonDevicePolicy(key::kDeviceArcDataSnapshotHours,
-                          container.arc_data_snapshot_hours(), policies);
-    }
-  }
-
   if (policy.has_device_allow_mgs_to_store_display_properties()) {
     const em::BooleanPolicyProto& container(
         policy.device_allow_mgs_to_store_display_properties());
