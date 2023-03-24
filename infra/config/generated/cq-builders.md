@@ -20,6 +20,8 @@ These builders must pass before a CL may land that affects files outside of
 ### chrome
 * [linux-chromeos-compile-chrome](https://ci.chromium.org/p/chrome/builders/try/linux-chromeos-compile-chrome) ([definition](https://source.corp.google.com/search?q=+file:/try/.*\.star$+""linux-chromeos-compile-chrome""))
 
+* [win-branded-compile-rel](https://ci.chromium.org/p/chrome/builders/try/win-branded-compile-rel) ([definition](https://source.corp.google.com/search?q=+file:/try/.*\.star$+""win-branded-compile-rel""))
+
 ### chromium
 * [android-12-x64-rel](https://ci.chromium.org/p/chromium/builders/try/android-12-x64-rel) ([definition](https://cs.chromium.org/search?q=+file:/try/.*\.star$+""android-12-x64-rel""))
 
@@ -537,9 +539,6 @@ as required builders.
 
   Location filters:
   * [`//third_party/nearby/README.chromium`](https://cs.chromium.org/search?q=+file:third_party/nearby/README.chromium)
-
-* [win-branded-compile-rel](https://ci.chromium.org/p/chrome/builders/try/win-branded-compile-rel) ([definition](https://source.corp.google.com/search?q=+file:/try/.*\.star$+""win-branded-compile-rel""))
-  * Experiment percentage: 100.0
 
 ### chromium
 * [linux-1mbu-compile-fyi-rel](https://ci.chromium.org/p/chromium/builders/try/linux-1mbu-compile-fyi-rel) ([definition](https://cs.chromium.org/search?q=+file:/try/.*\.star$+""linux-1mbu-compile-fyi-rel""))
