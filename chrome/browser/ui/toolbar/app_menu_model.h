@@ -154,6 +154,7 @@ class AppMenuModel : public ui::SimpleMenuModel,
   DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kExtensionsMenuItem);
   DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kMoreToolsMenuItem);
   DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kIncognitoMenuItem);
+  DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kPasswordManagerMenuItem);
 
   // First command ID to use for the recent tabs menu. This is one higher than
   // the first command id used for the bookmarks menus, as the command ids for

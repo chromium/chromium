@@ -61,6 +61,7 @@
 #include "components/dom_distiller/core/dom_distiller_features.h"
 #include "components/dom_distiller/core/url_utils.h"
 #include "components/feature_engagement/public/event_constants.h"
+#include "components/password_manager/core/common/password_manager_features.h"
 #include "components/performance_manager/public/features.h"
 #include "components/prefs/pref_service.h"
 #include "components/profile_metrics/browser_profile_type.h"
@@ -114,6 +115,7 @@ DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(AppMenuModel, kHistoryMenuItem);
 DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(AppMenuModel, kExtensionsMenuItem);
 DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(AppMenuModel, kMoreToolsMenuItem);
 DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(AppMenuModel, kIncognitoMenuItem);
+DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(AppMenuModel, kPasswordManagerMenuItem);
 DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(ToolsMenuModel, kPerformanceMenuItem);
 DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(ExtensionsMenuModel,
                                       kManageExtensionsMenuItem);
@@ -954,6 +956,13 @@ void AppMenuModel::Build() {
                            bookmark_sub_menu_model_.get());
     SetElementIdentifierAt(GetIndexOfCommandId(IDC_BOOKMARKS_MENU).value(),
                            kBookmarksMenuItem);
+  }
+  if (!browser_->profile()->IsOffTheRecord() &&
+      base::FeatureList::IsEnabled(
+          password_manager::features::kPasswordManagerRedesign)) {
+    AddItemWithStringId(IDC_VIEW_PASSWORDS, IDS_VIEW_PASSWORDS);
+    SetElementIdentifierAt(GetIndexOfCommandId(IDC_VIEW_PASSWORDS).value(),
+                           kPasswordManagerMenuItem);
   }
 
   if (base::FeatureList::IsEnabled(features::kExtensionsMenuInAppMenu)) {

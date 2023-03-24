@@ -1487,6 +1487,9 @@ are declared in tools/grit/grit_rule.gni.
         <message name="IDS_SHOW_DOWNLOADS" desc="The show downloads menu in the app menu">
           &amp;Downloads
         </message>
+        <message name="IDS_VIEW_PASSWORDS" desc="The show Password Manager menu in the app menu">
+          &amp;Password Manager
+        </message>
         <message name="IDS_SHOW_EXTENSIONS" desc="The show extensions menu in the app menu">
           &amp;Extensions
         </message>
@@ -1536,6 +1539,9 @@ are declared in tools/grit/grit_rule.gni.
         </message>
         <message name="IDS_SHOW_DOWNLOADS" desc="In Title Case: The show downloads menu in the app menu">
           &amp;Downloads
+        </message>
+        <message name="IDS_VIEW_PASSWORDS" desc="In Title Case: The show Password Manager menu in the app menu">
+          Password Manager
         </message>
         <message name="IDS_SHOW_EXTENSIONS" desc="In Title Case: The show extensions menu in the app menu">
           &amp;Extensions
