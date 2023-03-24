@@ -52,6 +52,7 @@ class TestPersonalDataManager : public PersonalDataManager {
   void AddProfile(const AutofillProfile& profile) override;
   void UpdateProfile(const AutofillProfile& profile) override;
   void RemoveByGUID(const std::string& guid) override;
+  bool IsEligibleForAddressAccountStorage() const override;
   void AddCreditCard(const CreditCard& credit_card) override;
   std::string AddIBAN(const IBAN& iban) override;
   void DeleteLocalCreditCards(const std::vector<CreditCard>& cards) override;
@@ -149,6 +150,10 @@ class TestPersonalDataManager : public PersonalDataManager {
     autofill_wallet_import_enabled_ = autofill_wallet_import_enabled;
   }
 
+  void SetIsEligibleForAddressAccountStorage(bool eligible) {
+    eligible_for_account_storage_ = eligible;
+  }
+
   void SetPaymentsCustomerData(
       std::unique_ptr<PaymentsCustomerData> customer_data) {
     payments_customer_data_ = std::move(customer_data);
@@ -175,6 +180,7 @@ class TestPersonalDataManager : public PersonalDataManager {
   absl::optional<bool> autofill_profile_enabled_;
   absl::optional<bool> autofill_credit_card_enabled_;
   absl::optional<bool> autofill_wallet_import_enabled_;
+  absl::optional<bool> eligible_for_account_storage_;
   bool sync_feature_enabled_ = false;
   AutofillSyncSigninState sync_and_signin_state_ =
       AutofillSyncSigninState::kSignedInAndSyncFeatureEnabled;

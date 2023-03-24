@@ -65,6 +65,11 @@ ProfileImportProcess::ProfileImportProcess(
       allow_only_silent_updates_(allow_only_silent_updates),
       import_metadata_(import_metadata) {
   DetermineProfileImportType();
+  // For eligible users, new profiles are stored in their account.
+  if (import_type_ == AutofillProfileImportType::kNewProfile &&
+      personal_data_manager_->IsEligibleForAddressAccountStorage()) {
+    import_candidate_ = import_candidate_->ConvertToAccountProfile();
+  }
 }
 
 ProfileImportProcess::ProfileImportProcess(const ProfileImportProcess&) =

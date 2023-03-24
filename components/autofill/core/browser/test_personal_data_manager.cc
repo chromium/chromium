@@ -95,6 +95,12 @@ void TestPersonalDataManager::RemoveByGUID(const std::string& guid) {
   }
 }
 
+bool TestPersonalDataManager::IsEligibleForAddressAccountStorage() const {
+  return eligible_for_account_storage_.has_value()
+             ? *eligible_for_account_storage_
+             : PersonalDataManager::IsEligibleForAddressAccountStorage();
+}
+
 void TestPersonalDataManager::AddCreditCard(const CreditCard& credit_card) {
   std::unique_ptr<CreditCard> local_credit_card =
       std::make_unique<CreditCard>(credit_card);

@@ -172,8 +172,10 @@ class PersonalDataManager : public KeyedService,
       absl::variant<const AutofillProfile*, const CreditCard*>
           profile_or_credit_card);
 
-  // Saves |imported_profile| to the WebDB if it exists. Returns the guid of
+  // Saves `imported_profile` to the WebDB if it exists. Returns the guid of
   // the new or updated profile, or the empty string if no profile was saved.
+  // This function is only used for tests and is a leftover from pre-explicit
+  // save prompt times.
   virtual std::string SaveImportedProfile(
       const AutofillProfile& imported_profile);
 
@@ -213,7 +215,7 @@ class PersonalDataManager : public KeyedService,
 
   // Determines whether the logged in user (if any) is eligible to store
   // Autofill address profiles to their account.
-  bool IsEligibleForAddressAccountStorage() const;
+  virtual bool IsEligibleForAddressAccountStorage() const;
 
   // Migrates a given kLocalOrSyncable `profile` to source kAccount. This has
   // multiple side-effects for the profile:

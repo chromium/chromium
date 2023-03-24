@@ -962,6 +962,27 @@ TEST_F(AutofillProfileImportProcessTest,
       testing::UnorderedElementsAre(mergeable_profile, updated_profile));
 }
 
+// Tests that for eligible users, new profiles are of source kAccount.
+TEST_F(AutofillProfileImportProcessTest, NewProfileSource) {
+  {
+    personal_data_manager_.SetIsEligibleForAddressAccountStorage(false);
+    ProfileImportProcess import_data(test::StandardProfile(), "en_US", url_,
+                                     &personal_data_manager_,
+                                     /*allow_only_silent_updates=*/false);
+    EXPECT_EQ(import_data.import_candidate()->source(),
+              AutofillProfile::Source::kLocalOrSyncable);
+  }
+
+  {
+    personal_data_manager_.SetIsEligibleForAddressAccountStorage(true);
+    ProfileImportProcess import_data(test::StandardProfile(), "en_US", url_,
+                                     &personal_data_manager_,
+                                     /*allow_only_silent_updates=*/false);
+    EXPECT_EQ(import_data.import_candidate()->source(),
+              AutofillProfile::Source::kAccount);
+  }
+}
+
 }  // namespace
 
 }  // namespace autofill

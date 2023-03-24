@@ -2079,13 +2079,17 @@ std::string PersonalDataManager::SaveImportedProfile(
   if (is_off_the_record_)
     return std::string();
 
-  DCHECK_EQ(imported_profile.source(),
-            AutofillProfile::Source::kLocalOrSyncable);
   std::vector<AutofillProfile> profiles;
-  // TODO(crbug.com/1348294): Merge into `account_profiles_` once `kAccount`
-  // imports are supported.
   std::string guid = AutofillProfileComparator::MergeProfile(
-      imported_profile, synced_local_profiles_, app_locale_, &profiles);
+      imported_profile, GetProfileStorage(imported_profile.source()),
+      app_locale_, &profiles);
+  // Keep profiles from other sources. `SetProfilesForSource()` cannot be used,
+  // since it doesn't notify observers.
+  for (AutofillProfile* profile : GetProfiles()) {
+    if (profile->source() != imported_profile.source()) {
+      profiles.push_back(*profile);
+    }
+  }
   SetProfilesForAllSources(&profiles);
   return guid;
 }
