@@ -21,6 +21,7 @@
 #include "chrome/browser/ash/crostini/crostini_util.h"
 #include "chrome/browser/ash/file_manager/fileapi_util.h"
 #include "chrome/browser/ash/file_manager/path_util.h"
+#include "chrome/browser/ash/guest_os/guest_os_launcher.h"
 #include "chrome/browser/ash/guest_os/guest_os_registry_service.h"
 #include "chrome/browser/ash/guest_os/guest_os_session_tracker.h"
 #include "chrome/browser/ash/guest_os/guest_os_share_path.h"
@@ -73,9 +74,9 @@ void OnSharePathForLaunchApplication(
                    "Failed to share paths with Bruschetta: " + failure_reason);
     return;
   }
-  // TODO(b/265601951): Factor this out of CrostiniManager.
-  crostini::CrostiniManager::GetForProfile(profile)->LaunchContainerApplication(
-      container_id, registration.DesktopFileId(), args, registration.IsScaled(),
+  guest_os::launcher::LaunchApplication(
+      profile, container_id, registration.DesktopFileId(), args,
+      registration.IsScaled(),
       base::BindOnce(
           [](const std::string& app_id, LaunchCallback callback, bool success,
              const std::string& failure_reason) {

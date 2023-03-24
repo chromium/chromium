@@ -104,7 +104,7 @@ void OnLaunchFailed(const std::string& app_id,
 
 void OnSharePathForLaunchApplication(
     Profile* profile,
-    const std::string& app_id,
+    const std::string& desktop_file_id,
     guest_os::GuestOsRegistryService::Registration registration,
     int64_t display_id,
     const std::vector<std::string>& args,
@@ -112,17 +112,18 @@ void OnSharePathForLaunchApplication(
     bool success,
     const std::string& failure_reason) {
   if (!success) {
-    return OnLaunchFailed(
-        app_id, std::move(callback),
-        "failed to share paths to launch " + app_id + ":" + failure_reason,
-        CrostiniResult::SHARE_PATHS_FAILED);
+    return OnLaunchFailed(desktop_file_id, std::move(callback),
+                          "Failed to share paths to launch " + desktop_file_id +
+                              ": " + failure_reason,
+                          CrostiniResult::SHARE_PATHS_FAILED);
   }
-  const guest_os::GuestId container_id(registration.VmType(),
-                                       registration.VmName(),
-                                       registration.ContainerName());
-  crostini::CrostiniManager::GetForProfile(profile)->LaunchContainerApplication(
-      container_id, registration.DesktopFileId(), args, registration.IsScaled(),
-      base::BindOnce(OnApplicationLaunched, app_id, std::move(callback),
+  const guest_os::GuestId guest_id(registration.VmType(), registration.VmName(),
+                                   registration.ContainerName());
+  guest_os::launcher::LaunchApplication(
+      profile, guest_id, registration.DesktopFileId(), args,
+      registration.IsScaled(),
+      base::BindOnce(OnApplicationLaunched, desktop_file_id,
+                     std::move(callback),
                      crostini::CrostiniResult::UNKNOWN_ERROR));
 }
 

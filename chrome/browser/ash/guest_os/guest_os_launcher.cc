@@ -172,4 +172,46 @@ void EnsureLaunched(const vm_tools::launch::EnsureVmLaunchedRequest& request,
   }
 }
 
+void LaunchApplication(Profile* profile,
+                       const guest_os::GuestId& guest_id,
+                       std::string desktop_file_id,
+                       const std::vector<std::string>& files,
+                       bool display_scaled,
+                       SuccessCallback callback) {
+  vm_tools::cicerone::LaunchContainerApplicationRequest request;
+  request.set_owner_id(crostini::CryptohomeIdForProfile(profile));
+  request.set_vm_name(guest_id.vm_name);
+  request.set_container_name(guest_id.container_name);
+  request.set_desktop_file_id(std::move(desktop_file_id));
+  if (display_scaled) {
+    request.set_display_scaling(
+        vm_tools::cicerone::LaunchContainerApplicationRequest::SCALED);
+  }
+  base::ranges::copy(files, google::protobuf::RepeatedFieldBackInserter(
+                                request.mutable_files()));
+
+  const std::vector<vm_tools::cicerone::ContainerFeature> container_features =
+      crostini::GetContainerFeatures();
+  request.mutable_container_features()->Add(container_features.begin(),
+                                            container_features.end());
+
+  ash::CiceroneClient::Get()->LaunchContainerApplication(
+      std::move(request),
+      base::BindOnce(
+          [](SuccessCallback callback,
+             absl::optional<
+                 vm_tools::cicerone::LaunchContainerApplicationResponse>
+                 response) {
+            if (!response) {
+              std::move(callback).Run(/*success=*/false,
+                                      "Failed to launch application. Empty "
+                                      "LaunchContainerApplicationResponse.");
+              return;
+            }
+            std::move(callback).Run(response->success(),
+                                    response->failure_reason());
+          },
+          std::move(callback)));
+}
+
 }  // namespace guest_os::launcher

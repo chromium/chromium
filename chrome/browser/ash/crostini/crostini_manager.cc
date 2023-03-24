@@ -2046,35 +2046,6 @@ void CrostiniManager::CancelUpgradeContainer(const guest_os::GuestId& key,
                      weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
 }
 
-void CrostiniManager::LaunchContainerApplication(
-    const guest_os::GuestId& container_id,
-    std::string desktop_file_id,
-    const std::vector<std::string>& files,
-    bool display_scaled,
-    CrostiniSuccessCallback callback) {
-  vm_tools::cicerone::LaunchContainerApplicationRequest request;
-  request.set_owner_id(owner_id_);
-  request.set_vm_name(container_id.vm_name);
-  request.set_container_name(container_id.container_name);
-  request.set_desktop_file_id(std::move(desktop_file_id));
-  if (display_scaled) {
-    request.set_display_scaling(
-        vm_tools::cicerone::LaunchContainerApplicationRequest::SCALED);
-  }
-  base::ranges::copy(files, google::protobuf::RepeatedFieldBackInserter(
-                                request.mutable_files()));
-
-  std::vector<vm_tools::cicerone::ContainerFeature> container_features =
-      GetContainerFeatures();
-  request.mutable_container_features()->Add(container_features.begin(),
-                                            container_features.end());
-
-  GetCiceroneClient()->LaunchContainerApplication(
-      std::move(request),
-      base::BindOnce(&CrostiniManager::OnLaunchContainerApplication,
-                     weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
-}
-
 void CrostiniManager::GetContainerAppIcons(
     const guest_os::GuestId& container_id,
     std::vector<std::string> desktop_file_ids,
@@ -3315,20 +3286,6 @@ void CrostiniManager::OnLxdContainerStopping(
   }
   InvokeAndErasePendingContainerCallbacks(&stop_container_callbacks_,
                                           container_id, result);
-}
-
-void CrostiniManager::OnLaunchContainerApplication(
-    CrostiniSuccessCallback callback,
-    absl::optional<vm_tools::cicerone::LaunchContainerApplicationResponse>
-        response) {
-  if (!response) {
-    LOG(ERROR) << "Failed to launch application. Empty response.";
-    std::move(callback).Run(/*success=*/false,
-                            "Failed to launch application. Empty response.");
-    return;
-  }
-
-  std::move(callback).Run(response->success(), response->failure_reason());
 }
 
 void CrostiniManager::OnGetContainerAppIcons(

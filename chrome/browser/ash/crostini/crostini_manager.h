@@ -25,6 +25,7 @@
 #include "chrome/browser/ash/crostini/crostini_util.h"
 #include "chrome/browser/ash/crostini/termina_installer.h"
 #include "chrome/browser/ash/guest_os/guest_id.h"
+#include "chrome/browser/ash/guest_os/guest_os_launcher.h"
 #include "chrome/browser/ash/guest_os/guest_os_remover.h"
 #include "chrome/browser/ash/guest_os/guest_os_session_tracker.h"
 #include "chrome/browser/ash/guest_os/public/guest_os_mount_provider_registry.h"
@@ -346,13 +347,6 @@ class CrostiniManager : public KeyedService,
   // CiceroneClient::CancelUpgradeContainer.
   void CancelUpgradeContainer(const guest_os::GuestId& key,
                               CrostiniResultCallback callback);
-
-  // Asynchronously launches an app as specified by its desktop file id.
-  void LaunchContainerApplication(const guest_os::GuestId& container_id,
-                                  std::string desktop_file_id,
-                                  const std::vector<std::string>& files,
-                                  bool display_scaled,
-                                  CrostiniSuccessCallback callback);
 
   // Asynchronously gets app icons as specified by their desktop file ids.
   // |callback| is called after the method call finishes.
@@ -754,7 +748,7 @@ class CrostiniManager : public KeyedService,
 
   // Callback for CrostiniManager::LaunchContainerApplication.
   void OnLaunchContainerApplication(
-      CrostiniSuccessCallback callback,
+      guest_os::launcher::SuccessCallback callback,
       absl::optional<vm_tools::cicerone::LaunchContainerApplicationResponse>
           response);
 
