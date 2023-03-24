@@ -17,6 +17,7 @@
 #include "ash/test/pixel/ash_pixel_differ.h"
 #include "ash/test/pixel/ash_pixel_test_init_params.h"
 #include "ash/wm/tablet_mode/tablet_mode_controller.h"
+#include "ui/events/types/event_type.h"
 #include "ui/views/controls/scroll_view.h"
 #include "ui/views/controls/textfield/textfield_test_api.h"
 
@@ -257,6 +258,15 @@ TEST_P(AppListViewTabletPixelTest, BottomGradientZone) {
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
       "tablet_launcher_bottom_gradient_zone",
       /*revision_number=*/0, GetAppListTestHelper()->GetAppsContainerView()));
+}
+
+TEST_P(AppListViewTabletPixelTest, SearchBoxViewActive) {
+  raw_ptr<SearchBoxView> search_box_view =
+      GetAppListTestHelper()->GetSearchBoxView();
+  search_box_view->SetSearchBoxActive(true, ui::EventType::ET_UNKNOWN);
+
+  EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
+      "search_box_view_active", /*revision_number=*/0, search_box_view));
 }
 
 }  // namespace ash

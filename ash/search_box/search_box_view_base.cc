@@ -349,6 +349,8 @@ SearchBoxViewBase::SearchBoxViewBase()
                           views::DISTANCE_TEXTFIELD_HORIZONTAL_TEXT_PADDING);
   iph_container_ = AddChildView(std::make_unique<views::BoxLayoutView>());
   iph_container_->SetOrientation(views::BoxLayout::Orientation::kVertical);
+  iph_container_->SetMainAxisAlignment(
+      views::BoxLayout::MainAxisAlignment::kCenter);
 
   content_container_ =
       iph_container_->AddChildView(std::make_unique<views::BoxLayoutView>());
