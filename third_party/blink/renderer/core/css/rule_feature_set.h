@@ -136,6 +136,9 @@ class CORE_EXPORT RuleFeatureSet {
   bool UsesWindowInactiveSelector() const {
     return metadata_.uses_window_inactive_selector;
   }
+  // Returns true if we have :nth-child(... of S) selectors where S contains a
+  // :has() selector.
+  bool UsesHasInsideNth() const { return metadata_.uses_has_inside_nth; }
   bool NeedsFullRecalcForRuleSetInvalidation() const {
     return metadata_.needs_full_recalc_for_rule_set_invalidation;
   }
@@ -303,6 +306,23 @@ class CORE_EXPORT RuleFeatureSet {
     bool needs_full_recalc_for_rule_set_invalidation = false;
     unsigned max_direct_adjacent_selectors = 0;
     bool invalidates_parts = false;
+    // If we have a selector on the form :nth-child(... of :has(S)), any element
+    // changing S will trigger that the element is "affected by subject of
+    // :has", and in turn, will look up the tree for anything affected by
+    // :nth-child to invalidate its siblings. However, this mechanism is
+    // frequently too broad; if we have two separate rules :nth-child(an+b)
+    // (without complex selector) and :has(S), such :has() invalidation will not
+    // be able to distinguish between an element actually having a
+    // :nth-child(... of :has(S)), and just being affected by
+    // (forward-)positional rules for entirely different reasons. Thus, we will
+    // over-invalidate a lot (crbug.com/1426750). Since this combination is
+    // fairly rare, we make a per-stylesheet stop gap solution: We note whether
+    // there are any such has-inside-nth-child rules. If not, we don't need to
+    // do :nth-child() invalidation of elements affected by :has(). Of course,
+    // this means that the existence of a single such rule will potentially send
+    // us over the performance cliff, so we may have to revisit this solution in
+    // the future.
+    bool uses_has_inside_nth = false;
   };
 
   SelectorPreMatch CollectMetadataFromSelector(
@@ -674,7 +694,8 @@ class CORE_EXPORT RuleFeatureSet {
       const CSSSelector& has_pseudo_class,
       const CSSSelector* compound_containing_has,
       InvalidationSetFeatures* sibling_features,
-      InvalidationSetFeatures& descendant_features);
+      InvalidationSetFeatures& descendant_features,
+      bool in_nth_child);
 
   // There are two methods to add features for logical combinations in :has().
   // - kForAllNonRightmostCompounds:

@@ -1217,7 +1217,9 @@ void StyleEngine::InvalidateElementAffectedByHas(
         StyleChangeReasonForTracing::Create(
             blink::style_change_reason::kStyleInvalidator));
 
-    PossiblyScheduleNthPseudoInvalidations(element);
+    if (GetRuleFeatureSet().UsesHasInsideNth()) {
+      PossiblyScheduleNthPseudoInvalidations(element);
+    }
   }
 
   if (element.AffectedByNonSubjectHas()) {
