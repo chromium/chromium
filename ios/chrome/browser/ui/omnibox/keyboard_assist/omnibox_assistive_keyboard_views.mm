@@ -32,11 +32,11 @@ OmniboxKeyboardAccessoryView* ConfigureAssistiveKeyboardViews(
     textField.inputAssistantItem.leadingBarButtonGroups = @[];
     textField.inputAssistantItem.trailingBarButtonGroups = @[];
     OmniboxKeyboardAccessoryView* keyboardAccessoryView =
-        [[OmniboxKeyboardAccessoryView alloc]
-               initWithButtons:buttonTitles
-                      delegate:delegate
-                   pasteTarget:textField
-            templateURLService:templateURLService];
+        [[OmniboxKeyboardAccessoryView alloc] initWithButtons:buttonTitles
+                                                     delegate:delegate
+                                                  pasteTarget:textField
+                                           templateURLService:templateURLService
+                                                    textField:textField];
     [keyboardAccessoryView setAutoresizingMask:UIViewAutoresizingFlexibleWidth];
     [textField setInputAccessoryView:keyboardAccessoryView];
     return keyboardAccessoryView;

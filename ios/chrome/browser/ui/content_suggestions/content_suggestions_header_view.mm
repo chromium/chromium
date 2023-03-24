@@ -19,6 +19,7 @@
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_feature.h"
 #import "ios/chrome/browser/ui/content_suggestions/ntp_home_constant.h"
 #import "ios/chrome/browser/ui/elements/extended_touch_target_button.h"
+#import "ios/chrome/browser/ui/lens/lens_availability.h"
 #import "ios/chrome/browser/ui/ntp/new_tab_page_delegate.h"
 #import "ios/chrome/browser/ui/ntp/new_tab_page_header_constants.h"
 #import "ios/chrome/browser/ui/omnibox/omnibox_constants.h"
@@ -269,9 +270,9 @@ CGFloat ToolbarHeight() {
   UIButton* endButton = self.voiceSearchButton;
 
   // Lens.
-  const BOOL lensEnabled = ios::provider::IsLensSupported() &&
-                           base::FeatureList::IsEnabled(kEnableLensInNTP);
-  const BOOL useLens = lensEnabled && self.isGoogleDefaultSearchEngine;
+  const BOOL useLens =
+      lens_availability::CheckAndLogAvailabilityForLensEntryPoint(
+          LensEntrypoint::NewTabPage, self.isGoogleDefaultSearchEngine);
   if (useLens) {
     self.lensButton =
         [ExtendedTouchTargetButton buttonWithType:UIButtonTypeSystem];

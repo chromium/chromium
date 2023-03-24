@@ -230,6 +230,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Mobile.Keyboard.LensSupportStatus" enum="IOSLensSupportStatus"
+    expires_after="2023-08-26">
+  <owner>hujasonx@google.com</owner>
+  <owner>lens-in-bling-team@google.com</owner>
+  <summary>
+    Whether or not Lens is supported in the Omnibox keyboard accessory view
+    (shown above the number keys upon focusing the omnibox for edit), and if
+    not, the reason why. Recorded each time the Omnibox keyboard is opened.
+  </summary>
+</histogram>
+
 <histogram name="Mobile.Messages.Badge.Tapped.{MobileInfobarType}"
     enum="MobileMessagesBadgeState" expires_after="2023-07-24">
   <owner>sczs@chromium.org</owner>
@@ -379,6 +390,17 @@ chromium-metrics-reviews@google.com.
   <summary>
     Records the context when an iOS user initiates a Translate Modal
     presentation.
+  </summary>
+</histogram>
+
+<histogram name="Mobile.NewTabPage.LensSupportStatus"
+    enum="IOSLensSupportStatus" expires_after="2023-08-26">
+  <owner>hujasonx@google.com</owner>
+  <owner>lens-in-bling-team@google.com</owner>
+  <summary>
+    Whether or not Lens is supported in the new tab page, and if not, the reason
+    why. Recorded when a new tab is created. Subsequent navigations to an
+    existing new tab page will not log the event.
   </summary>
 </histogram>
 

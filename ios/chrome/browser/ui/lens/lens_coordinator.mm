@@ -5,6 +5,7 @@
 #import "ios/chrome/browser/ui/lens/lens_coordinator.h"
 
 #import "base/strings/sys_string_conversions.h"
+#import "components/lens/lens_metrics.h"
 #import "ios/chrome/browser/application_context/application_context.h"
 #import "ios/chrome/browser/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/main/browser.h"
@@ -36,6 +37,8 @@
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
 #endif
+
+using lens::CameraOpenEntryPoint;
 
 @interface LensCoordinator () <ChromeLensControllerDelegate,
                                LensCommands,
@@ -218,6 +221,21 @@ const base::TimeDelta kCloseLensViewTimeout = base::Seconds(10);
   [self.baseViewController presentViewController:viewController
                                         animated:YES
                                       completion:nil];
+
+  switch (entrypoint) {
+    case LensEntrypoint::HomeScreenWidget:
+      RecordCameraOpen(CameraOpenEntryPoint::WIDGET);
+      break;
+    case LensEntrypoint::NewTabPage:
+      RecordCameraOpen(CameraOpenEntryPoint::NEW_TAB_PAGE);
+      break;
+    case LensEntrypoint::Keyboard:
+      RecordCameraOpen(CameraOpenEntryPoint::KEYBOARD);
+      break;
+    default:
+      // Do not record the camera open histogram for other entry points.
+      break;
+  }
 }
 
 #pragma mark - ChromeLensControllerDelegate

@@ -1350,6 +1350,19 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Search.Image.Camera.Result" enum="CameraResult"
+    expires_after="2023-08-07">
+  <owner>juanmojica@google.com</owner>
+  <owner>schechter@google.com</owner>
+  <owner>stanfield@google.com</owner>
+  <owner>hujasonx@google.com</owner>
+  <owner>lens-chrome-eng@google.com</owner>
+  <summary>
+    Records camera results such as successful image capture, user exited, etc.
+    This is recorded every time the user opens the Lens viewfinder camera.
+  </summary>
+</histogram>
+
 <histogram name="Search.iOS.SelectDefaultSearchEngine"
     enum="OmniboxSearchEngineType" expires_after="2023-07-16">
   <owner>sczs@chromium.org</owner>

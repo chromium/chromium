@@ -1825,10 +1825,11 @@ Unknown properties are collapsed to zero. -->
       label="Context menu item for 'Search Images with Google Lens' (Region)"/>
   <int value="3"
       label="Context menu item for 'Search Images with Web' (Region)"/>
-  <int value="4" label="Omnibox (Camera)"/>
-  <int value="5" label="New Tab Page (Camera)"/>
-  <int value="6" label="Quick Action Search Widget (Camera)"/>
-  <int value="7" label="Keyboard (Camera)"/>
+  <int value="4" label="Context menu item for 'Search Web For'"/>
+  <int value="5" label="Omnibox (Camera)"/>
+  <int value="6" label="New Tab Page (Camera)"/>
+  <int value="7" label="Quick Action Search Widget (Camera)"/>
+  <int value="8" label="Keyboard (Camera)"/>
 </enum>
 
 <enum name="AmbientUiMode">
@@ -14163,6 +14164,13 @@ Called by update_bad_message_reasons.py.-->
   <int value="0" label="Camera privacy switch toggled on"/>
   <int value="1" label="Camera privacy switch toggled off"/>
   <int value="2" label="Camera privacy switch on notification shown"/>
+</enum>
+
+<enum name="CameraResult">
+  <int value="0" label="Success (Camera)"/>
+  <int value="1" label="Success (Gallery Image)"/>
+  <int value="2" label="Success (QR/Bar Code)"/>
+  <int value="3" label="Dismissed"/>
 </enum>
 
 <enum name="CanaryCheckLookupResult">
@@ -53374,6 +53382,8 @@ Unsupported non-ascii characters will cause issues with xml presubmits.
   <int value="0" label="Lens Search Supported"/>
   <int value="1" label="Not Google Search Engine"/>
   <int value="2" label="Device was a tablet"/>
+  <int value="3" label="Entry Point disabled by flag"/>
+  <int value="4" label="Lens Provider does not support the entry point"/>
 </enum>
 
 <enum name="IOSLensWebUploadStatus">

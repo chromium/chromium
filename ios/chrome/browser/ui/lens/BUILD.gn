@@ -13,6 +13,7 @@ source_set("coordinator") {
   deps = [
     ":lens_entrypoint",
     "//base",
+    "//components/lens",
     "//ios/chrome/browser/application_context",
     "//ios/chrome/browser/browser_state:browser_state",
     "//ios/chrome/browser/main:public",
@@ -35,7 +36,13 @@ source_set("lens_availability") {
     "lens_availability.h",
     "lens_availability.mm",
   ]
-  deps = []
+  deps = [
+    ":lens_entrypoint",
+    "//base",
+    "//ios/chrome/browser/shared/public/features:features",
+    "//ios/public/provider/chrome/browser/lens:lens_api",
+    "//ui/base",
+  ]
 }
 
 source_set("lens_entrypoint") {

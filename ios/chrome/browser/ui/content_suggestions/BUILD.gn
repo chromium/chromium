@@ -192,6 +192,7 @@ source_set("content_suggestions_ui") {
     "//ios/chrome/browser/ui/content_suggestions/identifier",
     "//ios/chrome/browser/ui/elements",
     "//ios/chrome/browser/ui/icons:symbols",
+    "//ios/chrome/browser/ui/lens:lens_availability",
     "//ios/chrome/browser/ui/lens:lens_entrypoint",
     "//ios/chrome/browser/ui/ntp",
     "//ios/chrome/browser/ui/ntp:logo",
