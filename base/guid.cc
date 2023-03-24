@@ -67,20 +67,8 @@ bool IsValidGUID(StringPiece input) {
   return !GetCanonicalGUIDInternal(input, /*strict=*/false).empty();
 }
 
-bool IsValidGUID(StringPiece16 input) {
-  return !GetCanonicalGUIDInternal(input, /*strict=*/false).empty();
-}
-
 bool IsValidGUIDOutputString(StringPiece input) {
   return !GetCanonicalGUIDInternal(input, /*strict=*/true).empty();
-}
-
-std::string RandomDataToGUIDString(const uint64_t bytes[2]) {
-  return StringPrintf(
-      "%08x-%04x-%04x-%04x-%012llx", static_cast<uint32_t>(bytes[0] >> 32),
-      static_cast<uint32_t>((bytes[0] >> 16) & 0x0000ffff),
-      static_cast<uint32_t>(bytes[0] & 0x0000ffff),
-      static_cast<uint32_t>(bytes[1] >> 48), bytes[1] & 0x0000ffff'ffffffffULL);
 }
 
 // static
@@ -125,7 +113,13 @@ GUID GUID::FormatRandomDataAsV4Impl(base::span<const uint8_t, 16> input) {
   sixteen_bytes[1] |= 0x80000000'00000000ULL;
 
   GUID guid;
-  guid.lowercase_ = RandomDataToGUIDString(sixteen_bytes);
+  guid.lowercase_ =
+      StringPrintf("%08x-%04x-%04x-%04x-%012llx",
+                   static_cast<uint32_t>(sixteen_bytes[0] >> 32),
+                   static_cast<uint32_t>((sixteen_bytes[0] >> 16) & 0x0000ffff),
+                   static_cast<uint32_t>(sixteen_bytes[0] & 0x0000ffff),
+                   static_cast<uint32_t>(sixteen_bytes[1] >> 48),
+                   sixteen_bytes[1] & 0x0000ffff'ffffffffULL);
   return guid;
 }
 
