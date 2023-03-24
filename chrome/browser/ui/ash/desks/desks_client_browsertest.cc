@@ -124,6 +124,7 @@ namespace {
 constexpr int32_t kSettingsWindowId = 100;
 constexpr int32_t kHelpWindowId = 200;
 constexpr int32_t kLaunchedWindowIdBase = -1;
+constexpr int32_t kTestWindowId = 300;
 
 constexpr char kExampleUrl1[] = "https://examples1.com";
 constexpr char kExampleUrl2[] = "https://examples2.com";
@@ -138,6 +139,7 @@ constexpr char kTestAdminTemplateFormat[] =
     "\"created_time_usec\": \"1633535632\",\"updated_time_usec\": "
     "\"1633535632\",\"desk\":{}}]";
 constexpr char kTestTabGroupNameFormat[] = "test_tab_group_%u";
+constexpr char kTestAppName[] = "test_app_name";
 
 Browser* FindBrowser(int32_t window_id) {
   for (auto* browser : *BrowserList::GetInstance()) {
@@ -2998,6 +3000,76 @@ IN_PROC_BROWSER_TEST_F(DesksTemplatesClientLacrosTest, SystemUILaunchBrowser) {
 
   ash::ToggleOverview();
   ash::WaitForOverviewExitAnimation();
+}
+
+// Tests that app browsers are captured correctly, coverage for launching
+// lacros browsers can be found in
+// c/b/lacros/desk_template_client_browsertest.cc This simply confirms that the
+// chrome desk client handles apps correctly when converting the returned mojom
+// from crosapi to app_launch_info.
+IN_PROC_BROWSER_TEST_F(DesksTemplatesClientLacrosTest,
+                       CapturesLacrosAppCorrectly) {
+  // Prevents test from running when running in a build without lacros.
+  if (!ash_starter_.HasLacrosArgument()) {
+    return;
+  }
+
+  ASSERT_TRUE(crosapi::BrowserManager::Get()->IsRunning());
+
+  // Add our browser under test, this is the only way to launch an app
+  // via the BrowserManager.
+  crosapi::BrowserManager::Get()->CreateBrowserWithRestoredData(
+      {GURL(kExampleUrl1)}, {0, 0, 256, 256}, {},
+      ui::WindowShowState::SHOW_STATE_DEFAULT,
+      /*active_tab_index=*/0, /*first_non_pinned_tab_index=*/0, kTestAppName,
+      kTestWindowId);
+  LacrosWindowWaiter waiter;
+  aura::Window::Windows launched_windows = waiter.Wait(/*expected_count=*/1u);
+  ASSERT_EQ(1u, launched_windows.size());
+
+  // Enter overview and save the current desk as a template. The current desk
+  // has one lacros app and the default browser.
+  ash::ToggleOverview();
+  ash::WaitForOverviewEnterAnimation();
+  ClickSaveDeskAsTemplateButton();
+
+  // Grab all entries to assert.
+  const std::vector<const ash::DeskTemplate*> all_entries = GetAllEntries();
+  ASSERT_EQ(all_entries.size(), 1u);
+
+  // Since we only have one template grab the first one.
+  const app_restore::RestoreData* desk_restore_data =
+      all_entries[0]->desk_restore_data();
+  ASSERT_NE(desk_restore_data, nullptr);
+
+  // Through an exhaustive process of trial and error we cannot retrieve our
+  // desired window through any other means than running a search for the app
+  // name in the mapping of window ID's to app launch info.  There isn't a way,
+  // currently at least, within this test class or through the crosapi
+  // to close the default browser.  We can't use the test's class' close browser
+  // method either as both have been tried and failed to successfully close the
+  // window.  Furthermore obscuring the window from the capture logic doesn't
+  // seem to work in the testing logic either.  Simply using the window ID the
+  // browser was launched with doesn't work either because the window ID is
+  // changed on capture.
+  const auto& app_id_to_launch_list =
+      desk_restore_data->app_id_to_launch_list();
+  const auto& launch_list =
+      app_id_to_launch_list.at(app_constants::kLacrosAppId);
+  const app_restore::AppRestoreData* actual_app_data = nullptr;
+
+  for (const auto& it : launch_list) {
+    if (it.second->app_name.has_value() &&
+        it.second->app_name.value() == kTestAppName) {
+      actual_app_data = it.second.get();
+      break;
+    }
+  }
+  ASSERT_NE(actual_app_data, nullptr);
+
+  // Finally assert we set the relevant fields properly.
+  EXPECT_TRUE(actual_app_data->app_type_browser.has_value());
+  EXPECT_TRUE(actual_app_data->app_type_browser.value());
 }
 
 using SaveAndRecallBrowserTest = DesksClientTest;

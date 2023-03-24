@@ -81,6 +81,8 @@ void AssertBrowserCreatedCorrectly(
     EXPECT_EQ(browser->create_params().type, Browser::Type::TYPE_NORMAL);
   }
 
+  EXPECT_EQ(browser->creation_source(), Browser::CreationSource::kDeskTemplate);
+
   TabStripModel* browser_tab_model = browser->tab_strip_model();
   EXPECT_TRUE(browser_tab_model);
 
@@ -140,6 +142,24 @@ class DeskTemplateClientLacrosBrowserTest : public InProcessBrowserTest {
     state->groups =
         std::vector<tab_groups::TabGroupInfo>({tab_groups::TabGroupInfo(
             gfx::Range(2, 4),
+            tab_groups::TabGroupVisualData(
+                u"tab group one", tab_groups::TabGroupColorId::kGreen))});
+
+    return state;
+  }
+
+  // Returns a maximal `DeskTemplateStatePtr` mojom for testing where the tab
+  // group in question reaches to the end of the tab strip.  This ensures that
+  // the browser launches with the entirety of the tab group intact.
+  crosapi::mojom::DeskTemplateStatePtr MakeTestMojomWithTabGroupAtEndOfStrip() {
+    crosapi::mojom::DeskTemplateStatePtr state =
+        MakeTestStateWithoutPinnedTabsOrTabGroup();
+
+    // Add in tab groups and pinned tabs.
+    state->first_non_pinned_index = 1;
+    state->groups =
+        std::vector<tab_groups::TabGroupInfo>({tab_groups::TabGroupInfo(
+            gfx::Range(2, 5),
             tab_groups::TabGroupVisualData(
                 u"tab group one", tab_groups::TabGroupColorId::kGreen))});
 
@@ -255,6 +275,39 @@ class DeskTemplateClientLacrosBrowserTest : public InProcessBrowserTest {
         u"tab group one", tab_groups::TabGroupColorId::kGreen));
   }
 
+  // Helper function that modifies the test's browser() object to match the
+  // representation produced in the `MakeTestMojomWithTabGroupAtEndOfStrip`
+  // function. This helps to ensure that the entirety of Tab Groups are captured
+  // properly.
+  void MakeTestBrowserWithTabGroupAtEndOfStrip() {
+    EXPECT_TRUE(
+        AddTabAtIndexToBrowser(browser(), 0, GURL(kChromeVersionUrl),
+                               ui::PageTransition::PAGE_TRANSITION_LINK));
+    EXPECT_TRUE(
+        AddTabAtIndexToBrowser(browser(), 2, GetGoogleTestURL(),
+                               ui::PageTransition::PAGE_TRANSITION_LINK));
+    EXPECT_TRUE(
+        AddTabAtIndexToBrowser(browser(), 3, GURL(kChromeVersionUrl),
+                               ui::PageTransition::PAGE_TRANSITION_LINK));
+    EXPECT_TRUE(
+        AddTabAtIndexToBrowser(browser(), 4, GURL(kChromeVersionUrl),
+                               ui::PageTransition::PAGE_TRANSITION_LINK));
+
+    TabStripModel* strip_model = browser()->tab_strip_model();
+
+    // May not be necessary but guarantees that the correct tab is active.
+    strip_model->ActivateTabAt(0);
+
+    // Assert we haven't moved the pinned tab.
+    EXPECT_EQ(0, strip_model->SetTabPinned(0, /*pinned=*/true));
+    tab_groups::TabGroupId group_id_one = strip_model->AddToNewGroup({2, 3, 4});
+
+    TabGroupModel* group_model = strip_model->group_model();
+    TabGroup* group_one = group_model->GetTabGroup(group_id_one);
+    group_one->SetVisualData(tab_groups::TabGroupVisualData(
+        u"tab group one", tab_groups::TabGroupColorId::kGreen));
+  }
+
   void MakeTestAppBrowser() {
     Profile* profile = ProfileManager::GetLastUsedProfileAllowedByPolicy();
 
@@ -317,6 +370,30 @@ IN_PROC_BROWSER_TEST_F(DeskTemplateClientLacrosBrowserTest,
   // two semantically identical states to test against.
   crosapi::mojom::DeskTemplateStatePtr expected_state = MakeTestMojom();
   crosapi::mojom::DeskTemplateStatePtr launch_parameters = MakeTestMojom();
+  gfx::Rect expected_bounds(0, 0, 256, 256);
+
+  DeskTemplateClientLacros client;
+
+  client.CreateBrowserWithRestoredData(
+      expected_bounds, ui::mojom::WindowShowState::SHOW_STATE_DEFAULT,
+      std::move(launch_parameters));
+
+  // Close default test browser, we will set browser to the browser created
+  // by the method under test.
+  CloseBrowserSynchronously(browser());
+  SelectFirstBrowser();
+
+  AssertBrowserCreatedCorrectly(browser(), expected_state, expected_bounds);
+}
+
+IN_PROC_BROWSER_TEST_F(DeskTemplateClientLacrosBrowserTest,
+                       LaunchesBrowserWithTabGroupAtEndOfStripCorrectly) {
+  // State pointers don't supply a Clone operation.  Therefore we will create
+  // two semantically identical states to test against.
+  crosapi::mojom::DeskTemplateStatePtr expected_state =
+      MakeTestMojomWithTabGroupAtEndOfStrip();
+  crosapi::mojom::DeskTemplateStatePtr launch_parameters =
+      MakeTestMojomWithTabGroupAtEndOfStrip();
   gfx::Rect expected_bounds(0, 0, 256, 256);
 
   DeskTemplateClientLacros client;
@@ -448,6 +525,36 @@ IN_PROC_BROWSER_TEST_F(DeskTemplateClientLacrosBrowserTest,
   EXPECT_EQ(out_state->first_non_pinned_index,
             test_mojom->first_non_pinned_index);
   EXPECT_TRUE(test_mojom->groups.has_value());
+  EXPECT_TRUE(out_state->groups.has_value());
+
+  // We don't care about the order of tab groups.
+  EXPECT_THAT(out_state->groups.value(),
+              testing::UnorderedElementsAreArray(test_mojom->groups.value()));
+}
+
+IN_PROC_BROWSER_TEST_F(DeskTemplateClientLacrosBrowserTest,
+                       CapturesBrowserWithTabGroupAtEndOfStripCorrectly) {
+  MakeTestBrowserWithTabGroupAtEndOfStrip();
+  DeskTemplateClientLacros client;
+  crosapi::mojom::DeskTemplateClientAsyncWaiter waiter(&client);
+  std::string window_id = views::DesktopWindowTreeHostLacros::From(
+                              browser()->window()->GetNativeWindow()->GetHost())
+                              ->platform_window()
+                              ->GetWindowUniqueId();
+
+  uint32_t out_serial;
+  std::string out_window_id;
+  crosapi::mojom::DeskTemplateStatePtr out_state;
+  waiter.GetBrowserInformation(/*serial=*/0, window_id, &out_serial,
+                               &out_window_id, &out_state);
+
+  crosapi::mojom::DeskTemplateStatePtr test_mojom =
+      MakeTestMojomWithTabGroupAtEndOfStrip();
+  EXPECT_EQ(out_state->urls, test_mojom->urls);
+  EXPECT_EQ(out_state->active_index, test_mojom->active_index);
+  EXPECT_EQ(out_state->first_non_pinned_index,
+            test_mojom->first_non_pinned_index);
+  ASSERT_TRUE(test_mojom->groups.has_value());
   EXPECT_TRUE(out_state->groups.has_value());
 
   // We don't care about the order of tab groups.

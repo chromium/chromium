@@ -265,13 +265,6 @@ void ChromeSavedDeskDelegate::GetAppLaunchDataForSavedDesk(
     }
   }
 
-  // Use app id from lacros if available. This will only be set for lacros
-  // app windows.
-  if (auto app_name = DesksClient::Get()->GetAppIdForLacrosWindow(window)) {
-    app_launch_info->app_name = *app_name;
-    app_launch_info->app_type_browser = true;
-  }
-
   if (app_id != app_constants::kChromeAppId &&
       app_id != app_constants::kLacrosAppId &&
       (app_type == apps::AppType::kChromeApp ||
@@ -456,6 +449,10 @@ void ChromeSavedDeskDelegate::OnLacrosChromeInfoReturned(
   app_launch_info->urls = state->urls;
   app_launch_info->active_tab_index = state->active_index;
   app_launch_info->first_non_pinned_tab_index = state->first_non_pinned_index;
+  if (state->browser_app_name.has_value()) {
+    app_launch_info->app_name = state->browser_app_name.value();
+    app_launch_info->app_type_browser = true;
+  }
 
   std::move(callback).Run(std::move(app_launch_info));
 }
