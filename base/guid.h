@@ -23,16 +23,18 @@ class FileSystemAccessManagerImpl;
 
 namespace base {
 
-// DEPRECATED(crbug.com/1195446): Use GUID::GenerateRandomV4() instead.
+// DEPRECATED, use GUID::GenerateRandomV4() instead.
 BASE_EXPORT std::string GenerateGUID();
 
-// DEPRECATED(crbug.com/1195446): Use GUID::ParseCaseInsensitive() and
-// GUID::is_valid() instead.
+// DEPRECATED, use GUID::ParseCaseInsensitive() and GUID::is_valid() instead.
 BASE_EXPORT bool IsValidGUID(StringPiece input);
+BASE_EXPORT bool IsValidGUID(StringPiece16 input);
 
-// DEPRECATED(crbug.com/1195446): Use GUID::ParseLowercase() and
-// GUID::is_valid() instead.
+// DEPRECATED, use GUID::ParseLowercase() and GUID::is_valid() instead.
 BASE_EXPORT bool IsValidGUIDOutputString(StringPiece input);
+
+// For unit testing purposes only.  Do not use outside of tests.
+BASE_EXPORT std::string RandomDataToGUIDString(const uint64_t bytes[2]);
 
 class BASE_EXPORT GUID {
  public:

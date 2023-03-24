@@ -16,6 +16,19 @@
 
 namespace base {
 
+TEST(GUIDTest, GUIDGeneratesAllZeroes) {
+  static constexpr uint64_t kBytes[] = {0, 0};
+  const std::string clientid = RandomDataToGUIDString(kBytes);
+  EXPECT_EQ("00000000-0000-0000-0000-000000000000", clientid);
+}
+
+TEST(GUIDTest, GUIDGeneratesCorrectly) {
+  static constexpr uint64_t kBytes[] = {0x0123456789ABCDEFULL,
+                                        0xFEDCBA9876543210ULL};
+  const std::string clientid = RandomDataToGUIDString(kBytes);
+  EXPECT_EQ("01234567-89ab-cdef-fedc-ba9876543210", clientid);
+}
+
 TEST(GUIDTest, DeprecatedGUIDCorrectlyFormatted) {
   constexpr int kIterations = 10;
   for (int i = 0; i < kIterations; ++i) {
@@ -115,17 +128,20 @@ TEST(GUIDTest, Validity) {
   }
 }
 
-TEST(GUIDTest, EqualityAndRoundTrip) {
-  static constexpr char kCanonicalStr[] =
-      "deadbeef-dead-4eef-bead-beefdeadbeef";
+TEST(GUIDTest, Equality) {
+  static constexpr uint64_t kBytes[] = {0xDEADBEEFDEADBEEFULL,
+                                        0xDEADBEEFDEADBEEFULL};
+  const std::string clientid = RandomDataToGUIDString(kBytes);
 
-  const GUID from_lower =
-      GUID::ParseCaseInsensitive(ToLowerASCII(kCanonicalStr));
-  EXPECT_EQ(kCanonicalStr, from_lower.AsLowercaseString());
+  static constexpr char kExpectedCanonicalStr[] =
+      "deadbeef-dead-beef-dead-beefdeadbeef";
+  ASSERT_EQ(kExpectedCanonicalStr, clientid);
 
-  const GUID from_upper =
-      GUID::ParseCaseInsensitive(ToUpperASCII(kCanonicalStr));
-  EXPECT_EQ(kCanonicalStr, from_upper.AsLowercaseString());
+  const GUID from_lower = GUID::ParseCaseInsensitive(ToLowerASCII(clientid));
+  EXPECT_EQ(kExpectedCanonicalStr, from_lower.AsLowercaseString());
+
+  const GUID from_upper = GUID::ParseCaseInsensitive(ToUpperASCII(clientid));
+  EXPECT_EQ(kExpectedCanonicalStr, from_upper.AsLowercaseString());
 
   EXPECT_EQ(from_lower, from_upper);
 
