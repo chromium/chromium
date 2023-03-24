@@ -15,7 +15,6 @@ import static androidx.test.espresso.matcher.ViewMatchers.withId;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
 
 import static org.hamcrest.CoreMatchers.not;
-import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -34,7 +33,6 @@ import androidx.test.filters.SmallTest;
 
 import org.junit.After;
 import org.junit.Before;
-import org.junit.BeforeClass;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -42,10 +40,10 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
-import org.chromium.base.test.metrics.HistogramTestRule;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Feature;
+import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.base.test.util.UserActionTester;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
@@ -64,7 +62,6 @@ import org.chromium.components.content_settings.PrefNames;
 import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.components.sync.UserSelectableType;
 import org.chromium.components.user_prefs.UserPrefs;
-import org.chromium.content_public.browser.test.NativeLibraryTestUtils;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -88,9 +85,6 @@ public class PrivacyGuideFragmentTest {
             new ChromeTabbedActivityTestRule();
 
     @Rule
-    public HistogramTestRule mHistogramTestRule = new HistogramTestRule();
-
-    @Rule
     public SettingsActivityTestRule<PrivacyGuideFragment> mSettingsActivityTestRule =
             new SettingsActivityTestRule<>(PrivacyGuideFragment.class);
 
@@ -101,12 +95,6 @@ public class PrivacyGuideFragmentTest {
     private PrivacyGuideMetricsDelegate mPrivacyGuideMetricsDelegateMock;
 
     private UserActionTester mActionTester;
-
-    @BeforeClass
-    public static void setUpBeforeActivityLaunched() {
-        // Only needs to be loaded once and needs to be loaded before HistogramTestRule.
-        NativeLibraryTestUtils.loadNativeLibraryNoBrowserProcess();
-    }
 
     @Before
     public void setUp() {
@@ -281,15 +269,12 @@ public class PrivacyGuideFragmentTest {
     public void testWelcomeCard_nextNavigationHistogram() {
         launchPrivacyGuide();
 
-        assertEquals(0,
-                mHistogramTestRule.getHistogramValueCount(
-                        NEXT_NAVIGATION_HISTOGRAM, PrivacyGuideInteractions.WELCOME_NEXT_BUTTON));
+        var histogram = HistogramWatcher.newSingleRecordWatcher(
+                NEXT_NAVIGATION_HISTOGRAM, PrivacyGuideInteractions.WELCOME_NEXT_BUTTON);
 
         navigateFromWelcomeToMSBBCard();
 
-        assertEquals(1,
-                mHistogramTestRule.getHistogramValueCount(
-                        NEXT_NAVIGATION_HISTOGRAM, PrivacyGuideInteractions.WELCOME_NEXT_BUTTON));
+        histogram.assertExpected();
     }
 
     @Test
@@ -315,16 +300,13 @@ public class PrivacyGuideFragmentTest {
         launchPrivacyGuide();
         goToCompletionCard();
 
-        assertEquals(0,
-                mHistogramTestRule.getHistogramValueCount(NEXT_NAVIGATION_HISTOGRAM,
-                        PrivacyGuideInteractions.COMPLETION_NEXT_BUTTON));
+        var histogram = HistogramWatcher.newSingleRecordWatcher(
+                NEXT_NAVIGATION_HISTOGRAM, PrivacyGuideInteractions.COMPLETION_NEXT_BUTTON);
 
         // Complete page -> EXIT
         onView(withText(R.string.done)).perform(click());
 
-        assertEquals(1,
-                mHistogramTestRule.getHistogramValueCount(NEXT_NAVIGATION_HISTOGRAM,
-                        PrivacyGuideInteractions.COMPLETION_NEXT_BUTTON));
+        histogram.assertExpected();
     }
 
     @Test
@@ -372,15 +354,12 @@ public class PrivacyGuideFragmentTest {
         launchPrivacyGuide();
         goToCompletionCard();
 
-        assertEquals(0,
-                mHistogramTestRule.getHistogramValueCount(ENTRY_EXIT_HISTOGRAM,
-                        PrivacyGuideInteractions.PRIVACY_SANDBOX_COMPLETION_LINK));
+        var histogram = HistogramWatcher.newSingleRecordWatcher(
+                ENTRY_EXIT_HISTOGRAM, PrivacyGuideInteractions.PRIVACY_SANDBOX_COMPLETION_LINK);
 
         onViewWaiting(withId(R.id.ps_button)).perform(click());
 
-        assertEquals(1,
-                mHistogramTestRule.getHistogramValueCount(ENTRY_EXIT_HISTOGRAM,
-                        PrivacyGuideInteractions.PRIVACY_SANDBOX_COMPLETION_LINK));
+        histogram.assertExpected();
     }
 
     @Test
@@ -417,15 +396,12 @@ public class PrivacyGuideFragmentTest {
         launchPrivacyGuide();
         goToCompletionCard();
 
-        assertEquals(0,
-                mHistogramTestRule.getHistogramValueCount(
-                        ENTRY_EXIT_HISTOGRAM, PrivacyGuideInteractions.SWAA_COMPLETION_LINK));
+        var histogram = HistogramWatcher.newSingleRecordWatcher(
+                ENTRY_EXIT_HISTOGRAM, PrivacyGuideInteractions.SWAA_COMPLETION_LINK);
 
         executeWhileCapturingIntents(() -> onViewWaiting(withId(R.id.waa_button)).perform(click()));
 
-        assertEquals(1,
-                mHistogramTestRule.getHistogramValueCount(
-                        ENTRY_EXIT_HISTOGRAM, PrivacyGuideInteractions.SWAA_COMPLETION_LINK));
+        histogram.assertExpected();
     }
 
     @Test
@@ -445,15 +421,12 @@ public class PrivacyGuideFragmentTest {
         launchPrivacyGuide();
         navigateFromWelcomeToMSBBCard();
 
-        assertEquals(0,
-                mHistogramTestRule.getHistogramValueCount(
-                        NEXT_NAVIGATION_HISTOGRAM, PrivacyGuideInteractions.MSBB_NEXT_BUTTON));
+        var histogram = HistogramWatcher.newSingleRecordWatcher(
+                NEXT_NAVIGATION_HISTOGRAM, PrivacyGuideInteractions.MSBB_NEXT_BUTTON);
 
         navigateFromMSBBToHistorySyncCard();
 
-        assertEquals(1,
-                mHistogramTestRule.getHistogramValueCount(
-                        NEXT_NAVIGATION_HISTOGRAM, PrivacyGuideInteractions.MSBB_NEXT_BUTTON));
+        histogram.assertExpected();
     }
 
     @Test
@@ -464,15 +437,12 @@ public class PrivacyGuideFragmentTest {
         launchPrivacyGuide();
         navigateFromWelcomeToMSBBCard();
 
-        assertEquals(0,
-                mHistogramTestRule.getHistogramValueCount(
-                        SETTINGS_STATES_HISTOGRAM, PrivacyGuideSettingsStates.MSBB_OFF_TO_OFF));
+        var histogram = HistogramWatcher.newSingleRecordWatcher(
+                SETTINGS_STATES_HISTOGRAM, PrivacyGuideSettingsStates.MSBB_OFF_TO_OFF);
 
         navigateFromMSBBToHistorySyncCard();
 
-        assertEquals(1,
-                mHistogramTestRule.getHistogramValueCount(
-                        SETTINGS_STATES_HISTOGRAM, PrivacyGuideSettingsStates.MSBB_OFF_TO_OFF));
+        histogram.assertExpected();
     }
 
     @Test
@@ -483,16 +453,13 @@ public class PrivacyGuideFragmentTest {
         launchPrivacyGuide();
         navigateFromWelcomeToMSBBCard();
 
-        assertEquals(0,
-                mHistogramTestRule.getHistogramValueCount(
-                        SETTINGS_STATES_HISTOGRAM, PrivacyGuideSettingsStates.MSBB_OFF_TO_ON));
+        var histogram = HistogramWatcher.newSingleRecordWatcher(
+                SETTINGS_STATES_HISTOGRAM, PrivacyGuideSettingsStates.MSBB_OFF_TO_ON);
 
         onView(withId(R.id.msbb_switch)).perform(click());
         navigateFromMSBBToHistorySyncCard();
 
-        assertEquals(1,
-                mHistogramTestRule.getHistogramValueCount(
-                        SETTINGS_STATES_HISTOGRAM, PrivacyGuideSettingsStates.MSBB_OFF_TO_ON));
+        histogram.assertExpected();
     }
 
     @Test
@@ -503,16 +470,13 @@ public class PrivacyGuideFragmentTest {
         launchPrivacyGuide();
         navigateFromWelcomeToMSBBCard();
 
-        assertEquals(0,
-                mHistogramTestRule.getHistogramValueCount(
-                        SETTINGS_STATES_HISTOGRAM, PrivacyGuideSettingsStates.MSBB_ON_TO_OFF));
+        var histogram = HistogramWatcher.newSingleRecordWatcher(
+                SETTINGS_STATES_HISTOGRAM, PrivacyGuideSettingsStates.MSBB_ON_TO_OFF);
 
         onView(withId(R.id.msbb_switch)).perform(click());
         navigateFromMSBBToHistorySyncCard();
 
-        assertEquals(1,
-                mHistogramTestRule.getHistogramValueCount(
-                        SETTINGS_STATES_HISTOGRAM, PrivacyGuideSettingsStates.MSBB_ON_TO_OFF));
+        histogram.assertExpected();
     }
 
     @Test
@@ -523,15 +487,12 @@ public class PrivacyGuideFragmentTest {
         launchPrivacyGuide();
         navigateFromWelcomeToMSBBCard();
 
-        assertEquals(0,
-                mHistogramTestRule.getHistogramValueCount(
-                        SETTINGS_STATES_HISTOGRAM, PrivacyGuideSettingsStates.MSBB_ON_TO_ON));
+        var histogram = HistogramWatcher.newSingleRecordWatcher(
+                SETTINGS_STATES_HISTOGRAM, PrivacyGuideSettingsStates.MSBB_ON_TO_ON);
 
         navigateFromMSBBToHistorySyncCard();
 
-        assertEquals(1,
-                mHistogramTestRule.getHistogramValueCount(
-                        SETTINGS_STATES_HISTOGRAM, PrivacyGuideSettingsStates.MSBB_ON_TO_ON));
+        histogram.assertExpected();
     }
 
     @Test
@@ -585,15 +546,12 @@ public class PrivacyGuideFragmentTest {
         launchPrivacyGuide();
         goToHistorySyncCard();
 
-        assertEquals(0,
-                mHistogramTestRule.getHistogramValueCount(NEXT_NAVIGATION_HISTOGRAM,
-                        PrivacyGuideInteractions.HISTORY_SYNC_NEXT_BUTTON));
+        var histogram = HistogramWatcher.newSingleRecordWatcher(
+                NEXT_NAVIGATION_HISTOGRAM, PrivacyGuideInteractions.HISTORY_SYNC_NEXT_BUTTON);
 
         navigateFromHistorySyncToSBCard();
 
-        assertEquals(1,
-                mHistogramTestRule.getHistogramValueCount(NEXT_NAVIGATION_HISTOGRAM,
-                        PrivacyGuideInteractions.HISTORY_SYNC_NEXT_BUTTON));
+        histogram.assertExpected();
     }
 
     @Test
@@ -604,15 +562,12 @@ public class PrivacyGuideFragmentTest {
         launchPrivacyGuide();
         goToHistorySyncCard();
 
-        assertEquals(0,
-                mHistogramTestRule.getHistogramValueCount(SETTINGS_STATES_HISTOGRAM,
-                        PrivacyGuideSettingsStates.HISTORY_SYNC_OFF_TO_OFF));
+        var histogram = HistogramWatcher.newSingleRecordWatcher(
+                SETTINGS_STATES_HISTOGRAM, PrivacyGuideSettingsStates.HISTORY_SYNC_OFF_TO_OFF);
 
         navigateFromHistorySyncToSBCard();
 
-        assertEquals(1,
-                mHistogramTestRule.getHistogramValueCount(SETTINGS_STATES_HISTOGRAM,
-                        PrivacyGuideSettingsStates.HISTORY_SYNC_OFF_TO_OFF));
+        histogram.assertExpected();
     }
 
     @Test
@@ -623,16 +578,13 @@ public class PrivacyGuideFragmentTest {
         launchPrivacyGuide();
         goToHistorySyncCard();
 
-        assertEquals(0,
-                mHistogramTestRule.getHistogramValueCount(SETTINGS_STATES_HISTOGRAM,
-                        PrivacyGuideSettingsStates.HISTORY_SYNC_OFF_TO_ON));
+        var histogram = HistogramWatcher.newSingleRecordWatcher(
+                SETTINGS_STATES_HISTOGRAM, PrivacyGuideSettingsStates.HISTORY_SYNC_OFF_TO_ON);
 
         onView(withId(R.id.history_sync_switch)).perform(click());
         navigateFromHistorySyncToSBCard();
 
-        assertEquals(1,
-                mHistogramTestRule.getHistogramValueCount(SETTINGS_STATES_HISTOGRAM,
-                        PrivacyGuideSettingsStates.HISTORY_SYNC_OFF_TO_ON));
+        histogram.assertExpected();
     }
 
     @Test
@@ -643,16 +595,13 @@ public class PrivacyGuideFragmentTest {
         launchPrivacyGuide();
         goToHistorySyncCard();
 
-        assertEquals(0,
-                mHistogramTestRule.getHistogramValueCount(SETTINGS_STATES_HISTOGRAM,
-                        PrivacyGuideSettingsStates.HISTORY_SYNC_ON_TO_OFF));
+        var histogram = HistogramWatcher.newSingleRecordWatcher(
+                SETTINGS_STATES_HISTOGRAM, PrivacyGuideSettingsStates.HISTORY_SYNC_ON_TO_OFF);
 
         onView(withId(R.id.history_sync_switch)).perform(click());
         navigateFromHistorySyncToSBCard();
 
-        assertEquals(1,
-                mHistogramTestRule.getHistogramValueCount(SETTINGS_STATES_HISTOGRAM,
-                        PrivacyGuideSettingsStates.HISTORY_SYNC_ON_TO_OFF));
+        histogram.assertExpected();
     }
 
     @Test
@@ -663,15 +612,12 @@ public class PrivacyGuideFragmentTest {
         launchPrivacyGuide();
         goToHistorySyncCard();
 
-        assertEquals(0,
-                mHistogramTestRule.getHistogramValueCount(SETTINGS_STATES_HISTOGRAM,
-                        PrivacyGuideSettingsStates.HISTORY_SYNC_ON_TO_ON));
+        var histogram = HistogramWatcher.newSingleRecordWatcher(
+                SETTINGS_STATES_HISTOGRAM, PrivacyGuideSettingsStates.HISTORY_SYNC_ON_TO_ON);
 
         navigateFromHistorySyncToSBCard();
 
-        assertEquals(1,
-                mHistogramTestRule.getHistogramValueCount(SETTINGS_STATES_HISTOGRAM,
-                        PrivacyGuideSettingsStates.HISTORY_SYNC_ON_TO_ON));
+        histogram.assertExpected();
     }
 
     @Test
@@ -724,15 +670,12 @@ public class PrivacyGuideFragmentTest {
         launchPrivacyGuide();
         goToSafeBrowsingCard();
 
-        assertEquals(0,
-                mHistogramTestRule.getHistogramValueCount(NEXT_NAVIGATION_HISTOGRAM,
-                        PrivacyGuideInteractions.SAFE_BROWSING_NEXT_BUTTON));
+        var histogram = HistogramWatcher.newSingleRecordWatcher(
+                NEXT_NAVIGATION_HISTOGRAM, PrivacyGuideInteractions.SAFE_BROWSING_NEXT_BUTTON);
 
         navigateFromSBToCookiesCard();
 
-        assertEquals(1,
-                mHistogramTestRule.getHistogramValueCount(NEXT_NAVIGATION_HISTOGRAM,
-                        PrivacyGuideInteractions.SAFE_BROWSING_NEXT_BUTTON));
+        histogram.assertExpected();
     }
 
     @Test
@@ -743,15 +686,12 @@ public class PrivacyGuideFragmentTest {
         launchPrivacyGuide();
         goToSafeBrowsingCard();
 
-        assertEquals(0,
-                mHistogramTestRule.getHistogramValueCount(SETTINGS_STATES_HISTOGRAM,
-                        PrivacyGuideSettingsStates.SAFE_BROWSING_STANDARD_TO_STANDARD));
+        var histogram = HistogramWatcher.newSingleRecordWatcher(SETTINGS_STATES_HISTOGRAM,
+                PrivacyGuideSettingsStates.SAFE_BROWSING_STANDARD_TO_STANDARD);
 
         navigateFromSBToCookiesCard();
 
-        assertEquals(1,
-                mHistogramTestRule.getHistogramValueCount(SETTINGS_STATES_HISTOGRAM,
-                        PrivacyGuideSettingsStates.SAFE_BROWSING_STANDARD_TO_STANDARD));
+        histogram.assertExpected();
     }
 
     @Test
@@ -762,16 +702,13 @@ public class PrivacyGuideFragmentTest {
         launchPrivacyGuide();
         goToSafeBrowsingCard();
 
-        assertEquals(0,
-                mHistogramTestRule.getHistogramValueCount(SETTINGS_STATES_HISTOGRAM,
-                        PrivacyGuideSettingsStates.SAFE_BROWSING_STANDARD_TO_ENHANCED));
+        var histogram = HistogramWatcher.newSingleRecordWatcher(SETTINGS_STATES_HISTOGRAM,
+                PrivacyGuideSettingsStates.SAFE_BROWSING_STANDARD_TO_ENHANCED);
 
         onView(withId(R.id.enhanced_option)).perform(click());
         navigateFromSBToCookiesCard();
 
-        assertEquals(1,
-                mHistogramTestRule.getHistogramValueCount(SETTINGS_STATES_HISTOGRAM,
-                        PrivacyGuideSettingsStates.SAFE_BROWSING_STANDARD_TO_ENHANCED));
+        histogram.assertExpected();
     }
 
     @Test
@@ -782,15 +719,12 @@ public class PrivacyGuideFragmentTest {
         launchPrivacyGuide();
         goToSafeBrowsingCard();
 
-        assertEquals(0,
-                mHistogramTestRule.getHistogramValueCount(SETTINGS_STATES_HISTOGRAM,
-                        PrivacyGuideSettingsStates.SAFE_BROWSING_ENHANCED_TO_ENHANCED));
+        var histogram = HistogramWatcher.newSingleRecordWatcher(SETTINGS_STATES_HISTOGRAM,
+                PrivacyGuideSettingsStates.SAFE_BROWSING_ENHANCED_TO_ENHANCED);
 
         navigateFromSBToCookiesCard();
 
-        assertEquals(1,
-                mHistogramTestRule.getHistogramValueCount(SETTINGS_STATES_HISTOGRAM,
-                        PrivacyGuideSettingsStates.SAFE_BROWSING_ENHANCED_TO_ENHANCED));
+        histogram.assertExpected();
     }
 
     @Test
@@ -801,16 +735,13 @@ public class PrivacyGuideFragmentTest {
         launchPrivacyGuide();
         goToSafeBrowsingCard();
 
-        assertEquals(0,
-                mHistogramTestRule.getHistogramValueCount(SETTINGS_STATES_HISTOGRAM,
-                        PrivacyGuideSettingsStates.SAFE_BROWSING_ENHANCED_TO_STANDARD));
+        var histogram = HistogramWatcher.newSingleRecordWatcher(SETTINGS_STATES_HISTOGRAM,
+                PrivacyGuideSettingsStates.SAFE_BROWSING_ENHANCED_TO_STANDARD);
 
         onView(withId(R.id.standard_option)).perform(click());
         navigateFromSBToCookiesCard();
 
-        assertEquals(1,
-                mHistogramTestRule.getHistogramValueCount(SETTINGS_STATES_HISTOGRAM,
-                        PrivacyGuideSettingsStates.SAFE_BROWSING_ENHANCED_TO_STANDARD));
+        histogram.assertExpected();
     }
 
     @Test
@@ -862,15 +793,12 @@ public class PrivacyGuideFragmentTest {
         launchPrivacyGuide();
         goToCookiesCard();
 
-        assertEquals(0,
-                mHistogramTestRule.getHistogramValueCount(
-                        NEXT_NAVIGATION_HISTOGRAM, PrivacyGuideInteractions.COOKIES_NEXT_BUTTON));
+        var histogram = HistogramWatcher.newSingleRecordWatcher(
+                NEXT_NAVIGATION_HISTOGRAM, PrivacyGuideInteractions.COOKIES_NEXT_BUTTON);
 
         navigateFromCookiesToCompletionCard();
 
-        assertEquals(1,
-                mHistogramTestRule.getHistogramValueCount(
-                        NEXT_NAVIGATION_HISTOGRAM, PrivacyGuideInteractions.COOKIES_NEXT_BUTTON));
+        histogram.assertExpected();
     }
 
     @Test
@@ -881,15 +809,12 @@ public class PrivacyGuideFragmentTest {
         launchPrivacyGuide();
         goToCookiesCard();
 
-        assertEquals(0,
-                mHistogramTestRule.getHistogramValueCount(SETTINGS_STATES_HISTOGRAM,
-                        PrivacyGuideSettingsStates.BLOCK3P_INCOGNITO_TO3P_INCOGNITO));
+        var histogram = HistogramWatcher.newSingleRecordWatcher(SETTINGS_STATES_HISTOGRAM,
+                PrivacyGuideSettingsStates.BLOCK3P_INCOGNITO_TO3P_INCOGNITO);
 
         navigateFromCookiesToCompletionCard();
 
-        assertEquals(1,
-                mHistogramTestRule.getHistogramValueCount(SETTINGS_STATES_HISTOGRAM,
-                        PrivacyGuideSettingsStates.BLOCK3P_INCOGNITO_TO3P_INCOGNITO));
+        histogram.assertExpected();
     }
 
     @Test
@@ -900,16 +825,13 @@ public class PrivacyGuideFragmentTest {
         launchPrivacyGuide();
         goToCookiesCard();
 
-        assertEquals(0,
-                mHistogramTestRule.getHistogramValueCount(SETTINGS_STATES_HISTOGRAM,
-                        PrivacyGuideSettingsStates.BLOCK3P_INCOGNITO_TO3P));
+        var histogram = HistogramWatcher.newSingleRecordWatcher(
+                SETTINGS_STATES_HISTOGRAM, PrivacyGuideSettingsStates.BLOCK3P_INCOGNITO_TO3P);
 
         onView(withId(R.id.block_third_party)).perform(click());
         navigateFromCookiesToCompletionCard();
 
-        assertEquals(1,
-                mHistogramTestRule.getHistogramValueCount(SETTINGS_STATES_HISTOGRAM,
-                        PrivacyGuideSettingsStates.BLOCK3P_INCOGNITO_TO3P));
+        histogram.assertExpected();
     }
 
     @Test
@@ -920,16 +842,13 @@ public class PrivacyGuideFragmentTest {
         launchPrivacyGuide();
         goToCookiesCard();
 
-        assertEquals(0,
-                mHistogramTestRule.getHistogramValueCount(SETTINGS_STATES_HISTOGRAM,
-                        PrivacyGuideSettingsStates.BLOCK3P_TO3P_INCOGNITO));
+        var histogram = HistogramWatcher.newSingleRecordWatcher(
+                SETTINGS_STATES_HISTOGRAM, PrivacyGuideSettingsStates.BLOCK3P_TO3P_INCOGNITO);
 
         onView(withId(R.id.block_third_party_incognito)).perform(click());
         navigateFromCookiesToCompletionCard();
 
-        assertEquals(1,
-                mHistogramTestRule.getHistogramValueCount(SETTINGS_STATES_HISTOGRAM,
-                        PrivacyGuideSettingsStates.BLOCK3P_TO3P_INCOGNITO));
+        histogram.assertExpected();
     }
 
     @Test
@@ -940,15 +859,12 @@ public class PrivacyGuideFragmentTest {
         launchPrivacyGuide();
         goToCookiesCard();
 
-        assertEquals(0,
-                mHistogramTestRule.getHistogramValueCount(
-                        SETTINGS_STATES_HISTOGRAM, PrivacyGuideSettingsStates.BLOCK3P_TO3P));
+        var histogram = HistogramWatcher.newSingleRecordWatcher(
+                SETTINGS_STATES_HISTOGRAM, PrivacyGuideSettingsStates.BLOCK3P_TO3P);
 
         navigateFromCookiesToCompletionCard();
 
-        assertEquals(1,
-                mHistogramTestRule.getHistogramValueCount(
-                        SETTINGS_STATES_HISTOGRAM, PrivacyGuideSettingsStates.BLOCK3P_TO3P));
+        histogram.assertExpected();
     }
 
     @Test
