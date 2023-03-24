@@ -139,6 +139,12 @@ class AdsPageLoadMetricsObserverBrowserTest
     subresource_filter::SubresourceFilterBrowserTest::SetUp();
   }
 
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    subresource_filter::SubresourceFilterBrowserTest::SetUpCommandLine(
+        command_line);
+    command_line->AppendSwitchASCII(switches::kForceDeviceScaleFactor, "1");
+  }
+
   void SetUpOnMainThread() override {
     SubresourceFilterBrowserTest::SetUpOnMainThread();
     SetRulesetWithRules(
