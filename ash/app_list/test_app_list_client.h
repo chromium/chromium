@@ -59,6 +59,8 @@ class TestAppListClient : public AppListClient {
       const std::string& setting_name,
       const std::map<std::string, int>& values) override {}
   AppListNotifier* GetNotifier() override;
+  void QueryWouldTriggerLauncherSearchIph() override;
+  std::unique_ptr<ScopedIphSession> CreateLauncherSearchIphSession() override;
   void LoadIcon(int profile_id, const std::string& app_id) override {}
   ash::AppListSortOrder GetPermanentSortingOrder() const override;
   void CommitTemporarySortOrder() override;

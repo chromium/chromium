@@ -15,6 +15,7 @@
 #include "ash/public/cpp/app_list/app_list_controller.h"
 #include "ash/public/cpp/app_list/app_list_metrics.h"
 #include "ash/public/cpp/tablet_mode.h"
+#include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/ash/app_list/app_list_controller_delegate.h"
@@ -24,6 +25,10 @@
 #include "chrome/browser/ash/app_list/reorder/app_list_reorder_core.h"
 #include "chrome/browser/ash/app_list/reorder/app_list_reorder_delegate.h"
 #include "chrome/browser/ash/app_list/search/chrome_search_result.h"
+#include "chrome/browser/feature_engagement/tracker_factory.h"
+#include "chrome/browser/profiles/profile.h"
+#include "components/feature_engagement/public/feature_constants.h"
+#include "components/feature_engagement/public/tracker.h"
 #include "extensions/common/constants.h"
 #include "ui/base/models/menu_model.h"
 
@@ -281,6 +286,44 @@ void ChromeAppListModelUpdater::SetStatus(ash::AppListModelStatus status) {
 void ChromeAppListModelUpdater::SetSearchEngineIsGoogle(bool is_google) {
   search_engine_is_google_ = is_google;
   search_model_.SetSearchEngineIsGoogle(is_google);
+}
+
+void ChromeAppListModelUpdater::QueryWouldTriggerLauncherSearchIph() {
+  raw_ptr<feature_engagement::Tracker> tracker =
+      feature_engagement::TrackerFactory::GetForBrowserContext(profile_);
+  if (!tracker) {
+    // Set false as a fail-safe behavior.
+    search_model_.SetWouldTriggerLauncherSearchIph(false);
+    return;
+  }
+
+  // `AddOnInitializedCallback` will call the callback immediately if it's
+  // already initialized.
+  tracker->AddOnInitializedCallback(base::BindOnce(
+      &ChromeAppListModelUpdater::OnFeatureEngagementTrackerInitialized,
+      weak_ptr_factory_.GetWeakPtr()));
+}
+
+void ChromeAppListModelUpdater::OnFeatureEngagementTrackerInitialized(
+    bool success) {
+  if (!success) {
+    // Set false as a fail-safe behavior.
+    search_model_.SetWouldTriggerLauncherSearchIph(false);
+    return;
+  }
+
+  // To be on a safer side, query tracker instance again to minimize the
+  // duration of holding a tracker object.
+  raw_ptr<feature_engagement::Tracker> tracker =
+      feature_engagement::TrackerFactory::GetForBrowserContext(profile_);
+  if (!tracker) {
+    // Set false as a fail-safe behavior.
+    search_model_.SetWouldTriggerLauncherSearchIph(false);
+    return;
+  }
+
+  search_model_.SetWouldTriggerLauncherSearchIph(tracker->WouldTriggerHelpUI(
+      feature_engagement::kIPHLauncherSearchHelpUiFeature));
 }
 
 void ChromeAppListModelUpdater::PublishSearchResults(

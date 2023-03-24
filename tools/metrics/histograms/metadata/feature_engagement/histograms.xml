@@ -184,6 +184,8 @@ chromium-metrics-reviews@google.com.
       summary="payments autofill suggestions"/>
   <variant name="IPH_KeyboardAccessoryPaymentOffer"
       summary="payments autofill suggestions that have an offer"/>
+  <variant name="IPH_LauncherSearchHelpUi"
+      summary="show launcher search chips in the launcher"/>
   <variant name="IPH_LiveCaption" summary="Live Caption"/>
   <variant name="IPH_LongPressToolbarTip" summary="LongPress toolbar"/>
   <variant name="IPH_MicToolbar" summary="the mic button in the toolbar"/>

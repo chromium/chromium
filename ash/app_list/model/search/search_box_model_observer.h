@@ -19,6 +19,10 @@ class APP_LIST_MODEL_EXPORT SearchBoxModelObserver
   // Invoked when whether to show Assistant is changed.
   virtual void ShowAssistantChanged() = 0;
 
+  // Invoked when whether an IPH should be triggered or not have been
+  // changed.
+  virtual void OnWouldTriggerIphChanged() = 0;
+
  protected:
   ~SearchBoxModelObserver() override = default;
 };

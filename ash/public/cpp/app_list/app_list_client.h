@@ -117,6 +117,16 @@ class ASH_PUBLIC_EXPORT AppListClient {
   // implementation, this can return nullptr.
   virtual AppListNotifier* GetNotifier() = 0;
 
+  // Queries whether launcher search IPH should be shown and update
+  // SearchBoxModel.
+  virtual void QueryWouldTriggerLauncherSearchIph() = 0;
+
+  // `feature_engagement::Tracker` needs to be initialized before this method
+  // gets called. Call `WouldTriggerLauncherSearchIph` to initialize it. This
+  // returns false if the tracker is not initialized yet.
+  virtual std::unique_ptr<ScopedIphSession>
+  CreateLauncherSearchIphSession() = 0;
+
   // Invoked to load an icon of the app identified by `app_id`.
   virtual void LoadIcon(int profile_id, const std::string& app_id) = 0;
 

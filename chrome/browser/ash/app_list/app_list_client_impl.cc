@@ -9,13 +9,17 @@
 #include <utility>
 #include <vector>
 
+#include "ash/app_list/app_list_view_delegate.h"
+#include "ash/public/cpp/app_list/app_list_client.h"
 #include "ash/public/cpp/app_list/app_list_controller.h"
 #include "ash/public/cpp/app_list/app_list_types.h"
 #include "ash/public/cpp/new_window_delegate.h"
 #include "ash/public/cpp/tablet_mode.h"
 #include "ash/shell.h"
 #include "ash/system/federated/federated_service_controller_impl.h"
+#include "base/feature_list.h"
 #include "base/functional/bind.h"
+#include "base/memory/weak_ptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/metrics/user_metrics.h"
@@ -32,6 +36,7 @@
 #include "chrome/browser/ash/app_list/search/search_controller_factory.h"
 #include "chrome/browser/ash/crosapi/browser_util.h"
 #include "chrome/browser/ash/crosapi/url_handler_ash.h"
+#include "chrome/browser/feature_engagement/tracker_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/search_engines/template_url_service_factory.h"
@@ -47,6 +52,8 @@
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/webui/chrome_web_ui_controller_factory.h"
 #include "chromeos/crosapi/cpp/gurl_os_handler_utils.h"
+#include "components/feature_engagement/public/feature_constants.h"
+#include "components/feature_engagement/public/tracker.h"
 #include "components/session_manager/core/session_manager.h"
 #include "ui/base/page_transition_types.h"
 #include "ui/display/types/display_constants.h"
@@ -116,6 +123,21 @@ ash::NewWindowDelegate::Disposition ConvertDisposition(
       return ash::NewWindowDelegate::Disposition::kSwitchToTab;
   }
 }
+
+class ScopedIphSessionImpl : public ash::ScopedIphSession {
+ public:
+  explicit ScopedIphSessionImpl(raw_ptr<feature_engagement::Tracker> tracker,
+                                const base::Feature& iph_feature)
+      : tracker_(tracker), iph_feature_(iph_feature) {
+    CHECK(tracker_);
+  }
+
+  ~ScopedIphSessionImpl() override { tracker_->Dismissed(iph_feature_); }
+
+ private:
+  raw_ptr<feature_engagement::Tracker> tracker_;
+  const base::Feature& iph_feature_;
+};
 
 }  // namespace
 
@@ -527,6 +549,7 @@ void AppListClientImpl::SetProfile(Profile* new_profile) {
 
   SetUpSearchUI();
   OnTemplateURLServiceChanged();
+  QueryWouldTriggerLauncherSearchIph();
 }
 
 void AppListClientImpl::SetUpSearchUI() {
@@ -666,6 +689,36 @@ void AppListClientImpl::OpenURL(Profile* profile,
 
 ash::AppListNotifier* AppListClientImpl::GetNotifier() {
   return app_list_notifier_.get();
+}
+
+void AppListClientImpl::QueryWouldTriggerLauncherSearchIph() {
+  // This can be called before a `Profile` is set to `AppListClientImpl`. If a
+  // `Profile` is not set yet, return here. `AppListClientImpl::SetProfile` will
+  // call this method once a `Profile` is set.
+  if (!current_model_updater_) {
+    return;
+  }
+
+  current_model_updater_->QueryWouldTriggerLauncherSearchIph();
+}
+
+std::unique_ptr<ash::ScopedIphSession>
+AppListClientImpl::CreateLauncherSearchIphSession() {
+  if (profile_ == nullptr) {
+    return nullptr;
+  }
+
+  raw_ptr<feature_engagement::Tracker> tracker =
+      feature_engagement::TrackerFactory::GetForBrowserContext(profile_);
+  if (!tracker->ShouldTriggerHelpUI(
+          feature_engagement::kIPHLauncherSearchHelpUiFeature)) {
+    return nullptr;
+  }
+
+  // If we call `ShouldTriggerHelpUI` above, we must show an IPH, i.e. we must
+  // return `ScopedIphSessionImpl`.
+  return std::make_unique<ScopedIphSessionImpl>(
+      tracker, feature_engagement::kIPHLauncherSearchHelpUiFeature);
 }
 
 void AppListClientImpl::LoadIcon(int profile_id, const std::string& app_id) {

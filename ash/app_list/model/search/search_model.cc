@@ -23,6 +23,10 @@ void SearchModel::SetSearchEngineIsGoogle(bool is_google) {
   search_box_->SetSearchEngineIsGoogle(is_google);
 }
 
+void SearchModel::SetWouldTriggerLauncherSearchIph(bool would_trigger) {
+  search_box_->SetWouldTriggerIph(would_trigger);
+}
+
 std::vector<SearchResult*> SearchModel::FilterSearchResultsByFunction(
     SearchResults* results,
     const base::RepeatingCallback<bool(const SearchResult&)>& result_filter,

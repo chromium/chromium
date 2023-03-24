@@ -36989,6 +36989,7 @@ should be able to be added at any place in this file.
       label="For KeyboardAccessoryPaymentFilling feature."/>
   <suffix name="KeyboardAccessoryPaymentOffer"
       label="For KeyboardAccessoryPaymentOffer feature."/>
+  <suffix name="LauncherSearchHelpUi" label="For launcher search IPH feature."/>
   <suffix name="LiveCaption" label="For LiveCaption feature."/>
   <suffix name="LongPressToolbarTip" label="For LongPressToolbar feature."/>
   <suffix name="LowUserEngagementDetector"
