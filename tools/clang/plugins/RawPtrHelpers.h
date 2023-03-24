@@ -208,4 +208,136 @@ clang::ast_matchers::internal::Matcher<clang::Decl> AffectedRawRefFieldDecl(
     const FilterFile* paths_to_exclude,
     const FilterFile* fields_to_exclude);
 
+// If `field_decl` declares a field in an implicit template specialization, then
+// finds and returns the corresponding FieldDecl from the template definition.
+// Otherwise, just returns the original `field_decl` argument.
+const clang::FieldDecl* GetExplicitDecl(const clang::FieldDecl* field_decl);
+
+// Given:
+//   template <typename T>
+//   class MyTemplate {
+//     T field;  // This is an explicit field declaration.
+//   };
+//   void foo() {
+//     // This creates implicit template specialization for MyTemplate,
+//     // including an implicit `field` declaration.
+//     MyTemplate<int> v;
+//     v.field = 123;
+//   }
+// and
+//   innerMatcher that will match the explicit `T field` declaration (but not
+//   necessarily the implicit template declarations),
+// hasExplicitFieldDecl(innerMatcher) will match both explicit and implicit
+// field declarations.
+//
+// For example, `member_expr_matcher` below will match `v.field` in the example
+// above, even though the type of `v.field` is `int`, rather than `T` (matched
+// by substTemplateTypeParmType()):
+//   auto explicit_field_decl_matcher =
+//       fieldDecl(hasType(substTemplateTypeParmType()));
+//   auto member_expr_matcher = memberExpr(member(fieldDecl(
+//       hasExplicitFieldDecl(explicit_field_decl_matcher))))
+AST_MATCHER_P(clang::FieldDecl,
+              hasExplicitFieldDecl,
+              clang::ast_matchers::internal::Matcher<clang::FieldDecl>,
+              InnerMatcher) {
+  const clang::FieldDecl* explicit_field_decl = GetExplicitDecl(&Node);
+  return InnerMatcher.matches(*explicit_field_decl, Finder, Builder);
+}
+
+// If `original_param` declares a parameter in an implicit template
+// specialization of a function or method, then finds and returns the
+// corresponding ParmVarDecl from the template definition.  Otherwise, just
+// returns the `original_param` argument.
+//
+// Note: nullptr may be returned in rare, unimplemented cases.
+const clang::ParmVarDecl* GetExplicitDecl(
+    const clang::ParmVarDecl* original_param);
+
+AST_MATCHER_P(clang::ParmVarDecl,
+              hasExplicitParmVarDecl,
+              clang::ast_matchers::internal::Matcher<clang::ParmVarDecl>,
+              InnerMatcher) {
+  const clang::ParmVarDecl* explicit_param = GetExplicitDecl(&Node);
+  if (!explicit_param) {
+    // Rare, unimplemented case - fall back to returning "no match".
+    return false;
+  }
+
+  return InnerMatcher.matches(*explicit_param, Finder, Builder);
+}
+
+// forEachInitExprWithFieldDecl matches InitListExpr if it
+// 1) evaluates to a RecordType
+// 2) has a InitListExpr + FieldDecl pair that matches the submatcher args.
+//
+// forEachInitExprWithFieldDecl is based on and very similar to the builtin
+// forEachArgumentWithParam matcher.
+AST_MATCHER_P2(clang::InitListExpr,
+               forEachInitExprWithFieldDecl,
+               clang::ast_matchers::internal::Matcher<clang::Expr>,
+               init_expr_matcher,
+               clang::ast_matchers::internal::Matcher<clang::FieldDecl>,
+               field_decl_matcher) {
+  const clang::InitListExpr& init_list_expr = Node;
+  const clang::Type* type = init_list_expr.getType()
+                                .getDesugaredType(Finder->getASTContext())
+                                .getTypePtrOrNull();
+  if (!type) {
+    return false;
+  }
+  const clang::CXXRecordDecl* record_decl = type->getAsCXXRecordDecl();
+  if (!record_decl) {
+    return false;
+  }
+
+  bool is_matching = false;
+  clang::ast_matchers::internal::BoundNodesTreeBuilder result;
+  const llvm::SmallVector<const clang::FieldDecl*> field_decls(
+      record_decl->fields());
+  for (unsigned i = 0; i < init_list_expr.getNumInits(); i++) {
+    const clang::Expr* expr = init_list_expr.getInit(i);
+
+    const clang::FieldDecl* field_decl = nullptr;
+    if (const clang::ImplicitValueInitExpr* implicit_value_init_expr =
+            clang::dyn_cast<clang::ImplicitValueInitExpr>(expr)) {
+      continue;  // Do not match implicit value initializers.
+    } else if (const clang::DesignatedInitExpr* designated_init_expr =
+                   clang::dyn_cast<clang::DesignatedInitExpr>(expr)) {
+      // Nested designators are unsupported by C++.
+      if (designated_init_expr->size() != 1) {
+        break;
+      }
+      expr = designated_init_expr->getInit();
+      field_decl = designated_init_expr->getDesignator(0)->getField();
+    } else {
+      if (i >= field_decls.size()) {
+        break;
+      }
+      field_decl = field_decls[i];
+    }
+
+    clang::ast_matchers::internal::BoundNodesTreeBuilder field_matches(
+        *Builder);
+    if (field_decl_matcher.matches(*field_decl, Finder, &field_matches)) {
+      clang::ast_matchers::internal::BoundNodesTreeBuilder expr_matches(
+          field_matches);
+      if (init_expr_matcher.matches(*expr, Finder, &expr_matches)) {
+        result.addMatch(expr_matches);
+        is_matching = true;
+      }
+    }
+  }
+
+  *Builder = std::move(result);
+  return is_matching;
+}
+
+AST_POLYMORPHIC_MATCHER(isInMacroLocation,
+                        AST_POLYMORPHIC_SUPPORTED_TYPES(clang::Decl,
+                                                        clang::Stmt,
+                                                        clang::TypeLoc)) {
+  return Node.getBeginLoc().isMacroID();
+}
+
 #endif  // TOOLS_CLANG_PLUGINS_RAWPTRHELPERS_H_

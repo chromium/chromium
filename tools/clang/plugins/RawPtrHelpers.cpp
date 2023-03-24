@@ -168,3 +168,121 @@ clang::ast_matchers::internal::Matcher<clang::Decl> AffectedRawRefFieldDecl(
 
   return field_decl_matcher;
 }
+
+// If |field_decl| declares a field in an implicit template specialization, then
+// finds and returns the corresponding FieldDecl from the template definition.
+// Otherwise, just returns the original |field_decl| argument.
+const clang::FieldDecl* GetExplicitDecl(const clang::FieldDecl* field_decl) {
+  if (field_decl->isAnonymousStructOrUnion()) {
+    return field_decl;  // Safe fallback - |field_decl| is not a pointer field.
+  }
+
+  const clang::CXXRecordDecl* record_decl =
+      clang::dyn_cast<clang::CXXRecordDecl>(field_decl->getParent());
+  if (!record_decl) {
+    return field_decl;  // Non-C++ records are never template instantiations.
+  }
+
+  const clang::CXXRecordDecl* pattern_decl =
+      record_decl->getTemplateInstantiationPattern();
+  if (!pattern_decl) {
+    return field_decl;  // |pattern_decl| is not a template instantiation.
+  }
+
+  if (record_decl->getTemplateSpecializationKind() !=
+      clang::TemplateSpecializationKind::TSK_ImplicitInstantiation) {
+    return field_decl;  // |field_decl| was in an *explicit* specialization.
+  }
+
+  // Find the field decl with the same name in |pattern_decl|.
+  clang::DeclContextLookupResult lookup_result =
+      pattern_decl->lookup(field_decl->getDeclName());
+  assert(!lookup_result.empty());
+  const clang::NamedDecl* found_decl = lookup_result.front();
+  assert(found_decl);
+  field_decl = clang::dyn_cast<clang::FieldDecl>(found_decl);
+  assert(field_decl);
+  return field_decl;
+}
+
+// If |original_param| declares a parameter in an implicit template
+// specialization of a function or method, then finds and returns the
+// corresponding ParmVarDecl from the template definition.  Otherwise, just
+// returns the |original_param| argument.
+//
+// Note: nullptr may be returned in rare, unimplemented cases.
+const clang::ParmVarDecl* GetExplicitDecl(
+    const clang::ParmVarDecl* original_param) {
+  const clang::FunctionDecl* original_func =
+      clang::dyn_cast<clang::FunctionDecl>(original_param->getDeclContext());
+  if (!original_func) {
+    // |!original_func| may happen when the ParmVarDecl is part of a
+    // FunctionType, but not part of a FunctionDecl:
+    //     base::RepeatingCallback<void(int parm_var_decl_here)>
+    //
+    // In theory, |parm_var_decl_here| can also represent an implicit template
+    // specialization in this scenario.  OTOH, it should be rare + shouldn't
+    // matter for this rewriter, so for now let's just return the
+    // |original_param|.
+    //
+    // TODO: Implement support for this scenario.
+    return nullptr;
+  }
+
+  const clang::FunctionDecl* pattern_func =
+      original_func->getTemplateInstantiationPattern();
+  if (!pattern_func) {
+    // |original_func| is not a template instantiation - return the
+    // |original_param|.
+    return original_param;
+  }
+
+  // See if |pattern_func| has a parameter that is a template parameter pack.
+  bool has_param_pack = false;
+  unsigned int index_of_param_pack = std::numeric_limits<unsigned int>::max();
+  for (unsigned int i = 0; i < pattern_func->getNumParams(); i++) {
+    const clang::ParmVarDecl* pattern_param = pattern_func->getParamDecl(i);
+    if (!pattern_param->isParameterPack()) {
+      continue;
+    }
+
+    if (has_param_pack) {
+      // TODO: Implement support for multiple parameter packs.
+      return nullptr;
+    }
+
+    has_param_pack = true;
+    index_of_param_pack = i;
+  }
+
+  // Find and return the corresponding ParmVarDecl from |pattern_func|.
+  unsigned int original_index = original_param->getFunctionScopeIndex();
+  unsigned int pattern_index = std::numeric_limits<unsigned int>::max();
+  if (!has_param_pack) {
+    pattern_index = original_index;
+  } else {
+    // |original_func| has parameters that look like this:
+    //     l1, l2, l3, p1, p2, p3, t1, t2, t3
+    // where
+    //     lN is a leading, non-pack parameter
+    //     pN is an expansion of a template parameter pack
+    //     tN is a trailing, non-pack parameter
+    // Using the knowledge above, let's adjust |pattern_index| as needed.
+    unsigned int leading_param_num = index_of_param_pack;  // How many |lN|.
+    unsigned int pack_expansion_num =  // How many |pN| above.
+        original_func->getNumParams() - pattern_func->getNumParams() + 1;
+    if (original_index < leading_param_num) {
+      // |original_param| is a leading, non-pack parameter.
+      pattern_index = original_index;
+    } else if (leading_param_num <= original_index &&
+               original_index < (leading_param_num + pack_expansion_num)) {
+      // |original_param| is an expansion of a template pack parameter.
+      pattern_index = index_of_param_pack;
+    } else if ((leading_param_num + pack_expansion_num) <= original_index) {
+      // |original_param| is a trailing, non-pack parameter.
+      pattern_index = original_index - pack_expansion_num + 1;
+    }
+  }
+  assert(pattern_index < pattern_func->getNumParams());
+  return pattern_func->getParamDecl(pattern_index);
+}
