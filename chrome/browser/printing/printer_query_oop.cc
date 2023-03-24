@@ -19,23 +19,6 @@
 
 namespace printing {
 
-namespace {
-
-mojom::PrintTargetType DeterminePrintTargetType(
-    const base::Value::Dict& job_settings) {
-#if BUILDFLAG(IS_MAC)
-  if (job_settings.contains(kSettingOpenPDFInPreview)) {
-    return mojom::PrintTargetType::kExternalPreview;
-  }
-#endif
-  if (job_settings.FindBool(kSettingShowSystemDialog).value_or(false)) {
-    return mojom::PrintTargetType::kSystemDialog;
-  }
-  return mojom::PrintTargetType::kDirectToDevice;
-}
-
-}  // namespace
-
 PrinterQueryOop::PrinterQueryOop(content::GlobalRenderFrameHostId rfh_id)
     : PrinterQuery(rfh_id) {}
 
@@ -132,7 +115,8 @@ void PrinterQueryOop::UseDefaultSettings(SettingsCallback callback) {
   // Any settings selected from the system dialog could need to be retained
   // for printing, so establish a printing context.
   CHECK(!context_id_.has_value());
-  SendEstablishPrintingContext(*query_with_ui_client_id_);
+  SendEstablishPrintingContext(*query_with_ui_client_id_,
+                               /*printer_name=*/std::string());
   SendUseDefaultSettings(std::move(callback));
 #else
   // `PrintingContextLinux::UseDefaultSettings()` is to be called prior to
@@ -149,7 +133,7 @@ void PrinterQueryOop::GetSettingsWithUI(uint32_t document_page_count,
                                         SettingsCallback callback) {
   // Save the print target type from the settings, since this will be needed
   // later when printing is started.
-  print_target_type_ = mojom::PrintTargetType::kSystemDialog;
+  print_from_system_dialog_ = true;
 
 #if BUILDFLAG(ENABLE_OOP_BASIC_PRINT_DIALOG)
   SendAskUserForSettings(document_page_count, has_selection, is_scripted,
@@ -178,19 +162,47 @@ void PrinterQueryOop::UpdatePrintSettings(base::Value::Dict new_settings,
   // Do not take a const reference, as `new_settings` will be modified below.
   std::string device_name = *new_settings.FindString(kSettingDeviceName);
 
-  // Save the print target type from the settings, since this will be needed
+  // Remember if this is from system print dialog, since this will be needed
   // later when printing is started.
-  print_target_type_ = DeterminePrintTargetType(new_settings);
+  print_from_system_dialog_ =
+      new_settings.FindBool(kSettingShowSystemDialog).value_or(false);
 
-  // TODO(crbug.com/1414968):  Establish a context once `UpdatePrintSettings()`
-  // API to PrintBackendService is updated to always require a context.
-
-  VLOG(1) << "Updating print settings via service for " << device_name;
+  // A device name is required for printing documents. If the device name is
+  // empty then this is for a system print dialog, for which a destination is
+  // not yet known.
   PrintBackendServiceManager& service_mgr =
       PrintBackendServiceManager::GetInstance();
+  PrintBackendServiceManager::ClientId client_id;
+  std::string printer_name;
+  if (print_from_system_dialog_) {
+    CHECK(!print_document_client_id_.has_value());
+    client_id = *query_with_ui_client_id_;
+#if BUILDFLAG(ENABLE_OOP_BASIC_PRINT_DIALOG) && BUILDFLAG(IS_WIN)
+    // `PrintingContextWin::UpdatePrintSettings()` is special because it can
+    // invoke `AskUserForSettings()` and cause a system dialog to be displayed.
+    // Running a dialog causes an exit to webpage-initiated fullscreen.
+    // http://crbug.com/728276
+    content::WebContents* web_contents = GetWebContents();
+    if (web_contents && web_contents->IsFullscreen()) {
+      web_contents->ExitFullscreen(true);
+    }
+#endif
+  } else {
+    // Print the document from Print Preview.
+    CHECK(!query_with_ui_client_id_.has_value());
+    CHECK(!print_document_client_id_.has_value());
+
+    print_document_client_id_ =
+        service_mgr.RegisterPrintDocumentClient(device_name);
+    client_id = *print_document_client_id_;
+    printer_name = device_name;
+  }
+  SendEstablishPrintingContext(client_id, printer_name);
+
+  VLOG(1) << "Updating print settings via service for " << device_name;
 
   service_mgr.UpdatePrintSettings(
-      query_with_ui_client_id_, device_name, std::move(new_settings),
+      client_id, printer_name, *context_id_, std::move(new_settings),
       base::BindOnce(&PrinterQueryOop::OnDidUpdatePrintSettings,
                      weak_factory_.GetWeakPtr(), device_name,
                      std::move(callback)));
@@ -215,19 +227,22 @@ void PrinterQueryOop::OnDidUpdatePrintSettings(
     result = mojom::ResultCode::kSuccess;
     printing_context()->ApplyPrintSettings(print_settings->get_settings());
 
-    // Query work completed, next step will be to print.
-    // TODO(crbug.com/1414968):  Registration for printing a document will
-    // need to be made before calling `UpdatePrintSettings()` once it requires
-    // a context ID.
-    print_document_client_id_ =
-        PrintBackendServiceManager::GetInstance().RegisterPrintDocumentClient(
-            device_name);
+    if (query_with_ui_client_id_.has_value()) {
+      // Use the same PrintBackendService for querying and printing, so that the
+      // same device context can be used with both.
+      CHECK(!print_document_client_id_.has_value());
+      print_document_client_id_ =
+          PrintBackendServiceManager::GetInstance()
+              .RegisterPrintDocumentClientReusingClientRemote(
+                  *query_with_ui_client_id_);
+    }
   }
   InvokeSettingsCallback(std::move(callback), result);
 }
 
 void PrinterQueryOop::SendEstablishPrintingContext(
-    PrintBackendServiceManager::ClientId client_id) {
+    PrintBackendServiceManager::ClientId client_id,
+    const std::string& printer_name) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   DCHECK(features::kEnableOopPrintDriversJobPrint.Get());
 
@@ -242,11 +257,10 @@ void PrinterQueryOop::SendEstablishPrintingContext(
   PrintBackendServiceManager& service_mgr =
       PrintBackendServiceManager::GetInstance();
 
-  context_id_ = service_mgr.EstablishPrintingContext(
-      client_id, /*printer_name=*/std::string()
+  context_id_ = service_mgr.EstablishPrintingContext(client_id, printer_name
 #if BUILDFLAG(ENABLE_OOP_BASIC_PRINT_DIALOG)
-          ,
-      parent_view
+                                                     ,
+                                                     parent_view
 #endif
   );
 }
@@ -300,7 +314,8 @@ std::unique_ptr<PrintJobWorkerOop> PrinterQueryOop::CreatePrintJobWorker(
     PrintJob* print_job) {
   return std::make_unique<PrintJobWorkerOop>(
       std::move(printing_context_delegate_), std::move(printing_context_),
-      print_document_client_id_, context_id_, print_job, print_target_type_);
+      print_document_client_id_, context_id_, print_job,
+      print_from_system_dialog_);
 }
 
 }  // namespace printing

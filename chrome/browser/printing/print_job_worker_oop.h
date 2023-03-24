@@ -43,7 +43,7 @@ class PrintJobWorkerOop : public PrintJobWorker {
       absl::optional<PrintBackendServiceManager::ClientId> client_id,
       absl::optional<PrintBackendServiceManager::ContextId> context_id,
       PrintJob* print_job,
-      mojom::PrintTargetType print_target_type);
+      bool print_from_system_dialog);
   PrintJobWorkerOop(const PrintJobWorkerOop&) = delete;
   PrintJobWorkerOop& operator=(const PrintJobWorkerOop&) = delete;
   ~PrintJobWorkerOop() override;
@@ -59,7 +59,7 @@ class PrintJobWorkerOop : public PrintJobWorker {
       absl::optional<PrintBackendServiceManager::ClientId> client_id,
       absl::optional<PrintBackendServiceManager::ContextId> context_id,
       PrintJob* print_job,
-      mojom::PrintTargetType print_target_type,
+      bool print_from_system_dialog,
       bool simulate_spooling_memory_errors);
 
   // Local callback wrappers for Print Backend Service mojom call.  Virtual to
@@ -137,9 +137,8 @@ class PrintJobWorkerOop : public PrintJobWorker {
   // to avoid any potential confusion between them.
   scoped_refptr<PrintedDocument> document_oop_;
 
-  // The type of target to print to.  Used only from the UI thread.
-  mojom::PrintTargetType print_target_type_ =
-      mojom::PrintTargetType::kDirectToDevice;
+  // Indicates if the print job was initiated from the print system dialog.
+  const bool print_from_system_dialog_;
 
 #if BUILDFLAG(IS_WIN)
   // Number of pages that have completed printing.

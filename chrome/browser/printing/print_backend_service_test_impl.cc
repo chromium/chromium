@@ -144,6 +144,7 @@ void PrintBackendServiceTestImpl::FetchCapabilities(
 }
 
 void PrintBackendServiceTestImpl::UpdatePrintSettings(
+    uint32_t context_id,
     base::Value::Dict job_settings,
     mojom::PrintBackendService::UpdatePrintSettingsCallback callback) {
   if (terminate_receiver_) {
@@ -151,8 +152,8 @@ void PrintBackendServiceTestImpl::UpdatePrintSettings(
     return;
   }
 
-  PrintBackendServiceImpl::UpdatePrintSettings(std::move(job_settings),
-                                               std::move(callback));
+  PrintBackendServiceImpl::UpdatePrintSettings(
+      context_id, std::move(job_settings), std::move(callback));
 }
 
 #if BUILDFLAG(IS_WIN)

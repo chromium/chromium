@@ -159,12 +159,10 @@ class DocumentContainer {
  public:
   DocumentContainer(std::unique_ptr<PrintingContext::Delegate> context_delegate,
                     std::unique_ptr<PrintingContext> context,
-                    scoped_refptr<PrintedDocument> document,
-                    mojom::PrintTargetType target_type)
+                    scoped_refptr<PrintedDocument> document)
       : context_delegate_(std::move(context_delegate)),
         context_(std::move(context)),
-        document_(document),
-        target_type_(target_type) {}
+        document_(document) {}
 
   ~DocumentContainer() = default;
 
@@ -192,9 +190,6 @@ class DocumentContainer {
 
   scoped_refptr<PrintedDocument> document_;
 
-  // Parameter required for the delayed call to `UpdatePrinterSettings()`.
-  mojom::PrintTargetType target_type_;
-
   // Ensure all interactions for this document are issued from the same runner.
   SEQUENCE_CHECKER(sequence_checker_);
 };
@@ -204,31 +199,7 @@ mojom::ResultCode DocumentContainer::StartPrintingReadyDocument() {
 
   DVLOG(1) << "Start printing for document " << document_->cookie();
 
-  // With out-of-process printing the printer settings no longer get updated
-  // from `PrintingContext::UpdatePrintSettings()`, so we need to apply that
-  // now to our new context.
-  // TODO(crbug.com/1245679):  Drop calls to update context once
-  // `UpdatePrinterSettings()` supports use with an established context.
-  PrintingContext::PrinterSettings printer_settings {
-#if BUILDFLAG(IS_MAC)
-    .external_preview =
-        target_type_ == mojom::PrintTargetType::kExternalPreview,
-#endif
-    .show_system_dialog = target_type_ == mojom::PrintTargetType::kSystemDialog,
-#if BUILDFLAG(IS_WIN)
-    .page_count = 0,
-#endif
-  };
-  context_->ApplyPrintSettings(document_->settings());
-  mojom::ResultCode result = context_->UpdatePrinterSettings(printer_settings);
-  if (result != mojom::ResultCode::kSuccess) {
-    DLOG(ERROR) << "Failure updating printer settings for document "
-                << document_->cookie() << ", error: " << result;
-    context_->Cancel();
-    return result;
-  }
-
-  result = context_->NewDocument(document_->name());
+  mojom::ResultCode result = context_->NewDocument(document_->name());
   if (result != mojom::ResultCode::kSuccess) {
     DLOG(ERROR) << "Failure initializing new document " << document_->cookie()
                 << ", error: " << result;
@@ -675,6 +646,7 @@ void PrintBackendServiceImpl::AskUserForSettings(
 #endif  // BUILDFLAG(ENABLE_OOP_BASIC_PRINT_DIALOG)
 
 void PrintBackendServiceImpl::UpdatePrintSettings(
+    uint32_t context_id,
     base::Value::Dict job_settings,
     mojom::PrintBackendService::UpdatePrintSettingsCallback callback) {
   DCHECK(print_backend_);
@@ -698,12 +670,8 @@ void PrintBackendServiceImpl::UpdatePrintSettings(
   }
 #endif  // BUILDFLAG(IS_LINUX) && BUILDFLAG(USE_CUPS)
 
-  // Use a one-time `PrintingContext` to do the update to print settings.
-  // Intentionally do not cache this context here since the process model does
-  // not guarantee that that printing will return to this same process when
-  // `StartPrinting()` gets called.
-  std::unique_ptr<PrintingContext> context =
-      PrintingContext::Create(&context_delegate_, /*skip_system_calls=*/false);
+  PrintingContext* context = GetPrintingContext(context_id);
+  CHECK(context) << "No context found for id " << context_id;
   mojom::ResultCode result =
       context->UpdatePrintSettings(std::move(job_settings));
 
@@ -712,16 +680,17 @@ void PrintBackendServiceImpl::UpdatePrintSettings(
     return;
   }
 
-  std::move(callback).Run(mojom::PrintSettingsResult::NewSettings(
-      *context->TakeAndResetSettings()));
+  std::move(callback).Run(
+      mojom::PrintSettingsResult::NewSettings(context->settings()));
 }
 
 void PrintBackendServiceImpl::StartPrinting(
     uint32_t context_id,
     int document_cookie,
     const std::u16string& document_name,
-    mojom::PrintTargetType target_type,
-    const PrintSettings& settings,
+#if !BUILDFLAG(ENABLE_OOP_BASIC_PRINT_DIALOG)
+    const absl::optional<PrintSettings>& settings,
+#endif
     mojom::PrintBackendService::StartPrintingCallback callback) {
 #if BUILDFLAG(IS_CHROMEOS) && BUILDFLAG(USE_CUPS)
   CupsConnectionPool* connection_pool = CupsConnectionPool::GetInstance();
@@ -747,18 +716,22 @@ void PrintBackendServiceImpl::StartPrinting(
   std::unique_ptr<ContextContainer> context_container = std::move(item->second);
   persistent_printing_contexts_.erase(item);
 
+#if !BUILDFLAG(ENABLE_OOP_BASIC_PRINT_DIALOG)
+  if (settings) {
+    // Apply the settings from the in-browser system dialog to the context.
+    context_container->context->ApplyPrintSettings(*settings);
+  }
+#endif
+
   // Save all the document settings for use through the print job, until the
   // time that this document can complete printing.  Track the order of
   // received documents with position in `documents_`.
-  // TODO(crbug.com/1414968):  Use `context_container->context->settings()`
-  // instead of `settings` once `UpdatePrintSettings()` uses an established
-  // context.
   auto document = base::MakeRefCounted<PrintedDocument>(
-      std::make_unique<PrintSettings>(settings), document_name,
-      document_cookie);
+      std::make_unique<PrintSettings>(context_container->context->settings()),
+      document_name, document_cookie);
   base::SequenceBound<DocumentContainer> document_container(
       GetPrintingTaskRunner(), std::move(context_container->delegate),
-      std::move(context_container->context), document, target_type);
+      std::move(context_container->context), document);
   documents_.push_back(std::make_unique<DocumentHelper>(
       document_cookie, std::move(document_container), std::move(callback)));
   DocumentHelper& document_helper = *documents_.back();

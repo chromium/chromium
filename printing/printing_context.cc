@@ -203,6 +203,17 @@ mojom::ResultCode PrintingContext::UpdatePrintSettingsFromPOD(
 
 void PrintingContext::ApplyPrintSettings(const PrintSettings& settings) {
   *settings_ = settings;
+
+#if !BUILDFLAG(ENABLE_OOP_BASIC_PRINT_DIALOG)
+  if (skip_system_calls()) {
+    return;
+  }
+
+  // TODO(crbug.com/1414968):  System print dialog settings from the browser
+  // require platform-specific handling to be applied to device context.
+  NOTIMPLEMENTED()
+      << "Apply system dialog settings to device context not supported yet";
+#endif
 }
 
 }  // namespace printing

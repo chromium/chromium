@@ -241,6 +241,11 @@ void PrintViewManagerBase::PrintForPrintPreview(
                      std::move(callback));
   std::unique_ptr<printing::PrinterQuery> printer_query =
       queue_->CreatePrinterQuery(rfh->GetGlobalId());
+#if BUILDFLAG(ENABLE_OOP_PRINTING)
+  if (query_with_ui_client_id_.has_value()) {
+    printer_query->SetClientId(*query_with_ui_client_id_);
+  }
+#endif
   auto* printer_query_ptr = printer_query.get();
   printer_query_ptr->SetSettings(
       std::move(job_settings),

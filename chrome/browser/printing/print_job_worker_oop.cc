@@ -55,13 +55,13 @@ PrintJobWorkerOop::PrintJobWorkerOop(
     absl::optional<PrintBackendServiceManager::ClientId> client_id,
     absl::optional<PrintBackendServiceManager::ContextId> context_id,
     PrintJob* print_job,
-    mojom::PrintTargetType print_target_type)
+    bool print_from_system_dialog)
     : PrintJobWorkerOop(std::move(printing_context_delegate),
                         std::move(printing_context),
                         client_id,
                         context_id,
                         print_job,
-                        print_target_type,
+                        print_from_system_dialog,
                         /*simulate_spooling_memory_errors=*/false) {}
 
 PrintJobWorkerOop::PrintJobWorkerOop(
@@ -70,7 +70,7 @@ PrintJobWorkerOop::PrintJobWorkerOop(
     absl::optional<PrintBackendServiceManager::ClientId> client_id,
     absl::optional<PrintBackendServiceManager::ContextId> context_id,
     PrintJob* print_job,
-    mojom::PrintTargetType print_target_type,
+    bool print_from_system_dialog,
     bool simulate_spooling_memory_errors)
     : PrintJobWorker(std::move(printing_context_delegate),
                      std::move(printing_context),
@@ -78,7 +78,7 @@ PrintJobWorkerOop::PrintJobWorkerOop(
       simulate_spooling_memory_errors_(simulate_spooling_memory_errors),
       service_manager_client_id_(client_id),
       printing_context_id_(context_id),
-      print_target_type_(print_target_type) {}
+      print_from_system_dialog_(print_from_system_dialog) {}
 
 PrintJobWorkerOop::~PrintJobWorkerOop() {
   DCHECK(!service_manager_client_id_.has_value());
@@ -327,7 +327,7 @@ bool PrintJobWorkerOop::TryRestartPrinting() {
   service_mgr.SetPrinterDriverFoundToRequireElevatedPrivilege(device_name_);
 
 #if BUILDFLAG(ENABLE_OOP_BASIC_PRINT_DIALOG)
-  if (print_target_type_ == mojom::PrintTargetType::kSystemDialog) {
+  if (print_from_system_dialog_) {
     // Cannot print from process where system dialog was displayed.  Another
     // print attempt where dialog is used again will be required.
     PRINTER_LOG(ERROR) << "Failure during system printing, unable to retry.";
@@ -429,10 +429,18 @@ void PrintJobWorkerOop::SendStartPrinting(const std::string& device_name,
     SendEstablishPrintingContext();
   }
 
+#if !BUILDFLAG(ENABLE_OOP_BASIC_PRINT_DIALOG)
+  absl::optional<PrintSettings> settings;
+  if (print_from_system_dialog_) {
+    settings = document_oop_->settings();
+  }
+#endif
   service_mgr.StartPrinting(
       *service_manager_client_id_, device_name, *printing_context_id_,
-      document_cookie, document_name_, print_target_type_,
-      document_oop_->settings(),
+      document_cookie, document_name_,
+#if !BUILDFLAG(ENABLE_OOP_BASIC_PRINT_DIALOG)
+      settings,
+#endif
       base::BindOnce(&PrintJobWorkerOop::OnDidStartPrinting,
                      ui_weak_factory_.GetWeakPtr()));
 }

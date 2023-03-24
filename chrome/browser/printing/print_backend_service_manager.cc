@@ -277,7 +277,7 @@ PrintBackendServiceManager::EstablishPrintingContext(
   CallbackContext context;
   auto& service = printer_name.empty()
                       ? GetServiceAndCallbackContextForQueryWithUiClient(
-                            client_id, printer_name, context)
+                            client_id, kEmptyPrinterName, context)
                       : GetServiceAndCallbackContextForPrintDocumentClient(
                             client_id, printer_name, context);
 
@@ -341,16 +341,20 @@ void PrintBackendServiceManager::AskUserForSettings(
 #endif  // BUILDFLAG(ENABLE_OOP_BASIC_PRINT_DIALOG)
 
 void PrintBackendServiceManager::UpdatePrintSettings(
-    absl::optional<ClientId> client_id,
+    ClientId client_id,
     const std::string& printer_name,
+    ContextId context_id,
     base::Value::Dict job_settings,
     mojom::PrintBackendService::UpdatePrintSettingsCallback callback) {
+  // A blank `printer_name` indicates the destination is unknown, which occurs
+  // when initiating a system print dialog.  When printing a document the
+  // destination must be known.
   CallbackContext context;
-  auto& service =
-      client_id.has_value()
-          ? GetServiceAndCallbackContextForQueryWithUiClient(
-                *client_id, printer_name, context)
-          : GetServiceAndCallbackContextForQuery(printer_name, context);
+  auto& service = printer_name.empty()
+                      ? GetServiceAndCallbackContextForQueryWithUiClient(
+                            client_id, printer_name, context)
+                      : GetServiceAndCallbackContextForPrintDocumentClient(
+                            client_id, printer_name, context);
 
   SaveCallback(GetRemoteSavedUpdatePrintSettingsCallbacks(context.is_sandboxed),
                context.remote_id, context.saved_callback_id,
@@ -360,7 +364,7 @@ void PrintBackendServiceManager::UpdatePrintSettings(
 
   LogCallToRemote("UpdatePrintSettings", context);
   service->UpdatePrintSettings(
-      std::move(job_settings),
+      *context_id, std::move(job_settings),
       base::BindOnce(&PrintBackendServiceManager::OnDidUpdatePrintSettings,
                      base::Unretained(this), std::move(context)));
 }
@@ -371,8 +375,9 @@ void PrintBackendServiceManager::StartPrinting(
     ContextId context_id,
     int document_cookie,
     const std::u16string& document_name,
-    mojom::PrintTargetType target_type,
-    const PrintSettings& settings,
+#if !BUILDFLAG(ENABLE_OOP_BASIC_PRINT_DIALOG)
+    absl::optional<PrintSettings> settings,
+#endif
     mojom::PrintBackendService::StartPrintingCallback callback) {
   CallbackContext context;
   auto& service = GetServiceAndCallbackContextForPrintDocumentClient(
@@ -386,7 +391,10 @@ void PrintBackendServiceManager::StartPrinting(
 
   LogCallToRemote("StartPrinting", context);
   service->StartPrinting(
-      *context_id, document_cookie, document_name, target_type, settings,
+      *context_id, document_cookie, document_name,
+#if !BUILDFLAG(ENABLE_OOP_BASIC_PRINT_DIALOG)
+      settings,
+#endif
       base::BindOnce(&PrintBackendServiceManager::OnDidStartPrinting,
                      base::Unretained(this), std::move(context)));
 }

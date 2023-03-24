@@ -58,14 +58,6 @@ union PrintSettingsResult {
   ResultCode result_code;
 };
 
-// The type of printing interface to target.
-enum PrintTargetType {
-  kDirectToDevice,
-  kSystemDialog,
-  [EnableIf=is_mac]
-  kExternalPreview,
-};
-
 // Hosts the PrintBackendService but does so without sandboxing the service -
 // this is required if print drivers need UI access or cannot otherwise
 // operate in the normal sandbox. There is a 1:1 relationship and `service`
@@ -170,11 +162,15 @@ interface PrintBackendService {
                      bool is_scripted)
     => (PrintSettingsResult settings);
 
-  // Generates a print settings object based upon the job settings used with
-  // the device settings.  The driver to be used is expected to be identified
-  // in the `job_settings` map by an entry with key
-  // `printing::kSettingDeviceName`.
-  UpdatePrintSettings(mojo_base.mojom.DictionaryValue job_settings)
+  // Updates the indicated printing context based upon the job settings used
+  // with the device settings.  The driver to be used is expected to be
+  // identified in the `job_settings` map by an entry with key
+  // `printing::kSettingDeviceName`.  `context_id` must be for a context
+  // previously created by a call to `EstablishPrintingContext()`.  The updated
+  // print settings remain in the context for use when a system dialog is
+  // initiated and/or printing of a document is started.
+  UpdatePrintSettings(uint32 context_id,
+                      mojo_base.mojom.DictionaryValue job_settings)
     => (PrintSettingsResult settings);
 
   // Submit the document identified by `document_cookie` to be printed.
@@ -186,11 +182,17 @@ interface PrintBackendService {
   // Starting the device initialization may be delayed if it needs to wait for
   // prior print jobs to complete before a connection to the system to become
   // available.
+  // For platforms which do not support an out-of-process system print dialog,
+  // when doing system print the settings are specified from the system dialog
+  // that is invoked from the browser process.  The settings are collected from
+  // that and then are provided at start of printing via `settings`.  This is
+  // optional since such settings are not necessary when printing from Print
+  // Preview, where the print settings are provided via `UpdatePrintSettings()`.
   StartPrinting(uint32 context_id,
                 int32 document_cookie,
                 mojo_base.mojom.String16 document_name,
-                PrintTargetType target_type,
-                PrintSettings settings)
+                [EnableIfNot=enable_oop_basic_print_dialog]
+                PrintSettings? settings)
     => (ResultCode result_code);
 
   // Render the indicated page as part of print job for `document_cookie`.

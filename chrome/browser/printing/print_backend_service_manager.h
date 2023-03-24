@@ -156,32 +156,34 @@ class PrintBackendServiceManager {
       bool is_scripted,
       mojom::PrintBackendService::AskUserForSettingsCallback callback);
 #endif
-  // `UpdatePrintSettings()` can be used in two different scenarios:
-  //    - For Print Preview, where the desire is to use the appropriate
-  //      service based on the `printer_name` indicated.
-  //    - System printing, where a particular PrintBackendService instance
-  //      is desired, and is selected based upon a ClientId.
-  // When `client_id` is null, then the `printer_name` will be used to select
-  // the service.  Otherwise the `client_id` value will be used, similar to
-  // other methods related for supporting the system print dialog and for
-  // printing the document.
-  // TODO(crbug.com/1414968):  Remove use of optional for `client_id` once
-  // this the callers are updated to take advantage of `UpdatePrintSettings()`
-  // no longer being needed for Print Preview queries after
-  // https://crrev.com/1117252.
+  // `UpdatePrintSettings()` can be used prior to initiating a system print
+  // dialog or right before starting to print a document.  The first requires a
+  // `client_id` of `kQueryWithUi` type, while the latter requires a the ID to
+  // be of type `kPrintDocument`.
+  // The destination printer is still unknown when initiating a system print
+  // dialog, so `printer_name` will be empty in this case.  The destination
+  // must be known when starting to print a document.  `UpdatePrintSettings()`
+  // uses this insight to know what kind of client type is to be expected for
+  // the provided `client_id`.  The function will CHECK if the `client_id`
+  // is not registered for the expected type.
   void UpdatePrintSettings(
-      absl::optional<ClientId> client_id,
+      ClientId client_id,
       const std::string& printer_name,
+      ContextId context_id,
       base::Value::Dict job_settings,
       mojom::PrintBackendService::UpdatePrintSettingsCallback callback);
+  // `StartPrinting()` initiates the printing of a document.  The optional
+  // `settings` is used in the case where a system print dialog is invoked
+  // from in the browser, and this provides those settings for printing.
   void StartPrinting(
       ClientId client_id,
       const std::string& printer_name,
       ContextId context_id,
       int document_cookie,
       const std::u16string& document_name,
-      mojom::PrintTargetType target_type,
-      const PrintSettings& settings,
+#if !BUILDFLAG(ENABLE_OOP_BASIC_PRINT_DIALOG)
+      absl::optional<PrintSettings> settings,
+#endif
       mojom::PrintBackendService::StartPrintingCallback callback);
 #if BUILDFLAG(IS_WIN)
   void RenderPrintedPage(

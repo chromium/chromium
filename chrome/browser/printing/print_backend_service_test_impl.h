@@ -97,6 +97,7 @@ class PrintBackendServiceTestImpl : public PrintBackendServiceImpl {
       const std::string& printer_name,
       mojom::PrintBackendService::FetchCapabilitiesCallback callback) override;
   void UpdatePrintSettings(
+      uint32_t context_id,
       base::Value::Dict job_settings,
       mojom::PrintBackendService::UpdatePrintSettingsCallback callback)
       override;

@@ -176,6 +176,7 @@ class PrintBackendServiceImpl : public mojom::PrintBackendService {
       mojom::PrintBackendService::AskUserForSettingsCallback callback) override;
 #endif
   void UpdatePrintSettings(
+      uint32_t context_id,
       base::Value::Dict job_settings,
       mojom::PrintBackendService::UpdatePrintSettingsCallback callback)
       override;
@@ -183,8 +184,9 @@ class PrintBackendServiceImpl : public mojom::PrintBackendService {
       uint32_t context_id,
       int document_cookie,
       const std::u16string& document_name,
-      mojom::PrintTargetType target_type,
-      const PrintSettings& settings,
+#if !BUILDFLAG(ENABLE_OOP_BASIC_PRINT_DIALOG)
+      const absl::optional<PrintSettings>& settings,
+#endif
       mojom::PrintBackendService::StartPrintingCallback callback) override;
 #if BUILDFLAG(IS_WIN)
   void RenderPrintedPage(
@@ -254,10 +256,6 @@ class PrintBackendServiceImpl : public mojom::PrintBackendService {
   // the main thread.
   base::flat_map<uint32_t, std::unique_ptr<ContextContainer>>
       persistent_printing_contexts_;
-
-  // TODO(crbug.com/1414968):  Delete this once callers switch to complete
-  // local contexts or using `persistent_printing_contexts_`.
-  PrintingContextDelegate context_delegate_;
 
   // Want all callbacks and document helper sequence manipulations to be made
   // from main thread, not a thread runner.

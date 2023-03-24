@@ -62,7 +62,8 @@ class PrinterQueryOop : public PrinterQuery {
 
   // Mojo support to send messages from UI thread.
   void SendEstablishPrintingContext(
-      PrintBackendServiceManager::ClientId client_id);
+      PrintBackendServiceManager::ClientId client_id,
+      const std::string& printer_name);
   void SendUpdatePrintSettings(const std::string& printer_name,
                                base::Value::Dict new_settings,
                                SettingsCallback callback);
@@ -83,9 +84,7 @@ class PrinterQueryOop : public PrinterQuery {
     return print_document_client_id_;
   }
 
-  mojom::PrintTargetType print_target_type() const {
-    return print_target_type_;
-  }
+  bool print_from_system_dialog() const { return print_from_system_dialog_; }
 
   const absl::optional<PrintBackendServiceManager::ContextId>& context_id()
       const {
@@ -93,8 +92,7 @@ class PrinterQueryOop : public PrinterQuery {
   }
 
  private:
-  mojom::PrintTargetType print_target_type_ =
-      mojom::PrintTargetType::kDirectToDevice;
+  bool print_from_system_dialog_ = false;
   absl::optional<PrintBackendServiceManager::ClientId> query_with_ui_client_id_;
   absl::optional<PrintBackendServiceManager::ClientId>
       print_document_client_id_;
