@@ -55,6 +55,20 @@ void WriteToClipboard(const std::u16string& text) {
   scw.WriteText(text);
 }
 
+// Computes the margins of each row. This adjusts the left margin equal to the
+// dialog left margin + the back button insets to make sure all icons are
+// vertically aligned with the back button.
+gfx::Insets ComputeRowMargins() {
+  ChromeLayoutProvider* layout_provider = ChromeLayoutProvider::Get();
+  gfx::Insets margins = layout_provider->GetInsetsMetric(views::INSETS_DIALOG);
+  margins.set_top_bottom(0, 0);
+  margins.set_left(
+      margins.left() +
+      layout_provider->GetInsetsMetric(views::INSETS_VECTOR_IMAGE_BUTTON)
+          .left());
+  return margins;
+}
+
 std::unique_ptr<views::View> CreateIconView(
     const gfx::VectorIcon& vector_icon) {
   // TODO(crbug.com/1408790): Double check if it should always be not accessible
@@ -120,6 +134,7 @@ std::unique_ptr<views::FlexLayoutView> CreateDetailsRow(
     std::unique_ptr<views::View> detail_view) {
   auto row = std::make_unique<views::FlexLayoutView>();
   row->SetCollapseMargins(true);
+  row->SetInteriorMargin(ComputeRowMargins());
   row->SetDefault(
       views::kMarginsKey,
       gfx::Insets::VH(0, ChromeLayoutProvider::Get()->GetDistanceMetric(
@@ -247,6 +262,7 @@ std::unique_ptr<views::View> CreateEditUsernameRow(
   DCHECK(form.username_value.empty());
   auto row = std::make_unique<views::FlexLayoutView>();
   row->SetCollapseMargins(true);
+  row->SetInteriorMargin(ComputeRowMargins());
   row->SetDefault(
       views::kMarginsKey,
       gfx::Insets::VH(0, ChromeLayoutProvider::Get()->GetDistanceMetric(
@@ -282,6 +298,7 @@ std::unique_ptr<views::View> CreateEditNoteRow(
     raw_ptr<views::Label>* error_label) {
   auto row = std::make_unique<views::FlexLayoutView>();
   row->SetCollapseMargins(true);
+  row->SetInteriorMargin(ComputeRowMargins());
   row->SetDefault(
       views::kMarginsKey,
       gfx::Insets::VH(0, ChromeLayoutProvider::Get()->GetDistanceMetric(
