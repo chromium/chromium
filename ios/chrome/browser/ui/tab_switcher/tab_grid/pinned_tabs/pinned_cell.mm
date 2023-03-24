@@ -208,6 +208,13 @@ UIColor* GetInterfaceStyleDarkColor(UIColor* dynamicColor) {
   [_faviconContainerView setHidden:NO];
 }
 
+#pragma mark - UIAccessibility
+
+- (BOOL)isAccessibilityElement {
+  // This makes the whole cell tappable in VoiceOver.
+  return YES;
+}
+
 #pragma mark - Private
 
 // Sets up the selection border.
