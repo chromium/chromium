@@ -582,6 +582,9 @@ bool EnumTraits<mojom_vkey, ui::KeyboardCode>::FromMojom(
     case mojom_vkey::kKeyL:
       *out = ui::KeyboardCode::VKEY_L;
       return true;
+    case mojom_vkey::kKeyM:
+      *out = ui::KeyboardCode::VKEY_M;
+      return true;
     case mojom_vkey::kKeyN:
       *out = ui::KeyboardCode::VKEY_N;
       return true;
