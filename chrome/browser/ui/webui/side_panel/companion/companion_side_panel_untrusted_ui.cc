@@ -24,6 +24,7 @@ CompanionSidePanelUntrustedUI::CompanionSidePanelUntrustedUI(
           chrome::kChromeUIUntrustedCompanionSidePanelURL);
 
   // Add required resources.
+  html_source->UseStringsJs();
   html_source->AddResourcePaths(base::make_span(
       kSidePanelCompanionResources, kSidePanelCompanionResourcesSize));
   html_source->AddResourcePath("", IDR_SIDE_PANEL_COMPANION_COMPANION_HTML);
@@ -41,6 +42,7 @@ CompanionSidePanelUntrustedUI::CompanionSidePanelUntrustedUI(
       std::string("frame-src ") + frameSrcString + ";";
   html_source->OverrideContentSecurityPolicy(
       network::mojom::CSPDirectiveName::FrameSrc, frameSrcDirective);
+  html_source->AddString("companion_origin", frameSrcString);
 }
 
 CompanionSidePanelUntrustedUI::~CompanionSidePanelUntrustedUI() = default;

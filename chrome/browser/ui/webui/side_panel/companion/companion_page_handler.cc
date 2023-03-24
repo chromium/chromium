@@ -9,6 +9,7 @@
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/webui/side_panel/companion/companion_side_panel_untrusted_ui.h"
 #include "chrome/browser/ui/webui/side_panel/companion/companion_url_builder.h"
+#include "chrome/browser/ui/webui/side_panel/companion/promo_handler.h"
 #include "chrome/common/webui_url_constants.h"
 #include "components/prefs/pref_service.h"
 #include "components/unified_consent/pref_names.h"
@@ -29,7 +30,9 @@ CompanionPageHandler::CompanionPageHandler(
       page_(std::move(page)),
       companion_untrusted_ui_(companion_untrusted_ui),
       url_builder_(std::make_unique<CompanionUrlBuilder>(
-          browser->profile()->GetPrefs())) {
+          browser->profile()->GetPrefs())),
+      promo_handler_(
+          std::make_unique<PromoHandler>(browser->profile()->GetPrefs())) {
   DCHECK(browser);
   NotifyURLChanged();
 }
@@ -53,6 +56,16 @@ void CompanionPageHandler::NotifyURLChanged() {
   GURL companion_url =
       url_builder_->BuildCompanionURL(web_contents()->GetVisibleURL());
   page_->OnURLChanged(companion_url.spec());
+}
+
+void CompanionPageHandler::OnPromoAction(
+    side_panel::mojom::PromoType promo_type,
+    side_panel::mojom::PromoAction promo_action) {
+  promo_handler_->OnPromoAction(promo_type, promo_action);
+}
+
+void CompanionPageHandler::OnRegionSearchClicked() {
+  // TODO(b/274618487): Start lens region search.
 }
 
 }  // namespace companion

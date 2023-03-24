@@ -4,6 +4,45 @@
 
 module side_panel.mojom;
 
+// Methods called on the browser from the companion UI.
+// TODO(b/274618365): Link documentation for server side counterpart that must
+// be kept in sync.
+enum MethodType {
+  // Method called in response to a user action in a promo.
+  kOnPromoAction = 1,
+
+  // Method called in response to user clicking on the region search button.
+  kOnRegionSearchClicked = 2,
+};
+
+// Types of promos shown in the companion UI.
+// TODO(b/274618365): Link documentation for server side counterpart that must
+// be kept in sync.
+enum PromoType {
+  // Promo to sign-in to chrome.
+  kSignin = 1,
+
+  // Promo to turn on make searches and browsing better.
+  kMsbb = 2,
+
+  // Promo to opt into labs api.
+  kLabs = 3,
+};
+
+// User actions taken on a promo.
+// TODO(b/274618365): Link documentation for server side counterpart that must
+// be kept in sync.
+enum PromoAction {
+  // Promo was shown in the companion UI.
+  kShown = 1,
+
+  // User accepted the promo.
+  kAccepted = 2,
+
+  // User declined the promo.
+  kRejected = 3,
+};
+
 // Factory method for creating a new WebUI page handler.
 interface CompanionPageHandlerFactory {
   // The WebUI calls this method when the page is first initialized.
@@ -16,6 +55,12 @@ interface CompanionPageHandlerFactory {
 interface CompanionPageHandler {
   // Notify the backend that the UI is ready to be shown.
   ShowUI();
+
+  // Called to notify the browser about user action on a promo.
+  OnPromoAction(PromoType promo_type, PromoAction promo_action);
+
+  // Called to notify the browser that user has clicked on region search button.
+  OnRegionSearchClicked();
 };
 
 // WebUI page handler for request from Browser side. (C++ -> TypeScript)
