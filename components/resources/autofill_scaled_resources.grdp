@@ -16,6 +16,7 @@
   <structure type="chrome_scaled_image" name="IDR_AUTOFILL_METADATA_CC_AMEX" file="autofill/metadata/amex.png" />
   <structure type="chrome_scaled_image" name="IDR_AUTOFILL_METADATA_CC_DINERS" file="autofill/metadata/diners.png" />
   <structure type="chrome_scaled_image" name="IDR_AUTOFILL_METADATA_CC_DISCOVER" file="autofill/metadata/discover.png" />
+  <structure type="chrome_scaled_image" name="IDR_AUTOFILL_METADATA_CC_ELO" file="autofill/metadata/elo.png" />
   <structure type="chrome_scaled_image" name="IDR_AUTOFILL_METADATA_CC_GENERIC" file="autofill/metadata/cc-generic.png" />
   <structure type="chrome_scaled_image" name="IDR_AUTOFILL_METADATA_CC_JCB" file="autofill/metadata/jcb.png" />
   <structure type="chrome_scaled_image" name="IDR_AUTOFILL_METADATA_CC_MASTERCARD" file="autofill/metadata/mastercard.png" />
