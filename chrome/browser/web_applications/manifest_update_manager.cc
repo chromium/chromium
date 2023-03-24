@@ -269,7 +269,8 @@ void ManifestUpdateManager::OnManifestCheckAwaitAppWindowClose(
     return;
   }
 
-  if (!contents) {
+  if (!contents || contents->IsBeingDestroyed() ||
+      !contents->GetBrowserContext()) {
     update_stages_.erase(app_id);
     NotifyResult(url, app_id, ManifestUpdateResult::kWebContentsDestroyed);
     return;
@@ -287,8 +288,7 @@ void ManifestUpdateManager::OnManifestCheckAwaitAppWindowClose(
 
   DCHECK(install_info.has_value());
 
-  Profile* profile =
-      Profile::FromBrowserContext(contents.get()->GetBrowserContext());
+  Profile* profile = Profile::FromBrowserContext(contents->GetBrowserContext());
   auto keep_alive = std::make_unique<ScopedKeepAlive>(
       KeepAliveOrigin::APP_MANIFEST_UPDATE, KeepAliveRestartOption::DISABLED);
   std::unique_ptr<ScopedProfileKeepAlive> profile_keep_alive;
