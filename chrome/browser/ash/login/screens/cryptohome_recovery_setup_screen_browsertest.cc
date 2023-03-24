@@ -18,6 +18,7 @@
 #include "chrome/browser/ash/login/test/wizard_controller_screen_exit_waiter.h"
 #include "chrome/browser/ash/login/ui/login_display_host.h"
 #include "chrome/browser/ash/login/wizard_controller.h"
+#include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/webui/ash/login/cryptohome_recovery_setup_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/user_creation_screen_handler.h"
 #include "content/public/test/browser_test.h"
@@ -153,7 +154,6 @@ IN_PROC_BROWSER_TEST_F(CryptohomeRecoverySetupScreenTest,
   LoginDisplayHost::default_host()
       ->GetWizardContextForTesting()
       ->recovery_setup.recovery_factor_opted_in = true;
-  EXPECT_FALSE(PinSetupScreen::ShouldSkipBecauseOfPolicy());
   base::HistogramTester histogram_tester;
 
   ShowScreen();
@@ -171,20 +171,20 @@ IN_PROC_BROWSER_TEST_F(CryptohomeRecoverySetupScreenTest,
 }
 
 // If user opts in to recovery, the screen should be shown.
-// The PIN setup screen is skipped. In this case `extra_factors_auth_session`
-// should be cleared.
+// The PIN setup screen is skipped due to policy. In this case
+// `extra_factors_auth_session` should be cleared.
 IN_PROC_BROWSER_TEST_F(CryptohomeRecoverySetupScreenTest,
                        ShowClearsAuthSession) {
   LoginAsRegularUser();
-  auto test_api = std::make_unique<quick_unlock::TestApi>(
-      /*override_quick_unlock=*/true);
+  PrefService* prefs = ProfileManager::GetActiveUserProfile()->GetPrefs();
+  prefs->SetList(prefs::kQuickUnlockModeAllowlist, base::Value::List());
+  prefs->SetList(prefs::kWebAuthnFactors, base::Value::List());
   LoginDisplayHost::default_host()
       ->GetWizardContextForTesting()
       ->recovery_setup.ask_about_recovery_consent = true;
   LoginDisplayHost::default_host()
       ->GetWizardContextForTesting()
       ->recovery_setup.recovery_factor_opted_in = true;
-  EXPECT_TRUE(PinSetupScreen::ShouldSkipBecauseOfPolicy());
   base::HistogramTester histogram_tester;
 
   ShowScreen();

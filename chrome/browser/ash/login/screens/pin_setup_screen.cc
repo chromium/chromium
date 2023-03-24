@@ -22,6 +22,8 @@
 #include "chrome/browser/policy/profile_policy_connector.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/webui/ash/login/pin_setup_screen_handler.h"
+#include "chromeos/ash/components/dbus/userdataauth/userdataauth_client.h"
+#include "chromeos/ash/components/login/auth/auth_performer.h"
 #include "chromeos/ash/components/login/auth/public/cryptohome_key_constants.h"
 #include "chromeos/ash/components/login/auth/public/user_context.h"
 #include "components/prefs/pref_service.h"
@@ -80,22 +82,13 @@ std::string PinSetupScreen::GetResultString(Result result) {
   }
 }
 
-// static
-bool PinSetupScreen::ShouldSkipBecauseOfPolicy() {
-  PrefService* prefs = ProfileManager::GetActiveUserProfile()->GetPrefs();
-  if (chrome_user_manager_util::IsPublicSessionOrEphemeralLogin() ||
-      quick_unlock::IsPinDisabledByPolicy(prefs, quick_unlock::Purpose::kAny)) {
-    return true;
-  }
-
-  return false;
-}
-
 PinSetupScreen::PinSetupScreen(base::WeakPtr<PinSetupScreenView> view,
                                const ScreenExitCallback& exit_callback)
     : BaseScreen(PinSetupScreenView::kScreenId, OobeScreenPriority::DEFAULT),
       view_(std::move(view)),
-      exit_callback_(exit_callback) {
+      exit_callback_(exit_callback),
+      auth_performer_(UserDataAuthClient::Get()),
+      cryptohome_pin_engine_(&auth_performer_) {
   DCHECK(view_);
 
   quick_unlock::PinBackend::GetInstance()->HasLoginSupport(base::BindOnce(
@@ -105,12 +98,15 @@ PinSetupScreen::PinSetupScreen(base::WeakPtr<PinSetupScreenView> view,
 PinSetupScreen::~PinSetupScreen() = default;
 
 bool PinSetupScreen::ShouldBeSkipped(const WizardContext& context) const {
-  if (context.skip_post_login_screens_for_tests || ShouldSkipBecauseOfPolicy())
-    return true;
-
   // Just a precaution:
   if (!context.extra_factors_auth_session)
     return true;
+
+  if (context.skip_post_login_screens_for_tests ||
+      cryptohome_pin_engine_.ShouldSkipSetupBecauseOfPolicy(
+          context.extra_factors_auth_session->GetAccountId())) {
+    return true;
+  }
 
   // If cryptohome takes very long to respond, `has_login_support_` may be null
   // here, but this is very unusual.

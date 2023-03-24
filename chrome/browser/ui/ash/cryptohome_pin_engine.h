@@ -33,6 +33,15 @@ class CryptohomePinEngine {
   using IsPinAuthAvailableCallback =
       base::OnceCallback<void(bool, std::unique_ptr<UserContext>)>;
 
+  // Checks if pin setup should be skipped due to policy.
+  bool ShouldSkipSetupBecauseOfPolicy(const AccountId& account_id) const;
+
+  // Checks if pin is disabled by policy for the given `account_id` and
+  // `purpose`.
+  absl::optional<bool> IsCryptohomePinDisabledByPolicy(
+      const AccountId& account_id,
+      CryptohomePinEngine::Purpose purpose) const;
+
   // Checks the availability of Pin authentication, based on things like
   // policy configuration and whether or not the auth factor is set up.
   void IsPinAuthAvailable(Purpose purpose,

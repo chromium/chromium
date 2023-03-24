@@ -42,7 +42,9 @@ CryptohomeRecoverySetupScreen::CryptohomeRecoverySetupScreen(
     : BaseScreen(CryptohomeRecoverySetupScreenView::kScreenId,
                  OobeScreenPriority::DEFAULT),
       view_(std::move(view)),
-      exit_callback_(std::move(exit_callback)) {}
+      exit_callback_(std::move(exit_callback)),
+      auth_performer_(UserDataAuthClient::Get()),
+      cryptohome_pin_engine_(&auth_performer_) {}
 
 CryptohomeRecoverySetupScreen::~CryptohomeRecoverySetupScreen() = default;
 
@@ -107,7 +109,9 @@ void CryptohomeRecoverySetupScreen::ExitScreen(
     WizardContext& wizard_context,
     CryptohomeRecoverySetupScreen::Result result) {
   // Clear the auth session if it's not needed for PIN setup.
-  if (PinSetupScreen::ShouldSkipBecauseOfPolicy()) {
+  if (wizard_context.extra_factors_auth_session != nullptr &&
+      cryptohome_pin_engine_.ShouldSkipSetupBecauseOfPolicy(
+          wizard_context.extra_factors_auth_session->GetAccountId())) {
     wizard_context.extra_factors_auth_session.reset();
   }
   exit_callback_.Run(result);

@@ -12,6 +12,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/timer/timer.h"
 #include "chrome/browser/ash/login/screens/base_screen.h"
+#include "chrome/browser/ui/ash/cryptohome_pin_engine.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace ash {
@@ -36,11 +37,6 @@ class PinSetupScreen : public BaseScreen {
   };
 
   static std::string GetResultString(Result result);
-
-  // Checks whether PIN setup should be skipped because of the policies.
-  // There is an additional checkpoint that might skip the setup based on user
-  // profile and pin availability information in `MaybeSkip`.
-  static bool ShouldSkipBecauseOfPolicy();
 
   static std::unique_ptr<base::AutoReset<bool>>
   SetForceNoSkipBecauseOfPolicyForTests(bool value);
@@ -84,6 +80,10 @@ class PinSetupScreen : public BaseScreen {
   void ClearAuthData(WizardContext& context);
   void OnHasLoginSupport(bool login_available);
   void OnTokenTimedOut();
+
+  AuthPerformer auth_performer_;
+
+  CryptohomePinEngine cryptohome_pin_engine_;
 
   base::WeakPtrFactory<PinSetupScreen> weak_ptr_factory_{this};
 };

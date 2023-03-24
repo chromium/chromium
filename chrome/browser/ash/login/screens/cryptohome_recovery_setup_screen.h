@@ -9,6 +9,8 @@
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ash/login/quick_unlock/auth_token.h"
 #include "chrome/browser/ash/login/screens/base_screen.h"
+#include "chrome/browser/ui/ash/cryptohome_pin_engine.h"
+#include "chromeos/ash/components/login/auth/auth_performer.h"
 #include "chromeos/ash/services/auth_factor_config/recovery_factor_editor.h"
 #include "components/account_id/account_id.h"
 
@@ -55,6 +57,8 @@ class CryptohomeRecoverySetupScreen : public BaseScreen {
   void OnRecoveryConfigured(auth::mojom::ConfigureResult result);
   base::WeakPtr<CryptohomeRecoverySetupScreenView> view_ = nullptr;
   ScreenExitCallback exit_callback_;
+  AuthPerformer auth_performer_;
+  CryptohomePinEngine cryptohome_pin_engine_;
   base::WeakPtrFactory<CryptohomeRecoverySetupScreen> weak_ptr_factory_{this};
 };
 

@@ -7,6 +7,7 @@
 #include "ash/constants/ash_pref_names.h"
 #include "base/check_op.h"
 #include "base/containers/contains.h"
+#include "chrome/browser/ash/login/users/chrome_user_manager_util.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile.h"
@@ -50,9 +51,26 @@ bool IsPinDisabledByPolicySinglePurpose(const PrefService& pref_service,
   return !enabled;
 }
 
-absl::optional<bool> IsCryptohomePinDisabledByPolicy(
+// Read the salt from local state.
+std::string GetUserSalt(const AccountId& account_id) {
+  user_manager::KnownUser known_user(g_browser_process->local_state());
+  if (const std::string* salt =
+          known_user.FindStringPath(account_id, prefs::kQuickUnlockPinSalt)) {
+    return *salt;
+  }
+  return {};
+}
+
+}  // namespace
+
+CryptohomePinEngine::CryptohomePinEngine(ash::AuthPerformer* auth_performer)
+    : auth_performer_(auth_performer) {}
+
+CryptohomePinEngine::~CryptohomePinEngine() = default;
+
+absl::optional<bool> CryptohomePinEngine::IsCryptohomePinDisabledByPolicy(
     const AccountId& account_id,
-    CryptohomePinEngine::Purpose purpose) {
+    CryptohomePinEngine::Purpose purpose) const {
   Profile* profile =
       ash::ProfileHelper::Get()->GetProfileByAccountId(account_id);
 
@@ -74,22 +92,15 @@ absl::optional<bool> IsCryptohomePinDisabledByPolicy(
   return IsPinDisabledByPolicySinglePurpose(*pref_service, purpose);
 }
 
-// Read the salt from local state.
-std::string GetUserSalt(const AccountId& account_id) {
-  user_manager::KnownUser known_user(g_browser_process->local_state());
-  if (const std::string* salt =
-          known_user.FindStringPath(account_id, prefs::kQuickUnlockPinSalt)) {
-    return *salt;
-  }
-  return {};
+bool CryptohomePinEngine::ShouldSkipSetupBecauseOfPolicy(
+    const AccountId& account_id) const {
+  absl::optional<bool> is_pin_disabled = IsCryptohomePinDisabledByPolicy(
+      account_id, CryptohomePinEngine::Purpose::kAny);
+  bool result = is_pin_disabled.has_value() ? is_pin_disabled.value() : false;
+  result =
+      result || chrome_user_manager_util::IsPublicSessionOrEphemeralLogin();
+  return result;
 }
-
-}  // namespace
-
-CryptohomePinEngine::CryptohomePinEngine(ash::AuthPerformer* auth_performer)
-    : auth_performer_(auth_performer) {}
-
-CryptohomePinEngine::~CryptohomePinEngine() = default;
 
 void CryptohomePinEngine::IsPinAuthAvailable(
     Purpose purpose,
