@@ -2602,7 +2602,7 @@ void MediaStreamManager::PostRequestToUI(
     request->SetState(video_type, MEDIA_REQUEST_STATE_PENDING_APPROVAL);
   }
 
-  if (ShouldUseFakeUIProxy(request->video_type())) {
+  if (ShouldUseFakeUIProxy(*request)) {
     request->ui_proxy = MakeFakeUIProxy(label, enumeration, request);
   } else if (!request->ui_proxy) {
     request->ui_proxy = MediaStreamUIProxy::Create();
@@ -4479,17 +4479,17 @@ void MediaStreamManager::MaybeUpdateTrackedCaptureHandleConfigs(
 }
 
 bool MediaStreamManager::ShouldUseFakeUIProxy(
-    MediaStreamType stream_type) const {
+    const DeviceRequest& request) const {
   if (!fake_ui_factory_) {
     return false;
   }
 
   if (use_fake_ui_only_for_camera_and_microphone_) {
-    return stream_type == MediaStreamType::DEVICE_AUDIO_CAPTURE ||
-           stream_type == MediaStreamType::DEVICE_VIDEO_CAPTURE;
+    return request.audio_type() == MediaStreamType::DEVICE_AUDIO_CAPTURE ||
+           request.video_type() == MediaStreamType::DEVICE_VIDEO_CAPTURE;
   }
 
-  return stream_type != MediaStreamType::GUM_DESKTOP_VIDEO_CAPTURE ||
+  return request.video_type() != MediaStreamType::GUM_DESKTOP_VIDEO_CAPTURE ||
          use_fake_ui_for_gum_desktop_capture_;
 }
 

@@ -747,7 +747,7 @@ class CONTENT_EXPORT MediaStreamManager
       const blink::mojom::StreamDevicesSet& new_stream_devices_set,
       DeviceRequest& request);
 
-  bool ShouldUseFakeUIProxy(blink::mojom::MediaStreamType stream_type) const;
+  bool ShouldUseFakeUIProxy(const DeviceRequest& request) const;
 
   std::unique_ptr<MediaStreamUIProxy> MakeFakeUIProxy(
       const std::string& label,
