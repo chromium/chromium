@@ -244,6 +244,9 @@ extern const char kAutofillEnableOfferNotificationForPromoCodesDescription[];
 extern const char kAutofillEnableOffersInClankKeyboardAccessoryName[];
 extern const char kAutofillEnableOffersInClankKeyboardAccessoryDescription[];
 
+extern const char kAutofillEnablePaymentsMandatoryReauthName[];
+extern const char kAutofillEnablePaymentsMandatoryReauthDescription[];
+
 extern const char kAutofillEnableRankingFormulaAddressProfilesName[];
 extern const char kAutofillEnableRankingFormulaAddressProfilesDescription[];
 

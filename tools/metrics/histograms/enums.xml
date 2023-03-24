@@ -60973,6 +60973,8 @@ from previous Chrome versions.
   <int value="-783999903" label="FilesTrashDrive:disabled"/>
   <int value="-783890018" label="LacrosProfileMigrationForAnyUser:disabled"/>
   <int value="-783093620" label="WebViewHitTestInBlinkOnTouchStart:enabled"/>
+  <int value="-782193212"
+      label="AutofillEnablePaymentsMandatoryReauth:enabled"/>
   <int value="-781625651"
       label="DisruptiveNotificationPermissionRevocation:enabled"/>
   <int value="-780798969" label="disable-single-click-autofill"/>
@@ -62427,6 +62429,7 @@ from previous Chrome versions.
   <int value="21641175" label="OptimizeEarlyNavigation:disabled"/>
   <int value="22142588" label="OptimizationGuidePushNotifications:disabled"/>
   <int value="22202990" label="LacrosOnly:disabled"/>
+  <int value="22322436" label="AutofillEnablePaymentsMandatoryReauth:disabled"/>
   <int value="23121136" label="MobileIdentityConsistencyVar:enabled"/>
   <int value="23556595" label="MarkHttpAs:enabled"/>
   <int value="24332306" label="ButtonARCNetworkDiagnostics:disabled"/>

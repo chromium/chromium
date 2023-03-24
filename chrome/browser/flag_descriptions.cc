@@ -425,6 +425,13 @@ const char kAutofillEnableOffersInClankKeyboardAccessoryDescription[] =
     "When enabled, offers will be displayed in the keyboard accessory when "
     "available.";
 
+const char kAutofillEnablePaymentsMandatoryReauthName[] =
+    "Enable mandatory re-auth for payments autofill";
+const char kAutofillEnablePaymentsMandatoryReauthDescription[] =
+    "When enabled, in use-cases where we would not have triggered any "
+    "user-visible authentication to autofill payment methods, we will trigger "
+    "a device authentication.";
+
 const char kAutofillEnableRankingFormulaAddressProfilesName[] =
     "Enable new Autofill suggestion ranking formula for profiles";
 const char kAutofillEnableRankingFormulaAddressProfilesDescription[] =

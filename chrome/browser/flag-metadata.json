@@ -544,6 +544,11 @@
     "expiry_milestone": 116
   },
   {
+    "name": "autofill-enable-payments-mandatory-reauth",
+    "owners": [ "vinnypersky@google.com", "sujiezhu@google.com" ],
+    "expiry_milestone": 125
+  },
+  {
     "name": "autofill-enable-ranking-formula-address-profiles",
     "owners": [ "alexandertekle@google.com", "koerber@google.com" ],
     "expiry_milestone": 120

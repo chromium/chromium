@@ -105,6 +105,13 @@ BASE_FEATURE(kAutofillEnableOffersInClankKeyboardAccessory,
              "AutofillEnableOffersInClankKeyboardAccessory",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// When enabled, in use-cases where we would not have triggered any user-visible
+// authentication to autofill payment methods, we will trigger a device
+// authentication.
+BASE_FEATURE(kAutofillEnablePaymentsMandatoryReauth,
+             "AutofillEnablePaymentsMandatoryReauth",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // When enabled, some extra metrics logging for Autofill Downstream will start.
 BASE_FEATURE(kAutofillEnableRemadeDownstreamMetrics,
              "AutofillEnableRemadeDownstreamMetrics",
