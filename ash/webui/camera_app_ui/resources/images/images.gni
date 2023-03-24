@@ -22,8 +22,6 @@ in_app_images = [
   "camera_button_ptz_panel_on.svg",
   "camera_button_settings.svg",
   "camera_button_switch_device.svg",
-  "camera_button_switch_photo.svg",
-  "camera_button_switch_video.svg",
   "camera_button_timer_off.svg",
   "camera_button_timer_on_10s.svg",
   "camera_button_timer_on_3s.svg",
