@@ -17,6 +17,10 @@
 #include "url/gurl.h"
 #include "url/origin.h"
 
+namespace content {
+class BrowserContext;
+}
+
 namespace content_settings {
 class CookieSettings;
 }
@@ -43,8 +47,10 @@ class ExtensionSpecialStoragePolicy : public storage::SpecialStoragePolicy {
   bool IsStorageDurable(const GURL& origin) override;
 
   // Methods used by the ExtensionService to populate this class.
-  void GrantRightsForExtension(const extensions::Extension* extension);
-  void RevokeRightsForExtension(const extensions::Extension* extension);
+  void GrantRightsForExtension(const extensions::Extension* extension,
+                               content::BrowserContext* context);
+  void RevokeRightsForExtension(const extensions::Extension* extension,
+                                content::BrowserContext* context);
   void RevokeRightsForAllExtensions();
 
   // Decides whether the storage for |extension|'s web extent needs protection.

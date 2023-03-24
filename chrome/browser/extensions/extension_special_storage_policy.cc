@@ -30,6 +30,7 @@
 #include "components/content_settings/core/browser/cookie_settings.h"
 #include "components/content_settings/core/common/content_settings.h"
 #include "components/content_settings/core/common/content_settings_types.h"
+#include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/common/url_constants.h"
@@ -213,7 +214,8 @@ ExtensionSpecialStoragePolicy::ExtensionsProtectingOrigin(const GURL& origin) {
 }
 
 void ExtensionSpecialStoragePolicy::GrantRightsForExtension(
-    const extensions::Extension* extension) {
+    const extensions::Extension* extension,
+    content::BrowserContext* context) {
   base::AutoLock locker(lock_);
   DCHECK(extension);
 
@@ -229,7 +231,7 @@ void ExtensionSpecialStoragePolicy::GrantRightsForExtension(
           APIPermissionID::kUnlimitedStorage) ||
       extension->permissions_data()->HasAPIPermission(
           APIPermissionID::kFileBrowserHandler) ||
-      extensions::util::LegacyHasIsolatedStorage(extension) ||
+      extensions::util::HasIsolatedStorage(*extension, context) ||
       extension->is_app()) {
     if (NeedsProtection(extension) && protected_apps_.Add(extension)) {
       change_flags |= SpecialStoragePolicy::STORAGE_PROTECTED;
@@ -246,7 +248,7 @@ void ExtensionSpecialStoragePolicy::GrantRightsForExtension(
       file_handler_extensions_.Add(extension);
     }
 
-    if (extensions::util::LegacyHasIsolatedStorage(extension)) {
+    if (extensions::util::HasIsolatedStorage(*extension, context)) {
       isolated_extensions_.Add(extension);
     }
   }
@@ -258,7 +260,8 @@ void ExtensionSpecialStoragePolicy::GrantRightsForExtension(
 }
 
 void ExtensionSpecialStoragePolicy::RevokeRightsForExtension(
-    const extensions::Extension* extension) {
+    const extensions::Extension* extension,
+    content::BrowserContext* context) {
   base::AutoLock locker(lock_);
   DCHECK(extension);
 
@@ -274,7 +277,7 @@ void ExtensionSpecialStoragePolicy::RevokeRightsForExtension(
           APIPermissionID::kUnlimitedStorage) ||
       extension->permissions_data()->HasAPIPermission(
           APIPermissionID::kFileBrowserHandler) ||
-      extensions::util::LegacyHasIsolatedStorage(extension) ||
+      extensions::util::HasIsolatedStorage(*extension, context) ||
       extension->is_app()) {
     if (NeedsProtection(extension) && protected_apps_.Remove(extension)) {
       change_flags |= SpecialStoragePolicy::STORAGE_PROTECTED;
@@ -291,7 +294,7 @@ void ExtensionSpecialStoragePolicy::RevokeRightsForExtension(
       file_handler_extensions_.Remove(extension);
     }
 
-    if (extensions::util::LegacyHasIsolatedStorage(extension)) {
+    if (extensions::util::HasIsolatedStorage(*extension, context)) {
       isolated_extensions_.Remove(extension);
     }
   }

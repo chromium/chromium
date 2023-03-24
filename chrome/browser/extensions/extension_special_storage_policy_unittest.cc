@@ -202,8 +202,9 @@ TEST_F(ExtensionSpecialStoragePolicyTest, EmptyPolicy) {
 }
 
 TEST_F(ExtensionSpecialStoragePolicyTest, AppWithProtectedStorage) {
+  TestingProfile profile;
   scoped_refptr<Extension> extension(CreateProtectedApp());
-  policy_->GrantRightsForExtension(extension.get());
+  policy_->GrantRightsForExtension(extension.get(), &profile);
   ExtensionSet protecting_extensions;
   protecting_extensions.Insert(extension);
   ExtensionSet empty_set;
@@ -216,15 +217,16 @@ TEST_F(ExtensionSpecialStoragePolicyTest, AppWithProtectedStorage) {
   ExpectProtectedBy(protecting_extensions, GURL("https://bar.wildcards/"));
   ExpectProtectedBy(empty_set, GURL("http://not_listed/"));
 
-  policy_->RevokeRightsForExtension(extension.get());
+  policy_->RevokeRightsForExtension(extension.get(), &profile);
   ExpectProtectedBy(empty_set, GURL("http://explicit/"));
   ExpectProtectedBy(empty_set, GURL("http://foo.wildcards/"));
   ExpectProtectedBy(empty_set, GURL("https://bar.wildcards/"));
 }
 
 TEST_F(ExtensionSpecialStoragePolicyTest, AppWithUnlimitedStorage) {
+  TestingProfile profile;
   scoped_refptr<Extension> extension(CreateUnlimitedApp());
-  policy_->GrantRightsForExtension(extension.get());
+  policy_->GrantRightsForExtension(extension.get(), &profile);
   ExtensionSet protecting_extensions;
   protecting_extensions.Insert(extension);
   ExtensionSet empty_set;
@@ -242,7 +244,7 @@ TEST_F(ExtensionSpecialStoragePolicyTest, AppWithUnlimitedStorage) {
   EXPECT_TRUE(policy_->IsStorageUnlimited(GURL("https://bar.wildcards/")));
   EXPECT_FALSE(policy_->IsStorageUnlimited(GURL("http://not_listed/")));
 
-  policy_->RevokeRightsForExtension(extension.get());
+  policy_->RevokeRightsForExtension(extension.get(), &profile);
   ExpectProtectedBy(empty_set, GURL("http://explicit/"));
   ExpectProtectedBy(empty_set, GURL("https://foo.wildcards/"));
   ExpectProtectedBy(empty_set, GURL("https://foo.wildcards/"));
@@ -263,8 +265,9 @@ TEST_F(ExtensionSpecialStoragePolicyTest,
 
 TEST_F(ExtensionSpecialStoragePolicyTest,
        ExplicitlyUnlimitedOriginsShouldNotInterferWithExtensions) {
+  TestingProfile profile;
   scoped_refptr<Extension> extension(CreateUnlimitedApp());
-  policy_->GrantRightsForExtension(extension.get());
+  policy_->GrantRightsForExtension(extension.get(), &profile);
 
   policy_->AddOriginWithUnlimitedStorage(
       url::Origin::Create(GURL("http://unlimited/")));
@@ -277,8 +280,9 @@ TEST_F(ExtensionSpecialStoragePolicyTest,
 TEST_F(ExtensionSpecialStoragePolicyTest, HasIsolatedStorage) {
   const GURL kHttpUrl("http://foo");
   const GURL kExtensionUrl("chrome-extension://bar");
+  TestingProfile profile;
   scoped_refptr<Extension> app(CreateRegularApp());
-  policy_->GrantRightsForExtension(app.get());
+  policy_->GrantRightsForExtension(app.get(), &profile);
 
   EXPECT_FALSE(policy_->HasIsolatedStorage(kHttpUrl));
   EXPECT_FALSE(policy_->HasIsolatedStorage(kExtensionUrl));
@@ -286,10 +290,11 @@ TEST_F(ExtensionSpecialStoragePolicyTest, HasIsolatedStorage) {
 }
 
 TEST_F(ExtensionSpecialStoragePolicyTest, OverlappingApps) {
+  TestingProfile profile;
   scoped_refptr<Extension> protected_app(CreateProtectedApp());
   scoped_refptr<Extension> unlimited_app(CreateUnlimitedApp());
-  policy_->GrantRightsForExtension(protected_app.get());
-  policy_->GrantRightsForExtension(unlimited_app.get());
+  policy_->GrantRightsForExtension(protected_app.get(), &profile);
+  policy_->GrantRightsForExtension(unlimited_app.get(), &profile);
   ExtensionSet protecting_extensions;
   ExtensionSet empty_set;
   protecting_extensions.Insert(protected_app);
@@ -307,7 +312,7 @@ TEST_F(ExtensionSpecialStoragePolicyTest, OverlappingApps) {
   EXPECT_TRUE(policy_->IsStorageUnlimited(GURL("https://bar.wildcards/")));
   EXPECT_FALSE(policy_->IsStorageUnlimited(GURL("http://not_listed/")));
 
-  policy_->RevokeRightsForExtension(unlimited_app.get());
+  policy_->RevokeRightsForExtension(unlimited_app.get(), &profile);
   protecting_extensions.Remove(unlimited_app->id());
   EXPECT_FALSE(policy_->IsStorageUnlimited(GURL("http://explicit/")));
   EXPECT_FALSE(policy_->IsStorageUnlimited(GURL("https://foo.wildcards/")));
@@ -316,7 +321,7 @@ TEST_F(ExtensionSpecialStoragePolicyTest, OverlappingApps) {
   ExpectProtectedBy(protecting_extensions, GURL("http://foo.wildcards/"));
   ExpectProtectedBy(protecting_extensions, GURL("https://bar.wildcards/"));
 
-  policy_->RevokeRightsForExtension(protected_app.get());
+  policy_->RevokeRightsForExtension(protected_app.get(), &profile);
   ExpectProtectedBy(empty_set, GURL("http://explicit/"));
   ExpectProtectedBy(empty_set, GURL("http://foo.wildcards/"));
   ExpectProtectedBy(empty_set, GURL("https://bar.wildcards/"));
@@ -370,6 +375,7 @@ TEST_F(ExtensionSpecialStoragePolicyTest, IsStorageDurableTest) {
 }
 
 TEST_F(ExtensionSpecialStoragePolicyTest, NotificationTest) {
+  TestingProfile profile;
   PolicyChangeObserver observer;
   policy_->AddObserver(&observer);
 
@@ -389,14 +395,14 @@ TEST_F(ExtensionSpecialStoragePolicyTest, NotificationTest) {
   for (size_t i = 0; i < std::size(apps); ++i) {
     SCOPED_TRACE(testing::Message() << "i: " << i);
     observer.ExpectGrant(apps[i]->id(), change_flags[i]);
-    policy_->GrantRightsForExtension(apps[i].get());
+    policy_->GrantRightsForExtension(apps[i].get(), &profile);
     base::RunLoop().RunUntilIdle();
     EXPECT_TRUE(observer.IsCompleted());
   }
 
   for (size_t i = 0; i < std::size(apps); ++i) {
     SCOPED_TRACE(testing::Message() << "i: " << i);
-    policy_->GrantRightsForExtension(apps[i].get());
+    policy_->GrantRightsForExtension(apps[i].get(), &profile);
     base::RunLoop().RunUntilIdle();
     EXPECT_TRUE(observer.IsCompleted());
   }
@@ -404,14 +410,14 @@ TEST_F(ExtensionSpecialStoragePolicyTest, NotificationTest) {
   for (size_t i = 0; i < std::size(apps); ++i) {
     SCOPED_TRACE(testing::Message() << "i: " << i);
     observer.ExpectRevoke(apps[i]->id(), change_flags[i]);
-    policy_->RevokeRightsForExtension(apps[i].get());
+    policy_->RevokeRightsForExtension(apps[i].get(), &profile);
     base::RunLoop().RunUntilIdle();
     EXPECT_TRUE(observer.IsCompleted());
   }
 
   for (size_t i = 0; i < std::size(apps); ++i) {
     SCOPED_TRACE(testing::Message() << "i: " << i);
-    policy_->RevokeRightsForExtension(apps[i].get());
+    policy_->RevokeRightsForExtension(apps[i].get(), &profile);
     base::RunLoop().RunUntilIdle();
     EXPECT_TRUE(observer.IsCompleted());
   }

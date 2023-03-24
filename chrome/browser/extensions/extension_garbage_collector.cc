@@ -223,7 +223,7 @@ void ExtensionGarbageCollector::GarbageCollectIsolatedStorageIfNeeded() {
   const ExtensionSet extensions =
       ExtensionRegistry::Get(context_)->GenerateInstalledExtensionsSet();
   for (const auto& ext : extensions) {
-    if (extensions::util::LegacyHasIsolatedStorage(ext.get())) {
+    if (extensions::util::HasIsolatedStorage(*ext.get(), context_)) {
       active_paths.insert(
           util::GetStoragePartitionForExtensionId(ext->id(), context_)
               ->GetPath());

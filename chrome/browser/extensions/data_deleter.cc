@@ -106,7 +106,7 @@ void DataDeleter::StartDeleting(Profile* profile,
   GURL launch_web_url_origin;
   StoragePartition* partition = nullptr;
 
-  if (extensions::util::LegacyHasIsolatedStorage(extension)) {
+  if (extensions::util::HasIsolatedStorage(*extension, profile)) {
     has_isolated_storage = true;
     ++num_tasks;
   } else {
