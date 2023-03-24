@@ -54,18 +54,19 @@ class MockBrowserAutofillManager : public TestBrowserAutofillManager {
   MOCK_METHOD(void, SetShouldSuppressKeyboard, (bool), (override));
 };
 
-class MockTouchToFillDelegateImpl : public TouchToFillDelegateImpl {
+class MockTouchToFillDelegateAndroidImpl
+    : public TouchToFillDelegateAndroidImpl {
  public:
-  explicit MockTouchToFillDelegateImpl(
+  explicit MockTouchToFillDelegateAndroidImpl(
       MockBrowserAutofillManager* autofill_manager,
       MockFastCheckoutClient* fast_checkout_client)
-      : TouchToFillDelegateImpl(autofill_manager, fast_checkout_client) {
+      : TouchToFillDelegateAndroidImpl(autofill_manager, fast_checkout_client) {
     ON_CALL(*this, GetManager).WillByDefault(Return(autofill_manager));
     ON_CALL(*this, ShouldShowScanCreditCard).WillByDefault(Return(true));
   }
-  ~MockTouchToFillDelegateImpl() override = default;
+  ~MockTouchToFillDelegateAndroidImpl() override = default;
 
-  base::WeakPtr<MockTouchToFillDelegateImpl> GetWeakPointer() {
+  base::WeakPtr<MockTouchToFillDelegateAndroidImpl> GetWeakPointer() {
     return weak_factory_.GetWeakPtr();
   }
 
@@ -87,7 +88,7 @@ class MockTouchToFillDelegateImpl : public TouchToFillDelegateImpl {
 
  private:
   std::unique_ptr<TouchToFillKeyboardSuppressor> suppressor_;
-  base::WeakPtrFactory<MockTouchToFillDelegateImpl> weak_factory_{this};
+  base::WeakPtrFactory<MockTouchToFillDelegateAndroidImpl> weak_factory_{this};
 };
 
 }  // namespace
@@ -106,7 +107,7 @@ class TouchToFillCreditCardControllerTest
     fast_checkout_client_ =
         std::make_unique<MockFastCheckoutClient>(web_contents());
     autofill_manager().set_touch_to_fill_delegate(
-        std::make_unique<MockTouchToFillDelegateImpl>(
+        std::make_unique<MockTouchToFillDelegateAndroidImpl>(
             &autofill_manager(), fast_checkout_client_.get()));
     mock_view_ = std::make_unique<MockTouchToFillCreditCardViewImpl>();
   }
@@ -125,8 +126,8 @@ class TouchToFillCreditCardControllerTest
     return *autofill_manager_injector_[web_contents()];
   }
 
-  MockTouchToFillDelegateImpl& ttf_delegate() {
-    return *static_cast<MockTouchToFillDelegateImpl*>(
+  MockTouchToFillDelegateAndroidImpl& ttf_delegate() {
+    return *static_cast<MockTouchToFillDelegateAndroidImpl*>(
         autofill_manager().touch_to_fill_delegate());
   }
 

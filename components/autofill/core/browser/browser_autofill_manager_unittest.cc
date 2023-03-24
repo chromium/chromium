@@ -208,7 +208,7 @@ class MockTouchToFillDelegate : public TouchToFillDelegate {
   MockTouchToFillDelegate(const MockTouchToFillDelegate&) = delete;
   MockTouchToFillDelegate& operator=(const MockTouchToFillDelegate&) = delete;
   ~MockTouchToFillDelegate() override = default;
-  MOCK_METHOD(AutofillManager*, GetManager, (), (override));
+  MOCK_METHOD(BrowserAutofillManager*, GetManager, (), (override));
   MOCK_METHOD(bool,
               IntendsToShowTouchToFill,
               (FormGlobalId, FieldGlobalId),

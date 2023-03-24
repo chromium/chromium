@@ -66,8 +66,8 @@ class TouchToFillForCreditCardsTest
     ON_CALL(fast_checkout_client_, IsNotShownYet)
         .WillByDefault(testing::Return(true));
     autofill_manager().set_touch_to_fill_delegate(
-        std::make_unique<TouchToFillDelegateImpl>(&autofill_manager(),
-                                                  &fast_checkout_client_));
+        std::make_unique<TouchToFillDelegateAndroidImpl>(
+            &autofill_manager(), &fast_checkout_client_));
   }
 
   void TearDown() override { TearDownHelper(); }
@@ -119,8 +119,8 @@ class TouchToFillForCreditCardsTest
     }
   }
 
-  TouchToFillDelegateImpl& touch_to_fill_delegate() {
-    return *static_cast<TouchToFillDelegateImpl*>(
+  TouchToFillDelegateAndroidImpl& touch_to_fill_delegate() {
+    return *static_cast<TouchToFillDelegateAndroidImpl*>(
         autofill_manager().touch_to_fill_delegate());
   }
 

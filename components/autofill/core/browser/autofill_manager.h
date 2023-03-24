@@ -46,7 +46,7 @@ struct FormData;
 struct FormFieldData;
 class FormStructure;
 class LogManager;
-class TouchToFillDelegateImpl;
+class TouchToFillDelegateAndroidImpl;
 
 // This class defines the interface should be implemented by autofill
 // implementation in browser side to interact with AutofillDriver.
@@ -153,7 +153,7 @@ class AutofillManager
   }
 
   AutofillClient* unsafe_client(
-      base::PassKey<TouchToFillDelegateImpl> pass_key) {
+      base::PassKey<TouchToFillDelegateAndroidImpl> pass_key) {
     return AutofillManager::unsafe_client();
   }
 

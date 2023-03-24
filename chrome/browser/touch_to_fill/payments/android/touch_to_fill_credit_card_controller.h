@@ -73,7 +73,7 @@ class TouchToFillCreditCardController
   base::android::ScopedJavaLocalRef<jobject> GetJavaObject() override;
 
   // Observes creation of ContentAutofillDrivers to inject a
-  // TouchToFillDelegateImpl into the BrowserAutofillManager.
+  // TouchToFillDelegateAndroidImpl into the BrowserAutofillManager.
   base::ScopedObservation<ContentAutofillDriverFactory,
                           ContentAutofillDriverFactory::Observer>
       driver_factory_observation_{this};

@@ -87,13 +87,15 @@ class FormStructure;
 // interact with it and its |AutofillClient| and |AutofillDriver|.
 //
 // TODO(crbug.com/1324900): Consider using more descriptive name.
-class TouchToFillDelegateImpl : public TouchToFillDelegate {
+class TouchToFillDelegateAndroidImpl : public TouchToFillDelegate {
  public:
-  TouchToFillDelegateImpl(BrowserAutofillManager* manager,
-                          FastCheckoutClient* fast_checkout_client);
-  TouchToFillDelegateImpl(const TouchToFillDelegateImpl&) = delete;
-  TouchToFillDelegateImpl& operator=(const TouchToFillDelegateImpl&) = delete;
-  ~TouchToFillDelegateImpl() override;
+  TouchToFillDelegateAndroidImpl(BrowserAutofillManager* manager,
+                                 FastCheckoutClient* fast_checkout_client);
+  TouchToFillDelegateAndroidImpl(const TouchToFillDelegateAndroidImpl&) =
+      delete;
+  TouchToFillDelegateAndroidImpl& operator=(
+      const TouchToFillDelegateAndroidImpl&) = delete;
+  ~TouchToFillDelegateAndroidImpl() override;
 
   // Checks whether TTF is eligible for the given web form data.
   // Only if this is true, the controller will show the view.
@@ -125,7 +127,7 @@ class TouchToFillDelegateImpl : public TouchToFillDelegate {
 
   void LogMetricsAfterSubmission(const FormStructure& submitted_form) override;
 
-  base::WeakPtr<TouchToFillDelegateImpl> GetWeakPtr();
+  base::WeakPtr<TouchToFillDelegateAndroidImpl> GetWeakPtr();
 
  private:
   enum class TouchToFillState {
@@ -172,7 +174,7 @@ class TouchToFillDelegateImpl : public TouchToFillDelegate {
   FormFieldData query_field_;
   bool dismissed_by_user_;
 
-  base::WeakPtrFactory<TouchToFillDelegateImpl> weak_ptr_factory_{this};
+  base::WeakPtrFactory<TouchToFillDelegateAndroidImpl> weak_ptr_factory_{this};
 };
 
 }  // namespace autofill
