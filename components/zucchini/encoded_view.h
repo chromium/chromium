@@ -11,6 +11,7 @@
 #include <iterator>
 #include <vector>
 
+#include "base/memory/raw_ptr_exclusion.h"
 #include "base/memory/raw_ref.h"
 #include "components/zucchini/image_index.h"
 #include "components/zucchini/image_utils.h"
@@ -124,7 +125,9 @@ class EncodedView {
     }
 
    private:
-    const EncodedView* encoded_view_;
+    // This field is not a raw_ptr<> because it was filtered by the rewriter
+    // for: #constexpr-ctor-field-initializer
+    RAW_PTR_EXCLUSION const EncodedView* encoded_view_;
     difference_type pos_;
   };
 

@@ -14,6 +14,7 @@
 #include "base/files/scoped_temp_dir.h"
 #include "base/functional/bind.h"
 #include "base/location.h"
+#include "base/memory/raw_ptr_exclusion.h"
 #include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/task/sequenced_task_runner.h"
@@ -498,7 +499,9 @@ class DownloadFileTest : public testing::Test {
 
   // Stream for sending data into the download file.
   // Owned by download_file_; will be alive for lifetime of download_file_.
-  StrictMock<MockInputStream>* input_stream_;
+  // This field is not a raw_ptr<> because it was filtered by the rewriter for:
+  // #addr-of
+  RAW_PTR_EXCLUSION StrictMock<MockInputStream>* input_stream_;
 
   // Additional streams to test multiple stream write.
   std::vector<StrictMock<MockInputStream>*> additional_streams_;

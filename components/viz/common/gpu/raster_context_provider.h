@@ -11,6 +11,7 @@
 #include <memory>
 
 #include "base/functional/callback.h"
+#include "base/memory/raw_ptr_exclusion.h"
 #include "base/memory/ref_counted.h"
 #include "base/synchronization/lock.h"
 #include "components/viz/common/gpu/context_cache_controller.h"
@@ -54,7 +55,9 @@ class VIZ_COMMON_EXPORT RasterContextProvider {
     }
 
    private:
-    RasterContextProvider* const context_provider_;
+    // This field is not a raw_ptr<> because it was filtered by the rewriter
+    // for: #union
+    RAW_PTR_EXCLUSION RasterContextProvider* const context_provider_;
     base::AutoLock context_lock_;
     std::unique_ptr<ContextCacheController::ScopedBusy> busy_;
   };

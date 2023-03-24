@@ -9,6 +9,7 @@
 #include <string>
 
 #include "base/compiler_specific.h"
+#include "base/memory/raw_ptr_exclusion.h"
 #include "components/autofill/core/browser/data_model/autofill_structured_address_name.h"
 #include "components/autofill/core/browser/data_model/form_group.h"
 
@@ -136,7 +137,9 @@ class CompanyInfo : public FormGroup {
   bool IsValidOrVerified(const std::u16string& value) const;
 
   std::u16string company_name_;
-  const AutofillProfile* profile_ = nullptr;
+  // This field is not a raw_ptr<> because it was filtered by the rewriter for:
+  // #union
+  RAW_PTR_EXCLUSION const AutofillProfile* profile_ = nullptr;
 };
 
 }  // namespace autofill

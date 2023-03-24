@@ -12,6 +12,7 @@
 
 #include "base/component_export.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/raw_ptr_exclusion.h"
 
 // Utility for dynamically loading libsecret.
 class LibsecretLoader {
@@ -60,7 +61,9 @@ class LibsecretLoader {
    private:
     // |results_| and |error_| are C-style objects owned by this instance.
     raw_ptr<GList> results_ = nullptr;
-    GError* error_ = nullptr;
+    // This field is not a raw_ptr<> because it was filtered by the rewriter
+    // for: #addr-of
+    RAW_PTR_EXCLUSION GError* error_ = nullptr;
   };
 
   LibsecretLoader() = delete;
@@ -83,7 +86,9 @@ class LibsecretLoader {
  private:
   struct FunctionInfo {
     const char* name;
-    void** pointer;
+    // This field is not a raw_ptr<> because it was filtered by the rewriter
+    // for: #global-scope
+    RAW_PTR_EXCLUSION void** pointer;
   };
 
   static const FunctionInfo kFunctions[];

@@ -9,6 +9,7 @@
 #include <cstddef>
 
 #include "base/memory/raw_ptr.h"
+#include "base/memory/raw_ptr_exclusion.h"
 #include "components/segmentation_platform/internal/database/ukm_types.h"
 #include "components/segmentation_platform/public/proto/model_metadata.pb.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -32,9 +33,13 @@ class MetadataWriter {
     const uint64_t tensor_length{0};
     const proto::Aggregation aggregation{proto::Aggregation::UNKNOWN};
     const size_t enum_ids_size{0};
-    const int32_t* const accepted_enum_ids = nullptr;
+    // This field is not a raw_ptr<> because it was filtered by the rewriter
+    // for: #constexpr-var-initializer
+    RAW_PTR_EXCLUSION const int32_t* const accepted_enum_ids = nullptr;
     const size_t default_values_size{0};
-    const float* const default_values = nullptr;
+    // This field is not a raw_ptr<> because it was filtered by the rewriter
+    // for: #constexpr-var-initializer
+    RAW_PTR_EXCLUSION const float* const default_values = nullptr;
 
     static constexpr UMAFeature FromUserAction(const char* name,
                                                uint64_t bucket_count) {

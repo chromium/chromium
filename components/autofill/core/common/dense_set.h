@@ -12,6 +12,7 @@
 
 #include "base/check.h"
 #include "base/check_op.h"
+#include "base/memory/raw_ptr_exclusion.h"
 #include "base/numerics/safe_conversions.h"
 
 namespace autofill {
@@ -120,7 +121,9 @@ class DenseSet {
       return owner_->bitset_.test(index_);
     }
 
-    const DenseSet* owner_ = nullptr;
+    // This field is not a raw_ptr<> because it was filtered by the rewriter
+    // for: #constexpr-ctor-field-initializer
+    RAW_PTR_EXCLUSION const DenseSet* owner_ = nullptr;
 
     // The current index is in the interval [0, owner_->max_size()].
     Index index_ = 0;

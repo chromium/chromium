@@ -10,6 +10,7 @@
 
 #include "base/compiler_specific.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/raw_ptr_exclusion.h"
 #include "components/autofill/core/browser/autofill_type.h"
 #include "components/autofill/core/browser/form_parsing/form_field.h"
 #include "components/autofill/core/common/language_code.h"
@@ -83,7 +84,9 @@ class CreditCardField : public FormField {
 
   raw_ptr<LogManager> log_manager_;  // Optional.
 
-  AutofillField* cardholder_;  // Optional.
+  // This field is not a raw_ptr<> because it was filtered by the rewriter for:
+  // #addr-of
+  RAW_PTR_EXCLUSION AutofillField* cardholder_;  // Optional.
 
   // Occasionally pages have separate fields for the cardholder's first and
   // last names; for such pages |cardholder_| holds the first name field and
@@ -92,19 +95,29 @@ class CreditCardField : public FormField {
   // because the text patterns for matching a cardholder name are different
   // than for ordinary names, and because cardholder names never have titles,
   // middle names or suffixes.)
-  AutofillField* cardholder_last_;
+  // This field is not a raw_ptr<> because it was filtered by the rewriter for:
+  // #addr-of
+  RAW_PTR_EXCLUSION AutofillField* cardholder_last_;
 
   raw_ptr<AutofillField> type_;          // Optional.
   std::vector<AutofillField*> numbers_;  // Required.
 
   // The 3-digit card verification number; we don't currently fill this.
-  AutofillField* verification_;
+  // This field is not a raw_ptr<> because it was filtered by the rewriter for:
+  // #addr-of
+  RAW_PTR_EXCLUSION AutofillField* verification_;
 
   // Either |expiration_date_| or both |expiration_month_| and
   // |expiration_year_| are required.
-  AutofillField* expiration_month_;
-  AutofillField* expiration_year_;
-  AutofillField* expiration_date_;
+  // This field is not a raw_ptr<> because it was filtered by the rewriter for:
+  // #addr-of
+  RAW_PTR_EXCLUSION AutofillField* expiration_month_;
+  // This field is not a raw_ptr<> because it was filtered by the rewriter for:
+  // #addr-of
+  RAW_PTR_EXCLUSION AutofillField* expiration_year_;
+  // This field is not a raw_ptr<> because it was filtered by the rewriter for:
+  // #addr-of
+  RAW_PTR_EXCLUSION AutofillField* expiration_date_;
 
   // For combined expiration field having year as 2-digits we store here
   // |CREDIT_CARD_EXP_DATE_2_DIGIT_YEAR|; otherwise we store

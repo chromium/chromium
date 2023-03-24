@@ -146,7 +146,7 @@ class ShuntedHttpBridge : public HttpBridge {
     OnURLLoadCompleteInternal(200, net::OK, GURL("http://www.google.com"),
                               std::make_unique<std::string>("success!"));
   }
-  MAYBE_SyncHttpBridgeTest* test_;
+  raw_ptr<MAYBE_SyncHttpBridgeTest> test_;
   bool never_finishes_;
 };
 

@@ -6,6 +6,7 @@
 #define COMPONENTS_OPTIMIZATION_GUIDE_CORE_MODEL_STORE_METADATA_ENTRY_H_
 
 #include "base/memory/raw_ptr.h"
+#include "base/memory/raw_ptr_exclusion.h"
 #include "base/values.h"
 #include "components/optimization_guide/proto/models.pb.h"
 #include "components/prefs/scoped_user_pref_update.h"
@@ -57,7 +58,9 @@ class ModelStoreMetadataEntry {
   void SetMetadataEntry(const base::Value::Dict* metadata_entry);
 
   // The root metadata entry for this model.
-  const base::Value::Dict* metadata_entry_;
+  // This field is not a raw_ptr<> because it was filtered by the rewriter for:
+  // #union
+  RAW_PTR_EXCLUSION const base::Value::Dict* metadata_entry_;
 };
 
 // The pref updater for ModelStoreMetadataEntry.

@@ -12,6 +12,7 @@
 #include "base/functional/callback_forward.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/raw_ptr_exclusion.h"
 #include "base/observer_list.h"
 #include "base/threading/thread_checker.h"
 #include "base/timer/timer.h"
@@ -278,7 +279,9 @@ class VIZ_SERVICE_EXPORT SkiaOutputSurfaceImpl : public SkiaOutputSurface {
 
    private:
     // This is recorder being used for current paint
-    SkDeferredDisplayListRecorder* recorder_;
+    // This field is not a raw_ptr<> because it was filtered by the rewriter
+    // for: #union
+    RAW_PTR_EXCLUSION SkDeferredDisplayListRecorder* recorder_;
     // If we need new recorder for this Paint (i.e. it's not root render pass),
     // it's stored here
     absl::optional<SkDeferredDisplayListRecorder> recorder_storage_;

@@ -8,6 +8,7 @@
 #include <algorithm>
 #include <utility>
 #include "base/feature_list.h"
+#include "base/memory/raw_ptr_exclusion.h"
 #include "base/metrics/field_trial_params.h"
 #include "base/system/sys_info.h"
 #include "base/values.h"
@@ -278,7 +279,9 @@ namespace {
 // be set to true if the experiment state should be listed on
 // chrome://safe-browsing. Features should be listed in alphabetical order.
 constexpr struct {
-  const base::Feature* feature;
+  // This field is not a raw_ptr<> because it was filtered by the rewriter for:
+  // #global-scope, #constexpr-var-initializer
+  RAW_PTR_EXCLUSION const base::Feature* feature;
   // True if the feature's state should be listed on chrome://safe-browsing.
   bool show_state;
 } kExperimentalFeatures[]{

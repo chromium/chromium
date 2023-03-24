@@ -7,6 +7,7 @@
 
 #include <memory>
 
+#include "base/memory/raw_ptr_exclusion.h"
 #include "components/autofill/core/browser/form_parsing/autofill_scanner.h"
 #include "components/autofill/core/browser/form_parsing/form_field.h"
 #include "components/autofill/core/common/language_code.h"
@@ -29,10 +30,18 @@ class TravelField : public FormField {
 
  private:
   // All of the following fields are optional.
-  AutofillField* passport_;
-  AutofillField* origin_;
-  AutofillField* destination_;
-  AutofillField* flight_;
+  // This field is not a raw_ptr<> because it was filtered by the rewriter for:
+  // #addr-of
+  RAW_PTR_EXCLUSION AutofillField* passport_;
+  // This field is not a raw_ptr<> because it was filtered by the rewriter for:
+  // #addr-of
+  RAW_PTR_EXCLUSION AutofillField* origin_;
+  // This field is not a raw_ptr<> because it was filtered by the rewriter for:
+  // #addr-of
+  RAW_PTR_EXCLUSION AutofillField* destination_;
+  // This field is not a raw_ptr<> because it was filtered by the rewriter for:
+  // #addr-of
+  RAW_PTR_EXCLUSION AutofillField* flight_;
 };
 }  // namespace autofill
 

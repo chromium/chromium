@@ -12,6 +12,7 @@
 #include "base/bit_cast.h"
 #include "base/containers/span.h"
 #include "base/json/values_util.h"
+#include "base/memory/raw_ptr_exclusion.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_tokenizer.h"
 #include "base/values.h"
@@ -1116,7 +1117,9 @@ struct DrawQuadCommon {
   gfx::Rect rect;
   gfx::Rect visible_rect;
   bool needs_blending = false;
-  const SharedQuadState* shared_quad_state = nullptr;
+  // This field is not a raw_ptr<> because it was filtered by the rewriter for:
+  // #union
+  RAW_PTR_EXCLUSION const SharedQuadState* shared_quad_state = nullptr;
   DrawQuad::Resources resources;
 };
 

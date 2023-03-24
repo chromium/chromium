@@ -10,6 +10,8 @@
 #include <utility>
 #include <vector>
 
+#include "base/memory/raw_ptr_exclusion.h"
+
 namespace bookmarks {
 
 class TitledUrlNode;
@@ -36,7 +38,9 @@ struct TitledUrlMatch {
       const std::vector<size_t>& offsets);
 
   // The matching node of a query.
-  const TitledUrlNode* node;
+  // This field is not a raw_ptr<> because it was filtered by the rewriter for:
+  // #union
+  RAW_PTR_EXCLUSION const TitledUrlNode* node;
 
   // Location of the matching words in the title of the node.
   MatchPositions title_match_positions;

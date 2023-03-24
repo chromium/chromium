@@ -5,6 +5,8 @@
 #ifndef COMPONENTS_OS_CRYPT_SYNC_KEYRING_UTIL_LINUX_H_
 #define COMPONENTS_OS_CRYPT_SYNC_KEYRING_UTIL_LINUX_H_
 
+#include "base/memory/raw_ptr_exclusion.h"
+
 // libgnome-keyring has been deprecated in favor of libsecret.
 // See: https://mail.gnome.org/archives/commits-list/2013-October/msg08876.html
 //
@@ -13,6 +15,7 @@
 // removed, together with the include below it.
 //
 // The porting is tracked in http://crbug.com/355223
+
 #define GNOME_KEYRING_DEPRECATED
 #define GNOME_KEYRING_DEPRECATED_FOR(x)
 #include <gnome-keyring.h>
@@ -72,7 +75,9 @@ class GnomeKeyringLoader {
  private:
   struct FunctionInfo {
     const char* name;
-    void** pointer;
+    // This field is not a raw_ptr<> because it was filtered by the rewriter
+    // for: #global-scope
+    RAW_PTR_EXCLUSION void** pointer;
   };
 
   // Make it easy to initialize the function pointers in LoadGnomeKeyring().

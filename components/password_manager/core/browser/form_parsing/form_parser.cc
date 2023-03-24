@@ -15,6 +15,7 @@
 #include "base/containers/contains.h"
 #include "base/feature_list.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/raw_ptr_exclusion.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/string_piece.h"
@@ -219,9 +220,15 @@ const std::u16string& GetFieldValue(const FormFieldData& field) {
 // the construction of a PasswordForm.
 struct SignificantFields {
   raw_ptr<const FormFieldData> username = nullptr;
-  const FormFieldData* password = nullptr;
-  const FormFieldData* new_password = nullptr;
-  const FormFieldData* confirmation_password = nullptr;
+  // This field is not a raw_ptr<> because it was filtered by the rewriter for:
+  // #addr-of
+  RAW_PTR_EXCLUSION const FormFieldData* password = nullptr;
+  // This field is not a raw_ptr<> because it was filtered by the rewriter for:
+  // #addr-of
+  RAW_PTR_EXCLUSION const FormFieldData* new_password = nullptr;
+  // This field is not a raw_ptr<> because it was filtered by the rewriter for:
+  // #addr-of
+  RAW_PTR_EXCLUSION const FormFieldData* confirmation_password = nullptr;
   // True if the information about fields could only be derived after relaxing
   // some constraints. The resulting PasswordForm should only be used for
   // fallback UI.

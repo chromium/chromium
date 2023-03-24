@@ -10,6 +10,7 @@
 #include <vector>
 
 #include "base/memory/raw_ptr.h"
+#include "base/memory/raw_ptr_exclusion.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "components/password_manager/core/browser/form_fetcher.h"
@@ -133,7 +134,9 @@ class FormFetcherImpl : public FormFetcher,
   // preferred. This is only allowed to be null if there are no best matches at
   // all, since there will always be one preferred login when there are multiple
   // matches (when first saved, a login is marked preferred).
-  const PasswordForm* preferred_match_ = nullptr;
+  // This field is not a raw_ptr<> because it was filtered by the rewriter for:
+  // #addr-of
+  RAW_PTR_EXCLUSION const PasswordForm* preferred_match_ = nullptr;
 
   // Whether there were any blocklisted credentials obtained from the profile
   // and account password stores respectively.

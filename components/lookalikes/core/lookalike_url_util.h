@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "base/functional/callback.h"
+#include "base/memory/raw_ptr_exclusion.h"
 #include "components/lookalikes/core/safety_tips.pb.h"
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/prefs/pref_service.h"
@@ -124,7 +125,9 @@ enum class NavigationSuggestionEvent {
 struct Top500DomainsParams {
   // Skeletons of top 500 domains. There can be fewer than 500 skeletons in
   // this array.
-  const char* const* edit_distance_skeletons;
+  // This field is not a raw_ptr<> because it was filtered by the rewriter for:
+  // #global-scope
+  RAW_PTR_EXCLUSION const char* const* edit_distance_skeletons;
   // Number of skeletons in `edit_distance_skeletons`.
   size_t num_edit_distance_skeletons;
 };
@@ -134,12 +137,16 @@ struct ComboSquattingParams {
   // (in pairs). The first item in each pair is the brand name and the second
   // item is its skeleton. Brand names should be usable in domain names (i.e.
   // lower case, no punctuation except for - etc.)
-  const std::pair<const char*, const char*>* brand_names;
+  // This field is not a raw_ptr<> because it was filtered by the rewriter for:
+  // #global-scope
+  RAW_PTR_EXCLUSION const std::pair<const char*, const char*>* brand_names;
   // Number of brand names in combo_squatting_brand_names.
   size_t num_brand_names;
 
   // List of popular keywords such as "login", "online".
-  const char* const* popular_keywords;
+  // This field is not a raw_ptr<> because it was filtered by the rewriter for:
+  // #global-scope
+  RAW_PTR_EXCLUSION const char* const* popular_keywords;
   // Number of popular keywords in combo_squatting_keywords.
   size_t num_popular_keywords;
 };

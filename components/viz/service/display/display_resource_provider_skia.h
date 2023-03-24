@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "base/memory/raw_ptr.h"
+#include "base/memory/raw_ptr_exclusion.h"
 #include "components/viz/service/display/display_resource_provider.h"
 #include "components/viz/service/display/external_use_client.h"
 #include "components/viz/service/viz_service_export.h"
@@ -68,7 +69,9 @@ class VIZ_SERVICE_EXPORT DisplayResourceProviderSkia
     void UnlockResources(const gpu::SyncToken& sync_token);
 
    private:
-    DisplayResourceProviderSkia* const resource_provider_;
+    // This field is not a raw_ptr<> because it was filtered by the rewriter
+    // for: #union
+    RAW_PTR_EXCLUSION DisplayResourceProviderSkia* const resource_provider_;
     std::vector<std::pair<ResourceId, ChildResource*>> resources_;
   };
 

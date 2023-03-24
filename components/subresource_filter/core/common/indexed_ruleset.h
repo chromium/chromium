@@ -8,6 +8,7 @@
 #include <stddef.h>
 #include <stdint.h>
 
+#include "base/memory/raw_ptr_exclusion.h"
 #include "base/numerics/safe_conversions.h"
 #include "components/subresource_filter/core/common/flat/indexed_ruleset_generated.h"
 #include "components/subresource_filter/core/common/load_policy.h"
@@ -139,7 +140,9 @@ class IndexedRulesetMatcher {
       bool disable_generic_rules) const;
 
  private:
-  const flat::IndexedRuleset* root_;
+  // This field is not a raw_ptr<> because it was filtered by the rewriter for:
+  // #union
+  RAW_PTR_EXCLUSION const flat::IndexedRuleset* root_;
 
   url_pattern_index::UrlPatternIndexMatcher blocklist_;
   url_pattern_index::UrlPatternIndexMatcher allowlist_;

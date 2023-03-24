@@ -14,6 +14,7 @@
 #include "base/functional/callback_helpers.h"
 #include "base/location.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/raw_ptr_exclusion.h"
 #include "base/memory/weak_ptr.h"
 #include "base/run_loop.h"
 #include "base/task/sequenced_task_runner.h"
@@ -317,7 +318,9 @@ class SyncEngineImplTest : public testing::Test {
       sync_transport_data_cleared_cb_;
   std::unique_ptr<SyncEngineImpl> backend_;
   std::unique_ptr<FakeSyncManagerFactory> fake_manager_factory_;
-  FakeSyncManager* fake_manager_ = nullptr;
+  // This field is not a raw_ptr<> because it was filtered by the rewriter for:
+  // #addr-of
+  RAW_PTR_EXCLUSION FakeSyncManager* fake_manager_ = nullptr;
   ModelTypeSet engine_types_;
   ModelTypeSet enabled_types_;
   base::OnceClosure quit_loop_;

@@ -7,6 +7,7 @@
 
 #include <string>
 
+#include "base/memory/raw_ptr_exclusion.h"
 #include "base/time/time.h"
 #include "components/password_manager/core/browser/password_form.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -46,7 +47,9 @@ class PasswordNotesTable {
   GetAllPasswordNotesForTest() const;
 
  private:
-  sql::Database* db_ = nullptr;
+  // This field is not a raw_ptr<> because it was filtered by the rewriter for:
+  // #constexpr-ctor-field-initializer
+  RAW_PTR_EXCLUSION sql::Database* db_ = nullptr;
 };
 
 }  // namespace password_manager

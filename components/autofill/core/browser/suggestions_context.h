@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_AUTOFILL_CORE_BROWSER_SUGGESTIONS_CONTEXT_H_
 #define COMPONENTS_AUTOFILL_CORE_BROWSER_SUGGESTIONS_CONTEXT_H_
 
+#include "base/memory/raw_ptr_exclusion.h"
 #include "components/autofill/core/browser/autofill_ablation_study.h"
 #include "components/autofill/core/browser/form_structure.h"
 
@@ -33,8 +34,12 @@ struct SuggestionsContext {
   SuggestionsContext();
   ~SuggestionsContext();
 
-  FormStructure* form_structure = nullptr;
-  AutofillField* focused_field = nullptr;
+  // This field is not a raw_ptr<> because it was filtered by the rewriter for:
+  // #addr-of
+  RAW_PTR_EXCLUSION FormStructure* form_structure = nullptr;
+  // This field is not a raw_ptr<> because it was filtered by the rewriter for:
+  // #addr-of
+  RAW_PTR_EXCLUSION AutofillField* focused_field = nullptr;
   bool is_autofill_available = false;
   bool is_context_secure = false;
   bool is_filling_credit_card = false;

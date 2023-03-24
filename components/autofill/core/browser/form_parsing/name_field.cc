@@ -9,6 +9,7 @@
 #include "base/feature_list.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/raw_ptr_exclusion.h"
 #include "base/strings/string_util.h"
 #include "components/autofill/core/browser/autofill_type.h"
 #include "components/autofill/core/browser/form_parsing/autofill_scanner.h"
@@ -62,11 +63,21 @@ class FirstTwoLastNamesField : public NameField {
  private:
   FirstTwoLastNamesField();
 
-  AutofillField* honorific_prefix_{nullptr};  // Optional.
-  AutofillField* first_name_{nullptr};
-  AutofillField* middle_name_{nullptr};  // Optional.
-  AutofillField* first_last_name_{nullptr};
-  AutofillField* second_last_name_{nullptr};
+  // This field is not a raw_ptr<> because it was filtered by the rewriter for:
+  // #addr-of
+  RAW_PTR_EXCLUSION AutofillField* honorific_prefix_{nullptr};  // Optional.
+  // This field is not a raw_ptr<> because it was filtered by the rewriter for:
+  // #addr-of
+  RAW_PTR_EXCLUSION AutofillField* first_name_{nullptr};
+  // This field is not a raw_ptr<> because it was filtered by the rewriter for:
+  // #addr-of
+  RAW_PTR_EXCLUSION AutofillField* middle_name_{nullptr};  // Optional.
+  // This field is not a raw_ptr<> because it was filtered by the rewriter for:
+  // #addr-of
+  RAW_PTR_EXCLUSION AutofillField* first_last_name_{nullptr};
+  // This field is not a raw_ptr<> because it was filtered by the rewriter for:
+  // #addr-of
+  RAW_PTR_EXCLUSION AutofillField* second_last_name_{nullptr};
   bool middle_initial_{false};  // True if middle_name_ is a middle initial.
 };
 
@@ -116,10 +127,18 @@ class FirstLastNameField : public NameField {
  private:
   FirstLastNameField();
 
-  AutofillField* honorific_prefix_{nullptr};  // Optional
-  AutofillField* first_name_{nullptr};
-  AutofillField* middle_name_{nullptr};  // Optional.
-  AutofillField* last_name_{nullptr};
+  // This field is not a raw_ptr<> because it was filtered by the rewriter for:
+  // #addr-of
+  RAW_PTR_EXCLUSION AutofillField* honorific_prefix_{nullptr};  // Optional
+  // This field is not a raw_ptr<> because it was filtered by the rewriter for:
+  // #addr-of
+  RAW_PTR_EXCLUSION AutofillField* first_name_{nullptr};
+  // This field is not a raw_ptr<> because it was filtered by the rewriter for:
+  // #addr-of
+  RAW_PTR_EXCLUSION AutofillField* middle_name_{nullptr};  // Optional.
+  // This field is not a raw_ptr<> because it was filtered by the rewriter for:
+  // #addr-of
+  RAW_PTR_EXCLUSION AutofillField* last_name_{nullptr};
   bool middle_initial_{false};  // True if middle_name_ is a middle initial.
 };
 

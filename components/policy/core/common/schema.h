@@ -10,6 +10,7 @@
 
 #include "absl/types/variant.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/raw_ptr_exclusion.h"
 #include "base/memory/ref_counted.h"
 #include "base/values.h"
 #include "components/policy/policy_export.h"
@@ -269,7 +270,9 @@ class POLICY_EXPORT Schema {
   void MaskSensitiveValuesRecursive(base::Value* value) const;
 
   scoped_refptr<const InternalStorage> storage_;
-  const internal::SchemaNode* node_;
+  // This field is not a raw_ptr<> because it was filtered by the rewriter for:
+  // #union
+  RAW_PTR_EXCLUSION const internal::SchemaNode* node_;
 };
 
 }  // namespace policy

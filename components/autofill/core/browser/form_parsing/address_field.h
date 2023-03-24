@@ -12,6 +12,7 @@
 #include "base/compiler_specific.h"
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/raw_ptr_exclusion.h"
 #include "components/autofill/core/browser/autofill_type.h"
 #include "components/autofill/core/browser/form_parsing/form_field.h"
 #include "components/autofill/core/common/language_code.h"
@@ -132,20 +133,49 @@ class AddressField : public FormField {
       PatternSource pattern_source);
 
   raw_ptr<LogManager> log_manager_;
-  AutofillField* company_ = nullptr;
-  AutofillField* street_name_ = nullptr;
-  AutofillField* house_number_ = nullptr;
-  AutofillField* address1_ = nullptr;
-  AutofillField* address2_ = nullptr;
-  AutofillField* address3_ = nullptr;
-  AutofillField* street_address_ = nullptr;
-  AutofillField* apartment_number_ = nullptr;
-  AutofillField* dependent_locality_ = nullptr;
-  AutofillField* city_ = nullptr;
-  AutofillField* state_ = nullptr;
-  AutofillField* zip_ = nullptr;
-  AutofillField* zip4_ = nullptr;  // optional ZIP+4; we don't fill this yet.
-  AutofillField* country_ = nullptr;
+  // This field is not a raw_ptr<> because it was filtered by the rewriter for:
+  // #addr-of
+  RAW_PTR_EXCLUSION AutofillField* company_ = nullptr;
+  // This field is not a raw_ptr<> because it was filtered by the rewriter for:
+  // #addr-of
+  RAW_PTR_EXCLUSION AutofillField* street_name_ = nullptr;
+  // This field is not a raw_ptr<> because it was filtered by the rewriter for:
+  // #addr-of
+  RAW_PTR_EXCLUSION AutofillField* house_number_ = nullptr;
+  // This field is not a raw_ptr<> because it was filtered by the rewriter for:
+  // #addr-of
+  RAW_PTR_EXCLUSION AutofillField* address1_ = nullptr;
+  // This field is not a raw_ptr<> because it was filtered by the rewriter for:
+  // #addr-of
+  RAW_PTR_EXCLUSION AutofillField* address2_ = nullptr;
+  // This field is not a raw_ptr<> because it was filtered by the rewriter for:
+  // #addr-of
+  RAW_PTR_EXCLUSION AutofillField* address3_ = nullptr;
+  // This field is not a raw_ptr<> because it was filtered by the rewriter for:
+  // #addr-of
+  RAW_PTR_EXCLUSION AutofillField* street_address_ = nullptr;
+  // This field is not a raw_ptr<> because it was filtered by the rewriter for:
+  // #addr-of
+  RAW_PTR_EXCLUSION AutofillField* apartment_number_ = nullptr;
+  // This field is not a raw_ptr<> because it was filtered by the rewriter for:
+  // #addr-of
+  RAW_PTR_EXCLUSION AutofillField* dependent_locality_ = nullptr;
+  // This field is not a raw_ptr<> because it was filtered by the rewriter for:
+  // #addr-of
+  RAW_PTR_EXCLUSION AutofillField* city_ = nullptr;
+  // This field is not a raw_ptr<> because it was filtered by the rewriter for:
+  // #addr-of
+  RAW_PTR_EXCLUSION AutofillField* state_ = nullptr;
+  // This field is not a raw_ptr<> because it was filtered by the rewriter for:
+  // #addr-of
+  RAW_PTR_EXCLUSION AutofillField* zip_ = nullptr;
+  // This field is not a raw_ptr<> because it was filtered by the rewriter for:
+  // #addr-of
+  RAW_PTR_EXCLUSION AutofillField* zip4_ =
+      nullptr;  // optional ZIP+4; we don't fill this yet.
+  // This field is not a raw_ptr<> because it was filtered by the rewriter for:
+  // #addr-of
+  RAW_PTR_EXCLUSION AutofillField* country_ = nullptr;
 };
 
 }  // namespace autofill

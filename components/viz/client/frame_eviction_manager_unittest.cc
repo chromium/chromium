@@ -7,6 +7,7 @@
 #include <vector>
 
 #include "base/memory/memory_pressure_listener.h"
+#include "base/memory/raw_ptr_exclusion.h"
 #include "base/ranges/algorithm.h"
 #include "base/test/test_mock_time_task_runner.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -40,7 +41,10 @@ class TestFrameEvictionManagerClient : public FrameEvictionManagerClient {
   bool has_frame() const { return has_frame_; }
 
  private:
-  FrameEvictionManager* manager_ = FrameEvictionManager::GetInstance();
+  // This field is not a raw_ptr<> because it was filtered by the rewriter for:
+  // #constexpr-ctor-field-initializer
+  RAW_PTR_EXCLUSION FrameEvictionManager* manager_ =
+      FrameEvictionManager::GetInstance();
   bool has_frame_ = true;
 };
 
