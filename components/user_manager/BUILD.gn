@@ -32,6 +32,8 @@ component("user_manager") {
   if (is_chromeos_ash) {
     sources += [
       "common_types.h",
+      "include_exclude_account_id_filter.cc",
+      "include_exclude_account_id_filter.h",
       "known_user.cc",
       "known_user.h",
       "remove_user_delegate.h",
@@ -77,6 +79,7 @@ if (is_chromeos_ash) {
   source_set("unit_tests") {
     testonly = true
     sources = [
+      "include_exclude_account_id_filter_unittest.cc",
       "known_user_unittest.cc",
       "user_unittest.cc",
     ]
