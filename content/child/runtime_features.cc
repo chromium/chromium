@@ -260,8 +260,6 @@ void SetRuntimeFeaturesFromChromiumFeatures() {
     {wf::EnableMediaCastOverlayButton, raw_ref(media::kMediaCastOverlayButton)},
     {wf::EnableMediaEngagementBypassAutoplayPolicies,
      raw_ref(media::kMediaEngagementBypassAutoplayPolicies)},
-    {wf::EnableMouseSubframeNoImplicitCapture,
-     raw_ref(features::kMouseSubframeNoImplicitCapture)},
     {wf::EnableNotificationContentImage,
      raw_ref(features::kNotificationContentImage), kSetOnlyIfOverridden},
     {wf::EnablePaymentApp, raw_ref(features::kServiceWorkerPaymentApps)},

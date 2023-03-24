@@ -890,9 +890,7 @@ WebInputEventResult EventHandler::HandleMousePressEvent(
                                                           source_capabilities);
   }
 
-  if ((!RuntimeEnabledFeatures::MouseSubframeNoImplicitCaptureEnabled() &&
-       event_result == WebInputEventResult::kNotHandled) ||
-      mev.GetScrollbar()) {
+  if (event_result == WebInputEventResult::kNotHandled || mev.GetScrollbar()) {
     mouse_event_manager_->SetCapturesDragging(true);
     // Outermost main frames don't implicitly capture mouse input on MouseDown,
     // all subframes do (regardless of whether local or remote or fenced).
@@ -1447,28 +1445,6 @@ void EventHandler::SetPointerCapture(PointerId pointer_id,
 
   if (captured && pointer_id == PointerEventFactory::kMouseId) {
     CaptureMouseEventsToWidget(true);
-
-    // TODO(crbug.com/919908) This is a temporary approach to make pointer
-    // capture work across in-process frames while mouse subframe capture
-    // disabled. It's to experiment removing the frame capture logic. This
-    // must be re-write before the flag enabled.
-    if (RuntimeEnabledFeatures::MouseSubframeNoImplicitCaptureEnabled()) {
-      LocalFrame* frame = frame_;
-      LocalFrame* parent = DynamicTo<LocalFrame>(frame_->Tree().Parent());
-      while (parent) {
-        Element* subframe_element = nullptr;
-        if (frame->OwnerLayoutObject() &&
-            frame->OwnerLayoutObject()->GetNode()) {
-          subframe_element =
-              DynamicTo<Element>(frame->OwnerLayoutObject()->GetNode());
-        }
-
-        parent->GetEventHandler().capturing_subframe_element_ =
-            subframe_element;
-        frame = parent;
-        parent = DynamicTo<LocalFrame>(parent->Tree().Parent());
-      }
-    }
   }
 }
 
@@ -1483,17 +1459,6 @@ void EventHandler::ReleasePointerCapture(PointerId pointer_id,
 
   if (released && pointer_id == PointerEventFactory::kMouseId) {
     CaptureMouseEventsToWidget(false);
-
-    // TODO(crbug/919908) same as SetPointerCapture, this is temporary
-    // approach for removing mouse subframe capture. It must be re-write
-    // before enable the flag.
-    if (RuntimeEnabledFeatures::MouseSubframeNoImplicitCaptureEnabled()) {
-      LocalFrame* parent = DynamicTo<LocalFrame>(frame_->Tree().Parent());
-      while (parent) {
-        parent->GetEventHandler().capturing_subframe_element_ = nullptr;
-        parent = DynamicTo<LocalFrame>(parent->Tree().Parent());
-      }
-    }
   }
 }
 

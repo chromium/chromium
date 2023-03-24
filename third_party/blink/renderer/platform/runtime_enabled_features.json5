@@ -2225,12 +2225,6 @@
       base_feature: "none",
     },
     {
-      // When enabled, iframes are not capturing mouse events by default.
-      name: "MouseSubframeNoImplicitCapture",
-      base_feature: "none",
-      public: true,
-    },
-    {
       name: "NavigateEventCancelableTraversals",
       status: "stable",
     },

@@ -1102,9 +1102,6 @@ extern const char kMetricsSettingsAndroidDescription[];
 extern const char kMojoLinuxChannelSharedMemName[];
 extern const char kMojoLinuxChannelSharedMemDescription[];
 
-extern const char kMouseSubframeNoImplicitCaptureName[];
-extern const char kMouseSubframeNoImplicitCaptureDescription[];
-
 extern const char kUsernameFirstFlowFallbackCrowdsourcingName[];
 extern const char kUsernameFirstFlowFallbackCrowdsourcingDescription[];
 

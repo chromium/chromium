@@ -7102,11 +7102,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kEvDetailsInPageInfoDescription, kOsDesktop,
      FEATURE_VALUE_TYPE(features::kEvDetailsInPageInfo)},
 
-    {"mouse-subframe-no-implicit-capture",
-     flag_descriptions::kMouseSubframeNoImplicitCaptureName,
-     flag_descriptions::kMouseSubframeNoImplicitCaptureDescription, kOsAll,
-     FEATURE_VALUE_TYPE(features::kMouseSubframeNoImplicitCapture)},
-
 #if BUILDFLAG(IS_CHROMEOS)
     {"global-media-controls-cros-updated-ui",
      flag_descriptions::kGlobalMediaControlsCrOSUpdatedUIName,

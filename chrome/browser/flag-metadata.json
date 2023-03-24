@@ -4983,11 +4983,6 @@
     "expiry_milestone": 115
   },
   {
-    "name": "mouse-subframe-no-implicit-capture",
-    "owners": [ "eirage", "nzolghadr", "input-dev" ],
-    "expiry_milestone": 84
-  },
-  {
     "name": "multi-zone-rgb-keyboard",
     "owners": [ "jasontt", "assistive-eng@google.com"],
     "expiry_milestone": 120

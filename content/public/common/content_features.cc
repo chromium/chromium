@@ -743,11 +743,6 @@ BASE_FEATURE(kMojoVideoCaptureSecondary,
              "MojoVideoCaptureSecondary",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-// When enable, iframe does not implicit capture mouse event.
-BASE_FEATURE(kMouseSubframeNoImplicitCapture,
-             "MouseSubframeNoImplicitCapture",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 // When NavigationNetworkResponseQueue is enabled, the browser will schedule
 // some tasks related to navigation network responses in a kHighest priority
 // queue.

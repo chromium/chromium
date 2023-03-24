@@ -1960,11 +1960,6 @@ const char kMojoLinuxChannelSharedMemDescription[] =
     "If enabled Mojo on Linux based platforms can use shared memory as an "
     "alternate channel for most messages.";
 
-const char kMouseSubframeNoImplicitCaptureName[] =
-    "Disable mouse implicit capture for iframe";
-const char kMouseSubframeNoImplicitCaptureDescription[] =
-    "When enable, mouse down does not implicit capture for iframe.";
-
 const char kCanvas2DLayersName[] =
     "Enables canvas 2D methods BeginLayer and EndLayer";
 const char kCanvas2DLayersDescription[] =
