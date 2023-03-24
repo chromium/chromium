@@ -298,7 +298,7 @@ bool ConsumeAnimationRangeItemInto(CSSParserTokenRange& range,
     return false;
   }
   if (!end_range) {
-    end_range = CSSIdentifierValue::Create(CSSValueID::kAuto);
+    end_range = CSSIdentifierValue::Create(CSSValueID::kNormal);
   }
 
   DCHECK(start_range);

@@ -905,14 +905,14 @@ CSSValue* AnimationDelayShorthandValueItem(wtf_size_t index,
 // contracting '<somename> 0%' and '<somename> 100%' into just <somename>.
 //
 // If the offset is present, but not a <percentage>, -1 is returned as the
-// offset. Otherwise (also in the auto case), the `default_offset_percent`
+// offset. Otherwise (also in the 'normal' case), the `default_offset_percent`
 // is returned.
 std::pair<CSSValueID, double> GetTimelineRangePercent(
     const CSSValue& value,
     double default_offset_percent) {
   const auto* list = DynamicTo<CSSValueList>(value);
   if (!list) {
-    return {CSSValueID::kAuto, default_offset_percent};
+    return {CSSValueID::kNormal, default_offset_percent};
   }
   DCHECK_GE(list->length(), 1u);
   DCHECK_LE(list->length(), 2u);

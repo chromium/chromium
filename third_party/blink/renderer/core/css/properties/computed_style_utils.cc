@@ -2198,7 +2198,7 @@ CSSValue* ValueForAnimationRange(const absl::optional<TimelineOffset>& offset,
                                  const ComputedStyle& style,
                                  const Length& default_offset) {
   if (!offset.has_value()) {
-    return MakeGarbageCollected<CSSIdentifierValue>(CSSValueID::kAuto);
+    return MakeGarbageCollected<CSSIdentifierValue>(CSSValueID::kNormal);
   }
   CSSValueList* list = CSSValueList::CreateSpaceSeparated();
   list->Append(*MakeGarbageCollected<CSSIdentifierValue>(offset->name));

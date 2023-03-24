@@ -62,8 +62,8 @@ animation-fill-mode: none
 animation-iteration-count: 1
 animation-name: none
 animation-play-state: running
-animation-range-end: auto
-animation-range-start: auto
+animation-range-end: normal
+animation-range-start: normal
 animation-timeline: auto
 animation-timing-function: ease
 app-region: none

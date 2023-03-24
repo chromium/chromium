@@ -4324,7 +4324,7 @@ CSSValue* ConsumeAnimationRange(CSSParserTokenRange& range,
                                 const CSSParserContext& context,
                                 double default_offset_percent) {
   DCHECK(RuntimeEnabledFeatures::CSSScrollTimelineEnabled());
-  if (CSSValue* ident = ConsumeIdent<CSSValueID::kAuto>(range)) {
+  if (CSSValue* ident = ConsumeIdent<CSSValueID::kNormal>(range)) {
     return ident;
   }
   CSSValueList* list = CSSValueList::CreateSpaceSeparated();

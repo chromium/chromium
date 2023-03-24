@@ -478,7 +478,7 @@ absl::optional<TimelineOffset> MapAnimationRange(StyleResolverState& state,
                                                  const CSSValue& value,
                                                  double default_percent) {
   if (auto* ident = DynamicTo<CSSIdentifierValue>(value);
-      ident && ident->GetValueID() == CSSValueID::kAuto) {
+      ident && ident->GetValueID() == CSSValueID::kNormal) {
     return absl::nullopt;
   }
   const auto& list = To<CSSValueList>(value);

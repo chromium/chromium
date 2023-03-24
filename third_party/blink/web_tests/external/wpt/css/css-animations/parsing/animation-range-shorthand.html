@@ -8,8 +8,8 @@
 <script src="/css/support/computed-testcommon.js"></script>
 <div id="target" style="font-size:10px"></div>
 <script>
-test_valid_value("animation-range", "auto");
-test_valid_value("animation-range", "auto auto", "auto");
+test_valid_value("animation-range", "normal");
+test_valid_value("animation-range", "normal normal", "normal");
 test_valid_value("animation-range", "cover");
 test_valid_value("animation-range", "contain");
 test_valid_value("animation-range", "entry");
@@ -41,8 +41,8 @@ test_valid_value("animation-range", "entry 50% exit 50%");
 test_valid_value("animation-range",
                  "cover 50% entry 50%, contain 50% exit 50%");
 
-test_computed_value("animation-range", "auto");
-test_computed_value("animation-range", "auto auto", "auto");
+test_computed_value("animation-range", "normal");
+test_computed_value("animation-range", "normal normal", "normal");
 test_computed_value("animation-range", "cover");
 test_computed_value("animation-range", "contain");
 test_computed_value("animation-range", "entry");
@@ -98,23 +98,23 @@ test_invalid_value("animation-range", "thing 100%");
 test_invalid_value("animation-range", "thing 100px");
 test_invalid_value("animation-range", "100% thing");
 
-test_shorthand_value('animation-range', 'auto', {
-  'animation-range-start': 'auto',
-  'animation-range-end': 'auto',
+test_shorthand_value('animation-range', 'normal', {
+  'animation-range-start': 'normal',
+  'animation-range-end': 'normal',
 });
 
-test_shorthand_value('animation-range', 'auto auto', {
-  'animation-range-start': 'auto',
-  'animation-range-end': 'auto',
+test_shorthand_value('animation-range', 'normal normal', {
+  'animation-range-start': 'normal',
+  'animation-range-end': 'normal',
 });
 
-test_shorthand_value('animation-range', 'auto entry 100%', {
-  'animation-range-start': 'auto',
+test_shorthand_value('animation-range', 'normal entry 100%', {
+  'animation-range-start': 'normal',
   'animation-range-end': 'entry',
 });
 
-test_shorthand_value('animation-range', 'auto entry 10%', {
-  'animation-range-start': 'auto',
+test_shorthand_value('animation-range', 'normal entry 10%', {
+  'animation-range-start': 'normal',
   'animation-range-end': 'entry 10%',
 });
 

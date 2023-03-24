@@ -10,8 +10,10 @@
 #include "third_party/blink/renderer/core/css/css_to_length_conversion_data.h"
 #include "third_party/blink/renderer/core/css/css_value_list.h"
 #include "third_party/blink/renderer/core/css/cssom/css_numeric_value.h"
-#include "third_party/blink/renderer/core/css/parser/css_parser.h"
+#include "third_party/blink/renderer/core/css/parser/css_parser_token_range.h"
+#include "third_party/blink/renderer/core/css/parser/css_tokenizer.h"
 #include "third_party/blink/renderer/core/css/properties/computed_style_utils.h"
+#include "third_party/blink/renderer/core/css/properties/css_parsing_utils.h"
 #include "third_party/blink/renderer/core/css/resolver/element_resolve_context.h"
 #include "third_party/blink/renderer/core/css/style_sheet_contents.h"
 #include "third_party/blink/renderer/core/dom/document.h"
@@ -81,33 +83,31 @@ absl::optional<TimelineOffset> TimelineOffset::Create(
   }
 
   Document& document = element->GetDocument();
-  const CSSValue* value_list = CSSParser::ParseSingleValue(
-      CSSPropertyID::kAnimationRangeStart, css_text,
-      document.ElementSheet().Contents()->ParserContext());
 
-  if (!DynamicTo<CSSValueList>(value_list)) {
+  CSSTokenizer tokenizer(css_text);
+  Vector<CSSParserToken, 32> tokens = tokenizer.TokenizeToEOF();
+  CSSParserTokenRange range(tokens);
+  range.ConsumeWhitespace();
+
+  // Note that we use "auto" to represent nullopt here, unlike CSS which
+  // uses "normal".
+  if (css_parsing_utils::ConsumeIdent<CSSValueID::kAuto>(range)) {
+    if (!range.AtEnd()) {
+      ThrowExcpetionForInvalidTimelineOffset(exception_state);
+    }
+    return absl::nullopt;
+  }
+
+  const CSSValue* value = css_parsing_utils::ConsumeAnimationRange(
+      range, *document.ElementSheet().Contents()->ParserContext(),
+      /* default_offset_percent */ default_percent);
+
+  if (!value || !value->IsValueList() || !range.AtEnd()) {
     ThrowExcpetionForInvalidTimelineOffset(exception_state);
     return absl::nullopt;
   }
 
-  if (To<CSSValueList>(value_list)->length() != 1) {
-    ThrowExcpetionForInvalidTimelineOffset(exception_state);
-    return absl::nullopt;
-  }
-
-  const CSSValue& value = To<CSSValueList>(value_list)->Item(0);
-
-  if (value.IsIdentifierValue() &&
-      To<CSSIdentifierValue>(value).GetValueID() == CSSValueID::kAuto) {
-    return absl::nullopt;
-  }
-
-  if (!value.IsValueList()) {
-    ThrowExcpetionForInvalidTimelineOffset(exception_state);
-    return absl::nullopt;
-  }
-
-  const auto& list = To<CSSValueList>(value);
+  const auto& list = To<CSSValueList>(*value);
 
   // TODO(kevers): Keep track of style dependent lengths in order
   // to re-resolve on a style update.
