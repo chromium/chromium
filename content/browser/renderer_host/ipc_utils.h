@@ -29,19 +29,17 @@ class RenderFrameHostImpl;
 bool VerifyDownloadUrlParams(SiteInstance* site_instance,
                              const blink::mojom::DownloadURLParams& params);
 
-// Verifies that |params| are valid and can be accessed by the renderer process
-// associated with |site_instance|. |current_rfh| represents the current frame
-// on which OpenURL is being called
+// Verifies that |params| are valid and can be accessed by |process|.
+// |current_rfh| represents the current frame on which OpenURL is being called
 //
 // Returns true if the |params| are valid.  As a side-effect of the verification
 // |out_validated_url| and |out_blob_url_loader_factory| will be populated.
 //
-// Terminates the renderer the process associated with |site_instance| and
-// returns false if the |params| are invalid.
+// Terminates |process| and returns false if the |params| are invalid.
 //
 // This function has to be called on the UI thread.
 bool VerifyOpenURLParams(RenderFrameHostImpl* current_rfh,
-                         SiteInstance* site_instance,
+                         RenderProcessHost* process,
                          const blink::mojom::OpenURLParamsPtr& params,
                          GURL* out_validated_url,
                          scoped_refptr<network::SharedURLLoaderFactory>*

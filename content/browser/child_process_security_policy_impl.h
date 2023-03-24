@@ -337,11 +337,10 @@ class CONTENT_EXPORT ChildProcessSecurityPolicyImpl
       const storage::FileSystemContext* file_system_context,
       const scoped_refptr<network::ResourceRequestBody>& body);
 
-  // Validate that the renderer process for |site_instance| is allowed to access
-  // data in the POST body specified by |body|.  Has to be called on the UI
-  // thread.
+  // Validate that `process` is allowed to access data in the POST body
+  // specified by |body|.  Has to be called on the UI thread.
   bool CanReadRequestBody(
-      SiteInstance* site_instance,
+      RenderProcessHost* process,
       const scoped_refptr<network::ResourceRequestBody>& body);
 
   // Pseudo schemes are treated differently than other schemes because they

@@ -124,17 +124,16 @@ bool VerifyDownloadUrlParams(SiteInstance* site_instance,
 }
 
 bool VerifyOpenURLParams(RenderFrameHostImpl* current_rfh,
-                         SiteInstance* site_instance,
+                         RenderProcessHost* process,
                          const blink::mojom::OpenURLParamsPtr& params,
                          GURL* out_validated_url,
                          scoped_refptr<network::SharedURLLoaderFactory>*
                              out_blob_url_loader_factory) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   DCHECK(current_rfh);
-  DCHECK(site_instance);
+  DCHECK(process);
   DCHECK(out_validated_url);
   DCHECK(out_blob_url_loader_factory);
-  RenderProcessHost* process = site_instance->GetProcess();
   int process_id = process->GetID();
 
   // Verify |params.url| and populate |out_validated_url|.
@@ -148,14 +147,12 @@ bool VerifyOpenURLParams(RenderFrameHostImpl* current_rfh,
   if (params->blob_url_token.is_valid()) {
     *out_blob_url_loader_factory =
         ChromeBlobStorageContext::URLLoaderFactoryForToken(
-            site_instance->GetBrowserContext()->GetStoragePartition(
-                site_instance),
-            std::move(params->blob_url_token));
+            process->GetStoragePartition(), std::move(params->blob_url_token));
   }
 
   // Verify |params.post_body|.
   auto* policy = ChildProcessSecurityPolicyImpl::GetInstance();
-  if (!policy->CanReadRequestBody(site_instance, params->post_body)) {
+  if (!policy->CanReadRequestBody(process, params->post_body)) {
     bad_message::ReceivedBadMessage(process,
                                     bad_message::ILLEGAL_UPLOAD_PARAMS);
     return false;
@@ -205,7 +202,7 @@ bool VerifyBeginNavigationCommonParams(
 
   // Verify |post_data|.
   auto* policy = ChildProcessSecurityPolicyImpl::GetInstance();
-  if (!policy->CanReadRequestBody(site_instance, common_params->post_data)) {
+  if (!policy->CanReadRequestBody(process, common_params->post_data)) {
     bad_message::ReceivedBadMessage(process,
                                     bad_message::ILLEGAL_UPLOAD_PARAMS);
     return false;

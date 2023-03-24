@@ -673,8 +673,8 @@ void RenderFrameProxyHost::OpenURL(blink::mojom::OpenURLParamsPtr params) {
   scoped_refptr<network::SharedURLLoaderFactory> blob_url_loader_factory;
   RenderFrameHostImpl* current_rfh = frame_tree_node_->current_frame_host();
 
-  if (!VerifyOpenURLParams(current_rfh, GetSiteInstance(), params,
-                           &validated_url, &blob_url_loader_factory)) {
+  if (!VerifyOpenURLParams(current_rfh, GetProcess(), params, &validated_url,
+                           &blob_url_loader_factory)) {
     return;
   }
 
