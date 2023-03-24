@@ -115,6 +115,7 @@ class BrightnessControlDelegate;
 class CalendarController;
 class CameraEffectsController;
 class CaptureModeController;
+class ColorPaletteController;
 class ControlVHistogramRecorder;
 class CrosDisplayConfig;
 class DarkLightModeControllerImpl;
@@ -428,6 +429,9 @@ class ASH_EXPORT Shell : public SessionObserver,
   }
   CameraEffectsController* camera_effects_controller() {
     return camera_effects_controller_.get();
+  }
+  ColorPaletteController* color_palette_controller() {
+    return color_palette_controller_.get();
   }
   CrosDisplayConfig* cros_display_config() {
     return cros_display_config_.get();
@@ -909,6 +913,7 @@ class ASH_EXPORT Shell : public SessionObserver,
   std::unique_ptr<BrightnessControlDelegate> brightness_control_delegate_;
   std::unique_ptr<CalendarController> calendar_controller_;
   std::unique_ptr<CameraEffectsController> camera_effects_controller_;
+  std::unique_ptr<ColorPaletteController> color_palette_controller_;
   std::unique_ptr<CrosDisplayConfig> cros_display_config_;
   std::unique_ptr<curtain::SecurityCurtainController>
       security_curtain_controller_;
