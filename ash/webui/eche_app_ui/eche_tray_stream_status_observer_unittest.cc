@@ -76,8 +76,8 @@ class EcheTrayStreamStatusObserverTest : public AshTestBase {
   void TearDown() override {
     observer_.reset();
     apps_launch_info_provider_.reset();
-    connection_status_handler_.reset();
     stream_status_change_handler_.reset();
+    connection_status_handler_.reset();
     AshTestBase::TearDown();
   }
 

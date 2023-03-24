@@ -103,9 +103,9 @@ class EcheStreamStatusChangeHandlerTest : public testing::Test {
 
   void TearDown() override {
     apps_launch_info_provider_.reset();
-    connection_status_handler_.reset();
     handler_->RemoveObserver(&fake_observer_);
     handler_.reset();
+    connection_status_handler_.reset();
   }
 
   void StartStreaming() { handler_->StartStreaming(); }
