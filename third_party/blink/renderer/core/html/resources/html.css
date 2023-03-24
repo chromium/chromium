@@ -408,7 +408,10 @@ button {
 }
 
 /* Form controls don't go vertical. */
-input, textarea, select, button {
+input, textarea, select {
+    writing-mode: horizontal-tb !important;
+}
+button:not(::-internal-selectmenu-button) {
     writing-mode: horizontal-tb !important;
 }
 
