@@ -12,6 +12,7 @@
 #import "ios/chrome/browser/shared/public/commands/application_commands.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/commands/show_signin_command.h"
+#import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/signin/chrome_account_manager_service.h"
 #import "ios/chrome/browser/signin/chrome_account_manager_service_factory.h"
 #import "ios/chrome/browser/ui/ntp/feed_promos/feed_sign_in_promo_view_controller.h"
@@ -47,54 +48,61 @@ constexpr CGFloat kHalfSheetCornerRadius = 20;
 - (void)start {
   DCHECK(IsFeedCardMenuSignInPromoEnabled());
 
-  ChromeAccountManagerService* accountManagerService =
-      ChromeAccountManagerServiceFactory::GetForBrowserState(
-          self.browser->GetBrowserState());
-
-  // Show sign-in only flow when there's one or more device-level user account.
-  if (accountManagerService->HasIdentities()) {
-    [self showSignInFlowWithSignInOnly:YES];
-    return;
-  }
-
   self.feedMetricsRecorder = DiscoverFeedServiceFactory::GetForBrowserState(
                                  self.browser->GetBrowserState())
                                  ->GetFeedMetricsRecorder();
 
-  FeedSignInPromoViewController* signInPromoViewController =
-      [[FeedSignInPromoViewController alloc] init];
+  ChromeAccountManagerService* accountManagerService =
+      ChromeAccountManagerServiceFactory::GetForBrowserState(
+          self.browser->GetBrowserState());
 
-  signInPromoViewController.actionHandler = self;
+  BOOL hasUserIdentities = accountManagerService->HasIdentities();
 
-  if (@available(iOS 15, *)) {
-    signInPromoViewController.modalPresentationStyle =
-        UIModalPresentationPageSheet;
-    UISheetPresentationController* presentationController =
-        signInPromoViewController.sheetPresentationController;
-    presentationController.prefersEdgeAttachedInCompactHeight = YES;
-    presentationController.widthFollowsPreferredContentSizeWhenEdgeAttached =
-        YES;
-    presentationController.detents = @[
-      UISheetPresentationControllerDetent.mediumDetent,
-      UISheetPresentationControllerDetent.largeDetent
-    ];
-    presentationController.preferredCornerRadius = kHalfSheetCornerRadius;
+  // Launch the Sign-In only flow, since Sync is not needed for this feature.
+  // TODO(crbug.com/1382615): Currently we show sign-in only UI when it's
+  // enabled, or when the user has one or more device-level user identities.
+  // Remove else block and the user identity check when sign-in only UI is fully
+  // launched.
+  if (IsConsistencyNewAccountInterfaceEnabled() || hasUserIdentities) {
+    [self showSignInFlowWithSignInOnly:YES];
+    [self.feedMetricsRecorder
+        recordShowSignInOnlyUIWithUserId:hasUserIdentities];
   } else {
-    signInPromoViewController.modalPresentationStyle =
-        UIModalPresentationFormSheet;
-  }
+    FeedSignInPromoViewController* signInPromoViewController =
+        [[FeedSignInPromoViewController alloc] init];
 
-  [self.baseViewController
-      presentViewController:signInPromoViewController
-                   animated:YES
-                 completion:^() {
-                   const signin_metrics::AccessPoint access_point =
-                       signin_metrics::AccessPoint::
-                           ACCESS_POINT_NTP_FEED_CARD_MENU_PROMO;
-                   signin_metrics::
-                       RecordSigninImpressionUserActionForAccessPoint(
-                           access_point);
-                 }];
+    signInPromoViewController.actionHandler = self;
+
+    if (@available(iOS 15, *)) {
+      signInPromoViewController.modalPresentationStyle =
+          UIModalPresentationPageSheet;
+      UISheetPresentationController* presentationController =
+          signInPromoViewController.sheetPresentationController;
+      presentationController.prefersEdgeAttachedInCompactHeight = YES;
+      presentationController.widthFollowsPreferredContentSizeWhenEdgeAttached =
+          YES;
+      presentationController.detents = @[
+        UISheetPresentationControllerDetent.mediumDetent,
+        UISheetPresentationControllerDetent.largeDetent
+      ];
+      presentationController.preferredCornerRadius = kHalfSheetCornerRadius;
+    } else {
+      signInPromoViewController.modalPresentationStyle =
+          UIModalPresentationFormSheet;
+    }
+
+    [self.baseViewController
+        presentViewController:signInPromoViewController
+                     animated:YES
+                   completion:^() {
+                     const signin_metrics::AccessPoint access_point =
+                         signin_metrics::AccessPoint::
+                             ACCESS_POINT_NTP_FEED_CARD_MENU_PROMO;
+                     signin_metrics::
+                         RecordSigninImpressionUserActionForAccessPoint(
+                             access_point);
+                   }];
+  }
 }
 
 - (void)stop {

@@ -800,6 +800,12 @@ using feed::FeedUserActionType;
   base::RecordAction(base::UserMetricsAction(kFeedSignInPromoUICancelTapped));
 }
 
+- (void)recordShowSignInOnlyUIWithUserId:(BOOL)hasUserId {
+  base::RecordAction(
+      hasUserId ? base::UserMetricsAction(kShowFeedSignInOnlyUIWithUserId)
+                : base::UserMetricsAction(kShowFeedSignInOnlyUIWithoutUserId));
+}
+
 #pragma mark - Private
 
 // Returns the UserSettingsOnStart value based on the user settings.
