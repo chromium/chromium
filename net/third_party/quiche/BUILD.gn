@@ -529,7 +529,6 @@ component("quiche") {
     "src/quiche/quic/core/quic_blocked_writer_interface.h",
     "src/quiche/quic/core/quic_chaos_protector.cc",
     "src/quiche/quic/core/quic_chaos_protector.h",
-    "src/quiche/quic/core/quic_clock.cc",
     "src/quiche/quic/core/quic_clock.h",
     "src/quiche/quic/core/quic_coalesced_packet.cc",
     "src/quiche/quic/core/quic_coalesced_packet.h",

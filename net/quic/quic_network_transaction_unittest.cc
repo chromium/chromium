@@ -7173,14 +7173,14 @@ TEST_P(QuicNetworkTransactionTest, QuicProxyAuth) {
           SYNCHRONOUS,
           client_maker.MakePriorityPacket(
               packet_num++, true, GetNthClientInitiatedBidirectionalStreamId(0),
-              quic::QuicStreamPriority::kDefaultUrgency));
+              quic::HttpStreamPriority::kDefaultUrgency));
     }
 
     mock_quic_data.AddWrite(
         SYNCHRONOUS,
         client_maker.MakeRequestHeadersPacket(
             packet_num++, GetNthClientInitiatedBidirectionalStreamId(0), true,
-            false, quic::QuicStreamPriority::kDefaultUrgency,
+            false, quic::HttpStreamPriority::kDefaultUrgency,
             client_maker.ConnectRequestHeaders("mail.example.org:443"), nullptr,
             false));
 
@@ -7226,7 +7226,7 @@ TEST_P(QuicNetworkTransactionTest, QuicProxyAuth) {
           SYNCHRONOUS,
           client_maker.MakePriorityPacket(
               packet_num++, true, GetNthClientInitiatedBidirectionalStreamId(1),
-              quic::QuicStreamPriority::kDefaultUrgency));
+              quic::HttpStreamPriority::kDefaultUrgency));
     }
 
     headers = client_maker.ConnectRequestHeaders("mail.example.org:443");
@@ -7235,7 +7235,7 @@ TEST_P(QuicNetworkTransactionTest, QuicProxyAuth) {
         SYNCHRONOUS,
         client_maker.MakeRequestHeadersPacket(
             packet_num++, GetNthClientInitiatedBidirectionalStreamId(1), false,
-            false, quic::QuicStreamPriority::kDefaultUrgency,
+            false, quic::HttpStreamPriority::kDefaultUrgency,
             std::move(headers), nullptr, false));
 
     // Response to wrong password
@@ -7664,7 +7664,7 @@ TEST_P(QuicNetworkTransactionTest, NetworkIsolationTunnel) {
           SYNCHRONOUS,
           client_maker.MakePriorityPacket(
               packet_num++, true, GetNthClientInitiatedBidirectionalStreamId(0),
-              quic::QuicStreamPriority::kDefaultUrgency));
+              quic::HttpStreamPriority::kDefaultUrgency));
     }
 
     std::cout << "MakeRequestHeadersPacket\n";
@@ -7672,7 +7672,7 @@ TEST_P(QuicNetworkTransactionTest, NetworkIsolationTunnel) {
         SYNCHRONOUS,
         client_maker.MakeRequestHeadersPacket(
             packet_num++, GetNthClientInitiatedBidirectionalStreamId(0), true,
-            false, quic::QuicStreamPriority::kDefaultUrgency,
+            false, quic::HttpStreamPriority::kDefaultUrgency,
             ConnectRequestHeaders("mail.example.org:443"), nullptr, false));
     mock_quic_data[index]->AddRead(
         ASYNC, server_maker.MakeResponseHeadersPacket(

@@ -357,7 +357,7 @@ class QuicHttpStreamTest : public ::testing::TestWithParam<TestParams>,
     EXPECT_CALL(*send_algorithm_, InSlowStart()).WillRepeatedly(Return(false));
     EXPECT_CALL(*send_algorithm_, OnPacketSent(_, _, _, _, _))
         .Times(testing::AtLeast(1));
-    EXPECT_CALL(*send_algorithm_, OnCongestionEvent(_, _, _, _, _))
+    EXPECT_CALL(*send_algorithm_, OnCongestionEvent(_, _, _, _, _, _, _))
         .Times(AnyNumber());
     EXPECT_CALL(*send_algorithm_, GetCongestionWindow())
         .WillRepeatedly(Return(quic::kMaxOutgoingPacketSize));

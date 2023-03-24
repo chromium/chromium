@@ -693,11 +693,12 @@ int HttpProxyConnectJob::DoQuicProxyCreateStreamComplete(int result) {
       quic_session_->ReleaseStream();
 
   uint8_t urgency = ConvertRequestPriorityToQuicPriority(kH2QuicTunnelPriority);
-  bool incremental = quic::QuicStreamPriority::kDefaultIncremental;
+  bool incremental = quic::HttpStreamPriority::kDefaultIncremental;
   if (base::FeatureList::IsEnabled(features::kPriorityIncremental)) {
     incremental = kDefaultPriorityIncremental;
   }
-  quic_stream->SetPriority(quic::QuicStreamPriority{urgency, incremental});
+  quic_stream->SetPriority(
+      quic::QuicStreamPriority(quic::HttpStreamPriority{urgency, incremental}));
 
   transport_socket_ = std::make_unique<QuicProxyClientSocket>(
       std::move(quic_stream), std::move(quic_session_),

@@ -175,11 +175,12 @@ int QuicHttpStream::DoHandlePromiseComplete(int rv) {
   stream_ = quic_session()->ReleasePromisedStream();
 
   uint8_t urgency = ConvertRequestPriorityToQuicPriority(priority_);
-  bool incremental = quic::QuicStreamPriority::kDefaultIncremental;
+  bool incremental = quic::HttpStreamPriority::kDefaultIncremental;
   if (base::FeatureList::IsEnabled(features::kPriorityIncremental)) {
     incremental = request_info_->priority_incremental;
   }
-  stream_->SetPriority(quic::QuicStreamPriority{urgency, incremental});
+  stream_->SetPriority(
+      quic::QuicStreamPriority(quic::HttpStreamPriority{urgency, incremental}));
 
   next_state_ = STATE_OPEN;
   NetLogQuicPushStream(stream_net_log_, quic_session()->net_log(),
@@ -581,22 +582,24 @@ int QuicHttpStream::DoSetRequestPriority() {
   DCHECK(request_info_);
 
   uint8_t urgency = ConvertRequestPriorityToQuicPriority(priority_);
-  bool incremental = quic::QuicStreamPriority::kDefaultIncremental;
+  bool incremental = quic::HttpStreamPriority::kDefaultIncremental;
   if (base::FeatureList::IsEnabled(features::kPriorityIncremental)) {
     incremental = request_info_->priority_incremental;
   }
-  stream_->SetPriority(quic::QuicStreamPriority{urgency, incremental});
+  stream_->SetPriority(
+      quic::QuicStreamPriority(quic::HttpStreamPriority{urgency, incremental}));
   next_state_ = STATE_SEND_HEADERS;
   return OK;
 }
 
 int QuicHttpStream::DoSendHeaders() {
   uint8_t urgency = ConvertRequestPriorityToQuicPriority(priority_);
-  bool incremental = quic::QuicStreamPriority::kDefaultIncremental;
+  bool incremental = quic::HttpStreamPriority::kDefaultIncremental;
   if (base::FeatureList::IsEnabled(features::kPriorityIncremental)) {
     incremental = request_info_->priority_incremental;
   }
-  quic::QuicStreamPriority priority{urgency, incremental};
+  quic::QuicStreamPriority priority(
+      quic::HttpStreamPriority{urgency, incremental});
   // Log the actual request with the URL Request's net log.
   stream_net_log_.AddEvent(
       NetLogEventType::HTTP_TRANSACTION_QUIC_SEND_REQUEST_HEADERS,

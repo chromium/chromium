@@ -1454,15 +1454,15 @@ std::string QuicTestPacketMaker::GenerateHttp3PriorityData(
     quic::QuicStreamId stream_id) {
   std::string priority_data;
   quic::PriorityUpdateFrame priority_update;
-  quic::QuicStreamPriority priority{
-      spdy_priority, quic::QuicStreamPriority::kDefaultIncremental};
+  quic::HttpStreamPriority priority{
+      spdy_priority, quic::HttpStreamPriority::kDefaultIncremental};
   if (client_priority_uses_incremental_ &&
       base::FeatureList::IsEnabled(features::kPriorityIncremental)) {
     priority.incremental = kDefaultPriorityIncremental;
   }
 
-  if (priority.urgency != quic::QuicStreamPriority::kDefaultUrgency ||
-      priority.incremental != quic::QuicStreamPriority::kDefaultIncremental) {
+  if (priority.urgency != quic::HttpStreamPriority::kDefaultUrgency ||
+      priority.incremental != quic::HttpStreamPriority::kDefaultIncremental) {
     priority_update.priority_field_value =
         quic::SerializePriorityFieldValue(priority);
   }
