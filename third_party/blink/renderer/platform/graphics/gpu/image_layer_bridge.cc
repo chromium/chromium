@@ -282,8 +282,8 @@ ImageLayerBridge::RegisteredBitmap ImageLayerBridge::CreateOrRecycleBitmap(
 
   // There are no bitmaps to recycle so allocate a new one.
   viz::SharedBitmapId id = viz::SharedBitmap::GenerateId();
-  base::MappedReadOnlyRegion shm = viz::bitmap_allocation::AllocateSharedBitmap(
-      size, format.resource_format());
+  base::MappedReadOnlyRegion shm =
+      viz::bitmap_allocation::AllocateSharedBitmap(size, format);
 
   RegisteredBitmap registered;
   registered.bitmap = base::MakeRefCounted<cc::CrossThreadSharedBitmap>(

@@ -260,8 +260,8 @@ CanvasResourceSharedBitmap::CanvasResourceSharedBitmap(
       size_(info.width(), info.height()) {
   // Software compositing lazily uses RGBA_8888 as the resource format
   // everywhere but the content is expected to be rendered in N32 format.
-  base::MappedReadOnlyRegion shm =
-      viz::bitmap_allocation::AllocateSharedBitmap(Size(), viz::RGBA_8888);
+  base::MappedReadOnlyRegion shm = viz::bitmap_allocation::AllocateSharedBitmap(
+      Size(), viz::SinglePlaneFormat::kRGBA_8888);
 
   if (!shm.IsValid())
     return;

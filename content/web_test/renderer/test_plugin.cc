@@ -278,8 +278,8 @@ void TestPlugin::UpdateGeometry(const gfx::Rect& window_rect,
   } else {
     viz::SharedBitmapId id = viz::SharedBitmap::GenerateId();
     base::MappedReadOnlyRegion shm =
-        viz::bitmap_allocation::AllocateSharedBitmap(gfx::Rect(rect_).size(),
-                                                     viz::RGBA_8888);
+        viz::bitmap_allocation::AllocateSharedBitmap(
+            gfx::Rect(rect_).size(), viz::SinglePlaneFormat::kRGBA_8888);
     shared_bitmap_ = base::MakeRefCounted<cc::CrossThreadSharedBitmap>(
         id, std::move(shm), gfx::Rect(rect_).size(),
         viz::SinglePlaneFormat::kRGBA_8888);
