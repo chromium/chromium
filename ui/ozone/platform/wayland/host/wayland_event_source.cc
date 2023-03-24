@@ -23,6 +23,7 @@
 #include "ui/events/keycodes/dom/keycode_converter.h"
 #include "ui/events/keycodes/keyboard_code_conversion.h"
 #include "ui/events/keycodes/keyboard_codes.h"
+#include "ui/events/ozone/events_ozone.h"
 #include "ui/events/ozone/layout/keyboard_layout_engine.h"
 #include "ui/events/ozone/layout/keyboard_layout_engine_manager.h"
 #include "ui/events/platform/wayland/wayland_event_watcher.h"
@@ -245,8 +246,7 @@ uint32_t WaylandEventSource::OnKeyboardKeyEvent(
 
   if (kind == WaylandKeyboard::KeyEventKind::kKey) {
     // Mark that this is the key event which IME did not consume.
-    properties.emplace(kPropertyKeyboardImeFlag,
-                       std::vector<uint8_t>{kPropertyKeyboardImeIgnoredFlag});
+    SetKeyboardImeFlagProperty(&properties, kPropertyKeyboardImeIgnoredFlag);
   }
   event.SetProperties(properties);
   return DispatchEvent(&event);

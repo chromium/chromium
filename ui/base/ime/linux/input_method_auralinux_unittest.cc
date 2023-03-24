@@ -24,8 +24,8 @@
 #include "ui/base/ime/text_input_client.h"
 #include "ui/base/ime/virtual_keyboard_controller_stub.h"
 #include "ui/events/event.h"
-#include "ui/events/event_utils.h"
 #include "ui/events/keycodes/dom/dom_code.h"
+#include "ui/events/ozone/events_ozone.h"
 
 namespace ui {
 namespace {
@@ -138,15 +138,7 @@ class LinuxInputMethodContextForTesting : public LinuxInputMethodContext {
   }
 
   bool IsPeekKeyEvent(const ui::KeyEvent& key_event) override {
-    const auto* properties = key_event.properties();
-    // For the purposes of tests if kPropertyKeyboardImeFlag is not
-    // explicitly set assume the event is not a key event.
-    if (!properties)
-      return true;
-    auto it = properties->find(kPropertyKeyboardImeFlag);
-    if (it == properties->end())
-      return true;
-    return !(it->second[0] & kPropertyKeyboardImeIgnoredFlag);
+    return !(GetKeyboardImeFlags(key_event) & kPropertyKeyboardImeIgnoredFlag);
   }
 
   void Reset() override {}
@@ -744,10 +736,7 @@ TEST_F(InputMethodAuraLinuxTest, MockWaylandEventsTest) {
   test_result_->Verify();
 
   KeyEvent key(ET_KEY_PRESSED, VKEY_TAB, 0);
-  ui::Event::Properties properties;
-  properties[ui::kPropertyKeyboardImeFlag] =
-      std::vector<uint8_t>({ui::kPropertyKeyboardImeIgnoredFlag});
-  key.SetProperties(properties);
+  SetKeyboardImeFlags(&key, kPropertyKeyboardImeIgnoredFlag);
   input_method_auralinux_->DispatchKeyEvent(&key);
   test_result_->ExpectAction("keydown:9");
   test_result_->Verify();

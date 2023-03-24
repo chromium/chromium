@@ -28,6 +28,10 @@
 #include "ui/events/keycodes/keyboard_code_conversion.h"
 #endif
 
+#if BUILDFLAG(IS_OZONE)
+#include "ui/events/ozone/events_ozone.h"
+#endif
+
 namespace ui {
 namespace test {
 
@@ -677,15 +681,14 @@ void EventGenerator::DispatchKeyEvent(bool is_press,
 #else
   ui::EventType type = is_press ? ui::ET_KEY_PRESSED : ui::ET_KEY_RELEASED;
   ui::KeyEvent keyev(type, key_code, flags);
+#if BUILDFLAG(IS_OZONE)
   if (is_press) {
     // Set a property as if this is a key event not consumed by IME.
     // Ozone/X11+GTK IME works so already. Ozone/wayland IME relies on this
     // flag to work properly.
-    keyev.SetProperties({{
-        kPropertyKeyboardImeFlag,
-        std::vector<uint8_t>{kPropertyKeyboardImeIgnoredFlag},
-    }});
+    SetKeyboardImeFlags(&keyev, kPropertyKeyboardImeIgnoredFlag);
   }
+#endif  // BUILDFLAG(IS_OZONE)
 #endif  // BUILDFLAG(IS_WIN)
   keyev.set_source_device_id(source_device_id);
   Dispatch(&keyev);

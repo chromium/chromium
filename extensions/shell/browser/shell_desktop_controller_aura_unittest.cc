@@ -40,6 +40,10 @@
 #include "chromeos/dbus/power/fake_power_manager_client.h"
 #endif
 
+#if BUILDFLAG(IS_OZONE)
+#include "ui/events/ozone/events_ozone.h"
+#endif
+
 namespace extensions {
 
 class ShellDesktopControllerAuraTest : public ShellTestBaseAura {
@@ -130,10 +134,11 @@ TEST_F(ShellDesktopControllerAuraTest, InputEvents) {
 
   // Dispatch a keypress on the window tree host to verify it is processed.
   ui::KeyEvent key_press(u'a', ui::VKEY_A, ui::DomCode::NONE, ui::EF_NONE);
-  ui::Event::Properties properties;
-  properties.emplace(ui::kPropertyKeyboardImeFlag,
-                     std::vector<uint8_t>{ui::kPropertyKeyboardImeIgnoredFlag});
-  key_press.SetProperties(properties);
+#if BUILDFLAG(IS_OZONE)
+  // Mark IME ignoring flag for ozone platform to be just a key event skipping
+  // IME handling, which is referred in some IME handling code based on ozone.
+  ui::SetKeyboardImeFlags(&key_press, ui::kPropertyKeyboardImeIgnoredFlag);
+#endif
   ui::EventDispatchDetails details =
       controller_->GetPrimaryHost()->dispatcher()->DispatchEvent(
           controller_->GetPrimaryHost()->window(), &key_press);

@@ -63849,6 +63849,7 @@ from previous Chrome versions.
   <int value="1230018793" label="enable-dom-distiller"/>
   <int value="1230555479"
       label="AutofillEnableUnmaskCardRequestSetInstrumentId:disabled"/>
+  <int value="1233310128" label="ExoConsumedByImeByFlag:enabled"/>
   <int value="1234601252" label="ForceUseAPDownloadProtection:enabled"/>
   <int value="1234950775" label="FileTransferEnterpriseConnector:enabled"/>
   <int value="1235197204" label="AvatarsCloudMigration:enabled"/>
@@ -65137,6 +65138,7 @@ from previous Chrome versions.
   <int value="1933376478" label="IsolatePrerenders:enabled"/>
   <int value="1934470615" label="AppIconInIntentChip:disabled"/>
   <int value="1935405622" label="AppServiceInstanceRegistry:disabled"/>
+  <int value="1936308950" label="ExoConsumedByImeByFlag:disabled"/>
   <int value="1936774335" label="EcheSWASendStartSignaling:enabled"/>
   <int value="1936810062" label="WebVrVsyncAlign:enabled"/>
   <int value="1937357350" label="MultilingualTyping:disabled"/>

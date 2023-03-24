@@ -50,6 +50,10 @@
 #include "ui/platform_window/platform_window_init_properties.h"
 #include "ui/wm/core/capture_controller.h"
 
+#if BUILDFLAG(IS_OZONE)
+#include "ui/events/ozone/events_ozone.h"
+#endif
+
 namespace aura {
 namespace {
 
@@ -401,8 +405,10 @@ TEST_F(WindowEventDispatcherTest, GetCanProcessEventsWithinSubtree) {
 
 TEST_F(WindowEventDispatcherTest, DontIgnoreUnknownKeys) {
   ui::Event::Properties properties;
-  properties.emplace(ui::kPropertyKeyboardImeFlag,
-                     std::vector<uint8_t>{ui::kPropertyKeyboardImeIgnoredFlag});
+#if BUILDFLAG(IS_OZONE)
+  ui::SetKeyboardImeFlagProperty(&properties,
+                                 ui::kPropertyKeyboardImeIgnoredFlag);
+#endif
 
   ConsumeKeyHandler handler;
   root_window()->AddPreTargetHandler(&handler);
@@ -447,10 +453,9 @@ TEST_F(WindowEventDispatcherTest, NoDelegateWindowReceivesKeyEvents) {
   ui::test::TestEventHandler handler;
   w1->AddPreTargetHandler(&handler);
   ui::KeyEvent key_press(ui::ET_KEY_PRESSED, ui::VKEY_A, ui::EF_NONE);
-  ui::Event::Properties properties;
-  properties.emplace(ui::kPropertyKeyboardImeFlag,
-                     std::vector<uint8_t>{ui::kPropertyKeyboardImeIgnoredFlag});
-  key_press.SetProperties(properties);
+#if BUILDFLAG(IS_OZONE)
+  ui::SetKeyboardImeFlags(&key_press, ui::kPropertyKeyboardImeIgnoredFlag);
+#endif
 
   DispatchEventUsingWindowDispatcher(&key_press);
   EXPECT_TRUE(key_press.handled());

@@ -3202,6 +3202,9 @@ extern const char kEolIncentiveDescription[];
 extern const char kEolResetDismissedPrefsName[];
 extern const char kEolResetDismissedPrefsDescription[];
 
+extern const char kExoConsumedByImeByFlagName[];
+extern const char kExoConsumedByImeByFlagDescription[];
+
 extern const char kExoGamepadVibrationName[];
 extern const char kExoGamepadVibrationDescription[];
 

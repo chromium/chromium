@@ -51,21 +51,6 @@ constexpr char kPropertyKeyboardGroup[] = "_keyevent_kbd_group_";
 // Key used to store 'hardware key code' values in Event::Properties.
 constexpr char kPropertyKeyboardHwKeyCode[] = "_keyevent_kbd_hw_keycode_";
 
-// Event::Properties constants for IBus-GTK and fcitx-GTK.
-// Both of them in async mode use gtk-specific XKeyEvent::state bits 24 and 25.
-// 24 is handled and 25 is ignored.
-// Note that they use more bits, but Chrome does not handle it now.
-// cf)
-// https://github.com/ibus/ibus/blob/dd4cc5b028c35f9bb8fa9d3bdc8f26bcdfc43d40/src/ibustypes.h#L88
-// https://github.com/fcitx/fcitx/blob/289b2f674d95651d4e0d0c77a48e3a2f0da40efe/src/lib/fcitx-utils/keysym.h#L47
-// https://mail.gnome.org/archives/gtk-devel-list/2013-June/msg00003.html
-constexpr char kPropertyKeyboardImeFlag[] = "_keyevent_kbd_ime_flags_";
-constexpr unsigned int kPropertyKeyboardImeFlagOffset = 24;
-constexpr unsigned int kPropertyKeyboardImeFlagMask = 0x03;
-// Ignored is the 25-th bit.
-constexpr unsigned int kPropertyKeyboardImeIgnoredFlag =
-    1 << (25 - kPropertyKeyboardImeFlagOffset);
-
 // Key used to store mouse event flag telling ET_MOUSE_EXITED must actually be
 // interpreted as "crossing intermediate window" in blink context.
 constexpr char kPropertyMouseCrossedIntermediateWindow[] =

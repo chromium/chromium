@@ -24,8 +24,8 @@
 #include "ui/base/ime/text_input_type.h"
 #include "ui/events/base_event_utils.h"
 #include "ui/events/event.h"
-#include "ui/events/event_utils.h"
 #include "ui/events/keycodes/dom/dom_code.h"
+#include "ui/events/ozone/events_ozone.h"
 #include "ui/events/types/event_type.h"
 #include "ui/gfx/range/range.h"
 #include "ui/ozone/platform/wayland/host/wayland_connection.h"
@@ -179,13 +179,7 @@ bool WaylandInputMethodContext::DispatchKeyEvent(
 }
 
 bool WaylandInputMethodContext::IsPeekKeyEvent(const ui::KeyEvent& key_event) {
-  const auto* properties = key_event.properties();
-  if (!properties)
-    return true;
-  auto it = properties->find(kPropertyKeyboardImeFlag);
-  if (it == properties->end())
-    return true;
-  return !(it->second[0] & kPropertyKeyboardImeIgnoredFlag);
+  return !(GetKeyboardImeFlags(key_event) & kPropertyKeyboardImeIgnoredFlag);
 }
 
 void WaylandInputMethodContext::UpdatePreeditText(

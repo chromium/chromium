@@ -7,6 +7,7 @@
 #include "ash/accelerators/accelerator_controller_impl.h"
 #include "ash/accessibility/accessibility_controller_impl.h"
 #include "ash/constants/app_types.h"
+#include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
 #include "ash/keyboard/keyboard_controller_impl.h"
 #include "ash/public/cpp/external_arc/overlay/arc_overlay_manager.h"
@@ -18,6 +19,7 @@
 #include "ash/wm/desks/desks_test_util.h"
 #include "ash/wm/tablet_mode/tablet_mode_controller.h"
 #include "base/run_loop.h"
+#include "base/test/scoped_feature_list.h"
 #include "components/exo/buffer.h"
 #include "components/exo/keyboard_delegate.h"
 #include "components/exo/keyboard_device_configuration_delegate.h"
@@ -37,6 +39,7 @@
 #include "ui/events/devices/device_data_manager.h"
 #include "ui/events/event_constants.h"
 #include "ui/events/keycodes/dom/dom_code.h"
+#include "ui/events/ozone/events_ozone.h"
 #include "ui/events/test/event_generator.h"
 #include "ui/events/types/event_type.h"
 #include "ui/views/controls/textfield/textfield.h"
@@ -57,6 +60,26 @@ class KeyboardTest : public test::ExoTestBase {
       : test::ExoTestBase(base::test::TaskEnvironment::TimeSource::MOCK_TIME) {}
   ~KeyboardTest() override = default;
 };
+
+class KeyboardKeyTest : public KeyboardTest,
+                        public testing::WithParamInterface<bool> {
+ public:
+  void SetUp() override {
+    if (GetParam()) {
+      feature_list_.InitAndEnableFeature(
+          ash::features::kExoConsumedByImeByFlag);
+    } else {
+      feature_list_.InitAndDisableFeature(
+          ash::features::kExoConsumedByImeByFlag);
+    }
+    KeyboardTest::SetUp();
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+INSTANTIATE_TEST_SUITE_P(, KeyboardKeyTest, ::testing::Bool());
 
 class MockKeyboardDelegate : public KeyboardDelegate {
  public:
@@ -266,7 +289,7 @@ TEST_F(KeyboardTest, OnKeyboardLeave) {
   testing::Mock::VerifyAndClearExpectations(delegate_ptr);
 }
 
-TEST_F(KeyboardTest, OnKeyboardKey) {
+TEST_P(KeyboardKeyTest, OnKeyboardKey) {
   auto shell_surface = test::ShellSurfaceBuilder({10, 10}).BuildShellSurface();
   auto* surface = shell_surface->surface_for_testing();
 
@@ -422,7 +445,7 @@ TEST_F(KeyboardTest, OnKeyboardKey) {
   testing::Mock::VerifyAndClearExpectations(delegate_ptr);
 }
 
-TEST_F(KeyboardTest, OnKeyboardKey_NotSendKeyIfConsumedByIme) {
+TEST_P(KeyboardKeyTest, OnKeyboardKey_NotSendKeyIfConsumedByIme) {
   auto shell_surface = test::ShellSurfaceBuilder({10, 10}).BuildShellSurface();
   auto* surface = shell_surface->surface_for_testing();
 
@@ -462,7 +485,13 @@ TEST_F(KeyboardTest, OnKeyboardKey_NotSendKeyIfConsumedByIme) {
       .Times(0);
   seat.set_physical_code_for_currently_processing_event_for_testing(
       ui::DomCode::US_A);
-  generator.PressKey(ui::VKEY_A, 0);
+
+  {
+    ui::KeyEvent event(ui::ET_KEY_PRESSED, ui::VKEY_A, 0);
+    ui::SetKeyboardImeFlags(&event, ui::kPropertyKeyboardImeHandledFlag);
+    event.set_source_device_id(0);
+    generator.Dispatch(&event);
+  }
   testing::Mock::VerifyAndClearExpectations(&observer);
   testing::Mock::VerifyAndClearExpectations(delegate_ptr);
 
@@ -501,7 +530,7 @@ TEST_F(KeyboardTest, OnKeyboardKey_NotSendKeyIfConsumedByIme) {
   input_method->SetFocusedTextInputClient(nullptr);
 }
 
-TEST_F(KeyboardTest, OnKeyboardKey_KeyboardInhibit) {
+TEST_P(KeyboardKeyTest, OnKeyboardKey_KeyboardInhibit) {
   auto shell_surface = test::ShellSurfaceBuilder({10, 10}).BuildShellSurface();
   auto* surface = shell_surface->surface_for_testing();
 

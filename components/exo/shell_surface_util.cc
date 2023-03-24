@@ -6,9 +6,11 @@
 
 #include <memory>
 
+#include "ash/constants/ash_features.h"
 #include "ash/public/cpp/window_properties.h"
 #include "ash/wm/desks/desks_controller.h"
 #include "ash/wm/desks/desks_util.h"
+#include "base/feature_list.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/trace_event/trace_event.h"
 #include "chromeos/ui/base/window_properties.h"
@@ -25,6 +27,7 @@
 #include "ui/aura/window_targeter.h"
 #include "ui/events/base_event_utils.h"
 #include "ui/events/event.h"
+#include "ui/events/ozone/events_ozone.h"
 #include "ui/views/widget/widget.h"
 #include "ui/wm/core/window_util.h"
 
@@ -314,6 +317,12 @@ bool HasPermissionToActivate(aura::Window* window) {
 }
 
 bool ConsumedByIme(aura::Window* window, const ui::KeyEvent& event) {
+  // TODO(crbug.com/1401822): remove the old behavior, once the fix is
+  // stabilized.
+  if (base::FeatureList::IsEnabled(ash::features::kExoConsumedByImeByFlag)) {
+    return ui::GetKeyboardImeFlags(event) & ui::kPropertyKeyboardImeHandledFlag;
+  }
+
   // Check if IME consumed the event, to avoid it to be doubly processed.
   // First let us see whether IME is active and is in text input mode.
   views::Widget* widget = views::Widget::GetTopLevelWidgetForNativeView(window);

@@ -16,6 +16,7 @@
 #include "ui/events/event_utils.h"
 #include "ui/events/keycodes/dom/dom_key.h"
 #include "ui/events/keycodes/keyboard_code_conversion_x.h"
+#include "ui/events/ozone/events_ozone.h"
 #include "ui/events/pointer_details.h"
 #include "ui/events/types/event_type.h"
 #include "ui/events/x/events_x_utils.h"
@@ -81,9 +82,9 @@ Event::Properties GetEventPropertiesFromXEvent(EventType type,
     // IBus-/fctix-GTK specific flags
     uint8_t ime_flags = (state >> kPropertyKeyboardImeFlagOffset) &
                         kPropertyKeyboardImeFlagMask;
-    if (ime_flags)
-      properties.emplace(kPropertyKeyboardImeFlag, Values{ime_flags});
-
+    if (ime_flags) {
+      SetKeyboardImeFlagProperty(&properties, ime_flags);
+    }
   } else if (type == ET_MOUSE_EXITED) {
     // NotifyVirtual events are created for intermediate windows that the
     // pointer crosses through. These occur when middle clicking.

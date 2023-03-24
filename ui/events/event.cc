@@ -34,6 +34,7 @@
 
 #if BUILDFLAG(IS_OZONE)
 #include "ui/base/ui_base_features.h"                               // nogncheck
+#include "ui/events/ozone/events_ozone.h"                           // nogncheck
 #include "ui/events/ozone/layout/keyboard_layout_engine.h"          // nogncheck
 #include "ui/events/ozone/layout/keyboard_layout_engine_manager.h"  // nogncheck
 #endif

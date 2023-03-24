@@ -4,6 +4,7 @@
 
 #include "ui/events/ozone/events_ozone.h"
 
+#include "base/check.h"
 #include "ui/events/event.h"
 
 namespace ui {
@@ -60,6 +61,33 @@ bool DispatchEventFromNativeUiEvent(
 
 EVENTS_EXPORT void DisableNativeUiEventDispatchForTest() {
   dispatch_disabled = true;
+}
+
+void SetKeyboardImeFlagProperty(KeyEvent::Properties* properties,
+                                uint8_t flags) {
+  properties->emplace(kPropertyKeyboardImeFlag, std::vector<uint8_t>{flags});
+}
+
+void SetKeyboardImeFlags(KeyEvent* event, uint8_t flags) {
+  Event::Properties properties;
+  if (const auto* original = event->properties()) {
+    properties = *original;
+  }
+  SetKeyboardImeFlagProperty(&properties, flags);
+  event->SetProperties(properties);
+}
+
+uint8_t GetKeyboardImeFlags(const KeyEvent& event) {
+  const auto* properties = event.properties();
+  if (!properties) {
+    return 0;
+  }
+  auto it = properties->find(kPropertyKeyboardImeFlag);
+  if (it == properties->end()) {
+    return 0;
+  }
+  DCHECK_EQ(1u, it->second.size());
+  return it->second[0];
 }
 
 }  // namespace ui

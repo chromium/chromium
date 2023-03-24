@@ -11,6 +11,7 @@
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "ui/events/event_utils.h"
+#include "ui/events/ozone/events_ozone.h"
 
 namespace aura {
 namespace test {
@@ -295,10 +296,7 @@ void UIControlsOzone::PostKeyEventTask(ui::EventType type,
     // Set a property as if this is a key event not consumed by IME.
     // Ozone/X11+GTK IME works so already. Ozone/wayland IME relies on this
     // flag to work properly.
-    key_event.SetProperties({{
-        ui::kPropertyKeyboardImeFlag,
-        std::vector<uint8_t>{ui::kPropertyKeyboardImeIgnoredFlag},
-    }});
+    ui::SetKeyboardImeFlags(&key_event, ui::kPropertyKeyboardImeIgnoredFlag);
   }
   SendEventToSink(&key_event, display_id, std::move(closure), optional_host);
 }

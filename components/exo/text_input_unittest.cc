@@ -7,8 +7,10 @@
 #include <memory>
 #include <string>
 
+#include "ash/constants/ash_features.h"
 #include "ash/keyboard/ui/keyboard_ui_controller.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/test/scoped_feature_list.h"
 #include "components/exo/buffer.h"
 #include "components/exo/seat.h"
 #include "components/exo/shell_surface.h"
@@ -24,6 +26,7 @@
 #include "ui/base/ime/composition_text.h"
 #include "ui/base/ime/input_method_observer.h"
 #include "ui/events/keycodes/dom/dom_code.h"
+#include "ui/events/ozone/events_ozone.h"
 #include "ui/views/widget/widget.h"
 
 using testing::_;
@@ -220,6 +223,29 @@ void TextInputTest::TestSurface::TearDown() {
   surface_.reset();
   buffer_.reset();
 }
+
+// Test for both kExoConsumedByImeByFlag enabled and disabled.
+class TextInputTestWithConsumedByIme
+    : public TextInputTest,
+      public testing::WithParamInterface<bool> {
+ public:
+  void SetUp() override {
+    if (GetParam()) {
+      feature_list_.InitAndEnableFeature(
+          ash::features::kExoConsumedByImeByFlag);
+    } else {
+      feature_list_.InitAndDisableFeature(
+          ash::features::kExoConsumedByImeByFlag);
+    }
+
+    TextInputTest::SetUp();
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+INSTANTIATE_TEST_SUITE_P(, TextInputTestWithConsumedByIme, ::testing::Bool());
 
 TEST_F(TextInputTest, Activate) {
   EXPECT_EQ(ui::TEXT_INPUT_TYPE_NONE, text_input()->GetTextInputType());
@@ -557,17 +583,18 @@ TEST_F(TextInputTest, Commit) {
   EXPECT_FALSE(text_input()->HasCompositionText());
 }
 
-TEST_F(TextInputTest, InsertChar) {
+TEST_P(TextInputTestWithConsumedByIme, InsertChar) {
   text_input()->Activate(seat(), surface(),
                          ui::TextInputClient::FOCUS_REASON_OTHER);
 
   ui::KeyEvent ev(ui::ET_KEY_PRESSED, ui::VKEY_RETURN, 0);
+  ui::SetKeyboardImeFlags(&ev, ui::kPropertyKeyboardImeHandledFlag);
 
   EXPECT_CALL(*delegate(), SendKey(testing::Ref(ev))).Times(1);
   text_input()->InsertChar(ev);
 }
 
-TEST_F(TextInputTest, InsertCharCtrlV) {
+TEST_P(TextInputTestWithConsumedByIme, InsertCharCtrlV) {
   text_input()->Activate(seat(), surface(),
                          ui::TextInputClient::FOCUS_REASON_OTHER);
 
@@ -578,12 +605,13 @@ TEST_F(TextInputTest, InsertCharCtrlV) {
   text_input()->InsertChar(ev);
 }
 
-TEST_F(TextInputTest, InsertCharNormalKey) {
+TEST_P(TextInputTestWithConsumedByIme, InsertCharNormalKey) {
   text_input()->Activate(seat(), surface(),
                          ui::TextInputClient::FOCUS_REASON_OTHER);
 
   char16_t ch = 'x';
   ui::KeyEvent ev(ch, ui::VKEY_X, ui::DomCode::NONE, 0);
+  ui::SetKeyboardImeFlags(&ev, ui::kPropertyKeyboardImeHandledFlag);
 
   EXPECT_CALL(*delegate(), SendKey(testing::Ref(ev))).Times(1);
   text_input()->InsertChar(ev);
