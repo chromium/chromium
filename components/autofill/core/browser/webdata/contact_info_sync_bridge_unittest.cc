@@ -149,6 +149,18 @@ class ContactInfoSyncBridgeTest : public testing::Test {
   std::unique_ptr<ContactInfoSyncBridge> bridge_;
 };
 
+// Tests that a failure in the database initialization reports an error and
+// doesn't cause a crash.
+// Regression test for crbug.com/1421663.
+TEST_F(ContactInfoSyncBridgeTest, InitializationFailure) {
+  // The database will be null if it failed to initialize.
+  ON_CALL(backend(), GetDatabase()).WillByDefault(testing::Return(nullptr));
+  EXPECT_CALL(mock_processor(), ReportError);
+  // The `bridge()` was already initialized during `SetUp()`. Recreate it.
+  ContactInfoSyncBridge(mock_processor().CreateForwardingProcessor(),
+                        &backend());
+}
+
 TEST_F(ContactInfoSyncBridgeTest, IsEntityDataValid) {
   // Valid case.
   std::unique_ptr<syncer::EntityData> entity =

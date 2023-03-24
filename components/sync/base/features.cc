@@ -98,6 +98,10 @@ BASE_FEATURE(kSyncEnableContactInfoDataType,
              "SyncEnableContactInfoDataType",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+BASE_FEATURE(kSyncEnableContactInfoDataTypeEarlyReturnNoDatabase,
+             "SyncEnableContactInfoDataTypeEarlyReturnNoDatabase",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 BASE_FEATURE(kSyncEnableContactInfoDataTypeInTransportMode,
              "kSyncEnableContactInfoDataTypeInTransportMode",
              base::FEATURE_DISABLED_BY_DEFAULT);
