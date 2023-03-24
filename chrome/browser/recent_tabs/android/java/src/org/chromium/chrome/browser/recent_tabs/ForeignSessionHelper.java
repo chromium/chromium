@@ -44,7 +44,7 @@ public class ForeignSessionHelper {
         public final long modifiedTime;
         public final List<ForeignSessionWindow> windows = new ArrayList<ForeignSessionWindow>();
 
-        private ForeignSession(String tag, String name, long modifiedTime) {
+        protected ForeignSession(String tag, String name, long modifiedTime) {
             this.tag = tag;
             this.name = name;
             this.modifiedTime = modifiedTime;

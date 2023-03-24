@@ -4,18 +4,26 @@
 
 package org.chromium.chrome.browser.recent_tabs;
 
+import org.chromium.chrome.browser.profiles.Profile;
+
 /**
- * Controller for accessing an instance of the RestoreTabsFeatureHelper for the singleton factory
- * instance.
+ * Controller for accessing helper functions for the singleton factory instance.
  */
 public class RestoreTabsControllerImpl {
     private RestoreTabsFeatureHelper mHelper;
+    private RestoreTabsCoordinator mRestoreTabsCoordinator;
 
     public RestoreTabsControllerImpl() {
         mHelper = new RestoreTabsFeatureHelperImpl();
+        mRestoreTabsCoordinator = new RestoreTabsCoordinator();
+        mRestoreTabsCoordinator.initialize();
     }
 
     public RestoreTabsFeatureHelper getFeatureHelper() {
         return mHelper;
+    }
+
+    public void showBottomSheet(Profile profile) {
+        mRestoreTabsCoordinator.showOptions(profile);
     }
 }
