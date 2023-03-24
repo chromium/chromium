@@ -546,4 +546,15 @@ int GetNumberOfSupportedRecordingTypes(bool is_in_projector_mode) {
   return total;
 }
 
+void MaybeSetHighlightBorder(views::View* view,
+                             int corner_radius,
+                             views::HighlightBorder::Type type) {
+  if (!features::IsDarkLightModeEnabled()) {
+    return;
+  }
+
+  view->SetBorder(std::make_unique<views::HighlightBorder>(
+      corner_radius, type, /*use_light_color=*/false));
+}
+
 }  // namespace ash::capture_mode_util

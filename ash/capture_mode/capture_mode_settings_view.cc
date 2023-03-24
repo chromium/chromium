@@ -13,6 +13,7 @@
 #include "ash/capture_mode/capture_mode_metrics.h"
 #include "ash/capture_mode/capture_mode_session.h"
 #include "ash/capture_mode/capture_mode_session_focus_cycler.h"
+#include "ash/capture_mode/capture_mode_util.h"
 #include "ash/constants/ash_features.h"
 #include "ash/public/cpp/style/color_provider.h"
 #include "ash/resources/vector_icons/vector_icons.h"
@@ -23,6 +24,7 @@
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"
 #include "capture_mode_menu_toggle_button.h"
+#include "chromeos/constants/chromeos_features.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/compositor/layer.h"
@@ -161,11 +163,11 @@ CaptureModeSettingsView::CaptureModeSettingsView(CaptureModeSession* session,
   SetLayoutManager(std::make_unique<views::BoxLayout>(
       views::BoxLayout::Orientation::kVertical));
 
-  if (features::IsDarkLightModeEnabled()) {
-    SetBorder(std::make_unique<views::HighlightBorder>(
-        kCornerRadius, views::HighlightBorder::Type::kHighlightBorder1,
-        /*use_light_colors=*/false));
-  }
+  capture_mode_util::MaybeSetHighlightBorder(
+      this, kCornerRadius,
+      chromeos::features::IsJellyrollEnabled()
+          ? views::HighlightBorder::Type::kHighlightBorderOnShadow
+          : views::HighlightBorder::Type::kHighlightBorder1);
 
   shadow_->SetRoundedCornerRadius(kCornerRadius);
 }

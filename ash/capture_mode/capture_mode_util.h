@@ -15,6 +15,7 @@
 #include "ui/gfx/animation/tween.h"
 #include "ui/gfx/geometry/point.h"
 #include "ui/gfx/geometry/size.h"
+#include "ui/views/highlight_border.h"
 
 namespace aura {
 class Window;
@@ -207,6 +208,12 @@ ASH_EXPORT gfx::Rect CalculateHighlightLayerBounds(
 // Returns the number of currently supported recording types. The value may
 // differ based on whether `is_in_projector_mode` is true or false.
 int GetNumberOfSupportedRecordingTypes(bool is_in_projector_mode);
+
+// Sets a highlight border to the `view` with given rounded corner radius and
+// type.
+void MaybeSetHighlightBorder(views::View* view,
+                             int corner_radius,
+                             views::HighlightBorder::Type type);
 
 }  // namespace capture_mode_util
 

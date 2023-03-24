@@ -6,12 +6,14 @@
 
 #include "ash/capture_mode/capture_mode_controller.h"
 #include "ash/capture_mode/capture_mode_types.h"
+#include "ash/capture_mode/capture_mode_util.h"
 #include "ash/constants/ash_features.h"
 #include "ash/public/cpp/style/color_provider.h"
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/style/ash_color_id.h"
 #include "ash/style/system_shadow.h"
+#include "chromeos/constants/chromeos_features.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/compositor/layer.h"
 #include "ui/gfx/geometry/point.h"
@@ -71,11 +73,11 @@ RecordingTypeMenuView::RecordingTypeMenuView(
             l10n_util::GetStringUTF16(IDS_ASH_SCREEN_CAPTURE_LABEL_GIF_RECORD),
             ToInt(RecordingType::kGif));
 
-  if (features::IsDarkLightModeEnabled()) {
-    SetBorder(std::make_unique<views::HighlightBorder>(
-        kCornerRadius, views::HighlightBorder::Type::kHighlightBorder1,
-        /*use_light_colors=*/false));
-  }
+  capture_mode_util::MaybeSetHighlightBorder(
+      this, kCornerRadius,
+      chromeos::features::IsJellyrollEnabled()
+          ? views::HighlightBorder::Type::kHighlightBorderOnShadow
+          : views::HighlightBorder::Type::kHighlightBorder1);
 
   shadow_->SetRoundedCornerRadius(kCornerRadius);
 }

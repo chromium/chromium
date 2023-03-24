@@ -13,6 +13,7 @@
 #include "ash/capture_mode/capture_mode_session_focus_cycler.h"
 #include "ash/capture_mode/capture_mode_source_view.h"
 #include "ash/capture_mode/capture_mode_type_view.h"
+#include "ash/capture_mode/capture_mode_util.h"
 #include "ash/constants/ash_features.h"
 #include "ash/public/cpp/style/color_provider.h"
 #include "ash/resources/vector_icons/vector_icons.h"
@@ -24,6 +25,7 @@
 #include "ash/style/icon_button.h"
 #include "ash/style/system_shadow.h"
 #include "base/functional/bind.h"
+#include "chromeos/constants/chromeos_features.h"
 #include "ui/aura/window.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
@@ -112,11 +114,12 @@ CaptureModeBarView::CaptureModeBarView(bool projector_mode)
   separator_2_->SetColorId(ui::kColorAshSystemUIMenuSeparator);
   separator_2_->SetPreferredLength(kSeparatorHeight);
 
-  if (features::IsDarkLightModeEnabled()) {
-    SetBorder(std::make_unique<views::HighlightBorder>(
-        kBorderRadius, views::HighlightBorder::Type::kHighlightBorder2,
-        /*use_light_colors=*/false));
-  }
+  capture_mode_util::MaybeSetHighlightBorder(
+      this, kBorderRadius,
+      chromeos::features::IsJellyrollEnabled()
+          ? views::HighlightBorder::Type::kHighlightBorderOnShadow
+          : views::HighlightBorder::Type::kHighlightBorder2);
+
   shadow_->SetRoundedCornerRadius(kBorderRadius);
 }
 

@@ -7,6 +7,7 @@
 #include <memory>
 
 #include "ash/capture_mode/capture_mode_util.h"
+#include "chromeos/constants/chromeos_features.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/models/image_model.h"
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
@@ -47,6 +48,12 @@ KeyItemView::KeyItemView(ui::KeyboardCode key_code) : key_code_(key_code) {
   SetBackground(
       views::CreateRoundedRectBackground(GetColor(), kKeyItemHeight / 2));
   layer()->SetFillsBoundsOpaquely(false);
+
+  capture_mode_util::MaybeSetHighlightBorder(
+      this, kKeyItemHeight / 2,
+      chromeos::features::IsJellyrollEnabled()
+          ? views::HighlightBorder::Type::kHighlightBorderOnShadow
+          : views::HighlightBorder::Type::kHighlightBorder1);
 }
 
 KeyItemView::~KeyItemView() = default;
@@ -54,9 +61,6 @@ KeyItemView::~KeyItemView() = default;
 void KeyItemView::OnThemeChanged() {
   views::View::OnThemeChanged();
   GetBackground()->SetNativeControlColor(GetColor());
-  SetBorder(std::make_unique<views::HighlightBorder>(
-      kKeyItemHeight / 2, views::HighlightBorder::Type::kHighlightBorder1,
-      /*use_light_colors=*/false));
   SchedulePaint();
 }
 

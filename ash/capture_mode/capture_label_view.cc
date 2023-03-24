@@ -20,6 +20,7 @@
 #include "base/task/single_thread_task_runner.h"
 #include "base/task/task_runner.h"
 #include "base/time/time.h"
+#include "chromeos/constants/chromeos_features.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/compositor/layer.h"
@@ -176,11 +177,11 @@ CaptureLabelView::CaptureLabelView(
   label_->SetEnabledColorId(kColorAshTextColorPrimary);
   label_->SetBackgroundColor(SK_ColorTRANSPARENT);
 
-  if (features::IsDarkLightModeEnabled()) {
-    SetBorder(std::make_unique<views::HighlightBorder>(
-        kCaptureLabelRadius, views::HighlightBorder::Type::kHighlightBorder2,
-        /*use_light_colors=*/false));
-  }
+  capture_mode_util::MaybeSetHighlightBorder(
+      this, kCaptureLabelRadius,
+      chromeos::features::IsJellyrollEnabled()
+          ? views::HighlightBorder::Type::kHighlightBorderNoShadow
+          : views::HighlightBorder::Type::kHighlightBorder2);
 
   shadow_->SetRoundedCornerRadius(kCaptureLabelRadius);
 }
