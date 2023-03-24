@@ -8,12 +8,12 @@
 #ifndef THIRD_PARTY_BLINK_PUBLIC_COMMON_FENCED_FRAME_REDACTED_FENCED_FRAME_CONFIG_H_
 #define THIRD_PARTY_BLINK_PUBLIC_COMMON_FENCED_FRAME_REDACTED_FENCED_FRAME_CONFIG_H_
 
-#include "base/containers/flat_map.h"
-#include "base/functional/callback_forward.h"
-#include "base/memory/raw_ptr.h"
+#include <string>
+#include <utility>
+#include <vector>
+
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/common_export.h"
-#include "third_party/blink/public/mojom/fenced_frame/fenced_frame.mojom.h"
 #include "third_party/blink/public/mojom/fenced_frame/fenced_frame_config.mojom-forward.h"
 #include "ui/gfx/geometry/size.h"
 #include "url/gurl.h"
