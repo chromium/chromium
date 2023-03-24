@@ -1130,6 +1130,11 @@ class VIEWS_EXPORT Widget : public internal::NativeWidgetDelegate,
   // Overridden from ui::NativeThemeObserver:
   void OnNativeThemeUpdated(ui::NativeTheme* observed_theme) override;
 
+  // Sets an override for `color_mode` when `GetColorProvider()` is requested.
+  // e.g. if set to kDark, colors will always be for the dark theme.
+  void SetColorModeOverride(
+      absl::optional<ui::ColorProviderManager::ColorMode> color_mode);
+
   // ui::ColorProviderSource:
   const ui::ColorProvider* GetColorProvider() const override;
 
@@ -1312,6 +1317,10 @@ class VIEWS_EXPORT Widget : public internal::NativeWidgetDelegate,
   ui::ColorProviderManager::ElevationMode background_elevation_ =
       ui::ColorProviderManager::ElevationMode::kLow;
 #endif
+
+  // If set, overrides this value is used instead of the one from NativeTheme
+  // when constructing a ColorProvider.
+  absl::optional<ui::ColorProviderManager::ColorMode> color_mode_override_;
 
   // The current frame type in use by this window. Defaults to
   // FrameType::kDefault.

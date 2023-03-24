@@ -1300,6 +1300,7 @@ test("views_unittests") {
     "//ui/base/emoji",
     "//ui/base/ime/init",
     "//ui/color",
+    "//ui/color:mixers",
     "//ui/compositor:test_support",
     "//ui/display:test_support",
     "//ui/events:dom_keycode_converter",

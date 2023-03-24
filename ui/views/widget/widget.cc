@@ -1948,6 +1948,11 @@ void Widget::OnNativeThemeUpdated(ui::NativeTheme* observed_theme) {
   ThemeChanged();
 }
 
+void Widget::SetColorModeOverride(
+    absl::optional<ui::ColorProviderManager::ColorMode> color_mode) {
+  color_mode_override_ = color_mode;
+}
+
 ////////////////////////////////////////////////////////////////////////////////
 // Widget, ui::ColorProviderSource:
 
@@ -1958,6 +1963,9 @@ ui::ColorProviderManager::Key Widget::GetColorProviderKey() const {
   key.elevation_mode = background_elevation_;
 #endif
   key.user_color = GetUserColor();
+  if (color_mode_override_) {
+    key.color_mode = color_mode_override_.value();
+  }
   return key;
 }
 
