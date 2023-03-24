@@ -40,7 +40,7 @@ void AddMaterialUiColorMixer(ColorProvider* provider,
   mixer[kColorButtonForegroundDisabled] = {kColorSysStateDisabled};
   mixer[kColorButtonForegroundProminent] = {kColorSysOnPrimary};
   mixer[kColorCheckboxBackgroundDisabled] = {kColorSysStateDisabledContainer};
-  mixer[kColorCheckboxForegroundChecked] = {kColorSysOnSurfacePrimary};
+  mixer[kColorCheckboxForegroundChecked] = {kColorSysPrimary};
   mixer[kColorCheckboxForegroundDisabled] = {kColorSysStateDisabled};
   mixer[kColorCheckboxForegroundUnchecked] = {kColorSysOutline};
   mixer[kColorComboboxBackground] = {kColorSysSurface};

@@ -198,16 +198,18 @@ SkColor Checkbox::GetIconImageColor(int icon_state) const {
                                        ? ui::kColorCheckboxForegroundChecked
                                        : ui::kColorCheckboxForegroundUnchecked);
 
-  // TODO(crbug.com/1394575): Remove block and update the above ColorIds
-  if (features::IsChromeRefresh2023()) {
-    active_color = GetColorProvider()->GetColor(
-        (icon_state & IconState::CHECKED) ? ui::kColorAlertHighSeverity
-                                          : ui::kColorAlertMediumSeverityIcon);
-  }
-
   // Use the overridden checked icon image color instead if set.
   if (icon_state & IconState::CHECKED && checked_icon_image_color_.has_value())
     active_color = checked_icon_image_color_.value();
+
+  // TODO(crbug.com/1394575): Replace return statement with the following once
+  // CR2023 is launched
+  if (features::IsChromeRefresh2023()) {
+    return (icon_state & IconState::ENABLED)
+               ? active_color
+               : GetColorProvider()->GetColor(
+                     ui::kColorCheckboxForegroundDisabled);
+  }
 
   return (icon_state & IconState::ENABLED)
              ? active_color
