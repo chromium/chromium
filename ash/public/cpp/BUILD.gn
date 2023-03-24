@@ -12,6 +12,8 @@ component("cpp") {
   sources = [
     "accelerator_configuration.cc",
     "accelerator_configuration.h",
+    "accelerator_keycode_lookup_cache.cc",
+    "accelerator_keycode_lookup_cache.h",
     "accelerators.cc",
     "accelerators.h",
     "accelerators_util.cc",
@@ -449,6 +451,7 @@ component("cpp") {
     "//components/session_manager:base",
     "//components/user_manager",
     "//components/version_info:channel",
+    "//ui/base/ime/ash",
     "//ui/base/ime/ash:ime_types",
     "//ui/gfx",
   ]
@@ -459,6 +462,7 @@ component("cpp") {
 source_set("unit_tests") {
   testonly = true
   sources = [
+    "accelerator_keycode_lookup_cache_unittest.cc",
     "accelerators_util_unittest.cc",
     "ambient/ambient_metrics_unittest.cc",
     "ambient/ambient_prefs_unittest.cc",
@@ -486,6 +490,7 @@ source_set("unit_tests") {
   deps = [
     ":cpp",
     ":test_support",
+    "//ash:test_support",
     "//base",
     "//base/test:test_support",
     "//chromeos/ui/vector_icons",
@@ -495,6 +500,7 @@ source_set("unit_tests") {
     "//skia",
     "//testing/gtest",
     "//ui/aura:test_support",
+    "//ui/base:test_support",
     "//ui/chromeos/styles:cros_styles_views",
     "//ui/chromeos/styles:cros_tokens_color_mappings",
     "//ui/compositor_extra",
