@@ -102,7 +102,10 @@ void ProfileImportProcess::DetermineProfileImportType() {
   int number_of_unchanged_profiles = 0;
 
   // We don't offer an import if `observed_profile_` is a duplicate of an
-  // existing profile. For `kAccount` profiles, only silent updates are allowed.
+  // existing profile. For `kAccount` profiles:
+  // - Settings-visible updates are only possible when
+  //   `kAutofillAccountProfileStorage` is enabled.
+  // - Silent updates are allowed in any case.
   const std::vector<AutofillProfile*> existing_profiles =
       personal_data_manager_->GetProfiles();
 
@@ -142,11 +145,14 @@ void ProfileImportProcess::DetermineProfileImportType() {
     // Now, determine if the merge alters any settings-visible value, or if the
     // merge can  be considered as a silent update that does not need to get
     // user confirmation.
-    // Setting-visible updates are not offered for `kAccount` profiles.
     if (AutofillProfileComparator::ProfilesHaveDifferentSettingsVisibleValues(
             *existing_profile, merged_profile, app_locale_)) {
       if (allow_only_silent_updates_ ||
-          existing_profile->source() == AutofillProfile::Source::kAccount) {
+          (existing_profile->source() == AutofillProfile::Source::kAccount &&
+           !(base::FeatureList::IsEnabled(
+                 features::kAutofillAccountProfilesUnionView) &&
+             base::FeatureList::IsEnabled(
+                 features::kAutofillAccountProfileStorage)))) {
         ++number_of_unchanged_profiles;
         continue;
       }
