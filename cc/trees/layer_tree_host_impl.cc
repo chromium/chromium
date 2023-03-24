@@ -4640,8 +4640,7 @@ void LayerTreeHostImpl::CreateUIResource(UIResourceId uid,
           caps);
     }
   } else {
-    shm = viz::bitmap_allocation::AllocateSharedBitmap(
-        upload_size, format.resource_format());
+    shm = viz::bitmap_allocation::AllocateSharedBitmap(upload_size, format);
     shared_bitmap_id = viz::SharedBitmap::GenerateId();
   }
 

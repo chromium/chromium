@@ -119,7 +119,8 @@ BitmapRasterBufferProvider::AcquireBufferForRaster(
     backing->frame_sink = frame_sink_;
     backing->shared_bitmap_id = viz::SharedBitmap::GenerateId();
     base::MappedReadOnlyRegion shm =
-        viz::bitmap_allocation::AllocateSharedBitmap(size, viz::RGBA_8888);
+        viz::bitmap_allocation::AllocateSharedBitmap(
+            size, viz::SinglePlaneFormat::kRGBA_8888);
     backing->mapping = std::move(shm.mapping);
     frame_sink_->DidAllocateSharedBitmap(std::move(shm.region),
                                          backing->shared_bitmap_id);

@@ -1467,10 +1467,8 @@ class SoftwareTextureLayerSwitchTreesTest : public SoftwareTextureLayerTest {
 
     id_ = viz::SharedBitmap::GenerateId();
     bitmap_ = base::MakeRefCounted<CrossThreadSharedBitmap>(
-        id_,
-        viz::bitmap_allocation::AllocateSharedBitmap(size,
-                                                     format.resource_format()),
-        size, format);
+        id_, viz::bitmap_allocation::AllocateSharedBitmap(size, format), size,
+        format);
   }
 
   void DidCommitAndDrawFrame() override {
@@ -1572,10 +1570,8 @@ class SoftwareTextureLayerPurgeMemoryTest : public SoftwareTextureLayerTest {
 
     id_ = viz::SharedBitmap::GenerateId();
     bitmap_ = base::MakeRefCounted<CrossThreadSharedBitmap>(
-        id_,
-        viz::bitmap_allocation::AllocateSharedBitmap(size,
-                                                     format.resource_format()),
-        size, format);
+        id_, viz::bitmap_allocation::AllocateSharedBitmap(size, format), size,
+        format);
   }
 
   void DidCommitAndDrawFrame() override {
@@ -1653,16 +1649,12 @@ class SoftwareTextureLayerMultipleRegisterTest
 
     id1_ = viz::SharedBitmap::GenerateId();
     bitmap1_ = base::MakeRefCounted<CrossThreadSharedBitmap>(
-        id1_,
-        viz::bitmap_allocation::AllocateSharedBitmap(size,
-                                                     format.resource_format()),
-        size, format);
+        id1_, viz::bitmap_allocation::AllocateSharedBitmap(size, format), size,
+        format);
     id2_ = viz::SharedBitmap::GenerateId();
     bitmap2_ = base::MakeRefCounted<CrossThreadSharedBitmap>(
-        id2_,
-        viz::bitmap_allocation::AllocateSharedBitmap(size,
-                                                     format.resource_format()),
-        size, format);
+        id2_, viz::bitmap_allocation::AllocateSharedBitmap(size, format), size,
+        format);
   }
 
   void DidCommitAndDrawFrame() override {
@@ -1750,16 +1742,12 @@ class SoftwareTextureLayerRegisterUnregisterTest
 
     id1_ = viz::SharedBitmap::GenerateId();
     bitmap1_ = base::MakeRefCounted<CrossThreadSharedBitmap>(
-        id1_,
-        viz::bitmap_allocation::AllocateSharedBitmap(size,
-                                                     format.resource_format()),
-        size, format);
+        id1_, viz::bitmap_allocation::AllocateSharedBitmap(size, format), size,
+        format);
     id2_ = viz::SharedBitmap::GenerateId();
     bitmap2_ = base::MakeRefCounted<CrossThreadSharedBitmap>(
-        id2_,
-        viz::bitmap_allocation::AllocateSharedBitmap(size,
-                                                     format.resource_format()),
-        size, format);
+        id2_, viz::bitmap_allocation::AllocateSharedBitmap(size, format), size,
+        format);
   }
 
   void DidCommitAndDrawFrame() override {
@@ -1842,10 +1830,8 @@ class SoftwareTextureLayerLoseFrameSinkTest : public SoftwareTextureLayerTest {
 
     id_ = viz::SharedBitmap::GenerateId();
     bitmap_ = base::MakeRefCounted<CrossThreadSharedBitmap>(
-        id_,
-        viz::bitmap_allocation::AllocateSharedBitmap(size,
-                                                     format.resource_format()),
-        size, format);
+        id_, viz::bitmap_allocation::AllocateSharedBitmap(size, format), size,
+        format);
   }
 
   void DidCommitAndDrawFrame() override {
@@ -1964,10 +1950,8 @@ class SoftwareTextureLayerUnregisterRegisterTest
 
     id_ = viz::SharedBitmap::GenerateId();
     bitmap_ = base::MakeRefCounted<CrossThreadSharedBitmap>(
-        id_,
-        viz::bitmap_allocation::AllocateSharedBitmap(size,
-                                                     format.resource_format()),
-        size, format);
+        id_, viz::bitmap_allocation::AllocateSharedBitmap(size, format), size,
+        format);
   }
 
   void DidCommitAndDrawFrame() override {
