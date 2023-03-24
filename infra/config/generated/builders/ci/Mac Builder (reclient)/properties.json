@@ -42,11 +42,11 @@
     }
   },
   "$build/reclient": {
-    "instance": "rbe-chromium-trusted-test",
-    "metrics_project": "chromium-reclient-metrics",
-    "rewrapper_env": {
+    "bootstrap_env": {
       "RBE_compression_threshold": "4000000"
     },
+    "instance": "rbe-chromium-trusted-test",
+    "metrics_project": "chromium-reclient-metrics",
     "scandeps_server": true
   },
   "$recipe_engine/resultdb/test_presentation": {
