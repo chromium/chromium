@@ -1,11 +1,11 @@
 # Overview
-The Shill D-Bus client is a critical component of the Chrome OS network stack
-that facilitates communication between applications and system components with
-Shill via D-Bus. This client provides a high-level API that enables interaction
+The Shill D-Bus clients are a critical component of the Chrome OS network stack
+that facilitate communication between applications and system components with
+Shill via D-Bus. These clients provide a high-level API that enables interaction
 with the following Shill services:
 * [Shill manager service](#shill-manager-client)
 * Shill device service
-* Shill IPconfig service
+* [Shill IPconfig service](#shill-ipconfig-client)
 * Shill profile service
 * Shill service service
 
@@ -63,3 +63,23 @@ setting fake responses. For example, `SetInteractiveDelay` sets the fake
 interactive delay for the following shill response for testing purposes, while
 `SetSimulateConfigurationResult` sets the following `ConfigureService` call to
 succeed, fail or timeout.
+
+## Shill IPConfig client
+The [ShillIPConfigClient](https://source.chromium.org/chromium/chromium/src/+/main:chromeos/ash/components/dbus/shill/shill_ipconfig_client.h;drc=ad947e92bd398452f42173e7a39ed7ab2e4ad094)
+class provides an interface for interacting with the Shill IPConfig interface
+which is the top-level singleton exposed by Shill that provides Layer 3
+configuration. It enables Chrome to:
+* Get, set, clear, or observe changes to IPConfig properties
+* Remove IPConfig entries
+
+For detailed documentation on the Shill IPConfig DBus API, please refer to
+[ipconfig-api.txt](https://source.chromium.org/chromiumos/chromiumos/codesearch/+/main:src/platform2/shill/doc/ipconfig-api.txt;drc=9a98a2fb4b28a8e3c32d7eafb39395ccbc730538).
+
+All Shill methods must be called from the origin thread that initializes the
+DBusThreadManager instance. Most methods that make Shill IPConfig calls pass
+a callback that is invoked when the method finishes.
+
+Additionally, ShillIPConfigClient provides a
+[test interface](https://source.chromium.org/chromium/chromium/src/+/main:chromeos/ash/components/dbus/shill/shill_ipconfig_client.h;l=32-40;drc=ad947e92bd398452f42173e7a39ed7ab2e4ad094)
+that allows you to add fake IPConfig entries for ChromeOS unit testing
+purposes. This interface is implemented in the [FakeShillIPConfigClient](https://source.chromium.org/chromium/chromium/src/+/refs/heads/main:chromeos/ash/components/dbus/shill/fake_shill_ipconfig_client.h;drc=ad947e92bd398452f42173e7a39ed7ab2e4ad094).
