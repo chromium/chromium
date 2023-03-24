@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <cstddef>
 #include <memory>
 #include <utility>
 #include <vector>
@@ -26,6 +27,7 @@
 #include "chrome/browser/web_applications/web_app_install_info.h"
 #include "chrome/browser/web_applications/web_app_install_params.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
+#include "chrome/browser/web_applications/web_app_registry_update.h"
 #include "chrome/common/chrome_features.h"
 #include "components/webapps/browser/install_result_code.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -242,15 +244,18 @@ TEST_P(ShortcutMenuHandlingSubManagerConfigureTest, TestConfigure) {
                   testing::Eq(base::StrCat(
                       {kWebAppUrl.spec(), base::NumberToString(menu_index)})));
 
-      EXPECT_TRUE(os_integration_state.shortcut_menus()
-                      .shortcut_menu_info(menu_index)
-                      .icon_data_any_size() == num_sizes);
-      EXPECT_TRUE(os_integration_state.shortcut_menus()
-                      .shortcut_menu_info(menu_index)
-                      .icon_data_maskable_size() == num_sizes);
-      EXPECT_TRUE(os_integration_state.shortcut_menus()
-                      .shortcut_menu_info(menu_index)
-                      .icon_data_monochrome_size() == num_sizes);
+      EXPECT_EQ(os_integration_state.shortcut_menus()
+                    .shortcut_menu_info(menu_index)
+                    .icon_data_any_size(),
+                num_sizes);
+      EXPECT_EQ(os_integration_state.shortcut_menus()
+                    .shortcut_menu_info(menu_index)
+                    .icon_data_maskable_size(),
+                num_sizes);
+      EXPECT_EQ(os_integration_state.shortcut_menus()
+                    .shortcut_menu_info(menu_index)
+                    .icon_data_monochrome_size(),
+                num_sizes);
 
       for (int size_index = 0; size_index < num_sizes; size_index++) {
         EXPECT_TRUE(os_integration_state.shortcut_menus()
@@ -278,6 +283,70 @@ TEST_P(ShortcutMenuHandlingSubManagerConfigureTest, TestConfigure) {
                         .icon_data_monochrome(size_index)
                         .has_timestamp());
       }
+    }
+  } else {
+    ASSERT_FALSE(os_integration_state.has_shortcut_menus());
+  }
+}
+
+// This tests our handling of https://crbug.com/1427444.
+TEST_P(ShortcutMenuHandlingSubManagerConfigureTest, NoDownloadedIcons_1427444) {
+  const int num_menu_items = 2;
+
+  const std::vector<int> sizes = {icon_size::k64, icon_size::k128};
+  const std::vector<SkColor> colors = {SK_ColorRED, SK_ColorRED};
+  const AppId& app_id = InstallWebAppWithShortcutMenuIcons(
+      MakeIconBitmaps({{IconPurpose::ANY, sizes, colors},
+                       {IconPurpose::MASKABLE, sizes, colors},
+                       {IconPurpose::MONOCHROME, sizes, colors}},
+                      num_menu_items));
+  // Remove the downloaded icons & resync os integration.
+  {
+    ScopedRegistryUpdate remove_downloaded(&provider().sync_bridge_unsafe());
+    remove_downloaded->UpdateApp(app_id)->SetDownloadedShortcutsMenuIconsSizes(
+        {});
+  }
+  if (AreOsIntegrationSubManagersEnabled()) {
+    base::test::TestFuture<void> future;
+    provider().scheduler().SynchronizeOsIntegration(app_id,
+                                                    future.GetCallback());
+    ASSERT_TRUE(future.Wait());
+  }
+
+  auto state =
+      provider().registrar_unsafe().GetAppCurrentOsIntegrationState(app_id);
+  ASSERT_TRUE(state.has_value());
+  const proto::WebAppOsIntegrationState& os_integration_state = state.value();
+  if (AreOsIntegrationSubManagersEnabled()) {
+    EXPECT_TRUE(
+        os_integration_state.shortcut_menus().shortcut_menu_info_size() ==
+        num_menu_items);
+
+    for (int menu_index = 0; menu_index < num_menu_items; menu_index++) {
+      EXPECT_THAT(os_integration_state.shortcut_menus()
+                      .shortcut_menu_info(menu_index)
+                      .shortcut_name(),
+                  testing::Eq(base::StrCat(
+                      {"shortcut_name", base::NumberToString(menu_index)})));
+
+      EXPECT_THAT(os_integration_state.shortcut_menus()
+                      .shortcut_menu_info(menu_index)
+                      .shortcut_launch_url(),
+                  testing::Eq(base::StrCat(
+                      {kWebAppUrl.spec(), base::NumberToString(menu_index)})));
+
+      EXPECT_EQ(os_integration_state.shortcut_menus()
+                    .shortcut_menu_info(menu_index)
+                    .icon_data_any_size(),
+                0);
+      EXPECT_EQ(os_integration_state.shortcut_menus()
+                    .shortcut_menu_info(menu_index)
+                    .icon_data_maskable_size(),
+                0);
+      EXPECT_EQ(os_integration_state.shortcut_menus()
+                    .shortcut_menu_info(menu_index)
+                    .icon_data_monochrome_size(),
+                0);
     }
   } else {
     ASSERT_FALSE(os_integration_state.has_shortcut_menus());
