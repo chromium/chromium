@@ -13,6 +13,10 @@ namespace browsing_data::features {
 // defined by the BrowsingDataLifetime policy.
 BASE_DECLARE_FEATURE(kEnableBrowsingDataLifetimeManager);
 
+// Deprecate CookiesTReeModel and use BrowsingDataModel as the only browsing
+// data interface.
+BASE_DECLARE_FEATURE(kDeprecateCookiesTreeModel);
+
 }  // namespace browsing_data::features
 
 #endif  // COMPONENTS_BROWSING_DATA_CORE_FEATURES_H_
