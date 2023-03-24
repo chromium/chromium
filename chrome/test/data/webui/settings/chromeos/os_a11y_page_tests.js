@@ -72,7 +72,8 @@ suite('A11yPageTests', function() {
   test('Checking pdf ocr toggle visibility in the TTS page', async () => {
     // Need to have this test here as the screen reader state is passed from
     // the os-settings-a11y-page to the settings-text-to-speech-page.
-    loadTimeData.overrideValues({pdfOcrEnabled: true});
+    // `features::kPdfOcr` is enabled in os_settings_v3_browsertest.js
+    assertTrue(loadTimeData.getBoolean('pdfOcrEnabled'));
 
     Router.getInstance().navigateTo(routes.A11Y_TEXT_TO_SPEECH);
     flush();

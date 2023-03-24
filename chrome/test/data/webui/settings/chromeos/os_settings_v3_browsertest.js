@@ -200,7 +200,11 @@ TEST_F('OSSettingsCrostiniExtraContainerPageV3Test', 'AllJsTests', () => {
   mocha.run();
 });
 
-[['AccessibilityPage', 'os_a11y_page_tests.js'],
+[[
+  'AccessibilityPage',
+  'os_a11y_page_tests.js',
+  {enabled: ['features::kPdfOcr']},
+ ],
  ['AboutPage', 'os_about_page_tests.js'],
  ['ApnDetailDialog', 'apn_detail_dialog_tests.js'],
  [
@@ -387,6 +391,7 @@ TEST_F('OSSettingsCrostiniExtraContainerPageV3Test', 'AllJsTests', () => {
  [
    'OsA11yPageTextToSpeechPage',
    'os_a11y_page/text_to_speech_page_tests.js',
+   {enabled: ['features::kPdfOcr']},
  ],
  [
    'OsA11yPageTextToSpeechSubpage',

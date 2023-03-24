@@ -93,7 +93,9 @@ suite('<text-to-speech-page>', function() {
   test(
       'pdf ocr pref enabled when both pdf ocr and screen reader enabled',
       async function() {
-        loadTimeData.overrideValues({pdfOcrEnabled: true});
+        // `features::kPdfOcr` is enabled in os_settings_v3_browsertest.js
+        assertTrue(loadTimeData.getBoolean('pdfOcrEnabled'));
+
         await initPage();
         // Simulate enabling the ChromeVox.
         page.hasScreenReader = true;

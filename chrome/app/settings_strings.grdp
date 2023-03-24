@@ -82,6 +82,18 @@
   <message name="IDS_SETTINGS_ACCESSIBLE_IMAGE_LABELS_SUBTITLE" desc="Subtitle for screen reader image labels feature.">
     If an image doesn’t have a useful description, Chrome will try to provide one for you. To create descriptions, images are sent to Google.
   </message>
+  <message name="IDS_SETTINGS_PDF_OCR_DOWNLOAD_COMPLETE" desc="Success message when it has downloaded PDF OCR files.">
+    Text recognition files downloaded
+  </message>
+  <message name="IDS_SETTINGS_PDF_OCR_DOWNLOAD_ERROR" desc="Generic error message when it fails to download PDF OCR files.">
+    Can't download text recognition files. Try again later.
+  </message>
+  <message name="IDS_SETTINGS_PDF_OCR_DOWNLOAD_PROGRESS" desc="Download progress indicator after PDF OCR is enabled. The user needs to download certain files for the feature to work.">
+    Downloading text recognition files… <ph name="PERCENT">$1<ex>17</ex></ph>%
+  </message>
+  <message name="IDS_SETTINGS_PDF_OCR_DOWNLOADING" desc="Generic message when it has started downloading PDF OCR files.">
+    Downloading text recognition files
+  </message>
   <message name="IDS_SETTINGS_PDF_OCR_TITLE" desc="Description for screen reader pdf ocr feature.">
     Convert images to text
   </message>

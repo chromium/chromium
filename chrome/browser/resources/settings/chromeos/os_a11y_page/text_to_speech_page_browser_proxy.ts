@@ -4,6 +4,12 @@
 
 export interface TextToSpeechPageBrowserProxy {
   /**
+   * Request whether ScreenAIInstallState changed. Result is returned by the
+   * 'pdf-ocr-state-changed' WebUI listener event.
+   */
+  pdfOcrSectionReady(): void;
+
+  /**
    * Opens the options page for Chrome Vox.
    */
   showChromeVoxSettings(): void;
@@ -29,6 +35,10 @@ export class TextToSpeechPageBrowserProxyImpl implements
 
   static setInstanceForTesting(obj: TextToSpeechPageBrowserProxy): void {
     instance = obj;
+  }
+
+  pdfOcrSectionReady(): void {
+    chrome.send('pdfOcrSectionReady');
   }
 
   showChromeVoxSettings(): void {

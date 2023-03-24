@@ -28,6 +28,18 @@ import {Route, Router} from '../router.js';
 import {getTemplate} from './text_to_speech_page.html.js';
 import {TextToSpeechPageBrowserProxy, TextToSpeechPageBrowserProxyImpl} from './text_to_speech_page_browser_proxy.js';
 
+/**
+ * Numerical values should not be changed because they must stay in sync with
+ * screen_ai::ScreenAIInstallState::State defined in screen_ai_install_state.h
+ */
+export enum ScreenAiInstallStatus {
+  NOT_DOWNLOADED = 0,
+  DOWNLOADING = 1,
+  FAILED = 2,
+  DOWNLOADED = 3,
+  READY = 4,
+}
+
 const SettingsTextToSpeechPageElementBase = DeepLinkingMixin(RouteOriginMixin(
     PrefsMixin(WebUiListenerMixin(I18nMixin(PolymerElement)))));
 
@@ -72,6 +84,17 @@ export class SettingsTextToSpeechPageElement extends
       },
 
       /**
+       * |pdfOcrProgress_| stores the downloading progress in percentage of
+       * the ScreenAI library.
+       */
+      pdfOcrProgress_: Number,
+
+      /**
+       * |pdfOcrStatus_| stores the ScreenAI library install state.
+       */
+      pdfOcrStatus_: ScreenAiInstallStatus,
+
+      /**
        * Whether to show the toggle button for PDF OCR.
        */
       showPdfOcrToggle_: {
@@ -98,6 +121,8 @@ export class SettingsTextToSpeechPageElement extends
   private isAccessibilityChromeVoxPageMigrationEnabled_: boolean;
   private isAccessibilitySelectToSpeakPageMigrationEnabled_: boolean;
   private route_: Route;
+  private pdfOcrProgress_: number;
+  private pdfOcrStatus_: ScreenAiInstallStatus;
   private showPdfOcrToggle_: boolean;
   private textToSpeechBrowserProxy_: TextToSpeechPageBrowserProxy;
 
@@ -120,6 +145,18 @@ export class SettingsTextToSpeechPageElement extends
         'has-hardware-keyboard',
         (hasKeyboard: boolean) => this.set('hasKeyboard_', hasKeyboard));
     this.deviceBrowserProxy_.initializeKeyboardWatcher();
+
+    if (loadTimeData.getBoolean('pdfOcrEnabled')) {
+      this.addWebUiListener(
+          'pdf-ocr-state-changed',
+          (pdfOcrState: ScreenAiInstallStatus) =>
+              this.onPdfOcrStateChanged_(pdfOcrState));
+      this.addWebUiListener(
+          'pdf-ocr-downloading-progress-changed',
+          (progress: number) =>
+              this.onPdfOcrDownloadingProgressChanged_(progress));
+      this.textToSpeechBrowserProxy_.pdfOcrSectionReady();
+    }
   }
 
   override ready() {
@@ -128,6 +165,34 @@ export class SettingsTextToSpeechPageElement extends
     this.addFocusConfig(
         routes.A11Y_SELECT_TO_SPEAK, '#select-to-speak-subpage-trigger');
     this.addFocusConfig(routes.MANAGE_TTS_SETTINGS, '#ttsSubpageButton');
+  }
+
+  private getPdfOcrToggleSublabel_(): string {
+    switch (this.pdfOcrStatus_) {
+      case ScreenAiInstallStatus.DOWNLOADING:
+        return this.pdfOcrProgress_ > 0 && this.pdfOcrProgress_ < 100 ?
+            this.i18n('pdfOcrDownloadProgressLabel', this.pdfOcrProgress_) :
+            this.i18n('pdfOcrDownloadingLabel');
+      case ScreenAiInstallStatus.FAILED:
+        return this.i18n('pdfOcrDownloadErrorLabel');
+      case ScreenAiInstallStatus.DOWNLOADED:
+        return this.i18n('pdfOcrDownloadCompleteLabel');
+      case ScreenAiInstallStatus.READY:
+        // No subtitle update in this case
+      case ScreenAiInstallStatus.NOT_DOWNLOADED:
+        // No subtitle update in this case
+      default:
+        // This is a generic subtitle describing the feature.
+        return this.i18n('pdfOcrSubtitle');
+    }
+  }
+
+  private onPdfOcrStateChanged_(pdfOcrState: ScreenAiInstallStatus) {
+    this.pdfOcrStatus_ = pdfOcrState;
+  }
+
+  private onPdfOcrDownloadingProgressChanged_(progress: number) {
+    this.pdfOcrProgress_ = progress;
   }
 
   /**

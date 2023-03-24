@@ -3128,6 +3128,11 @@ static_library("ui") {
       "webui/settings/ash/os_settings_ui.h",
       "webui/settings/ash/parental_controls_handler.cc",
       "webui/settings/ash/parental_controls_handler.h",
+
+      # TODO(crbug.com/1393069): Move to under `enable_screen_ai_service` when
+      # PDF OCR becomes available on windows, macOS, and linux.
+      "webui/settings/ash/pdf_ocr_handler.cc",
+      "webui/settings/ash/pdf_ocr_handler.h",
       "webui/settings/ash/people_section.cc",
       "webui/settings/ash/people_section.h",
       "webui/settings/ash/peripheral_data_access_handler.cc",
