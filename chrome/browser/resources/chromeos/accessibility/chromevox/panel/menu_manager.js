@@ -135,6 +135,32 @@ export class MenuManager {
   }
 
   /**
+   * Advance the index of the current active menu by |delta|.
+   * @param {number} delta The number to add to the active menu index.
+   */
+  advanceActiveMenuBy(delta) {
+    let activeIndex = this.menus_.findIndex(menu => menu === this.activeMenu_);
+
+    if (activeIndex >= 0) {
+      activeIndex += delta;
+      activeIndex = (activeIndex + this.menus_.length) % this.menus_.length;
+    } else {
+      if (delta >= 0) {
+        activeIndex = 0;
+      } else {
+        activeIndex = this.menus_.length - 1;
+      }
+    }
+
+    activeIndex = this.findEnabledMenuIndex(activeIndex, delta > 0 ? 1 : -1);
+    if (activeIndex === -1) {
+      return;
+    }
+
+    this.activateMenu(this.menus_[activeIndex], true /* activateFirstItem */);
+  }
+
+  /**
    * Clear any previous menus. The menus are all regenerated each time the
    * menus are opened.
    */

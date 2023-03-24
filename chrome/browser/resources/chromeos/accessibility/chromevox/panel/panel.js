@@ -728,42 +728,6 @@ export class Panel extends PanelInterface {
   }
 
   /**
-   * Advance the index of the current active menu by |delta|.
-   * @param {number} delta The number to add to the active menu index.
-   * @private
-   */
-  advanceActiveMenuBy_(delta) {
-    let activeIndex = -1;
-    for (let i = 0; i < this.menuManager_.menus.length; i++) {
-      if (this.menuManager_.activeMenu === this.menuManager_.menus[i]) {
-        activeIndex = i;
-        break;
-      }
-    }
-
-    if (activeIndex >= 0) {
-      activeIndex += delta;
-      activeIndex = (activeIndex + this.menuManager_.menus.length) %
-          this.menuManager_.menus.length;
-    } else {
-      if (delta >= 0) {
-        activeIndex = 0;
-      } else {
-        activeIndex = this.menuManager_.menus.length - 1;
-      }
-    }
-
-    activeIndex =
-        this.menuManager_.findEnabledMenuIndex(activeIndex, delta > 0 ? 1 : -1);
-    if (activeIndex === -1) {
-      return;
-    }
-
-    this.menuManager_.activateMenu(
-        this.menuManager_.menus[activeIndex], true /* activateFirstItem */);
-  }
-
-  /**
    * Advance the index of the current active menu item by |delta|.
    * @param {number} delta The number to add to the active menu item index.
    * @private
@@ -851,10 +815,10 @@ export class Panel extends PanelInterface {
 
     switch (event.key) {
       case 'ArrowLeft':
-        this.advanceActiveMenuBy_(-1);
+        this.menuManager_.advanceActiveMenuBy(-1);
         break;
       case 'ArrowRight':
-        this.advanceActiveMenuBy_(1);
+        this.menuManager_.advanceActiveMenuBy(1);
         break;
       case 'ArrowUp':
         this.advanceItemBy_(-1);
