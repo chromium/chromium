@@ -126,7 +126,7 @@
 <translation id="1717267964664691695">स्पर्श ट्यूटोरियल पूर्ण करणे</translation>
 <translation id="1722567105086139392">लिंक</translation>
 <translation id="1727806147743597030">ftr</translation>
-<translation id="1730447754326314349">ChromeVox ट्युटोरियलमध्ये स्वागत आहे. या ट्युटोरियलमधून कोणत्याही वेळी बाहेर पडण्यासाठी कीबोर्डच्या डाव्या कोपर्‍यातील एस्केप की दाबा. ChromeVox बंद करण्यासाठी Control आणि Alt धरून ठेवा व Z दाबा. तुम्ही तयार असल्यास, पुढील धड्यावर जाण्यासाठी स्पेसबार वापरा.</translation>
+<translation id="1730447754326314349">ChromeVox ट्युटोरियलमध्ये स्वागत आहे. या ट्युटोरियलमधून कोणत्याही वेळी बाहेर पडण्यासाठी कीबोर्डच्या डाव्या कोपर्‍यातील एस्केप की प्रेस करा. ChromeVox बंद करण्यासाठी Control आणि Alt धरून ठेवा व Z प्रेस करा. तुम्ही तयार असल्यास, पुढील धड्यावर जाण्यासाठी स्पेसबार वापरा.</translation>
 <translation id="174268867904053074">पुढील ग्राफिक</translation>
 <translation id="1756785467854861272">गडद किरमिजी तांबडा</translation>
 <translation id="1758693804775271377">या विषयासाठी धडे ब्राउझ करण्याकरिता एका बोटाने डावीकडे किंवा उजवीकडे स्वाइप करा</translation>
@@ -200,7 +200,7 @@
 <translation id="2318372665160196757">मुख्य</translation>
 <translation id="2329324941084714723">टॅब पॅनल</translation>
 <translation id="2347456970887948350">एक लिंक</translation>
-<translation id="2365384324219615024">आयटम अ‍ॅक्टिव्हेट करण्यासाठी तुम्ही एंटरदेखील दाबू शकता. उदाहरणार्थ, फॉर्ममध्ये मजकूर सबमिट करण्यासाठी एंटरचा वापर केला जाऊ शकतो. पुढे सुरू ठेवण्यासाठी एंटर दाबा.</translation>
+<translation id="2365384324219615024">आयटम अ‍ॅक्टिव्हेट करण्यासाठी तुम्ही एंटरदेखील प्रेस करू शकता. उदाहरणार्थ, फॉर्ममध्ये मजकूर सबमिट करण्यासाठी एंटरचा वापर केला जाऊ शकतो. पुढे सुरू ठेवण्यासाठी एंटर प्रेस करा.</translation>
 <translation id="2381733276052567791">भाषण सुरू किंवा बंद करा</translation>
 <translation id="2390264819538553347">पुढे जाण्यासाठी, एंटर दाबा; मागे जाण्यासाठी, बॅकस्पेस दाबा.</translation>
 <translation id="2398579267367951220">पेज शोधण्यासाठी टाइप करा. परिणामांवर जाण्यासाठी एंटर, परिणाम ब्राउझ करण्यासाठी अप किंवा डाउन अ‍ॅरो दाबा, तुमचा शोध बदलण्यासाठी टाइप करणे सुरू ठेवा किंवा रद्द करण्यासाठी एस्केप दाबा.</translation>
@@ -376,7 +376,7 @@
 <translation id="335581015389089642">भाषण</translation>
 <translation id="3356951775008366684">शब्दाचा अक्षरानुसार उच्चार सूचित करा</translation>
 <translation id="3359142382821736686">seprtr</translation>
-<translation id="3363015957057974366">तुम्ही स्क्रीनवरील पुढील संवादी आयटमवर जाण्यासाठी टॅब कीदेखील वापरू शकता. टॅब की शोधा, जी सर्च कीच्या अगदी वरती आहे. पुढे सुरू ठेवण्यासाठी टॅब की दाबा.</translation>
+<translation id="3363015957057974366">तुम्ही स्क्रीनवरील पुढील संवादी आयटमवर जाण्यासाठी टॅब कीदेखील वापरू शकता. टॅब की शोधा, जी सर्च कीच्या अगदी वरती आहे. पुढे सुरू ठेवण्यासाठी टॅब की प्रेस करा.</translation>
 <translation id="3366946046494222386"><ph name="TOPIC" /> ट्यूटोरियल, <ph name="LESSONS" /> धडे</translation>
 <translation id="3374537878095184207">{COUNT,plural, =1{प्लस}other{# प्लस चिन्हे}}</translation>
 <translation id="338583716107319301">विभाजक</translation>
@@ -414,14 +414,14 @@
 <translation id="3594207934078151302">मध्यम निळसर हिरवा</translation>
 <translation id="3599054940393788245">गणितात नाही</translation>
 <translation id="360241989769010433">श्रेयनिर्देश</translation>
-<translation id="3616016838842055984">तुम्हाला क्लिक करायच्या असलेल्या आयटमवर तुम्ही पोहोचल्यास, Search + Space दाबा. पुढे सुरू ठेवण्यासाठी आता वापरून पहा.</translation>
+<translation id="3616016838842055984">तुम्हाला क्लिक करायच्या असलेल्या आयटमवर तुम्ही पोहोचल्यास, Search + Space प्रेस करा. पुढे सुरू ठेवण्यासाठी आता वापरून पहा.</translation>
 <translation id="3616113530831147358">ऑडिओ</translation>
 <translation id="3622350485154495700">एका बोटाने दोनदा टॅप करा</translation>
 <translation id="3646890046000188562">{COUNT,plural, =1{बॅकटिक}other{# बॅकटिक}}</translation>
 <translation id="3650317109285159359">chkmnuitm</translation>
 <translation id="3655855170848725876">{COUNT,plural, =1{डॉलर}other{# डॉलर चिन्हे}}</translation>
 <translation id="3659787053479271466">alrt</translation>
-<translation id="366419593095697301">सूचना: तुम्हाला या ट्युटोरियलमधून बाहेर पडायचे असल्यास, एस्केप दाबा.</translation>
+<translation id="366419593095697301">सूचना: तुम्हाला या ट्युटोरियलमधून बाहेर पडायचे असल्यास, एस्केप प्रेस करा.</translation>
 <translation id="3676062394766691318">तुम्ही तुमचे डिव्हाइस सेट केल्यानंतर, तुम्ही परत येऊ शकता आणि Search + O त्यानंतर T दाबून आणखी ट्यूटोरियल पाहू शकता.</translation>
 <translation id="3681531118904532409">हलका गुलाबी</translation>
 <translation id="3692274950075847560">S:<ph name="RESULT" /></translation>
@@ -599,7 +599,7 @@
 <translation id="4973717656530883744">किमान <ph name="X" /></translation>
 <translation id="4974612477719259470">मागील बटण नाही</translation>
 <translation id="4979404613699303341">मागील बटण</translation>
-<translation id="4982917827052020884">तुम्ही नियमितपणे वापराल अशा काही कीसह सुरुवात करू या. सध्याचे कोणतेही भाषण थांबवण्यासाठी Control की वापरली जाऊ शकते. तुमच्या कीबोर्डच्या डाव्या कोपर्‍यात Control की आढळेल. पुढे सुरू ठेवण्यासाठी Control की दाबा.</translation>
+<translation id="4982917827052020884">तुम्ही नियमितपणे वापराल अशा काही कीसह सुरुवात करू या. सध्याचे कोणतेही भाषण थांबवण्यासाठी कंट्रोल की वापरली जाऊ शकते. तुमच्या कीबोर्डच्या डाव्या कोपर्‍यात कंट्रोल की आढळेल. पुढे सुरू ठेवण्यासाठी कंट्रोल की प्रेस करा.</translation>
 <translation id="4983588134362688868">पृष्ठाच्या शीर्षस्थानी जा</translation>
 <translation id="4986606102545753256"><ph name="NAME" />, विंडो</translation>
 <translation id="4993152509206108683">दर <ph name="PERCENT" /> टक्के</translation>
@@ -610,7 +610,7 @@
 <translation id="5041394372352067729">ब्रेल डिस्प्ले पेजच्या सर्वात वर हलवा</translation>
 <translation id="5042770794184672516">बोलण्‍याचा आवाज वाढवा</translation>
 <translation id="5042992464904238023">वेब आशय</translation>
-<translation id="5045870649377683106">आता, डावी शिफ्ट की शोधा, जी कंट्राेल कीच्या अगदी वरती आहे. पुढे सुरू ठेवण्यासाठी डावी शिफ्ट की दाबा.</translation>
+<translation id="5045870649377683106">आता, डावी शिफ्ट की शोधा, जी कंट्राेल कीच्या अगदी वरती आहे. पुढे सुरू ठेवण्यासाठी डावी शिफ्ट की प्रेस करा.</translation>
 <translation id="5050015258024679800">मागील स्तर 4 शीर्षक</translation>
 <translation id="5054047268577924192">मागील सूची आयटम</translation>
 <translation id="5085453135206054947">फिकट जांभळट लाल</translation>
@@ -703,7 +703,7 @@
 <translation id="5653397561111110475">Chromebook टच स्क्रीन ॲक्सेसिबिलिटी वैशिष्ट्ये वापरा</translation>
 <translation id="5655682562155942719">जाण्याचे आदेश</translation>
 <translation id="56637627897541303">मजकूर क्षेत्र</translation>
-<translation id="5669637233317991674">हा धडा नेव्हिगेट करण्यासाठी Search + Right Arrow किंवा Search + Left Arrow दाबा</translation>
+<translation id="5669637233317991674">हा धडा नेव्हिगेट करण्यासाठी Search + Right Arrow किंवा Search + Left Arrow प्रेस करा</translation>
 <translation id="5677240841070992068">सध्याचे स्थान</translation>
 <translation id="5678161956734658133">mled</translation>
 <translation id="5681643281275621376">def</translation>
@@ -731,11 +731,11 @@
 <translation id="5850707923114094062">मागे पॅन करा</translation>
 <translation id="5851548754964597211">टॅब सूची</translation>
 <translation id="5866042630553435010">अंशत: चेक केलेले</translation>
-<translation id="5866210856231860256">या विषयासाठी धडे ब्राउझ करण्याकरिता Search + Right Arrow किंवा Search + Left Arrow दाबा</translation>
+<translation id="5866210856231860256">या विषयासाठी धडे ब्राउझ करण्याकरिता Search + Right Arrow किंवा Search + Left Arrow प्रेस करा</translation>
 <translation id="5867591286054666064">या ट्यूटोरियल दरम्यान, तिचे नाव ऐकण्यासाठी कोणतीही की दाबा.</translation>
 <translation id="5869546221129391014">ग्रिड</translation>
 <translation id="5876817486144482042">आवाज कमी करा</translation>
-<translation id="5878206664863390311">विषय ब्राउझ करण्यासाठी Search + Right Arrow किंवा Search + Left Arrow दाबा</translation>
+<translation id="5878206664863390311">विषय ब्राउझ करण्यासाठी Search + Right Arrow किंवा Search + Left Arrow प्रेस करा</translation>
 <translation id="5878908838135392163">पावडर निळा</translation>
 <translation id="588108970619830498">टेक्‍स्‍ट टू स्‍पीच सेटिंग्ज डीफॉल्ट मूल्यांवर रीसेट करा</translation>
 <translation id="5891934789323004067">सारणी</translation>
@@ -862,7 +862,7 @@
 <translation id="6858047746862060282">उपोद्घात</translation>
 <translation id="6859876496651143278">एका बोटाने डावीकडे स्वाइप करा</translation>
 <translation id="6865519907510167493">शब्दलेखनाची चूक आहे</translation>
-<translation id="6873188295213080042">सूचना: नेव्हिगेट करण्यासाठी Search धरा आणि arrow keys दाबा.</translation>
+<translation id="6873188295213080042">सूचना: नेव्हिगेट करण्यासाठी सर्च धरा आणि ॲरो की प्रेस करा.</translation>
 <translation id="6894148351896207544">सध्याची वेळ आणि तारीख बोला</translation>
 <translation id="6896758677409633944">कॉपी करा</translation>
 <translation id="6897341342232909480">डावीकडे हलवा</translation>
@@ -943,7 +943,7 @@
 <translation id="739763518212184081">मागील रेखा</translation>
 <translation id="7400575256015741911">शब्दलेखन चूक आढळली</translation>
 <translation id="7408482676469142474">tbl</translation>
-<translation id="7419264136822406994">तुम्ही मागील संवादी आयटमवर जाण्यासाठी Shift + Tab वापरू शकता. पुढे सुरू ठेवण्यासाठी Shift + Tab दाबा.</translation>
+<translation id="7419264136822406994">तुम्ही मागील संवादी आयटमवर जाण्यासाठी Shift + Tab वापरू शकता. पुढे सुरू ठेवण्यासाठी Shift + Tab प्रेस करा.</translation>
 <translation id="7425395583360211003">मिळवणे</translation>
 <translation id="7429415133937917139">स्क्रीनच्या वरच्या बाजूला ChromeVox पॅनलमध्ये
     रिफ्रेश करता येण्यासारख्या ब्रेल डिस्प्लेचे आउटपुट सिम्युलेट करते</translation>
@@ -972,7 +972,7 @@
 <translation id="762020119231868829">सध्या प्ले होत असलेल्या सर्व माध्यम विजेटला विराम देते</translation>
 <translation id="7625690649919402823">पुढील सारणी</translation>
 <translation id="7628927569678398026"><ph name="LOCALE" /> ( <ph name="VARIANT" /> ), ग्रेड <ph name="GRADE" /></translation>
-<translation id="7637342083105831460">सराव क्षेत्र किंवा पुढील धडा बटण शोधण्यासाठी Search + Right arrow दाबा. त्यानंतर अ‍ॅक्टिव्हेट करण्यासाठी Search + Space दाबा.</translation>
+<translation id="7637342083105831460">सराव क्षेत्र किंवा पुढील धडा बटण शोधण्यासाठी Search + Right arrow प्रेस करा. त्यानंतर अ‍ॅक्टिव्हेट करण्यासाठी Search + Space प्रेस करा.</translation>
 <translation id="7639968568612851608">गडद राखाडी</translation>
 <translation id="7663318257180412551">मथळा 2</translation>
 <translation id="7668307052366682650">{COUNT,plural, =1{तास}other{तास}}</translation>
@@ -1050,9 +1050,9 @@
 <translation id="8129445297241948503">वर सेल नाही</translation>
 <translation id="8132248161074464367">मागील चुकीचा आयटम</translation>
 <translation id="8138880386467279117">स्पर्श करा</translation>
-<translation id="8146613869421949343">त्यानंतर, तुम्ही सर्च कीबद्दल जाणून घ्याल. सर्च की ChromeVox कमांडच्या इतर कीसह एकत्रितपणे वापरली जाते. सर्च की डाव्या शिफ्ट कीच्या अगदी वरती आहे. पुढे सुरू ठेवण्यासाठी सर्च की दाबा.</translation>
+<translation id="8146613869421949343">त्यानंतर, तुम्ही सर्च कीबद्दल जाणून घ्याल. सर्च की ChromeVox कमांडच्या इतर कीसह एकत्रितपणे वापरली जाते. सर्च की डाव्या शिफ्ट कीच्या अगदी वरती आहे. पुढे सुरू ठेवण्यासाठी सर्च की प्रेस करा.</translation>
 <translation id="8158033275290782295">सर्व निवडा</translation>
-<translation id="816818801578874684">हे पहिले शीर्षक आहे. पुढील शीर्षकावर जाण्यासाठी Search + H दाबा.</translation>
+<translation id="816818801578874684">हे पहिले शीर्षक आहे. पुढील शीर्षकावर जाण्यासाठी Search + H प्रेस करा.</translation>
 <translation id="8173092779156526980">चार बोटांनी डावीकडे स्वाइप करा</translation>
 <translation id="817440585505441544">{COUNT,plural, =1{अंडरस्कोअर}other{# अंडरस्कोअर}}</translation>
 <translation id="817529114347680055">स्क्रीन सुरू करा</translation>
@@ -1096,7 +1096,7 @@
 <translation id="8473540203671727883">माउसखाली मजकूर बोला</translation>
 <translation id="8476408756881832830">ChromeVox बोलत असताना प्लेबॅकला विराम द्या</translation>
 <translation id="8476508772960940536">विंडो विहंगावलोकन</translation>
-<translation id="8480873377842220259">तुम्ही आता काही मूलभूत नेव्हिगेशनबद्दल जाणून घ्याल. स्क्रीनभोवती फिरण्यासाठी तुम्ही सर्च धरून ठेवू शकता आणि अ‍ॅरो की दाबू शकता. पुढे सुरू ठेवण्यासाठी Search + Right arrow दाबा.</translation>
+<translation id="8480873377842220259">तुम्ही आता काही मूलभूत नेव्हिगेशनबद्दल जाणून घ्याल. स्क्रीनभोवती फिरण्यासाठी तुम्ही सर्च धरून ठेवू शकता आणि अ‍ॅरो की प्रेस करू शकता. पुढे सुरू ठेवण्यासाठी Search + Right arrow प्रेस करा.</translation>
 <translation id="8503360654911991865">नॅव्हिगेशन ग्रॅन्युलॅरिटी कमी करा</translation>
 <translation id="8520472399088452386">स्पिन बटण</translation>
 <translation id="8534394844575788431">फॉरमॅटिंग</translation>
@@ -1126,7 +1126,7 @@
 <translation id="8693391540059827073">माझा आवडता ऋतू</translation>
 <translation id="8696284982970258155">फिकट पिवळसर हिरवा</translation>
 <translation id="8697111817566059991">{COUNT,plural, =1{पाइप}other{# अनुलंब पाइप}}</translation>
-<translation id="8741370088760768424">सूचना: सध्याचा आयटम अ‍ॅक्टिव्हेट करण्यासाठी Search + Space दाबा.</translation>
+<translation id="8741370088760768424">सूचना: सध्याचा आयटम अ‍ॅक्टिव्हेट करण्यासाठी Search + Space प्रेस करा.</translation>
 <translation id="8743786158317878347">संरचित आशय एंटर करा, जसे की सारण्या</translation>
 <translation id="8746846427395705317">मागील शब्दावर हलवा</translation>
 <translation id="8747966237988593539">क्रमांकित सूची</translation>
@@ -1158,7 +1158,7 @@
 <translation id="8978496506222343566">tltip</translation>
 <translation id="898089897833732740"><ph name="PHRASE" /> हटवा</translation>
 <translation id="8986362086234534611">विसरा</translation>
-<translation id="8989104346085848538">सध्याचे कोणतेही ChromeVox भाषण थांबवण्यासाठी कंट्रोल की दाबा.</translation>
+<translation id="8989104346085848538">सध्याचे कोणतेही ChromeVox भाषण थांबवण्यासाठी कंट्रोल की प्रेस करा.</translation>
 <translation id="8993737615451556423">वाचनाच्या आवाजाची गती वाढवण्यासाठी, कमी करण्यासाठी आणि विराम देण्यासाठी नियंत्रणे पुरवते</translation>
 <translation id="9014206344398081366">ChromeVox ट्यूटोरियल</translation>
 <translation id="9040132695316389094">मथळा 1</translation>
