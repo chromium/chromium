@@ -279,13 +279,6 @@ bool WebAXObject::IsClickable() const {
          action != ax::mojom::blink::DefaultActionVerb::kClickAncestor;
 }
 
-bool WebAXObject::IsControl() const {
-  if (IsDetached())
-    return false;
-
-  return private_->IsControl();
-}
-
 bool WebAXObject::IsFocused() const {
   if (IsDetached())
     return false;
@@ -293,32 +286,11 @@ bool WebAXObject::IsFocused() const {
   return private_->IsFocused();
 }
 
-bool WebAXObject::IsLineBreakingObject() const {
-  if (IsDetached())
-    return false;
-
-  return private_->IsLineBreakingObject();
-}
-
-bool WebAXObject::IsLinked() const {
-  if (IsDetached())
-    return false;
-
-  return private_->IsLinked();
-}
-
 bool WebAXObject::IsModal() const {
   if (IsDetached())
     return false;
 
   return private_->IsModal();
-}
-
-bool WebAXObject::IsAtomicTextField() const {
-  if (IsDetached())
-    return false;
-
-  return private_->IsAtomicTextField();
 }
 
 bool WebAXObject::IsOffScreen() const {
@@ -342,24 +314,6 @@ bool WebAXObject::IsVisited() const {
   return private_->IsVisited();
 }
 
-WebString WebAXObject::AccessKey() const {
-  if (IsDetached())
-    return WebString();
-
-  return WebString(private_->AccessKey());
-}
-
-// Deprecated.
-void WebAXObject::ColorValue(int& r, int& g, int& b) const {
-  if (IsDetached())
-    return;
-
-  unsigned color = private_->ColorValue();
-  r = (color >> 16) & 0xFF;
-  g = (color >> 8) & 0xFF;
-  b = color & 0xFF;
-}
-
 unsigned WebAXObject::ColorValue() const {
   if (IsDetached())
     return 0;
@@ -373,13 +327,6 @@ WebAXObject WebAXObject::AriaActiveDescendant() const {
     return WebAXObject();
 
   return WebAXObject(private_->ActiveDescendant());
-}
-
-WebAXObject WebAXObject::ErrorMessage() const {
-  if (IsDetached())
-    return WebAXObject();
-
-  return WebAXObject(private_->ErrorMessage());
 }
 
 bool WebAXObject::IsEditable() const {
@@ -408,13 +355,6 @@ WebString WebAXObject::LiveRegionStatus() const {
     return WebString();
 
   return private_->LiveRegionStatus();
-}
-
-bool WebAXObject::ContainerLiveRegionAtomic() const {
-  if (IsDetached())
-    return false;
-
-  return private_->ContainerLiveRegionAtomic();
 }
 
 bool WebAXObject::AriaOwns(WebVector<WebAXObject>& owns_elements) const {

@@ -110,25 +110,15 @@ class BLINK_EXPORT WebAXObject {
   int ImageDataNodeId() const;
 
   ax::mojom::CheckedState CheckedState() const;
-  bool IsCheckable() const;
   bool IsClickable() const;
-  bool IsControl() const;
   bool IsFocused() const;
-  bool IsLineBreakingObject() const;
-  bool IsLinked() const;
   bool IsModal() const;
 
-  // Returns true if this object is an input element of a text field type, such
-  // as type="text" or type="tel", or a textarea.
-  bool IsAtomicTextField() const;
   bool IsOffScreen() const;
   bool IsSelectedOptionActive() const;
   bool IsVisited() const;
 
-  WebString AccessKey() const;
   bool CanSetValueAttribute() const;
-  // Deprecated.
-  void ColorValue(int& r, int& g, int& b) const;
   unsigned ColorValue() const;
   WebAXObject AriaActiveDescendant() const;
   WebString AutoComplete() const;
@@ -136,7 +126,6 @@ class BLINK_EXPORT WebAXObject {
   bool IsEditable() const;
   bool AriaOwns(WebVector<WebAXObject>& owns_elements) const;
   bool CanvasHasFallbackContent() const;
-  WebAXObject ErrorMessage() const;
   ax::mojom::InvalidState InvalidState() const;
   int HeadingLevel() const;
   int HierarchicalLevel() const;
@@ -192,7 +181,6 @@ class BLINK_EXPORT WebAXObject {
   bool LiveRegionAtomic() const;
   WebString LiveRegionRelevant() const;
   WebString LiveRegionStatus() const;
-  bool ContainerLiveRegionAtomic() const;
 
   bool SupportsRangeValue() const;
   bool ValueForRange(float* out_value) const;
