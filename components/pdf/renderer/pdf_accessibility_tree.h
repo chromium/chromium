@@ -32,6 +32,7 @@ class PdfAccessibilityActionHandler;
 struct AccessibilityActionData;
 struct AccessibilityCharInfo;
 struct AccessibilityDocInfo;
+struct AccessibilityImageInfo;
 struct AccessibilityPageInfo;
 struct AccessibilityPageObjects;
 struct AccessibilityTextRunInfo;
@@ -131,7 +132,7 @@ class PdfAccessibilityTree : public content::PluginAXTreeSource,
   // adds a page node hosting a child tree containing the page contents which
   // will later be provided by the OCR Service.
   void OnOcrDataReceived(const ui::AXNodeID& image_node_id,
-                         const gfx::RectF& image_bounds,
+                         const chrome_pdf::AccessibilityImageInfo& image,
                          const ui::AXNodeID& parent_node_id,
                          const ui::AXTreeID& child_tree_id);
 
