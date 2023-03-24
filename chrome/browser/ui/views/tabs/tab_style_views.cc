@@ -105,6 +105,12 @@ class GM2TabStyle : public TabStyleViews {
   // Painting helper functions:
   virtual SkColor GetTabBackgroundColor(TabActive active) const;
 
+  // Returns the thickness of the stroke drawn around the top and sides of the
+  // tab. Only active tabs may have a stroke, and not in all cases. If there
+  // is no stroke, returns 0. If |should_paint_as_active| is true, the tab is
+  // treated as an active tab regardless of its true current state.
+  virtual int GetStrokeThickness(bool should_paint_as_active = false) const;
+
  private:
   // Gets the bounds for the leading and trailing separators for a tab.
   SeparatorBounds GetSeparatorBounds(float scale) const;
@@ -141,12 +147,6 @@ class GM2TabStyle : public TabStyleViews {
 
   // Gets the throb value. A value of 0 indicates no throbbing.
   float GetThrobValue() const;
-
-  // Returns the thickness of the stroke drawn around the top and sides of the
-  // tab. Only active tabs may have a stroke, and not in all cases. If there
-  // is no stroke, returns 0. If |should_paint_as_active| is true, the tab is
-  // treated as an active tab regardless of its true current state.
-  int GetStrokeThickness(bool should_paint_as_active = false) const;
 
   bool ShouldPaintTabBackgroundColor(TabActive active,
                                      bool has_custom_background) const;
@@ -956,6 +956,7 @@ class GM3TabStyle : public GM2TabStyle {
  public:
   explicit GM3TabStyle(Tab* tab);
   SkColor GetTabBackgroundColor(TabActive active) const override;
+  int GetStrokeThickness(bool should_paint_as_active = false) const override;
 };
 
 GM3TabStyle::GM3TabStyle(Tab* tab) : GM2TabStyle(tab) {}
@@ -975,6 +976,14 @@ SkColor GM3TabStyle::GetTabBackgroundColor(TabActive active) const {
 
   return cp->GetColor(kColorIds[int(active == TabActive::kActive)][int(
       tab()->controller()->ShouldPaintAsActiveFrame())]);
+}
+
+int GM3TabStyle::GetStrokeThickness(bool should_paint_as_active) const {
+  if (tab()->group().has_value() && tab()->IsActive()) {
+    return TabGroupUnderline::kStrokeThickness;
+  }
+
+  return 0;
 }
 
 }  // namespace

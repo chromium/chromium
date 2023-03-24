@@ -87,6 +87,7 @@
 #include "ui/base/models/list_selection_model.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/base/theme_provider.h"
+#include "ui/base/ui_base_features.h"
 #include "ui/color/color_provider.h"
 #include "ui/display/display.h"
 #include "ui/gfx/animation/throb_animation.h"
@@ -1152,8 +1153,16 @@ void TabStrip::OnGroupClosed(const tab_groups::TabGroupId& group) {
 
 bool TabStrip::ShouldDrawStrokes() const {
   // If the controller says we can't draw strokes, don't.
-  if (!controller_->CanDrawStrokes())
+  if (!controller_->CanDrawStrokes()) {
     return false;
+  }
+
+  // The Tabstrip in the refreshed style does not meet the contrast ratio
+  // requirements listed below but does not have strokes for Tabs or the bottom
+  // border.
+  if (features::IsChromeRefresh2023()) {
+    return false;
+  }
 
   // The tabstrip normally avoids strokes and relies on the active tab
   // contrasting sufficiently with the frame background.  When there isn't
