@@ -4536,6 +4536,11 @@
     "expiry_milestone": 110
   },
   {
+    "name": "ios-set-up-list",
+    "owners": ["scottyoder@google.com", "bling-get-set-up@google.com"],
+    "expiry_milestone": 118
+  },
+  {
     "name": "ios-shared-highlighting-color-change",
     "owners": [ "cheickcisse@google.com" ],
     "expiry_milestone": 95

@@ -532,6 +532,10 @@ const char kIOSPasswordUISplitDescription[] =
     "Splits Password Settings and "
     "Password Manager into two separate UIs.";
 
+const char kIOSSetUpListName[] = "IOS Set Up List";
+const char kIOSSetUpListDescription[] =
+    "Displays an unobtrusive list of set up tasks on Home for a new user.";
+
 const char kIOSPasswordManagerCrossOriginIframeSupportName[] =
     "IOS Password Manager Cross-Origin Iframe Support";
 const char kIOSPasswordManagerCrossOriginIframeSupportDescription[] =

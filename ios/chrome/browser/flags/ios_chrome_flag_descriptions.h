@@ -459,6 +459,10 @@ extern const char kIOSPasswordCheckupDescription[];
 extern const char kIOSPasswordUISplitName[];
 extern const char kIOSPasswordUISplitDescription[];
 
+// Title and description for the flag to display the Set Up List.
+extern const char kIOSSetUpListName[];
+extern const char kIOSSetUpListDescription[];
+
 // Title and description for the flag to enable password saving and
 // filling in cross-origin iframes on IOS.
 extern const char kIOSPasswordManagerCrossOriginIframeSupportName[];
