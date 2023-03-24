@@ -154,9 +154,9 @@ absl::optional<FeatureConfig> GetClientSideFeatureConfig(
     absl::optional<FeatureConfig> config = FeatureConfig();
     config->valid = true;
     config->availability = Comparator(ANY, 0);
-    config->session_rate = Comparator(ANY, 0);
+    config->session_rate = Comparator(EQUAL, 0);
     config->trigger = EventConfig("battery_saver_info_triggered",
-                                  Comparator(EQUAL, 0), 360, 360);
+                                  Comparator(LESS_THAN, 3), 360, 360);
     config->used =
         EventConfig("battery_saver_info_shown", Comparator(EQUAL, 0), 7, 360);
     return config;
@@ -166,11 +166,11 @@ absl::optional<FeatureConfig> GetClientSideFeatureConfig(
     absl::optional<FeatureConfig> config = FeatureConfig();
     config->valid = true;
     config->availability = Comparator(ANY, 0);
-    config->session_rate = Comparator(ANY, 0);
-    // Show the promo once a year if the page action chip was not opened
+    config->session_rate = Comparator(EQUAL, 0);
+    // Show the promo up to 3 times if the page action chip was not opened
     // within the last week
     config->trigger = EventConfig("high_efficiency_info_trigger",
-                                  Comparator(EQUAL, 0), 360, 360);
+                                  Comparator(LESS_THAN, 3), 360, 360);
     config->used =
         EventConfig("high_efficiency_info_shown", Comparator(EQUAL, 0), 7, 360);
     return config;
@@ -180,10 +180,10 @@ absl::optional<FeatureConfig> GetClientSideFeatureConfig(
     absl::optional<FeatureConfig> config = FeatureConfig();
     config->valid = true;
     config->availability = Comparator(ANY, 0);
-    config->session_rate = Comparator(ANY, 0);
-    // Show the promo max 3 times, once per day.
+    config->session_rate = Comparator(EQUAL, 0);
+    // Show the promo max 3 times, once per week.
     config->trigger = EventConfig("high_efficiency_prompt_in_trigger",
-                                  Comparator(LESS_THAN, 1), 1, 360);
+                                  Comparator(LESS_THAN, 1), 7, 360);
     // This event is never logged but is included for consistency.
     config->used = EventConfig("high_efficiency_prompt_in_used",
                                Comparator(EQUAL, 0), 360, 360);
