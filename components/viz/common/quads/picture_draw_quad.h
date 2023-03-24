@@ -41,19 +41,6 @@ class VIZ_COMMON_EXPORT PictureDrawQuad : public ContentDrawQuadBase {
               ImageAnimationMap animation_map,
               scoped_refptr<cc::DisplayItemList> display_items);
 
-  void SetAll(const SharedQuadState* shared_quad_state,
-              const gfx::Rect& rect,
-              const gfx::Rect& visible_rect,
-              bool needs_blending,
-              const gfx::RectF& tex_coord_rect,
-              const gfx::Size& texture_size,
-              bool nearest_neighbor,
-              ResourceFormat format,
-              const gfx::Rect& content,
-              float scale,
-              ImageAnimationMap animation_map,
-              scoped_refptr<cc::DisplayItemList> display_items);
-
   gfx::Rect content_rect;
   float contents_scale;
   ImageAnimationMap image_animation_map;

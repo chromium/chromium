@@ -470,18 +470,6 @@ TEST(DrawQuadTest, CopyPictureDrawQuad) {
   EXPECT_EQ(content_rect, copy_quad->content_rect);
   EXPECT_EQ(contents_scale, copy_quad->contents_scale);
   EXPECT_EQ(display_item_list, copy_quad->display_item_list);
-
-  CREATE_QUAD_ALL(PictureDrawQuad, tex_coord_rect, texture_size,
-                  nearest_neighbor, texture_format, content_rect,
-                  contents_scale, {}, display_item_list);
-  EXPECT_EQ(DrawQuad::Material::kPictureContent, copy_quad->material);
-  EXPECT_EQ(tex_coord_rect, copy_quad->tex_coord_rect);
-  EXPECT_EQ(texture_size, copy_quad->texture_size);
-  EXPECT_EQ(nearest_neighbor, copy_quad->nearest_neighbor);
-  EXPECT_EQ(texture_format, copy_quad->texture_format);
-  EXPECT_EQ(content_rect, copy_quad->content_rect);
-  EXPECT_EQ(contents_scale, copy_quad->contents_scale);
-  EXPECT_EQ(display_item_list, copy_quad->display_item_list);
 }
 
 class DrawQuadIteratorTest : public testing::Test {
