@@ -62,11 +62,14 @@ bool AutoEnrollmentTypeChecker::IsUnifiedStateDeterminationEnabled() {
   if (command_line_mode == kUnifiedStateDeterminationNever) {
     return false;
   }
-  return !UnifiedStateDeterminationKillSwitchEnabled() &&
-         // Non-Google-branded Chrome indicates that we're running on non-Chrome
-         // hardware. In that environment, it doesn't make sense to enable state
-         // determination as state key generation is likely to fail.
-         IsGoogleBrandedChrome();
+  if (IsUnifiedStateDeterminationDisabledByKillSwitch()) {
+    return false;
+  }
+
+  // Non-Google-branded Chrome indicates that we're running on non-Chrome
+  // hardware. In that environment, it doesn't make sense to enable state
+  // determination as state key generation is likely to fail.
+  return IsGoogleBrandedChrome();
 }
 
 // static
@@ -378,9 +381,11 @@ void AutoEnrollmentTypeChecker::
 }
 
 // static
-bool AutoEnrollmentTypeChecker::UnifiedStateDeterminationKillSwitchEnabled() {
+// As of today, the unified state determination is "killed" by default.
+// TODO(b/265923216): Implement fetching server-based kill switch.
+bool AutoEnrollmentTypeChecker::
+    IsUnifiedStateDeterminationDisabledByKillSwitch() {
   if (!g_unified_enrollment_kill_switch_.has_value()) {
-    // TODO(b/265923216): Implement fetching server-based kill switch.
     g_unified_enrollment_kill_switch_ = true;
   }
 

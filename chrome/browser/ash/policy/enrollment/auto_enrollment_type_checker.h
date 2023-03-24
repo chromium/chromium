@@ -143,7 +143,7 @@ class AutoEnrollmentTypeChecker {
 
   // Checks if unified state determination is disabled using the server-based
   // kill-switch.
-  static bool UnifiedStateDeterminationKillSwitchEnabled();
+  static bool IsUnifiedStateDeterminationDisabledByKillSwitch();
 };
 
 }  // namespace policy
