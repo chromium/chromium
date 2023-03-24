@@ -168,7 +168,7 @@ BOOL ShouldDismissKeyboardOnScroll() {
 
 - (void)loadView {
   // TODO(crbug.com/1365374): Check why largeIconService not available in
-  // icognito.
+  // incognito.
   if (self.largeIconService) {
     _carouselAttributeProvider = [[FaviconAttributesProvider alloc]
         initWithFaviconSize:kMaxTileFaviconSize

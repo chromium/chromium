@@ -44,7 +44,7 @@ enum class MenuActionType {
   ShowQRScanner = 32,
   StartVoiceSearch = 33,
   StartNewSearch = 34,
-  StartNewIcognitoSearch = 35,
+  StartNewIncognitoSearch = 35,
   SearchCopiedImage = 36,
   VisitCopiedLink = 37,
   SearchCopiedText = 38,

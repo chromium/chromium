@@ -292,7 +292,7 @@
                                 IDS_IOS_TOOLS_MENU_NEW_INCOGNITO_SEARCH)
                       image:CustomSymbolWithPointSize(kIncognitoSymbol,
                                                       kSymbolActionPointSize)
-                       type:MenuActionType::StartNewIcognitoSearch
+                       type:MenuActionType::StartNewIncognitoSearch
                       block:^{
                         OpenNewTabCommand* command =
                             [OpenNewTabCommand commandWithIncognito:YES];

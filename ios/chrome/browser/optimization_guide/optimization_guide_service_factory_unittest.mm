@@ -55,7 +55,7 @@ TEST_F(OptimizationGuideServiceFactoryTest, CheckNormalServiceNotNull) {
                          browser_state_.get()));
 }
 
-TEST_F(OptimizationGuideServiceFactoryTest, CheckIncogitoServiceNotNull) {
+TEST_F(OptimizationGuideServiceFactoryTest, CheckIncognitoServiceNotNull) {
   EXPECT_NE(nullptr, OptimizationGuideServiceFactory::GetForBrowserState(
                          browser_state_->GetOffTheRecordChromeBrowserState()));
 }

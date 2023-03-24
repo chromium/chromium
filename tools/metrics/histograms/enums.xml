@@ -112651,7 +112651,7 @@ Called by update_scheduler_enums.py.-->
   </int>
   <int value="1" label="Remote request without page URL ineligible">
     Suggest request without sending the current page URL cannot be made. E.g.,
-    the user is in icognito mode or Google is not set as the default search
+    the user is in incognito mode or Google is not set as the default search
     provider.
   </int>
   <int value="2" label="Remote request with sending page URL ineligible">

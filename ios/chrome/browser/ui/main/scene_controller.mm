@@ -1303,8 +1303,8 @@ void InjectNTP(Browser* browser) {
 
   NSString* text =
       inIncognitoMode
-          ? l10n_util::GetNSString(IDS_IOS_SNACKBAR_MESSAGE_ICOGNITO_FORCED)
-          : l10n_util::GetNSString(IDS_IOS_SNACKBAR_MESSAGE_ICOGNITO_DISABLED);
+          ? l10n_util::GetNSString(IDS_IOS_SNACKBAR_MESSAGE_INCOGNITO_FORCED)
+          : l10n_util::GetNSString(IDS_IOS_SNACKBAR_MESSAGE_INCOGNITO_DISABLED);
 
   MDCSnackbarMessage* message = [MDCSnackbarMessage messageWithText:text];
   message.action = action;

@@ -801,7 +801,7 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
     completion(completeds[0], finisheds[0]);
   };
 
-  // Each LayoutSwitcher method calls regular and icognito grid controller's
+  // Each LayoutSwitcher method calls regular and incognito grid controller's
   // corresponding method. Thus, attaching the completion to only one of the
   // grid view controllers should suffice.
   [regularViewController willTransitionToLayout:nextState

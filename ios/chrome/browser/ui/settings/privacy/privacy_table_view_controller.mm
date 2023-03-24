@@ -582,7 +582,7 @@ const char kSyncSettingsURL[] = "settings://open_sync";
 - (void)didTapIncognitoReauthDisabledInfoButton:(UIButton*)buttonView {
   NSString* popoverMessage =
       IsIncognitoModeDisabled(_browserState->GetPrefs())
-          ? l10n_util::GetNSString(IDS_IOS_SNACKBAR_MESSAGE_ICOGNITO_DISABLED)
+          ? l10n_util::GetNSString(IDS_IOS_SNACKBAR_MESSAGE_INCOGNITO_DISABLED)
           : l10n_util::GetNSString(
                 IDS_IOS_INCOGNITO_REAUTH_SET_UP_PASSCODE_HINT);
   InfoPopoverViewController* popover =
@@ -600,8 +600,8 @@ const char kSyncSettingsURL[] = "settings://open_sync";
 - (void)didTapIncognitoInterstitialDisabledInfoButton:(UIButton*)buttonView {
   NSString* popoverMessage =
       IsIncognitoModeDisabled(_browserState->GetPrefs())
-          ? l10n_util::GetNSString(IDS_IOS_SNACKBAR_MESSAGE_ICOGNITO_DISABLED)
-          : l10n_util::GetNSString(IDS_IOS_SNACKBAR_MESSAGE_ICOGNITO_FORCED);
+          ? l10n_util::GetNSString(IDS_IOS_SNACKBAR_MESSAGE_INCOGNITO_DISABLED)
+          : l10n_util::GetNSString(IDS_IOS_SNACKBAR_MESSAGE_INCOGNITO_FORCED);
   EnterpriseInfoPopoverViewController* popover =
       [[EnterpriseInfoPopoverViewController alloc]
           initWithMessage:popoverMessage

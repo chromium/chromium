@@ -2373,10 +2373,10 @@ While in Incognito, sites can't use cookies to see your browsing activity across
       <message name="IDS_IOS_SNACKBAR_MESSAGE_UNPINNED_TAB" desc="The iOS snackbar message when a tab has been unpinned. [iOS only]">
         Tab Unpinned
       </message>
-      <message name="IDS_IOS_SNACKBAR_MESSAGE_ICOGNITO_DISABLED" desc="The material toast message when incogonito mode is disabled by policy [iOS only].">
+      <message name="IDS_IOS_SNACKBAR_MESSAGE_INCOGNITO_DISABLED" desc="The material toast message when incogonito mode is disabled by policy [iOS only].">
         Your organization turned off Incognito mode
       </message>
-      <message name="IDS_IOS_SNACKBAR_MESSAGE_ICOGNITO_FORCED" desc="The material toast message when incogonito mode is forced by policy [iOS only].">
+      <message name="IDS_IOS_SNACKBAR_MESSAGE_INCOGNITO_FORCED" desc="The material toast message when incogonito mode is forced by policy [iOS only].">
         Your organization requires Incognito mode
       </message>
       <message name="IDS_IOS_TOOLS_MENU_CELL_NEW_FEATURE_BADGE" desc="Title and accessibility label of the badge displayed on a tools menu item when it represents a new feature [Length: 20em]" meaning="A badge with this title is displayed informing the user that this feature that is new to them.">
