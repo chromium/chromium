@@ -75,7 +75,8 @@ class CONTENT_EXPORT LegacyRenderWidgetHostHWND
   // Creates and returns an instance of the LegacyRenderWidgetHostHWND class on
   // successful creation of a child window parented to the parent window passed
   // in.
-  static LegacyRenderWidgetHostHWND* Create(HWND parent);
+  static LegacyRenderWidgetHostHWND* Create(HWND parent,
+                                            RenderWidgetHostViewAura* host);
 
   LegacyRenderWidgetHostHWND(const LegacyRenderWidgetHostHWND&) = delete;
   LegacyRenderWidgetHostHWND& operator=(const LegacyRenderWidgetHostHWND&) =
@@ -128,12 +129,6 @@ class CONTENT_EXPORT LegacyRenderWidgetHostHWND
   // Resizes the window to the bounds passed in.
   void SetBounds(const gfx::Rect& bounds);
 
-  // The pointer to the containing RenderWidgetHostViewAura instance is passed
-  // here.
-  void set_host(RenderWidgetHostViewAura* host) {
-    host_ = host;
-  }
-
   // Return the root accessible object for either MSAA or UI Automation.
   gfx::NativeViewAccessible GetOrCreateWindowRootAccessible(
       bool is_uia_request);
@@ -145,7 +140,7 @@ class CONTENT_EXPORT LegacyRenderWidgetHostHWND
   friend class AccessibilityObjectLifetimeWinBrowserTest;
   friend class DirectManipulationBrowserTestBase;
 
-  LegacyRenderWidgetHostHWND();
+  LegacyRenderWidgetHostHWND(RenderWidgetHostViewAura* host);
   ~LegacyRenderWidgetHostHWND() override;
 
   // If initialization fails, deletes `this` and returns false.
@@ -183,6 +178,7 @@ class CONTENT_EXPORT LegacyRenderWidgetHostHWND
   bool IsAXFragmentRootAControlElement() override;
 
   gfx::NativeViewAccessible GetOrCreateBrowserAccessibilityRoot();
+  void CreateDirectManipulationHelper();
 
   Microsoft::WRL::ComPtr<IAccessible> window_accessible_;
 

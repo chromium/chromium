@@ -2507,11 +2507,10 @@ void RenderWidgetHostViewAura::UpdateLegacyWin() {
 
   if (!legacy_render_widget_host_HWND_) {
     legacy_render_widget_host_HWND_ =
-        LegacyRenderWidgetHostHWND::Create(GetHostWindowHWND());
+        LegacyRenderWidgetHostHWND::Create(GetHostWindowHWND(), this);
   }
 
   if (legacy_render_widget_host_HWND_) {
-    legacy_render_widget_host_HWND_->set_host(this);
     legacy_render_widget_host_HWND_->UpdateParent(GetHostWindowHWND());
     legacy_render_widget_host_HWND_->SetBounds(
         window_->GetBoundsInRootWindow());

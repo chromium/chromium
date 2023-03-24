@@ -39,7 +39,9 @@ namespace content {
 const int kIdScreenReaderHoneyPot = 1;
 
 // static
-LegacyRenderWidgetHostHWND* LegacyRenderWidgetHostHWND::Create(HWND parent) {
+LegacyRenderWidgetHostHWND* LegacyRenderWidgetHostHWND::Create(
+    HWND parent,
+    RenderWidgetHostViewAura* host) {
   // content_unittests passes in the desktop window as the parent. We allow
   // the LegacyRenderWidgetHostHWND instance to be created in this case for
   // these tests to pass.
@@ -49,7 +51,7 @@ LegacyRenderWidgetHostHWND* LegacyRenderWidgetHostHWND::Create(HWND parent) {
     return nullptr;
 
   LegacyRenderWidgetHostHWND* legacy_window_instance =
-      new LegacyRenderWidgetHostHWND();
+      new LegacyRenderWidgetHostHWND(host);
   if (!legacy_window_instance->InitOrDeleteSelf(parent))
     return nullptr;
 
@@ -65,12 +67,7 @@ void LegacyRenderWidgetHostHWND::Destroy() {
     ::DestroyWindow(hwnd());
 }
 
-void LegacyRenderWidgetHostHWND::UpdateParent(HWND parent) {
-  if (GetWindowEventTarget(GetParent()))
-    GetWindowEventTarget(GetParent())->HandleParentChanged();
-
-  ::SetParent(hwnd(), parent);
-
+void LegacyRenderWidgetHostHWND::CreateDirectManipulationHelper() {
   // Direct Manipulation is enabled on Windows 10+. The CreateInstance function
   // returns NULL if Direct Manipulation is not available. Recreate
   // |direct_manipulation_helper_| when parent changed (compositor and window
@@ -78,10 +75,38 @@ void LegacyRenderWidgetHostHWND::UpdateParent(HWND parent) {
   direct_manipulation_helper_ = DirectManipulationHelper::CreateInstance(
       hwnd(), host_->GetNativeView()->GetHost()->compositor(),
       GetWindowEventTarget(GetParent()));
+}
 
-  // Reset tooltips when parent changed; otherwise tooltips could stay open as
-  // the former parent wouldn't be forwarded any mouse leave messages.
-  host_->UpdateTooltip(std::u16string());
+void LegacyRenderWidgetHostHWND::UpdateParent(HWND new_parent) {
+  // Performance profiles for resizing show that roughly 1/3 of the
+  // browser main thread CPU samples are inside of the ::SetParent call, even
+  // though the parent is never changed during this operation. The CPU samples
+  // disappear if we ask the OS for the current parent and avoid the SetParent
+  // call altogether.
+  const HWND current_parent = GetParent();
+  if (current_parent != new_parent) {
+    if (GetWindowEventTarget(GetParent())) {
+      GetWindowEventTarget(GetParent())->HandleParentChanged();
+    }
+
+    ::SetParent(hwnd(), new_parent);
+
+    CreateDirectManipulationHelper();
+
+    // Reset tooltips when parent changed; otherwise tooltips could stay open as
+    // the former parent wouldn't be forwarded any mouse leave messages.
+    host_->UpdateTooltip(std::u16string());
+  } else {
+    // The first call to UpdateParent may have the parent correctly set on
+    // account of InitOrDeleteSelf having just created the correctly parented
+    // Window. We will need to create the DirectManipulationHelper in this case
+    // if we haven't already done so. After initial creation, the
+    // DirectManipulationHelper only needs to be re-created if the parent
+    // subsequently changes.
+    if (!direct_manipulation_helper_) {
+      CreateDirectManipulationHelper();
+    }
+  }
 }
 
 HWND LegacyRenderWidgetHostHWND::GetParent() {
@@ -118,9 +143,10 @@ void LegacyRenderWidgetHostHWND::OnFinalMessage(HWND hwnd) {
   delete this;
 }
 
-LegacyRenderWidgetHostHWND::LegacyRenderWidgetHostHWND()
+LegacyRenderWidgetHostHWND::LegacyRenderWidgetHostHWND(
+    RenderWidgetHostViewAura* host)
     : mouse_tracking_enabled_(false),
-      host_(nullptr),
+      host_(host),
       did_return_uia_object_(false) {}
 
 LegacyRenderWidgetHostHWND::~LegacyRenderWidgetHostHWND() {
@@ -186,6 +212,8 @@ bool LegacyRenderWidgetHostHWND::InitOrDeleteSelf(HWND parent) {
 
   // Disable pen flicks (http://crbug.com/506977)
   base::win::DisableFlicks(hwnd());
+
+  host_->UpdateTooltip(std::u16string());
 
   return true;
 }
