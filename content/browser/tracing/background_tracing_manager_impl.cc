@@ -96,9 +96,6 @@ BackgroundTracingManagerImpl::~BackgroundTracingManagerImpl() = default;
 void BackgroundTracingManagerImpl::AddMetadataGeneratorFunction() {
   auto* metadata_source = tracing::TraceEventMetadataSource::GetInstance();
   metadata_source->AddGeneratorFunction(
-      base::BindRepeating(&BackgroundTracingManagerImpl::GenerateMetadataDict,
-                          base::Unretained(this)));
-  metadata_source->AddGeneratorFunction(
       base::BindRepeating(&BackgroundTracingManagerImpl::GenerateMetadataProto,
                           base::Unretained(this)));
 }
@@ -380,14 +377,6 @@ bool BackgroundTracingManagerImpl::IsAllowedFinalization(
               *active_scenario_->GetConfig(),
               active_scenario_->GetConfig()->requires_anonymized_data(),
               is_crash_scenario));
-}
-
-absl::optional<base::Value::Dict>
-BackgroundTracingManagerImpl::GenerateMetadataDict() {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  if (!active_scenario_)
-    return absl::nullopt;
-  return active_scenario_->GenerateMetadataDict();
 }
 
 void BackgroundTracingManagerImpl::GenerateMetadataProto(

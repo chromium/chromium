@@ -20,10 +20,6 @@
 #include "services/tracing/public/mojom/background_tracing_agent.mojom.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
-namespace base {
-class Value;
-}  // namespace base
-
 namespace tracing::mojom {
 class BackgroundTracingAgent;
 class BackgroundTracingAgentProvider;
@@ -137,7 +133,6 @@ class BackgroundTracingManagerImpl : public BackgroundTracingManager {
   BackgroundTracingManagerImpl();
   ~BackgroundTracingManagerImpl() override;
 
-  absl::optional<base::Value::Dict> GenerateMetadataDict();
   void GenerateMetadataProto(
       perfetto::protos::pbzero::ChromeMetadataPacket* metadata,
       bool privacy_filtering_enabled);

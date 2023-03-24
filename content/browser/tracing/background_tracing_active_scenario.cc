@@ -467,18 +467,6 @@ bool BackgroundTracingActiveScenario::OnRuleTriggered(
   return true;
 }
 
-base::Value::Dict BackgroundTracingActiveScenario::GenerateMetadataDict() {
-  base::Value::Dict metadata_dict;
-  metadata_dict.Set("config", config_->ToDict());
-  metadata_dict.Set("scenario_name", config_->scenario_name());
-
-  if (last_triggered_rule_) {
-    metadata_dict.Set("last_triggered_rule", last_triggered_rule_->ToDict());
-  }
-
-  return metadata_dict;
-}
-
 void BackgroundTracingActiveScenario::GenerateMetadataProto(
     perfetto::protos::pbzero::ChromeMetadataPacket* metadata) {
   if (!last_triggered_rule_) {

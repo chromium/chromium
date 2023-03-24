@@ -42,7 +42,6 @@ class BackgroundTracingActiveScenario {
   void AbortScenario();
 
   CONTENT_EXPORT const BackgroundTracingConfigImpl* GetConfig() const;
-  base::Value::Dict GenerateMetadataDict();
   void GenerateMetadataProto(
       perfetto::protos::pbzero::ChromeMetadataPacket* metadata);
   State state() const { return scenario_state_; }
