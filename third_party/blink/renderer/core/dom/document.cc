@@ -403,6 +403,7 @@ void FireRequestStorageAccessForHistogram(RequestStorageResult result) {
 class IntrinsicSizeResizeObserverDelegate : public ResizeObserver::Delegate {
  public:
   void OnResize(const HeapVector<Member<ResizeObserverEntry>>& entries) final;
+  ResizeObserver::DeliveryTime Delivery() const final;
 };
 
 // Returns true if any of <object> ancestors don't start loading or are loading
@@ -618,6 +619,11 @@ void IntrinsicSizeResizeObserverDelegate::OnResize(
     DCHECK_GT(entry->contentBoxSize().size(), 0u);
     entry->target()->LastRememberedSizeChanged(entry->contentBoxSize().at(0));
   }
+}
+
+ResizeObserver::DeliveryTime IntrinsicSizeResizeObserverDelegate::Delivery()
+    const {
+  return ResizeObserver::DeliveryTime::kBeforeOthers;
 }
 
 void Document::UnassociatedListedElementsList::MarkDirty() {

@@ -30,7 +30,14 @@ ResizeObserverController* ResizeObserverController::FromIfExists(
 ResizeObserverController::ResizeObserverController() : Supplement(nullptr) {}
 
 void ResizeObserverController::AddObserver(ResizeObserver& observer) {
-  observers_.insert(&observer);
+  switch (observer.Delivery()) {
+    case ResizeObserver::DeliveryTime::kInsertionOrder:
+      observers_.insert(&observer);
+      break;
+    case ResizeObserver::DeliveryTime::kBeforeOthers:
+      observers_.PrependOrMoveToFirst(&observer);
+      break;
+  }
 }
 
 size_t ResizeObserverController::GatherObservations() {
