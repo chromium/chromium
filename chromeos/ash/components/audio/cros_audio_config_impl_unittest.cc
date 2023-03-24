@@ -949,8 +949,7 @@ TEST_F(CrosAudioConfigImplTest, StubInternalMicHandlesDualMicUpdates) {
       fake_observer->last_audio_system_properties_.value()
           ->input_devices[1]
           .Clone();
-  const std::string expected_display_name = "Internal Mic";
-  EXPECT_EQ(expected_display_name, internal_mic->display_name);
+  EXPECT_EQ(mojom::AudioDeviceType::kInternalMic, internal_mic->device_type);
   EXPECT_FALSE(internal_mic->is_active);
 
   SimulateSetActiveDevice(kInternalMicFrontId);
@@ -961,7 +960,7 @@ TEST_F(CrosAudioConfigImplTest, StubInternalMicHandlesDualMicUpdates) {
   internal_mic = fake_observer->last_audio_system_properties_.value()
                      ->input_devices[1]
                      .Clone();
-  EXPECT_EQ(expected_display_name, internal_mic->display_name);
+  EXPECT_EQ(mojom::AudioDeviceType::kInternalMic, internal_mic->device_type);
   EXPECT_TRUE(internal_mic->is_active);
 
   // Verify rear device ID will also set internal mic to active.
@@ -974,7 +973,7 @@ TEST_F(CrosAudioConfigImplTest, StubInternalMicHandlesDualMicUpdates) {
   internal_mic = fake_observer->last_audio_system_properties_.value()
                      ->input_devices[1]
                      .Clone();
-  EXPECT_EQ(expected_display_name, internal_mic->display_name);
+  EXPECT_EQ(mojom::AudioDeviceType::kInternalMic, internal_mic->device_type);
   EXPECT_TRUE(internal_mic->is_active);
 }
 

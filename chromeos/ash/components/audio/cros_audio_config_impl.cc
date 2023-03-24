@@ -16,7 +16,6 @@ namespace ash::audio_config {
 namespace {
 
 constexpr int kDefaultInternalMicId = 0;
-constexpr char kStubInternalMicDisplayName[] = "Internal Mic";
 constexpr base::TimeDelta kMetricsDelayTimerInterval = base::Seconds(2);
 
 // Histogram names.
@@ -42,8 +41,6 @@ AudioDevice CreateStubInternalMic() {
   AudioDevice internal_mic;
   internal_mic.id = kDefaultInternalMicId;
   internal_mic.is_input = true;
-  // TODO(b/260277007): Replace with lookup for localized device name.
-  internal_mic.display_name = kStubInternalMicDisplayName;
   internal_mic.stable_device_id_version = 2;
   internal_mic.type = AudioDeviceType::kInternalMic;
   internal_mic.active = false;
