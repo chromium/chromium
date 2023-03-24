@@ -16,10 +16,69 @@
 using bookmarks::BookmarkModel;
 using bookmarks::BookmarkNode;
 
+// /!\ Warning
+//
+// The design of the AppleScript dictionary with regards to bookmarks is
+// deficient. The ideal design would mirror the design of the actual bookmark
+// system, where a bookmark element could be either a folder or an item, and
+// bookmark folders could hold any number of them, in any order.
+//
+// However, that's not the design that is implemented. The current design is
+// that bookmark folders and bookmark items are separate and unrelated things,
+// and that bookmark folders have a list of bookmark folders they contain, as
+// well as a list of bookmark items they contain.
+//
+// That is, there are _two separate lists_.
+//
+// Translating from the real bookmarks system, where the children of a folder
+// are a list of intermingled folders and items, is easy: walk the list of
+// children, and filter out the wrong kind. (See `-bookmarkFolders` and
+// `-bookmarkItems`.)
+//
+// Translating _to_ the real bookmarks system cannot be done in the general
+// case. There is no control over the mingling of folders and items, and there
+// is only vague control over the ordering of items that share a type.
+//
+// All this is to explain the difference in terminology between "index" and
+// "bookmark manager position". An "index" value is relative to the two separate
+// child lists that exist from the AppleScript perspective. The "bookmark
+// manager position" is relative to the true list of (both types of) children of
+// a folder in the bookmarks system.
+//
+// Because AppleScript maintains no state, no translation ever needs to be done
+// from positions to indexes. AppleScript keeps object identifiers, and if it
+// ever needs to update the index, it will re-request the list and find the item
+// again by matching its ID.
+//
+// However, when a script requests a folder or bookmark to be moved around or
+// inserted, AppleScript will request a change in index. That index will need to
+// be converted into a position in the real list of children of a folder, and
+// that's what the `-bookmarkManagerPositionOf[Folder|Item]At:` methods are for.
+
+@interface BookmarkFolderAppleScript ()
+
+// Does the actual insertion of a bookmark folder at an absolute position.
+- (void)insertFolder:(BookmarkFolderAppleScript*)bookmarkFolder
+    atBookmarkManagerPosition:(size_t)position;
+
+// Does the actual insertion of a bookmark item at an absolute position.
+- (void)insertItem:(BookmarkItemAppleScript*)bookmarkItem
+    atBookmarkManagerPosition:(size_t)position;
+
+// Returns the position of a bookmark folder within the current bookmark folder
+// which consists of bookmark folders as well as bookmark items.
+- (size_t)bookmarkManagerPositionOfFolderAt:(size_t)index;
+
+// Returns the position of a bookmark item within the current bookmark folder
+// which consists of bookmark folders as well as bookmark items.
+- (size_t)bookmarkManagerPositionOfItemAt:(size_t)index;
+
+@end
+
 @implementation BookmarkFolderAppleScript
 
-- (NSArray*)bookmarkFolders {
-  NSMutableArray* bookmarkFolders =
+- (NSArray<BookmarkFolderAppleScript*>*)bookmarkFolders {
+  NSMutableArray<BookmarkFolderAppleScript*>* bookmarkFolders =
       [NSMutableArray arrayWithCapacity:self.bookmarkNode->children().size()];
 
   for (const auto& node : self.bookmarkNode->children()) {
@@ -37,64 +96,8 @@ using bookmarks::BookmarkNode;
   return bookmarkFolders;
 }
 
-- (void)insertInBookmarkFolders:(BookmarkFolderAppleScript*)aBookmarkFolder {
-  // This method gets called when a new bookmark folder is created so
-  // the container and property are set here.
-  [aBookmarkFolder setContainer:self
-                       property:AppleScript::kBookmarkFoldersProperty];
-  BookmarkModel* model = self.bookmarkModel;
-  if (!model) {
-    return;
-  }
-
-  const BookmarkNode* node =
-      model->AddFolder(self.bookmarkNode, self.bookmarkNode->children().size(),
-                       std::u16string());
-  if (!node) {
-    AppleScript::SetError(AppleScript::Error::kCreateBookmarkFolder);
-    return;
-  }
-
-  aBookmarkFolder.bookmarkNode = node;
-}
-
-- (void)insertInBookmarkFolders:(BookmarkFolderAppleScript*)aBookmarkFolder
-                        atIndex:(size_t)index {
-  // This method gets called when a new bookmark folder is created so
-  // the container and property are set here.
-  [aBookmarkFolder setContainer:self
-                       property:AppleScript::kBookmarkFoldersProperty];
-  size_t position = [self calculatePositionOfBookmarkFolderAt:index];
-
-  BookmarkModel* model = self.bookmarkModel;
-  if (!model) {
-    return;
-  }
-
-  const BookmarkNode* node =
-      model->AddFolder(self.bookmarkNode, position, std::u16string());
-  if (!node) {
-    AppleScript::SetError(AppleScript::Error::kCreateBookmarkFolder);
-    return;
-  }
-
-  aBookmarkFolder.bookmarkNode = node;
-}
-
-- (void)removeFromBookmarkFoldersAtIndex:(size_t)index {
-  size_t position = [self calculatePositionOfBookmarkFolderAt:index];
-
-  BookmarkModel* model = self.bookmarkModel;
-  if (!model) {
-    return;
-  }
-
-  model->Remove(self.bookmarkNode->children()[position].get(),
-                bookmarks::metrics::BookmarkEditSource::kUser);
-}
-
-- (NSArray*)bookmarkItems {
-  NSMutableArray* bookmarkItems =
+- (NSArray<BookmarkItemAppleScript*>*)bookmarkItems {
+  NSMutableArray<BookmarkItemAppleScript*>* bookmarkItems =
       [NSMutableArray arrayWithCapacity:self.bookmarkNode->children().size()];
 
   for (const auto& node : self.bookmarkNode->children()) {
@@ -112,65 +115,41 @@ using bookmarks::BookmarkNode;
   return bookmarkItems;
 }
 
-- (void)insertInBookmarkItems:(BookmarkItemAppleScript*)aBookmarkItem {
-  // This method gets called when a new bookmark item is created so
-  // the container and property are set here.
-  [aBookmarkItem setContainer:self
-                     property:AppleScript::kBookmarkItemsProperty];
+- (void)insertInBookmarkFolders:(BookmarkFolderAppleScript*)bookmarkFolder {
+  [self insertFolder:bookmarkFolder
+      atBookmarkManagerPosition:self.bookmarkNode->children().size()];
+}
+
+- (void)insertInBookmarkFolders:(BookmarkFolderAppleScript*)bookmarkFolder
+                        atIndex:(size_t)index {
+  [self insertFolder:bookmarkFolder
+      atBookmarkManagerPosition:[self bookmarkManagerPositionOfFolderAt:index]];
+}
+
+- (void)insertFolder:(BookmarkFolderAppleScript*)bookmarkFolder
+    atBookmarkManagerPosition:(size_t)position {
+  [bookmarkFolder setContainer:self
+                      property:AppleScript::kBookmarkFoldersProperty];
 
   BookmarkModel* model = self.bookmarkModel;
   if (!model) {
     return;
   }
 
-  GURL url = GURL(base::SysNSStringToUTF8(aBookmarkItem.URL));
-  if (!url.is_valid()) {
-    AppleScript::SetError(AppleScript::Error::kInvalidURL);
-    return;
-  }
-
-  const BookmarkNode* node =
-      model->AddNewURL(self.bookmarkNode, self.bookmarkNode->children().size(),
-                       std::u16string(), url);
+  const BookmarkNode* node = model->AddFolder(
+      self.bookmarkNode, position,
+      /*title=*/std::u16string(), /*meta_info=*/nullptr,
+      /*creation_time=*/absl::nullopt, bookmarkFolder.bookmarkGUID);
   if (!node) {
-    AppleScript::SetError(AppleScript::Error::kCreateBookmarkItem);
+    AppleScript::SetError(AppleScript::Error::kCreateBookmarkFolder);
     return;
   }
 
-  aBookmarkItem.bookmarkNode = node;
+  [bookmarkFolder didCreateBookmarkNode:node];
 }
 
-- (void)insertInBookmarkItems:(BookmarkItemAppleScript*)aBookmarkItem
-                      atIndex:(size_t)index {
-  // This method gets called when a new bookmark item is created so
-  // the container and property are set here.
-  [aBookmarkItem setContainer:self
-                     property:AppleScript::kBookmarkItemsProperty];
-  size_t position = [self calculatePositionOfBookmarkItemAt:index];
-
-  BookmarkModel* model = self.bookmarkModel;
-  if (!model) {
-    return;
-  }
-
-  GURL url(base::SysNSStringToUTF8(aBookmarkItem.URL));
-  if (!url.is_valid()) {
-    AppleScript::SetError(AppleScript::Error::kInvalidURL);
-    return;
-  }
-
-  const BookmarkNode* node =
-      model->AddNewURL(self.bookmarkNode, position, std::u16string(), url);
-  if (!node) {
-    AppleScript::SetError(AppleScript::Error::kCreateBookmarkItem);
-    return;
-  }
-
-  aBookmarkItem.bookmarkNode = node;
-}
-
-- (void)removeFromBookmarkItemsAtIndex:(size_t)index {
-  size_t position = [self calculatePositionOfBookmarkItemAt:index];
+- (void)removeFromBookmarkFoldersAtIndex:(size_t)index {
+  size_t position = [self bookmarkManagerPositionOfFolderAt:index];
 
   BookmarkModel* model = self.bookmarkModel;
   if (!model) {
@@ -181,8 +160,58 @@ using bookmarks::BookmarkNode;
                 bookmarks::metrics::BookmarkEditSource::kUser);
 }
 
-- (size_t)calculatePositionOfBookmarkFolderAt:(size_t)index {
-  // Traverse through all the child nodes till the required node is found and
+- (void)insertInBookmarkItems:(BookmarkItemAppleScript*)bookmarkItem {
+  [self insertItem:bookmarkItem
+      atBookmarkManagerPosition:self.bookmarkNode->children().size()];
+}
+
+- (void)insertInBookmarkItems:(BookmarkItemAppleScript*)bookmarkItem
+                      atIndex:(size_t)index {
+  [self insertItem:bookmarkItem
+      atBookmarkManagerPosition:[self bookmarkManagerPositionOfItemAt:index]];
+}
+
+- (void)insertItem:(BookmarkItemAppleScript*)bookmarkItem
+    atBookmarkManagerPosition:(size_t)position {
+  [bookmarkItem setContainer:self property:AppleScript::kBookmarkItemsProperty];
+
+  BookmarkModel* model = self.bookmarkModel;
+  if (!model) {
+    return;
+  }
+
+  GURL url(base::SysNSStringToUTF8(bookmarkItem.URL));
+  if (!url.is_valid()) {
+    AppleScript::SetError(AppleScript::Error::kInvalidURL);
+    return;
+  }
+
+  const BookmarkNode* node = model->AddURL(
+      self.bookmarkNode, position, /*title=*/std::u16string(), url,
+      /*meta_info=*/nullptr, /*creation_time=*/absl::nullopt,
+      bookmarkItem.bookmarkGUID, /*added_by_user=*/true);
+  if (!node) {
+    AppleScript::SetError(AppleScript::Error::kCreateBookmarkItem);
+    return;
+  }
+
+  [bookmarkItem didCreateBookmarkNode:node];
+}
+
+- (void)removeFromBookmarkItemsAtIndex:(size_t)index {
+  size_t position = [self bookmarkManagerPositionOfItemAt:index];
+
+  BookmarkModel* model = self.bookmarkModel;
+  if (!model) {
+    return;
+  }
+
+  model->Remove(self.bookmarkNode->children()[position].get(),
+                bookmarks::metrics::BookmarkEditSource::kUser);
+}
+
+- (size_t)bookmarkManagerPositionOfFolderAt:(size_t)index {
+  // Traverse through all the child nodes until the required node is found and
   // return its position.
   // AppleScript is 1-based therefore index is incremented by 1.
   ++index;
@@ -195,8 +224,8 @@ using bookmarks::BookmarkNode;
   return count - 1;
 }
 
-- (size_t)calculatePositionOfBookmarkItemAt:(size_t)index {
-  // Traverse through all the child nodes till the required node is found and
+- (size_t)bookmarkManagerPositionOfItemAt:(size_t)index {
+  // Traverse through all the child nodes until the required node is found and
   // return its position.
   // AppleScript is 1-based therefore index is incremented by 1.
   ++index;

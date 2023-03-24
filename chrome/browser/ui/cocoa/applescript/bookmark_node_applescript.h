@@ -7,6 +7,7 @@
 
 #import <Foundation/Foundation.h>
 
+#include "base/guid.h"
 #import "chrome/browser/ui/cocoa/applescript/element_applescript.h"
 
 namespace bookmarks {
@@ -18,16 +19,8 @@ class BookmarkNode;
 // bookmark item.
 @interface BookmarkNodeAppleScript : ElementAppleScript
 
-// Does not actually create a folder/item but just sets its ID, the folder is
-// created in insertInBookmarksFolder: in the corresponding bookmarks folder.
-- (instancetype)init;
-
-// Does not make a folder/item but instead uses an existing one.
-- (instancetype)initWithBookmarkNode:
-    (const bookmarks::BookmarkNode*)aBookmarkNode;
-
-// Assigns/gets a node, sets its unique ID and also copies temporary values.
-@property(assign) const bookmarks::BookmarkNode* bookmarkNode;
+// Gets the node.
+@property(readonly) const bookmarks::BookmarkNode* bookmarkNode;
 
 // Get and Set title.
 @property(copy) NSString* title;
@@ -38,6 +31,20 @@ class BookmarkNode;
 
 // Returns the bookmark model of the browser, returns null if there is an error.
 @property(readonly) bookmarks::BookmarkModel* bookmarkModel;
+
+// Returns the GUID of the bookmark node.
+@property(readonly) base::GUID bookmarkGUID;
+
+// Does not actually create a folder/item but just sets its ID, the folder is
+// created in insertInBookmarksFolder: in the corresponding bookmarks folder.
+- (instancetype)init;
+
+// Does not make a folder/item but instead uses an existing one.
+- (instancetype)initWithBookmarkNode:
+    (const bookmarks::BookmarkNode*)bookmarkNode;
+
+// Handles the bookkeeping for when a node is created.
+- (void)didCreateBookmarkNode:(const bookmarks::BookmarkNode*)bookmarkNode;
 
 @end
 

@@ -137,12 +137,12 @@ IN_PROC_BROWSER_TEST_F(BookmarkFolderAppleScriptTest, InsertBookmarkItem) {
   EXPECT_NSEQ(unique_id.get(), bi.uniqueID);
 
   // Test to see no bookmark item is created when no/invalid URL is entered.
-  base::scoped_nsobject<FakeScriptCommand> fakeScriptCommand(
+  base::scoped_nsobject<FakeScriptCommand> fake_script_command(
       [[FakeScriptCommand alloc] init]);
   bookmark_item.reset([[BookmarkItemAppleScript alloc] init]);
   [bookmark_bar_ insertInBookmarkItems:bookmark_item];
   EXPECT_EQ(static_cast<int>(Error::kInvalidURL),
-            fakeScriptCommand.get().scriptErrorNumber);
+            fake_script_command.get().scriptErrorNumber);
 }
 
 // Insert a new bookmark item at a particular position.
@@ -171,12 +171,12 @@ IN_PROC_BROWSER_TEST_F(BookmarkFolderAppleScriptTest,
   EXPECT_NSEQ(unique_id, bi.uniqueID);
 
   // Test to see no bookmark item is created when no/invalid URL is entered.
-  base::scoped_nsobject<FakeScriptCommand> fakeScriptCommand(
+  base::scoped_nsobject<FakeScriptCommand> fake_script_command(
       [[FakeScriptCommand alloc] init]);
   bookmark_item.reset([[BookmarkItemAppleScript alloc] init]);
   [bookmark_bar_ insertInBookmarkItems:bookmark_item atIndex:1];
   EXPECT_EQ(static_cast<int>(Error::kInvalidURL),
-            fakeScriptCommand.get().scriptErrorNumber);
+            fake_script_command.get().scriptErrorNumber);
 }
 
 // Delete bookmark items.

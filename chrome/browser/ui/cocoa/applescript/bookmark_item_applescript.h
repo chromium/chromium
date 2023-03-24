@@ -12,11 +12,11 @@
 // Represents a bookmark item scriptable object in applescript.
 @interface BookmarkItemAppleScript : BookmarkNodeAppleScript
 
-// Assigns a node, sets its unique ID and also copies temporary values.
-- (void)setBookmarkNode:(const bookmarks::BookmarkNode*)aBookmarkNode;
-
 // Returns/sets the URL that the bookmark item holds.
 @property(copy) NSString* URL;
+
+// Handles the bookkeeping for when a node is created.
+- (void)didCreateBookmarkNode:(const bookmarks::BookmarkNode*)bookmarkNode;
 
 @end
 
