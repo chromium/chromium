@@ -181,6 +181,7 @@ clang_v8_toolchain("clang_x64_v8_loong64") {
 
 # In a LaCrOS build, this toolchain is intended to be used as an alternate
 # toolchain to build Ash-Chrome in a subdirectory.
+# This is a test-only toolchain.
 clang_toolchain("ash_clang_x64") {
   toolchain_args = {
     # This turns the toolchain into the "Linux ChromeOS" build
@@ -202,6 +203,7 @@ clang_toolchain("ash_clang_x64") {
 
 # In an ash build, this toolchain is intended to be used as an alternate
 # toolchain to build lacros-Chrome in a subdirectory.
+# This is a test-only toolchain.
 clang_toolchain("lacros_clang_x64") {
   toolchain_args = {
     # This turns the toolchain into the "Lacros" build
@@ -214,7 +216,6 @@ clang_toolchain("lacros_clang_x64") {
     chromeos_is_browser_only = true
     use_clang_coverage = false
     dcheck_always_on = false
-    symbol_level = 1
   }
 }
 
