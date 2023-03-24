@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "ash/public/mojom/input_device_settings.mojom-forward.h"
 #include "ash/system/input_device_settings/pref_handlers/pointing_stick_pref_handler_impl.h"
 
 #include "ash/constants/ash_pref_names.h"
@@ -31,6 +32,11 @@ const mojom::PointingStickSettings kPointingStickSettingsDefault(
     /*swap_right=*/kDefaultSwapRight,
     /*sensitivity=*/kDefaultSensitivity,
     /*acceleration_enabled=*/kDefaultAccelerationEnabled);
+
+const mojom::PointingStickSettings kPointingStickSettingsNotDefault(
+    /*swap_right=*/!kDefaultSwapRight,
+    /*sensitivity=*/1,
+    /*acceleration_enabled=*/!kDefaultAccelerationEnabled);
 
 const mojom::PointingStickSettings kPointingStickSettings1(
     /*swap_right=*/true,
@@ -70,11 +76,18 @@ class PointingStickPrefHandlerTest : public AshTestBase {
     pref_service_->registry()->RegisterDictionaryPref(
         prefs::kPointingStickDeviceSettingsDictPref);
     pref_service_->registry()->RegisterIntegerPref(
-        prefs::kPointingStickSensitivity, kTestSensitivity);
+        prefs::kPointingStickSensitivity, kDefaultSensitivity);
     pref_service_->registry()->RegisterBooleanPref(
-        prefs::kPrimaryPointingStickButtonRight, kTestSwapRight);
+        prefs::kPrimaryPointingStickButtonRight, kDefaultSwapRight);
     pref_service_->registry()->RegisterBooleanPref(
-        prefs::kPointingStickAcceleration, kTestAccelerationEnabled);
+        prefs::kPointingStickAcceleration, kDefaultAccelerationEnabled);
+
+    pref_service_->SetUserPref(prefs::kPointingStickSensitivity,
+                               base::Value(kTestSensitivity));
+    pref_service_->SetUserPref(prefs::kPrimaryPointingStickButtonRight,
+                               base::Value(kTestSwapRight));
+    pref_service_->SetUserPref(prefs::kPointingStickAcceleration,
+                               base::Value(kTestAccelerationEnabled));
   }
 
   void CheckPointingStickSettingsAndDictAreEqual(
@@ -82,18 +95,27 @@ class PointingStickPrefHandlerTest : public AshTestBase {
       const base::Value::Dict& settings_dict) {
     const auto sensitivity =
         settings_dict.FindInt(prefs::kPointingStickSettingSensitivity);
-    ASSERT_TRUE(sensitivity.has_value());
-    EXPECT_EQ(settings.sensitivity, sensitivity);
+    if (sensitivity.has_value()) {
+      EXPECT_EQ(settings.sensitivity, sensitivity);
+    } else {
+      EXPECT_EQ(settings.sensitivity, kDefaultSensitivity);
+    }
 
     const auto swap_right =
         settings_dict.FindBool(prefs::kPointingStickSettingSwapRight);
-    ASSERT_TRUE(swap_right.has_value());
-    EXPECT_EQ(settings.swap_right, swap_right);
+    if (swap_right.has_value()) {
+      EXPECT_EQ(settings.swap_right, swap_right);
+    } else {
+      EXPECT_EQ(settings.swap_right, kDefaultSwapRight);
+    }
 
     const auto acceleration_enabled =
         settings_dict.FindBool(prefs::kPointingStickSettingAcceleration);
-    ASSERT_TRUE(acceleration_enabled.has_value());
-    EXPECT_EQ(settings.acceleration_enabled, acceleration_enabled);
+    if (acceleration_enabled.has_value()) {
+      EXPECT_EQ(settings.acceleration_enabled, acceleration_enabled);
+    } else {
+      EXPECT_EQ(settings.acceleration_enabled, kDefaultAccelerationEnabled);
+    }
   }
 
   void CallUpdatePointingStickSettings(
@@ -115,6 +137,16 @@ class PointingStickPrefHandlerTest : public AshTestBase {
     pref_handler_->InitializePointingStickSettings(pref_service_.get(),
                                                    pointing_stick.get());
     return std::move(pointing_stick->settings);
+  }
+
+  const base::Value::Dict* GetSettingsDict(const std::string& device_key) {
+    const auto& devices_dict =
+        pref_service_->GetDict(prefs::kPointingStickDeviceSettingsDictPref);
+    EXPECT_EQ(1u, devices_dict.size());
+    const auto* settings_dict = devices_dict.FindDict(device_key);
+    EXPECT_NE(nullptr, settings_dict);
+
+    return settings_dict;
   }
 
  protected:
@@ -277,6 +309,66 @@ TEST_F(PointingStickPrefHandlerTest,
   ASSERT_EQ(settings->sensitivity, kTestSensitivity);
   ASSERT_EQ(settings->swap_right, kTestSwapRight);
   ASSERT_EQ(settings->acceleration_enabled, kTestAccelerationEnabled);
+}
+
+TEST_F(PointingStickPrefHandlerTest,
+       TransitionPeriodSettingsPersistedWhenUserChosen) {
+  mojom::PointingStick pointing_stick;
+  pointing_stick.device_key = kPointingStickKey1;
+  Shell::Get()->input_device_tracker()->OnPointingStickConnected(
+      pointing_stick);
+
+  pref_service_->SetUserPref(prefs::kPointingStickSensitivity,
+                             base::Value(kDefaultSensitivity));
+  pref_service_->SetUserPref(prefs::kPrimaryPointingStickButtonRight,
+                             base::Value(kDefaultSwapRight));
+  pref_service_->SetUserPref(prefs::kPointingStickAcceleration,
+                             base::Value(kDefaultAccelerationEnabled));
+  mojom::PointingStickSettingsPtr settings =
+      CallInitializePointingStickSettings(pointing_stick.device_key);
+  EXPECT_EQ(kPointingStickSettingsDefault, *settings);
+
+  const auto* settings_dict = GetSettingsDict(pointing_stick.device_key);
+  EXPECT_TRUE(settings_dict->contains(prefs::kPointingStickSettingSensitivity));
+  EXPECT_TRUE(
+      settings_dict->contains(prefs::kPointingStickSettingAcceleration));
+  EXPECT_TRUE(settings_dict->contains(prefs::kPointingStickSettingSwapRight));
+  CheckPointingStickSettingsAndDictAreEqual(kPointingStickSettingsDefault,
+                                            *settings_dict);
+}
+
+TEST_F(PointingStickPrefHandlerTest, DefaultNotPersistedUntilUpdated) {
+  CallUpdatePointingStickSettings(kPointingStickKey1,
+                                  kPointingStickSettingsDefault);
+
+  const auto* settings_dict = GetSettingsDict(kPointingStickKey1);
+  EXPECT_FALSE(
+      settings_dict->contains(prefs::kPointingStickSettingSensitivity));
+  EXPECT_FALSE(
+      settings_dict->contains(prefs::kPointingStickSettingAcceleration));
+  EXPECT_FALSE(settings_dict->contains(prefs::kPointingStickSettingSwapRight));
+  CheckPointingStickSettingsAndDictAreEqual(kPointingStickSettingsDefault,
+                                            *settings_dict);
+
+  CallUpdatePointingStickSettings(kPointingStickKey1,
+                                  kPointingStickSettingsNotDefault);
+  settings_dict = GetSettingsDict(kPointingStickKey1);
+  EXPECT_TRUE(settings_dict->contains(prefs::kPointingStickSettingSensitivity));
+  EXPECT_TRUE(
+      settings_dict->contains(prefs::kPointingStickSettingAcceleration));
+  EXPECT_TRUE(settings_dict->contains(prefs::kPointingStickSettingSwapRight));
+  CheckPointingStickSettingsAndDictAreEqual(kPointingStickSettingsNotDefault,
+                                            *settings_dict);
+
+  CallUpdatePointingStickSettings(kPointingStickKey1,
+                                  kPointingStickSettingsDefault);
+  settings_dict = GetSettingsDict(kPointingStickKey1);
+  EXPECT_TRUE(settings_dict->contains(prefs::kPointingStickSettingSensitivity));
+  EXPECT_TRUE(
+      settings_dict->contains(prefs::kPointingStickSettingAcceleration));
+  EXPECT_TRUE(settings_dict->contains(prefs::kPointingStickSettingSwapRight));
+  CheckPointingStickSettingsAndDictAreEqual(kPointingStickSettingsDefault,
+                                            *settings_dict);
 }
 
 class PointingStickSettingsPrefConversionTest

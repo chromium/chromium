@@ -29,15 +29,6 @@ class ASH_EXPORT PointingStickPrefHandlerImpl
   void UpdatePointingStickSettings(
       PrefService* pref_service,
       const mojom::PointingStick& pointing_stick) override;
-
- private:
-  mojom::PointingStickSettingsPtr GetNewPointingStickSettings(
-      PrefService* prefs,
-      const mojom::PointingStick& pointing_stick);
-  mojom::PointingStickSettingsPtr RetrievePointingStickSettings(
-      PrefService* prefs,
-      const mojom::PointingStick& pointing_stick,
-      const base::Value::Dict& settings_dict);
 };
 
 }  // namespace ash
