@@ -7517,17 +7517,17 @@
   {
     "name": "webpage-alternative-text-zoom",
     "owners": [ "rkgibson@google.com", "bling-flags@google.com" ],
-    "expiry_milestone": 111
+    "expiry_milestone": 120
   },
   {
     "name": "webpage-default-zoom-from-dynamic-type",
     "owners": [ "rkgibson@google.com", "bling-flags@google.com" ],
-    "expiry_milestone": 111
+    "expiry_milestone": 120
   },
   {
     "name": "webpage-text-zoom-ipad",
     "owners": [ "rkgibson@google.com", "bling-flags@google.com" ],
-    "expiry_milestone": 111
+    "expiry_milestone": 120
   },
   {
     "name": "webui-omnibox-popup",
