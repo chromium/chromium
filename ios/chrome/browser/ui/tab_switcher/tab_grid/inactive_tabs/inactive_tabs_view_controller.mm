@@ -7,6 +7,7 @@
 #import "ios/chrome/browser/tabs/inactive_tabs/features.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/grid_view_controller.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/tab_grid_constants.h"
+#import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ui/base/l10n/l10n_util_mac.h"
 
@@ -18,6 +19,12 @@
 
 // The embedded navigation bar.
 @property(nonatomic, readonly) UINavigationBar* navigationBar;
+
+// The embedded bottom toolbar bar.
+@property(nonatomic, readonly) UIToolbar* bottomBar;
+
+// The Close All Inactive button.
+@property(nonatomic, readonly) UIBarButtonItem* closeAllInactiveButton;
 
 @end
 
@@ -58,6 +65,33 @@
   _navigationBar.translatesAutoresizingMaskIntoConstraints = NO;
   [self.view addSubview:_navigationBar];
 
+  // Add the bottom toolbar with the Close All Inactive button.
+  NSString* buttonTitle =
+      l10n_util::GetNSString(IDS_IOS_INACTIVE_TABS_CLOSE_ALL_BUTTON);
+  __weak __typeof(self) weakSelf = self;
+  UIAction* closeAllInactiveAction =
+      [UIAction actionWithTitle:buttonTitle
+                          image:nil
+                     identifier:nil
+                        handler:^(UIAction* action) {
+                          [weakSelf didTapCloseAllInactive];
+                        }];
+  _closeAllInactiveButton =
+      [[UIBarButtonItem alloc] initWithPrimaryAction:closeAllInactiveAction];
+  _closeAllInactiveButton.accessibilityIdentifier = kInactiveTabGridIdentifier;
+
+  _bottomBar = [[UIToolbar alloc] init];
+  _bottomBar.barStyle = UIBarStyleBlack;
+  _bottomBar.translucent = YES;
+  _bottomBar.tintColor = [UIColor colorNamed:kRed500Color];
+  UIBarButtonItem* flexibleSpace = [[UIBarButtonItem alloc]
+      initWithBarButtonSystemItem:UIBarButtonSystemItemFlexibleSpace
+                           target:nil
+                           action:nil];
+  _bottomBar.items = @[ flexibleSpace, _closeAllInactiveButton, flexibleSpace ];
+  _bottomBar.translatesAutoresizingMaskIntoConstraints = NO;
+  [self.view addSubview:_bottomBar];
+
   [NSLayoutConstraint activateConstraints:@[
     [gridView.topAnchor constraintEqualToAnchor:self.view.topAnchor],
     [gridView.leadingAnchor constraintEqualToAnchor:self.view.leadingAnchor],
@@ -69,13 +103,22 @@
         constraintEqualToAnchor:self.view.leadingAnchor],
     [_navigationBar.trailingAnchor
         constraintEqualToAnchor:self.view.trailingAnchor],
+    [_bottomBar.leadingAnchor constraintEqualToAnchor:self.view.leadingAnchor],
+    [_bottomBar.trailingAnchor
+        constraintEqualToAnchor:self.view.trailingAnchor],
+    [_bottomBar.bottomAnchor
+        constraintEqualToAnchor:self.view.safeAreaLayoutGuide.bottomAnchor],
   ]];
 }
 
 - (void)viewDidLayoutSubviews {
   [super viewDidLayoutSubviews];
+  CGFloat topInset =
+      CGRectGetMaxY(_navigationBar.frame) - CGRectGetMinY(self.view.bounds);
+  CGFloat bottomInset =
+      CGRectGetMaxY(self.view.bounds) - CGRectGetMinY(_bottomBar.frame);
   _gridViewController.gridView.contentInset =
-      UIEdgeInsetsMake(CGRectGetMaxY(_navigationBar.frame), 0, 0, 0);
+      UIEdgeInsetsMake(topInset, 0, bottomInset, 0);
 }
 
 #pragma mark - UIBarPositioningDelegate
@@ -92,6 +135,14 @@
         shouldPopItem:(UINavigationItem*)item {
   [self.delegate inactiveTabsViewControllerDidTapBackButton:self];
   return NO;
+}
+
+#pragma mark - Private
+
+// Called when the user tapped the Close All Inactive button.
+- (void)didTapCloseAllInactive {
+  [self.delegate inactiveTabsViewController:self
+        didTapCloseAllInactiveBarButtonItem:self.closeAllInactiveButton];
 }
 
 @end

@@ -20,6 +20,7 @@
 #import "ios/chrome/browser/web_state_list/web_state_list_observer_bridge.h"
 #import "ios/web/public/web_state.h"
 #import "ios/web/public/web_state_observer_bridge.h"
+#import "ui/base/device_form_factor.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -50,6 +51,24 @@ NSArray* CreateItemsOrderedByRecency(WebStateList* web_state_list) {
     [items addObject:GetTabSwitcherItem(web_state)];
   }
   return items;
+}
+
+// Observes all web states from the list with the scoped web state observer.
+void AddWebStateObservations(
+    ScopedWebStateObservation* scoped_web_state_observation,
+    WebStateList* web_state_list) {
+  for (int i = 0; i < web_state_list->count(); i++) {
+    web::WebState* web_state = web_state_list->GetWebStateAt(i);
+    scoped_web_state_observation->AddObservation(web_state);
+  }
+}
+
+// Pushes tab items created from the web state list to the consumer. They are
+// sorted by recency (see `CreateItemsOrderedByRecency`).
+void PopulateConsumerItems(id<TabCollectionConsumer> consumer,
+                           WebStateList* web_state_list) {
+  [consumer populateItems:CreateItemsOrderedByRecency(web_state_list)
+           selectedItemID:nil];
 }
 
 }  // namespace
@@ -101,14 +120,10 @@ NSArray* CreateItemsOrderedByRecency(WebStateList* web_state_list) {
         std::make_unique<web::WebStateObserverBridge>(self);
     _scopedWebStateObservation = std::make_unique<ScopedWebStateObservation>(
         _webStateObserverBridge.get());
-    for (int i = 0; i < _webStateList->count(); i++) {
-      web::WebState* webState = _webStateList->GetWebStateAt(i);
-      _scopedWebStateObservation->AddObservation(webState);
-    }
+    AddWebStateObservations(_scopedWebStateObservation.get(), _webStateList);
 
     // Push the tabs to the consumer.
-    [_consumer populateItems:CreateItemsOrderedByRecency(_webStateList)
-              selectedItemID:nil];
+    PopulateConsumerItems(_consumer, _webStateList);
 
     // TODO(crbug.com/1421321): The snapshot cache never returns snapshots.
     // Investigate why.
@@ -124,6 +139,10 @@ NSArray* CreateItemsOrderedByRecency(WebStateList* web_state_list) {
   [_snapshotCache removeObserver:self];
 }
 
+- (NSInteger)numberOfItems {
+  return _webStateList->count();
+}
+
 - (void)closeItemWithID:(NSString*)itemID {
   // TODO(crbug.com/1418021): Add metrics when the user closes an inactive tab.
   int index = GetTabIndex(_webStateList, WebStateSearchCriteria{
@@ -132,6 +151,20 @@ NSArray* CreateItemsOrderedByRecency(WebStateList* web_state_list) {
   if (index != WebStateList::kInvalidIndex) {
     _webStateList->CloseWebStateAt(index, WebStateList::CLOSE_USER_ACTION);
   }
+}
+
+- (void)shutdownAndCloseAllItems {
+  _consumer = nil;
+  _scopedWebStateObservation->RemoveAllObservations();
+  _scopedWebStateObservation.reset();
+  _scopedWebStateListObservation.reset();
+  [_snapshotCache removeObserver:self];
+  _appearanceCache = nil;
+
+  // TODO(crbug.com/1418021): Add metrics when the user closes all inactive
+  // tabs.
+  _webStateList->CloseAllWebStates(WebStateList::CLOSE_USER_ACTION);
+  _webStateList = nullptr;
 }
 
 #pragma mark - CRWWebStateObserver
@@ -245,7 +278,21 @@ NSArray* CreateItemsOrderedByRecency(WebStateList* web_state_list) {
     didInsertWebState:(web::WebState*)webState
               atIndex:(int)index
            activating:(BOOL)activating {
-  NOTREACHED();
+  // Insertions are only supported for iPad multiwindow support when changing
+  // the user settings for Inactive Tabs (i.e. when picking a longer inactivity
+  // threshold).
+  DCHECK_EQ(ui::GetDeviceFormFactor(), ui::DEVICE_FORM_FACTOR_TABLET);
+  DCHECK_EQ(_webStateList, webStateList);
+  if (_webStateList->IsBatchInProgress()) {
+    // Updates are handled in the batch operation observer methods.
+    return;
+  }
+
+  [_consumer insertItem:GetTabSwitcherItem(webState)
+                atIndex:index
+         selectedItemID:nil];
+
+  _scopedWebStateObservation->AddObservation(webState);
 }
 
 - (void)webStateList:(WebStateList*)webStateList
@@ -266,7 +313,10 @@ NSArray* CreateItemsOrderedByRecency(WebStateList* web_state_list) {
     willDetachWebState:(web::WebState*)webState
                atIndex:(int)index {
   DCHECK_EQ(_webStateList, webStateList);
-  DCHECK(!webStateList->IsBatchInProgress());
+  if (_webStateList->IsBatchInProgress()) {
+    // Updates are handled in the batch operation observer methods.
+    return;
+  }
 
   [_consumer removeItemWithID:webState->GetStableIdentifier()
                selectedItemID:nil];
@@ -302,11 +352,15 @@ NSArray* CreateItemsOrderedByRecency(WebStateList* web_state_list) {
 }
 
 - (void)webStateListWillBeginBatchOperation:(WebStateList*)webStateList {
-  NOTREACHED();
+  DCHECK_EQ(_webStateList, webStateList);
+  _scopedWebStateObservation->RemoveAllObservations();
 }
 
 - (void)webStateListBatchOperationEnded:(WebStateList*)webStateList {
-  NOTREACHED();
+  DCHECK_EQ(_webStateList, webStateList);
+
+  AddWebStateObservations(_scopedWebStateObservation.get(), _webStateList);
+  PopulateConsumerItems(_consumer, _webStateList);
 }
 
 - (void)webStateListDestroyed:(WebStateList*)webStateList {

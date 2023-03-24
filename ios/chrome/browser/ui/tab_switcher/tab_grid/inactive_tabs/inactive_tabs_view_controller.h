@@ -18,6 +18,11 @@
 - (void)inactiveTabsViewControllerDidTapBackButton:
     (InactiveTabsViewController*)inactiveTabsViewController;
 
+// Invoked when the button to close all inactive tabs is tapped.
+- (void)inactiveTabsViewController:
+            (InactiveTabsViewController*)inactiveTabsViewController
+    didTapCloseAllInactiveBarButtonItem:(UIBarButtonItem*)barButtonItem;
+
 @end
 
 // Displays the list of inactive tabs.

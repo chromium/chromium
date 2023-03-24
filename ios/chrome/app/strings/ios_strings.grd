@@ -1220,6 +1220,23 @@ See your search engine’s instructions for deleting your search history, if app
       <message name="IDS_IOS_INACTIVE_TABS_BUTTON_SUBTITLE" desc="Subtitle of the button in the Tab Grid that opens the grid of Inactive Tabs.">
         Tabs not used for <ph name="THRESHOLD">$1<ex>14</ex></ph> days
       </message>
+      <message name="IDS_IOS_INACTIVE_TABS_CLOSE_ALL_BUTTON" desc="Title of the Close All Inactive button in the grid of Inactive Tabs.">
+        Close All Inactive
+      </message>
+      <message name="IDS_IOS_INACTIVE_TABS_CLOSE_ALL_CONFIRMATION" desc="Title of the confirmation dialog that offers to close all inactive tabs. COUNT refers to the number of inactive tabs present. According to its value, the string goes from singular to plural.">
+        {COUNT, plural,
+             =1 {Close {COUNT} Inactive Tab?}
+             other {Close {COUNT} Inactive Tabs?}}
+      </message>
+      <message name="IDS_IOS_INACTIVE_TABS_CLOSE_ALL_CONFIRMATION_MANY" desc="Title of the confirmation dialog that offers to close all inactive tabs. This is used instead of IDS_IOS_INACTIVE_TABS_CLOSE_ALL_CONFIRMATION when there are more than 99 inactive tabs present.">
+        Close 99+ Inactive Tabs?
+      </message>
+      <message name="IDS_IOS_INACTIVE_TABS_CLOSE_ALL_CONFIRMATION_MESSAGE" desc="Message of the confimation dialog when the user wants to close all tabs in the grid of Inactive Tabs.">
+        You can always get them back in history.
+      </message>
+      <message name="IDS_IOS_INACTIVE_TABS_CLOSE_ALL_CONFIRMATION_OPTION" desc="Title of the action that will close all tabs in the grid of Inactive Tabs.">
+        Close All
+      </message>
       <message name="IDS_IOS_INCOGNITO_INTERSTITIAL_LEARN_MORE_HINT" desc="Accessibility hint for the 'Learn more' button in the incognito NTP [iOS only]">
         Learn more about Incognito mode
       </message>

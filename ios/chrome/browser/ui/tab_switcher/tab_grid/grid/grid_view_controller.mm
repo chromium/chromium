@@ -397,17 +397,18 @@ NSIndexPath* CreateIndexPath(NSInteger index) {
     [self.selectedEditingItemIDs removeAllObjects];
     [self.selectedSharableEditingItemIDs removeAllObjects];
 
-    // After transition from other modes to the normal mode, the
-    // selection border doesn't show around the selection item. The
-    // collection view needs to be updated with the selected item again
-    // for it to appear correctly.
+    // After transition from other modes to the normal mode, the selection
+    // border doesn't show around the selected item, because reloading
+    // operations like `reloadSections` loose the selected items. The
+    // collection view needs to be updated with the selected item again for it
+    // to appear correctly.
     [self deselectAllCollectionViewItemsAnimated:NO];
     [self selectCollectionViewItemWithID:self.selectedItemID
                                 animated:NO
                           scrollPosition:UICollectionViewScrollPositionNone];
     [self updateFractionVisibleOfLastItem];
-    }
-    self.searchText = nil;
+  }
+  self.searchText = nil;
 }
 
 - (void)setSearchText:(NSString*)searchText {
@@ -1406,7 +1407,19 @@ NSIndexPath* CreateIndexPath(NSInteger index) {
     // The header should appear or disappear. Reload the section.
     NSIndexSet* openTabsSection =
         [NSIndexSet indexSetWithIndex:kOpenTabsSectionIndex];
-    [self.collectionView reloadSections:openTabsSection];
+    // Prevent the animation, as it leads to a jarrying effect when closing all
+    // inactive tabs: the inactive tabs view controller gets popped, and the
+    // underlying regular Tab Grid moves tabs up.
+    // Note: this could be revisited when supporting iPad, as the user could
+    // have closed all inactive tabs in a different window.
+    [UIView performWithoutAnimation:^{
+      [self.collectionView reloadSections:openTabsSection];
+    }];
+    // Make sure to restore the selection. `reloadSections` cleared it.
+    // https://developer.apple.com/forums/thread/656529
+    [self selectCollectionViewItemWithID:self.selectedItemID
+                                animated:NO
+                          scrollPosition:UICollectionViewScrollPositionNone];
   } else {
     // The header just needs to be updated with the new count.
     NSIndexPath* indexPath =

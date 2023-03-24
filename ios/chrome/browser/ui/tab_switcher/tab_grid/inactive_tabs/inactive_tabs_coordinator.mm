@@ -7,13 +7,17 @@
 #import <UIKit/UIKit.h>
 
 #import "base/notreached.h"
+#import "base/strings/sys_string_conversions.h"
 #import "ios/chrome/browser/main/browser.h"
 #import "ios/chrome/browser/snapshots/snapshot_browser_agent.h"
 #import "ios/chrome/browser/tabs/inactive_tabs/features.h"
+#import "ios/chrome/browser/ui/alert_coordinator/action_sheet_coordinator.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/grid_view_controller.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/inactive_tabs/inactive_tabs_mediator.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/inactive_tabs/inactive_tabs_view_controller.h"
 #import "ios/chrome/browser/web_state_list/web_state_list.h"
+#import "ios/chrome/grit/ios_strings.h"
+#import "ui/base/l10n/l10n_util.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -201,6 +205,51 @@ const NSTimeInterval kDuration = 0.2;
 - (void)inactiveTabsViewControllerDidTapBackButton:
     (InactiveTabsViewController*)inactiveTabsViewController {
   [self.delegate inactiveTabsCoordinatorDidFinish:self];
+}
+
+- (void)inactiveTabsViewController:
+            (InactiveTabsViewController*)inactiveTabsViewController
+    didTapCloseAllInactiveBarButtonItem:(UIBarButtonItem*)barButtonItem {
+  NSInteger numberOfTabs = [self.mediator numberOfItems];
+  DCHECK_GT(numberOfTabs, 0);
+
+  NSString* title;
+  if (numberOfTabs > 99) {
+    title = l10n_util::GetNSString(
+        IDS_IOS_INACTIVE_TABS_CLOSE_ALL_CONFIRMATION_MANY);
+  } else {
+    title = base::SysUTF16ToNSString(l10n_util::GetPluralStringFUTF16(
+        IDS_IOS_INACTIVE_TABS_CLOSE_ALL_CONFIRMATION, numberOfTabs));
+  }
+  NSString* message = l10n_util::GetNSString(
+      IDS_IOS_INACTIVE_TABS_CLOSE_ALL_CONFIRMATION_MESSAGE);
+
+  ActionSheetCoordinator* actionSheetCoordinator =
+      [[ActionSheetCoordinator alloc]
+          initWithBaseViewController:self.baseViewController
+                             browser:self.browser
+                               title:title
+                             message:message
+                       barButtonItem:barButtonItem];
+
+  __weak __typeof(self) weakSelf = self;
+  NSString* closeAllActionTitle = l10n_util::GetNSString(
+      IDS_IOS_INACTIVE_TABS_CLOSE_ALL_CONFIRMATION_OPTION);
+  [actionSheetCoordinator addItemWithTitle:closeAllActionTitle
+                                    action:^{
+                                      [weakSelf closeAllInactiveTabs];
+                                    }
+                                     style:UIAlertActionStyleDestructive];
+
+  [actionSheetCoordinator start];
+}
+
+#pragma mark - Private
+
+// Called when the user confirmed wanting to close all inactive tabs.
+- (void)closeAllInactiveTabs {
+  [self.delegate inactiveTabsCoordinatorDidFinish:self];
+  [self.mediator shutdownAndCloseAllItems];
 }
 
 @end

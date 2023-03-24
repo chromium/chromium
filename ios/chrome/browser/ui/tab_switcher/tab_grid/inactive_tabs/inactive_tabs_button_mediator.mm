@@ -86,6 +86,10 @@ using ScopedWebStateListObservation =
     didDetachWebState:(web::WebState*)webState
               atIndex:(int)atIndex {
   DCHECK_EQ(_webStateList, webStateList);
+  if (_webStateList->IsBatchInProgress()) {
+    // Consumer will be updated at the end of the batch.
+    return;
+  }
   [_consumer advertizeInactiveTabsWithCount:_webStateList->count()];
 }
 
@@ -113,11 +117,12 @@ using ScopedWebStateListObservation =
 }
 
 - (void)webStateListWillBeginBatchOperation:(WebStateList*)webStateList {
-  NOTREACHED();
+  // No-op. This is called when all inactive tabs are closed at once.
 }
 
 - (void)webStateListBatchOperationEnded:(WebStateList*)webStateList {
-  NOTREACHED();
+  DCHECK_EQ(_webStateList, webStateList);
+  [_consumer advertizeInactiveTabsWithCount:_webStateList->count()];
 }
 
 - (void)webStateListDestroyed:(WebStateList*)webStateList {
