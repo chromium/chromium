@@ -4,12 +4,15 @@
 
 #include "ash/rounded_display/rounded_display_frame_factory.h"
 
+#include <algorithm>
+#include <array>
 #include <memory>
 #include <vector>
 
 #include "ash/frame_sink/ui_resource.h"
 #include "ash/frame_sink/ui_resource_manager.h"
 #include "ash/rounded_display/rounded_display_gutter.h"
+#include "base/check.h"
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
 #include "components/viz/common/quads/compositor_frame.h"
@@ -30,12 +33,15 @@
 #include "ui/display/screen.h"
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/geometry/rect.h"
+#include "ui/gfx/geometry/rect_f.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/geometry/transform.h"
 #include "ui/gfx/gpu_memory_buffer.h"
 
 namespace ash {
 namespace {
+
+using RoundedCorner = RoundedDisplayGutter::RoundedCorner;
 
 constexpr viz::ResourceFormat kResourceFormat =
     SK_B32_SHIFT ? viz::RGBA_8888 : viz::BGRA_8888;
@@ -51,6 +57,46 @@ gfx::Transform GetRootRotationTransform(const aura::Window& host_window) {
                                 1 / device_scale_factor);
 
   return root_rotation_transform;
+}
+
+viz::TextureDrawQuad::RoundedDisplayMasksInfo MapToRoundedDisplayMasksInfo(
+    const std::vector<RoundedCorner>& corners) {
+  DCHECK(corners.size() <= 2) << "Currently, viz can only handle textures that "
+                                 "have up to 2 corner masks drawn into them";
+
+  if (corners.size() == 1) {
+    return viz::TextureDrawQuad::RoundedDisplayMasksInfo::
+        CreateRoundedDisplayMasksInfo(corners.back().radius(), 0,
+                                      /*is_horizontally_positioned=*/true);
+  }
+
+  std::array<const RoundedCorner*, 2> sorted_corners = {&corners.at(0),
+                                                        &corners.at(1)};
+
+  std::sort(sorted_corners.begin(), sorted_corners.end(),
+            [](const RoundedCorner* c1, const RoundedCorner* c2) {
+              return c1->bounds().origin() < c2->bounds().origin();
+            });
+
+  const RoundedDisplayGutter::RoundedCorner& first_corner =
+      *sorted_corners.at(0);
+  const RoundedDisplayGutter::RoundedCorner& second_corner =
+      *sorted_corners.at(1);
+
+  // Corners of a gutter need to be either vertically or horizontally
+  // aligned.
+  DCHECK(first_corner.bounds().x() == second_corner.bounds().x() ||
+         first_corner.bounds().y() == second_corner.bounds().y());
+
+  DCHECK(!first_corner.bounds().Intersects(second_corner.bounds()));
+
+  bool is_horizontally_positioned =
+      first_corner.bounds().y() == second_corner.bounds().y();
+
+  return viz::TextureDrawQuad::RoundedDisplayMasksInfo::
+      CreateRoundedDisplayMasksInfo(first_corner.radius(),
+                                    second_corner.radius(),
+                                    is_horizontally_positioned);
 }
 
 }  // namespace
@@ -200,8 +246,7 @@ RoundedDisplayFrameFactory::CreateCompositorFrame(
     viz::TransferableResource transferable_resource =
         resource_manager.PrepareResourceForExport(resource_id);
 
-    AppendQuad(transferable_resource, gutter->bounds().size(),
-               gutter->bounds().size(), buffer_to_target_transform,
+    AppendQuad(transferable_resource, buffer_to_target_transform, *gutter,
                *render_pass);
 
     frame->resource_list.push_back(std::move(transferable_resource));
@@ -262,41 +307,49 @@ void RoundedDisplayFrameFactory::Paint(const RoundedDisplayGutter& gutter,
 
 void RoundedDisplayFrameFactory::AppendQuad(
     const viz::TransferableResource& resource,
-    const gfx::Size& gutter_size,
-    const gfx::Size& buffer_size,
     const gfx::Transform& buffer_to_target_transform,
+    const RoundedDisplayGutter& gutter,
     viz::CompositorRenderPass& render_pass_out) const {
-  gfx::Rect output_rect(gutter_size);
+  const gfx::Size& gutter_size_in_pixels = gutter.bounds().size();
 
+  // Each gutter can be thought of as a single ui::Layer that produces only one
+  // quad. Therefore the layer_rect and visible_layer_rect is the size of the
+  // `gutter_size_in_pixels`. (layer is the same size as the texture produced
+  // and it is all visible)
   viz::SharedQuadState* quad_state =
       render_pass_out.CreateAndAppendSharedQuadState();
   quad_state->SetAll(buffer_to_target_transform,
-                     /*layer_rect=*/output_rect,
-                     /*visible_layer_rect=*/output_rect,
+                     /*layer_rect=*/gfx::Rect(gutter_size_in_pixels),
+                     /*visible_layer_rect=*/gfx::Rect(gutter_size_in_pixels),
                      /*filter_info=*/gfx::MaskFilterInfo(),
                      /*clip=*/absl::nullopt, /*contents_opaque=*/false,
                      /*opacity_f=*/1.f,
                      /*blend=*/SkBlendMode::kSrcOver,
                      /*sorting_context=*/0);
 
-  gfx::Rect quad_rect(buffer_size);
-
   viz::TextureDrawQuad* texture_quad =
       render_pass_out.CreateAndAppendDrawQuad<viz::TextureDrawQuad>();
-  float vertex_opacity[4] = {1.0f, 1.0f, 1.0f, 1.0f};
-  gfx::RectF uv_crop(quad_rect);
-  uv_crop.Scale(1.f / buffer_size.width(), 1.f / buffer_size.height());
 
-  texture_quad->SetNew(
-      quad_state, quad_rect, quad_rect,
-      /*needs_blending=*/true, resource.id,
-      /*premultiplied=*/true, uv_crop.origin(), uv_crop.bottom_right(),
-      /*background=*/SkColors::kTransparent, vertex_opacity,
-      /*flipped=*/false,
-      /*nearest=*/false,
-      /*secure_output=*/false, gfx::ProtectedVideoType::kClear);
+  constexpr float kVertexOpacity[4] = {1.0f, 1.0f, 1.0f, 1.0f};
+
+  // Each frame, we re-render the full texture therefore quad_rect is the size
+  // of the texture i.e `gutter_size_in_pixels`.
+  gfx::Rect quad_rect(gutter_size_in_pixels);
+
+  texture_quad->SetNew(quad_state, quad_rect, quad_rect,
+                       /*needs_blending=*/true, resource.id,
+                       /*premultiplied=*/true, gfx::RectF(quad_rect).origin(),
+                       gfx::RectF(quad_rect).bottom_right(),
+                       /*background=*/SkColors::kTransparent, kVertexOpacity,
+                       /*flipped=*/false,
+                       /*nearest=*/false,
+                       /*secure_output=*/false,
+                       gfx::ProtectedVideoType::kClear);
 
   texture_quad->set_resource_size_in_pixels(resource.size);
+
+  texture_quad->rounded_display_masks_info =
+      MapToRoundedDisplayMasksInfo(gutter.GetGutterCorners());
 }
 
 }  // namespace ash

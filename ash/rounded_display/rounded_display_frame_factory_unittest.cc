@@ -13,7 +13,10 @@
 #include "ash/test/ash_test_base.h"
 #include "ash/test/ash_test_helper.h"
 #include "components/viz/common/quads/compositor_frame.h"
+#include "components/viz/common/quads/quad_list.h"
+#include "components/viz/common/quads/texture_draw_quad.h"
 #include "rounded_display_gutter_factory.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/aura/window_tree_host.h"
 #include "ui/compositor/layer_type.h"
@@ -25,6 +28,9 @@ namespace {
 constexpr viz::ResourceFormat kTestResourceFormat =
     SK_B32_SHIFT ? viz::RGBA_8888 : viz::BGRA_8888;
 constexpr gfx::Size kTestDisplaySize(1920, 1080);
+constexpr gfx::RoundedCornersF kTestPanelRadii(10);
+
+using RoundedDisplayMasksInfo = viz::TextureDrawQuad::RoundedDisplayMasksInfo;
 
 class RoundedDisplayFrameFactoryTest : public AshTestBase {
  public:
@@ -48,9 +54,6 @@ class RoundedDisplayFrameFactoryTest : public AshTestBase {
 
     auto* root_window = ash_test_helper()->GetHost()->window();
     root_window->AddChild(host_window_.get());
-
-    gutters_ = CreateGutters(kTestDisplaySize, gfx::RoundedCornersF(10),
-                             /*create_vertical_gutters=*/true);
   }
 
   // AshTestBase:
@@ -73,27 +76,39 @@ class RoundedDisplayFrameFactoryTest : public AshTestBase {
     return gutters;
   }
 
-  std::vector<std::unique_ptr<RoundedDisplayGutter>> CreateGutters(
-      const gfx::Size& display_size_in_pixels,
-      const gfx::RoundedCornersF& display_radii,
-      bool create_vertical_gutters) {
-    std::vector<std::unique_ptr<RoundedDisplayGutter>> gutters;
-
+  // Creates vertical gutters and appends them to `gutters_`.
+  void AppendVerticalOverlayGutters(const gfx::Size& display_size_in_pixels,
+                                    const gfx::RoundedCornersF& panel_radii) {
     auto overlay_gutters = gutter_factory_->CreateOverlayGutters(
-        display_size_in_pixels, display_radii, create_vertical_gutters);
+        display_size_in_pixels, panel_radii,
+        /*create_vertical_gutters=*/true);
 
     for (auto& gutter : overlay_gutters) {
-      gutters.push_back(std::move(gutter));
+      gutters_.push_back(std::move(gutter));
     }
+  }
 
+  // Creates horizontal gutters and appends them to `gutters_`.
+  void AppendHorizontalOverlayGutters(const gfx::Size& display_size_in_pixels,
+                                      const gfx::RoundedCornersF& panel_radii) {
+    auto overlay_gutters = gutter_factory_->CreateOverlayGutters(
+        display_size_in_pixels, panel_radii,
+        /*create_vertical_gutters=*/false);
+
+    for (auto& gutter : overlay_gutters) {
+      gutters_.push_back(std::move(gutter));
+    }
+  }
+
+  // Creates non overlay gutters and appends them to `gutters_`.
+  void AppendNonOverlayGutters(const gfx::Size& display_size_in_pixels,
+                               const gfx::RoundedCornersF& panel_radii) {
     auto non_overlay_gutters = gutter_factory_->CreateNonOverlayGutters(
-        display_size_in_pixels, display_radii);
+        display_size_in_pixels, panel_radii);
 
     for (auto& gutter : non_overlay_gutters) {
-      gutters.push_back(std::move(gutter));
+      gutters_.push_back(std::move(gutter));
     }
-
-    return gutters;
   }
 
  protected:
@@ -106,6 +121,8 @@ class RoundedDisplayFrameFactoryTest : public AshTestBase {
 
 // TODO(zoraiznaeem): Add more unittest coverage.
 TEST_F(RoundedDisplayFrameFactoryTest, CompositorFrameHasCorrectStructure) {
+  AppendVerticalOverlayGutters(kTestDisplaySize, kTestPanelRadii);
+
   const auto& gutters = GetGutters();
 
   auto frame = frame_factory_->CreateCompositorFrame(
@@ -133,7 +150,92 @@ TEST_F(RoundedDisplayFrameFactoryTest, CompositorFrameHasCorrectStructure) {
   EXPECT_EQ(shared_quad_state_list.size(), gutters.size());
 }
 
+MATCHER_P(IsRoundedDisplayMasksInfoEqual, value, "") {
+  return arg.is_horizontally_positioned == value.is_horizontally_positioned &&
+         arg.radii[RoundedDisplayMasksInfo::kOriginRoundedDisplayMaskIndex] ==
+             value.radii
+                 [RoundedDisplayMasksInfo::kOriginRoundedDisplayMaskIndex] &&
+         arg.radii[RoundedDisplayMasksInfo::kOtherRoundedDisplayMaskIndex] ==
+             value
+                 .radii[RoundedDisplayMasksInfo::kOtherRoundedDisplayMaskIndex];
+}
+
+TEST_F(RoundedDisplayFrameFactoryTest,
+       CorrectRoundedDisplayInfo_VerticalGuttersWithTwoCorners) {
+  const auto panel_radii = gfx::RoundedCornersF(10, 0, 0, 15);
+  AppendVerticalOverlayGutters(kTestDisplaySize, panel_radii);
+
+  // `gutter_factory_` will only create left overlay gutter.
+  EXPECT_EQ(gutters_.size(), 1u);
+
+  auto frame = frame_factory_->CreateCompositorFrame(
+      viz::BeginFrameAck::CreateManualAckWithDamage(), *host_window_,
+      resource_manager_, GetGutters());
+
+  const viz::QuadList& quad_list = frame->render_pass_list.front()->quad_list;
+  ASSERT_EQ(quad_list.size(), 1u);
+
+  EXPECT_THAT(viz::TextureDrawQuad::MaterialCast(quad_list.ElementAt(0))
+                  ->rounded_display_masks_info,
+              IsRoundedDisplayMasksInfoEqual(
+                  RoundedDisplayMasksInfo::CreateRoundedDisplayMasksInfo(
+                      /*origin_rounded_display_mask_radius=*/10,
+                      /*other_rounded_display_mask_radius=*/15,
+                      /*is_horizontally_positioned=*/false)));
+}
+
+TEST_F(RoundedDisplayFrameFactoryTest,
+       CorrectRoundedDisplayInfo_HorizontalGuttersWithTwoCorners) {
+  const auto panel_radii = gfx::RoundedCornersF(15, 10, 0, 0);
+  AppendHorizontalOverlayGutters(kTestDisplaySize, panel_radii);
+
+  // `gutter_factory_` will only create upper overlay gutter.
+  EXPECT_EQ(gutters_.size(), 1u);
+
+  auto frame = frame_factory_->CreateCompositorFrame(
+      viz::BeginFrameAck::CreateManualAckWithDamage(), *host_window_,
+      resource_manager_, GetGutters());
+
+  const viz::QuadList& quad_list = frame->render_pass_list.front()->quad_list;
+  ASSERT_EQ(quad_list.size(), 1u);
+
+  EXPECT_THAT(viz::TextureDrawQuad::MaterialCast(quad_list.ElementAt(0))
+                  ->rounded_display_masks_info,
+              IsRoundedDisplayMasksInfoEqual(
+                  RoundedDisplayMasksInfo::CreateRoundedDisplayMasksInfo(
+                      /*origin_rounded_display_mask_radius=*/15,
+                      /*other_rounded_display_mask_radius=*/10,
+                      /*is_horizontally_positioned=*/true)));
+}
+
+TEST_F(RoundedDisplayFrameFactoryTest,
+       CorrectRoundedDisplayInfo_GuttersWithOneCorner) {
+  const auto panel_radii = gfx::RoundedCornersF(10, 0, 0, 0);
+  AppendNonOverlayGutters(kTestDisplaySize, panel_radii);
+
+  // `gutter_factory_` will only create upper-left non-overlay gutter.
+  EXPECT_EQ(gutters_.size(), 1u);
+
+  auto frame = frame_factory_->CreateCompositorFrame(
+      viz::BeginFrameAck::CreateManualAckWithDamage(), *host_window_,
+      resource_manager_, GetGutters());
+
+  const viz::QuadList& quad_list = frame->render_pass_list.front()->quad_list;
+  ASSERT_EQ(quad_list.size(), 1u);
+
+  EXPECT_THAT(viz::TextureDrawQuad::MaterialCast(quad_list.ElementAt(0))
+                  ->rounded_display_masks_info,
+              IsRoundedDisplayMasksInfoEqual(
+                  RoundedDisplayMasksInfo::CreateRoundedDisplayMasksInfo(
+                      /*origin_rounded_display_mask_radius=*/10,
+                      /*other_rounded_display_mask_radius=*/0,
+                      /*is_horizontally_positioned=*/true)));
+}
+
 TEST_F(RoundedDisplayFrameFactoryTest, OnlyCreateNewResourcesWhenNecessary) {
+  AppendVerticalOverlayGutters(kTestDisplaySize, kTestPanelRadii);
+  AppendNonOverlayGutters(kTestDisplaySize, kTestPanelRadii);
+
   const auto& gutters = GetGutters();
 
   // Populate resources in the resource manager.
