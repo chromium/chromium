@@ -270,9 +270,6 @@ FormFieldData WithoutUnserializedData(FormFieldData field);
 // Returns a full profile with valid info according to rules for Canada.
 AutofillProfile GetFullValidProfileForCanada();
 
-// Returns a full profile with valid info according to rules for China.
-AutofillProfile GetFullValidProfileForChina();
-
 // Returns a profile full of dummy info.
 AutofillProfile GetFullProfile();
 

@@ -462,14 +462,6 @@ AutofillProfile GetFullValidProfileForCanada() {
   return profile;
 }
 
-AutofillProfile GetFullValidProfileForChina() {
-  AutofillProfile profile(base::GenerateGUID(), kEmptyOrigin);
-  SetProfileInfo(&profile, "John", "H.", "Doe", "johndoe@google.cn", "Google",
-                 "100 Century Avenue", "", "赫章县", "毕节地区", "贵州省",
-                 "200120", "CN", "+86-21-6133-7666");
-  return profile;
-}
-
 AutofillProfile GetFullProfile() {
   AutofillProfile profile(base::GenerateGUID(), kEmptyOrigin);
   SetProfileInfo(&profile, "John", "H.", "Doe", "johndoe@hades.com",
