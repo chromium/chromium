@@ -56,6 +56,18 @@ class GPU_GLES2_EXPORT CopySharedImageHelper {
       GLsizei height,
       GLboolean unpack_flip_y,
       const volatile GLbyte* mailboxes);
+  // Only used by passthrough decoder.
+  base::expected<void, GLError> CopySharedImageToGLTexture(
+      GLuint texture_service_id,
+      GLenum target,
+      GLuint internal_format,
+      GLenum type,
+      GLint src_x,
+      GLint src_y,
+      GLsizei width,
+      GLsizei height,
+      GLboolean flip_y,
+      const volatile GLbyte* src_mailbox);
   base::expected<void, GLError> ReadPixels(
       GLint src_x,
       GLint src_y,
