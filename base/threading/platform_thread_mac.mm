@@ -93,8 +93,6 @@ BASE_FEATURE(kOptimizedRealtimeThreadingMac,
 #endif
 );
 
-const Feature kUseThreadQoSMac{"UseThreadQoSMac", FEATURE_ENABLED_BY_DEFAULT};
-
 namespace {
 
 bool IsOptimizedRealtimeThreadingMacEnabled() {
@@ -143,8 +141,6 @@ struct TimeConstraints {
 std::atomic<bool> g_use_optimized_realtime_threading(
     kOptimizedRealtimeThreadingMac.default_state == FEATURE_ENABLED_BY_DEFAULT);
 std::atomic<TimeConstraints> g_time_constraints;
-std::atomic<bool> g_use_thread_qos(kUseThreadQoSMac.default_state ==
-                                   FEATURE_ENABLED_BY_DEFAULT);
 
 }  // namespace
 
@@ -158,7 +154,6 @@ void PlatformThread::InitFeaturesPostFieldTrial() {
     g_time_constraints.store(TimeConstraints::ReadFromFeatureParams());
     g_use_optimized_realtime_threading.store(
         IsOptimizedRealtimeThreadingMacEnabled());
-    g_use_thread_qos.store(FeatureList::IsEnabled(kUseThreadQoSMac));
   }
 }
 
@@ -299,7 +294,6 @@ namespace internal {
 
 void SetCurrentThreadTypeImpl(ThreadType thread_type,
                               MessagePumpType pump_type_hint) {
-  const bool use_thread_qos = g_use_thread_qos.load(std::memory_order_relaxed);
   // Changing the priority of the main thread causes performance
   // regressions. https://crbug.com/601270
   // TODO(1280764): Remove this check. kCompositing is the default on Mac, so
@@ -315,54 +309,27 @@ void SetCurrentThreadTypeImpl(ThreadType thread_type,
   switch (thread_type) {
     case ThreadType::kBackground:
       priority = ThreadPriorityForTest::kBackground;
-      if (use_thread_qos)
-        pthread_set_qos_class_self_np(QOS_CLASS_BACKGROUND, 0);
-      else
-        [[NSThread currentThread] setThreadPriority:0];
+      pthread_set_qos_class_self_np(QOS_CLASS_BACKGROUND, 0);
       break;
     case ThreadType::kUtility:
       priority = ThreadPriorityForTest::kUtility;
-      if (use_thread_qos)
-        pthread_set_qos_class_self_np(QOS_CLASS_UTILITY, 0);
-      else
-        [[NSThread currentThread] setThreadPriority:0.5];
+      pthread_set_qos_class_self_np(QOS_CLASS_UTILITY, 0);
       break;
     case ThreadType::kResourceEfficient:
-      if (use_thread_qos) {
-        priority = ThreadPriorityForTest::kUtility;
-        pthread_set_qos_class_self_np(QOS_CLASS_UTILITY, 0);
-        break;
-      }
-      [[fallthrough]];
+      priority = ThreadPriorityForTest::kUtility;
+      pthread_set_qos_class_self_np(QOS_CLASS_UTILITY, 0);
+      break;
     case ThreadType::kDefault:
       // TODO(1329208): Experiment with prioritizing kCompositing on Mac like on
       // other platforms.
       [[fallthrough]];
     case ThreadType::kCompositing:
       priority = ThreadPriorityForTest::kNormal;
-      if (use_thread_qos)
-        pthread_set_qos_class_self_np(QOS_CLASS_USER_INITIATED, 0);
-      else
-        [[NSThread currentThread] setThreadPriority:0.5];
+      pthread_set_qos_class_self_np(QOS_CLASS_USER_INITIATED, 0);
       break;
     case ThreadType::kDisplayCritical: {
       priority = ThreadPriorityForTest::kDisplay;
-      if (use_thread_qos) {
-        pthread_set_qos_class_self_np(QOS_CLASS_USER_INTERACTIVE, 0);
-      } else {
-        // Apple has suggested that insufficient priority may be the reason for
-        // Metal shader compilation hangs. A priority of 50 is higher than user
-        // input.
-        // https://crbug.com/974219.
-        [[NSThread currentThread] setThreadPriority:1.0];
-        sched_param param;
-        int policy;
-        pthread_t thread = pthread_self();
-        if (!pthread_getschedparam(thread, &policy, &param)) {
-          param.sched_priority = 50;
-          pthread_setschedparam(thread, policy, &param);
-        }
-      }
+      pthread_set_qos_class_self_np(QOS_CLASS_USER_INTERACTIVE, 0);
       break;
     }
     case ThreadType::kRealtimeAudio:

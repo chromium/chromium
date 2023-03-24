@@ -946,7 +946,6 @@ void ChromeMainDelegate::CommonEarlyInitialization() {
   base::MessagePumpLibevent::InitializeFeatures();
 #elif BUILDFLAG(IS_MAC)
   base::PlatformThread::InitFeaturesPostFieldTrial();
-  base::MessagePumpDefault::InitFeaturesPostFieldTrial();
   base::MessagePumpCFRunLoopBase::InitializeFeatures();
   base::MessagePumpKqueue::InitializeFeatures();
 #endif

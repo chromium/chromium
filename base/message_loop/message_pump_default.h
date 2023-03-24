@@ -28,11 +28,6 @@ class BASE_EXPORT MessagePumpDefault : public MessagePump {
   void ScheduleWork() override;
   void ScheduleDelayedWork(
       const Delegate::NextWorkInfo& next_work_info) override;
-#if BUILDFLAG(IS_APPLE)
-  void SetTimerSlack(TimerSlack timer_slack) override;
-
-  static void InitFeaturesPostFieldTrial();
-#endif
 
  private:
   // This flag is set to false when Run should return.
