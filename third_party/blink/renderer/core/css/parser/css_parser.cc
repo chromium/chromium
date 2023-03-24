@@ -366,7 +366,8 @@ const CSSValue* CSSParser::ParseFontFaceDescriptor(
 
 CSSPrimitiveValue* CSSParser::ParseLengthPercentage(
     const String& string,
-    const CSSParserContext* context) {
+    const CSSParserContext* context,
+    CSSPrimitiveValue::ValueRange value_range) {
   if (string.empty() || !context) {
     return nullptr;
   }
@@ -376,8 +377,8 @@ CSSPrimitiveValue* CSSParser::ParseLengthPercentage(
   // Trim whitespace from the string. It's only necessary to consume leading
   // whitespaces, since ConsumeLengthOrPercent always consumes trailing ones.
   range.ConsumeWhitespace();
-  CSSPrimitiveValue* parsed_value = css_parsing_utils::ConsumeLengthOrPercent(
-      range, *context, CSSPrimitiveValue::ValueRange::kAll);
+  CSSPrimitiveValue* parsed_value =
+      css_parsing_utils::ConsumeLengthOrPercent(range, *context, value_range);
   return range.AtEnd() ? parsed_value : nullptr;
 }
 

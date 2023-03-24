@@ -15,7 +15,8 @@ void MathMLSpaceElement::AddMathBaselineIfNeeded(
     ComputedStyleBuilder& builder,
     const CSSToLengthConversionData& conversion_data) {
   if (auto length_or_percentage_value = AddMathLengthToComputedStyle(
-          conversion_data, mathml_names::kHeightAttr, AllowPercentages::kNo)) {
+          conversion_data, mathml_names::kHeightAttr, AllowPercentages::kNo,
+          CSSPrimitiveValue::ValueRange::kNonNegative)) {
     builder.SetMathBaseline(std::move(*length_or_percentage_value));
   }
 }
@@ -34,7 +35,8 @@ void MathMLSpaceElement::CollectStyleForPresentationAttribute(
     MutableCSSPropertyValueSet* style) {
   if (name == mathml_names::kWidthAttr) {
     if (const CSSPrimitiveValue* width_value =
-            ParseMathLength(name, AllowPercentages::kNo)) {
+            ParseMathLength(name, AllowPercentages::kNo,
+                            CSSPrimitiveValue::ValueRange::kNonNegative)) {
       AddPropertyToPresentationAttributeStyle(style, CSSPropertyID::kWidth,
                                               *width_value);
     }
@@ -43,9 +45,11 @@ void MathMLSpaceElement::CollectStyleForPresentationAttribute(
     // TODO(rbuis): this can be simplified once attr() is supported for
     // width/height.
     const CSSPrimitiveValue* height_value =
-        ParseMathLength(mathml_names::kHeightAttr, AllowPercentages::kNo);
+        ParseMathLength(mathml_names::kHeightAttr, AllowPercentages::kNo,
+                        CSSPrimitiveValue::ValueRange::kNonNegative);
     const CSSPrimitiveValue* depth_value =
-        ParseMathLength(mathml_names::kDepthAttr, AllowPercentages::kNo);
+        ParseMathLength(mathml_names::kDepthAttr, AllowPercentages::kNo,
+                        CSSPrimitiveValue::ValueRange::kNonNegative);
     const CSSPrimitiveValue* attribute_value =
         (name == mathml_names::kHeightAttr ? height_value : depth_value);
     if (height_value && depth_value) {

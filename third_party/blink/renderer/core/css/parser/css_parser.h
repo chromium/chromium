@@ -129,8 +129,10 @@ class CORE_EXPORT CSSParser {
                                                const String&,
                                                CSSParserObserver&);
 
-  static CSSPrimitiveValue* ParseLengthPercentage(const String&,
-                                                  const CSSParserContext*);
+  static CSSPrimitiveValue* ParseLengthPercentage(
+      const String&,
+      const CSSParserContext*,
+      CSSPrimitiveValue::ValueRange);
 
   // https://html.spec.whatwg.org/multipage/canvas.html#dom-context-2d-font
   // https://drafts.csswg.org/css-font-loading/#find-the-matching-font-faces

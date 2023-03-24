@@ -16,23 +16,28 @@ void MathMLPaddedElement::AddMathBaselineIfNeeded(
     ComputedStyleBuilder& builder,
     const CSSToLengthConversionData& conversion_data) {
   if (auto length_or_percentage_value = AddMathLengthToComputedStyle(
-          conversion_data, mathml_names::kHeightAttr, AllowPercentages::kNo))
+          conversion_data, mathml_names::kHeightAttr, AllowPercentages::kNo,
+          CSSPrimitiveValue::ValueRange::kNonNegative)) {
     builder.SetMathBaseline(std::move(*length_or_percentage_value));
+  }
 }
 
 void MathMLPaddedElement::AddMathPaddedDepthIfNeeded(
     ComputedStyleBuilder& builder,
     const CSSToLengthConversionData& conversion_data) {
   if (auto length_or_percentage_value = AddMathLengthToComputedStyle(
-          conversion_data, mathml_names::kDepthAttr, AllowPercentages::kNo))
+          conversion_data, mathml_names::kDepthAttr, AllowPercentages::kNo,
+          CSSPrimitiveValue::ValueRange::kNonNegative)) {
     builder.SetMathPaddedDepth(std::move(*length_or_percentage_value));
+  }
 }
 
 void MathMLPaddedElement::AddMathPaddedLSpaceIfNeeded(
     ComputedStyleBuilder& builder,
     const CSSToLengthConversionData& conversion_data) {
   if (auto length_or_percentage_value = AddMathLengthToComputedStyle(
-          conversion_data, mathml_names::kLspaceAttr, AllowPercentages::kNo)) {
+          conversion_data, mathml_names::kLspaceAttr, AllowPercentages::kNo,
+          CSSPrimitiveValue::ValueRange::kNonNegative)) {
     builder.SetMathLSpace(std::move(*length_or_percentage_value));
   }
 }
@@ -70,7 +75,8 @@ void MathMLPaddedElement::CollectStyleForPresentationAttribute(
     MutableCSSPropertyValueSet* style) {
   if (name == mathml_names::kWidthAttr) {
     if (const CSSPrimitiveValue* width_value =
-            ParseMathLength(name, AllowPercentages::kNo)) {
+            ParseMathLength(name, AllowPercentages::kNo,
+                            CSSPrimitiveValue::ValueRange::kNonNegative)) {
       AddPropertyToPresentationAttributeStyle(style, CSSPropertyID::kWidth,
                                               *width_value);
     }

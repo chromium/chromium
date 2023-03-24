@@ -159,13 +159,15 @@ absl::optional<bool> MathMLElement::BooleanAttribute(
 
 const CSSPrimitiveValue* MathMLElement::ParseMathLength(
     const QualifiedName& attr_name,
-    AllowPercentages allow_percentages) {
+    AllowPercentages allow_percentages,
+    CSSPrimitiveValue::ValueRange value_range) {
   if (!FastHasAttribute(attr_name))
     return nullptr;
   auto value = FastGetAttribute(attr_name);
   const CSSPrimitiveValue* parsed_value = CSSParser::ParseLengthPercentage(
       value,
-      StrictCSSParserContext(GetExecutionContext()->GetSecureContextMode()));
+      StrictCSSParserContext(GetExecutionContext()->GetSecureContextMode()),
+      value_range);
   if (!parsed_value || parsed_value->IsCalculated() ||
       (parsed_value->IsPercentage() &&
        allow_percentages == AllowPercentages::kNo)) {
@@ -177,9 +179,10 @@ const CSSPrimitiveValue* MathMLElement::ParseMathLength(
 absl::optional<Length> MathMLElement::AddMathLengthToComputedStyle(
     const CSSToLengthConversionData& conversion_data,
     const QualifiedName& attr_name,
-    AllowPercentages allow_percentages) {
+    AllowPercentages allow_percentages,
+    CSSPrimitiveValue::ValueRange value_range) {
   if (const CSSPrimitiveValue* parsed_value =
-          ParseMathLength(attr_name, allow_percentages)) {
+          ParseMathLength(attr_name, allow_percentages, value_range)) {
     return parsed_value->ConvertToLength(conversion_data);
   }
   return absl::nullopt;
