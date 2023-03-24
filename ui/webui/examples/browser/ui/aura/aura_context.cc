@@ -52,9 +52,9 @@ class AuraContext::NativeCursorManager : public wm::NativeCursorManager {
   // wm::NativeCursorManager:
   void SetDisplay(const display::Display& display,
                   wm::NativeCursorManagerDelegate* delegate) override {
-    cursor_loader_.SetDisplayData(display.rotation(),
-                                  display.device_scale_factor());
-    SetCursor(delegate->GetCursor(), delegate);
+    if (cursor_loader_.SetDisplay(display)) {
+      SetCursor(delegate->GetCursor(), delegate);
+    }
   }
 
   void SetCursor(gfx::NativeCursor cursor,

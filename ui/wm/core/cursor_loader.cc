@@ -17,6 +17,8 @@
 #include "ui/base/cursor/cursor_size.h"
 #include "ui/base/cursor/mojom/cursor_type.mojom.h"
 #include "ui/base/cursor/platform_cursor.h"
+#include "ui/base/layout.h"
+#include "ui/base/resource/resource_scale_factor.h"
 #include "ui/gfx/geometry/point.h"
 #include "ui/wm/core/cursor_util.h"
 
@@ -48,14 +50,18 @@ void CursorLoader::UnloadCursors() {
   image_cursors_.clear();
 }
 
-bool CursorLoader::SetDisplayData(display::Display::Rotation rotation,
-                                  float scale) {
-  DCHECK_GT(scale, 0);
-  if (rotation_ == rotation && scale_ == scale)
+bool CursorLoader::SetDisplay(const display::Display& display) {
+  const display::Display::Rotation rotation = display.panel_rotation();
+  const float scale = display.device_scale_factor();
+  if (rotation_ == rotation && scale_ == scale) {
     return false;
+  }
 
   rotation_ = rotation;
   scale_ = scale;
+  resource_scale_ = ui::GetScaleForResourceScaleFactor(
+      ui::GetSupportedResourceScaleFactor(scale_));
+
   UnloadCursors();
   if (use_platform_cursors_)
     factory_->SetDeviceScaleFactor(scale_);
@@ -76,7 +82,8 @@ void CursorLoader::SetPlatformCursor(ui::Cursor* cursor) {
   // The platform cursor was already set via WebCursor::GetNativeCursor.
   if (cursor->type() == CursorType::kCustom)
     return;
-  cursor->set_image_scale_factor(scale());
+  cursor->set_image_scale_factor(use_platform_cursors_ ? scale_
+                                                       : resource_scale_);
   cursor->SetPlatformCursor(CursorFromType(cursor->type()));
 }
 
@@ -99,7 +106,8 @@ absl::optional<ui::CursorData> CursorLoader::GetCursorData(
   // TODO(https://crbug.com/1193775): use the actual `rotation_` if that makes
   // sense for the current use cases of `GetCursorData` (e.g. Chrome Remote
   // Desktop, WebRTC and VideoRecordingWatcher).
-  return wm::GetCursorData(type, size_, scale_, display::Display::ROTATE_0);
+  return wm::GetCursorData(type, size_, resource_scale_,
+                           display::Display::ROTATE_0);
 }
 
 scoped_refptr<ui::PlatformCursor> CursorLoader::CursorFromType(
@@ -136,7 +144,7 @@ scoped_refptr<ui::PlatformCursor> CursorLoader::CursorFromType(
 scoped_refptr<ui::PlatformCursor> CursorLoader::LoadCursorFromAsset(
     CursorType type) {
   absl::optional<ui::CursorData> cursor_data =
-      wm::GetCursorData(type, size_, scale_, rotation_);
+      wm::GetCursorData(type, size_, resource_scale_, rotation_);
   if (!cursor_data) {
     return nullptr;
   }

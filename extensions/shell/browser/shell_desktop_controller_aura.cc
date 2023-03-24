@@ -76,9 +76,9 @@ class ShellNativeCursorManager : public wm::NativeCursorManager {
   // wm::NativeCursorManager overrides.
   void SetDisplay(const display::Display& display,
                   wm::NativeCursorManagerDelegate* delegate) override {
-    if (cursor_loader_.SetDisplayData(display.panel_rotation(),
-                                      display.device_scale_factor()))
+    if (cursor_loader_.SetDisplay(display)) {
       SetCursor(delegate->GetCursor(), delegate);
+    }
   }
 
   void SetCursor(gfx::NativeCursor cursor,

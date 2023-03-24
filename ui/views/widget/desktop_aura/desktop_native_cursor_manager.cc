@@ -32,10 +32,9 @@ void DesktopNativeCursorManager::RemoveHost(aura::WindowTreeHost* host) {
 void DesktopNativeCursorManager::SetDisplay(
     const display::Display& display,
     wm::NativeCursorManagerDelegate* delegate) {
-  cursor_loader_.SetDisplayData(display.rotation(),
-                                display.device_scale_factor());
-
-  SetCursor(delegate->GetCursor(), delegate);
+  if (cursor_loader_.SetDisplay(display)) {
+    SetCursor(delegate->GetCursor(), delegate);
+  }
 }
 
 void DesktopNativeCursorManager::SetCursor(

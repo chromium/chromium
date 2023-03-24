@@ -5,6 +5,7 @@
 import("//build/config/chromeos/ui_mode.gni")
 import("//build/config/ui.gni")
 import("//testing/test.gni")
+import("//ui/base/ui_features.gni")
 
 assert(use_aura)
 
@@ -181,10 +182,11 @@ test("wm_unittests") {
     "//ui/wm/public",
   ]
 
-  data_deps = [
-    "//ui/resources:ui_test_pak_data",
-    "//ui/resources:ui_test_pak_data_200_percent",
-  ]
+  data_deps = [ "//ui/resources:ui_test_pak_data" ]
+
+  if (enable_hidpi) {
+    data_deps += [ "//ui/resources:ui_test_pak_data_200_percent" ]
+  }
 
   if (is_chromeos_ash) {
     sources += [ "core/ime_util_chromeos_unittest.cc" ]
