@@ -11,6 +11,7 @@ import android.graphics.Rect;
 import android.os.Build;
 import android.util.DisplayMetrics;
 import android.view.Display;
+import android.view.DisplayCutout;
 import android.view.Surface;
 import android.view.View;
 import android.view.WindowInsets;
@@ -219,8 +220,6 @@ abstract class PartialCustomTabVersionCompat {
         @Override
         @Px
         int getDisplayWidth() {
-            // TODO(crbug.com/1425558): The width on the devices with the display cutout,
-            //     when it is in landscape mode, is not correct. Fix this.
             Display display = mActivity.getWindowManager().getDefaultDisplay();
             Point size = new Point();
             display.getSize(size);
@@ -284,14 +283,23 @@ abstract class PartialCustomTabVersionCompat {
         @Px
         int getXOffset() {
             Display display = mActivity.getWindowManager().getDefaultDisplay();
-            if (!DeviceFormFactor.isTablet() && display.getRotation() == Surface.ROTATION_270) {
+            if (!DeviceFormFactor.isNonMultiDisplayContextOnTablet(mActivity)
+                    && display.getRotation() == Surface.ROTATION_270) {
                 // On the phone in reverse-landscape mode, navigation bar is located on the left
                 // side of the screen. The origin of x should be offset as much.
-                DisplayMetrics displayMetrics = getDisplayMetrics();
-                int wholeWidth = displayMetrics.widthPixels;
-                return wholeWidth - getDisplayWidth();
+                // |getDisplayWidth()| already takes into account the display cutout insets on
+                // both sides. Subtract the right inset since it doesn't affect the offset.
+                int wholeWidth = getDisplayMetrics().widthPixels;
+                return wholeWidth - getDisplayWidth() - getDisplayCutoutRightInset(display);
             }
             return 0;
+        }
+
+        private static int getDisplayCutoutRightInset(Display display) {
+            // TODO(crbug.com/1425558): Make this work on P.
+            if (Build.VERSION.SDK_INT < Build.VERSION_CODES.Q) return 0;
+            DisplayCutout cutout = display.getCutout();
+            return cutout != null ? cutout.getSafeInsetRight() : 0;
         }
 
         @Override
