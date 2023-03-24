@@ -31,9 +31,11 @@
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/common/url_constants.h"
 #include "chrome/test/base/mixin_based_in_process_browser_test.h"
+#include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
 #include "chromeos/ash/components/dbus/update_engine/fake_update_engine_client.h"
 #include "chromeos/ash/components/dbus/update_engine/update_engine_client.h"
 #include "components/session_manager/core/session_manager.h"
+#include "components/user_manager/user_manager.h"
 #include "content/public/test/browser_test.h"
 
 namespace ash {
@@ -85,30 +87,67 @@ enum class TimeSetupResult {
   kInvalidProfileCreation
 };
 
-// Helper class to create NotificationDisplayServiceTester before notification
-// in the session shown.
-class NotificationDisplayServiceWaiter : public ProfileManagerObserver {
+// A mixin that injects a stub notification display service that tracks set of
+// notifications for the primary profile. Expected to be used with test that go
+// through login flow, and the primary user profile is different than the
+// browser test profile (`browser()->profile()`).
+class NotificationDisplayServiceMixin : public InProcessBrowserTestMixin,
+                                        public ProfileManagerObserver {
  public:
-  NotificationDisplayServiceWaiter() {
-    g_browser_process->profile_manager()->AddObserver(this);
+  explicit NotificationDisplayServiceMixin(
+      InProcessBrowserTestMixinHost* mixin_host)
+      : InProcessBrowserTestMixin(mixin_host) {}
+
+  NotificationDisplayServiceMixin(const NotificationDisplayServiceMixin&) =
+      delete;
+  NotificationDisplayServiceMixin& operator=(
+      const NotificationDisplayServiceMixin&) = delete;
+
+  ~NotificationDisplayServiceMixin() override = default;
+
+  // InProcessBrowserTestMixin:
+  void SetUpOnMainThread() override {
+    // The mixin observes profile manager, and initializes the test notification
+    // service when the primary user profile gets added. If primary user (and
+    // profile) have already been created at this point, the mixin will not be
+    // able to detect profile addition.
+    ASSERT_FALSE(user_manager::UserManager::Get()->GetPrimaryUser());
+    profile_waiter_ = std::make_unique<base::RunLoop>();
+    profile_manager_observer_.Observe(g_browser_process->profile_manager());
+  }
+
+  void TearDownOnMainThread() override {
+    profile_manager_observer_.Reset();
+    profile_waiter_.reset();
+    display_service_.reset();
   }
 
   // ProfileManagerObserver:
   void OnProfileAdded(Profile* profile) override {
-    g_browser_process->profile_manager()->RemoveObserver(this);
+    if (!user_manager::UserManager::Get()->IsPrimaryUser(
+            BrowserContextHelper::Get()->GetUserByBrowserContext(profile))) {
+      return;
+    }
+    profile_manager_observer_.Reset();
     display_service_ =
         std::make_unique<NotificationDisplayServiceTester>(profile);
-    run_loop_.Quit();
+    profile_waiter_->Quit();
   }
 
-  std::unique_ptr<NotificationDisplayServiceTester> Wait() {
-    run_loop_.Run();
-    return std::move(display_service_);
+  NotificationDisplayServiceTester* WaitForDisplayService() {
+    if (!display_service_ && !profile_manager_observer_.IsObserving()) {
+      return nullptr;
+    }
+
+    profile_waiter_->Run();
+    return display_service_.get();
   }
 
  private:
+  base::ScopedObservation<ProfileManager, ProfileManagerObserver>
+      profile_manager_observer_{this};
   std::unique_ptr<NotificationDisplayServiceTester> display_service_;
-  base::RunLoop run_loop_;
+  std::unique_ptr<base::RunLoop> profile_waiter_;
 };
 
 // Mixin that sets up session state to indicate certain EOL status:
@@ -288,6 +327,8 @@ class EolNotificationTest : public MixinBasedInProcessBrowserTest,
  protected:
   EolStatusMixin eol_status_mixin_{&mixin_host_};
 
+  NotificationDisplayServiceMixin notifications_mixin_{&mixin_host_};
+
   ash::LoggedInUserMixin logged_in_user_mixin_{
       &mixin_host_, LoggedInUserMixin::LogInType::kRegular,
       embedded_test_server(), this};
@@ -307,6 +348,8 @@ class ManagedDeviceEolNotificationTest
 
  protected:
   EolStatusMixin eol_status_mixin_{&mixin_host_};
+
+  NotificationDisplayServiceMixin notifications_mixin_{&mixin_host_};
 
   ash::DeviceStateMixin device_state_{
       &mixin_host_,
@@ -337,6 +380,8 @@ class ChildUserEolNotificationTest
 
  protected:
   EolStatusMixin eol_status_mixin_{&mixin_host_};
+
+  NotificationDisplayServiceMixin notifications_mixin_{&mixin_host_};
 
   ash::LoggedInUserMixin logged_in_user_mixin_{
       &mixin_host_,
@@ -382,11 +427,12 @@ IN_PROC_BROWSER_TEST_P(EolNotificationTest, ShowNotificationForEolApproaching) {
                 /*now_string=*/"12 May 2023", /*eol_string=*/"01 June 2023",
                 /*profile_creation_string=*/"05 December 2021"));
 
-  NotificationDisplayServiceWaiter notifications_waiter;
   logged_in_user_mixin_.LogInUser();
 
-  std::unique_ptr<NotificationDisplayServiceTester>
-      notification_display_service = notifications_waiter.Wait();
+  NotificationDisplayServiceTester* notification_display_service =
+      notifications_mixin_.WaitForDisplayService();
+  ASSERT_TRUE(notification_display_service);
+
   base::RunLoop().RunUntilIdle();
 
   absl::optional<message_center::Notification> notification =
@@ -401,7 +447,7 @@ IN_PROC_BROWSER_TEST_P(EolNotificationTest, ShowNotificationForEolApproaching) {
   if (NotificationHasClaimButton()) {
     notification_display_service->SimulateClick(
         NotificationHandler::Type::TRANSIENT, notification->id(),
-        /*action_id=*/0, /*reply=*/absl::nullopt);
+        /*action_index=*/0, /*reply=*/absl::nullopt);
     content::WebContents* active_contents =
         chrome::FindLastActive()->tab_strip_model()->GetActiveWebContents();
     ASSERT_TRUE(active_contents);
@@ -431,11 +477,12 @@ IN_PROC_BROWSER_TEST_P(EolNotificationTest,
                 /*now_string=*/"12 May 2023", /*eol_string=*/"01 June 2023",
                 /*profile_creation_string=*/"05 December 2021"));
 
-  NotificationDisplayServiceWaiter notifications_waiter;
   logged_in_user_mixin_.LogInUser();
 
-  std::unique_ptr<NotificationDisplayServiceTester>
-      notification_display_service = notifications_waiter.Wait();
+  NotificationDisplayServiceTester* notification_display_service =
+      notifications_mixin_.WaitForDisplayService();
+  ASSERT_TRUE(notification_display_service);
+
   base::RunLoop().RunUntilIdle();
 
   absl::optional<message_center::Notification> notification =
@@ -443,7 +490,7 @@ IN_PROC_BROWSER_TEST_P(EolNotificationTest,
   ASSERT_TRUE(notification);
   notification_display_service->SimulateClick(
       NotificationHandler::Type::TRANSIENT, notification->id(),
-      /*action_id=*/0, /*reply=*/absl::nullopt);
+      /*action_index=*/0, /*reply=*/absl::nullopt);
 }
 
 IN_PROC_BROWSER_TEST_P(EolNotificationTest,
@@ -453,11 +500,12 @@ IN_PROC_BROWSER_TEST_P(EolNotificationTest,
                 /*now_string=*/"12 May 2023", /*eol_string=*/"01 June 2023",
                 /*profile_creation_string=*/"05 December 2021"));
 
-  NotificationDisplayServiceWaiter notifications_waiter;
   logged_in_user_mixin_.LogInUser();
 
-  std::unique_ptr<NotificationDisplayServiceTester>
-      notification_display_service = notifications_waiter.Wait();
+  NotificationDisplayServiceTester* notification_display_service =
+      notifications_mixin_.WaitForDisplayService();
+  ASSERT_TRUE(notification_display_service);
+
   base::RunLoop().RunUntilIdle();
 
   absl::optional<message_center::Notification> notification =
@@ -473,11 +521,12 @@ IN_PROC_BROWSER_TEST_P(EolNotificationTest,
                                   /*eol_string=*/"01 June 2023",
                                   /*profile_creation_string=*/"01 April 2023"));
 
-  NotificationDisplayServiceWaiter notifications_waiter;
   logged_in_user_mixin_.LogInUser();
 
-  std::unique_ptr<NotificationDisplayServiceTester>
-      notification_display_service = notifications_waiter.Wait();
+  NotificationDisplayServiceTester* notification_display_service =
+      notifications_mixin_.WaitForDisplayService();
+  ASSERT_TRUE(notification_display_service);
+
   base::RunLoop().RunUntilIdle();
 
   absl::optional<message_center::Notification> notification =
@@ -490,7 +539,7 @@ IN_PROC_BROWSER_TEST_P(EolNotificationTest,
 
   notification_display_service->SimulateClick(
       NotificationHandler::Type::TRANSIENT, notification->id(),
-      /*action_id=*/0, /*reply=*/absl::nullopt);
+      /*action_index=*/0, /*reply=*/absl::nullopt);
   content::WebContents* active_contents =
       chrome::FindLastActive()->tab_strip_model()->GetActiveWebContents();
   ASSERT_TRUE(active_contents);
@@ -503,11 +552,12 @@ IN_PROC_BROWSER_TEST_P(EolNotificationTest, ShowRecentEolNotification) {
                 /*now_string=*/"03 June 2023", /*eol_string=*/"01 June 2023",
                 /*profile_creation_string=*/"05 December 2021"));
 
-  NotificationDisplayServiceWaiter notifications_waiter;
   logged_in_user_mixin_.LogInUser();
 
-  std::unique_ptr<NotificationDisplayServiceTester>
-      notification_display_service = notifications_waiter.Wait();
+  NotificationDisplayServiceTester* notification_display_service =
+      notifications_mixin_.WaitForDisplayService();
+  ASSERT_TRUE(notification_display_service);
+
   base::RunLoop().RunUntilIdle();
 
   absl::optional<message_center::Notification> notification =
@@ -520,7 +570,7 @@ IN_PROC_BROWSER_TEST_P(EolNotificationTest, ShowRecentEolNotification) {
   if (NotificationHasClaimButton()) {
     notification_display_service->SimulateClick(
         NotificationHandler::Type::TRANSIENT, notification->id(),
-        /*action_id=*/0, /*reply=*/absl::nullopt);
+        /*action_index=*/0, /*reply=*/absl::nullopt);
     content::WebContents* active_contents =
         chrome::FindLastActive()->tab_strip_model()->GetActiveWebContents();
     ASSERT_TRUE(active_contents);
@@ -538,11 +588,12 @@ IN_PROC_BROWSER_TEST_P(EolNotificationTest,
                 /*now_string=*/"03 June 2023", /*eol_string=*/"01 June 2023",
                 /*profile_creation_string=*/"05 December 2021"));
 
-  NotificationDisplayServiceWaiter notifications_waiter;
   logged_in_user_mixin_.LogInUser();
 
-  std::unique_ptr<NotificationDisplayServiceTester>
-      notification_display_service = notifications_waiter.Wait();
+  NotificationDisplayServiceTester* notification_display_service =
+      notifications_mixin_.WaitForDisplayService();
+  ASSERT_TRUE(notification_display_service);
+
   base::RunLoop().RunUntilIdle();
 
   absl::optional<message_center::Notification> notification =
@@ -551,7 +602,7 @@ IN_PROC_BROWSER_TEST_P(EolNotificationTest,
 
   notification_display_service->SimulateClick(
       NotificationHandler::Type::TRANSIENT, notification->id(),
-      /*action_id=*/0, /*reply=*/absl::nullopt);
+      /*action_index=*/0, /*reply=*/absl::nullopt);
 
   // Verify quick settings notice still shows.
   EXPECT_EQ(
@@ -566,11 +617,12 @@ IN_PROC_BROWSER_TEST_P(EolNotificationTest, RecentEolNotificationNotReshown) {
                 /*now_string=*/"03 June 2023", /*eol_string=*/"01 June 2023",
                 /*profile_creation_string=*/"05 December 2021"));
 
-  NotificationDisplayServiceWaiter notifications_waiter;
   logged_in_user_mixin_.LogInUser();
 
-  std::unique_ptr<NotificationDisplayServiceTester>
-      notification_display_service = notifications_waiter.Wait();
+  NotificationDisplayServiceTester* notification_display_service =
+      notifications_mixin_.WaitForDisplayService();
+  ASSERT_TRUE(notification_display_service);
+
   base::RunLoop().RunUntilIdle();
 
   absl::optional<message_center::Notification> notification =
@@ -669,11 +721,12 @@ IN_PROC_BROWSER_TEST_P(EolNotificationTest,
                                   /*eol_string=*/"01 June 2023",
                                   /*profile_creation_string=*/"05 May 2023"));
 
-  NotificationDisplayServiceWaiter notifications_waiter;
   logged_in_user_mixin_.LogInUser();
 
-  std::unique_ptr<NotificationDisplayServiceTester>
-      notification_display_service = notifications_waiter.Wait();
+  NotificationDisplayServiceTester* notification_display_service =
+      notifications_mixin_.WaitForDisplayService();
+  ASSERT_TRUE(notification_display_service);
+
   base::RunLoop().RunUntilIdle();
 
   absl::optional<message_center::Notification> notification =
@@ -685,7 +738,7 @@ IN_PROC_BROWSER_TEST_P(EolNotificationTest,
 
   notification_display_service->SimulateClick(
       NotificationHandler::Type::TRANSIENT, notification->id(),
-      /*action_id=*/0, /*reply=*/absl::nullopt);
+      /*action_index=*/0, /*reply=*/absl::nullopt);
   content::WebContents* active_contents =
       chrome::FindLastActive()->tab_strip_model()->GetActiveWebContents();
   ASSERT_TRUE(active_contents);
@@ -699,11 +752,12 @@ IN_PROC_BROWSER_TEST_P(EolNotificationTest, ShowNonRecentEolNotification) {
                                   /*eol_string=*/"01 June 2023",
                                   /*profile_creation_string=*/"05 May 2020"));
 
-  NotificationDisplayServiceWaiter notifications_waiter;
   logged_in_user_mixin_.LogInUser();
 
-  std::unique_ptr<NotificationDisplayServiceTester>
-      notification_display_service = notifications_waiter.Wait();
+  NotificationDisplayServiceTester* notification_display_service =
+      notifications_mixin_.WaitForDisplayService();
+  ASSERT_TRUE(notification_display_service);
+
   base::RunLoop().RunUntilIdle();
 
   absl::optional<message_center::Notification> notification =
@@ -716,7 +770,7 @@ IN_PROC_BROWSER_TEST_P(EolNotificationTest, ShowNonRecentEolNotification) {
 
   notification_display_service->SimulateClick(
       NotificationHandler::Type::TRANSIENT, notification->id(),
-      /*action_id=*/0, /*reply=*/absl::nullopt);
+      /*action_index=*/0, /*reply=*/absl::nullopt);
   content::WebContents* active_contents =
       chrome::FindLastActive()->tab_strip_model()->GetActiveWebContents();
   ASSERT_TRUE(active_contents);
@@ -770,11 +824,12 @@ IN_PROC_BROWSER_TEST_P(ManagedDeviceEolNotificationTest,
                 /*now_string=*/"12 May 2023", /*eol_string=*/"01 June 2023",
                 /*profile_creation_string=*/"05 December 2021"));
 
-  NotificationDisplayServiceWaiter notifications_waiter;
   logged_in_user_mixin_.LogInUser();
 
-  std::unique_ptr<NotificationDisplayServiceTester>
-      notification_display_service = notifications_waiter.Wait();
+  NotificationDisplayServiceTester* notification_display_service =
+      notifications_mixin_.WaitForDisplayService();
+  ASSERT_TRUE(notification_display_service);
+
   base::RunLoop().RunUntilIdle();
 
   absl::optional<message_center::Notification> notification =
@@ -789,11 +844,12 @@ IN_PROC_BROWSER_TEST_P(ManagedDeviceEolNotificationTest,
                 /*now_string=*/"03 June 2023", /*eol_string=*/"01 June 2023",
                 /*profile_creation_string=*/"05 December 2021"));
 
-  NotificationDisplayServiceWaiter notifications_waiter;
   logged_in_user_mixin_.LogInUser();
 
-  std::unique_ptr<NotificationDisplayServiceTester>
-      notification_display_service = notifications_waiter.Wait();
+  NotificationDisplayServiceTester* notification_display_service =
+      notifications_mixin_.WaitForDisplayService();
+  ASSERT_TRUE(notification_display_service);
+
   base::RunLoop().RunUntilIdle();
 
   absl::optional<message_center::Notification> notification =
@@ -820,11 +876,12 @@ IN_PROC_BROWSER_TEST_P(ChildUserEolNotificationTest,
                 /*now_string=*/"12 May 2023", /*eol_string=*/"01 June 2023",
                 /*profile_creation_string=*/"05 December 2021"));
 
-  NotificationDisplayServiceWaiter notifications_waiter;
   logged_in_user_mixin_.LogInUser();
 
-  std::unique_ptr<NotificationDisplayServiceTester>
-      notification_display_service = notifications_waiter.Wait();
+  NotificationDisplayServiceTester* notification_display_service =
+      notifications_mixin_.WaitForDisplayService();
+  ASSERT_TRUE(notification_display_service);
+
   base::RunLoop().RunUntilIdle();
 
   absl::optional<message_center::Notification> notification =
@@ -840,11 +897,12 @@ IN_PROC_BROWSER_TEST_P(ChildUserEolNotificationTest, NoEolPassedNotification) {
                 /*now_string=*/"03 June 2023", /*eol_string=*/"01 June 2023",
                 /*profile_creation_string=*/"05 December 2021"));
 
-  NotificationDisplayServiceWaiter notifications_waiter;
   logged_in_user_mixin_.LogInUser();
 
-  std::unique_ptr<NotificationDisplayServiceTester>
-      notification_display_service = notifications_waiter.Wait();
+  NotificationDisplayServiceTester* notification_display_service =
+      notifications_mixin_.WaitForDisplayService();
+  ASSERT_TRUE(notification_display_service);
+
   base::RunLoop().RunUntilIdle();
 
   absl::optional<message_center::Notification> notification =
