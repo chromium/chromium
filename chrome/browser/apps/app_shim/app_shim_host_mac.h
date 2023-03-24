@@ -114,6 +114,9 @@ class AppShimHost : public chrome::mojom::AppShimHost {
 
   void SetOnShimConnectedForTesting(base::OnceClosure closure);
 
+  // Returns kNullProcessId if no process has connected to this host yet.
+  base::ProcessId GetAppShimPid() const;
+
  protected:
   void ChannelError(uint32_t custom_reason, const std::string& description);
 

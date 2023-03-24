@@ -438,7 +438,9 @@ class WebAppIntegrationTestDriver : WebAppInstallManagerObserver {
 
   void LaunchAppStartupBrowserCreator(const AppId& app_id);
 #if BUILDFLAG(IS_MAC)
-  void LaunchFromAppShim(Site site, const std::vector<GURL>& urls);
+  bool LaunchFromAppShim(Site site,
+                         const std::vector<GURL>& urls,
+                         bool wait_for_complete_launch);
 #endif
 
   void CheckAppSettingsAppState(Profile* profile, const AppState& app_state);

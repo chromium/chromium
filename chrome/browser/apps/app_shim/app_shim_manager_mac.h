@@ -207,6 +207,19 @@ class AppShimManager : public AppShimHostBootstrap::Client,
   static base::ScopedCFTypeRef<SecRequirementRef>
       BuildAppShimRequirementFromFrameworkRequirementString(CFStringRef);
 
+  class AppShimObserver {
+   public:
+    virtual void OnShimProcessConnected(base::ProcessId pid) = 0;
+    virtual void OnShimProcessConnectedAndAllLaunchesDone(
+        base::ProcessId pid,
+        chrome::mojom::AppShimLaunchResult result) = 0;
+    virtual void OnShimReopen(base::ProcessId pid) = 0;
+    virtual void OnShimOpenedURLs(base::ProcessId pid) = 0;
+  };
+  void SetAppShimObserverForTesting(AppShimObserver* observer) {
+    app_shim_observer_ = observer;
+  }
+
  protected:
   typedef std::set<Browser*> BrowserSet;
 
@@ -380,6 +393,8 @@ class AppShimManager : public AppShimHostBootstrap::Client,
 
   // The avatar menu instance used by all app shims.
   std::unique_ptr<AvatarMenu> avatar_menu_;
+
+  raw_ptr<AppShimObserver> app_shim_observer_ = nullptr;
 
   base::ScopedMultiSourceObservation<Profile, ProfileObserver>
       profile_observation_{this};

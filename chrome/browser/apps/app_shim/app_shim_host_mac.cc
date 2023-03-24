@@ -120,6 +120,13 @@ void AppShimHost::SetOnShimConnectedForTesting(base::OnceClosure closure) {
   on_shim_connected_for_testing_ = std::move(closure);
 }
 
+base::ProcessId AppShimHost::GetAppShimPid() const {
+  if (bootstrap_) {
+    return bootstrap_->GetAppShimPid();
+  }
+  return base::kNullProcessId;
+}
+
 bool AppShimHost::HasBootstrapConnected() const {
   return bootstrap_ != nullptr;
 }

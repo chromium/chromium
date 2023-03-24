@@ -1562,7 +1562,7 @@ void WebAppIntegrationTestDriver::LaunchFromPlatformShortcut(Site site) {
     // expected to open a new one, so only wait for a new browser to be added
     // if there wasn't an open one already.
     app_browser_ = GetBrowserForAppId(profile(), app_id);
-    LaunchFromAppShim(site, /*urls=*/{});
+    LaunchFromAppShim(site, /*urls=*/{}, /*wait_for_complete_launch=*/true);
     if (!app_browser_) {
       browser_added_waiter.Wait();
       app_browser_ = browser_added_waiter.browser_added();
@@ -1570,7 +1570,7 @@ void WebAppIntegrationTestDriver::LaunchFromPlatformShortcut(Site site) {
     active_app_id_ = app_id;
     EXPECT_TRUE(AppBrowserController::IsForWebApp(app_browser(), app_id));
   } else {
-    LaunchFromAppShim(site, /*urls=*/{});
+    LaunchFromAppShim(site, /*urls=*/{}, /*wait_for_complete_launch=*/true);
   }
 #else
   if (is_open_in_app_browser) {
@@ -3826,7 +3826,7 @@ void WebAppIntegrationTestDriver::LaunchFile(Site site,
     urls.push_back(net::FilePathToFileURL(path));
   }
 
-  LaunchFromAppShim(site, urls);
+  LaunchFromAppShim(site, urls, /*wait_for_complete_launch=*/false);
 #else
   StartupBrowserCreator browser_creator;
   base::CommandLine command_line(base::CommandLine::NO_PROGRAM);
@@ -3853,20 +3853,108 @@ void WebAppIntegrationTestDriver::LaunchAppStartupBrowserCreator(
 }
 
 #if BUILDFLAG(IS_MAC)
-void WebAppIntegrationTestDriver::LaunchFromAppShim(
+class AppShimLaunchWaiter : public apps::AppShimManager::AppShimObserver {
+ public:
+  explicit AppShimLaunchWaiter(bool wait_for_complete_launch)
+      : wait_for_complete_launch_(wait_for_complete_launch) {}
+
+  base::WeakPtr<AppShimLaunchWaiter> AsWeakPtr() {
+    return weak_factory_.GetWeakPtr();
+  }
+
+  bool did_launch() const { return did_launch_; }
+
+  void OnLaunchStarted(base::Process process) {
+    if (!process.IsValid()) {
+      LOG(INFO) << "App Shim quit before finishing launch";
+      loop_.Quit();
+      return;
+    }
+    expected_pid_ = process.Pid();
+    LOG(INFO) << "Waiting for App Shim with PID " << *expected_pid_;
+    MaybeQuitLoop();
+  }
+
+  void Wait() { loop_.Run(); }
+
+  void OnShimTerminated() {
+    LOG(INFO) << "App Shim terminated while launching";
+    loop_.Quit();
+  }
+
+  void OnShimProcessConnected(base::ProcessId pid) override {
+    LOG(INFO) << "Got App Shim connection from " << pid;
+    if (!wait_for_complete_launch_) {
+      launched_shims_.insert(pid);
+      did_launch_ = true;
+      MaybeQuitLoop();
+    }
+  }
+
+  void OnShimProcessConnectedAndAllLaunchesDone(
+      base::ProcessId pid,
+      chrome::mojom::AppShimLaunchResult result) override {
+    LOG(INFO) << "Finished launching App Shim " << pid << " with result "
+              << result;
+    did_launch_ = true;
+    launched_shims_.insert(pid);
+    MaybeQuitLoop();
+  }
+
+  void OnShimReopen(base::ProcessId pid) override {
+    LOG(INFO) << "Reopened App Shim " << pid;
+    did_launch_ = true;
+    launched_shims_.insert(pid);
+    MaybeQuitLoop();
+  }
+
+  void OnShimOpenedURLs(base::ProcessId pid) override {
+    LOG(INFO) << "App Shim opened URLs " << pid;
+    did_launch_ = true;
+    launched_shims_.insert(pid);
+    MaybeQuitLoop();
+  }
+
+ private:
+  void MaybeQuitLoop() {
+    if (expected_pid_.has_value() &&
+        launched_shims_.find(*expected_pid_) != launched_shims_.end()) {
+      loop_.Quit();
+    }
+  }
+
+  bool wait_for_complete_launch_ = true;
+
+  base::RunLoop loop_;
+  std::set<base::ProcessId> launched_shims_;
+  absl::optional<base::ProcessId> expected_pid_;
+  bool did_launch_ = false;
+  base::WeakPtrFactory<AppShimLaunchWaiter> weak_factory_{this};
+};
+
+bool WebAppIntegrationTestDriver::LaunchFromAppShim(
     Site site,
-    const std::vector<GURL>& urls) {
+    const std::vector<GURL>& urls,
+    bool wait_for_complete_launch) {
   AppId app_id = GetAppIdBySiteMode(site);
   std::string app_name = GetSiteConfiguration(site).app_name;
   base::FilePath app_path = GetShortcutPath(
       override_registration_->test_override->chrome_apps_folder(), app_name,
       app_id);
-  base::RunLoop loop;
-  LaunchShimForTesting(
-      app_path, urls,
-      base::BindLambdaForTesting([&](base::Process process) { loop.Quit(); }),
-      base::DoNothing());
-  loop.Run();
+
+  AppShimLaunchWaiter launch_waiter(wait_for_complete_launch);
+  apps::AppShimManager::Get()->SetAppShimObserverForTesting(&launch_waiter);
+
+  LaunchShimForTesting(app_path, urls,
+                       base::BindOnce(&AppShimLaunchWaiter::OnLaunchStarted,
+                                      launch_waiter.AsWeakPtr()),
+                       base::BindOnce(&AppShimLaunchWaiter::OnShimTerminated,
+                                      launch_waiter.AsWeakPtr()));
+  launch_waiter.Wait();
+
+  apps::AppShimManager::Get()->SetAppShimObserverForTesting(nullptr);
+
+  return launch_waiter.did_launch();
 }
 #endif
 
