@@ -8564,32 +8564,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Networks.RememberedShared" units="units"
-    expires_after="2020-08-01">
-  <owner>stevenjb@chromium.org</owner>
-  <summary>
-    Number of shared remembered (preferred) networks on Chrome OS. Updated any
-    time the network list changes.
-  </summary>
-</histogram>
-
-<histogram name="Networks.RememberedUnshared" units="units"
-    expires_after="2020-08-01">
-  <owner>stevenjb@chromium.org</owner>
-  <summary>
-    Number of private remembered (preferred) networks on Chrome OS. Updated any
-    time the network list changes.
-  </summary>
-</histogram>
-
-<histogram name="Networks.Visible" units="units" expires_after="2020-08-01">
-  <owner>stevenjb@chromium.org</owner>
-  <summary>
-    Number of visible (in-range) networks on Chrome OS. Updated any time the
-    network list changes.
-  </summary>
-</histogram>
-
 <histogram name="NQE.CachedNetworkQualityAvailable" enum="BooleanAvailable"
     expires_after="2021-10-10">
   <owner>tbansal@chromium.org</owner>

@@ -591,9 +591,6 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) NetworkStateHandler
   // * Hidden (wifi) networks
   void SortNetworkList();
 
-  // Updates UMA stats. Called once after all requested networks are updated.
-  void UpdateNetworkStats();
-
   // NetworkState specific method for UpdateManagedStateProperties which
   // notifies observers.
   void UpdateNetworkStateProperties(NetworkState* network,

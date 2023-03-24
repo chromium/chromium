@@ -1729,7 +1729,6 @@ void NetworkStateHandler::ManagedStateListChanged(
     case ManagedState::MANAGED_TYPE_NETWORK:
       AddOrRemoveStubCellularNetworks();
       SortNetworkList();
-      UpdateNetworkStats();
       NotifyIfActiveNetworksChanged();
       NotifyNetworkListChanged();
       UpdateBlockedCellularNetworks();
@@ -1804,25 +1803,6 @@ void NetworkStateHandler::SortNetworkList() {
   std::move(new_networks.begin(), new_networks.end(),
             std::back_inserter(network_list_));
   network_list_sorted_ = true;
-}
-
-void NetworkStateHandler::UpdateNetworkStats() {
-  size_t shared = 0, unshared = 0, visible = 0;
-  for (ManagedStateList::iterator iter = network_list_.begin();
-       iter != network_list_.end(); ++iter) {
-    const NetworkState* network = (*iter)->AsNetworkState();
-    if (network->visible())
-      ++visible;
-    if (network->IsInProfile()) {
-      if (network->IsPrivate())
-        ++unshared;
-      else
-        ++shared;
-    }
-  }
-  base::UmaHistogramCounts100("Networks.Visible", visible);
-  base::UmaHistogramCounts100("Networks.RememberedShared", shared);
-  base::UmaHistogramCounts100("Networks.RememberedUnshared", unshared);
 }
 
 void NetworkStateHandler::DefaultNetworkServiceChanged(
