@@ -1285,10 +1285,6 @@ Value* Value::SetPath(StringPiece path, Value&& value) {
   return GetDict().SetByDottedPath(path, std::move(value));
 }
 
-Value* Value::SetIntPath(StringPiece path, int value) {
-  return GetDict().SetByDottedPath(path, value);
-}
-
 Value* Value::SetDoublePath(StringPiece path, double value) {
   return GetDict().SetByDottedPath(path, value);
 }
