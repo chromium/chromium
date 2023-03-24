@@ -8,6 +8,7 @@
 #import "components/sync_sessions/open_tabs_ui_delegate.h"
 #import "components/sync_sessions/session_sync_service.h"
 #import "components/sync_sessions/synced_session.h"
+#import "ios/chrome/browser/synced_sessions/distant_tab.h"
 #import "ios/chrome/browser/synced_sessions/synced_sessions.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)

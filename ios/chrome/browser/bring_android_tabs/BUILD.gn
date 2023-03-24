@@ -1,0 +1,51 @@
+# Copyright 2023 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("bring_android_tabs") {
+  configs += [ "//build/config/compiler:enable_arc" ]
+  sources = [
+    "bring_android_tabs_to_ios_service.h",
+    "bring_android_tabs_to_ios_service.mm",
+    "bring_android_tabs_to_ios_service_factory.h",
+    "bring_android_tabs_to_ios_service_factory.mm",
+  ]
+  deps = [
+    ":features",
+    ":metrics",
+    "//base",
+    "//components/keyed_service/core",
+    "//components/keyed_service/ios",
+    "//components/pref_registry",
+    "//components/prefs",
+    "//components/segmentation_platform/embedder/default_model",
+    "//components/segmentation_platform/public",
+    "//components/sync/driver",
+    "//components/sync_device_info",
+    "//ios/chrome/browser/browser_state",
+    "//ios/chrome/browser/first_run",
+    "//ios/chrome/browser/flags:system_flags",
+    "//ios/chrome/browser/prefs:pref_names",
+    "//ios/chrome/browser/segmentation_platform",
+    "//ios/chrome/browser/sync",
+    "//ios/chrome/browser/synced_sessions",
+  ]
+}
+
+source_set("features") {
+  configs += [ "//build/config/compiler:enable_arc" ]
+  sources = [
+    "features.h",
+    "features.mm",
+  ]
+  deps = [ "//base" ]
+}
+
+source_set("metrics") {
+  configs += [ "//build/config/compiler:enable_arc" ]
+  sources = [
+    "metrics.h",
+    "metrics.mm",
+  ]
+  deps = [ "//base" ]
+}

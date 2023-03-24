@@ -165,26 +165,6 @@ bool ShouldAddToHomeScreen(bool in_incognito);
 // Feature flag to enable the new layout of the NTP omnibox.
 BASE_DECLARE_FEATURE(kNewNTPOmniboxLayout);
 
-// Feature flag to turn on the prompt that brings the user's Android tabs to iOS
-// Chrome.
-BASE_DECLARE_FEATURE(kBringYourOwnTabsIOS);
-
-// Enum for "Bring Your Own Tabs" experiment groups (control/experiment) and its
-// param.
-enum class BringYourOwnTabsPromptType {
-  // "Bring Your Own Tabs" enabled with half sheet modal prompt.
-  kHalfSheet = 0,
-  // "Bring Your Own Tabs" enabled with bottom message prompt.
-  kBottomMessage,
-  // "Bring Your Own Tabs" not enabled.
-  kDisabled,
-};
-extern const char kBringYourOwnTabsIOSParam[];
-
-// Returns the current BringYourOwnTabsPromptType according to the feature flag
-// and experiment "BringYourOwnTabsIOS".
-BringYourOwnTabsPromptType GetBringYourOwnTabsPromptType();
-
 // Whether the email is shown in the snackbar indicating that a new bookmark
 // or reading list item is added.
 BASE_DECLARE_FEATURE(kEnableEmailInBookmarksReadingListSnackbar);

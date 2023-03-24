@@ -66,6 +66,7 @@
 #import "components/translate/core/browser/translate_prefs.h"
 #import "components/translate/core/common/translate_util.h"
 #import "ios/chrome/app/background_mode_buildflags.h"
+#import "ios/chrome/browser/bring_android_tabs/features.h"
 #import "ios/chrome/browser/browsing_data/browsing_data_features.h"
 #import "ios/chrome/browser/crash_report/features.h"
 #import "ios/chrome/browser/credential_provider_promo/features.h"

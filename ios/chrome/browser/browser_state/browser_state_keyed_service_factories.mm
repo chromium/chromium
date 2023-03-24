@@ -12,6 +12,7 @@
 #import "ios/chrome/browser/bookmarks/account_bookmark_model_factory.h"
 #import "ios/chrome/browser/bookmarks/local_or_syncable_bookmark_model_factory.h"
 #import "ios/chrome/browser/bookmarks/managed_bookmark_service_factory.h"
+#import "ios/chrome/browser/bring_android_tabs/bring_android_tabs_to_ios_service_factory.h"
 #import "ios/chrome/browser/browsing_data/browsing_data_remover_factory.h"
 #import "ios/chrome/browser/commerce/shopping_service_factory.h"
 #import "ios/chrome/browser/consent_auditor/consent_auditor_factory.h"
@@ -179,6 +180,7 @@ void EnsureBrowserStateKeyedServiceFactoriesBuilt() {
   TrustedVaultClientBackendFactory::GetInstance();
   TextClassifierModelServiceFactory::GetInstance();
   PromosManagerFactory::GetInstance();
+  BringAndroidTabsToIOSServiceFactory::GetInstance();
 
 #if BUILDFLAG(IOS_CREDENTIAL_PROVIDER_ENABLED)
   CredentialProviderServiceFactory::GetInstance();

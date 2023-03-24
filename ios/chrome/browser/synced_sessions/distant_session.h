@@ -8,7 +8,6 @@
 #import <string>
 
 #import "components/sync_device_info/device_info.h"
-#import "ios/chrome/browser/synced_sessions/distant_tab.h"
 
 namespace base {
 class Time;
@@ -21,6 +20,8 @@ struct SyncedSession;
 }  // namespace sync_sessions
 
 namespace synced_sessions {
+
+struct DistantTab;
 
 // Data holder that contains the data of the distant sessions and their tabs to
 // show in the UI.
@@ -49,7 +50,7 @@ struct DistantSession {
   // Time the session is last modified.
   base::Time modified_time;
   // A list of tabs opened in this session.
-  DistantTabVector tabs;
+  std::vector<std::unique_ptr<DistantTab>> tabs;
   // The form factor of the device in which the session is created.
   syncer::DeviceInfo::FormFactor form_factor;
 };

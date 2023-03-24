@@ -416,11 +416,6 @@ void RegisterBrowserStatePrefs(user_prefs::PrefRegistrySyncable* registry) {
 
   // Register pref used to determine if the Price Tracking UI has been shown.
   registry->RegisterBooleanPref(prefs::kPriceNotificationsHasBeenShown, false);
-
-  // Register pref used to determine if the Bring Android Tabs prompt has been
-  // shown.
-  registry->RegisterBooleanPref(prefs::kIosBringAndroidTabsPromptDisplayed,
-                                false);
 }
 
 // This method should be periodically pruned of year+ old migrations.

@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef IOS_CHROME_BROWSER_UI_RECENT_TABS_BRING_ANDROID_TABS_BRING_ANDROID_TABS_METRICS_H_
-#define IOS_CHROME_BROWSER_UI_RECENT_TABS_BRING_ANDROID_TABS_BRING_ANDROID_TABS_METRICS_H_
+#ifndef IOS_CHROME_BROWSER_BRING_ANDROID_TABS_METRICS_H_
+#define IOS_CHROME_BROWSER_BRING_ANDROID_TABS_METRICS_H_
 
 namespace bring_android_tabs {
 
@@ -62,4 +62,4 @@ enum class TabsListActionType {
 
 }  // namespace bring_android_tabs
 
-#endif  // IOS_CHROME_BROWSER_UI_RECENT_TABS_BRING_ANDROID_TABS_BRING_ANDROID_TABS_METRICS_H_
+#endif  // IOS_CHROME_BROWSER_BRING_ANDROID_TABS_METRICS_H_

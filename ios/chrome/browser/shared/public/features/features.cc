@@ -201,22 +201,6 @@ bool ShouldAddToHomeScreen(bool in_incognito) {
       kAddToHomeScreen, kAddToHomeScreenDisableIncognitoParam, false);
 }
 
-BASE_FEATURE(kBringYourOwnTabsIOS,
-             "BringYourOwnTabsIOS",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
-const char kBringYourOwnTabsIOSParam[] = "bottom-message";
-
-BringYourOwnTabsPromptType GetBringYourOwnTabsPromptType() {
-  if (base::FeatureList::IsEnabled(kBringYourOwnTabsIOS)) {
-    bool showBottomMessagePrompt = base::GetFieldTrialParamByFeatureAsBool(
-        kBringYourOwnTabsIOS, kBringYourOwnTabsIOSParam, false);
-    return showBottomMessagePrompt ? BringYourOwnTabsPromptType::kBottomMessage
-                                   : BringYourOwnTabsPromptType::kHalfSheet;
-  }
-  return BringYourOwnTabsPromptType::kDisabled;
-}
-
 BASE_FEATURE(kNewNTPOmniboxLayout,
              "kNewNTPOmniboxLayout",
              base::FEATURE_DISABLED_BY_DEFAULT);
