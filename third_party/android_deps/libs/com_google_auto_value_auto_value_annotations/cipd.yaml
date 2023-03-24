@@ -3,8 +3,8 @@
 # found in the LICENSE file.
 
 # To create CIPD package run the following command.
-# cipd create --pkg-def cipd.yaml -tag version:2@1.9.cr1
+# cipd create --pkg-def cipd.yaml -tag version:2@1.10.1.cr1
 package: chromium/third_party/android_deps/libs/com_google_auto_value_auto_value_annotations
 description: "AutoValue Annotations"
 data:
-- file: auto-value-annotations-1.9.jar
+- file: auto-value-annotations-1.10.1.jar

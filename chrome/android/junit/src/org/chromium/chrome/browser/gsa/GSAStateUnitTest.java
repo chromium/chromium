@@ -46,11 +46,7 @@ public final class GSAStateUnitTest {
             pm.addActivityIfNotPresent(componentName);
             IntentFilter intentFilter = new IntentFilter(Intent.ACTION_SEARCH);
             intentFilter.addCategory(Intent.CATEGORY_DEFAULT);
-            try {
-                pm.addIntentFilterForActivity(componentName, intentFilter);
-            } catch (NameNotFoundException e) {
-                throw new RuntimeException(e);
-            }
+            pm.addIntentFilterForActivity(componentName, intentFilter);
         }
     }
 
