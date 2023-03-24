@@ -27,6 +27,8 @@ constexpr const char* kMicrosoftOfficeWebAppExperimentScopeExtensions[] = {
     "https://www.office.com/",
 };
 
+const char kOneDriveBusinessDomain[] = "sharepoint.com";
+
 struct FallbackPageThemeColor {
   const char* page_url_piece;
   SkColor page_theme_color;
@@ -89,6 +91,13 @@ size_t ChromeOsWebAppExperiments::GetExtendedScopeScore(
             ? strlen(scope)
             : 0;
     best_score = std::max(best_score, score);
+  }
+
+  // Check the OneDrive Business domain separately as this has a different URL
+  // format.
+  GURL url = GURL(url_spec);
+  if (url.DomainIs(kOneDriveBusinessDomain)) {
+    best_score = std::max(best_score, strlen(kOneDriveBusinessDomain));
   }
   return best_score;
 }
