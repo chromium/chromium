@@ -2594,13 +2594,6 @@
       status: "test",
     },
     {
-      name: "PointerLockOptions",
-      origin_trial_feature_name: "PointerLockOptions",
-      public: true,
-      status: "stable",
-      base_feature: "none",
-    },
-    {
       name: "Portals",
       // Portals must be enabled by blink::features::kPortals as we require the
       // support of the browser process to enable the feature. Enabling this

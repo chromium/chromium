@@ -6222,10 +6222,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kParallelDownloadingDescription, kOsAll,
      FEATURE_VALUE_TYPE(download::features::kParallelDownloading)},
 
-    {"enable-pointer-lock-options", flag_descriptions::kPointerLockOptionsName,
-     flag_descriptions::kPointerLockOptionsDescription, kOsDesktop,
-     FEATURE_VALUE_TYPE(features::kPointerLockOptions)},
-
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX)
     {"enable-async-dns", flag_descriptions::kAsyncDnsName,
      flag_descriptions::kAsyncDnsDescription, kOsWin | kOsLinux,

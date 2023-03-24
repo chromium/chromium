@@ -1460,9 +1460,6 @@ extern const char kPermissionQuietChipDescription[];
 extern const char kRecordPermissionExpirationTimestampsName[];
 extern const char kRecordPermissionExpirationTimestampsDescription[];
 
-extern const char kPointerLockOptionsName[];
-extern const char kPointerLockOptionsDescription[];
-
 extern const char kPowerBookmarkBackendName[];
 extern const char kPowerBookmarkBackendDescription[];
 

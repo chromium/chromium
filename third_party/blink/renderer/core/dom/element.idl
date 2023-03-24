@@ -109,7 +109,7 @@ dictionary CheckVisibilityOptions {
 
     // Pointer Lock
     // https://w3c.github.io/pointerlock/#extensions-to-the-element-interface
-    // This function returns void unless the Runtime Enabled Feature |PointerLockOptions| is enabled then it returns Promise<void>.
+    // https://github.com/w3c/pointerlock/pull/49
     [MeasureAs=ElementRequestPointerLock, CallWith=ScriptState, RaisesException] any requestPointerLock(optional PointerLockOptions options = {});
 
     // CSSOM View Module

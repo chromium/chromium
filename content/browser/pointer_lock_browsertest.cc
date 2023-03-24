@@ -144,16 +144,6 @@ class PointerLockBrowserTest : public ContentBrowserTest {
   MockPointerLockWebContentsDelegate web_contents_delegate_;
 };
 
-class PointerLockBrowserTestWithOptions : public PointerLockBrowserTest {
- public:
-  PointerLockBrowserTestWithOptions() {
-    feature_list_.InitAndEnableFeature(features::kPointerLockOptions);
-  }
-
- private:
-  base::test::ScopedFeatureList feature_list_;
-};
-
 namespace {
 class PointerLockHelper {
  public:
@@ -720,7 +710,7 @@ IN_PROC_BROWSER_TEST_F(PointerLockBrowserTest, PointerLockOnDroppedElem) {
   EXPECT_TRUE(ExecJs(shell(), "", EXECUTE_SCRIPT_NO_USER_GESTURE));
 }
 
-IN_PROC_BROWSER_TEST_F(PointerLockBrowserTestWithOptions,
+IN_PROC_BROWSER_TEST_F(PointerLockBrowserTest,
                        PointerLockRequestUnadjustedMovement) {
   GURL main_url(embedded_test_server()->GetURL(
       "a.com", "/cross_site_iframe_factory.html?a(b)"));
@@ -782,8 +772,7 @@ IN_PROC_BROWSER_TEST_F(PointerLockBrowserTestWithOptions,
 
 #if defined(USE_AURA)
 // Flaky on all platforms http://crbug.com/1198612.
-IN_PROC_BROWSER_TEST_F(PointerLockBrowserTestWithOptions,
-                       DISABLED_UnadjustedMovement) {
+IN_PROC_BROWSER_TEST_F(PointerLockBrowserTest, DISABLED_UnadjustedMovement) {
   GURL main_url(embedded_test_server()->GetURL(
       "a.com", "/cross_site_iframe_factory.html?a(b)"));
   EXPECT_TRUE(NavigateToURL(shell(), main_url));
@@ -865,7 +854,7 @@ IN_PROC_BROWSER_TEST_F(PointerLockBrowserTestWithOptions,
 // options inside a Child view gets piped to the proper places and gives
 // the proper unsupported error(this option is only supported on Windows
 // This was prompted by this bug: https://crbug.com/1062702
-IN_PROC_BROWSER_TEST_F(PointerLockBrowserTestWithOptions,
+IN_PROC_BROWSER_TEST_F(PointerLockBrowserTest,
                        MAYBE_ChangeUnadjustedMovementFailure) {
   GURL main_url(embedded_test_server()->GetURL(
       "a.com", "/cross_site_iframe_factory.html?a(b)"));
@@ -913,7 +902,7 @@ IN_PROC_BROWSER_TEST_F(PointerLockBrowserTestWithOptions,
 // options inside a Child view gets piped to the proper places and updates
 // the option(this option is only supported on Windows).
 // This was prompted by this bug: https://crbug.com/1062702
-IN_PROC_BROWSER_TEST_F(PointerLockBrowserTestWithOptions,
+IN_PROC_BROWSER_TEST_F(PointerLockBrowserTest,
                        ChangeUnadjustedMovementSuccess) {
   GURL main_url(embedded_test_server()->GetURL(
       "a.com", "/cross_site_iframe_factory.html?a(b)"));

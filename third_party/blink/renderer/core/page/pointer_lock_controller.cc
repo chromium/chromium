@@ -211,7 +211,7 @@ void PointerLockController::ProcessResultScriptPromise(
     return;
   }
   DOMException* exception = ConvertResultToException(result);
-  RejectIfPromiseEnabled(resolver, exception);
+  resolver->Reject(exception);
 }
 
 void PointerLockController::ProcessResult(
@@ -260,15 +260,6 @@ DOMException* PointerLockController::ConvertResultToException(
           DOMExceptionCode::kUnknownError,
           "If you see this error we have a bug. Please report this bug to "
           "chromium.");
-  }
-}
-
-void PointerLockController::RejectIfPromiseEnabled(
-    ScriptPromiseResolver* resolver,
-    DOMException* exception) {
-  if (RuntimeEnabledFeatures::PointerLockOptionsEnabled(
-          resolver->GetExecutionContext())) {
-    resolver->Reject(exception);
   }
 }
 

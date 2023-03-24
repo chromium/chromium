@@ -108,8 +108,6 @@ class CORE_EXPORT PointerLockController final
       mojom::blink::PointerLockResult result);
   static DOMException* ConvertResultToException(
       mojom::blink::PointerLockResult result);
-  static void RejectIfPromiseEnabled(ScriptPromiseResolver* resolver,
-                                     DOMException* exception);
 
   Member<Page> page_;
   bool lock_pending_;

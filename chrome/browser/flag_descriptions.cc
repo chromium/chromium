@@ -2595,12 +2595,6 @@ const char kRecordPermissionExpirationTimestampsDescription[] =
     "When enabled, permissions grants with a durable session model will have "
     "an expiration date set.";
 
-const char kPointerLockOptionsName[] = "Enables pointer lock options";
-const char kPointerLockOptionsDescription[] =
-    "Enables pointer lock unadjustedMovement. When unadjustedMovement is set "
-    "to true, pointer movements wil not be affected by the underlying platform "
-    "modications such as mouse accelaration.";
-
 const char kPowerBookmarkBackendName[] = "Power bookmark backend";
 const char kPowerBookmarkBackendDescription[] =
     "Enables storing additional metadata to support power bookmark features.";

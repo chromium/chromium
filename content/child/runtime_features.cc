@@ -270,7 +270,6 @@ void SetRuntimeFeaturesFromChromiumFeatures() {
      raw_ref(features::kWindowsScrollingPersonality)},
     {wf::EnablePeriodicBackgroundSync,
      raw_ref(features::kPeriodicBackgroundSync)},
-    {wf::EnablePointerLockOptions, raw_ref(features::kPointerLockOptions)},
     {wf::EnablePushMessagingSubscriptionChange,
      raw_ref(features::kPushSubscriptionChangeEvent)},
     {wf::EnableRestrictGamepadAccess,
