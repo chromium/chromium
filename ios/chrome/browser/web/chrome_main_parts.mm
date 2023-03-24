@@ -267,6 +267,10 @@ void IOSChromeMainParts::PreCreateThreads() {
   application_context_->PreCreateThreads();
 }
 
+void IOSChromeMainParts::PostCreateThreads() {
+  application_context_->PostCreateThreads();
+}
+
 void IOSChromeMainParts::PreMainMessageLoopRun() {
   application_context_->PreMainMessageLoopRun();
 

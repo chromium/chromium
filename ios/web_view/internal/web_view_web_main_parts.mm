@@ -86,6 +86,10 @@ void WebViewWebMainParts::PreCreateThreads() {
   base::FeatureList::SetInstance(std::move(feature_list));
 }
 
+void WebViewWebMainParts::PostCreateThreads() {
+  ApplicationContext::GetInstance()->PostCreateThreads();
+}
+
 void WebViewWebMainParts::PreMainMessageLoopRun() {
   WebViewTranslateService::GetInstance()->Initialize();
 

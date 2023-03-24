@@ -38,6 +38,9 @@ class ApplicationContextImpl : public ApplicationContext {
   // Called before the browser threads are created.
   void PreCreateThreads();
 
+  // Called after the browser threads are created.
+  void PostCreateThreads();
+
   // Called after the threads have been created but before the message loops
   // starts running. Allows the ApplicationContext to do any initialization
   // that requres all threads running.

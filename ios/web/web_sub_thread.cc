@@ -43,12 +43,6 @@ void WebSubThread::RegisterAsWebThread() {
 
   DCHECK(!web_thread_);
   web_thread_.reset(new WebThreadImpl(identifier_, task_runner()));
-
-  // Unretained(this) is safe as `this` outlives its underlying thread.
-  task_runner()->PostTask(
-      FROM_HERE,
-      base::BindOnce(&WebSubThread::CompleteInitializationOnWebThread,
-                     Unretained(this)));
 }
 
 void WebSubThread::AllowBlockingForTesting() {
@@ -89,16 +83,6 @@ void WebSubThread::CleanUp() {
     g_io_thread_delegate->CleanUp();
 
   web_thread_.reset();
-}
-
-void WebSubThread::CompleteInitializationOnWebThread() {
-  DCHECK_CALLED_ON_VALID_THREAD(web_thread_checker_);
-
-  if (identifier_ == WebThread::IO && g_io_thread_delegate) {
-    // Allow blocking calls while initializing the IO thread.
-    base::ScopedAllowBlocking allow_blocking_for_init;
-    g_io_thread_delegate->Init();
-  }
 }
 
 void WebSubThread::UIThreadRun(base::RunLoop* run_loop) {

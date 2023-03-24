@@ -74,6 +74,10 @@ class ApplicationContext {
   // called from web::WebMainParts::PreCreateThreads.
   void PreCreateThreads();
 
+  // Called after the browser threads are created. It is expected this will be
+  // called from web::WebMainParts::PostCreateThreads.
+  void PostCreateThreads();
+
   // Saves application context state if |local_state_| exists. This should be
   // called during shutdown to save application state.
   void SaveState();

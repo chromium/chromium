@@ -96,6 +96,11 @@ void WebMainLoop::CreateStartupTasks() {
   if (result > 0)
     return;
 
+  result = PostCreateThreads();
+  if (result > 0) {
+    return;
+  }
+
   result = WebThreadsStarted();
   if (result > 0)
     return;
@@ -117,6 +122,13 @@ int WebMainLoop::PreCreateThreads() {
   base::PowerMonitor::Initialize(
       std::make_unique<base::PowerMonitorDeviceSource>());
 
+  return result_code_;
+}
+
+int WebMainLoop::PostCreateThreads() {
+  if (parts_) {
+    parts_->PostCreateThreads();
+  }
   return result_code_;
 }
 

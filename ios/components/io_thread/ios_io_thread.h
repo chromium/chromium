@@ -93,6 +93,9 @@ class IOSIOThread : public web::WebThreadDelegate {
 
   ~IOSIOThread() override;
 
+  // Initialize the IO thread with blocking allowed.
+  void InitOnIO();
+
   // Can only be called on the IO thread.
   Globals* globals();
 

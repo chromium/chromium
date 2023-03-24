@@ -143,6 +143,12 @@ void ApplicationContextImpl::PreCreateThreads() {
       new IOSChromeIOThread(GetLocalState(), GetNetLog()));
 }
 
+void ApplicationContextImpl::PostCreateThreads() {
+  web::GetIOThreadTaskRunner({})->PostTask(
+      FROM_HERE, base::BindOnce(&IOSChromeIOThread::InitOnIO,
+                                base::Unretained(ios_chrome_io_thread_.get())));
+}
+
 void ApplicationContextImpl::PreMainMessageLoopRun() {
   DCHECK(thread_checker_.CalledOnValidThread());
 

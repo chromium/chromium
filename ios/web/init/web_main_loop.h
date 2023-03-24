@@ -49,6 +49,9 @@ class WebMainLoop {
   // Creates all secondary threads.
   int CreateThreads();
 
+  // Called after creating the threads
+  int PostCreateThreads();
+
   // Called right after the web threads have been started.
   int WebThreadsStarted();
 

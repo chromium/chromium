@@ -77,6 +77,7 @@ class WebMainParts {
   virtual void PreCreateMainMessageLoop() {}
   virtual void PostCreateMainMessageLoop() {}
   virtual void PreCreateThreads() {}
+  virtual void PostCreateThreads() {}
   virtual void PreMainMessageLoopRun() {}
   virtual void PostMainMessageLoopRun() {}
   virtual void PostDestroyThreads() {}

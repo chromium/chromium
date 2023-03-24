@@ -45,10 +45,6 @@ class WebSubThread : public base::Thread {
   void CleanUp() override;
 
  private:
-  // Second Init() phase that must happen on this thread but can only happen
-  // after it's promoted to a WebThread in `RegisterAsWebThread()`.
-  void CompleteInitializationOnWebThread();
-
   // These methods merely forwards to Thread::Run() but are useful to identify
   // which WebThread this represents in stack traces.
   void UIThreadRun(base::RunLoop* run_loop);

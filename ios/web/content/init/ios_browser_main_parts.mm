@@ -32,10 +32,16 @@ void IOSBrowserMainParts::PreCreateMainMessageLoop() {
 void IOSBrowserMainParts::PostCreateMainMessageLoop() {
   parts_->PostCreateMainMessageLoop();
 }
+
 int IOSBrowserMainParts::PreCreateThreads() {
   parts_->PreCreateThreads();
   return 0;
 }
+
+void IOSBrowserMainParts::PostCreateThreads() {
+  parts_->PostCreateThreads();
+}
+
 int IOSBrowserMainParts::PreMainMessageLoopRun() {
   parts_->PreMainMessageLoopRun();
   return 0;

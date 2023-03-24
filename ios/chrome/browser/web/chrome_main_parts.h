@@ -29,6 +29,7 @@ class IOSChromeMainParts : public web::WebMainParts {
   // web::WebMainParts implementation.
   void PreCreateMainMessageLoop() override;
   void PreCreateThreads() override;
+  void PostCreateThreads() override;
   void PreMainMessageLoopRun() override;
   void PostMainMessageLoopRun() override;
   void PostDestroyThreads() override;

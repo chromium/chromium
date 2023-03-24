@@ -294,6 +294,9 @@ class HistoryReportJniBridge;
 namespace ios_web_view {
 class WebViewBrowserState;
 }
+namespace io_thread {
+class IOSIOThread;
+}
 namespace leveldb::port {
 class CondVar;
 }  // namespace leveldb::port
@@ -428,7 +431,6 @@ class VrShell;
 
 namespace web {
 class WebMainLoop;
-class WebSubThread;
 }  // namespace web
 
 namespace webrtc {
@@ -615,6 +617,7 @@ class BASE_EXPORT [[maybe_unused, nodiscard]] ScopedAllowBlocking {
   friend class extensions::UnpackedInstaller;
   friend class font_service::internal::MappedFontFile;
   friend class ios_web_view::WebViewBrowserState;
+  friend class io_thread::IOSIOThread;
   friend class media::FileVideoCaptureDeviceFactory;
   friend class memory_instrumentation::OSMetrics;
   friend class memory_pressure::UserLevelMemoryPressureSignalGenerator;
@@ -637,7 +640,6 @@ class BASE_EXPORT [[maybe_unused, nodiscard]] ScopedAllowBlocking {
   friend class ui::DrmDisplayHostManager;
   friend class ui::ScopedAllowBlockingForGbmSurface;
   friend class ui::SelectFileDialogLinux;
-  friend class web::WebSubThread;
   friend class weblayer::BrowserContextImpl;
   friend class weblayer::ContentBrowserClientImpl;
   friend class weblayer::ProfileImpl;

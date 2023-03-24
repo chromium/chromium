@@ -72,6 +72,13 @@ void ApplicationContext::PreCreateThreads() {
       std::make_unique<WebViewIOThread>(GetLocalState(), GetNetLog());
 }
 
+void ApplicationContext::PostCreateThreads() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  web::GetIOThreadTaskRunner({})->PostTask(
+      FROM_HERE, base::BindOnce(&WebViewIOThread::InitOnIO,
+                                base::Unretained(web_view_io_thread_.get())));
+}
+
 void ApplicationContext::SaveState() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (local_state_) {
