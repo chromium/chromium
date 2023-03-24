@@ -397,6 +397,7 @@ IN_PROC_BROWSER_TEST_F(MojoJSInterfaceBrokerBrowserTest, IframeBarWorks) {
   content::TestNavigationObserver observer(web_contents, 1);
   EXPECT_TRUE(content::ExecuteScript(bar_frame, "location.reload()"));
   observer.Wait();
+  bar_frame = ChildFrameAt(web_contents->GetPrimaryMainFrame(), 0);
 
   EXPECT_EQ("bar", EvalStatement("(async () => {"
                                  "  let barRemote = window.Bar.getRemote();"

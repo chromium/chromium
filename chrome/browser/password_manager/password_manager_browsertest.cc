@@ -4835,6 +4835,7 @@ IN_PROC_BROWSER_TEST_F(PasswordManagerCredentiallessIframeTest,
       content::JsReplace("document.getElementById('normal').src = $1",
                          form_url)));
   content::WaitForLoadStop(WebContents());
+  iframe_normal = ChildFrameAt(WebContents()->GetPrimaryMainFrame(), 0);
   EXPECT_EQ("not found",
             content::EvalJs(iframe_normal,
                             "window.parent.check_password(document);"));

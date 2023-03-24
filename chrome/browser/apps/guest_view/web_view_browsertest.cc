@@ -6501,11 +6501,14 @@ IN_PROC_BROWSER_TEST_F(WebViewWithDefaultSiteInstanceTest, SimpleNavigations) {
     load_observer.Wait();
   }
 
-  // Expect that we stayed in the same (default) SiteInstance and
-  // RenderFrameHost.
+  // Expect that we stayed in the same (default) SiteInstance.
   main_frame = GetGuestRenderFrameHost();
   ASSERT_TRUE(main_frame);
-  EXPECT_EQ(main_frame->GetGlobalId(), original_id);
+  if (!content::WillSameSiteNavigationsChangeRenderFrameHosts()) {
+    // The RenderFrameHost will stay the same when we don't change
+    // RenderFrameHosts on same-SiteInstance navigations.
+    EXPECT_EQ(main_frame->GetGlobalId(), original_id);
+  }
   EXPECT_EQ(starting_instance, main_frame->GetSiteInstance());
   EXPECT_FALSE(main_frame->GetSiteInstance()->RequiresDedicatedProcess());
   EXPECT_FALSE(main_frame->GetProcess()->IsProcessLockedToSiteForTesting());
@@ -6517,6 +6520,7 @@ IN_PROC_BROWSER_TEST_F(WebViewWithDefaultSiteInstanceTest, SimpleNavigations) {
   content::RenderFrameHost* subframe = content::ChildFrameAt(main_frame, 0);
   ASSERT_TRUE(subframe);
   EXPECT_TRUE(NavigateToURLFromRenderer(subframe, frame_url));
+  subframe = content::ChildFrameAt(main_frame, 0);
   EXPECT_EQ(main_frame->GetSiteInstance(), subframe->GetSiteInstance());
   EXPECT_EQ(main_frame->GetProcess(), subframe->GetProcess());
   EXPECT_TRUE(subframe->GetSiteInstance()->IsGuest());

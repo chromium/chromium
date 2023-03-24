@@ -311,8 +311,7 @@ IN_PROC_BROWSER_TEST_F(ContentFaviconDriverTest,
       embedded_test_server()->GetURL("/favicon/page_with_favicon.html");
   GURL icon_url = embedded_test_server()->GetURL("/favicon/icon.png");
   GURL initial_url = embedded_test_server()->GetURL("/empty.html");
-  EXPECT_CALL(observer, DidUpdateFaviconURL(
-                            web_contents()->GetPrimaryMainFrame(), testing::_));
+  EXPECT_CALL(observer, DidUpdateFaviconURL(testing::_, testing::_));
   prerender_helper().NavigatePrimaryPage(initial_url);
 
   {

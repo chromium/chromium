@@ -39,20 +39,6 @@ class AutofillPopupControllerBrowserTest : public InProcessBrowserTest {
   void SetUpOnMainThread() override {
     web_contents()->Focus();
 
-    autofill_driver_ =
-        ContentAutofillDriverFactory::FromWebContents(web_contents())
-            ->DriverForFrame(main_rfh());
-    auto autofill_external_delegate =
-        std::make_unique<TestAutofillExternalDelegate>(
-            &autofill_manager(), autofill_driver_,
-            /*call_parent_methods=*/true);
-    autofill_external_delegate_ = autofill_external_delegate.get();
-    autofill_manager().SetExternalDelegateForTest(
-        std::move(autofill_external_delegate));
-
-    disable_animation_ = std::make_unique<ui::ScopedAnimationDurationScaleMode>(
-        ui::ScopedAnimationDurationScaleMode::ZERO_DURATION);
-
     // The test cases mock the entire forms by directly calling
     // ContentAutofillDriver functions. Nonetheless we set up an HTTP server and
     // open an empty page. Otherwise, the FormData::url would be about:blank and
@@ -73,6 +59,20 @@ class AutofillPopupControllerBrowserTest : public InProcessBrowserTest {
     embedded_test_server()->StartAcceptingConnections();
     ASSERT_TRUE(ui_test_utils::NavigateToURL(
         browser(), embedded_test_server()->GetURL("/test.html")));
+
+    autofill_driver_ =
+        ContentAutofillDriverFactory::FromWebContents(web_contents())
+            ->DriverForFrame(main_rfh());
+    auto autofill_external_delegate =
+        std::make_unique<TestAutofillExternalDelegate>(
+            &autofill_manager(), autofill_driver_,
+            /*call_parent_methods=*/true);
+    autofill_external_delegate_ = autofill_external_delegate.get();
+    autofill_manager().SetExternalDelegateForTest(
+        std::move(autofill_external_delegate));
+
+    disable_animation_ = std::make_unique<ui::ScopedAnimationDurationScaleMode>(
+        ui::ScopedAnimationDurationScaleMode::ZERO_DURATION);
   }
 
   void TearDownOnMainThread() override {

@@ -100,13 +100,7 @@ IN_PROC_BROWSER_TEST_F(HeavyAdHelperBrowserTest,
       net::ERR_BLOCKED_BY_CLIENT);
   error_observer.Wait();
 
-  // With error page isolation, the error page will be loaded in the error
-  // page process, therefore it will have a different RenderFrameHost
-  // instance.
-  if (content::SiteIsolationPolicy::IsErrorPageIsolationEnabled(
-          /* in_main_frame = */ false)) {
-    child = ChildFrameAt(web_contents->GetPrimaryMainFrame(), 0);
-  }
+  child = ChildFrameAt(web_contents->GetPrimaryMainFrame(), 0);
 
   EXPECT_TRUE(IsContentInDocument(
       child,

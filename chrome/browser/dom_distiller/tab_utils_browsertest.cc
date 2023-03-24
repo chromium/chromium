@@ -361,12 +361,6 @@ IN_PROC_BROWSER_TEST_F(DomDistillerTabUtilsBrowserTest,
   GURL url1(article_url());
   content::WebContents* initial_web_contents =
       browser()->tab_strip_model()->GetActiveWebContents();
-  content::RenderFrameHost* main_frame = browser()
-                                             ->tab_strip_model()
-                                             ->GetActiveWebContents()
-                                             ->GetPrimaryMainFrame();
-  int process_id = main_frame->GetProcess()->GetID();
-  int frame_routing_id = main_frame->GetRoutingID();
   GURL url2(https_server_->GetURL("/title1.html"));
 
   TestDistillabilityObserver distillability_observer(initial_web_contents);
@@ -377,6 +371,12 @@ IN_PROC_BROWSER_TEST_F(DomDistillerTabUtilsBrowserTest,
 
   // Navigate to the page
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url1));
+  content::RenderFrameHost* main_frame = browser()
+                                             ->tab_strip_model()
+                                             ->GetActiveWebContents()
+                                             ->GetPrimaryMainFrame();
+  int process_id = main_frame->GetProcess()->GetID();
+  int frame_routing_id = main_frame->GetRoutingID();
   distillability_observer.WaitForResult(expected_result);
 
   DistillCurrentPageAndView(initial_web_contents);

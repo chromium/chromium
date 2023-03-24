@@ -106,9 +106,9 @@ class SearchTest : public BrowserWithTestWindowTest {
   // Each test case represents a navigation to |start_url| followed by a
   // navigation to |end_url|. We will check whether each navigation lands in an
   // Instant process, and also whether the navigation from start to end re-uses
-  // the same SiteInstance (and hence the same RenderViewHost, etc.).
+  // the same SiteInstance, RenderViewHost, etc.
   // Note that we need to define this here because the flags needed to check
-  // content::CanSameSiteMainFrameNavigationsChangeSiteInstances() might not
+  // content::CanSameSiteMainFrameNavigationsChangeSiteInstances() etc might not
   // be set yet if we define this immediately (e.g. outside of the test class).
   const struct ProcessIsolationTestCase {
     const char* description;
@@ -117,23 +117,21 @@ class SearchTest : public BrowserWithTestWindowTest {
     const char* end_url;
     bool end_in_instant_process;
     bool same_site_instance;
+    bool same_rvh;
     bool same_process;
   } kProcessIsolationTestCases[5] = {
       {"Remote NTP -> SRP", "https://foo.com/newtab", true,
-       "https://foo.com/url", false, false, false},
+       "https://foo.com/url", false, false, false, false},
       {"Remote NTP -> Regular", "https://foo.com/newtab", true,
-       "https://foo.com/other", false, false, false},
+       "https://foo.com/other", false, false, false, false},
       {"SRP -> SRP", "https://foo.com/url", false, "https://foo.com/url", false,
-       true, true},
-      // Same-site (but not same URL) navigations might switch site instances
-      // but keep the same process when ProactivelySwapBrowsingInstance is
-      // enabled on same-site navigations.
+       true, !content::WillSameSiteNavigationsChangeRenderFrameHosts(), true},
       {"SRP -> Regular", "https://foo.com/url", false, "https://foo.com/other",
        false, !content::CanSameSiteMainFrameNavigationsChangeSiteInstances(),
-       true},
+       !content::CanSameSiteMainFrameNavigationsChangeSiteInstances(), true},
       {"Regular -> SRP", "https://foo.com/other", false, "https://foo.com/url",
        false, !content::CanSameSiteMainFrameNavigationsChangeSiteInstances(),
-       true},
+       !content::CanSameSiteMainFrameNavigationsChangeSiteInstances(), true},
   };
 
   // BrowserWithTestWindowTest:
@@ -224,7 +222,7 @@ TEST_F(SearchTest, ProcessIsolation) {
     EXPECT_EQ(test.same_site_instance,
               start_site_instance.get() == contents->GetSiteInstance())
         << test.description;
-    EXPECT_EQ(test.same_site_instance,
+    EXPECT_EQ(test.same_rvh,
               start_rvh == contents->GetPrimaryMainFrame()->GetRenderViewHost())
         << test.description;
     EXPECT_EQ(test.same_process,
@@ -263,7 +261,7 @@ TEST_F(SearchTest, ProcessIsolation_RendererInitiated) {
     EXPECT_EQ(test.same_site_instance,
               start_site_instance.get() == contents->GetSiteInstance())
         << test.description;
-    EXPECT_EQ(test.same_site_instance,
+    EXPECT_EQ(test.same_rvh,
               start_rvh == contents->GetPrimaryMainFrame()->GetRenderViewHost())
         << test.description;
     EXPECT_EQ(test.same_process,

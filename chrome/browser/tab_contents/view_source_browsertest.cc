@@ -545,6 +545,8 @@ IN_PROC_BROWSER_TEST_P(ViewSourceWithSplitCacheTest, HttpPostInSubframe) {
   EXPECT_TRUE(ExecuteScript(original_child_frame,
                             "document.getElementById('form').submit();"));
   form_post_observer.Wait();
+  original_child_frame = ChildFrameAt(original_contents, 0);
+
   GURL target_url(embedded_test_server()->GetURL("b.com", "/echoall"));
   EXPECT_EQ(target_url, original_child_frame->GetLastCommittedURL());
 

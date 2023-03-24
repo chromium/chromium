@@ -839,6 +839,7 @@ IN_PROC_BROWSER_TEST_F(TabManagerTest,
 
   // Navigate the main frame (same site) again, wasDiscarded is not set anymore.
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), main_url));
+  main_frame = contents->GetPrimaryMainFrame();
   EXPECT_TRUE(content::ExecuteScriptAndExtractBool(
       main_frame, kDiscardedStateJS, &discarded_mainframe_result));
   EXPECT_FALSE(discarded_mainframe_result);
@@ -847,6 +848,7 @@ IN_PROC_BROWSER_TEST_F(TabManagerTest,
   content::TestNavigationObserver observer(contents);
   contents->GetController().GoBack();
   observer.Wait();
+  main_frame = contents->GetPrimaryMainFrame();
   EXPECT_TRUE(content::ExecuteScriptAndExtractBool(
       main_frame, kDiscardedStateJS, &discarded_mainframe_result));
   EXPECT_FALSE(discarded_mainframe_result);

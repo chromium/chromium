@@ -2819,7 +2819,7 @@ IN_PROC_BROWSER_TEST_F(MultiOriginSessionRestoreTest,
         content::ExecJs(old_tab, "window.open('about:blank', 'subframe');"));
     nav_observer.Wait();
   }
-  EXPECT_EQ(subframe, ChildFrameAt(old_tab_main_frame.get(), 0));
+  subframe = ChildFrameAt(old_tab_main_frame.get(), 0);
   EXPECT_EQ(GURL(url::kAboutBlankURL), subframe->GetLastCommittedURL());
   EXPECT_EQ(a_origin, subframe->GetLastCommittedOrigin());
 

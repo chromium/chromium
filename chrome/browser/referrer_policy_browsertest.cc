@@ -686,11 +686,17 @@ IN_PROC_BROWSER_TEST_F(ReferrerPolicyTest, IFrame) {
   title_watcher = std::make_unique<content::TitleWatcher>(tab, expected_title);
   EXPECT_TRUE(content::ExecuteScript(tab, "document.title = 'reset'"));
   EXPECT_EQ(expected_title, title_watcher->WaitAndGetTitle());
+  frame = content::FrameMatchingPredicate(
+      tab->GetPrimaryPage(),
+      base::BindRepeating(&content::FrameIsChildOfMainFrame));
 
   expected_title = u"loaded";
   title_watcher = std::make_unique<content::TitleWatcher>(tab, expected_title);
   EXPECT_TRUE(content::ExecuteScript(frame, "location.reload()"));
   EXPECT_EQ(expected_title, title_watcher->WaitAndGetTitle());
+  frame = content::FrameMatchingPredicate(
+      tab->GetPrimaryPage(),
+      base::BindRepeating(&content::FrameIsChildOfMainFrame));
 
   // Verify that the full url of the iframe was used as referrer.
   EXPECT_TRUE(content::ExecuteScriptAndExtractString(

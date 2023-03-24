@@ -543,11 +543,12 @@ IN_PROC_BROWSER_TEST_F(HistoryBrowserTest, Subframe) {
       ui_test_utils::GetTestUrl(base::FilePath().AppendASCII("History"),
                                 base::FilePath().AppendASCII("target.html"));
 
-  RenderFrameHostGrabber rfh_grabber(
-      browser()->tab_strip_model()->GetActiveWebContents(), initial_subframe);
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), main_page));
-  rfh_grabber.Wait();
-  content::RenderFrameHost* frame = rfh_grabber.render_frame_host();
+  content::RenderFrameHost* frame = ChildFrameAt(browser()
+                                                     ->tab_strip_model()
+                                                     ->GetActiveWebContents()
+                                                     ->GetPrimaryMainFrame(),
+                                                 0);
   ASSERT_TRUE(frame);
   ASSERT_TRUE(HistoryContainsURL(main_page));
   ASSERT_FALSE(HistoryContainsURL(initial_subframe));
@@ -560,7 +561,11 @@ IN_PROC_BROWSER_TEST_F(HistoryBrowserTest, Subframe) {
   ASSERT_TRUE(HistoryContainsURL(manual_subframe));
 
   // After navigation, the current RenderFrameHost may change.
-  frame = rfh_grabber.render_frame_host();
+  frame = ChildFrameAt(browser()
+                           ->tab_strip_model()
+                           ->GetActiveWebContents()
+                           ->GetPrimaryMainFrame(),
+                       0);
   // Page-initiated location.replace subframe navigations should not show up in
   // history.
   std::string script = "location.replace('form.html')";
