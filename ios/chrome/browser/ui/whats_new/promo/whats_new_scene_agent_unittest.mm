@@ -42,14 +42,14 @@ void UpdateWhatsNewLaunchesAfterFre(int num_lanches) {
 }
 
 void ClearWhatsNewUserData() {
-  [[NSUserDefaults standardUserDefaults] setObject:nil
-                                            forKey:kWhatsNewDaysAfterFre];
-  [[NSUserDefaults standardUserDefaults] setInteger:0
-                                             forKey:kWhatsNewLaunchesAfterFre];
-  [[NSUserDefaults standardUserDefaults] setBool:NO
-                                          forKey:kWhatsNewPromoRegistrationKey];
-  [[NSUserDefaults standardUserDefaults] setBool:NO
-                                          forKey:kWhatsNewUsageEntryKey];
+  [[NSUserDefaults standardUserDefaults]
+      removeObjectForKey:kWhatsNewDaysAfterFre];
+  [[NSUserDefaults standardUserDefaults]
+      removeObjectForKey:kWhatsNewLaunchesAfterFre];
+  [[NSUserDefaults standardUserDefaults]
+      removeObjectForKey:kWhatsNewPromoRegistrationKey];
+  [[NSUserDefaults standardUserDefaults]
+      removeObjectForKey:kWhatsNewUsageEntryKey];
 }
 
 }  // namespace
@@ -83,6 +83,8 @@ class WhatsNewSceneAgentTest : public PlatformTest {
     SceneStateBrowserAgent::CreateForBrowser(browser_.get(), scene_state_);
   }
 
+  void TearDown() override { ClearWhatsNewUserData(); }
+
  protected:
   WhatsNewSceneAgent* agent_;
   FakeSceneState* scene_state_;
@@ -94,7 +96,6 @@ class WhatsNewSceneAgentTest : public PlatformTest {
 // Tests that the What's New promo did not register in the promo manager when
 // the conditions aren't met.
 TEST_F(WhatsNewSceneAgentTest, TestWhatsNewNoPromoRegistration) {
-  ClearWhatsNewUserData();
   EXPECT_CALL(*promos_manager_.get(),
               RegisterPromoForSingleDisplay(promos_manager::Promo::WhatsNew))
       .Times(0);
@@ -110,7 +111,6 @@ TEST_F(WhatsNewSceneAgentTest, TestWhatsNewNoPromoRegistration) {
 // Tests that the What's New promo registers in the promo manager after 6 days
 // have been recorded.
 TEST_F(WhatsNewSceneAgentTest, TestWhatsNewPromoRegistrationWith6Days) {
-  ClearWhatsNewUserData();
   EXPECT_CALL(*promos_manager_.get(),
               RegisterPromoForSingleDisplay(promos_manager::Promo::WhatsNew))
       .Times(1);
@@ -123,7 +123,6 @@ TEST_F(WhatsNewSceneAgentTest, TestWhatsNewPromoRegistrationWith6Days) {
 // Tests that the What's New promo did not register in the promo manager after 4
 // days have been recorded.
 TEST_F(WhatsNewSceneAgentTest, TestWhatsNewPromoNoRegistrationWith4Days) {
-  ClearWhatsNewUserData();
   EXPECT_CALL(*promos_manager_.get(),
               RegisterPromoForSingleDisplay(promos_manager::Promo::WhatsNew))
       .Times(0);
@@ -136,8 +135,6 @@ TEST_F(WhatsNewSceneAgentTest, TestWhatsNewPromoNoRegistrationWith4Days) {
 // Tests that the What's New promo registers in the promo manager after 6
 // launches have been recorded.
 TEST_F(WhatsNewSceneAgentTest, TestWhatsNewPromoRegistrationWith6Launches) {
-  ClearWhatsNewUserData();
-
   EXPECT_CALL(*promos_manager_.get(),
               RegisterPromoForSingleDisplay(promos_manager::Promo::WhatsNew))
       .Times(1);
@@ -150,8 +147,6 @@ TEST_F(WhatsNewSceneAgentTest, TestWhatsNewPromoRegistrationWith6Launches) {
 // Tests that the What's New promo did not register in the promo manager after 3
 // launches have been recorded.
 TEST_F(WhatsNewSceneAgentTest, TestWhatsNewPromoNoRegistrationWith3Launches) {
-  ClearWhatsNewUserData();
-
   EXPECT_CALL(*promos_manager_.get(),
               RegisterPromoForSingleDisplay(promos_manager::Promo::WhatsNew))
       .Times(0);
