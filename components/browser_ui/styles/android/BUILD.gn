@@ -163,6 +163,7 @@ android_resources("java_resources") {
     "java/res/drawable/ic_data_personalization_20dp.xml",
     "java/res/drawable/ic_data_viz_grey.xml",
     "java/res/drawable/ic_desktop_windows.xml",
+    "java/res/drawable/ic_dino.xml",
     "java/res/drawable/ic_dns_24dp.xml",
     "java/res/drawable/ic_done_blue.xml",
     "java/res/drawable/ic_drive_document_24dp.xml",
@@ -180,6 +181,7 @@ android_resources("java_resources") {
     "java/res/drawable/ic_history_24dp.xml",
     "java/res/drawable/ic_info_outline_grey_16dp.xml",
     "java/res/drawable/ic_info_outline_grey_24dp.xml",
+    "java/res/drawable/ic_journeys.xml",
     "java/res/drawable/ic_lightbulb_24dp.xml",
     "java/res/drawable/ic_link_24dp.xml",
     "java/res/drawable/ic_mic_off_white_24dp.xml",
@@ -229,6 +231,16 @@ android_resources("java_resources") {
     "java/res/values/styles.xml",
     "java/res/values/themes.xml",
     "java/res/values/values.xml",
+    "java/res_chromium/drawable-hdpi/fre_product_logo.png",
+    "java/res_chromium/drawable-hdpi/product_logo_name.png",
+    "java/res_chromium/drawable-mdpi/fre_product_logo.png",
+    "java/res_chromium/drawable-mdpi/product_logo_name.png",
+    "java/res_chromium/drawable-xhdpi/fre_product_logo.png",
+    "java/res_chromium/drawable-xhdpi/product_logo_name.png",
+    "java/res_chromium/drawable-xxhdpi/fre_product_logo.png",
+    "java/res_chromium/drawable-xxhdpi/product_logo_name.png",
+    "java/res_chromium/drawable-xxxhdpi/fre_product_logo.png",
+    "java/res_chromium/drawable-xxxhdpi/product_logo_name.png",
   ]
 
   if (enable_arcore) {
@@ -238,5 +250,22 @@ android_resources("java_resources") {
   deps = [
     "//third_party/android_deps:material_design_java",
     "//ui/android:ui_java_resources",
+  ]
+}
+
+# Overrides icon / name defined in chrome_app_java_resources.
+android_resources("chrome_public_apk_resources") {
+  resource_overlay = true
+  sources = [
+    "java/res_chromium/drawable-hdpi/fre_product_logo.png",
+    "java/res_chromium/drawable-hdpi/product_logo_name.png",
+    "java/res_chromium/drawable-mdpi/fre_product_logo.png",
+    "java/res_chromium/drawable-mdpi/product_logo_name.png",
+    "java/res_chromium/drawable-xhdpi/fre_product_logo.png",
+    "java/res_chromium/drawable-xhdpi/product_logo_name.png",
+    "java/res_chromium/drawable-xxhdpi/fre_product_logo.png",
+    "java/res_chromium/drawable-xxhdpi/product_logo_name.png",
+    "java/res_chromium/drawable-xxxhdpi/fre_product_logo.png",
+    "java/res_chromium/drawable-xxxhdpi/product_logo_name.png",
   ]
 }

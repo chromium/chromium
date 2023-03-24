@@ -8,7 +8,6 @@ import("//chrome/browser/buildflags.gni")
 
 android_resources("java_resources") {
   sources = [
-    "java/res/drawable/ic_journeys.xml",
     "java/res/layout/empty_text_view.xml",
     "java/res/layout/history_cluster.xml",
     "java/res/layout/history_cluster_visit.xml",

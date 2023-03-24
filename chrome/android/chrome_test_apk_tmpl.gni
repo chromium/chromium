@@ -6,10 +6,11 @@ import("//chrome/android/chrome_public_apk_tmpl.gni")
 
 # Dependencies that are common to any chrome_public derivative targets.
 chrome_public_shared_deps = [
+  "//chrome/android:chrome_app_java_resources",
   "//chrome/android:chrome_public_apk_base_module_resources",
-  "//chrome/android:chrome_public_apk_resources",
   "//chrome/android:chrome_public_base_module_java",
   "//chrome/android:chrome_public_non_pak_assets",
+  "//components/browser_ui/styles/android:chrome_public_apk_resources",
   "//gin:v8_snapshot_assets",
   "//third_party/icu:icu_assets",
 ]

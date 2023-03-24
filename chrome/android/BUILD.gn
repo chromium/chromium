@@ -106,19 +106,7 @@ if (current_toolchain == default_toolchain) {
 
   android_resources("chrome_app_java_resources") {
     sources = chrome_java_resources
-    sources += [
-      "//chrome/android/java/res_app/layout/main.xml",
-      "//chrome/android/java/res_chromium/drawable-hdpi/fre_product_logo.png",
-      "//chrome/android/java/res_chromium/drawable-hdpi/product_logo_name.png",
-      "//chrome/android/java/res_chromium/drawable-mdpi/fre_product_logo.png",
-      "//chrome/android/java/res_chromium/drawable-mdpi/product_logo_name.png",
-      "//chrome/android/java/res_chromium/drawable-xhdpi/fre_product_logo.png",
-      "//chrome/android/java/res_chromium/drawable-xhdpi/product_logo_name.png",
-      "//chrome/android/java/res_chromium/drawable-xxhdpi/fre_product_logo.png",
-      "//chrome/android/java/res_chromium/drawable-xxhdpi/product_logo_name.png",
-      "//chrome/android/java/res_chromium/drawable-xxxhdpi/fre_product_logo.png",
-      "//chrome/android/java/res_chromium/drawable-xxxhdpi/product_logo_name.png",
-    ]
+    sources += [ "//chrome/android/java/res_app/layout/main.xml" ]
 
     deps = [
       ":chrome_base_module_resources",
@@ -1927,26 +1915,6 @@ if (current_toolchain == default_toolchain) {
         ]
       }
     }
-  }
-
-  # Overrides icon / name defined in chrome_app_java_resources.
-  android_resources("chrome_public_apk_resources") {
-    resource_overlay = true
-    sources = [
-      "java/res_chromium/drawable-hdpi/fre_product_logo.png",
-      "java/res_chromium/drawable-hdpi/product_logo_name.png",
-      "java/res_chromium/drawable-mdpi/fre_product_logo.png",
-      "java/res_chromium/drawable-mdpi/product_logo_name.png",
-      "java/res_chromium/drawable-xhdpi/fre_product_logo.png",
-      "java/res_chromium/drawable-xhdpi/product_logo_name.png",
-      "java/res_chromium/drawable-xxhdpi/fre_product_logo.png",
-      "java/res_chromium/drawable-xxhdpi/product_logo_name.png",
-      "java/res_chromium/drawable-xxxhdpi/fre_product_logo.png",
-      "java/res_chromium/drawable-xxxhdpi/product_logo_name.png",
-    ]
-
-    # Dep needed to ensure override works properly.
-    deps = [ ":chrome_app_java_resources" ]
   }
 
   # Overrides icon / name defined in chrome_base_module_resources.
