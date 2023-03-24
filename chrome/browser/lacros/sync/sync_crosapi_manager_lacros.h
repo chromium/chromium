@@ -30,6 +30,10 @@ namespace sync_sessions {
 class SessionSyncService;
 }  // namespace sync_sessions
 
+namespace favicon {
+class HistoryUiFaviconRequestHandler;
+}  // namespace favicon
+
 // Controls lifetime of sync-related Crosapi clients.
 class SyncCrosapiManagerLacros : public syncer::SyncServiceObserver,
                                  public ProfileObserver {
@@ -61,6 +65,7 @@ class SyncCrosapiManagerLacros : public syncer::SyncServiceObserver,
   void OnCreateSyncedSessionClient(
       sync_sessions::SessionSyncService* session_sync_service,
       syncer::SyncService* sync_service,
+      favicon::HistoryUiFaviconRequestHandler* favicon_request_handler,
       mojo::PendingRemote<crosapi::mojom::SyncedSessionClient> pending_remote);
 
   // The objects below are created for main profile PostProfileInit() and

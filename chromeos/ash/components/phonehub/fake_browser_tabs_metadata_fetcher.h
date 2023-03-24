@@ -24,6 +24,7 @@ class FakeBrowserTabsMetadataFetcher : public BrowserTabsMetadataFetcher {
       base::OnceCallback<void(BrowserTabsMetadataResponse)> callback) override;
   void FetchForeignSyncedPhoneSessionMetadata(
       const ForeignSyncedSessionAsh& session,
+      SyncedSessionClientAsh* synced_session_client_ash,
       base::OnceCallback<void(BrowserTabsMetadataResponse)> callback) override;
 
   void RespondToCurrentFetchAttempt(

@@ -11,6 +11,7 @@
 #include "components/favicon_base/favicon_types.h"
 #include "components/sync_sessions/synced_session.h"
 #include "components/ukm/scheme_constants.h"
+#include "ui/gfx/image/image_skia.h"
 
 namespace ash {
 namespace phonehub {
@@ -137,6 +138,7 @@ void BrowserTabsMetadataFetcherImpl::Fetch(
 
 void BrowserTabsMetadataFetcherImpl::FetchForeignSyncedPhoneSessionMetadata(
     const ForeignSyncedSessionAsh& session,
+    SyncedSessionClientAsh* synced_session_client_ash,
     base::OnceCallback<void(BrowserTabsMetadataResponse)> callback) {
   // A new fetch was made, return a absl::nullopt to the previous |callback_|.
   if (!callback_.is_null()) {
@@ -144,15 +146,36 @@ void BrowserTabsMetadataFetcherImpl::FetchForeignSyncedPhoneSessionMetadata(
     std::move(callback_).Run(absl::nullopt);
   }
 
-  // TODO(b/260599791): Fetch favicons before invoking the callback. We may need
-  // to include the favicons directly in the Mojo payload that we receive from
-  // Lacros.
-  std::move(callback).Run(
-      GetSortedMetadataWithoutFaviconsFromForeignSyncedSession(session));
+  std::vector<BrowserTabsModel::BrowserTabMetadata> results =
+      GetSortedMetadataWithoutFaviconsFromForeignSyncedSession(session);
+  BrowserTabsModel::BrowserTabMetadata* results_buffer = results.data();
+  size_t results_size = results.size();
+
+  // When |barrier| is run |num_tabs_to_display| times, it will run
+  // |OnAllFaviconsFetched|.
+  base::RepeatingClosure barrier = base::BarrierClosure(
+      results_size, base::BindOnce(&BrowserTabsMetadataFetcherImpl::
+                                       OnAllForeignSyncedSessionFaviconsFetched,
+                                   weak_ptr_factory_.GetWeakPtr(),
+                                   std::move(results), std::move(callback)));
+
+  for (size_t i = 0; i < results_size; ++i) {
+    synced_session_client_ash->GetFaviconImageForPageURL(
+        results_buffer[i].url,
+        base::BindOnce(
+            &BrowserTabsMetadataFetcherImpl::OnForeignSyncedSessionFaviconReady,
+            weak_ptr_factory_.GetWeakPtr(), results_buffer + i, barrier));
+  }
 }
 
 void BrowserTabsMetadataFetcherImpl::OnAllFaviconsFetched() {
   std::move(callback_).Run(std::move(results_));
+}
+
+void BrowserTabsMetadataFetcherImpl::OnAllForeignSyncedSessionFaviconsFetched(
+    std::vector<BrowserTabsModel::BrowserTabMetadata> results,
+    base::OnceCallback<void(BrowserTabsMetadataResponse)> callback) {
+  std::move(callback).Run(std::move(results));
 }
 
 void BrowserTabsMetadataFetcherImpl::OnFaviconReady(
@@ -162,6 +185,14 @@ void BrowserTabsMetadataFetcherImpl::OnFaviconReady(
   DCHECK(index_in_results < results_.size());
 
   results_[index_in_results].favicon = std::move(favicon_image_result.image);
+  std::move(done_closure).Run();
+}
+
+void BrowserTabsMetadataFetcherImpl::OnForeignSyncedSessionFaviconReady(
+    BrowserTabsModel::BrowserTabMetadata* tab,
+    base::OnceClosure done_closure,
+    const gfx::ImageSkia& favicon) {
+  tab->favicon = gfx::Image(favicon);
   std::move(done_closure).Run();
 }
 

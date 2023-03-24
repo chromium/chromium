@@ -21,6 +21,7 @@ void FakeBrowserTabsMetadataFetcher::Fetch(
 
 void FakeBrowserTabsMetadataFetcher::FetchForeignSyncedPhoneSessionMetadata(
     const ash::ForeignSyncedSessionAsh& session,
+    SyncedSessionClientAsh* synced_session_client_ash,
     base::OnceCallback<void(BrowserTabsMetadataResponse)> callback) {
   foreign_synced_session_ = &session;
   callback_ = std::move(callback);

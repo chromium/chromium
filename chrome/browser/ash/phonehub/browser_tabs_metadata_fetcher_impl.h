@@ -5,6 +5,9 @@
 #ifndef CHROME_BROWSER_ASH_PHONEHUB_BROWSER_TABS_METADATA_FETCHER_IMPL_H_
 #define CHROME_BROWSER_ASH_PHONEHUB_BROWSER_TABS_METADATA_FETCHER_IMPL_H_
 
+#include <vector>
+
+#include "base/functional/callback_forward.h"
 #include "base/memory/weak_ptr.h"
 #include "chromeos/ash/components/phonehub/browser_tabs_metadata_fetcher.h"
 #include "chromeos/ash/components/phonehub/browser_tabs_model.h"
@@ -17,9 +20,13 @@ namespace favicon {
 class HistoryUiFaviconRequestHandler;
 }  // namespace favicon
 
+namespace gfx {
+class ImageSkia;
+}  // namespace gfx
 namespace ash {
 
 struct ForeignSyncedSessionAsh;
+class SyncedSessionClientAsh;
 
 namespace phonehub {
 
@@ -43,14 +50,22 @@ class BrowserTabsMetadataFetcherImpl : public BrowserTabsMetadataFetcher {
       base::OnceCallback<void(BrowserTabsMetadataResponse)> callback) override;
   void FetchForeignSyncedPhoneSessionMetadata(
       const ForeignSyncedSessionAsh& session,
+      SyncedSessionClientAsh* synced_session_client_ash,
       base::OnceCallback<void(BrowserTabsMetadataResponse)> callback) override;
 
  private:
   void OnAllFaviconsFetched();
+  void OnAllForeignSyncedSessionFaviconsFetched(
+      std::vector<BrowserTabsModel::BrowserTabMetadata> results,
+      base::OnceCallback<void(BrowserTabsMetadataResponse)> callback);
   void OnFaviconReady(
       size_t index_in_results,
       base::OnceClosure done_closure,
       const favicon_base::FaviconImageResult& favicon_image_result);
+  void OnForeignSyncedSessionFaviconReady(
+      BrowserTabsModel::BrowserTabMetadata* tab,
+      base::OnceClosure done_closure,
+      const gfx::ImageSkia& favicon);
 
   favicon::HistoryUiFaviconRequestHandler* const favicon_request_handler_;
   std::vector<BrowserTabsModel::BrowserTabMetadata> results_;

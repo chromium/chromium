@@ -6,6 +6,7 @@ module crosapi.mojom;
 
 import "mojo/public/mojom/base/string16.mojom";
 import "mojo/public/mojom/base/time.mojom";
+import "ui/gfx/image/mojom/image.mojom";
 import "url/mojom/url.mojom";
 
 // Contains information regarding a Chrome tab for sync.
@@ -32,6 +33,15 @@ struct SyncedSession {
   array<SyncedSessionWindow> windows@2;
 };
 
+// Used by ash-chrome to request favicons for SyncedSessionTabs.
+[Stable]
+interface SyncedSessionClientFaviconDelegate {
+  // Request a favicon for the given page URL. Responds with an empty image
+  // if the favicon is not found.
+  GetFaviconImageForPageURL@0(url.mojom.Url page_url)
+      => (gfx.mojom.ImageSkia? image);
+};
+
 // Defines an API for updating synced foreign sessions.
 [Stable]
 interface SyncedSessionClient {
@@ -44,4 +54,10 @@ interface SyncedSessionClient {
   // the first update is received.
   [MinVersion=1]
   OnSessionSyncEnabledChanged@1(bool enabled);
+
+  // Called by Lacros to register a delegate which Ash can use to request
+  // favicons.
+  [MinVersion=2]
+  SetFaviconDelegate@2(
+      pending_remote<SyncedSessionClientFaviconDelegate> delegate);
 };

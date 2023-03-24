@@ -9,6 +9,7 @@
 #include <utility>
 
 #include "base/feature_list.h"
+#include "chrome/browser/favicon/history_ui_favicon_request_handler_factory.h"
 #include "chrome/browser/lacros/sync/crosapi_session_sync_notifier.h"
 #include "chrome/browser/lacros/sync/sync_explicit_passphrase_client_lacros.h"
 #include "chrome/browser/lacros/sync/sync_user_settings_client_lacros.h"
@@ -154,15 +155,21 @@ void SyncCrosapiManagerLacros::MaybeCreateCrosapiSessionSyncNotifier(
     return;
   }
 
+  favicon::HistoryUiFaviconRequestHandler* favicon_request_handler =
+      HistoryUiFaviconRequestHandlerFactory::GetInstance()
+          ->GetForBrowserContext(profile);
+
   lacros_service->GetRemote<crosapi::mojom::SyncService>()
-      ->CreateSyncedSessionClient(base::BindOnce(
-          &SyncCrosapiManagerLacros::OnCreateSyncedSessionClient,
-          weak_ptr_factory_.GetWeakPtr(), session_sync_service, sync_service));
+      ->CreateSyncedSessionClient(
+          base::BindOnce(&SyncCrosapiManagerLacros::OnCreateSyncedSessionClient,
+                         weak_ptr_factory_.GetWeakPtr(), session_sync_service,
+                         sync_service, favicon_request_handler));
 }
 
 void SyncCrosapiManagerLacros::OnCreateSyncedSessionClient(
     sync_sessions::SessionSyncService* session_sync_service,
     syncer::SyncService* sync_service,
+    favicon::HistoryUiFaviconRequestHandler* favicon_request_handler,
     mojo::PendingRemote<crosapi::mojom::SyncedSessionClient> pending_remote) {
   // TODO(b/260599791): Handle the potential case where the profile or these
   // passed-in services may be invalid by the time we receive the remote.
@@ -178,5 +185,6 @@ void SyncCrosapiManagerLacros::OnCreateSyncedSessionClient(
 
   DCHECK(!crosapi_session_sync_notifier_);
   crosapi_session_sync_notifier_ = std::make_unique<CrosapiSessionSyncNotifier>(
-      session_sync_service, std::move(pending_remote), sync_service);
+      session_sync_service, std::move(pending_remote), sync_service,
+      favicon_request_handler);
 }

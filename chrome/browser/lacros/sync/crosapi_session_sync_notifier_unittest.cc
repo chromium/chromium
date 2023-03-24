@@ -130,7 +130,7 @@ class CrosapiSessionSyncNotifierTest : public testing::Test {
         std::make_unique<CrosapiSessionSyncNotifier>(
             &mock_session_sync_service_,
             fake_synced_session_client_ash_.CreateRemote(),
-            test_sync_service_.get());
+            test_sync_service_.get(), /*favicon_request_handler=*/nullptr);
   }
 
   base::CallbackListSubscription SubscribeToForeignSessionsChanged(

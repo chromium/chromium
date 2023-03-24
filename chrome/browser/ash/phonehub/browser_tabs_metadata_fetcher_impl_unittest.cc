@@ -145,7 +145,7 @@ class BrowserTabsMetadataFetcherImplTest : public testing::Test {
   void AttemptFetchForeignSyncedPhoneSessionMetadata(
       const ForeignSyncedSessionAsh& session) {
     browser_tabs_metadata_job_.FetchForeignSyncedPhoneSessionMetadata(
-        session,
+        session, &synced_session_client_ash_,
         base::BindOnce(
             &BrowserTabsMetadataFetcherImplTest::OnBrowserTabMetadataFetched,
             base::Unretained(this)));
@@ -182,6 +182,7 @@ class BrowserTabsMetadataFetcherImplTest : public testing::Test {
   BrowserTabsMetadataFetcherImpl browser_tabs_metadata_job_;
   absl::optional<std::vector<BrowserTabsModel::BrowserTabMetadata>>
       actual_browser_tabs_metadata_;
+  SyncedSessionClientAsh synced_session_client_ash_;
 
   std::map<SessionID, std::unique_ptr<sync_sessions::SyncedSessionWindow>>
       windows;

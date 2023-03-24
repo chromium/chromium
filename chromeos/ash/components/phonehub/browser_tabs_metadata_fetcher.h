@@ -15,9 +15,12 @@ namespace sync_sessions {
 struct SyncedSession;
 }  // namespace sync_sessions
 
+class SyncedSessionClientAsh;
+
 namespace ash {
 
 struct ForeignSyncedSessionAsh;
+class SyncedSessionClientAsh;
 
 namespace phonehub {
 
@@ -43,6 +46,7 @@ class BrowserTabsMetadataFetcher {
       base::OnceCallback<void(BrowserTabsMetadataResponse)> callback) = 0;
   virtual void FetchForeignSyncedPhoneSessionMetadata(
       const ForeignSyncedSessionAsh& session,
+      SyncedSessionClientAsh* synced_session_client_ash,
       base::OnceCallback<void(BrowserTabsMetadataResponse)> callback) = 0;
 
  protected:

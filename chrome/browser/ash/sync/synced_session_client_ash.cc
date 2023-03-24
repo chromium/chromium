@@ -96,6 +96,27 @@ void SyncedSessionClientAsh::OnSessionSyncEnabledChanged(bool enabled) {
   }
 }
 
+void SyncedSessionClientAsh::SetFaviconDelegate(
+    mojo::PendingRemote<crosapi::mojom::SyncedSessionClientFaviconDelegate>
+        delegate) {
+  if (favicon_delegate_.is_bound()) {
+    favicon_delegate_.reset();
+  }
+
+  favicon_delegate_.Bind(std::move(delegate));
+}
+
+void SyncedSessionClientAsh::GetFaviconImageForPageURL(
+    const GURL& url,
+    base::OnceCallback<void(const gfx::ImageSkia&)> callback) {
+  if (!favicon_delegate_.is_bound()) {
+    std::move(callback).Run(gfx::ImageSkia());
+    return;
+  }
+
+  favicon_delegate_->GetFaviconImageForPageURL(url, std::move(callback));
+}
+
 void SyncedSessionClientAsh::AddObserver(Observer* observer) {
   observers_.AddObserver(observer);
 }

@@ -214,7 +214,7 @@ void BrowserTabsModelProviderImpl::OnForeignSyncedPhoneSessionsUpdated(
     return;
   }
   browser_tabs_metadata_fetcher_->FetchForeignSyncedPhoneSessionMetadata(
-      host_phone_session.value(),
+      host_phone_session.value(), synced_session_client_ash_,
       base::BindOnce(&BrowserTabsModelProviderImpl::OnMetadataFetched,
                      weak_ptr_factory_.GetWeakPtr()));
 }

@@ -11,7 +11,6 @@
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
-#include "mojo/public/cpp/bindings/remote_set.h"
 
 namespace syncer {
 
@@ -25,6 +24,9 @@ class FakeSyncedSessionClientAsh : public crosapi::mojom::SyncedSessionClient {
   void OnForeignSyncedPhoneSessionsUpdated(
       std::vector<crosapi::mojom::SyncedSessionPtr> sessions) override;
   void OnSessionSyncEnabledChanged(bool enabled) override;
+  void SetFaviconDelegate(
+      mojo::PendingRemote<crosapi::mojom::SyncedSessionClientFaviconDelegate>
+          delegate) override;
 
   void SetOnForeignSyncedPhoneSessionsUpdatedCallback(
       base::RepeatingClosure callback);

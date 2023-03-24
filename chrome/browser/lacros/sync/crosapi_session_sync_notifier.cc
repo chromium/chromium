@@ -7,6 +7,7 @@
 #include <utility>
 
 #include "base/functional/bind.h"
+#include "chrome/browser/lacros/sync/crosapi_session_sync_favicon_delegate.h"
 #include "chromeos/lacros/lacros_service.h"
 #include "components/sync/driver/sync_user_settings.h"
 #include "components/sync_sessions/open_tabs_ui_delegate.h"
@@ -98,10 +99,12 @@ CrosapiSessionSyncNotifier::CrosapiSessionSyncNotifier(
     sync_sessions::SessionSyncService* session_sync_service,
     mojo::PendingRemote<crosapi::mojom::SyncedSessionClient>
         synced_session_client,
-    syncer::SyncService* sync_service)
+    syncer::SyncService* sync_service,
+    favicon::HistoryUiFaviconRequestHandler* favicon_request_handler)
     : is_tab_sync_enabled_(IsTabSyncEnabled(sync_service)),
       session_sync_service_(session_sync_service),
-      synced_session_client_(std::move(synced_session_client)) {
+      synced_session_client_(std::move(synced_session_client)),
+      favicon_delegate_(favicon_request_handler) {
   if (synced_session_client_.version() >=
       static_cast<int>(crosapi::mojom::SyncedSessionClient::
                            kOnForeignSyncedPhoneSessionsUpdatedMinVersion)) {
@@ -116,6 +119,13 @@ CrosapiSessionSyncNotifier::CrosapiSessionSyncNotifier(
 
   // Broadcast the initial value for |is_tab_sync_enabled_|.
   NotifySyncEnabledChanged();
+
+  if (synced_session_client_.version() >=
+      static_cast<int>(
+          crosapi::mojom::SyncedSessionClient::kSetFaviconDelegateMinVersion)) {
+    synced_session_client_->SetFaviconDelegate(
+        favicon_delegate_.CreateRemote());
+  }
 }
 
 CrosapiSessionSyncNotifier::~CrosapiSessionSyncNotifier() = default;

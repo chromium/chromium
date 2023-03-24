@@ -54,6 +54,10 @@ void FakeSyncedSessionClientAsh::OnSessionSyncEnabledChanged(bool enabled) {
   is_session_sync_enabled_ = enabled;
 }
 
+void FakeSyncedSessionClientAsh::SetFaviconDelegate(
+    mojo::PendingRemote<crosapi::mojom::SyncedSessionClientFaviconDelegate>
+        delegate) {}
+
 void FakeSyncedSessionClientAsh::FlushMojoForTesting() {
   receivers_.FlushForTesting();
 }

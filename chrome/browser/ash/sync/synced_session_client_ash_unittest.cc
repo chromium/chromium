@@ -4,13 +4,17 @@
 
 #include "chrome/browser/ash/sync/synced_session_client_ash.h"
 
+#include "base/test/bind.h"
 #include "base/test/task_environment.h"
+#include "base/test/test_future.h"
 #include "base/time/time.h"
 #include "chromeos/crosapi/mojom/synced_session_client.mojom.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/gfx/favicon_size.h"
+#include "ui/gfx/image/image_unittest_util.h"
 #include "url/gurl.h"
 
 namespace ash {
@@ -72,6 +76,43 @@ class TestSyncedSessionClientObserver
   bool is_session_sync_enabled_ = false;
 };
 
+class FakeCrosapiSessionSyncFaviconDelegate
+    : public crosapi::mojom::SyncedSessionClientFaviconDelegate {
+ public:
+  FakeCrosapiSessionSyncFaviconDelegate() = default;
+  FakeCrosapiSessionSyncFaviconDelegate(
+      const FakeCrosapiSessionSyncFaviconDelegate&) = delete;
+  FakeCrosapiSessionSyncFaviconDelegate& operator=(
+      const FakeCrosapiSessionSyncFaviconDelegate&) = delete;
+  ~FakeCrosapiSessionSyncFaviconDelegate() override = default;
+
+  // crosapi::mojom::SyncedSessionClientFaviconDelegate:
+  void GetFaviconImageForPageURL(
+      const GURL& url,
+      GetFaviconImageForPageURLCallback callback) override {
+    std::move(callback).Run(*result_image_);
+  }
+
+  mojo::PendingRemote<crosapi::mojom::SyncedSessionClientFaviconDelegate>
+  CreateRemote() {
+    return receiver_.BindNewPipeAndPassRemote();
+  }
+
+  void SetResultImage(gfx::ImageSkia* image) { result_image_ = image; }
+
+ private:
+  mojo::Receiver<crosapi::mojom::SyncedSessionClientFaviconDelegate> receiver_{
+      this};
+  gfx::ImageSkia* result_image_ = nullptr;
+};
+
+gfx::ImageSkia GetTestImage() {
+  SkBitmap bitmap;
+  bitmap.allocN32Pixels(gfx::kFaviconSize, gfx::kFaviconSize);
+  bitmap.eraseColor(SK_ColorBLUE);
+  return gfx::Image::CreateFrom1xBitmap(bitmap).AsImageSkia();
+}
+
 }  // namespace
 
 class SyncedSessionClientAshTest : public testing::Test {
@@ -87,6 +128,13 @@ class SyncedSessionClientAshTest : public testing::Test {
     client_remote_.Bind(client_->CreateRemote());
     test_observer_ = std::make_unique<TestSyncedSessionClientObserver>();
     client_->AddObserver(test_observer_.get());
+  }
+
+  void RequestFaviconImage(gfx::ImageSkia expected_image) {
+    base::test::TestFuture<const gfx::ImageSkia&> future;
+    client_->GetFaviconImageForPageURL(GURL(kTestUrl), future.GetCallback());
+    EXPECT_TRUE(gfx::test::AreImagesEqual(gfx::Image(expected_image),
+                                          gfx::Image(future.Get())));
   }
 
   SyncedSessionClientAsh* client() {
@@ -133,6 +181,23 @@ TEST_F(SyncedSessionClientAshTest, OnSessionSyncEnabledChanged) {
   EXPECT_TRUE(test_observer()->IsSessionSyncEnabled());
   client()->OnSessionSyncEnabledChanged(/*enabled=*/false);
   EXPECT_FALSE(test_observer()->IsSessionSyncEnabled());
+}
+
+TEST_F(SyncedSessionClientAshTest, GetFaviconImage_NoRemote) {
+  RequestFaviconImage(gfx::ImageSkia());
+}
+
+TEST_F(SyncedSessionClientAshTest, GetFaviconImage_ImagesMatch) {
+  FakeCrosapiSessionSyncFaviconDelegate favicon_delegate;
+  client()->SetFaviconDelegate(favicon_delegate.CreateRemote());
+
+  gfx::ImageSkia empty_image;
+  favicon_delegate.SetResultImage(&empty_image);
+  RequestFaviconImage(gfx::ImageSkia());
+
+  gfx::ImageSkia test_image = GetTestImage();
+  favicon_delegate.SetResultImage(&test_image);
+  RequestFaviconImage(GetTestImage());
 }
 
 }  // namespace ash
