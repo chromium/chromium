@@ -13661,6 +13661,7 @@
                 {
                     "name": "Enabled",
                     "enable_features": [
+                        "CrOSLateBootAudioFlexibleLoopback",
                         "VideoConference"
                     ]
                 }
