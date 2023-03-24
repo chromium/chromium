@@ -409,6 +409,7 @@ SkiaOutputDeviceDCompPresenter::SkiaOutputDeviceDCompPresenter(
   DCHECK(presenter_);
   DCHECK(presenter_->SupportsGpuVSync());
 
+  capabilities_.supports_post_sub_buffer = true;
   capabilities_.supports_delegated_ink = presenter_->SupportsDelegatedInk();
   capabilities_.pending_swap_params.max_pending_swaps = 1;
   capabilities_.renderer_allocates_images = true;
