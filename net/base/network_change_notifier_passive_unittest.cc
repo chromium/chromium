@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "net/base/network_change_notifier_posix.h"
+#include "net/base/network_change_notifier_passive.h"
 
 #include <utility>
 
@@ -20,16 +20,16 @@
 
 namespace net {
 
-class NetworkChangeNotifierPosixTest : public testing::Test {
+class NetworkChangeNotifierPassiveTest : public testing::Test {
  public:
-  NetworkChangeNotifierPosixTest()
+  NetworkChangeNotifierPassiveTest()
       : task_environment_(base::test::TaskEnvironment::TimeSource::MOCK_TIME) {
     // Create a SystemDnsConfigChangeNotifier instead of letting
     // NetworkChangeNotifier create a global one, otherwise the global one will
     // hold a TaskRunner handle to |task_environment_| and crash if any
     // subsequent tests use it.
     dns_config_notifier_ = std::make_unique<SystemDnsConfigChangeNotifier>();
-    notifier_ = base::WrapUnique(new NetworkChangeNotifierPosix(
+    notifier_ = base::WrapUnique(new NetworkChangeNotifierPassive(
         NetworkChangeNotifier::CONNECTION_UNKNOWN,
         NetworkChangeNotifier::SUBTYPE_UNKNOWN, dns_config_notifier_.get()));
     auto dns_config_service = std::make_unique<TestDnsConfigService>();
@@ -42,14 +42,14 @@ class NetworkChangeNotifierPosixTest : public testing::Test {
     task_environment_.FastForwardUntilNoTasksRemain();
   }
 
-  NetworkChangeNotifierPosix* notifier() { return notifier_.get(); }
+  NetworkChangeNotifierPassive* notifier() { return notifier_.get(); }
   TestDnsConfigService* dns_config_service() { return dns_config_service_; }
 
  private:
   base::test::TaskEnvironment task_environment_;
   net::NetworkChangeNotifier::DisableForTest mock_notifier_disabler_;
   std::unique_ptr<SystemDnsConfigChangeNotifier> dns_config_notifier_;
-  std::unique_ptr<NetworkChangeNotifierPosix> notifier_;
+  std::unique_ptr<NetworkChangeNotifierPassive> notifier_;
   raw_ptr<TestDnsConfigService> dns_config_service_;
 };
 
@@ -58,7 +58,7 @@ class MockIPAddressObserver : public NetworkChangeNotifier::IPAddressObserver {
   MOCK_METHOD0(OnIPAddressChanged, void());
 };
 
-TEST_F(NetworkChangeNotifierPosixTest, OnIPAddressChanged) {
+TEST_F(NetworkChangeNotifierPassiveTest, OnIPAddressChanged) {
   testing::StrictMock<MockIPAddressObserver> observer;
   NetworkChangeNotifier::AddIPAddressObserver(&observer);
 
@@ -75,7 +75,7 @@ class MockNetworkChangeObserver
   MOCK_METHOD1(OnNetworkChanged, void(NetworkChangeNotifier::ConnectionType));
 };
 
-TEST_F(NetworkChangeNotifierPosixTest, OnNetworkChanged) {
+TEST_F(NetworkChangeNotifierPassiveTest, OnNetworkChanged) {
   testing::StrictMock<MockNetworkChangeObserver> observer;
   NetworkChangeNotifier::AddNetworkChangeObserver(&observer);
 
@@ -95,7 +95,7 @@ class MockMaxBandwidthObserver
                void(double, NetworkChangeNotifier::ConnectionType));
 };
 
-TEST_F(NetworkChangeNotifierPosixTest, OnMaxBandwidthChanged) {
+TEST_F(NetworkChangeNotifierPassiveTest, OnMaxBandwidthChanged) {
   testing::StrictMock<MockMaxBandwidthObserver> observer;
   NetworkChangeNotifier::AddMaxBandwidthObserver(&observer);
 
@@ -118,7 +118,7 @@ class TestDnsObserver : public NetworkChangeNotifier::DNSObserver {
   int dns_changes_ = 0;
 };
 
-TEST_F(NetworkChangeNotifierPosixTest, OnDNSChanged) {
+TEST_F(NetworkChangeNotifierPassiveTest, OnDNSChanged) {
   TestDnsObserver observer;
   NetworkChangeNotifier::AddDNSObserver(&observer);
 

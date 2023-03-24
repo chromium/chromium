@@ -1347,8 +1347,8 @@ component("net") {
 
   if (is_android || is_chromeos) {
     sources += [
-      "base/network_change_notifier_posix.cc",
-      "base/network_change_notifier_posix.h",
+      "base/network_change_notifier_passive.cc",
+      "base/network_change_notifier_passive.h",
     ]
   }
 
@@ -2902,7 +2902,7 @@ test("net_unittests") {
   }
 
   if (is_android || is_chromeos_ash) {
-    sources += [ "base/network_change_notifier_posix_unittest.cc" ]
+    sources += [ "base/network_change_notifier_passive_unittest.cc" ]
   }
 
   if (enable_reporting) {

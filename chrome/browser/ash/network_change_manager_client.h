@@ -21,7 +21,7 @@ class NetworkChangeObserver;
 }  // namespace crosapi::mojom
 
 namespace net {
-class NetworkChangeNotifierPosix;
+class NetworkChangeNotifierPassive;
 }  // namespace net
 
 namespace ash {
@@ -29,14 +29,14 @@ namespace ash {
 class NetworkStateHandler;
 
 // This class listens to Shill for network change events and notifies both
-// the local NetworkChangeNotifierPosix, and the network service via
+// the local NetworkChangeNotifierPassive, and the network service via
 // the NetworkChangeManager if the network service is enabled.
 class NetworkChangeManagerClient
     : public chromeos::PowerManagerClient::Observer,
       public NetworkStateHandlerObserver {
  public:
   explicit NetworkChangeManagerClient(
-      net::NetworkChangeNotifierPosix* network_change_notifier);
+      net::NetworkChangeNotifierPassive* network_change_notifier);
 
   NetworkChangeManagerClient(const NetworkChangeManagerClient&) = delete;
   NetworkChangeManagerClient& operator=(const NetworkChangeManagerClient&) =
@@ -118,7 +118,7 @@ class NetworkChangeManagerClient
   base::ScopedObservation<NetworkStateHandler, NetworkStateHandlerObserver>
       network_state_handler_observer_{this};
 
-  net::NetworkChangeNotifierPosix* network_change_notifier_;
+  net::NetworkChangeNotifierPassive* network_change_notifier_;
   mojo::Remote<network::mojom::NetworkChangeManager> network_change_manager_;
   mojo::RemoteSet<crosapi::mojom::NetworkChangeObserver>
       lacros_network_change_observers_;

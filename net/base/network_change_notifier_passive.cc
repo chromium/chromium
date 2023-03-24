@@ -9,7 +9,7 @@
 #include "base/task/task_traits.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
-#include "net/base/network_change_notifier_posix.h"
+#include "net/base/network_change_notifier_passive.h"
 #include "net/dns/dns_config_service_posix.h"
 #include "net/dns/system_dns_config_change_notifier.h"
 
@@ -19,38 +19,38 @@
 
 namespace net {
 
-NetworkChangeNotifierPosix::NetworkChangeNotifierPosix(
+NetworkChangeNotifierPassive::NetworkChangeNotifierPassive(
     NetworkChangeNotifier::ConnectionType initial_connection_type,
     NetworkChangeNotifier::ConnectionSubtype initial_connection_subtype)
-    : NetworkChangeNotifierPosix(initial_connection_type,
-                                 initial_connection_subtype,
-                                 /*system_dns_config_notifier=*/nullptr) {}
+    : NetworkChangeNotifierPassive(initial_connection_type,
+                                   initial_connection_subtype,
+                                   /*system_dns_config_notifier=*/nullptr) {}
 
-NetworkChangeNotifierPosix::NetworkChangeNotifierPosix(
+NetworkChangeNotifierPassive::NetworkChangeNotifierPassive(
     NetworkChangeNotifier::ConnectionType initial_connection_type,
     NetworkChangeNotifier::ConnectionSubtype initial_connection_subtype,
     SystemDnsConfigChangeNotifier* system_dns_config_notifier)
-    : NetworkChangeNotifier(NetworkChangeCalculatorParamsPosix(),
+    : NetworkChangeNotifier(NetworkChangeCalculatorParamsPassive(),
                             system_dns_config_notifier),
       connection_type_(initial_connection_type),
       max_bandwidth_mbps_(
           NetworkChangeNotifier::GetMaxBandwidthMbpsForConnectionSubtype(
               initial_connection_subtype)) {}
 
-NetworkChangeNotifierPosix::~NetworkChangeNotifierPosix() {
+NetworkChangeNotifierPassive::~NetworkChangeNotifierPassive() {
   ClearGlobalPointer();
 }
 
-void NetworkChangeNotifierPosix::OnDNSChanged() {
+void NetworkChangeNotifierPassive::OnDNSChanged() {
   GetCurrentSystemDnsConfigNotifier()->RefreshConfig();
 }
 
-void NetworkChangeNotifierPosix::OnIPAddressChanged() {
+void NetworkChangeNotifierPassive::OnIPAddressChanged() {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   NetworkChangeNotifier::NotifyObserversOfIPAddressChange();
 }
 
-void NetworkChangeNotifierPosix::OnConnectionChanged(
+void NetworkChangeNotifierPassive::OnConnectionChanged(
     NetworkChangeNotifier::ConnectionType connection_type) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   {
@@ -60,7 +60,7 @@ void NetworkChangeNotifierPosix::OnConnectionChanged(
   NetworkChangeNotifier::NotifyObserversOfConnectionTypeChange();
 }
 
-void NetworkChangeNotifierPosix::OnConnectionSubtypeChanged(
+void NetworkChangeNotifierPassive::OnConnectionSubtypeChanged(
     NetworkChangeNotifier::ConnectionType connection_type,
     NetworkChangeNotifier::ConnectionSubtype connection_subtype) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
@@ -75,12 +75,12 @@ void NetworkChangeNotifierPosix::OnConnectionSubtypeChanged(
 }
 
 NetworkChangeNotifier::ConnectionType
-NetworkChangeNotifierPosix::GetCurrentConnectionType() const {
+NetworkChangeNotifierPassive::GetCurrentConnectionType() const {
   base::AutoLock scoped_lock(lock_);
   return connection_type_;
 }
 
-void NetworkChangeNotifierPosix::GetCurrentMaxBandwidthAndConnectionType(
+void NetworkChangeNotifierPassive::GetCurrentMaxBandwidthAndConnectionType(
     double* max_bandwidth_mbps,
     ConnectionType* connection_type) const {
   base::AutoLock scoped_lock(lock_);
@@ -90,7 +90,7 @@ void NetworkChangeNotifierPosix::GetCurrentMaxBandwidthAndConnectionType(
 
 // static
 NetworkChangeNotifier::NetworkChangeCalculatorParams
-NetworkChangeNotifierPosix::NetworkChangeCalculatorParamsPosix() {
+NetworkChangeNotifierPassive::NetworkChangeCalculatorParamsPassive() {
   NetworkChangeCalculatorParams params;
 #if BUILDFLAG(IS_CHROMEOS)
   // Delay values arrived at by simple experimentation and adjusted so as to

@@ -15,7 +15,7 @@
 #include "chromeos/dbus/power/power_manager_client.h"
 #include "content/public/test/browser_task_environment.h"
 #include "net/base/network_change_notifier.h"
-#include "net/base/network_change_notifier_posix.h"
+#include "net/base/network_change_notifier_passive.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace ash {
@@ -110,8 +110,8 @@ TEST(NetworkChangeManagerClientTest,
      NetworkChangeNotifierConnectionTypeUpdated) {
   // Create a NetworkChangeNotifier with a non-NONE connection type.
   content::BrowserTaskEnvironment task_environment_;
-  std::unique_ptr<net::NetworkChangeNotifierPosix> network_change_notifier(
-      static_cast<net::NetworkChangeNotifierPosix*>(
+  std::unique_ptr<net::NetworkChangeNotifierPassive> network_change_notifier(
+      static_cast<net::NetworkChangeNotifierPassive*>(
           net::NetworkChangeNotifier::CreateIfNeeded().release()));
   network_change_notifier->OnConnectionChanged(
       net::NetworkChangeNotifier::CONNECTION_UNKNOWN);
@@ -153,7 +153,7 @@ class NetworkChangeManagerClientUpdateTest : public testing::Test {
     network_change_notifier_ = net::NetworkChangeNotifier::CreateIfNeeded();
     chromeos::PowerManagerClient::InitializeFake();
     proxy_ = std::make_unique<NetworkChangeManagerClient>(
-        static_cast<net::NetworkChangeNotifierPosix*>(
+        static_cast<net::NetworkChangeNotifierPassive*>(
             network_change_notifier_.get()));
   }
 

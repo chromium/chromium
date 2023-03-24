@@ -17,7 +17,7 @@
 #include "services/network/public/mojom/network_service_test.mojom.h"
 
 #if BUILDFLAG(IS_CHROMEOS)
-#include "net/base/network_change_notifier_posix.h"
+#include "net/base/network_change_notifier_passive.h"
 #endif
 
 namespace content {
@@ -39,8 +39,8 @@ void NetworkConnectionChangeSimulator::InitializeChromeosConnectionType() {
   // Manually set the connection type since ChromeOS's NetworkChangeNotifier
   // implementation relies on some other class controlling it (normally
   // NetworkChangeManagerClient), which isn't used on content/.
-  net::NetworkChangeNotifierPosix* network_change_notifier =
-      static_cast<net::NetworkChangeNotifierPosix*>(
+  net::NetworkChangeNotifierPassive* network_change_notifier =
+      static_cast<net::NetworkChangeNotifierPassive*>(
           content::GetNetworkChangeNotifier());
   network_change_notifier->OnConnectionChanged(
       net::NetworkChangeNotifier::CONNECTION_ETHERNET);

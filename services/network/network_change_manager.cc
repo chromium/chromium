@@ -12,7 +12,7 @@
 #include "build/chromeos_buildflags.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "net/base/network_change_notifier.h"
-#include "net/base/network_change_notifier_posix.h"
+#include "net/base/network_change_notifier_passive.h"
 
 namespace network {
 
@@ -62,8 +62,8 @@ void NetworkChangeManager::OnNetworkChanged(
   if (!network_change_notifier_)
     return;
 
-  net::NetworkChangeNotifierPosix* notifier =
-      static_cast<net::NetworkChangeNotifierPosix*>(
+  net::NetworkChangeNotifierPassive* notifier =
+      static_cast<net::NetworkChangeNotifierPassive*>(
           network_change_notifier_.get());
   if (dns_changed)
     notifier->OnDNSChanged();

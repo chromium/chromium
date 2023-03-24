@@ -8,7 +8,7 @@
 #include "chromeos/lacros/lacros_service.h"
 #include "content/public/browser/network_service_instance.h"
 #include "content/public/common/network_service_util.h"
-#include "net/base/network_change_notifier_posix.h"
+#include "net/base/network_change_notifier_passive.h"
 #include "services/network/public/mojom/network_service.mojom.h"
 
 // Check ConnectionType and ConnectionSubtype values are the same for
@@ -64,7 +64,7 @@ STATIC_ASSERT_CONNECTION_TYPE(ConnectionSubtype::SUBTYPE_WIFI_AD);
 STATIC_ASSERT_CONNECTION_TYPE(ConnectionSubtype::SUBTYPE_LAST);
 
 NetworkChangeManagerBridge::NetworkChangeManagerBridge()
-    : network_change_notifier_(static_cast<net::NetworkChangeNotifierPosix*>(
+    : network_change_notifier_(static_cast<net::NetworkChangeNotifierPassive*>(
           content::GetNetworkChangeNotifier())) {
   auto* lacros_service = chromeos::LacrosService::Get();
   // If NetworkChange crosapi is not supported, fallback to use

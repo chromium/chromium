@@ -12,7 +12,7 @@
 #include "services/network/public/mojom/network_change_manager.mojom.h"
 
 namespace net {
-class NetworkChangeNotifierPosix;
+class NetworkChangeNotifierPassive;
 }
 
 // Passes NetworkChange status given from Ash to NetworkChangeNotifier in
@@ -47,7 +47,7 @@ class NetworkChangeManagerBridge
   net::NetworkChangeNotifier::ConnectionSubtype connection_subtype_ =
       net::NetworkChangeNotifier::SUBTYPE_NONE;
 
-  const raw_ptr<net::NetworkChangeNotifierPosix> network_change_notifier_;
+  const raw_ptr<net::NetworkChangeNotifierPassive> network_change_notifier_;
   mojo::Remote<network::mojom::NetworkChangeManager> network_change_manager_;
 
   // Receives mojo messages from ash-chrome.
