@@ -435,10 +435,9 @@ network::NetworkConnectionTracker*
 ApplicationContextImpl::GetNetworkConnectionTracker() {
   DCHECK(thread_checker_.CalledOnValidThread());
   if (!network_connection_tracker_) {
-    if (!network_change_manager_) {
-      network_change_manager_ =
-          std::make_unique<network::NetworkChangeManager>(nullptr);
-    }
+    DCHECK(!network_change_manager_);
+    network_change_manager_ =
+        std::make_unique<network::NetworkChangeManager>(nullptr);
     network_connection_tracker_ =
         std::make_unique<network::NetworkConnectionTracker>(base::BindRepeating(
             &BindNetworkChangeManagerReceiver,

@@ -116,16 +116,20 @@ class ApplicationContextImpl : public ApplicationContext {
       metrics_services_manager_;
   std::unique_ptr<gcm::GCMDriver> gcm_driver_;
   std::unique_ptr<component_updater::ComponentUpdateService> component_updater_;
+
+  // Must be destroyed after `chrome_browser_state_manager_` as some of the
+  // KeyedService register themselves as NetworkConnectionObserver and need
+  // to unregister themselves before NetworkConnectionTracker destruction.
+  std::unique_ptr<network::NetworkChangeManager> network_change_manager_;
+  std::unique_ptr<network::NetworkConnectionTracker>
+      network_connection_tracker_;
+
   std::unique_ptr<ios::ChromeBrowserStateManager> chrome_browser_state_manager_;
   std::string application_locale_;
   std::string application_country_;
 
   // Sequenced task runner for local state related I/O tasks.
   const scoped_refptr<base::SequencedTaskRunner> local_state_task_runner_;
-
-  std::unique_ptr<network::NetworkChangeManager> network_change_manager_;
-  std::unique_ptr<network::NetworkConnectionTracker>
-      network_connection_tracker_;
 
   scoped_refptr<SafeBrowsingService> safe_browsing_service_;
 
