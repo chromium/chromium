@@ -24,10 +24,9 @@ class WebRtcContentBrowserTestBase : public ContentBrowserTest {
   // Helper function to append "--use-fake-ui-for-media-stream".
   void AppendUseFakeUIForMediaStreamFlag();
 
-  // Executes |javascript|. The script is required to use
-  // window.domAutomationController.send to send a string value back to here.
-  std::string ExecuteJavascriptAndReturnResult(
-      const std::string& javascript);
+  // Evaluates `javascript` in `shell()`. The result of the evaluation is the
+  // last-evaluated statement, which must be a string.
+  std::string EvalJsInShell(const std::string& javascript);
 
   // Waits for the javascript to return OK via the automation controller.
   // If the javascript returns != OK or times out, we fail the test.

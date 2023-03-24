@@ -80,7 +80,7 @@ IN_PROC_BROWSER_TEST_P(WebRtcConstraintsBrowserTest,
                                               user_media().max_frame_rate);
   DVLOG(1) << "Calling getUserMedia: " << call;
   EXPECT_TRUE(NavigateToURL(shell(), url));
-  ExecuteJavascriptAndWaitForOk(call);
+  EXPECT_EQ("OK", EvalJsInShell(call));
 }
 
 INSTANTIATE_TEST_SUITE_P(UserMedia,

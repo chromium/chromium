@@ -1760,8 +1760,8 @@ public class SiteSettingsTest {
         initializeUpdateWaiter(false /* expectGranted */);
         mPermissionRule.runNoPromptTest(mPermissionUpdateWaiter,
                 "/content/test/data/media/getusermedia.html",
-                "getUserMediaAndStop({video: true, audio: false});", 0, true /* withGesture */,
-                true /* isDialog */);
+                "getUserMediaAndStopLegacy({video: true, audio: false});", 0,
+                true /* withGesture */, true /* isDialog */);
     }
 
     /**
@@ -1781,8 +1781,8 @@ public class SiteSettingsTest {
         initializeUpdateWaiter(true /* expectGranted */);
         mPermissionRule.runAllowTest(mPermissionUpdateWaiter,
                 "/content/test/data/media/getusermedia.html",
-                "getUserMediaAndStop({video: true, audio: false});", 0, true /* withGesture */,
-                true /* isDialog */);
+                "getUserMediaAndStopLegacy({video: true, audio: false});", 0,
+                true /* withGesture */, true /* isDialog */);
     }
 
     /**
@@ -1803,7 +1803,7 @@ public class SiteSettingsTest {
         initializeUpdateWaiter(false /* expectGranted */);
         mPermissionRule.runNoPromptTest(mPermissionUpdateWaiter,
                 "/content/test/data/media/getusermedia.html",
-                "getUserMediaAndStop({video: false, audio: true});", 0, true, true);
+                "getUserMediaAndStopLegacy({video: false, audio: true});", 0, true, true);
     }
 
     /**
@@ -1824,7 +1824,7 @@ public class SiteSettingsTest {
         initializeUpdateWaiter(true /* expectGranted */);
         mPermissionRule.runAllowTest(mPermissionUpdateWaiter,
                 "/content/test/data/media/getusermedia.html",
-                "getUserMediaAndStop({video: false, audio: true});", 0, true, true);
+                "getUserMediaAndStopLegacy({video: false, audio: true});", 0, true, true);
     }
 
     @Test

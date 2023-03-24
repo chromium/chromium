@@ -80,7 +80,7 @@ public class RuntimePermissionTest {
         RuntimePermissionTestUtils.runTest(mPermissionTestRule, mTestAndroidPermissionDelegate,
                 MEDIA_TEST, true /* expectPermissionAllowed */, true /* permissionPromptAllow */,
                 false /* waitForMissingPermissionPrompt */, true /* waitForUpdater */,
-                "getUserMediaAndStop({video: true, audio: false});",
+                "getUserMediaAndStopLegacy({video: true, audio: false});",
                 0 /* missingPermissionPromptTextId */);
     }
 
@@ -95,7 +95,7 @@ public class RuntimePermissionTest {
         RuntimePermissionTestUtils.runTest(mPermissionTestRule, mTestAndroidPermissionDelegate,
                 MEDIA_TEST, true /* expectPermissionAllowed */, true /* permissionPromptAllow */,
                 false /* waitForMissingPermissionPrompt */, true /* waitForUpdater */,
-                "getUserMediaAndStop({video: false, audio: true});",
+                "getUserMediaAndStopLegacy({video: false, audio: true});",
                 0 /* missingPermissionPromptTextId */);
     }
 
@@ -127,7 +127,7 @@ public class RuntimePermissionTest {
         RuntimePermissionTestUtils.runTest(mPermissionTestRule, mTestAndroidPermissionDelegate,
                 MEDIA_TEST, false /* expectPermissionAllowed */, true /* permissionPromptAllow */,
                 true /* waitForMissingPermissionPrompt */, true /* waitForUpdater */,
-                "getUserMediaAndStop({video: true, audio: false});",
+                "getUserMediaAndStopLegacy({video: true, audio: false});",
                 R.string.infobar_missing_camera_permission_text);
     }
 
@@ -142,7 +142,7 @@ public class RuntimePermissionTest {
         RuntimePermissionTestUtils.runTest(mPermissionTestRule, mTestAndroidPermissionDelegate,
                 MEDIA_TEST, false /* expectPermissionAllowed */, true /* permissionPromptAllow */,
                 true /* waitForMissingPermissionPrompt */, true /* waitForUpdater */,
-                "getUserMediaAndStop({video: false, audio: true});",
+                "getUserMediaAndStopLegacy({video: false, audio: true});",
                 R.string.infobar_missing_microphone_permission_text);
     }
 
@@ -210,7 +210,7 @@ public class RuntimePermissionTest {
         RuntimePermissionTestUtils.runTest(mPermissionTestRule, mTestAndroidPermissionDelegate,
                 MEDIA_TEST, false /* expectPermissionAllowed */, true /* permissionPromptAllow */,
                 false /* waitForMissingPermissionPrompt */, true /* waitForUpdater */,
-                "getUserMediaAndStop({video: false, audio: true});",
+                "getUserMediaAndStopLegacy({video: false, audio: true});",
                 0 /* missingPermissionPromptTextId */);
 
         // Now set the expectation that the runtime prompt is not shown again.
@@ -220,7 +220,7 @@ public class RuntimePermissionTest {
         RuntimePermissionTestUtils.runTest(mPermissionTestRule, mTestAndroidPermissionDelegate,
                 MEDIA_TEST, false /* expectPermissionAllowed */, null /* permissionPromptAllow */,
                 false /* waitForMissingPermissionPrompt */, true /* waitForUpdater */,
-                "getUserMediaAndStop({video: false, audio: true});",
+                "getUserMediaAndStopLegacy({video: false, audio: true});",
                 0 /* missingPermissionPromptTextId */);
     }
 
@@ -236,7 +236,7 @@ public class RuntimePermissionTest {
         RuntimePermissionTestUtils.runTest(mPermissionTestRule, mTestAndroidPermissionDelegate,
                 MEDIA_TEST, false /* expectPermissionAllowed */, true /* permissionPromptAllow */,
                 false /* waitForMissingPermissionPrompt */, true /* waitForUpdater */,
-                "getUserMediaAndStop({video: true, audio: false});",
+                "getUserMediaAndStopLegacy({video: true, audio: false});",
                 0 /* missingPermissionPromptTextId */);
 
         // Now set the expectation that the runtime prompt is not shown again.
@@ -246,7 +246,7 @@ public class RuntimePermissionTest {
         RuntimePermissionTestUtils.runTest(mPermissionTestRule, mTestAndroidPermissionDelegate,
                 MEDIA_TEST, false /* expectPermissionAllowed */, null /* permissionPromptAllow */,
                 false /* waitForMissingPermissionPrompt */, true /* waitForUpdater */,
-                "getUserMediaAndStop({video: true, audio: false});",
+                "getUserMediaAndStopLegacy({video: true, audio: false});",
                 0 /* missingPermissionPromptTextId */);
     }
 
@@ -298,7 +298,7 @@ public class RuntimePermissionTest {
         RuntimePermissionTestUtils.runTest(mPermissionTestRule, mTestAndroidPermissionDelegate,
                 MEDIA_TEST, true /* expectPermissionAllowed */, true /* permissionPromptAllow */,
                 false /* waitForMissingPermissionPrompt */, true /* waitForUpdater */,
-                "getUserMediaAndStop({video: true, audio: false});",
+                "getUserMediaAndStopLegacy({video: true, audio: false});",
                 0 /* missingPermissionPromptTextId */);
     }
 
@@ -314,7 +314,7 @@ public class RuntimePermissionTest {
         RuntimePermissionTestUtils.runTest(mPermissionTestRule, mTestAndroidPermissionDelegate,
                 MEDIA_TEST, true /* expectPermissionAllowed */, true /* permissionPromptAllow */,
                 false /* waitForMissingPermissionPrompt */, true /* waitForUpdater */,
-                "getUserMediaAndStop({video: false, audio: true});",
+                "getUserMediaAndStopLegacy({video: false, audio: true});",
                 0 /* missingPermissionPromptTextId */);
     }
 }

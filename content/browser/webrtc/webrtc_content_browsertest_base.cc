@@ -65,12 +65,9 @@ void WebRtcContentBrowserTestBase::AppendUseFakeUIForMediaStreamFlag() {
       switches::kUseFakeUIForMediaStream);
 }
 
-// Executes |javascript|. The script is required to use
-// window.domAutomationController.send to send a string value back to here.
-std::string WebRtcContentBrowserTestBase::ExecuteJavascriptAndReturnResult(
+std::string WebRtcContentBrowserTestBase::EvalJsInShell(
     const std::string& javascript) {
-  return EvalJs(shell(), javascript, EXECUTE_SCRIPT_USE_MANUAL_REPLY)
-      .ExtractString();
+  return EvalJs(shell(), javascript).ExtractString();
 }
 
 void WebRtcContentBrowserTestBase::MakeTypicalCall(
@@ -87,7 +84,9 @@ void WebRtcContentBrowserTestBase::MakeTypicalCall(
 
 void WebRtcContentBrowserTestBase::ExecuteJavascriptAndWaitForOk(
     const std::string& javascript) {
-  std::string result = ExecuteJavascriptAndReturnResult(javascript);
+  std::string result =
+      EvalJs(shell(), javascript, EXECUTE_SCRIPT_USE_MANUAL_REPLY)
+          .ExtractString();
   if (result != "OK") {
     if (result.empty())
       result = "(nothing)";
