@@ -786,7 +786,7 @@ the browser and content area. -->
 </histogram>
 
 <histogram name="Signin.LoadedIdentities.Count" units="identities"
-    expires_after="2023-09-03">
+    expires_after="2024-04-01">
   <owner>jlebel@chromium.org</owner>
   <owner>msarda@chromium.org</owner>
   <owner>chrome-signin-team@google.com</owner>
@@ -799,7 +799,7 @@ the browser and content area. -->
 </histogram>
 
 <histogram name="Signin.LoadedIdentities.Duration" units="ms"
-    expires_after="2023-08-08">
+    expires_after="2024-04-01">
   <owner>jlebel@chromium.org</owner>
   <owner>msarda@chromium.org</owner>
   <owner>chrome-signin-team@google.com</owner>
@@ -812,7 +812,7 @@ the browser and content area. -->
 </histogram>
 
 <histogram name="Signin.LoadedIdentities.DurationPerIdentity" units="ms"
-    expires_after="2023-04-01">
+    expires_after="2024-04-01">
   <owner>jlebel@chromium.org</owner>
   <owner>msarda@chromium.org</owner>
   <owner>chrome-signin-team@google.com</owner>
@@ -1253,7 +1253,7 @@ kept as long as profile signout is possible -->
 </histogram>
 
 <histogram name="Signin.SSOWKWebView.GetAllCookies.CookieCount" units="cookies"
-    expires_after="2023-04-01">
+    expires_after="2024-04-01">
   <owner>jlebel@chromium.org</owner>
   <owner>chrome-signin-team@google.com</owner>
   <summary>
@@ -1265,7 +1265,7 @@ kept as long as profile signout is possible -->
 </histogram>
 
 <histogram name="Signin.SSOWKWebView.GetAllCookies.Duration" units="ms"
-    expires_after="2023-08-13">
+    expires_after="2024-04-01">
   <owner>jlebel@chromium.org</owner>
   <owner>chrome-signin-team@google.com</owner>
   <summary>
@@ -1279,7 +1279,7 @@ kept as long as profile signout is possible -->
 </histogram>
 
 <histogram name="Signin.SSOWKWebView.GetAllCookies.Request"
-    enum="SigninSSOWKWebViewGetAllCookiesRequest" expires_after="2023-04-01">
+    enum="SigninSSOWKWebViewGetAllCookiesRequest" expires_after="2024-04-01">
   <owner>jlebel@chromium.org</owner>
   <owner>chrome-signin-team@google.com</owner>
   <summary>
