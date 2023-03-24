@@ -2762,6 +2762,10 @@ void Element::RemovedFrom(ContainerNode& insertion_point) {
   }
 
   document.UnobserveForIntrinsicSize(this);
+  if (auto* local_frame_view = document.View();
+      local_frame_view && LastIntrinsicSize()) {
+    local_frame_view->NotifyElementWithSavedIntrinsicSizeDisconnected(this);
+  }
 
   SetSavedLayerScrollOffset(ScrollOffset());
 

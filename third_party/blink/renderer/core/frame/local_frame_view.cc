@@ -345,6 +345,7 @@ void LocalFrameView::Trace(Visitor* visitor) const {
   visitor->Trace(fullscreen_video_elements_);
   visitor->Trace(pending_transform_updates_);
   visitor->Trace(pending_opacity_updates_);
+  visitor->Trace(disconnected_elements_with_saved_intrinsic_size_);
 }
 
 void LocalFrameView::ForAllChildViewsAndPlugins(
@@ -2575,6 +2576,13 @@ bool LocalFrameView::RunResizeObserverSteps(
     DocumentLifecycle::LifecycleState target_state) {
   if (target_state != DocumentLifecycle::kPaintClean)
     return false;
+
+  for (auto& element : disconnected_elements_with_saved_intrinsic_size_) {
+    if (!element->isConnected()) {
+      element->SaveIntrinsicSize(nullptr);
+    }
+  }
+  disconnected_elements_with_saved_intrinsic_size_.clear();
 
   bool re_run_lifecycles = false;
   ForAllNonThrottledLocalFrameViews(
@@ -5018,4 +5026,10 @@ void LocalFrameView::RemoveAllPendingUpdates() {
     pending_transform_updates_->clear();
   }
 }
+
+void LocalFrameView::NotifyElementWithSavedIntrinsicSizeDisconnected(
+    Element* element) {
+  disconnected_elements_with_saved_intrinsic_size_.insert(element);
+}
+
 }  // namespace blink
