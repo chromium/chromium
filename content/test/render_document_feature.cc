@@ -39,8 +39,12 @@ std::string GetRenderDocumentLevelNameForTestParams(
   if (render_document_level ==
       GetRenderDocumentLevelName(RenderDocumentLevel::kCrashedFrame)) {
     return "RDCrashedFrame";
+  } else if (render_document_level ==
+             GetRenderDocumentLevelName(RenderDocumentLevel::kSubframe)) {
+    return "RDSubframe";
+  } else {
+    return "RDAllFrames";
   }
-  return "RDSubframe";
 }
 
 }  // namespace content
