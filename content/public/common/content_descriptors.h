@@ -17,7 +17,6 @@ enum {
 
 #if BUILDFLAG(IS_ANDROID)
   kAndroidPropertyDescriptor,
-  kAndroidICUDataDescriptor,
 #endif
 
   // Reserves 100 to 199 for dynamically generated IDs.

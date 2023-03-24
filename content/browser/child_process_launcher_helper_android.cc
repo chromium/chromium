@@ -68,12 +68,6 @@ ChildProcessLauncherHelper::GetFilesToMap() {
           child_process_id(), mojo_channel_->remote_endpoint(),
           file_data_->files_to_preload, GetProcessType(), command_line());
 
-#if ICU_UTIL_DATA_IMPL == ICU_UTIL_DATA_FILE
-  base::MemoryMappedFile::Region icu_region;
-  int fd = base::i18n::GetIcuDataFileHandle(&icu_region);
-  files_to_register->ShareWithRegion(kAndroidICUDataDescriptor, fd, icu_region);
-#endif  // ICU_UTIL_DATA_IMPL == ICU_UTIL_DATA_FILE
-
   return files_to_register;
 }
 
