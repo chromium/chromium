@@ -33,6 +33,7 @@ using ash::federated::FakeServiceConnectionImpl;
 using ash::federated::ScopedFakeServiceConnectionForTest;
 using ash::federated::ServiceConnection;
 using federated::FederatedMetricsManager;
+using testing::HasSubstr;
 
 class TestFederatedServiceController
     : public ash::federated::FederatedServiceController {
@@ -47,16 +48,26 @@ class TestFederatedServiceController
   bool IsServiceAvailable() const override { return true; }
 };
 
-class FederatedMetricsManagerTest : public testing::Test {
+// Parameterized by feature kLauncherQueryFederatedAnalyticsPHH.
+class FederatedMetricsManagerTest : public testing::Test,
+                                    public ::testing::WithParamInterface<bool> {
  public:
   FederatedMetricsManagerTest()
       : scoped_fake_for_test_(&fake_service_connection_),
         app_list_notifier_(&app_list_controller_) {
-    scoped_feature_list_.InitWithFeatures(
-        /*enabled_features=*/{ash::features::kFederatedService,
-                              search_features::
-                                  kLauncherQueryFederatedAnalyticsPHH},
-        /*disabled_features=*/{});
+    std::vector<base::test::FeatureRef> enabled_features = {
+        ash::features::kFederatedService};
+    std::vector<base::test::FeatureRef> disabled_features;
+
+    if (GetParam()) {
+      enabled_features.push_back(
+          search_features::kLauncherQueryFederatedAnalyticsPHH);
+    } else {
+      disabled_features.push_back(
+          search_features::kLauncherQueryFederatedAnalyticsPHH);
+    }
+
+    scoped_feature_list_.InitWithFeatures(enabled_features, disabled_features);
   }
 
   FederatedMetricsManagerTest(const FederatedMetricsManagerTest&) = delete;
@@ -77,6 +88,19 @@ class FederatedMetricsManagerTest : public testing::Test {
 
   base::HistogramTester* histogram_tester() { return histogram_tester_.get(); }
 
+  void ExpectNoFederatedLogs() {
+    const std::string histograms =
+        histogram_tester()->GetAllHistogramsRecorded();
+    EXPECT_THAT(
+        histograms,
+        Not(AnyOf(
+            HasSubstr(app_list::federated::kHistogramInitStatus),
+            HasSubstr(app_list::federated::kHistogramSearchSessionConclusion),
+            HasSubstr(app_list::federated::kHistogramReportStatus))));
+    // TODO(b/262611120): Check emptiness of federated service storage, once
+    // this functionality is available.
+  }
+
  protected:
   std::unique_ptr<base::HistogramTester> histogram_tester_;
   std::unique_ptr<FederatedMetricsManager> metrics_manager_;
@@ -93,30 +117,39 @@ class FederatedMetricsManagerTest : public testing::Test {
   TestFederatedServiceController federated_service_controller_;
 };
 
-TEST_F(FederatedMetricsManagerTest, Quit) {
+INSTANTIATE_TEST_SUITE_P(LauncherQueryFA,
+                         FederatedMetricsManagerTest,
+                         testing::Bool());
+
+TEST_P(FederatedMetricsManagerTest, Quit) {
   metrics_manager_->OnSearchSessionStarted();
   // Search session ends without user taking other action (e.g. without
   // launching a result).
   metrics_manager_->OnSearchSessionEnded(u"fake_query");
   base::RunLoop().RunUntilIdle();
 
-  histogram_tester()->ExpectUniqueSample(
-      app_list::federated::kHistogramInitStatus,
-      app_list::federated::FederatedMetricsManager::InitStatus::kOk, 1);
+  const bool launcher_fa_enabled = GetParam();
+  if (launcher_fa_enabled) {
+    histogram_tester()->ExpectUniqueSample(
+        app_list::federated::kHistogramInitStatus,
+        app_list::federated::FederatedMetricsManager::InitStatus::kOk, 1);
 
-  histogram_tester()->ExpectUniqueSample(
-      app_list::federated::kHistogramSearchSessionConclusion,
-      ash::SearchSessionConclusion::kQuit, 1);
+    histogram_tester()->ExpectUniqueSample(
+        app_list::federated::kHistogramSearchSessionConclusion,
+        ash::SearchSessionConclusion::kQuit, 1);
 
-  histogram_tester()->ExpectUniqueSample(
-      app_list::federated::kHistogramReportStatus,
-      app_list::federated::FederatedMetricsManager::ReportStatus::kOk, 1);
+    histogram_tester()->ExpectUniqueSample(
+        app_list::federated::kHistogramReportStatus,
+        app_list::federated::FederatedMetricsManager::ReportStatus::kOk, 1);
 
-  // TODO(b/262611120): Check contents of logged example, once this
-  // functionality is available.
+    // TODO(b/262611120): Check contents of logged example, once this
+    // functionality is available.
+  } else {
+    ExpectNoFederatedLogs();
+  }
 }
 
-TEST_F(FederatedMetricsManagerTest, Launch) {
+TEST_P(FederatedMetricsManagerTest, Launch) {
   metrics_manager_->OnSearchSessionStarted();
   std::vector<Result> shown_results;
   Result launched_result = CreateFakeResult(Type::EXTENSION_APP, "fake_id");
@@ -127,23 +160,27 @@ TEST_F(FederatedMetricsManagerTest, Launch) {
   metrics_manager_->OnSearchSessionEnded(query);
   base::RunLoop().RunUntilIdle();
 
-  histogram_tester()->ExpectUniqueSample(
-      app_list::federated::kHistogramInitStatus,
-      app_list::federated::FederatedMetricsManager::InitStatus::kOk, 1);
+  const bool launcher_fa_enabled = GetParam();
+  if (launcher_fa_enabled) {
+    histogram_tester()->ExpectUniqueSample(
+        app_list::federated::kHistogramInitStatus,
+        app_list::federated::FederatedMetricsManager::InitStatus::kOk, 1);
 
-  // TODO
-  histogram_tester()->ExpectUniqueSample(
-      app_list::federated::kHistogramSearchSessionConclusion,
-      ash::SearchSessionConclusion::kLaunch, 1);
+    histogram_tester()->ExpectUniqueSample(
+        app_list::federated::kHistogramSearchSessionConclusion,
+        ash::SearchSessionConclusion::kLaunch, 1);
 
-  histogram_tester()->ExpectUniqueSample(
-      app_list::federated::kHistogramReportStatus,
-      app_list::federated::FederatedMetricsManager::ReportStatus::kOk, 1);
-  // TODO(b/262611120): Check contents of logged example, once this
-  // functionality is available.
+    histogram_tester()->ExpectUniqueSample(
+        app_list::federated::kHistogramReportStatus,
+        app_list::federated::FederatedMetricsManager::ReportStatus::kOk, 1);
+    // TODO(b/262611120): Check contents of logged example, once this
+    // functionality is available.
+  } else {
+    ExpectNoFederatedLogs();
+  }
 }
 
-TEST_F(FederatedMetricsManagerTest, AnswerCardSeen) {
+TEST_P(FederatedMetricsManagerTest, AnswerCardSeen) {
   metrics_manager_->OnSearchSessionStarted();
   std::vector<Result> shown_results;
   std::u16string query = u"fake_query";
@@ -152,23 +189,27 @@ TEST_F(FederatedMetricsManagerTest, AnswerCardSeen) {
   metrics_manager_->OnSearchSessionEnded(query);
   base::RunLoop().RunUntilIdle();
 
-  histogram_tester()->ExpectUniqueSample(
-      app_list::federated::kHistogramInitStatus,
-      app_list::federated::FederatedMetricsManager::InitStatus::kOk, 1);
+  const bool launcher_fa_enabled = GetParam();
+  if (launcher_fa_enabled) {
+    histogram_tester()->ExpectUniqueSample(
+        app_list::federated::kHistogramInitStatus,
+        app_list::federated::FederatedMetricsManager::InitStatus::kOk, 1);
 
-  // TODO
-  histogram_tester()->ExpectUniqueSample(
-      app_list::federated::kHistogramSearchSessionConclusion,
-      ash::SearchSessionConclusion::kAnswerCardSeen, 1);
+    histogram_tester()->ExpectUniqueSample(
+        app_list::federated::kHistogramSearchSessionConclusion,
+        ash::SearchSessionConclusion::kAnswerCardSeen, 1);
 
-  histogram_tester()->ExpectUniqueSample(
-      app_list::federated::kHistogramReportStatus,
-      app_list::federated::FederatedMetricsManager::ReportStatus::kOk, 1);
-  // TODO(b/262611120): Check contents of logged example, once this
-  // functionality is available.
+    histogram_tester()->ExpectUniqueSample(
+        app_list::federated::kHistogramReportStatus,
+        app_list::federated::FederatedMetricsManager::ReportStatus::kOk, 1);
+    // TODO(b/262611120): Check contents of logged example, once this
+    // functionality is available.
+  } else {
+    ExpectNoFederatedLogs();
+  }
 }
 
-TEST_F(FederatedMetricsManagerTest, AnswerCardSeenThenListResultLaunched) {
+TEST_P(FederatedMetricsManagerTest, AnswerCardSeenThenListResultLaunched) {
   // Tests that a Launch event takes precedence over an AnswerCardSeen event,
   // within the same search session.
   metrics_manager_->OnSearchSessionStarted();
@@ -184,22 +225,27 @@ TEST_F(FederatedMetricsManagerTest, AnswerCardSeenThenListResultLaunched) {
   metrics_manager_->OnSearchSessionEnded(query);
   base::RunLoop().RunUntilIdle();
 
-  histogram_tester()->ExpectUniqueSample(
-      app_list::federated::kHistogramInitStatus,
-      app_list::federated::FederatedMetricsManager::InitStatus::kOk, 1);
+  const bool launcher_fa_enabled = GetParam();
+  if (launcher_fa_enabled) {
+    histogram_tester()->ExpectUniqueSample(
+        app_list::federated::kHistogramInitStatus,
+        app_list::federated::FederatedMetricsManager::InitStatus::kOk, 1);
 
-  histogram_tester()->ExpectUniqueSample(
-      app_list::federated::kHistogramSearchSessionConclusion,
-      ash::SearchSessionConclusion::kLaunch, 1);
+    histogram_tester()->ExpectUniqueSample(
+        app_list::federated::kHistogramSearchSessionConclusion,
+        ash::SearchSessionConclusion::kLaunch, 1);
 
-  histogram_tester()->ExpectUniqueSample(
-      app_list::federated::kHistogramReportStatus,
-      app_list::federated::FederatedMetricsManager::ReportStatus::kOk, 1);
-  // TODO(b/262611120): Check contents of logged example, once this
-  // functionality is available.
+    histogram_tester()->ExpectUniqueSample(
+        app_list::federated::kHistogramReportStatus,
+        app_list::federated::FederatedMetricsManager::ReportStatus::kOk, 1);
+    // TODO(b/262611120): Check contents of logged example, once this
+    // functionality is available.
+  } else {
+    ExpectNoFederatedLogs();
+  }
 }
 
-TEST_F(FederatedMetricsManagerTest, ZeroState) {
+TEST_P(FederatedMetricsManagerTest, ZeroState) {
   // Note: metrics_manager_->OnSearchSession{Started,Ended}() are not expected
   // to be called during zero state search.
 
@@ -216,19 +262,24 @@ TEST_F(FederatedMetricsManagerTest, ZeroState) {
                              shown_results, empty_query);
   base::RunLoop().RunUntilIdle();
 
-  histogram_tester()->ExpectUniqueSample(
-      app_list::federated::kHistogramInitStatus,
-      app_list::federated::FederatedMetricsManager::InitStatus::kOk, 1);
+  const bool launcher_fa_enabled = GetParam();
+  if (launcher_fa_enabled) {
+    histogram_tester()->ExpectUniqueSample(
+        app_list::federated::kHistogramInitStatus,
+        app_list::federated::FederatedMetricsManager::InitStatus::kOk, 1);
 
-  // Zero state search should not trigger any logging on user action.
-  histogram_tester()->ExpectTotalCount(
-      app_list::federated::kHistogramSearchSessionConclusion, 0);
-  histogram_tester()->ExpectTotalCount(
-      app_list::federated::kHistogramReportStatus, 0);
+    // Zero state search should not trigger any logging on user action.
+    histogram_tester()->ExpectTotalCount(
+        app_list::federated::kHistogramSearchSessionConclusion, 0);
+    histogram_tester()->ExpectTotalCount(
+        app_list::federated::kHistogramReportStatus, 0);
 
-  // Do not expect that any examples were logged to the federated service.
-  // TODO(b/262611120): Check contents of federated service storage, once this
-  // functionality is available.
+    // Do not expect that any examples were logged to the federated service.
+    // TODO(b/262611120): Check contents of federated service storage, once this
+    // functionality is available.
+  } else {
+    ExpectNoFederatedLogs();
+  }
 }
 
 }  // namespace
