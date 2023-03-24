@@ -6,5 +6,8 @@ FAIL ORB should block opaque application/json (empty) assert_unreached: Should h
 FAIL ORB should block opaque application/json which contains non ascii characters assert_unreached: Should have rejected: undefined Reached unreachable code
 PASS ORB shouldn't block opaque image/png
 PASS ORB shouldn't block opaque text/javascript
+PASS ORB shouldn't block opaque text/javascript (utf16 encoded with BOM)
+PASS ORB shouldn't block opaque text/javascript (utf16 encoded without BOM but charset is provided in content-type)
+PASS ORB shouldn't block opaque text/javascript (iso-8559-1 encoded)
 Harness: the test ran to completion.
 

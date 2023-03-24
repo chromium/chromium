@@ -1,0 +1,4 @@
+This is a testharness.js-based test.
+FAIL html5lib_innerHTML_template.html 64d3e0e4395745b6ea928e5f5cf888bf675a598b assert_equals: expected "#document\n| <template>\n|   content\n|     <form>\n|       <input>\n|         name=\"q\"\n|     <div>\n|       \"second\"" but got "#document\n| content\n|   <template>\n|     content\n|       <form>\n|         <input>\n|           name=\"q\"\n|       <div>\n|         \"second\""
+Harness: the test ran to completion.
+

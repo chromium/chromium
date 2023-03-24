@@ -1,4 +1,4 @@
 This is a testharness.js-based test.
-FAIL Inline violations have a blockedURI of 'inline' assert_equals: expected 1 but got 0
+FAIL Inline violations have a blockedURI of 'inline' assert_equals: expected 8 but got 0
 Harness: the test ran to completion.
 

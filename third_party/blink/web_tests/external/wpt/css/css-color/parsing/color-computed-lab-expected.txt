@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-Found 96 tests; 90 PASS, 6 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 104 tests; 90 PASS, 14 FAIL, 0 TIMEOUT, 0 NOTRUN.
 PASS Property color value 'lab(0 0 0)'
 PASS Property color value 'lab(0 0 0 / 1)'
 PASS Property color value 'lab(0 0 0 / 0.5)'
@@ -21,6 +21,8 @@ PASS Property color value 'lab(none none none)'
 PASS Property color value 'lab(20 none none / none)'
 PASS Property color value 'lab(none none none / 0.5)'
 PASS Property color value 'lab(0 0 0 / none)'
+FAIL Property color value 'lab(calc(NaN) 0 0)' assert_array_approx_equals: Numeric parameters are approximately equal. property 0, expected 0 +/- 0.0001, expected 0 but got Infinity
+FAIL Property color value 'lab(calc(0 / 0) 0 0)' assert_array_approx_equals: Numeric parameters are approximately equal. property 0, expected 0 +/- 0.0001, expected 0 but got Infinity
 PASS Property color value 'oklab(0 0 0)'
 PASS Property color value 'oklab(0 0 0 / 1)'
 PASS Property color value 'oklab(0 0 0 / 0.5)'
@@ -42,6 +44,8 @@ PASS Property color value 'oklab(none none none)'
 PASS Property color value 'oklab(0.2 none none / none)'
 PASS Property color value 'oklab(none none none / 0.5)'
 PASS Property color value 'oklab(0 0 0 / none)'
+FAIL Property color value 'oklab(calc(NaN) 0 0)' assert_array_approx_equals: Numeric parameters are approximately equal. property 0, expected 0 +/- 0.0001, expected 0 but got Infinity
+FAIL Property color value 'oklab(calc(0 / 0) 0 0)' assert_array_approx_equals: Numeric parameters are approximately equal. property 0, expected 0 +/- 0.0001, expected 0 but got Infinity
 PASS Property color value 'lab(20% 0 10/0.5)'
 PASS Property color value 'oklab(20% 0 0.1/0.5)'
 PASS Property color value 'lch(0 0 0deg)'
@@ -69,6 +73,8 @@ PASS Property color value 'lch(none none none)'
 PASS Property color value 'lch(20 none none / none)'
 PASS Property color value 'lch(none none none / 0.5)'
 PASS Property color value 'lch(0 0 0 / none)'
+FAIL Property color value 'lch(calc(NaN) 0 0)' assert_array_approx_equals: Numeric parameters are approximately equal. property 0, expected 0 +/- 0.0001, expected 0 but got Infinity
+FAIL Property color value 'lch(calc(0 / 0) 0 0)' assert_array_approx_equals: Numeric parameters are approximately equal. property 0, expected 0 +/- 0.0001, expected 0 but got Infinity
 PASS Property color value 'oklch(0 0 0deg)'
 PASS Property color value 'oklch(0 0 0deg / 1)'
 PASS Property color value 'oklch(0 0 0deg / 0.5)'
@@ -94,6 +100,8 @@ PASS Property color value 'oklch(none none none)'
 PASS Property color value 'oklch(0.2 none none / none)'
 PASS Property color value 'oklch(none none none / 0.5)'
 PASS Property color value 'oklch(0 0 0 / none)'
+FAIL Property color value 'oklch(calc(NaN) 0 0)' assert_array_approx_equals: Numeric parameters are approximately equal. property 0, expected 0 +/- 0.0001, expected 0 but got Infinity
+FAIL Property color value 'oklch(calc(0 / 0) 0 0)' assert_array_approx_equals: Numeric parameters are approximately equal. property 0, expected 0 +/- 0.0001, expected 0 but got Infinity
 PASS Property color value 'lch(20% 0 10/0.5)'
 PASS Property color value 'oklch(20% 0 10/0.5)'
 Harness: the test ran to completion.
