@@ -8,6 +8,7 @@
 #import "base/mac/foundation_util.h"
 #import "base/metrics/user_metrics.h"
 #import "base/metrics/user_metrics_action.h"
+#import "base/strings/sys_string_conversions.h"
 #import "components/autofill/core/common/autofill_features.h"
 #import "components/strings/grit/components_strings.h"
 #import "ios/chrome/browser/infobars/infobar_metrics_recorder.h"
@@ -54,6 +55,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
   ItemTypeUpdateEmailOld,
   ItemTypeUpdatePhoneOld,
   ItemTypeAddressProfileSaveUpdateButton,
+  ItemTypeFooter
 };
 
 const CGFloat kSymbolSize = 16;
@@ -82,6 +84,10 @@ const CGFloat kSymbolSize = 16;
 @property(nonatomic, copy) NSDictionary* profileDataDiff;
 // Description of the update modal.
 @property(nonatomic, copy) NSString* updateModalDescription;
+// Stores the user email for the currently syncing account.
+@property(nonatomic, copy) NSString* syncingUserEmail;
+// If YES, denotes that the profile will be added to the Google Account.
+@property(nonatomic, assign) BOOL isMigrationToAccount;
 
 @end
 
@@ -248,6 +254,8 @@ const CGFloat kSymbolSize = 16;
   self.isUpdateModal = [prefs[kIsUpdateModalPrefKey] boolValue];
   self.profileDataDiff = prefs[kProfileDataDiffKey];
   self.updateModalDescription = prefs[kUpdateModalDescriptionKey];
+  self.isMigrationToAccount = [prefs[kIsMigrationToAccountKey] boolValue];
+  self.syncingUserEmail = prefs[kSyncingUserEmailKey];
   [self.tableView reloadData];
 }
 
@@ -381,8 +389,14 @@ const CGFloat kSymbolSize = 16;
     lastAddedItem = phoneItem;
   }
 
+  if (self.isMigrationToAccount) {
+    DCHECK([self.syncingUserEmail length] > 0);
+    [model addItem:[self footerItem]
+        toSectionWithIdentifier:SectionIdentifierSaveModalFields];
+  }
+
   // Remove the separator after the last field.
-  lastAddedItem.useCustomSeparator = NO;
+  lastAddedItem.useCustomSeparator = self.isMigrationToAccount;
 
   [model addItem:[self saveUpdateButton]
       toSectionWithIdentifier:SectionIdentifierSaveModalFields];
@@ -532,6 +546,18 @@ const CGFloat kSymbolSize = 16;
   }
 
   return detailItem;
+}
+
+- (TableViewTextItem*)footerItem {
+  // TODO(crbug.com/1407666): Align the text with the icon of the other fields.
+  TableViewTextItem* item =
+      [[TableViewTextItem alloc] initWithType:ItemTypeFooter];
+  item.text =
+      l10n_util::GetNSStringF(IDS_IOS_AUTOFILL_SAVE_ADDRESS_IN_ACCOUNT_FOOTER,
+                              base::SysNSStringToUTF16(self.syncingUserEmail));
+  item.textFont = [UIFont preferredFontForTextStyle:UIFontTextStyleFootnote];
+  item.textColor = [UIColor colorNamed:kTextSecondaryColor];
+  return item;
 }
 
 @end

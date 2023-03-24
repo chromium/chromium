@@ -54,6 +54,12 @@ class SaveAddressProfileModalRequestConfig
     return current_address_profile_saved_;
   }
 
+  bool is_migration_to_account() const { return is_migration_to_account_; }
+
+  absl::optional<std::u16string> syncing_user_email() const {
+    return syncing_user_email_;
+  }
+
  private:
   OVERLAY_USER_DATA_SETUP(SaveAddressProfileModalRequestConfig);
   explicit SaveAddressProfileModalRequestConfig(InfoBarIOS* infobar);
@@ -85,6 +91,12 @@ class SaveAddressProfileModalRequestConfig
 
   // True if the address profile is saved.
   bool current_address_profile_saved_ = false;
+
+  // Denotes that the profile will be saved to Google Account.
+  bool is_migration_to_account_ = false;
+
+  // Denotes the email address of the syncing account.
+  absl::optional<std::u16string> syncing_user_email_;
 };
 
 }  // namespace autofill_address_profile_infobar_overlays

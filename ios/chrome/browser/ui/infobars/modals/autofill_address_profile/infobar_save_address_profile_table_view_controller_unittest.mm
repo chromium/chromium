@@ -38,7 +38,22 @@ class InfobarSaveAddressProfileTableViewControllerTest
       kCurrentAddressProfileSavedPrefKey : @(false),
       kIsUpdateModalPrefKey : @(false),
       kProfileDataDiffKey : @{},
-      kUpdateModalDescriptionKey : @""
+      kUpdateModalDescriptionKey : @"",
+    };
+    return prefs;
+  }
+
+  NSDictionary* GetDataForSaveInAccountModal() {
+    NSDictionary* prefs = @{
+      kAddressPrefKey : @"Test Envelope Address",
+      kPhonePrefKey : @"Test Phone Number",
+      kEmailPrefKey : @"Test Email Address",
+      kCurrentAddressProfileSavedPrefKey : @(false),
+      kIsUpdateModalPrefKey : @(false),
+      kProfileDataDiffKey : @{},
+      kUpdateModalDescriptionKey : @"",
+      kSyncingUserEmailKey : @"test@gmail.com",
+      kIsMigrationToAccountKey : @(true)
     };
     return prefs;
   }
@@ -92,4 +107,21 @@ TEST_F(InfobarSaveAddressProfileTableViewControllerTest,
 
   EXPECT_EQ(1, NumberOfSections());
   EXPECT_EQ(6, NumberOfItemsInSection(0));
+}
+
+// Tests that the save address profile modal has been initialized for saving the
+// profile to Google Account.
+TEST_F(InfobarSaveAddressProfileTableViewControllerTest,
+       TestSaveInAccountModalInitialization) {
+  CreateController();
+  CheckController();
+  InfobarSaveAddressProfileTableViewController* save_view_controller =
+      base::mac::ObjCCastStrict<InfobarSaveAddressProfileTableViewController>(
+          controller());
+  [save_view_controller
+      setupModalViewControllerWithPrefs:GetDataForSaveInAccountModal()];
+  [save_view_controller loadModel];
+
+  EXPECT_EQ(1, NumberOfSections());
+  EXPECT_EQ(5, NumberOfItemsInSection(0));
 }

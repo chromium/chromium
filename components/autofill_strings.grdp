@@ -405,6 +405,9 @@
     <message name="IDS_IOS_AUTOFILL_SAVE_ADDRESS_IN_ACCOUNT_MESSAGE_SUBTITLE" desc="Subtitle shown in the messages UI view when a new profile is asked to be saved in the Google Account">
        In your Google Account, <ph name="USER_EMAIL">$1<ex>janedoe@google.com</ex></ph>
     </message>
+    <message name="IDS_IOS_AUTOFILL_SAVE_ADDRESS_IN_ACCOUNT_FOOTER" desc="Footer text shown in the save modal for saving a new address profile or migrating it in the Google Account">
+      You can use saved addresses across Google products. This address will be saved in your Google Account, <ph name="USER_EMAIL">$1<ex>janedoe@google.com</ex></ph>.
+    </message>
   </if>
   <!-- Used on Desktop: -->
   <if expr="not is_android and not is_ios">
