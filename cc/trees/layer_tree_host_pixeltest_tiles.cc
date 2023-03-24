@@ -238,7 +238,7 @@ INSTANTIATE_TEST_SUITE_P(All,
                          ::testing::PrintToStringParamName());
 
 #if BUILDFLAG(IS_CHROMEOS_ASH) || defined(MEMORY_SANITIZER) || \
-    defined(ADDRESS_SANITIZER) || BUILDFLAG(IS_FUCHSIA)
+    defined(ADDRESS_SANITIZER)
 // TODO(crbug.com/1045521): Flakes on all slower bots.
 #define MAYBE_PartialRaster DISABLED_PartialRaster
 #else
@@ -288,7 +288,7 @@ GTEST_ALLOW_UNINSTANTIATED_PARAMETERIZED_TEST(
 // Flaky on Linux TSAN. https://crbug.com/707711
 #define MAYBE_PartialRaster DISABLED_PartialRaster
 #elif BUILDFLAG(IS_CHROMEOS_ASH) || defined(MEMORY_SANITIZER) || \
-    defined(ADDRESS_SANITIZER) || BUILDFLAG(IS_FUCHSIA)
+    defined(ADDRESS_SANITIZER)
 // TODO(crbug.com/1045521): Flakes on all slower bots.
 #define MAYBE_PartialRaster DISABLED_PartialRaster
 #else
