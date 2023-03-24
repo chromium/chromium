@@ -1,9 +1,9 @@
-// Copyright 2022 The Chromium Authors
+// Copyright 2023 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef MEDIA_FILTERS_HLS_DEMUXER_H_
-#define MEDIA_FILTERS_HLS_DEMUXER_H_
+#ifndef MEDIA_FILTERS_MANIFEST_DEMUXER_H_
+#define MEDIA_FILTERS_MANIFEST_DEMUXER_H_
 
 #include <vector>
 
@@ -23,18 +23,18 @@
 
 namespace media {
 
-class MEDIA_EXPORT HlsDemuxer final : public Demuxer {
+class MEDIA_EXPORT ManifestDemuxer final : public Demuxer {
  public:
-  explicit HlsDemuxer(
+  explicit ManifestDemuxer(
       scoped_refptr<base::SequencedTaskRunner> task_runner,
       base::SequenceBound<HlsDataSourceProvider> data_source_provider,
       GURL root_playlist_uri,
       MediaLog* media_log);
-  ~HlsDemuxer() override;
-  HlsDemuxer(const HlsDemuxer&) = delete;
-  HlsDemuxer(HlsDemuxer&&) = delete;
-  HlsDemuxer& operator=(const HlsDemuxer&) = delete;
-  HlsDemuxer& operator=(HlsDemuxer&&) = delete;
+  ~ManifestDemuxer() override;
+  ManifestDemuxer(const ManifestDemuxer&) = delete;
+  ManifestDemuxer(ManifestDemuxer&&) = delete;
+  ManifestDemuxer& operator=(const ManifestDemuxer&) = delete;
+  ManifestDemuxer& operator=(ManifestDemuxer&&) = delete;
 
   // `media::MediaResource` implementation
   std::vector<DemuxerStream*> GetAllStreams() override;
@@ -72,4 +72,4 @@ class MEDIA_EXPORT HlsDemuxer final : public Demuxer {
 
 }  // namespace media
 
-#endif  // MEDIA_FILTERS_HLS_DEMUXER_H_
+#endif  // MEDIA_FILTERS_MANIFEST_DEMUXER_H_

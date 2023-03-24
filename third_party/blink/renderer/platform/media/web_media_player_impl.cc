@@ -3761,7 +3761,7 @@ void WebMediaPlayerImpl::WriteSplitHistogram(
 void WebMediaPlayerImpl::RecordUnderflowDuration(base::TimeDelta duration) {
   DCHECK(demuxer_manager_->HasDataSource() ||
          GetDemuxerType() == media::DemuxerType::kChunkDemuxer ||
-         GetDemuxerType() == media::DemuxerType::kHlsDemuxer);
+         GetDemuxerType() == media::DemuxerType::kManifestDemuxer);
   WriteSplitHistogram<kPlaybackType | kEncrypted>(
       &base::UmaHistogramTimes, "Media.UnderflowDuration2", duration);
 }

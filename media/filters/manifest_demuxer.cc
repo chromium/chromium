@@ -1,8 +1,8 @@
-// Copyright 2022 The Chromium Authors
+// Copyright 2023 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "media/filters/hls_demuxer.h"
+#include "media/filters/manifest_demuxer.h"
 
 #include <vector>
 
@@ -19,7 +19,7 @@
 
 namespace media {
 
-HlsDemuxer::HlsDemuxer(
+ManifestDemuxer::ManifestDemuxer(
     scoped_refptr<base::SequencedTaskRunner> task_runner,
     base::SequenceBound<HlsDataSourceProvider> data_source_provider,
     GURL root_playlist_uri,
@@ -30,11 +30,11 @@ HlsDemuxer::HlsDemuxer(
   DCHECK(data_source_provider);
 }
 
-HlsDemuxer::~HlsDemuxer() {
+ManifestDemuxer::~ManifestDemuxer() {
   DVLOG(1) << __func__;
 }
 
-std::vector<DemuxerStream*> HlsDemuxer::GetAllStreams() {
+std::vector<DemuxerStream*> ManifestDemuxer::GetAllStreams() {
   DVLOG(1) << __func__;
 
   // TODO(crbug/1266991): Consult underlying ChunkDemuxer for its streams
@@ -42,16 +42,16 @@ std::vector<DemuxerStream*> HlsDemuxer::GetAllStreams() {
   return std::vector<DemuxerStream*>();
 }
 
-std::string HlsDemuxer::GetDisplayName() const {
-  return "HlsDemuxer";
+std::string ManifestDemuxer::GetDisplayName() const {
+  return "ManifestDemuxer";
 }
 
-DemuxerType HlsDemuxer::GetDemuxerType() const {
-  return DemuxerType::kHlsDemuxer;
+DemuxerType ManifestDemuxer::GetDemuxerType() const {
+  return DemuxerType::kManifestDemuxer;
 }
 
-void HlsDemuxer::Initialize(DemuxerHost* host,
-                            PipelineStatusCallback status_cb) {
+void ManifestDemuxer::Initialize(DemuxerHost* host,
+                                 PipelineStatusCallback status_cb) {
   DVLOG(1) << __func__ << "(host=" << host << ")";
   DCHECK(task_runner_->RunsTasksInCurrentSequence());
 
@@ -63,27 +63,28 @@ void HlsDemuxer::Initialize(DemuxerHost* host,
   // displayname log when it is constructed (perhaps subtype it?).
 }
 
-void HlsDemuxer::AbortPendingReads() {
+void ManifestDemuxer::AbortPendingReads() {
   DVLOG(1) << __func__;
   // TODO(crbug/1266991): Let the wrapped ChunkDemuxer know to abort pending
   // reads, if any.
 }
 
-void HlsDemuxer::StartWaitingForSeek(base::TimeDelta seek_time) {
+void ManifestDemuxer::StartWaitingForSeek(base::TimeDelta seek_time) {
   DVLOG(1) << __func__ << "(seek_time=" << seek_time.InMicroseconds() << "us)";
   // TODO(crbug/1266991): Time Remapping.
   // TODO(crbug/1266991): Let the wrapped ChunkDemuxer know to start waiting for
   // a seek to `seek_time`.
 }
 
-void HlsDemuxer::CancelPendingSeek(base::TimeDelta seek_time) {
+void ManifestDemuxer::CancelPendingSeek(base::TimeDelta seek_time) {
   DVLOG(1) << __func__ << "(seek_time=" << seek_time.InMicroseconds() << "us)";
   // TODO(crbug/1266991): Time remapping.
   // TODO(crbug/1266991): Let the wrapped ChunkDemuxer know to cancel pending
   // seek for `seek_time`.
 }
 
-void HlsDemuxer::Seek(base::TimeDelta time, PipelineStatusCallback status_cb) {
+void ManifestDemuxer::Seek(base::TimeDelta time,
+                           PipelineStatusCallback status_cb) {
   DVLOG(1) << __func__ << "(time=" << time.InMicroseconds() << "us)";
   // TODO(crbug/1266991): This should be intercepted when performing time
   // remapping.
@@ -91,12 +92,12 @@ void HlsDemuxer::Seek(base::TimeDelta time, PipelineStatusCallback status_cb) {
   // and give it `status_cb`.
 }
 
-bool HlsDemuxer::IsSeekable() const {
+bool ManifestDemuxer::IsSeekable() const {
   // The underlying wrapping ChunkDemuxer is seekable.
   return true;
 }
 
-void HlsDemuxer::Stop() {
+void ManifestDemuxer::Stop() {
   DVLOG(1) << __func__;
   DCHECK(task_runner_->RunsTasksInCurrentSequence());
 
@@ -104,14 +105,14 @@ void HlsDemuxer::Stop() {
   // clear the host for it, invalidate any weak pointers we may have bound.
 }
 
-base::TimeDelta HlsDemuxer::GetStartTime() const {
+base::TimeDelta ManifestDemuxer::GetStartTime() const {
   // TODO(crbug/1266991): Is any time remapping of HLS start time necessary
   // here?
   DVLOG(2) << __func__ << " -> 0";
   return base::TimeDelta();
 }
 
-base::Time HlsDemuxer::GetTimelineOffset() const {
+base::Time ManifestDemuxer::GetTimelineOffset() const {
   // TODO(crbug/1266991): Implement this with the value of the
   // EXT-X-PROGRAM-DATETIME tag.
   // TODO(crbug/1266991): Moderate that tag with respect to any underlying
@@ -123,7 +124,7 @@ base::Time HlsDemuxer::GetTimelineOffset() const {
   return base::Time();
 }
 
-int64_t HlsDemuxer::GetMemoryUsage() const {
+int64_t ManifestDemuxer::GetMemoryUsage() const {
   // TODO(crbug/1266991): If we have a wrapped ChunkDemuxer, consider returning
   // its usage here.
   // TODO(crbug/1266991): Consider other potential significant memory usage
@@ -134,14 +135,14 @@ int64_t HlsDemuxer::GetMemoryUsage() const {
 }
 
 absl::optional<container_names::MediaContainerName>
-HlsDemuxer::GetContainerForMetrics() const {
+ManifestDemuxer::GetContainerForMetrics() const {
   DVLOG(1) << __func__;
   // TODO(crbug/1266991): Consider how this is used. HLS can involve multiple
   // stream types (mp2ts, mp4, etc). Refactor to report something useful.
   return absl::nullopt;
 }
 
-void HlsDemuxer::OnEnabledAudioTracksChanged(
+void ManifestDemuxer::OnEnabledAudioTracksChanged(
     const std::vector<MediaTrack::Id>& track_ids,
     base::TimeDelta curr_time,
     TrackChangeCB change_completed_cb) {
@@ -149,7 +150,7 @@ void HlsDemuxer::OnEnabledAudioTracksChanged(
   // TODO(crbug/1266991): Handle this as necessary.
 }
 
-void HlsDemuxer::OnSelectedVideoTrackChanged(
+void ManifestDemuxer::OnSelectedVideoTrackChanged(
     const std::vector<MediaTrack::Id>& track_ids,
     base::TimeDelta curr_time,
     TrackChangeCB change_completed_cb) {

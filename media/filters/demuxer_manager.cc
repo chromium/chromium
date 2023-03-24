@@ -21,7 +21,7 @@
 #include "url/gurl.h"
 
 #if BUILDFLAG(ENABLE_HLS_DEMUXER)
-#include "media/filters/hls_demuxer.h"
+#include "media/filters/manifest_demuxer.h"
 #endif  // BUILDFLAG(ENABLE_HLS_DEMUXER)
 
 namespace media {
@@ -573,9 +573,9 @@ std::unique_ptr<Demuxer> DemuxerManager::CreateFFmpegDemuxer() {
 
 #if BUILDFLAG(ENABLE_HLS_DEMUXER)
 std::unique_ptr<Demuxer> DemuxerManager::CreateHlsDemuxer() {
-  return std::make_unique<HlsDemuxer>(media_task_runner_,
-                                      client_->GetHlsDataSourceProvider(),
-                                      loaded_url_, media_log_.get());
+  return std::make_unique<ManifestDemuxer>(media_task_runner_,
+                                           client_->GetHlsDataSourceProvider(),
+                                           loaded_url_, media_log_.get());
 }
 #endif
 
