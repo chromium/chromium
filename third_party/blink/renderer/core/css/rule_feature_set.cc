@@ -1026,7 +1026,7 @@ const CSSSelector* RuleFeatureSet::ExtractInvalidationSetFeaturesFromCompound(
         !for_logical_combination_in_has) {
       CollectValuesInHasArgument(*simple_selector);
       AddFeaturesToInvalidationSetsForHasPseudoClass(
-          *simple_selector, &compound, nullptr, features);
+          *simple_selector, &compound, nullptr, features, in_nth_child);
     }
 
     if (!simple_selector->TagHistory() ||
@@ -1069,9 +1069,14 @@ void RuleFeatureSet::AddFeaturesToInvalidationSetsForHasPseudoClass(
     const CSSSelector& pseudo_has,
     const CSSSelector* compound_containing_has,
     InvalidationSetFeatures* sibling_features,
-    InvalidationSetFeatures& descendant_features) {
+    InvalidationSetFeatures& descendant_features,
+    bool in_nth_child) {
   DCHECK(compound_containing_has);
   DCHECK_EQ(pseudo_has.GetPseudoType(), CSSSelector::kPseudoHas);
+
+  if (in_nth_child) {
+    metadata_.uses_has_inside_nth = true;
+  }
 
   // Add features to invalidation sets only when the :has() pseudo class
   // contains logical combinations containing a complex selector as argument.
@@ -1590,7 +1595,8 @@ void RuleFeatureSet::AddFeaturesToInvalidationSetsForSimpleSelector(
   if (pseudo_type == CSSSelector::kPseudoHas) {
     CollectValuesInHasArgument(simple_selector);
     AddFeaturesToInvalidationSetsForHasPseudoClass(
-        simple_selector, &compound, sibling_features, descendant_features);
+        simple_selector, &compound, sibling_features, descendant_features,
+        in_nth_child);
   }
 
   if (InvalidationSet* invalidation_set = InvalidationSetForSimpleSelector(
@@ -1810,6 +1816,7 @@ void RuleFeatureSet::FeatureMetadata::Merge(const FeatureMetadata& other) {
   uses_window_inactive_selector |= other.uses_window_inactive_selector;
   max_direct_adjacent_selectors = std::max(max_direct_adjacent_selectors,
                                            other.max_direct_adjacent_selectors);
+  uses_has_inside_nth |= other.uses_has_inside_nth;
 }
 
 void RuleFeatureSet::FeatureMetadata::Clear() {
@@ -1818,6 +1825,7 @@ void RuleFeatureSet::FeatureMetadata::Clear() {
   needs_full_recalc_for_rule_set_invalidation = false;
   max_direct_adjacent_selectors = 0;
   invalidates_parts = false;
+  uses_has_inside_nth = false;
 }
 
 bool RuleFeatureSet::FeatureMetadata::operator==(
@@ -1827,7 +1835,8 @@ bool RuleFeatureSet::FeatureMetadata::operator==(
          needs_full_recalc_for_rule_set_invalidation ==
              other.needs_full_recalc_for_rule_set_invalidation &&
          max_direct_adjacent_selectors == other.max_direct_adjacent_selectors &&
-         invalidates_parts == other.invalidates_parts;
+         invalidates_parts == other.invalidates_parts &&
+         uses_has_inside_nth == other.uses_has_inside_nth;
 }
 
 void RuleFeatureSet::Merge(const RuleFeatureSet& other) {
