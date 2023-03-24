@@ -10,6 +10,14 @@
 # during an x.py build, but we have to do it manually.
 rustflags = ['-Zforce-unstable-if-unmarked']
 
+# Override the GN output dir. We direct std targets to output directly to the
+# sysroot we'll use later. This must stay in sync with `local_rustc_sysroot` in
+# //build/rust/std/BUILD.gn
+output_dir = '$root_out_dir/local_rustc_sysroot/lib/rustlib/$rust_abi_target/lib/'
+
+# This target provides setup needed for building std.
+extra_deps = ['//build/rust/std:std_build_deps']
+
 [crate.libc]
 # Requires:
 # * cfg(libc_align) for new enough rustc, which is normally provided by build.rs

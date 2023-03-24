@@ -69,6 +69,7 @@ pub struct RuleConcrete {
     pub build_script_outputs: Vec<String>,
     pub rustflags: Vec<String>,
     pub rustenv: Vec<String>,
+    pub output_dir: Option<String>,
     pub gn_variables_lib: String,
 }
 
@@ -166,7 +167,10 @@ pub fn build_rule_from_std_dep(
     let cargo_pkg_authors =
         if dep.authors.is_empty() { None } else { Some(dep.authors.join(", ")) };
 
-    let crate_config = extra_config.per_crate_config.get(&dep.package_name);
+    // Used by reference if the provided crate config is empty.
+    let default_crate_config = Default::default();
+    let crate_config =
+        extra_config.per_crate_config.get(&dep.package_name).unwrap_or(&default_crate_config);
 
     // Collect the set of rustflags for this crate. This is a combination of
     // those for the crate specifically, and any overall ones set. Additionally,
@@ -176,25 +180,25 @@ pub fn build_rule_from_std_dep(
     // only need to clone each String once, and create one new Vec with
     // collect() at the end.
     let rustflags = crate_config
-        .into_iter()
-        .flat_map(|c| c.cfg.iter())
+        .cfg
+        .iter()
         .chain(extra_config.all_config.cfg.iter())
         .map(|cfg| format!("--cfg={cfg}"))
         .chain(
-            crate_config
-                .into_iter()
-                .flat_map(|c| c.rustflags.iter())
-                .chain(extra_config.all_config.rustflags.iter())
-                .cloned(),
+            crate_config.rustflags.iter().chain(extra_config.all_config.rustflags.iter()).cloned(),
         )
         .collect();
 
     // Do the same for rustenv, which is simpler.
-    let rustenv = crate_config
-        .into_iter()
-        .flat_map(|c| c.env.iter())
-        .chain(extra_config.all_config.env.iter())
+    let rustenv =
+        crate_config.env.iter().chain(extra_config.all_config.env.iter()).cloned().collect();
+
+    let extra_deps = crate_config
+        .extra_deps
+        .iter()
+        .chain(extra_config.all_config.extra_deps.iter())
         .cloned()
+        .map(|dep| RuleDep { cond: Condition::Always, rule: dep })
         .collect();
 
     let mut rule = RuleConcrete {
@@ -208,7 +212,7 @@ pub fn build_rule_from_std_dep(
         cargo_pkg_authors,
         cargo_pkg_name: dep.package_name.clone(),
         cargo_pkg_description: dep.description.clone(),
-        deps: vec![],
+        deps: extra_deps,
         dev_deps: vec![],
         build_deps: vec![],
         aliased_deps: vec![],
@@ -217,6 +221,10 @@ pub fn build_rule_from_std_dep(
         build_script_outputs: vec![],
         rustflags,
         rustenv,
+        output_dir: crate_config
+            .output_dir
+            .clone()
+            .or_else(|| extra_config.all_config.output_dir.clone()),
         gn_variables_lib: String::new(),
     };
 
@@ -226,23 +234,19 @@ pub fn build_rule_from_std_dep(
         .map(|pki| pki.features.clone())
         .unwrap_or(vec![]);
 
-    // Enumerate the dependencies of each kind for the package.
-    for (gn_deps, cargo_deps) in
-        [(&mut rule.deps, &dep.dependencies), (&mut rule.build_deps, &dep.build_dependencies)]
-    {
-        for dep_of_dep in cargo_deps {
-            let cond = match &dep_of_dep.platform {
-                None => Condition::Always,
-                Some(p) => Condition::If(platform_to_condition(p)),
-            };
-            let target_name = normalize_target_name(&dep_of_dep.package_name);
-            let dep_rule = format!(":{target_name}");
-            gn_deps.push(RuleDep { cond, rule: dep_rule });
+    // Add only normal dependencies: we don't run unit tests, and we don't run
+    // build scripts (instead manually configuring build flags and env vars).
+    for dep_of_dep in &dep.dependencies {
+        let cond = match &dep_of_dep.platform {
+            None => Condition::Always,
+            Some(p) => Condition::If(platform_to_condition(p)),
+        };
+        let target_name = normalize_target_name(&dep_of_dep.package_name);
+        let dep_rule = format!(":{target_name}");
+        rule.deps.push(RuleDep { cond, rule: dep_rule });
 
-            if target_name != dep_of_dep.use_name {
-                rule.aliased_deps
-                    .push((dep_of_dep.use_name.clone(), format!(":{target_name}__rlib")));
-            }
+        if target_name != dep_of_dep.use_name {
+            rule.aliased_deps.push((dep_of_dep.use_name.clone(), format!(":{target_name}__rlib")));
         }
     }
 
@@ -303,6 +307,7 @@ fn make_build_file_for_chromium_dep(
         build_script_outputs: build_script_outputs.get(&crate_id).cloned().unwrap_or_default(),
         rustflags: vec![],
         rustenv: vec![],
+        output_dir: None,
         gn_variables_lib: String::new(),
     };
 
@@ -578,6 +583,10 @@ fn write_concrete<W: Write>(
     if !details.rustflags.is_empty() {
         write!(writer, "rustflags = ")?;
         write_list(&mut writer, &details.rustflags)?;
+    }
+
+    if let Some(output_dir) = &details.output_dir {
+        writeln!(writer, "output_dir = \"{output_dir}\"")?;
     }
 
     if !details.gn_variables_lib.is_empty() {

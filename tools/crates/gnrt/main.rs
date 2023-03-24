@@ -338,6 +338,15 @@ fn generate_for_std(_args: &clap::ArgMatches, paths: &paths::ChromiumPaths) -> E
     let mut dependencies =
         deps::collect_dependencies(&command.exec().unwrap(), Some(vec!["test".to_string()]), None);
 
+    // Remove dev dependencies since tests aren't run. Also remove build deps
+    // since we configure flags and env vars manually. Include libtest
+    // explicitly since, as the root of collect_dependencies(), it doesn't get a
+    // dependency_kinds entry.
+    dependencies.retain(|dep| {
+        dep.package_name == "test"
+            || dep.dependency_kinds.contains_key(&deps::DependencyKind::Normal)
+    });
+
     dependencies.sort_unstable_by(|a, b| {
         a.package_name.cmp(&b.package_name).then(a.version.cmp(&b.version))
     });

@@ -158,45 +158,48 @@ if (toolchain_has_rust) {
     }
   }
 
-  if (local_libstd_supported) {
-    # Builds the Rust standard library and creates a sysroot that can be
-    # supplied to rustc.
-    copy("local_rustc_sysroot") {
-      deps = []
-      sources = []
+  # Construct sysroots for rustc invocations to better control what libraries
+  # are linked. We have two: one with copied prebuilt libraries, and one with
+  # our locally-built std. Both reside in root_out_dir: we must only have one of
+  # each per GN toolchain anyway.
 
-      foreach(libname, stdlib_files + skip_stdlib_files) {
-        rule = "rules:$libname"
-        deps += [ rule ]
-        outdir = get_label_info(rule, "target_out_dir")
-        sources += [ "$outdir/$libname/lib${libname}.rlib" ]
-      }
+  prebuilt_rustc_sysroot = "$root_out_dir/prebuilt_rustc_sysroot"
+  local_rustc_sysroot = "$root_out_dir/local_rustc_sysroot"
+  sysroot_lib_subdir = "lib/rustlib/$rust_abi_target/lib"
 
-      outputs = [ "$target_out_dir/local_rustc_sysroot/lib/rustlib/$rust_abi_target/lib/{{source_file_part}}" ]
-    }
-  }
-
-  # Create a sysroot containing our std rlibs to pass to rustc invocations. This
-  # gives better control of where rustc may pick libraries from.
   copy("prebuilt_rustc_sysroot") {
     deps = [ ":find_stdlib" ]
     sources = get_target_outputs(":find_stdlib")
-    outputs = [ "$target_out_dir/prebuilt_rustc_sysroot/lib/rustlib/$rust_abi_target/lib/{{source_file_part}}" ]
+    outputs =
+        [ "$prebuilt_rustc_sysroot/$sysroot_lib_subdir/{{source_file_part}}" ]
   }
 
   if (local_libstd_supported) {
+    # All std targets starting with core build with our sysroot. It starts empty
+    # and is incrementally built. The directory must exist at the start.
+    generated_file("empty_sysroot_for_std_build") {
+      outputs = [ "$local_rustc_sysroot/$sysroot_lib_subdir/.empty" ]
+      contents = ""
+    }
+
     config("local_stdlib_for_rustc") {
-      # Match the output directory of :local_rustc_sysroot
-      sysroot =
-          rebase_path("$target_out_dir/local_rustc_sysroot", root_build_dir)
+      sysroot = rebase_path(local_rustc_sysroot, root_build_dir)
       rustflags = [ "--sysroot=$sysroot" ]
     }
+
+    # Target to be depended on by std build targets. Creates the initially empty
+    # sysroot.
+    group("std_build_deps") {
+      deps = [ ":empty_sysroot_for_std_build" ]
+      public_configs = [ ":local_stdlib_for_rustc" ]
+    }
+  } else {
+    not_needed([ "local_rustc_sysroot" ])
   }
 
   config("prebuilt_stdlib_for_rustc") {
     # Match the output directory of :prebuilt_rustc_sysroot
-    sysroot =
-        rebase_path("$target_out_dir/prebuilt_rustc_sysroot", root_build_dir)
+    sysroot = rebase_path(prebuilt_rustc_sysroot, root_build_dir)
     rustflags = [ "--sysroot=$sysroot" ]
   }
 
@@ -208,7 +211,11 @@ if (toolchain_has_rust) {
           enable_rust,
           "Some C++ target is including Rust code even though enable_rust=false")
       all_dependent_configs = [ ":local_stdlib_for_rustc" ]
-      deps = [ ":local_rustc_sysroot" ]
+
+      deps = []
+      foreach(libname, stdlib_files + skip_stdlib_files) {
+        deps += [ "rules:$libname" ]
+      }
     }
   }
 

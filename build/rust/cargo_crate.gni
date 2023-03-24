@@ -160,9 +160,14 @@ template("cargo_crate") {
     # We may generate multiple build rules for the same Cargo crate, as they may
     # have multiple build configurations: for use from deps, build-deps or
     # dev-deps. But that would try to build multiple crates with the same name,
-    # colliding on the libcratename.rlib outputs. So we specify an output_dir
-    # for Cargo crates which includes the GN target name to disambiguate them.
-    output_dir = "${target_out_dir}/${orig_target_name}"
+    # colliding on the libcratename.rlib outputs. So if not overridden, we
+    # specify an output_dir for Cargo crates which includes the GN target name
+    # to disambiguate them.
+    if (defined(invoker.output_dir) && invoker.output_dir != "") {
+      output_dir = invoker.output_dir
+    } else {
+      output_dir = "${target_out_dir}/${orig_target_name}"
+    }
 
     # The unit tests for each target, if generated, should be unique as well.
     # a) It needs to be unique even if multiple build targets have the same

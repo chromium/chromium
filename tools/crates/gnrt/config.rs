@@ -11,6 +11,7 @@ use serde::Deserialize;
 
 /// Customizes GN output for a session.
 #[derive(Clone, Debug, Deserialize)]
+#[serde(deny_unknown_fields)]
 pub struct BuildConfig {
     /// Configuration that applies to all crates
     #[serde(default, rename = "all")]
@@ -22,6 +23,7 @@ pub struct BuildConfig {
 }
 
 #[derive(Clone, Debug, Default, Deserialize)]
+#[serde(deny_unknown_fields)]
 pub struct CrateConfig {
     /// `cfg(...)` options for building this crate.
     #[serde(default)]
@@ -32,4 +34,8 @@ pub struct CrateConfig {
     /// Extra rustc flags.
     #[serde(default)]
     pub rustflags: Vec<String>,
+    #[serde(default)]
+    pub output_dir: Option<String>,
+    #[serde(default)]
+    pub extra_deps: Vec<String>,
 }

@@ -54,6 +54,7 @@ fn test() {
                         "-Zunstable-feature".to_string(),
                     ],
                     rustenv: vec!["BAR_ENV=123".to_string()],
+                    output_dir: Some("some/out/dir".to_string()),
                     gn_variables_lib: "variables = []".to_string(),
                 },
             },
@@ -107,6 +108,7 @@ rustflags = [
 "--cfg=feature=\"std\"",
 "-Zunstable-feature",
 ]
+output_dir = "some/out/dir"
 variables = []
 }
 "#,
@@ -140,6 +142,7 @@ variables = []
                         build_script_outputs: vec![],
                         rustflags: vec![],
                         rustenv: vec![],
+                        output_dir: None,
                         gn_variables_lib: String::new(),
                     },
                 },
@@ -242,6 +245,7 @@ testonly = true
                     build_script_outputs: vec!["binding.rs".to_string()],
                     rustflags: vec![],
                     rustenv: vec![],
+                    output_dir: None,
                     gn_variables_lib: String::new(),
                 },
             },
