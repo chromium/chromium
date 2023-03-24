@@ -108,7 +108,7 @@ class TabletModeMultitaskMenuView : public views::View {
 
     menu_view_base_ =
         AddChildView(std::make_unique<chromeos::MultitaskMenuView>(
-            window, std::move(callback), buttons));
+            window, std::move(callback), buttons, /*anchor_view=*/nullptr));
 
     // base::Unretained() is safe since `this` also destroys `menu_view_base_`
     // and its child `feedback_button_`.

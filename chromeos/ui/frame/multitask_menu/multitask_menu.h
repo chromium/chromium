@@ -30,7 +30,9 @@ class COMPONENT_EXPORT(CHROMEOS_UI_FRAME) MultitaskMenu
  public:
   METADATA_HEADER(MultitaskMenu);
 
-  MultitaskMenu(views::View* anchor, views::Widget* parent_widget);
+  MultitaskMenu(views::View* anchor,
+                views::Widget* parent_widget,
+                bool close_on_move_out);
   MultitaskMenu(const MultitaskMenu&) = delete;
   MultitaskMenu& operator=(const MultitaskMenu&) = delete;
   ~MultitaskMenu() override;

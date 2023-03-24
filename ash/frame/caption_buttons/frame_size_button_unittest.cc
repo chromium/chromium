@@ -673,14 +673,14 @@ class MultitaskMenuTest : public FrameSizeButtonTest {
                   : nullptr;
   }
 
-  void ShowMultitaskMenu() {
+  void ShowMultitaskMenu(MultitaskMenuEntryType entry_type =
+                             MultitaskMenuEntryType::kFrameSizeButtonHover) {
     DCHECK(size_button());
 
     views::NamedWidgetShownWaiter waiter(
         views::test::AnyWidgetTestPasskey{},
         std::string(kMultitaskMenuBubbleWidgetName));
-    static_cast<FrameSizeButton*>(size_button())
-        ->ShowMultitaskMenu(MultitaskMenuEntryType::kFrameSizeButtonHover);
+    static_cast<FrameSizeButton*>(size_button())->ShowMultitaskMenu(entry_type);
     waiter.WaitIfNeededAndGet();
   }
 
@@ -752,7 +752,7 @@ TEST_F(MultitaskMenuTest, HalfButtonSecondaryLayout) {
       .SetDisplayRotation(display::Display::ROTATE_180,
                           display::Display::RotationSource::ACTIVE);
 
-  ShowMultitaskMenu();
+  ShowMultitaskMenu(MultitaskMenuEntryType::kAccel);
 
   // Click on the left side of the half button. It should be in secondary
   // snapped state, because in this orientation secondary snapped is actually
@@ -939,6 +939,42 @@ TEST_F(MultitaskMenuTest, CloseOnClickOutside) {
   GetEventGenerator()->ClickLeftButton();
   base::RunLoop().RunUntilIdle();
   ASSERT_FALSE(GetMultitaskMenu());
+}
+
+// Tests that moving the mouse outside the menu will close the menu, if opened
+// via hovering on the frame size button.
+TEST_F(MultitaskMenuTest, MoveMouseOutsideMenu) {
+  chromeos::MultitaskMenuView::SetSkipMouseOutDelayFoTesting(true);
+
+  // Simulate opening the menu by moving the mouse to the frame size button and
+  // opening the menu.
+  ui::test::EventGenerator* event_generator = GetEventGenerator();
+  event_generator->MoveMouseTo(
+      size_button()->GetBoundsInScreen().CenterPoint());
+  ShowMultitaskMenu();
+
+  MultitaskMenu* multitask_menu = GetMultitaskMenu();
+  ASSERT_TRUE(multitask_menu);
+  event_generator->MoveMouseTo(
+      multitask_menu->GetBoundsInScreen().CenterPoint());
+  // Widget is closed with a post task.
+  base::RunLoop().RunUntilIdle();
+  EXPECT_TRUE(GetMultitaskMenu());
+
+  event_generator->MoveMouseTo(gfx::Point(1, 1));
+  base::RunLoop().RunUntilIdle();
+  EXPECT_FALSE(GetMultitaskMenu());
+
+  // Open the menu using the accelerator.
+  event_generator->MoveMouseTo(
+      size_button()->GetBoundsInScreen().CenterPoint());
+  ShowMultitaskMenu(MultitaskMenuEntryType::kAccel);
+
+  // Test that the menu remains open if we move outside when using the
+  // accelerator.
+  event_generator->MoveMouseTo(gfx::Point(1, 1));
+  base::RunLoop().RunUntilIdle();
+  EXPECT_TRUE(GetMultitaskMenu());
 }
 
 }  // namespace ash

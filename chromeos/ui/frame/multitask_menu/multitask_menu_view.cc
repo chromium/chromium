@@ -9,6 +9,7 @@
 #include "base/check.h"
 #include "base/functional/callback_forward.h"
 #include "base/metrics/user_metrics.h"
+#include "base/timer/timer.h"
 #include "chromeos/strings/grit/chromeos_strings.h"
 #include "chromeos/ui/base/display_util.h"
 #include "chromeos/ui/base/window_properties.h"
@@ -43,6 +44,8 @@ namespace chromeos {
 
 namespace {
 
+bool g_skip_mouse_out_delay_for_testing = false;
+
 constexpr int kCenterPadding = 4;
 constexpr int kLabelFontSize = 13;
 
@@ -53,6 +56,11 @@ constexpr int kButtonImageSpacing = 4;
 // Divisor to determine the radius of the rounded corners for the button.
 constexpr float kButtonRadDivisor = 2.f;
 constexpr gfx::Insets kButtonInsets = gfx::Insets::TLBR(0, 6, 0, 8);
+
+// If the menu was opened as a result of hovering over the frame size button,
+// moving the mouse outside the menu or size button will result in closing it
+// after 3 seconds have elapsed.
+constexpr base::TimeDelta kMouseExitMenuTimeout = base::Seconds(3);
 
 // Creates multitask button with label.
 std::unique_ptr<views::View> CreateButtonContainer(
@@ -78,21 +86,40 @@ std::unique_ptr<views::View> CreateButtonContainer(
 
 class MultitaskMenuView::MenuPreTargetHandler : public ui::EventHandler {
  public:
-  MenuPreTargetHandler(aura::Window* menu_window,
-                       base::RepeatingClosure close_callback)
-      : menu_window_(menu_window), close_callback_(std::move(close_callback)) {
+  MenuPreTargetHandler(views::Widget* menu_widget,
+                       base::RepeatingClosure close_callback,
+                       views::View* anchor_view)
+      : menu_widget_(menu_widget),
+        anchor_view_(anchor_view),
+        close_callback_(std::move(close_callback)) {
     aura::Env::GetInstance()->AddPreTargetHandler(
         this, ui::EventTarget::Priority::kSystem);
   }
-
+  MenuPreTargetHandler(const MenuPreTargetHandler&) = delete;
+  MenuPreTargetHandler& operator=(const MenuPreTargetHandler&) = delete;
   ~MenuPreTargetHandler() override {
     aura::Env::GetInstance()->RemovePreTargetHandler(this);
   }
 
   void OnMouseEvent(ui::MouseEvent* event) override {
-    // TODO(b/266441890): Consider closing the menu on ET_MOUSE_MOVED.
     if (event->type() == ui::ET_MOUSE_PRESSED) {
       ProcessPressedEvent(*event);
+    }
+
+    if (event->type() == ui::ET_MOUSE_MOVED && anchor_view_) {
+      const gfx::Point screen_location =
+          event->target()->GetScreenLocation(*event);
+      // Stop the existing timer if either the anchor or the menu contain the
+      // event.
+      if (menu_widget_->GetWindowBoundsInScreen().Contains(screen_location) ||
+          anchor_view_->GetBoundsInScreen().Contains(screen_location)) {
+        exit_timer_.Stop();
+      } else if (g_skip_mouse_out_delay_for_testing) {
+        OnExitTimerFinished();
+      } else {
+        exit_timer_.Start(FROM_HERE, kMouseExitMenuTimeout, this,
+                          &MenuPreTargetHandler::OnExitTimerFinished);
+      }
     }
   }
 
@@ -105,15 +132,24 @@ class MultitaskMenuView::MenuPreTargetHandler : public ui::EventHandler {
   void ProcessPressedEvent(const ui::LocatedEvent& event) {
     const gfx::Point screen_location = event.target()->GetScreenLocation(event);
     // If the event is out of menu bounds, close the menu.
-    if (!menu_window_->GetBoundsInScreen().Contains(screen_location)) {
+    if (!menu_widget_->GetWindowBoundsInScreen().Contains(screen_location)) {
       close_callback_.Run();
     }
   }
 
  private:
-  // The multitask menu that is currently shown. Guaranteed to outlive `this`,
-  // which will get destroyed when the menu is destructed in `close_callback_`.
-  aura::Window* const menu_window_;
+  void OnExitTimerFinished() { close_callback_.Run(); }
+
+  // The widget of the multitask menu that is currently shown. Guaranteed to
+  // outlive `this`, which will get destroyed when the menu is destructed in
+  // `close_callback_`.
+  views::Widget* const menu_widget_;
+
+  // The anchor of the menu's widget if it exists. Set if there is an anchor and
+  // we want the menu to close if the mouse has exited the menu bounds.
+  views::View* anchor_view_ = nullptr;
+
+  base::OneShotTimer exit_timer_;
 
   base::RepeatingClosure close_callback_;
 };
@@ -123,8 +159,11 @@ class MultitaskMenuView::MenuPreTargetHandler : public ui::EventHandler {
 
 MultitaskMenuView::MultitaskMenuView(aura::Window* window,
                                      base::RepeatingClosure close_callback,
-                                     uint8_t buttons)
-    : window_(window), close_callback_(std::move(close_callback)) {
+                                     uint8_t buttons,
+                                     views::View* anchor_view)
+    : window_(window),
+      anchor_view_(anchor_view),
+      close_callback_(std::move(close_callback)) {
   DCHECK(window);
   DCHECK(close_callback_);
   SetUseDefaultFillLayout(true);
@@ -220,8 +259,8 @@ MultitaskMenuView::~MultitaskMenuView() {
 void MultitaskMenuView::AddedToWidget() {
   // When the menu widget is shown, we install `MenuPreTargetHandler` to close
   // the menu on any events outside.
-  event_handler_ = std::make_unique<MultitaskMenuView::MenuPreTargetHandler>(
-      GetWidget()->GetNativeWindow(), close_callback_);
+  event_handler_ = std::make_unique<MenuPreTargetHandler>(
+      GetWidget(), close_callback_, anchor_view_);
 }
 
 void MultitaskMenuView::OnThemeChanged() {
@@ -239,6 +278,11 @@ void MultitaskMenuView::OnThemeChanged() {
           kDogfoodPawIcon,
           color_provider->GetColor(
               ui::kColorMultitaskFeedbackButtonLabelForeground)));
+}
+
+// static
+void MultitaskMenuView::SetSkipMouseOutDelayFoTesting(bool val) {
+  g_skip_mouse_out_delay_for_testing = val;
 }
 
 void MultitaskMenuView::SplitButtonPressed(SnapDirection direction) {

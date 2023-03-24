@@ -37,9 +37,13 @@ class COMPONENT_EXPORT(CHROMEOS_UI_FRAME) MultitaskMenuView
     kFloat = 1 << 3,
   };
 
+  // `window` is the window that the buttons on this view act on. `anchor_view`
+  // should be passed when we want the functionality of auto-closing the menu
+  // when the mouse moves out of the menu or the anchor.
   MultitaskMenuView(aura::Window* window,
                     base::RepeatingClosure on_any_button_pressed,
-                    uint8_t buttons);
+                    uint8_t buttons,
+                    views::View* anchor_view);
 
   MultitaskMenuView(const MultitaskMenuView&) = delete;
   MultitaskMenuView& operator=(const MultitaskMenuView&) = delete;
@@ -51,6 +55,12 @@ class COMPONENT_EXPORT(CHROMEOS_UI_FRAME) MultitaskMenuView
 
   // views::View:
   void AddedToWidget() override;
+  void OnThemeChanged() override;
+
+  // If the menu is opened because of mouse hover, moving the mouse outside the
+  // menu for 3 seconds will result in it auto closing. This function reduces
+  // that 3 second dealy to
+  static void SetSkipMouseOutDelayFoTesting(bool val);
 
   // For testing.
   SplitButtonView* half_button_for_testing() {
@@ -62,9 +72,6 @@ class COMPONENT_EXPORT(CHROMEOS_UI_FRAME) MultitaskMenuView
   MultitaskButton* float_button_for_testing() {
     return float_button_for_testing_.get();
   }
-
-  // views::View:
-  void OnThemeChanged() override;
 
  private:
   class MenuPreTargetHandler;
@@ -85,6 +92,11 @@ class COMPONENT_EXPORT(CHROMEOS_UI_FRAME) MultitaskMenuView
 
   // The window which the buttons act on. It is guaranteed to outlive `this`.
   aura::Window* const window_;
+
+  // The view the menu is anchored to if any. This is only passed if we want to
+  // close the menu when the mouse moves out of the multitask menu or its anchor
+  // view.
+  views::View* const anchor_view_;
 
   // Runs after any of the buttons are pressed, or a press out of the menu
   // bounds.

@@ -244,7 +244,9 @@ void FrameSizeButton::ShowMultitaskMenu(MultitaskMenuEntryType entry_type) {
     // Owned by the bubble which contains this view. If there is an existing
     // bubble, it will be deactivated and then close and destroy itself.
     auto menu_delegate = std::make_unique<MultitaskMenu>(
-        /*anchor=*/this, GetWidget());
+        /*anchor=*/this, GetWidget(),
+        /*close_on_move_out=*/entry_type ==
+            MultitaskMenuEntryType::kFrameSizeButtonHover);
     auto* menu_delegate_ptr = menu_delegate.get();
     multitask_menu_widget_ =
         base::WrapUnique(views::BubbleDialogDelegateView::CreateBubble(

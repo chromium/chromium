@@ -33,7 +33,8 @@ constexpr int kButtonHeight = 28;
 }  // namespace
 
 MultitaskMenu::MultitaskMenu(views::View* anchor,
-                             views::Widget* parent_widget) {
+                             views::Widget* parent_widget,
+                             bool close_on_move_out) {
   DCHECK(parent_widget);
 
   set_corner_radius(kMultitaskMenuBubbleCornerRadius);
@@ -61,7 +62,7 @@ MultitaskMenu::MultitaskMenu(views::View* anchor,
   multitask_menu_view_ = AddChildView(std::make_unique<MultitaskMenuView>(
       parent_window(),
       base::BindRepeating(&MultitaskMenu::HideBubble, base::Unretained(this)),
-      buttons));
+      buttons, close_on_move_out ? anchor : nullptr));
 
   auto* layout = multitask_menu_view_->SetLayoutManager(
       std::make_unique<views::TableLayout>());
