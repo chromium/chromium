@@ -6299,7 +6299,7 @@
   },
   {
     "name": "request-desktop-site-additions",
-    "owners": [ "shuyng@google.com", "twellington", "clank-app-team@google.com" ],
+    "owners": [ "shuyng@google.com", "skavuluru@google.com", "twellington", "clank-app-team@google.com" ],
     "expiry_milestone": 116
   },
   {
@@ -6314,18 +6314,18 @@
   },
   {
     "name": "request-desktop-site-defaults-logging",
-    "owners": [ "shuyng@google.com", "clank-app-team@google.com" ],
+    "owners": [ "shuyng@google.com", "skavuluru@google.com", "clank-app-team@google.com" ],
     "expiry_milestone": 116
   },
   {
     "name": "request-desktop-site-exceptions",
-    "owners": [ "shuyng@google.com", "twellington", "clank-app-team@google.com" ],
-    "expiry_milestone": 114
+    "owners": [ "shuyng@google.com", "skavuluru@google.com", "twellington", "clank-app-team@google.com" ],
+    "expiry_milestone": 116
   },
   {
     "name": "request-desktop-site-exceptions-downgrade",
-    "owners": [ "aishwaryarj", "twellington", "clank-app-team@google.com" ],
-    "expiry_milestone": 114
+    "owners": [ "aishwaryarj", "skavuluru@google.com", "twellington", "clank-app-team@google.com" ],
+    "expiry_milestone": 116
   },
   {
     "name": "request-desktop-site-per-site-iph",
