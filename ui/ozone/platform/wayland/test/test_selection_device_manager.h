@@ -13,6 +13,7 @@
 #include "base/files/scoped_file.h"
 #include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/raw_ptr_exclusion.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/threading/thread.h"
 #include "ui/ozone/platform/wayland/test/global_object.h"
@@ -45,8 +46,12 @@ class TestSelectionDeviceManager : public GlobalObject {
   };
 
   struct InterfaceInfo {
-    const struct wl_interface* interface;
-    const void* implementation;
+    // This field is not a raw_ptr<> because it was filtered by the rewriter
+    // for: #global-scope
+    RAW_PTR_EXCLUSION const struct wl_interface* interface;
+    // This field is not a raw_ptr<> because it was filtered by the rewriter
+    // for: #global-scope
+    RAW_PTR_EXCLUSION const void* implementation;
     uint32_t version;
   };
 

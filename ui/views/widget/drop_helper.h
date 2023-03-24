@@ -9,6 +9,7 @@
 
 #include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/raw_ptr_exclusion.h"
 #include "ui/base/dragdrop/mojom/drag_drop_types.mojom-forward.h"
 #include "ui/compositor/layer_tree_owner.h"
 #include "ui/views/view.h"
@@ -128,7 +129,9 @@ class VIEWS_EXPORT DropHelper {
   raw_ptr<View, DanglingUntriaged> target_view_;
 
   // The deepest view under the current drop coordinate.
-  View* deepest_view_ = nullptr;
+  // This field is not a raw_ptr<> because it was filtered by the rewriter for:
+  // #addr-of
+  RAW_PTR_EXCLUSION View* deepest_view_ = nullptr;
 };
 
 }  // namespace views

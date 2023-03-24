@@ -11,6 +11,7 @@
 
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/raw_ptr_exclusion.h"
 #include "base/time/time.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/metadata/metadata_header_macros.h"
@@ -322,7 +323,10 @@ class MESSAGE_CENTER_EXPORT NotificationViewBase
   void CreateOrUpdateActionButtonViews(const Notification& notification);
 
   // View containing close and settings buttons
-  NotificationControlButtonsView* control_buttons_view_ = nullptr;
+  // This field is not a raw_ptr<> because it was filtered by the rewriter for:
+  // #addr-of
+  RAW_PTR_EXCLUSION NotificationControlButtonsView* control_buttons_view_ =
+      nullptr;
 
   // Whether this notification is expanded or not.
   bool expanded_ = false;
@@ -349,20 +353,32 @@ class MESSAGE_CENTER_EXPORT NotificationViewBase
   bool inline_settings_enabled_ = false;
 
   // Container views directly attached to this view.
-  NotificationHeaderView* header_row_ = nullptr;
-  views::View* content_row_ = nullptr;
+  // This field is not a raw_ptr<> because it was filtered by the rewriter for:
+  // #addr-of
+  RAW_PTR_EXCLUSION NotificationHeaderView* header_row_ = nullptr;
+  // This field is not a raw_ptr<> because it was filtered by the rewriter for:
+  // #addr-of
+  RAW_PTR_EXCLUSION views::View* content_row_ = nullptr;
   raw_ptr<views::View> actions_row_ = nullptr;
-  views::View* settings_row_ = nullptr;
+  // This field is not a raw_ptr<> because it was filtered by the rewriter for:
+  // #addr-of
+  RAW_PTR_EXCLUSION views::View* settings_row_ = nullptr;
 
   // Containers for left and right side on |content_row_|
-  views::View* left_content_ = nullptr;
-  views::View* right_content_ = nullptr;
+  // This field is not a raw_ptr<> because it was filtered by the rewriter for:
+  // #addr-of
+  RAW_PTR_EXCLUSION views::View* left_content_ = nullptr;
+  // This field is not a raw_ptr<> because it was filtered by the rewriter for:
+  // #addr-of
+  RAW_PTR_EXCLUSION views::View* right_content_ = nullptr;
 
   // Views which are dynamically created inside view hierarchy.
   raw_ptr<views::Label, DanglingUntriaged> message_label_ = nullptr;
   raw_ptr<views::Label, DanglingUntriaged> status_view_ = nullptr;
   raw_ptr<ProportionalImageView, DanglingUntriaged> icon_view_ = nullptr;
-  views::View* image_container_view_ = nullptr;
+  // This field is not a raw_ptr<> because it was filtered by the rewriter for:
+  // #addr-of
+  RAW_PTR_EXCLUSION views::View* image_container_view_ = nullptr;
   std::vector<views::LabelButton*> action_buttons_;
   std::vector<views::View*> item_views_;
   raw_ptr<views::ProgressBar, DanglingUntriaged> progress_bar_view_ = nullptr;

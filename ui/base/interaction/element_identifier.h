@@ -11,6 +11,7 @@
 #include <set>
 
 #include "base/component_export.h"
+#include "base/memory/raw_ptr_exclusion.h"
 #include "base/numerics/safe_conversions.h"
 #include "ui/base/class_property.h"
 
@@ -177,7 +178,9 @@ class COMPONENT_EXPORT(UI_BASE) ElementIdentifier final {
   // The value of the identifier. Because all non-null values point to static
   // ElementIdentifierImpl objects this can be treated as a value from a set of
   // unique, opaque handles.
-  const internal::ElementIdentifierImpl* handle_ = nullptr;
+  // This field is not a raw_ptr<> because it was filtered by the rewriter for:
+  // #union, #global-scope, #constexpr-ctor-field-initializer
+  RAW_PTR_EXCLUSION const internal::ElementIdentifierImpl* handle_ = nullptr;
 };
 
 // The context of an element is unique to the top-level, primary window that the

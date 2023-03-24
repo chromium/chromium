@@ -7,6 +7,7 @@
 #include <memory>
 #include <utility>
 
+#include "base/memory/raw_ptr_exclusion.h"
 #include "ui/aura/client/capture_delegate.h"
 #include "ui/aura/env.h"
 #include "ui/aura/test/aura_test_base.h"
@@ -55,8 +56,12 @@ class TestCaptureDelegate : public aura::client::CaptureDelegate {
 
  private:
   bool has_capture_ = false;
-  aura::Window* old_capture_ = nullptr;
-  aura::Window* new_capture_ = nullptr;
+  // This field is not a raw_ptr<> because it was filtered by the rewriter for:
+  // #constexpr-ctor-field-initializer
+  RAW_PTR_EXCLUSION aura::Window* old_capture_ = nullptr;
+  // This field is not a raw_ptr<> because it was filtered by the rewriter for:
+  // #constexpr-ctor-field-initializer
+  RAW_PTR_EXCLUSION aura::Window* new_capture_ = nullptr;
   bool destroy_old_capture_ = false;
 };
 

@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "base/memory/raw_ptr.h"
+#include "base/memory/raw_ptr_exclusion.h"
 #include "third_party/skia/include/core/SkPath.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/metadata/metadata_types.h"
@@ -149,12 +150,22 @@ class VIEWS_EXAMPLES_EXPORT DesignerExample : public ExampleBase,
   std::u16string GetItemAt(size_t index) const override;
   absl::optional<size_t> GetDefaultIndex() const override;
 
-  BoxLayoutView* designer_container_ = nullptr;
-  DesignerSurface* designer_panel_ = nullptr;
-  View* palette_panel_ = nullptr;
+  // This field is not a raw_ptr<> because it was filtered by the rewriter for:
+  // #addr-of
+  RAW_PTR_EXCLUSION BoxLayoutView* designer_container_ = nullptr;
+  // This field is not a raw_ptr<> because it was filtered by the rewriter for:
+  // #addr-of
+  RAW_PTR_EXCLUSION DesignerSurface* designer_panel_ = nullptr;
+  // This field is not a raw_ptr<> because it was filtered by the rewriter for:
+  // #addr-of
+  RAW_PTR_EXCLUSION View* palette_panel_ = nullptr;
 
-  Combobox* view_type_ = nullptr;
-  TableView* inspector_ = nullptr;
+  // This field is not a raw_ptr<> because it was filtered by the rewriter for:
+  // #addr-of
+  RAW_PTR_EXCLUSION Combobox* view_type_ = nullptr;
+  // This field is not a raw_ptr<> because it was filtered by the rewriter for:
+  // #addr-of
+  RAW_PTR_EXCLUSION TableView* inspector_ = nullptr;
   raw_ptr<ui::TableModelObserver> model_observer_ = nullptr;
 
   raw_ptr<View> selected_ = nullptr;

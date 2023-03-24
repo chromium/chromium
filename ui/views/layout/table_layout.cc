@@ -12,6 +12,7 @@
 
 #include "base/check_op.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/raw_ptr_exclusion.h"
 #include "base/notreached.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/ranges/algorithm.h"
@@ -282,7 +283,9 @@ struct TableLayout::ViewState {
     DCHECK_GT(row_span, 0u);
   }
 
-  View* view = nullptr;
+  // This field is not a raw_ptr<> because it was filtered by the rewriter for:
+  // #constexpr-ctor-field-initializer
+  RAW_PTR_EXCLUSION View* view = nullptr;
   size_t start_col = 0;
   size_t start_row = 0;
   size_t col_span = 0;

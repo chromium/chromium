@@ -10,6 +10,7 @@
 
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/raw_ptr_exclusion.h"
 #include "base/posix/eintr_wrapper.h"
 #include "skia/ext/legacy_display_globals.h"
 #include "third_party/skia/include/core/SkSurface.h"
@@ -220,7 +221,9 @@ class Buffer final : public ui::GbmBuffer {
   }
 
   raw_ptr<gbm_bo> bo_;
-  void* mmap_data_ = nullptr;
+  // This field is not a raw_ptr<> because it was filtered by the rewriter for:
+  // #addr-of
+  RAW_PTR_EXCLUSION void* mmap_data_ = nullptr;
 
   const uint32_t format_;
   const uint64_t format_modifier_;

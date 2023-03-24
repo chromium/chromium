@@ -9,6 +9,7 @@
 
 #include "base/allocator/partition_allocator/partition_alloc_constants.h"
 #include "base/files/file_util.h"
+#include "base/memory/raw_ptr_exclusion.h"
 #include "base/numerics/checked_math.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/system/sys_info.h"
@@ -74,10 +75,14 @@ struct ObfuscatedFileUtilMemoryDelegate::Entry {
 struct ObfuscatedFileUtilMemoryDelegate::DecomposedPath {
   // Entry in the directory structure that the input |path| referes to,
   // nullptr if the entry does not exist.
-  Entry* entry = nullptr;
+  // This field is not a raw_ptr<> because it was filtered by the rewriter for:
+  // #union
+  RAW_PTR_EXCLUSION Entry* entry = nullptr;
 
   // Parent of the |path| in the directory structure, nullptr if not exists.
-  Entry* parent = nullptr;
+  // This field is not a raw_ptr<> because it was filtered by the rewriter for:
+  // #union
+  RAW_PTR_EXCLUSION Entry* parent = nullptr;
 
   // Normalized components of the path after the |root_|. E.g., if the root
   // is 'foo/' and the path is 'foo/./bar/baz', it will be ['bar', 'baz'].

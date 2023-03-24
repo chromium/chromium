@@ -7,6 +7,7 @@
 
 #include <string>
 
+#include "base/memory/raw_ptr_exclusion.h"
 #include "build/build_config.h"
 #include "third_party/sqlite/sqlite3.h"
 
@@ -26,8 +27,12 @@ sqlite3_vfs* VFSWrapper();
 
 // Internal representation of sqlite3_file for VFSWrapper.
 struct VfsFile {
-  const sqlite3_io_methods* methods;
-  sqlite3_file* wrapped_file;
+  // This field is not a raw_ptr<> because it was filtered by the rewriter for:
+  // #reinterpret-cast-trivial-type
+  RAW_PTR_EXCLUSION const sqlite3_io_methods* methods;
+  // This field is not a raw_ptr<> because it was filtered by the rewriter for:
+  // #reinterpret-cast-trivial-type
+  RAW_PTR_EXCLUSION sqlite3_file* wrapped_file;
 #if BUILDFLAG(IS_FUCHSIA)
   std::string file_name;
 #endif

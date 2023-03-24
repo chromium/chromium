@@ -16,6 +16,7 @@
 #include "base/location.h"
 #include "base/logging.h"
 #include "base/memory/free_deleter.h"
+#include "base/memory/raw_ptr_exclusion.h"
 #include "base/strings/string_util.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/task/task_runner.h"
@@ -495,7 +496,9 @@ const PrintableSubEntry kU017E[] = {
 // Table mapping unshifted characters to PrintableSubEntry tables.
 struct PrintableMultiEntry {
   char16_t plain_character;
-  const PrintableSubEntry* subtable;
+  // This field is not a raw_ptr<> because it was filtered by the rewriter for:
+  // #global-scope
+  RAW_PTR_EXCLUSION const PrintableSubEntry* subtable;
   size_t subtable_size;
 };
 

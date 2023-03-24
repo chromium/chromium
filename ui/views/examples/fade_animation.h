@@ -5,6 +5,7 @@
 #ifndef UI_VIEWS_EXAMPLES_FADE_ANIMATION_H_
 #define UI_VIEWS_EXAMPLES_FADE_ANIMATION_H_
 
+#include "base/memory/raw_ptr_exclusion.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/views/examples/example_base.h"
 #include "ui/views/metadata/view_factory.h"
@@ -29,8 +30,12 @@ class FadingView : public View {
   static constexpr int kSpacing = 2;
   static constexpr gfx::Size kSize = {200, 50};
 
-  BoxLayoutView* primary_view_;
-  BoxLayoutView* secondary_view_;
+  // This field is not a raw_ptr<> because it was filtered by the rewriter for:
+  // #addr-of
+  RAW_PTR_EXCLUSION BoxLayoutView* primary_view_;
+  // This field is not a raw_ptr<> because it was filtered by the rewriter for:
+  // #addr-of
+  RAW_PTR_EXCLUSION BoxLayoutView* secondary_view_;
 };
 
 BEGIN_VIEW_BUILDER(, FadingView, View)

@@ -12,6 +12,7 @@
 #include "base/containers/flat_set.h"
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/raw_ptr_exclusion.h"
 #include "base/scoped_multi_source_observation.h"
 #include "third_party/skia/include/core/SkRegion.h"
 #include "ui/aura/aura_export.h"
@@ -405,7 +406,9 @@ class AURA_EXPORT WindowOcclusionTracker : public ui::LayerAnimationObserver,
   // occlusion based on target bounds, opacity, transform, and visibility
   // values. If the occlusion tracker is not computing for a specific window
   // (most of the time it is not), this will be nullptr.
-  Window* target_occlusion_window_ = nullptr;
+  // This field is not a raw_ptr<> because it was filtered by the rewriter for:
+  // #addr-of
+  RAW_PTR_EXCLUSION Window* target_occlusion_window_ = nullptr;
 };
 
 }  // namespace aura

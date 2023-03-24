@@ -8,6 +8,8 @@
 #include <linux/input.h>
 #include <stddef.h>
 
+#include "base/memory/raw_ptr_exclusion.h"
+
 namespace ui {
 
 class EventDeviceInfo;
@@ -52,7 +54,9 @@ struct DeviceCapabilities {
   const char* ff;
 
   // EVIOCGABS.
-  const DeviceAbsoluteAxis* abs_axis;
+  // This field is not a raw_ptr<> because it was filtered by the rewriter for:
+  // #global-scope
+  RAW_PTR_EXCLUSION const DeviceAbsoluteAxis* abs_axis;
   size_t abs_axis_count;
 
   // (/sys/class/input/*/device/device/function_row_physmap)

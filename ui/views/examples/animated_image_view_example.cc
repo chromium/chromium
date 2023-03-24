@@ -13,6 +13,7 @@
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
+#include "base/memory/raw_ptr_exclusion.h"
 #include "base/memory/ref_counted.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
@@ -124,9 +125,15 @@ class AnimationGallery : public BoxLayoutView, public TextfieldController {
     InvalidateLayout();
   }
 
-  AnimatedImageView* animated_image_view_ = nullptr;
-  Textfield* size_input_ = nullptr;
-  Textfield* file_chooser_ = nullptr;
+  // This field is not a raw_ptr<> because it was filtered by the rewriter for:
+  // #addr-of
+  RAW_PTR_EXCLUSION AnimatedImageView* animated_image_view_ = nullptr;
+  // This field is not a raw_ptr<> because it was filtered by the rewriter for:
+  // #addr-of
+  RAW_PTR_EXCLUSION Textfield* size_input_ = nullptr;
+  // This field is not a raw_ptr<> because it was filtered by the rewriter for:
+  // #addr-of
+  RAW_PTR_EXCLUSION Textfield* file_chooser_ = nullptr;
 
   int size_ = 0;
 };

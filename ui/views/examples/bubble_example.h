@@ -5,6 +5,7 @@
 #ifndef UI_VIEWS_EXAMPLES_BUBBLE_EXAMPLE_H_
 #define UI_VIEWS_EXAMPLES_BUBBLE_EXAMPLE_H_
 
+#include "base/memory/raw_ptr_exclusion.h"
 #include "ui/events/event.h"
 #include "ui/views/bubble/bubble_border.h"
 #include "ui/views/examples/example_base.h"
@@ -35,9 +36,15 @@ class VIEWS_EXAMPLES_EXPORT BubbleExample : public ExampleBase {
                   bool persistent,
                   const ui::Event& event);
 
-  Button* standard_shadow_;
-  Button* no_shadow_;
-  Button* persistent_;
+  // This field is not a raw_ptr<> because it was filtered by the rewriter for:
+  // #addr-of
+  RAW_PTR_EXCLUSION Button* standard_shadow_;
+  // This field is not a raw_ptr<> because it was filtered by the rewriter for:
+  // #addr-of
+  RAW_PTR_EXCLUSION Button* no_shadow_;
+  // This field is not a raw_ptr<> because it was filtered by the rewriter for:
+  // #addr-of
+  RAW_PTR_EXCLUSION Button* persistent_;
 };
 
 }  // namespace examples

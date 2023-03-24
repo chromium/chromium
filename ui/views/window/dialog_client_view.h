@@ -10,6 +10,7 @@
 
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/raw_ptr_exclusion.h"
 #include "ui/base/ui_base_types.h"
 #include "ui/views/input_event_activation_protector.h"
 #include "ui/views/metadata/view_factory.h"
@@ -149,8 +150,12 @@ class VIEWS_EXPORT DialogClientView : public ClientView, public DialogObserver {
   gfx::Size minimum_size_;
 
   // The dialog buttons.
-  LabelButton* ok_button_ = nullptr;
-  LabelButton* cancel_button_ = nullptr;
+  // This field is not a raw_ptr<> because it was filtered by the rewriter for:
+  // #addr-of
+  RAW_PTR_EXCLUSION LabelButton* ok_button_ = nullptr;
+  // This field is not a raw_ptr<> because it was filtered by the rewriter for:
+  // #addr-of
+  RAW_PTR_EXCLUSION LabelButton* cancel_button_ = nullptr;
 
   // The extra view shown in the row of buttons; may be NULL.
   raw_ptr<View, DanglingUntriaged> extra_view_ = nullptr;

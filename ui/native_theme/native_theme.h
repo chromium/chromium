@@ -9,6 +9,7 @@
 
 #include "base/containers/flat_map.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/raw_ptr_exclusion.h"
 #include "base/observer_list.h"
 #include "base/sequence_checker.h"
 #include "build/build_config.h"
@@ -212,7 +213,9 @@ class NATIVE_THEME_EXPORT NativeTheme {
   };
 
   struct MenuSeparatorExtraParams {
-    const gfx::Rect* paint_rect;
+    // This field is not a raw_ptr<> because it was filtered by the rewriter
+    // for: #union
+    RAW_PTR_EXCLUSION const gfx::Rect* paint_rect;
     MenuSeparatorType type;
   };
 

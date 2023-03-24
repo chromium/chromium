@@ -10,6 +10,7 @@
 #include <memory>
 
 #include "base/auto_reset.h"
+#include "base/memory/raw_ptr_exclusion.h"
 #include "base/observer_list.h"
 #include "ui/events/events_export.h"
 #include "ui/events/platform_event.h"
@@ -107,7 +108,9 @@ class EVENTS_EXPORT PlatformEventSource {
   const base::AutoReset<PlatformEventSource*> resetter_;
 
   PlatformEventDispatcherList dispatchers_;
-  PlatformEventDispatcher* overridden_dispatcher_;
+  // This field is not a raw_ptr<> because it was filtered by the rewriter for:
+  // #addr-of
+  RAW_PTR_EXCLUSION PlatformEventDispatcher* overridden_dispatcher_;
 
   // Used to keep track of whether the current override-dispatcher has been
   // reset and a previous override-dispatcher has been restored.

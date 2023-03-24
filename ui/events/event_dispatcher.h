@@ -7,6 +7,7 @@
 
 #include "base/auto_reset.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/raw_ptr_exclusion.h"
 #include "ui/events/event.h"
 #include "ui/events/event_constants.h"
 #include "ui/events/event_handler.h"
@@ -101,7 +102,9 @@ class EVENTS_EXPORT EventDispatcher {
 
   raw_ptr<EventDispatcherDelegate> delegate_;
 
-  Event* current_event_ = nullptr;
+  // This field is not a raw_ptr<> because it was filtered by the rewriter for:
+  // #addr-of
+  RAW_PTR_EXCLUSION Event* current_event_ = nullptr;
 
   EventHandlerList handler_list_;
 };

@@ -9,6 +9,7 @@
 
 #include "base/check_op.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/raw_ptr_exclusion.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/notreached.h"
 #include "base/time/time.h"
@@ -376,7 +377,9 @@ class TouchSelectionControllerImpl::EditingHandleView : public View {
   bool draw_invisible_ = false;
 
   // Owning widget.
-  Widget* widget_ = nullptr;
+  // This field is not a raw_ptr<> because it was filtered by the rewriter for:
+  // #addr-of
+  RAW_PTR_EXCLUSION Widget* widget_ = nullptr;
 };
 
 BEGIN_METADATA(TouchSelectionControllerImpl, EditingHandleView, View)
