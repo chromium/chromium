@@ -47,11 +47,10 @@ BASE_FEATURE(kRendererFilterEnvironment,
              base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Emergency "off switch" for removal of direct system font access from
-// sandboxed processes.
-// Enabled until https://crbug.com/1425413 is resolved.
+// web renderer processes.
 BASE_FEATURE(kWinSboxAllowSystemFonts,
              "WinSboxAllowSystemFonts",
-             base::FEATURE_ENABLED_BY_DEFAULT);
+             base::FEATURE_DISABLED_BY_DEFAULT);
 #endif  // BUILDFLAG(IS_WIN)
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
