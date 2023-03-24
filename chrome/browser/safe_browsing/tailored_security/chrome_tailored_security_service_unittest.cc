@@ -39,11 +39,9 @@ class Profile;
 
 namespace safe_browsing {
 
-#if !BUILDFLAG(IS_ANDROID)
 // Names for Tailored Security status to make the test cases clearer.
 const bool kTailoredSecurityEnabled = true;
 const bool kTailoredSecurityDisabled = false;
-#endif
 
 namespace {
 // Test implementation of ChromeTailoredSecurityService.
@@ -200,7 +198,6 @@ class ChromeTailoredSecurityServiceTest : public testing::Test {
       chrome_tailored_security_service_;
 };
 
-#if !BUILDFLAG(IS_ANDROID)
 // Some of the test names are shorted using "Ts" for Tailored Security, "Ep"
 // for Enhanced Protection and "Sb" for Safe Browsing.
 
@@ -348,7 +345,5 @@ TEST_F(ChromeTailoredSecurityServiceTest,
                                                    base::Time::Now());
   EXPECT_TRUE(IsEnhancedProtectionEnabled(*prefs()));
 }
-
-#endif
 
 }  // namespace safe_browsing
