@@ -1,0 +1,59 @@
+# Copyright 2023 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("bring_android_tabs") {
+  configs += [ "//build/config/compiler:enable_arc" ]
+  sources = [
+    "bring_android_tabs_prompt_coordinator.h",
+    "bring_android_tabs_prompt_coordinator.mm",
+    "bring_android_tabs_prompt_mediator.h",
+    "bring_android_tabs_prompt_mediator.mm",
+  ]
+  deps = [
+    ":bring_android_tabs_ui",
+    "//base",
+    "//ios/chrome/browser/bring_android_tabs",
+    "//ios/chrome/browser/bring_android_tabs:features",
+    "//ios/chrome/browser/bring_android_tabs:metrics",
+    "//ios/chrome/browser/main:public",
+    "//ios/chrome/browser/shared/coordinator/chrome_coordinator",
+    "//ios/chrome/browser/shared/public/commands",
+    "//ios/chrome/browser/synced_sessions",
+    "//ios/chrome/browser/url_loading",
+    "//ios/chrome/browser/url_loading:url_loading_params_header",
+  ]
+}
+
+source_set("bring_android_tabs_ui") {
+  sources = [ "bring_android_tabs_prompt_view_controller_delegate.h" ]
+  deps = [
+    "//base",
+    "//ios/chrome/browser/shared/public/commands",
+  ]
+}
+
+source_set("unit_tests") {
+  configs += [ "//build/config/compiler:enable_arc" ]
+  testonly = true
+  sources = [ "bring_android_tabs_prompt_mediator_unittest.mm" ]
+  deps = [
+    ":bring_android_tabs",
+    "//base/test:test_support",
+    "//components/prefs",
+    "//components/segmentation_platform/embedder/default_model",
+    "//components/segmentation_platform/public",
+    "//ios/chrome/browser/bring_android_tabs",
+    "//ios/chrome/browser/bring_android_tabs:metrics",
+    "//ios/chrome/browser/browser_state:test_support",
+    "//ios/chrome/browser/main:test_support",
+    "//ios/chrome/browser/segmentation_platform",
+    "//ios/chrome/browser/sync",
+    "//ios/chrome/browser/synced_sessions",
+    "//ios/chrome/browser/url_loading",
+    "//ios/chrome/browser/url_loading:test_support",
+    "//ios/chrome/test:test_support",
+    "//ios/web/public/test",
+    "//testing/gtest:gtest",
+  ]
+}

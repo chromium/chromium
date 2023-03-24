@@ -11,6 +11,7 @@ source_set("commands") {
     "bookmark_add_command.h",
     "bookmark_add_command.mm",
     "bookmarks_commands.h",
+    "bring_android_tabs_commands.h",
     "browser_commands.h",
     "browser_coordinator_commands.h",
     "browsing_data_commands.h",
