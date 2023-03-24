@@ -401,6 +401,14 @@ extern const base::FeatureParam<int> kSuggestionRowHeight;
 // suggestions.
 extern const base::FeatureParam<int> kRichSuggestionVerticalMargin;
 
+// Omnibox GM3 - text style.
+// Returns true if the feature to enable GM3 text styling is enabled.
+bool IsGM3TextStyleEnabled();
+// Specifies the omnibox font size (Touch UI).
+extern const base::FeatureParam<int> kFontSizeTouchUI;
+// Specifies the omnibox font size (non-Touch UI).
+extern const base::FeatureParam<int> kFontSizeNonTouchUI;
+
 // ---------------------------------------------------------
 // Clipboard URL suggestions:
 

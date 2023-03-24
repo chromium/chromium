@@ -29,6 +29,7 @@
 #include "components/variations/variations_associated_data.h"
 #include "third_party/metrics_proto/omnibox_event.pb.h"
 #include "ui/base/pointer/touch_ui_controller.h"
+#include "ui/base/ui_base_features.h"
 
 using metrics::OmniboxEventProto;
 
@@ -707,6 +708,39 @@ const base::FeatureParam<int> OmniboxFieldTrial::kRichSuggestionVerticalMargin(
     &omnibox::kUniformRowHeight,
     "OmniboxRichSuggestionVerticalMargin",
     4);
+
+bool OmniboxFieldTrial::IsGM3TextStyleEnabled() {
+  return features::IsChromeRefresh2023() ||
+         base::FeatureList::IsEnabled(omnibox::kOmniboxSteadyStateTextStyle);
+}
+
+// In order to control the value of this "font size" param via Finch, the
+// kOmniboxSteadyStateTextStyle feature flag must be enabled.
+//
+// Enabling only the kChromeRefresh2023 flag, while leaving the
+// kOmniboxSteadyStateTextStyle flag disabled, will result in the param being
+// locked to its default value and ignoring any overrides provided via Finch.
+//
+// If neither kChromeRefresh2023 nor kOmniboxSteadyStateTextStyle are enabled,
+// then this "font size" param will have zero effect on Chrome UI.
+const base::FeatureParam<int> OmniboxFieldTrial::kFontSizeTouchUI(
+    &omnibox::kOmniboxSteadyStateTextStyle,
+    "OmniboxFontSizeTouchUI",
+    15);
+
+// In order to control the value of this "font size" param via Finch, the
+// kOmniboxSteadyStateTextStyle feature flag must be enabled.
+//
+// Enabling only the kChromeRefresh2023 flag, while leaving the
+// kOmniboxSteadyStateTextStyle flag disabled, will result in the param being
+// locked to its default value and ignoring any overrides provided via Finch.
+//
+// If neither kChromeRefresh2023 nor kOmniboxSteadyStateTextStyle are enabled,
+// then this "font size" param will have zero effect on Chrome UI.
+const base::FeatureParam<int> OmniboxFieldTrial::kFontSizeNonTouchUI(
+    &omnibox::kOmniboxSteadyStateTextStyle,
+    "OmniboxFontSizeNonTouchUI",
+    12);
 
 const char OmniboxFieldTrial::kBundledExperimentFieldTrialName[] =
     "OmniboxBundledExperimentV1";
