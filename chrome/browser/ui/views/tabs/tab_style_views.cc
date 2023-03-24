@@ -83,6 +83,8 @@ class GM2TabStyle : public TabStyleViews {
   GM2TabStyle(const GM2TabStyle&) = delete;
   GM2TabStyle& operator=(const GM2TabStyle&) = delete;
 
+  const Tab* tab() const { return tab_; }
+
  protected:
   // TabStyle:
   SkPath GetPath(
@@ -99,6 +101,9 @@ class GM2TabStyle : public TabStyleViews {
   void SetHoverLocation(const gfx::Point& location) override;
   void ShowHover(ShowHoverStyle style) override;
   void HideHover(HideHoverStyle style) override;
+
+  // Painting helper functions:
+  virtual SkColor GetTabBackgroundColor(TabActive active) const;
 
  private:
   // Gets the bounds for the leading and trailing separators for a tab.
@@ -145,8 +150,6 @@ class GM2TabStyle : public TabStyleViews {
 
   bool ShouldPaintTabBackgroundColor(TabActive active,
                                      bool has_custom_background) const;
-
-  SkColor GetTabBackgroundColor(TabActive active) const;
 
   // When selected, non-active, non-hovered tabs are adjacent to each other,
   // there are anti-aliasing artifacts in the overlapped lower arc region. This
@@ -952,9 +955,27 @@ gfx::RectF GM2TabStyle::ScaleAndAlignBounds(const gfx::Rect& bounds,
 class GM3TabStyle : public GM2TabStyle {
  public:
   explicit GM3TabStyle(Tab* tab);
+  SkColor GetTabBackgroundColor(TabActive active) const override;
 };
 
 GM3TabStyle::GM3TabStyle(Tab* tab) : GM2TabStyle(tab) {}
+
+SkColor GM3TabStyle::GetTabBackgroundColor(TabActive active) const {
+  const auto* cp = tab()->GetWidget()->GetColorProvider();
+  DCHECK(cp);
+  if (!cp) {
+    return gfx::kPlaceholderColor;
+  }
+
+  constexpr ChromeColorIds kColorIds[2][2] = {
+      {kColorTabBackgroundInactiveFrameInactive,
+       kColorTabBackgroundInactiveFrameActive},
+      {kColorTabBackgroundActiveFrameInactive,
+       kColorTabBackgroundActiveFrameActive}};
+
+  return cp->GetColor(kColorIds[int(active == TabActive::kActive)][int(
+      tab()->controller()->ShouldPaintAsActiveFrame())]);
+}
 
 }  // namespace
 
