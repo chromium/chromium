@@ -25,8 +25,11 @@
 #include "ash/wm/overview/overview_controller.h"
 #include "ash/wm/overview/overview_observer.h"
 #include "ash/wm/tablet_mode/tablet_mode_controller.h"
+#include "base/functional/bind.h"
+#include "base/functional/callback_helpers.h"
 #include "base/i18n/rtl.h"
 #include "base/metrics/histogram_macros.h"
+#include "chromeos/constants/chromeos_features.h"
 #include "ui/aura/scoped_window_targeter.h"
 #include "ui/aura/window_targeter.h"
 #include "ui/compositor/animation_throughput_reporter.h"
@@ -426,6 +429,10 @@ class HotseatWidget::DelegateView : public HotseatTransitionAnimator::Observer,
   // Updates the hotseat background.
   void UpdateTranslucentBackground();
 
+  // Updates the highlight border rounded corner radius or the type according to
+  // the visibility of shadow.
+  void UpdateHighlightBorder(bool update_corner_radius);
+
   void SetTranslucentBackground(const gfx::Rect& translucent_background_bounds);
 
   // Sets whether the background should be blurred as requested by the argument,
@@ -476,6 +483,9 @@ class HotseatWidget::DelegateView : public HotseatTransitionAnimator::Observer,
   SkColor target_color_ = SK_ColorTRANSPARENT;
 
   std::unique_ptr<SystemShadow> shadow_;
+
+  // The type of highlight border.
+  views::HighlightBorder::Type border_type_;
 };
 
 HotseatWidget::DelegateView::~DelegateView() {
@@ -524,6 +534,11 @@ void HotseatWidget::DelegateView::Init(
 }
 
 void HotseatWidget::DelegateView::UpdateTranslucentBackground() {
+  // Update highlight border after updating the visibility of shadow.
+  base::ScopedClosureRunner update_highlight_border(
+      base::BindOnce(&DelegateView::UpdateHighlightBorder,
+                     base::Unretained(this), /*update_corner_radius=*/false));
+
   if (!HotseatWidget::ShouldShowHotseatBackground()) {
     translucent_background_->SetVisible(false);
     SetBackgroundBlur(false);
@@ -546,6 +561,31 @@ void HotseatWidget::DelegateView::UpdateTranslucentBackground() {
   gfx::Rect background_bounds = translucent_background_->bounds();
   shadow_->SetRoundedCornerRadius(background_bounds.height() / 2);
   shadow_->SetContentBounds(background_bounds);
+}
+
+void HotseatWidget::DelegateView::UpdateHighlightBorder(
+    bool update_corner_radius) {
+  const bool is_jelly_enabled = chromeos::features::IsJellyrollEnabled();
+  views::HighlightBorder::Type border_type;
+  if (!is_jelly_enabled) {
+    border_type = views::HighlightBorder::Type::kHighlightBorder1;
+  } else {
+    border_type = shadow_->GetLayer()->visible()
+                      ? views::HighlightBorder::Type::kHighlightBorderOnShadow
+                      : views::HighlightBorder::Type::kHighlightBorderNoShadow;
+  }
+
+  if (GetBorder() && !update_corner_radius && border_type_ == border_type) {
+    return;
+  }
+
+  const float radius = hotseat_widget_->GetHotseatSize() / 2.0f;
+  border_type_ = border_type;
+  auto border = std::make_unique<views::HighlightBorder>(
+      radius, border_type_,
+      /*use_light_colors=*/!features::IsDarkLightModeEnabled() &&
+          !is_jelly_enabled);
+  translucent_background_->SetBorder(std::move(border));
 }
 
 void HotseatWidget::DelegateView::SetTranslucentBackground(
@@ -595,12 +635,7 @@ void HotseatWidget::DelegateView::SetTranslucentBackground(
   if (translucent_background_->layer()->rounded_corner_radii() !=
       rounded_corners) {
     translucent_background_->layer()->SetRoundedCornerRadius(rounded_corners);
-    if (features::IsDarkLightModeEnabled()) {
-      translucent_background_->SetBorder(
-          std::make_unique<views::HighlightBorder>(
-              radius, views::HighlightBorder::Type::kHighlightBorder1,
-              /*use_light_colors=*/!features::IsDarkLightModeEnabled()));
-    }
+    UpdateHighlightBorder(/*update_corner_radius=*/true);
   }
 
   const gfx::Rect mirrored_bounds = GetMirroredRect(background_bounds);

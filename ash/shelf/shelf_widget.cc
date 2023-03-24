@@ -38,6 +38,7 @@
 #include "ash/wm/work_area_insets.h"
 #include "base/command_line.h"
 #include "base/functional/bind.h"
+#include "chromeos/constants/chromeos_features.h"
 #include "ui/compositor/layer.h"
 #include "ui/compositor/layer_delegate.h"
 #include "ui/compositor/layer_owner.h"
@@ -289,7 +290,9 @@ class ShelfBackgroundLayerDelegate : public ui::LayerOwner,
   SkColor background_color_;
   float corner_radius_ = 0.0f;
   views::HighlightBorder::Type highlight_border_type_ =
-      views::HighlightBorder::Type::kHighlightBorder1;
+      chromeos::features::IsJellyrollEnabled()
+          ? views::HighlightBorder::Type::kHighlightBorderNoShadow
+          : views::HighlightBorder::Type::kHighlightBorder1;
 };
 
 }  // namespace
@@ -938,7 +941,10 @@ void ShelfWidget::OnHotseatStateChanged(HotseatState old_state,
     return;
   hotseat_transition_animator_->OnHotseatStateChanged(old_state, new_state);
 
-  if (new_state == HotseatState::kExtended) {
+  if (chromeos::features::IsJellyrollEnabled()) {
+    delegate_view_->opaque_background()->SetBorderType(
+        views::HighlightBorder::Type::kHighlightBorderNoShadow);
+  } else if (new_state == HotseatState::kExtended) {
     delegate_view_->opaque_background()->SetBorderType(
         views::HighlightBorder::Type::kHighlightBorder2);
   } else {
