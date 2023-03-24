@@ -31,6 +31,7 @@
       "blink_enable_generated_code_formatting": true,
       "clang_use_chrome_plugins": false,
       "dcheck_always_on": false,
+      "enable_cast_receiver": true,
       "enable_kythe_annotations": true,
       "is_component_build": false,
       "is_debug": false,

@@ -2447,7 +2447,7 @@
     ],
 
     'codesearch_gen_chromium_fuchsia_bot': [
-      'codesearch_release', 'fuchsia',
+      'codesearch_release', 'fuchsia', 'cast_receiver',
     ],
 
     'codesearch_gen_chromium_ios_bot': [
