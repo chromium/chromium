@@ -4,7 +4,7 @@
 
 package org.chromium.ui;
 
-import android.graphics.Bitmap;
+import android.graphics.drawable.Drawable;
 
 import androidx.annotation.Nullable;
 
@@ -96,7 +96,7 @@ public class DropdownItemBase implements DropdownItem {
 
     @Override
     @Nullable
-    public Bitmap getCustomIcon() {
+    public Drawable getIconDrawable() {
         return null;
     }
 }

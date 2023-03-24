@@ -28,7 +28,6 @@ import org.chromium.components.autofill.AutofillPopup;
 import org.chromium.components.autofill.AutofillSuggestion;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.browser.WebContentsAccessibility;
-import org.chromium.ui.DropdownItem;
 import org.chromium.ui.base.ViewAndroidDelegate;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.url.GURL;
@@ -187,30 +186,22 @@ public class AutofillPopupBridge implements AutofillDelegate, DialogInterface.On
             String secondaryLabel, String sublabel, String secondarySublabel, String itemTag,
             int iconId, boolean isIconAtStart, int suggestionId, boolean isDeletable,
             boolean isLabelMultiline, boolean isLabelBold, GURL customIconUrl) {
-        int drawableId = iconId == 0 ? DropdownItem.NO_ICON : iconId;
-        AutofillSuggestion.Builder builder = new AutofillSuggestion.Builder()
-                                                     .setLabel(label)
-                                                     .setSecondaryLabel(secondaryLabel)
-                                                     .setSubLabel(sublabel)
-                                                     .setSecondarySubLabel(secondarySublabel)
-                                                     .setItemTag(itemTag)
-                                                     .setIconId(drawableId)
-                                                     .setIsIconAtStart(isIconAtStart)
-                                                     .setSuggestionId(suggestionId)
-                                                     .setIsDeletable(isDeletable)
-                                                     .setIsMultiLineLabel(isLabelMultiline)
-                                                     .setIsBoldLabel(isLabelBold);
-        if (customIconUrl != null && customIconUrl.isValid()) {
-            builder.setCustomIcon(
-                    PersonalDataManager.getInstance()
-                            .getCustomImageForAutofillSuggestionIfAvailable(
-                                    AutofillUiUtils.getCCIconURLWithParams(customIconUrl,
-                                            mContext.getResources().getDimensionPixelSize(
-                                                    R.dimen.autofill_dropdown_icon_width),
-                                            mContext.getResources().getDimensionPixelSize(
-                                                    R.dimen.autofill_dropdown_icon_height))));
-        }
-        array[index] = builder.build();
+        array[index] =
+                new AutofillSuggestion.Builder()
+                        .setLabel(label)
+                        .setSecondaryLabel(secondaryLabel)
+                        .setSubLabel(sublabel)
+                        .setSecondarySubLabel(secondarySublabel)
+                        .setItemTag(itemTag)
+                        .setIsIconAtStart(isIconAtStart)
+                        .setSuggestionId(suggestionId)
+                        .setIsDeletable(isDeletable)
+                        .setIsMultiLineLabel(isLabelMultiline)
+                        .setIsBoldLabel(isLabelBold)
+                        .setIconDrawable(AutofillUiUtils.getCardIcon(mContext, customIconUrl,
+                                iconId, R.dimen.autofill_dropdown_icon_width,
+                                R.dimen.autofill_dropdown_icon_height, /* showCustomIcon= */ true))
+                        .build();
     }
 
     private @Nullable WebContentsViewRectProvider tryCreateRectProvider(
