@@ -290,6 +290,9 @@ CHAR_LIMIT guidelines:
       <message name="IDS_SIGN_IN_TO_CHROME_DISABLED_SUMMARY" desc="A descriptive line of text that appears under the 'Sign in to Chrome' option, in Chrome Settings on Android. The text explains why 'Sign in to Chrome' is disabled. 'Administrator' refers to the IT administrator of the company/organization that owns the user’s device.">
         Disabled by the administrator of this device
       </message>
+      <message name="IDS_SIGN_IN_TO_CHROME_DISABLED_BY_USER_SUMMARY" desc="A descriptive line of text that appears when a user tries to signin when signin is disabled by the Google Services option in settings. The text explains why 'Sign in to Chrome' is not available.">
+        Not available on your device
+      </message>
       <message name="IDS_SIGN_IN_GOOGLE_ACTIVITY_CONTROLS_TITLE" desc="Title of Google activity controls preference in signed in accounts settings screen">
         Google activity controls
       </message>
