@@ -9602,7 +9602,7 @@
                         "IPH_BatterySaverMode_session_rate": "==0",
                         "IPH_HighEfficiencyMode_availability": "any",
                         "IPH_HighEfficiencyMode_event_1": "name:high_efficiency_prompt_in_trigger;comparator:<3;window:360;storage:360",
-                        "IPH_HighEfficiencyMode_event_trigger": "name:high_efficiency_prompt_in_trigger;comparator:<1;window:1;storage:360",
+                        "IPH_HighEfficiencyMode_event_trigger": "name:high_efficiency_prompt_in_trigger;comparator:<1;window:7;storage:360",
                         "IPH_HighEfficiencyMode_event_used": "name:high_efficiency_prompt_in_used;comparator:==0;window:360;storage:360",
                         "IPH_HighEfficiencyMode_session_rate": "any",
                         "IPH_PerformanceNewBadge_availability": "any",
