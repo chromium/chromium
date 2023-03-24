@@ -52,7 +52,7 @@ mac_app_bundle("updater_bundle") {
     "//chrome/updater:constants_prod",
   ]
   public_deps = [
-    ":ksadmin_copy",
+    ":ksadmin",
     ":ksadmin_link",
   ]
 }
@@ -77,10 +77,7 @@ mac_app_bundle("updater_bundle_test") {
   if (is_asan) {
     deps += [ ":keystone_agent_bundle_resource_executable_test_asan_dylib" ]
   }
-  public_deps = [
-    ":ksadmin_test_copy",
-    ":ksadmin_test_link",
-  ]
+  public_deps = [ ":ksadmin_test_copy" ]
 }
 
 source_set("privileged_helper_sources") {
@@ -334,7 +331,7 @@ source_set("ksadmin_lib") {
 }
 
 executable("ksadmin") {
-  output_name = "ksadmin"
+  output_dir = "$root_out_dir/${updater_product_full_name}.app/Contents/Helpers/$keystone_app_name.bundle/Contents/Helpers"
   sources = [ "keystone/ksadmin_main.cc" ]
 
   deps = [
@@ -351,14 +348,7 @@ executable("ksadmin") {
   }
 }
 
-copy("ksadmin_copy") {
-  sources = [ "$root_out_dir/ksadmin" ]
-  outputs = [ "$root_out_dir/${updater_product_full_name}.app/Contents/Helpers/$keystone_app_name.bundle/Contents/Helpers/ksadmin" ]
-  deps = [ ":ksadmin" ]
-}
-
 executable("ksadmin_test") {
-  output_name = "ksadmin_test"
   sources = [ "keystone/ksadmin_main.cc" ]
 
   deps = [
@@ -409,12 +399,6 @@ symlink("ksadmin_link") {
   source = "$root_out_dir/${updater_product_full_name}.app/Contents/Helpers/$keystone_app_name.bundle/Contents/Helpers/ksadmin"
   output = "$root_out_dir/${updater_product_full_name}.app/Contents/Helpers/$keystone_app_name.bundle/Contents/MacOS/ksadmin"
   deps = [ ":ksadmin" ]
-}
-
-symlink("ksadmin_test_link") {
-  source = "$root_out_dir/${updater_product_full_name}_test.app/Contents/Helpers/$keystone_app_name.bundle/Contents/Helpers/ksadmin"
-  output = "$root_out_dir/${updater_product_full_name}_test.app/Contents/Helpers/$keystone_app_name.bundle/Contents/MacOS/ksadmin"
-  deps = [ ":ksadmin_test" ]
 }
 
 mac_app_bundle("keystone_agent_bundle") {
@@ -601,7 +585,6 @@ artifact_zip("updater_zip") {
     "$root_build_dir/${updater_product_full_name}_test.app/Contents/Helpers/$keystone_app_name.bundle/Contents/MacOS/$keystone_app_name",
     "$root_build_dir/${updater_product_full_name}_test.app/Contents/Helpers/$keystone_app_name.bundle/Contents/Helpers/ksinstall",
     "$root_build_dir/${updater_product_full_name}_test.app/Contents/Helpers/$keystone_app_name.bundle/Contents/Helpers/ksadmin",
-    "$root_build_dir/${updater_product_full_name}_test.app/Contents/Helpers/$keystone_app_name.bundle/Contents/MacOS/ksadmin",
     "$root_build_dir/${updater_product_full_name}_test.app/Contents/Helpers/$keystone_app_name.bundle/Contents/Resources/${keystone_app_name}Agent.app/Contents/MacOS/${keystone_app_name}Agent",
     "$root_build_dir/${updater_product_full_name}_test.app/Contents/Helpers/$keystone_app_name.bundle/Contents/Resources/${keystone_app_name}Agent.app/Contents/Info.plist",
     "$root_build_dir/${updater_product_full_name}_test.app/Contents/Helpers/$keystone_app_name.bundle/Contents/Info.plist",

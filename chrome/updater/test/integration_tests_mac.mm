@@ -200,15 +200,10 @@ void ExpectInstalled(UpdaterScope scope) {
 
   absl::optional<base::FilePath> keystone_path = GetKeystoneFolderPath(scope);
   ASSERT_TRUE(keystone_path);
-  absl::optional<base::FilePath> ksadmin_symlink =
-      keystone_path->Append(FILE_PATH_LITERAL(KEYSTONE_NAME ".bundle"))
-          .Append(FILE_PATH_LITERAL("Contents"))
-          .Append(FILE_PATH_LITERAL("MacOS"))
-          .Append(FILE_PATH_LITERAL("ksadmin"));
 
   // Files must exist on the file system.
-  for (const auto& path : {GetInstallDirectory(scope), keystone_path,
-                           GetKSAdminPath(scope), ksadmin_symlink}) {
+  for (const auto& path :
+       {GetInstallDirectory(scope), keystone_path, GetKSAdminPath(scope)}) {
     ASSERT_TRUE(path) << path;
     EXPECT_TRUE(base::PathExists(*path)) << path;
   }

@@ -26,7 +26,7 @@ namespace {
 int RunKSAdmin(std::string* std_out, const std::vector<std::string>& args) {
   base::FilePath out_dir;
   EXPECT_TRUE(base::PathService::Get(base::DIR_EXE, &out_dir));
-  base::CommandLine command(out_dir.Append(FILE_PATH_LITERAL("ksadmin")));
+  base::CommandLine command(out_dir.Append(FILE_PATH_LITERAL("ksadmin_test")));
   for (const auto& arg : args) {
     command.AppendSwitch(arg);
   }
