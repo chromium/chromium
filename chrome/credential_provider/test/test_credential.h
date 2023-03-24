@@ -220,7 +220,7 @@ template <class T>
 bool CTestCredentialBase<T>::IsAuthenticationResultsEmpty() {
   auto& results = this->get_authentication_results();
 
-  return !results || (results->is_dict() && results->DictEmpty());
+  return !results || (results->is_dict() && results->GetDict().empty());
 }
 
 template <class T>
