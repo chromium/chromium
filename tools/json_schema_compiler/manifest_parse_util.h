@@ -114,7 +114,7 @@ bool ParseFromDictionary(const base::Value::Dict& dict,
     return false;
 
   bool result = json_schema_compiler::util::PopulateArrayFromList(
-      value->GetList(), &out, error);
+      value->GetList(), out, error);
   if (!result) {
     DCHECK(error_path_reversed);
     DCHECK(error_path_reversed->empty());

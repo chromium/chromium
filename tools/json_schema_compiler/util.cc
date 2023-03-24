@@ -25,119 +25,123 @@ bool ReportError(const base::Value& from,
 
 }  // namespace
 
-bool PopulateItem(const base::Value& from, int* out) {
-  if (out && from.is_int()) {
-    *out = from.GetInt();
-    return true;
+bool PopulateItem(const base::Value& from, int& out) {
+  if (!from.is_int()) {
+    return false;
   }
-  return from.is_int();
+  out = from.GetInt();
+  return true;
 }
 
-bool PopulateItem(const base::Value& from, int* out, std::u16string* error) {
+bool PopulateItem(const base::Value& from, int& out, std::u16string* error) {
   if (!PopulateItem(from, out))
     return ReportError(from, base::Value::Type::INTEGER, error);
   return true;
 }
 
-bool PopulateItem(const base::Value& from, bool* out) {
-  if (out && from.is_bool()) {
-    *out = from.GetBool();
-    return true;
+bool PopulateItem(const base::Value& from, bool& out) {
+  if (!from.is_bool()) {
+    return false;
   }
-  return from.is_bool();
+  out = from.GetBool();
+  return true;
 }
 
-bool PopulateItem(const base::Value& from, bool* out, std::u16string* error) {
-  if (!from.is_bool())
+bool PopulateItem(const base::Value& from, bool& out, std::u16string* error) {
+  if (!from.is_bool()) {
     return ReportError(from, base::Value::Type::BOOLEAN, error);
-  if (out)
-    *out = from.GetBool();
-  return true;
-}
-
-bool PopulateItem(const base::Value& from, double* out) {
-  absl::optional<double> maybe_double = from.GetIfDouble();
-  if (maybe_double.has_value()) {
-    if (out)
-      *out = maybe_double.value();
-    return true;
   }
-  return false;
+
+  out = from.GetBool();
+  return true;
 }
 
-bool PopulateItem(const base::Value& from, double* out, std::u16string* error) {
-  if (!from.is_double())
+bool PopulateItem(const base::Value& from, double& out) {
+  if (!from.is_double()) {
+    return false;
+  }
+  out = from.GetDouble();
+  return true;
+}
+
+bool PopulateItem(const base::Value& from, double& out, std::u16string* error) {
+  if (!from.is_double()) {
     return ReportError(from, base::Value::Type::DOUBLE, error);
-  *out = from.GetDouble();
+  }
+
+  out = from.GetDouble();
   return true;
 }
 
-bool PopulateItem(const base::Value& from, std::string* out) {
+bool PopulateItem(const base::Value& from, std::string& out) {
   if (!from.is_string())
     return false;
-  *out = from.GetString();
+  out = from.GetString();
   return true;
 }
 
 bool PopulateItem(const base::Value& from,
-                  std::string* out,
+                  std::string& out,
                   std::u16string* error) {
-  if (!from.is_string())
+  if (!from.is_string()) {
     return ReportError(from, base::Value::Type::STRING, error);
-  *out = from.GetString();
+  }
+  out = from.GetString();
   return true;
 }
 
-bool PopulateItem(const base::Value& from, std::vector<uint8_t>* out) {
-  if (!from.is_blob())
+bool PopulateItem(const base::Value& from, std::vector<uint8_t>& out) {
+  if (!from.is_blob()) {
     return false;
-  *out = from.GetBlob();
+  }
+  out = from.GetBlob();
   return true;
 }
 
 bool PopulateItem(const base::Value& from,
-                  std::vector<uint8_t>* out,
+                  std::vector<uint8_t>& out,
                   std::u16string* error) {
-  if (!from.is_blob())
+  if (!from.is_blob()) {
     return ReportError(from, base::Value::Type::BINARY, error);
-  *out = from.GetBlob();
+  }
+  out = from.GetBlob();
   return true;
 }
 
-bool PopulateItem(const base::Value& from, base::Value* out) {
-  *out = from.Clone();
+bool PopulateItem(const base::Value& from, base::Value& out) {
+  out = from.Clone();
   return true;
 }
 
 bool PopulateItem(const base::Value& from,
-                  base::Value* out,
+                  base::Value& out,
                   std::u16string* error) {
-  *out = from.Clone();
+  out = from.Clone();
   return true;
 }
 
-void AddItemToList(const int from, base::Value::List* out) {
-  out->Append(from);
+void AddItemToList(const int from, base::Value::List& out) {
+  out.Append(from);
 }
 
-void AddItemToList(const bool from, base::Value::List* out) {
-  out->Append(from);
+void AddItemToList(const bool from, base::Value::List& out) {
+  out.Append(from);
 }
 
-void AddItemToList(const double from, base::Value::List* out) {
-  out->Append(from);
+void AddItemToList(const double from, base::Value::List& out) {
+  out.Append(from);
 }
 
-void AddItemToList(const std::string& from, base::Value::List* out) {
-  out->Append(from);
+void AddItemToList(const std::string& from, base::Value::List& out) {
+  out.Append(from);
 }
 
-void AddItemToList(const std::vector<uint8_t>& from, base::Value::List* out) {
-  out->Append(base::Value(from));
+void AddItemToList(const std::vector<uint8_t>& from, base::Value::List& out) {
+  out.Append(base::Value(from));
 }
 
-void AddItemToList(const base::Value& from, base::Value::List* out) {
-  out->Append(from.Clone());
+void AddItemToList(const base::Value& from, base::Value::List& out) {
+  out.Append(from.Clone());
 }
 
 }  // namespace util

@@ -1108,7 +1108,7 @@ class _Generator(object):
                      failure_value,
                      is_ptr=is_ptr))
       else:
-        args = ['%(src_var)s.GetList()', '&%(dst_var)s']
+        args = ['%(src_var)s.GetList()', '%(dst_var)s']
         if self._generate_error_messages:
           c.Append('std::u16string array_parse_error;')
           args.append('&array_parse_error')
