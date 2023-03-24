@@ -6681,3 +6681,8 @@ crbug.com/1427239 [ Mac ] virtual/view-transition-wide-gamut/external/wpt/css/cs
 crbug.com/1427239 [ Mac ] virtual/view-transition-wide-gamut/external/wpt/css/css-view-transitions/massive-element-right-of-viewport-offscreen-new.html [ Failure Pass ]
 crbug.com/1427239 [ Mac ] virtual/view-transition/external/wpt/css/css-view-transitions/massive-element-right-and-left-of-viewport-partially-onscreen-new.html [ Failure Pass ]
 crbug.com/1427239 [ Mac ] virtual/view-transition/external/wpt/css/css-view-transitions/massive-element-right-of-viewport-offscreen-new.html [ Failure Pass ]
+
+# Temporarily disable while updating icon names in DevTools
+# https://chromium-review.googlesource.com/c/devtools/devtools-frontend/+/4370249
+crbug.com/1427397 http/tests/devtools/persistence/persistence-navigator-unique-names.js [ Failure Pass ]
+
