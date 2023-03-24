@@ -169,6 +169,15 @@ void ImeServiceConnector::MaybeTriggerDownload(
     return;
   }
 
+  // If the currently active request does not match the url being requested,
+  // then revert to the previous logic of dropping new requests while the
+  // current request is in progress.
+  if (url_loader_) {
+    base::FilePath empty_path;
+    std::move(callback).Run(empty_path);
+    return;
+  }
+
   // Reset the download context before triggering a new download request.
   active_request_url_ = url.spec();
   download_callbacks_.clear();
@@ -182,6 +191,7 @@ void ImeServiceConnector::MaybeTriggerDownload(
 }
 
 void ImeServiceConnector::HandleDownloadResponse(base::FilePath file_path) {
+  // Notify any download callbacks registered for the current request.
   base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE,
       base::BindOnce(&ImeServiceConnector::NotifyAllDownloadListeners,
@@ -193,6 +203,10 @@ void ImeServiceConnector::NotifyAllDownloadListeners(base::FilePath file_path) {
     std::move(download_callbacks_.back()).Run(file_path);
     download_callbacks_.pop_back();
   }
+
+  // Clear the currently active request info.
+  url_loader_.reset();
+  active_request_url_ = absl::nullopt;
 }
 
 }  // namespace input_method
