@@ -79,7 +79,7 @@ bool FileSystemProviderCapabilitiesHandler::Parse(Extension* extension,
 
   api::manifest_types::FileSystemProviderCapabilities idl_capabilities;
   if (!api::manifest_types::FileSystemProviderCapabilities::Populate(
-          *section, idl_capabilities, error)) {
+          *section, idl_capabilities, *error)) {
     return false;
   }
 

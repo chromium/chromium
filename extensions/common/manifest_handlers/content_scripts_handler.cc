@@ -222,7 +222,7 @@ base::span<const char* const> ContentScriptsHandler::Keys() const {
 bool ContentScriptsHandler::Parse(Extension* extension, std::u16string* error) {
   ContentScriptsKeys manifest_keys;
   if (!ContentScriptsKeys::ParseFromDictionary(
-          extension->manifest()->available_values(), manifest_keys, error)) {
+          extension->manifest()->available_values(), manifest_keys, *error)) {
     return false;
   }
 

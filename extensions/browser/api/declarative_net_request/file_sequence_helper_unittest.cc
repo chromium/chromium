@@ -38,7 +38,7 @@ api::declarative_net_request::Rule GetAPIRule(const TestRule& rule) {
   api::declarative_net_request::Rule result;
   std::u16string error;
   EXPECT_TRUE(api::declarative_net_request::Rule::Populate(rule.ToValue(),
-                                                           result, &error))
+                                                           result, error))
       << error;
   EXPECT_TRUE(error.empty()) << error;
   return result;

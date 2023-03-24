@@ -43,7 +43,7 @@ const OAuth2Info& OAuth2ManifestHandler::GetOAuth2Info(
 bool OAuth2ManifestHandler::Parse(Extension* extension, std::u16string* error) {
   OAuth2ManifestKeys manifest_keys;
   if (!OAuth2ManifestKeys::ParseFromDictionary(
-          extension->manifest()->available_values(), manifest_keys, error)) {
+          extension->manifest()->available_values(), manifest_keys, *error)) {
     return false;
   }
 

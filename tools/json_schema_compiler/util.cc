@@ -15,9 +15,9 @@ namespace {
 
 bool ReportError(const base::Value& from,
                  base::Value::Type expected,
-                 std::u16string* error) {
-  DCHECK(error->empty());
-  *error = base::ASCIIToUTF16(base::StringPrintf(
+                 std::u16string& error) {
+  DCHECK(error.empty());
+  error = base::ASCIIToUTF16(base::StringPrintf(
       "expected %s, got %s", base::Value::GetTypeName(expected),
       base::Value::GetTypeName(from.type())));
   return false;  // Always false on purpose.
@@ -33,7 +33,7 @@ bool PopulateItem(const base::Value& from, int& out) {
   return true;
 }
 
-bool PopulateItem(const base::Value& from, int& out, std::u16string* error) {
+bool PopulateItem(const base::Value& from, int& out, std::u16string& error) {
   if (!PopulateItem(from, out))
     return ReportError(from, base::Value::Type::INTEGER, error);
   return true;
@@ -47,7 +47,7 @@ bool PopulateItem(const base::Value& from, bool& out) {
   return true;
 }
 
-bool PopulateItem(const base::Value& from, bool& out, std::u16string* error) {
+bool PopulateItem(const base::Value& from, bool& out, std::u16string& error) {
   if (!from.is_bool()) {
     return ReportError(from, base::Value::Type::BOOLEAN, error);
   }
@@ -64,7 +64,7 @@ bool PopulateItem(const base::Value& from, double& out) {
   return true;
 }
 
-bool PopulateItem(const base::Value& from, double& out, std::u16string* error) {
+bool PopulateItem(const base::Value& from, double& out, std::u16string& error) {
   if (!from.is_double()) {
     return ReportError(from, base::Value::Type::DOUBLE, error);
   }
@@ -82,7 +82,7 @@ bool PopulateItem(const base::Value& from, std::string& out) {
 
 bool PopulateItem(const base::Value& from,
                   std::string& out,
-                  std::u16string* error) {
+                  std::u16string& error) {
   if (!from.is_string()) {
     return ReportError(from, base::Value::Type::STRING, error);
   }
@@ -100,7 +100,7 @@ bool PopulateItem(const base::Value& from, std::vector<uint8_t>& out) {
 
 bool PopulateItem(const base::Value& from,
                   std::vector<uint8_t>& out,
-                  std::u16string* error) {
+                  std::u16string& error) {
   if (!from.is_blob()) {
     return ReportError(from, base::Value::Type::BINARY, error);
   }
@@ -115,7 +115,7 @@ bool PopulateItem(const base::Value& from, base::Value& out) {
 
 bool PopulateItem(const base::Value& from,
                   base::Value& out,
-                  std::u16string* error) {
+                  std::u16string& error) {
   out = from.Clone();
   return true;
 }

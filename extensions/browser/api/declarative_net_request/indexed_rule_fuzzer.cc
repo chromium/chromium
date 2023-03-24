@@ -32,7 +32,7 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
   if (!value || !value->is_dict())
     return 0;
   std::u16string error;
-  absl::optional<Rule> rule = Rule::FromValue(value->GetDict(), &error);
+  absl::optional<Rule> rule = Rule::FromValue(value->GetDict(), error);
   if (!rule) {
     CHECK(!error.empty());
     return 0;

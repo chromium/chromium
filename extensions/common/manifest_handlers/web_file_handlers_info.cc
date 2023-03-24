@@ -26,7 +26,7 @@ std::unique_ptr<WebFileHandlers> ParseFromList(const Extension& extension,
                                                std::u16string* error) {
   FileHandlersManifestKeys manifest_keys;
   if (!FileHandlersManifestKeys::ParseFromDictionary(
-          extension.manifest()->available_values(), manifest_keys, error)) {
+          extension.manifest()->available_values(), manifest_keys, *error)) {
     return nullptr;
   }
 
@@ -122,7 +122,7 @@ std::unique_ptr<WebFileHandlers> ParseFromList(const Extension& extension,
 
     // Make the temporary `accept` permanent by assigning to `file_handler`.
     api::file_handlers::FileHandler::Accept::Populate(
-        accept, file_handler.accept, error);
+        accept, file_handler.accept, *error);
 
     // `icon` is an optional array of dictionaries.
     if (manifest_file_handler.icons.has_value()) {

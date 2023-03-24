@@ -84,7 +84,7 @@ DeclarativeNetRequestUpdateDynamicRulesFunction::Run() {
   using Params = dnr_api::UpdateDynamicRules::Params;
 
   std::u16string error;
-  absl::optional<Params> params = Params::Create(args(), &error);
+  absl::optional<Params> params = Params::Create(args(), error);
   EXTENSION_FUNCTION_VALIDATE(params);
   EXTENSION_FUNCTION_VALIDATE(error.empty());
 
@@ -134,7 +134,7 @@ DeclarativeNetRequestGetDynamicRulesFunction::Run() {
   using Params = dnr_api::GetDynamicRules::Params;
 
   std::u16string error;
-  absl::optional<Params> params = Params::Create(args(), &error);
+  absl::optional<Params> params = Params::Create(args(), error);
   EXTENSION_FUNCTION_VALIDATE(params);
   EXTENSION_FUNCTION_VALIDATE(error.empty());
 
@@ -190,7 +190,7 @@ DeclarativeNetRequestUpdateSessionRulesFunction::Run() {
   using Params = dnr_api::UpdateSessionRules::Params;
 
   std::u16string error;
-  absl::optional<Params> params = Params::Create(args(), &error);
+  absl::optional<Params> params = Params::Create(args(), error);
   EXTENSION_FUNCTION_VALIDATE(params);
   EXTENSION_FUNCTION_VALIDATE(error.empty());
 
@@ -237,7 +237,7 @@ DeclarativeNetRequestGetSessionRulesFunction::Run() {
   using Params = dnr_api::GetSessionRules::Params;
 
   std::u16string error;
-  absl::optional<Params> params = Params::Create(args(), &error);
+  absl::optional<Params> params = Params::Create(args(), error);
   EXTENSION_FUNCTION_VALIDATE(params);
   EXTENSION_FUNCTION_VALIDATE(error.empty());
 
@@ -267,7 +267,7 @@ DeclarativeNetRequestUpdateEnabledRulesetsFunction::Run() {
   using DNRManifestData = declarative_net_request::DNRManifestData;
 
   std::u16string error;
-  absl::optional<Params> params = Params::Create(args(), &error);
+  absl::optional<Params> params = Params::Create(args(), error);
   EXTENSION_FUNCTION_VALIDATE(params);
   EXTENSION_FUNCTION_VALIDATE(error.empty());
 
@@ -379,7 +379,7 @@ DeclarativeNetRequestUpdateStaticRulesFunction::Run() {
       DeclarativeNetRequestPrefsHelper::RuleIdsToUpdate;
 
   std::u16string error;
-  absl::optional<Params> params = Params::Create(args(), &error);
+  absl::optional<Params> params = Params::Create(args(), error);
   EXTENSION_FUNCTION_VALIDATE(params);
   EXTENSION_FUNCTION_VALIDATE(error.empty());
 
@@ -433,7 +433,7 @@ DeclarativeNetRequestGetDisabledRuleIdsFunction::Run() {
   using DNRManifestData = declarative_net_request::DNRManifestData;
 
   std::u16string error;
-  absl::optional<Params> params = Params::Create(args(), &error);
+  absl::optional<Params> params = Params::Create(args(), error);
   EXTENSION_FUNCTION_VALIDATE(params);
   EXTENSION_FUNCTION_VALIDATE(error.empty());
 
@@ -482,7 +482,7 @@ DeclarativeNetRequestGetMatchedRulesFunction::Run() {
   using Params = dnr_api::GetMatchedRules::Params;
 
   std::u16string error;
-  absl::optional<Params> params = Params::Create(args(), &error);
+  absl::optional<Params> params = Params::Create(args(), error);
   EXTENSION_FUNCTION_VALIDATE(params);
   EXTENSION_FUNCTION_VALIDATE(error.empty());
 
@@ -555,7 +555,7 @@ DeclarativeNetRequestSetExtensionActionOptionsFunction::Run() {
   using Params = dnr_api::SetExtensionActionOptions::Params;
 
   std::u16string error;
-  absl::optional<Params> params = Params::Create(args(), &error);
+  absl::optional<Params> params = Params::Create(args(), error);
   EXTENSION_FUNCTION_VALIDATE(params);
   EXTENSION_FUNCTION_VALIDATE(error.empty());
 
@@ -624,7 +624,7 @@ DeclarativeNetRequestIsRegexSupportedFunction::Run() {
   using Params = dnr_api::IsRegexSupported::Params;
 
   std::u16string error;
-  absl::optional<Params> params = Params::Create(args(), &error);
+  absl::optional<Params> params = Params::Create(args(), error);
   EXTENSION_FUNCTION_VALIDATE(params);
   EXTENSION_FUNCTION_VALIDATE(error.empty());
 
@@ -714,7 +714,7 @@ DeclarativeNetRequestTestMatchOutcomeFunction::Run() {
   using Params = dnr_api::TestMatchOutcome::Params;
 
   std::u16string error;
-  absl::optional<Params> params = Params::Create(args(), &error);
+  absl::optional<Params> params = Params::Create(args(), error);
   EXTENSION_FUNCTION_VALIDATE(params);
   EXTENSION_FUNCTION_VALIDATE(error.empty());
 

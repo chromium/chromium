@@ -239,9 +239,6 @@ class _Generator(object):
       .Sblock('    %s) {' % self._GenerateParams(
           ('const base::Value::Dict& dict', '%(name)s& out'))))
 
-    if self._generate_error_messages:
-      c.Append('DCHECK(error);')
-
     # TODO(crbug.com/1145154): The generated code here will ignore
     # unrecognized keys, but the parsing code for types passed to APIs in the
     # renderer will hard-error on them. We should probably be consistent with
@@ -283,9 +280,6 @@ class _Generator(object):
       .Append('bool %(namespace)s::Populate(')
       .Sblock('    %s) {' % self._GenerateParams(
           ('const base::Value& value', '%(name)s& out'))))
-
-    if self._generate_error_messages:
-      c.Append('DCHECK(error);')
 
     if type_.property_type is PropertyType.CHOICES:
       for choice in type_.choices:
@@ -375,13 +369,16 @@ class _Generator(object):
     c = Code()
     (c.Append('// static')
       .Append('std::unique_ptr<%s> %s::FromValueDeprecated(%s) {' % (classname,
-        cpp_namespace, self._GenerateParams(('const base::Value& value',))))
+        cpp_namespace, self._GenerateParams(('const base::Value& value',),
+          error_as_ptr=True)))
     )
     c.Sblock();
-    if self._generate_error_messages:
-      c.Append('DCHECK(error);')
 
     c.Append('auto out = std::make_unique<%s>();' % classname)
+
+    if self._generate_error_messages:
+      c.Append('DCHECK(error_ptr);')
+      c.Append('auto& error = *error_ptr;')
 
     if type_.property_type == PropertyType.CHOICES:
       c.Append('bool result = Populate(%s);' %
@@ -397,7 +394,7 @@ class _Generator(object):
         self._GenerateArgs(('value.GetDict()', '*out')))
 
     if self._generate_error_messages:
-      c.Append('DCHECK_EQ(result, error->empty());')
+      c.Append('DCHECK_EQ(result, error.empty());')
     c.Sblock('if (!result) {')
     c.Append('return nullptr;')
     c.Eblock('}')
@@ -424,13 +421,11 @@ class _Generator(object):
     # TODO(crbug.com/1354063): Once the deprecated version of this method is
     # removed, we should consider making Populate return an optional, rather
     # than using an out param.
-    if self._generate_error_messages:
-      c.Append('DCHECK(error);')
     c.Append('absl::optional<%s> out(absl::in_place);' % classname)
     c.Append('bool result = Populate(%s);' %
       self._GenerateArgs(('value', 'out.value()')))
     if self._generate_error_messages:
-      c.Append('DCHECK_EQ(result, error->empty());')
+      c.Append('DCHECK_EQ(result, error.empty());')
     c.Sblock('if (!result)')
     c.Append('return absl::nullopt;')
     c.Eblock('return out;')
@@ -516,11 +511,9 @@ class _Generator(object):
     c.Sblock('%s) {' %
              self._GenerateParams(params, generate_error_messages=True))
 
-    c.Append('DCHECK(error);')
     c.Append()
 
-    c.Append('std::vector<base::StringPiece> error_path_reversed_vec;')
-    c.Append('auto* error_path_reversed = &error_path_reversed_vec;')
+    c.Append('std::vector<base::StringPiece> error_path_reversed;')
     c.Append('const base::Value::Dict& dict = root_dict;')
 
     for prop in properties:
@@ -547,8 +540,8 @@ class _Generator(object):
       'const base::Value::Dict& root_dict',
       'base::StringPiece key',
       '%(classname)s& out',
-      'std::u16string* error',
-      'std::vector<base::StringPiece>* error_path_reversed'
+      'std::u16string& error',
+      'std::vector<base::StringPiece>& error_path_reversed'
     ]
 
     c = Code()
@@ -560,8 +553,6 @@ class _Generator(object):
     c.Sblock('%s) {' %
              self._GenerateParams(params, generate_error_messages=False))
 
-    c.Append('DCHECK(error);')
-    c.Append('DCHECK(error_path_reversed);')
     c.Append()
 
     c.Append(
@@ -674,7 +665,7 @@ class _Generator(object):
       c.Append('::json_schema_compiler::manifest_parse_util::'
         'PopulateFinalError(error, error_path_reversed);')
     else:
-      c.Append('error_path_reversed->push_back(key);')
+      c.Append('error_path_reversed.push_back(key);')
     c.Append('return false;')
     c.Eblock('}')
 
@@ -945,8 +936,6 @@ class _Generator(object):
                   self._GenerateParams([
                       'const base::Value::List& args']))
     )
-    if self._generate_error_messages:
-      c.Append('DCHECK(error);')
 
     failure_value = 'absl::nullopt'
     (c.Concat(self._GenerateParamsCheck(function, 'args', failure_value))
@@ -1111,7 +1100,7 @@ class _Generator(object):
         args = ['%(src_var)s.GetList()', '%(dst_var)s']
         if self._generate_error_messages:
           c.Append('std::u16string array_parse_error;')
-          args.append('&array_parse_error')
+          args.append('array_parse_error')
 
         c.Append('if (!%s(%s)) {' % (
             self._util_cc_helper.PopulateArrayFromListFunction(is_ptr),
@@ -1377,11 +1366,12 @@ class _Generator(object):
     c = Code()
     if not self._generate_error_messages:
       return c
-    c.Append('DCHECK(error->empty());')
-    c.Append('*error = %s;' % error16)
+    c.Append('DCHECK(error.empty());')
+    c.Append('error = %s;' % error16)
     return c
 
-  def _GenerateParams(self, params, generate_error_messages=None):
+  def _GenerateParams(
+      self, params, generate_error_messages=None, error_as_ptr=None):
     """Builds the parameter list for a function, given an array of parameters.
     If |generate_error_messages| is specified, it overrides
     |self._generate_error_messages|.
@@ -1389,7 +1379,10 @@ class _Generator(object):
     if generate_error_messages is None:
       generate_error_messages = self._generate_error_messages
     if generate_error_messages:
-      params = list(params) + ['std::u16string* error']
+      if error_as_ptr:
+        params = list(params) + ['std::u16string* error_ptr']
+      else:
+        params = list(params) + ['std::u16string& error']
     return ', '.join(str(p) for p in params)
 
   def _GenerateArgs(self, args, generate_error_messages=None):

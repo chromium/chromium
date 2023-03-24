@@ -274,7 +274,8 @@ class _Generator(object):
             .Comment('Creates a %s object from a base::Value, or NULL on '
                      'failure.' % classname)
             .Append('static std::unique_ptr<%s> FromValueDeprecated(%s);' % (
-                classname, self._GenerateParams(('const base::Value& value',))))
+                classname, self._GenerateParams(('const base::Value& value',),
+                  error_as_ptr=True)))
           )
           (c.Append()
             .Comment('Creates a %s object from a base::Value, or nullopt on '
@@ -410,7 +411,7 @@ class _Generator(object):
       params = [
         'const base::Value::Dict& root_dict',
         '%s& out' % classname,
-        'std::u16string* error'
+        'std::u16string& error'
       ]
       comment = (
         'Parses manifest keys for this namespace. Any keys not available to the'
@@ -421,8 +422,8 @@ class _Generator(object):
         'const base::Value::Dict& root_dict',
         'base::StringPiece key',
         '%s& out' % classname,
-        'std::u16string* error',
-        'std::vector<base::StringPiece>* error_path_reversed'
+        'std::u16string& error',
+        'std::vector<base::StringPiece>& error_path_reversed'
       ]
       comment = (
         'Parses the given |key| from |root_dict|. Any keys not available to the'
@@ -487,10 +488,12 @@ class _Generator(object):
     )
     return c
 
-  def _GenerateParams(self, params, generate_error_messages=None):
+  def _GenerateParams(
+        self, params, generate_error_messages=None, error_as_ptr=None):
     """Builds the parameter list for a function, given an array of parameters.
     If |generate_error_messages| is specified, it overrides
     |self._generate_error_messages|.
+    |error_as_ptr| is used to indicate a pointer argument should be preserved.
     """
     # |error| is populated with warnings and/or errors found during parsing.
     # |error| being set does not necessarily imply failure and may be
@@ -500,5 +503,11 @@ class _Generator(object):
     if generate_error_messages is None:
       generate_error_messages = self._generate_error_messages
     if generate_error_messages:
-      params += ('std::u16string* error',)
+      if error_as_ptr:
+        # TODO(crbug.com/1415174): error_as_ptr argument should eventually be
+        # removed, once all sites making use of FromValueDeprecated get
+        # migrated, and FromValueDeprecated is removed.
+        params += ('std::u16string* error',)
+      else:
+        params += ('std::u16string& error',)
     return ', '.join(str(p) for p in params)
