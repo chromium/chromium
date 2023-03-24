@@ -156,6 +156,7 @@ robolectric_library("junit") {
     "java/src/org/chromium/chrome/browser/tab/TabAssociatedAppTest.java",
     "java/src/org/chromium/chrome/browser/tab/TabIdManagerTest.java",
     "java/src/org/chromium/chrome/browser/tab/TabStateAttributesTest.java",
+    "java/src/org/chromium/chrome/browser/tab/state/PriceDropMetricsLoggerTest.java",
   ]
 
   deps = [
