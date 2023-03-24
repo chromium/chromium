@@ -56,6 +56,7 @@ enum OnlineImageType {
   kUnknown = 0,
   kLight = 1,
   kDark = 2,
+  kPreview = 3, // Used to indicate a preview image. Not an actual wallpaper.
   kMorning = 4,
   kLateAfternoon = 5,
 };

@@ -158,6 +158,8 @@ EnumTraits<MojomOnlineImageType, ::backdrop::Image::ImageType>::ToMojom(
       return MojomOnlineImageType::kMorning;
     case ::backdrop::Image::IMAGE_TYPE_LATE_AFTERNOON_MODE:
       return MojomOnlineImageType::kLateAfternoon;
+    case ::backdrop::Image::IMAGE_TYPE_PREVIEW_MODE:
+      return MojomOnlineImageType::kPreview;
   }
 }
 
@@ -179,6 +181,9 @@ bool EnumTraits<MojomOnlineImageType, ::backdrop::Image::ImageType>::FromMojom(
       return true;
     case MojomOnlineImageType::kLateAfternoon:
       *output = ::backdrop::Image::IMAGE_TYPE_LATE_AFTERNOON_MODE;
+      return true;
+    case MojomOnlineImageType::kPreview:
+      *output = ::backdrop::Image::IMAGE_TYPE_PREVIEW_MODE;
       return true;
   }
   NOTREACHED();
