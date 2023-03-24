@@ -142,6 +142,8 @@ enum Setting {
   kTouchpadHapticFeedback = 438,
   kTouchpadHapticClickSensitivity = 439,
   kAdaptiveCharging = 440,
+  kKeyboardBlockMetaFkeyRewrites = 441,
+  kKeyboardRemapKeys = 442,
 
   // Personalization section.
   kOpenWallpaper = 500,

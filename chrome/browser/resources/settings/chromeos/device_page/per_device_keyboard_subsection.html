@@ -29,7 +29,8 @@
         class="hr" id="blockMetaFunctionKeyRewritesButton"
         pref="{{blockMetaFunctionKeyRewritesPref}}"
         label="$i18n{keyboardBlockMetaFunctionKeyRewrites}"
-        sub-label="$i18n{keyboardBlockMetaFunctionKeyRewritesDescription}">
+        sub-label="$i18n{keyboardBlockMetaFunctionKeyRewritesDescription}"
+        deep-link-focus-id$="[[Setting.kKeyboardBlockMetaFkeyRewrites]]">
     </settings-toggle-button>
   </template>
   <template is="dom-if" if="[[!keyboard.isExternal]]" restamp>
@@ -44,6 +45,7 @@
   <cr-link-row id="remapKeyboardKeys"
     class="hr" on-click="onRemapKeyboardKeysTap"
     label="$i18n{remapKeyboardKeysRowLabel}"
-    sub-label$="[[remapKeyboardKeysSublabel]]">
+    sub-label$="[[remapKeyboardKeysSublabel]]"
+    deep-link-focus-id$="[[Setting.kKeyboardRemapKeys]]">
   </cr-link-row>
 </div>

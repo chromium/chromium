@@ -76925,6 +76925,10 @@ Called by update_net_trust_anchors.py.-->
   <int value="438" label="Touchpad: Haptic Feedback"/>
   <int value="439" label="Touchpad: Haptic Click Sensitivity"/>
   <int value="440" label="Power: Adaptive Charging"/>
+  <int value="441"
+      label="Keyboard: Switch Top Row Keys Between Function Keys And Chrome
+             Actions"/>
+  <int value="442" label="Keyboard: Remap Keys"/>
   <int value="500" label="Open Wallpaper"/>
   <int value="501" label="Ambient Mode On/Off"/>
   <int value="502" label="Ambient Mode Source"/>

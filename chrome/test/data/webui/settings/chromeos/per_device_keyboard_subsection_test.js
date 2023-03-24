@@ -11,6 +11,7 @@ import {flushTasks, waitAfterNextRender} from 'chrome://webui-test/polymer_test_
 import {isVisible} from 'chrome://webui-test/test_util.js';
 
 const KEYBOARD_FUNCTION_KEYS_SETTING_ID = 411;
+const KEYBOARD_SWITCH_TOP_ROW_KEYS_SETTING_ID = 441;
 
 suite('PerDeviceKeyboardSubsection', function() {
   /**
@@ -263,18 +264,33 @@ suite('PerDeviceKeyboardSubsection', function() {
         '#externalTopRowAreFunctionKeysButton');
     subsection.keyboardIndex = 0;
     // Enter the page from auto repeat search tag.
-    const url = new URLSearchParams(
+    const searchAutoRepeatUrl = new URLSearchParams(
         'search=keyboard&settingId=' +
         encodeURIComponent(KEYBOARD_FUNCTION_KEYS_SETTING_ID));
 
     await Router.getInstance().navigateTo(
         routes.PER_DEVICE_KEYBOARD,
-        /* dynamicParams= */ url, /* removeSearch= */ true);
+        /* dynamicParams= */ searchAutoRepeatUrl, /* removeSearch= */ true);
 
     await waitAfterNextRender(topRowAreFunctionKeysToggle);
     assertTrue(!!topRowAreFunctionKeysToggle);
     assertEquals(
         subsection.shadowRoot.activeElement, topRowAreFunctionKeysToggle);
+
+    const switchTopRowKeysButton = subsection.shadowRoot.querySelector(
+        '#blockMetaFunctionKeyRewritesButton');
+    const searchSwitchTopRowKeysUrl = new URLSearchParams(
+        'search=switch+top&settingId=' +
+        encodeURIComponent(KEYBOARD_SWITCH_TOP_ROW_KEYS_SETTING_ID));
+
+    await Router.getInstance().navigateTo(
+        routes.PER_DEVICE_KEYBOARD,
+        /* dynamicParams= */ searchSwitchTopRowKeysUrl,
+        /* removeSearch= */ true);
+
+    await waitAfterNextRender(switchTopRowKeysButton);
+    assertTrue(!!switchTopRowKeysButton);
+    assertEquals(subsection.shadowRoot.activeElement, switchTopRowKeysButton);
   });
 
   /**
@@ -297,6 +313,21 @@ suite('PerDeviceKeyboardSubsection', function() {
     await flushTasks();
 
     assertTrue(!!topRowAreFunctionKeysToggle);
+    assertFalse(!!subsection.shadowRoot.activeElement);
+
+    const switchTopRowKeysButton = subsection.shadowRoot.querySelector(
+        '#blockMetaFunctionKeyRewritesButton');
+    const searchSwitchTopRowKeysUrl = new URLSearchParams(
+        'search=switch+top&settingId=' +
+        encodeURIComponent(KEYBOARD_SWITCH_TOP_ROW_KEYS_SETTING_ID));
+
+    await Router.getInstance().navigateTo(
+        routes.PER_DEVICE_KEYBOARD,
+        /* dynamicParams= */ searchSwitchTopRowKeysUrl,
+        /* removeSearch= */ true);
+
+    await flushTasks();
+    assertTrue(!!switchTopRowKeysButton);
     assertFalse(!!subsection.shadowRoot.activeElement);
   });
 });

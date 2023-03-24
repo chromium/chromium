@@ -91,6 +91,7 @@ export class SettingsPerDeviceKeyboardSubsectionElement extends
         type: Object,
         value: () => new Set<Setting>([
           Setting.kKeyboardFunctionKeys,
+          Setting.kKeyboardRemapKeys,
         ]),
       },
 
@@ -116,6 +117,10 @@ export class SettingsPerDeviceKeyboardSubsectionElement extends
     // Does not apply to this page.
     if (route !== routes.PER_DEVICE_KEYBOARD) {
       return;
+    }
+
+    if (this.keyboard.isExternal) {
+      this.supportedSettingIds.add(Setting.kKeyboardBlockMetaFkeyRewrites);
     }
 
     // If multiple keyboards are available, focus on the first one.

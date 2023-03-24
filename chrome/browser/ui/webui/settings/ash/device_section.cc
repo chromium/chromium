@@ -197,6 +197,18 @@ const std::vector<SearchConcept>& GetPerDeviceKeyboardSearchConcepts() {
        mojom::SearchResultDefaultRank::kMedium,
        mojom::SearchResultType::kSetting,
        {.setting = mojom::Setting::kKeyboardFunctionKeys}},
+      {IDS_OS_SETTINGS_TAG_KEYBOARD_BLOCK_META_FKEY_COMBO_REWRITES,
+       mojom::kPerDeviceKeyboardSubpagePath,
+       mojom::SearchResultIcon::kKeyboard,
+       mojom::SearchResultDefaultRank::kMedium,
+       mojom::SearchResultType::kSetting,
+       {.setting = mojom::Setting::kKeyboardBlockMetaFkeyRewrites}},
+      {IDS_OS_SETTINGS_TAG_KEYBOARD_REMAP_KEYS,
+       mojom::kPerDeviceKeyboardSubpagePath,
+       mojom::SearchResultIcon::kKeyboard,
+       mojom::SearchResultDefaultRank::kMedium,
+       mojom::SearchResultType::kSetting,
+       {.setting = mojom::Setting::kKeyboardRemapKeys}},
   });
   return *tags;
 }
@@ -1286,6 +1298,13 @@ void DeviceSection::RegisterHierarchy(HierarchyGenerator* generator) const {
         mojom::Subpage::kPerDeviceKeyboard, mojom::SearchResultIcon::kKeyboard,
         mojom::SearchResultDefaultRank::kMedium,
         mojom::kPerDeviceKeyboardRemapKeysSubpagePath);
+
+    static constexpr mojom::Setting kPerDeviceKeyboardSettings[] = {
+        mojom::Setting::kKeyboardBlockMetaFkeyRewrites,
+        mojom::Setting::kKeyboardRemapKeys,
+    };
+    RegisterNestedSettingBulk(mojom::Subpage::kPerDeviceKeyboard,
+                              kPerDeviceKeyboardSettings, generator);
 
     // Per-device Mouse.
     generator->RegisterTopLevelSubpage(IDS_SETTINGS_MOUSE_TITLE,

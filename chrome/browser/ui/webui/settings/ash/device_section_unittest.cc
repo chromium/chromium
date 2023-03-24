@@ -21,6 +21,7 @@ namespace ash::settings {
 
 namespace mojom {
 
+using ::chromeos::settings::mojom::Setting;
 using ::chromeos::settings::mojom::Subpage;
 
 }  // namespace mojom
@@ -33,6 +34,8 @@ constexpr OsSettingsIdentifier kKeyboardOsSettingsId = {
     .subpage = mojom::Subpage::kKeyboard};
 constexpr OsSettingsIdentifier kPerDeviceKeyboardOsSettingsId = {
     .subpage = mojom::Subpage::kPerDeviceKeyboard};
+constexpr OsSettingsIdentifier kKeyboardBlockMetaFkeyRewritesOsSettingsId = {
+    .setting = mojom::Setting::kKeyboardBlockMetaFkeyRewrites};
 
 // Provides a correctly formatted result_id based on `SearchConcept`
 // configuration in `device_section.cc`. Based on private static function in
@@ -40,6 +43,12 @@ constexpr OsSettingsIdentifier kPerDeviceKeyboardOsSettingsId = {
 std::string GetSubpageSearchResultId(OsSettingsIdentifier id, int message_id) {
   std::stringstream ss;
   ss << id.subpage << "," << message_id;
+  return ss.str();
+}
+
+std::string GetSettingsSearchResultId(OsSettingsIdentifier id, int message_id) {
+  std::stringstream ss;
+  ss << id.setting << "," << message_id;
   return ss.str();
 }
 
@@ -119,7 +128,11 @@ TEST_F(DeviceSectionTest, SearchResultChangeToSettingsSplitWithFlag) {
 
   std::string result_id = GetSubpageSearchResultId(
       kPerDeviceKeyboardOsSettingsId, IDS_OS_SETTINGS_TAG_KEYBOARD);
+  std::string switch_top_row_key_id = GetSettingsSearchResultId(
+      kKeyboardBlockMetaFkeyRewritesOsSettingsId,
+      IDS_OS_SETTINGS_TAG_KEYBOARD_BLOCK_META_FKEY_COMBO_REWRITES);
   EXPECT_TRUE(search_tag_registry()->GetTagMetadata(result_id));
+  EXPECT_TRUE(search_tag_registry()->GetTagMetadata(switch_top_row_key_id));
 }
 
 // Verify registry updated with regular settings search tags when flag is
@@ -131,7 +144,11 @@ TEST_F(DeviceSectionTest, SearchResultChangeBackWithoutFlag) {
 
   std::string result_id = GetSubpageSearchResultId(
       kKeyboardOsSettingsId, IDS_OS_SETTINGS_TAG_KEYBOARD);
+  std::string switch_top_row_key_id = GetSettingsSearchResultId(
+      kKeyboardBlockMetaFkeyRewritesOsSettingsId,
+      IDS_OS_SETTINGS_TAG_KEYBOARD_BLOCK_META_FKEY_COMBO_REWRITES);
   EXPECT_TRUE(search_tag_registry()->GetTagMetadata(result_id));
+  EXPECT_FALSE(search_tag_registry()->GetTagMetadata(switch_top_row_key_id));
 }
 
 }  // namespace ash::settings
