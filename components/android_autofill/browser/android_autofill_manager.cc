@@ -38,10 +38,6 @@ base::WeakPtr<AutofillManager> AndroidAutofillManager::GetWeakPtr() {
   return weak_ptr_factory_.GetWeakPtr();
 }
 
-AutofillOfferManager* AndroidAutofillManager::GetOfferManager() {
-  return nullptr;
-}
-
 CreditCardAccessManager* AndroidAutofillManager::GetCreditCardAccessManager() {
   return nullptr;
 }

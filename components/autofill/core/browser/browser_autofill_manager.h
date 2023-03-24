@@ -239,7 +239,6 @@ class BrowserAutofillManager : public AutofillManager,
 
   // AutofillManager:
   base::WeakPtr<AutofillManager> GetWeakPtr() override;
-  AutofillOfferManager* GetOfferManager() override;
   CreditCardAccessManager* GetCreditCardAccessManager() override;
   bool ShouldClearPreviewedForm() override;
   void OnFocusNoLongerOnFormImpl(bool had_interacted_form) override;
@@ -778,11 +777,6 @@ class BrowserAutofillManager : public AutofillManager,
 
   // The credit card access manager, used to access local and server cards.
   std::unique_ptr<CreditCardAccessManager> credit_card_access_manager_;
-
-  // The autofill offer manager, used to to retrieve offers for card
-  // suggestions. Initialized when BrowserAutofillManager is created.
-  // |offer_manager_| is never null.
-  raw_ptr<AutofillOfferManager> offer_manager_;
 
   // Helper class to generate Autofill suggestions.
   std::unique_ptr<AutofillSuggestionGenerator> suggestion_generator_;

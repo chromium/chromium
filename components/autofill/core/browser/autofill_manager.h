@@ -40,7 +40,6 @@ class RectF;
 namespace autofill {
 
 class AutofillField;
-class AutofillOfferManager;
 class CreditCardAccessManager;
 struct FormData;
 struct FormFieldData;
@@ -159,9 +158,6 @@ class AutofillManager
 
   // Returns a WeakPtr to the leaf class.
   virtual base::WeakPtr<AutofillManager> GetWeakPtr() = 0;
-
-  // May return nullptr.
-  virtual AutofillOfferManager* GetOfferManager() = 0;
 
   // May return nullptr.
   virtual CreditCardAccessManager* GetCreditCardAccessManager() = 0;

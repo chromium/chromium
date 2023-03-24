@@ -86,7 +86,6 @@ class MockAutofillManager : public AutofillManager {
   }
 
   MOCK_METHOD(bool, ShouldClearPreviewedForm, (), (override));
-  MOCK_METHOD(AutofillOfferManager*, GetOfferManager, (), (override));
   MOCK_METHOD(CreditCardAccessManager*,
               GetCreditCardAccessManager,
               (),

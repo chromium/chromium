@@ -11,6 +11,7 @@
 #include "chrome/browser/ui/autofill/payments/offer_notification_controller_android.h"
 #include "chrome/test/base/android/android_browser_test.h"
 #include "chrome/test/base/chrome_test_utils.h"
+#include "components/autofill/content/browser/content_autofill_client.h"
 #include "components/autofill/content/browser/content_autofill_driver.h"
 #include "components/autofill/core/browser/autofill_test_utils.h"
 #include "components/autofill/core/browser/data_model/autofill_offer_data.h"
@@ -33,7 +34,9 @@
 
 namespace autofill {
 
-const char kHostName[] = "example.com";
+namespace {
+constexpr char kHostName[] = "example.com";
+}
 
 class OfferNotificationControllerAndroidBrowserTest
     : public AndroidBrowserTest {
@@ -100,10 +103,8 @@ class OfferNotificationControllerAndroidBrowserTest
   }
 
   AutofillOfferManager* GetOfferManager() {
-    return ContentAutofillDriver::GetForRenderFrameHost(
-               GetWebContents()->GetPrimaryMainFrame())
-        ->autofill_manager()
-        ->GetOfferManager();
+    return ContentAutofillClient::FromWebContents(GetWebContents())
+        ->GetAutofillOfferManager();
   }
 
   void SetShownOffer(int64_t id) {
@@ -127,6 +128,7 @@ class OfferNotificationControllerAndroidBrowserTest
   base::test::ScopedFeatureList scoped_feature_list_;
 
  private:
+  test::AutofillBrowserTestEnvironment autofill_environment_;
   raw_ptr<PersonalDataManager> personal_data_;
 };
 

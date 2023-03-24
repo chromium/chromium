@@ -15,6 +15,7 @@
 #include "chrome/browser/ui/views/toolbar/toolbar_view.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
+#include "components/autofill/content/browser/content_autofill_client.h"
 #include "components/autofill/content/browser/content_autofill_driver.h"
 #include "components/autofill/content/browser/test_autofill_manager_injector.h"
 #include "components/autofill/core/common/autofill_clock.h"
@@ -301,10 +302,8 @@ OfferNotificationBubbleViewsTestBase::GetDefaultTestDetailsUrlString() const {
 }
 
 AutofillOfferManager* OfferNotificationBubbleViewsTestBase::GetOfferManager() {
-  return ContentAutofillDriver::GetForRenderFrameHost(
-             GetActiveWebContents()->GetPrimaryMainFrame())
-      ->autofill_manager()
-      ->GetOfferManager();
+  return ContentAutofillClient::FromWebContents(GetActiveWebContents())
+      ->GetAutofillOfferManager();
 }
 
 }  // namespace autofill

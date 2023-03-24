@@ -543,7 +543,6 @@ BrowserAutofillManager::BrowserAutofillManager(AutofillDriver* driver,
       credit_card_form_event_logger_.get());
 
   CountryNames::SetLocaleString(app_locale_);
-  offer_manager_ = client->GetAutofillOfferManager();
 }
 
 BrowserAutofillManager::~BrowserAutofillManager() {
@@ -577,10 +576,6 @@ BrowserAutofillManager::~BrowserAutofillManager() {
 
 base::WeakPtr<AutofillManager> BrowserAutofillManager::GetWeakPtr() {
   return weak_ptr_factory_.GetWeakPtr();
-}
-
-AutofillOfferManager* BrowserAutofillManager::GetOfferManager() {
-  return offer_manager_;
 }
 
 CreditCardAccessManager* BrowserAutofillManager::GetCreditCardAccessManager() {
