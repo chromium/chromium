@@ -259,7 +259,7 @@ SmartLockStateHandler* EasyUnlockService::GetSmartLockStateHandler() {
   if (!smartlock_state_handler_) {
     smartlock_state_handler_ = std::make_unique<SmartLockStateHandler>(
         GetAccountId(), GetHardlockState(),
-        proximity_auth::ScreenlockBridge::Get(), GetProximityAuthPrefManager());
+        proximity_auth::ScreenlockBridge::Get());
   }
   return smartlock_state_handler_.get();
 }
@@ -485,7 +485,6 @@ void EasyUnlockService::SetSmartLockHardlockedState(
 
   if (GetSmartLockStateHandler()) {
     smartlock_state_handler_->SetHardlockState(state);
-    smartlock_state_handler_->MaybeShowHardlockUI();
   }
   if (state != SmartLockStateHandler::NO_HARDLOCK)
     auth_attempt_.reset();

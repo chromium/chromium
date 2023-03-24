@@ -10,10 +10,6 @@
 #include "chromeos/ash/components/proximity_auth/screenlock_bridge.h"
 #include "components/account_id/account_id.h"
 
-namespace proximity_auth {
-class ProximityAuthPrefManager;
-}  // namespace proximity_auth
-
 namespace ash {
 
 enum class SmartLockState;
@@ -42,12 +38,9 @@ class SmartLockStateHandler
   // `initial_hardlock_state`: The initial hardlock state.
   // `screenlock_bridge`: The screenlock bridge used to update the Smart Lock
   //     state.
-  // `pref_manager`: Used primarily to track if the "Signin with Smart Lock is
-  //     disabled" message has been shown before.
   SmartLockStateHandler(const AccountId& account_id,
                         HardlockState initial_hardlock_state,
-                        proximity_auth::ScreenlockBridge* screenlock_bridge,
-                        proximity_auth::ProximityAuthPrefManager* pref_manager);
+                        proximity_auth::ScreenlockBridge* screenlock_bridge);
 
   SmartLockStateHandler(const SmartLockStateHandler&) = delete;
   SmartLockStateHandler& operator=(const SmartLockStateHandler&) = delete;
@@ -69,9 +62,6 @@ class SmartLockStateHandler
   // Updates the hardlock state.
   void SetHardlockState(HardlockState new_state);
 
-  // Shows the hardlock UI if the hardlock_state_ is not NO_HARDLOCK.
-  void MaybeShowHardlockUI();
-
   SmartLockState state() const { return state_; }
 
  private:
@@ -85,8 +75,6 @@ class SmartLockStateHandler
 
   // Forces refresh of the Smart Lock UI.
   void RefreshSmartLockState();
-
-  void ShowHardlockUI();
 
   // Updates icon's tooltip options.
   void UpdateTooltipOptions(
@@ -102,11 +90,9 @@ class SmartLockStateHandler
   SmartLockState state_;
   const AccountId account_id_;
   proximity_auth::ScreenlockBridge* screenlock_bridge_ = nullptr;
-  proximity_auth::ProximityAuthPrefManager* pref_manager_ = nullptr;
 
   // State of hardlock.
   HardlockState hardlock_state_;
-  bool hardlock_ui_shown_ = false;
 
   // Whether the user's phone was ever locked while on the current lock screen.
   bool did_see_locked_phone_ = false;
