@@ -133,9 +133,6 @@
 // YES if the selected cell is visible in the grid.
 @property(nonatomic, readonly, getter=isSelectedCellVisible)
     BOOL selectedCellVisible;
-// YES if the grid should show cell selection updates. This would be set to NO,
-// for example, if the grid was about to be transitioned out of.
-@property(nonatomic, assign) BOOL showsSelectionUpdates;
 // The fraction of the last item of the grid that is visible.
 @property(nonatomic, assign, readonly) CGFloat fractionVisibleOfLastItem;
 // YES when the current contents are hidden from the user before a successful

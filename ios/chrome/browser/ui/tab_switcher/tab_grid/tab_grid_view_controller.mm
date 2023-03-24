@@ -2450,10 +2450,6 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
     return;
   }
 
-  // Update the model with the tab selection, but don't have the grid view
-  // controller display the new selection, since there will be a transition
-  // away from it immediately afterwards.
-  gridViewController.showsSelectionUpdates = NO;
   // Check if the tab being selected is already selected.
   BOOL alreadySelected = NO;
   id<GridCommands> tabsDelegate;
@@ -2503,7 +2499,6 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
   [self.tabPresentationDelegate showActiveTabInPage:self.currentPage
                                        focusOmnibox:NO
                                        closeTabGrid:closeTabGrid];
-  gridViewController.showsSelectionUpdates = YES;
 }
 
 - (void)gridViewController:(GridViewController*)gridViewController

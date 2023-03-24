@@ -175,7 +175,6 @@ NSIndexPath* CreateIndexPath(NSInteger index) {
     _items = [[NSMutableArray<TabSwitcherItem*> alloc] init];
     _selectedEditingItemIDs = [[NSMutableSet<NSString*> alloc] init];
     _selectedSharableEditingItemIDs = [[NSMutableSet<NSString*> alloc] init];
-    _showsSelectionUpdates = YES;
     _dropAnimationInProgress = NO;
     _localDragActionInProgress = NO;
     _notSelectedTabCellOpacity = 1.0;
