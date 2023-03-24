@@ -51,7 +51,7 @@ declare_args() {
   gtest_enable_absl_printers = !is_nacl
 
   # Allows third-party repositories to use C++17 for MSVC builds
-  # TODO(crbug.com/1380553) Remove once ANGLE's MSVC C++20 build passes
+  # TODO(https://crbug.com/pdfium/1932) Remove once pdfium builds on MSVC C++20
   msvc_use_cxx17 = false
 }
 
