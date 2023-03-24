@@ -16,14 +16,8 @@
 class Browser;
 class CompanionSidePanelUntrustedUI;
 
-// Query parameter for the url of the main web content.
-inline constexpr char kUrlQueryParameterKey[] = "url";
-// Query parameter for the Chrome WebUI origin.
-inline constexpr char kOriginQueryParameterKey[] = "origin";
-// Query parameter value for the Chrome WebUI origin. This needs to be different
-// from the WebUI URL constant because it does not include the last '/'.
-inline constexpr char kOriginQueryParameterValue[] =
-    "chrome-untrusted://companion-side-panel.top-chrome";
+namespace companion {
+class CompanionUrlBuilder;
 
 class CompanionPageHandler : public side_panel::mojom::CompanionPageHandler,
                              public content::WebContentsObserver {
@@ -44,24 +38,15 @@ class CompanionPageHandler : public side_panel::mojom::CompanionPageHandler,
   void PrimaryPageChanged(content::Page& page) override;
 
  private:
-  // Notifies the companion page of the initial URL it should load if any.
-  // Otherwise, it will load the zero state.
-  void InitializePage();
-
   // Notifies the companion page of the visible URL when the active tab has
   // changed or when the primary page has changed on the active tab.
   void NotifyURLChanged();
-  bool IsMsbbEnabled();
-
-  // Returns the companion URL that will be loaded in the side panel with the
-  // URL query parameter set to `url_query_param_value` and the origin query
-  // parameter set the to URL of the WebUI.
-  GURL GetCompanionURLWithQueryParams(GURL url_query_param_value);
-  GURL GetHomepageURLForCompanion();
 
   mojo::Receiver<side_panel::mojom::CompanionPageHandler> receiver_;
   mojo::Remote<side_panel::mojom::CompanionPage> page_;
   raw_ptr<CompanionSidePanelUntrustedUI> companion_untrusted_ui_ = nullptr;
+  std::unique_ptr<CompanionUrlBuilder> url_builder_;
 };
+}  // namespace companion
 
 #endif  // CHROME_BROWSER_UI_WEBUI_SIDE_PANEL_COMPANION_COMPANION_PAGE_HANDLER_H_

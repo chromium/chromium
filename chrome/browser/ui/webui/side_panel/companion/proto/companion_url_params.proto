@@ -1,0 +1,30 @@
+// Copyright 2023 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+syntax = "proto3";
+option optimize_for = LITE_RUNTIME;
+
+package companion.proto;
+
+// Information passed to the server side to make a decision on whether or not to
+// show various promos.
+message PromoState {
+  // Number of times the user has denied various promo requests in past.
+  int32 signin_promo_denial_count = 1;
+  int32 msbb_promo_denial_count = 2;
+  int32 labs_promo_denial_count = 3;
+}
+
+// This proto file is shared between Chrome and Server side and used to pack the
+// URL query params for the companion URL request.
+message QueryParams {
+  // URL of the main contents. Empty, if MSBB is off.
+  string page_url = 1;
+
+  // Whether make searches and browsing better has been enabled in the settings.
+  bool has_msbb_enabled = 2;
+
+  // State for driving promo related decisions.
+  PromoState promo_state = 3;
+}

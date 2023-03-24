@@ -20,9 +20,7 @@ interface CompanionPageHandler {
 
 // WebUI page handler for request from Browser side. (C++ -> TypeScript)
 interface CompanionPage {
-  // Initialize the page with the initial main content URL.
-  OnInitializePage(string initial_url);
-
-  // Pass the current main content URL to frontend
+  // Pass the companion URL needed to request the iframe to the frontend for
+  // rendering.
   OnURLChanged(string new_url);
 };

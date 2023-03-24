@@ -55,7 +55,7 @@ void CompanionSidePanelUntrustedUI::BindInterface(
 void CompanionSidePanelUntrustedUI::CreateCompanionPageHandler(
     mojo::PendingReceiver<side_panel::mojom::CompanionPageHandler> receiver,
     mojo::PendingRemote<side_panel::mojom::CompanionPage> page) {
-  companion_page_handler_ = std::make_unique<CompanionPageHandler>(
+  companion_page_handler_ = std::make_unique<companion::CompanionPageHandler>(
       std::move(receiver), std::move(page), browser_, this);
 }
 
