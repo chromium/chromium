@@ -774,50 +774,7 @@ TEST_F(PaymentsClientTest,
   EXPECT_EQ(AutofillClient::PaymentsRpcResult::kPermanentFailure, result_);
 }
 
-TEST_F(PaymentsClientTest, VirtualCardRiskBasedYellowPathResponse_CvcFlagOff) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndDisableFeature(
-      features::kAutofillEnableCvcForVcnYellowPath);
-  StartUnmasking(CardUnmaskOptions().with_virtual_card_risk_based());
-  IssueOAuthToken();
-  ReturnResponse(
-      net::HTTP_OK,
-      "{ \"fido_request_options\": { \"challenge\": \"fake_fido_challenge\" }, "
-      "\"context_token\": \"fake_context_token\", \"idv_challenge_options\": "
-      "[{ \"sms_otp_challenge_option\": { \"challenge_id\": "
-      "\"fake_challenge_id_1\", \"masked_phone_number\": \"(***)-***-1234\" } "
-      "}, { \"sms_otp_challenge_option\": { \"challenge_id\": "
-      "\"fake_challenge_id_2\", \"masked_phone_number\": \"(***)-***-5678\" } "
-      "}, { \"cvc_challenge_option\": { \"challenge_id\": "
-      "\"fake_challenge_id_3\", \"cvc_length\": 3, \"cvc_position\": "
-      "\"CVC_POSITION_BACK\"}}]}");
-
-  // Ensure that it's not treated as failure when no pan is returned.
-  EXPECT_EQ(AutofillClient::PaymentsRpcResult::kSuccess, result_);
-  EXPECT_EQ("fake_context_token", unmask_response_details_->context_token);
-  // Verify the FIDO request challenge is correctly parsed.
-  EXPECT_EQ(
-      "fake_fido_challenge",
-      *unmask_response_details_->fido_request_options->FindString("challenge"));
-  // Verify the two idv challenge options are both sms challenge and fields can
-  // be correctly parsed.
-  ASSERT_EQ(2u, unmask_response_details_->card_unmask_challenge_options.size());
-  const CardUnmaskChallengeOption& challenge_option_1 =
-      unmask_response_details_->card_unmask_challenge_options[0];
-  EXPECT_EQ(CardUnmaskChallengeOptionType::kSmsOtp, challenge_option_1.type);
-  EXPECT_EQ("fake_challenge_id_1", challenge_option_1.id.value());
-  EXPECT_EQ(u"(***)-***-1234", challenge_option_1.challenge_info);
-  const CardUnmaskChallengeOption& challenge_option_2 =
-      unmask_response_details_->card_unmask_challenge_options[1];
-  EXPECT_EQ(CardUnmaskChallengeOptionType::kSmsOtp, challenge_option_2.type);
-  EXPECT_EQ("fake_challenge_id_2", challenge_option_2.id.value());
-  EXPECT_EQ(u"(***)-***-5678", challenge_option_2.challenge_info);
-}
-
-TEST_F(PaymentsClientTest, VirtualCardRiskBasedYellowPathResponse_CvcFlagOn) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(
-      features::kAutofillEnableCvcForVcnYellowPath);
+TEST_F(PaymentsClientTest, VirtualCardRiskBasedYellowPathResponse) {
   StartUnmasking(CardUnmaskOptions().with_virtual_card_risk_based());
   IssueOAuthToken();
   ReturnResponse(

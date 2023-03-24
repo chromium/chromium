@@ -47,14 +47,6 @@ BASE_FEATURE(kAutofillEnableCardProductName,
              "AutofillEnableCardProductName",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// When enabled, if the user encounters the yellow path (challenge path) in the
-// VCN retrieval flow and the server denotes that the card is eligible for CVC
-// authentication, CVC authentication will be offered as one of the challenge
-// options.
-BASE_FEATURE(kAutofillEnableCvcForVcnYellowPath,
-             "AutofillEnableCvcForVcnYellowPath",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // When enabled, user's will see network card art images and network icons which
 // are larger, having a white border, and don't have the standard grey overlay
 // applied to them.

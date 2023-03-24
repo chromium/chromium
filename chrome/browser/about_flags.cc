@@ -9446,12 +9446,6 @@ const FeatureEntry kFeatureEntries[] = {
      kOsAndroid | kOsDesktop,
      FEATURE_VALUE_TYPE(features::kEnableWebUsbOnExtensionServiceWorker)},
 
-    {"autofill-enable-cvc-for-vcn-yellow-path",
-     flag_descriptions::kAutofillEnableCvcForVcnYellowPathName,
-     flag_descriptions::kAutofillEnableCvcForVcnYellowPathDescription, kOsAll,
-     FEATURE_VALUE_TYPE(
-         autofill::features::kAutofillEnableCvcForVcnYellowPath)},
-
 #if BUILDFLAG(IS_CHROMEOS_ASH)
     {"enable-holding-space-predictability",
      flag_descriptions::kHoldingSpacePredictabilityName,

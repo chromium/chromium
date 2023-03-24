@@ -142,9 +142,7 @@ CardUnmaskChallengeOption ParseCardUnmaskChallengeOption(
   // Check if it's a CVC challenge option, and if it is, set
   // `defined_challenge_option` to the defined challenge option found, parse the
   // challenge option, and return it.
-  else if (base::FeatureList::IsEnabled(
-               features::kAutofillEnableCvcForVcnYellowPath) &&
-           (defined_challenge_option =
+  else if ((defined_challenge_option =
                 challenge_option.FindDict("cvc_challenge_option"))) {
     ParseAsCvcChallengeOption(defined_challenge_option,
                               &parsed_challenge_option);

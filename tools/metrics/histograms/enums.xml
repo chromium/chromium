@@ -59006,7 +59006,6 @@ from previous Chrome versions.
   <int value="-1454264660" label="ProminentDarkModeActiveTabTitle:disabled"/>
   <int value="-1453647118" label="PasswordLeakDetection:disabled"/>
   <int value="-1452786530" label="ChromeOSZramWriteback:enabled"/>
-  <int value="-1452408727" label="AutofillEnableCvcForVcnYellowPath:enabled"/>
   <int value="-1452010225" label="WindowNaming:disabled"/>
   <int value="-1451644187" label="OverviewSwipeToClose:enabled"/>
   <int value="-1450657485" label="EnableHardwareMirrorMode:enabled"/>
@@ -60362,7 +60361,6 @@ from previous Chrome versions.
   <int value="-718884399" label="NewTabPageUIMd:enabled"/>
   <int value="-718626298" label="SysInternals:enabled"/>
   <int value="-718485659" label="OmniboxGroupingFrameworkForNonZPS:enabled"/>
-  <int value="-717339133" label="AutofillEnableCvcForVcnYellowPath:disabled"/>
   <int value="-716965886" label="NtpRealboxRoundedCorners:disabled"/>
   <int value="-716953514" label="disable-password-separated-signin-flow"/>
   <int value="-716272467" label="AssistantAppSupport:disabled"/>

@@ -54,10 +54,7 @@ void CardUnmaskAuthenticationSelectionDialogControllerImpl::ShowDialog(
     return;
 
   CHECK(!challenge_options.empty());
-  challenge_options_ =
-      base::FeatureList::IsEnabled(features::kAutofillEnableCvcForVcnYellowPath)
-          ? challenge_options
-          : std::vector<CardUnmaskChallengeOption>{challenge_options[0]};
+  challenge_options_ = challenge_options;
 
   confirm_unmasking_method_callback_ =
       std::move(confirm_unmasking_method_callback);
