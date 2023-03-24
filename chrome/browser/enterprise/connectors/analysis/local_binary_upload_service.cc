@@ -714,7 +714,7 @@ void LocalBinaryUploadService::StartConnectionRetry() {
   if (!connection_retry_timer_.IsRunning()) {
     ++retry_count_;
     connection_retry_timer_.Start(
-        FROM_HERE, retry_count_ * base::Seconds(1),
+        FROM_HERE, retry_count_ * base::Milliseconds(100),
         base::BindOnce(&LocalBinaryUploadService::OnConnectionRetry,
                        factory_.GetWeakPtr()));
   }

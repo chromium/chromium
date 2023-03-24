@@ -38,7 +38,7 @@ class LocalBinaryUploadService : public safe_browsing::BinaryUploadService {
   // The maximum number of reconnection retries chrome will attempt when an
   // error occurs with the agent communication.  Once this is reached chrome
   // will no longer attempt to connect to the agent until it restarts.
-  static constexpr size_t kMaxRetryCount = 5;
+  static constexpr size_t kMaxRetryCount = 1;
 
   // The maximum amount of time chrome will wait for a verdict from the local
   // content analysis agent.
