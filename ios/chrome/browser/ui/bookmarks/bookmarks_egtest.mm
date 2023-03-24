@@ -131,6 +131,16 @@ using chrome_test_util::TappableBookmarkNodeWithLabel;
   [BookmarkEarlGrey verifyBookmarksWithTitle:@"my bookmark" expectedCount:1];
 }
 
+// Regression test for crbug.com/1426259.
+// Tests that there is no crash when opening from incognito tab.
+- (void)testOpeningBookmarksInIncognitoMode {
+  [ChromeEarlGrey openNewIncognitoTab];
+
+  [BookmarkEarlGrey setupStandardBookmarks];
+  [BookmarkEarlGreyUI openBookmarks];
+  [BookmarkEarlGreyUI openMobileBookmarks];
+}
+
 // Tests that changes to the parent folder from the Single Bookmark Editor
 // are saved to the bookmark only when saving the results.
 - (void)testMoveDoesSaveOnSave {
