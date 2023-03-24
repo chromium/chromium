@@ -1537,6 +1537,8 @@ source_set("ash") {
     "login/app_mode/force_install_observer.h",
     "login/app_mode/kiosk_launch_controller.cc",
     "login/app_mode/kiosk_launch_controller.h",
+    "login/app_mode/network_ui_controller.cc",
+    "login/app_mode/network_ui_controller.h",
     "login/auth/chrome_login_performer.cc",
     "login/auth/chrome_login_performer.h",
     "login/auth/chrome_safe_mode_delegate.cc",

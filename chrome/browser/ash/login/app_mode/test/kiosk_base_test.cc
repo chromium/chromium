@@ -16,9 +16,11 @@
 #include "base/logging.h"
 #include "base/run_loop.h"
 #include "base/test/bind.h"
+#include "base/test/test_future.h"
 #include "base/values.h"
 #include "chrome/browser/ash/app_mode/kiosk_app_manager.h"
 #include "chrome/browser/ash/login/app_mode/kiosk_launch_controller.h"
+#include "chrome/browser/ash/login/app_mode/network_ui_controller.h"
 #include "chrome/browser/ash/login/startup_utils.h"
 #include "chrome/browser/ash/login/test/js_checker.h"
 #include "chrome/browser/ash/login/test/kiosk_apps_mixin.h"
@@ -185,7 +187,7 @@ void KioskBaseTest::SetUpOnMainThread() {
 void KioskBaseTest::TearDownOnMainThread() {
   owner_settings_service_.reset();
   settings_helper_.RestoreRealDeviceSettingsProvider();
-  KioskLaunchController::SetNetworkTimeoutCallbackForTesting(nullptr);
+  NetworkUiController::SetNetworkTimeoutCallbackForTesting(nullptr);
 
   OobeBaseTest::TearDownOnMainThread();
 }
@@ -323,16 +325,11 @@ void KioskBaseTest::WaitForAppLaunchSuccess() {
 }
 
 void KioskBaseTest::WaitForAppLaunchNetworkTimeout() {
-  if (GetKioskLaunchController()->network_wait_timedout()) {
-    return;
-  }
-
-  base::RunLoop loop;
-  base::OnceClosure callback =
-      base::BindOnce(&OnNetworkWaitTimedOut, loop.QuitClosure());
-  KioskLaunchController::SetNetworkTimeoutCallbackForTesting(&callback);
-  loop.Run();
-  ASSERT_TRUE(GetKioskLaunchController()->network_wait_timedout());
+  base::test::TestFuture<void> network_timeout_future;
+  base::OnceClosure callback = base::BindOnce(
+      &OnNetworkWaitTimedOut, network_timeout_future.GetCallback());
+  NetworkUiController::SetNetworkTimeoutCallbackForTesting(&callback);
+  ASSERT_TRUE(network_timeout_future.Wait());
 }
 
 void KioskBaseTest::RunAppLaunchNetworkDownTest() {
@@ -350,7 +347,8 @@ void KioskBaseTest::RunAppLaunchNetworkDownTest() {
   test::OobeJS().ExpectVisiblePath(kConfigNetwork);
 
   // Configure network should bring up lock screen for owner.
-  static_cast<AppLaunchSplashScreenView::Delegate*>(GetKioskLaunchController())
+  GetKioskLaunchController()
+      ->GetNetworkUiControllerForTesting()
       ->OnConfigureNetwork();
   EXPECT_FALSE(LoginScreenTestApi::IsOobeDialogVisible());
   // There should be only one owner pod on this screen.

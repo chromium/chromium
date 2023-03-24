@@ -17,6 +17,7 @@
 #include "chrome/browser/ash/app_mode/kiosk_app_types.h"
 #include "chrome/browser/ash/app_mode/kiosk_profile_loader.h"
 #include "chrome/browser/ash/login/app_mode/force_install_observer.h"
+#include "chrome/browser/ash/login/app_mode/network_ui_controller.h"
 #include "chrome/browser/ui/webui/ash/login/app_launch_splash_screen_handler.h"
 
 namespace app_mode {
@@ -82,9 +83,8 @@ void SetKioskLaunchStateCrashKey(KioskLaunchState state);
 // It is all encompassed within the combination of two states -- AppState and
 // NetworkUI state.
 class KioskLaunchController : public KioskProfileLoader::Delegate,
-                              public AppLaunchSplashScreenView::Delegate,
-                              public KioskAppLauncher::NetworkDelegate,
-                              public KioskAppLauncher::Observer {
+                              public KioskAppLauncher::Observer,
+                              public NetworkUiController::Observer {
  public:
   class KioskProfileLoadFailedObserver : public base::CheckedObserver {
    public:
@@ -120,18 +120,12 @@ class KioskLaunchController : public KioskProfileLoader::Delegate,
   [[nodiscard]] static std::unique_ptr<base::AutoReset<bool>>
   BlockAppLaunchForTesting();
   [[nodiscard]] static base::AutoReset<bool> BlockExitOnFailureForTesting();
-  static void SetNetworkTimeoutCallbackForTesting(base::OnceClosure* callback);
-  static void SetCanConfigureNetworkCallbackForTesting(
-      ReturnBoolCallback* callback);
-  static void SetNeedOwnerAuthToConfigureNetworkCallbackForTesting(
-      ReturnBoolCallback* callback);
 
   bool waiting_for_network() const {
     return app_state_ == AppState::kInitNetwork;
   }
-  bool network_wait_timedout() const { return network_wait_timedout_; }
   bool showing_network_dialog() const {
-    return network_ui_state_ == NetworkUIState::kShowing;
+    return network_ui_controller_->IsShowingNetworkConfigScreen();
   }
 
   void Start(const KioskAppId& kiosk_app_id, bool auto_launch);
@@ -143,6 +137,18 @@ class KioskLaunchController : public KioskProfileLoader::Delegate,
       KioskProfileLoadFailedObserver* observer);
 
   bool HandleAccelerator(LoginAcceleratorAction action);
+
+  // `NetworkUiController::Observer`:
+  void OnNetworkConfigureUiShowing() override;
+  void OnNetworkConfigureUiFinished() override;
+  void OnNetworkReady() override;
+  void OnNetworkLost() override;
+
+  // Currently required for testing
+  NetworkUiController::NetworkUIState GetNetworkUiStateForTesting() const {
+    return network_ui_controller_->GetNetworkUiStateForTesting();
+  }
+  NetworkUiController* GetNetworkUiControllerForTesting();
 
  private:
   friend class KioskLaunchControllerTest;
@@ -158,30 +164,10 @@ class KioskLaunchController : public KioskProfileLoader::Delegate,
     kInitNetwork,  // Waiting for the network to initialize.
   };
 
-  enum NetworkUIState {
-    kNotShowing = 0,     // Network configure UI is not being shown.
-    kNeedToShow,         // We need to show the UI as soon as we can.
-    kShowing,            // Network configure UI is being shown.
-    kWaitingForNetwork,  // App requested network. In this case we first wait
-                         // for 10s to see if network appears. If it does, we
-                         // continue the app launch, otherwise we show the
-                         // config network UI
-  };
-
   void OnCancelAppLaunch();
   void OnNetworkConfigRequested();
   void InitializeKeyboard();
   void InitializeLauncher();
-
-  // `AppLaunchSplashScreenView::Delegate`
-  void OnConfigureNetwork() override;
-  void OnNetworkConfigFinished() override;
-  void OnNetworkStateChanged(bool online) override;
-
-  // `KioskAppLauncher::NetworkDelegate`
-  void InitializeNetwork() override;
-  bool IsNetworkReady() const override;
-  bool IsShowingNetworkConfigScreen() const override;
 
   // `KioskAppLauncher::Observer`
   void OnLaunchFailed(KioskAppLaunchError::Error error) override;
@@ -201,14 +187,6 @@ class KioskLaunchController : public KioskProfileLoader::Delegate,
 
   // Whether the network could be configured during launching.
   bool CanConfigureNetwork();
-  // Whether the owner password is needed to configure network.
-  bool NeedOwnerAuthToConfigureNetwork();
-  // Shows network configuration dialog if kiosk profile was already created or
-  // postpones the display upon creation.
-  void MaybeShowNetworkConfigureUI();
-  // Shows the network configuration dialog.
-  void ShowNetworkConfigureUI();
-  void CloseNetworkConfigureScreenIfOnline();
 
   void HandleWebAppInstallFailed();
 
@@ -217,7 +195,6 @@ class KioskLaunchController : public KioskProfileLoader::Delegate,
   void FinishForcedExtensionsInstall(
       app_mode::ForceInstallObserver::Result result);
 
-  void OnNetworkWaitTimedOut();
   void OnNetworkOnline();
   void OnNetworkOffline();
   void OnTimerFire();
@@ -229,8 +206,6 @@ class KioskLaunchController : public KioskProfileLoader::Delegate,
 
   // Current state of the controller.
   AppState app_state_ = AppState::kCreatingProfile;
-  // Current state of network configure dialog.
-  NetworkUIState network_ui_state_ = NetworkUIState::kNotShowing;
 
   // Not owned, destructed upon shutdown.
   raw_ptr<LoginDisplayHost> const host_;
@@ -241,12 +216,10 @@ class KioskLaunchController : public KioskProfileLoader::Delegate,
   // Not owned.
   raw_ptr<Profile> profile_ = nullptr;
   const KioskAppLauncherFactory app_launcher_factory_;
+  std::unique_ptr<NetworkUiController> network_ui_controller_;
 
   // Whether app should be launched as soon as it is ready.
   bool launch_on_install_ = false;
-  bool network_wait_timedout_ = false;
-  // Whether the network is required for the installation.
-  bool network_required_ = false;
 
   // Whether the controller has already been cleaned-up.
   bool cleaned_up_ = false;
