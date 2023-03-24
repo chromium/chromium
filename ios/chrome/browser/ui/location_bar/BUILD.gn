@@ -74,7 +74,6 @@ source_set("location_bar") {
     "//ios/chrome/browser/ui/omnibox/popup",
     "//ios/chrome/browser/ui/orchestrator:orchestrator",
     "//ios/chrome/browser/ui/toolbar/buttons",
-    "//ios/chrome/browser/ui/toolbar/public",
     "//ios/chrome/browser/ui/voice",
     "//ios/chrome/browser/url_loading",
     "//ios/chrome/browser/web",

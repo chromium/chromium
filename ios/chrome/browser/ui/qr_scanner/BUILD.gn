@@ -46,7 +46,6 @@ source_set("coordinator") {
     "//ios/chrome/browser/shared/public/commands",
     "//ios/chrome/browser/ui/main:scene_state_header",
     "//ios/chrome/browser/ui/scanner",
-    "//ios/chrome/browser/ui/toolbar/public",
   ]
 }
 

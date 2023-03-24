@@ -27,6 +27,7 @@ source_set("incognito") {
     "//ios/chrome/browser/ui/ntp:constants",
     "//ios/chrome/browser/ui/ntp:ntp_internal",
     "//ios/chrome/browser/ui/toolbar/public",
+    "//ios/chrome/browser/ui/toolbar/public:constants",
     "//ios/chrome/browser/url_loading",
     "//ios/chrome/common:string_util",
     "//ios/chrome/common/ui/colors",

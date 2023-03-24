@@ -13,6 +13,7 @@ source_set("public") {
     "toolbar_utils.mm",
   ]
   deps = [
+    ":constants",
     "//base",
     "//ios/chrome/browser/shared/ui/util",
     "//ios/chrome/browser/ui/bubble",
@@ -21,7 +22,6 @@ source_set("public") {
     "//ios/chrome/common/ui/util",
     "//ios/components/ui_util",
   ]
-  public_deps = [ ":constants" ]
 }
 
 source_set("constants") {

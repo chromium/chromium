@@ -36,6 +36,7 @@ source_set("side_swipe") {
     "//ios/chrome/browser/ui/tab_switcher/tab_grid/grid:grid_ui_constants",
     "//ios/chrome/browser/ui/tabs/requirements",
     "//ios/chrome/browser/ui/toolbar/public",
+    "//ios/chrome/browser/ui/toolbar/public:constants",
     "//ios/chrome/browser/url",
     "//ios/chrome/browser/url:constants",
     "//ios/chrome/browser/web",
