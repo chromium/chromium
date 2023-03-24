@@ -173,7 +173,7 @@ void TestBrowserAutofillManager::StoreUploadVotesAndLogQualityCallback(
 }
 
 const gfx::Image& TestBrowserAutofillManager::GetCardImage(
-    const CreditCard& credit_card) const {
+    const CreditCard& credit_card) {
   return card_image_;
 }
 

@@ -362,10 +362,6 @@ class BrowserAutofillManager : public AutofillManager,
     return address_form_event_logger_->form_interactions_flow_id_for_test();
   }
 
-  PersonalDataManager& personal_data_manager_for_test() const {
-    return *personal_data_;
-  }
-
   void set_single_field_form_fill_router_for_test(
       std::unique_ptr<SingleFieldFormFillRouter> router) {
     single_field_form_fill_router_ = std::move(router);
@@ -435,7 +431,7 @@ class BrowserAutofillManager : public AutofillManager,
 
   // Returns the card image for `credit_card`. If the `credit_card` has a card
   // art image linked, prefer it. Otherwise fall back to the network icon.
-  virtual const gfx::Image& GetCardImage(const CreditCard& credit_card) const;
+  virtual const gfx::Image& GetCardImage(const CreditCard& credit_card);
 
   // AutofillManager:
   void OnFormSubmittedImpl(const FormData& form,
@@ -736,16 +732,6 @@ class BrowserAutofillManager : public AutofillManager,
   std::unique_ptr<TouchToFillDelegate> touch_to_fill_delegate_;
 
   std::string app_locale_;
-
-  // The personal data manager, used to save and load personal data to/from the
-  // web database. Set when this BrowserAutofillManager is initialized. This is
-  // overridden by the BrowserAutofillManagerTest.
-  // Weak reference.
-  // May be nullptr. Nullptr indicates that we are on an unsupported platform,
-  // for example android webview.
-  // In OTR mode, on supported platforms, `personal_data_` will represent the
-  // original profile's PersonalDataManager.
-  raw_ptr<PersonalDataManager> personal_data_;
 
   // Used to help fill data into fields.
   FieldFiller field_filler_;

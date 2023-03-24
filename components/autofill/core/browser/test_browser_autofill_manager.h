@@ -71,7 +71,7 @@ class TestBrowserAutofillManager : public BrowserAutofillManager {
                                 base::TimeTicks interaction_time,
                                 base::TimeTicks submission_time,
                                 bool observed_submission) override;
-  const gfx::Image& GetCardImage(const CreditCard& credit_card) const override;
+  const gfx::Image& GetCardImage(const CreditCard& credit_card) override;
   bool MaybeStartVoteUploadProcess(
       std::unique_ptr<FormStructure> form_structure,
       bool observed_submission) override;
