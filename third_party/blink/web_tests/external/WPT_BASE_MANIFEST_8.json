@@ -135657,6 +135657,32 @@
       ]
      ],
      "image-set": {
+      "image-set-calc-x-rendering-2.html": [
+       "b7c02fce25d45b9b0be8f673bc144a8b4a698450",
+       [
+        null,
+        [
+         [
+          "/css/css-images/image-set/reference/image-set-rendering-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "image-set-calc-x-rendering.html": [
+       "a5444fd76901a402578eaf54b28a4d0563f90a64",
+       [
+        null,
+        [
+         [
+          "/css/css-images/image-set/reference/image-set-rendering-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
       "image-set-conic-gradient-rendering.html": [
        "e4f426471a7e11fc935456fac7b71e173d846d38",
        [
@@ -241872,6 +241898,19 @@
        {}
       ]
      ],
+     "mq-calc-resolution.html": [
+      "da649eb753f4ca0b1854147fe233c2ab966d3520",
+      [
+       null,
+       [
+        [
+         "/css/reference/ref-filled-green-100px-square.xht",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
      "mq-case-insensitive-001.html": [
       "c851662343dcfcff5a0d39d37d849f9e0ff8c667",
       [
@@ -267331,11 +267370,11 @@
   "support": {
    ".cache": {
     "gitignore2.json": [
-     "6c5b73875f0615c22d09b0917fd9ff5437376cea",
+     "ae51dd543eb97d7a48569fb96d6cbb36e951682f",
      []
     ],
     "mtime.json": [
-     "9502f88512135244d7075f132926dbda288c4931",
+     "5ec44b1ac823445d2b36626e0e62ca841f1aaf5d",
      []
     ]
    },
@@ -267607,7 +267646,7 @@
      []
     ],
     "back-forward-cache-open-connection.window.js.ini": [
-     "e9ec6bf98544bbbf3bf03b0aca3ccbfdef063eb6",
+     "2e5b648c4e75b94fe85accbf7b71f025b55e4862",
      []
     ],
     "back-forward-cache-open-transaction.window.js.ini": [
@@ -268532,8 +268571,32 @@
      "88e7d924aa67645938190a6570f5026233779702",
      []
     ],
+    "animate-multiple-effects-on-different-targets-via-main-thread.https.html.ini": [
+     "3965f1e032aeba9ebd0a04460da0f35fb717e04d",
+     []
+    ],
+    "animate-non-accelerated-property.https.html.ini": [
+     "9eaa6924f8ad097c18bc155cd229dae7de8763c4",
+     []
+    ],
+    "animation-worklet-inside-iframe.https.html.ini": [
+     "d2fc442462400bf621b606ea13a7cfe28d585417",
+     []
+    ],
+    "animator-with-options.https.html.ini": [
+     "960b25584fbfdfed6befad8ef8ba2209ae1b0a48",
+     []
+    ],
+    "cancel-non-accelerated-property.https.html.ini": [
+     "bd9a0b08a05c5791c429436e394da9e450d279f7",
+     []
+    ],
     "common.js": [
      "ceb430b718b8438c933071b1dd24240ab13bf562",
+     []
+    ],
+    "current-time.https.html.ini": [
+     "24e7605278ebc9884a14ddd109fd87e15a7793d1",
      []
     ],
     "idlharness.any-expected.txt": [
@@ -268541,7 +268604,7 @@
      []
     ],
     "idlharness.any.js.ini": [
-     "ffa2e4b43d1cf84188880b580b867e20e49bd965",
+     "00a012aa962ba962aace647592e65702a3380425",
      []
     ],
     "idlharness.any.worker-expected.txt": [
@@ -268549,11 +268612,15 @@
      []
     ],
     "inactive-timeline.https.html.ini": [
-     "106c4b522809618f35b116c63cad7bcdff2e0f9a",
+     "4b906bd2342559934cecd2265ed3a07016d40d4b",
+     []
+    ],
+    "multiple-effects-on-same-target-driven-by-individual-local-time.https.html.ini": [
+     "d2d3b4e093b5f833f3bcd47283f13eb715fccf01",
      []
     ],
     "playback-rate.https.html.ini": [
-     "95b3d38bfbbf8274b43d12052de9fff87d5482ed",
+     "25886b86f7e0cbda307f2d631977ec28128633c2",
      []
     ],
     "references": {
@@ -268577,23 +268644,107 @@
      ]
     },
     "scroll-timeline-writing-modes.https.html.ini": [
-     "72204df6de3ef6b64726246dba4437a97b156b42",
+     "0d6dd8a501192020fc32e07fd1c8f1dc928863e0",
+     []
+    ],
+    "stateful-animator.https.html.ini": [
+     "6e22ffb624994bc5d84bf1e98c5464b6606a7320",
+     []
+    ],
+    "worklet-animation-animator-name.https.html.ini": [
+     "600f5c9c96846435e106ed526b2c471e38a6b69e",
+     []
+    ],
+    "worklet-animation-cancel.https.html.ini": [
+     "8eabd72c233dd8cd7c513c9c1de8c9a8e4f0d47b",
      []
     ],
     "worklet-animation-creation.https.html.ini": [
-     "cff9ef9b43ace0330c5fdb882e118bfe7454a01f",
+     "e3a37fa10c1b2d5f4d89a7f67a1253abcc46b06c",
+     []
+    ],
+    "worklet-animation-duration.https.html.ini": [
+     "beabec8056c26b7c09747b87e0f12cdcf75eec7f",
+     []
+    ],
+    "worklet-animation-get-computed-timing-progress-on-worklet-thread.https.html.ini": [
+     "a5ede0a232a8a5250d9daee914acc9cc5938f9c5",
+     []
+    ],
+    "worklet-animation-get-timing-on-worklet-thread.https.html.ini": [
+     "694e0daad472d21ac89b534b40fe3adf3805f104",
+     []
+    ],
+    "worklet-animation-local-time-after-duration.https.html.ini": [
+     "59a7fc77ce65da47355b4c99fa7dca2060b7745c",
+     []
+    ],
+    "worklet-animation-local-time-before-start.https.html.ini": [
+     "d0f0108c678ec80a12b355561dd3573b7752c37e",
+     []
+    ],
+    "worklet-animation-local-time-null-1.https.html.ini": [
+     "9e229ba9508ebe81d3c8bf4adea85ce700692ec6",
      []
     ],
     "worklet-animation-local-time-null-2-ref.html": [
      "3b7a2b9258d0c2a210aaa389fadc3787c0da93a5",
      []
     ],
+    "worklet-animation-local-time-null-2.https.html.ini": [
+     "c5c79208424782f15542cfeeb81c92e4f76affed",
+     []
+    ],
+    "worklet-animation-pause-immediately.https.html.ini": [
+     "273789f178050837e8ab73b3b1aeb52004cba70f",
+     []
+    ],
+    "worklet-animation-pause-resume.https.html.ini": [
+     "fabe0e00bcd4541754e02d248e75930ce2e7b502",
+     []
+    ],
+    "worklet-animation-pause.https.html.ini": [
+     "7882feee373db03ceee82abf125e296ef7029307",
+     []
+    ],
+    "worklet-animation-play.https.html.ini": [
+     "52d94ab26e555672c85e1c924d14cd7c4c6cf1e9",
+     []
+    ],
+    "worklet-animation-set-keyframes.https.html.ini": [
+     "ab47701defc9dc085436ade5e894e0e9569f3fab",
+     []
+    ],
+    "worklet-animation-set-timing.https.html.ini": [
+     "8af5ed5e6b90632ca37aaddaa15afdedfa9d604a",
+     []
+    ],
     "worklet-animation-start-delay-ref.html": [
      "efef6f842bf0f9d3ce05e6335a3f48d17e625167",
      []
     ],
+    "worklet-animation-start-delay.https.html.ini": [
+     "e09e9ac0c985fe907ab4a71610793ee587506978",
+     []
+    ],
+    "worklet-animation-with-effects-from-different-frames.https.html.ini": [
+     "7286082a4a5eca1af9843e683d37a71db5087e57",
+     []
+    ],
+    "worklet-animation-with-fill-mode.https.html.ini": [
+     "a6da9e7f7f1086dde59c0a6ce5095d732f5a60aa",
+     []
+    ],
+    "worklet-animation-with-invalid-effect.https.html.ini": [
+     "1b77811cad07f06fd4903bf3931b5d44c1b35ca2",
+     []
+    ],
     "worklet-animation-with-non-ascii-name-ref.html": [
      "012f6f9d510581f577d8794f31badecb863d0698",
+     []
+    ],
+    "worklet-animation-with-non-ascii-name.https.html.ini": [
+     "9fb75aeadb011deeaa594381fb1d23e7fc360199",
      []
     ],
     "worklet-animation-with-scroll-timeline-and-display-none.https.html.ini": [
@@ -268622,6 +268773,10 @@
     ],
     "worklet-animation-with-scroll-timeline.https.html.ini": [
      "f5cc24c01e5e5e1b3879dcaaaf49cb23732c0fbf",
+     []
+    ],
+    "worklet-animation-without-target.https.html.ini": [
+     "84cb4f29127a941f5908df676debd36a79cd324b",
      []
     ]
    },
@@ -272060,7 +272215,7 @@
         []
        ],
        "worklet-animation.https.html.ini": [
-        "acb0cff14e0d8794a4b5623378a59f340ebd7252",
+        "56956467bb0a7e471cd561fd38672be9515fa773",
         []
        ],
        "worklet-audio-import-data.https-expected.txt": [
@@ -272223,6 +272378,10 @@
        ],
        "worklet-animation.https.html.headers": [
         "cbc7a1b54f7ad52e9d6ae924483c040104f881af",
+        []
+       ],
+       "worklet-animation.https.html.ini": [
+        "b86a23f746cb3ff2f8ca33d95c23cdad2bddfa0b",
         []
        ],
        "worklet-audio-import-data.https-expected.txt": [
@@ -272351,8 +272510,16 @@
         "c75aa51ab414505f610344c00f899c6f8204827b",
         []
        ],
+       "worklet-animation-import-data.https.html.ini": [
+        "d07fb3b5f355ba6c2421cdbb47869d7b9b65fb13",
+        []
+       ],
        "worklet-animation.https.html.headers": [
         "c75aa51ab414505f610344c00f899c6f8204827b",
+        []
+       ],
+       "worklet-animation.https.html.ini": [
+        "b86a23f746cb3ff2f8ca33d95c23cdad2bddfa0b",
         []
        ],
        "worklet-audio-import-data.https.html.headers": [
@@ -272489,8 +272656,16 @@
         "d55f863f727274371606d214d792b9dba0c3dabc",
         []
        ],
+       "worklet-animation-import-data.https.html.ini": [
+        "d07fb3b5f355ba6c2421cdbb47869d7b9b65fb13",
+        []
+       ],
        "worklet-animation.https.html.headers": [
         "d55f863f727274371606d214d792b9dba0c3dabc",
+        []
+       ],
+       "worklet-animation.https.html.ini": [
+        "b86a23f746cb3ff2f8ca33d95c23cdad2bddfa0b",
         []
        ],
        "worklet-audio-import-data.https.html.headers": [
@@ -272595,8 +272770,16 @@
         "59e5c0fc4a31a4b09f371fa1a504c16127a32f73",
         []
        ],
+       "worklet-animation-import-data.https.html.ini": [
+        "d07fb3b5f355ba6c2421cdbb47869d7b9b65fb13",
+        []
+       ],
        "worklet-animation.https.html.headers": [
         "59e5c0fc4a31a4b09f371fa1a504c16127a32f73",
+        []
+       ],
+       "worklet-animation.https.html.ini": [
+        "b86a23f746cb3ff2f8ca33d95c23cdad2bddfa0b",
         []
        ],
        "worklet-audio-import-data.https.html.headers": [
@@ -272672,7 +272855,7 @@
         []
        ],
        "worklet-animation.https.html.ini": [
-        "acb0cff14e0d8794a4b5623378a59f340ebd7252",
+        "56956467bb0a7e471cd561fd38672be9515fa773",
         []
        ],
        "worklet-audio-import-data.https-expected.txt": [
@@ -272733,6 +272916,10 @@
         "0047e9e5edb3ab404f73829e00127146226c9625",
         []
        ],
+       "worklet-animation.https.html.ini": [
+        "b86a23f746cb3ff2f8ca33d95c23cdad2bddfa0b",
+        []
+       ],
        "worklet-audio-import-data.https-expected.txt": [
         "e758ba1ff0e4542079755b67f4ff73e75e525ec9",
         []
@@ -272755,6 +272942,16 @@
        ],
        "worklet-paint-import-data.https.html.ini": [
         "d79d620f4451bbe33b534170cb1efa4c79583f31",
+        []
+       ]
+      },
+      "worker-src-none": {
+       "worklet-animation-import-data.https.html.ini": [
+        "d07fb3b5f355ba6c2421cdbb47869d7b9b65fb13",
+        []
+       ],
+       "worklet-animation.https.html.ini": [
+        "b86a23f746cb3ff2f8ca33d95c23cdad2bddfa0b",
         []
        ]
       },
@@ -272789,6 +272986,24 @@
        ],
        "worker-import.https.html.ini": [
         "4d114e48ff74395c73e9eeb3301da7754225577b",
+        []
+       ],
+       "worklet-animation-import-data.https.html.ini": [
+        "d07fb3b5f355ba6c2421cdbb47869d7b9b65fb13",
+        []
+       ],
+       "worklet-animation.https.html.ini": [
+        "b86a23f746cb3ff2f8ca33d95c23cdad2bddfa0b",
+        []
+       ]
+      },
+      "worker-src-wildcard": {
+       "worklet-animation-import-data.https.html.ini": [
+        "d07fb3b5f355ba6c2421cdbb47869d7b9b65fb13",
+        []
+       ],
+       "worklet-animation.https.html.ini": [
+        "b86a23f746cb3ff2f8ca33d95c23cdad2bddfa0b",
         []
        ]
       }
@@ -282855,16 +283070,8 @@
      }
     },
     "css-anchor-position": {
-     "anchor-default-basics.html.ini": [
-      "d652ce94c54a6f158f5ae79778b70d663c7639f4",
-      []
-     ],
      "anchor-default-ref.html": [
       "4d7de12447c8297b8f0fc04338d80a028a3e9798",
-      []
-     ],
-     "anchor-name-basics.html.ini": [
-      "aba97000ea7f2242c2cc02dc361bdd2a3aa49538",
       []
      ],
      "anchor-position-top-layer-ref.html": [
@@ -282909,10 +283116,6 @@
      ],
      "anchor-scroll-vrl.tentative.html.ini": [
       "4f3fe39eed570ad07ac3bbd3dace1d25d862999e",
-      []
-     ],
-     "position-fallback-basics.html.ini": [
-      "f4fce0703ae73e9f8154d864bdb0916f448c4d4c",
       []
      ],
      "reference": {
@@ -284103,6 +284306,10 @@
      ],
      "border-radius-012-ref.html": [
       "75f7985aa4a9361078c05429b7975c3bf81c77cf",
+      []
+     ],
+     "border-radius-clip-001.html.ini": [
+      "d7b1866b5f11ed9b40c27d7a9969ce42045ff84a",
       []
      ],
      "border-radius-clip-002.htm.ini": [
@@ -302618,14 +302825,6 @@
       []
      ],
      "image-set": {
-      "image-set-parsing-expected.txt": [
-       "02729359d0fb33db5e122ce19a24c652b58ecbc6",
-       []
-      ],
-      "image-set-parsing.html.ini": [
-       "7ab4fb4e4b6d43c4c3297387fd8dac590ccb4abb",
-       []
-      ],
       "image-set-resolution-001-ref.html": [
        "46c4d729ed59525b1a138f1f60aa6e6074251211",
        []
@@ -309531,14 +309730,6 @@
      ],
      "register-property.html.ini": [
       "6a1d5036693e054d22fc94b47401227961a6b2f6",
-      []
-     ],
-     "registered-property-computation-expected.txt": [
-      "b5ca1975fbaa5fbf770b0e2b058ba67d25b35ad4",
-      []
-     ],
-     "registered-property-computation.html.ini": [
-      "ccc985a5a543202804995361f3f4b8711ec7b60f",
       []
      ],
      "registered-property-cssom.html.ini": [
@@ -317617,7 +317808,7 @@
        []
       ],
       "text-transform-capitalize-016.html.ini": [
-       "38beba6e5cb6fa31f957f18a03e4d18288c7ed19",
+       "76a85b163aac3061e477a882d92419275450dbca",
        []
       ],
       "text-transform-capitalize-018.html.ini": [
@@ -322943,7 +323134,7 @@
        ],
        "resources": {
         "testsuite.js": [
-         "9708c5c04fc2510c730a5e1d9aca4eab0aed4ba4",
+         "cecd72ad927cfe239da62b01a2cb31c44c2ec7a0",
          []
         ]
        },
@@ -323430,12 +323621,20 @@
        "14b26723f548de962341d22594eefaf841cec560",
        []
       ],
+      "kind-of-widget-fallback-input-search-background-image-001.html.ini": [
+       "3ae7a3be48e0c50654746f65314e5f406e60672b",
+       []
+      ],
       "kind-of-widget-fallback-input-search-background-position-001.html.ini": [
        "99cd283bfdd9382c317c638a2dc731fb7e36e95e",
        []
       ],
       "kind-of-widget-fallback-input-search-border-bottom-style-001.html.ini": [
        "7f0c55c56c12ea30869cc5b0b212ebfbaa31640f",
+       []
+      ],
+      "kind-of-widget-fallback-input-search-border-bottom-width-001.html.ini": [
+       "9e2554135851da64342ee914bb18d9a08426b423",
        []
       ],
       "kind-of-widget-fallback-input-search-border-inline-end-color-001.html.ini": [
@@ -323472,6 +323671,10 @@
       ],
       "kind-of-widget-fallback-input-search-text-border-block-start-color-001.html.ini": [
        "f57dc9971a753fc62dbe453c8256c6e759225333",
+       []
+      ],
+      "kind-of-widget-fallback-input-search-text-border-block-start-style-001.html.ini": [
+       "80288c76e7432b63b0a724c0bb92ff11f9f6c982",
        []
       ],
       "kind-of-widget-fallback-input-search-text-border-block-start-width-001.html.ini": [
@@ -323684,6 +323887,10 @@
       ],
       "kind-of-widget-fallback-input-text-border-start-end-radius-001.html.ini": [
        "ee737becadbdfae290cdb1d571146cff26e9cce7",
+       []
+      ],
+      "kind-of-widget-fallback-input-text-border-top-color-001.html.ini": [
+       "ba05f649f0ed735eaaec24e14f887181dcc6022a",
        []
       ],
       "kind-of-widget-fallback-input-text-border-top-left-radius-001.html.ini": [
@@ -325325,14 +325532,6 @@
       "bbd995d7f1c39e3bc7338ca9fd4c73a77e148da4",
       []
      ],
-     "calc-infinity-nan-serialize-angle-expected.txt": [
-      "3dfd64ddf2dda313347848c41af2b86a03b2f03f",
-      []
-     ],
-     "calc-infinity-nan-serialize-angle.html.ini": [
-      "95ef8232642319972990848365b3fc614c48d98b",
-      []
-     ],
      "calc-infinity-nan-serialize-length-expected.txt": [
       "56ac7eedc3014f41277191537c026a91971e6f88",
       []
@@ -325342,19 +325541,11 @@
       []
      ],
      "calc-infinity-nan-serialize-resolution-expected.txt": [
-      "65aeaea55f04143f50c89b3ced8b1977a7fef19a",
+      "db917e137f05618d76c99427baf65e461021e799",
       []
      ],
      "calc-infinity-nan-serialize-resolution.html.ini": [
-      "10fd5f24b0b7e03c53b9dbbaf5c95cbf995e9e64",
-      []
-     ],
-     "calc-infinity-nan-serialize-time-expected.txt": [
-      "43afde95b517c8dc93cce4ce80feb453c669f765",
-      []
-     ],
-     "calc-infinity-nan-serialize-time.html.ini": [
-      "eaa5df0674e621dd80219c70678fe9e79b30d41b",
+      "26ac406e8466e7194850b11b29e39da864fdd939",
       []
      ],
      "calc-margin-block-1-ref.html": [
@@ -332966,7 +333157,7 @@
       []
      ],
      "interpolation-testcommon.js": [
-      "283a2d8aaba88802cc451978ba6396078364c47d",
+      "2ee00e457a2277174eb5df78ca22483892d7243e",
       []
      ],
      "numeric-testcommon.js": [
@@ -354166,6 +354357,12 @@
       }
      },
      "editing-0": {
+      "autocapitalization": {
+       "autocapitalize.html.ini": [
+        "798e0de0daf0c1f05ccd6998196db5e6f492b058",
+        []
+       ]
+      },
       "contenteditable": {
        "DIR_METADATA": [
         "a70c6e73fcc9273f0bcf1836f8c830a38e820e0c",
@@ -354815,10 +355012,6 @@
         "394af9a1f37914ea3ed60fc93f1bce46ab06a49a",
         []
        ],
-       "document-base-url-initiated-grand-parent.https.window-expected.txt": [
-        "0f00b10ed387682fb257b26d51c871a61ab16a60",
-        []
-       ],
        "document-base-url-initiated-grand-parent.https.window.js.ini": [
         "d25b70b39e2c0a2d53031c3d85cae1059fbeb506",
         []
@@ -355073,6 +355266,22 @@
        ],
        "figure-ref.html": [
         "a87141be1100197f60943799ec356584abe718ea",
+        []
+       ],
+       "search-styles-expected.txt": [
+        "f9926c87deae93bd2ab0cef146a5664a4c0a51c2",
+        []
+       ],
+       "search-styles-iso-8859-8-expected.txt": [
+        "373390bd7a7368a4f5e848445af2df40db06d0ca",
+        []
+       ],
+       "search-styles-iso-8859-8.html.ini": [
+        "172555a6af52d0650509072940a19a59ad09e9b7",
+        []
+       ],
+       "search-styles.html.ini": [
+        "f54f2a9527724744a9b6fb3a498c9bf6c49e1c44",
         []
        ],
        "support": {
@@ -357734,7 +357943,7 @@
         []
        ],
        "sandbox-top-navigation-grandchild.tentative.sub.window.js.ini": [
-        "9f75e6c22e1a25ff37b85e91c323e102d1f38a0f",
+        "680ce4e0c15432dc5e3d81957ba712f34651f2f6",
         []
        ],
        "stash.py": [
@@ -361638,6 +361847,16 @@
       ],
       "the-input-byte-stream-038.html.headers": [
        "156209f9c81ff73b6aaf1a0734ef770ddf0a8e3e",
+       []
+      ]
+     },
+     "serializing-html-fragments": {
+      "serializing-expected.txt": [
+       "dc32f824f56428314af67688881cebbe1be282a9",
+       []
+      ],
+      "serializing.html.ini": [
+       "eaae0335ee0aa4ed797cc5e14c1207b5fbd2e863",
        []
       ]
      },
@@ -369493,8 +369712,16 @@
         "46e2255e388e9e08377d625b55653a007d59c14e",
         []
        ],
+       "worklet-animation-import-data.https.html.ini": [
+        "a3b306219544c79a5464b45192c083280489c5c1",
+        []
+       ],
        "worklet-animation.https.html.headers": [
         "46e2255e388e9e08377d625b55653a007d59c14e",
+        []
+       ],
+       "worklet-animation.https.html.ini": [
+        "ef66d3ee75b117a6e6bebfeb4ecf82caf3882429",
         []
        ],
        "worklet-audio-import-data.https.html.headers": [
@@ -369528,6 +369755,16 @@
       }
      },
      "top.meta": {
+      "opt-in": {
+       "worklet-animation-import-data.https.html.ini": [
+        "1d270469d1f0da0e6d416c247157be194b5bf09c",
+        []
+       ],
+       "worklet-animation.https.html.ini": [
+        "ab0c9b7bd19a32365ec8efcf74f58ee90fd61bea",
+        []
+       ]
+      },
       "unset": {
        "audio-tag.https.html.ini": [
         "b799f42c4360a82349d637e671998d036910250b",
@@ -369539,6 +369776,14 @@
        ],
        "video-tag.https.html.ini": [
         "610e997a8870d59cabaf87371911d6aa2ea1a13a",
+        []
+       ],
+       "worklet-animation-import-data.https.html.ini": [
+        "a3b306219544c79a5464b45192c083280489c5c1",
+        []
+       ],
+       "worklet-animation.https.html.ini": [
+        "ef66d3ee75b117a6e6bebfeb4ecf82caf3882429",
         []
        ]
       }
@@ -384024,6 +384269,14 @@
        "worker-module.https.html.ini": [
         "444fe5c902158be0692f17a9e560ebc422461e30",
         []
+       ],
+       "worklet-animation-import-data.https.html.ini": [
+        "848048dd5032ba9b33c6ff56d4691e1f95c77da3",
+        []
+       ],
+       "worklet-animation.https.html.ini": [
+        "0712a2bfdc748d2a19fb897d706fe951eb9f1a48",
+        []
        ]
       }
      },
@@ -384101,6 +384354,14 @@
        ],
        "worker-module.https.html.ini": [
         "444fe5c902158be0692f17a9e560ebc422461e30",
+        []
+       ],
+       "worklet-animation-import-data.https.html.ini": [
+        "848048dd5032ba9b33c6ff56d4691e1f95c77da3",
+        []
+       ],
+       "worklet-animation.https.html.ini": [
+        "0712a2bfdc748d2a19fb897d706fe951eb9f1a48",
         []
        ]
       }
@@ -384191,8 +384452,16 @@
         "602d9dc38d0a5975e8d40c26daae9329de69840c",
         []
        ],
+       "worklet-animation-import-data.https.html.ini": [
+        "848048dd5032ba9b33c6ff56d4691e1f95c77da3",
+        []
+       ],
        "worklet-animation.https.html.headers": [
         "602d9dc38d0a5975e8d40c26daae9329de69840c",
+        []
+       ],
+       "worklet-animation.https.html.ini": [
+        "0712a2bfdc748d2a19fb897d706fe951eb9f1a48",
         []
        ],
        "worklet-audio-import-data.https.html.headers": [
@@ -384267,6 +384536,14 @@
        ],
        "worker-module.https.html.ini": [
         "444fe5c902158be0692f17a9e560ebc422461e30",
+        []
+       ],
+       "worklet-animation-import-data.https.html.ini": [
+        "848048dd5032ba9b33c6ff56d4691e1f95c77da3",
+        []
+       ],
+       "worklet-animation.https.html.ini": [
+        "0712a2bfdc748d2a19fb897d706fe951eb9f1a48",
         []
        ]
       }
@@ -385611,6 +385888,12 @@
        []
       ]
      },
+     "Animation": {
+      "finished.html.ini": [
+       "b79ed9dd3a043c8e6398fd289d5537dc2e2e0b75",
+       []
+      ]
+     },
      "KeyframeEffect": {
       "constructor-expected.txt": [
        "51e5f086363a0f40864298b93ede4a66a38a4825",
@@ -386807,7 +387090,7 @@
      },
      "the-mediaelementaudiosourcenode-interface": {
       "mediaElementAudioSourceToScriptProcessorTest.html.ini": [
-       "3bf76070f88802b4a5bfa04ec31b371916fc3c16",
+       "c2a51399def927cff1eec490a3b10f213263341a",
        []
       ]
      }
@@ -389143,7 +389426,7 @@
      []
     ],
     "RTCRtpTransceiver-headerExtensionControl.html.ini": [
-     "0b2d13f50acfdd71a61057fead139c22ce16f17f",
+     "e5e8b90e3f05551fd6015d91385510a69115ed13",
      []
     ],
     "transfer-datachannel-service-worker.https.html.ini": [
@@ -394842,6 +395125,26 @@
     ],
     "README.md": [
      "b06ea33cd926fd99d890b0dd7544213170a15e8e",
+     []
+    ],
+    "animation-worklet-credentials.https.html.ini": [
+     "f8b9a8b46e20c0fec2d649894bdb637f3cbb8c16",
+     []
+    ],
+    "animation-worklet-csp.https.html.ini": [
+     "9f5065677b3627e23589d0fe7578588f3f664b39",
+     []
+    ],
+    "animation-worklet-import.https.html.ini": [
+     "73f181dded96ff54481d6ae04be372bf8d121f00",
+     []
+    ],
+    "animation-worklet-referrer.https.html.ini": [
+     "eca2bb2965a31deed66cfb9a8e329d56bdd2db51",
+     []
+    ],
+    "animation-worklet-service-worker-interception.https.html.ini": [
+     "bb74ff5a79b5458491477bf6889815de09fad8a7",
      []
     ],
     "idlharness.https.any-expected.txt": [
@@ -430821,6 +431124,13 @@
        {}
       ]
      ],
+     "display-interpolation.html": [
+      "791e794c70fdf8ec8823504b8f014992c97fbf7a",
+      [
+       null,
+       {}
+      ]
+     ],
      "event-dispatch.tentative.html": [
       "3e577d6ea6c67269766ed9ec38d13bd4cbda435c",
       [
@@ -433660,7 +433970,7 @@
        ]
       ],
       "at-container-parsing.html": [
-       "d0aef94de55eca8c00cde4d3ddb7bd94105573c8",
+       "b0196b5e5a124cbc41f13e754f0963108b407d4a",
        [
         null,
         {}
@@ -442013,7 +442323,7 @@
      },
      "image-set": {
       "image-set-computed.sub.html": [
-       "a25ca17835b5dcf5a85d6216b6f3fe8d33b60042",
+       "6d54fd0d09b4ade26a254a0a9c8cb5a76097e88a",
        [
         null,
         {}
@@ -442489,7 +442799,7 @@
       ]
      },
      "css-lists-no-interpolation.html": [
-      "8250bc2b662dceac36966ce04d1f2419eb3a9fa2",
+      "a0e1005ef0bf3b1ff2690ee6a9fe2d3fd902e8ce",
       [
        null,
        {}
@@ -454364,7 +454674,7 @@
        ]
       ],
       "cssTransformValue.tentative.html": [
-       "856b9314d852b7134dae6ad52ff391a61d6a0345",
+       "c098868f143cb789deac6c456aa07da33dd37483",
        [
         null,
         {}
@@ -461661,7 +461971,7 @@
       ]
      ],
      "match-media-parsing.html": [
-      "bbb326eb1893e0fc35cad8e45629edd31a93fba5",
+      "c029f5494569f17f8fbe6d556de4e5b34a840fc6",
       [
        null,
        {}
@@ -461766,7 +462076,7 @@
       ]
      ],
      "test_media_queries.html": [
-      "fe3ba8195f981572aca7e7f08733d69a5151a7f0",
+      "20fca4affd24e5a3d1335b9d39420f653c7cd9fb",
       [
        null,
        {}
@@ -535732,6 +536042,20 @@
        ],
        "form-margin-quirk.html": [
         "7f6618bb782a0460d286930f05866ea9b432a1cd",
+        [
+         null,
+         {}
+        ]
+       ],
+       "search-styles-iso-8859-8.html": [
+        "194456622740b374ad5f35faf3de5d424714bffd",
+        [
+         null,
+         {}
+        ]
+       ],
+       "search-styles.html": [
+        "8c8badd1703fcf3f797d588090bc378735c6005f",
         [
          null,
          {}
