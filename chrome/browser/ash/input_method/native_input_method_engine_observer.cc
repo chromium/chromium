@@ -670,8 +670,8 @@ void UpdateCandidatesWindowSync(ime::mojom::CandidatesWindowPtr window) {
 ime::mojom::InputMethodSettingsPtr WithAutocorrectOverride(
     ime::mojom::InputMethodSettingsPtr base_settings,
     bool autocorrect_enabled) {
-  if (!(base::FeatureList::IsEnabled(features::kAutocorrectByDefault) &&
-        base_settings->is_latin_settings())) {
+  if (!base::FeatureList::IsEnabled(features::kAutocorrectByDefault) ||
+      !base_settings || !base_settings->is_latin_settings()) {
     return base_settings;
   }
 
