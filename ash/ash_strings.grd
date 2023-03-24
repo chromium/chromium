@@ -5297,12 +5297,6 @@ Here are some things you can try to get started.
       <message name="IDS_ASH_SCREEN_CAPTURE_DISPLAY_SOURCE" desc="The name that is the display source of the screen capture notification.">
         Screen capture
       </message>
-      <message name="IDS_ASH_SCREEN_CAPTURE_GIF_PROGRESS_TITLE" desc="The title of the notification that shows up informing the user about the GIF file being processed.">
-        Creating GIF
-      </message>
-      <message name="IDS_ASH_SCREEN_CAPTURE_GIF_PROGRESS_MESSAGE" desc="The message of the notification that shows up informing the user about the GIF file being processed.">
-        Your GIF will be ready shortly
-      </message>
       <message name="IDS_ASH_SCREEN_CAPTURE_SCREENSHOT_TITLE" desc="The title of the notificaton which shows after a screenshot is taken.">
         Screenshot taken
       </message>
