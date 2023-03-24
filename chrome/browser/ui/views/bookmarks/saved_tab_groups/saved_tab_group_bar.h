@@ -81,7 +81,7 @@ class SavedTabGroupBar : public views::AccessiblePaneView,
       const absl::optional<base::GUID>& tab_guid = absl::nullopt) override;
 
   // WidgetObserver
-  void OnWidgetClosing(views::Widget* widget) override;
+  void OnWidgetDestroying(views::Widget* widget) override;
 
   // Calculates what the visible width would be when a restriction on width is
   // placed on the bar.

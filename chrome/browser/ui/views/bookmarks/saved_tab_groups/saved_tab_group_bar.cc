@@ -400,7 +400,7 @@ void SavedTabGroupBar::SavedTabGroupUpdatedFromSync(
   SavedTabGroupUpdated(group_guid);
 }
 
-void SavedTabGroupBar::OnWidgetClosing(views::Widget* widget) {
+void SavedTabGroupBar::OnWidgetDestroying(views::Widget* widget) {
   widget_observation_.Reset();
   overflow_menu_ = nullptr;
   bubble_delegate_ = nullptr;
