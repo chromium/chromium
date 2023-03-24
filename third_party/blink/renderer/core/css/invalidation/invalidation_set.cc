@@ -140,17 +140,17 @@ bool InvalidationSet::InvalidatesElement(Element& element) const {
   }
 
   if (element.HasClass() && HasClasses()) {
-    if (StringImpl* class_name = FindAnyClass(element)) {
+    if (const String* class_name = FindAnyClass(element)) {
       TRACE_STYLE_INVALIDATOR_INVALIDATION_SELECTORPART_IF_ENABLED(
-          element, kInvalidationSetMatchedClass, *this, String(class_name));
+          element, kInvalidationSetMatchedClass, *this, *class_name);
       return true;
     }
   }
 
   if (element.hasAttributes() && HasAttributes()) {
-    if (StringImpl* attribute = FindAnyAttribute(element)) {
+    if (const String* attribute = FindAnyAttribute(element)) {
       TRACE_STYLE_INVALIDATOR_INVALIDATION_SELECTORPART_IF_ENABLED(
-          element, kInvalidationSetMatchedAttribute, *this, String(attribute));
+          element, kInvalidationSetMatchedAttribute, *this, *attribute);
       return true;
     }
   }
@@ -284,13 +284,13 @@ bool InvalidationSet::HasEmptyBackings() const {
          attributes_.IsEmpty(backing_flags_);
 }
 
-StringImpl* InvalidationSet::FindAnyClass(Element& element) const {
+const String* InvalidationSet::FindAnyClass(Element& element) const {
   const SpaceSplitString& class_names = element.ClassNames();
   wtf_size_t size = class_names.size();
-  if (StringImpl* string_impl = classes_.GetStringImpl(backing_flags_)) {
+  if (const String* string = classes_.GetString(backing_flags_)) {
     for (wtf_size_t i = 0; i < size; ++i) {
-      if (Equal(string_impl, class_names[i].Impl())) {
-        return string_impl;
+      if (*string == class_names[i]) {
+        return string;
       }
     }
   }
@@ -298,24 +298,24 @@ StringImpl* InvalidationSet::FindAnyClass(Element& element) const {
     for (wtf_size_t i = 0; i < size; ++i) {
       auto item = set->find(class_names[i]);
       if (item != set->end()) {
-        return item->Impl();
+        return &item->GetString();
       }
     }
   }
   return nullptr;
 }
 
-StringImpl* InvalidationSet::FindAnyAttribute(Element& element) const {
-  if (StringImpl* string_impl = attributes_.GetStringImpl(backing_flags_)) {
-    if (element.HasAttributeIgnoringNamespace(AtomicString(string_impl))) {
-      return string_impl;
+const String* InvalidationSet::FindAnyAttribute(Element& element) const {
+  if (const String* string = attributes_.GetString(backing_flags_)) {
+    if (element.HasAttributeIgnoringNamespace(AtomicString(*string))) {
+      return string;
     }
   }
   if (const HashSet<AtomicString>* set =
           attributes_.GetHashSet(backing_flags_)) {
     for (const auto& attribute : *set) {
       if (element.HasAttributeIgnoringNamespace(attribute)) {
-        return attribute.Impl();
+        return &attribute.GetString();
       }
     }
   }
