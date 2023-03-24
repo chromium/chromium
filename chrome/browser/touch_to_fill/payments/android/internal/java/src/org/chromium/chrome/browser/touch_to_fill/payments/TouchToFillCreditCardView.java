@@ -23,10 +23,6 @@ import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
  * but holds Android Views.
  */
 class TouchToFillCreditCardView extends TouchToFillViewBase {
-    private final BottomSheetController mBottomSheetController;
-    private final RecyclerView mSheetItemListView;
-    private Runnable mScanCreditCardHandler;
-
     private static class HorizontalDividerItemDecoration extends ItemDividerBase {
         HorizontalDividerItemDecoration(Context context) {
             super(context);
@@ -71,15 +67,13 @@ class TouchToFillCreditCardView extends TouchToFillViewBase {
         super(bottomSheetController,
                 (RelativeLayout) LayoutInflater.from(context).inflate(
                         R.layout.touch_to_fill_sheet, null));
-        mBottomSheetController = bottomSheetController;
-        mSheetItemListView = getItemList();
 
-        mSheetItemListView.addItemDecoration(new HorizontalDividerItemDecoration(context));
+        getSheetItemListView().addItemDecoration(new HorizontalDividerItemDecoration(context));
     }
 
     @Override
     public int getVerticalScrollOffset() {
-        return mSheetItemListView.computeVerticalScrollOffset();
+        return getSheetItemListView().computeVerticalScrollOffset();
     }
 
     @Override
@@ -105,11 +99,6 @@ class TouchToFillCreditCardView extends TouchToFillViewBase {
     @Override
     protected View getHandlebar() {
         return getContentView().findViewById(R.id.drag_handlebar);
-    }
-
-    @Override
-    protected RecyclerView getItemList() {
-        return getContentView().findViewById(R.id.sheet_item_list);
     }
 
     @Override

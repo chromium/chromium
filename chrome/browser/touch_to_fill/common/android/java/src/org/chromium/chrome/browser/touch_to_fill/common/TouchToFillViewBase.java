@@ -12,10 +12,12 @@ import android.widget.RelativeLayout;
 
 import androidx.annotation.Nullable;
 import androidx.annotation.Px;
+import androidx.annotation.VisibleForTesting;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import org.chromium.base.Callback;
+import org.chromium.chrome.browser.autofill.bottom_sheet_utils.DetailScreenScrollListener;
 import org.chromium.chrome.browser.util.ChromeAccessibilityUtil;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
@@ -23,7 +25,6 @@ import org.chromium.components.browser_ui.bottomsheet.BottomSheetObserver;
 import org.chromium.components.browser_ui.bottomsheet.EmptyBottomSheetObserver;
 import org.chromium.ui.base.LocalizationUtils;
 import org.chromium.ui.base.ViewUtils;
-
 /**
  * This is a base class for the Touch to Fill View classes.
  */
@@ -32,8 +33,9 @@ public abstract class TouchToFillViewBase implements BottomSheetContent {
 
     private final BottomSheetController mBottomSheetController;
     private final RelativeLayout mContentView;
-    private final RecyclerView mSheetItemListView;
+    private final DetailScreenScrollListener mScrollListener;
     private Callback<Integer> mDismissHandler;
+    private RecyclerView mSheetItemListView;
 
     private final BottomSheetObserver mBottomSheetObserver = new EmptyBottomSheetObserver() {
         @Override
@@ -47,6 +49,16 @@ public abstract class TouchToFillViewBase implements BottomSheetContent {
         @Override
         public void onSheetStateChanged(int newState, int reason) {
             super.onSheetStateChanged(newState, reason);
+            if (newState == BottomSheetController.SheetState.FULL) {
+                // The list of items should be scrollable in full state.
+                mSheetItemListView.suppressLayout(false);
+            } else if (newState == BottomSheetController.SheetState.HALF
+                    && mScrollListener.isScrolledToTop()) {
+                // The list of items should not be scrollable when the sheet transitions into half
+                // state if it's scrolled to the top. If the list is currently scrolled away from
+                // the top, it should stay scrolled in half state until the user scrolls to the top.
+                mSheetItemListView.suppressLayout(true);
+            }
             if (newState != BottomSheetController.SheetState.HIDDEN) return;
             // This is a fail-safe for cases where onSheetClosed isn't triggered.
             mDismissHandler.onResult(BottomSheetController.StateChangeReason.NONE);
@@ -59,12 +71,6 @@ public abstract class TouchToFillViewBase implements BottomSheetContent {
      * @return the {@link View} representing the drag handlebar.
      */
     protected abstract View getHandlebar();
-
-    /**
-     * Used to access the list of suggestions to measure it.
-     * @return the {@link RecyclerView} containing the suggestions in the {@link BottomSheet}.
-     */
-    protected abstract RecyclerView getItemList();
 
     /**
      * Returns the margin between the last item in the scrollable list and the footer.
@@ -94,7 +100,7 @@ public abstract class TouchToFillViewBase implements BottomSheetContent {
             BottomSheetController bottomSheetController, RelativeLayout contentView) {
         mBottomSheetController = bottomSheetController;
         mContentView = contentView;
-        mSheetItemListView = getItemList();
+        mSheetItemListView = getContentView().findViewById(R.id.sheet_item_list);
 
         mSheetItemListView.setLayoutManager(new LinearLayoutManager(
                 mSheetItemListView.getContext(), LinearLayoutManager.VERTICAL, false) {
@@ -108,6 +114,9 @@ public abstract class TouchToFillViewBase implements BottomSheetContent {
         int layoutDirection = LocalizationUtils.isLayoutRtl() ? View.LAYOUT_DIRECTION_RTL
                                                               : View.LAYOUT_DIRECTION_LTR;
         mContentView.setLayoutDirection(layoutDirection);
+
+        mScrollListener = new DetailScreenScrollListener(mBottomSheetController);
+        mSheetItemListView.addOnScrollListener(mScrollListener);
     }
 
     @Override
@@ -316,5 +325,10 @@ public abstract class TouchToFillViewBase implements BottomSheetContent {
     @Override
     public void destroy() {
         mBottomSheetController.removeObserver(mBottomSheetObserver);
+    }
+
+    @VisibleForTesting(otherwise = VisibleForTesting.PROTECTED)
+    public RecyclerView getSheetItemListView() {
+        return mSheetItemListView;
     }
 }
