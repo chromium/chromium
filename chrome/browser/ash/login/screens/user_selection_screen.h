@@ -64,10 +64,7 @@ class UserSelectionScreen
   void HandleNoPodFocused();
   void OnBeforeShow();
 
-  // Methods for easy unlock support.
-  void HardLockPod(const AccountId& account_id);
   void AttemptEasyUnlock(const AccountId& account_id);
-
   void InitEasyUnlock();
 
   void SetTpmLockedState(bool is_locked, base::TimeDelta time_left);

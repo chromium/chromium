@@ -189,14 +189,6 @@ bool LoginScreenController::GetSecurityTokenPinRequestCanceled() const {
   return security_token_request_controller_.request_canceled();
 }
 
-void LoginScreenController::HardlockPod(const AccountId& account_id) {
-  GetModel()->NotifyFocusPod(account_id);
-  if (!client_) {
-    return;
-  }
-  client_->HardlockPod(account_id);
-}
-
 void LoginScreenController::OnFocusPod(const AccountId& account_id) {
   GetModel()->NotifyFocusPod(account_id);
   if (!client_) {

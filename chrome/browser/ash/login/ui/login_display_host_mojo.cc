@@ -595,10 +595,6 @@ void LoginDisplayHostMojo::HandleAuthenticateUserWithChallengeResponse(
                      std::move(callback)));
 }
 
-void LoginDisplayHostMojo::HandleHardlockPod(const AccountId& account_id) {
-  user_selection_screen_->HardLockPod(account_id);
-}
-
 void LoginDisplayHostMojo::HandleOnFocusPod(const AccountId& account_id) {
   user_selection_screen_->HandleFocusPod(account_id);
   WallpaperControllerClientImpl::Get()->ShowUserWallpaper(account_id);

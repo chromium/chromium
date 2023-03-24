@@ -54,7 +54,6 @@ class ViewsScreenLocker : public LoginScreenClientImpl::Delegate,
   void HandleAuthenticateUserWithChallengeResponse(
       const AccountId& account_id,
       base::OnceCallback<void(bool)> callback) override;
-  void HandleHardlockPod(const AccountId& account_id) override;
   void HandleOnFocusPod(const AccountId& account_id) override;
   void HandleOnNoPodFocused() override;
   bool HandleFocusLockScreenApps(bool reverse) override;

@@ -807,16 +807,6 @@ void UserSelectionScreen::OnOnlineSigninEnforced(const AccountId& account_id) {
               std::u16string());
 }
 
-void UserSelectionScreen::HardLockPod(const AccountId& account_id) {
-  view_->SetAuthType(account_id,
-                     proximity_auth::mojom::AuthType::OFFLINE_PASSWORD,
-                     std::u16string());
-  EasyUnlockService* service = GetEasyUnlockServiceForUser(account_id);
-  if (!service)
-    return;
-  service->SetHardlockState(SmartLockStateHandler::USER_HARDLOCK);
-}
-
 void UserSelectionScreen::AttemptEasyUnlock(const AccountId& account_id) {
   EasyUnlockService* service = GetEasyUnlockServiceForUser(account_id);
   if (!service)

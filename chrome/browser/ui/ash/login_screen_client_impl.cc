@@ -156,11 +156,6 @@ ash::ParentCodeValidationResult LoginScreenClientImpl::ValidateParentAccessCode(
       .ValidateParentAccessCode(account_id, access_code, validation_time);
 }
 
-void LoginScreenClientImpl::HardlockPod(const AccountId& account_id) {
-  if (delegate_)
-    delegate_->HandleHardlockPod(account_id);
-}
-
 void LoginScreenClientImpl::OnFocusPod(const AccountId& account_id) {
   if (delegate_)
     delegate_->HandleOnFocusPod(account_id);

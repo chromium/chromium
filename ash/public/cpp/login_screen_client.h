@@ -71,10 +71,6 @@ class ASH_PUBLIC_EXPORT LoginScreenClient {
       const std::string& access_code,
       base::Time validation_time) = 0;
 
-  // Request to hard lock the user pod.
-  // |account_id|:    The account id of the user in the user pod.
-  virtual void HardlockPod(const AccountId& account_id) = 0;
-
   // Focus user pod of user with |account_id|.
   virtual void OnFocusPod(const AccountId& account_id) = 0;
 

@@ -75,7 +75,6 @@ class MockLoginScreenClient : public LoginScreenClient {
               AuthenticateUserWithEasyUnlock,
               (const AccountId& account_id),
               (override));
-  MOCK_METHOD(void, HardlockPod, (const AccountId& account_id), (override));
   MOCK_METHOD(void, OnFocusPod, (const AccountId& account_id), (override));
   MOCK_METHOD(void, OnNoPodFocused, (), (override));
   MOCK_METHOD(void, LoadWallpaper, (const AccountId& account_id), (override));

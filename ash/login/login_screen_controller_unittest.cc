@@ -111,11 +111,6 @@ TEST_F(LoginScreenControllerTest, RequestEasyUnlock) {
   EXPECT_CALL(*client, AuthenticateUserWithEasyUnlock(id));
   controller->AuthenticateUserWithEasyUnlock(id);
   base::RunLoop().RunUntilIdle();
-
-  // Verify HardlockPod mojo call is run with the same account id.
-  EXPECT_CALL(*client, HardlockPod(id));
-  controller->HardlockPod(id);
-  base::RunLoop().RunUntilIdle();
 }
 
 TEST_F(LoginScreenControllerTest, RequestUserPodFocus) {

@@ -44,7 +44,6 @@ class LoginScreenClientImpl : public ash::LoginScreenClient {
     virtual void HandleAuthenticateUserWithChallengeResponse(
         const AccountId& account_id,
         base::OnceCallback<void(bool)> callback) = 0;
-    virtual void HandleHardlockPod(const AccountId& account_id) = 0;
     virtual void HandleOnFocusPod(const AccountId& account_id) = 0;
     virtual void HandleOnNoPodFocused() = 0;
     // Handles request to focus a lock screen app window. Returns whether the
@@ -103,7 +102,6 @@ class LoginScreenClientImpl : public ash::LoginScreenClient {
       const AccountId& account_id,
       const std::string& access_code,
       base::Time validation_time) override;
-  void HardlockPod(const AccountId& account_id) override;
   void OnFocusPod(const AccountId& account_id) override;
   void OnNoPodFocused() override;
   void LoadWallpaper(const AccountId& account_id) override;

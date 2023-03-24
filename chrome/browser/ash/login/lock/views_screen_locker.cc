@@ -150,10 +150,6 @@ void ViewsScreenLocker::HandleAuthenticateUserWithChallengeResponse(
       account_id, std::move(callback));
 }
 
-void ViewsScreenLocker::HandleHardlockPod(const AccountId& account_id) {
-  user_selection_screen_->HardLockPod(account_id);
-}
-
 void ViewsScreenLocker::HandleOnFocusPod(const AccountId& account_id) {
   user_selection_screen_->HandleFocusPod(account_id);
 
