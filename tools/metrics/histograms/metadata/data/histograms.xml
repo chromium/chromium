@@ -144,25 +144,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="DataUse.AllServicesKB" enum="DataUseServicesHash"
-    expires_after="2022-08-28">
-  <obsolete>
-    Obsoleted.
-  </obsolete>
-  <owner>rajendrant@chromium.org</owner>
-  <owner>mcrouse@chromium.org</owner>
-  <summary>
-    The request and response size of the messages exchanged by all the services.
-    Whenever a URLRequest of a service is completed, the number of exchanged
-    bytes is logged in this histogram. The buckets in this histogram are
-    services recorded by the corresponding network traffic annotation tag
-    hashes, so it makes it possible to compare the use of different services in
-    different conditions. Different conditions are added as suffixes to this
-    histogram. If the OS is not Android all the requests are considered
-    foreground.
-  </summary>
-</histogram>
-
 <histogram name="DataUse.AppTabState" units="bytes" expires_after="2023-05-07">
   <owner>rajendrant@chromium.org</owner>
   <owner>mcrouse@chromium.org</owner>

@@ -607,6 +607,34 @@ class ExtractHistogramsTest(unittest.TestCase):
         histogram_with_enum)
     self.assertFalse(have_errors)
 
+  def testEnumWithDuplicateValues(self):
+    bad_enum = xml.dom.minidom.parseString("""
+<histogram-configuration>
+<enums>
+  <enum name="MyEnumType">
+    <int value="1" label="FIRST_VALUE">This is the first value.</int>
+    <int value="1" label="SECOND_VALUE">This is the second value.</int>
+  </enum>
+</enums>
+</histogram-configuration>
+""")
+    _, have_errors = extract_histograms.ExtractEnumsFromXmlTree(bad_enum)
+    self.assertTrue(have_errors)
+
+  def testEnumWithDuplicateLabels(self):
+    bad_enum = xml.dom.minidom.parseString("""
+<histogram-configuration>
+<enums>
+  <enum name="MyEnumType">
+    <int value="1" label="FIRST_VALUE">This is the first value.</int>
+    <int value="2" label="FIRST_VALUE">This is the second value.</int>
+  </enum>
+</enums>
+</histogram-configuration>
+""")
+    _, have_errors = extract_histograms.ExtractEnumsFromXmlTree(bad_enum)
+    self.assertTrue(have_errors)
+
   def testNewHistogramWithUnits(self):
     histogram_with_units = xml.dom.minidom.parseString("""
 <histogram-configuration>

@@ -297,6 +297,7 @@ def ExtractEnumsFromXmlTree(tree):
     enum_dict = {}
     enum_dict['name'] = name
     enum_dict['values'] = {}
+    labels = set()
 
     nodes = list(IterElementsWithTag(enum, 'int'))
 
@@ -313,7 +314,13 @@ def ExtractEnumsFromXmlTree(tree):
         logging.error('Duplicate enum value %d for enum %s', int_value, name)
         have_errors = True
         continue
-      value_dict['label'] = int_tag.getAttribute('label')
+      label = int_tag.getAttribute('label')
+      if label in labels:
+        logging.error('Duplicate enum label "%s" for enum %s', label, name)
+        have_errors = True
+        continue
+      labels.add(label)
+      value_dict['label'] = label
       value_dict['summary'] = _GetTextFromChildNodes(int_tag)
       enum_dict['values'][int_value] = value_dict
 

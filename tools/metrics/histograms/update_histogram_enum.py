@@ -44,8 +44,29 @@ class DuplicatedValue(Exception):
     self.second_label = second_label
 
 
+class DuplicatedLabel(Exception):
+  """Exception raised for duplicated enum labels.
+
+  Attributes:
+      first_value: First enum value that shares the duplicated enum label.
+      second_value: Second enum value that shares the duplicated enum label.
+  """
+  def __init__(self, first_value, second_value):
+    self.first_value = first_value
+    self.second_value = second_value
+
+
 def Log(message):
   logging.info(message)
+
+
+def _CheckForDuplicates(enum_value, label, result):
+  """Checks if an enum value or label already exists in the results."""
+  if enum_value in result:
+    raise DuplicatedValue(result[enum_value], label)
+  if label in result.values():
+    (dup_value, ) = (k for k, v in result.items() if v == 'label')
+    raise DuplicatedLabel(enum_value, dup_value)
 
 
 def ReadHistogramValues(filename, start_marker, end_marker, strip_k_prefix):
@@ -63,6 +84,7 @@ def ReadHistogramValues(filename, start_marker, end_marker, strip_k_prefix):
 
   Raises:
       DuplicatedValue: An error when two enum labels share the same value.
+      DuplicatedLabel: An error when two enum values share the same label.
   """
   # Read the file as a list of lines
   with io.open(path_util.GetInputFile(filename)) as f:
@@ -106,9 +128,7 @@ def ReadHistogramValues(filename, start_marker, end_marker, strip_k_prefix):
     if strip_k_prefix:
       assert label.startswith('k'), "Enum " + label + " should start with 'k'."
       label = label[1:]
-    # If two enum labels have the same value
-    if enum_value in result:
-      raise DuplicatedValue(result[enum_value], label)
+    _CheckForDuplicates(enum_value, label, result)
     result[enum_value] = label
     enum_value += 1
   return result
@@ -132,15 +152,14 @@ def ReadHistogramValuesFromXML(filename, element_name,
 
   Raises:
       DuplicatedValue: An error when two enum labels share the same value.
+      DuplicatedLabel: An error when two enum values share the same label.
   """
   source_xml = minidom.parse(path_util.GetInputFile(filename))
   result = {}
   for row in source_xml.getElementsByTagName(element_name):
     enum_value = int(row.getAttribute(value_attribute))
     label = row.getAttribute(label_attribute)
-    # If two enum labels have the same value
-    if enum_value in result:
-      raise DuplicatedValue(result[enum_value], label)
+    _CheckForDuplicates(enum_value, label, result)
     result[enum_value] = label
   return result
 
@@ -276,6 +295,11 @@ def CheckPresubmitErrors(histogram_enum_name,
             'duplicated values between (%s) and (%s)' %
             (histogram_enum_name, duplicated_values.first_label,
              duplicated_values.second_label))
+  except DuplicatedLabel as duplicated_labels:
+    return ('%s enum has been updated and there exist '
+            'duplicated labels between (%s) and (%s)' %
+            (histogram_enum_name, duplicated_labels.first_value,
+             duplicated_labels.second_value))
 
   (xml, new_xml) = _GetOldAndUpdatedXml(histogram_enum_name, source_enum_values,
                                         source_enum_path, update_script_name)

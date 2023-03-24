@@ -1516,14 +1516,6 @@ chromium-metrics-reviews@google.com.
   <affected-histogram name="DataUse.TrafficSize.User"/>
 </histogram_suffixes>
 
-<histogram_suffixes name="DataUse_Dimensions_AllServicesKB" separator=".">
-  <suffix name="Downstream.Background" label=""/>
-  <suffix name="Downstream.Foreground" label=""/>
-  <suffix name="Upstream.Background" label=""/>
-  <suffix name="Upstream.Foreground" label=""/>
-  <affected-histogram name="DataUse.AllServicesKB"/>
-</histogram_suffixes>
-
 <histogram_suffixes name="DataUse_TrafficSource" separator=".">
   <suffix name="System" label=""/>
   <suffix name="User" label=""/>

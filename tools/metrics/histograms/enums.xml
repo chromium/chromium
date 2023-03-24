@@ -4745,38 +4745,6 @@ Unknown properties are collapsed to zero. -->
       label="Error with getting OAuth token due to OperationCanceledException"/>
 </enum>
 
-<enum name="ArcProvisioningResult">
-  <obsolete>
-    Removed in Dec 2020. Replaced by ArcProvisioningStatus.
-  </obsolete>
-  <summary>Defines Arc Provisioning success and failure reasons</summary>
-  <int value="0" label="Success"/>
-  <int value="1" label="Unclassified failure"/>
-  <int value="2" label="GMS Network failure"/>
-  <int value="3" label="GMS Services are not available"/>
-  <int value="4" label="GMS Bad authentication returned by server"/>
-  <int value="5" label="GMS check-in was failed"/>
-  <int value="6" label="Cloud provision flow failed"/>
-  <int value="7" label="Mojo version mistmached"/>
-  <int value="8" label="Provisioning timeout"/>
-  <int value="9" label="GMS check-in was timed out"/>
-  <int value="10" label="GMS check-in reported internal error"/>
-  <int value="11" label="GMS core sign in procedure was failed"/>
-  <int value="12" label="GMS core sign in procedure was timed out"/>
-  <int value="13" label="GMS core sign in procedure reporeted internal error"/>
-  <int value="14" label="Cloud provision flow was timed out"/>
-  <int value="15" label="Cloud provision flow reporeted internal error"/>
-  <int value="16" label="ARC instance is stopped before complete provisioning"/>
-  <int value="17" label="Overall sign in timeout"/>
-  <int value="18" label="Chrome server communication error"/>
-  <int value="19" label="Network is unavailable"/>
-  <int value="20" label="Disabled"/>
-  <int value="21" label="Already provisioned"/>
-  <int value="22" label="Unsupported account type"/>
-  <int value="23" label="Account is not present in Chrome"/>
-  <int value="24" label="Cloud provision flow failed"/>
-</enum>
-
 <enum name="ArcProvisioningSignInError">
   <summary>Defines ARC GMS sign-in failure reasons</summary>
   <int value="1" label="Network error"/>
@@ -14105,7 +14073,7 @@ Called by update_bad_message_reasons.py.-->
   <int value="200" label="HTTP_SUCCESS"/>
   <int value="201" label="HTTP_CREATED"/>
   <int value="204" label="HTTP_NO_CONTENT"/>
-  <int value="302" label="HTTP_NOT_FOUND"/>
+  <int value="302" label="HTTP_FOUND"/>
   <int value="304" label="HTTP_NOT_MODIFIED"/>
   <int value="308" label="HTTP_RESUME_INCOMPLETE"/>
   <int value="400" label="HTTP_BAD_REQUEST"/>
@@ -16187,7 +16155,7 @@ Called by update_protocol_commands_enum.py.-->
   <int value="90" label="No bootable storage device in system"/>
   <int value="91" label="No bootable kernel found on disk"/>
   <int value="92" label="BCB related error in RW firmware"/>
-  <int value="93" label="Secure data inititalization error"/>
+  <int value="93" label="Secure data inititalization error 0"/>
   <int value="94" label="Fastboot mode requested in firmware"/>
   <int value="95" label="Recovery hash space lock error in RO firmware"/>
   <int value="127" label="Unspecified/unknown error in rewritable firmware"/>
@@ -16295,7 +16263,7 @@ Called by update_protocol_commands_enum.py.-->
   <int value="8" label="Open in a new incognito window"/>
   <int value="20" label="Open in a tabbed window"/>
   <int value="100" label="Launch New"/>
-  <int value="101" label="Toggle Pin"/>
+  <int value="101" label="Toggle Pin."/>
   <int value="102" label="Show App Info"/>
   <int value="103" label="Options"/>
   <int value="104" label="Uninstall"/>
@@ -16303,11 +16271,11 @@ Called by update_protocol_commands_enum.py.-->
   <int value="106" label="Open in New Window"/>
   <int value="107" label="Open in New Incognito Window"/>
   <int value="108" label="Install"/>
-  <int value="200" label="Open in a pinned tab"/>
+  <int value="200" label="Open in a pinned tab."/>
   <int value="201" label="Open in a regular tab."/>
-  <int value="202" label="Open in fullscreen"/>
+  <int value="202" label="Open in fullscreen."/>
   <int value="203" label="Open in a window"/>
-  <int value="204" label="Open in a tabbed window"/>
+  <int value="204" label="Open in a tabbed window."/>
   <int value="500" label="Toggle Auto Hide"/>
   <int value="501" label="Shelf Alignment Menu"/>
   <int value="502" label="Shelf Alignment Left"/>
@@ -16357,107 +16325,6 @@ Called by update_protocol_commands_enum.py.-->
   <int value="0" label="kLoggedOut"/>
   <int value="1" label="kLoggedIn"/>
   <int value="2" label="kLocked"/>
-</enum>
-
-<enum name="ChromeOSUserImageId">
-  <obsolete>
-    Deprecated in M92 in favor of ChromeOSUserImageId2.
-  </obsolete>
-  <summary>
-    Indices of the default images as defined in
-    chrome/browser/ash/login/users/default_user_image/default_user_images.cc.
-    Value 19 is the image selected from file or photo. Value 20 is the profile
-    image.Values 0~18 and 21~40 are legacy default images that still used by
-    some users, but cannot be selected from Settings &gt; Personalization &gt;
-    Change device account image.
-  </summary>
-<!-- Please append new values to the end and do not change the order of existing value. -->
-
-  <int value="0" label="Beaker"/>
-  <int value="1" label="Bee"/>
-  <int value="2" label="Briefcase"/>
-  <int value="3" label="Circles"/>
-  <int value="4" label="Cloud"/>
-  <int value="5" label="Cupcake"/>
-  <int value="6" label="Day"/>
-  <int value="7" label="Flower"/>
-  <int value="8" label="Globe"/>
-  <int value="9" label="Hot air"/>
-  <int value="10" label="Ladybug"/>
-  <int value="11" label="Leaf"/>
-  <int value="12" label="Night"/>
-  <int value="13" label="Plane"/>
-  <int value="14" label="Robot body"/>
-  <int value="15" label="Robot head"/>
-  <int value="16" label="Toolbox"/>
-  <int value="17" label="User color"/>
-  <int value="18" label="User enterprise"/>
-  <int value="19" label="User defined"/>
-  <int value="20" label="Profile image"/>
-  <int value="21" label="Bicycle"/>
-  <int value="22" label="Bokeh"/>
-  <int value="23" label="Chess"/>
-  <int value="24" label="Coffee"/>
-  <int value="25" label="Dragonfly"/>
-  <int value="26" label="Frog"/>
-  <int value="27" label="Gazania Flower"/>
-  <int value="28" label="Jack Russell Terrier"/>
-  <int value="29" label="Jellyfish"/>
-  <int value="30" label="Kiwi"/>
-  <int value="31" label="Penguin1"/>
-  <int value="32" label="Rainbowfish"/>
-  <int value="33" label="Record player"/>
-  <int value="34" label="Upside Down"/>
-  <int value="35" label="Cat"/>
-  <int value="36" label="Penguin2"/>
-  <int value="37" label="Fox"/>
-  <int value="38" label="Snail"/>
-  <int value="39" label="Red butterfly"/>
-  <int value="40" label="Cat"/>
-  <int value="41" label="Corgi"/>
-  <int value="42" label="Rabbit"/>
-  <int value="43" label="Pink butterfly"/>
-  <int value="44" label="Monkey"/>
-  <int value="45" label="Dragon"/>
-  <int value="46" label="Elephant"/>
-  <int value="47" label="Panda"/>
-  <int value="48" label="Unicorn"/>
-  <int value="49" label="Butterflies"/>
-  <int value="50" label="Bird"/>
-  <int value="51" label="Ramen"/>
-  <int value="52" label="Tamagotchi"/>
-  <int value="53" label="Cheese"/>
-  <int value="54" label="Football"/>
-  <int value="55" label="Basketball"/>
-  <int value="56" label="Vinyl record"/>
-  <int value="57" label="Sushi"/>
-  <int value="58" label="Bike"/>
-  <int value="59" label="Sunglasses"/>
-  <int value="60" label="Pizza"/>
-  <int value="61" label="Sandwich"/>
-  <int value="62" label="Cappuccino"/>
-  <int value="63" label="Ice water"/>
-  <int value="64" label="Ice cream"/>
-  <int value="65" label="Onigiri"/>
-  <int value="66" label="Melon"/>
-  <int value="67" label="Avocado"/>
-  <int value="68" label="Landing"/>
-  <int value="69" label="Lunar"/>
-  <int value="70" label="Dots"/>
-  <int value="71" label="Spin"/>
-  <int value="72" label="Grids"/>
-  <int value="73" label="Botanist"/>
-  <int value="74" label="Burger"/>
-  <int value="75" label="Graduate"/>
-  <int value="76" label="Guitar"/>
-  <int value="77" label="Waving"/>
-  <int value="78" label="Lion"/>
-  <int value="79" label="Planet"/>
-  <int value="80" label="Instant Camera"/>
-  <int value="81" label="Robot"/>
-  <int value="82" label="Sneaker"/>
-  <int value="83" label="Van"/>
-  <int value="84" label="Watermelon"/>
 </enum>
 
 <enum name="ChromeOSUserImageId2">
@@ -16517,7 +16384,7 @@ In case of new special images, values 3 to 9 can be used. -->
   <int value="45" label="Fox (deprecated)"/>
   <int value="46" label="Snail (deprecated)"/>
   <int value="47" label="Red butterfly (deprecated)"/>
-  <int value="48" label="Cat (deprecated)"/>
+  <int value="48" label="Cat (deprecated.)"/>
   <int value="49" label="Corgi (deprecated)"/>
   <int value="50" label="Rabbit (deprecated)"/>
   <int value="51" label="Pink butterfly (deprecated)"/>
@@ -17788,7 +17655,7 @@ In case of new special images, values 3 to 9 can be used. -->
 <!-- Generated from net/base/net_error_list.h.
 Called by update_net_error_codes.py.-->
 
-  <int value="-1478" label="SSL_CLIENT_AUTH_NO_COMMON_ALGORITHMS"/>
+  <int value="-1478" label="SSL_CLIENT_AUTH_NO_COMMON_ALGORITHMS (old)"/>
   <int value="-808" label="DNS_SECURE_RESOLVER_HOSTNAME_RESOLUTION_FAILED"/>
   <int value="-807" label="DNS_HTTP_FAILED"/>
   <int value="-806" label="DNS_SORT_ERROR"/>
@@ -17911,7 +17778,7 @@ Called by update_net_error_codes.py.-->
   <int value="-300" label="INVALID_URL"/>
   <int value="-218" label="SSL_OBSOLETE_VERSION"/>
   <int value="-217" label="CERT_KNOWN_INTERCEPTION_BLOCKED"/>
-  <int value="-216" label="QUIC_CERT_ROOT_NOT_KNOWN"/>
+  <int value="-216" label="QUIC_CERT_ROOT_NOT_KNOWN (old)"/>
   <int value="-215" label="CERT_SYMANTEC_LEGACY"/>
   <int value="-214" label="CERTIFICATE_TRANSPARENCY_REQUIRED"/>
   <int value="-213" label="CERT_VALIDITY_TOO_LONG"/>
@@ -18376,11 +18243,11 @@ Called by update_net_error_codes.py.-->
   <int value="17" label="OTASP Failed"/>
   <int value="18" label="Out Of Range"/>
   <int value="19" label="PPP Auth"/>
-  <int value="20" label="Pin Missing"/>
-  <int value="21" label="Unknown"/>
-  <int value="22" label="Not Associated"/>
-  <int value="23" label="Not Authenticated"/>
-  <int value="24" label="Too Many STAs"/>
+  <int value="20" label="Pin Missing."/>
+  <int value="21" label="Unknown."/>
+  <int value="22" label="Not Associated."/>
+  <int value="23" label="Not Authenticated."/>
+  <int value="24" label="Too Many STAs."/>
   <int value="25" label="Disconnect"/>
   <int value="26" label="Sim Locked"/>
   <int value="27" label="Not Registered"/>
@@ -25319,216 +25186,6 @@ metrics consent we also won't be able to send UMA metrics. -->
   <int value="10" label="HOME_PAGE"/>
 </enum>
 
-<enum name="DataUseServices">
-  <obsolete>
-    Replaced by DataUseServicesHash in June, 2018.
-  </obsolete>
-  <int value="0" label="Not Tagged"/>
-  <int value="1" label="Suggestions"/>
-  <int value="2" label="Translate"/>
-  <int value="3" label="Sync"/>
-  <int value="4" label="Omnibox"/>
-  <int value="5" label="Invalidation"/>
-  <int value="6" label="Rappor"/>
-  <int value="7" label="Variations"/>
-  <int value="8" label="UMA"/>
-  <int value="9" label="Domain Reliability"/>
-  <int value="10" label="Profile Downloader"/>
-  <int value="11" label="Google URL Tracker"/>
-  <int value="12" label="Autofill"/>
-  <int value="13" label="Policy"/>
-  <int value="14" label="Spell Checker"/>
-  <int value="15" label="NTPSnippets (obsolete)"/>
-  <int value="16" label="Safe Browsing"/>
-  <int value="17" label="Data Reduction Proxy"/>
-  <int value="18" label="Precache"/>
-  <int value="19" label="NTPTiles"/>
-  <int value="20" label="Feedback Uploader"/>
-  <int value="21" label="Tracing Uploader"/>
-  <int value="22" label="DOM Distiller"/>
-  <int value="23" label="Cloud Print"/>
-  <int value="24" label="Search Provider Logos"/>
-  <int value="25" label="Update Client"/>
-  <int value="26" label="GCM Driver"/>
-  <int value="27" label="Web History Service"/>
-  <int value="28" label="Network Time Tracker"/>
-  <int value="29" label="Supervised User"/>
-  <int value="30" label="Image Fetcher Untagged"/>
-  <int value="31" label="GAIA"/>
-  <int value="32" label="Captive Portal"/>
-  <int value="33" label="Web Resource Service"/>
-  <int value="34" label="Signin"/>
-  <int value="35" label="NTPSnippets suggestions"/>
-  <int value="36" label="NTPSnippets thumbnails"/>
-  <int value="37" label="Doodle"/>
-  <int value="38" label="UKM"/>
-  <int value="39" label="Payments"/>
-  <int value="40" label="LargeIconService"/>
-  <int value="41" label="MachineIntelligence"/>
-</enum>
-
-<enum name="DataUseServicesHash">
-<!-- Generated from the network annotation tag hashes in tools/traffic_annotation/summary/annotations.xml -->
-
-  <int value="485305" label="DATA_REDUCTION_PROXY"/>
-  <int value="727478" label="UKM"/>
-  <int value="727528" label="UMA"/>
-  <int value="1112842" label="GAIA"/>
-  <int value="1313982" label="SAFE_BROWSING"/>
-  <int value="3813491" label="OMNIBOX"/>
-  <int value="3989826" label="DOM_DISTILLER"/>
-  <int value="4300475" label="SIGNIN"/>
-  <int value="4598626" label="GAIA"/>
-  <int value="5021348" label="SYNC"/>
-  <int value="5492492" label="GOOGLE_URL_TRACKER"/>
-  <int value="5637379" label="GAIA"/>
-  <int value="6019475" label="SAFE_BROWSING"/>
-  <int value="7687691" label="OMNIBOX"/>
-  <int value="8250451" label="DATA_REDUCTION_PROXY"/>
-  <int value="8561691" label="SAFE_BROWSING"/>
-  <int value="9459438" label="POLICY"/>
-  <int value="10498172" label="PER_USER_TOPIC_REGISTRATION_REQUEST"/>
-  <int value="13211343" label="SUGGESTIONS"/>
-  <int value="14257952" label="SUPERVISED_USER"/>
-  <int value="15418154" label="NTP_SNIPPETS_SUGGESTIONS"/>
-  <int value="16653985" label="NTP_SNIPPETS_THUMBNAILS"/>
-  <int value="17188928" label="WEBSOCKET_STREAM"/>
-  <int value="17400350" label="WEB_HISTORY_SERVICE"/>
-  <int value="17562717" label="HISTORY_UI_FAVICON"/>
-  <int value="18300705" label="GCM_DRIVER"/>
-  <int value="18858893" label="OFFLINE_PAGES_DOWNLOAD_FILE"/>
-  <int value="19185953" label="OFFLINE_PAGES_PREFETCH"/>
-  <int value="21785164" label="INTRANET_REDIRECT_DETECTOR"/>
-  <int value="22265491" label="POLICY"/>
-  <int value="24978481" label="CLOUD_PRINT"/>
-  <int value="25790702" label="APPCACHE_UPDATE_JOB"/>
-  <int value="26216847" label="GAIA"/>
-  <int value="27071967" label="SAFE_BROWSING"/>
-  <int value="27915688" label="GAIA"/>
-  <int value="29057242" label="GCM_DRIVER"/>
-  <int value="29188932" label="GAIA"/>
-  <int value="30913825" label="SUPERVISED_USER"/>
-  <int value="31445884" label="GAIA_AUTH_MULTILOGIN"/>
-  <int value="32585152" label="GAIA"/>
-  <int value="33813109" label="PREVIEWS_LITEPAGE_PROBER"/>
-  <int value="34557599" label="HINTSFETCHER_GETHINTS"/>
-  <int value="35370363" label="SUGGESTIONS"/>
-  <int value="35380758" label="RESUMED_DOWNLOADS"/>
-  <int value="35473769" label="LOGO_SERVICE"/>
-  <int value="35565745" label="GAIA"/>
-  <int value="35725390" label="HTTPS_SERVER_PREVIEWS_NAVIGATION"/>
-  <int value="36859107" label="SEARCH_PROVIDER_LOGOS"/>
-  <int value="38670228" label="DOWNLOADS_INTERNAL_WEBUI"/>
-  <int value="39877119" label="GAIA"/>
-  <int value="39886742" label="WEB_PUSH_MESSAGE"/>
-  <int value="42848942" label="SAFE_BROWSING"/>
-  <int value="43206794" label="SUPERVISED_USER"/>
-  <int value="44494884" label="NTP_TILES"/>
-  <int value="44583172" label="OFFLINE_PAGES_PREFETCH_DOWNLOAD"/>
-  <int value="44583821" label="SAFE_BROWSING"/>
-  <int value="44606780" label="RAPPOR"/>
-  <int value="46188932" label="NETWORK_TIME_TRACKER"/>
-  <int value="47815025" label="OMNIBOX"/>
-  <int value="49544361" label="NTP_SNIPPETS_THUMBNAILS"/>
-  <int value="49601082" label="WEB_RESOURCE_SERVICE"/>
-  <int value="50755044" label="NTP_TILES"/>
-  <int value="50816767" label="LIB_ADDRESS_INPUT"/>
-  <int value="50859288" label="CLOUD_PRINT"/>
-  <int value="52821843" label="GEO_LANGUAGE_PROVIDER"/>
-  <int value="53695122" label="CREDENTIAL_AVATAR"/>
-  <int value="54845618" label="UPDATE_CLIENT"/>
-  <int value="56434025" label="NTP_SNIPPETS_SUGGESTIONS"/>
-  <int value="57144960" label="SYNC"/>
-  <int value="60071001" label="NET_ERROR_HELPER"/>
-  <int value="60946824" label="WEB_HISTORY_SERVICE"/>
-  <int value="61656965" label="GCM_DRIVER"/>
-  <int value="61684939" label="OMNIBOX"/>
-  <int value="63171670" label="NAVIGATION_URL_LOADER"/>
-  <int value="65957842" label="GCM_DRIVER"/>
-  <int value="66322287" label="SAFE_BROWSING"/>
-  <int value="66590631" label="SAFE_BROWSING"/>
-  <int value="67638271" label="CLOUD_PRINT"/>
-  <int value="68561428" label="DATA_REDUCTION_PROXY"/>
-  <int value="68745894" label="SAFE_BROWSING"/>
-  <int value="69585116" label="PASSWORD_REQUIREMENTS_SPEC_FETCH"/>
-  <int value="69881286" label="OMNIBOX_ANSWERS_IMAGE"/>
-  <int value="70126372" label="SAFE_BROWSING"/>
-  <int value="71251498" label="CLOUD_PRINT"/>
-  <int value="71578042" label="CLOUD_PRINT"/>
-  <int value="72354423" label="INVALIDATION"/>
-  <int value="73107389" label="OMNIBOX"/>
-  <int value="73772528" label="DOWNLOAD_VIA_CONTEXT_MENU"/>
-  <int value="75153841" label="SAFE_BROWSING"/>
-  <int value="76717919" label="INTEREST_FEED_SEND"/>
-  <int value="77597059" label="DOMAIN_RELIABILITY"/>
-  <int value="78544924" label="SUPERVISED_USER"/>
-  <int value="79442849" label="SIGNED_EXCHANGE_CERT_FETCHER"/>
-  <int value="79957943" label="SAFE_BROWSING"/>
-  <int value="80832574" label="HISTORY_NOTICE_UTILS_POPUP"/>
-  <int value="82167736" label="GAIA"/>
-  <int value="82462683" label="GAIA"/>
-  <int value="83476155" label="GAIA"/>
-  <int value="84045030" label="PAYMENTS"/>
-  <int value="84212388" label="OMNIBOX"/>
-  <int value="84575287" label="TRACING_UPLOADER"/>
-  <int value="88754904" label="CAPTIVE_PORTAL"/>
-  <int value="88863520" label="AUTOFILL"/>
-  <int value="91068704" label="PREFETCH_VISUALS"/>
-  <int value="91597383" label="GAIA"/>
-  <int value="95588446" label="AUTOFILL"/>
-  <int value="95682324" label="MACHINE_INTELLIGENCE"/>
-  <int value="95711309" label="NTP_SNIPPETS_SUGGESTIONS"/>
-  <int value="97978464" label="GAIA"/>
-  <int value="98658519" label="SIGNIN"/>
-  <int value="102595701" label="HISTORY_NOTICE_UTILS_NOTICE"/>
-  <int value="102935425" label="SAFE_BROWSING"/>
-  <int value="103133150" label="NTP_TILES"/>
-  <int value="104798869" label="AUTOFILL"/>
-  <int value="106980485" label="SAFE_BROWSING"/>
-  <int value="107267424" label="OPEN_SEARCH"/>
-  <int value="107881858" label="IMAGE_ANNOTATION"/>
-  <int value="108804096" label="DOMAIN_RELIABILITY"/>
-  <int value="108903331" label="PROFILE_DOWNLOADER"/>
-  <int value="109200878" label="OMNIBOX"/>
-  <int value="109891200" label="REPORTING"/>
-  <int value="109987793" label="KIDS_CHROME_MANAGEMENT_CLIENT"/>
-  <int value="110307337" label="WEB_HISTORY_SERVICE"/>
-  <int value="111712433" label="CLOUD_PRINT"/>
-  <int value="111904019" label="AFFILIATION_LOOKUP"/>
-  <int value="112189210" label="FAVICON_LOADER"/>
-  <int value="113231892" label="UPDATE_CLIENT"/>
-  <int value="113553577" label="CERTIFICATE_VERIFIER"/>
-  <int value="114468207" label="SSL_NAME_MISMATCH_LOOKUP"/>
-  <int value="115188287" label="VARIATIONS"/>
-  <int value="115907811" label="SAFE_BROWSING"/>
-  <int value="116426676" label="GAIA"/>
-  <int value="117649486" label="SPELL_CHECKER"/>
-  <int value="117782019" label="POLICY"/>
-  <int value="117963307" label="SERVICE_WORKER_WRITE_TO_CACHE_JOB"/>
-  <int value="118389509" label="URL_PROVISION_FETCHER"/>
-  <int value="119416099" label="LOAD_AUTOFILL_GSTATIC_DATA"/>
-  <int value="119542033" label="GCM_DRIVER"/>
-  <int value="119677115" label="SUPERVISED_USER"/>
-  <int value="121842329" label="WEBAPK_ICON_HASHER"/>
-  <int value="124950347" label="SAFE_BROWSING"/>
-  <int value="125522256" label="SAFE_BROWSING"/>
-  <int value="125596241" label="UPDATE_CLIENT"/>
-  <int value="126122632" label="WEB_HISTORY_SERVICE"/>
-  <int value="129872904" label="SERVICE_WORKER_NAVIGATION_PRELOAD"/>
-  <int value="130931413" label="SERVICE_WORKER_UPDATE_CHECKER"/>
-  <int value="131236802" label="DATA_REDUCTION_PROXY"/>
-  <int value="132055347" label="CLOUD_PRINT"/>
-  <int value="132553989" label="SPELL_CHECKER"/>
-  <int value="133982351" label="GAIA"/>
-  <int value="134289752" label="GAIA"/>
-  <int value="134729048" label="FEEDBACK_UPLOADER"/>
-  <int value="135967426" label="SAFE_BROWSING"/>
-  <int value="136468456" label="PROXY_CONFIG_SETTINGS"/>
-  <int value="137116619" label="TRANSLATE"/>
-  <int value="137420486" label="CLOUD_PRINT"/>
-  <int value="137457845" label="WEB_HISTORY_SERVICE"/>
-</enum>
-
 <enum name="DayOfWeek">
   <int value="0" label="Sunday"/>
   <int value="1" label="Monday"/>
@@ -28123,7 +27780,6 @@ Called by update_document_policy_enum.py.-->
   <int value="11" label="JSProfiling"/>
   <int value="12" label="SyncXHR"/>
   <int value="13" label="DocumentDomain"/>
-  <int value="14" label="DocumentDomain"/>
 </enum>
 
 <enum name="DocumentScanSaneBackend">
@@ -29311,405 +28967,6 @@ Called by update_document_policy_enum.py.-->
   <int value="7" label="Download reinitiated"/>
   <int value="8" label="Download shared"/>
   <int value="9" label="Download renamed"/>
-</enum>
-
-<enum name="DownloadItem.DangerousFileType">
-  <int value="0" label="unknown"/>
-  <int value="1" label="ad"/>
-  <int value="2" label="ade"/>
-  <int value="3" label="adp"/>
-  <int value="4" label="ah"/>
-  <int value="5" label="apk"/>
-  <int value="6" label="app"/>
-  <int value="7" label="application"/>
-  <int value="8" label="asp"/>
-  <int value="9" label="asx"/>
-  <int value="10" label="bas"/>
-  <int value="11" label="bash"/>
-  <int value="12" label="bat"/>
-  <int value="13" label="cfg"/>
-  <int value="14" label="chi"/>
-  <int value="15" label="chm"/>
-  <int value="16" label="class"/>
-  <int value="17" label="cmd"/>
-  <int value="18" label="com"/>
-  <int value="19" label="command"/>
-  <int value="20" label="crt"/>
-  <int value="21" label="crx"/>
-  <int value="22" label="csh"/>
-  <int value="23" label="deb"/>
-  <int value="24" label="dex"/>
-  <int value="25" label="dll"/>
-  <int value="26" label="drv"/>
-  <int value="27" label="exe"/>
-  <int value="28" label="fxp"/>
-  <int value="29" label="grp"/>
-  <int value="30" label="hlp"/>
-  <int value="31" label="hta"/>
-  <int value="32" label="htm"/>
-  <int value="33" label="html"/>
-  <int value="34" label="htt"/>
-  <int value="35" label="inf"/>
-  <int value="36" label="ini"/>
-  <int value="37" label="ins"/>
-  <int value="38" label="isp"/>
-  <int value="39" label="jar"/>
-  <int value="40" label="jnlp"/>
-  <int value="41" label="user.js"/>
-  <int value="42" label="js"/>
-  <int value="43" label="jse"/>
-  <int value="44" label="ksh"/>
-  <int value="45" label="lnk"/>
-  <int value="46" label="local"/>
-  <int value="47" label="mad"/>
-  <int value="48" label="maf"/>
-  <int value="49" label="mag"/>
-  <int value="50" label="mam"/>
-  <int value="51" label="manifest"/>
-  <int value="52" label="maq"/>
-  <int value="53" label="mar"/>
-  <int value="54" label="mas"/>
-  <int value="55" label="mat"/>
-  <int value="56" label="mau"/>
-  <int value="57" label="mav"/>
-  <int value="58" label="maw"/>
-  <int value="59" label="mda"/>
-  <int value="60" label="mdb"/>
-  <int value="61" label="mde"/>
-  <int value="62" label="mdt"/>
-  <int value="63" label="mdw"/>
-  <int value="64" label="mdz"/>
-  <int value="65" label="mht"/>
-  <int value="66" label="mhtml"/>
-  <int value="67" label="mmc"/>
-  <int value="68" label="mof"/>
-  <int value="69" label="msc"/>
-  <int value="70" label="msh"/>
-  <int value="71" label="mshxml"/>
-  <int value="72" label="msi"/>
-  <int value="73" label="msp"/>
-  <int value="74" label="mst"/>
-  <int value="75" label="ocx"/>
-  <int value="76" label="ops"/>
-  <int value="77" label="pcd"/>
-  <int value="78" label="pif"/>
-  <int value="79" label="pkg"/>
-  <int value="80" label="pl"/>
-  <int value="81" label="plg"/>
-  <int value="82" label="prf"/>
-  <int value="83" label="prg"/>
-  <int value="84" label="pst"/>
-  <int value="85" label="py"/>
-  <int value="86" label="pyc"/>
-  <int value="87" label="pyw"/>
-  <int value="88" label="rb"/>
-  <int value="89" label="reg"/>
-  <int value="90" label="rpm"/>
-  <int value="91" label="scf"/>
-  <int value="92" label="scr"/>
-  <int value="93" label="sct"/>
-  <int value="94" label="sh"/>
-  <int value="95" label="shar"/>
-  <int value="96" label="shb"/>
-  <int value="97" label="shs"/>
-  <int value="98" label="shtm"/>
-  <int value="99" label="shtml"/>
-  <int value="100" label="spl"/>
-  <int value="101" label="svg"/>
-  <int value="102" label="swf"/>
-  <int value="103" label="sys"/>
-  <int value="104" label="tcsh"/>
-  <int value="105" label="url"/>
-  <int value="106" label="vb"/>
-  <int value="107" label="vbe"/>
-  <int value="108" label="vbs"/>
-  <int value="109" label="vsd"/>
-  <int value="110" label="vsmacros"/>
-  <int value="111" label="vss"/>
-  <int value="112" label="vst"/>
-  <int value="113" label="vsw"/>
-  <int value="114" label="ws"/>
-  <int value="115" label="wsc"/>
-  <int value="116" label="wsf"/>
-  <int value="117" label="wsh"/>
-  <int value="118" label="xbap"/>
-  <int value="119" label="xht"/>
-  <int value="120" label="xhtm"/>
-  <int value="121" label="xhtml"/>
-  <int value="122" label="xml"/>
-  <int value="123" label="xsl"/>
-  <int value="124" label="xslt"/>
-  <int value="125" label="website"/>
-  <int value="126" label="msh1"/>
-  <int value="127" label="msh2"/>
-  <int value="128" label="msh1xml"/>
-  <int value="129" label="msh2xml"/>
-  <int value="130" label="ps1"/>
-  <int value="131" label="ps1xml"/>
-  <int value="132" label="ps2"/>
-  <int value="133" label="ps2xml"/>
-  <int value="134" label="psc1"/>
-  <int value="135" label="psc2"/>
-  <int value="136" label="xnk"/>
-  <int value="137" label="appref-ms"/>
-  <int value="138" label="gadget"/>
-  <int value="139" label="efi"/>
-  <int value="140" label="fon"/>
-  <int value="141" label="partial"/>
-  <int value="142" label="svg"/>
-  <int value="143" label="xml"/>
-  <int value="144" label="xrm_ms"/>
-  <int value="145" label="xsl"/>
-  <int value="146" label="action"/>
-  <int value="147" label="bin"/>
-  <int value="148" label="inx"/>
-  <int value="149" label="ipa"/>
-  <int value="150" label="isu"/>
-  <int value="151" label="job"/>
-  <int value="152" label="out"/>
-  <int value="153" label="pad"/>
-  <int value="154" label="paf"/>
-  <int value="155" label="rgs"/>
-  <int value="156" label="u3p"/>
-  <int value="157" label="vbscript"/>
-  <int value="158" label="workflow"/>
-  <int value="159" label="001"/>
-  <int value="160" label="7z"/>
-  <int value="161" label="ace"/>
-  <int value="162" label="arc"/>
-  <int value="163" label="arj"/>
-  <int value="164" label="b64"/>
-  <int value="165" label="balz"/>
-  <int value="166" label="bhx"/>
-  <int value="167" label="bz"/>
-  <int value="168" label="bz2"/>
-  <int value="169" label="bzip2"/>
-  <int value="170" label="cab"/>
-  <int value="171" label="cpio"/>
-  <int value="172" label="fat"/>
-  <int value="173" label="gz"/>
-  <int value="174" label="gzip"/>
-  <int value="175" label="hfs"/>
-  <int value="176" label="hqx"/>
-  <int value="177" label="iso"/>
-  <int value="178" label="lha"/>
-  <int value="179" label="lpaq1"/>
-  <int value="180" label="lpaq5"/>
-  <int value="181" label="lpaq8"/>
-  <int value="182" label="lzh"/>
-  <int value="183" label="lzma"/>
-  <int value="184" label="mim"/>
-  <int value="185" label="ntfs"/>
-  <int value="186" label="paq8f"/>
-  <int value="187" label="paq8jd"/>
-  <int value="188" label="paq8l"/>
-  <int value="189" label="paq8o"/>
-  <int value="190" label="pea"/>
-  <int value="191" label="quad"/>
-  <int value="192" label="r00"/>
-  <int value="193" label="r01"/>
-  <int value="194" label="r02"/>
-  <int value="195" label="r03"/>
-  <int value="196" label="r04"/>
-  <int value="197" label="r05"/>
-  <int value="198" label="r06"/>
-  <int value="199" label="r07"/>
-  <int value="200" label="r08"/>
-  <int value="201" label="r09"/>
-  <int value="202" label="r10"/>
-  <int value="203" label="r11"/>
-  <int value="204" label="r12"/>
-  <int value="205" label="r13"/>
-  <int value="206" label="r14"/>
-  <int value="207" label="r15"/>
-  <int value="208" label="r16"/>
-  <int value="209" label="r17"/>
-  <int value="210" label="r18"/>
-  <int value="211" label="r19"/>
-  <int value="212" label="r20"/>
-  <int value="213" label="r21"/>
-  <int value="214" label="r22"/>
-  <int value="215" label="r23"/>
-  <int value="216" label="r24"/>
-  <int value="217" label="r25"/>
-  <int value="218" label="r26"/>
-  <int value="219" label="r27"/>
-  <int value="220" label="r28"/>
-  <int value="221" label="r29"/>
-  <int value="222" label="rar"/>
-  <int value="223" label="squashfs"/>
-  <int value="224" label="swm"/>
-  <int value="225" label="tar"/>
-  <int value="226" label="taz"/>
-  <int value="227" label="tbz"/>
-  <int value="228" label="tbz2"/>
-  <int value="229" label="tgz"/>
-  <int value="230" label="tpz"/>
-  <int value="231" label="txz"/>
-  <int value="232" label="tz"/>
-  <int value="233" label="udf"/>
-  <int value="234" label="uu"/>
-  <int value="235" label="uue"/>
-  <int value="236" label="vhd"/>
-  <int value="237" label="vmdk"/>
-  <int value="238" label="wim"/>
-  <int value="239" label="wrc"/>
-  <int value="240" label="xar"/>
-  <int value="241" label="xxe"/>
-  <int value="242" label="xz"/>
-  <int value="243" label="z"/>
-  <int value="244" label="zip"/>
-  <int value="245" label="zipx"/>
-  <int value="246" label="zpaq"/>
-  <int value="247" label="cdr"/>
-  <int value="248" label="dart"/>
-  <int value="249" label="dc42"/>
-  <int value="250" label="diskcopy42"/>
-  <int value="251" label="dmg"/>
-  <int value="252" label="dmgpart"/>
-  <int value="253" label="dvdr"/>
-  <int value="254" label="img"/>
-  <int value="255" label="imgpart"/>
-  <int value="256" label="ndif"/>
-  <int value="257" label="smi"/>
-  <int value="258" label="sparsebundle"/>
-  <int value="259" label="sparseimage"/>
-  <int value="260" label="toast"/>
-  <int value="261" label="udif"/>
-  <int value="262" label="run"/>
-  <int value="263" label="mpkg"/>
-  <int value="264" label="as"/>
-  <int value="265" label="cpgz"/>
-  <int value="266" label="pax"/>
-  <int value="267" label="xip"/>
-  <int value="268" label="docx"/>
-  <int value="269" label="docm"/>
-  <int value="270" label="dott"/>
-  <int value="271" label="dotm"/>
-  <int value="272" label="docb"/>
-  <int value="273" label="xlsx"/>
-  <int value="274" label="xlsm"/>
-  <int value="275" label="xltx"/>
-  <int value="276" label="xltm"/>
-  <int value="277" label="pptx"/>
-  <int value="278" label="pptm"/>
-  <int value="279" label="potx"/>
-  <int value="280" label="ppam"/>
-  <int value="281" label="ppsx"/>
-  <int value="282" label="sldx"/>
-  <int value="283" label="sldm"/>
-  <int value="284" label="htm"/>
-  <int value="285" label="html"/>
-  <int value="286" label="xht"/>
-  <int value="287" label="xhtm"/>
-  <int value="288" label="xhtml"/>
-  <int value="289" label="vdx"/>
-  <int value="290" label="vsx"/>
-  <int value="291" label="vtx"/>
-  <int value="292" label="vsdx"/>
-  <int value="293" label="vssx"/>
-  <int value="294" label="vstx"/>
-  <int value="295" label="vsdm"/>
-  <int value="296" label="vssm"/>
-  <int value="297" label="vstm"/>
-  <int value="298" label="btapp"/>
-  <int value="299" label="btskin"/>
-  <int value="300" label="btinstall"/>
-  <int value="301" label="btkey"/>
-  <int value="302" label="btsearch"/>
-  <int value="303" label="dhtml"/>
-  <int value="304" label="dhtm"/>
-  <int value="305" label="dht"/>
-  <int value="306" label="shtml"/>
-  <int value="307" label="shtm"/>
-  <int value="308" label="sht"/>
-  <int value="309" label="slk"/>
-  <int value="310" label="applescript"/>
-  <int value="311" label="scpt"/>
-  <int value="312" label="scptd"/>
-  <int value="313" label="seplugin"/>
-  <int value="314" label="osas"/>
-  <int value="315" label="osax"/>
-  <int value="316" label="settingcontent-ms"/>
-  <int value="317" label="oxt"/>
-  <int value="318" label="pyd"/>
-  <int value="319" label="pyo"/>
-  <int value="320" label="desktop"/>
-  <int value="321" label="cpi"/>
-  <int value="322" label="jpg"/>
-  <int value="323" label="jpeg"/>
-  <int value="324" label="mp3"/>
-  <int value="325" label="mp4"/>
-  <int value="326" label="png"/>
-  <int value="327" label="xls"/>
-  <int value="328" label="doc"/>
-  <int value="329" label="pptx"/>
-  <int value="330" label="csv"/>
-  <int value="331" label="ica"/>
-  <int value="332" label="ppt"/>
-  <int value="333" label="gif"/>
-  <int value="334" label="txt"/>
-  <int value="335" label="package"/>
-  <int value="336" label="tif"/>
-  <int value="337" label="rtf"/>
-  <int value="338" label="webp"/>
-  <int value="339" label="mkv"/>
-  <int value="340" label="wav"/>
-  <int value="341" label="mov"/>
-  <int value="342" label="dot"/>
-  <int value="343" label="dotx"/>
-  <int value="344" label="xlsb"/>
-  <int value="345" label="xlt"/>
-  <int value="346" label="xlm"/>
-  <int value="347" label="xldm"/>
-  <int value="348" label="xla"/>
-  <int value="349" label="xlam"/>
-  <int value="350" label="xll"/>
-  <int value="351" label="xlw"/>
-  <int value="352" label="pot"/>
-  <int value="353" label="potm"/>
-  <int value="354" label="ppsm"/>
-  <int value="355" label="pps"/>
-  <int value="356" label="mobileconfig"/>
-  <int value="357" label="dylib"/>
-  <int value="358" label="service"/>
-  <int value="359" label="definition"/>
-  <int value="360" label="wflow"/>
-  <int value="361" label="caction"/>
-  <int value="362" label="configprofile"/>
-  <int value="363" label="internetconnect"/>
-  <int value="364" label="networkconnect"/>
-  <int value="365" label="bmp"/>
-  <int value="366" label="css"/>
-  <int value="367" label="ehtml"/>
-  <int value="368" label="flac"/>
-  <int value="369" label="ico"/>
-  <int value="370" label="jfif"/>
-  <int value="371" label="m4a"/>
-  <int value="372" label="m4v"/>
-  <int value="373" label="mpeg"/>
-  <int value="374" label="mpg"/>
-  <int value="375" label="oga"/>
-  <int value="376" label="ogg"/>
-  <int value="377" label="ogm"/>
-  <int value="378" label="ogv"/>
-  <int value="379" label="opus"/>
-  <int value="380" label="pjp"/>
-  <int value="381" label="pjpeg"/>
-  <int value="382" label="svgz"/>
-  <int value="383" label="text"/>
-  <int value="384" label="tiff"/>
-  <int value="385" label="weba"/>
-  <int value="386" label="webm"/>
-  <int value="387" label="xbm"/>
-  <int value="388" label="accdb"/>
-  <int value="389" label="accde"/>
-  <int value="390" label="accdr"/>
-  <int value="391" label="accda"/>
-  <int value="392" label="cer"/>
-  <int value="393" label="der"/>
-  <int value="394" label="fileloc"/>
-  <int value="395" label="webloc"/>
 </enum>
 
 <enum name="DownloadItem.DangerType">
@@ -38326,7 +37583,7 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="435" label="MouseEventMovementY"/>
   <int value="436" label="MixedContentTextTrack"/>
   <int value="437" label="MixedContentRaw"/>
-  <int value="438" label="MixedContentImage"/>
+  <int value="438" label="MixedContentImage (old)"/>
   <int value="439" label="MixedContentMedia"/>
   <int value="440" label="DocumentFonts"/>
   <int value="441" label="MixedContentFormsSubmitted"/>
@@ -41785,7 +41042,7 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="3742" label="CrossOriginSubframeWithoutEmbeddingControl"/>
   <int value="3743" label="ReadableStreamWithByteSource"/>
   <int value="3744" label="ReadableStreamBYOBReader"/>
-  <int value="3745" label="EmbedElementWithoutTypeSrcChanged"/>
+  <int value="3745" label="EmbedElementWithoutTypeSrcChanged_Deleted"/>
   <int value="3746" label="SamePartyCookieAttribute"/>
   <int value="3747" label="SamePartyCookieExclusionOverruledSameSite"/>
   <int value="3748" label="SamePartyCookieInclusionOverruledSameSite"/>
@@ -42043,7 +41300,7 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="3988" label="FontSelectorCSSFontFamilyWebKitPrefixBody"/>
   <int value="3989" label="FontBuilderCSSFontFamilyWebKitPrefixBody"/>
   <int value="3990" label="CapabilityDelegationOfPaymentRequest"/>
-  <int value="3991" label="ConditionalFocus"/>
+  <int value="3991" label="ConditionalFocus_Deleted"/>
   <int value="3992" label="CredentialManagerGetLegacyFederatedCredential"/>
   <int value="3993" label="CredentialManagerGetPasswordCredential"/>
   <int value="3994" label="CredentialManagerStoreFederatedCredential"/>
@@ -48573,16 +47830,16 @@ Called by update_permissions_policy_enum.py.-->
   <int value="28" label="Linux/ATI/Third party drivers with 'AMD' in renderer"/>
   <int value="29" label="Linux/ATI/Third party drivers with 'ATI' in renderer"/>
   <int value="30" label="Linux/NVIDIA/Nouveau drivers"/>
-  <int value="31" label=""/>
+  <int value="31" label="31"/>
   <int value="32" label="Win/perf_overall less than 3.5/2d-canvas"/>
   <int value="33" label="Linux/Intel/IvyBridge/multisampling"/>
   <int value="34" label="Win/S3 Trio/all"/>
   <int value="35" label="Linux/Stage3D"/>
-  <int value="36" label=""/>
+  <int value="36" label="36"/>
   <int value="37" label="Linux/Optimus/all"/>
   <int value="38" label="MacLion/NVIDIA GeForce 9400M/2d-canvas"/>
-  <int value="39" label=""/>
-  <int value="40" label=""/>
+  <int value="39" label="39"/>
+  <int value="40" label="40"/>
   <int value="41" label="WinXP/Flash3D"/>
   <int value="42" label="Mac10.6/AMD/Radeon HD 6490M/WebGL"/>
   <int value="43" label="Win/Intel/8.15.10.1749/Texture_sharing"/>
@@ -50172,8 +49429,8 @@ Called by update_gpu_driver_bug_workaround_entries.py.-->
   <int value="0" label="kEmptyExtension"/>
   <int value="1" label="kOtherExtension"/>
   <int value="2" label="RESERVED"/>
-  <int value="3" label="RESERVED"/>
-  <int value="4" label="RESERVED"/>
+  <int value="3" label="RESERVED0"/>
+  <int value="4" label="RESERVED1"/>
   <int value="5" label=".3ga"/>
   <int value="6" label=".3gp"/>
   <int value="7" label=".aac"/>
@@ -52917,7 +52174,7 @@ Unsupported non-ascii characters will cause issues with xml presubmits.
   <int value="-607101895" label="zh-t-i0-pinyin"/>
   <int value="-547772150" label="xkb:ro:std:rum"/>
   <int value="-545936253" label="zh-hant-t-i0-array-1992"/>
-  <int value="-537214862" label="xkb:us:intl_pc:eng"/>
+  <int value="-537214862" label="xkb:us:intl_pc:eng (*)"/>
   <int value="-535089160" label="xkb:us::msa"/>
   <int value="-512360986" label="xkb:us:altgr-intl:eng"/>
   <int value="-496003957" label="xkb:de::ger"/>
@@ -66357,53 +65614,53 @@ from previous Chrome versions.
   <int value="2" label="HEALTHY">Healthy</int>
   <int value="3" label="RESERVED">Reserved</int>
   <int value="4" label="BAD_POLICY_R11">Key OK, policy bad, pre-R11</int>
-  <int value="5" label="UNUSED">Unused</int>
+  <int value="5" label="UNUSED0">Unused</int>
   <int value="6" label="BAD_POLICY">Key OK, policy bad</int>
-  <int value="7" label="RESERVED">Reserved</int>
+  <int value="7" label="RESERVED0">Reserved</int>
   <int value="8" label="KEY_OK_NO_POLICY_R11">
     Key OK, no policy, pre-R11 user (http://crosbug.com/24916)
   </int>
-  <int value="9" label="UNUSED">Unused</int>
+  <int value="9" label="UNUSED1">Unused</int>
   <int value="10" label="KEY_OK_NO_POLICY">Key OK, no policy</int>
-  <int value="11" label="RESERVED">Reserved</int>
-  <int value="12" label="RESERVED">Reserved</int>
-  <int value="13" label="RESERVED">Reserved</int>
-  <int value="14" label="RESERVED">Reserved</int>
-  <int value="15" label="RESERVED">Reserved</int>
+  <int value="11" label="RESERVED1">Reserved</int>
+  <int value="12" label="RESERVED2">Reserved</int>
+  <int value="13" label="RESERVED3">Reserved</int>
+  <int value="14" label="RESERVED4">Reserved</int>
+  <int value="15" label="RESERVED5">Reserved</int>
   <int value="16" label="BAD_KEY_R11">Key bad, policy OK, pre-R11</int>
-  <int value="17" label="UNUSED">Unused</int>
+  <int value="17" label="UNUSED2">Unused</int>
   <int value="18" label="BAD_KEY">Key bad, policy OK</int>
-  <int value="19" label="RESERVED">Reserved</int>
+  <int value="19" label="RESERVED6">Reserved</int>
   <int value="20" label="BAD_KEY_BAD_POLICY_R11">
     Key bad, policy bad, pre-R11
   </int>
-  <int value="21" label="UNUSED">Unused</int>
-  <int value="22" label="BAD_KEY_BAD_POLICY">Key bad, policy bad</int>
-  <int value="23" label="RESERVED">Reserved</int>
+  <int value="21" label="UNUSED3">Unused</int>
+  <int value="22" label="BAD_KEY_BAD_POLICY_0">Key bad, policy bad</int>
+  <int value="23" label="RESERVED7">Reserved</int>
   <int value="24" label="BAD_KEY_NO_POLICY_R11">
     Key bad, policy bad, pre-R11
   </int>
-  <int value="25" label="UNUSED">Unused</int>
+  <int value="25" label="UNUSED4">Unused</int>
   <int value="26" label="BAD_KEY_BAD_POLICY">Key bad, policy bad</int>
-  <int value="27" label="RESERVED">Reserved</int>
-  <int value="28" label="RESERVED">Reserved</int>
-  <int value="29" label="RESERVED">Reserved</int>
-  <int value="30" label="RESERVED">Reserved</int>
-  <int value="31" label="RESERVED">Reserved</int>
+  <int value="27" label="RESERVED8">Reserved</int>
+  <int value="28" label="RESERVED9">Reserved</int>
+  <int value="29" label="RESERVED10">Reserved</int>
+  <int value="30" label="RESERVED11">Reserved</int>
+  <int value="31" label="RESERVED12">Reserved</int>
   <int value="32" label="NO_KEY_R11">No key, policy OK, pre-R11</int>
-  <int value="33" label="UNUSED">Unused</int>
+  <int value="33" label="UNUSED5">Unused</int>
   <int value="34" label="NO_KEY">No key, policy OK</int>
-  <int value="35" label="RESERVED">RESERVED</int>
+  <int value="35" label="RESERVED13">RESERVED</int>
   <int value="36" label="NO_KEY_BAD_POLICY_R11">
     No key, policy bad, pre-R11
   </int>
-  <int value="37" label="UNUSED">Unused</int>
+  <int value="37" label="UNUSED6">Unused</int>
   <int value="38" label="NO_KEY_BAD_POLICY">No key, bad policy</int>
-  <int value="39" label="RESERVED">Reserved</int>
+  <int value="39" label="RESERVED14">Reserved</int>
   <int value="40" label="NO_KEY_NO_POLICY_R11">Un-owned, pre-R11</int>
-  <int value="41" label="UNUSED">Unused</int>
+  <int value="41" label="UNUSED7">Unused</int>
   <int value="42" label="NO_KEY_NO_POLICY">Un-owned</int>
-  <int value="43" label="RESERVED">Reserved</int>
+  <int value="43" label="RESERVED15">Reserved</int>
 </enum>
 
 <enum name="LoginReauthReasons">
@@ -67547,8 +66804,8 @@ Called by update_use_counter_css.py.-->
   <int value="411" label="webkit-overflow-scrolling"/>
   <int value="412" label="alias-webkit-app-region"/>
   <int value="413" label="alias-webkit-filter"/>
-  <int value="414" label="webkit-box-decoration-break"/>
-  <int value="415" label="webkit-tap-highlight-color"/>
+  <int value="414" label="webkit-box-decoration-break-0"/>
+  <int value="415" label="webkit-tap-highlight-color-0"/>
   <int value="416" label="buffered-rendering"/>
   <int value="417" label="grid-auto-rows"/>
   <int value="418" label="grid-auto-columns"/>
@@ -67640,7 +66897,7 @@ Called by update_use_counter_css.py.-->
   <int value="504" label="translate"/>
   <int value="505" label="rotate"/>
   <int value="506" label="scale"/>
-  <int value="507" label="image-orientation"/>
+  <int value="507" label="image-orientation-0"/>
   <int value="508" label="backdrop-filter"/>
   <int value="509" label="text-combine-upright"/>
   <int value="510" label="text-orientation"/>
@@ -71717,7 +70974,7 @@ Called by update_net_error_codes.py.-->
   <int value="213" label="CERT_VALIDITY_TOO_LONG"/>
   <int value="214" label="CERTIFICATE_TRANSPARENCY_REQUIRED"/>
   <int value="215" label="CERT_SYMANTEC_LEGACY"/>
-  <int value="216" label="QUIC_CERT_ROOT_NOT_KNOWN"/>
+  <int value="216" label="QUIC_CERT_ROOT_NOT_KNOWN_0"/>
   <int value="217" label="CERT_KNOWN_INTERCEPTION_BLOCKED"/>
   <int value="218" label="SSL_OBSOLETE_VERSION"/>
   <int value="300" label="INVALID_URL"/>
@@ -71841,7 +71098,7 @@ Called by update_net_error_codes.py.-->
   <int value="806" label="DNS_SORT_ERROR"/>
   <int value="807" label="DNS_HTTP_FAILED"/>
   <int value="808" label="DNS_SECURE_RESOLVER_HOSTNAME_RESOLUTION_FAILED"/>
-  <int value="1478" label="SSL_CLIENT_AUTH_NO_COMMON_ALGORITHMS"/>
+  <int value="1478" label="SSL_CLIENT_AUTH_NO_COMMON_ALGORITHMS_0"/>
 </enum>
 
 <enum name="NetErrorNavigationCorrectionTypes">
@@ -76495,7 +75752,7 @@ Called by update_net_trust_anchors.py.-->
   <int value="45" label="DELFI"/>
   <int value="46" label="Fonecta 02.fi"/>
   <int value="50" label="AVG"/>
-  <int value="51" label="search.ch"/>
+  <int value="51" label="search.ch (duplicate)"/>
   <int value="54" label="in.gr"/>
   <int value="55" label="Walla!"/>
   <int value="59" label="leit.is"/>
@@ -77412,7 +76669,7 @@ Called by update_net_trust_anchors.py.-->
   <int value="9" label="LOADING_PREDICTOR"/>
   <int value="10" label="FAST_HOST_HINTS"/>
   <int value="11" label="Deprecated"/>
-  <int value="12" label="Deprecated"/>
+  <int value="12" label="Deprecated0"/>
   <int value="13" label="LITE_VIDEO"/>
   <int value="14" label="LINK_PERFORMANCE"/>
   <int value="15" label="SHOPPING_PAGE_PREDICTOR"/>
@@ -83543,43 +82800,49 @@ chromeos/ash/components/peripheral_notification/peripheral_notification_manager.
 </enum>
 
 <enum name="PrefetchReuseState">
-  <int value="0">
+  <int value="0" label="0">
     Reused fresh cache: outside time window and already reused
   </int>
-  <int value="1">Reused fresh cache: outside time window</int>
-  <int value="2">Reused fresh cache: already reused</int>
-  <int value="3">
+  <int value="1" label="1">Reused fresh cache: outside time window</int>
+  <int value="2" label="2">Reused fresh cache: already reused</int>
+  <int value="3" label="3">
     Reused: first reuse within time window, cache entry is fresh
   </int>
-  <int value="4">
+  <int value="4" label="4">
     Not reused: outside time window and already reused, cache always validates
     due to headers
   </int>
-  <int value="5">
+  <int value="5" label="5">
     Not reused: outside time window and cache always validates due to headers
   </int>
-  <int value="6">
+  <int value="6" label="6">
     Not reused: already reused and cache always validates due to headers
   </int>
-  <int value="7">
+  <int value="7" label="7">
     Reused: cache headers are set to always validate, overriding since it's the
     first reuse within time window
   </int>
-  <int value="8">
+  <int value="8" label="8">
     Not reused: outside time window and already reused, cache entry expired
   </int>
-  <int value="9">Not reused: outside time window and cache entry expired</int>
-  <int value="10">Not reused: already reused and cache entry expired</int>
-  <int value="11">
+  <int value="9" label="9">
+    Not reused: outside time window and cache entry expired
+  </int>
+  <int value="10" label="10">
+    Not reused: already reused and cache entry expired
+  </int>
+  <int value="11" label="11">
     Reused: cache age expired, overriding since it's the first reuse within time
     window
   </int>
-  <int value="12">
+  <int value="12" label="12">
     Reused while revalidating: outside time window and already reused
   </int>
-  <int value="13">Reused while revalidating: outside time window</int>
-  <int value="14">Reused while revalidating: already reused</int>
-  <int value="15">
+  <int value="13" label="13">
+    Reused while revalidating: outside time window
+  </int>
+  <int value="14" label="14">Reused while revalidating: already reused</int>
+  <int value="15" label="15">
     Reused, skipped revalidation: first reuse within time window
   </int>
 </enum>
@@ -88084,31 +87347,6 @@ https://www.dmtf.org/sites/default/files/standards/documents/DSP0134_2.7.1.pdf
   <int value="514" label="QPACK_DECODER_STREAM_ERROR"/>
 </enum>
 
-<enum name="QuicInternalErrorLocation">
-  <int value="0" label="QUIC_CHROMIUM_CLIENT_SESSION"/>
-  <int value="1" label="QUIC_CONNECTION_PROTOCOL_VERSION_MISMATCH"/>
-  <int value="2" label="QUIC_CONNECTION_VERSION_NEGOTIATION_PACKET"/>
-  <int value="3" label="QUIC_CONNECTION_UNAUTHENTICATED_HEADER"/>
-  <int value="4" label="QUIC_CONNECTION_WRITE_PACKET"/>
-  <int value="5" label="QUIC_CONTROL_FRAME_MANAGER_CONTROL_FRAME_SENT"/>
-  <int value="6" label="QUIC_CONTROL_FRAME_MANAGER_CONTROL_FRAME_ACKED"/>
-  <int value="7" label="QUIC_CONTROL_FRAME_MANAGER_CONTROL_FRAME_LOST"/>
-  <int value="8" label="QUIC_CONTROL_FRAME_MANAGER_RETRANSMIT_CONTROL_FRAME"/>
-  <int value="9" label="QUIC_CRYPTO_CLIENT_HANDSHAKER_MAX_PACKET"/>
-  <int value="10" label="QUIC_CRYPTO_CLIENT_HANDSHAKER_CHLO"/>
-  <int value="11" label="QUIC_ERROR_CODES"/>
-  <int value="12" label="QUIC_FRAMER"/>
-  <int value="13" label="QUIC_HEADERS_STREAM"/>
-  <int value="14" label="QUIC_SESSION_ON_CAN_WRITE"/>
-  <int value="15" label="QUIC_SESSION_WRITEV_DATA"/>
-  <int value="16" label="QUIC_SESSION_STREAM_FRAME_RETRANSMITTED"/>
-  <int value="17" label="QUIC_SPDY_SESSION"/>
-  <int value="18" label="QUIC_STREAM_ACKED_UNSENT_FIN"/>
-  <int value="19" label="QUIC_STREAM_ACKED_UNSENT_FIN"/>
-  <int value="20" label="QUIC_STREAM_SEQUENCER_BUFFER"/>
-  <int value="21" label="QUIC_CHROMIUM_CLIENT_SESSION_CLOSE_SESSION_ON_ERROR"/>
-</enum>
-
 <enum name="QuickAnswersDictionaryIntentSource">
   <int value="0" label="kTextClassifier"/>
   <int value="1" label="kHunspell"/>
@@ -89937,7 +89175,7 @@ https://www.dmtf.org/sites/default/files/standards/documents/DSP0134_2.7.1.pdf
   <int value="75" label="NetworkingUnfreezable"/>
   <int value="76" label="WakeLock"/>
   <int value="77" label="InternalInputBlocking"/>
-  <int value="78" label="WebGL"/>
+  <int value="78" label="WebGPU"/>
   <int value="79" label="InternalPostMessageForwarding"/>
   <int value="80" label="InternalNavigationCancellation"/>
   <int value="81" label="LowPriorityScriptExecution"/>
@@ -89997,177 +89235,6 @@ https://www.dmtf.org/sites/default/files/standards/documents/DSP0134_2.7.1.pdf
   <int value="4" label="During BeforeUnload"/>
   <int value="5" label="During Unload"/>
   <int value="6" label="While closing the page"/>
-</enum>
-
-<enum name="RenderFrameHostImpl.InterfaceNames">
-  <summary>
-    Enumerates names of Mojo interfaces that are requests through
-    RenderFrameHostImpl::GetInterface.
-  </summary>
-  <int value="4595745" label="blink.mojom.FileSystemAccessManager"/>
-  <int value="28688772" label="snippets_internals.mojom.PageHandlerFactory"/>
-  <int value="39256405" label="device.mojom.Geolocation"/>
-  <int value="70273688" label="device.mojom.VRService"/>
-  <int value="81966276" label="blink.mojom.KeyboardLockService"/>
-  <int value="83462680" label="media.mojom.MediaMetricsProvider"/>
-  <int value="112672197" label="blink.mojom.SharedWorkerConnector"/>
-  <int value="116454628" label="blink.mojom.CacheStorage"/>
-  <int value="118314811" label="media.mojom.RemoterFactory"/>
-  <int value="127672107" label="mojom.UsbInternalsPageHandler"/>
-  <int value="141486647" label="webauth.mojom.Authenticator"/>
-  <int value="155545232" label="blink.mojom.GeolocationService"/>
-  <int value="188516542" label="content.mojom.MediaStreamDispatcherHost"/>
-  <int value="190256703" label="network.mojom.RestrictedCookieManager"/>
-  <int value="194725745" label="app_management.mojom.PageHandlerFactory"/>
-  <int value="202417688" label="resource_coordinator.mojom.WebUIGraphDump"/>
-  <int value="241045822" label="blink.mojom.DateTimeChooser"/>
-  <int value="242965667" label="blink.mojom.MediaSessionService"/>
-  <int value="250652837" label="mojom.ProcessInternalsHandler"/>
-  <int value="264532149" label="blink.mojom.LockManager"/>
-  <int value="271849582" label="performance_manager.mojom.WebUIGraphDump"/>
-  <int value="273500403" label="blink.mojom.PresentationService"/>
-  <int value="298400659" label="media.mojom.MediaMetricsProvider"/>
-  <int value="302655516" label="blink.mojom.WakeLockService"/>
-  <int value="323903839" label="feed_internals.mojom.PageHandler"/>
-  <int value="389086904" label="content.mojom.BrowserTarget"/>
-  <int value="390613312" label="autofill.mojom.AutofillDriver"/>
-  <int value="390850644" label="device.mojom.GamepadMonitor"/>
-  <int value="398982196" label="mojom.InterventionsInternalsPageHandler"/>
-  <int value="423966775" label="blink.mojom.IDBFactory"/>
-  <int value="443506227" label="blink.mojom.SpeechRecognizer"/>
-  <int value="450992839" label="blink.mojom.WebBluetoothService"/>
-  <int value="453803103" label="device.mojom.Geolocation"/>
-  <int value="465691137" label="blink.mojom.BadgeService"/>
-  <int value="470231457" label="extensions.KeepAlive"/>
-  <int value="473587909" label="autofill.mojom.AutofillDriver"/>
-  <int value="480255287" label="content.mojom.BrowserTarget"/>
-  <int value="485751698" label="blink.mojom.MediaStreamDispatcherHost"/>
-  <int value="536067486" label="ws.mojom.Gpu"/>
-  <int value="575717011" label="blink.mojom.AnchorElementMetricsHost"/>
-  <int value="583861320" label="media.mojom.InterfaceFactory"/>
-  <int value="593735191" label="blink.mojom.PresentationService"/>
-  <int value="620853817" label="media.mojom.Renderer"/>
-  <int value="660485518" label="payments.mojom.PaymentRequest"/>
-  <int value="664813603" label="blink.mojom.ShareService"/>
-  <int value="668914812" label="autofill.mojom.PasswordManagerDriver"/>
-  <int value="670026296" label="blink.mojom.CacheStorage"/>
-  <int value="738435690" label="blink.mojom.SharedWorkerConnector"/>
-  <int value="772959538"
-      label="dom_distiller.mojom.DistillerJavaScriptService"/>
-  <int value="781395216" label="dom_distiller.mojom.DistillabilityService"/>
-  <int value="833468074" label="device.mojom.VRService"/>
-  <int value="846414148" label="blink.mojom.MediaDevicesDispatcherHost"/>
-  <int value="893321775"
-      label="resource_coordinator.mojom.FrameCoordinationUnit"/>
-  <int value="902740039" label="blink.mojom.PermissionService"/>
-  <int value="917382314" label="blink.mojom.TextSuggestionHost"/>
-  <int value="917568449" label="media.mojom.ImageCapture"/>
-  <int value="948847120" label="blink.mojom.WebUsbService"/>
-  <int value="958735765" label="shape_detection.mojom.FaceDetectionProvider"/>
-  <int value="968027799" label="blink.mojom.MediaSessionService"/>
-  <int value="979421400" label="device.mojom.NFC"/>
-  <int value="982123735" label="blink.mojom.ColorChooserFactory"/>
-  <int value="994757370" label="blink.mojom.InsecureInputService"/>
-  <int value="996732224" label="autofill.mojom.PasswordManagerDriver"/>
-  <int value="1014286658" label="blink.mojom.NotificationService"/>
-  <int value="1037735345" label="extensions.mime_handler.BeforeUnloadControl"/>
-  <int value="1044427386" label="blink.mojom.SmsManager"/>
-  <int value="1048723358" label="content.mojom.InputInjector"/>
-  <int value="1049460515" label="translate.mojom.ContentTranslateDriver"/>
-  <int value="1071268620" label="blink.mojom.QuotaManagerHost"/>
-  <int value="1100311626" label="blink.mojom.TextSuggestionHost"/>
-  <int value="1102158904" label="chrome.mojom.PrerenderCanceler"/>
-  <int value="1116085333"
-      label="content.mojom.RendererAudioOutputStreamFactory"/>
-  <int value="1117840258" label="media.mojom.InterfaceFactory"/>
-  <int value="1123228604" label="blink.mojom.QuotaManagerHost"/>
-  <int value="1144764995" label="network.mojom.WebSocket"/>
-  <int value="1144778719" label="ui.mojom.Gpu"/>
-  <int value="1148580579" label="blink.mojom.LockManager"/>
-  <int value="1157068323"
-      label="resource_coordinator.mojom.DocumentCoordinationUnit"/>
-  <int value="1207132298" label="media.mojom.Renderer"/>
-  <int value="1214902026" label="device.mojom.VibrationManager"/>
-  <int value="1225155271" label="blink.mojom.DedicatedWorkerHostFactory"/>
-  <int value="1237802022" label="blink.mojom.PermissionService"/>
-  <int value="1241592573" label="media.mojom.VideoDecodePerfHistory"/>
-  <int value="1258017914" label="blink.mojom.UnhandledTapNotifier"/>
-  <int value="1293422219" label="media.mojom.ImageCapture"/>
-  <int value="1298636847" label="media.mojom.RemoterFactory"/>
-  <int value="1303034727" label="blink.mojom.PictureInPictureService"/>
-  <int value="1311956027"
-      label="discardable_memory.mojom.DiscardableSharedMemoryManager"/>
-  <int value="1321671191" label="blink.mojom.BudgetService"/>
-  <int value="1337066913"
-      label="resource_coordinator.mojom.FrameCoordinationUnit"/>
-  <int value="1363277053" label="mojom.OmniboxPageHandler"/>
-  <int value="1374541190" label="payments.mojom.PaymentManager"/>
-  <int value="1391649397" label="blink.mojom.InstalledAppProvider"/>
-  <int value="1416694600" label="payments.mojom.PaymentRequest"/>
-  <int value="1419976867" label="blink.mojom.DedicatedWorkerHostFactory"/>
-  <int value="1448556545" label="content.mojom.InputInjector"/>
-  <int value="1450167594" label="device.mojom.WakeLock"/>
-  <int value="1454720654" label="blink.mojom.ContactsManager"/>
-  <int value="1487601584" label="blink.mojom.SerialService"/>
-  <int value="1494628140" label="blink.mojom.BackgroundFetchService"/>
-  <int value="1497405510" label="blink.mojom.Portal"/>
-  <int value="1514474533" label="blink.mojom.DisplayCutoutHost"/>
-  <int value="1517562643"
-      label="content.mojom.RendererAudioInputStreamFactory"/>
-  <int value="1528642323" label="mojom.BluetoothInternalsHandler"/>
-  <int value="1548931182" label="shape_detection.mojom.FaceDetectionProvider"/>
-  <int value="1558418769" label="mojom.DiscardsDetailsProvider"/>
-  <int value="1558900994" label="device.mojom.NFC"/>
-  <int value="1566236400" label="mojom.SiteEngagementDetailsProvider"/>
-  <int value="1569949878" label="mojom.ResetPasswordHandler"/>
-  <int value="1608786055" label="network.mojom.WebSocket"/>
-  <int value="1617971260" label="blink.mojom.HidService"/>
-  <int value="1625278273"
-      label="shape_detection.mojom.BarcodeDetectionProvider"/>
-  <int value="1637627623" label="device.mojom.SensorProvider"/>
-  <int value="1658893493" label="device.mojom.WakeLock"/>
-  <int value="1659485640" label="password_manager.mojom.CredentialManager"/>
-  <int value="1664576526"
-      label="media.mojom.MediaEngagementScoreDetailsProvider"/>
-  <int value="1694940426" label="blink.mojom.KeyboardLockService"/>
-  <int value="1725898486" label="blink.mojom.UnhandledTapNotifier"/>
-  <int value="1726661029" label="blink.mojom.ColorChooserFactory"/>
-  <int value="1727086043"
-      label="content.mojom.RendererAudioInputStreamFactory"/>
-  <int value="1729889736"
-      label="discardable_memory.mojom.DiscardableSharedMemoryManager"/>
-  <int value="1736030522" label="downloads.mojom.PageHandlerFactory"/>
-  <int value="1750772802" label="blink.mojom.NotificationService"/>
-  <int value="1751386040" label="page_load_metrics.mojom.PageLoadMetrics"/>
-  <int value="1769429998" label="blink.mojom.PrefetchURLLoaderService"/>
-  <int value="1780600451" label="blink.mojom.MediaDevicesDispatcherHost"/>
-  <int value="1785235899" label="shape_detection.mojom.BarcodeDetection"/>
-  <int value="1798060917" label="blink.mojom.BackgroundFetchService"/>
-  <int value="1811548070" label="payments.mojom.PaymentManager"/>
-  <int value="1831896638"
-      label="content.mojom.RendererAudioOutputStreamFactory"/>
-  <int value="1844445757" label="image_annotation.mojom.Annotator"/>
-  <int value="1851878773" label="blink.mojom.WebBluetoothService"/>
-  <int value="1872102254" label="blink.mojom.PrefetchURLLoaderService"/>
-  <int value="1872706686"
-      label="contextual_search.mojom.ContextualSearchJsApiService"/>
-  <int value="1884536898" label="blink.mojom.FileSystemManager"/>
-  <int value="1893297160" label="network.mojom.RestrictedCookieManager"/>
-  <int value="1921948028" label="blink.mojom.GeolocationService"/>
-  <int value="1951066980" label="shape_detection.mojom.TextDetection"/>
-  <int value="1972006840" label="blink.mojom.FileChooser"/>
-  <int value="2015729329" label="extensions.mime_handler.MimeHandlerService"/>
-  <int value="2019700793" label="device.mojom.VibrationManager"/>
-  <int value="2036010684" label="chrome.mojom.OfflinePageAutoFetcher"/>
-  <int value="2051587908" label="blink.mojom.IdleManager"/>
-  <int value="2056556199" label="media_router.mojom.MediaRouter"/>
-  <int value="2060513738"
-      label="webauth.test.mojom.VirtualAuthenticatorManager"/>
-  <int value="2067597900" label="blink.mojom.InsecureInputService"/>
-  <int value="2076591855" label="viz.mojom.Gpu"/>
-  <int value="2109171099" label="device.mojom.SensorProvider"/>
-  <int value="2137870010" label="web_ui_test.mojom.TestRunner"/>
-  <int value="2147202291" label="shape_detection.mojom.TextDetection"/>
 </enum>
 
 <enum name="RenderingType">
@@ -90424,7 +89491,7 @@ https://www.dmtf.org/sites/default/files/standards/documents/DSP0134_2.7.1.pdf
   <int value="4" label="kTriggerExtensionRequest">
     A new extension request is added
   </int>
-  <int value="5" label="kTriggerExtensionRequest">
+  <int value="5" label="kExtensionRequestRealTime">
     A new extension request is added and uploaded with ERP.
   </int>
   <int value="6" label="kTriggerManual">User upload report manually</int>
@@ -92258,7 +91325,7 @@ https://www.dmtf.org/sites/default/files/standards/documents/DSP0134_2.7.1.pdf
   <int value="326" label="PNG"/>
   <int value="327" label="XLS"/>
   <int value="328" label="DOC"/>
-  <int value="329" label="PPTX"/>
+  <int value="329" label="PPTX (duplicate)"/>
   <int value="330" label="CSV"/>
   <int value="331" label="ICA"/>
   <int value="332" label="PPT"/>
@@ -92266,7 +91333,7 @@ https://www.dmtf.org/sites/default/files/standards/documents/DSP0134_2.7.1.pdf
   <int value="334" label="TXT"/>
   <int value="335" label="PACKAGE"/>
   <int value="336" label="TIF"/>
-  <int value="337" label="RTF"/>
+  <int value="337" label="RTF (duplicate)"/>
   <int value="338" label="WEBP"/>
   <int value="339" label="MKV"/>
   <int value="340" label="WAV"/>
@@ -92842,7 +91909,7 @@ https://www.dmtf.org/sites/default/files/standards/documents/DSP0134_2.7.1.pdf
   <int value="36" label="defunct">
     DICTIONARY_PREVIOUSLY_SCHEDULED_TO_DOWNLOAD used instead
   </int>
-  <int value="37" label="defunct">
+  <int value="37" label="defunct0">
     DICTIONARY_PREVIOUSLY_SCHEDULED_TO_DOWNLOAD used instead
   </int>
   <int value="38" label="DICTIONARY_FETCH_READ_FAILED-defunct">
@@ -92858,13 +91925,13 @@ https://www.dmtf.org/sites/default/files/standards/documents/DSP0134_2.7.1.pdf
   <int value="53" label="UNADVERTISED_DICTIONARY_USED_CACHED"/>
   <int value="61" label="DOMAIN_BLACKLIST_INCLUDES_TARGET"/>
   <int value="70" label="META_REFRESH_RECOVERY"/>
-  <int value="71" label="defunct">
+  <int value="71" label="defunct1">
     Almost the same as META_REFRESH_UNSUPPORTED
   </int>
-  <int value="72" label="defunct">
+  <int value="72" label="defunct2">
     Almost the same as CACHED_META_REFRESH_UNSUPPORTED
   </int>
-  <int value="73" label="defunct">
+  <int value="73" label="defunct3">
     PASSING_THROUGH_NON_SDCH plus DISCARD_TENTATIVE_SDCH
   </int>
   <int value="74" label="META_REFRESH_UNSUPPORTED"/>
@@ -94788,14 +93855,14 @@ https://www.dmtf.org/sites/default/files/standards/documents/DSP0134_2.7.1.pdf
   <summary>
     Index of a third party app in the bottom row of the sharing hub on Android.
   </summary>
-  <int value="0"/>
-  <int value="1"/>
-  <int value="2"/>
-  <int value="3"/>
-  <int value="4"/>
-  <int value="5"/>
-  <int value="6"/>
-  <int value="7"/>
+  <int value="0" label="0"/>
+  <int value="1" label="1"/>
+  <int value="2" label="2"/>
+  <int value="3" label="3"/>
+  <int value="4" label="4"/>
+  <int value="5" label="5"/>
+  <int value="6" label="6"/>
+  <int value="7" label="7"/>
 </enum>
 
 <enum name="SharingHubSharesheetResult">
@@ -97186,41 +96253,6 @@ https://www.dmtf.org/sites/default/files/standards/documents/DSP0134_2.7.1.pdf
   <int value="1" label="match"/>
 </enum>
 
-<!-- Replaced by SpdyProtocolErrorDetails2 on 2013-04-19. -->
-
-<enum name="SpdyProtocolErrorDetails">
-  <int value="0" label="No error"/>
-  <int value="1" label="Invalid Control Frame"/>
-  <int value="2" label="Control Frame Payload Too Large"/>
-  <int value="3" label="Zlib Init Failure"/>
-  <int value="4" label="Unsupported Version"/>
-  <int value="5" label="Decompress Failure"/>
-  <int value="6" label="Compress Failure"/>
-  <int value="7" label="Credential Frame Corrupt"/>
-  <int value="8" label="Invalid Data Frame Flags"/>
-<!-- r181910 added an enum value here, so don't trust the counts for
-     the values below for Chrome builds after that revision. -->
-
-  <int value="9" label="Invalid Status Code"/>
-  <int value="10" label="Protocol Error"/>
-  <int value="11" label="Invalid Stream"/>
-  <int value="12" label="Refused Stream"/>
-  <int value="13" label="Unsupported Version"/>
-  <int value="14" label="Cancel"/>
-  <int value="15" label="Internal Error"/>
-  <int value="16" label="Flow Control Error"/>
-  <int value="17" label="Stream In Use"/>
-  <int value="18" label="Stream Already Closed"/>
-  <int value="19" label="Invalid Credentials"/>
-  <int value="20" label="Frame Too Large"/>
-  <int value="21" label="Unexpected Ping"/>
-  <int value="22" label="Rst Stream For Non Active Stream"/>
-  <int value="23" label="Spdy Compression Failure"/>
-  <int value="24" label="Request For Secure Content Over Insecure Session"/>
-  <int value="25" label="Protocol Error Syn Reply Not Received"/>
-  <int value="26" label="Num Spdy Protocol Error Details"/>
-</enum>
-
 <enum name="SpdyProtocolErrorDetails2">
 <!-- SpdyFramer::SpdyErrors -->
 
@@ -97240,7 +96272,7 @@ https://www.dmtf.org/sites/default/files/standards/documents/DSP0134_2.7.1.pdf
   <int value="11" label="Protocol Error"/>
   <int value="12" label="Closed Stream"/>
   <int value="13" label="Refused Stream"/>
-  <int value="14" label="Unsupported Version"/>
+  <int value="14" label="Unsupported Version (SpdyRstStreamStatus)"/>
   <int value="15" label="Cancel"/>
   <int value="16" label="Internal Error"/>
   <int value="17" label="Flow Control Error"/>
@@ -98923,29 +97955,6 @@ https://www.dmtf.org/sites/default/files/standards/documents/DSP0134_2.7.1.pdf
   <int value="1" label="Provider uninitialized"/>
   <int value="2" label="Recording disabled"/>
   <int value="3" label="Provider missing"/>
-</enum>
-
-<enum name="StructuredMetricsInternalError">
-  <obsolete>
-    Deprecated as of 10/08/2021. Histogram using this enum had a recording bug
-    that grouped failed key errors with failed event erorrs. Prefer to use
-    StructuredMetrcsInternalError2.
-  </obsolete>
-  <int value="0" label="Missing key (deprecated)"/>
-  <int value="1" label="Wrong key length"/>
-  <int value="2" label="Missing last rotation"/>
-  <int value="3" label="Missing rotation period"/>
-  <int value="4" label="Failed uint conversion"/>
-  <int value="5" label="Failed key or event read error"/>
-  <int value="6" label="Failed key or event parse error"/>
-  <int value="7" label="Failed key or event write error"/>
-  <int value="8" label="Failed key or event serialization"/>
-  <int value="9" label="Unused"/>
-  <int value="10" label="Unused"/>
-  <int value="11" label="Unused"/>
-  <int value="12" label="Unused"/>
-  <int value="13" label="Uninitialized recorder"/>
-  <int value="14" label="Invalid event parsed"/>
 </enum>
 
 <enum name="StructuredMetricsInternalError2">
@@ -103300,7 +102309,7 @@ Full version information for the fingerprint enum values:
   <int value="1065916186" label="CROS Cr50 0.0.19"/>
   <int value="1069046756" label="CROS Cr50 0.5.51"/>
   <int value="1080347583" label="CROS Cr50 0.6.2"/>
-  <int value="1123680979" label="CROS Cr50 0.3.4"/>
+  <int value="1123680979" label="CROS Cr50 0.3.4 (duplicate)"/>
   <int value="1184698907" label="CROS Cr50 0.3.23"/>
   <int value="1190683265" label="CROS Cr50 0.0.14"/>
   <int value="1204349964" label="CROS Cr50 0.6.3"/>
@@ -106399,19 +105408,21 @@ Full version information for the fingerprint enum values:
 </enum>
 
 <enum name="VideoCaptureApi">
-  <int value="0">UNKNOWN</int>
-  <int value="1">LINUX_V4L2_SINGLE_PLANE</int>
-  <int value="2">WIN_MEDIA_FOUNDATION</int>
-  <int value="3">WIN_MEDIA_FOUNDATION_SENSOR</int>
-  <int value="4">WIN_DIRECT_SHOW</int>
-  <int value="5">MACOSX_AVFOUNDATION</int>
-  <int value="6">MACOSX_DECKLINK</int>
-  <int value="7">ANDROID_API1</int>
-  <int value="8">ANDROID_API2_LEGACY</int>
-  <int value="9">ANDROID_API2_FULL</int>
-  <int value="10">ANDROID_API2_LIMITED</int>
-  <int value="11">FUCHSIA_CAMERA3</int>
-  <int value="12">VIRTUAL_DEVICE</int>
+  <int value="0" label="UNKNOWN">UNKNOWN</int>
+  <int value="1" label="LINUX_V4L2_SINGLE_PLANE">LINUX_V4L2_SINGLE_PLANE</int>
+  <int value="2" label="WIN_MEDIA_FOUNDATION">WIN_MEDIA_FOUNDATION</int>
+  <int value="3" label="WIN_MEDIA_FOUNDATION_SENSOR">
+    WIN_MEDIA_FOUNDATION_SENSOR
+  </int>
+  <int value="4" label="WIN_DIRECT_SHOW">WIN_DIRECT_SHOW</int>
+  <int value="5" label="MACOSX_AVFOUNDATION">MACOSX_AVFOUNDATION</int>
+  <int value="6" label="MACOSX_DECKLINK">MACOSX_DECKLINK</int>
+  <int value="7" label="ANDROID_API1">ANDROID_API1</int>
+  <int value="8" label="ANDROID_API2_LEGACY">ANDROID_API2_LEGACY</int>
+  <int value="9" label="ANDROID_API2_FULL">ANDROID_API2_FULL</int>
+  <int value="10" label="ANDROID_API2_LIMITED">ANDROID_API2_LIMITED</int>
+  <int value="11" label="FUCHSIA_CAMERA3">FUCHSIA_CAMERA3</int>
+  <int value="12" label="VIRTUAL_DEVICE">VIRTUAL_DEVICE</int>
 </enum>
 
 <enum name="VideoCaptureError">
@@ -108415,14 +107426,14 @@ others/histograms.xml -->
   <int value="492" label="STATUS_FILE_ERROR"/>
   <int value="495" label="STATUS_HTTP_DATA_ERROR"/>
   <int value="907" label="ERROR_DOWNLOAD_INTERNAL_CONDITION_5"/>
-  <int value="908" label="ERROR_DOWNLOAD_INTERNAL_FREE_SPACE"/>
+  <int value="908" label="ERROR_DOWNLOAD_INTERNAL_FREE_SPACE_0"/>
   <int value="910" label="ERROR_INSTALL_INCOMPLETE"/>
   <int value="919" label="ERROR_INSTALL_APK_VERIFICATION_SIZE"/>
   <int value="920" label="ERROR_VOLLEY_AUTH_FAILURE"/>
-  <int value="922" label="ERROR_VOLLEY_DFE_SERVER"/>
+  <int value="922" label="ERROR_VOLLEY_DFE_SERVER_0"/>
   <int value="923" label="ERROR_VOLLEY_NETWORK"/>
-  <int value="924" label="ERROR_VOLLEY_NO_CONNECTION"/>
-  <int value="927" label="ERROR_VOLLEY_TIMEOUT"/>
+  <int value="924" label="ERROR_VOLLEY_NO_CONNECTION_0"/>
+  <int value="927" label="ERROR_VOLLEY_TIMEOUT_0"/>
   <int value="961" label="ERROR_INSTALL_APK_VERIFICATION_OTHER"/>
   <int value="963" label="ERROR_INSTALL_APK_COPY_FAILURE"/>
   <int value="1008" label="ERROR_DOWNLOAD_INTERNAL_FREE_SPACE"/>
@@ -109822,9 +108833,11 @@ This is true even if the type has been removed from the mojom file.
   <int value="36006" label="Data, Stun, priv IPv4 local, IPv6 remote"/>
   <int value="156898" label="No media, Stun, SLD/SRD, local IPv6, remote MDNS"/>
   <int value="157154" label="Connected, Data, Stun, local IPv6, remote MDNS"/>
-  <int value="157158" label="Connected, Data, Stun, local IPv6, remote MDNS"/>
+  <int value="157158"
+      label="Connected, Data, Stun, local IPv6, remote MDNS (duplicate)"/>
   <int value="157414" label="Data, Stun, SLD/SRD, local IPv6, remote MDNS"/>
-  <int value="157670" label="Connected, Data, Stun, local IPv6, remote MDNS"/>
+  <int value="157670"
+      label="Connected, Data, Stun, local IPv6, remote MDNS (triplicate)"/>
 </enum>
 
 <enum name="WebRtcScalabilityMode">
@@ -110346,49 +109359,24 @@ Called by update_scheduler_enums.py.-->
   <int value="2136345292" label="/privacy"/>
   <int value="2236117233" label="/cursorAndTouchpad"/>
   <int value="2292642563" label="/androidAppsDetails"/>
-  <int value="2344894009" label="/crostini/details"/>
-  <int value="2370455991" label="/help"/>
-  <int value="2474569398" label="/manageAccessibility"/>
   <int value="2583527907" label="/manageAccessibility/captions"/>
   <int value="2584045321" label="/app-notifications"/>
-  <int value="2705666388" label="/app-management/pluginVm/sharedPaths"/>
-  <int value="2725194796" label="/manageAccessibility/tts"/>
-  <int value="2810037793" label="/manageAccessibility/switchAccess"/>
   <int value="2827754479" label="/osPrivacy/lockScreen"/>
   <int value="2831082225" label="/bluetoothDeviceDetail"/>
-  <int value="2982222690" label="/knownNetworks"/>
-  <int value="3015629864" label="/power"/>
-  <int value="3088443552" label="/app-management/detail"/>
-  <int value="3090186306" label="/dateTime/timeZone"/>
   <int value="3174617532" label="/osLanguages/smartInputs"/>
-  <int value="3175327472" label="/display"/>
-  <int value="3226551256" label="/multidevice/features/smartLock"/>
-  <int value="3246951466" label="/"/>
-  <int value="3322449366" label="/googleAssistant"/>
-  <int value="3378793001" label="/internet"/>
-  <int value="3396486028" label="/multidevice/features"/>
   <int value="3447116306" label="/osSearch/search"/>
   <int value="3452400691" label="/kerberos"/>
-  <int value="3452418917" label="/apps"/>
   <int value="3453079661" label="/osSync"/>
   <int value="3514732098" label="/keyboardAndTextInput"/>
   <int value="3531919210" label="/osLanguages/editDictionary"/>
   <int value="3561556862" label="/app-management/pluginVm/sharedUsbDevices"/>
-  <int value="3584610247" label="/bluetooth"/>
   <int value="3585870839" label="/crostini/androidAdb"/>
-  <int value="3724010310" label="/personalization"/>
   <int value="3869947881" label="/crostini/portForwarding"/>
-  <int value="3916101162" label="/networkDetail"/>
   <int value="3958116773" label="/osPrivacy/smartPrivacy"/>
-  <int value="3975673829" label="/multidevice"/>
-  <int value="3999264766" label="/smbShares"/>
   <int value="4060403967" label="/osPrivacy"/>
   <int value="4083684424" label="/bruschetta/details"/>
-  <int value="4105652989" label="/crostini/exportImport"/>
   <int value="4171209718" label="/app-management"/>
   <int value="4174275430" label="/androidAppsDetails/sharedUsbDevices"/>
-  <int value="4235634477" label="/accountManager"/>
-  <int value="4250700256" label="/bluetoothDevices"/>
 </enum>
 
 <enum name="WebUISettingsPathHashes">
@@ -110734,7 +109722,7 @@ Called by update_scheduler_enums.py.-->
   <int value="1396129399" label="chrome://flash/"/>
   <int value="1397728473" label="chrome://crostini-installer/"/>
   <int value="1399992914" label="chrome://java-crash/"/>
-  <int value="1403605293" label="chrome://internet-detail-dialog/"/>
+  <int value="1403605293" label="chrome://internet-detail-dialog/ (duplicate)"/>
   <int value="1411665301" label="chrome://lock-network/"/>
   <int value="1427179406" label="chrome://gcm-internals/"/>
   <int value="1454088830" label="chrome://uber-frame/"/>
