@@ -82,6 +82,50 @@ suite('SettingsSectionTest', function() {
     assertFalse(value);
   });
 
+  test('extension control disables toggle', async function() {
+    const enableServicePref =
+        await prefsProxy.getPref('credentials_enable_service');
+    enableServicePref.extensionId = 'test';
+    enableServicePref.controlledByName = 'test extension';
+
+    const settings = document.createElement('settings-section');
+    document.body.appendChild(settings);
+    await prefsProxy.whenCalled('getPref');
+
+    assertTrue(settings.$.passwordToggle.checked);
+    settings.$.passwordToggle.click();
+    assertTrue(settings.$.passwordToggle.checked);
+
+    const postPref = await prefsProxy.getPref('credentials_enable_service');
+    assertTrue(postPref.value);
+  });
+
+  test('extension control includes icon', async function() {
+    const enableServicePref =
+        await prefsProxy.getPref('credentials_enable_service');
+    enableServicePref.extensionId = 'test';
+    enableServicePref.controlledByName = 'test extension';
+
+    const settings = document.createElement('settings-section');
+    document.body.appendChild(settings);
+    await prefsProxy.whenCalled('getPref');
+
+    assertTrue(settings.$.passwordToggle.checked);
+    assertTrue(!!settings.$.passwordToggle.shadowRoot!.querySelector(
+        '#extensionIcon'));
+  });
+
+  test('no extension control icon by default', async function() {
+    const settings = document.createElement('settings-section');
+    document.body.appendChild(settings);
+    await prefsProxy.whenCalled('getPref');
+
+    assertTrue(settings.$.passwordToggle.checked);
+    settings.$.passwordToggle.click();
+    assertFalse(!!settings.$.passwordToggle.shadowRoot!.querySelector(
+        '#extensionIcon'));
+  });
+
   test('pref updated externally', async function() {
     const settings = document.createElement('settings-section');
     document.body.appendChild(settings);

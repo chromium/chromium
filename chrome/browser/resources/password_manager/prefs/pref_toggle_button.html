@@ -29,9 +29,15 @@
       </span>
     </div>
   </div>
-  <!-- TODO(crbug.com/1350947): Add policy pref indicator -->
   <cr-toggle id="control" checked="{{checked}}"
+      disabled="[[disabled]]"
       on-change="onClick_"
       aria-describedby="sub-label-text">
   </cr-toggle>
+  <template is="dom-if" if="[[pref.extensionId]]">
+    <extension-controlled-icon id="extensionIcon"
+        extension-id="[[pref.extensionId]]"
+        extension-name="[[pref.controlledByName]]">
+    </extension-controlled-icon>
+  </template>
 </div>

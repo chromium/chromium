@@ -101,6 +101,7 @@ content::WebUIDataSource* CreateAndAddPasswordsUIHTMLSource(
      IDS_PASSWORD_MANAGER_UI_NO_COMPROMISED_PASSWORDS},
     {"compromisedPasswordsTitle",
      IDS_PASSWORD_MANAGER_UI_HAS_COMPROMISED_PASSWORDS},
+    {"controlledByExtension", IDS_SETTINGS_CONTROLLED_BY_EXTENSION},
     {"copyPassword", IDS_PASSWORD_MANAGER_UI_COPY_PASSWORD},
     {"copyUsername", IDS_PASSWORD_MANAGER_UI_COPY_USERNAME},
     {"deletePassword", IDS_DELETE},
