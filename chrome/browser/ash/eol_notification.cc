@@ -299,6 +299,14 @@ void EolNotification::Click(const absl::optional<int>& button_index,
       NotificationHandler::Type::TRANSIENT, kEolNotificationId);
 }
 
+void EolNotification::OverrideClockForTesting(base::Clock* clock) {
+  if (!clock) {
+    clock_ = base::DefaultClock::GetInstance();
+  } else {
+    clock_ = clock;
+  }
+}
+
 void EolNotification::MaybeShowEolIncentiveNotification(
     base::Time eol_date,
     eol_incentive_util::EolIncentiveType incentive_type) {

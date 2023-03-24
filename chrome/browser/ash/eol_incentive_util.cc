@@ -52,8 +52,7 @@ EolIncentiveType ShouldShowEolIncentive(Profile* profile,
     return EolIncentiveType::kNone;
   }
 
-  const base::Time creation_time =
-      profile->GetPrefs()->GetTime(prefs::kProfileCreationTime);
+  const base::Time creation_time = profile->GetCreationTime();
   const base::TimeDelta time_since_creation = now - creation_time;
 
   // Only show the incentive for a user that has used the device longer than the

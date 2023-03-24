@@ -44,6 +44,8 @@ class EolNotification final : public message_center::NotificationObserver {
   void Click(const absl::optional<int>& button_index,
              const absl::optional<std::u16string>& reply) override;
 
+  void OverrideClockForTesting(base::Clock* clock);
+
  private:
   friend class EolNotificationTest;
 

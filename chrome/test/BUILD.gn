@@ -3335,6 +3335,7 @@ if (!is_android) {
         sources += [
           "../browser/apps/platform_apps/api/arc_apps_private/arc_apps_private_apitest.cc",
           "../browser/apps/platform_apps/api/enterprise_remote_apps/enterprise_remote_apps_apitest.cc",
+          "../browser/ash/eol_notification_browsertest.cc",
           "../browser/ash/extensions/accessibility_features_apitest.cc",
           "../browser/ash/extensions/autotest_private/autotest_private_apitest.cc",
           "../browser/ash/extensions/default_keyboard_extension_browser_test.cc",

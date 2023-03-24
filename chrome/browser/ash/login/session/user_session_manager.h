@@ -338,6 +338,12 @@ class UserSessionManager
   // milestone.
   void MaybeShowHelpAppDiscoverNotification(Profile* profile);
 
+  using EolNotificationHandlerFactoryCallback =
+      base::RepeatingCallback<std::unique_ptr<EolNotification>(
+          Profile* profile)>;
+  void SetEolNotificationHandlerFactoryForTesting(
+      const EolNotificationHandlerFactoryCallback& eol_notification_factory);
+
   base::WeakPtr<UserSessionManager> GetUserSessionManagerAsWeakPtr();
 
  protected:
@@ -629,6 +635,9 @@ class UserSessionManager
 
   std::unique_ptr<OnboardingUserActivityCounter>
       onboarding_user_activity_counter_;
+
+  // Callback that allows tests to inject a test EolNotification implementation.
+  EolNotificationHandlerFactoryCallback eol_notification_handler_test_factory_;
 
   base::WeakPtrFactory<UserSessionManager> weak_factory_{this};
 };
