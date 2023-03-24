@@ -571,7 +571,8 @@ class LayerTreeHostImplTest : public testing::Test,
         ui::ScrollInputType::kWheel);
     if (base::FeatureList::IsEnabled(features::kScrollUnification)) {
       ASSERT_EQ(ScrollThread::SCROLL_ON_IMPL_THREAD, status.thread);
-      ASSERT_TRUE(status.needs_main_thread_hit_test);
+      ASSERT_EQ(MainThreadScrollingReason::kFailedHitTest,
+                status.main_thread_hit_test_reasons);
     } else {
       ASSERT_EQ(ScrollThread::SCROLL_ON_MAIN_THREAD, status.thread);
       ASSERT_EQ(MainThreadScrollingReason::kFailedHitTest,
@@ -586,7 +587,8 @@ class LayerTreeHostImplTest : public testing::Test,
         ui::ScrollInputType::kWheel);
     if (base::FeatureList::IsEnabled(features::kScrollUnification)) {
       ASSERT_EQ(ScrollThread::SCROLL_ON_IMPL_THREAD, status.thread);
-      ASSERT_TRUE(status.needs_main_thread_hit_test);
+      ASSERT_EQ(MainThreadScrollingReason::kFailedHitTest,
+                status.main_thread_hit_test_reasons);
     } else {
       ASSERT_EQ(ScrollThread::SCROLL_ON_MAIN_THREAD, status.thread);
       ASSERT_EQ(MainThreadScrollingReason::kFailedHitTest,
@@ -1348,7 +1350,8 @@ TEST_P(ScrollUnifiedLayerTreeHostImplTest, TargetMainThreadScroller) {
         scroll_state.get(), ui::ScrollInputType::kWheel);
     if (base::FeatureList::IsEnabled(features::kScrollUnification)) {
       EXPECT_EQ(ScrollThread::SCROLL_ON_IMPL_THREAD, status.thread);
-      EXPECT_FALSE(status.needs_main_thread_hit_test);
+      EXPECT_EQ(MainThreadScrollingReason::kNotScrollingOnMain,
+                status.main_thread_hit_test_reasons);
       EXPECT_EQ(
           MainThreadScrollingReason::kThreadedScrollingDisabled,
           host_impl_->CurrentlyScrollingNode()->main_thread_scrolling_reasons);
@@ -1676,7 +1679,10 @@ TEST_P(ScrollUnifiedLayerTreeHostImplTest, ShouldScrollOnMainThread) {
       ui::ScrollInputType::kWheel);
   if (base::FeatureList::IsEnabled(features::kScrollUnification)) {
     EXPECT_EQ(ScrollThread::SCROLL_ON_IMPL_THREAD, status.thread);
-    EXPECT_FALSE(status.needs_main_thread_hit_test);
+    EXPECT_EQ(MainThreadScrollingReason::kNotScrollingOnMain,
+              status.main_thread_scrolling_reasons);
+    EXPECT_EQ(MainThreadScrollingReason::kNotScrollingOnMain,
+              status.main_thread_hit_test_reasons);
     EXPECT_EQ(
         MainThreadScrollingReason::kHasBackgroundAttachmentFixedObjects,
         host_impl_->CurrentlyScrollingNode()->main_thread_scrolling_reasons);
@@ -1693,7 +1699,10 @@ TEST_P(ScrollUnifiedLayerTreeHostImplTest, ShouldScrollOnMainThread) {
       ui::ScrollInputType::kTouchscreen);
   if (base::FeatureList::IsEnabled(features::kScrollUnification)) {
     EXPECT_EQ(ScrollThread::SCROLL_ON_IMPL_THREAD, status.thread);
-    EXPECT_FALSE(status.needs_main_thread_hit_test);
+    EXPECT_EQ(MainThreadScrollingReason::kNotScrollingOnMain,
+              status.main_thread_scrolling_reasons);
+    EXPECT_EQ(MainThreadScrollingReason::kNotScrollingOnMain,
+              status.main_thread_hit_test_reasons);
     EXPECT_EQ(
         MainThreadScrollingReason::kHasBackgroundAttachmentFixedObjects,
         host_impl_->CurrentlyScrollingNode()->main_thread_scrolling_reasons);
@@ -1752,7 +1761,8 @@ TEST_P(ScrollUnifiedLayerTreeHostImplTest,
     EXPECT_EQ(ScrollThread::SCROLL_ON_IMPL_THREAD, status.thread);
     EXPECT_EQ(MainThreadScrollingReason::kNotScrollingOnMain,
               status.main_thread_scrolling_reasons);
-    EXPECT_TRUE(status.needs_main_thread_hit_test);
+    EXPECT_EQ(MainThreadScrollingReason::kFailedHitTest,
+              status.main_thread_hit_test_reasons);
   } else {
     EXPECT_EQ(ScrollThread::SCROLL_ON_MAIN_THREAD, status.thread);
     EXPECT_EQ(MainThreadScrollingReason::kFailedHitTest,
@@ -1906,7 +1916,8 @@ TEST_P(ScrollUnifiedLayerTreeHostImplTest, NonFastScrollableRegionBasic) {
     EXPECT_EQ(ScrollThread::SCROLL_ON_IMPL_THREAD, status.thread);
     EXPECT_EQ(MainThreadScrollingReason::kNotScrollingOnMain,
               status.main_thread_scrolling_reasons);
-    EXPECT_TRUE(status.needs_main_thread_hit_test);
+    EXPECT_EQ(MainThreadScrollingReason::kNonFastScrollableRegion,
+              status.main_thread_hit_test_reasons);
   } else {
     EXPECT_EQ(ScrollThread::SCROLL_ON_MAIN_THREAD, status.thread);
     EXPECT_EQ(MainThreadScrollingReason::kNonFastScrollableRegion,
@@ -1922,7 +1933,8 @@ TEST_P(ScrollUnifiedLayerTreeHostImplTest, NonFastScrollableRegionBasic) {
     EXPECT_EQ(ScrollThread::SCROLL_ON_IMPL_THREAD, status.thread);
     EXPECT_EQ(MainThreadScrollingReason::kNotScrollingOnMain,
               status.main_thread_scrolling_reasons);
-    EXPECT_TRUE(status.needs_main_thread_hit_test);
+    EXPECT_EQ(MainThreadScrollingReason::kNonFastScrollableRegion,
+              status.main_thread_hit_test_reasons);
   } else {
     EXPECT_EQ(ScrollThread::SCROLL_ON_MAIN_THREAD, status.thread);
     EXPECT_EQ(MainThreadScrollingReason::kNonFastScrollableRegion,
@@ -1987,7 +1999,8 @@ TEST_P(ScrollUnifiedLayerTreeHostImplTest,
       EXPECT_EQ(ScrollThread::SCROLL_ON_IMPL_THREAD, status.thread);
       EXPECT_EQ(MainThreadScrollingReason::kNotScrollingOnMain,
                 status.main_thread_scrolling_reasons);
-      EXPECT_TRUE(status.needs_main_thread_hit_test);
+      EXPECT_EQ(MainThreadScrollingReason::kNonFastScrollableRegion,
+                status.main_thread_hit_test_reasons);
     } else {
       EXPECT_EQ(ScrollThread::SCROLL_ON_MAIN_THREAD, status.thread);
       EXPECT_EQ(MainThreadScrollingReason::kNonFastScrollableRegion,
@@ -2016,7 +2029,8 @@ TEST_P(ScrollUnifiedLayerTreeHostImplTest, NonFastScrollableRegionWithOffset) {
   EXPECT_EQ(ScrollThread::SCROLL_ON_IMPL_THREAD, status.thread);
   EXPECT_EQ(MainThreadScrollingReason::kNotScrollingOnMain,
             status.main_thread_scrolling_reasons);
-  EXPECT_FALSE(status.needs_main_thread_hit_test);
+  EXPECT_EQ(MainThreadScrollingReason::kNotScrollingOnMain,
+            status.main_thread_hit_test_reasons);
 
   GetInputHandler().ScrollUpdate(UpdateState(gfx::Point(), gfx::Vector2d(0, 1),
                                              ui::ScrollInputType::kWheel)
@@ -2033,7 +2047,8 @@ TEST_P(ScrollUnifiedLayerTreeHostImplTest, NonFastScrollableRegionWithOffset) {
     EXPECT_EQ(ScrollThread::SCROLL_ON_IMPL_THREAD, status.thread);
     EXPECT_EQ(MainThreadScrollingReason::kNotScrollingOnMain,
               status.main_thread_scrolling_reasons);
-    EXPECT_TRUE(status.needs_main_thread_hit_test);
+    EXPECT_EQ(MainThreadScrollingReason::kNonFastScrollableRegion,
+              status.main_thread_hit_test_reasons);
   } else {
     EXPECT_EQ(ScrollThread::SCROLL_ON_MAIN_THREAD, status.thread);
     EXPECT_EQ(MainThreadScrollingReason::kNonFastScrollableRegion,
@@ -2092,7 +2107,8 @@ TEST_P(ScrollUnifiedLayerTreeHostImplTest,
       ASSERT_EQ(ScrollThread::SCROLL_ON_IMPL_THREAD, status.thread);
       ASSERT_EQ(MainThreadScrollingReason::kNotScrollingOnMain,
                 status.main_thread_scrolling_reasons);
-      ASSERT_TRUE(status.needs_main_thread_hit_test);
+      ASSERT_EQ(MainThreadScrollingReason::kNonFastScrollableRegion,
+                status.main_thread_hit_test_reasons);
     } else {
       ASSERT_EQ(ScrollThread::SCROLL_ON_MAIN_THREAD, status.thread);
       ASSERT_EQ(MainThreadScrollingReason::kNonFastScrollableRegion,
@@ -2147,7 +2163,8 @@ TEST_P(ScrollUnifiedLayerTreeHostImplTest,
       EXPECT_EQ(ScrollThread::SCROLL_ON_IMPL_THREAD, status.thread);
       EXPECT_EQ(MainThreadScrollingReason::kNotScrollingOnMain,
                 status.main_thread_scrolling_reasons);
-      EXPECT_TRUE(status.needs_main_thread_hit_test);
+      EXPECT_EQ(MainThreadScrollingReason::kNonFastScrollableRegion,
+                status.main_thread_hit_test_reasons);
     } else {
       EXPECT_EQ(ScrollThread::SCROLL_ON_MAIN_THREAD, status.thread);
       EXPECT_EQ(MainThreadScrollingReason::kNonFastScrollableRegion,
@@ -2222,7 +2239,8 @@ TEST_P(ScrollUnifiedLayerTreeHostImplTest,
       ASSERT_EQ(ScrollThread::SCROLL_ON_IMPL_THREAD, status.thread);
       ASSERT_EQ(MainThreadScrollingReason::kNotScrollingOnMain,
                 status.main_thread_scrolling_reasons);
-      ASSERT_TRUE(status.needs_main_thread_hit_test);
+      ASSERT_EQ(MainThreadScrollingReason::kFailedHitTest,
+                status.main_thread_hit_test_reasons);
     } else {
       ASSERT_EQ(ScrollThread::SCROLL_ON_MAIN_THREAD, status.thread);
       ASSERT_EQ(MainThreadScrollingReason::kFailedHitTest,
@@ -2278,7 +2296,8 @@ TEST_P(ScrollUnifiedLayerTreeHostImplTest,
       EXPECT_EQ(ScrollThread::SCROLL_ON_IMPL_THREAD, status.thread);
       EXPECT_EQ(MainThreadScrollingReason::kNotScrollingOnMain,
                 status.main_thread_scrolling_reasons);
-      EXPECT_TRUE(status.needs_main_thread_hit_test);
+      EXPECT_EQ(MainThreadScrollingReason::kFailedHitTest,
+                status.main_thread_hit_test_reasons);
     } else {
       EXPECT_EQ(ScrollThread::SCROLL_ON_MAIN_THREAD, status.thread);
       EXPECT_EQ(MainThreadScrollingReason::kFailedHitTest,
@@ -2339,7 +2358,8 @@ TEST_P(ScrollUnifiedLayerTreeHostImplTest,
       ASSERT_EQ(ScrollThread::SCROLL_ON_IMPL_THREAD, status.thread);
       ASSERT_EQ(MainThreadScrollingReason::kNotScrollingOnMain,
                 status.main_thread_scrolling_reasons);
-      ASSERT_TRUE(status.needs_main_thread_hit_test);
+      ASSERT_EQ(MainThreadScrollingReason::kNonFastScrollableRegion,
+                status.main_thread_hit_test_reasons);
     } else {
       ASSERT_EQ(ScrollThread::SCROLL_ON_MAIN_THREAD, status.thread);
       ASSERT_EQ(MainThreadScrollingReason::kNonFastScrollableRegion,
@@ -2394,7 +2414,8 @@ TEST_P(ScrollUnifiedLayerTreeHostImplTest,
       EXPECT_EQ(ScrollThread::SCROLL_ON_IMPL_THREAD, status.thread);
       EXPECT_EQ(MainThreadScrollingReason::kNotScrollingOnMain,
                 status.main_thread_scrolling_reasons);
-      EXPECT_TRUE(status.needs_main_thread_hit_test);
+      EXPECT_EQ(MainThreadScrollingReason::kNonFastScrollableRegion,
+                status.main_thread_hit_test_reasons);
     } else {
       EXPECT_EQ(ScrollThread::SCROLL_ON_MAIN_THREAD, status.thread);
       EXPECT_EQ(MainThreadScrollingReason::kNonFastScrollableRegion,
@@ -2487,7 +2508,8 @@ TEST_P(ScrollUnifiedLayerTreeHostImplTest, FixedLayerOverNonFixedLayer) {
       EXPECT_EQ(ScrollThread::SCROLL_ON_IMPL_THREAD, status.thread);
       EXPECT_EQ(MainThreadScrollingReason::kNotScrollingOnMain,
                 status.main_thread_scrolling_reasons);
-      EXPECT_TRUE(status.needs_main_thread_hit_test);
+      EXPECT_EQ(MainThreadScrollingReason::kFailedHitTest,
+                status.main_thread_hit_test_reasons);
     } else {
       EXPECT_EQ(ScrollThread::SCROLL_ON_MAIN_THREAD, status.thread);
       EXPECT_EQ(MainThreadScrollingReason::kFailedHitTest,
@@ -3378,7 +3400,8 @@ TEST_P(ScrollUnifiedLayerTreeHostImplTest, ScrollNodeWithoutScrollLayer) {
     // We don't have a layer for the scroller but we didn't hit a non-fast
     // scrolling region or fail hit testing the layer - we don't need a main
     // thread hit test in this case.
-    EXPECT_FALSE(status.needs_main_thread_hit_test);
+    EXPECT_EQ(MainThreadScrollingReason::kNotScrollingOnMain,
+              status.main_thread_hit_test_reasons);
   } else {
     EXPECT_EQ(ScrollThread::SCROLL_ON_MAIN_THREAD, status.thread);
     EXPECT_EQ(MainThreadScrollingReason::kNoScrollingLayer,
@@ -8265,10 +8288,15 @@ TEST_P(ScrollUnifiedLayerTreeHostImplTest, ScrollLayerWithMainThreadReason) {
       ui::ScrollInputType::kWheel);
   if (base::FeatureList::IsEnabled(features::kScrollUnification)) {
     EXPECT_EQ(ScrollThread::SCROLL_ON_IMPL_THREAD, status.thread);
-    EXPECT_FALSE(status.needs_main_thread_hit_test);
+    EXPECT_EQ(MainThreadScrollingReason::kNotScrollingOnMain,
+              status.main_thread_scrolling_reasons);
+    EXPECT_EQ(MainThreadScrollingReason::kNotScrollingOnMain,
+              status.main_thread_hit_test_reasons);
     EXPECT_EQ(
         MainThreadScrollingReason::kHasBackgroundAttachmentFixedObjects,
         host_impl_->CurrentlyScrollingNode()->main_thread_scrolling_reasons);
+    EXPECT_EQ(MainThreadScrollingReason::kHasBackgroundAttachmentFixedObjects,
+              status.main_thread_repaint_reasons);
   } else {
     // Scrolling fails because the content layer is asking to be scrolled on the
     // main thread.
@@ -11949,7 +11977,8 @@ TEST_P(ScrollUnifiedLayerTreeHostImplTest, ScrollHitTestIsNotReliable) {
       ui::ScrollInputType::kWheel);
   if (base::FeatureList::IsEnabled(features::kScrollUnification)) {
     EXPECT_EQ(ScrollThread::SCROLL_ON_IMPL_THREAD, status.thread);
-    EXPECT_TRUE(status.needs_main_thread_hit_test);
+    EXPECT_EQ(MainThreadScrollingReason::kFailedHitTest,
+              status.main_thread_hit_test_reasons);
   } else {
     EXPECT_EQ(ScrollThread::SCROLL_ON_MAIN_THREAD, status.thread);
     EXPECT_EQ(MainThreadScrollingReason::kFailedHitTest,
@@ -11992,7 +12021,8 @@ TEST_P(ScrollUnifiedLayerTreeHostImplTest, ScrollHitTestAncestorMismatch) {
       ui::ScrollInputType::kWheel);
   if (base::FeatureList::IsEnabled(features::kScrollUnification)) {
     EXPECT_EQ(ScrollThread::SCROLL_ON_IMPL_THREAD, status.thread);
-    EXPECT_TRUE(status.needs_main_thread_hit_test);
+    EXPECT_EQ(MainThreadScrollingReason::kFailedHitTest,
+              status.main_thread_hit_test_reasons);
   } else {
     EXPECT_EQ(ScrollThread::SCROLL_ON_MAIN_THREAD, status.thread);
     EXPECT_EQ(MainThreadScrollingReason::kFailedHitTest,
@@ -17868,8 +17898,9 @@ class UnifiedScrollingTest : public LayerTreeHostImplTest {
     ScrollStatus status = GetInputHandler().ScrollBegin(
         scroll_state.get(), ui::ScrollInputType::kWheel);
 
-    if (status.needs_main_thread_hit_test)
+    if (status.main_thread_hit_test_reasons) {
       to_be_continued_scroll_begin_ = std::move(scroll_state);
+    }
 
     return status;
   }
@@ -17882,7 +17913,8 @@ class UnifiedScrollingTest : public LayerTreeHostImplTest {
         std::move(to_be_continued_scroll_begin_);
 
     scroll_state->data()->set_current_native_scrolling_element(element_id);
-    scroll_state->data()->is_main_thread_hit_tested = true;
+    scroll_state->data()->main_thread_hit_tested_reasons =
+        MainThreadScrollingReason::kFailedHitTest;
 
     return GetInputHandler().ScrollBegin(scroll_state.get(),
                                          ui::ScrollInputType::kWheel);
@@ -17976,7 +18008,8 @@ TEST_F(UnifiedScrollingTest, UnifiedScrollNonFastScrollableRegion) {
     ScrollStatus status = ScrollBegin(gfx::Vector2d(0, 10));
 
     EXPECT_EQ(ScrollThread::SCROLL_ON_IMPL_THREAD, status.thread);
-    EXPECT_TRUE(status.needs_main_thread_hit_test);
+    EXPECT_EQ(MainThreadScrollingReason::kNonFastScrollableRegion,
+              status.main_thread_hit_test_reasons);
 
     // The scroll hasn't started yet though.
     EXPECT_FALSE(CurrentlyScrollingNode());
@@ -17989,7 +18022,8 @@ TEST_F(UnifiedScrollingTest, UnifiedScrollNonFastScrollableRegion) {
     ScrollStatus status = ContinuedScrollBegin(ScrollerElementId());
 
     EXPECT_EQ(ScrollThread::SCROLL_ON_IMPL_THREAD, status.thread);
-    EXPECT_FALSE(status.needs_main_thread_hit_test);
+    EXPECT_EQ(MainThreadScrollingReason::kNotScrollingOnMain,
+              status.main_thread_hit_test_reasons);
 
     EXPECT_TRUE(CurrentlyScrollingNode());
     EXPECT_EQ(ScrollerNode(), CurrentlyScrollingNode());
@@ -18034,7 +18068,8 @@ TEST_F(UnifiedScrollingTest, MainThreadHitTestLatchBubbling) {
 
   {
     ScrollStatus status = ScrollBegin(gfx::Vector2d(0, 10));
-    ASSERT_TRUE(status.needs_main_thread_hit_test);
+    ASSERT_EQ(MainThreadScrollingReason::kNonFastScrollableRegion,
+              status.main_thread_hit_test_reasons);
     status = ContinuedScrollBegin(ScrollerElementId());
 
     // Since the hit tested scroller in ContinuedScrollBegin was fully
@@ -18108,7 +18143,8 @@ TEST_F(UnifiedScrollingTest, SquashingLayerCausesMainThreadHitTest) {
   {
     ScrollStatus status = ScrollBegin(gfx::Vector2d(0, 10));
     EXPECT_EQ(ScrollThread::SCROLL_ON_IMPL_THREAD, status.thread);
-    EXPECT_TRUE(status.needs_main_thread_hit_test);
+    EXPECT_EQ(MainThreadScrollingReason::kFailedHitTest,
+              status.main_thread_hit_test_reasons);
   }
 
   // Resolving the hit test should allow the scroller underneath to scroll as
@@ -18116,7 +18152,8 @@ TEST_F(UnifiedScrollingTest, SquashingLayerCausesMainThreadHitTest) {
   {
     ScrollStatus status = ContinuedScrollBegin(ScrollerElementId());
     EXPECT_EQ(ScrollThread::SCROLL_ON_IMPL_THREAD, status.thread);
-    EXPECT_FALSE(status.needs_main_thread_hit_test);
+    EXPECT_EQ(MainThreadScrollingReason::kNotScrollingOnMain,
+              status.main_thread_hit_test_reasons);
 
     EXPECT_TRUE(CurrentlyScrollingNode());
     EXPECT_EQ(ScrollerNode(), CurrentlyScrollingNode());
@@ -18133,7 +18170,8 @@ TEST_F(UnifiedScrollingTest, MainThreadScrollingReasonsScrollOnCompositor) {
   {
     ScrollStatus status = ScrollBegin(gfx::Vector2d(0, 10));
     EXPECT_EQ(ScrollThread::SCROLL_ON_IMPL_THREAD, status.thread);
-    EXPECT_FALSE(status.needs_main_thread_hit_test);
+    EXPECT_EQ(MainThreadScrollingReason::kNotScrollingOnMain,
+              status.main_thread_hit_test_reasons);
   }
 }
 
@@ -18160,8 +18198,9 @@ void UnifiedScrollingTest::TestUncompositedScrollingState(
   // test parameter.
   {
     ScrollStatus status = ScrollBegin(gfx::Vector2d(0, 10));
-    if (status.needs_main_thread_hit_test)
+    if (status.main_thread_hit_test_reasons) {
       ContinuedScrollBegin(ScrollerElementId());
+    }
 
     ASSERT_EQ(ScrollerNode(), CurrentlyScrollingNode());
 

@@ -93,8 +93,8 @@ class CC_EXPORT ScrollState {
     return data_.current_native_scrolling_element();
   }
 
-  bool is_main_thread_hit_tested() const {
-    return data_.is_main_thread_hit_tested;
+  uint32_t main_thread_hit_tested_reasons() const {
+    return data_.main_thread_hit_tested_reasons;
   }
 
   ScrollStateData* data() { return &data_; }

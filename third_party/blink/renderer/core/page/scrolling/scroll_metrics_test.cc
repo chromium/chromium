@@ -147,7 +147,8 @@ TEST_P(ScrollMetricsTest, TouchAndWheelGeneralTest) {
   if (base::FeatureList::IsEnabled(::features::kScrollUnification)) {
     // cc reports the below reasons because #box is not composited.
     EXPECT_TOUCH_BUCKET(
-        BucketIndex(cc::MainThreadScrollingReason::kFailedHitTest), 1);
+        BucketIndex(cc::MainThreadScrollingReason::kNonFastScrollableRegion),
+        1);
     EXPECT_TOUCH_BUCKET(
         BucketIndex(cc::MainThreadScrollingReason::kNotOpaqueForTextAndLCDText),
         1);
@@ -183,7 +184,8 @@ TEST_P(ScrollMetricsTest, TouchAndWheelGeneralTest) {
   if (base::FeatureList::IsEnabled(::features::kScrollUnification)) {
     // cc reports the below reasons because #box is not composited.
     EXPECT_WHEEL_BUCKET(
-        BucketIndex(cc::MainThreadScrollingReason::kFailedHitTest), 1);
+        BucketIndex(cc::MainThreadScrollingReason::kNonFastScrollableRegion),
+        1);
     EXPECT_WHEEL_BUCKET(
         BucketIndex(cc::MainThreadScrollingReason::kNotOpaqueForTextAndLCDText),
         1);
@@ -231,7 +233,8 @@ TEST_P(ScrollMetricsTest, CompositedScrollableAreaTest) {
   if (base::FeatureList::IsEnabled(::features::kScrollUnification)) {
     // cc reports the below reasons because #box is not composited.
     EXPECT_WHEEL_BUCKET(
-        BucketIndex(cc::MainThreadScrollingReason::kFailedHitTest), 1);
+        BucketIndex(cc::MainThreadScrollingReason::kNonFastScrollableRegion),
+        1);
     EXPECT_WHEEL_BUCKET(
         BucketIndex(cc::MainThreadScrollingReason::kNotOpaqueForTextAndLCDText),
         1);
@@ -293,7 +296,8 @@ TEST_P(ScrollMetricsTest, NotScrollableAreaTest) {
   if (base::FeatureList::IsEnabled(::features::kScrollUnification)) {
     // cc reports the below reasons because #box is not composited.
     EXPECT_WHEEL_BUCKET(
-        BucketIndex(cc::MainThreadScrollingReason::kFailedHitTest), 1);
+        BucketIndex(cc::MainThreadScrollingReason::kNonFastScrollableRegion),
+        1);
     EXPECT_WHEEL_BUCKET(
         BucketIndex(cc::MainThreadScrollingReason::kNotOpaqueForTextAndLCDText),
         1);
@@ -330,13 +334,14 @@ TEST_P(ScrollMetricsTest, NotScrollableAreaTest) {
   if (base::FeatureList::IsEnabled(::features::kScrollUnification)) {
     // The overflow: hidden element is still a non-fast scroll region, so cc
     // reports the following for the second scroll:
-    //   kFailedHitTest
+    //   kNonFastScrollableRegion
     //   kScrollingOnMainForAnyReason
     //
     // Since #box is overflow: hidden, the hit test returns the viewport, and
     // so we do not log kNoScrollingLayer again.
     EXPECT_WHEEL_BUCKET(
-        BucketIndex(cc::MainThreadScrollingReason::kFailedHitTest), 1);
+        BucketIndex(cc::MainThreadScrollingReason::kNonFastScrollableRegion),
+        1);
     EXPECT_WHEEL_BUCKET(
         cc::MainThreadScrollingReason::kScrollingOnMainForAnyReason, 1);
     EXPECT_WHEEL_TOTAL(2);
