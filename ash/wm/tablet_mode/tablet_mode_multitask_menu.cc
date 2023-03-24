@@ -18,6 +18,7 @@
 #include "ash/wm/window_state.h"
 #include "base/cxx17_backports.h"
 #include "base/functional/bind.h"
+#include "chromeos/constants/chromeos_features.h"
 #include "chromeos/ui/frame/multitask_menu/multitask_menu_metrics.h"
 #include "chromeos/ui/frame/multitask_menu/multitask_menu_view.h"
 #include "chromeos/ui/frame/multitask_menu/split_button_view.h"
@@ -70,7 +71,10 @@ class TabletModeMultitaskMenuView : public views::View {
     SetBackground(views::CreateThemedRoundedRectBackground(
         kColorAshShieldAndBaseOpaque, kCornerRadius));
     SetBorder(std::make_unique<views::HighlightBorder>(
-        kCornerRadius, views::HighlightBorder::Type::kHighlightBorder1,
+        kCornerRadius,
+        chromeos::features::IsJellyrollEnabled()
+            ? views::HighlightBorder::Type::kHighlightBorderOnShadow
+            : views::HighlightBorder::Type::kHighlightBorder1,
         /*use_light_colors=*/false));
 
     SetUseDefaultFillLayout(true);

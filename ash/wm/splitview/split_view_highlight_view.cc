@@ -64,6 +64,14 @@ SplitViewHighlightView::SplitViewHighlightView(bool is_right_or_bottom)
   SetBackground(views::CreateRoundedRectBackground(
       AshColorProvider::Get()->GetBackgroundColor(),
       kHighlightScreenRoundRectRadius));
+  if (chromeos::features::IsDarkLightModeEnabled()) {
+    SetBorder(std::make_unique<views::HighlightBorder>(
+        kHighlightScreenRoundRectRadius,
+        chromeos::features::IsJellyrollEnabled()
+            ? views::HighlightBorder::Type::kHighlightBorderNoShadow
+            : views::HighlightBorder::Type::kHighlightBorder1,
+        /*use_light_colors=*/false));
+  }
   layer()->SetFillsBoundsOpaquely(false);
   layer()->SetRoundedCornerRadius(
       gfx::RoundedCornersF{kHighlightScreenRoundRectRadius});
@@ -76,12 +84,6 @@ void SplitViewHighlightView::OnThemeChanged() {
   views::View::OnThemeChanged();
   background()->SetNativeControlColor(
       AshColorProvider::Get()->GetBackgroundColor());
-  if (chromeos::features::IsDarkLightModeEnabled()) {
-    SetBorder(std::make_unique<views::HighlightBorder>(
-        kHighlightScreenRoundRectRadius,
-        views::HighlightBorder::Type::kHighlightBorder1,
-        /*use_light_colors=*/false));
-  }
 }
 
 void SplitViewHighlightView::SetBounds(
@@ -188,12 +190,6 @@ void SplitViewHighlightView::OnWindowDraggingStateChanged(
 
   background()->SetNativeControlColor(
       AshColorProvider::Get()->GetBackgroundColor());
-  if (chromeos::features::IsDarkLightModeEnabled()) {
-    SetBorder(std::make_unique<views::HighlightBorder>(
-        kHighlightScreenRoundRectRadius,
-        views::HighlightBorder::Type::kHighlightBorder1,
-        /*use_light_colors=*/false));
-  }
 
   if (preview_position != SplitViewController::SnapPosition::kNone) {
     DoSplitviewOpacityAnimation(

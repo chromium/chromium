@@ -235,7 +235,10 @@ class DividerView : public views::View, public views::ViewTargeterDelegate {
 
     if (chromeos::features::IsDarkLightModeEnabled()) {
       divider_view_->SetBorder(std::make_unique<views::HighlightBorder>(
-          /*corner_radius=*/0, views::HighlightBorder::Type::kHighlightBorder1,
+          /*corner_radius=*/0,
+          chromeos::features::IsJellyrollEnabled()
+              ? views::HighlightBorder::Type::kHighlightBorderNoShadow
+              : views::HighlightBorder::Type::kHighlightBorder1,
           /*use_light_colors=*/false));
     }
   }

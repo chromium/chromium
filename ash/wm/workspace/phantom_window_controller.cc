@@ -12,6 +12,7 @@
 #include "ash/style/ash_color_id.h"
 #include "ash/style/ash_color_provider.h"
 #include "ash/wm/window_util.h"
+#include "chromeos/constants/chromeos_features.h"
 #include "ui/aura/window.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/compositor/layer.h"
@@ -210,7 +211,9 @@ std::unique_ptr<views::Widget> PhantomWindowController::CreatePhantomWidget(
               kColorAshShieldAndBase20, kPhantomWindowCornerRadius))
           .SetBorder(std::make_unique<views::HighlightBorder>(
               kPhantomWindowCornerRadius,
-              views::HighlightBorder::Type::kHighlightBorder1,
+              chromeos::features::IsJellyrollEnabled()
+                  ? views::HighlightBorder::Type::kHighlightBorderNoShadow
+                  : views::HighlightBorder::Type::kHighlightBorder1,
               /*use_light_colors=*/false))
           .Build());
   return phantom_widget;
@@ -251,7 +254,9 @@ std::unique_ptr<views::Widget> PhantomWindowController::CreateMaximizeCue(
               kColorAshShieldAndBase20, kPhantomWindowCornerRadius))
           .SetBorder(std::make_unique<views::HighlightBorder>(
               kPhantomWindowCornerRadius,
-              views::HighlightBorder::Type::kHighlightBorder1,
+              chromeos::features::IsJellyrollEnabled()
+                  ? views::HighlightBorder::Type::kHighlightBorderNoShadow
+                  : views::HighlightBorder::Type::kHighlightBorder1,
               /*use_light_colors=*/false))
           .AddChildren(
               views::Builder<views::Label>()

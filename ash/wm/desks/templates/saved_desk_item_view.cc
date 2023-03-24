@@ -33,6 +33,7 @@
 #include "base/i18n/time_formatting.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
+#include "chromeos/constants/chromeos_features.h"
 #include "chromeos/ui/vector_icons/vector_icons.h"
 #include "ui/accessibility/ax_enums.mojom-shared.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -138,7 +139,10 @@ SavedDeskItemView::SavedDeskItemView(std::unique_ptr<DeskTemplate> saved_desk)
       .SetBackground(views::CreateThemedRoundedRectBackground(
           cros_tokens::kCrosSysSystemBaseElevated, kCornerRadius))
       .SetBorder(std::make_unique<views::HighlightBorder>(
-          kCornerRadius, views::HighlightBorder::Type::kHighlightBorder1,
+          kCornerRadius,
+          chromeos::features::IsJellyrollEnabled()
+              ? views::HighlightBorder::Type::kHighlightBorderNoShadow
+              : views::HighlightBorder::Type::kHighlightBorder1,
           /*use_light_colors=*/false))
       // TODO(b/274025495): Update Shadow for SavedDeskItemView.
       .AddChildren(

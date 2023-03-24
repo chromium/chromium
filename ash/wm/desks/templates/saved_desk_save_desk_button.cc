@@ -9,6 +9,7 @@
 #include "ash/style/style_util.h"
 #include "ash/wm/overview/overview_constants.h"
 #include "ash/wm/overview/overview_utils.h"
+#include "chromeos/constants/chromeos_features.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/gfx/vector_icon_types.h"
 #include "ui/views/controls/focus_ring.h"
@@ -39,7 +40,9 @@ SavedDeskSaveDeskButton::SavedDeskSaveDeskButton(
   if (features::IsDarkLightModeEnabled()) {
     SetBorder(std::make_unique<views::HighlightBorder>(
         /*corner_radius=*/kCornerRadius,
-        views::HighlightBorder::Type::kHighlightBorder1,
+        chromeos::features::IsJellyrollEnabled()
+            ? views::HighlightBorder::Type::kHighlightBorderNoShadow
+            : views::HighlightBorder::Type::kHighlightBorder2,
         /*use_light_colors=*/false));
   }
 }

@@ -125,7 +125,10 @@ WindowCycleView::WindowCycleView(aura::Window* root_window,
   SetBackground(views::CreateThemedRoundedRectBackground(
       cros_tokens::kCrosSysScrim2, kBackgroundCornerRadius));
   SetBorder(std::make_unique<views::HighlightBorder>(
-      kBackgroundCornerRadius, views::HighlightBorder::Type::kHighlightBorder1,
+      kBackgroundCornerRadius,
+      chromeos::features::IsJellyrollEnabled()
+          ? views::HighlightBorder::Type::kHighlightBorderOnShadow
+          : views::HighlightBorder::Type::kHighlightBorder1,
       /*use_light_colors=*/false));
 
   // |mirror_container_| may be larger than |this|. In this case, it will be

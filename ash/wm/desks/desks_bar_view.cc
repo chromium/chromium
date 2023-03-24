@@ -521,7 +521,10 @@ DesksBarView::DesksBarView(OverviewGrid* overview_grid)
 
   if (features::IsDarkLightModeEnabled()) {
     SetBorder(std::make_unique<views::HighlightBorder>(
-        /*corner_radius=*/0, views::HighlightBorder::Type::kHighlightBorder2,
+        /*corner_radius=*/0,
+        chromeos::features::IsJellyrollEnabled()
+            ? views::HighlightBorder::Type::kHighlightBorderNoShadow
+            : views::HighlightBorder::Type::kHighlightBorder2,
         /*use_light_colors=*/false));
   }
 
