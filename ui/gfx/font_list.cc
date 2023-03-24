@@ -26,13 +26,9 @@ base::LazyInstance<scoped_refptr<gfx::FontListImpl>>::Leaky g_default_impl =
     LAZY_INSTANCE_INITIALIZER;
 bool g_default_impl_initialized = false;
 
-bool IsFontFamilyAvailable(const std::string& family, SkFontMgr* fontManager) {
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
-  return !!fontManager->legacyMakeTypeface(family.c_str(), SkFontStyle());
-#else
-  sk_sp<SkFontStyleSet> set(fontManager->matchFamily(family.c_str()));
-  return set && set->count();
-#endif
+bool IsFontFamilyAvailable(const std::string& family, SkFontMgr* font_manager) {
+  return !!sk_sp<SkTypeface>(
+      font_manager->matchFamilyStyle(family.c_str(), SkFontStyle()));
 }
 
 }  // namespace
