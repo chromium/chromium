@@ -9811,13 +9811,17 @@
             ],
             "experiments": [
                 {
-                    "name": "ExperimentalConfidenceCutoff_20230227",
+                    "name": "ExperimentalConfidenceCutoff_20230323",
+                    "params": {
+                        "preconnect_dui_confidence_cutoff": "0.3",
+                        "prerender_dui_confidence_cutoff": "0.5"
+                    },
                     "enable_features": [
                         "AutocompleteActionPredictorConfidenceCutoff"
                     ]
                 },
                 {
-                    "name": "Control_20230227",
+                    "name": "Control_20230323",
                     "disable_features": [
                         "AutocompleteActionPredictorConfidenceCutoff"
                     ]
