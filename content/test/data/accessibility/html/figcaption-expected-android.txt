@@ -2,3 +2,6 @@ android.webkit.WebView focusable focused scrollable
 ++android.view.View role_description='graphic'
 ++++android.widget.Image role_description='graphic' name='This is a green box.'
 ++++android.view.View name='Fig.1 - A green Box'
+++android.view.View role_description='graphic'
+++++android.widget.Image role_description='graphic' name='This is a blue box.'
+++++android.view.View name='Fig.2 - A blue Box'

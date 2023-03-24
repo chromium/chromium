@@ -784,7 +784,7 @@ class MODULES_EXPORT AXObject : public GarbageCollected<AXObject> {
   virtual ax::mojom::blink::IsPopup IsPopup() const;
 
   // Heuristic to get the target popover for an invoking element.
-  AXObject* GetTargetPopoverForInvoker();
+  AXObject* GetTargetPopoverForInvoker() const;
 
   // Heuristic to get the listbox for an <input role="combobox">.
   AXObject* GetControlsListboxForTextfieldCombobox();
@@ -1448,6 +1448,7 @@ class MODULES_EXPORT AXObject : public GarbageCollected<AXObject> {
   void SerializeTableAttributes(ui::AXNodeData* node_data);
   void SerializeUnignoredAttributes(ui::AXNodeData* node_data,
                                     ui::AXMode accessibility_mode);
+  void SerializeComputedDetailsRelation(ui::AXNodeData* node_data) const;
 
   // Serialization implemented in specific subclasses.
   virtual void SerializeMarkerAttributes(ui::AXNodeData* node_data) const;

@@ -1868,7 +1868,7 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest, AccessibilityFieldset) {
 }
 
 // TODO(crbug.com/1307316): failing on Linux bots and flaky on Fuchsia bots.
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_FUCHSIA)
+#if BUILDFLAG(IS_FUCHSIA)
 #define MAYBE_AccessibilityFigcaption DISABLED_AccessibilityFigcaption
 #else
 #define MAYBE_AccessibilityFigcaption AccessibilityFigcaption

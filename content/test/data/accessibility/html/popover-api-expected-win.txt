@@ -16,6 +16,7 @@ ROLE_SYSTEM_DOCUMENT READONLY FOCUSABLE
 ++IA2_ROLE_PARAGRAPH
 ++++ROLE_SYSTEM_STATICTEXT name='Showing/visible popovers below'
 ++ROLE_SYSTEM_PUSHBUTTON name='Button pointing to showing popover' EXPANDED FOCUSABLE details-roles:popover
+++ROLE_SYSTEM_PUSHBUTTON name='w/o details' EXPANDED FOCUSABLE
 ++ROLE_SYSTEM_TEXT FOCUSABLE
 ++ROLE_SYSTEM_STATICTEXT name='Tel input pointing to showing popover '
 ++ROLE_SYSTEM_PUSHBUTTON name='Show button pointing to nested popover' EXPANDED FOCUSABLE details-roles:popover

@@ -16,6 +16,7 @@
 ++[paragraph]
 ++++[static] name='Showing/visible popovers below'
 ++[push button] name='Button pointing to showing popover' expanded details details-roles:popover
+++[push button] name='w/o details' expanded
 ++[entry] selectable-text
 ++[static] name='Tel input pointing to showing popover '
 ++[push button] name='Show button pointing to nested popover' expanded details details-roles:popover

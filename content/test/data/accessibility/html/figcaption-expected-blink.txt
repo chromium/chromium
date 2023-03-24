@@ -6,3 +6,8 @@ rootWebArea
 ++++++++figcaption
 ++++++++++staticText name='Fig.1 - A green Box'
 ++++++++++++inlineTextBox name='Fig.1 - A green Box'
+++++++figure
+++++++++image name='This is a blue box.'
+++++++++figcaption
+++++++++++staticText name='Fig.2 - A blue Box'
+++++++++++++inlineTextBox name='Fig.2 - A blue Box'

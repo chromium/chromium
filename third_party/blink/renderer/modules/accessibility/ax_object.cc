@@ -1765,16 +1765,6 @@ void AXObject::SerializeOtherScreenReaderAttributes(
   DCHECK_NE(node_data->role, ax::mojom::blink::Role::kUnknown);
   DCHECK_NE(node_data->role, ax::mojom::blink::Role::kNone);
 
-  if (node_data->role == ax::mojom::blink::Role::kFigure) {
-    AXObject* fig_caption = GetChildFigcaption();
-    if (fig_caption) {
-      std::vector<int32_t> ids;
-      ids.push_back(GetChildFigcaption()->AXObjectID());
-      node_data->AddIntListAttribute(
-          ax::mojom::blink::IntListAttribute::kDetailsIds, ids);
-    }
-  }
-
   if (IsA<Document>(GetNode())) {
     if (!IsLoaded()) {
       node_data->AddBoolAttribute(ax::mojom::blink::BoolAttribute::kBusy, true);
@@ -2269,16 +2259,7 @@ void AXObject::SerializeUnignoredAttributes(ui::AXNodeData* node_data,
     }
   }
 
-  // See if we need to add aria-details for a popover invoker.
-  if (!node_data->HasIntListAttribute(
-          ax::mojom::blink::IntListAttribute::kDetailsIds)) {
-    if (AXObject* popover = GetTargetPopoverForInvoker()) {
-      node_data->AddIntListAttribute(
-          ax::mojom::blink::IntListAttribute::kDetailsIds,
-          {static_cast<int32_t>(popover->AXObjectID())});
-    }
-  }
-
+  SerializeComputedDetailsRelation(node_data);
   // Try to get an aria-controls listbox for an <input role="combobox">.
   if (!node_data->HasIntListAttribute(
           ax::mojom::blink::IntListAttribute::kControlsIds)) {
@@ -2302,10 +2283,42 @@ void AXObject::SerializeUnignoredAttributes(ui::AXNodeData* node_data,
   }
 }
 
+void AXObject::SerializeComputedDetailsRelation(
+    ui::AXNodeData* node_data) const {
+  // aria-details was used -- it may have set a relation, unless the attribute
+  // value did not point to valid elements (e.g aria-details=""). Whether it
+  // actually set the relation or not, the author's intent in using the
+  // aria-details attribute is understood to mean that no automatic relation
+  // should be set.
+  if (HasAttribute(html_names::kAriaDetailsAttr)) {
+    return;
+  }
+
+  // Add details relation to <figure>, pointing at <figcaption>.
+  if (node_data->role == ax::mojom::blink::Role::kFigure) {
+    AXObject* fig_caption = GetChildFigcaption();
+    if (fig_caption) {
+      std::vector<int32_t> ids;
+      ids.push_back(GetChildFigcaption()->AXObjectID());
+      node_data->AddIntListAttribute(
+          ax::mojom::blink::IntListAttribute::kDetailsIds, ids);
+      return;
+    }
+  }
+
+  // Add aria-details for a popover invoker.
+  // TODO(https://crbug.com/1426607) Support this for non-plain hint popovers.
+  if (AXObject* popover = GetTargetPopoverForInvoker()) {
+    node_data->AddIntListAttribute(
+        ax::mojom::blink::IntListAttribute::kDetailsIds,
+        {static_cast<int32_t>(popover->AXObjectID())});
+  }
+}
+
 // Popover invoking elements should have details relationships with their
 // target popover, when that popover is a) open, and b) not the next element
 // in the DOM (depth first search order).
-AXObject* AXObject::GetTargetPopoverForInvoker() {
+AXObject* AXObject::GetTargetPopoverForInvoker() const {
   auto* form_element = DynamicTo<HTMLFormControlElement>(GetElement());
   if (!form_element) {
     return nullptr;

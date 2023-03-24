@@ -16,6 +16,7 @@ Document
 ++Group IsControlElement=false
 ++++Text Name='Showing/visible popovers below'
 ++Button Name='Button pointing to showing popover' ExpandCollapse.ExpandCollapseState='Expanded'
+++Button Name='w/o details' ExpandCollapse.ExpandCollapseState='Expanded'
 ++Edit
 ++Text Name='Tel input pointing to showing popover '
 ++Button Name='Show button pointing to nested popover' ExpandCollapse.ExpandCollapseState='Expanded'

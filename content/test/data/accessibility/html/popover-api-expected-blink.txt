@@ -56,6 +56,9 @@ rootWebArea
 ++++++button expanded name='Button pointing to showing popover' detailsIds=group
 ++++++++staticText name='Button pointing to showing popover'
 ++++++++++inlineTextBox name='Button pointing to showing popover'
+++++++button expanded name='w/o details'
+++++++++staticText name='w/o details'
+++++++++++inlineTextBox name='w/o details'
 ++++++textField
 ++++++++genericContainer
 ++++++staticText name='Tel input pointing to showing popover '

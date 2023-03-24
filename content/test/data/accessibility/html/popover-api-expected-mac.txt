@@ -16,6 +16,7 @@ AXWebArea
 ++AXGroup
 ++++AXStaticText AXValue='Showing/visible popovers below'
 ++AXButton AXExpanded=1 AXTitle='Button pointing to showing popover'
+++AXButton AXExpanded=1 AXTitle='w/o details'
 ++AXTextField
 ++AXStaticText AXValue='Tel input pointing to showing popover '
 ++AXButton AXExpanded=1 AXTitle='Show button pointing to nested popover'

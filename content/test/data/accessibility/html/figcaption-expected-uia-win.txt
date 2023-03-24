@@ -3,3 +3,7 @@ Document
 ++++Image Name='This is a green box.'
 ++++Text IsControlElement=false
 ++++++Text Name='Fig.1 - A green Box'
+++Group
+++++Image Name='This is a blue box.'
+++++Text IsControlElement=false
+++++++Text Name='Fig.2 - A blue Box'

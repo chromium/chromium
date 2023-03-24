@@ -3,3 +3,7 @@
 ++++[image] name='This is a green box.'
 ++++[caption] details-for
 ++++++[static] name='Fig.1 - A green Box'
+++[panel]
+++++[image] name='This is a blue box.'
+++++[caption]
+++++++[static] name='Fig.2 - A blue Box'
