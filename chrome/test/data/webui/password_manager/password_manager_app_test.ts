@@ -124,8 +124,7 @@ suite('PasswordManagerAppTest', function() {
   test('Search navigates to Passwords and updates URL parameters', function() {
     const query = new URLSearchParams();
     query.set(UrlParam.START_CHECK, 'true');
-    Router.getInstance().navigateTo(Page.CHECKUP);
-    Router.getInstance().updateRouterParams(query);
+    Router.getInstance().navigateTo(Page.CHECKUP, null, query);
 
     app.$.toolbar.$.mainToolbar.getSearchField().setValue('hello');
 

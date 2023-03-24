@@ -25,8 +25,12 @@ build_webui_tests("build") {
     "site_favicon_test.ts",
     "test_password_manager_proxy.ts",
     "test_prefs_browser_proxy.ts",
+    "test_promo_cards_browser_proxy.ts",
     "test_util.ts",
   ]
+  if (is_chrome_branded) {
+    files += [ "promo_cards_test.ts" ]
+  }
 
   ts_definitions = [
     "//tools/typescript/definitions/passwords_private.d.ts",

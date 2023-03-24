@@ -1,0 +1,46 @@
+<style include="shared-style cr-shared-style">
+  :host {
+    display: flex;
+  }
+
+  #image {
+    height: 120px;
+    width: 248px;
+  }
+
+  a[href] {
+    color: var(--cr-link-color);
+    text-decoration: none;
+  }
+
+  #promoContent {
+    display: flex;
+    flex: 1;
+    flex-direction: column;
+    justify-content: center;
+    margin-inline-end: 6px;
+    margin-inline-start: 24px;
+  }
+
+  #actionButton {
+    margin-top: 6px;
+    width: fit-content
+  }
+</style>
+<picture id="image">
+  <source class="banner" srcset="./images/[[promoCard.id]]_dark.svg"
+      media="(prefers-color-scheme: dark)">
+  <img class="banner" alt="" src="./images/[[promoCard.id]].svg">
+</picture>
+<div id="promoContent">
+  <span id="title" class="label">[[promoCard.title]]</span>
+  <div id="description" class="cr-secondary-text label"
+      inner-h-t-m-l="[[getDescription_(promoCard)]]"></div>
+  <cr-button id="actionButton" hidden="[[!promoCard.actionButtonText]]"
+      class="action-button" on-click="onActionButtonClick_">
+    [[promoCard.actionButtonText]]
+  </cr-button>
+</div>
+<cr-icon-button id="closeButton" class="icon-clear no-overlap"
+    on-click="onCloseClick_">
+</cr-icon-button>

@@ -19,7 +19,17 @@ build_webui("build") {
     "password_manager.html",
   ]
   if (is_chrome_branded) {
-    static_files += [ "chrome_branded_manifest.webmanifest" ]
+    static_files += [
+      "chrome_branded_manifest.webmanifest",
+      "images/access_on_any_device_promo.svg",
+      "images/access_on_any_device_promo_dark.svg",
+      "images/password_checkup_promo.svg",
+      "images/password_checkup_promo_dark.svg",
+      "images/password_shortcut_promo.svg",
+      "images/password_shortcut_promo_dark.svg",
+      "images/passwords_on_web_promo.svg",
+      "images/passwords_on_web_promo_dark.svg",
+    ]
   } else {
     static_files += [ "manifest.webmanifest" ]
   }
@@ -45,6 +55,10 @@ build_webui("build") {
     "site_favicon.ts",
     "toolbar.ts",
   ]
+  if (is_chrome_branded) {
+    web_component_files += [ "promo_cards/promo_card.ts" ]
+  }
+
   non_web_component_files = [
     "password_manager.ts",
     "password_manager_proxy.ts",
@@ -55,6 +69,7 @@ build_webui("build") {
     "show_password_mixin.ts",
     "sync_browser_proxy.ts",
     "user_utils_mixin.ts",
+    "promo_cards/promo_cards_browser_proxy.ts",
   ]
 
   # Files that are passed as input to css_to_wrapper().

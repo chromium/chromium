@@ -82,4 +82,13 @@ suite('PasswordManagerAppTest', function() {
     assertEquals(Page.CHECKUP_DETAILS, router.currentRoute.page);
     assertEquals(CheckupSubpage.WEAK, router.currentRoute.details);
   });
+
+  test('navigate to with URLSearchParams', function() {
+    const newParams = new URLSearchParams();
+    newParams.set(UrlParam.START_CHECK, 'true');
+    Router.getInstance().navigateTo(Page.CHECKUP, null, newParams);
+
+    assertEquals(newParams, Router.getInstance().currentRoute.queryParameters);
+    assertEquals(newParams, testElement.newRoute!.queryParameters);
+  });
 });
