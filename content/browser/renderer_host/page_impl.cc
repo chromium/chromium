@@ -170,7 +170,7 @@ void PageImpl::OnTextAutosizerPageInfoChanged(
       ->render_manager()
       ->ExecuteRemoteFramesBroadcastMethod(
           std::move(remote_frames_broadcast_callback),
-          main_document_->GetSiteInstance());
+          main_document_->GetSiteInstance()->group());
 }
 
 void PageImpl::SetActivationStartTime(base::TimeTicks activation_start) {

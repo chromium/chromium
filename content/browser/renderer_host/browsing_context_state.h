@@ -261,7 +261,7 @@ class CONTENT_EXPORT BrowsingContextState
 
   void ExecuteRemoteFramesBroadcastMethod(
       base::RepeatingCallback<void(RenderFrameProxyHost*)> callback,
-      SiteInstance* instance_to_skip,
+      SiteInstanceGroup* group_to_skip,
       RenderFrameProxyHost* outer_delegate_proxy);
 
   using TraceProto = perfetto::protos::pbzero::BrowsingContextState;

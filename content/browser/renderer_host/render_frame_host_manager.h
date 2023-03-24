@@ -525,11 +525,11 @@ class CONTENT_EXPORT RenderFrameHostManager {
 
   // Executes a RemoteMainFrame Mojo method to every instance in |proxy_hosts|.
   // This should only be called in the top-level RenderFrameHostManager.
-  // The |callback| is called synchronously and the |instance_to_skip| won't
+  // The |callback| is called synchronously and the |group_to_skip| won't
   // be referenced after this method returns.
   void ExecuteRemoteFramesBroadcastMethod(
       RemoteFramesBroadcastMethodCallback callback,
-      SiteInstanceImpl* instance_to_skip = nullptr);
+      SiteInstanceGroup* group_to_skip = nullptr);
 
   // Returns a const reference to the map of proxy hosts. The keys are
   // SiteInstanceGroup IDs, the values are RenderFrameProxyHosts.

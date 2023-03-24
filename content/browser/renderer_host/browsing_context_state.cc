@@ -204,7 +204,7 @@ bool BrowsingContextState::UpdateFramePolicyHeaders(
                   replication_state->permissions_policy_header);
             },
             std::ref(replication_state_)),
-        /*instance_to_skip=*/nullptr, /*outer_delegate_proxy=*/nullptr);
+        /*group_to_skip=*/nullptr, /*outer_delegate_proxy=*/nullptr);
   }
   return changed;
 }
@@ -271,7 +271,7 @@ void BrowsingContextState::SetFrameName(const std::string& name,
                                                                  unique_name);
           },
           std::ref(name), std::ref(unique_name)),
-      /*instance_to_skip=*/nullptr, /*outer_delegate_proxy=*/nullptr);
+      /*group_to_skip=*/nullptr, /*outer_delegate_proxy=*/nullptr);
   replication_state_->unique_name = unique_name;
   replication_state_->name = name;
 }
@@ -294,7 +294,7 @@ void BrowsingContextState::SetCurrentOrigin(
                 origin, is_potentially_trustworthy_unique_origin);
           },
           std::ref(origin), std::ref(is_potentially_trustworthy_unique_origin)),
-      /*instance_to_skip=*/nullptr, /*outer_delegate_proxy=*/nullptr);
+      /*group_to_skip=*/nullptr, /*outer_delegate_proxy=*/nullptr);
 
   replication_state_->origin = origin;
   replication_state_->has_potentially_trustworthy_unique_origin =
@@ -313,7 +313,7 @@ void BrowsingContextState::SetInsecureRequestPolicy(
                 policy);
           },
           policy),
-      /*instance_to_skip=*/nullptr, /*outer_delegate_proxy=*/nullptr);
+      /*group_to_skip=*/nullptr, /*outer_delegate_proxy=*/nullptr);
   replication_state_->insecure_request_policy = policy;
 }
 
@@ -331,7 +331,7 @@ void BrowsingContextState::SetInsecureNavigationsSet(
                 insecure_navigations_set);
           },
           std::ref(insecure_navigations_set)),
-      /*instance_to_skip=*/nullptr, /*outer_delegate_proxy=*/nullptr);
+      /*group_to_skip=*/nullptr, /*outer_delegate_proxy=*/nullptr);
   replication_state_->insecure_navigations_set = insecure_navigations_set;
 }
 
@@ -344,7 +344,7 @@ void BrowsingContextState::OnSetHadStickyUserActivationBeforeNavigation(
                 ->SetHadStickyUserActivationBeforeNavigation(value);
           },
           value),
-      /*instance_to_skip=*/nullptr, /*outer_delegate_proxy=*/nullptr);
+      /*group_to_skip=*/nullptr, /*outer_delegate_proxy=*/nullptr);
   replication_state_->has_received_user_gesture_before_nav = value;
 }
 
@@ -360,7 +360,7 @@ void BrowsingContextState::SetIsAdFrame(bool is_ad_frame) {
                 is_ad_frame);
           },
           is_ad_frame),
-      /*instance_to_skip=*/nullptr, /*outer_delegate_proxy=*/nullptr);
+      /*group_to_skip=*/nullptr, /*outer_delegate_proxy=*/nullptr);
 }
 
 void BrowsingContextState::ActiveFrameCountIsZero(
@@ -402,7 +402,7 @@ void BrowsingContextState::SendFramePolicyUpdatesToProxies(
                 frame_policy);
           },
           base::Unretained(parent_group), std::ref(frame_policy)),
-      /*instance_to_skip=*/nullptr, /*outer_delegate_proxy=*/nullptr);
+      /*group_to_skip=*/nullptr, /*outer_delegate_proxy=*/nullptr);
 }
 
 void BrowsingContextState::OnDidStartLoading() {
@@ -410,7 +410,7 @@ void BrowsingContextState::OnDidStartLoading() {
       base::BindRepeating([](RenderFrameProxyHost* proxy) {
         proxy->GetAssociatedRemoteFrame()->DidStartLoading();
       }),
-      /*instance_to_skip=*/nullptr, /*outer_delegate_proxy=*/nullptr);
+      /*group_to_skip=*/nullptr, /*outer_delegate_proxy=*/nullptr);
 }
 
 void BrowsingContextState::OnDidStopLoading() {
@@ -418,7 +418,7 @@ void BrowsingContextState::OnDidStopLoading() {
       base::BindRepeating([](RenderFrameProxyHost* proxy) {
         proxy->GetAssociatedRemoteFrame()->DidStopLoading();
       }),
-      /*instance_to_skip=*/nullptr, /*outer_delegate_proxy=*/nullptr);
+      /*group_to_skip=*/nullptr, /*outer_delegate_proxy=*/nullptr);
 }
 
 void BrowsingContextState::ResetProxyHosts() {
@@ -457,18 +457,19 @@ void BrowsingContextState::OnDidUpdateFrameOwnerProperties(
           },
           base::Unretained(parent_->GetSiteInstance()->group()),
           std::ref(properties)),
-      /*instance_to_skip=*/nullptr, /*outer_delegate_proxy=*/nullptr);
+      /*group_to_skip=*/nullptr, /*outer_delegate_proxy=*/nullptr);
 }
 
 void BrowsingContextState::ExecuteRemoteFramesBroadcastMethod(
     base::RepeatingCallback<void(RenderFrameProxyHost*)> callback,
-    SiteInstance* instance_to_skip,
+    SiteInstanceGroup* group_to_skip,
     RenderFrameProxyHost* outer_delegate_proxy) {
   for (const auto& pair : proxy_hosts_) {
     if (outer_delegate_proxy == pair.second.get())
       continue;
-    if (pair.second->GetSiteInstance() == instance_to_skip)
+    if (pair.second->site_instance_group() == group_to_skip) {
       continue;
+    }
     if (!pair.second->is_render_frame_proxy_live())
       continue;
     callback.Run(pair.second.get());
