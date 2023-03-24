@@ -392,15 +392,18 @@ void OnWebAppInstallCompleted(InstallOrLaunchWebAppCallback callback,
 }
 
 void OnWebAppInstallabilityChecked(
-    Profile* profile,
+    base::WeakPtr<Profile> profile,
     InstallOrLaunchWebAppCallback callback,
     std::unique_ptr<content::WebContents> web_contents,
     InstallableCheckResult result,
     absl::optional<web_app::AppId> app_id) {
+  if (!profile) {
+    return;
+  }
   switch (result) {
     case InstallableCheckResult::kAlreadyInstalled:
       DCHECK(app_id);
-      LaunchWebApp(*app_id, profile);
+      LaunchWebApp(*app_id, profile.get());
       std::move(callback).Run(InstallOrLaunchWebAppResult::kSuccess);
       return;
     case InstallableCheckResult::kNotInstallable:
@@ -408,7 +411,7 @@ void OnWebAppInstallabilityChecked(
       return;
     case InstallableCheckResult::kInstallable:
       content::WebContents* containing_contents = web_contents.get();
-      chrome::ScopedTabbedBrowserDisplayer displayer(profile);
+      chrome::ScopedTabbedBrowserDisplayer displayer(profile.get());
       const GURL& url = web_contents->GetLastCommittedURL();
       chrome::AddWebContents(displayer.browser(), nullptr,
                              std::move(web_contents), url,
@@ -589,7 +592,7 @@ void ChromeManagementAPIDelegate::InstallOrLaunchReplacementWebApp(
       web_contents->GetWeakPtr();
   provider->scheduler().FetchInstallabilityForChromeManagement(
       web_app_url, web_contents_ptr,
-      base::BindOnce(&OnWebAppInstallabilityChecked, profile,
+      base::BindOnce(&OnWebAppInstallabilityChecked, profile->GetWeakPtr(),
                      std::move(callback), std::move(web_contents)));
 }
 
