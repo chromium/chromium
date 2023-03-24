@@ -698,7 +698,7 @@ def main():
     else:
         assert not rest
 
-    xpy_args = []
+    xpy_args = ['--build', host_triple]
     if args.build_mac_arm:
         xpy_args.extend(['--host', host_triple, '--target', host_triple])
 
