@@ -191,7 +191,8 @@ class PLATFORM_EXPORT MemoryCache final : public GarbageCollected<MemoryCache>,
   void PruneResources(PruneStrategy);
   void PruneNow(PruneStrategy);
 
-  void RemovePageResourceStrongReference(uint32_t saved_page_token);
+  void RemovePageResourceStrongReference(
+      const base::UnguessableToken& saved_page_token);
 
   bool in_prune_resources_ = false;
   bool prune_pending_ = false;
@@ -209,9 +210,8 @@ class PLATFORM_EXPORT MemoryCache final : public GarbageCollected<MemoryCache>,
 
   // The size of strong reference to resources is not limited.
   // The strong references will be removed when memory pressure is signaled.
-  HeapHashMap<uint32_t, Member<HeapVector<Member<Resource>>>>
+  HeapHashMap<String, Member<HeapVector<Member<Resource>>>>
       saved_page_resources_;
-  uint32_t saved_page_token_ = 0;
 
   scoped_refptr<base::SingleThreadTaskRunner> task_runner_;
 

@@ -616,9 +616,7 @@ ResourceFetcher::ResourceFetcher(const ResourceFetcherInit& init)
 
   if (IsMainThread()) {
     MainThreadFetchersSet().insert(this);
-    if (MemoryPressureListenerRegistry::IsLowEndDevice()) {
-      MemoryPressureListenerRegistry::Instance().RegisterClient(this);
-    }
+    MemoryPressureListenerRegistry::Instance().RegisterClient(this);
   }
 }
 
@@ -1365,7 +1363,7 @@ Resource* ResourceFetcher::RequestResource(FetchParameters& params,
   return resource;
 }
 
-void ResourceFetcher::RemoveImageStrongReference(Resource* image_resource) {
+void ResourceFetcher::RemoveResourceStrongReference(Resource* image_resource) {
   document_resource_strong_refs_.erase(image_resource);
 }
 
@@ -2676,7 +2674,7 @@ void ResourceFetcher::MaybeSaveResourceToStrongReference(Resource* resource) {
       document_resource_strong_refs_.insert(resource);
       freezable_task_runner_->PostDelayedTask(
           FROM_HERE,
-          WTF::BindOnce(&ResourceFetcher::RemoveImageStrongReference,
+          WTF::BindOnce(&ResourceFetcher::RemoveResourceStrongReference,
                         WrapWeakPersistent(this), WrapWeakPersistent(resource)),
           GetResourceStrongReferenceTimeout(resource));
     }

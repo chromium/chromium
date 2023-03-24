@@ -95,8 +95,7 @@ MemoryCache::MemoryCache(
       size_(0),
       task_runner_(std::move(task_runner)) {
   MemoryCacheDumpProvider::Instance()->SetMemoryCache(this);
-  if (MemoryPressureListenerRegistry::IsLowEndDevice())
-    MemoryPressureListenerRegistry::Instance().RegisterClient(this);
+  MemoryPressureListenerRegistry::Instance().RegisterClient(this);
 }
 
 MemoryCache::~MemoryCache() = default;
@@ -478,7 +477,10 @@ bool MemoryCache::OnMemoryDump(WebMemoryDumpLevelOfDetail level_of_detail,
 
 void MemoryCache::OnMemoryPressure(
     base::MemoryPressureListener::MemoryPressureLevel level) {
-  PruneAll();
+  saved_page_resources_.clear();
+  if (MemoryPressureListenerRegistry::IsLowEndDevice()) {
+    PruneAll();
+  }
 }
 
 void MemoryCache::SavePageResourceStrongReferences(
@@ -490,21 +492,22 @@ void MemoryCache::SavePageResourceStrongReferences(
   }
   base::UmaHistogramCustomCounts(kPageSavedResourceStrongReferenceSize,
                                  resources.size(), 0, 200, 50);
-  saved_page_token_++;
+  base::UnguessableToken saved_page_token = base::UnguessableToken::Create();
   saved_page_resources_.insert(
-      saved_page_token_,
+      String(saved_page_token.ToString()),
       MakeGarbageCollected<HeapVector<Member<Resource>>>(std::move(resources)));
   task_runner_->PostDelayedTask(
       FROM_HERE,
       base::BindOnce(&MemoryCache::RemovePageResourceStrongReference,
-                     WrapWeakPersistent(this), saved_page_token_),
+                     WrapWeakPersistent(this), saved_page_token),
       kCUnloadPageResourceSaveTime);
 }
 
-void MemoryCache::RemovePageResourceStrongReference(uint32_t saved_page_token) {
+void MemoryCache::RemovePageResourceStrongReference(
+    const base::UnguessableToken& saved_page_token) {
   DCHECK(base::FeatureList::IsEnabled(features::kMemoryCacheStrongReference));
 
-  saved_page_resources_.erase(saved_page_token);
+  saved_page_resources_.erase(String(saved_page_token.ToString()));
 }
 
 }  // namespace blink

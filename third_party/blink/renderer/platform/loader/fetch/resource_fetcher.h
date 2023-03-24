@@ -497,7 +497,7 @@ class PLATFORM_EXPORT ResourceFetcher
 
   void WarnUnusedPreloads();
 
-  void RemoveImageStrongReference(Resource* image_resource);
+  void RemoveResourceStrongReference(Resource* image_resource);
 
   // Information about a resource fetch that had started but not completed yet.
   // Would be added to the response data when the response arrives.
