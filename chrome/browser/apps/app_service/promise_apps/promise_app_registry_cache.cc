@@ -37,11 +37,6 @@ void PromiseAppRegistryCache::OnPromiseApp(PromiseAppPtr delta) {
   update_in_progress_ = false;
 }
 
-const PromiseApp* PromiseAppRegistryCache::GetPromiseApp(
-    const PackageId& package_id) const {
-  return FindPromiseApp(package_id);
-}
-
 // Retrieve a copy of all the registered promise apps.
 std::vector<PromiseAppPtr> PromiseAppRegistryCache::GetAllPromiseApps() const {
   std::vector<PromiseAppPtr> promise_apps;
@@ -49,6 +44,11 @@ std::vector<PromiseAppPtr> PromiseAppRegistryCache::GetAllPromiseApps() const {
     promise_apps.push_back(promise_pair.second.get()->Clone());
   }
   return promise_apps;
+}
+
+const PromiseApp* PromiseAppRegistryCache::GetPromiseAppForTesting(
+    const PackageId& package_id) const {
+  return FindPromiseApp(package_id);
 }
 
 PromiseApp* PromiseAppRegistryCache::FindPromiseApp(

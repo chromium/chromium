@@ -535,13 +535,15 @@ TEST_F(ArcAppsPublisherTest, OnInstallationStarted_RegistersPromiseApp) {
 
   // Verify that the promise app is not yet registered.
   const apps::PromiseApp* promise_app_before =
-      app_service_proxy()->PromiseAppRegistryCache().GetPromiseApp(package_id);
+      app_service_proxy()->PromiseAppRegistryCache().GetPromiseAppForTesting(
+          package_id);
   EXPECT_FALSE(promise_app_before);
 
   arc_test()->app_instance()->SendInstallationStarted(package_name);
 
   // Verify that the promise app is now registered.
   const apps::PromiseApp* promise_app_after =
-      app_service_proxy()->PromiseAppRegistryCache().GetPromiseApp(package_id);
+      app_service_proxy()->PromiseAppRegistryCache().GetPromiseAppForTesting(
+          package_id);
   EXPECT_TRUE(promise_app_after);
 }
