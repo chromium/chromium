@@ -219,7 +219,9 @@ FILES_TO_REMOVE = [
     'linux/doc',
     'linux/example',
     'linux/fuzz',
+    'linux/include/private',
     'linux/python',
+    'linux/xstc',
 ]
 
 
