@@ -1124,17 +1124,6 @@ LayoutUnit LayoutBoxModelObject::OffsetTop(const Element* parent) const {
   return AdjustedPositionRelativeTo(PhysicalOffset(), parent).top;
 }
 
-int LayoutBoxModelObject::PixelSnappedOffsetWidth(const Element* parent) const {
-  NOT_DESTROYED();
-  return SnapSizeToPixel(OffsetWidth(), OffsetLeft(parent));
-}
-
-int LayoutBoxModelObject::PixelSnappedOffsetHeight(
-    const Element* parent) const {
-  NOT_DESTROYED();
-  return SnapSizeToPixel(OffsetHeight(), OffsetTop(parent));
-}
-
 LayoutUnit LayoutBoxModelObject::ComputedCSSPadding(
     const Length& padding) const {
   NOT_DESTROYED();

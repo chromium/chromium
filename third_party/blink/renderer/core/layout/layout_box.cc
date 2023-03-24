@@ -1194,16 +1194,6 @@ LayoutUnit LayoutBox::ClientHeightWithTableSpecialBehavior() const {
   return ClientHeight();
 }
 
-int LayoutBox::PixelSnappedOffsetWidth(const Element*) const {
-  NOT_DESTROYED();
-  return SnapSizeToPixel(OffsetWidth(), Location().X() + ClientLeft());
-}
-
-int LayoutBox::PixelSnappedOffsetHeight(const Element*) const {
-  NOT_DESTROYED();
-  return SnapSizeToPixel(OffsetHeight(), Location().Y() + ClientTop());
-}
-
 bool LayoutBox::UsesOverlayScrollbars() const {
   NOT_DESTROYED();
   if (StyleRef().HasCustomScrollbarStyle())

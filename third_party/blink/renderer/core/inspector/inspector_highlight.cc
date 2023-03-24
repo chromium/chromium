@@ -2077,23 +2077,22 @@ bool InspectorHighlight::GetBoxModel(
       view->ConvertToRootFrame(layout_object->AbsoluteBoundingBoxRect());
   auto* model_object = DynamicTo<LayoutBoxModelObject>(layout_object);
 
-  *model =
-      protocol::DOM::BoxModel::create()
-          .setContent(BuildArrayForQuad(content))
-          .setPadding(BuildArrayForQuad(padding))
-          .setBorder(BuildArrayForQuad(border))
-          .setMargin(BuildArrayForQuad(margin))
-          .setWidth(model_object ? AdjustForAbsoluteZoom::AdjustInt(
-                                       model_object->PixelSnappedOffsetWidth(
-                                           model_object->OffsetParent()),
-                                       model_object)
-                                 : bounding_box.width())
-          .setHeight(model_object ? AdjustForAbsoluteZoom::AdjustInt(
-                                        model_object->PixelSnappedOffsetHeight(
-                                            model_object->OffsetParent()),
-                                        model_object)
-                                  : bounding_box.height())
-          .build();
+  *model = protocol::DOM::BoxModel::create()
+               .setContent(BuildArrayForQuad(content))
+               .setPadding(BuildArrayForQuad(padding))
+               .setBorder(BuildArrayForQuad(border))
+               .setMargin(BuildArrayForQuad(margin))
+               .setWidth(model_object
+                             ? AdjustForAbsoluteZoom::AdjustLayoutUnit(
+                                   model_object->OffsetWidth(), *model_object)
+                                   .Round()
+                             : bounding_box.width())
+               .setHeight(model_object
+                              ? AdjustForAbsoluteZoom::AdjustLayoutUnit(
+                                    model_object->OffsetHeight(), *model_object)
+                                    .Round()
+                              : bounding_box.height())
+               .build();
 
   Shape::DisplayPaths paths;
   gfx::QuadF bounds_quad;

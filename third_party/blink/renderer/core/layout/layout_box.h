@@ -807,10 +807,6 @@ class CORE_EXPORT LayoutBox : public LayoutBoxModelObject {
     return Size().Height();
   }
 
-  // TODO(crbug.com/962299): This is incorrect in some cases.
-  int PixelSnappedOffsetWidth(const Element*) const final;
-  int PixelSnappedOffsetHeight(const Element*) const final;
-
   bool UsesOverlayScrollbars() const;
 
   // Clamps the left scrollbar size so it is not wider than the content box.
