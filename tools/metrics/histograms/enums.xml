@@ -52174,6 +52174,8 @@ Unsupported non-ascii characters will cause issues with xml presubmits.
   <int value="-607101895" label="zh-t-i0-pinyin"/>
   <int value="-547772150" label="xkb:ro:std:rum"/>
   <int value="-545936253" label="zh-hant-t-i0-array-1992"/>
+<!-- TODO(b/274989284): Properly de-duplicate this label. -->
+
   <int value="-537214862" label="xkb:us:intl_pc:eng (*)"/>
   <int value="-535089160" label="xkb:us::msa"/>
   <int value="-512360986" label="xkb:us:altgr-intl:eng"/>
