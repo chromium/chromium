@@ -62,6 +62,12 @@ class MODULES_EXPORT MediaStreamTrackImpl : public MediaStreamTrack,
   static MediaStreamTrack* Create(ExecutionContext* context,
                                   MediaStreamComponent* component,
                                   base::OnceClosure callback);
+  // Creates a new MediaStreamTrackImpl with a component cloned from an existing
+  // component with an initialized platform track. The cloned component will be
+  // connected to the same platform track as the passed in component.
+  static MediaStreamTrackImpl* CreateCloningComponent(
+      ExecutionContext* execution_context,
+      MediaStreamComponent* component);
 
   MediaStreamTrackImpl(ExecutionContext*, MediaStreamComponent*);
   MediaStreamTrackImpl(ExecutionContext*,
@@ -70,8 +76,7 @@ class MODULES_EXPORT MediaStreamTrackImpl : public MediaStreamTrack,
   MediaStreamTrackImpl(ExecutionContext*,
                        MediaStreamComponent*,
                        MediaStreamSource::ReadyState,
-                       base::OnceClosure callback,
-                       bool is_clone = false);
+                       base::OnceClosure callback);
   ~MediaStreamTrackImpl() override;
 
   // MediaStreamTrack

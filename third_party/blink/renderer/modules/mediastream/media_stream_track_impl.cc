@@ -166,13 +166,13 @@ CreateWebAudioSourceFromMediaStreamTrack(MediaStreamComponent* component,
                                                         context_sample_rate);
 }
 
-void DidCloneMediaStreamTrack(MediaStreamComponent* clone) {
-  DCHECK(clone);
-  DCHECK(clone->Source());
+void ConnectToSource(MediaStreamComponent* component) {
+  DCHECK(component);
+  DCHECK(component->Source());
 
-  if (clone->GetSourceType() == MediaStreamSource::kTypeAudio) {
-    MediaStreamAudioSource::From(clone->Source())
-        ->ConnectToInitializedTrack(clone);
+  if (component->GetSourceType() == MediaStreamSource::kTypeAudio) {
+    MediaStreamAudioSource::From(component->Source())
+        ->ConnectToInitializedTrack(component);
   }
 }
 
@@ -228,6 +228,18 @@ MediaStreamTrack* MediaStreamTrackImpl::Create(ExecutionContext* context,
   }
 }
 
+MediaStreamTrackImpl* MediaStreamTrackImpl::CreateCloningComponent(
+    ExecutionContext* execution_context,
+    MediaStreamComponent* component) {
+  MediaStreamTrackImpl* track = MakeGarbageCollected<MediaStreamTrackImpl>(
+      execution_context, component->Clone(), component->GetReadyState(),
+      base::DoNothing());
+
+  ConnectToSource(track->Component());
+
+  return track;
+}
+
 MediaStreamTrackImpl::MediaStreamTrackImpl(ExecutionContext* context,
                                            MediaStreamComponent* component)
     : MediaStreamTrackImpl(context,
@@ -247,8 +259,7 @@ MediaStreamTrackImpl::MediaStreamTrackImpl(
     ExecutionContext* context,
     MediaStreamComponent* component,
     MediaStreamSource::ReadyState ready_state,
-    base::OnceClosure callback,
-    bool is_clone)
+    base::OnceClosure callback)
     : ready_state_(ready_state),
       component_(component),
       execution_context_(context) {
@@ -422,7 +433,7 @@ MediaStreamTrack* MediaStreamTrackImpl::clone(
   MediaStreamTrackImpl* cloned_track =
       MakeGarbageCollected<MediaStreamTrackImpl>(
           execution_context, Component()->Clone(), ready_state_,
-          base::DoNothing(), /*is_clone=*/true);
+          base::DoNothing());
 
   // Copy state.
   CloneInternal(cloned_track);
@@ -958,7 +969,7 @@ void MediaStreamTrackImpl::Trace(Visitor* visitor) const {
 void MediaStreamTrackImpl::CloneInternal(MediaStreamTrackImpl* cloned_track) {
   DCHECK(cloned_track);
 
-  DidCloneMediaStreamTrack(cloned_track->Component());
+  ConnectToSource(cloned_track->Component());
 
   cloned_track->SetInitialConstraints(constraints_);
 
