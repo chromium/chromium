@@ -400,9 +400,9 @@ id<GREYMatcher> CancelUsingOtherPasswordButton() {
       assertWithMatcher:grey_notVisible()];
 }
 
-// Tests that the Password View Controller is not present when presenting UI.
-// TODO(crbug.com/1350323): Test is flaky.
-- (void)DISABLED_testPasswordControllerPauses {
+// Tests that the Password View Controller is still present after tapping the
+// search bar.
+- (void)testPasswordControllerWhileSearching {
   // Bring up the keyboard.
   [[EarlGrey selectElementWithMatcher:chrome_test_util::WebViewMatcher()]
       performAction:TapWebElementWithId(kFormElementUsername)];
@@ -411,22 +411,29 @@ id<GREYMatcher> CancelUsingOtherPasswordButton() {
   [[EarlGrey selectElementWithMatcher:ManualFallbackPasswordIconMatcher()]
       performAction:grey_tap()];
 
-  // Tap the "Manage Passwords..." action.
-  [[EarlGrey selectElementWithMatcher:ManualFallbackManagePasswordsMatcher()]
+  // Tap the "Select Password..." action.
+  [[EarlGrey selectElementWithMatcher:ManualFallbackOtherPasswordsMatcher()]
       performAction:grey_tap()];
+
+  // Acknowledge concerns using other passwords on a website.
+  [[EarlGrey selectElementWithMatcher:ConfirmUsingOtherPasswordButton()]
+      performAction:grey_tap()];
+
+  // Verify the use other passwords opened.
+  [[EarlGrey
+      selectElementWithMatcher:ManualFallbackOtherPasswordsDismissMatcher()]
+      assertWithMatcher:grey_sufficientlyVisible()];
 
   // Tap the password search.
-  [[EarlGrey selectElementWithMatcher:SettingsPasswordSearchMatcher()]
+  [[EarlGrey selectElementWithMatcher:ManualFallbackPasswordSearchBarMatcher()]
       performAction:grey_tap()];
 
-  // Verify keyboard is shown without the password controller.
+  // Verify keyboard is shown and that the password controller is still present
+  // in the background.
   GREYAssertTrue([EarlGrey isKeyboardShownWithError:nil],
                  @"Keyboard Should be Shown");
   [[EarlGrey selectElementWithMatcher:ManualFallbackPasswordTableViewMatcher()]
-      assertWithMatcher:grey_notVisible()];
-
-  [[EarlGrey selectElementWithMatcher:SettingsPasswordMatcher()]
-      performAction:grey_tap()];
+      assertWithMatcher:grey_minimumVisiblePercent(0.6)];
 }
 
 // Tests that the Password View Controller is dismissed when tapping the
