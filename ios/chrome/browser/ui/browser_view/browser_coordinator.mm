@@ -1298,7 +1298,7 @@ enum class ToolbarKind {
 
 #pragma mark - ActivityServiceCommands
 
-- (void)sharePage {
+- (void)stopAndStartSharingCoordinator {
   SharingParams* params =
       [[SharingParams alloc] initWithScenario:SharingScenario::TabShareButton];
 
@@ -1312,6 +1312,8 @@ enum class ToolbarKind {
     anchor = positioner.barButtonItem;
   }
 
+  [self.sharingCoordinator stop];
+  self.sharingCoordinator = nil;
   self.sharingCoordinator = [[SharingCoordinator alloc]
       initWithBaseViewController:self.viewController
                          browser:self.browser
@@ -1319,7 +1321,17 @@ enum class ToolbarKind {
                       originView:positioner.sourceView
                       originRect:positioner.sourceRect
                           anchor:anchor];
+  self.sharingCoordinator.activityHandler =
+      HandlerForProtocol(self.dispatcher, ActivityServiceCommands);
   [self.sharingCoordinator start];
+}
+
+- (void)sharePage {
+  if (!self.sharingCoordinator) {
+    [self stopAndStartSharingCoordinator];
+  } else {
+    [self.sharingCoordinator cancelIfNecessaryAndCreateNewCoordinator];
+  }
 }
 
 - (void)shareChromeApp {

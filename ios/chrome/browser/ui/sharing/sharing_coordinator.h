@@ -9,6 +9,7 @@
 
 #import "ios/chrome/browser/shared/coordinator/chrome_coordinator/chrome_coordinator.h"
 
+@protocol ActivityServiceCommands;
 @class SharingParams;
 class Browser;
 
@@ -50,6 +51,16 @@ class Browser;
 - (instancetype)init NS_UNAVAILABLE;
 - (instancetype)initWithBaseViewController:(UIViewController*)viewController
                                    browser:(Browser*)browser NS_UNAVAILABLE;
+
+// Activity Handler.
+// Adding this to be able to tell the BrowserCoordinator to start a new
+// coordinator after stopping this one.
+@property(nonatomic, weak) id<ActivityServiceCommands> activityHandler;
+
+// If there is a download currently happening, this cancels it and triggers a
+// new coordinator to be created.
+- (void)cancelIfNecessaryAndCreateNewCoordinator;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_UI_SHARING_SHARING_COORDINATOR_H_

@@ -15,6 +15,7 @@
 #import "base/threading/scoped_blocking_call.h"
 #import "ios/chrome/browser/main/browser.h"
 #import "ios/chrome/browser/open_in/open_in_tab_helper.h"
+#import "ios/chrome/browser/shared/public/commands/activity_service_commands.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/commands/qr_generation_commands.h"
 #import "ios/chrome/browser/shared/public/commands/share_download_overlay_commands.h"
@@ -128,6 +129,12 @@ BOOL CreateDestinationDirectoryAndRemoveObsoleteFiles() {
 // YES if the file download was canceled.
 @property(nonatomic, assign) BOOL isDownloadCanceled;
 
+// YES if the file download is in the process of cancelling.
+@property(nonatomic, assign) BOOL isCancelling;
+
+// YES if this coordinator should be restarted.
+@property(nonatomic, assign) BOOL shouldRestartCoordinator;
+
 // Command dispatcher.
 @property(nonatomic, strong) CommandDispatcher* dispatcher;
 
@@ -188,6 +195,26 @@ BOOL CreateDestinationDirectoryAndRemoveObsoleteFiles() {
     _anchor = anchor;
   }
   return self;
+}
+
+// The behaviour is predictable: the coordinator will be stopped, either right
+// now or delayed (in -cancelDownload method). If we are already in the process
+// of cancelling a download, do not call this again.
+- (void)cancelIfNecessaryAndCreateNewCoordinator {
+  // Download has been cancelled or currently not download (so no overlay).
+  if (self.isDownloadCanceled || !self.overlay) {
+    // Stop the coordinator now.
+    [self stopAndStartNewCoordinator];
+  } else if (!self.isCancelling) {
+    // Delay stopping the coordinator after the download has been cancelled.
+    self.shouldRestartCoordinator = YES;
+    [self cancelDownload];
+  }
+}
+
+// Stop this coordinator and start a new one.
+- (void)stopAndStartNewCoordinator {
+  [self.activityHandler stopAndStartSharingCoordinator];
 }
 
 #pragma mark - ChromeCoordinator
@@ -374,14 +401,13 @@ BOOL CreateDestinationDirectoryAndRemoveObsoleteFiles() {
 // Removes downloaded file at `self.filePath`.
 - (void)removeFile {
   if ([[NSFileManager defaultManager] fileExistsAtPath:self.filePath]) {
-    __weak SharingCoordinator* weakSelf = self;
+    NSString* tempFilePath = self.filePath;
     base::ThreadPool::PostTask(
         FROM_HERE, {base::MayBlock(), base::TaskPriority::BEST_EFFORT},
         base::BindOnce(^{
           NSError* error = nil;
-          if (![[NSFileManager defaultManager]
-                  removeItemAtPath:weakSelf.filePath
-                             error:&error]) {
+          if (![[NSFileManager defaultManager] removeItemAtPath:tempFilePath
+                                                          error:&error]) {
             DLOG(ERROR) << "Failed to remove file: "
                         << base::SysNSStringToUTF8([error description]);
           }
@@ -415,10 +441,19 @@ BOOL CreateDestinationDirectoryAndRemoveObsoleteFiles() {
 #pragma mark - ShareDownloadOverlayCommands
 
 - (void)cancelDownload {
-  self.isDownloadCanceled = YES;
   [self stopDisplayDownloadOverlay];
   if (@available(iOS 14.5, *)) {
-    [self.download cancelDownload];
+    self.isCancelling = YES;
+    __weak SharingCoordinator* weakSelf = self;
+    [self.download cancelDownload:^() {
+      weakSelf.isDownloadCanceled = YES;
+      weakSelf.isCancelling = NO;
+      if (weakSelf.shouldRestartCoordinator) {
+        // Self will be destroyed after this call so it should not be used
+        // anymore.
+        [weakSelf stopAndStartNewCoordinator];
+      }
+    }];
   }
   UMA_HISTOGRAM_ENUMERATION(kOpenInDownloadHistogram,
                             OpenInDownloadResult::kCanceled);
