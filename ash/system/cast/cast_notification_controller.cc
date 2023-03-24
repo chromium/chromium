@@ -91,7 +91,17 @@ void CastNotificationController::OnDevicesUpdated(
     displayed_route_id_ = route.id;
 
     message_center::RichNotificationData data;
-    data.buttons.push_back(message_center::ButtonInfo(
+
+    if (route.freeze_info.can_freeze) {
+      displayed_route_is_frozen_ = route.freeze_info.is_frozen;
+      data.buttons.emplace_back(message_center::ButtonInfo(
+          displayed_route_is_frozen_
+              ? l10n_util::GetStringUTF16(IDS_ASH_STATUS_TRAY_CAST_RESUME)
+              : l10n_util::GetStringUTF16(IDS_ASH_STATUS_TRAY_CAST_PAUSE)));
+      freeze_button_index_ = data.buttons.size() - 1;
+    }
+
+    data.buttons.emplace_back(message_center::ButtonInfo(
         l10n_util::GetStringUTF16(IDS_ASH_STATUS_TRAY_CAST_STOP)));
 
     std::unique_ptr<Notification> notification = CreateSystemNotificationPtr(
@@ -103,7 +113,7 @@ void CastNotificationController::OnDevicesUpdated(
             NotificationCatalogName::kCast),
         data,
         base::MakeRefCounted<message_center::HandleNotificationClickDelegate>(
-            base::BindRepeating(&CastNotificationController::StopCasting,
+            base::BindRepeating(&CastNotificationController::PressedCallback,
                                 weak_ptr_factory_.GetWeakPtr())),
         kSystemMenuCastIcon,
         message_center::SystemNotificationWarningLevel::NORMAL);
@@ -114,9 +124,29 @@ void CastNotificationController::OnDevicesUpdated(
   }
 }
 
-void CastNotificationController::StopCasting(absl::optional<int> button_index) {
+void CastNotificationController::PressedCallback(
+    absl::optional<int> button_index) {
+  if (freeze_button_index_ && button_index == freeze_button_index_) {
+    FreezePressed();
+  } else {
+    // Handles the case that the stop button is pressed, or the notification is
+    // pressed not on a button.
+    StopCasting();
+  }
+}
+
+void CastNotificationController::StopCasting() {
   CastConfigController::Get()->StopCasting(displayed_route_id_);
   base::RecordAction(base::UserMetricsAction("StatusArea_Cast_StopCast"));
+}
+
+void CastNotificationController::FreezePressed() {
+  auto* controller = CastConfigController::Get();
+  if (displayed_route_is_frozen_) {
+    controller->UnfreezeRoute(displayed_route_id_);
+  } else {
+    controller->FreezeRoute(displayed_route_id_);
+  }
 }
 
 }  // namespace ash

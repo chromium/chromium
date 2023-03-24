@@ -10,6 +10,7 @@
 #include "ash/public/cpp/cast_config_controller.h"
 #include "base/observer_list.h"
 #include "base/scoped_observation.h"
+#include "components/media_router/browser/mirroring_media_controller_host.h"
 #include "components/session_manager/core/session_manager.h"
 #include "components/session_manager/core/session_manager_observer.h"
 
@@ -23,7 +24,8 @@ class CastDeviceCache;
 // A class which allows the ash tray to communicate with the media router.
 class CastConfigControllerMediaRouter
     : public ash::CastConfigController,
-      public session_manager::SessionManagerObserver {
+      public session_manager::SessionManagerObserver,
+      public media_router::MirroringMediaControllerHost::Observer {
  public:
   CastConfigControllerMediaRouter();
 
@@ -34,12 +36,15 @@ class CastConfigControllerMediaRouter
 
   ~CastConfigControllerMediaRouter() override;
 
+  // media_router::MirroringMediaControllerHost::Observer:
+  void OnFreezeInfoChanged() override;
+
   static void SetMediaRouterForTest(media_router::MediaRouter* media_router);
 
  private:
   // CastConfigController:
-  void AddObserver(Observer* observer) override;
-  void RemoveObserver(Observer* observer) override;
+  void AddObserver(CastConfigController::Observer* observer) override;
+  void RemoveObserver(CastConfigController::Observer* observer) override;
   bool HasMediaRouterForPrimaryProfile() const override;
   bool HasSinksAndRoutes() const override;
   bool HasActiveRoute() const override;
@@ -48,9 +53,17 @@ class CastConfigControllerMediaRouter
   const std::vector<ash::SinkAndRoute>& GetSinksAndRoutes() override;
   void CastToSink(const std::string& sink_id) override;
   void StopCasting(const std::string& route_id) override;
+  void FreezeRoute(const std::string& route_id) override;
+  void UnfreezeRoute(const std::string& route_id) override;
 
   // session_manager::SessionManagerObserver:
   void OnUserProfileLoaded(const AccountId& account_id) override;
+
+  bool IsAccessCodeCastFreezeUiEnabled();
+
+  void StopObservingMirroringMediaControllerHosts();
+
+  void UpdateDevices();
 
 #if !defined(OFFICIAL_BUILD)
   // Adds fake Cast devices for manual testing of the UI (for example, in the
@@ -67,7 +80,7 @@ class CastConfigControllerMediaRouter
   // Ash UI.
   std::vector<ash::SinkAndRoute> devices_;
 
-  base::ObserverList<Observer> observers_;
+  base::ObserverList<CastConfigController::Observer> observers_;
 
   base::ScopedObservation<session_manager::SessionManager,
                           session_manager::SessionManagerObserver>

@@ -50,6 +50,8 @@ class TestCastConfigController : public CastConfigController {
     ++stop_casting_count_;
     stop_casting_route_id_ = route_id;
   }
+  void FreezeRoute(const std::string& route_id) override {}
+  void UnfreezeRoute(const std::string& route_id) override {}
 
   bool access_code_casting_enabled_ = false;
   std::vector<SinkAndRoute> sinks_and_routes_;

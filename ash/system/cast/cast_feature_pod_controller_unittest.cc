@@ -39,6 +39,8 @@ class TestCastConfigController : public CastConfigController {
   }
   void CastToSink(const std::string& sink_id) override {}
   void StopCasting(const std::string& route_id) override {}
+  void FreezeRoute(const std::string& route_id) override {}
+  void UnfreezeRoute(const std::string& route_id) override {}
 
   bool has_media_router_ = true;
   bool has_sinks_and_routes_ = false;
