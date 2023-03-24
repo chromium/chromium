@@ -1,11 +1,16 @@
 # Interactive Testing API: "Kombucha"
 
+**[go/kombucha-api](goto.google.com/kombucha-api)**
+
 **Kombucha** is a group of powerful test mix-ins that let you easily and
 concisely write interactive tests.
 
-The current API version is 1.55. All future 1.x versions are guaranteed to
+The current API version is 2.0. All future 2.x versions are guaranteed to
 either be backwards-compatible with existing tests, or the authors will update
 the API calls for you.
+
+This page provides technical documentation. For a cookbook/FAQ/troubleshooting
+guide, see our [Kombucha Playbook](goto.google.com/kombucha-playbook).
 
 [TOC]
 
