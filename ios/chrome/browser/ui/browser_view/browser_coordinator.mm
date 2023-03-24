@@ -93,6 +93,7 @@
 #import "ios/chrome/browser/ui/browser_view/browser_view_controller+private.h"
 #import "ios/chrome/browser/ui/browser_view/browser_view_controller.h"
 #import "ios/chrome/browser/ui/browser_view/key_commands_provider.h"
+#import "ios/chrome/browser/ui/browser_view/safe_area_provider.h"
 #import "ios/chrome/browser/ui/browser_view/tab_events_mediator.h"
 #import "ios/chrome/browser/ui/browser_view/tab_lifecycle_mediator.h"
 #import "ios/chrome/browser/ui/bubble/bubble_presenter.h"
@@ -872,6 +873,8 @@ enum class ToolbarKind {
       [[ToolbarContainerCoordinator alloc]
           initWithBrowser:self.browser
                      type:ToolbarContainerType::kSecondary];
+  _viewControllerDependencies.safeAreaProvider =
+      [[SafeAreaProvider alloc] initWithBrowser:self.browser];
 }
 
 - (void)updateViewControllerDependencies {
@@ -933,6 +936,7 @@ enum class ToolbarKind {
   _viewControllerDependencies.identityManager = nil;
   _viewControllerDependencies.voiceSearchController = nil;
   _viewControllerDependencies.secondaryToolbarContainerCoordinator = nil;
+  _viewControllerDependencies.safeAreaProvider = nil;
 
   [_bookmarksCoordinator shutdown];
   _bookmarksCoordinator = nil;

@@ -16,6 +16,7 @@
 #import "ios/chrome/browser/shared/public/commands/browser_commands.h"
 #import "ios/chrome/browser/ui/authentication/signin_presenter.h"
 #import "ios/chrome/browser/ui/browser_view/key_commands_provider.h"
+#import "ios/chrome/browser/ui/browser_view/safe_area_provider.h"
 #import "ios/chrome/browser/ui/browser_view/tab_consumer.h"
 #import "ios/chrome/browser/ui/find_bar/find_bar_coordinator.h"
 #import "ios/chrome/browser/ui/incognito_reauth/incognito_reauth_consumer.h"
@@ -57,6 +58,7 @@ class FullscreenController;
 @protocol PopupMenuUIUpdating;
 class PrerenderService;
 @class PrimaryToolbarCoordinator;
+@class SafeAreaProvider;
 @class SecondaryToolbarCoordinator;
 @class SideSwipeController;
 @protocol SnackbarCommands;
@@ -116,6 +118,7 @@ typedef struct {
   WebNavigationBrowserAgent* webNavigationBrowserAgent;
   base::WeakPtr<WebStateList> webStateList;
   ToolbarContainerCoordinator* secondaryToolbarContainerCoordinator;
+  SafeAreaProvider* safeAreaProvider;
 } BrowserViewControllerDependencies;
 
 // The top-level view controller for the browser UI. Manages other controllers

@@ -18,7 +18,6 @@
 #import "base/task/sequenced_task_runner.h"
 #import "components/strings/grit/components_strings.h"
 #import "components/ukm/ios/ukm_url_recorder.h"
-#import "ios/chrome/app/application_delegate/app_state.h"
 #import "ios/chrome/browser/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/crash_report/crash_keys_helper.h"
 #import "ios/chrome/browser/discover_feed/feed_constants.h"
@@ -58,8 +57,6 @@
 #import "ios/chrome/browser/ui/incognito_reauth/incognito_reauth_scene_agent.h"
 #import "ios/chrome/browser/ui/incognito_reauth/incognito_reauth_view.h"
 #import "ios/chrome/browser/ui/lens/lens_coordinator.h"
-#import "ios/chrome/browser/ui/main/scene_state.h"
-#import "ios/chrome/browser/ui/main/scene_state_browser_agent.h"
 #import "ios/chrome/browser/ui/main_content/main_content_ui.h"
 #import "ios/chrome/browser/ui/main_content/main_content_ui_broadcasting_util.h"
 #import "ios/chrome/browser/ui/main_content/main_content_ui_state.h"
@@ -447,6 +444,9 @@ NSString* const kBrowserViewControllerSnackbarCategory =
 // The coordinator for all NTPs in the BVC. Only used if kSingleNtp is enabled.
 @property(nonatomic, strong) NewTabPageCoordinator* ntpCoordinator;
 
+// Provider used to offload SceneStateBrowserAgent usage from BVC.
+@property(nonatomic, strong) SafeAreaProvider* safeAreaProvider;
+
 @end
 
 @implementation BrowserViewController
@@ -506,6 +506,7 @@ NSString* const kBrowserViewControllerSnackbarCategory =
     _voiceSearchController = dependencies.voiceSearchController;
     self.secondaryToolbarContainerCoordinator =
         dependencies.secondaryToolbarContainerCoordinator;
+    self.safeAreaProvider = dependencies.safeAreaProvider;
 
     dependencies.lensCoordinator.delegate = self;
 
@@ -693,16 +694,17 @@ NSString* const kBrowserViewControllerSnackbarCategory =
 // the self.view.safeAreaInsets are cleared when the view has moved (like with
 // thumbstrip, starting with iOS 15) or if it is unattached ( for example on the
 // incognito BVC when the normal BVC is the one active or vice versa). Attached
-// or unttached, going to the window through the SceneState for the self.browser
-// solves both issues.
+// or unattached, going to the window through the SceneState for the
+// self.browser solves both issues.
 - (UIEdgeInsets)rootSafeAreaInsets {
   if (_isShutdown) {
     return UIEdgeInsetsZero;
   }
-  // TODO(crbug.com/1329096): Create an external provider thingy for this.
-  UIView* view =
-      SceneStateBrowserAgent::FromBrowser(self.browser)->GetSceneState().window;
-  return view ? view.safeAreaInsets : self.view.safeAreaInsets;
+  UIEdgeInsets safeArea = self.safeAreaProvider.safeArea;
+
+  return UIEdgeInsetsEqualToEdgeInsets(safeArea, UIEdgeInsetsZero)
+             ? self.view.safeAreaInsets
+             : safeArea;
 }
 
 - (CGFloat)headerOffset {
@@ -2078,15 +2080,6 @@ NSString* const kBrowserViewControllerSnackbarCategory =
   _lastTapPoint = [[view superview] convertPoint:viewCoordinate
                                           toView:self.view];
   _lastTapTime = CACurrentMediaTime();
-
-  // This is a workaround for a bug in iOS multiwindow, in which you can touch a
-  // webView without the window getting the keyboard focus.
-  // The result is that a field in the new window gains focus, but keyboard
-  // typing continue to happen in the other window.
-  // TODO(crbug.com/1109124): Remove this workaround.
-  SceneStateBrowserAgent::FromBrowser(self.browser)
-      ->GetSceneState()
-      .appState.lastTappedWindow = view.window;
 }
 
 #pragma mark - Private Methods: Reading List

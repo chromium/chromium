@@ -45,6 +45,7 @@
 #import "ios/chrome/browser/ui/bookmarks/bookmarks_coordinator.h"
 #import "ios/chrome/browser/ui/browser_container/browser_container_view_controller.h"
 #import "ios/chrome/browser/ui/browser_view/key_commands_provider.h"
+#import "ios/chrome/browser/ui/browser_view/safe_area_provider.h"
 #import "ios/chrome/browser/ui/browser_view/tab_consumer.h"
 #import "ios/chrome/browser/ui/browser_view/tab_events_mediator.h"
 #import "ios/chrome/browser/ui/bubble/bubble_presenter.h"
@@ -214,6 +215,8 @@ class BrowserViewControllerTest : public BlockCleanupTest {
     container_ = [[BrowserContainerViewController alloc] init];
     key_commands_provider_ =
         [[KeyCommandsProvider alloc] initWithBrowser:browser_.get()];
+    safe_area_provider_ =
+        [[SafeAreaProvider alloc] initWithBrowser:browser_.get()];
 
     fake_prerender_service_ = std::make_unique<FakePrerenderService>();
 
@@ -285,6 +288,7 @@ class BrowserViewControllerTest : public BlockCleanupTest {
         [[ToolbarContainerCoordinator alloc]
             initWithBrowser:browser_.get()
                        type:ToolbarContainerType::kSecondary];
+    dependencies.safeAreaProvider = safe_area_provider_;
 
     bvc_ = [[BrowserViewController alloc] initWithBrowser:browser_.get()
                            browserContainerViewController:container_
@@ -381,6 +385,7 @@ class BrowserViewControllerTest : public BlockCleanupTest {
   UrlLoadingNotifierBrowserAgent* url_loading_notifier_browser_agent_;
   TabUsageRecorderBrowserAgent* tab_usage_recorder_browser_agent_;
   WebNavigationBrowserAgent* web_navigation_browser_agent_;
+  SafeAreaProvider* safe_area_provider_;
 };
 
 TEST_F(BrowserViewControllerTest, TestWebStateSelected) {
