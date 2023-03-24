@@ -7,7 +7,7 @@
             "builder_id": {
               "bucket": "ci",
               "builder": "GPU Mac Builder",
-              "project": "chromium"
+              "project": "chromium-m113"
             },
             "builder_spec": {
               "build_gs_bucket": "chromium-gpu-archive",
@@ -35,7 +35,7 @@
             "builder_id": {
               "bucket": "ci",
               "builder": "Mac Retina Release (AMD)",
-              "project": "chromium"
+              "project": "chromium-m113"
             },
             "builder_spec": {
               "build_gs_bucket": "chromium-gpu-archive",
@@ -57,7 +57,7 @@
               "parent": {
                 "bucket": "ci",
                 "builder": "GPU Mac Builder",
-                "project": "chromium"
+                "project": "chromium-m113"
               }
             }
           }
@@ -67,13 +67,7 @@
         {
           "bucket": "ci",
           "builder": "Mac Retina Release (AMD)",
-          "project": "chromium"
-        }
-      ],
-      "mirroring_builder_group_and_names": [
-        {
-          "builder": "mac-inverse-fieldtrials-fyi-rel",
-          "group": "tryserver.chromium.mac"
+          "project": "chromium-m113"
         }
       ]
     }
@@ -88,6 +82,6 @@
   "builder_group": "chromium.gpu",
   "recipe": "chromium",
   "sheriff_rotations": [
-    "chromium.gpu"
+    "chrome_browser_release"
   ]
 }

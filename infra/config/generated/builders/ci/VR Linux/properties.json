@@ -7,7 +7,7 @@
             "builder_id": {
               "bucket": "ci",
               "builder": "VR Linux",
-              "project": "chromium"
+              "project": "chromium-m113"
             },
             "builder_spec": {
               "build_gs_bucket": "chromium-fyi-archive",
@@ -32,7 +32,7 @@
         {
           "bucket": "ci",
           "builder": "VR Linux",
-          "project": "chromium"
+          "project": "chromium-m113"
         }
       ],
       "mirroring_builder_group_and_names": [
@@ -56,5 +56,8 @@
     ]
   },
   "builder_group": "chromium.fyi",
-  "recipe": "chromium"
+  "recipe": "chromium",
+  "sheriff_rotations": [
+    "chrome_browser_release"
+  ]
 }
