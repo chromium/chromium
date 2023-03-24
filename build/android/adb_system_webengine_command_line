@@ -1,0 +1,16 @@
+#!/bin/bash
+#
+# Copyright 2023 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+# If no flags are given, prints the current content shell flags.
+#
+# Otherwise, the given flags are used to REPLACE (not modify) the content shell
+# flags. For example:
+#   adb_system_webengine_command_line --enable-webgl
+#
+# To remove all content shell flags, pass an empty string for the flags:
+#   adb_system_webengine_command_line ""
+
+exec $(dirname $0)/adb_command_line.py --name weblayer-command-line "$@"

@@ -92,3 +92,15 @@ To run instrumentation tests:
 ```
 
 The scripts will build and install all necessary APKs.
+
+
+## Command line flags
+
+Command line flags can be set via the build/android/adb_system_webengine_command_line script.
+
+### Useful flags:
+
+Force enabling metrics reporting:
+```
+    $ build/android/adb_system_webengine_command_line --force-enable-metrics-reporting
+```
