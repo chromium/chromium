@@ -102,8 +102,8 @@ happens whenever Chrome is updated rather than when the user launches Chrome.
 
 ### Conflicting ClassLoaders
 
-Missing synchronization can cause the parent ClassLoader of split contexts to
-be different from the Application's ClassLoader. This manifests as odd-looking
+Tracked by [b/172602571], sometimes a split's parent ClassLoader is different
+from the Application's ClassLoader. This manifests as odd-looking
 `ClassCastExceptions` where `"TypeA cannot be cast to TypeA"` (since the two
 `TypeAs` are from different ClassLoaders).
 
@@ -179,6 +179,26 @@ Do not add too many splits, and monitor the size of our `ApplicationInfo` object
 
 [crbug/1298496]: https://bugs.chromium.org/p/chromium/issues/detail?id=1298496
 [Application Zygote]: https://developer.android.com/reference/android/app/ZygotePreload
+
+### AppComponentFactory does not Hook Split ClassLoaders
+
+`AppComponentFactory#instantiateClassLoader()` is meant to allow apps to hook
+`ClassLoader` creation. The hook is called for the base split, but not for other
+isolated splits. Tracked by [b/265583114]. There is no work-around.
+
+[b/265583114]: https://issuetracker.google.com/265583114
+
+### Incorrect Handling of Shared Libraries
+
+Tracked by [b/265589431]. If an APK split has `<uses-library>` in its manifest,
+the classloader for the split is meant to have that library added to it by the
+framework. However, Android does not add the library to the classpath when a
+split is dynamically installed, but instead adds it to the classpath of the base
+split's classloader upon subsequent app launches.
+
+**Work-around:**
+
+In progress: https://bugs.chromium.org/p/chromium/issues/detail?id=1066842#c34
 
 ## Other Quirks & Subtleties
 
@@ -325,6 +345,17 @@ only).
 
 [proguard.py]: https://source.chromium.org/search?q=symbol:_DeDupeInputJars%20f:proguard.py&ss=chromium
 [b/225876019]: https://issuetracker.google.com/225876019
+
+### Metadata in Splits
+
+Metadata is queried on a per-app basis (not a per-split basis). E.g.:
+
+```java
+ApplicationInfo ai = context.getPackageManager().getApplicationInfo(context.getPackageName(), PackageManager.GET_META_DATA);
+Bundle b = ai.metaData;
+```
+
+This bundle contains merged values from all fully-installed apk splits.
 
 ## Other Resources
 
