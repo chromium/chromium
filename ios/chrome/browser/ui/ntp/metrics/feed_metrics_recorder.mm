@@ -87,9 +87,6 @@ using feed::FeedUserActionType;
 // YES if the NTP is visible.
 @property(nonatomic, assign) BOOL isNTPVisible;
 
-// YES if the feed is toggled on in the feed header menu.
-@property(nonatomic, assign) BOOL isFeedVisible;
-
 @end
 
 @implementation FeedMetricsRecorder
@@ -304,7 +301,6 @@ using feed::FeedUserActionType;
 }
 
 - (void)recordDiscoverFeedVisibilityChanged:(BOOL)visible {
-  self.isFeedVisible = visible;
   if (visible) {
     [self
         recordDiscoverFeedUserActionHistogram:FeedUserActionType::kTappedTurnOn
@@ -647,7 +643,8 @@ using feed::FeedUserActionType;
 #pragma mark - FeedRefreshStateTracker
 
 - (BOOL)isNTPAndFeedVisible {
-  return self.isNTPVisible && self.isFeedVisible;
+  // This method is deprecated and usage is replaced with `isNTPVisible`.
+  return self.isNTPVisible;
 }
 
 #pragma mark - Follow
