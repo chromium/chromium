@@ -96,7 +96,7 @@ public class QuickDeleteControllerTest {
         HistogramWatcher histogramWatcher =
                 HistogramWatcher.newBuilder()
                         .expectIntRecords("Privacy.QuickDelete",
-                                QuickDeleteMetricsDelegate.PrivacyQuickDelete.DELETE_CLICKED, 1)
+                                QuickDeleteMetricsDelegate.QuickDeleteAction.DELETE_CLICKED, 1)
                         .build();
 
         onViewWaiting(withId(R.id.positive_button)).perform(click());
@@ -128,7 +128,7 @@ public class QuickDeleteControllerTest {
         HistogramWatcher histogramWatcher =
                 HistogramWatcher.newBuilder()
                         .expectIntRecords("Privacy.QuickDelete",
-                                QuickDeleteMetricsDelegate.PrivacyQuickDelete.CANCEL_CLICKED, 1)
+                                QuickDeleteMetricsDelegate.QuickDeleteAction.CANCEL_CLICKED, 1)
                         .build();
 
         onViewWaiting(withId(R.id.negative_button)).perform(click());
@@ -144,7 +144,7 @@ public class QuickDeleteControllerTest {
         HistogramWatcher histogramWatcher =
                 HistogramWatcher.newBuilder()
                         .expectIntRecords("Privacy.QuickDelete",
-                                QuickDeleteMetricsDelegate.PrivacyQuickDelete
+                                QuickDeleteMetricsDelegate.QuickDeleteAction
                                         .DIALOG_DISMISSED_IMPLICITLY,
                                 1)
                         .build();

@@ -70,17 +70,17 @@ public class QuickDeleteController {
         switch (dismissalCause) {
             case DialogDismissalCause.POSITIVE_BUTTON_CLICKED:
                 QuickDeleteMetricsDelegate.recordHistogram(
-                        QuickDeleteMetricsDelegate.PrivacyQuickDelete.DELETE_CLICKED);
+                        QuickDeleteMetricsDelegate.QuickDeleteAction.DELETE_CLICKED);
                 navigateToTabSwitcher();
                 showSnackbar();
                 break;
             case DialogDismissalCause.NEGATIVE_BUTTON_CLICKED:
                 QuickDeleteMetricsDelegate.recordHistogram(
-                        QuickDeleteMetricsDelegate.PrivacyQuickDelete.CANCEL_CLICKED);
+                        QuickDeleteMetricsDelegate.QuickDeleteAction.CANCEL_CLICKED);
                 break;
             default:
                 QuickDeleteMetricsDelegate.recordHistogram(
-                        QuickDeleteMetricsDelegate.PrivacyQuickDelete.DIALOG_DISMISSED_IMPLICITLY);
+                        QuickDeleteMetricsDelegate.QuickDeleteAction.DIALOG_DISMISSED_IMPLICITLY);
                 break;
         }
     }

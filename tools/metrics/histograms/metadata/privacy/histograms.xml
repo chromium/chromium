@@ -436,7 +436,7 @@ reviewer.
   </summary>
 </histogram>
 
-<histogram name="Privacy.QuickDelete" enum="PrivacyQuickDelete"
+<histogram name="Privacy.QuickDelete" enum="QuickDeleteAction"
     expires_after="M116">
   <owner>roagarwal@chromium.org</owner>
   <owner>eokoyomon@chromium.org</owner>

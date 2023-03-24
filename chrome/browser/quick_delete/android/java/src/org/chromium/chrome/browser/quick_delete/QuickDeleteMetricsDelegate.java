@@ -17,11 +17,11 @@ public class QuickDeleteMetricsDelegate {
      * These values are persisted to logs. Entries should not be renumbered and
      * numeric values should never be reused.
      *
-     * Must be kept in sync with the PrivacyQuickDelete in enums.xml.
+     * Must be kept in sync with the QuickDeleteAction in enums.xml.
      */
-    @IntDef({PrivacyQuickDelete.MENU_ITEM_CLICKED, PrivacyQuickDelete.DELETE_CLICKED,
-            PrivacyQuickDelete.CANCEL_CLICKED, PrivacyQuickDelete.DIALOG_DISMISSED_IMPLICITLY})
-    public @interface PrivacyQuickDelete {
+    @IntDef({QuickDeleteAction.MENU_ITEM_CLICKED, QuickDeleteAction.DELETE_CLICKED,
+            QuickDeleteAction.CANCEL_CLICKED, QuickDeleteAction.DIALOG_DISMISSED_IMPLICITLY})
+    public @interface QuickDeleteAction {
         int MENU_ITEM_CLICKED = 0;
         int DELETE_CLICKED = 1;
         int CANCEL_CLICKED = 2;
@@ -31,16 +31,15 @@ public class QuickDeleteMetricsDelegate {
     }
 
     /**
-     * A method to record the metrics of an action {@link PrivacyQuickDelete} related with
-     * QuickDelete.
+     * A method to record the metrics of a {@link QuickDeleteAction}.
      *
-     * @param privacyQuickDelete action taken related to QuickDelete.
+     * @param quickDeleteAction action taken related to QuickDelete.
      */
-    public static void recordHistogram(@PrivacyQuickDelete int privacyQuickDelete) {
+    public static void recordHistogram(@QuickDeleteAction int quickDeleteAction) {
         RecordHistogram.recordEnumeratedHistogram(
-                "Privacy.QuickDelete", privacyQuickDelete, PrivacyQuickDelete.MAX_VALUE);
+                "Privacy.QuickDelete", quickDeleteAction, QuickDeleteAction.MAX_VALUE);
 
-        if (privacyQuickDelete == PrivacyQuickDelete.DELETE_CLICKED) {
+        if (quickDeleteAction == QuickDeleteAction.DELETE_CLICKED) {
             RecordHistogram.recordEnumeratedHistogram("Privacy.ClearBrowsingData.Action",
                     ClearBrowsingDataAction.QUICK_DELETE_LAST15_MINUTES,
                     ClearBrowsingDataAction.MAX_VALUE);

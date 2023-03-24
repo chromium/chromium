@@ -85229,14 +85229,6 @@ chromeos/ash/components/peripheral_notification/peripheral_notification_manager.
   <int value="14" label="Screen Sharing, Microphone, and Camera are in use"/>
 </enum>
 
-<enum name="PrivacyQuickDelete">
-  <int value="0" label="Entry from menu item clicked"/>
-  <int value="1" label="Delete button on dialog clicked"/>
-  <int value="2" label="Cancel button on dialog clicked"/>
-  <int value="3"
-      label="Dialog dismissed due to reasons other than Cancel or Delete"/>
-</enum>
-
 <enum name="PrivacySandboxAggregationServiceKeyFetcherStatus">
   <int value="0" label="Success"/>
   <int value="1" label="Download error"/>
@@ -87392,6 +87384,14 @@ https://www.dmtf.org/sites/default/files/standards/documents/DSP0134_2.7.1.pdf
   <int value="1" label="TTS_EVENT_END"/>
   <int value="2" label="TTS_EVENT_ERROR"/>
   <int value="3" label="TTS_EVENT_OTHER"/>
+</enum>
+
+<enum name="QuickDeleteAction">
+  <int value="0" label="Entry from menu item clicked"/>
+  <int value="1" label="Delete button on dialog clicked"/>
+  <int value="2" label="Cancel button on dialog clicked"/>
+  <int value="3"
+      label="Dialog dismissed due to reasons other than Cancel or Delete"/>
 </enum>
 
 <enum name="QuicKeyUpdateReason">

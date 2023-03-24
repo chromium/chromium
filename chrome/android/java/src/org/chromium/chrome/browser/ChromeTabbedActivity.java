@@ -2202,7 +2202,7 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
                 : "Quick delete is not supported in Incognito.";
 
             QuickDeleteMetricsDelegate.recordHistogram(
-                    QuickDeleteMetricsDelegate.PrivacyQuickDelete.MENU_ITEM_CLICKED);
+                    QuickDeleteMetricsDelegate.QuickDeleteAction.MENU_ITEM_CLICKED);
 
             new QuickDeleteController(
                     this, getModalDialogManager(), getSnackbarManager(), getLayoutManager())

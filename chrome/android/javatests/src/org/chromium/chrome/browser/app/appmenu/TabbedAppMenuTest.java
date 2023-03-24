@@ -462,7 +462,7 @@ public class TabbedAppMenuTest {
         HistogramWatcher histogramWatcher =
                 HistogramWatcher.newBuilder()
                         .expectIntRecords("Privacy.QuickDelete",
-                                QuickDeleteMetricsDelegate.PrivacyQuickDelete.MENU_ITEM_CLICKED, 1)
+                                QuickDeleteMetricsDelegate.QuickDeleteAction.MENU_ITEM_CLICKED, 1)
                         .build();
 
         MenuUtils.invokeCustomMenuActionSync(InstrumentationRegistry.getInstrumentation(),

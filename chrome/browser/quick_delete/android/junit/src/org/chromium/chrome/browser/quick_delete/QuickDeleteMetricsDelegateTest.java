@@ -38,16 +38,16 @@ public class QuickDeleteMetricsDelegateTest {
         public List<ParameterSet> getParameters() {
             return Arrays.asList(
                     new ParameterSet()
-                            .value(QuickDeleteMetricsDelegate.PrivacyQuickDelete.MENU_ITEM_CLICKED)
+                            .value(QuickDeleteMetricsDelegate.QuickDeleteAction.MENU_ITEM_CLICKED)
                             .name("MenuItem"),
                     new ParameterSet()
-                            .value(QuickDeleteMetricsDelegate.PrivacyQuickDelete.DELETE_CLICKED)
+                            .value(QuickDeleteMetricsDelegate.QuickDeleteAction.DELETE_CLICKED)
                             .name("Delete"),
                     new ParameterSet()
-                            .value(QuickDeleteMetricsDelegate.PrivacyQuickDelete.CANCEL_CLICKED)
+                            .value(QuickDeleteMetricsDelegate.QuickDeleteAction.CANCEL_CLICKED)
                             .name("Cancel"),
                     new ParameterSet()
-                            .value(QuickDeleteMetricsDelegate.PrivacyQuickDelete
+                            .value(QuickDeleteMetricsDelegate.QuickDeleteAction
                                             .DIALOG_DISMISSED_IMPLICITLY)
                             .name("Dismissed"));
         }
@@ -57,13 +57,13 @@ public class QuickDeleteMetricsDelegateTest {
     @SmallTest
     @UseMethodParameter(MethodParams.class)
     public void testRecordHistogram(
-            @QuickDeleteMetricsDelegate.PrivacyQuickDelete int mPrivacyQuickDeleteMetric) {
+            @QuickDeleteMetricsDelegate.QuickDeleteAction int quickDeleteAction) {
         HistogramWatcher histogramWatcher =
                 HistogramWatcher.newBuilder()
-                        .expectIntRecords("Privacy.QuickDelete", mPrivacyQuickDeleteMetric, 1)
+                        .expectIntRecords("Privacy.QuickDelete", quickDeleteAction, 1)
                         .build();
 
-        QuickDeleteMetricsDelegate.recordHistogram(mPrivacyQuickDeleteMetric);
+        QuickDeleteMetricsDelegate.recordHistogram(quickDeleteAction);
 
         histogramWatcher.assertExpected();
     }
@@ -78,7 +78,7 @@ public class QuickDeleteMetricsDelegateTest {
                         .build();
 
         QuickDeleteMetricsDelegate.recordHistogram(
-                QuickDeleteMetricsDelegate.PrivacyQuickDelete.DELETE_CLICKED);
+                QuickDeleteMetricsDelegate.QuickDeleteAction.DELETE_CLICKED);
 
         histogramWatcher.assertExpected();
     }
