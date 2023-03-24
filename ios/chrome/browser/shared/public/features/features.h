@@ -110,6 +110,9 @@ BASE_DECLARE_FEATURE(kEnableShortenedPasswordAutoFillInstruction);
 // Feature flag to switch images to SFSymbols in the omnibox when enabled.
 BASE_DECLARE_FEATURE(kUseSFSymbolsInOmnibox);
 
+// Feature flag for the follow up of the SF Symbols.
+BASE_DECLARE_FEATURE(kSFSymbolsFollowup);
+
 // Feature flag to enable Calendar event in experience kit.
 BASE_DECLARE_FEATURE(kCalendarExperienceKit);
 

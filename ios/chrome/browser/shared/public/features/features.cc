@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ios/chrome/browser/shared/public/features/features.h"
+#import "ios/chrome/browser/shared/public/features/features.h"
 
 BASE_FEATURE(kDefaultBrowserBlueDotPromo,
              "DefaultBrowserBlueDotPromo",
@@ -130,6 +130,10 @@ BASE_FEATURE(kEnableShortenedPasswordAutoFillInstruction,
 
 BASE_FEATURE(kUseSFSymbolsInOmnibox,
              "UseSFSymbolsInOmnibox",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+BASE_FEATURE(kSFSymbolsFollowup,
+             "SFSymbolsFollowup",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kCalendarExperienceKit,

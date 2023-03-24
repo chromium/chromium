@@ -5,6 +5,7 @@
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/tab_grid_bottom_toolbar.h"
 
 #import "base/strings/sys_string_conversions.h"
+#import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/chrome/browser/ui/icons/symbols.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/grid_constants.h"
@@ -335,8 +336,13 @@
     // When a11y font size is used, long press on UIBarButtonItem will show a
     // built-in a11y modal panel with image and title if set. The size is not
     // taken into account.
-    _newTabButtonItem.image =
-        CustomSymbolWithPointSize(kPlusCircleFillSymbol, 0);
+    if (base::FeatureList::IsEnabled(kSFSymbolsFollowup)) {
+      _newTabButtonItem.image =
+          CustomSymbolWithPointSize(kPlusCircleFillSymbol, 0);
+    } else {
+      _newTabButtonItem.image =
+          CustomSymbolWithPointSize(kLegacyPlusCircleFillSymbol, 0);
+    }
   } else {
     UIImage* regularImage =
         [UIImage imageNamed:@"tab_grid_new_tab_floating_button_ios14"];

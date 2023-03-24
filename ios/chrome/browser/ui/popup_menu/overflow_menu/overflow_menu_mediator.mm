@@ -607,7 +607,7 @@ NSArray<OverflowMenuDestination*>* SortBadgedDestinations(
   self.siteInfoDestination =
       [self createOverflowMenuDestination:IDS_IOS_TOOLS_MENU_SITE_INFORMATION
                               destination:overflow_menu::Destination::SiteInfo
-                               symbolName:kInfoCircleSymbol
+                               symbolName:kToolsMenuSiteInformation
                              systemSymbol:YES
                           accessibilityID:kToolsMenuSiteInformation
                                   handler:^{

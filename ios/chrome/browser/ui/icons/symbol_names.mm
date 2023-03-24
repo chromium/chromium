@@ -24,7 +24,6 @@ NSString* const kTranslateSymbol = @"translate";
 NSString* const kCameraSymbol = @"camera";
 NSString* const kCameraFillSymbol = @"camera_fill";
 NSString* const kPasswordManagerSymbol = @"password_manager";
-NSString* const kPlusCircleFillSymbol = @"plus_circle_fill";
 NSString* const kPopupBadgeMinusSymbol = @"popup_badge_minus";
 NSString* const kPhotoBadgePlusSymbol = @"photo_badge_plus";
 NSString* const kPhotoBadgeMagnifyingglassSymbol =
@@ -47,10 +46,12 @@ NSString* const kCloudSlashSymbol = @"cloud_slash";
 NSString* const kCloudAndArrowUpSymbol = @"cloud_and_arrow_up";
 NSString* const kDinoSymbol = @"dino";
 NSString* const kChromeProductSymbol = @"chrome_product";
+NSString* const kTunerSymbol = @"tuner";
 
 // Custom symbol names which can be configured with a color palette.
 NSString* const kIncognitoCircleFillSymbol = @"incognito_circle_fill";
-NSString* const kNewTabSymbol = @"plus_circle_fill";
+NSString* const kPlusCircleFillSymbol = @"plus_circle_fill";
+NSString* const kLegacyPlusCircleFillSymbol = @"legacy_plus_circle_fill";
 
 // Default symbol names.
 NSString* const kSyncEnabledSymbol = @"arrow.triangle.2.circlepath";

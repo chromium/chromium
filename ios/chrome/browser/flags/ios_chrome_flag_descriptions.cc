@@ -993,6 +993,9 @@ const char kEnableLensInOmniboxCopiedImageDescription[] =
     "when Google is the selected search engine, accessible from the omnibox or "
     "popup menu.";
 
+const char kSFSymbolsFollowupName[] = "SF Symbol follow up";
+const char kSFSymbolsFollowupDescription[] = "Change the + button.";
+
 const char kTabGridRecencySortName[] = "Change TabGrid sorting";
 const char kTabGridRecencySortDescription[] =
     "When enabled, the tabs in the Tab Grid are sorted differently.";

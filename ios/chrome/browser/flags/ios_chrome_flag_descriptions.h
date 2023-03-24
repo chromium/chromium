@@ -861,6 +861,10 @@ extern const char kEnableLensContextMenuAltTextDescription[];
 extern const char kEnableLensInOmniboxCopiedImageName[];
 extern const char kEnableLensInOmniboxCopiedImageDescription[];
 
+// Title and description for the flag to enable the follow up of the SF Symbols.
+extern const char kSFSymbolsFollowupName[];
+extern const char kSFSymbolsFollowupDescription[];
+
 // Title and description for the flag to sort the tab by recency in the TabGrid.
 extern const char kTabGridRecencySortName[];
 extern const char kTabGridRecencySortDescription[];
