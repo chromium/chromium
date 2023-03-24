@@ -111,6 +111,9 @@ class TailoredSecurityService : public KeyedService {
   void Shutdown() override;
 
  protected:
+  // Callback when the `kAccountTailoredSecurityUpdateTimestamp` is updated
+  virtual void TailoredSecurityTimestampUpdateCallback();
+
   // This function is pulled out for testing purposes. Caller takes ownership of
   // the new Request.
   virtual std::unique_ptr<Request> CreateRequest(
@@ -155,9 +158,6 @@ class TailoredSecurityService : public KeyedService {
   GetURLLoaderFactory() = 0;
 
  private:
-  // Callback when the `kAccountTailoredSecurityUpdateTimestamp` is updated
-  void TailoredSecurityTimestampUpdateCallback();
-
   // Stores pointer to IdentityManager instance. It must outlive the
   // TailoredSecurityService and can be null during tests.
   raw_ptr<signin::IdentityManager> identity_manager_;
