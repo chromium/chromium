@@ -636,6 +636,13 @@ bool RequestMatcherRegex(const std::string& request_body_regex,
   return true;
 }
 
+void ExpectUninstallPing(UpdaterScope scope, ScopedServer* test_server) {
+  test_server->ExpectOnce(
+      {base::BindRepeating(RequestMatcherRegex, R"(.*"eventtype":4.*)"),
+       GetScopePredicate(scope)},
+      ")]}'\n");
+}
+
 void ExpectSelfUpdateSequence(UpdaterScope scope, ScopedServer* test_server) {
   base::FilePath test_data_path;
   ASSERT_TRUE(base::PathService::Get(base::DIR_EXE, &test_data_path));

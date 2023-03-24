@@ -41,6 +41,7 @@ class IntegrationTestCommands
   virtual void ExpectActive(const std::string& app_id) const = 0;
   virtual void ExpectNotActive(const std::string& app_id) const = 0;
   virtual void ExpectSelfUpdateSequence(ScopedServer* test_server) const = 0;
+  virtual void ExpectUninstallPing(ScopedServer* test_server) const = 0;
   virtual void ExpectUpdateCheckSequence(
       ScopedServer* test_server,
       const std::string& app_id,

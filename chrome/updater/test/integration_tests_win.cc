@@ -647,11 +647,11 @@ void Uninstall(UpdaterScope scope) {
   // dir, because it is useful for tests to be able to run it to clean the
   // system even if installation has failed or the installed binaries have
   // already been removed.
-  base::FilePath path =
-      GetSetupExecutablePath().DirName().Append(GetExecutableRelativePath());
+  base::FilePath path = GetSetupExecutablePath().DirName().Append(
+      FILE_PATH_LITERAL("updater_test.exe"));
   ASSERT_FALSE(path.empty());
   base::CommandLine command_line(path);
-  command_line.AppendSwitch("uninstall");
+  command_line.AppendSwitch(kUninstallSwitch);
   int exit_code = -1;
   Run(scope, command_line, &exit_code);
 

@@ -444,6 +444,8 @@ extern const char kSetupMutex[];
 
 inline constexpr int kUninstallPingReasonUninstalled = 0;
 inline constexpr int kUninstallPingReasonUserNotAnOwner = 1;
+inline constexpr int kUninstallPingReasonNoAppsRemain = 2;
+inline constexpr int kUninstallPingReasonNeverHadApps = 3;
 
 // The file downloaded to a temporary location could not be moved.
 inline constexpr int kErrorFailedToMoveDownloadedFile = 5;

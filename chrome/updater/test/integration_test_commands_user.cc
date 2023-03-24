@@ -77,6 +77,10 @@ class IntegrationTestCommandsUser : public IntegrationTestCommands {
     updater::test::SetGroupPolicies(values);
   }
 
+  void ExpectUninstallPing(ScopedServer* test_server) const override {
+    updater::test::ExpectUninstallPing(updater_scope_, test_server);
+  }
+
   void ExpectUpdateCheckSequence(
       ScopedServer* test_server,
       const std::string& app_id,

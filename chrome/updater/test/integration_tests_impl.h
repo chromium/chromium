@@ -223,6 +223,8 @@ int CountDirectoryFiles(const base::FilePath& dir);
 
 void ExpectSelfUpdateSequence(UpdaterScope scope, ScopedServer* test_server);
 
+void ExpectUninstallPing(UpdaterScope scope, ScopedServer* test_server);
+
 void ExpectUpdateCheckSequence(UpdaterScope scope,
                                ScopedServer* test_server,
                                const std::string& app_id,
