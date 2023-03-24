@@ -1397,7 +1397,7 @@
     },
     {
       name: "ElementSuperRareData",
-      status: "experimental",
+      status: "stable",
     },
     {
       // Experiment with preventing some instances of mutation XSS
