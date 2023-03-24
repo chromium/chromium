@@ -286,8 +286,9 @@ bool RootScrollerController::IsValidImplicit(const Element& element) const {
     return false;
 
   // Do not implicitly promote things that are partially or fully invisible.
-  if (style->HasOpacity() || style->Visibility() != EVisibility::kVisible)
+  if (style->HasOpacity() || !style->VisibleToHitTesting()) {
     return false;
+  }
 
   PaintLayerScrollableArea* scrollable_area = GetScrollableArea(element);
   if (!scrollable_area)

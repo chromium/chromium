@@ -2380,8 +2380,8 @@ void PaintLayerScrollableArea::UpdateScrollableAreaSet() {
     frame_view->RemoveScrollAnchoringScrollableArea(this);
   }
 
-  bool is_visible_to_hit_test =
-      GetLayoutBox()->StyleRef().VisibleToHitTesting();
+  bool is_visible =
+      GetLayoutBox()->StyleRef().Visibility() == EVisibility::kVisible;
   bool did_scroll_overflow = scrolls_overflow_;
   if (auto* layout_view = DynamicTo<LayoutView>(GetLayoutBox())) {
     mojom::blink::ScrollbarMode h_mode;
@@ -2392,7 +2392,7 @@ void PaintLayerScrollableArea::UpdateScrollableAreaSet() {
       has_overflow = false;
   }
 
-  scrolls_overflow_ = has_overflow && is_visible_to_hit_test;
+  scrolls_overflow_ = has_overflow && is_visible;
   if (did_scroll_overflow == ScrollsOverflow())
     return;
 

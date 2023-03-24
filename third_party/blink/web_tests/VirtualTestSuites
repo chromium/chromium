@@ -805,12 +805,15 @@
     "args": ["--disable-blink-features=ImportMaps"],
     "expires": "Jul 1, 2023"
   },
+  "The overlay-scrollbar virtual suite is testing a feature that is enabled",
+  "or not based on platform and settings, so it should not expire.",
   {
     "prefix": "overlay-scrollbar",
     "platforms": ["Linux", "Mac", "Win"],
-    "bases": [],
+    "bases": [ "external/wpt/css/css-ui/pointer-events-no-scrollbars-001.html",
+               "external/wpt/css/css-ui/pointer-events-no-scrollbars-002.html"],
     "args": ["--enable-features=OverlayScrollbar"],
-    "expires": "Jul 1, 2023"
+    "expires": "never"
   },
   {
     "prefix": "elastic-overscroll",
@@ -821,12 +824,14 @@
              "--enable-threaded-compositing"],
     "expires": "Jul 1, 2023"
   },
+  "The non-overlay-scrollbar virtual suite is testing a feature that is",
+  "enabled or not based on platform and settings, so it should not expire.",
   {
     "prefix": "non-overlay-scrollbar",
     "platforms": ["Linux", "Mac", "Win"],
     "bases": [],
     "args": ["--disable-features=OverlayScrollbar"],
-    "expires": "Jul 1, 2023"
+    "expires": "never"
   },
   {
     "prefix": "fluent-non-overlay-scrollbar",

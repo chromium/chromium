@@ -445,9 +445,12 @@ class CORE_EXPORT PaintLayerScrollableArea final
       const PhysicalRect&,
       const mojom::blink::ScrollIntoViewParamsPtr&) override;
 
-  // Returns true if the scrollable area is user-scrollable, visible to hit
-  // testing, and it does in fact overflow. This means this method will return
-  // false for 'overflow: hidden' and 'pointer-events: none'.
+  // Returns true if the scrollable area is user-scrollable and it does
+  // in fact overflow. This means this method will return false for
+  // 'overflow: hidden' (which is programmatically scrollable but not
+  // user-scrollable).  Note that being user-scrollable may mean being
+  // scrollable with the keyboard but not (due to pointer-events:none)
+  // with the mouse or touch.
   bool ScrollsOverflow() const { return scrolls_overflow_; }
 
   // Rectangle encompassing the scroll corner and resizer rect.

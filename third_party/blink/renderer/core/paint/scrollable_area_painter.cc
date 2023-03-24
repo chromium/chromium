@@ -77,7 +77,7 @@ void ScrollableAreaPainter::RecordResizerScrollHitTestData(
     GraphicsContext& context,
     const PhysicalOffset& paint_offset) {
   const auto* box = GetScrollableArea().GetLayoutBox();
-  DCHECK_EQ(box->StyleRef().Visibility(), EVisibility::kVisible);
+  DCHECK(box->StyleRef().VisibleToHitTesting());
   if (!box->CanResize())
     return;
 
@@ -276,7 +276,8 @@ void ScrollableAreaPainter::PaintScrollbar(GraphicsContext& context,
   // cc::ScrollbarController can only handle interactions with composited native
   // scrollbars. For any other scrollbar, prevent the composited-scroll hit test
   // from succeeding, and send touch events to the main thread for thumb drags.
-  if (!GetScrollableArea().ShouldDirectlyCompositeScrollbar(scrollbar)) {
+  if (!GetScrollableArea().ShouldDirectlyCompositeScrollbar(scrollbar) &&
+      GetScrollableArea().GetLayoutBox()->StyleRef().VisibleToHitTesting()) {
     context.GetPaintController().RecordScrollHitTestData(
         scrollbar, DisplayItem::kScrollbarHitTest, nullptr, visual_rect);
   }

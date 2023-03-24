@@ -295,10 +295,16 @@ TEST_P(MAYBE_PaintLayerScrollableAreaTest, ScrollLayerOnPointerEvents) {
   Element* scroller = GetDocument().getElementById("scroller");
   EXPECT_TRUE(UsesCompositedScrolling(scroller->GetLayoutObject()));
 
-  // pointer-events: none causes the scoller to be invisible for hit testing,
+  // pointer-events: none does not affect whether composited scrolling is
+  // present.
+  scroller->setAttribute(html_names::kStyleAttr, "pointer-events: none");
+  UpdateAllLifecyclePhasesForTest();
+  EXPECT_TRUE(UsesCompositedScrolling(scroller->GetLayoutObject()));
+
+  // visibility: hidden causes the scroller to be invisible for hit testing,
   // so ScrollsOverflow becomes false on the PaintLayerScrollableArea, and hence
   // composited scrolling is not present.
-  scroller->setAttribute(html_names::kStyleAttr, "pointer-events: none");
+  scroller->setAttribute(html_names::kStyleAttr, "visibility: hidden");
   UpdateAllLifecyclePhasesForTest();
   EXPECT_FALSE(UsesCompositedScrolling(scroller->GetLayoutObject()));
 

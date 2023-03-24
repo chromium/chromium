@@ -1,4 +1,0 @@
-This is a testharness.js-based test.
-FAIL Wheel-scroll over pointer-events: auto descendant scrolls pointer-events: none scroller. assert_equals: Incorrect element scrolled expected "overlay" but got "root"
-Harness: the test ran to completion.
-

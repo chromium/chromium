@@ -302,8 +302,10 @@ void BoxPainter::RecordScrollHitTestData(
     return;
 
   // If an object is not visible, it does not scroll.
-  if (layout_box_.StyleRef().Visibility() != EVisibility::kVisible)
+  const ComputedStyle& style = layout_box_.StyleRef();
+  if (style.Visibility() != EVisibility::kVisible) {
     return;
+  }
 
   if (!layout_box_.GetScrollableArea())
     return;
@@ -311,6 +313,23 @@ void BoxPainter::RecordScrollHitTestData(
   const auto* fragment = paint_info.FragmentToPaint(layout_box_);
   if (!fragment)
     return;
+
+  // If an object does scroll overflow, but it is not itself visible to
+  // hit testing (e.g., because it has pointer-events: none), it may
+  // have descendants that *are* visible to hit testing.  In that case,
+  // we need to record hit test data with a null scroll_translation
+  // (which marks a region where composited scroll is not allowed) so
+  // that we fall back to main thread hit testing for the entire box.
+  //
+  // Note that if it is visibility: hidden, then the style.Visibility()
+  // check above will fail and we will already have returned.
+  if (!style.VisibleToHitTesting()) {
+    auto& paint_controller = paint_info.context.GetPaintController();
+    paint_controller.RecordScrollHitTestData(
+        background_client, DisplayItem::kScrollHitTest, nullptr,
+        VisualRect(fragment->PaintOffset()));
+    return;
+  }
 
   // If there is an associated scroll node, emit scroll hit test data.
   const auto* properties = fragment->PaintProperties();
