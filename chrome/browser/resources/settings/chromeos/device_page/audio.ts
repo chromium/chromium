@@ -158,21 +158,11 @@ class SettingsAudioElement extends SettingsAudioElementBase {
   }
 
   protected onInputMuteClicked(): void {
-    // TODO(b/260277007): Remove condition when setInputMuted added to mojo
-    // definition.
-    if (!this.crosAudioConfig_.setInputMuted) {
-      return;
-    }
     this.crosAudioConfig_.setInputMuted(!this.isInputMuted_);
   }
 
   /** Handles updating active input device. */
   protected onInputDeviceChanged(): void {
-    // TODO(b/260277007): Remove condition when setActiveDevice added to mojo
-    // definition.
-    if (!this.crosAudioConfig_.setActiveDevice) {
-      return;
-    }
     const inputDeviceSelect = this.shadowRoot!.querySelector<HTMLSelectElement>(
         '#audioInputDeviceDropdown');
     assert(!!inputDeviceSelect);
@@ -217,11 +207,6 @@ class SettingsAudioElement extends SettingsAudioElementBase {
 
   /** Handles updating active output device. */
   protected onOutputDeviceChanged(): void {
-    // TODO(b/260277007): Remove condition when setActiveDevice added to mojo
-    // definition.
-    if (!this.crosAudioConfig_.setActiveDevice) {
-      return;
-    }
     const outputDeviceSelect =
         this.shadowRoot!.querySelector<HTMLSelectElement>(
             '#audioOutputDeviceDropdown');
@@ -231,11 +216,6 @@ class SettingsAudioElement extends SettingsAudioElementBase {
 
   /** Handles updating outputMuteState. */
   protected onOutputMuteButtonClicked(): void {
-    // TODO(b/260277007): Remove condition when setOutputMuted added to mojo
-    // definition.
-    if (!this.crosAudioConfig_.setOutputMuted) {
-      return;
-    }
     this.crosAudioConfig_.setOutputMuted(!this.isOutputMuted_);
   }
 
