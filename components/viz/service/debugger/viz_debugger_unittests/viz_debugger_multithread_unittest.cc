@@ -152,7 +152,7 @@ class WriterTestThread : public base::PlatformThread::Delegate {
  private:
   uint32_t spin_amount_;
   std::atomic<int> spin_inc_var_ = 0;
-  VizDebuggerMultithreadTest* test_fixture_ptr_;
+  raw_ptr<VizDebuggerMultithreadTest> test_fixture_ptr_;
   uint32_t num_writer_tries_;
 };
 
