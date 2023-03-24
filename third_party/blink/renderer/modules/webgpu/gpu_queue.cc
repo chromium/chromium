@@ -154,12 +154,13 @@ ExternalSource GetExternalSourceFromExternalImage(
     return external_source;
   }
 
-  if (canvas && !(canvas->IsWebGL() || canvas->IsRenderingContext2D() ||
-                  canvas->IsWebGPU())) {
+  if (canvas &&
+      !(canvas->IsWebGL() || canvas->IsRenderingContext2D() ||
+        canvas->IsWebGPU() || canvas->IsImageBitmapRenderingContext())) {
     exception_state.ThrowDOMException(
         DOMExceptionCode::kOperationError,
-        "CopyExternalImageToTexture doesn't support canvas without 2d, webgl,"
-        " webgl2 or webgpu context");
+        "CopyExternalImageToTexture doesn't support canvas without rendering "
+        "context");
     return external_source;
   }
 
