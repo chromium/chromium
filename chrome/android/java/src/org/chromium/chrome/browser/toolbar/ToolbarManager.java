@@ -933,6 +933,9 @@ public class ToolbarManager implements UrlFocusChangeListener, ThemeColorObserve
                 if (layoutType == LayoutType.TAB_SWITCHER) {
                     mToolbar.onTabSwitcherTransitionFinished();
                 }
+                if (ToolbarFeatures.shouldDelayTransitionsForAnimation()) {
+                    mToolbar.onTransitionEnd();
+                }
             }
 
             @Override
@@ -946,6 +949,9 @@ public class ToolbarManager implements UrlFocusChangeListener, ThemeColorObserve
                     if (mToolbar.setForceTextureCapture(true)) {
                         mControlContainer.invalidateBitmap();
                     }
+                }
+                if (ToolbarFeatures.shouldDelayTransitionsForAnimation()) {
+                    mToolbar.onTransitionStart();
                 }
             }
 

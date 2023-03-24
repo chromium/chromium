@@ -806,4 +806,12 @@ public class TopToolbarCoordinator implements Toolbar {
     public boolean isBrowsingModeToolbarVisible() {
         return mToolbarLayout.getVisibility() == View.VISIBLE;
     }
+
+    public void onTransitionStart() {
+        mToolbarLayout.onTransitionStart();
+    }
+
+    public void onTransitionEnd() {
+        mToolbarLayout.onTransitionEnd();
+    }
 }

@@ -271,6 +271,9 @@ public class ToolbarPhone extends ToolbarLayout implements OnClickListener, TabC
 
     private boolean mDropdownListScrolled;
 
+    // If we're in a layout transition, between startHiding to doneShowing.
+    private boolean mInLayoutTransition;
+
     // The following are some properties used during animation.  We use explicit property classes
     // to avoid the cost of reflection for each animation setup.
 
@@ -798,6 +801,10 @@ public class ToolbarPhone extends ToolbarLayout implements OnClickListener, TabC
                     return ChromeColors.getDefaultThemeColor(getContext(), false);
                 }
 
+                // During transition we cannot rely on the background to be opaque yet, so keep full
+                // alpha until the transition is over.
+                int alpha = mInLayoutTransition ? 255 : Math.round(mUrlExpansionFraction * 255);
+
                 // When the NTP fake search box is visible, the background color should be
                 // transparent. When the location bar reaches the top of the screen (i.e. location
                 // bar is fully expanded), the background needs to change back to the default
@@ -805,8 +812,7 @@ public class ToolbarPhone extends ToolbarLayout implements OnClickListener, TabC
                 // between the transition, we set a translucent default toolbar color based on
                 // the expansion progress of the toolbar.
                 return androidx.core.graphics.ColorUtils.setAlphaComponent(
-                        ChromeColors.getDefaultThemeColor(getContext(), false),
-                        Math.round(mUrlExpansionFraction * 255));
+                        ChromeColors.getDefaultThemeColor(getContext(), false), alpha);
             case VisualState.NORMAL:
                 return ChromeColors.getDefaultThemeColor(getContext(), false);
             case VisualState.INCOGNITO:
@@ -1404,8 +1410,14 @@ public class ToolbarPhone extends ToolbarLayout implements OnClickListener, TabC
      *         toolbar.
      */
     private boolean shouldDrawLocationBar() {
-        return mLocationBarBackground != null
-                && (mTabSwitcherState == STATIC_TAB || mTextureCaptureMode);
+        if (ToolbarFeatures.shouldDelayTransitionsForAnimation()) {
+            // The location bar should have alpha or clip+translation when its not supposed to be
+            // shown. Needs to be drawn during transitions, such as entering/exiting tab switcher.
+            return mLocationBarBackground != null;
+        } else {
+            return mLocationBarBackground != null
+                    && (mTabSwitcherState == STATIC_TAB || mTextureCaptureMode);
+        }
     }
 
     private boolean drawLocationBar(Canvas canvas, long drawingTime) {
@@ -1413,7 +1425,6 @@ public class ToolbarPhone extends ToolbarLayout implements OnClickListener, TabC
         boolean clipped = false;
         if (shouldDrawLocationBar()) {
             canvas.save();
-
             if (shouldDrawLocationBarBackground()) {
                 if (mActiveLocationBarBackground instanceof NtpSearchBoxDrawable) {
                     ((NtpSearchBoxDrawable) mActiveLocationBarBackground)
@@ -1804,6 +1815,12 @@ public class ToolbarPhone extends ToolbarLayout implements OnClickListener, TabC
             }
 
             updateViewsForTabSwitcherMode();
+        }
+
+        if (ToolbarFeatures.shouldDelayTransitionsForAnimation()) {
+            // Since mTabSwitcherState has changed, we need to also check if mVisualState should
+            // change.
+            updateVisualsForLocationBarState();
         }
 
         updateButtonsTranslationY();
@@ -2742,5 +2759,18 @@ public class ToolbarPhone extends ToolbarLayout implements OnClickListener, TabC
 
     private int calculateOnFocusHeightIncrease() {
         return (int) (mBackgroundHeightIncreaseWhenFocus * mUrlFocusChangeFraction / 2);
+    }
+
+    @Override
+    public void onTransitionStart() {
+        setVisibility(View.VISIBLE);
+        mInLayoutTransition = true;
+        updateToolbarBackgroundFromState(mVisualState);
+    }
+
+    @Override
+    public void onTransitionEnd() {
+        mInLayoutTransition = false;
+        updateToolbarBackgroundFromState(mVisualState);
     }
 }

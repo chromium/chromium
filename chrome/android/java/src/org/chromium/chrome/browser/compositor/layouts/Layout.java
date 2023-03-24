@@ -793,4 +793,9 @@ public abstract class Layout {
      */
     @LayoutType
     public abstract int getLayoutType();
+
+    /** Returns whether the layout is currently running animations. */
+    public boolean isRunningAnimations() {
+        return false;
+    }
 }
