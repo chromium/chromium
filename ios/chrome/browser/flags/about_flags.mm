@@ -52,6 +52,7 @@
 #import "components/policy/core/common/features.h"
 #import "components/policy/core/common/policy_loader_ios_constants.h"
 #import "components/policy/policy_constants.h"
+#import "components/reading_list/features/reading_list_switches.h"
 #import "components/safe_browsing/core/common/features.h"
 #import "components/send_tab_to_self/features.h"
 #import "components/shared_highlighting/core/common/shared_highlighting_features.h"
@@ -1492,6 +1493,18 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
     {"sf-symbols-follow-up", flag_descriptions::kSFSymbolsFollowupName,
      flag_descriptions::kSFSymbolsFollowupDescription, flags_ui::kOsIos,
      FEATURE_VALUE_TYPE(kSFSymbolsFollowup)},
+    {"enable-reading-list-account-storage",
+     flag_descriptions::kEnableReadingListAccountStorageName,
+     flag_descriptions::kEnableReadingListAccountStorageDescription,
+     flags_ui::kOsIos,
+     FEATURE_VALUE_TYPE(
+         reading_list::switches::kReadingListEnableDualReadingListModel)},
+    {"enable-reading-list-sign-in-promo",
+     flag_descriptions::kEnableReadingListSignInPromoName,
+     flag_descriptions::kEnableReadingListSignInPromoDescription,
+     flags_ui::kOsIos,
+     FEATURE_VALUE_TYPE(reading_list::switches::
+                            kReadingListEnableSyncTransportModeUponSignIn)},
 };
 
 bool SkipConditionalFeatureEntry(const flags_ui::FeatureEntry& entry) {

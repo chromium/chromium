@@ -385,6 +385,16 @@ const char kEnablePinnedTabsIpadDescription[] =
     "Allows users to pin tabs."
     "#enable-pinned-tabs should also be enabled.";
 
+const char kEnableReadingListAccountStorageName[] =
+    "Enable Reading List Account Storage";
+const char kEnableReadingListAccountStorageDescription[] =
+    "Enable the reading list account storage.";
+
+const char kEnableReadingListSignInPromoName[] =
+    "Enable Reading List Sign-in promo";
+const char kEnableReadingListSignInPromoDescription[] =
+    "Enable the sign-in promo view in the reading list screen.";
+
 const char kEnableRefineDataSourceReloadReportingName[] =
     "Enable Refine Data Source Reload Reporting";
 const char kEnableRefineDataSourceReloadReportingDescription[] =

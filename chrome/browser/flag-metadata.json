@@ -3032,6 +3032,16 @@
     "expiry_milestone": -1
   },
   {
+    "name": "enable-reading-list-account-storage",
+    "owners": [ "mmrashad", "mastiz", "myuu", "chrome-signin-team" ],
+    "expiry_milestone": 119
+  },
+  {
+    "name": "enable-reading-list-sign-in-promo",
+    "owners": [ "mmrashad", "mastiz", "myuu", "chrome-signin-team" ],
+    "expiry_milestone": 119
+  },
+  {
     "name": "enable-refine-data-source-reload-reporting",
     "owners": [ "sczs", "tinazwang" ],
     "expiry_milestone": 120

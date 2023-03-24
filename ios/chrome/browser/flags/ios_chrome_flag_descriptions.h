@@ -339,6 +339,15 @@ extern const char kEnablePinnedTabsDescription[];
 extern const char kEnablePinnedTabsIpadName[];
 extern const char kEnablePinnedTabsIpadDescription[];
 
+// Title and description for the flag to enable the account storage.
+extern const char kEnableReadingListAccountStorageName[];
+extern const char kEnableReadingListAccountStorageDescription[];
+
+// Title and description for the flag to enable the sign-in promo in the reading
+// list screen.
+extern const char kEnableReadingListSignInPromoName[];
+extern const char kEnableReadingListSignInPromoDescription[];
+
 // Title and description for the flag to enable refining data source reload
 // reporting when having a very short attention log.
 extern const char kEnableRefineDataSourceReloadReportingName[];
