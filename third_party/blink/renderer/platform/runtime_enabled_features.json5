@@ -1146,6 +1146,12 @@
       status: "experimental",
       base_feature: "none",
     },
+    // `white-space` as a shorthand. crbug.com/1417543
+    {
+      name: "CSSWhiteSpaceShorthand",
+      depends_on: ["CSSTextWrap"],
+      status: "test",
+    },
     {
       name: "Database",
       public: true,
