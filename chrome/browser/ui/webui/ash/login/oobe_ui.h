@@ -16,6 +16,7 @@
 #include "chrome/browser/ash/login/oobe_screen.h"
 #include "chrome/browser/ui/webui/ash/login/base_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/core_oobe_handler.h"
+#include "chromeos/ash/services/auth_factor_config/public/mojom/auth_factor_config.mojom-forward.h"
 #include "chromeos/ash/services/cellular_setup/public/mojom/esim_manager.mojom-forward.h"
 #include "chromeos/ash/services/multidevice_setup/public/mojom/multidevice_setup.mojom-forward.h"
 #include "chromeos/services/network_config/public/mojom/cros_network_config.mojom-forward.h"
@@ -155,6 +156,12 @@ class OobeUI : public ui::MojoWebUIController {
   void BindInterface(
       mojo::PendingReceiver<color_change_listener::mojom::PageHandler>
           receiver);
+
+  // Binds to the cros authentication factor editing services.
+  void BindInterface(
+      mojo::PendingReceiver<auth::mojom::AuthFactorConfig> receiver);
+  void BindInterface(
+      mojo::PendingReceiver<auth::mojom::PinFactorEditor> receiver);
 
   static void AddOobeComponents(content::WebUIDataSource* source);
 

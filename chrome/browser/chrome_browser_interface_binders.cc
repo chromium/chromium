@@ -1148,13 +1148,15 @@ void PopulateChromeWebUIFrameBinders(
       map);
 
   RegisterWebUIControllerInterfaceBinder<ash::auth::mojom::AuthFactorConfig,
-                                         ash::settings::OSSettingsUI>(map);
+                                         ash::settings::OSSettingsUI,
+                                         ash::OobeUI>(map);
 
   RegisterWebUIControllerInterfaceBinder<ash::auth::mojom::RecoveryFactorEditor,
                                          ash::settings::OSSettingsUI>(map);
 
   RegisterWebUIControllerInterfaceBinder<ash::auth::mojom::PinFactorEditor,
-                                         ash::settings::OSSettingsUI>(map);
+                                         ash::settings::OSSettingsUI,
+                                         ash::OobeUI>(map);
 
   RegisterWebUIControllerInterfaceBinder<
       ash::cellular_setup::mojom::ESimManager, ash::settings::OSSettingsUI,
