@@ -1607,6 +1607,8 @@ class CORE_EXPORT Element : public ContainerNode, public Animatable {
   void PseudoStateChanged(CSSSelector::PseudoType pseudo,
                           AffectedByPseudoStateChange&&);
 
+  void ProcessContainIntrinsicSizeChanges(const ComputedStyle* new_style);
+
   enum class HighlightRecalc {
     // No highlight recalc is needed.
     kNone,

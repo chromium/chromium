@@ -3750,15 +3750,7 @@ StyleRecalcChange Element::RecalcOwnStyle(
   }
   SetComputedStyle(new_style);
 
-  if (new_style && !new_style->ContainsSize() &&
-      ((new_style->ContainIntrinsicWidth() &&
-        new_style->ContainIntrinsicWidth()->HasAuto()) ||
-       (new_style->ContainIntrinsicHeight() &&
-        new_style->ContainIntrinsicHeight()->HasAuto()))) {
-    GetDocument().ObserveForIntrinsicSize(this);
-  } else {
-    GetDocument().UnobserveForIntrinsicSize(this);
-  }
+  ProcessContainIntrinsicSizeChanges(new_style.get());
 
   if (!child_change.ReattachLayoutTree() &&
       (GetForceReattachLayoutTree() || NeedsReattachLayoutTree() ||
@@ -3901,6 +3893,36 @@ StyleRecalcChange Element::RecalcOwnStyle(
     layout_object->SetStyle(layout_style.get(), apply_changes);
   }
   return child_change;
+}
+
+void Element::ProcessContainIntrinsicSizeChanges(
+    const ComputedStyle* new_style) {
+  if (!new_style) {
+    GetDocument().UnobserveForIntrinsicSize(this);
+    return;
+  }
+
+  bool observe_for_intrinsic_size = false;
+  if ((new_style->ContainIntrinsicWidth() &&
+       new_style->ContainIntrinsicWidth()->HasAuto()) ||
+      (new_style->ContainIntrinsicHeight() &&
+       new_style->ContainIntrinsicHeight()->HasAuto())) {
+    DisplayLockContext* context = GetDisplayLockContext();
+    // The only case where we _don't_ observe is if we're skipping contents
+    // while being content-visibility: auto.
+    observe_for_intrinsic_size =
+        !context || !context->IsAuto() || !context->IsLocked();
+  } else {
+    // If we don't have contain-intrinsic-size: auto, immediately forget the
+    // saved intrinsic size.
+    SaveIntrinsicSize(nullptr);
+  }
+
+  if (observe_for_intrinsic_size) {
+    GetDocument().ObserveForIntrinsicSize(this);
+  } else {
+    GetDocument().UnobserveForIntrinsicSize(this);
+  }
 }
 
 void Element::RebuildLayoutTree(WhitespaceAttacher& whitespace_attacher) {
