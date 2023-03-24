@@ -188,6 +188,12 @@ void SetUpTrailingIconAndAccessoryType(
   // Password counts associated with the different insecure types.
   InsecurePasswordCounts _insecurePasswordCounts;
 
+  // The string containing the timestamp of the last completed check.
+  NSString* _formattedElapsedTimeSinceLastCheck;
+
+  // The number of affiliated groups for which the user has saved passwords.
+  NSInteger _affiliatedGroupCount;
+
   // Image view at the top of the screen, indicating the overall Password
   // Checkup status.
   UIImageView* _headerImageView;
@@ -285,6 +291,11 @@ void SetUpTrailingIconAndAccessoryType(
   }
   [model addItem:_checkPasswordsButtonItem
       toSectionWithIdentifier:SectionIdentifierLastPasswordCheckup];
+
+  if (_consumerHasBeenUpdated) {
+    [self updateItemsDependingOnPasswordCheckupState];
+  }
+  [self updatePasswordCheckupTimestampDetailText];
 }
 
 #pragma mark - Items
@@ -375,20 +386,21 @@ void SetUpTrailingIconAndAccessoryType(
 
   _passwordCheckupState = state;
   _insecurePasswordCounts = insecurePasswordCounts;
-  [self updateHeaderImage];
-  [self updateCompromisedPasswordsItem];
-  [self updateReusedPasswordsItem];
-  [self updateWeakPasswordsItem];
-  [self updatePasswordCheckupTimestampTextWith:
-            formattedElapsedTimeSinceLastCheck];
-  [self updateCheckPasswordsButtonItem];
+  _formattedElapsedTimeSinceLastCheck = formattedElapsedTimeSinceLastCheck;
+  [self updateItemsDependingOnPasswordCheckupState];
 
   _consumerHasBeenUpdated = YES;
 }
 
 - (void)setAffiliatedGroupCount:(NSInteger)affiliatedGroupCount {
-  [self updatePasswordCheckupTimestampDetailTextWithAffiliatedGroupCount:
-            affiliatedGroupCount];
+  // If the affiliated group count hasn't changed, there is no need to update
+  // the item.
+  if (_affiliatedGroupCount == affiliatedGroupCount) {
+    return;
+  }
+
+  _affiliatedGroupCount = affiliatedGroupCount;
+  [self updatePasswordCheckupTimestampDetailText];
 }
 
 #pragma mark - UITableViewDelegate
@@ -493,6 +505,10 @@ void SetUpTrailingIconAndAccessoryType(
 
 // Updates the `_compromisedPasswordsItem`.
 - (void)updateCompromisedPasswordsItem {
+  if (!_compromisedPasswordsItem) {
+    return;
+  }
+
   BOOL hasCompromisedPasswords = _insecurePasswordCounts.compromised_count > 0;
   BOOL hasDismissedWarnings = _insecurePasswordCounts.dismissed_count > 0;
 
@@ -512,6 +528,10 @@ void SetUpTrailingIconAndAccessoryType(
 
 // Updates the `_reusedPasswordsItem`.
 - (void)updateReusedPasswordsItem {
+  if (!_reusedPasswordsItem) {
+    return;
+  }
+
   BOOL hasReusedPasswords = _insecurePasswordCounts.reused_count > 0;
 
   NSString* text;
@@ -539,6 +559,10 @@ void SetUpTrailingIconAndAccessoryType(
 
 // Updates the `_weakPasswordsItem`.
 - (void)updateWeakPasswordsItem {
+  if (!_weakPasswordsItem) {
+    return;
+  }
+
   BOOL hasWeakPasswords = _insecurePasswordCounts.weak_count > 0;
 
   NSString* text;
@@ -565,8 +589,11 @@ void SetUpTrailingIconAndAccessoryType(
 }
 
 // Updates the `_passwordCheckupTimestampItem` text.
-- (void)updatePasswordCheckupTimestampTextWith:
-    (NSString*)formattedElapsedTimeSinceLastCheck {
+- (void)updatePasswordCheckupTimestampText {
+  if (!_passwordCheckupTimestampItem) {
+    return;
+  }
+
   switch (_passwordCheckupState) {
     case PasswordCheckupHomepageStateRunning: {
       _passwordCheckupTimestampItem.text =
@@ -577,7 +604,7 @@ void SetUpTrailingIconAndAccessoryType(
     case PasswordCheckupHomepageStateDone:
     case PasswordCheckupHomepageStateError:
     case PasswordCheckupHomepageStateDisabled:
-      _passwordCheckupTimestampItem.text = formattedElapsedTimeSinceLastCheck;
+      _passwordCheckupTimestampItem.text = _formattedElapsedTimeSinceLastCheck;
       _passwordCheckupTimestampItem.indicatorHidden = YES;
       break;
   }
@@ -586,16 +613,23 @@ void SetUpTrailingIconAndAccessoryType(
 }
 
 // Updates the `_passwordCheckupTimestampItem` detail text.
-- (void)updatePasswordCheckupTimestampDetailTextWithAffiliatedGroupCount:
-    (NSInteger)affiliatedGroupCount {
+- (void)updatePasswordCheckupTimestampDetailText {
+  if (!_passwordCheckupTimestampItem) {
+    return;
+  }
+
   _passwordCheckupTimestampItem.detailText = l10n_util::GetPluralNSStringF(
-      IDS_IOS_PASSWORD_CHECKUP_SITES_AND_APPS_COUNT, affiliatedGroupCount);
+      IDS_IOS_PASSWORD_CHECKUP_SITES_AND_APPS_COUNT, _affiliatedGroupCount);
 
   [self reconfigureCellsForItems:@[ _passwordCheckupTimestampItem ]];
 }
 
 // Updates the `_checkPasswordsButtonItem`.
 - (void)updateCheckPasswordsButtonItem {
+  if (!_checkPasswordsButtonItem) {
+    return;
+  }
+
   if (_passwordCheckupState == PasswordCheckupHomepageStateRunning) {
     _checkPasswordsButtonItem.enabled = NO;
     _checkPasswordsButtonItem.textColor =
@@ -610,6 +644,16 @@ void SetUpTrailingIconAndAccessoryType(
   }
 
   [self reconfigureCellsForItems:@[ _checkPasswordsButtonItem ]];
+}
+
+// Updates all items whose content is depending on `_passwordCheckupState`.
+- (void)updateItemsDependingOnPasswordCheckupState {
+  [self updateHeaderImage];
+  [self updateCompromisedPasswordsItem];
+  [self updateReusedPasswordsItem];
+  [self updateWeakPasswordsItem];
+  [self updatePasswordCheckupTimestampText];
+  [self updateCheckPasswordsButtonItem];
 }
 
 @end
