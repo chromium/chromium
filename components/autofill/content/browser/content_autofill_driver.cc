@@ -569,29 +569,7 @@ void ContentAutofillDriver::OnContextMenuShownInField(
       });
 }
 
-void ContentAutofillDriver::DidNavigateFrame(
-    content::NavigationHandle* navigation_handle) {
-  if (navigation_handle->IsSameDocument()) {
-    return;
-  }
-
-  // If the navigation happened in the main frame and the BrowserAutofillManager
-  // exists (not in Android Webview), and the AutofillOfferManager exists (not
-  // in Incognito windows), notifies the navigation event.
-  if (navigation_handle->IsInPrimaryMainFrame() &&
-      autofill_manager_->GetOfferManager()) {
-    autofill_manager_->GetOfferManager()->OnDidNavigateFrame(
-        autofill_manager_->client());
-  }
-
-  // When IsServedFromBackForwardCache or IsPrerendererdPageActivation, the form
-  // data is not parsed again. So, we should keep and use the autofill manager's
-  // form_structures from BFCache or prerendering page for form submit.
-  if (navigation_handle->IsServedFromBackForwardCache() ||
-      navigation_handle->IsPrerenderedPageActivation()) {
-    return;
-  }
-
+void ContentAutofillDriver::Reset() {
   // The driver's RenderFrameHost may be used for the page we're navigating to.
   // Therefore, we need to forget all forms of the page we're navigating from.
   submitted_forms_.clear();

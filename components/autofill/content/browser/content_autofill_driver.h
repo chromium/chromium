@@ -23,7 +23,6 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace content {
-class NavigationHandle;
 class RenderFrameHost;
 }  // namespace content
 
@@ -193,9 +192,8 @@ class ContentAutofillDriver : public AutofillDriver,
   // enabled.
   void ProbablyFormSubmitted(base::PassKey<ContentAutofillDriverFactory>);
 
-  // DidNavigateFrame() is called on the frame's driver, respectively, when a
-  // navigation occurs in that specific frame.
-  void DidNavigateFrame(content::NavigationHandle* navigation_handle);
+  // Called on certain types of navigations by ContentAutofillDriverFactory.
+  void Reset();
 
   // Key-press handlers capture the user input into fields from the renderer.
   // The AutofillPopupControllerImpl listens for input while showing a popup.

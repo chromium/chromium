@@ -349,7 +349,7 @@ class ContentAutofillDriverTest : public content::RenderViewHostTestHarness,
         navigation_handle.set_is_prerendered_page_activation(true);
         break;
     }
-    driver()->DidNavigateFrame(&navigation_handle);
+    factory()->DidFinishNavigation(&navigation_handle);
   }
 
  protected:
