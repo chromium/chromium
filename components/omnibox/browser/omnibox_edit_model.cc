@@ -2234,7 +2234,7 @@ void OmniboxEditModel::OpenMatch(AutocompleteMatch match,
 
   // TODO(manukh): Remove this histogram when `kRedoCurrentMatch` &
   //   `kRevertModelBeforeClosingPopup` launch or are abandoned.
-  SCOPED_UMA_HISTOGRAM_TIMER_MICROS("Omnibox.OpenMatchTime");
+  SCOPED_UMA_HISTOGRAM_TIMER_MICROS("Omnibox.OmniboxEditModelOpenMatchTime");
 
   // Switch the window disposition to SWITCH_TO_TAB for open tab matches that
   // originated while in keyword mode.  This is to support the keyword mode
