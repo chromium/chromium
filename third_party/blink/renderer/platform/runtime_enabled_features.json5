@@ -1961,8 +1961,6 @@
     },
     {
       name: "LayoutMediaNGContainer",
-      // This feature doesn't work in the legacy layout.
-      depends_on: ["LayoutNGPrinting"],
       status: "stable",
     },
     {
@@ -1976,15 +1974,10 @@
       status: "test",
     },
     {
-      name: "LayoutNGPrinting",
-      status: "stable",
-    },
-    {
       // Avoid UpdateLogicalWidth() and UpdateLogicalHeight() in LayoutReplaced
       // subclasses.
       // It's a part of "stop-copying-back" project. crbug.com/1353190
       name: "LayoutNGReplacedNoBoxSetters",
-      depends_on: ["LayoutNGPrinting"],
       status: "stable",
     },
     {
@@ -2001,8 +1994,6 @@
       // Merge UpdateAfterLayout() calls for LayoutReplaced into one in
       // CopyFragmentDataToLayoutBox(). crbug.com/1353190
       name: "LayoutNGUnifyUpdateAfterLayout",
-      // This feature doesn't work in the legacy layout.
-      depends_on: ["LayoutNGPrinting"],
       status: "stable",
     },
     {

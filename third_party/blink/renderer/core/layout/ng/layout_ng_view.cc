@@ -66,9 +66,6 @@ MinMaxSizes LayoutNGView::ComputeIntrinsicLogicalWidths() const {
 }
 
 AtomicString LayoutNGView::NamedPageAtIndex(wtf_size_t page_index) const {
-  // If LayoutNGView is enabled, but not LayoutNGPrinting, fall back to legacy.
-  if (!RuntimeEnabledFeatures::LayoutNGPrintingEnabled())
-    return LayoutView::NamedPageAtIndex(page_index);
   if (!PhysicalFragmentCount())
     return AtomicString();
   DCHECK_EQ(PhysicalFragmentCount(), 1u);

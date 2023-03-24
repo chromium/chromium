@@ -3861,25 +3861,6 @@ void StyleEngine::MarkForLayoutTreeChangesAfterDetach() {
   parent_for_detached_subtree_ = nullptr;
 }
 
-void StyleEngine::ReportUseOfLegacyLayoutWithContainerQueries() {
-  DCHECK(!HasFullNGFragmentationSupport());
-
-  // Only report once.
-  if (legacy_layout_query_container_) {
-    return;
-  }
-
-  legacy_layout_query_container_ = true;
-
-  ConsoleMessage* console_message = MakeGarbageCollected<ConsoleMessage>(
-      mojom::blink::ConsoleMessageSource::kRendering,
-      mojom::blink::ConsoleMessageLevel::kWarning,
-      String::Format(
-          "Using container queries or units with printing, or in combination "
-          "with tables inside multicol will not work correctly."));
-  GetDocument().AddConsoleMessage(console_message);
-}
-
 bool StyleEngine::AllowSkipStyleRecalcForScope() const {
   if (InContainerQueryStyleRecalc()) {
     return true;

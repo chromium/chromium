@@ -115,16 +115,9 @@ TEST_F(LayoutViewTest, NamedPages) {
   EXPECT_EQ(view->NamedPageAtIndex(7), AtomicString());
   EXPECT_EQ(view->NamedPageAtIndex(8), "yksi");
 
-  if (RuntimeEnabledFeatures::LayoutNGPrintingEnabled()) {
-    // LayoutNGPrinting doesn't provide a name for pages that don't exist.
-    EXPECT_EQ(view->NamedPageAtIndex(9), AtomicString());
-    EXPECT_EQ(view->NamedPageAtIndex(100), AtomicString());
-  } else {
-    // The legacy API, on the other hand, has no clue about how many pages we
-    // have, so it will just return the last page name, for good measure.
-    EXPECT_EQ(view->NamedPageAtIndex(9), "yksi");
-    EXPECT_EQ(view->NamedPageAtIndex(100), "yksi");
-  }
+  // We don't provide a name for pages that don't exist.
+  EXPECT_EQ(view->NamedPageAtIndex(9), AtomicString());
+  EXPECT_EQ(view->NamedPageAtIndex(100), AtomicString());
 }
 
 TEST_F(LayoutViewTest, NamedPagesAbsPos) {

@@ -2469,8 +2469,6 @@ bool ComputedStyle::ShouldApplyAnyContainment(const Element& element,
 bool ComputedStyle::CanMatchSizeContainerQueries(const Element& element) const {
   return IsContainerForSizeContainerQueries() &&
          !element.ShouldForceLegacyLayout() &&
-         (RuntimeEnabledFeatures::LayoutNGPrintingEnabled() ||
-          !element.GetDocument().Printing()) &&
          (!element.IsSVGElement() ||
           To<SVGElement>(element).IsOutermostSVGSVGElement());
 }

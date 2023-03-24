@@ -980,13 +980,8 @@ class ComputedStyle : public ComputedStyleBase,
   }
 
   // Column utility functions.
-  static bool SpecifiesColumns(bool has_auto_column_count,
-                               bool has_auto_column_width) {
-    return !has_auto_column_count || !has_auto_column_width;
-  }
   bool SpecifiesColumns() const {
-    return ComputedStyle::SpecifiesColumns(HasAutoColumnCount(),
-                                           HasAutoColumnWidth());
+    return !HasAutoColumnCount() || !HasAutoColumnWidth();
   }
   bool ColumnRuleIsTransparent() const {
     return !ColumnRuleColor()
@@ -2977,10 +2972,6 @@ class ComputedStyleBuilder final : public ComputedStyleBuilderBase {
     SetColumnWidthInternal(0);
   }
 
-  bool SpecifiesColumns() const {
-    return ComputedStyle::SpecifiesColumns(HasAutoColumnCount(),
-                                           HasAutoColumnWidth());
-  }
   // contain
   bool ShouldApplyAnyContainment(const Element& element) const {
     unsigned effective_containment = ComputedStyle::EffectiveContainment(

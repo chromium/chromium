@@ -272,11 +272,7 @@ TEST_P(PrintContextTest, LinkTargetContainingABlock) {
       canvas.RecordedOperations();
   ASSERT_EQ(1u, operations.size());
   EXPECT_EQ(MockPageContextCanvas::kDrawRect, operations[0].type);
-  // Block-in-inline behaves differently in LayoutNG.
-  if (RuntimeEnabledFeatures::LayoutNGPrintingEnabled())
-    EXPECT_SKRECT_EQ(0, 50, 555, 30, operations[0].rect);
-  else
-    EXPECT_SKRECT_EQ(0, 50, 133, 30, operations[0].rect);
+  EXPECT_SKRECT_EQ(0, 50, 555, 30, operations[0].rect);
 }
 
 TEST_P(PrintContextTest, LinkTargetUnderInInlines) {

@@ -421,22 +421,6 @@ bool DefinitelyNewFormattingContext(const Node& node,
   return false;
 }
 
-bool CalculateStyleShouldForceLegacyLayout(const Element& element,
-                                           const ComputedStyle& style) {
-  Document& document = element.GetDocument();
-
-  if (style.DisplayTypeRequiresLayoutNG()) {
-    return false;
-  }
-
-  if (document.Printing() && element == document.documentElement() &&
-      !RuntimeEnabledFeatures::LayoutNGPrintingEnabled()) {
-    return true;
-  }
-
-  return false;
-}
-
 bool HasLeftwardDirection(const Element& element) {
   auto* style = element.GetComputedStyle();
   if (!style) {
@@ -610,15 +594,6 @@ bool IsGuaranteedToEnterNGBlockNodeLayout(const LayoutObject& layout_object) {
     return false;
   }
   if (!NGBlockNode::CanUseNewLayout(*box)) {
-    return false;
-  }
-  // Out-of-flow positioned replaced elements take the legacy path for layout
-  // if the container for positioning is a legacy object. That is the case for
-  // LayoutView, which is a legacy object but does not otherwise force
-  // legacy layout objects.
-  if (!RuntimeEnabledFeatures::LayoutNGPrintingEnabled() &&
-      layout_object.IsOutOfFlowPositioned() &&
-      layout_object.IsLayoutReplaced()) {
     return false;
   }
   return true;
@@ -2926,11 +2901,6 @@ void Element::AttachLayoutTree(AttachContext& context) {
                               ? LegacyLayout::kForce
                               : LegacyLayout::kAuto;
 
-    if (legacy == LegacyLayout::kForce &&
-        style->IsContainerForSizeContainerQueries()) {
-      style_engine.ReportUseOfLegacyLayoutWithContainerQueries();
-    }
-
     LayoutTreeBuilderForElement builder(*this, context, style, legacy);
     builder.CreateLayoutObject();
 
@@ -3537,17 +3507,6 @@ static ContainerQueryEvaluator* ComputeContainerQueryEvaluator(
     if (!new_style.IsContainerForSizeContainerQueries()) {
       return nullptr;
     }
-    if (LayoutObject* layout_object = element.GetLayoutObject()) {
-      if (layout_object->ForceLegacyLayout()) {
-        element.GetDocument()
-            .GetStyleEngine()
-            .ReportUseOfLegacyLayoutWithContainerQueries();
-      }
-    }
-  }
-  if (!RuntimeEnabledFeatures::LayoutNGPrintingEnabled() &&
-      element.GetDocument().Printing()) {
-    return nullptr;
   }
   // If we're switching to display:contents, any existing results cached on
   // ContainerQueryEvaluator are no longer valid, since any style recalc
@@ -5731,6 +5690,7 @@ void Element::SetAffectedByMultipleHas() {
   EnsureElementRareData().SetAffectedByMultipleHas();
 }
 
+// TODO(1229581): Remove this function.
 bool Element::UpdateForceLegacyLayout(const ComputedStyle& new_style,
                                       const ComputedStyle* old_style) {
   // ::first-letter may cause structure discrepancies between DOM and layout
@@ -5746,8 +5706,7 @@ bool Element::UpdateForceLegacyLayout(const ComputedStyle& new_style,
   }
   bool needs_reattach = false;
   bool old_force = old_style && ShouldForceLegacyLayout();
-  SetStyleShouldForceLegacyLayout(
-      CalculateStyleShouldForceLegacyLayout(*this, new_style));
+  SetStyleShouldForceLegacyLayout(false);
   if (ShouldForceLegacyLayout()) {
     if (!old_force) {
       if (const LayoutObject* layout_object = GetLayoutObject()) {
@@ -5820,9 +5779,6 @@ bool Element::ForceLegacyLayoutInFormattingContext(
     if (container_recalc_root == ancestor) {
       DCHECK(found_fc)
           << "A size query container is always a formatting context";
-      GetDocument()
-          .GetStyleEngine()
-          .ReportUseOfLegacyLayoutWithContainerQueries();
       break;
     }
   }
@@ -5885,12 +5841,6 @@ bool Element::ForceLegacyLayoutInFragmentationContext(
   if (legacy_root->ForceLegacyLayoutInFormattingContext(
           *legacy_root->GetComputedStyle())) {
     needs_reattach = true;
-  }
-
-  if (legacy_root == container_recalc_root) {
-    GetDocument()
-        .GetStyleEngine()
-        .ReportUseOfLegacyLayoutWithContainerQueries();
   }
 
   return needs_reattach;

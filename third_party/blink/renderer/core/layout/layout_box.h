@@ -595,8 +595,7 @@ class CORE_EXPORT LayoutBox : public LayoutBoxModelObject {
   LayoutRect NoOverflowRect() const;
   LayoutRect LayoutOverflowRect() const {
     NOT_DESTROYED();
-    DCHECK(!RuntimeEnabledFeatures::LayoutNGPrintingEnabled() ||
-           !IsLayoutMultiColumnSet());
+    DCHECK(!IsLayoutMultiColumnSet());
     return LayoutOverflowIsSet()
                ? overflow_->layout_overflow->LayoutOverflowRect()
                : NoOverflowRect();
@@ -1449,12 +1448,11 @@ class CORE_EXPORT LayoutBox : public LayoutBoxModelObject {
     return StyleRef().IsHorizontalWritingMode() ? IntrinsicSize().Height()
                                                 : IntrinsicSize().Width();
   }
+  // TODO(1229581): Remove this function, and intrinsic_content_logical_height_.
   virtual LayoutUnit IntrinsicContentLogicalHeight() const {
     NOT_DESTROYED();
-    DCHECK(!RuntimeEnabledFeatures::LayoutNGPrintingEnabled());
-    return HasOverrideIntrinsicContentLogicalHeight()
-               ? OverrideIntrinsicContentLogicalHeight()
-               : intrinsic_content_logical_height_;
+    NOTREACHED();
+    return LayoutUnit();
   }
 
   // Whether or not the element shrinks to its intrinsic width (rather than

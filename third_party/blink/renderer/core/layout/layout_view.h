@@ -210,15 +210,14 @@ class CORE_EXPORT LayoutView : public LayoutBlockFlow {
     page_size_ = size;
   }
 
-  virtual AtomicString NamedPageAtIndex(wtf_size_t page_index) const;
+  // TODO(1229581): Make non-virtual.
+  virtual AtomicString NamedPageAtIndex(wtf_size_t page_index) const = 0;
 
+  // TODO(1229581): Remove this function, and the NamedPagesMapper class.
   NamedPagesMapper* GetNamedPagesMapper() const {
     NOT_DESTROYED();
-
-    // NamedPagesMapper is deprecated.
-    DCHECK(!RuntimeEnabledFeatures::LayoutNGPrintingEnabled());
-
-    return named_pages_mapper_.get();
+    NOTREACHED();
+    return nullptr;
   }
 
   PhysicalRect DocumentRect() const;
@@ -397,7 +396,6 @@ class CORE_EXPORT LayoutView : public LayoutBlockFlow {
   LayoutState* layout_state_;
 
   Member<ViewFragmentationContext> fragmentation_context_;
-  std::unique_ptr<NamedPagesMapper> named_pages_mapper_;
   scoped_refptr<IntervalArena> interval_arena_;
 
   Member<LayoutQuote> layout_quote_head_;

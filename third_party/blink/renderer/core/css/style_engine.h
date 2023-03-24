@@ -659,10 +659,6 @@ class CORE_EXPORT StyleEngine final : public GarbageCollected<StyleEngine>,
     return active_user_style_sheets_;
   }
 
-  // Report a warning to the console that we are combining legacy layout and
-  // container queries.
-  void ReportUseOfLegacyLayoutWithContainerQueries();
-
  private:
   // FontSelectorClient implementation.
   void FontsNeedUpdate(FontSelector*, FontInvalidationReason) override;
@@ -896,10 +892,6 @@ class CORE_EXPORT StyleEngine final : public GarbageCollected<StyleEngine>,
   // Set to true if we are allowed to skip recalc for a size container subtree.
   bool allow_skip_style_recalc_{false};
 
-  // Set to true if we have detected an element which is a size query container
-  // rendered in legacy layout.
-  bool legacy_layout_query_container_{false};
-
   // See enum ViewportUnitFlag.
   unsigned viewport_unit_dirty_flags_{0};
 
@@ -1019,12 +1011,6 @@ class CORE_EXPORT StyleEngine final : public GarbageCollected<StyleEngine>,
   HeapHashMap<AtomicString, Member<const CSSValue>>
       fill_or_clip_path_uri_value_cache_;
 };
-
-// Helper function for checking if we need to handle legacy fragmentation cases
-// for container queries.
-inline bool HasFullNGFragmentationSupport() {
-  return RuntimeEnabledFeatures::LayoutNGPrintingEnabled();
-}
 
 void PossiblyScheduleNthPseudoInvalidations(Node& node);
 

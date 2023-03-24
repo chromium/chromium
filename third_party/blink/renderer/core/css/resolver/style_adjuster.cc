@@ -1095,20 +1095,6 @@ void StyleAdjuster::AdjustComputedStyle(StyleResolverState& state,
 
   AdjustAnchorQueryStyles(builder);
 
-  if (!HasFullNGFragmentationSupport()) {
-    // When establishing a block fragmentation context for LayoutNG, we require
-    // that everything fragmentable inside can be laid out by NG natively, since
-    // NG and legacy layout cannot cooperate within the same fragmentation
-    // context. And vice versa (everything inside a legacy fragmentation context
-    // needs to be legacy objects, in order to be fragmentable). Set a flag, so
-    // that we can quickly determine whether we need to check that an element is
-    // compatible with the block fragmentation implementation being used.
-    if (builder.SpecifiesColumns() ||
-        (element && element->GetDocument().Printing())) {
-      builder.SetInsideFragmentationContextWithNondeterministicEngine(true);
-    }
-  }
-
   if (element && element->HasCustomStyleCallbacks()) {
     element->AdjustStyle(base::PassKey<StyleAdjuster>(), builder);
   }

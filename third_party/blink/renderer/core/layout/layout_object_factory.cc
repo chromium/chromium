@@ -143,8 +143,6 @@ LayoutBlock* LayoutObjectFactory::CreateBlockForLineClamp(
 
 LayoutView* LayoutObjectFactory::CreateView(Document& document,
                                             const ComputedStyle& style) {
-  if (!RuntimeEnabledFeatures::LayoutNGPrintingEnabled())
-    return MakeGarbageCollected<LayoutView>(&document);
   return MakeGarbageCollected<LayoutNGView>(&document);
 }
 
@@ -190,14 +188,7 @@ LayoutObject* LayoutObjectFactory::CreateListMarker(Node& node,
   const ComputedStyle* parent_style = parent->GetComputedStyle();
 
   if (legacy == LegacyLayout::kForce) {
-    // A table inside an inline element with specified columns may end up
-    // marking a list-item ancestor with a size container-type for forced legacy
-    // without re-attaching it during interleaved style recalc. Enforce
-    // legacy/ng consistency between list-item and marker.
-    DCHECK(!RuntimeEnabledFeatures::LayoutNGPrintingEnabled());
-    DCHECK(parent->GetLayoutObject());
-    if (parent->GetLayoutObject()->IsLayoutNGObject())
-      legacy = LegacyLayout::kAuto;
+    NOTREACHED();
   }
   bool is_inside =
       parent_style->ListStylePosition() == EListStylePosition::kInside ||
