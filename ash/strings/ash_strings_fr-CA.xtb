@@ -461,6 +461,7 @@ Voici quelques exemples de choses que vous pouvez essayer pour commencer.</trans
 <translation id="3256109297135787951">Supprimer la mise en évidence d'un élément sur votre étagère</translation>
 <translation id="3260969790895726815">La voix est traitée localement et la dictée fonctionne hors ligne, mais certaines commandes vocales ne fonctionneront pas.</translation>
 <translation id="3269597722229482060">Clic droit</translation>
+<translation id="3289364673986435196">Menu de l'interrupteur</translation>
 <translation id="3289544412142055976">Les applications Linux ne sont pas prises en charge actuellement</translation>
 <translation id="3289674678944039601">Recharge par l'adaptateur</translation>
 <translation id="3290356915286466215">Non sécurisé</translation>
@@ -685,6 +686,7 @@ Branchez votre appareil sur une source d'alimentation.</translation>
 <translation id="4269883910223712419">L'administrateur de cet appareil peut :</translation>
 <translation id="4274537685965975248">Le raccourci-clavier Ctrl+Alt+flèche vers le bas a changé. Pour utiliser la touche Fin, appuyez sur la touche <ph name="LAUNCHER_KEY_NAME" />+flèche vers la droite.</translation>
 <translation id="4279490309300973883">Mise en miroir</translation>
+<translation id="4280601795273309128">Les mises à jour de sécurité sont terminées. Améliorer votre appareil.</translation>
 <translation id="4283888303416325161">Entrez le mot de passe pour plus de sécurité</translation>
 <translation id="4285498937028063278">Annuler l'épinglage</translation>
 <translation id="4294319844246081198">Bonjour <ph name="GIVEN_NAME" />,</translation>
@@ -871,6 +873,7 @@ Branchez votre appareil sur une source d'alimentation.</translation>
 <translation id="5147567197700016471">Déverrouillé</translation>
 <translation id="5150070631291639005">Paramètres de confidentialité</translation>
 <translation id="5155897006997040331">Vitesse de lecture</translation>
+<translation id="5163434717504750796">État de la batterie <ph name="BATTERY_HEALTH_PERCENTAGE" /> % | Comptage de cycles <ph name="CYCLE_COUNT" /></translation>
 <translation id="5166007464919321363">Enregistrer le bureau comme modèle</translation>
 <translation id="5168181903108465623">Appareils de diffusion disponibles</translation>
 <translation id="5170568018924773124">Afficher dans le dossier</translation>
@@ -1341,6 +1344,7 @@ Nouvelle installation</translation>
 <translation id="743058460480092004">La caméra et le microphone sont actuellement utilisés.</translation>
 <translation id="7452560014878697800">Une application utilise votre caméra</translation>
 <translation id="7453330308669753048">Résultat de l'historique de recherche retiré</translation>
+<translation id="7455047553373871740"><ph name="BATTERY_PERCENTAGE" /> % - <ph name="TIME" /> avant le chargement complet</translation>
 <translation id="7461924472993315131">NIP</translation>
 <translation id="746232733191930409">Mode d'enregistrement de l'écran</translation>
 <translation id="7466449121337984263">Veuillez toucher le capteur</translation>
@@ -1399,6 +1403,7 @@ Pour éteindre l'appareil, appuyez à nouveau sur le bouton d'alimentation de l'
 <translation id="7689817529363080918">Ceci permet à <ph name="APP1_NAME" />, à <ph name="APP2_NAME" /> ainsi qu'à toutes les applications et à tous les sites Web détenant l'autorisation du microphone d'accéder au microphone</translation>
 <translation id="7704000866383261579">Rétablir la dernière action</translation>
 <translation id="7705524343798198388">RPV</translation>
+<translation id="770741401784017797">Création du GIF en cours…</translation>
 <translation id="7714767791242455379">Ajouter un nouveau réseau cellulaire</translation>
 <translation id="7720400844887872976">Activée jusqu'à <ph name="TIME" /></translation>
 <translation id="7720410380936703141">RÉESSAYER</translation>
@@ -1703,6 +1708,7 @@ Pour éteindre l'appareil, appuyez à nouveau sur le bouton d'alimentation de l'
 <translation id="9178475906033259337">Affichage de 1 résultat pour <ph name="QUERY" /></translation>
 <translation id="9179259655489829027">Cette fonctionnalité vous permet d'accéder rapidement à tout compte connecté sans mot de passe. N'utilisez cette fonctionnalité que lorsqu'il s'agit de comptes fiables.</translation>
 <translation id="9183456764293710005">Loupe en mode plein écran</translation>
+<translation id="9186811218777709815"><ph name="BATTERY_PERCENTAGE" /> % | <ph name="TIME" /> restant</translation>
 <translation id="9193626018745640770">Diffusion sur un récepteur inconnu en cours…</translation>
 <translation id="9194617393863864469">Ouvrir une session avec un autre compte d'utilisateur...</translation>
 <translation id="9198992156681343238">La résolution de l'écran <ph name="DISPLAY_NAME" /> est maintenant de <ph name="RESOLUTION" />. Cliquez sur Confirmer pour garder les changements. Les paramètres précédents seront restaurés dans <ph name="TIMEOUT_SECONDS" />.</translation>

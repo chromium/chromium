@@ -568,6 +568,7 @@
 <translation id="1530812829012954197">一律在瀏覽器中算繪以下網址模式</translation>
 <translation id="1542491165152947087">允許使用者在裝置上開啟或關閉 <ph name="PRIVACY_SANDBOX_NAME" /> 廣告主題設定。</translation>
 <translation id="1547424904796464052">韌體映像檔的十六進位編碼 SHA-256 雜湊。</translation>
+<translation id="1550295162561011575">如果設定這項政策，系統管理員將可指定要在 <ph name="PRODUCT_NAME" /> 裝置上自動啟動的應用程式。這些應用程式可在使用者登入時啟動，使用者也可以透過啟動器一起啟動這些應用程式。</translation>
 <translation id="1552418937045050762">如果啟用這項設定，使用者將可使用「鄰近分享」功能，與附近的使用者互相傳送檔案。
 
       如果停用這項設定，使用者就無法使用「鄰近分享」功能。
@@ -1028,6 +1029,7 @@
 <translation id="1980777339173013601">除非已透過其他方式停用 ARC，否則將這項政策設為 True 或不設定時，使用者可以使用 ARC。如果將這項政策設為 False，無關聯的使用者將無法使用 ARC。
 
       只有當 ARC 處於未執行狀態 (例如 Chrome OS 啟動期間) 時，這項政策的變更才會生效。</translation>
+<translation id="1984934843478301531">應用程式啟動自動化作業</translation>
 <translation id="1985598967415986700">使用者代理程式縮減功能可透過 Field-Trials 和 Origin-Trials 功能控管。</translation>
 <translation id="1987789058026551147">啟用裝置資訊站工作階段回報功能</translation>
 <translation id="1988345404999458987">為可用的印表機伺服器提供設定。
@@ -2080,6 +2082,7 @@
       如果將這項政策設為停用或不設定，系統會忽略 <ph name="REQUIRED_PLATFORM_VERSION" /> 資訊清單金鑰，且自動更新會照常運作。
 
       警告：請勿將 <ph name="PRODUCT_OS_NAME" />版本的控制權委派給資訊站應用程式，因為這項操作可能會讓裝置無法取得軟體更新和重大安全性修正項目。委派 <ph name="PRODUCT_OS_NAME" />版本的控制權可能會讓使用者面臨風險。</translation>
+<translation id="2989404644164421834">重新載入頁面</translation>
 <translation id="299446489108785864">指定要套用 <ph name="AUTO_OPEN_FILE_TYPES_POLICY_NAME" /> 的網址清單。這項政策不會影響使用者設定的自動開啟值。
 
       如果設定這項政策，只有當網址列在這份清單中，且檔案類型列在 <ph name="AUTO_OPEN_FILE_TYPES_POLICY_NAME" /> 中時，系統才會依照政策規定自動開啟檔案。只要有任一條件不符，系統就不會依照政策規定自動開啟下載的內容。
@@ -4043,6 +4046,25 @@
 <translation id="4860900625632464759">允許使用者在手機和 Chromebook 間同步簡訊</translation>
 <translation id="486146220825734683">不允許使用者記住 Kerberos 密碼</translation>
 <translation id="4861767323695239729">設定可在使用者工作階段中使用的輸入法</translation>
+<translation id="4870120523614402392">如果達到 <ph name="IDLE_TIMEOUT_POLICY_NAME" /> 政策指定的逾時時間，系統要執行的動作清單。
+
+      如果不設定 <ph name="IDLE_TIMEOUT_POLICY_NAME" /> 政策，這項政策就不會有任何作用。
+
+      假如達到 <ph name="IDLE_TIMEOUT_POLICY_NAME" /> 政策指定的逾時時間，<ph name="PRODUCT_NAME" /> 就會執行在這項政策中設定的動作。
+
+      如果將這項政策留空或未設定，<ph name="IDLE_TIMEOUT_POLICY_NAME" /> 政策就不會有任何作用。
+
+      支援的動作為：
+
+      「<ph name="CLOSE_BROWSERS_ACTION" />」：關閉這個設定檔的所有瀏覽器視窗和 PWA。請注意，Android 不支援這項動作。
+
+      「<ph name="SHOW_PROFILE_PICKER_ACTION" />」：顯示設定檔選擇畫面視窗。請注意，Android 不支援這項動作。
+
+      「<ph name="CLEAR_BROWSING_HISTORY_ACTION" />」、「<ph name="CLEAR_DOWNLOAD_HISTORY_ACTION" />」、「<ph name="CLEAR_COOKIES_AND_OTHER_SITE_DATA_ACTION" />」、「<ph name="CLEAR_CACHED_IMAGES_AND_FILES_ACTION" />」、「<ph name="CLEAR_PASSWORD_SIGNIN_ACTION" />」、「<ph name="CLEAR_AUTOFILL_ACTION" />」、「<ph name="CLEAR_SITE_SETTINGS_ACTION" />」、「<ph name="CLEAR_HOSTED_APP_DATA_ACTION" />」：清除對應的瀏覽資料。詳情請參閱 <ph name="CLEAR_BROWSING_DATA_ON_EXIT_LIST_POLICY_NAME" /> 政策。
+
+      「<ph name="RELOAD_PAGES_ACTION" />」：重新載入所有網頁。有些網頁可能會先提示使用者確認。
+
+      <ph name="SYNC_DISABLED_POLICY_NAME" /> 政策必須設為 True，才能執行「<ph name="CLEAR_BROWSING_HISTORY_ACTION" />」、「<ph name="CLEAR_PASSWORD_SIGNIN_ACTION" />」、「<ph name="CLEAR_AUTOFILL_ACTION" />」和「<ph name="CLEAR_HOSTED_APP_DATA_ACTION" />」。</translation>
 <translation id="4873380469296842901">如果啟用這項設定，已開啟 Phone Hub 功能的使用者將可在 Chrome OS 上傳送/接收手機的通知。
 
       如果停用這項設定，使用者就無法使用這項功能。如果停用 PhoneHubAllowed 政策，使用者也會無法使用這項功能。

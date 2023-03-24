@@ -809,6 +809,7 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="2951588413176968965">Posta kutum</translation>
 <translation id="2952820037279740115">Tüm gizli pencereleri kapat</translation>
 <translation id="2952904171810469095">A2x5</translation>
+<translation id="2954624054936281172">Kayıtlı ödeme yöntemleri tablosu</translation>
 <translation id="295526156371527179">Uyarı: Bu politika, bir sözlük olmadığından politika tarafından belirtildiği gibi bir sözlük olarak birleştirilmedi.</translation>
 <translation id="2955913368246107853">Bulma çubuğunu kapat</translation>
 <translation id="2958544468932521864">Kriket</translation>
@@ -921,7 +922,6 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="3249151924975132674">Öğrenci kredileri ve üniversite finansmanı</translation>
 <translation id="3249845759089040423">Modern</translation>
 <translation id="3250640885957938546">Reklamcılık ve pazarlama</translation>
-<translation id="3252266817569339921">Fransızca</translation>
 <translation id="3254301855501243548">18 x 22 inç</translation>
 <translation id="3256863843508922226">Emeklilik ve emekli maaşı</translation>
 <translation id="3259648571731540213"><ph name="CREATE_GOOGLE_CALENDAR_EVENT_FOCUSED_FRIENDLY_MATCH_TEXT" />, Google Takvim'de hızlıca yeni bir etkinlik oluşturmak için Sekme'ye, ardından Enter'a basın</translation>
@@ -1585,7 +1585,6 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="484988093836683706">Cihazda kilit açmayı kullan</translation>
 <translation id="4850886885716139402">Görüntüle</translation>
 <translation id="4852429274334674023">İşletim sistemleri</translation>
-<translation id="485316830061041779">Almanca</translation>
 <translation id="4853901935952445031">Bu site, Şubat 2022 itibarıyla U2F API'yi kullanamayacak. Bu sitenin sahibiyseniz siteyi, Web Authentication API'yi kullanacak şekilde değiştirmelisiniz.</translation>
 <translation id="4854362297993841467">Bu teslimat yöntemi kullanılamıyor. Farklı bir yöntem deneyin.</translation>
 <translation id="4854853140771946034">Google Keep'te hızlıca yeni bir not oluşturun</translation>
@@ -1824,7 +1823,6 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="5423269318075950257">Fiyatı Takip Et</translation>
 <translation id="5425241977284572032">{NUM_COOKIES,plural, =0{Hiçbir site engellenmiyor}=1{1 site engelleniyor}other{# site engelleniyor}}</translation>
 <translation id="5426179911063097041"><ph name="SITE" /> size bildirim göndermek istiyor</translation>
-<translation id="5428105026674456456">İspanyolca</translation>
 <translation id="5430298929874300616">Yer işaretini kaldır</translation>
 <translation id="5443468954631487277">Ters sırada ön yüz yukarı bakacak şekilde</translation>
 <translation id="5447765697759493033">Bu site çevrilmeyecek</translation>
@@ -1833,7 +1831,6 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="5457113250005438886">Geçersiz</translation>
 <translation id="5458150163479425638">{CONTACT,plural, =0{<ph name="CONTACT_PREVIEW" />}=1{<ph name="CONTACT_PREVIEW" /> ve <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> kişi daha}other{<ph name="CONTACT_PREVIEW" /> ve <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> kişi daha}}</translation>
 <translation id="5463625433003343978">Cihazlar bulunuyor...</translation>
-<translation id="5469868506864199649">İtalyanca</translation>
 <translation id="5470230812924696184">İnşaat mühendisliği</translation>
 <translation id="5470861586879999274">Düzenlemeyi &amp;yeniden yap</translation>
 <translation id="5471337644440862957">Komedi filmleri</translation>
@@ -1846,7 +1843,6 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
     <ph name="LINE_BREAK" />
     Sistem yöneticinize başvurmayı deneyin.</translation>
 <translation id="549333378215107354">Boyut 3</translation>
-<translation id="5503356662318814623">Mesaj gönder</translation>
 <translation id="5509762909502811065">B0</translation>
 <translation id="5509780412636533143">Yönetilen yer işaretleri</translation>
 <translation id="5510481203689988000">Bu ayar, Çerezler ayarlarında kontrol edilir.</translation>
@@ -2777,6 +2773,7 @@ Ek ayrıntılar:
 <translation id="7736959720849233795">Bağlantı Adresini Kopyala</translation>
 <translation id="7740996059027112821">Standart</translation>
 <translation id="77424286611022110">Bu site, araya giren veya yanıltıcı reklamlar gösteriyor. <ph name="LEARN_MORE_LINK_TEXT" /></translation>
+<translation id="7744505202669469867">Kayıtlı adresler tablosu</translation>
 <translation id="774634243536837715">Tehlikeli içerik engellendi.</translation>
 <translation id="7751971323486164747">Chrome'daki yazı tipi boyutlarını ve yazı tiplerini özelleştirin</translation>
 <translation id="7752995774971033316">Yönetimden kaldırıldı</translation>
@@ -3003,7 +3000,6 @@ Ek ayrıntılar:
 <translation id="8296205692406981542">Bölgesel parklar ve bahçeler</translation>
 <translation id="8297545700510100061">Çerezler ve diğer site verileri sizi hatırlamamız için kullanılır, örneğin oturumunuzu açmak veya reklamları kişiselleştirmek için. Çerezlerin tüm siteler için nasıl yönetileceğini <ph name="SETTINGS" /> sayfasından öğrenebilirsiniz.</translation>
 <translation id="8298115750975731693">Kullandığınız kablosuz bağlantı ağı (<ph name="WIFI_NAME" />) <ph name="BEGIN_BOLD" /><ph name="LOGIN_URL" /><ph name="END_BOLD" /> adresini ziyaret etmenizi gerektiriyor olabilir.</translation>
-<translation id="8299269255470343364">Japonca</translation>
 <translation id="8303854710873047864">"<ph name="SECTION" />" bölümü gösterildi</translation>
 <translation id="830498451218851433">Ortadan katlama</translation>
 <translation id="8307888238279532626">Yüklü uygulamalar ve ne sıklıkla kullanıldıkları</translation>
@@ -3018,6 +3014,7 @@ Ek ayrıntılar:
 <translation id="8347658365704983341">Uzaktan eğitim</translation>
 <translation id="8349305172487531364">Yer işaretleri çubuğu</translation>
 <translation id="8351131234907093545">Not oluştur</translation>
+<translation id="835203957414790336">Yazdırdığınız sayfaların içeriği ve yazıcınızla ilgili bilgiler analiz edilmek üzere Google Cloud'a veya üçüncü taraflara gönderilir. Dosyalarınızın hassas veriler içerip içermediği kontrol edilir.</translation>
 <translation id="8355270400102541638">Yerel Kilitlenme Bağlamı:</translation>
 <translation id="8363502534493474904">Uçak modunu kapatma</translation>
 <translation id="8364627913115013041">Henüz ayarlanmadı.</translation>
@@ -3124,7 +3121,6 @@ Ek ayrıntılar:
 <translation id="865032292777205197">hareket sensörleri</translation>
 <translation id="8654126188050905496">55 x 91 mm</translation>
 <translation id="8663226718884576429">Sipariş Özeti, <ph name="TOTAL_LABEL" />, Daha Fazla Ayrıntı</translation>
-<translation id="8666678546361132282">İngilizce</translation>
 <translation id="8671519637524426245"><ph name="SECURE_DNS_SALT" /> değeri, boyut şartlarını karşılamıyor.</translation>
 <translation id="867224526087042813">İmza</translation>
 <translation id="8672264262457010862">İş ve endüstri</translation>

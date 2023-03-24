@@ -47,10 +47,12 @@
 <translation id="3567399274263440288">Ak chcete využívať Chromium naplno, prihláste sa doň svojím účtom Google.</translation>
 <translation id="3639997914391704523">Keď sa prihlásite účtom Google, Chromium môže skontrolovať vaše heslá.</translation>
 <translation id="3650632991272923014"><ph name="USER_EMAIL1" /> používal(a) Chromium a zanechal(a) záložky, heslá a ďalšie nastavenia v tomto zariadení.</translation>
+<translation id="372658070733623520">Ak chcete vo svojom účte Google používať a ukladať údaje prehliadača Chromium, overte svoju totožnosť.</translation>
 <translation id="3805899903892079518">Chromium nemá prístup k vašim fotkám ani videám. Prístup povoľte v časti Nastavenia systému iOS &gt; Súkromie &gt; Fotky.</translation>
 <translation id="4043291146360695975">Heslá sa ukladajú do správcu hesiel iba v tomto zariadení.</translation>
 <translation id="4099085513035183040">Nepodporované vo verzii Chromium Beta</translation>
 <translation id="4432744876818348753">Prihláste sa, aby ste mohli Chromium využívať naplno.</translation>
+<translation id="452436063477828504">Uistite sa, že vo svojom účte Google môžete kedykoľvek použiť údaje prehliadača Chromium</translation>
 <translation id="4555020257205549924">Po zapnutí tejto funkcie bude prehliadač Chromium ponúkať preloženie stránok napísaných v inom jazyku pomocou Prekladača Google. <ph name="BEGIN_LINK" />Ďalšie informácie<ph name="END_LINK" /></translation>
 <translation id="4585809515399340748">Chromium môžete teraz kedykoľvek použiť klepnutím na odkazy v správach, dokumentoch a ďalších aplikáciách.</translation>
 <translation id="4633738821577273991">Získajte aj Zlepšené bezpečné prehliadanie pre tento profil prehliadača Chromium</translation>
@@ -75,6 +77,7 @@
 <translation id="5945387852661427312">Prihlasujete sa pomocou účtu spravovaného doménou <ph name="DOMAIN" /> a jej správcovi tým dávate kontrolu nad vašimi údajmi prehliadača Chromium. Vaše údaje budú natrvalo prepojené s týmto účtom. Odhlásením z prehliadača Chromium odstránite údaje z príslušného zariadenia, avšak naďalej zostanú uložené vo vašom účte Google.</translation>
 <translation id="5983312940147103417">Zlepšujte Chromium</translation>
 <translation id="6062449165341879460">Vaša organizácia <ph name="DOMAIN" /> bude mať prístup k údajom, záložkám, histórii, heslám a ďalším nastaveniam prehliadača Chromium, ktoré uložíte v tomto účte. Keď sa odhlásite, vaše údaje budú z tohto zariadenia vymazané.  Údaje však zostanú uložené vo vašom spravovanom účte Google a budú k dispozícii vašej organizácii. Vaša organizácia môže nastaviť aj pravidlá pre používateľov špecifické pre daný účet, ktoré môžu zmeniť správanie prehliadača Chromium.</translation>
+<translation id="61109258320235597">Ak chcete vo svojom účte Google používať a ukladať údaje prehliadača Chromium, zadajte prístupovú frázu.</translation>
 <translation id="6119647025869519954">Ak chcete Chromium nastaviť ako predvolený prehliadač:
 1. Otvorte nastavenia.
 2. Klepnite na položku Predvolená aplikácia prehliadača.
@@ -86,6 +89,7 @@
 <translation id="6625409903340039086">Chromium teraz podporuje pre váš spravovaný účet pravidlá pre používateľov</translation>
 <translation id="6752854822223394465">Vaša organizácia nastavuje Chromium…</translation>
 <translation id="6820823224820483452">Prehliadaču Chromium sa nepodarilo skontrolovať všetky heslá. Skúste to znova zajtra.</translation>
+<translation id="6911341667534646387">Naďalej používajte údaje prehliadača Chromium vo svojom účte Google</translation>
 <translation id="7006920032187763988">Heslá, ktoré ste uložili do správcu hesiel, môžete v iPade použiť v iných aplikáciách.</translation>
 <translation id="7018284295775193585">Chromium sa nedá aktualizovať</translation>
 <translation id="7045244423563602563">Upravte Chromium podľa seba</translation>

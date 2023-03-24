@@ -461,6 +461,7 @@ Vifuatavyo ni vitu unavyoweza kujaribu ili uanze.</translation>
 <translation id="3256109297135787951">Acha kuangazia kipengee kwenye rafu yako</translation>
 <translation id="3260969790895726815">Matamshi huchakatwa ndani ya kifaa na kipengele cha kuandika kwa kutamka hufanya kazi nje ya mtandao, lakini baadhi ya amri za sauti hazitafanya kazi.</translation>
 <translation id="3269597722229482060">Bofya Kulia</translation>
+<translation id="3289364673986435196">Menyu ya kuzima au kuwasha</translation>
 <translation id="3289544412142055976">Programu za Linux haziwezi kutumika kwa sasa</translation>
 <translation id="3289674678944039601">Inachaji kupitia adapta</translation>
 <translation id="3290356915286466215">Haulindwi</translation>
@@ -685,6 +686,7 @@ Chomeka kifaa chako kwenye umeme.</translation>
 <translation id="4269883910223712419">Msimamizi wa kifaa hiki ana uwezo wa:</translation>
 <translation id="4274537685965975248">Mikato ya kibodi ya Ctrl + Alt + Kishale cha Chini imebadilika. Ili utumie kitufe cha End, bonyeza kitufe cha <ph name="LAUNCHER_KEY_NAME" /> pamoja na Kishale cha Kulia.</translation>
 <translation id="4279490309300973883">Kuakisi</translation>
+<translation id="4280601795273309128">Masasisho ya usalama yamesitishwa. Sasisha kifaa chako.</translation>
 <translation id="4283888303416325161">Weka nenosiri kwa ajili ya usalama zaidi</translation>
 <translation id="4285498937028063278">Banua</translation>
 <translation id="4294319844246081198">Habari za asubuhi <ph name="GIVEN_NAME" />,</translation>
@@ -871,6 +873,7 @@ Chomeka kifaa chako kwenye umeme.</translation>
 <translation id="5147567197700016471">Imefunguliwa</translation>
 <translation id="5150070631291639005">Mipangilio ya faragha</translation>
 <translation id="5155897006997040331">Kasi ya kusoma</translation>
+<translation id="5163434717504750796">Muda wa kudumu wa betri ni asilimia <ph name="BATTERY_HEALTH_PERCENTAGE" /> | Mara ambazo betri imechajiwa na kutumia chaji ni <ph name="CYCLE_COUNT" /></translation>
 <translation id="5166007464919321363">Hifadhi eneokazi kama kiolezo</translation>
 <translation id="5168181903108465623">Vifaa vinavyorusha maudhui vinapatikana</translation>
 <translation id="5170568018924773124">Onyesha katika folda</translation>
@@ -1341,6 +1344,7 @@ Imesakinishwa hivi karibuni</translation>
 <translation id="743058460480092004">Kamera na maikrofoni zinatumiwa.</translation>
 <translation id="7452560014878697800">Kuna proramu inayotumia kamera yako</translation>
 <translation id="7453330308669753048">Matokeo ya historia ya mambo uliyotafuta imeondolewa</translation>
+<translation id="7455047553373871740">Asilimia <ph name="BATTERY_PERCENTAGE" /> | <ph name="TIME" /> hadi ijae</translation>
 <translation id="7461924472993315131">Bana</translation>
 <translation id="746232733191930409">Hali ya kurekodi skrini</translation>
 <translation id="7466449121337984263">Tafadhali gusa kitambuzi</translation>
@@ -1400,6 +1404,7 @@ Arifa, madirisha na vidirisha vya baadaye vitagawanywa kati ya maeneo-kazi.</tra
 <translation id="7689817529363080918">Hatua hii huruhusu ufikiaji wa maikrofoni kwa <ph name="APP1_NAME" />, <ph name="APP2_NAME" /> pamoja na programu na tovuti zote zenye ruhusa ya maikrofoni</translation>
 <translation id="7704000866383261579">Rudia kitendo cha mwisho</translation>
 <translation id="7705524343798198388">VPN</translation>
+<translation id="770741401784017797">Inaunda GIF</translation>
 <translation id="7714767791242455379">Ongeza mtandao mpya wa simu</translation>
 <translation id="7720400844887872976">Itawashwa hadi <ph name="TIME" /></translation>
 <translation id="7720410380936703141">JARIBU TENA</translation>
@@ -1705,6 +1710,7 @@ Arifa, madirisha na vidirisha vya baadaye vitagawanywa kati ya maeneo-kazi.</tra
 <translation id="9178475906033259337">Inaonyesha matokeo moja ya <ph name="QUERY" /></translation>
 <translation id="9179259655489829027">Kipengele hiki kinakuruhusu ufikie kwa haraka mtumiaji yeyote aliyeingia katika akaunti bila ya kuweka nenosiri. Tumia kipengele hiki katika akaunti unazoamini pekee.</translation>
 <translation id="9183456764293710005">Kikuza Skrini Nzima</translation>
+<translation id="9186811218777709815">Asilimia <ph name="BATTERY_PERCENTAGE" /> | Zimesalia <ph name="TIME" /></translation>
 <translation id="9193626018745640770">Inatuma kwenye kifaa au kwa mpokeaji usiyemjua</translation>
 <translation id="9194617393863864469">Ongeza akaunti nyingine...</translation>
 <translation id="9198992156681343238">Ubora wa <ph name="DISPLAY_NAME" /> umebadilika kuwa <ph name="RESOLUTION" />. Bofya thibitisha ili uhifadhi mabadiliko. Mipangilio ya awali itarejeshwa baada ya <ph name="TIMEOUT_SECONDS" />.</translation>

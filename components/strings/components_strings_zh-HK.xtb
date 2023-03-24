@@ -498,6 +498,7 @@
 <translation id="2119867082804433120">打孔 (右下方)</translation>
 <translation id="2122719317867821810">此政策運作正常，但與其他地方設定的值有衝突，並已覆寫該值。</translation>
 <translation id="2126374524350484896">PDF 製作工具：</translation>
+<translation id="2128262927290305126">儲存到 Google 帳戶 (<ph name="ACCOUNT" />) 中</translation>
 <translation id="2130448033692577677">您並未設定 DnsOverHttpsMode 政策，因此系統無法套用您指定的範本。</translation>
 <translation id="2130699163006053678">A3x7</translation>
 <translation id="2135799067377889518">男裝</translation>
@@ -543,6 +544,7 @@
 <translation id="2219735899272417925">必須重設裝置</translation>
 <translation id="2224337661447660594">沒有互聯網</translation>
 <translation id="2225927550500503913">虛擬卡已啟用</translation>
+<translation id="2226636330183131181"><ph name="BEGIN_LINK" />登入<ph name="END_LINK" /> Wi-Fi 網路</translation>
 <translation id="2239100178324503013">立即傳送</translation>
 <translation id="2241693394036365668">已下載檔案</translation>
 <translation id="2246264294482514010">10 x 12 吋</translation>
@@ -628,6 +630,7 @@
 <translation id="2469153820345007638">1 至 N 的順序</translation>
 <translation id="2470767536994572628">在您編輯註解時，此文件將會返回單頁檢視模式及轉回原本的方向</translation>
 <translation id="2479410451996844060">無效的搜尋網址。</translation>
+<translation id="2480300195898055381">儲存到 Google 帳戶 (<ph name="USER_EMAIL" />)</translation>
 <translation id="2482878487686419369">通知</translation>
 <translation id="248348093745724435">裝置政策</translation>
 <translation id="2491120439723279231">伺服器憑證含有錯誤。</translation>
@@ -841,6 +844,7 @@
 <translation id="3029752078111257850">世界新聞</translation>
 <translation id="3037177537145227281">正在追蹤價格</translation>
 <translation id="3037605927509011580">糟糕！</translation>
+<translation id="3041450980936463495">你可以在各項 Google 產品中使用已儲存的地址。系統會將這個地址會儲存到 Google 帳戶 (<ph name="ACCOUNT" />) 中。</translation>
 <translation id="3041612393474885105">憑證資料</translation>
 <translation id="305162504811187366">Chrome 遠端桌面記錄，包括時間戳記、主機和用戶端工作階段 ID</translation>
 <translation id="3052964831964880138"><ph name="PRODUCT_NAME" /> 降價 <ph name="PRICE_DROP" /></translation>
@@ -922,7 +926,6 @@
 <translation id="3249151924975132674">學生貸款和大專貸款</translation>
 <translation id="3249845759089040423">型格</translation>
 <translation id="3250640885957938546">廣告和市場推廣</translation>
-<translation id="3252266817569339921">法文</translation>
 <translation id="3254301855501243548">18 x 22 吋</translation>
 <translation id="3256863843508922226">退休和退休金</translation>
 <translation id="3259648571731540213"><ph name="CREATE_GOOGLE_CALENDAR_EVENT_FOCUSED_FRIENDLY_MATCH_TEXT" />，㩒一下 Tab 鍵，然後㩒一下 Enter 鍵就可以喺 Google 日曆度快速建立新活動</translation>
@@ -1081,6 +1084,7 @@
 <translation id="3631244953324577188">生物識別</translation>
 <translation id="3632503704576938756">已繼續分享螢幕畫面</translation>
 <translation id="3632892046558972264">已暫停分享螢幕畫面</translation>
+<translation id="3633035844150606508">將地址儲存到 Google 帳戶 (<ph name="ACCOUNT" />) 中</translation>
 <translation id="3633738897356909127">更新 Chrome 按鈕，㩒一下 Enter 鍵就可以透過 Chrome 設定更新 Chrome</translation>
 <translation id="3634530185120165534">紙匣 5</translation>
 <translation id="3634567936866541746">您剛才在欺詐網站上輸入了密碼。為確保帳戶安全，Chrome 建議您檢查已儲存的密碼。</translation>
@@ -1585,7 +1589,6 @@
 <translation id="484988093836683706">使用裝置解鎖功能</translation>
 <translation id="4850886885716139402">檢視</translation>
 <translation id="4852429274334674023">作業系統</translation>
-<translation id="485316830061041779">德文</translation>
 <translation id="4853901935952445031">2022 年 2 月後，此網站將不能使用 U2F API。如果您是網站擁有者，請為該網站改用 Web Authentication API。</translation>
 <translation id="4854362297993841467">不支援此送貨方式，請選擇其他方式。</translation>
 <translation id="4854853140771946034">在 Google Keep 中快速建立新筆記</translation>
@@ -1824,7 +1827,6 @@
 <translation id="5423269318075950257">追蹤價格</translation>
 <translation id="5425241977284572032">{NUM_COOKIES,plural, =0{未封鎖任何網站}=1{已封鎖 1 個網站}other{已封鎖 # 個網站}}</translation>
 <translation id="5426179911063097041"><ph name="SITE" /> 要求傳送通知給您</translation>
-<translation id="5428105026674456456">西班牙文</translation>
 <translation id="5430298929874300616">移除書籤</translation>
 <translation id="5443468954631487277">相反順序 (正面朝上)</translation>
 <translation id="5447765697759493033">系統不會翻譯此網站</translation>
@@ -1833,7 +1835,6 @@
 <translation id="5457113250005438886">無效</translation>
 <translation id="5458150163479425638">{CONTACT,plural, =0{<ph name="CONTACT_PREVIEW" />}=1{「<ph name="CONTACT_PREVIEW" />」和另外 <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> 項聯絡資料}other{「<ph name="CONTACT_PREVIEW" />」和另外 <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> 項聯絡資料}}</translation>
 <translation id="5463625433003343978">正在尋找裝置…</translation>
-<translation id="5469868506864199649">意大利文</translation>
 <translation id="5470230812924696184">土木工程</translation>
 <translation id="5470861586879999274">重做編輯(&amp;R)</translation>
 <translation id="5471337644440862957">喜劇電影</translation>
@@ -1846,7 +1847,6 @@
     <ph name="LINE_BREAK" />
     請嘗試聯絡您的系統管理員。</translation>
 <translation id="549333378215107354">粗幼：3</translation>
-<translation id="5503356662318814623">傳送訊息</translation>
 <translation id="5509762909502811065">B0</translation>
 <translation id="5509780412636533143">受管理書籤</translation>
 <translation id="5510481203689988000">您可在 Cookie 設定中控制此設定。</translation>
@@ -1932,6 +1932,7 @@
 <translation id="5695542892312572833">要使用 Windows Hello 驗證並完成購買嗎？</translation>
 <translation id="5701381305118179107">置中</translation>
 <translation id="570530837424789914">管理…</translation>
+<translation id="5706906618852913030">要儲存到帳戶中嗎？</translation>
 <translation id="5707154300732650394">恢復瀏覽過程</translation>
 <translation id="57094364128775171">建議安全性強的密碼…</translation>
 <translation id="571403275720188526">(arm64)</translation>
@@ -1984,6 +1985,7 @@
 <translation id="5830698870816298009">使用及調整攝錄機</translation>
 <translation id="583281660410589416">不明</translation>
 <translation id="5838278095973806738">您不應在此網站上輸入任何敏感資料 (例如密碼或信用卡資料)，因為攻擊者可能會竊取這些資料。</translation>
+<translation id="5841338463993781099">要儲存到帳戶中嗎？</translation>
 <translation id="5851548754964597211">分頁清單</translation>
 <translation id="5852909432155870672">RA4</translation>
 <translation id="5860033963881614850">關閉</translation>
@@ -3004,7 +3006,6 @@
 <translation id="8296205692406981542">地區公園和花園</translation>
 <translation id="8297545700510100061">系統會使用 Cookie 和其他網站資料記住您的身分，例如登入帳戶或個人化廣告。如要管理所有網站的 Cookie，請參閱「<ph name="SETTINGS" />」。</translation>
 <translation id="8298115750975731693">目前使用的 Wi-Fi (<ph name="WIFI_NAME" />) 可能要求您前往 <ph name="BEGIN_BOLD" /><ph name="LOGIN_URL" /><ph name="END_BOLD" />。</translation>
-<translation id="8299269255470343364">日文</translation>
 <translation id="8303854710873047864">顯示咗「<ph name="SECTION" />」部分</translation>
 <translation id="830498451218851433">對摺</translation>
 <translation id="8307888238279532626">已安裝的應用程式及使用頻率</translation>
@@ -3125,7 +3126,6 @@
 <translation id="865032292777205197">動作感應器</translation>
 <translation id="8654126188050905496">55 x 91 毫米</translation>
 <translation id="8663226718884576429">訂單摘要、<ph name="TOTAL_LABEL" /> 及更多詳情</translation>
-<translation id="8666678546361132282">英文</translation>
 <translation id="8671519637524426245"><ph name="SECURE_DNS_SALT" /> 的值不符合大小要求。</translation>
 <translation id="867224526087042813">簽名</translation>
 <translation id="8672264262457010862">工商業</translation>

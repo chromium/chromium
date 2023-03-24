@@ -1910,6 +1910,8 @@ Si no se establece la política, <ph name="PRODUCT_OS_NAME" /> podrá selecciona
       Si se le asigna el valor "Inhabilitada", se desactivarán los mensajes de solicitud de acceso y la captura de audio solo estará disponible para las URL incluidas en la lista AudioCaptureAllowedUrls.
 
       Nota: Esta política afecta a todas las entradas de audio, no solo al micrófono integrado.</translation>
+<translation id="2818869063785105255">Determina si <ph name="PRODUCT_OS_NAME" /> conserva los datos de cuenta locales después de cerrar sesión. Si se le asigna el valor true, <ph name="PRODUCT_OS_NAME" /> no conservará ninguna cuenta de forma permanente y se descartarán todos los datos de la sesión de usuario al cerrar sesión. Si se le asigna el valor false o no se configura, el dispositivo podría conservar los datos de usuario locales (encriptados).
+La política <ph name="DEVICE_LOCAL_ACCOUNTS_POLICY_NAME" /> podría anular el comportamiento de esta política en las cuentas locales del dispositivo con el modo Efímero especificado.</translation>
 <translation id="2823870601012066791">Ubicación del registro de Windows para clientes de <ph name="PRODUCT_OS_NAME" />:</translation>
 <translation id="2824715612115726353">Habilitar modo Incógnito</translation>
 <translation id="282870810415075521">Permitir que JavaScript use JIT en estos sitios</translation>
@@ -3839,6 +3841,13 @@ Para obtener información detallada sobre los patrones válidos de <ph name="URL
       Si no se establece esta política, <ph name="PRODUCT_NAME" /> usará el tamaño predeterminado. Los usuarios podrán cambiar el ajuste usando la marca "--disk-cache-size".
 
       Nota: El valor especificado en esta política se utilizará como sugerencia en varios subsistemas de caché del navegador. Por ello, el consumo total real de disco de todas las cachés será mayor, pero se mantendrá en el mismo orden de magnitud que el valor especificado.</translation>
+<translation id="458285976189239891">Por motivos de seguridad, para llamar a las APIs web <ph name="SHOW_OPEN_FILE_PICKER_API_NAME" /> <ph name="SHOW_SAVE_FILE_PICKER_API_NAME" /> y<ph name="SHOW_DIRECTORY_PICKER_API_NAME" /> se requiere un gesto previo del usuario ("activación temporal"). De lo contrario, se producirá un error.
+
+Si se define esta política, los administradores pueden especificar los orígenes desde los que se puede llamar a estas APIs sin ningún gesto previo del usuario.
+
+Para obtener información detallada sobre los patrones de URL válidos, consulta https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns. Esta política no acepta el valor *.
+
+Si no se define esta política, se requerirá un gesto previo del usuario para llamar a estas APIs desde todos los orígenes.</translation>
 <translation id="4587365491100112056">Si se establece esta política, se especificará en horas el tiempo de vida en caché de los datos de autenticación. La caché contiene datos sobre los dominios de confianza del dominio del equipo (dominios afiliados). Almacenar datos de autenticación en caché ayuda a acelerar el inicio de sesión. No se almacena en caché ningún dato específico del usuario ni ningún dato de dominios no afiliados.
 
       Si se asigna el valor "0" a esta política, se desactivará el almacenamiento de datos de autenticación en caché. Los datos específicos del dominio se obtendrán en cada inicio de sesión, por lo que desactivar el almacenamiento de datos de autenticación en caché puede ralentizar notablemente el inicio de sesión de los usuarios.
@@ -7838,6 +7847,7 @@ OverrideSecurityRestrictionsOnInsecureOrigin. Si ambas políticas están present
 <translation id="827054846390793641">Habilitar la UI relacionada con la conexión en el escritorio del host cuando una conexión esté activa</translation>
 <translation id="8274603902181597201">Borrar los eCryptfs del directorio principal del usuario y empezar con un nuevo directorio principal cifrado con ext4.</translation>
 <translation id="8274926413890711289">Habilitar los controles de informes granulares</translation>
+<translation id="8275103737670730746">Permitir llamar a las APIs de selección de archivos o directorios sin un gesto previo del usuario</translation>
 <translation id="8278133379873210419">Impedir que se activen cuadros de diálogo de JavaScript desde submarcos de origen diferente</translation>
 <translation id="8284296539558710573">Solicitudes de autenticación HTTP de origen cruzado</translation>
 <translation id="8284527236880877730">Si se inhabilita la política <ph name="POWER_SMART_DIM_ENABLED_POLICY_NAME" /> y se establece <ph name="PRESENTATION_SCREEN_DIM_DELAY_SCALE_POLICY_NAME" />, se especifica el porcentaje del retraso de atenuación de pantalla cuando el dispositivo esté en el modo de presentación. Si se ajusta el retraso de atenuación de pantalla, se ajustan los retrasos de apagado de pantalla, bloqueo de pantalla e inactividad para mantener las mismas distancias del retraso de atenuación de pantalla que tenía la configuración original.

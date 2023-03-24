@@ -274,6 +274,7 @@
 <translation id="3456078764689556234"><ph name="TOTAL_PAGES" />-ൽ <ph name="PRINTED_PAGES" /> പേജ് പ്രിന്റ് ചെയ്‌തു.</translation>
 <translation id="345898999683440380"><ph name="PAGE_NUM" />-ാമത്തെ പേജ് സ്‌കാൻ ചെയ്യുന്നു. <ph name="PERCENTAGE_VALUE" />% പൂർത്തിയായി.</translation>
 <translation id="3459509316159669723">പ്രിന്റിംഗ്</translation>
+<translation id="346423161771747987">വൈദ്യുതി</translation>
 <translation id="346539236881580388">വീണ്ടും എടുക്കുക</translation>
 <translation id="3484914941826596830">ഫേംവെയർ അപ്ഡേറ്റ് ചെയ്തുകൊണ്ടിരിക്കുമ്പോൾ ഈ എക്സ്റ്റേണൽ ഉപകരണം അൺപ്ലഗ് ചെയ്യാനോ നിങ്ങളുടെ കമ്പ്യൂട്ടർ ഷട്ട് ഡൗൺ ചെയ്യാനോ പാടില്ല. നിങ്ങൾക്ക് ഈ വിൻഡോ ചെറുതാക്കാം. ഈ അപ്ഡേറ്റ് പൂർത്തിയാകാൻ ഏതാനും മിനിറ്റുകൾ എടുത്തേക്കാം, അതുവരെ നിങ്ങളുടെ എക്സ്റ്റേണൽ ഉപകരണം പ്രവർത്തിക്കില്ല.</translation>
 <translation id="3486220673238053218">നിർവചനം</translation>
@@ -697,6 +698,7 @@
 <translation id="7103252855940681301"><ph name="INDEX" />-ൽ <ph name="COUNT" />-ാമത്തെ ഉപകരണം, പേര് <ph name="NAME" />.</translation>
 <translation id="7108668606237948702">നല്‍കുക</translation>
 <translation id="7130438335435247835">ആക്സസ്സ് പോയിന്റിന്റെ പേര് (APN)</translation>
+<translation id="7131634559772719176">പ്രീസെറ്റ് സ്ഥിരീകരിക്കുക</translation>
 <translation id="7134436342991564651">{0,plural, =1{നെയിം സെർവർ}other{നെയിം സെർവറുകൾ}}</translation>
 <translation id="7143207342074048698">കണക്റ്റിംഗ്</translation>
 <translation id="7144878232160441200">വീണ്ടും ശ്രമിക്കുക</translation>
@@ -800,6 +802,7 @@
 <translation id="80398733265834479">സ്വയം നിറം ക്രമീകരിക്കൽ മോഡ് പ്രവർത്തനക്ഷമമാക്കുക</translation>
 <translation id="8041089156583427627">ഫീഡ്ബാക്ക് അയയ്ക്കുക</translation>
 <translation id="8045012663542226664">മൈക്രോഫോൺ മ്യൂട്ട് ചെയ്യൽ</translation>
+<translation id="8050091914317269817">ഈ വാൾപേപ്പർ തിരഞ്ഞെടുക്കുന്നത്, സ്വയമേവയുള്ള ഡാർക്ക് മോഡും വാൾപേപ്പറിന്റെ നിറം പൊരുത്തപ്പെടുത്തലും ഓണാക്കും.</translation>
 <translation id="8075838845814659848">ശേഷിക്കുന്ന ചാർജ്</translation>
 <translation id="8076492880354921740">ടാബുകള്‍‌</translation>
 <translation id="8082366717211101304">Android ആപ്പുകളിൽ നിന്ന് DNS പരിഹരിക്കാനാകില്ല</translation>

@@ -923,7 +923,6 @@ Muussa tapauksessa tämä estetään tietosuoja-asetuksilla. Jos sallit tämän,
 <translation id="3249151924975132674">Opintolainat ja opintojen rahoittaminen</translation>
 <translation id="3249845759089040423">Svengaava</translation>
 <translation id="3250640885957938546">Mainonta ja markkinointi</translation>
-<translation id="3252266817569339921">ranska</translation>
 <translation id="3254301855501243548">18 x 22 tuumaa</translation>
 <translation id="3256863843508922226">Eläkkeelle siirtyminen ja eläke</translation>
 <translation id="3259648571731540213"><ph name="CREATE_GOOGLE_CALENDAR_EVENT_FOCUSED_FRIENDLY_MATCH_TEXT" />, luo uusi tapahtuma nopeasti Google Kalenterissa painamalla sarkainta ja sitten Enter</translation>
@@ -1587,7 +1586,6 @@ Muussa tapauksessa tämä estetään tietosuoja-asetuksilla. Jos sallit tämän,
 <translation id="484988093836683706">Käytä laitteen lukituksen avaustapaa</translation>
 <translation id="4850886885716139402">Näytä</translation>
 <translation id="4852429274334674023">Käyttöjärjestelmät</translation>
-<translation id="485316830061041779">saksa</translation>
 <translation id="4853901935952445031">Sivusto ei voi käyttää U2F APIa helmikuun 2022 jälkeen. Jos omistat tämän sivuston, sinun täytyy vaihtaa sen käyttöön Web Authentication API.</translation>
 <translation id="4854362297993841467">Tämä toimitustapa ei ole käytettävissä. Kokeile toista tapaa.</translation>
 <translation id="4854853140771946034">Luo uusi muistiinpano nopeasti Google Keepissa</translation>
@@ -1826,7 +1824,6 @@ Muussa tapauksessa tämä estetään tietosuoja-asetuksilla. Jos sallit tämän,
 <translation id="5423269318075950257">Hintaseuranta</translation>
 <translation id="5425241977284572032">{NUM_COOKIES,plural, =0{Ei estettyjä sivustoja}=1{1 sivusto estetty}other{# sivustoa estetty}}</translation>
 <translation id="5426179911063097041"><ph name="SITE" /> haluaa lähettää sinulle ilmoituksia</translation>
-<translation id="5428105026674456456">espanja</translation>
 <translation id="5430298929874300616">Poista kirjanmerkki</translation>
 <translation id="5443468954631487277">Käänteinen järjestys tulostuspuoli ylöspäin</translation>
 <translation id="5447765697759493033">Sivustoa ei käännetä.</translation>
@@ -1835,7 +1832,6 @@ Muussa tapauksessa tämä estetään tietosuoja-asetuksilla. Jos sallit tämän,
 <translation id="5457113250005438886">Virheellinen</translation>
 <translation id="5458150163479425638">{CONTACT,plural, =0{<ph name="CONTACT_PREVIEW" />}=1{<ph name="CONTACT_PREVIEW" /> ja <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> toinen}other{<ph name="CONTACT_PREVIEW" /> ja <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> muuta}}</translation>
 <translation id="5463625433003343978">Haetaan laitteita…</translation>
-<translation id="5469868506864199649">italia</translation>
 <translation id="5470230812924696184">Maa- ja vesirakentaminen</translation>
 <translation id="5470861586879999274">&amp;Toista muokkaus</translation>
 <translation id="5471337644440862957">Komediaelokuvat</translation>
@@ -1848,7 +1844,6 @@ Muussa tapauksessa tämä estetään tietosuoja-asetuksilla. Jos sallit tämän,
     <ph name="LINE_BREAK" />
     Ota yhteyttä järjestelmänvalvojaasi.</translation>
 <translation id="549333378215107354">Koko 3</translation>
-<translation id="5503356662318814623">Lähetä viesti</translation>
 <translation id="5509762909502811065">B0</translation>
 <translation id="5509780412636533143">Hallinnoidut kirjanmerkit</translation>
 <translation id="5510481203689988000">Tätä asetusta ylläpidetään evästeasetuksissa.</translation>
@@ -3006,7 +3001,6 @@ Lisätietoja:
 <translation id="8296205692406981542">Kansallispuistot ja julkiset puutarhat</translation>
 <translation id="8297545700510100061">Evästeillä ja muulla sivustodatalla tunnistetaan sinut, jotta voit esimerkiksi kirjautua sisään tai nähdä personoituja mainoksia. Jos haluat ylläpitää kaikkien sivustojen evästeitä, katso <ph name="SETTINGS" />.</translation>
 <translation id="8298115750975731693">Käyttämäsi Wi-Fi (<ph name="WIFI_NAME" />) saattaa edellyttää vierailua osoitteessa <ph name="BEGIN_BOLD" /><ph name="LOGIN_URL" /><ph name="END_BOLD" />.</translation>
-<translation id="8299269255470343364">japani</translation>
 <translation id="8303854710873047864">Osio "<ph name="SECTION" />" näkyvissä</translation>
 <translation id="830498451218851433">Keskitaite</translation>
 <translation id="8307888238279532626">Asennetut sovellukset ja se, miten usein niitä käytetään</translation>
@@ -3128,7 +3122,6 @@ Lisätietoja:
 <translation id="865032292777205197">liiketunnistimet</translation>
 <translation id="8654126188050905496">55 x 91 mm</translation>
 <translation id="8663226718884576429">Tilauksen yhteenveto, <ph name="TOTAL_LABEL" />, lisätietoja</translation>
-<translation id="8666678546361132282">englanti</translation>
 <translation id="8671519637524426245">Arvo <ph name="SECURE_DNS_SALT" /> ei ole kokovaatimusten mukainen.</translation>
 <translation id="867224526087042813">Allekirjoitus</translation>
 <translation id="8672264262457010862">Yritystoiminta ja teollisuus</translation>

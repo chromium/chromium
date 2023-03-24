@@ -58,6 +58,7 @@ Tik jūsų slaptafrazę turintis asmuo galės perskaityti šifruotus duomenis. S
 <translation id="1283524564873030414">Pastarosios 24 valandos</translation>
 <translation id="1285320974508926690">Niekada neversti šios svetainės</translation>
 <translation id="1291506870746876680"><ph name="BEGIN_BOLD" /><ph name="SITE_NAME" /><ph name="END_BOLD" /> leidimai bus iš naujo nustatyti kaip išjungti, kai išeisite iš šios svetainės.</translation>
+<translation id="1305822519689023679">Kad užtikrintumėte, jog visada galėsite naudoti slaptažodžius „Google“ paskyroje, patvirtinkite savo tapatybę.</translation>
 <translation id="1312721752506309252">Sustiprinta apsauga įjungta</translation>
 <translation id="1321993286294231467">Klaida išsaugant vaizdą.</translation>
 <translation id="1322735045095424339">Organizacija reikalauja naudoti inkognito režimą</translation>
@@ -107,6 +108,7 @@ Tik jūsų slaptafrazę turintis asmuo galės perskaityti šifruotus duomenis. S
 <translation id="1626771852476987600">Pakartotinai naudojamų slaptažodžių: <ph name="COUNT" /></translation>
 <translation id="1641113438599504367">Saugus naršymas</translation>
 <translation id="1644574205037202324">Istorija</translation>
+<translation id="165008673352427892">Nauja funkcija</translation>
 <translation id="1650222530560417226">Palieskite mygtuką „Pradėi registravimą“, kad rinktumėte būsimus „JavaScript“ pulto žurnalus ir klaidas iš visų skirtukų. Žurnalai bus renkami (ir saugomi tik atmintyje), kol šis puslapis bus uždarytas arba kol paliesite „Stabdyti registravimą“.</translation>
 <translation id="1653432787084483144">{count,plural, =1{Virš klaviatūros pasiekiamas {count} išsaugotas slaptažodis.}one{Virš klaviatūros pasiekiamas {count} išsaugotas slaptažodis.}few{Virš klaviatūros pasiekiami {count} išsaugoti slaptažodžiai.}many{Virš klaviatūros pasiekiama {count} išsaugoto slaptažodžio.}other{Virš klaviatūros pasiekiama {count} išsaugotų slaptažodžių.}}</translation>
 <translation id="1657011748321897393">Bendrinant įvyko klaida, nes nesate prisijungę prie tinklo.</translation>
@@ -120,6 +122,7 @@ Tik jūsų slaptafrazę turintis asmuo galės perskaityti šifruotus duomenis. S
 <translation id="1700629756560807968">Pasirinkta: <ph name="NUMBER_OF_SELECTED_BOOKMARKS" /></translation>
 <translation id="1715515772563243997">Jei pasitikite <ph name="SITE" />, prisijungdami galite naudoti išsaugotą slaptažodį.</translation>
 <translation id="1740468249224277719">Dukart palieskite, kad įdiegtumėte.</translation>
+<translation id="1750238553597293878">Toliau naudokite slaptažodžius „Google“ paskyroje</translation>
 <translation id="1752547299766512813">Išs. slaptažod.</translation>
 <translation id="1753905327828125965">Dažniausiai lankomi</translation>
 <translation id="1767766085187034454">„Google“ vertėjas</translation>
@@ -402,6 +405,7 @@ Peržiūrėkite paieškos variklio instrukcijas, kaip ištrinti paieškos istori
 <translation id="3810973564298564668">Tvarkyti</translation>
 <translation id="3818293389945649617">Rasti kitą</translation>
 <translation id="3819183753496523827">Esate neprisijungę. Patikrinkite interneto ryšį ir bandykite dar kartą.</translation>
+<translation id="3832419617903252251">Slaptažodis išsaugotas tik šiame įrenginyje</translation>
 <translation id="3835964409414434850">Eiti į kitą skirtuką</translation>
 <translation id="3838691874161539578">Patikrinkite išsaugotus slaptažodžius, kad būtumėte geriau apsaugoti internete</translation>
 <translation id="385051799172605136">Atgal</translation>
@@ -630,6 +634,7 @@ Jei norite pakeisti šį nustatymą, <ph name="BEGIN_LINK" />iš naujo nustatyki
 <translation id="54401264925851789">Puslapio saugos informacija</translation>
 <translation id="5443952882982198570">Kredito kortelės</translation>
 <translation id="5444892875087332195">Žymės</translation>
+<translation id="5453250766792920795">{count,plural, =1{Žymė išsaugota jūsų paskyroje ({email})}one{Žymės išsaugotos jūsų paskyroje ({email})}few{Žymės išsaugotos jūsų paskyroje ({email})}many{Žymės išsaugotos jūsų paskyroje ({email})}other{Žymės išsaugotos jūsų paskyroje ({email})}}</translation>
 <translation id="5457226814769348910">Atidaryti versiją neprisijungus</translation>
 <translation id="5489208564673669003">Jei norite tvarkyti visų svetainių slapukus, žr. <ph name="BEGIN_LINK" />„Slapukų nustatymai“<ph name="END_LINK" />.</translation>
 <translation id="5490005495580364134">Blokuoti visus slapukus (nerekomenduojama)</translation>
@@ -656,6 +661,7 @@ Be to, reikia įgalinti „Handoff“ nustatymų skiltyje „Bendrieji“, o įr
 <translation id="5669528293118408608">www</translation>
 <translation id="5669617676038747374">Kurti QR kodą</translation>
 <translation id="567881659373499783"><ph name="PRODUCT_VERSION" /> versija</translation>
+<translation id="5683499062697987550">Jei norite naudoti ir saugoti slaptažodžius „Google“ paskyroje, patvirtinkite savo tapatybę.</translation>
 <translation id="5690398455483874150">{count,plural, =1{Dabar rodomas vienas „Chrome“ langas}one{Dabar rodomas {count} „Chrome“ langas}few{Dabar rodomi {count} „Chrome“ langai}many{Dabar rodoma {count} „Chrome“ lango}other{Dabar rodoma {count} „Chrome“ langų}}</translation>
 <translation id="5701270923492462699">Leidžiama pasiekti vaizdo kamerą</translation>
 <translation id="5704908597376970822">Nepavyksta prisijungti.</translation>
@@ -788,6 +794,7 @@ Be to, reikia įgalinti „Handoff“ nustatymų skiltyje „Bendrieji“, o įr
 
 <ph name="TIME" /> duomenys buvo užšifruoti naudojant sinchronizavimo slaptafrazę. Įveskite ją, kad pradėtumėte sinchronizuoti.</translation>
 <translation id="6418346271604475326">Ruošiamas PDF</translation>
+<translation id="6421095165635308">{count,plural, =1{Žymė išsaugota skiltyje „{title}“ jūsų paskyroje ({email})}one{Žymės išsaugotos skiltyje „{title}“ jūsų paskyroje ({email})}few{Žymės išsaugotos skiltyje „{title}“ jūsų paskyroje ({email})}many{Žymės išsaugotos skiltyje „{title}“ jūsų paskyroje ({email})}other{Žymės išsaugotos skiltyje „{title}“ jūsų paskyroje ({email})}}</translation>
 <translation id="6429213933892582367">Atidarykite slaptažodžio parinktis</translation>
 <translation id="6434591244308415567">Įvyko klaida. Vėliau bandykite dar kartą.</translation>
 <translation id="6435236283694032571">Pridėti prie skaitymo sąrašo</translation>
@@ -876,6 +883,7 @@ Kai įjungtas inkognito režimas, svetainės negali naudoti slapukų, siekdamos 
 <translation id="6888009575607455378">Ar tikrai norite atmesti pakeitimus?</translation>
 <translation id="6896758677409633944">Kopijuoti</translation>
 <translation id="6897187120838603299">Slaptažodis bus išsaugotas įrenginyje.</translation>
+<translation id="6906448540340261898">Užtikrinkite, kad visada galėtumėte naudoti slaptažodžius „Google“ paskyroje</translation>
 <translation id="6913136913033237761"><ph name="FOLDER_NAME" />. Tik šiame įrenginyje</translation>
 <translation id="6914583639806229067">Ieškoti nukopijuoto vaizdo</translation>
 <translation id="6914783257214138813">Jūsų slaptažodžiai bus matomi visiems, kurie gali peržiūrėti eksportuotą failą.</translation>

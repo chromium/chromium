@@ -72,6 +72,7 @@
 <translation id="1061130374843955397">Este é seu <ph name="DEVICE_TYPE" /></translation>
 <translation id="1061373870045429865">Criar um código QR para este link</translation>
 <translation id="1061904396131502319">Está quase na hora de fazer uma pausa</translation>
+<translation id="1062407476771304334">Substituir</translation>
 <translation id="1062628064301375934">Ajude-nos a criar uma Web com mais privacidade</translation>
 <translation id="1067048845568873861">Criado em</translation>
 <translation id="1067661089446014701">Para ter mais segurança, você pode criptografar as senhas no dispositivo antes que elas sejam salvas na sua Conta do Google</translation>
@@ -1165,6 +1166,7 @@ As permissões que você já concedeu a apps podem ser aplicadas a essa conta. V
 <translation id="1987317783729300807">Contas</translation>
 <translation id="1987574314042117472">Selecionar e instalar apps populares</translation>
 <translation id="1988259784461813694">Requisito</translation>
+<translation id="1988733631391393183">Mostrar comandos de braille nos menus do ChromeVox</translation>
 <translation id="1989112275319619282">Procurar</translation>
 <translation id="1989903373608997757">Usar sempre</translation>
 <translation id="1990046457226896323">Download de arquivos de fala concluído</translation>
@@ -2558,7 +2560,6 @@ Para gerenciar as configurações dessa conta, instale o app Family Link no seu 
 <translation id="3193695589337931419">Utilitários de sinais do sistema</translation>
 <translation id="3194786596445804250">Mostrar detalhes sobre bloquear cookies de terceiros</translation>
 <translation id="3197453258332670132">Ao clicar com o botão direito do mouse ou tocar na tela e mantê-la pressionada, informações relacionadas à seleção de texto são exibidas</translation>
-<translation id="3198804549162832936">Abrir link no novo <ph name="APP" /></translation>
 <translation id="3199127022143353223">Servidores</translation>
 <translation id="3200061262156232574">No seu carrinho de compras</translation>
 <translation id="3201237270673604992">De Z a A</translation>
@@ -2687,6 +2688,7 @@ Para gerenciar as configurações dessa conta, instale o app Family Link no seu 
 <translation id="3317678681329786349">Câmera e microfone bloqueados</translation>
 <translation id="3319306431415395200">Traduzir texto na imagem com o <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
 <translation id="3320630259304269485">"Navegação segura" (proteção contra sites perigosos) e outras configurações de segurança</translation>
+<translation id="3321460131042519426">Ativar quebra de palavra</translation>
 <translation id="3323521181261657960">Bônus! Você ganhou mais tempo de uso</translation>
 <translation id="3323577066981719144">As mudanças que você fizer aqui serão aplicadas apenas ao navegador Chrome. Abra o navegador Chrome Lacros e acesse as configurações se quiser fazer mudanças nele.</translation>
 <translation id="3325804108816646710">Procurando perfis disponíveis…</translation>
@@ -6562,6 +6564,7 @@ Há # outras senhas comprometidas. O Gerenciador de senhas do Google recomenda q
 <translation id="6823174134746916417">Tocar para clicar no touchpad</translation>
 <translation id="6824564591481349393">Copiar &amp;endereço de e-mail</translation>
 <translation id="6824584962142919697">&amp;Inspecionar elementos</translation>
+<translation id="6824725898506587159">Gerenciar idiomas</translation>
 <translation id="6825184156888454064">Ordenar por nome</translation>
 <translation id="6826872289184051766">Verificar por USB</translation>
 <translation id="6827121912381363404">Permitir que todas as extensões leiam e mudem o site <ph name="PERMITTED_SITE" /></translation>
@@ -6686,7 +6689,6 @@ Há # outras senhas comprometidas. O Gerenciador de senhas do Google recomenda q
 <translation id="6925127338315966709">Você está adicionando um perfil gerenciado a este navegador. Seu administrador poderá controlar o perfil e acessar os dados dele. Favoritos, histórico, senhas e outras configurações podem ser sincronizados com sua conta e gerenciados pelo administrador.</translation>
 <translation id="6929126689972602640">O controle dos pais não é compatível com contas escolares. Se quiser adicionar uma conta escolar que permita o acesso ao Google Sala de Aula e a outros sites para fazer trabalhos escolares em casa, primeiro faça login com a conta pessoal da criança. Você pode adicionar a conta escolar mais tarde na configuração.</translation>
 <translation id="6929760895658557216">Olá Google</translation>
-<translation id="6930036377490597025">Chave de segurança externa ou sensor integrado</translation>
 <translation id="6930161297841867798">{NUM_EXTENSIONS,plural, =1{Uma extensão foi rejeitada}one{# extensão foi rejeitada}other{# extensões foram rejeitadas}}</translation>
 <translation id="6931690462168617033">Força do clique</translation>
 <translation id="6935286146439255109">A bandeja de papel não foi encontrada</translation>
@@ -9013,6 +9015,7 @@ As permissões que você já concedeu a sites e apps podem ser aplicadas a essa 
 <translation id="9008828754342192581">Anteriormente, você escolheu permitir todas as extensões em <ph name="ORIGIN" /></translation>
 <translation id="9009369504041480176">Enviando (<ph name="PROGRESS_PERCENT" />%)...</translation>
 <translation id="9009708085379296446">Você quis modificar esta página?</translation>
+<translation id="9010845741772269259">Adicionar formas de pagamento</translation>
 <translation id="9011163749350026987">Sempre mostrar ícone</translation>
 <translation id="9011262023858991985">Transmitindo esta guia</translation>
 <translation id="9011393886518328654">Notas da versão</translation>

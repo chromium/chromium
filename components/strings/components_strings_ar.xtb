@@ -806,6 +806,7 @@
 <translation id="2951588413176968965">صندوق بريدي الإلكتروني</translation>
 <translation id="2952820037279740115">إغلاق جميع نوافذ التصفُّح المتخفي</translation>
 <translation id="2952904171810469095">A2x5</translation>
+<translation id="2954624054936281172">جدول طُرق الدفع المحفوظة</translation>
 <translation id="295526156371527179">تحذير: لم يتم دمج هذه السياسة كمعجم كما هو موضح بموجب السياسة؛ لأنها ليست معجمًا.</translation>
 <translation id="2955913368246107853">إغلاق شريط البحث</translation>
 <translation id="2958544468932521864">كريكيت</translation>
@@ -917,7 +918,6 @@
 <translation id="3249151924975132674">قروض للطلاب وتمويل الدراسة الجامعية</translation>
 <translation id="3249845759089040423">أنيق</translation>
 <translation id="3250640885957938546">إعلان وتسويق</translation>
-<translation id="3252266817569339921">الفرنسية</translation>
 <translation id="3254301855501243548">18 × 22 بوصة</translation>
 <translation id="3256863843508922226">خطط تقاعد</translation>
 <translation id="3259648571731540213">‏<ph name="CREATE_GOOGLE_CALENDAR_EVENT_FOCUSED_FRIENDLY_MATCH_TEXT" />: اضغط على مفتاح التبويب (Tab) ثم Enter لإنشاء حدث جديد في "تقويم Google" بسرعة.</translation>
@@ -1579,7 +1579,6 @@
 <translation id="484988093836683706">استخدام فتح قفل الجهاز</translation>
 <translation id="4850886885716139402">عرض</translation>
 <translation id="4852429274334674023">أنظمة تشغيل</translation>
-<translation id="485316830061041779">الألمانية</translation>
 <translation id="4853901935952445031">‏لن يتمكّن هذا الموقع الإلكتروني من استخدام U2F API بعد شباط (فبراير) 2022. وإذا كنت تمتلك هذا الموقع الإلكتروني، عليك تغييره بحيث يستخدم Web Authentication API.</translation>
 <translation id="4854362297993841467">طريقة التسليم هذه غير متاحة. جرِّب طريقة أخرى.</translation>
 <translation id="4854853140771946034">‏إنشاء ملاحظة جديدة في Google Keep بسرعة</translation>
@@ -1818,7 +1817,6 @@
 <translation id="5423269318075950257">تتبُّع السعر</translation>
 <translation id="5425241977284572032">{NUM_COOKIES,plural, =0{ما مِن مواقع إلكترونية محظورة}=1{موقع إلكتروني واحد محظور}two{موقعان إلكترونيان محظوران}few{# مواقع إلكترونية محظورة}many{# موقعًا إلكترونيًا محظورًا}other{# موقع إلكتروني محظور}}</translation>
 <translation id="5426179911063097041">يريد موقع <ph name="SITE" /> إرسال إشعارات إليك.</translation>
-<translation id="5428105026674456456">الإسبانية</translation>
 <translation id="5430298929874300616">إزالة إشارة مرجعية</translation>
 <translation id="5443468954631487277">ترتيب عكسي والوجه للأعلى</translation>
 <translation id="5447765697759493033">لن تتم ترجمة هذا الموقع</translation>
@@ -1827,7 +1825,6 @@
 <translation id="5457113250005438886">غير صالحة</translation>
 <translation id="5458150163479425638">{CONTACT,plural, =0{<ph name="CONTACT_PREVIEW" />}=1{<ph name="CONTACT_PREVIEW" /> وجهة اتصال <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> أخرى}two{<ph name="CONTACT_PREVIEW" /> وجهتا اتصال (<ph name="NUMBER_OF_ADDITIONAL_CONTACTS" />) أخريان}few{<ph name="CONTACT_PREVIEW" /> و<ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> جهات اتصال أخرى}many{<ph name="CONTACT_PREVIEW" /> و<ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> جهة اتصال أخرى}other{<ph name="CONTACT_PREVIEW" /> و<ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> جهة اتصال أخرى}}</translation>
 <translation id="5463625433003343978">جارٍ البحث عن أجهزة...</translation>
-<translation id="5469868506864199649">الإيطالية</translation>
 <translation id="5470230812924696184">هندسة مدنية</translation>
 <translation id="5470861586879999274">إعادة الت&amp;حرير</translation>
 <translation id="5471337644440862957">أفلام كوميدية</translation>
@@ -1840,7 +1837,6 @@
     <ph name="LINE_BREAK" />
     حاول الاتصال بمشرف النظام.</translation>
 <translation id="549333378215107354">الحجم 3</translation>
-<translation id="5503356662318814623">إرسال رسالة</translation>
 <translation id="5509762909502811065">B0</translation>
 <translation id="5509780412636533143">الإشارات المرجعية المُدارة</translation>
 <translation id="5510481203689988000">تتم إدارة هذا الإعداد في إعدادات ملفات تعريف الارتباط.</translation>
@@ -2765,6 +2761,7 @@
 <translation id="7736959720849233795">نسخ عنوان الرابط</translation>
 <translation id="7740996059027112821">عادي</translation>
 <translation id="77424286611022110">يعرض هذا الموقع الإلكتروني إعلانات مضلِّلة أو غير مرغوب فيها. <ph name="LEARN_MORE_LINK_TEXT" /></translation>
+<translation id="7744505202669469867">جدول العناوين المحفوظة</translation>
 <translation id="774634243536837715">تم حظر المحتوى الخطير.</translation>
 <translation id="7751971323486164747">‏تخصيص أحجام الخطوط وأنماطها في Chrome</translation>
 <translation id="7752995774971033316">غير مُدار</translation>
@@ -2992,7 +2989,6 @@
 <translation id="8296205692406981542">منتزهات وحدائق عامة ومحلية</translation>
 <translation id="8297545700510100061">يتم استخدام ملفات تعريف الارتباط وبيانات الموقع الإلكتروني الأخرى لتذكُّر بيانات تسجيل دخولك أو تقديم إعلانات مخصّصة لك مثلاً. لإدارة ملفات تعريف الارتباط لجميع المواقع الإلكترونية، يمكنك الانتقال إلى <ph name="SETTINGS" />.</translation>
 <translation id="8298115750975731693">‏قد يتتطلب Wi-Fi الذي تستخدمه (<ph name="WIFI_NAME" />) زيارة <ph name="BEGIN_BOLD" /><ph name="LOGIN_URL" /><ph name="END_BOLD" />.</translation>
-<translation id="8299269255470343364">اليابانية</translation>
 <translation id="8303854710873047864">تم عرض قسم "<ph name="SECTION" />"</translation>
 <translation id="830498451218851433">الطي إلى نصفَين</translation>
 <translation id="8307888238279532626">التطبيقات المثبَّتة وعدد مرات استخدامها</translation>
@@ -3007,6 +3003,7 @@
 <translation id="8347658365704983341">تعليم عن بُعد</translation>
 <translation id="8349305172487531364">شريط الإشارات</translation>
 <translation id="8351131234907093545">إنشاء ملاحظة</translation>
+<translation id="835203957414790336">‏بالنسبة إلى محتوى الصفحات التي تطبعها والمعلومات المتعلّقة بطابعتك، يتم إرسالهما إلى Google Cloud أو جهات خارجية لتحليلهما. على سبيل المثال، قد يتم فحصهما للكشف عن البيانات الحساسة.</translation>
 <translation id="8355270400102541638">سياق التعطّل على جهاز المستخدِم:</translation>
 <translation id="8363502534493474904">إيقاف "وضع الطيران"</translation>
 <translation id="8364627913115013041">لم يتم ضبطها.
@@ -3114,7 +3111,6 @@
 <translation id="865032292777205197">أجهزة استشعار الحركة</translation>
 <translation id="8654126188050905496">55 × 91 ملم</translation>
 <translation id="8663226718884576429">ملخّص الطلب و<ph name="TOTAL_LABEL" /> وتفاصيل إضافية</translation>
-<translation id="8666678546361132282">الإنجليزية</translation>
 <translation id="8671519637524426245">قيمة <ph name="SECURE_DNS_SALT" /> لا تستوفي متطلبات الحجم.</translation>
 <translation id="867224526087042813">التوقيع</translation>
 <translation id="8672264262457010862">خدمات تجارية وأسواق صناعية</translation>

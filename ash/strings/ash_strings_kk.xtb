@@ -466,6 +466,7 @@
 <translation id="3256109297135787951">Сөредегі элементтің ерекшеленуін өшіру</translation>
 <translation id="3260969790895726815">Сөйлеу жергілікті түрде өңделеді және мәтінді дауыспен енгізу офлайн жұмыс істейді, бірақ кейбір дауыстық пәрмендер жұмыс істемейді.</translation>
 <translation id="3269597722229482060">Тінтуірдің оң жақ түймесін басу</translation>
+<translation id="3289364673986435196">Қуат мәзірі</translation>
 <translation id="3289544412142055976">Linux қолданбаларына қазір қолдау көрсетілмейді.</translation>
 <translation id="3289674678944039601">Адаптер арқылы зарядталып жатыр.</translation>
 <translation id="3290356915286466215">Қорғалмаған</translation>
@@ -693,6 +694,7 @@
 <translation id="4269883910223712419">Құрылғының әкімшісі мына әрекеттерді орындай алады:</translation>
 <translation id="4274537685965975248">Ctrl + Alt + төменге бағыттауыш перне тіркесімінің функциясы өзгерді. End пернесінің әрекетін орындау үшін <ph name="LAUNCHER_KEY_NAME" /> пернесі + оң жаққа бағыттауыш перне тіркесімін басыңыз.</translation>
 <translation id="4279490309300973883">Экран көшірмесін көрсету</translation>
+<translation id="4280601795273309128">Қауіпсіздік жаңартулары аяқталды. Құрылғыңызды жаңартыңыз.</translation>
 <translation id="4283888303416325161">Қауіпсіздікті күшейту үшін құпия сөзді енгізіңіз.</translation>
 <translation id="4285498937028063278">Босату</translation>
 <translation id="4294319844246081198">Қайырлы таң, <ph name="GIVEN_NAME" />!</translation>
@@ -883,6 +885,7 @@
 <translation id="5147567197700016471">Құлып ашылды.</translation>
 <translation id="5150070631291639005">Құпиялық параметрлері</translation>
 <translation id="5155897006997040331">Оқу жылдамдығы</translation>
+<translation id="5163434717504750796">Батарея күйі: <ph name="BATTERY_HEALTH_PERCENTAGE" />% | Цикл саны: <ph name="CYCLE_COUNT" /></translation>
 <translation id="5166007464919321363">Жұмыс үстелін үлгі ретінде сақтау</translation>
 <translation id="5168181903108465623">Трансляциялау құрылғылары қолжетімді</translation>
 <translation id="5170568018924773124">Қалтада көрсету</translation>
@@ -1357,6 +1360,7 @@
 <translation id="743058460480092004">Камера және микрофон пайдаланылуда.</translation>
 <translation id="7452560014878697800">Қолданба камераңызды пайдаланып жатыр.</translation>
 <translation id="7453330308669753048">Іздеу тарихы нәтижесі өшірілді.</translation>
+<translation id="7455047553373871740"><ph name="BATTERY_PERCENTAGE" />% | Толуға <ph name="TIME" /> қалды</translation>
 <translation id="7461924472993315131">Бекіту</translation>
 <translation id="746232733191930409">Экран жазу режимі</translation>
 <translation id="7466449121337984263">Саусақ ізін оқу сканерін түртіңіз.</translation>
@@ -1415,6 +1419,7 @@
 <translation id="7689817529363080918">Бұл — микрофон рұқсаты бар барлық қолданба мен веб-сайт және <ph name="APP1_NAME" />, <ph name="APP2_NAME" /> қолданбалары үшін микрофонды пайдалануға мүмкіндік береді</translation>
 <translation id="7704000866383261579">Соңғы әрекетті қайталау</translation>
 <translation id="7705524343798198388">VPN</translation>
+<translation id="770741401784017797">GIF жасалып жатыр</translation>
 <translation id="7714767791242455379">Жаңа ұялы желі қосу</translation>
 <translation id="7720400844887872976"><ph name="TIME" /> дейін қосулы</translation>
 <translation id="7720410380936703141">ҚАЙТАЛАП КӨРУ</translation>
@@ -1723,6 +1728,7 @@
 <translation id="9178475906033259337"><ph name="QUERY" /> бойынша 1 нәтиже көрсетілуде</translation>
 <translation id="9179259655489829027">Бұл функция аккаунтқа кірген кез келген пайдаланушыға құпия сөзсіз жылдам кіруге мүмкіндік береді. Оны тек сенімді аккаунттармен пайдаланыңыз.</translation>
 <translation id="9183456764293710005">Толық экран ұлғайтқышы</translation>
+<translation id="9186811218777709815"><ph name="BATTERY_PERCENTAGE" />% | <ph name="TIME" /> қалды</translation>
 <translation id="9193626018745640770">Белгісіз қабылдағышта трансляциялауда</translation>
 <translation id="9194617393863864469">Басқа пайдаланушыны кіргізу…</translation>
 <translation id="9198992156681343238"><ph name="DISPLAY_NAME" /> ажыратымдылығы <ph name="RESOLUTION" /> етіп өзгертілді. Өзгерістерді сақтау үшін "Растау" түймесін басыңыз. Алдыңғы параметрлер <ph name="TIMEOUT_SECONDS" /> кейін қалпына келтіріледі.</translation>

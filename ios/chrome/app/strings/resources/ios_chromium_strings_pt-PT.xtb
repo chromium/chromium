@@ -47,10 +47,12 @@
 <translation id="3567399274263440288">Para tirar o máximo partido do Chromium, inicie sessão no mesmo com a sua Conta Google.</translation>
 <translation id="3639997914391704523">O Chromium pode verificar as suas palavras-passe quando inicia sessão com a sua Conta Google.</translation>
 <translation id="3650632991272923014"><ph name="USER_EMAIL1" /> estava a utilizar o Chromium e deixou marcadores, palavras-passe e outras definições neste dispositivo.</translation>
+<translation id="372658070733623520">Para usar e guardar dados do Chromium na sua Conta Google, valide a sua identidade.</translation>
 <translation id="3805899903892079518">O Chromium não tem acesso aos seus vídeos ou fotos. Ative o acesso nas Definições do iOS &gt; Privacidade &gt; Fotos.</translation>
 <translation id="4043291146360695975">As palavras-passe são guardadas no Gestor de palavras-passe apenas neste dispositivo.</translation>
 <translation id="4099085513035183040">Opção não suportada no Chromium Beta.</translation>
 <translation id="4432744876818348753">Inicie sessão para tirar o máximo partido do Chromium.</translation>
+<translation id="452436063477828504">Certifique-se de que pode sempre usar os dados do Chromium na sua Conta Google</translation>
 <translation id="4555020257205549924">Se esta funcionalidade estiver ativada, o Chromium oferecer-se-á para traduzir páginas escritas noutros idiomas com o Google Tradutor. <ph name="BEGIN_LINK" />Saiba mais<ph name="END_LINK" /></translation>
 <translation id="4585809515399340748">Agora, pode utilizar o Chromium sempre que tocar em links de mensagens, documentos e outras apps.</translation>
 <translation id="4633738821577273991">Obtenha também a Navegação segura melhorada para este perfil do Chromium</translation>
@@ -75,6 +77,7 @@
 <translation id="5945387852661427312">Está a iniciar sessão com uma conta gerida por <ph name="DOMAIN" /> e a conceder ao respetivo gestor o controlo dos seus dados do Chromium. Os dados ficarão permanentemente associados a esta conta. Terminar sessão no Chromium elimina os seus dados deste dispositivo, embora permaneçam armazenados na Conta Google.</translation>
 <translation id="5983312940147103417">Melhore o Chromium</translation>
 <translation id="6062449165341879460">A sua organização <ph name="DOMAIN" /> vai ter acesso aos seus dados do Chromium, marcadores, histórico, palavras-passe e outras definições que armazenar nesta conta. Quando terminar sessão, os dados são limpos deste dispositivo.  No entanto, os dados permanecem armazenados na sua Conta Google gerida e ficam disponíveis para a sua organização. A sua organização também pode definir Políticas do Utilizador específicas dessa conta que podem alterar o comportamento do Chromium.</translation>
+<translation id="61109258320235597">Para usar e guardar dados do Chromium na sua Conta Google, introduza a sua frase de acesso.</translation>
 <translation id="6119647025869519954">Para definir o Chromium como o navegador predefinido:
 1. Abra as Definições
 2. Toque em App de navegador predefinida
@@ -86,6 +89,7 @@
 <translation id="6625409903340039086">O Chromium suporta agora Políticas do Utilizador para a sua conta gerida</translation>
 <translation id="6752854822223394465">A sua entidade está a configurar o Chromium…</translation>
 <translation id="6820823224820483452">O Chromium não conseguiu verificar todas as palavras-passe. Tente novamente amanhã.</translation>
+<translation id="6911341667534646387">Continue a usar os dados do Chromium na sua Conta Google</translation>
 <translation id="7006920032187763988">Pode utilizar as palavras-passe que guardou no Gestor de palavras-passe noutras apps no seu iPad.</translation>
 <translation id="7018284295775193585">Não é possível atualizar o Chromium.</translation>
 <translation id="7045244423563602563">Personalize o Chromium</translation>

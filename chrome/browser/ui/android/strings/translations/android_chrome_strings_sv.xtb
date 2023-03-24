@@ -1446,6 +1446,7 @@ Vissa webbplatser kan till exempel svara på begäran genom att visa annonser so
 <translation id="869891660844655955">Utgångsdatum</translation>
 <translation id="8699120352855309748">Erbjud inte att översätta dessa språk</translation>
 <translation id="8712637175834984815">Uppfattat</translation>
+<translation id="8723453889042591629">Översätt sidan snabbt. Tryck länge om du vill ändra det här kortkommandot.</translation>
 <translation id="8725066075913043281">Försök igen</translation>
 <translation id="8746155870861185046">Dela markering</translation>
 <translation id="874726034427945498">Synkronisera flikar och historik för att få bättre förslag i adressfältet</translation>
@@ -1498,6 +1499,7 @@ Vissa webbplatser kan till exempel svara på begäran genom att visa annonser so
 <translation id="8989968390305463310">Webbhistoriken påverkar vilka annonser som visas och vilka intressen som du uppskattas ha. Av integritetsskäl raderas dina intressen automatiskt och löpande varje månad. Intressen kan förnyas om du inte tar bort dem.</translation>
 <translation id="8993760627012879038">Öppna en ny flik i inkognitoläge</translation>
 <translation id="8996847606757455498">Välj en annan leverantör</translation>
+<translation id="8998289560386111590">Inte tillgängligt på din enhet</translation>
 <translation id="8998729206196772491">Du håller på att logga in med ett konto som hanteras av <ph name="MANAGED_DOMAIN" />, vilket ger administratören kontroll över data i Chrome. Din data kopplas permanent till det här kontot. Om du loggar ut från Chrome raderas all din data från enheten, men den lagras fortfarande i Google-kontot.</translation>
 <translation id="9022774213089566801">Mest besökta</translation>
 <translation id="9022871169049522985">Webbplatser och annonsörer kan mäta annonsernas resultat</translation>

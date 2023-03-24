@@ -40,6 +40,7 @@
 <translation id="3167189358072330585">您的帳戶不適用於 Google Chrome。請聯絡網域管理員，或使用一般的 Google 帳戶登入。</translation>
 <translation id="3173834708294760622">Google Chrome 頁面</translation>
 <translation id="3196546062792660320">Chrome 允許您將帳戶同步至網路上，以節省時間。您可以在設定中新增或移除帳戶。</translation>
+<translation id="322254490661677575">如要將 Chrome 的資料儲存到 Google 帳戶及使用這類資料，請輸入通關密語。</translation>
 <translation id="3282568296779691940">登入 Chrome</translation>
 <translation id="3345341804167540816">隨時隨地使用 Chrome</translation>
 <translation id="3503014945441706099">同時為此 Chrome 個人檔案取得「強化安全瀏覽」功能</translation>
@@ -52,6 +53,7 @@
 <translation id="3980220367029651214">您正在將同步處理帳戶從 <ph name="USER_EMAIL1" /> 切換為 <ph name="USER_EMAIL2" />。您現有的 Chrome 資料由 <ph name="DOMAIN" /> 管理。這會刪除此裝置上的資料，但這些資料仍會保留在 <ph name="USER_EMAIL1" /> 中。</translation>
 <translation id="3984746313391923992">您的機構要求您保持登出 Chrome。</translation>
 <translation id="3988789688219830639">Google Chrome 沒有存取相片或影片的權限。請前往「iOS 設定」&gt;「私隱」&gt;「相片」開放權限。</translation>
+<translation id="4064699917955374540">如要將 Chrome 的資料儲存到 Google 帳戶及使用這類資料，請驗證身分。</translation>
 <translation id="417201473131094001">Chrome Canary 上不支援此功能</translation>
 <translation id="4233521129555661685"><ph name="USER_EMAIL1" /> 之前曾在此裝置上使用 Chrome，並儲存書籤、密碼和其他設定。</translation>
 <translation id="424864128008805179">要登出 Chrome 嗎？</translation>
@@ -68,6 +70,7 @@
 <translation id="5119391094379141756">選取 [Chrome]</translation>
 <translation id="5162467219239570114">Chrome 版本過舊。如果<ph name="BEGIN_LINK" />應用程式商店<ph name="END_LINK" />沒有提供任何更新，您的裝置可能已停止支援新版本的 Chrome。</translation>
 <translation id="5389212809648216794">由於另一個應用程式正在使用相機，因此 Google Chrome 暫時無法使用</translation>
+<translation id="5395376160638294582">確保你隨時可以使用 Google 帳戶中的 Chrome 資料</translation>
 <translation id="5460571915754665838">4. 選取 [Chrome]</translation>
 <translation id="5492504007368565877">「Google 密碼管理工具」無法檢查您的密碼。</translation>
 <translation id="5552137475244467770">Chrome 會定期將您的密碼與網上發佈的清單互相核對。核對時，您的密碼和使用者名稱將會加密，任何人 (包括 Google) 均無法讀取。</translation>
@@ -122,6 +125,7 @@
 <translation id="8370517070665726704">版權所有 <ph name="YEAR" /> Google LLC。保留所有權利。</translation>
 <translation id="840168496893712993">部份外掛程式導致 Chrome 當機，請嘗試解除安裝。</translation>
 <translation id="8414886616817913619">您的機構要求您登入才能使用 Chrome。<ph name="BEGIN_LINK" />瞭解詳情<ph name="END_LINK" /></translation>
+<translation id="84594714173170813">請繼續使用 Google 帳戶中的 Chrome 資料</translation>
 <translation id="8459495907675268833">所選資料已從 Chrome 和已同步的裝置中移除。不過，您仍可前往 history.google.com 存取 Google 帳戶中保存的其他各種瀏覽紀錄，例如在其他 Google 服務中的搜尋和活動紀錄。</translation>
 <translation id="850555388806794946">如何將 Chrome 設定為預設瀏覽器：
   1. 開啟「設定」

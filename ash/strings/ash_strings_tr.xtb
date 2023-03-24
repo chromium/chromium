@@ -461,6 +461,7 @@ Başlamak için şunları deneyebilirsin.</translation>
 <translation id="3256109297135787951">Rafınızdaki bir öğenin vurgusunu kaldırır</translation>
 <translation id="3260969790895726815">Konuşma yerel olarak işlenir ve dikte özelliği çevrimdışı çalışır ancak bazı sesli komutlar kullanılamaz.</translation>
 <translation id="3269597722229482060">Sağ Tıkla</translation>
+<translation id="3289364673986435196">Güç menüsü</translation>
 <translation id="3289544412142055976">Linux uygulamaları şu anda desteklenmiyor</translation>
 <translation id="3289674678944039601">Adaptör ile şarj oluyor</translation>
 <translation id="3290356915286466215">Güvenli değil</translation>
@@ -685,6 +686,7 @@ Cihazınızı güç kaynağına bağlayın.</translation>
 <translation id="4269883910223712419">Bu cihazın yöneticisi şunları yapabilir:</translation>
 <translation id="4274537685965975248">Ctrl + Alt + Aşağı Ok klavye kısayolu değişti. End tuşunu kullanmak için <ph name="LAUNCHER_KEY_NAME" /> + Sağ Ok tuşlarına basın.</translation>
 <translation id="4279490309300973883">Yansıtılıyor</translation>
+<translation id="4280601795273309128">Artık güvenlik güncellemeleri alınmayacak. Cihazınızı yeni sürüme geçirin.</translation>
 <translation id="4283888303416325161">Daha fazla güvenlik için şifre girin</translation>
 <translation id="4285498937028063278">Sabitlemeyi kaldır</translation>
 <translation id="4294319844246081198">Günaydın <ph name="GIVEN_NAME" />,</translation>
@@ -871,6 +873,7 @@ Cihazınızı güç kaynağına bağlayın.</translation>
 <translation id="5147567197700016471">Kilitli değil</translation>
 <translation id="5150070631291639005">Gizlilik ayarları</translation>
 <translation id="5155897006997040331">Okuma hızı</translation>
+<translation id="5163434717504750796">Pil sağlığı %<ph name="BATTERY_HEALTH_PERCENTAGE" /> | Şarj döngüsü sayısı <ph name="CYCLE_COUNT" /></translation>
 <translation id="5166007464919321363">Masayı şablon olarak kaydet</translation>
 <translation id="5168181903108465623">Yayın cihazları kullanılabilir</translation>
 <translation id="5170568018924773124">Klasörde göster</translation>
@@ -1341,6 +1344,7 @@ Yeni yüklenmiş</translation>
 <translation id="743058460480092004">Kamera ve mikrofon kullanımda.</translation>
 <translation id="7452560014878697800">Bir uygulama kameranızı kullanıyor</translation>
 <translation id="7453330308669753048">Arama geçmişi sonucu kaldırıldı</translation>
+<translation id="7455047553373871740">%<ph name="BATTERY_PERCENTAGE" /> - Tamamen dolmasına <ph name="TIME" /> kaldı</translation>
 <translation id="7461924472993315131">Sabitle</translation>
 <translation id="746232733191930409">Ekran kaydetme modu</translation>
 <translation id="7466449121337984263">Lütfen sensöre dokunun</translation>
@@ -1399,6 +1403,7 @@ Cihazı kapatmak için cihazın güç düğmesini tekrar basılı tutun.</transl
 <translation id="7689817529363080918">Mikrofonun sesinin açılması; <ph name="APP1_NAME" />, <ph name="APP2_NAME" /> ile birlikte mikrofon izni olan tüm uygulamaların ve web sitelerinin mikrofona erişmesine izin verir</translation>
 <translation id="7704000866383261579">Son işlemi yinele</translation>
 <translation id="7705524343798198388">VPN</translation>
+<translation id="770741401784017797">GIF oluşturuluyor</translation>
 <translation id="7714767791242455379">Yeni hücresel ağ ekle</translation>
 <translation id="7720400844887872976">Saat <ph name="TIME" /> olana kadar açık</translation>
 <translation id="7720410380936703141">TEKRAR DENE</translation>
@@ -1704,6 +1709,7 @@ Cihazı kapatmak için cihazın güç düğmesini tekrar basılı tutun.</transl
 <translation id="9178475906033259337"><ph name="QUERY" /> için 1 sonuç gösteriliyor</translation>
 <translation id="9179259655489829027">Bu özellik oturum açmış tüm kullanıcılara şifre gerektirmeden hızlı bir şekilde erişmenize olanak verir. Bu özelliği sadece güvendiğiniz hesaplarda kullanın.</translation>
 <translation id="9183456764293710005">Tam Ekran Büyüteci</translation>
+<translation id="9186811218777709815">%<ph name="BATTERY_PERCENTAGE" /> | <ph name="TIME" /> kaldı</translation>
 <translation id="9193626018745640770">Bilinmeyen bir alıcıya yayınlanıyor</translation>
 <translation id="9194617393863864469">Başka bir kullanıcı olarak oturum aç...</translation>
 <translation id="9198992156681343238">Çözünürlük <ph name="DISPLAY_NAME" /> için <ph name="RESOLUTION" /> olarak değiştirildi. Değişiklikleri korumak için Onayla'yı tıklayın. Önceki ayarlar <ph name="TIMEOUT_SECONDS" /> saniye içinde geri yüklenecek.</translation>

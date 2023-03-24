@@ -919,7 +919,6 @@ Bestela, pribatutasun-ezarpenek blokeatu egingo dute baimen hori. Baimen honekin
 <translation id="3249151924975132674">Ikasleentzako maileguak eta unibertsitaterako finantzaketa</translation>
 <translation id="3249845759089040423">Modakoa</translation>
 <translation id="3250640885957938546">Publizitatea eta marketina</translation>
-<translation id="3252266817569339921">Frantsesa</translation>
 <translation id="3254301855501243548">45,72 × 55,88 cm (18 × 22 in)</translation>
 <translation id="3256863843508922226">Erretiroa eta pentsioa</translation>
 <translation id="3259648571731540213"><ph name="CREATE_GOOGLE_CALENDAR_EVENT_FOCUSED_FRIENDLY_MATCH_TEXT" />: sakatu tabuladorea eta, ondoren, "Sartu", Google Calendar-en gertaera bat bizkor sortzeko</translation>
@@ -1582,7 +1581,6 @@ Bestela, pribatutasun-ezarpenek blokeatu egingo dute baimen hori. Baimen honekin
 <translation id="484988093836683706">Erabili gailu-desblokeoa</translation>
 <translation id="4850886885716139402">Ikusi</translation>
 <translation id="4852429274334674023">Sistema eragileak</translation>
-<translation id="485316830061041779">Alemana</translation>
 <translation id="4853901935952445031">2022ko otsailetik aurrera, webguneak ezingo du erabili U2F APIa. Zeurea bada webgunea, alda ezazu Web Authentication APIa erabiltzeko.</translation>
 <translation id="4854362297993841467">Ez dago erabilgarri entrega-metodo hori. Saiatu beste metodo batekin.</translation>
 <translation id="4854853140771946034">Sortu bizkor ohar bat Google Keep-en</translation>
@@ -1821,7 +1819,6 @@ Bestela, pribatutasun-ezarpenek blokeatu egingo dute baimen hori. Baimen honekin
 <translation id="5423269318075950257">Egin prezioen jarraipena</translation>
 <translation id="5425241977284572032">{NUM_COOKIES,plural, =0{Ezein webgunek ez ditu blokeatu cookieak}=1{Webgune batek blokeatu ditu cookieak}other{# webgunek blokeatu dituzte cookieak}}</translation>
 <translation id="5426179911063097041"><ph name="SITE" /> webguneak jakinarazpenak bidali nahi dizkizu</translation>
-<translation id="5428105026674456456">Espaniarra</translation>
 <translation id="5430298929874300616">Kendu laster-marka</translation>
 <translation id="5443468954631487277">Alderantzizko ordenan, ahoz gora</translation>
 <translation id="5447765697759493033">Webgune hau ez da itzuliko</translation>
@@ -1830,7 +1827,6 @@ Bestela, pribatutasun-ezarpenek blokeatu egingo dute baimen hori. Baimen honekin
 <translation id="5457113250005438886">Ez du balio</translation>
 <translation id="5458150163479425638">{CONTACT,plural, =0{<ph name="CONTACT_PREVIEW" />}=1{<ph name="CONTACT_PREVIEW" /> eta beste <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" />}other{<ph name="CONTACT_PREVIEW" /> eta beste <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" />}}</translation>
 <translation id="5463625433003343978">Gailuak bilatzen…</translation>
-<translation id="5469868506864199649">Italiarra</translation>
 <translation id="5470230812924696184">Ingeniaritza zibila</translation>
 <translation id="5470861586879999274">&amp;Berregin editatzea</translation>
 <translation id="5471337644440862957">Komedia-filmak</translation>
@@ -1843,7 +1839,6 @@ Bestela, pribatutasun-ezarpenek blokeatu egingo dute baimen hori. Baimen honekin
     <ph name="LINE_BREAK" />
     Jarri harremanetan sistemaren administratzailearekin.</translation>
 <translation id="549333378215107354">Tamaina: 3</translation>
-<translation id="5503356662318814623">Bidali mezu bat</translation>
 <translation id="5509762909502811065">B0</translation>
 <translation id="5509780412636533143">Kudeatutako laster-markak</translation>
 <translation id="5510481203689988000">Cookieen ezarpenek kontrolatzen dute ezarpen hau.</translation>
@@ -3000,7 +2995,6 @@ Xehetasun gehiago:
 <translation id="8296205692406981542">Lurraldeko parkeak eta lorategiak</translation>
 <translation id="8297545700510100061">Cookieak eta webguneetako beste datu batzuk zu gogoratzeko erabiltzen dira; adibidez, saioa hasteko edo iragarkiak pertsonalizatzeko. Webgune guztietako cookieak kudeatzeko, ikusi <ph name="SETTINGS" /> atala.</translation>
 <translation id="8298115750975731693">Baliteke darabilzun Wi-Fi konexioaren (<ph name="WIFI_NAME" />) <ph name="BEGIN_BOLD" /><ph name="LOGIN_URL" /><ph name="END_BOLD" /> orrira joan behar izatea.</translation>
-<translation id="8299269255470343364">Japoniarra</translation>
 <translation id="8303854710873047864">"<ph name="SECTION" />" atala ikusten ari zara</translation>
 <translation id="830498451218851433">Erdibitzeko tolestura</translation>
 <translation id="8307888238279532626">Instalatuta dauden aplikazioak eta zer maiztasunekin erabiltzen diren</translation>
@@ -3121,7 +3115,6 @@ Xehetasun gehiago:
 <translation id="865032292777205197">mugimendu-sentsoreak</translation>
 <translation id="8654126188050905496">55 × 91 mm</translation>
 <translation id="8663226718884576429">Eskaeraren laburpena, <ph name="TOTAL_LABEL" />, xehetasun gehiago</translation>
-<translation id="8666678546361132282">Ingelesa</translation>
 <translation id="8671519637524426245"><ph name="SECURE_DNS_SALT" /> balioak ez ditu betetzen tamaina-eskakizunak.</translation>
 <translation id="867224526087042813">Sinadura</translation>
 <translation id="8672264262457010862">Enpresak eta industria</translation>

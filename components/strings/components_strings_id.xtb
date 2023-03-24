@@ -922,7 +922,6 @@ Jika tidak, ini akan diblokir oleh setelan privasi Anda. Ini akan memungkinkan k
 <translation id="3249151924975132674">Pinjaman mahasiswa &amp; pembiayaan kuliah</translation>
 <translation id="3249845759089040423">Groovy</translation>
 <translation id="3250640885957938546">Periklanan &amp; pemasaran</translation>
-<translation id="3252266817569339921">Prancis</translation>
 <translation id="3254301855501243548">18 x 22 inci (45 x 55 cm)</translation>
 <translation id="3256863843508922226">Pensiun</translation>
 <translation id="3259648571731540213"><ph name="CREATE_GOOGLE_CALENDAR_EVENT_FOCUSED_FRIENDLY_MATCH_TEXT" />, tekan Tab lalu Enter untuk membuat acara baru di Google Kalender dengan cepat</translation>
@@ -1585,7 +1584,6 @@ Jika tidak, ini akan diblokir oleh setelan privasi Anda. Ini akan memungkinkan k
 <translation id="484988093836683706">Gunakan fitur buka kunci perangkat</translation>
 <translation id="4850886885716139402">Lihat</translation>
 <translation id="4852429274334674023">Sistem operasi</translation>
-<translation id="485316830061041779">Jerman</translation>
 <translation id="4853901935952445031">Situs ini tidak akan dapat menggunakan U2F API setelah Februari 2022. Jika Anda memiliki situs ini, sebaiknya ubah untuk menggunakan Web Authentication API.</translation>
 <translation id="4854362297993841467">Metode pengiriman tidak tersedia. Coba metode lain.</translation>
 <translation id="4854853140771946034">Buat catatan baru di Google Keep dengan cepat</translation>
@@ -1824,7 +1822,6 @@ Jika tidak, ini akan diblokir oleh setelan privasi Anda. Ini akan memungkinkan k
 <translation id="5423269318075950257">Pantau Harga</translation>
 <translation id="5425241977284572032">{NUM_COOKIES,plural, =0{Tidak ada situs yang diblokir}=1{1 situs diblokir}other{# situs diblokir}}</translation>
 <translation id="5426179911063097041"><ph name="SITE" /> ingin mengirimkan notifikasi kepada Anda</translation>
-<translation id="5428105026674456456">Spanyol</translation>
 <translation id="5430298929874300616">Buang bookmark</translation>
 <translation id="5443468954631487277">Urutan yang berkebalikan menghadap ke atas</translation>
 <translation id="5447765697759493033">Situs ini tidak diterjemahkan</translation>
@@ -1833,7 +1830,6 @@ Jika tidak, ini akan diblokir oleh setelan privasi Anda. Ini akan memungkinkan k
 <translation id="5457113250005438886">Tidak valid</translation>
 <translation id="5458150163479425638">{CONTACT,plural, =0{<ph name="CONTACT_PREVIEW" />}=1{<ph name="CONTACT_PREVIEW" /> dan <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> lainnya}other{<ph name="CONTACT_PREVIEW" /> dan <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> lainnya}}</translation>
 <translation id="5463625433003343978">Mencari perangkat ...</translation>
-<translation id="5469868506864199649">Italia</translation>
 <translation id="5470230812924696184">Teknik sipil</translation>
 <translation id="5470861586879999274">&amp;Ulangi pengeditan</translation>
 <translation id="5471337644440862957">Film komedi</translation>
@@ -1846,7 +1842,6 @@ Jika tidak, ini akan diblokir oleh setelan privasi Anda. Ini akan memungkinkan k
     <ph name="LINE_BREAK" />
     Coba hubungi administrator sistem Anda.</translation>
 <translation id="549333378215107354">Ukuran 3</translation>
-<translation id="5503356662318814623">Kirim pesan</translation>
 <translation id="5509762909502811065">B0</translation>
 <translation id="5509780412636533143">Bookmark Terkelola</translation>
 <translation id="5510481203689988000">Setelan ini dikontrol di setelan Cookie.</translation>
@@ -3002,7 +2997,6 @@ Jika tidak, ini akan diblokir oleh setelan privasi Anda. Ini akan memungkinkan k
 <translation id="8296205692406981542">Taman &amp; kebun daerah</translation>
 <translation id="8297545700510100061">Cookie dan data situs lainnya digunakan untuk mengingat Anda, misalnya untuk login atau personalisasi iklan. Untuk mengelola cookie semua situs, lihat <ph name="SETTINGS" />.</translation>
 <translation id="8298115750975731693">Wi-Fi yang digunakan (<ph name="WIFI_NAME" />) mungkin mewajibkan Anda mengunjungi <ph name="BEGIN_BOLD" /><ph name="LOGIN_URL" /><ph name="END_BOLD" />.</translation>
-<translation id="8299269255470343364">Jepang</translation>
 <translation id="8303854710873047864">Bagian "<ph name="SECTION" />" ditampilkan</translation>
 <translation id="830498451218851433">Lipatan setengah</translation>
 <translation id="8307888238279532626">Aplikasi yang diinstal dan seberapa sering digunakan</translation>
@@ -3121,7 +3115,6 @@ Jika tidak, ini akan diblokir oleh setelan privasi Anda. Ini akan memungkinkan k
 <translation id="865032292777205197">sensor gerakan</translation>
 <translation id="8654126188050905496">55 x 91 mm</translation>
 <translation id="8663226718884576429">Ringkasan Pesanan, <ph name="TOTAL_LABEL" />, Detail Selengkapnya</translation>
-<translation id="8666678546361132282">Inggris</translation>
 <translation id="8671519637524426245">Nilai <ph name="SECURE_DNS_SALT" /> tidak memenuhi persyaratan ukuran.</translation>
 <translation id="867224526087042813">Tanda Tangan</translation>
 <translation id="8672264262457010862">Bisnis &amp; industri</translation>

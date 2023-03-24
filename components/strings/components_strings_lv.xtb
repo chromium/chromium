@@ -809,6 +809,7 @@ Pretējā gadījumā šī iespēja būtu liegta saskaņā ar jūsu konfidenciali
 <translation id="2951588413176968965">Mana pastkaste</translation>
 <translation id="2952820037279740115">Aizvērt visus inkognito režīma logus</translation>
 <translation id="2952904171810469095">A2x5</translation>
+<translation id="2954624054936281172">Saglabāto maksājumu veidu tabula</translation>
 <translation id="295526156371527179">Brīdinājums! Šī politika netika apvienota kā vārdnīca atbilstoši politikā noteiktajam, jo tā nav vārdnīca.</translation>
 <translation id="2955913368246107853">Aizvērt atrašanas joslu</translation>
 <translation id="2958544468932521864">Krikets</translation>
@@ -921,7 +922,6 @@ Pretējā gadījumā šī iespēja būtu liegta saskaņā ar jūsu konfidenciali
 <translation id="3249151924975132674">Studiju un studējošā kredīti</translation>
 <translation id="3249845759089040423">Moderna</translation>
 <translation id="3250640885957938546">Reklamēšana un mārketings</translation>
-<translation id="3252266817569339921">Franču valoda</translation>
 <translation id="3254301855501243548">18 x 22 collas</translation>
 <translation id="3256863843508922226">Pensionēšanās un pensijas</translation>
 <translation id="3259648571731540213"><ph name="CREATE_GOOGLE_CALENDAR_EVENT_FOCUSED_FRIENDLY_MATCH_TEXT" />. Lai ātri izveidotu jaunu pasākumu Google kalendārā, nospiediet tabulēšanas taustiņu un pēc tam — taustiņu Enter.</translation>
@@ -1584,7 +1584,6 @@ Pretējā gadījumā šī iespēja būtu liegta saskaņā ar jūsu konfidenciali
 <translation id="484988093836683706">Izmantot ierīces atbloķēšanu</translation>
 <translation id="4850886885716139402">Skatīt</translation>
 <translation id="4852429274334674023">Operētājsistēmas</translation>
-<translation id="485316830061041779">Vācu valoda</translation>
 <translation id="4853901935952445031">Pēc 2022. gada februāra šajā vietnē vairs nevarēs izmantot U2F API. Ja vietne pieder jums, veiciet izmaiņas, lai turpmāk tajā izmantotu Web Authentication API.</translation>
 <translation id="4854362297993841467">Šis piegādes veids nav pieejams. Izmēģiniet citu veidu.</translation>
 <translation id="4854853140771946034">Ātri izveidot jaunu piezīmi lietotnē Google Keep</translation>
@@ -1823,7 +1822,6 @@ Pretējā gadījumā šī iespēja būtu liegta saskaņā ar jūsu konfidenciali
 <translation id="5423269318075950257">Cenas izsekošana</translation>
 <translation id="5425241977284572032">{NUM_COOKIES,plural, =0{Nav bloķēta neviena vietne}=1{Bloķēta 1 vietne}zero{Bloķētas # vietnes}one{Bloķēta # vietne}other{Bloķētas # vietnes}}</translation>
 <translation id="5426179911063097041">No vietnes <ph name="SITE" /> tiek mēģināts nosūtīt paziņojumus.</translation>
-<translation id="5428105026674456456">Spāņu valoda</translation>
 <translation id="5430298929874300616">Noņemt grāmatzīmi</translation>
 <translation id="5443468954631487277">Pretēja secība, virspuse uz augšu</translation>
 <translation id="5447765697759493033">Šī vietne netiks tulkota</translation>
@@ -1832,7 +1830,6 @@ Pretējā gadījumā šī iespēja būtu liegta saskaņā ar jūsu konfidenciali
 <translation id="5457113250005438886">Nav derīgi</translation>
 <translation id="5458150163479425638">{CONTACT,plural, =0{<ph name="CONTACT_PREVIEW" />}=1{<ph name="CONTACT_PREVIEW" /> un vēl <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" />}zero{<ph name="CONTACT_PREVIEW" /> un vēl <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" />}one{<ph name="CONTACT_PREVIEW" /> un vēl <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" />}other{<ph name="CONTACT_PREVIEW" /> un vēl <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" />}}</translation>
 <translation id="5463625433003343978">Notiek ierīču meklēšana…</translation>
-<translation id="5469868506864199649">Itāļu valoda</translation>
 <translation id="5470230812924696184">Inženiertehniskie pakalpojumi</translation>
 <translation id="5470861586879999274">&amp;Atcelt labojuma atsaukšanu</translation>
 <translation id="5471337644440862957">Komēdijas</translation>
@@ -1845,7 +1842,6 @@ Pretējā gadījumā šī iespēja būtu liegta saskaņā ar jūsu konfidenciali
     <ph name="LINE_BREAK" />
     Sazinieties ar sistēmas administratoru.</translation>
 <translation id="549333378215107354">3. izmērs</translation>
-<translation id="5503356662318814623">Sūtīt ziņojumu</translation>
 <translation id="5509762909502811065">B0</translation>
 <translation id="5509780412636533143">Pārvaldītās grāmatzīmes</translation>
 <translation id="5510481203689988000">Šo iestatījumu var kontrolēt sadaļā Sīkfaili.</translation>
@@ -2776,6 +2772,7 @@ Papildu informācija:
 <translation id="7736959720849233795">Kopēt saites adresi</translation>
 <translation id="7740996059027112821">Standarta</translation>
 <translation id="77424286611022110">Šajā vietnē tiek rādītas traucējošas vai maldinošas reklāmas. <ph name="LEARN_MORE_LINK_TEXT" /></translation>
+<translation id="7744505202669469867">Saglabāto adrešu tabula</translation>
 <translation id="774634243536837715">Bloķēts bīstams saturs</translation>
 <translation id="7751971323486164747">Pielāgot fontu izmērus un burtveidolus pārlūkā Chrome</translation>
 <translation id="7752995774971033316">Netiek pārvaldīts</translation>
@@ -3002,7 +2999,6 @@ Papildu informācija:
 <translation id="8296205692406981542">Reģionālie parki un dārzi</translation>
 <translation id="8297545700510100061">Sīkfaili un citi vietņu dati tiek izmantoti, lai saglabātu jūsu datus un tos izmantotu, piemēram, kad pierakstāties, vai reklāmu personalizēšanai. Lai pārvaldītu visu vietņu sīkfailus, pārejiet uz sadaļu <ph name="SETTINGS" />.</translation>
 <translation id="8298115750975731693">Iespējams, izmantotajā Wi-Fi tīklā (<ph name="WIFI_NAME" />) tiks pieprasīts apmeklēt vietni <ph name="BEGIN_BOLD" /><ph name="LOGIN_URL" /><ph name="END_BOLD" />.</translation>
-<translation id="8299269255470343364">Japāņu valoda</translation>
 <translation id="8303854710873047864">Tiek rādīta sadaļa “<ph name="SECTION" />”</translation>
 <translation id="830498451218851433">Locījums uz pusēm</translation>
 <translation id="8307888238279532626">Instalētās lietotnes un to izmantošanas biežums</translation>
@@ -3017,6 +3013,7 @@ Papildu informācija:
 <translation id="8347658365704983341">Tālmācība</translation>
 <translation id="8349305172487531364">Grāmatzīmju josla</translation>
 <translation id="8351131234907093545">Izveidot piezīmi</translation>
+<translation id="835203957414790336">Jūsu izdrukāto lapu saturs un informācija par printeri tiek nosūtīta uz Google Cloud vai trešajām pusēm, lai veiktu analīzi. Piemēram, saturs var tikt pārmeklēts, lai konstatētu, vai tajā ir ietverti sensitīvi dati.</translation>
 <translation id="8355270400102541638">Lokālais avārijas konteksts:</translation>
 <translation id="8363502534493474904">Izslēdziet lidojuma režīmu.</translation>
 <translation id="8364627913115013041">Nav iestatīta.</translation>
@@ -3123,7 +3120,6 @@ Papildu informācija:
 <translation id="865032292777205197">kustību sensori</translation>
 <translation id="8654126188050905496">55 x 91 mm</translation>
 <translation id="8663226718884576429">Pasūtījuma kopsavilkums, <ph name="TOTAL_LABEL" />, citi dati</translation>
-<translation id="8666678546361132282">Angļu valoda</translation>
 <translation id="8671519637524426245"><ph name="SECURE_DNS_SALT" /> vērtība neatbilst lieluma prasībām.</translation>
 <translation id="867224526087042813">Iespiedloksne</translation>
 <translation id="8672264262457010862">Uzņēmējdarbība un rūpniecība</translation>

@@ -72,6 +72,7 @@
 <translation id="1061130374843955397">Tervetuloa käyttäjäksi: <ph name="DEVICE_TYPE" /></translation>
 <translation id="1061373870045429865">Luo QR-koodi tälle linkille</translation>
 <translation id="1061904396131502319">Pian on tauon paikka</translation>
+<translation id="1062407476771304334">Korvaa</translation>
 <translation id="1062628064301375934">Auta meitä tekemään internetistä yksityisempi</translation>
 <translation id="1067048845568873861">Luotu</translation>
 <translation id="1067661089446014701">Turvallisuuden parantamiseksi voit salata salasanat laitteella ennen niiden tallentamista Google Salasanoihin.</translation>
@@ -1163,6 +1164,7 @@ Sovelluksille myöntämäsi luvat saattavat koskea tätä tiliä. Voit päättä
 <translation id="1987317783729300807">Tilit</translation>
 <translation id="1987574314042117472">Valitse ja asenna suosittuja sovelluksia</translation>
 <translation id="1988259784461813694">Vaatimus</translation>
+<translation id="1988733631391393183">Näytä pistekirjoituskomennot ChromeVox-valikoissa</translation>
 <translation id="1989112275319619282">Selaa</translation>
 <translation id="1989903373608997757">Käytä aina</translation>
 <translation id="1990046457226896323">Puhetiedostot ladattu</translation>
@@ -2556,7 +2558,6 @@ Voit ylläpitää tilin asetuksia asentamalla laitteellesi Family Link ‑sovell
 <translation id="3193695589337931419">System Signals Utilities</translation>
 <translation id="3194786596445804250">Näytä tietoa kolmansien osapuolten evästeiden estämisestä</translation>
 <translation id="3197453258332670132">Näytä valittuun tekstiin liittyviä tietoja klikkaamalla kakkospainikkeella tai painamalla pitkään</translation>
-<translation id="3198804549162832936">Avaa linkki uudella välilehdellä (<ph name="APP" />)</translation>
 <translation id="3199127022143353223">Palvelimet</translation>
 <translation id="3200061262156232574">Ostoskorissa</translation>
 <translation id="3201237270673604992">Z–A</translation>
@@ -2685,6 +2686,7 @@ Voit ylläpitää tilin asetuksia asentamalla laitteellesi Family Link ‑sovell
 <translation id="3317678681329786349">Kamera ja mikrofoni estetty</translation>
 <translation id="3319306431415395200">Käännä kuvassa oleva teksti: <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
 <translation id="3320630259304269485">Selaussuoja (suojaus vaarallisilta sivustoilta) ja muut suojausasetukset</translation>
+<translation id="3321460131042519426">Ota sanojen rivitys käyttöön</translation>
 <translation id="3323521181261657960">Bonus! Sait lisää käyttöaikaa</translation>
 <translation id="3323577066981719144">Tässä tekemäsi muutokset koskevat vain Chrome-selainta. Jos haluat muuttaa Lacros Chrome ‑selaimesi asetuksia, avaa Lacros Chrome ‑selain ja siirry asetuksiin.</translation>
 <translation id="3325804108816646710">Etsitään käytettävissä olevia profiileja…</translation>
@@ -6553,6 +6555,7 @@ Sinulla on vielä # vaarantunutta salasanaa. Google Salasanat suosittelee, että
 <translation id="6823174134746916417">Kosketuslevyn napauttamalla klikkaus</translation>
 <translation id="6824564591481349393">Kopioi sähköpostiosoit&amp;e</translation>
 <translation id="6824584962142919697">Tutk&amp;i elementtejä</translation>
+<translation id="6824725898506587159">Hallinnoi kieliä</translation>
 <translation id="6825184156888454064">Lajittele nimen mukaan</translation>
 <translation id="6826872289184051766">Vahvista USB:n kautta</translation>
 <translation id="6827121912381363404">Salli kaikkien laajennuksien lukea ja muuttaa sivustoa (<ph name="PERMITTED_SITE" />)</translation>
@@ -6677,7 +6680,6 @@ Sinulla on vielä # vaarantunutta salasanaa. Google Salasanat suosittelee, että
 <translation id="6925127338315966709">Olet lisäämässä ylläpidettyä profiilia tähän selaimeen. Järjestelmänvalvoja hallitsee profiilia ja pääsee sen dataan. Järjestelmänvalvoja voi synkronoida kirjanmerkit, historian, salasanat ja muut asetukset tilillesi ja ylläpitää niitä.</translation>
 <translation id="6929126689972602640">Koulutilit eivät tue lapsilukkotoimintojen käyttöä. Jos haluat lisätä koulutilin koulutehtävien tekemistä varten Google Classroomin ja muiden sivustojen kautta, kirjaudu ensin sisään lapsen henkilökohtaisella tilillä. Voit lisätä koulutilin myöhemmin määrityksen aikana.</translation>
 <translation id="6929760895658557216">Okei Google</translation>
-<translation id="6930036377490597025">Ulkoinen suojausavain tai sisäänrakennettu anturi</translation>
 <translation id="6930161297841867798">{NUM_EXTENSIONS,plural, =1{Laajennus on hylätty}other{# laajennusta on hylätty}}</translation>
 <translation id="6931690462168617033">Klikkausherkkyys</translation>
 <translation id="6935286146439255109">Paperilokero puuttuu</translation>

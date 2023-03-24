@@ -72,6 +72,7 @@
 <translation id="1061130374843955397"><ph name="DEVICE_TYPE" /> – witamy!</translation>
 <translation id="1061373870045429865">Utwórz kod QR powiązany z tym linkiem</translation>
 <translation id="1061904396131502319">Wielkimi krokami nadchodzi przerwa</translation>
+<translation id="1062407476771304334">Zastąp</translation>
 <translation id="1062628064301375934">Pomóż nam zadbać o większą prywatność w sieci</translation>
 <translation id="1067048845568873861">Utworzono</translation>
 <translation id="1067661089446014701">Zanim zapiszesz hasła na koncie Google, zaszyfruj je na urządzeniu, aby zwiększyć ich bezpieczeństwo</translation>
@@ -1150,6 +1151,7 @@ Na tym koncie mogą obowiązywać uprawnienia przyznane wcześniej aplikacjom. U
 <translation id="1987317783729300807">Konta</translation>
 <translation id="1987574314042117472">Wybierz i zainstaluj popularne aplikacje</translation>
 <translation id="1988259784461813694">Wymagania</translation>
+<translation id="1988733631391393183">Pokazuj polecenia klawiatury brajlowskiej w menu ChromeVoxa</translation>
 <translation id="1989112275319619282">Przeglądaj</translation>
 <translation id="1989903373608997757">Używaj zawsze</translation>
 <translation id="1990046457226896323">Pliki z mową zostały pobrane</translation>
@@ -2529,7 +2531,6 @@ Domena <ph name="DOMAIN" /> wymaga, by karta inteligentna pozostała w gnieźdz
 <translation id="3193695589337931419">Narzędzia do zbierania sygnałów systemowych</translation>
 <translation id="3194786596445804250">Pokaż szczegóły blokowania plików cookie innych firm</translation>
 <translation id="3197453258332670132">Gdy klikniesz prawym przyciskiem lub przytrzymasz zaznaczony na ekranie fragment, zobaczysz związane z nim informacje</translation>
-<translation id="3198804549162832936">Otwórz link w nowej karcie aplikacji <ph name="APP" /></translation>
 <translation id="3199127022143353223">Serwery</translation>
 <translation id="3200061262156232574">W koszyku na zakupy</translation>
 <translation id="3201237270673604992">Z–A</translation>
@@ -2658,6 +2659,7 @@ Domena <ph name="DOMAIN" /> wymaga, by karta inteligentna pozostała w gnieźdz
 <translation id="3317678681329786349">Zablokowano dostęp do kamery i mikrofonu</translation>
 <translation id="3319306431415395200">Przetłumacz tekst z obrazu za pomocą usługi <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
 <translation id="3320630259304269485">Bezpieczne przeglądanie (ochrona przed niebezpiecznymi stronami) i inne ustawienia zabezpieczeń</translation>
+<translation id="3321460131042519426">Włącz zawijanie wyrazów</translation>
 <translation id="3323521181261657960">Bonus! Możesz dłużej korzystać z urządzenia</translation>
 <translation id="3323577066981719144">Wprowadzone tu zmiany są stosowane tylko do przeglądarki Chrome. Aby zmienić ustawienia przeglądarki Chrome w wersji Lacros, otwórz ją i przejdź do ustawień.</translation>
 <translation id="3325804108816646710">Szukam dostępnych profili...</translation>
@@ -6531,6 +6533,7 @@ Masz jeszcze # przejętego hasła. Menedżer haseł Google zaleca, aby jak najs
 <translation id="6823174134746916417">Kliknięcie przez dotknięcie touchpada</translation>
 <translation id="6824564591481349393">Kopiuj adres &amp;e-mail</translation>
 <translation id="6824584962142919697">&amp;Sprawdź elementy</translation>
+<translation id="6824725898506587159">Więcej języków</translation>
 <translation id="6825184156888454064">Sortuj według nazwy</translation>
 <translation id="6826872289184051766">Zweryfikuj przez USB</translation>
 <translation id="6827121912381363404">Zezwalaj wszystkim rozszerzeniom na odczytywanie i zmienianie <ph name="PERMITTED_SITE" /></translation>
@@ -6655,7 +6658,6 @@ Masz jeszcze # przejętego hasła. Menedżer haseł Google zaleca, aby jak najs
 <translation id="6925127338315966709">Dodajesz do tej przeglądarki profil zarządzany. Kontrolę nad nim i dostęp do jego danych ma administrator. Zakładki, historię, hasła i inne ustawienia można zsynchronizować z kontem, a administrator może nimi zarządzać.</translation>
 <translation id="6929126689972602640">Kontrola rodzicielska nie działa z kontami szkolnymi. Aby dodać konto szkolne do korzystania z Google Classroom i innych stron przydatnych w nauce w domu, najpierw zaloguj się na osobiste konto dziecka. Konto szkolne możesz dodać na późniejszym etapie konfiguracji.</translation>
 <translation id="6929760895658557216">OK Google</translation>
-<translation id="6930036377490597025">Zewnętrzny klucz bezpieczeństwa lub wbudowany czujnik</translation>
 <translation id="6930161297841867798">{NUM_EXTENSIONS,plural, =1{Rozszerzenie zostało odrzucone}few{# rozszerzenia zostały odrzucone}many{# rozszerzeń zostało odrzuconych}other{# rozszerzenia zostało odrzucone}}</translation>
 <translation id="6931690462168617033">Siła kliknięcia</translation>
 <translation id="6935286146439255109">Brakuje zasobnika na papier</translation>
@@ -8981,6 +8983,7 @@ Na tym koncie mogą obowiązywać uprawnienia przyznane stronom i aplikacjom. K
 <translation id="9008828754342192581">Poprzednio zezwoliłeś(-aś) na wszystkie rozszerzenia na <ph name="ORIGIN" /></translation>
 <translation id="9009369504041480176">Przesyłam (<ph name="PROGRESS_PERCENT" />%)...</translation>
 <translation id="9009708085379296446">Czy ta strona miała zostać zmieniona?</translation>
+<translation id="9010845741772269259">Dodawanie form płatności</translation>
 <translation id="9011163749350026987">Zawsze pokazuj ikonę</translation>
 <translation id="9011262023858991985">Przesyłam tę kartę</translation>
 <translation id="9011393886518328654">Informacje o wersji</translation>

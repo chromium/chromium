@@ -920,7 +920,6 @@
 <translation id="3249151924975132674">ವಿದ್ಯಾರ್ಥಿ ಸಾಲಗಳು ಮತ್ತು ಕಾಲೇಜ್ ಸಾಲ</translation>
 <translation id="3249845759089040423">ಗ್ರೂವಿ</translation>
 <translation id="3250640885957938546">ಜಾಹೀರಾತು ಮತ್ತು ಮಾರ್ಕೆಟಿಂಗ್</translation>
-<translation id="3252266817569339921">ಫ್ರೆಂಚ್</translation>
 <translation id="3254301855501243548">18 x 22 ಇಂಚು</translation>
 <translation id="3256863843508922226">ನಿವೃತ್ತಿ ಮತ್ತು ಪಿಂಚಣಿ</translation>
 <translation id="3259648571731540213"><ph name="CREATE_GOOGLE_CALENDAR_EVENT_FOCUSED_FRIENDLY_MATCH_TEXT" />, Google Calendar ನಲ್ಲಿ ಹೊಸ ಈವೆಂಟ್ ಅನ್ನು ತ್ವರಿತವಾಗಿ ರಚಿಸಲು Tab ಒತ್ತಿ, ನಂತರ Enter ಒತ್ತಿ</translation>
@@ -1583,7 +1582,6 @@
 <translation id="484988093836683706">ಸಾಧನದ ಅನ್‌ಲಾಕ್ ಬಳಸಿ</translation>
 <translation id="4850886885716139402">ವೀಕ್ಷಣೆ</translation>
 <translation id="4852429274334674023">ಆಪರೇಟಿಂಗ್ ಸಿಸ್ಟಮ್‌ಗಳು</translation>
-<translation id="485316830061041779">ಜರ್ಮನ್</translation>
 <translation id="4853901935952445031">ಫೆಬ್ರವರಿ 2022 ರ ನಂತರ ಈ ಸೈಟ್‌ಗೆ U2F API ಅನ್ನು ಬಳಸಲು ಸಾಧ್ಯವಾಗುವುದಿಲ್ಲ. ನೀವು ಈ ಸೈಟ್ ಅನ್ನು ಹೊಂದಿದ್ದರೆ, Web Authentication API ಅನ್ನು ಬಳಸಲು ನೀವು ಅದನ್ನು ಬದಲಾಯಿಸಬೇಕು.</translation>
 <translation id="4854362297993841467">ಈ ವಿತರಣೆಯ ವಿಧಾನ ಲಭ್ಯವಿಲ್ಲ. ಬೇರೊಂದು ವಿಧಾನವನ್ನು ಪ್ರಯತ್ನಿಸಿ.</translation>
 <translation id="4854853140771946034">Google Keep ನಲ್ಲಿ ಹೊಸ ಟಿಪ್ಪಣಿಯನ್ನು ತ್ವರಿತವಾಗಿ ರಚಿಸಿ</translation>
@@ -1822,7 +1820,6 @@
 <translation id="5423269318075950257">ಬೆಲೆಯನ್ನು ಟ್ರ್ಯಾಕ್ ಮಾಡಿ</translation>
 <translation id="5425241977284572032">{NUM_COOKIES,plural, =0{ಯಾವುದೇ ಸೈಟ್‌ಗಳನ್ನು ನಿರ್ಬಂಧಿಸಲಾಗಿಲ್ಲ}=1{1 ಸೈಟ್ ಅನ್ನು ನಿರ್ಬಂಧಿಸಲಾಗಿದೆ}one{# ಸೈಟ್‌ಗಳನ್ನು ನಿರ್ಬಂಧಿಸಲಾಗಿದೆ}other{# ಸೈಟ್‌ಗಳನ್ನು ನಿರ್ಬಂಧಿಸಲಾಗಿದೆ}}</translation>
 <translation id="5426179911063097041">ನಿಮಗೆ ಅಧಿಸೂಚನೆಗಳನ್ನು ಕಳುಹಿಸಲು <ph name="SITE" /> ಬಯಸುತ್ತದೆ</translation>
-<translation id="5428105026674456456">ಸ್ಪ್ಯಾನಿಶ್</translation>
 <translation id="5430298929874300616">ಬುಕ್‌ಮಾರ್ಕ್‌ ತೆಗೆದುಹಾಕಿ</translation>
 <translation id="5443468954631487277">ಹಿಮ್ಮುಖ ಆರ್ಡರ್ ಮುಖ ಮೇಲಕ್ಕೆ</translation>
 <translation id="5447765697759493033">ಈ ಸೈಟ್ ಅನ್ನು ಅನುವಾದಿಸಲಾಗುವುದಿಲ್ಲ</translation>
@@ -1831,7 +1828,6 @@
 <translation id="5457113250005438886">ಅಮಾನ್ಯ</translation>
 <translation id="5458150163479425638">{CONTACT,plural, =0{<ph name="CONTACT_PREVIEW" />}=1{<ph name="CONTACT_PREVIEW" /> ಮತ್ತು <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> ಇನ್ನಷ್ಟು}one{<ph name="CONTACT_PREVIEW" /> ಮತ್ತು <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> ಇನ್ನಷ್ಟು}other{<ph name="CONTACT_PREVIEW" /> ಮತ್ತು <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> ಇನ್ನಷ್ಟು}}</translation>
 <translation id="5463625433003343978">ಸಾಧನಗಳನ್ನು ಹುಡುಕಲಾಗುತ್ತಿದೆ...</translation>
-<translation id="5469868506864199649">ಇಟಾಲಿಯನ್</translation>
 <translation id="5470230812924696184">ಸಿವಿಲ್ ಎಂಜಿನಿಯರಿಂಗ್</translation>
 <translation id="5470861586879999274">&amp;ಎಡಿಟ್ ಮಾಡುವುದನ್ನು ಪುನಃ ಮಾಡು</translation>
 <translation id="5471337644440862957">ಹಾಸ್ಯ ಪ್ರಧಾನ ಚಲನಚಿತ್ರಗಳು</translation>
@@ -1844,7 +1840,6 @@
     <ph name="LINE_BREAK" />
     ನಿಮ್ಮ ಸಿಸ್ಟಂ ನಿರ್ವಾಹಕರನ್ನು ಸಂಪರ್ಕಿಸಲು ಪ್ರಯತ್ನಿಸಿ.</translation>
 <translation id="549333378215107354">ಗಾತ್ರ 3</translation>
-<translation id="5503356662318814623">ಸಂದೇಶ ಕಳುಹಿಸಿ</translation>
 <translation id="5509762909502811065">B0</translation>
 <translation id="5509780412636533143">ನಿರ್ವಹಿಸಿದ ಬುಕ್‌ಮಾರ್ಕ್‌ಗಳು</translation>
 <translation id="5510481203689988000">ಈ ಸೆಟ್ಟಿಂಗ್ ಅನ್ನು ಕುಕೀಗಳ ಸೆಟ್ಟಿಂಗ್‌ಗಳಲ್ಲಿ ನಿಯಂತ್ರಿಸಲಾಗುತ್ತದೆ.</translation>
@@ -3001,7 +2996,6 @@
 <translation id="8296205692406981542">ಪ್ರಾದೇಶಿಕ ಪಾರ್ಕ್‌ಗಳು ಮತ್ತು ಉದ್ಯಾನಗಳು</translation>
 <translation id="8297545700510100061">ಕುಕೀಗಳು ಮತ್ತು ಇತರ ಸೈಟ್ ಡೇಟಾವನ್ನು ಬಳಸಿಕೊಂಡು ನಿಮ್ಮನ್ನು ನೆನಪಿಟ್ಟುಕೊಳ್ಳಲಾಗುತ್ತದೆ, ಉದಾಹರಣೆಗೆ ನಿಮ್ಮನ್ನು ಸೈನ್ ಇನ್ ಮಾಡಲು ಅಥವಾ ಜಾಹೀರಾತುಗಳನ್ನು ವೈಯಕ್ತೀಕರಿಸಲು ಬಳಸಲಾಗುತ್ತದೆ. ಈ ಎಲ್ಲಾ ಸೈಟ್‌ಗಳಿಗಾಗಿ ಕುಕೀಗಳನ್ನು ನಿರ್ವಹಿಸಲು, <ph name="SETTINGS" /> ನೋಡಿ.</translation>
 <translation id="8298115750975731693">ನೀವು ಬಳಸುತ್ತಿರುವ ವೈ-ಫೈ (<ph name="WIFI_NAME" />) ಗೆ ನೀವು <ph name="BEGIN_BOLD" /><ph name="LOGIN_URL" /><ph name="END_BOLD" /> ಅನ್ನು ಭೇಟಿ ನೀಡುವ ಅಗತ್ಯವಿದೆ.</translation>
-<translation id="8299269255470343364">ಜಪಾನೀಸ್</translation>
 <translation id="8303854710873047864">"<ph name="SECTION" />" ವಿಭಾಗವನ್ನು ತೋರಿಸಲಾಗಿದೆ</translation>
 <translation id="830498451218851433">ಅರ್ಧ ಮಡಿಸಿ</translation>
 <translation id="8307888238279532626">ಇನ್‍‍ಸ್ಟಾಲ್ ಮಾಡಿರುವ ಆ್ಯಪ್‌ಗಳು ಮತ್ತು ಅವುಗಳನ್ನು ಎಷ್ಟು ಬಾರಿ ಬಳಸಿರುವುದು</translation>
@@ -3123,7 +3117,6 @@
 <translation id="865032292777205197">ಮೋಷನ್ ಸೆನ್ಸರ್‌ಗಳು</translation>
 <translation id="8654126188050905496">55 x 91 ಮಿಮೀ</translation>
 <translation id="8663226718884576429">ಆರ್ಡರ್ ಸಾರಾಂಶ, <ph name="TOTAL_LABEL" />, ಹೆಚ್ಚಿನ ವಿವರಗಳು</translation>
-<translation id="8666678546361132282">ಇಂಗ್ಲಿಷ್</translation>
 <translation id="8671519637524426245"><ph name="SECURE_DNS_SALT" /> ಮೌಲ್ಯವು ಗಾತ್ರದ ಅಗತ್ಯತೆಗಳನ್ನು ಪೂರೈಸುವುದಿಲ್ಲ.</translation>
 <translation id="867224526087042813">ಸಹಿ</translation>
 <translation id="8672264262457010862">ವ್ಯಾಪಾರ ಮತ್ತು ಕೈಗಾರಿಕೆ</translation>

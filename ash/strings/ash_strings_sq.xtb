@@ -461,6 +461,7 @@ Ja disa gjëra që mund të provosh për të filluar.</translation>
 <translation id="3256109297135787951">Hiq theksimin nga një artikull në raftin tënd</translation>
 <translation id="3260969790895726815">Ligjërimi përpunohet në nivel lokal dhe diktimi funksionon jashtë linje, por disa komanda zanore nuk do të funksionojnë.</translation>
 <translation id="3269597722229482060">Kliko me butonin djathtas</translation>
+<translation id="3289364673986435196">Menyja e energjisë</translation>
 <translation id="3289544412142055976">Aplikacionet për Linux nuk mbështeten aktualisht</translation>
 <translation id="3289674678944039601">Po karikohet përmes përshtatësit</translation>
 <translation id="3290356915286466215">I pasiguruar</translation>
@@ -685,6 +686,7 @@ Lidhe pajisjen me një burim të energjisë elektrike.</translation>
 <translation id="4269883910223712419">Administratori i kësaj pajisjeje ka aftësinë që:</translation>
 <translation id="4274537685965975248">Shkurtorja e tastierës për Alt + Shigjeta poshtë është ndryshuar. Për të përdorur tastin End, shtyp tastin <ph name="LAUNCHER_KEY_NAME" /> + Shigjeta djathtas.</translation>
 <translation id="4279490309300973883">Pasqyrim</translation>
+<translation id="4280601795273309128">Përditësimet e sigurisë kanë ndaluar. Përmirëso pajisjen tënde.</translation>
 <translation id="4283888303416325161">Fut fjalëkalimin për më shumë siguri</translation>
 <translation id="4285498937028063278">Zhgozhdo</translation>
 <translation id="4294319844246081198">Mirëmëngjesi <ph name="GIVEN_NAME" />,</translation>
@@ -871,6 +873,7 @@ Lidhe pajisjen me një burim të energjisë elektrike.</translation>
 <translation id="5147567197700016471">Shkyçur</translation>
 <translation id="5150070631291639005">Cilësimet e privatësisë</translation>
 <translation id="5155897006997040331">Shpejtësia e leximit</translation>
+<translation id="5163434717504750796">Integriteti i baterisë: <ph name="BATTERY_HEALTH_PERCENTAGE" />% | Numri i cikleve: <ph name="CYCLE_COUNT" /></translation>
 <translation id="5166007464919321363">Ruaje tavolinën e punës si shabllon</translation>
 <translation id="5168181903108465623">Pajisjet e transmetimit janë të disponueshme</translation>
 <translation id="5170568018924773124">Shfaq në dosje</translation>
@@ -1341,6 +1344,7 @@ Instalim i ri</translation>
 <translation id="743058460480092004">Kamera dhe mikrofoni janë në përdorim</translation>
 <translation id="7452560014878697800">Kamerën tënde po e përdor një aplikacion</translation>
 <translation id="7453330308669753048">Rezultati i historikut të kërkimeve u hoq</translation>
+<translation id="7455047553373871740"><ph name="BATTERY_PERCENTAGE" />% | <ph name="TIME" /> derisa të mbushet</translation>
 <translation id="7461924472993315131">Gozhdoje</translation>
 <translation id="746232733191930409">Modaliteti i regjistrimit të ekranit</translation>
 <translation id="7466449121337984263">Prek sensorin</translation>
@@ -1399,6 +1403,7 @@ Për ta fikur pajisjen, shtyp dhe mbaj shtypur përsëri butonin e energjisë n�
 <translation id="7689817529363080918">Kjo lejon qasjen te mikrofoni për <ph name="APP1_NAME" />, <ph name="APP2_NAME" /> dhe të gjitha aplikacionet dhe sajtet e uebit me lejen e mikrofonit</translation>
 <translation id="7704000866383261579">Ribëj veprimin e fundit</translation>
 <translation id="7705524343798198388">VPN</translation>
+<translation id="770741401784017797">Po krijohet GIF</translation>
 <translation id="7714767791242455379">Shto rrjet të ri celular</translation>
 <translation id="7720400844887872976">Aktive deri në <ph name="TIME" /></translation>
 <translation id="7720410380936703141">PROVO SËRISH</translation>
@@ -1704,6 +1709,7 @@ Për ta fikur pajisjen, shtyp dhe mbaj shtypur përsëri butonin e energjisë n�
 <translation id="9178475906033259337">Po shfaq 1 rezultat për <ph name="QUERY" /></translation>
 <translation id="9179259655489829027">Ky funksion të lejon që të qasesh me shpejtësi te çdo përdorues i identifikuar pa kërkuar një fjalëkalim. Përdore këtë funksion vetëm me llogaritë që u beson.</translation>
 <translation id="9183456764293710005">Zmadhuesi i ekranit të plotë</translation>
+<translation id="9186811218777709815"><ph name="BATTERY_PERCENTAGE" />% | Koha e mbetur: <ph name="TIME" /></translation>
 <translation id="9193626018745640770">Po transmeton në një marrës të panjohur</translation>
 <translation id="9194617393863864469">Identifiko një përdorues tjetër...</translation>
 <translation id="9198992156681343238">Rezolucioni i <ph name="DISPLAY_NAME" /> u ndryshua në <ph name="RESOLUTION" />. Kliko te "Konfirmo" për t'i mbajtur ndryshimet. Cilësimet e mëparshme do të restaurohen për <ph name="TIMEOUT_SECONDS" />.</translation>

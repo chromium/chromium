@@ -70,6 +70,7 @@
 <translation id="5119391094379141756">Velg Chrome</translation>
 <translation id="5162467219239570114">Chrome er utdatert. Hvis ingen oppdatering er tilgjengelig i <ph name="BEGIN_LINK" />App Store<ph name="END_LINK" />, kan det hende at enheten din ikke støtter nye versjoner av Chrome lenger.</translation>
 <translation id="5389212809648216794">Google Chrome kan ikke bruke kameraet fordi det brukes av en annen app</translation>
+<translation id="5395376160638294582">Sørg for at du alltid kan bruke Chrome-dataene i Google-kontoen din</translation>
 <translation id="5460571915754665838">4. Velg Chrome</translation>
 <translation id="5492504007368565877">Google Passordlagring kan ikke sjekke passordene dine.</translation>
 <translation id="5552137475244467770">Chrome sjekker passordene dine regelmessig mot lister som er lagt ut på nett. Når dette gjøres, er passordene og brukernavnene dine kryptert. Det betyr at ingen kan lese dem, ikke engang Google.</translation>
@@ -124,6 +125,7 @@
 <translation id="8370517070665726704">Copyright <ph name="YEAR" /> Google LLC. Med enerett.</translation>
 <translation id="840168496893712993">Noen tillegg fører til at Chrome krasjer. Prøv å avinstallere dem.</translation>
 <translation id="8414886616817913619">Organisasjonen din krever at du logger på for å bruke Chrome. <ph name="BEGIN_LINK" />Finn ut mer<ph name="END_LINK" /></translation>
+<translation id="84594714173170813">Fortsett å bruke Chrome-dataene i Google-kontoen din</translation>
 <translation id="8459495907675268833">De valgte dataene er fjernet fra Chrome og alle synkroniserte enheter. Det kan hende Google-kontoen din har andre typer nettleserlogger, for eksempel for søk og aktivitet fra andre Google-tjenester, på history.google.com.</translation>
 <translation id="850555388806794946">Slik velger du Chrome som standard:
   1. Åpne Innstillinger.

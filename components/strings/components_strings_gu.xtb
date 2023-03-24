@@ -922,7 +922,6 @@
 <translation id="3249151924975132674">કૉલેજના વિદ્યાર્થીઓને લોન આપતી સેવાઓ</translation>
 <translation id="3249845759089040423">ગ્રૂવી</translation>
 <translation id="3250640885957938546">જાહેરાત અને માર્કેટિંગ</translation>
-<translation id="3252266817569339921">ફ્રેન્ચ</translation>
 <translation id="3254301855501243548">18 x 22 ઇંચ</translation>
 <translation id="3256863843508922226">નિવૃત્તિ અને પેન્શન</translation>
 <translation id="3259648571731540213"><ph name="CREATE_GOOGLE_CALENDAR_EVENT_FOCUSED_FRIENDLY_MATCH_TEXT" />, Google Calendarમાં ઝડપથી કોઈ નવી ઇવેન્ટ બનાવવા માટે, પહેલાં Tab અને પછી Enter કી દબાવો</translation>
@@ -1586,7 +1585,6 @@
 <translation id="484988093836683706">ડિવાઇસ અનલૉક કરવાની સુવિધાનો ઉપયોગ કરો</translation>
 <translation id="4850886885716139402">જુઓ</translation>
 <translation id="4852429274334674023">ઑપરેટિંગ સિસ્ટમ</translation>
-<translation id="485316830061041779">જર્મન</translation>
 <translation id="4853901935952445031">આ સાઇટ ફેબ્રુઆરી 2022 પછી U2F APIનો ઉપયોગ કરી શકશે નહીં. જો આ સાઇટની માલિકી તમારી હોય, તો વેબ પ્રમાણીકરણ APIનો ઉપયોગ કરવા માટે તમારે તેને બદલવી જોઈએ.</translation>
 <translation id="4854362297993841467">વિતરણની આ પદ્ધતિ ઉપલબ્ધ નથી. કોઈ ભિન્ન પદ્ધતિ અજમાવો.</translation>
 <translation id="4854853140771946034">Google Keepમાં ઝડપથી કોઈ નવી નોંધ બનાવો</translation>
@@ -1825,7 +1823,6 @@
 <translation id="5423269318075950257">કિંમત ટ્રૅક કરો</translation>
 <translation id="5425241977284572032">{NUM_COOKIES,plural, =0{કોઈ સાઇટને બ્લૉક કરી નથી}=1{1 સાઇટને બ્લૉક કરી}one{# સાઇટને બ્લૉક કરી}other{# સાઇટને બ્લૉક કરી}}</translation>
 <translation id="5426179911063097041"><ph name="SITE" />તમને નોટિફિકેશનો મોકલવા માગે છે</translation>
-<translation id="5428105026674456456">સ્પેનિશ</translation>
 <translation id="5430298929874300616">બુકમાર્ક દૂર કરો</translation>
 <translation id="5443468954631487277">ઉલટા ક્રમમાં ઉપર તરફ</translation>
 <translation id="5447765697759493033">આ સાઇટનો અનુવાદ થશે નહીં</translation>
@@ -1834,7 +1831,6 @@
 <translation id="5457113250005438886">અમાન્ય</translation>
 <translation id="5458150163479425638">{CONTACT,plural, =0{<ph name="CONTACT_PREVIEW" />}=1{<ph name="CONTACT_PREVIEW" /> અને <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> વધુ}one{<ph name="CONTACT_PREVIEW" /> અને <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> વધુ}other{<ph name="CONTACT_PREVIEW" /> અને <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> વધુ}}</translation>
 <translation id="5463625433003343978">ડિવાઇસ શોધી રહ્યાં છીએ...</translation>
-<translation id="5469868506864199649">ઇટાલિયન</translation>
 <translation id="5470230812924696184">સિવિલ એન્જિનિયરિંગ</translation>
 <translation id="5470861586879999274">&amp;ફરી ફેરફાર કરો</translation>
 <translation id="5471337644440862957">રમૂજી મૂવી</translation>
@@ -1847,7 +1843,6 @@
     <ph name="LINE_BREAK" />
     તમારા સિસ્ટમ વ્યવસ્થાપકનો સંપર્ક કરવાનો પ્રયાસ કરો.</translation>
 <translation id="549333378215107354">કદ 3</translation>
-<translation id="5503356662318814623">એક સંદેશ મોકલો</translation>
 <translation id="5509762909502811065">B0</translation>
 <translation id="5509780412636533143">મેનેજ થયેલા બુકમાર્ક</translation>
 <translation id="5510481203689988000">આ સેટિંગને કુકી સેટિંગમાં નિયંત્રિત કરવામાં આવે છે.</translation>
@@ -3005,7 +3000,6 @@
 <translation id="8296205692406981542">પ્રાદેશિક પાર્ક અને બગીચા</translation>
 <translation id="8297545700510100061">કુકી અને અન્ય સાઇટ ડેટાનો ઉપયોગ તમને યાદ રાખવા માટે કરવામાં આવે છે, ઉદાહરણ તરીકે, તમને સાઇન ઇન કરવા માટે અથવા જાહેરાતો મનગમતી બનાવવા માટે. બધી સાઇટ માટે કુકી મેનેજ કરવા, <ph name="SETTINGS" /> જુઓ.</translation>
 <translation id="8298115750975731693">તમે વાપરી રહેલા વાઇ-ફાઇ (<ph name="WIFI_NAME" />)ના <ph name="BEGIN_BOLD" /><ph name="LOGIN_URL" /><ph name="END_BOLD" />ની જવું પડી શકે.</translation>
-<translation id="8299269255470343364">જાપાનીઝ</translation>
 <translation id="8303854710873047864">"<ph name="SECTION" />" વિભાગ બતાવ્યો</translation>
 <translation id="830498451218851433">અડધું વાળો</translation>
 <translation id="8307888238279532626">ઇન્સ્ટૉલ થયેલી ઍપ અને તેમનો ઉપયોગ કેટલી વાર કરવામાં આવે છે</translation>
@@ -3126,7 +3120,6 @@
 <translation id="865032292777205197">મોશન સેન્સર</translation>
 <translation id="8654126188050905496">55 x 91 મિમી</translation>
 <translation id="8663226718884576429">ઑર્ડરનો સારાંશ, <ph name="TOTAL_LABEL" />, વધુ વિગતો</translation>
-<translation id="8666678546361132282">અંગ્રેજી</translation>
 <translation id="8671519637524426245"><ph name="SECURE_DNS_SALT" />નું મૂલ્ય કદની આવશ્યકતાઓ પૂરી કરતું નથી.</translation>
 <translation id="867224526087042813">સહી</translation>
 <translation id="8672264262457010862">વેપાર અને ઔદ્યોગિક</translation>

@@ -922,7 +922,6 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="3249151924975132674">Student loans and university financing</translation>
 <translation id="3249845759089040423">Groovy</translation>
 <translation id="3250640885957938546">Advertising and marketing</translation>
-<translation id="3252266817569339921">French</translation>
 <translation id="3254301855501243548">18 in x 22 in</translation>
 <translation id="3256863843508922226">Retirement and pension</translation>
 <translation id="3259648571731540213"><ph name="CREATE_GOOGLE_CALENDAR_EVENT_FOCUSED_FRIENDLY_MATCH_TEXT" />: press Tab then Enter to create a new event in Google Calendar quickly</translation>
@@ -1586,7 +1585,6 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="484988093836683706">Use device unlock</translation>
 <translation id="4850886885716139402">View</translation>
 <translation id="4852429274334674023">Operating systems</translation>
-<translation id="485316830061041779">German</translation>
 <translation id="4853901935952445031">This site won't be able to use the U2F API after February 2022. If you own this site, you should change it to use the Web Authentication API.</translation>
 <translation id="4854362297993841467">This delivery method isn’t available. Try a different method.</translation>
 <translation id="4854853140771946034">Create a new note in Google Keep quickly</translation>
@@ -1825,7 +1823,6 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="5423269318075950257">Track price</translation>
 <translation id="5425241977284572032">{NUM_COOKIES,plural, =0{No sites blocked}=1{1 site blocked}other{# sites blocked}}</translation>
 <translation id="5426179911063097041"><ph name="SITE" /> wants to send you notifications</translation>
-<translation id="5428105026674456456">Spanish</translation>
 <translation id="5430298929874300616">Remove bookmark</translation>
 <translation id="5443468954631487277">Reverse order face up</translation>
 <translation id="5447765697759493033">This site will not be translated</translation>
@@ -1834,7 +1831,6 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="5457113250005438886">Invalid</translation>
 <translation id="5458150163479425638">{CONTACT,plural, =0{<ph name="CONTACT_PREVIEW" />}=1{<ph name="CONTACT_PREVIEW" /> and <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> more}other{<ph name="CONTACT_PREVIEW" /> and <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> more}}</translation>
 <translation id="5463625433003343978">Finding devices…</translation>
-<translation id="5469868506864199649">Italian</translation>
 <translation id="5470230812924696184">Civil engineering</translation>
 <translation id="5470861586879999274">&amp;Redo edit</translation>
 <translation id="5471337644440862957">Comedy movies</translation>
@@ -1847,7 +1843,6 @@ This will otherwise be blocked by your privacy settings. This will allow the con
     <ph name="LINE_BREAK" />
     Try contacting your system administrator.</translation>
 <translation id="549333378215107354">Size 3</translation>
-<translation id="5503356662318814623">Send a message</translation>
 <translation id="5509762909502811065">B0</translation>
 <translation id="5509780412636533143">Managed bookmarks</translation>
 <translation id="5510481203689988000">This setting is controlled in Cookie settings.</translation>
@@ -3005,7 +3000,6 @@ Additional details:
 <translation id="8296205692406981542">Regional parks and gardens</translation>
 <translation id="8297545700510100061">Cookies and other site data are used to remember you, for example, to sign you in or to personalise ads. To manage cookies for all sites, see <ph name="SETTINGS" />.</translation>
 <translation id="8298115750975731693">The Wi-Fi that you are using (<ph name="WIFI_NAME" />) may require you to visit <ph name="BEGIN_BOLD" /><ph name="LOGIN_URL" /><ph name="END_BOLD" />.</translation>
-<translation id="8299269255470343364">Japanese</translation>
 <translation id="8303854710873047864">'<ph name="SECTION" />' section shown</translation>
 <translation id="830498451218851433">Fold half</translation>
 <translation id="8307888238279532626">Apps installed and how often they are used</translation>
@@ -3126,7 +3120,6 @@ Additional details:
 <translation id="865032292777205197">motion sensors</translation>
 <translation id="8654126188050905496">55 mm x 91 mm</translation>
 <translation id="8663226718884576429">Order Summary, <ph name="TOTAL_LABEL" />, More Details</translation>
-<translation id="8666678546361132282">English</translation>
 <translation id="8671519637524426245">The <ph name="SECURE_DNS_SALT" /> value does not meet the size requirements.</translation>
 <translation id="867224526087042813">Signature</translation>
 <translation id="8672264262457010862">Business and industrial</translation>

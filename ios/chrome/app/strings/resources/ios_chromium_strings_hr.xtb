@@ -47,6 +47,7 @@
 <translation id="3567399274263440288">Da biste iskoristili sve prednosti koje vam pruža Chromium, prijavite se u Chromium Google računom.</translation>
 <translation id="3639997914391704523">Chromium može provjeriti vaše zaporke kad se prijavite Google računom.</translation>
 <translation id="3650632991272923014">Korisnik <ph name="USER_EMAIL1" /> upotrebljavao je Chromium i ostavio oznake, zaporke i druge postavke na ovom uređaju.</translation>
+<translation id="372658070733623520">Da biste upotrebljavali i spremali podatke Chromiuma na svoj Google račun, potvrdite da ste to vi.</translation>
 <translation id="3805899903892079518">Chromium nema pristup fotografijama ni videozapisima. Omogućite pristup u Postavkama iOS-a &gt; Privatnost &gt; Fotografije.</translation>
 <translation id="4043291146360695975">Zaporke se spremaju u Upravitelj zaporki samo na ovom uređaju.</translation>
 <translation id="4099085513035183040">Nije podržano u beta verziji Chromiuma</translation>
@@ -75,6 +76,7 @@
 <translation id="5945387852661427312">Prijavljujete se računom kojim upravlja <ph name="DOMAIN" /> i njegovom administratoru dajete kontrolu nad svojim podacima u Chromiumu. Vaši će se podaci trajno povezati s tim računom. Ako se odjavite s Chromiuma, vaši će se podaci izbrisati s ovog uređaja, no ostat će pohranjeni na vašem Google računu.</translation>
 <translation id="5983312940147103417">Poboljšavanje Chromiuma</translation>
 <translation id="6062449165341879460">Vaša organizacija <ph name="DOMAIN" /> imat će pristup vašim podacima, oznakama, povijesti, zaporkama i drugim postavkama Chromiuma koje pohranjujete na ovom računu. Kad se odjavite, vaši će se podaci izbrisati s ovog uređaja.  No vaši će podaci ostati pohranjeni na vašem upravljanom Google računu i bit će dostupni vašoj organizaciji. Vaša organizacija može postaviti i korisnička pravila koja se odnose na taj račun i koja mogu promijeniti Chromiumovo ponašanje.</translation>
+<translation id="61109258320235597">Da biste upotrebljavali podatke iz Chromiuma na svojem Google računu i spremili ih, unesite šifru.</translation>
 <translation id="6119647025869519954">Da biste postavili Chromium kao zadani preglednik:
 1. Otvorite postavke.
 2. Dodirnite opciju Zadana aplikacija preglednika.

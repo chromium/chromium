@@ -630,6 +630,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="2469153820345007638">1-til-N-rekkefølge</translation>
 <translation id="2470767536994572628">Når du redigerer annoteringer, går dette dokumentet tilbake til enkeltsidevisning og den opprinnelige rotasjonen</translation>
 <translation id="2479410451996844060">Ugyldig nettadresse for søk.</translation>
+<translation id="2480300195898055381">I Google-kontoen din, <ph name="USER_EMAIL" /></translation>
 <translation id="2482878487686419369">Varsler</translation>
 <translation id="248348093745724435">Maskininnstillinger</translation>
 <translation id="2491120439723279231">Tjenerens sertifikat inneholder feil.</translation>
@@ -843,6 +844,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="3029752078111257850">Nyheter fra hele verden</translation>
 <translation id="3037177537145227281">Sporer prisen</translation>
 <translation id="3037605927509011580">Æsj!</translation>
+<translation id="3041450980936463495">Du kan bruke lagrede adresser i flere Google-produkter. Denne adressen er lagret i Google-kontoen din (<ph name="ACCOUNT" />).</translation>
 <translation id="3041612393474885105">Sertifikatinformasjon</translation>
 <translation id="305162504811187366">loggen for Chrome Eksternt skrivebord, inkludert tidsstempler, verter og klientøkt-ID-er</translation>
 <translation id="3052964831964880138"><ph name="PRICE_DROP" /> avslag på <ph name="PRODUCT_NAME" /></translation>
@@ -924,7 +926,6 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="3249151924975132674">Studielån og universitetsfinansiering</translation>
 <translation id="3249845759089040423">Groovy</translation>
 <translation id="3250640885957938546">Reklame og markedsføring</translation>
-<translation id="3252266817569339921">Fransk</translation>
 <translation id="3254301855501243548">18 x 22 tommer</translation>
 <translation id="3256863843508922226">Pensjon</translation>
 <translation id="3259648571731540213"><ph name="CREATE_GOOGLE_CALENDAR_EVENT_FOCUSED_FRIENDLY_MATCH_TEXT" /> – trykk på Tab og deretter på Enter for å opprette en ny hendelse i Google Kalender raskt</translation>
@@ -1589,7 +1590,6 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="484988093836683706">Bruk enhetsopplåsing</translation>
 <translation id="4850886885716139402">Visning</translation>
 <translation id="4852429274334674023">Operativsystemer</translation>
-<translation id="485316830061041779">Tysk</translation>
 <translation id="4853901935952445031">Dette nettstedet kan ikke bruke U2F-API-et etter februar 2022. Hvis du eier dette nettstedet, bør du endre det til å bruke Web Authentication-API-et.</translation>
 <translation id="4854362297993841467">Denne leveringsmetoden er ikke tilgjengelig. Prøv en annen metode.</translation>
 <translation id="4854853140771946034">Opprett et nytt notat i Google Keep raskt</translation>
@@ -1828,7 +1828,6 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="5423269318075950257">Spor prisen</translation>
 <translation id="5425241977284572032">{NUM_COOKIES,plural, =0{Ingen nettsteder er blokkert}=1{1 nettsted er blokkert}other{# nettsteder er blokkert}}</translation>
 <translation id="5426179911063097041"><ph name="SITE" /> vil sende deg varsler</translation>
-<translation id="5428105026674456456">Spansk</translation>
 <translation id="5430298929874300616">Fjern bokmerke</translation>
 <translation id="5443468954631487277">Motsatt rekkefølge – forsiden opp</translation>
 <translation id="5447765697759493033">Dette nettstedet oversettes ikke</translation>
@@ -1837,7 +1836,6 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="5457113250005438886">Ugyldig</translation>
 <translation id="5458150163479425638">{CONTACT,plural, =0{<ph name="CONTACT_PREVIEW" />}=1{<ph name="CONTACT_PREVIEW" /> og <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> til}other{<ph name="CONTACT_PREVIEW" /> og <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> til}}</translation>
 <translation id="5463625433003343978">Finner enheter …</translation>
-<translation id="5469868506864199649">Italiensk</translation>
 <translation id="5470230812924696184">Byggeteknikk</translation>
 <translation id="5470861586879999274">&amp;Endre likevel</translation>
 <translation id="5471337644440862957">Komedier</translation>
@@ -1850,7 +1848,6 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
     <ph name="LINE_BREAK" />
     Prøv å kontakte systemadministratoren din.</translation>
 <translation id="549333378215107354">Størrelse 3</translation>
-<translation id="5503356662318814623">Send melding</translation>
 <translation id="5509762909502811065">B0</translation>
 <translation id="5509780412636533143">Administrerte bokmerker</translation>
 <translation id="5510481203689988000">Dette styres i innstillingene for informasjonskapsler.</translation>
@@ -1936,6 +1933,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="5695542892312572833">Vil du bruke Windows Hello for å verifisere og fullføre kjøpet?</translation>
 <translation id="5701381305118179107">Midtstill</translation>
 <translation id="570530837424789914">Administrer…</translation>
+<translation id="5706906618852913030">Lagre i kontoen?</translation>
 <translation id="5707154300732650394">Fortsett reisen</translation>
 <translation id="57094364128775171">Foreslå et sterkt passord…</translation>
 <translation id="571403275720188526">(arm64)</translation>
@@ -3008,7 +3006,6 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="8296205692406981542">Regionale parker og hager</translation>
 <translation id="8297545700510100061">Informasjonskapsler og andre nettstedsdata brukes til å huske deg, for eksempel for å logge deg på eller for å vise deg personlig tilpassede annonser. For å administrere informasjonskapsler for alle nettsteder, se <ph name="SETTINGS" />.</translation>
 <translation id="8298115750975731693">Det kan hende at Wifi-nettverket du bruker (<ph name="WIFI_NAME" />), krever at du besøker <ph name="BEGIN_BOLD" /><ph name="LOGIN_URL" /><ph name="END_BOLD" />.</translation>
-<translation id="8299269255470343364">Japansk</translation>
 <translation id="8303854710873047864">Delen «<ph name="SECTION" />» vises</translation>
 <translation id="830498451218851433">Halvfals</translation>
 <translation id="8307888238279532626">hvilke apper som er installert, og hvor ofte de brukes</translation>
@@ -3129,7 +3126,6 @@ Mer informasjon:
 <translation id="865032292777205197">bevegelsessensorer</translation>
 <translation id="8654126188050905496">55 x 91 mm</translation>
 <translation id="8663226718884576429">Bestillingssammendrag, <ph name="TOTAL_LABEL" />, mer informasjon</translation>
-<translation id="8666678546361132282">Engelsk</translation>
 <translation id="8671519637524426245"><ph name="SECURE_DNS_SALT" />-verdien oppfyller ikke størrelseskravene.</translation>
 <translation id="867224526087042813">Signatur</translation>
 <translation id="8672264262457010862">Forretning og industri</translation>

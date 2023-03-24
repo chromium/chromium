@@ -922,7 +922,6 @@
 <translation id="3249151924975132674">სტუდენტური სესხები და სწავლის დაფინანსება</translation>
 <translation id="3249845759089040423">სასიამოვნო</translation>
 <translation id="3250640885957938546">რეკლამა და მარკეტინგი</translation>
-<translation id="3252266817569339921">ფრანგული</translation>
 <translation id="3254301855501243548">18 x 22 დუიმი</translation>
 <translation id="3256863843508922226">პენსიაზე გასვლა და პენსია</translation>
 <translation id="3259648571731540213"><ph name="CREATE_GOOGLE_CALENDAR_EVENT_FOCUSED_FRIENDLY_MATCH_TEXT" />, Google Calendar-ში ახალი მოვლენის სწრაფად შესაქმნელად დააჭირეთ კლავიშს Tab, შემდეგ კი Enter-ს</translation>
@@ -1586,7 +1585,6 @@
 <translation id="484988093836683706">მოწყობილობის განბლოკვის მეთოდის გამოყენება</translation>
 <translation id="4850886885716139402">გადახედვა</translation>
 <translation id="4852429274334674023">ოპერაციული სისტემები</translation>
-<translation id="485316830061041779">გერმანული</translation>
 <translation id="4853901935952445031">2022 წლის თებერვლის შემდეგ ეს საიტი ვეღარ გამოიყენებს U2F API-ს. თუ ამ საიტის მფლობელი ხართ, შეიტანეთ ცვლილებები, Web Authentication API რომ გამოიყენოთ.</translation>
 <translation id="4854362297993841467">მიწოდების ეს მეთოდი მიუწვდომელია. ცადეთ სხვა ვარიანტი.</translation>
 <translation id="4854853140771946034">Google Keep-ში ახალი ჩანიშვნის სწრაფად შექმნა</translation>
@@ -1825,7 +1823,6 @@
 <translation id="5423269318075950257">ფასისთვის თვალის მიდევნება</translation>
 <translation id="5425241977284572032">{NUM_COOKIES,plural, =0{დაბლოკილი საიტები არ არის}=1{დაბლოკილია 1 საიტი}other{დაბლოკილია # საიტი}}</translation>
 <translation id="5426179911063097041"><ph name="SITE" /> ითხოვს თქვენთვის შეტყობინებების გამოგზავნას</translation>
-<translation id="5428105026674456456">ესპანური</translation>
 <translation id="5430298929874300616">სანიშნის ამოშლა</translation>
 <translation id="5443468954631487277">უკუმიმდევრობა ნაბეჭდი მხარით აღმა</translation>
 <translation id="5447765697759493033">ეს გვერდი არ ითარგმნება</translation>
@@ -1834,7 +1831,6 @@
 <translation id="5457113250005438886">არასწორი</translation>
 <translation id="5458150163479425638">{CONTACT,plural, =0{<ph name="CONTACT_PREVIEW" />}=1{<ph name="CONTACT_PREVIEW" /> და <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> სხვა}other{<ph name="CONTACT_PREVIEW" /> და <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> სხვა}}</translation>
 <translation id="5463625433003343978">მიმდინარეობს მოწყობილობების პოვნა…</translation>
-<translation id="5469868506864199649">იტალიური</translation>
 <translation id="5470230812924696184">სამოქალაქო ინჟინერია</translation>
 <translation id="5470861586879999274">რედაქტირების &amp;გამეორება</translation>
 <translation id="5471337644440862957">კომედიური ფილმები</translation>
@@ -1847,7 +1843,6 @@
     <ph name="LINE_BREAK" />
     დაუკავშირდით თქვენი სისტემის ადმინისტრატორს.</translation>
 <translation id="549333378215107354">ზომა 3</translation>
-<translation id="5503356662318814623">შეტყობინების გაგზავნა</translation>
 <translation id="5509762909502811065">B0</translation>
 <translation id="5509780412636533143">მართული სანიშნეები</translation>
 <translation id="5510481203689988000">ეს პარამეტრი იმართება ქუქი-ჩანაწერების პარამეტრებიდან.</translation>
@@ -3005,7 +3000,6 @@
 <translation id="8296205692406981542">რეგიონული პარკები და ბაღები</translation>
 <translation id="8297545700510100061">ქუქი-ჩანაწერები და საიტების სხვა მონაცემები გამოიყენება თქვენ დასამახსოვრებლად, რომ, მაგალითად, შეგიყვანოთ სისტემაში ან რეკლამა მოგარგოთ. ყველა საიტისთვის ქუქი-ჩანაწერების სამართავად მოინახულეთ <ph name="SETTINGS" />.</translation>
 <translation id="8298115750975731693">Wi-Fi-მ, რომელსაც თქვენ იყენებთ (<ph name="WIFI_NAME" />) შეიძლება მოითხოვოს თქვენი სტუმრობა <ph name="BEGIN_BOLD" /><ph name="LOGIN_URL" /><ph name="END_BOLD" />.</translation>
-<translation id="8299269255470343364">იაპონური</translation>
 <translation id="8303854710873047864">ნაჩვენებია სექცია „<ph name="SECTION" />“</translation>
 <translation id="830498451218851433">დაკეცვა ნახევრად</translation>
 <translation id="8307888238279532626">დაინსტალირებული აპები და მათი გამოყენების სიხშირე</translation>
@@ -3126,7 +3120,6 @@
 <translation id="865032292777205197">მოძრაობის სენსორები</translation>
 <translation id="8654126188050905496">55 x 91 მმ</translation>
 <translation id="8663226718884576429">შეკვეთის რეზიუმე, <ph name="TOTAL_LABEL" />, დამატებითი ინფორმაცია</translation>
-<translation id="8666678546361132282">ინგლისური</translation>
 <translation id="8671519637524426245">მნიშვნელობა <ph name="SECURE_DNS_SALT" /> არ აკმაყოფილებს მოთხოვნებს ზომის მიმართ.</translation>
 <translation id="867224526087042813">ხელმოწერა</translation>
 <translation id="8672264262457010862">ბიზნესი და მრეწველობა</translation>

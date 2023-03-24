@@ -811,6 +811,7 @@
 <translation id="2951588413176968965">నా మెయిల్‌బాక్స్</translation>
 <translation id="2952820037279740115">అజ్ఞాత విండోలన్నింటినీ మూసివేయండి</translation>
 <translation id="2952904171810469095">A2x5</translation>
+<translation id="2954624054936281172">సేవ్ చేయబడిన పేమెంట్ ఆప్షన్‌ల టేబుల్</translation>
 <translation id="295526156371527179">హెచ్చరిక: ఈ విధానం ఒక నిఘంటువు కానందున, విధానంలో పేర్కొన్నట్లు నిఘంటువు లాగా విలీనం చేయబడలేదు.</translation>
 <translation id="2955913368246107853">కనుగొనండి బార్‌ను మూసివేయి</translation>
 <translation id="2958544468932521864">క్రికెట్</translation>
@@ -923,7 +924,6 @@
 <translation id="3249151924975132674">విద్యార్థి రుణాలు &amp; కళాశాలకు ఫైనాన్సింగ్</translation>
 <translation id="3249845759089040423">సొగసైనది</translation>
 <translation id="3250640885957938546">అడ్వర్టైజింగ్ &amp; మార్కెటింగ్</translation>
-<translation id="3252266817569339921">ఫ్రెంచ్</translation>
 <translation id="3254301855501243548">18 x 22 అంగుళాలు</translation>
 <translation id="3256863843508922226">పదవీ విరమణ &amp; పింఛను</translation>
 <translation id="3259648571731540213"><ph name="CREATE_GOOGLE_CALENDAR_EVENT_FOCUSED_FRIENDLY_MATCH_TEXT" />, Google Calendarలో త్వరగా కొత్త ఈవెంట్‌ను క్రియేట్ చేయడానికి Tabను నొక్కి, ఆపై Enterను నొక్కండి</translation>
@@ -1587,7 +1587,6 @@
 <translation id="484988093836683706">పరికర అన్‌లాక్‌ను ఉపయోగించండి</translation>
 <translation id="4850886885716139402">వీక్షణ</translation>
 <translation id="4852429274334674023">ఆపరేటింగ్ సిస్టమ్‌లు</translation>
-<translation id="485316830061041779">జర్మన్</translation>
 <translation id="4853901935952445031">ఫిబ్రవరి 2022 తర్వాత, ఈ సైట్ U2F APIను ఉపయోగించలేదు. ఈ సైట్ మీది అయితే, వెబ్ ప్రామాణీకరణ APIను ఉపయోగించడానికి మీరు దాని సెట్టింగ్‌ను మార్చాలి.</translation>
 <translation id="4854362297993841467">ఈ డెలివరీ పద్ధతి అందుబాటులో లేదు. వేరే పద్ధతిని ప్రయత్నించండి.</translation>
 <translation id="4854853140771946034">Google Keepలో త్వరగా కొత్త నోట్‌ను క్రియేట్ చేయండి</translation>
@@ -1826,7 +1825,6 @@
 <translation id="5423269318075950257">ధరను ట్రాక్ చేయండి</translation>
 <translation id="5425241977284572032">{NUM_COOKIES,plural, =0{ఏ సైట్‌లు బ్లాక్ చేయలేదు}=1{1 సైట్ బ్లాక్ చేసింది}other{# సైట్‌లు బ్లాక్ చేశాయి}}</translation>
 <translation id="5426179911063097041"><ph name="SITE" /> మీకు నోటిఫికేషన్‌లను పంపాలనుకుంటోంది</translation>
-<translation id="5428105026674456456">స్పానిష్</translation>
 <translation id="5430298929874300616">బుక్‌మార్క్‌ను తీసివేయండి</translation>
 <translation id="5443468954631487277">వ్యతిరేక క్రమంలో ఉన్న ఫేస్ అప్</translation>
 <translation id="5447765697759493033">ఈ సైట్ అనువదించబడదు</translation>
@@ -1835,7 +1833,6 @@
 <translation id="5457113250005438886">చెల్లదు</translation>
 <translation id="5458150163479425638">{CONTACT,plural, =0{<ph name="CONTACT_PREVIEW" />}=1{<ph name="CONTACT_PREVIEW" /> మరియు మరో <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" />}other{<ph name="CONTACT_PREVIEW" /> మరియు మరో <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" />}}</translation>
 <translation id="5463625433003343978">పరికరాలను కనుగొంటోంది...</translation>
-<translation id="5469868506864199649">ఇటాలియన్</translation>
 <translation id="5470230812924696184">సివిల్ ఇంజినీరింగ్</translation>
 <translation id="5470861586879999274">&amp;సవరించడాన్ని రిపీట్‌ చేయి</translation>
 <translation id="5471337644440862957">కామెడీ సినిమాలు</translation>
@@ -1848,7 +1845,6 @@
     <ph name="LINE_BREAK" />
     మీ సిస్టమ్ నిర్వాహకుడిని సంప్రదించడానికి ప్రయత్నించండి.</translation>
 <translation id="549333378215107354">సైజ్‌ 3</translation>
-<translation id="5503356662318814623">మెసేజ్‌ను పంపండి</translation>
 <translation id="5509762909502811065">B0</translation>
 <translation id="5509780412636533143">నిర్వహించబడిన బుక్‌మార్క్‌లు</translation>
 <translation id="5510481203689988000">ఈ సెట్టింగ్, కుక్కీల సెట్టింగ్‌లలో నియంత్రించబడుతోంది.</translation>
@@ -2779,6 +2775,7 @@
 <translation id="7736959720849233795">లింక్ అడ్రస్‌ను కాపీ చేయండి</translation>
 <translation id="7740996059027112821">ప్రామాణికం</translation>
 <translation id="77424286611022110">ఈ సైట్ అనుచితమైన లేదా తప్పుదారి పట్టించే యాడ్‌లను చూపుతుంది. <ph name="LEARN_MORE_LINK_TEXT" /></translation>
+<translation id="7744505202669469867">సేవ్ చేయబడిన అడ్రస్‌ల టేబుల్</translation>
 <translation id="774634243536837715">హానికరమైన కంటెంట్ బ్లాక్ చేయబడింది.</translation>
 <translation id="7751971323486164747">Chromeలో ఫాంట్ సైజ్‌లను, టైప్‌ఫేస్‌లను అనుకూలంగా మార్చండి</translation>
 <translation id="7752995774971033316">నిర్వహించడం లేదు</translation>
@@ -3005,7 +3002,6 @@
 <translation id="8296205692406981542">ప్రాంతీయ పార్క్‌లు &amp; గార్డెన్‌లు</translation>
 <translation id="8297545700510100061">మీ సందర్శన సమాచారాన్ని గుర్తుంచుకోవడానికి కుక్కీలు, ఇతర సైట్ డేటా ఉపయోగించబడతాయి, ఉదాహరణకు, సైన్ ఇన్ చేయడానికి మిమ్మల్ని అనుమతించడం లేదా మీకు వ్యక్తిగతీకరించిన యాడ్‌లను చూపడం. అన్ని సైట్‌లకు కుక్కీలను మేనేజ్ చేయడానికి, <ph name="SETTINGS" />‌ను చూడండి.</translation>
 <translation id="8298115750975731693">మీరు ఉపయోగిస్తున్న Wi-Fi (<ph name="WIFI_NAME" />)కు మీరు<ph name="BEGIN_BOLD" /><ph name="LOGIN_URL" /><ph name="END_BOLD" />ను సందర్శించడం అవసరం.</translation>
-<translation id="8299269255470343364">జపనీస్</translation>
 <translation id="8303854710873047864">"<ph name="SECTION" />" విభాగం చూపబడింది</translation>
 <translation id="830498451218851433">సగం ఫోల్డ్</translation>
 <translation id="8307888238279532626">ఇన్‌స్టాల్ చేయబడిన యాప్‌లు అలాగే వాటిని ఎంత తరచుగా ఉపయోగించినది తెలిపే వివరాలు</translation>
@@ -3020,6 +3016,7 @@
 <translation id="8347658365704983341">దూర విద్య</translation>
 <translation id="8349305172487531364">బుక్‌మార్క్‌ల బార్‌</translation>
 <translation id="8351131234907093545">గమనికను క్రియేట్ చేయండి</translation>
+<translation id="835203957414790336">మీరు ప్రింట్ చేసే పేజీల కంటెంట్, మీ ప్రింటర్ గురించిన సమాచారం, విశ్లేషణ కోసం Google Cloud లేదా థర్డ్-పార్టీలకు పంపబడుతుంది. ఉదాహరణకు, ఇది సున్నితమైన వ్యక్తిగత సమాచారం కోసం స్కాన్ చేయబడవచ్చు.</translation>
 <translation id="8355270400102541638">స్థానిక క్రాష్ సందర్భం:</translation>
 <translation id="8363502534493474904">ఎయిర్‌ప్లైన్ మోడ్‌ను ఆఫ్ చేయడం</translation>
 <translation id="8364627913115013041">సెట్ చేయలేదు.</translation>
@@ -3125,7 +3122,6 @@
 <translation id="865032292777205197">మోషన్ సెన్సార్‌లు</translation>
 <translation id="8654126188050905496">55 x 91 మి.మీ.</translation>
 <translation id="8663226718884576429">ఆర్డర్ సారాంశం, <ph name="TOTAL_LABEL" />, మరిన్ని వివరాలు</translation>
-<translation id="8666678546361132282">ఇంగ్లీష్</translation>
 <translation id="8671519637524426245"><ph name="SECURE_DNS_SALT" /> విలువ సైజు అవసరాలకు అనుగుణంగా లేదు.</translation>
 <translation id="867224526087042813">సంతకం</translation>
 <translation id="8672264262457010862">బిజినెస్ &amp; పారిశ్రామికం</translation>

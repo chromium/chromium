@@ -893,7 +893,7 @@
 <translation id="5876496397064130037">任务已恢复</translation>
 <translation id="587735546353481577">若要关注某个网站，请转到该网站，打开 Chrome 菜单，然后点按“关注”。</translation>
 <translation id="5879072387416556377">获得更好的建议</translation>
-<translation id="5916664084637901428">启用</translation>
+<translation id="5916664084637901428">已启用</translation>
 <translation id="5919204609460789179">需更新 <ph name="PRODUCT_NAME" />，才能开始同步</translation>
 <translation id="5938820472109305350">添加“<ph name="INTEREST" />”</translation>
 <translation id="5942872142862698679">目前使用的搜索引擎是 Google</translation>
@@ -1498,6 +1498,7 @@
 <translation id="8989968390305463310">您的浏览记录会影响您看到的广告以及系统推测出的兴趣（如下所示）。为了保护您的隐私，Chrome 每个月都会按保留时间先后顺序自动删除您的部分兴趣。兴趣能够刷新，除非您将其移除。</translation>
 <translation id="8993760627012879038">在无痕模式下打开新标签页</translation>
 <translation id="8996847606757455498">另选一个提供商</translation>
+<translation id="8998289560386111590">在您的设备上不可用</translation>
 <translation id="8998729206196772491">您正要登录由 <ph name="MANAGED_DOMAIN" /> 管理的帐号，并要授权其管理员控制您的 Chrome 数据。您的数据将与此帐号永久关联。退出 Chrome 后，您的数据将从这台设备上删除，但仍会保留在您的 Google 帐号中。</translation>
 <translation id="9022774213089566801">经常访问</translation>
 <translation id="9022871169049522985">网站和广告主可以衡量其广告的效果</translation>

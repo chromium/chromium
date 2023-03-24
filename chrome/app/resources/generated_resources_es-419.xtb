@@ -72,6 +72,7 @@
 <translation id="1061130374843955397">Te damos la bienvenida a tu <ph name="DEVICE_TYPE" /></translation>
 <translation id="1061373870045429865">Crear un código QR para este vínculo</translation>
 <translation id="1061904396131502319">Casi es hora de un descanso</translation>
+<translation id="1062407476771304334">Reemplazar</translation>
 <translation id="1062628064301375934">Ayúdanos a crear una Web más privada</translation>
 <translation id="1067048845568873861">Creada</translation>
 <translation id="1067661089446014701">Para más seguridad, puedes encriptar las contraseñas en tu dispositivo antes de que se guarden en tu Cuenta de Google</translation>
@@ -560,6 +561,7 @@ Es posible que se apliquen a esta cuenta los permisos que otorgaste a apps. Pued
 <translation id="1485015260175968628">Ahora puede:</translation>
 <translation id="1485141095922496924">Versión <ph name="PRODUCT_VERSION" /> (<ph name="PRODUCT_CHANNEL" />) <ph name="PRODUCT_MODIFIER" /> <ph name="PRODUCT_VERSION_BITS" /></translation>
 <translation id="1486096554574027028">Buscar contraseñas</translation>
+<translation id="1486486872607808064">Escanea este código QR con la cámara del dispositivo en el que quieras crear una llave de acceso para <ph name="APP_NAME" /></translation>
 <translation id="1487335504823219454">Activado: Configuración personalizada</translation>
 <translation id="1493892686965953381">Esperando <ph name="LOAD_STATE_PARAMETER" />...</translation>
 <translation id="1494349716233667318">Los sitios pueden solicitar permiso para usar las fuentes instaladas en el dispositivo</translation>
@@ -767,6 +769,7 @@ Es posible que se apliquen a esta cuenta los permisos que otorgaste a apps. Pued
 <translation id="164936512206786300">Desvincular el dispositivo Bluetooth</translation>
 <translation id="1651008383952180276">Debes ingresar la misma frase de contraseña dos veces</translation>
 <translation id="1652326691684645429">Habilitar Compartir con Nearby</translation>
+<translation id="1654580009054503925">No puede mostrar solicitudes</translation>
 <translation id="1656528038316521561">Opacidad del fondo</translation>
 <translation id="1657406563541664238">Ayúdanos a <ph name="PRODUCT_NAME" /> mejorar enviando automáticamente estadísticas de uso e informes de fallos a Google.</translation>
 <translation id="1657937299377480641">Pídele permiso a tu madre o padre para ingresar de nuevo a la cuenta que te permita acceder a recursos educativos</translation>
@@ -1147,6 +1150,7 @@ Es posible que se apliquen a esta cuenta los permisos que otorgaste a apps. Pued
 <translation id="1987317783729300807">Cuentas</translation>
 <translation id="1987574314042117472">Seleccionar e instalar apps populares</translation>
 <translation id="1988259784461813694">Requisito</translation>
+<translation id="1988733631391393183">Mostrar los comandos braille en los menús de ChromeVox</translation>
 <translation id="1989112275319619282">Navegar</translation>
 <translation id="1989903373608997757">Usar siempre</translation>
 <translation id="1990046457226896323">Se descargaron los archivos de Subtitulado instantáneo</translation>
@@ -2537,7 +2541,6 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="3193695589337931419">Utilidades de las indicaciones del sistema</translation>
 <translation id="3194786596445804250">Mostrar detalles sobre cómo bloquear cookies de terceros</translation>
 <translation id="3197453258332670132">Para ver información relacionada sobre la selección de texto, haz clic con el botón derecho en ella o mantenla presionada.</translation>
-<translation id="3198804549162832936">Abrir vínculo en una nueva pestaña de <ph name="APP" /></translation>
 <translation id="3199127022143353223">Servidores</translation>
 <translation id="3200061262156232574">En tu carrito de compras</translation>
 <translation id="3201237270673604992">De la Z a la A</translation>
@@ -2666,6 +2669,7 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="3317678681329786349">Cámara y micrófono bloqueados</translation>
 <translation id="3319306431415395200">Traducir el texto en la imagen con <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
 <translation id="3320630259304269485">Navegación segura (protección contra sitios peligrosos) y otras opciones de configuración de seguridad</translation>
+<translation id="3321460131042519426">Habilitar ajuste de línea</translation>
 <translation id="3323521181261657960">Bonus: Disfruta de más tiempo de uso</translation>
 <translation id="3323577066981719144">Los cambios que realices aquí solo se aplicarán en el navegador Chrome. Para realizar cambios en la configuración de tu navegador Chrome Lacros, abre el navegador y ve a la configuración.</translation>
 <translation id="3325804108816646710">Buscando perfiles disponibles…</translation>
@@ -3404,6 +3408,7 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="3957079323242030166">Si creas una copia de seguridad de los datos, no se verá afectada tu cuota de espacio de almacenamiento en Drive.</translation>
 <translation id="3957844511978444971">Presiona "Aceptar" para confirmar la selección de esta configuración de los servicios de Google.</translation>
 <translation id="3958088479270651626">Importar favoritos y configuración</translation>
+<translation id="3958110062351175311">Puede mostrar solicitudes en la barra de herramientas</translation>
 <translation id="3960566196862329469">ONC</translation>
 <translation id="3961005895395968120">Más acciones para <ph name="IBAN_DESCRIPTION" /></translation>
 <translation id="3962119236270174787">Protección estándar contra descargas, extensiones y sitios web identificados como peligrosos</translation>
@@ -3663,6 +3668,7 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="4205157409548006256">Se produjo un error al configurar Linux.</translation>
 <translation id="4206144641569145248">Alienígena</translation>
 <translation id="4206323443866416204">Informe de comentarios</translation>
+<translation id="4206585797409671301">Puede mostrar solicitudes</translation>
 <translation id="4207932031282227921">Se solicitó un permiso; para responder, presiona F6</translation>
 <translation id="4208390505124702064">Buscar <ph name="SITE_NAME" /></translation>
 <translation id="4209092469652827314">Grande</translation>
@@ -4332,6 +4338,7 @@ Usa Ctrl + Alt + Disminuir brillo para alejarte.</translation>
 <translation id="481574578487123132">Dispositivos vinculados</translation>
 <translation id="4816097470512964351"><ph name="DEVICE" />, Detalles</translation>
 <translation id="4816336393325437908">{COUNT,plural, =1{1 favorito borrado}other{{COUNT} favoritos borrados}}</translation>
+<translation id="4816900689218414104">Crea una llave de acceso en un teléfono o una tablet</translation>
 <translation id="4819323978093861656">{0,plural, =0{Cerrando}=1{Se cerrará dentro de 1 segundo}other{Se cerrará dentro de # segundos}}</translation>
 <translation id="4819607494758673676">Notificaciones del Asistente de Google</translation>
 <translation id="4820236583224459650">Establecer como ticket activo</translation>
@@ -6240,6 +6247,7 @@ Es posible que se apliquen a esta cuenta los permisos que otorgaste a sitios web
 <translation id="6562117348069327379">Almacena los registros del sistema en el directorio Descargas.</translation>
 <translation id="656293578423618167">La ruta de acceso o el nombre del archivo es demasiado largo. Guarda con un nombre más corto o en otra ubicación.</translation>
 <translation id="6568283005472142698">Búsqueda de pestañas</translation>
+<translation id="6570622975915850879">Usar otro dispositivo</translation>
 <translation id="65711204837946324">Se necesita permiso para continuar con la descarga.</translation>
 <translation id="6571533309669248172">Formato de texto</translation>
 <translation id="6571772921213691236">Editar los datos de acceso</translation>
@@ -6532,6 +6540,7 @@ Tienes # contraseñas hackeadas más. El Administrador de contraseñas de Go
 <translation id="6823174134746916417">Tocar para hacer clic del panel táctil</translation>
 <translation id="6824564591481349393">Copiar la dir&amp;ección de correo electrónico</translation>
 <translation id="6824584962142919697">Analizar elementos</translation>
+<translation id="6824725898506587159">Administrar idiomas</translation>
 <translation id="6825184156888454064">Ordenar por nombre</translation>
 <translation id="6826872289184051766">Verificar mediante USB</translation>
 <translation id="6827121912381363404">Permitir que todas las extensiones lean y cambien <ph name="PERMITTED_SITE" /></translation>
@@ -6656,7 +6665,6 @@ Tienes # contraseñas hackeadas más. El Administrador de contraseñas de Go
 <translation id="6925127338315966709">Estás agregando un perfil administrado a este navegador. El administrador controla tu perfil y puede acceder a sus datos. Los favoritos, el historial, las contraseñas y otras opciones de configuración se podrán sincronizar con tu cuenta, y el administrador podrá controlarlas.</translation>
 <translation id="6929126689972602640">Las cuentas de instituciones educativas no admiten la función de controles parentales. Si quieres agregar una cuenta de institución educativa para acceder a Google Classroom y otros sitios web a fin de hacer tarea en el hogar, primero accede con la cuenta personal del niño. Puedes agregar la cuenta de institución educativa más tarde en la configuración.</translation>
 <translation id="6929760895658557216">Ok Google</translation>
-<translation id="6930036377490597025">Llave de seguridad externa o sensor integrado</translation>
 <translation id="6930161297841867798">{NUM_EXTENSIONS,plural, =1{Se rechazó una extensión}other{Se rechazaron # extensiones}}</translation>
 <translation id="6931690462168617033">Fuerza del clic</translation>
 <translation id="6935286146439255109">Falta la bandeja de papel</translation>
@@ -6803,6 +6811,7 @@ Tienes # contraseñas hackeadas más. El Administrador de contraseñas de Go
 <translation id="7044606776288350625">Sincronización de datos</translation>
 <translation id="7047059339731138197">Elige un fondo de pantalla</translation>
 <translation id="7049293980323620022">¿Deseas conservar el archivo?</translation>
+<translation id="70496770794393383">Tabla de contraseñas guardadas</translation>
 <translation id="7050037487872780845">La configuración del hotspot no es válida</translation>
 <translation id="7051551856857948729">Ocultar el valor del IBAN</translation>
 <translation id="7052237160939977163">Enviar datos de seguimiento de rendimiento</translation>

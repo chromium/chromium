@@ -466,6 +466,7 @@
 <translation id="3256109297135787951">ଆପଣଙ୍କ ସେଲ୍ଫରେ ଥିବା ଏକ ଆଇଟମ୍‌ରୁ ହାଇଲାଇଟ୍‌କୁ କାଢ଼ନ୍ତୁ</translation>
 <translation id="3260969790895726815">ସ୍ପିଚକୁ ସ୍ଥାନୀୟ ଭାବେ ପ୍ରକ୍ରିୟାନ୍ଵିତ କରାଯାଇଛି ଏବଂ ଡିକ୍ଟେସନ ଅଫଲାଇନରେ କାମ କରେ, କିନ୍ତୁ କିଛି ଭଏସ କମାଣ୍ଡ କାମ କରିବ ନାହିଁ।</translation>
 <translation id="3269597722229482060">ଡାହାଣ କ୍ଲିକ୍ କରନ୍ତୁ</translation>
+<translation id="3289364673986435196">ପାୱାର ମେନୁ</translation>
 <translation id="3289544412142055976">Linux ଆପ୍ସ ବର୍ତ୍ତମାନ ସମର୍ଥିତ ନୁହେଁ</translation>
 <translation id="3289674678944039601">ଆଡପ୍ଟର୍ ମାଧ୍ୟମରେ ଚାର୍ଜ ହେଉଛି</translation>
 <translation id="3290356915286466215">ଅସୁରକ୍ଷିତ</translation>
@@ -693,6 +694,7 @@
 <translation id="4269883910223712419">ଏହା କରିବାକୁ ଏହି ଡିଭାଇସ୍‌ର ବ୍ୟବସ୍ଥାପକଙ୍କ କ୍ଷମତା ରହିଛି:</translation>
 <translation id="4274537685965975248">Ctrl + Alt + ତଳ ତୀର କୀବୋର୍ଡ ସର୍ଟକଟ୍ ବଦଳି ଯାଇଛି। End କୀକୁ ବ୍ୟବହାର କରିବା ପାଇଁ, <ph name="LAUNCHER_KEY_NAME" /> କୀ + ଡାହାଣ ତୀର କୀ ଦବାନ୍ତୁ।</translation>
 <translation id="4279490309300973883">ପ୍ରତିଫଳନ</translation>
+<translation id="4280601795273309128">ସୁରକ୍ଷା ଅପଡେଟ ସମାପ୍ତ ହୋଇଛି। ଆପଣଙ୍କ ଡିଭାଇସକୁ ଅପଗ୍ରେଡ କରନ୍ତୁ।</translation>
 <translation id="4283888303416325161">ଅଧିକ ସୁରକ୍ଷା ପାଇଁ ପାସୱାର୍ଡ ଲେଖନ୍ତୁ</translation>
 <translation id="4285498937028063278">ଅନ୍‌ପିନ୍ କରନ୍ତୁ</translation>
 <translation id="4294319844246081198">ସୁପ୍ରଭାତ <ph name="GIVEN_NAME" />,</translation>
@@ -883,6 +885,7 @@
 <translation id="5147567197700016471">ଅନଲକ୍ କରାଯାଇଛି</translation>
 <translation id="5150070631291639005">ଗୋପନୀୟତା ସେଟିଂସ</translation>
 <translation id="5155897006997040331">ପଢ଼ିବା ବେଗ</translation>
+<translation id="5163434717504750796">ବେଟେରୀ ହେଲ୍ଥ <ph name="BATTERY_HEALTH_PERCENTAGE" />% | ସାଇକେଲ ସଂଖ୍ୟା <ph name="CYCLE_COUNT" /></translation>
 <translation id="5166007464919321363">ଏକ ଟେମ୍ପଲେଟ ଭାବେ ଡେସ୍କ ସେଭ କରନ୍ତୁ</translation>
 <translation id="5168181903108465623">କାଷ୍ଟ ଡିଭାଇସ୍ ଉପଲବ୍ଧ</translation>
 <translation id="5170568018924773124">ଫୋଲ୍ଡରରେ ଦେଖାନ୍ତୁ</translation>
@@ -1356,6 +1359,7 @@
 <translation id="743058460480092004">କ୍ୟାମେରା ଓ ମାଇକ୍ରୋଫୋନ୍ ବ୍ୟବହାରରେ ଅଛି।</translation>
 <translation id="7452560014878697800">ଏକ ଆପ୍ଲିକେସନ୍ ଆପଣଙ୍କ କ୍ୟାମେରାକୁ ବ୍ୟବହାର କରୁଛି</translation>
 <translation id="7453330308669753048">ସନ୍ଧାନ ଇତିହାସ ଫଳାଫଳକୁ କାଢ଼ି ଦିଆଯାଇଛି</translation>
+<translation id="7455047553373871740"><ph name="BATTERY_PERCENTAGE" />% | ପୂର୍ଣ୍ଣ ହେବାକୁ <ph name="TIME" /> ବାକି ଅଛି</translation>
 <translation id="7461924472993315131">ପିନ୍‍</translation>
 <translation id="746232733191930409">ସ୍କ୍ରିନ୍ ରେକର୍ଡିଂ ମୋଡ୍</translation>
 <translation id="7466449121337984263">ଦୟାକରି ସେନ୍ସରକୁ ସ୍ପର୍ଶ କରନ୍ତୁ</translation>
@@ -1414,6 +1418,7 @@
 <translation id="7689817529363080918">ଏହା <ph name="APP1_NAME" />, <ph name="APP2_NAME" /> ଏବଂ ମାଇକ୍ରୋଫୋନ ଅନୁମତି ଥିବା ସମସ୍ତ ଆପ୍ସ ଓ ୱେବସାଇଟ ପାଇଁ ମାଇକ୍ରୋଫୋନ ଆକ୍ସେସକୁ ଅନୁମତି ଦିଏ</translation>
 <translation id="7704000866383261579">ଗତ କାର୍ଯ୍ୟଟିକୁ ପୁଣି କରନ୍ତୁ</translation>
 <translation id="7705524343798198388">VPN</translation>
+<translation id="770741401784017797">GIF ତିଆରି କରାଯାଉଛି</translation>
 <translation id="7714767791242455379">ନୂଆ ସେଲ୍ୟୁଲାର୍ ନେଟୱାର୍କ ଯୋଗ କରନ୍ତୁ</translation>
 <translation id="7720400844887872976"><ph name="TIME" /> ପର୍ଯ୍ୟନ୍ତ ଚାଲୁ ଅଛି</translation>
 <translation id="7720410380936703141">ପୁଣି ଚେଷ୍ଟା କରନ୍ତୁ</translation>
@@ -1722,6 +1727,7 @@
 <translation id="9178475906033259337"><ph name="QUERY" /> ପାଇଁ 1ଟି ଫଳାଫଳ ଡିସ୍‌ପ୍ଲେ ହେଉଛି</translation>
 <translation id="9179259655489829027">ଏହି ଫିଚର ସାଇନ ଇନ କରିଥିବା ଯେ କୌଣସି ୟୁଜରଙ୍କୁ ବିନା ପାସୱାର୍ଡରେ ଶୀଘ୍ର ଆକ୍ସେସ କରିବା ପାଇଁ ଆପଣଙ୍କୁ ଅନୁମତି ଦିଏ। କେବଳ ଆପଣ ବିଶ୍ୱାସ କରୁଥିବା ଆକାଉଣ୍ଟଗୁଡ଼ିକରେ ଏହି ଫିଚରକୁ ବ୍ୟବହାର କରନ୍ତୁ।</translation>
 <translation id="9183456764293710005">ପୂର୍ଣ୍ଣ ସ୍କ୍ରିନ୍ ମ୍ୟାଗ୍ନିଫାୟର୍</translation>
+<translation id="9186811218777709815"><ph name="BATTERY_PERCENTAGE" />% | <ph name="TIME" /> ବାକି ଅଛି</translation>
 <translation id="9193626018745640770">ଗୋଟିଏ ଅଜଣା ପ୍ରାପ୍ତକର୍ତ୍ତା ଉପରେ କାଷ୍ଟ କରାଯାଉଛି</translation>
 <translation id="9194617393863864469">ଅନ୍ୟ ଜଣେ ୟୁଜରଙ୍କୁ ସାଇନ-ଇନ କରନ୍ତୁ...</translation>
 <translation id="9198992156681343238"><ph name="DISPLAY_NAME" /> ରିଜୋଲ୍ୟୁସନକୁ <ph name="RESOLUTION" />ରେ ବଦଳା ଯାଇଥିଲା। ପରିବର୍ତ୍ତନଗୁଡ଼ିକ ରଖିବା ପାଇଁ ସୁନିଶ୍ଚିତ କରନ୍ତୁରେ କ୍ଲିକ୍ କରନ୍ତୁ। ପୂର୍ବବର୍ତ୍ତୀ ସେଟିଂସ୍ <ph name="TIMEOUT_SECONDS" />ରେ ରିଷ୍ଟୋର୍ କରାଯିବ।</translation>

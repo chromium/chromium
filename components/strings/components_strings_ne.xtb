@@ -919,7 +919,6 @@
 <translation id="3249151924975132674">विद्यार्थी तथा शैक्षिक कर्जा</translation>
 <translation id="3249845759089040423">सानदार</translation>
 <translation id="3250640885957938546">विज्ञापन तथा बजारीकरण</translation>
-<translation id="3252266817569339921">फ्रेन्च</translation>
 <translation id="3254301855501243548">१८ x २२ इन्च</translation>
 <translation id="3256863843508922226">सेवानिवृत्ति तथा पेन्सन</translation>
 <translation id="3259648571731540213"><ph name="CREATE_GOOGLE_CALENDAR_EVENT_FOCUSED_FRIENDLY_MATCH_TEXT" />, Google पात्रो प्रयोग गरी तुरुन्तै नयाँ कार्यक्रम बनाउन Tab थिच्नुहोस् अनि Enter थिच्नुहोस्</translation>
@@ -1583,7 +1582,6 @@
 <translation id="484988093836683706">डिभाइस अनलक प्रयोग गर्नुहोस्</translation>
 <translation id="4850886885716139402">हेर्नुहोस्</translation>
 <translation id="4852429274334674023">अपरेटिङ सिस्टमहरू</translation>
-<translation id="485316830061041779">जर्मन</translation>
 <translation id="4853901935952445031">यो साइटले फेब्रुअरी २०२२ पछि U2F API प्रयोग गर्न सक्ने छैन। तपाईं यो साइटको मालिक हुनुहुन्छ भने तपाईंले यो साइटको सेटिङ परिवर्तन गरी यसले Web Authentication API प्रयोग गर्ने सेटिङ लागू गर्नु पर्छ।</translation>
 <translation id="4854362297993841467">डेलिभरीको यो विधि उपलब्ध छैन। फरक विधि चयन गर्ने प्रयास गर्नुहोस्।</translation>
 <translation id="4854853140771946034">Google Keep प्रयोग गरी तुरुन्तै नयाँ टिपोट बनाउनुहोस्</translation>
@@ -1822,7 +1820,6 @@
 <translation id="5423269318075950257">मूल्य ट्रयाक गर्नुहोस्</translation>
 <translation id="5425241977284572032">{NUM_COOKIES,plural, =0{कुनै पनि साइट ब्लक गरिएको छैन}=1{एउटा साइट ब्लक गरिएको छ}other{# वटा साइट ब्लक गरिएका छन्}}</translation>
 <translation id="5426179911063097041"><ph name="SITE" /> तपाईंलाई सूचनाहरू पठाउन चाहन्छ</translation>
-<translation id="5428105026674456456">स्पेनिस</translation>
 <translation id="5430298929874300616">पुस्तकचिनो हटाउनुहोस्</translation>
 <translation id="5443468954631487277">विपरीत क्रम तर माथितिर फर्काएर</translation>
 <translation id="5447765697759493033">यो साइटलाई अनुवाद गरिने छैन</translation>
@@ -1831,7 +1828,6 @@
 <translation id="5457113250005438886">अवैध</translation>
 <translation id="5458150163479425638">{CONTACT,plural, =0{<ph name="CONTACT_PREVIEW" />}=1{<ph name="CONTACT_PREVIEW" /> र थप <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" />}other{<ph name="CONTACT_PREVIEW" /> र थप <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" />}}</translation>
 <translation id="5463625433003343978">यन्त्रहरू पत्ता लगाइँदै छ...</translation>
-<translation id="5469868506864199649">इटालियन</translation>
 <translation id="5470230812924696184">सिभिल इन्जिनियरिङ</translation>
 <translation id="5470861586879999274">सम्पादन &amp;पुन: गर्नुहोस्</translation>
 <translation id="5471337644440862957">हास्य चलचित्रहरू</translation>
@@ -1844,7 +1840,6 @@
     <ph name="LINE_BREAK" />
     आफ्नो प्रणाली प्रशासकलाई सम्पर्क गर्ने प्रयास गर्नुहोस्।</translation>
 <translation id="549333378215107354">आकार ३</translation>
-<translation id="5503356662318814623">म्यासेज पठाउनुहोस्</translation>
 <translation id="5509762909502811065">B0</translation>
 <translation id="5509780412636533143">व्यवस्थित बुकमार्कहरू</translation>
 <translation id="5510481203689988000">यो सेटिङ कुकीका सेटिङहरूबाट नियन्त्रण गरिन्छ।</translation>
@@ -3002,7 +2997,6 @@
 <translation id="8296205692406981542">क्षेत्रीय उद्यान तथा बगैँचाहरू</translation>
 <translation id="8297545700510100061">कुकी र साइटका अन्य डेटा तपाईंको जानकारी याद राख्न प्रयोग गरिन्छन्। जस्तै, कुकी र साइटका अन्य डेटा तपाईंलाई साइन इन गराउने वा विज्ञापन पर्सनलाइज गर्ने प्रयोजनका लागि प्रयोग गरिन्छन्। सबै साइटका कुकीहरू व्यवस्थापन गर्न <ph name="SETTINGS" /> मा जानुहोस्।</translation>
 <translation id="8298115750975731693">तपाईँले प्रयोग गरिरहनु भएको Wi-Fi (<ph name="WIFI_NAME" />) लाई <ph name="BEGIN_BOLD" /><ph name="LOGIN_URL" /><ph name="END_BOLD" /> भ्रमण गर्ने आवश्यकता हुन सक्छ।</translation>
-<translation id="8299269255470343364">जापानिज</translation>
 <translation id="8303854710873047864">"<ph name="SECTION" />" नामक खण्ड देखाइएको छ</translation>
 <translation id="830498451218851433">आधा फोल्ड</translation>
 <translation id="8307888238279532626">इन्स्टल गरिएका एप र ती एप प्रयोग गरिने अन्तराल</translation>
@@ -3123,7 +3117,6 @@
 <translation id="865032292777205197">मोसन सेन्सरहरू</translation>
 <translation id="8654126188050905496">५५ x ९१ मिलिमिटर</translation>
 <translation id="8663226718884576429">अर्डरको सारांश, <ph name="TOTAL_LABEL" />, थप विवरण</translation>
-<translation id="8666678546361132282">अङ्ग्रेजी</translation>
 <translation id="8671519637524426245"><ph name="SECURE_DNS_SALT" /> को मान आकारसम्बन्धी मापदण्डबमोजिम छैन।</translation>
 <translation id="867224526087042813">हस्ताक्षर</translation>
 <translation id="8672264262457010862">व्यापार तथा उद्योगधन्दा</translation>

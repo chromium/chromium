@@ -809,6 +809,7 @@
 <translation id="2951588413176968965">ମୋ ମେଲବକ୍ସ</translation>
 <translation id="2952820037279740115">ସମସ୍ତ ଇନକଗ୍ନିଟୋ ୱିଣ୍ଡୋ ବନ୍ଦ କରନ୍ତୁ</translation>
 <translation id="2952904171810469095">A2x5</translation>
+<translation id="2954624054936281172">ସେଭ କରାଯାଇଥିବା ପେମେଣ୍ଟ ପଦ୍ଧତିଗୁଡ଼ିକର ଟେବୁଲ</translation>
 <translation id="295526156371527179">ଚେତାବନୀ: ଏହି ନୀତିକୁ ଏକ ଅଭିଧାନ ଭାବେ ନିର୍ଦ୍ଦିଷ୍ଟ କରାଯାଇଥିବା ନୀତି ଦ୍ୱାରା ମିଶାଯାଇ ନଥିଲା କାହିଁକି ନା ଏହା ଏକ ଅଭିଧାନ ନୁହେଁ।</translation>
 <translation id="2955913368246107853">ଖୋଜନ୍ତୁ ଦଣ୍ଡିକା ବନ୍ଦ କରନ୍ତୁ</translation>
 <translation id="2958544468932521864">କ୍ରିକେଟ</translation>
@@ -919,7 +920,6 @@
 <translation id="3249151924975132674">ବିଦ୍ୟାର୍ଥୀ ଋଣ ଏବଂ କଲେଜ ଫାଇନାନ୍ସିଂ</translation>
 <translation id="3249845759089040423">ଗ୍ରୁଭି</translation>
 <translation id="3250640885957938546">ବିଜ୍ଞାପନ ଏବଂ ମାର୍କେଟିଂ</translation>
-<translation id="3252266817569339921">ଫ୍ରେଞ୍ଚ</translation>
 <translation id="3254301855501243548">18 x 22 ଇଞ୍ଚ</translation>
 <translation id="3256863843508922226">ଅବସର ଗ୍ରହଣ ଏବଂ ପେନସନ</translation>
 <translation id="3259648571731540213"><ph name="CREATE_GOOGLE_CALENDAR_EVENT_FOCUSED_FRIENDLY_MATCH_TEXT" />, Google Calendarରେ ଶୀଘ୍ର ଏକ ନୂଆ ଇଭେଣ୍ଟ ତିଆରି କରିବାକୁ Tab କରି Enter ଦବାନ୍ତୁ</translation>
@@ -985,7 +985,7 @@
 <translation id="3392028486601120379">URL ପାଟର୍ନ "<ph name="URL_PATTERN" />"ର ଏକ ନିର୍ଦ୍ଦିଷ୍ଟ ପାଥ ଅଛି। ଏହି କୀ ପାଇଁ ପାଥଗୁଡ଼ିକ ସମର୍ଥିତ ନୁହେଁ, ଦୟାକରି ପାଥକୁ କାଢ଼ି ପୁଣି ଚେଷ୍ଟା କରନ୍ତୁ। ଉ.ଦା *://example.com/ =&gt; *://example.com",</translation>
 <translation id="3395827396354264108">ପିକ୍‌ଅପ୍‌ ପଦ୍ଧତି</translation>
 <translation id="3399952811970034796">ବିତରଣ ଠିକଣା</translation>
-<translation id="3402261774528610252">ଏହି ସାଇଟକୁ ଲୋଡ୍ କରିବା ପାଇଁ ବ୍ୟବହୃତ ସଂଯୋଗ TLS 1.0 କିମ୍ବା TLS 1.1ର ବ୍ୟବହାର କରିଛି, ଯେଉଁଗୁଡ଼ିକୁ ଅଗ୍ରାହ୍ୟ କରାଯାଇଛି ଏବଂ ଭବିଷ୍ୟତରେ ଏହା ଅକ୍ଷମ ହୋଇଯିବ। ଥରେ ଅକ୍ଷମ ହୋଇଗଲା ପରେ, ଉପଯୋଗକର୍ତ୍ତାମାନଙ୍କୁ ଏହି ସାଇଟ୍ ଲୋଡ୍ କରିବାରୁ ପ୍ରତିରୋଧ କରାଯିବ। TLS 1.2 କିମ୍ବା ତା'ପରର ସଂସ୍କରଣକୁ ସର୍ଭର ସକ୍ଷମ କରିବା ଉଚିତ।</translation>
+<translation id="3402261774528610252">ଏହି ସାଇଟକୁ ଲୋଡ କରିବା ପାଇଁ ବ୍ୟବହୃତ ହେଉଥିବା କନେକ୍ସନ TLS 1.0 କିମ୍ବା TLS 1.1ର ବ୍ୟବହାର କରିଛି, ଯେଉଁଗୁଡ଼ିକ ଅସମର୍ଥିତ ଅଟେ ଏବଂ ଭବିଷ୍ୟତରେ ଏହା ଅକ୍ଷମ ହୋଇଯିବ। ଅକ୍ଷମ ହୋଇଗଲା ପରେ, ଯୁଜରଙ୍କୁ ଏହି ସାଇଟ ଲୋଡ କରିବାରୁ ପ୍ରତିରୋଧ କରାଯିବ। TLS 1.2 କିମ୍ବା ତା'ପରର ସଂସ୍କରଣକୁ ସର୍ଭର ସକ୍ଷମ କରିବା ଉଚିତ।</translation>
 <translation id="3405664148539009465">ଫଣ୍ଟଗୁଡ଼ିକୁ କଷ୍ଟମାଇଜ୍ କରନ୍ତୁ</translation>
 <translation id="3407789382767355356">ତୃତୀୟ-ପକ୍ଷ ସାଇନ-ଇନ</translation>
 <translation id="3409896703495473338">ସୁରକ୍ଷା ସେଟିଂସକୁ ପରିଚାଳନା କରନ୍ତୁ</translation>
@@ -1583,7 +1583,6 @@
 <translation id="484988093836683706">ଡିଭାଇସ ଅନଲକ ବ୍ୟବହାର କରନ୍ତୁ</translation>
 <translation id="4850886885716139402">ଦେଖନ୍ତୁ</translation>
 <translation id="4852429274334674023">ଅପରେଟିଂ ସିଷ୍ଟମଗୁଡ଼ିକ</translation>
-<translation id="485316830061041779">ଜର୍ମାନ୍</translation>
 <translation id="4853901935952445031">ଫେବୃଆରୀ 2022 ପରେ ଏହି ସାଇଟ୍ U2F API ବ୍ୟବହାର କରିବାକୁ ସକ୍ଷମ ହେବ ନାହିଁ। ଯଦି ଏହି ସାଇଟ୍ ଆପଣଙ୍କ ମାଲିକାନାରେ ଅଛି, ତେବେ ୱେବ୍ ପ୍ରମାଣୀକରଣ API ବ୍ୟବହାର କରିବା ପାଇଁ ଆପଣ ଏହାକୁ ପରିବର୍ତ୍ତନ କରିବା ଉଚିତ।</translation>
 <translation id="4854362297993841467">ଏହି ବିତରଣ ପଦ୍ଧତି ଉପଲବ୍ଧ ନାହିଁ। ଏକ ଭିନ୍ନ ପଦ୍ଧତି ଚେଷ୍ଠା କରନ୍ତୁ।</translation>
 <translation id="4854853140771946034">Google Keepରେ ଶୀଘ୍ର ଏକ ନୂଆ ନୋଟ୍ ତିଆରି କରନ୍ତୁ</translation>
@@ -1822,7 +1821,6 @@
 <translation id="5423269318075950257">ମୂଲ୍ୟ ଟ୍ରାକ କରନ୍ତୁ</translation>
 <translation id="5425241977284572032">{NUM_COOKIES,plural, =0{କୌଣସି ସାଇଟକୁ ବ୍ଲକ କରାଯାଇନାହିଁ}=1{1ଟି ସାଇଟକୁ ବ୍ଲକ କରାଯାଇଛି}other{#ଟି ସାଇଟକୁ ବ୍ଲକ କରାଯାଇଛି}}</translation>
 <translation id="5426179911063097041"><ph name="SITE" /> ଆପଣଙ୍କୁ ବିଜ୍ଞପ୍ତି ପଠାଇବାକୁ ଚାହୁଁଛି</translation>
-<translation id="5428105026674456456">ସ୍ପାନିଶ୍</translation>
 <translation id="5430298929874300616">ବୁକମାର୍କ୍ କାଢ଼ିଦିଅନ୍ତୁ</translation>
 <translation id="5443468954631487277">ଓଲଟା ଅର୍ଡରରେ ଫେସ୍ ଅପ୍</translation>
 <translation id="5447765697759493033">ଏହି ସାଇଟ୍‌ ଅନୁବାଦ କରାଯିବ ନାହିଁ</translation>
@@ -1831,7 +1829,6 @@
 <translation id="5457113250005438886">ଅବୈଧ</translation>
 <translation id="5458150163479425638">{CONTACT,plural, =0{<ph name="CONTACT_PREVIEW" />}=1{<ph name="CONTACT_PREVIEW" /> ଏବଂ ଅଧିକ <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" />ଜଣ}other{<ph name="CONTACT_PREVIEW" /> ଏବଂ ଅଧିକ <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" />ଜଣ}}</translation>
 <translation id="5463625433003343978">ଡିଭାଇସ୍ ଖୋଜାଯାଉଛି…</translation>
-<translation id="5469868506864199649">ଇଟାଲିୟାନ୍</translation>
 <translation id="5470230812924696184">ସିଭିଲ ଇଞ୍ଜିନିୟରିଂ</translation>
 <translation id="5470861586879999274">&amp;ରି-ଡୁ ଏଡିଟ୍ କରନ୍ତୁ</translation>
 <translation id="5471337644440862957">କମେଡି ମୁଭିଗୁଡ଼ିକ</translation>
@@ -1844,7 +1841,6 @@
     <ph name="LINE_BREAK" />
     ଆପଣଙ୍କର ସିଷ୍ଟମ୍ ବ୍ୟବସ୍ଥାପକଙ୍କୁ ଯୋଗାଯୋଗ କରିବାକୁ ଚେଷ୍ଟା କରନ୍ତୁ।</translation>
 <translation id="549333378215107354">ଆକାର 3</translation>
-<translation id="5503356662318814623">ଏକ ମେସେଜ୍ ପଠାନ୍ତୁ</translation>
 <translation id="5509762909502811065">B0</translation>
 <translation id="5509780412636533143">ବୁକ୍‍ମାର୍କଗୁଡ଼ିକୁ ପରିଚାଳନା କରାଯାଇଛି</translation>
 <translation id="5510481203689988000">କୁକୀଗୁଡ଼ିକର ସେଟିଂସରେ ଏହି ସେଟିଂକୁ ନିୟନ୍ତ୍ରଣ କରାଯାଇଛି।</translation>
@@ -2774,6 +2770,7 @@
 <translation id="7736959720849233795">ଲିଙ୍କ ଠିକଣାକୁ କପି କରନ୍ତୁ</translation>
 <translation id="7740996059027112821">ମାନାଙ୍କ</translation>
 <translation id="77424286611022110">ଏହି ସାଇଟ୍ ଅନଧିକାର ପ୍ରବେଶ କରିଥିବା କିମ୍ବା ବିଭ୍ରାନ୍ତିକର ବିଜ୍ଞାପନଗୁଡ଼ିକ ଦେଖାଏ। <ph name="LEARN_MORE_LINK_TEXT" /></translation>
+<translation id="7744505202669469867">ସେଭ କରାଯାଇଥିବା ଠିକଣାଗୁଡ଼ିକର ଟେବୁଲ</translation>
 <translation id="774634243536837715">ବିପଜ୍ଜନକ ବିଷୟବସ୍ତୁ ବ୍ଲକ୍ କରାଯାଇଛି।</translation>
 <translation id="7751971323486164747">Chromeରେ ଫଣ୍ଟ ଆକାର ଏବଂ ଟାଇପଫେସ୍ କଷ୍ଟମାଇଜ୍ କରନ୍ତୁ</translation>
 <translation id="7752995774971033316">ଅପରିଚାଳିତ</translation>
@@ -3000,7 +2997,6 @@
 <translation id="8296205692406981542">ରିଜିଓନାଲ ପାର୍କ ଏବଂ ବଗିଚାଗୁଡ଼ିକ</translation>
 <translation id="8297545700510100061">ଆପଣଙ୍କୁ ସାଇନ ଇନ କରିବା କିମ୍ବା ବିଜ୍ଞାପନଗୁଡ଼ିକୁ ପର୍ସନାଲାଇଜ କରିବା ପରି, ଆପଣଙ୍କୁ ମନେରଖିବା ପାଇଁ କୁକୀ ଏବଂ ଅନ୍ୟ ସାଇଟ ଡାଟା ବ୍ୟବହାର କରାଯାଏ। ସମସ୍ତ ସାଇଟ ପାଇଁ କୁକୀଗୁଡ଼ିକୁ ପରିଚାଳନା କରିବାକୁ, <ph name="SETTINGS" /> ଦେଖନ୍ତୁ।</translation>
 <translation id="8298115750975731693">ଆପଣ ବ୍ୟବହାର କରୁଥିବା ୱାଇ-ଫାଇ(<ph name="WIFI_NAME" />) ପାଇଁ ଆପଣଙ୍କୁ <ph name="BEGIN_BOLD" /><ph name="LOGIN_URL" /><ph name="END_BOLD" />କୁ ଯିବାର ଆବଶ୍ୟକତା ହୋଇପାରେ।</translation>
-<translation id="8299269255470343364">ଜାପାନୀ</translation>
 <translation id="8303854710873047864">"<ph name="SECTION" />" ବିଭାଗ ଦେଖାଯାଇଛି</translation>
 <translation id="830498451218851433">ଅଧା ଫୋଲ୍ଡ କରନ୍ତୁ</translation>
 <translation id="8307888238279532626">ଇନଷ୍ଟଲ୍ କରାଯାଇଥିବା ଆପଗୁଡ଼ିକ ଏବଂ ସେଗୁଡ଼ିକ କେତେ ଥର ବ୍ୟବହାର କରାଯାଇଛି</translation>
@@ -3015,6 +3011,7 @@
 <translation id="8347658365704983341">ଦୂର ଶିକ୍ଷା</translation>
 <translation id="8349305172487531364">ବୁକମାର୍କସ୍ ଦଣ୍ଡିକା</translation>
 <translation id="8351131234907093545">ନୋଟ୍ ତିଆରି କରନ୍ତୁ</translation>
+<translation id="835203957414790336">ଆପଣ ପ୍ରିଣ୍ଟ କରୁଥିବା ପୃଷ୍ଠାଗୁଡ଼ିକର ବିଷୟବସ୍ତୁ ଏବଂ ଆପଣଙ୍କ ପ୍ରିଣ୍ଟର ବିଷୟରେ ସୂଚନା ବିଶ୍ଳେଷଣ ପାଇଁ Google Cloud କିମ୍ବା ତୃତୀୟ ପକ୍ଷଗୁଡ଼ିକୁ ପଠାଯାଏ। ଉଦାହରଣ ସ୍ଵରୂପ, ଏହାକୁ ସମ୍ବେଦନଶୀଳ ଡାଟା ପାଇଁ ସ୍କାନ କରାଯାଇପାରେ।</translation>
 <translation id="8355270400102541638">ସ୍ଥାନୀୟ କ୍ରାସ୍ ପ୍ରସଙ୍ଗ:</translation>
 <translation id="8363502534493474904">ଏରୋପ୍ଲେନ୍ ମୋଡ୍ ବନ୍ଦ କରନ୍ତୁ</translation>
 <translation id="8364627913115013041">ସେଟ୍ ହୋଇନାହିଁ।</translation>
@@ -3120,7 +3117,6 @@
 <translation id="865032292777205197">ମୋସନ୍ ସେନ୍ସରଗୁଡ଼ିକ</translation>
 <translation id="8654126188050905496">55 x 91 ମିମି</translation>
 <translation id="8663226718884576429">ଅର୍ଡର ସାରାଂଶ, <ph name="TOTAL_LABEL" />, ଅଧିକ ବିବରଣୀ</translation>
-<translation id="8666678546361132282">ଇଂରାଜୀ</translation>
 <translation id="8671519637524426245"><ph name="SECURE_DNS_SALT" /> ମୂଲ୍ୟ ଆକାର ଆବଶ୍ୟକତାକୁ ପୂରଣ କରେ ନାହିଁ।</translation>
 <translation id="867224526087042813">ଦସ୍ତଖତ</translation>
 <translation id="8672264262457010862">ବ୍ୟବସାୟ ଏବଂ ଶିଳ୍ପ</translation>

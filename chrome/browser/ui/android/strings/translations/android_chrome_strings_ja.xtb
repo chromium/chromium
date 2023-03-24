@@ -477,6 +477,7 @@
 <translation id="3587596251841506391">ウェブ上のセキュリティ強化に協力する</translation>
 <translation id="3597179440835065298">最適な検索候補を表示</translation>
 <translation id="3602290021589620013">プレビュー</translation>
+<translation id="360901359071773787">過去 15 分の履歴を削除しますか？</translation>
 <translation id="3616113530831147358">音声</translation>
 <translation id="3622349720008044802">ウィンドウの管理</translation>
 <translation id="3631987586758005671"><ph name="DEVICE_NAME" /> と共有しています</translation>
@@ -822,6 +823,7 @@
 <translation id="5517095782334947753"><ph name="FROM_ACCOUNT" /> のブックマーク、履歴、パスワードとその他の設定を使用できます。</translation>
 <translation id="5524761631371622910">Chrome の試用期間がランダムに割り当てられた場合は、閲覧履歴が、表示される広告と以下の推定された興味 / 関心に影響します。プライバシーを保護するために、Chrome ではユーザーの興味 / 関心が毎月順番に削除されます。</translation>
 <translation id="5524843473235508879">リダイレクトがブロックされました。</translation>
+<translation id="554297709083131118">過去 15 分の次のデータが削除されます</translation>
 <translation id="5548606607480005320">安全確認</translation>
 <translation id="5555525474779371165">セーフ ブラウジングの保護設定を選択してください</translation>
 <translation id="5556459405103347317">再読み込み</translation>
@@ -1263,6 +1265,7 @@
 <translation id="78270725016672455">パソコンからサイトへのログインにこのデバイスを登録するよう求められています</translation>
 <translation id="7844171778363018843">同期するデータが選択されていません</translation>
 <translation id="7846296061357476882">Google のサービス</translation>
+<translation id="7847228556075070294">履歴、Cookie などのデータを削除しました</translation>
 <translation id="784934925303690534">期間</translation>
 <translation id="7851858861565204677">他のデバイス</translation>
 <translation id="7853202427316060426">アクティビティ</translation>
@@ -1442,6 +1445,7 @@
 <translation id="869891660844655955">有効期限</translation>
 <translation id="8699120352855309748">これらの言語を翻訳するか尋ねない</translation>
 <translation id="8712637175834984815">閉じる</translation>
+<translation id="8723453889042591629">このページをすばやく翻訳します。このショートカットを編集するには、長押ししてください。</translation>
 <translation id="8725066075913043281">やり直し</translation>
 <translation id="8746155870861185046">選択箇所を共有</translation>
 <translation id="874726034427945498">アドレスバーに最適な検索候補が表示されるようにするには、タブと履歴を同期します</translation>
@@ -1494,6 +1498,7 @@
 <translation id="8989968390305463310">閲覧履歴は、表示される広告と以下の推定された興味 / 関心に影響します。プライバシーを保護するために、Chrome ではユーザーの興味 / 関心が毎月順番に自動削除されます。ユーザーが削除しない限り、興味 / 関心は更新される可能性があります。</translation>
 <translation id="8993760627012879038">新しいタブをシークレット モードで開く</translation>
 <translation id="8996847606757455498">別のプロバイダを選択</translation>
+<translation id="8998289560386111590">お使いのデバイスではご利用いただけません</translation>
 <translation id="8998729206196772491"><ph name="MANAGED_DOMAIN" /> で管理されているアカウントでログインして、Chrome データの管理を管理者に委ねようとしています。この操作を行うと、データはこのアカウントに恒久的に関連付けられます。Chrome からログアウトすると、データはこのデバイスから削除されますが、Google アカウントには残ります。</translation>
 <translation id="9022774213089566801">よく使用するサイト</translation>
 <translation id="9022871169049522985">サイトと広告主は広告のパフォーマンスを測定できます</translation>

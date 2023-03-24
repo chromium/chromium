@@ -461,6 +461,7 @@ Pro začátek můžete vyzkoušet třeba tohle.</translation>
 <translation id="3256109297135787951">Odebrat zvýraznění z položky na poličce</translation>
 <translation id="3260969790895726815">Řeč se zpracovává místně a diktování funguje offline, ale některé hlasové příkazy nebudou fungovat.</translation>
 <translation id="3269597722229482060">Kliknutí pravým tlačítkem</translation>
+<translation id="3289364673986435196">Nabídka napájení</translation>
 <translation id="3289544412142055976">Linuxové aplikace v současné době nejsou podporovány</translation>
 <translation id="3289674678944039601">Nabíjení pomocí adaptéru</translation>
 <translation id="3290356915286466215">Nezabezpečeno</translation>
@@ -685,6 +686,7 @@ Připojte zařízení k napájení.</translation>
 <translation id="4269883910223712419">Administrátor zařízení má následující možnosti:</translation>
 <translation id="4274537685965975248">Klávesová zkratka Ctrl + Alt + šipka dolů se změnila. Pokud chcete použít klávesu End, stiskněte <ph name="LAUNCHER_KEY_NAME" /> + šipku vpravo.</translation>
 <translation id="4279490309300973883">Zrcadlení</translation>
+<translation id="4280601795273309128">Aktualizace zabezpečení skončily. Upgradujte své zařízení.</translation>
 <translation id="4283888303416325161">Pro lepší zabezpečení zadejte heslo</translation>
 <translation id="4285498937028063278">Odepnout</translation>
 <translation id="4294319844246081198">Dobré ráno, <ph name="GIVEN_NAME" />,</translation>
@@ -871,6 +873,7 @@ Připojte zařízení k napájení.</translation>
 <translation id="5147567197700016471">Odemknuto</translation>
 <translation id="5150070631291639005">Nastavení soukromí</translation>
 <translation id="5155897006997040331">Rychlost čtení</translation>
+<translation id="5163434717504750796">Stav baterie: <ph name="BATTERY_HEALTH_PERCENTAGE" /> % | Počet cyklů <ph name="CYCLE_COUNT" /></translation>
 <translation id="5166007464919321363">Uložit plochu jako šablonu</translation>
 <translation id="5168181903108465623">Dostupná zařízení pro streamování obsahu</translation>
 <translation id="5170568018924773124">Zobrazit ve složce</translation>
@@ -1341,6 +1344,7 @@ Nová instalace</translation>
 <translation id="743058460480092004">Kamera a mikrofon jsou používány.</translation>
 <translation id="7452560014878697800">Váš fotoaparát používá nějaká aplikace</translation>
 <translation id="7453330308669753048">Výsledek historie vyhledávání byl odstraněn</translation>
+<translation id="7455047553373871740"><ph name="BATTERY_PERCENTAGE" /> % | <ph name="TIME" /> do úplného nabití</translation>
 <translation id="7461924472993315131">Připnout</translation>
 <translation id="746232733191930409">Režim nahrávání obrazovky</translation>
 <translation id="7466449121337984263">Dotkněte se senzoru</translation>
@@ -1399,6 +1403,7 @@ Pokud zařízení chcete vypnout, znovu podržte tlačítko napájení na zaří
 <translation id="7689817529363080918">Umožňuje přístup k mikrofonu aplikacím <ph name="APP1_NAME" />, <ph name="APP2_NAME" /> a všem aplikacím a webům s oprávněním k mikrofonu</translation>
 <translation id="7704000866383261579">Opakovat poslední akci</translation>
 <translation id="7705524343798198388">VPN</translation>
+<translation id="770741401784017797">Vytváření obrázku GIF</translation>
 <translation id="7714767791242455379">Přidat novou mobilní síť</translation>
 <translation id="7720400844887872976">Zapnuto do <ph name="TIME" /></translation>
 <translation id="7720410380936703141">ZKUSIT ZNOVU</translation>
@@ -1703,6 +1708,7 @@ Pokud zařízení chcete vypnout, znovu podržte tlačítko napájení na zaří
 <translation id="9178475906033259337">Zobrazuje se 1 výsledek pro dotaz <ph name="QUERY" /></translation>
 <translation id="9179259655489829027">Tato funkce umožňuje rychle získat přístup ke kterémukoliv přihlášenému uživateli, aniž by bylo potřeba zadávat heslo. Tuto funkci používejte pouze s účty, kterým důvěřujete.</translation>
 <translation id="9183456764293710005">Zvětšení obrazovky</translation>
+<translation id="9186811218777709815"><ph name="BATTERY_PERCENTAGE" /> % | Zbývá: <ph name="TIME" /></translation>
 <translation id="9193626018745640770">Odesílání do neznámého přijímače</translation>
 <translation id="9194617393863864469">Přihlásit dalšího uživatele...</translation>
 <translation id="9198992156681343238">Rozlišení displeje <ph name="DISPLAY_NAME" /> bylo změněno na <ph name="RESOLUTION" />. Chcete-li změny ponechat, potvrďte je. Předchozí nastavení bude obnoveno za <ph name="TIMEOUT_SECONDS" />.</translation>

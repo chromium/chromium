@@ -922,7 +922,6 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="3249151924975132674">Študentska posojila in financiranje študija</translation>
 <translation id="3249845759089040423">Razgibano</translation>
 <translation id="3250640885957938546">Oglaševanje in trženje</translation>
-<translation id="3252266817569339921">francoščina</translation>
 <translation id="3254301855501243548">18 x 22 palcev</translation>
 <translation id="3256863843508922226">Upokojitev in pokojnina</translation>
 <translation id="3259648571731540213"><ph name="CREATE_GOOGLE_CALENDAR_EVENT_FOCUSED_FRIENDLY_MATCH_TEXT" />, pritisnite tabulatorko, nato Enter, če želite hitro ustvariti nov dogodek v Google Koledarju</translation>
@@ -1586,7 +1585,6 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="484988093836683706">Uporabi odklepanje naprave</translation>
 <translation id="4850886885716139402">Pogled</translation>
 <translation id="4852429274334674023">Operacijski sistemi</translation>
-<translation id="485316830061041779">nemščina</translation>
 <translation id="4853901935952445031">To spletno mesto po februarju 2022 ne bo moglo uporabljati API-ja za U2F. Če je spletno mesto vaše, spremenite tako, da bo uporabljalo API za spletno preverjanje pristnosti.</translation>
 <translation id="4854362297993841467">Ta način pošiljanja ni na voljo. Poskusite uporabiti drugega.</translation>
 <translation id="4854853140771946034">Hitro ustvarjanje novega zapiska v Googlu Keep</translation>
@@ -1825,7 +1823,6 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="5423269318075950257">Spremljanje cene</translation>
 <translation id="5425241977284572032">{NUM_COOKIES,plural, =0{Ni blokiranih spletnih mest}=1{1 blokirano spletno mesto}one{# blokirano spletno mesto}two{# blokirani spletni mesti}few{# blokirana spletna mesta}other{# blokiranih spletnih mest}}</translation>
 <translation id="5426179911063097041"><ph name="SITE" /> vam želi pošiljati obvestila</translation>
-<translation id="5428105026674456456">španščina</translation>
 <translation id="5430298929874300616">Odstrani zaznamek</translation>
 <translation id="5443468954631487277">V obratnem vrstnem redu s tiskom na zgornji strani</translation>
 <translation id="5447765697759493033">To spletno mesto ne bo prevedeno</translation>
@@ -1834,7 +1831,6 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="5457113250005438886">Neveljavno</translation>
 <translation id="5458150163479425638">{CONTACT,plural, =0{<ph name="CONTACT_PREVIEW" />}=1{<ph name="CONTACT_PREVIEW" /> in še <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" />}one{<ph name="CONTACT_PREVIEW" /> in še <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" />}two{<ph name="CONTACT_PREVIEW" /> in še <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" />}few{<ph name="CONTACT_PREVIEW" /> in še <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" />}other{<ph name="CONTACT_PREVIEW" /> in še <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" />}}</translation>
 <translation id="5463625433003343978">Iskanje naprav …</translation>
-<translation id="5469868506864199649">italijanščina</translation>
 <translation id="5470230812924696184">Gradbeništvo</translation>
 <translation id="5470861586879999274">&amp;Uveljavi urejanje</translation>
 <translation id="5471337644440862957">Komedije</translation>
@@ -1847,7 +1843,6 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
     <ph name="LINE_BREAK" />
     Poskusite se obrniti na skrbnika sistema.</translation>
 <translation id="549333378215107354">Velikost 3</translation>
-<translation id="5503356662318814623">Pošljite sporočilo</translation>
 <translation id="5509762909502811065">B0</translation>
 <translation id="5509780412636533143">Upravljani zaznamki</translation>
 <translation id="5510481203689988000">To nastavitev je mogoče nadzirati v nastavitvah piškotkov.</translation>
@@ -3006,7 +3001,6 @@ Dodatne podrobnosti:
 <translation id="8296205692406981542">Regijski parki in vrtovi</translation>
 <translation id="8297545700510100061">Piškotke in druge podatke spletnega mesta uporabljamo, da si zapomnimo vaše podatke, na primer za prijavo ali osebno prilagajanje oglasov. Če želite upravljati piškotke za vsa spletna mesta, si oglejte <ph name="SETTINGS" />.</translation>
 <translation id="8298115750975731693">Omrežje Wi-Fi, ki ga uporabljate (<ph name="WIFI_NAME" />), morda zahteva, da obiščete <ph name="BEGIN_BOLD" /><ph name="LOGIN_URL" /><ph name="END_BOLD" />.</translation>
-<translation id="8299269255470343364">japonščina</translation>
 <translation id="8303854710873047864">Razdelek »<ph name="SECTION" />« je prikazan</translation>
 <translation id="830498451218851433">Prepogibanje na pol</translation>
 <translation id="8307888238279532626">Nameščene aplikacije in pogostost njihove uporabe</translation>
@@ -3127,7 +3121,6 @@ Dodatne podrobnosti:
 <translation id="865032292777205197">tipala gibanja</translation>
 <translation id="8654126188050905496">55 x 91 mm</translation>
 <translation id="8663226718884576429">Povzetek naročila, <ph name="TOTAL_LABEL" />, več podrobnosti</translation>
-<translation id="8666678546361132282">angleščina</translation>
 <translation id="8671519637524426245">Vrednost <ph name="SECURE_DNS_SALT" /> ne izpolnjuje zahtev glede velikosti.</translation>
 <translation id="867224526087042813">Podpis</translation>
 <translation id="8672264262457010862">Posel in industrija</translation>

@@ -461,6 +461,7 @@ Ecco alcune cose che puoi provare per iniziare.</translation>
 <translation id="3256109297135787951">Consente di rimuovere l'evidenziazione da un elemento sulla barra delle app</translation>
 <translation id="3260969790895726815">Il riconoscimento vocale viene elaborato localmente e la dettatura funziona offline, ma alcuni comandi vocali non funzionano.</translation>
 <translation id="3269597722229482060">Clic con il pulsante destro</translation>
+<translation id="3289364673986435196">Menu del tasto di accensione</translation>
 <translation id="3289544412142055976">Al momento le app Linux non sono supportate</translation>
 <translation id="3289674678944039601">Carica tramite adattatore</translation>
 <translation id="3290356915286466215">Non protetta</translation>
@@ -682,6 +683,7 @@ Collega il dispositivo all'alimentazione.</translation>
 <translation id="4269883910223712419">L'amministratore di questo dispositivo ha la possibilità di:</translation>
 <translation id="4274537685965975248">La scorciatoia da tastiera Ctrl + Alt + Freccia giù è cambiata. Per usare il tasto Fine, premi il tasto <ph name="LAUNCHER_KEY_NAME" /> + Freccia destra.</translation>
 <translation id="4279490309300973883">Mirroring</translation>
+<translation id="4280601795273309128">Aggiornamenti della sicurezza terminati. Aggiorna il tuo dispositivo.</translation>
 <translation id="4283888303416325161">Inserisci la password per una maggior sicurezza</translation>
 <translation id="4285498937028063278">Sblocca</translation>
 <translation id="4294319844246081198">Buongiorno <ph name="GIVEN_NAME" />,</translation>
@@ -868,6 +870,7 @@ Collega il dispositivo all'alimentazione.</translation>
 <translation id="5147567197700016471">Sbloccato</translation>
 <translation id="5150070631291639005">Impostazioni privacy</translation>
 <translation id="5155897006997040331">Velocità di lettura</translation>
+<translation id="5163434717504750796">Integrità della batteria <ph name="BATTERY_HEALTH_PERCENTAGE" />% | Numero di cicli <ph name="CYCLE_COUNT" /></translation>
 <translation id="5166007464919321363">Salva scrivania come modello</translation>
 <translation id="5168181903108465623">Dispositivi di trasmissione disponibili</translation>
 <translation id="5170568018924773124">Mostra nella cartella</translation>
@@ -1338,6 +1341,7 @@ Nuova installazione</translation>
 <translation id="743058460480092004">Videocamera e microfono sono in uso.</translation>
 <translation id="7452560014878697800">Un'applicazione sta utilizzando la fotocamera</translation>
 <translation id="7453330308669753048">Risultato della cronologia delle ricerche rimosso</translation>
+<translation id="7455047553373871740"><ph name="BATTERY_PERCENTAGE" />% | <ph name="TIME" /> alla ricarica completa</translation>
 <translation id="7461924472993315131">Blocca</translation>
 <translation id="746232733191930409">Modalità Registrazione dello schermo</translation>
 <translation id="7466449121337984263">Tocca il sensore</translation>
@@ -1396,6 +1400,7 @@ Per arrestare il dispositivo, tieni di nuovo premuto il relativo tasto di accens
 <translation id="7689817529363080918">Consente l'accesso al microfono per <ph name="APP1_NAME" />, <ph name="APP2_NAME" /> e tutti i siti web e le app che hanno l'autorizzazione di accesso al microfono</translation>
 <translation id="7704000866383261579">Ripeti l'ultima azione</translation>
 <translation id="7705524343798198388">VPN</translation>
+<translation id="770741401784017797">Creazione GIF in corso…</translation>
 <translation id="7714767791242455379">Aggiungi una nuova rete mobile</translation>
 <translation id="7720400844887872976">Funzionalità attiva fino alle ore <ph name="TIME" /></translation>
 <translation id="7720410380936703141">RIPROVA</translation>
@@ -1700,6 +1705,7 @@ Per arrestare il dispositivo, tieni di nuovo premuto il relativo tasto di accens
 <translation id="9178475906033259337">Visualizzazione di un risultato per <ph name="QUERY" /></translation>
 <translation id="9179259655489829027">Questa funzione consente di accedere rapidamente a qualsiasi utente che abbia effettuato l'accesso, senza bisogno di una password. Utilizza questa funzione solo con gli account che consideri attendibili.</translation>
 <translation id="9183456764293710005">Ingrandimento a schermo intero</translation>
+<translation id="9186811218777709815"><ph name="BATTERY_PERCENTAGE" />% | <ph name="TIME" /> rimanenti</translation>
 <translation id="9193626018745640770">Trasmissione a un ricevitore sconosciuto</translation>
 <translation id="9194617393863864469">Accedi con un altro account utente...</translation>
 <translation id="9198992156681343238">La risoluzione di <ph name="DISPLAY_NAME" /> è stata cambiata in <ph name="RESOLUTION" />. Fai clic su Conferma per mantenere le modifiche. Le impostazioni precedenti verranno ripristinate tra <ph name="TIMEOUT_SECONDS" />.</translation>

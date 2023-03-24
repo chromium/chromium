@@ -922,7 +922,6 @@
 <translation id="3249151924975132674">ສິນເຊື່ອນັກສຶກສາ ແລະ ການເງິນວິທະຍາໄລ</translation>
 <translation id="3249845759089040423">ກຣູຟີ</translation>
 <translation id="3250640885957938546">ການໂຄສະນາ ແລະ ການຕະຫຼາດ</translation>
-<translation id="3252266817569339921">ພາສາຝຣັ່ງ</translation>
 <translation id="3254301855501243548">18 x 22 ນິ້ວ</translation>
 <translation id="3256863843508922226">ການກະສຽນ ແລະ ເງິນເບ້ຍບຳນານ</translation>
 <translation id="3259648571731540213"><ph name="CREATE_GOOGLE_CALENDAR_EVENT_FOCUSED_FRIENDLY_MATCH_TEXT" />, ກົດ Tab ຈາກນັ້ນກົດ Enter ເພື່ອສ້າງນັດໝາຍໃໝ່ໃນ Google ປະຕິທິນໄດ້ຢ່າງວ່ອງໄວ</translation>
@@ -1586,7 +1585,6 @@
 <translation id="484988093836683706">ໃຊ້ການປົດລັອກອຸປະກອນ</translation>
 <translation id="4850886885716139402">ເບິ່ງ</translation>
 <translation id="4852429274334674023">ລະບົບປະຕິບັດການ</translation>
-<translation id="485316830061041779">ພາສາເຢຍລະມັນ</translation>
 <translation id="4853901935952445031">ເວັບໄຊນີ້ຈະບໍ່ສາມາດໃຊ້ U2F API ໄດ້ຫຼັງຈາກເດືອນກຸມພາ 2022. ຫາກທ່ານເປັນເຈົ້າຂອງເວັບໄຊນີ້, ທ່ານຄວນປ່ຽນມັນເພື່ອໃຊ້ Web Authentication API.</translation>
 <translation id="4854362297993841467">ວິທີການສົ່ງນີ້ບໍ່ສາມາດໃຊ້ໄດ້. ລອງວິທີອື່ນ.</translation>
 <translation id="4854853140771946034">ສ້າງບັນທຶກໃໝ່ໃນ Google Keep ໄດ້ຢ່າງງ່າຍດາຍ</translation>
@@ -1825,7 +1823,6 @@
 <translation id="5423269318075950257">ຕິດຕາມລາຄາ</translation>
 <translation id="5425241977284572032">{NUM_COOKIES,plural, =0{ບໍ່ມີເວັບໄຊທີ່ຖືກບລັອກ}=1{ບລັອກ 1 ເວັບໄຊແລ້ວ}other{ບລັອກ # ເວັບໄຊແລ້ວ}}</translation>
 <translation id="5426179911063097041"><ph name="SITE" /> ຕ້ອງການສົ່ງການແຈ້ງເຕືອນໃຫ້ທ່ານ</translation>
-<translation id="5428105026674456456">ພາສາສະເປນ</translation>
 <translation id="5430298929874300616">ເອົາບຸກມາກຄ໌ອອກໄປ</translation>
 <translation id="5443468954631487277">ລຳດັບຍ້ອນກັບປີ້ນໜ້າຂຶ້ນ</translation>
 <translation id="5447765697759493033">ເວັບໄຊນີ້ຈະບໍ່ຖືກແປ</translation>
@@ -1834,7 +1831,6 @@
 <translation id="5457113250005438886">ໃຊ້ບໍ່ໄດ້</translation>
 <translation id="5458150163479425638">{CONTACT,plural, =0{<ph name="CONTACT_PREVIEW" />}=1{<ph name="CONTACT_PREVIEW" /> ແລະ ອີກ <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> ທີ່ຢູ່}other{<ph name="CONTACT_PREVIEW" /> ແລະ ອີກ <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> ທີ່ຢູ່}}</translation>
 <translation id="5463625433003343978">ກຳລັງຊອກຫາອຸປະກອນ…</translation>
-<translation id="5469868506864199649">ພາສາອີຕາລີ</translation>
 <translation id="5470230812924696184">ການໃຫ້ຄຳປຶກສາດ້ານວິສະວະກຳໂຍທາ</translation>
 <translation id="5470861586879999274">ເຮັດຄືນຄໍາສັ່ງແກ້ໄຂ</translation>
 <translation id="5471337644440862957">ໜັງຕະຫຼົກ</translation>
@@ -1847,7 +1843,6 @@
     <ph name="LINE_BREAK" />
     ໃຫ້ລອງຕິດຕໍ່ຫາຜູ້ເບິ່ງແຍງລະບົບຂອງທ່ານ.</translation>
 <translation id="549333378215107354">ຂະໜາດ 3</translation>
-<translation id="5503356662318814623">ສົ່ງຂໍ້ຄວາມ</translation>
 <translation id="5509762909502811065">B0</translation>
 <translation id="5509780412636533143">ບຸກມາກສ໌ທີ່ຄຸ້ມຄອງ:</translation>
 <translation id="5510481203689988000">ການຕັ້ງຄ່ານີ້ຖືກຄວບຄຸມໃນການຕັ້ງຄ່າຄຸກກີ້.</translation>
@@ -3005,7 +3000,6 @@
 <translation id="8296205692406981542">ສວນ ແລະ ອຸທະຍານທ້ອງຖິ່ນ</translation>
 <translation id="8297545700510100061">ຄຸກກີ້ ແລະ ຂໍ້ມູນເວັບໄຊອື່ນໆແມ່ນຖືກໃຊ້ເພື່ອຈື່ທ່ານ, ຕົວຢ່າງ: ນຳທ່ານເຂົ້າສູ່ລະບົບ ຫຼື ເພື່ອປັບແຕ່ງໂຄສະນາເປັນແບບສ່ວນຕົວ. ເພື່ອຈັດການຄຸກກີ້ສຳລັບເວັບໄຊທັງໝົດ, ກະລຸນາເບິ່ງ <ph name="SETTINGS" />.</translation>
 <translation id="8298115750975731693">Wi-Fi ທີ່​ທ່ານ​ກຳ​ລັງ​ໃຊ້​ຢູ່ (<ph name="WIFI_NAME" />) ອາດ​ຈະ​ຕ້ອງ​ການ​ໃຫ້​ທ່ານ​ເຂົ້າ​ <ph name="BEGIN_BOLD" /><ph name="LOGIN_URL" /><ph name="END_BOLD" /> ຂອງ​ມັນ.</translation>
-<translation id="8299269255470343364">ພາສາຍີ່ປຸ່ນ</translation>
 <translation id="8303854710873047864">ສະແດງ "<ph name="SECTION" />" ແລ້ວ</translation>
 <translation id="830498451218851433">ພັບເຄິ່ງ</translation>
 <translation id="8307888238279532626">ແອັບທີ່ຕິດຕັ້ງ ແລະ ມີການນຳໃຊ້ພວກມັນເລື້ອຍໆສໍ່າໃດ</translation>
@@ -3126,7 +3120,6 @@
 <translation id="865032292777205197">ເຊັນກວດຈັບການເຄື່ອນໄຫວ</translation>
 <translation id="8654126188050905496">55 x 91 ມມ</translation>
 <translation id="8663226718884576429">ສັງຮວມຄຳສັ່ງຊື້, <ph name="TOTAL_LABEL" />, ລາຍລະອຽດເພີ່ມເຕີມ</translation>
-<translation id="8666678546361132282">ພາສາອັງກິດ</translation>
 <translation id="8671519637524426245">ຄ່າ <ph name="SECURE_DNS_SALT" /> ບໍ່ເປັນໄປຕາມຂໍ້ກຳນົດດ້ານຂະໜາດ.</translation>
 <translation id="867224526087042813">ລາຍເຊັນ</translation>
 <translation id="8672264262457010862">ທຸລະກິດ ແລະ ອຸດສາຫະກຳ</translation>

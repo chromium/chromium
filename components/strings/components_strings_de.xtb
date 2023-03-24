@@ -809,6 +809,7 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="2951588413176968965">Meine Ablage</translation>
 <translation id="2952820037279740115">Alle Inkognitofenster schließen</translation>
 <translation id="2952904171810469095">A2x5</translation>
+<translation id="2954624054936281172">Tabelle mit gespeicherten Zahlungsmethoden</translation>
 <translation id="295526156371527179">Warnung: Diese Richtlinie wurde nicht gemäß Richtlinie in einem Wörterbuch zusammengeführt, weil sie kein Wörterbuch ist.</translation>
 <translation id="2955913368246107853">Suchleiste schließen</translation>
 <translation id="2958544468932521864">Kricket</translation>
@@ -921,7 +922,6 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="3249151924975132674">Studienfinanzierung und -kredite</translation>
 <translation id="3249845759089040423">Cool</translation>
 <translation id="3250640885957938546">Werbung und Marketing</translation>
-<translation id="3252266817569339921">Französisch</translation>
 <translation id="3254301855501243548">18 × 22 Zoll</translation>
 <translation id="3256863843508922226">Ruhestand und Rente</translation>
 <translation id="3259648571731540213"><ph name="CREATE_GOOGLE_CALENDAR_EVENT_FOCUSED_FRIENDLY_MATCH_TEXT" /> – drücke die Tabulatortaste und dann die Eingabetaste, um schnell einen neuen Termin in Google Kalender zu erstellen</translation>
@@ -1583,7 +1583,6 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="484988093836683706">Geräteentsperrung verwenden</translation>
 <translation id="4850886885716139402">Anzeigen</translation>
 <translation id="4852429274334674023">Betriebssysteme</translation>
-<translation id="485316830061041779">Deutsch</translation>
 <translation id="4853901935952445031">Diese Website kann die U2F API nach Februar 2022 nicht mehr nutzen. Wenn du Inhaber dieser Website bist, solltest du sie auf die Nutzung der Web Authentication API umstellen.</translation>
 <translation id="4854362297993841467">Diese Lieferoption ist nicht verfügbar. Bitte wähle eine andere Option aus.</translation>
 <translation id="4854853140771946034">Schnell eine neue Notiz in Google Notizen erstellen</translation>
@@ -1822,7 +1821,6 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="5423269318075950257">Preis beobachten</translation>
 <translation id="5425241977284572032">{NUM_COOKIES,plural, =0{Keine Websites blockiert}=1{1 Website blockiert}other{# Websites blockiert}}</translation>
 <translation id="5426179911063097041"><ph name="SITE" /> möchte dir Benachrichtigungen senden</translation>
-<translation id="5428105026674456456">Spanisch</translation>
 <translation id="5430298929874300616">Lesezeichen löschen</translation>
 <translation id="5443468954631487277">Umgekehrte Reihenfolge mit der Vorderseite nach oben</translation>
 <translation id="5447765697759493033">Diese Website wird nicht übersetzt</translation>
@@ -1831,7 +1829,6 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="5457113250005438886">Ungültig</translation>
 <translation id="5458150163479425638">{CONTACT,plural, =0{<ph name="CONTACT_PREVIEW" />}=1{<ph name="CONTACT_PREVIEW" /> und <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> weiterer}other{<ph name="CONTACT_PREVIEW" /> und <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> weitere}}</translation>
 <translation id="5463625433003343978">Geräte werden gesucht…</translation>
-<translation id="5469868506864199649">Italienisch</translation>
 <translation id="5470230812924696184">Hoch- und Tiefbau</translation>
 <translation id="5470861586879999274">&amp;Bearbeiten wiederholen</translation>
 <translation id="5471337644440862957">Komödien</translation>
@@ -1844,7 +1841,6 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
     <ph name="LINE_BREAK" />
     Wende dich an deinen Systemadministrator.</translation>
 <translation id="549333378215107354">Größe 3</translation>
-<translation id="5503356662318814623">Nachricht senden</translation>
 <translation id="5509762909502811065">B0</translation>
 <translation id="5509780412636533143">Verwaltete Lesezeichen</translation>
 <translation id="5510481203689988000">Dies kann in den Cookie-Einstellungen festgelegt werden.</translation>
@@ -2775,6 +2771,7 @@ Weitere Details:
 <translation id="7736959720849233795">Linkadresse kopieren</translation>
 <translation id="7740996059027112821">Standard</translation>
 <translation id="77424286611022110">Diese Website zeigt aufdringliche oder irreführende Werbung an. <ph name="LEARN_MORE_LINK_TEXT" /></translation>
+<translation id="7744505202669469867">Tabelle mit gespeicherten Adressen</translation>
 <translation id="774634243536837715">Gefährliche Inhalte blockiert.</translation>
 <translation id="7751971323486164747">Schriftgrößen und -arten in Chrome anpassen</translation>
 <translation id="7752995774971033316">Nicht verwaltet</translation>
@@ -3001,7 +2998,6 @@ Weitere Details:
 <translation id="8296205692406981542">Nationalparks, Naturschutzgebiete, Parks und botanische Gärten</translation>
 <translation id="8297545700510100061">Durch Cookies und andere Websitedaten erinnert sich die Website an dich, z. B. für die Anmeldung oder personalisierte Werbung. Du kannst Cookies für alle Websites in den <ph name="SETTINGS" /> verwalten.</translation>
 <translation id="8298115750975731693">Unter Umständen erfordert das verwendete WLAN (<ph name="WIFI_NAME" />), dass du <ph name="BEGIN_BOLD" /><ph name="LOGIN_URL" /><ph name="END_BOLD" /> aufrufst.</translation>
-<translation id="8299269255470343364">Japanisch</translation>
 <translation id="8303854710873047864">Abschnitt "<ph name="SECTION" />" eingeblendet</translation>
 <translation id="830498451218851433">Zur Hälfte falten</translation>
 <translation id="8307888238279532626">Installierte Apps und Häufigkeit ihrer Verwendung</translation>
@@ -3016,6 +3012,7 @@ Weitere Details:
 <translation id="8347658365704983341">Fernunterricht</translation>
 <translation id="8349305172487531364">Lesezeichenleiste</translation>
 <translation id="8351131234907093545">Notiz erstellen</translation>
+<translation id="835203957414790336">Die Inhalte der von dir gedruckten Seiten und Informationen zu deinem Drucker werden zur Analyse an Google Cloud oder Dritte gesendet. Sie werden beispielsweise auf sensible Daten geprüft.</translation>
 <translation id="8355270400102541638">Kontext für lokalen Absturz:</translation>
 <translation id="8363502534493474904">Flugmodus ausschalten</translation>
 <translation id="8364627913115013041">Nicht eingerichtet</translation>
@@ -3122,7 +3119,6 @@ Weitere Details:
 <translation id="865032292777205197">Bewegungssensoren</translation>
 <translation id="8654126188050905496">55 × 91 mm</translation>
 <translation id="8663226718884576429">Bestellübersicht, <ph name="TOTAL_LABEL" />, weitere Details</translation>
-<translation id="8666678546361132282">Englisch</translation>
 <translation id="8671519637524426245">Der <ph name="SECURE_DNS_SALT" />-Wert erfüllt nicht die Größenanforderungen.</translation>
 <translation id="867224526087042813">Signatur</translation>
 <translation id="8672264262457010862">Unternehmen und Industrie</translation>

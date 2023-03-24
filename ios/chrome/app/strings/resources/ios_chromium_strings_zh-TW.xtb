@@ -47,10 +47,12 @@
 <translation id="3567399274263440288">如要充分運用 Chromium 的所有功能，請透過 Google 帳戶登入 Chromium。</translation>
 <translation id="3639997914391704523">如果你使用 Google 帳戶登入，Chromium 可以檢查你的密碼。</translation>
 <translation id="3650632991272923014"><ph name="USER_EMAIL1" /> 原本使用 Chromium，並將書籤、密碼和其他設定儲存在裝置上。</translation>
+<translation id="372658070733623520">如要將 Chromium 的資料儲存到 Google 帳戶及使用這類資料，請驗證身分。</translation>
 <translation id="3805899903892079518">Chromium 無法存取您的相片或影片，請前往「iOS 設定」中的 [隱私權] &gt; [相片] 啟用存取權。</translation>
 <translation id="4043291146360695975">密碼只會儲存至這部裝置上的密碼管理員。</translation>
 <translation id="4099085513035183040">Chromium Beta 版不支援這項功能</translation>
 <translation id="4432744876818348753">登入以充分運用 Chromium 的各項功能。</translation>
+<translation id="452436063477828504">確保你隨時可以使用 Google 帳戶中的 Chromium 資料</translation>
 <translation id="4555020257205549924">開啟這項功能後，Chromium 會使用 Google 翻譯來翻譯其他語言的網頁。<ph name="BEGIN_LINK" />瞭解詳情<ph name="END_LINK" /></translation>
 <translation id="4585809515399340748">現在只要在訊息、文件和其他應用程式中輕觸連結，即可透過 Chromium 開啟。</translation>
 <translation id="4633738821577273991">一併為這個 Chromium 設定檔啟用安全瀏覽強化防護功能</translation>
@@ -75,6 +77,7 @@
 <translation id="5945387852661427312">你即將使用由 <ph name="DOMAIN" /> 所管理的帳戶登入，並授權該網域的管理員控管你的 Chromium 資料。你的資料會與這個帳戶建立永久連結。登出 Chromium 後，系統會將你的資料從這個裝置上刪除，但繼續保留在你的 Google 帳戶中。</translation>
 <translation id="5983312940147103417">讓 Chromium 更臻完美</translation>
 <translation id="6062449165341879460">貴機構 <ph name="DOMAIN" /> 將可存取你儲存在這個帳戶中的 Chromium 資料、書籤、歷史記錄、密碼和其他設定。登出帳戶後，系統會清除這部裝置中的資料。不過，你的資料仍會儲存在受管理 Google 帳戶中，並可供貴機構使用。貴機構也可以設定該帳戶專屬的使用者政策，這些政策可以變更 Chromium 的行為。</translation>
+<translation id="61109258320235597">如要將 Chromium 的資料儲存到 Google 帳戶及使用這類資料，請輸入通關密語。</translation>
 <translation id="6119647025869519954">如何將 Chromium 設為預設瀏覽器：
 1. 開啟「設定」
 2. 輕觸 [預設瀏覽器 App]
@@ -86,6 +89,7 @@
 <translation id="6625409903340039086">Chromium 現在支援受管理帳戶的使用者政策</translation>
 <translation id="6752854822223394465">貴機構正在設定 Chromium...</translation>
 <translation id="6820823224820483452">Chromium 無法檢查所有密碼，請明天再試。</translation>
+<translation id="6911341667534646387">請繼續使用 Google 帳戶中的 Chromium 資料</translation>
 <translation id="7006920032187763988">你可以在 iPad 上的其他應用程式，使用儲存至密碼管理員的密碼。</translation>
 <translation id="7018284295775193585">Chromium 無法更新</translation>
 <translation id="7045244423563602563">使用你專屬的 Chromium</translation>

@@ -97,6 +97,7 @@
 <translation id="1773212559869067373">Autentiseringssertifikatet ble avvist lokalt</translation>
 <translation id="1775381402323441512">Videoinformasjon</translation>
 <translation id="180035236176489073">Du må ha internettilkobling for å få tilgang til disse filene.</translation>
+<translation id="1805030087840125683">{COUNT,plural, =1{En utvidelse med ID-en}other{Utvidelser med ID-ene}}</translation>
 <translation id="1807938677607439181">Alle filer</translation>
 <translation id="1810764548349082891">Ingen forhåndsvisning er tilgjengelig</translation>
 <translation id="1812302367230252929">Amharisk, translitterasjon</translation>
@@ -130,6 +131,7 @@
 <translation id="2084108471225856927">Enhetsinnstillinger</translation>
 <translation id="2084809735218147718">Tegnspråk for takk</translation>
 <translation id="2088690981887365033">VPN-nettverk</translation>
+<translation id="2111134541987263231">Slå på <ph name="BEGIN_BOLD" />Tillat i inkognitomodus<ph name="END_BOLD" />.</translation>
 <translation id="2114191879048183086"><ph name="NUMBER_OF_ITEMS" /> elementer slettes, og du kan ikke gjenopprette dem.</translation>
 <translation id="2122305276694332719">Automatisk tilkobling til skjulte nettverk gjør det mulig for andre å se enheten din og enkelte nettverksinnstillinger, så det anbefales ikke.</translation>
 <translation id="2125607626296734455">Khmer</translation>
@@ -228,6 +230,7 @@
 <translation id="290843123675549676">Marathi</translation>
 <translation id="2923240520113693977">Estisk</translation>
 <translation id="2938685643439809023">Mongolsk</translation>
+<translation id="293972288692056847">{COUNT,plural, =1{Finner ikke utvidelsen}other{Finner ikke utvidelser}}</translation>
 <translation id="2943503720238418293">Bruk et kortere navn</translation>
 <translation id="2949781154072577687">Formaterer <ph name="DRIVE_NAME" /> …</translation>
 <translation id="2951236788251446349">Stormanet</translation>
@@ -282,6 +285,7 @@
 <translation id="3356580349448036450">Fullført</translation>
 <translation id="3358452157379365236">Gitar</translation>
 <translation id="3368922792935385530">Tilkoblet</translation>
+<translation id="3372635229069101468">Klikk på <ph name="BEGIN_BOLD" />Detaljer<ph name="END_BOLD" />.</translation>
 <translation id="3382143449143186018">Nepali med InScript-tastatur</translation>
 <translation id="338691029516748599">Nettverk <ph name="NETWORK_INDEX" /> av <ph name="NETWORK_COUNT" /> – <ph name="NETWORK_NAME" /> – <ph name="SECURITY_STATUS" /> – signalstyrke <ph name="SIGNAL_STRENGTH" /> % – administreres av administratoren din – koble til</translation>
 <translation id="3408072735282270043">Aktivér, <ph name="NETWORK_NAME" /></translation>
@@ -366,6 +370,7 @@
 <translation id="4124935795427217608">Enhjørning</translation>
 <translation id="4131235941541910880">Flytt elementer du ikke trenger, til papirkurven</translation>
 <translation id="4134804435730168042">Nettverk <ph name="NETWORK_INDEX" /> av <ph name="NETWORK_COUNT" /> – <ph name="NETWORK_NAME" /> – <ph name="NETWORK_PROVIDER_NAME" /> – aktiver etter enhetskonfigurering</translation>
+<translation id="41501027364808384">{COUNT,plural, =1{Slå på følgende utvidelse i Inkognito:}other{Slå på følgende utvidelser i Inkognito:}}</translation>
 <translation id="4153015322587141338">Høyreklikk på en fil, og velg «<ph name="PIN_COMMAND" />» for å få rask tilgang til filene dine på hyllen.</translation>
 <translation id="4157569377477607576">Administratorreglene anbefaler ikke at du gjør følgende:</translation>
 <translation id="4159731583141908892"><ph name="FILE_NAME" /> er flyttet.</translation>
@@ -462,8 +467,10 @@
 <translation id="4801956050125744859">Behold begge</translation>
 <translation id="4804827417948292437">Avokado</translation>
 <translation id="4805966553127040832">Gjenoppretter <ph name="COUNT" /> elementer</translation>
+<translation id="4816695657735045067">{COUNT,plural, =1{Organisasjonen din må forlenge bruk for å bruke inkognitomodus}other{Organisasjonen din krever enkelte utvidelser for å bruke Inkognito-modus}}</translation>
 <translation id="4823651846660089135">Enheten er skrivebeskyttet</translation>
 <translation id="4826849268470072925">Tamil ITRANS</translation>
+<translation id="482932175346970750">Skriv inn <ph name="BEGIN_BOLD" />chrome://extensions<ph name="END_BOLD" /> i nettleseren.</translation>
 <translation id="4839847978919684242"><ph name="SELCTED_FILES_COUNT" /> elementer valgt</translation>
 <translation id="4843566743023903107">Chromebase-enheter</translation>
 <translation id="4850886885716139402">Visning</translation>
@@ -533,6 +540,7 @@
         med andre om filer – alt på ett sted.<ph name="MARKUP_9" /></translation>
 <translation id="5275973617553375938">Gjenopprettede filer fra Google Disk</translation>
 <translation id="5278111733643988471">For å gjenopprette dette elementet, dra det til en ny mappe utenfor papirkurven. Den opprinnelige mappen «<ph name="PARENT_FOLDER_NAME" />» for dette elementet er slettet.</translation>
+<translation id="5283101102242354279">Slå på en utvidelse i Inkognito:</translation>
 <translation id="5286194356314741248">Skanning</translation>
 <translation id="5288441970121584418">Hamburger</translation>
 <translation id="5288481194217812690"><ph name="FILENAME" /></translation>
@@ -779,6 +787,7 @@
 <translation id="7238643356913091553"><ph name="NETWORK_NAME" /> – detaljer</translation>
 <translation id="7246947237293279874">FTP-proxy-tjener</translation>
 <translation id="7248671827512403053">App</translation>
+<translation id="7252604552361840748">Finn utvidelsen ovenfor</translation>
 <translation id="7256405249507348194">Ukjent feil: <ph name="DESC" /></translation>
 <translation id="7268659760406822741">Tilgjengelige tjenester</translation>
 <translation id="7292816689782057017">Administratorreglene begrenser lagring på enkelte steder.</translation>
@@ -792,6 +801,7 @@
 <translation id="7359359531237882347">Kopierer <ph name="NUMBER_OF_ITEMS" /> elementer …</translation>
 <translation id="7375951387215729722">Fillisten er sortert etter <ph name="COLUMN_NAME" /> i synkende rekkefølge.</translation>
 <translation id="7377161162143020057">Kopiering av denne filen er blokkert på grunn av en administratorregel</translation>
+<translation id="7392500733467492920">er ikke å finne. Kontakt administratoren din.</translation>
 <translation id="7402503521691663770">ChromeOS Flex-enheter</translation>
 <translation id="7408870451288633753">Tsjekkisk</translation>
 <translation id="7417453074306512035">Etiopisk tastatur</translation>

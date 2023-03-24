@@ -922,7 +922,6 @@ Kung ayaw mo, iba-block ito ng iyong mga setting ng privacy. Papayagan nito ang 
 <translation id="3249151924975132674">Mga loan ng estudyante at financing sa kolehiyo</translation>
 <translation id="3249845759089040423">Groovy</translation>
 <translation id="3250640885957938546">Advertising at marketing</translation>
-<translation id="3252266817569339921">Pranses</translation>
 <translation id="3254301855501243548">18 x 22 in</translation>
 <translation id="3256863843508922226">Pagreretiro at pension</translation>
 <translation id="3259648571731540213"><ph name="CREATE_GOOGLE_CALENDAR_EVENT_FOCUSED_FRIENDLY_MATCH_TEXT" />, pindutin ang Tab at pagkatapos ay ang Enter para gumawa ng bagong event sa Google Calendar nang mabilis</translation>
@@ -1586,7 +1585,6 @@ Kung ayaw mo, iba-block ito ng iyong mga setting ng privacy. Papayagan nito ang 
 <translation id="484988093836683706">Gamitin ang pag-unlock ng device</translation>
 <translation id="4850886885716139402">View</translation>
 <translation id="4852429274334674023">Mga operating system</translation>
-<translation id="485316830061041779">German</translation>
 <translation id="4853901935952445031">Hindi na magagamit ng site na ito ang U2F API pagkalipas ng Pebrero 2022. Kung pagmamay-ari mo ang site na ito, dapat mong gawin itong gumagamit ng Web Authentication API.</translation>
 <translation id="4854362297993841467">Hindi available ang pamamaraan ng paghahatid na ito. Sumubok ng ibang pamamaraan.</translation>
 <translation id="4854853140771946034">Gumawa ng bagong tala sa Google Keep nang mabilis</translation>
@@ -1825,7 +1823,6 @@ Kung ayaw mo, iba-block ito ng iyong mga setting ng privacy. Papayagan nito ang 
 <translation id="5423269318075950257">Subaybayan ang Presyo</translation>
 <translation id="5425241977284572032">{NUM_COOKIES,plural, =0{Walang naka-block na site}=1{1 site ang naka-block}one{# site ang naka-block}other{# na site ang naka-block}}</translation>
 <translation id="5426179911063097041">Gusto ng <ph name="SITE" /> na padalhan ka ng mga notification</translation>
-<translation id="5428105026674456456">Spanish</translation>
 <translation id="5430298929874300616">Alisin ang bookmark</translation>
 <translation id="5443468954631487277">Baligtarin ang pagkakasunod-sunod nang nakatihaya</translation>
 <translation id="5447765697759493033">Hindi isasalin ang site na ito</translation>
@@ -1834,7 +1831,6 @@ Kung ayaw mo, iba-block ito ng iyong mga setting ng privacy. Papayagan nito ang 
 <translation id="5457113250005438886">Di-wasto</translation>
 <translation id="5458150163479425638">{CONTACT,plural, =0{<ph name="CONTACT_PREVIEW" />}=1{<ph name="CONTACT_PREVIEW" /> at <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> pa}one{<ph name="CONTACT_PREVIEW" /> at <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> pa}other{<ph name="CONTACT_PREVIEW" /> at <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> pa}}</translation>
 <translation id="5463625433003343978">Naghahanap ng mga device...</translation>
-<translation id="5469868506864199649">Italyano</translation>
 <translation id="5470230812924696184">Civil engineering</translation>
 <translation id="5470861586879999274">&amp;Gawing muli ang pag-e-edit</translation>
 <translation id="5471337644440862957">Mga pelikulang komedya</translation>
@@ -1847,7 +1843,6 @@ Kung ayaw mo, iba-block ito ng iyong mga setting ng privacy. Papayagan nito ang 
     <ph name="LINE_BREAK" />
     Subukang makipag-ugnayan sa iyong system administrator.</translation>
 <translation id="549333378215107354">Laki 3</translation>
-<translation id="5503356662318814623">Magpadala ng mensahe</translation>
 <translation id="5509762909502811065">B0</translation>
 <translation id="5509780412636533143">Mga pinamamahalaang bookmark</translation>
 <translation id="5510481203689988000">Kinokontrol ang setting na ito sa mga setting ng Cookies.</translation>
@@ -3005,7 +3000,6 @@ Mga karagdagang detalye:
 <translation id="8296205692406981542">Mga parke at harding panrehiyon</translation>
 <translation id="8297545700510100061">Ginagamit ang cookies at iba pang data ng site para tandaan ka, halimbawa para i-sign in ka o i-personalize ang mga ad. Para mapamahalaan ang cookies para sa lahat ng site, tingnan ang <ph name="SETTINGS" />.</translation>
 <translation id="8298115750975731693">Maaaring hilingin ng Wi-Fi na ginagamit mo (<ph name="WIFI_NAME" />) na bisitahin mo ang <ph name="BEGIN_BOLD" /><ph name="LOGIN_URL" /><ph name="END_BOLD" />.</translation>
-<translation id="8299269255470343364">Japanese</translation>
 <translation id="8303854710873047864">Ipinapakita ang seksyong "<ph name="SECTION" />"</translation>
 <translation id="830498451218851433">Fold half</translation>
 <translation id="8307888238279532626">Mga naka-install na app at kung gaano kadalas gamitin ang mga ito</translation>
@@ -3126,7 +3120,6 @@ Mga karagdagang detalye:
 <translation id="865032292777205197">mga sensor ng paggalaw</translation>
 <translation id="8654126188050905496">55 x 91 mm</translation>
 <translation id="8663226718884576429">Buod ng Order, <ph name="TOTAL_LABEL" />, Higit pang Detalye</translation>
-<translation id="8666678546361132282">English</translation>
 <translation id="8671519637524426245">Hindi natutugunan ng value ng <ph name="SECURE_DNS_SALT" /> ang mga requirement sa laki.</translation>
 <translation id="867224526087042813">Lagda</translation>
 <translation id="8672264262457010862">Negosyo at pang-industriya</translation>

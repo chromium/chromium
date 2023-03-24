@@ -1498,6 +1498,7 @@ Noen nettsteder kan for eksempel svare på denne forespørselen ved å vise deg 
 <translation id="8989968390305463310">Nettleserloggen din påvirker hvilke annonser du ser, og interessene som er anslått nedenfor. For å beskytte personvernet ditt sletter Chrome interessene dine automatisk på rullerende basis hver måned. Interessene kan fornyes med mindre du fjerner dem.</translation>
 <translation id="8993760627012879038">Åpne en ny fane i inkognitomodus</translation>
 <translation id="8996847606757455498">Velg en annen leverandør</translation>
+<translation id="8998289560386111590">Ikke tilgjengelig på enheten din</translation>
 <translation id="8998729206196772491">Du logger på med en konto som administreres av <ph name="MANAGED_DOMAIN" />, og du gir administratoren for dette domenet kontroll over Chrome-dataene dine. Dataene dine blir permanent knyttet til denne kontoen. Når du logger av Chrome, slettes dataene dine fra denne enheten, men de fortsetter å være lagret i Google-kontoen din.</translation>
 <translation id="9022774213089566801">Ofte besøkte</translation>
 <translation id="9022871169049522985">Nettsteder og annonsører kan måle annonseresultater sine</translation>

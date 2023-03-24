@@ -72,6 +72,7 @@
 <translation id="1061130374843955397">Bienvenue sur votre <ph name="DEVICE_TYPE" /></translation>
 <translation id="1061373870045429865">Créer un code QR pour ce lien</translation>
 <translation id="1061904396131502319">C'est bientôt le moment de prendre une pause</translation>
+<translation id="1062407476771304334">Remplacer</translation>
 <translation id="1062628064301375934">Aidez-nous à créer une navigation Web plus privée</translation>
 <translation id="1067048845568873861">Créé</translation>
 <translation id="1067661089446014701">Pour plus de sécurité, vous pouvez chiffrer les mots de passe sur votre appareil avant qu'ils ne soient enregistrés dans votre compte Google</translation>
@@ -561,6 +562,7 @@ Les autorisations que vous avez déjà accordées à des applications peuvent s'
 <translation id="1485015260175968628">Elle peut maintenant :</translation>
 <translation id="1485141095922496924">Version <ph name="PRODUCT_VERSION" /> (<ph name="PRODUCT_CHANNEL" />) <ph name="PRODUCT_MODIFIER" /> <ph name="PRODUCT_VERSION_BITS" /></translation>
 <translation id="1486096554574027028">Recherche de mots de passe</translation>
+<translation id="1486486872607808064">Scannez ce code QR avec une caméra sur l'appareil sur lequel vous souhaitez créer une clé d'accès pour <ph name="APP_NAME" /></translation>
 <translation id="1487335504823219454">Paramètres personnalisés activés</translation>
 <translation id="1493892686965953381">En attente de <ph name="LOAD_STATE_PARAMETER" />...</translation>
 <translation id="1494349716233667318">Les sites peuvent demander à utiliser les polices installées sur votre appareil</translation>
@@ -771,6 +773,7 @@ Les autorisations que vous avez déjà accordées à des applications peuvent s'
 <translation id="164936512206786300">Annuler l'association de l'appareil Bluetooth</translation>
 <translation id="1651008383952180276">Vous devez entrer deux fois la même phrase de passe</translation>
 <translation id="1652326691684645429">Activer la fonctionnalité Partage à proximité</translation>
+<translation id="1654580009054503925">Non autorisé à afficher les demandes</translation>
 <translation id="1656528038316521561">Opacité de l'arrière-plan</translation>
 <translation id="1657406563541664238">Aidez-nous à améliorer <ph name="PRODUCT_NAME" /> en envoyant automatiquement des statistiques d'utilisation et des rapports d'erreur à Google</translation>
 <translation id="1657937299377480641">Pour te connecter à nouveau afin d'accéder aux ressources éducatives, demande à un parent de te donner l'autorisation</translation>
@@ -1151,6 +1154,7 @@ Les autorisations que vous avez déjà accordées à des applications peuvent s'
 <translation id="1987317783729300807">Comptes</translation>
 <translation id="1987574314042117472">Sélectionner et installer des applications populaires</translation>
 <translation id="1988259784461813694">Exigence</translation>
+<translation id="1988733631391393183">Afficher les commandes braille dans les menus de ChromeVox</translation>
 <translation id="1989112275319619282">Parcourir</translation>
 <translation id="1989903373608997757">Toujours utiliser</translation>
 <translation id="1990046457226896323">Les fichiers de synthèse textuelle ont été téléchargés</translation>
@@ -2542,7 +2546,6 @@ https://support.google.com/chrome/?p=applescript</translation>
 <translation id="3193695589337931419">Utilitaires pour les signaux système</translation>
 <translation id="3194786596445804250">Afficher les détails sur le blocage des témoins tiers</translation>
 <translation id="3197453258332670132">Obtenez de l'information à propos du texte sélectionné lorsque vous faites un clic droit ou que vous maintenez le doigt dessus</translation>
-<translation id="3198804549162832936">Ouvrir le lien dans une nouvelle <ph name="APP" /></translation>
 <translation id="3199127022143353223">Serveurs</translation>
 <translation id="3200061262156232574">Votre panier d'achats</translation>
 <translation id="3201237270673604992">Z à A</translation>
@@ -2671,6 +2674,7 @@ https://support.google.com/chrome/?p=applescript</translation>
 <translation id="3317678681329786349">La caméra et le microphone sont bloqués</translation>
 <translation id="3319306431415395200">Traduire le texte de l'image avec <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
 <translation id="3320630259304269485">Navigation sécurisée (protection contre les sites dangereux) et autres paramètres de sécurité</translation>
+<translation id="3321460131042519426">Activer le retour à la ligne</translation>
 <translation id="3323521181261657960">Hé hé! Ton temps d'écran a été prolongé!</translation>
 <translation id="3323577066981719144">Les modifications que vous apportez ici s'appliquent uniquement au navigateur Chrome. Pour modifier les paramètres de votre navigateur Chrome utilisant l'architecture Lacros, ouvrez celui-ci et accédez aux paramètres.</translation>
 <translation id="3325804108816646710">Recherche des profils accessibles en cours…</translation>
@@ -3409,6 +3413,7 @@ Souhaitez-vous lancer <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="3957079323242030166">Les données des sauvegardes ne comptent pas dans votre quota de stockage Google Disque.</translation>
 <translation id="3957844511978444971">Touchez « Accepter » pour confirmer votre sélection des paramètres de ces services Google.</translation>
 <translation id="3958088479270651626">Importation des favoris et des paramètres</translation>
+<translation id="3958110062351175311">Autorisé à afficher les demandes dans la barre d'outils</translation>
 <translation id="3960566196862329469">ONC</translation>
 <translation id="3961005895395968120">Autres actions pour <ph name="IBAN_DESCRIPTION" /></translation>
 <translation id="3962119236270174787">Protection standard contre les extensions, les sites Web, les téléchargements qui sont réputés être dangereux</translation>
@@ -3668,6 +3673,7 @@ Souhaitez-vous lancer <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="4205157409548006256">Une erreur s'est produite lors de la configuration de Linux.</translation>
 <translation id="4206144641569145248">Extraterrestre</translation>
 <translation id="4206323443866416204">Rapport de commentaire</translation>
+<translation id="4206585797409671301">Autorisé à afficher les demandes</translation>
 <translation id="4207932031282227921">Autorisation demandée, appuyez sur F6 pour répondre</translation>
 <translation id="4208390505124702064">Rechercher sur <ph name="SITE_NAME" /></translation>
 <translation id="4209092469652827314">Grand</translation>
@@ -4337,6 +4343,7 @@ Appuyez sur Ctrl+Alt+diminuer la luminosité pour dézoomer.</translation>
 <translation id="481574578487123132">Appareils associés</translation>
 <translation id="4816097470512964351"><ph name="DEVICE" />, détails</translation>
 <translation id="4816336393325437908">{COUNT,plural, =1{1 favori supprimé}one{{COUNT} favori supprimé}other{{COUNT} favoris supprimés}}</translation>
+<translation id="4816900689218414104">Créer une clé d'accès sur un téléphone ou une tablette</translation>
 <translation id="4819323978093861656">{0,plural, =0{Fermeture maintenant.}=1{Fermeture dans : 1 seconde}one{Fermeture dans : # seconde}other{Fermeture dans : # secondes}}</translation>
 <translation id="4819607494758673676">Notifications de l'Assistant Google</translation>
 <translation id="4820236583224459650">Enregistrer comme ticket actif</translation>
@@ -6245,6 +6252,7 @@ Les autorisations que vous avez déjà accordées à des sites Web et à des app
 <translation id="6562117348069327379">Stocker les journaux système dans le répertoire Téléchargements.</translation>
 <translation id="656293578423618167">Le chemin d'accès ou le nom du fichier est trop long. Veuillez raccourcir le nom ou enregistrer le fichier à un autre endroit.</translation>
 <translation id="6568283005472142698">Recherche d'onglet</translation>
+<translation id="6570622975915850879">Utiliser un autre appareil</translation>
 <translation id="65711204837946324">Le téléchargement exige une autorisation</translation>
 <translation id="6571533309669248172">Formatage du texte</translation>
 <translation id="6571772921213691236">Modifier les données de connexion</translation>
@@ -6539,6 +6547,7 @@ Vous avez # autres mots de passe compromis. Le gestionnaire de mots de passe de
 <translation id="6823174134746916417">Toucher pour cliquer sur le pavé tactile</translation>
 <translation id="6824564591481349393">Copier l'adresse de courri&amp;el</translation>
 <translation id="6824584962142919697">&amp;Inspecter des éléments</translation>
+<translation id="6824725898506587159">Gérer les langues</translation>
 <translation id="6825184156888454064">Trier par nom</translation>
 <translation id="6826872289184051766">Vérifier par l'intermédiaire de la technologie USB</translation>
 <translation id="6827121912381363404">Autoriser toutes les extensions à lire et à modifier le site <ph name="PERMITTED_SITE" /></translation>
@@ -6663,7 +6672,6 @@ Vous avez # autres mots de passe compromis. Le gestionnaire de mots de passe de
 <translation id="6925127338315966709">Vous ajoutez un profil géré à ce navigateur. L'administrateur peut gérer ce profil et accéder à ses données. Vos favoris, votre historique, vos mots de passe et vos autres paramètres peuvent être synchronisés avec votre compte et gérés par votre administrateur.</translation>
 <translation id="6929126689972602640">Les contrôles parentaux ne sont pas pris en charge pour les comptes scolaires. Pour ajouter un compte scolaire afin d'accéder à Google Classroom et à d'autres sites Web permettant de faire des devoirs à la maison, connectez-vous d'abord avec le compte personnel de l'enfant. Vous pouvez ajouter le compte scolaire plus tard dans le menu de configuration.</translation>
 <translation id="6929760895658557216">Ok Google</translation>
-<translation id="6930036377490597025">Clé de sécurité externe ou capteur intégré</translation>
 <translation id="6930161297841867798">{NUM_EXTENSIONS,plural, =1{Une extension a été refusée}one{# extension a été refusée}other{# extensions ont été refusées}}</translation>
 <translation id="6931690462168617033">Niveau de pression du clic</translation>
 <translation id="6935286146439255109">Il manque un bac à papier</translation>
@@ -6810,6 +6818,7 @@ Vous avez # autres mots de passe compromis. Le gestionnaire de mots de passe de
 <translation id="7044606776288350625">Synchroniser les données</translation>
 <translation id="7047059339731138197">Choisir un fond d'écran</translation>
 <translation id="7049293980323620022">Conserver le fichier?</translation>
+<translation id="70496770794393383">Tableau des mots de passe enregistrés</translation>
 <translation id="7050037487872780845">Configuration incorrecte du point d’accès</translation>
 <translation id="7051551856857948729">Masquer la valeur IBAN</translation>
 <translation id="7052237160939977163">Envoyer des données de suivi des performances</translation>
@@ -8188,7 +8197,7 @@ Conservez votre fichier de clé en lieu sûr. Vous en aurez besoin lors de la cr
 <translation id="8275339871947079271">Déplacez votre mot de passe vers votre compte Google pour y accéder de manière sécuritaire sur les appareils sur lesquels vous êtes connecté</translation>
 <translation id="8276560076771292512">Vider le cache et effectuer une actualisation forcée</translation>
 <translation id="8281721647184388851">Activer la synchronisation du navigateur Chrome?</translation>
-<translation id="8281886186245836920">Passer</translation>
+<translation id="8281886186245836920">Ignorer</translation>
 <translation id="8284279544186306258">tous les sites <ph name="WEBSITE_1" /></translation>
 <translation id="8284326494547611709">Sous-titres</translation>
 <translation id="8286036467436129157">Se connecter</translation>

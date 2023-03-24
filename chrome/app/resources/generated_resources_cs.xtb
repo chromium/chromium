@@ -72,6 +72,7 @@
 <translation id="1061130374843955397"><ph name="DEVICE_TYPE" /> vás vítá</translation>
 <translation id="1061373870045429865">Vytvořit pro tento odkaz QR kód</translation>
 <translation id="1061904396131502319">Brzy bude čas na přestávku</translation>
+<translation id="1062407476771304334">Nahradit</translation>
 <translation id="1062628064301375934">Pomozte nám vybudovat web zajišťující více soukromí</translation>
 <translation id="1067048845568873861">Vytvořeno</translation>
 <translation id="1067661089446014701">Za účelem zvýšení zabezpečení můžete hesla před uložením do účtu Google v zařízení zašifrovat</translation>
@@ -562,6 +563,7 @@ Na tento účet se mohou vztahovat oprávnění, která jste již udělili aplik
 <translation id="1485015260175968628">Nyní může:</translation>
 <translation id="1485141095922496924">Verze <ph name="PRODUCT_VERSION" /> (<ph name="PRODUCT_CHANNEL" />) <ph name="PRODUCT_MODIFIER" /> <ph name="PRODUCT_VERSION_BITS" /></translation>
 <translation id="1486096554574027028">Prohledávat hesla</translation>
+<translation id="1486486872607808064">Naskenujte tento QR kód fotoaparátem zařízení, ve kterém chcete vytvořit přístupový klíč pro <ph name="APP_NAME" /></translation>
 <translation id="1487335504823219454">Zapnuto – vlastní nastavení</translation>
 <translation id="1493892686965953381">Čekání na <ph name="LOAD_STATE_PARAMETER" />...</translation>
 <translation id="1494349716233667318">Weby mohou žádat o použití písem nainstalovaných v zařízení</translation>
@@ -772,6 +774,7 @@ Na tento účet se mohou vztahovat oprávnění, která jste již udělili aplik
 <translation id="164936512206786300">Zrušit spárování se zařízením Bluetooth</translation>
 <translation id="1651008383952180276">Musíte zadat dvakrát stejnou heslovou frázi</translation>
 <translation id="1652326691684645429">Aktivovat sdílení nablízko</translation>
+<translation id="1654580009054503925">Není povoleno zobrazovat žádosti</translation>
 <translation id="1656528038316521561">Neprůhlednost pozadí</translation>
 <translation id="1657406563541664238">Pomozte <ph name="PRODUCT_NAME" /> zlepšit tím, že budete Googlu automaticky zasílat statistiky o využívání a zprávy o selhání aplikace</translation>
 <translation id="1657937299377480641">Jestli se chceš znovu přihlásit kvůli přístupu ke vzdělávacím materiálům, požádej rodiče, aby ti udělili oprávnění</translation>
@@ -1152,6 +1155,7 @@ Na aplikace a obsah v jiných zařízeních tato akce nemá vliv.</translation
 <translation id="1987317783729300807">Účty</translation>
 <translation id="1987574314042117472">Vyberte a nainstalujte oblíbené aplikace</translation>
 <translation id="1988259784461813694">Požadavek</translation>
+<translation id="1988733631391393183">Zobrazovat v nabídkách čtečky ChromeVox klávesové zkratky pro klávesnici s Braillovým písmem</translation>
 <translation id="1989112275319619282">Procházet</translation>
 <translation id="1989903373608997757">Použít vždy</translation>
 <translation id="1990046457226896323">Stažené řečové soubory</translation>
@@ -2542,7 +2546,6 @@ Zpráva serveru: <ph name="SERVER_MSG" /></translation>
 <translation id="3193695589337931419">Nástroje pro sběr systémových signálů</translation>
 <translation id="3194786596445804250">Zobrazit podrobnosti o blokování souborů cookie třetích stran</translation>
 <translation id="3197453258332670132">Zobrazit kliknutím pravým tlačítkem nebo dlouhým stisknutím informace o vybraném textu</translation>
-<translation id="3198804549162832936">Otevřít odkaz v novém okně aplikace <ph name="APP" /></translation>
 <translation id="3199127022143353223">Servery</translation>
 <translation id="3200061262156232574">V nákupním košíku</translation>
 <translation id="3201237270673604992">Z až A</translation>
@@ -2671,6 +2674,7 @@ Zpráva serveru: <ph name="SERVER_MSG" /></translation>
 <translation id="3317678681329786349">Kamera a mikrofon jsou blokovány</translation>
 <translation id="3319306431415395200">Přeložit text na obrázku pomocí služby <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
 <translation id="3320630259304269485">Bezpečné prohlížení (ochrana před nebezpečnými weby) a další nastavení zabezpečení</translation>
+<translation id="3321460131042519426">Povolit zalamování slov</translation>
 <translation id="3323521181261657960">Bonus! Získáváš víc času na zařízení</translation>
 <translation id="3323577066981719144">Zde provedené změny se vztahují pouze na prohlížeč Chrome. Pokud chcete provést změny nastavení prohlížeče Chrome Lacros, otevřete prohlížeč Chrome Lacros a přejděte na nastavení.</translation>
 <translation id="3325804108816646710">Vyhledávání dostupných profilů…</translation>
@@ -3408,6 +3412,7 @@ Zpráva serveru: <ph name="SERVER_MSG" /></translation>
 <translation id="3957079323242030166">Zálohovaná data se nezapočítávají do kvóty úložiště na Disku.</translation>
 <translation id="3957844511978444971">Klepnutím na Přijmout potvrdíte výběr těchto nastavení služeb Google.</translation>
 <translation id="3958088479270651626">Importovat záložky a nastavení</translation>
+<translation id="3958110062351175311">Povoleno zobrazovat žádosti na liště</translation>
 <translation id="3960566196862329469">ONC</translation>
 <translation id="3961005895395968120">Další akce pro <ph name="IBAN_DESCRIPTION" /></translation>
 <translation id="3962119236270174787">Standardní ochrana před weby, soubory ke stažení a rozšířeními, o nichž je známo, že jsou nebezpečné</translation>
@@ -3667,6 +3672,7 @@ Zpráva serveru: <ph name="SERVER_MSG" /></translation>
 <translation id="4205157409548006256">Při konfiguraci Linuxu došlo k chybě.</translation>
 <translation id="4206144641569145248">Mimozemšťan</translation>
 <translation id="4206323443866416204">Zpětná vazba</translation>
+<translation id="4206585797409671301">Povoleno zobrazovat žádosti</translation>
 <translation id="4207932031282227921">Odpovězte na žádost o oprávnění stisknutím klávesy F6</translation>
 <translation id="4208390505124702064">Hledat na webu <ph name="SITE_NAME" /></translation>
 <translation id="4209092469652827314">Velké</translation>
@@ -4336,6 +4342,7 @@ Oddálení provedete stisknutím kláves Ctrl + Alt + Snížit jas.</translation
 <translation id="481574578487123132">Propojená zařízení</translation>
 <translation id="4816097470512964351"><ph name="DEVICE" />, podrobnosti</translation>
 <translation id="4816336393325437908">{COUNT,plural, =1{Byla smazána 1 záložka}few{Byly smazány {COUNT} záložky}many{Bylo smazáno {COUNT} záložky}other{Bylo smazáno {COUNT} záložek}}</translation>
+<translation id="4816900689218414104">Vytvořte na telefonu nebo tabletu přístupový klíč</translation>
 <translation id="4819323978093861656">{0,plural, =0{Probíhá zavírání.}=1{K zavření dojde za 1 sekundu}few{K zavření dojde za # sekundy}many{K zavření dojde za # sekundy}other{K zavření dojde za # sekund}}</translation>
 <translation id="4819607494758673676">Oznámení Asistenta Google</translation>
 <translation id="4820236583224459650">Nastavit jako aktivní lístek</translation>
@@ -6241,6 +6248,7 @@ Na tento účet se mohou vztahovat oprávnění, která jste již udělili webů
 <translation id="6562117348069327379">Ukládat systémové protokoly do složky Stažené soubory.</translation>
 <translation id="656293578423618167">Cesta nebo název souboru jsou příliš dlouhé. Použijte kratší název nebo vyberte jiné umístění.</translation>
 <translation id="6568283005472142698">Vyhledávání v kartách</translation>
+<translation id="6570622975915850879">Použít jiné zařízení</translation>
 <translation id="65711204837946324">Ke stažení je potřeba oprávnění</translation>
 <translation id="6571533309669248172">Formátování textu</translation>
 <translation id="6571772921213691236">Upravit přihlašovací údaje</translation>
@@ -6537,6 +6545,7 @@ Máte # dalších prolomených hesel. Správce hesel Google doporučuje ihned ta
 <translation id="6823174134746916417">Kliknutí klepnutím na touchpadu</translation>
 <translation id="6824564591481349393">Kopírovat &amp;e-mailovou adresu</translation>
 <translation id="6824584962142919697">&amp;Prozkoumat prvky</translation>
+<translation id="6824725898506587159">Spravovat jazyky</translation>
 <translation id="6825184156888454064">Seřadit podle názvu</translation>
 <translation id="6826872289184051766">Ověřit přes USB</translation>
 <translation id="6827121912381363404">Povolit všem rozšířením číst a měnit data webu <ph name="PERMITTED_SITE" /></translation>
@@ -6661,7 +6670,6 @@ Máte # dalších prolomených hesel. Správce hesel Google doporučuje ihned ta
 <translation id="6925127338315966709">Přidáváte do tohoto prohlížeče spravovaný profil. Váš administrátor může profil ovládat a má přístup k jeho datům. Administrátor může do vašeho účtu synchronizovat záložky, historii, hesla a další nastavení a spravovat je.</translation>
 <translation id="6929126689972602640">U školních účtů není rodičovská kontrola podporována. Pokud chcete přidat školní účet pro přístup k Učebně Google a dalším webům, které dítě potřebuje k práci do školy, nejdříve se přihlaste pomocí osobního účtu dítěte. Školní účet budete moci přidat později.</translation>
 <translation id="6929760895658557216">Ok Google</translation>
-<translation id="6930036377490597025">Externí bezpečnostní klíč nebo zabudovaný senzor</translation>
 <translation id="6930161297841867798">{NUM_EXTENSIONS,plural, =1{Rozšíření bylo zamítnuto}few{# rozšíření byla zamítnuta}many{# rozšíření bylo zamítnuto}other{# rozšíření bylo zamítnuto}}</translation>
 <translation id="6931690462168617033">Síla kliknutí</translation>
 <translation id="6935286146439255109">Chybí zásobník papíru</translation>
@@ -6808,6 +6816,7 @@ Máte # dalších prolomených hesel. Správce hesel Google doporučuje ihned ta
 <translation id="7044606776288350625">Synchronizace dat</translation>
 <translation id="7047059339731138197">Výběr pozadí</translation>
 <translation id="7049293980323620022">Ponechat soubor?</translation>
+<translation id="70496770794393383">Tabulka uložených hesel</translation>
 <translation id="7050037487872780845">Neplatná konfigurace hotspotu</translation>
 <translation id="7051551856857948729">Skrýt hodnotu IBAN</translation>
 <translation id="7052237160939977163">Odesílat údaje sledování výkonu</translation>

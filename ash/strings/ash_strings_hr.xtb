@@ -40,6 +40,7 @@ Evo nekih stvari koje možete pokušati pokrenuti.</translation>
 <translation id="1181037720776840403">Ukloni</translation>
 <translation id="1182225749592316782">To omogućuje pristup svim aplikacijama i web-lokacijama s dopuštenjem za kameru i mikrofon</translation>
 <translation id="1183863904939664422">Ne zanima me taj prijedlog</translation>
+<translation id="1184126796192815024">Ova mreža ne podržava aplikacije za streaming na vašem telefonu. Pokušajte upotrijebiti žarišnu točku telefona. <ph name="LEARN_MORE" /></translation>
 <translation id="118437560755358292">Unesite zaporku ili PIN radi dodatne sigurnosti</translation>
 <translation id="118532027333893379">Dodirnite bilo gdje da biste snimili cijeli zaslon</translation>
 <translation id="1190609913194133056">Centar za obavijesti</translation>
@@ -1418,6 +1419,7 @@ Da biste isključili uređaj, ponovno pritisnite i zadržite tipku za uključiva
 <translation id="7689817529363080918">Omogućuje pristup mikrofonu za aplikacije <ph name="APP1_NAME" /> i <ph name="APP2_NAME" /> te sve aplikacije i web-lokacije s dopuštenjem za mikrofon</translation>
 <translation id="7704000866383261579">Ponavljanje zadnje radnje</translation>
 <translation id="7705524343798198388">VPN</translation>
+<translation id="770741401784017797">Izrada GIF-a</translation>
 <translation id="7714767791242455379">Dodajte novu mobilnu mrežu</translation>
 <translation id="7720400844887872976">Uključeno do <ph name="TIME" /></translation>
 <translation id="7720410380936703141">PONOVI</translation>

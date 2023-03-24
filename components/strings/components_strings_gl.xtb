@@ -809,6 +809,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="2951588413176968965">A miña caixa de correo</translation>
 <translation id="2952820037279740115">Pechar todas as ventás do modo de incógnito</translation>
 <translation id="2952904171810469095">A2x5</translation>
+<translation id="2954624054936281172">Táboa cos métodos de pago gardados</translation>
 <translation id="295526156371527179">Advertencia: Esta política non se combinou como un dicionario do xeito especificado na política porque non é un dicionario.</translation>
 <translation id="2955913368246107853">Pecha a barra de busca</translation>
 <translation id="2958544468932521864">Crícket</translation>
@@ -921,7 +922,6 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="3249151924975132674">Préstamos para estudantes e financiamento de estudos universitarios</translation>
 <translation id="3249845759089040423">Moderno</translation>
 <translation id="3250640885957938546">Publicidade e márketing</translation>
-<translation id="3252266817569339921">Francés</translation>
 <translation id="3254301855501243548">18 x 22 polgadas</translation>
 <translation id="3256863843508922226">Xubilación e pensión</translation>
 <translation id="3259648571731540213"><ph name="CREATE_GOOGLE_CALENDAR_EVENT_FOCUSED_FRIENDLY_MATCH_TEXT" />. Preme Tabulador e, a continuación, Introducir para crear rapidamente un novo evento en Google Calendar</translation>
@@ -1585,7 +1585,6 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="484988093836683706">Usar desbloqueo do dispositivo</translation>
 <translation id="4850886885716139402">Vista</translation>
 <translation id="4852429274334674023">Sistemas operativos</translation>
-<translation id="485316830061041779">Alemán</translation>
 <translation id="4853901935952445031">O sitio non poderá usar a API U2F a partir de febreiro de 2022. Se este sitio é da túa propiedade, debes cambiar a API e usar a de Web Authentication.</translation>
 <translation id="4854362297993841467">Este método de entrega non está dispoñible. Proba cun diferente.</translation>
 <translation id="4854853140771946034">Crear rapidamente unha nota nova en Google Keep</translation>
@@ -1824,7 +1823,6 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="5423269318075950257">Facer seguimento do prezo</translation>
 <translation id="5425241977284572032">{NUM_COOKIES,plural, =0{Non hai sitios bloqueados}=1{1 sitio bloqueado}other{# sitios bloqueados}}</translation>
 <translation id="5426179911063097041"><ph name="SITE" /> quere enviarche notificacións</translation>
-<translation id="5428105026674456456">Español</translation>
 <translation id="5430298929874300616">Eliminar marcador</translation>
 <translation id="5443468954631487277">Orde inversa cara arriba</translation>
 <translation id="5447765697759493033">Non se traducirá este sitio</translation>
@@ -1833,7 +1831,6 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="5457113250005438886">Non válidos</translation>
 <translation id="5458150163479425638">{CONTACT,plural, =0{<ph name="CONTACT_PREVIEW" />}=1{<ph name="CONTACT_PREVIEW" /> e <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> máis}other{<ph name="CONTACT_PREVIEW" /> e <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> máis}}</translation>
 <translation id="5463625433003343978">Buscando dispositivos…</translation>
-<translation id="5469868506864199649">Italiano</translation>
 <translation id="5470230812924696184">Enxeñaría civil</translation>
 <translation id="5470861586879999274">&amp;Refacer modificación</translation>
 <translation id="5471337644440862957">Películas de comedia</translation>
@@ -1846,7 +1843,6 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
     <ph name="LINE_BREAK" />
     Tenta pórte en contacto coa persoa que administra o sistema.</translation>
 <translation id="549333378215107354">Tamaño 3</translation>
-<translation id="5503356662318814623">Enviar mensaxe</translation>
 <translation id="5509762909502811065">B0</translation>
 <translation id="5509780412636533143">Marcadores xestionados</translation>
 <translation id="5510481203689988000">Esta opción de configuración contrólase nos axustes das cookies.</translation>
@@ -2777,6 +2773,7 @@ Detalles adicionais:
 <translation id="7736959720849233795">Copiar enderezo da ligazón</translation>
 <translation id="7740996059027112821">Estándar</translation>
 <translation id="77424286611022110">Este sitio mostra anuncios intrusivos ou enganosos. <ph name="LEARN_MORE_LINK_TEXT" /></translation>
+<translation id="7744505202669469867">Táboa cos enderezos gardados</translation>
 <translation id="774634243536837715">Bloqueouse contido perigoso.</translation>
 <translation id="7751971323486164747">Personalizar os tamaños e os tipos de letra en Chrome</translation>
 <translation id="7752995774971033316">Sen xestionar</translation>
@@ -3003,7 +3000,6 @@ Detalles adicionais:
 <translation id="8296205692406981542">Parques e xardíns rexionais</translation>
 <translation id="8297545700510100061">As cookies e outros datos do sitio utilízanse para lembrarte (por exemplo, á hora de iniciar sesión ou de personalizar anuncios). Se queres xestionar as cookies para todos os sitios, vai a <ph name="SETTINGS" />.</translation>
 <translation id="8298115750975731693">É posible que a rede wifi que utilizas (<ph name="WIFI_NAME" />) requira o acceso a <ph name="BEGIN_BOLD" /><ph name="LOGIN_URL" /><ph name="END_BOLD" />.</translation>
-<translation id="8299269255470343364">Xaponés</translation>
 <translation id="8303854710873047864">Mostrouse a sección <ph name="SECTION" /></translation>
 <translation id="830498451218851433">Dobrez á metade</translation>
 <translation id="8307888238279532626">Aplicacións instaladas e frecuencia de uso</translation>
@@ -3018,6 +3014,7 @@ Detalles adicionais:
 <translation id="8347658365704983341">Educación a distancia</translation>
 <translation id="8349305172487531364">Barra de marcadores</translation>
 <translation id="8351131234907093545">Crear nota</translation>
+<translation id="835203957414790336">O contido das páxinas que imprimas e a información sobre a impresora enviaranse a Google Cloud ou a terceiros para a súa análise. Por exemplo, poderían buscarse datos confidenciais.</translation>
 <translation id="8355270400102541638">Contexto do fallo local:</translation>
 <translation id="8363502534493474904">Desactivar o modo avión</translation>
 <translation id="8364627913115013041">Sen configurar.</translation>
@@ -3123,7 +3120,6 @@ Detalles adicionais:
 <translation id="865032292777205197">sensores de movemento</translation>
 <translation id="8654126188050905496">55 x 91 mm</translation>
 <translation id="8663226718884576429">Resumo do pedido, <ph name="TOTAL_LABEL" />, máis detalles</translation>
-<translation id="8666678546361132282">Inglés</translation>
 <translation id="8671519637524426245">O valor de <ph name="SECURE_DNS_SALT" /> non cumpre os requisitos de tamaño.</translation>
 <translation id="867224526087042813">Sinatura</translation>
 <translation id="8672264262457010862">Empresas e industrias</translation>

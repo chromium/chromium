@@ -126,6 +126,7 @@ Pour commencer, voici des exemples de ce que vous pouvez me demander.</translati
 <translation id="15373452373711364">Grand curseur</translation>
 <translation id="1546492247443594934">Bureau 2</translation>
 <translation id="1546930421365146760">Demandez à votre administrateur de configurer cet appareil dans la console d'administration Google</translation>
+<translation id="1549512626801247439">gestion de l'espace de stockage</translation>
 <translation id="1550406609415860283">Appareils disponibles</translation>
 <translation id="1550523713251050646">Cliquez pour obtenir plus d'options.</translation>
 <translation id="1555130319947370107">Bleu</translation>
@@ -249,6 +250,7 @@ Pour commencer, voici des exemples de ce que vous pouvez me demander.</translati
 <translation id="2148716181193084225">Aujourd'hui</translation>
 <translation id="2149229036084364364">Passer au titre précédent</translation>
 <translation id="2161132820593978283">Essayez le cadrage de la caméra pour être au centre de l'écran lors d'appels vidéo. Activez-le dans les Réglages rapides.</translation>
+<translation id="2165966740263283349">utilisation de l'espace de stockage</translation>
 <translation id="2170530631236737939">Balayez l'écran vers le bas avec trois doigts pour quitter l'Aperçu</translation>
 <translation id="2185166372312820725">Accéder à l'onglet précédent</translation>
 <translation id="2185444992308415167">Parcourir les onglets 1 à 8</translation>
@@ -286,6 +288,7 @@ Pour commencer, voici des exemples de ce que vous pouvez me demander.</translati
 <translation id="2352467521400612932">Paramètres du stylet</translation>
 <translation id="2354174487190027830">Activation du réseau <ph name="NAME" /> en cours…</translation>
 <translation id="2359808026110333948">Continuer</translation>
+<translation id="2360398059912971776">batterie</translation>
 <translation id="2367186422933365202">Impossible de se connecter au Chromebook</translation>
 <translation id="2367972762794486313">Afficher les applications</translation>
 <translation id="2369165858548251131">"Bonjour" en chinois</translation>
@@ -320,6 +323,7 @@ Pour commencer, voici des exemples de ce que vous pouvez me demander.</translati
 <translation id="2515586267016047495">Alt</translation>
 <translation id="2526581474998477112">Déverrouiller les fenêtres</translation>
 <translation id="2530896289327917474">Activer ou désactiver la navigation au clavier</translation>
+<translation id="2531025035050312891">appareil lent</translation>
 <translation id="2542089167727451762">Appuyez sur votre image de profil</translation>
 <translation id="254900897760075745">Copier le contenu sélectionné dans le presse-papiers</translation>
 <translation id="255671100581129685">L'Assistant Google n'est pas disponible dans une session publique.</translation>
@@ -332,6 +336,7 @@ Pour commencer, voici des exemples de ce que vous pouvez me demander.</translati
 <translation id="2596078834055697711">Faire une capture de la fenêtre</translation>
 <translation id="2598725286293895280">Applis non compatibles dans le bureau</translation>
 <translation id="2607678425161541573">Connexion en ligne requise</translation>
+<translation id="2612072250312279703">moniteur d'activité</translation>
 <translation id="2612614436418177118">Déplacer une icône d'application dans la grille d'applications</translation>
 <translation id="2620016719323068571">Rechercher dans vos <ph name="CATEGORY" />, fichiers, applis, etc.…</translation>
 <translation id="2620436844016719705">Système</translation>
@@ -461,6 +466,7 @@ Pour commencer, voici des exemples de ce que vous pouvez me demander.</translati
 <translation id="3256109297135787951">Supprimer la mise en surbrillance d'un élément sur l'étagère</translation>
 <translation id="3260969790895726815">Les paroles sont traitées localement et la dictée fonctionne hors connexion, mais certaines commandes vocales ne sont pas prises en charge.</translation>
 <translation id="3269597722229482060">Clic droit</translation>
+<translation id="3289364673986435196">Menu Marche/Arrêt</translation>
 <translation id="3289544412142055976">Les applis Linux ne sont pas prises en charge actuellement</translation>
 <translation id="3289674678944039601">En charge via un adaptateur</translation>
 <translation id="3290356915286466215">Non sécurisé</translation>
@@ -471,6 +477,7 @@ Pour commencer, voici des exemples de ce que vous pouvez me demander.</translati
 <translation id="3308453408813785101"><ph name="USER_EMAIL_ADDRESS" /> pourra toujours se connecter plus tard.</translation>
 <translation id="3321628682574733415">Code parental incorrect</translation>
 <translation id="332827762492701193">Les notifications sont masquées</translation>
+<translation id="3338855835380298613">utilisation du CPU</translation>
 <translation id="3339826665088060472">Capture d'écran : outils de capture et d'enregistrement d'écran</translation>
 <translation id="3340978935015468852">paramètres</translation>
 <translation id="3341303451326249809">Capture d'écran réussie</translation>
@@ -478,6 +485,7 @@ Pour commencer, voici des exemples de ce que vous pouvez me demander.</translati
 <translation id="334927402682780278">Sélectionner le texte entre le curseur et la fin de la ligne</translation>
 <translation id="3349345708646875009">Ouvrir le gestionnaire de tâches</translation>
 <translation id="3351879221545518001">Vous êtes actuellement en train de caster l'écran.</translation>
+<translation id="3354555338129305222">pourquoi mon appareil est-il lent</translation>
 <translation id="3364721542077212959">Outils de stylet</translation>
 <translation id="3365977133351922112">Votre téléphone est trop loin. Rapprochez-le.</translation>
 <translation id="3368922792935385530">Connecté</translation>
@@ -583,6 +591,7 @@ Branchez votre appareil sur une source d'alimentation.</translation>
 <translation id="3779139509281456663">Connexion à l'appareil suivant : <ph name="NAME" /></translation>
 <translation id="3783640748446814672">alt</translation>
 <translation id="3784455785234192852">Verrouiller</translation>
+<translation id="3796198851576711985">état de la batterie</translation>
 <translation id="3796746699333205839">Une application utilise la caméra et le micro</translation>
 <translation id="3798670284305777884">Haut-parleur (interne)</translation>
 <translation id="3799080171973636491">Vous avez appuyé sur le raccourci clavier de la loupe plein écran. Voulez-vous l'activer ?</translation>
@@ -684,6 +693,7 @@ Branchez votre appareil sur une source d'alimentation.</translation>
 <translation id="4269883910223712419">L'administrateur de cet appareil peut :</translation>
 <translation id="4274537685965975248">Le raccourci clavier Ctrl+Alt+Flèche vers le bas a été modifié. Pour utiliser la touche Fin, appuyez sur la touche du <ph name="LAUNCHER_KEY_NAME" />+Flèche vers la droite.</translation>
 <translation id="4279490309300973883">Mise en miroir</translation>
+<translation id="4280601795273309128">Mises à jour de sécurité terminées. Mettez à niveau votre appareil.</translation>
 <translation id="4283888303416325161">Veuillez saisir votre mot de passe pour renforcer la sécurité</translation>
 <translation id="4285498937028063278">Retirer</translation>
 <translation id="4294319844246081198">Bonjour <ph name="GIVEN_NAME" />,</translation>
@@ -739,9 +749,11 @@ Branchez votre appareil sur une source d'alimentation.</translation>
 <translation id="4527045527269911712">L'appareil Bluetooth "<ph name="DEVICE_NAME" />" demande l'autorisation de s'associer.</translation>
 <translation id="4533343294786968049">Prolongation de l'autonomie de la batterie. La batterie sera complètement chargée à <ph name="FULLY_CHARGE_TIME" />.</translation>
 <translation id="453661520163887813"><ph name="TIME" /> avant charge complète</translation>
+<translation id="4536664881735498710">utilisation de la RAM</translation>
 <translation id="4538824937723742295">Prendre une capture en plein écran</translation>
 <translation id="4539127209940689201">Imprimer la page active</translation>
 <translation id="4544483149666270818">Sélectionner une fenêtre à enregistrer</translation>
+<translation id="454541942614298893">mon appareil</translation>
 <translation id="4548482551627849548">Déplacer la fenêtre active vers le bureau à gauche</translation>
 <translation id="4560576029703263363">Activé</translation>
 <translation id="4561267230861221837">3G</translation>
@@ -856,9 +868,11 @@ Branchez votre appareil sur une source d'alimentation.</translation>
 <translation id="5043679421800073804">Cliquer ou appuyer sur la dernière icône de l'étagère</translation>
 <translation id="504465286040788597">Paragraphe précédent</translation>
 <translation id="5045550434625856497">Mot de passe incorrect</translation>
+<translation id="5062496344832867502">RAM</translation>
 <translation id="5078796286268621944">Code PIN incorrect</translation>
 <translation id="5083553833479578423">Déverrouiller plus de fonctionnalités de l'Assistant.</translation>
 <translation id="5092436659250499817">Activer/Désactiver le rétroéclairage du clavier</translation>
+<translation id="5094577350232361255">à propos de</translation>
 <translation id="509790653408515442">Lorsque vous diffusez les applis de votre téléphone en streaming, elles s'affichent ici</translation>
 <translation id="5098537242461068432">Bureau et fenêtres rouverts</translation>
 <translation id="5104236669533825617">Impossible de créer l'enregistrement d'écran</translation>
@@ -870,6 +884,7 @@ Branchez votre appareil sur une source d'alimentation.</translation>
 <translation id="5147567197700016471">Déverrouillé</translation>
 <translation id="5150070631291639005">Paramètres de confidentialité</translation>
 <translation id="5155897006997040331">Vitesse de lecture</translation>
+<translation id="5163434717504750796">Batterie à <ph name="BATTERY_HEALTH_PERCENTAGE" /> % | <ph name="CYCLE_COUNT" /> cycles</translation>
 <translation id="5166007464919321363">Enregistrer le bureau comme modèle</translation>
 <translation id="5168181903108465623">Appareils Cast disponibles</translation>
 <translation id="5170568018924773124">Afficher le dossier</translation>
@@ -960,6 +975,7 @@ Branchez votre appareil sur une source d'alimentation.</translation>
 <translation id="557563299383177668">Paragraphe suivant</translation>
 <translation id="5577082622442191756">Activer/Désactiver le Bluetooth. <ph name="STATE_TEXT" />.</translation>
 <translation id="5577281275355252094">Vérifiez que le Bluetooth est activé sur votre téléphone pour utiliser Phone Hub</translation>
+<translation id="5578188167649348993">mémoire</translation>
 <translation id="5580000943347215299">Bibliothèque</translation>
 <translation id="558849140439112033">Faire glisser pour sélectionner une zone à capturer</translation>
 <translation id="5597451508971090205"><ph name="SHORT_WEEKDAY" /> <ph name="DATE" /></translation>
@@ -1029,6 +1045,7 @@ Branchez votre appareil sur une source d'alimentation.</translation>
 <translation id="589817443623831496">Exploration par position</translation>
 <translation id="5901316534475909376">Maj+Échap</translation>
 <translation id="5901630391730855834">Jaune</translation>
+<translation id="5902162043476810127">mémoire vive</translation>
 <translation id="5909862606227538307">Bureau inactif.</translation>
 <translation id="5911231045062997865">Les fenêtres Lacros ne sont pas prises en charge pour le moment. Les autres applis seront enregistrées.</translation>
 <translation id="5911909173233110115"><ph name="USERNAME" /> (<ph name="MAIL" />)</translation>
@@ -1134,6 +1151,7 @@ Branchez votre appareil sur une source d'alimentation.</translation>
 <translation id="6431865393913628856">Enregistrer l'écran</translation>
 <translation id="6442259747294754014">L'accès au micro de l'appareil est désactivé</translation>
 <translation id="6445835306623867477"><ph name="ROUTE_TITLE" /> vers <ph name="RECEIVER_NAME" /></translation>
+<translation id="6445915701151710649">CPU</translation>
 <translation id="6447111710783417522"><ph name="DATE" />, <ph name="NUMBER" /> événement</translation>
 <translation id="6449483711453944360">Les applis Linux et les fenêtres de navigation privée ne sont pas prises en charge actuellement</translation>
 <translation id="6452181791372256707">Refuser</translation>
@@ -1208,6 +1226,7 @@ Nouvelle installation</translation>
 <translation id="6752912906630585008">Bureau <ph name="REMOVED_DESK" /> supprimé et fusionné avec le Bureau <ph name="RECEIVE_DESK" /></translation>
 <translation id="6753390234084146956">onglets</translation>
 <translation id="6757237461819837179">Aucun contenu multimédia en cours lecture</translation>
+<translation id="6768043681523654438">espace de stockage</translation>
 <translation id="6777216307882431711">En cours d'alimentation : plusieurs appareils USB-C connectés</translation>
 <translation id="6781002679438061620">Bureau 9</translation>
 <translation id="6782182743534150858">Bureau 13</translation>
@@ -1340,6 +1359,7 @@ Nouvelle installation</translation>
 <translation id="743058460480092004">La caméra et le micro sont en cours d'utilisation.</translation>
 <translation id="7452560014878697800">Une application utilise la caméra</translation>
 <translation id="7453330308669753048">Résultat de l'historique des recherches supprimé</translation>
+<translation id="7455047553373871740"><ph name="BATTERY_PERCENTAGE" /> % | <ph name="TIME" /> avant charge complète</translation>
 <translation id="7461924472993315131">Épingler</translation>
 <translation id="746232733191930409">Mode d'enregistrement d'écran</translation>
 <translation id="7466449121337984263">Veuillez toucher le capteur</translation>
@@ -1398,6 +1418,7 @@ Pour éteindre l'appareil, appuyez à nouveau de manière prolongée sur le bout
 <translation id="7689817529363080918">L'accès au micro est accordé à <ph name="APP1_NAME" /> et <ph name="APP2_NAME" />, ainsi qu'à l'ensemble des sites Web et applis ayant l'autorisation d'y accéder</translation>
 <translation id="7704000866383261579">Répéter la dernière action</translation>
 <translation id="7705524343798198388">VPN</translation>
+<translation id="770741401784017797">Création du GIF en cours</translation>
 <translation id="7714767791242455379">Ajouter un réseau mobile</translation>
 <translation id="7720400844887872976">Activé jusqu'à <ph name="TIME" /></translation>
 <translation id="7720410380936703141">RÉESSAYER</translation>
@@ -1405,6 +1426,7 @@ Pour éteindre l'appareil, appuyez à nouveau de manière prolongée sur le bout
 <translation id="7723703419796509666">Afficher ou masquer la console des outils pour les développeurs</translation>
 <translation id="7724603315864178912">Couper</translation>
 <translation id="7727952505535211425">Ouvrir dans un nouvel onglet le site indiqué dans la barre d'adresse</translation>
+<translation id="77365090426890123">utilisation de mémoire</translation>
 <translation id="7742327441377685481">Aucune notification</translation>
 <translation id="7749443890790263709">Vous avez atteint le nombre maximal de bureaux.</translation>
 <translation id="776344839111254542">Cliquer pour afficher les informations relatives à la mise à jour</translation>
@@ -1636,6 +1658,8 @@ Pour éteindre l'appareil, appuyez à nouveau de manière prolongée sur le bout
 <translation id="8853703225951107899">Impossible de valider votre code ou votre mot de passe pour la deuxième fois. Remarque : si vous avez modifié votre mot de passe récemment, utilisez l'ancien. Votre nouveau mot de passe ne sera appliqué qu'une fois que vous serez déconnecté.</translation>
 <translation id="8855885154700222542">Touche de plein écran</translation>
 <translation id="8858369206579825206">Paramètres de confidentialité</translation>
+<translation id="8860817004574502558">autonomie de la batterie</translation>
+<translation id="8863602954531760927"><ph name="STORAGE_IN_USE_SIZE" /> en cours d'utilisation/<ph name="STORAGE_TOTAL_SIZE" /></translation>
 <translation id="8870509716567206129">Application incompatible avec l'écran partagé.</translation>
 <translation id="8874184842967597500">Non connecté</translation>
 <translation id="8875021410787719674">Basculer entre l'angle inférieur droit, le lanceur d'applications, la barre d'adresse, la barre de favoris, le site Web ouvert et les téléchargements</translation>
@@ -1702,6 +1726,7 @@ Pour éteindre l'appareil, appuyez à nouveau de manière prolongée sur le bout
 <translation id="9178475906033259337">1 résultat pour <ph name="QUERY" /></translation>
 <translation id="9179259655489829027">Cette fonctionnalité vous permet d'accéder rapidement à tout compte connecté sans avoir à indiquer le mot de passe. N'utilisez cette fonctionnalité que pour les comptes auxquels vous pouvez faire confiance.</translation>
 <translation id="9183456764293710005">Loupe plein écran</translation>
+<translation id="9186811218777709815"><ph name="BATTERY_PERCENTAGE" /> % | <ph name="TIME" /> restantes</translation>
 <translation id="9193626018745640770">Destinataire de la diffusion inconnu</translation>
 <translation id="9194617393863864469">Se connecter avec un autre compte utilisateur…</translation>
 <translation id="9198992156681343238">La résolution de <ph name="DISPLAY_NAME" /> est passée à <ph name="RESOLUTION" />. Cliquez sur "Confirmer" pour conserver les modifications. Les paramètres précédents seront restaurés dans <ph name="TIMEOUT_SECONDS" />.</translation>

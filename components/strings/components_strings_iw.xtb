@@ -921,7 +921,6 @@
 <translation id="3249151924975132674">הלוואות לסטודנטים ומימון השכלה גבוהה</translation>
 <translation id="3249845759089040423">מגניב</translation>
 <translation id="3250640885957938546">פרסום ושיווק</translation>
-<translation id="3252266817569339921">צרפתית</translation>
 <translation id="3254301855501243548">‏18x22 אינץ'</translation>
 <translation id="3256863843508922226">פרישה ופנסיה</translation>
 <translation id="3259648571731540213">‏<ph name="CREATE_GOOGLE_CALENDAR_EVENT_FOCUSED_FRIENDLY_MATCH_TEXT" />, מקישים על Tab ואז על Enter כדי ליצור במהירות אירוע חדש ביומן Google</translation>
@@ -1589,7 +1588,6 @@ Del</translation>
 <translation id="484988093836683706">שימוש בביטול נעילת המכשיר</translation>
 <translation id="4850886885716139402">הצגה</translation>
 <translation id="4852429274334674023">מערכות הפעלה</translation>
-<translation id="485316830061041779">גרמנית</translation>
 <translation id="4853901935952445031">‏האתר הזה לא יוכל להשתמש ב-U2F API אחרי פברואר 2022. אם האתר בבעלותך, צריך לשנות אותו כך שיוכל להשתמש ב-Web Authentication API.</translation>
 <translation id="4854362297993841467">שיטת המסירה הזו אינה זמינה. עליך לבחור שיטה אחרת.</translation>
 <translation id="4854853140771946034">‏יצירת הערה חדשה ב-Google Keep במהירות</translation>
@@ -1828,7 +1826,6 @@ Del</translation>
 <translation id="5423269318075950257">מעקב אחר המחיר</translation>
 <translation id="5425241977284572032">{NUM_COOKIES,plural, =0{אין אתרים חסומים}=1{אתר אחד נחסם}one{# אתרים נחסמו}two{# אתרים נחסמו}other{# אתרים נחסמו}}</translation>
 <translation id="5426179911063097041"><ph name="SITE" /> רוצה לשלוח לך הודעות</translation>
-<translation id="5428105026674456456">ספרדית</translation>
 <translation id="5430298929874300616">הסרת סימנייה</translation>
 <translation id="5443468954631487277">בסדר הפוך עם הפנים כלפי מעלה</translation>
 <translation id="5447765697759493033">האתר הזה לא יתורגם</translation>
@@ -1837,7 +1834,6 @@ Del</translation>
 <translation id="5457113250005438886">לא חוקי</translation>
 <translation id="5458150163479425638">{CONTACT,plural, =0{<ph name="CONTACT_PREVIEW" />}=1{<ph name="CONTACT_PREVIEW" /> ועוד <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" />}one{<ph name="CONTACT_PREVIEW" /> ועוד <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" />}two{<ph name="CONTACT_PREVIEW" /> ועוד <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" />}other{<ph name="CONTACT_PREVIEW" /> ועוד <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" />}}</translation>
 <translation id="5463625433003343978">מתבצע חיפוש מכשירים…</translation>
-<translation id="5469868506864199649">איטלקית</translation>
 <translation id="5470230812924696184">הנדסה אזרחית</translation>
 <translation id="5470861586879999274">&amp;ביצוע מחדש של עריכה</translation>
 <translation id="5471337644440862957">סרטי קומדיה</translation>
@@ -1851,7 +1847,6 @@ Del</translation>
 <ph name="LINE_BREAK" />
 יש לנסות ליצור קשר עם מנהל המערכת.</translation>
 <translation id="549333378215107354">גודל 3</translation>
-<translation id="5503356662318814623">שליחת הודעה</translation>
 <translation id="5509762909502811065">B0</translation>
 <translation id="5509780412636533143">סימניות מנוהלות</translation>
 <translation id="5510481203689988000">‏ההגדרה הזו מנוהלת בהגדרות הקשורות לקובצי Cookie.</translation>
@@ -3008,7 +3003,6 @@ Del</translation>
 <translation id="8296205692406981542">פארקים וגנים אזוריים</translation>
 <translation id="8297545700510100061">‏קובצי cookie ונתונים אחרים מאתרים משמשים כדי לזכור את הפרטים שלך, למשל כדי להכניס אותך לחשבון או להציג מודעות בהתאמה אישית. ב<ph name="SETTINGS" /> אפשר לנהל את קובצי ה-cookie מכל האתרים.</translation>
 <translation id="8298115750975731693">‏ייתכן שרשת ה-Wi-Fi שנעשה בה שימוש (<ph name="WIFI_NAME" />) תחייב כניסה ל-<ph name="BEGIN_BOLD" /><ph name="LOGIN_URL" /><ph name="END_BOLD" />.</translation>
-<translation id="8299269255470343364">יפנית</translation>
 <translation id="8303854710873047864">הקטע "<ph name="SECTION" />" מוצג</translation>
 <translation id="830498451218851433">קיפול באמצע</translation>
 <translation id="8307888238279532626">את האפליקציות המותקנות ואת תדירות השימוש בהן.</translation>
@@ -3128,7 +3122,6 @@ Del</translation>
 <translation id="865032292777205197">חיישני תנועה</translation>
 <translation id="8654126188050905496">‏55x91 מ"מ</translation>
 <translation id="8663226718884576429">סיכום הזמנה, <ph name="TOTAL_LABEL" />, פרטים נוספים</translation>
-<translation id="8666678546361132282">אנגלית</translation>
 <translation id="8671519637524426245">הערך של <ph name="SECURE_DNS_SALT" /> לא עומד בדרישות הגודל.</translation>
 <translation id="867224526087042813">חתימה</translation>
 <translation id="8672264262457010862">עסקים ותעשייה</translation>

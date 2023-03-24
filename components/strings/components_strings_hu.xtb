@@ -920,7 +920,6 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="3249151924975132674">Diákhitelek és felsőfokú képzés finanszírozása</translation>
 <translation id="3249845759089040423">Izgalmas</translation>
 <translation id="3250640885957938546">Reklám és marketing</translation>
-<translation id="3252266817569339921">francia</translation>
 <translation id="3254301855501243548">18 × 22 hüvelyk</translation>
 <translation id="3256863843508922226">Nyugdíjba vonulás és nyugdíj</translation>
 <translation id="3259648571731540213"><ph name="CREATE_GOOGLE_CALENDAR_EVENT_FOCUSED_FRIENDLY_MATCH_TEXT" />, tartsa lenyomva a Tab billentyűt, majd nyomja meg az Enter billentyűt új esemény gyors létrehozásához a Google Naptár szolgáltatással</translation>
@@ -1584,7 +1583,6 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="484988093836683706">Eszközfeloldási módszer használata</translation>
 <translation id="4850886885716139402">Nézet</translation>
 <translation id="4852429274334674023">Operációs rendszerek</translation>
-<translation id="485316830061041779">német</translation>
 <translation id="4853901935952445031">Ez a webhely nem tudja majd használni az U2F API-t 2022 áprilisa után. Ha Ön a webhely tulajdonosa, be kell állítania a Web Authentication API használatára.</translation>
 <translation id="4854362297993841467">Ez a kézbesítési mód nem áll rendelkezésre. Próbálkozzon másik móddal.</translation>
 <translation id="4854853140771946034">Új jegyzet gyors létrehozása a Google Keep szolgáltatással</translation>
@@ -1823,7 +1821,6 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="5423269318075950257">Ár nyomon követése</translation>
 <translation id="5425241977284572032">{NUM_COOKIES,plural, =0{Nincs letiltott webhely}=1{1 letiltott webhely}other{# letiltott webhely}}</translation>
 <translation id="5426179911063097041">A(z) <ph name="SITE" /> értesítéseket szeretne küldeni Önnek</translation>
-<translation id="5428105026674456456">spanyol</translation>
 <translation id="5430298929874300616">Könyvjelző törlése</translation>
 <translation id="5443468954631487277">Fordított sorrend, felfelé fordítva</translation>
 <translation id="5447765697759493033">Nem fordítjuk le ezt a webhelyet</translation>
@@ -1832,7 +1829,6 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="5457113250005438886">Érvénytelen</translation>
 <translation id="5458150163479425638">{CONTACT,plural, =0{<ph name="CONTACT_PREVIEW" />}=1{<ph name="CONTACT_PREVIEW" /> és további <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" />}other{<ph name="CONTACT_PREVIEW" /> és további <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" />}}</translation>
 <translation id="5463625433003343978">Eszközök keresése…</translation>
-<translation id="5469868506864199649">olasz</translation>
 <translation id="5470230812924696184">Építőmérnöki tanácsadás</translation>
 <translation id="5470861586879999274">&amp;Szerkesztés újra</translation>
 <translation id="5471337644440862957">Vígjátékok</translation>
@@ -1845,7 +1841,6 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
     <ph name="LINE_BREAK" />
     Javasoljuk, hogy forduljon a rendszergazdához.</translation>
 <translation id="549333378215107354">Méret: 3</translation>
-<translation id="5503356662318814623">Üzenet küldése</translation>
 <translation id="5509762909502811065">B0</translation>
 <translation id="5509780412636533143">Kezelt könyvjelzők</translation>
 <translation id="5510481203689988000">Ez a beállítás a cookie-beállításokban vezérelhető.</translation>
@@ -3003,7 +2998,6 @@ További részletek:
 <translation id="8296205692406981542">Regionális parkok és kertek</translation>
 <translation id="8297545700510100061">A cookie-k és az egyéb webhelyadatok arra szolgálnak, hogy a webhelyek emlékezzenek Önre, és így például bejelentkeztessék, vagy személyre szabják a hirdetéseket. A <ph name="SETTINGS" /> szakaszban kezelheti a webhelyek cookie-jait.</translation>
 <translation id="8298115750975731693">Az Ön által használt Wi-Fi-hálózat (<ph name="WIFI_NAME" />) megkövetelheti a(z) <ph name="BEGIN_BOLD" /><ph name="LOGIN_URL" /><ph name="END_BOLD" /> felkeresését.</translation>
-<translation id="8299269255470343364">japán</translation>
 <translation id="8303854710873047864">A(z) „<ph name="SECTION" />” szakasz megjelenítve</translation>
 <translation id="830498451218851433">Félbehajtás</translation>
 <translation id="8307888238279532626">Telepített alkalmazások és a használatuk gyakorisága</translation>
@@ -3125,7 +3119,6 @@ További részletek:
 <translation id="865032292777205197">mozgásérzékelők</translation>
 <translation id="8654126188050905496">55 × 91 mm</translation>
 <translation id="8663226718884576429">Rendelés-összefoglaló, <ph name="TOTAL_LABEL" />, További részletek</translation>
-<translation id="8666678546361132282">angol</translation>
 <translation id="8671519637524426245">A(z) <ph name="SECURE_DNS_SALT" /> értéke nem felel meg a méretre vonatkozó követelményeknek.</translation>
 <translation id="867224526087042813">Aláírás</translation>
 <translation id="8672264262457010862">Üzleti és ipari termékek</translation>

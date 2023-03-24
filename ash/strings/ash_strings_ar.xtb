@@ -465,6 +465,7 @@
 <translation id="3256109297135787951">إزالة التحديد عن عنصر على الرف</translation>
 <translation id="3260969790895726815">تتم معالجة الكلام على الجهاز وتعمل ميزة "الإملاء" بلا اتصال بالإنترنت، ولكن لن تعمل بعض الطلبات الصوتية.</translation>
 <translation id="3269597722229482060">النقر بزر الماوس الأيمن</translation>
+<translation id="3289364673986435196">قائمة زر التشغيل</translation>
 <translation id="3289544412142055976">‏هذا الخيار غير متوفّر حاليًا لتطبيقات Linux.</translation>
 <translation id="3289674678944039601">جارٍ الشحن عبر المحوِّل.</translation>
 <translation id="3290356915286466215">غير مؤمّن</translation>
@@ -691,6 +692,7 @@
 <translation id="4269883910223712419">يمتلك مشرف هذا الجهاز القدرة على ما يلي:</translation>
 <translation id="4274537685965975248">‏تم تغيير اختصارات لوحة المفاتيح "Ctrl + Alt + السهم المتّجه للأسفل". لاستخدام مفتاح End، اضغط على المفتاحَين "<ph name="LAUNCHER_KEY_NAME" /> + السهم المتّجه لليمين".</translation>
 <translation id="4279490309300973883">النسخ المطابق</translation>
+<translation id="4280601795273309128">انتهت تحديثات الأمان المتوفّرة لهذا الجهاز. يُرجى ترقية الجهاز.</translation>
 <translation id="4283888303416325161">أدخِل كلمة المرور لزيادة مستوى الأمان</translation>
 <translation id="4285498937028063278">إزالة التثبيت</translation>
 <translation id="4294319844246081198">صباح الخير <ph name="GIVEN_NAME" />،</translation>
@@ -880,6 +882,7 @@
 <translation id="5147567197700016471">تم فتح القفل.</translation>
 <translation id="5150070631291639005">إعدادات الخصوصية</translation>
 <translation id="5155897006997040331">سرعة القراءة</translation>
+<translation id="5163434717504750796">حالة البطارية: %<ph name="BATTERY_HEALTH_PERCENTAGE" /> | عدد الدورات: <ph name="CYCLE_COUNT" /></translation>
 <translation id="5166007464919321363">حفظ سطح المكتب كنموذج</translation>
 <translation id="5168181903108465623">أجهزة البث متاحة</translation>
 <translation id="5170568018924773124">العرض في المجلد</translation>
@@ -1353,6 +1356,7 @@
 <translation id="743058460480092004">الكاميرا والميكروفون قيد الاستخدام.</translation>
 <translation id="7452560014878697800">أحد التطبيقات يستخدم الكاميرا.</translation>
 <translation id="7453330308669753048">تمت إزالة نتائج سجلّ البحث.</translation>
+<translation id="7455047553373871740">‫%<ph name="BATTERY_PERCENTAGE" /> | الوقت المتبقي على اكتمال الشحن <ph name="TIME" /></translation>
 <translation id="7461924472993315131">تثبيت</translation>
 <translation id="746232733191930409">وضع تسجيل الشاشة</translation>
 <translation id="7466449121337984263">يُرجى لمس جهاز الاستشعار.</translation>
@@ -1410,6 +1414,7 @@
 <translation id="7689817529363080918">يتيح هذا الإجراء وصول "<ph name="APP1_NAME" />" و"<ph name="APP2_NAME" />" وجميع التطبيقات والمواقع الإلكترونية إلى الميكروفون من خلال منحها إذن استخدام الميكروفون.</translation>
 <translation id="7704000866383261579">إعادة آخر إجراء</translation>
 <translation id="7705524343798198388">VPN</translation>
+<translation id="770741401784017797">‏جارٍ إنشاء ملف GIF</translation>
 <translation id="7714767791242455379">إضافة شبكة جوّال جديدة</translation>
 <translation id="7720400844887872976">تفعيل الميزة حتى <ph name="TIME" /></translation>
 <translation id="7720410380936703141">إعادة المحاولة</translation>
@@ -1715,6 +1720,7 @@
 <translation id="9178475906033259337">عرض نتيجة واحدة عن <ph name="QUERY" /></translation>
 <translation id="9179259655489829027">تسمح لك هذه الميزة بالوصول بسرعة إلى أي مستخدم سجّل دخوله بدون طلب كلمة مرور. لا تستخدم هذه الميزة إلا مع الحسابات التي تثق بها.</translation>
 <translation id="9183456764293710005">المكبِّر بملء الشاشة</translation>
+<translation id="9186811218777709815">‫%<ph name="BATTERY_PERCENTAGE" /> | الوقت المتبقي على نفاد الشحن <ph name="TIME" /></translation>
 <translation id="9193626018745640770">إرسال إلى مستلم غير معروف</translation>
 <translation id="9194617393863864469">تسجيل دخول مستخدم آخر...</translation>
 <translation id="9198992156681343238">تم تغيير درجة دقة <ph name="DISPLAY_NAME" /> إلى <ph name="RESOLUTION" />. انقر على "تأكيد" لحفظ التغييرات. ستتم استعادة الإعدادات السابقة خلال <ph name="TIMEOUT_SECONDS" />.</translation>

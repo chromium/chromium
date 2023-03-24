@@ -337,7 +337,7 @@ Gizlilik jetonları, web'deki gizliliği artırırken kim olduğunuzu bulmak iç
 <translation id="2908243544703713905">Okunmamış haberler hazır</translation>
 <translation id="2909615210195135082">Google Notifications Platform</translation>
 <translation id="2912296070571964914">İlgilendiğiniz konuları yönetin</translation>
-<translation id="2912345083818861431">Açık gizli sekmeleri görmek için ekran kilidini kullanın</translation>
+<translation id="2912345083818861431">Açık Gizli sekmeleri görmek için ekran kilidini kullanın</translation>
 <translation id="2922568440285376746">Resmin içinde Google'la ara <ph name="BEGIN_NEW" />Yeni<ph name="END_NEW" /></translation>
 <translation id="2923908459366352541">Ad geçersiz</translation>
 <translation id="2932150158123903946">Google <ph name="APP_NAME" /> depolama alanı</translation>
@@ -1445,6 +1445,7 @@ Bu ayarı değiştirmek için <ph name="BEGIN_LINK" />senkronizasyonu sıfırlay
 <translation id="869891660844655955">Son kullanma tarihi</translation>
 <translation id="8699120352855309748">Şu dilleri çevirmeyi önerme</translation>
 <translation id="8712637175834984815">Anlaşıldı</translation>
+<translation id="8723453889042591629">Bu sayfayı hızlıca çevirin. Bu kısayolu düzenlemek için dokunup basılı tutun.</translation>
 <translation id="8725066075913043281">Yeniden dene</translation>
 <translation id="8746155870861185046">Vurgulanan metni paylaş</translation>
 <translation id="874726034427945498">Adres çubuğunuzda daha iyi öneriler görmek için sekmelerinizi ve geçmişinizi senkronize edin</translation>
@@ -1487,7 +1488,7 @@ Bu ayarı değiştirmek için <ph name="BEGIN_LINK" />senkronizasyonu sıfırlay
 <translation id="8942627711005830162">Yeni pencerede aç</translation>
 <translation id="8945143127965743188"><ph name="LANG" /> - Bu dil indirilemedi. Daha sonra tekrar deneyin.</translation>
 <translation id="8955719471735800169">Başa dön</translation>
-<translation id="8964479563882643397">Yeni gizli sekme açmak için menüyü açın</translation>
+<translation id="8964479563882643397">Yeni Gizli sekme açmak için menüyü açın</translation>
 <translation id="8965591936373831584">beklemede</translation>
 <translation id="8968085728801125376">{TAB_COUNT,plural, =1{<ph name="INCOGNITO_TAB_COUNT" /> gizli sekme ve <ph name="TAB_COUNT_ONE" /> sekme daha kapatılacak}other{<ph name="INCOGNITO_TAB_COUNT" /> gizli sekme ve <ph name="TAB_COUNT_MANY" /> sekme daha kapatılacak}}</translation>
 <translation id="8970887620466824814">Bir hata oluştu.</translation>
@@ -1497,6 +1498,7 @@ Bu ayarı değiştirmek için <ph name="BEGIN_LINK" />senkronizasyonu sıfırlay
 <translation id="8989968390305463310">Tarama geçmişiniz gördüğünüz reklamları ve aşağıdaki şekilde tahmin edilen ilgi alanlarınızı etkiler. Chrome, gizliliğinizi korumak için ilgi alanlarınızı her ay sürekli olarak siler. Silme işlemi otomatik olarak gerçekleştirilir. Kaldırmadığınız sürece ilgi alanlarınız yenilenmeye devam edebilir.</translation>
 <translation id="8993760627012879038">Gizli modda yeni bir sekme açar</translation>
 <translation id="8996847606757455498">Başka bir sağlayıcı seçin:</translation>
+<translation id="8998289560386111590">Cihazınızda kullanılamıyor</translation>
 <translation id="8998729206196772491"><ph name="MANAGED_DOMAIN" /> tarafından yönetilen bir hesapla oturum açıyorsunuz ve yöneticiye tüm Chrome verileriniz üzerinde denetim olanağı veriyorsunuz. Verileriniz kalıcı olarak bu hesaba bağlanacaktır. Chrome'da oturumu kapattığınızda verileriniz bu cihazdan silinir, ancak Google Hesabınızda kalmaya devam eder.</translation>
 <translation id="9022774213089566801">Sık ziyaret edilenler</translation>
 <translation id="9022871169049522985">Siteler ve reklamverenler, reklamlarının performansını ölçebilir</translation>

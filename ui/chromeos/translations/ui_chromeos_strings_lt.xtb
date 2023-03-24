@@ -97,6 +97,7 @@
 <translation id="1773212559869067373">Autentifikavimo sertifikatas atmestas vietiniu mastu</translation>
 <translation id="1775381402323441512">Vaizdo įrašo informacija</translation>
 <translation id="180035236176489073">Jei norite pasiekti šios failus, turite prisijungti.</translation>
+<translation id="1805030087840125683">{COUNT,plural, =1{Plėtinys su ID}one{Plėtiniai su ID}few{Plėtiniai su ID}many{Plėtiniai su ID}other{Plėtiniai su ID}}</translation>
 <translation id="1807938677607439181">Visi failai</translation>
 <translation id="1810764548349082891">Peržiūra negalima</translation>
 <translation id="1812302367230252929">Amharų k. transliteracija</translation>
@@ -130,6 +131,7 @@
 <translation id="2084108471225856927">Įrenginio nustatymai</translation>
 <translation id="2084809735218147718">Rašoma „ačiū“</translation>
 <translation id="2088690981887365033">VPN tinklas</translation>
+<translation id="2111134541987263231">Įjunkite parinktį <ph name="BEGIN_BOLD" />Leisti inkognito režimu<ph name="END_BOLD" />.</translation>
 <translation id="2114191879048183086">Elementai (iš viso: <ph name="NUMBER_OF_ITEMS" />) bus ištrinti ir nebegalėsite jų atkurti.</translation>
 <translation id="2122305276694332719">Automatiškai susiejus su paslėptu tinklu kiti gali matyti jūsų įrenginį ir kai kuriuos tinklo nustatymus (nerekomenduojama).</translation>
 <translation id="2125607626296734455">Khmerų k.</translation>
@@ -228,6 +230,7 @@
 <translation id="290843123675549676">Maratų k.</translation>
 <translation id="2923240520113693977">Estų</translation>
 <translation id="2938685643439809023">Mongolų</translation>
+<translation id="293972288692056847">{COUNT,plural, =1{Nepavyko rasti plėtinio}one{Nepavyko rasti plėtinių}few{Nepavyko rasti plėtinių}many{Nepavyko rasti plėtinių}other{Nepavyko rasti plėtinių}}</translation>
 <translation id="2943503720238418293">Naudokite trumpesnį pavadinimą</translation>
 <translation id="2949781154072577687">Formatuojama: „<ph name="DRIVE_NAME" />“...</translation>
 <translation id="2951236788251446349">Medūza</translation>
@@ -282,6 +285,7 @@
 <translation id="3356580349448036450">Baigta</translation>
 <translation id="3358452157379365236">Gitara</translation>
 <translation id="3368922792935385530">Prijungta</translation>
+<translation id="3372635229069101468">Spustelėkite <ph name="BEGIN_BOLD" />Išsami informacija<ph name="END_BOLD" />.</translation>
 <translation id="3382143449143186018">Nepaliečių k. su „InScript“ klaviatūra</translation>
 <translation id="338691029516748599"><ph name="NETWORK_INDEX" /> tinklas iš <ph name="NETWORK_COUNT" />, „<ph name="NETWORK_NAME" />“, <ph name="SECURITY_STATUS" />, signalo stiprumas <ph name="SIGNAL_STRENGTH" /> %, tvarko administratorius, prisijungti</translation>
 <translation id="3408072735282270043">Suaktyvinti „<ph name="NETWORK_NAME" />“</translation>
@@ -366,6 +370,7 @@
 <translation id="4124935795427217608">Vienaragis</translation>
 <translation id="4131235941541910880">Perkelkite nereikalingus elementus į šiukšliadėžę</translation>
 <translation id="4134804435730168042"><ph name="NETWORK_INDEX" /> tinklas iš <ph name="NETWORK_COUNT" />, „<ph name="NETWORK_NAME" />“, „<ph name="NETWORK_PROVIDER_NAME" />“, aktyvinti nustačius įrenginį</translation>
+<translation id="41501027364808384">{COUNT,plural, =1{Toliau nurodytą plėtinį įjunkite inkognito režimu.}one{Toliau nurodytus plėtinius įjunkite inkognito režimu.}few{Toliau nurodytus plėtinius įjunkite inkognito režimu.}many{Toliau nurodytus plėtinius įjunkite inkognito režimu.}other{Toliau nurodytus plėtinius įjunkite inkognito režimu.}}</translation>
 <translation id="4153015322587141338">Spustelėkite failą dešiniuoju klavišu ir pasirinkite „<ph name="PIN_COMMAND" />“, kad sparčiai pasiektumėte failus lentynoje.</translation>
 <translation id="4157569377477607576">Pagal administratoriaus politikos nuostatas nerekomenduojama atlikti toliau nurodytų veiksmų.</translation>
 <translation id="4159731583141908892">Perkelta: <ph name="FILE_NAME" />.</translation>
@@ -462,8 +467,10 @@
 <translation id="4801956050125744859">Palikti abu</translation>
 <translation id="4804827417948292437">Avokadas</translation>
 <translation id="4805966553127040832">Atkuriama elementų: <ph name="COUNT" /></translation>
+<translation id="4816695657735045067">{COUNT,plural, =1{Norint naudoti inkognito režimą, organizacijai reikia plėtinio}one{Norint naudoti inkognito režimą, organizacijai reikia kai kurių plėtinių}few{Norint naudoti inkognito režimą, organizacijai reikia kai kurių plėtinių}many{Norint naudoti inkognito režimą, organizacijai reikia kai kurių plėtinių}other{Norint naudoti inkognito režimą, organizacijai reikia kai kurių plėtinių}}</translation>
 <translation id="4823651846660089135">Įrenginys yra tik skaitomas</translation>
 <translation id="4826849268470072925">Tamilų k. ITRANS</translation>
+<translation id="482932175346970750">Naršyklėje įveskite <ph name="BEGIN_BOLD" />chrome://extensions<ph name="END_BOLD" />.</translation>
 <translation id="4839847978919684242">Pasirinkta elementų: <ph name="SELCTED_FILES_COUNT" /></translation>
 <translation id="4843566743023903107">Chromebase</translation>
 <translation id="4850886885716139402">Žiūrėti</translation>
@@ -533,6 +540,7 @@
     failus su kitais vienoje vietoje.<ph name="MARKUP_9" /></translation>
 <translation id="5275973617553375938">Atkurti failai iš „Google“ disko</translation>
 <translation id="5278111733643988471">Norėdami atkurti šį elementą, nuvilkite jį į naują aplanką, esantį už šiukšliadėžės ribų. Pradinis šio elemento aplankas „<ph name="PARENT_FOLDER_NAME" />“ buvo ištrintas.</translation>
+<translation id="5283101102242354279">Įjunkite plėtinį inkognito režimu.</translation>
 <translation id="5286194356314741248">Nuskaitoma</translation>
 <translation id="5288441970121584418">Mėsainis</translation>
 <translation id="5288481194217812690"><ph name="FILENAME" /></translation>
@@ -779,6 +787,7 @@
 <translation id="7238643356913091553">„<ph name="NETWORK_NAME" />“, išsami informacija</translation>
 <translation id="7246947237293279874">FTP tarpinis serveris</translation>
 <translation id="7248671827512403053">Programa</translation>
+<translation id="7252604552361840748">Raskite plėtinį anksčiau nurodytu adresu.</translation>
 <translation id="7256405249507348194">Neatpažinta klaida: <ph name="DESC" /></translation>
 <translation id="7268659760406822741">Prieinamos paslaugos</translation>
 <translation id="7292816689782057017">Pagal administratoriaus politiką neleidžiama išsaugoti kai kurių vietovių.</translation>
@@ -792,6 +801,7 @@
 <translation id="7359359531237882347">Kopijuojama elementų: <ph name="NUMBER_OF_ITEMS" />...</translation>
 <translation id="7375951387215729722">Failų sąrašas surūšiuotas pagal stulpelį „<ph name="COLUMN_NAME" />“ mažėjimo tvarka.</translation>
 <translation id="7377161162143020057">Pagal administratoriaus politiką neleidžiama kopijuoti šio failo</translation>
+<translation id="7392500733467492920">Nepavyko rasti. Susisiekite su administratoriumi.</translation>
 <translation id="7402503521691663770">„ChromeOS Flex“ įrenginiai</translation>
 <translation id="7408870451288633753">Čekų k.</translation>
 <translation id="7417453074306512035">Etiopiška klaviatūra</translation>

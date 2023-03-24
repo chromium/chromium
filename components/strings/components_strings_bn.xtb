@@ -923,7 +923,6 @@
 <translation id="3249151924975132674">স্টুডেন্ট লোন এবং কলেজ ফাইন্যান্সিং</translation>
 <translation id="3249845759089040423">গ্ৰুভি</translation>
 <translation id="3250640885957938546">বিজ্ঞাপন এবং মার্কেটিং</translation>
-<translation id="3252266817569339921">ফরাসী</translation>
 <translation id="3254301855501243548">১৮ x ২২ ইঞ্চি</translation>
 <translation id="3256863843508922226">রিটায়ারমেন্ট ও পেনশন</translation>
 <translation id="3259648571731540213"><ph name="CREATE_GOOGLE_CALENDAR_EVENT_FOCUSED_FRIENDLY_MATCH_TEXT" />, চটপট নতুন Google Calendar তৈরি করতে প্রথমে Tab, তারপরে Enter প্রেস করুন</translation>
@@ -1587,7 +1586,6 @@
 <translation id="484988093836683706">ডিভাইস আনলক ব্যবহার করুন</translation>
 <translation id="4850886885716139402">দেখুন</translation>
 <translation id="4852429274334674023">অপারেটিং সিস্টেম</translation>
-<translation id="485316830061041779">জার্মান</translation>
 <translation id="4853901935952445031">২০২২ সালের ফেব্রুয়ারি মাসের পর থেকে, এই সাইট U2F API ব্যবহার করতে পারবে না। আপনি এই সাইটের মালিক হলে, Web Authentication API ব্যবহার করার জন্য আপনাকে এটি পরিবর্তন করতে হবে।</translation>
 <translation id="4854362297993841467">এই পদ্ধতিতে ডেলিভারি করা যাবে না। অন্য পদ্ধতি ব্যবহার করুন।</translation>
 <translation id="4854853140771946034">Google Keep-এ চটপট নতুন নোট তৈরি করুন</translation>
@@ -1826,7 +1824,6 @@
 <translation id="5423269318075950257">দাম ট্র্যাক করুন</translation>
 <translation id="5425241977284572032">{NUM_COOKIES,plural, =0{কোনও সাইট ব্লক করা নেই}=1{১টি সাইট ব্লক করা আছে}one{#টি সাইট ব্লক করা আছে}other{#টি সাইট ব্লক করা আছে}}</translation>
 <translation id="5426179911063097041"><ph name="SITE" /> আপনাকে বিজ্ঞপ্তি পাঠাতে চায়</translation>
-<translation id="5428105026674456456">স্প্যানিশ</translation>
 <translation id="5430298929874300616">বুকমার্ক সরান</translation>
 <translation id="5443468954631487277">রিভার্স অর্ডার, সামনের দিক উপরে</translation>
 <translation id="5447765697759493033">এই সাইটটি অনুবাদ করা হবে না</translation>
@@ -1835,7 +1832,6 @@
 <translation id="5457113250005438886">ভুল</translation>
 <translation id="5458150163479425638">{CONTACT,plural, =0{<ph name="CONTACT_PREVIEW" />}=1{<ph name="CONTACT_PREVIEW" /> এবং আরও <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" />টি}one{<ph name="CONTACT_PREVIEW" /> এবং আরও <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" />টি}other{<ph name="CONTACT_PREVIEW" /> এবং আরও <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" />টি}}</translation>
 <translation id="5463625433003343978">ডিভাইস খোঁজা হচ্ছে...</translation>
-<translation id="5469868506864199649">ইতালীয়</translation>
 <translation id="5470230812924696184">সিভিল ইঞ্জিনিয়ারিং</translation>
 <translation id="5470861586879999274">&amp;সম্পাদনাকে আবার করুন</translation>
 <translation id="5471337644440862957">কমেডি সিনেমা</translation>
@@ -1848,7 +1844,6 @@
     <ph name="LINE_BREAK" />
     আপনার সিস্টেম প্রশাসকের সাথে যোগাযোগের চেষ্টা করুন।</translation>
 <translation id="549333378215107354">সাইজ ৩</translation>
-<translation id="5503356662318814623">ব্লক করা সাইট অ্যাক্সেস করতে মেসেজ পাঠান</translation>
 <translation id="5509762909502811065">B0</translation>
 <translation id="5509780412636533143">পরিচালিত বুকমার্কগুলি</translation>
 <translation id="5510481203689988000">কুকি সেটিংস থেকে এই সেটিংস নিয়ন্ত্রণ করা যায়।</translation>
@@ -3005,7 +3000,6 @@
 <translation id="8296205692406981542">আঞ্চলিক পার্ক ও উদ্যান</translation>
 <translation id="8297545700510100061">কুকি এবং অন্যন্য সাইটের ডেটা আপনার অ্যাকাউন্টের তথ্য মনে রাখে, যেমন আপনাকে সাইন-ইন করানোর সময় অথবা আপনার পছন্দমতো বিজ্ঞাপন দেখানোর সময়। সব সাইটের জন্য কুকি ম্যানেজ করতে, <ph name="SETTINGS" /> দেখুন।</translation>
 <translation id="8298115750975731693">আপনি যে (<ph name="WIFI_NAME" />) Wi-Fiটি ব্যবহার করছেন সেটির জন্য অপনাকে <ph name="BEGIN_BOLD" /><ph name="LOGIN_URL" /><ph name="END_BOLD" /> তে যেতে হতে পারে৷</translation>
-<translation id="8299269255470343364">জাপানী</translation>
 <translation id="8303854710873047864">"<ph name="SECTION" />" বিভাগ দেখানো হয়েছে</translation>
 <translation id="830498451218851433">অর্ধেক ফোল্ড করুন</translation>
 <translation id="8307888238279532626">কোন কোন অ্যাপ ইনস্টল করা আছে এবং কত ঘন ঘন সেগুলি ব্যবহার করা হয়েছে</translation>
@@ -3126,7 +3120,6 @@
 <translation id="865032292777205197">মোশন সেন্সর</translation>
 <translation id="8654126188050905496">৫৫ x ৯১ মিমি</translation>
 <translation id="8663226718884576429">অর্ডারের সারসংক্ষেপ, <ph name="TOTAL_LABEL" />, আরও বিবরণ</translation>
-<translation id="8666678546361132282">ইংরাজি</translation>
 <translation id="8671519637524426245"><ph name="SECURE_DNS_SALT" /> মানটি সাইজের প্রয়োজনীয়তা পূরণ করে না।</translation>
 <translation id="867224526087042813">স্বাক্ষর</translation>
 <translation id="8672264262457010862">ব্যবসা ও শিল্প সংক্রান্ত</translation>

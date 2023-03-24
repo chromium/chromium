@@ -72,6 +72,7 @@
 <translation id="1061130374843955397">Өөрийн <ph name="DEVICE_TYPE" />-д тавтай морилно уу</translation>
 <translation id="1061373870045429865">Энэ холбоосонд QR код үүсгэх</translation>
 <translation id="1061904396131502319">Завсарлах цаг ойртож байна</translation>
+<translation id="1062407476771304334">Солих</translation>
 <translation id="1062628064301375934">Бидэнд илүү хувийн веб бүтээхэд тусална уу</translation>
 <translation id="1067048845568873861">Үүсгэсэн</translation>
 <translation id="1067661089446014701">Нэмэлт аюулгүй байдлын үүднээс та төхөөрөмж дээрх нууц үгнүүдээ Google Бүртгэлдээ хадгалахаасаа өмнө шифрлэх боломжтой</translation>
@@ -563,6 +564,7 @@
 <translation id="1485015260175968628">Энэ одоо болно:</translation>
 <translation id="1485141095922496924"><ph name="PRODUCT_VERSION" /> (<ph name="PRODUCT_CHANNEL" />) <ph name="PRODUCT_MODIFIER" /> <ph name="PRODUCT_VERSION_BITS" /> хувилбар</translation>
 <translation id="1486096554574027028">Нууц үгийг хайх</translation>
+<translation id="1486486872607808064">Та <ph name="APP_NAME" />-д passkey үүсгэхийг хүсэж буй төхөөрөмжийнхөө камераар энэ QR кодыг скан хийнэ үү</translation>
 <translation id="1487335504823219454">Асаалттай - өөрчлөх тохиргоо</translation>
 <translation id="1493892686965953381"><ph name="LOAD_STATE_PARAMETER" />-ыг хүлээж байна...</translation>
 <translation id="1494349716233667318">Сайтууд таны төхөөрөмж дээр суулгасан фонтуудыг ашиглахыг хүсэх боломжтой</translation>
@@ -769,6 +771,7 @@
 <translation id="164936512206786300">Bluetooth төхөөрөмжийг үл хослуулах</translation>
 <translation id="1651008383952180276">Та нэвтрэх үгээ хоёр удаа зөв оруулах шаардлагатай</translation>
 <translation id="1652326691684645429">Ойролцоо хуваалцах онцлогийг идэвхжүүлэх</translation>
+<translation id="1654580009054503925">Хүсэлтүүдийг харуулахыг зөвшөөрөөгүй</translation>
 <translation id="1656528038316521561">Арын дэвсгэрийн тод байдал</translation>
 <translation id="1657406563541664238"><ph name="PRODUCT_NAME" />-г сайжруулахад дэмжлэг үзүүлэх зорилгоор хэрэглээний статистик болон гэмтлийн тайланг автоматаар Google-д илгээх</translation>
 <translation id="1657937299377480641">Боловсролын нөөцөд хандахаар дахин нэвтрэхийн тулд эцэг эхээсээ танд зөвшөөрөл өгөхийг хүснэ үү</translation>
@@ -1158,6 +1161,7 @@
 <translation id="1987317783729300807">Хаяг</translation>
 <translation id="1987574314042117472">Түгээмэл аппуудыг сонгож, суулгах</translation>
 <translation id="1988259784461813694">Шаардлага</translation>
+<translation id="1988733631391393183">ChromeVox-н цэсэд брайлын тушаалуудыг харуулах</translation>
 <translation id="1989112275319619282">Хөтлөх</translation>
 <translation id="1989903373608997757">Үргэлж ашиглах</translation>
 <translation id="1990046457226896323">Ярианы файлуудыг татсан</translation>
@@ -2551,7 +2555,6 @@
 <translation id="3193695589337931419">Системийн дохионы хэрэгслүүд</translation>
 <translation id="3194786596445804250">Гуравдагч талын күүкиг блоклох талаарх дэлгэрэнгүйг харуулах</translation>
 <translation id="3197453258332670132">Баруун талыг товших эсвэл удаан дарснаар таны текстийн сонголттой холбоотой мэдээллийг харуулна</translation>
-<translation id="3198804549162832936">Холбоосыг шинэ <ph name="APP" />-д нээх</translation>
 <translation id="3199127022143353223">Серверүүд</translation>
 <translation id="3200061262156232574">Таны худалдан авалтын сагсанд</translation>
 <translation id="3201237270673604992">Z-с A руу</translation>
@@ -2680,6 +2683,7 @@
 <translation id="3317678681329786349">Камер болон микрофоныг блоклосон</translation>
 <translation id="3319306431415395200"><ph name="VISUAL_SEARCH_PROVIDER" />-р зургийн текстийг орчуулах</translation>
 <translation id="3320630259304269485">Аюулгүй үзэх (аюултай сайтаас хамгаалах хамгаалалт) болон аюулгүй байдлын бусад тохиргоо</translation>
+<translation id="3321460131042519426">Үг хураангуйлахыг идэвхжүүлэх</translation>
 <translation id="3323521181261657960">Бонус! Таны дэлгэцийн цагийг сунгалаа</translation>
 <translation id="3323577066981719144">Таны энд хийсэн өөрчлөлтүүд зөвхөн Chrome хөтчид хэрэгжинэ. Lacros Chrome хөтчийн тохиргоондоо өөрчлөлтүүд хийхийн тулд Lacros Chrome хөтчийг нээж, тохиргоо руу очно уу.</translation>
 <translation id="3325804108816646710">Боломжтой профайлыг хайж байна...</translation>
@@ -3417,6 +3421,7 @@
 <translation id="3957079323242030166">Нөөцлөлтийн өгөгдөл нь таны Драйв сангийн багтаамжид нөлөөлөхгүй.</translation>
 <translation id="3957844511978444971">Google-н эдгээр үйлчилгээний тохиргооны сонголтоо баталгаажуулахын тулд “Зөвшөөрөх” гэснийг товшино уу.</translation>
 <translation id="3958088479270651626">Хайлтын жагсаалтууд болон тохиргоонуудыг импортолж авах</translation>
+<translation id="3958110062351175311">Хүсэлтүүдийг самбарт харуулахыг зөвшөөрсөн</translation>
 <translation id="3960566196862329469">ONC</translation>
 <translation id="3961005895395968120"><ph name="IBAN_DESCRIPTION" />-н бусад үйлдэл</translation>
 <translation id="3962119236270174787">Аюултай гэж мэдэгдсэн вебсайтууд, татаж авсан файл болон өргөтгөлийн эсрэг стандарт хамгаалалт</translation>
@@ -3676,6 +3681,7 @@
 <translation id="4205157409548006256">Linux-г тохируулах явцад алдаа гарлаа.</translation>
 <translation id="4206144641569145248">Харь гарагийн хүн</translation>
 <translation id="4206323443866416204">Санал хүсэлтийн тайлан</translation>
+<translation id="4206585797409671301">Хүсэлтүүдийг харуулахыг зөвшөөрсөн</translation>
 <translation id="4207932031282227921">Зөвшөөрлийн хүсэлт тавьсан. Хариу өгөхийн тулд F6 дээр дарна уу</translation>
 <translation id="4208390505124702064"><ph name="SITE_NAME" />-г хайх</translation>
 <translation id="4209092469652827314">Том</translation>
@@ -4346,6 +4352,7 @@
 <translation id="481574578487123132">Холбосон төхөөрөмжүүд</translation>
 <translation id="4816097470512964351"><ph name="DEVICE" />, Дэлгэрэнгүй мэдээлэл</translation>
 <translation id="4816336393325437908">{COUNT,plural, =1{1 хавчуургыг устгасан}other{{COUNT} хавчуургыг устгасан}}</translation>
+<translation id="4816900689218414104">Утас эсвэл таблетад passkey үүсгэнэ үү</translation>
 <translation id="4819323978093861656">{0,plural, =0{Одоо хааж байна.}=1{Дараах хугацааны дараа хаана: 1 секунд}other{Дараах хугацааны дараа хаана: # секунд}}</translation>
 <translation id="4819607494758673676">Google Туслахын мэдэгдэл</translation>
 <translation id="4820236583224459650">Идэвхтэй тасалбар болгож тохируулах</translation>
@@ -6254,6 +6261,7 @@
 <translation id="6562117348069327379">Системийн логуудыг Татаж авсан файлын лавлахад хадгална.</translation>
 <translation id="656293578423618167">Файлын зам эсвэл нэр нь хэтэрхий урт байна. Илүү богино нэрээр эсвэл өөр газарт хадгална уу.</translation>
 <translation id="6568283005472142698">Таб хайлт</translation>
+<translation id="6570622975915850879">Өөр төхөөрөмж ашиглах</translation>
 <translation id="65711204837946324">Татах зөвшөөрөл шаардана</translation>
 <translation id="6571533309669248172">Текст форматлах</translation>
 <translation id="6571772921213691236">Нэвтрэх өгөгдлийг засна уу</translation>
@@ -6546,6 +6554,7 @@
 <translation id="6823174134746916417">Мэдрэгч самбарын tap-to-click</translation>
 <translation id="6824564591481349393">Хуулах &amp; И-мэйл хаяг</translation>
 <translation id="6824584962142919697">&amp;Элементүүдийг шалгах</translation>
+<translation id="6824725898506587159">Хэлний тохиргоо хийх</translation>
 <translation id="6825184156888454064">Нэрээр эрэмбэлэх</translation>
 <translation id="6826872289184051766">USB-р баталгаажуулах</translation>
 <translation id="6827121912381363404">Бүх өргөтгөлд <ph name="PERMITTED_SITE" />-г унших болон өөрчлөхийг зөвшөөрнө үү</translation>
@@ -6670,7 +6679,6 @@
 <translation id="6925127338315966709">Та энэ хөтчид удирддаг профайл нэмж байна. Танай администратор профайлыг хянах бөгөөд өгөгдөлд нь хандах боломжтой. Хавчуурга, түүх, нууц үг ба бусад тохиргоог таны бүртгэлд синк хийх болон танай администратор удирдах боломжтой.</translation>
 <translation id="6929126689972602640">Эцэг эхийн хяналтыг сургуулийн бүртгэлүүдэд дэмждэггүй. Гэртээ хичээл хийх зорилгоор Google Анги болон бусад вебсайтад хандахын тулд сургуулийн бүртгэлийг нэмэх бол эхлээд хүүхдийн хувийн бүртгэлээр нэвтэрнэ үү. Та дараа нь тохируулга хэсэгт сургуулийн бүртгэл нэмэх боломжтой.</translation>
 <translation id="6929760895658557216">Okay Google</translation>
-<translation id="6930036377490597025">Гадаад аюулгүй байдлын түлхүүр эсвэл бүрэлдэхүүн мэдрэгч</translation>
 <translation id="6930161297841867798">{NUM_EXTENSIONS,plural, =1{Өргөтгөлийг зөвшөөрөөгүй}other{# өргөтгөлийг зөвшөөрөөгүй}}</translation>
 <translation id="6931690462168617033">Товшилтын хүч</translation>
 <translation id="6935286146439255109">Цаасны тэвш алга байна</translation>
@@ -6817,6 +6825,7 @@
 <translation id="7044606776288350625">Өгөгдөл синк хийх</translation>
 <translation id="7047059339731138197">Арын дэвсгэр сонгох</translation>
 <translation id="7049293980323620022">Файлыг хадгалах уу?</translation>
+<translation id="70496770794393383">Хадгалсан нууц үгнүүдийн хүснэгт</translation>
 <translation id="7050037487872780845">Буруу сүлжээний цэгийн тохируулга</translation>
 <translation id="7051551856857948729">Олон улсын банк акаунтны дугаарын утгыг нуух</translation>
 <translation id="7052237160939977163">Үйлдлийн явцын өгөгдлийг илгээх</translation>

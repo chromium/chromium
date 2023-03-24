@@ -809,6 +809,7 @@ Vastasel korral blokeeritakse see teie privaatsusseadetes. See võimaldab teie k
 <translation id="2951588413176968965">Minu postkast</translation>
 <translation id="2952820037279740115">Sule kõik inkognito aknad</translation>
 <translation id="2952904171810469095">A2 × 5</translation>
+<translation id="2954624054936281172">Salvestatud makseviiside tabel</translation>
 <translation id="295526156371527179">Hoiatus! Seda reeglit ei liidetud reeglis määratud sõnastikuna, kuna see ei ole sõnastik.</translation>
 <translation id="2955913368246107853">Sule leiuriba</translation>
 <translation id="2958544468932521864">Kriket</translation>
@@ -921,7 +922,6 @@ Vastasel korral blokeeritakse see teie privaatsusseadetes. See võimaldab teie k
 <translation id="3249151924975132674">Õppelaenud ja ülikooliõppe rahastamine</translation>
 <translation id="3249845759089040423">Särtsakas</translation>
 <translation id="3250640885957938546">Reklaam ja turundus</translation>
-<translation id="3252266817569339921">prantsuse keel</translation>
 <translation id="3254301855501243548">18 × 22 tolli</translation>
 <translation id="3256863843508922226">Pension ja pensionile jäämine</translation>
 <translation id="3259648571731540213"><ph name="CREATE_GOOGLE_CALENDAR_EVENT_FOCUSED_FRIENDLY_MATCH_TEXT" />, rakenduses Google'i kalender kiirelt uue sündmuse loomiseks vajutage tabulaatorit ja seejärel sisestusklahvi</translation>
@@ -1585,7 +1585,6 @@ Vastasel korral blokeeritakse see teie privaatsusseadetes. See võimaldab teie k
 <translation id="484988093836683706">Kasuta seadmega avamist</translation>
 <translation id="4850886885716139402">Kuva</translation>
 <translation id="4852429274334674023">Operatsioonisüsteemid</translation>
-<translation id="485316830061041779">saksa keel</translation>
 <translation id="4853901935952445031">See sait ei saa pärast 2022. aasta veebruari U2F API-t kasutada. Kui olete selle saidi omanik, peaksite selle puhul kasutusele võtma Web Authentication API.</translation>
 <translation id="4854362297993841467">See kohaletoimetamisviis pole saadaval. Proovige mõnda teist kohaletoimetamisviisi.</translation>
 <translation id="4854853140771946034">Rakenduses Google Keep kiirelt uue märkuse loomine</translation>
@@ -1824,7 +1823,6 @@ Vastasel korral blokeeritakse see teie privaatsusseadetes. See võimaldab teie k
 <translation id="5423269318075950257">Hindade jälgimine</translation>
 <translation id="5425241977284572032">{NUM_COOKIES,plural, =0{Ükski sait pole blokeeritud}=1{1 sait on blokeeritud}other{# saiti on blokeeritud}}</translation>
 <translation id="5426179911063097041"><ph name="SITE" /> soovib teile saata märguandeid</translation>
-<translation id="5428105026674456456">hispaania keel</translation>
 <translation id="5430298929874300616">Järjehoidja eemaldamine</translation>
 <translation id="5443468954631487277">Vastupidine järjestus, esikülg ülespoole</translation>
 <translation id="5447765697759493033">Seda saiti ei tõlgita</translation>
@@ -1833,7 +1831,6 @@ Vastasel korral blokeeritakse see teie privaatsusseadetes. See võimaldab teie k
 <translation id="5457113250005438886">Kehtetu</translation>
 <translation id="5458150163479425638">{CONTACT,plural, =0{<ph name="CONTACT_PREVIEW" />}=1{<ph name="CONTACT_PREVIEW" /> ja veel <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" />}other{<ph name="CONTACT_PREVIEW" /> ja veel <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" />}}</translation>
 <translation id="5463625433003343978">Seadmete otsimine …</translation>
-<translation id="5469868506864199649">itaalia keel</translation>
 <translation id="5470230812924696184">Üldehitus</translation>
 <translation id="5470861586879999274">&amp;Muuda uuesti</translation>
 <translation id="5471337644440862957">Komöödiad</translation>
@@ -1846,7 +1843,6 @@ Vastasel korral blokeeritakse see teie privaatsusseadetes. See võimaldab teie k
     <ph name="LINE_BREAK" />
     Võtke ühendust süsteemiadministraatoriga.</translation>
 <translation id="549333378215107354">Suurus 3</translation>
-<translation id="5503356662318814623">Saada sõnum</translation>
 <translation id="5509762909502811065">B0</translation>
 <translation id="5509780412636533143">Hallatud järjehoidjad</translation>
 <translation id="5510481203689988000">Seda seadet saab hallata küpsisefailide seadetes.</translation>
@@ -2777,6 +2773,7 @@ Lisateave:
 <translation id="7736959720849233795">Kopeeri lingi aadress</translation>
 <translation id="7740996059027112821">Tavapärane</translation>
 <translation id="77424286611022110">Sait kuvab sekkuvaid või eksitavaid reklaame. <ph name="LEARN_MORE_LINK_TEXT" /></translation>
+<translation id="7744505202669469867">Salvestatud aadresside tabel</translation>
 <translation id="774634243536837715">Ohtlik sisu blokeeriti.</translation>
 <translation id="7751971323486164747">Chrome'is fondi suuruste ja kirjatüüpide kohandamine</translation>
 <translation id="7752995774971033316">Haldamata</translation>
@@ -3003,7 +3000,6 @@ Lisateave:
 <translation id="8296205692406981542">Pargid ja aiad</translation>
 <translation id="8297545700510100061">Küpsisefaile ja muid saidi andmeid kasutatakse teie meeldejätmiseks, näiteks selleks, et teid sisse logida või reklaame isikupärastada. Kõigi saitide küpsisefailide haldamiseks vaadake jaotist <ph name="SETTINGS" />.</translation>
 <translation id="8298115750975731693">WiFi-võrk, mida kasutate (<ph name="WIFI_NAME" />), võib nõuda veebilehe <ph name="BEGIN_BOLD" /><ph name="LOGIN_URL" /><ph name="END_BOLD" /> külastamist.</translation>
-<translation id="8299269255470343364">jaapani keel</translation>
 <translation id="8303854710873047864">Jaotis „<ph name="SECTION" />” on kuvatud</translation>
 <translation id="830498451218851433">Pooleks volditud</translation>
 <translation id="8307888238279532626">Installitud rakendused ja nende kasutussagedus</translation>
@@ -3018,6 +3014,7 @@ Lisateave:
 <translation id="8347658365704983341">Kaugõpe</translation>
 <translation id="8349305172487531364">Järjehoidjariba</translation>
 <translation id="8351131234907093545">Märkme loomine</translation>
+<translation id="835203957414790336">Sisu teie prinditavatel lehtedel ja printeri teave saadetakse analüüsiks Google Cloudile või kolmandatele osapooltele. Näiteks võidakse seda skannida tundlike andmete tuvastamiseks.</translation>
 <translation id="8355270400102541638">Kohaliku kokkujooksmise kontekst:</translation>
 <translation id="8363502534493474904">Lülitage lennurežiim välja</translation>
 <translation id="8364627913115013041">Määramata.</translation>
@@ -3123,7 +3120,6 @@ Lisateave:
 <translation id="865032292777205197">liikumisandurid</translation>
 <translation id="8654126188050905496">55 × 91 mm</translation>
 <translation id="8663226718884576429">Tellimuse kokkuvõte, <ph name="TOTAL_LABEL" />, rohkem üksikasju</translation>
-<translation id="8666678546361132282">inglise keel</translation>
 <translation id="8671519637524426245">Reegli <ph name="SECURE_DNS_SALT" /> väärtus ei vasta suuruse nõuetele.</translation>
 <translation id="867224526087042813">Allkiri</translation>
 <translation id="8672264262457010862">Ettevõtlus ja tööstus</translation>

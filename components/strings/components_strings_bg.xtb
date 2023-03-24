@@ -922,7 +922,6 @@
 <translation id="3249151924975132674">Студентски заеми и финансиране на обучение в колежи</translation>
 <translation id="3249845759089040423">Приятно</translation>
 <translation id="3250640885957938546">Реклама и маркетинг</translation>
-<translation id="3252266817569339921">френски</translation>
 <translation id="3254301855501243548">18 x 22 инча</translation>
 <translation id="3256863843508922226">Пенсиониране и пенсии</translation>
 <translation id="3259648571731540213"><ph name="CREATE_GOOGLE_CALENDAR_EVENT_FOCUSED_FRIENDLY_MATCH_TEXT" />. Натиснете Tab и след това Enter, за да създадете бързо събитие в Google Календар</translation>
@@ -1586,7 +1585,6 @@
 <translation id="484988093836683706">Използване на отключването на устройството</translation>
 <translation id="4850886885716139402">Изглед</translation>
 <translation id="4852429274334674023">Операционни системи</translation>
-<translation id="485316830061041779">немски</translation>
 <translation id="4853901935952445031">След февруари 2022 г. този сайт няма да може да използва API за U2F. Ако вие сте собственикът на сайта, трябва да преминете към API за удостоверяване в мрежата.</translation>
 <translation id="4854362297993841467">Този начин на бърза доставка не се поддържа. Опитайте с друг.</translation>
 <translation id="4854853140771946034">Бързо създаване на бележка в Google Keep</translation>
@@ -1825,7 +1823,6 @@
 <translation id="5423269318075950257">Следене на цената</translation>
 <translation id="5425241977284572032">{NUM_COOKIES,plural, =0{Няма блокирани сайтове}=1{Блокиран е 1 сайт}other{Блокирани са # сайта}}</translation>
 <translation id="5426179911063097041"><ph name="SITE" /> иска да ви изпраща известия</translation>
-<translation id="5428105026674456456">испански</translation>
 <translation id="5430298929874300616">Премахване на отметката</translation>
 <translation id="5443468954631487277">В обратен ред с отпечатаната страна нагоре</translation>
 <translation id="5447765697759493033">Този сайт няма да се превежда</translation>
@@ -1834,7 +1831,6 @@
 <translation id="5457113250005438886">Невалидно</translation>
 <translation id="5458150163479425638">{CONTACT,plural, =0{<ph name="CONTACT_PREVIEW" />}=1{<ph name="CONTACT_PREVIEW" /> и още <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" />}other{<ph name="CONTACT_PREVIEW" /> и още <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" />}}</translation>
 <translation id="5463625433003343978">Търсят се устройства...</translation>
-<translation id="5469868506864199649">италиански</translation>
 <translation id="5470230812924696184">Строително инженерство</translation>
 <translation id="5470861586879999274">&amp;Възстановяване на редактирането</translation>
 <translation id="5471337644440862957">Комедийни филми</translation>
@@ -1847,7 +1843,6 @@
 <ph name="LINE_BREAK" />
 Опитайте да се свържете със системния си администратор.</translation>
 <translation id="549333378215107354">Размер 3</translation>
-<translation id="5503356662318814623">Изпращане на съобщение</translation>
 <translation id="5509762909502811065">B0</translation>
 <translation id="5509780412636533143">Управлявани отметки</translation>
 <translation id="5510481203689988000">Тази настройка се контролира от настройките за „бисквитките“.</translation>
@@ -3005,7 +3000,6 @@
 <translation id="8296205692406981542">Регионални паркове и градини</translation>
 <translation id="8297545700510100061">„Бисквитките“ и другите данни за сайтовете се използват с цел да бъдете запомнени, като например за влизане в профила ви или за персонализиране на реклами. За да управлявате „бисквитките“ за всички сайтове, вижте <ph name="SETTINGS" />.</translation>
 <translation id="8298115750975731693">Използваната от вас Wi-Fi мрежа (<ph name="WIFI_NAME" />) може да изисква да посетите <ph name="BEGIN_BOLD" /><ph name="LOGIN_URL" /><ph name="END_BOLD" />.</translation>
-<translation id="8299269255470343364">японски</translation>
 <translation id="8303854710873047864">Секцията „<ph name="SECTION" />“ бе показана</translation>
 <translation id="830498451218851433">Сгъване в средата</translation>
 <translation id="8307888238279532626">Инсталираните приложения и колко често са използвани</translation>
@@ -3126,7 +3120,6 @@
 <translation id="865032292777205197">сензори за движение</translation>
 <translation id="8654126188050905496">55 x 91 мм</translation>
 <translation id="8663226718884576429">Обобщение на поръчката, <ph name="TOTAL_LABEL" />, още подробности</translation>
-<translation id="8666678546361132282">английски</translation>
 <translation id="8671519637524426245">Стойността на <ph name="SECURE_DNS_SALT" /> не отговаря на изискванията за размер.</translation>
 <translation id="867224526087042813">Подпис</translation>
 <translation id="8672264262457010862">Бизнес и индустрия</translation>

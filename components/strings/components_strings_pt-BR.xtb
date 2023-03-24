@@ -628,6 +628,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="2469153820345007638">Ordem 1 a N</translation>
 <translation id="2470767536994572628">Quando você editar as anotações, este documento voltará à visualização de uma página e à rotação original</translation>
 <translation id="2479410451996844060">URL de pesquisa inválido.</translation>
+<translation id="2480300195898055381">Na sua Conta do Google <ph name="USER_EMAIL" /></translation>
 <translation id="2482878487686419369">Notificações</translation>
 <translation id="248348093745724435">Políticas do computador</translation>
 <translation id="2491120439723279231">O certificado do servidor contém erros.</translation>
@@ -841,6 +842,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="3029752078111257850">Notícias mundiais</translation>
 <translation id="3037177537145227281">Monitorando preço</translation>
 <translation id="3037605927509011580">Ah, não!</translation>
+<translation id="3041450980936463495">Os endereços salvos podem ser usados em vários produtos do Google. Esse endereço foi salvo na sua conta <ph name="ACCOUNT" />.</translation>
 <translation id="3041612393474885105">Informações do certificado</translation>
 <translation id="305162504811187366">o histórico da Área de trabalho remota do Google Chrome, incluindo carimbos de data/hora, hosts e IDs de sessões de clientes.</translation>
 <translation id="3052964831964880138">Redução de <ph name="PRICE_DROP" /> no preço deste produto: <ph name="PRODUCT_NAME" /></translation>
@@ -922,7 +924,6 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="3249151924975132674">Empréstimos para estudantes e financiamento universitário</translation>
 <translation id="3249845759089040423">Maravilhoso</translation>
 <translation id="3250640885957938546">Publicidade e marketing</translation>
-<translation id="3252266817569339921">Francês</translation>
 <translation id="3254301855501243548">18 x 22 pol.</translation>
 <translation id="3256863843508922226">Aposentadoria e pensões</translation>
 <translation id="3259648571731540213"><ph name="CREATE_GOOGLE_CALENDAR_EVENT_FOCUSED_FRIENDLY_MATCH_TEXT" />. Pressione Tab e depois Enter para criar rapidamente um novo evento no Google Agenda</translation>
@@ -1586,7 +1587,6 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="484988093836683706">Usar o desbloqueio do dispositivo</translation>
 <translation id="4850886885716139402">Ver</translation>
 <translation id="4852429274334674023">Sistemas operacionais</translation>
-<translation id="485316830061041779">Alemão</translation>
 <translation id="4853901935952445031">Este site não poderá usar a API U2F depois de fevereiro de 2022. Se o site for seu, faça mudanças para que ele use a API Web Authentication.</translation>
 <translation id="4854362297993841467">Esse método de entrega não está disponível. Tente um método diferente.</translation>
 <translation id="4854853140771946034">Criar rapidamente uma nova nota no Google Keep</translation>
@@ -1825,7 +1825,6 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="5423269318075950257">Monitorar preço</translation>
 <translation id="5425241977284572032">{NUM_COOKIES,plural, =0{Nenhum site bloqueado}=1{1 site bloqueado}one{# site bloqueado}other{# sites bloqueados}}</translation>
 <translation id="5426179911063097041"><ph name="SITE" /> quer enviar notificações a você</translation>
-<translation id="5428105026674456456">Espanhol</translation>
 <translation id="5430298929874300616">Remover favorito</translation>
 <translation id="5443468954631487277">Ordem reversa virada para cima</translation>
 <translation id="5447765697759493033">Este site não será traduzido</translation>
@@ -1834,7 +1833,6 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="5457113250005438886">Inválidos</translation>
 <translation id="5458150163479425638">{CONTACT,plural, =0{<ph name="CONTACT_PREVIEW" />}=1{<ph name="CONTACT_PREVIEW" /> e mais <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" />}one{<ph name="CONTACT_PREVIEW" /> e mais <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" />}other{<ph name="CONTACT_PREVIEW" /> e mais <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" />}}</translation>
 <translation id="5463625433003343978">Localizando dispositivos…</translation>
-<translation id="5469868506864199649">Italiano</translation>
 <translation id="5470230812924696184">Engenharia civil</translation>
 <translation id="5470861586879999274">&amp;Refazer editar</translation>
 <translation id="5471337644440862957">Comédias</translation>
@@ -1847,7 +1845,6 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
     <ph name="LINE_BREAK" />
     Tente entrar em contato com o administrador do sistema.</translation>
 <translation id="549333378215107354">Tamanho 3</translation>
-<translation id="5503356662318814623">Enviar uma mensagem</translation>
 <translation id="5509762909502811065">B0</translation>
 <translation id="5509780412636533143">Favoritos gerenciados</translation>
 <translation id="5510481203689988000">Essa configuração é controlada nas configurações de cookies.</translation>
@@ -1933,6 +1930,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="5695542892312572833">Usar o Windows Hello para verificar e concluir a compra?</translation>
 <translation id="5701381305118179107">Centralizar</translation>
 <translation id="570530837424789914">Gerenciar…</translation>
+<translation id="5706906618852913030">Salvar na conta?</translation>
 <translation id="5707154300732650394">Retomar a jornada</translation>
 <translation id="57094364128775171">Sugerir senha forte…</translation>
 <translation id="571403275720188526">(arm64)</translation>
@@ -3005,7 +3003,6 @@ Mais detalhes:
 <translation id="8296205692406981542">Parques e jardins regionais</translation>
 <translation id="8297545700510100061">Os cookies e outros dados do site são usados para lembrar de você, por exemplo, para conectar sua conta ou personalizar anúncios. Se quiser gerenciar os cookies de todos os sites, acesse <ph name="SETTINGS" />.</translation>
 <translation id="8298115750975731693">O Wi-Fi que você está usando (<ph name="WIFI_NAME" />) pode exigir a visita a <ph name="BEGIN_BOLD" /><ph name="LOGIN_URL" /><ph name="END_BOLD" />.</translation>
-<translation id="8299269255470343364">Japonês</translation>
 <translation id="8303854710873047864">Seção "<ph name="SECTION" />" exibida</translation>
 <translation id="830498451218851433">Dobra simples</translation>
 <translation id="8307888238279532626">Os apps instalados e a frequência de uso deles</translation>
@@ -3127,7 +3124,6 @@ Mais detalhes:
 <translation id="865032292777205197">sensores de movimento</translation>
 <translation id="8654126188050905496">55 x 91 mm</translation>
 <translation id="8663226718884576429">Resumo do pedido, <ph name="TOTAL_LABEL" />, Mais detalhes</translation>
-<translation id="8666678546361132282">Inglês</translation>
 <translation id="8671519637524426245">O valor <ph name="SECURE_DNS_SALT" /> não atende aos requisitos de tamanho.</translation>
 <translation id="867224526087042813">Assinatura</translation>
 <translation id="8672264262457010862">Indústria e negócios</translation>

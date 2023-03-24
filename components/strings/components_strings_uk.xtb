@@ -922,7 +922,6 @@
 <translation id="3249151924975132674">Студентські кредити й фінансування освіти</translation>
 <translation id="3249845759089040423">Чудовий</translation>
 <translation id="3250640885957938546">Реклама та маркетинг</translation>
-<translation id="3252266817569339921">Французька</translation>
 <translation id="3254301855501243548">18 x 22 дюйм.</translation>
 <translation id="3256863843508922226">Пенсія</translation>
 <translation id="3259648571731540213"><ph name="CREATE_GOOGLE_CALENDAR_EVENT_FOCUSED_FRIENDLY_MATCH_TEXT" />; натисніть Tab, а потім – Enter, щоб швидко створити нову подію в Google Календарі</translation>
@@ -1586,7 +1585,6 @@
 <translation id="484988093836683706">Використовувати функцію розблокування пристрою</translation>
 <translation id="4850886885716139402">Перегляд</translation>
 <translation id="4852429274334674023">Операційні системи</translation>
-<translation id="485316830061041779">Німецька</translation>
 <translation id="4853901935952445031">Після лютого 2022 року цей сайт більше не підтримуватиме U2F API. Якщо сайт належить вам, перейдіть на Web Authentication API.</translation>
 <translation id="4854362297993841467">Цей спосіб доставки недоступний. Виберіть інший спосіб.</translation>
 <translation id="4854853140771946034">Швидко створюйте нові нотатки в Google Keep</translation>
@@ -1825,7 +1823,6 @@
 <translation id="5423269318075950257">Відстежувати ціну</translation>
 <translation id="5425241977284572032">{NUM_COOKIES,plural, =0{Не заблоковано на жодному сайті}=1{Заблоковано на 1 сайті}one{Заблоковано на # сайті}few{Заблоковано на # сайтах}many{Заблоковано на # сайтах}other{Заблоковано на # сайту}}</translation>
 <translation id="5426179911063097041">Сайт <ph name="SITE" /> хоче надсилати вам сповіщення</translation>
-<translation id="5428105026674456456">Іспанська</translation>
 <translation id="5430298929874300616">Видалити закладку</translation>
 <translation id="5443468954631487277">Зворотний порядок лицевою стороною вгору</translation>
 <translation id="5447765697759493033">Цей сайт не буде перекладено</translation>
@@ -1834,7 +1831,6 @@
 <translation id="5457113250005438886">Недійсні дані</translation>
 <translation id="5458150163479425638">{CONTACT,plural, =0{<ph name="CONTACT_PREVIEW" />}=1{<ph name="CONTACT_PREVIEW" /> і ще <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" />}one{<ph name="CONTACT_PREVIEW" /> і ще <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" />}few{<ph name="CONTACT_PREVIEW" /> і ще <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" />}many{<ph name="CONTACT_PREVIEW" /> і ще <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" />}other{<ph name="CONTACT_PREVIEW" /> і ще <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" />}}</translation>
 <translation id="5463625433003343978">Пошук пристроїв…</translation>
-<translation id="5469868506864199649">Італійська</translation>
 <translation id="5470230812924696184">Цивільне будівництво</translation>
 <translation id="5470861586879999274">&amp;Повторити редагування</translation>
 <translation id="5471337644440862957">Комедії</translation>
@@ -1847,7 +1843,6 @@
     <ph name="LINE_BREAK" />
     Зв’яжіться зі своїм системним адміністратором.</translation>
 <translation id="549333378215107354">Розмір 3</translation>
-<translation id="5503356662318814623">Надіслати повідомлення</translation>
 <translation id="5509762909502811065">B0</translation>
 <translation id="5509780412636533143">Закладки, якими керує адміністратор</translation>
 <translation id="5510481203689988000">Цим параметром можна керувати в налаштуваннях файлів cookie.</translation>
@@ -3005,7 +3000,6 @@
 <translation id="8296205692406981542">Регіональні парки й сади</translation>
 <translation id="8297545700510100061">Файли cookie й інші дані сайтів використовуються, щоб зберігати інформацію про вас, зокрема для входу в обліковий запис або персоналізації реклами. Щоб керувати файлами cookie для всіх сайтів, перейдіть у <ph name="SETTINGS" />.</translation>
 <translation id="8298115750975731693">Можливо, щоб під’єднатися до цієї мережі Wi-Fi (<ph name="WIFI_NAME" />), потрібно відвідати сторінку <ph name="BEGIN_BOLD" /><ph name="LOGIN_URL" /><ph name="END_BOLD" />.</translation>
-<translation id="8299269255470343364">Японська</translation>
 <translation id="8303854710873047864">Відображається розділ "<ph name="SECTION" />"</translation>
 <translation id="830498451218851433">Зігнути посередині</translation>
 <translation id="8307888238279532626">Установлені додатки та як часто ними користуються</translation>
@@ -3127,7 +3121,6 @@
 <translation id="865032292777205197">датчики руху</translation>
 <translation id="8654126188050905496">55 x 91 мм</translation>
 <translation id="8663226718884576429">Підсумок замовлення, <ph name="TOTAL_LABEL" />, докладніше</translation>
-<translation id="8666678546361132282">Англійська</translation>
 <translation id="8671519637524426245">Значення <ph name="SECURE_DNS_SALT" /> не відповідає вимогам щодо розміру.</translation>
 <translation id="867224526087042813">Підпис</translation>
 <translation id="8672264262457010862">Бізнес і промисловість</translation>

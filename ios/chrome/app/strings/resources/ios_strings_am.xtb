@@ -16,6 +16,7 @@
 <translation id="1054745118061919935">በመቀጠል፣ በ<ph name="BEGIN_LINK" />የአገልግሎት ውል<ph name="END_LINK" /> ይስማማሉ።</translation>
 <translation id="1063454504051558093">ሌላ የይለፍ ቃል ይጠቀሙ...</translation>
 <translation id="1066060668811609597">ስምረትን ያቀናብሩ</translation>
+<translation id="1069154182096085577">የይለፍ ቃል አስቀድሞ ነበር</translation>
 <translation id="1076421457278169141">ኮድ ተቃኝቷል</translation>
 <translation id="1076785341346483463">በሚተዳደር መለያ ያስምሩ</translation>
 <translation id="1084365883616172403">የFacebook ልጥፍ ተጠናቅቋል።</translation>
@@ -121,6 +122,7 @@
 <translation id="1740468249224277719">ለመጫን ሁለቴ ነካ ያድርጉ።</translation>
 <translation id="1752547299766512813">የይለፍ ቃላትን አስቀምጥ</translation>
 <translation id="1753905327828125965">በይበልጥ የተጎበኙ</translation>
+<translation id="1767766085187034454">Google ትርጉም</translation>
 <translation id="1789803444939621101">እንኳን በደህና ተመልሰው መጡ፣ <ph name="USER_NAME" /></translation>
 <translation id="1803264062614276815">የካርድ ያዢው ስም</translation>
 <translation id="1809939268435598390">አቃፊ ሰርዝ</translation>
@@ -215,6 +217,7 @@
 <translation id="2523363575747517183">ይህ ድር ጣቢያ በተደጋጋሚነት ሌላ መተግበሪያ ለመክፈት እየሞከረ ነው።</translation>
 <translation id="2529021024822217800">ሁሉንም ክፈት</translation>
 <translation id="2547458583188611426">ማስመር እየሰራ አይደለም። ማስመር ለመጀመር የይለፍ ሐረግዎን ያስገቡ።</translation>
+<translation id="2551153019974022505">የመለያ ስህተት</translation>
 <translation id="2556092377360758201">ምንም ጥበቃ የለም (አይመከርም)</translation>
 <translation id="2562041823070056534">ወደ <ph name="DEVICE_NAME" /> በመላክ ላይ...</translation>
 <translation id="2576499762020411840">በGoogle መለያዎ ውስጥ የይለፍ ቃላትን ይጠቀሙ እና ያስቀምጡ</translation>
@@ -417,6 +420,7 @@
 <translation id="3928666092801078803">የእኔን ውሂብ አጣምር</translation>
 <translation id="3929457972718048006">አድራሻዎች</translation>
 <translation id="3943492037546055397">የይለፍ ቃላት</translation>
+<translation id="3951717558054674026">{count,plural, =1{{count} ደካማ የይለፍ ቃል}one{{count} ደካማ የይለፍ ቃል}other{{count} ደካማ የይለፍ ቃላት}}</translation>
 <translation id="3959736869653157332">ምናሌ → አዲስ ማንነት የማያሳውቅ ትር</translation>
 <translation id="3967822245660637423">ማውረድ ተጠናቅቋል</translation>
 <translation id="3968505803272650567">ፍላጎቶችን አቀናብር</translation>
@@ -468,6 +472,7 @@
 <translation id="4334428914252001502">1 ያልተነበበ ጽሁፍ።</translation>
 <translation id="4338650699862464074">የሚጎበኟቸው የገጾች ዩአርኤሎችን ወደ Google ይላኩ።</translation>
 <translation id="4342054591427973606">{count,plural, =1{ይህ አድራሻ ከዚህ እና በመለያ ከገቡባቸው ሌሎች መሣሪያዎችዎ ይሰረዛል።}one{ይህ አድራሻ ከዚህ እና በመለያ ከገቡባቸው ሌሎች መሣሪያዎችዎ ይሰረዛል።}other{እነዚህ አድራሻዎች ከዚህ እና በመለያ ከገቡባቸው ሌሎች መሣሪያዎችዎ ይሰረዛሉ።}}</translation>
+<translation id="4342946437867096381">ለዚህ ጣቢያ የይለፍ ቃል አስቀድመው በGoogle መለያዎ ውስጥ አስቀምጠዋል። Google በጣም የቅርብ ጊዜውን የይለፍ ቃል ለእርስዎ መምረጥ ይችላል።</translation>
 <translation id="4343046787186034850">የካሜራ እና የማይክሮፎን መዳረሻ ተፈቅዷል</translation>
 <translation id="4359125752503270327">ይህ ገጽ በሌላ መተግበሪያ ውስጥ ይከፈታል።</translation>
 <translation id="4375040482473363939">የQR ኮድ ፍለጋ</translation>
@@ -483,6 +488,8 @@
 <translation id="4474494258097106883">ለእርስዎ iPhone የተገነባ</translation>
 <translation id="4476574785019001431">ቅንብሮች</translation>
 <translation id="448433063499977729">ስምረት ጠፍቷል</translation>
+<translation id="4488754974567924717">የእርስዎ የይለፍ ቃላት ከተጠለፉ እናሳውቅዎታለን</translation>
+<translation id="4489536976005181779">{count,plural, =1{ገጽ ወደ የእርስዎ የንባብ ዝርዝር በመለያዎ ውስጥ ታክሏል፣ {email}}one{ገጽ ወደ የእርስዎ የንባብ ዝርዝር በመለያዎ ውስጥ ታክሏል፣ {email}}other{ገጾች ወደ የእርስዎ የንባብ ዝርዝር በመለያዎ ውስጥ ታክለዋል፣ {email}}}</translation>
 <translation id="4496373720959965247">ትሮችን ያክሉ እና በገጾች መካከል ይቀያይሩ</translation>
 <translation id="4502566650163919158">አሁን ይፈትሹ</translation>
 <translation id="4505980578794259603">መጨረሻ የተፈተሸው <ph name="TIME" /> ላይ።</translation>
@@ -588,6 +595,7 @@
 <translation id="5150492518600715772">ወደ የእርስዎ መሣሪያ ይላኩ</translation>
 <translation id="5168414296986405587">ለiPadOS ይፍጠሩ</translation>
 <translation id="5173088371991956744">ስምረት እርስዎ መሆንዎን ማረጋገጥ ይፈልጋል</translation>
+<translation id="5176312250994681348">የቅርብ ጊዜውን የይለፍ ቃል አቆይ</translation>
 <translation id="5181140330217080051">በማውረድ ላይ</translation>
 <translation id="5184329579814168207">በChrome ውስጥ ክፈት</translation>
 <translation id="5186185447130319458">የግል</translation>
@@ -962,6 +970,7 @@ Handoff እንዲሁም በSettings ውስጥ ባለው የGeneral ክፍል ላ
 <translation id="7679915578945954324">የድር ጣቢያ አድራሻዎች ተቀድተዋል</translation>
 <translation id="7687508192620387263">የቀን መቁጠሪያ ፋይል ይገኛል</translation>
 <translation id="7701040980221191251">ምንም</translation>
+<translation id="7711440461521638739">ምንም የይለፍ ቃላትን ዳግም እየተጠቀሙ አይደለም</translation>
 <translation id="7720410380936703141">እንደገና ይሞክሩ</translation>
 <translation id="7726702057919861819">ምናሌ → ታሪክ → የአሰሳ ውሂብን አጽዳ</translation>
 <translation id="7733646263819020771"><ph name="BOOKMRK_NAME" />። በዚህ መሣሪያ ላይ ብቻ።</translation>
@@ -1066,6 +1075,7 @@ Handoff እንዲሁም በSettings ውስጥ ባለው የGeneral ክፍል ላ
 <translation id="8393889347136007944">ትሮች ለ<ph name="THRESHOLD" /> ቀናት ጥቅም ላይ አልዋሉም</translation>
 <translation id="8407669440184693619">ለዚህ ጣቢያ ምንም የይለፍ ቃላት አልተገኙም</translation>
 <translation id="842017693807136194">በሚከተለው በመለያ ተገብቷል፦</translation>
+<translation id="8425693829365242963">የእርስዎ የይለፍ ቃላት ልዩ ናቸው</translation>
 <translation id="8428045167754449968">ከተማ / መለስተኛ ከተማ</translation>
 <translation id="8428213095426709021">ቅንብሮች</translation>
 <translation id="8428634594422941299">ገባኝ</translation>
@@ -1086,6 +1096,7 @@ Handoff እንዲሁም በSettings ውስጥ ባለው የGeneral ክፍል ላ
 <translation id="8533670235862049797">የጥንቃቄ አሰሳ በርቷል</translation>
 <translation id="8534481786647257214">የGoogle+ ልጥፍ ተጠናቅቋል።</translation>
 <translation id="8548878600947630424">በዚህ ገጽ ውስጥ አግኝ...</translation>
+<translation id="8556590991644167667">{count,plural, =1{{count} ማስጠንቀቂያ አሰናብተዋል}one{{count} ማስጠንቀቂያ አሰናብተዋል}other{{count} ማስጠንቀቂያዎች አሰናብተዋል}}</translation>
 <translation id="8558480467877843976">አሁን በሚያስሱበት ወይም በመልዕክቶች ውስጥ አገናኞችን መታ በሚያደርጉበት በማንኛውም ጊዜ Chromeን እና ሌሎች መተግበሪያዎችን መጠቀም ይችላሉ።</translation>
 <translation id="8588404856427128947">ጠፍቷል</translation>
 <translation id="8591976964826315682">ማንነትን በማያሳውቅ ሁነታ ላይ የሦስተኛ ወገን ኩኪዎችን ያግዱ</translation>
@@ -1094,9 +1105,11 @@ Handoff እንዲሁም በSettings ውስጥ ባለው የGeneral ክፍል ላ
 <translation id="8626393685701737946">የነባሪ ጣቢያ ዕይታውን በ ቅንብሮች &gt; የይዘት ቅንብሮች መቀየር ይችላሉ</translation>
 <translation id="8636825310635137004">ትሮችዎን ከሌሎች መሣሪያዎችዎ ለማግኘት ስምረትን ያብሩ።</translation>
 <translation id="8654802032646794042">ይቅር</translation>
+<translation id="8663764600409216912">ሲታዩ ለመገመት ከባድ የሚመስሉ የይለፍ ቃላትን እየተጠቀሙ ነው</translation>
 <translation id="8668210798914567634">ይህ ገጽ ወደ የእርስዎ ንባብ ዝርዝር ተቀምጧል።</translation>
 <translation id="8680787084697685621">የመለያ መግቢያ ዝርዝሮች ጊዜ ያለፈባቸው ናቸው።</translation>
 <translation id="8693663554456874301">{count,plural, =1{ትርን ዝጋ}one{ትሮችን ዝጋ}other{ትሮችን ዝጋ}}</translation>
+<translation id="8703536910991780768">ሲታዩ የእርስዎ የይለፍ ቃላት ጠንካራ ይመስላሉ</translation>
 <translation id="8706588385081740091">የይለፍ ቃላት</translation>
 <translation id="8717864919010420084">አገናኝ ቅዳ</translation>
 <translation id="8721297211384281569">የመሣሪያዎች ምናሌ</translation>
@@ -1145,6 +1158,7 @@ Handoff እንዲሁም በSettings ውስጥ ባለው የGeneral ክፍል ላ
 <translation id="8974714402877957201">1. የiPad ቅንብሮችን ይክፈቱ</translation>
 <translation id="8976382372951310360">እገዛ</translation>
 <translation id="8976414606286374109">ካርዶች ወደ የእርስዎ Google መለያ ተቀምጠዋል።</translation>
+<translation id="8978059030508051916">{count,plural, =0{ምንም የተጠለፈ የይለፍ ቃል የለም}=1{{count} የተጠለፈ የይለፍ ቃል}one{{count} የተጠለፈ የይለፍ ቃል}other{{count} የተጠለፉ የይለፍ ቃላት}}</translation>
 <translation id="8981454092730389528">የGoogle እንቅስቃሴ መቆጣጠሪያዎች</translation>
 <translation id="8985320356172329008">እንደሚከተለው ሆነው ወደ Google በመለያ ገብተዋል፦</translation>
 <translation id="9000089900434778519">የእርስዎ የፍለጋ ፕሮግራም <ph name="DSE_NAME" /> ነው። መተግበር የሚችል ከሆነ የፍለጋ ታሪክዎን ለመሰረዝ መመሪያዎቻቸውን ይመልከቱ።</translation>

@@ -922,7 +922,6 @@
 <translation id="3249151924975132674">وام دانشجویی و مخارج دانشگاه</translation>
 <translation id="3249845759089040423">شیک</translation>
 <translation id="3250640885957938546">تبلیغات و بازاریابی</translation>
-<translation id="3252266817569339921">فرانسوی</translation>
 <translation id="3254301855501243548">۲۲ × ۱۸ اینچ</translation>
 <translation id="3256863843508922226">بازنشستگی و مستمری</translation>
 <translation id="3259648571731540213">‏<ph name="CREATE_GOOGLE_CALENDAR_EVENT_FOCUSED_FRIENDLY_MATCH_TEXT" />؛ برای ایجاد سریع رویداد جدید در «تقویم Google»، کلید «جهش» و سپس «ورود» را فشار دهید</translation>
@@ -1586,7 +1585,6 @@
 <translation id="484988093836683706">استفاده از باز کردن قفل دستگاه</translation>
 <translation id="4850886885716139402">نما</translation>
 <translation id="4852429274334674023">سیستم‌عامل</translation>
-<translation id="485316830061041779">آلمانی</translation>
 <translation id="4853901935952445031">‏این سایت بعداز فوریه ۲۰۲۲ نمی‌تواند از U2F API استفاده کند. اگر مالک این سایت هستید، باید تغییراتی اعمال کنید تا به‌جای آن از Web Authentication AP استفاده کند.</translation>
 <translation id="4854362297993841467">این روش تحویل در دسترس نیست. روش دیگری را امتحان کنید.</translation>
 <translation id="4854853140771946034">‏ایجاد سریع یادداشت جدید در Google Keep</translation>
@@ -1825,7 +1823,6 @@
 <translation id="5423269318075950257">پیگیری قیمت</translation>
 <translation id="5425241977284572032">{NUM_COOKIES,plural, =0{هیچ سایتی مسدود نشده است}=1{یک سایت مسدود}one{# سایت مسدود}other{# سایت مسدود}}</translation>
 <translation id="5426179911063097041"><ph name="SITE" /> می‌خواهد برایتان اعلان  ارسال کند</translation>
-<translation id="5428105026674456456">اسپانیایی</translation>
 <translation id="5430298929874300616">حذف نشانک</translation>
 <translation id="5443468954631487277">روبه‌بالا به‌ترتیب معکوس</translation>
 <translation id="5447765697759493033">این سایت ترجمه نخواهد شد</translation>
@@ -1834,7 +1831,6 @@
 <translation id="5457113250005438886">نامعتبر</translation>
 <translation id="5458150163479425638">{CONTACT,plural, =0{<ph name="CONTACT_PREVIEW" />}=1{<ph name="CONTACT_PREVIEW" /> و <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> مخاطب دیگر}one{<ph name="CONTACT_PREVIEW" /> و <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> مخاطب دیگر}other{<ph name="CONTACT_PREVIEW" /> و <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> مخاطب دیگر}}</translation>
 <translation id="5463625433003343978">درحال پیدا کردن دستگاه‌ها…</translation>
-<translation id="5469868506864199649">ایتالیایی</translation>
 <translation id="5470230812924696184">مهندسی عمران</translation>
 <translation id="5470861586879999274">&amp;انجام مجدد ویرایش</translation>
 <translation id="5471337644440862957">فیلم کمدی</translation>
@@ -1847,7 +1843,6 @@
     <ph name="LINE_BREAK" />
     با سرپرست سیستم تماس بگیرید.</translation>
 <translation id="549333378215107354">اندازه ۳</translation>
-<translation id="5503356662318814623">ارسال پیام</translation>
 <translation id="5509762909502811065">B0</translation>
 <translation id="5509780412636533143">نشانک‌های مدیریت شده</translation>
 <translation id="5510481203689988000">این تنظیم در «تنظیمات کوکی‌ها» کنترل می‌شود.</translation>
@@ -3005,7 +3000,6 @@
 <translation id="8296205692406981542">پارک منطقه‌ای و باغ</translation>
 <translation id="8297545700510100061">از کوکی‌ها و دیگر داده‌های سایت برای به‌خاطر سپردن شما استفاده می‌شود؛ به‌عنوان مثال برای وارد کردن شما به سیستم یا شخصی کردن آگهی‌ها. برای مدیریت کوکی‌های همه سایت‌ها، به <ph name="SETTINGS" /> بروید.</translation>
 <translation id="8298115750975731693">‏شبکه Wi-Fi (<ph name="WIFI_NAME" />) مورد استفاده‌تان احتمالاً نیاز دارد که به صفحه <ph name="BEGIN_BOLD" /><ph name="LOGIN_URL" /><ph name="END_BOLD" /> بروید.</translation>
-<translation id="8299269255470343364">ژاپنی</translation>
 <translation id="8303854710873047864">بخش «<ph name="SECTION" />» نمایش داده شد</translation>
 <translation id="830498451218851433">تاخوردگی از وسط</translation>
 <translation id="8307888238279532626">برنامه‌های نصب‌شده و میزان استفاده از آن‌ها</translation>
@@ -3126,7 +3120,6 @@
 <translation id="865032292777205197">حسگرهای حرکتی</translation>
 <translation id="8654126188050905496">۹۱ × ۵۵ میلی‌متر</translation>
 <translation id="8663226718884576429">خلاصه سفارش، <ph name="TOTAL_LABEL" />، جزئيات بیشتر</translation>
-<translation id="8666678546361132282">انگلیسی</translation>
 <translation id="8671519637524426245">مقدار <ph name="SECURE_DNS_SALT" /> با الزامات اندازه مطابقت ندارد.</translation>
 <translation id="867224526087042813">امضا</translation>
 <translation id="8672264262457010862">تجارت و صنعت</translation>

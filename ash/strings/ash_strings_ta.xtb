@@ -461,6 +461,7 @@
 <translation id="3256109297135787951">உங்கள் ஷெல்ஃபில் உருப்படியைத் தனிப்படுத்தியதை அகற்றும்</translation>
 <translation id="3260969790895726815">பேச்சு சாதனத்திற்குள்ளேயே செயலாக்கப்படும் மற்றும் சொல்வதை எழுதும் வசதி ஆஃப்லைனில் செயல்படும். ஆனால் சில குரல் கட்டளைகள் செயல்படாது.</translation>
 <translation id="3269597722229482060">வலது கிளிக்</translation>
+<translation id="3289364673986435196">பவர் மெனு</translation>
 <translation id="3289544412142055976">Linux ஆப்ஸைத் தற்போது பயன்படுத்த முடியாது</translation>
 <translation id="3289674678944039601">அடாப்டர் மூலம் சார்ஜாகிறது</translation>
 <translation id="3290356915286466215">பாதுகாப்பற்ற வைஃபை நெட்வொர்க்</translation>
@@ -685,6 +686,7 @@
 <translation id="4269883910223712419">இந்தச் சாதனத்தின் நிர்வாகி இவற்றைச் செய்ய முடியும்:</translation>
 <translation id="4274537685965975248">இந்தக் கீபோர்டு ஷார்ட்கட் மாற்றப்பட்டுள்ளது: Ctrl + Alt + கீழ்நோக்கிய அம்புக்குறி. End பட்டனைப் பயன்படுத்த, <ph name="LAUNCHER_KEY_NAME" /> பட்டன் + வலது அம்புக்குறி பட்டனை அழுத்தவும்.</translation>
 <translation id="4279490309300973883">பிரதிபலிக்கிறது</translation>
+<translation id="4280601795273309128">பாதுகாப்புப் புதுப்பிப்புகள் முடிந்துவிட்டன. சாதனத்தை மேம்படுத்தவும்.</translation>
 <translation id="4283888303416325161">கூடுதல் பாதுகாப்பிற்கு, கடவுச்சொல்லை டைப் செய்யுங்கள்</translation>
 <translation id="4285498937028063278">பிரித்தெடு</translation>
 <translation id="4294319844246081198">காலை வணக்கம் <ph name="GIVEN_NAME" />,</translation>
@@ -871,6 +873,7 @@
 <translation id="5147567197700016471">அன்லாக் செய்யப்பட்டது</translation>
 <translation id="5150070631291639005">தனியுரிமை அமைப்புகள்</translation>
 <translation id="5155897006997040331">வாசிப்பு வேகம்</translation>
+<translation id="5163434717504750796">பேட்டரி ஆயுள் <ph name="BATTERY_HEALTH_PERCENTAGE" />% | சுழற்சி எண்ணிக்கை <ph name="CYCLE_COUNT" /></translation>
 <translation id="5166007464919321363">டெஸ்க்கை டெம்ப்ளேட்டாகச் சேமி</translation>
 <translation id="5168181903108465623">Cast சாதனங்கள் உள்ளன</translation>
 <translation id="5170568018924773124">ஃபோல்டரில் காண்பி</translation>
@@ -1341,6 +1344,7 @@
 <translation id="743058460480092004">கேமராவும் மைக்ரோஃபோனும் பயன்பாட்டில் உள்ளன.</translation>
 <translation id="7452560014878697800">உங்கள் கேமராவை ஆப்ஸ் பயன்படுத்துகிறது</translation>
 <translation id="7453330308669753048">இதுவரை தேடியவை தொடர்பான முடிவுகள் அகற்றப்பட்டன</translation>
+<translation id="7455047553373871740"><ph name="BATTERY_PERCENTAGE" />% | முழுமையாகச் சார்ஜ் ஆக <ph name="TIME" /> ஆகும்</translation>
 <translation id="7461924472993315131">நிலையாக வை</translation>
 <translation id="746232733191930409">ஸ்கிரீன் ரெக்கார்டிங் பயன்முறை</translation>
 <translation id="7466449121337984263">சென்சாரைத் தொடவும்</translation>
@@ -1399,6 +1403,7 @@
 <translation id="7689817529363080918">மைக்ரோஃபோனைப் பயன்படுத்த அனுமதி கேட்கும் <ph name="APP1_NAME" />, <ph name="APP2_NAME" /> ஆப்ஸுக்கும், ஆப்ஸ் மற்றும் இணையதளங்கள் அனைத்திற்கும் மைக்ரோஃபோனுக்கான அணுகலை இது வழங்கும்</translation>
 <translation id="7704000866383261579">கடைசிச் செயலை மீண்டும் செய்யும்</translation>
 <translation id="7705524343798198388">VPN</translation>
+<translation id="770741401784017797">GIF படத்தை உருவாக்குகிறது</translation>
 <translation id="7714767791242455379">புதிய மொபைல் நெட்வொர்க்கைச் சேர்</translation>
 <translation id="7720400844887872976"><ph name="TIME" /> வரை இயங்கும்</translation>
 <translation id="7720410380936703141">மீண்டும் முயல்க</translation>
@@ -1704,6 +1709,7 @@
 <translation id="9178475906033259337"><ph name="QUERY" />க்கான ஒரு முடிவைக் காட்டுகிறது</translation>
 <translation id="9179259655489829027">கடவுச்சொல்லைக் கேட்காமல், உள்நுழைந்த பயனர் எவரையும் உடனடியாக அணுக இந்த அம்சம் உங்களை அனுமதிக்கிறது. நீங்கள் நம்பும் கணக்குகளுடன் மட்டும் இந்த அம்சத்தைப் பயன்படுத்தவும்.</translation>
 <translation id="9183456764293710005">முழுத்திரைப் பெரிதாக்கி</translation>
+<translation id="9186811218777709815"><ph name="BATTERY_PERCENTAGE" />% | <ph name="TIME" /> மீதமுள்ளது</translation>
 <translation id="9193626018745640770">தெரியாத ரிசீவருக்கு அனுப்புகிறது</translation>
 <translation id="9194617393863864469">வேறொருவராக உள்நுழை...</translation>
 <translation id="9198992156681343238"><ph name="DISPLAY_NAME" /> இன் தெளிவுத்திறன் <ph name="RESOLUTION" />க்கு மாறியது. மாற்றங்களை உறுதிசெய்ய 'உறுதிப்படுத்து' என்பதைக் கிளிக் செய்யவும். இன்னும் <ph name="TIMEOUT_SECONDS" /> இல் முந்தைய அமைப்புகளுக்கு மீட்டமைக்கப்படும்.</translation>

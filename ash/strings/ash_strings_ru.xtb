@@ -40,6 +40,7 @@
 <translation id="1181037720776840403">Удалить</translation>
 <translation id="1182225749592316782">Доступ будет предоставлен всем приложениям и сайтам с разрешениями "Камера" и "Микрофон".</translation>
 <translation id="1183863904939664422">Эта подсказка мне неинтересна</translation>
+<translation id="1184126796192815024">Эта сеть не поддерживает трансляцию приложений с телефона. Попробуйте использовать телефон как точку доступа. <ph name="LEARN_MORE" /></translation>
 <translation id="118437560755358292">Для дополнительной безопасности введите пароль или PIN-код.</translation>
 <translation id="118532027333893379">Чтобы снять экран полностью, нажмите в любом его месте</translation>
 <translation id="1190609913194133056">Центр уведомлений</translation>
@@ -126,6 +127,7 @@
 <translation id="15373452373711364">Большой курсор мыши</translation>
 <translation id="1546492247443594934">Рабочий стол 2</translation>
 <translation id="1546930421365146760">Попросите администратора настроить это устройство в консоли администратора Google</translation>
+<translation id="1549512626801247439">управление хранилищем</translation>
 <translation id="1550406609415860283">Доступные устройства</translation>
 <translation id="1550523713251050646">Чтобы изменить источник питания, нажмите здесь.</translation>
 <translation id="1555130319947370107">Синий</translation>
@@ -249,6 +251,7 @@
 <translation id="2148716181193084225">Сегодня</translation>
 <translation id="2149229036084364364">Перейти к предыдущему треку</translation>
 <translation id="2161132820593978283">Используйте автомасштабирование, чтобы во время видеовстреч оставаться в центре экрана. Эту функцию можно включить в быстрых настройках.</translation>
+<translation id="2165966740263283349">использование хранилища</translation>
 <translation id="2170530631236737939">Чтобы выйти из режима обзора, проведите тремя пальцами вниз.</translation>
 <translation id="2185166372312820725">Перейти на предыдущую вкладку</translation>
 <translation id="2185444992308415167">Перейти по вкладкам 1–8</translation>
@@ -286,6 +289,7 @@
 <translation id="2352467521400612932">Настройки стилуса</translation>
 <translation id="2354174487190027830">Активация <ph name="NAME" /></translation>
 <translation id="2359808026110333948">Продолжить</translation>
+<translation id="2360398059912971776">батарея</translation>
 <translation id="2367186422933365202">Не удалось войти в аккаунт на устройстве Chromebook.</translation>
 <translation id="2367972762794486313">Показать сервисы</translation>
 <translation id="2369165858548251131">"Привет" по-китайски</translation>
@@ -320,6 +324,7 @@
 <translation id="2515586267016047495">Alt</translation>
 <translation id="2526581474998477112">Открепить окна</translation>
 <translation id="2530896289327917474">Включить или отключить режим активного курсора</translation>
+<translation id="2531025035050312891">устройство работает медленно</translation>
 <translation id="2542089167727451762">Нажмите на фото профиля</translation>
 <translation id="254900897760075745">Скопировать данные в буфер обмена</translation>
 <translation id="255671100581129685">Google Ассистент не работает в режиме открытого доступа.</translation>
@@ -332,6 +337,7 @@
 <translation id="2596078834055697711">Сделать скриншот окна</translation>
 <translation id="2598725286293895280">На рабочем столе есть неподдерживаемые приложения</translation>
 <translation id="2607678425161541573">Войдите в аккаунт в режиме онлайн</translation>
+<translation id="2612072250312279703">мониторинг системы</translation>
 <translation id="2612614436418177118">Переместить значок приложения в сетке</translation>
 <translation id="2620016719323068571">Ищите <ph name="CATEGORY" />, файлы, приложения и не только…</translation>
 <translation id="2620436844016719705">Система</translation>
@@ -472,6 +478,7 @@
 <translation id="3308453408813785101">Пользователь <ph name="USER_EMAIL_ADDRESS" /> сможет войти в аккаунт позже.</translation>
 <translation id="3321628682574733415">Неверный родительский код доступа</translation>
 <translation id="332827762492701193">Уведомления скрыты</translation>
+<translation id="3338855835380298613">использование процессора</translation>
 <translation id="3339826665088060472">Запись экрана, инструменты для создания скриншотов и записи видео с экрана</translation>
 <translation id="3340978935015468852">настройки</translation>
 <translation id="3341303451326249809">Скриншот сохранен</translation>
@@ -479,6 +486,7 @@
 <translation id="334927402682780278">Выделить текст от курсора до конца строки</translation>
 <translation id="3349345708646875009">Открыть диспетчер задач</translation>
 <translation id="3351879221545518001">Вы транслируете изображение своего экрана.</translation>
+<translation id="3354555338129305222">почему мое устройство работает медленно</translation>
 <translation id="3364721542077212959">Инструменты стилуса</translation>
 <translation id="3365977133351922112">Телефон слишком далеко. Поднесите его ближе.</translation>
 <translation id="3368922792935385530">Подключено</translation>
@@ -585,6 +593,7 @@
 <translation id="3779139509281456663">Подключение к устройству "<ph name="NAME" />"</translation>
 <translation id="3783640748446814672">alt</translation>
 <translation id="3784455785234192852">Заблокировать</translation>
+<translation id="3796198851576711985">состояние батареи</translation>
 <translation id="3796746699333205839">Приложение использует вашу камеру и микрофон</translation>
 <translation id="3798670284305777884">Динамик (встроенный)</translation>
 <translation id="3799080171973636491">Вы нажали сочетание клавиш для включения полноэкранной лупы. Выполнить это действие?</translation>
@@ -742,9 +751,11 @@
 <translation id="4527045527269911712">Устройству <ph name="DEVICE_NAME" /> требуется разрешение на подключение через Bluetooth.</translation>
 <translation id="4533343294786968049">Включен режим, продлевающий срок службы батареи. Она полностью зарядится к <ph name="FULLY_CHARGE_TIME" />.</translation>
 <translation id="453661520163887813">До полной зарядки <ph name="TIME" /></translation>
+<translation id="4536664881735498710">использование озу</translation>
 <translation id="4538824937723742295">Сделать снимок всего экрана</translation>
 <translation id="4539127209940689201">Распечатать текущую страницу</translation>
 <translation id="4544483149666270818">Выберите окно для записи</translation>
+<translation id="454541942614298893">мое устройство</translation>
 <translation id="4548482551627849548">Переместить активное окно на рабочий стол слева</translation>
 <translation id="4560576029703263363">Включено</translation>
 <translation id="4561267230861221837">3G</translation>
@@ -859,9 +870,11 @@
 <translation id="5043679421800073804">Выбрать последний значок на панели запуска</translation>
 <translation id="504465286040788597">Предыдущий абзац</translation>
 <translation id="5045550434625856497">Неправильный пароль</translation>
+<translation id="5062496344832867502">озу</translation>
 <translation id="5078796286268621944">Неверный PIN-код</translation>
 <translation id="5083553833479578423">Получите доступ к другим возможностям Ассистента.</translation>
 <translation id="5092436659250499817">Включить/отключить подсветку клавиатуры</translation>
+<translation id="5094577350232361255">сведения о версии</translation>
 <translation id="509790653408515442">Приложения, которые вы транслируете с телефона, появляются здесь.</translation>
 <translation id="5098537242461068432">Рабочий стол и окна открыты повторно</translation>
 <translation id="5104236669533825617">Не удалось создать скринкаст</translation>
@@ -964,6 +977,7 @@
 <translation id="557563299383177668">Следующий абзац</translation>
 <translation id="5577082622442191756">Включить или отключить Bluetooth. <ph name="STATE_TEXT" />.</translation>
 <translation id="5577281275355252094">Чтобы использовать функцию "Управление телефоном", включите Bluetooth на телефоне.</translation>
+<translation id="5578188167649348993">память</translation>
 <translation id="5580000943347215299">Библиотека</translation>
 <translation id="558849140439112033">Перетащите, чтобы выделить область для снимка</translation>
 <translation id="5597451508971090205"><ph name="SHORT_WEEKDAY" />, <ph name="DATE" /></translation>
@@ -1033,6 +1047,7 @@
 <translation id="589817443623831496">Точечное сканирование</translation>
 <translation id="5901316534475909376">Shift + Esc</translation>
 <translation id="5901630391730855834">Желтый</translation>
+<translation id="5902162043476810127">оперативная память</translation>
 <translation id="5909862606227538307">Рабочий стол неактивен.</translation>
 <translation id="5911231045062997865">Окна Lacros пока не поддерживаются. Остальные приложения будут сохранены.</translation>
 <translation id="5911909173233110115"><ph name="USERNAME" /> (<ph name="MAIL" />)</translation>
@@ -1138,6 +1153,7 @@
 <translation id="6431865393913628856">Запись видео с экрана</translation>
 <translation id="6442259747294754014">Доступ к микрофону запрещен.</translation>
 <translation id="6445835306623867477">Трансляция <ph name="ROUTE_TITLE" /> на устройство "<ph name="RECEIVER_NAME" />"</translation>
+<translation id="6445915701151710649">процессор</translation>
 <translation id="6447111710783417522"><ph name="DATE" />, мероприятий: <ph name="NUMBER" /></translation>
 <translation id="6449483711453944360">Приложения для Linux и окна в режиме инкогнито пока не поддерживаются</translation>
 <translation id="6452181791372256707">Отклонить</translation>
@@ -1212,6 +1228,7 @@
 <translation id="6752912906630585008">Рабочий стол "<ph name="REMOVED_DESK" />" удален и объединен с рабочим столом "<ph name="RECEIVE_DESK" />".</translation>
 <translation id="6753390234084146956">вкладки</translation>
 <translation id="6757237461819837179">Контент не воспроизводится</translation>
+<translation id="6768043681523654438">хранилище</translation>
 <translation id="6777216307882431711">Питание подключенных устройств USB-C</translation>
 <translation id="6781002679438061620">Рабочий стол 9</translation>
 <translation id="6782182743534150858">Рабочий стол 13</translation>
@@ -1403,6 +1420,7 @@
 <translation id="7689817529363080918">Доступ к микрофону получат приложения "<ph name="APP1_NAME" />" и "<ph name="APP2_NAME" />", а также все приложения и сайты с разрешением "Микрофон".</translation>
 <translation id="7704000866383261579">Повторить последнее действие</translation>
 <translation id="7705524343798198388">VPN</translation>
+<translation id="770741401784017797">Создание GIF</translation>
 <translation id="7714767791242455379">Добавить мобильную сеть</translation>
 <translation id="7720400844887872976">Вкл. до <ph name="TIME" /></translation>
 <translation id="7720410380936703141">ПОВТОРИТЬ</translation>
@@ -1410,6 +1428,7 @@
 <translation id="7723703419796509666">Показать или скрыть консоль инструментов разработчика</translation>
 <translation id="7724603315864178912">Вырезать</translation>
 <translation id="7727952505535211425">Открыть сайт из адресной строки в новой вкладке</translation>
+<translation id="77365090426890123">использование памяти</translation>
 <translation id="7742327441377685481">Нет уведомлений</translation>
 <translation id="7749443890790263709">Достигнуто максимально допустимое количество рабочих столов.</translation>
 <translation id="776344839111254542">Нажмите, чтобы просмотреть информацию об обновлении</translation>
@@ -1642,6 +1661,8 @@
 <translation id="8853703225951107899">Введенный PIN-код или пароль снова оказался недействительным. Если вы недавно меняли пароль, введите прежний. Новый пароль вступит в силу после того, как вы выйдете из аккаунта.</translation>
 <translation id="8855885154700222542">Клавиша полноэкранного режима</translation>
 <translation id="8858369206579825206">Настройки конфиденциальности</translation>
+<translation id="8860817004574502558">время работы от батареи</translation>
+<translation id="8863602954531760927">Занято места в хранилище: <ph name="STORAGE_IN_USE_SIZE" /> из <ph name="STORAGE_TOTAL_SIZE" /></translation>
 <translation id="8870509716567206129">Приложение не поддерживает разделение экрана.j</translation>
 <translation id="8874184842967597500">Не подключено</translation>
 <translation id="8875021410787719674">Переключаться между правым нижним углом, панелью запуска, адресной строкой, панелью закладок, открытой веб-страницей и панелью скачанных файлов</translation>

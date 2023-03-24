@@ -697,6 +697,7 @@
 <translation id="7103252855940681301">Uređaj <ph name="INDEX" /> od <ph name="COUNT" /> pod nazivom <ph name="NAME" />.</translation>
 <translation id="7108668606237948702">enter</translation>
 <translation id="7130438335435247835">Pristupna točka (APN)</translation>
+<translation id="7131634559772719176">Potvrda unaprijed definirane postavke</translation>
 <translation id="7134436342991564651">{0,plural, =1{Poslužitelj naziva}one{Poslužitelji naziva}few{Poslužitelji naziva}other{Poslužitelji naziva}}</translation>
 <translation id="7143207342074048698">Povezivanje</translation>
 <translation id="7144878232160441200">Pokušaj ponovno</translation>
@@ -800,6 +801,7 @@
 <translation id="80398733265834479">Omogućite način automatske boje</translation>
 <translation id="8041089156583427627">Slanje povratnih informacija</translation>
 <translation id="8045012663542226664">Mikrofon isključen</translation>
+<translation id="8050091914317269817">Ako odaberete tu pozadinu, uključit ćete automatski tamni način rada i podudaranje boje pozadine.</translation>
 <translation id="8075838845814659848">Preostala razina napunjenosti</translation>
 <translation id="8076492880354921740">Kartice</translation>
 <translation id="8082366717211101304">Razrješavanje DNS-a iz Android aplikacija nije uspjelo</translation>

@@ -809,6 +809,7 @@
 <translation id="2951588413176968965">Моето поштенско сандаче</translation>
 <translation id="2952820037279740115">Затвори ги сите прозорци „Инкогнито“</translation>
 <translation id="2952904171810469095">A2x5</translation>
+<translation id="2954624054936281172">Табела на зачувани начини на плаќање</translation>
 <translation id="295526156371527179">Предупредување: правилово не беше споено како речник како што е наведено во правилото бидејќи не е речник.</translation>
 <translation id="2955913368246107853">Затвори лента за наоѓање</translation>
 <translation id="2958544468932521864">Крикет</translation>
@@ -921,7 +922,6 @@
 <translation id="3249151924975132674">Студентски заеми и факултетско финансирање</translation>
 <translation id="3249845759089040423">Модерен</translation>
 <translation id="3250640885957938546">Рекламирање и маркетинг</translation>
-<translation id="3252266817569339921">француски</translation>
 <translation id="3254301855501243548">18 x 22 инчи</translation>
 <translation id="3256863843508922226">Пензионирање и пензија</translation>
 <translation id="3259648571731540213"><ph name="CREATE_GOOGLE_CALENDAR_EVENT_FOCUSED_FRIENDLY_MATCH_TEXT" />, притиснете го копчето Tab, а потоа копчето Enter за да набрзина создадете нов настан во „Календар на Google“</translation>
@@ -1585,7 +1585,6 @@
 <translation id="484988093836683706">Користи отклучување уред</translation>
 <translation id="4850886885716139402">Приказ</translation>
 <translation id="4852429274334674023">Оперативни системи</translation>
-<translation id="485316830061041779">германски</translation>
 <translation id="4853901935952445031">Сајтов нема да може да користи API за U2F по февруари 2022 година. Ако сајтов е во ваша сопственост, треба да извршите промена за да користи API за проверка на интернет.</translation>
 <translation id="4854362297993841467">Овој метод за доставување не е достапен. Изберете друг.</translation>
 <translation id="4854853140771946034">Набрзина создајте нова белешка во Google Keep</translation>
@@ -1824,7 +1823,6 @@
 <translation id="5423269318075950257">Следи ја цената</translation>
 <translation id="5425241977284572032">{NUM_COOKIES,plural, =0{Нема блокирани сајтови}=1{1 сајт е блокиран}one{# сајт се блокирани}other{# сајтови се блокирани}}</translation>
 <translation id="5426179911063097041"><ph name="SITE" /> сака да ви испраќа известувања</translation>
-<translation id="5428105026674456456">шпански</translation>
 <translation id="5430298929874300616">Отстрани обележувач</translation>
 <translation id="5443468954631487277">Обратен редослед со лицето нагоре</translation>
 <translation id="5447765697759493033">Сајтов нема да се преведе</translation>
@@ -1833,7 +1831,6 @@
 <translation id="5457113250005438886">Неважечки</translation>
 <translation id="5458150163479425638">{CONTACT,plural, =0{<ph name="CONTACT_PREVIEW" />}=1{<ph name="CONTACT_PREVIEW" /> и уште <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" />}one{<ph name="CONTACT_PREVIEW" /> и уште <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" />}other{<ph name="CONTACT_PREVIEW" /> и уште <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" />}}</translation>
 <translation id="5463625433003343978">Се бараат уреди…</translation>
-<translation id="5469868506864199649">италијански</translation>
 <translation id="5470230812924696184">Градежништво</translation>
 <translation id="5470861586879999274">&amp;Повтори уредување</translation>
 <translation id="5471337644440862957">Комедии</translation>
@@ -1846,7 +1843,6 @@
     <ph name="LINE_BREAK" />
     Обидете се да го контактирате вашиот системски администратор.</translation>
 <translation id="549333378215107354">Големина 3</translation>
-<translation id="5503356662318814623">Испрати порака</translation>
 <translation id="5509762909502811065">B0</translation>
 <translation id="5509780412636533143">Управувани обележувачи</translation>
 <translation id="5510481203689988000">Поставкава се контролира во поставките за колачиња.</translation>
@@ -2777,6 +2773,7 @@
 <translation id="7736959720849233795">Копирај ја адресата на линкот</translation>
 <translation id="7740996059027112821">Стандарден</translation>
 <translation id="77424286611022110">Сајтов прикажува нападни или лажни реклами. <ph name="LEARN_MORE_LINK_TEXT" /></translation>
+<translation id="7744505202669469867">Табела на зачувани адреси</translation>
 <translation id="774634243536837715">Опасните содржини се блокирани.</translation>
 <translation id="7751971323486164747">Приспособете ги голимините и типовите на фонтовите во Chrome</translation>
 <translation id="7752995774971033316">Неуправуван</translation>
@@ -3003,7 +3000,6 @@
 <translation id="8296205692406981542">Регионални паркови и градини</translation>
 <translation id="8297545700510100061">Колачињата и другите сајтови се користат за да ве запомнат, на пр., за најавување или за персонализирање реклами. За да управувате со колачињата за сите сајтови, погледнете „<ph name="SETTINGS" />“.</translation>
 <translation id="8298115750975731693">Wi-Fi што го користите (<ph name="WIFI_NAME" />) може да бара да ја посетите страницата <ph name="BEGIN_BOLD" /><ph name="LOGIN_URL" /><ph name="END_BOLD" />.</translation>
-<translation id="8299269255470343364">јапонски</translation>
 <translation id="8303854710873047864">Прикажан е делот „<ph name="SECTION" />“</translation>
 <translation id="830498451218851433">Превиткување на половина</translation>
 <translation id="8307888238279532626">Инсталирани апликации и колку често се користат</translation>
@@ -3018,6 +3014,7 @@
 <translation id="8347658365704983341">Далечинско учење</translation>
 <translation id="8349305172487531364">Лента со обележувачи</translation>
 <translation id="8351131234907093545">Создајте белешка</translation>
+<translation id="835203957414790336">Содржините на страниците што ги печатите и податоците за вашиот печатач се испраќаат на Google Cloud или трети страни за анализа. На пример, можеби ќе се скенираат за да се провери дали содржат чувствителни податоци.</translation>
 <translation id="8355270400102541638">Контекст на локален пад:</translation>
 <translation id="8363502534493474904">Да го исклучите авионскиот режим</translation>
 <translation id="8364627913115013041">Не е поставено.</translation>
@@ -3123,7 +3120,6 @@
 <translation id="865032292777205197">сензори за движење</translation>
 <translation id="8654126188050905496">55 x 91 mm</translation>
 <translation id="8663226718884576429">Краток преглед на нарачка, <ph name="TOTAL_LABEL" />, повеќе детали</translation>
-<translation id="8666678546361132282">англиски</translation>
 <translation id="8671519637524426245">Вредноста <ph name="SECURE_DNS_SALT" /> не ги исполнува барањата за големина.</translation>
 <translation id="867224526087042813">Потпис</translation>
 <translation id="8672264262457010862">Бизнис и индустрија</translation>

@@ -58,6 +58,7 @@
 <translation id="1283524564873030414">過去 24 小時</translation>
 <translation id="1285320974508926690">永不翻譯此網站</translation>
 <translation id="1291506870746876680"><ph name="BEGIN_BOLD" />「<ph name="SITE_NAME" />」<ph name="END_BOLD" />的權限會在您離開此網站後重設為停用。</translation>
+<translation id="1305822519689023679">為確保你隨時可以使用 Google 帳戶中的密碼，請驗證身分。</translation>
 <translation id="1312721752506309252">已開啟「強化保護功能」</translation>
 <translation id="1321993286294231467">儲存圖片時發生錯誤。</translation>
 <translation id="1322735045095424339">您的機構要求使用無痕模式</translation>
@@ -107,6 +108,7 @@
 <translation id="1626771852476987600"><ph name="COUNT" /> 個重複使用的密碼</translation>
 <translation id="1641113438599504367">安全瀏覽</translation>
 <translation id="1644574205037202324">記錄</translation>
+<translation id="165008673352427892">新功能</translation>
 <translation id="1650222530560417226">輕按 [開始記錄] 按鈕即可收集之後的 JavaScript 控制台記錄和所有分頁錯誤。系統會持續收集記錄 (且僅會儲存於記憶體中)，直到網頁關閉或使用者輕按 [停止記錄] 為止。</translation>
 <translation id="1653432787084483144">{count,plural, =1{有 {count} 個可以用嘅密碼儲存咗喺鍵盤上面。}other{有 {count} 個可以用嘅密碼儲存咗喺鍵盤上面。}}</translation>
 <translation id="1657011748321897393">由於您並未連線至網絡，因此無法分享。</translation>
@@ -120,6 +122,7 @@
 <translation id="1700629756560807968">已選取 <ph name="NUMBER_OF_SELECTED_BOOKMARKS" /> 個</translation>
 <translation id="1715515772563243997">如果您信任 <ph name="SITE" />，可使用已儲存的密碼登入。</translation>
 <translation id="1740468249224277719">輕按兩下即可安裝。</translation>
+<translation id="1750238553597293878">請繼續使用 Google 帳戶中的密碼</translation>
 <translation id="1752547299766512813">儲存密碼</translation>
 <translation id="1753905327828125965">最常瀏覽</translation>
 <translation id="1767766085187034454">Google 翻譯</translation>
@@ -402,6 +405,7 @@
 <translation id="3810973564298564668">管理</translation>
 <translation id="3818293389945649617">尋找下一個相符的項目</translation>
 <translation id="3819183753496523827">您已離線。請檢查您的互聯網連線，然後再試一次。</translation>
+<translation id="3832419617903252251">系統只會將密碼儲存在這部裝置上</translation>
 <translation id="3835964409414434850">前往下一個分頁</translation>
 <translation id="3838691874161539578">請檢查已儲存的密碼，以提升安全性，並確保網上安全</translation>
 <translation id="385051799172605136">返回</translation>
@@ -630,6 +634,7 @@
 <translation id="54401264925851789">網頁安全性資料</translation>
 <translation id="5443952882982198570">信用卡</translation>
 <translation id="5444892875087332195">書籤</translation>
+<translation id="5453250766792920795">{count,plural, =1{書籤已儲存到帳戶 ({email})}other{書籤已儲存到帳戶 ({email})}}</translation>
 <translation id="5457226814769348910">開啟離線版本</translation>
 <translation id="5489208564673669003">如要管理所有網站的 Cookie，請參閱 <ph name="BEGIN_LINK" />Cookie 設定<ph name="END_LINK" />。</translation>
 <translation id="5490005495580364134">封鎖所有 Cookie (不建議)</translation>
@@ -656,6 +661,7 @@
 <translation id="5669528293118408608">www</translation>
 <translation id="5669617676038747374">建立 QR 碼</translation>
 <translation id="567881659373499783">版本 <ph name="PRODUCT_VERSION" /></translation>
+<translation id="5683499062697987550">如要將密碼儲存到 Google 帳戶及使用當中的密碼，請驗證身分。</translation>
 <translation id="5690398455483874150">{count,plural, =1{宜家顯示緊 1 個 Chrome 視窗}other{宜家顯示緊 {count} 個 Chrome 視窗}}</translation>
 <translation id="5701270923492462699">已允許存取攝錄機</translation>
 <translation id="5704908597376970822">無法登入。</translation>
@@ -749,6 +755,7 @@
 <translation id="6219550825416862075">歡迎回來</translation>
 <translation id="6219688215832490856">永不翻譯</translation>
 <translation id="6223816392543092032">您可從任何裝置取得自己的書籤、記錄、密碼和其他設定。</translation>
+<translation id="6224759905509595045">驗證身分…</translation>
 <translation id="6229318421047648685">切換至桌面版網站</translation>
 <translation id="6231782223312638214">建議</translation>
 <translation id="6232329973559504466">無痕搜尋</translation>
@@ -788,6 +795,7 @@
 
 您已於 <ph name="TIME" />使用同步密碼短語加密資料，請輸入密碼短語開始同步資料。</translation>
 <translation id="6418346271604475326">正在準備 PDF</translation>
+<translation id="6421095165635308">{count,plural, =1{書籤已儲存到帳戶 ({email}) 中的「{title}」}other{書籤已儲存到帳戶 ({email}) 中的「{title}」}}</translation>
 <translation id="6429213933892582367">開啟 [密碼選項]</translation>
 <translation id="6434591244308415567">發生錯誤，請稍後再試。</translation>
 <translation id="6435236283694032571">加入閱讀清單</translation>
@@ -874,6 +882,7 @@
 <translation id="6888009575607455378">確定要捨棄變更嗎？</translation>
 <translation id="6896758677409633944">複製</translation>
 <translation id="6897187120838603299">密碼將會儲存至您的裝置。</translation>
+<translation id="6906448540340261898">確保你隨時可以使用 Google 帳戶中的密碼</translation>
 <translation id="6913136913033237761"><ph name="FOLDER_NAME" />。只係喺呢部裝置上面。</translation>
 <translation id="6914583639806229067">搜尋您複製的圖片</translation>
 <translation id="6914783257214138813">任何能查看匯出檔案的使用者都可看到您的密碼。</translation>
@@ -905,6 +914,7 @@
 <translation id="7108762695052995889">瀏覽網站</translation>
 <translation id="7133798577887235672">全名</translation>
 <translation id="7136892417564438900">無法使用相機</translation>
+<translation id="7161230316646448869">同步你在所有裝置上的密碼、歷史記錄和其他設定</translation>
 <translation id="7162168282402939716">用 <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /> 解鎖無痕式分頁</translation>
 <translation id="7172852049901402487">確保密碼安全，避免發生安全性問題</translation>
 <translation id="7173114856073700355">開啟設定</translation>

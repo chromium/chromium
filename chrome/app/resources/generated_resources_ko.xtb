@@ -72,6 +72,7 @@
 <translation id="1061130374843955397"><ph name="DEVICE_TYPE" /> 기기를 구매해 주셔서 감사합니다</translation>
 <translation id="1061373870045429865">이 링크의 QR 코드 생성</translation>
 <translation id="1061904396131502319">곧 휴식 시간입니다</translation>
+<translation id="1062407476771304334">바꾸기</translation>
 <translation id="1062628064301375934">웹의 개인 정보 보호 개선에 동참해 주세요</translation>
 <translation id="1067048845568873861">생성됨</translation>
 <translation id="1067661089446014701">보안 강화를 위해 비밀번호를 Google 계정에 저장하기 전에 기기에서 암호화할 수 있습니다.</translation>
@@ -1165,6 +1166,7 @@
 <translation id="1987317783729300807">계정</translation>
 <translation id="1987574314042117472">인기 앱 선택 및 설치</translation>
 <translation id="1988259784461813694">요건</translation>
+<translation id="1988733631391393183">ChromeVox 메뉴에 점자 명령어 표시</translation>
 <translation id="1989112275319619282">찾아보기</translation>
 <translation id="1989903373608997757">항상 사용</translation>
 <translation id="1990046457226896323">음성 파일 다운로드됨</translation>
@@ -2559,7 +2561,6 @@
 <translation id="3193695589337931419">시스템 신호 유틸리티</translation>
 <translation id="3194786596445804250">서드 파티 쿠키 차단에 관한 세부정보 표시</translation>
 <translation id="3197453258332670132">마우스 오른쪽 버튼으로 클릭하거나 길게 누르면 선택한 텍스트에 관한 관련 정보가 표시됩니다.</translation>
-<translation id="3198804549162832936">새 <ph name="APP" />에서 링크 열기</translation>
 <translation id="3199127022143353223">서버</translation>
 <translation id="3200061262156232574">장바구니 항목</translation>
 <translation id="3201237270673604992">알파벳 역순</translation>
@@ -2688,6 +2689,7 @@
 <translation id="3317678681329786349">카메라 및 마이크 차단됨</translation>
 <translation id="3319306431415395200"><ph name="VISUAL_SEARCH_PROVIDER" />을 사용하여 이미지의 텍스트 번역</translation>
 <translation id="3320630259304269485">세이프 브라우징(위험한 사이트로부터 보호) 및 기타 보안 설정</translation>
+<translation id="3321460131042519426">줄바꿈 사용</translation>
 <translation id="3323521181261657960">보너스 기기 사용 시간이 추가되었습니다</translation>
 <translation id="3323577066981719144">여기에서 변경하는 사항은 Chrome 브라우저에만 적용됩니다. Lacros Chrome 브라우저 설정을 변경하려면 Lacros Chrome 브라우저를 열고 설정으로 이동하세요.</translation>
 <translation id="3325804108816646710">사용 가능한 프로필 찾는 중...</translation>
@@ -6557,6 +6559,7 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="6823174134746916417">터치패드 탭하여 클릭</translation>
 <translation id="6824564591481349393">이메일 주소 복사(&amp;E)</translation>
 <translation id="6824584962142919697">요소 검사(&amp;I)</translation>
+<translation id="6824725898506587159">언어 관리</translation>
 <translation id="6825184156888454064">이름순 정렬</translation>
 <translation id="6826872289184051766">USB를 통해 인증</translation>
 <translation id="6827121912381363404">모든 확장 프로그램이 <ph name="PERMITTED_SITE" /> 사이트를 읽고 변경하도록 허용</translation>
@@ -6681,7 +6684,6 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="6925127338315966709">브라우저에 관리되는 프로필을 추가하려고 합니다. 관리자가 프로필을 제어하고 프로필 데이터에 액세스할 수 있습니다. 북마크, 방문 기록, 비밀번호 및 기타 설정이 계정에 동기화되고 이를 관리자가 관리할 수 있습니다.</translation>
 <translation id="6929126689972602640">학교 계정에서는 자녀 보호 기능이 지원되지 않습니다. 집에서 학교 과제를 위해 Google 클래스룸 및 다른 웹사이트에 액세스할 수 있는 학교 계정을 추가하려면 먼저 자녀의 개인 계정으로 로그인하세요. 설정에서 학교 계정을 나중에 추가할 수 있습니다.</translation>
 <translation id="6929760895658557216">Hey Google</translation>
-<translation id="6930036377490597025">외장 보안 키 또는 내장 센서</translation>
 <translation id="6930161297841867798">{NUM_EXTENSIONS,plural, =1{확장 프로그램 1개 거부됨}other{확장 프로그램 #개 거부됨}}</translation>
 <translation id="6931690462168617033">클릭 강도</translation>
 <translation id="6935286146439255109">용지함 없음</translation>

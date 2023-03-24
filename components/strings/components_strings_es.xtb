@@ -809,6 +809,7 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="2951588413176968965">Mi buzón de correo</translation>
 <translation id="2952820037279740115">Cerrar todas las ventanas de Incógnito</translation>
 <translation id="2952904171810469095">A2x5</translation>
+<translation id="2954624054936281172">Tabla de métodos de pago guardados</translation>
 <translation id="295526156371527179">Advertencia: Esta política no se ha combinado como un diccionario tal como se especifica en la política porque no es un diccionario.</translation>
 <translation id="2955913368246107853">Cerrar la barra de búsqueda</translation>
 <translation id="2958544468932521864">Críquet</translation>
@@ -921,7 +922,6 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="3249151924975132674">Préstamos para estudiantes y financiación de estudios universitarios</translation>
 <translation id="3249845759089040423">Estilosa</translation>
 <translation id="3250640885957938546">Publicidad y marketing</translation>
-<translation id="3252266817569339921">Francés</translation>
 <translation id="3254301855501243548">18x22 pulgadas</translation>
 <translation id="3256863843508922226">Jubilación y pensiones</translation>
 <translation id="3259648571731540213"><ph name="CREATE_GOOGLE_CALENDAR_EVENT_FOCUSED_FRIENDLY_MATCH_TEXT" />, pulsa Tabulador y luego Intro para crear un nuevo evento en Google Calendar rápidamente</translation>
@@ -1585,7 +1585,6 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="484988093836683706">Usar desbloqueo del dispositivo</translation>
 <translation id="4850886885716139402">Ver</translation>
 <translation id="4852429274334674023">Sistemas operativos</translation>
-<translation id="485316830061041779">Alemán</translation>
 <translation id="4853901935952445031">Este sitio no podrá usar la API U2F después de febrero del 2022. Si este sitio es de tu propiedad, debes cambiarlo para que use la API Web Authentication.</translation>
 <translation id="4854362297993841467">Este método de entrega no está disponible. Selecciona otro.</translation>
 <translation id="4854853140771946034">Crea una nueva nota en Google Keep rápidamente</translation>
@@ -1824,7 +1823,6 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="5423269318075950257">Seguir precio</translation>
 <translation id="5425241977284572032">{NUM_COOKIES,plural, =0{Ningún sitio bloqueado}=1{1 sitio bloqueado}other{# sitios bloqueados}}</translation>
 <translation id="5426179911063097041"><ph name="SITE" /> quiere enviarte notificaciones</translation>
-<translation id="5428105026674456456">Español</translation>
 <translation id="5430298929874300616">Eliminar marcador</translation>
 <translation id="5443468954631487277">Orden inverso boca arriba</translation>
 <translation id="5447765697759493033">Este sitio web no va a traducirse</translation>
@@ -1833,7 +1831,6 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="5457113250005438886">No válido</translation>
 <translation id="5458150163479425638">{CONTACT,plural, =0{<ph name="CONTACT_PREVIEW" />}=1{<ph name="CONTACT_PREVIEW" /> y <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> más}other{<ph name="CONTACT_PREVIEW" /> y <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> más}}</translation>
 <translation id="5463625433003343978">Buscando dispositivos...</translation>
-<translation id="5469868506864199649">Italiano</translation>
 <translation id="5470230812924696184">Ingeniería civil</translation>
 <translation id="5470861586879999274">&amp;Rehacer edición</translation>
 <translation id="5471337644440862957">Comedias</translation>
@@ -1846,7 +1843,6 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
     <ph name="LINE_BREAK" />
     Ponte en contacto con el administrador del sistema.</translation>
 <translation id="549333378215107354">Tamaño 3</translation>
-<translation id="5503356662318814623">Enviar un mensaje</translation>
 <translation id="5509762909502811065">B0</translation>
 <translation id="5509780412636533143">Marcadores administrados</translation>
 <translation id="5510481203689988000">Este ajuste se controla en la configuración de cookies.</translation>
@@ -2777,6 +2773,7 @@ Más información:
 <translation id="7736959720849233795">Copiar dirección de enlace</translation>
 <translation id="7740996059027112821">Estándar</translation>
 <translation id="77424286611022110">Este sitio muestra anuncios invasivos o engañosos. <ph name="LEARN_MORE_LINK_TEXT" /></translation>
+<translation id="7744505202669469867">Tabla de direcciones guardadas</translation>
 <translation id="774634243536837715">Contenido peligroso bloqueado.</translation>
 <translation id="7751971323486164747">Personaliza los tamaños de fuente y los tipos de letra de Chrome</translation>
 <translation id="7752995774971033316">No administrado</translation>
@@ -3003,7 +3000,6 @@ Más información:
 <translation id="8296205692406981542">Parques y jardines regionales</translation>
 <translation id="8297545700510100061">Las cookies y otros datos de los sitios se usan para recordarte. Así, podrás iniciar sesión o ver anuncios personalizados, entre otras cosas. Para gestionar las cookies de todos los sitios, ve a <ph name="SETTINGS" />.</translation>
 <translation id="8298115750975731693">La red Wi-Fi que estás utilizando (<ph name="WIFI_NAME" />) puede requerir que accedas a la página <ph name="BEGIN_BOLD" /><ph name="LOGIN_URL" /><ph name="END_BOLD" />.</translation>
-<translation id="8299269255470343364">Japonés</translation>
 <translation id="8303854710873047864">Sección <ph name="SECTION" /> mostrada</translation>
 <translation id="830498451218851433">Plegado al medio</translation>
 <translation id="8307888238279532626">Las aplicaciones instaladas y la frecuencia con la que se usan</translation>
@@ -3018,6 +3014,7 @@ Más información:
 <translation id="8347658365704983341">Educación a distancia</translation>
 <translation id="8349305172487531364">Barra de marcadores</translation>
 <translation id="8351131234907093545">Crear nota</translation>
+<translation id="835203957414790336">El contenido de las páginas que imprimes y la información sobre tu impresora se envía a Google Cloud o a terceros para analizarlos. Por ejemplo, puede que se analice para buscar datos sensibles.</translation>
 <translation id="8355270400102541638">Contexto del fallo local:</translation>
 <translation id="8363502534493474904">Desactivar el modo Avión</translation>
 <translation id="8364627913115013041">No establecida</translation>
@@ -3123,7 +3120,6 @@ Más información:
 <translation id="865032292777205197">sensores de movimiento</translation>
 <translation id="8654126188050905496">55x91 mm</translation>
 <translation id="8663226718884576429">Resumen del pedido: <ph name="TOTAL_LABEL" /> (más detalles)</translation>
-<translation id="8666678546361132282">Inglés</translation>
 <translation id="8671519637524426245">El valor <ph name="SECURE_DNS_SALT" /> no cumple los requisitos de tamaño.</translation>
 <translation id="867224526087042813">Firma</translation>
 <translation id="8672264262457010862">Empresas e industrias</translation>

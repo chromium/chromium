@@ -926,7 +926,6 @@ To inače blokiraju podešavanja privatnosti. To omogućava da sadržaj sa koji
 <translation id="3249151924975132674">Studentski krediti i stipendiranje</translation>
 <translation id="3249845759089040423">Hipi</translation>
 <translation id="3250640885957938546">Oglašavanje i marketing</translation>
-<translation id="3252266817569339921">francuski</translation>
 <translation id="3254301855501243548">18×22 in</translation>
 <translation id="3256863843508922226">Penzionisanje</translation>
 <translation id="3259648571731540213"><ph name="CREATE_GOOGLE_CALENDAR_EVENT_FOCUSED_FRIENDLY_MATCH_TEXT" />, pritisnite Tab, pa Enter da biste brzo napravili nov događaj u Google kalendaru</translation>
@@ -1591,7 +1590,6 @@ To inače blokiraju podešavanja privatnosti. To omogućava da sadržaj sa koji
 <translation id="484988093836683706">Koristi otključavanje uređaja</translation>
 <translation id="4850886885716139402">Prikaz</translation>
 <translation id="4852429274334674023">Operativni sistemi</translation>
-<translation id="485316830061041779">nemački</translation>
 <translation id="4853901935952445031">Ovaj sajt neće moći da koristi API U2F posle februara 2022. Ako ste vlasnik ovog sajta, treba da ga promenite tako da koristi API za potvrdu identiteta na vebu.</translation>
 <translation id="4854362297993841467">Ovaj način isporuke nije dostupan. Isprobajte neki drugi način.</translation>
 <translation id="4854853140771946034">Brzo napravite novu belešku u Google Keep-u</translation>
@@ -1830,7 +1828,6 @@ To inače blokiraju podešavanja privatnosti. To omogućava da sadržaj sa koji
 <translation id="5423269318075950257">Pratite cenu</translation>
 <translation id="5425241977284572032">{NUM_COOKIES,plural, =0{Nema blokiranih sajtova}=1{1 sajt je blokiran}one{# sajt je blokiran}few{# sajta su blokirana}other{# sajtova je blokirano}}</translation>
 <translation id="5426179911063097041"><ph name="SITE" /> želi da vam šalje obaveštenja</translation>
-<translation id="5428105026674456456">španski</translation>
 <translation id="5430298929874300616">Uklonite obeleživač</translation>
 <translation id="5443468954631487277">Obrnutim redosledom sa odštampanom stranom nagore</translation>
 <translation id="5447765697759493033">Ovaj sajt se neće prevoditi</translation>
@@ -1839,7 +1836,6 @@ To inače blokiraju podešavanja privatnosti. To omogućava da sadržaj sa koji
 <translation id="5457113250005438886">Nevažeće</translation>
 <translation id="5458150163479425638">{CONTACT,plural, =0{<ph name="CONTACT_PREVIEW" />}=1{<ph name="CONTACT_PREVIEW" /> i još <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" />}one{<ph name="CONTACT_PREVIEW" /> i još <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" />}few{<ph name="CONTACT_PREVIEW" /> i još <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" />}other{<ph name="CONTACT_PREVIEW" /> i još <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" />}}</translation>
 <translation id="5463625433003343978">Traže se uređaji…</translation>
-<translation id="5469868506864199649">italijanski</translation>
 <translation id="5470230812924696184">Građevinarstvo</translation>
 <translation id="5470861586879999274">&amp;Ponovi izmenu</translation>
 <translation id="5471337644440862957">Komedije</translation>
@@ -1852,7 +1848,6 @@ To inače blokiraju podešavanja privatnosti. To omogućava da sadržaj sa koji
     <ph name="LINE_BREAK" />
     Pokušajte da se obratite administratoru sistema.</translation>
 <translation id="549333378215107354">Veličina 3</translation>
-<translation id="5503356662318814623">Pošalji poruku</translation>
 <translation id="5509762909502811065">B0</translation>
 <translation id="5509780412636533143">Obeleživači kojim se upravlja</translation>
 <translation id="5510481203689988000">Ovo podešavanje se kontroliše u podešavanjima kolačića.</translation>
@@ -3011,7 +3006,6 @@ Dodatni detalji:
 <translation id="8296205692406981542">Regionalni parkovi i bašte</translation>
 <translation id="8297545700510100061">Kolačići i drugi podaci o sajtovima se koriste da biste bili zapamćeni, na primer, radi prijavljivanja ili personalizovanja oglasa. Da biste upravljali kolačićima za sve sajtove, pogledajte <ph name="SETTINGS" />.</translation>
 <translation id="8298115750975731693">WiFi mreža koju koristite (<ph name="WIFI_NAME" />) će možda zahtevati da posetite <ph name="BEGIN_BOLD" /><ph name="LOGIN_URL" /><ph name="END_BOLD" />.</translation>
-<translation id="8299269255470343364">japanski</translation>
 <translation id="8303854710873047864">Prikazuje se odeljak „<ph name="SECTION" />“</translation>
 <translation id="830498451218851433">Presavijanje napola</translation>
 <translation id="8307888238279532626">Instalirane aplikacije i koliko često se koriste</translation>
@@ -3133,7 +3127,6 @@ Dodatni detalji:
 <translation id="865032292777205197">senzori za pokret</translation>
 <translation id="8654126188050905496">55×91 mm</translation>
 <translation id="8663226718884576429">Rezime porudžbine, <ph name="TOTAL_LABEL" />, još detalja</translation>
-<translation id="8666678546361132282">engleski</translation>
 <translation id="8671519637524426245">Vrednost <ph name="SECURE_DNS_SALT" /> ne ispunjava uslove za veličinu.</translation>
 <translation id="867224526087042813">Potpis</translation>
 <translation id="8672264262457010862">Poslovanje i industrija</translation>

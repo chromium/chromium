@@ -630,6 +630,7 @@ Jika tidak, ini akan disekat oleh tetapan privasi anda. Kebenaran ini akan membo
 <translation id="2469153820345007638">Susunan 1-ke-N</translation>
 <translation id="2470767536994572628">Apabila anda mengedit anotasi, dokumen ini akan kembali kepada paparan satu halaman dan putaran asalnya</translation>
 <translation id="2479410451996844060">URL carian tidak sah.</translation>
+<translation id="2480300195898055381">Dalam Google Account anda, <ph name="USER_EMAIL" /></translation>
 <translation id="2482878487686419369">Pemberitahuan</translation>
 <translation id="248348093745724435">Dasar mesin</translation>
 <translation id="2491120439723279231">Sijil pelayan mengandungi ralat.</translation>
@@ -843,6 +844,7 @@ Jika tidak, ini akan disekat oleh tetapan privasi anda. Kebenaran ini akan membo
 <translation id="3029752078111257850">Berita dunia</translation>
 <translation id="3037177537145227281">Menjejaki harga</translation>
 <translation id="3037605927509011580">Oh, Tidak!</translation>
+<translation id="3041450980936463495">Anda boleh menggunakan alamat yang disimpan merentas produk Google. Alamat ini disimpan dalam Google Account anda (<ph name="ACCOUNT" />).</translation>
 <translation id="3041612393474885105">Maklumat Sijil</translation>
 <translation id="305162504811187366">Sejarah Desktop Jauh Chrome, termasuk cap masa, hos dan ID sesi pelanggan</translation>
 <translation id="3052964831964880138"><ph name="PRICE_DROP" /> penurunan harga pada <ph name="PRODUCT_NAME" /></translation>
@@ -924,7 +926,6 @@ Jika tidak, ini akan disekat oleh tetapan privasi anda. Kebenaran ini akan membo
 <translation id="3249151924975132674">Pinjaman pelajar &amp; pembiayaan kolej</translation>
 <translation id="3249845759089040423">Groovy</translation>
 <translation id="3250640885957938546">Pengiklanan &amp; pemasaran</translation>
-<translation id="3252266817569339921">Bahasa Perancis</translation>
 <translation id="3254301855501243548">18 x 22 in</translation>
 <translation id="3256863843508922226">Persaraan &amp; pencen</translation>
 <translation id="3259648571731540213"><ph name="CREATE_GOOGLE_CALENDAR_EVENT_FOCUSED_FRIENDLY_MATCH_TEXT" />, tekan kekunci Tab kemudian Enter untuk membuat acara baharu dalam Google Calendar dengan pantas</translation>
@@ -1590,7 +1591,6 @@ Jika tidak, ini akan disekat oleh tetapan privasi anda. Kebenaran ini akan membo
 <translation id="484988093836683706">Gunakan buka kunci peranti</translation>
 <translation id="4850886885716139402">Lihat</translation>
 <translation id="4852429274334674023">Sistem pengendalian</translation>
-<translation id="485316830061041779">Bahasa Jerman</translation>
 <translation id="4853901935952445031">Laman ini tidak akan dapat menggunakan API U2F selepas bulan Februari 2022. Jika anda pemilik laman ini, anda harus mengubah laman anda untuk menggunakan API Pengesahan Web.</translation>
 <translation id="4854362297993841467">Kaedah penghantaran ini tidak tersedia. Cuba kaedah lain.</translation>
 <translation id="4854853140771946034">Buat nota baharu dalam Google Keep dengan pantas</translation>
@@ -1829,7 +1829,6 @@ Jika tidak, ini akan disekat oleh tetapan privasi anda. Kebenaran ini akan membo
 <translation id="5423269318075950257">Jejaki Harga</translation>
 <translation id="5425241977284572032">{NUM_COOKIES,plural, =0{Tiada laman disekat}=1{1 laman disekat}other{# laman disekat}}</translation>
 <translation id="5426179911063097041"><ph name="SITE" /> mahu menghantar pemberitahuan kepada anda</translation>
-<translation id="5428105026674456456">Bahasa Sepanyol</translation>
 <translation id="5430298929874300616">Alih keluar penanda halaman</translation>
 <translation id="5443468954631487277">Susunan terbalik menghadap ke atas</translation>
 <translation id="5447765697759493033">Tapak ini tidak akan diterjemah</translation>
@@ -1838,7 +1837,6 @@ Jika tidak, ini akan disekat oleh tetapan privasi anda. Kebenaran ini akan membo
 <translation id="5457113250005438886">Tidak sah</translation>
 <translation id="5458150163479425638">{CONTACT,plural, =0{<ph name="CONTACT_PREVIEW" />}=1{<ph name="CONTACT_PREVIEW" /> dan <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> lagi}other{<ph name="CONTACT_PREVIEW" /> dan <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> lagi}}</translation>
 <translation id="5463625433003343978">Mencari peranti...</translation>
-<translation id="5469868506864199649">Bahasa Itali</translation>
 <translation id="5470230812924696184">Kejuruteraan awam</translation>
 <translation id="5470861586879999274">&amp;Buat semula edit</translation>
 <translation id="5471337644440862957">Filem komedi</translation>
@@ -1851,7 +1849,6 @@ Jika tidak, ini akan disekat oleh tetapan privasi anda. Kebenaran ini akan membo
     <ph name="LINE_BREAK" />
     Cuba hubungi pentadbir sistem anda.</translation>
 <translation id="549333378215107354">Saiz 3</translation>
-<translation id="5503356662318814623">Hantar mesej</translation>
 <translation id="5509762909502811065">B0</translation>
 <translation id="5509780412636533143">Penanda halaman terurus</translation>
 <translation id="5510481203689988000">Tetapan ini dikawal dalam tetapan Kuki.</translation>
@@ -1937,6 +1934,7 @@ Jika tidak, ini akan disekat oleh tetapan privasi anda. Kebenaran ini akan membo
 <translation id="5695542892312572833">Gunakan Windows Hello untuk mengesahkan dan melengkapkan pembelian anda?</translation>
 <translation id="5701381305118179107">Tengah</translation>
 <translation id="570530837424789914">Urus...</translation>
+<translation id="5706906618852913030">Simpan dalam Account?</translation>
 <translation id="5707154300732650394">Sambung semula perjalanan anda</translation>
 <translation id="57094364128775171">Cadangkan kata laluan yang kukuh…</translation>
 <translation id="571403275720188526">(arm64)</translation>
@@ -3010,7 +3008,6 @@ Butiran tambahan:
 <translation id="8296205692406981542">Taman &amp; kebun serantau</translation>
 <translation id="8297545700510100061">Kuki dan data laman lain digunakan untuk mengingat anda, misalnya untuk log anda masuk atau memperibadikan iklan. Untuk mengurus kuki bagi semua laman, lihat <ph name="SETTINGS" />.</translation>
 <translation id="8298115750975731693">Wi-Fi yang anda gunakan (<ph name="WIFI_NAME" />) mungkin memerlukan anda untuk melawat <ph name="BEGIN_BOLD" /><ph name="LOGIN_URL" /><ph name="END_BOLD" />.</translation>
-<translation id="8299269255470343364">Bahasa Jepun</translation>
 <translation id="8303854710873047864">Bahagian "<ph name="SECTION" />" ditunjukkan</translation>
 <translation id="830498451218851433">Lipat dua</translation>
 <translation id="8307888238279532626">Apl yang dipasang dan kekerapan apl itu digunakan</translation>
@@ -3132,7 +3129,6 @@ Butiran tambahan:
 <translation id="865032292777205197">penderia gerakan</translation>
 <translation id="8654126188050905496">55 x 91 mm</translation>
 <translation id="8663226718884576429">Ringkasan Pesanan, <ph name="TOTAL_LABEL" />, Butiran Lanjut</translation>
-<translation id="8666678546361132282">Bahasa Inggeris</translation>
 <translation id="8671519637524426245">Nilai <ph name="SECURE_DNS_SALT" /> tidak memenuhi keperluan saiz.</translation>
 <translation id="867224526087042813">Tandatangan</translation>
 <translation id="8672264262457010862">Perniagaan &amp; industri</translation>

@@ -498,6 +498,7 @@ To će u suprotnom biti onemogućeno na temelju vaših postavki privatnosti. To 
 <translation id="2119867082804433120">Bušenje pri dnu desno</translation>
 <translation id="2122719317867821810">Pravilo funkcionira kako je predviđeno, ali na drugoj lokaciji postavljena je sukobljena vrijednost koju ovo pravilo nadjačava.</translation>
 <translation id="2126374524350484896">Alat za izradu PDF-a:</translation>
+<translation id="2128262927290305126">Na vašem Google računu, <ph name="ACCOUNT" /></translation>
 <translation id="2130448033692577677">Predlošci koje ste naveli ne mogu se primijeniti jer nije postavljeno pravilo DnsOverHttpsMode.</translation>
 <translation id="2130699163006053678">A3x7</translation>
 <translation id="2135799067377889518">Muška odjeća</translation>
@@ -543,6 +544,7 @@ To će u suprotnom biti onemogućeno na temelju vaših postavki privatnosti. To 
 <translation id="2219735899272417925">Uređaj je potrebno vratiti na zadano</translation>
 <translation id="2224337661447660594">Nema interneta</translation>
 <translation id="2225927550500503913">Virtualna kartica je uključena</translation>
+<translation id="2226636330183131181"><ph name="BEGIN_LINK" />Prijava<ph name="END_LINK" /> na Wi-Fi mrežu</translation>
 <translation id="2239100178324503013">Pošalji sad</translation>
 <translation id="2241693394036365668">Datoteka je preuzeta</translation>
 <translation id="2246264294482514010">10 x 12 in</translation>
@@ -922,7 +924,6 @@ To će u suprotnom biti onemogućeno na temelju vaših postavki privatnosti. To 
 <translation id="3249151924975132674">Studentski krediti i financiranje obrazovanja</translation>
 <translation id="3249845759089040423">Živopisno</translation>
 <translation id="3250640885957938546">Oglašavanje i marketing</translation>
-<translation id="3252266817569339921">Francuski</translation>
 <translation id="3254301855501243548">18 x 22 in</translation>
 <translation id="3256863843508922226">Umirovljenje i mirovinski fondovi</translation>
 <translation id="3259648571731540213"><ph name="CREATE_GOOGLE_CALENDAR_EVENT_FOCUSED_FRIENDLY_MATCH_TEXT" />, pritisnite Tab, a zatim Enter da biste brzo izradili novi događaj u Google kalendaru</translation>
@@ -1081,6 +1082,7 @@ To će u suprotnom biti onemogućeno na temelju vaših postavki privatnosti. To 
 <translation id="3631244953324577188">Biometrijski podaci</translation>
 <translation id="3632503704576938756">Nastavljeno je dijeljenje zaslona</translation>
 <translation id="3632892046558972264">Pauzirano je dijeljenje zaslona</translation>
+<translation id="3633035844150606508">Spremite adresu na svoj Google račun, <ph name="ACCOUNT" /></translation>
 <translation id="3633738897356909127">Gumb Ažuriranje Chromea, pritisnite Enter da biste ažurirali Chrome u postavkama Chromea</translation>
 <translation id="3634530185120165534">Ladica 5</translation>
 <translation id="3634567936866541746">Upravo ste unijeli zaporku na obmanjujućoj web-lokaciji. Da bi zaštitio vaše račune, Chrome preporučuje da provjerite spremljene zaporke.</translation>
@@ -1585,7 +1587,6 @@ To će u suprotnom biti onemogućeno na temelju vaših postavki privatnosti. To 
 <translation id="484988093836683706">Upotrijebite otključavanje uređaja</translation>
 <translation id="4850886885716139402">Prikaz</translation>
 <translation id="4852429274334674023">Operativni sustavi</translation>
-<translation id="485316830061041779">Njemački</translation>
 <translation id="4853901935952445031">Ova web-lokacija neće moći koristiti U2F API nakon veljače 2022. Ako ste vlasnik ove web-lokacije, trebali biste je izmijeniti tako da koristi Web Authentication API.</translation>
 <translation id="4854362297993841467">Taj način dostave nije dostupan. Pokušajte s nekim drugim načinom.</translation>
 <translation id="4854853140771946034">Brzo izradite novu bilješku u Google Keepu</translation>
@@ -1824,7 +1825,6 @@ To će u suprotnom biti onemogućeno na temelju vaših postavki privatnosti. To 
 <translation id="5423269318075950257">Praćenje cijene</translation>
 <translation id="5425241977284572032">{NUM_COOKIES,plural, =0{Nije blokirana nijedna web-lokacija}=1{Blokirana je jedna web-lokacija}one{Blokirana je # web-lokacija}few{Blokirane su # web-lokacije}other{Blokirano je # web-lokacija}}</translation>
 <translation id="5426179911063097041"><ph name="SITE" /> želi vam slati obavijesti</translation>
-<translation id="5428105026674456456">Španjolski</translation>
 <translation id="5430298929874300616">Ukloni oznaku</translation>
 <translation id="5443468954631487277">Suprotnim redoslijedom prema gore</translation>
 <translation id="5447765697759493033">Ova web-stranica neće biti prevedena</translation>
@@ -1833,7 +1833,6 @@ To će u suprotnom biti onemogućeno na temelju vaših postavki privatnosti. To 
 <translation id="5457113250005438886">Nije važeće</translation>
 <translation id="5458150163479425638">{CONTACT,plural, =0{<ph name="CONTACT_PREVIEW" />}=1{<ph name="CONTACT_PREVIEW" /> i još <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" />}one{<ph name="CONTACT_PREVIEW" /> i još <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" />}few{<ph name="CONTACT_PREVIEW" /> i još <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" />}other{<ph name="CONTACT_PREVIEW" /> i još <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" />}}</translation>
 <translation id="5463625433003343978">Traženje uređaja...</translation>
-<translation id="5469868506864199649">Talijanski</translation>
 <translation id="5470230812924696184">Građevinarstvo</translation>
 <translation id="5470861586879999274">&amp;Ponovi uređivanje</translation>
 <translation id="5471337644440862957">Komedije</translation>
@@ -1846,7 +1845,6 @@ To će u suprotnom biti onemogućeno na temelju vaših postavki privatnosti. To 
     <ph name="LINE_BREAK" />
     Pokušajte se obratiti administratoru sustava.</translation>
 <translation id="549333378215107354">Veličina 3</translation>
-<translation id="5503356662318814623">Pošalji poruku</translation>
 <translation id="5509762909502811065">B0</translation>
 <translation id="5509780412636533143">Upravljane oznake</translation>
 <translation id="5510481203689988000">Tom se postavkom upravlja u postavkama kolačića.</translation>
@@ -1984,6 +1982,7 @@ To će u suprotnom biti onemogućeno na temelju vaših postavki privatnosti. To 
 <translation id="5830698870816298009">upotreba i pomicanje fotoaparata</translation>
 <translation id="583281660410589416">Nepoznato</translation>
 <translation id="5838278095973806738">Na ovu web-lokaciju nemojte unositi osjetljive podatke (na primjer, zaporke ili kreditne kartice) jer su je možda ukrali napadači.</translation>
+<translation id="5841338463993781099">Spremiti na račun?</translation>
 <translation id="5851548754964597211">Popis kartica</translation>
 <translation id="5852909432155870672">RA4</translation>
 <translation id="5860033963881614850">Isključeno</translation>
@@ -3004,7 +3003,6 @@ Dodatne pojedinosti:
 <translation id="8296205692406981542">Regionalni parkovi i vrtovi</translation>
 <translation id="8297545700510100061">Kolačići i drugi podaci web-lokacije koriste se kako bi vas web-lokacija zapamtila, na primjer kako bi vas prijavila na račun ili vam prilagodila oglase. Da biste upravljali kolačićima za sve web-lokacije, idite na <ph name="SETTINGS" />.</translation>
 <translation id="8298115750975731693">Za Wi-Fi koji upotrebljavate (<ph name="WIFI_NAME" />) možda ćete morati posjetiti stranicu <ph name="BEGIN_BOLD" /><ph name="LOGIN_URL" /><ph name="END_BOLD" />.</translation>
-<translation id="8299269255470343364">Japanski</translation>
 <translation id="8303854710873047864">Prikazuje se odjeljak "<ph name="SECTION" />"</translation>
 <translation id="830498451218851433">Presavijanje napola</translation>
 <translation id="8307888238279532626">koje su aplikacije instalirane i kako se često upotrebljavaju</translation>
@@ -3126,7 +3124,6 @@ Dodatne pojedinosti:
 <translation id="865032292777205197">senzori kretanja</translation>
 <translation id="8654126188050905496">55 x 91 mm</translation>
 <translation id="8663226718884576429">Sažetak narudžbe, <ph name="TOTAL_LABEL" />, više pojedinosti</translation>
-<translation id="8666678546361132282">Engleski</translation>
 <translation id="8671519637524426245">Vrijednost <ph name="SECURE_DNS_SALT" /> ne zadovoljava zahtjeve za veličinu.</translation>
 <translation id="867224526087042813">Potpis</translation>
 <translation id="8672264262457010862">Poslovanje i industrija</translation>

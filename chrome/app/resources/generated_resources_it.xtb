@@ -72,6 +72,7 @@
 <translation id="1061130374843955397">Ti diamo il benvenuto nel tuo <ph name="DEVICE_TYPE" /></translation>
 <translation id="1061373870045429865">Crea codice QR per questo link</translation>
 <translation id="1061904396131502319">È quasi ora di fare una pausa</translation>
+<translation id="1062407476771304334">Sostituisci</translation>
 <translation id="1062628064301375934">Aiutaci a rendere il Web più privato</translation>
 <translation id="1067048845568873861">Data creazione</translation>
 <translation id="1067661089446014701">Per maggiore sicurezza, puoi criptare le password sul dispositivo prima che vengano salvate nel tuo Account Google</translation>
@@ -560,6 +561,7 @@ A questo account potrebbero essere applicate le autorizzazioni già concesse all
 <translation id="1485015260175968628">Ora può:</translation>
 <translation id="1485141095922496924">Versione <ph name="PRODUCT_VERSION" /> (<ph name="PRODUCT_CHANNEL" />) <ph name="PRODUCT_MODIFIER" /> <ph name="PRODUCT_VERSION_BITS" /></translation>
 <translation id="1486096554574027028">Cerca password</translation>
+<translation id="1486486872607808064">Scansiona questo codice QR con una fotocamera sul dispositivo in cui vuoi creare una passkey per <ph name="APP_NAME" /></translation>
 <translation id="1487335504823219454">Con: impostazioni personalizzate</translation>
 <translation id="1493892686965953381">In attesa di <ph name="LOAD_STATE_PARAMETER" />...</translation>
 <translation id="1494349716233667318">I siti possono chiedere di utilizzare i caratteri installati sul tuo dispositivo</translation>
@@ -770,6 +772,7 @@ A questo account potrebbero essere applicate le autorizzazioni già concesse all
 <translation id="164936512206786300">Disaccoppiare dispositivo Bluetooth</translation>
 <translation id="1651008383952180276">Devi inserire la stessa passphrase due volte</translation>
 <translation id="1652326691684645429">Attiva Condivisione nelle vicinanze</translation>
+<translation id="1654580009054503925">Non autorizzate a mostrare richieste</translation>
 <translation id="1656528038316521561">Opacità sfondo</translation>
 <translation id="1657406563541664238">Aiutaci a migliorare <ph name="PRODUCT_NAME" /> inviando automaticamente a Google le statistiche sull'utilizzo e segnalazioni sugli arresti anomali</translation>
 <translation id="1657937299377480641">Per eseguire di nuovo l'accesso per accedere a risorse didattiche, chiedi l'autorizzazione a uno dei tuoi genitori</translation>
@@ -1150,6 +1153,7 @@ A questo account potrebbero essere applicate le autorizzazioni già concesse all
 <translation id="1987317783729300807">Account</translation>
 <translation id="1987574314042117472">Seleziona e installa le app più apprezzate</translation>
 <translation id="1988259784461813694">Requisito</translation>
+<translation id="1988733631391393183">Mostra comandi braille nei menu ChromeVox</translation>
 <translation id="1989112275319619282">Esplora</translation>
 <translation id="1989903373608997757">Usa sempre</translation>
 <translation id="1990046457226896323">File di contenuti vocali scaricati</translation>
@@ -2540,7 +2544,6 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="3193695589337931419">System Signals Utilities</translation>
 <translation id="3194786596445804250">Mostra dettagli sul blocco dei cookie di terze parti</translation>
 <translation id="3197453258332670132">Se fai clic con il pulsante destro del mouse o se applichi una pressione prolungata, vengono mostrate informazioni correlate al testo selezionato</translation>
-<translation id="3198804549162832936">Apri link in nuova <ph name="APP" /></translation>
 <translation id="3199127022143353223">Server</translation>
 <translation id="3200061262156232574">Nel tuo carrello degli acquisti</translation>
 <translation id="3201237270673604992">Dalla Z alla A</translation>
@@ -2669,6 +2672,7 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="3317678681329786349">Videocamera e microfono bloccati</translation>
 <translation id="3319306431415395200">Traduci il testo nell'immagine con <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
 <translation id="3320630259304269485">Impostazioni di Navigazione sicura (protezione da siti pericolosi) e altre impostazioni di sicurezza</translation>
+<translation id="3321460131042519426">Attiva ritorno a capo automatico</translation>
 <translation id="3323521181261657960">Premio! Hai più tempo di utilizzo</translation>
 <translation id="3323577066981719144">Le modifiche che apporti qui vengono applicate soltanto al browser Chrome. Per apportare modifiche alle impostazioni del browser Lacros, aprilo e vai alle impostazioni.</translation>
 <translation id="3325804108816646710">Ricerca di profili disponibili in corso…</translation>
@@ -3407,6 +3411,7 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="3957079323242030166">I dati di backup non incidono sulla tua quota di spazio di archiviazione di Drive.</translation>
 <translation id="3957844511978444971">Tocca "Accetta" per confermare la selezione delle impostazioni di questi servizi di Google.</translation>
 <translation id="3958088479270651626">Importa preferiti e impostazioni</translation>
+<translation id="3958110062351175311">Possono mostrare richieste nella barra degli strumenti</translation>
 <translation id="3960566196862329469">ONC</translation>
 <translation id="3961005895395968120">Altre azioni per <ph name="IBAN_DESCRIPTION" /></translation>
 <translation id="3962119236270174787">Sistemi di protezione standard da estensioni, siti web e download che sono noti per essere pericolosi</translation>
@@ -3666,6 +3671,7 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="4205157409548006256">Si è verificato un errore durante la configurazione di Linux.</translation>
 <translation id="4206144641569145248">Alieno</translation>
 <translation id="4206323443866416204">Report di feedback</translation>
+<translation id="4206585797409671301">Autorizzate a mostrare richieste</translation>
 <translation id="4207932031282227921">Autorizzazione richiesta, premi F6 per rispondere</translation>
 <translation id="4208390505124702064">Cerca su <ph name="SITE_NAME" />:</translation>
 <translation id="4209092469652827314">Grande</translation>
@@ -4335,6 +4341,7 @@ Premi Ctrl + Alt + Diminuisci luminosità per diminuire lo zoom.</translation>
 <translation id="481574578487123132">Dispositivi collegati</translation>
 <translation id="4816097470512964351"><ph name="DEVICE" />, dettagli</translation>
 <translation id="4816336393325437908">{COUNT,plural, =1{1 preferito eliminato}other{{COUNT} preferiti eliminati}}</translation>
+<translation id="4816900689218414104">Crea una passkey su un telefono o tablet</translation>
 <translation id="4819323978093861656">{0,plural, =0{Chiusura in corso ora}=1{Chiusura tra 1 secondo}other{Chiusura tra # secondi}}</translation>
 <translation id="4819607494758673676">Notifiche dell'Assistente Google</translation>
 <translation id="4820236583224459650">Imposta come richiesta attiva</translation>
@@ -5627,7 +5634,7 @@ A questo account potrebbero essere applicate le autorizzazioni già concesse a s
 <translation id="6003143259071779217">Rimuovi rete mobile eSIM</translation>
 <translation id="6003479444341796444">Barra del titolo ora visibile</translation>
 <translation id="6003582434972667631">Il tema è impostato dalla tua organizzazione</translation>
-<translation id="6006392003290068688">Autorizzazioni per <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> rimosse</translation>
+<translation id="6006392003290068688">Autorizzazioni per <ph name="PERMISSION_1" /> e <ph name="PERMISSION_2" /> rimosse</translation>
 <translation id="6006484371116297560">Classico</translation>
 <translation id="6007240208646052708">La ricerca vocale nella tua lingua non è disponibile.</translation>
 <translation id="6010651352520077187">Quando l'opzione è attiva, Google Traduttore propone di tradurre i siti nella tua lingua preferita. Può anche tradurre automaticamente i siti.</translation>
@@ -6240,6 +6247,7 @@ A questo account potrebbero essere applicate le autorizzazioni già concesse a s
 <translation id="6562117348069327379">Archivia i log di sistema nella directory Download.</translation>
 <translation id="656293578423618167">Il percorso o il nome del file è troppo lungo. Salva il file con un nome più corto o in un'altra posizione.</translation>
 <translation id="6568283005472142698">Ricerca di schede</translation>
+<translation id="6570622975915850879">Usa un dispositivo diverso</translation>
 <translation id="65711204837946324">Richiede l'autorizzazione al download</translation>
 <translation id="6571533309669248172">Formattazione del testo</translation>
 <translation id="6571772921213691236">Modifica i dati di accesso</translation>
@@ -6532,6 +6540,7 @@ Hai altre # password compromesse. Gestore delle password di Google consiglia di 
 <translation id="6823174134746916417">Tocco per fare clic sul touchpad</translation>
 <translation id="6824564591481349393">Copia indirizzo &amp;email</translation>
 <translation id="6824584962142919697">&amp;Ispeziona elementi</translation>
+<translation id="6824725898506587159">Gestisci lingue</translation>
 <translation id="6825184156888454064">Ordina per nome</translation>
 <translation id="6826872289184051766">Verifica tramite USB</translation>
 <translation id="6827121912381363404">Consenti a tutte le estensioni di leggere e modificare <ph name="PERMITTED_SITE" /></translation>
@@ -6656,7 +6665,6 @@ Hai altre # password compromesse. Gestore delle password di Google consiglia di 
 <translation id="6925127338315966709">Stai per aggiungere un profilo gestito a questo browser. L'amministratore ha il controllo del profilo e può accedere ai relativi dati. I preferiti, la cronologia, le password e altre impostazioni possono essere sincronizzati con il tuo account e gestiti dall'amministratore.</translation>
 <translation id="6929126689972602640">La funzionalità Controllo genitori non è supportata per gli account della scuola. Per aggiungere un account della scuola e accedere a Google Classroom e ad altri siti web per svolgere i compiti a casa, accedi prima con l'account personale del bambino. Puoi aggiungere l'account della scuola in un secondo momento nelle impostazioni.</translation>
 <translation id="6929760895658557216">Ok Google</translation>
-<translation id="6930036377490597025">Token di sicurezza esterno o sensore integrato</translation>
 <translation id="6930161297841867798">{NUM_EXTENSIONS,plural, =1{Un'estensione è stata rifiutata}other{# estensioni sono state rifiutate}}</translation>
 <translation id="6931690462168617033">Intensità clic</translation>
 <translation id="6935286146439255109">Vassoio carta mancante</translation>
@@ -6803,6 +6811,7 @@ Hai altre # password compromesse. Gestore delle password di Google consiglia di 
 <translation id="7044606776288350625">Sincronizza dati</translation>
 <translation id="7047059339731138197">Scegli uno sfondo</translation>
 <translation id="7049293980323620022">Conservare il file?</translation>
+<translation id="70496770794393383">Tabella delle password salvate</translation>
 <translation id="7050037487872780845">Configurazione hotspot non valida</translation>
 <translation id="7051551856857948729">Nascondi valore IBAN</translation>
 <translation id="7052237160939977163">Invia dati di rilevamento del rendimento</translation>
@@ -8981,6 +8990,7 @@ A questo account potrebbero essere applicate le autorizzazioni già concesse a s
 <translation id="9008828754342192581">In precedenza hai scelto di consentire tutte le estensioni su <ph name="ORIGIN" /></translation>
 <translation id="9009369504041480176">Caricamento in corso (<ph name="PROGRESS_PERCENT" />%)...</translation>
 <translation id="9009708085379296446">Forse intendevi modificare la pagina?</translation>
+<translation id="9010845741772269259">Aggiungi metodi di pagamento</translation>
 <translation id="9011163749350026987">Mostra sempre l'icona</translation>
 <translation id="9011262023858991985">Trasmissione di questa scheda in corso…</translation>
 <translation id="9011393886518328654">Note di rilascio</translation>

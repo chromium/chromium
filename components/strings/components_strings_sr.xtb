@@ -926,7 +926,6 @@
 <translation id="3249151924975132674">Студентски кредити и стипендирање</translation>
 <translation id="3249845759089040423">Хипи</translation>
 <translation id="3250640885957938546">Оглашавање и маркетинг</translation>
-<translation id="3252266817569339921">француски</translation>
 <translation id="3254301855501243548">18×22 in</translation>
 <translation id="3256863843508922226">Пензионисање</translation>
 <translation id="3259648571731540213"><ph name="CREATE_GOOGLE_CALENDAR_EVENT_FOCUSED_FRIENDLY_MATCH_TEXT" />, притисните Tab, па Enter да бисте брзо направили нов догађај у Google календару</translation>
@@ -1591,7 +1590,6 @@
 <translation id="484988093836683706">Користи откључавање уређаја</translation>
 <translation id="4850886885716139402">Приказ</translation>
 <translation id="4852429274334674023">Оперативни системи</translation>
-<translation id="485316830061041779">немачки</translation>
 <translation id="4853901935952445031">Овај сајт неће моћи да користи API U2F после фебруара 2022. Ако сте власник овог сајта, треба да га промените тако да користи API за потврду идентитета на вебу.</translation>
 <translation id="4854362297993841467">Овај начин испоруке није доступан. Испробајте неки други начин.</translation>
 <translation id="4854853140771946034">Брзо направите нову белешку у Google Keep-у</translation>
@@ -1830,7 +1828,6 @@
 <translation id="5423269318075950257">Пратите цену</translation>
 <translation id="5425241977284572032">{NUM_COOKIES,plural, =0{Нема блокираних сајтова}=1{1 сајт је блокиран}one{# сајт је блокиран}few{# сајта су блокирана}other{# сајтова је блокирано}}</translation>
 <translation id="5426179911063097041"><ph name="SITE" /> жели да вам шаље обавештења</translation>
-<translation id="5428105026674456456">шпански</translation>
 <translation id="5430298929874300616">Уклоните обележивач</translation>
 <translation id="5443468954631487277">Обрнутим редоследом са одштампаном страном нагоре</translation>
 <translation id="5447765697759493033">Овај сајт се неће преводити</translation>
@@ -1839,7 +1836,6 @@
 <translation id="5457113250005438886">Неважеће</translation>
 <translation id="5458150163479425638">{CONTACT,plural, =0{<ph name="CONTACT_PREVIEW" />}=1{<ph name="CONTACT_PREVIEW" /> и још <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" />}one{<ph name="CONTACT_PREVIEW" /> и још <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" />}few{<ph name="CONTACT_PREVIEW" /> и још <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" />}other{<ph name="CONTACT_PREVIEW" /> и још <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" />}}</translation>
 <translation id="5463625433003343978">Траже се уређаји…</translation>
-<translation id="5469868506864199649">италијански</translation>
 <translation id="5470230812924696184">Грађевинарство</translation>
 <translation id="5470861586879999274">&amp;Понови измену</translation>
 <translation id="5471337644440862957">Комедије</translation>
@@ -1852,7 +1848,6 @@
     <ph name="LINE_BREAK" />
     Покушајте да се обратите администратору система.</translation>
 <translation id="549333378215107354">Величина 3</translation>
-<translation id="5503356662318814623">Пошаљи поруку</translation>
 <translation id="5509762909502811065">B0</translation>
 <translation id="5509780412636533143">Обележивачи којим се управља</translation>
 <translation id="5510481203689988000">Ово подешавање се контролише у подешавањима колачића.</translation>
@@ -3011,7 +3006,6 @@
 <translation id="8296205692406981542">Регионални паркови и баште</translation>
 <translation id="8297545700510100061">Колачићи и други подаци о сајтовима се користе да бисте били запамћени, на пример, ради пријављивања или персонализовања огласа. Да бисте управљали колачићима за све сајтове, погледајте <ph name="SETTINGS" />.</translation>
 <translation id="8298115750975731693">WiFi мрежа коју користите (<ph name="WIFI_NAME" />) ће можда захтевати да посетите <ph name="BEGIN_BOLD" /><ph name="LOGIN_URL" /><ph name="END_BOLD" />.</translation>
-<translation id="8299269255470343364">јапански</translation>
 <translation id="8303854710873047864">Приказује се одељак „<ph name="SECTION" />“</translation>
 <translation id="830498451218851433">Пресавијање напола</translation>
 <translation id="8307888238279532626">Инсталиране апликације и колико често се користе</translation>
@@ -3133,7 +3127,6 @@
 <translation id="865032292777205197">сензори за покрет</translation>
 <translation id="8654126188050905496">55×91 mm</translation>
 <translation id="8663226718884576429">Резиме поруџбине, <ph name="TOTAL_LABEL" />, још детаља</translation>
-<translation id="8666678546361132282">енглески</translation>
 <translation id="8671519637524426245">Вредност <ph name="SECURE_DNS_SALT" /> не испуњава услове за величину.</translation>
 <translation id="867224526087042813">Потпис</translation>
 <translation id="8672264262457010862">Пословање и индустрија</translation>

@@ -809,6 +809,7 @@
 <translation id="2951588413176968965">Миний шуудангийн хайрцаг</translation>
 <translation id="2952820037279740115">Бүх нууцлалтай цонхыг хаах</translation>
 <translation id="2952904171810469095">A2x5</translation>
+<translation id="2954624054936281172">Хадгалсан төлбөрийн хэрэгслүүдийн хүснэгт</translation>
 <translation id="295526156371527179">Анхааруулга: Энэ удирдамж нь толь бичиг биш тул үүнийг удирдамжид тодорхойлсны дагуу толь бичиг шиг нэгтгэж чадсангүй.</translation>
 <translation id="2955913368246107853">Хайлтын цонхыг хаах</translation>
 <translation id="2958544468932521864">Крикет</translation>
@@ -922,7 +923,6 @@
 <translation id="3249151924975132674">Оюутны зээл, коллежийн санхүүжилт</translation>
 <translation id="3249845759089040423">Дэгжин</translation>
 <translation id="3250640885957938546">Сурталчилгаа, маркетинг</translation>
-<translation id="3252266817569339921">Франц</translation>
 <translation id="3254301855501243548">18 x 22 инч</translation>
 <translation id="3256863843508922226">Тэтгэвэр, тэтгэмж</translation>
 <translation id="3259648571731540213"><ph name="CREATE_GOOGLE_CALENDAR_EVENT_FOCUSED_FRIENDLY_MATCH_TEXT" />, Google Календарьт шинэ үйл явдал шуурхай үүсгэхийн тулд эхлээд Tab, дараа нь Enter дээр дарна уу</translation>
@@ -1586,7 +1586,6 @@
 <translation id="484988093836683706">Төхөөрөмжийн түгжээг тайлахыг ашиглах</translation>
 <translation id="4850886885716139402">Харах</translation>
 <translation id="4852429274334674023">Үйлдлийн систем</translation>
-<translation id="485316830061041779">Герман</translation>
 <translation id="4853901935952445031">Энэ сайт 2022 оны 2-р сараас хойш U2F API-г ашиглах боломжгүй болно. Хэрэв та энэ сайтыг өмчилдөг бол үүнийг Веб баталгаажуулалтын API-г ашигладаг болгон өөрчлөх хэрэгтэй.</translation>
 <translation id="4854362297993841467">Хүргэлтийн энэ арга боломжгүй тул өөр арга сонгоно уу.</translation>
 <translation id="4854853140771946034">Google Keep-д шинэ тэмдэглэл шуурхай үүсгээрэй</translation>
@@ -1825,7 +1824,6 @@
 <translation id="5423269318075950257">Үнэ хянах</translation>
 <translation id="5425241977284572032">{NUM_COOKIES,plural, =0{Ямар ч сайтыг блоклоогүй}=1{1 сайтыг блоклосон}other{# сайтыг блоклосон}}</translation>
 <translation id="5426179911063097041"><ph name="SITE" /> танд мэдэгдэл илгээх хүсэлтэй байна</translation>
-<translation id="5428105026674456456">Испани</translation>
 <translation id="5430298929874300616">Хавчуургыг устга</translation>
 <translation id="5443468954631487277">Нүүрээр нь дээш харуулж, хуудасны урвуу дарааллаар</translation>
 <translation id="5447765697759493033">Энэ сайтыг орчуулахгүй</translation>
@@ -1834,7 +1832,6 @@
 <translation id="5457113250005438886">Хүчингүй</translation>
 <translation id="5458150163479425638">{CONTACT,plural, =0{<ph name="CONTACT_PREVIEW" />}=1{<ph name="CONTACT_PREVIEW" /> болон бусад <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" />}other{<ph name="CONTACT_PREVIEW" /> болон бусад <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" />}}</translation>
 <translation id="5463625433003343978">Төхөөрөмжүүдийг хайж байна...</translation>
-<translation id="5469868506864199649">Итали хэл</translation>
 <translation id="5470230812924696184">Барилгын инженерчлэл</translation>
 <translation id="5470861586879999274">&amp; Засварлах үйлдлийг дахин хийх</translation>
 <translation id="5471337644440862957">Инээдмийн кинo</translation>
@@ -1847,7 +1844,6 @@
     <ph name="LINE_BREAK" />
     Та системийн админтайгаа холбогдоно уу.</translation>
 <translation id="549333378215107354">Хэмжээ 3</translation>
-<translation id="5503356662318814623">Мессеж илгээх</translation>
 <translation id="5509762909502811065">B0</translation>
 <translation id="5509780412636533143">Зохицуулагдсан хавчуурга</translation>
 <translation id="5510481203689988000">Күүкигийн тохиргоо хэсэгт энэ тохиргоог хянадаг.</translation>
@@ -2777,6 +2773,7 @@
 <translation id="7736959720849233795">Холбоосны хаягийг хуулах</translation>
 <translation id="7740996059027112821">Стандарт</translation>
 <translation id="77424286611022110">Энэ сайт төвөгтэй эсвэл хуурамч зар харуулдаг. <ph name="LEARN_MORE_LINK_TEXT" /></translation>
+<translation id="7744505202669469867">Хадгалсан хаягуудын хүснэгт</translation>
 <translation id="774634243536837715">Аюултай агуулгыг блоклосон.</translation>
 <translation id="7751971323486164747">Chrome-д фонтын хэмжээ болон үсгийн хэлбэрийг өөрчилнө үү</translation>
 <translation id="7752995774971033316">Ажиллаж дуусаагүй</translation>
@@ -3003,7 +3000,6 @@
 <translation id="8296205692406981542">Бүс нутгийн цэцэрлэг, цэцэрлэгт хүрээлэн</translation>
 <translation id="8297545700510100061">Күүки болон сайтын бусад өгөгдлийг таныг нэвтрүүлэх эсвэл зарыг хувийн болгох зэргээр таныг санахад ашигладаг. Бүх сайтын күүкийг удирдахын тулд <ph name="SETTINGS" />-г харна уу.</translation>
 <translation id="8298115750975731693">Таны ашиглаж буй Wi-Fi сүлжээ (<ph name="WIFI_NAME" />) таныг <ph name="BEGIN_BOLD" /><ph name="LOGIN_URL" /><ph name="END_BOLD" /> нэвтрэхийг шаардах магадлалтай.</translation>
-<translation id="8299269255470343364">Япон</translation>
 <translation id="8303854710873047864">"<ph name="SECTION" />" хэсгийг харуулсан</translation>
 <translation id="830498451218851433">Хагас нугалаа</translation>
 <translation id="8307888238279532626">Суулгасан аппууд болон тэдгээрийг ашигладаг давтамж</translation>
@@ -3018,6 +3014,7 @@
 <translation id="8347658365704983341">Алсын сургалт</translation>
 <translation id="8349305172487531364">Хайлтын жагсаалтын цонх</translation>
 <translation id="8351131234907093545">Тэмдэглэл үүсгэх</translation>
+<translation id="835203957414790336">Таны хэвлэх хуудасны контент болон хэвлэгчийн талаарх мэдээллийг задлан шинжлүүлэхээр Google Cloud эсвэл гуравдагч талууд руу илгээнэ. Жишээ нь үүнд эмзэг өгөгдөл байгаа эсэхийг скан хийж болзошгүй.</translation>
 <translation id="8355270400102541638">Дотоод гэмтлийн контекст:</translation>
 <translation id="8363502534493474904">Нислэгийн горимыг унтрааж байна</translation>
 <translation id="8364627913115013041">Тохиргоо хийгдээгүй.</translation>
@@ -3123,7 +3120,6 @@
 <translation id="865032292777205197">хөдөлгөөн мэдрэгч</translation>
 <translation id="8654126188050905496">55 x 91 мм</translation>
 <translation id="8663226718884576429">Захиалгын дүн, <ph name="TOTAL_LABEL" />, Дэлгэрэнгүй</translation>
-<translation id="8666678546361132282">Англи хэл</translation>
 <translation id="8671519637524426245"><ph name="SECURE_DNS_SALT" />-н утга нь шаардлагатай хэмжээнд нийцэхгүй байна.</translation>
 <translation id="867224526087042813">Гарын үсэг</translation>
 <translation id="8672264262457010862">Бизнес, аж үйлдвэр</translation>

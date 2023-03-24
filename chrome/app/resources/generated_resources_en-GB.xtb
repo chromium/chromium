@@ -72,6 +72,7 @@
 <translation id="1061130374843955397">Welcome to your <ph name="DEVICE_TYPE" /></translation>
 <translation id="1061373870045429865">Create QR code for this link</translation>
 <translation id="1061904396131502319">Almost time for a break</translation>
+<translation id="1062407476771304334">Replace</translation>
 <translation id="1062628064301375934">Help us build a more private web</translation>
 <translation id="1067048845568873861">Created</translation>
 <translation id="1067661089446014701">For added safety, you can encrypt passwords on your device before they're saved to your Google Account</translation>
@@ -1164,6 +1165,7 @@ Permissions that you've already given to apps may apply to this account. You can
 <translation id="1987317783729300807">Accounts</translation>
 <translation id="1987574314042117472">Select and install popular apps</translation>
 <translation id="1988259784461813694">Requirement</translation>
+<translation id="1988733631391393183">Show braille commands in the ChromeVox menus</translation>
 <translation id="1989112275319619282">Browse</translation>
 <translation id="1989903373608997757">Always use</translation>
 <translation id="1990046457226896323">Speech files downloaded</translation>
@@ -2557,7 +2559,6 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="3193695589337931419">System signals utilities</translation>
 <translation id="3194786596445804250">Show details about blocking third-party cookies</translation>
 <translation id="3197453258332670132">With a right-click or long press, show related info for your text selection</translation>
-<translation id="3198804549162832936">Open link in new <ph name="APP" /></translation>
 <translation id="3199127022143353223">Servers</translation>
 <translation id="3200061262156232574">In your shopping basket</translation>
 <translation id="3201237270673604992">Z to A</translation>
@@ -2686,6 +2687,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="3317678681329786349">Camera and microphone blocked</translation>
 <translation id="3319306431415395200">Translate text in image with <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
 <translation id="3320630259304269485">Safe Browsing (protection from dangerous sites) and other security settings</translation>
+<translation id="3321460131042519426">Enable word wrap</translation>
 <translation id="3323521181261657960">Bonus! You got more screen time</translation>
 <translation id="3323577066981719144">Changes that you make here apply only to Chrome Browser. To make changes to your Lacros Chrome Browser settings, open Lacros Chrome Browser and go to settings.</translation>
 <translation id="3325804108816646710">Looking for available profiles…</translation>
@@ -6557,6 +6559,7 @@ You have # more compromised passwords. Google Password Manager recommends checki
 <translation id="6823174134746916417">Touchpad tap-to-click</translation>
 <translation id="6824564591481349393">Copy &amp;Email Address</translation>
 <translation id="6824584962142919697">&amp;Inspect elements</translation>
+<translation id="6824725898506587159">Manage languages</translation>
 <translation id="6825184156888454064">Sort by name</translation>
 <translation id="6826872289184051766">Verify via USB</translation>
 <translation id="6827121912381363404">Allow all extensions to read and change <ph name="PERMITTED_SITE" /></translation>
@@ -6681,7 +6684,6 @@ You have # more compromised passwords. Google Password Manager recommends checki
 <translation id="6925127338315966709">You’re adding a managed profile to this browser. Your administrator has control over the profile and can access its data. Bookmarks, history, passwords and other settings can be synced to your account and managed by your administrator.</translation>
 <translation id="6929126689972602640">Parental controls are not supported for school accounts. To add a school account to access Google Classroom and other websites for schoolwork at home, sign in with the child's personal account first. You can add the school account later in setup.</translation>
 <translation id="6929760895658557216">Ok Google</translation>
-<translation id="6930036377490597025">External security key or built-in sensor</translation>
 <translation id="6930161297841867798">{NUM_EXTENSIONS,plural, =1{An extension has been rejected}other{# extensions have been rejected}}</translation>
 <translation id="6931690462168617033">Click strength</translation>
 <translation id="6935286146439255109">A paper tray is missing</translation>

@@ -74,6 +74,7 @@
 <translation id="1061130374843955397"><ph name="DEVICE_TYPE" /> qurilmasiga xush kelibsiz!</translation>
 <translation id="1061373870045429865">Bu havola uchun QR kod yaratish</translation>
 <translation id="1061904396131502319">Tanaffus qilish vaqti keldi</translation>
+<translation id="1062407476771304334">Almashtirish</translation>
 <translation id="1062628064301375934">Internetni yanada shaxsiy qilishimizga yordam bering</translation>
 <translation id="1067048845568873861">Yaratilgan sanasi</translation>
 <translation id="1067661089446014701">Xavfsizlik maqsadlarida parollarni Google hisobiga saqlashdan avval qurilmada shifrlash mumkin</translation>
@@ -1158,6 +1159,7 @@ Ilovalarga berilgan ruxsatlar bu hisobga tatbiq etilishi mumkin. Android ilovala
 <translation id="1987317783729300807">Hisoblar</translation>
 <translation id="1987574314042117472">Mashhur ilovalarni tanlash va oʻrnatish</translation>
 <translation id="1988259784461813694">Talab</translation>
+<translation id="1988733631391393183">ChromeVox menyusida brayl buyruqlari chiqsin</translation>
 <translation id="1989112275319619282">Tanlash</translation>
 <translation id="1989903373608997757">Har doim ishlatish</translation>
 <translation id="1990046457226896323">Avtomatik subtitr fayllari yuklab olindi</translation>
@@ -2555,7 +2557,6 @@ Oʻz qurilmangizda Family Link ilovasini oʻrnatib, bu hisob sozlamalarini boshq
 <translation id="3193695589337931419">Tizim signallari vositalari</translation>
 <translation id="3194786596445804250">Tashqi cookie fayllar bloklanishi tafsilotini chiqarish</translation>
 <translation id="3197453258332670132">Oʻng klik yoki biroz bosib turilsa, belgilangan matn uchun aloqador axborot chiqariladi</translation>
-<translation id="3198804549162832936">Havolani yangi <ph name="APP" />da ochish</translation>
 <translation id="3199127022143353223">Serverlar</translation>
 <translation id="3200061262156232574">Xarid qutingizda</translation>
 <translation id="3201237270673604992">Z–A</translation>
@@ -2684,6 +2685,7 @@ Oʻz qurilmangizda Family Link ilovasini oʻrnatib, bu hisob sozlamalarini boshq
 <translation id="3317678681329786349">Kamera va mikrofon bloklandi</translation>
 <translation id="3319306431415395200">Rasmdagi matnni <ph name="VISUAL_SEARCH_PROVIDER" /> yordamida tarjima qiling</translation>
 <translation id="3320630259304269485">Saytlarni xavfsiz kezish (zararli saytlardan himoya) va boshqa xavfsizlik sozlamalari</translation>
+<translation id="3321460131042519426">So‘zma-so‘z o‘tish</translation>
 <translation id="3323521181261657960">Bonus! Foydalanish vaqtingiz oshdi</translation>
 <translation id="3323577066981719144">Siz kiritgan oʻzgarishlar faqat Chrome brauzeriga tatbiq etiladi. Lacros Chrome brauzeri sozlamalariga oʻzgartirish kiritish uchun uning sozlamalarini oching.</translation>
 <translation id="3325804108816646710">Mavjud profillar qidirilmoqda...</translation>
@@ -6567,6 +6569,7 @@ Yana # ta oshkor qilingan parollaringiz bor. Google Parollar menejeri ularni hoz
 <translation id="6823174134746916417">Sensorli panelni ohista teginib bosish</translation>
 <translation id="6824564591481349393">&amp;E-pochta manzilini nusxalash</translation>
 <translation id="6824584962142919697">&amp;Elementlarni tekshirish</translation>
+<translation id="6824725898506587159">Tillar boshqaruvi</translation>
 <translation id="6825184156888454064">Nomi bo‘yicha saralash</translation>
 <translation id="6826872289184051766">USB orqali tasdiqlash</translation>
 <translation id="6827121912381363404">Barcha kengaytmalarga <ph name="PERMITTED_SITE" /> saytini oʻqish va oʻzgartirish huquqi berilsin</translation>
@@ -6691,7 +6694,6 @@ Yana # ta oshkor qilingan parollaringiz bor. Google Parollar menejeri ularni hoz
 <translation id="6925127338315966709">Bu brauzerga boshqaruvdagi profil kiritish arafasidasiz. Administratoringiz profilingizni boshqara oladi va undagi maʼlumotarni ochishi mumkin. Bukmarklar, tarix, parollar va boshqa sozlamalar hisobingizga sinxronlanadi va administratoringiz tomonidan boshqariladi.</translation>
 <translation id="6929126689972602640">Ota-ona nazoratida maktab hisoblaridan foydalanish mumkin emas. Google Classroom va boshqa saytlarga uy vazifalarini bajarish uchun kirish maqsadida maktab hisobini kiritmoqchi boʻlsangiz, farzandingizning shaxsiy hisobi bilan kiring. Maktab hisobini keyinroq sozlash orqali kiritish mumkin.</translation>
 <translation id="6929760895658557216">Hey, Google</translation>
-<translation id="6930036377490597025">Tashqi elektron kalit yoki xavfsizlik sensori</translation>
 <translation id="6930161297841867798">{NUM_EXTENSIONS,plural, =1{Kengaytma rad etildi}other{# ta kengaytma rad etildi}}</translation>
 <translation id="6931690462168617033">Bosish sezgirligi</translation>
 <translation id="6935286146439255109">Kiritish tarnoviga qogʻoz solinmagan</translation>

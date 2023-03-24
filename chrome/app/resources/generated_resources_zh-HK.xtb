@@ -50,6 +50,8 @@
 <translation id="1042248468362992359">連接至流動數據即可使用熱點。<ph name="BEGIN_LINK_LEARN_MORE" />瞭解詳情<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="1043505821207197890">發生錯誤，Linux 可能只完成部分升級。詳情請查看記錄。記錄已儲存至「檔案」&gt;「我的檔案」&gt; <ph name="LOG_FILE" /></translation>
 <translation id="104419033123549300">按鍵配置樣式</translation>
+<translation id="1046219820096501039"><ph name="BEGIN_PARAGRAPH1" />如果你允許 ChromeOS 裝置自動傳送報告，就能協助我們為 ChromeOS 優先規劃要修正及改善的項目。這類報告可能包含 ChromeOS 當機時間、曾使用的功能，以及記憶體一般使用量等資訊。如果同時啟用應用程式同步功能，系統也會收集其他應用程式診斷和使用資料 (包括 Android 和網頁應用程式)。<ph name="END_PARAGRAPH1" />
+    <ph name="BEGIN_PARAGRAPH2" />你隨時可以在孩子的 ChromeOS 裝置設定中允許或禁止傳送這類報告。網域管理員可以在管理控制台中變更這項設定。<ph name="END_PARAGRAPH2" /></translation>
 <translation id="104710386808485638">要重新啟動 Linux 嗎？</translation>
 <translation id="1047431265488717055">複製連結文字(&amp;X)</translation>
 <translation id="1048286738600630630">顯示</translation>
@@ -72,6 +74,7 @@
 <translation id="1061130374843955397">歡迎使用 <ph name="DEVICE_TYPE" /></translation>
 <translation id="1061373870045429865">為此連結建立 QR 碼</translation>
 <translation id="1061904396131502319">快到休息時間了</translation>
+<translation id="1062407476771304334">取代</translation>
 <translation id="1062628064301375934">協助我們建立更私密的網絡</translation>
 <translation id="1067048845568873861">已建立</translation>
 <translation id="1067661089446014701">為進一步加強安全性，建議先在裝置上將密碼加密，再儲存至您的 Google 帳戶</translation>
@@ -289,6 +292,9 @@
 <translation id="1243436884219965846">檢查密碼</translation>
 <translation id="1244265436519979884">正在執行 Linux 還原</translation>
 <translation id="1244303850296295656">擴充功能錯誤</translation>
+<translation id="124479667302995853"><ph name="BEGIN_PARAGRAPH1" />如果你允許 ChromeOS 裝置自動傳送報告，就能協助我們為 ChromeOS 優先規劃要修正及改善的項目。這類報告可能包含 ChromeOS 當機時間、使用的功能、記憶體一般使用量，以及 Android 應用程式診斷與使用資料。此外，部分匯總資料還能協助 Google 應用程式和合作夥伴 (例如 Android 開發人員) 改善產品和服務。如果同時啟用應用程式同步功能，系統也會收集其他應用程式診斷和使用資料 (包括 Android 和網頁應用程式)。<ph name="END_PARAGRAPH1" />
+    <ph name="BEGIN_PARAGRAPH2" />你隨時可以在 ChromeOS 裝置的設定中允許或禁止傳送這類報告。網域管理員可以在管理控制台中變更這項設定。<ph name="END_PARAGRAPH2" />
+    <ph name="BEGIN_PARAGRAPH3" />Google 帳戶的「網路和應用程式活動」設定開啟後，系統可能會將 Android 資料儲存到你的 Google 帳戶。你可以前往 account.google.com 查看、刪除資料，以及變更帳戶設定。<ph name="END_PARAGRAPH3" /></translation>
 <translation id="1245628370644070008">本機資料復原</translation>
 <translation id="1246863218384630739">無法安裝「<ph name="VM_NAME" />」：圖片網址已傳回 <ph name="HTTP_ERROR" /> 錯誤代碼。請聯絡您的管理員。</translation>
 <translation id="1247372569136754018">麥克風 (內置)</translation>
@@ -378,7 +384,9 @@
 <translation id="1331977651797684645">這是我本人。</translation>
 <translation id="1333489022424033687">如不清除其他網站在裝置上儲存的資料，<ph name="ORIGIN" /> 的部分功能可能無法正常運作</translation>
 <translation id="1333965224356556482">不允許網站查看您的位置</translation>
+<translation id="1335282218035876586">你的 Chromebook 不會再收到安全性和軟體更新。如要獲得最佳體驗，請改用新款 Chromebook。</translation>
 <translation id="133535873114485416">偏好的輸入模式</translation>
+<translation id="1335437153193710305">你可以選擇要查看密碼的設定檔</translation>
 <translation id="1335929031622236846">註冊您的裝置</translation>
 <translation id="1336902454946927954">無法辨識您的指紋，因此安全密鑰已被鎖定。如要解鎖，請輸入您的 PIN。</translation>
 <translation id="1338631221631423366">正在配對…</translation>
@@ -1164,6 +1172,7 @@
 <translation id="1987317783729300807">帳戶</translation>
 <translation id="1987574314042117472">選取並安裝熱門應用程式</translation>
 <translation id="1988259784461813694">要求</translation>
+<translation id="1988733631391393183">在 ChromeVox 選單中顯示點字指令</translation>
 <translation id="1989112275319619282">瀏覽</translation>
 <translation id="1989903373608997757">一律使用</translation>
 <translation id="1990046457226896323">已下載即時字幕檔案</translation>
@@ -1177,6 +1186,7 @@
 <translation id="1997433994358798851">Chrome 需要權限才能透過藍牙連接您的裝置</translation>
 <translation id="1997616988432401742">您的憑證</translation>
 <translation id="1999115740519098545">起始螢幕</translation>
+<translation id="1999315477791571194">儲存到 Google 密碼管理工具 <ph name="SEPARATOR" /> <ph name="ACCOUNT" /></translation>
 <translation id="2002109485265116295">即時</translation>
 <translation id="2003130567827682533">如要啟用「<ph name="NAME" />」的流動網絡，請先連接 Wi-Fi 網絡</translation>
 <translation id="2004697686368036666">部分網站的功能可能會無法正常運作</translation>
@@ -1218,6 +1228,7 @@
 <translation id="2039464276165755892">偵測到有人窺探螢幕時隱藏通知內容</translation>
 <translation id="2040460856718599782">糟糕！嘗試驗證您的身分時發生錯誤。請重新檢查您的登入憑證，然後再試一次。</translation>
 <translation id="2040894699575719559">位置已封鎖</translation>
+<translation id="2041246176170574368">安全性更新即將終止，購買新款 Chromebook 可省下 $50 美元以上</translation>
 <translation id="2042279886444479655">使用中的設定檔</translation>
 <translation id="2044014337866019681">請確保您驗證的是 <ph name="ACCOUNT" />，才能解鎖工作階段。</translation>
 <translation id="204497730941176055">Microsoft 憑證範本名稱</translation>
@@ -1246,6 +1257,7 @@
 <translation id="2061366302742593739">沒有可顯示的內容</translation>
 <translation id="2062354623176996748">如果您使用無痕式視窗瀏覽網頁，系統便不會保留您的瀏覽記錄</translation>
 <translation id="206308717637808771">在關閉所有視窗後刪除資料。資料的處理方式與處理目前瀏覽網站的方式相同</translation>
+<translation id="2063623149012168328">新增 <ph name="BRAND" />捷徑</translation>
 <translation id="2065405795449409761">Chrome 目前由自動化測試軟件控制。</translation>
 <translation id="2071393345806050157">沒有本機記錄檔案。</translation>
 <translation id="2071692954027939183">由於您通常不允許通知，因此系統已自動封鎖通知</translation>
@@ -2300,6 +2312,7 @@
 <translation id="2949289451367477459">使用定位服務。允許擁有位置資訊存取權的應用程式和服務使用此裝置的位置資訊。Google 可能會定期收集位置資訊資料，並以匿名方式使用這些資料，以提高定位的精確度及改善適地性服務。<ph name="BEGIN_LINK1" />瞭解詳情<ph name="END_LINK1" /></translation>
 <translation id="2950666755714083615">我要訂閱</translation>
 <translation id="2953019166882260872">使用連接線連接手機</translation>
+<translation id="2953210795988451570">安全性更新已終止，請改用新款 Chromebook</translation>
 <translation id="2953218713108551165">已禁止 <ph name="SITE" /> 傳送通知，系統將在您下次瀏覽網站時再次詢問您。</translation>
 <translation id="2956070239128776395">群組中具有巢狀部份：<ph name="ERROR_LINE" /></translation>
 <translation id="2958721676848865875">封裝擴充功能警告</translation>
@@ -2557,7 +2570,6 @@
 <translation id="3193695589337931419">系統訊號實用程式</translation>
 <translation id="3194786596445804250">顯示封鎖第三方 Cookie 嘅詳情</translation>
 <translation id="3197453258332670132">按一下右鍵或長按畫面，即可查看所選文字的相關資料</translation>
-<translation id="3198804549162832936">在「<ph name="APP" />」的新視窗中開啟連結</translation>
 <translation id="3199127022143353223">伺服器</translation>
 <translation id="3200061262156232574">購物車內商品</translation>
 <translation id="3201237270673604992">Z 至 A</translation>
@@ -2686,6 +2698,7 @@
 <translation id="3317678681329786349">已禁止使用相機和麥克風</translation>
 <translation id="3319306431415395200">透過 <ph name="VISUAL_SEARCH_PROVIDER" /> 翻譯圖片中的文字</translation>
 <translation id="3320630259304269485">安全瀏覽功能 (可防範危險網站) 和其他安全性設定</translation>
+<translation id="3321460131042519426">啟用自動換行功能</translation>
 <translation id="3323521181261657960">恭喜！您的裝置使用時間增加了</translation>
 <translation id="3323577066981719144">您在這裡作出的變更只會套用到 Chrome 瀏覽器。如要變更 Lacros Chrome 瀏覽器設定，請開啟 Lacros Chrome 瀏覽器並前往設定頁面。</translation>
 <translation id="3325804108816646710">正在尋找可用的設定檔…</translation>
@@ -2754,6 +2767,7 @@
 <translation id="3388094447051599208">輸出紙匣將滿</translation>
 <translation id="3388788256054548012">此檔案已加密。請要求擁有者解密。</translation>
 <translation id="3390013585654699824">應用程式詳情</translation>
+<translation id="3390530051434634135">備註：<ph name="NOTE" /></translation>
 <translation id="3393554941209044235">Chrome 文件分析</translation>
 <translation id="3393582007140394275">無法投放畫面。</translation>
 <translation id="3394850431319394743">已允許使用識別碼來播放受保護的內容</translation>
@@ -3296,6 +3310,7 @@
 <translation id="3846116211488856547">獲取開發網站、Android 應用程式及其他平台的工具。安裝 Linux 時會下載 <ph name="DOWNLOAD_SIZE" /> 數據。</translation>
 <translation id="3847319713229060696">可為所有網絡使用者提供更完善的安全防護</translation>
 <translation id="3848547754896969219">在無痕式視窗中開啟書籤(&amp;I)</translation>
+<translation id="3850172593216628215">安全性更新已終止，購買新款 Chromebook 可省下 $50 美元以上</translation>
 <translation id="385051799172605136">返回</translation>
 <translation id="3851428669031642514">載入不安全的指令碼</translation>
 <translation id="3852215160863921508">輸入協助</translation>
@@ -4151,6 +4166,7 @@
 <translation id="4622051949285931942">要關閉自動更新功能嗎？</translation>
 <translation id="4623167406982293031">驗證帳戶</translation>
 <translation id="4623189117674524348">系統無法將 API 存取權授予此裝置。</translation>
+<translation id="4623341761454569602">儲存到 Google 密碼管理工具 <ph name="SEPARATOR" /> <ph name="ACCOUNT" /></translation>
 <translation id="4625078469366263107">啟用應用程式</translation>
 <translation id="4627427111733173920">已封鎖 Cookie</translation>
 <translation id="4627442949885028695">先前在其他裝置瀏覽的網頁</translation>
@@ -4389,6 +4405,7 @@
 <translation id="4841741146571978176">必要的虛擬機器不存在。如要繼續，請嘗試設定 <ph name="VM_TYPE" /></translation>
 <translation id="4842976633412754305">這個網頁正嘗試從未授權的來源載入指令碼。</translation>
 <translation id="4844333629810439236">其他鍵盤</translation>
+<translation id="4844347226195896707">即使沒有在使用 Chrome 或 Android 時登入 &lt;a target='_blank' href='<ph name="LINK" />'&gt;passwords.google.com&lt;/a&gt;，也能查看自己的密碼</translation>
 <translation id="484462545196658690">自動</translation>
 <translation id="4844633725025837809">為進一步增強安全性，請先在裝置上將密碼加密，然後才將密碼儲存至 Google 密碼管理工具</translation>
 <translation id="4846628405149428620">選取此網站可以儲存變更的位置</translation>
@@ -4432,6 +4449,7 @@
 <translation id="4878653975845355462">管理員已關閉自訂背景功能</translation>
 <translation id="4878718769565915065">無法將指紋新增到此安全密鑰</translation>
 <translation id="4879491255372875719">自動 (預設)</translation>
+<translation id="4880315242806573837">安全性更新即將終止，請改用新款 Chromebook</translation>
 <translation id="4880827082731008257">搜尋記錄</translation>
 <translation id="4881062916686771679">此檔案含有惡意軟件，可能會導致您的個人或社交網絡帳戶受到威脅，包括 <ph name="USER_EMAIL" /></translation>
 <translation id="4881685975363383806">下次不要提醒我</translation>
@@ -4842,6 +4860,7 @@
 <translation id="5275352920323889391">狗</translation>
 <translation id="527605719918376753">將分頁設為靜音</translation>
 <translation id="527605982717517565">永遠允許在 <ph name="HOST" /> 執行 JavaScript</translation>
+<translation id="5276288422515364908">這部 Chromebook 在 <ph name="MONTH_AND_YEAR" />之後就不會再收到安全性和軟體更新。如要獲得最佳體驗，請改用新款 Chromebook。</translation>
 <translation id="5276357196618041410">請先登入才能儲存設定</translation>
 <translation id="5277127016695466621">顯示側面板</translation>
 <translation id="5278823018825269962">狀態 ID</translation>
@@ -5165,6 +5184,9 @@
 <translation id="5559311991468302423">刪除地址</translation>
 <translation id="55601339223879446">調整顯示屏內的桌面邊界</translation>
 <translation id="5561162485081632007">偵測並在危險事件發生時發出警告</translation>
+<translation id="5561488201985846671"><ph name="BEGIN_PARAGRAPH1" />如果你允許 ChromeOS 裝置自動傳送報告，就能協助我們為 ChromeOS 優先規劃要修正及改善的項目。這類報告可能包含 ChromeOS 當機時間、曾使用的功能、記憶體一般使用量，以及 Android 應用程式診斷與使用資料。此外，部分匯總資料還能協助 Google 應用程式和合作夥伴 (例如 Android 開發人員) 改善產品和服務。如果同時啟用應用程式同步功能，系統也會收集其他應用程式診斷和使用資料 (包括 Android 和網頁應用程式)。<ph name="END_PARAGRAPH1" />
+    <ph name="BEGIN_PARAGRAPH2" />你隨時可以在孩子的 ChromeOS 裝置設定中允許或禁止傳送這類報告。網域管理員可以在管理控制台中變更這項設定。<ph name="END_PARAGRAPH2" />
+    <ph name="BEGIN_PARAGRAPH4" />當孩子 Google 帳戶的「網路和應用程式活動」設定開啟時，系統可能會將孩子的資料儲存到其 Google 帳戶。如要進一步瞭解這些設定和調整方式，請前往 families.google.com。<ph name="END_PARAGRAPH4" /></translation>
 <translation id="5562781907504170924">這個分頁已連線至藍牙裝置。</translation>
 <translation id="556321030400250233">本機或共用檔案</translation>
 <translation id="5563234215388768762">搜尋 Google 或輸入網址</translation>
@@ -5287,6 +5309,7 @@
 <translation id="5678550637669481956">已授與「<ph name="VOLUME_NAME" />」的讀取和寫入權限。</translation>
 <translation id="5678821117681811450">正在傳送至「<ph name="WEB_DRIVE" />」</translation>
 <translation id="5678955352098267522">讀取您在 <ph name="WEBSITE_1" /> 上的資料</translation>
+<translation id="5679785611070310751">這部 Chromebook 在 <ph name="MONTH_AND_YEAR" />之後就不會再收到安全性更新。如要收到最新的安全性與軟體，請盡快改用新款 Chromebook。適用優惠條款。</translation>
 <translation id="5680050361008726776">要移除「<ph name="ESIM_PROFILE_NAME" />」嗎？</translation>
 <translation id="5683806393796685434">請輸入您的確認碼</translation>
 <translation id="5684181005476681636">Wi-Fi 詳情</translation>
@@ -5409,6 +5432,7 @@
 <translation id="5794786537412027208">結束所有 Chrome 應用程式</translation>
 <translation id="5796485699458186843">新無痕式分頁</translation>
 <translation id="5797521893972859201">清除記錄 (包括搜尋框中的記錄)</translation>
+<translation id="5797934230382081317">瞭解如何在 &lt;a target='_blank' href='<ph name="LINK_ANDROID" />'&gt;Android&lt;/a&gt; 和 &lt;a target='_blank' href='<ph name="LINK_IOS" />'&gt;iOS&lt;/a&gt; 裝置上開始使用密碼管理工具</translation>
 <translation id="5798079537501238810">網站可安裝付款處理常式</translation>
 <translation id="579915268381781820">您的安全密鑰已被移除。</translation>
 <translation id="5799478978078236781">取得 <ph name="DEVICE_TYPE" /> 提示、優惠和最新資訊，並分享意見。</translation>
@@ -5479,6 +5503,7 @@
 <translation id="5857090052475505287">新資料夾</translation>
 <translation id="5857171483910641802">系統會根據您經常瀏覽的網站提供捷徑建議</translation>
 <translation id="5857675236236529683">準備就緒後，即可在這裡查看閱讀清單</translation>
+<translation id="5857693745746757503">現在購買新款 Chromebook 可省 $50 美元以上的費用</translation>
 <translation id="5858490737742085133">終端機</translation>
 <translation id="585979798156957858">外置 Meta 鍵</translation>
 <translation id="5860033963881614850">關閉</translation>
@@ -6555,6 +6580,7 @@
 <translation id="6823174134746916417">觸控板輕按點撃功能</translation>
 <translation id="6824564591481349393">複製電郵地址(&amp;E)</translation>
 <translation id="6824584962142919697">檢查元素 (&amp;I)</translation>
+<translation id="6824725898506587159">管理語言</translation>
 <translation id="6825184156888454064">按名稱排序</translation>
 <translation id="6826872289184051766">透過 USB 驗證</translation>
 <translation id="6827121912381363404">允許所有擴充程式讀取和變更 <ph name="PERMITTED_SITE" /></translation>
@@ -6679,7 +6705,6 @@
 <translation id="6925127338315966709">您即將在此瀏覽器中新增受管理的設定檔。管理員可以控制該設定檔，並存取其中的資料。書籤、記錄、密碼和其他設定可能會同步至您的帳戶，並由管理員管理。</translation>
 <translation id="6929126689972602640">學校帳戶不支援家長監控設定。如要新增學校帳戶，以便在家中存取 Google Classroom 和其他學校作業用的網站，請先使用子女的個人帳戶登入。您稍後可在設定新增學校帳戶。</translation>
 <translation id="6929760895658557216">Ok Google</translation>
-<translation id="6930036377490597025">外置安全密鑰或內置感應器</translation>
 <translation id="6930161297841867798">{NUM_EXTENSIONS,plural, =1{已拒絕 1 個擴充程式}other{已拒絕 # 個擴充程式}}</translation>
 <translation id="6931690462168617033">點擊力度</translation>
 <translation id="6935286146439255109">找不到紙匣</translation>
@@ -6817,6 +6842,7 @@
 <translation id="7039326228527141150">存取來自 <ph name="VENDOR_NAME" /> 的 USB 裝置</translation>
 <translation id="7039912931802252762">Microsoft 智能卡登入</translation>
 <translation id="7039951224110875196">為子女建立 Google 帳戶</translation>
+<translation id="7039968672732182060">你的 Chromebook 不會再收到安全性更新。如要收到最新的安全性與軟體，請盡快改用新款 Chromebook。適用優惠條款。</translation>
 <translation id="7041405817194720353">已移除「<ph name="PERMISSION_1" />」、「<ph name="PERMISSION_2" />」和其他 <ph name="COUNT" /> 個權限</translation>
 <translation id="7042116641003232070">可將資料儲存至您的裝置</translation>
 <translation id="7043108582968290193">大功告成！已沒有任何不兼容的應用程式。</translation>
@@ -7048,6 +7074,7 @@
 <translation id="7272674038937250585">未提供說明</translation>
 <translation id="7273110280511444812">最後附加日期為 <ph name="DATE" /></translation>
 <translation id="727441411541283857">電池現有 <ph name="PERCENTAGE" />% - 還有 <ph name="TIME" />便完成充電</translation>
+<translation id="727595954130325265">立即選購</translation>
 <translation id="727952162645687754">下載錯誤</translation>
 <translation id="7280041992884344566">Chrome 搜尋有害軟件時發生錯誤</translation>
 <translation id="7280649757394340890">文字轉語音聲音設定</translation>
@@ -7249,6 +7276,7 @@
 <translation id="7457831169406914076">{COUNT,plural, =1{1 個連結}other{# 個連結}}</translation>
 <translation id="7458168200501453431">系統會使用與「Google 搜尋」相同的的拼字檢查工具。您在瀏覽器輸入的文字將會傳送給 Google。</translation>
 <translation id="7458715171471938198">要還原應用程式嗎？</translation>
+<translation id="7458933488302148148">請檢查已儲存的密碼，強化安全性並保護自己的線上安全</translation>
 <translation id="7460045493116006516">您目前安裝的主題</translation>
 <translation id="7461924472993315131">Pin</translation>
 <translation id="746216226901520237">下次您便可使用手機來解鎖 <ph name="DEVICE_TYPE" />。您可在「設定」中停用 Smart Lock。</translation>
@@ -7376,6 +7404,8 @@
 <translation id="7575272930307342804">導覽控制項</translation>
 <translation id="7576690715254076113">自動分頁</translation>
 <translation id="7576976045740938453">示範模式帳戶發生問題。</translation>
+<translation id="7577048250795121670"><ph name="BEGIN_PARAGRAPH1" />如果你允許 ChromeOS 裝置自動傳送報告，就能協助我們為 ChromeOS 優先規劃要修正及改善的項目。這類報告可能包含 ChromeOS 當機時間、曾使用的功能，以及記憶體一般使用量等資訊。如果同時啟用應用程式同步功能，系統也會收集其他應用程式診斷和使用資料 (包括 Android 和網頁應用程式)。<ph name="END_PARAGRAPH1" />
+    <ph name="BEGIN_PARAGRAPH2" />你隨時可以在 Chrome 裝置的設定中允許或禁止傳送這類報告。網域管理員可以在管理控制台中變更這項設定。<ph name="END_PARAGRAPH2" /></translation>
 <translation id="7578137152457315135">指紋設定</translation>
 <translation id="7578692661782707876">請輸入您的確認碼。</translation>
 <translation id="7581007437437492586">須正確設定政策</translation>
@@ -7726,6 +7756,7 @@
 <translation id="7874257161694977650">Chrome 背景</translation>
 <translation id="7876027585589532670">無法編輯捷徑</translation>
 <translation id="7877451762676714207">不明的伺服器錯誤。請再試一次，或與伺服器管理員聯絡。</translation>
+<translation id="7878945852730162014">管理下載中的檔案，並在下載完成後開啟</translation>
 <translation id="7879478708475862060">按照輸入模式</translation>
 <translation id="7879631849810108578">快速鍵組合：<ph name="IDS_SHORT_SET_COMMAND" /></translation>
 <translation id="7880823633812189969">系統會在您重新啟動時刪除本機資料</translation>
@@ -7901,6 +7932,7 @@
 <translation id="8023133589013344428">在 ChromeOS Flex 設定中管理語言</translation>
 <translation id="8023801379949507775">立即更新擴充功能</translation>
 <translation id="8025151549289123443">上鎖畫面和登入</translation>
+<translation id="8025291188699172126">關於更新</translation>
 <translation id="8026334261755873520">清除瀏覽數據</translation>
 <translation id="8026471514777758216">您的所有裝置</translation>
 <translation id="8027581147000338959">在新視窗中開啟</translation>
@@ -7997,6 +8029,7 @@
 <translation id="8097959162767603171">您的管理員必須先接受管理控制台 Chrome 裝置清單中的服務條款。</translation>
 <translation id="8098156986344908134">要安裝 <ph name="DEVICE_OS" /> 並清除硬碟的資料嗎？</translation>
 <translation id="8098616321286360457">需要網絡連線</translation>
+<translation id="8100230553590752325">在任何裝置上都能使用已儲存的密碼</translation>
 <translation id="810068641062493918">揀咗「<ph name="LANGUAGE" />」。㩒搜尋鍵加空白鍵就可以取消選取揀咗嘅語言。</translation>
 <translation id="8100972288595615768">要清除 <ph name="SITE_NAME" /> 的網站資料和權限嗎？</translation>
 <translation id="8101409298456377967">建立、儲存及管理密碼，讓您輕鬆登入網站和應用程式。<ph name="BEGIN_LINK" />瞭解詳情<ph name="END_LINK" /></translation>
@@ -8825,12 +8858,14 @@
 <translation id="8846163936679269230">重設 eSIM 設定檔</translation>
 <translation id="8846239054091760429">單聲道音效、啟動、即時字幕等等</translation>
 <translation id="8847988622838149491">USB</translation>
+<translation id="8848963863312877204">在這裡查看下載的檔案</translation>
 <translation id="8849001918648564819">隱藏</translation>
 <translation id="8849219423513870962">取消移除叫做「<ph name="PROFILE_NAME" />」嘅 eSIM 卡設定檔</translation>
 <translation id="8849262417389398097"><ph name="CHECKED" />/<ph name="CHECKING" /></translation>
 <translation id="8850251000316748990">查看更多…</translation>
 <translation id="885246833287407341">API 函數引數</translation>
 <translation id="8853586775156634952">此卡只會儲存在此裝置上</translation>
+<translation id="8853731677580212469">Google 密碼管理工具網頁版</translation>
 <translation id="8854745870658584490">候選快速鍵</translation>
 <translation id="8855977033756560989">此 Chromebook Enterprise 裝置附隨 Chrome Enterprise Upgrade。如要善用企業功能，請使用 Google 管理員帳戶註冊此裝置。</translation>
 <translation id="8856028055086294840">還原應用程式及網頁</translation>
@@ -9005,6 +9040,7 @@
 <translation id="9008828754342192581">您先前已選擇允許 <ph name="ORIGIN" /> 上的所有擴充程式</translation>
 <translation id="9009369504041480176">上載中 (<ph name="PROGRESS_PERCENT" />%)…</translation>
 <translation id="9009708085379296446">您要變更此頁面嗎？</translation>
+<translation id="9010845741772269259">新增付款方式</translation>
 <translation id="9011163749350026987">一律顯示圖示</translation>
 <translation id="9011262023858991985">正在投放此分頁</translation>
 <translation id="9011393886518328654">版本說明</translation>
@@ -9092,6 +9128,7 @@
 <translation id="907779190626433918">請為每個網站或應用程式設定獨一無二的密碼。如果其他人取得您重複使用的密碼，就可用來存取其他帳戶。</translation>
 <translation id="9078193189520575214">正在套用變更…</translation>
 <translation id="9078316009970372699">停用「即時網絡共享」</translation>
+<translation id="9078546160009814724">使用者名稱：<ph name="USERNAME" /></translation>
 <translation id="9079267182985899251">系統即將停止支援此選項。如要分享分頁畫面，請使用 <ph name="GOOGLE_MEET" />。</translation>
 <translation id="9080175821499742274">「記憶體節省模式」會從閒置分頁釋出記憶體，給使用中的分頁和其他應用程式。</translation>
 <translation id="9080971985541434310">推測您的興趣 - Chrome 可以推測您的興趣</translation>

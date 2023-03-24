@@ -72,6 +72,7 @@
 <translation id="1061130374843955397">Chào mừng bạn đến với <ph name="DEVICE_TYPE" /></translation>
 <translation id="1061373870045429865">Tạo mã QR cho Đường liên kết này</translation>
 <translation id="1061904396131502319">Sắp đến giờ nghỉ giải lao</translation>
+<translation id="1062407476771304334">Thay thế</translation>
 <translation id="1062628064301375934">Giúp chúng tôi xây dựng một môi trường web riêng tư hơn</translation>
 <translation id="1067048845568873861">Đã tạo</translation>
 <translation id="1067661089446014701">Để tăng mức độ an toàn, bạn có thể mã hoá mật khẩu trên thiết bị trước khi lưu vào Tài khoản Google</translation>
@@ -1164,6 +1165,7 @@ Các quyền bạn từng cấp cho ứng dụng có thể áp dụng cho cả t
 <translation id="1987317783729300807">Tài khoản</translation>
 <translation id="1987574314042117472">Chọn cài đặt các ứng dụng phổ biến</translation>
 <translation id="1988259784461813694">Yêu cầu</translation>
+<translation id="1988733631391393183">Hiển thị các lệnh chữ nổi trong trình đơn của ChromeVox</translation>
 <translation id="1989112275319619282">Duyệt qua</translation>
 <translation id="1989903373608997757">Luôn sử dụng</translation>
 <translation id="1990046457226896323">Đã tải tệp mã chuyển lời nói thành văn bản xuống</translation>
@@ -2557,7 +2559,6 @@ Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này 
 <translation id="3193695589337931419">Phần mềm tiện ích tín hiệu hệ thống</translation>
 <translation id="3194786596445804250">Hiện thông tin chi tiết về việc chặn cookie bên thứ ba</translation>
 <translation id="3197453258332670132">Khi bạn nhấp chuột phải hoặc nhấn và giữ, thông tin liên quan của văn bản bạn chọn sẽ xuất hiện</translation>
-<translation id="3198804549162832936">Mở đường liên kết trong <ph name="APP" /> mới</translation>
 <translation id="3199127022143353223">Máy chủ</translation>
 <translation id="3200061262156232574">Trong giỏ hàng của bạn</translation>
 <translation id="3201237270673604992">Từ Z đến A</translation>
@@ -2686,6 +2687,7 @@ Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này 
 <translation id="3317678681329786349">Máy ảnh và micrô bị chặn</translation>
 <translation id="3319306431415395200">Dịch văn bản trong hình ảnh bằng <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
 <translation id="3320630259304269485">Tính năng Duyệt web an toàn (bảo vệ trước các trang web nguy hiểm) và các tùy chọn cài đặt bảo mật khác</translation>
+<translation id="3321460131042519426">Bật xuống dòng tự động</translation>
 <translation id="3323521181261657960">Phần thưởng! Bạn có thêm thời gian sử dụng thiết bị</translation>
 <translation id="3323577066981719144">Các thay đổi bạn thực hiện tại đây chỉ áp dụng cho Trình duyệt Chrome. Để thực hiện các thay đổi đối với chế độ cài đặt trên Trình duyệt Lacros Chrome của bạn, hãy mở Trình duyệt Lacros Chrome và chuyển đến phần cài đặt.</translation>
 <translation id="3325804108816646710">Đang tìm hồ sơ có sẵn...</translation>
@@ -6557,6 +6559,7 @@ Bạn còn # mật khẩu bị lộ nữa. Trình quản lý mật khẩu của 
 <translation id="6823174134746916417">Gõ để nhấp trên bàn di chuột</translation>
 <translation id="6824564591481349393">Sao chép Địa chỉ &amp;Email</translation>
 <translation id="6824584962142919697">&amp;Kiểm tra các yếu tố</translation>
+<translation id="6824725898506587159">Quản lý ngôn ngữ</translation>
 <translation id="6825184156888454064">Sắp xếp theo tên</translation>
 <translation id="6826872289184051766">Xác minh qua USB</translation>
 <translation id="6827121912381363404">Cho phép tất cả tiện ích đọc và thay đổi <ph name="PERMITTED_SITE" /></translation>
@@ -6681,7 +6684,6 @@ Bạn còn # mật khẩu bị lộ nữa. Trình quản lý mật khẩu của 
 <translation id="6925127338315966709">Bạn đang thêm một hồ sơ được quản lý vào trình duyệt này. Quản trị viên của bạn có quyền kiểm soát hồ sơ đó và có thể truy cập vào dữ liệu của hồ sơ. Các dấu trang, danh sách trang web đã truy cập, mật khẩu, cũng như các chế độ cài đặt khác có thể được đồng bộ hóa với tài khoản và được quản trị viên của bạn quản lý.</translation>
 <translation id="6929126689972602640">Tài khoản trường học không hỗ trợ các quyền kiểm soát của cha mẹ. Nếu bạn muốn thêm một tài khoản trường học để truy cập vào Google Lớp học và các trang web khác để làm bài tập ở nhà, trước tiên, hãy đăng nhập bằng tài khoản cá nhân của trẻ. Bạn có thể thêm tài khoản trường học sau này trong phần cài đặt.</translation>
 <translation id="6929760895658557216">Ok Google</translation>
-<translation id="6930036377490597025">Khóa bảo mật bên ngoài hoặc cảm biến tích hợp</translation>
 <translation id="6930161297841867798">{NUM_EXTENSIONS,plural, =1{1 tiện ích đã bị từ chối}other{# tiện ích đã bị từ chối}}</translation>
 <translation id="6931690462168617033">Độ mạnh của thao tác nhấp</translation>
 <translation id="6935286146439255109">Thiếu một khay giấy</translation>

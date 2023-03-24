@@ -72,6 +72,7 @@
 <translation id="1061130374843955397">טוב לראות אותך ב-<ph name="DEVICE_TYPE" /></translation>
 <translation id="1061373870045429865">‏יש ליצור קוד QR לקישור הזה</translation>
 <translation id="1061904396131502319">עוד מעט זמן להפסקה</translation>
+<translation id="1062407476771304334">החלפה</translation>
 <translation id="1062628064301375934">רוצה לעזור לנו לשפר את הפרטיות באינטרנט?</translation>
 <translation id="1067048845568873861">נוצר</translation>
 <translation id="1067661089446014701">‏כדי לשפר את הבטיחות, אפשר להצפין את הסיסמאות במכשיר שלך לפני שהן נשמרות בחשבון Google</translation>
@@ -495,6 +496,7 @@
 <translation id="1427269577154060167">מדינה</translation>
 <translation id="142765311413773645">פג תוקף הרישיון של <ph name="APP_NAME" /></translation>
 <translation id="1428373049397869723">‏יש לך אפשרות לפתוח ולערוך קבצים נתמכים באמצעות האפליקציה הזו מתוך Finder או באמצעות אפליקציות אחרות. כדי לקבוע אילו קבצים יפתחו את האפליקציה הזו כברירת מחדל, <ph name="BEGIN_LINK" />כאן אפשר לקרוא איך להגדיר אפליקציות כברירת מחדל במכשיר שלך<ph name="END_LINK" />.</translation>
+<translation id="1428657116642077141">שמרת הערה לגבי סיסמה באתר הזה. כדי להציג את הסיסמה, צריך לבחור באפשרות 'ניהול הסיסמאות' בסרגל הכתובות והחיפוש.</translation>
 <translation id="1428770807407000502">לכבות את הסנכרון?</translation>
 <translation id="1429300045468813835">הכול נוקה</translation>
 <translation id="1430915738399379752">הדפסה</translation>
@@ -1160,6 +1162,7 @@
 <translation id="1987317783729300807">חשבונות</translation>
 <translation id="1987574314042117472">בחירה והתקנה של האפליקציות הפופולריות</translation>
 <translation id="1988259784461813694">דרישה</translation>
+<translation id="1988733631391393183">‏בתפריטי ChromeVox יוצגו פקודות בכתב ברייל</translation>
 <translation id="1989112275319619282">עיון</translation>
 <translation id="1989903373608997757">להשתמש תמיד</translation>
 <translation id="1990046457226896323">הסתיימה ההורדה של קובצי הדיבור</translation>
@@ -1248,6 +1251,7 @@
 <translation id="2073148037220830746">{NUM_EXTENSIONS,plural, =1{יש ללחוץ כדי להתקין את התוסף}one{יש ללחוץ כדי להתקין את התוספים האלה}two{יש ללחוץ כדי להתקין את התוספים האלה}other{יש ללחוץ כדי להתקין את התוספים האלה}}</translation>
 <translation id="2073496667646280609">יכול להיות שאין מספיק מקום אחסון פנוי במכשיר או במיקום שנבחר לגיבוי. כדאי לנסות לפנות מקום או לבחור מיקום אחר.</translation>
 <translation id="2073505299004274893">אפשר להזין עד <ph name="CHARACTER_LIMIT" /> תווים</translation>
+<translation id="2074060876831574159">‏הסיסמאות השמורות יופיעו כאן.  &lt;a target='_blank' href='chrome://password-manager/'&gt;ייבוא סיסמאות&lt;/a&gt;</translation>
 <translation id="2075474481720804517">%<ph name="BATTERY_PERCENTAGE" /> סוללה</translation>
 <translation id="2076269580855484719">הסתרת פלאגין זה</translation>
 <translation id="2076672359661571384">בינוני (מומלץ)</translation>
@@ -1494,6 +1498,7 @@
     <ph name="BEGIN_PARAGRAPH2" />אין אפשרות לבטל את ההתקנה לאחר שהחלה.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="2270627217422354837">החלפת נתונים עם כל מכשיר בדומיינים: <ph name="DOMAINS" /></translation>
 <translation id="2270666014403455717">הקצאת מתג לפעולה "בחירה"</translation>
+<translation id="2271986192355138465">כך מתקינים אפליקציות אינטרנט</translation>
 <translation id="2272430695183451567">הוקצו אפס מתגים</translation>
 <translation id="2272570998639520080">כוס מרטיני</translation>
 <translation id="2273119997271134996">בעיה עם יציאות הווידאו באביזר העגינה</translation>
@@ -2552,7 +2557,6 @@
 <translation id="3193695589337931419">כלי איסוף של אותות במערכת</translation>
 <translation id="3194786596445804250">‏הצגת פרטים על חסימת קובצי cookie של צדדים שלישיים</translation>
 <translation id="3197453258332670132">בלחיצה ימנית או בלחיצה ארוכה, יוצג מידע שקשור לטקסט שבחרת</translation>
-<translation id="3198804549162832936">פתיחת הקישור בגרסה החדשה של <ph name="APP" /></translation>
 <translation id="3199127022143353223">שרתים</translation>
 <translation id="3200061262156232574">בעגלת הקניות שלך</translation>
 <translation id="3201237270673604992">סדר אלפביתי יורד</translation>
@@ -2681,6 +2685,7 @@
 <translation id="3317678681329786349">לא ניתן להשתמש בדף זה במצלמה ובמיקרופון</translation>
 <translation id="3319306431415395200">תרגום הטקסט בתמונה באמצעות <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
 <translation id="3320630259304269485">גלישה בטוחה (הגנה מאתרים מסוכנים) והגדרות אבטחה אחרות</translation>
+<translation id="3321460131042519426">הפעלת גלישת שורות</translation>
 <translation id="3323521181261657960">בונוס! קיבלת עוד זמן מסך</translation>
 <translation id="3323577066981719144">‏שינויים שיבוצעו כאן יחולו רק בדפדפן Chrome. כדי לבצע שינויים בהגדרות של דפדפן Chrome Lacros, עליך לפתוח את דפדפן Chrome Lacros ולעבור להגדרות.</translation>
 <translation id="3325804108816646710">מתבצע חיפוש של פרופילים זמינים…</translation>
@@ -3138,6 +3143,7 @@
 <translation id="3728188878314831180">שיקוף התראות מהטלפון</translation>
 <translation id="3728681439294129328">הגדרת כתובת הרשת</translation>
 <translation id="3729506734996624908">אתרים מורשים</translation>
+<translation id="3729957991398443677">כדי להציג את הסיסמה או להוסיף הערה לגביה, צריך לבחור באפשרות 'ניהול הסיסמאות' בסרגל הכתובות והחיפוש</translation>
 <translation id="3730076362938942381">אפליקציה לכתיבה עם סטיילוס</translation>
 <translation id="3732078975418297900">שגיאה בשורה <ph name="ERROR_LINE" /></translation>
 <translation id="3732530910372558017">קוד האימות יכול להיות באורך של 63 תווים לכל היותר</translation>
@@ -5855,6 +5861,7 @@
 <translation id="6200151268994853226">ניהול התוספים</translation>
 <translation id="6201608810045805374">להסיר את החשבון הזה?</translation>
 <translation id="6202304368170870640">קוד האימות מאפשר להיכנס למכשיר או לבטל את נעילתו.</translation>
+<translation id="6203247599828309566">שמרת הערה לגבי סיסמה באתר הזה. כדי להציג אותה, צריך ללחוץ על סמל המפתח.</translation>
 <translation id="6205314730813004066">פרטיות בפרסום</translation>
 <translation id="6206199626856438589">תבוצע יציאה מהאתרים המוצגים, כולל מהכרטיסיות הפתוחות</translation>
 <translation id="6206311232642889873">העת&amp;קת תמונה</translation>
@@ -6550,6 +6557,7 @@
 <translation id="6823174134746916417">שימוש בנגיעה קלה בלוח המגע</translation>
 <translation id="6824564591481349393">העתקת כתובת &amp;אימייל</translation>
 <translation id="6824584962142919697">&amp;בדיקת רכיבים</translation>
+<translation id="6824725898506587159">נהל שפות</translation>
 <translation id="6825184156888454064">מיון לפי שם</translation>
 <translation id="6826872289184051766">‏אימות באמצעות USB</translation>
 <translation id="6827121912381363404">מתן הרשאה לכל התוספים לקרוא את האתר <ph name="PERMITTED_SITE" /> ולשנות אותו</translation>
@@ -6674,7 +6682,6 @@
 <translation id="6925127338315966709">בחרת להוסיף פרופיל מנוהל לדפדפן הזה. למנהל המערכת שלך יש שליטה על הפרופיל וגישה לנתונים שלו. ניתן לסנכרן את הסימניות, ההיסטוריה, הסיסמאות והגדרות אחרות עם חשבון שלך, והן ינוהלו ידי מנהל המערכת.</translation>
 <translation id="6929126689972602640">‏בחשבונות בית ספריים, אין תמיכה באמצעי בקרת הורים. כדי להוסיף חשבון בית ספרי לצורך גישה אל Google Classroom ואתרים אחרים למטלות לימודיות, תחילה יש להיכנס באמצעות החשבון האישי של הילד או הילדה. ניתן להוסיף את החשבון הבית ספרי בשלב מאוחר יותר בהגדרה.</translation>
 <translation id="6929760895658557216">Okay Google</translation>
-<translation id="6930036377490597025">מפתח אבטחה חיצוני או חיישן מובנה</translation>
 <translation id="6930161297841867798">{NUM_EXTENSIONS,plural, =1{בקשת הארכה נדחתה}one{# בקשות הארכה נדחו}two{# בקשות הארכה נדחו}other{# בקשות הארכה נדחו}}</translation>
 <translation id="6931690462168617033">עוצמת הלחיצה</translation>
 <translation id="6935286146439255109">חסר מגש נייר</translation>
@@ -6966,6 +6973,7 @@
 <translation id="720715819012336933">{NUM_PAGES,plural, =1{יציאה מהדף}one{יציאה מהדפים}two{יציאה מהדפים}other{יציאה מהדפים}}</translation>
 <translation id="7207457272187520234">‏שליחת מידע לגבי אופן השימוש בנתונים וניתוח הביצועים. המכשיר הזה שולח עכשיו אל Google באופן אוטומטי נתוני אבחון, נתוני מכשיר ונתוני שימוש באפליקציות. הנתונים האלה יעזרו לשמור על היציבות של המערכת ושל האפליקציות ולבצע שיפורים אחרים. חלק מהנתונים הנצברים יעזרו גם לשפר את האפליקציות של Google וכן יעזרו לשותפים של Google, כמו מפתחים של Android. ההגדרה הזו נאכפת על-ידי הבעלים. אם הופעלה ההגדרה 'פעילות באפליקציות ובאתרי אינטרנט נוספים', ייתכן שהנתונים יישמרו בחשבון Google שלך.</translation>
 <translation id="7207631048330366454">חיפוש אפליקציות</translation>
+<translation id="7210257969463271891">אפליקציות האינטרנט שמתקינים יופיעו כאן</translation>
 <translation id="7210471695184432500">‏צריך לבחור קובץ CSV כדי לייבא סיסמאות למנהל הסיסמאות של Google במכשיר הזה</translation>
 <translation id="7210499381659830293">מדפסות בתוסף</translation>
 <translation id="7211783048245131419">עוד לא הוקצו מתגים.</translation>
@@ -9210,6 +9218,7 @@
 <translation id="9179524979050048593">הצגת שם המשתמש במסך הכניסה</translation>
 <translation id="9180281769944411366">‏הפעולה עשויה להימשך מספר דקות. מתבצעת הפעלה של הקונטיינר של Linux.</translation>
 <translation id="9180380851667544951">האתר רשאי לשתף את המסך</translation>
+<translation id="9180847522826713506">כדי להציג את הסיסמה או להוסיף הערה לגביה, צריך ללחוץ על סמל המפתח</translation>
 <translation id="9182556968660520230">לא לאפשר לאתרים להפעיל תוכן מוגן</translation>
 <translation id="9183331776983279456">‏Chrome מוחק באופן אוטומטי אתרים שנוספו לפני יותר מ-4 שבועות. אתר שמבקרים בו פעם נוספת עשוי להופיע שוב ברשימה. אפשר גם לחסום את האפשרות של אתרים להציע מודעות.</translation>
 <translation id="918352324374649435">{COUNT,plural, =1{אפליקציה}one{# אפליקציות}two{# אפליקציות}other{# אפליקציות}}</translation>

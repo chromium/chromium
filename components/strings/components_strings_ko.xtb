@@ -922,7 +922,6 @@
 <translation id="3249151924975132674">학생 대출 및 학자금 대출</translation>
 <translation id="3249845759089040423">그루브</translation>
 <translation id="3250640885957938546">광고 및 마케팅</translation>
-<translation id="3252266817569339921">프랑스어</translation>
 <translation id="3254301855501243548">18x22인치</translation>
 <translation id="3256863843508922226">퇴직 및 연금</translation>
 <translation id="3259648571731540213"><ph name="CREATE_GOOGLE_CALENDAR_EVENT_FOCUSED_FRIENDLY_MATCH_TEXT" />, Tab을 누른 다음 Enter를 눌러 Google Calendar에서 빠르게 새 일정 만들기</translation>
@@ -1586,7 +1585,6 @@
 <translation id="484988093836683706">기기 잠금 해제 사용</translation>
 <translation id="4850886885716139402">보기</translation>
 <translation id="4852429274334674023">운영체제</translation>
-<translation id="485316830061041779">독일어</translation>
 <translation id="4853901935952445031">2022년 2월부터 이 사이트에서 U2F API를 사용할 수 없게 됩니다. 사이트 소유자인 경우 Web Authentication API를 사용하도록 변경해야 합니다.</translation>
 <translation id="4854362297993841467">사용할 수 없는 배달 방법입니다. 다른 방법을 선택하세요.</translation>
 <translation id="4854853140771946034">Google Keep에서 빠르게 새 메모 만들기</translation>
@@ -1825,7 +1823,6 @@
 <translation id="5423269318075950257">가격 추적</translation>
 <translation id="5425241977284572032">{NUM_COOKIES,plural, =0{차단된 사이트 없음}=1{차단된 사이트 1개}other{차단된 사이트 #개}}</translation>
 <translation id="5426179911063097041"><ph name="SITE" />에서 알림을 보내려고 합니다.</translation>
-<translation id="5428105026674456456">스페인어</translation>
 <translation id="5430298929874300616">북마크 삭제</translation>
 <translation id="5443468954631487277">역순으로 인쇄면이 위를 향하게</translation>
 <translation id="5447765697759493033">이 사이트는 번역되지 않습니다.</translation>
@@ -1834,7 +1831,6 @@
 <translation id="5457113250005438886">잘못된 데이터</translation>
 <translation id="5458150163479425638">{CONTACT,plural, =0{<ph name="CONTACT_PREVIEW" />}=1{<ph name="CONTACT_PREVIEW" /> 외 <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" />개}other{<ph name="CONTACT_PREVIEW" /> 외 <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" />개}}</translation>
 <translation id="5463625433003343978">기기를 찾는 중...</translation>
-<translation id="5469868506864199649">이탈리아어</translation>
 <translation id="5470230812924696184">토목공학</translation>
 <translation id="5470861586879999274">수정 다시 실행(&amp;R)</translation>
 <translation id="5471337644440862957">코미디 영화</translation>
@@ -1847,7 +1843,6 @@
     <ph name="LINE_BREAK" />
     시스템 관리자에게 문의하세요.</translation>
 <translation id="549333378215107354">크기 3</translation>
-<translation id="5503356662318814623">메시지 보내기</translation>
 <translation id="5509762909502811065">B0</translation>
 <translation id="5509780412636533143">관리 북마크</translation>
 <translation id="5510481203689988000">이 설정은 쿠키 설정에서 제어됩니다.</translation>
@@ -3004,7 +2999,6 @@
 <translation id="8296205692406981542">국립 및 도립 공원</translation>
 <translation id="8297545700510100061">예를 들어 로그인하거나 광고를 맞춤설정하기 위해 사용자 정보를 저장하는 데 쿠키와 기타 사이트 데이터가 사용됩니다. 모든 사이트의 쿠키를 관리하려면 <ph name="SETTINGS" />을(를) 확인하세요.</translation>
 <translation id="8298115750975731693">사용 중인 Wi-Fi(<ph name="WIFI_NAME" />)에서 <ph name="BEGIN_BOLD" /><ph name="LOGIN_URL" /><ph name="END_BOLD" /> 방문을 요청할 수 있습니다.</translation>
-<translation id="8299269255470343364">일본어</translation>
 <translation id="8303854710873047864">‘<ph name="SECTION" />’ 섹션 표시됨</translation>
 <translation id="830498451218851433">폴드 하프</translation>
 <translation id="8307888238279532626">설치된 앱 및 앱의 사용 빈도</translation>
@@ -3125,7 +3119,6 @@
 <translation id="865032292777205197">움직임 감지 센서</translation>
 <translation id="8654126188050905496">55x91mm</translation>
 <translation id="8663226718884576429">주문 요약, <ph name="TOTAL_LABEL" />, 세부정보 더보기</translation>
-<translation id="8666678546361132282">영어</translation>
 <translation id="8671519637524426245"><ph name="SECURE_DNS_SALT" /> 값이 크기 요구사항을 충족하지 않습니다.</translation>
 <translation id="867224526087042813">서명</translation>
 <translation id="8672264262457010862">비즈니스 및 산업</translation>

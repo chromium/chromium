@@ -922,7 +922,6 @@
 <translation id="3249151924975132674">สินเชื่อเพื่อการศึกษา</translation>
 <translation id="3249845759089040423">ดึงดูด</translation>
 <translation id="3250640885957938546">การโฆษณาและการตลาด</translation>
-<translation id="3252266817569339921">ฝรั่งเศส</translation>
 <translation id="3254301855501243548">18 x 22 นิ้ว</translation>
 <translation id="3256863843508922226">การเกษียณอายุและบำนาญ</translation>
 <translation id="3259648571731540213"><ph name="CREATE_GOOGLE_CALENDAR_EVENT_FOCUSED_FRIENDLY_MATCH_TEXT" /> กด Tab ตามด้วย Enter เพื่อสร้างกิจกรรมใหม่ใน Google ปฏิทินอย่างรวดเร็ว</translation>
@@ -1585,7 +1584,6 @@
 <translation id="484988093836683706">ใช้การปลดล็อกอุปกรณ์</translation>
 <translation id="4850886885716139402">มุมมอง</translation>
 <translation id="4852429274334674023">ระบบปฏิบัติการ</translation>
-<translation id="485316830061041779">เยอรมัน</translation>
 <translation id="4853901935952445031">เว็บไซต์นี้จะใช้ U2F API ไม่ได้อีกหลังเดือนกุมภาพันธ์ 2022 หากเป็นเจ้าของเว็บไซต์นี้ คุณควรเปลี่ยนไปใช้ Web Authentication API</translation>
 <translation id="4854362297993841467">วิธีการนำส่งสินค้านี้ไม่พร้อมให้บริการ โปรดลองใช้วิธีการอื่น</translation>
 <translation id="4854853140771946034">สร้างโน้ตใหม่ใน Google Keep อย่างรวดเร็ว</translation>
@@ -1824,7 +1822,6 @@
 <translation id="5423269318075950257">ติดตามราคา</translation>
 <translation id="5425241977284572032">{NUM_COOKIES,plural, =0{ไม่มีเว็บไซต์ที่ถูกบล็อก}=1{มี 1 เว็บไซต์ที่ถูกบล็อก}other{มี # เว็บไซต์ที่ถูกบล็อก}}</translation>
 <translation id="5426179911063097041"><ph name="SITE" /> ต้องการส่งการแจ้งเตือนให้คุณ</translation>
-<translation id="5428105026674456456">สเปน</translation>
 <translation id="5430298929874300616">นำบุ๊กมาร์กออก</translation>
 <translation id="5443468954631487277">ลำดับย้อนกลับหงายหน้าขึ้น</translation>
 <translation id="5447765697759493033">ระบบจะไม่แปลไซต์นี้</translation>
@@ -1833,7 +1830,6 @@
 <translation id="5457113250005438886">ไม่ถูกต้อง</translation>
 <translation id="5458150163479425638">{CONTACT,plural, =0{<ph name="CONTACT_PREVIEW" />}=1{<ph name="CONTACT_PREVIEW" /> และอีก <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> รายการ}other{<ph name="CONTACT_PREVIEW" /> และอีก <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> รายการ}}</translation>
 <translation id="5463625433003343978">กำลังค้นหาอุปกรณ์...</translation>
-<translation id="5469868506864199649">อิตาลี</translation>
 <translation id="5470230812924696184">การให้คำปรึกษาด้านวิศวกรรมโยธา</translation>
 <translation id="5470861586879999274">&amp;ทำซ้ำการแก้ไข</translation>
 <translation id="5471337644440862957">ภาพยนตร์ตลก</translation>
@@ -1846,7 +1842,6 @@
     <ph name="LINE_BREAK" />
     โปรดลองติดต่อผู้ดูแลระบบของคุณ</translation>
 <translation id="549333378215107354">ขนาด 3</translation>
-<translation id="5503356662318814623">ส่งข้อความ</translation>
 <translation id="5509762909502811065">B0</translation>
 <translation id="5509780412636533143">บุ๊กมาร์กที่มีการจัดการ</translation>
 <translation id="5510481203689988000">ควบคุมการตั้งค่านี้ได้ในการตั้งค่าคุกกี้</translation>
@@ -3004,7 +2999,6 @@
 <translation id="8296205692406981542">อุทยานและสวนระดับเมือง</translation>
 <translation id="8297545700510100061">คุกกี้และข้อมูลเว็บไซต์อื่นๆ ใช้ในการจดจำคุณ เช่น เพื่อลงชื่อเข้าใช้หรือปรับโฆษณาตามโปรไฟล์ของคุณ ดู<ph name="SETTINGS" />เพื่อจัดการคุกกี้สำหรับทุกเว็บไซต์</translation>
 <translation id="8298115750975731693">Wi-Fi ที่คุณใช้ (<ph name="WIFI_NAME" />) อาจต้องการให้คุณไปที่ <ph name="BEGIN_BOLD" /><ph name="LOGIN_URL" /><ph name="END_BOLD" /></translation>
-<translation id="8299269255470343364">ญี่ปุ่น</translation>
 <translation id="8303854710873047864">แสดงส่วน "<ph name="SECTION" />"</translation>
 <translation id="830498451218851433">พับครึ่ง</translation>
 <translation id="8307888238279532626">แอปที่ติดตั้งและความถี่ในการใช้</translation>
@@ -3126,7 +3120,6 @@
 <translation id="865032292777205197">เซ็นเซอร์ตรวจจับการเคลื่อนไหว</translation>
 <translation id="8654126188050905496">55 x 91 มม.</translation>
 <translation id="8663226718884576429">สรุปคำสั่งซื้อ <ph name="TOTAL_LABEL" /> รายละเอียดเพิ่มเติม</translation>
-<translation id="8666678546361132282">อังกฤษ</translation>
 <translation id="8671519637524426245">ค่า <ph name="SECURE_DNS_SALT" /> ไม่เป็นไปตามข้อกำหนดด้านขนาด</translation>
 <translation id="867224526087042813">ลายเซ็น</translation>
 <translation id="8672264262457010862">ธุรกิจและอุตสาหกรรม</translation>

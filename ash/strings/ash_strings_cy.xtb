@@ -460,6 +460,7 @@ Dyma rai pethau y gallwch eu gwneud i roi cychwyn arni.</translation>
 <translation id="3256109297135787951">Tynnwch yr amlygu o eitem ar eich silff</translation>
 <translation id="3260969790895726815">Mae lleferydd yn cael ei brosesu'n lleol ac mae arddweud yn gweithio all-lein, ond ni fydd rhai gorchmynion llais yn gweithio.</translation>
 <translation id="3269597722229482060">De-glicio</translation>
+<translation id="3289364673986435196">Dewislen pŵer</translation>
 <translation id="3289544412142055976">Ni chefnogir apiau Linux ar hyn o bryd</translation>
 <translation id="3289674678944039601">Wrthi'n gwefru drwy addasydd</translation>
 <translation id="3290356915286466215">Heb ei ddiogelu</translation>
@@ -684,6 +685,7 @@ Cysylltwch eich dyfais â phŵer.</translation>
 <translation id="4269883910223712419">Gall gweinyddwr y ddyfais hon:</translation>
 <translation id="4274537685965975248">Mae'r llwybr byr bysellfwrdd Ctrl + Alt + Saeth i lawr wedi newid. I ddefnyddio'r fysell End, pwysywch y fysell <ph name="LAUNCHER_KEY_NAME" /> + Saeth dde.</translation>
 <translation id="4279490309300973883">Adlewyrchu</translation>
+<translation id="4280601795273309128">Daeth diweddariadau diogelwch i ben. Uwchraddio'ch dyfais.</translation>
 <translation id="4283888303416325161">Rhowch gyfrinair i gael rhagor o ddiogelwch</translation>
 <translation id="4285498937028063278">Dad-binio</translation>
 <translation id="4294319844246081198">Bore da <ph name="GIVEN_NAME" />,</translation>
@@ -870,6 +872,7 @@ Cysylltwch eich dyfais â phŵer.</translation>
 <translation id="5147567197700016471">Wedi'i ddatgloi</translation>
 <translation id="5150070631291639005">Gosodiadau preifatrwydd</translation>
 <translation id="5155897006997040331">Cyflymder darllen</translation>
+<translation id="5163434717504750796">Iechyd batri <ph name="BATTERY_HEALTH_PERCENTAGE" />% | Cyfrif seiclo <ph name="CYCLE_COUNT" /></translation>
 <translation id="5166007464919321363">Cadw desg fel templed</translation>
 <translation id="5168181903108465623">Mae dyfeisiau Cast ar gael</translation>
 <translation id="5170568018924773124">Dangos yn y ffolder</translation>
@@ -1340,6 +1343,7 @@ Gosodiad newydd</translation>
 <translation id="743058460480092004">Mae'r camera a'r meicroffon yn cael eu defnyddio.</translation>
 <translation id="7452560014878697800">Mae ap yn defnyddio'ch camera</translation>
 <translation id="7453330308669753048">Canlyniad hanes chwilio wedi'i dynnu</translation>
+<translation id="7455047553373871740"><ph name="BATTERY_PERCENTAGE" />% | <ph name="TIME" /> nes ei fod yn llawn</translation>
 <translation id="7461924472993315131">Pinio</translation>
 <translation id="746232733191930409">Modd recordio'r sgrîn</translation>
 <translation id="7466449121337984263">Cyffyrddwch â'r synhwyrydd</translation>
@@ -1398,6 +1402,7 @@ I ddiffodd y ddyfais, pwyswch a daliwch y botwm pŵer ar y ddyfais eto.</transla
 <translation id="7689817529363080918">Mae hyn yn caniatáu mynediad meicroffon ar gyfer <ph name="APP1_NAME" />, <ph name="APP2_NAME" /> a phob ap a gwefan gyda'r caniatâd meicroffon</translation>
 <translation id="7704000866383261579">Ail-wneud y weithred ddiwethaf</translation>
 <translation id="7705524343798198388">VPN</translation>
+<translation id="770741401784017797">Wrthi'n creu GIF</translation>
 <translation id="7714767791242455379">Ychwanegu rhwydwaith symudol newydd</translation>
 <translation id="7720400844887872976">Ymlaen tan <ph name="TIME" /></translation>
 <translation id="7720410380936703141">RHOI CYNNIG ARALL ARNI</translation>
@@ -1703,6 +1708,7 @@ I ddiffodd y ddyfais, pwyswch a daliwch y botwm pŵer ar y ddyfais eto.</transla
 <translation id="9178475906033259337">Wrthi'n dangos 1 canlyniad am <ph name="QUERY" /></translation>
 <translation id="9179259655489829027">Mae'r nodwedd hon yn caniatáu i chi gyrchu unrhyw ddefnyddiwr sydd wedi mewngofnodi yn gyflym heb fod angen cyfrinair. Defnyddiwch y nodwedd hon gyda'r cyfrifon rydych yn ymddiried ynddynt yn unig.</translation>
 <translation id="9183456764293710005">Chwyddwr sgrîn lawn</translation>
+<translation id="9186811218777709815"><ph name="BATTERY_PERCENTAGE" />% | <ph name="TIME" /> ar ôl</translation>
 <translation id="9193626018745640770">Wrthi'n castio i dderbynnydd anhysbys</translation>
 <translation id="9194617393863864469">Mewngofnodi defnyddiwr arall...</translation>
 <translation id="9198992156681343238">Mae cydraniad <ph name="DISPLAY_NAME" /> wedi'i newid i <ph name="RESOLUTION" />. Cliciwch Cadarnhau i gadw'r newidiadau. Bydd y gosodiadau blaenorol yn cael eu hadfer mewn <ph name="TIMEOUT_SECONDS" />.</translation>

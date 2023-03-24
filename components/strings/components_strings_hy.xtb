@@ -922,7 +922,6 @@
 <translation id="3249151924975132674">Ուսանողական վարկեր և կրթության ֆինանսավորում</translation>
 <translation id="3249845759089040423">Նորաձև</translation>
 <translation id="3250640885957938546">Գովազդ և մարքեթինգ</translation>
-<translation id="3252266817569339921">Ֆրանսիական</translation>
 <translation id="3254301855501243548">18 x 22 դյույմ</translation>
 <translation id="3256863843508922226">Կենսաթոշակ</translation>
 <translation id="3259648571731540213"><ph name="CREATE_GOOGLE_CALENDAR_EVENT_FOCUSED_FRIENDLY_MATCH_TEXT" />։ Google Օրացույցում արագ միջոցառում ստեղծելու համար սեղմեք Tab, ապա՝ Enter։</translation>
@@ -1586,7 +1585,6 @@
 <translation id="484988093836683706">Օգտագործել սարքի ապակողպումը</translation>
 <translation id="4850886885716139402">Տեսք</translation>
 <translation id="4852429274334674023">Օպերացիոն համակարգեր</translation>
-<translation id="485316830061041779">Գերմանական</translation>
 <translation id="4853901935952445031">Այս կայքը 2022 թ․ փետրվար ամսից չի աջակցելու U2F API-ը։ Եթե կայքը ձեզ է պատկանում, անցեք Web Authentication API-ին։</translation>
 <translation id="4854362297993841467">Առաքման տվյալ եղանակը հասանելի չէ: Ընտրեք այլ եղանակ:</translation>
 <translation id="4854853140771946034">Արագ ստեղծել նշում Google Keep-ում</translation>
@@ -1826,7 +1824,6 @@
 <translation id="5423269318075950257">Հետևեք գներին</translation>
 <translation id="5425241977284572032">{NUM_COOKIES,plural, =0{Արգելափակված կայքեր չկան}=1{Արգելափակված է 1 կայք}one{Արգելափակված է # կայք}other{Արգելափակված է # կայք}}</translation>
 <translation id="5426179911063097041"><ph name="SITE" /> կայքն ուզում է ձեզ ծանուցումներ ուղարկել</translation>
-<translation id="5428105026674456456">Իսպանական</translation>
 <translation id="5430298929874300616">Հեռացնել էջանիշը</translation>
 <translation id="5443468954631487277">Հակառակ հերթականությամբ՝ երեսի կողմով վերև</translation>
 <translation id="5447765697759493033">Այս կայքը չի թարգմանվի</translation>
@@ -1835,7 +1832,6 @@
 <translation id="5457113250005438886">Անվավեր</translation>
 <translation id="5458150163479425638">{CONTACT,plural, =0{<ph name="CONTACT_PREVIEW" />}=1{<ph name="CONTACT_PREVIEW" /> ու ևս <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> կոնտակտ}one{<ph name="CONTACT_PREVIEW" /> ու ևս <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> կոնտակտ}other{<ph name="CONTACT_PREVIEW" /> ու ևս <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> կոնտակտ}}</translation>
 <translation id="5463625433003343978">Սարքերի որոնում…</translation>
-<translation id="5469868506864199649">Իտալական</translation>
 <translation id="5470230812924696184">Քաղաքացիական շինարարության նախագծում</translation>
 <translation id="5470861586879999274">&amp;Վերարկել փոփոխումը</translation>
 <translation id="5471337644440862957">Կատակերգական ֆիլմեր</translation>
@@ -1848,7 +1844,6 @@
     <ph name="LINE_BREAK" />
     Փորձեք կապվել ձեր համակարգի ադմինիստրատորի հետ:</translation>
 <translation id="549333378215107354">Չափ 3</translation>
-<translation id="5503356662318814623">Ուղարկել SMS</translation>
 <translation id="5509762909502811065">B0</translation>
 <translation id="5509780412636533143">Կառավարվող էջանիշներ</translation>
 <translation id="5510481203689988000">Այս պարամետրը կարող եք կառավարել քուքիների կարգավորումներում։</translation>
@@ -3006,7 +3001,6 @@
 <translation id="8296205692406981542">Տարածաշրջանային զբոսայգիներ և այգիներ</translation>
 <translation id="8297545700510100061">Քուքիները և կայքերի այլ տվյալները օգտագործվում են ձեր մասին տեղեկությունները պահելու համար, այդ թվում՝ հաշիվ մտնելու և գովազդը ձեզ համար անհատականացնելու համար։ Բոլոր կայքերի քուքիների կառավարման համար անցեք <ph name="SETTINGS" />։</translation>
 <translation id="8298115750975731693">Անլար կապը (<ph name="WIFI_NAME" />), որից օգտվում եք, կարող է պահանջել, որպեսզի դուք այցելեք <ph name="BEGIN_BOLD" /><ph name="LOGIN_URL" /><ph name="END_BOLD" />-ը:</translation>
-<translation id="8299269255470343364">Ճապոնական</translation>
 <translation id="8303854710873047864">«<ph name="SECTION" />» բաժինը ցուցադրվում է</translation>
 <translation id="830498451218851433">Ծալում կիսով չափ</translation>
 <translation id="8307888238279532626">Տեղադրված հավելվածները և դրանց օգտագործման հաճախականությունը</translation>
@@ -3127,7 +3121,6 @@
 <translation id="865032292777205197">շարժման տվիչներ</translation>
 <translation id="8654126188050905496">55 x 91 մմ</translation>
 <translation id="8663226718884576429">Տեղեկություն պատվերի մասին, <ph name="TOTAL_LABEL" />, մանրամասներ</translation>
-<translation id="8666678546361132282">Անգլիական</translation>
 <translation id="8671519637524426245"><ph name="SECURE_DNS_SALT" /> կանոնի արժեքը չի համապատասխանում չափսի պահանջներին։</translation>
 <translation id="867224526087042813">Ստորագրություն</translation>
 <translation id="8672264262457010862">Բիզնես և արդյունաբերություն</translation>

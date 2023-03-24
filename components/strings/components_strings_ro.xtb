@@ -922,7 +922,6 @@
 <translation id="3249151924975132674">Credite pentru studenți și finanțare pentru studii universitare</translation>
 <translation id="3249845759089040423">Șic</translation>
 <translation id="3250640885957938546">Publicitate și marketing</translation>
-<translation id="3252266817569339921">Franceză</translation>
 <translation id="3254301855501243548">18 x 22 in</translation>
 <translation id="3256863843508922226">Pensionare și pensie</translation>
 <translation id="3259648571731540213"><ph name="CREATE_GOOGLE_CALENDAR_EVENT_FOCUSED_FRIENDLY_MATCH_TEXT" />, apasă pe Tab, apoi pe Enter pentru a crea rapid un eveniment în Google Calendar</translation>
@@ -1586,7 +1585,6 @@
 <translation id="484988093836683706">Folosește deblocarea dispozitivului</translation>
 <translation id="4850886885716139402">Afișează</translation>
 <translation id="4852429274334674023">Sisteme de operare</translation>
-<translation id="485316830061041779">Germană</translation>
 <translation id="4853901935952445031">Site-ul nu va mai putea folosi API-ul U2F începând din februarie 2022. Dacă ești proprietarul acestui site, trebuie să-l modifici astfel încât să folosească API-ul Web Authentication.</translation>
 <translation id="4854362297993841467">Această metodă de livrare nu este disponibilă. Încearcă altă metodă.</translation>
 <translation id="4854853140771946034">Creează rapid o notă în Google Keep</translation>
@@ -1825,7 +1823,6 @@
 <translation id="5423269318075950257">Urmărește prețul</translation>
 <translation id="5425241977284572032">{NUM_COOKIES,plural, =0{Niciun site blocat}=1{Un site blocat}few{# site-uri blocate}other{# de site-uri blocate}}</translation>
 <translation id="5426179911063097041"><ph name="SITE" /> dorește să îți trimită notificări</translation>
-<translation id="5428105026674456456">Spaniolă</translation>
 <translation id="5430298929874300616">Elimină marcajul</translation>
 <translation id="5443468954631487277">În ordine inversă, cu fața în sus</translation>
 <translation id="5447765697759493033">Acest site nu va fi tradus</translation>
@@ -1834,7 +1831,6 @@
 <translation id="5457113250005438886">Nevalide</translation>
 <translation id="5458150163479425638">{CONTACT,plural, =0{<ph name="CONTACT_PREVIEW" />}=1{<ph name="CONTACT_PREVIEW" /> și încă <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" />}few{<ph name="CONTACT_PREVIEW" /> și încă <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" />}other{<ph name="CONTACT_PREVIEW" /> și încă <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" />}}</translation>
 <translation id="5463625433003343978">Se caută dispozitive...</translation>
-<translation id="5469868506864199649">Italiană</translation>
 <translation id="5470230812924696184">Inginerie civilă</translation>
 <translation id="5470861586879999274">&amp;Repetați editarea</translation>
 <translation id="5471337644440862957">Filme de comedie</translation>
@@ -1847,7 +1843,6 @@
     <ph name="LINE_BREAK" />
     Contactează administratorul sistemului.</translation>
 <translation id="549333378215107354">Mărimea 3</translation>
-<translation id="5503356662318814623">Trimite un mesaj</translation>
 <translation id="5509762909502811065">B0</translation>
 <translation id="5509780412636533143">Marcaje gestionate</translation>
 <translation id="5510481203689988000">Setarea este controlată din setările cookie-urilor.</translation>
@@ -3005,7 +3000,6 @@ Detalii suplimentare:
 <translation id="8296205692406981542">Parcuri și grădini regionale</translation>
 <translation id="8297545700510100061">Cookie-urile și alte date ale site-urilor sunt folosite pentru a te reține, de exemplu, pentru a te conecta sau pentru a personaliza anunțuri. Pentru a gestiona cookie-urile pentru toate site-urile, consultă <ph name="SETTINGS" />.</translation>
 <translation id="8298115750975731693">Rețeaua Wi-Fi pe care o folosești (<ph name="WIFI_NAME" />) poate solicita accesarea adresei <ph name="BEGIN_BOLD" /><ph name="LOGIN_URL" /><ph name="END_BOLD" />.</translation>
-<translation id="8299269255470343364">Japoneză</translation>
 <translation id="8303854710873047864">Secțiunea „<ph name="SECTION" />” s-a afișat</translation>
 <translation id="830498451218851433">Îndoire la jumătate</translation>
 <translation id="8307888238279532626">Aplicațiile instalate și frecvența de folosire a acestora</translation>
@@ -3127,7 +3121,6 @@ Detalii suplimentare:
 <translation id="865032292777205197">Senzori de mișcare</translation>
 <translation id="8654126188050905496">55 x 91 mm</translation>
 <translation id="8663226718884576429">Rezumatul comenzii, <ph name="TOTAL_LABEL" />, Mai multe detalii</translation>
-<translation id="8666678546361132282">Engleză</translation>
 <translation id="8671519637524426245">Valoarea <ph name="SECURE_DNS_SALT" /> nu respectă cerințele de dimensiune.</translation>
 <translation id="867224526087042813">Semnătura</translation>
 <translation id="8672264262457010862">Afaceri și comerț</translation>

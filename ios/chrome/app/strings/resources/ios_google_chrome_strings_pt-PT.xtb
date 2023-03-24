@@ -40,6 +40,7 @@
 <translation id="3167189358072330585">A sua conta não funciona no Google Chrome. Contacte o gestor do domínio ou utilize uma Conta Google normal para iniciar sessão.</translation>
 <translation id="3173834708294760622">Página do Google Chrome</translation>
 <translation id="3196546062792660320">O Chrome poupa o seu tempo ao trazer as suas contas para a Web. Pode adicionar ou remover contas nas Definições.</translation>
+<translation id="322254490661677575">Para usar e guardar dados do Chrome na sua Conta Google, introduza a frase de acesso.</translation>
 <translation id="3282568296779691940">Iniciar sessão no Chrome</translation>
 <translation id="3345341804167540816">Usar o Chrome em todas as plataformas</translation>
 <translation id="3503014945441706099">Obtenha também a Navegação segura melhorada para este perfil do Chrome</translation>
@@ -52,6 +53,7 @@
 <translation id="3980220367029651214">Está a mudar as contas de sincronização de <ph name="USER_EMAIL1" /> para <ph name="USER_EMAIL2" />. Os seus dados do Chrome existentes são geridos por <ph name="DOMAIN" />. Esta ação elimina os seus dados deste dispositivo, embora permaneçam em <ph name="USER_EMAIL1" />.</translation>
 <translation id="3984746313391923992">A sua entidade requer que se mantenha sem sessão iniciada no Chrome.</translation>
 <translation id="3988789688219830639">O Google Chrome não tem acesso aos seus vídeos ou fotos. Ative o acesso nas Definições do iOS &gt; Privacidade &gt; Fotos.</translation>
+<translation id="4064699917955374540">Para usar e guardar dados do Chrome na sua Conta Google, valide a sua identidade.</translation>
 <translation id="417201473131094001">Opção não suportada no Chrome Canary.</translation>
 <translation id="4233521129555661685"><ph name="USER_EMAIL1" /> estava a utilizar o Chrome e deixou marcadores, palavras-passe e outras definições neste dispositivo.</translation>
 <translation id="424864128008805179">Pretende terminar sessão no Chrome?</translation>
@@ -68,6 +70,7 @@
 <translation id="5119391094379141756">Selecione o Chrome</translation>
 <translation id="5162467219239570114">O Chrome está desatualizado. Se não estiverem disponíveis atualizações na <ph name="BEGIN_LINK" />App Store<ph name="END_LINK" />, é possível que o seu dispositivo já não suporte novas versões do Chrome.</translation>
 <translation id="5389212809648216794">O Google Chrome não pode utilizar a câmara porque está a ser utilizada por outra aplicação</translation>
+<translation id="5395376160638294582">Certifique-se de que pode sempre usar os dados do Chrome na sua Conta Google</translation>
 <translation id="5460571915754665838">4. Selecione o Chrome</translation>
 <translation id="5492504007368565877">O Gestor de Palavras-passe da Google não consegue verificar as suas palavras-passe.</translation>
 <translation id="5552137475244467770">O Chrome verifica periodicamente se as suas palavras-passe fazem parte das listas publicadas online. Ao fazê-lo, as suas palavras-passe e nomes de utilizador estão encriptados, pelo que não podem ser lidos por ninguém, incluindo a Google.</translation>
@@ -122,6 +125,7 @@
 <translation id="8370517070665726704">Copyright <ph name="YEAR" /> Google LLC. Todos os direitos reservados.</translation>
 <translation id="840168496893712993">Alguns suplementos provocam falhas no sistema do Chrome. Tente desinstalá-los.</translation>
 <translation id="8414886616817913619">A sua organização requer que inicie sessão para utilizar o Chrome. <ph name="BEGIN_LINK" />Saiba mais<ph name="END_LINK" /></translation>
+<translation id="84594714173170813">Continue a usar os dados do Chrome na sua Conta Google</translation>
 <translation id="8459495907675268833">Os dados selecionados foram removidos do Chrome e dos dispositivos sincronizados. A sua Conta Google pode ter outras formas do histórico de navegação, como pesquisas e atividade de outros serviços Google, em history.google.com.</translation>
 <translation id="850555388806794946">Para definir o Chrome como o navegador predefinido:
   1. Abra as Definições

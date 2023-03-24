@@ -97,6 +97,7 @@
 <translation id="1773212559869067373">Certificado de autenticação rejeitado localmente</translation>
 <translation id="1775381402323441512">Informações sobre o vídeo</translation>
 <translation id="180035236176489073">É necessário estar conectado para acessar estes arquivos.</translation>
+<translation id="1805030087840125683">{COUNT,plural, =1{Falha ao localizar a extensão com o ID}one{Falha ao localizar a extensão com o ID}other{Falha ao localizar as extensões com os IDs}}</translation>
 <translation id="1807938677607439181">Todos os arquivos</translation>
 <translation id="1810764548349082891">Nenhuma visualização disponível</translation>
 <translation id="1812302367230252929">Amárico (transliteração)</translation>
@@ -130,6 +131,7 @@
 <translation id="2084108471225856927">Configurações do dispositivo</translation>
 <translation id="2084809735218147718">"Obrigado" na língua de sinais</translation>
 <translation id="2088690981887365033">Rede VPN</translation>
+<translation id="2111134541987263231">Ative a opção <ph name="BEGIN_BOLD" />Permitir na navegação anônima<ph name="END_BOLD" />.</translation>
 <translation id="2114191879048183086"><ph name="NUMBER_OF_ITEMS" /> itens vão ser excluídos e não poderão ser restaurados.</translation>
 <translation id="2122305276694332719">A conexão automática a uma rede oculta não é recomendada porque permite que outras pessoas vejam seu dispositivo e algumas configurações de rede.</translation>
 <translation id="2125607626296734455">Khmer</translation>
@@ -228,6 +230,7 @@
 <translation id="290843123675549676">Marati</translation>
 <translation id="2923240520113693977">Estoniano</translation>
 <translation id="2938685643439809023">Mongol</translation>
+<translation id="293972288692056847">{COUNT,plural, =1{Não foi possível encontrar a extensão}one{Não foi possível encontrar a extensão}other{Não foi possível encontrar as extensões}}</translation>
 <translation id="2943503720238418293">Use um nome mais curto</translation>
 <translation id="2949781154072577687">Formatando <ph name="DRIVE_NAME" />…</translation>
 <translation id="2951236788251446349">Água-viva</translation>
@@ -282,6 +285,7 @@
 <translation id="3356580349448036450">Concluído</translation>
 <translation id="3358452157379365236">Violão</translation>
 <translation id="3368922792935385530">Conectado</translation>
+<translation id="3372635229069101468">Clique em <ph name="BEGIN_BOLD" />Detalhes<ph name="END_BOLD" />.</translation>
 <translation id="3382143449143186018">Nepalês com teclado InScript</translation>
 <translation id="338691029516748599">Rede <ph name="NETWORK_INDEX" /> de <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, intensidade do sinal em <ph name="SIGNAL_STRENGTH" />%, gerenciada pelo seu administrador, conectar</translation>
 <translation id="3408072735282270043">Ativar, <ph name="NETWORK_NAME" /></translation>
@@ -366,6 +370,7 @@
 <translation id="4124935795427217608">Unicórnio</translation>
 <translation id="4131235941541910880">Mova os itens desnecessários para a lixeira</translation>
 <translation id="4134804435730168042">Rede <ph name="NETWORK_INDEX" /> de <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" />, ativar após a configuração do dispositivo</translation>
+<translation id="41501027364808384">{COUNT,plural, =1{Ative esta extensão na navegação anônima:}one{Ative esta extensão na navegação anônima:}other{Ative estas extensões na navegação anônima:}}</translation>
 <translation id="4153015322587141338">Clique com o botão direito do mouse em um arquivo e selecione "<ph name="PIN_COMMAND" />" para ter acesso rápido a ele pela estante.</translation>
 <translation id="4157569377477607576">A política do administrador não recomenda o seguinte:</translation>
 <translation id="4159731583141908892"><ph name="FILE_NAME" /> movido.</translation>
@@ -462,8 +467,10 @@
 <translation id="4801956050125744859">Manter ambas</translation>
 <translation id="4804827417948292437">Abacate</translation>
 <translation id="4805966553127040832">Restaurando <ph name="COUNT" /> itens</translation>
+<translation id="4816695657735045067">{COUNT,plural, =1{Para usar a navegação anônima, sua organização exige uma extensão}one{Para usar a navegação anônima, sua organização exige uma extensão}other{Para usar a navegação anônima, sua organização exige algumas extensões}}</translation>
 <translation id="4823651846660089135">O dispositivo é somente leitura</translation>
 <translation id="4826849268470072925">Tâmil (ITRANS)</translation>
+<translation id="482932175346970750">Digite <ph name="BEGIN_BOLD" />chrome://extensions<ph name="END_BOLD" /> no navegador.</translation>
 <translation id="4839847978919684242"><ph name="SELCTED_FILES_COUNT" /> itens selecionados</translation>
 <translation id="4843566743023903107">Chromebases</translation>
 <translation id="4850886885716139402">Ver</translation>
@@ -533,6 +540,7 @@
     em arquivos com outras pessoas em um só lugar.<ph name="MARKUP_9" /></translation>
 <translation id="5275973617553375938">Arquivos recuperados a partir do Google Drive</translation>
 <translation id="5278111733643988471">Para restaurar esse item, arraste-o para uma nova pasta fora da lixeira. A pasta original "<ph name="PARENT_FOLDER_NAME" />" foi excluída.</translation>
+<translation id="5283101102242354279">Ative uma extensão na navegação anônima:</translation>
 <translation id="5286194356314741248">Verificando</translation>
 <translation id="5288441970121584418">Hambúrguer</translation>
 <translation id="5288481194217812690"><ph name="FILENAME" /></translation>
@@ -779,6 +787,7 @@
 <translation id="7238643356913091553"><ph name="NETWORK_NAME" />, detalhes</translation>
 <translation id="7246947237293279874">Proxy FTP</translation>
 <translation id="7248671827512403053">Aplicativo</translation>
+<translation id="7252604552361840748">Encontre a extensão acima.</translation>
 <translation id="7256405249507348194">Erro não reconhecido: <ph name="DESC" /></translation>
 <translation id="7268659760406822741">Serviços disponíveis</translation>
 <translation id="7292816689782057017">A política do administrador restringe a capacidade de salvar em alguns locais.</translation>
@@ -792,6 +801,7 @@
 <translation id="7359359531237882347">Copiando <ph name="NUMBER_OF_ITEMS" /> itens…</translation>
 <translation id="7375951387215729722">Lista de arquivos classificada por <ph name="COLUMN_NAME" /> em ordem decrescente.</translation>
 <translation id="7377161162143020057">A cópia desse arquivo está bloqueada pela política do administrador</translation>
+<translation id="7392500733467492920">Entre em contato com o administrador.</translation>
 <translation id="7402503521691663770">Dispositivos ChromeOS Flex</translation>
 <translation id="7408870451288633753">Tcheco</translation>
 <translation id="7417453074306512035">Teclado etíope</translation>

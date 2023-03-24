@@ -72,6 +72,7 @@
 <translation id="1061130374843955397">Sveiki! Tai – „<ph name="DEVICE_TYPE" />“</translation>
 <translation id="1061373870045429865">Sukurkite šios nuorodos QR kodą</translation>
 <translation id="1061904396131502319">Beveik atėjo laikas padaryti pertrauką</translation>
+<translation id="1062407476771304334">Pakeisti</translation>
 <translation id="1062628064301375934">Padėkite mums kurti privatesnį žiniatinklį</translation>
 <translation id="1067048845568873861">Sukurtas</translation>
 <translation id="1067661089446014701">Kad užtikrintumėte geresnę saugą, galite šifruoti slaptažodžius įrenginyje prieš išsaugodami juos „Google“ paskyroje</translation>
@@ -1167,6 +1168,7 @@ Leidimai, kuriuos jau esate suteikę programoms, gali būti taikomi šiai paskyr
 <translation id="1987317783729300807">Paskyros</translation>
 <translation id="1987574314042117472">Pasirinkti ir įdiegti populiarias programas</translation>
 <translation id="1988259784461813694">Reikalavimas</translation>
+<translation id="1988733631391393183">Rodyti komandas Brailio raštu „ChromeVox“ meniu</translation>
 <translation id="1989112275319619282">Naršyti</translation>
 <translation id="1989903373608997757">Visada naudoti</translation>
 <translation id="1990046457226896323">Kalbos failai atsisiųsti</translation>
@@ -2560,7 +2562,6 @@ Jei nenorite, dabar atsijunkite, kad šios paskyros pakeitimai būtų matomi ši
 <translation id="3193695589337931419">Sistemos signalų paslaugų programos</translation>
 <translation id="3194786596445804250">Rodyti išsamią informaciją apie trečiųjų šalių slapukų blokavimą</translation>
 <translation id="3197453258332670132">Spustelėjus dešiniuoju pelės klavišu arba ilgai paspaudus rodoma su jūsų teksto pasirinkimu susijusi informacija</translation>
-<translation id="3198804549162832936">Atidaryti nuorodą naujoje programoje „<ph name="APP" />“</translation>
 <translation id="3199127022143353223">Serveriai</translation>
 <translation id="3200061262156232574">Jūsų pirkinių krepšelyje</translation>
 <translation id="3201237270673604992">Ž–A</translation>
@@ -2689,6 +2690,7 @@ Jei nenorite, dabar atsijunkite, kad šios paskyros pakeitimai būtų matomi ši
 <translation id="3317678681329786349">Fotoaparatas ir mikrofonas užblokuoti</translation>
 <translation id="3319306431415395200">Versti tekstą vaizde naudojant „<ph name="VISUAL_SEARCH_PROVIDER" />“</translation>
 <translation id="3320630259304269485">Saugus naršymas (apsauga nuo pavojingų svetainių) ir kiti saugos nustatymai</translation>
+<translation id="3321460131042519426">Įgalinti teksto skaidymą į eilutes</translation>
 <translation id="3323521181261657960">Premija! Galite ilgiau naudoti įrenginį</translation>
 <translation id="3323577066981719144">Čia atlikti pakeitimai taikomi tik naršyklei „Chrome“. Jei norite atlikti „Lacros“ naršyklės „Chrome“ nustatymų pakeitimus, atidarykite „Lacros“ naršyklę „Chrome“ ir eikite į nustatymus.</translation>
 <translation id="3325804108816646710">Ieškoma pasiekiamų profilių...</translation>
@@ -6567,6 +6569,7 @@ Turite dar # pažeistų slaptažodžių. „Google“ slaptažodžių tvarkyklė
 <translation id="6823174134746916417">Paspaudimas palietus jutiklinę dalį</translation>
 <translation id="6824564591481349393">Kopijuoti &amp;el. pašto adresą</translation>
 <translation id="6824584962142919697">&amp;Tikrinti elementus</translation>
+<translation id="6824725898506587159">Valdyti kalbas</translation>
 <translation id="6825184156888454064">Rūšiuoti pagal pavadinimą</translation>
 <translation id="6826872289184051766">Patvirtinti per USB</translation>
 <translation id="6827121912381363404">Leisti visiems plėtiniams skaityti ir keisti <ph name="PERMITTED_SITE" /></translation>
@@ -6691,7 +6694,6 @@ Turite dar # pažeistų slaptažodžių. „Google“ slaptažodžių tvarkyklė
 <translation id="6925127338315966709">Pridedate tvarkomą profilį prie šios naršyklės. Jūsų administratorius valdo profilį ir gali pasiekti jo duomenis. Jūsų administratorius gali sinchronizuoti žymes, istoriją, slaptažodžius ir kitus nustatymus su paskyra bei juos tvarkyti.</translation>
 <translation id="6929126689972602640">Tėvų kontrolė nepalaikoma naudojant mokyklos paskyras. Jei norite pridėti mokyklos paskyrą, kad būtų galima pasiekti „Google Classroom“ ir kitas svetaines, reikalingas norint mokytis namuose, pirmiausia prisijunkite naudodami vaiko asmeninę paskyrą. Mokyklos paskyrą galėsite pridėti vėliau atlikdami sąranką.</translation>
 <translation id="6929760895658557216">Ok Google</translation>
-<translation id="6930036377490597025">Išorinis saugos raktas arba integruotas jutiklis</translation>
 <translation id="6930161297841867798">{NUM_EXTENSIONS,plural, =1{Plėtinys atmestas}one{Atmestas # plėtinys}few{Atmesti # plėtiniai}many{Atmesta # plėtinio}other{Atmesta # plėtinių}}</translation>
 <translation id="6931690462168617033">Paspaudimo stiprumas</translation>
 <translation id="6935286146439255109">Nėra popieriaus dėklo</translation>
@@ -9020,6 +9022,7 @@ Leidimai, kuriuos jau esate suteikę svetainėms ir programoms, gali būti taiko
 <translation id="9008828754342192581">Anksčiau pasirinkote leisti visus plėtinius <ph name="ORIGIN" /></translation>
 <translation id="9009369504041480176">Įkeliama (<ph name="PROGRESS_PERCENT" /> %)...</translation>
 <translation id="9009708085379296446">Ar norėjote pakeisti šį puslapį?</translation>
+<translation id="9010845741772269259">Pridėti mokėjimo metodus</translation>
 <translation id="9011163749350026987">Visada rodyti piktogramą</translation>
 <translation id="9011262023858991985">Šis skirtukas perduodamas</translation>
 <translation id="9011393886518328654">Laidos informacija</translation>

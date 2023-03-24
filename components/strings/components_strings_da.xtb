@@ -809,6 +809,7 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="2951588413176968965">Min postkasse</translation>
 <translation id="2952820037279740115">Luk alle inkognitovinduer</translation>
 <translation id="2952904171810469095">A2x5</translation>
+<translation id="2954624054936281172">Tabel over gemte betalingsmetoder</translation>
 <translation id="295526156371527179">Advarsel! Denne politik blev ikke flettet som en ordbog som angivet af politikken, da den ikke er en ordbog.</translation>
 <translation id="2955913368246107853">Luk søgefeltet</translation>
 <translation id="2958544468932521864">Cricket</translation>
@@ -921,7 +922,6 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="3249151924975132674">Studielån og uddannelsesfinansiering</translation>
 <translation id="3249845759089040423">Groovy</translation>
 <translation id="3250640885957938546">Reklame og marketing</translation>
-<translation id="3252266817569339921">Fransk</translation>
 <translation id="3254301855501243548">18 x 22 tommer</translation>
 <translation id="3256863843508922226">Fratrædelse og pension</translation>
 <translation id="3259648571731540213"><ph name="CREATE_GOOGLE_CALENDAR_EVENT_FOCUSED_FRIENDLY_MATCH_TEXT" />, tryk på Tab-tasten efterfulgt af Enter for hurtigt at oprette en ny begivenhed i Google Kalender</translation>
@@ -1585,7 +1585,6 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="484988093836683706">Brug enhedsoplåsning</translation>
 <translation id="4850886885716139402">Vis</translation>
 <translation id="4852429274334674023">Operativsystemer</translation>
-<translation id="485316830061041779">Tysk</translation>
 <translation id="4853901935952445031">Efter februar 2022 kan dette website ikke anvende U2F API. Hvis du ejer websitet, skal du skifte til Web Authentication API.</translation>
 <translation id="4854362297993841467">Denne leveringsmetode er ikke tilgængelig. Prøv en anden metode.</translation>
 <translation id="4854853140771946034">Opret hurtigt en ny note i Google Keep</translation>
@@ -1824,7 +1823,6 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="5423269318075950257">Hold øje med prisudviklingen</translation>
 <translation id="5425241977284572032">{NUM_COOKIES,plural, =0{Ingen websites er blokeret}=1{1 website er blokeret}one{# website er blokeret}other{# websites er blokeret}}</translation>
 <translation id="5426179911063097041"><ph name="SITE" /> vil gerne sende notifikationer til dig</translation>
-<translation id="5428105026674456456">Spansk</translation>
 <translation id="5430298929874300616">Fjern bogmærke</translation>
 <translation id="5443468954631487277">Omvendt rækkefølge med forside opad</translation>
 <translation id="5447765697759493033">Dette website kan ikke oversættes</translation>
@@ -1833,7 +1831,6 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="5457113250005438886">Ugyldig</translation>
 <translation id="5458150163479425638">{CONTACT,plural, =0{<ph name="CONTACT_PREVIEW" />}=1{<ph name="CONTACT_PREVIEW" /> og <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> anden}one{<ph name="CONTACT_PREVIEW" /> og <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> anden}other{<ph name="CONTACT_PREVIEW" /> og <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> andre}}</translation>
 <translation id="5463625433003343978">Finder enheder...</translation>
-<translation id="5469868506864199649">Italiensk</translation>
 <translation id="5470230812924696184">Ingeniørvidenskab</translation>
 <translation id="5470861586879999274">&amp;Annuller fortryd redigering</translation>
 <translation id="5471337644440862957">Komedier</translation>
@@ -1846,7 +1843,6 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
     <ph name="LINE_BREAK" />
     Prøv at kontakte din systemadministrator.</translation>
 <translation id="549333378215107354">Størrelse 3</translation>
-<translation id="5503356662318814623">Send en sms</translation>
 <translation id="5509762909502811065">B0</translation>
 <translation id="5509780412636533143">Administrerede bogmærker</translation>
 <translation id="5510481203689988000">Denne indstilling administreres i indstillingerne for cookies.</translation>
@@ -2777,6 +2773,7 @@ Yderligere oplysninger:
 <translation id="7736959720849233795">Kopiér linkadresse</translation>
 <translation id="7740996059027112821">Standard</translation>
 <translation id="77424286611022110">Dette website viser påtrængende eller vildledende annoncer. <ph name="LEARN_MORE_LINK_TEXT" /></translation>
+<translation id="7744505202669469867">Tabel over gemte adresser</translation>
 <translation id="774634243536837715">Farligt indhold er blokeret.</translation>
 <translation id="7751971323486164747">Tilpas skriftstørrelser og skrifttyper i Chrome</translation>
 <translation id="7752995774971033316">Administreres ikke</translation>
@@ -3003,7 +3000,6 @@ Yderligere oplysninger:
 <translation id="8296205692406981542">Regionale parker og haver</translation>
 <translation id="8297545700510100061">Cookies og andre websitedata bruges til at huske dig, f.eks. for at logge dig ind eller give dig tilpassede annoncer. Gå til <ph name="SETTINGS" /> for at administrere cookies for alle websites.</translation>
 <translation id="8298115750975731693">Det Wi-Fi-netværk, du bruger (<ph name="WIFI_NAME" />), kan kræve, at du går til <ph name="BEGIN_BOLD" /><ph name="LOGIN_URL" /><ph name="END_BOLD" />.</translation>
-<translation id="8299269255470343364">Japansk</translation>
 <translation id="8303854710873047864">Sektionen "<ph name="SECTION" />" vises</translation>
 <translation id="830498451218851433">Fals halvt</translation>
 <translation id="8307888238279532626">Installerede apps, og hvor ofte de bruges</translation>
@@ -3018,6 +3014,7 @@ Yderligere oplysninger:
 <translation id="8347658365704983341">Fjernundervisning</translation>
 <translation id="8349305172487531364">Bogmærkelinje</translation>
 <translation id="8351131234907093545">Opret note</translation>
+<translation id="835203957414790336">Indholdet på de sider, du udskriver, og oplysninger om din printer sendes til analyse i Google Cloud eller hos tredjeparter. Tekst kan f.eks. blive scannet for følsomme oplysninger.</translation>
 <translation id="8355270400102541638">Lokal nedbrudskontekst:</translation>
 <translation id="8363502534493474904">Deaktivere flytilstand</translation>
 <translation id="8364627913115013041">Ikke angivet.</translation>
@@ -3124,7 +3121,6 @@ Yderligere oplysninger:
 <translation id="865032292777205197">bevægelsessensorer</translation>
 <translation id="8654126188050905496">55 x 91 mm</translation>
 <translation id="8663226718884576429">Ordreoversigt, <ph name="TOTAL_LABEL" />, flere oplysninger</translation>
-<translation id="8666678546361132282">Engelsk</translation>
 <translation id="8671519637524426245"><ph name="SECURE_DNS_SALT" />-værdien opfylder ikke størrelseskravene.</translation>
 <translation id="867224526087042813">Underskrift</translation>
 <translation id="8672264262457010862">Erhverv og industri</translation>

@@ -809,6 +809,7 @@ Jinak to vaše nastavení ochrany soukromí bude blokovat. Povolením umožníte
 <translation id="2951588413176968965">Moje schránka</translation>
 <translation id="2952820037279740115">Zavřít všechna anonymní okna</translation>
 <translation id="2952904171810469095">A2x5</translation>
+<translation id="2954624054936281172">Tabulka uložených platebních metod</translation>
 <translation id="295526156371527179">Upozornění: Tato zásada nebyla podle zásady sloučena jako slovník, protože se nejedná o slovník.</translation>
 <translation id="2955913368246107853">Zavřít vyhledávací lištu</translation>
 <translation id="2958544468932521864">Kriket</translation>
@@ -918,7 +919,6 @@ Jinak to vaše nastavení ochrany soukromí bude blokovat. Povolením umožníte
 <translation id="3249151924975132674">Studentské půjčky a financování studia na vysoké škole</translation>
 <translation id="3249845759089040423">Elegantní</translation>
 <translation id="3250640885957938546">Reklama a marketing</translation>
-<translation id="3252266817569339921">francouzština</translation>
 <translation id="3254301855501243548">18 × 22″</translation>
 <translation id="3256863843508922226">Důchod a penze</translation>
 <translation id="3259648571731540213"><ph name="CREATE_GOOGLE_CALENDAR_EVENT_FOCUSED_FRIENDLY_MATCH_TEXT" />, stisknutím klávesy Tab a poté Enter rychle vytvoříte novou událost v Kalendáři Google</translation>
@@ -1581,7 +1581,6 @@ Jinak to vaše nastavení ochrany soukromí bude blokovat. Povolením umožníte
 <translation id="484988093836683706">Použít odemknutí zařízení</translation>
 <translation id="4850886885716139402">Zobrazit</translation>
 <translation id="4852429274334674023">Operační systémy</translation>
-<translation id="485316830061041779">němčina</translation>
 <translation id="4853901935952445031">Po únoru 2022 nebude tento web moci používat rozhraní U2F API. Pokud tento web vlastníte, měli byste provést úpravy, aby používal rozhraní Web Authentication API.</translation>
 <translation id="4854362297993841467">Tento způsob doručení není k dispozici. Zkuste použít jiný způsob.</translation>
 <translation id="4854853140771946034">Rychle vytvořit novou poznámku v aplikaci Google Keep</translation>
@@ -1820,7 +1819,6 @@ Jinak to vaše nastavení ochrany soukromí bude blokovat. Povolením umožníte
 <translation id="5423269318075950257">Sledovat cenu</translation>
 <translation id="5425241977284572032">{NUM_COOKIES,plural, =0{Nejsou blokovány žádné weby}=1{Je blokován 1 web}few{Jsou blokovány # weby}many{Je blokováno # webu}other{Je blokováno # webů}}</translation>
 <translation id="5426179911063097041"><ph name="SITE" /> vám chce zasílat oznámení</translation>
-<translation id="5428105026674456456">španělština</translation>
 <translation id="5430298929874300616">Odstranit záložku</translation>
 <translation id="5443468954631487277">Obrácené pořadí lícem nahoru</translation>
 <translation id="5447765697759493033">Tento web nebude přeložen</translation>
@@ -1829,7 +1827,6 @@ Jinak to vaše nastavení ochrany soukromí bude blokovat. Povolením umožníte
 <translation id="5457113250005438886">Neplatné</translation>
 <translation id="5458150163479425638">{CONTACT,plural, =0{<ph name="CONTACT_PREVIEW" />}=1{<ph name="CONTACT_PREVIEW" /> a <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> další}few{<ph name="CONTACT_PREVIEW" /> a <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> další}many{<ph name="CONTACT_PREVIEW" /> a <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> dalšího}other{<ph name="CONTACT_PREVIEW" /> a <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> dalších}}</translation>
 <translation id="5463625433003343978">Hledání zařízení…</translation>
-<translation id="5469868506864199649">italština</translation>
 <translation id="5470230812924696184">Stavební inženýrství</translation>
 <translation id="5470861586879999274">&amp;Opakovat úpravy</translation>
 <translation id="5471337644440862957">Komedie</translation>
@@ -1842,7 +1839,6 @@ Jinak to vaše nastavení ochrany soukromí bude blokovat. Povolením umožníte
 <ph name="LINE_BREAK" />
 Kontaktujte administrátora systému.</translation>
 <translation id="549333378215107354">Velikost 3</translation>
-<translation id="5503356662318814623">Poslat zprávu</translation>
 <translation id="5509762909502811065">B0</translation>
 <translation id="5509780412636533143">Spravované záložky</translation>
 <translation id="5510481203689988000">Toto nastavení se ovládá v nastavení souborů cookie.</translation>
@@ -2771,6 +2767,7 @@ Kontaktujte administrátora systému.</translation>
 <translation id="7736959720849233795">Zkopírovat adresu odkazu</translation>
 <translation id="7740996059027112821">Standardně</translation>
 <translation id="77424286611022110">Tento web zobrazuje rušivé nebo zavádějící reklamy. <ph name="LEARN_MORE_LINK_TEXT" /></translation>
+<translation id="7744505202669469867">Tabulka uložených adres</translation>
 <translation id="774634243536837715">Byl zablokován nebezpečný obsah.</translation>
 <translation id="7751971323486164747">Upravit v Chromu velikosti a typy písem</translation>
 <translation id="7752995774971033316">Nespravováno</translation>
@@ -2997,7 +2994,6 @@ Kontaktujte administrátora systému.</translation>
 <translation id="8296205692406981542">Přírodní parky a zahrady</translation>
 <translation id="8297545700510100061">Soubory cookie a další data webů slouží k tomu, aby si vás web zapamatoval, například pro účely přihlášení nebo personalizace reklam. Pokud chcete spravovat soubory cookie pro všechny weby, přejděte do <ph name="SETTINGS" />.</translation>
 <translation id="8298115750975731693">Síť Wi-Fi, kterou používáte (<ph name="WIFI_NAME" />), může vyžadovat, abyste navštívili stránku <ph name="BEGIN_BOLD" /><ph name="LOGIN_URL" /><ph name="END_BOLD" />.</translation>
-<translation id="8299269255470343364">japonština</translation>
 <translation id="8303854710873047864">Je zobrazena sekce <ph name="SECTION" /></translation>
 <translation id="830498451218851433">Přeložení napůl</translation>
 <translation id="8307888238279532626">Nainstalované aplikace a četnost jejich používání</translation>
@@ -3012,6 +3008,7 @@ Kontaktujte administrátora systému.</translation>
 <translation id="8347658365704983341">Dálkové studium</translation>
 <translation id="8349305172487531364">Lišta záložek</translation>
 <translation id="8351131234907093545">Vytvořit poznámku</translation>
+<translation id="835203957414790336">Obsah tisknutých stránek a informace o vaší tiskárně se odesílají do služby Google Cloud nebo třetím stranám k analýze. Může se u nich například kontrolovat přítomnost citlivých údajů.</translation>
 <translation id="8355270400102541638">Místní kontext selhání:</translation>
 <translation id="8363502534493474904">Vypnout režim Letadlo</translation>
 <translation id="8364627913115013041">Nenastaveno.</translation>
@@ -3118,7 +3115,6 @@ Další podrobnosti:
 <translation id="865032292777205197">senzory pohybu</translation>
 <translation id="8654126188050905496">55 × 91 mm</translation>
 <translation id="8663226718884576429">Shrnutí objednávky, <ph name="TOTAL_LABEL" />, další podrobnosti</translation>
-<translation id="8666678546361132282">angličtina</translation>
 <translation id="8671519637524426245">Hodnota <ph name="SECURE_DNS_SALT" /> nesplňuje požadavky na velikost.</translation>
 <translation id="867224526087042813">Podpis</translation>
 <translation id="8672264262457010862">Obchodní a průmyslové zboží</translation>

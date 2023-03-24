@@ -58,6 +58,7 @@ Só uma pessoa com sua senha longa poderá ler os dados criptografados. Essa sen
 <translation id="1283524564873030414">Últimas 24 horas</translation>
 <translation id="1285320974508926690">Nunca traduzir este site</translation>
 <translation id="1291506870746876680">As permissões de <ph name="BEGIN_BOLD" /><ph name="SITE_NAME" /><ph name="END_BOLD" /> serão redefinidas como desativadas quando você sair desse site.</translation>
+<translation id="1305822519689023679">Para garantir que você sempre possa usar as senhas na sua Conta do Google, confirme sua identidade.</translation>
 <translation id="1312721752506309252">A Proteção reforçada está ativa</translation>
 <translation id="1321993286294231467">Erro ao salvar a imagem.</translation>
 <translation id="1322735045095424339">Sua organização requer o uso do modo de navegação anônima</translation>
@@ -107,6 +108,7 @@ Só uma pessoa com sua senha longa poderá ler os dados criptografados. Essa sen
 <translation id="1626771852476987600"><ph name="COUNT" /> senhas reutilizadas</translation>
 <translation id="1641113438599504367">Navegação segura</translation>
 <translation id="1644574205037202324">Histórico</translation>
+<translation id="165008673352427892">Novo recurso</translation>
 <translation id="1650222530560417226">Toque no botão "Iniciar registro" para coletar erros e registros futuros do Console JavaScript em todas as guias. Os registros serão coletados (e armazenados apenas na memória) até que a página seja fechada ou que o botão "Parar de registrar" seja pressionado.</translation>
 <translation id="1653432787084483144">{count,plural, =1{{count} senha salva disponível acima do teclado.}one{{count} senha salva disponível acima do teclado.}other{{count} senhas salvas disponíveis acima do teclado.}}</translation>
 <translation id="1657011748321897393">O compartilhamento falhou porque não há conexão de rede.</translation>
@@ -120,6 +122,7 @@ Só uma pessoa com sua senha longa poderá ler os dados criptografados. Essa sen
 <translation id="1700629756560807968"><ph name="NUMBER_OF_SELECTED_BOOKMARKS" /> selecionados</translation>
 <translation id="1715515772563243997">Se você confia no site <ph name="SITE" />, pode usar uma senha salva para fazer login.</translation>
 <translation id="1740468249224277719">Toque duas vezes para instalar.</translation>
+<translation id="1750238553597293878">Continue usando as senhas na sua Conta do Google</translation>
 <translation id="1752547299766512813">Salvar senhas</translation>
 <translation id="1753905327828125965">Mais visitados</translation>
 <translation id="1767766085187034454">Google Tradutor</translation>
@@ -402,6 +405,7 @@ Veja as instruções do seu mecanismo de pesquisa para excluir o histórico de p
 <translation id="3810973564298564668">Gerenciar</translation>
 <translation id="3818293389945649617">Localizar próximo</translation>
 <translation id="3819183753496523827">Você está off-line. Verifique sua conexão de Internet e tente novamente.</translation>
+<translation id="3832419617903252251">Senha salva apenas neste dispositivo</translation>
 <translation id="3835964409414434850">Ir para a próxima guia</translation>
 <translation id="3838691874161539578">Verifique suas senhas salvas para melhorar a segurança on-line</translation>
 <translation id="385051799172605136">Voltar</translation>
@@ -630,6 +634,7 @@ Para alterar essa configuração, <ph name="BEGIN_LINK" />redefina a sincroniza�
 <translation id="54401264925851789">Informações de segurança</translation>
 <translation id="5443952882982198570">Cartões de crédito</translation>
 <translation id="5444892875087332195">Favoritos</translation>
+<translation id="5453250766792920795">{count,plural, =1{Favorito salvo na sua conta {email}}one{Favorito salvo na sua conta {email}}other{Favoritos salvos na sua conta {email}}}</translation>
 <translation id="5457226814769348910">Abrir versão off-line</translation>
 <translation id="5489208564673669003">Para gerenciar os cookies de todos os sites, acesse <ph name="BEGIN_LINK" />Configurações de cookies<ph name="END_LINK" />.</translation>
 <translation id="5490005495580364134">Bloquear todos os cookies (não recomendado)</translation>
@@ -656,6 +661,7 @@ A "Transição" também deve ser ativada na seção "Geral" das configurações.
 <translation id="5669528293118408608">www</translation>
 <translation id="5669617676038747374">Criar um código QR</translation>
 <translation id="567881659373499783">Versão <ph name="PRODUCT_VERSION" /></translation>
+<translation id="5683499062697987550">Para usar e salvar senhas na sua Conta do Google, confirme sua identidade.</translation>
 <translation id="5690398455483874150">{count,plural, =1{Mostrando agora 1 janela do Chrome}one{Mostrando agora {count} janela do Chrome}other{Mostrando agora {count} janelas do Chrome}}</translation>
 <translation id="5701270923492462699">Acesso à câmera permitido</translation>
 <translation id="5704908597376970822">Não é possível fazer login.</translation>
@@ -788,6 +794,7 @@ A "Transição" também deve ser ativada na seção "Geral" das configurações.
 
 Seus dados foram criptografados com sua senha longa de sincronização no dia <ph name="TIME" />. Informe-a para começar a sincronização.</translation>
 <translation id="6418346271604475326">Preparando PDF</translation>
+<translation id="6421095165635308">{count,plural, =1{Favorito salvo na pasta {title} na sua conta {email}}one{Favorito salvo na pasta {title} na sua conta {email}}other{Favoritos salvos na pasta {title} na sua conta {email}}}</translation>
 <translation id="6429213933892582367">Abra "Opções de senha"</translation>
 <translation id="6434591244308415567">Ocorreu um erro. Tente novamente mais tarde.</translation>
 <translation id="6435236283694032571">Adicionar à Lista de leitura</translation>
@@ -876,6 +883,7 @@ Na navegação anônima, eles não podem usar cookies para ver suas atividades d
 <translation id="6888009575607455378">Tem certeza de que quer descartar suas alterações?</translation>
 <translation id="6896758677409633944">Copiar</translation>
 <translation id="6897187120838603299">A senha será salva no seu dispositivo.</translation>
+<translation id="6906448540340261898">Garanta que você sempre possa usar as senhas na sua Conta do Google</translation>
 <translation id="6913136913033237761"><ph name="FOLDER_NAME" />. Somente neste dispositivo.</translation>
 <translation id="6914583639806229067">Pesquisar imagem que você copiou</translation>
 <translation id="6914783257214138813">Suas senhas ficarão visíveis para qualquer pessoa que tiver acesso ao arquivo exportado.</translation>

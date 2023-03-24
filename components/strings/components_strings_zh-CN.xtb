@@ -920,7 +920,6 @@
 <translation id="3249151924975132674">学生贷款与学院资助</translation>
 <translation id="3249845759089040423">时髦</translation>
 <translation id="3250640885957938546">广告与营销</translation>
-<translation id="3252266817569339921">法语</translation>
 <translation id="3254301855501243548">18 x 22 英寸</translation>
 <translation id="3256863843508922226">退休与养老金</translation>
 <translation id="3259648571731540213"><ph name="CREATE_GOOGLE_CALENDAR_EVENT_FOCUSED_FRIENDLY_MATCH_TEXT" />，依次按 Tab 键和 Enter 键即可在 Google 日历中快速创建新活动</translation>
@@ -1582,7 +1581,6 @@
 <translation id="484988093836683706">使用设备解锁</translation>
 <translation id="4850886885716139402">视图</translation>
 <translation id="4852429274334674023">操作系统</translation>
-<translation id="485316830061041779">德语</translation>
 <translation id="4853901935952445031">2022 年 2 月之后，此网站将无法使用 U2F API。如果您是此网站的所有者，则应将其更改为使用 Web Authentication API。</translation>
 <translation id="4854362297993841467">该递送方式不可用。请另选一种方式。</translation>
 <translation id="4854853140771946034">在 Google Keep 中快速创建新记事</translation>
@@ -1821,7 +1819,6 @@
 <translation id="5423269318075950257">跟踪价格</translation>
 <translation id="5425241977284572032">{NUM_COOKIES,plural, =0{没有阻止任何网站}=1{已阻止 1 个网站}other{已阻止 # 个网站}}</translation>
 <translation id="5426179911063097041"><ph name="SITE" /> 想向您发送通知</translation>
-<translation id="5428105026674456456">西班牙语</translation>
 <translation id="5430298929874300616">移除书签</translation>
 <translation id="5443468954631487277">逆转顺序，正面朝上</translation>
 <translation id="5447765697759493033">系统不会翻译此网站</translation>
@@ -1830,7 +1827,6 @@
 <translation id="5457113250005438886">无效</translation>
 <translation id="5458150163479425638">{CONTACT,plural, =0{<ph name="CONTACT_PREVIEW" />}=1{<ph name="CONTACT_PREVIEW" />以及另外 <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> 名联系人}other{<ph name="CONTACT_PREVIEW" />以及另外 <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> 名联系人}}</translation>
 <translation id="5463625433003343978">正在查找设备…</translation>
-<translation id="5469868506864199649">意大利语</translation>
 <translation id="5470230812924696184">土木工程</translation>
 <translation id="5470861586879999274">恢复修改(&amp;R)</translation>
 <translation id="5471337644440862957">喜剧片</translation>
@@ -1843,7 +1839,6 @@
     <ph name="LINE_BREAK" />
     请尝试与您的系统管理员联系。</translation>
 <translation id="549333378215107354">大小：3</translation>
-<translation id="5503356662318814623">发送消息</translation>
 <translation id="5509762909502811065">B0</translation>
 <translation id="5509780412636533143">受管理的书签</translation>
 <translation id="5510481203689988000">您可在“Cookie”设置中控制此设置。</translation>
@@ -3000,7 +2995,6 @@
 <translation id="8296205692406981542">地区公园与园林</translation>
 <translation id="8297545700510100061">系统会使用 Cookie 和其他网站数据来记住您，以便实现某些功能或目的（例如帮您登录或向您展示个性化广告）。如需管理所有网站的 Cookie，请查看<ph name="SETTINGS" />。</translation>
 <translation id="8298115750975731693">您要使用的 Wi-Fi 网络（<ph name="WIFI_NAME" />）可能需要您访问 <ph name="BEGIN_BOLD" /><ph name="LOGIN_URL" /><ph name="END_BOLD" />。</translation>
-<translation id="8299269255470343364">日语</translation>
 <translation id="8303854710873047864">已显示“<ph name="SECTION" />”部分</translation>
 <translation id="830498451218851433">对折</translation>
 <translation id="8307888238279532626">已安装的应用及其使用频率</translation>
@@ -3122,7 +3116,6 @@
 <translation id="865032292777205197">移动传感器</translation>
 <translation id="8654126188050905496">55 x 91 毫米</translation>
 <translation id="8663226718884576429">订单摘要，<ph name="TOTAL_LABEL" />，更多详情</translation>
-<translation id="8666678546361132282">英语</translation>
 <translation id="8671519637524426245"><ph name="SECURE_DNS_SALT" /> 值不符合大小要求。</translation>
 <translation id="867224526087042813">签名</translation>
 <translation id="8672264262457010862">工商业</translation>

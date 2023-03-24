@@ -628,6 +628,7 @@ Jeśli się nie zgodzisz, zostaną one zablokowane ze względu na Twoje ustawien
 <translation id="2469153820345007638">Kolejność od 1 do N</translation>
 <translation id="2470767536994572628">Gdy zmodyfikujesz adnotacje, dokument wróci do widoku jednej strony i pierwotnej orientacji</translation>
 <translation id="2479410451996844060">Nieprawidłowy URL wyszukiwania</translation>
+<translation id="2480300195898055381">Na koncie Google <ph name="USER_EMAIL" /></translation>
 <translation id="2482878487686419369">Powiadomienia</translation>
 <translation id="248348093745724435">Zasady dotyczące komputera</translation>
 <translation id="2491120439723279231">Certyfikat serwera zawiera błędy.</translation>
@@ -841,6 +842,7 @@ Jeśli się nie zgodzisz, zostaną one zablokowane ze względu na Twoje ustawien
 <translation id="3029752078111257850">Wiadomości ze świata</translation>
 <translation id="3037177537145227281">Monitoruję cenę</translation>
 <translation id="3037605927509011580">Kurza twarz!</translation>
+<translation id="3041450980936463495">Zapisanych adresów możesz używać w różnych usługach Google. Ten adres jest zapisany na Twoim koncie Google (<ph name="ACCOUNT" />).</translation>
 <translation id="3041612393474885105">Informacje o certyfikacie</translation>
 <translation id="305162504811187366">Historię Pulpitu zdalnego Chrome, w tym sygnatury czasowe, hostów oraz identyfikatory sesji klientów</translation>
 <translation id="3052964831964880138"><ph name="PRODUCT_NAME" /> taniej o <ph name="PRICE_DROP" /></translation>
@@ -922,7 +924,6 @@ Uruchamianie aplikacji może potrwać dłużej niż zwykle.</translation>
 <translation id="3249151924975132674">Pożyczki studenckie i finansowanie studiów</translation>
 <translation id="3249845759089040423">Dynamiczny</translation>
 <translation id="3250640885957938546">Reklama i marketing</translation>
-<translation id="3252266817569339921">Francuski</translation>
 <translation id="3254301855501243548">18 x 22 cale</translation>
 <translation id="3256863843508922226">Emerytura</translation>
 <translation id="3259648571731540213"><ph name="CREATE_GOOGLE_CALENDAR_EVENT_FOCUSED_FRIENDLY_MATCH_TEXT" />; naciśnij Tab, a potem Enter, aby szybko utworzyć nowe wydarzenie w Kalendarzu Google</translation>
@@ -1586,7 +1587,6 @@ Uruchamianie aplikacji może potrwać dłużej niż zwykle.</translation>
 <translation id="484988093836683706">Używaj odblokowywania urządzenia</translation>
 <translation id="4850886885716139402">Widok</translation>
 <translation id="4852429274334674023">Systemy operacyjne</translation>
-<translation id="485316830061041779">Niemiecki</translation>
 <translation id="4853901935952445031">Po lutym 2022 roku ta witryna nie będzie mogła korzystać z interfejsu U2F API. Jeśli jesteś jej właścicielem, zaimplementuj interfejs Web Authentication API.</translation>
 <translation id="4854362297993841467">Ta metoda dostawy jest niedostępna. Wybierz inną.</translation>
 <translation id="4854853140771946034">Szybko utwórz nową notatkę w Google Keep</translation>
@@ -1825,7 +1825,6 @@ Uruchamianie aplikacji może potrwać dłużej niż zwykle.</translation>
 <translation id="5423269318075950257">Monitoruj cenę</translation>
 <translation id="5425241977284572032">{NUM_COOKIES,plural, =0{Brak witryn z zablokowanym dostępem}=1{1 witryna z zablokowanym dostępem}few{# witryny z zablokowanym dostępem}many{# witryn z zablokowanym dostępem}other{# witryny z zablokowanym dostępem}}</translation>
 <translation id="5426179911063097041"><ph name="SITE" /> chce wysyłać Ci powiadomienia</translation>
-<translation id="5428105026674456456">Hiszpański</translation>
 <translation id="5430298929874300616">Usuń zakładkę</translation>
 <translation id="5443468954631487277">Kolejność odwrotna, strona do drukowania skierowana w górę</translation>
 <translation id="5447765697759493033">Ta strona nie zostanie przetłumaczona</translation>
@@ -1834,7 +1833,6 @@ Uruchamianie aplikacji może potrwać dłużej niż zwykle.</translation>
 <translation id="5457113250005438886">Nieprawidłowe</translation>
 <translation id="5458150163479425638">{CONTACT,plural, =0{<ph name="CONTACT_PREVIEW" />}=1{<ph name="CONTACT_PREVIEW" /> i jeszcze <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" />}few{<ph name="CONTACT_PREVIEW" /> i jeszcze <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" />}many{<ph name="CONTACT_PREVIEW" /> i jeszcze <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" />}other{<ph name="CONTACT_PREVIEW" /> i jeszcze <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" />}}</translation>
 <translation id="5463625433003343978">Szukam urządzeń...</translation>
-<translation id="5469868506864199649">Włoski</translation>
 <translation id="5470230812924696184">Inżynieria lądowa i wodna</translation>
 <translation id="5470861586879999274">&amp;Ponów edycję</translation>
 <translation id="5471337644440862957">Komedie</translation>
@@ -1847,7 +1845,6 @@ Uruchamianie aplikacji może potrwać dłużej niż zwykle.</translation>
     <ph name="LINE_BREAK" />
     Skontaktuj się z administratorem systemu.</translation>
 <translation id="549333378215107354">Rozmiar 3</translation>
-<translation id="5503356662318814623">Wyślij wiadomość</translation>
 <translation id="5509762909502811065">B0</translation>
 <translation id="5509780412636533143">Zakładki zarządzane</translation>
 <translation id="5510481203689988000">Tym ustawieniem zarządza się w ustawieniach plików cookie.</translation>
@@ -1933,6 +1930,7 @@ Uruchamianie aplikacji może potrwać dłużej niż zwykle.</translation>
 <translation id="5695542892312572833">Czy do zweryfikowania i dokończenia zakupu użyć Windows Hello?</translation>
 <translation id="5701381305118179107">Wyśrodkuj</translation>
 <translation id="570530837424789914">Zarządzaj…</translation>
+<translation id="5706906618852913030">Zapisać na koncie?</translation>
 <translation id="5707154300732650394">Wznów swoją serię czynności</translation>
 <translation id="57094364128775171">Zaproponuj silne hasło…</translation>
 <translation id="571403275720188526">(arm64)</translation>
@@ -3005,7 +3003,6 @@ Dodatkowe informacje:
 <translation id="8296205692406981542">Regionalne parki i ogrody</translation>
 <translation id="8297545700510100061">Dzięki plikom cookie oraz innym danym witryn możemy Cię zapamiętać i na przykład ułatwić Ci logowanie lub personalizować reklamy. Aby zarządzać plikami cookie we wszystkich witrynach, sprawdź <ph name="SETTINGS" />.</translation>
 <translation id="8298115750975731693">Sieć Wi-Fi (<ph name="WIFI_NAME" />), której używasz, może wymagać otwarcia strony <ph name="BEGIN_BOLD" /><ph name="LOGIN_URL" /><ph name="END_BOLD" />.</translation>
-<translation id="8299269255470343364">Japoński</translation>
 <translation id="8303854710873047864">Wyświetlam sekcję „<ph name="SECTION" />”</translation>
 <translation id="830498451218851433">Składanie w połowie</translation>
 <translation id="8307888238279532626">Zainstalowane aplikacje i częstotliwość ich użycia</translation>
@@ -3126,7 +3123,6 @@ Dodatkowe informacje:
 <translation id="865032292777205197">czujniki ruchu</translation>
 <translation id="8654126188050905496">55 x 91 mm</translation>
 <translation id="8663226718884576429">Podsumowanie zamówienia, <ph name="TOTAL_LABEL" />, Szczegółowe informacje</translation>
-<translation id="8666678546361132282">Angielski</translation>
 <translation id="8671519637524426245">Wartość <ph name="SECURE_DNS_SALT" /> nie spełnia wymagań dotyczących rozmiaru.</translation>
 <translation id="867224526087042813">Podpis</translation>
 <translation id="8672264262457010862">Biznes i przemysł</translation>

@@ -809,6 +809,7 @@ Ef þú gerir það ekki loka persónuverndarstillingar þínar á þennan aðga
 <translation id="2951588413176968965">Pósthólfið mitt</translation>
 <translation id="2952820037279740115">Loka öllum huliðsgluggum</translation>
 <translation id="2952904171810469095">A2x5</translation>
+<translation id="2954624054936281172">Tafla með vistuðum greiðslumátum</translation>
 <translation id="295526156371527179">Viðvörun: Þessi regla var ekki sameinuð sem safn eins og tilgreint er í reglu vegna þess að hún er ekki safn.</translation>
 <translation id="2955913368246107853">Loka leitarstiku</translation>
 <translation id="2958544468932521864">Krikket</translation>
@@ -921,7 +922,6 @@ Ef þú gerir það ekki loka persónuverndarstillingar þínar á þennan aðga
 <translation id="3249151924975132674">Námslán og fjármögnun háskólanáms</translation>
 <translation id="3249845759089040423">Mergjað</translation>
 <translation id="3250640885957938546">Auglýsingar og markaðsmál</translation>
-<translation id="3252266817569339921">Franskt</translation>
 <translation id="3254301855501243548">18 x 22 to.</translation>
 <translation id="3256863843508922226">Starfslok og lífeyrir</translation>
 <translation id="3259648571731540213"><ph name="CREATE_GOOGLE_CALENDAR_EVENT_FOCUSED_FRIENDLY_MATCH_TEXT" />, ýttu á Tab og svo Enter til að búa til nýjan viðburð í Google dagatali á skjótan hátt</translation>
@@ -1585,7 +1585,6 @@ Ef þú gerir það ekki loka persónuverndarstillingar þínar á þennan aðga
 <translation id="484988093836683706">Nota „Taka tæki úr lás“</translation>
 <translation id="4850886885716139402">Yfirlit</translation>
 <translation id="4852429274334674023">Stýrikerfi</translation>
-<translation id="485316830061041779">Þýskt</translation>
 <translation id="4853901935952445031">Þetta vefsvæði getur ekki notað forritaskil U2F eftir febrúar 2022. Ef þú ert eigandi þessa vefsvæðis ættirðu frekar að láta það nota forritaskil Web Authentication.</translation>
 <translation id="4854362297993841467">Þessi sendingarmáti er ekki í boði. Prófaðu að velja annan valkost.</translation>
 <translation id="4854853140771946034">Búa til nýja glósu í Google Keep á skjótan hátt</translation>
@@ -1824,7 +1823,6 @@ Ef þú gerir það ekki loka persónuverndarstillingar þínar á þennan aðga
 <translation id="5423269318075950257">Vakta verð</translation>
 <translation id="5425241977284572032">{NUM_COOKIES,plural, =0{Ekki lokað á nein vefsvæði}=1{Lokað á 1 vefsvæði}one{Lokað á # vefsvæði}other{Lokað á # vefsvæði}}</translation>
 <translation id="5426179911063097041"><ph name="SITE" /> vill senda þér tilkynningar</translation>
-<translation id="5428105026674456456">Spænskt</translation>
 <translation id="5430298929874300616">Fjarlægja bókamerki</translation>
 <translation id="5443468954631487277">Öfug röð, snýr upp</translation>
 <translation id="5447765697759493033">Þetta vefsvæði verður ekki þýtt</translation>
@@ -1833,7 +1831,6 @@ Ef þú gerir það ekki loka persónuverndarstillingar þínar á þennan aðga
 <translation id="5457113250005438886">Ógilt</translation>
 <translation id="5458150163479425638">{CONTACT,plural, =0{<ph name="CONTACT_PREVIEW" />}=1{<ph name="CONTACT_PREVIEW" /> og <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> í viðbót}one{<ph name="CONTACT_PREVIEW" /> og <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> í viðbót}other{<ph name="CONTACT_PREVIEW" /> og <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> í viðbót}}</translation>
 <translation id="5463625433003343978">Leitar að tækjum...</translation>
-<translation id="5469868506864199649">Ítalskt</translation>
 <translation id="5470230812924696184">Byggingarverkfræði</translation>
 <translation id="5470861586879999274">&amp;Endurtaka breytingu</translation>
 <translation id="5471337644440862957">Grínmyndir</translation>
@@ -1846,7 +1843,6 @@ Ef þú gerir það ekki loka persónuverndarstillingar þínar á þennan aðga
     <ph name="LINE_BREAK" />
     Prófaðu að hafa samband við vefstjórann þinn.</translation>
 <translation id="549333378215107354">Stærð 3</translation>
-<translation id="5503356662318814623">Senda skilaboð</translation>
 <translation id="5509762909502811065">B0</translation>
 <translation id="5509780412636533143">Stýrð bókamerki</translation>
 <translation id="5510481203689988000">Fótsporastillingar stjórna þessari stillingu.</translation>
@@ -2777,6 +2773,7 @@ Ef þú gerir það ekki loka persónuverndarstillingar þínar á þennan aðga
 <translation id="7736959720849233795">Afrita slóð tengils</translation>
 <translation id="7740996059027112821">Venjulegt</translation>
 <translation id="77424286611022110">Þetta vefsvæði sýnir ágengar eða villandi auglýsingar. <ph name="LEARN_MORE_LINK_TEXT" /></translation>
+<translation id="7744505202669469867">Tafla með vistuðum heimilisföngum</translation>
 <translation id="774634243536837715">Lokað á hættulegt efni.</translation>
 <translation id="7751971323486164747">Sérsníða leturstærðir og leturgerðir í Chrome</translation>
 <translation id="7752995774971033316">Ekki stjórnað</translation>
@@ -3003,7 +3000,6 @@ Ef þú gerir það ekki loka persónuverndarstillingar þínar á þennan aðga
 <translation id="8296205692406981542">Almenningsgarðar og þjóðgarðar</translation>
 <translation id="8297545700510100061">Fótspor og önnur vefsvæðagögn eru notuð til að muna eftir þér, t.d. til að skrá þig inn eða sérsníða auglýsingar. Upplýsingar um stjórnun fótspora fyrir öll vefsvæði eru í <ph name="SETTINGS" />.</translation>
 <translation id="8298115750975731693">Wi-Fi netið sem þú notar (<ph name="WIFI_NAME" />) kann að fara fram á að þú farir á <ph name="BEGIN_BOLD" /><ph name="LOGIN_URL" /><ph name="END_BOLD" /></translation>
-<translation id="8299269255470343364">Japanskt</translation>
 <translation id="8303854710873047864">„<ph name="SECTION" />“ hluti sýndur</translation>
 <translation id="830498451218851433">Brotið í miðju</translation>
 <translation id="8307888238279532626">Uppsett forrit og hversu oft þau eru notuð</translation>
@@ -3018,6 +3014,7 @@ Ef þú gerir það ekki loka persónuverndarstillingar þínar á þennan aðga
 <translation id="8347658365704983341">Fjarnám</translation>
 <translation id="8349305172487531364">Bókamerkjastika</translation>
 <translation id="8351131234907093545">Búa til glósu</translation>
+<translation id="835203957414790336">Efni síðna sem þú prentar og upplýsingar um prentarann þinn eru sendar til Google Cloud eða þriðju aðila til greiningar. Þær gætu til dæmis verið skannaðar í leit að viðkvæmum upplýsingum.</translation>
 <translation id="8355270400102541638">Samhengi staðbundins hruns:</translation>
 <translation id="8363502534493474904">Slökkva á flugstillingu</translation>
 <translation id="8364627913115013041">Ekkert valið.</translation>
@@ -3123,7 +3120,6 @@ Ef þú gerir það ekki loka persónuverndarstillingar þínar á þennan aðga
 <translation id="865032292777205197">hreyfiskynjara</translation>
 <translation id="8654126188050905496">55 x 91 mm</translation>
 <translation id="8663226718884576429">Yfirlit pöntunar, <ph name="TOTAL_LABEL" />, frekari upplýsingar</translation>
-<translation id="8666678546361132282">Enska</translation>
 <translation id="8671519637524426245">Gildið <ph name="SECURE_DNS_SALT" /> stenst ekki stærðarkröfur.</translation>
 <translation id="867224526087042813">Undirskrift</translation>
 <translation id="8672264262457010862">Viðskipti og iðnaður</translation>

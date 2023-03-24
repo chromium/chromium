@@ -72,6 +72,7 @@
 <translation id="1061130374843955397">Bun venit la <ph name="DEVICE_TYPE" /></translation>
 <translation id="1061373870045429865">Creează un cod QR pentru acest link</translation>
 <translation id="1061904396131502319">Se apropie timpul pentru o pauză</translation>
+<translation id="1062407476771304334">Înlocuiți</translation>
 <translation id="1062628064301375934">Ajută-ne să creăm un web mai privat</translation>
 <translation id="1067048845568873861">Creat</translation>
 <translation id="1067661089446014701">Pentru siguranță suplimentară, criptează parolele pe dispozitiv înainte să se salveze în Contul Google</translation>
@@ -1153,6 +1154,7 @@ Permisiunile pe care le-ai acordat deja aplicațiilor se pot aplica acestui cont
 <translation id="1987317783729300807">Conturi</translation>
 <translation id="1987574314042117472">Selectează și instalează aplicații populare</translation>
 <translation id="1988259784461813694">Cerință</translation>
+<translation id="1988733631391393183">Afișează comenzile Braille în meniurile ChromeVox</translation>
 <translation id="1989112275319619282">Răsfoiește</translation>
 <translation id="1989903373608997757">Folosește întotdeauna</translation>
 <translation id="1990046457226896323">Fișierele de redare în scris a vorbirii s-au descărcat</translation>
@@ -2543,7 +2545,6 @@ Mesaj de la server: <ph name="SERVER_MSG" /></translation>
 <translation id="3193695589337931419">Utilitare pentru semnalele de sistem</translation>
 <translation id="3194786596445804250">Afișează detalii despre blocarea cookie-urilor terțe</translation>
 <translation id="3197453258332670132">Dacă dai clic dreapta sau apeși lung, se afișează informații conexe pentru textul selectat</translation>
-<translation id="3198804549162832936">Deschide linkul într-o filă nouă în <ph name="APP" /></translation>
 <translation id="3199127022143353223">Servere</translation>
 <translation id="3200061262156232574">În coșul de cumpărături</translation>
 <translation id="3201237270673604992">De la Z la A</translation>
@@ -2672,6 +2673,7 @@ Mesaj de la server: <ph name="SERVER_MSG" /></translation>
 <translation id="3317678681329786349">Camera foto și microfonul sunt blocate</translation>
 <translation id="3319306431415395200">Tradu textul din imagine cu <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
 <translation id="3320630259304269485">Navigarea sigură (protecție împotriva site-urilor periculoase) și alte setări de securitate</translation>
+<translation id="3321460131042519426">Activează încadrarea cuvintelor</translation>
 <translation id="3323521181261657960">Bonus! Ai primit o durată mai mare de folosire a dispozitivului</translation>
 <translation id="3323577066981719144">Modificările pe care le faci aici se aplică numai în browserul Chrome. Pentru a face modificări în setările browserului Lacros Chrome, deschide browserul Lacros Chrome și accesează setările.</translation>
 <translation id="3325804108816646710">Se caută profiluri disponibile...</translation>
@@ -6544,6 +6546,7 @@ Mai ai # de parole compromise. Managerul de parole Google recomandă să verific
 <translation id="6823174134746916417">Atingerea pentru clic pe touchpad</translation>
 <translation id="6824564591481349393">Copiază adresa de &amp;e-mail</translation>
 <translation id="6824584962142919697">&amp;Inspectează elementele</translation>
+<translation id="6824725898506587159">Gestionați limbile</translation>
 <translation id="6825184156888454064">Sortează după nume</translation>
 <translation id="6826872289184051766">Confirmă prin USB</translation>
 <translation id="6827121912381363404">Permite ca toate extensiile să citească și să modifice <ph name="PERMITTED_SITE" /></translation>
@@ -6668,7 +6671,6 @@ Mai ai # de parole compromise. Managerul de parole Google recomandă să verific
 <translation id="6925127338315966709">Adaugi un profil gestionat în acest browser. Administratorul deține controlul asupra profilului și poate accesa datele asociate. Marcajele, istoricul, parolele și alte setări pot fi sincronizate cu contul tău și gestionate de administrator.</translation>
 <translation id="6929126689972602640">Controlul parental nu este acceptat pentru conturile de la școală. Ca să adaugi un cont de la școală cu care să accesezi Google Classroom și alte site-uri pentru teme pentru acasă, mai întâi conectează-te cu contul personal al copilului. Poți adăuga contul de la școală mai târziu în timpul configurării.</translation>
 <translation id="6929760895658557216">Ok Google</translation>
-<translation id="6930036377490597025">Cheie de securitate externă sau senzor încorporat</translation>
 <translation id="6930161297841867798">{NUM_EXTENSIONS,plural, =1{O extensie a fost respinsă}few{# extensii au fost respinse}other{# de extensii au fost respinse}}</translation>
 <translation id="6931690462168617033">Sensibilitatea la clic</translation>
 <translation id="6935286146439255109">Lipsește o tavă de hârtie</translation>

@@ -434,7 +434,7 @@
 <translation id="4835901797422965222">कोणतीही अ‍ॅक्टिव्ह नेटवर्क नाहीत</translation>
 <translation id="4839698083503556542">स्वतः चित्रपट तयार करा</translation>
 <translation id="484462545196658690">ऑटो</translation>
-<translation id="4847902821209177679"><ph name="TOPIC_SOURCE" /> <ph name="TOPIC_SOURCE_DESC" /> निवडले, <ph name="TOPIC_SOURCE" /> अल्बम निवडण्यासाठी एंटर दाबा</translation>
+<translation id="4847902821209177679"><ph name="TOPIC_SOURCE" /> <ph name="TOPIC_SOURCE_DESC" /> निवडले, <ph name="TOPIC_SOURCE" /> अल्बम निवडण्यासाठी एंटर प्रेस करा</translation>
 <translation id="484790837831576105">(Android) DNS रिझोल्यूशन</translation>
 <translation id="4848429997038228357">रन होत आहे</translation>
 <translation id="4854586501323951986">बिल्ट-इन टचस्क्रीन</translation>
@@ -697,6 +697,7 @@
 <translation id="7103252855940681301"><ph name="NAME" /> नावाची <ph name="COUNT" /> पैकी <ph name="INDEX" /> डिव्हाइस.</translation>
 <translation id="7108668606237948702">प्रविष्‍ट करा</translation>
 <translation id="7130438335435247835">अ‍ॅक्सेस पॉइंट नाव (APN)</translation>
+<translation id="7131634559772719176">प्रीसेट कंफर्म करा</translation>
 <translation id="7134436342991564651">{0,plural, =1{नेम सर्व्हर}other{नेम सर्व्हर}}</translation>
 <translation id="7143207342074048698">कनेक्ट करत आहे</translation>
 <translation id="7144878232160441200">पुन्हा प्रयत्न करा</translation>
@@ -800,6 +801,7 @@
 <translation id="80398733265834479">ऑटो कलर मोड सुरू करा</translation>
 <translation id="8041089156583427627">अभिप्राय पाठवा</translation>
 <translation id="8045012663542226664">मायक्रोफोन म्यूट</translation>
+<translation id="8050091914317269817">हा वॉलपेपर निवडल्याने ऑटो डार्क मोड आणि वॉलपेपरचा रंग जुळवणे सुरू होईल.</translation>
 <translation id="8075838845814659848">शिल्लक चार्जिंग</translation>
 <translation id="8076492880354921740">टॅब</translation>
 <translation id="8082366717211101304">Android अ‍ॅप्सवरून DNS चे निराकरण करू शकत नाही</translation>
