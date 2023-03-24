@@ -136,14 +136,6 @@ void DeserializeWebStateList(WebStateList* web_state_list,
     web::SerializableUserDataManager* user_data_manager =
         web::SerializableUserDataManager::FromWebState(web_state);
 
-    if (IsPinnedTabsEnabled()) {
-      // If Pinned Tabs feature has been disabled, add WebStates back as regular
-      // ones.
-      NSNumber* pinned_state = base::mac::ObjCCast<NSNumber>(
-          user_data_manager->GetValueForSerializationKey(kPinnedStateKey));
-      web_state_list->SetWebStatePinnedAt(index, [pinned_state boolValue]);
-    }
-
     NSNumber* boxed_opener_index = base::mac::ObjCCast<NSNumber>(
         user_data_manager->GetValueForSerializationKey(kOpenerIndexKey));
 
@@ -175,5 +167,20 @@ void DeserializeWebStateList(WebStateList* web_state_list,
     DCHECK_LT(session_window.selectedIndex, static_cast<NSUInteger>(INT_MAX));
     web_state_list->ActivateWebStateAt(
         old_count + static_cast<int>(session_window.selectedIndex));
+  }
+
+  // By default all the restored tabs are not pinned.
+  if (IsPinnedTabsEnabled()) {
+    // Restore the WebStates pinned state. This should be done in a separate
+    // cycle, since pinning the WebStates may cause WebStates indexes to change.
+    for (int index = old_count; index < web_state_list->count(); ++index) {
+      web::WebState* web_state = web_state_list->GetWebStateAt(index);
+      web::SerializableUserDataManager* user_data_manager =
+          web::SerializableUserDataManager::FromWebState(web_state);
+
+      NSNumber* pinned_state = base::mac::ObjCCast<NSNumber>(
+          user_data_manager->GetValueForSerializationKey(kPinnedStateKey));
+      web_state_list->SetWebStatePinnedAt(index, [pinned_state boolValue]);
+    }
   }
 }
