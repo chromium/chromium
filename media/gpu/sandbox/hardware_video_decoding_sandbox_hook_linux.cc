@@ -77,7 +77,7 @@ bool HardwareVideoDecodingPreSandboxHookForVaapiOnIntel(
                            /*read_write=*/false);
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 #if BUILDFLAG(USE_VAAPI)
-  VaapiWrapper::PreSandboxInitialization();
+  VaapiWrapper::PreSandboxInitialization(/*allow_disabling_global_lock=*/true);
   return true;
 #else
   NOTREACHED();
@@ -106,7 +106,7 @@ bool HardwareVideoDecodingPreSandboxHookForVaapiOnAMD(
   }
 
 #if BUILDFLAG(USE_VAAPI)
-  VaapiWrapper::PreSandboxInitialization();
+  VaapiWrapper::PreSandboxInitialization(/*allow_disabling_global_lock=*/true);
   return true;
 #else
   NOTREACHED();

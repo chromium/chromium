@@ -123,6 +123,11 @@ enum class VAImplementation {
 class MEDIA_GPU_EXPORT VaapiWrapper
     : public base::RefCountedThreadSafe<VaapiWrapper> {
  public:
+  // Whether it's okay or not to try to disable the VA-API global lock on the
+  // current process. This is intended to be set only once during process
+  // start-up.
+  static bool allow_disabling_global_lock_;
+
   enum CodecMode {
     kDecode,
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -533,7 +538,8 @@ class MEDIA_GPU_EXPORT VaapiWrapper
   );
 
   // Initialize static data before sandbox is enabled.
-  static void PreSandboxInitialization();
+  static void PreSandboxInitialization(
+      bool allow_disabling_global_lock = false);
 
   // vaDestroySurfaces() a vector or a single VASurfaceID.
   virtual void DestroySurfaces(std::vector<VASurfaceID> va_surfaces);

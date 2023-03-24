@@ -108,7 +108,7 @@ bool HardwareVideoEncodingPreSandboxHook(
   // of VA-API/V4L2. That means that bots like linux-chromeos-rel would end up
   // reaching this presandbox hook.
 #if BUILDFLAG(USE_VAAPI)
-  VaapiWrapper::PreSandboxInitialization();
+  VaapiWrapper::PreSandboxInitialization(/*allow_disabling_global_lock=*/true);
 
   if (options.use_amd_specific_policies) {
     const char* radeonsi_lib = "/usr/lib64/dri/radeonsi_dri.so";
