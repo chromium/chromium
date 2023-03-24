@@ -52,6 +52,10 @@ BASE_FEATURE(kIOSBrowserEditMenuMetrics,
              "IOSBrowserEditMenuMetrics",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+BASE_FEATURE(kDefaultBrowserRefactoringPromoManager,
+             "kDefaultBrowserRefactoringPromoManager",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 BASE_FEATURE(kIOSCustomBrowserEditMenu,
              "IOSCustomBrowserEditMenu",
              base::FEATURE_DISABLED_BY_DEFAULT);

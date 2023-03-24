@@ -242,6 +242,13 @@ const char kDefaultBrowserIntentsShowSettingsDescription[] =
     "When enabled, external apps can trigger the settings screen showing "
     "default browser tutorial.";
 
+const char kDefaultBrowserRefactoringPromoManagerName[] =
+    "Enable the refactoring of the full screen default browser promos to be "
+    "included in the promo manager";
+const char kDefaultBrowserRefactoringPromoManagerDescription[] =
+    "When enabled, the full screen default browser promos will be be included "
+    "and managed in the promo manager";
+
 const char kDetectMainThreadFreezeName[] = "Detect freeze in the main thread.";
 const char kDetectMainThreadFreezeDescription[] =
     "A crash report will be uploaded if the main thread is frozen more than "

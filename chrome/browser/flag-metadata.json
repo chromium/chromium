@@ -1369,6 +1369,11 @@
     "expiry_milestone": 120
   },
   {
+    "name": "default-browser-refactoring-promo-manager",
+    "owners": [ "cheickcisse@google.com", "bling-flags@google.com" ],
+    "expiry_milestone": 115
+  },
+  {
     "name": "deprecate-alt-based-six-pack",
     "owners": [ "zentaro@google.com", "jimmyxgong@google.com",
                 "cros-peripherals@google.com"],

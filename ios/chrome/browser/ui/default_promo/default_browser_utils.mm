@@ -439,6 +439,10 @@ bool IsBlueDotPromoEnabled() {
   return false;
 }
 
+bool IsDefaultBrowserInPromoManagerEnabled() {
+  return base::FeatureList::IsEnabled(kDefaultBrowserRefactoringPromoManager);
+}
+
 bool NonModalPromosEnabled() {
   // Default browser isn't enabled until iOS 14.0.1, regardless of flag state.
   return base::ios::IsRunningOnOrLater(14, 0, 1);

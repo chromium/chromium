@@ -50,6 +50,10 @@ BASE_DECLARE_FEATURE(kDefaultBrowserIntentsShowSettings);
 // Feature flag to log metrics for the edit menu.
 BASE_DECLARE_FEATURE(kIOSBrowserEditMenuMetrics);
 
+// Feature flag that allows full screen default browser promos to be added to
+// the promo manager.
+BASE_DECLARE_FEATURE(kDefaultBrowserRefactoringPromoManager);
+
 // Feature flag to use the new Edit menu API for browser view.
 BASE_DECLARE_FEATURE(kIOSCustomBrowserEditMenu);
 

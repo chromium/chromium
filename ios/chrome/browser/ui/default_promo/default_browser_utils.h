@@ -89,6 +89,10 @@ bool AreDefaultBrowserPromosEnabled();
 // one of the blue dot active/enabled groups.
 bool IsBlueDotPromoEnabled();
 
+// Returns true if the full screen default browser promos are added to the promo
+// manager.
+bool IsDefaultBrowserInPromoManagerEnabled();
+
 // Returns true if the user is in the CTA experiment in the open links group.
 bool IsInCTAOpenLinksGroup();
 
