@@ -78,6 +78,11 @@ class FileUploadJob {
         base::OnceCallback<void(StatusOr<std::string /*access_parameters*/>)>
             cb) = 0;
 
+    // Asynchronously deletes the original file (either upon success, or when
+    // the failure happened when `retry_count` dropped to 0). Doesn't wait for
+    // completion and doesn't report the outcome.
+    virtual void DoDeleteFile(base::StringPiece origin_path) = 0;
+
    protected:
     Delegate() = default;
   };
@@ -222,6 +227,11 @@ class FileUploadJob {
           result);
   void DoneFinalize(base::ScopedClosureRunner done,
                     StatusOr<std::string /*access_parameters*/> result);
+
+  // Creates scoped closure runner that augments `done_cb` with the ability to
+  // asynchronously delete the original file upon success or the failure that
+  // happened when `retry_count` dropped to 0.
+  base::ScopedClosureRunner CompletionCb(base::OnceClosure done_cb);
 
   // Post event.
   static void AddRecordToStorage(Priority priority,

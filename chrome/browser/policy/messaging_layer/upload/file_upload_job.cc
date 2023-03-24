@@ -277,10 +277,43 @@ FileUploadJob::FileUploadJob(const UploadSettings& settings,
 
 FileUploadJob::~FileUploadJob() = default;
 
+base::ScopedClosureRunner FileUploadJob::CompletionCb(
+    base::OnceClosure done_cb) {
+  return base::ScopedClosureRunner(
+      base::BindPostTaskToCurrentDefault(base::BindOnce(
+          [](base::WeakPtr<FileUploadJob> job, base::OnceClosure done_cb) {
+            // If `job` has not been destructed yet,
+            // analyze its status and delete the file, if it has completed with
+            // success or the last retry failed.
+            if (job) {
+              DCHECK_CALLED_ON_VALID_SEQUENCE(job->job_sequence_checker_);
+              DCHECK(job->event_helper_)
+                  << "Event must be associated with the job";
+              if (!job->tracker_.access_parameters().empty() ||  // success
+                  (job->tracker_.has_status() &&
+                   job->settings_.retry_count() <= 0)) {  // last retry
+                // Perform deletion on a thread pool, do not wait for completion
+                // and do not report the outcome.
+                base::ThreadPool::PostTask(
+                    FROM_HERE,
+                    {base::TaskPriority::BEST_EFFORT, base::MayBlock()},
+                    base::BindOnce(&Delegate::DoDeleteFile,
+                                   base::Unretained(job->delegate_),
+                                   std::string(job->settings_.origin_path())));
+              }
+            }
+            // Execute the callback regardless of whether the `job` exists or
+            // not.
+            std::move(done_cb).Run();
+          },
+          weak_ptr_factory_.GetWeakPtr(), std::move(done_cb))));
+}
+
 void FileUploadJob::Initiate(base::OnceClosure done_cb) {
-  base::ScopedClosureRunner done(std::move(done_cb));
   DCHECK_CALLED_ON_VALID_SEQUENCE(job_sequence_checker_);
   DCHECK(event_helper_) << "Event must be associated with the job";
+  base::ScopedClosureRunner done(
+      FileUploadJob::CompletionCb(std::move(done_cb)));
   if (tracker_.has_status()) {
     // Error detected earlier.
     return;
@@ -338,9 +371,10 @@ void FileUploadJob::DoneInitiate(
 
 void FileUploadJob::NextStep(const ScopedReservation& scoped_reservation,
                              base::OnceClosure done_cb) {
-  base::ScopedClosureRunner done(std::move(done_cb));
   DCHECK_CALLED_ON_VALID_SEQUENCE(job_sequence_checker_);
   DCHECK(event_helper_) << "Event must be associated with the job";
+  base::ScopedClosureRunner done(
+      FileUploadJob::CompletionCb(std::move(done_cb)));
   if (tracker_.has_status()) {
     // Error detected earlier.
     return;
@@ -406,9 +440,10 @@ void FileUploadJob::DoneNextStep(
 }
 
 void FileUploadJob::Finalize(base::OnceClosure done_cb) {
-  base::ScopedClosureRunner done(std::move(done_cb));
   DCHECK_CALLED_ON_VALID_SEQUENCE(job_sequence_checker_);
   DCHECK(event_helper_) << "Event must be associated with the job";
+  base::ScopedClosureRunner done(
+      FileUploadJob::CompletionCb(std::move(done_cb)));
   if (tracker_.has_status()) {
     // Error detected earlier.
     return;

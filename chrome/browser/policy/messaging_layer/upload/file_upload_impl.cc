@@ -62,14 +62,6 @@ constexpr char kUploadOffsetHeader[] = "X-Goog-Upload-Offset";
 constexpr char kUploadProtocolHeader[] = "X-Goog-Upload-Protocol";
 constexpr char kUploadIdHeader[] = "X-GUploader-UploadID";
 
-// Deletes original file (called on a thread pool upon successful upload).
-void DeleteOriginalFile(const std::string origin_path) {
-  const auto delete_result = base::DeleteFile(base::FilePath(origin_path));
-  if (!delete_result) {
-    LOG(WARNING) << "Failed to delete file=" << origin_path;
-  }
-}
-
 // Helper for network response, headers analysis and status retrieval.
 StatusOr<std::string> CheckResponseAndGetStatus(
     const std::unique_ptr<::network::SimpleURLLoader> url_loader,
@@ -783,11 +775,6 @@ class FileUploadDelegate::FinalContext
       return;
     }
 
-    // Delete file upon success (on a thread pool, don't wait for completion).
-    base::ThreadPool::PostTask(
-        FROM_HERE, {base::TaskPriority::BEST_EFFORT, base::MayBlock()},
-        base::BindOnce(&DeleteOriginalFile, std::string(origin_path_)));
-
     Complete(base::StrCat({"Upload_id=", upload_id}));
   }
 
@@ -994,6 +981,13 @@ void FileUploadDelegate::DoFinalize(
   InitializeOnce();
 
   (new FinalContext(session_token, GetWeakPtr(), std::move(result_cb)))->Run();
+}
+
+void FileUploadDelegate::DoDeleteFile(base::StringPiece origin_path) {
+  const auto delete_result = base::DeleteFile(base::FilePath(origin_path));
+  if (!delete_result) {
+    LOG(WARNING) << "Failed to delete file=" << origin_path;
+  }
 }
 
 base::WeakPtr<FileUploadDelegate> FileUploadDelegate::GetWeakPtr() {

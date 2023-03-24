@@ -101,6 +101,11 @@ class MockFileUploadDelegate : public FileUploadJob::Delegate {
        base::OnceCallback<void(StatusOr<std::string /*access_parameters*/>)>
            cb),
       (override));
+
+  MOCK_METHOD(void,
+              DoDeleteFile,
+              (base::StringPiece /*origin_path*/),
+              (override));
 };
 
 // Tests for generic events handling.

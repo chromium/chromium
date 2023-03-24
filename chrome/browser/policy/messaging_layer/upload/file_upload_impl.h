@@ -64,6 +64,8 @@ class FileUploadDelegate : public FileUploadJob::Delegate {
       base::OnceCallback<void(StatusOr<std::string /*access_parameters*/>)> cb)
       override;
 
+  void DoDeleteFile(base::StringPiece origin_path) override;
+
   // Called once authentication is finished (with token or failure status).
   void OnAccessTokenResult(
       base::StringPiece origin_path,

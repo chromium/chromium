@@ -340,10 +340,6 @@ class FileUploadDelegateTest : public ::testing::Test {
                 }));
   }
 
-  void EnsureOriginFileIsErased() {
-    task_environment_.RunUntilIdle();  // Let file deletion finish.
-    EXPECT_FALSE(base::PathExists(origin_path_));
-  }
   std::string origin_path() const { return origin_path_.MaybeAsASCII(); }
 
   content::BrowserTaskEnvironment task_environment_{
@@ -885,8 +881,6 @@ TEST_F(FileUploadDelegateTest, SuccessfulUploadFinish) {
   ASSERT_OK(result) << result.status();
   ASSERT_THAT(result.ValueOrDie(),
               StrEq(base::StrCat({"Upload_id=", kUploadId})));
-
-  EnsureOriginFileIsErased();
 }
 
 TEST_F(FileUploadDelegateTest, FinishFailures) {
@@ -1004,5 +998,14 @@ TEST_F(FileUploadDelegateTest, FinishFailures) {
         AllOf(Property(&Status::error_code, Eq(error::DATA_LOSS)),
               Property(&Status::error_message, "No upload ID returned")));
   }
+}
+
+TEST_F(FileUploadDelegateTest, DeleteFile) {
+  // Prepare the delegate.
+  std::unique_ptr<FileUploadJob::Delegate> delegate =
+      PrepareFileUploadDelegate();
+
+  delegate->DoDeleteFile(origin_path());
+  EXPECT_FALSE(base::PathExists(base::FilePath(origin_path())));
 }
 }  // namespace reporting
