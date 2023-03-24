@@ -62856,6 +62856,7 @@ from previous Chrome versions.
   <int value="671800756" label="TabStripImprovements:enabled"/>
   <int value="672067370" label="InstallableAmbientBadgeMessage:enabled"/>
   <int value="672255299" label="WebAuthFlowInBrowserTab:disabled"/>
+  <int value="672599279" label="WebUiSystemFont:disabled"/>
   <int value="673588373" label="OmniboxPedalSuggestions:disabled"/>
   <int value="674627327" label="MagnifierNewFocusFollowing:enabled"/>
   <int value="674788251" label="EnableNewBadgeOnMenuItems:enabled"/>
@@ -64555,6 +64556,7 @@ from previous Chrome versions.
   <int value="1628831121" label="SafeBrowsingUseLocalBlacklistsV2:enabled"/>
   <int value="1629289109" label="EnableBloom:disabled"/>
   <int value="1629497607" label="CertDualVerificationTrial:disabled"/>
+  <int value="1629523329" label="WebUiSystemFont:enabled"/>
   <int value="1630159957" label="SharingSendViaSync:disabled"/>
   <int value="1630283072" label="CrOSAutoSelect:enabled"/>
   <int value="1630988998" label="VrBrowsingExperimentalRendering:disabled"/>

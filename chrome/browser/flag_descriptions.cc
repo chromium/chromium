@@ -2342,6 +2342,11 @@ const char kWebUIOmniboxPopupName[] = "WebUI Omnibox Popup";
 const char kWebUIOmniboxPopupDescription[] =
     "If enabled, shows the omnibox suggestions popup in WebUI.";
 
+const char kWebUiSystemFontName[] = "WebUI System font";
+const char kWebUiSystemFontDescription[] =
+    "If enabled, all WebUI surfaces will use the default UI font of the "
+    "underlying platform.";
+
 const char kOmniboxMaxURLMatchesName[] = "Omnibox Max URL Matches";
 const char kOmniboxMaxURLMatchesDescription[] =
     "The maximum number of URL matches to show, unless there are no "

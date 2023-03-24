@@ -465,6 +465,10 @@ bool IsChromeRefresh2023() {
   return base::FeatureList::IsEnabled(kChromeRefresh2023);
 }
 
+BASE_FEATURE(kWebUiSystemFont,
+             "WebUiSystemFont",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 BASE_FEATURE(kUseNanosecondsForMotionEvent,
              "UseNanosecondsForMotionEvent",
              base::FEATURE_ENABLED_BY_DEFAULT);

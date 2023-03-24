@@ -1316,6 +1316,9 @@ extern const char kOmniboxUpdatedConnectionSecurityIndicatorsDescription[];
 extern const char kWebUIOmniboxPopupName[];
 extern const char kWebUIOmniboxPopupDescription[];
 
+extern const char kWebUiSystemFontName[];
+extern const char kWebUiSystemFontDescription[];
+
 extern const char kOmniboxMaxURLMatchesName[];
 extern const char kOmniboxMaxURLMatchesDescription[];
 
