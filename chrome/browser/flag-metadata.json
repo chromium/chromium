@@ -4200,7 +4200,7 @@
   {
     "name": "hardware-media-key-handling",
     "owners": [ "steimel", "media-dev" ],
-    "expiry_milestone": 113
+    "expiry_milestone": 123
   },
   {
     "name": "heavy-ad-privacy-mitigations",
