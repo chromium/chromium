@@ -77,8 +77,7 @@ class DatabaseHelperTest : public content::ContentBrowserTest {
   }
 };
 
-// Flaky, see https://crbug.com/1293136
-IN_PROC_BROWSER_TEST_F(DatabaseHelperTest, DISABLED_FetchData) {
+IN_PROC_BROWSER_TEST_F(DatabaseHelperTest, FetchData) {
   CreateDatabases();
   auto database_helper = base::MakeRefCounted<DatabaseHelper>(
       shell()->web_contents()->GetPrimaryMainFrame()->GetStoragePartition());
