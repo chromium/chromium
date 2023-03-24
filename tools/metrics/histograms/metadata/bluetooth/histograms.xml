@@ -155,7 +155,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Bluetooth.ChromeOS.FastPair.AccountKey.Write.GattErrorReason"
-    enum="BluetoothDeviceConnectErrorCode" expires_after="2023-04-30">
+    enum="BluetoothDeviceConnectErrorCode" expires_after="2023-09-03">
   <owner>jackshira@google.com</owner>
   <owner>dclasson@google.com</owner>
   <owner>brandosocarras@google.com</owner>
@@ -728,7 +728,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Bluetooth.ChromeOS.FastPair.GattConnection.EffectiveSuccessRate"
-    enum="BooleanSuccess" expires_after="2023-04-30">
+    enum="BooleanSuccess" expires_after="2023-09-03">
   <owner>jackshira@google.com</owner>
   <owner>dclasson@google.com</owner>
   <owner>brandosocarras@google.com</owner>
