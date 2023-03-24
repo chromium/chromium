@@ -620,7 +620,7 @@ are declared in tools/grit/grit_rule.gni.
             Open link in new <ph name="APP">$1<ex>Gmail App</ex> window</ph>
           </message>
           <message name="IDS_CONTENT_CONTEXT_OPENLINKWEBAPP_NEWTAB" desc="The name of the command to open a link in a new tab of the same app the user is currently in">
-            Open link in new <ph name="APP">$1<ex>Gmail App</ex> tab</ph>
+            Open link in new <ph name="APP">$1<ex>Gmail App</ex></ph> tab
           </message>
 
           <message name="IDS_CONTENT_CONTEXT_SAVELINKAS" desc="The name of the Save Link As command in the content area context menu">
@@ -889,7 +889,7 @@ are declared in tools/grit/grit_rule.gni.
             Open Link in new <ph name="APP">$1<ex>Gmail App</ex></ph> Window
           </message>
           <message name="IDS_CONTENT_CONTEXT_OPENLINKWEBAPP_NEWTAB" desc="In Title Case: The name of the command to open a link in a new tab of the same app the user is currently in">
-            Open Link in new <ph name="APP">$1<ex>Gmail App</ex> Tab</ph>
+            Open Link in new <ph name="APP">$1<ex>Gmail App</ex></ph> Tab
           </message>
 
           <message name="IDS_CONTENT_CONTEXT_SAVELINKAS" desc="In Title Case: The name of the Save Link As command in the content area context menu">
