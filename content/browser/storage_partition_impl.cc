@@ -1423,9 +1423,10 @@ void StoragePartitionImpl::Initialize(
 
   bucket_manager_ = std::make_unique<BucketManager>(this);
 
-  // The Conversion Measurement API is not available in Incognito mode.
-  if (!is_in_memory() &&
-      base::FeatureList::IsEnabled(blink::features::kConversionMeasurement)) {
+  if (base::FeatureList::IsEnabled(blink::features::kConversionMeasurement)) {
+    // The Conversion Measurement API is not available in Incognito mode, but
+    // this is enforced by the `AttributionManagerImpl` itself for better error
+    // reporting and metrics.
     attribution_manager_ = std::make_unique<AttributionManagerImpl>(
         this, path, special_storage_policy_);
   }

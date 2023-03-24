@@ -1816,6 +1816,15 @@ TEST(StoragePartitionImplStaticTest, CreatePredicateForHostCookies) {
   }
 }
 
+TEST_F(StoragePartitionImplTest, AttributionManagerCreatedInIncognito) {
+  browser_context()->set_is_off_the_record(true);
+
+  StoragePartitionImpl* partition = static_cast<StoragePartitionImpl*>(
+      browser_context()->GetDefaultStoragePartition());
+
+  EXPECT_TRUE(partition->GetAttributionManager());
+}
+
 TEST_F(StoragePartitionImplTest, ConversionsClearDataForOrigin) {
   StoragePartitionImpl* partition = static_cast<StoragePartitionImpl*>(
       browser_context()->GetDefaultStoragePartition());

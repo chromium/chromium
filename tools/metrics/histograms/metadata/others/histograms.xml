@@ -3789,19 +3789,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Conversions.RegisterConversionAllowed" enum="BooleanAllowed"
-    expires_after="M117">
-  <owner>apaseltiner@chromium.org</owner>
-  <owner>johnidel@chromium.org</owner>
-  <owner>measurement-api-dev+metrics@google.com</owner>
-  <summary>
-    Measures how often conversions are dropped by the Attribution Reporting API
-    being disabled. Recorded when a conversion is processed by the browser
-    process. Records not allowed if within an OTR profile, or if the privacy
-    sandbox is not allowed for the conversion and reporting origin.
-  </summary>
-</histogram>
-
 <histogram name="Conversions.RegisteredSourcesPerDataHost" units="sources"
     expires_after="M117">
   <owner>linnan@chromium.org</owner>
@@ -3821,19 +3808,6 @@ chromium-metrics-reviews@google.com.
   <summary>
     Measures the number of triggers registered per data host. Recorded when the
     data host is disconnected or when the data host manager is destroyed.
-  </summary>
-</histogram>
-
-<histogram name="Conversions.RegisterImpressionAllowed" enum="BooleanAllowed"
-    expires_after="M117">
-  <owner>apaseltiner@chromium.org</owner>
-  <owner>johnidel@chromium.org</owner>
-  <owner>measurement-api-dev+metrics@google.com</owner>
-  <summary>
-    Measures how often impressions are dropped by the Attribution Reporting API
-    being disabled. Recorded when an impression is processed by the browser
-    process. Records not allowed if within an OTR profile, or if the privacy
-    sandbox is not allowed for the impression and reporting origin.
   </summary>
 </histogram>
 
