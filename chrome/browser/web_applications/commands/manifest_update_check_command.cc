@@ -125,6 +125,9 @@ void ManifestUpdateCheckCommand::StashNewManifestJson(
     webapps::InstallableStatusCode installable_status) {
   DCHECK_EQ(stage_, ManifestUpdateCheckStage::kDownloadingNewManifestData);
 
+  debug_log_.Set("manifest_url", manifest_url.spec());
+  debug_log_.Set("manifest_installable_result", base::ToString(installable_status));
+
   if (installable_status != webapps::InstallableStatusCode::NO_ERROR_DETECTED) {
     CompleteCommandAndSelfDestruct(ManifestUpdateCheckResult::kAppNotEligible);
     return;
@@ -168,6 +171,8 @@ void ManifestUpdateCheckCommand::StashNewIconBitmaps(
     IconsMap icons_map,
     DownloadedIconsHttpResults icons_http_results) {
   DCHECK_EQ(stage_, ManifestUpdateCheckStage::kDownloadingNewManifestData);
+
+  debug_log_.Set("icon_download_result", base::ToString(result));
 
   RecordIconDownloadMetrics(result, icons_http_results);
 
