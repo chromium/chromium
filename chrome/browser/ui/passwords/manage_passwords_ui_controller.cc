@@ -333,6 +333,10 @@ void ManagePasswordsUIController::OnShowMoveToAccountBubble(
 
 void ManagePasswordsUIController::OnBiometricAuthenticationForFilling(
     PrefService* prefs) {
+  // Existing dialog shouldn't be closed.
+  if (dialog_controller_) {
+    return;
+  }
 #if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
   const std::string promo_shown_counter =
       password_manager::prefs::kBiometricAuthBeforeFillingPromoShownCounter;
