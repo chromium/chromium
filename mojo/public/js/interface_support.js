@@ -345,7 +345,9 @@ mojo.internal.interfaceSupport.Endpoint = class {
  */
 mojo.internal.interfaceSupport.createEndpoint = function(
     pipeOrEndpoint, setNamespaceBit = false) {
-  if (pipeOrEndpoint.constructor.name != 'MojoHandle') {
+  // `watch` is defined on MojoHandle but not Endpoint, so if it is not defined
+  // we know this is an Endpoint.
+  if (pipeOrEndpoint.watch === undefined) {
     return /** @type {!mojo.internal.interfaceSupport.Endpoint} */(
         pipeOrEndpoint);
   }

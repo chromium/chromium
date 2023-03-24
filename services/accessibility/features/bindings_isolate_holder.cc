@@ -28,6 +28,24 @@ void BindingsIsolateHolder::InitializeV8() {
                                  gin::ArrayBufferAllocator::SharedInstance());
 }
 
+BindingsIsolateHolder::BindingsIsolateHolder() = default;
+
+BindingsIsolateHolder::~BindingsIsolateHolder() = default;
+
+void BindingsIsolateHolder::AddObserver(IsolateObserver* observer) {
+  observers_.AddObserver(observer);
+}
+
+void BindingsIsolateHolder::RemoveObserver(IsolateObserver* observer) {
+  observers_.RemoveObserver(observer);
+}
+
+void BindingsIsolateHolder::NotifyIsolateWillDestroy() {
+  for (IsolateObserver& obs : observers_) {
+    obs.OnIsolateWillDestroy();
+  }
+}
+
 bool BindingsIsolateHolder::ExecuteScriptInContext(const std::string& script) {
   // Enter isolate scope.
   v8::Isolate::Scope isolate_scope(GetIsolate());
@@ -56,8 +74,8 @@ bool BindingsIsolateHolder::ExecuteScriptInContext(const std::string& script) {
     }
 
     // Run the script, checking for errors.
-    auto result = compiled->Run(GetContext());
-    if (result.IsEmpty()) {
+    v8::MaybeLocal<v8::Value> maybe_result = compiled->Run(GetContext());
+    if (maybe_result.IsEmpty()) {
       DCHECK(trycatch.HasCaught());
       HandleError(ExceptionToString(trycatch));
       return false;

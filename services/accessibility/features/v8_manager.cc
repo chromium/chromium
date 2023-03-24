@@ -13,12 +13,16 @@
 #include "base/task/thread_pool.h"
 #include "gin/arguments.h"
 #include "gin/array_buffer.h"
+#include "gin/converter.h"
 #include "gin/function_template.h"
 #include "gin/public/context_holder.h"
 #include "gin/public/isolate_holder.h"
+#include "mojo/public/cpp/bindings/generic_pending_receiver.h"
 #include "services/accessibility/assistive_technology_controller_impl.h"
 #include "services/accessibility/features/automation_internal_bindings.h"
+#include "services/accessibility/features/mojo/mojo.h"
 #include "v8/include/v8-context.h"
+#include "v8/include/v8-object.h"
 #include "v8/include/v8-template.h"
 
 namespace ax {
@@ -56,6 +60,9 @@ static void ConsoleError(gin::Arguments* args) {
 }  // namespace
 
 // static
+const int V8Manager::kV8ContextWrapperIndex = 0;
+
+// static
 scoped_refptr<V8Manager> V8Manager::Create() {
   // Create task runner for running V8. The Isolate should only ever be accessed
   // on this thread.
@@ -84,6 +91,8 @@ V8Manager::~V8Manager() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!isolate_holder_)
     return;
+
+  NotifyIsolateWillDestroy();
 
   isolate_holder_->isolate()->TerminateExecution();
   context_holder_.reset();
@@ -124,6 +133,25 @@ v8::Local<v8::Context> V8Manager::GetContext() const {
   return context_holder_->context();
 }
 
+void V8Manager::BindInterface(const std::string& interface_name,
+                              mojo::GenericPendingReceiver pending_receiver) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  // TODO(b:262637071): Add mappings for bindings for other C++/JS mojom APIs.
+  if (test_mojo_interface_ &&
+      test_mojo_interface_->MatchesInterface(interface_name)) {
+    test_mojo_interface_->BindReceiver(std::move(pending_receiver));
+    return;
+  }
+  LOG(ERROR) << "Couldn't find remote implementation for interface "
+             << interface_name;
+}
+
+void V8Manager::SetTestMojoInterface(
+    std::unique_ptr<InterfaceBinder> test_interface) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  test_mojo_interface_ = std::move(test_interface);
+}
+
 void V8Manager::ConstructIsolateOnThread() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
@@ -141,37 +169,41 @@ void V8Manager::AddV8BindingsOnThread() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(isolate_holder_) << "V8 has not been started, cannot bind.";
 
+  v8::Isolate* isolate = isolate_holder_->isolate();
+
   // Enter isolate scope.
-  v8::Isolate::Scope isolate_scope(isolate_holder_->isolate());
+  v8::Isolate::Scope isolate_scope(isolate);
 
   // Creates and enters stack-allocated handle scope.
   // All the Local handles (Local<>) in this function will belong to this
   // HandleScope and will be garbage collected when it goes out of scope in this
   // C++ function.
-  v8::HandleScope handle_scope(isolate_holder_->isolate());
+  v8::HandleScope handle_scope(isolate);
 
   // Create a template for the global object where we set the
   // built-in global functions.
   v8::Local<v8::ObjectTemplate> global_template =
-      v8::ObjectTemplate::New(isolate_holder_->isolate());
+      v8::ObjectTemplate::New(isolate);
+  global_template->SetInternalFieldCount(kV8ContextWrapperIndex + 1);
 
   // Create a template for the global "chrome" object.
+  // We add this because APIs are found in the chrome namespace in JS,
+  // like chrome.automation, etc.
   v8::Local<v8::ObjectTemplate> chrome_template =
-      v8::ObjectTemplate::New(isolate_holder_->isolate());
-  global_template->Set(isolate_holder_->isolate(), "chrome", chrome_template);
+      v8::ObjectTemplate::New(isolate);
+  global_template->Set(isolate, "chrome", chrome_template);
 
   // Add automation bindings if needed.
   if (automation_bindings_) {
     v8::Local<v8::ObjectTemplate> automation_template =
-        v8::ObjectTemplate::New(isolate_holder_->isolate());
+        v8::ObjectTemplate::New(isolate);
     automation_bindings_->AddAutomationRoutesToTemplate(&automation_template);
-    chrome_template->Set(isolate_holder_->isolate(), "automation",
-                         automation_template);
+    chrome_template->Set(isolate, "automation", automation_template);
     v8::Local<v8::ObjectTemplate> automation_internal_template =
-        v8::ObjectTemplate::New(isolate_holder_->isolate());
+        v8::ObjectTemplate::New(isolate);
     automation_bindings_->AddAutomationInternalRoutesToTemplate(
         &automation_internal_template);
-    chrome_template->Set(isolate_holder_->isolate(), "automationInternal",
+    chrome_template->Set(isolate, "automationInternal",
                          automation_internal_template);
   }
   // TODO(crbug.com/1355633): Add other API bindings to the global template.
@@ -182,28 +214,37 @@ void V8Manager::AddV8BindingsOnThread() {
   // TODO(crbug.com/1355633): Use blink::mojom::DevToolsAgent interface to
   // attach to Chrome devtools and remove these temporary bindings.
   v8::Local<v8::ObjectTemplate> console_template =
-      v8::ObjectTemplate::New(isolate_holder_->isolate());
+      v8::ObjectTemplate::New(isolate);
   console_template->Set(
-      isolate_holder_->isolate(), "log",
-      gin::CreateFunctionTemplate(isolate_holder_->isolate(),
-                                  base::BindRepeating(&ConsoleLog)));
+      isolate, "log",
+      gin::CreateFunctionTemplate(isolate, base::BindRepeating(&ConsoleLog)));
   console_template->Set(
-      isolate_holder_->isolate(), "warn",
-      gin::CreateFunctionTemplate(isolate_holder_->isolate(),
-                                  base::BindRepeating(&ConsoleWarn)));
+      isolate, "warn",
+      gin::CreateFunctionTemplate(isolate, base::BindRepeating(&ConsoleWarn)));
   console_template->Set(
-      isolate_holder_->isolate(), "error",
-      gin::CreateFunctionTemplate(isolate_holder_->isolate(),
-                                  base::BindRepeating(&ConsoleError)));
-  global_template->Set(isolate_holder_->isolate(), "atpconsole",
-                       console_template);
+      isolate, "error",
+      gin::CreateFunctionTemplate(isolate, base::BindRepeating(&ConsoleError)));
+  global_template->Set(isolate, "atpconsole", console_template);
 
   // Add the global template to the current context.
-  v8::Local<v8::Context> context = v8::Context::New(
-      isolate_holder_->isolate(), /*extensions=*/nullptr, global_template);
-  context_holder_ =
-      std::make_unique<gin::ContextHolder>(isolate_holder_->isolate());
+  v8::Local<v8::Context> context =
+      v8::Context::New(isolate, /*extensions=*/nullptr, global_template);
+  context_holder_ = std::make_unique<gin::ContextHolder>(isolate);
   context_holder_->SetContext(context);
+
+  // Make a pointer to `this` in the current context.
+  // This allows Mojo to use the context to find `this` and bind interfaces
+  // on it.
+  v8::Local<v8::Object> global_proxy = context->Global();
+  DCHECK_EQ(kV8ContextWrapperIndex + 1, global_proxy->InternalFieldCount());
+
+  global_proxy->SetAlignedPointerInInternalField(kV8ContextWrapperIndex, this);
+
+  // Create a template for the "Mojo" object in the context scope.
+  v8::Context::Scope context_scope(context);
+  gin::Handle<Mojo> mojo = Mojo::Create(isolate);
+  global_proxy->Set(context, gin::StringToV8(isolate, "Mojo"), mojo.ToV8())
+      .Check();
 
   // TODO(crbug.com/1355633): At this point we could load in API Javascript
   // using ExecuteScript.
