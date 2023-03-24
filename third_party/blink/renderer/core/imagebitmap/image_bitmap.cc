@@ -46,6 +46,7 @@
 #include "third_party/blink/renderer/platform/wtf/cross_thread_copier_std.h"
 #include "third_party/blink/renderer/platform/wtf/cross_thread_functional.h"
 #include "third_party/skia/include/core/SkCanvas.h"
+#include "third_party/skia/include/core/SkImage.h"
 #include "third_party/skia/include/core/SkImageInfo.h"
 #include "third_party/skia/include/core/SkSurface.h"
 #include "third_party/skia/include/core/SkSwizzle.h"
@@ -340,8 +341,8 @@ scoped_refptr<StaticBitmapImage> ScaleImage(
   resized_pixmap.setColorSpace(GetSkImageInfo(image).refColorSpace());
 
   auto resized_sk_image =
-      SkImage::MakeRasterData(resized_pixmap.info(), std::move(image_pixels),
-                              resized_pixmap.rowBytes());
+      SkImages::RasterFromData(resized_pixmap.info(), std::move(image_pixels),
+                               resized_pixmap.rowBytes());
   if (!resized_sk_image)
     return nullptr;
   return UnacceleratedStaticBitmapImage::Create(
@@ -593,7 +594,7 @@ ImageBitmap::ImageBitmap(ImageElementBase* image,
 
     paint_image = PaintImageBuilder::WithDefault()
                       .set_id(paint_image.stable_id())
-                      .set_image(SkImage::MakeFromBitmap(bitmap),
+                      .set_image(SkImages::RasterFromBitmap(bitmap),
                                  paint_image.GetContentIdForFrame(0u))
                       .TakePaintImage();
   }
@@ -693,7 +694,7 @@ ImageBitmap::ImageBitmap(OffscreenCanvas* offscreen_canvas,
 ImageBitmap::ImageBitmap(const SkPixmap& pixmap,
                          bool is_image_bitmap_origin_clean,
                          ImageOrientationEnum image_orientation) {
-  sk_sp<SkImage> raster_copy = SkImage::MakeRasterCopy(pixmap);
+  sk_sp<SkImage> raster_copy = SkImages::RasterFromPixmapCopy(pixmap);
   if (!raster_copy)
     return;
   image_ = UnacceleratedStaticBitmapImage::Create(std::move(raster_copy));

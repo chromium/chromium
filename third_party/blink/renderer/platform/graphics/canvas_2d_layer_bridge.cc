@@ -216,7 +216,7 @@ sk_sp<SkImage> HibernationHandler::GetImage() {
 
   base::TimeTicks before = base::TimeTicks::Now();
   // Note: not discarding the encoded image.
-  auto image = SkImage::MakeFromEncoded(encoded_)->makeRasterImage();
+  auto image = SkImages::DeferredFromEncodedData(encoded_)->makeRasterImage();
   base::TimeTicks after = base::TimeTicks::Now();
   UMA_HISTOGRAM_TIMES(
       "Blink.Canvas.2DLayerBridge.Compression.DecompressionTime",

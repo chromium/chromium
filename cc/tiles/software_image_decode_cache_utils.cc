@@ -18,6 +18,7 @@
 #include "cc/paint/paint_flags.h"
 #include "cc/tiles/mipmap_util.h"
 #include "third_party/skia/include/core/SkColorSpace.h"
+#include "third_party/skia/include/core/SkImage.h"
 #include "ui/gfx/geometry/skia_conversions.h"
 
 namespace cc {
@@ -327,7 +328,7 @@ SoftwareImageDecodeCacheUtils::CacheEntry::CacheEntry(
       tracing_id_(g_next_tracing_id_.GetNext()) {
   DCHECK(memory);
   SkPixmap pixmap(image_info_, memory->data(), image_info_.minRowBytes());
-  image_ = SkImage::MakeFromRaster(
+  image_ = SkImages::RasterFromPixmap(
       pixmap, [](const void* pixels, void* context) {}, nullptr);
 }
 

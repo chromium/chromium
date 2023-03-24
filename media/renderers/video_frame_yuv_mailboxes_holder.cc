@@ -19,6 +19,7 @@
 #include "third_party/skia/include/core/SkSurface.h"
 #include "third_party/skia/include/core/SkYUVAPixmaps.h"
 #include "third_party/skia/include/gpu/GrDirectContext.h"
+#include "third_party/skia/include/gpu/ganesh/SkImageGanesh.h"
 #include "third_party/skia/include/gpu/gl/GrGLTypes.h"
 
 namespace media {
@@ -199,8 +200,8 @@ sk_sp<SkImage> VideoFrameYUVMailboxesHolder::VideoFrameToSkImage(
           : video_frame->ColorSpace().GetAsFullRangeRGB().ToSkColorSpace();
 
   DCHECK(yuva_backend_textures.isValid());
-  auto result = SkImage::MakeFromYUVATextures(gr_context, yuva_backend_textures,
-                                              rgb_color_space);
+  auto result = SkImages::TextureFromYUVATextures(
+      gr_context, yuva_backend_textures, rgb_color_space);
   DCHECK(result);
   return result;
 }

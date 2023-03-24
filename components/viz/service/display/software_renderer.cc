@@ -37,6 +37,7 @@
 #include "skia/ext/opacity_filter_canvas.h"
 #include "third_party/skia/include/core/SkCanvas.h"
 #include "third_party/skia/include/core/SkColor.h"
+#include "third_party/skia/include/core/SkImage.h"
 #include "third_party/skia/include/core/SkImageFilter.h"
 #include "third_party/skia/include/core/SkMatrix.h"
 #include "third_party/skia/include/core/SkPath.h"
@@ -853,7 +854,7 @@ sk_sp<SkShader> SoftwareRenderer::GetBackdropFilterShader(
     if (filter_clip.IsEmpty())
       return nullptr;
     // Crop the source image to the backdrop_filter_bounds.
-    sk_sp<SkImage> cropped_image = SkImage::MakeFromBitmap(backdrop_bitmap);
+    sk_sp<SkImage> cropped_image = SkImages::RasterFromBitmap(backdrop_bitmap);
     cropped_image =
         cropped_image->makeSubset(RectToSkIRect(filter_clip), nullptr);
     cropped_image->asLegacyBitmap(&backdrop_bitmap);
@@ -913,7 +914,7 @@ sk_sp<SkShader> SoftwareRenderer::GetBackdropFilterShader(
   canvas.drawImageRect(filtered_image, src_rect, dst_rect, SkSamplingOptions(),
                        &paint, SkCanvas::kStrict_SrcRectConstraint);
 
-  return SkImage::MakeFromBitmap(bitmap)->makeShader(
+  return SkImages::RasterFromBitmap(bitmap)->makeShader(
       content_tile_mode, content_tile_mode, SkSamplingOptions(),
       &filter_backdrop_transform);
 }

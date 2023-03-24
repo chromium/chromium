@@ -39,6 +39,7 @@
 #include "third_party/blink/renderer/platform/wtf/cross_thread_copier_gpu.h"
 #include "third_party/blink/renderer/platform/wtf/cross_thread_functional.h"
 #include "third_party/blink/renderer/platform/wtf/functional.h"
+#include "third_party/skia/include/core/SkImage.h"
 #include "third_party/skia/include/gpu/GrDirectContext.h"
 #include "ui/gfx/buffer_format_util.h"
 #include "ui/gfx/color_space.h"
@@ -301,7 +302,7 @@ scoped_refptr<StaticBitmapImage> CanvasResourceSharedBitmap::Bitmap() {
   SkPixmap pixmap(image_info, shared_mapping_.memory(),
                   image_info.minRowBytes());
   AddRef();
-  sk_sp<SkImage> sk_image = SkImage::MakeFromRaster(
+  sk_sp<SkImage> sk_image = SkImages::RasterFromPixmap(
       pixmap,
       [](const void*, SkImage::ReleaseContext resource_to_unref) {
         static_cast<CanvasResourceSharedBitmap*>(resource_to_unref)->Release();
@@ -644,7 +645,7 @@ scoped_refptr<StaticBitmapImage> CanvasResourceRasterSharedImage::Bitmap() {
 
     SkPixmap pixmap(CreateSkImageInfo(), gpu_memory_buffer_->memory(0),
                     gpu_memory_buffer_->stride(0));
-    auto sk_image = SkImage::MakeRasterCopy(pixmap);
+    auto sk_image = SkImages::RasterFromPixmapCopy(pixmap);
     gpu_memory_buffer_->Unmap();
     return sk_image ? UnacceleratedStaticBitmapImage::Create(sk_image)
                     : nullptr;

@@ -139,7 +139,7 @@ bool RenderIconForVisibilityAnalysis(const SkBitmap& icon,
   }
   rendered_icon->eraseColor(background_color);
   SkCanvas offscreen(*rendered_icon, SkSurfaceProps{});
-  offscreen.drawImage(SkImage::MakeFromBitmap(icon), 0, 0);
+  offscreen.drawImage(SkImages::RasterFromBitmap(icon), 0, 0);
   offscreen.drawColor(background_color, SkBlendMode::kDifference);
 
   return true;

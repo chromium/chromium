@@ -35,7 +35,7 @@ static const int kCacheSize = 128 * 1024 * 1024;
 sk_sp<SkImage> CreateImage(int width, int height) {
   SkBitmap bitmap;
   bitmap.allocPixels(SkImageInfo::MakeS32(width, height, kPremul_SkAlphaType));
-  return SkImage::MakeFromBitmap(bitmap);
+  return SkImages::RasterFromBitmap(bitmap);
 }
 
 SkM44 CreateMatrix(const SkSize& scale) {

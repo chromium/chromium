@@ -3809,7 +3809,7 @@ WebGLImageConversion::ImageExtractor::ImageExtractor(
 
       // TODO(fmalita): Partial frames are not supported currently: only fully
       // decoded frames make it through.  We could potentially relax this and
-      // use SkImage::MakeFromBitmap(bitmap) to make a copy.
+      // use SkImages::RasterFromBitmap(bitmap) to make a copy.
       skia_image = frame->FinalizePixelsAndGetImage();
     }
   }

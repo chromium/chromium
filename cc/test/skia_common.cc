@@ -26,6 +26,7 @@
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "third_party/skia/include/core/SkCanvas.h"
 #include "third_party/skia/include/core/SkColorSpace.h"
+#include "third_party/skia/include/core/SkImage.h"
 #include "third_party/skia/include/core/SkImageGenerator.h"
 #include "third_party/skia/include/core/SkImageInfo.h"
 #include "third_party/skia/include/core/SkPixmap.h"
@@ -225,7 +226,7 @@ PaintImage CreateBitmapImage(const gfx::Size& size, SkColorType color_type) {
   bitmap.eraseColor(SK_AlphaTRANSPARENT);
   return PaintImageBuilder::WithDefault()
       .set_id(PaintImage::GetNextId())
-      .set_image(SkImage::MakeFromBitmap(bitmap),
+      .set_image(SkImages::RasterFromBitmap(bitmap),
                  PaintImage::GetNextContentId())
       .TakePaintImage();
 }
@@ -289,7 +290,7 @@ PaintImage CreateNonDiscardablePaintImage(const gfx::Size& size) {
   return PaintImageBuilder::WithDefault()
       .set_id(PaintImage::GetNextId())
       .set_texture_image(
-          SkImage::MakeFromBitmap(bitmap)->makeTextureImage(context.get()),
+          SkImages::RasterFromBitmap(bitmap)->makeTextureImage(context.get()),
           PaintImage::GetNextContentId())
       .TakePaintImage();
 }

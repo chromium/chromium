@@ -147,7 +147,7 @@ class PLATFORM_EXPORT ImageFrame final {
 
   // Create SkImage from Bitmap() and return it.  This should be called only
   // if frame is complete.  The bitmap is set immutable before creating
-  // SkImage to avoid copying bitmap in SkImage::MakeFromBitmap(bitmap_).
+  // SkImage to avoid copying bitmap in SkImages::RasterFromBitmap(bitmap_).
   sk_sp<SkImage> FinalizePixelsAndGetImage();
 
   // Returns true if the pixels changed, but the bitmap has not yet been

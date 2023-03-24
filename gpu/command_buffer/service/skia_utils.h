@@ -26,6 +26,8 @@ typedef unsigned int GLenum;
 typedef unsigned int GLuint;
 
 class GrBackendTexture;
+class GrContextThreadSafeProxy;
+class SkImage;
 
 namespace gfx {
 class Size;

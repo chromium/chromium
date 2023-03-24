@@ -106,7 +106,7 @@ class CanvasCaptureHandlerTest
     testBitmap.allocPixels(info);
     testBitmap.eraseARGB(opaque ? 255 : kTestAlphaValue, 30, 60, 200);
     return UnacceleratedStaticBitmapImage::Create(
-        SkImage::MakeFromBitmap(testBitmap));
+        SkImages::RasterFromBitmap(testBitmap));
   }
 
   void OnVerifyDeliveredFrame(

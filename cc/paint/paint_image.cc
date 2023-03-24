@@ -110,7 +110,7 @@ PaintImage PaintImage::CreateFromBitmap(SkBitmap bitmap) {
 
   return PaintImageBuilder::WithDefault()
       .set_id(PaintImage::GetNextId())
-      .set_image(SkImage::MakeFromBitmap(bitmap),
+      .set_image(SkImages::RasterFromBitmap(bitmap),
                  PaintImage::GetNextContentId())
       .TakePaintImage();
 }
@@ -181,15 +181,15 @@ void PaintImage::CreateSkImage() {
   if (sk_image_) {
     cached_sk_image_ = sk_image_;
   } else if (paint_record_) {
-    cached_sk_image_ = SkImage::MakeFromPicture(
+    cached_sk_image_ = SkImages::DeferredFromPicture(
         paint_record_->ToSkPicture(gfx::RectToSkRect(paint_record_rect_)),
         SkISize::Make(paint_record_rect_.width(), paint_record_rect_.height()),
-        nullptr, nullptr, SkImage::BitDepth::kU8, SkColorSpace::MakeSRGB());
+        nullptr, nullptr, SkImages::BitDepth::kU8, SkColorSpace::MakeSRGB());
   } else if (paint_image_generator_) {
-    cached_sk_image_ =
-        SkImage::MakeFromGenerator(std::make_unique<SkiaPaintImageGenerator>(
-            paint_image_generator_, kDefaultFrameIndex,
-            kDefaultGeneratorClientId));
+    cached_sk_image_ = SkImages::DeferredFromGenerator(
+        std::make_unique<SkiaPaintImageGenerator>(paint_image_generator_,
+                                                  kDefaultFrameIndex,
+                                                  kDefaultGeneratorClientId));
   } else if (texture_backing_) {
     cached_sk_image_ = texture_backing_->GetAcceleratedSkImage();
   }
@@ -362,7 +362,7 @@ sk_sp<SkImage> PaintImage::GetSkImageForFrame(
     return GetSwSkImage();
 
   sk_sp<SkImage> image =
-      SkImage::MakeFromGenerator(std::make_unique<SkiaPaintImageGenerator>(
+      SkImages::DeferredFromGenerator(std::make_unique<SkiaPaintImageGenerator>(
           paint_image_generator_, index, client_id));
   return image;
 }

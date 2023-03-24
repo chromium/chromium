@@ -1130,12 +1130,13 @@ TEST_F(DiscardableImageMapTest, HighBitDepth) {
                                 nullptr /* color_space */);
   bitmap.allocPixels(info);
   bitmap.eraseColor(SK_AlphaTRANSPARENT);
-  PaintImage discardable_image = PaintImageBuilder::WithDefault()
-                                     .set_id(PaintImage::GetNextId())
-                                     .set_is_high_bit_depth(true)
-                                     .set_image(SkImage::MakeFromBitmap(bitmap),
-                                                PaintImage::GetNextContentId())
-                                     .TakePaintImage();
+  PaintImage discardable_image =
+      PaintImageBuilder::WithDefault()
+          .set_id(PaintImage::GetNextId())
+          .set_is_high_bit_depth(true)
+          .set_image(SkImages::RasterFromBitmap(bitmap),
+                     PaintImage::GetNextContentId())
+          .TakePaintImage();
 
   FakeContentLayerClient content_layer_client;
   content_layer_client.set_bounds(visible_rect.size());

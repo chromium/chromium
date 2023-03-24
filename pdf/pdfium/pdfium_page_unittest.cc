@@ -874,7 +874,7 @@ class PDFiumPageThumbnailTest : public PDFiumTestBase {
     ASSERT_GT(stride, 0);
     ASSERT_EQ(image_info.minRowBytes(), static_cast<size_t>(stride));
     std::vector<uint8_t> data = thumbnail.TakeData();
-    sk_sp<SkImage> image = SkImage::MakeRasterCopy(
+    sk_sp<SkImage> image = SkImages::RasterFromPixmapCopy(
         SkPixmap(image_info, data.data(), image_info.minRowBytes()));
     ASSERT_TRUE(image);
 

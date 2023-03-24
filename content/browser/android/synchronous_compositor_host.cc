@@ -437,9 +437,9 @@ bool SynchronousCompositorHost::DemandDrawSw(SkCanvas* canvas,
       auto mark_bool = [](const void* pixels, void* context) {
         *static_cast<bool*>(context) = true;
       };
-      image = SkImage::MakeFromRaster(pixmap, mark_bool, &pixels_released);
+      image = SkImages::RasterFromPixmap(pixmap, mark_bool, &pixels_released);
     } else {
-      image = SkImage::MakeRasterCopy(pixmap);
+      image = SkImages::RasterFromPixmapCopy(pixmap);
     }
     canvas->drawImage(image, 0, 0);
     canvas->restore();

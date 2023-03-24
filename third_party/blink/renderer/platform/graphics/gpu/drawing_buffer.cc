@@ -69,6 +69,7 @@
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/scheduler/public/thread_scheduler.h"
 #include "third_party/blink/renderer/platform/wtf/functional.h"
+#include "third_party/skia/include/core/SkImage.h"
 #include "third_party/skia/include/core/SkPixmap.h"
 #include "third_party/skia/include/core/SkSurface.h"
 #include "third_party/skia/include/gpu/gl/GrGLTypes.h"
@@ -464,7 +465,7 @@ DrawingBuffer::GetUnacceleratedStaticBitmapImage(bool flip_y) {
   if (!bitmap.tryAllocN32Pixels(size_.width(), size_.height()))
     return nullptr;
   ReadFramebufferIntoBitmapPixels(static_cast<uint8_t*>(bitmap.getPixels()));
-  auto sk_image = SkImage::MakeFromBitmap(bitmap);
+  auto sk_image = SkImages::RasterFromBitmap(bitmap);
 
   bool origin_top_left =
       flip_y ? opengl_flip_y_extension_ : !opengl_flip_y_extension_;
@@ -698,7 +699,7 @@ scoped_refptr<StaticBitmapImage> DrawingBuffer::TransferToStaticBitmapImage() {
     if (!black_bitmap.tryAllocN32Pixels(size_.width(), size_.height()))
       return nullptr;
     black_bitmap.eraseARGB(0, 0, 0, 0);
-    sk_sp<SkImage> black_image = SkImage::MakeFromBitmap(black_bitmap);
+    sk_sp<SkImage> black_image = SkImages::RasterFromBitmap(black_bitmap);
     if (!black_image)
       return nullptr;
     return UnacceleratedStaticBitmapImage::Create(black_image);

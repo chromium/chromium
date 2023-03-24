@@ -40,6 +40,7 @@
 #include "third_party/skia/include/core/SkColorSpace.h"
 #include "third_party/skia/include/core/SkColorType.h"
 #include "third_party/skia/include/core/SkGraphics.h"
+#include "third_party/skia/include/core/SkImage.h"
 #include "third_party/skia/include/core/SkPictureRecorder.h"
 #include "third_party/skia/include/core/SkRect.h"
 #include "third_party/skia/include/core/SkSurface.h"
@@ -89,7 +90,7 @@ sk_sp<SkImage> MakeSkImage(const gfx::Size& size,
   green.setColor(SkColors::kGreen);
   canvas.drawRect(SkRect::MakeXYWH(10, 20, 30, 40), green);
 
-  return SkImage::MakeFromBitmap(bitmap);
+  return SkImages::RasterFromBitmap(bitmap);
 }
 
 constexpr size_t kCacheLimitBytes = 1024 * 1024;
@@ -651,7 +652,7 @@ TEST_F(OopPixelTest, DrawHdrImageWithMetadata) {
     SkColor4f color{image_pq_pixel, image_pq_pixel, image_pq_pixel, 1.f};
     canvas.drawColor(color);
 
-    image = SkImage::MakeFromBitmap(bitmap);
+    image = SkImages::RasterFromBitmap(bitmap);
     image = image->reinterpretColorSpace(
         SkColorSpace::MakeRGB(pq, SkNamedGamut::kSRGB));
   }

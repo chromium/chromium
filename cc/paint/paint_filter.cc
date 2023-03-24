@@ -23,6 +23,7 @@
 #include "cc/paint/scoped_raster_flags.h"
 #include "third_party/skia/include/core/SkColorFilter.h"
 #include "third_party/skia/include/core/SkColorSpace.h"
+#include "third_party/skia/include/core/SkImage.h"
 #include "third_party/skia/include/core/SkScalar.h"
 #include "third_party/skia/include/core/SkString.h"
 #include "third_party/skia/include/core/SkTileMode.h"
@@ -755,9 +756,9 @@ RecordPaintFilter::RecordPaintFilter(PaintRecord record,
     int height = SkScalarCeilToInt(record_bounds.height());
     SkMatrix originAdjust =
         SkMatrix::Translate(-record_bounds.fLeft, -record_bounds.fTop);
-    auto image = SkImage::MakeFromPicture(
+    auto image = SkImages::DeferredFromPicture(
         std::move(picture), SkISize::Make(width, height), &originAdjust,
-        nullptr, SkImage::BitDepth::kU8, SkColorSpace::MakeSRGB());
+        nullptr, SkImages::BitDepth::kU8, SkColorSpace::MakeSRGB());
 
     // Must account for the raster scale when drawing the picture image,
     SkRect src = SkRect::MakeWH(record_bounds.width(), record_bounds.height());

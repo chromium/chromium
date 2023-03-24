@@ -46,8 +46,10 @@
 #include "gpu/vulkan/buildflags.h"
 #include "skia/buildflags.h"
 #include "skia/ext/legacy_display_globals.h"
+#include "third_party/skia/include/core/SkImage.h"
 #include "third_party/skia/include/core/SkPromiseImageTexture.h"
 #include "third_party/skia/include/gpu/GrYUVABackendTextures.h"
+#include "third_party/skia/include/gpu/ganesh/SkImageGanesh.h"
 #include "ui/base/ui_base_features.h"
 #include "ui/gfx/color_space.h"
 #include "ui/gfx/geometry/skia_conversions.h"
@@ -454,7 +456,7 @@ void SkiaOutputSurfaceImpl::MakePromiseSkImage(
         image_context->mailbox_holder().texture_target,
         image_context->ycbcr_info());
     FulfillForPlane* fulfill = new FulfillForPlane(impl);
-    auto image = SkImage::MakePromiseTexture(
+    auto image = SkImages::PromiseTextureFrom(
         gr_context_thread_safe_, backend_format,
         gfx::SizeToSkISize(image_context->size()), GrMipMapped::kNo,
         image_context->origin(), color_type, image_context->alpha_type(),
@@ -483,7 +485,7 @@ void SkiaOutputSurfaceImpl::MakePromiseSkImage(
 
     GrYUVABackendTextureInfo yuva_backend_info(
         yuva_info, formats.data(), GrMipmapped::kNo, kTopLeft_GrSurfaceOrigin);
-    auto image = SkImage::MakePromiseYUVATexture(
+    auto image = SkImages::PromiseTextureFromYUVA(
         gr_context_thread_safe_, yuva_backend_info,
         image_context->color_space(), Fulfill, CleanUp, fulfills);
     DCHECK(image);
@@ -538,7 +540,7 @@ sk_sp<SkImage> SkiaOutputSurfaceImpl::MakePromiseSkImageFromYUV(
 
   GrYUVABackendTextureInfo yuva_backend_info(
       yuva_info, formats, GrMipmapped::kNo, kTopLeft_GrSurfaceOrigin);
-  auto image = SkImage::MakePromiseYUVATexture(
+  auto image = SkImages::PromiseTextureFromYUVA(
       gr_context_thread_safe_, yuva_backend_info, std::move(image_color_space),
       Fulfill, CleanUp, fulfills);
   DCHECK(image);
@@ -793,7 +795,7 @@ sk_sp<SkImage> SkiaOutputSurfaceImpl::MakePromiseSkImageFromRenderPass(
         si_format, /*plane_index=*/0, GL_TEXTURE_2D,
         /*ycbcr_info=*/absl::nullopt);
     FulfillForPlane* fulfill = new FulfillForPlane(image_context.get());
-    auto image = SkImage::MakePromiseTexture(
+    auto image = SkImages::PromiseTextureFrom(
         gr_context_thread_safe_, backend_format,
         gfx::SizeToSkISize(image_context->size()),
         mipmap ? GrMipMapped::kYes : GrMipMapped::kNo, image_context->origin(),

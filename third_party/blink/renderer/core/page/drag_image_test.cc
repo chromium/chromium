@@ -166,7 +166,7 @@ TEST(DragImageTest, InterpolationNone) {
   test_bitmap.eraseArea(SkIRect::MakeXYWH(1, 1, 1, 1), 0xFFFFFFFF);
 
   scoped_refptr<TestImage> test_image =
-      TestImage::Create(SkImage::MakeFromBitmap(test_bitmap));
+      TestImage::Create(SkImages::RasterFromBitmap(test_bitmap));
   std::unique_ptr<DragImage> drag_image = DragImage::Create(
       test_image.get(), kRespectImageOrientation, kInterpolationNone);
   ASSERT_TRUE(drag_image);

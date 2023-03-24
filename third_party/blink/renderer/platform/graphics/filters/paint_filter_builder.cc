@@ -30,6 +30,7 @@
 #include "third_party/blink/renderer/platform/graphics/paint/paint_canvas.h"
 #include "third_party/blink/renderer/platform/graphics/paint/paint_record.h"
 #include "third_party/blink/renderer/platform/graphics/skia/skia_utils.h"
+#include "third_party/skia/include/core/SkImage.h"
 #include "third_party/skia/include/effects/SkColorMatrixFilter.h"
 #include "third_party/skia/include/effects/SkTableColorFilter.h"
 #include "ui/gfx/geometry/skia_conversions.h"
@@ -132,7 +133,7 @@ sk_sp<PaintFilter> BuildBoxReflectFilter(const BoxReflection& reflection,
       canvas.drawPicture(std::move(mask_record));
       PaintImage image = PaintImageBuilder::WithDefault()
                              .set_id(PaintImage::GetNextId())
-                             .set_image(SkImage::MakeFromBitmap(bitmap),
+                             .set_image(SkImages::RasterFromBitmap(bitmap),
                                         PaintImage::GetNextContentId())
                              .TakePaintImage();
 

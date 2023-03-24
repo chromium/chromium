@@ -12,10 +12,12 @@
 #include "gpu/command_buffer/service/shared_image/shared_image_format_utils.h"
 #include "gpu/command_buffer/service/texture_manager.h"
 #include "third_party/skia/include/core/SkColorSpace.h"
+#include "third_party/skia/include/core/SkImage.h"
 #include "third_party/skia/include/core/SkPromiseImageTexture.h"
 #include "third_party/skia/include/gpu/GrBackendSurfaceMutableState.h"
 #include "third_party/skia/include/gpu/GrDirectContext.h"
 #include "third_party/skia/include/gpu/GrYUVABackendTextures.h"
+#include "third_party/skia/include/gpu/ganesh/SkImageGanesh.h"
 #include "ui/gl/gl_fence.h"
 
 namespace gpu {
@@ -283,7 +285,7 @@ sk_sp<SkImage> SkiaImageRepresentation::ScopedReadAccess::CreateSkImage(
     auto alpha_type = representation()->alpha_type();
     auto color_type =
         viz::ToClosestSkColorType(/*gpu_compositing=*/true, format);
-    return SkImage::MakeFromTexture(
+    return SkImages::BorrowTextureFrom(
         context, promise_image_texture()->backendTexture(), surface_origin,
         color_type, alpha_type, sk_color_space, texture_release_proc,
         release_context);
@@ -307,9 +309,9 @@ sk_sp<SkImage> SkiaImageRepresentation::ScopedReadAccess::CreateSkImage(
                          ToSkYUVASubsampling(format), yuv_color_space);
     GrYUVABackendTextures yuva_backend_textures(yuva_info, yuva_textures.data(),
                                                 surface_origin);
-    return SkImage::MakeFromYUVATextures(context, yuva_backend_textures,
-                                         sk_color_space, texture_release_proc,
-                                         release_context);
+    return SkImages::TextureFromYUVATextures(
+        context, yuva_backend_textures, sk_color_space, texture_release_proc,
+        release_context);
   }
 }
 
@@ -325,7 +327,7 @@ sk_sp<SkImage> SkiaImageRepresentation::ScopedReadAccess::CreateSkImageForPlane(
   auto alpha_type = SkAlphaType::kOpaque_SkAlphaType;
   auto color_type =
       viz::ToClosestSkColorType(/*gpu_compositing=*/true, format, plane_index);
-  return SkImage::MakeFromTexture(
+  return SkImages::BorrowTextureFrom(
       context, promise_image_texture(plane_index)->backendTexture(),
       surface_origin, color_type, alpha_type, /*sk_color_space=*/nullptr);
 }

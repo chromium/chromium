@@ -2743,7 +2743,7 @@ class MockImageProvider : public ImageProvider {
     SkBitmap bitmap;
     bitmap.allocPixelsFlags(SkImageInfo::MakeN32Premul(10, 10),
                             SkBitmap::kZeroPixels_AllocFlag);
-    sk_sp<SkImage> image = SkImage::MakeFromBitmap(bitmap);
+    sk_sp<SkImage> image = SkImages::RasterFromBitmap(bitmap);
     size_t i = index_++;
     return ScopedResult(DecodedDrawImage(image, nullptr, src_rect_offset_[i],
                                          scale_[i], quality_[i], true));

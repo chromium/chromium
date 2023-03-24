@@ -31,6 +31,7 @@
 #include "third_party/skia/include/core/SkSurface.h"
 #include "third_party/skia/include/core/SkYUVAPixmaps.h"
 #include "third_party/skia/include/gpu/GrDirectContext.h"
+#include "third_party/skia/include/gpu/ganesh/SkImageGanesh.h"
 #include "third_party/skia/include/gpu/gl/GrGLTypes.h"
 #include "ui/gfx/gpu_memory_buffer.h"
 
@@ -154,13 +155,13 @@ bool ReadbackTexturePlaneToMemorySyncSkImage(const VideoFrame& src_frame,
   gl_texture_info.fFormat = texture_format;
   GrBackendTexture texture(width, height, GrMipMapped::kNo, gl_texture_info);
 
-  auto image =
-      SkImage::MakeFromTexture(gr_context, texture,
-                               src_frame.metadata().texture_origin_is_top_left
-                                   ? kTopLeft_GrSurfaceOrigin
-                                   : kBottomLeft_GrSurfaceOrigin,
-                               sk_color_type, sk_alpha_type,
-                               /*colorSpace=*/nullptr);
+  auto image = SkImages::BorrowTextureFrom(
+      gr_context, texture,
+      src_frame.metadata().texture_origin_is_top_left
+          ? kTopLeft_GrSurfaceOrigin
+          : kBottomLeft_GrSurfaceOrigin,
+      sk_color_type, sk_alpha_type,
+      /*colorSpace=*/nullptr);
   if (!image) {
     DLOG(ERROR) << "Can't create SkImage from texture plane " << src_plane;
     return false;

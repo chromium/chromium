@@ -31,7 +31,7 @@ bool AddPdfPage(sk_sp<SkDocument> pdf_doc,
                 const sk_sp<SkData>& image_data,
                 bool rotate,
                 absl::optional<int> dpi) {
-  const sk_sp<SkImage> image = SkImage::MakeFromEncoded(image_data);
+  const sk_sp<SkImage> image = SkImages::DeferredFromEncodedData(image_data);
   if (!image) {
     LOG(ERROR) << "Unable to generate image from encoded image data.";
     return false;

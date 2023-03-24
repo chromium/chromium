@@ -27,6 +27,7 @@
 #include "third_party/blink/renderer/platform/graphics/unaccelerated_static_bitmap_image.h"
 #include "third_party/skia/include/core/SkImage.h"
 #include "third_party/skia/include/gpu/GrDirectContext.h"
+#include "third_party/skia/include/gpu/ganesh/SkImageGanesh.h"
 
 namespace blink {
 
@@ -339,7 +340,7 @@ void AcceleratedStaticBitmapImage::InitializeTextureBacking(
     release_ctx->texture_id = shared_context_texture_id;
   release_ctx->context_provider_wrapper = context_provider_wrapper;
 
-  sk_sp<SkImage> sk_image = SkImage::MakeFromTexture(
+  sk_sp<SkImage> sk_image = SkImages::BorrowTextureFrom(
       shared_gr_context, backend_texture, origin, sk_image_info_.colorType(),
       sk_image_info_.alphaType(), sk_image_info_.refColorSpace(),
       &ReleaseTexture, release_ctx);

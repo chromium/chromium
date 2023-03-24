@@ -1410,7 +1410,7 @@ class AppListSortColorOrderBrowserTest : public AppListSortBrowserTest {
     gfx::ImageSkia icon;
     icon = gfx::ImageSkiaOperations::CreateImageWithCircleBackground(
         icon_size / 2, icon_color, icon);
-    const sk_sp<SkImage> image = SkImage::MakeFromBitmap(*icon.bitmap());
+    const sk_sp<SkImage> image = SkImages::RasterFromBitmap(*icon.bitmap());
     const sk_sp<SkData> png_data(
         image->encodeToData(SkEncodedImageFormat::kPNG, /*quality=*/100));
     icon_file.Write(0, (const char*)png_data->data(), png_data->size());

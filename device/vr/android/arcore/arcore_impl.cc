@@ -844,7 +844,7 @@ void ArCoreImpl::BuildImageDatabase(
                           kOpaque_SkAlphaType),
         SkBitmap::kZeroPixels_AllocFlag);
     SkCanvas gray_canvas(canvas_bitmap);
-    sk_sp<SkImage> src_image = SkImage::MakeFromBitmap(src_bitmap);
+    sk_sp<SkImage> src_image = SkImages::RasterFromBitmap(src_bitmap);
     gray_canvas.drawImage(src_image, 0, 0);
     SkPixmap gray_pixmap;
     if (!gray_canvas.peekPixels(&gray_pixmap)) {

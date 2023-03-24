@@ -24,8 +24,10 @@
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "third_party/skia/include/core/SkColorType.h"
+#include "third_party/skia/include/core/SkImage.h"
 #include "third_party/skia/include/core/SkPromiseImageTexture.h"
 #include "third_party/skia/include/gpu/GrBackendSemaphore.h"
+#include "third_party/skia/include/gpu/ganesh/SkImageGanesh.h"
 #include "ui/gl/gl_context.h"
 #include "ui/gl/gl_share_group.h"
 #include "ui/gl/gl_surface.h"
@@ -226,7 +228,7 @@ TEST_P(WrappedSkImageBackingFactoryTest, Upload) {
 
     // Readback via Skia API and verify it's the same pixels that were uploaded.
     SkColorType color_type = ToClosestSkColorType(true, format, plane);
-    auto sk_image = SkImage::MakeFromTexture(
+    auto sk_image = SkImages::BorrowTextureFrom(
         context_state_->gr_context(), promise_texture->backendTexture(),
         kSurfaceOrigin, color_type, kAlphaType, nullptr);
     ASSERT_TRUE(sk_image);

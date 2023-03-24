@@ -112,7 +112,7 @@ ChildFrameCompositingHelper::PaintContentsToDisplayList() {
 
       auto image = cc::PaintImageBuilder::WithDefault()
                        .set_id(cc::PaintImage::GetNextId())
-                       .set_image(SkImage::MakeFromBitmap(*sad_bitmap),
+                       .set_image(SkImages::RasterFromBitmap(*sad_bitmap),
                                   cc::PaintImage::GetNextContentId())
                        .TakePaintImage();
       display_list->push<cc::DrawImageOp>(image, x, y);

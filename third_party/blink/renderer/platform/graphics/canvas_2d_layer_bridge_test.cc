@@ -74,6 +74,7 @@
 #include "third_party/blink/renderer/platform/scheduler/public/thread_scheduler.h"
 #include "third_party/blink/renderer/platform/testing/runtime_enabled_features_test_helpers.h"
 #include "third_party/blink/renderer/platform/wtf/cross_thread_functional.h"
+#include "third_party/skia/include/core/SkImage.h"
 #include "third_party/skia/include/core/SkSurface.h"
 #include "third_party/skia/include/gpu/GrDirectContext.h"
 #include "third_party/skia/include/gpu/gl/GrGLTypes.h"
@@ -163,7 +164,7 @@ class ImageTrackingDecodeCache : public cc::StubDecodeCache {
     SkBitmap bitmap;
     bitmap.allocPixelsFlags(SkImageInfo::MakeN32Premul(10, 10),
                             SkBitmap::kZeroPixels_AllocFlag);
-    sk_sp<SkImage> sk_image = SkImage::MakeFromBitmap(bitmap);
+    sk_sp<SkImage> sk_image = SkImages::RasterFromBitmap(bitmap);
     return cc::DecodedDrawImage(
         sk_image, nullptr, SkSize::Make(0, 0), SkSize::Make(1, 1),
         cc::PaintFlags::FilterQuality::kLow, !budget_exceeded_);

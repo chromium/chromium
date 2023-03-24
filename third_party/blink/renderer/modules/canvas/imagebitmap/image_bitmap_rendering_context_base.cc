@@ -52,7 +52,7 @@ void ImageBitmapRenderingContextBase::ResetInternalBitmapToBlackTransparent(
   SkBitmap black_bitmap;
   if (black_bitmap.tryAllocN32Pixels(width, height)) {
     black_bitmap.eraseARGB(0, 0, 0, 0);
-    auto image = SkImage::MakeFromBitmap(black_bitmap);
+    auto image = SkImages::RasterFromBitmap(black_bitmap);
     if (image) {
       image_layer_bridge_->SetImage(
           UnacceleratedStaticBitmapImage::Create(image));

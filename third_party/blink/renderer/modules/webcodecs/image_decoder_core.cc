@@ -16,6 +16,7 @@
 #include "third_party/blink/renderer/platform/image-decoders/segment_reader.h"
 #include "third_party/blink/renderer/platform/wtf/shared_buffer.h"
 #include "third_party/skia/include/core/SkColorSpace.h"
+#include "third_party/skia/include/core/SkImage.h"
 #include "third_party/skia/include/core/SkYUVAPixmaps.h"
 
 namespace blink {
@@ -213,7 +214,7 @@ std::unique_ptr<ImageDecoderCore::ImageDecodeResult> ImageDecoderCore::Decode(
   // Prefer FinalizePixelsAndGetImage() since that will mark the underlying
   // bitmap as immutable, which allows copies to be avoided.
   auto sk_image = is_complete ? image->FinalizePixelsAndGetImage()
-                              : SkImage::MakeFromBitmap(image->Bitmap());
+                              : SkImages::RasterFromBitmap(image->Bitmap());
   if (!sk_image) {
     NOTREACHED() << "Failed to retrieve SkImage for decoded image.";
     result->status = Status::kDecodeError;

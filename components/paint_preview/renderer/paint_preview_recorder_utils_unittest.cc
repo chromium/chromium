@@ -378,7 +378,7 @@ TEST_P(PaintPreviewRecorderUtilsSerializeAsSkPictureTest,
             .set_id(cc::PaintImage::GetNextId())
             .set_texture_backing(
                 sk_sp<FakeTextureBacking>(
-                    new FakeTextureBacking(SkImage::MakeFromBitmap(bitmap))),
+                    new FakeTextureBacking(SkImages::RasterFromBitmap(bitmap))),
                 cc::PaintImage::GetNextContentId())
             .TakePaintImage();
     canvas->drawImage(paint_image, 0U, 0U);
@@ -405,9 +405,9 @@ TEST_P(PaintPreviewRecorderUtilsSerializeAsSkPictureTest,
     bitmap.allocN32Pixels(dimensions.width(), dimensions.height());
     SkCanvas sk_canvas(bitmap);
     sk_canvas.drawColor(SkColors::kRed);
-    auto sk_image = SkImage::MakeFromBitmap(bitmap);
+    auto sk_image = SkImages::RasterFromBitmap(bitmap);
     auto data = sk_image->encodeToData();
-    auto lazy_sk_image = SkImage::MakeFromEncoded(data);
+    auto lazy_sk_image = SkImages::DeferredFromEncodedData(data);
     ASSERT_TRUE(lazy_sk_image->isLazyGenerated());
     cc::PaintImage paint_image =
         cc::PaintImageBuilder::WithDefault()

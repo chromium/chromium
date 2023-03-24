@@ -27,6 +27,7 @@
 #include "third_party/blink/renderer/platform/graphics/gpu/webgpu_texture_alpha_clearer.h"
 #include "third_party/blink/renderer/platform/graphics/unaccelerated_static_bitmap_image.h"
 #include "third_party/blink/renderer/platform/scheduler/public/thread_scheduler.h"
+#include "third_party/skia/include/core/SkImage.h"
 
 namespace blink {
 
@@ -267,7 +268,7 @@ ImageBitmap* GPUCanvasContext::TransferToImageBitmap(
 
     return MakeGarbageCollected<ImageBitmap>(
         UnacceleratedStaticBitmapImage::Create(
-            SkImage::MakeFromBitmap(black_bitmap)));
+            SkImages::RasterFromBitmap(black_bitmap)));
   };
 
   // If the canvas configuration is invalid, WebGPU requires that we give a

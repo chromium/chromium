@@ -16,6 +16,7 @@
 #include "cc/paint/paint_op_writer.h"
 #include "cc/paint/paint_record.h"
 #include "third_party/skia/include/core/SkColorSpace.h"
+#include "third_party/skia/include/core/SkImage.h"
 #include "third_party/skia/include/core/SkPictureRecorder.h"
 #include "third_party/skia/include/effects/SkGradientShader.h"
 
@@ -460,10 +461,10 @@ sk_sp<SkShader> PaintShader::GetSkShader(
           // For fixed scale, we create an image shader with an image backed by
           // the picture.
           case ScalingBehavior::kFixedScale: {
-            auto image = SkImage::MakeFromPicture(
+            auto image = SkImages::DeferredFromPicture(
                 sk_cached_picture_,
                 SkISize::Make(tile_.width(), tile_.height()), nullptr, nullptr,
-                SkImage::BitDepth::kU8, SkColorSpace::MakeSRGB());
+                SkImages::BitDepth::kU8, SkColorSpace::MakeSRGB());
             return image->makeShader(tx_, ty_, sampling,
                                      base::OptionalToPtr(local_matrix_));
           }

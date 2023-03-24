@@ -88,6 +88,7 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "third_party/khronos/GLES2/gl2.h"
 #include "third_party/khronos/GLES2/gl2ext.h"
+#include "third_party/skia/include/core/SkImage.h"
 #include "third_party/skia/include/core/SkPicture.h"
 #include "third_party/skia/include/gpu/GrDirectContext.h"
 #include "ui/gfx/animation/keyframe/timing_function.h"
@@ -8429,7 +8430,7 @@ class LayerTreeHostTestQueueImageDecodeNonLazy : public LayerTreeHostTest {
     bitmap_.allocN32Pixels(10, 10);
     PaintImage image = PaintImageBuilder::WithDefault()
                            .set_id(PaintImage::GetNextId())
-                           .set_image(SkImage::MakeFromBitmap(bitmap_),
+                           .set_image(SkImages::RasterFromBitmap(bitmap_),
                                       PaintImage::GetNextContentId())
                            .TakePaintImage();
     auto callback = base::BindOnce(

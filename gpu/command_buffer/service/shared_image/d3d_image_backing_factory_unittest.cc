@@ -34,6 +34,7 @@
 #include "third_party/skia/include/core/SkImage.h"
 #include "third_party/skia/include/core/SkPromiseImageTexture.h"
 #include "third_party/skia/include/core/SkSurface.h"
+#include "third_party/skia/include/gpu/ganesh/SkImageGanesh.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/geometry/skia_conversions.h"
 #include "ui/gfx/gpu_memory_buffer.h"
@@ -483,7 +484,7 @@ class D3DImageBackingFactoryTest : public D3DImageBackingFactoryTestBase {
     EXPECT_EQ(size.height(), backend_texture.height());
 
     // Create an Sk Image from GrBackendTexture.
-    auto sk_image = SkImage::MakeFromTexture(
+    auto sk_image = SkImages::BorrowTextureFrom(
         gr_context(), backend_texture, kTopLeft_GrSurfaceOrigin,
         kRGBA_8888_SkColorType, kOpaque_SkAlphaType, nullptr);
 
@@ -2277,7 +2278,7 @@ TEST_F(D3DImageBackingFactoryTest, MultiplanarUploadAndReadback) {
 
     GrBackendTexture backend_texture = dest_surface->getBackendTexture(
         SkSurface::kFlushWrite_BackendHandleAccess);
-    auto dst_image = SkImage::MakeFromTexture(
+    auto dst_image = SkImages::BorrowTextureFrom(
         context_state_->gr_context(), backend_texture, kTopLeft_GrSurfaceOrigin,
         kRGBA_8888_SkColorType, alpha_type, nullptr);
     ASSERT_TRUE(dst_image);

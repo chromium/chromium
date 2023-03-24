@@ -50,6 +50,7 @@
 #include "third_party/skia/include/core/SkColorFilter.h"
 #include "third_party/skia/include/core/SkColorSpace.h"
 #include "third_party/skia/include/core/SkData.h"
+#include "third_party/skia/include/core/SkImage.h"
 #include "third_party/skia/include/core/SkImageInfo.h"
 #include "third_party/skia/include/core/SkPixmap.h"
 #include "third_party/skia/include/core/SkRect.h"
@@ -60,6 +61,7 @@
 #include "third_party/skia/include/gpu/GrBackendSurface.h"
 #include "third_party/skia/include/gpu/GrDirectContext.h"
 #include "third_party/skia/include/gpu/GrYUVABackendTextures.h"
+#include "third_party/skia/include/gpu/ganesh/SkImageGanesh.h"
 #include "ui/gfx/color_space.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/geometry/skia_conversions.h"
@@ -433,11 +435,12 @@ sk_sp<SkImage> TakeOwnershipOfSkImageBacking(GrDirectContext* context,
   }
   sk_sp<SkColorSpace> color_space = image->refColorSpace();
   GrBackendTexture backend_texture;
-  SkImage::BackendTextureReleaseProc release_proc;
-  SkImage::MakeBackendTextureFromSkImage(context, std::move(image),
-                                         &backend_texture, &release_proc);
-  return SkImage::MakeFromTexture(context, backend_texture, origin, color_type,
-                                  kPremul_SkAlphaType, std::move(color_space));
+  SkImages::BackendTextureReleaseProc release_proc;
+  SkImages::GetBackendTextureFromImage(context, std::move(image),
+                                       &backend_texture, &release_proc);
+  return SkImages::BorrowTextureFrom(context, backend_texture, origin,
+                                     color_type, kPremul_SkAlphaType,
+                                     std::move(color_space));
 }
 
 // Immediately deletes an SkImage, preventing caching of that image. Must be
@@ -2200,9 +2203,9 @@ void GpuImageDecodeCache::DecodeImageIfNecessary(
         backing_memory->Unlock();
         backing_memory.reset();
       } else {
-        image_y = SkImage::MakeFromRaster(pixmap_y, release_proc, nullptr);
-        image_u = SkImage::MakeFromRaster(pixmap_u, release_proc, nullptr);
-        image_v = SkImage::MakeFromRaster(pixmap_v, release_proc, nullptr);
+        image_y = SkImages::RasterFromPixmap(pixmap_y, release_proc, nullptr);
+        image_u = SkImages::RasterFromPixmap(pixmap_u, release_proc, nullptr);
+        image_v = SkImages::RasterFromPixmap(pixmap_v, release_proc, nullptr);
       }
     } else {  // RGBX decoding is the default path.
       SkPixmap pixmap(image_info, backing_memory->data(),
@@ -2212,7 +2215,7 @@ void GpuImageDecodeCache::DecodeImageIfNecessary(
         backing_memory->Unlock();
         backing_memory.reset();
       } else {
-        image = SkImage::MakeFromRaster(pixmap, release_proc, nullptr);
+        image = SkImages::RasterFromPixmap(pixmap, release_proc, nullptr);
       }
     }
   }
@@ -3236,7 +3239,7 @@ sk_sp<SkImage> GpuImageDecodeCache::CreateImageFromYUVATexturesInternal(
     target_color_space = nullptr;
   }
 
-  sk_sp<SkImage> yuva_image = SkImage::MakeFromYUVATextures(
+  sk_sp<SkImage> yuva_image = SkImages::TextureFromYUVATextures(
       context_->GrContext(), yuva_backend_textures,
       std::move(decoded_color_space));
   if (target_color_space)

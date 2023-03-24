@@ -19,9 +19,10 @@ namespace blink {
 namespace {
 
 sk_sp<SkImage> CreateFrameAtIndex(DeferredImageDecoder* decoder, size_t index) {
-  return SkImage::MakeFromGenerator(std::make_unique<SkiaPaintImageGenerator>(
-      decoder->CreateGenerator(), index,
-      cc::PaintImage::kDefaultGeneratorClientId));
+  return SkImages::DeferredFromGenerator(
+      std::make_unique<SkiaPaintImageGenerator>(
+          decoder->CreateGenerator(), index,
+          cc::PaintImage::kDefaultGeneratorClientId));
 }
 
 }  // namespace

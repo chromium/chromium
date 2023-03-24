@@ -44,6 +44,7 @@
 #include "third_party/skia/include/core/SkImageInfo.h"
 #include "third_party/skia/include/gpu/GrBackendSurface.h"
 #include "third_party/skia/include/gpu/GrDirectContext.h"
+#include "third_party/skia/include/gpu/ganesh/SkImageGanesh.h"
 #include "third_party/skia/include/gpu/gl/GrGLTypes.h"
 #include "ui/gfx/geometry/rect_f.h"
 #include "ui/gfx/geometry/skia_conversions.h"
@@ -203,7 +204,7 @@ sk_sp<SkImage> WrapGLTexture(
   texture_info.fFormat = GL_RGBA8_OES;
   GrBackendTexture backend_texture(size.width(), size.height(),
                                    GrMipMapped::kNo, texture_info);
-  return SkImage::MakeFromAdoptedTexture(
+  return SkImages::AdoptTextureFrom(
       raster_context_provider->GrContext(), backend_texture,
       texture_origin_is_top_left ? kTopLeft_GrSurfaceOrigin
                                  : kBottomLeft_GrSurfaceOrigin,
@@ -911,8 +912,8 @@ class VideoTextureBacking : public cc::TextureBacking {
       DLOG(ERROR) << "VideoTextureBacking::GetSkImageViaReadback failed.";
       return nullptr;
     }
-    return SkImage::MakeRasterData(sk_image_info_, std::move(image_pixels),
-                                   sk_image_info_.minRowBytes());
+    return SkImages::RasterFromData(sk_image_info_, std::move(image_pixels),
+                                    sk_image_info_.minRowBytes());
   }
 
   bool readPixels(const SkImageInfo& dst_info,

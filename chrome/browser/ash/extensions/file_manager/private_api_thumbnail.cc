@@ -56,7 +56,7 @@ std::string ConvertAndEncode(const SkBitmap& bitmap) {
     DLOG(WARNING) << "Got an invalid bitmap";
     return std::string();
   }
-  sk_sp<SkImage> image = SkImage::MakeFromBitmap(bitmap);
+  sk_sp<SkImage> image = SkImages::RasterFromBitmap(bitmap);
   sk_sp<SkData> png_data(image->encodeToData(SkEncodedImageFormat::kPNG, 100));
   if (!png_data) {
     DLOG(WARNING) << "Thumbnail encoding error";

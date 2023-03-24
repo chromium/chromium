@@ -145,6 +145,7 @@
 #include "third_party/blink/renderer/platform/text/text_direction.h"
 #include "third_party/blink/renderer/platform/weborigin/kurl.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
+#include "third_party/skia/include/core/SkImage.h"
 #include "ui/accessibility/ax_common.h"
 #include "ui/accessibility/ax_role_properties.h"
 #include "ui/events/keycodes/dom/dom_code.h"
@@ -2628,8 +2629,9 @@ String AXNodeObject::ImageDataUrl(const gfx::Size& max_size) const {
   Vector<char> pixel_storage(
       base::checked_cast<wtf_size_t>(info.computeByteSize(row_bytes)));
   SkPixmap pixmap(info, pixel_storage.data(), row_bytes);
-  if (!SkImage::MakeFromBitmap(bitmap)->readPixels(pixmap, 0, 0))
+  if (!SkImages::RasterFromBitmap(bitmap)->readPixels(pixmap, 0, 0)) {
     return String();
+  }
 
   // Encode as a PNG and return as a data url.
   std::unique_ptr<ImageDataBuffer> buffer = ImageDataBuffer::Create(pixmap);

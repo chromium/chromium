@@ -43,7 +43,7 @@ cc::PaintImage MakeUnaccelerated(const cc::PaintImage& paint_image) {
     }
     // Make immutable to skip an extra copy.
     bitmap.setImmutable();
-    sk_image = SkImage::MakeFromBitmap(bitmap);
+    sk_image = SkImages::RasterFromBitmap(bitmap);
   }
   return cc::PaintImageBuilder::WithDefault()
       .set_id(cc::PaintImage::GetNextId())

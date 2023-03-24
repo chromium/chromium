@@ -20,6 +20,7 @@
 #include "third_party/blink/renderer/platform/graphics/image_data_buffer.h"
 #include "third_party/blink/renderer/platform/wtf/text/base64.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
+#include "third_party/skia/include/core/SkImage.h"
 #include "ui/gfx/geometry/size.h"
 
 namespace blink {
@@ -55,7 +56,7 @@ bool EncodeAsImage(char* body,
   Vector<unsigned char> pixel_storage(
       base::checked_cast<wtf_size_t>(info.computeByteSize(row_bytes)));
   SkPixmap pixmap(info, pixel_storage.data(), row_bytes);
-  sk_sp<SkImage> image = SkImage::MakeFromBitmap(bitmap);
+  sk_sp<SkImage> image = SkImages::RasterFromBitmap(bitmap);
 
   if (!image || !image->readPixels(pixmap, 0, 0))
     return false;

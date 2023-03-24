@@ -92,7 +92,7 @@ sk_sp<const SkPicture> PaintPictureLargeImage(gfx::Size bounds) {
   paint.setStyle(SkPaint::kFill_Style);
   paint.setColor(SK_ColorRED);
   canvas->drawRect(sk_bounds, paint);
-  canvas->drawImage(SkImage::MakeFromBitmap(bitmap), 0, 0);
+  canvas->drawImage(SkImages::RasterFromBitmap(bitmap), 0, 0);
   return recorder.finishRecordingAsPicture();
 }
 

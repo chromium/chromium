@@ -23,8 +23,9 @@
 #include "third_party/skia/include/core/SkImage.h"
 #include "third_party/skia/include/core/SkPaint.h"
 #include "third_party/skia/include/core/SkSamplingOptions.h"
-#include "third_party/skia/include/gpu/GrTypes.h"
 #include "third_party/skia/include/gpu/GrBackendSemaphore.h"
+#include "third_party/skia/include/gpu/GrTypes.h"
+#include "third_party/skia/include/gpu/ganesh/SkImageGanesh.h"
 #include "third_party/skia/include/gpu/vk/GrVkBackendContext.h"
 #include "third_party/skia/include/gpu/vk/GrVkExtensions.h"
 #include "third_party/skia/include/private/chromium/GrVkSecondaryCBDrawContext.h"
@@ -321,7 +322,7 @@ void VulkanGLInterop::DrawVk(sk_sp<GrVkSecondaryCBDrawContext> draw_context,
   // Create an SkImage from AHB.
   GrBackendTexture backend_texture(params.width, params.height,
                                    pending_draw->image_info);
-  pending_draw->ahb_skimage = SkImage::MakeFromTexture(
+  pending_draw->ahb_skimage = SkImages::BorrowTextureFrom(
       vulkan_context_provider_->GetGrContext(), backend_texture,
       kBottomLeft_GrSurfaceOrigin, kRGBA_8888_SkColorType, kPremul_SkAlphaType,
       color_space);

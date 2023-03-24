@@ -134,6 +134,7 @@
 #include "third_party/blink/renderer/platform/wtf/functional.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_utf8_adaptor.h"
+#include "third_party/skia/include/core/SkImage.h"
 #include "ui/gfx/geometry/size.h"
 
 // Populates parameters from texImage2D except for border, width, height, and
@@ -5632,7 +5633,7 @@ void WebGLRenderingContextBase::TexImageHelperImageData(TexImageParams params,
   }
 
   auto pixmap = pixels->GetSkPixmap();
-  auto image = SkImage::MakeFromRaster(pixmap, nullptr, nullptr);
+  auto image = SkImages::RasterFromPixmap(pixmap, nullptr, nullptr);
   TexImageSkImage(params, std::move(image), /*image_has_flip_y=*/false);
 }
 

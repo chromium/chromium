@@ -13,6 +13,7 @@
 #include "third_party/blink/renderer/core/imagebitmap/image_bitmap.h"
 #include "third_party/blink/renderer/platform/blob/blob_data.h"
 #include "third_party/blink/renderer/platform/graphics/unaccelerated_static_bitmap_image.h"
+#include "third_party/skia/include/core/SkImage.h"
 
 namespace blink {
 
@@ -115,7 +116,7 @@ BlinkTransferableMessage& BlinkTransferableMessage::operator=(
 
 scoped_refptr<StaticBitmapImage> ToStaticBitmapImage(
     const SkBitmap& sk_bitmap) {
-  sk_sp<SkImage> image = SkImage::MakeFromBitmap(sk_bitmap);
+  sk_sp<SkImage> image = SkImages::RasterFromBitmap(sk_bitmap);
   if (!image)
     return nullptr;
 

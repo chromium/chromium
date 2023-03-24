@@ -30,7 +30,7 @@ static const int kTimeCheckInterval = 10;
 sk_sp<SkImage> CreateImage(int width, int height) {
   SkBitmap bitmap;
   bitmap.allocPixels(SkImageInfo::MakeN32Premul(width, height));
-  return SkImage::MakeFromBitmap(bitmap);
+  return SkImages::RasterFromBitmap(bitmap);
 }
 
 SkM44 CreateMatrix(const SkSize& scale) {

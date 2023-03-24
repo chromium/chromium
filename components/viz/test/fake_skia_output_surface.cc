@@ -24,10 +24,12 @@
 #include "gpu/command_buffer/common/swap_buffers_complete_params.h"
 #include "gpu/command_buffer/service/shared_image/shared_image_format_utils.h"
 #include "third_party/khronos/GLES2/gl2ext.h"
+#include "third_party/skia/include/core/SkImage.h"
 #include "third_party/skia/include/core/SkPixelRef.h"
 #include "third_party/skia/include/gpu/GpuTypes.h"
 #include "third_party/skia/include/gpu/GrBackendSurface.h"
 #include "third_party/skia/include/gpu/GrDirectContext.h"
+#include "third_party/skia/include/gpu/ganesh/SkImageGanesh.h"
 #include "third_party/skia/include/gpu/gl/GrGLTypes.h"
 #include "ui/gfx/gpu_fence_handle.h"
 #include "ui/gfx/presentation_feedback.h"
@@ -130,10 +132,10 @@ void FakeSkiaOutputSurface::MakePromiseSkImage(
   auto sk_color_type =
       ToClosestSkColorType(true /* gpu_compositing */, image_context->format());
   image_context->SetImage(
-      SkImage::MakeFromTexture(gr_context(), backend_texture,
-                               kTopLeft_GrSurfaceOrigin, sk_color_type,
-                               image_context->alpha_type(),
-                               image_context->color_space()),
+      SkImages::BorrowTextureFrom(gr_context(), backend_texture,
+                                  kTopLeft_GrSurfaceOrigin, sk_color_type,
+                                  image_context->alpha_type(),
+                                  image_context->color_space()),
       {backend_texture.getBackendFormat()});
 }
 

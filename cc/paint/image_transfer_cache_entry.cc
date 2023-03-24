@@ -23,6 +23,7 @@
 #include "third_party/skia/include/gpu/GrBackendSurface.h"
 #include "third_party/skia/include/gpu/GrDirectContext.h"
 #include "third_party/skia/include/gpu/GrYUVABackendTextures.h"
+#include "third_party/skia/include/gpu/ganesh/SkImageGanesh.h"
 #include "ui/gfx/color_conversion_sk_filter_cache.h"
 #include "ui/gfx/hdr_metadata.h"
 
@@ -43,7 +44,7 @@ void ReleaseContext(SkImage::ReleaseContext context) {
 // first extracted out of the |plane_images| (and work is flushed on each one).
 // Note that we assume that the image is opaque (no alpha plane). Then, a
 // SkImage is created out of those textures using the
-// SkImage::MakeFromYUVATextures() API. Finally, |image_color_space| is the
+// SkImages::TextureFromYUVATextures() API. Finally, |image_color_space| is the
 // color space of the resulting image after applying |yuv_color_space|
 // (converting from YUV to RGB). This is assumed to be sRGB if nullptr.
 //
@@ -80,7 +81,7 @@ sk_sp<SkImage> MakeYUVImageFromUploadedPlanes(
   GrYUVABackendTextures yuva_backend_textures(
       yuva_info, plane_backend_textures.data(), kTopLeft_GrSurfaceOrigin);
   Context* ctx = new Context{plane_images};
-  sk_sp<SkImage> image = SkImage::MakeFromYUVATextures(
+  sk_sp<SkImage> image = SkImages::TextureFromYUVATextures(
       context, yuva_backend_textures, std::move(image_color_space),
       ReleaseContext, ctx);
   if (!image) {
@@ -569,7 +570,8 @@ bool ServiceImageTransferCacheEntry::Deserialize(
         return false;
       }
 
-      sk_sp<SkImage> plane = SkImage::MakeFromRaster(pixmap, nullptr, nullptr);
+      sk_sp<SkImage> plane =
+          SkImages::RasterFromPixmap(pixmap, nullptr, nullptr);
       if (!plane) {
         DLOG(ERROR) << "Failed to create image from plane pixmap";
         return false;
@@ -598,7 +600,8 @@ bool ServiceImageTransferCacheEntry::Deserialize(
       DLOG(ERROR) << "Failed to read pixmap";
       return false;
     }
-    rgba_pixmap_image = SkImage::MakeFromRaster(rgba_pixmap, nullptr, nullptr);
+    rgba_pixmap_image =
+        SkImages::RasterFromPixmap(rgba_pixmap, nullptr, nullptr);
     if (!rgba_pixmap_image) {
       DLOG(ERROR) << "Failed to create image from plane pixmap";
       return false;
@@ -664,7 +667,7 @@ bool ServiceImageTransferCacheEntry::Deserialize(
   // a copy of it, because `rgba_pixmap` is directly referencing the transfer
   // buffer's memory, and will go away after this this call.
   if (image_ == rgba_pixmap_image) {
-    image_ = SkImage::MakeRasterCopy(rgba_pixmap);
+    image_ = SkImages::RasterFromPixmapCopy(rgba_pixmap);
     if (!image_) {
       DLOG(ERROR) << "Failed to create raster copy";
       return false;

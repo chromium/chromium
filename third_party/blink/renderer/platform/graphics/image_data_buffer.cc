@@ -42,6 +42,7 @@
 #include "third_party/blink/renderer/platform/wtf/text/base64.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
+#include "third_party/skia/include/core/SkImage.h"
 #include "third_party/skia/include/core/SkSurface.h"
 #include "third_party/skia/include/core/SkSwizzle.h"
 #include "third_party/skia/include/encode/SkJpegEncoder.h"
@@ -94,7 +95,7 @@ ImageDataBuffer::ImageDataBuffer(scoped_refptr<StaticBitmapImage> image) {
       return;
     }
     MSAN_CHECK_MEM_IS_INITIALIZED(pixmap_.addr(), pixmap_.computeByteSize());
-    retained_image_ = SkImage::MakeRasterData(info, std::move(data), rowBytes);
+    retained_image_ = SkImages::RasterFromData(info, std::move(data), rowBytes);
   } else {
     retained_image_ = paint_image.GetSwSkImage();
     if (!retained_image_->peekPixels(&pixmap_))

@@ -26,7 +26,7 @@ namespace {
 sk_sp<SkImage> CreateRasterImage() {
   SkBitmap bitmap;
   bitmap.allocN32Pixels(10, 10);
-  return SkImage::MakeFromBitmap(bitmap);
+  return SkImages::RasterFromBitmap(bitmap);
 }
 
 DecodedDrawImage CreateDecode() {

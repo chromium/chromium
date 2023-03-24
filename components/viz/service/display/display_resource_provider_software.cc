@@ -9,6 +9,7 @@
 
 #include "components/viz/common/resources/resource_format_utils.h"
 #include "components/viz/service/display/shared_bitmap_manager.h"
+#include "third_party/skia/include/core/SkImage.h"
 
 namespace viz {
 
@@ -148,7 +149,7 @@ DisplayResourceProviderSoftware::ScopedReadLockSkImage::ScopedReadLockSkImage(
   resource_provider->PopulateSkBitmapWithResource(&sk_bitmap, resource,
                                                   alpha_type);
   sk_bitmap.setImmutable();
-  sk_image_ = SkImage::MakeFromBitmap(sk_bitmap);
+  sk_image_ = SkImages::RasterFromBitmap(sk_bitmap);
   resource_provider_->resource_sk_images_[resource_id] = sk_image_;
 }
 
