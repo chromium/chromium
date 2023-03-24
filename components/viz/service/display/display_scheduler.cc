@@ -472,11 +472,9 @@ void DisplayScheduler::ScheduleBeginFrameDeadline() {
     return;
   }
 
-  begin_frame_deadline_timer_.Start(
-      FROM_HERE, desired_deadline, begin_frame_deadline_closure_,
-      deadline_mode == BeginFrameDeadlineMode::kLate
-          ? base::subtle::DelayPolicy::kFlexibleNoSooner
-          : base::subtle::DelayPolicy::kPrecise);
+  begin_frame_deadline_timer_.Start(FROM_HERE, desired_deadline,
+                                    begin_frame_deadline_closure_,
+                                    base::subtle::DelayPolicy::kPrecise);
   TRACE_EVENT2("viz", "Using new deadline", "deadline_mode", deadline_mode,
                "desired_deadline", desired_deadline);
 }
