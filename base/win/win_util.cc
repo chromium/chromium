@@ -690,7 +690,7 @@ void EnableHighDPISupport() {
   }
 }
 
-std::wstring WStringFromGUID(REFGUID rguid) {
+std::wstring WStringFromGUID(const ::GUID& rguid) {
   // This constant counts the number of characters in the formatted string,
   // including the null termination character.
   constexpr int kGuidStringCharacters =

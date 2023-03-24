@@ -24,7 +24,6 @@
 #include "base/types/expected.h"
 #include "base/win/atl.h"
 #include "base/win/scoped_handle.h"
-#include "base/win/win_util.h"
 #include "base/win/windows_types.h"
 #include "chrome/updater/updater_scope.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"

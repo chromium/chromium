@@ -200,7 +200,7 @@ BASE_EXPORT void DisableFlicks(HWND hwnd);
 BASE_EXPORT void EnableHighDPISupport();
 
 // Returns a string representation of |rguid|.
-BASE_EXPORT std::wstring WStringFromGUID(REFGUID rguid);
+BASE_EXPORT std::wstring WStringFromGUID(const ::GUID& rguid);
 
 // Attempts to pin user32.dll to ensure it remains loaded. If it isn't loaded
 // yet, the module will first be loaded and then the pin will be attempted. If
