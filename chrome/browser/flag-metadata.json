@@ -2481,7 +2481,7 @@
   {
     "name": "enable-fullscreen-api",
     "owners": [ "ajuma", "joemerramos" ],
-    "expiry_milestone": 113
+    "expiry_milestone": 120
   },
   {
     "name": "enable-future-v8-vm-features",
@@ -3251,7 +3251,7 @@
   {
     "name": "enable-tailored-security-integration",
     "owners": ["joemerramos", "ajuma", "bling-flags@google.com"],
-    "expiry_milestone": 114
+    "expiry_milestone": 120
   },
   {
     "name": "enable-tflite-language-detection",
