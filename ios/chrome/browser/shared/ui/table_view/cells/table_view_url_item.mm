@@ -179,6 +179,8 @@ const char kDefaultSupplementalURLTextDelimiter[] = "•";
         [UIFont preferredFontForTextStyle:UIFontTextStyleFootnote];
     _thirdRowLabel.adjustsFontForContentSizeCategory = YES;
     _thirdRowLabel.textColor = [UIColor colorNamed:kTextSecondaryColor];
+    _thirdRowLabel.numberOfLines = 0;
+    _thirdRowLabel.lineBreakMode = NSLineBreakByWordWrapping;
     _thirdRowLabel.hidden = YES;
     _metadataLabel.font =
         [UIFont preferredFontForTextStyle:UIFontTextStyleFootnote];
