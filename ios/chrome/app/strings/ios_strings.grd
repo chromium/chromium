@@ -551,6 +551,43 @@ locale.  The strings in this file are specific to iOS.
       <message name="IDS_IOS_BOTTOM_TOOLBAR_IPH_PROMOTION_TEXT" desc="Text for the Bottom Toolbar Tip in-product help promotion, explaining that the bottom toolbar can be used to focus the Search Bar, instead of having to reach to the top toolbar. [iOS only]">
         Search bar is now easier to reach
       </message>
+      <message name="IDS_IOS_BRING_ANDROID_TABS_CANCEL_BUTTON" desc="Button to dismiss the 'Bring Android Tabs' prompt. [iOS only]">
+        Cancel
+      </message>
+      <message name="IDS_IOS_BRING_ANDROID_TABS_PROMPT_OPEN_TABS_BUTTON" desc="Button to open on the current device all the Android switcher's recently active tabs from Android. [iOS only]">
+        {count, plural,
+          =1 {Open the tab}
+          other {Open {count} tabs}}
+      </message>
+      <message name="IDS_IOS_BRING_ANDROID_TABS_PROMPT_REVIEW_TABS_BUTTON_BOTTOM_MESSAGE" desc="Button shown on the prompt (bottom message version) for Android switchers to bring up a table of the user's recently active tabs from Android. [iOS only]">
+        {count, plural,
+          =1 {Review the tab}
+          other {Review all tabs}}
+      </message>
+      <message name="IDS_IOS_BRING_ANDROID_TABS_PROMPT_REVIEW_TABS_BUTTON_CONFIRMATION_ALERT" desc="Button shown on the prompt (confirmation alert version) for Android switchers to bring up a table of the user's recently active tabs from Android. [iOS only]">
+        {count, plural,
+          =1 {Review the tab...}
+          other {Review all tabs...}}
+      </message>
+      <message name="IDS_IOS_BRING_ANDROID_TABS_PROMPT_SUBTITLE" desc="Subtitle of the 'Bring Android Tabs' prompt shown to Android switchers to review their recently active tabs from Android. [iOS only]">
+        {count, plural,
+          =1 {Get your {count} recently active tab from your other device on this iPhone}
+          other {Get your {count} recently active tabs from your other device on this iPhone}}
+      </message>
+      <message name="IDS_IOS_BRING_ANDROID_TABS_PROMPT_TITLE" desc="Title of the 'Bring Android Tabs' prompt shown to Android switchers to review their recently active tabs from Android. [iOS only]">
+        {count, plural,
+          =1 {Pick up the tab you left off from Android?}
+          other {Pick up the tabs you left off from Android?}}
+      </message>
+      <message name="IDS_IOS_BRING_ANDROID_TABS_REVIEW_TABLE_OPEN_BUTTON" desc="Button to open selected tabs imported from Android. [iOS only]">
+        {count, plural,
+          =0 {Open {count} tab}
+          =1 {Open {count} tab}
+          other {Open {count} tabs}}
+      </message>
+      <message name="IDS_IOS_BRING_ANDROID_TABS_REVIEW_TABLE_TITLE" desc="Title of the table that shows a list of recently active tabs from Android for the Android switcher to review and open. [iOS only]">
+        Tabs from Android
+      </message>
       <message name="IDS_IOS_CALENDARS_USAGE_DESCRIPTION" desc="Specifies the reason for accessing the user's calendar while the app is in use [Length: unlimited] [iOS only].">
           This will be used to create events in your Apple Calendar from Chrome and Google Lens.
       </message>
