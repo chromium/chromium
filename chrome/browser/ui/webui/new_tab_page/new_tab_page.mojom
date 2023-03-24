@@ -318,6 +318,8 @@ interface PageHandler {
   // Increment the number of times the user has opened the side panel
   // with the customize chrome button.
   IncrementCustomizeChromeButtonOpenCount();
+  // Attempts to trigger in product help for customize chrome.
+  MaybeShowCustomizeChromeFeaturePromo();
 
   // ======= METRICS =======
   // Logs that the One Google Bar was added to the DOM / loaded in an iframe at

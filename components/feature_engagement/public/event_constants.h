@@ -29,6 +29,8 @@ extern const char kReadingListItemAdded[];
 extern const char kReadingListMenuOpened[];
 // Bookmark star button was clicked opening the menu.
 extern const char kBookmarkStarMenuOpened[];
+// Customize chrome was opened.
+extern const char kCustomizeChromeOpened[];
 
 // All conditions for reopen closed tab IPH were met. Since this IPH needs to
 // track user events (opening/closing tabs, focusing the omnibox, etc) on the

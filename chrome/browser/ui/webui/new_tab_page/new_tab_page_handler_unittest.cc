@@ -14,6 +14,7 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/mock_callback.h"
 #include "base/test/scoped_feature_list.h"
+#include "chrome/browser/new_tab_page/customize_chrome/customize_chrome_feature_promo_helper.h"
 #include "chrome/browser/new_tab_page/promos/promo_data.h"
 #include "chrome/browser/new_tab_page/promos/promo_service.h"
 #include "chrome/browser/new_tab_page/promos/promo_service_factory.h"
@@ -193,6 +194,25 @@ class MockCustomizeChromeTabHelper : public CustomizeChromeTabHelper {
       : CustomizeChromeTabHelper(web_contents) {}
 };
 
+class MockCustomizeChromeFeaturePromoHelper
+    : public CustomizeChromeFeaturePromoHelper {
+ public:
+  MOCK_METHOD(void,
+              RecordCustomizeChromeFeatureUsage,
+              (content::WebContents*),
+              (override));
+  MOCK_METHOD(void,
+              MaybeShowCustomizeChromeFeaturePromo,
+              (content::WebContents*),
+              (override));
+  MOCK_METHOD(void,
+              CloseCustomizeChromeFeaturePromo,
+              (content::WebContents*),
+              (override));
+
+  ~MockCustomizeChromeFeaturePromoHelper() override = default;
+};
+
 std::unique_ptr<TestingProfile> MakeTestingProfile(
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory) {
   TestingProfile::Builder profile_builder;
@@ -222,6 +242,11 @@ class NewTabPageHandlerTest : public testing::Test {
         mock_promo_service_(*static_cast<MockPromoService*>(
             PromoServiceFactory::GetForProfile(profile_.get()))),
         web_contents_(factory_.CreateWebContents(profile_.get())),
+        mock_customize_chrome_feature_promo_helper_(
+            new MockCustomizeChromeFeaturePromoHelper()),
+        mock_customize_chrome_feature_promo_helper_ptr_(
+            std::unique_ptr<MockCustomizeChromeFeaturePromoHelper>(
+                mock_customize_chrome_feature_promo_helper_)),
         mock_customize_chrome_tab_helper_(
             MockCustomizeChromeTabHelper::CreateForWebContents(
                 web_contents_.get())) {
@@ -258,7 +283,9 @@ class NewTabPageHandlerTest : public testing::Test {
         mojo::PendingReceiver<new_tab_page::mojom::PageHandler>(),
         mock_page_.BindAndGetRemote(), profile_.get(),
         &mock_ntp_custom_background_service_, &mock_theme_service_,
-        &mock_logo_service_, web_contents_, base::Time::Now(), module_id_names);
+        &mock_logo_service_, web_contents_,
+        std::move(mock_customize_chrome_feature_promo_helper_ptr_),
+        base::Time::Now(), module_id_names);
     mock_page_.FlushForTesting();
     EXPECT_EQ(handler_.get(), theme_service_observer_);
     EXPECT_EQ(handler_.get(), ntp_custom_background_service_observer_);
@@ -312,6 +339,11 @@ class NewTabPageHandlerTest : public testing::Test {
   const raw_ref<MockPromoService> mock_promo_service_;
   content::TestWebContentsFactory factory_;
   raw_ptr<content::WebContents> web_contents_;  // Weak. Owned by factory_.
+  // Pointer to mock that will eventually be solely owned by the handler.
+  MockCustomizeChromeFeaturePromoHelper*
+      mock_customize_chrome_feature_promo_helper_;
+  std::unique_ptr<MockCustomizeChromeFeaturePromoHelper>
+      mock_customize_chrome_feature_promo_helper_ptr_;
   raw_ptr<MockCustomizeChromeTabHelper> mock_customize_chrome_tab_helper_;
   base::HistogramTester histogram_tester_;
   std::unique_ptr<NewTabPageHandler> handler_;
@@ -1056,6 +1088,12 @@ TEST_F(NewTabPageHandlerTest, SetCustomizeChromeSidePanelVisible) {
       .Times(1)
       .WillOnce(testing::DoAll(testing::SaveArg<0>(&visible),
                                testing::SaveArg<1>(&section)));
+  EXPECT_CALL(*mock_customize_chrome_feature_promo_helper_,
+              RecordCustomizeChromeFeatureUsage)
+      .Times(1);
+  EXPECT_CALL(*mock_customize_chrome_feature_promo_helper_,
+              CloseCustomizeChromeFeaturePromo)
+      .Times(1);
 
   handler_->SetCustomizeChromeSidePanelVisible(
       /*visible=*/true,
@@ -1073,6 +1111,12 @@ TEST_F(NewTabPageHandlerTest, SetCustomizeChromeSidePanelInvisible) {
       .Times(1)
       .WillOnce(testing::DoAll(testing::SaveArg<0>(&visible),
                                testing::SaveArg<1>(&section)));
+  EXPECT_CALL(*mock_customize_chrome_feature_promo_helper_,
+              RecordCustomizeChromeFeatureUsage)
+      .Times(0);
+  EXPECT_CALL(*mock_customize_chrome_feature_promo_helper_,
+              CloseCustomizeChromeFeaturePromo)
+      .Times(0);
 
   handler_->SetCustomizeChromeSidePanelVisible(
       /*visible=*/false, new_tab_page::mojom::CustomizeChromeSection::kModules);
@@ -1097,6 +1141,29 @@ TEST_F(NewTabPageHandlerTest, IncrementCustomizeChromeButtonOpenCount) {
   EXPECT_EQ(profile_->GetPrefs()->GetInteger(
                 prefs::kNtpCustomizeChromeButtonOpenCount),
             2);
+
+  mock_page_.FlushForTesting();
+}
+
+TEST_F(NewTabPageHandlerTest, MaybeShowCustomizeChromeFeaturePromo) {
+  EXPECT_EQ(profile_->GetPrefs()->GetInteger(
+                prefs::kNtpCustomizeChromeButtonOpenCount),
+            0);
+  EXPECT_CALL(*mock_customize_chrome_feature_promo_helper_,
+              MaybeShowCustomizeChromeFeaturePromo)
+      .Times(1);
+
+  handler_->MaybeShowCustomizeChromeFeaturePromo();
+
+  handler_->IncrementCustomizeChromeButtonOpenCount();
+  EXPECT_EQ(profile_->GetPrefs()->GetInteger(
+                prefs::kNtpCustomizeChromeButtonOpenCount),
+            1);
+  EXPECT_CALL(*mock_customize_chrome_feature_promo_helper_,
+              MaybeShowCustomizeChromeFeaturePromo)
+      .Times(0);
+
+  handler_->MaybeShowCustomizeChromeFeaturePromo();
 
   mock_page_.FlushForTesting();
 }

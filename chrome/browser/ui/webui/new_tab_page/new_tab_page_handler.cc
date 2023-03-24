@@ -30,6 +30,7 @@
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
+#include "chrome/browser/new_tab_page/customize_chrome/customize_chrome_feature_promo_helper.h"
 #include "chrome/browser/new_tab_page/modules/new_tab_page_modules.h"
 #include "chrome/browser/new_tab_page/promos/promo_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
@@ -460,6 +461,8 @@ NewTabPageHandler::NewTabPageHandler(
     ThemeService* theme_service,
     search_provider_logos::LogoService* logo_service,
     content::WebContents* web_contents,
+    std::unique_ptr<CustomizeChromeFeaturePromoHelper>
+        customize_chrome_feature_promo_helper,
     const base::Time& ntp_navigation_start_time,
     const std::vector<std::pair<const std::string, int>> module_id_names)
     : ntp_background_service_(
@@ -470,6 +473,8 @@ NewTabPageHandler::NewTabPageHandler(
       theme_service_(theme_service),
       profile_(profile),
       web_contents_(web_contents),
+      customize_chrome_feature_promo_helper_(
+          std::move(customize_chrome_feature_promo_helper)),
       ntp_navigation_start_time_(ntp_navigation_start_time),
       module_id_names_(module_id_names),
       logger_(profile,
@@ -484,6 +489,7 @@ NewTabPageHandler::NewTabPageHandler(
   CHECK(theme_service_);
   CHECK(promo_service_);
   CHECK(web_contents_);
+  CHECK(customize_chrome_feature_promo_helper_);
   ntp_background_service_->AddObserver(this);
   native_theme_observation_.Observe(ui::NativeTheme::GetInstanceForNativeUi());
   theme_service_observation_.Observe(theme_service_.get());
@@ -873,6 +879,15 @@ void NewTabPageHandler::SetCustomizeChromeSidePanelVisible(
       CustomizeChromeTabHelper::FromWebContents(web_contents_);
   customize_chrome_tab_helper->SetCustomizeChromeSidePanelVisible(visible,
                                                                   section_enum);
+
+  if (visible) {
+    // Record usage for customize chrome promo.
+    auto* tab = web_contents_.get();
+    customize_chrome_feature_promo_helper_->RecordCustomizeChromeFeatureUsage(
+        tab);
+    customize_chrome_feature_promo_helper_->CloseCustomizeChromeFeaturePromo(
+        tab);
+  }
 }
 
 void NewTabPageHandler::IncrementCustomizeChromeButtonOpenCount() {
@@ -883,6 +898,18 @@ void NewTabPageHandler::IncrementCustomizeChromeButtonOpenCount() {
       profile_->GetPrefs()->GetInteger(
           prefs::kNtpCustomizeChromeButtonOpenCount) +
           1);
+}
+
+void NewTabPageHandler::MaybeShowCustomizeChromeFeaturePromo() {
+  CHECK(profile_);
+  CHECK(profile_->GetPrefs());
+  const auto customize_chrome_button_open_count =
+      profile_->GetPrefs()->GetInteger(
+          prefs::kNtpCustomizeChromeButtonOpenCount);
+  if (customize_chrome_button_open_count == 0) {
+    customize_chrome_feature_promo_helper_
+        ->MaybeShowCustomizeChromeFeaturePromo(web_contents_.get());
+  }
 }
 
 void NewTabPageHandler::OnPromoDataUpdated() {
