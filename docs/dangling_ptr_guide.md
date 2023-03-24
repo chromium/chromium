@@ -174,11 +174,11 @@ the dangling raw_ptr.
 
 Q. Gee, this is a raw pointer. Does destroying it actually do anything?
 
-A. Yes. On some platforms raw_ptr<T> is a synonym for T*, but on many platforms
-(more every day) raw_ptr<T> is the interface to PartitionAlloc’s BackupRefPtr
-(BRP) Use-after-Free (UaF) protection mechanism. Destroying the pointer thus
-actually performs internal bookkeeping and may also null the pointer on
-destruction to trap use-after-destruct errors.
+A. Yes. On some platforms `raw_ptr<T>` is a synonym for `T*`, but on many
+platforms (more every day) `raw_ptr<T>` is the interface to PartitionAlloc’s
+BackupRefPtr (BRP) Use-after-Free (UaF) protection mechanism. Destroying the
+pointer thus actually performs internal bookkeeping and may also null
+the pointer on destruction to trap use-after-destruct errors.
 
 Q. So BRP mitigates these dangling pointers. What's the problem with just
 keeping them if they are not used?
@@ -187,7 +187,7 @@ A. When an object is deleted under BRP, if there are any dangling references
 remaining, the object must be quarantined and overwritten with a “zapped”
 pattern as opposed to being simply freed. This costs cycles and memory
 pressure. Even worse, it is still possible that the raw_ptr is converted to
-T* and used with the zap value, or even used after the quarantine is
+`T*` and used with the zap value, or even used after the quarantine is
 gone. Hence we are inventing mechanisms for finding dangling pointers so we
 may remove the ones we know about. BRP will then make it harder to write
 exploits with the ones we don’t know about in the wild.
