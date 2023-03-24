@@ -7,6 +7,7 @@
 
 #include "base/memory/read_only_shared_memory_region.h"
 #include "components/viz/common/resources/resource_format.h"
+#include "components/viz/common/resources/shared_image_format.h"
 #include "components/viz/common/viz_common_export.h"
 
 namespace gfx {
@@ -19,6 +20,12 @@ namespace bitmap_allocation {
 
 // Allocates a read-only shared memory region and its writable mapping to hold
 // |size| pixels in specific |format|. Crashes if allocation does not succeed.
+VIZ_COMMON_EXPORT base::MappedReadOnlyRegion AllocateSharedBitmap(
+    const gfx::Size& size,
+    SharedImageFormat format);
+
+// Deprecated version of the above that takes in ResourceFormat.
+// TODO(crbug.com/1378708): Convert all clients and eliminate this function.
 VIZ_COMMON_EXPORT base::MappedReadOnlyRegion AllocateSharedBitmap(
     const gfx::Size& size,
     ResourceFormat format);
