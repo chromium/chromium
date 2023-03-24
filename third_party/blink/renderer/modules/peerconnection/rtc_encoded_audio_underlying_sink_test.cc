@@ -90,7 +90,7 @@ class RTCEncodedAudioUnderlyingSinkTest : public testing::Test {
 
   RTCEncodedAudioStreamTransformer* GetTransformer() { return &transformer_; }
 
-  ScriptValue CreateEncodedAudioFrameChunk(
+  RTCEncodedAudioFrame* CreateEncodedAudioFrame(
       ScriptState* script_state,
       webrtc::TransformableFrameInterface::Direction direction =
           webrtc::TransformableFrameInterface::Direction::kSender) {
@@ -101,11 +101,17 @@ class RTCEncodedAudioUnderlyingSinkTest : public testing::Test {
     std::unique_ptr<webrtc::TransformableAudioFrameInterface> audio_frame =
         base::WrapUnique(static_cast<webrtc::TransformableAudioFrameInterface*>(
             mock_frame.release()));
-    RTCEncodedAudioFrame* frame =
-        MakeGarbageCollected<RTCEncodedAudioFrame>(std::move(audio_frame));
+    return MakeGarbageCollected<RTCEncodedAudioFrame>(std::move(audio_frame));
+  }
+
+  ScriptValue CreateEncodedAudioFrameChunk(
+      ScriptState* script_state,
+      webrtc::TransformableFrameInterface::Direction direction =
+          webrtc::TransformableFrameInterface::Direction::kSender) {
     return ScriptValue(
         script_state->GetIsolate(),
-        ToV8Traits<RTCEncodedAudioFrame>::ToV8(script_state, frame)
+        ToV8Traits<RTCEncodedAudioFrame>::ToV8(
+            script_state, CreateEncodedAudioFrame(script_state, direction))
             .ToLocalChecked());
   }
 
@@ -141,8 +147,8 @@ TEST_F(RTCEncodedAudioUnderlyingSinkTest,
 
   // Writing to the sink after the stream closes should fail.
   DummyExceptionStateForTesting dummy_exception_state;
-  sink->write(script_state, CreateEncodedAudioFrameChunk(script_state), nullptr,
-              dummy_exception_state);
+  sink->write(script_state, CreateEncodedAudioFrameChunk(script_state),
+              /*controller=*/nullptr, dummy_exception_state);
   EXPECT_TRUE(dummy_exception_state.HadException());
   EXPECT_EQ(dummy_exception_state.Code(),
             static_cast<ExceptionCode>(DOMExceptionCode::kInvalidStateError));
@@ -157,7 +163,8 @@ TEST_F(RTCEncodedAudioUnderlyingSinkTest, WriteInvalidDataFails) {
   // Writing something that is not an RTCEncodedAudioFrame integer to the sink
   // should fail.
   DummyExceptionStateForTesting dummy_exception_state;
-  sink->write(script_state, v8_integer, nullptr, dummy_exception_state);
+  sink->write(script_state, v8_integer, /*controller=*/nullptr,
+              dummy_exception_state);
   EXPECT_TRUE(dummy_exception_state.HadException());
 }
 
@@ -174,7 +181,48 @@ TEST_F(RTCEncodedAudioUnderlyingSinkTest, WriteInvalidDirectionFails) {
               CreateEncodedAudioFrameChunk(
                   script_state,
                   webrtc::TransformableFrameInterface::Direction::kReceiver),
-              nullptr, dummy_exception_state);
+              /*controller=*/nullptr, dummy_exception_state);
+  EXPECT_TRUE(dummy_exception_state.HadException());
+}
+
+TEST_F(RTCEncodedAudioUnderlyingSinkTest,
+       WriteLargeButNotTooLargeFrameSucceeds) {
+  V8TestingScope v8_scope;
+  ScriptState* script_state = v8_scope.GetScriptState();
+  auto* sink = CreateSink(
+      script_state, webrtc::TransformableFrameInterface::Direction::kSender);
+  RTCEncodedAudioFrame* frame = CreateEncodedAudioFrame(script_state);
+  frame->setData(
+      DOMArrayBuffer::Create(/*num_elements=*/1000, /*element_byte_size=*/1));
+
+  DummyExceptionStateForTesting dummy_exception_state;
+  EXPECT_CALL(*webrtc_callback_, OnTransformedFrame(_));
+  sink->write(
+      script_state,
+      ScriptValue(script_state->GetIsolate(),
+                  ToV8Traits<RTCEncodedAudioFrame>::ToV8(script_state, frame)
+                      .ToLocalChecked()),
+      /*controller=*/nullptr, dummy_exception_state);
+  EXPECT_FALSE(dummy_exception_state.HadException());
+}
+
+TEST_F(RTCEncodedAudioUnderlyingSinkTest, WriteTooLargeFrameFails) {
+  V8TestingScope v8_scope;
+  ScriptState* script_state = v8_scope.GetScriptState();
+  auto* sink = CreateSink(
+      script_state, webrtc::TransformableFrameInterface::Direction::kSender);
+  RTCEncodedAudioFrame* frame = CreateEncodedAudioFrame(script_state);
+  // Set too much data on the frame.
+  frame->setData(
+      DOMArrayBuffer::Create(/*num_elements=*/1001, /*element_byte_size=*/1));
+
+  DummyExceptionStateForTesting dummy_exception_state;
+  sink->write(
+      script_state,
+      ScriptValue(script_state->GetIsolate(),
+                  ToV8Traits<RTCEncodedAudioFrame>::ToV8(script_state, frame)
+                      .ToLocalChecked()),
+      /*controller=*/nullptr, dummy_exception_state);
   EXPECT_TRUE(dummy_exception_state.HadException());
 }
 
