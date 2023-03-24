@@ -8032,6 +8032,21 @@
             ]
         }
     ],
+    "MojoIpczMac": [
+        {
+            "platforms": [
+                "mac"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled_1",
+                    "enable_features": [
+                        "MojoIpcz"
+                    ]
+                }
+            ]
+        }
+    ],
     "MoreAggressiveSolidColorDetection": [
         {
             "platforms": [
