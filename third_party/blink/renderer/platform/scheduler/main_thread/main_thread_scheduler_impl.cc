@@ -477,7 +477,10 @@ MainThreadSchedulerImpl::MainThreadOnly::MainThreadOnly(
       have_seen_a_frame(false),
       audible_power_mode_voter(
           power_scheduler::PowerModeArbiter::GetInstance()->NewVoter(
-              "PowerModeVoter.Audible")) {}
+              "PowerModeVoter.Audible")),
+      agent_group_schedulers(
+          MakeGarbageCollected<
+              HeapHashSet<WeakMember<AgentGroupSchedulerImpl>>>()) {}
 
 MainThreadSchedulerImpl::MainThreadOnly::~MainThreadOnly() = default;
 
@@ -1127,9 +1130,6 @@ void MainThreadSchedulerImpl::PerformMicrotaskCheckpoint() {
   // default EventLoop for the isolate.
   if (isolate())
     EventLoop::PerformIsolateGlobalMicrotasksCheckpoint(isolate());
-
-  if (!main_thread_only().agent_group_schedulers)
-    return;
 
   // Perform a microtask checkpoint for each AgentSchedulingGroup. This
   // really should only be the ones that are not frozen but AgentSchedulingGroup
@@ -2269,11 +2269,6 @@ base::TimeTicks MainThreadSchedulerImpl::NowTicks() const {
 
 void MainThreadSchedulerImpl::AddAgentGroupScheduler(
     AgentGroupSchedulerImpl* agent_group_scheduler) {
-  if (!main_thread_only().agent_group_schedulers) {
-    main_thread_only().agent_group_schedulers = MakeGarbageCollected<
-        HeapHashSet<WeakMember<AgentGroupSchedulerImpl>>>();
-  }
-
   bool is_new_entry = main_thread_only()
                           .agent_group_schedulers->insert(agent_group_scheduler)
                           .is_new_entry;

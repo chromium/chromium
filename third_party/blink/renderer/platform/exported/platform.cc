@@ -194,6 +194,8 @@ void Platform::InitializeBlink() {
   DCHECK(!did_initialize_blink_);
   WTF::Partitions::Initialize();
   WTF::Initialize();
+  ProcessHeap::Init();
+  ThreadState::AttachMainThread();
   did_initialize_blink_ = true;
 }
 
@@ -221,9 +223,8 @@ void Platform::InitializeMainThreadCommon(
   DCHECK(did_initialize_blink_);
   MainThread::SetMainThread(std::move(main_thread));
 
-  ProcessHeap::Init();
-
-  ThreadState* thread_state = ThreadState::AttachMainThread();
+  ThreadState* thread_state = ThreadState::Current();
+  CHECK(thread_state->IsMainThread());
   new BlinkGCMemoryDumpProvider(
       thread_state, base::SingleThreadTaskRunner::GetCurrentDefault(),
       BlinkGCMemoryDumpProvider::HeapType::kBlinkMainThread);
