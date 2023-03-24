@@ -3115,6 +3115,32 @@ QuicChromiumClientSession::CreateContextForMultiPortPath() {
       std::move(probing_reader));
 }
 
+void QuicChromiumClientSession::MigrateToMultiPortPath(
+    std::unique_ptr<quic::QuicPathValidationContext> context) {
+  DCHECK_NE(nullptr, context);
+  auto* chrome_context =
+      static_cast<QuicChromiumPathValidationContext*>(context.get());
+  std::unique_ptr<QuicChromiumPacketWriter> owned_writer =
+      chrome_context->ReleaseWriter();
+  // Remove |this| as the old packet writer's delegate. Write error on old
+  // writers will be ignored.
+  // Set |this| to listen on socket write events on the packet writer
+  // that was used for probing.
+  static_cast<QuicChromiumPacketWriter*>(connection()->writer())
+      ->set_delegate(nullptr);
+  owned_writer->set_delegate(this);
+
+  if (!MigrateToSocket(
+          chrome_context->self_address(), chrome_context->peer_address(),
+          chrome_context->ReleaseSocket(), chrome_context->ReleaseReader(),
+          std::move(owned_writer))) {
+    LogMigrateToSocketStatus(false);
+    return;
+  }
+  LogMigrateToSocketStatus(true);
+  num_migrations_++;
+}
+
 void QuicChromiumClientSession::StartProbing(
     ProbingCallback probing_callback,
     handles::NetworkHandle network,

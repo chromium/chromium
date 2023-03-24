@@ -5082,7 +5082,7 @@ TEST_P(QuicStreamFactoryTest,
   EXPECT_TRUE(quic_data2.AllWriteDataConsumed());
 }
 
-TEST_P(QuicStreamFactoryTest, MultiPortSession) {
+TEST_P(QuicStreamFactoryTest, MultiPortSessionWithMigration) {
   SetIetfConnectionMigrationFlagsAndConnectionOptions();
   // Turning on MPQC will implicitly turn on port migration.
   quic_params_->client_connection_options.push_back(quic::kMPQC);
@@ -5097,27 +5097,12 @@ TEST_P(QuicStreamFactoryTest, MultiPortSession) {
   QuicStreamFactoryPeer::SetTaskRunner(factory_.get(), task_runner.get());
 
   MockQuicData quic_data1(version_);
+  quic_data1.AddRead(SYNCHRONOUS, ERR_IO_PENDING);
   quic_data1.AddWrite(SYNCHRONOUS, ConstructInitialSettingsPacket(1));
   quic_data1.AddWrite(
       SYNCHRONOUS,
       ConstructGetRequestPacket(
           3, GetNthClientInitiatedBidirectionalStreamId(0), true, true));
-  quic_data1.AddRead(ASYNC, ERR_IO_PENDING);  // Pause
-  quic_data1.AddRead(
-      ASYNC,
-      ConstructOkResponsePacket(
-          2, GetNthClientInitiatedBidirectionalStreamId(0), false, false));
-  quic_data1.AddRead(SYNCHRONOUS, ERR_IO_PENDING);
-  quic_data1.AddWrite(
-      SYNCHRONOUS,
-      client_maker_.MakeAckAndDataPacket(
-          4, /*include_version=*/false, GetQpackDecoderStreamId(),
-          /*largest_received=*/2, /*smallest_received=*/1, /*fin=*/false,
-          StreamCancellationQpackDecoderInstruction(0)));
-  quic_data1.AddWrite(
-      SYNCHRONOUS, client_maker_.MakeRstPacket(
-                       5, false, GetNthClientInitiatedBidirectionalStreamId(0),
-                       quic::QUIC_STREAM_CANCELLED));
   quic_data1.AddSocketDataToFactory(socket_factory_.get());
 
   // Set up the second socket data provider that is used for multi-port
@@ -5133,8 +5118,29 @@ TEST_P(QuicStreamFactoryTest, MultiPortSession) {
   // Connectivity probe to receive from the server.
   quic_data2.AddRead(ASYNC,
                      server_maker_.MakeConnectivityProbingPacket(1, false));
+  quic_data2.AddRead(ASYNC, ERR_IO_PENDING);  // Pause
+  quic_data2.AddRead(
+      ASYNC,
+      ConstructOkResponsePacket(
+          2, GetNthClientInitiatedBidirectionalStreamId(0), false, false));
+  quic_data2.AddRead(ASYNC, ERR_IO_PENDING);  // Pause
+  quic_data2.AddWrite(
+      ASYNC, client_maker_.MakeAckAndPingPacket(4, /*include_version=*/false,
+                                                /*largest_received=*/2,
+                                                /*smallest_received=*/1));
+  quic_data2.AddWrite(
+      SYNCHRONOUS, client_maker_.MakeRetireConnectionIdPacket(
+                       5, /*include_version=*/false, /*sequence_number=*/0u));
+  quic_data2.AddRead(ASYNC, server_maker_.MakeAckPacket(3, 5, 1));
+  quic_data2.AddRead(SYNCHRONOUS, ERR_IO_PENDING);  // No more data to read
+  quic_data2.AddWrite(ASYNC, client_maker_.MakeDataPacket(
+                                 6, GetQpackDecoderStreamId(), true, false,
+                                 StreamCancellationQpackDecoderInstruction(0)));
+  quic_data2.AddWrite(
+      ASYNC, client_maker_.MakeRstPacket(
+                 7, false, GetNthClientInitiatedBidirectionalStreamId(0),
+                 quic::QUIC_STREAM_CANCELLED));
 
-  quic_data2.AddRead(SYNCHRONOUS, ERR_IO_PENDING);
   quic_data2.AddSocketDataToFactory(socket_factory_.get());
 
   // Create request and QuicHttpStream.
@@ -5180,27 +5186,49 @@ TEST_P(QuicStreamFactoryTest, MultiPortSession) {
   HttpRequestHeaders request_headers;
   EXPECT_EQ(OK, stream->SendRequest(request_headers, &response,
                                     callback_.callback()));
+  // Disable connection migration on the request streams.
+  // This should have no effect for port migration.
+  QuicChromiumClientStream* chrome_stream =
+      static_cast<QuicChromiumClientStream*>(
+          quic::test::QuicSessionPeer::GetStream(
+              session, GetNthClientInitiatedBidirectionalStreamId(0)));
+  EXPECT_TRUE(chrome_stream);
+  chrome_stream->DisableConnectionMigrationToCellularNetwork();
 
   // Resume quic data and a connectivity probe response will be read on the new
-  // socket.
+  // socket. This makes the multi-port path ready to migrate.
   quic_data2.Resume();
 
-  // The response is received on the default path.
-  quic_data1.Resume();
-  // Response headers are received over the new port.
+  EXPECT_EQ(0u, QuicStreamFactoryPeer::GetNumDegradingSessions(factory_.get()));
+
+  // Cause the connection to report path degrading to the session.
+  // Session will start migrate to multi-port path immediately.
+  session->connection()->OnPathDegradingDetected();
+  base::RunLoop().RunUntilIdle();
+  // The connection should still be degrading because no new packets are
+  // received from the new path.
+  EXPECT_EQ(1u, QuicStreamFactoryPeer::GetNumDegradingSessions(factory_.get()));
+
+  // The response is received on the new path.
+  quic_data2.Resume();
   EXPECT_EQ(OK, stream->ReadResponseHeaders(callback_.callback()));
   EXPECT_EQ(200, response.headers->response_code());
+  task_runner->RunUntilIdle();
+  base::RunLoop().RunUntilIdle();
 
   EXPECT_TRUE(QuicStreamFactoryPeer::IsLiveSession(factory_.get(), session));
   EXPECT_TRUE(HasActiveSession(scheme_host_port_));
   EXPECT_EQ(1u, session->GetNumActiveStreams());
 
-  // The periodic probing is handled and tested in quiche.
-  EXPECT_TRUE(quic::test::QuicConnectionPeer::GetMultiPortProbingAlarm(
-                  session->connection())
-                  ->IsSet());
+  // Receives an ack from the server, this will be considered forward progress.
+  quic_data2.Resume();
+  task_runner->RunUntilIdle();
+  base::RunLoop().RunUntilIdle();
+  EXPECT_EQ(0u, QuicStreamFactoryPeer::GetNumDegradingSessions(factory_.get()));
 
   stream.reset();
+  task_runner->RunUntilIdle();
+  base::RunLoop().RunUntilIdle();
   EXPECT_TRUE(quic_data1.AllReadDataConsumed());
   EXPECT_TRUE(quic_data1.AllWriteDataConsumed());
   EXPECT_TRUE(quic_data2.AllReadDataConsumed());

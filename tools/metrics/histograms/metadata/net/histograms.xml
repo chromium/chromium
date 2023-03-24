@@ -2346,6 +2346,15 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Net.QuicConnection.MultiPortPathStatusWhenMigrating"
+    enum="MultiPortStatusOnMigration" expires_after="2023-12-30">
+  <owner>renjietang@chromium.org</owner>
+  <owner>src/net/quic/OWNERS</owner>
+  <summary>
+    The status of the multi-port path when the client initiates the migration.
+  </summary>
+</histogram>
+
 <histogram name="Net.QuicConnection.WritePacketStatus" enum="QuicWriteStatus"
     expires_after="2023-09-17">
   <owner>wub@chromium.org</owner>
