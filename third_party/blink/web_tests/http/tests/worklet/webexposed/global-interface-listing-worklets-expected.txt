@@ -1,6 +1,5 @@
 CONSOLE MESSAGE: This test logs all exposed Worklets
 CONSOLE MESSAGE: layoutWorklet
-CONSOLE MESSAGE: animationWorklet
 CONSOLE MESSAGE: paintWorklet
 CONSOLE MESSAGE: AudioWorklet
 CONSOLE MESSAGE: IMPORTANT:

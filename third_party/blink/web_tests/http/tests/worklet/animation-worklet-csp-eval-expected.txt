@@ -1,9 +1,2 @@
-CONSOLE ERROR: Uncaught EvalError: Refused to evaluate a string as JavaScript because 'unsafe-eval' is not an allowed source of script in the following Content Security Policy directive: "script-src 'self' 'unsafe-inline'".
-
-CONSOLE ERROR: Uncaught EvalError: Refused to evaluate a string as JavaScript because 'unsafe-eval' is not an allowed source of script in the following Content Security Policy directive: "script-src 'self' 'unsafe-inline'".
-
-This is a testharness.js-based test.
-PASS eval() call on the worklet should be blocked because the script-src unsafe-eval directive is not specified.
-PASS eval() call on the worklet should not be blocked because the script-src unsafe-eval directive allows it.
-Harness: the test ran to completion.
+CONSOLE ERROR: Uncaught TypeError: Cannot read properties of undefined (reading 'addModule')
 

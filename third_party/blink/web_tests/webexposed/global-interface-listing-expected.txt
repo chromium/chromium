@@ -11408,20 +11408,6 @@ interface Worklet
     attribute @@toStringTag
     method addModule
     method constructor
-interface WorkletAnimation
-    attribute @@toStringTag
-    getter animatorName
-    getter currentTime
-    getter effect
-    getter playState
-    getter playbackRate
-    getter startTime
-    getter timeline
-    method cancel
-    method constructor
-    method pause
-    method play
-    setter playbackRate
 interface WritableStream
     attribute @@toStringTag
     getter locked
@@ -12064,7 +12050,6 @@ interface webkitURL
 [NAMESPACES]
 namespace CSS
     attribute @@toStringTag
-    getter animationWorklet
     getter highlights
     getter layoutWorklet
     getter paintWorklet
