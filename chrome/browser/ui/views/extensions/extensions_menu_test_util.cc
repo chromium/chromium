@@ -244,7 +244,7 @@ ExtensionMenuItemView* ExtensionsMenuTestUtil::GetMenuItemViewForId(
             ->GetControllerForTesting()
             ->GetMainPageViewForTesting();
     DCHECK(main_page);
-    menu_items = main_page->GetMenuItemsForTesting();
+    menu_items = main_page->GetMenuItems();
 
   } else {
     menu_items = menu_view_->extensions_menu_items_for_testing();

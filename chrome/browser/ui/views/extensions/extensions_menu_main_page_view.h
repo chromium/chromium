@@ -45,12 +45,17 @@ class ExtensionsMenuMainPageView : public views::View {
       std::unique_ptr<ExtensionActionViewController> action_controller,
       extensions::ExtensionId extension_id,
       bool allow_pinning,
+      bool is_site_permissions_button_visible,
       int index);
 
   // Removes the menu item corresponding to `action_id`.
   void RemoveMenuItem(const ToolbarActionsModel::ActionId& action_id);
 
-  // Updates the page with the given parameters.
+  // Returns the menu items.
+  std::vector<ExtensionMenuItemView*> GetMenuItems() const;
+
+  // Updates the page with the given parameters. Does not update the menu items
+  // (menu item updates are handled directly in such view).
   void Update(std::u16string current_site,
               bool is_site_settings_toggle_visible,
               bool is_site_settings_toggle_on);
@@ -65,7 +70,6 @@ class ExtensionsMenuMainPageView : public views::View {
   views::ToggleButton* GetSiteSettingsToggleForTesting() {
     return site_settings_toggle_;
   }
-  std::vector<ExtensionMenuItemView*> GetMenuItemsForTesting() const;
 
  private:
   content::WebContents* GetActiveWebContents() const;

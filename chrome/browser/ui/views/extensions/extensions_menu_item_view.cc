@@ -70,6 +70,7 @@ ExtensionMenuItemView::ExtensionMenuItemView(
     Browser* browser,
     std::unique_ptr<ToolbarActionViewController> controller,
     bool allow_pinning,
+    bool is_site_permissions_button_visible,
     views::Button::PressedCallback site_permissions_button_callback)
     : browser_(browser),
       controller_(std::move(controller)),
@@ -121,6 +122,7 @@ ExtensionMenuItemView::ExtensionMenuItemView(
                                 vector_icons::kSubmenuArrowIcon,
                                 ui::kColorIcon))))
                     .CopyAddressTo(&site_permissions_button_)
+                    .SetVisible(is_site_permissions_button_visible)
                     // Margin to align the main and secondary row text. Icon
                     // size and horizontal insets should be the values used by
                     // the extensions menu button.
@@ -205,7 +207,11 @@ void ExtensionMenuItemView::OnThemeChanged() {
   UpdatePinButton();
 }
 
-void ExtensionMenuItemView::Update() {
+void ExtensionMenuItemView::Update(bool is_site_permissions_button_visible) {
+  if (site_permissions_button_) {
+    site_permissions_button_->SetVisible(is_site_permissions_button_visible);
+  }
+
   view_controller()->UpdateState();
 }
 

@@ -306,7 +306,8 @@ void ExtensionsMenuView::CreateAndInsertNewItem(
   // be added to the view hierarchy, which takes ownership.
   auto* item = new ExtensionMenuItemView(
       browser_, std::move(controller),
-      extensions_container_->CanShowActionsInToolbar());
+      extensions_container_->CanShowActionsInToolbar(),
+      /*is_site_permissions_button_visible=*/false);
   extensions_menu_items_.insert(item);
   InsertMenuItem(item);
   // Sanity check that the item was added.

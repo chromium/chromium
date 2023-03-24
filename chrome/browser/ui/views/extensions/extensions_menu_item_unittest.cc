@@ -70,7 +70,8 @@ void ExtensionMenuItemViewTest::SetUp() {
   controller_->SetActionName(initial_extension_name_);
   controller_->SetTooltip(initial_tooltip_);
   auto menu_item = std::make_unique<ExtensionMenuItemView>(
-      browser(), std::move(controller), true);
+      browser(), std::move(controller), true,
+      /*is_site_permissions_button_visible=*/false);
   primary_button_ = menu_item->primary_action_button_for_testing();
   pin_button_ = menu_item->pin_button_for_testing();
   context_menu_button_ = menu_item->context_menu_button_for_testing();

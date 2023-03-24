@@ -17,13 +17,17 @@
 #include "chrome/browser/ui/views/extensions/extensions_menu_view_controller.h"
 #include "chrome/browser/ui/views/extensions/extensions_toolbar_button.h"
 #include "chrome/browser/ui/views/extensions/extensions_toolbar_unittest.h"
+#include "extensions/browser/permissions_manager.h"
 #include "extensions/browser/test_extension_registry_observer.h"
 #include "extensions/common/extension_features.h"
+#include "extensions/test/permissions_manager_waiter.h"
 #include "extensions/test/test_extension_dir.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "ui/views/view_utils.h"
 
 namespace {
+
+using PermissionsManager = extensions::PermissionsManager;
 
 // A scoper that manages a Browser instance created by BrowserWithTestWindowTest
 // beyond the default instance it creates in SetUp.
@@ -84,6 +88,10 @@ class ExtensionsMenuMainPageViewUnitTest : public ExtensionsToolbarUnitTest {
 
   void ClickPinButton(ExtensionMenuItemView* menu_item);
   void ClickSitePermissionsButton(ExtensionMenuItemView* menu_item);
+
+  content::WebContentsTester* web_contents_tester() {
+    return web_contents_tester_;
+  }
 
   ExtensionsMenuMainPageView* main_page();
   ExtensionsMenuSitePermissionsPageView* site_permissions_page();
@@ -149,8 +157,7 @@ ExtensionsMenuMainPageViewUnitTest::site_permissions_page() {
 std::vector<ExtensionMenuItemView*>
 ExtensionsMenuMainPageViewUnitTest::menu_items() {
   ExtensionsMenuMainPageView* page = main_page();
-  return page ? page->GetMenuItemsForTesting()
-              : std::vector<ExtensionMenuItemView*>();
+  return page ? page->GetMenuItems() : std::vector<ExtensionMenuItemView*>();
 }
 
 void ExtensionsMenuMainPageViewUnitTest::SetUp() {
@@ -301,14 +308,21 @@ TEST_F(ExtensionsMenuMainPageViewUnitTest,
       InstallExtensionWithHostPermissions("Extension A", {"<all_urls>"});
   InstallExtensionWithHostPermissions("Extension B", {"<all_urls>"});
 
+  // Navigate to a page that extensions request access, and open the menu.
+  web_contents_tester()->NavigateAndCommit(GURL("http://www.example.com"));
   ShowMenu();
 
   std::vector<ExtensionMenuItemView*> items = menu_items();
   ASSERT_EQ(items.size(), 2u);
   EXPECT_EQ(items[0]->view_controller()->GetId(), extensionA->id());
 
-  ClickSitePermissionsButton(items[0]);
+  // Site permissions button should be visible for both extensions.
+  EXPECT_TRUE(items[0]->site_permissions_button_for_testing()->GetVisible());
+  EXPECT_TRUE(items[1]->site_permissions_button_for_testing()->GetVisible());
 
+  // Clicking on an extension's site permission button should open its site
+  // permission page in the menu.
+  ClickSitePermissionsButton(items[0]);
   ExtensionsMenuSitePermissionsPageView* page = site_permissions_page();
   ASSERT_TRUE(page);
   EXPECT_EQ(page->extension_id(), extensionA->id());
@@ -465,4 +479,95 @@ TEST_F(ExtensionsMenuMainPageViewUnitTest, ReloadExtensionFailed) {
   for (views::View* child : extensions_container()->children()) {
     EXPECT_FALSE(views::IsViewClass<ToolbarActionView>(child));
   }
+}
+
+// Tests that extension's site permission button is always hidden when site is
+// restricted.
+TEST_F(ExtensionsMenuMainPageViewUnitTest, RestrictedSite) {
+  constexpr char kExtension[] = "Extension";
+  constexpr char kEnterpriseExtension[] = "Enterprise extension";
+  InstallExtension(kExtension);
+  InstallEnterpriseExtension(kEnterpriseExtension,
+                             /*host_permissions=*/{"<all_urls>"});
+
+  const GURL restricted_url("chrome://extensions");
+  auto restricted_origin = url::Origin::Create(restricted_url);
+  web_contents_tester()->NavigateAndCommit(restricted_url);
+
+  // By default, site settings is set to "customize by extension".
+  PermissionsManager* permissions_manager = PermissionsManager::Get(profile());
+  EXPECT_EQ(permissions_manager->GetUserSiteSetting(restricted_origin),
+            PermissionsManager::UserSiteSetting::kCustomizeByExtension);
+
+  ShowMenu();
+  ASSERT_EQ(menu_items().size(), 2u);
+
+  // Both extension's site permissions button should be hidden.
+  EXPECT_FALSE(
+      menu_items()[0]->site_permissions_button_for_testing()->GetVisible());
+  EXPECT_FALSE(
+      menu_items()[1]->site_permissions_button_for_testing()->GetVisible());
+
+  // Change site settings to "block all extensions".
+  extensions::PermissionsManagerWaiter waiter(
+      PermissionsManager::Get(browser()->profile()));
+  permissions_manager->UpdateUserSiteSetting(
+      restricted_origin,
+      PermissionsManager::UserSiteSetting::kBlockAllExtensions);
+  waiter.WaitForUserPermissionsSettingsChange();
+
+  // Both extension's site permission button should still be hidden (restricted
+  // sites have priority over enterprise extensions).
+  EXPECT_FALSE(
+      menu_items()[0]->site_permissions_button_for_testing()->GetVisible());
+  EXPECT_FALSE(
+      menu_items()[1]->site_permissions_button_for_testing()->GetVisible());
+}
+
+// Test that an enterprise extension's site permissions button is shown based on
+// the user site setting and extension site interaction.
+TEST_F(ExtensionsMenuMainPageViewUnitTest, EnterpriseExtension) {
+  constexpr char kExtension[] = "Enterprise extension";
+  constexpr char kExtensionWithPermissions[] =
+      "Enterprise extension with host permissions";
+  InstallEnterpriseExtension(kExtension, /*host_permissions=*/{});
+  InstallEnterpriseExtension(kExtensionWithPermissions,
+                             /*host_permissions=*/{"<all_urls>"});
+
+  const GURL url(u"http://www.example.com");
+  auto url_origin = url::Origin::Create(url);
+  web_contents_tester()->NavigateAndCommit(url);
+
+  // By default, user site setting is set to "customize by extension".
+  PermissionsManager* permissions_manager = PermissionsManager::Get(profile());
+  EXPECT_EQ(permissions_manager->GetUserSiteSetting(url_origin),
+            PermissionsManager::UserSiteSetting::kCustomizeByExtension);
+
+  // Open menu and verify extensions are in the expected order.
+  ShowMenu();
+  ASSERT_EQ(menu_items().size(), 2u);
+  std::vector<std::string> expected_items{kExtension,
+                                          kExtensionWithPermissions};
+  EXPECT_EQ(GetNamesFromMenuItems(menu_items()), expected_items);
+
+  // Enterprise extension's site permission button is always visible when user
+  // can customize site access by extension.
+  EXPECT_TRUE(
+      menu_items()[0]->site_permissions_button_for_testing()->GetVisible());
+  EXPECT_TRUE(
+      menu_items()[1]->site_permissions_button_for_testing()->GetVisible());
+
+  extensions::PermissionsManagerWaiter waiter(
+      PermissionsManager::Get(browser()->profile()));
+  permissions_manager->UpdateUserSiteSetting(
+      url_origin, PermissionsManager::UserSiteSetting::kBlockAllExtensions);
+  waiter.WaitForUserPermissionsSettingsChange();
+
+  // Enterprise extension's site permission button is still visible when
+  // user has blocked all extensions but enterprise extension still has access
+  // (policy his priority over user settings).
+  EXPECT_FALSE(
+      menu_items()[0]->site_permissions_button_for_testing()->GetVisible());
+  EXPECT_TRUE(
+      menu_items()[1]->site_permissions_button_for_testing()->GetVisible());
 }

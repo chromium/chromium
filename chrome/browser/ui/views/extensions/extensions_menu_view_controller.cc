@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/views/extensions/extensions_menu_view_controller.h"
 
 #include "base/i18n/case_conversion.h"
+#include "base/notreached.h"
 #include "chrome/browser/extensions/site_permissions_helper.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
@@ -13,9 +14,11 @@
 #include "chrome/browser/ui/tabs/tab_strip_model_observer.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/browser/ui/views/extensions/extensions_dialogs_utils.h"
+#include "chrome/browser/ui/views/extensions/extensions_menu_item_view.h"
 #include "chrome/browser/ui/views/extensions/extensions_menu_main_page_view.h"
 #include "chrome/browser/ui/views/extensions/extensions_menu_site_permissions_page_view.h"
 #include "content/public/browser/web_contents.h"
+#include "extensions/browser/extension_system.h"
 #include "extensions/browser/permissions_manager.h"
 #include "ui/base/metadata/metadata_types.h"
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
@@ -68,6 +71,16 @@ ExtensionsMenuSitePermissionsPageView* GetSitePermissionsPage(
   return views::AsViewClass<ExtensionsMenuSitePermissionsPageView>(page);
 }
 
+// Returns whether `extension` cannot have its site access modified by the user
+// because of policy.
+bool HasEnterpriseForcedAccess(const extensions::Extension& extension,
+                               Profile& profile) {
+  extensions::ManagementPolicy* policy =
+      extensions::ExtensionSystem::Get(&profile)->management_policy();
+  return !policy->UserMayModifySettings(&extension, nullptr) ||
+         policy->MustRemainInstalled(&extension, nullptr);
+}
+
 // Returns whether the site setting toggle for `web_contents` should be visible.
 bool IsSiteSettingsToggleVisible(
     const raw_ptr<ToolbarActionsModel> toolbar_model,
@@ -82,6 +95,42 @@ bool IsSiteSettingsToggleOn(Browser* browser,
   return extensions::PermissionsManager::Get(browser->profile())
              ->GetUserSiteSetting(origin) ==
          extensions::PermissionsManager::UserSiteSetting::kCustomizeByExtension;
+}
+
+// Returns whether the site permissions button should be visible.
+bool IsSitePermissionsButtonVisible(const extensions::Extension& extension,
+                                    Profile& profile,
+                                    const ToolbarActionsModel& toolbar_model,
+                                    content::WebContents& web_contents) {
+  // Button is never visible when site is restricted.
+  if (toolbar_model.IsRestrictedUrl(web_contents.GetLastCommittedURL())) {
+    return false;
+  }
+
+  PermissionsManager::UserSiteSetting user_site_setting =
+      extensions::PermissionsManager::Get(&profile)->GetUserSiteSetting(
+          web_contents.GetPrimaryMainFrame()->GetLastCommittedOrigin());
+  switch (user_site_setting) {
+    case PermissionsManager::UserSiteSetting::kCustomizeByExtension: {
+      // Extensions should always display the button.
+      return true;
+    }
+    case PermissionsManager::UserSiteSetting::kBlockAllExtensions: {
+      // Extension should only display the button when it's an enterprise
+      // extension and has granted access.
+      bool enterprise_forced_access =
+          HasEnterpriseForcedAccess(extension, profile);
+      SitePermissionsHelper::SiteInteraction site_interaction =
+          SitePermissionsHelper(&profile).GetSiteInteraction(extension,
+                                                             &web_contents);
+      return enterprise_forced_access &&
+             site_interaction ==
+                 SitePermissionsHelper::SiteInteraction::kGranted;
+    }
+    case PermissionsManager::UserSiteSetting::kGrantAllExtensions: {
+      NOTREACHED_NORETURN();
+    }
+  }
 }
 
 }  // namespace
@@ -181,6 +230,20 @@ void ExtensionsMenuViewController::UpdatePage(
         IsSiteSettingsToggleOn(browser_, web_contents);
     main_page->Update(current_site, is_site_settings_toggle_visible,
                       is_site_settings_toggle_on);
+
+    std::vector<ExtensionMenuItemView*> menu_items = main_page->GetMenuItems();
+    for (auto* menu_item : menu_items) {
+      const extensions::Extension* extension =
+          extensions::ExtensionRegistry::Get(browser_->profile())
+              ->enabled_extensions()
+              .GetByID(menu_item->view_controller()->GetId());
+      CHECK(extension);
+
+      bool is_site_permissions_button_visible = IsSitePermissionsButtonVisible(
+          *extension, *browser_->profile(), *toolbar_model_,
+          *GetActiveWebContents());
+      menu_item->Update(is_site_permissions_button_visible);
+    }
   }
 }
 
@@ -202,10 +265,14 @@ void ExtensionsMenuViewController::OnToolbarActionAdded(
   std::unique_ptr<ExtensionActionViewController> action_controller =
       ExtensionActionViewController::Create(action_id, browser_,
                                             extensions_container_);
+  bool is_site_permissions_button_visible = IsSitePermissionsButtonVisible(
+      *action_controller->extension(), *browser_->profile(), *toolbar_model_,
+      *GetActiveWebContents());
 
   main_page->CreateAndInsertMenuItem(
       std::move(action_controller), action_id,
-      extensions_container_->CanShowActionsInToolbar(), index);
+      extensions_container_->CanShowActionsInToolbar(),
+      is_site_permissions_button_visible, index);
 
   // TODO(crbug.com/1390952): Update requests access section once such section
   // is implemented (if the extension added requests site access, it needs to be
@@ -355,8 +422,12 @@ void ExtensionsMenuViewController::PopulateMainPage(
     std::unique_ptr<ExtensionActionViewController> action_controller =
         ExtensionActionViewController::Create(sorted_ids[i], browser_,
                                               extensions_container_);
+    bool is_site_permissions_button_visible = IsSitePermissionsButtonVisible(
+        *action_controller->extension(), *browser_->profile(), *toolbar_model_,
+        *GetActiveWebContents());
     main_page->CreateAndInsertMenuItem(std::move(action_controller),
-                                       sorted_ids[i], allow_pinning, i);
+                                       sorted_ids[i], allow_pinning,
+                                       is_site_permissions_button_visible, i);
   }
 }
 

@@ -18,6 +18,7 @@
 #include "extensions/browser/notification_types.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/extension_builder.h"
+#include "extensions/common/mojom/manifest.mojom-shared.h"
 #include "extensions/common/value_builder.h"
 #include "extensions/test/permissions_manager_waiter.h"
 #include "ui/events/base_event_utils.h"
@@ -71,13 +72,23 @@ ExtensionsToolbarUnitTest::InstallExtensionWithPermissions(
 }
 
 scoped_refptr<const extensions::Extension>
+ExtensionsToolbarUnitTest::InstallEnterpriseExtension(
+    const std::string& name,
+    const std::vector<std::string>& host_permissions) {
+  return InstallExtension(name, {}, host_permissions,
+                          extensions::mojom::ManifestLocation::kExternalPolicy);
+}
+
+scoped_refptr<const extensions::Extension>
 ExtensionsToolbarUnitTest::InstallExtension(
     const std::string& name,
     const std::vector<std::string>& permissions,
-    const std::vector<std::string>& host_permissions) {
+    const std::vector<std::string>& host_permissions,
+    extensions::mojom::ManifestLocation location) {
   scoped_refptr<const extensions::Extension> extension =
       extensions::ExtensionBuilder(name)
           .SetManifestVersion(3)
+          .SetLocation(location)
           .AddPermissions(permissions)
           .SetManifestKey("host_permissions", ToListValue(host_permissions))
           .SetID(crx_file::id_util::GenerateId(name))

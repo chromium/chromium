@@ -51,10 +51,10 @@ std::u16string GetSiteSettingToggleText(bool is_on) {
   return l10n_util::GetStringUTF16(label_id);
 }
 
-// Converts a view to a ExtensionMenuItemView. This cannot
-// be used to *determine* if a view is an ExtensionMenuItemView (it
-// should only be used when the view is known to be one). It is only used as an
-// extra measure to prevent bad static casts.
+// Converts a view to a ExtensionMenuItemView. This cannot be used to
+// *determine* if a view is an ExtensionMenuItemView (it should only be used
+// when the view is known to be one). It is only used as an extra measure to
+// prevent bad static casts.
 ExtensionMenuItemView* GetAsMenuItem(views::View* view) {
   DCHECK(views::IsViewClass<ExtensionMenuItemView>(view));
   return views::AsViewClass<ExtensionMenuItemView>(view);
@@ -225,9 +225,11 @@ void ExtensionsMenuMainPageView::CreateAndInsertMenuItem(
     std::unique_ptr<ExtensionActionViewController> action_controller,
     extensions::ExtensionId extension_id,
     bool allow_pinning,
+    bool is_site_permissions_button_visible,
     int index) {
   auto item = std::make_unique<ExtensionMenuItemView>(
       browser_, std::move(action_controller), allow_pinning,
+      is_site_permissions_button_visible,
       base::BindRepeating(
           &ExtensionsMenuNavigationHandler::OpenSitePermissionsPage,
           base::Unretained(navigation_handler_), extension_id));
@@ -263,11 +265,6 @@ void ExtensionsMenuMainPageView::Update(std::u16string current_site,
       GetSiteSettingToggleText(is_site_settings_toggle_on));
   site_settings_toggle_->SetAccessibleName(
       GetSiteSettingToggleText(is_site_settings_toggle_on));
-
-  // Update menu items.
-  for (auto* view : menu_items_->children()) {
-    GetAsMenuItem(view)->Update();
-  }
 }
 
 void ExtensionsMenuMainPageView::UpdatePinButtons() {
@@ -276,8 +273,8 @@ void ExtensionsMenuMainPageView::UpdatePinButtons() {
   }
 }
 
-std::vector<ExtensionMenuItemView*>
-ExtensionsMenuMainPageView::GetMenuItemsForTesting() const {
+std::vector<ExtensionMenuItemView*> ExtensionsMenuMainPageView::GetMenuItems()
+    const {
   std::vector<ExtensionMenuItemView*> menu_item_views;
   for (views::View* view : menu_items_->children()) {
     menu_item_views.push_back(GetAsMenuItem(view));
