@@ -639,7 +639,7 @@ const char* AlreadySeenSigninViewPreferenceKey(
       // received yet. Let's update the promo identity.
       [self identityListChanged];
     }
-    DCHECK(self.identity);
+    DCHECK(self.identity) << base::SysNSStringToUTF8([self description]);
     return [[SigninPromoViewConfigurator alloc]
         initWithSigninPromoViewMode:SigninPromoViewModeSyncWithPrimaryAccount
                           userEmail:self.identity.userEmail
@@ -667,7 +667,7 @@ const char* AlreadySeenSigninViewPreferenceKey(
 }
 
 - (void)signinPromoViewIsVisible {
-  DCHECK(!self.invalidOrClosed);
+  DCHECK(!self.invalidOrClosed) << base::SysNSStringToUTF8([self description]);
   if (self.signinPromoViewVisible) {
     return;
   }
@@ -711,7 +711,7 @@ const char* AlreadySeenSigninViewPreferenceKey(
 }
 
 - (void)signinPromoViewIsHidden {
-  DCHECK(!self.invalidOrClosed);
+  DCHECK(!self.invalidOrClosed) << base::SysNSStringToUTF8([self description]);
   self.signinPromoViewVisible = NO;
 }
 
@@ -746,7 +746,8 @@ const char* AlreadySeenSigninViewPreferenceKey(
   if (self.authService->HasPrimaryIdentity(signin::ConsentLevel::kSignin)) {
     return self.authService->GetPrimaryIdentity(signin::ConsentLevel::kSignin);
   }
-  DCHECK(self.accountManagerService);
+  DCHECK(self.accountManagerService)
+      << base::SysNSStringToUTF8([self description]);
   return self.accountManagerService->GetDefaultIdentity();
 }
 
@@ -789,7 +790,8 @@ const char* AlreadySeenSigninViewPreferenceKey(
 // before the sign-in button is pressed, if the current access point supports
 // it.
 - (void)sendImpressionsTillSigninButtonsHistogram {
-  DCHECK(!self.invalidClosedOrNeverVisible);
+  DCHECK(!self.invalidClosedOrNeverVisible)
+      << base::SysNSStringToUTF8([self description]);
   const char* displayedCountPreferenceKey =
       DisplayedCountPreferenceKey(self.accessPoint);
   if (!displayedCountPreferenceKey)
@@ -807,8 +809,9 @@ const char* AlreadySeenSigninViewPreferenceKey(
     return;
   }
   DCHECK_EQ(ios::SigninPromoViewState::UsedAtLeastOnce,
-            self.signinPromoViewState);
-  DCHECK(self.signinInProgress);
+            self.signinPromoViewState)
+      << base::SysNSStringToUTF8([self description]);
+  DCHECK(self.signinInProgress) << base::SysNSStringToUTF8([self description]);
   self.signinInProgress = NO;
 }
 
@@ -848,7 +851,7 @@ const char* AlreadySeenSigninViewPreferenceKey(
 
 // Triggers the primary action when `signInOnly` is at YES: starts sign-in flow.
 - (void)primaryActionForSignInOnly {
-  DCHECK(self.signInOnly);
+  DCHECK(self.signInOnly) << base::SysNSStringToUTF8([self description]);
   signin_metrics::RecordSigninUserActionForAccessPoint(self.accessPoint);
   self.signinPromoViewState = ios::SigninPromoViewState::UsedAtLeastOnce;
   self.signinInProgress = YES;
@@ -858,7 +861,7 @@ const char* AlreadySeenSigninViewPreferenceKey(
 // Triggers the secondary action when `signInOnly` is at YES: starts the
 // add account dialog.
 - (void)secondaryActionForSignInOnly {
-  DCHECK(self.signInOnly);
+  DCHECK(self.signInOnly) << base::SysNSStringToUTF8([self description]);
   signin_metrics::RecordSigninUserActionForAccessPoint(self.accessPoint);
   self.signinPromoViewState = ios::SigninPromoViewState::UsedAtLeastOnce;
   self.signinInProgress = YES;
@@ -887,7 +890,8 @@ const char* AlreadySeenSigninViewPreferenceKey(
 
 - (void)startAddAccountForSignInOnly {
   DCHECK(!_signinCoordinator)
-      << base::SysNSStringToUTF8([_signinCoordinator description]);
+      << base::SysNSStringToUTF8([_signinCoordinator description]) << " "
+      << base::SysNSStringToUTF8([self description]);
   self.signinPromoViewState = ios::SigninPromoViewState::UsedAtLeastOnce;
   self.signinInProgress = YES;
   _signinCoordinator = [SigninCoordinator
@@ -904,7 +908,7 @@ const char* AlreadySeenSigninViewPreferenceKey(
 
 - (void)addAccountDoneWithResult:(SigninCoordinatorResult)result
                             info:(SigninCompletionInfo*)info {
-  DCHECK(_signinCoordinator);
+  DCHECK(_signinCoordinator) << base::SysNSStringToUTF8([self description]);
   _signinCoordinator = nil;
   switch (result) {
     case SigninCoordinatorResultSuccess:
@@ -920,7 +924,8 @@ const char* AlreadySeenSigninViewPreferenceKey(
 
 // Changes the promo view state, and records the metrics.
 - (void)signinPromoViewIsRemoved {
-  DCHECK_NE(ios::SigninPromoViewState::Invalid, self.signinPromoViewState);
+  DCHECK_NE(ios::SigninPromoViewState::Invalid, self.signinPromoViewState)
+      << base::SysNSStringToUTF8([self description]);
   BOOL wasNeverVisible =
       self.signinPromoViewState == ios::SigninPromoViewState::NeverVisible;
   BOOL wasUnused =
@@ -969,13 +974,15 @@ const char* AlreadySeenSigninViewPreferenceKey(
 
 - (void)signinPromoViewDidTapSigninWithNewAccount:
     (SigninPromoView*)signinPromoView {
-  DCHECK(!self.identity);
+  DCHECK(!self.identity) << base::SysNSStringToUTF8([self description]);
   // The promo on top of the feed is only logged as visible when most of it can
   // be seen, so it can be used without `self.signinPromoViewVisible`.
   DCHECK(self.signinPromoViewVisible ||
          self.accessPoint ==
-             signin_metrics::AccessPoint::ACCESS_POINT_NTP_FEED_TOP_PROMO);
-  DCHECK(!self.invalidClosedOrNeverVisible);
+             signin_metrics::AccessPoint::ACCESS_POINT_NTP_FEED_TOP_PROMO)
+      << base::SysNSStringToUTF8([self description]);
+  DCHECK(!self.invalidClosedOrNeverVisible)
+      << base::SysNSStringToUTF8([self description]);
   [self sendImpressionsTillSigninButtonsHistogram];
   // On iOS, the promo does not have a button to add and account when there is
   // already an account on the device. That flow goes through the NOT_DEFAULT
@@ -992,9 +999,11 @@ const char* AlreadySeenSigninViewPreferenceKey(
 
 - (void)signinPromoViewDidTapSigninWithDefaultAccount:
     (SigninPromoView*)signinPromoView {
-  DCHECK(self.identity);
-  DCHECK(self.signinPromoViewVisible);
-  DCHECK(!self.invalidClosedOrNeverVisible);
+  DCHECK(self.identity) << base::SysNSStringToUTF8([self description]);
+  DCHECK(self.signinPromoViewVisible)
+      << base::SysNSStringToUTF8([self description]);
+  DCHECK(!self.invalidClosedOrNeverVisible)
+      << base::SysNSStringToUTF8([self description]);
   [self sendImpressionsTillSigninButtonsHistogram];
   if (self.signInOnly) {
     [self primaryActionForSignInOnly];
@@ -1007,9 +1016,11 @@ const char* AlreadySeenSigninViewPreferenceKey(
 
 - (void)signinPromoViewDidTapSigninWithOtherAccount:
     (SigninPromoView*)signinPromoView {
-  DCHECK(self.identity);
-  DCHECK(self.signinPromoViewVisible);
-  DCHECK(!self.invalidClosedOrNeverVisible);
+  DCHECK(self.identity) << base::SysNSStringToUTF8([self description]);
+  DCHECK(self.signinPromoViewVisible)
+      << base::SysNSStringToUTF8([self description]);
+  DCHECK(!self.invalidClosedOrNeverVisible)
+      << base::SysNSStringToUTF8([self description]);
   [self sendImpressionsTillSigninButtonsHistogram];
   signin_metrics::RecordSigninUserActionForAccessPoint(self.accessPoint);
   if (self.signInOnly) {
@@ -1022,16 +1033,19 @@ const char* AlreadySeenSigninViewPreferenceKey(
 }
 
 - (void)signinPromoViewCloseButtonWasTapped:(SigninPromoView*)view {
-  DCHECK(!self.invalidClosedOrNeverVisible);
+  DCHECK(!self.invalidClosedOrNeverVisible)
+      << base::SysNSStringToUTF8([self description]);
   // The promo on top of the feed is only logged as visible when most of it can
   // be seen, so it can be dismissed without `self.signinPromoViewVisible`.
   DCHECK(self.signinPromoViewVisible ||
          self.accessPoint ==
-             signin_metrics::AccessPoint::ACCESS_POINT_NTP_FEED_TOP_PROMO);
+             signin_metrics::AccessPoint::ACCESS_POINT_NTP_FEED_TOP_PROMO)
+      << base::SysNSStringToUTF8([self description]);
   self.signinPromoViewState = ios::SigninPromoViewState::Closed;
   const char* alreadySeenSigninViewPreferenceKey =
       AlreadySeenSigninViewPreferenceKey(self.accessPoint);
-  DCHECK(alreadySeenSigninViewPreferenceKey);
+  DCHECK(alreadySeenSigninViewPreferenceKey)
+      << base::SysNSStringToUTF8([self description]);
   self.prefService->SetBoolean(alreadySeenSigninViewPreferenceKey, true);
   const char* displayedCountPreferenceKey =
       DisplayedCountPreferenceKey(self.accessPoint);
@@ -1054,12 +1068,13 @@ const char* AlreadySeenSigninViewPreferenceKey(
   // `_identityChooserCoordinator.delegate` was set to nil before calling this
   // method since `identityChooserCoordinatorDidTapOnAddAccount:` or
   // `identityChooserCoordinator:didSelectIdentity:` have been called before.
-  NOTREACHED();
+  NOTREACHED() << base::SysNSStringToUTF8([self description]);
 }
 
 - (void)identityChooserCoordinatorDidTapOnAddAccount:
     (IdentityChooserCoordinator*)coordinator {
-  DCHECK_EQ(coordinator, _identityChooserCoordinator);
+  DCHECK_EQ(coordinator, _identityChooserCoordinator)
+      << base::SysNSStringToUTF8([self description]);
   _identityChooserCoordinator.delegate = nil;
   [_identityChooserCoordinator stop];
   _identityChooserCoordinator = nil;
@@ -1068,7 +1083,8 @@ const char* AlreadySeenSigninViewPreferenceKey(
 
 - (void)identityChooserCoordinator:(IdentityChooserCoordinator*)coordinator
                  didSelectIdentity:(id<SystemIdentity>)identity {
-  DCHECK_EQ(coordinator, _identityChooserCoordinator);
+  DCHECK_EQ(coordinator, _identityChooserCoordinator)
+      << base::SysNSStringToUTF8([self description]);
   _identityChooserCoordinator.delegate = nil;
   [_identityChooserCoordinator stop];
   _identityChooserCoordinator = nil;
@@ -1080,6 +1096,19 @@ const char* AlreadySeenSigninViewPreferenceKey(
   [_identityChooserCoordinator stop];
   _identityChooserCoordinator = nil;
   [self startSignInOnlyFlow];
+}
+
+#pragma mark - NSObject
+
+- (NSString*)description {
+  return [NSString
+      stringWithFormat:@"<%@: %p, identity: %p, signinPromoViewState: %d, "
+                       @"signinInProgress: %d, accessPoint: %d, "
+                       @"signinPromoViewVisible: %d, invalidOrClosed %d>",
+                       self.class.description, self, self.identity,
+                       self.signinPromoViewState, self.signinInProgress,
+                       self.accessPoint, self.signinPromoViewVisible,
+                       self.invalidOrClosed];
 }
 
 @end
