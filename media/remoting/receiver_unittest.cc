@@ -301,13 +301,12 @@ class ReceiverTest : public ::testing::Test {
   int receiver_renderer_handle_ = RpcMessenger::kInvalidHandle;
 
   MockMediaResource mock_media_resource_;
-  raw_ptr<MockRenderer> mock_renderer_ = nullptr;
   std::unique_ptr<MockSender> mock_sender_;
-
   raw_ptr<RpcMessenger> rpc_messenger_ = nullptr;
   raw_ptr<MockRemotee> mock_remotee_;
   raw_ptr<MockReceiverController> mock_controller_ = nullptr;
   std::unique_ptr<Receiver> receiver_;
+  raw_ptr<MockRenderer> mock_renderer_ = nullptr;
 
   base::WeakPtrFactory<ReceiverTest> weak_factory_{this};
 };
