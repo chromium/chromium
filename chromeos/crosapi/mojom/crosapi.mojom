@@ -995,14 +995,8 @@ struct BrowserInitParams {
   [MinVersion=6]
   DefaultPaths? default_paths@6;
 
-  // Device Account's obfuscated Gaia id, if present.
-  // This is null for older versions of ash, for Active Directory sessions,
-  // Guest sessions, Managed Guest sessions, Demo mode, and Kiosks.
-  // Added in M89.
-  // Deprecated in M91. Use `device_account` (field id 16)  instead.
-  // TODO(crbug.com/1195865): Remove this in M93.
   [MinVersion=7]
-  string? device_account_gaia_id@7;
+  string? REMOVED_7@7;
 
   // Whether or not metrics reporting in ash is managed by policy. This is
   // passed independently because the metrics reporting state is controlled by
@@ -1341,13 +1335,7 @@ struct BrowserPostLoginParams {
   // Added in M89.
   DefaultPaths? default_paths@1;
 
-  // Device Account's obfuscated Gaia id, if present.
-  // This is null for older versions of ash, for Active Directory sessions,
-  // Guest sessions, Managed Guest sessions, Demo mode, and Kiosks.
-  // Added in M89.
-  // Deprecated in M91. Use `device_account` (field id 16)  instead.
-  // TODO(crbug.com/1195865): Remove this in M93.
-  string? device_account_gaia_id@2;
+  string? REMOVED_2@2;
 
   // Primary user ID hash. Used to set CROS_USER_ID_HASH env var in crosh.
   // Do not use this to construct paths, use DefaultPaths for that purpose.

@@ -610,8 +610,6 @@ void InjectBrowserPostLoginParams(BrowserParams* params,
   params->session_type = environment_provider->GetSessionType();
   params->default_paths = environment_provider->GetDefaultPaths();
 
-  params->device_account_gaia_id =
-      environment_provider->GetDeviceAccountGaiaId();
   const absl::optional<account_manager::Account> maybe_device_account =
       environment_provider->GetDeviceAccount();
   if (maybe_device_account) {
