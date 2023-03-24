@@ -1300,6 +1300,31 @@ INSTANTIATE_TEST_SUITE_P(
       }
     });
 
+class HttpCacheTest_SplitCacheFeatureEnabled
+    : public HttpCacheTest_SplitCacheFeature {
+ public:
+  HttpCacheTest_SplitCacheFeatureEnabled() {
+    CHECK(base::FeatureList::IsEnabled(
+        net::features::kSplitCacheByNetworkIsolationKey));
+  }
+};
+
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    HttpCacheTest_SplitCacheFeatureEnabled,
+    testing::ValuesIn({SplitCacheTestCase::kSplitCacheNikFrameSiteEnabled,
+                       SplitCacheTestCase::kSplitCacheNikCrossSiteFlagEnabled}),
+    [](const testing::TestParamInfo<SplitCacheTestCase>& info) {
+      switch (info.param) {
+        case (SplitCacheTestCase::kSplitCacheDisabled):
+          return "NotUsedForThisTestSuite";
+        case (SplitCacheTestCase::kSplitCacheNikFrameSiteEnabled):
+          return "SplitCacheNikFrameSiteEnabled";
+        case (SplitCacheTestCase::kSplitCacheNikCrossSiteFlagEnabled):
+          return "SplitCacheNikCrossSiteFlagEnabled";
+      }
+    });
+
 TEST_F(HttpCacheTest, SimpleGETNoDiskCache) {
   MockHttpCache cache;
 
@@ -7178,10 +7203,8 @@ TEST_F(HttpCacheTest, SimplePOST_Invalidate_205) {
 
 // Tests that a successful POST invalidates a previously cached GET,
 // with cache split by top-frame origin.
-TEST_P(HttpCacheTest_SplitCacheFeature, SimplePOST_Invalidate_205_SplitCache) {
-  if (!IsSplitCacheEnabled()) {
-    return;
-  }
+TEST_P(HttpCacheTest_SplitCacheFeatureEnabled,
+       SimplePOST_Invalidate_205_SplitCache) {
   SchemefulSite site_a(GURL("http://a.com"));
   SchemefulSite site_b(GURL("http://b.com"));
 
@@ -11195,10 +11218,8 @@ TEST_F(HttpCacheTest, UpdatesRequestResponseTimeOn304) {
   RemoveMockTransaction(&mock_network_response);
 }
 
-TEST_P(HttpCacheTest_SplitCacheFeature, SplitCacheWithNetworkIsolationKey) {
-  if (!IsSplitCacheEnabled()) {
-    return;
-  }
+TEST_P(HttpCacheTest_SplitCacheFeatureEnabled,
+       SplitCacheWithNetworkIsolationKey) {
   MockHttpCache cache;
   HttpResponseInfo response;
 
@@ -11207,8 +11228,8 @@ TEST_P(HttpCacheTest_SplitCacheFeature, SplitCacheWithNetworkIsolationKey) {
   SchemefulSite site_data(GURL("data:text/html,<body>Hello World</body>"));
 
   MockHttpRequest trans_info = MockHttpRequest(kSimpleGET_Transaction);
-  // Request with a.com as the top frame and subframe origins. It shouldn't be
-  // cached.
+  // Request with a.com as the top frame and subframe origins. This should
+  // result in a cache miss.
   trans_info.network_isolation_key = NetworkIsolationKey(site_a, site_a);
   trans_info.network_anonymization_key =
       net::NetworkAnonymizationKey::CreateSameSite(site_a);
@@ -11216,12 +11237,13 @@ TEST_P(HttpCacheTest_SplitCacheFeature, SplitCacheWithNetworkIsolationKey) {
                                 trans_info, &response);
   EXPECT_FALSE(response.was_cached);
 
-  // The second request should be cached.
+  // The second request should result in a cache hit.
   RunTransactionTestWithRequest(cache.http_cache(), kSimpleGET_Transaction,
                                 trans_info, &response);
   EXPECT_TRUE(response.was_cached);
 
-  // Now request with b.com as the subframe origin. It shouldn't be cached.
+  // Now request with b.com as the subframe origin. It should result in a cache
+  // miss.
   trans_info.network_isolation_key = NetworkIsolationKey(site_a, site_b);
   trans_info.network_anonymization_key =
       net::NetworkAnonymizationKey::CreateCrossSite(site_a);
@@ -11229,12 +11251,13 @@ TEST_P(HttpCacheTest_SplitCacheFeature, SplitCacheWithNetworkIsolationKey) {
                                 trans_info, &response);
   EXPECT_FALSE(response.was_cached);
 
-  // The second request should be cached.
+  // The second request should result in a cache hit.
   RunTransactionTestWithRequest(cache.http_cache(), kSimpleGET_Transaction,
                                 trans_info, &response);
   EXPECT_TRUE(response.was_cached);
 
-  // a.com should still be cached.
+  // Another request with a.com as the top frame and subframe origin should
+  // still result in a cache hit.
   trans_info.network_isolation_key = NetworkIsolationKey(site_a, site_a);
   trans_info.network_anonymization_key =
       net::NetworkAnonymizationKey::CreateSameSite(site_a);
@@ -11242,10 +11265,10 @@ TEST_P(HttpCacheTest_SplitCacheFeature, SplitCacheWithNetworkIsolationKey) {
                                 trans_info, &response);
   EXPECT_TRUE(response.was_cached);
 
-  // Now make a request with an opaque subframe site.  It shouldn't be
-  // cached when the NIK makes use of the frame site. Note that we will use
-  // `site_b` as the top-level site so that this resource won't be in the cache
-  // at first regardless of the NIK partitioning scheme.
+  // Now make a request with an opaque subframe site. It shouldn't cause
+  // anything to be added to the cache when the NIK makes use of the frame site.
+  // Note that we will use `site_b` as the top-level site so that this resource
+  // won't be in the cache at first regardless of the NIK partitioning scheme.
   trans_info.network_isolation_key = NetworkIsolationKey(site_b, site_data);
   trans_info.network_anonymization_key =
       net::NetworkAnonymizationKey::CreateCrossSite(site_b);
@@ -11260,8 +11283,7 @@ TEST_P(HttpCacheTest_SplitCacheFeature, SplitCacheWithNetworkIsolationKey) {
                                 trans_info, &response);
   EXPECT_FALSE(response.was_cached);
 
-  // On the second request, it still shouldn't be cached if
-  // the NIK uses the frame site.
+  // On the second request, expect a cache miss if the NIK uses the frame site.
   RunTransactionTestWithRequest(cache.http_cache(), kSimpleGET_Transaction,
                                 trans_info, &response);
   if (IsNikFrameSiteEnabled()) {
@@ -11419,10 +11441,7 @@ TEST_F(HttpCacheTest, HttpCacheProfileThirdPartyFont) {
   histograms.ExpectTotalCount("HttpCache.Pattern.FontThirdParty", 1);
 }
 
-TEST_P(HttpCacheTest_SplitCacheFeature, SplitCache) {
-  if (!IsSplitCacheEnabled()) {
-    return;
-  }
+TEST_P(HttpCacheTest_SplitCacheFeatureEnabled, SplitCache) {
   MockHttpCache cache;
   HttpResponseInfo response;
 
@@ -11430,7 +11449,8 @@ TEST_P(HttpCacheTest_SplitCacheFeature, SplitCache) {
   SchemefulSite site_b(GURL("http://b.com"));
   SchemefulSite site_data(GURL("data:text/html,<body>Hello World</body>"));
 
-  // A request without a top frame origin is not cached at all.
+  // A request without a top frame origin shouldn't result in anything being
+  // added to the cache.
   MockHttpRequest trans_info = MockHttpRequest(kSimpleGET_Transaction);
   trans_info.network_isolation_key = net::NetworkIsolationKey();
   trans_info.network_anonymization_key = net::NetworkAnonymizationKey();
@@ -11442,8 +11462,9 @@ TEST_P(HttpCacheTest_SplitCacheFeature, SplitCache) {
                                 trans_info, &response);
   EXPECT_FALSE(response.was_cached);
 
-  // Now request with a.com as the top frame origin. It shouldn't be cached
-  // since the cached resource has a different top frame origin.
+  // Now request with a.com as the top frame origin. This should initially
+  // result in a cache miss since the cached resource has a different top frame
+  // origin.
   net::NetworkIsolationKey key_a(site_a, site_a);
   auto nak_a = net::NetworkAnonymizationKey::CreateSameSite(site_a);
   trans_info.network_isolation_key = key_a;
@@ -11452,7 +11473,7 @@ TEST_P(HttpCacheTest_SplitCacheFeature, SplitCache) {
                                 trans_info, &response);
   EXPECT_FALSE(response.was_cached);
 
-  // The second request should be cached.
+  // The second request should result in a cache hit.
   RunTransactionTestWithRequest(cache.http_cache(), kSimpleGET_Transaction,
                                 trans_info, &response);
   EXPECT_TRUE(response.was_cached);
@@ -11470,7 +11491,7 @@ TEST_P(HttpCacheTest_SplitCacheFeature, SplitCache) {
                                 subframe_document_trans_info, &response);
   EXPECT_TRUE(response.was_cached);
 
-  // Now request with b.com as the top frame origin. It shouldn't be cached.
+  // Now request with b.com as the top frame origin. It should be a cache miss.
   trans_info.network_isolation_key = NetworkIsolationKey(site_b, site_b);
   trans_info.network_anonymization_key =
       NetworkAnonymizationKey::CreateSameSite(site_b);
@@ -11478,20 +11499,20 @@ TEST_P(HttpCacheTest_SplitCacheFeature, SplitCache) {
                                 trans_info, &response);
   EXPECT_FALSE(response.was_cached);
 
-  // The second request should be cached.
+  // The second request should be a cache hit.
   RunTransactionTestWithRequest(cache.http_cache(), kSimpleGET_Transaction,
                                 trans_info, &response);
   EXPECT_TRUE(response.was_cached);
 
-  // a.com should still be cached.
+  // Another request for a.com should still result in a cache hit.
   trans_info.network_isolation_key = key_a;
   trans_info.network_anonymization_key = nak_a;
   RunTransactionTestWithRequest(cache.http_cache(), kSimpleGET_Transaction,
                                 trans_info, &response);
   EXPECT_TRUE(response.was_cached);
 
-  // Now make a request with an opaque top frame origin.  It shouldn't be
-  // cached.
+  // Now make a request with an opaque top frame origin. It shouldn't result in
+  // a cache hit.
   trans_info.network_isolation_key = NetworkIsolationKey(site_data, site_data);
   trans_info.network_anonymization_key =
       NetworkAnonymizationKey::CreateSameSite(site_data);
@@ -11500,7 +11521,7 @@ TEST_P(HttpCacheTest_SplitCacheFeature, SplitCache) {
                                 trans_info, &response);
   EXPECT_FALSE(response.was_cached);
 
-  // On the second request, it still shouldn't be cached.
+  // On the second request, it still shouldn't result in a cache hit.
   RunTransactionTestWithRequest(cache.http_cache(), kSimpleGET_Transaction,
                                 trans_info, &response);
   EXPECT_FALSE(response.was_cached);
@@ -11570,10 +11591,8 @@ TEST_F(HttpCacheTest, SplitCacheEnabledByDefaultButOverridden) {
   EXPECT_FALSE(HttpCache::IsSplitCacheEnabled());
 }
 
-TEST_P(HttpCacheTest_SplitCacheFeature, SplitCacheUsesRegistrableDomain) {
-  if (!IsSplitCacheEnabled()) {
-    return;
-  }
+TEST_P(HttpCacheTest_SplitCacheFeatureEnabled,
+       SplitCacheUsesRegistrableDomain) {
   MockHttpCache cache;
   HttpResponseInfo response;
   MockHttpRequest trans_info = MockHttpRequest(kSimpleGET_Transaction);
@@ -11618,7 +11637,7 @@ TEST_F(HttpCacheTest, NonSplitCache) {
   MockHttpCache cache;
   HttpResponseInfo response;
 
-  // A request without a top frame is cached normally.
+  // A request without a top frame is added to the cache normally.
   MockHttpRequest trans_info = MockHttpRequest(kSimpleGET_Transaction);
   trans_info.network_isolation_key = NetworkIsolationKey();
   trans_info.network_anonymization_key = NetworkAnonymizationKey();
@@ -11626,13 +11645,13 @@ TEST_F(HttpCacheTest, NonSplitCache) {
                                 trans_info, &response);
   EXPECT_FALSE(response.was_cached);
 
-  // The second request comes from cache.
+  // The second request should result in a cache hit.
   RunTransactionTestWithRequest(cache.http_cache(), kSimpleGET_Transaction,
                                 trans_info, &response);
   EXPECT_TRUE(response.was_cached);
 
-  // Now request with a.com as the top frame origin. It should use the same
-  // cached object.
+  // Now request with a.com as the top frame origin. The same cached object
+  // should be used.
   const SchemefulSite kSiteA(GURL("http://a.com/"));
   trans_info.network_isolation_key = NetworkIsolationKey(kSiteA, kSiteA);
   trans_info.network_anonymization_key =
@@ -13799,7 +13818,7 @@ TEST_F(HttpCacheTest, DnsAliasesNoRevalidation) {
   EXPECT_FALSE(response.was_cached);
   EXPECT_THAT(response.dns_aliases, testing::ElementsAre("alias1", "alias2"));
 
-  // The second request should be cached, and the response used without
+  // The second request result in a cache hit and the response used without
   // revalidation. Set the transaction alias list to empty to verify that the
   // cached aliases are being used.
   transaction.dns_aliases = {};
@@ -13820,9 +13839,9 @@ TEST_F(HttpCacheTest, NoDnsAliasesNoRevalidation) {
   EXPECT_FALSE(response.was_cached);
   EXPECT_TRUE(response.dns_aliases.empty());
 
-  // The second request should be cached, and the response used without
-  // revalidation. Set the transaction alias list to nonempty to verify that the
-  // cached aliases are being used.
+  // The second request should result in a cache hit and the response used
+  // without revalidation. Set the transaction alias list to nonempty to verify
+  // that the cached aliases are being used.
   transaction.dns_aliases = {"alias"};
   RunTransactionTestWithResponseInfo(cache.http_cache(), transaction,
                                      &response);
@@ -13967,22 +13986,15 @@ TEST_F(HttpCacheTest, SecurityHeadersAreCopiedToConditionalizedResponse) {
   EXPECT_EQ(304, response.headers->response_code());
   EXPECT_EQ("cross-origin", response_corp_header);
 }
-class HttpCacheSingleKeyedCacheTest
-    : public HttpCacheTest,
-      public ::testing::WithParamInterface<SplitCacheTestCase> {
+class CacheTransparencyHttpCacheTest
+    : public HttpCacheTest_SplitCacheFeatureEnabled {
  public:
-  HttpCacheSingleKeyedCacheTest() {
-    InitializeSplitCacheScopedFeatureList(feature_list_, GetParam());
-
+  CacheTransparencyHttpCacheTest() {
     // The single-keyed cache feature is meaningless when the split cache is not
     // enabled. The //net layer doesn't care whether or not the
     // "CacheTransparency" feature is enabled.
     CHECK(base::FeatureList::IsEnabled(
         net::features::kSplitCacheByNetworkIsolationKey));
-  }
-
-  bool IsNikFrameSiteEnabled() const {
-    return GetParam() == SplitCacheTestCase::kSplitCacheNikFrameSiteEnabled;
   }
 
   void RunTransactionTestForSingleKeyedCache(
@@ -14010,14 +14022,11 @@ class HttpCacheSingleKeyedCacheTest
     RunTransactionTestForSingleKeyedCache(cache, kSimpleGET_Transaction,
                                           network_isolation_key, checksum);
   }
-
- private:
-  base::test::ScopedFeatureList feature_list_;
 };
 
 INSTANTIATE_TEST_SUITE_P(
     All,
-    HttpCacheSingleKeyedCacheTest,
+    CacheTransparencyHttpCacheTest,
     testing::ValuesIn({SplitCacheTestCase::kSplitCacheNikFrameSiteEnabled,
                        SplitCacheTestCase::kSplitCacheNikCrossSiteFlagEnabled}),
     [](const testing::TestParamInfo<SplitCacheTestCase>& info) {
@@ -14034,7 +14043,7 @@ INSTANTIATE_TEST_SUITE_P(
 constexpr char kChecksumForSimpleGET[] =
     "80B4C37CEF5CFE69B4A90830282AA2BB772DC4CBC00491A219CE5F2AD75C7B58";
 
-TEST_P(HttpCacheSingleKeyedCacheTest, SuccessfulGET) {
+TEST_P(CacheTransparencyHttpCacheTest, SuccessfulGET) {
   MockHttpCache cache;
   // The first request adds the item to the cache.
   {
@@ -14062,7 +14071,7 @@ TEST_P(HttpCacheSingleKeyedCacheTest, SuccessfulGET) {
   }
 }
 
-TEST_P(HttpCacheSingleKeyedCacheTest, GETWithChecksumMismatch) {
+TEST_P(CacheTransparencyHttpCacheTest, GETWithChecksumMismatch) {
   MockHttpCache cache;
   const auto site_a = SchemefulSite(GURL("https://a.com/"));
   // The first request adds the item to the cache.
@@ -14102,7 +14111,7 @@ TEST_P(HttpCacheSingleKeyedCacheTest, GETWithChecksumMismatch) {
   }
 }
 
-TEST_P(HttpCacheSingleKeyedCacheTest, GETWithBadResponseCode) {
+TEST_P(CacheTransparencyHttpCacheTest, GETWithBadResponseCode) {
   MockHttpCache cache;
   MockTransaction transaction = kSimpleGET_Transaction;
   transaction.status = "HTTP/1.1 404 Not Found";
@@ -14134,7 +14143,7 @@ TEST_P(HttpCacheSingleKeyedCacheTest, GETWithBadResponseCode) {
 // This is identical to GETWithBadResponseCode but with a different response
 // code. It's not very realistic as it doesn't call DoneReading(), but it covers
 // the relevant code path.
-TEST_P(HttpCacheSingleKeyedCacheTest, RedirectUnusable) {
+TEST_P(CacheTransparencyHttpCacheTest, RedirectUnusable) {
   MockHttpCache cache;
   MockTransaction transaction = kSimpleGET_Transaction;
   transaction.status = "HTTP/1.1 301 Moved Permanently";
@@ -14163,7 +14172,7 @@ TEST_P(HttpCacheSingleKeyedCacheTest, RedirectUnusable) {
   }
 }
 
-TEST_P(HttpCacheSingleKeyedCacheTest, GETWith206ResponseCode) {
+TEST_P(CacheTransparencyHttpCacheTest, GETWith206ResponseCode) {
   MockHttpCache cache;
   MockTransaction transaction = kSimpleGET_Transaction;
   // We should never get a partial response since we never send a range request,
@@ -14193,7 +14202,7 @@ TEST_P(HttpCacheSingleKeyedCacheTest, GETWith206ResponseCode) {
   }
 }
 
-TEST_P(HttpCacheSingleKeyedCacheTest, SuccessfulRevalidation) {
+TEST_P(CacheTransparencyHttpCacheTest, SuccessfulRevalidation) {
   MockHttpCache cache;
   MockTransaction transaction = kSimpleGET_Transaction;
   // Add a cache control header to permit the entry to be cached, with max-age 0
@@ -14243,7 +14252,7 @@ TEST_P(HttpCacheSingleKeyedCacheTest, SuccessfulRevalidation) {
   }
 }
 
-TEST_P(HttpCacheSingleKeyedCacheTest, RevalidationChangingUncheckedHeader) {
+TEST_P(CacheTransparencyHttpCacheTest, RevalidationChangingUncheckedHeader) {
   MockHttpCache cache;
   MockTransaction transaction = kSimpleGET_Transaction;
   // Add a cache control header to permit the entry to be cached, with max-age 0
@@ -14295,7 +14304,7 @@ TEST_P(HttpCacheSingleKeyedCacheTest, RevalidationChangingUncheckedHeader) {
   }
 }
 
-TEST_P(HttpCacheSingleKeyedCacheTest, RevalidationChangingCheckedHeader) {
+TEST_P(CacheTransparencyHttpCacheTest, RevalidationChangingCheckedHeader) {
   MockHttpCache cache;
   MockTransaction transaction = kSimpleGET_Transaction;
   // Add a cache control header to permit the entry to be cached, with max-age 0
@@ -14347,7 +14356,7 @@ TEST_P(HttpCacheSingleKeyedCacheTest, RevalidationChangingCheckedHeader) {
   }
 }
 
-TEST_P(HttpCacheSingleKeyedCacheTest, SuccessfulGETManyWriters) {
+TEST_P(CacheTransparencyHttpCacheTest, SuccessfulGETManyWriters) {
   MockHttpCache cache;
 
   MockHttpRequest request(kSimpleGET_Transaction);
@@ -14389,7 +14398,7 @@ TEST_P(HttpCacheSingleKeyedCacheTest, SuccessfulGETManyWriters) {
   EXPECT_EQ(1, cache.disk_cache()->create_count());
 }
 
-TEST_P(HttpCacheSingleKeyedCacheTest, BadChecksumManyWriters) {
+TEST_P(CacheTransparencyHttpCacheTest, BadChecksumManyWriters) {
   MockHttpCache cache;
 
   MockHttpRequest request(kSimpleGET_Transaction);

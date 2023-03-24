@@ -80,16 +80,6 @@ class NET_EXPORT_PRIVATE HttpCache::Transaction : public HttpTransaction {
     UPDATE          = READ_META | WRITE,  // READ_WRITE & ~READ_DATA
   };
 
-  // This enum backs a histogram. Please keep enums.xml up to date with any
-  // changes, and new entries should be appended at the end. Never re-arrange /
-  // re-use values.
-  enum class NetworkIsolationKeyPresent {
-    kNotPresentCacheableRequest = 0,
-    kNotPresentNonCacheableRequest = 1,
-    kPresent = 2,
-    kMaxValue = kPresent,
-  };
-
   Transaction(RequestPriority priority,
               HttpCache* cache);
 
