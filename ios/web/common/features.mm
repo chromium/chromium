@@ -93,6 +93,10 @@ BASE_FEATURE(kSmoothScrollingDefault,
              "FullscreenSmoothScrollingDefault",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+BASE_FEATURE(kEnableNewSessionSerialization,
+             "EnableNewSessionSerialization",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 bool IsMediaPermissionsControlEnabled() {
   if (@available(iOS 15, *)) {
     return base::FeatureList::IsEnabled(kMediaPermissionsControl);
@@ -112,6 +116,10 @@ bool IsFullscreenAPIEnabled() {
     return base::FeatureList::IsEnabled(kEnableFullscreenAPI);
   }
   return false;
+}
+
+bool UseNewSessionSerialization() {
+  return base::FeatureList::IsEnabled(kEnableNewSessionSerialization);
 }
 
 }  // namespace features

@@ -89,6 +89,9 @@ BASE_DECLARE_FEATURE(kEnableWebInspector);
 // viewport adjustment experiment is selected via command line switches.
 BASE_DECLARE_FEATURE(kSmoothScrollingDefault);
 
+// Feature flag to enable the new session serialization code.
+BASE_DECLARE_FEATURE(kEnableNewSessionSerialization);
+
 // When true, user control for camera and/or microphone access should be
 // enabled.
 bool IsMediaPermissionsControlEnabled();
@@ -102,6 +105,9 @@ bool IsFullscreenAPIEnabled();
 
 // Return true when the smooth scrolling feature is enabled.
 bool IsFullscreenSmoothScrollingEnabled();
+
+// When true, the new session serialization code should be used.
+bool UseNewSessionSerialization();
 
 }  // namespace features
 }  // namespace web
