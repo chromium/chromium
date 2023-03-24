@@ -820,10 +820,11 @@ AutofillProfile* PersonalDataManager::GetProfileByGUID(
 bool PersonalDataManager::IsEligibleForAddressAccountStorage() const {
   // The CONTACT_INFO data type is only running for eligible users. See
   // ContactInfoModelTypeController.
-  return base::FeatureList::IsEnabled(
-             features::kAutofillAccountProfileStorage) &&
-         sync_service_ &&
-         sync_service_->GetActiveDataTypes().Has(syncer::CONTACT_INFO);
+  return sync_service_ &&
+         sync_service_->GetActiveDataTypes().Has(syncer::CONTACT_INFO) &&
+         base::FeatureList::IsEnabled(
+             features::kAutofillAccountProfilesUnionView) &&
+         base::FeatureList::IsEnabled(features::kAutofillAccountProfileStorage);
 }
 
 void PersonalDataManager::MigrateProfileToAccount(
