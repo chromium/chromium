@@ -5,6 +5,7 @@
 #import "ios/chrome/browser/ui/browser_view/tab_lifecycle_mediator.h"
 
 #import "ios/chrome/browser/autofill/autofill_tab_helper.h"
+#import "ios/chrome/browser/autofill/bottom_sheet/bottom_sheet_tab_helper.h"
 #import "ios/chrome/browser/commerce/price_notifications/price_notifications_iph_presenter.h"
 #import "ios/chrome/browser/commerce/price_notifications/price_notifications_tab_helper.h"
 #import "ios/chrome/browser/download/download_manager_tab_helper.h"
@@ -17,6 +18,7 @@
 #import "ios/chrome/browser/passwords/password_tab_helper.h"
 #import "ios/chrome/browser/prerender/prerender_service.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
+#import "ios/chrome/browser/shared/public/commands/password_bottom_sheet_commands.h"
 #import "ios/chrome/browser/shared/public/commands/web_content_commands.h"
 #import "ios/chrome/browser/snapshots/snapshot_tab_helper.h"
 #import "ios/chrome/browser/ssl/captive_portal_tab_helper.h"
@@ -84,6 +86,11 @@
   passwordTabHelper->SetBaseViewController(_baseViewController);
   passwordTabHelper->SetPasswordControllerDelegate(_delegate);
   passwordTabHelper->SetDispatcher(_commandDispatcher);
+
+  BottomSheetTabHelper* bottomSheetTabHelper =
+      BottomSheetTabHelper::FromWebState(webState);
+  bottomSheetTabHelper->SetPasswordBottomSheetHandler(
+      HandlerForProtocol(_commandDispatcher, PasswordBottomSheetCommands));
 
   DCHECK(_delegate);
   OverscrollActionsTabHelper::FromWebState(webState)->SetDelegate(_delegate);
@@ -157,6 +164,10 @@
   passwordTabHelper->SetBaseViewController(nil);
   passwordTabHelper->SetPasswordControllerDelegate(nil);
   passwordTabHelper->SetDispatcher(nil);
+
+  BottomSheetTabHelper* bottomSheetTabHelper =
+      BottomSheetTabHelper::FromWebState(webState);
+  bottomSheetTabHelper->SetPasswordBottomSheetHandler(nil);
 
   OverscrollActionsTabHelper::FromWebState(webState)->SetDelegate(nil);
 

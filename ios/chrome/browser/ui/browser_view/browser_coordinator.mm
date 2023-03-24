@@ -53,6 +53,7 @@
 #import "ios/chrome/browser/shared/public/commands/load_query_commands.h"
 #import "ios/chrome/browser/shared/public/commands/new_tab_page_commands.h"
 #import "ios/chrome/browser/shared/public/commands/page_info_commands.h"
+#import "ios/chrome/browser/shared/public/commands/password_bottom_sheet_commands.h"
 #import "ios/chrome/browser/shared/public/commands/password_breach_commands.h"
 #import "ios/chrome/browser/shared/public/commands/password_protection_commands.h"
 #import "ios/chrome/browser/shared/public/commands/password_suggestion_commands.h"
@@ -667,6 +668,7 @@ enum class ToolbarKind {
     @protocol(FindInPageCommands),
     @protocol(NewTabPageCommands),
     @protocol(PageInfoCommands),
+    @protocol(PasswordBottomSheetCommands),
     @protocol(PasswordBreachCommands),
     @protocol(PasswordProtectionCommands),
     @protocol(PasswordSuggestionCommands),
@@ -1376,6 +1378,13 @@ enum class ToolbarKind {
                                                   originRect:command.sourceRect
                                                       anchor:nil];
   [self.sharingCoordinator start];
+}
+
+#pragma mark - PasswordBottomSheetCommands
+
+- (void)showPasswordBottomSheet:(const autofill::FormActivityParams&)params {
+  // TODO(crbug.com/1422362): This will be implemented as soon as the
+  // Password Bottom Sheet's coordinator class lands.
 }
 
 #pragma mark - BrowserCoordinatorCommands

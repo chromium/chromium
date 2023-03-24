@@ -38,6 +38,11 @@ let AutofillFormFieldData;
 let AutofillFormData;
 
 /**
+ * Maps elements using their unique ID
+ */
+const elementMap = new Map();
+
+/**
  * Namespace for this file. It depends on |__gCrWeb| having already been
  * injected. String 'fill' is used in |__gCrWeb['fill']| as it needs to be
  * accessed in Objective-C code.
@@ -694,7 +699,9 @@ function matchLabelsAndFields_(
       // Sometimes site authors will incorrectly specify the corresponding
       // field element's name rather than its id, so we compensate here.
       const elementName = label.htmlFor;
-      if (!elementName) continue;
+      if (!elementName) {
+        continue;
+      }
       // Look through the list for elements with this name. There can actually
       // be more than one. In this case, the label may not be particularly
       // useful, so just discard it.
@@ -724,7 +731,9 @@ function matchLabelsAndFields_(
       }
     }
 
-    if (!fieldData) continue;
+    if (!fieldData) {
+      continue;
+    }
 
     if (!('label' in fieldData)) {
       fieldData['label'] = '';
@@ -820,7 +829,9 @@ __gCrWeb.fill.formOrFieldsetsToFormData = function(
        i < controlElements.length && fieldIdx < formFields.length; ++i) {
     // This field didn't meet the requirements, so don't try to find a label
     // for it.
-    if (!fieldsExtracted[i]) continue;
+    if (!fieldsExtracted[i]) {
+      continue;
+    }
 
     const controlElement = controlElements[i];
     const currentField = formFields[fieldIdx];
@@ -833,7 +844,9 @@ __gCrWeb.fill.formOrFieldsetsToFormData = function(
           currentField['label'].substr(0, __gCrWeb.fill.MAX_DATA_LENGTH);
     }
 
-    if (controlElement === formControlElement) field = formFields[fieldIdx];
+    if (controlElement === formControlElement) {
+      field = formFields[fieldIdx];
+    }
     ++fieldIdx;
   }
 
@@ -2353,6 +2366,10 @@ __gCrWeb.fill.setUniqueIDIfNeeded = function(element) {
     if (typeof document[uniqueID] !== 'undefined' &&
         typeof element[uniqueID] === 'undefined') {
       element[uniqueID] = document[uniqueID]++;
+      // TODO(crbug.com/1350973): WeakRef starts in 14.5, remove checks once 14
+      // is deprecated.
+      elementMap.set(
+          element[uniqueID], window.WeakRef ? new WeakRef(element) : element);
     }
   } catch (e) {
   }
@@ -2372,5 +2389,19 @@ __gCrWeb.fill.getUniqueID = function(element) {
     }
   } catch (e) {
     return __gCrWeb.fill.RENDERER_ID_NOT_SET;
+  }
+};
+
+/**
+ * @param {int} Unique ID.
+ * @return {Element} element Form or form input element.
+ */
+__gCrWeb.fill.getElementByUniqueID = function(id) {
+  try {
+    // TODO(crbug.com/1350973): WeakRef starts in 14.5, remove checks once 14 is
+    // deprecated.
+    return window.WeakRef ? elementMap.get(id).deref() : elementMap.get(id);
+  } catch (e) {
+    return null;
   }
 };

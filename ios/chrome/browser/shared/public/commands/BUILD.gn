@@ -30,6 +30,7 @@ source_set("commands") {
     "open_new_tab_command.h",
     "open_new_tab_command.mm",
     "page_info_commands.h",
+    "password_bottom_sheet_commands.h",
     "password_breach_commands.h",
     "password_protection_commands.h",
     "password_suggestion_commands.h",
