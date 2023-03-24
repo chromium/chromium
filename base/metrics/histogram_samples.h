@@ -50,17 +50,23 @@ class BASE_EXPORT HistogramSamples {
   // acquire/release operations to guarantee ordering with outside values.
   union BASE_EXPORT AtomicSingleSample {
     AtomicSingleSample() : as_atomic(0) {}
-    AtomicSingleSample(subtle::Atomic32 rhs) : as_atomic(rhs) {}
+    explicit AtomicSingleSample(subtle::Atomic32 rhs) : as_atomic(rhs) {}
 
     // Returns the single sample in an atomic manner. This in an "acquire"
     // load. The returned sample isn't shared and thus its fields can be safely
-    // accessed.
+    // accessed. If this object is disabled, this will return an empty sample
+    // (bucket count set to 0).
     SingleSample Load() const;
 
-    // Extracts the single sample in an atomic manner. If |disable| is true
-    // then this object will be set so it will never accumulate another value.
-    // This is "no barrier" so doesn't enforce ordering with other atomic ops.
-    SingleSample Extract(bool disable);
+    // Extracts and returns the single sample and changes it to |new_value| in
+    // an atomic manner. If this object is disabled, this will return an empty
+    // sample (bucket count set to 0).
+    SingleSample Extract(AtomicSingleSample new_value = AtomicSingleSample(0));
+
+    // Like Extract() above, but also disables this object so that it will
+    // never accumulate another value. If this object is already disabled, this
+    // will return an empty sample (bucket count set to 0).
+    SingleSample ExtractAndDisable();
 
     // Adds a given count to the held bucket. If not possible, it returns false
     // and leaves the parts unchanged. Once extracted/disabled, this always

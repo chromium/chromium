@@ -83,7 +83,7 @@ static_assert(sizeof(HistogramSamples::AtomicSingleSample) ==
 
 HistogramSamples::SingleSample HistogramSamples::AtomicSingleSample::Load()
     const {
-  AtomicSingleSample single_sample = subtle::Acquire_Load(&as_atomic);
+  AtomicSingleSample single_sample(subtle::Acquire_Load(&as_atomic));
 
   // If the sample was extracted/disabled, it's still zero to the outside.
   if (single_sample.as_atomic == kDisabledSingleSample)
@@ -93,12 +93,48 @@ HistogramSamples::SingleSample HistogramSamples::AtomicSingleSample::Load()
 }
 
 HistogramSamples::SingleSample HistogramSamples::AtomicSingleSample::Extract(
-    bool disable) {
-  AtomicSingleSample single_sample = subtle::NoBarrier_AtomicExchange(
-      &as_atomic, disable ? kDisabledSingleSample : 0);
-  if (single_sample.as_atomic == kDisabledSingleSample)
-    single_sample.as_atomic = 0;
-  return single_sample.as_parts;
+    AtomicSingleSample new_value) {
+  DCHECK(new_value.as_atomic != kDisabledSingleSample)
+      << "Disabling an AtomicSingleSample should be done through "
+         "ExtractAndDisable().";
+
+  AtomicSingleSample old_value;
+
+  // Because a concurrent call may modify and/or disable this object as we are
+  // trying to extract its value, a compare-and-swap loop must be done to ensure
+  // that the value was not changed between the reading and writing (and to
+  // prevent accidentally re-enabling this object).
+  while (true) {
+    old_value.as_atomic = subtle::Acquire_Load(&as_atomic);
+
+    // If this object was already disabled, return an empty sample and keep it
+    // disabled.
+    if (old_value.as_atomic == kDisabledSingleSample) {
+      old_value.as_atomic = 0;
+      return old_value.as_parts;
+    }
+
+    // Extract the single-sample from memory. |existing| is what was in that
+    // memory location at the time of the call; if it doesn't match |original|
+    // (i.e., the single-sample was concurrently modified during this
+    // iteration), then the swap did not happen, so try again.
+    subtle::Atomic32 existing = subtle::Release_CompareAndSwap(
+        &as_atomic, old_value.as_atomic, new_value.as_atomic);
+    if (existing == old_value.as_atomic) {
+      return old_value.as_parts;
+    }
+  }
+}
+
+HistogramSamples::SingleSample
+HistogramSamples::AtomicSingleSample::ExtractAndDisable() {
+  AtomicSingleSample old_value(
+      subtle::NoBarrier_AtomicExchange(&as_atomic, kDisabledSingleSample));
+  // If this object was already disabled, return an empty sample.
+  if (old_value.as_atomic == kDisabledSingleSample) {
+    old_value.as_atomic = 0;
+  }
+  return old_value.as_parts;
 }
 
 bool HistogramSamples::AtomicSingleSample::Accumulate(

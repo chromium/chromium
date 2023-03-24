@@ -269,7 +269,7 @@ void SampleVectorBase::MoveSingleSampleToCounts() {
   DCHECK(counts());
 
   // Disable the single-sample since there is now counts storage for the data.
-  SingleSample sample = single_sample().Extract(/*disable=*/true);
+  SingleSample sample = single_sample().ExtractAndDisable();
 
   // Stop here if there is no "count" as trying to find the bucket index of
   // an invalid (including zero) "value" will crash.

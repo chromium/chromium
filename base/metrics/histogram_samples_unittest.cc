@@ -25,33 +25,44 @@ TEST(SingleSampleTest, Load) {
   s = sample.Load();
   EXPECT_EQ(9U, s.bucket);
   EXPECT_EQ(1U, s.count);
+
+  ASSERT_TRUE(sample.Accumulate(9, 1));
+  s = sample.Load();
+  EXPECT_EQ(9U, s.bucket);
+  EXPECT_EQ(2U, s.count);
 }
 
 TEST(SingleSampleTest, Extract) {
   AtomicSingleSample sample;
   ASSERT_TRUE(sample.Accumulate(9, 1));
 
-  SingleSample s = sample.Extract(/*disable=*/false);
+  SingleSample s = sample.Extract();
   EXPECT_EQ(9U, s.bucket);
   EXPECT_EQ(1U, s.count);
 
-  s = sample.Extract(/*disable=*/false);
+  s = sample.Extract();
   EXPECT_EQ(0U, s.bucket);
   EXPECT_EQ(0U, s.count);
+
+  ASSERT_TRUE(sample.Accumulate(1, 2));
+  s = sample.Extract();
+  EXPECT_EQ(1U, s.bucket);
+  EXPECT_EQ(2U, s.count);
 }
 
 TEST(SingleSampleTest, Disable) {
   AtomicSingleSample sample;
-  EXPECT_EQ(0U, sample.Extract(/*disable=*/false).count);
+  EXPECT_EQ(0U, sample.Extract().count);
   EXPECT_FALSE(sample.IsDisabled());
 
   ASSERT_TRUE(sample.Accumulate(9, 1));
-  EXPECT_EQ(1U, sample.Extract(/*disable=*/true).count);
+  EXPECT_EQ(1U, sample.ExtractAndDisable().count);
   EXPECT_TRUE(sample.IsDisabled());
 
   ASSERT_FALSE(sample.Accumulate(9, 1));
-  EXPECT_EQ(0U, sample.Extract(/*disable=*/false).count);
-  EXPECT_FALSE(sample.IsDisabled());
+  EXPECT_EQ(0U, sample.Extract().count);
+  // The sample should still be disabled.
+  EXPECT_TRUE(sample.IsDisabled());
 }
 
 TEST(SingleSampleTest, Accumulate) {
@@ -60,12 +71,14 @@ TEST(SingleSampleTest, Accumulate) {
   ASSERT_TRUE(sample.Accumulate(9, 1));
   ASSERT_TRUE(sample.Accumulate(9, 2));
   ASSERT_TRUE(sample.Accumulate(9, 4));
-  EXPECT_EQ(7U, sample.Extract(/*disable=*/false).count);
+  ASSERT_FALSE(sample.Accumulate(10, 1));
+  EXPECT_EQ(7U, sample.Extract().count);
 
   ASSERT_TRUE(sample.Accumulate(9, 4));
   ASSERT_TRUE(sample.Accumulate(9, -2));
   ASSERT_TRUE(sample.Accumulate(9, 1));
-  EXPECT_EQ(3U, sample.Extract(/*disable=*/false).count);
+  ASSERT_FALSE(sample.Accumulate(10, 1));
+  EXPECT_EQ(3U, sample.Extract().count);
 }
 
 TEST(SingleSampleTest, Overflow) {
@@ -73,12 +86,11 @@ TEST(SingleSampleTest, Overflow) {
 
   ASSERT_TRUE(sample.Accumulate(9, 1));
   ASSERT_FALSE(sample.Accumulate(9, -2));
-  EXPECT_EQ(1U, sample.Extract(/*disable=*/false).count);
+  EXPECT_EQ(1U, sample.Extract().count);
 
   ASSERT_TRUE(sample.Accumulate(9, std::numeric_limits<uint16_t>::max()));
   ASSERT_FALSE(sample.Accumulate(9, 1));
-  EXPECT_EQ(std::numeric_limits<uint16_t>::max(),
-            sample.Extract(/*disable=*/false).count);
+  EXPECT_EQ(std::numeric_limits<uint16_t>::max(), sample.Extract().count);
 }
 
 }  // namespace base
