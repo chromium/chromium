@@ -76,6 +76,11 @@ class FakeDevToolsClient : public StubDevToolsClient {
     listener_ = listener;
   }
 
+  void RemoveListener(DevToolsEventListener* listener) override {
+    CHECK(listener_ = listener);
+    listener_ = nullptr;
+  }
+
   const std::string& GetId() override { return id_; }
 
  private:
@@ -207,6 +212,7 @@ TEST(PerformanceLogger, OneWebView) {
   ASSERT_EQ(2u, log.GetEntries().size());
   ValidateLogEntry(log.GetEntries()[0].get(), "webview-1", "Network.gaga");
   ValidateLogEntry(log.GetEntries()[1].get(), "webview-1", "Page.ulala");
+  client.RemoveListener(&logger);
 }
 
 TEST(PerformanceLogger, TwoWebViews) {
@@ -234,6 +240,8 @@ TEST(PerformanceLogger, TwoWebViews) {
   ASSERT_EQ(2u, log.GetEntries().size());
   ValidateLogEntry(log.GetEntries()[0].get(), "webview-1", "Page.gaga1");
   ValidateLogEntry(log.GetEntries()[1].get(), "webview-2", "Network.gaga2");
+  client1.RemoveListener(&logger);
+  client2.RemoveListener(&logger);
 }
 
 TEST(PerformanceLogger, PerfLoggingPrefs) {
@@ -253,6 +261,7 @@ TEST(PerformanceLogger, PerfLoggingPrefs) {
 
   DevToolsCommand* cmd;
   ASSERT_FALSE(client.PopSentCommand(&cmd));
+  client.RemoveListener(&logger);
 }
 
 namespace {
@@ -315,6 +324,7 @@ TEST(PerformanceLogger, TracingStartStop) {
   ExpectCommand(&client, "Tracing.end");
   ExpectCommand(&client, "Tracing.start");  // Tracing should re-start.
   ASSERT_FALSE(client.PopSentCommand(&cmd));
+  client.RemoveListener(&logger);
 }
 
 TEST(PerformanceLogger, RecordTraceEvents) {
@@ -345,6 +355,7 @@ TEST(PerformanceLogger, RecordTraceEvents) {
   ValidateLogEntry(log.GetEntries()[1].get(),
                    DevToolsClientImpl::kBrowserwideDevToolsClientId,
                    "Tracing.dataCollected", event2);
+  client.RemoveListener(&logger);
 }
 
 TEST(PerformanceLogger, ShouldRequestTraceEvents) {
@@ -366,6 +377,7 @@ TEST(PerformanceLogger, ShouldRequestTraceEvents) {
   // Trace events should always be dumped for GetLog command.
   ASSERT_EQ(kOk, logger.BeforeCommand("GetLog").code());
   EXPECT_TRUE(client.events_handled());
+  client.RemoveListener(&logger);
 }
 
 TEST(PerformanceLogger, WarnWhenTraceBufferFull) {
@@ -398,4 +410,5 @@ TEST(PerformanceLogger, WarnWhenTraceBufferFull) {
       message->FindDictByDottedPath("message.params");
   ASSERT_TRUE(actual_params);
   EXPECT_TRUE(actual_params->contains("error"));
+  client.RemoveListener(&logger);
 }
