@@ -169,6 +169,7 @@ FILES_TO_REMOVE = [
     'src/depcomp',
     'src/doc',
     'src/example',
+    'src/fuzz',
     'src/genChRanges.py',
     'src/global.data',
     'src/include/libxml/Makefile.in',
