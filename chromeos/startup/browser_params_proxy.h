@@ -34,6 +34,8 @@ class COMPONENT_EXPORT(CHROMEOS_STARTUP) BrowserParamsProxy {
 
   const crosapi::mojom::DefaultPathsPtr& DefaultPaths() const;
 
+  const absl::optional<std::string>& DeviceAccountGaiaId() const;
+
   crosapi::mojom::MetricsReportingManaged AshMetricsManaged() const;
 
   crosapi::mojom::ExoImeSupport ExoImeSupport() const;
