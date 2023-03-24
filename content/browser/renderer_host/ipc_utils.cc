@@ -17,7 +17,6 @@
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/child_process_host.h"
 #include "content/public/browser/render_process_host.h"
-#include "content/public/browser/site_instance.h"
 #include "content/public/common/url_constants.h"
 #include "mojo/public/cpp/system/message_pipe.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -98,11 +97,10 @@ bool VerifyHasStorageAccess(
 
 }  // namespace
 
-bool VerifyDownloadUrlParams(SiteInstance* site_instance,
+bool VerifyDownloadUrlParams(RenderProcessHost* process,
                              const blink::mojom::DownloadURLParams& params) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  DCHECK(site_instance);
-  RenderProcessHost* process = site_instance->GetProcess();
+  CHECK(process);
   int process_id = process->GetID();
 
   // Verifies |params.blob_url_token| is appropriately set.
@@ -184,13 +182,11 @@ bool VerifyOpenURLParams(RenderFrameHostImpl* current_rfh,
 
 bool VerifyBeginNavigationCommonParams(
     const RenderFrameHostImpl& current_rfh,
-    SiteInstance* site_instance,
     blink::LocalFrameToken* initiator_frame_token,
     blink::mojom::CommonNavigationParams* common_params) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  DCHECK(site_instance);
   DCHECK(common_params);
-  RenderProcessHost* process = site_instance->GetProcess();
+  RenderProcessHost* process = current_rfh.GetProcess();
   int process_id = process->GetID();
 
   // Verify (and possibly rewrite) |url|.

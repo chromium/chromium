@@ -5684,8 +5684,9 @@ void RenderFrameHostImpl::DownloadURL(
     return;
   }
 
-  if (!VerifyDownloadUrlParams(GetSiteInstance(), *blink_parameters))
+  if (!VerifyDownloadUrlParams(GetProcess(), *blink_parameters)) {
     return;
+  }
 
   net::NetworkTrafficAnnotationTag traffic_annotation =
       net::DefineNetworkTrafficAnnotation("renderer_initiated_download", R"(
@@ -8351,8 +8352,7 @@ void RenderFrameHostImpl::BeginNavigation(
   blink::mojom::CommonNavigationParamsPtr validated_common_params =
       unvalidated_common_params.Clone();
   if (!VerifyBeginNavigationCommonParams(
-          *this, GetSiteInstance(),
-          base::OptionalToPtr(begin_params->initiator_frame_token),
+          *this, base::OptionalToPtr(begin_params->initiator_frame_token),
           &*validated_common_params)) {
     return;
   }
