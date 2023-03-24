@@ -5,8 +5,8 @@
 <translation id="1181037720776840403">Kaldır</translation>
 <translation id="125153950246128346">Başka bir sekmeyi görmek için dokunun</translation>
 <translation id="1403228085774130835">Kapatılan sekmelerinizi, Chrome ana menüsündeki son sekmelerde bulabilirsiniz</translation>
-<translation id="1455506303394048917">Bu gizli sekmelerdeki etkinliğiniz bu cihazdan silinecektir</translation>
-<translation id="1499635324672558517">Tüm gizli sekmeler kapatılsın mı?</translation>
+<translation id="1455506303394048917">Bu Gizli sekmelerdeki etkinliğiniz bu cihazdan silinecektir</translation>
+<translation id="1499635324672558517">Tüm Gizli sekmeler kapatılsın mı?</translation>
 <translation id="1657719826150349398">Sekmeyi aşağı taşı</translation>
 <translation id="1869137256605757565">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> sekme}other{<ph name="TABS_COUNT_MANY" /> sekme}}</translation>
 <translation id="2050597508048557928">{TABS_COUNT,plural, =1{Seçili <ph name="TABS_COUNT_ONE" /> sekmeye yer işareti koy}other{Seçili <ph name="TABS_COUNT_MANY" /> sekmeye yer işareti koy}}</translation>
