@@ -39,6 +39,7 @@ import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.content_public.browser.test.util.WebContentsUtils;
 import org.chromium.media.MediaSwitches;
 import org.chromium.net.test.EmbeddedTestServer;
+import org.chromium.ui.test.util.DeviceRestriction;
 
 /**
  * Tests for FullscreenVideoPictureInPictureController and related methods.
@@ -47,7 +48,10 @@ import org.chromium.net.test.EmbeddedTestServer;
 @Batch(Batch.PER_CLASS)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE,
         MediaSwitches.AUTOPLAY_NO_GESTURE_REQUIRED_POLICY})
-@Restriction(RESTRICTION_TYPE_NON_LOW_END_DEVICE)
+@Restriction({
+        RESTRICTION_TYPE_NON_LOW_END_DEVICE,
+        DeviceRestriction.RESTRICTION_TYPE_NON_AUTO // PiP not supported on AAOS.
+})
 @RequiresApi(Build.VERSION_CODES.O)
 public class FullscreenVideoPictureInPictureControllerTest {
     // TODO(peconn): Add a test for exit on Tab Reparenting.
