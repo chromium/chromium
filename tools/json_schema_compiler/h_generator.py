@@ -409,7 +409,7 @@ class _Generator(object):
     if type_.IsRootManifestKeyType():
       params = [
         'const base::Value::Dict& root_dict',
-        '%s* out' % classname,
+        '%s& out' % classname,
         'std::u16string* error'
       ]
       comment = (
@@ -420,7 +420,7 @@ class _Generator(object):
       params = [
         'const base::Value::Dict& root_dict',
         'base::StringPiece key',
-        '%s* out' % classname,
+        '%s& out' % classname,
         'std::u16string* error',
         'std::vector<base::StringPiece>* error_path_reversed'
       ]

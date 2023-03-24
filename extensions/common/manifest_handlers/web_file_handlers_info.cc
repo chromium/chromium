@@ -26,7 +26,7 @@ std::unique_ptr<WebFileHandlers> ParseFromList(const Extension& extension,
                                                std::u16string* error) {
   FileHandlersManifestKeys manifest_keys;
   if (!FileHandlersManifestKeys::ParseFromDictionary(
-          extension.manifest()->available_values(), &manifest_keys, error)) {
+          extension.manifest()->available_values(), manifest_keys, error)) {
     return nullptr;
   }
 

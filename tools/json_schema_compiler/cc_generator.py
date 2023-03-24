@@ -504,7 +504,7 @@ class _Generator(object):
     """
     params = [
       'const base::Value::Dict& root_dict',
-      '%(classname)s* out'
+      '%(classname)s& out'
     ]
 
     c = Code()
@@ -516,7 +516,6 @@ class _Generator(object):
     c.Sblock('%s) {' %
              self._GenerateParams(params, generate_error_messages=True))
 
-    c.Append('DCHECK(out);')
     c.Append('DCHECK(error);')
     c.Append()
 
@@ -524,13 +523,8 @@ class _Generator(object):
     c.Append('auto* error_path_reversed = &error_path_reversed_vec;')
     c.Append('const base::Value::Dict& dict = root_dict;')
 
-    # Passing around a reference, but at the same time, doing a void access to
-    # it in case the ensuing codegen never uses it, so to avoid a unused
-    # variable warning. This code should be removed once we migrate this
-    # function codegen to take a reference, rather than a pointer.
-    c.Append('[[maybe_unused]] auto& out_ref = *out;')
     for prop in properties:
-      c.Concat(self._InitializePropertyToDefault(prop, 'out_ref'))
+      c.Concat(self._InitializePropertyToDefault(prop, 'out'))
 
     for prop in properties:
       c.Cblock(
@@ -552,7 +546,7 @@ class _Generator(object):
     params = [
       'const base::Value::Dict& root_dict',
       'base::StringPiece key',
-      '%(classname)s* out',
+      '%(classname)s& out',
       'std::u16string* error',
       'std::vector<base::StringPiece>* error_path_reversed'
     ]
@@ -566,7 +560,6 @@ class _Generator(object):
     c.Sblock('%s) {' %
              self._GenerateParams(params, generate_error_messages=False))
 
-    c.Append('DCHECK(out);')
     c.Append('DCHECK(error);')
     c.Append('DCHECK(error_path_reversed);')
     c.Append()
@@ -584,13 +577,8 @@ class _Generator(object):
     else:
       c.Eblock('')
 
-    # Passing around a reference, but at the same time, doing a void access to
-    # it in case the ensuing codegen never uses it, so to avoid a unused
-    # variable warning. This code should be removed once we migrate this
-    # function codegen to take a reference, rather than a pointer.
-    c.Append('[[maybe_unused]] auto& out_ref = *out;')
     for prop in properties:
-      c.Concat(self._InitializePropertyToDefault(prop, 'out_ref'))
+      c.Concat(self._InitializePropertyToDefault(prop, 'out'))
 
     for prop in properties:
       c.Cblock(
@@ -633,7 +621,7 @@ class _Generator(object):
       underlying_type.namespace.name))
 
     property_constant = cpp_util.UnixNameToConstantName(property.unix_name)
-    out_expression = '&out_ref.%s' % property.unix_name
+    out_expression = 'out.%s' % property.unix_name
 
     def get_enum_params(enum_type, include_optional_param):
       # type: (Type, bool) -> List[str]

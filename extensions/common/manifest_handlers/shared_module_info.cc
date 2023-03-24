@@ -132,7 +132,7 @@ SharedModuleHandler::~SharedModuleHandler() = default;
 bool SharedModuleHandler::Parse(Extension* extension, std::u16string* error) {
   ManifestKeys manifest_keys;
   if (!ManifestKeys::ParseFromDictionary(
-          extension->manifest()->available_values(), &manifest_keys, error)) {
+          extension->manifest()->available_values(), manifest_keys, error)) {
     return false;
   }
 

@@ -23,18 +23,17 @@ bool ParseHelper(const base::Value::Dict& dict,
                  base::StringPiece key,
                  base::Value::Type expected_type,
                  ValueTypeConverter<U> type_converter,
-                 T* out,
+                 T& out,
                  std::u16string* error,
                  std::vector<base::StringPiece>* error_path_reversed) {
   DCHECK(type_converter);
-  DCHECK(out);
 
   const base::Value* value =
       FindKeyOfType(dict, key, expected_type, error, error_path_reversed);
   if (!value)
     return false;
 
-  *out = (value->*type_converter)();
+  out = (value->*type_converter)();
   return true;
 }
 
@@ -109,7 +108,7 @@ const base::Value* FindKeyOfType(
 
 bool ParseFromDictionary(const base::Value::Dict& dict,
                          base::StringPiece key,
-                         int* out,
+                         int& out,
                          std::u16string* error,
                          std::vector<base::StringPiece>* error_path_reversed) {
   return ParseHelper(dict, key, base::Value::Type::INTEGER,
@@ -118,7 +117,7 @@ bool ParseFromDictionary(const base::Value::Dict& dict,
 
 bool ParseFromDictionary(const base::Value::Dict& dict,
                          base::StringPiece key,
-                         bool* out,
+                         bool& out,
                          std::u16string* error,
                          std::vector<base::StringPiece>* error_path_reversed) {
   return ParseHelper(dict, key, base::Value::Type::BOOLEAN,
@@ -127,7 +126,7 @@ bool ParseFromDictionary(const base::Value::Dict& dict,
 
 bool ParseFromDictionary(const base::Value::Dict& dict,
                          base::StringPiece key,
-                         double* out,
+                         double& out,
                          std::u16string* error,
                          std::vector<base::StringPiece>* error_path_reversed) {
   return ParseHelper(dict, key, base::Value::Type::DOUBLE,
@@ -136,7 +135,7 @@ bool ParseFromDictionary(const base::Value::Dict& dict,
 
 bool ParseFromDictionary(const base::Value::Dict& dict,
                          base::StringPiece key,
-                         std::string* out,
+                         std::string& out,
                          std::u16string* error,
                          std::vector<base::StringPiece>* error_path_reversed) {
   return ParseHelper(dict, key, base::Value::Type::STRING,

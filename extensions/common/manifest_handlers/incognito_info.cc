@@ -38,7 +38,7 @@ IncognitoHandler::~IncognitoHandler() = default;
 bool IncognitoHandler::Parse(Extension* extension, std::u16string* error) {
   IncognitoManifestKeys manifest_keys;
   if (!IncognitoManifestKeys::ParseFromDictionary(
-          extension->manifest()->available_values(), &manifest_keys, error)) {
+          extension->manifest()->available_values(), manifest_keys, error)) {
     return false;
   }
 
