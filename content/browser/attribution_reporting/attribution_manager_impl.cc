@@ -1244,19 +1244,19 @@ void AttributionManagerImpl::HandleOsRegistration(
   const url::Origin* destination_origin;
   switch (registration.GetType()) {
     case OsRegistrationType::kSource:
-      operation = ContentBrowserClient::AttributionReportingOperation::kSource;
+      operation =
+          ContentBrowserClient::AttributionReportingOperation::kOsSource;
       source_origin = &registration.top_level_origin;
       destination_origin = nullptr;
       break;
     case OsRegistrationType::kTrigger:
-      operation = ContentBrowserClient::AttributionReportingOperation::kTrigger;
+      operation =
+          ContentBrowserClient::AttributionReportingOperation::kOsTrigger;
       source_origin = nullptr;
       destination_origin = &registration.top_level_origin;
       break;
   }
 
-  // TODO(https://crbug.com/1420704): Support separate behavior on webview for
-  // allowing these.
   if (!IsOperationAllowed(storage_partition_.get(), operation,
                           RenderFrameHost::FromID(render_frame_id),
                           source_origin, destination_origin,

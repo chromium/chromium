@@ -862,16 +862,18 @@ class CONTENT_EXPORT ContentBrowserClient {
     kReport,
     kSourceVerboseDebugReport,
     kTriggerVerboseDebugReport,
+    kOsSource,
+    kOsTrigger,
     kAny,
   };
 
   // Allows the embedder to control if Attribution Reporting API operations can
   // happen in a given context. Origins must be provided for a given operation
   // as follows:
-  //   - `kSource` must provide a non-null `source_origin` and
+  //   - `kSource` and `kOsSource` must provide a non-null `source_origin` and
   //   `reporting_origin`
-  //   - `kTrigger` must provide a non-null `destination_origin` and
-  //   `reporting_origin`
+  //   - `kTrigger` and `kOsTrigger` must provide a non-null
+  //   `destination_origin` and `reporting_origin`
   //   - `kReport` must provide all non-null origins
   //   - `kAny` may provide all null origins. It checks whether conversion
   //   measurement is allowed anywhere in `browser_context`, returning false if

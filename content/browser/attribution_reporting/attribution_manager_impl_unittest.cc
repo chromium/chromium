@@ -1176,7 +1176,7 @@ TEST_F(AttributionManagerImplTest, HandleOsSource) {
   EXPECT_CALL(
       browser_client,
       IsAttributionReportingOperationAllowed(
-          _, ContentBrowserClient::AttributionReportingOperation::kSource, _,
+          _, ContentBrowserClient::AttributionReportingOperation::kOsSource, _,
           Pointee(kTopLevelOrigin4), IsNull(),
           Pointee(url::Origin::Create(kRegistrationUrl4))))
       .WillOnce(Return(false));
@@ -1251,7 +1251,7 @@ TEST_F(AttributionManagerImplTest, HandleOsTrigger) {
   EXPECT_CALL(
       browser_client,
       IsAttributionReportingOperationAllowed(
-          _, ContentBrowserClient::AttributionReportingOperation::kTrigger, _,
+          _, ContentBrowserClient::AttributionReportingOperation::kOsTrigger, _,
           IsNull(), Pointee(kTopLevelOrigin4),
           Pointee(url::Origin::Create(kRegistrationUrl4))))
       .WillOnce(Return(false));
