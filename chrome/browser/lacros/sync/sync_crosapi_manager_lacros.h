@@ -7,32 +7,21 @@
 
 #include <memory>
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
+#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_observer.h"
 #include "chromeos/crosapi/mojom/sync.mojom.h"
 #include "components/sync/driver/sync_service_observer.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 
-class Profile;
 class SyncExplicitPassphraseClientLacros;
 class SyncUserSettingsClientLacros;
 class CrosapiSessionSyncNotifier;
 
-namespace chromeos {
-class LacrosService;
-}  // namespace chromeos
-
 namespace syncer {
 class SyncService;
 }  // namespace syncer
-
-namespace sync_sessions {
-class SessionSyncService;
-}  // namespace sync_sessions
-
-namespace favicon {
-class HistoryUiFaviconRequestHandler;
-}  // namespace favicon
 
 // Controls lifetime of sync-related Crosapi clients.
 class SyncCrosapiManagerLacros : public syncer::SyncServiceObserver,
@@ -58,15 +47,11 @@ class SyncCrosapiManagerLacros : public syncer::SyncServiceObserver,
   //  - Crosapi version used is not high enough to include the necessary updates
   //  made.
   //  - session sync service for the user's profile cannot be found.
-  void MaybeCreateCrosapiSessionSyncNotifier(
-      chromeos::LacrosService* lacros_service,
-      Profile* profile,
-      syncer::SyncService* sync_service);
+  void MaybeCreateCrosapiSessionSyncNotifier();
   void OnCreateSyncedSessionClient(
-      sync_sessions::SessionSyncService* session_sync_service,
-      syncer::SyncService* sync_service,
-      favicon::HistoryUiFaviconRequestHandler* favicon_request_handler,
       mojo::PendingRemote<crosapi::mojom::SyncedSessionClient> pending_remote);
+
+  base::raw_ptr<Profile> profile_ = nullptr;
 
   // The objects below are created for main profile PostProfileInit() and
   // destroyed upon main profile SyncService shutdown.
