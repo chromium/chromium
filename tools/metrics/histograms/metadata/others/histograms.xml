@@ -10342,27 +10342,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="PushMessaging.DeliveryStatus.FindServiceWorker"
-    enum="ServiceWorkerStatusCode" expires_after="M98">
-  <owner>peter@chromium.org</owner>
-  <owner>knollr@chromium.org</owner>
-  <summary>
-    When attempting to deliver a push message to a Service Worker, this records
-    the result of finding the Service Worker registration given its ID and
-    origin.
-  </summary>
-</histogram>
-
-<histogram name="PushMessaging.DeliveryStatus.ServiceWorkerEvent"
-    enum="ServiceWorkerStatusCode" expires_after="M98">
-  <owner>peter@chromium.org</owner>
-  <owner>knollr@chromium.org</owner>
-  <summary>
-    When a Service Worker receives a push message, this records the precise
-    result received from the Service Worker code.
-  </summary>
-</histogram>
-
 <histogram name="PushMessaging.GetRegistrationStatus"
     enum="PushGetRegistrationStatus" expires_after="2022-06-26">
   <owner>peter@chromium.org</owner>

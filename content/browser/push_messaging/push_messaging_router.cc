@@ -51,10 +51,6 @@ void DidFindServiceWorkerRegistration(
     scoped_refptr<ServiceWorkerRegistration> service_worker_registration) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
-  if (event_type == ServiceWorkerMetrics::EventType::PUSH) {
-    UMA_HISTOGRAM_ENUMERATION("PushMessaging.DeliveryStatus.FindServiceWorker",
-                              service_worker_status);
-  }
   if (service_worker_status != blink::ServiceWorkerStatusCode::kOk) {
     std::move(callback).Run(nullptr /* service_worker_version */,
                             nullptr /* devtools_context */,
@@ -191,8 +187,6 @@ void PushMessagingRouter::DeliverMessageEnd(
     PushEventCallback deliver_message_callback,
     blink::ServiceWorkerStatusCode service_worker_status) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  UMA_HISTOGRAM_ENUMERATION("PushMessaging.DeliveryStatus.ServiceWorkerEvent",
-                            service_worker_status);
   blink::mojom::PushEventStatus push_event_status =
       blink::mojom::PushEventStatus::SERVICE_WORKER_ERROR;
   std::string status_description;

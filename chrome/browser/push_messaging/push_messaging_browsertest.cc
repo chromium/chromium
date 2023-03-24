@@ -1281,12 +1281,6 @@ IN_PROC_BROWSER_TEST_F(PushMessagingBrowserTest, PushEventSuccess) {
 
   // Check that we record this case in UMA.
   histogram_tester_.ExpectUniqueSample(
-      "PushMessaging.DeliveryStatus.FindServiceWorker",
-      0 /* SERVICE_WORKER_OK */, 1);
-  histogram_tester_.ExpectUniqueSample(
-      "PushMessaging.DeliveryStatus.ServiceWorkerEvent",
-      0 /* SERVICE_WORKER_OK */, 1);
-  histogram_tester_.ExpectUniqueSample(
       "PushMessaging.DeliveryStatus",
       static_cast<int>(blink::mojom::PushEventStatus::SUCCESS), 1);
 }
@@ -1382,11 +1376,6 @@ IN_PROC_BROWSER_TEST_F(PushMessagingBrowserTest, PushEventNoServiceWorker) {
 
   // Check that we record this case in UMA.
   histogram_tester_.ExpectUniqueSample(
-      "PushMessaging.DeliveryStatus.FindServiceWorker",
-      5 /* SERVICE_WORKER_ERROR_NOT_FOUND */, 1);
-  histogram_tester_.ExpectTotalCount(
-      "PushMessaging.DeliveryStatus.ServiceWorkerEvent", 0);
-  histogram_tester_.ExpectUniqueSample(
       "PushMessaging.DeliveryStatus",
       static_cast<int>(blink::mojom::PushEventStatus::NO_SERVICE_WORKER), 1);
 
@@ -1434,10 +1423,6 @@ IN_PROC_BROWSER_TEST_F(PushMessagingBrowserTest, NoSubscription) {
   EXPECT_EQ("null", script_result);
 
   // Check that we record this case in UMA.
-  histogram_tester_.ExpectTotalCount(
-      "PushMessaging.DeliveryStatus.FindServiceWorker", 0);
-  histogram_tester_.ExpectTotalCount(
-      "PushMessaging.DeliveryStatus.ServiceWorkerEvent", 0);
   histogram_tester_.ExpectUniqueSample(
       "PushMessaging.DeliveryStatus",
       static_cast<int>(blink::mojom::PushEventStatus::UNKNOWN_APP_ID), 1);
@@ -1485,10 +1470,6 @@ IN_PROC_BROWSER_TEST_F(PushMessagingBrowserTest, PushEventWithoutPermission) {
   EXPECT_EQ("null", script_result);
 
   // Check that we record this case in UMA.
-  histogram_tester_.ExpectTotalCount(
-      "PushMessaging.DeliveryStatus.FindServiceWorker", 0);
-  histogram_tester_.ExpectTotalCount(
-      "PushMessaging.DeliveryStatus.ServiceWorkerEvent", 0);
   histogram_tester_.ExpectUniqueSample(
       "PushMessaging.DeliveryStatus",
       static_cast<int>(blink::mojom::PushEventStatus::PERMISSION_DENIED), 1);
@@ -1769,10 +1750,6 @@ IN_PROC_BROWSER_TEST_F(
   EXPECT_EQ("null", script_result);
 
   // Check that we record this case in UMA.
-  histogram_tester_.ExpectTotalCount(
-      "PushMessaging.DeliveryStatus.FindServiceWorker", 0);
-  histogram_tester_.ExpectTotalCount(
-      "PushMessaging.DeliveryStatus.ServiceWorkerEvent", 0);
   histogram_tester_.ExpectUniqueSample(
       "PushMessaging.DeliveryStatus",
       static_cast<int>(
@@ -1836,12 +1813,6 @@ IN_PROC_BROWSER_TEST_F(
   EXPECT_EQ("testdata", script_result);
 
   // Check that we record this case in UMA.
-  histogram_tester_.ExpectUniqueSample(
-      "PushMessaging.DeliveryStatus.FindServiceWorker",
-      0 /* SERVICE_WORKER_OK */, 1);
-  histogram_tester_.ExpectUniqueSample(
-      "PushMessaging.DeliveryStatus.ServiceWorkerEvent",
-      0 /* SERVICE_WORKER_OK */, 1);
   histogram_tester_.ExpectUniqueSample(
       "PushMessaging.DeliveryStatus",
       static_cast<int>(blink::mojom::PushEventStatus::SUCCESS), 1);
