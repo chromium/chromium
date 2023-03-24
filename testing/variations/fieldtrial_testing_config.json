@@ -5404,7 +5404,6 @@
                     "name": "Enabled",
                     "enable_features": [
                         "GifRecording",
-                        "GifRendering",
                         "NotificationImageDrag"
                     ]
                 }
