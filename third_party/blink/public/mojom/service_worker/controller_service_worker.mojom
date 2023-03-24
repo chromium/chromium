@@ -82,6 +82,13 @@ struct ControllerServiceWorkerInfo {
   // it involves fetch handlers or not.
   ServiceWorkerFetchHandlerBypassOption fetch_handler_bypass_option = ServiceWorkerFetchHandlerBypassOption.kDefault;
 
+  // Experimental feature (crbug.com/1371756). Not followed by the spec.
+  //
+  // The script checksum hash string from the current ServiceWorker version. A
+  // renderer-side decides whether it involves fetch handlers or not based on
+  // this value.
+  string? sha256_script_checksum;
+
   // Non-null iff there is a controller and it has a fetch event handler.
   pending_remote<ControllerServiceWorker>? remote_controller;
 

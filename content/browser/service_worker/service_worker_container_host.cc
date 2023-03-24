@@ -613,6 +613,8 @@ void ServiceWorkerContainerHost::SendSetControllerServiceWorker(
       controller()->EffectiveFetchHandlerType();
   controller_info->fetch_handler_bypass_option =
       controller()->fetch_handler_bypass_option();
+  controller_info->sha256_script_checksum =
+      controller()->sha256_script_checksum();
 
   // Pass an endpoint for the client to talk to this controller.
   mojo::Remote<blink::mojom::ControllerServiceWorker> remote =

@@ -284,6 +284,8 @@ ServiceWorkerMainResourceLoaderInterceptor::
       container_host->controller()->EffectiveFetchHandlerType();
   controller_info->fetch_handler_bypass_option =
       container_host->controller()->fetch_handler_bypass_option();
+  controller_info->sha256_script_checksum =
+      container_host->controller()->sha256_script_checksum();
   // Note that |controller_info->remote_controller| is null if the controller
   // has no fetch event handler. In that case the renderer frame won't get the
   // controller pointer upon the navigation commit, and subresource loading will

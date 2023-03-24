@@ -289,6 +289,8 @@ class CONTENT_EXPORT ServiceWorkerProviderContext
       fetch_handler_bypass_option_ =
           blink::mojom::ServiceWorkerFetchHandlerBypassOption::kDefault;
 
+  absl::optional<std::string> sha256_script_checksum_;
+
   // Tracks feature usage for UseCounter.
   std::set<blink::mojom::WebFeature> used_features_;
 

@@ -4685,10 +4685,23 @@ IN_PROC_BROWSER_TEST_P(ServiceWorkerBypassFetchHandlerTest, All) {
       EXPECT_EQ(3, EvalJs(GetPrimaryMainFrame(), script));
       break;
     case features::ServiceWorkerBypassFetchHandlerTarget::kSubResource:
-      // TODO(crbug.com/1371756): Consider supporing the allowlist if needed.
-      // The service worker handles the navigation request, but bypasses fetch
-      // handlers for subsequent subresources.
-      EXPECT_EQ(1, EvalJs(GetPrimaryMainFrame(), script));
+      if (ShouldUseAllowListStrategy()) {
+        if (ShouldUseValidChecksum()) {
+          // If bypassing is allowed, subresources shouldn't be handled by the
+          // fetch handler.
+          // 1 = main resource
+          EXPECT_EQ(1, EvalJs(GetPrimaryMainFrame(), script));
+        } else {
+          // If bypassing is not allowed, subresources should be handled by the
+          // fetch handler.
+          // 3 = main + subresources
+          EXPECT_EQ(3, EvalJs(GetPrimaryMainFrame(), script));
+        }
+      } else {
+        // The service worker handles the navigation request, but bypasses fetch
+        // handlers for subsequent subresources.
+        EXPECT_EQ(1, EvalJs(GetPrimaryMainFrame(), script));
+      }
       break;
     case features::ServiceWorkerBypassFetchHandlerTarget::
         kAllWithRaceNetworkRequest:

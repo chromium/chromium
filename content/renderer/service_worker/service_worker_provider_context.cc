@@ -12,6 +12,7 @@
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/memory/ref_counted.h"
+#include "base/strings/string_split.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/sequenced_task_runner_helpers.h"
 #include "base/task/single_thread_task_runner.h"
@@ -53,6 +54,35 @@ void CreateSubresourceLoaderFactoryForProviderContext(
       network::SharedURLLoaderFactory::Create(
           std::move(pending_fallback_factory)),
       std::move(receiver), std::move(task_runner));
+}
+
+// Returns the set of hash strings of fetch handlers which can be bypassed.
+const base::flat_set<std::string> FetchHandlerBypassedHashStrings() {
+  const static base::NoDestructor<base::flat_set<std::string>> result(
+      base::SplitString(
+          features::kServiceWorkerBypassFetchHandlerBypassedHashStrings.Get(),
+          ",", base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY));
+
+  return *result;
+}
+
+bool ShouldBypassFetchHandlerForSubresource(
+    absl::optional<std::string> sha256_script_checksum) {
+  if (!base::FeatureList::IsEnabled(
+          features::kServiceWorkerBypassFetchHandler)) {
+    return false;
+  }
+  if (features::kServiceWorkerBypassFetchHandlerTarget.Get() !=
+      features::ServiceWorkerBypassFetchHandlerTarget::kSubResource) {
+    return false;
+  }
+
+  switch (features::kServiceWorkerBypassFetchHandlerStrategy.Get()) {
+    case features::ServiceWorkerBypassFetchHandlerStrategy::kFeatureOptIn:
+      return true;
+    case features::ServiceWorkerBypassFetchHandlerStrategy::kAllowList:
+      return FetchHandlerBypassedHashStrings().contains(sha256_script_checksum);
+  }
 }
 
 }  // namespace
@@ -128,10 +158,7 @@ ServiceWorkerProviderContext::GetSubresourceLoaderFactoryInternal() {
     return nullptr;
   }
 
-  if (base::FeatureList::IsEnabled(
-          features::kServiceWorkerBypassFetchHandler) &&
-      features::kServiceWorkerBypassFetchHandlerTarget.Get() ==
-          features::ServiceWorkerBypassFetchHandlerTarget::kSubResource) {
+  if (ShouldBypassFetchHandlerForSubresource(sha256_script_checksum_)) {
     CountFeature(blink::mojom::WebFeature::
                      kServiceWorkerBypassFetchHandlerForSubResource);
     return nullptr;
@@ -348,6 +375,7 @@ void ServiceWorkerProviderContext::SetController(
   effective_fetch_handler_type_ = controller_info->effective_fetch_handler_type;
   remote_controller_ = std::move(controller_info->remote_controller);
   fetch_handler_bypass_option_ = controller_info->fetch_handler_bypass_option;
+  sha256_script_checksum_ = controller_info->sha256_script_checksum;
 
   // Propagate the controller to workers related to this provider.
   if (controller_) {
