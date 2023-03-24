@@ -27,7 +27,6 @@
             interestGroupBuyers: ["${baseOrigin}"]});
 
         const fencedFrame = document.createElement("fencedframe");
-        fencedFrame.mode = "opaque-ads";
         fencedFrame.src = url;
         document.body.appendChild(fencedFrame);
       })();`;

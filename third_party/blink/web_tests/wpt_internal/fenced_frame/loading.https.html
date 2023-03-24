@@ -12,7 +12,7 @@
       const key = token();
 
       attachFencedFrame(await runSelectURL("resources/embeddee.html", [key],
-        resolve_to_config), 'opaque-ads');
+        resolve_to_config));
       const result = await nextValueFromServer(key);
 
       assert_equals(result, "PASS",

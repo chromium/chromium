@@ -21,7 +21,7 @@ for (const resolve_to_config of [true, false]) {
       }, {once: true});
 
       attachFencedFrame(await runSelectURL("resources/embeddee.html",
-                                  [key], resolve_to_config), "opaque-ads");
+                                  [key], resolve_to_config));
 
       const result = await nextValueFromServer(key);
       assert_equals(result, "PASS",

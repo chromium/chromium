@@ -14,8 +14,8 @@ promise_test(async () => {
   // (second_iframe) will attempt an _unfencedTop navigation, which will result
   // in GetFencedframeMode() being called. For this test to pass, it shouldn't
   // timeout.
-  const fencedframe = attachFencedFrameContext(
-      {attributes:[["mode", "opaque-ads"]]});
+  const fencedframe = await attachFencedFrameContext(
+      {generator_api: 'fledge'});
   await fencedframe.execute(async () => {
     const first_iframe = attachIFrameContext();
     await first_iframe.execute(async () => {

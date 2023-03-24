@@ -13,8 +13,7 @@ async function runTest(original_width, original_height, new_width, new_height) {
   // `original_width` by `original_height`.
   const frame = await attachFencedFrameContext({
       generator_api: "sharedstorage", resolve_to_config: true,
-      attributes: [["mode", "opaque-ads"],
-      ["width", original_width], ["height", original_height]]});
+      attributes: [["width", original_width], ["height", original_height]]});
 
   const assert_dimensions =
       (label, original_width, original_height,

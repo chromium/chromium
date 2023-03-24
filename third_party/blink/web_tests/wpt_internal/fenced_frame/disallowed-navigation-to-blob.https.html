@@ -26,7 +26,7 @@ for (const resolve_to_config of [true, false]) {
         new Blob([`${createLocalSource(key, kPublicUtils)}`],
                  {type: 'text/html'}));
     const select_url_result = await runSelectURL(blobURL);
-    attachFencedFrame(select_url_result, /*mode=*/'opaque-ads');
+    attachFencedFrame(select_url_result);
     const loaded_promise = nextValueFromServer(key);
     const result = await Promise.any([loaded_promise, getTimeoutPromise(t)]);
     assert_equals(result, "NOT LOADED");

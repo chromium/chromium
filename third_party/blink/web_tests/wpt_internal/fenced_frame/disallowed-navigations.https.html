@@ -18,11 +18,11 @@
 //   - Same-origin embedder can navigate iframe to javascript: URL
 //   - Embedder can navigate iframe to http: URL
 // Fenced frame tests:
-//   - Embedder cannot navigate fenced frame (mode=default) to blob: URL
-//   - Embedder cannot navigate fenced frame (mode=default) to data: URL
-//   - Same-origin embedder cannot navigate fenced frame (mode=default) to
+//   - Embedder cannot navigate fenced frame to blob: URL
+//   - Embedder cannot navigate fenced frame to data: URL
+//   - Same-origin embedder cannot navigate fenced frame to
 //     javascript: URL
-//   - Embedder cannot navigate fenced frame (mode=default) to http: URL
+//   - Embedder cannot navigate fenced frame to http: URL
 
 // Fenced frames are always put in the public IP address space which is the
 // least privileged. In case a navigation to a local data: URL or blob: URL
@@ -61,7 +61,7 @@ promise_test(async () => {
 }, "iframe javascript: URL");
 
 // The following tests ensure that an embedder cannot navigate a fenced frame
-// (with different modes) to:
+// to:
 //   - data: URLs
 //   - blob: URLs
 //   - javascript: URLs
@@ -71,52 +71,48 @@ function getTimeoutPromise(t) {
       t.step_timeout(() => resolve("NOT LOADED"), 2000));
 }
 
-for (const mode of ['opaque-ads', 'default']) {
+promise_test(async t => {
+  const key = token();
+  attachFencedFrame(`data:text/html, ${createLocalSource(key, kPublicUtils)}`);
+  const loaded_promise = nextValueFromServer(key);
+  const result = await Promise.any([loaded_promise, getTimeoutPromise(t)]);
+  assert_equals(result, "NOT LOADED");
+}, `fenced frame data: URL`);
 
-  promise_test(async t => {
-    const key = token();
-    attachFencedFrame(`data:text/html, ${createLocalSource(key, kPublicUtils)}`,
-                      /*mode=*/mode);
-    const loaded_promise = nextValueFromServer(key);
-    const result = await Promise.any([loaded_promise, getTimeoutPromise(t)]);
-    assert_equals(result, "NOT LOADED");
-  }, `fenced frame mode=${mode} data: URL`);
+promise_test(async t => {
+  const key = token();
+  const blobURL = URL.createObjectURL(
+      new Blob([`${createLocalSource(key, kPublicUtils)}`],
+               {type: 'text/html'}));
+  attachFencedFrame(blobURL);
+  const loaded_promise = nextValueFromServer(key);
+  const result = await Promise.any([loaded_promise, getTimeoutPromise(t)]);
+  assert_equals(result, "NOT LOADED");
+}, `fenced frame blob: URL`);
 
-  promise_test(async t => {
-    const key = token();
-    const blobURL = URL.createObjectURL(
-        new Blob([`${createLocalSource(key, kPublicUtils)}`],
-                 {type: 'text/html'}));
-    attachFencedFrame(blobURL, /*mode=*/mode);
-    const loaded_promise = nextValueFromServer(key);
-    const result = await Promise.any([loaded_promise, getTimeoutPromise(t)]);
-    assert_equals(result, "NOT LOADED");
-  }, `fenced frame mode=${mode} blob: URL`);
+promise_test(async t => {
+  const fencedframe = attachFencedFrameContext();
+  fencedframe.src = "javascript:window.jsURLExecuted = true;"
+  // Just in case the javascript URL executes asynchronously, let's wait for
+  // it.
+  await getTimeoutPromise(t);
+  await fencedframe.execute(async () => {
+    assert_equals(window.jsURLExecuted, undefined);
+  });
+}, `fenced frame javascript: URL`);
 
-  promise_test(async t => {
-    const fencedframe = attachFencedFrameContext({mode: ['mode', mode]});
-    fencedframe.src = "javascript:window.jsURLExecuted = true;"
-    // Just in case the javascript URL executes asynchronously, let's wait for
-    // it.
-    await getTimeoutPromise(t);
-    await fencedframe.execute(async () => {
-      assert_equals(window.jsURLExecuted, undefined);
-    });
-  }, `fenced frame mode=${mode} javascript: URL`);
+promise_test(async t => {
+  const key = token();
+  let http_url = new URL("resources/embeddee.html",
+      get_host_info().HTTP_ORIGIN + location.pathname);
+  http_url = generateURL(http_url, [key]);
+  assert_equals(http_url.protocol, "http:");
+  const fencedframe = attachFencedFrame(http_url);
+  const loaded_promise = nextValueFromServer(key);
+  const result = await Promise.any([loaded_promise, getTimeoutPromise(t)]);
+  assert_equals(result, "NOT LOADED");
+}, `fenced frame http: URL`);
 
-  promise_test(async t => {
-    const key = token();
-    let http_url = new URL("resources/embeddee.html",
-        get_host_info().HTTP_ORIGIN + location.pathname);
-    http_url = generateURL(http_url, [key]);
-    assert_equals(http_url.protocol, "http:");
-    const fencedframe = attachFencedFrame(http_url, /*mode=*/mode);
-    const loaded_promise = nextValueFromServer(key);
-    const result = await Promise.any([loaded_promise, getTimeoutPromise(t)]);
-    assert_equals(result, "NOT LOADED");
-  }, `fenced frame mode=${mode} http: URL`);
-
-} // end for.
 </script>
 
 </body>

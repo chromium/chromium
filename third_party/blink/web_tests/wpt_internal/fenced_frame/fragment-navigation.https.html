@@ -9,7 +9,7 @@
 <body>
 <script>
 async function runTest(first_url_opaque, second_url_opaque) {
-  const frame = attachFencedFrameContext({attributes: [["mode", "opaque-ads"]]});
+  const frame = await attachFencedFrameContext({generator_api: 'fledge'});
   let base_url = frame.src;
   let fragment_url = base_url + "#foo";
 

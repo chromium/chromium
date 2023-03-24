@@ -12,7 +12,7 @@ promise_test(async (t) => {
   const key = token();
   const urn = await generateURNFromFledge(
       "resources/get-nested-configs-inner.html", [key]);
-  attachFencedFrame(urn, mode='opaque-ads');
+  attachFencedFrame(urn);
 
   const response = await nextValueFromServer(key);
   const [length, first_url] = response.split(",");
@@ -27,7 +27,7 @@ for (const resolve_to_config of [true, false]) {
     const select_url_result = await runSelectURL(
         generateURL("resources/get-nested-configs-inner.html", [key]),
         [], resolve_to_config);
-    attachFencedFrame(select_url_result, mode='opaque-ads');
+    attachFencedFrame(select_url_result);
 
     const response = await nextValueFromServer(key);
     const [length, first_url] = response.split(",");
@@ -53,7 +53,7 @@ promise_test(async (t) => {
   const key = token();
   const urn = await generateURNFromFledge(
       "resources/get-nested-configs-nested-iframe.html", [key]);
-  attachFencedFrame(urn, mode='opaque-ads');
+  attachFencedFrame(urn);
 
   const response = await nextValueFromServer(key);
   const [length, first_url] = response.split(",");
@@ -72,7 +72,7 @@ promise_test(async (t) => {
   const urn = await generateURNFromFledge(
       "resources/navigate-nested-config.html", [key],
       [nested_url]);
-  attachFencedFrame(urn, mode='opaque-ads');
+  attachFencedFrame(urn);
 
   const response = await nextValueFromServer(key);
   assert_equals(response, 'PASS', 'The nested URL should load.');
@@ -107,7 +107,7 @@ promise_test(async (t) => {
   const urn = await generateURNFromFledge(
       "resources/navigate-nested-config.html", [key],
       []);
-  attachFencedFrame(urn, mode='opaque-ads');
+  attachFencedFrame(urn);
 
   // There is no API to observe whether the document in the FencedFrame loaded
   // or not. Instead, set up a timeout. If the document loads, "PASS" will be

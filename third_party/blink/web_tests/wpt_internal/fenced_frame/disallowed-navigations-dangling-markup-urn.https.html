@@ -52,7 +52,7 @@ for (const substring of kDanglingMarkupSubstrings) {
 
     const urn = await navigator.runAdAuction(auctionConfig);
 
-    const fencedframe = attachFencedFrame(urn, /*mode=*/'opaque-ads');
+    const fencedframe = attachFencedFrame(urn);
     const loaded_promise = nextValueFromServer(key);
     const result = await Promise.any([loaded_promise, getTimeoutPromise(t)]);
     assert_equals(result, "NOT LOADED");

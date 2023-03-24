@@ -9,7 +9,7 @@
 <body>
 <script>
 promise_test(async(t) => {
-  const fencedframe = attachFencedFrameContext({attributes:[['mode', 'opaque-ads']]});
+  const fencedframe = await attachFencedFrameContext({generator_api: 'fledge'});
   await fencedframe.execute(() => {
     let event = {};
     assert_throws_js(TypeError, () => {window.fence.reportEvent(event);});

@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<title>Test transparent url navigated in opaque fenced frame interacting with CSP</title>
+<title>Test transparent url navigated in fenced frame interacting with CSP</title>
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
 <script src="/common/utils.js"></script>
@@ -23,7 +23,7 @@ allowedCSPs.forEach((csp) => {
     t.step_timeout(t.unreached_func(
       "The fenced frame should load for CSP fenced-frame-src " + csp), 3000);
 
-    const fencedframe = attachFencedFrameContext({attributes:[["mode", "opaque-ads"]]});
+    const fencedframe = attachFencedFrameContext();
     await fencedframe.execute(() => {});
   }, "Fenced frame loaded for CSP fenced-frame-src " + csp);
 });
@@ -37,7 +37,7 @@ blockedCSPs.forEach((csp) => {
       window.addEventListener("securitypolicyviolation", resolve);
     });
 
-    const fencedframe = attachFencedFrameContext({attributes:[["mode", "opaque-ads"]]});
+    const fencedframe = attachFencedFrameContext();
 
     const fencedframe_loaded = fencedframe.execute(() => {});
     fencedframe_loaded.then(t.unreached_func(

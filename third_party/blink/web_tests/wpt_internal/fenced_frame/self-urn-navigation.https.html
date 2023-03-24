@@ -15,7 +15,7 @@ function getTimeoutPromise(t) {
 
 // A fenced frame root should not be able to navigate itself to a urn:uuid.
 promise_test(async t => {
-  const frame = attachFencedFrameContext({attributes: [["mode", "opaque-ads"]]});
+  const frame = attachFencedFrameContext();
   urn = await runSelectURL(frame.src);
 
   // Send the urn:uuid to the fenced frame over the network, and attempt to
@@ -26,8 +26,7 @@ promise_test(async t => {
     });
   }, [urn]);
 
-  // On ShadowDOM, the navigation will erroneously succeed.
-  // On MPArch, the navigation should fail as intended.
+  // The navigation should fail as intended.
   const urn_load_success_promise = frame.execute(() => {});
   const urn_load_failure_promise = getTimeoutPromise(t);
   const result =
