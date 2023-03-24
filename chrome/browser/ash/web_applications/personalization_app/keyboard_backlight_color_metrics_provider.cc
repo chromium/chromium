@@ -12,6 +12,8 @@
 #include "ash/webui/personalization_app/mojom/personalization_app.mojom-shared.h"
 #include "base/metrics/histogram_functions.h"
 
+using DisplayType = ash::KeyboardBacklightColorController::DisplayType;
+
 KeyboardBacklightColorMetricsProvider::KeyboardBacklightColorMetricsProvider() =
     default;
 KeyboardBacklightColorMetricsProvider::
@@ -26,8 +28,37 @@ void KeyboardBacklightColorMetricsProvider::ProvideCurrentSessionData(
 
   auto* keyboard_backlight_color_controller =
       ash::Shell::Get()->keyboard_backlight_color_controller();
-  auto backlight_color = keyboard_backlight_color_controller->GetBacklightColor(
-      ash::Shell::Get()->session_controller()->GetActiveAccountId());
-  base::UmaHistogramEnumeration(
-      "Ash.Personalization.KeyboardBacklight.Color.Settled", backlight_color);
+
+  const AccountId account_id =
+      ash::Shell::Get()->session_controller()->GetActiveAccountId();
+
+  const auto displayType =
+      keyboard_backlight_color_controller->GetDisplayType(account_id);
+  switch (displayType) {
+    case DisplayType::kStatic: {
+      auto backlight_color =
+          keyboard_backlight_color_controller->GetBacklightColor(account_id);
+      base::UmaHistogramEnumeration(
+          "Ash.Personalization.KeyboardBacklight.Color.Settled",
+          backlight_color);
+      return;
+    }
+    case DisplayType::kMultiZone: {
+      if (!ash::features::IsMultiZoneRgbKeyboardEnabled() ||
+          ash::Shell::Get()->rgb_keyboard_manager()->GetZoneCount() <= 1) {
+        return;
+      }
+      auto zone_colors =
+          keyboard_backlight_color_controller->GetBacklightZoneColors(
+              account_id);
+      for (size_t i = 0; i < zone_colors.size(); i++) {
+        base::UmaHistogramEnumeration(
+            base::StringPrintf("Ash.Personalization.KeyboardBacklight."
+                               "ZoneColors.Zone%zu.Settled",
+                               i + 1),
+            zone_colors[i]);
+      }
+      return;
+    }
+  }
 }
