@@ -99,7 +99,7 @@ class ChromeUserManagerImpl
   bool IsGuestSessionAllowed() const override;
   bool IsGaiaUserAllowed(const user_manager::User& user) const override;
   bool IsUserAllowed(const user_manager::User& user) const override;
-  bool AreEphemeralUsersEnabled() const override;
+  bool IsEphemeralAccountId(const AccountId& account_id) const override;
   const AccountId& GetGuestAccountId() const override;
   bool IsFirstExecAfterBoot() const override;
   void AsyncRemoveCryptohome(const AccountId& account_id) const override;

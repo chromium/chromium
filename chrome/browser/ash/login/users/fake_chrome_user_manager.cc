@@ -193,8 +193,9 @@ user_manager::User* FakeChromeUserManager::AddActiveDirectoryUser(
       /*profile=*/nullptr);
 }
 
-bool FakeChromeUserManager::AreEphemeralUsersEnabled() const {
-  return fake_ephemeral_users_enabled_;
+bool FakeChromeUserManager::IsEphemeralAccountId(
+    const AccountId& account_id) const {
+  return fake_ephemeral_mode_config_.IsAccountIdIncluded(account_id);
 }
 
 void FakeChromeUserManager::LoginUser(const AccountId& account_id,

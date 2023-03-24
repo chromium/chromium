@@ -665,10 +665,11 @@ bool ChromeUserManagerImpl::IsUserNonCryptohomeDataEphemeral(
          ChromeUserManager::IsUserNonCryptohomeDataEphemeral(account_id);
 }
 
-bool ChromeUserManagerImpl::AreEphemeralUsersEnabled() const {
+bool ChromeUserManagerImpl::IsEphemeralAccountId(
+    const AccountId& account_id) const {
   policy::BrowserPolicyConnectorAsh* connector =
       g_browser_process->platform_part()->browser_policy_connector_ash();
-  return GetEphemeralUsersEnabled() &&
+  return GetEphemeralModeConfig().IsAccountIdIncluded(account_id) &&
          (connector->IsDeviceEnterpriseManaged() ||
           GetOwnerAccountId().is_valid());
 }
@@ -735,7 +736,7 @@ void ChromeUserManagerImpl::RetrieveTrustedDevicePolicies() {
   if (!GetLocalState())
     return;
 
-  SetEphemeralUsersEnabled(false);
+  SetEphemeralModeConfig(EphemeralModeConfig());
   SetOwnerId(EmptyAccountId());
 
   // Schedule a callback if device policy has not yet been verified.
@@ -749,7 +750,13 @@ void ChromeUserManagerImpl::RetrieveTrustedDevicePolicies() {
   bool ephemeral_users_enabled = false;
   cros_settings_->GetBoolean(kAccountsPrefEphemeralUsersEnabled,
                              &ephemeral_users_enabled);
-  SetEphemeralUsersEnabled(ephemeral_users_enabled);
+
+  // TODO(b/273238218): Parse DeviceLocalAccounts to fetch epehemeral mode for
+  // device-local accounts.
+  SetEphemeralModeConfig(EphemeralModeConfig(
+      /* included_by_default= */ ephemeral_users_enabled,
+      /* include_list= */ std::vector<AccountId>{},
+      /* exclude_list= */ std::vector<AccountId>{}));
 
   std::string owner_email;
   cros_settings_->GetString(kDeviceOwner, &owner_email);
@@ -765,14 +772,15 @@ void ChromeUserManagerImpl::RetrieveTrustedDevicePolicies() {
 
   // If ephemeral users are enabled and we are on the login screen, take this
   // opportunity to clean up by removing all regular users except the owner.
-  if (GetEphemeralUsersEnabled() && !IsUserLoggedIn()) {
+  if (!IsUserLoggedIn()) {
     ScopedListPrefUpdate prefs_users_update(GetLocalState(),
                                             user_manager::kRegularUsersPref);
     prefs_users_update->clear();
     for (user_manager::UserList::iterator it = users_.begin();
          it != users_.end();) {
       const AccountId account_id = (*it)->GetAccountId();
-      if ((*it)->HasGaiaAccount() && account_id != GetOwnerAccountId()) {
+      if ((*it)->HasGaiaAccount() && account_id != GetOwnerAccountId() &&
+          IsEphemeralAccountId(account_id)) {
         user_manager::UserManager::Get()->NotifyUserToBeRemoved(account_id);
         RemoveNonCryptohomeData(account_id);
         DeleteUser(*it);

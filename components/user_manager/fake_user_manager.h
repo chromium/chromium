@@ -133,7 +133,7 @@ class USER_MANAGER_EXPORT FakeUserManager : public UserManagerBase {
   bool IsGuestSessionAllowed() const override;
   bool IsGaiaUserAllowed(const User& user) const override;
   bool IsUserAllowed(const User& user) const override;
-  bool AreEphemeralUsersEnabled() const override;
+  bool IsEphemeralAccountId(const AccountId& account_id) const override;
   void UpdateLoginState(const User* active_user,
                         const User* primary_user,
                         bool is_current_user_owner) const override;
@@ -150,7 +150,9 @@ class USER_MANAGER_EXPORT FakeUserManager : public UserManagerBase {
   bool IsValidDefaultUserImageId(int image_index) const override;
 
   // UserManagerBase overrides:
-  void SetEphemeralUsersEnabled(bool enabled) override;
+  void SetEphemeralModeConfig(
+      EphemeralModeConfig ephemeral_mode_config) override;
+
   const std::string& GetApplicationLocale() const override;
   PrefService* GetLocalState() const override;
   bool IsEnterpriseManaged() const override;

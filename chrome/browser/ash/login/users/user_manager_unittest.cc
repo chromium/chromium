@@ -5,6 +5,8 @@
 #include <cstdlib>
 #include <cstring>
 #include <memory>
+#include <utility>
+#include <vector>
 
 #include "ash/constants/ash_pref_names.h"
 #include "ash/constants/ash_switches.h"
@@ -30,6 +32,7 @@
 #include "chromeos/ash/components/cryptohome/system_salt_getter.h"
 #include "chromeos/ash/components/dbus/concierge/concierge_client.h"
 #include "chromeos/ash/components/settings/cros_settings_names.h"
+#include "components/account_id/account_id.h"
 #include "components/prefs/pref_service.h"
 #include "components/user_manager/known_user.h"
 #include "components/user_manager/remove_user_delegate.h"
@@ -171,12 +174,14 @@ class UserManagerTest : public testing::Test {
         user_manager::UserManager::Get());
   }
 
-  bool GetUserManagerEphemeralUsersEnabled() const {
-    return GetChromeUserManager()->GetEphemeralUsersEnabled();
+  bool IsEphemeralAccountId(const AccountId& account_id) const {
+    return GetChromeUserManager()->IsEphemeralAccountId(account_id);
   }
 
-  void SetUserManagerEphemeralUsersEnabled(bool ephemeral_users_enabled) {
-    GetChromeUserManager()->SetEphemeralUsersEnabled(ephemeral_users_enabled);
+  void SetEphemeralModeConfig(
+      user_manager::UserManager::EphemeralModeConfig ephemeral_mode_config) {
+    GetChromeUserManager()->SetEphemeralModeConfig(
+        std::move(ephemeral_mode_config));
   }
 
   AccountId GetUserManagerOwnerId() const {
@@ -250,14 +255,18 @@ class UserManagerTest : public testing::Test {
 };
 
 TEST_F(UserManagerTest, RetrieveTrustedDevicePolicies) {
-  SetUserManagerEphemeralUsersEnabled(true);
+  SetEphemeralModeConfig(user_manager::UserManager::EphemeralModeConfig(
+      /* included_by_default= */ true,
+      /* include_list= */ std::vector<AccountId>{},
+      /* exclude_list= */ std::vector<AccountId>{}));
   SetUserManagerOwnerId(EmptyAccountId());
 
   SetDeviceSettings(false, owner_account_id_at_invalid_domain_.GetUserEmail(),
                     false);
   RetrieveTrustedDevicePolicies();
 
-  EXPECT_FALSE(GetUserManagerEphemeralUsersEnabled());
+  EXPECT_FALSE(IsEphemeralAccountId(EmptyAccountId()));
+
   EXPECT_EQ(GetUserManagerOwnerId(), owner_account_id_at_invalid_domain_);
 }
 

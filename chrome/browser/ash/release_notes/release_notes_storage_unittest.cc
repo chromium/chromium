@@ -5,6 +5,8 @@
 #include "chrome/browser/ash/release_notes/release_notes_storage.h"
 
 #include <memory>
+#include <utility>
+#include <vector>
 
 #include "ash/constants/ash_features.h"
 #include "base/test/scoped_feature_list.h"
@@ -56,7 +58,11 @@ class ReleaseNotesStorageTest : public testing::Test,
       builder.OverridePolicyConnectorIsManagedForTesting(is_managed_);
       if (is_ephemeral_) {
         // Enabling ephemeral users passes the |IsEphemeralUserProfile| check.
-        user_manager_->set_ephemeral_users_enabled(true);
+        user_manager_->set_ephemeral_mode_config(
+            user_manager::UserManager::EphemeralModeConfig(
+                /* included_by_default= */ true,
+                /* include_list= */ std::vector<AccountId>{},
+                /* exclude_list= */ std::vector<AccountId>{}));
       } else if (is_unicorn_) {
         user_manager_->set_current_user_child(true);
         builder.SetIsSupervisedProfile();

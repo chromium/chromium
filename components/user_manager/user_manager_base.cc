@@ -229,7 +229,7 @@ void UserManagerBase::UserLoggedIn(const AccountId& account_id,
     case USER_TYPE_CHILD:    // fallthrough
     case USER_TYPE_ACTIVE_DIRECTORY:
       if (account_id != GetOwnerAccountId() && !user &&
-          (AreEphemeralUsersEnabled() || browser_restart)) {
+          (IsEphemeralAccountId(account_id) || browser_restart)) {
         RegularUserLoggedInAsEphemeral(account_id, user_type);
       } else {
         RegularUserLoggedIn(account_id, user_type);
@@ -661,8 +661,8 @@ bool UserManagerBase::IsEphemeralUser(const User* user) const {
     return true;
   }
 
-  // Otherwise, if ephemeral_users policy is enabled, it is ephemeral.
-  return AreEphemeralUsersEnabled();
+  // Otherwise, check ephemeral policies.
+  return IsEphemeralAccountId(user->GetAccountId());
 }
 
 bool UserManagerBase::IsCurrentUserOwner() const {
@@ -773,7 +773,7 @@ bool UserManagerBase::IsUserNonCryptohomeDataEphemeral(
   //    enabled.
   //    - or -
   // b) The browser is restarting after a crash.
-  return AreEphemeralUsersEnabled() || HasBrowserRestarted();
+  return IsEphemeralAccountId(account_id) || HasBrowserRestarted();
 }
 
 bool UserManagerBase::IsUserCryptohomeDataEphemeral(
@@ -792,7 +792,7 @@ bool UserManagerBase::IsUserCryptohomeDataEphemeral(
     return true;
 
   // Ephemeral users.
-  if (AreEphemeralUsersEnabled() && user &&
+  if (IsEphemeralAccountId(account_id) && user &&
       user->GetType() == USER_TYPE_REGULAR &&
       FindUserInList(account_id) == nullptr) {
     return true;
@@ -902,12 +902,14 @@ bool UserManagerBase::CanUserBeRemoved(const User* user) const {
   return true;
 }
 
-bool UserManagerBase::GetEphemeralUsersEnabled() const {
-  return ephemeral_users_enabled_;
+const UserManagerBase::EphemeralModeConfig&
+UserManagerBase::GetEphemeralModeConfig() const {
+  return ephemeral_mode_config_;
 }
 
-void UserManagerBase::SetEphemeralUsersEnabled(bool enabled) {
-  ephemeral_users_enabled_ = enabled;
+void UserManagerBase::SetEphemeralModeConfig(
+    EphemeralModeConfig ephemeral_mode_config) {
+  ephemeral_mode_config_ = std::move(ephemeral_mode_config);
 }
 
 void UserManagerBase::SetIsCurrentUserNew(bool is_new) {

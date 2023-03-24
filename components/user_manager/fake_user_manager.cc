@@ -176,8 +176,9 @@ void FakeUserManager::UserLoggedIn(const AccountId& account_id,
     }
   }
 
-  if (!active_user_ && AreEphemeralUsersEnabled())
+  if (!active_user_ && IsEphemeralAccountId(account_id)) {
     RegularUserLoggedInAsEphemeral(account_id, USER_TYPE_REGULAR);
+  }
 }
 
 User* FakeUserManager::GetActiveUserInternal() const {
@@ -345,12 +346,13 @@ bool FakeUserManager::IsUserAllowed(const User& user) const {
   return true;
 }
 
-bool FakeUserManager::AreEphemeralUsersEnabled() const {
-  return GetEphemeralUsersEnabled();
+bool FakeUserManager::IsEphemeralAccountId(const AccountId& account_id) const {
+  return GetEphemeralModeConfig().IsAccountIdIncluded(account_id);
 }
 
-void FakeUserManager::SetEphemeralUsersEnabled(bool enabled) {
-  UserManagerBase::SetEphemeralUsersEnabled(enabled);
+void FakeUserManager::SetEphemeralModeConfig(
+    EphemeralModeConfig ephemeral_mode_config) {
+  UserManagerBase::SetEphemeralModeConfig(std::move(ephemeral_mode_config));
 }
 
 const std::string& FakeUserManager::GetApplicationLocale() const {

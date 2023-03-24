@@ -1573,9 +1573,10 @@ void ExistingUserController::DoCompleteLogin(
   user_manager::KnownUser known_user(g_browser_process->local_state());
   std::string device_id = known_user.GetDeviceId(user_context.GetAccountId());
   if (device_id.empty()) {
-    bool is_ephemeral = ChromeUserManager::Get()->AreEphemeralUsersEnabled() &&
-                        user_context.GetAccountId() !=
-                            ChromeUserManager::Get()->GetOwnerAccountId();
+    const bool is_ephemeral = ChromeUserManager::Get()->IsEphemeralAccountId(
+                                  user_context.GetAccountId()) &&
+                              user_context.GetAccountId() !=
+                                  ChromeUserManager::Get()->GetOwnerAccountId();
     device_id = GenerateSigninScopedDeviceId(is_ephemeral);
   }
   user_context.SetDeviceId(device_id);

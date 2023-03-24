@@ -8,6 +8,7 @@
 #include <map>
 #include <memory>
 #include <string>
+#include <utility>
 
 #include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
@@ -133,7 +134,7 @@ class FakeChromeUserManager : public ChromeUserManager {
   bool IsGuestSessionAllowed() const override;
   bool IsGaiaUserAllowed(const user_manager::User& user) const override;
   bool IsUserAllowed(const user_manager::User& user) const override;
-  bool AreEphemeralUsersEnabled() const override;
+  bool IsEphemeralAccountId(const AccountId& account_id) const override;
   PrefService* GetLocalState() const override;
   const AccountId& GetGuestAccountId() const override;
   bool IsFirstExecAfterBoot() const override;
@@ -186,8 +187,8 @@ class FakeChromeUserManager : public ChromeUserManager {
   GetRemovedUserCache() const override;
   void MarkReporterInitialized() override;
 
-  void set_ephemeral_users_enabled(bool ephemeral_users_enabled) {
-    fake_ephemeral_users_enabled_ = ephemeral_users_enabled;
+  void set_ephemeral_mode_config(EphemeralModeConfig ephemeral_mode_config) {
+    fake_ephemeral_mode_config_ = std::move(ephemeral_mode_config);
   }
 
   // TODO(mukai): remove this.
@@ -236,7 +237,7 @@ class FakeChromeUserManager : public ChromeUserManager {
   user_manager::User* GetActiveUserInternal() const;
 
   std::unique_ptr<FakeSupervisedUserManager> supervised_user_manager_;
-  bool fake_ephemeral_users_enabled_ = false;
+  EphemeralModeConfig fake_ephemeral_mode_config_;
   bool current_user_new_ = false;
   bool current_user_ephemeral_ = false;
   bool current_user_child_ = false;

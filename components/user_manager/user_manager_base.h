@@ -283,8 +283,9 @@ class USER_MANAGER_EXPORT UserManagerBase : public UserManager {
 
   // Getters/setters for private members.
 
-  virtual bool GetEphemeralUsersEnabled() const;
-  virtual void SetEphemeralUsersEnabled(bool enabled);
+  const EphemeralModeConfig& GetEphemeralModeConfig() const;
+  virtual void SetEphemeralModeConfig(
+      EphemeralModeConfig ephemeral_mode_config);
 
   virtual void SetOwnerId(const AccountId& owner_account_id);
 
@@ -382,10 +383,11 @@ class USER_MANAGER_EXPORT UserManagerBase : public UserManager {
   // to |false|.
   bool is_current_user_ephemeral_regular_user_ = false;
 
-  // Cached flag indicating whether the ephemeral user policy is enabled.
-  // Defaults to |false| if the value has not been read from trusted device
-  // policy yet.
-  bool ephemeral_users_enabled_ = false;
+  // Cached `EphemeralModeConfig` created from trusted device policies.
+  //
+  // If the value has not been read from trusted device policy yet, then all
+  // users considered as non-ephemeral.
+  EphemeralModeConfig ephemeral_mode_config_;
 
   // Cached name of device owner. Defaults to empty if the value has not
   // been read from trusted device policy yet.

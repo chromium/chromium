@@ -9,6 +9,7 @@
 
 #include "base/functional/callback_forward.h"
 #include "base/scoped_observation_traits.h"
+#include "components/user_manager/include_exclude_account_id_filter.h"
 #include "components/user_manager/user.h"
 #include "components/user_manager/user_manager_export.h"
 #include "components/user_manager/user_type.h"
@@ -42,6 +43,8 @@ enum class UserRemovalReason : int32_t {
 // * Find/modify users, store user meta-data such as display name/email.
 class USER_MANAGER_EXPORT UserManager {
  public:
+  using EphemeralModeConfig = IncludeExcludeAccountIdFilter;
+
   // Interface that observers of UserManager must implement in order
   // to receive notification when local state preferences is changed
   class Observer {
@@ -392,8 +395,14 @@ class USER_MANAGER_EXPORT UserManager {
   virtual bool IsUserAllowed(const User& user) const = 0;
 
   // Returns true if trusted device policies have successfully been retrieved
-  // and ephemeral users are enabled.
-  virtual bool AreEphemeralUsersEnabled() const = 0;
+  // and `account_id` is ephemeral by policies.
+  //
+  // NOTE: this function does not handle neither device owner account nor
+  // explicitly-ephemeral accounts like MGS separately. This function gives an
+  // answer whether `account_id` is ephemeral by policies.
+  //
+  // TODO(b:275059758): Add logic to handle owner ID separately.
+  virtual bool IsEphemeralAccountId(const AccountId& account_id) const = 0;
 
   // Returns "Local State" PrefService instance.
   virtual PrefService* GetLocalState() const = 0;
