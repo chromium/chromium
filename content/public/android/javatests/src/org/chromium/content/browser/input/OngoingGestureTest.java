@@ -8,16 +8,13 @@ import static org.junit.Assert.assertEquals;
 
 import androidx.test.filters.SmallTest;
 
-import org.junit.BeforeClass;
-import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import org.chromium.base.test.metrics.HistogramTestRule;
 import org.chromium.base.test.util.Batch;
+import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.blink.mojom.HandwritingGestureResult;
 import org.chromium.content_public.browser.test.ContentJUnit4ClassRunner;
-import org.chromium.content_public.browser.test.NativeLibraryTestUtils;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 
 /**
@@ -29,15 +26,6 @@ import org.chromium.content_public.browser.test.util.TestThreadUtils;
 public class OngoingGestureTest {
     private static final String GESTURE_RESULT_HISTOGRAM =
             "InputMethod.StylusHandwriting.GestureResult";
-
-    @Rule
-    public HistogramTestRule mHistogramTester = new HistogramTestRule();
-
-    @BeforeClass
-    public static void setUpClass() {
-        // Needed for HistogramTestRule.
-        NativeLibraryTestUtils.loadNativeLibraryNoBrowserProcess();
-    }
 
     @Test
     @SmallTest
@@ -55,12 +43,12 @@ public class OngoingGestureTest {
     @SmallTest
     public void testGestureRequestLogsUnknownWithNullExecutor() {
         TestThreadUtils.runOnUiThreadBlocking(() -> {
+            var histogram = HistogramWatcher.newSingleRecordWatcher(
+                    GESTURE_RESULT_HISTOGRAM, HandwritingGestureResult.UNKNOWN);
             OngoingGesture request = new OngoingGesture(
                     new org.chromium.blink.mojom.StylusWritingGestureData(), null, (value) -> {});
             request.onGestureHandled(HandwritingGestureResult.SUCCESS);
-            assertEquals(1,
-                    mHistogramTester.getHistogramValueCount(
-                            GESTURE_RESULT_HISTOGRAM, HandwritingGestureResult.UNKNOWN));
+            histogram.assertExpected();
         });
     }
 
@@ -68,12 +56,12 @@ public class OngoingGestureTest {
     @SmallTest
     public void testGestureRequestLogsUnknownWithNullIntConsumer() {
         TestThreadUtils.runOnUiThreadBlocking(() -> {
+            var histogram = HistogramWatcher.newSingleRecordWatcher(
+                    GESTURE_RESULT_HISTOGRAM, HandwritingGestureResult.UNKNOWN);
             OngoingGesture request = new OngoingGesture(
                     new org.chromium.blink.mojom.StylusWritingGestureData(), (command) -> {}, null);
             request.onGestureHandled(HandwritingGestureResult.FAILED);
-            assertEquals(1,
-                    mHistogramTester.getHistogramValueCount(
-                            GESTURE_RESULT_HISTOGRAM, HandwritingGestureResult.UNKNOWN));
+            histogram.assertExpected();
         });
     }
 
@@ -84,20 +72,21 @@ public class OngoingGestureTest {
             OngoingGesture request =
                     new OngoingGesture(new org.chromium.blink.mojom.StylusWritingGestureData(),
                             (command) -> {}, (value) -> {});
+
+            var histogram = HistogramWatcher.newSingleRecordWatcher(
+                    GESTURE_RESULT_HISTOGRAM, HandwritingGestureResult.SUCCESS);
             request.onGestureHandled(HandwritingGestureResult.SUCCESS);
-            assertEquals(1,
-                    mHistogramTester.getHistogramValueCount(
-                            GESTURE_RESULT_HISTOGRAM, HandwritingGestureResult.SUCCESS));
+            histogram.assertExpected();
 
+            histogram = HistogramWatcher.newSingleRecordWatcher(
+                    GESTURE_RESULT_HISTOGRAM, HandwritingGestureResult.FAILED);
             request.onGestureHandled(HandwritingGestureResult.FAILED);
-            assertEquals(1,
-                    mHistogramTester.getHistogramValueCount(
-                            GESTURE_RESULT_HISTOGRAM, HandwritingGestureResult.FAILED));
+            histogram.assertExpected();
 
+            histogram = HistogramWatcher.newSingleRecordWatcher(
+                    GESTURE_RESULT_HISTOGRAM, HandwritingGestureResult.FALLBACK);
             request.onGestureHandled(HandwritingGestureResult.FALLBACK);
-            assertEquals(1,
-                    mHistogramTester.getHistogramValueCount(
-                            GESTURE_RESULT_HISTOGRAM, HandwritingGestureResult.FALLBACK));
+            histogram.assertExpected();
         });
     }
 }
