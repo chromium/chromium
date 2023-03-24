@@ -64,6 +64,10 @@
   if (!lastProfile) {
     AppleScript::SetError(AppleScript::Error::kGetProfile);
     return nil;
+  } else {
+    // Ensure that the profile is a non-OTR profile, so that it's possible to
+    // create a non-OTR window, below.
+    lastProfile = lastProfile->GetOriginalProfile();
   }
 
   Profile* profile;
