@@ -993,6 +993,11 @@
     "expiry_milestone": 121
   },
   {
+    "name": "cct-resizable-side-sheet-discover-feed-settings",
+    "owners": ["katzz", "kgrosu", "jinsukkim"],
+    "expiry_milestone": 130
+  },
+  {
     "name": "cct-resizable-side-sheet-for-third-parties",
     "owners": ["katzz", "kgrosu", "jinsukkim"],
     "expiry_milestone": 123
