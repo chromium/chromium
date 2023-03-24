@@ -65,7 +65,9 @@ class SharingUiController {
 
   // Get the name of the feature to be used as a prefix for the metric name.
   virtual SharingFeatureName GetFeatureMetricsPrefix() const = 0;
-  // Describes the content type of shared data.
+  // Describes the content type of shared data. For most languages this
+  // will be lower case as it's intended to be put as a placeholder within
+  // a sentence.
   virtual std::u16string GetContentType() const = 0;
   // Returns the message to be shown in the body of error dialog based on
   // |send_result_|.

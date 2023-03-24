@@ -977,11 +977,11 @@ need to be translated for each locale.-->
       </message>
 
       <!-- Sharing content types -->
-      <message name="IDS_BROWSER_SHARING_CONTENT_TYPE_TEXT" desc="The label used to describe that the content type being shared is a text.">
-        Text
+      <message name="IDS_BROWSER_SHARING_CONTENT_TYPE_TEXT" desc="This will be used as a placeholder in the message 'Can't share [content type].' so it should be lower-case unless this is a language where nouns are upper case." meaning="text as placeholder">
+        text
       </message>
-      <message name="IDS_BROWSER_SHARING_CONTENT_TYPE_NUMBER" desc="The label used to describe that the content type being shared is a number.">
-        Number
+      <message name="IDS_BROWSER_SHARING_CONTENT_TYPE_NUMBER" desc="This references a phone number and will be used as a placeholder in the message 'Can't share [content type].' so it should be lower-case unless this is a language where nouns are upper case." meaning="phone number as placeholder">
+        number
       </message>
 
       <!-- Sharing dialog error messages -->
