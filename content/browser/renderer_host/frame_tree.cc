@@ -546,15 +546,15 @@ void FrameTree::CreateProxiesForSiteInstance(
     }
   }
 
-  // Check whether we're in an inner delegate and |site_instance| corresponds
-  // to the outer delegate.  Subframe proxies aren't needed if this is the
-  // case.
-  bool is_site_instance_for_outer_delegate = false;
+  // Check whether we're in an inner delegate and the group |site_instance| is
+  // in corresponds to the outer delegate.  Subframe proxies aren't needed if
+  // this is the case.
+  bool is_site_instance_group_for_outer_delegate = false;
   RenderFrameProxyHost* outer_delegate_proxy =
       root()->render_manager()->GetProxyToOuterDelegate();
   if (outer_delegate_proxy) {
-    is_site_instance_for_outer_delegate =
-        (site_instance == outer_delegate_proxy->GetSiteInstance());
+    is_site_instance_group_for_outer_delegate =
+        (site_instance->group() == outer_delegate_proxy->site_instance_group());
   }
 
   // Proxies are created in the FrameTree in response to a node navigating to a
@@ -592,11 +592,12 @@ void FrameTree::CreateProxiesForSiteInstance(
       }
 
       // Do not create proxies for subframes in the outer delegate's
-      // SiteInstance, since there is no need to expose these subframes to the
-      // outer delegate.  See also comments in CreateProxiesForChildFrame() and
-      // https://crbug.com/1013553.
-      if (!node->IsMainFrame() && is_site_instance_for_outer_delegate)
+      // SiteInstanceGroup, since there is no need to expose these subframes to
+      // the outer delegate.  See also comments in CreateProxiesForChildFrame()
+      // and https://crbug.com/1013553.
+      if (!node->IsMainFrame() && is_site_instance_group_for_outer_delegate) {
         continue;
+      }
 
       // If |node| is the FrameTreeNode being navigated, we use
       // |browsing_context_state| (as BrowsingContextState might change for
