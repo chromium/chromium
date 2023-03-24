@@ -211,6 +211,16 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Startup.Android.Cold.TimeToForegroundSessionStart" units="ms"
+    expires_after="2023-09-22">
+  <owner>pasko@chromium.org</owner>
+  <owner>mthiesse@chromium.org</owner>
+  <summary>
+    The time from activity creation till the point when UMA foreground session
+    starts.
+  </summary>
+</histogram>
+
 <histogram name="Startup.Android.Cold.TimeToVisibleContent" units="ms"
     expires_after="2023-08-20">
   <owner>ckitagawa@chromium.org</owner>

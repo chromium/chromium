@@ -137,6 +137,11 @@ public class StartupLoadingMetricsTest {
     }
 
     private void assertHistogramsRecordedAsExpected(int expectedCount, String histogramSuffix) {
+        assertHistogramsRecordedAsExpectedWithBackgroundInfo(expectedCount, histogramSuffix, false);
+    }
+
+    private void assertHistogramsRecordedAsExpectedWithBackgroundInfo(
+            int expectedCount, String histogramSuffix, boolean inBackground) {
         boolean isTabbedSuffix = histogramSuffix.equals(TABBED_SUFFIX);
 
         // Check that the new first navigation commit is always recorded for the tabbed activity.
@@ -183,6 +188,12 @@ public class StartupLoadingMetricsTest {
             Assert.assertEquals(expectedCount,
                     RecordHistogram.getHistogramTotalCountForTesting(
                             FIRST_VISIBLE_CONTENT_HISTOGRAM2));
+        }
+
+        if (!inBackground) {
+            Assert.assertEquals(1,
+                    RecordHistogram.getHistogramTotalCountForTesting(
+                            "Startup.Android.Cold.TimeToForegroundSessionStart"));
         }
     }
 
@@ -299,7 +310,8 @@ public class StartupLoadingMetricsTest {
             Tab tab = mTabbedActivityTestRule.getActivity().getActivityTab();
             ChromeTabUtils.waitForTabPageLoaded(tab, (String) null);
         });
-        assertHistogramsRecordedAsExpected(0, TABBED_SUFFIX);
+        assertHistogramsRecordedAsExpectedWithBackgroundInfo(0, TABBED_SUFFIX, true);
+
         runAndWaitForPageLoadMetricsRecorded(() -> {
             // Put Chrome in foreground before loading a new page.
             ChromeApplicationTestUtils.launchChrome(InstrumentationRegistry.getTargetContext());

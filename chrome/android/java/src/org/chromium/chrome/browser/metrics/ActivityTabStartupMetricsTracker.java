@@ -162,6 +162,10 @@ public class ActivityTabStartupMetricsTracker {
                     FIRST_PAINT_OCCURRED_PRE_FOREGROUND_HISTOGRAM, true);
         }
 
+        RecordHistogram.recordMediumTimesHistogram(
+                "Startup.Android.Cold.TimeToForegroundSessionStart",
+                SystemClock.uptimeMillis() - mActivityStartTimeMs);
+
         UmaUtils.removeObserver();
     }
 
