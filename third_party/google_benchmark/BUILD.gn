@@ -10,12 +10,6 @@ config("benchmark_config") {
   }
 }
 
-# TODO(crbug.com/1344570): Remove once third_party/google_benchmark no longer
-# uses std::wstring_convert.
-config("benchmark_suppress_warnings") {
-  cflags = [ "-Wno-deprecated-declarations" ]
-}
-
 component("google_benchmark") {
   testonly = true
 
@@ -71,7 +65,6 @@ component("google_benchmark") {
   configs -= [ "//build/config/compiler:chromium_code" ]
   configs += [
     "//build/config/compiler:no_chromium_code",
-    ":benchmark_suppress_warnings",
   ]
 
   if (is_win) {
