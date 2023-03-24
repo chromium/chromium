@@ -6052,6 +6052,13 @@
        ]
       ]
      },
+     "mspace-mpadded-negative-dimensions.html": [
+      "97ae5b89b8452b49b701e4558650fdbd4cc4d5c1",
+      [
+       null,
+       {}
+      ]
+     ],
      "mtd-as-multicol.html": [
       "f00fa488154ff42e8c3ecfa5cc48ceb2aca4f131",
       [
@@ -267368,16 +267375,6 @@
    }
   },
   "support": {
-   ".cache": {
-    "gitignore2.json": [
-     "ae51dd543eb97d7a48569fb96d6cbb36e951682f",
-     []
-    ],
-    "mtime.json": [
-     "5ec44b1ac823445d2b36626e0e62ca841f1aaf5d",
-     []
-    ]
-   },
    ".gitignore": [
     "d93e645d547894b50149d3726de2654957b6e06f",
     []
@@ -387898,7 +387895,7 @@
        []
       ],
       "image.py": [
-       "793f649cb4d4cf734a842cf8d33e72d1b31b14d4",
+       "055ebe71fbc568741432a9c19344996286876a2a",
        []
       ],
       "inline.py": [
