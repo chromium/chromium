@@ -64,10 +64,12 @@ class NavigateEvent final : public Event,
   void intercept(NavigationInterceptOptions*, ExceptionState&);
 
   void DoCommit();
-  void React(ScriptState* script_state);
 
   void scroll(ExceptionState&);
 
+  void Finish(bool did_fulfill);
+
+  ScriptPromise GetReactionPromiseAll(ScriptState*);
   bool HasNavigationActions() const {
     return intercept_state_ != InterceptState::kNone;
   }
@@ -85,9 +87,6 @@ class NavigateEvent final : public Event,
   void PotentiallyResetTheFocus();
   void PotentiallyProcessScrollBehavior();
   void ProcessScrollBehavior();
-
-  class Reaction;
-  void ReactDone(ScriptValue, bool did_fulfill);
 
   String navigation_type_;
   Member<NavigationDestination> destination_;
