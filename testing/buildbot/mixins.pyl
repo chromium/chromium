@@ -606,18 +606,6 @@
       ],
     },
   },
-  'ios_runtime_cache_14_4': {
-    '$mixin_append': {
-      'swarming': {
-        'named_caches': [
-          {
-            'name': 'runtime_ios_14_4',
-            'path': 'Runtime-ios-14.4',
-          },
-        ],
-      },
-    },
-  },
   'ios_runtime_cache_14_5': {
     '$mixin_append': {
       'swarming': {
