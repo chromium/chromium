@@ -15,6 +15,7 @@ import {
   Mode,
   Resolution,
 } from '../../type.js';
+import {getFpsRangeFromConstraints} from '../../util.js';
 import {StreamConstraints} from '../stream_constraints.js';
 
 import {
@@ -170,26 +171,12 @@ export class Modes {
                 assertExists(this.getCaptureParams().videoSnapshotResolution));
           }
 
-          let minFrameRate = 0;
-          let maxFrameRate = 0;
-          if (constraints.video?.frameRate) {
-            const frameRate = constraints.video.frameRate;
-            if (typeof frameRate === 'number') {
-              minFrameRate = frameRate;
-              maxFrameRate = frameRate;
-            } else if (frameRate.exact) {
-              minFrameRate = frameRate.exact;
-              maxFrameRate = frameRate.exact;
-            } else if (frameRate.min && frameRate.max) {
-              minFrameRate = frameRate.min;
-              maxFrameRate = frameRate.max;
-            }
-            // TODO(wtlee): To set the fps range to the default value, we should
-            // remove the frameRate from constraints instead of using incomplete
-            // range.
-          }
-          await deviceOperator.setFpsRange(
-              deviceId, minFrameRate, maxFrameRate);
+          // TODO(wtlee): To set the fps range to the default value, we should
+          // remove the frameRate from constraints instead of using incomplete
+          // range.
+          const {minFps, maxFps} =
+              getFpsRangeFromConstraints(constraints.video?.frameRate);
+          await deviceOperator.setFpsRange(deviceId, minFps, maxFps);
         },
         fallbackMode: Mode.PHOTO,
       },

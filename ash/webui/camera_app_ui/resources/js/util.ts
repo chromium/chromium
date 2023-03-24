@@ -9,7 +9,7 @@ import {I18nString} from './i18n_string.js';
 import * as loadTimeData from './models/load_time_data.js';
 import * as state from './state.js';
 import * as tooltip from './tooltip.js';
-import {AspectRatioSet, Facing, Resolution} from './type.js';
+import {AspectRatioSet, Facing, FpsRange, Resolution} from './type.js';
 
 /**
  * Creates a canvas element for 2D drawing.
@@ -444,4 +444,25 @@ export function getNumberEnumMapping<T extends number>(
     }
     return [[k, v]];
   }));
+}
+
+/**
+ * Returns FPS range from media track constraints.
+ */
+export function getFpsRangeFromConstraints(frameRate: ConstrainDouble|
+                                           undefined): FpsRange {
+  let minFps = 0;
+  let maxFps = 0;
+  // For devices that don't support constant frame rate, we pass {0,0} and let
+  // VCD fall back to the default range.
+  if (frameRate) {
+    if (typeof frameRate === 'number') {
+      minFps = frameRate;
+      maxFps = frameRate;
+    } else if (frameRate.exact) {
+      minFps = frameRate.exact;
+      maxFps = frameRate.exact;
+    }
+  }
+  return {minFps, maxFps};
 }

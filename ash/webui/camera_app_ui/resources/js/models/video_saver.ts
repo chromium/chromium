@@ -58,10 +58,10 @@ async function createGifVideoProcessor(
  * Creates a VideoProcessor instance for recording time-lapse.
  */
 async function createTimeLapseProcessor(
-    output: AsyncWriter,
-    resolution: Resolution): Promise<Comlink.Remote<VideoProcessor>> {
+    output: AsyncWriter, resolution: Resolution,
+    fps: number): Promise<Comlink.Remote<VideoProcessor>> {
   return new (await FFMpegVideoProcessor)(
-      Comlink.proxy(output), createTimeLapseArgs(resolution));
+      Comlink.proxy(output), createTimeLapseArgs(resolution, fps));
 }
 
 /**
@@ -203,7 +203,8 @@ export class TimeLapseSaver {
 
   constructor(
       encoderConfig: VideoEncoderConfig,
-      private readonly resolution: Resolution, initialSpeed: number) {
+      private readonly resolution: Resolution, private readonly fps: number,
+      initialSpeed: number) {
     this.speed = initialSpeed;
     this.encoder = new VideoEncoder({
       error: (error) => {
@@ -251,7 +252,8 @@ export class TimeLapseSaver {
     // TODO(b/236800499): Optimize file writing mechanism to make it faster.
     const file = await createPrivateTempVideoFile();
     const writer = await file.getWriter();
-    const processor = await createTimeLapseProcessor(writer, this.resolution);
+    const processor =
+        await createTimeLapseProcessor(writer, this.resolution, this.fps);
 
     const filteredChunk =
         this.frames.filter(({frameNo}) => frameNo % this.speed === 0);
@@ -268,13 +270,13 @@ export class TimeLapseSaver {
    * Creates video saver with encoder using provided |encoderConfig|.
    */
   static async create(
-      encoderConfig: VideoEncoderConfig, resolution: Resolution,
+      encoderConfig: VideoEncoderConfig, resolution: Resolution, fps: number,
       initialSpeed: number): Promise<TimeLapseSaver> {
     const encoderSupport = await VideoEncoder.isConfigSupported(encoderConfig);
     if (!encoderSupport.supported) {
       throw new Error('Video encoder is not supported.');
     }
 
-    return new TimeLapseSaver(encoderConfig, resolution, initialSpeed);
+    return new TimeLapseSaver(encoderConfig, resolution, fps, initialSpeed);
   }
 }

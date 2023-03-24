@@ -42,6 +42,7 @@ import {
   Resolution,
   VideoType,
 } from '../../type.js';
+import {getFpsRangeFromConstraints} from '../../util.js';
 import {WaitableEvent} from '../../waitable_event.js';
 import {StreamConstraints} from '../stream_constraints.js';
 import {StreamManager} from '../stream_manager.js';
@@ -89,10 +90,14 @@ const GRAB_GIF_FRAME_RATIO = 2;
 const TIME_LAPSE_INITIAL_SPEED = 5;
 
 /**
- * Number of maximum frames recorded in a specific speed time-lapse video. If
- * the current number of frames exceeds, the speed must be increasd.
+ * Maximum duration for the time-lapse video in seconds.
  */
-const TIME_LAPSE_MAX_FRAMES = 5 * 30;
+const TIME_LAPSE_MAX_DURATION = 60;
+
+/**
+ * Default number of fps in case it's not defined from the original video.
+ */
+const TIME_LAPSE_DEFAULT_FRAME_RATE = 30;
 
 
 /**
@@ -283,6 +288,7 @@ export class Video extends ModeBase {
       private readonly snapshotResolution: Resolution|null,
       facing: Facing,
       private readonly handler: VideoHandler,
+      private readonly frameRate: number,
   ) {
     super(video, facing);
 
@@ -742,17 +748,20 @@ export class Video extends ModeBase {
    */
   private async captureTimeLapse(param: h264.EncoderParameters):
       Promise<TimeLapseSaver> {
+    const fps =
+        this.frameRate > 0 ? this.frameRate : TIME_LAPSE_DEFAULT_FRAME_RATE;
     const encoderConfig = getVideoEncoderConfig(param, this.captureResolution);
     const saver = await TimeLapseSaver.create(
-        encoderConfig, this.captureResolution, TIME_LAPSE_INITIAL_SPEED);
+        encoderConfig, this.captureResolution, fps, TIME_LAPSE_INITIAL_SPEED);
     const video = this.video.video;
 
     // Handles time-lapse speed adjustment.
+    const maxFrames = TIME_LAPSE_MAX_DURATION * fps;
     let speed = TIME_LAPSE_INITIAL_SPEED;
-    let speedCheckpoint = speed * TIME_LAPSE_MAX_FRAMES;
+    let speedCheckpoint = speed * maxFrames;
     function updateSpeed() {
       speed = speed * 2;
-      speedCheckpoint = speed * TIME_LAPSE_MAX_FRAMES;
+      speedCheckpoint = speed * maxFrames;
       saver.updateSpeed(speed);
     }
 
@@ -901,8 +910,10 @@ export class VideoFactory extends ModeFactory {
     }
     assert(this.previewVideo !== null);
     assert(this.facing !== null);
+    const frameRate =
+        getFpsRangeFromConstraints(this.constraints.video.frameRate).minFps;
     return new Video(
         this.previewVideo, captureConstraints, this.captureResolution,
-        this.snapshotResolution, this.facing, this.handler);
+        this.snapshotResolution, this.facing, this.handler, frameRate);
   }
 }
