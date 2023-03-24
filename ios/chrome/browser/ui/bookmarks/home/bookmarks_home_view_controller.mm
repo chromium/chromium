@@ -252,10 +252,11 @@ std::vector<GURL> GetUrlsToOpen(const std::vector<const BookmarkNode*>& nodes) {
 }
 
 - (void)shutdown {
-  [_bookmarksCoordinator shutdown];
-  _bookmarksCoordinator = nil;
-
+  [self.bookmarksCoordinator shutdown];
+  self.bookmarksCoordinator = nil;
   [self.mediator disconnect];
+  self.mediator.consumer = nil;
+  self.mediator = nil;
   _sharedState.tableView.dataSource = nil;
   _sharedState.tableView.delegate = nil;
   self.browser = nullptr;

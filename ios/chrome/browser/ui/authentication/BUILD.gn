@@ -57,6 +57,7 @@ source_set("authentication") {
     "//ios/chrome/browser/ui/alert_coordinator",
     "//ios/chrome/browser/ui/authentication/cells",
     "//ios/chrome/browser/ui/authentication/signin:signin_headers",
+    "//ios/chrome/browser/ui/authentication/unified_consent/identity_chooser",
     "//ios/chrome/browser/ui/infobars/resources:infobar_warning",
     "//ios/chrome/browser/ui/ntp:feature_flags",
     "//ios/chrome/browser/ui/settings:settings_root",

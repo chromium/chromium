@@ -475,6 +475,7 @@ TEST_F(SigninPromoViewMediatorTest, SigninPromoViewStateSignedin) {
                            signin_metrics::PromoAction::
                                PROMO_ACTION_NEW_ACCOUNT_NO_EXISTING_ACCOUNT
                         completion:completion_arg]);
+  ExpectConfiguratorNotification(NO /* identity changed */);
   [mediator_ signinPromoViewDidTapSigninWithNewAccount:signin_promo_view_];
   EXPECT_TRUE(mediator_.signinInProgress);
   EXPECT_EQ(ios::SigninPromoViewState::UsedAtLeastOnce,
@@ -482,6 +483,7 @@ TEST_F(SigninPromoViewMediatorTest, SigninPromoViewStateSignedin) {
   EXPECT_NE(nil, (id)completion);
   // Stop sign-in.
   OCMExpect([consumer_ signinDidFinish]);
+  ExpectConfiguratorNotification(NO /* identity changed */);
   completion(YES);
   EXPECT_FALSE(mediator_.signinInProgress);
   EXPECT_EQ(ios::SigninPromoViewState::UsedAtLeastOnce,
@@ -507,6 +509,7 @@ TEST_F(SigninPromoViewMediatorTest,
                            signin_metrics::PromoAction::
                                PROMO_ACTION_NEW_ACCOUNT_NO_EXISTING_ACCOUNT
                         completion:completion_arg]);
+  ExpectConfiguratorNotification(NO /* identity changed */);
   // Starts sign-in without identity.
   [mediator_ signinPromoViewDidTapSigninWithNewAccount:signin_promo_view_];
   // Adds an identity while doing sign-in.
@@ -515,6 +518,7 @@ TEST_F(SigninPromoViewMediatorTest,
   fake_system_identity_manager()->WaitForServiceCallbacksToComplete();
   // Finishs the sign-in.
   OCMExpect([consumer_ signinDidFinish]);
+  ExpectConfiguratorNotification(NO /* identity changed */);
   completion(YES);
 }
 
@@ -536,6 +540,7 @@ TEST_F(SigninPromoViewMediatorTest,
                                    promoAction:signin_metrics::PromoAction::
                                                    PROMO_ACTION_WITH_DEFAULT
                                     completion:completion_arg]);
+  ExpectConfiguratorNotification(NO /* identity changed */);
   // Starts sign-in with an identity.
   [mediator_ signinPromoViewDidTapSigninWithDefaultAccount:signin_promo_view_];
   EXPECT_TRUE([mediator_
@@ -548,6 +553,7 @@ TEST_F(SigninPromoViewMediatorTest,
   fake_system_identity_manager()->WaitForServiceCallbacksToComplete();
   // Finishs the sign-in.
   OCMExpect([consumer_ signinDidFinish]);
+  ExpectConfiguratorNotification(NO /* identity changed */);
   completion(YES);
 }
 
@@ -607,6 +613,7 @@ TEST_F(SigninPromoViewMediatorTest,
                                    promoAction:signin_metrics::PromoAction::
                                                    PROMO_ACTION_WITH_DEFAULT
                                     completion:completion_arg]);
+  ExpectConfiguratorNotification(NO /* identity changed */);
   // Start sign-in with an identity.
   [mediator_ signinPromoViewDidTapSigninWithDefaultAccount:signin_promo_view_];
   // Remove the sign-in promo.
@@ -638,6 +645,7 @@ TEST_F(SigninPromoViewMediatorTest, RemoveSigninPromoWhileSignedIn) {
                                    promoAction:signin_metrics::PromoAction::
                                                    PROMO_ACTION_WITH_DEFAULT
                                     completion:completion_arg]);
+  ExpectConfiguratorNotification(NO /* identity changed */);
   // Start sign-in with an identity.
   [mediator_ signinPromoViewDidTapSigninWithDefaultAccount:signin_promo_view_];
   // Remove the sign-in promo.

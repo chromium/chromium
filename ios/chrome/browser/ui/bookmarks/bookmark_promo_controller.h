@@ -23,6 +23,9 @@ class Browser;
             (SigninPromoViewConfigurator*)configurator
                              identityChanged:(BOOL)identityChanged;
 
+// Returns YES if the initial sync is running.
+- (BOOL)isPerformingInitialSync;
+
 @end
 
 // This controller manages the display of the promo cell through its delegate

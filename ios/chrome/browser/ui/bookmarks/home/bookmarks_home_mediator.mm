@@ -138,8 +138,8 @@ const int kMaxBookmarksSearchResults = 50;
 
 - (void)disconnect {
   [_bookmarkPromoController shutdown];
+  _bookmarkPromoController.delegate = nil;
   _bookmarkPromoController = nil;
-
   _modelBridge = nullptr;
   _syncSetupService = nullptr;
   _syncedBookmarksObserver = nullptr;
@@ -506,8 +506,7 @@ const int kMaxBookmarksSearchResults = 50;
             (SigninPromoViewConfigurator*)configurator
                              identityChanged:(BOOL)identityChanged {
   if (![self.sharedState.tableViewModel
-          hasSectionForSectionIdentifier:BookmarksHomeSectionIdentifierPromo] ||
-      !identityChanged) {
+          hasSectionForSectionIdentifier:BookmarksHomeSectionIdentifierPromo]) {
     return;
   }
 
@@ -516,6 +515,10 @@ const int kMaxBookmarksSearchResults = 50;
          sectionIdentifier:BookmarksHomeSectionIdentifierPromo];
   [self.consumer configureSigninPromoWithConfigurator:configurator
                                           atIndexPath:indexPath];
+}
+
+- (BOOL)isPerformingInitialSync {
+  return _syncedBookmarksObserver->IsPerformingInitialSync();
 }
 
 #pragma mark - SigninPresenter

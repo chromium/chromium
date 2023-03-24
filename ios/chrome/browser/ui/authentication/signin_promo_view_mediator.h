@@ -73,6 +73,11 @@ class PrefRegistrySyncable;
 @property(nonatomic, assign, readonly, getter=isInvalidClosedOrNeverVisible)
     BOOL invalidClosedOrNeverVisible;
 
+// If YES, SigninPromoViewMediator will trigger the sign-in flow with sign-in
+// only. Otherwise, SigninPromoViewMediator will trigger a command for sign-in
+// and sync.
+@property(nonatomic, assign) BOOL signInOnly;
+
 // Registers the feature preferences.
 + (void)registerBrowserStatePrefs:(user_prefs::PrefRegistrySyncable*)registry;
 
