@@ -13,6 +13,8 @@ found in the LICENSE file.
 
     <dimen name="autofill_dropdown_icon_width">32dp</dimen>
     <dimen name="autofill_dropdown_icon_height">20dp</dimen>
+    <dimen name="autofill_dropdown_icon_width_new">40dp</dimen>
+    <dimen name="autofill_dropdown_icon_height_new">24dp</dimen>
 
     <!-- Preferences dimensions
       pref_autofill_field_horizontal_padding exists because TextInputLayouts have an internal
