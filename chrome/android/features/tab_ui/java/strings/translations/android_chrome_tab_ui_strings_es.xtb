@@ -5,8 +5,8 @@
 <translation id="1181037720776840403">Quitar</translation>
 <translation id="125153950246128346">Pulsa para ver otra pestaña</translation>
 <translation id="1403228085774130835">Puedes encontrar las pestañas cerradas en la sección Pestañas recientes del menú principal de Chrome</translation>
-<translation id="1455506303394048917">Se borrará tu actividad en estas pestañas de incógnito de este dispositivo</translation>
-<translation id="1499635324672558517">¿Cerrar todas las pestañas de incógnito?</translation>
+<translation id="1455506303394048917">Se borrará tu actividad en estas pestañas de Incógnito de este dispositivo</translation>
+<translation id="1499635324672558517">¿Cerrar todas las pestañas de Incógnito?</translation>
 <translation id="1657719826150349398">Bajar pestaña</translation>
 <translation id="1869137256605757565">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> pestaña}other{<ph name="TABS_COUNT_MANY" /> pestañas}}</translation>
 <translation id="2050597508048557928">{TABS_COUNT,plural, =1{Añadir <ph name="TABS_COUNT_ONE" /> pestaña seleccionada a marcadores}other{Añadir <ph name="TABS_COUNT_MANY" /> pestañas seleccionadas a marcadores}}</translation>
