@@ -5,6 +5,7 @@
 #ifndef CC_RASTER_SCOPED_GRCONTEXT_ACCESS_H_
 #define CC_RASTER_SCOPED_GRCONTEXT_ACCESS_H_
 
+#include "base/memory/raw_ptr_exclusion.h"
 #include "components/viz/common/gpu/raster_context_provider.h"
 #include "gpu/command_buffer/client/raster_interface.h"
 
@@ -23,7 +24,9 @@ class ScopedGrContextAccess {
   }
 
  private:
-  viz::RasterContextProvider* context_provider_;
+  // This field is not a raw_ptr<> because it was filtered by the rewriter for:
+  // #union
+  RAW_PTR_EXCLUSION viz::RasterContextProvider* context_provider_;
 };
 
 #endif  // CC_RASTER_SCOPED_GRCONTEXT_ACCESS_H_

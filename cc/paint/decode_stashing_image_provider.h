@@ -6,6 +6,7 @@
 #define CC_PAINT_DECODE_STASHING_IMAGE_PROVIDER_H_
 
 #include "base/containers/stack_container.h"
+#include "base/memory/raw_ptr_exclusion.h"
 #include "cc/paint/image_provider.h"
 #include "cc/paint/paint_export.h"
 
@@ -32,7 +33,9 @@ class CC_PAINT_EXPORT DecodeStashingImageProvider : public ImageProvider {
   void Reset();
 
  private:
-  ImageProvider* source_provider_;
+  // This field is not a raw_ptr<> because it was filtered by the rewriter for:
+  // #union
+  RAW_PTR_EXCLUSION ImageProvider* source_provider_;
   base::StackVector<ScopedResult, 1> decoded_images_;
 };
 

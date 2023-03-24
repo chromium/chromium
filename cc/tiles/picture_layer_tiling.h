@@ -16,6 +16,7 @@
 #include <vector>
 
 #include "base/memory/raw_ptr.h"
+#include "base/memory/raw_ptr_exclusion.h"
 #include "cc/base/region.h"
 #include "cc/base/tiling_data.h"
 #include "cc/cc_export.h"
@@ -250,7 +251,9 @@ class CC_EXPORT PictureLayerTiling {
     bool AtEnd() const;
 
    private:
-    PictureLayerTiling* tiling_;
+    // This field is not a raw_ptr<> because it was filtered by the rewriter
+    // for: #union
+    RAW_PTR_EXCLUSION PictureLayerTiling* tiling_;
     PictureLayerTiling::TileMap::iterator iter_;
   };
 
