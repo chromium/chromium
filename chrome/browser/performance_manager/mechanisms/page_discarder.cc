@@ -7,6 +7,7 @@
 #include "base/functional/bind.h"
 #include "base/task/task_traits.h"
 #include "build/build_config.h"
+#include "chrome/browser/performance_manager/public/user_tuning/user_tuning_utils.h"
 #include "chrome/browser/resource_coordinator/tab_lifecycle_unit.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_list.h"
@@ -71,9 +72,10 @@ void PageDiscarder::DiscardPageNodes(
     base::OnceCallback<void(bool)> post_discard_cb) {
   std::vector<std::pair<WebContentsProxy, uint64_t>> proxies_and_pmf;
   proxies_and_pmf.reserve(page_nodes.size());
-  for (auto* page_node : page_nodes) {
-    proxies_and_pmf.emplace_back(page_node->GetContentsProxy(),
-                                 page_node->EstimatePrivateFootprintSize());
+  for (const auto* page_node : page_nodes) {
+    proxies_and_pmf.emplace_back(
+        page_node->GetContentsProxy(),
+        user_tuning::GetDiscardedMemoryEstimateForPage(page_node));
   }
   content::GetUIThreadTaskRunner({})->PostTaskAndReplyWithResult(
       FROM_HERE,

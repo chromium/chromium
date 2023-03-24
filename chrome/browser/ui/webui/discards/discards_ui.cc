@@ -15,6 +15,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
 #include "chrome/browser/browser_process.h"
+#include "chrome/browser/performance_manager/public/user_tuning/user_tuning_utils.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/resource_coordinator/lifecycle_unit.h"
 #include "chrome/browser/resource_coordinator/lifecycle_unit_state.mojom.h"
@@ -185,9 +186,27 @@ class DiscardsDetailsProviderImpl : public discards::mojom::DetailsProvider {
                    mojom::LifecycleUnitDiscardReason reason,
                    DiscardByIdCallback callback) override {
     auto* lifecycle_unit = GetLifecycleUnitById(id);
-    if (lifecycle_unit)
-      lifecycle_unit->Discard(reason);
-    std::move(callback).Run();
+    if (lifecycle_unit) {
+      // Callback to do the discard with the memory estimate.
+      auto discard_callback = base::BindOnce(
+          [](int32_t id, mojom::LifecycleUnitDiscardReason reason,
+             DiscardByIdCallback post_discard_callback,
+             uint64_t memory_estimate) {
+            // Look up lifecycle_unit by id again, in case it's deleted while
+            // waiting.
+            auto* lifecycle_unit = GetLifecycleUnitById(id);
+            if (lifecycle_unit) {
+              lifecycle_unit->Discard(reason, memory_estimate);
+            }
+            std::move(post_discard_callback).Run();
+          },
+          id, reason, std::move(callback));
+
+      performance_manager::user_tuning::
+          GetDiscardedMemoryEstimateForWebContents(
+              lifecycle_unit->AsTabLifecycleUnitExternal()->GetWebContents(),
+              std::move(discard_callback));
+    }
   }
 
   void LoadById(int32_t id) override {
