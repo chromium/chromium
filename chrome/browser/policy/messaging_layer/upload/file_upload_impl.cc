@@ -857,7 +857,7 @@ void FileUploadDelegate::InitializeOnce() {
         }
       )"));
 
-  max_upload_buffer_size_ = 1L * 1024L * 1024L;  // 1 MiB
+  max_upload_buffer_size_ = kMaxUploadBufferSize;
 }
 
 std::unique_ptr<OAuth2AccessTokenManager::Request>

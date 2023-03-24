@@ -17,6 +17,7 @@
 #include "base/task/single_thread_task_runner.h"
 #include "base/task/thread_pool.h"
 #include "chrome/browser/policy/messaging_layer/upload/event_upload_size_controller.h"
+#include "chrome/browser/policy/messaging_layer/upload/file_upload_impl.h"
 #include "chrome/browser/policy/messaging_layer/upload/upload_client.h"
 #include "chrome/browser/policy/messaging_layer/upload/upload_provider.h"
 #include "chromeos/dbus/missive/missive_client.h"
@@ -40,9 +41,9 @@ static constexpr uint64_t kDefaultMemoryAllocation =
 
 void SendStatusAsResponse(std::unique_ptr<dbus::Response> response,
                           dbus::ExportedObject::ResponseSender response_sender,
-                          reporting::Status status) {
+                          ::reporting::Status status) {
   // Build StatusProto
-  reporting::StatusProto status_proto;
+  ::reporting::StatusProto status_proto;
   status.SaveTo(&status_proto);
 
   dbus::MessageWriter writer(response.get());
@@ -147,8 +148,9 @@ void EncryptedReportingServiceProvider::RequestUploadEncryptedRecords(
     // We should never get to here, since the provider is only exported
     // when is_uploader_required() is true. Have this code only as
     // in order to let `missive` daemon to log configuration inconsistency.
-    reporting::Status status{reporting::error::FAILED_PRECONDITION,
-                             "Uploads are not expected in this configuration"};
+    ::reporting::Status status{
+        ::reporting::error::FAILED_PRECONDITION,
+        "Uploads are not expected in this configuration"};
     LOG(ERROR) << "Uploads are not expected in this configuration";
     SendStatusAsResponse(std::move(response), std::move(response_sender),
                          status);
@@ -161,8 +163,8 @@ void EncryptedReportingServiceProvider::RequestUploadEncryptedRecords(
   if (!reader.PopArrayOfBytes(
           reinterpret_cast<const uint8_t**>(&serialized_request_buf),
           &serialized_request_buf_size)) {
-    reporting::Status status{
-        reporting::error::INVALID_ARGUMENT,
+    ::reporting::Status status{
+        ::reporting::error::INVALID_ARGUMENT,
         "Error reading UploadEncryptedRecordRequest as array of bytes"};
     LOG(ERROR) << "Unable to process UploadEncryptedRecordRequest. status: "
                << status;
@@ -174,9 +176,9 @@ void EncryptedReportingServiceProvider::RequestUploadEncryptedRecords(
   ::reporting::ScopedReservation scoped_reservation(serialized_request_buf_size,
                                                     memory_resource_);
   if (!scoped_reservation.reserved()) {
-    reporting::Status status{reporting::error::RESOURCE_EXHAUSTED,
-                             "UploadEncryptedRecordRequest has exhausted "
-                             "assigned memory pool in Chrome"};
+    ::reporting::Status status{::reporting::error::RESOURCE_EXHAUSTED,
+                               "UploadEncryptedRecordRequest has exhausted "
+                               "assigned memory pool in Chrome"};
     LOG(ERROR) << "Unable to process UploadEncryptedRecordRequest. status: "
                << status;
     SendStatusAsResponse(std::move(response), std::move(response_sender),
@@ -184,11 +186,11 @@ void EncryptedReportingServiceProvider::RequestUploadEncryptedRecords(
     return;
   }
 
-  reporting::UploadEncryptedRecordRequest request;
+  ::reporting::UploadEncryptedRecordRequest request;
   if (!request.ParseFromArray(serialized_request_buf,
                               serialized_request_buf_size)) {
-    reporting::Status status{
-        reporting::error::INVALID_ARGUMENT,
+    ::reporting::Status status{
+        ::reporting::error::INVALID_ARGUMENT,
         "Failed to parse UploadEncryptedRecordRequest from array of bytes."};
     LOG(ERROR) << "Unable to process UploadEncryptedRecordRequest. status: "
                << status;
@@ -209,11 +211,12 @@ void EncryptedReportingServiceProvider::RequestUploadEncryptedRecords(
       request.has_new_events_rate() ? request.new_events_rate() : 1U;
   // Move events from |request| into a separate vector |records|, using more or
   // less the same amount of memory that has been reserved above.
-  auto records{reporting::EventUploadSizeController::BuildEncryptedRecords(
+  auto records{::reporting::EventUploadSizeController::BuildEncryptedRecords(
       request.encrypted_record(),
-      reporting::EventUploadSizeController(network_condition_service_,
-                                           new_events_rate,
-                                           remaining_storage_capacity))};
+      ::reporting::EventUploadSizeController(
+          network_condition_service_, new_events_rate,
+          remaining_storage_capacity,
+          ::reporting::FileUploadDelegate::kMaxUploadBufferSize))};
 
   DCHECK(upload_provider_);
   chromeos::MissiveClient* const missive_client =
@@ -222,8 +225,8 @@ void EncryptedReportingServiceProvider::RequestUploadEncryptedRecords(
     LOG(ERROR) << "No Missive client available";
     SendStatusAsResponse(
         std::move(response), std::move(response_sender),
-        reporting::Status(reporting::error::FAILED_PRECONDITION,
-                          "No Missive client available"));
+        ::reporting::Status(::reporting::error::FAILED_PRECONDITION,
+                            "No Missive client available"));
     return;
   }
 

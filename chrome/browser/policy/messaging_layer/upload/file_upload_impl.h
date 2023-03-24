@@ -30,6 +30,8 @@ namespace reporting {
 
 class FileUploadDelegate : public FileUploadJob::Delegate {
  public:
+  static constexpr int64_t kMaxUploadBufferSize = 1L * 1024L * 1024L;  // 1 MiB
+
   FileUploadDelegate();
   ~FileUploadDelegate() override;
 

@@ -42,7 +42,8 @@ TEST_F(EventUploadSizeControllerTest, AccountForRecordAddUp) {
   EventUploadSizeController event_upload_size_controller(
       network_condition_service,
       /*new_events_rate=*/1U,
-      /*remaining_storage_capacity=*/std::numeric_limits<uint64_t>::max());
+      /*remaining_storage_capacity=*/std::numeric_limits<uint64_t>::max(),
+      /*max_file_upload_buffer_size=*/1024UL);
   // This number may change from time to time if we adapt the formula in the
   // future.
   const uint64_t max_upload_size =
@@ -87,6 +88,36 @@ TEST_F(EventUploadSizeControllerTest, AccountForRecordAddUp) {
   ASSERT_FALSE(event_upload_size_controller.IsMaximumUploadSizeReached());
 }
 
-// TODO(b/214039157): Add test for |BuildEncryptedRecords|.
+TEST_F(EventUploadSizeControllerTest, AccountForFileUpload) {
+  TestingNetworkConditionService network_condition_service(&task_environment_);
+  network_condition_service.SetUploadRate(10000);
+  EventUploadSizeController event_upload_size_controller(
+      network_condition_service,
+      /*new_events_rate=*/1U,
+      /*remaining_storage_capacity=*/std::numeric_limits<uint64_t>::max(),
+      /*max_file_upload_buffer_size*/ 1024UL);
+  // This number may change from time to time if we adapt the formula in the
+  // future.
+  const uint64_t max_upload_size =
+      event_upload_size_controller.ComputeMaxUploadSize(
+          network_condition_service);
+  LOG(INFO) << "The computed max upload size is " << max_upload_size;
+
+  // Add this single record, accounting for the max data buffer,
+  // make sure |IsMaximumUploadSizeReached| gives the correct answer.
+  ASSERT_FALSE(event_upload_size_controller.IsMaximumUploadSizeReached());
+  event_upload_size_controller.AccountForData(/*size=*/max_upload_size);
+  ASSERT_TRUE(event_upload_size_controller.IsMaximumUploadSizeReached())
+      << "The maximum upload size is not reached when record with copy must "
+         "have been accounted for.";
+
+  // If disabled, |IsMaximumUploadSizeReached| returns false.
+  EventUploadSizeController::Enabler::Set(false);
+  ASSERT_FALSE(EventUploadSizeController::Enabler::Get());
+  ASSERT_FALSE(event_upload_size_controller.IsMaximumUploadSizeReached());
+}
+
+// TODO(b/214039157): Add test for |BuildEncryptedRecords|, including file
+// upload buffer accounting.
 
 }  // namespace reporting

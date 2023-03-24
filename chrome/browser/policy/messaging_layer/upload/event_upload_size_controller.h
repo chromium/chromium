@@ -37,7 +37,8 @@ class EventUploadSizeController {
   EventUploadSizeController(
       const NetworkConditionService& network_condition_service,
       uint64_t new_events_rate,
-      uint64_t remaining_storage_capacity);
+      uint64_t remaining_storage_capacity,
+      uint64_t max_file_upload_buffer_size);
 
   // Build the vector of encrypted records based on the records in the upload
   // request. Event upload size is adjusted.
@@ -50,6 +51,7 @@ class EventUploadSizeController {
   friend class EventUploadSizeControllerTest;
   FRIEND_TEST_ALL_PREFIXES(EventUploadSizeControllerTest,
                            AccountForRecordAddUp);
+  FRIEND_TEST_ALL_PREFIXES(EventUploadSizeControllerTest, AccountForFileUpload);
 
   // The maximum time in seconds during which a single connection should
   // remain open, a constant set heuristically.
@@ -75,11 +77,15 @@ class EventUploadSizeController {
   bool IsMaximumUploadSizeReached() const;
   // Bumps up by the size of the record to be uploaded.
   void AccountForRecord(const EncryptedRecord& record);
+  // Bumpls up by the size of the data chunk to be uploaded;
+  void AccountForData(size_t size);
 
   // The rate (bytes per seconds) at which new events are accepted by missive.
   const uint64_t new_events_rate_;
   // How much local storage is left as informed by missive.
   const uint64_t remaining_storage_capacity_;
+  // maximum file upl
+  const uint64_t max_file_upload_buffer_size_;
   // maximum upload size.
   const uint64_t max_upload_size_;
   // Already uploaded size.
