@@ -1028,6 +1028,29 @@ TEST_F(SlimLayerTreeCompositorFrameTest, VisibleRect) {
   EXPECT_EQ(child_quad->shared_quad_state->clip_rect, gfx::Rect(25, 25));
 }
 
+TEST_F(SlimLayerTreeCompositorFrameTest, CompletelyClippedLayer) {
+  auto root_layer = CreateSolidColorLayer(viewport_.size(), SkColors::kGray);
+  layer_tree_->SetRoot(root_layer);
+
+  auto clip_and_scale_layer = Layer::Create();
+  clip_and_scale_layer->SetMasksToBounds(true);
+  clip_and_scale_layer->SetBounds(gfx::Size(50, 50));
+  root_layer->AddChild(clip_and_scale_layer);
+
+  auto clipped_layer = CreateSolidColorLayer(gfx::Size(25, 25), SkColors::kRed);
+  clipped_layer->SetPosition(gfx::PointF(60.0f, 60.0f));
+  clip_and_scale_layer->AddChild(clipped_layer);
+
+  viz::CompositorFrame frame = ProduceFrame();
+  ASSERT_EQ(frame.render_pass_list.size(), 1u);
+  auto& pass = frame.render_pass_list.back();
+  ASSERT_THAT(
+      pass->quad_list,
+      ElementsAre(AllOf(viz::IsSolidColorQuad(SkColors::kGray),
+                        viz::HasRect(viewport_), viz::HasVisibleRect(viewport_),
+                        viz::HasTransform(gfx::Transform()))));
+}
+
 TEST_F(SlimLayerTreeCompositorFrameTest, NonAxisAlignedClip) {
   auto root_layer = CreateSolidColorLayer(viewport_.size(), SkColors::kGray);
   layer_tree_->SetRoot(root_layer);

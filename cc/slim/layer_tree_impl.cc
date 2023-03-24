@@ -716,13 +716,14 @@ void LayerTreeImpl::DrawChildrenAndAppendQuads(
   // Viz expects the visible rect to be a subrect of layer_rect (ie `bounds()`).
   // So intersect here unconditionally in case this layer is not
   // `masks_to_bounds()`.
-  gfx::RectF clip(layer.bounds().width(), layer.bounds().height());
-  clip.Intersect(clip_in_layer);
-  if (!clip_in_layer.IsEmpty() && layer.HasDrawableContent() &&
-      UpdateOcclusionRect(layer, data, transform_to_target, opacity, clip)) {
+  gfx::RectF visible_rectf(layer.bounds().width(), layer.bounds().height());
+  visible_rectf.Intersect(clip_in_layer);
+  if (!visible_rectf.IsEmpty() && layer.HasDrawableContent() &&
+      UpdateOcclusionRect(layer, data, transform_to_target, opacity,
+                          visible_rectf)) {
     layer.AppendQuads(render_pass, data, transform_to_root, transform_to_target,
                       clip_in_target ? &integer_clip_in_target : nullptr,
-                      gfx::ToEnclosingRect(clip), opacity);
+                      gfx::ToEnclosingRect(visible_rectf), opacity);
   }
 }
 
