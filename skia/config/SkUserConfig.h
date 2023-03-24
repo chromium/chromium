@@ -214,9 +214,6 @@ SK_API void SkDebugf_FileLine(const char* file,
 // Temporarily insulate Chrome pixel tests from Skia LOD bias change on GPU.
 #define SK_USE_LEGACY_MIPMAP_LOD_BIAS
 
-// Temporarily insulate Chrome pixel tests from Skia luminance changes in RP.
-#define SK_USE_LEGACY_RP_LUMINANCE
-
 // Max. verb count for paths rendered by the edge-AA tessellating path renderer.
 #define GR_AA_TESSELLATOR_MAX_VERB_COUNT 100
 
