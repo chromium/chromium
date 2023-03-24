@@ -1100,15 +1100,18 @@ void FrameSelection::RevealSelection(
     document_loader->GetInitialScrollState().was_scrolled_by_user = true;
   const Position& start = selection.Start();
   DCHECK(start.AnchorNode());
-  DCHECK(start.AnchorNode()->GetLayoutObject());
+  if (!start.AnchorNode()->GetLayoutObject()) {
+    return;
+  }
+
   // This function is needed to make sure that ComputeRectToScroll below has the
   // sticky offset info available before the computation.
   GetDocument().EnsurePaintLocationDataValidForNode(
       start.AnchorNode(), DocumentUpdateReason::kSelection);
   PhysicalRect selection_rect(ComputeRectToScroll(reveal_extent_option));
-  if (selection_rect == PhysicalRect() ||
-      !start.AnchorNode()->GetLayoutObject()->EnclosingBox())
+  if (selection_rect == PhysicalRect()) {
     return;
+  }
 
   scroll_into_view_util::ScrollRectToVisible(
       *start.AnchorNode()->GetLayoutObject(), selection_rect,
