@@ -331,8 +331,10 @@ SimpleFileTracker::FileHandle::FileHandle(FileHandle&& other) {
 }
 
 SimpleFileTracker::FileHandle::~FileHandle() {
-  if (entry_)
-    file_tracker_->Release(entry_, subfile_);
+  file_ = nullptr;
+  if (entry_) {
+    file_tracker_->Release(entry_.ExtractAsDangling(), subfile_);
+  }
 }
 
 SimpleFileTracker::FileHandle& SimpleFileTracker::FileHandle::operator=(
