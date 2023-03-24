@@ -8686,7 +8686,7 @@ TEST_F(AutofillMetricsFromLogEventsTest,
   EXPECT_EQ(0u, entries.size());
   auto form_entries =
       test_ukm_recorder_->GetEntriesByName(UkmFormSummaryType::kEntryName);
-  ASSERT_EQ(0u, form_entries.size());
+  EXPECT_EQ(0u, form_entries.size());
 }
 
 // Test that we do not record FieldInfo/FormSummary UKM metrics for forms
@@ -8709,7 +8709,7 @@ TEST_F(AutofillMetricsFromLogEventsTest,
   EXPECT_EQ(0u, entries.size());
   auto form_entries =
       test_ukm_recorder_->GetEntriesByName(UkmFormSummaryType::kEntryName);
-  ASSERT_EQ(0u, form_entries.size());
+  EXPECT_EQ(0u, form_entries.size());
 }
 
 // Tests that the forms with only <input type="checkbox"> fields are not
@@ -8745,17 +8745,15 @@ TEST_F(AutofillMetricsFromLogEventsTest,
   EXPECT_EQ(0u, entries.size());
   auto form_entries =
       test_ukm_recorder_->GetEntriesByName(UkmFormSummaryType::kEntryName);
-  ASSERT_EQ(0u, form_entries.size());
+  EXPECT_EQ(0u, form_entries.size());
 }
 
-// Tests that the forms with <input type="checkbox"> fields and a text field are
-// recorded in UkmFieldInfo metrics.
-TEST_F(AutofillMetricsFromLogEventsTest,
-       AutofillFieldInfoMetricsRecordOnCheckBoxWithTextField) {
-  base::TimeTicks now = AutofillTickClock::NowTicks();
-  TestAutofillTickClock test_clock;
-  test_clock.SetNowTicks(now);
-
+// Tests that the forms with <input type="checkbox"> fields and a text field
+// which does not get a type from heuristics or the server are not recorded in
+// UkmFieldInfo metrics.
+TEST_F(
+    AutofillMetricsFromLogEventsTest,
+    AutofillFieldInfoMetricsNotRecordOnCheckBoxWithTextFieldWithUnknownType) {
   FormData form;
   form.url = GURL("http://www.foo.com/");
 
@@ -8791,6 +8789,64 @@ TEST_F(AutofillMetricsFromLogEventsTest,
   form.fields.push_back(field);
 
   SeeForm(form);
+  SubmitForm(form);
+  autofill_manager().Reset();
+
+  // This form only has one non-checkable field, so the local heuristics are
+  // not executed.
+  auto entries =
+      test_ukm_recorder_->GetEntriesByName(UkmFieldInfoType::kEntryName);
+  EXPECT_EQ(0u, entries.size());
+  auto form_entries =
+      test_ukm_recorder_->GetEntriesByName(UkmFormSummaryType::kEntryName);
+  EXPECT_EQ(0u, form_entries.size());
+}
+
+// Tests that the forms with <input type="checkbox"> fields and two text field
+// which have predicted types are recorded in UkmFieldInfo metrics.
+TEST_F(AutofillMetricsFromLogEventsTest,
+       AutofillFieldInfoMetricsRecordOnCheckBoxWithTextField) {
+  base::TimeTicks now = AutofillTickClock::NowTicks();
+  TestAutofillTickClock test_clock;
+  test_clock.SetNowTicks(now);
+
+  FormData form;
+  form.url = GURL("http://www.foo.com/");
+
+  // Start with two input text fields.
+  FormFieldData field;
+  field.label = u"First Name";
+  field.name = u"firstname";
+  field.form_control_type = "text";
+  field.unique_renderer_id = test::MakeFieldRendererId();
+  form.fields.push_back(field);
+
+  field.label = u"Last Name";
+  field.name = u"lastname";
+  field.form_control_type = "text";
+  field.unique_renderer_id = test::MakeFieldRendererId();
+  form.fields.push_back(field);
+
+  // Two checkable radio buttons.
+  field.label = u"female";
+  field.name = u"female";
+  field.form_control_type = "radio";
+  field.check_status = FormFieldData::CheckStatus::kCheckableButUnchecked;
+  field.unique_renderer_id = test::MakeFieldRendererId();
+  form.fields.push_back(field);
+
+  field.label = u"male";
+  field.name = u"male";
+  field.form_control_type = "radio";
+  field.check_status = FormFieldData::CheckStatus::kCheckableButUnchecked;
+  field.unique_renderer_id = test::MakeFieldRendererId();
+  form.fields.push_back(field);
+
+  // The two text fields have predicted types.
+  std::vector<ServerFieldType> field_types = {NAME_FIRST, NAME_LAST,
+                                              UNKNOWN_TYPE, UNKNOWN_TYPE};
+  autofill_manager().AddSeenForm(form, field_types);
+  SeeForm(form);
   base::TimeTicks parse_time = autofill_manager()
                                    .form_structures()
                                    .begin()
@@ -8800,9 +8856,6 @@ TEST_F(AutofillMetricsFromLogEventsTest,
   SubmitForm(form);
   autofill_manager().Reset();
 
-  // Record Autofill2.FieldInfo UKM event at autofill manager reset.
-  // This form only has one non-checkable field, so the local heuristics are
-  // not executed.
   auto entries =
       test_ukm_recorder_->GetEntriesByName(UkmFieldInfoType::kEntryName);
   ASSERT_EQ(4u, entries.size());
@@ -8820,7 +8873,7 @@ TEST_F(AutofillMetricsFromLogEventsTest,
         {UFIT::kWasFocusedName, false},
         {UFIT::kIsFocusableName, true},
         {UFIT::kUserTypedIntoFieldName, false},
-        {UFIT::kOverallTypeName, UNKNOWN_TYPE},
+        {UFIT::kOverallTypeName, field_types[i]},
         {UFIT::kSectionIdName, 1},
         {UFIT::kTypeChangedByRationalizationName, false},
     };
@@ -8837,7 +8890,7 @@ TEST_F(AutofillMetricsFromLogEventsTest,
   ASSERT_EQ(1u, form_entries.size());
   using UFST = UkmFormSummaryType;
   const auto* const form_entry = form_entries[0];
-  AutofillMetrics::FormEventSet form_events = {};
+  AutofillMetrics::FormEventSet form_events = {FORM_EVENT_DID_PARSE_FORM};
   std::map<std::string, int64_t> expected = {
       {UFST::kFormSessionIdentifierName,
        AutofillMetrics::FormGlobalIdToHash64Bit(form.global_id())},

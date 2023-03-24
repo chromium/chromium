@@ -3478,12 +3478,19 @@ bool BrowserAutofillManager::ShouldUploadUkm(
     return false;
   }
 
-  auto is_text_field = [](const std::unique_ptr<AutofillField>& field) {
-    return field->IsTextInputElement();
-  };
+  // Return true if the field is a visible text input field which has predicted
+  // types from heuristics or the server.
+  auto is_focusable_predicted_text_field =
+      [](const std::unique_ptr<AutofillField>& field) {
+        return field->IsTextInputElement() && field->IsFocusable() &&
+               ((field->server_type() != NO_SERVER_DATA &&
+                 field->server_type() != UNKNOWN_TYPE) ||
+                field->heuristic_type() != UNKNOWN_TYPE ||
+                field->html_type() != HtmlFieldType::kUnspecified);
+      };
 
-  size_t num_text_fields =
-      base::ranges::count_if(form_structure.fields(), is_text_field);
+  size_t num_text_fields = base::ranges::count_if(
+      form_structure.fields(), is_focusable_predicted_text_field);
   if (num_text_fields == 0) {
     return false;
   }
@@ -3492,7 +3499,8 @@ bool BrowserAutofillManager::ShouldUploadUkm(
   // "search" in its name/id/placeholder, the function return false and the form
   // is not recorded into UKM. The form is considered a search box.
   if (num_text_fields == 1) {
-    auto it = base::ranges::find_if(form_structure.fields(), is_text_field);
+    auto it = base::ranges::find_if(form_structure.fields(),
+                                    is_focusable_predicted_text_field);
     if (base::ToLowerASCII((*it)->placeholder).find(u"search") !=
             std::string::npos ||
         base::ToLowerASCII((*it)->name).find(u"search") != std::string::npos ||

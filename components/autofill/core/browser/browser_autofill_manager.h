@@ -722,7 +722,8 @@ class BrowserAutofillManager : public AutofillManager,
 
   // Returns whether the form is considered parseable and meets a couple of
   // other requirements which makes uploading UKM data worthwhile. E.g. the
-  // form should not be a search form.
+  // form should not be a search form, the forms should have at least one
+  // focusable input field with a type from heuristics or the server.
   bool ShouldUploadUkm(const FormStructure& form_structure);
 
   // Delegates to perform external processing (display, selection) on
