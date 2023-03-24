@@ -66,6 +66,7 @@ using ::testing::_;
 using ::testing::AtLeast;
 using ::testing::Mock;
 using ::testing::NiceMock;
+using ::testing::Return;
 using ::testing::StrictMock;
 
 namespace autofill {
@@ -94,7 +95,7 @@ class MockAutofillDriver : public ContentAutofillDriver {
   MockAutofillDriver& operator=(MockAutofillDriver&) = delete;
 
   ~MockAutofillDriver() override = default;
-  MOCK_CONST_METHOD0(GetAxTreeId, ui::AXTreeID());
+  MOCK_METHOD(ui::AXTreeID, GetAxTreeId, (), (const override));
 };
 
 class MockBrowserAutofillManager : public BrowserAutofillManager {
@@ -191,51 +192,6 @@ class TestAutofillPopupController : public AutofillPopupControllerImpl {
   void DoHide(PopupHidingReason reason) {
     AutofillPopupControllerImpl::Hide(reason);
   }
-};
-
-class MockAxTreeManager : public ui::AXTreeManager {
- public:
-  MockAxTreeManager() = default;
-  MockAxTreeManager(MockAxTreeManager&) = delete;
-  MockAxTreeManager& operator=(MockAxTreeManager&) = delete;
-  ~MockAxTreeManager() override = default;
-
-  MOCK_CONST_METHOD2(GetNodeFromTree,
-                     ui::AXNode*(const ui::AXTreeID& tree_id,
-                                 const int32_t node_id));
-  MOCK_CONST_METHOD2(GetDelegate,
-                     ui::AXPlatformNodeDelegate*(const ui::AXTreeID tree_id,
-                                                 const int32_t node_id));
-  MOCK_CONST_METHOD1(GetRootDelegate,
-                     ui::AXPlatformNodeDelegate*(const ui::AXTreeID tree_id));
-  MOCK_CONST_METHOD0(GetTreeID, ui::AXTreeID());
-  MOCK_CONST_METHOD0(GetParentTreeID, ui::AXTreeID());
-  MOCK_CONST_METHOD0(GetRootAsAXNode, ui::AXNode*());
-  MOCK_CONST_METHOD0(GetParentNodeFromParentTree, ui::AXNode*());
-};
-
-class MockAxPlatformNodeDelegate : public ui::AXPlatformNodeDelegate {
- public:
-  MockAxPlatformNodeDelegate() = default;
-  MockAxPlatformNodeDelegate(MockAxPlatformNodeDelegate&) = delete;
-  MockAxPlatformNodeDelegate& operator=(MockAxPlatformNodeDelegate&) = delete;
-  ~MockAxPlatformNodeDelegate() override = default;
-
-  MOCK_METHOD(ui::AXPlatformNode*, GetFromNodeID, (int32_t id), (override));
-  MOCK_METHOD(ui::AXPlatformNode*,
-              GetFromTreeIDAndNodeID,
-              (const ui::AXTreeID& tree_id, int32_t id),
-              (override));
-};
-
-class MockAxPlatformNode : public ui::AXPlatformNodeBase {
- public:
-  MockAxPlatformNode() = default;
-  MockAxPlatformNode(MockAxPlatformNode&) = delete;
-  MockAxPlatformNode& operator=(MockAxPlatformNode&) = delete;
-  ~MockAxPlatformNode() override = default;
-
-  MOCK_CONST_METHOD0(GetDelegate, ui::AXPlatformNodeDelegate*());
 };
 
 }  // namespace
@@ -344,37 +300,6 @@ class AutofillPopupControllerUnitTest : public ChromeRenderViewHostTestHarness {
   raw_ptr<NiceMock<TestAutofillPopupController>> autofill_popup_controller_ =
       nullptr;
 };
-
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
-class AutofillPopupControllerAccessibilityUnitTest
-    : public AutofillPopupControllerUnitTest {
- public:
-  AutofillPopupControllerAccessibilityUnitTest()
-      : accessibility_mode_setter_(ui::AXMode::kScreenReader) {}
-  AutofillPopupControllerAccessibilityUnitTest(
-      AutofillPopupControllerAccessibilityUnitTest&) = delete;
-  AutofillPopupControllerAccessibilityUnitTest& operator=(
-      AutofillPopupControllerAccessibilityUnitTest&) = delete;
-  ~AutofillPopupControllerAccessibilityUnitTest() override = default;
-
-  std::unique_ptr<NiceMock<MockAutofillExternalDelegate>>
-  CreateExternalDelegate() override {
-    // Fake that |driver| has queried a form.
-    test_api(autofill_router()).set_last_queried_source(autofill_driver());
-    return std::make_unique<NiceMock<MockAutofillExternalDelegate>>(
-        autofill_manager(), autofill_driver());
-  }
-
- protected:
-  MockBrowserAutofillManager* autofill_manager() {
-    return autofill_manager_injector_[web_contents()];
-  }
-
-  content::testing::ScopedContentAXModeSetter accessibility_mode_setter_;
-  TestAutofillManagerInjector<MockBrowserAutofillManager>
-      autofill_manager_injector_;
-};
-#endif
 
 TEST_F(AutofillPopupControllerUnitTest, RemoveSuggestion) {
   ShowSuggestions({1, 1, POPUP_ITEM_ID_AUTOFILL_OPTIONS});
@@ -605,106 +530,6 @@ TEST_F(AutofillPopupControllerUnitTest, ShouldReportHidingPopupReason) {
                                      /*kTabGone=*/8, 1);
 }
 
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
-TEST_F(AutofillPopupControllerAccessibilityUnitTest, FireControlsChangedEvent) {
-  StrictMock<MockAxPlatformNodeDelegate> mock_ax_platform_node_delegate;
-  StrictMock<MockAxPlatformNode> mock_ax_platform_node;
-  const ui::AXTreeID& test_tree_id = ui::AXTreeID::CreateNewAXTreeID();
-
-  // Test for successfully firing controls changed event for popup show/hide.
-  {
-    EXPECT_CALL(*autofill_driver(), GetAxTreeId())
-        .Times(2)
-        .WillRepeatedly(testing::Return(test_tree_id));
-    EXPECT_CALL(*autofill_popup_view_, GetAxUniqueId)
-        .Times(2)
-        .WillRepeatedly(testing::Return(absl::optional<int32_t>(123)));
-    EXPECT_CALL(popup_controller(), GetRootAXPlatformNodeForWebContents)
-        .WillRepeatedly(testing::Return(&mock_ax_platform_node));
-    EXPECT_CALL(mock_ax_platform_node, GetDelegate)
-        .WillRepeatedly(testing::Return(&mock_ax_platform_node_delegate));
-    EXPECT_CALL(mock_ax_platform_node_delegate, GetFromTreeIDAndNodeID)
-        .Times(2)
-        .WillRepeatedly(testing::Return(&mock_ax_platform_node));
-
-    // Fire event for popup show and active popup ax unique id is set.
-    popup_controller().FireControlsChangedEvent(true);
-    EXPECT_EQ(123, ui::GetActivePopupAxUniqueId());
-
-    // Fire event for popup hide and active popup ax unique id is cleared.
-    popup_controller().FireControlsChangedEvent(false);
-    EXPECT_EQ(absl::nullopt, ui::GetActivePopupAxUniqueId());
-  }
-
-  // Test for attempting to fire controls changed event when ax tree manager
-  // fails to retrieve the ax platform node associated with the popup.
-  // No event is fired and global active popup ax unique id is not set.
-  {
-    EXPECT_CALL(*autofill_driver(), GetAxTreeId())
-        .WillOnce(testing::Return(test_tree_id));
-    EXPECT_CALL(*autofill_popup_view_, GetAxUniqueId)
-        .WillOnce(testing::Return(absl::optional<int32_t>(123)));
-    EXPECT_CALL(popup_controller(), GetRootAXPlatformNodeForWebContents)
-        .WillOnce(testing::Return(&mock_ax_platform_node));
-    EXPECT_CALL(mock_ax_platform_node, GetDelegate)
-        .WillOnce(testing::Return(&mock_ax_platform_node_delegate));
-    EXPECT_CALL(mock_ax_platform_node_delegate, GetFromTreeIDAndNodeID)
-        .WillOnce(testing::Return(nullptr));
-
-    // No controls changed event is fired and active popup ax unique id is not
-    // set.
-    popup_controller().FireControlsChangedEvent(true);
-    EXPECT_EQ(absl::nullopt, ui::GetActivePopupAxUniqueId());
-  }
-
-  // Test for attempting to fire controls changed event when failing to retrieve
-  // the ax platform node associated with the popup.
-  // No event is fired and global active popup ax unique id is not set.
-  {
-    EXPECT_CALL(popup_controller(), GetRootAXPlatformNodeForWebContents)
-        .WillRepeatedly(testing::Return(&mock_ax_platform_node));
-    EXPECT_CALL(*autofill_driver(), GetAxTreeId())
-        .WillOnce(testing::Return(test_tree_id));
-    EXPECT_CALL(mock_ax_platform_node, GetDelegate)
-        .WillRepeatedly(testing::Return(&mock_ax_platform_node_delegate));
-    EXPECT_CALL(mock_ax_platform_node_delegate, GetFromTreeIDAndNodeID)
-        .WillOnce(testing::Return(nullptr));
-    EXPECT_CALL(*autofill_popup_view_, GetAxUniqueId)
-        .WillOnce(testing::Return(absl::optional<int32_t>(123)));
-
-    // No controls changed event is fired and active popup ax unique id is not
-    // set.
-    popup_controller().FireControlsChangedEvent(true);
-    EXPECT_EQ(absl::nullopt, ui::GetActivePopupAxUniqueId());
-  }
-
-  // Test for attempting to fire controls changed event when failing to retrieve
-  // the autofill popup's ax unique id.
-  // No event is fired and global active popup ax unique id is not set.
-  {
-    EXPECT_CALL(*autofill_driver(), GetAxTreeId())
-        .WillOnce(testing::Return(test_tree_id));
-    EXPECT_CALL(popup_controller(), GetRootAXPlatformNodeForWebContents)
-        .WillRepeatedly(testing::Return(&mock_ax_platform_node));
-    EXPECT_CALL(mock_ax_platform_node, GetDelegate)
-        .WillRepeatedly(testing::Return(&mock_ax_platform_node_delegate));
-    EXPECT_CALL(mock_ax_platform_node_delegate, GetFromTreeIDAndNodeID)
-        .WillOnce(testing::Return(&mock_ax_platform_node));
-    EXPECT_CALL(*autofill_popup_view_, GetAxUniqueId)
-        .WillOnce(testing::Return(absl::nullopt));
-
-    // No controls changed event is fired and active popup ax unique id is not
-    // set.
-    popup_controller().FireControlsChangedEvent(true);
-    EXPECT_EQ(absl::nullopt, ui::GetActivePopupAxUniqueId());
-  }
-  // This needs to happen before TearDown() because having the mode set to
-  // kScreenReader causes mocked functions to get called  with
-  // mock_ax_platform_node_delegate after it has been destroyed.
-  accessibility_mode_setter_.ResetMode();
-}
-#endif
-
 // This is a regression test for crbug.com/521133 to ensure that we don't crash
 // when suggestions updates race with user selections.
 TEST_F(AutofillPopupControllerUnitTest, SelectInvalidSuggestion) {
@@ -761,5 +586,142 @@ TEST_F(AutofillPopupControllerUnitTest,
   task_environment()->FastForwardBy(base::Milliseconds(500));
   popup_controller().AcceptSuggestion(0);
 }
+
+#if !BUILDFLAG(IS_CHROMEOS_ASH)
+class MockAxTreeManager : public ui::AXTreeManager {
+ public:
+  MockAxTreeManager() = default;
+  MockAxTreeManager(MockAxTreeManager&) = delete;
+  MockAxTreeManager& operator=(MockAxTreeManager&) = delete;
+  ~MockAxTreeManager() override = default;
+
+  MOCK_METHOD(ui::AXNode*,
+              GetNodeFromTree,
+              (const ui::AXTreeID& tree_id, const int32_t node_id),
+              (const override));
+  MOCK_METHOD(ui::AXPlatformNodeDelegate*,
+              GetDelegate,
+              (const ui::AXTreeID tree_id, const int32_t node_id),
+              (const override));
+  MOCK_METHOD(ui::AXPlatformNodeDelegate*,
+              GetRootDelegate,
+              (const ui::AXTreeID tree_id),
+              (const override));
+  MOCK_METHOD(ui::AXTreeID, GetTreeID, (), (const override));
+  MOCK_METHOD(ui::AXTreeID, GetParentTreeID, (), (const override));
+  MOCK_METHOD(ui::AXNode*, GetRootAsAXNode, (), (const override));
+  MOCK_METHOD(ui::AXNode*, GetParentNodeFromParentTree, (), (const override));
+};
+
+class MockAxPlatformNodeDelegate : public ui::AXPlatformNodeDelegate {
+ public:
+  MockAxPlatformNodeDelegate() = default;
+  MockAxPlatformNodeDelegate(MockAxPlatformNodeDelegate&) = delete;
+  MockAxPlatformNodeDelegate& operator=(MockAxPlatformNodeDelegate&) = delete;
+  ~MockAxPlatformNodeDelegate() override = default;
+
+  MOCK_METHOD(ui::AXPlatformNode*, GetFromNodeID, (int32_t id), (override));
+  MOCK_METHOD(ui::AXPlatformNode*,
+              GetFromTreeIDAndNodeID,
+              (const ui::AXTreeID& tree_id, int32_t id),
+              (override));
+};
+
+class MockAxPlatformNode : public ui::AXPlatformNodeBase {
+ public:
+  MockAxPlatformNode() = default;
+  MockAxPlatformNode(MockAxPlatformNode&) = delete;
+  MockAxPlatformNode& operator=(MockAxPlatformNode&) = delete;
+  ~MockAxPlatformNode() override = default;
+
+  MOCK_METHOD(ui::AXPlatformNodeDelegate*, GetDelegate, (), (const override));
+};
+
+class AutofillPopupControllerAccessibilityUnitTest
+    : public AutofillPopupControllerUnitTest {
+ public:
+  static constexpr int kAxUniqueId = 123;
+
+  AutofillPopupControllerAccessibilityUnitTest()
+      : accessibility_mode_setter_(ui::AXMode::kScreenReader) {}
+  AutofillPopupControllerAccessibilityUnitTest(
+      AutofillPopupControllerAccessibilityUnitTest&) = delete;
+  AutofillPopupControllerAccessibilityUnitTest& operator=(
+      AutofillPopupControllerAccessibilityUnitTest&) = delete;
+  ~AutofillPopupControllerAccessibilityUnitTest() override = default;
+
+  void SetUp() override {
+    AutofillPopupControllerUnitTest::SetUp();
+
+    ON_CALL(*autofill_driver(), GetAxTreeId())
+        .WillByDefault(Return(test_tree_id_));
+    ON_CALL(popup_controller(), GetRootAXPlatformNodeForWebContents)
+        .WillByDefault(Return(&mock_ax_platform_node_));
+    ON_CALL(mock_ax_platform_node_, GetDelegate)
+        .WillByDefault(Return(&mock_ax_platform_node_delegate_));
+    ON_CALL(*autofill_popup_view_, GetAxUniqueId)
+        .WillByDefault(Return(absl::optional<int32_t>(kAxUniqueId)));
+    ON_CALL(mock_ax_platform_node_delegate_, GetFromTreeIDAndNodeID)
+        .WillByDefault(Return(&mock_ax_platform_node_));
+  }
+
+  void TearDown() override {
+    // This needs to bo reset explicit because having the mode set to
+    // `kScreenReader` causes mocked functions to get called  with
+    // `mock_ax_platform_node_delegate` after it has been destroyed.
+    accessibility_mode_setter_.ResetMode();
+    AutofillPopupControllerUnitTest::TearDown();
+  }
+
+ protected:
+  content::testing::ScopedContentAXModeSetter accessibility_mode_setter_;
+  MockAxPlatformNodeDelegate mock_ax_platform_node_delegate_;
+  MockAxPlatformNode mock_ax_platform_node_;
+  ui::AXTreeID test_tree_id_ = ui::AXTreeID::CreateNewAXTreeID();
+};
+
+// Test for successfully firing controls changed event for popup show/hide.
+TEST_F(AutofillPopupControllerAccessibilityUnitTest,
+       FireControlsChangedEventDuringShowAndHide) {
+  ShowSuggestions({1});
+  // Manually fire the event for popup show since setting the test view results
+  // in the fire controls changed event not being sent.
+  popup_controller().FireControlsChangedEvent(true);
+  EXPECT_EQ(kAxUniqueId, ui::GetActivePopupAxUniqueId());
+
+  popup_controller().DoHide();
+  EXPECT_EQ(absl::nullopt, ui::GetActivePopupAxUniqueId());
+}
+
+// Test for attempting to fire controls changed event when ax tree manager
+// fails to retrieve the ax platform node associated with the popup.
+// No event is fired and global active popup ax unique id is not set.
+TEST_F(AutofillPopupControllerAccessibilityUnitTest,
+       FireControlsChangedEventNoAxPlatformNode) {
+  EXPECT_CALL(mock_ax_platform_node_delegate_, GetFromTreeIDAndNodeID)
+      .WillOnce(Return(nullptr));
+
+  ShowSuggestions({1});
+  // Manually fire the event for popup show since setting the test view results
+  // in the fire controls changed event not being sent.
+  popup_controller().FireControlsChangedEvent(true);
+  EXPECT_EQ(absl::nullopt, ui::GetActivePopupAxUniqueId());
+}
+
+// Test for attempting to fire controls changed event when failing to retrieve
+// the autofill popup's ax unique id. No event is fired and the global active
+// popup ax unique id is not set.
+TEST_F(AutofillPopupControllerAccessibilityUnitTest,
+       FireControlsChangedEventNoPopupAxUniqueId) {
+  EXPECT_CALL(*autofill_popup_view_, GetAxUniqueId)
+      .WillOnce(testing::Return(absl::nullopt));
+
+  ShowSuggestions({1});
+  // Manually fire the event for popup show since setting the test view results
+  // in the fire controls changed event not being sent.
+  popup_controller().FireControlsChangedEvent(true);
+  EXPECT_EQ(absl::nullopt, ui::GetActivePopupAxUniqueId());
+}
+#endif
 
 }  // namespace autofill
