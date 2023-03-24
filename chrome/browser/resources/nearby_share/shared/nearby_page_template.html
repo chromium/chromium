@@ -1,4 +1,7 @@
 <style include="cr-icons cr-shared-style"></style>
+<if expr="chromeos_ash">
+<style include="cros-color-overrides"></style>
+</if>
 <style>
   :host {
     --nearby-page-linear-gradient-color-start: var(--google-blue-50);
@@ -11,6 +14,10 @@
       --nearby-page-linear-gradient-color-start:
           rgba(var(--google-blue-300-rgb), 0.2);
     }
+  }
+
+  :host-context(body.jelly-enabled):host {
+    --nearby-page-linear-gradient-color-start: var(--cros-sys-highlight_shape);
   }
 
   #pageContainer {
