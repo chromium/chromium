@@ -346,6 +346,11 @@ void TrackEventThreadLocalEventSink::UpdateIncrementalStateIfNeeded(
       track_descriptor->set_uuid(thread_track.uuid);
       DCHECK(thread_track.parent_uuid);
       track_descriptor->set_parent_uuid(thread_track.parent_uuid);
+      // Instructs Trace Processor not to merge track events and system events
+      // track for this thread.
+      // TODO(kraskevich): Figure out how to do this for the Perfetto SDK
+      // version.
+      track_descriptor->set_disallow_merging_with_system_tracks(true);
       ThreadDescriptor* thread = track_descriptor->set_thread();
       thread->set_pid(process_id_);
       thread->set_tid(trace_event->thread_id());
@@ -702,6 +707,10 @@ void TrackEventThreadLocalEventSink::EmitThreadTrackDescriptor(
   track_descriptor->set_uuid(thread_track.uuid);
   DCHECK(thread_track.parent_uuid);
   track_descriptor->set_parent_uuid(thread_track.parent_uuid);
+  // Instructs Trace Processor not to merge track events and system events
+  // track for this thread.
+  // TODO(kraskevich): Figure out how to do this for the Perfetto SDK version.
+  track_descriptor->set_disallow_merging_with_system_tracks(true);
 
   ThreadDescriptor* thread = track_descriptor->set_thread();
   thread->set_pid(process_id_);
