@@ -107,6 +107,16 @@ class SANDBOX_EXPORT BrokerFilePermission {
             kBlockInotifyAddWatchWithIntermediates);
   }
 
+  static BrokerFilePermission AllPermissions(const std::string& path) {
+    return BrokerFilePermission(
+        path, RecursionOption::kNonRecursive, PersistenceOption::kPermanent,
+        ReadPermission::kAllowRead, WritePermission::kAllowWrite,
+        CreatePermission::kAllowCreate,
+        StatWithIntermediatesPermission::kAllowStatWithIntermediates,
+        InotifyAddWatchWithIntermediatesPermission::
+            kAllowInotifyAddWatchWithIntermediates);
+  }
+
   static BrokerFilePermission AllPermissionsRecursive(const std::string& path) {
     return BrokerFilePermission(
         path, RecursionOption::kRecursive, PersistenceOption::kPermanent,

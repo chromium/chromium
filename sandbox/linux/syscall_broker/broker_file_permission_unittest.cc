@@ -321,6 +321,161 @@ TEST(BrokerFilePermission, InotifyAddWatchWithIntermediateDirs) {
   ASSERT_FALSE(perm.CheckInotifyAddWatchWithIntermediates(kPath, kBadMask));
 }
 
+TEST(BrokerFilePermission, AllPermissions) {
+  // `kPath` and `kPathDir` get allowlisted with AllPermissions and
+  // AllPermissionsRecursive, respectively.
+  static constexpr char kPath[] = "/tmp/good";
+  static constexpr char kPathDir[] = "/tmp/good/";
+  static constexpr char kPathFile[] = "/tmp/good/file";
+  static constexpr char kPathFileExtraStuff[] = "/tmp/good/file/extrastuff";
+  static constexpr char kLeading1[] = "/";
+  static constexpr char kLeading2[] = "/tmp";
+  static constexpr char kBadPrefix[] = "/tmp/go";
+  static constexpr char kExtraStuff[] = "/tmp/good_extra_stuff";
+  static constexpr char kExtraStuffFile[] = "/tmp/good_extra_stuff/file";
+  static constexpr char kDoubleSlash[] = "/tmp//good/file";
+  static constexpr char kParentRef[] = "/tmp/good/../file";
+
+  constexpr uint32_t kBadInotifyMask =
+      IN_CREATE | IN_DELETE | IN_CLOSE_WRITE | IN_MOVE | IN_ONLYDIR;
+  constexpr uint32_t kGoodInotifyMask = kBadInotifyMask | IN_ATTRIB;
+
+  BrokerFilePermission perm =
+      BrokerFilePermission::AllPermissionsRecursive(kPathDir);
+  // Opening and accessing the nested files `kPathFile` and
+  // `kPathFileExtraStuff` should work.
+  EXPECT_TRUE(perm.CheckOpen(kPathFile, O_CREAT | O_EXCL | O_RDONLY).first);
+  EXPECT_TRUE(perm.CheckOpen(kPathFile, O_CREAT | O_EXCL | O_RDWR).first);
+  EXPECT_TRUE(perm.CheckAccess(kPathFile, R_OK));
+  EXPECT_TRUE(perm.CheckAccess(kPathFile, W_OK));
+  EXPECT_TRUE(
+      perm.CheckOpen(kPathFileExtraStuff, O_CREAT | O_EXCL | O_RDONLY).first);
+  EXPECT_TRUE(
+      perm.CheckOpen(kPathFileExtraStuff, O_CREAT | O_EXCL | O_RDWR).first);
+  EXPECT_TRUE(perm.CheckAccess(kPathFileExtraStuff, R_OK));
+  EXPECT_TRUE(perm.CheckAccess(kPathFileExtraStuff, W_OK));
+  // Opening and accessing anything above the path shouldn't work.
+  EXPECT_FALSE(perm.CheckOpen(kBadPrefix, R_OK).first);
+  EXPECT_FALSE(perm.CheckAccess(kBadPrefix, R_OK));
+  EXPECT_FALSE(perm.CheckOpen(kLeading1, R_OK).first);
+  EXPECT_FALSE(perm.CheckAccess(kLeading1, R_OK));
+  EXPECT_FALSE(perm.CheckOpen(kLeading2, R_OK).first);
+  EXPECT_FALSE(perm.CheckAccess(kLeading2, R_OK));
+  // Stat should work recursively and on intermediates but not on all files.
+  EXPECT_TRUE(perm.CheckStatWithIntermediates(kPathFile));
+  EXPECT_TRUE(perm.CheckStatWithIntermediates(kLeading1));
+  EXPECT_TRUE(perm.CheckStatWithIntermediates(kLeading2));
+  EXPECT_FALSE(perm.CheckStatWithIntermediates(kBadPrefix));
+  // InotifyAddWatch should work recursively and on intermediates but not on all
+  // files.
+  EXPECT_TRUE(
+      perm.CheckInotifyAddWatchWithIntermediates(kPathFile, kGoodInotifyMask));
+  EXPECT_TRUE(
+      perm.CheckInotifyAddWatchWithIntermediates(kLeading1, kGoodInotifyMask));
+  EXPECT_TRUE(
+      perm.CheckInotifyAddWatchWithIntermediates(kLeading2, kGoodInotifyMask));
+  EXPECT_FALSE(
+      perm.CheckInotifyAddWatchWithIntermediates(kBadPrefix, kGoodInotifyMask));
+  // InotifyAddWatch should still fail without the correct mask.
+  EXPECT_FALSE(
+      perm.CheckInotifyAddWatchWithIntermediates(kPathFile, kBadInotifyMask));
+
+  EXPECT_TRUE(perm.CheckStatWithIntermediates(kPath));
+  EXPECT_TRUE(
+      perm.CheckInotifyAddWatchWithIntermediates(kPath, kGoodInotifyMask));
+  // Empty string should always fail
+  EXPECT_FALSE(perm.CheckOpen("", O_CREAT | O_EXCL | O_RDONLY).first);
+  EXPECT_FALSE(perm.CheckOpen("", O_CREAT | O_EXCL | O_RDWR).first);
+  EXPECT_FALSE(perm.CheckAccess("", R_OK));
+  EXPECT_FALSE(perm.CheckAccess("", W_OK));
+  EXPECT_FALSE(perm.CheckStatWithIntermediates(""));
+  EXPECT_FALSE(
+      perm.CheckInotifyAddWatchWithIntermediates("", kGoodInotifyMask));
+  // Extra characters on the allowlisted path shouldn't pass:
+  EXPECT_FALSE(perm.CheckOpen(kExtraStuff, O_CREAT | O_EXCL | O_RDONLY).first);
+  EXPECT_FALSE(perm.CheckOpen(kExtraStuff, O_CREAT | O_EXCL | O_RDWR).first);
+  EXPECT_FALSE(perm.CheckAccess(kExtraStuff, R_OK));
+  EXPECT_FALSE(perm.CheckAccess(kExtraStuff, W_OK));
+  EXPECT_FALSE(perm.CheckStatWithIntermediates(kExtraStuff));
+  EXPECT_FALSE(perm.CheckInotifyAddWatchWithIntermediates(kExtraStuff,
+                                                          kGoodInotifyMask));
+  // Extra characters and an extra filename on the allowlisted path shouldn't
+  // pass:
+  EXPECT_FALSE(
+      perm.CheckOpen(kExtraStuffFile, O_CREAT | O_EXCL | O_RDONLY).first);
+  EXPECT_FALSE(
+      perm.CheckOpen(kExtraStuffFile, O_CREAT | O_EXCL | O_RDWR).first);
+  EXPECT_FALSE(perm.CheckAccess(kExtraStuffFile, R_OK));
+  EXPECT_FALSE(perm.CheckAccess(kExtraStuffFile, W_OK));
+  EXPECT_FALSE(perm.CheckStatWithIntermediates(kExtraStuffFile));
+  EXPECT_FALSE(perm.CheckInotifyAddWatchWithIntermediates(kExtraStuffFile,
+                                                          kGoodInotifyMask));
+  // The sandbox doesn't bother parsing multiple separators in a row:
+  EXPECT_FALSE(perm.CheckOpen(kDoubleSlash, O_CREAT | O_EXCL | O_RDONLY).first);
+  EXPECT_FALSE(perm.CheckOpen(kDoubleSlash, O_CREAT | O_EXCL | O_RDWR).first);
+  EXPECT_FALSE(perm.CheckAccess(kDoubleSlash, R_OK));
+  EXPECT_FALSE(perm.CheckAccess(kDoubleSlash, W_OK));
+  EXPECT_FALSE(perm.CheckStatWithIntermediates(kDoubleSlash));
+  EXPECT_FALSE(perm.CheckInotifyAddWatchWithIntermediates(kDoubleSlash,
+                                                          kGoodInotifyMask));
+  // The sandbox auto-rejects paths with parent references:
+  EXPECT_FALSE(perm.CheckOpen(kParentRef, O_CREAT | O_EXCL | O_RDONLY).first);
+  EXPECT_FALSE(perm.CheckOpen(kParentRef, O_CREAT | O_EXCL | O_RDWR).first);
+  EXPECT_FALSE(perm.CheckAccess(kParentRef, R_OK));
+  EXPECT_FALSE(perm.CheckAccess(kParentRef, W_OK));
+  EXPECT_FALSE(perm.CheckStatWithIntermediates(kParentRef));
+  EXPECT_FALSE(
+      perm.CheckInotifyAddWatchWithIntermediates(kParentRef, kGoodInotifyMask));
+
+  // This permission should allow all access to `kPath` specifically.
+  perm = BrokerFilePermission::AllPermissions(kPath);
+  EXPECT_TRUE(perm.CheckOpen(kPath, O_CREAT | O_EXCL | O_RDONLY).first);
+  EXPECT_TRUE(perm.CheckOpen(kPath, O_CREAT | O_EXCL | O_RDWR).first);
+  EXPECT_TRUE(perm.CheckAccess(kPath, R_OK));
+  EXPECT_TRUE(perm.CheckAccess(kPath, W_OK));
+  EXPECT_TRUE(perm.CheckStatWithIntermediates(kPath));
+  EXPECT_TRUE(
+      perm.CheckInotifyAddWatchWithIntermediates(kPath, kGoodInotifyMask));
+  // InotifyAddWatch should still fail without the correct mask.
+  EXPECT_FALSE(
+      perm.CheckInotifyAddWatchWithIntermediates(kPath, kBadInotifyMask));
+  // Empty string should always fail
+  EXPECT_FALSE(perm.CheckOpen("", O_CREAT | O_EXCL | O_RDONLY).first);
+  EXPECT_FALSE(perm.CheckOpen("", O_CREAT | O_EXCL | O_RDWR).first);
+  EXPECT_FALSE(perm.CheckAccess("", R_OK));
+  EXPECT_FALSE(perm.CheckAccess("", W_OK));
+  EXPECT_FALSE(perm.CheckStatWithIntermediates(""));
+  EXPECT_FALSE(
+      perm.CheckInotifyAddWatchWithIntermediates("", kGoodInotifyMask));
+  // Extra characters on the allowlisted path shouldn't pass:
+  EXPECT_FALSE(perm.CheckOpen(kExtraStuff, O_CREAT | O_EXCL | O_RDONLY).first);
+  EXPECT_FALSE(perm.CheckOpen(kExtraStuff, O_CREAT | O_EXCL | O_RDWR).first);
+  EXPECT_FALSE(perm.CheckAccess(kExtraStuff, R_OK));
+  EXPECT_FALSE(perm.CheckAccess(kExtraStuff, W_OK));
+  EXPECT_FALSE(perm.CheckStatWithIntermediates(kExtraStuff));
+  EXPECT_FALSE(perm.CheckInotifyAddWatchWithIntermediates(kExtraStuff,
+                                                          kGoodInotifyMask));
+  // Extra characters and an extra filename on the allowlisted path shouldn't
+  // pass:
+  EXPECT_FALSE(
+      perm.CheckOpen(kExtraStuffFile, O_CREAT | O_EXCL | O_RDONLY).first);
+  EXPECT_FALSE(
+      perm.CheckOpen(kExtraStuffFile, O_CREAT | O_EXCL | O_RDWR).first);
+  EXPECT_FALSE(perm.CheckAccess(kExtraStuffFile, R_OK));
+  EXPECT_FALSE(perm.CheckAccess(kExtraStuffFile, W_OK));
+  EXPECT_FALSE(perm.CheckStatWithIntermediates(kExtraStuffFile));
+  EXPECT_FALSE(perm.CheckInotifyAddWatchWithIntermediates(kExtraStuffFile,
+                                                          kGoodInotifyMask));
+  // The sandbox doesn't bother parsing multiple separators in a row:
+  EXPECT_FALSE(perm.CheckOpen(kDoubleSlash, O_CREAT | O_EXCL | O_RDONLY).first);
+  EXPECT_FALSE(perm.CheckOpen(kDoubleSlash, O_CREAT | O_EXCL | O_RDWR).first);
+  EXPECT_FALSE(perm.CheckAccess(kDoubleSlash, R_OK));
+  EXPECT_FALSE(perm.CheckAccess(kDoubleSlash, W_OK));
+  EXPECT_FALSE(perm.CheckStatWithIntermediates(kDoubleSlash));
+  EXPECT_FALSE(perm.CheckInotifyAddWatchWithIntermediates(kDoubleSlash,
+                                                          kGoodInotifyMask));
+}
+
 TEST(BrokerFilePermission, ValidatePath) {
   EXPECT_TRUE(BrokerFilePermissionTester::ValidatePath("/path"));
   EXPECT_TRUE(BrokerFilePermissionTester::ValidatePath("/"));

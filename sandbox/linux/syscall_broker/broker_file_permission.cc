@@ -246,7 +246,10 @@ const char* BrokerFilePermission::CheckInotifyAddWatchWithIntermediates(
     return nullptr;
   }
 
-  if (!CheckIntermediates(requested_filename,
+  // If this permission is recursive and a prefix of `requested_filename`
+  // matches this permission, allow. Otherwise check intermediates.
+  if (!(recursive() && MatchPath(requested_filename)) &&
+      !CheckIntermediates(requested_filename,
                           /*can_match_full_path=*/true)) {
     return nullptr;
   }

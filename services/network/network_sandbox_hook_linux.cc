@@ -28,7 +28,8 @@ sandbox::syscall_broker::BrokerCommandSet GetNetworkBrokerCommandSet() {
 }
 
 std::vector<BrokerFilePermission> GetNetworkFilePermissions() {
-  return {BrokerFilePermission::AllPermissionsRecursive("/")};
+  return {BrokerFilePermission::AllPermissions("/"),
+          BrokerFilePermission::AllPermissionsRecursive("/")};
 }
 
 bool NetworkPreSandboxHook(sandbox::policy::SandboxLinux::Options options) {
