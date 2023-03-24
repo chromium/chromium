@@ -11,6 +11,7 @@
 int
 LLVMFuzzerInitialize(int *argc ATTRIBUTE_UNUSED,
                      char ***argv ATTRIBUTE_UNUSED) {
+    xmlFuzzMemSetup();
     xmlInitParser();
     xmlSetGenericErrorFunc(NULL, xmlFuzzErrorFunc);
 
@@ -21,28 +22,36 @@ int
 LLVMFuzzerTestOneInput(const char *data, size_t size) {
     xmlDocPtr doc;
     const char *expr, *xml;
-    size_t exprSize, xmlSize;
+    size_t maxAlloc, exprSize, xmlSize;
 
     if (size > 10000)
         return(0);
 
     xmlFuzzDataInit(data, size);
 
+    maxAlloc = xmlFuzzReadInt(4) % (size + 1);
     expr = xmlFuzzReadString(&exprSize);
     xml = xmlFuzzReadString(&xmlSize);
 
     /* Recovery mode allows more input to be fuzzed. */
     doc = xmlReadMemory(xml, xmlSize, NULL, NULL, XML_PARSE_RECOVER);
     if (doc != NULL) {
-        xmlXPathContextPtr xpctxt = xmlXPathNewContext(doc);
+        xmlXPathContextPtr xpctxt;
 
-        /* Operation limit to avoid timeout */
-        xpctxt->opLimit = 500000;
+        xmlFuzzMemSetLimit(maxAlloc);
 
-        xmlXPathFreeObject(xmlXPtrEval(BAD_CAST expr, xpctxt));
-        xmlXPathFreeContext(xpctxt);
+        xpctxt = xmlXPathNewContext(doc);
+        if (xpctxt != NULL) {
+            /* Operation limit to avoid timeout */
+            xpctxt->opLimit = 500000;
+
+            xmlXPathFreeObject(xmlXPtrEval(BAD_CAST expr, xpctxt));
+            xmlXPathFreeContext(xpctxt);
+        }
+
+        xmlFuzzMemSetLimit(0);
+        xmlFreeDoc(doc);
     }
-    xmlFreeDoc(doc);
 
     xmlFuzzDataCleanup();
     xmlResetLastError();

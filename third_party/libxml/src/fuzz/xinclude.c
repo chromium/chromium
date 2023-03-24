@@ -15,6 +15,7 @@
 int
 LLVMFuzzerInitialize(int *argc ATTRIBUTE_UNUSED,
                      char ***argv ATTRIBUTE_UNUSED) {
+    xmlFuzzMemSetup();
     xmlInitParser();
 #ifdef LIBXML_CATALOG_ENABLED
     xmlInitializeCatalog();
@@ -30,12 +31,14 @@ LLVMFuzzerTestOneInput(const char *data, size_t size) {
     xmlDocPtr doc;
     xmlTextReaderPtr reader;
     const char *docBuffer, *docUrl;
-    size_t docSize;
+    size_t maxAlloc, docSize;
     int opts;
 
     xmlFuzzDataInit(data, size);
-    opts = xmlFuzzReadInt();
+    opts = (int) xmlFuzzReadInt(4);
+    opts &= ~XML_PARSE_DTDVALID;
     opts |= XML_PARSE_XINCLUDE;
+    maxAlloc = xmlFuzzReadInt(4) % (size + 1);
 
     xmlFuzzReadEntities();
     docBuffer = xmlFuzzMainEntity(&docSize);
@@ -45,12 +48,14 @@ LLVMFuzzerTestOneInput(const char *data, size_t size) {
 
     /* Pull parser */
 
+    xmlFuzzMemSetLimit(maxAlloc);
     doc = xmlReadMemory(docBuffer, docSize, docUrl, NULL, opts);
     xmlXIncludeProcessFlags(doc, opts);
     xmlFreeDoc(doc);
 
     /* Reader */
 
+    xmlFuzzMemSetLimit(maxAlloc);
     reader = xmlReaderForMemory(docBuffer, docSize, NULL, NULL, opts);
     if (reader == NULL)
         goto exit;
@@ -66,6 +71,7 @@ LLVMFuzzerTestOneInput(const char *data, size_t size) {
     xmlFreeTextReader(reader);
 
 exit:
+    xmlFuzzMemSetLimit(0);
     xmlFuzzDataCleanup();
     xmlResetLastError();
     return(0);

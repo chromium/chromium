@@ -259,6 +259,41 @@ void check_buffer(xmlParserInputPtr in) {
 
 
 /**
+ * xmlHaltParser:
+ * @ctxt:  an XML parser context
+ *
+ * Blocks further parser processing don't override error
+ * for internal use
+ */
+void
+xmlHaltParser(xmlParserCtxtPtr ctxt) {
+    if (ctxt == NULL)
+        return;
+    ctxt->instate = XML_PARSER_EOF;
+    ctxt->disableSAX = 1;
+    while (ctxt->inputNr > 1)
+        xmlFreeInputStream(inputPop(ctxt));
+    if (ctxt->input != NULL) {
+        /*
+	 * in case there was a specific allocation deallocate before
+	 * overriding base
+	 */
+        if (ctxt->input->free != NULL) {
+	    ctxt->input->free((xmlChar *) ctxt->input->base);
+	    ctxt->input->free = NULL;
+	}
+        if (ctxt->input->buf != NULL) {
+            xmlFreeParserInputBuffer(ctxt->input->buf);
+            ctxt->input->buf = NULL;
+        }
+	ctxt->input->cur = BAD_CAST"";
+        ctxt->input->length = 0;
+	ctxt->input->base = ctxt->input->cur;
+        ctxt->input->end = ctxt->input->cur;
+    }
+}
+
+/**
  * xmlParserInputRead:
  * @in:  an XML parser input
  * @len:  an indicative size for the lookahead
@@ -270,6 +305,47 @@ void check_buffer(xmlParserInputPtr in) {
 int
 xmlParserInputRead(xmlParserInputPtr in ATTRIBUTE_UNUSED, int len ATTRIBUTE_UNUSED) {
     return(-1);
+}
+
+/**
+ * xmlParserGrow:
+ * @ctxt:  an XML parser context
+ */
+int
+xmlParserGrow(xmlParserCtxtPtr ctxt) {
+    xmlParserInputPtr in = ctxt->input;
+    xmlParserInputBufferPtr buf = in->buf;
+    ptrdiff_t curEnd = in->end - in->cur;
+    ptrdiff_t curBase = in->cur - in->base;
+    int ret;
+
+    if (buf == NULL)
+        return(0);
+    /* Don't grow memory buffers. */
+    if ((buf->encoder == NULL) && (buf->readcallback == NULL))
+        return(0);
+
+    if (((curEnd > XML_MAX_LOOKUP_LIMIT) ||
+         (curBase > XML_MAX_LOOKUP_LIMIT)) &&
+        ((ctxt->options & XML_PARSE_HUGE) == 0)) {
+        xmlErrInternal(ctxt, "Huge input lookup", NULL);
+        xmlHaltParser(ctxt);
+	return(-1);
+    }
+
+    if (curEnd >= INPUT_CHUNK)
+        return(0);
+
+    ret = xmlParserInputBufferGrow(buf, INPUT_CHUNK);
+    xmlBufSetInputBaseCur(buf->buffer, in, 0, curBase);
+
+    /* TODO: Get error code from xmlParserInputBufferGrow */
+    if (ret < 0) {
+        xmlErrInternal(ctxt, "Growing input buffer", NULL);
+        xmlHaltParser(ctxt);
+    }
+
+    return(ret);
 }
 
 /**
@@ -330,8 +406,58 @@ xmlParserInputGrow(xmlParserInputPtr in, int len) {
 }
 
 /**
+ * xmlParserShrink:
+ * @ctxt:  an XML parser context
+ */
+int
+xmlParserShrink(xmlParserCtxtPtr ctxt) {
+    xmlParserInputPtr in = ctxt->input;
+    xmlParserInputBufferPtr buf = in->buf;
+    size_t used;
+    int ret = 0;
+
+    /* Don't shrink memory buffers. */
+    if ((buf == NULL) ||
+        ((buf->encoder == NULL) && (buf->readcallback == NULL)))
+        return(0);
+
+    used = in->cur - in->base;
+    /*
+     * Do not shrink on large buffers whose only a tiny fraction
+     * was consumed
+     */
+    if (used > INPUT_CHUNK) {
+	size_t res = xmlBufShrink(buf->buffer, used - LINE_LEN);
+
+	if (res > 0) {
+            used -= res;
+            if ((res > ULONG_MAX) ||
+                (in->consumed > ULONG_MAX - (unsigned long)res))
+                in->consumed = ULONG_MAX;
+            else
+                in->consumed += res;
+	}
+    }
+
+    if (xmlBufUse(buf->buffer) < INPUT_CHUNK)
+        ret = xmlParserInputBufferGrow(buf, INPUT_CHUNK);
+
+    xmlBufSetInputBaseCur(buf->buffer, in, 0, used);
+
+    /* TODO: Get error code from xmlParserInputBufferGrow */
+    if (ret < 0) {
+        xmlErrInternal(ctxt, "Growing input buffer", NULL);
+        xmlHaltParser(ctxt);
+    }
+
+    return(ret);
+}
+
+/**
  * xmlParserInputShrink:
  * @in:  an XML parser input
+ *
+ * DEPRECATED: Don't use.
  *
  * This function removes used input for the parser.
  */
@@ -373,6 +499,13 @@ xmlParserInputShrink(xmlParserInputPtr in) {
     }
 
     in->base = xmlBufContent(in->buf->buffer);
+    if (in->base == NULL) {
+        /* TODO: raise error */
+        in->base = BAD_CAST "";
+        in->cur = in->base;
+        in->end = in->base;
+        return;
+    }
     in->cur = in->base + used;
     in->end = xmlBufEnd(in->buf->buffer);
 
@@ -406,9 +539,11 @@ xmlNextChar(xmlParserCtxtPtr ctxt)
 	return;
     }
 
-    if ((ctxt->input->cur >= ctxt->input->end) &&
-        (xmlParserInputGrow(ctxt->input, INPUT_CHUNK) <= 0)) {
-        return;
+    if (ctxt->input->end - ctxt->input->cur < 4) {
+        if (xmlParserGrow(ctxt) < 0)
+            return;
+        if (ctxt->input->cur >= ctxt->input->end)
+            return;
     }
 
     if (ctxt->charset == XML_CHAR_ENCODING_UTF8) {
@@ -441,30 +576,23 @@ xmlNextChar(xmlParserCtxtPtr ctxt)
 
         c = *cur;
         if (c & 0x80) {
+            size_t avail;
+
             if (c == 0xC0)
 	        goto encoding_error;
-            if (cur[1] == 0) {
-                xmlParserInputGrow(ctxt->input, INPUT_CHUNK);
-                cur = ctxt->input->cur;
-            }
-            if ((cur[1] & 0xc0) != 0x80)
+
+            avail = ctxt->input->end - ctxt->input->cur;
+
+            if ((avail < 2) || (cur[1] & 0xc0) != 0x80)
                 goto encoding_error;
             if ((c & 0xe0) == 0xe0) {
                 unsigned int val;
 
-                if (cur[2] == 0) {
-                    xmlParserInputGrow(ctxt->input, INPUT_CHUNK);
-                    cur = ctxt->input->cur;
-                }
-                if ((cur[2] & 0xc0) != 0x80)
+                if ((avail < 3) || (cur[2] & 0xc0) != 0x80)
                     goto encoding_error;
                 if ((c & 0xf0) == 0xf0) {
-                    if (cur[3] == 0) {
-                        xmlParserInputGrow(ctxt->input, INPUT_CHUNK);
-                        cur = ctxt->input->cur;
-                    }
                     if (((c & 0xf8) != 0xf0) ||
-                        ((cur[3] & 0xc0) != 0x80))
+                        (avail < 4) || ((cur[3] & 0xc0) != 0x80))
                         goto encoding_error;
                     /* 4-byte code */
                     ctxt->input->cur += 4;
@@ -505,8 +633,6 @@ xmlNextChar(xmlParserCtxtPtr ctxt)
             ctxt->input->col++;
         ctxt->input->cur++;
     }
-    if (*ctxt->input->cur == 0)
-        xmlParserInputGrow(ctxt->input, INPUT_CHUNK);
     return;
 encoding_error:
     /*
@@ -560,6 +686,10 @@ xmlCurrentChar(xmlParserCtxtPtr ctxt, int *len) {
     if (ctxt->instate == XML_PARSER_EOF)
 	return(0);
 
+    if ((ctxt->input->end - ctxt->input->cur < 4) &&
+        (xmlParserGrow(ctxt) < 0))
+        return(0);
+
     if ((*ctxt->input->cur >= 0x20) && (*ctxt->input->cur <= 0x7F)) {
 	    *len = 1;
 	    return(*ctxt->input->cur);
@@ -582,28 +712,21 @@ xmlCurrentChar(xmlParserCtxtPtr ctxt, int *len) {
 
 	c = *cur;
 	if (c & 0x80) {
+            size_t avail;
+
 	    if (((c & 0x40) == 0) || (c == 0xC0))
 		goto encoding_error;
-	    if (cur[1] == 0) {
-		xmlParserInputGrow(ctxt->input, INPUT_CHUNK);
-                cur = ctxt->input->cur;
-            }
-	    if ((cur[1] & 0xc0) != 0x80)
+
+            avail = ctxt->input->end - ctxt->input->cur;
+
+	    if ((avail < 2) || (cur[1] & 0xc0) != 0x80)
 		goto encoding_error;
 	    if ((c & 0xe0) == 0xe0) {
-		if (cur[2] == 0) {
-		    xmlParserInputGrow(ctxt->input, INPUT_CHUNK);
-                    cur = ctxt->input->cur;
-                }
-		if ((cur[2] & 0xc0) != 0x80)
+		if ((avail < 3) || (cur[2] & 0xc0) != 0x80)
 		    goto encoding_error;
 		if ((c & 0xf0) == 0xf0) {
-		    if (cur[3] == 0) {
-			xmlParserInputGrow(ctxt->input, INPUT_CHUNK);
-                        cur = ctxt->input->cur;
-                    }
 		    if (((c & 0xf8) != 0xf0) ||
-			((cur[3] & 0xc0) != 0x80))
+			(avail < 4) || ((cur[3] & 0xc0) != 0x80))
 			goto encoding_error;
 		    /* 4-byte code */
 		    *len = 4;
@@ -638,8 +761,6 @@ xmlCurrentChar(xmlParserCtxtPtr ctxt, int *len) {
 	} else {
 	    /* 1-byte code */
 	    *len = 1;
-	    if (*ctxt->input->cur == 0)
-		xmlParserInputGrow(ctxt->input, INPUT_CHUNK);
 	    if ((*ctxt->input->cur == 0) &&
 	        (ctxt->input->end > ctxt->input->cur)) {
 	        xmlErrEncodingInt(ctxt, XML_ERR_INVALID_CHAR,

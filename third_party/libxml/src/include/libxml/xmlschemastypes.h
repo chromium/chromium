@@ -30,7 +30,7 @@ typedef enum {
     XML_SCHEMA_WHITESPACE_COLLAPSE = 3
 } xmlSchemaWhitespaceValueType;
 
-XMLPUBFUN void
+XMLPUBFUN int
 		xmlSchemaInitTypes		(void);
 XML_DEPRECATED
 XMLPUBFUN void

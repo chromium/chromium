@@ -12,6 +12,7 @@
 int
 LLVMFuzzerInitialize(int *argc ATTRIBUTE_UNUSED,
                      char ***argv ATTRIBUTE_UNUSED) {
+    xmlFuzzMemSetup();
     xmlInitParser();
 #ifdef LIBXML_CATALOG_ENABLED
     xmlInitializeCatalog();
@@ -28,11 +29,12 @@ LLVMFuzzerTestOneInput(const char *data, size_t size) {
     htmlParserCtxtPtr ctxt;
     xmlOutputBufferPtr out;
     const char *docBuffer;
-    size_t docSize, consumed, chunkSize;
+    size_t maxAlloc, docSize, consumed, chunkSize;
     int opts;
 
     xmlFuzzDataInit(data, size);
-    opts = xmlFuzzReadInt();
+    opts = (int) xmlFuzzReadInt(4);
+    maxAlloc = xmlFuzzReadInt(4) % (size + 1);
 
     docBuffer = xmlFuzzReadRemaining(&docSize);
     if (docBuffer == NULL) {
@@ -42,6 +44,7 @@ LLVMFuzzerTestOneInput(const char *data, size_t size) {
 
     /* Pull parser */
 
+    xmlFuzzMemSetLimit(maxAlloc);
     doc = htmlReadMemory(docBuffer, docSize, NULL, NULL, opts);
 
     /*
@@ -57,23 +60,28 @@ LLVMFuzzerTestOneInput(const char *data, size_t size) {
 
     /* Push parser */
 
+    xmlFuzzMemSetLimit(maxAlloc);
     ctxt = htmlCreatePushParserCtxt(NULL, NULL, NULL, 0, NULL,
                                     XML_CHAR_ENCODING_NONE);
-    htmlCtxtUseOptions(ctxt, opts);
 
-    for (consumed = 0; consumed < docSize; consumed += chunkSize) {
-        chunkSize = docSize - consumed;
-        if (chunkSize > maxChunkSize)
-            chunkSize = maxChunkSize;
-        htmlParseChunk(ctxt, docBuffer + consumed, chunkSize, 0);
+    if (ctxt != NULL) {
+        htmlCtxtUseOptions(ctxt, opts);
+
+        for (consumed = 0; consumed < docSize; consumed += chunkSize) {
+            chunkSize = docSize - consumed;
+            if (chunkSize > maxChunkSize)
+                chunkSize = maxChunkSize;
+            htmlParseChunk(ctxt, docBuffer + consumed, chunkSize, 0);
+        }
+
+        htmlParseChunk(ctxt, NULL, 0, 1);
+        xmlFreeDoc(ctxt->myDoc);
+        htmlFreeParserCtxt(ctxt);
     }
-
-    htmlParseChunk(ctxt, NULL, 0, 1);
-    xmlFreeDoc(ctxt->myDoc);
-    htmlFreeParserCtxt(ctxt);
 
     /* Cleanup */
 
+    xmlFuzzMemSetLimit(0);
     xmlFuzzDataCleanup();
     xmlResetLastError();
 

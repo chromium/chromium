@@ -4090,6 +4090,10 @@ xmlCopyNamespaceList(xmlNsPtr cur) {
 
     while (cur != NULL) {
         q = xmlCopyNamespace(cur);
+        if (q == NULL) {
+            xmlFreeNsList(ret);
+            return(NULL);
+        }
 	if (p == NULL) {
 	    ret = p = q;
 	} else {
@@ -6034,7 +6038,7 @@ xmlGetNsList(const xmlDoc *doc ATTRIBUTE_UNUSED, const xmlNode *node)
     xmlNsPtr cur;
     xmlNsPtr *ret = NULL;
     int nbns = 0;
-    int maxns = 10;
+    int maxns = 0;
     int i;
 
     if ((node == NULL) || (node->type == XML_NAMESPACE_DECL))
@@ -6044,16 +6048,6 @@ xmlGetNsList(const xmlDoc *doc ATTRIBUTE_UNUSED, const xmlNode *node)
         if (node->type == XML_ELEMENT_NODE) {
             cur = node->nsDef;
             while (cur != NULL) {
-                if (ret == NULL) {
-                    ret =
-                        (xmlNsPtr *) xmlMalloc((maxns + 1) *
-                                               sizeof(xmlNsPtr));
-                    if (ret == NULL) {
-			xmlTreeErrMemory("getting namespace list");
-                        return (NULL);
-                    }
-                    ret[nbns] = NULL;
-                }
                 for (i = 0; i < nbns; i++) {
                     if ((cur->prefix == ret[i]->prefix) ||
                         (xmlStrEqual(cur->prefix, ret[i]->prefix)))
@@ -6061,15 +6055,18 @@ xmlGetNsList(const xmlDoc *doc ATTRIBUTE_UNUSED, const xmlNode *node)
                 }
                 if (i >= nbns) {
                     if (nbns >= maxns) {
-                        maxns *= 2;
-                        ret = (xmlNsPtr *) xmlRealloc(ret,
-                                                      (maxns +
-                                                       1) *
+                        xmlNsPtr *tmp;
+
+                        maxns = maxns ? maxns * 2 : 10;
+                        tmp = (xmlNsPtr *) xmlRealloc(ret,
+                                                      (maxns + 1) *
                                                       sizeof(xmlNsPtr));
-                        if (ret == NULL) {
+                        if (tmp == NULL) {
 			    xmlTreeErrMemory("getting namespace list");
+                            xmlFree(ret);
                             return (NULL);
                         }
+                        ret = tmp;
                     }
                     ret[nbns++] = cur;
                     ret[nbns] = NULL;

@@ -139,6 +139,8 @@ XMLPUBFUN void
 /*
  * These are specific to the XML debug memory wrapper.
  */
+XMLPUBFUN size_t
+	xmlMemSize	(void *ptr);
 XMLPUBFUN int
 	xmlMemUsed	(void);
 XMLPUBFUN int

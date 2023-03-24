@@ -41,6 +41,13 @@ XMLPUBVAR unsigned int xmlParserMaxDepth;
 #define XML_MAX_TEXT_LENGTH 10000000
 
 /**
+ * XML_MAX_HUGE_LENGTH:
+ *
+ * Maximum size allowed when XML_PARSE_HUGE is set.
+ */
+#define XML_MAX_HUGE_LENGTH 1000000000
+
+/**
  * XML_MAX_NAME_LENGTH:
  *
  * Maximum size allowed for a markup identifier.
@@ -575,6 +582,7 @@ XMLPUBFUN int			xmlCopyChar		(int len,
 						 xmlChar *out,
 						 int val);
 XMLPUBFUN void			xmlNextChar		(xmlParserCtxtPtr ctxt);
+XML_DEPRECATED
 XMLPUBFUN void			xmlParserInputShrink	(xmlParserInputPtr in);
 
 /*

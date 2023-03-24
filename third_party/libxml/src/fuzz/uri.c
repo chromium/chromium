@@ -8,40 +8,54 @@
 #include "fuzz.h"
 
 int
+LLVMFuzzerInitialize(int *argc ATTRIBUTE_UNUSED,
+                     char ***argv ATTRIBUTE_UNUSED) {
+    xmlFuzzMemSetup();
+    xmlSetGenericErrorFunc(NULL, xmlFuzzErrorFunc);
+
+    return 0;
+}
+
+int
 LLVMFuzzerTestOneInput(const char *data, size_t size) {
     xmlURIPtr uri;
-    char *str[2] = { NULL, NULL };
-    size_t numStrings;
+    size_t maxAlloc;
+    const char *str1, *str2;
+    char *copy;
 
     if (size > 10000)
         return(0);
 
-    numStrings = xmlFuzzExtractStrings(data, size, str, 2);
+    xmlFuzzDataInit(data, size);
+    maxAlloc = xmlFuzzReadInt(4) % (size * 8 + 1);
+    str1 = xmlFuzzReadString(NULL);
+    str2 = xmlFuzzReadString(NULL);
 
-    uri = xmlParseURI(str[0]);
+    xmlFuzzMemSetLimit(maxAlloc);
+
+    uri = xmlParseURI(str1);
     xmlFree(xmlSaveUri(uri));
     xmlFreeURI(uri);
 
-    uri = xmlParseURIRaw(str[0], 1);
+    uri = xmlParseURIRaw(str1, 1);
     xmlFree(xmlSaveUri(uri));
     xmlFreeURI(uri);
 
-    xmlFree(xmlURIUnescapeString(str[0], -1, NULL));
-    xmlFree(xmlURIEscape(BAD_CAST str[0]));
-    xmlFree(xmlCanonicPath(BAD_CAST str[0]));
-    xmlFree(xmlPathToURI(BAD_CAST str[0]));
+    xmlFree(xmlURIUnescapeString(str1, -1, NULL));
+    xmlFree(xmlURIEscape(BAD_CAST str1));
+    xmlFree(xmlCanonicPath(BAD_CAST str1));
+    xmlFree(xmlPathToURI(BAD_CAST str1));
 
-    if (numStrings >= 2) {
-        xmlFree(xmlBuildURI(BAD_CAST str[1], BAD_CAST str[0]));
-        xmlFree(xmlBuildRelativeURI(BAD_CAST str[1], BAD_CAST str[0]));
-        xmlFree(xmlURIEscapeStr(BAD_CAST str[0], BAD_CAST str[1]));
-    }
+    xmlFree(xmlBuildURI(BAD_CAST str2, BAD_CAST str1));
+    xmlFree(xmlBuildRelativeURI(BAD_CAST str2, BAD_CAST str1));
+    xmlFree(xmlURIEscapeStr(BAD_CAST str1, BAD_CAST str2));
 
-    /* Modifies string, so must come last. */
-    xmlNormalizeURIPath(str[0]);
+    copy = (char *) xmlCharStrdup(str1);
+    xmlNormalizeURIPath(copy);
+    xmlFree(copy);
 
-    xmlFree(str[0]);
-    xmlFree(str[1]);
+    xmlFuzzMemSetLimit(0);
+    xmlFuzzDataCleanup();
 
     return 0;
 }

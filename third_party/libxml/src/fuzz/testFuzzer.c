@@ -52,6 +52,16 @@ int fuzzUri(const char *data, size_t size);
 #undef LLVMFuzzerTestOneInput
 #endif
 
+#ifdef HAVE_VALID_FUZZER
+int fuzzValidInit(int *argc, char ***argv);
+int fuzzValid(const char *data, size_t size);
+#define LLVMFuzzerInitialize fuzzValidInit
+#define LLVMFuzzerTestOneInput fuzzValid
+#include "valid.c"
+#undef LLVMFuzzerInitialize
+#undef LLVMFuzzerTestOneInput
+#endif
+
 #ifdef HAVE_XINCLUDE_FUZZER
 int fuzzXIncludeInit(int *argc, char ***argv);
 int fuzzXInclude(const char *data, size_t size);
@@ -190,7 +200,11 @@ main(void) {
         ret = 1;
 #endif
 #ifdef HAVE_URI_FUZZER
-    if (testFuzzer(NULL, fuzzUri, "seed/uri/*") != 0)
+    if (testFuzzer(fuzzUriInit, fuzzUri, "seed/uri/*") != 0)
+        ret = 1;
+#endif
+#ifdef HAVE_VALID_FUZZER
+    if (testFuzzer(fuzzValidInit, fuzzValid, "seed/valid/*") != 0)
         ret = 1;
 #endif
 #ifdef HAVE_XINCLUDE_FUZZER

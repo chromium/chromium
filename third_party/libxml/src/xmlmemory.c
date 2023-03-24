@@ -559,6 +559,27 @@ xmlMemoryStrdup(const char *str) {
 }
 
 /**
+ * xmlMemSize:
+ * @ptr:  pointer to the memory allocation
+ *
+ * Returns the size of a memory allocation.
+ */
+
+size_t
+xmlMemSize(void *ptr) {
+    MEMHDR *p;
+
+    if (ptr == NULL)
+	return(0);
+
+    p = CLIENT_2_HDR(ptr);
+    if (p->mh_tag != MEMTAG)
+        return(0);
+
+    return(p->mh_size);
+}
+
+/**
  * xmlMemUsed:
  *
  * Provides the amount of memory currently allocated

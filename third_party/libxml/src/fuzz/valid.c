@@ -1,5 +1,5 @@
 /*
- * xml.c: a libFuzzer target to test several XML parser interfaces.
+ * valid.c: a libFuzzer target to test DTD validation.
  *
  * See Copyright for the status of this software.
  */
@@ -30,15 +30,16 @@ LLVMFuzzerTestOneInput(const char *data, size_t size) {
     static const size_t maxChunkSize = 128;
     xmlDocPtr doc;
     xmlParserCtxtPtr ctxt;
+    xmlValidCtxtPtr vctxt;
     xmlTextReaderPtr reader;
-    xmlChar *out;
     const char *docBuffer, *docUrl;
     size_t maxAlloc, docSize, consumed, chunkSize;
-    int opts, outSize;
+    int opts;
 
     xmlFuzzDataInit(data, size);
     opts = (int) xmlFuzzReadInt(4);
-    opts &= ~XML_PARSE_XINCLUDE & ~XML_PARSE_DTDVALID;
+    opts &= ~XML_PARSE_XINCLUDE;
+    opts |= XML_PARSE_DTDVALID;
     maxAlloc = xmlFuzzReadInt(4) % (size + 1);
 
     xmlFuzzReadEntities();
@@ -51,9 +52,15 @@ LLVMFuzzerTestOneInput(const char *data, size_t size) {
 
     xmlFuzzMemSetLimit(maxAlloc);
     doc = xmlReadMemory(docBuffer, docSize, docUrl, NULL, opts);
-    /* Also test the serializer. */
-    xmlDocDumpMemory(doc, &out, &outSize);
-    xmlFree(out);
+    xmlFreeDoc(doc);
+
+    /* Post validation */
+
+    xmlFuzzMemSetLimit(maxAlloc);
+    doc = xmlReadMemory(docBuffer, docSize, docUrl, NULL, opts & ~XML_PARSE_DTDVALID);
+    vctxt = xmlNewValidCtxt();
+    xmlValidateDocument(vctxt, doc);
+    xmlFreeValidCtxt(vctxt);
     xmlFreeDoc(doc);
 
     /* Push parser */
