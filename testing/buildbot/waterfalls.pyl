@@ -7073,6 +7073,9 @@
         ],
       },
       'webrtc_linux_chromium': {
+        'mixins': [
+          'linux-bionic',
+        ],
         'additional_compile_targets': [
           'blink_unittests',
           'browser_tests',
