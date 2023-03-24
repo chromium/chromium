@@ -1214,13 +1214,6 @@
     "expires": "Jul 1, 2023"
   },
   {
-    "prefix": "popover-disabled",
-    "platforms": ["Linux", "Mac", "Win"],
-    "bases": [],
-    "args": ["--disable-blink-features=HTMLSelectMenuElement,HTMLPopoverAttribute,HTMLPopoverHint"],
-    "expires": "Jul 1, 2023"
-  },
-  {
     "prefix": "popover-hint-disabled",
     "platforms": ["Linux", "Mac", "Win"],
     "bases": [],

@@ -1454,6 +1454,7 @@ interface Document : Node
     getter onbeforeinput
     getter onbeforematch
     getter onbeforepaste
+    getter onbeforetoggle
     getter onbeforexrselect
     getter onblur
     getter oncancel
@@ -1661,6 +1662,7 @@ interface Document : Node
     setter onbeforeinput
     setter onbeforematch
     setter onbeforepaste
+    setter onbeforetoggle
     setter onbeforexrselect
     setter onblur
     setter oncancel
@@ -2964,6 +2966,8 @@ interface HTMLButtonElement : HTMLElement
     getter formTarget
     getter labels
     getter name
+    getter popoverTargetAction
+    getter popoverTargetElement
     getter type
     getter validationMessage
     getter validity
@@ -2980,6 +2984,8 @@ interface HTMLButtonElement : HTMLElement
     setter formNoValidate
     setter formTarget
     setter name
+    setter popoverTargetAction
+    setter popoverTargetElement
     setter type
     setter value
 interface HTMLCanvasElement : HTMLElement
@@ -3073,6 +3079,7 @@ interface HTMLElement : Element
     getter onauxclick
     getter onbeforeinput
     getter onbeforematch
+    getter onbeforetoggle
     getter onbeforexrselect
     getter onblur
     getter oncancel
@@ -3167,6 +3174,7 @@ interface HTMLElement : Element
     getter onwebkittransitionend
     getter onwheel
     getter outerText
+    getter popover
     getter spellcheck
     getter style
     getter tabIndex
@@ -3178,6 +3186,9 @@ interface HTMLElement : Element
     method click
     method constructor
     method focus
+    method hidePopover
+    method showPopover
+    method togglePopover
     setter accessKey
     setter autocapitalize
     setter autofocus
@@ -3198,6 +3209,7 @@ interface HTMLElement : Element
     setter onauxclick
     setter onbeforeinput
     setter onbeforematch
+    setter onbeforetoggle
     setter onbeforexrselect
     setter onblur
     setter oncancel
@@ -3292,6 +3304,7 @@ interface HTMLElement : Element
     setter onwebkittransitionend
     setter onwheel
     setter outerText
+    setter popover
     setter spellcheck
     setter style
     setter tabIndex
@@ -3601,6 +3614,8 @@ interface HTMLInputElement : HTMLElement
     getter name
     getter pattern
     getter placeholder
+    getter popoverTargetAction
+    getter popoverTargetElement
     getter readOnly
     getter required
     getter selectionDirection
@@ -3656,6 +3671,8 @@ interface HTMLInputElement : HTMLElement
     setter name
     setter pattern
     setter placeholder
+    setter popoverTargetAction
+    setter popoverTargetElement
     setter readOnly
     setter required
     setter selectionDirection
@@ -4924,6 +4941,7 @@ interface MathMLElement : Element
     getter onauxclick
     getter onbeforeinput
     getter onbeforematch
+    getter onbeforetoggle
     getter onbeforexrselect
     getter onblur
     getter oncancel
@@ -5031,6 +5049,7 @@ interface MathMLElement : Element
     setter onauxclick
     setter onbeforeinput
     setter onbeforematch
+    setter onbeforetoggle
     setter onbeforexrselect
     setter onblur
     setter oncancel
@@ -6978,6 +6997,7 @@ interface SVGElement : Element
     getter onauxclick
     getter onbeforeinput
     getter onbeforematch
+    getter onbeforetoggle
     getter onbeforexrselect
     getter onblur
     getter oncancel
@@ -7087,6 +7107,7 @@ interface SVGElement : Element
     setter onauxclick
     setter onbeforeinput
     setter onbeforematch
+    setter onbeforetoggle
     setter onbeforexrselect
     setter onblur
     setter oncancel
@@ -8481,6 +8502,11 @@ interface TimeRanges
     method constructor
     method end
     method start
+interface ToggleEvent : Event
+    attribute @@toStringTag
+    getter newState
+    getter oldState
+    method constructor
 interface Touch
     attribute @@toStringTag
     getter clientX
@@ -11073,6 +11099,7 @@ namespace console
     getter onbeforeinstallprompt
     getter onbeforematch
     getter onbeforeprint
+    getter onbeforetoggle
     getter onbeforeunload
     getter onbeforexrselect
     getter onblur
@@ -11286,6 +11313,7 @@ namespace console
     setter onbeforeinstallprompt
     setter onbeforematch
     setter onbeforeprint
+    setter onbeforetoggle
     setter onbeforeunload
     setter onbeforexrselect
     setter onblur

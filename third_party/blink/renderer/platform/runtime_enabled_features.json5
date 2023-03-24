@@ -1854,8 +1854,7 @@
     {
       // TODO(crbug.com/1307772): Enables the Popover API.
       name: "HTMLPopoverAttribute",
-      status: "experimental",
-      // Because the OT is already underway, it is being left with the "popup" name.
+      status: "stable",
       origin_trial_feature_name: "HTMLPopupAttribute",
       implied_by: ["HTMLSelectMenuElement","HTMLPopoverHint"],
     },

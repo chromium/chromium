@@ -125,6 +125,7 @@ namespace http://www.w3.org/1999/xhtml
     property hasChildNodes
     property hasPointerCapture
     property hidden
+    property hidePopover
     property id
     property inert
     property innerHTML
@@ -169,6 +170,7 @@ namespace http://www.w3.org/1999/xhtml
     property onbeforeinput
     property onbeforematch
     property onbeforepaste
+    property onbeforetoggle
     property onbeforexrselect
     property onblur
     property oncancel
@@ -273,6 +275,7 @@ namespace http://www.w3.org/1999/xhtml
     property parentElement
     property parentNode
     property part
+    property popover
     property prefix
     property prepend
     property previousElementSibling
@@ -308,6 +311,7 @@ namespace http://www.w3.org/1999/xhtml
     property setHTML
     property setPointerCapture
     property shadowRoot
+    property showPopover
     property slot
     property spellcheck
     property style
@@ -317,6 +321,7 @@ namespace http://www.w3.org/1999/xhtml
     property title
     property toString
     property toggleAttribute
+    property togglePopover
     property translate
     property virtualKeyboardPolicy
     property webkitMatchesSelector
@@ -475,6 +480,8 @@ html element button
     property formTarget
     property labels
     property name
+    property popoverTargetAction
+    property popoverTargetElement
     property reportValidity
     property setCustomValidity
     property type
@@ -717,6 +724,8 @@ html element input
     property name
     property pattern
     property placeholder
+    property popoverTargetAction
+    property popoverTargetElement
     property readOnly
     property reportValidity
     property required
@@ -1344,6 +1353,7 @@ namespace http://www.w3.org/2000/svg
     property onbeforeinput
     property onbeforematch
     property onbeforepaste
+    property onbeforetoggle
     property onbeforexrselect
     property onblur
     property oncancel

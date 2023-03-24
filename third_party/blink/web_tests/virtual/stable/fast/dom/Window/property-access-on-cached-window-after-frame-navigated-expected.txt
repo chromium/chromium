@@ -100,6 +100,7 @@ PASS oldChildWindow.onbeforeinput is newChildWindow.onbeforeinput
 PASS oldChildWindow.onbeforeinstallprompt is newChildWindow.onbeforeinstallprompt
 PASS oldChildWindow.onbeforematch is newChildWindow.onbeforematch
 PASS oldChildWindow.onbeforeprint is newChildWindow.onbeforeprint
+PASS oldChildWindow.onbeforetoggle is newChildWindow.onbeforetoggle
 PASS oldChildWindow.onbeforeunload is newChildWindow.onbeforeunload
 PASS oldChildWindow.onbeforexrselect is newChildWindow.onbeforexrselect
 PASS oldChildWindow.onblur is newChildWindow.onblur

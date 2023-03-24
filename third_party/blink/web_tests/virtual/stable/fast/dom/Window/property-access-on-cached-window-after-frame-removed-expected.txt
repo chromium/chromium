@@ -52,6 +52,7 @@ PASS childWindow.onbeforeinput is null
 PASS childWindow.onbeforeinstallprompt is null
 PASS childWindow.onbeforematch is null
 PASS childWindow.onbeforeprint is null
+PASS childWindow.onbeforetoggle is null
 PASS childWindow.onbeforeunload is null
 PASS childWindow.onbeforexrselect is null
 PASS childWindow.onblur is null
