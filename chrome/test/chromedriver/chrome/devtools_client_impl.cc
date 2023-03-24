@@ -796,9 +796,11 @@ Status DevToolsClientImpl::SendCommandInternal(const std::string& method,
                                                bool wait_for_response,
                                                const int client_command_id,
                                                const Timeout* timeout) {
-  DCHECK(IsConnected());
-  if (parent_ == nullptr && !socket_->IsConnected())
+  if (parent_ == nullptr && !socket_->IsConnected()) {
+    // The browser has crashed or closed the connection, e.g. due to
+    // DeveloperToolsAvailability policy change.
     return Status(kDisconnected, "not connected to DevTools");
+  }
 
   // |client_command_id| will be 0 for commands sent by ChromeDriver
   int command_id =
