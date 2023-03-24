@@ -20,13 +20,11 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.ClassRule;
-import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import org.chromium.base.FeatureList;
 import org.chromium.base.ThreadUtils;
-import org.chromium.base.test.metrics.HistogramTestRule;
 import org.chromium.base.test.params.ParameterAnnotations;
 import org.chromium.base.test.params.ParameterSet;
 import org.chromium.base.test.params.ParameterizedRunner;
@@ -35,6 +33,7 @@ import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
+import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.autofill.settings.AutofillPaymentMethodsFragment;
 import org.chromium.chrome.browser.browsing_data.ClearBrowsingDataTabsFragment;
@@ -92,9 +91,6 @@ public class OmniboxPedalsTest {
             new ChromeTabbedActivityTestRule();
     public static @ClassRule DisableAnimationsTestRule sDisableAnimationsRule =
             new DisableAnimationsTestRule();
-
-    @Rule
-    public HistogramTestRule mHistogramTester = new HistogramTestRule();
 
     private OmniboxTestUtils mOmniboxUtils;
     private boolean mIncognito;
@@ -214,15 +210,15 @@ public class OmniboxPedalsTest {
     }
 
     /**
-     * Ensure the histogram for the pedal suggestion was recorded.
+     * Create a HistogramWatcher expecting both the shown and used histograms are recorded.
      *
      * @param pedalType The Omnibox pedal type.
      */
-    private void verifyHistogram(@OmniboxPedalType int pedalType) {
-        Assert.assertEquals(
-                1, mHistogramTester.getHistogramValueCount("Omnibox.PedalShown", pedalType));
-        Assert.assertEquals(1,
-                mHistogramTester.getHistogramValueCount("Omnibox.SuggestionUsed.Pedal", pedalType));
+    private HistogramWatcher newHistogramExpectations(@OmniboxPedalType int pedalType) {
+        return HistogramWatcher.newBuilder()
+                .expectIntRecord("Omnibox.PedalShown", pedalType)
+                .expectIntRecord("Omnibox.SuggestionUsed.Pedal", pedalType)
+                .build();
     }
 
     /**
@@ -286,6 +282,9 @@ public class OmniboxPedalsTest {
     @Test
     @MediumTest
     public void testClearBrowsingDataOmniboxPedalSuggestion() throws InterruptedException {
+        HistogramWatcher histogramWatcher =
+                newHistogramExpectations(OmniboxPedalType.CLEAR_BROWSING_DATA);
+
         // Generate the clear browsing data pedal.
         typeInOmnibox("Clear data");
 
@@ -303,12 +302,15 @@ public class OmniboxPedalsTest {
         checkSettingsWasShownAndOmniboxNoFocus(
                 settingsActivity, ClearBrowsingDataTabsFragment.class);
 
-        verifyHistogram(OmniboxPedalType.CLEAR_BROWSING_DATA);
+        histogramWatcher.assertExpected();
     }
 
     @Test
     @MediumTest
     public void testManagePasswordsOmniboxPedalSuggestion() throws InterruptedException {
+        HistogramWatcher histogramWatcher =
+                newHistogramExpectations(OmniboxPedalType.MANAGE_PASSWORDS);
+
         // Generate the manage passwords pedal.
         typeInOmnibox("Manage passwords");
 
@@ -320,12 +322,15 @@ public class OmniboxPedalsTest {
 
         checkSettingsWasShownAndOmniboxNoFocus(settingsActivity, PasswordSettings.class);
 
-        verifyHistogram(OmniboxPedalType.MANAGE_PASSWORDS);
+        histogramWatcher.assertExpected();
     }
 
     @Test
     @MediumTest
     public void testManagePaymentMethodsOmniboxPedalSuggestion() throws InterruptedException {
+        HistogramWatcher histogramWatcher =
+                newHistogramExpectations(OmniboxPedalType.UPDATE_CREDIT_CARD);
+
         // Generate the manage payment methods pedal.
         typeInOmnibox("Manage payment methods");
 
@@ -338,12 +343,15 @@ public class OmniboxPedalsTest {
         checkSettingsWasShownAndOmniboxNoFocus(
                 settingsActivity, AutofillPaymentMethodsFragment.class);
 
-        verifyHistogram(OmniboxPedalType.UPDATE_CREDIT_CARD);
+        histogramWatcher.assertExpected();
     }
 
     @Test
     @MediumTest
     public void testOpenIncognitoTabOmniboxPedalSuggestion() throws InterruptedException {
+        HistogramWatcher histogramWatcher =
+                newHistogramExpectations(OmniboxPedalType.LAUNCH_INCOGNITO);
+
         // Generate the open incognito pedal.
         typeInOmnibox("Open Incognito");
 
@@ -357,12 +365,19 @@ public class OmniboxPedalsTest {
             Criteria.checkThat(tab.isIncognito(), Matchers.is(true));
         });
 
-        verifyHistogram(OmniboxPedalType.LAUNCH_INCOGNITO);
+        histogramWatcher.assertExpected();
     }
 
     @Test
     @MediumTest
     public void testRunChromeSafetyCheckOmniboxPedalSuggestion() throws InterruptedException {
+        HistogramWatcher histogramWatcher =
+                newHistogramExpectations(OmniboxPedalType.RUN_CHROME_SAFETY_CHECK);
+        HistogramWatcher safetyCheckHistogramWatcher =
+                HistogramWatcher.newBuilder()
+                        .expectAnyRecord("Settings.SafetyCheck.UpdatesResult")
+                        .build();
+
         // Generate the run chrome safety check pedal.
         typeInOmnibox("Run safety check");
 
@@ -374,19 +389,18 @@ public class OmniboxPedalsTest {
 
         checkSettingsWasShownAndOmniboxNoFocus(settingsActivity, SafetyCheckSettingsFragment.class);
 
-        verifyHistogram(OmniboxPedalType.RUN_CHROME_SAFETY_CHECK);
+        histogramWatcher.assertExpected();
 
         // Make sure the safety check was ran.
-        CriteriaHelper.pollUiThread(() -> {
-            Criteria.checkThat(
-                    mHistogramTester.getHistogramTotalCount("Settings.SafetyCheck.UpdatesResult"),
-                    Matchers.is(1));
-        });
+        safetyCheckHistogramWatcher.pollInstrumentationThreadUntilSatisfied();
     }
 
     @Test
     @MediumTest
     public void testManageSiteSettingsOmniboxPedalSuggestion() throws InterruptedException {
+        HistogramWatcher histogramWatcher =
+                newHistogramExpectations(OmniboxPedalType.MANAGE_SITE_SETTINGS);
+
         // Generate the manage site setting pedal.
         typeInOmnibox("Change site permissions");
 
@@ -398,12 +412,15 @@ public class OmniboxPedalsTest {
 
         checkSettingsWasShownAndOmniboxNoFocus(settingsActivity, SiteSettings.class);
 
-        verifyHistogram(OmniboxPedalType.MANAGE_SITE_SETTINGS);
+        histogramWatcher.assertExpected();
     }
 
     @Test
     @MediumTest
     public void testManageChromeSettingsOmniboxPedalSuggestion() throws InterruptedException {
+        HistogramWatcher histogramWatcher =
+                newHistogramExpectations(OmniboxPedalType.MANAGE_CHROME_SETTINGS);
+
         // Generate the manage chrome settings pedal.
         typeInOmnibox("manage settings");
 
@@ -415,12 +432,15 @@ public class OmniboxPedalsTest {
 
         checkSettingsWasShownAndOmniboxNoFocus(settingsActivity, MainSettings.class);
 
-        verifyHistogram(OmniboxPedalType.MANAGE_CHROME_SETTINGS);
+        histogramWatcher.assertExpected();
     }
 
     @Test
     @MediumTest
     public void testViewYourChromeHistoryOmniboxPedalSuggestion() throws InterruptedException {
+        HistogramWatcher histogramWatcher =
+                newHistogramExpectations(OmniboxPedalType.VIEW_CHROME_HISTORY);
+
         // Generate the view chrome history pedal.
         typeInOmnibox("view chrome history");
 
@@ -438,7 +458,7 @@ public class OmniboxPedalsTest {
                         Matchers.startsWith(UrlConstants.NATIVE_HISTORY_URL));
             });
 
-            verifyHistogram(OmniboxPedalType.VIEW_CHROME_HISTORY);
+            histogramWatcher.assertExpected();
             return;
         }
 
@@ -448,13 +468,16 @@ public class OmniboxPedalsTest {
         // Make sure the history setting page was opened.
         Assert.assertNotNull("Could not find the history activity", historyActivity);
 
-        verifyHistogram(OmniboxPedalType.VIEW_CHROME_HISTORY);
+        histogramWatcher.assertExpected();
     }
 
     @Test
     @MediumTest
     public void testManageAccessibilitySettingsOmniboxPedalSuggestion()
             throws InterruptedException {
+        HistogramWatcher histogramWatcher =
+                newHistogramExpectations(OmniboxPedalType.MANAGE_CHROME_ACCESSIBILITY);
+
         // Generate the manage accessibility setting pedal.
         typeInOmnibox("Chrome accessibility");
 
@@ -467,12 +490,15 @@ public class OmniboxPedalsTest {
 
         checkSettingsWasShownAndOmniboxNoFocus(settingsActivity, AccessibilitySettings.class);
 
-        verifyHistogram(OmniboxPedalType.MANAGE_CHROME_ACCESSIBILITY);
+        histogramWatcher.assertExpected();
     }
 
     @Test
     @MediumTest
     public void testPedalsStartedOnCtrlEnterKeyStroke() throws Exception {
+        HistogramWatcher histogramWatcher =
+                newHistogramExpectations(OmniboxPedalType.MANAGE_CHROME_ACCESSIBILITY);
+
         typeInOmnibox("Chrome accessibility");
         SuggestionInfo<BaseSuggestionView> pedal = mOmniboxUtils.findSuggestionWithActionChips();
         Assert.assertNotNull(pedal.view);
@@ -489,12 +515,15 @@ public class OmniboxPedalsTest {
         checkSettingsWasShownAndOmniboxNoFocus(
                 (SettingsActivity) mTargetActivity, AccessibilitySettings.class);
 
-        verifyHistogram(OmniboxPedalType.MANAGE_CHROME_ACCESSIBILITY);
+        histogramWatcher.assertExpected();
     }
 
     @Test
     @MediumTest
     public void testPlayChromeDinoGameOmniboxPedalSuggestion() throws InterruptedException {
+        HistogramWatcher histogramWatcher =
+                newHistogramExpectations(OmniboxPedalType.PLAY_CHROME_DINO_GAME);
+
         // Generate the play chrome dino game pedal.
         typeInOmnibox("Dino game");
 
@@ -510,7 +539,7 @@ public class OmniboxPedalsTest {
                     tab.getUrl().getSpec(), Matchers.startsWith(UrlConstants.CHROME_DINO_URL));
         });
 
-        verifyHistogram(OmniboxPedalType.PLAY_CHROME_DINO_GAME);
+        histogramWatcher.assertExpected();
     }
 
     @Test(expected = AssertionError.class)
