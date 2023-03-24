@@ -145,11 +145,12 @@ class PrintBackendServiceManager {
   );
   void UseDefaultSettings(
       ClientId client_id,
+      ContextId context_id,
       mojom::PrintBackendService::UseDefaultSettingsCallback callback);
 #if BUILDFLAG(ENABLE_OOP_BASIC_PRINT_DIALOG)
   void AskUserForSettings(
       ClientId client_id,
-      gfx::NativeView parent_view,
+      ContextId context_id,
       int max_pages,
       bool has_selection,
       bool is_scripted,
@@ -176,6 +177,7 @@ class PrintBackendServiceManager {
   void StartPrinting(
       ClientId client_id,
       const std::string& printer_name,
+      ContextId context_id,
       int document_cookie,
       const std::u16string& document_name,
       mojom::PrintTargetType target_type,

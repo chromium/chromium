@@ -71,8 +71,10 @@ PrintBackendServiceTestImpl::PrintBackendServiceTestImpl(
       test_print_backend_(std::move(backend)) {}
 
 PrintBackendServiceTestImpl::~PrintBackendServiceTestImpl() {
-  // Make sure that all persistent contexts have been properly cleaned up.
-  DCHECK(persistent_printing_contexts_.empty());
+  if (!skip_dtor_persistent_contexts_check_) {
+    // Make sure that all persistent contexts have been properly cleaned up.
+    DCHECK(persistent_printing_contexts_.empty());
+  }
 }
 
 void PrintBackendServiceTestImpl::Init(

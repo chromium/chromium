@@ -146,11 +146,6 @@ mojom::ResultCode TestPrintingContext::UpdatePrinterSettings(
   DCHECK(!printer_settings.external_preview) << "Not implemented";
 #endif
 
-  // Windows is special case where system dialog can be shown from here.
-#if !BUILDFLAG(IS_WIN)
-  DCHECK(!printer_settings.show_system_dialog) << "Not implemented";
-#endif
-
   // The printer name is to be embedded in the printing context's existing
   // settings.
   const std::string& device_name = base::UTF16ToUTF8(settings_->device_name());

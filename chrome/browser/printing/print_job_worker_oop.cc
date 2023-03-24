@@ -4,6 +4,8 @@
 
 #include "chrome/browser/printing/print_job_worker_oop.h"
 
+#include "base/check_op.h"
+#include "base/functional/bind.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/notreached.h"
 #include "base/strings/utf_string_conversions.h"
@@ -15,9 +17,11 @@
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/global_routing_id.h"
+#include "printing/buildflags/buildflags.h"
 #include "printing/metafile.h"
 #include "printing/printed_document.h"
 #include "printing/printing_features.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 #if BUILDFLAG(IS_WIN)
 #include "printing/printed_page_win.h"
@@ -49,11 +53,13 @@ PrintJobWorkerOop::PrintJobWorkerOop(
     std::unique_ptr<PrintingContext::Delegate> printing_context_delegate,
     std::unique_ptr<PrintingContext> printing_context,
     absl::optional<PrintBackendServiceManager::ClientId> client_id,
+    absl::optional<PrintBackendServiceManager::ContextId> context_id,
     PrintJob* print_job,
     mojom::PrintTargetType print_target_type)
     : PrintJobWorkerOop(std::move(printing_context_delegate),
                         std::move(printing_context),
                         client_id,
+                        context_id,
                         print_job,
                         print_target_type,
                         /*simulate_spooling_memory_errors=*/false) {}
@@ -62,6 +68,7 @@ PrintJobWorkerOop::PrintJobWorkerOop(
     std::unique_ptr<PrintingContext::Delegate> printing_context_delegate,
     std::unique_ptr<PrintingContext> printing_context,
     absl::optional<PrintBackendServiceManager::ClientId> client_id,
+    absl::optional<PrintBackendServiceManager::ContextId> context_id,
     PrintJob* print_job,
     mojom::PrintTargetType print_target_type,
     bool simulate_spooling_memory_errors)
@@ -70,6 +77,7 @@ PrintJobWorkerOop::PrintJobWorkerOop(
                      print_job),
       simulate_spooling_memory_errors_(simulate_spooling_memory_errors),
       service_manager_client_id_(client_id),
+      printing_context_id_(context_id),
       print_target_type_(print_target_type) {}
 
 PrintJobWorkerOop::~PrintJobWorkerOop() {
@@ -202,6 +210,7 @@ void PrintJobWorkerOop::OnDidCancel(scoped_refptr<PrintJob> job) {
            << document_oop_->cookie();
 
   UnregisterServiceManagerClient();
+  printing_context_id_.reset();
 
   // Done with private document reference.
   document_oop_ = nullptr;
@@ -317,11 +326,22 @@ bool PrintJobWorkerOop::TryRestartPrinting() {
       PrintBackendServiceManager::GetInstance();
   service_mgr.SetPrinterDriverFoundToRequireElevatedPrivilege(device_name_);
 
+#if BUILDFLAG(ENABLE_OOP_BASIC_PRINT_DIALOG)
+  if (print_target_type_ == mojom::PrintTargetType::kSystemDialog) {
+    // Cannot print from process where system dialog was displayed.  Another
+    // print attempt where dialog is used again will be required.
+    PRINTER_LOG(ERROR) << "Failure during system printing, unable to retry.";
+    return false;
+  }
+#endif
+
   // Failure from access-denied means we no longer need the prior client ID.
   UnregisterServiceManagerClient();
 
-  // Retry the operation, which should now happen at a higher privilege
-  // level.
+  // Need to establish a new persistent printing context to use during
+  // printing.  Then retry the operation, which should now happen at a higher
+  // privilege level.
+  SendEstablishPrintingContext();
   SendStartPrinting(device_name_, document_name_);
   return true;
 }
@@ -361,6 +381,29 @@ void PrintJobWorkerOop::NotifyFailure(mojom::ResultCode result) {
   }
 }
 
+void PrintJobWorkerOop::SendEstablishPrintingContext() {
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  DCHECK(features::kEnableOopPrintDriversJobPrint.Get());
+
+  PrintBackendServiceManager& service_mgr =
+      PrintBackendServiceManager::GetInstance();
+
+  // Register this worker as a printing client, if registration wasn't already
+  // performed earlier.
+  if (!service_manager_client_id_.has_value()) {
+    service_manager_client_id_ =
+        service_mgr.RegisterPrintDocumentClient(device_name_);
+  }
+
+  printing_context_id_ = service_mgr.EstablishPrintingContext(
+      *service_manager_client_id_, device_name_
+#if BUILDFLAG(ENABLE_OOP_BASIC_PRINT_DIALOG)
+      ,
+      /*parent_view=*/nullptr
+#endif
+  );
+}
+
 void PrintJobWorkerOop::SendStartPrinting(const std::string& device_name,
                                           const std::u16string& document_name) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
@@ -381,16 +424,15 @@ void PrintJobWorkerOop::SendStartPrinting(const std::string& device_name,
   PrintBackendServiceManager& service_mgr =
       PrintBackendServiceManager::GetInstance();
 
-  // Register this worker as a printing client, if registration wasn't already
-  // performed earlier.
-  if (!service_manager_client_id_.has_value()) {
-    service_manager_client_id_ =
-        service_mgr.RegisterPrintDocumentClient(device_name_);
+  if (!printing_context_id_.has_value()) {
+    // Need to establish a persistent printing context to use during printing.
+    SendEstablishPrintingContext();
   }
 
   service_mgr.StartPrinting(
-      *service_manager_client_id_, device_name_, document_cookie,
-      document_name_, print_target_type_, document_oop_->settings(),
+      *service_manager_client_id_, device_name, *printing_context_id_,
+      document_cookie, document_name_, print_target_type_,
+      document_oop_->settings(),
       base::BindOnce(&PrintJobWorkerOop::OnDidStartPrinting,
                      ui_weak_factory_.GetWeakPtr()));
 }

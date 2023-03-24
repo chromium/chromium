@@ -140,15 +140,17 @@ interface PrintBackendService {
                            uint32 parent_window_id);
 
   // Generates a print settings object based upon the default settings for the
-  // default printer.
-  UseDefaultSettings()
+  // default printer.  `context_id` must be for a context previously created
+  // by a call to `EstablishPrintingContext()`.
+  UseDefaultSettings(uint32 context_id)
     => (PrintSettingsResult settings);
 
   // Generates a print settings object from user-selected options via a system
-  // print dialog.  The `parent_window_id` parameter specifies an ID which is
-  // cross-process safe to represent the native window which owns the modal
-  // print dialog used for prompting the user.  Other parameters are the same
-  // as used in `PrintingContext::AskUserForSettings()`.
+  // print dialog.  `context_id` must be for a context previously created by a
+  // call to `EstablishPrintingContext()`.
+  // The previously established context has the necessary parent window ID for
+  // displaying a system dialog.  Other parameters are the same as used in
+  // `PrintingContext::AskUserForSettings()`.
   // Currently only supported on Windows:
   //   - It is impossible for macOS `//ui` code to display a system print
   //     dialog from a service utility process that is modal to a window in the
@@ -162,7 +164,7 @@ interface PrintBackendService {
   //   - Platforms other than those identified above do not support a system
   //     print dialog.
   [EnableIf=enable_oop_basic_print_dialog]
-  AskUserForSettings(uint32 parent_window_id,
+  AskUserForSettings(uint32 context_id,
                      int32 max_pages,
                      bool has_selection,
                      bool is_scripted)
@@ -176,10 +178,16 @@ interface PrintBackendService {
     => (PrintSettingsResult settings);
 
   // Submit the document identified by `document_cookie` to be printed.
+  // A printing context must already have been setup previously with a call to
+  // `EstablishPrintingContext()`.
+  // This call to `StartPrinting()` will take ownership of the indicated
+  // context and automatically free it once the print job has completed (either
+  // with success or via a cancel after failure).
   // Starting the device initialization may be delayed if it needs to wait for
   // prior print jobs to complete before a connection to the system to become
   // available.
-  StartPrinting(int32 document_cookie,
+  StartPrinting(uint32 context_id,
+                int32 document_cookie,
                 mojo_base.mojom.String16 document_name,
                 PrintTargetType target_type,
                 PrintSettings settings)

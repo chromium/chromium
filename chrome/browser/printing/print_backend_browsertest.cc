@@ -162,14 +162,39 @@ class PrintBackendBrowserTest : public InProcessBrowserTest {
         printer_name);
   }
 
+  // `PrintBackendServiceTestImpl` does a debug check on shutdown that there
+  // are no residual persistent printing contexts left in the service.  For
+  // tests which are known to break this (either by design, for test simplicity
+  // or because a related change is only partly implemented), use this method
+  // to notify the service to not DCHECK on such a condition.
+  void SkipPersistentContextsCheckOnShutdown() {
+    print_backend_service_->SkipPersistentContextsCheckOnShutdown();
+  }
+
   // Common helpers to perform particular stages of printing a document.
+  uint32_t EstablishPrintingContextAndWait() {
+    constexpr uint32_t kContextId = 7;
+#if BUILDFLAG(ENABLE_OOP_BASIC_PRINT_DIALOG)
+    constexpr uint32_t kParentWindowId = 8;
+#endif
+
+    GetPrintBackendService()->EstablishPrintingContext(kContextId
+#if BUILDFLAG(ENABLE_OOP_BASIC_PRINT_DIALOG)
+                                                       ,
+                                                       kParentWindowId
+#endif
+    );
+    return kContextId;
+  }
+
   mojom::ResultCode StartPrintingAndWait(const PrintSettings& print_settings) {
+    const uint32_t context_id = EstablishPrintingContextAndWait();
     mojom::ResultCode result;
 
     // Safe to use base::Unretained(this) since waiting locally on the callback
     // forces a shorter lifetime than `this`.
     GetPrintBackendService()->StartPrinting(
-        kTestDocumentCookie, u"document name",
+        context_id, kTestDocumentCookie, u"document name",
         mojom::PrintTargetType::kDirectToDevice, print_settings,
         base::BindOnce(&PrintBackendBrowserTest::CaptureResult,
                        base::Unretained(this), std::ref(result)));
@@ -496,13 +521,18 @@ IN_PROC_BROWSER_TEST_F(PrintBackendBrowserTest, UseDefaultSettings) {
   AddDefaultPrinter();
   SetPrinterNameForSubsequentContexts(kDefaultPrinterName);
 
+  // Isolated call has no corresponding cleanup of the printing context.
+  SkipPersistentContextsCheckOnShutdown();
+
+  const uint32_t context_id = EstablishPrintingContextAndWait();
+
   mojom::PrintSettingsResultPtr settings;
 
   // Safe to use base::Unretained(this) since waiting locally on the callback
   // forces a shorter lifetime than `this`.
   GetPrintBackendService()->UseDefaultSettings(
-      base::BindOnce(&PrintBackendBrowserTest::CapturePrintSettings,
-                     base::Unretained(this), std::ref(settings)));
+      context_id, base::BindOnce(&PrintBackendBrowserTest::CapturePrintSettings,
+                                 base::Unretained(this), std::ref(settings)));
   WaitUntilCallbackReceived();
   ASSERT_TRUE(settings->is_settings());
   EXPECT_EQ(settings->get_settings().copies(), kPrintSettingsCopies);
@@ -515,12 +545,17 @@ IN_PROC_BROWSER_TEST_F(PrintBackendBrowserTest, AskUserForSettings) {
   AddDefaultPrinter();
   SetPrinterNameForSubsequentContexts(kDefaultPrinterName);
 
+  // Isolated call has no corresponding cleanup of the printing context.
+  SkipPersistentContextsCheckOnShutdown();
+
+  const uint32_t context_id = EstablishPrintingContextAndWait();
+
   mojom::PrintSettingsResultPtr settings;
 
   // Safe to use base::Unretained(this) since waiting locally on the callback
   // forces a shorter lifetime than `this`.
   GetPrintBackendService()->AskUserForSettings(
-      /*parent_window_id=*/8,
+      context_id,
       /*max_pages=*/1, /*has_selection=*/false, /*is_scripted=*/false,
       base::BindOnce(&PrintBackendBrowserTest::CapturePrintSettings,
                      base::Unretained(this), std::ref(settings)));

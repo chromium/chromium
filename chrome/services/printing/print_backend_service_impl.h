@@ -165,10 +165,11 @@ class PrintBackendServiceImpl : public mojom::PrintBackendService {
 #endif
                                 ) override;
   void UseDefaultSettings(
+      uint32_t context_id,
       mojom::PrintBackendService::UseDefaultSettingsCallback callback) override;
 #if BUILDFLAG(ENABLE_OOP_BASIC_PRINT_DIALOG)
   void AskUserForSettings(
-      uint32_t parent_window_id,
+      uint32_t context_id,
       int max_pages,
       bool has_selection,
       bool is_scripted,
@@ -179,6 +180,7 @@ class PrintBackendServiceImpl : public mojom::PrintBackendService {
       mojom::PrintBackendService::UpdatePrintSettingsCallback callback)
       override;
   void StartPrinting(
+      uint32_t context_id,
       int document_cookie,
       const std::u16string& document_name,
       mojom::PrintTargetType target_type,
@@ -209,6 +211,12 @@ class PrintBackendServiceImpl : public mojom::PrintBackendService {
               mojom::PrintBackendService::CancelCallback callback) override;
 
   // Callbacks from worker functions.
+#if BUILDFLAG(ENABLE_OOP_BASIC_PRINT_DIALOG)
+  void OnDidAskUserForSettings(
+      uint32_t context_id,
+      mojom::PrintBackendService::AskUserForSettingsCallback callback,
+      mojom::ResultCode result);
+#endif
   void OnDidStartPrintingReadyDocument(DocumentHelper& document_helper,
                                        mojom::ResultCode result);
   void OnDidDocumentDone(
@@ -220,6 +228,7 @@ class PrintBackendServiceImpl : public mojom::PrintBackendService {
 
   // Utility helpers.
   std::unique_ptr<PrintingContextDelegate> CreatePrintingContextDelegate();
+  PrintingContext* GetPrintingContext(uint32_t context_id);
   DocumentHelper* GetDocumentHelper(int document_cookie);
   void RemoveDocumentHelper(DocumentHelper& document_helper);
 
@@ -241,7 +250,8 @@ class PrintBackendServiceImpl : public mojom::PrintBackendService {
 
   scoped_refptr<PrintBackend> print_backend_;
 
-  // Map from a context ID to a printing device context.
+  // Map from a context ID to a printing device context.  Accessed only from
+  // the main thread.
   base::flat_map<uint32_t, std::unique_ptr<ContextContainer>>
       persistent_printing_contexts_;
 

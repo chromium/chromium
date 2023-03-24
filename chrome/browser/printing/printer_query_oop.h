@@ -61,6 +61,11 @@ class PrinterQueryOop : public PrinterQuery {
                            SettingsCallback callback) override;
 
   // Mojo support to send messages from UI thread.
+  void SendEstablishPrintingContext(
+      PrintBackendServiceManager::ClientId client_id);
+  void SendUpdatePrintSettings(const std::string& printer_name,
+                               base::Value::Dict new_settings,
+                               SettingsCallback callback);
   void SendUseDefaultSettings(SettingsCallback callback);
 #if BUILDFLAG(ENABLE_OOP_BASIC_PRINT_DIALOG)
   void SendAskUserForSettings(uint32_t document_page_count,
@@ -82,12 +87,18 @@ class PrinterQueryOop : public PrinterQuery {
     return print_target_type_;
   }
 
+  const absl::optional<PrintBackendServiceManager::ContextId>& context_id()
+      const {
+    return context_id_;
+  }
+
  private:
   mojom::PrintTargetType print_target_type_ =
       mojom::PrintTargetType::kDirectToDevice;
   absl::optional<PrintBackendServiceManager::ClientId> query_with_ui_client_id_;
   absl::optional<PrintBackendServiceManager::ClientId>
       print_document_client_id_;
+  absl::optional<PrintBackendServiceManager::ContextId> context_id_;
 
   base::WeakPtrFactory<PrinterQueryOop> weak_factory_{this};
 };

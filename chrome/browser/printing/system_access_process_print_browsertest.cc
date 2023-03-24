@@ -152,6 +152,7 @@ class TestPrintJobWorkerOop : public PrintJobWorkerOop {
       std::unique_ptr<PrintingContext::Delegate> printing_context_delegate,
       std::unique_ptr<PrintingContext> printing_context,
       PrintBackendServiceManager::ClientId client_id,
+      absl::optional<PrintBackendServiceManager::ContextId> context_id,
       PrintJob* print_job,
       mojom::PrintTargetType print_target_type,
       bool simulate_spooling_memory_errors,
@@ -159,6 +160,7 @@ class TestPrintJobWorkerOop : public PrintJobWorkerOop {
       : PrintJobWorkerOop(std::move(printing_context_delegate),
                           std::move(printing_context),
                           client_id,
+                          context_id,
                           print_job,
                           print_target_type,
                           simulate_spooling_memory_errors),
@@ -252,8 +254,8 @@ class TestPrinterQueryOop : public PrinterQueryOop {
       PrintJob* print_job) override {
     return std::make_unique<TestPrintJobWorkerOop>(
         std::move(printing_context_delegate_), std::move(printing_context_),
-        *print_document_client_id(), print_job, print_target_type(),
-        simulate_spooling_memory_errors_, callbacks_);
+        *print_document_client_id(), context_id(), print_job,
+        print_target_type(), simulate_spooling_memory_errors_, callbacks_);
   }
 
   bool simulate_spooling_memory_errors_;
@@ -1408,11 +1410,14 @@ IN_PROC_BROWSER_TEST_F(SystemAccessProcessSandboxedServicePrintBrowserTest,
 #if BUILDFLAG(ENABLE_OOP_BASIC_PRINT_DIALOG)
   EXPECT_EQ(use_default_settings_result(), mojom::ResultCode::kSuccess);
   EXPECT_EQ(ask_user_for_settings_result(), mojom::ResultCode::kSuccess);
-#endif
+  ASSERT_EQ(*MakeUserModifiedPrintSettings("printer1"),
+            *document_print_settings());
+#else
   // TODO(crbug.com/1414968)  Correct expectation once system print settings
   // are properly reflected at start of job print.
   ASSERT_NE(*MakeUserModifiedPrintSettings("printer1"),
             *document_print_settings());
+#endif
   EXPECT_EQ(start_printing_result(), mojom::ResultCode::kSuccess);
 #if BUILDFLAG(IS_WIN)
   // TODO(crbug.com/1008222)  Include Windows coverage of

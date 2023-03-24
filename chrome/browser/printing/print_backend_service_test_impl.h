@@ -112,6 +112,13 @@ class PrintBackendServiceTestImpl : public PrintBackendServiceImpl {
       mojom::PrintBackendService::RenderPrintedPageCallback callback) override;
 #endif  // BUILDFLAG(IS_WIN)
 
+  // Tests which will have a leftover printing context established in the
+  // service can use this to skip the destructor check that all contexts were
+  // cleaned up.
+  void SkipPersistentContextsCheckOnShutdown() {
+    skip_dtor_persistent_contexts_check_ = true;
+  }
+
   // Cause the service to terminate on the next interaction it receives.  Once
   // terminated no further Mojo calls will be possible since there will not be
   // a receiver to handle them.
@@ -151,6 +158,9 @@ class PrintBackendServiceTestImpl : public PrintBackendServiceImpl {
   // When pretending to be sandboxed, have the possibility of getting access
   // denied errors.
   bool is_sandboxed_ = false;
+
+  // Marker for skipping check for empty persistent contexts at destruction.
+  bool skip_dtor_persistent_contexts_check_ = false;
 
   // Marker to signal service should terminate on next interaction.
   bool terminate_receiver_ = false;

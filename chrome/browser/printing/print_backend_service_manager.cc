@@ -270,11 +270,16 @@ PrintBackendServiceManager::EstablishPrintingContext(
   // due to an idle timeout.  The client could be used for a system print
   // dialog and/or for printing a document.  Either `kQueryWithUi` or
   // `kPrintDocument` would satisfy guaranteeing this persists for as long as
-  // could be needed.  Associate this with the printing document client type,
-  // given that most cases would fall into this usage.
+  // could be needed.  The particular use case that it is being used with can
+  // be deduced from the provided `printer_name`, since the printer cannot be
+  // known ahead of time for a system print dialog query, but must be known
+  // when printing a document.
   CallbackContext context;
-  auto& service = GetServiceAndCallbackContextForPrintDocumentClient(
-      client_id, printer_name, context);
+  auto& service = printer_name.empty()
+                      ? GetServiceAndCallbackContextForQueryWithUiClient(
+                            client_id, printer_name, context)
+                      : GetServiceAndCallbackContextForPrintDocumentClient(
+                            client_id, printer_name, context);
 
   LogCallToRemote("EstablishPrintingContext", context);
   ContextId context_id = ContextId(++last_context_id_);
@@ -289,6 +294,7 @@ PrintBackendServiceManager::EstablishPrintingContext(
 
 void PrintBackendServiceManager::UseDefaultSettings(
     ClientId client_id,
+    ContextId context_id,
     mojom::PrintBackendService::UseDefaultSettingsCallback callback) {
   // Even though this call does not require a UI, it is used exclusively as
   // part of preparation for system print.  It is called immediately before a
@@ -305,6 +311,7 @@ void PrintBackendServiceManager::UseDefaultSettings(
 
   LogCallToRemote("UseDefaultSettings", context);
   service->UseDefaultSettings(
+      *context_id,
       base::BindOnce(&PrintBackendServiceManager::OnDidUseDefaultSettings,
                      base::Unretained(this), std::move(context)));
 }
@@ -312,7 +319,7 @@ void PrintBackendServiceManager::UseDefaultSettings(
 #if BUILDFLAG(ENABLE_OOP_BASIC_PRINT_DIALOG)
 void PrintBackendServiceManager::AskUserForSettings(
     ClientId client_id,
-    gfx::NativeView parent_view,
+    ContextId context_id,
     int max_pages,
     bool has_selection,
     bool is_scripted,
@@ -327,7 +334,7 @@ void PrintBackendServiceManager::AskUserForSettings(
 
   LogCallToRemote("AskUserForSettings", context);
   service->AskUserForSettings(
-      NativeViewToUint(parent_view), max_pages, has_selection, is_scripted,
+      *context_id, max_pages, has_selection, is_scripted,
       base::BindOnce(&PrintBackendServiceManager::OnDidAskUserForSettings,
                      base::Unretained(this), std::move(context)));
 }
@@ -361,6 +368,7 @@ void PrintBackendServiceManager::UpdatePrintSettings(
 void PrintBackendServiceManager::StartPrinting(
     ClientId client_id,
     const std::string& printer_name,
+    ContextId context_id,
     int document_cookie,
     const std::u16string& document_name,
     mojom::PrintTargetType target_type,
@@ -378,7 +386,7 @@ void PrintBackendServiceManager::StartPrinting(
 
   LogCallToRemote("StartPrinting", context);
   service->StartPrinting(
-      document_cookie, document_name, target_type, settings,
+      *context_id, document_cookie, document_name, target_type, settings,
       base::BindOnce(&PrintBackendServiceManager::OnDidStartPrinting,
                      base::Unretained(this), std::move(context)));
 }
