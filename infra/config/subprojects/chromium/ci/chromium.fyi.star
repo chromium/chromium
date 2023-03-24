@@ -1167,6 +1167,7 @@ The bot specs should be in sync with <a href="https://ci.chromium.org/p/chromium
         "RBE_deps_cache_mode": "reproxy",
     },
     reclient_cache_silo = "Comparison Android - cache siloed",
+    reclient_instance = reclient.instance.TEST_TRUSTED,
 )
 
 ci.builder(
@@ -1191,6 +1192,7 @@ The bot specs should be in sync with <a href="https://ci.chromium.org/p/chromium
         "RBE_deps_cache_mode": "reproxy",
     },
     reclient_cache_silo = "Comparison Android (reproxy cache) - cache siloed",
+    reclient_instance = reclient.instance.TEST_TRUSTED,
 )
 
 ci.builder(
@@ -1208,6 +1210,7 @@ ci.builder(
         "RBE_deps_cache_mode": "reproxy",
     },
     reclient_cache_silo = "Comparison Linux - cache siloed",
+    reclient_instance = reclient.instance.TEST_TRUSTED,
 )
 
 fyi_mac_builder(
@@ -1288,6 +1291,7 @@ ci.builder(
         "RBE_deps_cache_mode": "reproxy",
     },
     reclient_cache_silo = "Comparison Windows 8 cores - cache siloed",
+    reclient_instance = reclient.instance.TEST_TRUSTED,
     reclient_jobs = 80,
 )
 
@@ -1309,6 +1313,7 @@ ci.builder(
         "RBE_deps_cache_mode": "reproxy",
     },
     reclient_cache_silo = "Comparison Windows - cache siloed",
+    reclient_instance = reclient.instance.TEST_TRUSTED,
 )
 
 ci.builder(
@@ -1327,6 +1332,7 @@ ci.builder(
         "RBE_deps_cache_mode": "reproxy",
     },
     reclient_cache_silo = "Comparison Simple Chrome - cache siloed",
+    reclient_instance = reclient.instance.TEST_TRUSTED,
 )
 
 fyi_mac_builder(
