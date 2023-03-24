@@ -69050,6 +69050,17 @@ Called by update_use_counter_css.py.-->
   <int value="7" label="NavStart+Start+Commit missing"/>
 </enum>
 
+<enum name="MissiveMigrationStatus">
+  <int value="0" label="Not needed"/>
+  <int value="1" label="Success"/>
+  <int value="2" label="Failed to delete source files"/>
+  <int value="3" label="Failed to delete deletion tag file"/>
+  <int value="4" label="Failed to create deletion tag file"/>
+  <int value="5" label="Failed to delete destination files"/>
+  <int value="6" label="Failed to copy"/>
+  <int value="7" label="Destination not exist"/>
+</enum>
+
 <enum name="MistSwitchResult">
   <int value="0" label="Success"/>
   <int value="1" label="Failure"/>

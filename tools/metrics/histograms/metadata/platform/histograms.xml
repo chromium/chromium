@@ -1313,6 +1313,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Platform.Missive.MigrationStatus"
+    enum="MissiveMigrationStatus" expires_after="2024-03-24">
+  <owner>lbaraz@chromium.org</owner>
+  <owner>xuhong@chromium.org</owner>
+  <owner>cros-reporting-team@google.com</owner>
+  <summary>
+    Recorded when Missive runs the storage directory migration function (called
+    each time when Missive starts). It counts the status of the migration.
+  </summary>
+</histogram>
+
 <histogram name="Platform.Missive.ResourceExhaustedCase"
     enum="ResourceExhaustedCase" expires_after="2023-11-17">
   <owner>xuhong@chromium.org</owner>
