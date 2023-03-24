@@ -130,11 +130,10 @@ bool CSSPrimitiveValue::IsCalculatedPercentageWithLength() const {
 }
 
 bool CSSPrimitiveValue::IsResolution() const {
-  // TODO(crbug.com/983613): Either support math functions on resolutions; or
-  // provide a justification for not supporting it, and move this function to
-  // |CSSNumericLiteralValue|.
-  return IsNumericLiteralValue() &&
-         To<CSSNumericLiteralValue>(this)->IsResolution();
+  return (IsNumericLiteralValue() &&
+          To<CSSNumericLiteralValue>(this)->IsResolution()) ||
+         (IsMathFunctionValue() &&
+          To<CSSMathFunctionValue>(this)->IsResolution());
 }
 
 bool CSSPrimitiveValue::IsFlex() const {
@@ -265,9 +264,12 @@ double CSSPrimitiveValue::ComputeDegrees() const {
 }
 
 double CSSPrimitiveValue::ComputeDotsPerPixel() const {
-  // TODO(crbug.com/983613): Either support math functions on resolutions; or
-  // provide a justification for not supporting it.
-  DCHECK(IsNumericLiteralValue());
+  DCHECK(IsResolution());
+
+  if (IsCalculated()) {
+    return To<CSSMathFunctionValue>(this)->ComputeDotsPerPixel();
+  }
+
   return To<CSSNumericLiteralValue>(this)->ComputeDotsPerPixel();
 }
 

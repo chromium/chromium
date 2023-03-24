@@ -1470,21 +1470,27 @@ CSSPrimitiveValue* ConsumeTime(CSSParserTokenRange& range,
   return nullptr;
 }
 
-CSSNumericLiteralValue* ConsumeResolution(CSSParserTokenRange& range) {
-  const CSSParserToken& token = range.Peek();
+CSSPrimitiveValue* ConsumeResolution(CSSParserTokenRange& range,
+                                     const CSSParserContext& context) {
+  if (const CSSParserToken& token = range.Peek();
+      token.GetType() == kDimensionToken) {
+    CSSPrimitiveValue::UnitType unit = token.GetUnitType();
+    if (!CSSPrimitiveValue::IsResolution(unit)) {
+      return nullptr;
+    }
 
-  // Unlike the other types, calc() does not work with <resolution>.
-  if (token.GetType() != kDimensionToken) {
-    return nullptr;
+    return CSSNumericLiteralValue::Create(
+        range.ConsumeIncludingWhitespace().NumericValue(), unit);
   }
 
-  CSSPrimitiveValue::UnitType unit = token.GetUnitType();
-  if (!CSSPrimitiveValue::IsResolution(unit)) {
-    return nullptr;
+  MathFunctionParser math_parser(range, context,
+                                 CSSPrimitiveValue::ValueRange::kAll);
+  const CSSMathFunctionValue* math_value = math_parser.Value();
+  if (math_value && math_value->IsResolution()) {
+    return math_parser.ConsumeValue();
   }
 
-  return CSSNumericLiteralValue::Create(
-      range.ConsumeIncludingWhitespace().NumericValue(), unit);
+  return nullptr;
 }
 
 // https://drafts.csswg.org/css-values-4/#ratio-value
@@ -3534,20 +3540,13 @@ static CSSImageSetOptionValue* ConsumeImageSetOption(
   // Type could appear before or after resolution
   CSSImageSetTypeValue* type = ConsumeImageSetType(range, context);
 
-  CSSNumericLiteralValue* resolution = nullptr;
-  if (range.Peek().GetType() == kDimensionToken ||
-      !RuntimeEnabledFeatures::CSSImageSetEnabled()) {
-    if (range.Peek().GetUnitType() != CSSPrimitiveValue::UnitType::kX &&
-        !RuntimeEnabledFeatures::CSSImageSetEnabled()) {
-      return nullptr;
-    }
-
-    resolution = ConsumeResolution(range);
-    if (!resolution || (resolution->GetDoubleValue() <= 0.0 &&
-                        !RuntimeEnabledFeatures::CSSImageSetEnabled())) {
-      return nullptr;
-    }
+  if (!RuntimeEnabledFeatures::CSSImageSetEnabled() &&
+      range.Peek().GetType() != kDimensionToken &&
+      range.Peek().GetUnitType() != CSSPrimitiveValue::UnitType::kX) {
+    return nullptr;
   }
+
+  CSSPrimitiveValue* resolution = ConsumeResolution(range, context);
 
   if (!type) {
     type = ConsumeImageSetType(range, context);

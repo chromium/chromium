@@ -64,6 +64,7 @@ enum CalculationCategory {
   kCalcAngle,
   kCalcTime,
   kCalcFrequency,
+  kCalcResolution,
   kCalcOther,
 };
 

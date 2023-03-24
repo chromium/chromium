@@ -125,6 +125,14 @@ static CalculationCategory UnitCategory(CSSPrimitiveValue::UnitType type) {
     case CSSPrimitiveValue::UnitType::kHertz:
     case CSSPrimitiveValue::UnitType::kKilohertz:
       return kCalcFrequency;
+
+    // Resolution units
+    case CSSPrimitiveValue::UnitType::kDotsPerPixel:
+    case CSSPrimitiveValue::UnitType::kX:
+    case CSSPrimitiveValue::UnitType::kDotsPerInch:
+    case CSSPrimitiveValue::UnitType::kDotsPerCentimeter:
+      return kCalcResolution;
+
     default:
       return kCalcOther;
   }
@@ -225,6 +233,7 @@ bool CanEagerlySimplify(CalculationCategory calc_cat) {
     case CalculationCategory::kCalcAngle:
     case CalculationCategory::kCalcTime:
     case CalculationCategory::kCalcFrequency:
+    case CalculationCategory::kCalcResolution:
       return true;
     default:
       return false;
@@ -330,6 +339,7 @@ CSSMathExpressionNumericLiteral::ComputeValueInCanonicalUnit() const {
     case kCalcAngle:
     case kCalcTime:
     case kCalcFrequency:
+    case kCalcResolution:
       return value_->DoubleValue() *
              CSSPrimitiveValue::ConversionToCanonicalUnitsScaleFactor(
                  value_->GetType());
@@ -349,6 +359,7 @@ double CSSMathExpressionNumericLiteral::ComputeLengthPx(
     case kCalcFrequency:
     case kCalcPercentLength:
     case kCalcTime:
+    case kCalcResolution:
     case kCalcOther:
       NOTREACHED();
       break;
@@ -403,25 +414,28 @@ bool CSSMathExpressionNumericLiteral::InvolvesPercentageComparisons() const {
 
 static const CalculationCategory kAddSubtractResult[kCalcOther][kCalcOther] = {
     /* CalcNumber */ {kCalcNumber, kCalcOther, kCalcOther, kCalcOther,
-                      kCalcOther, kCalcOther, kCalcOther},
+                      kCalcOther, kCalcOther, kCalcOther, kCalcOther},
     /* CalcLength */
     {kCalcOther, kCalcLength, kCalcPercentLength, kCalcPercentLength,
-     kCalcOther, kCalcOther, kCalcOther},
+     kCalcOther, kCalcOther, kCalcOther, kCalcOther},
     /* CalcPercent */
     {kCalcOther, kCalcPercentLength, kCalcPercent, kCalcPercentLength,
-     kCalcOther, kCalcOther, kCalcOther},
+     kCalcOther, kCalcOther, kCalcOther, kCalcOther},
     /* CalcPercentLength */
     {kCalcOther, kCalcPercentLength, kCalcPercentLength, kCalcPercentLength,
-     kCalcOther, kCalcOther, kCalcOther},
+     kCalcOther, kCalcOther, kCalcOther, kCalcOther},
     /* CalcAngle  */
     {kCalcOther, kCalcOther, kCalcOther, kCalcOther, kCalcAngle, kCalcOther,
-     kCalcOther},
+     kCalcOther, kCalcOther},
     /* CalcTime */
     {kCalcOther, kCalcOther, kCalcOther, kCalcOther, kCalcOther, kCalcTime,
-     kCalcOther},
+     kCalcOther, kCalcOther},
     /* CalcFrequency */
     {kCalcOther, kCalcOther, kCalcOther, kCalcOther, kCalcOther, kCalcOther,
-     kCalcFrequency}};
+     kCalcFrequency, kCalcOther},
+    /* CalcResolution */
+    {kCalcOther, kCalcOther, kCalcOther, kCalcOther, kCalcOther, kCalcOther,
+     kCalcOther, kCalcResolution}};
 
 static CalculationCategory DetermineCategory(
     const CSSMathExpressionNode& left_side,
@@ -995,7 +1009,8 @@ double CSSMathExpressionOperation::DoubleValue() const {
 static bool HasCanonicalUnit(CalculationCategory category) {
   return category == kCalcNumber || category == kCalcLength ||
          category == kCalcPercent || category == kCalcAngle ||
-         category == kCalcTime || category == kCalcFrequency;
+         category == kCalcTime || category == kCalcFrequency ||
+         category == kCalcResolution;
 }
 
 absl::optional<double> CSSMathExpressionOperation::ComputeValueInCanonicalUnit()
@@ -1190,6 +1205,7 @@ CSSPrimitiveValue::UnitType CSSMathExpressionOperation::ResolvedUnitType()
     case kCalcFrequency:
     case kCalcLength:
     case kCalcPercent:
+    case kCalcResolution:
       switch (operator_) {
         case CSSMathOperator::kMultiply:
         case CSSMathOperator::kDivide: {

@@ -31,7 +31,6 @@
 
 #include "third_party/blink/renderer/core/css/css_custom_property_declaration.h"
 #include "third_party/blink/renderer/core/css/css_math_expression_node.h"
-#include "third_party/blink/renderer/core/css/css_math_function_value.h"
 #include "third_party/blink/renderer/core/css/css_numeric_literal_value.h"
 #include "third_party/blink/renderer/core/css/css_primitive_value.h"
 #include "third_party/blink/renderer/core/css/parser/css_parser_context.h"
@@ -386,7 +385,7 @@ absl::optional<MediaQueryExpValue> MediaQueryExpValue::Consume(
         range, context, CSSPrimitiveValue::ValueRange::kAll);
   }
   if (!value) {
-    value = css_parsing_utils::ConsumeResolution(range);
+    value = css_parsing_utils::ConsumeResolution(range, context);
   }
 
   if (!value) {
@@ -422,8 +421,12 @@ absl::optional<MediaQueryExpValue> MediaQueryExpValue::Consume(
   }
 
   if (FeatureWithValidDensity(media_feature, value)) {
-    // TODO(crbug.com/983613): Support resolution in math functions.
-    DCHECK(value->IsNumericLiteralValue());
+    DCHECK(value->IsResolution());
+
+    if (const auto* math_function = DynamicTo<CSSMathFunctionValue>(value)) {
+      return MediaQueryExpValue(*math_function);
+    }
+
     const auto* numeric_literal = To<CSSNumericLiteralValue>(value);
     return MediaQueryExpValue(numeric_literal->DoubleValue(),
                               numeric_literal->GetType());

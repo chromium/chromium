@@ -87,7 +87,7 @@ const CSSValue* ConsumeSingleType(const CSSSyntaxComponent& syntax,
       return css_parsing_utils::ConsumeTime(
           range, context, CSSPrimitiveValue::ValueRange::kAll);
     case CSSSyntaxType::kResolution:
-      return css_parsing_utils::ConsumeResolution(range);
+      return css_parsing_utils::ConsumeResolution(range, context);
     case CSSSyntaxType::kTransformFunction:
       return css_parsing_utils::ConsumeTransformValue(range, context);
     case CSSSyntaxType::kTransformList:

@@ -720,6 +720,101 @@ TEST(CSSPropertyParserTest, ImageSetNegativeResolution) {
   TestImageSetParsing("image-set(url(foo) -1x)", "image-set(url(\"foo\") -1x)");
 }
 
+TEST(CSSPropertyParserTest, ImageSetCalcResolutionUnitX) {
+  TestImageSetParsing("image-set(url(foo) calc(1x))",
+                      "image-set(url(\"foo\") calc(1dppx))");
+}
+
+TEST(CSSPropertyParserTest, ImageSetAddCalcResolutionUnitX) {
+  TestImageSetParsing("image-set(url(foo) calc(2x + 3x))",
+                      "image-set(url(\"foo\") calc(5dppx))");
+}
+
+TEST(CSSPropertyParserTest, ImageSetSubCalcResolutionUnitX) {
+  TestImageSetParsing("image-set(url(foo) calc(2x - 1x))",
+                      "image-set(url(\"foo\") calc(1dppx))");
+}
+
+TEST(CSSPropertyParserTest, ImageSetMultCalcResolutionUnitX) {
+  TestImageSetParsing("image-set(url(foo) calc(2x * 3))",
+                      "image-set(url(\"foo\") calc(6dppx))");
+}
+
+TEST(CSSPropertyParserTest, ImageSetDivCalcResolutionUnitX) {
+  TestImageSetParsing("image-set(url(foo) calc(6x / 3))",
+                      "image-set(url(\"foo\") calc(2dppx))");
+}
+
+TEST(CSSPropertyParserTest, ImageSetAddCalcResolutionUnitDpiWithX) {
+  TestImageSetParsing("image-set(url(foo) calc(96dpi + 2x))",
+                      "image-set(url(\"foo\") calc(3dppx))");
+}
+
+TEST(CSSPropertyParserTest, ImageSetAddCalcResolutionUnitDpiWithDpi) {
+  TestImageSetParsing("image-set(url(foo) calc(96dpi + 96dpi))",
+                      "image-set(url(\"foo\") calc(2dppx))");
+}
+
+TEST(CSSPropertyParserTest, ImageSetSubCalcResolutionUnitDpiFromX) {
+  TestImageSetParsing("image-set(url(foo) calc(2x - 96dpi))",
+                      "image-set(url(\"foo\") calc(1dppx))");
+}
+
+TEST(CSSPropertyParserTest, ImageSetCalcResolutionUnitDppx) {
+  TestImageSetParsing("image-set(url(foo) calc(2dppx * 3))",
+                      "image-set(url(\"foo\") calc(6dppx))");
+}
+
+TEST(CSSPropertyParserTest, ImageSetCalcResolutionUnitDpi) {
+  TestImageSetParsing("image-set(url(foo) calc(32dpi * 3))",
+                      "image-set(url(\"foo\") calc(1dppx))");
+}
+
+TEST(CSSPropertyParserTest, ImageSetCalcResolutionUnitDpcm) {
+  TestImageSetParsing("image-set(url(foo) calc(1dpcm * 37.79532))",
+                      "image-set(url(\"foo\") calc(1dppx))");
+}
+
+TEST(CSSPropertyParserTest, ImageSetCalcMaxInf) {
+  TestImageSetParsing("image-set(url(foo) calc(1 * max(INFinity * 3x, 0dpcm)))",
+                      "image-set(url(\"foo\") calc(infinity * 1dppx))");
+}
+
+TEST(CSSPropertyParserTest, ImageSetCalcMinInf) {
+  TestImageSetParsing("image-set(url(foo) calc(1 * min(inFInity * 4x, 0dpi)))",
+                      "image-set(url(\"foo\") calc(0dppx))");
+}
+
+TEST(CSSPropertyParserTest, ImageSetCalcMinMaxNan) {
+  TestImageSetParsing("image-set(url(foo) calc(1dppx * max(0, min(10, NaN))))",
+                      "image-set(url(\"foo\") calc(NaN * 1dppx))");
+}
+
+TEST(CSSPropertyParserTest, ImageSetCalcClamp) {
+  TestImageSetParsing(
+      "image-set(url(foo) calc(1dppx * clamp(-Infinity, 0, infinity)))",
+      "image-set(url(\"foo\") calc(0dppx))");
+}
+
+TEST(CSSPropertyParserTest, ImageSetCalcClampLeft) {
+  TestImageSetParsing(
+      "image-set(url(foo) calc(1dppx * clamp(0, -Infinity, infinity)))",
+      "image-set(url(\"foo\") calc(0dppx))");
+}
+
+TEST(CSSPropertyParserTest, ImageSetCalcClampRight) {
+  TestImageSetParsing(
+      "image-set(url(foo) calc(1dppx * clamp(-Infinity, infinity, 0)))",
+      "image-set(url(\"foo\") calc(0dppx))");
+}
+
+TEST(CSSPropertyParserTest, ImageSetCalcClampNan) {
+  TestImageSetParsing(
+      "image-set(url(foo) calc(1 * clamp(-INFINITY*0dppx, 0dppx, "
+      "infiniTY*0dppx)))",
+      "image-set(url(\"foo\") calc(NaN * 1dppx))");
+}
+
 TEST(CSSPropertyParserTest, ImageSetUrlFunction) {
   TestImageSetParsing("image-set(url('foo') 1x)", "image-set(url(\"foo\") 1x)");
 }
@@ -792,6 +887,30 @@ TEST(CSSPropertyParserTest, ImageSetMissingUrl) {
 
 TEST(CSSPropertyParserTest, ImageSetOnlyOneGradientColor) {
   TestImageSetParsingFailure("image-set(linear-gradient(red) 1x)");
+}
+
+TEST(CSSPropertyParserTest, ImageSetAddCalcMissingUnit1) {
+  TestImageSetParsingFailure("image-set(url(foo) calc(2 + 3x))");
+}
+
+TEST(CSSPropertyParserTest, ImageSetAddCalcMissingUnit2) {
+  TestImageSetParsingFailure("image-set(url(foo) calc(2x + 3))");
+}
+
+TEST(CSSPropertyParserTest, ImageSetSubCalcMissingUnit1) {
+  TestImageSetParsingFailure("image-set(url(foo) calc(2 - 1x))");
+}
+
+TEST(CSSPropertyParserTest, ImageSetSubCalcMissingUnit2) {
+  TestImageSetParsingFailure("image-set(url(foo) calc(2x - 1))");
+}
+
+TEST(CSSPropertyParserTest, ImageSetMultCalcDoubleX) {
+  TestImageSetParsingFailure("image-set(url(foo) calc(2x * 3x))");
+}
+
+TEST(CSSPropertyParserTest, ImageSetDivCalcDoubleX) {
+  TestImageSetParsingFailure("image-set(url(foo) calc(6x / 3x))");
 }
 
 TEST(CSSPropertyParserTest, InternalLightDarkAuthor) {

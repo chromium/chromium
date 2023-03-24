@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "third_party/blink/renderer/core/css/media_query_exp.h"
+#include "third_party/blink/renderer/core/css/css_numeric_literal_value.h"
 #include "third_party/blink/renderer/core/css/css_test_helpers.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/testing/null_execution_context.h"
@@ -60,6 +61,30 @@ MediaQueryExpValue CqhValue(double value) {
 
 MediaQueryExpValue CssValue(const CSSPrimitiveValue& value) {
   return MediaQueryExpValue(value);
+}
+
+MediaQueryExpValue DppxValue(double value) {
+  return MediaQueryExpValue(value, CSSPrimitiveValue::UnitType::kDotsPerPixel);
+}
+
+MediaQueryExpValue CalcValue(const String& syntax, const String& value) {
+  ScopedNullExecutionContext execution_context;
+  const auto* calc_value =
+      DynamicTo<CSSPrimitiveValue>(css_test_helpers::ParseValue(
+          *Document::CreateForTest(execution_context.GetExecutionContext()),
+          syntax, value));
+  EXPECT_NE(calc_value, nullptr);
+
+  return CssValue(*calc_value);
+}
+
+MediaQueryExpValue NumericLiteralValue(double value,
+                                       CSSPrimitiveValue::UnitType unit) {
+  auto* num_lit_val =
+      DynamicTo<CSSPrimitiveValue>(CSSNumericLiteralValue::Create(value, unit));
+  EXPECT_NE(num_lit_val, nullptr);
+
+  return CssValue(*num_lit_val);
 }
 
 MediaQueryExpValue InvalidValue() {
@@ -429,6 +454,18 @@ TEST(MediaQueryExpTest, UtilsNullptrHandling) {
   EXPECT_FALSE(MediaQueryExpNode::Or(nullptr, FeatureNode(exp)));
   EXPECT_FALSE(MediaQueryExpNode::Or(FeatureNode(exp), nullptr));
   EXPECT_FALSE(MediaQueryExpNode::Or(nullptr, nullptr));
+}
+
+TEST(MediaQueryExpTest, ResolutionChecks) {
+  EXPECT_TRUE(DppxValue(3).IsResolution());
+  EXPECT_TRUE(CalcValue("<resolution>", "calc(96dpi)").IsResolution());
+
+  EXPECT_FALSE(InvalidValue().IsResolution());
+  EXPECT_FALSE(PxValue(10).IsResolution());
+  EXPECT_FALSE(RatioValue(3, 5).IsResolution());
+  EXPECT_FALSE(CalcValue("<length>", "calc(13px)").IsResolution());
+  EXPECT_FALSE(NumericLiteralValue(3, CSSPrimitiveValue::UnitType::kPixels)
+                   .IsResolution());
 }
 
 }  // namespace blink

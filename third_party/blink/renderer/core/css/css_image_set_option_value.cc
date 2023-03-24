@@ -7,6 +7,7 @@
 #include "base/memory/values_equivalent.h"
 #include "third_party/blink/renderer/core/css/css_gradient_value.h"
 #include "third_party/blink/renderer/core/css/css_image_value.h"
+#include "third_party/blink/renderer/core/css/css_numeric_literal_value.h"
 #include "third_party/blink/renderer/core/style/style_generated_image.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
 
@@ -34,11 +35,10 @@ const CSSValue* ComputeImage(const CSSValue* value,
   return value;
 }
 
-const CSSNumericLiteralValue* ComputeResolution(
-    const CSSNumericLiteralValue* resolution) {
+const CSSPrimitiveValue* ComputeResolution(
+    const CSSPrimitiveValue* resolution) {
   if (RuntimeEnabledFeatures::CSSImageSetEnabled() && resolution &&
-      resolution->IsResolution() &&
-      resolution->GetType() != CSSPrimitiveValue::UnitType::kDotsPerPixel) {
+      resolution->IsResolution()) {
     return CSSNumericLiteralValue::Create(
         resolution->ComputeDotsPerPixel(),
         CSSPrimitiveValue::UnitType::kDotsPerPixel);
@@ -51,7 +51,7 @@ const CSSNumericLiteralValue* ComputeResolution(
 
 CSSImageSetOptionValue::CSSImageSetOptionValue(
     const CSSValue* image,
-    const CSSNumericLiteralValue* resolution,
+    const CSSPrimitiveValue* resolution,
     const CSSImageSetTypeValue* type)
     : CSSValue(kImageSetOptionClass),
       image_(image),
@@ -97,7 +97,8 @@ double CSSImageSetOptionValue::ComputedResolution() const {
 }
 
 bool CSSImageSetOptionValue::IsSupported() const {
-  return (!type_ || type_->IsSupported()) && (resolution_->DoubleValue() > 0.0);
+  return (!type_ || type_->IsSupported()) &&
+         (resolution_->ComputeDotsPerPixel() > 0.0);
 }
 
 String CSSImageSetOptionValue::CustomCSSText() const {

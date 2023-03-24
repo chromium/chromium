@@ -69,6 +69,20 @@ MediaQueryEvaluatorTestCase g_screen_test_cases[] = {
     {"all and (grid: 0)", true},
     {"(resolution: 2dppx)", true},
     {"(resolution: 1dppx)", false},
+    {"(resolution: calc(2x))", true},
+    {"(resolution: calc(1x))", false},
+    {"(resolution: calc(1x + 1x))", true},
+    {"(resolution: calc(1x + 0x))", false},
+    {"(resolution: calc(1x + 96dpi))", true},
+    {"(resolution: calc(0x + 37.79532dpcm))", false},
+    {"(resolution: calc(3x - 1x))", true},
+    {"(resolution: calc(3x - 2x))", false},
+    {"(resolution: calc(3x - 96dpi))", true},
+    {"(resolution: calc(2x - 37.79532dpcm))", false},
+    {"(resolution: calc(1x * 2))", true},
+    {"(resolution: calc(0.5x * 2))", false},
+    {"(resolution: calc(4x / 2))", true},
+    {"(resolution: calc(2x / 2))", false},
     {"(orientation: portrait)", true},
     {"(orientation: landscape)", false},
     {"(orientation: url(portrait))", false},
@@ -183,6 +197,7 @@ MediaQueryEvaluatorTestCase g_float_non_friendly_viewport_test_cases[] = {
 
 MediaQueryEvaluatorTestCase g_print_test_cases[] = {
     {"print and (min-resolution: 1dppx)", true},
+    {"print and (min-resolution: calc(100dpi - 4dpi))", true},
     {"print and (min-resolution: 118dpcm)", true},
     {"print and (min-resolution: 119dpcm)", false},
     {nullptr, false}  // Do not remove the terminator line.

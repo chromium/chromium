@@ -86,6 +86,11 @@ double CSSMathFunctionValue::ComputeLengthPx(
   return ClampToPermittedRange(expression_->ComputeLengthPx(length_resolver));
 }
 
+double CSSMathFunctionValue::ComputeDotsPerPixel() const {
+  DCHECK_EQ(kCalcResolution, expression_->Category());
+  return ClampToPermittedRange(*expression_->ComputeValueInCanonicalUnit());
+}
+
 bool CSSMathFunctionValue::AccumulateLengthArray(CSSLengthArray& length_array,
                                                  double multiplier) const {
   return expression_->AccumulateLengthArray(length_array, multiplier);

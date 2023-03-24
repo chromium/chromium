@@ -31,11 +31,13 @@ class CORE_EXPORT CSSMathFunctionValue : public CSSPrimitiveValue {
   bool MayHaveRelativeUnit() const;
 
   CalculationCategory Category() const { return expression_->Category(); }
+
   bool IsAngle() const { return Category() == kCalcAngle; }
   bool IsLength() const { return Category() == kCalcLength; }
   bool IsNumber() const { return Category() == kCalcNumber; }
   bool IsPercentage() const { return Category() == kCalcPercent; }
   bool IsTime() const { return Category() == kCalcTime; }
+  bool IsResolution() const { return Category() == kCalcResolution; }
 
   bool IsPx() const;
 
@@ -65,7 +67,7 @@ class CORE_EXPORT CSSMathFunctionValue : public CSSPrimitiveValue {
 
   // TODO(crbug.com/979895): The semantics of this function is still not very
   // clear. Do not add new callers before further refactoring and cleanups.
-  // |DoubleValue()| can be called only when the the math expression can be
+  // |DoubleValue()| can be called only when the math expression can be
   // resolved into a single numeric value *without any type conversion* (e.g.,
   // between px and em). Otherwise, it hits a DCHECK.
   double DoubleValue() const;
@@ -73,6 +75,7 @@ class CORE_EXPORT CSSMathFunctionValue : public CSSPrimitiveValue {
   double ComputeSeconds() const;
   double ComputeDegrees() const;
   double ComputeLengthPx(const CSSLengthResolver&) const;
+  double ComputeDotsPerPixel() const;
 
   bool AccumulateLengthArray(CSSLengthArray& length_array,
                              double multiplier) const;

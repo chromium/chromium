@@ -142,7 +142,8 @@ CSSPrimitiveValue* ConsumeHue(CSSParserTokenRange&,
 CSSPrimitiveValue* ConsumeTime(CSSParserTokenRange&,
                                const CSSParserContext&,
                                CSSPrimitiveValue::ValueRange);
-CSSNumericLiteralValue* ConsumeResolution(CSSParserTokenRange&);
+CSSPrimitiveValue* ConsumeResolution(CSSParserTokenRange&,
+                                     const CSSParserContext&);
 CSSValue* ConsumeRatio(CSSParserTokenRange&, const CSSParserContext&);
 CSSIdentifierValue* ConsumeIdent(CSSParserTokenRange&);
 CSSIdentifierValue* ConsumeIdentRange(CSSParserTokenRange&,

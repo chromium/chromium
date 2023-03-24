@@ -31,6 +31,7 @@
 
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/renderer/core/core_export.h"
+#include "third_party/blink/renderer/core/css/css_math_function_value.h"
 #include "third_party/blink/renderer/core/css/css_primitive_value.h"
 #include "third_party/blink/renderer/core/css/css_value.h"
 #include "third_party/blink/renderer/core/css/media_feature_names.h"
@@ -66,6 +67,20 @@ class CORE_EXPORT MediaQueryExpValue {
   bool IsNumeric() const { return type_ == Type::kNumeric; }
   bool IsRatio() const { return type_ == Type::kRatio; }
   bool IsCSSValue() const { return type_ == Type::kCSSValue; }
+  bool IsResolution() const {
+    switch (type_) {
+      case Type::kNumeric:
+        return CSSPrimitiveValue::IsResolution(Unit());
+      case Type::kCSSValue:
+        if (const auto* math_function =
+                DynamicTo<CSSMathFunctionValue>(css_value_.Get())) {
+          return math_function->IsResolution();
+        }
+        return false;
+      default:
+        return false;
+    }
+  }
 
   CSSValueID Id() const {
     DCHECK(IsId());
@@ -73,11 +88,25 @@ class CORE_EXPORT MediaQueryExpValue {
   }
 
   double Value() const {
+    if (const auto* math_function =
+            DynamicTo<CSSMathFunctionValue>(css_value_.Get())) {
+      if (math_function->IsResolution()) {
+        return math_function->ComputeDotsPerPixel();
+      }
+    }
+
     DCHECK(IsNumeric());
     return numeric_.value;
   }
 
   CSSPrimitiveValue::UnitType Unit() const {
+    if (const auto* math_function =
+            DynamicTo<CSSMathFunctionValue>(css_value_.Get())) {
+      if (math_function->IsResolution()) {
+        return CSSPrimitiveValue::UnitType::kDotsPerPixel;
+      }
+    }
+
     DCHECK(IsNumeric());
     return numeric_.unit;
   }

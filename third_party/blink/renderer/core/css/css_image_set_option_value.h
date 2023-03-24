@@ -6,7 +6,7 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_CSS_CSS_IMAGE_SET_OPTION_VALUE_H_
 
 #include "third_party/blink/renderer/core/css/css_image_set_type_value.h"
-#include "third_party/blink/renderer/core/css/css_numeric_literal_value.h"
+#include "third_party/blink/renderer/core/css/css_primitive_value.h"
 #include "third_party/blink/renderer/core/css/css_to_length_conversion_data.h"
 #include "third_party/blink/renderer/core/css/css_value.h"
 #include "third_party/blink/renderer/core/dom/document.h"
@@ -23,10 +23,9 @@ namespace blink {
 // <image-set-option> = [ <image> | <string> ] [<resolution> || type(<string>)]
 class CSSImageSetOptionValue : public CSSValue {
  public:
-  explicit CSSImageSetOptionValue(
-      const CSSValue* image,
-      const CSSNumericLiteralValue* resolution = nullptr,
-      const CSSImageSetTypeValue* type = nullptr);
+  explicit CSSImageSetOptionValue(const CSSValue* image,
+                                  const CSSPrimitiveValue* resolution = nullptr,
+                                  const CSSImageSetTypeValue* type = nullptr);
 
   // It is expected that CSSImageSetOptionValue objects should always have
   // non-null image and resolution values.
@@ -59,7 +58,7 @@ class CSSImageSetOptionValue : public CSSValue {
 
  private:
   Member<const CSSValue> image_;
-  Member<const CSSNumericLiteralValue> resolution_;
+  Member<const CSSPrimitiveValue> resolution_;
   Member<const CSSImageSetTypeValue> type_;
 };
 

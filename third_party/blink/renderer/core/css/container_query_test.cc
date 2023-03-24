@@ -201,6 +201,7 @@ TEST_F(ContainerQueryTest, ValidFeatures) {
   EXPECT_FALSE(ParseAtContainer("@container (color-index >= 1) {}"));
   EXPECT_FALSE(ParseAtContainer("@container (grid) {}"));
   EXPECT_FALSE(ParseAtContainer("@container (resolution: 150dpi) {}"));
+  EXPECT_FALSE(ParseAtContainer("@container (resolution: calc(6x / 3)) {}"));
   EXPECT_FALSE(ParseAtContainer("@container size(width) {}"));
   EXPECT_FALSE(ParseAtContainer("@container test_name size(width) {}"));
 }

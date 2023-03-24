@@ -574,15 +574,12 @@ static bool EvalResolution(const MediaQueryExpValue& value,
     return !!actual_resolution;
   }
 
-  if (!value.IsNumeric()) {
-    return false;
-  }
-
-  if (value.Unit() == CSSPrimitiveValue::UnitType::kNumber) {
+  if (value.IsNumeric() &&
+      value.Unit() == CSSPrimitiveValue::UnitType::kNumber) {
     return CompareValue(actual_resolution, ClampTo<float>(value.Value()), op);
   }
 
-  if (!CSSPrimitiveValue::IsResolution(value.Unit())) {
+  if (!value.IsResolution()) {
     return false;
   }
 
@@ -619,7 +616,7 @@ static bool DevicePixelRatioMediaFeatureEval(const MediaQueryExpValue& value,
 static bool ResolutionMediaFeatureEval(const MediaQueryExpValue& value,
                                        MediaQueryOperator op,
                                        const MediaValues& media_values) {
-  return (!value.IsValid() || CSSPrimitiveValue::IsResolution(value.Unit())) &&
+  return (!value.IsValid() || value.IsResolution()) &&
          EvalResolution(value, op, media_values);
 }
 
