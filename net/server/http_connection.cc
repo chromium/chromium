@@ -160,7 +160,7 @@ HttpConnection::HttpConnection(int id, std::unique_ptr<StreamSocket> socket)
 HttpConnection::~HttpConnection() = default;
 
 void HttpConnection::SetWebSocket(std::unique_ptr<WebSocket> web_socket) {
-  DCHECK(!web_socket_);
+  DCHECK(!web_socket_ || !web_socket);
   web_socket_ = std::move(web_socket);
 }
 
