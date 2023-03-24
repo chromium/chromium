@@ -1467,7 +1467,7 @@ class VIEWS_EXPORT View : public ui::LayerDelegate,
   // reader when that object gains focus and is critical to understanding the
   // purpose of that object non-visually.
   void SetAccessibleName(const std::u16string& name);
-  virtual const std::u16string& GetAccessibleName() const;
+  const std::u16string& GetAccessibleName() const;
 
   // Sets the accessible name to the specified string and source type.
   // To indicate that this view should never have an accessible name, e.g. to
