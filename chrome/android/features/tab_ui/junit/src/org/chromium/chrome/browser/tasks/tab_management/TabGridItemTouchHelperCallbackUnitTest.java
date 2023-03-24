@@ -798,6 +798,36 @@ public class TabGridItemTouchHelperCallbackUnitTest {
     }
 
     @Test
+    public void onLongPress_blockNextAction() {
+        initAndAssertAllProperties();
+
+        // Simulate the selection of card#1 in TabListModel.
+        mItemTouchHelperCallback.setSelectedTabIndexForTesting(POSITION1);
+
+        mItemTouchHelperCallback.onSelectedChanged(
+                mMockViewHolder1, ItemTouchHelper.ACTION_STATE_IDLE);
+
+        assertTrue(mItemTouchHelperCallback.shouldBlockAction());
+    }
+
+    @Test
+    public void onLongPressWithDrag_dontBlockNextAction() {
+        initAndAssertAllProperties();
+
+        // Simulate the selection of card#1 in TabListModel.
+        mItemTouchHelperCallback.setSelectedTabIndexForTesting(POSITION1);
+
+        // Pretend a drag started.
+        mItemTouchHelperCallback.onChildDraw(mCanvas, mRecyclerView, mDummyViewHolder1, 10, 5,
+                ItemTouchHelper.ACTION_STATE_DRAG, true);
+
+        mItemTouchHelperCallback.onSelectedChanged(
+                mMockViewHolder1, ItemTouchHelper.ACTION_STATE_IDLE);
+
+        assertFalse(mItemTouchHelperCallback.shouldBlockAction());
+    }
+
+    @Test
     @Features.EnableFeatures({ChromeFeatureList.TAB_SELECTION_EDITOR_V2})
     public void onLongPress_triggerTabSelectionEditor() {
         TabUiFeatureUtilities.ENABLE_TAB_SELECTION_EDITOR_V2_LONGPRESS_ENTRY.setForTesting(true);
@@ -811,6 +841,7 @@ public class TabGridItemTouchHelperCallbackUnitTest {
                 mMockViewHolder1, ItemTouchHelper.ACTION_STATE_IDLE);
 
         verify(mOnLongPressTabItemEventListener).onLongPressEvent(TAB1_ID);
+        assertTrue(mItemTouchHelperCallback.shouldBlockAction());
         TabUiFeatureUtilities.ENABLE_TAB_SELECTION_EDITOR_V2_LONGPRESS_ENTRY.setForTesting(false);
     }
 
@@ -831,6 +862,7 @@ public class TabGridItemTouchHelperCallbackUnitTest {
                 mMockViewHolder1, ItemTouchHelper.ACTION_STATE_IDLE);
 
         verify(mOnLongPressTabItemEventListener, never()).onLongPressEvent(TAB1_ID);
+        assertFalse(mItemTouchHelperCallback.shouldBlockAction());
         TabUiFeatureUtilities.ENABLE_TAB_SELECTION_EDITOR_V2_LONGPRESS_ENTRY.setForTesting(false);
     }
 

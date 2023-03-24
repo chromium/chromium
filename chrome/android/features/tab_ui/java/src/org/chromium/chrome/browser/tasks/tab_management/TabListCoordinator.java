@@ -329,14 +329,15 @@ public class TabListCoordinator
                                 mContext.getResources().getDimension(
                                         R.dimen.bottom_sheet_peek_height));
 
-                // The block below creates an instance of the ItemTouchHelper and also utilizes the
-                // TabGridItemTouchHelperCallback and its shouldBlockAction after attaching to the
-                // recycler view. The block action function determines if on longpress, a propagated
-                // MOTION_UP click event should be intercepted and negated by this listener to
-                // prevent selection state issues from occurring on subsequent recycler view layers
-                // should the MOTION_UP event continue propagating. The motion events concerning the
-                // longpress action are consumed by this recycler view, which is why the solution
-                // targets this recycler view rather than the selection editor recycler view.
+                // Creates an instance of the ItemTouchHelper using TabGridItemTouchHelperCallback
+                // and attach a downsteam mOnItemTouchListener that watches for
+                // TabGridItemTouchHelperCallback#shouldBlockAction() to occur. This determines if
+                // on a longpress the final MOTION_UP event should be intercepted if it should have
+                // been filtered in the ItemTouchHelper, but was not handled. This then allows
+                // the mOnItemTouchHelper to intercept the event and prevent subsequent downstream
+                // click handlers from receiving an input possibly causing unexpected behaviors.
+                //
+                // See similar comments in TabGridItemTouchHelperCallback for more details.
                 mItemTouchHelper = new ItemTouchHelper(callback);
                 mItemTouchHelper.attachToRecyclerView(mRecyclerView);
                 mOnItemTouchListener = new OnItemTouchListener() {
@@ -344,13 +345,14 @@ public class TabListCoordinator
                     public boolean onInterceptTouchEvent(
                             RecyclerView recyclerView, MotionEvent event) {
                         // There can be an edge case when adding the block action logic where
-                        // minimal movement not picked up by the actionStarted bool in onChildDraw
-                        // can result in a block action request with a DRAG event. The event gets
-                        // consumed and no erroneous selection would have occurred as it is not a
-                        // pure longpress, but due to the active block request, subsequent
-                        // intercepted actions may be blocked or have weird behaviours. This check
-                        // ensures that for a given action, if a block is requested, the MOTION_UP
-                        // event which results in a propagated click must be present to block it.
+                        // minimal movement not picked up by the mItemTouchHelper can result in
+                        // attempting to block an action that did have a DRAG event. Actually,
+                        // blocking the next event in this can result in an unexpected event
+                        // being consumed leading to an unexpected sequence of MotionEvents.
+                        // This bad sequence can then result in invalid UI & click state for
+                        // downstream touch handlers. This additional check ensures that for a
+                        // given action, if a block is requested it must be the UP motion that
+                        // ends the input.
                         if (callback.shouldBlockAction()
                                 && (event.getActionMasked() == MotionEvent.ACTION_UP
                                         || event.getActionMasked()
