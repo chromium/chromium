@@ -8,14 +8,11 @@
 #include "base/files/file_path.h"
 #include "base/json/json_writer.h"
 #include "base/strings/stringprintf.h"
-#include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
 #include "chrome/browser/ui/web_applications/test/isolated_web_app_test_utils.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_url_info.h"
-#include "chrome/common/chrome_features.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
-#include "content/public/common/content_features.h"
 #include "content/public/common/content_switches.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_base.h"
@@ -468,17 +465,8 @@ IN_PROC_BROWSER_TEST_F(ChromeDirectSocketsUdpApiTest, UdpServerReadWrite) {
 
 #endif
 
-class IsolatedWebAppTestHarnessWithDirectSocketsEnabled
-    : public web_app::IsolatedWebAppBrowserTestHarness {
- public:
-  IsolatedWebAppTestHarnessWithDirectSocketsEnabled() {
-    scoped_feature_list_.InitWithFeatures(
-        {features::kIsolatedWebApps, features::kIsolatedWebAppDevMode}, {});
-  }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
-};
+using IsolatedWebAppTestHarnessWithDirectSocketsEnabled =
+    web_app::IsolatedWebAppBrowserTestHarness;
 
 using ChromeDirectSocketsTcpIsolatedWebAppTest = ChromeDirectSocketsTcpTest<
     IsolatedWebAppTestHarnessWithDirectSocketsEnabled>;

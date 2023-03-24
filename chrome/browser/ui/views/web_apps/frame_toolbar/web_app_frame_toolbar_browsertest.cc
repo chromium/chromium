@@ -56,7 +56,6 @@
 #include "components/safe_browsing/core/common/features.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_observer.h"
-#include "content/public/common/content_features.h"
 #include "content/public/common/page_zoom.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
@@ -439,10 +438,8 @@ class BorderlessIsolatedWebAppBrowserTest
     : public web_app::IsolatedWebAppBrowserTestHarness {
  public:
   BorderlessIsolatedWebAppBrowserTest() {
-    scoped_feature_list_.InitWithFeatures(
-        {features::kIsolatedWebApps, features::kIsolatedWebAppDevMode,
-         blink::features::kWebAppBorderless},
-        {});
+    scoped_feature_list_.InitAndEnableFeature(
+        blink::features::kWebAppBorderless);
   }
 
   void InstallAndLaunchIsolatedWebApp(bool uses_borderless) {

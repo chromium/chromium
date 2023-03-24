@@ -564,10 +564,6 @@ IN_PROC_BROWSER_TEST_F(ChromeWebUsbAppTest, AllowProtectedInterfaces) {
 class IsolatedWebAppUsbBrowserTest
     : public web_app::IsolatedWebAppBrowserTestHarness {
  public:
-  IsolatedWebAppUsbBrowserTest() {
-    scoped_feature_list_.InitWithFeatures(
-        {features::kIsolatedWebApps, features::kIsolatedWebAppDevMode}, {});
-  }
   ~IsolatedWebAppUsbBrowserTest() override = default;
 
   void SetUpOnMainThread() override {
@@ -586,7 +582,6 @@ class IsolatedWebAppUsbBrowserTest
 
  private:
   device::FakeUsbDeviceManager device_manager_;
-  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 IN_PROC_BROWSER_TEST_F(IsolatedWebAppUsbBrowserTest, ClaimInterface) {

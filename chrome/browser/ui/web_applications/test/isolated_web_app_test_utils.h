@@ -10,6 +10,7 @@
 
 #include "base/files/file_path.h"
 #include "base/strings/string_piece.h"
+#include "base/test/scoped_feature_list.h"
 #include "chrome/browser/ui/web_applications/web_app_controller_browsertest.h"
 #include "components/web_package/signed_web_bundles/signed_web_bundle_id.h"
 #include "components/web_package/test_support/signed_web_bundles/web_bundle_signer.h"
@@ -75,6 +76,9 @@ class IsolatedWebAppBrowserTestHarness : public WebAppControllerBrowserTest {
       WindowOpenDisposition disposition = WindowOpenDisposition::CURRENT_TAB);
 
   Browser* GetBrowserFromFrame(content::RenderFrameHost* frame);
+
+ private:
+  base::test::ScopedFeatureList iwa_scoped_feature_list_;
 };
 
 std::unique_ptr<net::EmbeddedTestServer> CreateAndStartDevServer(
