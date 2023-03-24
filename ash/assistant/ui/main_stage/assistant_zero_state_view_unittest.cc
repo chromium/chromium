@@ -96,7 +96,9 @@ TEST_F(AssistantZeroStateViewUnittest, LearnMoreToastViewIsNotVisible) {
 
   AppListToastView* learn_more_toast = static_cast<AppListToastView*>(
       page_view()->GetViewByID(AssistantViewID::kLearnMoreToast));
-  ASSERT_FALSE(learn_more_toast);
+  ASSERT_TRUE(learn_more_toast);
+  ASSERT_FALSE(learn_more_toast->GetVisible());
+  ASSERT_FALSE(learn_more_toast->IsDrawn());
 }
 
 TEST_F(AssistantZeroStateViewUnittest, LearnMoreToastViewIsVisible) {
@@ -123,8 +125,85 @@ TEST_F(AssistantZeroStateViewUnittest,
       page_view()->GetViewByID(AssistantViewID::kLearnMoreToast));
   ASSERT_TRUE(learn_more_toast);
   ASSERT_TRUE(learn_more_toast->GetVisible());
+  ASSERT_TRUE(learn_more_toast->IsDrawn());
 
   MockTextInteraction().WithTextResponse("The response");
+  ASSERT_TRUE(learn_more_toast->GetVisible());
+  ASSERT_FALSE(learn_more_toast->IsDrawn());
+}
+
+TEST_F(AssistantZeroStateViewUnittest,
+       LearnMoreToastViewIsNotVisible_TabletMode) {
+  base::test::ScopedFeatureList feature_list_;
+  feature_list_.InitAndDisableFeature(
+      assistant::features::kEnableAssistantLearnMore);
+
+  SetNumberOfSessionsWhereOnboardingShown(
+      assistant::ui::kOnboardingMaxSessionsShown);
+  SetTabletMode(true);
+  ShowAssistantUi();
+
+  const views::Label* greeting_label = static_cast<views::Label*>(
+      page_view()->GetViewByID(AssistantViewID::kGreetingLabel));
+  ASSERT_TRUE(greeting_label);
+  ASSERT_TRUE(greeting_label->GetVisible());
+  ASSERT_TRUE(greeting_label->IsDrawn());
+
+  AppListToastView* learn_more_toast = static_cast<AppListToastView*>(
+      page_view()->GetViewByID(AssistantViewID::kLearnMoreToast));
+  ASSERT_TRUE(learn_more_toast);
+  ASSERT_FALSE(learn_more_toast->GetVisible());
+  ASSERT_FALSE(learn_more_toast->IsDrawn());
+}
+
+TEST_F(AssistantZeroStateViewUnittest, LearnMoreToastViewIsVisible_TabletMode) {
+  base::test::ScopedFeatureList scoped_feature_list(
+      assistant::features::kEnableAssistantLearnMore);
+
+  SetNumberOfSessionsWhereOnboardingShown(
+      assistant::ui::kOnboardingMaxSessionsShown);
+  SetTabletMode(true);
+  ShowAssistantUi();
+
+  const views::Label* greeting_label = static_cast<views::Label*>(
+      page_view()->GetViewByID(AssistantViewID::kGreetingLabel));
+  ASSERT_TRUE(greeting_label);
+  ASSERT_FALSE(greeting_label->GetVisible());
+  ASSERT_FALSE(greeting_label->IsDrawn());
+
+  AppListToastView* learn_more_toast = static_cast<AppListToastView*>(
+      page_view()->GetViewByID(AssistantViewID::kLearnMoreToast));
+  ASSERT_TRUE(learn_more_toast);
+  ASSERT_TRUE(learn_more_toast->GetVisible());
+  ASSERT_TRUE(learn_more_toast->IsDrawn());
+}
+
+TEST_F(AssistantZeroStateViewUnittest,
+       LearnMoreToastViewIsNotVisibleAfterResponse_TabletMode) {
+  base::test::ScopedFeatureList scoped_feature_list(
+      assistant::features::kEnableAssistantLearnMore);
+
+  SetNumberOfSessionsWhereOnboardingShown(
+      assistant::ui::kOnboardingMaxSessionsShown);
+  SetTabletMode(true);
+  ShowAssistantUi();
+  // Show Assistant UI in text mode, which is required to set text query.
+  TapOnAndWait(keyboard_input_toggle());
+
+  const views::Label* greeting_label = static_cast<views::Label*>(
+      page_view()->GetViewByID(AssistantViewID::kGreetingLabel));
+  ASSERT_TRUE(greeting_label);
+  ASSERT_FALSE(greeting_label->GetVisible());
+  ASSERT_FALSE(greeting_label->IsDrawn());
+
+  AppListToastView* learn_more_toast = static_cast<AppListToastView*>(
+      page_view()->GetViewByID(AssistantViewID::kLearnMoreToast));
+  ASSERT_TRUE(learn_more_toast);
+  ASSERT_TRUE(learn_more_toast->GetVisible());
+  ASSERT_TRUE(learn_more_toast->IsDrawn());
+
+  MockTextInteraction().WithTextResponse("The response");
+  ASSERT_TRUE(learn_more_toast->GetVisible());
   ASSERT_FALSE(learn_more_toast->IsDrawn());
 }
 
