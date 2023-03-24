@@ -31,6 +31,7 @@
 #include "third_party/skia/include/core/SkScalar.h"
 #include "third_party/skia/include/pathops/SkPathOps.h"
 #include "ui/base/theme_provider.h"
+#include "ui/base/ui_base_features.h"
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/font_list.h"
 #include "ui/gfx/geometry/skia_conversions.h"
@@ -47,6 +48,33 @@ constexpr ShapeModifier kNone = 0x00;
 constexpr ShapeModifier kNoLowerLeftArc = 0x01;
 // Exclude the lower right arc.
 constexpr ShapeModifier kNoLowerRightArc = 0x02;
+
+void DrawHighlight(gfx::Canvas* canvas,
+                   const SkPoint& p,
+                   SkScalar radius,
+                   SkColor color) {
+  // TODO(crbug/1308932): Remove FromColor and make all SkColor4f.
+  const SkColor4f colors[2] = {
+      SkColor4f::FromColor(color),
+      SkColor4f::FromColor(SkColorSetA(color, SK_AlphaTRANSPARENT))};
+  cc::PaintFlags flags;
+  flags.setAntiAlias(true);
+  flags.setShader(cc::PaintShader::MakeRadialGradient(
+      p, radius, colors, nullptr, 2, SkTileMode::kClamp));
+  canvas->sk_canvas()->drawRect(
+      SkRect::MakeXYWH(p.x() - radius, p.y() - radius, radius * 2, radius * 2),
+      flags);
+}
+
+// Updates a target value, returning true if it changed.
+template <class T>
+bool UpdateValue(T* dest, const T& src) {
+  if (*dest == src) {
+    return false;
+  }
+  *dest = src;
+  return true;
+}
 
 // Tab style implementation for the GM2 refresh (Chrome 69).
 class GM2TabStyle : public TabStyleViews {
@@ -155,32 +183,6 @@ class GM2TabStyle : public TabStyleViews {
 
   std::unique_ptr<GlowHoverController> hover_controller_;
 };
-
-void DrawHighlight(gfx::Canvas* canvas,
-                   const SkPoint& p,
-                   SkScalar radius,
-                   SkColor color) {
-  // TODO(crbug/1308932): Remove FromColor and make all SkColor4f.
-  const SkColor4f colors[2] = {
-      SkColor4f::FromColor(color),
-      SkColor4f::FromColor(SkColorSetA(color, SK_AlphaTRANSPARENT))};
-  cc::PaintFlags flags;
-  flags.setAntiAlias(true);
-  flags.setShader(cc::PaintShader::MakeRadialGradient(
-      p, radius, colors, nullptr, 2, SkTileMode::kClamp));
-  canvas->sk_canvas()->drawRect(
-      SkRect::MakeXYWH(p.x() - radius, p.y() - radius, radius * 2, radius * 2),
-      flags);
-}
-
-// Updates a target value, returning true if it changed.
-template <class T>
-bool UpdateValue(T* dest, const T& src) {
-  if (*dest == src)
-    return false;
-  *dest = src;
-  return true;
-}
 
 // GM2TabStyle -----------------------------------------------------------------
 
@@ -947,6 +949,13 @@ gfx::RectF GM2TabStyle::ScaleAndAlignBounds(const gfx::Rect& bounds,
   return aligned_bounds;
 }
 
+class GM3TabStyle : public GM2TabStyle {
+ public:
+  explicit GM3TabStyle(Tab* tab);
+};
+
+GM3TabStyle::GM3TabStyle(Tab* tab) : GM2TabStyle(tab) {}
+
 }  // namespace
 
 // static
@@ -997,6 +1006,10 @@ TabStyleViews::~TabStyleViews() = default;
 
 // static
 std::unique_ptr<TabStyleViews> TabStyleViews::CreateForTab(Tab* tab) {
+  // If refresh is turned on use GM3 styling.
+  if (features::IsChromeRefresh2023()) {
+    return std::make_unique<GM3TabStyle>(tab);
+  }
   return std::make_unique<GM2TabStyle>(tab);
 }
 
