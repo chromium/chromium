@@ -4,11 +4,67 @@
 
 #include "ash/system/input_device_settings/input_device_settings_metrics_manager.h"
 
+#include "ash/public/mojom/input_device_settings.mojom-forward.h"
+#include "base/metrics/histogram_functions.h"
+
 namespace ash {
+
+namespace {
+
+enum class KeyboardType {
+  kExternal = 0,
+  kExternalChromeOS,
+  kInternal,
+};
+
+KeyboardType GetKeyboardType(const mojom::Keyboard& keyboard) {
+  if (!keyboard.is_external) {
+    return KeyboardType::kInternal;
+  } else if (keyboard.meta_key == mojom::MetaKey::kLauncher ||
+             keyboard.meta_key == mojom::MetaKey::kSearch) {
+    return KeyboardType::kExternalChromeOS;
+  } else {
+    return KeyboardType::kExternal;
+  }
+}
+
+}  // namespace
 
 InputDeviceSettingsMetricsManager::InputDeviceSettingsMetricsManager() =
     default;
 InputDeviceSettingsMetricsManager::~InputDeviceSettingsMetricsManager() =
     default;
+
+void InputDeviceSettingsMetricsManager::RecordKeyboardInitialMetrics(
+    const mojom::Keyboard& keyboard) {
+  // TODO(yyhyyh@): Only record the metrics once for each keyboard.
+  const KeyboardType keyboard_type = GetKeyboardType(keyboard);
+  switch (keyboard_type) {
+    case KeyboardType::kExternal:
+      base::UmaHistogramBoolean(
+          "ChromeOS.Settings.Device.Keyboard.External.BlockMetaFKeyRewrites."
+          "Initial",
+          keyboard.settings->suppress_meta_fkey_rewrites);
+      base::UmaHistogramBoolean(
+          "ChromeOS.Settings.Device.Keyboard.External.TopRowAreFKeys.Initial",
+          keyboard.settings->top_row_are_fkeys);
+      break;
+    case KeyboardType::kExternalChromeOS:
+      base::UmaHistogramBoolean(
+          "ChromeOS.Settings.Device.Keyboard.ExternalChromeOS."
+          "BlockMetaFKeyRewrites.Initial",
+          keyboard.settings->suppress_meta_fkey_rewrites);
+      base::UmaHistogramBoolean(
+          "ChromeOS.Settings.Device.Keyboard.ExternalChromeOS.TopRowAreFKeys."
+          "Initial",
+          keyboard.settings->top_row_are_fkeys);
+      break;
+    case KeyboardType::kInternal:
+      base::UmaHistogramBoolean(
+          "ChromeOS.Settings.Device.Keyboard.Internal.TopRowAreFKeys.Initial",
+          keyboard.settings->top_row_are_fkeys);
+      break;
+  }
+}
 
 }  // namespace ash

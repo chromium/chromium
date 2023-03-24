@@ -6,6 +6,7 @@
 #define ASH_SYSTEM_INPUT_DEVICE_SETTINGS_INPUT_DEVICE_SETTINGS_METRICS_MANAGER_H_
 
 #include "ash/ash_export.h"
+#include "ash/public/mojom/input_device_settings.mojom.h"
 
 namespace ash {
 
@@ -17,6 +18,8 @@ class ASH_EXPORT InputDeviceSettingsMetricsManager {
   InputDeviceSettingsMetricsManager& operator=(
       const InputDeviceSettingsMetricsManager&) = delete;
   ~InputDeviceSettingsMetricsManager();
+
+  void RecordKeyboardInitialMetrics(const mojom::Keyboard& keyboard);
 };
 
 }  // namespace ash

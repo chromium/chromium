@@ -2314,6 +2314,40 @@ They are used for the ChromeOS.CertProvisioning.* histograms to distinguish
   </summary>
 </histogram>
 
+<histogram
+    name="ChromeOS.Settings.Device.Keyboard.{KeyboardType}.BlockMetaFKeyRewrites.Initial"
+    enum="Boolean" expires_after="2024-03-22">
+  <owner>dpad@google.com</owner>
+  <owner>yyhyyh@google.com</owner>
+  <owner>cros-peripherals@google.com</owner>
+  <summary>
+    Records the initial value of the Block Meta and Function Key rewrites
+    settings when a keyboard's settings are first initialized.
+  </summary>
+  <token key="KeyboardType">
+    <variant name="External"/>
+    <variant name="ExternalChromeOs"/>
+    <variant name="Internal"/>
+  </token>
+</histogram>
+
+<histogram
+    name="ChromeOS.Settings.Device.Keyboard.{KeyboardType}.TopRowAreFKeys.Initial"
+    enum="Boolean" expires_after="2024-03-22">
+  <owner>dpad@google.com</owner>
+  <owner>yyhyyh@google.com</owner>
+  <owner>cros-peripherals@google.com</owner>
+  <summary>
+    Records the initial value of the top-row keys are used as Function Keys when
+    a keyboard's settings are first initialized.
+  </summary>
+  <token key="KeyboardType">
+    <variant name="External"/>
+    <variant name="ExternalChromeOs"/>
+    <variant name="Internal"/>
+  </token>
+</histogram>
+
 <histogram name="ChromeOS.Sharesheet.AppCount2.{AppType}" units="apps"
     expires_after="2023-08-19">
   <owner>dominickn@chromium.org</owner>
