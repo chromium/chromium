@@ -577,18 +577,23 @@ bool IsLikelyPassword(const ProcessedField& field, size_t* ignored_readonly) {
 }
 
 // Filters the available passwords from |processed_fields| using these rules:
-// (1) Passwords with Interactability below |best_interactability| are removed.
-// (2) If |mode| == |kSaving|, passwords with empty values are removed.
-// (3) Passwords for which IsLikelyPassword returns false are removed.
-// (4) Field parsed as username is removed.
-// If applying rules (1)-(3) results in a non-empty vector of password fields,
-// that vector is returned. Otherwise, only rules (1) and (2) are applied and
-// the result returned (even if it is empty).
+// (0): Filter out all input fields which type is not password.
+// (1) If |mode| == |kFilling|, credit card fields are ignored even for
+// fallback.
+// (2) Passwords with Interactability below |best_interactability| are removed.
+// (3) If |mode| == |kSaving|, passwords with empty values are removed.
+// (4) Passwords for which IsLikelyPassword returns false are removed.
+// (5) The field parsed as username is removed.
+// If applying filters (0)-(1) results in an empty vector, the vector is
+// returned.
+// If applying filters (0)-(5) results in a non-empty vector of password fields,
+// that vector is returned. Otherwise, roll back to the result after applying
+// (0)-(3) and return it (with |is_fallback=true|) even if the result is empty.
 // Neither of the following output parameters may be null:
-// |readonly_status| will be updated according to the processing of the parsed
+// - |readonly_status| will be updated according to the processing of the parsed
 // fields.
-// |is_fallback| is set to true if the filtering rule (3) was not used to
-// obtain the result.
+// - |is_fallback| is set to true if applying all filters removes all fields and
+// the method rolls back to the result after (0)-(3).
 std::vector<const FormFieldData*> GetRelevantPasswords(
     const std::vector<ProcessedField>& processed_fields,
     FormDataParser::Mode mode,
@@ -599,12 +604,26 @@ std::vector<const FormFieldData*> GetRelevantPasswords(
   DCHECK(readonly_status);
   DCHECK(is_fallback);
 
-  // Step 0: filter out all non-password fields.
+  // Step 0: filter out all input fields which type is not password.
   std::vector<const ProcessedField*> passwords;
   passwords.reserve(processed_fields.size());
   for (const ProcessedField& processed_field : processed_fields) {
     if (processed_field.is_password)
       passwords.push_back(&processed_field);
+  }
+  // Step 1: filter out credit card fields (e.g. CVC). In the filling mode,
+  // don't keep CC fields even for fallback filling and let non-password
+  // Autofill handle these fields. Fallback saving is fine because saving UIs of
+  // Autofill and the password manager are not mutually exclusive.
+  if (mode == FormDataParser::Mode::kFilling) {
+    base::EraseIf(passwords, [](const ProcessedField* processed_field) {
+      // TODO(crbug/1425423): This code does not use |StringMatchesCVC| because
+      // the underlying regex has a high false positive rate, i.e. matches many
+      // real password fields. Reconsider this once the regex becomes better.
+      return processed_field->server_hints_credit_card_field ||
+             processed_field->autocomplete_flag ==
+                 AutocompleteFlag::kCreditCardField;
+    });
   }
   if (passwords.empty())
     return std::vector<const FormFieldData*>();
@@ -614,20 +633,20 @@ std::vector<const FormFieldData*> GetRelevantPasswords(
   const size_t all_passwords_seen = passwords.size();
   size_t ignored_readonly = 0;
 
-  // Step 1: apply filter criterion (1).
+  // Step 2: apply filter criterion (2).
   base::EraseIf(
       passwords, [best_interactability](const ProcessedField* processed_field) {
         return !MatchesInteractability(*processed_field, best_interactability);
       });
 
   if (mode == FormDataParser::Mode::kSaving) {
-    // Step 2: apply filter criterion (2).
+    // Step 3: apply filter criterion (3).
     base::EraseIf(passwords, [](const ProcessedField* processed_field) {
       return GetFieldValue(*processed_field->field).empty();
     });
   }
 
-  // Step 3: apply filter criterion (3). Keep the current content of
+  // Step 4: apply filter criterion (4). Keep the current content of
   // |passwords| though, in case it is needed for fallback.
   std::vector<const ProcessedField*> filtered;
   filtered.reserve(passwords.size());
@@ -637,7 +656,7 @@ std::vector<const FormFieldData*> GetRelevantPasswords(
         return IsLikelyPassword(*processed_field, &ignored_readonly);
       });
 
-  // Step 4: remove the field parsed as username, if needed.
+  // Step 5: remove the field parsed as username, if needed.
   if (username && username->IsPasswordInputElement()) {
     base::EraseIf(filtered, [username](const ProcessedField* processed_field) {
       return processed_field->field->unique_renderer_id ==

@@ -3334,14 +3334,21 @@ TEST_P(PasswordManagerTest, FillingAndSavingFallbacksOnNonPasswordForm) {
 
   PasswordForm saved_match(MakeSimpleForm());
   store_->AddLogin(saved_match);
-  PasswordForm credit_card_form(MakeSimpleCreditCardForm());
-  credit_card_form.only_for_fallback = true;
+  PasswordForm non_password_form(MakeSimpleForm());
+  non_password_form.username_value = u"+1 650 000 000";  // Phone number.
+  non_password_form.form_data.fields[0].value =
+      non_password_form.username_value;
+  non_password_form.password_value = u"379 390";  // One time SMS code.
+  non_password_form.form_data.fields[1].value =
+      non_password_form.password_value;
+  non_password_form.form_data.fields[1].id_attribute = u"one-time-code";
+  non_password_form.only_for_fallback = true;
 
   PasswordFormFillData form_data;
   EXPECT_CALL(driver_, SetPasswordFillData)
       .WillRepeatedly(SaveArg<0>(&form_data));
 
-  manager()->OnPasswordFormsParsed(&driver_, {credit_card_form.form_data});
+  manager()->OnPasswordFormsParsed(&driver_, {non_password_form.form_data});
   task_environment_.RunUntilIdle();
 
   // Check that manual filling fallback available.
@@ -3352,6 +3359,44 @@ TEST_P(PasswordManagerTest, FillingAndSavingFallbacksOnNonPasswordForm) {
   // Check that no automatic filling available.
   EXPECT_TRUE(form_data.username_element_renderer_id.is_null());
   EXPECT_TRUE(form_data.password_element_renderer_id.is_null());
+
+  // Check that saving fallback is available.
+  std::unique_ptr<PasswordFormManagerForUI> form_manager_to_save;
+  EXPECT_CALL(client_, ShowManualFallbackForSavingPtr(_, _, _))
+      .WillOnce(WithArg<0>(SaveToScopedPtr(&form_manager_to_save)));
+  manager()->OnInformAboutUserInput(&driver_, non_password_form.form_data);
+  ASSERT_TRUE(form_manager_to_save);
+  EXPECT_THAT(form_manager_to_save->GetPendingCredentials(),
+              FormMatches(non_password_form));
+
+  // Check that no automatic save prompt is shown.
+  OnPasswordFormSubmitted(non_password_form.form_data);
+  EXPECT_CALL(client_, PromptUserToSaveOrUpdatePasswordPtr(_)).Times(0);
+  manager()->DidNavigateMainFrame(true);
+  manager()->OnPasswordFormsRendered(&driver_, {});
+  task_environment_.RunUntilIdle();
+}
+
+// Check that on a credit card form, there is no password filling (can be
+// overwritten with a server override, but it is not tested in this test). For
+// saving, only the fallback is available.
+TEST_P(PasswordManagerTest, FillingAndSavingFallbacksOnCreditCardForm) {
+  PasswordFormManager::set_wait_for_server_predictions_for_filling(false);
+  EXPECT_CALL(client_, IsSavingAndFillingEnabled(_))
+      .WillRepeatedly(Return(true));
+
+  PasswordForm saved_match(MakeSimpleForm());
+  store_->AddLogin(saved_match);
+  PasswordForm credit_card_form(MakeSimpleCreditCardForm());
+  credit_card_form.only_for_fallback = true;
+
+  PasswordFormFillData form_data;
+  // No filling fallback in order to let non-password Autofill to handle the
+  // form.
+  EXPECT_CALL(driver_, SetPasswordFillData).Times(0);
+
+  manager()->OnPasswordFormsParsed(&driver_, {credit_card_form.form_data});
+  task_environment_.RunUntilIdle();
 
   // Check that saving fallback is available.
   std::unique_ptr<PasswordFormManagerForUI> form_manager_to_save;
