@@ -138,13 +138,8 @@ struct CORE_EXPORT GridItemData {
     return resolved_position.SpanSize(track_direction);
   }
 
-  // This item is considered a subgrid if it has at least one subgridded axis.
-  // However, for the purpose of iterating over the subgrids of a grid we don't
-  // want to consider subgridded items since they should be iterated over by
-  // their parent grid, otherwise they'll appear twice in the sizing tree.
   bool IsSubgrid() const {
-    return !is_subgridded_to_parent_grid &&
-           (has_subgridded_columns || has_subgridded_rows);
+    return has_subgridded_columns || has_subgridded_rows;
   }
 
   bool IsConsideredForSizing(GridTrackSizingDirection track_direction) const {

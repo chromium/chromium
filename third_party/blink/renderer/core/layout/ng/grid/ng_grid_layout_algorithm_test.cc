@@ -37,11 +37,15 @@ class NGGridLayoutAlgorithmTest : public NGBaseLayoutAlgorithmTest,
   void BuildGridItemsAndTrackCollections(NGGridLayoutAlgorithm& algorithm) {
     LayoutUnit unused_intrinsic_block_size;
     auto grid_sizing_tree = algorithm.BuildGridSizingTree();
-    algorithm.ComputeGridGeometry(&grid_sizing_tree,
+
+    algorithm.ComputeGridGeometry(grid_sizing_tree,
                                   &unused_intrinsic_block_size);
 
-    cached_grid_items_ = std::move(grid_sizing_tree[0].grid_items);
-    layout_data_ = std::move(grid_sizing_tree[0].layout_data);
+    auto& [grid_items, layout_data, tree_size] =
+        grid_sizing_tree.TreeRootData();
+
+    cached_grid_items_ = std::move(grid_items);
+    layout_data_ = std::move(layout_data);
   }
 
   const GridItemData& GridItem(wtf_size_t index) {

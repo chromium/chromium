@@ -29,10 +29,10 @@ NGSubgriddedItemData::CreateSubgridCollection(
 }
 
 scoped_refptr<const NGGridLayoutTree> NGGridSizingTree::FinalizeTree() const {
-  auto layout_tree =
-      base::MakeRefCounted<NGGridLayoutTree>(sizing_data_.size());
-  for (const auto& sizing_data : sizing_data_) {
-    layout_tree->Append(sizing_data->layout_data, sizing_data->subtree_size);
+  auto layout_tree = base::MakeRefCounted<NGGridLayoutTree>(tree_data_.size());
+  for (const auto& grid_tree_node : tree_data_) {
+    layout_tree->Append(grid_tree_node->layout_data,
+                        grid_tree_node->subtree_size);
   }
   return layout_tree;
 }

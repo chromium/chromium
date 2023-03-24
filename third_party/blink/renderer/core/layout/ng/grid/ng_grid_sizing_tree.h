@@ -11,15 +11,6 @@
 
 namespace blink {
 
-struct NGGridSizingData {
-  USING_FAST_MALLOC(NGGridSizingData);
-
- public:
-  GridItems grid_items;
-  NGGridLayoutData layout_data;
-  wtf_size_t subtree_size{1};
-};
-
 // In subgrid, we allow "subgridded items" to be considered by the sizing
 // algorithm of an ancestor grid that may not be its parent grid.
 //
@@ -65,26 +56,35 @@ class CORE_EXPORT NGGridSizingTree {
   DISALLOW_NEW();
 
  public:
+  struct GridTreeNode {
+    USING_FAST_MALLOC(GridTreeNode);
+
+   public:
+    GridItems grid_items;
+    NGGridLayoutData layout_data;
+    wtf_size_t subtree_size{1};
+  };
+
   NGGridSizingTree() = default;
   NGGridSizingTree(NGGridSizingTree&&) = default;
   NGGridSizingTree(const NGGridSizingTree&) = delete;
   NGGridSizingTree& operator=(NGGridSizingTree&&) = default;
   NGGridSizingTree& operator=(const NGGridSizingTree&) = delete;
 
-  NGGridSizingData& CreateSizingData() {
-    return *sizing_data_.emplace_back(std::make_unique<NGGridSizingData>());
+  GridTreeNode& CreateSizingData() {
+    return *tree_data_.emplace_back(std::make_unique<GridTreeNode>());
   }
 
-  NGGridSizingData& At(wtf_size_t index) {
-    DCHECK_LT(index, sizing_data_.size());
-    return *sizing_data_[index];
+  GridTreeNode& At(wtf_size_t index) const {
+    DCHECK_LT(index, tree_data_.size());
+    return *tree_data_[index];
   }
 
-  NGGridSizingData& operator[](wtf_size_t index) { return At(index); }
+  GridTreeNode& TreeRootData() const { return At(0); }
 
   wtf_size_t SubtreeSize(wtf_size_t index) const {
-    DCHECK_LT(index, sizing_data_.size());
-    return sizing_data_[index]->subtree_size;
+    DCHECK_LT(index, tree_data_.size());
+    return tree_data_[index]->subtree_size;
   }
 
   // Creates a copy of the current grid geometry for the entire tree in a new
@@ -92,14 +92,32 @@ class CORE_EXPORT NGGridSizingTree {
   // stored in a `scoped_refptr` to be shared by multiple subtrees.
   scoped_refptr<const NGGridLayoutTree> FinalizeTree() const;
 
-  wtf_size_t Size() const { return sizing_data_.size(); }
+  wtf_size_t Size() const { return tree_data_.size(); }
 
  private:
-  Vector<std::unique_ptr<NGGridSizingData>, 16> sizing_data_;
+  Vector<std::unique_ptr<GridTreeNode>, 16> tree_data_;
+};
+
+class NGGridSizingSubtree
+    : public NGGridSubtree<NGGridSizingSubtree, const NGGridSizingTree*> {
+  STACK_ALLOCATED();
+
+ public:
+  NGGridSizingSubtree() = default;
+
+  explicit NGGridSizingSubtree(const NGGridSizingTree& sizing_tree)
+      : NGGridSubtree(&sizing_tree) {}
+
+  NGGridSizingSubtree(const NGGridSizingTree* sizing_tree,
+                      wtf_size_t parent_end_index,
+                      wtf_size_t subtree_root)
+      : NGGridSubtree(sizing_tree, parent_end_index, subtree_root) {}
+
+  NGGridSizingTree::GridTreeNode& SubtreeRootData() const {
+    return grid_tree_->At(subtree_root_);
+  }
 };
 
 }  // namespace blink
-
-WTF_ALLOW_CLEAR_UNUSED_SLOTS_WITH_MEM_FUNCTIONS(blink::NGGridSizingData)
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_NG_GRID_NG_GRID_SIZING_TREE_H_

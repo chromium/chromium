@@ -252,10 +252,10 @@ class NGGridLayoutSubtree
       scoped_refptr<const NGGridLayoutTree>&& layout_tree)
       : NGGridSubtree(std::move(layout_tree)) {}
 
-  NGGridLayoutSubtree(wtf_size_t parent_end_index,
-                      wtf_size_t subtree_root,
-                      const scoped_refptr<const NGGridLayoutTree>& layout_tree)
-      : NGGridSubtree(parent_end_index, subtree_root, layout_tree) {}
+  NGGridLayoutSubtree(const scoped_refptr<const NGGridLayoutTree>& layout_tree,
+                      wtf_size_t parent_end_index,
+                      wtf_size_t subtree_root)
+      : NGGridSubtree(layout_tree, parent_end_index, subtree_root) {}
 
   // This method is meant to be used for layout invalidation, so we only care
   // about comparing the layout data of both subtrees.
@@ -266,7 +266,7 @@ class NGGridLayoutSubtree
                : !grid_tree_ && !other.grid_tree_;
   }
 
-  const NGGridLayoutData& LayoutData() const {
+  const NGGridLayoutData& SubtreeRootData() const {
     DCHECK(grid_tree_);
     return grid_tree_->LayoutData(subtree_root_);
   }

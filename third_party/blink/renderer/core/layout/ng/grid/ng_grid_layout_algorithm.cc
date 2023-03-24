@@ -238,8 +238,7 @@ const NGLayoutResult* NGGridLayoutAlgorithm::LayoutInternal() {
                               : BuildGridSizingTree(&oof_children);
 
   LayoutUnit intrinsic_block_size;
-  auto& grid_items = grid_sizing_tree[0].grid_items;
-  auto& layout_data = grid_sizing_tree[0].layout_data;
+  auto& [grid_items, layout_data, tree_size] = grid_sizing_tree.TreeRootData();
 
   if (IsBreakInside(BreakToken())) {
     // TODO(layout-dev): When we support variable inline-size fragments we'll
@@ -263,7 +262,7 @@ const NGLayoutResult* NGGridLayoutAlgorithm::LayoutInternal() {
     CacheGridItemsProperties(layout_data.Rows(), &grid_items,
                              &grid_data->row_range_indices);
   } else {
-    ComputeGridGeometry(&grid_sizing_tree, &intrinsic_block_size);
+    ComputeGridGeometry(grid_sizing_tree, &intrinsic_block_size);
   }
 
   // Subgridded items must be laid out by their parent.
@@ -417,13 +416,12 @@ MinMaxSizesResult NGGridLayoutAlgorithm::ComputeMinMaxSizes(
                               ? BuildGridSizingTreeIgnoringChildren()
                               : BuildGridSizingTree();
 
-  auto& grid_items = grid_sizing_tree[0].grid_items;
-  auto& layout_data = grid_sizing_tree[0].layout_data;
+  auto& [grid_items, layout_data, tree_size] = grid_sizing_tree.TreeRootData();
 
   bool depends_on_block_constraints = false;
   auto ComputeTotalColumnSize =
       [&](SizingConstraint sizing_constraint) -> LayoutUnit {
-    InitializeTrackSizes(&grid_sizing_tree);
+    InitializeTrackSizes(grid_sizing_tree);
 
     bool needs_additional_pass = false;
     ComputeUsedTrackSizes(layout_data, sizing_constraint, &grid_items,
@@ -440,7 +438,7 @@ MinMaxSizesResult NGGridLayoutAlgorithm::ComputeMinMaxSizes(
                               &layout_data.Rows(), &needs_additional_pass);
 
         if (needs_additional_pass) {
-          InitializeTrackSizes(&grid_sizing_tree, kForColumns);
+          InitializeTrackSizes(grid_sizing_tree, kForColumns);
           ComputeUsedTrackSizes(layout_data, sizing_constraint, &grid_items,
                                 &layout_data.Columns());
         }
@@ -627,7 +625,7 @@ NGGridSizingTree NGGridLayoutAlgorithm::BuildGridSizingTree(
 
     sizing_data.grid_items =
         node.ConstructGridItems(node.CachedPlacementData(), oof_children);
-    sizing_data.layout_data = layout_subtree->LayoutData();
+    sizing_data.layout_data = layout_subtree->SubtreeRootData();
   } else {
     BuildGridSizingSubtree(&sizing_tree, oof_children);
   }
@@ -792,9 +790,9 @@ FirstSetGeometry ComputeFirstSetGeometry(
 }  // namespace
 
 void NGGridLayoutAlgorithm::ComputeGridGeometry(
-    NGGridSizingTree* grid_sizing_tree,
+    const NGGridSizingTree& grid_sizing_tree,
     LayoutUnit* intrinsic_block_size) {
-  DCHECK(grid_sizing_tree && intrinsic_block_size);
+  DCHECK(intrinsic_block_size);
 
   const auto& node = Node();
   const auto& container_style = Style();
@@ -803,11 +801,8 @@ void NGGridLayoutAlgorithm::ComputeGridGeometry(
 
   DCHECK_NE(grid_available_size_.inline_size, kIndefiniteSize);
 
-  auto& root_sizing_data = (*grid_sizing_tree)[0];
-  auto& grid_items = root_sizing_data.grid_items;
-  auto& layout_data = root_sizing_data.layout_data;
-
   InitializeTrackSizes(grid_sizing_tree);
+  auto& [grid_items, layout_data, tree_size] = grid_sizing_tree.TreeRootData();
 
   bool needs_additional_pass = false;
   ComputeUsedTrackSizes(layout_data, SizingConstraint::kLayout, &grid_items,
@@ -925,10 +920,9 @@ LayoutUnit NGGridLayoutAlgorithm::ComputeIntrinsicBlockSizeIgnoringChildren()
     return BorderScrollbarPadding().BlockSum() + override_intrinsic_block_size;
 
   auto grid_sizing_tree = BuildGridSizingTreeIgnoringChildren();
-  auto& grid_items = grid_sizing_tree[0].grid_items;
-  auto& layout_data = grid_sizing_tree[0].layout_data;
+  auto& [grid_items, layout_data, tree_size] = grid_sizing_tree.TreeRootData();
 
-  InitializeTrackSizes(&grid_sizing_tree, kForRows);
+  InitializeTrackSizes(grid_sizing_tree, kForRows);
   ComputeUsedTrackSizes(layout_data, SizingConstraint::kLayout, &grid_items,
                         &layout_data.Rows());
 
@@ -1534,14 +1528,13 @@ void NGGridLayoutAlgorithm::InitializeTrackCollection(
 }
 
 void NGGridLayoutAlgorithm::InitializeTrackSizes(
-    wtf_size_t current_grid_index,
+    const NGGridSizingSubtree& sizing_subtree,
     const NGSubgriddedItemData& opt_subgrid_data,
-    const absl::optional<GridTrackSizingDirection>& opt_track_direction,
-    NGGridSizingTree* sizing_tree) const {
-  DCHECK(sizing_tree && current_grid_index < sizing_tree->Size());
+    const absl::optional<GridTrackSizingDirection>& opt_track_direction) const {
+  DCHECK(sizing_subtree);
 
   auto& [grid_items, layout_data, subtree_size] =
-      sizing_tree->At(current_grid_index);
+      sizing_subtree.SubtreeRootData();
 
   auto InitAndCacheTrackSizes = [&](GridTrackSizingDirection track_direction) {
     InitializeTrackCollection(opt_subgrid_data, track_direction, &layout_data);
@@ -1593,13 +1586,13 @@ void NGGridLayoutAlgorithm::InitializeTrackSizes(
     return;
   }
 
-  wtf_size_t next_subgrid_index = current_grid_index + 1;
+  auto next_subgrid_subtree = sizing_subtree.FirstChild();
   for (const auto& grid_item : grid_items) {
-    if (!grid_item.IsSubgrid()) {
+    if (grid_item.is_subgridded_to_parent_grid || !grid_item.IsSubgrid()) {
       continue;
     }
 
-    DCHECK_LT(next_subgrid_index, current_grid_index + subtree_size);
+    DCHECK(next_subgrid_subtree);
     NGSubgriddedItemData subgrid_data(grid_item, layout_data);
 
     NGConstraintSpace unused_space;
@@ -1607,20 +1600,19 @@ void NGGridLayoutAlgorithm::InitializeTrackSizes(
     auto subgrid_algorithm = CreateSubgridLayoutAlgorithm(
         subgrid_data, &unused_space, &unused_fragment_geometry);
 
-    subgrid_algorithm.InitializeTrackSizes(next_subgrid_index, subgrid_data,
-                                           opt_track_direction, sizing_tree);
+    subgrid_algorithm.InitializeTrackSizes(next_subgrid_subtree, subgrid_data,
+                                           opt_track_direction);
 
-    next_subgrid_index += sizing_tree->SubtreeSize(next_subgrid_index);
+    next_subgrid_subtree = next_subgrid_subtree.NextSibling();
   }
-  DCHECK_EQ(next_subgrid_index, current_grid_index + subtree_size);
 }
 
 void NGGridLayoutAlgorithm::InitializeTrackSizes(
-    NGGridSizingTree* sizing_tree,
+    const NGGridSizingTree& sizing_tree,
     const absl::optional<GridTrackSizingDirection>& opt_track_direction) const {
-  InitializeTrackSizes(/* current_grid_index */ 0,
+  InitializeTrackSizes(NGGridSizingSubtree(sizing_tree),
                        /* opt_subgrid_data */ kNoSubgriddedItemData,
-                       opt_track_direction, sizing_tree);
+                       opt_track_direction);
 }
 
 namespace {
@@ -3085,7 +3077,7 @@ void NGGridLayoutAlgorithm::PlaceGridItems(
   DCHECK(out_row_break_between);
 
   const auto& container_space = ConstraintSpace();
-  const auto& layout_data = layout_subtree.LayoutData();
+  const auto& layout_data = layout_subtree.SubtreeRootData();
 
   const auto container_writing_direction =
       container_space.GetWritingDirection();

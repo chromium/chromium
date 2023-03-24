@@ -83,7 +83,7 @@ class CORE_EXPORT NGGridLayoutAlgorithm
                       const GridItemData& grid_item,
                       GridTrackSizingDirection track_direction) const;
 
-  void ComputeGridGeometry(NGGridSizingTree* grid_sizing_tree,
+  void ComputeGridGeometry(const NGGridSizingTree& grid_sizing_tree,
                            LayoutUnit* intrinsic_block_size);
 
   LayoutUnit ComputeIntrinsicBlockSizeIgnoringChildren() const;
@@ -127,14 +127,13 @@ class CORE_EXPORT NGGridLayoutAlgorithm
                                  NGGridLayoutData* layout_data) const;
 
   // Initializes the track sizes of a given grid sizing subtree.
-  void InitializeTrackSizes(
-      wtf_size_t current_grid_index,
-      const NGSubgriddedItemData& opt_subgrid_data,
-      const absl::optional<GridTrackSizingDirection>& opt_track_direction,
-      NGGridSizingTree* sizing_tree) const;
+  void InitializeTrackSizes(const NGGridSizingSubtree& sizing_subtree,
+                            const NGSubgriddedItemData& opt_subgrid_data,
+                            const absl::optional<GridTrackSizingDirection>&
+                                opt_track_direction) const;
 
   // Helper that calls the method above for the entire grid sizing tree.
-  void InitializeTrackSizes(NGGridSizingTree* sizing_tree,
+  void InitializeTrackSizes(const NGGridSizingTree& sizing_subtree,
                             const absl::optional<GridTrackSizingDirection>&
                                 opt_track_direction = absl::nullopt) const;
 
