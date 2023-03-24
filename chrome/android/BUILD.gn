@@ -15,7 +15,6 @@ import("//chrome/android/chrome_test_apk_tmpl.gni")
 import("//chrome/android/expectations/expectations.gni")
 import("//chrome/android/features/dev_ui/dev_ui_module.gni")
 import("//chrome/android/features/start_surface/start_surface_java_sources.gni")
-import("//chrome/android/features/tab_ui/buildflags.gni")
 import("//chrome/android/features/tab_ui/tab_management_java_sources.gni")
 import("//chrome/android/features/vr/public_vr_java_sources.gni")
 import("//chrome/android/feed/feed_java_sources.gni")
@@ -608,8 +607,13 @@ if (current_toolchain == default_toolchain) {
 
     sources += public_vr_java_sources
 
-    # Include sources from public_tab_management_java_sources.gni.
+    # Include sources from tab_management_java_sources.gni.
     sources += public_tab_management_java_sources
+
+    # TODO(crbug/1422324): Make tab_ui/ a module so that these sources can be included in "chrome_all_java".
+    sources += internal_tab_management_java_sources
+
+    # Include sources for start_surface_java_sources.gni
     sources += start_surface_java_sources
     if (enable_arcore) {
       deps += [ "//third_party/arcore-android-sdk-client:com_google_ar_core_java__ignored_manifest" ]
@@ -729,13 +733,6 @@ if (current_toolchain == default_toolchain) {
       "//components/messages/android/internal:java",
       "//components/segmentation_platform/internal:internal_java",
     ]
-
-    if (disable_tab_ui_dfm) {
-      deps += [
-        "//chrome/android/features/tab_ui:java",
-        "//chrome/android/features/tab_ui:module_desc_java",
-      ]
-    }
   }
 
   action_with_pydeps("chrome_android_java_google_api_keys_srcjar") {
@@ -842,7 +839,6 @@ if (current_toolchain == default_toolchain) {
       "//chrome/android/features/keyboard_accessory:internal_java",
       "//chrome/android/features/start_surface:java_resources",
       "//chrome/android/features/start_surface:public_java",
-      "//chrome/android/features/tab_ui:java",
       "//chrome/android/features/tab_ui:tab_suggestions_java",
       "//chrome/android/features/tab_ui/public:java",
       "//chrome/android/modules/image_editor/provider:java",
@@ -1406,7 +1402,6 @@ if (current_toolchain == default_toolchain) {
       "//chrome/android/features/keyboard_accessory/public:public_java",
       "//chrome/android/features/start_surface:java_resources",
       "//chrome/android/features/start_surface:public_java",
-      "//chrome/android/features/tab_ui:java",
       "//chrome/android/features/tab_ui:java_resources",
       "//chrome/android/features/tab_ui:tab_suggestions_java",
       "//chrome/android/features/tab_ui:test_support_javalib",

@@ -108,7 +108,7 @@ import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tabmodel.TabModelSelectorObserver;
 import org.chromium.chrome.browser.tasks.ReturnToChromeUtil;
 import org.chromium.chrome.browser.tasks.tab_management.TabGroupUi;
-import org.chromium.chrome.browser.tasks.tab_management.TabManagementModuleProvider;
+import org.chromium.chrome.browser.tasks.tab_management.TabManagementDelegateProvider;
 import org.chromium.chrome.browser.tasks.tab_management.TabUiFeatureUtilities;
 import org.chromium.chrome.browser.theme.ThemeColorProvider;
 import org.chromium.chrome.browser.theme.ThemeColorProvider.ThemeColorObserver;
@@ -1279,7 +1279,7 @@ public class ToolbarManager implements UrlFocusChangeListener, ThemeColorObserve
      */
     public void enableBottomControls() {
         View root = ((ViewStub) mActivity.findViewById(R.id.bottom_controls_stub)).inflate();
-        mTabGroupUi = TabManagementModuleProvider.getDelegate().createTabGroupUi(mActivity,
+        mTabGroupUi = TabManagementDelegateProvider.getDelegate().createTabGroupUi(mActivity,
                 root.findViewById(R.id.bottom_container_slot), mIncognitoStateProvider,
                 mScrimCoordinator, mOmniboxFocusStateSupplier, mBottomSheetController,
                 mActivityLifecycleDispatcher, mIsWarmOnResumeSupplier, mTabModelSelector,

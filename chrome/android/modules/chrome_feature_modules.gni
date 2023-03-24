@@ -4,7 +4,6 @@
 
 import("//build/config/android/config.gni")
 import("//chrome/android/features/dev_ui/dev_ui_module.gni")
-import("//chrome/android/features/tab_ui/tab_ui_module.gni")
 import("//chrome/android/modules/buildflags.gni")
 import(
     "//chrome/android/modules/cablev2_authenticator/cablev2_authenticator_module.gni")
@@ -52,9 +51,6 @@ if (dfmify_dev_ui) {
 }
 if (false) {  # AR DFM is currently disabled
   monochrome_module_descs += [ ar_module_desc ]
-}
-if (!disable_tab_ui_dfm) {
-  monochrome_module_descs += [ tab_ui_module_desc ]
 }
 monochrome_module_descs += [ cablev2_authenticator_module_desc ]
 

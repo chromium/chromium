@@ -24,6 +24,7 @@ import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.layouts.LayoutTestUtils;
 import org.chromium.chrome.browser.layouts.LayoutType;
 import org.chromium.chrome.browser.ui.appmenu.AppMenuTestSupport;
+import org.chromium.chrome.browser.util.ChromeAccessibilityUtil;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.util.browser.Features;
@@ -47,6 +48,9 @@ public class OverviewAppMenuTest {
     @Before
     public void setUp() {
         mActivityTestRule.startMainActivityOnBlankPage();
+    }
+
+    private void openTabSwitcher() {
         LayoutTestUtils.startShowingAndWaitForLayout(
                 mActivityTestRule.getActivity().getLayoutManager(), LayoutType.TAB_SWITCHER, true);
     }
@@ -57,6 +61,7 @@ public class OverviewAppMenuTest {
     @Features.EnableFeatures({ChromeFeatureList.TAB_GROUPS_ANDROID})
     @Features.DisableFeatures({ChromeFeatureList.START_SURFACE_ANDROID})
     public void testAllMenuItemsWithoutStartSurface() throws Exception {
+        openTabSwitcher();
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             AppMenuTestSupport.showAppMenu(mActivityTestRule.getAppMenuCoordinator(), null, false);
         });
@@ -70,6 +75,7 @@ public class OverviewAppMenuTest {
     @Features.EnableFeatures({ChromeFeatureList.TAB_GROUPS_ANDROID})
     @Features.DisableFeatures({ChromeFeatureList.START_SURFACE_ANDROID})
     public void testIncognitoAllMenuItemsWithoutStartSurface() throws Exception {
+        openTabSwitcher();
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             mActivityTestRule.getActivity().getTabModelSelector().selectModel(true);
             AppMenuTestSupport.showAppMenu(mActivityTestRule.getAppMenuCoordinator(), null, false);
@@ -85,6 +91,7 @@ public class OverviewAppMenuTest {
     EnableFeatures({ChromeFeatureList.START_SURFACE_ANDROID, ChromeFeatureList.TAB_GROUPS_ANDROID})
     @Features.DisableFeatures({ChromeFeatureList.TAB_SELECTION_EDITOR_V2})
     public void testAllMenuItemsWithStartSurface() throws Exception {
+        openTabSwitcher();
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             AppMenuTestSupport.showAppMenu(mActivityTestRule.getAppMenuCoordinator(), null, false);
         });
@@ -99,6 +106,7 @@ public class OverviewAppMenuTest {
             ChromeFeatureList.TAB_GROUPS_ANDROID, ChromeFeatureList.TAB_SELECTION_EDITOR_V2})
     public void
     testAllMenuItemsWithStartSurfaceAndSelectTabs() throws Exception {
+        openTabSwitcher();
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             AppMenuTestSupport.showAppMenu(mActivityTestRule.getAppMenuCoordinator(), null, false);
         });
@@ -113,6 +121,7 @@ public class OverviewAppMenuTest {
     @Features.
     EnableFeatures({ChromeFeatureList.START_SURFACE_ANDROID, ChromeFeatureList.TAB_GROUPS_ANDROID})
     public void testIncognitoAllMenuItemsWithStartSurface() throws Exception {
+        openTabSwitcher();
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             mActivityTestRule.getActivity().getTabModelSelector().selectModel(true);
             AppMenuTestSupport.showAppMenu(mActivityTestRule.getAppMenuCoordinator(), null, false);
@@ -128,6 +137,7 @@ public class OverviewAppMenuTest {
             ChromeFeatureList.TAB_GROUPS_ANDROID, ChromeFeatureList.TAB_SELECTION_EDITOR_V2})
     public void
     testIncognitoAllMenuItemsWithStartSurfaceAndSelectTabs() throws Exception {
+        openTabSwitcher();
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             mActivityTestRule.getActivity().getTabModelSelector().selectModel(true);
             AppMenuTestSupport.showAppMenu(mActivityTestRule.getAppMenuCoordinator(), null, false);
@@ -145,6 +155,7 @@ public class OverviewAppMenuTest {
     @CommandLineFlags.Add({"force-fieldtrials=Study/Group",
         "force-fieldtrial-params=Study.Group:open_ntp_instead_of_start/true"})
     public void testNewTabIsEnabledWithStartSurfaceV2() throws Exception {
+        openTabSwitcher();
         // clang-format on
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             AppMenuTestSupport.showAppMenu(mActivityTestRule.getAppMenuCoordinator(), null, false);
@@ -160,12 +171,19 @@ public class OverviewAppMenuTest {
     @Features.
     DisableFeatures({ChromeFeatureList.START_SURFACE_ANDROID, ChromeFeatureList.TAB_GROUPS_ANDROID})
     public void testGroupTabsIsDisabled() throws Exception {
+        // Force accessibility mode as that is the only way to get a tab switcher with the flags on
+        // this test being disabled.
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> { ChromeAccessibilityUtil.get().setAccessibilityEnabledForTesting(true); });
+        openTabSwitcher();
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             AppMenuTestSupport.showAppMenu(mActivityTestRule.getAppMenuCoordinator(), null, false);
         });
 
         assertNull(AppMenuTestSupport.getMenuItemPropertyModel(
                 mActivityTestRule.getAppMenuCoordinator(), R.id.menu_group_tabs));
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> { ChromeAccessibilityUtil.get().setAccessibilityEnabledForTesting(null); });
     }
 
     @Test
@@ -174,6 +192,7 @@ public class OverviewAppMenuTest {
     @Features.EnableFeatures({ChromeFeatureList.TAB_GROUPS_ANDROID})
     @Features.DisableFeatures({ChromeFeatureList.START_SURFACE_ANDROID})
     public void testGroupTabsIsEnabled() throws Exception {
+        openTabSwitcher();
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             AppMenuTestSupport.showAppMenu(mActivityTestRule.getAppMenuCoordinator(), null, false);
         });
@@ -188,6 +207,7 @@ public class OverviewAppMenuTest {
     @Features.EnableFeatures({ChromeFeatureList.START_SURFACE_ANDROID})
     @Features.DisableFeatures({ChromeFeatureList.TAB_GROUPS_ANDROID})
     public void testGroupTabsIsDisabledWithStartSurface() throws Exception {
+        openTabSwitcher();
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             AppMenuTestSupport.showAppMenu(mActivityTestRule.getAppMenuCoordinator(), null, false);
         });
@@ -203,6 +223,7 @@ public class OverviewAppMenuTest {
     @Features.
     EnableFeatures({ChromeFeatureList.START_SURFACE_ANDROID, ChromeFeatureList.TAB_GROUPS_ANDROID})
     public void testGroupTabsIsEnabledWithStartSurface() throws Exception {
+        openTabSwitcher();
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             AppMenuTestSupport.showAppMenu(mActivityTestRule.getAppMenuCoordinator(), null, false);
         });
@@ -220,6 +241,7 @@ public class OverviewAppMenuTest {
             ChromeFeatureList.TAB_GROUPS_ANDROID, ChromeFeatureList.TAB_SELECTION_EDITOR_V2})
     public void
     testGroupTabsIsEnabledWithStartSurfaceAndSelectTabs() throws Exception {
+        openTabSwitcher();
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             AppMenuTestSupport.showAppMenu(mActivityTestRule.getAppMenuCoordinator(), null, false);
         });

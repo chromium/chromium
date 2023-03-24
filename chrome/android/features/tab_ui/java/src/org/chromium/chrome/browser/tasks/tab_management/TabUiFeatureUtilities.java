@@ -97,24 +97,6 @@ public class TabUiFeatureUtilities {
     private static Boolean sTabManagementModuleSupportedForTesting;
 
     /**
-     * Set whether the tab management module is supported for testing.
-     */
-    public static void setTabManagementModuleSupportedForTesting(@Nullable Boolean enabled) {
-        sTabManagementModuleSupportedForTesting = enabled;
-    }
-
-    /**
-     * @return Whether the tab management module is supported.
-     */
-    private static boolean isTabManagementModuleSupported() {
-        if (sTabManagementModuleSupportedForTesting != null) {
-            return sTabManagementModuleSupportedForTesting;
-        }
-
-        return TabManagementModuleProvider.isTabManagementModuleSupported();
-    }
-
-    /**
      * @return Whether the Grid Tab Switcher UI is enabled and available for use.
      * @param context The activity context.
      */
@@ -124,7 +106,7 @@ public class TabUiFeatureUtilities {
         }
 
         // Having Tab Groups or Start implies Grid Tab Switcher.
-        return isTabManagementModuleSupported() || isTabGroupsAndroidEnabled(context)
+        return isTabGroupsAndroidEnabled(context)
                 || ReturnToChromeUtil.isStartSurfaceEnabled(context);
     }
 
@@ -178,8 +160,7 @@ public class TabUiFeatureUtilities {
         }
 
         return !DeviceClassManager.enableAccessibilityLayout(context)
-                && ChromeFeatureList.sTabGroupsAndroid.isEnabled()
-                && isTabManagementModuleSupported();
+                && ChromeFeatureList.sTabGroupsAndroid.isEnabled();
     }
 
     /**

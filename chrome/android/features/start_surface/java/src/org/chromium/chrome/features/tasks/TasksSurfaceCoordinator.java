@@ -43,7 +43,7 @@ import org.chromium.chrome.browser.tabmodel.TabCreatorManager;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tasks.ReturnToChromeUtil;
 import org.chromium.chrome.browser.tasks.tab_management.TabManagementDelegate.TabSwitcherType;
-import org.chromium.chrome.browser.tasks.tab_management.TabManagementModuleProvider;
+import org.chromium.chrome.browser.tasks.tab_management.TabManagementDelegateProvider;
 import org.chromium.chrome.browser.tasks.tab_management.TabSwitcher;
 import org.chromium.chrome.browser.tasks.tab_management.TabSwitcherCustomViewManager;
 import org.chromium.chrome.browser.tasks.tab_management.TabUiFeatureUtilities;
@@ -122,7 +122,7 @@ public class TasksSurfaceCoordinator implements TasksSurface {
         mModalDialogManager = modalDialogManager;
         mParentTabSupplier = parentTabSupplier;
         if (tabSwitcherType == TabSwitcherType.CAROUSEL) {
-            mTabSwitcher = TabManagementModuleProvider.getDelegate().createCarouselTabSwitcher(
+            mTabSwitcher = TabManagementDelegateProvider.getDelegate().createCarouselTabSwitcher(
                     activity, activityLifecycleDispatcher, tabModelSelector, tabContentManager,
                     browserControlsStateProvider, tabCreatorManager, menuOrKeyboardActionController,
                     mView.getCarouselTabSwitcherContainer(), multiWindowModeStateDispatcher,
@@ -131,8 +131,8 @@ public class TasksSurfaceCoordinator implements TasksSurface {
         } else if (tabSwitcherType == TabSwitcherType.GRID) {
             assert incognitoReauthControllerSupplier
                     != null : "Valid Incognito re-auth controller supplier needed to create GTS.";
-            mTabSwitcher = TabManagementModuleProvider.getDelegate().createGridTabSwitcher(activity,
-                    activityLifecycleDispatcher, tabModelSelector, tabContentManager,
+            mTabSwitcher = TabManagementDelegateProvider.getDelegate().createGridTabSwitcher(
+                    activity, activityLifecycleDispatcher, tabModelSelector, tabContentManager,
                     browserControlsStateProvider, tabCreatorManager, menuOrKeyboardActionController,
                     mView.getBodyViewContainer(), multiWindowModeStateDispatcher, scrimCoordinator,
                     rootView, dynamicResourceLoaderSupplier, snackbarManager, modalDialogManager,

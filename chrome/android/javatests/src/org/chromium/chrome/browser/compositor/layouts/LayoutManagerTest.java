@@ -58,6 +58,8 @@ import org.chromium.chrome.R;
 import org.chromium.chrome.browser.accessibility_tab_switcher.OverviewListLayout;
 import org.chromium.chrome.browser.compositor.layouts.Layout.LayoutState;
 import org.chromium.chrome.browser.compositor.layouts.content.TabContentManager;
+import org.chromium.chrome.browser.device.DeviceClassManager;
+import org.chromium.chrome.browser.flags.CachedFeatureFlags;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.init.ChromeBrowserInitializer;
@@ -471,6 +473,7 @@ public class LayoutManagerTest implements MockTabModelDelegate {
 
         // Verify accessibility
         TabUiTestHelper.finishActivity(mActivityTestRule.getActivity());
+        DeviceClassManager.GTS_ACCESSIBILITY_SUPPORT.setForTesting(true);
         setAccessibilityEnabledForTesting(true);
         verifyTabSwitcherLayoutEnable(TabListCoordinator.TabListMode.GRID);
     }
@@ -486,10 +489,12 @@ public class LayoutManagerTest implements MockTabModelDelegate {
     @Features.DisableFeatures(ChromeFeatureList.TAB_TO_GTS_ANIMATION)
     public void testTabSwitcherLayout_Enabled_LowEndPhone() throws Exception {
         // clang-format on
+        DeviceClassManager.GTS_LOW_END_SUPPORT.setForTesting(true);
         verifyTabSwitcherLayoutEnable(TabListCoordinator.TabListMode.LIST);
 
         // Test Accessibility
         TabUiTestHelper.finishActivity(mActivityTestRule.getActivity());
+        DeviceClassManager.GTS_ACCESSIBILITY_SUPPORT.setForTesting(true);
         setAccessibilityEnabledForTesting(true);
         verifyTabSwitcherLayoutEnable(TabListCoordinator.TabListMode.LIST);
     }
@@ -758,6 +763,7 @@ public class LayoutManagerTest implements MockTabModelDelegate {
         ChromeFeatureList.sTabGridLayoutAndroid.setForTesting(null);
         ChromeFeatureList.sTabGroupsAndroid.setForTesting(null);
         setAccessibilityEnabledForTesting(null);
+        CachedFeatureFlags.resetFlagsForTesting();
     }
 
     private void launchAndVerifyOverviewListLayout() {

@@ -33,7 +33,7 @@ import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tabmodel.TabModelUtils;
 import org.chromium.chrome.browser.tasks.ReturnToChromeUtil;
 import org.chromium.chrome.browser.tasks.tab_management.TabManagementDelegate;
-import org.chromium.chrome.browser.tasks.tab_management.TabManagementModuleProvider;
+import org.chromium.chrome.browser.tasks.tab_management.TabManagementDelegateProvider;
 import org.chromium.chrome.browser.tasks.tab_management.TabSwitcher;
 import org.chromium.chrome.browser.tasks.tab_management.TabUiFeatureUtilities;
 import org.chromium.chrome.browser.theme.TopUiThemeColorProvider;
@@ -168,7 +168,8 @@ public class LayoutManagerChrome
 
         if (isRefactorEnabled) {
             assert tabSwitcher != null;
-            TabManagementDelegate tabManagementDelegate = TabManagementModuleProvider.getDelegate();
+            TabManagementDelegate tabManagementDelegate =
+                    TabManagementDelegateProvider.getDelegate();
             assert tabManagementDelegate != null;
 
             mTabSwitcherLayout = tabManagementDelegate.createTabSwitcherLayout(context, this,

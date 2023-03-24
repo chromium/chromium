@@ -36,7 +36,6 @@ import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.widget.MenuOrKeyboardActionController;
 import org.chromium.components.browser_ui.widget.scrim.ScrimCoordinator;
-import org.chromium.components.module_installer.builder.ModuleInterface;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.resources.dynamics.DynamicResourceLoader;
 
@@ -45,10 +44,7 @@ import java.lang.annotation.RetentionPolicy;
 
 /**
  * Interface to get access to components concerning tab management.
- * TODO(crbug.com/982018): Move DFM configurations to 'chrome/android/modules/start_surface/'
  */
-@ModuleInterface(module = "tab_management",
-        impl = "org.chromium.chrome.browser.tasks.tab_management.TabManagementDelegateImpl")
 public interface TabManagementDelegate {
     @IntDef({TabSwitcherType.GRID, TabSwitcherType.CAROUSEL, TabSwitcherType.SINGLE,
             TabSwitcherType.NONE})

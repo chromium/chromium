@@ -4,8 +4,6 @@
 
 package org.chromium.chrome.browser.tasks.tab_management;
 
-import static org.chromium.chrome.browser.tasks.tab_management.TabManagementModuleProvider.SYNTHETIC_TRIAL_POSTFIX;
-
 import android.app.Activity;
 import android.content.Context;
 import android.view.ViewGroup;
@@ -24,11 +22,9 @@ import org.chromium.chrome.browser.compositor.layouts.Layout;
 import org.chromium.chrome.browser.compositor.layouts.LayoutRenderHost;
 import org.chromium.chrome.browser.compositor.layouts.LayoutUpdateHost;
 import org.chromium.chrome.browser.compositor.layouts.content.TabContentManager;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.incognito.reauth.IncognitoReauthController;
 import org.chromium.chrome.browser.layouts.LayoutStateProvider;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
-import org.chromium.chrome.browser.metrics.UmaSessionStats;
 import org.chromium.chrome.browser.multiwindow.MultiWindowModeStateDispatcher;
 import org.chromium.chrome.browser.tabmodel.IncognitoStateProvider;
 import org.chromium.chrome.browser.tabmodel.TabCreatorManager;
@@ -72,12 +68,6 @@ public class TabManagementDelegateImpl implements TabManagementDelegate {
             @NonNull ModalDialogManager modalDialogManager,
             @NonNull OneshotSupplier<IncognitoReauthController> incognitoReauthControllerSupplier,
             @Nullable BackPressManager backPressManager) {
-        if (UmaSessionStats.isMetricsServiceAvailable()) {
-            UmaSessionStats.registerSyntheticFieldTrial(
-                    ChromeFeatureList.TAB_GRID_LAYOUT_ANDROID + SYNTHETIC_TRIAL_POSTFIX,
-                    "Downloaded_Enabled");
-        }
-
         return new TabSwitcherCoordinator(activity, activityLifecycleDispatcher, tabModelSelector,
                 tabContentManager, browserControlsStateProvider, tabCreatorManager,
                 menuOrKeyboardActionController, containerView, multiWindowModeStateDispatcher,
