@@ -146,7 +146,7 @@ if (topLevelDocument) {
           () => document.requestStorageAccessFor(document.location.origin));
       },
       '[' + testPrefix +
-          '] document.requestStorageAccessFor() should be resolved when called properly with a user gesture and the same site');
+          '] document.requestStorageAccessFor() should be resolved when called properly with a user gesture and the same origin');
 
   promise_test(
       async t => {
@@ -155,7 +155,7 @@ if (topLevelDocument) {
             'document.requestStorageAccessFor() call with bogus URL'));
       },
       '[' + testPrefix +
-          '] document.requestStorageAccessFor() should be rejected when called with an invalid site');
+          '] document.requestStorageAccessFor() should be rejected when called with an invalid origin');
 
   promise_test(
       async t => {
