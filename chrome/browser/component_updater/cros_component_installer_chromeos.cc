@@ -233,11 +233,19 @@ LacrosInstallerPolicy::~LacrosInstallerPolicy() = default;
 void LacrosInstallerPolicy::ComponentReady(const base::Version& version,
                                            const base::FilePath& path,
                                            base::Value::Dict manifest) {
-  // Each version of Lacros guarantees it will be compatible through the next
-  // major ash/OS version. For example, Lacros 89 will work with ash/OS 90,
-  // but may not work with ash/OS 91.
+  // Each version of Lacros guarantees it will be compatible through the same
+  // major ash/OS version and -2. For example, Lacros 89 will work with ash/OS
+  // 89, 88, and 87. But it may not work with ash/OS 86 or 90.
+  //
+  // As you see we (client side) only enforces the Lacros/Ash same version
+  // check here, while the code does not check the -2 version skew requirement.
+  // This is because go/lacros-version-skew-guide mentions the restriction on
+  // lacros being too new is enforced on the Omaha server side - and the too
+  // old check is enforced client side. Supposedly this makes it easy for us to
+  // start supporting newer lacros versions by just updating the Omaha server
+  // code.
   uint32_t lacros_major_version = version.components()[0];
-  if (lacros_major_version + 1 < GetAshMajorVersion()) {
+  if (lacros_major_version < GetAshMajorVersion()) {
     // Current lacros install is not compatible.
     return;
   }
