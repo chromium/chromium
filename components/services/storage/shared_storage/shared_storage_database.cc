@@ -22,6 +22,7 @@
 #include "components/services/storage/shared_storage/shared_storage_database_migrations.h"
 #include "components/services/storage/shared_storage/shared_storage_options.h"
 #include "mojo/public/cpp/bindings/remote.h"
+#include "sql/database.h"
 #include "sql/error_delegate_util.h"
 #include "sql/statement.h"
 #include "sql/transaction.h"
@@ -225,7 +226,7 @@ bool SharedStorageDatabase::Destroy() {
   if (!is_filebacked())
     return true;
 
-  return base::DeleteFile(db_path_);
+  return sql::Database::Delete(db_path_);
 }
 
 void SharedStorageDatabase::TrimMemory() {
@@ -1567,7 +1568,7 @@ void SharedStorageDatabase::LogInitHistograms() {
 
   if (is_filebacked()) {
     int64_t file_size = 0L;
-    if (GetFileSize(db_path_, &file_size)) {
+    if (base::GetFileSize(db_path_, &file_size)) {
       int64_t file_size_kb = file_size / 1024;
       base::UmaHistogramCounts10M(
           "Storage.SharedStorage.Database.FileBacked.FileSize.KB",
