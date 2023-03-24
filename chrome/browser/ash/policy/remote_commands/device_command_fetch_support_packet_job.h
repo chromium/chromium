@@ -18,6 +18,8 @@
 #include "components/feedback/redaction_tool/pii_types.h"
 #include "components/policy/core/common/remote_commands/remote_command_job.h"
 #include "components/policy/proto/device_management_backend.pb.h"
+#include "components/reporting/client/report_queue.h"
+#include "components/reporting/util/status.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace policy {
@@ -65,6 +67,8 @@ class DeviceCommandFetchSupportPacketJob : public RemoteCommandJob {
   void SetTargetDirForTesting(base::FilePath target_dir) {
     target_dir_ = target_dir;
   }
+  void SetReportQueueForTesting(
+      std::unique_ptr<reporting::ReportQueue> report_queue);
 
  protected:
   // RemoteCommandJob:
@@ -114,6 +118,13 @@ class DeviceCommandFetchSupportPacketJob : public RemoteCommandJob {
   void OnDataExported(base::FilePath exported_path,
                       std::set<SupportToolError> errors);
 
+  void OnReportQueueCreated(
+      std::unique_ptr<reporting::ReportQueue> report_queue);
+
+  void EnqueueEvent();
+
+  void OnEventEnqueued(reporting::Status status);
+
   // The directory to export the generated support packet.
   base::FilePath target_dir_;
   // The filepath of the exported support packet. It will be a file within
@@ -128,6 +139,7 @@ class DeviceCommandFetchSupportPacketJob : public RemoteCommandJob {
   // `login_waiter_` will wait for a user to login if the command was called on
   // login screen.
   absl::optional<LoginWaiter> login_waiter_;
+  std::unique_ptr<reporting::ReportQueue> report_queue_;
   base::WeakPtrFactory<DeviceCommandFetchSupportPacketJob> weak_ptr_factory_{
       this};
 };

@@ -12,6 +12,7 @@
 #include <vector>
 
 #include "base/check.h"
+#include "base/check_is_test.h"
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"
 #include "base/json/json_reader.h"
@@ -21,6 +22,7 @@
 #include "base/syslog_logging.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/values.h"
+#include "chrome/browser/policy/messaging_layer/proto/synced/log_upload_event.pb.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/support_tool/data_collection_module.pb.h"
 #include "chrome/browser/support_tool/data_collector.h"
@@ -30,6 +32,10 @@
 #include "components/feedback/redaction_tool/pii_types.h"
 #include "components/policy/core/common/remote_commands/remote_command_job.h"
 #include "components/policy/proto/device_management_backend.pb.h"
+#include "components/reporting/client/report_queue.h"
+#include "components/reporting/client/report_queue_configuration.h"
+#include "components/reporting/client/report_queue_factory.h"
+#include "components/reporting/util/status.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace {
@@ -162,6 +168,12 @@ void DeviceCommandFetchSupportPacketJob::LoginWaiter::LoggedInStateChanged() {
 enterprise_management::RemoteCommand_Type
 DeviceCommandFetchSupportPacketJob::GetType() const {
   return enterprise_management::RemoteCommand_Type_FETCH_SUPPORT_PACKET;
+}
+
+void DeviceCommandFetchSupportPacketJob::SetReportQueueForTesting(
+    std::unique_ptr<reporting::ReportQueue> report_queue) {
+  CHECK_IS_TEST();
+  report_queue_ = std::move(report_queue);
 }
 
 bool DeviceCommandFetchSupportPacketJob::ParseCommandPayload(
@@ -315,7 +327,52 @@ void DeviceCommandFetchSupportPacketJob::OnDataExported(
 
   exported_path_ = exported_path;
 
-  std::move(result_callback_).Run(ResultType::kSuccess, absl::nullopt);
+  // No need to create a `report_queue_` if it is already initialized. Since the
+  // DeviceCommandFetchSupportPacketJob instance will be created per command,
+  // `report_queue_` will only be already initialized for tests by
+  // `SetReportQueueForTesting()` function.
+  if (report_queue_) {
+    EnqueueEvent();
+    return;
+  }
+
+  reporting::ReportQueueFactory::Create(
+      reporting::EventType::kDevice, reporting::Destination::LOG_UPLOAD,
+      base::BindOnce(&DeviceCommandFetchSupportPacketJob::OnReportQueueCreated,
+                     weak_ptr_factory_.GetWeakPtr()));
+}
+
+void DeviceCommandFetchSupportPacketJob::OnReportQueueCreated(
+    std::unique_ptr<reporting::ReportQueue> report_queue) {
+  report_queue_ = std::move(report_queue);
+  EnqueueEvent();
+}
+
+void DeviceCommandFetchSupportPacketJob::EnqueueEvent() {
+  // TODO(b/264399756): Fill in the details of log_upload_event with necessary
+  // details. For now, we have empty log upload event as placeholder.
+  ash::reporting::LogUploadEvent log_upload_event;
+  report_queue_->Enqueue(
+      std::make_unique<ash::reporting::LogUploadEvent>(
+          std::move(log_upload_event)),
+      reporting::Priority::SLOW_BATCH,
+      base::BindOnce(&DeviceCommandFetchSupportPacketJob::OnEventEnqueued,
+                     weak_ptr_factory_.GetWeakPtr()));
+}
+
+void DeviceCommandFetchSupportPacketJob::OnEventEnqueued(
+    reporting::Status status) {
+  if (status.ok()) {
+    std::move(result_callback_).Run(ResultType::kAcked, absl::nullopt);
+    return;
+  }
+
+  std::string error_message =
+      base::StringPrintf("Couldn't enqueue event to reporting queue:  %s",
+                         status.error_message().data());
+
+  SYSLOG(ERROR) << error_message;
+  std::move(result_callback_).Run(ResultType::kFailure, error_message);
 }
 
 }  // namespace policy
