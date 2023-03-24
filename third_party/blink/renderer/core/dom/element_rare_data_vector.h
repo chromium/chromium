@@ -51,18 +51,19 @@ class CORE_EXPORT ElementRareDataVector final : public ElementRareDataBase {
     kRegionCaptureCropId = 16,
     kResizeObserverData = 17,
     kCustomElementDefinition = 18,
-    kLastIntrinsicSize = 19,
-    kPopoverData = 20,
-    kToggleMap = 21,
-    kPartNamesMap = 22,
-    kNonce = 23,
-    kIsValue = 24,
-    kSavedLayerScrollOffset = 25,
-    kAnchorScrollData = 26,
-    kAnchorElementObserver = 27,
-    kImplicitlyAnchoredElementCount = 28,
+    kPopoverData = 19,
+    kToggleMap = 20,
+    kPartNamesMap = 21,
+    kNonce = 22,
+    kIsValue = 23,
+    kSavedLayerScrollOffset = 24,
+    kAnchorScrollData = 25,
+    kAnchorElementObserver = 26,
+    kImplicitlyAnchoredElementCount = 27,
+    kLastRememberedBlockSize = 28,
+    kLastRememberedInlineSize = 29,
 
-    kNumFields = 29,
+    kNumFields = 30,
   };
 
   ElementRareDataField* GetField(FieldId field_id) const;
@@ -119,6 +120,23 @@ class CORE_EXPORT ElementRareDataVector final : public ElementRareDataBase {
   T* GetWrappedField(FieldId field_id) const {
     auto* wrapper = static_cast<DataFieldWrapper<T>*>(GetField(field_id));
     return wrapper ? &wrapper->Get() : nullptr;
+  }
+
+  template <typename T>
+  void SetOptionalField(FieldId field_id, absl::optional<T> data) {
+    if (data) {
+      SetWrappedField<T>(field_id, *data);
+    } else {
+      SetField(field_id, nullptr);
+    }
+  }
+
+  template <typename T>
+  absl::optional<T> GetOptionalField(FieldId field_id) const {
+    if (auto* value = GetWrappedField<T>(field_id)) {
+      return *value;
+    }
+    return absl::nullopt;
   }
 
  public:
@@ -215,8 +233,10 @@ class CORE_EXPORT ElementRareDataVector final : public ElementRareDataBase {
   void SetCustomElementDefinition(CustomElementDefinition* definition) override;
   CustomElementDefinition* GetCustomElementDefinition() const override;
 
-  void SaveLastIntrinsicSize(ResizeObserverSize* size) override;
-  const ResizeObserverSize* LastIntrinsicSize() const override;
+  void SetLastRememberedBlockSize(absl::optional<LayoutUnit> size) override;
+  void SetLastRememberedInlineSize(absl::optional<LayoutUnit> size) override;
+  absl::optional<LayoutUnit> LastRememberedBlockSize() const override;
+  absl::optional<LayoutUnit> LastRememberedInlineSize() const override;
 
   PopoverData* GetPopoverData() const override;
   PopoverData& EnsurePopoverData() override;

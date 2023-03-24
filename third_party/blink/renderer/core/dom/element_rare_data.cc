@@ -47,7 +47,9 @@ namespace blink {
 
 struct SameSizeAsElementRareData : ElementRareDataBase {
   void* pointers_or_strings[4];
-  Member<void*> members[23];
+  Member<void*> members[22];
+  absl::optional<LayoutUnit> last_remembered_block_size;
+  absl::optional<LayoutUnit> last_remembered_inline_size;
   gfx::Vector2dF scroll_offset;
   wtf_size_t implicitly_anchored_element_count;
 };
@@ -154,7 +156,6 @@ void ElementRareData::Trace(blink::Visitor* visitor) const {
   visitor->Trace(container_query_data_);
   visitor->Trace(resize_observer_data_);
   visitor->Trace(custom_element_definition_);
-  visitor->Trace(last_intrinsic_size_);
   visitor->Trace(popover_data_);
   visitor->Trace(toggle_map_);
   visitor->Trace(anchor_scroll_data_);

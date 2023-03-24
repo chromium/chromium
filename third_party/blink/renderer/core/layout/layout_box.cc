@@ -1347,14 +1347,16 @@ LayoutUnit LayoutBox::OverrideIntrinsicContentWidth() const {
       style.ContainIntrinsicWidth();
   DCHECK(intrinsic_length);
   if (intrinsic_length->HasAuto() && ShouldUseAutoIntrinsicSize()) {
-    const Element* elem = DynamicTo<Element>(GetNode());
-    const ResizeObserverSize* size = elem ? elem->LastIntrinsicSize() : nullptr;
-    if (size) {
-      // ResizeObserverSize is adjusted to be in CSS space, we need to adjust it
-      // back to Layout space by applying the effective zoom.
-      return LayoutUnit::FromFloatRound(
-          ToPhysicalSize(size->size(), StyleRef().GetWritingMode()).width *
-          style.EffectiveZoom());
+    if (const Element* elem = DynamicTo<Element>(GetNode())) {
+      const absl::optional<LayoutUnit> width =
+          StyleRef().IsHorizontalWritingMode()
+              ? elem->LastRememberedInlineSize()
+              : elem->LastRememberedBlockSize();
+      if (width) {
+        // ResizeObserverSize is adjusted to be in CSS space, we need to adjust
+        // it back to Layout space by applying the effective zoom.
+        return LayoutUnit::FromFloatRound(*width * style.EffectiveZoom());
+      }
     }
   }
   DCHECK(intrinsic_length->GetLength().IsFixed());
@@ -1370,14 +1372,16 @@ LayoutUnit LayoutBox::OverrideIntrinsicContentHeight() const {
       style.ContainIntrinsicHeight();
   DCHECK(intrinsic_length);
   if (intrinsic_length->HasAuto() && ShouldUseAutoIntrinsicSize()) {
-    const Element* elem = DynamicTo<Element>(GetNode());
-    const ResizeObserverSize* size = elem ? elem->LastIntrinsicSize() : nullptr;
-    if (size) {
-      // ResizeObserverSize is adjusted to be in CSS space, we need to adjust it
-      // back to Layout space by applying the effective zoom.
-      return LayoutUnit::FromFloatRound(
-          ToPhysicalSize(size->size(), StyleRef().GetWritingMode()).height *
-          style.EffectiveZoom());
+    if (const Element* elem = DynamicTo<Element>(GetNode())) {
+      const absl::optional<LayoutUnit> height =
+          StyleRef().IsHorizontalWritingMode()
+              ? elem->LastRememberedBlockSize()
+              : elem->LastRememberedInlineSize();
+      if (height) {
+        // ResizeObserverSize is adjusted to be in CSS space, we need to adjust
+        // it back to Layout space by applying the effective zoom.
+        return LayoutUnit::FromFloatRound(*height * style.EffectiveZoom());
+      }
     }
   }
   DCHECK(intrinsic_length->GetLength().IsFixed());

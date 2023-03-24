@@ -1151,8 +1151,14 @@ class CORE_EXPORT Element : public ContainerNode, public Animatable {
   bool AffectedByMultipleHas() const;
   void SetAffectedByMultipleHas();
 
-  void SaveIntrinsicSize(ResizeObserverSize* size);
-  const ResizeObserverSize* LastIntrinsicSize() const;
+  // This is meant to be used by document's resize observer to notify that the
+  // size has changed.
+  void LastRememberedSizeChanged(ResizeObserverSize* size);
+
+  void SetLastRememberedInlineSize(absl::optional<LayoutUnit>);
+  void SetLastRememberedBlockSize(absl::optional<LayoutUnit>);
+  absl::optional<LayoutUnit> LastRememberedInlineSize() const;
+  absl::optional<LayoutUnit> LastRememberedBlockSize() const;
 
   // Returns a unique pseudo element for the given |pseudo_id| and
   // |view_transition_name| originating from this DOM element.
@@ -1607,7 +1613,10 @@ class CORE_EXPORT Element : public ContainerNode, public Animatable {
   void PseudoStateChanged(CSSSelector::PseudoType pseudo,
                           AffectedByPseudoStateChange&&);
 
-  void ProcessContainIntrinsicSizeChanges(const ComputedStyle* new_style);
+  void ProcessContainIntrinsicSizeChanges();
+
+  bool ShouldUpdateLastRememberedBlockSize() const;
+  bool ShouldUpdateLastRememberedInlineSize() const;
 
   enum class HighlightRecalc {
     // No highlight recalc is needed.

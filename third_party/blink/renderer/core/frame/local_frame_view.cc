@@ -345,7 +345,7 @@ void LocalFrameView::Trace(Visitor* visitor) const {
   visitor->Trace(fullscreen_video_elements_);
   visitor->Trace(pending_transform_updates_);
   visitor->Trace(pending_opacity_updates_);
-  visitor->Trace(disconnected_elements_with_saved_intrinsic_size_);
+  visitor->Trace(disconnected_elements_with_remembered_size_);
 }
 
 void LocalFrameView::ForAllChildViewsAndPlugins(
@@ -2577,12 +2577,13 @@ bool LocalFrameView::RunResizeObserverSteps(
   if (target_state != DocumentLifecycle::kPaintClean)
     return false;
 
-  for (auto& element : disconnected_elements_with_saved_intrinsic_size_) {
+  for (auto& element : disconnected_elements_with_remembered_size_) {
     if (!element->isConnected()) {
-      element->SaveIntrinsicSize(nullptr);
+      element->SetLastRememberedBlockSize(absl::nullopt);
+      element->SetLastRememberedInlineSize(absl::nullopt);
     }
   }
-  disconnected_elements_with_saved_intrinsic_size_.clear();
+  disconnected_elements_with_remembered_size_.clear();
 
   bool re_run_lifecycles = false;
   ForAllNonThrottledLocalFrameViews(
@@ -5027,9 +5028,9 @@ void LocalFrameView::RemoveAllPendingUpdates() {
   }
 }
 
-void LocalFrameView::NotifyElementWithSavedIntrinsicSizeDisconnected(
+void LocalFrameView::NotifyElementWithRememberedSizeDisconnected(
     Element* element) {
-  disconnected_elements_with_saved_intrinsic_size_.insert(element);
+  disconnected_elements_with_remembered_size_.insert(element);
 }
 
 }  // namespace blink

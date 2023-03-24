@@ -34,7 +34,6 @@ class ContainerQueryData;
 class ResizeObserver;
 class ResizeObservation;
 class CustomElementDefinition;
-class ResizeObserverSize;
 class PopoverData;
 class CSSToggleMap;
 class HTMLElement;
@@ -143,8 +142,10 @@ class ElementRareDataBase : public NodeRareData {
   virtual void SetIsValue(const AtomicString& is_value) = 0;
   virtual const AtomicString& IsValue() const = 0;
 
-  virtual void SaveLastIntrinsicSize(ResizeObserverSize* size) = 0;
-  virtual const ResizeObserverSize* LastIntrinsicSize() const = 0;
+  virtual void SetLastRememberedBlockSize(absl::optional<LayoutUnit> size) = 0;
+  virtual void SetLastRememberedInlineSize(absl::optional<LayoutUnit> size) = 0;
+  virtual absl::optional<LayoutUnit> LastRememberedBlockSize() const = 0;
+  virtual absl::optional<LayoutUnit> LastRememberedInlineSize() const = 0;
 
   virtual PopoverData* GetPopoverData() const = 0;
   virtual PopoverData& EnsurePopoverData() = 0;

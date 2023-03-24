@@ -616,7 +616,7 @@ void IntrinsicSizeResizeObserverDelegate::OnResize(
     const HeapVector<Member<ResizeObserverEntry>>& entries) {
   for (const auto& entry : entries) {
     DCHECK_GT(entry->contentBoxSize().size(), 0u);
-    entry->target()->SaveIntrinsicSize(entry->contentBoxSize().at(0));
+    entry->target()->LastRememberedSizeChanged(entry->contentBoxSize().at(0));
   }
 }
 

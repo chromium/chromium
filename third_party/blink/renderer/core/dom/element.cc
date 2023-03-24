@@ -1327,18 +1327,65 @@ int Element::ClientTopNoLayout() const {
   return 0;
 }
 
-void Element::SaveIntrinsicSize(ResizeObserverSize* size) {
-  EnsureElementRareData().SaveLastIntrinsicSize(size);
+void Element::LastRememberedSizeChanged(ResizeObserverSize* size) {
+  if (ShouldUpdateLastRememberedBlockSize()) {
+    SetLastRememberedBlockSize(LayoutUnit(size->blockSize()));
+  }
+  if (ShouldUpdateLastRememberedInlineSize()) {
+    SetLastRememberedInlineSize(LayoutUnit(size->inlineSize()));
+  }
 }
 
-const ResizeObserverSize* Element::LastIntrinsicSize() const {
-  if (!HasRareData()) {
-    return nullptr;
+bool Element::ShouldUpdateLastRememberedBlockSize() const {
+  const auto* style = GetComputedStyle();
+  if (!style) {
+    return false;
   }
-  // If rare data exists, we are guaranteed that it's ElementRareData.
-  ElementRareDataBase* data = GetElementRareData();
-  DCHECK(data);
-  return data->LastIntrinsicSize();
+
+  if (style->IsHorizontalWritingMode()) {
+    return style->ContainIntrinsicHeight() &&
+           style->ContainIntrinsicHeight()->HasAuto();
+  }
+  return style->ContainIntrinsicWidth() &&
+         style->ContainIntrinsicWidth()->HasAuto();
+}
+
+bool Element::ShouldUpdateLastRememberedInlineSize() const {
+  const auto* style = GetComputedStyle();
+  if (!style) {
+    return false;
+  }
+
+  if (style->IsHorizontalWritingMode()) {
+    return style->ContainIntrinsicWidth() &&
+           style->ContainIntrinsicWidth()->HasAuto();
+  }
+  return style->ContainIntrinsicHeight() &&
+         style->ContainIntrinsicHeight()->HasAuto();
+}
+
+void Element::SetLastRememberedInlineSize(absl::optional<LayoutUnit> size) {
+  if (!size && !HasRareData()) {
+    return;
+  }
+  EnsureElementRareData().SetLastRememberedInlineSize(size);
+}
+
+void Element::SetLastRememberedBlockSize(absl::optional<LayoutUnit> size) {
+  if (!size && !HasRareData()) {
+    return;
+  }
+  EnsureElementRareData().SetLastRememberedBlockSize(size);
+}
+
+absl::optional<LayoutUnit> Element::LastRememberedInlineSize() const {
+  return HasRareData() ? GetElementRareData()->LastRememberedInlineSize()
+                       : absl::nullopt;
+}
+
+absl::optional<LayoutUnit> Element::LastRememberedBlockSize() const {
+  return HasRareData() ? GetElementRareData()->LastRememberedBlockSize()
+                       : absl::nullopt;
 }
 
 bool Element::IsViewportScrollElement() {
@@ -2763,8 +2810,9 @@ void Element::RemovedFrom(ContainerNode& insertion_point) {
 
   document.UnobserveForIntrinsicSize(this);
   if (auto* local_frame_view = document.View();
-      local_frame_view && LastIntrinsicSize()) {
-    local_frame_view->NotifyElementWithSavedIntrinsicSizeDisconnected(this);
+      local_frame_view &&
+      (LastRememberedInlineSize() || LastRememberedBlockSize())) {
+    local_frame_view->NotifyElementWithRememberedSizeDisconnected(this);
   }
 
   SetSavedLayerScrollOffset(ScrollOffset());
@@ -3754,7 +3802,7 @@ StyleRecalcChange Element::RecalcOwnStyle(
   }
   SetComputedStyle(new_style);
 
-  ProcessContainIntrinsicSizeChanges(new_style.get());
+  ProcessContainIntrinsicSizeChanges();
 
   if (!child_change.ReattachLayoutTree() &&
       (GetForceReattachLayoutTree() || NeedsReattachLayoutTree() ||
@@ -3899,30 +3947,38 @@ StyleRecalcChange Element::RecalcOwnStyle(
   return child_change;
 }
 
-void Element::ProcessContainIntrinsicSizeChanges(
-    const ComputedStyle* new_style) {
-  if (!new_style) {
+void Element::ProcessContainIntrinsicSizeChanges() {
+  // It is important that we early out, since ShouldUpdateLastRemembered*Size
+  // functions only return meaningful results if we have computed style. If we
+  // don't have style, we also avoid clearing the last remembered sizes.
+  if (!GetComputedStyle()) {
     GetDocument().UnobserveForIntrinsicSize(this);
     return;
   }
 
-  bool observe_for_intrinsic_size = false;
-  if ((new_style->ContainIntrinsicWidth() &&
-       new_style->ContainIntrinsicWidth()->HasAuto()) ||
-      (new_style->ContainIntrinsicHeight() &&
-       new_style->ContainIntrinsicHeight()->HasAuto())) {
-    DisplayLockContext* context = GetDisplayLockContext();
-    // The only case where we _don't_ observe is if we're skipping contents
-    // while being content-visibility: auto.
-    observe_for_intrinsic_size =
-        !context || !context->IsAuto() || !context->IsLocked();
+  DisplayLockContext* context = GetDisplayLockContext();
+  // The only case where we _don't_ record new sizes is if we're skipping
+  // contents.
+  bool allowed_to_record_new_intrinsic_sizes = !context || !context->IsLocked();
+
+  // We should only record new sizes if we will update either the block or
+  // inline direction. IOW, if we have contain-intrinsic-size: auto on at least
+  // one of the directions.
+  bool should_record_new_intrinsic_sizes = false;
+  if (ShouldUpdateLastRememberedBlockSize()) {
+    should_record_new_intrinsic_sizes = true;
   } else {
-    // If we don't have contain-intrinsic-size: auto, immediately forget the
-    // saved intrinsic size.
-    SaveIntrinsicSize(nullptr);
+    SetLastRememberedBlockSize(absl::nullopt);
   }
 
-  if (observe_for_intrinsic_size) {
+  if (ShouldUpdateLastRememberedInlineSize()) {
+    should_record_new_intrinsic_sizes = true;
+  } else {
+    SetLastRememberedInlineSize(absl::nullopt);
+  }
+
+  if (allowed_to_record_new_intrinsic_sizes &&
+      should_record_new_intrinsic_sizes) {
     GetDocument().ObserveForIntrinsicSize(this);
   } else {
     GetDocument().UnobserveForIntrinsicSize(this);

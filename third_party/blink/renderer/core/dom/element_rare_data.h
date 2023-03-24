@@ -244,11 +244,17 @@ class ElementRareData final : public ElementRareDataBase {
   }
   const AtomicString& IsValue() const override { return is_value_; }
 
-  void SaveLastIntrinsicSize(ResizeObserverSize* size) override {
-    last_intrinsic_size_ = size;
+  void SetLastRememberedBlockSize(absl::optional<LayoutUnit> size) override {
+    last_intrinsic_block_size_ = size;
   }
-  const ResizeObserverSize* LastIntrinsicSize() const override {
-    return last_intrinsic_size_;
+  void SetLastRememberedInlineSize(absl::optional<LayoutUnit> size) override {
+    last_intrinsic_inline_size_ = size;
+  }
+  absl::optional<LayoutUnit> LastRememberedBlockSize() const override {
+    return last_intrinsic_block_size_;
+  }
+  absl::optional<LayoutUnit> LastRememberedInlineSize() const override {
+    return last_intrinsic_inline_size_;
   }
 
   PopoverData* GetPopoverData() const override { return popover_data_; }
@@ -331,7 +337,6 @@ class ElementRareData final : public ElementRareDataBase {
   Member<ContainerQueryData> container_query_data_;
   Member<ResizeObserverDataMap> resize_observer_data_;
   Member<CustomElementDefinition> custom_element_definition_;
-  Member<ResizeObserverSize> last_intrinsic_size_;
   Member<PopoverData> popover_data_;
   Member<CSSToggleMap> toggle_map_;
   Member<AnchorScrollData> anchor_scroll_data_;
@@ -339,6 +344,8 @@ class ElementRareData final : public ElementRareDataBase {
 
   ScrollOffset saved_layer_scroll_offset_;
   wtf_size_t implicitly_anchored_element_count_ = 0;
+  absl::optional<LayoutUnit> last_intrinsic_block_size_;
+  absl::optional<LayoutUnit> last_intrinsic_inline_size_;
 };
 
 inline LayoutSize DefaultMinimumSizeForResizing() {
