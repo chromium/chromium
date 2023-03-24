@@ -8,6 +8,7 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/metrics/field_trial.h"
+#include "base/metrics/field_trial_params.h"
 #include "base/run_loop.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/media/webrtc/media_capture_devices_dispatcher.h"
@@ -34,7 +35,6 @@
 #include "components/permissions/request_type.h"
 #include "components/permissions/test/mock_permission_prompt_factory.h"
 #include "components/prefs/pref_service.h"
-#include "components/variations/variations_associated_data.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
@@ -997,7 +997,7 @@ IN_PROC_BROWSER_TEST_F(MediaStreamDevicesControllerTest,
   params[permissions::PermissionUtil::GetPermissionString(
       ContentSettingsType::MEDIASTREAM_CAMERA)] =
       permissions::PermissionContextBase::kPermissionsKillSwitchBlockedValue;
-  variations::AssociateVariationParams(
+  base::AssociateFieldTrialParams(
       permissions::PermissionContextBase::kPermissionsKillSwitchFieldStudy,
       "TestGroup", params);
   base::FieldTrialList::CreateFieldTrial(

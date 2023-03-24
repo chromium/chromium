@@ -20,7 +20,7 @@
 // IDs. These APIs are meant to extend the base::FieldTrial APIs to offer extra
 // functionality that is not offered by the simpler base::FieldTrial APIs.
 //
-// The AssociateGoogleVariationID and AssociateVariationParams functions are
+// The AssociateGoogleVariationID function is
 // generally meant to be called by the VariationsService based on server-side
 // variation configs, but may also be used for client-only field trials by
 // invoking them directly after appending all the groups to a FieldTrial.
@@ -119,12 +119,6 @@ VariationID GetGoogleVariationID(IDCollectionKey key,
 COMPONENT_EXPORT(VARIATIONS)
 VariationID GetGoogleVariationIDFromHashes(IDCollectionKey key,
                                            const ActiveGroupId& active_group);
-
-// Deprecated. Use base::AssociateFieldTrialParams() instead.
-COMPONENT_EXPORT(VARIATIONS)
-bool AssociateVariationParams(const std::string& trial_name,
-                              const std::string& group_name,
-                              const std::map<std::string, std::string>& params);
 
 // Expose some functions for testing.
 namespace testing {

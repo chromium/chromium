@@ -9,6 +9,7 @@
 #include "base/command_line.h"
 #include "base/functional/bind.h"
 #include "base/metrics/field_trial.h"
+#include "base/metrics/field_trial_params.h"
 #include "base/run_loop.h"
 #include "base/test/mock_callback.h"
 #include "base/test/scoped_feature_list.h"
@@ -39,7 +40,6 @@
 #include "components/permissions/test/mock_permission_prompt_factory.h"
 #include "components/permissions/test/mock_permission_request.h"
 #include "components/permissions/test/permission_request_observer.h"
-#include "components/variations/variations_associated_data.h"
 #include "content/public/browser/permission_controller.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_process_host.h"
@@ -143,9 +143,8 @@ class PermissionRequestManagerBrowserTest : public InProcessBrowserTest {
     std::map<std::string, std::string> params;
     params[permissions::PermissionUtil::GetPermissionString(
         content_settings_type)] = kPermissionsKillSwitchBlockedValue;
-    variations::AssociateVariationParams(kPermissionsKillSwitchFieldStudy,
-                                         kPermissionsKillSwitchTestGroup,
-                                         params);
+    base::AssociateFieldTrialParams(kPermissionsKillSwitchFieldStudy,
+                                    kPermissionsKillSwitchTestGroup, params);
     base::FieldTrialList::CreateFieldTrial(kPermissionsKillSwitchFieldStudy,
                                            kPermissionsKillSwitchTestGroup);
   }

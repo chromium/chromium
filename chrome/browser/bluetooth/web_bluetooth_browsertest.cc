@@ -603,7 +603,7 @@ IN_PROC_BROWSER_TEST_F(WebBluetoothTest, KillSwitchShouldBlock) {
   std::map<std::string, std::string> params;
   params["Bluetooth"] =
       permissions::PermissionContextBase::kPermissionsKillSwitchBlockedValue;
-  variations::AssociateVariationParams(
+  base::AssociateFieldTrialParams(
       permissions::PermissionContextBase::kPermissionsKillSwitchFieldStudy,
       "TestGroup", params);
   base::FieldTrialList::CreateFieldTrial(
@@ -645,8 +645,8 @@ IN_PROC_BROWSER_TEST_F(WebBluetoothTest, BlocklistShouldBlock) {
     // Create a field trial with test parameter.
     std::map<std::string, std::string> params;
     params["blocklist_additions"] = "ed5f25a4:e";
-    variations::AssociateVariationParams("WebBluetoothBlocklist", "TestGroup",
-                                         params);
+    base::AssociateFieldTrialParams("WebBluetoothBlocklist", "TestGroup",
+                                    params);
     base::FieldTrialList::CreateFieldTrial("WebBluetoothBlocklist",
                                            "TestGroup");
   }

@@ -118,7 +118,7 @@ void OmniboxFieldTrialTest::VerifySuggestPollingStrategy(
         OmniboxFieldTrial::kSuggestPollingDelayMsRule)] =
         polling_delay_ms_rule_value;
   }
-  ASSERT_TRUE(variations::AssociateVariationParams(
+  ASSERT_TRUE(base::AssociateFieldTrialParams(
       OmniboxFieldTrial::kBundledExperimentFieldTrialName, "A", params));
   base::FieldTrialList::CreateFieldTrial(
       OmniboxFieldTrial::kBundledExperimentFieldTrialName, "A");
@@ -139,7 +139,7 @@ TEST_F(OmniboxFieldTrialTest, GetDisabledProviderTypes) {
     SCOPED_TRACE("Valid field trial, missing param.");
     ResetFieldTrialList();
     std::map<std::string, std::string> params;
-    ASSERT_TRUE(variations::AssociateVariationParams(
+    ASSERT_TRUE(base::AssociateFieldTrialParams(
         OmniboxFieldTrial::kBundledExperimentFieldTrialName, "A", params));
     base::FieldTrialList::CreateFieldTrial(
         OmniboxFieldTrial::kBundledExperimentFieldTrialName, "A");
@@ -151,7 +151,7 @@ TEST_F(OmniboxFieldTrialTest, GetDisabledProviderTypes) {
     ResetFieldTrialList();
     std::map<std::string, std::string> params;
     params[std::string(OmniboxFieldTrial::kDisableProvidersRule)] = "";
-    ASSERT_TRUE(variations::AssociateVariationParams(
+    ASSERT_TRUE(base::AssociateFieldTrialParams(
         OmniboxFieldTrial::kBundledExperimentFieldTrialName, "A", params));
     base::FieldTrialList::CreateFieldTrial(
         OmniboxFieldTrial::kBundledExperimentFieldTrialName, "A");
@@ -163,7 +163,7 @@ TEST_F(OmniboxFieldTrialTest, GetDisabledProviderTypes) {
     ResetFieldTrialList();
     std::map<std::string, std::string> params;
     params[std::string(OmniboxFieldTrial::kDisableProvidersRule)] = "aaa";
-    ASSERT_TRUE(variations::AssociateVariationParams(
+    ASSERT_TRUE(base::AssociateFieldTrialParams(
         OmniboxFieldTrial::kBundledExperimentFieldTrialName, "A", params));
     base::FieldTrialList::CreateFieldTrial(
         OmniboxFieldTrial::kBundledExperimentFieldTrialName, "A");
@@ -175,7 +175,7 @@ TEST_F(OmniboxFieldTrialTest, GetDisabledProviderTypes) {
     ResetFieldTrialList();
     std::map<std::string, std::string> params;
     params[std::string(OmniboxFieldTrial::kDisableProvidersRule)] = "12321";
-    ASSERT_TRUE(variations::AssociateVariationParams(
+    ASSERT_TRUE(base::AssociateFieldTrialParams(
         OmniboxFieldTrial::kBundledExperimentFieldTrialName, "A", params));
     base::FieldTrialList::CreateFieldTrial(
         OmniboxFieldTrial::kBundledExperimentFieldTrialName, "A");
@@ -191,7 +191,7 @@ TEST_F(OmniboxFieldTrialTest, GetDemotionsByTypeWithFallback) {
     params[std::string(OmniboxFieldTrial::kDemoteByTypeRule) + ":3:*"] =
         "5:100";
     params[std::string(OmniboxFieldTrial::kDemoteByTypeRule) + ":*:*"] = "1:25";
-    ASSERT_TRUE(variations::AssociateVariationParams(
+    ASSERT_TRUE(base::AssociateFieldTrialParams(
         OmniboxFieldTrial::kBundledExperimentFieldTrialName, "A", params));
   }
   base::FieldTrialList::CreateFieldTrial(
@@ -268,7 +268,7 @@ TEST_F(OmniboxFieldTrialTest, GetValueForRuleInContext) {
     params["rule4:4:0"] = "rule4-4-0-value";  // OTHER
     // Add a malformed rule to make sure it doesn't screw things up.
     params["unrecognized"] = "unrecognized-value";
-    ASSERT_TRUE(variations::AssociateVariationParams(
+    ASSERT_TRUE(base::AssociateFieldTrialParams(
         OmniboxFieldTrial::kBundledExperimentFieldTrialName, "A", params));
   }
 
@@ -371,7 +371,7 @@ TEST_F(OmniboxFieldTrialTest, HUPNewScoringFieldTrial) {
     params[std::string(
         OmniboxFieldTrial::kHUPNewScoringVisitedCountScoreBucketsParam)] =
         "5:300,0:200";
-    ASSERT_TRUE(variations::AssociateVariationParams(
+    ASSERT_TRUE(base::AssociateFieldTrialParams(
         OmniboxFieldTrial::kBundledExperimentFieldTrialName, "A", params));
   }
   base::FieldTrialList::CreateFieldTrial(
@@ -405,7 +405,7 @@ TEST_F(OmniboxFieldTrialTest, HUPNewScoringFieldTrialWithDecayFactor) {
         "1";
     params[OmniboxFieldTrial::kHUPNewScoringTypedCountScoreBucketsParam] =
         "0.1:100,0.5:500,1.0:1000";
-    ASSERT_TRUE(variations::AssociateVariationParams(
+    ASSERT_TRUE(base::AssociateFieldTrialParams(
         OmniboxFieldTrial::kBundledExperimentFieldTrialName, "A", params));
   }
   base::FieldTrialList::CreateFieldTrial(

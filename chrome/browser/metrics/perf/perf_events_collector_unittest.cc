@@ -15,6 +15,7 @@
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/memory/ptr_util.h"
+#include "base/metrics/field_trial_params.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
 #include "base/system/sys_info.h"
@@ -1241,8 +1242,8 @@ TEST_F(PerfCollectorCollectionParamsTest, Commands_EmptyExperiment) {
       internal::GetDefaultCommandsForCpuModel(
           GetCPUIdentity(), base::SysInfo::HardwareModelName());
   std::map<std::string, std::string> params;
-  ASSERT_TRUE(variations::AssociateVariationParams(
-      "ChromeOSWideProfilingCollection", "group_name", params));
+  ASSERT_TRUE(base::AssociateFieldTrialParams("ChromeOSWideProfilingCollection",
+                                              "group_name", params));
   ASSERT_TRUE(base::FieldTrialList::CreateFieldTrial(
       "ChromeOSWideProfilingCollection", "group_name"));
 
@@ -1268,8 +1269,8 @@ TEST_F(PerfCollectorCollectionParamsTest, Commands_InvalidValues) {
       std::make_pair("PerfCommand::default::4", "NaN-trailing-space "));
   params.insert(std::make_pair("PerfCommand::default::5", "NaN x"));
   params.insert(std::make_pair("PerfCommand::default::6", "perf command"));
-  ASSERT_TRUE(variations::AssociateVariationParams(
-      "ChromeOSWideProfilingCollection", "group_name", params));
+  ASSERT_TRUE(base::AssociateFieldTrialParams("ChromeOSWideProfilingCollection",
+                                              "group_name", params));
   ASSERT_TRUE(base::FieldTrialList::CreateFieldTrial(
       "ChromeOSWideProfilingCollection", "group_name"));
 
@@ -1295,8 +1296,8 @@ TEST_F(PerfCollectorCollectionParamsTest, Commands_Override) {
       std::make_pair("PerfCommand::default::2", "25 perf record baz"));
   params.insert(
       std::make_pair("PerfCommand::another-cpu::0", "7 perf record bar"));
-  ASSERT_TRUE(variations::AssociateVariationParams(
-      "ChromeOSWideProfilingCollection", "group_name", params));
+  ASSERT_TRUE(base::AssociateFieldTrialParams("ChromeOSWideProfilingCollection",
+                                              "group_name", params));
   ASSERT_TRUE(base::FieldTrialList::CreateFieldTrial(
       "ChromeOSWideProfilingCollection", "group_name"));
 
@@ -1320,8 +1321,8 @@ TEST_F(PerfCollectorCollectionParamsTest, Parameters_Override) {
   params.insert(std::make_pair("ResumeFromSuspend::MaxDelaySec", "10"));
   params.insert(std::make_pair("RestoreSession::SamplingFactor", "2"));
   params.insert(std::make_pair("RestoreSession::MaxDelaySec", "20"));
-  ASSERT_TRUE(variations::AssociateVariationParams(
-      "ChromeOSWideProfilingCollection", "group_name", params));
+  ASSERT_TRUE(base::AssociateFieldTrialParams("ChromeOSWideProfilingCollection",
+                                              "group_name", params));
   ASSERT_TRUE(base::FieldTrialList::CreateFieldTrial(
       "ChromeOSWideProfilingCollection", "group_name"));
 

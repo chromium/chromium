@@ -6,6 +6,7 @@
 
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
+#include "base/metrics/field_trial_params.h"
 #include "build/build_config.h"
 #include "chrome/browser/background_sync/background_sync_delegate_impl.h"
 #include "chrome/browser/history/history_service_factory.h"
@@ -119,7 +120,7 @@ TEST_F(BackgroundSyncControllerImplTest, SomeParamsSet) {
       "TrUe";
   field_parameters[BackgroundSyncControllerImpl::kInitialRetryParameterName] =
       "100";
-  ASSERT_TRUE(variations::AssociateVariationParams(
+  ASSERT_TRUE(base::AssociateFieldTrialParams(
       BackgroundSyncControllerImpl::kFieldTrialName, kFieldTrialGroup,
       field_parameters));
 
@@ -158,7 +159,7 @@ TEST_F(BackgroundSyncControllerImplTest, AllParamsSet) {
       "500";
   field_parameters
       [BackgroundSyncControllerImpl::kMinPeriodicSyncEventsInterval] = "43200";
-  ASSERT_TRUE(variations::AssociateVariationParams(
+  ASSERT_TRUE(base::AssociateFieldTrialParams(
       BackgroundSyncControllerImpl::kFieldTrialName, kFieldTrialGroup,
       field_parameters));
 

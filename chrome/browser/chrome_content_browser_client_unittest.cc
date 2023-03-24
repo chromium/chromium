@@ -14,6 +14,7 @@
 #include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
 #include "base/metrics/field_trial.h"
+#include "base/metrics/field_trial_params.h"
 #include "base/run_loop.h"
 #include "base/strings/strcat.h"
 #include "base/strings/utf_string_conversions.h"
@@ -373,7 +374,7 @@ class BlinkSettingsFieldTrialTest : public testing::Test {
     params.insert(std::make_pair(key1, value1));
     params.insert(std::make_pair(key2, value2));
     CreateFieldTrial(trial_name, kFakeGroupName);
-    variations::AssociateVariationParams(trial_name, kFakeGroupName, params);
+    base::AssociateFieldTrialParams(trial_name, kFakeGroupName, params);
   }
 
   void AppendContentBrowserClientSwitches() {

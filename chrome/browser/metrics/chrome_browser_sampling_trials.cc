@@ -6,11 +6,11 @@
 
 #include "base/feature_list.h"
 #include "base/metrics/field_trial.h"
+#include "base/metrics/field_trial_params.h"
 #include "base/strings/string_number_conversions.h"
 #include "chrome/browser/metrics/chrome_metrics_services_manager_client.h"
 #include "chrome/common/channel_info.h"
 #include "components/ukm/ukm_recorder_impl.h"
-#include "components/variations/variations_associated_data.h"
 #include "components/version_info/channel.h"
 
 namespace metrics {
@@ -36,7 +36,7 @@ void AppendSamplingTrialGroup(const std::string& group_name,
                               base::FieldTrial* trial) {
   std::map<std::string, std::string> params = {
       {metrics::internal::kRateParamName, base::NumberToString(rate)}};
-  variations::AssociateVariationParams(trial->trial_name(), group_name, params);
+  base::AssociateFieldTrialParams(trial->trial_name(), group_name, params);
   trial->AppendGroup(group_name, rate);
 }
 
@@ -115,8 +115,7 @@ void CreateFallbackUkmSamplingTrial(
   // Everybody (100%) should have a sampling configuration.
   std::map<std::string, std::string> params = {
       {"_default_sampling", base::NumberToString(default_sampling)}};
-  variations::AssociateVariationParams(trial->trial_name(), sampled_group,
-                                       params);
+  base::AssociateFieldTrialParams(trial->trial_name(), sampled_group, params);
   trial->AppendGroup(sampled_group, 100);
 
   // Setup the feature.

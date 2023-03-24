@@ -10,6 +10,7 @@
 #include "base/base_switches.h"
 #include "base/feature_list.h"
 #include "base/metrics/field_trial.h"
+#include "base/metrics/field_trial_params.h"
 #include "base/test/scoped_feature_list.h"
 #include "components/variations/field_trial_config/field_trial_util.h"
 #include "components/variations/variations_associated_data.h"
@@ -26,7 +27,7 @@ base::FieldTrial* CreateFieldTrialWithParams(
     const std::string& trial_name,
     const std::string& trial_group_name,
     const std::map<std::string, std::string>& param_values) {
-  AssociateVariationParams(trial_name, trial_group_name, param_values);
+  base::AssociateFieldTrialParams(trial_name, trial_group_name, param_values);
   return base::FieldTrialList::CreateFieldTrial(trial_name, trial_group_name);
 }
 

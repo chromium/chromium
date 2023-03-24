@@ -8,6 +8,7 @@
 
 #include <map>
 
+#include "base/metrics/field_trial_params.h"
 #include "base/strings/stringprintf.h"
 #include "components/variations/client_filterable_state.h"
 #include "components/variations/processed_study.h"
@@ -28,7 +29,7 @@ void CreateTrial(const std::string& trial_name,
                  const std::map<std::string, std::string>* params) {
   base::FieldTrialList::CreateFieldTrial(trial_name, group_name);
   if (params != nullptr)
-    AssociateVariationParams(trial_name, group_name, *params);
+    base::AssociateFieldTrialParams(trial_name, group_name, *params);
   base::FieldTrialList::FindFullName(trial_name);
 }
 

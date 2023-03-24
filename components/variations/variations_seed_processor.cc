@@ -12,6 +12,7 @@
 #include "base/command_line.h"
 #include "base/feature_list.h"
 #include "base/metrics/field_trial.h"
+#include "base/metrics/field_trial_params.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/utf_string_conversions.h"
@@ -40,7 +41,7 @@ void RegisterExperimentParams(const Study& study,
       params[experiment.param(i).name()] = experiment.param(i).value();
   }
   if (!params.empty())
-    AssociateVariationParams(study.name(), experiment.name(), params);
+    base::AssociateFieldTrialParams(study.name(), experiment.name(), params);
 }
 
 // Returns the IDCollectionKey with which |experiment| should be associated.

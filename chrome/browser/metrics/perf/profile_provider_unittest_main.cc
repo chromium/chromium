@@ -10,6 +10,7 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/metrics/field_trial.h"
+#include "base/metrics/field_trial_params.h"
 #include "base/metrics/statistics_recorder.h"
 #include "base/run_loop.h"
 #include "base/synchronization/waitable_event.h"
@@ -157,7 +158,7 @@ class ProfileProviderRealCollectionTest : public testing::Test {
         "PerfCommand::default::0", "50 -- record -a -e cycles -c 1000003"));
     field_trial_params.insert(std::make_pair(
         "PerfCommand::default::1", "50 -- record -a -e cycles -g -c 4000037"));
-    ASSERT_TRUE(variations::AssociateVariationParams(
+    ASSERT_TRUE(base::AssociateFieldTrialParams(
         "ChromeOSWideProfilingCollection", "group_name", field_trial_params));
     field_trial_ = base::FieldTrialList::CreateFieldTrial(
         "ChromeOSWideProfilingCollection", "group_name");

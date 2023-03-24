@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "base/metrics/field_trial.h"
+#include "base/metrics/field_trial_params.h"
 #include "base/run_loop.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/time/time.h"
@@ -60,8 +61,8 @@ class RemoteDatabaseManagerTest : public testing::Test {
     if (!types_to_check_val.empty())
       params["types_to_check"] = types_to_check_val;
 
-    ASSERT_TRUE(variations::AssociateVariationParams(experiment_name,
-                                                     group_name, params));
+    ASSERT_TRUE(
+        base::AssociateFieldTrialParams(experiment_name, group_name, params));
   }
 
   content::BrowserTaskEnvironment task_environment_;

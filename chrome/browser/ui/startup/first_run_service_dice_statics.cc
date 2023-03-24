@@ -10,6 +10,7 @@
 #include "base/feature_list.h"
 #include "base/logging.h"
 #include "base/metrics/field_trial.h"
+#include "base/metrics/field_trial_params.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/first_run/first_run.h"
 #include "chrome/browser/metrics/chrome_metrics_service_accessor.h"
@@ -129,8 +130,8 @@ void FirstRunService::SetUpClientSideFieldTrial(
                                   : base::FeatureList::OVERRIDE_DISABLE_FEATURE;
 
   if (measurement_feature_state == base::FeatureList::OVERRIDE_ENABLE_FEATURE) {
-    variations::AssociateVariationParams(
-        kTrialName, group_name, {{kForYouFreStudyGroup.name, group_name}});
+    base::AssociateFieldTrialParams(kTrialName, group_name,
+                                    {{kForYouFreStudyGroup.name, group_name}});
   }
 
   feature_list->RegisterFieldTrialOverride(

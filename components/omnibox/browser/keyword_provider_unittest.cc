@@ -12,6 +12,7 @@
 
 #include "base/command_line.h"
 #include "base/metrics/field_trial.h"
+#include "base/metrics/field_trial_params.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/task_environment.h"
@@ -264,7 +265,7 @@ TEST_F(KeywordProviderTest, IgnoreRegistryForScoring) {
   {
     std::map<std::string, std::string> params;
     params[OmniboxFieldTrial::kKeywordRequiresRegistryRule] = "false";
-    ASSERT_TRUE(variations::AssociateVariationParams(
+    ASSERT_TRUE(base::AssociateFieldTrialParams(
         OmniboxFieldTrial::kBundledExperimentFieldTrialName, "A", params));
   }
   base::FieldTrialList::CreateFieldTrial(

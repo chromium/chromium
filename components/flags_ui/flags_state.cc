@@ -15,6 +15,7 @@
 #include "base/functional/callback.h"
 #include "base/logging.h"
 #include "base/metrics/field_trial.h"
+#include "base/metrics/field_trial_params.h"
 #include "base/stl_util.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_piece.h"
@@ -128,7 +129,7 @@ base::FieldTrial* RegisterFeatureVariationParameters(
     const std::string& feature_trial_name,
     const std::map<std::string, std::string>& feature_variation_params,
     const std::string& trial_group) {
-  bool success = variations::AssociateVariationParams(
+  bool success = base::AssociateFieldTrialParams(
       feature_trial_name, trial_group, feature_variation_params);
   if (!success)
     return nullptr;

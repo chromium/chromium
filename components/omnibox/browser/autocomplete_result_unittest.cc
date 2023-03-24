@@ -1086,7 +1086,7 @@ TEST_F(AutocompleteResultTest, SortAndCullWithDemotionsByType) {
     std::map<std::string, std::string> params;
     params[std::string(OmniboxFieldTrial::kDemoteByTypeRule) + ":3:*"] =
         "1:50,7:100,2:0";  // 3 == HOME_PAGE
-    ASSERT_TRUE(variations::AssociateVariationParams(
+    ASSERT_TRUE(base::AssociateFieldTrialParams(
         OmniboxFieldTrial::kBundledExperimentFieldTrialName, "A", params));
   }
   base::FieldTrialList::CreateFieldTrial(
@@ -1248,7 +1248,7 @@ TEST_F(AutocompleteResultTest, DemoteByType) {
   {
     std::map<std::string, std::string> params;
     params[std::string(OmniboxFieldTrial::kDemoteByTypeRule) + ":*:*"] = "2:50";
-    ASSERT_TRUE(variations::AssociateVariationParams(
+    ASSERT_TRUE(base::AssociateFieldTrialParams(
         OmniboxFieldTrial::kBundledExperimentFieldTrialName, "A", params));
   }
   base::FieldTrialList::CreateFieldTrial(
