@@ -57,6 +57,7 @@
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/test/test_future.h"
 #include "base/values.h"
 #include "build/build_config.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
@@ -71,6 +72,7 @@
 #include "chrome/browser/ash/app_list/arc/arc_app_utils.h"
 #include "chrome/browser/ash/app_list/arc/arc_default_app_list.h"
 #include "chrome/browser/ash/app_list/internal_app/internal_app_metadata.h"
+#include "chrome/browser/ash/apps/apk_web_app_service.h"
 #include "chrome/browser/ash/arc/arc_util.h"
 #include "chrome/browser/ash/arc/session/arc_session_manager.h"
 #include "chrome/browser/ash/crosapi/browser_util.h"
@@ -4685,21 +4687,60 @@ TEST_F(ChromeShelfControllerTest, MultipleAppIconLoaders) {
 
 TEST_F(ChromeShelfControllerWithArcTest, ArcAppPinPolicy) {
   InitShelfControllerWithBrowser();
-  arc::mojom::AppInfoPtr appinfo =
-      CreateAppInfo("Some App", "SomeActivity", "com.example.app");
-  const std::string app_id = AddArcAppAndShortcut(*appinfo);
 
-  // Set policy, that makes pins ARC app. Unlike native extension, for ARC app
-  // package_name (not hash) specified as id. In this test we check that
-  // by hash we can determine that appropriate package was set by policy.
+  constexpr char kExampleArcPackageName[] = "com.example.app";
+
+  arc::mojom::AppInfoPtr appinfo =
+      CreateAppInfo("Some App", "SomeActivity", kExampleArcPackageName);
+  const std::string example_app_id = AddArcAppAndShortcut(*appinfo);
+
+  // Sets up policy that pins this ARC app. Unlike native extensions, ARC apps
+  // are pinned by |package_name| rather than the actual |app_id|.
   base::Value::List policy_value;
-  AppendPrefValue(policy_value, appinfo->package_name);
+  AppendPrefValue(policy_value, kExampleArcPackageName);
   profile()->GetTestingPrefService()->SetManagedPref(
       prefs::kPolicyPinnedLauncherApps, base::Value(policy_value.Clone()));
 
-  EXPECT_TRUE(shelf_controller_->IsAppPinned(app_id));
+  EXPECT_TRUE(shelf_controller_->IsAppPinned(example_app_id));
   EXPECT_EQ(AppListControllerDelegate::PIN_FIXED,
-            GetPinnableForAppID(app_id, profile()));
+            GetPinnableForAppID(example_app_id, profile()));
+}
+
+TEST_F(ChromeShelfControllerWithArcTest, ApkWebAppPinPolicy) {
+  InitShelfControllerWithBrowser();
+
+  constexpr char kMapsWebPackageName[] = "com.google.maps";
+
+  auto* service = ash::ApkWebAppService::Get(browser()->profile());
+  ASSERT_TRUE(service);
+  service->SetArcAppListPrefsForTesting(arc_test_.arc_app_list_prefs());
+
+  base::test::TestFuture<const std::string&, const web_app::AppId&> future;
+  service->SetWebAppInstalledCallbackForTesting(future.GetCallback());
+
+  auto package = arc::mojom::ArcPackageInfo::New(kMapsWebPackageName, 1, 1, 1,
+                                                 /*sync=*/true);
+  package->web_app_info =
+      arc::mojom::WebAppInfo::New("Google Maps", "https://www.google.com/maps/",
+                                  "https://www.google.com/", 1000000);
+  std::vector<arc::mojom::ArcPackageInfoPtr> packages;
+  packages.push_back(std::move(package));
+  arc_test_.app_instance()->SendRefreshPackageList(std::move(packages));
+
+  auto [maps_package_name, maps_app_id] = future.Take();
+  ASSERT_EQ(maps_package_name, kMapsWebPackageName);
+
+  // Sets up policy that pins this apk-based Web App. Unlike regular Web Apps,
+  // Web Apps originating from apks are pinned by |package_name| rather than
+  // their |install_url|.
+  base::Value::List policy_value;
+  AppendPrefValue(policy_value, kMapsWebPackageName);
+  profile()->GetTestingPrefService()->SetManagedPref(
+      prefs::kPolicyPinnedLauncherApps, base::Value(policy_value.Clone()));
+
+  EXPECT_TRUE(shelf_controller_->IsAppPinned(maps_app_id));
+  EXPECT_EQ(AppListControllerDelegate::PIN_FIXED,
+            GetPinnableForAppID(maps_app_id, profile()));
 }
 
 TEST_F(ChromeShelfControllerWithArcTest, ArcManaged) {

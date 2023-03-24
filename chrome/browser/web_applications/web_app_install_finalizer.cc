@@ -207,9 +207,9 @@ void WebAppInstallFinalizer::FinalizeInstall(
   web_app->SetIsFromSyncAndPendingInstallation(false);
   web_app->SetLatestInstallSource(options.install_surface);
 
-  WriteExternalConfigMapInfo(*web_app, options.source,
-                             web_app_info.is_placeholder,
-                             web_app_info.install_url);
+  WriteExternalConfigMapInfo(
+      *web_app, options.source, web_app_info.is_placeholder,
+      web_app_info.install_url, web_app_info.additional_policy_ids);
 
   if (!options.locally_installed) {
     DCHECK(!(options.add_to_applications_menu || options.add_to_desktop ||
@@ -649,13 +649,19 @@ void WebAppInstallFinalizer::WriteExternalConfigMapInfo(
     WebApp& web_app,
     WebAppManagement::Type source,
     bool is_placeholder,
-    GURL install_url) {
+    GURL install_url,
+    const std::vector<std::string>& additional_policy_ids) {
   DCHECK(!(source == WebAppManagement::Type::kSync && is_placeholder));
   if (source != WebAppManagement::Type::kSync) {
     web_app.AddPlaceholderInfoToManagementExternalConfigMap(source,
                                                             is_placeholder);
     if (install_url.is_valid()) {
       web_app.AddInstallURLToManagementExternalConfigMap(source, install_url);
+    }
+    if (!additional_policy_ids.empty()) {
+      for (const auto& policy_id : additional_policy_ids) {
+        web_app.AddPolicyIdToManagementExternalConfigMap(source, policy_id);
+      }
     }
   }
 }

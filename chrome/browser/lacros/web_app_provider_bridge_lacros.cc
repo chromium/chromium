@@ -101,6 +101,10 @@ void WebAppProviderBridgeLacros::WebAppInstalledInArcImpl(
   install_info->theme_color = arc_install_info->theme_color;
   const SkBitmap& bitmap = *arc_install_info->icon.bitmap();
   install_info->icon_bitmaps.any[bitmap.width()] = bitmap;
+  if (arc_install_info->additional_policy_ids) {
+    install_info->additional_policy_ids =
+        std::move(*arc_install_info->additional_policy_ids);
+  }
 
   provider->scheduler().InstallFromInfo(
       std::move(install_info),

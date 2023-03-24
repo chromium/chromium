@@ -38,6 +38,7 @@ namespace ash {
 
 // static
 void ApkWebAppInstaller::Install(Profile* profile,
+                                 const std::string& package_name,
                                  arc::mojom::WebAppInfoPtr web_app_info,
                                  arc::mojom::RawIconPngDataPtr icon,
                                  InstallFinishCallback callback,
@@ -50,7 +51,7 @@ void ApkWebAppInstaller::Install(Profile* profile,
   // CompleteInstallation().
   auto* installer =
       new ApkWebAppInstaller(profile, std::move(callback), weak_owner);
-  installer->Start(std::move(web_app_info), std::move(icon));
+  installer->Start(package_name, std::move(web_app_info), std::move(icon));
 }
 
 ApkWebAppInstaller::ApkWebAppInstaller(Profile* profile,
@@ -64,7 +65,8 @@ ApkWebAppInstaller::ApkWebAppInstaller(Profile* profile,
 
 ApkWebAppInstaller::~ApkWebAppInstaller() = default;
 
-void ApkWebAppInstaller::Start(arc::mojom::WebAppInfoPtr web_app_info,
+void ApkWebAppInstaller::Start(const std::string& package_name,
+                               arc::mojom::WebAppInfoPtr web_app_info,
                                arc::mojom::RawIconPngDataPtr icon) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   if (!weak_owner_.get()) {
@@ -93,6 +95,8 @@ void ApkWebAppInstaller::Start(arc::mojom::WebAppInfoPtr web_app_info,
 
   web_app_install_info_->scope = GURL(web_app_info->scope_url);
   DCHECK(web_app_install_info_->scope.is_valid());
+
+  web_app_install_info_->additional_policy_ids.push_back(package_name);
 
   // The install_url and the start_url seem to be same in this case
   // as far as ExternallyInstalledWebAppPrefs are concerned.
@@ -183,6 +187,8 @@ void ApkWebAppInstaller::DoInstall() {
     arc_install_info->start_url = std::move(web_app_install_info->start_url);
     arc_install_info->scope = std::move(web_app_install_info->scope);
     arc_install_info->theme_color = web_app_install_info->theme_color;
+    arc_install_info->additional_policy_ids =
+        std::move(web_app_install_info->additional_policy_ids);
     // Take the first icon (there should only be one).
     if (web_app_install_info->icon_bitmaps.any.size() > 0) {
       auto& [sizePx, bitmap] =

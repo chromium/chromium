@@ -769,13 +769,23 @@ std::unique_ptr<WebApp> CreateRandomWebApp(const GURL& base_url,
     if (type == WebAppManagement::kSync)
       continue;
     base::flat_set<GURL> install_urls;
+    base::flat_set<std::string> additional_policy_ids;
     WebApp::ExternalManagementConfig config;
-    if (random.next_bool())
+    if (random.next_bool()) {
       install_urls.emplace(base_url.Resolve("installer1_" + seed_str + "/"));
-    if (random.next_bool())
+    }
+    if (random.next_bool()) {
       install_urls.emplace(base_url.Resolve("installer2_" + seed_str + "/"));
+    }
+    if (random.next_bool()) {
+      additional_policy_ids.emplace("policy_id_1_" + seed_str);
+    }
+    if (random.next_bool()) {
+      additional_policy_ids.emplace("policy_id_2_" + seed_str);
+    }
     config.is_placeholder = random.next_bool();
-    config.install_urls = install_urls;
+    config.install_urls = std::move(install_urls);
+    config.additional_policy_ids = std::move(additional_policy_ids);
     management_to_external_config.insert_or_assign(type, std::move(config));
   }
 

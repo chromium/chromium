@@ -127,12 +127,20 @@ enum WebAppManagementProto {
   ONEDRIVEINTEGRATION = 10;
 }
 
+// This stores data per-external-WebAppManagement::Type, as each installation
+// manager can have different installation configurations for the same web app.
 message ManagementToExternalConfigInfo {
   optional WebAppManagementProto management = 1;
   // The collection of install_urls per web_app per WebAppManagement::Type.
   repeated string install_urls = 2;
   // Stores whether the app is a placeholder app or not.
   optional bool is_placeholder = 3;
+  // A list of additional terms to use when matching this app against
+  // identifiers in admin policies (for shelf pinning, default file handlers,
+  // etc) per web_app per WebAppManagement::Type.
+  // Note that list is not meant to be an exhaustive enumeration of all possible
+  // policy_ids but rather just a supplement for tricky cases.
+  repeated string additional_policy_ids = 4;
 }
 
 // Contains information specific to Isolated Web Apps.

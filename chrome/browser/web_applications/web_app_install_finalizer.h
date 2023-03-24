@@ -159,10 +159,12 @@ class WebAppInstallFinalizer {
   const WebAppRegistrar& GetWebAppRegistrar() const;
 
   // Writes external config data to the web_app DB, mapped per source.
-  void WriteExternalConfigMapInfo(WebApp& web_app,
-                                  WebAppManagement::Type source,
-                                  bool is_placeholder,
-                                  GURL install_url);
+  void WriteExternalConfigMapInfo(
+      WebApp& web_app,
+      WebAppManagement::Type source,
+      bool is_placeholder,
+      GURL install_url,
+      const std::vector<std::string>& additional_policy_ids);
 
   // Used to schedule a WebAppUninstallCommand. The |external_install_source|
   // field is only required for external app uninstalls to verify OS

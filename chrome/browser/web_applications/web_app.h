@@ -292,6 +292,13 @@ class WebApp {
 
     bool is_placeholder = false;
     base::flat_set<GURL> install_urls;
+
+    // A list of additional terms to use when matching this app against
+    // identifiers in admin policies (for shelf pinning, default file handlers,
+    // etc).
+    // Note that list is not meant to be an exhaustive enumeration of all
+    // possible policy_ids but rather just a supplement for tricky cases.
+    base::flat_set<std::string> additional_policy_ids;
   };
 
   using ExternalConfigMap =
@@ -428,9 +435,14 @@ class WebApp {
       bool is_placeholder);
 
   // This adds an install_url per management type (source) for the
-  // WebAppManagementToInstallURLsMap.
+  // ExternalConfigMap.
   void AddInstallURLToManagementExternalConfigMap(WebAppManagement::Type type,
                                                   GURL install_url);
+
+  // This adds a policy_id per management type (source) for the
+  // ExternalConfigMap.
+  void AddPolicyIdToManagementExternalConfigMap(WebAppManagement::Type type,
+                                                const std::string& policy_id);
 
   // Encapsulate the addition of install_url and is_placeholder information
   // for cases where both need to be added.

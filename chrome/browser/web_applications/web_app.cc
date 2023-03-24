@@ -588,6 +588,15 @@ void WebApp::AddInstallURLToManagementExternalConfigMap(
   management_to_external_config_map_[type].install_urls.emplace(install_url);
 }
 
+void WebApp::AddPolicyIdToManagementExternalConfigMap(
+    WebAppManagement::Type type,
+    const std::string& policy_id) {
+  DCHECK_NE(type, WebAppManagement::Type::kSync);
+  DCHECK(!policy_id.empty());
+  management_to_external_config_map_[type].additional_policy_ids.emplace(
+      policy_id);
+}
+
 void WebApp::AddExternalSourceInformation(WebAppManagement::Type type,
                                           GURL install_url,
                                           bool is_placeholder) {
@@ -666,10 +675,15 @@ WebApp::ExternalManagementConfig& WebApp::ExternalManagementConfig::operator=(
 base::Value::Dict WebApp::ExternalManagementConfig::AsDebugValue() const {
   base::Value::Dict root;
   base::Value::List urls;
-  for (auto it : install_urls) {
-    urls.Append(it.spec());
+  for (const auto& install_url : install_urls) {
+    urls.Append(install_url.spec());
+  }
+  base::Value::List policy_ids;
+  for (const auto& policy_id : additional_policy_ids) {
+    policy_ids.Append(policy_id);
   }
   root.Set("install_urls", std::move(urls));
+  root.Set("additional_policy_ids", std::move(policy_ids));
   root.Set("is_placeholder", is_placeholder);
   return root;
 }
@@ -1101,8 +1115,12 @@ bool operator!=(const WebApp::SyncFallbackData& sync_fallback_data1,
 
 bool operator==(const WebApp::ExternalManagementConfig& management_config1,
                 const WebApp::ExternalManagementConfig& management_config2) {
-  return management_config1.install_urls == management_config2.install_urls &&
-         management_config1.is_placeholder == management_config2.is_placeholder;
+  return std::tie(management_config1.install_urls,
+                  management_config1.is_placeholder,
+                  management_config1.additional_policy_ids) ==
+         std::tie(management_config2.install_urls,
+                  management_config2.is_placeholder,
+                  management_config2.additional_policy_ids);
 }
 
 bool operator!=(const WebApp::ExternalManagementConfig& management_config1,

@@ -59,4 +59,5 @@ struct ArcWebAppInstallInfo {
   url.mojom.Url scope@2;
   skia.mojom.SkColor? theme_color@3;
   gfx.mojom.ImageSkia icon@4;
+  [MinVersion=1] array<string>? additional_policy_ids@5;
 };

@@ -104,7 +104,7 @@ TEST_F(ApkWebAppInstallerTest, IconDecodeCallsWebAppInstallManager) {
   FakeApkWebAppInstaller apk_web_app_installer(
       profile(), weak_ptr_factory_.GetWeakPtr(), run_loop.QuitClosure());
 
-  apk_web_app_installer.Start(GetWebAppInfo(), GetIconBytes());
+  apk_web_app_installer.Start("package", GetWebAppInfo(), GetIconBytes());
   run_loop.Run();
 
   EXPECT_FALSE(apk_web_app_installer.complete_installation_called());
@@ -135,7 +135,7 @@ TEST_F(ApkWebAppInstallerTest,
       profile(), weak_ptr_factory_.GetWeakPtr(), run_loop.QuitClosure());
 
   weak_ptr_factory_.InvalidateWeakPtrs();
-  apk_web_app_installer.Start(GetWebAppInfo(), GetIconBytes());
+  apk_web_app_installer.Start("package", GetWebAppInfo(), GetIconBytes());
   run_loop.Run();
 
   EXPECT_EQ("", apk_web_app_installer.id());
@@ -151,7 +151,7 @@ TEST_F(ApkWebAppInstallerTest,
   FakeApkWebAppInstaller apk_web_app_installer(
       profile(), weak_ptr_factory_.GetWeakPtr(), run_loop.QuitClosure());
 
-  apk_web_app_installer.Start(GetWebAppInfo(), GetIconBytes());
+  apk_web_app_installer.Start("package", GetWebAppInfo(), GetIconBytes());
   weak_ptr_factory_.InvalidateWeakPtrs();
   run_loop.Run();
 
@@ -165,7 +165,8 @@ TEST_F(ApkWebAppInstallerTest, NullWebAppInfoCallsCompleteInstallation) {
   FakeApkWebAppInstaller apk_web_app_installer(
       profile(), weak_ptr_factory_.GetWeakPtr(), run_loop.QuitClosure());
 
-  apk_web_app_installer.Start(/*web_app_install_info=*/nullptr, GetIconBytes());
+  apk_web_app_installer.Start("package", /*web_app_install_info=*/nullptr,
+                              GetIconBytes());
   run_loop.Run();
 
   EXPECT_EQ("", apk_web_app_installer.id());
@@ -180,7 +181,7 @@ TEST_F(ApkWebAppInstallerTest, NullIconCallsCompleteInstallation) {
   FakeApkWebAppInstaller apk_web_app_installer(
       profile(), weak_ptr_factory_.GetWeakPtr(), run_loop.QuitClosure());
 
-  apk_web_app_installer.Start(GetWebAppInfo(), {});
+  apk_web_app_installer.Start("package", GetWebAppInfo(), {});
   run_loop.Run();
 
   EXPECT_EQ("", apk_web_app_installer.id());

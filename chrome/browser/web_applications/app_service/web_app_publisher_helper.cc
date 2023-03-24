@@ -1642,6 +1642,14 @@ std::vector<std::string> WebAppPublisherHelper::GetPolicyIds(
   }
 #endif  // BUIDLFLAG(IS_CHROMEOS_ASH)
 
+  for (const auto& [source, external_config] :
+       web_app.management_to_external_config_map()) {
+    if (!external_config.additional_policy_ids.empty()) {
+      base::ranges::copy(external_config.additional_policy_ids,
+                         std::back_inserter(policy_ids));
+    }
+  }
+
   if (!registrar().HasExternalAppWithInstallSource(
           app_id, ExternalInstallSource::kExternalPolicy)) {
     return policy_ids;

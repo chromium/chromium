@@ -734,15 +734,20 @@ std::unique_ptr<WebAppProto> WebAppDatabase::CreateWebAppProto(
   }
 
   if (!web_app.management_to_external_config_map().empty()) {
-    for (const auto& entry : web_app.management_to_external_config_map()) {
+    for (const auto& [source, external_config] :
+         web_app.management_to_external_config_map()) {
       ManagementToExternalConfigInfo* management_config_proto =
           local_data->add_management_to_external_config_info();
-      management_config_proto->set_management(
-          WebAppManagementToProto(entry.first));
-      management_config_proto->set_is_placeholder(entry.second.is_placeholder);
-      for (const auto& url : entry.second.install_urls) {
+      management_config_proto->set_management(WebAppManagementToProto(source));
+      management_config_proto->set_is_placeholder(
+          external_config.is_placeholder);
+      for (const auto& url : external_config.install_urls) {
         DCHECK(url.is_valid());
         management_config_proto->add_install_urls(url.spec());
+      }
+      for (const auto& policy_id : external_config.additional_policy_ids) {
+        DCHECK(!policy_id.empty());
+        management_config_proto->add_additional_policy_ids(policy_id);
       }
     }
   }
@@ -1411,8 +1416,18 @@ std::unique_ptr<WebApp> WebAppDatabase::CreateWebApp(
       }
       install_urls.emplace(install_url);
     }
+    base::flat_set<std::string> additional_policy_ids;
+    for (const auto& policy_id : management_proto.additional_policy_ids()) {
+      if (policy_id.empty()) {
+        DLOG(ERROR) << "WebApp proto empty policy_id";
+        return nullptr;
+      }
+      additional_policy_ids.emplace(policy_id);
+    }
+
     config.is_placeholder = management_proto.is_placeholder();
-    config.install_urls = install_urls;
+    config.install_urls = std::move(install_urls);
+    config.additional_policy_ids = std::move(additional_policy_ids);
     management_to_external_config.insert_or_assign(
         ProtoToWebAppManagement(management_proto.management()),
         std::move(config));

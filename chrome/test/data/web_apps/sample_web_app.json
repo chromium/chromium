@@ -5,20 +5,19 @@
    "allowed_launch_protocols": [ "web+test_1234_0" ],
    "always_show_toolbar_in_fullscreen": false,
    "app_service_icon_url": "chrome://app-icon/eajjdjobhihlgobdfaehiiheinneagde/32",
-   "app_size_in_bytes": "2353265476",
+   "app_size_in_bytes": "1505422652",
    "background_color": "rgba(77,188,194,0.9686274509803922)",
    "capture_links": "kNone",
    "current_os_integration_states": {
       "file_handling": [  ],
       "protocols_handled": {
-         "web+test0": "https://example.com/scope1234/start12340",
-         "web+test1": "https://example.com/scope1234/start12341"
+         "web+test0": "https://example.com/scope1234/start12340"
       },
-      "run_on_os_login": "minimized",
+      "run_on_os_login": "not_run",
       "shortcut_descriptions": {
          "description": "Description1234",
          "icon_size_to_timestamp_map": {
-            "32": "1970-02-18 08:29:15.376 UTC"
+            "32": "1970-02-04 17:47:46.335 UTC"
          },
          "title": "Name1234"
       },
@@ -30,7 +29,7 @@
    },
    "dark_mode_background_color": "none",
    "dark_mode_theme_color": "rgba(34,214,187,1)",
-   "data_size_in_bytes": "3216637306",
+   "data_size_in_bytes": "1449447663",
    "description": "Description1234",
    "disallowed_launch_protocols": [ "web+disallowed_1234_0", "web+disallowed_1234_1", "web+disallowed_1234_2", "web+disallowed_1234_3", "web+disallowed_1234_4", "web+disallowed_1234_5" ],
    "display_mode": "fullscreen",
@@ -166,7 +165,7 @@
    "is_uninstalling": false,
    "isolation_data": {
       "isolated_web_app_location": {
-         "dev_mode_bundle": {
+         "installed_bundle": {
             "path": "1234"
          }
       }
@@ -181,16 +180,19 @@
    "lock_screen_start_url": "https://example.com/scope1234/lock_screen_start_url3022990271",
    "management_type_to_external_configuration_map": {
       "Default": {
+         "additional_policy_ids": [ "policy_id_1_1234", "policy_id_2_1234" ],
+         "install_urls": [ "https://example.com/installer1_1234/" ],
+         "is_placeholder": false
+      },
+      "SubApp": {
+         "additional_policy_ids": [  ],
          "install_urls": [  ],
          "is_placeholder": true
       },
-      "SubApp": {
-         "install_urls": [ "https://example.com/installer2_1234/" ],
-         "is_placeholder": true
-      },
       "WebAppStore": {
+         "additional_policy_ids": [ "policy_id_1_1234" ],
          "install_urls": [ "https://example.com/installer1_1234/", "https://example.com/installer2_1234/" ],
-         "is_placeholder": true
+         "is_placeholder": false
       }
    },
    "manifest_icons": [  ],
