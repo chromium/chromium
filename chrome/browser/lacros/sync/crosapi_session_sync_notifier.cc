@@ -115,10 +115,14 @@ CrosapiSessionSyncNotifier::CrosapiSessionSyncNotifier(
                 base::Unretained(this)));
   }
 
-  sync_service_observation_.Observe(sync_service);
+  if (synced_session_client_.version() >=
+      static_cast<int>(crosapi::mojom::SyncedSessionClient::
+                           kOnSessionSyncEnabledChangedMinVersion)) {
+    sync_service_observation_.Observe(sync_service);
 
-  // Broadcast the initial value for |is_tab_sync_enabled_|.
-  NotifySyncEnabledChanged();
+    // Broadcast the initial value for |is_tab_sync_enabled_|.
+    NotifySyncEnabledChanged();
+  }
 
   if (synced_session_client_.version() >=
       static_cast<int>(

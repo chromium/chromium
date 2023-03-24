@@ -177,12 +177,6 @@ void SyncCrosapiManagerLacros::OnCreateSyncedSessionClient(
     return;
   }
 
-  if (pending_remote.version() <
-      static_cast<int>(crosapi::mojom::SyncedSessionClient::
-                           kOnSessionSyncEnabledChangedMinVersion)) {
-    return;
-  }
-
   DCHECK(!crosapi_session_sync_notifier_);
   crosapi_session_sync_notifier_ = std::make_unique<CrosapiSessionSyncNotifier>(
       session_sync_service, std::move(pending_remote), sync_service,
