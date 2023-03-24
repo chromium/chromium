@@ -121,10 +121,12 @@ export const PasswordCheckMixin = dedupingMixin(
             this.fetchPluralizedStrings_();
           };
 
-          this.passwordManager.getPasswordCheckStatus().then(
-              this.statusChangedListener_);
-          this.passwordManager.getInsecureCredentials().then(
-              this.insecureCredentialsListener_);
+          this.passwordManager.getPasswordCheckStatus()
+              .then(this.statusChangedListener_)
+              .catch(() => {});
+          this.passwordManager.getInsecureCredentials()
+              .then(this.insecureCredentialsListener_)
+              .catch(() => {});
 
           this.passwordManager.addPasswordCheckStatusListener(
               this.statusChangedListener_);
