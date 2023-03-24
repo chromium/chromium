@@ -3221,6 +3221,9 @@ extern const char kExperimentalAccessibilityGoogleTtsLanguagePacksDescription[];
 extern const char kExperimentalAccessibilitySwitchAccessTextName[];
 extern const char kExperimentalAccessibilitySwitchAccessTextDescription[];
 
+extern const char kExposeOutOfProcessVideoDecodingToLacrosName[];
+extern const char kExposeOutOfProcessVideoDecodingToLacrosDescription[];
+
 extern const char kFileTransferEnterpriseConnectorName[];
 extern const char kFileTransferEnterpriseConnectorDescription[];
 
@@ -3833,6 +3836,11 @@ extern const char kFollowingFeedSidepanelDescription[];
 extern const char kLocalWebApprovalsName[];
 extern const char kLocalWebApprovalsDescription[];
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_ANDROID)
+
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
+extern const char kUseOutOfProcessVideoDecodingName[];
+extern const char kUseOutOfProcessVideoDecodingDescription[];
+#endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 
 // Feature flags --------------------------------------------------------------
 

@@ -5613,6 +5613,12 @@ const char kExperimentalAccessibilitySwitchAccessTextDescription[] =
     "Enable experimental or in-progress Switch Access features for improved "
     "text input";
 
+const char kExposeOutOfProcessVideoDecodingToLacrosName[] =
+    "Expose out-of-process video decoding (OOP-VD) to LaCrOS.";
+const char kExposeOutOfProcessVideoDecodingToLacrosDescription[] =
+    "Accept media.stable.mojom.StableVideoDecoderFactory connection requests "
+    "from LaCrOS and host said factories in utility processes.";
+
 const char kFileTransferEnterpriseConnectorName[] =
     "Enable Files Transfer Enterprise Connector.";
 const char kFileTransferEnterpriseConnectorDescription[] =
@@ -6567,6 +6573,17 @@ const char kLocalWebApprovalsDescription[] =
     "Enable local web approvals for Family Link users. Web filter interstitial "
     "refresh needs to also be enabled.";
 #endif
+
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
+const char kUseOutOfProcessVideoDecodingName[] =
+    "Use out-of-process video decoding (OOP-VD)";
+const char kUseOutOfProcessVideoDecodingDescription[] =
+    "Start utility processes to do hardware video decoding. Note: on LaCrOS, "
+    "this task is delegated to ash-chrome by requesting a "
+    "media.stable.mojom.StableVideoDecoderFactory through the crosapi (so "
+    "chrome://flags#expose-out-of-process-video-decoding-to-lacros must be "
+    "enabled in ash-chrome).";
+#endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_MAC)
 const char kWebShareName[] = "Web Share";

@@ -3674,6 +3674,11 @@
     "expiry_milestone": 102
   },
   {
+    "name": "expose-out-of-process-video-decoding-to-lacros",
+    "owners": [ "pmolinalopez", "andrescj" ],
+    "expiry_milestone": 128
+  },
+  {
     "name": "extension-content-verification",
     "owners": [ "//extensions/OWNERS" ],
     "expiry_milestone": 86
@@ -7271,6 +7276,11 @@
     "name": "use-nat64-for-ipv4-literal",
     "owners": [ "horo", "net-dev" ],
     "expiry_milestone": 120
+  },
+  {
+    "name": "use-out-of-process-video-decoding",
+    "owners": [ "pmolinalopez", "andrescj" ],
+    "expiry_milestone": 128
   },
   {
     "name": "use-passthrough-command-decoder",

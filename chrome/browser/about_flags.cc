@@ -5071,6 +5071,11 @@ const FeatureEntry kFeatureEntries[] = {
      kOsCrOS,
      FEATURE_VALUE_TYPE(
          features::kExperimentalAccessibilityColorEnhancementSettings)},
+    {"expose-out-of-process-video-decoding-to-lacros",
+     flag_descriptions::kExposeOutOfProcessVideoDecodingToLacrosName,
+     flag_descriptions::kExposeOutOfProcessVideoDecodingToLacrosDescription,
+     kOsCrOS,
+     FEATURE_VALUE_TYPE(media::kExposeOutOfProcessVideoDecodingToLacros)},
     {"enable-system-proxy-for-system-services",
      flag_descriptions::kSystemProxyForSystemServicesName,
      flag_descriptions::kSystemProxyForSystemServicesDescription, kOsCrOS,
@@ -7146,6 +7151,14 @@ const FeatureEntry kFeatureEntries[] = {
                                     kLocalWebApprovalsVariations,
                                     "LocalWebApprovals")},
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_ANDROID)
+
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
+    {"use-out-of-process-video-decoding",
+     flag_descriptions::kUseOutOfProcessVideoDecodingName,
+     flag_descriptions::kUseOutOfProcessVideoDecodingDescription,
+     kOsLinux | kOsCrOS | kOsLacros,
+     FEATURE_VALUE_TYPE(media::kUseOutOfProcessVideoDecoding)},
+#endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 
 #if BUILDFLAG(ENABLE_SUPERVISED_USERS)
     {"enable-web-filter-interstitial-refresh",

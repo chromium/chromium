@@ -771,13 +771,11 @@ void CrosapiAsh::BindSpeechRecognition(
 void CrosapiAsh::BindStableVideoDecoderFactory(
     mojo::GenericPendingReceiver receiver) {
 #if BUILDFLAG(USE_VAAPI) || BUILDFLAG(USE_V4L2_CODEC)
-  // TODO(b/171813538): if launching out-of-process video decoding for LaCrOS
-  // with Finch, we may need to tell LaCrOS somehow if this feature is enabled
-  // in ash-chrome. Otherwise, we may run into a situation in which the feature
-  // is enabled for LaCrOS but not for ash-chrome.
   auto r = receiver.As<media::stable::mojom::StableVideoDecoderFactory>();
-  if (r && base::FeatureList::IsEnabled(media::kUseOutOfProcessVideoDecoding))
+  if (r && base::FeatureList::IsEnabled(
+               media::kExposeOutOfProcessVideoDecodingToLacros)) {
     content::LaunchStableVideoDecoderFactory(std::move(r));
+  }
 #endif  // BUILDFLAG(USE_VAAPI) || BUILDFLAG(USE_V4L2_CODEC)
 }
 
