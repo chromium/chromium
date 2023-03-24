@@ -35,6 +35,11 @@
 
 namespace content {
 
+namespace {
+
+using AggregationCoordinator =
+    ::aggregation_service::mojom::AggregationCoordinator;
+
 testing::AssertionResult CborMapContainsKeyAndType(
     const cbor::Value::MapValue& map,
     const std::string& key,
@@ -406,13 +411,15 @@ TEST(AggregatableReportTest, GetAsJsonOnePayload_ValidJsonReturned) {
                         /*debug_cleartext_payload=*/absl::nullopt);
 
   AggregatableReport report(std::move(payloads), "example_shared_info",
-                            /*debug_key=*/absl::nullopt);
+                            /*debug_key=*/absl::nullopt,
+                            AggregationCoordinator::kDefault);
 
   std::string report_json_string;
   base::JSONWriter::Write(base::Value(report.GetAsJson()), &report_json_string);
 
   const char kExpectedJsonString[] =
       R"({)"
+      R"("aggregation_coordinator_identifier":"aws-cloud",)"
       R"("aggregation_service_payloads":[)"
       R"({"key_id":"key_1","payload":"ABCD1234"})"
       R"(],)"
@@ -431,13 +438,15 @@ TEST(AggregatableReportTest, GetAsJsonTwoPayloads_ValidJsonReturned) {
                         /*debug_cleartext_payload=*/absl::nullopt);
 
   AggregatableReport report(std::move(payloads), "example_shared_info",
-                            /*debug_key=*/absl::nullopt);
+                            /*debug_key=*/absl::nullopt,
+                            AggregationCoordinator::kDefault);
 
   std::string report_json_string;
   base::JSONWriter::Write(base::Value(report.GetAsJson()), &report_json_string);
 
   const char kExpectedJsonString[] =
       R"({)"
+      R"("aggregation_coordinator_identifier":"aws-cloud",)"
       R"("aggregation_service_payloads":[)"
       R"({"key_id":"key_1","payload":"ABCD1234"},)"
       R"({"key_id":"key_2","payload":"EFGH5678"})"
@@ -454,19 +463,22 @@ TEST(AggregatableReportTest, GetAsJsonDebugCleartextPayload_ValidJsonReturned) {
                         /*debug_cleartext_payload=*/kEFGH5678AsBytes);
 
   AggregatableReport report(std::move(payloads), "example_shared_info",
-                            /*debug_key=*/absl::nullopt);
+                            /*debug_key=*/absl::nullopt,
+                            AggregationCoordinator::kDefault);
 
   std::string report_json_string;
   base::JSONWriter::Write(base::Value(report.GetAsJson()), &report_json_string);
 
-  const char kExpectedJsonString[] = R"({)"
-                                     R"("aggregation_service_payloads":[{)"
-                                     R"("debug_cleartext_payload":"EFGH5678",)"
-                                     R"("key_id":"key_1",)"
-                                     R"("payload":"ABCD1234")"
-                                     R"(}],)"
-                                     R"("shared_info":"example_shared_info")"
-                                     R"(})";
+  const char kExpectedJsonString[] =
+      R"({)"
+      R"("aggregation_coordinator_identifier":"aws-cloud",)"
+      R"("aggregation_service_payloads":[{)"
+      R"("debug_cleartext_payload":"EFGH5678",)"
+      R"("key_id":"key_1",)"
+      R"("payload":"ABCD1234")"
+      R"(}],)"
+      R"("shared_info":"example_shared_info")"
+      R"(})";
   EXPECT_EQ(report_json_string, kExpectedJsonString);
 }
 
@@ -477,20 +489,23 @@ TEST(AggregatableReportTest, GetAsJsonDebugKey_ValidJsonReturned) {
                         /*debug_cleartext_payload=*/kEFGH5678AsBytes);
 
   AggregatableReport report(std::move(payloads), "example_shared_info",
-                            /*debug_key=*/1234);
+                            /*debug_key=*/1234,
+                            AggregationCoordinator::kDefault);
 
   std::string report_json_string;
   base::JSONWriter::Write(base::Value(report.GetAsJson()), &report_json_string);
 
-  const char kExpectedJsonString[] = R"({)"
-                                     R"("aggregation_service_payloads":[{)"
-                                     R"("debug_cleartext_payload":"EFGH5678",)"
-                                     R"("key_id":"key_1",)"
-                                     R"("payload":"ABCD1234")"
-                                     R"(}],)"
-                                     R"("debug_key":"1234",)"
-                                     R"("shared_info":"example_shared_info")"
-                                     R"(})";
+  const char kExpectedJsonString[] =
+      R"({)"
+      R"("aggregation_coordinator_identifier":"aws-cloud",)"
+      R"("aggregation_service_payloads":[{)"
+      R"("debug_cleartext_payload":"EFGH5678",)"
+      R"("key_id":"key_1",)"
+      R"("payload":"ABCD1234")"
+      R"(}],)"
+      R"("debug_key":"1234",)"
+      R"("shared_info":"example_shared_info")"
+      R"(})";
   EXPECT_EQ(report_json_string, kExpectedJsonString);
 }
 
@@ -641,14 +656,17 @@ TEST(AggregatableReportTest, ReportingPathEmpty_NotSetInRequest) {
 
 TEST(AggregatableReportTest, EmptyPayloads) {
   AggregatableReport report(/*payloads=*/{}, "example_shared_info",
-                            /*debug_key=*/absl::nullopt);
+                            /*debug_key=*/absl::nullopt,
+                            AggregationCoordinator::kDefault);
 
   std::string report_json_string;
   base::JSONWriter::Write(base::Value(report.GetAsJson()), &report_json_string);
 
-  const char kExpectedJsonString[] = R"({)"
-                                     R"("shared_info":"example_shared_info")"
-                                     R"(})";
+  const char kExpectedJsonString[] =
+      R"({)"
+      R"("aggregation_coordinator_identifier":"aws-cloud",)"
+      R"("shared_info":"example_shared_info")"
+      R"(})";
   EXPECT_EQ(report_json_string, kExpectedJsonString);
 }
 
@@ -676,7 +694,7 @@ TEST(AggregatableReportProtoMigrationTest,
               {blink::mojom::AggregatableReportHistogramContribution(
                   /*bucket=*/123, /*value=*/456)},
               blink::mojom::AggregationServiceMode::kDefault,
-              ::aggregation_service::mojom::AggregationCoordinator::kDefault),
+              AggregationCoordinator::kDefault),
           AggregatableReportSharedInfo(
               base::Time::FromJavaTime(1652984901234),
               base::GUID::ParseLowercase(
@@ -719,7 +737,7 @@ TEST(AggregatableReportProtoMigrationTest, NegativeDebugKey_ParsesCorrectly) {
               {blink::mojom::AggregatableReportHistogramContribution(
                   /*bucket=*/123, /*value=*/456)},
               blink::mojom::AggregationServiceMode::kDefault,
-              ::aggregation_service::mojom::AggregationCoordinator::kDefault),
+              AggregationCoordinator::kDefault),
           AggregatableReportSharedInfo(
               base::Time::FromJavaTime(1652984901234),
               base::GUID::ParseLowercase(
@@ -779,4 +797,5 @@ TEST(AggregatableReportTest, AggregationCoordinator_ProtoSet) {
   }
 }
 
+}  // namespace
 }  // namespace content

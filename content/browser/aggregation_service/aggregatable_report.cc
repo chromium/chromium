@@ -27,6 +27,7 @@
 #include "base/time/time.h"
 #include "base/values.h"
 #include "components/aggregation_service/aggregation_service.mojom.h"
+#include "components/aggregation_service/parsing_utils.h"
 #include "components/cbor/values.h"
 #include "components/cbor/writer.h"
 #include "content/browser/aggregation_service/aggregation_service_features.h"
@@ -701,10 +702,13 @@ AggregatableReport::AggregationServicePayload::~AggregationServicePayload() =
 AggregatableReport::AggregatableReport(
     std::vector<AggregationServicePayload> payloads,
     std::string shared_info,
-    absl::optional<uint64_t> debug_key)
+    absl::optional<uint64_t> debug_key,
+    ::aggregation_service::mojom::AggregationCoordinator
+        aggregation_coordinator)
     : payloads_(std::move(payloads)),
       shared_info_(std::move(shared_info)),
-      debug_key_(debug_key) {}
+      debug_key_(debug_key),
+      aggregation_coordinator_(aggregation_coordinator) {}
 
 AggregatableReport::AggregatableReport(const AggregatableReport& other) =
     default;
@@ -796,9 +800,10 @@ AggregatableReport::Provider::CreateFromRequestAndPublicKeys(
                                     std::move(debug_cleartext_payload));
   }
 
-  return AggregatableReport(std::move(encrypted_payloads),
-                            std::move(encoded_shared_info),
-                            report_request.debug_key());
+  return AggregatableReport(
+      std::move(encrypted_payloads), std::move(encoded_shared_info),
+      report_request.debug_key(),
+      report_request.payload_contents().aggregation_coordinator);
 }
 
 base::Value::Dict AggregatableReport::GetAsJson() const {
@@ -829,6 +834,10 @@ base::Value::Dict AggregatableReport::GetAsJson() const {
   if (debug_key_.has_value()) {
     value.Set("debug_key", base::NumberToString(debug_key_.value()));
   }
+
+  value.Set("aggregation_coordinator_identifier",
+            ::aggregation_service::SerializeAggregationCoordinator(
+                aggregation_coordinator_));
 
   return value;
 }

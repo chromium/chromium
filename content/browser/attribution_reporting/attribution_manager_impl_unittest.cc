@@ -33,6 +33,7 @@
 #include "base/values.h"
 #include "build/build_config.h"
 #include "build/buildflag.h"
+#include "components/aggregation_service/aggregation_service.mojom.h"
 #include "components/attribution_reporting/suitable_origin.h"
 #include "content/browser/aggregation_service/aggregatable_report.h"
 #include "content/browser/aggregation_service/aggregation_service.h"
@@ -160,8 +161,10 @@ AggregatableReport CreateExampleAggregatableReport() {
       /*api_version=*/"",
       /*api_identifier=*/"attribution-reporting");
 
-  return AggregatableReport(std::move(payloads), shared_info.SerializeAsJson(),
-                            /*debug_key=*/absl::nullopt);
+  return AggregatableReport(
+      std::move(payloads), shared_info.SerializeAsJson(),
+      /*debug_key=*/absl::nullopt,
+      ::aggregation_service::mojom::AggregationCoordinator::kDefault);
 }
 
 // Time after impression that a conversion can first be sent. See

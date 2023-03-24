@@ -61,8 +61,6 @@ struct CONTENT_EXPORT AggregationServicePayloadContents {
   std::vector<blink::mojom::AggregatableReportHistogramContribution>
       contributions;
   blink::mojom::AggregationServiceMode aggregation_mode;
-
-  // Does not affect the unencrypted payload, but is used for encryption.
   ::aggregation_service::mojom::AggregationCoordinator aggregation_coordinator;
 };
 
@@ -189,7 +187,9 @@ class CONTENT_EXPORT AggregatableReport {
 
   AggregatableReport(std::vector<AggregationServicePayload> payloads,
                      std::string shared_info,
-                     absl::optional<uint64_t> debug_key);
+                     absl::optional<uint64_t> debug_key,
+                     ::aggregation_service::mojom::AggregationCoordinator
+                         aggregation_coordinator);
   AggregatableReport(const AggregatableReport& other);
   AggregatableReport& operator=(const AggregatableReport& other);
   AggregatableReport(AggregatableReport&& other);
@@ -201,6 +201,10 @@ class CONTENT_EXPORT AggregatableReport {
   }
   const std::string& shared_info() const { return shared_info_; }
   absl::optional<uint64_t> debug_key() const { return debug_key_; }
+  ::aggregation_service::mojom::AggregationCoordinator aggregation_coordinator()
+      const {
+    return aggregation_coordinator_;
+  }
 
   // Returns the JSON representation of this report of the form
   // {
@@ -261,6 +265,8 @@ class CONTENT_EXPORT AggregatableReport {
   // Should only be set if the debug mode is enabled (but can still be empty).
   // Used as part of the temporary debugging mechanism.
   absl::optional<uint64_t> debug_key_;
+
+  ::aggregation_service::mojom::AggregationCoordinator aggregation_coordinator_;
 };
 
 // Represents a request for an AggregatableReport. Contains all the data
