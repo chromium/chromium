@@ -69,7 +69,6 @@ public class AdaptiveToolbarTest {
     @Test
     @MediumTest
     // clang-format off
-    @Features.EnableFeatures(ChromeFeatureList.TAB_GROUPS_ANDROID)
     @CommandLineFlags.Add({"enable-features=" + ChromeFeatureList.TAB_GRID_LAYOUT_ANDROID +
             "<Study", "force-fieldtrials=Study/Group", NO_NEW_TAB_VARIATION_PARAMS})
     public void testTopToolbar_WithGTS() throws InterruptedException {
@@ -92,7 +91,6 @@ public class AdaptiveToolbarTest {
     @Test
     @MediumTest
     // clang-format off
-    @Features.EnableFeatures(ChromeFeatureList.TAB_GROUPS_ANDROID)
     @CommandLineFlags.Add({"enable-features=" + ChromeFeatureList.TAB_GRID_LAYOUT_ANDROID +
             "<Study", "force-fieldtrials=Study/Group", NEW_TAB_VARIATION_PARAMS})
     public void testTopToolbar_NewTabVariation() {
@@ -119,7 +117,6 @@ public class AdaptiveToolbarTest {
     @Test
     @MediumTest
     // clang-format off
-    @Features.EnableFeatures(ChromeFeatureList.TAB_GROUPS_ANDROID)
     @CommandLineFlags.Add({"enable-features=" + ChromeFeatureList.TAB_GRID_LAYOUT_ANDROID +
             "<Study", "force-fieldtrials=Study/Group", NEW_TAB_VARIATION_PARAMS})
     public void testTopToolbar_NewTabVariation_IncognitoDisabled() {

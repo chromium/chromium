@@ -61,7 +61,7 @@ import org.chromium.chrome.browser.tabmodel.TabCreatorManager;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tasks.ReturnToChromeUtil;
 import org.chromium.chrome.browser.tasks.tab_management.TabManagementDelegate.TabSwitcherType;
-import org.chromium.chrome.browser.tasks.tab_management.TabManagementDelegateProvider;
+import org.chromium.chrome.browser.tasks.tab_management.TabManagementModuleProvider;
 import org.chromium.chrome.browser.tasks.tab_management.TabSwitcher;
 import org.chromium.chrome.browser.tasks.tab_management.TabSwitcherCustomViewManager;
 import org.chromium.chrome.browser.tasks.tab_management.TabUiFeatureUtilities;
@@ -327,7 +327,7 @@ public class StartSurfaceCoordinator implements StartSurface {
         ViewGroup feedPlaceholderParentView = null;
         if (!mIsStartSurfaceEnabled && !mIsStartSurfaceRefactorEnabled) {
             // Create Tab switcher directly to save one layer in the view hierarchy.
-            mGridTabSwitcher = TabManagementDelegateProvider.getDelegate().createGridTabSwitcher(
+            mGridTabSwitcher = TabManagementModuleProvider.getDelegate().createGridTabSwitcher(
                     activity, activityLifecycleDispatcher, tabModelSelector, tabContentManager,
                     browserControlsManager, tabCreatorManager, menuOrKeyboardActionController,
                     containerView, multiWindowModeStateDispatcher, scrimCoordinator,
@@ -876,7 +876,7 @@ public class StartSurfaceCoordinator implements StartSurface {
                 mWindowAndroid);
         if (tabSwitcherType == TabSwitcherType.CAROUSEL) {
             mTabSwitcherModule =
-                    TabManagementDelegateProvider.getDelegate().createCarouselTabSwitcher(mActivity,
+                    TabManagementModuleProvider.getDelegate().createCarouselTabSwitcher(mActivity,
                             mActivityLifecycleDispatcher, mTabModelSelector, mTabContentManager,
                             mBrowserControlsManager, mTabCreatorManager,
                             mMenuOrKeyboardActionController,

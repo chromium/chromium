@@ -186,6 +186,7 @@ public class TabGridDialogTest {
     public void setUp() {
         MockitoAnnotations.initMocks(this);
         Intents.init();
+        TabUiFeatureUtilities.setTabManagementModuleSupportedForTesting(true);
         mActivityTestRule.startMainActivityOnBlankPage();
         CriteriaHelper.pollUiThread(
                 mActivityTestRule.getActivity().getTabModelSelector()::isTabStateInitialized);
@@ -194,6 +195,7 @@ public class TabGridDialogTest {
     @After
     public void tearDown() {
         TabSelectionEditorShareAction.setIntentCallbackForTesting(null);
+        TabUiFeatureUtilities.setTabManagementModuleSupportedForTesting(null);
         ActivityTestUtils.clearActivityOrientation(mActivityTestRule.getActivity());
         Intents.release();
     }

@@ -4,8 +4,9 @@
 
 import("//build/config/android/rules.gni")
 import("//build/config/locales.gni")
-import("//chrome/android/features/android_library_factory_tmpl.gni")
+import("//chrome/android/features/tab_ui/buildflags.gni")
 import("//chrome/common/features.gni")
+import("//components/module_installer/android/module_desc_java.gni")
 import("//tools/grit/grit_rule.gni")
 
 java_strings_grd("java_strings_grd") {
@@ -89,6 +90,166 @@ android_resources("java_resources") {
   ]
 }
 
+android_library("java") {
+  sources = [
+    "java/src/org/chromium/chrome/browser/tasks/tab_groups/TabGroupUtils.java",
+    "java/src/org/chromium/chrome/browser/tasks/tab_management/ClosableTabGridView.java",
+    "java/src/org/chromium/chrome/browser/tasks/tab_management/CouponCardView.java",
+    "java/src/org/chromium/chrome/browser/tasks/tab_management/IncognitoReauthPromoMessageService.java",
+    "java/src/org/chromium/chrome/browser/tasks/tab_management/IncognitoReauthPromoViewModel.java",
+    "java/src/org/chromium/chrome/browser/tasks/tab_management/IphMessageCardViewModel.java",
+    "java/src/org/chromium/chrome/browser/tasks/tab_management/IphMessageService.java",
+    "java/src/org/chromium/chrome/browser/tasks/tab_management/LargeMessageCardView.java",
+    "java/src/org/chromium/chrome/browser/tasks/tab_management/LargeMessageCardViewBinder.java",
+    "java/src/org/chromium/chrome/browser/tasks/tab_management/MessageCardProviderCoordinator.java",
+    "java/src/org/chromium/chrome/browser/tasks/tab_management/MessageCardProviderMediator.java",
+    "java/src/org/chromium/chrome/browser/tasks/tab_management/MessageCardView.java",
+    "java/src/org/chromium/chrome/browser/tasks/tab_management/MessageCardViewBinder.java",
+    "java/src/org/chromium/chrome/browser/tasks/tab_management/MessageCardViewProperties.java",
+    "java/src/org/chromium/chrome/browser/tasks/tab_management/MessageCardViewUtils.java",
+    "java/src/org/chromium/chrome/browser/tasks/tab_management/MessageService.java",
+    "java/src/org/chromium/chrome/browser/tasks/tab_management/MultiThumbnailCardProvider.java",
+    "java/src/org/chromium/chrome/browser/tasks/tab_management/PriceCardView.java",
+    "java/src/org/chromium/chrome/browser/tasks/tab_management/PriceMessageCardViewModel.java",
+    "java/src/org/chromium/chrome/browser/tasks/tab_management/PriceMessageService.java",
+    "java/src/org/chromium/chrome/browser/tasks/tab_management/SelectableTabGridView.java",
+    "java/src/org/chromium/chrome/browser/tasks/tab_management/TabGridDialogCoordinator.java",
+    "java/src/org/chromium/chrome/browser/tasks/tab_management/TabGridDialogMediator.java",
+    "java/src/org/chromium/chrome/browser/tasks/tab_management/TabGridDialogMenuCoordinator.java",
+    "java/src/org/chromium/chrome/browser/tasks/tab_management/TabGridDialogMenuItemBinder.java",
+    "java/src/org/chromium/chrome/browser/tasks/tab_management/TabGridDialogMenuItemProperties.java",
+    "java/src/org/chromium/chrome/browser/tasks/tab_management/TabGridDialogView.java",
+    "java/src/org/chromium/chrome/browser/tasks/tab_management/TabGridIphDialogCoordinator.java",
+    "java/src/org/chromium/chrome/browser/tasks/tab_management/TabGridIphDialogView.java",
+    "java/src/org/chromium/chrome/browser/tasks/tab_management/TabGridItemTouchHelperCallback.java",
+    "java/src/org/chromium/chrome/browser/tasks/tab_management/TabGridPanelProperties.java",
+    "java/src/org/chromium/chrome/browser/tasks/tab_management/TabGridPanelViewBinder.java",
+    "java/src/org/chromium/chrome/browser/tasks/tab_management/TabGridThumbnailView.java",
+    "java/src/org/chromium/chrome/browser/tasks/tab_management/TabGridViewBinder.java",
+    "java/src/org/chromium/chrome/browser/tasks/tab_management/TabGroupTitleEditor.java",
+    "java/src/org/chromium/chrome/browser/tasks/tab_management/TabGroupUiCoordinator.java",
+    "java/src/org/chromium/chrome/browser/tasks/tab_management/TabGroupUiMediator.java",
+    "java/src/org/chromium/chrome/browser/tasks/tab_management/TabGroupUiProperties.java",
+    "java/src/org/chromium/chrome/browser/tasks/tab_management/TabGroupUiToolbarView.java",
+    "java/src/org/chromium/chrome/browser/tasks/tab_management/TabGroupUiViewBinder.java",
+    "java/src/org/chromium/chrome/browser/tasks/tab_management/TabListContainerProperties.java",
+    "java/src/org/chromium/chrome/browser/tasks/tab_management/TabListContainerViewBinder.java",
+    "java/src/org/chromium/chrome/browser/tasks/tab_management/TabListCoordinator.java",
+    "java/src/org/chromium/chrome/browser/tasks/tab_management/TabListMediator.java",
+    "java/src/org/chromium/chrome/browser/tasks/tab_management/TabListModel.java",
+    "java/src/org/chromium/chrome/browser/tasks/tab_management/TabListRecyclerView.java",
+    "java/src/org/chromium/chrome/browser/tasks/tab_management/TabListViewBinder.java",
+    "java/src/org/chromium/chrome/browser/tasks/tab_management/TabManagementDelegateImpl.java",
+    "java/src/org/chromium/chrome/browser/tasks/tab_management/TabProperties.java",
+    "java/src/org/chromium/chrome/browser/tasks/tab_management/TabSelectionEditorAction.java",
+    "java/src/org/chromium/chrome/browser/tasks/tab_management/TabSelectionEditorActionProperties.java",
+    "java/src/org/chromium/chrome/browser/tasks/tab_management/TabSelectionEditorActionProvider.java",
+    "java/src/org/chromium/chrome/browser/tasks/tab_management/TabSelectionEditorActionViewLayout.java",
+    "java/src/org/chromium/chrome/browser/tasks/tab_management/TabSelectionEditorBookmarkAction.java",
+    "java/src/org/chromium/chrome/browser/tasks/tab_management/TabSelectionEditorCloseAction.java",
+    "java/src/org/chromium/chrome/browser/tasks/tab_management/TabSelectionEditorCoordinator.java",
+    "java/src/org/chromium/chrome/browser/tasks/tab_management/TabSelectionEditorGroupAction.java",
+    "java/src/org/chromium/chrome/browser/tasks/tab_management/TabSelectionEditorLayout.java",
+    "java/src/org/chromium/chrome/browser/tasks/tab_management/TabSelectionEditorLayoutBinder.java",
+    "java/src/org/chromium/chrome/browser/tasks/tab_management/TabSelectionEditorMediator.java",
+    "java/src/org/chromium/chrome/browser/tasks/tab_management/TabSelectionEditorMenu.java",
+    "java/src/org/chromium/chrome/browser/tasks/tab_management/TabSelectionEditorMenuAdapter.java",
+    "java/src/org/chromium/chrome/browser/tasks/tab_management/TabSelectionEditorMenuItem.java",
+    "java/src/org/chromium/chrome/browser/tasks/tab_management/TabSelectionEditorProperties.java",
+    "java/src/org/chromium/chrome/browser/tasks/tab_management/TabSelectionEditorSelectionAction.java",
+    "java/src/org/chromium/chrome/browser/tasks/tab_management/TabSelectionEditorShareAction.java",
+    "java/src/org/chromium/chrome/browser/tasks/tab_management/TabSelectionEditorToolbar.java",
+    "java/src/org/chromium/chrome/browser/tasks/tab_management/TabSelectionEditorUngroupAction.java",
+    "java/src/org/chromium/chrome/browser/tasks/tab_management/TabStripSnapshotter.java",
+    "java/src/org/chromium/chrome/browser/tasks/tab_management/TabStripViewBinder.java",
+    "java/src/org/chromium/chrome/browser/tasks/tab_management/TabSuggestionMessageCardViewModel.java",
+    "java/src/org/chromium/chrome/browser/tasks/tab_management/TabSuggestionMessageService.java",
+    "java/src/org/chromium/chrome/browser/tasks/tab_management/TabSwitcherCoordinator.java",
+    "java/src/org/chromium/chrome/browser/tasks/tab_management/TabSwitcherMediator.java",
+    "java/src/org/chromium/chrome/browser/tasks/tab_management/TabUiMetricsHelper.java",
+    "java/src/org/chromium/chrome/browser/tasks/tab_management/suggestions/BaselineTabSuggestionProvider.java",
+    "java/src/org/chromium/chrome/browser/tasks/tab_management/suggestions/StaleTabSuggestionProvider.java",
+    "java/src/org/chromium/chrome/browser/tasks/tab_management/suggestions/TabContextObserver.java",
+    "java/src/org/chromium/chrome/browser/tasks/tab_management/suggestions/TabSuggestionProvider.java",
+    "java/src/org/chromium/chrome/browser/tasks/tab_management/suggestions/TabSuggestionProviderConfiguration.java",
+    "java/src/org/chromium/chrome/browser/tasks/tab_management/suggestions/TabSuggestionsClientFetcher.java",
+    "java/src/org/chromium/chrome/browser/tasks/tab_management/suggestions/TabSuggestionsFetcher.java",
+    "java/src/org/chromium/chrome/browser/tasks/tab_management/suggestions/TabSuggestionsFetcherResults.java",
+    "java/src/org/chromium/chrome/browser/tasks/tab_management/suggestions/TabSuggestionsOrchestrator.java",
+    "java/src/org/chromium/chrome/browser/tasks/tab_management/suggestions/TabSuggestionsRanker.java",
+  ]
+
+  deps = [
+    ":java_resources",
+    ":tab_suggestions_java",
+    "//base:base_java",
+    "//chrome/android:chrome_java",
+    "//chrome/android:ui_locale_string_resources",
+    "//chrome/android/features/start_surface:public_java",
+    "//chrome/android/features/tab_ui/public:java",
+    "//chrome/app:java_strings_grd",
+    "//chrome/browser/android/lifecycle:java",
+    "//chrome/browser/back_press/android:java",
+    "//chrome/browser/browser_controls/android:java",
+    "//chrome/browser/commerce/price_tracking/android:java",
+    "//chrome/browser/endpoint_fetcher:java",
+    "//chrome/browser/feature_engagement:java",
+    "//chrome/browser/feed/android:java",
+    "//chrome/browser/flags:java",
+    "//chrome/browser/incognito:java",
+    "//chrome/browser/lens:java",
+    "//chrome/browser/preferences:java",
+    "//chrome/browser/profiles/android:java",
+    "//chrome/browser/search_engines/android:java",
+    "//chrome/browser/share:java",
+    "//chrome/browser/signin/services/android:java",
+    "//chrome/browser/tab:java",
+    "//chrome/browser/tab_group:java",
+    "//chrome/browser/tabmodel:java",
+    "//chrome/browser/ui/android/favicon:java",
+    "//chrome/browser/ui/android/layouts:java",
+    "//chrome/browser/ui/android/native_page:java",
+    "//chrome/browser/ui/android/night_mode:java",
+    "//chrome/browser/ui/android/omnibox:java",
+    "//chrome/browser/ui/android/strings:ui_strings_grd",
+    "//chrome/browser/ui/android/theme:java",
+    "//chrome/browser/ui/android/toolbar:java",
+    "//chrome/browser/ui/messages/android:java",
+    "//chrome/browser/util:java",
+    "//components/browser_ui/bottomsheet/android:java",
+    "//components/browser_ui/share/android:java",
+    "//components/browser_ui/styles/android:java",
+    "//components/browser_ui/util/android:java",
+    "//components/browser_ui/widget/android:java",
+    "//components/embedder_support/android:util_java",
+    "//components/embedder_support/android:web_contents_delegate_java",
+    "//components/favicon/android:java",
+    "//components/feature_engagement:feature_engagement_java",
+    "//components/policy/android:policy_java",
+    "//components/prefs/android:java",
+    "//components/search_engines/android:java",
+    "//components/signin/public/android:java",
+    "//components/site_engagement/content/android:java",
+    "//components/user_prefs/android:java",
+    "//content/public/android:content_java",
+    "//content/public/android:content_java_resources",
+    "//net/android:net_java",
+    "//third_party/android_deps:material_design_java",
+    "//third_party/androidx:androidx_annotation_annotation_java",
+    "//third_party/androidx:androidx_appcompat_appcompat_java",
+    "//third_party/androidx:androidx_appcompat_appcompat_resources_java",
+    "//third_party/androidx:androidx_collection_collection_java",
+    "//third_party/androidx:androidx_core_core_java",
+    "//third_party/androidx:androidx_lifecycle_lifecycle_runtime_java",
+    "//third_party/androidx:androidx_recyclerview_recyclerview_java",
+    "//third_party/androidx:androidx_vectordrawable_vectordrawable_animated_java",
+    "//ui/android:ui_java",
+    "//ui/base/mojom:mojom_java",
+    "//url:gurl_java",
+  ]
+  resources_package = "org.chromium.chrome.tab_ui"
+}
+
 android_library("unit_device_javatests") {
   testonly = true
   sources = [
@@ -103,14 +264,18 @@ android_library("unit_device_javatests") {
     "javatests/src/org/chromium/chrome/browser/tasks/tab_management/TabSelectionEditorLayoutBinderTest.java",
   ]
 
+  # NOTE: the chrome/android:chrome_java dep is necessary to include the
+  # public_tab_management_java_sources.
   deps = [
+    ":java",
     ":java_resources",
-    ":tab_suggestions_java",
     ":test_support_javalib",
     "//base:base_java",
     "//base:base_java_test_support",
     "//base/test:test_support_java",
     "//chrome/android:chrome_java",
+    "//chrome/android/features/tab_ui:java",
+    "//chrome/android/features/tab_ui:tab_suggestions_java",
     "//chrome/browser/commerce/price_tracking/android:java",
     "//chrome/browser/flags:java",
     "//chrome/browser/optimization_guide/android:java",
@@ -175,6 +340,7 @@ android_library("test_support_javalib") {
   sources = [ "javatests/src/org/chromium/chrome/browser/tasks/tab_management/TabUiTestHelper.java" ]
 
   deps = [
+    ":java",
     "//base:base_java",
     "//base:base_java_test_support",
     "//chrome/android:chrome_java",
@@ -198,4 +364,8 @@ android_library("test_support_javalib") {
     "//third_party/junit:junit",
     "//ui/android:ui_no_recycler_view_java",
   ]
+}
+
+module_desc_java("module_desc_java") {
+  module_name = "tab_management"
 }
