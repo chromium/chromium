@@ -2115,7 +2115,7 @@ bool AttributionStorageSql::InitializeSchema(bool db_empty) {
 
   // Create the meta table if it doesn't already exist. The only version for
   // which this is the case is version 1.
-  if (!meta_table.Init(db_.get(), /*version=*/1, kCompatibleVersionNumber)) {
+  if (!meta_table.Init(db_.get(), /*version=*/1, /*compatible_version=*/1)) {
     return false;
   }
 
