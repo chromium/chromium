@@ -6,7 +6,6 @@
 
 #include "base/containers/stack_container.h"
 #include "base/debug/alias.h"
-#include "base/metrics/field_trial_params.h"
 #include "base/task/sequence_manager/fence.h"
 #include "base/task/sequence_manager/sequence_manager_impl.h"
 #include "base/task/sequence_manager/task_order.h"

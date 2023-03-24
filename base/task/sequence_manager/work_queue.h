@@ -163,8 +163,6 @@ class BASE_EXPORT WorkQueue {
   void CollectTasksOlderThan(TaskOrder reference,
                              std::vector<const Task*>* result) const;
 
-  bool RemoveAllCancelledTasksFromFrontImpl();
-
   bool InsertFenceImpl(Fence fence);
 
   TaskQueueImpl::TaskDeque tasks_;
