@@ -209,7 +209,12 @@ def compare_files(first_filepath, second_filepath):
 
   if ret and zipfile.is_zipfile(first_filepath) and zipfile.is_zipfile(
       second_filepath):
-    ret += '\n' + diff_zips(first_filepath, second_filepath)
+    try:
+      ret += '\n' + diff_zips(first_filepath, second_filepath)
+    except OSError:
+      print("https://crbug.com/1427203: error from diff_zips(%s, %s)?" %
+            (first_filepath, second_filepath))
+      raise
   return ret
 
 
