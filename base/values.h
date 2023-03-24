@@ -911,9 +911,6 @@ class BASE_EXPORT GSL_OWNER Value {
   // DEPRECATED: prefer `Value::Dict::size()`.
   size_t DictSize() const;
 
-  // DEPRECATED: prefer `Value::Dict::empty()`.
-  bool DictEmpty() const;
-
   // Note: Do not add more types. See the file-level comment above for why.
 
   // Comparison operators so that Values can easily be used with standard

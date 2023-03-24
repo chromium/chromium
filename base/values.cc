@@ -1355,10 +1355,6 @@ size_t Value::DictSize() const {
   return GetDict().size();
 }
 
-bool Value::DictEmpty() const {
-  return GetDict().empty();
-}
-
 bool operator==(const Value& lhs, const Value& rhs) {
   return lhs.data_ == rhs.data_;
 }
