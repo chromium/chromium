@@ -17,6 +17,12 @@
       <li><a href="#preferred-app-[[item.id]]">[[item.name]]</a></li>
     </template>
   </ul>
+  <li><a href="#promise-apps">Promise Apps</a></li>
+  <ul>
+    <template is="dom-repeat" items="[[promiseAppList_]]">
+      <li><a href="#promise-app-[[item.id]]">[[item.name]]</a></li>
+    </template>
+  </ul>
 </ul>
 
 <section>
@@ -36,6 +42,15 @@
     <div id="preferred-app-[[item.id]]">
       <h3>[[item.name]]</h3>
       <pre>[[item.preferredFilters]]</pre>
+    </div>
+  </template>
+
+  <h2 id="promise-apps">Promise Apps</h2>
+
+  <template is="dom-repeat" items="[[promiseAppList_]]">
+    <div id="promise-app-[[item.id]]">
+      <h3>[[item.name]]</h3>
+      <pre>[[item.debugInfo]]</pre>
     </div>
   </template>
 </section>

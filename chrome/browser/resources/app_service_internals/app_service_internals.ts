@@ -5,7 +5,7 @@
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {getTemplate} from './app_service_internals.html.js';
-import {AppInfo, AppServiceInternalsPageHandler, PreferredAppInfo} from './app_service_internals.mojom-webui.js';
+import {AppInfo, AppServiceInternalsPageHandler, PreferredAppInfo, PromiseAppInfo} from './app_service_internals.mojom-webui.js';
 
 export class AppServiceInternalsElement extends PolymerElement {
   static get is() {
@@ -20,6 +20,7 @@ export class AppServiceInternalsElement extends PolymerElement {
     return {
       appList_: Array,
       preferredAppList_: Array,
+      promiseAppList_: Array,
     };
   }
 
@@ -28,6 +29,8 @@ export class AppServiceInternalsElement extends PolymerElement {
   private hashChangeListener_ = () => this.onHashChanged_();
   /** List containing preferred app debug information for installed apps. */
   private preferredAppList_: PreferredAppInfo[] = [];
+  /** List containing debug information for all promise apps. */
+  private promiseAppList_: PromiseAppInfo[] = [];
 
   override ready() {
     super.ready();
@@ -37,7 +40,7 @@ export class AppServiceInternalsElement extends PolymerElement {
       this.appList_ = (await remote.getApps()).appList;
       this.preferredAppList_ =
           (await remote.getPreferredApps()).preferredAppList;
-
+      this.promiseAppList_ = (await remote.getPromiseApps()).promiseAppList;
       this.onHashChanged_();
       window.addEventListener('hashchange', this.hashChangeListener_);
     })();

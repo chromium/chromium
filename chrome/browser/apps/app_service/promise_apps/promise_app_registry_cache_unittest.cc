@@ -3,8 +3,13 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/apps/app_service/promise_apps/promise_app_registry_cache.h"
+
+#include <sstream>
+
 #include "chrome/browser/apps/app_service/package_id.h"
 #include "chrome/browser/apps/app_service/promise_apps/promise_apps.h"
+#include "components/services/app_service/public/cpp/app_types.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace apps {
@@ -61,6 +66,26 @@ TEST_F(PromiseAppRegistryCacheTest, UpdatePromiseAppProgress) {
   // All these changes should have applied to the same promise app instead
   // of creating new ones.
   EXPECT_EQ(CountPromiseAppsRegistered(), 1);
+}
+
+TEST_F(PromiseAppRegistryCacheTest, GetAllPromiseApps) {
+  // There should be no promise apps registered yet.
+  EXPECT_EQ(cache().GetAllPromiseApps().size(), 0u);
+
+  // Register some promise apps.
+  auto package_id_1 = PackageId(AppType::kArc, "test1");
+  auto promise_app_1 = std::make_unique<PromiseApp>(package_id_1);
+  cache().OnPromiseApp(std::move(promise_app_1));
+
+  auto package_id_2 = PackageId(AppType::kArc, "test2");
+  auto promise_app_2 = std::make_unique<PromiseApp>(package_id_2);
+  cache().OnPromiseApp(std::move(promise_app_2));
+
+  // Check that all the promise apps are being retrieved.
+  auto promise_app_list = cache().GetAllPromiseApps();
+  EXPECT_EQ(promise_app_list.size(), 2u);
+  EXPECT_EQ(promise_app_list[0]->package_id, package_id_1);
+  EXPECT_EQ(promise_app_list[1]->package_id, package_id_2);
 }
 
 }  // namespace apps

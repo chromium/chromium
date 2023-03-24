@@ -42,6 +42,15 @@ const PromiseApp* PromiseAppRegistryCache::GetPromiseApp(
   return FindPromiseApp(package_id);
 }
 
+// Retrieve a copy of all the registered promise apps.
+std::vector<PromiseAppPtr> PromiseAppRegistryCache::GetAllPromiseApps() const {
+  std::vector<PromiseAppPtr> promise_apps;
+  for (const auto& promise_pair : promise_app_map_) {
+    promise_apps.push_back(promise_pair.second.get()->Clone());
+  }
+  return promise_apps;
+}
+
 PromiseApp* PromiseAppRegistryCache::FindPromiseApp(
     const PackageId& package_id) const {
   auto promise_iter = promise_app_map_.find(package_id);

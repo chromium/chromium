@@ -30,6 +30,16 @@ struct PreferredAppInfo {
   string preferred_filters;
 };
 
+// Contains debugging information for a single promise app.
+struct PromiseAppInfo {
+  // The package ID for the promise app.
+  string package_id;
+
+  // Preformatted plain-text containing information about the internal state of
+  // the promise app.
+  string debug_info;
+};
+
 // Handler providing access to App Service information from the
 // chrome://app-service-internals WebUI.
 interface AppServiceInternalsPageHandler {
@@ -38,5 +48,8 @@ interface AppServiceInternalsPageHandler {
   GetApps() => (array<AppInfo> app_list);
 
   // Returns an array of debug information about preferred apps.
-  GetPreferredApps() => (array<PreferredAppInfo> preferred_app_list_);
+  GetPreferredApps() => (array<PreferredAppInfo> preferred_app_list);
+
+  // Returns an array of debug information about every promise app.
+  GetPromiseApps() => (array<PromiseAppInfo> promise_app_list);
 };

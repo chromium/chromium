@@ -32,10 +32,13 @@ class PromiseAppRegistryCache {
   // promise app with a matching package_id, then create a new promise app.
   void OnPromiseApp(PromiseAppPtr delta);
 
-  // Retrieve the registered promise app with the specified package_id. Returns
-  // nullptr if the promise app does not exist. This is the public read-only
-  // version of FindPromiseApp.
+  // For testing only. Retrieve a read-only pointer to the promise app with the
+  // specified package_id. Returns nullptr if the promise app does not exist. Do
+  // not store the pointer as the promise app may be destroyed at any time.
   const PromiseApp* GetPromiseApp(const PackageId& package_id) const;
+
+  // Retrieve a copy of all the registered promise apps.
+  std::vector<PromiseAppPtr> GetAllPromiseApps() const;
 
  private:
   friend class PromiseAppRegistryCacheTest;

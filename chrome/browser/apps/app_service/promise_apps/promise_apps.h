@@ -5,6 +5,8 @@
 #ifndef CHROME_BROWSER_APPS_APP_SERVICE_PROMISE_APPS_PROMISE_APPS_H_
 #define CHROME_BROWSER_APPS_APP_SERVICE_PROMISE_APPS_PROMISE_APPS_H_
 
+#include <ostream>
+
 #include "chrome/browser/apps/app_service/package_id.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
@@ -34,6 +36,8 @@ struct PromiseApp {
 
   std::unique_ptr<PromiseApp> Clone() const;
 };
+
+std::ostream& operator<<(std::ostream& out, const PromiseApp& promise_app);
 
 using PromiseAppPtr = std::unique_ptr<PromiseApp>;
 
