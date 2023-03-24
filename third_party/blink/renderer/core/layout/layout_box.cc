@@ -69,7 +69,6 @@
 #include "third_party/blink/renderer/core/layout/layout_fieldset.h"
 #include "third_party/blink/renderer/core/layout/layout_file_upload_control.h"
 #include "third_party/blink/renderer/core/layout/layout_flexible_box.h"
-#include "third_party/blink/renderer/core/layout/layout_grid.h"
 #include "third_party/blink/renderer/core/layout/layout_inline.h"
 #include "third_party/blink/renderer/core/layout/layout_list_marker.h"
 #include "third_party/blink/renderer/core/layout/layout_multi_column_flow_thread.h"
@@ -916,19 +915,6 @@ void LayoutBox::UpdateGridPositionAfterStyleChange(
   LayoutObject* parent = Parent();
   const bool was_out_of_flow = old_style->HasOutOfFlowPosition();
   const bool is_out_of_flow = StyleRef().HasOutOfFlowPosition();
-  if (parent && parent->IsLayoutGrid() &&
-      GridStyleChanged(old_style, StyleRef())) {
-    // Positioned items don't participate on the layout of the grid,
-    // so we don't need to mark the grid as dirty if they change positions.
-    if (was_out_of_flow && is_out_of_flow)
-      return;
-
-    // It should be possible to not dirty the grid in some cases (like moving an
-    // explicitly placed grid item).
-    // For now, it's more simple to just always recompute the grid.
-    To<LayoutGrid>(Parent())->DirtyGrid();
-    return;
-  }
 
   LayoutBlock* containing_block = ContainingBlock();
   if ((containing_block && containing_block->IsLayoutNGGrid()) &&
@@ -4064,9 +4050,6 @@ bool LayoutBox::ShouldComputeLogicalWidthFromAspectRatio(
   if (StyleRef().AspectRatio().IsAuto())
     return false;
 
-  if (IsGridItem() && HasStretchedLogicalWidth(StretchingMode::kExplicit))
-    return false;
-
   if (!HasOverrideLogicalHeight() &&
       !ShouldComputeLogicalWidthFromAspectRatioAndInsets() &&
       !StyleRef().LogicalHeight().IsFixed() &&
@@ -4141,7 +4124,7 @@ void LayoutBox::ComputeLogicalWidth(
   // to any block.
   bool treat_as_replaced = ShouldComputeSizeAsReplaced() &&
                            (!in_vertical_box || !stretching) &&
-                           (!IsGridItem() || !HasStretchedLogicalWidth());
+                           !HasStretchedLogicalWidth();
   const ComputedStyle& style_to_use = StyleRef();
   LayoutUnit container_logical_width =
       std::max(LayoutUnit(), ContainingBlockLogicalWidthForContent());
@@ -4168,8 +4151,8 @@ void LayoutBox::ComputeLogicalWidth(
     computed_values.extent_ =
         ComputeReplacedLogicalWidth() + BorderAndPaddingLogicalWidth();
   } else if (StyleRef().LogicalWidth().IsAuto() &&
-             (!IsGridItem() || !ShouldComputeSizeAsReplaced() ||
-              !HasStretchedLogicalWidth() || !HasStretchedLogicalHeight()) &&
+             (!ShouldComputeSizeAsReplaced() || !HasStretchedLogicalWidth() ||
+              !HasStretchedLogicalHeight()) &&
              ComputeLogicalWidthFromAspectRatio(&computed_values.extent_)) {
     /* we're good */
   } else {
@@ -4193,8 +4176,7 @@ void LayoutBox::ComputeLogicalWidth(
           (computed_values.extent_ + computed_values.margins_.start_ +
            computed_values.margins_.end_) &&
       !IsFloating() && !IsInline() &&
-      !cb->IsFlexibleBoxIncludingDeprecatedAndNG() &&
-      !cb->IsLayoutGridIncludingNG()) {
+      !cb->IsFlexibleBoxIncludingDeprecatedAndNG() && !cb->IsLayoutNGGrid()) {
     LayoutUnit new_margin_total =
         container_logical_width - computed_values.extent_;
     bool has_inverted_direction = cb->StyleRef().IsLeftToRightDirection() !=
@@ -4442,9 +4424,6 @@ bool LayoutBox::SizesLogicalWidthToFitContent(
       StyleRef().HasOutOfFlowPosition())
     return true;
 
-  if (IsGridItem())
-    return !HasStretchedLogicalWidth();
-
   // Flexible box items should shrink wrap, so we lay them out at their
   // intrinsic widths. In the case of columns that have a stretch alignment, we
   // go ahead and layout at the stretched size to avoid an extra layout when
@@ -4658,7 +4637,7 @@ void LayoutBox::ComputeLogicalHeight(
       // added before calling ComputeLogicalHeight to avoid this hack.
       if (IsTextControlIncludingNG())
         SetIntrinsicContentLogicalHeight(default_height);
-    } else if (ShouldApplySizeContainment() && !IsLayoutGrid()) {
+    } else if (ShouldApplySizeContainment()) {
       height = BorderAndPaddingLogicalHeight() +
                ComputeLogicalScrollbars().BlockSum();
     } else {
@@ -4858,8 +4837,9 @@ LayoutUnit LayoutBox::ComputeIntrinsicLogicalContentHeightUsing(
       logical_height_length.IsMinIntrinsic() ||
       logical_height_length.IsFitContent()) {
     if (IsAtomicInlineLevel() && !IsFlexibleBoxIncludingNG() &&
-        !IsLayoutGridIncludingNG())
+        !IsLayoutNGGrid()) {
       return IntrinsicSize().Height();
+    }
     return intrinsic_content_height;
   }
   if (logical_height_length.IsFillAvailable()) {
@@ -4958,7 +4938,7 @@ bool LayoutBox::SkipContainingBlockForPercentHeightCalculation(
   return !containing_block->IsTableCell() &&
          !containing_block->IsOutOfFlowPositioned() &&
          !containing_block->HasOverridePercentageResolutionBlockSize() &&
-         !containing_block->IsLayoutGridIncludingNG() &&
+         !containing_block->IsLayoutNGGrid() &&
          !containing_block->IsFlexibleBoxIncludingDeprecatedAndNG() &&
          !containing_block->IsLayoutNGCustom();
 }
@@ -5284,9 +5264,6 @@ LayoutUnit LayoutBox::ComputeReplacedLogicalHeightUsing(
           const auto* flex_box = To<LayoutFlexibleBox>(block->Parent());
           if (flex_box->UseOverrideLogicalHeightForPerentageResolution(*block))
             stretched_height = block->OverrideContentLogicalHeight();
-        } else if (block->IsGridItem() && block->HasOverrideLogicalHeight() &&
-                   !has_perpendicular_containing_block) {
-          stretched_height = block->OverrideContentLogicalHeight();
         }
       }
 
@@ -5613,18 +5590,6 @@ void LayoutBox::ComputeInlineStaticDistance(
 
   LayoutObject* parent = child->Parent();
   TextDirection parent_direction = parent->StyleRef().Direction();
-
-  // This method is using EnclosingBox() which is wrong for absolutely
-  // positioned grid items, as they rely on the grid area. So for grid items if
-  // both "left" and "right" properties are "auto", we can consider that one of
-  // them (depending on the direction) is simply "0".
-  if (parent->IsLayoutGrid() && parent == child->ContainingBlock()) {
-    if (parent_direction == TextDirection::kLtr)
-      logical_left = Length::Fixed(0);
-    else
-      logical_right = Length::Fixed(0);
-    return;
-  }
 
   // For multicol we also need to keep track of the block position, since that
   // determines which column we're in and thus affects the inline position.

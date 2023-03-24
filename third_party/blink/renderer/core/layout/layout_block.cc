@@ -51,7 +51,6 @@
 #include "third_party/blink/renderer/core/layout/hit_test_result.h"
 #include "third_party/blink/renderer/core/layout/layout_flexible_box.h"
 #include "third_party/blink/renderer/core/layout/layout_flow_thread.h"
-#include "third_party/blink/renderer/core/layout/layout_grid.h"
 #include "third_party/blink/renderer/core/layout/layout_inline.h"
 #include "third_party/blink/renderer/core/layout/layout_multi_column_flow_thread.h"
 #include "third_party/blink/renderer/core/layout/layout_multi_column_spanner_placeholder.h"
@@ -330,7 +329,7 @@ void LayoutBlock::AddChildBeforeDescendant(LayoutObject* new_child,
     if (new_child->IsInline() ||
         (new_child->IsFloatingOrOutOfFlowPositioned() &&
          (StyleRef().IsDeprecatedFlexboxUsingFlexLayout() ||
-          (!IsFlexibleBoxIncludingNG() && !IsLayoutGridIncludingNG()))) ||
+          (!IsFlexibleBoxIncludingNG() && !IsLayoutNGGrid()))) ||
         before_descendant->Parent()->SlowFirstChild() != before_descendant) {
       before_descendant_container->AddChild(new_child, before_descendant);
     } else {
@@ -374,7 +373,7 @@ void LayoutBlock::AddChild(LayoutObject* new_child,
   if (new_child->IsInline() ||
       (new_child->IsFloatingOrOutOfFlowPositioned() &&
        (StyleRef().IsDeprecatedFlexboxUsingFlexLayout() ||
-        (!IsFlexibleBoxIncludingNG() && !IsLayoutGridIncludingNG())))) {
+        (!IsFlexibleBoxIncludingNG() && !IsLayoutNGGrid())))) {
     // If we're inserting an inline child but all of our children are blocks,
     // then we have to make sure it is put into an anomyous block box. We try to
     // use an existing anonymous box if possible, otherwise a new one is created
@@ -417,11 +416,6 @@ void LayoutBlock::RemoveLeftoverAnonymousBlock(LayoutBlock* child) {
   // Remove all the information in the flow thread associated with the leftover
   // anonymous block.
   child->RemoveFromLayoutFlowThread();
-
-  // LayoutGrid keeps track of its children, we must notify it about changes in
-  // the tree.
-  if (child->Parent()->IsLayoutGrid())
-    To<LayoutGrid>(child->Parent())->DirtyGrid();
 
   // Now remove the leftover anonymous block from the tree, and destroy it.
   // We'll rip it out manually from the tree before destroying it, because we
@@ -1961,8 +1955,9 @@ absl::optional<LayoutUnit> LayoutBlock::FirstLineBoxBaselineOverride() const {
 
   // Orthogonal grid items can participate in baseline alignment along column
   // axis.
-  if (IsWritingModeRoot() && !IsRubyRun() && !IsGridItem())
+  if (IsWritingModeRoot() && !IsRubyRun()) {
     return LayoutUnit(-1);
+  }
 
   return absl::nullopt;
 }
@@ -2292,8 +2287,7 @@ LayoutBlock* LayoutBlock::CreateAnonymousWithParentAndDisplay(
     layout_block = LayoutObjectFactory::CreateFlexibleBox(parent->GetDocument(),
                                                           *new_style, legacy);
   } else if (new_display == EDisplay::kGrid) {
-    layout_block = LayoutObjectFactory::CreateGrid(parent->GetDocument(),
-                                                   *new_style, legacy);
+    layout_block = MakeGarbageCollected<LayoutNGGrid>(/* element */ nullptr);
   } else if (new_display == EDisplay::kBlockMath) {
     layout_block = LayoutObjectFactory::CreateMath(parent->GetDocument(),
                                                    *new_style, legacy);
@@ -2506,8 +2500,6 @@ LayoutUnit LayoutBlock::AvailableLogicalHeightForPercentageComputation() const {
   }
   if (stretched_flex_height != LayoutUnit(-1)) {
     available_height = stretched_flex_height;
-  } else if (IsGridItem() && HasOverrideLogicalHeight()) {
-    available_height = OverrideContentLogicalHeight();
   } else if (style.LogicalHeight().IsFixed()) {
     LayoutUnit content_box_height = AdjustContentBoxLogicalHeightForBoxSizing(
         style.LogicalHeight().Value());

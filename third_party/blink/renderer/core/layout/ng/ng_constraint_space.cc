@@ -96,7 +96,7 @@ NGConstraintSpace NGConstraintSpace::CreateFromLayoutObject(
   NGConstraintSpaceBuilder builder(writing_mode, style.GetWritingDirection(),
                                    is_new_fc, adjust_inline_size_if_needed);
 
-  if (!block.IsWritingModeRoot() || block.IsGridItem()) {
+  if (!block.IsWritingModeRoot()) {
     // We don't know if the parent layout will require our baseline, so always
     // request it.
     builder.SetBaselineAlgorithmType(block.IsInline() &&
@@ -105,9 +105,9 @@ NGConstraintSpace NGConstraintSpace::CreateFromLayoutObject(
                                          : NGBaselineAlgorithmType::kDefault);
   }
 
-  if (block.IsAtomicInlineLevel() || block.IsFlexItem() || block.IsGridItem() ||
-      block.IsFloating())
+  if (block.IsAtomicInlineLevel() || block.IsFlexItem() || block.IsFloating()) {
     builder.SetIsPaintedAtomically(true);
+  }
 
   builder.SetAvailableSize(available_size);
   builder.SetPercentageResolutionSize(percentage_size);

@@ -52,7 +52,6 @@ class LayoutObjectFactory {
   static LayoutBlock* CreateFlexibleBox(Node&,
                                         const ComputedStyle&,
                                         LegacyLayout);
-  static LayoutBlock* CreateGrid(Node&, const ComputedStyle&, LegacyLayout);
   static LayoutBlock* CreateMath(Node&, const ComputedStyle&, LegacyLayout);
   static LayoutBlock* CreateCustom(Node&, const ComputedStyle&, LegacyLayout);
   static LayoutObject* CreateListMarker(Node&,

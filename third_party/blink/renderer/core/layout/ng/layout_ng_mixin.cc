@@ -267,7 +267,7 @@ void LayoutNGMixin<Base>::UpdateOutOfFlowBlockLayout() {
   // should get laid out by the actual containing block.
   NGOutOfFlowLayoutPart(css_container->CanContainAbsolutePositionObjects(),
                         css_container->CanContainFixedPositionObjects(),
-                        css_container->IsLayoutGrid(), constraint_space,
+                        /* is_grid_container */ false, constraint_space,
                         &container_builder, initial_containing_block_fixed_size)
       .Run(/* only_layout */ this);
   const NGLayoutResult* result = container_builder.ToBoxFragment();

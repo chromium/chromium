@@ -1456,9 +1456,9 @@ static bool PrepareOrthogonalWritingModeRootForLayout(LayoutObject& root) {
   DCHECK(To<LayoutBox>(root).IsOrthogonalWritingModeRoot());
   if (!root.NeedsLayout() || root.IsOutOfFlowPositioned() ||
       root.IsColumnSpanAll() || root.StyleRef().LogicalHeight().IsSpecified() ||
-      To<LayoutBox>(root).IsGridItem() || root.IsTablePart() ||
-      root.IsLayoutFlowThread())
+      root.IsTablePart() || root.IsLayoutFlowThread()) {
     return false;
+  }
 
   // Do not pre-layout objects that are fully managed by LayoutNG; it is not
   // necessary and may lead to double layouts. We do need to pre-layout objects

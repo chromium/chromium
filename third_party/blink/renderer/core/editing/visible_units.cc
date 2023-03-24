@@ -1075,7 +1075,7 @@ static bool IsVisuallyEquivalentCandidateAlgorithm(
 
   if (layout_object->IsLayoutBlockFlow() ||
       layout_object->IsFlexibleBoxIncludingNG() ||
-      layout_object->IsLayoutGridIncludingNG()) {
+      layout_object->IsLayoutNGGrid()) {
     if (To<LayoutBlock>(layout_object)->LogicalHeight() ||
         anchor_node->GetDocument().body() == anchor_node) {
       if (!HasRenderedNonAnonymousDescendantsWithHeight(layout_object))

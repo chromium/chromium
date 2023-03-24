@@ -36,7 +36,7 @@ class LayoutNGGridInterface {
 template <>
 struct InterfaceDowncastTraits<LayoutNGGridInterface> {
   static bool AllowFrom(const LayoutObject& object) {
-    return object.IsLayoutGridIncludingNG();
+    return object.IsLayoutNGGrid();
   }
   static const LayoutNGGridInterface& ConvertFrom(const LayoutObject& object) {
     return *object.ToLayoutNGGridInterface();

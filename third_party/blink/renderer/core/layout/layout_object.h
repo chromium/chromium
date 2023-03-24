@@ -924,10 +924,6 @@ class CORE_EXPORT LayoutObject : public GarbageCollected<LayoutObject>,
     NOT_DESTROYED();
     return IsOfType(kLayoutObjectNGFlexibleBox);
   }
-  bool IsLayoutNGGrid() const {
-    NOT_DESTROYED();
-    return IsOfType(kLayoutObjectNGGrid);
-  }
   bool IsLayoutNGListItem() const {
     NOT_DESTROYED();
     return IsOfType(kLayoutObjectNGListItem);
@@ -1008,13 +1004,9 @@ class CORE_EXPORT LayoutObject : public GarbageCollected<LayoutObject>,
     NOT_DESTROYED();
     return IsOfType(kLayoutObjectNGCustom);
   }
-  bool IsLayoutGrid() const {
+  bool IsLayoutNGGrid() const {
     NOT_DESTROYED();
-    return IsOfType(kLayoutObjectGrid);
-  }
-  bool IsLayoutGridIncludingNG() const {
-    NOT_DESTROYED();
-    return IsOfType(kLayoutObjectGrid) || IsOfType(kLayoutObjectNGGrid);
+    return IsOfType(kLayoutObjectNGGrid);
   }
   bool IsLayoutIFrame() const {
     NOT_DESTROYED();
@@ -3766,7 +3758,6 @@ class CORE_EXPORT LayoutObject : public GarbageCollected<LayoutObject>,
     kLayoutObjectFileUploadControl,
     kLayoutObjectFrame,
     kLayoutObjectFrameSet,
-    kLayoutObjectGrid,
     kLayoutObjectIFrame,
     kLayoutObjectImage,
     kLayoutObjectInsideListMarker,

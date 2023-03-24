@@ -194,7 +194,7 @@ LayoutText* FirstLetterPseudoElement::FirstLetterTextLayoutObject(
       return nullptr;
     } else if (first_letter_text_layout_object
                    ->IsFlexibleBoxIncludingDeprecatedAndNG() ||
-               first_letter_text_layout_object->IsLayoutGridIncludingNG()) {
+               first_letter_text_layout_object->IsLayoutNGGrid()) {
       first_letter_text_layout_object =
           first_letter_text_layout_object->NextSibling();
     } else if (!first_letter_text_layout_object->IsInline() &&

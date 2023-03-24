@@ -74,8 +74,9 @@ bool NGTableNode::AllowColumnPercentages(bool is_layout_pass) const {
   const LayoutBlock* block = box_->ContainingBlock();
   while (!block->IsLayoutView()) {
     if (block->IsTableCell() || block->IsFlexibleBoxIncludingNG() ||
-        block->IsLayoutGridIncludingNG())
+        block->IsLayoutNGGrid()) {
       return false;
+    }
 
     block = block->ContainingBlock();
   }

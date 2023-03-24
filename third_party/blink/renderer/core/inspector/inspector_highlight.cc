@@ -29,7 +29,6 @@
 #include "third_party/blink/renderer/core/layout/geometry/physical_offset.h"
 #include "third_party/blink/renderer/core/layout/layout_box.h"
 #include "third_party/blink/renderer/core/layout/layout_flexible_box.h"
-#include "third_party/blink/renderer/core/layout/layout_grid.h"
 #include "third_party/blink/renderer/core/layout/layout_inline.h"
 #include "third_party/blink/renderer/core/layout/layout_object.h"
 #include "third_party/blink/renderer/core/layout/layout_view.h"
@@ -585,19 +584,10 @@ PhysicalOffset Transpose(PhysicalOffset& offset) {
 LayoutUnit TranslateRTLCoordinate(const LayoutObject* layout_object,
                                   LayoutUnit position,
                                   const Vector<LayoutUnit>& column_positions) {
-  // TranslateRTLCoordinate exists in legacy grid, but is not implemented in
-  // GridNG, duplicating implementation from legacy here. Once legacy grid is
-  // removed, the implementation for TranslateRTLCoordinate will only exist
-  // here.
-  // If this is a legacy grid, use the legacy grid method.
-  if (layout_object->IsLayoutGrid()) {
-    return To<LayoutGrid>(layout_object)->TranslateRTLCoordinate(position);
-  }
-  // This should only be called on grid layout objects. If the object is not
-  // legacy grid, it must be GridNG.
+  // This should only be called on grid layout objects.
   DCHECK(layout_object->IsLayoutNGGrid());
-
   DCHECK(!layout_object->StyleRef().IsLeftToRightDirection());
+
   LayoutUnit alignment_offset = column_positions.front();
   LayoutUnit right_grid_edge_position = column_positions.back();
   return right_grid_edge_position + alignment_offset - position;
@@ -1945,7 +1935,7 @@ void InspectorHighlight::AppendNodeHighlight(
   if (highlight_config.css_grid != Color::kTransparent ||
       highlight_config.grid_highlight_config) {
     grid_info_ = protocol::ListValue::create();
-    if (layout_object->IsLayoutGridIncludingNG()) {
+    if (layout_object->IsLayoutNGGrid()) {
       grid_info_->pushValue(
           BuildGridInfo(node, highlight_config, scale_, true));
     }
@@ -2163,8 +2153,9 @@ std::unique_ptr<protocol::DictionaryValue> InspectorGridHighlight(
 
   float scale = DeviceScaleFromFrameView(frame_view);
   LayoutObject* layout_object = node->GetLayoutObject();
-  if (!layout_object || !layout_object->IsLayoutGridIncludingNG())
+  if (!layout_object || !layout_object->IsLayoutNGGrid()) {
     return nullptr;
+  }
 
   std::unique_ptr<protocol::DictionaryValue> grid_info =
       BuildGridInfo(node, config, scale, true);

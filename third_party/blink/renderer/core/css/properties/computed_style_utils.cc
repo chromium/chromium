@@ -51,7 +51,6 @@
 #include "third_party/blink/renderer/core/css/style_color.h"
 #include "third_party/blink/renderer/core/layout/layout_block.h"
 #include "third_party/blink/renderer/core/layout/layout_box.h"
-#include "third_party/blink/renderer/core/layout/layout_grid.h"
 #include "third_party/blink/renderer/core/layout/ng/grid/layout_ng_grid_interface.h"
 #include "third_party/blink/renderer/core/layout/svg/transform_helper.h"
 #include "third_party/blink/renderer/core/style/computed_style_constants.h"
@@ -1712,8 +1711,7 @@ CSSValue* ComputedStyleUtils::ValueForGridTrackList(
   const Vector<GridTrackSize, 1>& auto_repeat_track_sizes =
       computed_grid_track_list.auto_repeat_track_sizes;
 
-  const bool is_layout_grid =
-      layout_object && layout_object->IsLayoutGridIncludingNG();
+  const bool is_layout_grid = layout_object && layout_object->IsLayoutNGGrid();
 
   // Handle the 'none' case.
   bool is_track_list_empty =

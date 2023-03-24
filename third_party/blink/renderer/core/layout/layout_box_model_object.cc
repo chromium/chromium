@@ -643,11 +643,6 @@ bool LayoutBoxModelObject::HasAutoHeightOrContainingBlockWithAutoHeight(
         return false;
     }
   }
-  if (this_box && this_box->IsGridItem() &&
-      this_box->HasOverrideContainingBlockContentLogicalHeight()) {
-    return this_box->OverrideContainingBlockContentLogicalHeight() ==
-           kIndefiniteSize;
-  }
   if (this_box && this_box->IsCustomItem() &&
       (this_box->HasOverrideContainingBlockContentLogicalHeight() ||
        this_box->HasOverridePercentageResolutionBlockSize()))

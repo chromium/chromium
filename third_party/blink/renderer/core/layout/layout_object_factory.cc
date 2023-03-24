@@ -17,7 +17,6 @@
 #include "third_party/blink/renderer/core/layout/layout_file_upload_control.h"
 #include "third_party/blink/renderer/core/layout/layout_flexible_box.h"
 #include "third_party/blink/renderer/core/layout/layout_frame_set.h"
-#include "third_party/blink/renderer/core/layout/layout_grid.h"
 #include "third_party/blink/renderer/core/layout/layout_inside_list_marker.h"
 #include "third_party/blink/renderer/core/layout/layout_list_item.h"
 #include "third_party/blink/renderer/core/layout/layout_list_marker.h"
@@ -151,12 +150,6 @@ LayoutBlock* LayoutObjectFactory::CreateFlexibleBox(Node& node,
                                                     LegacyLayout legacy) {
   return CreateObject<LayoutBlock, LayoutNGFlexibleBox, LayoutFlexibleBox>(
       node, legacy);
-}
-
-LayoutBlock* LayoutObjectFactory::CreateGrid(Node& node,
-                                             const ComputedStyle& style,
-                                             LegacyLayout legacy) {
-  return CreateObject<LayoutBlock, LayoutNGGrid, LayoutGrid>(node, legacy);
 }
 
 LayoutBlock* LayoutObjectFactory::CreateMath(Node& node,

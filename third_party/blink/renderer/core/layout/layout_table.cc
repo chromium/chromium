@@ -375,14 +375,6 @@ void LayoutTable::UpdateLogicalWidth() {
   // might not even get there.
   UpdateCachedIntrinsicLogicalWidthsIfNeeded();
 
-  if (IsGridItem()) {
-    // TODO(jfernandez): Investigate whether the grid layout algorithm provides
-    // all the logic needed and that we're not skipping anything essential due
-    // to the early return here.
-    LayoutBlock::UpdateLogicalWidth();
-    return;
-  }
-
   if (IsOutOfFlowPositioned()) {
     LogicalExtentComputedValues computed_values;
     ComputePositionedLogicalWidth(computed_values);

@@ -79,7 +79,6 @@
 #include "third_party/blink/renderer/core/layout/layout_fieldset.h"
 #include "third_party/blink/renderer/core/layout/layout_flexible_box.h"
 #include "third_party/blink/renderer/core/layout/layout_flow_thread.h"
-#include "third_party/blink/renderer/core/layout/layout_grid.h"
 #include "third_party/blink/renderer/core/layout/layout_image.h"
 #include "third_party/blink/renderer/core/layout/layout_image_resource_style_image.h"
 #include "third_party/blink/renderer/core/layout/layout_inline.h"
@@ -404,7 +403,7 @@ LayoutObject* LayoutObject::CreateObject(Element* element,
     case EDisplay::kGrid:
     case EDisplay::kInlineGrid:
       UseCounter::Count(element->GetDocument(), WebFeature::kCSSGridLayout);
-      return LayoutObjectFactory::CreateGrid(*element, style, legacy);
+      return MakeGarbageCollected<LayoutNGGrid>(element);
     case EDisplay::kMath:
     case EDisplay::kBlockMath:
       return LayoutObjectFactory::CreateMath(*element, style, legacy);
@@ -1302,8 +1301,9 @@ static inline bool ObjectIsRelayoutBoundary(const LayoutObject* object) {
     // its container. This also applies to out of flow items of the grid, as we
     // need the cached information of the grid to recompute the out of flow
     // item's containing block rect.
-    if (layout_box->ContainingBlock()->IsLayoutGridIncludingNG())
+    if (layout_box->ContainingBlock()->IsLayoutNGGrid()) {
       return false;
+    }
 
     if (const NGLayoutResult* layout_result =
             layout_box->GetCachedLayoutResult(nullptr)) {
