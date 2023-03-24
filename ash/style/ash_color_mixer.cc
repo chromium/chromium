@@ -526,6 +526,9 @@ void AddAshColorMixer(ui::ColorProvider* provider,
   AddControlsColors(mixer, key);
   AddContentColors(mixer, key);
 
+  mixer[kColorAshAssistantBgPlate] = {use_dark_color
+                                          ? SkColorSetRGB(0x1c, 0x2b, 0x3b)
+                                          : SkColorSetRGB(0xec, 0xef, 0xee)};
   mixer[kColorAshAssistantGreetingEnabled] = {cros_tokens::kColorPrimary};
   mixer[kColorAshSuggestionChipViewTextView] = {cros_tokens::kColorSecondary};
   mixer[kColorAshAssistantQueryHighConfidenceLabel] = {

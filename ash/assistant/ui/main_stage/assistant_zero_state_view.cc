@@ -11,8 +11,6 @@
 #include "ash/assistant/ui/assistant_ui_constants.h"
 #include "ash/assistant/ui/assistant_view_delegate.h"
 #include "ash/assistant/ui/assistant_view_ids.h"
-#include "ash/assistant/ui/colors/assistant_colors.h"
-#include "ash/assistant/ui/colors/assistant_colors_util.h"
 #include "ash/assistant/ui/main_stage/assistant_onboarding_view.h"
 #include "ash/constants/ash_features.h"
 #include "ash/public/cpp/assistant/assistant_state.h"
@@ -95,16 +93,6 @@ void AssistantZeroStateView::ChildPreferredSizeChanged(views::View* child) {
   PreferredSizeChanged();
 }
 
-void AssistantZeroStateView::OnThemeChanged() {
-  views::View::OnThemeChanged();
-
-  greeting_label_->SetBackgroundColor(ash::assistant::ResolveAssistantColor(
-      assistant_colors::ColorName::kBgAssistantPlate));
-
-  greeting_label_->SetEnabledColor(
-      GetColorProvider()->GetColor(kColorAshAssistantTextColorPrimary));
-}
-
 void AssistantZeroStateView::OnAssistantControllerDestroying() {
   AssistantUiController::Get()->GetModel()->RemoveObserver(this);
   DCHECK(assistant_controller_observation_.IsObservingSource(
@@ -148,6 +136,8 @@ void AssistantZeroStateView::InitLayout() {
   greeting_label_->SetMultiLine(true);
   greeting_label_->SetText(
       l10n_util::GetStringUTF16(IDS_ASH_ASSISTANT_PROMPT_DEFAULT));
+  greeting_label_->SetBackgroundColorId(kColorAshAssistantBgPlate);
+  greeting_label_->SetEnabledColorId(kColorAshAssistantTextColorPrimary);
 
   // Spacer.
   spacer_ = AddChildView(std::make_unique<views::View>());

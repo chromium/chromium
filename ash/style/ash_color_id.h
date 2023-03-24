@@ -101,6 +101,7 @@ namespace ash {
   E_CPONLY(kColorAshInkDrop) \
   E_CPONLY(kColorAshInkDropOpaqueColor) \
   /* Colors for Google Assistant */ \
+  E_CPONLY(kColorAshAssistantBgPlate) \
   E_CPONLY(kColorAshAssistantGreetingEnabled) \
   E_CPONLY(kColorAshSuggestionChipViewTextView) \
   E_CPONLY(kColorAshAssistantQueryHighConfidenceLabel) \
