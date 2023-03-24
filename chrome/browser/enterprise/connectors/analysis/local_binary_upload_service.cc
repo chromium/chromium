@@ -240,14 +240,6 @@ void LocalBinaryUploadService::MaybeUploadForDeepScanning(
     std::unique_ptr<Request> request) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
-  // If there have been too may consecutive failures accessing the agent,
-  // just fail the request immediately.  Chrome will apply the default verdict.
-  if (retry_count_ >= kMaxRetryCount) {
-    DVLOG(1) << __func__ << ": aborting, too many errors";
-    request->FinishRequest(Result::UPLOAD_FAILURE, ContentAnalysisResponse());
-    return;
-  }
-
   // Builds a request context to keep track of this request.  This starts
   // a timer that will fire if no response is received from the agent within
   // the specified timeout.  This timer remains active as the request moves

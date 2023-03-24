@@ -380,10 +380,21 @@ TEST_F(LocalBinaryUploadServiceTest, FailureAfterTooManyRetries) {
   EXPECT_EQ(0u, lbus.GetActiveRequestCountForTesting());
   EXPECT_EQ(0u, lbus.GetPendingRequestCountForTesting());
 
-  // New requests should fail immediately.
+  // New requests should fail while agent is not running.
   result = BinaryUploadService::Result::UNKNOWN;
   lbus.MaybeUploadForDeepScanning(MakeRequest(config, &result, &response));
+
+  task_environment_.RunUntilIdle();
   EXPECT_EQ(BinaryUploadService::Result::UPLOAD_FAILURE, result);
+
+  // The next time the code tries to connect to a client it succeeds.
+  fake_sdk_manager_.SetClientSendStatus(0);
+
+  // New requests should succeed now that agent is running.
+  result = BinaryUploadService::Result::UNKNOWN;
+  lbus.MaybeUploadForDeepScanning(MakeRequest(config, &result, &response));
+  task_environment_.RunUntilIdle();
+  EXPECT_EQ(BinaryUploadService::Result::SUCCESS, result);
 }
 
 TEST_F(LocalBinaryUploadServiceTest, CancelRequests) {
