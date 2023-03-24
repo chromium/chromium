@@ -10,10 +10,11 @@
 
 #import "ios/chrome/browser/ui/price_notifications/price_notifications_mutator.h"
 
-@protocol PriceNotificationsAlertPresenter;
 @protocol BookmarksCommands;
+@protocol PriceNotificationsAlertPresenter;
 @protocol PriceNotificationsCommands;
 @protocol PriceNotificationsConsumer;
+class PushNotificationService;
 
 namespace bookmarks {
 class BookmarkModel;
@@ -35,13 +36,16 @@ class WebState;
     : NSObject <PriceNotificationsMutator>
 
 // The designated initializer. `ShoppingService`, `BookmarkModel`,
-// `ImageDataFetcher` and `WebState` must not be nil.
+// `ImageDataFetcher`, `WebState`, and `PushNotificationService` must not be
+// nil.
 - (instancetype)
     initWithShoppingService:(commerce::ShoppingService*)service
               bookmarkModel:(bookmarks::BookmarkModel*)bookmarkModel
                imageFetcher:(std::unique_ptr<image_fetcher::ImageDataFetcher>)
                                 imageFetcher
-                   webState:(web::WebState*)webState NS_DESIGNATED_INITIALIZER;
+                   webState:(web::WebState*)webState
+    pushNotificationService:(PushNotificationService*)pushNotificationService
+    NS_DESIGNATED_INITIALIZER;
 
 - (instancetype)init NS_UNAVAILABLE;
 // The handler that is responsible for navigating the user to the Bookmarks UI.
@@ -52,6 +56,9 @@ class WebState;
 @property(nonatomic, weak) id<PriceNotificationsCommands> handler;
 
 @property(nonatomic, weak) id<PriceNotificationsAlertPresenter> presenter;
+
+// The GAIA ID of the user currently signed into Chrome;
+@property(nonatomic, copy) NSString* gaiaID;
 
 @end
 
