@@ -9759,7 +9759,7 @@ const CSSValue* TextWrap::CSSValueFromComputedStyleInternal(
     const ComputedStyle& style,
     const LayoutObject*,
     bool allow_visited_style) const {
-  return CSSIdentifierValue::Create(style.TextWrap());
+  return CSSIdentifierValue::Create(style.GetTextWrap());
 }
 
 const CSSValue* Widows::ParseSingleValue(CSSParserTokenRange& range,

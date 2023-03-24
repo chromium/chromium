@@ -408,6 +408,30 @@ inline CSSValueID PlatformEnumToCSSValueID(EWhiteSpace v) {
   }
 }
 
+template <>
+inline TextWrap CssValueIDToPlatformEnum(CSSValueID v) {
+  switch (v) {
+    case CSSValueID::kWrap:
+      return TextWrap::kWrap;
+    case CSSValueID::kBalance:
+      return TextWrap::kBalance;
+    default:
+      NOTREACHED();
+      return TextWrap::kWrap;
+  }
+}
+
+template <>
+inline CSSValueID PlatformEnumToCSSValueID(TextWrap v) {
+  switch (v) {
+    case TextWrap::kWrap:
+      return CSSValueID::kWrap;
+    case TextWrap::kBalance:
+      return CSSValueID::kBalance;
+  }
+  NOTREACHED();
+  return CSSValueID::kNone;
+}
 }  // namespace blink
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_CORE_CSS_CSS_VALUE_ID_MAPPINGS_H_

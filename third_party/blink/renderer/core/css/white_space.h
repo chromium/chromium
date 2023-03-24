@@ -30,6 +30,19 @@ constexpr WhiteSpaceBehavior operator|(WhiteSpaceBehavior a,
 }
 
 //
+// The `text-wrap` property.
+// https://w3c.github.io/csswg-drafts/css-text-4/#propdef-text-wrap
+//
+enum class TextWrap : uint8_t {
+  kWrap = 0,
+  kBalance = 1,
+  // Ensure `kTextWrapBits` can hold all values.
+};
+
+// Ensure this is in sync with `css_properties.json5`.
+static constexpr int kTextWrapBits = 1;
+
+//
 // The `white-space` property.
 // https://w3c.github.io/csswg-drafts/css-text-4/#propdef-white-space
 //

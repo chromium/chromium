@@ -1266,7 +1266,7 @@ const NGLayoutResult* NGInlineLayoutAlgorithm::Layout() {
   DCHECK(line_box);
 
   const bool initiate_balancing =
-      Style().TextWrap() == ETextWrap::kBalance &&
+      Style().GetTextWrap() == TextWrap::kBalance &&
       ShouldInitiateBalancing(break_token, opportunities) &&
       !column_spanner_path_;
   bool is_line_created = false;

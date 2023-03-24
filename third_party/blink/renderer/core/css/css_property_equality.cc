@@ -686,7 +686,7 @@ bool CSSPropertyEquality::PropertiesEqual(const PropertyHandle& property,
     case CSSPropertyID::kTextUnderlinePosition:
       return a.GetTextUnderlinePosition() == b.GetTextUnderlinePosition();
     case CSSPropertyID::kTextWrap:
-      return a.TextWrap() == b.TextWrap();
+      return a.GetTextWrap() == b.GetTextWrap();
     case CSSPropertyID::kToggleVisibility:
       return a.ToggleVisibility() == b.ToggleVisibility();
     case CSSPropertyID::kTop:

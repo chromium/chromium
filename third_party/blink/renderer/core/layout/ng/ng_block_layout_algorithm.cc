@@ -1101,7 +1101,7 @@ bool NGBlockLayoutAlgorithm::TryReuseFragmentsFromCache(
   DCHECK(previous_result_);
 
   // No lines are reusable if this block uses `NGParagraphLineBreaker`.
-  if (Style().TextWrap() == ETextWrap::kBalance) {
+  if (Style().GetTextWrap() == TextWrap::kBalance) {
     return false;
   }
 
