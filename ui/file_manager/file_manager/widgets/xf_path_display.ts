@@ -72,7 +72,7 @@ function getCSS(): CSSResultGroup {
       transition: all 300ms;
       flex-shrink: 1;
       min-width: 0;
-      padding: 4px 8px;
+      padding: 4px 4px;
       border-radius: 8px;
     }
     div.mid-folder {
