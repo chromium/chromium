@@ -2814,7 +2814,6 @@
         'os_type': 'fuchsia',
         'mixins': [
           'fuchsia-persistent-emulator',
-          'linux-bionic',
         ],
         'swarming': {
           'dimension_sets': [
