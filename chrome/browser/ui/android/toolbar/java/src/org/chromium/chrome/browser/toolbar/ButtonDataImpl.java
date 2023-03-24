@@ -93,4 +93,14 @@ public class ButtonDataImpl implements ButtonData {
                         currentSpec.getButtonVariant(), newActionChipResourceId);
         setButtonSpec(newSpec);
     }
+
+    /** Convenience method to update the action chip string resource ID. */
+    public void updateDrawable(Drawable newDrawable) {
+        ButtonSpec currentSpec = getButtonSpec();
+        ButtonSpec newSpec = new ButtonSpec(newDrawable, currentSpec.getOnClickListener(),
+                currentSpec.getOnLongClickListener(), currentSpec.getContentDescription(),
+                currentSpec.getSupportsTinting(), currentSpec.getIPHCommandBuilder(),
+                currentSpec.getButtonVariant(), currentSpec.getActionChipLabelResId());
+        setButtonSpec(newSpec);
+    }
 }
