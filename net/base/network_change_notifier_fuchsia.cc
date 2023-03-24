@@ -14,6 +14,7 @@
 #include "base/fuchsia/fuchsia_logging.h"
 #include "base/fuchsia/process_context.h"
 #include "base/logging.h"
+#include "base/process/process.h"
 #include "base/threading/thread_checker.h"
 #include "base/types/expected.h"
 #include "net/base/fuchsia/network_interface_cache.h"
@@ -39,7 +40,8 @@ NetworkChangeNotifierFuchsia::NetworkChangeNotifierFuchsia(
   auto handle_or_status = internal::ReadExistingNetworkInterfacesFromNewWatcher(
       std::move(watcher_handle), interfaces);
   if (!handle_or_status.has_value()) {
-    return;
+    ZX_LOG(ERROR, handle_or_status.error()) << "ReadExistingNetworkInterfaces";
+    base::Process::TerminateCurrentProcessImmediately(1);
   }
 
   HandleCacheStatus(cache_.AddInterfaces(std::move(interfaces)));
@@ -120,9 +122,10 @@ fuchsia::net::interfaces::WatcherHandle ConnectInterfacesWatcher() {
       base::ComponentContextForProcess()->svc()->Connect(state.NewRequest());
   ZX_CHECK(status == ZX_OK, status) << "Connect()";
 
+  // GetWatcher() is a feed-forward API, so failures will be observed via
+  // peer-closed events on the returned `watcher`.
   fuchsia::net::interfaces::WatcherHandle watcher;
   status = state->GetWatcher(/*options=*/{}, watcher.NewRequest());
-  ZX_CHECK(status == ZX_OK, status) << "GetWatcher()";
 
   return watcher;
 }
@@ -135,6 +138,11 @@ ReadExistingNetworkInterfacesFromNewWatcher(
 
   fuchsia::net::interfaces::WatcherSyncPtr watcher = watcher_handle.BindSync();
 
+  // fuchsia.net.interfaces.Watcher implements a hanging-get pattern, accepting
+  // a single Watch() call and returning an event when something changes.
+  // When a Watcher is first created, it emits a series of events describing
+  // existing interfaces, terminated by an "idle" event, before entering the
+  // normal hanging-get flow.
   while (true) {
     fuchsia::net::interfaces::Event event;
     if (auto watch_status = watcher->Watch(&event); watch_status != ZX_OK) {
@@ -152,7 +160,7 @@ ReadExistingNetworkInterfacesFromNewWatcher(
         return base::ok(watcher.Unbind());
       default:
         LOG(ERROR) << "Unexpected event " << event.Which();
-        return base::unexpected(ZX_ERR_NOT_SUPPORTED);
+        return base::unexpected(ZX_ERR_BAD_STATE);
     }
   }
 }
