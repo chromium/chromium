@@ -21,7 +21,6 @@
 #include "base/scoped_observation.h"
 #include "base/test/scoped_feature_list.h"
 #include "chromeos/ash/services/assistant/public/cpp/assistant_service.h"
-#include "chromeos/constants/chromeos_features.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
 namespace ash {
@@ -257,26 +256,7 @@ TEST_F(AssistantControllerImplTest, ClosesAssistantUiForFeedbackDeeplink) {
   ui_model()->RemoveObserver(&ui_model_observer_mock);
 }
 
-// Dark mode is set to true if the DarkLightMode flag is off. This is determined
-// in DarkLightModeControllerImpl::IsDarkModeEnabled().
-TEST_F(AssistantControllerImplTestForStartUp,
-       ColorModeIsSetWhenAssistantIsReadyFlagOff) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitWithFeatures(
-      /*enabled_features=*/{}, /*disabled_features=*/{
-          chromeos::features::kDarkLightMode, features::kNotificationsRefresh});
-  SetUpActiveUser();
-
-  ASSERT_TRUE(assistant_service()->dark_mode_enabled().has_value());
-  EXPECT_TRUE(assistant_service()->dark_mode_enabled().value());
-}
-
 TEST_F(AssistantControllerImplTestForStartUp, ColorModeIsUpdated) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(chromeos::features::kDarkLightMode);
-
-  ASSERT_TRUE(chromeos::features::IsDarkLightModeEnabled());
-
   auto* active_user_pref_service =
       Shell::Get()->session_controller()->GetPrimaryUserPrefService();
   ASSERT_TRUE(active_user_pref_service);
