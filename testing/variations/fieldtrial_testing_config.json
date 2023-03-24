@@ -8505,6 +8505,59 @@
             ]
         }
     ],
+    "OmniboxUISimplificationDesktop": [
+        {
+            "platforms": [
+                "chromeos",
+                "chromeos_lacros",
+                "fuchsia",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled_40px_RowHeight_SuggestIconBackgrounds_Non_Entities_Only",
+                    "params": {
+                        "OmniboxRichSuggestionVerticalMargin": "6",
+                        "OmniboxSquareSuggestIconAnswers": "true",
+                        "OmniboxSquareSuggestIconEntities": "false",
+                        "OmniboxSquareSuggestIconIcons": "true"
+                    },
+                    "enable_features": [
+                        "OmniboxSquareIcons",
+                        "OmniboxUniformRowHeight"
+                    ]
+                },
+                {
+                    "name": "Enabled_36px_RowHeight",
+                    "params": {
+                        "OmniboxRichSuggestionVerticalMargin": "4"
+                    },
+                    "enable_features": [
+                        "OmniboxUniformRowHeight"
+                    ],
+                    "disable_features": [
+                        "OmniboxSquareIcons"
+                    ]
+                },
+                {
+                    "name": "Enabled_40px_RowHeight_SuggestIconBackgrounds_13pct_Shrinkage",
+                    "params": {
+                        "OmniboxRichSuggestionVerticalMargin": "6",
+                        "OmniboxSquareSuggestIconAnswers": "true",
+                        "OmniboxSquareSuggestIconEntities": "true",
+                        "OmniboxSquareSuggestIconEntitiesScale": "0.8722",
+                        "OmniboxSquareSuggestIconIcons": "true"
+                    },
+                    "enable_features": [
+                        "OmniboxSquareIcons",
+                        "OmniboxUniformRowHeight"
+                    ]
+                }
+            ]
+        }
+    ],
     "OmniboxZeroSuggestPrefetchingWithInMemoryCaching": [
         {
             "platforms": [
