@@ -2814,6 +2814,7 @@
         'os_type': 'fuchsia',
         'mixins': [
           'fuchsia-persistent-emulator',
+          'linux-focal',
         ],
         'swarming': {
           'dimension_sets': [

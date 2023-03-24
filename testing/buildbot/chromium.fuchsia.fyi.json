@@ -3682,6 +3682,7 @@
             {
               "kvm": "1",
               "machine_type": "e2-standard-2",
+              "os": "Ubuntu-20.04",
               "pool": "chromium.tests.fuchsia"
             }
           ],
@@ -3704,6 +3705,7 @@
             {
               "kvm": "1",
               "machine_type": "e2-standard-2",
+              "os": "Ubuntu-20.04",
               "pool": "chromium.tests.fuchsia"
             }
           ],
@@ -3726,6 +3728,7 @@
             {
               "kvm": "1",
               "machine_type": "e2-standard-2",
+              "os": "Ubuntu-20.04",
               "pool": "chromium.tests.fuchsia"
             }
           ],
@@ -3748,6 +3751,7 @@
             {
               "kvm": "1",
               "machine_type": "e2-standard-2",
+              "os": "Ubuntu-20.04",
               "pool": "chromium.tests.fuchsia"
             }
           ],
@@ -3770,6 +3774,7 @@
             {
               "kvm": "1",
               "machine_type": "e2-standard-2",
+              "os": "Ubuntu-20.04",
               "pool": "chromium.tests.fuchsia"
             }
           ],
@@ -3793,6 +3798,7 @@
             {
               "kvm": "1",
               "machine_type": "e2-standard-2",
+              "os": "Ubuntu-20.04",
               "pool": "chromium.tests.fuchsia"
             }
           ],
@@ -3815,6 +3821,7 @@
             {
               "kvm": "1",
               "machine_type": "e2-standard-2",
+              "os": "Ubuntu-20.04",
               "pool": "chromium.tests.fuchsia"
             }
           ],
