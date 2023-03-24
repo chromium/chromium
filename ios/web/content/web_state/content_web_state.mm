@@ -7,12 +7,14 @@
 #import "base/strings/utf_string_conversions.h"
 #import "content/public/browser/navigation_entry.h"
 #import "content/public/browser/web_contents.h"
+#import "ios/web/content/content_browser_context.h"
 #import "ios/web/content/navigation/content_navigation_context.h"
 #import "ios/web/content/web_state/crc_web_view_proxy_impl.h"
 #import "ios/web/find_in_page/java_script_find_in_page_manager_impl.h"
 #import "ios/web/public/favicon/favicon_url.h"
 #import "ios/web/public/navigation/navigation_item.h"
 #import "ios/web/public/navigation/web_state_policy_decider.h"
+#import "ios/web/public/session/crw_session_storage.h"
 #import "ios/web/public/web_state_observer.h"
 #import "ios/web/text_fragments/text_fragments_manager_impl.h"
 #import "net/cert/x509_util.h"
@@ -64,8 +66,12 @@ FaviconURL::IconType IconTypeFromContentIconType(
 }  // namespace
 
 ContentWebState::ContentWebState(const CreateParams& params) {
-  // TODO(crbug.com/1419001): initialize web_contents_ with
-  // WebContents::Create(...) when a BrowserContext is available.
+  content::BrowserContext* browser_context =
+      ContentBrowserContext::FromBrowserState(params.browser_state);
+  scoped_refptr<content::SiteInstance> site_instance;
+  content::WebContents::CreateParams createParams(browser_context,
+                                                  site_instance);
+  web_contents_ = content::WebContents::Create(createParams);
   WebContentsObserver::Observe(web_contents_.get());
   content::NavigationController* controller = nullptr;
   if (web_contents_) {
@@ -77,6 +83,10 @@ ContentWebState::ContentWebState(const CreateParams& params) {
   navigation_manager_ = std::make_unique<ContentNavigationManager>(
       this, params.browser_state, controller);
   web_frames_manager_ = std::make_unique<ContentWebFramesManager>(this);
+
+  UIView* web_contents_view = web_contents_->GetNativeView();
+  web_contents_view.translatesAutoresizingMaskIntoConstraints = NO;
+  web_contents_view.layer.backgroundColor = UIColor.grayColor.CGColor;
 
   web_view_ = [[UIScrollView alloc] init];
   web_view_.translatesAutoresizingMaskIntoConstraints = NO;
@@ -127,7 +137,7 @@ bool ContentWebState::IsWebUsageEnabled() const {
 void ContentWebState::SetWebUsageEnabled(bool enabled) {}
 
 UIView* ContentWebState::GetView() {
-  return web_view_;
+  return web_contents_->GetNativeView();
 }
 
 void ContentWebState::DidCoverWebContent() {}
@@ -190,7 +200,7 @@ ContentWebState::GetSessionCertificatePolicyCache() {
 }
 
 CRWSessionStorage* ContentWebState::BuildSessionStorage() {
-  return nil;
+  return [[CRWSessionStorage alloc] init];
 }
 
 void ContentWebState::LoadData(NSData* data,
