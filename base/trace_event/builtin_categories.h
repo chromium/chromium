@@ -93,6 +93,7 @@
   X("GAMEPAD")                                                           \
   X("gpu")                                                               \
   X("gpu.angle")                                                         \
+  X("gpu.angle.texture_metrics")                                         \
   X("gpu.capture")                                                       \
   X("headless")                                                          \
   /* Traces for //components/history. */                                 \
