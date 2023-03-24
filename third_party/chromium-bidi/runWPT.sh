@@ -1,7 +1,7 @@
 #!/bin/bash
 # shellcheck disable=SC2155
 
-set -euo pipefail
+set -uo pipefail
 
 log() {
   echo "($0) $*"
