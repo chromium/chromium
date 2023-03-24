@@ -200,11 +200,14 @@ public class AppLanguagePromoDialog {
          * Modify the LanguageItemAdapter to show the other languages in addition to the top
          * languages. Can only called once. The other languages can not be hidden once shown.
          */
+        @SuppressWarnings("NotifyDataSetChanged")
         public void showOtherLanguages() {
+            // Do nothing if other languagers are already showing.
+            if (mShowOtherLanguages) return;
             mShowOtherLanguages = true;
-            notifyItemRemoved(mTopLanguages.size()); // Remove "More languages" item.
-            // Other languages plus a horizontal separator have been added.
-            notifyItemRangeInserted(mTopLanguages.size(), mOtherLanguages.size() + 1);
+            // Showing all other items adds a large amount of languages to the list, so we use
+            // DataSetChanged instead of more specific methods.
+            notifyDataSetChanged();
         }
 
         /**
