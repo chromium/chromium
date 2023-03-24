@@ -33,7 +33,6 @@ class AutofillProgressDialogViews : public AutofillProgressDialogView,
 
   // DialogDelegate:
   void AddedToWidget() override;
-  void OnThemeChanged() override;
   std::u16string GetWindowTitle() const override;
 
  private:

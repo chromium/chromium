@@ -53,7 +53,6 @@ class CardUnmaskPromptViews : public CardUnmaskPromptView,
   // views::BubbleDialogDelegateView:
   View* GetContentsView() override;
   void AddedToWidget() override;
-  void OnThemeChanged() override;
   std::u16string GetWindowTitle() const override;
   bool IsDialogButtonEnabled(ui::DialogButton button) const override;
   View* GetInitiallyFocusedView() override;

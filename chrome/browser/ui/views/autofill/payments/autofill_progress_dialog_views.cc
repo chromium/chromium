@@ -45,6 +45,7 @@ AutofillProgressDialogViews::AutofillProgressDialogViews(
       controller_->GetLoadingMessage(), views::style::CONTEXT_DIALOG_BODY_TEXT,
       views::style::STYLE_SECONDARY));
   label_->SetMultiLine(true);
+  label_->SetEnabledColorId(ui::kColorThrobber);
 }
 
 AutofillProgressDialogViews::~AutofillProgressDialogViews() {
@@ -96,12 +97,6 @@ void AutofillProgressDialogViews::AddedToWidget() {
   GetBubbleFrameView()->SetTitleView(
       std::make_unique<TitleWithIconAndSeparatorView>(
           GetWindowTitle(), TitleWithIconAndSeparatorView::Icon::GOOGLE_PAY));
-}
-
-void AutofillProgressDialogViews::OnThemeChanged() {
-  views::DialogDelegateView::OnThemeChanged();
-  SkColor enabled_color = GetColorProvider()->GetColor(ui::kColorThrobber);
-  label_->SetEnabledColor(enabled_color);
 }
 
 std::u16string AutofillProgressDialogViews::GetWindowTitle() const {

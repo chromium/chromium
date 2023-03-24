@@ -31,14 +31,12 @@
 #include "components/web_modal/web_contents_modal_dialog_host.h"
 #include "components/web_modal/web_contents_modal_dialog_manager.h"
 #include "components/web_modal/web_contents_modal_dialog_manager_delegate.h"
-#include "third_party/skia/include/core/SkColor.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/models/image_model.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/color/color_id.h"
-#include "ui/color/color_provider.h"
 #include "ui/gfx/color_palette.h"
 #include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/paint_vector_icon.h"
@@ -53,6 +51,7 @@
 #include "ui/views/controls/separator.h"
 #include "ui/views/controls/styled_label.h"
 #include "ui/views/layout/box_layout.h"
+#include "ui/views/layout/box_layout_view.h"
 #include "ui/views/style/typography.h"
 #include "ui/views/view_utils.h"
 #include "ui/views/widget/widget.h"
@@ -87,62 +86,52 @@ BEGIN_METADATA(AutofillMigrationHeaderView, views::ImageView)
 END_METADATA
 #endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
 
-// Create the view containing the |tip_message| shown to the user.
-class TipTextContainer : public views::View {
- public:
-  METADATA_HEADER(TipTextContainer);
-  explicit TipTextContainer(const std::u16string& tip_message) {
-    ChromeLayoutProvider* provider = ChromeLayoutProvider::Get();
-    // Set up the tip text container with inset, background and a solid border.
-    const gfx::Insets container_insets =
-        provider->GetInsetsMetric(views::INSETS_DIALOG_SUBSECTION);
-    const int container_child_space =
-        provider->GetDistanceMetric(views::DISTANCE_RELATED_LABEL_HORIZONTAL);
+// Create the view containing the `tip_message` shown to the user.
+std::unique_ptr<views::BoxLayoutView> CreateTipTextContainer(
+    const std::u16string& tip_message) {
+  ChromeLayoutProvider* provider = ChromeLayoutProvider::Get();
+  const gfx::Insets kContainerInsets =
+      provider->GetInsetsMetric(views::INSETS_DIALOG_SUBSECTION);
+  const int kContainerChildSpace =
+      provider->GetDistanceMetric(views::DISTANCE_RELATED_LABEL_HORIZONTAL);
+  constexpr int kTipValuePromptBorderThickness = 1;
+  constexpr int kTipImageSize = 16;
 
-    SetLayoutManager(std::make_unique<views::BoxLayout>(
-        views::BoxLayout::Orientation::kHorizontal,
-        gfx::Insets(container_insets), container_child_space));
-    SetBackground(views::CreateThemedSolidBackground(
-        kColorPaymentsFeedbackTipBackground));
+  auto container =
+      views::Builder<views::BoxLayoutView>()
+          .SetOrientation(views::BoxLayout::Orientation::kHorizontal)
+          .SetInsideBorderInsets(gfx::Insets(kContainerInsets))
+          .SetBetweenChildSpacing(kContainerChildSpace)
+          .SetBackground(views::CreateThemedSolidBackground(
+              kColorPaymentsFeedbackTipBackground))
+          .SetBorder(views::CreateThemedSolidBorder(
+              kTipValuePromptBorderThickness, kColorPaymentsFeedbackTipBorder))
+          .Build();
 
-    constexpr int kTipImageSize = 16;
-    auto* lightbulb_outline_image = AddChildView(
-        std::make_unique<views::ImageView>(ui::ImageModel::FromVectorIcon(
-            vector_icons::kLightbulbOutlineIcon, kColorPaymentsFeedbackTipIcon,
-            kTipImageSize)));
-    lightbulb_outline_image->SetVerticalAlignment(
-        views::ImageView::Alignment::kLeading);
+  container->AddChildView(
+      views::Builder<views::ImageView>()
+          .SetImage(ui::ImageModel::FromVectorIcon(
+              vector_icons::kLightbulbOutlineIcon,
+              kColorPaymentsFeedbackTipIcon, kTipImageSize))
+          .SetVerticalAlignment(views::ImageView::Alignment::kLeading)
+          .Build());
 
-    tip_ = AddChildView(std::make_unique<views::Label>(
-        tip_message, CONTEXT_DIALOG_BODY_TEXT_SMALL,
-        views::style::STYLE_SECONDARY));
-    tip_->SetMultiLine(true);
-    tip_->SetHorizontalAlignment(gfx::ALIGN_LEFT);
-    tip_->SizeToFit(provider->GetDistanceMetric(
-                        DISTANCE_LARGE_MODAL_DIALOG_PREFERRED_WIDTH) -
-                    kMigrationDialogInsets.width() - container_insets.width() -
-                    kTipImageSize - container_child_space);
-  }
+  container->AddChildView(
+      views::Builder<views::Label>()
+          .SetText(tip_message)
+          .SetTextContext(CONTEXT_DIALOG_BODY_TEXT_SMALL)
+          .SetTextStyle(views::style::STYLE_SECONDARY)
+          .SetEnabledColorId(kColorPaymentsFeedbackTipForeground)
+          .SetMultiLine(true)
+          .SetHorizontalAlignment(gfx::ALIGN_LEFT)
+          .SizeToFit(provider->GetDistanceMetric(
+                         DISTANCE_LARGE_MODAL_DIALOG_PREFERRED_WIDTH) -
+                     kMigrationDialogInsets.width() - kContainerInsets.width() -
+                     kTipImageSize - kContainerChildSpace)
+          .Build());
 
-  // views::Label:
-  void OnThemeChanged() override {
-    View::OnThemeChanged();
-
-    constexpr int kTipValuePromptBorderThickness = 1;
-    const auto* const color_provider = GetColorProvider();
-    SetBorder(views::CreateSolidBorder(
-        kTipValuePromptBorderThickness,
-        color_provider->GetColor(kColorPaymentsFeedbackTipBorder)));
-    tip_->SetEnabledColor(
-        color_provider->GetColor(kColorPaymentsFeedbackTipForeground));
-  }
-
- private:
-  raw_ptr<views::Label> tip_ = nullptr;
-};
-
-BEGIN_METADATA(TipTextContainer, views::View)
-END_METADATA
+  return container;
+}
 
 // Create the title label container for the migration dialogs. The title
 // text depends on the |view_state| of the dialog.
@@ -285,7 +274,7 @@ std::unique_ptr<views::View> CreateFeedbackContentView(
     if (view_state == LocalCardMigrationDialogState::kFinished &&
         card_list_size <= kShowTipMessageCardNumberLimit) {
       feedback_view->AddChildView(
-          std::make_unique<TipTextContainer>(controller->GetTipMessage()));
+          CreateTipTextContainer(controller->GetTipMessage()));
     }
   }
 

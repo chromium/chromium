@@ -20,13 +20,11 @@
 #include "components/web_modal/web_contents_modal_dialog_host.h"
 #include "components/web_modal/web_contents_modal_dialog_manager.h"
 #include "components/web_modal/web_contents_modal_dialog_manager_delegate.h"
-#include "third_party/skia/include/core/SkColor.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/models/image_model.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/color/color_id.h"
-#include "ui/color/color_provider.h"
 #include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/paint_vector_icon.h"
 #include "ui/gfx/vector_icon_utils.h"
@@ -202,18 +200,6 @@ void CardUnmaskPromptViews::AddedToWidget() {
   GetBubbleFrameView()->SetTitleView(
       std::make_unique<TitleWithIconAndSeparatorView>(
           GetWindowTitle(), TitleWithIconAndSeparatorView::Icon::GOOGLE_PAY));
-}
-
-void CardUnmaskPromptViews::OnThemeChanged() {
-  views::BubbleDialogDelegateView::OnThemeChanged();
-  const auto* color_provider = GetColorProvider();
-  SkColor bg_color = color_provider->GetColor(ui::kColorDialogBackground);
-  overlay_->SetBackground(views::CreateSolidBackground(bg_color));
-  if (overlay_label_) {
-    overlay_label_->SetBackgroundColor(bg_color);
-    overlay_label_->SetEnabledColor(
-        color_provider->GetColor(ui::kColorThrobber));
-  }
 }
 
 std::u16string CardUnmaskPromptViews::GetWindowTitle() const {
@@ -409,11 +395,15 @@ void CardUnmaskPromptViews::InitIfNecessary() {
           .SetMainAxisAlignment(views::BoxLayout::MainAxisAlignment::kCenter)
           .SetCrossAxisAlignment(views::BoxLayout::CrossAxisAlignment::kCenter)
           .SetVisible(false)
+          .SetBackground(
+              views::CreateThemedSolidBackground(ui::kColorDialogBackground))
           .AddChildren(
               views::Builder<views::Throbber>().CopyAddressTo(
                   &progress_throbber_),
               views::Builder<views::Label>()
                   .CopyAddressTo(&overlay_label_)
+                  .SetBackgroundColorId(ui::kColorDialogBackground)
+                  .SetEnabledColorId(ui::kColorThrobber)
                   .SetText(l10n_util::GetStringUTF16(
                       IDS_AUTOFILL_CARD_UNMASK_VERIFICATION_IN_PROGRESS)))
           .Build());
