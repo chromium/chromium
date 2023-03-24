@@ -26,6 +26,8 @@
 # (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
+from typing import Optional
+
 from blinkpy.web_tests.models import test_failures
 from blinkpy.web_tests.models.typ_types import (
     Artifacts,
@@ -122,6 +124,13 @@ class TestResult(object):
                                    retry_attempt,
                                    ARTIFACTS_SUB_DIR,
                                    repeat_tests=self.repeat_tests)
+
+    @property
+    def actual_image_hash(self) -> Optional[str]:
+        for failure in self.failures:
+            if isinstance(failure, test_failures.FailureImage):
+                return failure.actual_driver_output.image_hash
+        return None
 
     def create_artifacts(self):
         for failure in self.failures:

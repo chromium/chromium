@@ -28,6 +28,7 @@
 import re
 import six
 from six.moves import cPickle
+from typing import ClassVar
 
 from blinkpy.web_tests.controllers import repaint_overlay
 from blinkpy.web_tests.models.typ_types import ResultType
@@ -535,6 +536,9 @@ class FailureSpaceTabLineBreakTextMismatch(FailureTextMismatch):
 
 
 class FailureImage(ActualAndBaselineArtifacts):
+    # Tag key used to report the actual image's hash to ResultDB.
+    ACTUAL_HASH_RDB_TAG: ClassVar[str] = 'web_tests_actual_image_hash'
+
     def __init__(self, actual_driver_output, expected_driver_output):
         super(FailureImage, self).__init__(actual_driver_output,
                                            expected_driver_output)
