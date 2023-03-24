@@ -7,6 +7,7 @@
 
 #include <memory>
 
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/translate/chrome_translate_client.h"
 #include "chrome/browser/ui/translate/translate_bubble_model.h"
 
@@ -64,7 +65,7 @@ class TranslateBubbleModelImpl : public TranslateBubbleModel {
 
  private:
   std::unique_ptr<translate::TranslateUIDelegate> ui_delegate_;
-  translate::TranslateUILanguagesManager* ui_languages_manager_;
+  raw_ptr<translate::TranslateUILanguagesManager> ui_languages_manager_;
   ViewState current_view_state_;
 
   bool translation_declined_;

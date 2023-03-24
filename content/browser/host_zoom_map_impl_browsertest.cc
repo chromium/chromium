@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/memory/raw_ptr.h"
 #include "base/metrics/field_trial_params.h"
 #include "base/test/scoped_feature_list.h"
 #include "content/browser/host_zoom_map_impl.h"
@@ -61,7 +62,7 @@ class HostZoomMapImplBrowserTest : public ContentBrowserTest {
   base::test::ScopedFeatureList feature_list_;
 
   // Instance of HostZoomMapImpl for convenience in tests.
-  HostZoomMapImpl* host_zoom_map_impl_;
+  raw_ptr<HostZoomMapImpl, DanglingUntriaged> host_zoom_map_impl_;
 };
 
 #if BUILDFLAG(IS_ANDROID)

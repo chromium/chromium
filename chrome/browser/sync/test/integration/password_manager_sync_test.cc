@@ -8,6 +8,7 @@
 #include "base/files/file_util.h"
 #include "base/json/json_reader.h"
 #include "base/path_service.h"
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
@@ -114,7 +115,7 @@ class SavedPasswordsPresenterWaiter
 
   void OnSavedPasswordsChanged() override { CheckExitCondition(); }
 
-  password_manager::SavedPasswordsPresenter* const presenter_;
+  const raw_ptr<password_manager::SavedPasswordsPresenter> presenter_;
   const size_t n_passwords_;
 };
 

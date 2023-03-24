@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/views/commerce/price_tracking_bubble_dialog_view.h"
 
+#include "base/memory/raw_ptr.h"
 #include "base/test/mock_callback.h"
 #include "chrome/browser/bookmarks/bookmark_model_factory.h"
 #include "chrome/browser/signin/identity_test_environment_profile_adaptor.h"
@@ -99,7 +100,7 @@ class PriceTrackingBubbleDialogViewUnitTest : public BrowserWithTestWindowTest {
     bookmarks::test::WaitForBookmarkModelToLoad(bookmark_model_);
   }
 
-  bookmarks::BookmarkModel* bookmark_model_;
+  raw_ptr<bookmarks::BookmarkModel> bookmark_model_;
 
  private:
   views::UniqueWidgetPtr anchor_widget_;

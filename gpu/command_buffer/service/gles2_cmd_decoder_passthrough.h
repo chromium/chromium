@@ -437,7 +437,7 @@ class GPU_GLES2_EXPORT GLES2DecoderPassthroughImpl
     ~ScopedPixelLocalStorageDeactivate();
 
    private:
-    const GLES2DecoderPassthroughImpl* impl_;
+    raw_ptr<const GLES2DecoderPassthroughImpl> impl_;
   };
 
  private:

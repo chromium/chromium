@@ -11,6 +11,7 @@
 #include "base/files/file.h"
 #include "base/functional/callback.h"
 #include "components/safe_browsing/content/common/file_type_policies.h"
+#include "base/memory/raw_ptr.h"
 #include "third_party/zlib/google/zip_reader.h"
 
 namespace safe_browsing {
@@ -69,7 +70,7 @@ class ZipAnalyzer {
   base::File zip_file_;
   base::File temp_file_;
   zip::ZipReader reader_;
-  ArchiveAnalyzerResults* results_;
+  raw_ptr<ArchiveAnalyzerResults> results_;
 
   FinishedAnalysisCallback finished_analysis_callback_;
   GetTempFileCallback get_temp_file_callback_;

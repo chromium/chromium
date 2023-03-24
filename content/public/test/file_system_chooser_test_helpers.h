@@ -27,7 +27,7 @@ struct SelectFileDialogParams {
   int file_type_index = -1;
   base::FilePath default_path;
   std::u16string title;
-  const GURL* caller = nullptr;
+  raw_ptr<const GURL> caller = nullptr;
 };
 
 // A fake ui::SelectFileDialog, which will cancel the file selection instead of

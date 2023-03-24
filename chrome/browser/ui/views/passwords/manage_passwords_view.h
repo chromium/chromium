@@ -77,7 +77,7 @@ class ManagePasswordsView : public PasswordBubbleViewBase {
   // Holds the favicon of the page when it is asynchronously loaded.
   gfx::Image favicon_;
 
-  ManagePasswordsDetailsView* password_details_view_ = nullptr;
+  raw_ptr<ManagePasswordsDetailsView> password_details_view_ = nullptr;
 
   ItemsBubbleController controller_;
   raw_ptr<PageSwitcherView> page_container_ = nullptr;

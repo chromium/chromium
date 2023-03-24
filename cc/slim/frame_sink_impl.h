@@ -134,7 +134,7 @@ class COMPONENT_EXPORT(CC_SLIM) FrameSinkImpl
 
   mojo::AssociatedRemote<viz::mojom::CompositorFrameSink> frame_sink_remote_;
   // Separate from AssociatedRemote above for testing.
-  viz::mojom::CompositorFrameSink* frame_sink_ = nullptr;
+  raw_ptr<viz::mojom::CompositorFrameSink> frame_sink_ = nullptr;
   mojo::Receiver<viz::mojom::CompositorFrameSinkClient> client_receiver_{this};
   scoped_refptr<viz::ContextProvider> context_provider_;
   raw_ptr<FrameSinkImplClient> client_ = nullptr;

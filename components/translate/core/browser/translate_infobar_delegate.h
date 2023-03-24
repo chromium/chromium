@@ -13,6 +13,7 @@
 #include <vector>
 
 #include "base/feature_list.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "base/observer_list_types.h"
@@ -248,7 +249,7 @@ class TranslateInfoBarDelegate : public infobars::InfoBarDelegate {
 
   TranslateUIDelegate ui_delegate_;
   base::WeakPtr<TranslateManager> translate_manager_;
-  TranslateUILanguagesManager* ui_languages_manager_;
+  raw_ptr<TranslateUILanguagesManager> ui_languages_manager_;
 
   // The error that occurred when trying to translate (NONE if no error).
   TranslateErrors error_type_;

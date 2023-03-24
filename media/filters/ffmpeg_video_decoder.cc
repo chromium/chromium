@@ -14,6 +14,7 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/location.h"
+#include "base/memory/raw_ptr.h"
 #include "base/task/bind_post_task.h"
 #include "base/task/sequenced_task_runner.h"
 #include "media/base/decoder_buffer.h"
@@ -44,7 +45,7 @@ struct OpaqueData {
         layout(std::move(l)) {}
 
   // FrameBufferPool key that we'll free when the AVBuffer is unused.
-  void* fb_priv = nullptr;
+  raw_ptr<void> fb_priv = nullptr;
 
   // Pool which owns `fb_priv`.
   scoped_refptr<FrameBufferPool> frame_pool;

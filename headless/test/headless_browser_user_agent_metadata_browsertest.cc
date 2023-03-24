@@ -4,6 +4,7 @@
 
 #include <string>
 
+#include "base/memory/raw_ptr.h"
 #include "base/strings/strcat.h"
 #include "base/test/bind.h"
 #include "base/values.h"
@@ -111,7 +112,7 @@ class HeadlessBrowserNavigatorUADataTest : public HeadlessBrowserTest {
   }
 
  protected:
-  HeadlessWebContents* web_contents_;
+  raw_ptr<HeadlessWebContents, DanglingUntriaged> web_contents_;
   SimpleDevToolsProtocolClient devtools_client_;
 
   // Get the version of the HeadlessChrome brand from the brand list.
@@ -392,7 +393,7 @@ class HeadlessBrowserUAHeaderTest : public HeadlessBrowserTest {
   }
 
  protected:
-  HeadlessWebContents* web_contents_;
+  raw_ptr<HeadlessWebContents, DanglingUntriaged> web_contents_;
   SimpleDevToolsProtocolClient devtools_client_;
   // HandleRequest will capture headers with this path in `got_headers_`.
   std::string capture_headers_for_path_;

@@ -74,7 +74,7 @@ class MojoSafeBrowsingImpl : public mojom::SafeBrowsing,
   int render_process_id_ = MSG_ROUTING_NONE;
 
   // Guaranteed to outlive this object as it owns it.
-  base::SupportsUserData* user_data_;
+  raw_ptr<base::SupportsUserData> user_data_;
 };
 
 }  // namespace safe_browsing

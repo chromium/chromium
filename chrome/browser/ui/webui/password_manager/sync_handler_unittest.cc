@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/webui/password_manager/sync_handler.h"
 
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/signin/identity_test_environment_profile_adaptor.h"
 #include "chrome/browser/sync/sync_service_factory.h"
@@ -116,7 +117,7 @@ class SyncHandlerTest : public ChromeRenderViewHostTestHarness {
   std::unique_ptr<IdentityTestEnvironmentProfileAdaptor>
       identity_test_env_adaptor_;
   raw_ptr<MockSyncService> mock_sync_service_;
-  SyncHandler* handler_;
+  raw_ptr<SyncHandler> handler_;
 };
 
 TEST_F(SyncHandlerTest, HandleTrustedVaultBannerStateNotShown) {

@@ -11,6 +11,7 @@
 #include "base/files/file_path.h"
 #include "base/functional/callback_forward.h"
 #include "base/location.h"
+#include "base/memory/raw_ptr.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "components/file_access/scoped_file_access.h"
@@ -127,7 +128,7 @@ class COMPONENT_EXPORT(FILE_ACCESS) ScopedFileAccessDelegate {
 
    private:
     bool restore_original_callback_;
-    RequestFilesAccessIOCallback* original_callback_ = nullptr;
+    raw_ptr<RequestFilesAccessIOCallback> original_callback_ = nullptr;
   };
   // Get a callback to get file access to files for system component
   // destination. Can be called from IO or UI thread. The callback should be

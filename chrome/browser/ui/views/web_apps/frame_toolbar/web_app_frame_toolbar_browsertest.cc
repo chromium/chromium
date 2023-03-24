@@ -5,6 +5,7 @@
 #include <cmath>
 #include <tuple>
 
+#include "base/memory/raw_ptr.h"
 #include "base/path_service.h"
 #include "base/run_loop.h"
 #include "base/test/bind.h"
@@ -577,9 +578,9 @@ class BorderlessIsolatedWebAppBrowserTest
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
   std::unique_ptr<net::EmbeddedTestServer> isolated_web_app_dev_server_;
-  Browser* browser_;
-  BrowserView* browser_view_;
-  BrowserNonClientFrameView* frame_view_;
+  raw_ptr<Browser, DanglingUntriaged> browser_;
+  raw_ptr<BrowserView, DanglingUntriaged> browser_view_;
+  raw_ptr<BrowserNonClientFrameView, DanglingUntriaged> frame_view_;
 };
 
 IN_PROC_BROWSER_TEST_F(BorderlessIsolatedWebAppBrowserTest,

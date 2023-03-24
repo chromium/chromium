@@ -8,6 +8,7 @@
 #include <memory>
 #include <unordered_map>
 
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/ui/autofill/address_editor_controller.h"
 #include "components/autofill/core/browser/data_model/autofill_profile.h"
 #include "ui/base/metadata/metadata_header_macros.h"
@@ -83,7 +84,7 @@ class AddressEditorView : public views::View {
   // Map from TextField to the object that describes it
   std::unordered_map<views::Textfield*, const EditorField> text_fields_;
   const std::string locale_;
-  views::Label* validation_error_ = nullptr;
+  raw_ptr<views::Label> validation_error_ = nullptr;
 
   // 1 subscription to text changes per field.
   std::vector<base::CallbackListSubscription> field_change_callbacks_;

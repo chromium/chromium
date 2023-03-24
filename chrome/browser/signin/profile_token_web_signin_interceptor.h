@@ -95,7 +95,7 @@ class ProfileTokenWebSigninInterceptor : public KeyedService {
   std::string enrollment_token_;
   std::string intercepted_id_;
   bool disable_browser_creation_after_interception_for_testing_ = false;
-  const ProfileAttributesEntry* switch_to_entry_ = nullptr;
+  raw_ptr<const ProfileAttributesEntry> switch_to_entry_ = nullptr;
 };
 
 #endif  // CHROME_BROWSER_SIGNIN_PROFILE_TOKEN_WEB_SIGNIN_INTERCEPTOR_H_

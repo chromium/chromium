@@ -4,6 +4,7 @@
 
 #include <memory>
 
+#include "base/memory/raw_ptr.h"
 #include "base/test/metrics/user_action_tester.h"
 #include "base/test/task_environment.h"
 #include "chrome/app/chrome_command_ids.h"
@@ -83,7 +84,7 @@ class ShoppingListContextMenuControllerTest : public testing::Test {
  protected:
   content::BrowserTaskEnvironment task_environment_;
   base::UserActionTester user_action_tester_;
-  const bookmarks::BookmarkNode* bookmark_;
+  raw_ptr<const bookmarks::BookmarkNode> bookmark_;
 
  private:
   std::unique_ptr<bookmarks::BookmarkModel> bookmark_model_;
