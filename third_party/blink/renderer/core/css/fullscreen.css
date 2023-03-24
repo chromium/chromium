@@ -17,7 +17,7 @@
 }
 
 :fullscreen {
-    top-layer: browser !important;
+    overlay: auto !important;
 }
 
 iframe:fullscreen {
@@ -31,7 +31,7 @@ iframe:fullscreen {
     position: fixed;
     inset: 0;
     background: black;
-    top-layer: browser !important;
+    overlay: auto !important;
 }
 
 /* Anything below are extensions over what the Fullscreen API (29 May 2018) mandates. */

@@ -691,8 +691,8 @@ bool CSSPropertyEquality::PropertiesEqual(const PropertyHandle& property,
       return a.ToggleVisibility() == b.ToggleVisibility();
     case CSSPropertyID::kTop:
       return a.Top() == b.Top();
-    case CSSPropertyID::kTopLayer:
-      return a.TopLayer() == b.TopLayer();
+    case CSSPropertyID::kOverlay:
+      return a.Overlay() == b.Overlay();
     case CSSPropertyID::kTouchAction:
       return a.GetTouchAction() == b.GetTouchAction();
     case CSSPropertyID::kTransformBox:

@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<title>CSS Transitions: getComputedStyle().overlay</title>
+<link rel="help" href="https://github.com/w3c/csswg-drafts/issues/8189">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/css/support/computed-testcommon.js"></script>
+<div id="target"></div>
+<script>
+  test_computed_value("overlay", "none", "none");
+  // 'auto' also computes to 'none' due to this UA style while the element is
+  // not in the top layer:
+  //
+  // * { overlay: none !important }
+  test_computed_value("overlay", "auto", "none");
+  test_computed_value("overlay", "initial", "none");
+  test_computed_value("overlay", "revert", "none");
+  test_computed_value("overlay", "unset", "none");
+</script>

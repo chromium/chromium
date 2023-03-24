@@ -9662,11 +9662,11 @@ const CSSValue* ToggleVisibility::CSSValueFromComputedStyleInternal(
   return result_list;
 }
 
-const CSSValue* TopLayer::CSSValueFromComputedStyleInternal(
+const CSSValue* Overlay::CSSValueFromComputedStyleInternal(
     const ComputedStyle& style,
     const LayoutObject*,
     bool allow_visited_style) const {
-  return CSSIdentifierValue::Create(style.TopLayer());
+  return CSSIdentifierValue::Create(style.Overlay());
 }
 
 const CSSValue* WebkitTransformOriginY::ParseSingleValue(

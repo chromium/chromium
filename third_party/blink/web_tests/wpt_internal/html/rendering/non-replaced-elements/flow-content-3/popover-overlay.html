@@ -1,5 +1,5 @@
 <!doctype html>
-<title>popover: top-layer</title>
+<title>popover: overlay</title>
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
 <dialog popover id="popover-show-dialog"></dialog>
@@ -9,41 +9,41 @@
 <script>
   test(() => {
     const popover_show_dialog = document.getElementById("popover-show-dialog");
-    assert_equals(getComputedStyle(popover_show_dialog).topLayer, "none",
-                  "Computed top-layer");
+    assert_equals(getComputedStyle(popover_show_dialog).overlay, "none",
+                  "Computed overlay");
     popover_show_dialog.show();
-    assert_equals(getComputedStyle(popover_show_dialog).topLayer, "none",
-                  "Computed top-layer after show()");
+    assert_equals(getComputedStyle(popover_show_dialog).overlay, "none",
+                  "Computed overlay after show()");
     popover_show_dialog.close();
   }, "dialog.show() should not put popover dialog in top layer");
 
   test(() => {
     const popover_show_modal_dialog = document.getElementById("popover-show-modal-dialog");
-    assert_equals(getComputedStyle(popover_show_modal_dialog).topLayer, "none",
-                  "Computed top-layer");
+    assert_equals(getComputedStyle(popover_show_modal_dialog).overlay, "none",
+                  "Computed overlay");
     popover_show_modal_dialog.showModal();
-    assert_equals(getComputedStyle(popover_show_modal_dialog).topLayer, "browser",
-                  "Computed top-layer after showModal()");
+    assert_equals(getComputedStyle(popover_show_modal_dialog).overlay, "auto",
+                  "Computed overlay after showModal()");
     popover_show_modal_dialog.close();
   }, "dialog.showModal() should put popover dialog in top layer");
 
   test(() => {
     const popover_dialog = document.getElementById("popover-dialog");
-    assert_equals(getComputedStyle(popover_dialog).topLayer, "none",
-                  "Computed top-layer");
+    assert_equals(getComputedStyle(popover_dialog).overlay, "none",
+                  "Computed overlay");
     popover_dialog.showPopover();
-    assert_equals(getComputedStyle(popover_dialog).topLayer, "browser",
-                  "Computed top-layer after showPopover()");
+    assert_equals(getComputedStyle(popover_dialog).overlay, "auto",
+                  "Computed overlay after showPopover()");
     popover_dialog.hidePopover();
   }, "dialog.showPopover() should put popover dialog in top layer");
 
   test(() => {
     const popover_div = document.getElementById("popover-div");
-    assert_equals(getComputedStyle(popover_div).topLayer, "none",
-                  "Computed top-layer");
+    assert_equals(getComputedStyle(popover_div).overlay, "none",
+                  "Computed overlay");
     popover_div.showPopover();
-    assert_equals(getComputedStyle(popover_div).topLayer, "browser",
-                  "Computed top-layer after showPopover()");
+    assert_equals(getComputedStyle(popover_div).overlay, "auto",
+                  "Computed overlay after showPopover()");
     popover_div.hidePopover();
   }, "div.showPopover() should put popover div in top layer");
 </script>

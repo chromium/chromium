@@ -1078,7 +1078,12 @@
       base_feature: "none",
     },
     {
-      // Support for CSS top-layer property for being able to transition
+      // Support for transitioning top layer elements out of the top layer by
+      // allowing the new CSS overlay property to keep the element in the top
+      // layer with transition-name: overlay. Also, the HTML implementation is
+      // deferring removal of top layer elements from the top layer until the
+      // overlay property computes to 'none'.
+      //
       // See: https://github.com/w3c/csswg-drafts/issues/8189
       name: "CSSTopLayerForTransitions",
       status: "experimental",

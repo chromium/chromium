@@ -67140,6 +67140,7 @@ Called by update_use_counter_css.py.-->
   <int value="745" label="anchor-default"/>
   <int value="746" label="text-wrap"/>
   <int value="747" label="text-box-trim"/>
+  <int value="748" label="overlay"/>
 </enum>
 
 <enum name="MappedEditingCommands">

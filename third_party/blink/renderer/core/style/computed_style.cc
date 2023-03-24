@@ -367,7 +367,7 @@ bool ComputedStyle::NeedsReattachLayoutTree(const Element& element,
     return true;
   }
 
-  if (old_style->TopLayer() != new_style->TopLayer()) {
+  if (old_style->Overlay() != new_style->Overlay()) {
     return true;
   }
   return false;
@@ -2520,7 +2520,7 @@ bool ComputedStyle::CalculateIsStackingContextWithoutContainment() const {
 }
 
 bool ComputedStyle::IsInTopLayer(const Element& element) const {
-  return element.IsInTopLayer() && TopLayer() == ETopLayer::kBrowser;
+  return element.IsInTopLayer() && Overlay() == EOverlay::kAuto;
 }
 
 ComputedStyleBuilder::ComputedStyleBuilder(const ComputedStyle& style) {

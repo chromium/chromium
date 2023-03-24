@@ -1418,11 +1418,11 @@ video::-internal-media-controls-playback-speed-list,
 audio::-internal-media-controls-playback-speed-list,
 video::-internal-media-controls-text-track-list,
 audio::-internal-media-controls-text-track-list {
-  /* Ideally, top-layer should only be set to 'browser' when IsWanted() is true,
+  /* Ideally, overlay should only be set to 'auto' when IsWanted() is true,
      but there is currently no way to match that with a selector. If IsWanted()
      is false we force a display:none in the code, which means we will not
      render these pseudo elements in the top layer anyway. */
-  top-layer: browser !important;
+  overlay: auto !important;
 }
 
 @media ua-forced-colors {

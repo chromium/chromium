@@ -6539,8 +6539,8 @@ bool Element::ShouldStoreComputedStyle(const ComputedStyle& style) const {
   // If we're in a locked subtree and we're a top layer element, it means that
   // we shouldn't be creating a layout object. This path can happen if we're
   // force-updating style on the locked subtree and reach this node. Note that
-  // we already detached layout when this element was added to top-layer, so we
-  // simply maintain the fact that it doesn't have a layout object/subtree.
+  // we already detached layout when this element was added to the top layer, so
+  // we simply maintain the fact that it doesn't have a layout object/subtree.
   if (style.IsInTopLayer(*this) &&
       DisplayLockUtilities::LockedAncestorPreventingPaint(*this)) {
     return false;
@@ -7280,13 +7280,13 @@ void Element::SetIsInTopLayer(bool in_top_layer) {
   if (!GetDocument().InStyleRecalc()) {
     if (in_top_layer) {
       // Need to force re-attachment in case the element was removed and re-
-      // added between two lifecycle updates since the top-layer computed value
+      // added between two lifecycle updates since the overlay computed value
       // would not change, but the layout object order may have.
       SetForceReattachLayoutTree();
     }
 
     if (!RuntimeEnabledFeatures::CSSTopLayerForTransitionsEnabled()) {
-      // Needs a style recalc to update the top-layer property in
+      // Needs a style recalc to update the overlay property in
       // StyleAdjuster.
       SetNeedsStyleRecalc(
           kLocalStyleChange,

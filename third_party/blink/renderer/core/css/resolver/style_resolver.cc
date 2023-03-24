@@ -434,8 +434,8 @@ static CSSPropertyValueSet* ForcedColorsUserAgentDeclarations() {
   return decl;
 }
 
-// UA rule: * { top-layer: none !important }
-static CSSPropertyValueSet* UniversalTopLayerUserAgentDeclaration() {
+// UA rule: * { overlay: none !important }
+static CSSPropertyValueSet* UniversalOverlayUserAgentDeclaration() {
   DEFINE_STATIC_LOCAL(
       Persistent<MutableCSSPropertyValueSet>, decl,
       (MakeGarbageCollected<MutableCSSPropertyValueSet>(kHTMLStandardMode)));
@@ -443,7 +443,7 @@ static CSSPropertyValueSet* UniversalTopLayerUserAgentDeclaration() {
   DCHECK(RuntimeEnabledFeatures::CSSTopLayerForTransitionsEnabled());
 
   if (decl->IsEmpty()) {
-    decl->SetProperty(CSSPropertyID::kTopLayer,
+    decl->SetProperty(CSSPropertyID::kOverlay,
                       *CSSIdentifierValue::Create(CSSValueID::kNone),
                       true /* important */);
   }
@@ -1342,14 +1342,14 @@ void StyleResolver::ApplyBaseStyleNoCache(
           ForcedColorsUserAgentDeclarations());
     }
 
-    // UA rule: * { top-layer: none !important }
+    // UA rule: * { overlay: none !important }
     // Implemented here because DCHECKs ensures we don't add universal rules to
     // the UA sheets. Note that this is a universal rule in any namespace.
     // Adding this to the html.css would only do the override in the HTML
     // namespace since the sheet has a default namespace.
     if (RuntimeEnabledFeatures::CSSTopLayerForTransitionsEnabled()) {
       cascade.MutableMatchResult().AddMatchedProperties(
-          UniversalTopLayerUserAgentDeclaration());
+          UniversalOverlayUserAgentDeclaration());
     }
 
     // This adds a CSSInitialColorValue to the cascade for the document

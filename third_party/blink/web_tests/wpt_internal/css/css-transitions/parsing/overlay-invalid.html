@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<title>CSS Transitions: parsing overlay with invalid values</title>
+<link rel="help" href="https://github.com/w3c/csswg-drafts/issues/8189">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/css/support/parsing-testcommon.js"></script>
+<script>
+  // overlay: none | auto
+  test_invalid_value("overlay", "browser");
+  test_invalid_value("overlay", "normal");
+  test_invalid_value("overlay", "none auto");
+  test_invalid_value("overlay", "none, auto");
+  test_invalid_value("overlay", "\'auto\'");
+  test_invalid_value("overlay", "\'none\'");
+</script>

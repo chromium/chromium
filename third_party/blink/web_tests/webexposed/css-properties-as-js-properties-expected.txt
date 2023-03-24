@@ -315,6 +315,7 @@ overflowInline
 overflowWrap
 overflowX
 overflowY
+overlay
 overrideColors
 overscrollBehavior
 overscrollBehaviorBlock
@@ -451,7 +452,6 @@ toggleRoot
 toggleTrigger
 toggleVisibility
 top
-topLayer
 touchAction
 transform
 transformBox

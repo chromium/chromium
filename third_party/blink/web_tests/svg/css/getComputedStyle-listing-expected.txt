@@ -274,6 +274,7 @@ overflow-inline: visible
 overflow-wrap: normal
 overflow-x: visible
 overflow-y: visible
+overlay: none
 overscroll-behavior-block: auto
 overscroll-behavior-inline: auto
 padding-block-end: 0px
@@ -354,7 +355,6 @@ toggle-root: none
 toggle-trigger: none
 toggle-visibility: normal
 top: auto
-top-layer: none
 touch-action: auto
 transform: none
 transform-origin: 0px 0px

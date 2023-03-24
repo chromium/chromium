@@ -2441,7 +2441,7 @@ class CORE_EXPORT Document : public ContainerNode,
   // stack and is thus the one that will be visually on top.
   HeapVector<Member<Element>> top_layer_elements_;
 
-  // top_layer_elements_ to be removed when top-layer computes to none.
+  // top_layer_elements_ to be removed when overlay computes to none.
   HeapHashSet<Member<Element>> top_layer_elements_pending_removal_;
 
   // The stack of currently-displayed `popover=auto` elements. Elements in the

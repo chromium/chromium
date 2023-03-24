@@ -7926,7 +7926,7 @@ void Document::RemoveFinishedTopLayerElements() {
   HeapVector<Member<Element>> to_remove;
   for (Element* element : top_layer_elements_pending_removal_) {
     const ComputedStyle* style = element->GetComputedStyle();
-    if (!style || style->TopLayer() == ETopLayer::kNone) {
+    if (!style || style->Overlay() == EOverlay::kNone) {
       to_remove.push_back(element);
     }
   }

@@ -2386,7 +2386,7 @@ class ComputedStyle : public ComputedStyleBase,
     if (pseudo == kPseudoIdMarker) {
       return Display() == EDisplay::kListItem;
     }
-    if (pseudo == kPseudoIdBackdrop && TopLayer() == ETopLayer::kNone) {
+    if (pseudo == kPseudoIdBackdrop && Overlay() == EOverlay::kNone) {
       return false;
     }
     if (!HasPseudoElementStyle(pseudo)) {
@@ -2401,8 +2401,8 @@ class ComputedStyle : public ComputedStyleBase,
     return pseudo == kPseudoIdBefore || pseudo == kPseudoIdAfter;
   }
 
-  // Returns true if the element is a top layer candidate whose top-layer
-  // property computes to 'browser'.
+  // Returns true if the element is a top layer candidate whose overlay property
+  // computes to 'auto'.
   bool IsInTopLayer(const Element& element) const;
 
   // Load the images of CSS properties that were deferred by LazyLoad.
