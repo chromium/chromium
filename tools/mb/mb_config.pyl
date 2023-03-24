@@ -2451,7 +2451,7 @@
     ],
 
     'codesearch_gen_chromium_ios_bot': [
-      'codesearch', 'ios',
+      'codesearch_ios', 'ios',
     ],
 
     # Lacros uses different gn args to build for chromeOS device vs. Linux. For
@@ -4013,6 +4013,14 @@
       'mixins': ['goma', 'clang', 'shared', 'debug', 'minimal_symbols',
                  'blink_enable_generated_code_formatting'],
     },
+
+    # Same as regular codesearch except ios does not allow component builds
+    'codesearch_ios': {
+      'gn_args': 'clang_use_chrome_plugins=false enable_kythe_annotations=true',
+      'mixins': ['goma', 'clang', 'debug', 'minimal_symbols',
+                 'blink_enable_generated_code_formatting'],
+    },
+
     'codesearch_release': {
       'gn_args': 'clang_use_chrome_plugins=false enable_kythe_annotations=true',
       'mixins': ['release', 'static', 'goma',
