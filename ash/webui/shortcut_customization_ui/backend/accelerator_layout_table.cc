@@ -398,8 +398,8 @@ const NonConfigurableActionsMap& GetNonConfigurableActionsMap() {
                {ui::Accelerator(ui::VKEY_BROWSER_BACK,
                                 ui::EF_CONTROL_DOWN | ui::EF_SHIFT_DOWN)})},
           {NonConfigurableActions::kAmbientOpenRightClickMenu,
-           NonConfigurableAcceleratorDetails({ui::Accelerator(
-               ui::VKEY_VOLUME_UP, ui::EF_COMMAND_DOWN | ui::EF_SHIFT_DOWN)})},
+           NonConfigurableAcceleratorDetails(
+               {ui::Accelerator(ui::VKEY_F10, ui::EF_SHIFT_DOWN)})},
           {NonConfigurableActions::kAmbientDisplayHiddenFiles,
            NonConfigurableAcceleratorDetails(
                {ui::Accelerator(ui::VKEY_OEM_PERIOD, ui::EF_CONTROL_DOWN)})},
