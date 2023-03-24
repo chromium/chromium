@@ -6841,3 +6841,28 @@ def CheckNoJsInIos(input_api, output_api):
             'scripts on iOS.', error_paths))
 
     return results
+
+def CheckLibcxxRevisionsMatch(input_api, output_api):
+    """Check to make sure the libc++ version matches across deps files."""
+
+    DEPS_FILES = [ 'DEPS', 'buildtools/deps_revisions.gni' ]
+
+    file_filter = lambda f: f.LocalPath().replace(
+            input_api.os_path.sep, '/') in DEPS_FILES
+    changed_deps_files = input_api.AffectedFiles(file_filter=file_filter)
+    if not changed_deps_files:
+        return []
+
+    def LibcxxRevision(file):
+        file = input_api.os_path.join(input_api.PresubmitLocalPath(),
+                                      *file.split('/'))
+        return input_api.re.search(
+                r'libcxx_revision.*[:=].*[\'"](\w+)[\'"]',
+                input_api.ReadFile(file)).group(1)
+
+    if len(set([LibcxxRevision(f) for f in DEPS_FILES])) == 1:
+        return []
+
+    return [output_api.PresubmitError(
+        'libcxx_revision not equal across %s' % ', '.join(DEPS_FILES),
+        changed_deps_files)]
