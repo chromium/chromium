@@ -31,12 +31,12 @@
 #include "chrome/browser/serial/serial_chooser_context.h"
 #include "chrome/browser/serial/serial_chooser_context_factory.h"
 #include "chrome/browser/subresource_filter/subresource_filter_profile_context_factory.h"
+#include "chrome/browser/ui/url_identity.h"
 #include "chrome/browser/usb/usb_chooser_context.h"
 #include "chrome/browser/usb/usb_chooser_context_factory.h"
-#include "chrome/browser/web_applications/web_app_provider.h"
-#include "chrome/browser/web_applications/web_app_utils.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/pref_names.h"
+#include "chrome/common/url_constants.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/content_settings/core/common/content_settings.h"
 #include "components/content_settings/core/common/content_settings_pattern.h"
@@ -1041,17 +1041,13 @@ base::Value::List GetChooserExceptionListFromProfile(
 
 absl::optional<std::string> GetIsolatedWebAppName(Profile* profile,
                                                   GURL origin) {
-  absl::optional<std::string> app_name;
-  if (auto* provider = web_app::WebAppProvider::GetForWebApps(profile)) {
-    if (absl::optional<web_app::AppId> app_id =
-            provider->registrar_unsafe().FindAppWithUrlInScope(origin)) {
-      if (!provider->registrar_unsafe().IsIsolated(*app_id)) {
-        return app_name;
-      }
-      app_name = provider->registrar_unsafe().GetAppShortName(*app_id);
-    }
+  if (!origin.SchemeIs(chrome::kIsolatedAppScheme)) {
+    return absl::nullopt;
   }
-  return app_name;
+  auto identity = UrlIdentity::CreateFromUrl(
+      profile, origin,
+      /*allowed_types=*/{UrlIdentity::Type::kIsolatedWebApp}, /*options=*/{});
+  return base::UTF16ToUTF8(identity.name);
 }
 
 absl::optional<std::string> GetExtensionDisplayName(Profile* profile,
