@@ -156,7 +156,8 @@ public class RequestDesktopUtilsUnitTest {
         }
 
         @Implementation
-        public static void registerSyntheticFieldTrial(String trialName, String groupName) {
+        public static void registerSyntheticFieldTrial(
+                String trialName, String groupName, int annotationMode) {
             sGlobalDefaultsExperimentTrialName = trialName;
             sGlobalDefaultsExperimentGroupName = groupName;
         }
