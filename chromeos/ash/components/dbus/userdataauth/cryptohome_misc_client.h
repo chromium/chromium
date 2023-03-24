@@ -35,8 +35,6 @@ class COMPONENT_EXPORT(USERDATAAUTH_CLIENT) CryptohomeMiscClient {
       ::user_data_auth::LockToSingleUserMountUntilRebootReply>;
   using GetRsuDeviceIdCallback =
       chromeos::DBusMethodCallback<::user_data_auth::GetRsuDeviceIdReply>;
-  using CheckHealthCallback =
-      chromeos::DBusMethodCallback<::user_data_auth::CheckHealthReply>;
 
   // Not copyable or movable.
   CryptohomeMiscClient(const CryptohomeMiscClient&) = delete;
