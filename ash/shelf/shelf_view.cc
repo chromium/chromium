@@ -85,6 +85,8 @@
 #include "ui/events/event_utils.h"
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/geometry/point.h"
+#include "ui/gfx/geometry/rect.h"
+#include "ui/gfx/geometry/transform_util.h"
 #include "ui/gfx/image/image_skia.h"
 #include "ui/views/animation/bounds_animator.h"
 #include "ui/views/animation/ink_drop.h"
@@ -1267,6 +1269,7 @@ void ShelfView::PointerPressedOnButton(views::View* view,
   // animation is still in progress), as drag icon proxy is not expected to be
   // reused after it starts animating out.
   drag_icon_proxy_.reset();
+  drag_image_layer_.reset();
 
   // Only when the repost event occurs on the same shelf item, we should ignore
   // the call in ShelfView::ButtonPressed(...).
@@ -1333,30 +1336,18 @@ void ShelfView::PointerReleasedOnButton(const views::View* view,
 
   delegate_->CancelScrollForItemDrag();
 
-  if (!drag_view_ || dragged_off_shelf_)
+  if (!drag_view_ || dragged_off_shelf_) {
     drag_icon_proxy_.reset();
+    drag_image_layer_.reset();
+  }
+
+  const gfx::Rect target_bounds_in_screen =
+      CalculateDropTargetBoundsForDragViewInScreen();
 
   if (drag_icon_proxy_) {
-    const gfx::Rect drag_view_ideal_bounds = view_model_->ideal_bounds(
-        view_model_->GetIndexOfView(drag_view_).value());
-    gfx::Rect target_bounds_in_screen =
-        drag_view_->GetIdealIconBounds(drag_view_ideal_bounds.size(),
-                                       /*icon_scale=*/1.0f);
-    target_bounds_in_screen.Offset(drag_view_ideal_bounds.x(),
-                                   drag_view_ideal_bounds.y());
-    target_bounds_in_screen = GetMirroredRect(target_bounds_in_screen);
-    views::View::ConvertRectToScreen(this, &target_bounds_in_screen);
-
-    if (!delegate_->AreBoundsWithinVisibleSpace(target_bounds_in_screen)) {
-      drag_icon_proxy_.reset();
-      drag_view_->layer()->SetOpacity(1.0f);
-    } else {
-      drag_icon_proxy_->AnimateToBoundsAndCloseWidget(
-          target_bounds_in_screen,
-          base::BindOnce(&ShelfView::OnDragIconProxyAnimatedOut,
-                         base::Unretained(this),
-                         std::make_unique<ViewOpacityResetter>(drag_view_)));
-    }
+    AnimateDragIconProxy(target_bounds_in_screen);
+  } else if (drag_image_layer_) {
+    AnimateDragImageLayer(target_bounds_in_screen);
   } else if (drag_view_) {
     drag_view_->layer()->SetOpacity(1.0f);
   }
@@ -1368,10 +1359,89 @@ void ShelfView::PointerReleasedOnButton(const views::View* view,
   RemoveGhostView();
 }
 
+void ShelfView::AnimateDragImageLayer(
+    const gfx::Rect& target_bounds_in_screen) {
+  DCHECK(drag_image_layer_);
+
+  if (!delegate_->AreBoundsWithinVisibleSpace(target_bounds_in_screen)) {
+    drag_image_layer_.reset();
+    drag_view_->layer()->SetOpacity(1.0f);
+    return;
+  }
+
+  ui::Layer* target_layer = drag_image_layer_->root();
+  if (target_layer) {
+    target_layer->GetAnimator()->AbortAllAnimations();
+
+    gfx::Rect current_bounds = target_layer->bounds();
+    if (current_bounds.IsEmpty()) {
+      OnDragIconProxyAnimatedOut(
+          std::make_unique<ViewOpacityResetter>(drag_view_));
+      return;
+    }
+
+    // |target_layer| bounds are in display coordinates.
+    display::Display display =
+        display::Screen::GetScreen()->GetDisplayNearestWindow(
+            GetWidget()->GetNativeWindow());
+    current_bounds.Offset(display.bounds().OffsetFromOrigin());
+
+    const gfx::Transform transform = gfx::TransformBetweenRects(
+        gfx::RectF(current_bounds), gfx::RectF(target_bounds_in_screen));
+
+    views::AnimationBuilder builder;
+    builder.SetPreemptionStrategy(ui::LayerAnimator::IMMEDIATELY_SET_NEW_TARGET)
+        .OnEnded(base::BindOnce(
+            &ShelfView::OnDragIconProxyAnimatedOut, weak_factory_.GetWeakPtr(),
+            std::make_unique<ViewOpacityResetter>(drag_view_)))
+        .OnAborted(base::BindOnce(
+            &ShelfView::OnDragIconProxyAnimatedOut, weak_factory_.GetWeakPtr(),
+            std::make_unique<ViewOpacityResetter>(drag_view_)))
+        .Once()
+        .SetDuration(base::Milliseconds(200))
+        .SetTransform(target_layer, transform, gfx::Tween::FAST_OUT_LINEAR_IN);
+  }
+}
+
+void ShelfView::AnimateDragIconProxy(const gfx::Rect& target_bounds_in_screen) {
+  DCHECK(drag_icon_proxy_);
+
+  if (!delegate_->AreBoundsWithinVisibleSpace(target_bounds_in_screen)) {
+    drag_icon_proxy_.reset();
+    drag_view_->layer()->SetOpacity(1.0f);
+    return;
+  }
+
+  drag_icon_proxy_->AnimateToBoundsAndCloseWidget(
+      target_bounds_in_screen,
+      base::BindOnce(&ShelfView::OnDragIconProxyAnimatedOut,
+                     base::Unretained(this),
+                     std::make_unique<ViewOpacityResetter>(drag_view_)));
+}
+
+gfx::Rect ShelfView::CalculateDropTargetBoundsForDragViewInScreen() {
+  if (!drag_view_) {
+    return gfx::Rect();
+  }
+
+  const gfx::Rect drag_view_ideal_bounds = view_model_->ideal_bounds(
+      view_model_->GetIndexOfView(drag_view_).value());
+  gfx::Rect target_bounds_in_screen =
+      drag_view_->GetIdealIconBounds(drag_view_ideal_bounds.size(),
+                                     /*icon_scale=*/1.0f);
+  target_bounds_in_screen.Offset(drag_view_ideal_bounds.x(),
+                                 drag_view_ideal_bounds.y());
+  target_bounds_in_screen = GetMirroredRect(target_bounds_in_screen);
+  views::View::ConvertRectToScreen(this, &target_bounds_in_screen);
+
+  return target_bounds_in_screen;
+}
+
 void ShelfView::OnDragIconProxyAnimatedOut(
     std::unique_ptr<ViewOpacityResetter> opacity_resetter) {
   opacity_resetter->Run();
   drag_icon_proxy_.reset();
+  drag_image_layer_.reset();
 }
 
 void ShelfView::LayoutToIdealBounds() {
@@ -1507,6 +1577,7 @@ void ShelfView::PrepareForDrag(Pointer pointer, const ui::LocatedEvent& event) {
   // Drag icon proxy from previous drag may be around if the icon is still
   // animating to the final position. Reset it here to cancel the animation.
   drag_icon_proxy_.reset();
+  drag_image_layer_.reset();
   delegate_->CancelScrollForItemDrag();
 
   drag_view_->layer()->SetOpacity(0.0f);
@@ -1757,6 +1828,7 @@ void ShelfView::FinalizeRipOffDrag(bool cancel) {
   // proxy image.
   if (!current_index.has_value()) {
     drag_icon_proxy_.reset();
+    drag_image_layer_.reset();
     return;
   }
 
@@ -1799,6 +1871,7 @@ void ShelfView::FinalizeRipOffDrag(bool cancel) {
     model_->OnItemReturnedFromRipOff(model_->item_count() - 1);
   }
   drag_icon_proxy_.reset();
+  drag_image_layer_.reset();
 }
 
 ShelfView::RemovableState ShelfView::RemovableByRipOff(int index) const {
@@ -2065,6 +2138,7 @@ absl::optional<size_t> ShelfView::CancelDrag(
 
   delegate_->CancelScrollForItemDrag();
   drag_icon_proxy_.reset();
+  drag_image_layer_.reset();
 
   if (!drag_view_)
     return modified_index;
@@ -2804,6 +2878,7 @@ void ShelfView::EndDragCallback(
     std::unique_ptr<ui::LayerTreeOwner> drag_image_layer_owner) {
   // TODO(b/271601288): Hook up drop animation with the drag image icon.
   output_drag_op = ui::mojom::DragOperation::kMove;
+  drag_image_layer_ = std::move(drag_image_layer_owner);
   EndDrag(false, /*icon_proxy = */ nullptr);
 }
 
