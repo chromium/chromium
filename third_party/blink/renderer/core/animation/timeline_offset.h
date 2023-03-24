@@ -35,6 +35,7 @@ struct TimelineOffset {
 
   static absl::optional<TimelineOffset> Create(Element* element,
                                                String value,
+                                               double default_percent,
                                                ExceptionState& exception_state);
 
   static absl::optional<TimelineOffset> Create(

@@ -328,7 +328,9 @@ CSSValue* ConsumeTimelineRangeName(CSSParserTokenRange&);
 CSSValue* ConsumeTimelineRangeNameAndPercent(CSSParserTokenRange&,
                                              const CSSParserContext&);
 CSSValue* ConsumeAnimationDelay(CSSParserTokenRange&, const CSSParserContext&);
-CSSValue* ConsumeAnimationRange(CSSParserTokenRange&, const CSSParserContext&);
+CSSValue* ConsumeAnimationRange(CSSParserTokenRange&,
+                                const CSSParserContext&,
+                                double default_offset_percent);
 
 bool ConsumeAnimationShorthand(
     const StylePropertyShorthand&,

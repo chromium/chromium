@@ -269,14 +269,6 @@ bool ConsumeAnimationDelayItemInto(CSSParserTokenRange& range,
   return true;
 }
 
-CSSValue* RangeOffsetValue(const CSSValue* range_name, double percentage) {
-  CSSValueList* list = CSSValueList::CreateSpaceSeparated();
-  list->Append(*range_name);
-  list->Append(*CSSNumericLiteralValue::Create(
-      percentage, CSSPrimitiveValue::UnitType::kPercentage));
-  return list;
-}
-
 // Consume a single <animation-range-start> and a single
 // <animation-range-end>, and append the result to `start_list` and
 // `end_list` respectively.
@@ -287,29 +279,24 @@ bool ConsumeAnimationRangeItemInto(CSSParserTokenRange& range,
   using css_parsing_utils::ConsumeAnimationRange;
   using css_parsing_utils::ConsumeTimelineRangeName;
 
-  CSSParserTokenRange original_range = range;
+  const CSSValue* start_range =
+      ConsumeAnimationRange(range, context, /* default_offset_percent */ 0.0);
+  const CSSValue* end_range =
+      ConsumeAnimationRange(range, context, /* default_offset_percent */ 100.0);
 
-  const CSSValue* start_range = ConsumeAnimationRange(range, context);
-  const CSSValue* end_range = ConsumeAnimationRange(range, context);
-
-  // If a <timeline-range-name> alone is specified, animation-delay-start is set
-  // to that name plus 0% and animation-delay-end is set to that name plus 100%.
+  // The form 'name X' must expand to 'name X name 100%'.
   //
-  // https://drafts.csswg.org/scroll-animations-1/#propdef-animation-range
-  if (!start_range) {
-    range = original_range;
-    const CSSValue* range_name = ConsumeTimelineRangeName(range);
-    if (!range_name) {
-      return false;
-    }
-    start_range = RangeOffsetValue(range_name, 0);
-    end_range = RangeOffsetValue(range_name, 100);
+  // https://github.com/w3c/csswg-drafts/issues/8438
+  if (start_range && start_range->IsValueList() && !end_range) {
+    CSSValueList* implied_end = CSSValueList::CreateSpaceSeparated();
+    const CSSValue& name = To<CSSValueList>(start_range)->First();
+    implied_end->Append(name);
+    end_range = implied_end;
   }
 
   if (!start_range) {
     return false;
   }
-
   if (!end_range) {
     end_range = CSSIdentifierValue::Create(CSSValueID::kAuto);
   }
@@ -457,27 +444,29 @@ const CSSValue* AnimationRange::CSSValueFromComputedStyleInternal(
     return nullptr;
   }
 
+  TimelineOffset default_start(TimelineOffset::NamedRange::kNone,
+                               Length::Percent(0));
+  TimelineOffset default_end(TimelineOffset::NamedRange::kNone,
+                             Length::Percent(100));
+
   auto* outer_list = CSSValueList::CreateCommaSeparated();
 
   for (wtf_size_t i = 0; i < range_start_list.size(); ++i) {
     const absl::optional<TimelineOffset>& start = range_start_list[i];
     const absl::optional<TimelineOffset>& end = range_end_list[i];
 
-    // E.g. "enter 0% enter 100%" must be shortened to just "enter".
-    if (start.has_value() && end.has_value() && start->name == end->name &&
-        start->offset == Length::Percent(0) &&
-        end->offset == Length::Percent(100)) {
-      outer_list->Append(
-          *MakeGarbageCollected<CSSIdentifierValue>(start->name));
-      continue;
-    }
-
     auto* inner_list = CSSValueList::CreateSpaceSeparated();
-    inner_list->Append(*ComputedStyleUtils::ValueForAnimationRangeStart(
-        range_start_list[i], style));
-    if (end != CSSAnimationData::InitialRangeEnd()) {
-      inner_list->Append(*ComputedStyleUtils::ValueForAnimationRangeEnd(
-          range_end_list[i], style));
+    inner_list->Append(
+        *ComputedStyleUtils::ValueForAnimationRangeStart(start, style));
+
+    // The form "name X name 100%" must contract to "name X".
+    //
+    // https://github.com/w3c/csswg-drafts/issues/8438
+    TimelineOffset omittable_end(start.value_or(default_start).name,
+                                 Length::Percent(100));
+    if (end.value_or(default_end) != omittable_end) {
+      inner_list->Append(
+          *ComputedStyleUtils::ValueForAnimationRangeEnd(end, style));
     }
     outer_list->Append(*inner_list);
   }

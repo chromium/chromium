@@ -475,17 +475,21 @@ EAnimPlayState CSSToStyleMap::MapAnimationPlayState(StyleResolverState& state,
 namespace {
 
 absl::optional<TimelineOffset> MapAnimationRange(StyleResolverState& state,
-                                                 const CSSValue& value) {
+                                                 const CSSValue& value,
+                                                 double default_percent) {
   if (auto* ident = DynamicTo<CSSIdentifierValue>(value);
       ident && ident->GetValueID() == CSSValueID::kAuto) {
     return absl::nullopt;
   }
   const auto& list = To<CSSValueList>(value);
-  DCHECK_EQ(list.length(), 2u);
+  DCHECK_GE(list.length(), 1u);
+  DCHECK_LE(list.length(), 2u);
   const auto& range_name = To<CSSIdentifierValue>(list.Item(0));
-  return TimelineOffset(
-      range_name.ConvertTo<TimelineOffset::NamedRange>(),
-      StyleBuilderConverter::ConvertLength(state, list.Item(1)));
+  Length percent = (list.length() == 2u) ? StyleBuilderConverter::ConvertLength(
+                                               state, list.Item(1))
+                                         : Length::Percent(default_percent);
+  return TimelineOffset(range_name.ConvertTo<TimelineOffset::NamedRange>(),
+                        percent);
 }
 
 }  // namespace
@@ -493,13 +497,13 @@ absl::optional<TimelineOffset> MapAnimationRange(StyleResolverState& state,
 absl::optional<TimelineOffset> CSSToStyleMap::MapAnimationRangeStart(
     StyleResolverState& state,
     const CSSValue& value) {
-  return MapAnimationRange(state, value);
+  return MapAnimationRange(state, value, 0);
 }
 
 absl::optional<TimelineOffset> CSSToStyleMap::MapAnimationRangeEnd(
     StyleResolverState& state,
     const CSSValue& value) {
-  return MapAnimationRange(state, value);
+  return MapAnimationRange(state, value, 100);
 }
 
 EffectModel::CompositeOperation CSSToStyleMap::MapAnimationComposition(

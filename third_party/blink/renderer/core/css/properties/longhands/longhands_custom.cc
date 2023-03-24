@@ -469,7 +469,8 @@ const CSSValue* AnimationRangeStart::ParseSingleValue(
     const CSSParserLocalContext&) const {
   DCHECK(RuntimeEnabledFeatures::CSSScrollTimelineEnabled());
   return css_parsing_utils::ConsumeCommaSeparatedList(
-      css_parsing_utils::ConsumeAnimationRange, range, context);
+      css_parsing_utils::ConsumeAnimationRange, range, context,
+      /* default_offset_percent */ 0.0);
 }
 
 const CSSValue* AnimationRangeStart::CSSValueFromComputedStyleInternal(
@@ -486,7 +487,8 @@ const CSSValue* AnimationRangeEnd::ParseSingleValue(
     const CSSParserLocalContext&) const {
   DCHECK(RuntimeEnabledFeatures::CSSScrollTimelineEnabled());
   return css_parsing_utils::ConsumeCommaSeparatedList(
-      css_parsing_utils::ConsumeAnimationRange, range, context);
+      css_parsing_utils::ConsumeAnimationRange, range, context,
+      /* default_offset_percent */ 100.0);
 }
 
 const CSSValue* AnimationRangeEnd::CSSValueFromComputedStyleInternal(

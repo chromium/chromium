@@ -4321,7 +4321,8 @@ CSSValue* ConsumeAnimationDelay(CSSParserTokenRange& range,
 }
 
 CSSValue* ConsumeAnimationRange(CSSParserTokenRange& range,
-                                const CSSParserContext& context) {
+                                const CSSParserContext& context,
+                                double default_offset_percent) {
   DCHECK(RuntimeEnabledFeatures::CSSScrollTimelineEnabled());
   if (CSSValue* ident = ConsumeIdent<CSSValueID::kAuto>(range)) {
     return ident;
@@ -4332,12 +4333,13 @@ CSSValue* ConsumeAnimationRange(CSSParserTokenRange& range,
     return nullptr;
   }
   list->Append(*range_name);
-  CSSValue* percentage = ConsumeLengthOrPercent(
+  CSSPrimitiveValue* percentage = ConsumeLengthOrPercent(
       range, context, CSSPrimitiveValue::ValueRange::kAll);
-  if (!percentage) {
-    return nullptr;
+  if (percentage &&
+      !(percentage->IsPercentage() &&
+        percentage->GetValue<double>() == default_offset_percent)) {
+    list->Append(*percentage);
   }
-  list->Append(*percentage);
   return list;
 }
 

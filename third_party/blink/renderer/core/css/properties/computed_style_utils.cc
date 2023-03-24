@@ -2192,16 +2192,29 @@ CSSValue* ComputedStyleUtils::ValueForAnimationPlayStateList(
       &ValueForAnimationPlayState);
 }
 
-CSSValue* ComputedStyleUtils::ValueForAnimationRangeStart(
-    const absl::optional<TimelineOffset>& offset,
-    const ComputedStyle& style) {
+namespace {
+
+CSSValue* ValueForAnimationRange(const absl::optional<TimelineOffset>& offset,
+                                 const ComputedStyle& style,
+                                 const Length& default_offset) {
   if (!offset.has_value()) {
     return MakeGarbageCollected<CSSIdentifierValue>(CSSValueID::kAuto);
   }
   CSSValueList* list = CSSValueList::CreateSpaceSeparated();
   list->Append(*MakeGarbageCollected<CSSIdentifierValue>(offset->name));
-  list->Append(*ZoomAdjustedPixelValueForLength(offset->offset, style));
+  if (offset->offset != default_offset) {
+    list->Append(*ComputedStyleUtils::ZoomAdjustedPixelValueForLength(
+        offset->offset, style));
+  }
   return list;
+}
+
+}  // namespace
+
+CSSValue* ComputedStyleUtils::ValueForAnimationRangeStart(
+    const absl::optional<TimelineOffset>& offset,
+    const ComputedStyle& style) {
+  return ValueForAnimationRange(offset, style, Length::Percent(0.0));
 }
 
 CSSValue* ComputedStyleUtils::ValueForAnimationRangeStartList(
@@ -2218,7 +2231,7 @@ CSSValue* ComputedStyleUtils::ValueForAnimationRangeStartList(
 CSSValue* ComputedStyleUtils::ValueForAnimationRangeEnd(
     const absl::optional<TimelineOffset>& offset,
     const ComputedStyle& style) {
-  return ValueForAnimationRangeStart(offset, style);
+  return ValueForAnimationRange(offset, style, Length::Percent(100.0));
 }
 
 CSSValue* ComputedStyleUtils::ValueForAnimationRangeEndList(

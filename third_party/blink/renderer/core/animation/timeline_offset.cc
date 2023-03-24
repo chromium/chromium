@@ -70,6 +70,7 @@ String TimelineOffset::ToString() const {
 absl::optional<TimelineOffset> TimelineOffset::Create(
     Element* element,
     String css_text,
+    double default_percent,
     ExceptionState& exception_state) {
   if (!element) {
     exception_state.ThrowDOMException(
@@ -107,16 +108,15 @@ absl::optional<TimelineOffset> TimelineOffset::Create(
   }
 
   const auto& list = To<CSSValueList>(value);
-  if (list.length() != 2) {
-    ThrowExcpetionForInvalidTimelineOffset(exception_state);
-    return absl::nullopt;
-  }
 
   // TODO(kevers): Keep track of style dependent lengths in order
   // to re-resolve on a style update.
+  DCHECK(list.length());
   const auto& range_name = To<CSSIdentifierValue>(list.Item(0));
-  return TimelineOffset(range_name.ConvertTo<NamedRange>(),
-                        ResolveLength(element, &list.Item(1)));
+  Length offset = (list.length() == 2u) ? ResolveLength(element, &list.Item(1))
+                                        : Length::Percent(default_percent);
+
+  return TimelineOffset(range_name.ConvertTo<NamedRange>(), offset);
 }
 
 /* static */
@@ -126,7 +126,8 @@ absl::optional<TimelineOffset> TimelineOffset::Create(
     double default_percent,
     ExceptionState& exception_state) {
   if (range_offset->IsString()) {
-    return Create(element, range_offset->GetAsString(), exception_state);
+    return Create(element, range_offset->GetAsString(), default_percent,
+                  exception_state);
   }
 
   TimelineRangeOffset* value = range_offset->GetAsTimelineRangeOffset();
