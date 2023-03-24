@@ -1,3 +1,3 @@
 file://chrome/browser/flags/OWNERS
 
-per-file CachedChromeFlags.java=*
+per-file ChromeCachedFlags.java=*
