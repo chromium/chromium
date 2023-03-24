@@ -886,7 +886,9 @@ gfx::Size HotseatWidget::CalculateTargetBoundsSize(
 
   if (hotseat_target_state == HotseatState::kShownHomeLauncher) {
     if (ShelfConfig::Get()->elevate_tablet_mode_app_bar()) {
-      return gfx::Size(shelf_bounds.width(), hotseat_size);
+      return gfx::Size(
+          shelf_bounds.width() - ShelfConfig::Get()->button_spacing() * 2,
+          hotseat_size);
     }
   }
   return app_bar_size;
