@@ -87,11 +87,16 @@ bool DocumentInit::IsSrcdocDocument() const {
   return window_ && !window_->GetFrame()->IsMainFrame() && is_srcdoc_document_;
 }
 
-const KURL& DocumentInit::FallbackSrcdocBaseURL() const {
-  // The following DCHECK will need to change when we also use the fallback base
-  // url for about:blank. https://crbug.com/1356658.
-  DCHECK(IsSrcdocDocument() || fallback_srcdoc_base_url_.IsEmpty());
-  return fallback_srcdoc_base_url_;
+bool DocumentInit::IsAboutBlankDocument() const {
+  return window_ && url_.IsAboutBlankURL();
+}
+
+const KURL& DocumentInit::FallbackBaseURL() const {
+  DCHECK(IsSrcdocDocument() || IsAboutBlankDocument() ||
+         IsInitialEmptyDocument() || is_for_javascript_url_ ||
+         fallback_base_url_.IsEmpty())
+      << " url = " << url_ << ", fallback_base_url = " << fallback_base_url_;
+  return fallback_base_url_;
 }
 
 DocumentInit& DocumentInit::WithWindow(LocalDOMWindow* window,
@@ -271,9 +276,13 @@ DocumentInit& DocumentInit::WithSrcdocDocument(bool is_srcdoc_document) {
   return *this;
 }
 
-DocumentInit& DocumentInit::WithFallbackSrcdocBaseURL(
-    const KURL& fallback_srcdoc_base_url) {
-  fallback_srcdoc_base_url_ = fallback_srcdoc_base_url;
+DocumentInit& DocumentInit::WithFallbackBaseURL(const KURL& fallback_base_url) {
+  fallback_base_url_ = fallback_base_url;
+  return *this;
+}
+
+DocumentInit& DocumentInit::WithJavascriptURL(bool is_for_javascript_url) {
+  is_for_javascript_url_ = is_for_javascript_url;
   return *this;
 }
 

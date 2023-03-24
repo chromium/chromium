@@ -71,7 +71,8 @@ FrameLoadRequest::FrameLoadRequest(LocalDOMWindow* origin_window,
     // about:blank and about:srcdoc here.
     if (blink::features::IsNewBaseUrlInheritanceBehaviorEnabled() &&
         (resource_request_.Url().IsAboutBlankURL() ||
-         resource_request_.Url().IsAboutSrcdocURL())) {
+         resource_request_.Url().IsAboutSrcdocURL() ||
+         resource_request_.Url().IsEmpty())) {
       requestor_base_url_ = origin_window->BaseURL();
     }
 

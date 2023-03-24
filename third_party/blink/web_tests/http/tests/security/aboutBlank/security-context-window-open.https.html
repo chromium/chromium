@@ -19,6 +19,11 @@ function doTest() {
   var wnd0 = window.open('about:blank');
   var wnd1 = window.open('');
 
+  // TODO(1356658, 751329): This expectation will need to be changed when
+  // the feature NewBaseUrlInheritanceBehavior is enabled by default. At present
+  // the baseURI of about:blank is expected to be about:blank, but when
+  // NewBaseUrlInheritanceBehavior is enabled both the baseURI in the initial
+  // "Test begins" section will be the url of the test instead.
   log('--- Test begins ---\n');
   log('* "about:blank"\n');
   log('document.URL = ' + wnd0.document.URL + '\n');

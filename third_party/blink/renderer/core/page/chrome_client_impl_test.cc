@@ -104,7 +104,8 @@ class ViewCreatingClient : public frame_test_helpers::TestWebFrameClient {
       const SessionStorageNamespaceId&,
       bool& consumed_user_gesture,
       const absl::optional<Impression>&,
-      const absl::optional<WebPictureInPictureWindowOptions>&) override {
+      const absl::optional<WebPictureInPictureWindowOptions>&,
+      const WebURL& creator_base_url) override {
     return web_view_helper_.InitializeWithOpener(Frame());
   }
 

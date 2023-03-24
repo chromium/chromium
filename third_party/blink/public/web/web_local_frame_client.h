@@ -797,7 +797,8 @@ class BLINK_EXPORT WebLocalFrameClient {
       const SessionStorageNamespaceId& session_storage_namespace_id,
       bool& consumed_user_gesture,
       const absl::optional<Impression>&,
-      const absl::optional<WebPictureInPictureWindowOptions>& pip_options) {
+      const absl::optional<WebPictureInPictureWindowOptions>& pip_options,
+      const WebURL& base_url) {
     return nullptr;
   }
 };

@@ -519,18 +519,18 @@ void FillNavigationParamsRequest(
     }
   }
 
-  if (common_params.url.IsAboutSrcdoc()) {
-    // Pass on the `initiator_base_url`sent via the common_params. This will be
-    // picked up in DocumentLoader.
-    if (blink::features::IsNewBaseUrlInheritanceBehaviorEnabled()) {
-      // It's possible for initiator_base_url to be empty if this is an error
-      // srcdoc page. See
-      // NavigationRequestBrowserTest.OriginForSrcdocErrorPageInSubframe.
-      navigation_params->fallback_srcdoc_base_url =
-          common_params.initiator_base_url
-              ? WebURL(common_params.initiator_base_url.value())
-              : WebURL();
-    }
+  // Pass on the `initiator_base_url` sent via the common_params for srcdoc and
+  // about:blank documents. This will be picked up in DocumentLoader.
+  // Note: It's possible for initiator_base_url to be empty if this is an
+  // error srcdoc page. See test
+  // NavigationRequestBrowserTest.OriginForSrcdocErrorPageInSubframe.
+  if (blink::features::IsNewBaseUrlInheritanceBehaviorEnabled() &&
+      common_params.initiator_base_url &&
+      (common_params.url.IsAboutSrcdoc() || common_params.url.IsAboutBlank())) {
+    navigation_params->fallback_base_url =
+        common_params.initiator_base_url.value();
+  } else {
+    navigation_params->fallback_base_url = WebURL();
   }
 }
 
@@ -1424,7 +1424,8 @@ RenderFrameImpl* RenderFrameImpl::CreateMainFrame(
     bool is_for_scalable_page,
     blink::mojom::FrameReplicationStatePtr replication_state,
     const base::UnguessableToken& devtools_frame_token,
-    mojom::CreateLocalMainFrameParamsPtr params) {
+    mojom::CreateLocalMainFrameParamsPtr params,
+    const blink::WebURL& base_url) {
   // A main frame RenderFrame must have a RenderWidget.
   DCHECK_NE(MSG_ROUTING_NONE, params->widget_params->routing_id);
 
@@ -1441,7 +1442,7 @@ RenderFrameImpl* RenderFrameImpl::CreateMainFrame(
       // This conversion is a little sad, as this often comes from a
       // WebString...
       WebString::FromUTF8(replication_state->name),
-      replication_state->frame_policy.sandbox_flags);
+      replication_state->frame_policy.sandbox_flags, base_url);
   if (!params->is_on_initial_empty_document)
     render_frame->frame_->SetIsNotOnInitialEmptyDocument();
 
@@ -4594,9 +4595,6 @@ RenderFrameImpl::MakeDidCommitProvisionalLoadParams(
   // RenderFrameProxies in other processes.
   WebSecurityOrigin frame_origin = frame_document.GetSecurityOrigin();
   params->origin = frame_origin;
-  // Note: since we get the security origin from the `frame_document`, we also
-  // get the base url from it too.
-  params->initiator_base_url = frame_document.BaseURL();
 
   params->permissions_policy_header = permissions_policy_header;
   params->document_policy_header = document_policy_header;
@@ -4615,6 +4613,12 @@ RenderFrameImpl::MakeDidCommitProvisionalLoadParams(
   // for virtual URLs (e.g. the "history URL" is shown for loadDataWithBaseURL
   // instead of this URL).
   params->url = GetLoadingUrl();
+  // Note: since we get the security origin from the `frame_document`, we also
+  // get the base url from it too.
+  if (blink::features::IsNewBaseUrlInheritanceBehaviorEnabled() &&
+      (params->url.IsAboutBlank() || params->url.IsAboutSrcdoc())) {
+    params->initiator_base_url = frame_document.BaseURL();
+  }
 
   // TODO(https://crbug.com/1158101): Reconsider how we calculate
   // should_update_history.
@@ -5427,8 +5431,9 @@ void RenderFrameImpl::OpenURL(std::unique_ptr<blink::WebNavigationInfo> info) {
   auto params = blink::mojom::OpenURLParams::New();
   params->url = info->url_request.Url();
   params->initiator_origin = info->url_request.RequestorOrigin();
-  if (info->requestor_base_url.IsValid())
+  if (info->requestor_base_url.IsValid()) {
     params->initiator_base_url = info->requestor_base_url;
+  }
   params->post_body = blink::GetRequestBodyForWebURLRequest(info->url_request);
   DCHECK_EQ(!!params->post_body, IsHttpPost(info->url_request));
   params->extra_headers =
@@ -6204,8 +6209,8 @@ WebView* RenderFrameImpl::CreateNewWindow(
     const blink::SessionStorageNamespaceId& session_storage_namespace_id,
     bool& consumed_user_gesture,
     const absl::optional<blink::Impression>& impression,
-    const absl::optional<blink::WebPictureInPictureWindowOptions>&
-        pip_options) {
+    const absl::optional<blink::WebPictureInPictureWindowOptions>& pip_options,
+    const blink::WebURL& base_url) {
   consumed_user_gesture = false;
   mojom::CreateNewWindowParamsPtr params = mojom::CreateNewWindowParams::New();
 
@@ -6361,9 +6366,9 @@ WebView* RenderFrameImpl::CreateNewWindow(
   view_params->hidden = is_background_tab;
   view_params->never_composited = never_composited;
 
-  WebView* web_view =
-      agent_scheduling_group_.CreateWebView(std::move(view_params),
-                                            /*was_created_by_renderer=*/true);
+  WebView* web_view = agent_scheduling_group_.CreateWebView(
+      std::move(view_params),
+      /*was_created_by_renderer=*/true, base_url);
 
   if (reply->wait_for_debugger) {
     blink::WebFrameWidget* frame_widget =

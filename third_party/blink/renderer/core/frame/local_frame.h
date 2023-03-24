@@ -214,6 +214,8 @@ class CORE_EXPORT LocalFrame final
   //   storage, IndexedDB, BroadcastChannel, etc...
   // - |document_ukm_source_id| is the ukm source id for the new document. If
   //   you pass ukm::kInvalidSourceId, a new ukm source id will be generated.
+  // - `creator_base_url` is the base url of the initiator that created this
+  //    frame.
   //
   // Note: Usually, the initial empty document inherits its |policy_container|
   // and |storage_key| from the parent or the opener. The inheritance operation
@@ -224,7 +226,8 @@ class CORE_EXPORT LocalFrame final
             const DocumentToken& document_token,
             std::unique_ptr<PolicyContainer> policy_container,
             const StorageKey& storage_key,
-            ukm::SourceId document_ukm_source_id);
+            ukm::SourceId document_ukm_source_id,
+            const KURL& creator_base_url);
   void SetView(LocalFrameView*);
   void CreateView(const gfx::Size&, const Color&);
 

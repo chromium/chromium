@@ -2243,12 +2243,12 @@ class CORE_EXPORT Document : public ContainerNode,
   KURL base_url_override_;  // An alternative base URL that takes precedence
                             // over base_url_ (but not base_element_url_).
 
-  // Used in FallbackBaseURL() to provide the base URL for srcdoc documents,
-  // which is the initiator's base URL at the time the navigation was initiated.
-  // Separate from the base_url_* fields because the fallback base URL should
-  // not take precedence over things like <base>.
-  // Note: this currently is only used when IsolateSandboxedIframes is enabled.
-  KURL fallback_base_url_for_srcdoc_;
+  // Used in FallbackBaseURL() to provide the base URL for  about:srcdoc  and
+  // about:blank documents, which is the initiator's base URL at the time the
+  // navigation was initiated. Separate from the base_url_* fields because the
+  // fallback base URL should not take precedence over things like <base>. Note:
+  // this currently is only used when NewBaseUrlInheritanceBehavior is enabled.
+  KURL fallback_base_url_;
 
   KURL base_element_url_;   // The URL set by the <base> element.
   KURL cookie_url_;         // The URL to use for cookie access.

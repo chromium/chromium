@@ -1984,10 +1984,12 @@ WebLocalFrame* WebLocalFrame::CreateMainFrame(
     std::unique_ptr<WebPolicyContainer> policy_container,
     WebFrame* opener,
     const WebString& name,
-    network::mojom::blink::WebSandboxFlags sandbox_flags) {
+    network::mojom::blink::WebSandboxFlags sandbox_flags,
+    const WebURL& creator_base_url) {
   return WebLocalFrameImpl::CreateMainFrame(
       web_view, client, interface_registry, frame_token, opener, name,
-      sandbox_flags, document_token, std::move(policy_container));
+      sandbox_flags, document_token, std::move(policy_container),
+      creator_base_url);
 }
 
 WebLocalFrame* WebLocalFrame::CreateProvisional(
@@ -2012,7 +2014,8 @@ WebLocalFrameImpl* WebLocalFrameImpl::CreateMainFrame(
     const WebString& name,
     network::mojom::blink::WebSandboxFlags sandbox_flags,
     const DocumentToken& document_token,
-    std::unique_ptr<WebPolicyContainer> policy_container) {
+    std::unique_ptr<WebPolicyContainer> policy_container,
+    const WebURL& creator_base_url) {
   auto* frame = MakeGarbageCollected<WebLocalFrameImpl>(
       base::PassKey<WebLocalFrameImpl>(),
       mojom::blink::TreeScopeType::kDocument, client, interface_registry,
@@ -2030,7 +2033,7 @@ WebLocalFrameImpl* WebLocalFrameImpl::CreateMainFrame(
       page, nullptr, nullptr, nullptr, FrameInsertType::kInsertInConstructor,
       name, opener ? &ToCoreFrame(*opener)->window_agent_factory() : nullptr,
       opener, document_token, std::move(policy_container), storage_key,
-      sandbox_flags);
+      creator_base_url, sandbox_flags);
   return frame;
 }
 
@@ -2084,7 +2087,8 @@ WebLocalFrameImpl* WebLocalFrameImpl::CreateProvisional(
       previous_web_frame->Parent(), nullptr, FrameInsertType::kInsertLater,
       name, &ToCoreFrame(*previous_web_frame)->window_agent_factory(),
       previous_web_frame->Opener(), DocumentToken(),
-      /*policy_container=*/nullptr, StorageKey(), sandbox_flags);
+      /*policy_container=*/nullptr, StorageKey(),
+      /*creator_base_url=*/KURL(), sandbox_flags);
 
   LocalFrame* new_frame = web_frame->GetFrame();
 
@@ -2203,13 +2207,14 @@ void WebLocalFrameImpl::InitializeCoreFrame(
     const DocumentToken& document_token,
     std::unique_ptr<blink::WebPolicyContainer> policy_container,
     const StorageKey& storage_key,
+    const KURL& creator_base_url,
     network::mojom::blink::WebSandboxFlags sandbox_flags) {
   InitializeCoreFrameInternal(
       page, owner, parent, previous_sibling, insert_type, name,
       window_agent_factory, opener, document_token,
       PolicyContainer::CreateFromWebPolicyContainer(
           std::move(policy_container)),
-      storage_key, ukm::kInvalidSourceId, sandbox_flags);
+      storage_key, ukm::kInvalidSourceId, creator_base_url, sandbox_flags);
 }
 
 void WebLocalFrameImpl::InitializeCoreFrameInternal(
@@ -2225,6 +2230,7 @@ void WebLocalFrameImpl::InitializeCoreFrameInternal(
     std::unique_ptr<PolicyContainer> policy_container,
     const StorageKey& storage_key,
     ukm::SourceId document_ukm_source_id,
+    const KURL& creator_base_url,
     network::mojom::blink::WebSandboxFlags sandbox_flags) {
   Frame* parent_frame = parent ? ToCoreFrame(*parent) : nullptr;
   Frame* previous_sibling_frame =
@@ -2262,7 +2268,7 @@ void WebLocalFrameImpl::InitializeCoreFrameInternal(
   // We must call init() after frame_ is assigned because it is referenced
   // during init().
   frame_->Init(opener_frame, document_token, std::move(policy_container),
-               storage_key, document_ukm_source_id);
+               storage_key, document_ukm_source_id, creator_base_url);
 
   if (!owner) {
     // This trace event is needed to detect the main frame of the
@@ -2329,13 +2335,18 @@ LocalFrame* WebLocalFrameImpl::CreateChildFrame(
         std::make_unique<PolicyContainer>(std::move(policy_container_remote),
                                           std::move(policy_container_data));
 
+    KURL creator_base_url;
+    if (features::IsNewBaseUrlInheritanceBehaviorEnabled()) {
+      creator_base_url = owner_element->GetDocument().BaseURL();
+    }
     To<WebLocalFrameImpl>(new_child_frame)
         ->InitializeCoreFrameInternal(
             *GetFrame()->GetPage(), owner_element, this, LastChild(),
             FrameInsertType::kInsertInConstructor, name,
             &GetFrame()->window_agent_factory(), nullptr, document_token,
             std::move(policy_container),
-            GetFrame()->DomWindow()->GetStorageKey(), document_ukm_source_id);
+            GetFrame()->DomWindow()->GetStorageKey(), document_ukm_source_id,
+            creator_base_url);
   };
 
   // FIXME: Using subResourceAttributeName as fallback is not a perfect
@@ -2659,6 +2670,16 @@ void WebLocalFrameImpl::CommitNavigation(
     // the current document.
     navigation_params->origin_agent_cluster =
         GetFrame()->GetDocument()->GetAgent().IsOriginKeyedForInheritance();
+
+    KURL url = navigation_params->url;
+    if (navigation_params->is_synchronous_commit_for_bug_778318 &&
+        // Explicitly check for about:blank or about:srcdoc to prevent things
+        // like about:mumble propagating the base url.
+        (url.IsAboutBlankURL() || url.IsAboutSrcdocURL()) &&
+        features::IsNewBaseUrlInheritanceBehaviorEnabled()) {
+      navigation_params->fallback_base_url =
+          GetFrame()->GetDocument()->BaseURL();
+    }
   }
   if (GetTextFinder())
     GetTextFinder()->ClearActiveFindMatch();

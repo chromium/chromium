@@ -19,6 +19,27 @@
 
 namespace content {
 
+// Test class that runs with kNewBaseUrlInheritanceBehavior enabled.
+class BaseUrlInheritanceBehaviorIframeTest : public ContentBrowserTest {
+ public:
+  BaseUrlInheritanceBehaviorIframeTest() {
+    feature_list_.InitAndEnableFeature(
+        blink::features::kNewBaseUrlInheritanceBehavior);
+  }
+
+  void SetUpOnMainThread() override {
+    // Support multiple sites on the test server.
+    host_resolver()->AddRule("*", "127.0.0.1");
+  }
+  void StartEmbeddedServer() {
+    SetupCrossSiteRedirector(embedded_test_server());
+    ASSERT_TRUE(embedded_test_server()->Start());
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};  // class NewBaseUrlInheritanceBehaviorIframeTest
+
 // Test class to allow testing srcdoc functionality both with and without
 // `kIsolateSandboxedIframes` enabled. The tests verify the correct operation of
 // plumbing of both srcdoc attribute values, as well as the srcdoc frame's
@@ -2206,6 +2227,67 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessIsolatedSandboxedIframeTest,
   ASSERT_TRUE(root_frame_entry);
   EXPECT_FALSE(root_frame_entry->initiator_base_url().has_value());
   EXPECT_EQ(GURL(), root->current_frame_host()->GetInheritedBaseUrl());
+}
+
+// A test to verify that a new about:blank mainframe inherits its base url
+// from its initiator.
+IN_PROC_BROWSER_TEST_F(BaseUrlInheritanceBehaviorIframeTest,
+                       PopupsInheritBaseUrl) {
+  StartEmbeddedServer();
+  GURL main_url(embedded_test_server()->GetURL("a.com", "/title1.html"));
+  EXPECT_TRUE(NavigateToURL(shell(), main_url));
+  FrameTreeNode* root = static_cast<WebContentsImpl*>(shell()->web_contents())
+                            ->GetPrimaryFrameTree()
+                            .root();
+
+  ShellAddedObserver new_shell_observer;
+  EXPECT_TRUE(ExecJs(root, "var w = window.open()"));
+  Shell* new_shell = new_shell_observer.GetShell();
+  WebContentsImpl* new_contents =
+      static_cast<WebContentsImpl*>(new_shell->web_contents());
+  EXPECT_TRUE(WaitForLoadStop(new_contents));
+  ASSERT_NE(new_contents, shell()->web_contents());
+
+  // The popup should get the same base URL as its initiator.
+  FrameTreeNode* new_root = new_contents->GetPrimaryFrameTree().root();
+  EXPECT_EQ(EvalJs(root, "document.baseURI").ExtractString(),
+            EvalJs(new_root, "document.baseURI").ExtractString());
+}
+
+IN_PROC_BROWSER_TEST_F(BaseUrlInheritanceBehaviorIframeTest,
+                       AboutBlankInheritsBaseUrlFromSiblingInitiator) {
+  StartEmbeddedServer();
+  GURL main_url(embedded_test_server()->GetURL("a.com", "/title1.html"));
+  EXPECT_TRUE(NavigateToURL(shell(), main_url));
+  FrameTreeNode* root = static_cast<WebContentsImpl*>(shell()->web_contents())
+                            ->GetPrimaryFrameTree()
+                            .root();
+
+  // Create siblings.
+  EXPECT_TRUE(ExecJs(root,
+                     "var frm = document.createElement('iframe'); "
+                     "frm.src = 'about:blank'; "
+                     "frm.id = 'frm1'; "
+                     "document.body.appendChild(frm);"));
+  ASSERT_EQ(1U, root->child_count());
+  FrameTreeNode* child1 = root->child_at(0);
+
+  EXPECT_TRUE(ExecJs(root,
+                     "var frm = document.createElement('iframe'); "
+                     "frm.id = 'frm2'; "
+                     "document.body.appendChild(frm);"));
+  ASSERT_EQ(2U, root->child_count());
+  FrameTreeNode* child2 = root->child_at(1);
+
+  // First child navigates to about:blank on second child.
+  EXPECT_TRUE(ExecJs(child1,
+                     "var base = document.createElement('base'); "
+                     "base.href = 'https://example.com'; "
+                     "document.head.appendChild(base); "
+                     "window.top.window[1].location.href = 'about:blank';"));
+  // Make sure second child inherited base url from the first child.
+  EXPECT_EQ(GURL("https://example.com"),
+            GetFrameBaseUrl(child2->current_frame_host()));
 }
 
 INSTANTIATE_TEST_SUITE_P(All,

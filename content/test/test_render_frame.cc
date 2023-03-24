@@ -26,6 +26,7 @@
 #include "services/network/public/mojom/url_response_head.mojom.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_provider.h"
+#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/permissions_policy/permissions_policy.h"
 #include "third_party/blink/public/mojom/frame/frame.mojom.h"
 #include "third_party/blink/public/mojom/frame/frame_replication_state.mojom.h"
@@ -358,7 +359,7 @@ void TestRenderFrame::BeginNavigation(
           blink::WebString::FromUTF8(charset), data);
     }
     if (url.IsAboutSrcdoc()) {
-      navigation_params->fallback_srcdoc_base_url = info->requestor_base_url;
+      navigation_params->fallback_base_url = info->requestor_base_url;
     }
 
     navigation_params->policy_container->policies.sandbox_flags =

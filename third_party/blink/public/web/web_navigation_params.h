@@ -281,14 +281,11 @@ struct BLINK_EXPORT WebNavigationParams {
   // a failed navigation.
   WebURL pre_redirect_url_for_failed_navigations;
 
-  // If `url` is about:srcdoc, this is the default base URL to use for the new
-  // document. It corresponds to the initiator's base URL snapshotted when the
-  // navigation started.
-  // Note: this value is only used when the NewBaseUrlInheritanceBehavior
-  // feature is enabled in the embedder.
-  // TODO(wjmaclean): Revisit the naming here when we expand to sending base
-  // URLs for about:blank.
-  WebURL fallback_srcdoc_base_url;
+  // If `url` is about:srcdoc or about:blank, this is the default base URL to
+  // use for the new document. It corresponds to the initiator's base URL
+  // snapshotted when the navigation started. Note: this value is only used when
+  // the NewBaseUrlInheritanceBehavior feature is enabled in the embedder.
+  WebURL fallback_base_url;
 
   // The net error code for failed navigation. Must be non-zero when
   // |unreachable_url| is non-null.

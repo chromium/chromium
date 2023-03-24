@@ -471,7 +471,8 @@ void RenderViewTest::SetUp() {
 
   web_view_ =
       agent_scheduling_group_->CreateWebView(std::move(view_params),
-                                             /*was_created_by_renderer=*/false);
+                                             /*was_created_by_renderer=*/false,
+                                             /*base_url=*/blink::WebURL());
 
   RenderFrameWasShownWaiter waiter(
       RenderFrame::FromWebFrame(web_view_->MainFrame()->ToWebLocalFrame()));

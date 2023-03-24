@@ -140,7 +140,8 @@ class BLINK_EXPORT WebLocalFrame : public WebFrame {
       std::unique_ptr<blink::WebPolicyContainer> policy_container,
       WebFrame* opener = nullptr,
       const WebString& name = WebString(),
-      network::mojom::WebSandboxFlags = network::mojom::WebSandboxFlags::kNone);
+      network::mojom::WebSandboxFlags = network::mojom::WebSandboxFlags::kNone,
+      const WebURL& base_url = WebURL());
 
   // Used to create a provisional local frame. Currently, it's possible for a
   // provisional navigation not to commit (i.e. it might turn into a download),

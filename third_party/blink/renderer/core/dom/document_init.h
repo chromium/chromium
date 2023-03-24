@@ -97,7 +97,8 @@ class CORE_EXPORT DocumentInit final {
   Document* CreateDocument() const;
 
   bool IsSrcdocDocument() const;
-  const KURL& FallbackSrcdocBaseURL() const;
+  bool IsAboutBlankDocument() const;
+  const KURL& FallbackBaseURL() const;
   bool ShouldSetURL() const;
 
   DocumentInit& WithWindow(LocalDOMWindow*, Document* owner_document);
@@ -139,7 +140,8 @@ class CORE_EXPORT DocumentInit final {
   const KURL& GetCookieUrl() const;
 
   DocumentInit& WithSrcdocDocument(bool is_srcdoc_document);
-  DocumentInit& WithFallbackSrcdocBaseURL(const KURL& fallback_srcdoc_base_url);
+  DocumentInit& WithFallbackBaseURL(const KURL& fallback_base_url);
+  DocumentInit& WithJavascriptURL(bool is_for_javascript_url);
 
   DocumentInit& WithUkmSourceId(ukm::SourceId ukm_source_id);
   ukm::SourceId UkmSourceId() const { return ukm_source_id_; }
@@ -166,7 +168,9 @@ class CORE_EXPORT DocumentInit final {
   // affects security checks, since srcdoc's content comes directly from
   // the parent document, not from loading a URL.
   bool is_srcdoc_document_ = false;
-  KURL fallback_srcdoc_base_url_;
+  KURL fallback_base_url_;
+  // True when the commit reason for this DocumentInit was a javascript: url.
+  bool is_for_javascript_url_ = false;
 
   // Source id to set on the Document to be created.
   ukm::SourceId ukm_source_id_ = ukm::kInvalidSourceId;

@@ -33,6 +33,7 @@ class SyncChannel;
 }  // namespace IPC
 
 namespace blink {
+class WebURL;
 class WebView;
 }  // namespace blink
 
@@ -79,7 +80,8 @@ class CONTENT_EXPORT AgentSchedulingGroup
 
   // Create a new WebView in this AgentSchedulingGroup.
   blink::WebView* CreateWebView(mojom::CreateViewParamsPtr params,
-                                bool was_created_by_renderer);
+                                bool was_created_by_renderer,
+                                const blink::WebURL& base_url);
 
  protected:
   // mojom::AgentSchedulingGroup:

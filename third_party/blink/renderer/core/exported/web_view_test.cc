@@ -3892,7 +3892,8 @@ class ViewCreatingWebFrameClient
       const SessionStorageNamespaceId&,
       bool& consumed_user_gesture,
       const absl::optional<Impression>&,
-      const absl::optional<WebPictureInPictureWindowOptions>&) override {
+      const absl::optional<WebPictureInPictureWindowOptions>&,
+      const WebURL&) override {
     return web_view_helper_.InitializeWithOpener(Frame());
   }
   WebView* CreatedWebView() const { return web_view_helper_.GetWebView(); }
@@ -3989,7 +3990,8 @@ class ViewReusingWebFrameClient
       const SessionStorageNamespaceId&,
       bool& consumed_user_gesture,
       const absl::optional<Impression>&,
-      const absl::optional<WebPictureInPictureWindowOptions>&) override {
+      const absl::optional<WebPictureInPictureWindowOptions>&,
+      const WebURL&) override {
     return web_view_;
   }
 

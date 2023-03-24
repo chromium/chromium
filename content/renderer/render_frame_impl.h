@@ -184,7 +184,8 @@ class CONTENT_EXPORT RenderFrameImpl
       bool is_for_scalable_page,
       blink::mojom::FrameReplicationStatePtr replication_state,
       const base::UnguessableToken& devtools_frame_token,
-      mojom::CreateLocalMainFrameParamsPtr params);
+      mojom::CreateLocalMainFrameParamsPtr params,
+      const blink::WebURL& base_url);
 
   // Creates a new RenderFrame with |routing_id|. If |previous_frame_token| is
   // not provided, it creates the Blink WebLocalFrame and inserts it into
@@ -638,7 +639,8 @@ class CONTENT_EXPORT RenderFrameImpl
       bool& consumed_user_gesture,
       const absl::optional<blink::Impression>& impression,
       const absl::optional<blink::WebPictureInPictureWindowOptions>&
-          pip_options) override;
+          pip_options,
+      const blink::WebURL& base_url) override;
 
   // Dispatches the current state of selection on the webpage to the browser if
   // it has changed or if the forced flag is passed. The forced flag is used

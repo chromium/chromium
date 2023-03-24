@@ -1,6 +1,0 @@
-This is a testharness.js-based test.
-FAIL Check the baseURL of an about:blank document same-origin with its parent assert_equals: expected "https://web-platform.test:8444/html/infrastructure/urls/terminology-0/document-base-url-initiated-grand-parent.https.window.html" but got "https://web-platform.test:8444/common/dispatcher/executor.html?uuid=child_token#interesting-fragment"
-FAIL Check the baseURL of an about:blank document cross-origin with its parent assert_equals: expected "https://web-platform.test:8444/html/infrastructure/urls/terminology-0/document-base-url-initiated-grand-parent.https.window.html" but got "about:blank"
-FAIL Check the baseURL of an about:blank document cross-site with its parent assert_equals: expected "https://web-platform.test:8444/html/infrastructure/urls/terminology-0/document-base-url-initiated-grand-parent.https.window.html" but got "about:blank"
-Harness: the test ran to completion.
-

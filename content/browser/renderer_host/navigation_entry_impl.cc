@@ -846,10 +846,20 @@ NavigationEntryImpl::ConstructCommonNavigationParams(
   // by main frames, because loadData* navigations can only happen on the main
   // frame.
   bool is_for_main_frame = (root_node()->frame_entry == &frame_entry);
+  // Even if the frame_entry was originally about:blank or about:srcdoc and had
+  // an initiator_base_url, there's no guarantee here that `dest_url` will be
+  // either about:blank or about:srcdoc. In that case make sure we don't
+  // propagate initiator_base_url.
+  // TODO(creis): Look into how this case can be avoided so that dest_url
+  // doesn't diverge from other parameters in frame_entry.
+  const absl::optional<GURL> initiator_base_url =
+      (dest_url.IsAboutBlank() || dest_url.IsAboutSrcdoc())
+          ? frame_entry.initiator_base_url()
+          : absl::nullopt;
   return blink::mojom::CommonNavigationParams::New(
-      dest_url, frame_entry.initiator_origin(),
-      frame_entry.initiator_base_url(), std::move(dest_referrer),
-      GetTransitionType(), navigation_type, blink::NavigationDownloadPolicy(),
+      dest_url, frame_entry.initiator_origin(), initiator_base_url,
+      std::move(dest_referrer), GetTransitionType(), navigation_type,
+      blink::NavigationDownloadPolicy(),
       // It's okay to pass false for `should_replace_entry` because we never
       // replace an entry on session history / reload / restore navigation. New
       // navigation that may use replacement create their CommonNavigationParams

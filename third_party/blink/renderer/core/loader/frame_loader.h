@@ -89,7 +89,8 @@ class CORE_EXPORT FrameLoader final {
   void Init(const DocumentToken& document_token,
             std::unique_ptr<PolicyContainer> policy_container,
             const StorageKey& storage_key,
-            ukm::SourceId document_ukm_source_id);
+            ukm::SourceId document_ukm_source_id,
+            const KURL& creator_base_url);
 
   ResourceRequest ResourceRequestForReload(
       WebFrameLoadType,

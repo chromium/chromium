@@ -293,12 +293,14 @@ void AgentSchedulingGroup::CreateView(mojom::CreateViewParamsPtr params) {
       params->web_preferences.enable_scroll_animator, PassKey());
 
   CreateWebView(std::move(params),
-                /*was_created_by_renderer=*/false);
+                /*was_created_by_renderer=*/false,
+                /*base_url=*/blink::WebURL());
 }
 
 blink::WebView* AgentSchedulingGroup::CreateWebView(
     mojom::CreateViewParamsPtr params,
-    bool was_created_by_renderer) {
+    bool was_created_by_renderer,
+    const blink::WebURL& base_url) {
   DCHECK(RenderThread::IsMainThread());
 
   blink::WebFrame* opener_frame = nullptr;
@@ -345,7 +347,7 @@ blink::WebView* AgentSchedulingGroup::CreateWebView(
           /*is_for_scalable_page=*/params->type !=
               mojom::ViewWidgetType::kFencedFrame,
           std::move(params->replication_state),
-          params->devtools_main_frame_token, std::move(local_params));
+          params->devtools_main_frame_token, std::move(local_params), base_url);
     } else {
       // Create a local provisional main frame and a placeholder RemoteFrame as
       // a placeholder main frame for the new WebView. This can only happen for

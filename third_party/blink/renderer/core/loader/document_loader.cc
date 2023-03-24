@@ -283,7 +283,7 @@ struct SameSizeAsDocumentLoader
   bool was_discarded;
   bool loading_main_document_from_mhtml_archive;
   bool loading_srcdoc;
-  KURL fallback_srcdoc_base_url;
+  KURL fallback_base_url;
   bool loading_url_as_empty_document;
   bool is_static_data;
   CommitReason commit_reason;
@@ -489,7 +489,7 @@ DocumentLoader::DocumentLoader(
       is_browser_initiated_(params_->is_browser_initiated),
       was_discarded_(params_->was_discarded),
       loading_srcdoc_(url_.IsAboutSrcdocURL()),
-      fallback_srcdoc_base_url_(params_->fallback_srcdoc_base_url),
+      fallback_base_url_(params_->fallback_base_url),
       loading_url_as_empty_document_(!params_->is_static_data &&
                                      WillLoadUrlAsEmpty(url_)),
       is_static_data_(params_->is_static_data),
@@ -608,7 +608,7 @@ DocumentLoader::CreateWebNavigationParamsToCloneDocument() {
   LocalDOMWindow* window = frame_->DomWindow();
   params->document_token = frame_->GetDocument()->Token();
   params->url = window->Url();
-  params->fallback_srcdoc_base_url = fallback_srcdoc_base_url_;
+  params->fallback_base_url = fallback_base_url_;
   params->unreachable_url = unreachable_url_;
   params->referrer = referrer_;
   // All the security properties of the document must be preserved. Note that
@@ -2506,7 +2506,8 @@ void DocumentLoader::CommitNavigation() {
           .WithURL(Url())
           .WithTypeFrom(MimeType())
           .WithSrcdocDocument(loading_srcdoc_)
-          .WithFallbackSrcdocBaseURL(fallback_srcdoc_base_url_)
+          .WithJavascriptURL(commit_reason_ == CommitReason::kJavascriptUrl)
+          .WithFallbackBaseURL(fallback_base_url_)
           .WithUkmSourceId(ukm_source_id_));
 
   RecordUseCountersForCommit();

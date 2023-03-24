@@ -719,7 +719,7 @@ Document::Document(const DocumentInit& initializer,
       context_features_(ContextFeatures::DefaultSwitch()),
       http_refresh_scheduler_(MakeGarbageCollected<HttpRefreshScheduler>(this)),
       well_formed_(false),
-      fallback_base_url_for_srcdoc_(initializer.FallbackSrcdocBaseURL()),
+      fallback_base_url_(initializer.FallbackBaseURL()),
       cookie_url_(dom_window_ ? initializer.GetCookieUrl()
                               : KURL(g_empty_string)),
       printing_(kNotPrinting),
@@ -3291,7 +3291,7 @@ void Document::open(LocalDOMWindow* entered_window,
   // for this document with the entered window's url.
   if (dom_window_ && entered_window) {
     KURL new_url = entered_window->Url();
-    if (new_url.IsAboutSrcdocURL() &&
+    if ((new_url.IsAboutSrcdocURL() || new_url.IsAboutBlankURL()) &&
         blink::features::IsNewBaseUrlInheritanceBehaviorEnabled()) {
       // When updating the URL to about:srcdoc due to a document.open() call,
       // the opened document should also end up with the same base URL as the
@@ -3299,7 +3299,7 @@ void Document::open(LocalDOMWindow* entered_window,
       // so that SetURL() below will take it into account.
       // TODO(https://crbug.com/751329): about:blank should also be handled
       // here once it supports the new base url inheritance behavior.
-      fallback_base_url_for_srcdoc_ = entered_window->BaseURL();
+      fallback_base_url_ = entered_window->BaseURL();
       is_srcdoc_document_ = new_url.IsAboutSrcdocURL();
     }
     // Clear the hash fragment from the inherited URL to prevent a
@@ -4351,14 +4351,19 @@ KURL Document::FallbackBaseURL() const {
   const Document* same_origin_parent =
       is_parent_cross_origin ? nullptr : ParentDocument();
 
+  // TODO(https://github.com/whatwg/html/issues/9025): Don't let a sandboxed
+  // iframe (without 'allow-same-origin') inherit a fallback base url.
+  // https://chromium-review.googlesource.com/c/chromium/src/+/4324738
+
   // [spec] 1. If document is an iframe srcdoc document, then return the
   //           document base URL of document's browsing context's container
   //           document.
   if (IsSrcdocDocument()) {
     // Return the base_url value that was sent from the initiator along with the
     // srcdoc attribute's value.
-    if (fallback_base_url_for_srcdoc_.IsValid())
-      return fallback_base_url_for_srcdoc_;
+    if (fallback_base_url_.IsValid()) {
+      return fallback_base_url_;
+    }
     // We only use the parent document's base URL in legacy behavior. There are
     // cases where fallback_base_url_for_srcdoc_ may not be set in the new base
     // URL inheritance mode (e.g., browser-initiated navigations as in
@@ -4385,7 +4390,18 @@ KURL Document::FallbackBaseURL() const {
       return execution_context_->BaseURL();
     }
 
-    if (same_origin_parent) {
+    if (!fallback_base_url_.IsEmpty() &&
+        blink::features::IsNewBaseUrlInheritanceBehaviorEnabled()) {
+      // Note: if we get here, it's not worth worrying if
+      // same_origin_parent->BaseURL() exists and matches fallback_base_url_,
+      // since if the latter exists it's based on the initiator, which won't
+      // always be the parent.
+      return fallback_base_url_;
+    }
+
+    if (same_origin_parent &&
+        !blink::features::IsNewBaseUrlInheritanceBehaviorEnabled()) {
+      // Only allow access to the parent in legacy mode.
       return same_origin_parent->BaseURL();
     }
   }
@@ -4820,10 +4836,13 @@ void Document::UnobserveForIntrinsicSize(Element* element) {
 }
 
 Document* Document::CloneDocumentWithoutChildren() const {
-  DocumentInit init = DocumentInit::Create()
-                          .WithExecutionContext(execution_context_.Get())
-                          .WithAgent(GetAgent())
-                          .WithURL(Url());
+  DocumentInit init =
+      DocumentInit::Create()
+          .WithExecutionContext(execution_context_.Get())
+          .WithAgent(GetAgent())
+          .WithURL(Url())
+          .WithFallbackBaseURL(Url().IsAboutBlankURL() ? fallback_base_url_
+                                                       : KURL());
   if (IsA<XMLDocument>(this)) {
     if (IsXHTMLDocument())
       return XMLDocument::CreateXHTML(init);
