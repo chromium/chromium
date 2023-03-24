@@ -52,6 +52,7 @@
 #include "chrome/browser/ash/login/users/multi_profile_user_controller.h"
 #include "chrome/browser/ash/login/users/supervised_user_manager_impl.h"
 #include "chrome/browser/ash/policy/core/browser_policy_connector_ash.h"
+#include "chrome/browser/ash/policy/core/device_local_account.h"
 #include "chrome/browser/ash/policy/external_data/handlers/crostini_ansible_playbook_external_data_handler.h"
 #include "chrome/browser/ash/policy/external_data/handlers/preconfigured_desk_templates_external_data_handler.h"
 #include "chrome/browser/ash/policy/external_data/handlers/print_servers_external_data_handler.h"
@@ -252,6 +253,38 @@ void CheckProfileForSanity() {
   CHECK(
       !g_browser_process->profile_manager()->GetProfileByPath(user_profile_dir))
       << "The user profile was loaded before we mounted the cryptohome.";
+}
+
+user_manager::UserManager::EphemeralModeConfig CreateEphemeralModeConfig(
+    ash::CrosSettings* cros_settings) {
+  DCHECK(cros_settings);
+
+  bool ephemeral_users_enabled = false;
+  cros_settings->GetBoolean(ash::kAccountsPrefEphemeralUsersEnabled,
+                            &ephemeral_users_enabled);
+
+  std::vector<AccountId> ephemeral_accounts, non_ephemeral_accounts;
+
+  const auto accounts = policy::GetDeviceLocalAccounts(cros_settings);
+  for (const auto& account : accounts) {
+    switch (account.ephemeral_mode) {
+      case policy::DeviceLocalAccount::EphemeralMode::kEnable:
+        ephemeral_accounts.push_back(AccountId::FromUserEmail(account.user_id));
+        break;
+      case policy::DeviceLocalAccount::EphemeralMode::kDisable:
+        non_ephemeral_accounts.push_back(
+            AccountId::FromUserEmail(account.user_id));
+        break;
+      case policy::DeviceLocalAccount::EphemeralMode::kUnset:
+      case policy::DeviceLocalAccount::EphemeralMode::kFollowDeviceWidePolicy:
+        // Do nothing.
+        break;
+    }
+  }
+
+  return user_manager::UserManager::EphemeralModeConfig(
+      ephemeral_users_enabled, std::move(ephemeral_accounts),
+      std::move(non_ephemeral_accounts));
 }
 
 }  // namespace
@@ -747,16 +780,7 @@ void ChromeUserManagerImpl::RetrieveTrustedDevicePolicies() {
     return;
   }
 
-  bool ephemeral_users_enabled = false;
-  cros_settings_->GetBoolean(kAccountsPrefEphemeralUsersEnabled,
-                             &ephemeral_users_enabled);
-
-  // TODO(b/273238218): Parse DeviceLocalAccounts to fetch epehemeral mode for
-  // device-local accounts.
-  SetEphemeralModeConfig(EphemeralModeConfig(
-      /* included_by_default= */ ephemeral_users_enabled,
-      /* include_list= */ std::vector<AccountId>{},
-      /* exclude_list= */ std::vector<AccountId>{}));
+  SetEphemeralModeConfig(CreateEphemeralModeConfig(cros_settings_));
 
   std::string owner_email;
   cros_settings_->GetString(kDeviceOwner, &owner_email);
