@@ -647,11 +647,17 @@ void HangWatcher::RecordHang() {
 ScopedClosureRunner HangWatcher::RegisterThreadInternal(
     ThreadType thread_type) {
   AutoLock auto_lock(watch_state_lock_);
+  CHECK(base::FeatureList::GetInstance());
+
+  // Do not install a WatchState if the results would never be observable.
+  if (!ThreadTypeLoggingLevelGreaterOrEqual(thread_type,
+                                            LoggingLevel::kUmaOnly)) {
+    return ScopedClosureRunner(base::DoNothing());
+  }
 
   watch_states_.push_back(
       internal::HangWatchState::CreateHangWatchStateForCurrentThread(
           thread_type));
-
   return ScopedClosureRunner(BindOnce(&HangWatcher::UnregisterThread,
                                       Unretained(HangWatcher::GetInstance())));
 }

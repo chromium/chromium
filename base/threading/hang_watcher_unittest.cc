@@ -778,6 +778,9 @@ const base::TimeDelta kMonitoringPeriod = base::Milliseconds(1);
 class HangWatcherPeriodicMonitoringTest : public testing::Test {
  public:
   HangWatcherPeriodicMonitoringTest() {
+    hang_watcher_.InitializeOnMainThread(
+        HangWatcher::ProcessType::kBrowserProcess);
+
     hang_watcher_.SetMonitoringPeriodForTesting(kMonitoringPeriod);
     hang_watcher_.SetOnHangClosureForTesting(base::BindRepeating(
         &WaitableEvent::Signal, base::Unretained(&hang_event_)));
@@ -792,6 +795,8 @@ class HangWatcherPeriodicMonitoringTest : public testing::Test {
       const HangWatcherPeriodicMonitoringTest& other) = delete;
   HangWatcherPeriodicMonitoringTest& operator=(
       const HangWatcherPeriodicMonitoringTest& other) = delete;
+
+  void TearDown() override { hang_watcher_.UnitializeOnMainThreadForTesting(); }
 
  protected:
   // Setup the callback invoked after waiting in HangWatcher to advance the
