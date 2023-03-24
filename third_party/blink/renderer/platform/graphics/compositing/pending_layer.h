@@ -74,22 +74,13 @@ class PLATFORM_EXPORT PendingLayer {
   // Returns whether the merge is successful.
   bool Merge(
       const PendingLayer& guest,
-      LCDTextPreference lcd_text_preference = LCDTextPreference::kIgnored) {
-    return MergeInternal(guest,
-                         guest.property_tree_state_.GetPropertyTreeState(),
-                         lcd_text_preference, /*dry_run*/ false);
-  }
+      LCDTextPreference lcd_text_preference = LCDTextPreference::kIgnored);
 
-  // Returns true if |guest| can be merged into |this|.
-  // |guest_state| is for cases where we want to check if we can merge |guest|
-  // if it has |guest_state| in the future (which may be different from its
-  // current state).
-  bool CanMerge(const PendingLayer& guest,
-                const PropertyTreeState& guest_state,
-                LCDTextPreference lcd_text_preference) const {
-    return const_cast<PendingLayer*>(this)->MergeInternal(
-        guest, guest_state, lcd_text_preference, /*dry_run*/ true);
-  }
+  // Returns true if `guest` that could be upcasted with decomposited blend
+  // mode can be merged into `this`.
+  bool CanMergeWithDecompositedBlendMode(
+      const PendingLayer& guest,
+      const PropertyTreeState& upcast_state) const;
 
   // Mutate this layer's property tree state to a more general (shallower)
   // state, thus the name "upcast". The concrete effect of this is to
@@ -166,11 +157,15 @@ class PLATFORM_EXPORT PendingLayer {
   bool IsSolidColor() const { return is_solid_color_; }
 
  private:
-  gfx::RectF MapRectKnownToBeOpaque(const PropertyTreeState&) const;
-  bool MergeInternal(const PendingLayer& guest,
-                     const PropertyTreeState& guest_state,
-                     LCDTextPreference,
-                     bool dry_run);
+  // Checks basic merge-ability with `guest` and calls
+  // PropertyTreeState::CanUpcastWith().
+  absl::optional<PropertyTreeState> CanUpcastWith(
+      const PendingLayer& guest,
+      const PropertyTreeState& guest_state) const;
+
+  gfx::RectF MapRectKnownToBeOpaque(
+      const PropertyTreeState& new_state,
+      const FloatClipRect& mapped_layer_bounds) const;
 
   bool PropertyTreeStateChanged(const PendingLayer* old_pending_layer) const;
 

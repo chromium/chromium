@@ -383,8 +383,8 @@ bool PaintArtifactCompositor::DecompositeEffect(
       // the same composited layer.
       const auto& previous_sibling = pending_layers_[layer_index - 1];
       if (previous_sibling.DrawsContent() &&
-          !previous_sibling.CanMerge(layer, *upcast_state,
-                                     lcd_text_preference_)) {
+          !previous_sibling.CanMergeWithDecompositedBlendMode(layer,
+                                                              *upcast_state)) {
         return false;
       }
     }

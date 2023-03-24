@@ -492,7 +492,7 @@ TEST_P(PendingLayerTextOpaquenessTest, UnitedClippedToOpaque) {
   PendingLayer layer_b(artifact, artifact->PaintChunks()[1]);
   ASSERT_TRUE(layer_a.Merge(layer_b, GetLCDTextPreference()));
   EXPECT_EQ(gfx::RectF(175, 175, 100, 100), layer_a.BoundsForTesting());
-  EXPECT_EQ(gfx::RectF(100, 100, 210, 210), layer_a.RectKnownToBeOpaque());
+  EXPECT_EQ(gfx::RectF(175, 175, 100, 100), layer_a.RectKnownToBeOpaque());
   EXPECT_TRUE(layer_a.TextKnownToBeOnOpaqueBackground());
 }
 
