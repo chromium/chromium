@@ -51,7 +51,7 @@
 
 namespace policy {
 
-const size_t kNumChunks = 8;
+const size_t kNumChunks = 32;
 
 namespace {
 
@@ -170,13 +170,7 @@ ChunkedPolicyPrefsTest::ChunkedPolicyPrefsTest() {
 // failure/flakiness.
 // IMPORTANT: Please add hendrich@chromium.org on any related bugs when
 // disabling this test.
-#if BUILDFLAG(IS_CHROMEOS) && !defined(NDEBUG)
-// TODO(crbug.com/1425785): Fix flakiness and re-enable.
-#define MAYBE_PolicyToPrefsMapping DISABLED_PolicyToPrefsMapping
-#else
-#define MAYBE_PolicyToPrefsMapping PolicyToPrefsMapping
-#endif
-IN_PROC_BROWSER_TEST_P(ChunkedPolicyPrefsTest, MAYBE_PolicyToPrefsMapping) {
+IN_PROC_BROWSER_TEST_P(ChunkedPolicyPrefsTest, PolicyToPrefsMapping) {
   base::ScopedAllowBlockingForTesting allow_blocking;
 
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
