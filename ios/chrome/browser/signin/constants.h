@@ -31,10 +31,17 @@ typedef enum {
 
 // Enum is used to represent the action to be taken by the authentication once
 // the user is successfully signed in.
-typedef enum {
-  POST_SIGNIN_ACTION_NONE,
-  POST_SIGNIN_ACTION_COMMIT_SYNC,
-} PostSignInAction;
+enum class PostSignInAction {
+  // No post action after sign-in.
+  kNone,
+  // Starts sign-in flow for a sync consent.
+  // The owner of `AuthenticationFlow` still needs to:
+  //  * Record the sync dialog strings.
+  //  * Grand the sync consent in AuthenticationService.
+  //  * Record the first setup complete.
+  // Related crbug.com/1254359.
+  kCommitSync,
+};
 
 // Enum for identity avatar size. See GetSizeForIdentityAvatarSize() to convert
 // the enum value to point.

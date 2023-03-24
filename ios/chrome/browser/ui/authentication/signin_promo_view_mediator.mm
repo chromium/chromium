@@ -875,7 +875,7 @@ const char* AlreadySeenSigninViewPreferenceKey(
   _authenticationFlow =
       [[AuthenticationFlow alloc] initWithBrowser:_browser
                                          identity:self.identity
-                                 postSignInAction:POST_SIGNIN_ACTION_NONE
+                                 postSignInAction:PostSignInAction::kNone
                          presentingViewController:_baseViewController];
   __weak id<SigninPromoViewConsumer> weakConsumer = self.consumer;
   [_authenticationFlow startSignInWithCompletion:^(BOOL success) {

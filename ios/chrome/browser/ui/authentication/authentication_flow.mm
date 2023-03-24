@@ -219,8 +219,8 @@ enum AuthenticationState {
       return CHECK_MERGE_CASE;
     case CHECK_MERGE_CASE:
       // If the user enabled Sync, expect the data clearing strategy to be set.
-      DCHECK(self.postSignInAction == POST_SIGNIN_ACTION_NONE ||
-             (self.postSignInAction == POST_SIGNIN_ACTION_COMMIT_SYNC &&
+      DCHECK(self.postSignInAction == PostSignInAction::kNone ||
+             (self.postSignInAction == PostSignInAction::kCommitSync &&
               self.localDataClearingStrategy != SHOULD_CLEAR_DATA_USER_CHOICE));
       if (_shouldShowManagedConfirmation)
         return SHOW_MANAGED_CONFIRMATION;
@@ -245,9 +245,9 @@ enum AuthenticationState {
       return SIGN_IN;
     case SIGN_IN:
       switch (self.postSignInAction) {
-        case POST_SIGNIN_ACTION_COMMIT_SYNC:
+        case PostSignInAction::kCommitSync:
           return COMMIT_SYNC;
-        case POST_SIGNIN_ACTION_NONE:
+        case PostSignInAction::kNone:
           return COMPLETE_WITH_SUCCESS;
       }
     case COMMIT_SYNC:
@@ -380,10 +380,10 @@ enum AuthenticationState {
     return;
   }
   switch (self.postSignInAction) {
-    case POST_SIGNIN_ACTION_COMMIT_SYNC:
+    case PostSignInAction::kCommitSync:
       [self checkMergeCaseForUnsupervisedAccounts];
       break;
-    case POST_SIGNIN_ACTION_NONE:
+    case PostSignInAction::kNone:
       [self continueSignin];
       break;
   }
@@ -456,9 +456,10 @@ enum AuthenticationState {
     bool isManagedAccount = _identityToSignInHostedDomain.length > 0;
     signin_metrics::RecordSigninAccountType(signin::ConsentLevel::kSignin,
                                             isManagedAccount);
-    if (self.postSignInAction == POST_SIGNIN_ACTION_COMMIT_SYNC)
+    if (self.postSignInAction == PostSignInAction::kCommitSync) {
       signin_metrics::RecordSigninAccountType(signin::ConsentLevel::kSync,
                                               isManagedAccount);
+    }
   }
   if (_signInCompletion) {
     // Make sure the completion callback is always called after
@@ -531,7 +532,7 @@ enum AuthenticationState {
   DCHECK_EQ(FETCH_MANAGED_STATUS, _state);
   _shouldShowManagedConfirmation =
       [hostedDomain length] > 0 &&
-      (self.postSignInAction == POST_SIGNIN_ACTION_COMMIT_SYNC);
+      (self.postSignInAction == PostSignInAction::kCommitSync);
   _identityToSignInHostedDomain = hostedDomain;
   _shouldFetchUserPolicy = YES;
   [self continueSignin];

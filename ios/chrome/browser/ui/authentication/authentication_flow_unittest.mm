@@ -161,7 +161,7 @@ class AuthenticationFlowTest : public PlatformTest {
 // Tests a Sign In of a normal account on the same profile with Sync
 // consent granted.
 TEST_F(AuthenticationFlowTest, TestSignInSimple) {
-  CreateAuthenticationFlow(POST_SIGNIN_ACTION_COMMIT_SYNC, identity1_);
+  CreateAuthenticationFlow(PostSignInAction::kCommitSync, identity1_);
 
   [[[performer_ expect] andDo:^(NSInvocation*) {
     [authentication_flow_ didFetchManagedStatus:nil];
@@ -189,7 +189,7 @@ TEST_F(AuthenticationFlowTest, TestSignInSimple) {
 
 // Tests that starting sync while the user is already signed in only.
 TEST_F(AuthenticationFlowTest, TestAlreadySignedIn) {
-  CreateAuthenticationFlow(POST_SIGNIN_ACTION_COMMIT_SYNC, identity1_);
+  CreateAuthenticationFlow(PostSignInAction::kCommitSync, identity1_);
 
   [[[performer_ expect] andDo:^(NSInvocation*) {
     [authentication_flow_ didFetchManagedStatus:nil];
@@ -220,7 +220,7 @@ TEST_F(AuthenticationFlowTest, TestAlreadySignedIn) {
 // already signed in account, and asking the user whether data should be cleared
 // or merged.
 TEST_F(AuthenticationFlowTest, TestSignOutUserChoice) {
-  CreateAuthenticationFlow(POST_SIGNIN_ACTION_COMMIT_SYNC, identity1_);
+  CreateAuthenticationFlow(PostSignInAction::kCommitSync, identity1_);
 
   [[[performer_ expect] andDo:^(NSInvocation*) {
     [authentication_flow_ didFetchManagedStatus:nil];
@@ -264,7 +264,7 @@ TEST_F(AuthenticationFlowTest, TestSignOutUserChoice) {
 
 // Tests the cancelling of a Sign In.
 TEST_F(AuthenticationFlowTest, TestCancel) {
-  CreateAuthenticationFlow(POST_SIGNIN_ACTION_COMMIT_SYNC, identity1_);
+  CreateAuthenticationFlow(PostSignInAction::kCommitSync, identity1_);
 
   [[[performer_ expect] andDo:^(NSInvocation*) {
     [authentication_flow_ didFetchManagedStatus:nil];
@@ -292,7 +292,7 @@ TEST_F(AuthenticationFlowTest, TestCancel) {
 
 // Tests the fetch managed status failure case.
 TEST_F(AuthenticationFlowTest, TestFailFetchManagedStatus) {
-  CreateAuthenticationFlow(POST_SIGNIN_ACTION_COMMIT_SYNC, identity1_);
+  CreateAuthenticationFlow(PostSignInAction::kCommitSync, identity1_);
 
   NSError* error = [NSError errorWithDomain:@"foo" code:0 userInfo:nil];
   [[[performer_ expect] andDo:^(NSInvocation*) {
@@ -319,7 +319,7 @@ TEST_F(AuthenticationFlowTest, TestFailFetchManagedStatus) {
 // Tests the managed sign in confirmation dialog is shown when signing in to
 // a managed identity.
 TEST_F(AuthenticationFlowTest, TestShowManagedConfirmation) {
-  CreateAuthenticationFlow(POST_SIGNIN_ACTION_COMMIT_SYNC, managed_identity_);
+  CreateAuthenticationFlow(PostSignInAction::kCommitSync, managed_identity_);
 
   [[[performer_ expect] andDo:^(NSInvocation*) {
     [authentication_flow_ didFetchManagedStatus:@"foo.com"];
@@ -353,7 +353,7 @@ TEST_F(AuthenticationFlowTest, TestShowManagedConfirmation) {
 // Tests sign-in only with a managed account. The managed account confirmation
 // dialog should not be shown.
 TEST_F(AuthenticationFlowTest, TestShowNoManagedConfirmationForSigninOnly) {
-  CreateAuthenticationFlow(POST_SIGNIN_ACTION_NONE, managed_identity_);
+  CreateAuthenticationFlow(PostSignInAction::kNone, managed_identity_);
 
   [[[performer_ expect] andDo:^(NSInvocation*) {
     [authentication_flow_ didFetchManagedStatus:@"foo.com"];
@@ -373,7 +373,7 @@ TEST_F(AuthenticationFlowTest, TestShowNoManagedConfirmationForSigninOnly) {
 // Tests sign-in only with a managed account, and then starts sync. The managed
 // account confirmation dialog should be shown only in sync.
 TEST_F(AuthenticationFlowTest, TestSyncAfterSigninAndSync) {
-  CreateAuthenticationFlow(POST_SIGNIN_ACTION_COMMIT_SYNC, managed_identity_);
+  CreateAuthenticationFlow(PostSignInAction::kCommitSync, managed_identity_);
 
   [[[performer_ expect] andDo:^(NSInvocation*) {
     [authentication_flow_ didFetchManagedStatus:@"foo.com"];
@@ -411,7 +411,7 @@ TEST_F(AuthenticationFlowTest,
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitWithFeatures({policy::kUserPolicy}, {});
 
-  CreateAuthenticationFlow(POST_SIGNIN_ACTION_COMMIT_SYNC, managed_identity_);
+  CreateAuthenticationFlow(PostSignInAction::kCommitSync, managed_identity_);
 
   [[[performer_ expect] andDo:^(NSInvocation*) {
     [authentication_flow_ didFetchManagedStatus:@"foo.com"];
@@ -461,7 +461,7 @@ TEST_F(AuthenticationFlowTest,
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitWithFeatures({policy::kUserPolicy}, {});
 
-  CreateAuthenticationFlow(POST_SIGNIN_ACTION_COMMIT_SYNC, managed_identity_);
+  CreateAuthenticationFlow(PostSignInAction::kCommitSync, managed_identity_);
 
   [[[performer_ expect] andDo:^(NSInvocation*) {
     [authentication_flow_ didFetchManagedStatus:@"foo.com"];
@@ -508,7 +508,7 @@ TEST_F(AuthenticationFlowTest, TestCanSyncWithUserPolicyFetchFailure) {
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitWithFeatures({policy::kUserPolicy}, {});
 
-  CreateAuthenticationFlow(POST_SIGNIN_ACTION_COMMIT_SYNC, managed_identity_);
+  CreateAuthenticationFlow(PostSignInAction::kCommitSync, managed_identity_);
 
   [[[performer_ expect] andDo:^(NSInvocation*) {
     [authentication_flow_ didFetchManagedStatus:@"foo.com"];

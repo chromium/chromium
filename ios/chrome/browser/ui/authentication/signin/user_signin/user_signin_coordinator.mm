@@ -549,8 +549,8 @@ using signin_metrics::PromoAction;
   DCHECK(self.unifiedConsentCoordinator.selectedIdentity);
   PostSignInAction postSignInAction =
       self.userSigninMediatorGetSettingsLinkWasTapped
-          ? POST_SIGNIN_ACTION_NONE
-          : POST_SIGNIN_ACTION_COMMIT_SYNC;
+          ? PostSignInAction::kNone
+          : PostSignInAction::kCommitSync;
   AuthenticationFlow* authenticationFlow = [[AuthenticationFlow alloc]
                initWithBrowser:self.browser
                       identity:self.unifiedConsentCoordinator.selectedIdentity

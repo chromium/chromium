@@ -195,8 +195,8 @@
           ->GetPrimaryIdentity(signin::ConsentLevel::kSignin);
 
   PostSignInAction postSignInAction = advancedSettings
-                                          ? POST_SIGNIN_ACTION_NONE
-                                          : POST_SIGNIN_ACTION_COMMIT_SYNC;
+                                          ? PostSignInAction::kNone
+                                          : PostSignInAction::kCommitSync;
   AuthenticationFlow* authenticationFlow =
       [[AuthenticationFlow alloc] initWithBrowser:self.browser
                                          identity:identity
