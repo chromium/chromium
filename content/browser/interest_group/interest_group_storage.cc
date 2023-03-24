@@ -2389,7 +2389,7 @@ bool InterestGroupStorage::InitializeDB() {
   } else {
     const base::FilePath dir = path_to_database_.DirName();
 
-    if (!base::DirectoryExists(dir) && !base::CreateDirectory(dir)) {
+    if (!base::CreateDirectory(dir)) {
       DLOG(ERROR) << "Failed to create directory for interest group database";
       return false;
     }
