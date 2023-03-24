@@ -48,11 +48,9 @@ class VIEWS_EXPORT ImageViewBase : public View {
   void SetTooltipText(const std::u16string& tooltip);
   const std::u16string& GetTooltipText() const;
 
-  // If `accessible_name_` has not been set, the tooltip text value is used.
-  const std::u16string& GetAccessibleName() const override;
-
   // Overridden from View:
-  void GetAccessibleNodeData(ui::AXNodeData* node_data) override;
+  void AdjustAccessibleName(std::u16string& new_name,
+                            ax::mojom::NameFrom& name_from) override;
   std::u16string GetTooltipText(const gfx::Point& p) const override;
   gfx::Size CalculatePreferredSize() const override;
   views::PaintInfo::ScaleType GetPaintScaleType() const override;

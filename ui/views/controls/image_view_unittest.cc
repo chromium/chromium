@@ -19,6 +19,7 @@
 #include "ui/gfx/geometry/point.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/image/image_skia.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/border.h"
 #include "ui/views/layout/box_layout.h"
 #include "ui/views/test/ax_event_counter.h"
@@ -161,6 +162,71 @@ TEST_P(ImageViewTest, SetAccessibleNameNotifiesAccessibilityEvent) {
   const std::string& name =
       data.GetStringAttribute(ax::mojom::StringAttribute::kName);
   EXPECT_EQ(test_tooltip_text, base::ASCIIToUTF16(name));
+}
+
+TEST_P(ImageViewTest, AccessibleNameFromTooltipText) {
+  // Initially there is no name and no tooltip text.
+  // The role should always be image, regardless of whether or not there is
+  // presentable information. It's the "ignored" state which should change.
+  ui::AXNodeData data;
+  image_view()->GetAccessibleNodeData(&data);
+  EXPECT_EQ(data.GetString16Attribute(ax::mojom::StringAttribute::kName),
+            std::u16string());
+  EXPECT_EQ(image_view()->GetAccessibleName(), std::u16string());
+  EXPECT_EQ(image_view()->GetTooltipText(), std::u16string());
+  EXPECT_EQ(data.role, ax::mojom::Role::kImage);
+  EXPECT_TRUE(image_view()->GetViewAccessibility().IsIgnored());
+
+  // Setting the tooltip text when there is no accessible name should result in
+  // the tooltip text being used for the accessible name and the "ignored" state
+  // being removed.
+  data = ui::AXNodeData();
+  std::u16string tooltip_text = u"Tooltip Text";
+  image_view()->SetTooltipText(tooltip_text);
+  image_view()->GetAccessibleNodeData(&data);
+  EXPECT_EQ(data.GetString16Attribute(ax::mojom::StringAttribute::kName),
+            tooltip_text);
+  EXPECT_EQ(image_view()->GetAccessibleName(), tooltip_text);
+  EXPECT_EQ(image_view()->GetTooltipText(), tooltip_text);
+  EXPECT_EQ(data.role, ax::mojom::Role::kImage);
+  EXPECT_FALSE(image_view()->GetViewAccessibility().IsIgnored());
+
+  // Setting the accessible name to a non-empty string should replace the name
+  // from the tooltip text.
+  data = ui::AXNodeData();
+  std::u16string accessible_name = u"Accessible Name";
+  image_view()->SetAccessibleName(accessible_name);
+  image_view()->GetAccessibleNodeData(&data);
+  EXPECT_EQ(data.GetString16Attribute(ax::mojom::StringAttribute::kName),
+            accessible_name);
+  EXPECT_EQ(image_view()->GetAccessibleName(), accessible_name);
+  EXPECT_EQ(image_view()->GetTooltipText(), tooltip_text);
+  EXPECT_EQ(data.role, ax::mojom::Role::kImage);
+  EXPECT_FALSE(image_view()->GetViewAccessibility().IsIgnored());
+
+  // Setting the accessible name to an empty string should cause the tooltip
+  // text to be used as the name.
+  data = ui::AXNodeData();
+  image_view()->SetAccessibleName(std::u16string());
+  image_view()->GetAccessibleNodeData(&data);
+  EXPECT_EQ(data.GetString16Attribute(ax::mojom::StringAttribute::kName),
+            tooltip_text);
+  EXPECT_EQ(image_view()->GetAccessibleName(), tooltip_text);
+  EXPECT_EQ(image_view()->GetTooltipText(), tooltip_text);
+  EXPECT_EQ(data.role, ax::mojom::Role::kImage);
+  EXPECT_FALSE(image_view()->GetViewAccessibility().IsIgnored());
+
+  // Setting the tooltip to an empty string without setting a new accessible
+  // name should cause the view to become "ignored" again.
+  data = ui::AXNodeData();
+  image_view()->SetTooltipText(std::u16string());
+  image_view()->GetAccessibleNodeData(&data);
+  EXPECT_EQ(data.GetString16Attribute(ax::mojom::StringAttribute::kName),
+            std::u16string());
+  EXPECT_EQ(image_view()->GetAccessibleName(), std::u16string());
+  EXPECT_EQ(image_view()->GetTooltipText(), std::u16string());
+  EXPECT_EQ(data.role, ax::mojom::Role::kImage);
+  EXPECT_TRUE(image_view()->GetViewAccessibility().IsIgnored());
 }
 
 INSTANTIATE_TEST_SUITE_P(All,

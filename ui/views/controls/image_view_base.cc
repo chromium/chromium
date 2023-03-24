@@ -8,13 +8,24 @@
 
 #include "base/i18n/rtl.h"
 #include "ui/accessibility/ax_enums.mojom.h"
-#include "ui/accessibility/ax_node_data.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/gfx/geometry/insets.h"
+#include "ui/views/accessibility/view_accessibility.h"
 
 namespace views {
 
-ImageViewBase::ImageViewBase() = default;
+ImageViewBase::ImageViewBase() {
+  SetAccessibilityProperties(ax::mojom::Role::kImage);
+
+  // The role of an object should not change over its lifetime. Therefore,
+  // rather than changing the role to `kNone` when there is no presentable
+  // information, set it to ignored. This will result in the same tree
+  // inclusion/exclusion behavior without unexpected platform-specific
+  // side effects related to the role changing.
+  if (GetAccessibleName().empty() && tooltip_text_.empty()) {
+    GetViewAccessibility().OverrideIsIgnored(true);
+  }
+}
 
 ImageViewBase::~ImageViewBase() = default;
 
@@ -30,17 +41,6 @@ gfx::Rect ImageViewBase::GetImageBounds() const {
 void ImageViewBase::ResetImageSize() {
   image_size_.reset();
   PreferredSizeChanged();
-}
-
-void ImageViewBase::GetAccessibleNodeData(ui::AXNodeData* node_data) {
-  const std::u16string& name = GetAccessibleName();
-  if (name.empty()) {
-    node_data->role = ax::mojom::Role::kNone;
-    return;
-  }
-
-  node_data->role = ax::mojom::Role::kImage;
-  node_data->SetNameChecked(name);
 }
 
 void ImageViewBase::SetHorizontalAlignment(Alignment alignment) {
@@ -68,16 +68,32 @@ ImageViewBase::Alignment ImageViewBase::GetVerticalAlignment() const {
 }
 
 void ImageViewBase::SetTooltipText(const std::u16string& tooltip) {
+  if (tooltip_text_ == tooltip) {
+    return;
+  }
+
+  std::u16string current_tooltip = tooltip_text_;
   tooltip_text_ = tooltip;
+
+  if (GetAccessibleName().empty() || GetAccessibleName() == current_tooltip) {
+    SetAccessibleName(tooltip);
+  }
+
+  TooltipTextChanged();
+  OnPropertyChanged(&tooltip_text_, kPropertyEffectsNone);
 }
 
 const std::u16string& ImageViewBase::GetTooltipText() const {
   return tooltip_text_;
 }
 
-const std::u16string& ImageViewBase::GetAccessibleName() const {
-  return View::GetAccessibleName().empty() ? tooltip_text_
-                                           : View::GetAccessibleName();
+void ImageViewBase::AdjustAccessibleName(std::u16string& new_name,
+                                         ax::mojom::NameFrom& name_from) {
+  if (new_name.empty()) {
+    new_name = tooltip_text_;
+  }
+
+  GetViewAccessibility().OverrideIsIgnored(new_name.empty());
 }
 
 std::u16string ImageViewBase::GetTooltipText(const gfx::Point& p) const {
