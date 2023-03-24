@@ -5248,10 +5248,19 @@ void LayerTreeHostImpl::ApplyFirstScrollTracking(const ui::LatencyInfo& latency,
 
 std::string LayerTreeHostImpl::GetHungCommitDebugInfo() const {
   return base::StringPrintf(
-      "ptfp%d pwpd%d tmrta%d ", static_cast<int>(pending_tree_fully_painted_),
-      static_cast<int>(paint_worklet_painter_ &&
-                       paint_worklet_painter_->HasOngoingDispatch()),
-      static_cast<int>(tile_manager_.IsReadyToActivate()));
+             "ptfp%d pwpd%d tmrta%d as%d gpur%d%d ltfs%d%d zc%d ",
+             static_cast<int>(pending_tree_fully_painted_),
+             static_cast<int>(paint_worklet_painter_ &&
+                              paint_worklet_painter_->HasOngoingDispatch()),
+             static_cast<int>(tile_manager_.IsReadyToActivate()),
+             static_cast<int>(GetActivelyScrollingType()),
+             static_cast<int>(use_gpu_rasterization_),
+             static_cast<int>(gpu_rasterization_status_),
+             static_cast<int>(has_valid_layer_tree_frame_sink_),
+             static_cast<int>(layer_tree_frame_sink_ &&
+                              layer_tree_frame_sink_->context_provider()),
+             static_cast<int>(settings_.use_zero_copy)) +
+         tile_manager_.GetHungCommitDebugInfo();
 }
 
 }  // namespace cc

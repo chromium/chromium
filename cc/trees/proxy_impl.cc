@@ -396,7 +396,7 @@ void ProxyImpl::NotifyReadyToCommitOnImpl(
 void ProxyImpl::OnHungCommit() {
   UMA_HISTOGRAM_BOOLEAN("Compositing.Renderer.CommitHung", true);
   static auto* hung_commit_data = base::debug::AllocateCrashKeyString(
-      "hung_commit", base::debug::CrashKeySize::Size256);
+      "hung_commit", base::debug::CrashKeySize::Size1024);
   std::string debug_info = host_impl_->GetHungCommitDebugInfo() +
                            scheduler_->GetHungCommitDebugInfo();
   LOG(ERROR) << "commit hung: " << debug_info;

@@ -10,6 +10,7 @@
 
 #include <memory>
 #include <set>
+#include <string>
 #include <unordered_map>
 #include <unordered_set>
 #include <utility>
@@ -306,7 +307,7 @@ class CC_EXPORT TileManager : CheckerImageTrackerClient {
   std::unique_ptr<base::trace_event::ConvertableToTraceFormat>
   ActivationStateAsValue();
 
-  void ActivationStateAsValueInto(base::trace_event::TracedValue* state);
+  void ActivationStateAsValueInto(base::trace_event::TracedValue* state) const;
   int num_of_tiles_with_checker_images() const {
     return num_of_tiles_with_checker_images_;
   }
@@ -323,6 +324,8 @@ class CC_EXPORT TileManager : CheckerImageTrackerClient {
   }
 
   void set_active_url(const GURL& url) { active_url_ = url; }
+
+  std::string GetHungCommitDebugInfo() const;
 
  protected:
   friend class Tile;
