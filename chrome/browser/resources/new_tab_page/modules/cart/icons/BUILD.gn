@@ -14,6 +14,7 @@ generate_grd("build_grdp") {
     "cart_logo.svg",
     "consent_icon.svg",
     "consent_label.svg",
+    "shopping_cart.svg",
   ]
   input_files_base_dir = rebase_path(".", "//")
   resource_path_prefix = "modules/cart/icons"
