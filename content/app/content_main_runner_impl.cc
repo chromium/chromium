@@ -733,7 +733,22 @@ RunOtherNamedProcessTypeMain(const std::string& process_type,
     base::HangWatcher::CreateHangWatcherInstance();
     unregister_thread_closure = base::HangWatcher::RegisterThread(
         base::HangWatcher::ThreadType::kMainThread);
-    base::HangWatcher::GetInstance()->Start();
+    bool start_hang_watcher_now;
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
+    // On Linux/ChromeOS, the HangWatcher can't start until after the sandbox is
+    // initialized, because the sandbox can't be started with multiple threads.
+    // TODO(mpdenton): start the HangWatcher after the sandbox is initialized.
+    // Currently there are no sandboxed processes that aren't launched from the
+    // zygote so this doesn't disable the HangWatcher anywhere.
+    start_hang_watcher_now = sandbox::policy::IsUnsandboxedSandboxType(
+        sandbox::policy::SandboxTypeFromCommandLine(
+            *main_function_params.command_line));
+#else
+    start_hang_watcher_now = true;
+#endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
+    if (start_hang_watcher_now) {
+      base::HangWatcher::GetInstance()->Start();
+    }
   }
 
   for (size_t i = 0; i < std::size(kMainFunctions); ++i) {
