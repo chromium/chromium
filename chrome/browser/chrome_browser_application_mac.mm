@@ -35,6 +35,12 @@ void RegisterBrowserCrApp() {
   CHECK([NSApp isKindOfClass:[BrowserCrApplication class]]);
 }
 
+void InitializeHeadlessMode() {
+  // In headless mode the browser window exists but is always hidden, so there
+  // is no point in showing dock icon and menu bar.
+  [NSApp setActivationPolicy:NSApplicationActivationPolicyAccessory];
+}
+
 void Terminate() {
   [NSApp terminate:nil];
 }

@@ -121,6 +121,7 @@
 #include "base/message_loop/message_pump_mac.h"
 #include "chrome/app/chrome_main_mac.h"
 #include "chrome/browser/chrome_browser_application_mac.h"
+#include "chrome/browser/headless/headless_mode_util.h"
 #include "chrome/browser/mac/relauncher.h"
 #include "chrome/browser/shell_integration.h"
 #include "components/crash/core/common/objc_zombie.h"
@@ -1729,6 +1730,12 @@ absl::optional<int> ChromeMainDelegate::PreBrowserMain() {
 
   // Initialize NSApplication using the custom subclass.
   chrome_browser_application_mac::RegisterBrowserCrApp();
+
+  // Perform additional initialization when running in headless mode: hide
+  // dock icon and menu bar.
+  if (headless::IsHeadlessMode()) {
+    chrome_browser_application_mac::InitializeHeadlessMode();
+  }
 
   if (l10n_util::GetLocaleOverride().empty()) {
     // The browser process only wants to support the language Cocoa will use,
