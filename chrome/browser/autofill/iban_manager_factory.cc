@@ -33,10 +33,8 @@ IBANManagerFactory::~IBANManagerFactory() = default;
 
 KeyedService* IBANManagerFactory::BuildServiceInstanceFor(
     content::BrowserContext* context) const {
-  Profile* profile = Profile::FromBrowserContext(context);
-  IBANManager* service =
-      new IBANManager(PersonalDataManagerFactory::GetForBrowserContext(context),
-                      profile->IsOffTheRecord());
+  IBANManager* service = new IBANManager(
+      PersonalDataManagerFactory::GetForBrowserContext(context));
   return service;
 }
 

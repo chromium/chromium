@@ -7,7 +7,7 @@
 namespace autofill {
 
 MockIBANManager::MockIBANManager(PersonalDataManager* personal_data_manager)
-    : IBANManager(personal_data_manager, /*is_off_the_record=*/false) {}
+    : IBANManager(personal_data_manager) {}
 
 MockIBANManager::~MockIBANManager() = default;
 

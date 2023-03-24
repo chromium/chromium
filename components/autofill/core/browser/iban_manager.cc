@@ -14,10 +14,8 @@
 
 namespace autofill {
 
-IBANManager::IBANManager(PersonalDataManager* personal_data_manager,
-                         bool is_off_the_record)
-    : personal_data_manager_(personal_data_manager),
-      is_off_the_record_(is_off_the_record) {}
+IBANManager::IBANManager(PersonalDataManager* personal_data_manager)
+    : personal_data_manager_(personal_data_manager) {}
 
 IBANManager::~IBANManager() = default;
 
@@ -45,7 +43,7 @@ bool IBANManager::OnGetSingleFieldSuggestions(
     }
   }
 
-  if (!is_off_the_record_ && personal_data_manager_) {
+  if (personal_data_manager_) {
     std::vector<IBAN*> ibans = personal_data_manager_->GetLocalIBANs();
     if (!ibans.empty()) {
       // Rank the IBANs by ranking score (see AutoFillDataModel for details).
