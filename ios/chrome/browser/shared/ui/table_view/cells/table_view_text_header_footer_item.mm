@@ -49,9 +49,8 @@
   }
   [headerFooter setSubtitle:self.subtitle];
   headerFooter.textLabel.text = self.text;
-  headerFooter.accessibilityLabel = self.text ? self.text : @"";
-  headerFooter.accessibilityValue = self.subtitle;
-  headerFooter.isAccessibilityElement = YES;
+  headerFooter.textLabel.accessibilityTraits = UIAccessibilityTraitHeader;
+  headerFooter.isAccessibilityElement = NO;
 }
 
 @end

@@ -1829,6 +1829,9 @@ While in Incognito, sites can't use cookies to see your browsing activity across
       <message name="IDS_IOS_PASSWORD_BOTTOM_SHEET_NO_THANKS" desc="The action button to dismiss the password bottom sheet and revert to using the keyboard to fill in username and password information on the webpage.">
         No Thanks
       </message>
+      <message name="IDS_IOS_PRICE_NOTIFICATIONS_PRICE_TRACK_CHIP" desc="Acessibility label to describe the UI which displays a product's price in the Price Tracking Item UI.">
+          Price
+      </message>
       <message name="IDS_IOS_PRICE_NOTIFICATIONS_PRICE_TRACK_PERMISSION_REDIRECT_ALERT_CANCEL" desc="The label for the alert's cancel button">
           Cancel
       </message>

@@ -110,10 +110,6 @@ const char kBookmarksSettingsURL[] = "settings://open_bookmarks";
 
 - (NSIndexPath*)tableView:(UITableView*)tableView
     willSelectRowAtIndexPath:(NSIndexPath*)indexPath {
-  if (@available(iOS 16.0, *)) {
-    return [super tableView:tableView willSelectRowAtIndexPath:indexPath];
-  }
-
   PriceNotificationsTableViewItem* item =
       base::mac::ObjCCastStrict<PriceNotificationsTableViewItem>(
           [self.tableViewModel itemAtIndexPath:indexPath]);

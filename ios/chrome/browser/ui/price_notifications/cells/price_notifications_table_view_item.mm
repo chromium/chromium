@@ -231,6 +231,7 @@ UIStackView* CreateLoadingScreen(UIView* track_button, UIView* menu_button) {
     _menuButton.showsMenuAsPrimaryAction = YES;
     _priceNotificationsChip = [[PriceNotificationsPriceChipView alloc] init];
     _priceNotificationsChip.translatesAutoresizingMaskIntoConstraints = NO;
+    _priceNotificationsChip.isAccessibilityElement = YES;
     _priceNotificationsImageContainerView =
         [[PriceNotificationsImageContainerView alloc] init];
     _priceNotificationsImageContainerView
