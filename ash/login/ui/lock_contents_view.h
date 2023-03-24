@@ -343,8 +343,6 @@ class ASH_EXPORT LockContentsView
 
   // Called when the easy unlock icon is hovered.
   void OnEasyUnlockIconHovered();
-  // Called when the easy unlock icon is tapped.
-  void OnEasyUnlockIconTapped();
 
   // Called when LoginAuthFactorsView enters/exits a state where an auth
   // factor wants to hide the password and pin fields.

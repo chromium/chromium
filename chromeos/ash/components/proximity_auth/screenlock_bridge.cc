@@ -74,9 +74,6 @@ base::Value::Dict ScreenlockBridge::UserPodCustomIconInfo::ToDictForTesting()
   if (!aria_label_.empty())
     result.Set("ariaLabel", aria_label_);
 
-  if (hardlock_on_click_)
-    result.Set("hardlockOnClick", true);
-
   return result;
 }
 
@@ -95,10 +92,6 @@ void ScreenlockBridge::UserPodCustomIconInfo::SetTooltip(
 void ScreenlockBridge::UserPodCustomIconInfo::SetAriaLabel(
     const std::u16string& aria_label) {
   aria_label_ = aria_label;
-}
-
-void ScreenlockBridge::UserPodCustomIconInfo::SetHardlockOnClick() {
-  hardlock_on_click_ = true;
 }
 
 std::string ScreenlockBridge::UserPodCustomIconInfo::GetIDString() const {

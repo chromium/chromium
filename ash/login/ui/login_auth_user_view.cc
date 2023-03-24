@@ -1047,8 +1047,7 @@ LoginAuthUserView::LoginAuthUserView(const LoginUserInfo& user,
                           base::Unretained(this)),
       base::BindRepeating(&LoginAuthUserView::OnPasswordTextChanged,
                           base::Unretained(this)),
-      callbacks.on_easy_unlock_icon_hovered,
-      callbacks.on_easy_unlock_icon_tapped);
+      callbacks.on_easy_unlock_icon_hovered);
 
   auto pin_input_view = std::make_unique<LoginPinInputView>();
   pin_input_view_ = pin_input_view.get();

@@ -146,8 +146,6 @@ class ASH_EXPORT LoginAuthUserView : public NonAccessibleView {
     LoginUserView::OnRemove on_remove;
     // Called when the easy unlock icon is hovered.
     OnEasyUnlockIconHovered on_easy_unlock_icon_hovered;
-    // Called when the easy unlock icon is tapped.
-    views::Button::PressedCallback on_easy_unlock_icon_tapped;
     // Called when LoginAuthFactorsView enters/exits a state where an auth
     // factor wants to hide the password and pin.
     base::RepeatingCallback<void(bool)>

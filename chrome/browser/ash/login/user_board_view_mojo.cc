@@ -56,9 +56,6 @@ EasyUnlockIconInfo ToEasyUnlockIconInfo(
   if (!user_pod_icon_info.aria_label().empty())
     easy_unlock_icon_info.aria_label = user_pod_icon_info.aria_label();
 
-  if (user_pod_icon_info.hardlock_on_click())
-    easy_unlock_icon_info.hardlock_on_click = true;
-
   return easy_unlock_icon_info;
 }
 

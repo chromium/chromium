@@ -15,7 +15,6 @@
 #include "ui/base/ime/ash/ime_keyboard.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/compositor/layer_animation_observer.h"
-#include "ui/views/controls/button/button.h"
 #include "ui/views/controls/textfield/textfield_controller.h"
 #include "ui/views/view.h"
 
@@ -104,8 +103,7 @@ class ASH_EXPORT LoginPasswordView
   // changes.
   void Init(const OnPasswordSubmit& on_submit,
             const OnPasswordTextChanged& on_password_text_changed,
-            const OnEasyUnlockIconHovered& on_easy_unlock_icon_hovered,
-            views::Button::PressedCallback on_easy_unlock_icon_tapped);
+            const OnEasyUnlockIconHovered& on_easy_unlock_icon_hovered);
 
   // Whether or not the password field is enabled when there is no text.
   void SetEnabledOnEmptyPassword(bool enabled);

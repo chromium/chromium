@@ -173,11 +173,6 @@ struct ASH_PUBLIC_EXPORT EasyUnlockIconInfo {
   // TODO(jdufault): Always populate and use |aria_label|, even if |tooltip| is
   // non-empty.
   std::u16string aria_label;
-  // If true, clicking the easy unlock icon should fire a hardlock event which
-  // will disable easy unlock. The hardlock event will request a new icon
-  // display via a separate EasyUnlockIconsOption update. See
-  // LoginScreenClient::HardlockPod.
-  bool hardlock_on_click = false;
 };
 
 // Enterprise information about a managed device.

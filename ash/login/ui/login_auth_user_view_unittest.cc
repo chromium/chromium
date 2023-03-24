@@ -114,8 +114,6 @@ class LoginAuthUserViewTestBase : public LoginTestBase {
     LoginAuthUserView::Callbacks auth_callbacks;
     auth_callbacks.on_auth = base::DoNothing();
     auth_callbacks.on_easy_unlock_icon_hovered = base::DoNothing();
-    auth_callbacks.on_easy_unlock_icon_tapped =
-        views::Button::PressedCallback();
     auth_callbacks.on_tap = base::DoNothing();
     auth_callbacks.on_remove_warning_shown = base::DoNothing();
     auth_callbacks.on_remove = base::DoNothing();

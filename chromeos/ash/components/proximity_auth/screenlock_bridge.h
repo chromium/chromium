@@ -66,10 +66,6 @@ class ScreenlockBridge {
     // provided, then the tooltip will be used.
     void SetAriaLabel(const std::u16string& aria_label);
 
-    // If hardlock on click is set, clicking the icon in the screenlock will
-    // go to state where password is required for unlock.
-    void SetHardlockOnClick();
-
     std::string GetIDString() const;
 
     UserPodCustomIcon icon() const { return icon_; }
@@ -80,8 +76,6 @@ class ScreenlockBridge {
 
     const std::u16string aria_label() const { return aria_label_; }
 
-    bool hardlock_on_click() const { return hardlock_on_click_; }
-
    private:
     UserPodCustomIcon icon_;
 
@@ -89,8 +83,6 @@ class ScreenlockBridge {
     bool autoshow_tooltip_ = false;
 
     std::u16string aria_label_;
-
-    bool hardlock_on_click_ = false;
   };
 
   class LockHandler {

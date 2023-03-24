@@ -65,10 +65,6 @@ proximity_auth::ScreenlockBridge::UserPodCustomIcon GetIconForState(
   return proximity_auth::ScreenlockBridge::USER_POD_CUSTOM_ICON_NONE;
 }
 
-bool HardlockOnClick(SmartLockState state) {
-  return state != SmartLockState::kInactive;
-}
-
 size_t GetTooltipResourceId(SmartLockState state) {
   switch (state) {
     case SmartLockState::kInactive:
@@ -190,9 +186,6 @@ void SmartLockStateHandler::ChangeState(SmartLockState new_state) {
 
   proximity_auth::ScreenlockBridge::UserPodCustomIconInfo icon_info;
   icon_info.SetIcon(icon);
-
-  if (HardlockOnClick(state_))
-    icon_info.SetHardlockOnClick();
 
   UpdateTooltipOptions(&icon_info);
 

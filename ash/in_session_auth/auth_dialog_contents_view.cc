@@ -470,7 +470,7 @@ void AuthDialogContentsView::AddPasswordView() {
                           /*authenticated_by_pin=*/false),
       base::BindRepeating(&AuthDialogContentsView::OnInputTextChanged,
                           base::Unretained(this)),
-      base::DoNothing(), views::Button::PressedCallback());
+      base::DoNothing());
 }
 
 void AuthDialogContentsView::AddPinPadView() {
@@ -503,7 +503,7 @@ void AuthDialogContentsView::AddPinPadView() {
                             /*authenticated_by_pin=*/true),
         base::BindRepeating(&AuthDialogContentsView::OnInputTextChanged,
                             base::Unretained(this)),
-        base::DoNothing(), views::Button::PressedCallback());
+        base::DoNothing());
   }
   pin_pad_view_->SetVisible(true);
 }

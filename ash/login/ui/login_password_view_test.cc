@@ -50,8 +50,6 @@ class LoginPasswordViewTest : public LoginTestBase {
         base::BindRepeating(&LoginPasswordViewTest::OnPasswordTextChanged,
                             base::Unretained(this)),
         base::BindRepeating(&LoginPasswordViewTest::OnEasyUnlockIconHovered,
-                            base::Unretained(this)),
-        base::BindRepeating(&LoginPasswordViewTest::OnEasyUnlockIconTapped,
                             base::Unretained(this)));
 
     SetWidget(CreateWidgetWithContent(view_));
@@ -64,7 +62,6 @@ class LoginPasswordViewTest : public LoginTestBase {
     is_password_field_empty_ = is_empty;
   }
   void OnEasyUnlockIconHovered() { easy_unlock_icon_hovered_called_ = true; }
-  void OnEasyUnlockIconTapped() { easy_unlock_icon_tapped_called_ = true; }
 
   LoginPasswordView* view_ = nullptr;
   absl::optional<std::u16string> password_;

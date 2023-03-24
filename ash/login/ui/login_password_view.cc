@@ -315,12 +315,10 @@ class LoginPasswordView::EasyUnlockIcon : public views::ImageButton {
 
   ~EasyUnlockIcon() override = default;
 
-  void Init(const OnEasyUnlockIconHovered& on_hovered,
-            views::Button::PressedCallback on_tapped) {
+  void Init(const OnEasyUnlockIconHovered& on_hovered) {
     DCHECK(on_hovered);
 
     on_hovered_ = on_hovered;
-    SetCallback(std::move(on_tapped));
 
     hover_notifier_ = std::make_unique<HoverNotifier>(
         this, base::BindRepeating(
@@ -687,14 +685,12 @@ LoginPasswordView::~LoginPasswordView() {
 void LoginPasswordView::Init(
     const OnPasswordSubmit& on_submit,
     const OnPasswordTextChanged& on_password_text_changed,
-    const OnEasyUnlockIconHovered& on_easy_unlock_icon_hovered,
-    views::Button::PressedCallback on_easy_unlock_icon_tapped) {
+    const OnEasyUnlockIconHovered& on_easy_unlock_icon_hovered) {
   DCHECK(on_submit);
   DCHECK(on_password_text_changed);
   on_submit_ = on_submit;
   on_password_text_changed_ = on_password_text_changed;
-  easy_unlock_icon_->Init(on_easy_unlock_icon_hovered,
-                          std::move(on_easy_unlock_icon_tapped));
+  easy_unlock_icon_->Init(on_easy_unlock_icon_hovered);
 }
 
 void LoginPasswordView::SetEnabledOnEmptyPassword(bool enabled) {
