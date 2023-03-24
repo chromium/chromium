@@ -210,6 +210,15 @@ std::unique_ptr<AggregatedRenderPass> AggregatedRenderPass::DeepCopy() const {
   return copy_pass;
 }
 
+bool AggregatedRenderPass::ShouldDrawWithBlending() const {
+  for (auto* quad : quad_list) {
+    if (quad->ShouldDrawWithBlending()) {
+      return true;
+    }
+  }
+  return false;
+}
+
 void AggregatedRenderPass::AsValueInto(
     base::trace_event::TracedValue* value) const {
   RenderPassInternal::AsValueInto(value);

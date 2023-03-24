@@ -167,6 +167,17 @@ class SurfaceAggregatorTest : public testing::Test, public DisplayTimeSource {
       return quad;
     }
 
+    static Quad TransparentSolidColorQuad(SkColor4f color,
+                                          const gfx::Rect& rect,
+                                          float opacity) {
+      Quad quad;
+      quad.material = DrawQuad::Material::kSolidColor;
+      quad.color = color;
+      quad.rect = rect;
+      quad.opacity = opacity;
+      return quad;
+    }
+
     static Quad YUVVideoQuad(const gfx::Rect& rect,
                              bool per_quad_damage_output = false) {
       Quad quad;
@@ -295,7 +306,7 @@ class SurfaceAggregatorTest : public testing::Test, public DisplayTimeSource {
                             std::vector<SurfaceRange>* referenced_surfaces) {
     switch (desc.material) {
       case DrawQuad::Material::kSolidColor:
-        cc::AddQuad(pass, desc.rect, desc.color);
+        cc::AddTransparentQuad(pass, desc.rect, desc.color, desc.opacity);
         break;
       case DrawQuad::Material::kSurfaceContent:
         referenced_surfaces->emplace_back(desc.surface_range);
@@ -6131,7 +6142,8 @@ TEST_F(SurfaceAggregatorValidSurfaceTest, ColorSpaceTestWin) {
       {Quad::SolidColorQuad(SkColors::kWhite, gfx::Rect(5, 5)),
        Quad::SolidColorQuad(SkColors::kLtGray, gfx::Rect(5, 5))},
       {Quad::SolidColorQuad(SkColors::kGray, gfx::Rect(5, 5)),
-       Quad::SolidColorQuad(SkColors::kDkGray, gfx::Rect(5, 5))}};
+       Quad::TransparentSolidColorQuad(SkColors::kDkGray, gfx::Rect(5, 5),
+                                       0.5)}};
 
   gfx::DisplayColorSpaces display_color_spaces(gfx::ColorSpace::CreateSRGB());
   display_color_spaces.SetOutputColorSpaceAndBufferFormat(
@@ -6156,8 +6168,9 @@ TEST_F(SurfaceAggregatorValidSurfaceTest, ColorSpaceTestWin) {
   passes[1].damage_rect = partial_damage_rect;
   passes[0].damage_rect = child_pass_damage_rect;
 
-  // HDR content with a transparent background will get an extra RenderPass
-  // converting to SCRGB-linear.
+  // The root pass of HDR content with a transparent background will get an
+  // extra RenderPass converting to SCRGB-linear, if any content drawn to the
+  // root pass requires blending.
   aggregator_.SetDisplayColorSpaces(display_color_spaces);
   {
     SubmitCompositorFrame(root_sink_.get(), passes,
@@ -6185,8 +6198,9 @@ TEST_F(SurfaceAggregatorValidSurfaceTest, ColorSpaceTestWin) {
               aggregated_frame.render_pass_list[0]->damage_rect);
   }
 
-  // HDR content with an opaque background will get an extra RenderPass
-  // converting to HDR10.
+  // The root pass of HDR content with a transparent background will get an
+  // extra RenderPass converting to HDR10, if any content drawn to the root pass
+  // requires blending.
   passes[1].has_transparent_background = false;
   {
     SubmitCompositorFrame(root_sink_.get(), passes,
@@ -6212,6 +6226,33 @@ TEST_F(SurfaceAggregatorValidSurfaceTest, ColorSpaceTestWin) {
     EXPECT_EQ(partial_damage_rect,
               aggregated_frame.render_pass_list[2]->damage_rect);
     EXPECT_EQ(partial_damage_rect,
+              aggregated_frame.render_pass_list[1]->damage_rect);
+  }
+
+  // The root pass of HDR content with a transparent background won't get an
+  // extra RenderPass, if all content drawn to the root pass doesn't require
+  // blending.
+  quads[1][1] = Quad::SolidColorQuad(SkColors::kDkGray, gfx::Rect(5, 5));
+  passes[1] = Pass(quads[1], CompositorRenderPassId{1}, kSurfaceSize);
+  passes[1].has_transparent_background = false;
+  passes[1].damage_rect = partial_damage_rect;
+  {
+    SubmitCompositorFrame(root_sink_.get(), passes,
+                          root_surface_id_.local_surface_id(),
+                          device_scale_factor);
+    SurfaceId surface_id(root_sink_->frame_sink_id(),
+                         root_surface_id_.local_surface_id());
+
+    auto aggregated_frame = AggregateFrame(surface_id);
+
+    EXPECT_EQ(2u, aggregated_frame.render_pass_list.size());
+    EXPECT_EQ(gfx::ContentColorUsage::kHDR,
+              aggregated_frame.render_pass_list[0]->content_color_usage);
+    EXPECT_EQ(gfx::ContentColorUsage::kHDR,
+              aggregated_frame.render_pass_list[1]->content_color_usage);
+
+    // The root pass has full damage because the intermediate pass was removed.
+    EXPECT_EQ(full_damage_rect,
               aggregated_frame.render_pass_list[1]->damage_rect);
   }
 
@@ -6246,14 +6287,18 @@ TEST_F(SurfaceAggregatorValidSurfaceTest, ColorSpaceTestWin) {
     EXPECT_EQ(gfx::ContentColorUsage::kHDR,
               aggregated_frame.render_pass_list[1]->content_color_usage);
 
-    // The root pass has full damage because the intermediate pass was removed.
-    EXPECT_EQ(full_damage_rect,
+    // The root pass has partial damage.
+    EXPECT_EQ(partial_damage_rect,
               aggregated_frame.render_pass_list[1]->damage_rect);
   }
 
-  // When the root pass has a transparent background, we'll end up getting a
-  // color conversion pass.
+  // When the root pass has a transparent background and any content drawn to it
+  // requires blending, we'll end up getting a color conversion pass.
+  quads[1][1] =
+      Quad::TransparentSolidColorQuad(SkColors::kDkGray, gfx::Rect(5, 5), 0.5);
+  passes[1] = Pass(quads[1], CompositorRenderPassId{1}, kSurfaceSize);
   passes[1].has_transparent_background = true;
+  passes[1].damage_rect = partial_damage_rect;
   {
     SubmitCompositorFrame(root_sink_.get(), passes,
                           root_surface_id_.local_surface_id(),

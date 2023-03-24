@@ -68,16 +68,24 @@ viz::AggregatedRenderPass* AddRenderPassWithDamage(
 
 // Adds a solid quad to a given render pass.
 template <typename RenderPassType>
-inline viz::SolidColorDrawQuad* AddQuad(RenderPassType* pass,
-                                        const gfx::Rect& rect,
-                                        SkColor4f color) {
+inline viz::SolidColorDrawQuad* AddTransparentQuad(RenderPassType* pass,
+                                                   const gfx::Rect& rect,
+                                                   SkColor4f color,
+                                                   float opacity) {
   viz::SharedQuadState* shared_state = pass->CreateAndAppendSharedQuadState();
   shared_state->SetAll(gfx::Transform(), rect, rect, gfx::MaskFilterInfo(),
-                       absl::nullopt, false, 1, SkBlendMode::kSrcOver, 0);
+                       absl::nullopt, false, opacity, SkBlendMode::kSrcOver, 0);
   auto* quad =
       pass->template CreateAndAppendDrawQuad<viz::SolidColorDrawQuad>();
   quad->SetNew(shared_state, rect, rect, color, false);
   return quad;
+}
+
+template <typename RenderPassType>
+inline viz::SolidColorDrawQuad* AddQuad(RenderPassType* pass,
+                                        const gfx::Rect& rect,
+                                        SkColor4f color) {
+  return AddTransparentQuad(pass, rect, color, 1.0);
 }
 
 // Adds a solid quad to a given render pass and sets is_clipped=true.

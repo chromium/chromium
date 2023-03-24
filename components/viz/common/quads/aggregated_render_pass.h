@@ -89,6 +89,9 @@ class VIZ_COMMON_EXPORT AggregatedRenderPass : public RenderPassInternal {
     return quad_list.AllocateAndConstruct<DrawQuadType>();
   }
 
+  // Indicates if any its quad needs to draw with blending.
+  bool ShouldDrawWithBlending() const;
+
   // Uniquely identifies the render pass in the aggregated frame.
   AggregatedRenderPassId id;
 
