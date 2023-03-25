@@ -518,7 +518,10 @@ void OOPVideoDecoder::Reset(base::OnceClosure reset_cb) {
   CHECK(!reset_cb_);
 
   if (has_error_ || remote_decoder_type_ == VideoDecoderType::kUnknown) {
-    std::move(reset_cb).Run();
+    // Post a task instead of calling |reset_cb| immediately in order to keep
+    // the relative order between decode callbacks (posted as tasks in Decode())
+    // and the reset callback.
+    decoder_task_runner_->PostTask(FROM_HERE, std::move(reset_cb));
     return;
   }
 
@@ -537,6 +540,16 @@ void OOPVideoDecoder::OnResetDone() {
     Stop();
     return;
   }
+
+  // After a reset is completed, we shouldn't receive decoded frames
+  // corresponding to Decode() calls that came in prior to the reset (similar to
+  // a flush). That's because according to the media::VideoDecoder and
+  // media::stable::mojom::StableVideoDecoder interfaces, all ongoing Decode()
+  // requests must be completed or aborted prior to executing the reset
+  // callback. The clearing of the cache together with the validation in
+  // OnVideoFrameDecoded() should guarantee this.
+  fake_timestamp_to_real_timestamp_cache_.Clear();
+
   std::move(reset_cb_).Run();
 }
 
@@ -587,8 +600,12 @@ void OOPVideoDecoder::Stop() {
   pending_decodes_.clear();
   is_flushing_ = false;
 
-  if (reset_cb_)
-    std::move(reset_cb_).Run();
+  if (reset_cb_) {
+    // We post the |reset_cb_| as a task instead of calling it immediately so
+    // that we keep the order of pending decode callbacks (posted as tasks
+    // above) with respect to the reset callback.
+    decoder_task_runner_->PostTask(FROM_HERE, std::move(reset_cb_));
+  }
 }
 
 void OOPVideoDecoder::ReleaseVideoFrame(
@@ -626,6 +643,7 @@ int OOPVideoDecoder::GetMaxDecodeRequests() const {
 VideoDecoderType OOPVideoDecoder::GetDecoderType() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   CHECK(!init_cb_);
+  CHECK(!reset_cb_);
   return VideoDecoderType::kOutOfProcess;
 }
 
