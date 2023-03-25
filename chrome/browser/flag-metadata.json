@@ -494,11 +494,6 @@
     "expiry_milestone": 120
   },
   {
-    "name": "autofill-enable-cvc-for-vcn-yellow-path",
-     "owners": ["vinnypersky@google.com"],
-     "expiry_milestone": 120
-  },
-  {
     "name": "autofill-enable-fido-progress-dialog",
     "owners": [ "siashah", "yiian" ],
     "expiry_milestone": 120
