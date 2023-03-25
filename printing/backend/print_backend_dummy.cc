@@ -41,12 +41,6 @@ class DummyPrintBackend : public PrintBackend {
     return mojom::ResultCode::kFailed;
   }
 
-  mojom::ResultCode GetPrinterCapsAndDefaults(
-      const std::string& printer_name,
-      PrinterCapsAndDefaults* printer_info) override {
-    return mojom::ResultCode::kFailed;
-  }
-
   std::string GetPrinterDriverInfo(const std::string& printer_name) override {
     return std::string();
   }

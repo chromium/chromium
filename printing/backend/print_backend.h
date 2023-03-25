@@ -277,10 +277,13 @@ class COMPONENT_EXPORT(PRINT_BACKEND) PrintBackend
       const std::string& printer_name,
       PrinterSemanticCapsAndDefaults* printer_info) = 0;
 
+#if BUILDFLAG(IS_WIN)
   // Gets the capabilities and defaults for a specific printer.
+  // TODO(crbug.com/1008222): Evaluate if this code is useful and delete if not.
   virtual mojom::ResultCode GetPrinterCapsAndDefaults(
       const std::string& printer_name,
       PrinterCapsAndDefaults* printer_info) = 0;
+#endif
 
   // Gets the information about driver for a specific printer.
   virtual std::string GetPrinterDriverInfo(const std::string& printer_name) = 0;

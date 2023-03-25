@@ -35,9 +35,11 @@ class TestPrintBackend : public PrintBackend {
   mojom::ResultCode GetPrinterSemanticCapsAndDefaults(
       const std::string& printer_name,
       PrinterSemanticCapsAndDefaults* printer_info) override;
+#if BUILDFLAG(IS_WIN)
   mojom::ResultCode GetPrinterCapsAndDefaults(
       const std::string& printer_name,
       PrinterCapsAndDefaults* printer_info) override;
+#endif
   std::string GetPrinterDriverInfo(const std::string& printer_name) override;
   bool IsValidPrinter(const std::string& printer_name) override;
 #if BUILDFLAG(IS_WIN)

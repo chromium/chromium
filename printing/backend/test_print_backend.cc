@@ -51,10 +51,12 @@ mojom::ResultCode ReportErrorNoDevice(const base::Location& from_here) {
   return mojom::ResultCode::kFailed;
 }
 
+#if BUILDFLAG(IS_WIN)
 mojom::ResultCode ReportErrorNotImplemented(const base::Location& from_here) {
   DLOG(ERROR) << from_here.ToString() << " failed, method not implemented";
   return mojom::ResultCode::kFailed;
 }
+#endif  // BUILDFLAG(IS_WIN)
 
 }  // namespace
 
@@ -124,11 +126,13 @@ mojom::ResultCode TestPrintBackend::GetPrinterSemanticCapsAndDefaults(
   return mojom::ResultCode::kSuccess;
 }
 
+#if BUILDFLAG(IS_WIN)
 mojom::ResultCode TestPrintBackend::GetPrinterCapsAndDefaults(
     const std::string& printer_name,
     PrinterCapsAndDefaults* printer_caps) {
   return ReportErrorNotImplemented(FROM_HERE);
 }
+#endif  // BUILDFLAG(IS_WIN)
 
 std::string TestPrintBackend::GetPrinterDriverInfo(
     const std::string& printer_name) {

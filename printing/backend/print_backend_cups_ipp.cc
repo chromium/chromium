@@ -87,13 +87,6 @@ mojom::ResultCode PrintBackendCupsIpp::GetPrinterBasicInfo(
                                               : mojom::ResultCode::kFailed;
 }
 
-mojom::ResultCode PrintBackendCupsIpp::GetPrinterCapsAndDefaults(
-    const std::string& printer_name,
-    PrinterCapsAndDefaults* printer_info) {
-  NOTREACHED();
-  return mojom::ResultCode::kFailed;
-}
-
 mojom::ResultCode PrintBackendCupsIpp::GetPrinterSemanticCapsAndDefaults(
     const std::string& printer_name,
     PrinterSemanticCapsAndDefaults* printer_info) {

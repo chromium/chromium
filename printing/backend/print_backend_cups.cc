@@ -240,51 +240,39 @@ mojom::ResultCode PrintBackendCUPS::GetPrinterBasicInfo(
 mojom::ResultCode PrintBackendCUPS::GetPrinterSemanticCapsAndDefaults(
     const std::string& printer_name,
     PrinterSemanticCapsAndDefaults* printer_info) {
-  PrinterCapsAndDefaults info;
   if (!IsValidPrinter(printer_name))
     return mojom::ResultCode::kFailed;
 
-  mojom::ResultCode result_code =
-      GetPrinterCapsAndDefaults(printer_name, &info);
-  if (result_code != mojom::ResultCode::kSuccess)
-    return result_code;
+  std::string printer_capabilities = GetPrinterCapabilities(printer_name);
+  if (printer_capabilities.empty()) {
+    return mojom::ResultCode::kFailed;
+  }
 
   ScopedDestination dest = GetNamedDest(printer_name);
-  return ParsePpdCapabilities(dest.get(), locale_, info.printer_capabilities,
+  return ParsePpdCapabilities(dest.get(), locale_, printer_capabilities,
                               printer_info)
              ? mojom::ResultCode::kSuccess
              : mojom::ResultCode::kFailed;
 }
 
-mojom::ResultCode PrintBackendCUPS::GetPrinterCapsAndDefaults(
-    const std::string& printer_name,
-    PrinterCapsAndDefaults* printer_info) {
-  DCHECK(printer_info);
-
+std::string PrintBackendCUPS::GetPrinterCapabilities(
+    const std::string& printer_name) {
   VLOG(1) << "CUPS: Getting caps and defaults, printer name: " << printer_name;
 
   base::FilePath ppd_path(GetPPD(printer_name.c_str()));
   // In some cases CUPS failed to get ppd file.
   if (ppd_path.empty()) {
     LOG(ERROR) << "CUPS: Failed to get PPD, printer name: " << printer_name;
-    return mojom::ResultCode::kFailed;
+    return std::string();
   }
 
   std::string content;
-  bool res = base::ReadFileToString(ppd_path, &content);
+  if (!base::ReadFileToString(ppd_path, &content)) {
+    content.clear();
+  }
 
   base::DeleteFile(ppd_path);
-
-  if (!res)
-    return mojom::ResultCode::kFailed;
-
-  printer_info->printer_capabilities.swap(content);
-  printer_info->caps_mime_type = "application/pagemaker";
-  // In CUPS, printer defaults is a part of PPD file. Nothing to upload here.
-  printer_info->printer_defaults.clear();
-  printer_info->defaults_mime_type.clear();
-
-  return mojom::ResultCode::kSuccess;
+  return content;
 }
 
 std::string PrintBackendCUPS::GetPrinterDriverInfo(

@@ -28,9 +28,6 @@ class PrintBackendCupsIpp : public PrintBackend {
   mojom::ResultCode GetPrinterBasicInfo(
       const std::string& printer_name,
       PrinterBasicInfo* printer_info) override;
-  mojom::ResultCode GetPrinterCapsAndDefaults(
-      const std::string& printer_name,
-      PrinterCapsAndDefaults* printer_info) override;
   mojom::ResultCode GetPrinterSemanticCapsAndDefaults(
       const std::string& printer_name,
       PrinterSemanticCapsAndDefaults* printer_info) override;
