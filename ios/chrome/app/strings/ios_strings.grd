@@ -1677,6 +1677,9 @@ See your search engine’s instructions for deleting your search history, if app
       <message name="IDS_IOS_NTP_FEED_SIGNIN_PROMO_CONTINUE" desc="In Title Case: Button on the new tab page Feed Signin Promo which allow users to signin. [iOS only]">
         Continue
       </message>
+      <message name="IDS_IOS_NTP_FEED_SIGNIN_PROMO_DISABLE_SNACKBAR_MESSAGE" desc="The test shown in the snackbar message when sign-in promo is trigger when sign-in is disabled. [iOS only]">
+        Not available on your device
+      </message>
       <message name="IDS_IOS_NTP_FEED_SIGNIN_PROMO_TITLE" desc="In Title Case: Title   of the new tab page Feed Signin Promo. [iOS only]">
         See Content for You
       </message>

@@ -88,6 +88,7 @@ source_set("coordinator") {
     ":ntp",
     ":ntp_internal",
     "//components/feed/core/v2/public/ios:feed_ios_public",
+    "//components/policy:policy_code_generate",
     "//components/pref_registry",
     "//components/prefs",
     "//components/prefs/ios",
