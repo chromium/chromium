@@ -615,9 +615,6 @@ void SkiaOutputSurfaceImplOnGpu::FinishPaintRenderPass(
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   DCHECK(ddl);
 
-  DLOG_IF(WARNING, update_rect.IsEmpty())
-      << "FinishPaintRenderPass called with empty update_rect.";
-
   if (context_is_lost_)
     return;
 
@@ -674,6 +671,10 @@ void SkiaOutputSurfaceImplOnGpu::FinishPaintRenderPass(
     DCHECK(!overlay_pass_accesses_.contains(mailbox));
     overlay_pass_accesses_.emplace(mailbox, std::move(local_scoped_access));
   }
+
+  DLOG_IF(WARNING, update_rect.IsEmpty() && !skia_representation->IsCleared())
+      << "FinishPaintRenderPass called with empty update_rect on an "
+         "uninitialized backing.";
 
   SkSurface* surface = scoped_access->surface();
   DCHECK(surface);
