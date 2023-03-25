@@ -169,6 +169,9 @@ crbug.com/626703 [ Linux ] external/wpt/webdriver/tests/take_element_screenshot/
 crbug.com/626703 [ Linux ] external/wpt/webdriver/tests/take_element_screenshot/screenshot.py>>test_no_such_element_from_other_window_handle[open] [ Failure ]
 
 # ====== New tests from wpt-importer added here ======
+crbug.com/626703 [ Linux ] external/wpt/webdriver/tests/print/orientation.py>>test_orientation[default] [ Failure ]
+crbug.com/626703 [ Linux ] external/wpt/webdriver/tests/print/orientation.py>>test_orientation[landscape] [ Failure ]
+crbug.com/626703 [ Linux ] external/wpt/webdriver/tests/print/orientation.py>>test_orientation[portrait] [ Failure ]
 crbug.com/626703 [ Linux ] external/wpt/webdriver/tests/maximize_window/stress.py>>test_stress[0] [ Failure ]
 crbug.com/626703 [ Linux ] external/wpt/webdriver/tests/print/background.py>>test_background[False-iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAAC0lEQVQIW2P4DwQACfsD/Z8fLAAAAAAASUVORK5CYII=] [ Failure ]
 crbug.com/626703 [ Linux ] external/wpt/webdriver/tests/print/background.py>>test_background[None-iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAAC0lEQVQIW2P4DwQACfsD/Z8fLAAAAAAASUVORK5CYII=] [ Failure ]
