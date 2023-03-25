@@ -62,6 +62,7 @@ import androidx.webkit.WebViewClientCompat;
 import androidx.webkit.WebViewCompat;
 import androidx.webkit.WebViewFeature;
 
+import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.base.BuildInfo;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.Log;
@@ -328,6 +329,7 @@ public class WebViewBrowserActivity extends AppCompatActivity {
             }
             return false;
         });
+        ApiCompatibilityUtils.clearHandwritingBoundsOffsetBottom(mUrlBar);
         findViewById(R.id.btn_load_url).setOnClickListener((view) -> loadUrlFromUrlBar(view));
 
         enableStrictMode();
