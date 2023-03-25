@@ -22,12 +22,13 @@
 namespace media {
 
 class AUHALStream;
+class AudioSessionManagerIOS;
 
 // iOS implementation of the AudioManager singleton. This class is internal
 // to the audio output and only internal users can call methods not exposed by
 // the AudioManager class.
 // TODO(crbug.com/1413450): Fill this implementation out.
-class MEDIA_EXPORT AudioManagerIOS : public FakeAudioManager,
+class MEDIA_EXPORT AudioManagerIOS : public AudioManagerBase,
                                      public AUHALStreamClient {
  public:
   AudioManagerIOS(std::unique_ptr<AudioThread> audio_thread,
@@ -39,7 +40,32 @@ class MEDIA_EXPORT AudioManagerIOS : public FakeAudioManager,
   ~AudioManagerIOS() override;
 
   // Implementation of AudioManager.
+  bool HasAudioOutputDevices() override;
+  bool HasAudioInputDevices() override;
+  void GetAudioInputDeviceNames(AudioDeviceNames* device_names) override;
+  void GetAudioOutputDeviceNames(AudioDeviceNames* device_names) override;
+  AudioParameters GetInputStreamParameters(
+      const std::string& device_id) override;
+  std::string GetAssociatedOutputDeviceID(
+      const std::string& input_device_id) override;
   const char* GetName() override;
+
+  // Implementation of AudioManagerBase.
+  AudioOutputStream* MakeLinearOutputStream(
+      const AudioParameters& params,
+      const LogCallback& log_callback) override;
+  AudioOutputStream* MakeLowLatencyOutputStream(
+      const AudioParameters& params,
+      const std::string& device_id,
+      const LogCallback& log_callback) override;
+  AudioInputStream* MakeLinearInputStream(
+      const AudioParameters& params,
+      const std::string& device_id,
+      const LogCallback& log_callback) override;
+  AudioInputStream* MakeLowLatencyInputStream(
+      const AudioParameters& params,
+      const std::string& device_id,
+      const LogCallback& log_callback) override;
 
   // Implementation of AUHALStreamClient.
   void ReleaseOutputStreamUsingRealDevice(AudioOutputStream* stream,
@@ -49,15 +75,15 @@ class MEDIA_EXPORT AudioManagerIOS : public FakeAudioManager,
                              AudioUnitElement element,
                              size_t desired_buffer_size) override;
 
-  AudioOutputStream* MakeLinearOutputStream(
-      const AudioParameters& params,
-      const LogCallback& log_callback) override;
-  AudioOutputStream* MakeLowLatencyOutputStream(
-      const AudioParameters& params,
-      const std::string& device_id,
-      const LogCallback& log_callback) override;
+ protected:
+  AudioParameters GetPreferredOutputStreamParameters(
+      const std::string& output_device_id,
+      const AudioParameters& input_params) override;
 
  private:
+  std::unique_ptr<AudioSessionManagerIOS> audio_session_manager_;
+
+  // Tracks all constructed output streams.
   std::list<AUHALStream*> output_streams_;
 };
 
