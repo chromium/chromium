@@ -269,6 +269,16 @@ bool ResolvedFrameData::IsNextFrameSinceLastAggregation() const {
 gfx::Rect ResolvedFrameData::GetSurfaceDamage() const {
   DCHECK(valid_);
 
+  // The |damage_rect| set in |SurfaceAnimationManager| is the |output_rect|.
+  // However, we dont use |damage_rect| because when we transition from
+  // interpolated frame we would end up using the |damage_rect| from the
+  // original non interpolated frame.
+  // TODO(vmpstr): This damage may be too large, but I think it's hard to figure
+  // out a small bounds on the damage given an animation that happens in
+  // SurfaceAnimationManager.
+  if (surface_->HasSurfaceAnimationDamage())
+    return GetOutputRect();
+
   if (IsSameFrameAsLastAggregation()) {
     return gfx::Rect();
   } else if (IsNextFrameSinceLastAggregation()) {
