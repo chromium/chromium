@@ -81,7 +81,7 @@ interface AuthChallengeResponder {
 // of authentication and certificate events. This is typically implemented
 // by a trusted process such as the browser process.
 interface URLLoaderNetworkServiceObserver {
-  // Called when an SSL certificate is encountered.
+  // Called when an SSL certificate error is encountered.
   // The callback argument is a net::ERROR value. If it's net::OK, then the
   // request is resumed. Otherwise it's cancelled with the given error.
   OnSSLCertificateError(url.mojom.Url url,
