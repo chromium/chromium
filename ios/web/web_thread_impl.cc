@@ -242,14 +242,14 @@ WebThreadTaskExecutor* WebThreadTaskExecutor::g_instance = nullptr;
 
 }  // namespace
 
-scoped_refptr<base::SingleThreadTaskRunner> GetUIThreadTaskRunner(
-    const WebTaskTraits& traits) {
+scoped_refptr<base::SingleThreadTaskRunner>
+WebThreadImpl::GetUIThreadTaskRunner(const WebTaskTraits& traits) {
   return WebThreadTaskExecutor::GetInstance()->GetTaskRunner(WebThread::UI,
                                                              traits);
 }
 
-scoped_refptr<base::SingleThreadTaskRunner> GetIOThreadTaskRunner(
-    const WebTaskTraits& traits) {
+scoped_refptr<base::SingleThreadTaskRunner>
+WebThreadImpl::GetIOThreadTaskRunner(const WebTaskTraits& traits) {
   return WebThreadTaskExecutor::GetInstance()->GetTaskRunner(WebThread::IO,
                                                              traits);
 }
@@ -290,7 +290,6 @@ void WebThreadImpl::ResetGlobalsForTesting(WebThread::ID identifier) {
   globals.states[identifier] = WebThreadState::UNINITIALIZED;
   globals.task_runners[identifier] = nullptr;
 }
-
 // Friendly names for the well-known threads.
 
 // static
@@ -306,7 +305,7 @@ const char* WebThreadImpl::GetThreadName(WebThread::ID thread) {
 }
 
 // static
-bool WebThread::IsThreadInitialized(ID identifier) {
+bool WebThreadImpl::IsThreadInitialized(ID identifier) {
   if (!g_globals.IsCreated())
     return false;
 
@@ -318,7 +317,7 @@ bool WebThread::IsThreadInitialized(ID identifier) {
 }
 
 // static
-bool WebThread::CurrentlyOn(ID identifier) {
+bool WebThreadImpl::CurrentlyOn(ID identifier) {
   WebThreadGlobals& globals = g_globals.Get();
   base::AutoLock lock(globals.lock);
   DCHECK_GE(identifier, 0);
@@ -328,7 +327,7 @@ bool WebThread::CurrentlyOn(ID identifier) {
 }
 
 // static
-std::string WebThread::GetDCheckCurrentlyOnErrorMessage(ID expected) {
+std::string WebThreadImpl::GetDCheckCurrentlyOnErrorMessage(ID expected) {
   std::string actual_name = base::PlatformThread::GetName();
   if (actual_name.empty())
     actual_name = "Unknown Thread";
@@ -342,7 +341,7 @@ std::string WebThread::GetDCheckCurrentlyOnErrorMessage(ID expected) {
 }
 
 // static
-bool WebThread::GetCurrentThreadIdentifier(ID* identifier) {
+bool WebThreadImpl::GetCurrentThreadIdentifier(ID* identifier) {
   if (!g_globals.IsCreated())
     return false;
 
@@ -357,22 +356,6 @@ bool WebThread::GetCurrentThreadIdentifier(ID* identifier) {
   }
 
   return false;
-}
-
-// static
-scoped_refptr<base::SingleThreadTaskRunner> WebThread::GetTaskRunnerForThread(
-    ID identifier) {
-  DCHECK_GE(identifier, 0);
-  DCHECK_LT(identifier, ID_COUNT);
-  switch (identifier) {
-    case UI:
-      return GetUIThreadTaskRunner({});
-    case IO:
-      return GetIOThreadTaskRunner({});
-    case ID_COUNT:
-      NOTREACHED();
-      return nullptr;
-  }
 }
 
 // static

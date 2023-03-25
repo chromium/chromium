@@ -29,6 +29,16 @@ class WebThreadImpl : public WebThread {
  public:
   ~WebThreadImpl();
 
+  // WebThread static implementation:
+  static scoped_refptr<base::SingleThreadTaskRunner> GetUIThreadTaskRunner(
+      const WebTaskTraits& traits);
+  static scoped_refptr<base::SingleThreadTaskRunner> GetIOThreadTaskRunner(
+      const WebTaskTraits& traits);
+  static bool IsThreadInitialized(ID identifier);
+  static bool CurrentlyOn(ID identifier);
+  static std::string GetDCheckCurrentlyOnErrorMessage(ID expected);
+  static bool GetCurrentThreadIdentifier(ID* identifier);
+
   // Returns the thread name for `identifier`.
   static const char* GetThreadName(WebThread::ID identifier);
 

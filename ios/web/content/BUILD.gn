@@ -11,6 +11,8 @@ source_set("content") {
   sources = [
     "content_browser_context.h",
     "content_browser_context.mm",
+    "content_thread_impl.cc",
+    "content_thread_impl.h",
     "js_messaging/content_web_frame.h",
     "js_messaging/content_web_frame.mm",
     "js_messaging/content_web_frames_manager.h",

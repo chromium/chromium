@@ -6,7 +6,18 @@ import("//ios/build/config.gni")
 
 source_set("thread") {
   configs += [ "//build/config/compiler:enable_arc" ]
-  deps = [ "//ios/web/public" ]
+  deps = [
+    "//build:blink_buildflags",
+    "//ios/web:threads",
+    "//ios/web/public",
+  ]
 
-  sources = [ "web_task_traits.cc" ]
+  if (use_blink) {
+    deps += [ "//ios/web/content" ]
+  }
+
+  sources = [
+    "web_task_traits.cc",
+    "web_thread.cc",
+  ]
 }
