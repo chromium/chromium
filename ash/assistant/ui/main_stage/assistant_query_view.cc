@@ -11,7 +11,6 @@
 #include "ash/assistant/ui/assistant_ui_constants.h"
 #include "ash/assistant/ui/assistant_view_ids.h"
 #include "ash/assistant/ui/colors/assistant_colors.h"
-#include "ash/assistant/ui/colors/assistant_colors_util.h"
 #include "ash/constants/ash_features.h"
 #include "ash/style/ash_color_id.h"
 #include "base/strings/escape.h"

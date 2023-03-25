@@ -15,17 +15,3 @@ style_variable_generator("assistant_colors") {
 
   cpp_namespace = "assistant_colors"
 }
-
-source_set("assistant_colors_util") {
-  sources = [
-    "assistant_colors_util.cc",
-    "assistant_colors_util.h",
-  ]
-  deps = [
-    ":assistant_colors_views",
-    "//ash/constants",
-    "//ash/public/cpp",
-    "//base",
-    "//skia",
-  ]
-}

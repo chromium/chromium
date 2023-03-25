@@ -163,7 +163,6 @@ source_set("app_list") {
     "//ash/assistant/model",
     "//ash/assistant/ui",
     "//ash/assistant/ui:constants",
-    "//ash/assistant/ui/colors:assistant_colors_util",
     "//ash/assistant/ui/colors:assistant_colors_views",
     "//ash/assistant/util",
     "//ash/keyboard/ui",
