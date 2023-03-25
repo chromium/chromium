@@ -1,4 +1,4 @@
-// Copyright 2022 The Chromium Authors
+// Copyright 2023 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -37,12 +37,18 @@ export class SettingsSimpleConfirmationDialogElement extends PolymerElement {
       titleText: String,
       bodyText: String,
       confirmText: String,
+
+      noPrimaryButton: {
+        type: Boolean,
+        value: false,
+      },
     };
   }
 
   titleText: string;
   bodyText: string;
   confirmText: string;
+  noPrimaryButton: boolean;
 
   /** @return Whether the user confirmed the dialog. */
   wasConfirmed(): boolean {
@@ -55,6 +61,10 @@ export class SettingsSimpleConfirmationDialogElement extends PolymerElement {
 
   private onConfirmClick_() {
     this.$.dialog.close();
+  }
+
+  private getConfirmButtonCssClass_(): string {
+    return this.noPrimaryButton ? '' : 'action-button';
   }
 }
 

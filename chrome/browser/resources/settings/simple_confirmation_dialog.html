@@ -5,7 +5,9 @@
     <cr-button  id="cancel" class="cancel-button" on-click="onCancelClick_">
       $i18n{cancel}
     </cr-button>
-    <cr-button id="confirm" on-click="onConfirmClick_">
+    <cr-button id="confirm"
+        class$="[[getConfirmButtonCssClass_(noPrimaryButton)]]"
+        on-click="onConfirmClick_">
       [[confirmText]]
     </cr-button>
   </div>
