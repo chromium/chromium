@@ -27,8 +27,8 @@ PASS Property color value 'color(srgb none none none)'
 PASS Property color value 'color(srgb 10% none none / none)'
 PASS Property color value 'color(srgb none none none / 0.5)'
 PASS Property color value 'color(srgb 0 0 0 / none)'
-FAIL Property color value 'color(srgb calc(NaN) 0 0 / none)' assert_array_approx_equals: Numeric parameters are approximately equal. property 0, expected 0 +/- 0.0001, expected 0 but got Infinity
-FAIL Property color value 'color(srgb calc(0 / 0) 0 0 / none)' assert_array_approx_equals: Numeric parameters are approximately equal. property 0, expected 0 +/- 0.0001, expected 0 but got Infinity
+FAIL Property color value 'color(srgb calc(NaN) 0 0)' assert_array_approx_equals: Numeric parameters are approximately equal. property 0, expected 0 +/- 0.0001, expected 0 but got Infinity
+FAIL Property color value 'color(srgb calc(0 / 0) 0 0)' assert_array_approx_equals: Numeric parameters are approximately equal. property 0, expected 0 +/- 0.0001, expected 0 but got Infinity
 PASS Property color value 'color(srgb-linear 0% 0% 0%)'
 PASS Property color value 'color(srgb-linear 10% 10% 10%)'
 PASS Property color value 'color(srgb-linear .2 .2 25%)'
@@ -56,8 +56,8 @@ PASS Property color value 'color(srgb-linear none none none)'
 PASS Property color value 'color(srgb-linear 10% none none / none)'
 PASS Property color value 'color(srgb-linear none none none / 0.5)'
 PASS Property color value 'color(srgb-linear 0 0 0 / none)'
-FAIL Property color value 'color(srgb-linear calc(NaN) 0 0 / none)' assert_array_approx_equals: Numeric parameters are approximately equal. property 0, expected 0 +/- 0.0001, expected 0 but got Infinity
-FAIL Property color value 'color(srgb-linear calc(0 / 0) 0 0 / none)' assert_array_approx_equals: Numeric parameters are approximately equal. property 0, expected 0 +/- 0.0001, expected 0 but got Infinity
+FAIL Property color value 'color(srgb-linear calc(NaN) 0 0)' assert_array_approx_equals: Numeric parameters are approximately equal. property 0, expected 0 +/- 0.0001, expected 0 but got Infinity
+FAIL Property color value 'color(srgb-linear calc(0 / 0) 0 0)' assert_array_approx_equals: Numeric parameters are approximately equal. property 0, expected 0 +/- 0.0001, expected 0 but got Infinity
 PASS Property color value 'color(a98-rgb 0% 0% 0%)'
 PASS Property color value 'color(a98-rgb 10% 10% 10%)'
 PASS Property color value 'color(a98-rgb .2 .2 25%)'
@@ -85,8 +85,8 @@ PASS Property color value 'color(a98-rgb none none none)'
 PASS Property color value 'color(a98-rgb 10% none none / none)'
 PASS Property color value 'color(a98-rgb none none none / 0.5)'
 PASS Property color value 'color(a98-rgb 0 0 0 / none)'
-FAIL Property color value 'color(a98-rgb calc(NaN) 0 0 / none)' assert_array_approx_equals: Numeric parameters are approximately equal. property 0, expected 0 +/- 0.0001, expected 0 but got Infinity
-FAIL Property color value 'color(a98-rgb calc(0 / 0) 0 0 / none)' assert_array_approx_equals: Numeric parameters are approximately equal. property 0, expected 0 +/- 0.0001, expected 0 but got Infinity
+FAIL Property color value 'color(a98-rgb calc(NaN) 0 0)' assert_array_approx_equals: Numeric parameters are approximately equal. property 0, expected 0 +/- 0.0001, expected 0 but got Infinity
+FAIL Property color value 'color(a98-rgb calc(0 / 0) 0 0)' assert_array_approx_equals: Numeric parameters are approximately equal. property 0, expected 0 +/- 0.0001, expected 0 but got Infinity
 PASS Property color value 'color(rec2020 0% 0% 0%)'
 PASS Property color value 'color(rec2020 10% 10% 10%)'
 PASS Property color value 'color(rec2020 .2 .2 25%)'
@@ -114,8 +114,8 @@ PASS Property color value 'color(rec2020 none none none)'
 PASS Property color value 'color(rec2020 10% none none / none)'
 PASS Property color value 'color(rec2020 none none none / 0.5)'
 PASS Property color value 'color(rec2020 0 0 0 / none)'
-FAIL Property color value 'color(rec2020 calc(NaN) 0 0 / none)' assert_array_approx_equals: Numeric parameters are approximately equal. property 0, expected 0 +/- 0.0001, expected 0 but got Infinity
-FAIL Property color value 'color(rec2020 calc(0 / 0) 0 0 / none)' assert_array_approx_equals: Numeric parameters are approximately equal. property 0, expected 0 +/- 0.0001, expected 0 but got Infinity
+FAIL Property color value 'color(rec2020 calc(NaN) 0 0)' assert_array_approx_equals: Numeric parameters are approximately equal. property 0, expected 0 +/- 0.0001, expected 0 but got Infinity
+FAIL Property color value 'color(rec2020 calc(0 / 0) 0 0)' assert_array_approx_equals: Numeric parameters are approximately equal. property 0, expected 0 +/- 0.0001, expected 0 but got Infinity
 PASS Property color value 'color(prophoto-rgb 0% 0% 0%)'
 PASS Property color value 'color(prophoto-rgb 10% 10% 10%)'
 PASS Property color value 'color(prophoto-rgb .2 .2 25%)'
@@ -143,8 +143,8 @@ PASS Property color value 'color(prophoto-rgb none none none)'
 PASS Property color value 'color(prophoto-rgb 10% none none / none)'
 PASS Property color value 'color(prophoto-rgb none none none / 0.5)'
 PASS Property color value 'color(prophoto-rgb 0 0 0 / none)'
-FAIL Property color value 'color(prophoto-rgb calc(NaN) 0 0 / none)' assert_array_approx_equals: Numeric parameters are approximately equal. property 0, expected 0 +/- 0.0001, expected 0 but got Infinity
-FAIL Property color value 'color(prophoto-rgb calc(0 / 0) 0 0 / none)' assert_array_approx_equals: Numeric parameters are approximately equal. property 0, expected 0 +/- 0.0001, expected 0 but got Infinity
+FAIL Property color value 'color(prophoto-rgb calc(NaN) 0 0)' assert_array_approx_equals: Numeric parameters are approximately equal. property 0, expected 0 +/- 0.0001, expected 0 but got Infinity
+FAIL Property color value 'color(prophoto-rgb calc(0 / 0) 0 0)' assert_array_approx_equals: Numeric parameters are approximately equal. property 0, expected 0 +/- 0.0001, expected 0 but got Infinity
 PASS Property color value 'color(display-p3 0% 0% 0%)'
 PASS Property color value 'color(display-p3 10% 10% 10%)'
 PASS Property color value 'color(display-p3 .2 .2 25%)'
@@ -172,8 +172,8 @@ PASS Property color value 'color(display-p3 none none none)'
 PASS Property color value 'color(display-p3 10% none none / none)'
 PASS Property color value 'color(display-p3 none none none / 0.5)'
 PASS Property color value 'color(display-p3 0 0 0 / none)'
-FAIL Property color value 'color(display-p3 calc(NaN) 0 0 / none)' assert_array_approx_equals: Numeric parameters are approximately equal. property 0, expected 0 +/- 0.0001, expected 0 but got Infinity
-FAIL Property color value 'color(display-p3 calc(0 / 0) 0 0 / none)' assert_array_approx_equals: Numeric parameters are approximately equal. property 0, expected 0 +/- 0.0001, expected 0 but got Infinity
+FAIL Property color value 'color(display-p3 calc(NaN) 0 0)' assert_array_approx_equals: Numeric parameters are approximately equal. property 0, expected 0 +/- 0.0001, expected 0 but got Infinity
+FAIL Property color value 'color(display-p3 calc(0 / 0) 0 0)' assert_array_approx_equals: Numeric parameters are approximately equal. property 0, expected 0 +/- 0.0001, expected 0 but got Infinity
 PASS Property color value 'color(xyz 0 0 0)'
 PASS Property color value 'color(xyz 0 0 0 / 1)'
 PASS Property color value 'color(xyz 1 1 1)'
@@ -194,8 +194,8 @@ PASS Property color value 'color(xyz none none none)'
 PASS Property color value 'color(xyz 0.2 none none / none)'
 PASS Property color value 'color(xyz none none none / 0.5)'
 PASS Property color value 'color(xyz 0 0 0 / none)'
-FAIL Property color value 'color(xyz calc(NaN) 0 0 / none)' assert_array_approx_equals: Numeric parameters are approximately equal. property 0, expected 0 +/- 0.0001, expected 0 but got Infinity
-FAIL Property color value 'color(xyz calc(0 / 0) 0 0 / none)' assert_array_approx_equals: Numeric parameters are approximately equal. property 0, expected 0 +/- 0.0001, expected 0 but got Infinity
+FAIL Property color value 'color(xyz calc(NaN) 0 0)' assert_array_approx_equals: Numeric parameters are approximately equal. property 0, expected 0 +/- 0.0001, expected 0 but got Infinity
+FAIL Property color value 'color(xyz calc(0 / 0) 0 0)' assert_array_approx_equals: Numeric parameters are approximately equal. property 0, expected 0 +/- 0.0001, expected 0 but got Infinity
 PASS Property color value 'color(xyz-d50 0 0 0)'
 PASS Property color value 'color(xyz-d50 0 0 0 / 1)'
 PASS Property color value 'color(xyz-d50 1 1 1)'
@@ -216,8 +216,8 @@ PASS Property color value 'color(xyz-d50 none none none)'
 PASS Property color value 'color(xyz-d50 0.2 none none / none)'
 PASS Property color value 'color(xyz-d50 none none none / 0.5)'
 PASS Property color value 'color(xyz-d50 0 0 0 / none)'
-FAIL Property color value 'color(xyz-d50 calc(NaN) 0 0 / none)' assert_array_approx_equals: Numeric parameters are approximately equal. property 0, expected 0 +/- 0.0001, expected 0 but got Infinity
-FAIL Property color value 'color(xyz-d50 calc(0 / 0) 0 0 / none)' assert_array_approx_equals: Numeric parameters are approximately equal. property 0, expected 0 +/- 0.0001, expected 0 but got Infinity
+FAIL Property color value 'color(xyz-d50 calc(NaN) 0 0)' assert_array_approx_equals: Numeric parameters are approximately equal. property 0, expected 0 +/- 0.0001, expected 0 but got Infinity
+FAIL Property color value 'color(xyz-d50 calc(0 / 0) 0 0)' assert_array_approx_equals: Numeric parameters are approximately equal. property 0, expected 0 +/- 0.0001, expected 0 but got Infinity
 PASS Property color value 'color(xyz-d65 0 0 0)'
 PASS Property color value 'color(xyz-d65 0 0 0 / 1)'
 PASS Property color value 'color(xyz-d65 1 1 1)'
@@ -238,8 +238,8 @@ PASS Property color value 'color(xyz-d65 none none none)'
 PASS Property color value 'color(xyz-d65 0.2 none none / none)'
 PASS Property color value 'color(xyz-d65 none none none / 0.5)'
 PASS Property color value 'color(xyz-d65 0 0 0 / none)'
-FAIL Property color value 'color(xyz-d65 calc(NaN) 0 0 / none)' assert_array_approx_equals: Numeric parameters are approximately equal. property 0, expected 0 +/- 0.0001, expected 0 but got Infinity
-FAIL Property color value 'color(xyz-d65 calc(0 / 0) 0 0 / none)' assert_array_approx_equals: Numeric parameters are approximately equal. property 0, expected 0 +/- 0.0001, expected 0 but got Infinity
+FAIL Property color value 'color(xyz-d65 calc(NaN) 0 0)' assert_array_approx_equals: Numeric parameters are approximately equal. property 0, expected 0 +/- 0.0001, expected 0 but got Infinity
+FAIL Property color value 'color(xyz-d65 calc(0 / 0) 0 0)' assert_array_approx_equals: Numeric parameters are approximately equal. property 0, expected 0 +/- 0.0001, expected 0 but got Infinity
 PASS Property color value 'color(srgb 1.00 0.50 0.200)' [sRGB all numbers]
 PASS Property color value 'color(srgb 100% 50% 20%)' [sRGB all percent]
 PASS Property color value 'color(srgb 100% 0.5 20%)' [sRGB mixed number and percent]
