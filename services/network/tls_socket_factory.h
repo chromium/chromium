@@ -80,12 +80,13 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) TLSSocketFactory {
       mojom::TCPConnectedSocket::UpgradeToTLSCallback callback);
 
   // The following are used when |unsafely_skip_cert_verification| is specified
-  // in upgrade options.
-  std::unique_ptr<net::SSLClientContext> no_verification_ssl_client_context_;
+  // in upgrade options. The SSLClientContext must be last so that it does not
+  // outlive its input parameters.
   std::unique_ptr<net::CertVerifier> no_verification_cert_verifier_;
   std::unique_ptr<net::TransportSecurityState>
       no_verification_transport_security_state_;
   std::unique_ptr<net::CTPolicyEnforcer> no_verification_ct_policy_enforcer_;
+  std::unique_ptr<net::SSLClientContext> no_verification_ssl_client_context_;
 
   net::SSLClientContext ssl_client_context_;
   raw_ptr<net::ClientSocketFactory> client_socket_factory_;
