@@ -173,6 +173,30 @@ ExtensionsToolbarUITest::GetVisibleToolbarActionViews() const {
   return views;
 }
 
+ExtensionsToolbarButton* ExtensionsToolbarUITest::extensions_button() {
+  return GetExtensionsToolbarContainer()->GetExtensionsButton();
+}
+
+ExtensionsMenuCoordinator* ExtensionsToolbarUITest::menu_coordinator() {
+  return GetExtensionsToolbarContainer()
+      ->GetExtensionsMenuCoordinatorForTesting();
+}
+
+bool ExtensionsToolbarUITest::DidInjectScript(
+    content::WebContents* web_contents) {
+  const std::u16string& title = web_contents->GetTitle();
+  if (title == u"success") {
+    return true;
+  }
+  // The original page title is "OK"; this indicates the script didn't
+  // inject.
+  if (title == u"OK") {
+    return false;
+  }
+  ADD_FAILURE() << "Unexpected page title found: " << title;
+  return false;
+}
+
 void ExtensionsToolbarUITest::ClickButton(views::Button* button) const {
   ui::MouseEvent press_event(ui::ET_MOUSE_PRESSED, gfx::Point(), gfx::Point(),
                              base::TimeTicks(), ui::EF_LEFT_MOUSE_BUTTON, 0);

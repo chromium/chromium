@@ -22,22 +22,6 @@ namespace {
 
 using PermissionsManager = extensions::PermissionsManager;
 
-// Returns whether the extension injected a script by checking the document
-// title.
-bool DidInjectScript(content::WebContents* web_contents) {
-  const std::u16string& title = web_contents->GetTitle();
-  if (title == u"success") {
-    return true;
-  }
-  // The original page title is "OK"; this indicates the script didn't
-  // inject.
-  if (title == u"OK") {
-    return false;
-  }
-  ADD_FAILURE() << "Unexpected page title found: " << title;
-  return false;
-}
-
 }  // namespace
 
 class ExtensionsMenuMainPageViewInteractiveUITest
@@ -55,8 +39,6 @@ class ExtensionsMenuMainPageViewInteractiveUITest
 
   void ClickSiteSettingToggle();
 
-  ExtensionsToolbarButton* extensions_button();
-  ExtensionsMenuCoordinator* menu_coordinator();
   ExtensionsMenuMainPageView* main_page();
 
   // ExtensionsToolbarUITest:
@@ -87,17 +69,6 @@ void ExtensionsMenuMainPageViewInteractiveUITest::ClickSiteSettingToggle() {
   waiter.WaitForUserPermissionsSettingsChange();
 
   WaitForAnimation();
-}
-
-ExtensionsToolbarButton*
-ExtensionsMenuMainPageViewInteractiveUITest::extensions_button() {
-  return GetExtensionsToolbarContainer()->GetExtensionsButton();
-}
-
-ExtensionsMenuCoordinator*
-ExtensionsMenuMainPageViewInteractiveUITest::menu_coordinator() {
-  return GetExtensionsToolbarContainer()
-      ->GetExtensionsMenuCoordinatorForTesting();
 }
 
 ExtensionsMenuMainPageView*

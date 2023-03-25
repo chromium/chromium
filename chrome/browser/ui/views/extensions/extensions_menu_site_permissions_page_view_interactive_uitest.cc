@@ -22,24 +22,6 @@ namespace {
 
 using PermissionsManager = extensions::PermissionsManager;
 
-// Returns whether the extension injected a script by checking the document
-// title.
-// TODO(crbug.com/1390952): Move repeated code from main page and site
-// permissions page interactive ui tests to ExtensionsToolbarUITest.
-bool DidInjectScript(content::WebContents* web_contents) {
-  const std::u16string& title = web_contents->GetTitle();
-  if (title == u"success") {
-    return true;
-  }
-  // The original page title is "OK"; this indicates the script didn't
-  // inject.
-  if (title == u"OK") {
-    return false;
-  }
-  ADD_FAILURE() << "Unexpected page title found: " << title;
-  return false;
-}
-
 }  // namespace
 
 class ExtensionsMenuSitePermissionsPageViewInteractiveUITest
@@ -62,8 +44,6 @@ class ExtensionsMenuSitePermissionsPageViewInteractiveUITest
   // opened.
   bool IsSitePermissionsPageOpened(extensions::ExtensionId extension_id);
 
-  ExtensionsToolbarButton* extensions_button();
-  ExtensionsMenuCoordinator* menu_coordinator();
   ExtensionsMenuMainPageView* main_page();
   ExtensionsMenuSitePermissionsPageView* site_permissions_page();
 
@@ -98,17 +78,6 @@ bool ExtensionsMenuSitePermissionsPageViewInteractiveUITest::
     IsSitePermissionsPageOpened(extensions::ExtensionId extension_id) {
   ExtensionsMenuSitePermissionsPageView* page = site_permissions_page();
   return page && page->extension_id() == extension_id;
-}
-
-ExtensionsToolbarButton*
-ExtensionsMenuSitePermissionsPageViewInteractiveUITest::extensions_button() {
-  return GetExtensionsToolbarContainer()->GetExtensionsButton();
-}
-
-ExtensionsMenuCoordinator*
-ExtensionsMenuSitePermissionsPageViewInteractiveUITest::menu_coordinator() {
-  return GetExtensionsToolbarContainer()
-      ->GetExtensionsMenuCoordinatorForTesting();
 }
 
 ExtensionsMenuMainPageView*
