@@ -12,6 +12,8 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/values.h"
+#include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/printing/print_backend_service_manager.h"
 #include "printing/backend/test_print_backend.h"
 
@@ -113,6 +115,7 @@ void PrintBackendServiceTestImpl::GetDefaultPrinterName(
   PrintBackendServiceImpl::GetDefaultPrinterName(std::move(callback));
 }
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 void PrintBackendServiceTestImpl::GetPrinterSemanticCapsAndDefaults(
     const std::string& printer_name,
     mojom::PrintBackendService::GetPrinterSemanticCapsAndDefaultsCallback
@@ -125,6 +128,7 @@ void PrintBackendServiceTestImpl::GetPrinterSemanticCapsAndDefaults(
   PrintBackendServiceImpl::GetPrinterSemanticCapsAndDefaults(
       printer_name, std::move(callback));
 }
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 void PrintBackendServiceTestImpl::FetchCapabilities(
     const std::string& printer_name,
