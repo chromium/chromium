@@ -72,9 +72,6 @@ class ASH_EXPORT ColorPaletteController {
     virtual void OnColorPaletteChanging(const ColorPaletteSeed& seed) = 0;
   };
 
-  // Temporary factory for migration.  DO NOT USE.
-  static std::unique_ptr<ColorPaletteController> Create();
-
   static std::unique_ptr<ColorPaletteController> Create(
       DarkLightModeController* dark_light_mode_controller,
       WallpaperControllerImpl* wallpaper_controller);

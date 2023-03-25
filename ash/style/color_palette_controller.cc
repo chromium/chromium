@@ -263,13 +263,6 @@ class ColorPaletteControllerImpl : public ColorPaletteController,
 }  // namespace
 
 // static
-std::unique_ptr<ColorPaletteController> ColorPaletteController::Create() {
-  Shell* shell = Shell::Get();
-  return Create(shell->dark_light_mode_controller(),
-                shell->wallpaper_controller());
-}
-
-// static
 std::unique_ptr<ColorPaletteController> ColorPaletteController::Create(
     DarkLightModeController* dark_light_mode_controller,
     WallpaperControllerImpl* wallpaper_controller) {

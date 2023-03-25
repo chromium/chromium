@@ -32,7 +32,7 @@ PersonalizationAppThemeProviderImpl::PersonalizationAppThemeProviderImpl(
     : profile_(Profile::FromWebUI(web_ui)) {
   pref_change_registrar_.Init(profile_->GetPrefs());
   if (chromeos::features::IsJellyEnabled()) {
-    color_palette_controller_ = ColorPaletteController::Create();
+    color_palette_controller_ = Shell::Get()->color_palette_controller();
   }
 }
 

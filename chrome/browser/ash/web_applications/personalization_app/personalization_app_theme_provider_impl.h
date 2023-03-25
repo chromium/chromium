@@ -6,7 +6,6 @@
 #define CHROME_BROWSER_ASH_WEB_APPLICATIONS_PERSONALIZATION_APP_PERSONALIZATION_APP_THEME_PROVIDER_IMPL_H_
 
 #include "ash/public/cpp/style/color_mode_observer.h"
-#include "ash/style/color_palette_controller.h"
 #include "ash/style/dark_light_mode_controller_impl.h"
 #include "ash/webui/personalization_app/personalization_app_theme_provider.h"
 #include "base/memory/raw_ptr.h"
@@ -18,6 +17,10 @@
 #include "ui/color/color_provider_source_observer.h"
 
 class Profile;
+
+namespace ash {
+class ColorPaletteController;
+}  // namespace ash
 
 namespace content {
 class WebUI;
@@ -93,7 +96,8 @@ class PersonalizationAppThemeProviderImpl
 
   PrefChangeRegistrar pref_change_registrar_;
 
-  std::unique_ptr<ColorPaletteController> color_palette_controller_;
+  base::raw_ptr<ColorPaletteController> color_palette_controller_ =
+      nullptr;  // owned by Shell
 
   base::ScopedObservation<ash::DarkLightModeControllerImpl,
                           ash::ColorModeObserver>
