@@ -1162,6 +1162,7 @@ Los sitios pueden usar cookies para ver tu actividad de navegación en otros sit
 <translation id="8978059030508051916">{count,plural, =0{No hay contraseñas vulneradas}=1{{count} contraseña vulnerada}other{{count} contraseñas vulneradas}}</translation>
 <translation id="8981454092730389528">Gestión de tu actividad en Google</translation>
 <translation id="8985320356172329008">Has iniciado sesión en Google como</translation>
+<translation id="8998289560386111590">No disponible en tu dispositivo</translation>
 <translation id="9000089900434778519">Usas el buscador <ph name="DSE_NAME" />. Consulta las instrucciones de tu buscador para eliminar tu historial de búsqueda (si corresponde).</translation>
 <translation id="9008201768610948239">Ignorar</translation>
 <translation id="9034759925968272072">No se cerrará la sesión en tu cuenta de Google. Es posible que tu cuenta de Google tenga otras formas del historial de navegación en la página <ph name="BEGIN_LINK" />history.google.com<ph name="END_LINK" />.</translation>

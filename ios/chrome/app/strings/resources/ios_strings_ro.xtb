@@ -1162,6 +1162,7 @@ Site-urile pot folosi cookie-uri pentru a vedea activitatea ta de navigare de pe
 <translation id="8978059030508051916">{count,plural, =0{Nicio parolă compromisă}=1{{count} parolă compromisă}few{{count} parole compromise}other{{count} de parole compromise}}</translation>
 <translation id="8981454092730389528">Opțiuni privind activitatea Google</translation>
 <translation id="8985320356172329008">Conectat(ă) la Google ca</translation>
+<translation id="8998289560386111590">Nu este disponibil pe dispozitivul tău</translation>
 <translation id="9000089900434778519">Motorul tău de căutare este <ph name="DSE_NAME" />. Vezi instrucțiunile pentru ștergerea istoricului căutărilor, dacă este cazul.</translation>
 <translation id="9008201768610948239">Ignorați</translation>
 <translation id="9034759925968272072">Nu vei fi deconectat(ă) de la Contul Google. Contul Google poate să ofere alte forme ale istoricului de navigare la <ph name="BEGIN_LINK" />history.google.com<ph name="END_LINK" />.</translation>

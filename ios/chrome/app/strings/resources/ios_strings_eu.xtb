@@ -1161,6 +1161,7 @@ Webguneek cookieak erabil ditzakete beste webguneetan egiten dituzun arakatze-ja
 <translation id="8978059030508051916">{count,plural, =0{Ez dago pasahitzik arriskuan}=1{{count} pasahitz dago arriskuan}other{{count} pasahitz daude arriskuan}}</translation>
 <translation id="8981454092730389528">Google-ko jarduerak kontrolatzeko aukerak</translation>
 <translation id="8985320356172329008">Kontu honekin hasi duzu saioa Google-n:</translation>
+<translation id="8998289560386111590">Ez dago erabilgarri zure gailuan</translation>
 <translation id="9000089900434778519"><ph name="DSE_NAME" /> da bilatzailea. Behar izanez gero, joan haren argibideetara bilaketa-historia ezabatzeari buruzko informazio gehiago lortzeko.</translation>
 <translation id="9008201768610948239">Egin ez ikusi</translation>
 <translation id="9034759925968272072">Ez da amaituko Google-ko kontuko saioa. Baliteke Google-ko kontuak arakatze-historiako bestelako datu batzuk edukitzea <ph name="BEGIN_LINK" />history.google.com<ph name="END_LINK" /> webgunean.</translation>

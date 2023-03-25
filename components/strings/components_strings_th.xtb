@@ -628,6 +628,7 @@
 <translation id="2469153820345007638">ลำดับ 1 ถึง N</translation>
 <translation id="2470767536994572628">เมื่อคุณแก้ไขคำอธิบายประกอบ เอกสารนี้จะกลับไปเป็นมุมมองแบบหน้าเดียวและกลับไปใช้การหมุนแบบเดิม</translation>
 <translation id="2479410451996844060">URL ค้นหาไม่ถูกต้อง</translation>
+<translation id="2480300195898055381">ในบัญชี Google ที่ใช้อีเมล <ph name="USER_EMAIL" /></translation>
 <translation id="2482878487686419369">การแจ้งเตือน</translation>
 <translation id="248348093745724435">นโยบายเครื่อง</translation>
 <translation id="2491120439723279231">ใบรับรองของเซิร์ฟเวอร์มีข้อผิดพลาด</translation>
@@ -841,6 +842,7 @@
 <translation id="3029752078111257850">ข่าวรอบโลก</translation>
 <translation id="3037177537145227281">กำลังติดตามราคา</translation>
 <translation id="3037605927509011580">แย่จัง!</translation>
+<translation id="3041450980936463495">คุณใช้ที่อยู่ที่บันทึกไว้ในผลิตภัณฑ์ต่างๆ ของ Google ได้ โดยที่อยู่นี้จะบันทึกอยู่ในบัญชี Google (<ph name="ACCOUNT" />)</translation>
 <translation id="3041612393474885105">ข้อมูลในใบรับรอง</translation>
 <translation id="305162504811187366">ประวัติการใช้ Chrome Remote Desktop รวมถึงการประทับเวลา โฮสต์ และรหัสเซสชันไคลเอ็นต์</translation>
 <translation id="3052964831964880138">ลดราคา <ph name="PRICE_DROP" /> สำหรับ <ph name="PRODUCT_NAME" /></translation>
@@ -1927,6 +1929,7 @@
 <translation id="5695542892312572833">ใช้ Windows Hello เพื่อยืนยันและทำการซื้อให้เสร็จใช่ไหม</translation>
 <translation id="5701381305118179107">กึ่งกลาง</translation>
 <translation id="570530837424789914">จัดการ...</translation>
+<translation id="5706906618852913030">บันทึกในบัญชีไหม</translation>
 <translation id="5707154300732650394">สำรวจต่อ</translation>
 <translation id="57094364128775171">แนะนำรหัสผ่านที่รัดกุม…</translation>
 <translation id="571403275720188526">(arm64)</translation>

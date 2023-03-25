@@ -1162,6 +1162,7 @@ Vietnes drīkst izmantot sīkfailus, lai skatītu jūsu pārlūkošanas darbība
 <translation id="8978059030508051916">{count,plural, =0{Nav uzlauztu paroļu}=1{{count} uzlauzta parole}zero{{count} uzlauztu paroļu}one{{count} uzlauzta parole}other{{count} uzlauztas paroles}}</translation>
 <translation id="8981454092730389528">Google aktivitātes vadīklas</translation>
 <translation id="8985320356172329008">Pierakstījies Google kontā kā</translation>
+<translation id="8998289560386111590">Nav pieejams jūsu ierīcē</translation>
 <translation id="9000089900434778519">Jūsu meklētājprogramma ir <ph name="DSE_NAME" />. Skatiet tās norādījumus par meklēšanas vēstures dzēšanu, ja šāda iespēja ir pieejama.</translation>
 <translation id="9008201768610948239">Ignorēt</translation>
 <translation id="9034759925968272072">Jūs netiksiet izrakstīts no sava Google konta. Jūsu Google kontam vietnē <ph name="BEGIN_LINK" />history.google.com<ph name="END_LINK" /> var būt citu veidu pārlūkošanas vēstures dati.</translation>

@@ -1162,6 +1162,7 @@
 <translation id="8978059030508051916">{count,plural, =0{不正使用されたパスワードはありません}=1{不正使用されたパスワード: {count} 件}other{不正使用されたパスワード: {count} 件}}</translation>
 <translation id="8981454092730389528">Google アクティビティ管理</translation>
 <translation id="8985320356172329008">Google にログイン済みのユーザー</translation>
+<translation id="8998289560386111590">お使いのデバイスではご利用いただけません</translation>
 <translation id="9000089900434778519">検索エンジンは <ph name="DSE_NAME" /> に設定されています。検索履歴を削除する場合は、検索エンジンの手順をご確認ください（該当する場合）。</translation>
 <translation id="9008201768610948239">無視する</translation>
 <translation id="9034759925968272072">Google アカウントへのログイン状態は維持されます。Google アカウントでの他の形式の閲覧履歴が <ph name="BEGIN_LINK" />history.google.com<ph name="END_LINK" /> に残ることがあります。</translation>

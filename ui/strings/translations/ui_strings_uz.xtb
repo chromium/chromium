@@ -38,7 +38,6 @@
 <translation id="208586643495776849">Qayta urining</translation>
 <translation id="2141853158323869627">{DAYS,plural, =1{1 kun}other{# kun}}</translation>
 <translation id="2148716181193084225">Bugun</translation>
-<translation id="2161656808144014275">Matn</translation>
 <translation id="2168039046890040389">Tepaga o‘tkazish</translation>
 <translation id="2190355936436201913">(bo‘sh)</translation>
 <translation id="2192232475740621500">Kamroq oynalar</translation>
@@ -90,7 +89,6 @@
 <translation id="3622035490309591977">Vaqtinchalik xotira tarixi</translation>
 <translation id="364720409959344976">Yuklash uchun jildni tanlang</translation>
 <translation id="3660179305079774227">Tepaga qaragan strelka</translation>
-<translation id="3670030362669914947">Raqam</translation>
 <translation id="3740362395218339114"><ph name="QUANTITY" /> GB/s</translation>
 <translation id="3757388668994797779"><ph name="QUANTITY" /> GB</translation>
 <translation id="3804247818991980532"><ph name="TYPE_1" />. <ph name="TYPE_2" />.</translation>
@@ -110,6 +108,7 @@
 <translation id="4565377596337484307">Parolni berkitish</translation>
 <translation id="4588090240171750605">O‘ngga aylantirish</translation>
 <translation id="4724120544754982507">Bildirishnomalar markazi, <ph name="UNREAD_NOTIFICATION_COUNT" /> ta o‘qilmagan bildirishnoma</translation>
+<translation id="4729257764711776855">raqam</translation>
 <translation id="4746179598275229723">Kengaytma olib tashlandi</translation>
 <translation id="4788285488841504513">{MONTHS,plural, =1{1 oy qoldi}other{# oy qoldi}}</translation>
 <translation id="4888938634149558681">Telefon qilish</translation>
@@ -121,6 +120,7 @@
 <translation id="5278860589123563674">Yuborilmadi</translation>
 <translation id="528468243742722775">Tugatish</translation>
 <translation id="5329858601952122676">&amp;O‘chirish</translation>
+<translation id="5361107212971249203">matn</translation>
 <translation id="5463830097259460683">Emoji va maxsus belgilar</translation>
 <translation id="5528053674512161860">Dasturchilar UI moduli (dev_ui) oʻrnatilmagani sababli sahifa yuklanmadi</translation>
 <translation id="5574202486608032840"><ph name="IDS_SHORT_PRODUCT_OS_NAME" /> tizimi</translation>

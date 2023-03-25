@@ -697,6 +697,7 @@
 <translation id="7103252855940681301">ឧបករណ៍ <ph name="INDEX" /> ក្នុងចំណោម <ph name="COUNT" /> មានឈ្មោះថា <ph name="NAME" />។</translation>
 <translation id="7108668606237948702">បញ្ចូល</translation>
 <translation id="7130438335435247835">ឈ្មោះ​ចំណុចចូលប្រើប្រាស់ (APN)</translation>
+<translation id="7131634559772719176">បញ្ជាក់ការកំណត់ជាមុន</translation>
 <translation id="7134436342991564651">{0,plural, =1{ដាក់ឈ្មោះ​ម៉ាស៊ីនមេ}other{ដាក់ឈ្មោះ​ម៉ាស៊ីនមេ}}</translation>
 <translation id="7143207342074048698">កំពុងភ្ជាប់...</translation>
 <translation id="7144878232160441200">ព្យាយាមម្តងទៀត</translation>
@@ -800,6 +801,7 @@
 <translation id="80398733265834479">បើកមុខងារពណ៌ស្វ័យប្រវត្តិ</translation>
 <translation id="8041089156583427627">ផ្ញើមតិ</translation>
 <translation id="8045012663542226664">ប៊ូតុងបិទ/បើកសំឡេងមីក្រូហ្វូន</translation>
+<translation id="8050091914317269817">ការជ្រើសរើសផ្ទាំងរូបភាពនេះនឹងបើកការផ្គូផ្គងពណ៌ផ្ទាំងរូបភាព និងមុខងារងងឹតស្វ័យប្រវត្តិ។</translation>
 <translation id="8075838845814659848">ការសាកថ្ម​ដែលនៅសល់</translation>
 <translation id="8076492880354921740">ផ្ទាំង</translation>
 <translation id="8082366717211101304">មិនអាចដោះស្រាយ DNS ពីកម្មវិធី Android បានទេ</translation>

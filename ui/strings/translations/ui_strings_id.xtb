@@ -38,7 +38,6 @@
 <translation id="208586643495776849">Coba lagi</translation>
 <translation id="2141853158323869627">{DAYS,plural, =1{1h}other{#h}}</translation>
 <translation id="2148716181193084225">Hari ini</translation>
-<translation id="2161656808144014275">Teks</translation>
 <translation id="2168039046890040389">Page Up</translation>
 <translation id="2190355936436201913">(kosong)</translation>
 <translation id="2192232475740621500">Gunakan kepadatan rendah</translation>
@@ -90,7 +89,6 @@
 <translation id="3622035490309591977">Histori papan klip</translation>
 <translation id="364720409959344976">Pilih Folder untuk Diunggah</translation>
 <translation id="3660179305079774227">Panah Atas</translation>
-<translation id="3670030362669914947">Nomor</translation>
 <translation id="3740362395218339114"><ph name="QUANTITY" /> GB/dtk</translation>
 <translation id="3757388668994797779"><ph name="QUANTITY" /> GB</translation>
 <translation id="3804247818991980532"><ph name="TYPE_1" />. <ph name="TYPE_2" />.</translation>

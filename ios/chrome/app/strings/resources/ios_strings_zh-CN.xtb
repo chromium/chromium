@@ -58,6 +58,7 @@
 <translation id="1283524564873030414">过去 24 小时</translation>
 <translation id="1285320974508926690">一律不翻译此网站</translation>
 <translation id="1291506870746876680">您离开<ph name="BEGIN_BOLD" />“<ph name="SITE_NAME" />”<ph name="END_BOLD" />后，这个网站的权限将重置为停用。</translation>
+<translation id="1305822519689023679">为了确保您可以一直使用 Google 帐号的密码，请验证是您本人在操作。</translation>
 <translation id="1312721752506309252">增强型保护已开启</translation>
 <translation id="1321993286294231467">保存图片时出错。</translation>
 <translation id="1322735045095424339">贵单位要求使用无痕模式</translation>
@@ -107,6 +108,7 @@
 <translation id="1626771852476987600">有 <ph name="COUNT" /> 个重复使用的密码</translation>
 <translation id="1641113438599504367">安全浏览</translation>
 <translation id="1644574205037202324">历史记录</translation>
+<translation id="165008673352427892">新功能</translation>
 <translation id="1650222530560417226">点按“开始记录”按钮即可从所有标签页中收集日后的 JavaScript 控制台日志和错误。系统会一直收集（并仅在内存中存储）日志，直到用户关闭此页面或点按“停止记录”。</translation>
 <translation id="1653432787084483144">{count,plural, =1{键盘上方显示了 {count} 个已保存的密码。}other{键盘上方显示了 {count} 个已保存的密码。}}</translation>
 <translation id="1657011748321897393">分享失败，因为您没有连接到网络。</translation>
@@ -120,6 +122,7 @@
 <translation id="1700629756560807968">已选中<ph name="NUMBER_OF_SELECTED_BOOKMARKS" />项</translation>
 <translation id="1715515772563243997">如果您信任 <ph name="SITE" />，则可使用已保存的密码登录。</translation>
 <translation id="1740468249224277719">点按两次即可安装。</translation>
+<translation id="1750238553597293878">请继续使用您的 Google 帐号的密码</translation>
 <translation id="1752547299766512813">保存密码</translation>
 <translation id="1753905327828125965">常去网站</translation>
 <translation id="1767766085187034454">Google 翻译</translation>
@@ -402,6 +405,7 @@
 <translation id="3810973564298564668">管理</translation>
 <translation id="3818293389945649617">查找下一个</translation>
 <translation id="3819183753496523827">您未联网。请检查您的互联网连接状况，然后重试。</translation>
+<translation id="3832419617903252251">密码仅保存在此设备上</translation>
 <translation id="3835964409414434850">转到下一个标签页</translation>
 <translation id="3838691874161539578">检查您已保存的密码，让您在上网时更安全、更安心</translation>
 <translation id="385051799172605136">返回</translation>
@@ -630,6 +634,7 @@
 <translation id="54401264925851789">网页安全信息</translation>
 <translation id="5443952882982198570">信用卡</translation>
 <translation id="5444892875087332195">书签</translation>
+<translation id="5453250766792920795">{count,plural, =1{书签已保存到您的帐号 {email} 中}other{书签已保存到您的帐号 {email} 中}}</translation>
 <translation id="5457226814769348910">打开离线版</translation>
 <translation id="5489208564673669003">若要管理所有网站的 Cookie，请查看 <ph name="BEGIN_LINK" />Cookie 设置<ph name="END_LINK" />。</translation>
 <translation id="5490005495580364134">阻止所有 Cookie（不建议）</translation>
@@ -656,6 +661,7 @@
 <translation id="5669528293118408608">www</translation>
 <translation id="5669617676038747374">生成二维码</translation>
 <translation id="567881659373499783">版本 <ph name="PRODUCT_VERSION" /></translation>
+<translation id="5683499062697987550">要使用 Google 帐号中的密码或将密码保存到 Google 帐号，请验证是您本人在操作。</translation>
 <translation id="5690398455483874150">{count,plural, =1{目前显示了 1 个 Chrome 窗口}other{目前显示了 {count} 个 Chrome 窗口}}</translation>
 <translation id="5701270923492462699">已启用摄像头使用权限</translation>
 <translation id="5704908597376970822">无法登录。</translation>
@@ -788,6 +794,7 @@
 
 您的数据已于 <ph name="TIME" />使用您的同步密码加密。输入该密码即可开始同步。</translation>
 <translation id="6418346271604475326">正在准备 PDF 文件</translation>
+<translation id="6421095165635308">{count,plural, =1{书签已保存到您的帐号 {email} 的 {title} 中}other{书签已保存到您的帐号 {email} 的 {title} 中}}</translation>
 <translation id="6429213933892582367">打开“密码选项”</translation>
 <translation id="6434591244308415567">发生错误，请稍后重试。</translation>
 <translation id="6435236283694032571">添加到阅读清单</translation>
@@ -876,6 +883,7 @@
 <translation id="6888009575607455378">确定要舍弃您所做的更改吗？</translation>
 <translation id="6896758677409633944">复制</translation>
 <translation id="6897187120838603299">您的密码将会保存到您的设备上。</translation>
+<translation id="6906448540340261898">请确保您可以一直使用 Google 帐号的密码</translation>
 <translation id="6913136913033237761"><ph name="FOLDER_NAME" />。仅在该设备上。</translation>
 <translation id="6914583639806229067">搜索您复制的图片</translation>
 <translation id="6914783257214138813">所有能查看此导出文件的人员都能看到您的密码。</translation>
@@ -1162,6 +1170,7 @@
 <translation id="8978059030508051916">{count,plural, =0{没有任何已泄露的密码}=1{有 {count} 个已泄露的密码}other{有 {count} 个已泄露的密码}}</translation>
 <translation id="8981454092730389528">Google 活动控件</translation>
 <translation id="8985320356172329008">已使用以下帐号登录 Google：</translation>
+<translation id="8998289560386111590">在您的设备上不可用</translation>
 <translation id="9000089900434778519">您所用的搜索引擎是<ph name="DSE_NAME" />。请查看它的相关说明，了解如何删除您的搜索记录（若适用）。</translation>
 <translation id="9008201768610948239">忽略</translation>
 <translation id="9034759925968272072">您不会因此而退出自己的 Google 帐号。您的 Google 帐号在 <ph name="BEGIN_LINK" />history.google.com<ph name="END_LINK" /> 上可能有其他形式的浏览记录。</translation>

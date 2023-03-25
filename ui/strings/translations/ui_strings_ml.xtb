@@ -38,7 +38,6 @@
 <translation id="208586643495776849">വീണ്ടും ശ്രമിക്കുക</translation>
 <translation id="2141853158323869627">{DAYS,plural, =1{1ദിവസം}other{# ദിവസം}}</translation>
 <translation id="2148716181193084225">ഇന്ന്</translation>
-<translation id="2161656808144014275">വാചകം</translation>
 <translation id="2168039046890040389">Page Up</translation>
 <translation id="2190355936436201913">(ശൂന്യം)</translation>
 <translation id="2192232475740621500">കുറഞ്ഞ സാന്ദ്രത ഉപയോഗിക്കുക</translation>
@@ -90,7 +89,6 @@
 <translation id="3622035490309591977">ക്ലിപ്പ്‌ബോർഡ് ചരിത്രം</translation>
 <translation id="364720409959344976">അപ്‌ലോഡ് ചെയ്യുന്നതിന് ഫോൾഡർ തിരഞ്ഞെടുക്കുക</translation>
 <translation id="3660179305079774227">മുകളിലേക്കുള്ള അമ്പടയാളം</translation>
-<translation id="3670030362669914947">നമ്പർ</translation>
 <translation id="3740362395218339114"><ph name="QUANTITY" /> GB/s</translation>
 <translation id="3757388668994797779"><ph name="QUANTITY" /> GB</translation>
 <translation id="3804247818991980532"><ph name="TYPE_1" />. <ph name="TYPE_2" />.</translation>

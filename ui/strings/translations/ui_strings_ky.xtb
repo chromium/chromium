@@ -38,7 +38,6 @@
 <translation id="208586643495776849">Кайталап көрүңүз</translation>
 <translation id="2141853158323869627">{DAYS,plural, =1{1 к.}other{# к.}}</translation>
 <translation id="2148716181193084225">Бүгүн</translation>
-<translation id="2161656808144014275">Текст</translation>
 <translation id="2168039046890040389">Өйдө баракта</translation>
 <translation id="2190355936436201913">(бош)</translation>
 <translation id="2192232475740621500">Терезелерди аз көрсөтүү</translation>
@@ -90,7 +89,6 @@
 <translation id="3622035490309591977">Алмашуу буферинин таржымалы</translation>
 <translation id="364720409959344976">Жүктөлүп бериле турган куржунду тандоо</translation>
 <translation id="3660179305079774227">Өйдө жебе</translation>
-<translation id="3670030362669914947">Сан</translation>
 <translation id="3740362395218339114"><ph name="QUANTITY" /> Гб/сек.</translation>
 <translation id="3757388668994797779"><ph name="QUANTITY" /> Гб</translation>
 <translation id="3804247818991980532"><ph name="TYPE_1" />. <ph name="TYPE_2" />.</translation>

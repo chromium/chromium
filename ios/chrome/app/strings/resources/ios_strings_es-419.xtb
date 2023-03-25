@@ -1162,6 +1162,7 @@ También pueden usar cookies para ver la actividad de navegación en diferentes 
 <translation id="8978059030508051916">{count,plural, =0{Sin con. hackeadas}=1{{count} contraseña hackeada}other{{count} contraseñas hackeadas}}</translation>
 <translation id="8981454092730389528">Controles de actividad de Google</translation>
 <translation id="8985320356172329008">Accediste a Google como</translation>
+<translation id="8998289560386111590">No está disponible en tu dispositivo</translation>
 <translation id="9000089900434778519">Tu motor de búsqueda es <ph name="DSE_NAME" />. Consulta las instrucciones para borrar el historial de búsqueda (si corresponde).</translation>
 <translation id="9008201768610948239">Ignorar</translation>
 <translation id="9034759925968272072">No saldrás de tu cuenta de Google. Es posible que tu cuenta de Google tenga otros formularios del historial de navegación en <ph name="BEGIN_LINK" />history.google.com<ph name="END_LINK" />.</translation>

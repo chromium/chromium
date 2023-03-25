@@ -1172,6 +1172,7 @@
 <translation id="8978059030508051916">{count,plural, =0{Нет раскрытых паролей}=1{{count} раскрытый пароль}one{{count} раскрытый пароль}few{{count} раскрытых пароля}many{{count} раскрытых паролей}other{{count} раскрытого пароля}}</translation>
 <translation id="8981454092730389528">Отслеживание действий в Google</translation>
 <translation id="8985320356172329008">Вы вошли в аккаунт</translation>
+<translation id="8998289560386111590">Недоступно на вашем устройстве</translation>
 <translation id="9000089900434778519">Вы используете "<ph name="DSE_NAME" />". Изучите инструкции по удалению истории поиска в справочных материалах указанной поисковой системы.</translation>
 <translation id="9008201768610948239">Пропустить</translation>
 <translation id="9034759925968272072">Вы не выйдете из аккаунта Google. Остальная история ваших действий в Интернете доступна на странице <ph name="BEGIN_LINK" />history.google.com<ph name="END_LINK" />.</translation>

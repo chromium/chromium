@@ -58,6 +58,7 @@
 <translation id="1283524564873030414">24 ชั่วโมงที่ผ่านมา</translation>
 <translation id="1285320974508926690">ไม่ต้องแปลเว็บไซต์นี้</translation>
 <translation id="1291506870746876680">สิทธิ์ของ <ph name="BEGIN_BOLD" />"<ph name="SITE_NAME" />"<ph name="END_BOLD" /> จะรีเซ็ตเป็นปิดเมื่อคุณออกจากเว็บไซต์นี้</translation>
+<translation id="1305822519689023679">โปรดยืนยันว่าเป็นคุณเพื่อให้ใช้รหัสผ่านในบัญชี Google ได้เสมอ</translation>
 <translation id="1312721752506309252">การปกป้องที่ดียิ่งขึ้นเปิดอยู่</translation>
 <translation id="1321993286294231467">เกิดข้อผิดพลาดในการบันทึกรูปภาพ</translation>
 <translation id="1322735045095424339">องค์กรกำหนดให้ใช้โหมดไม่ระบุตัวตน</translation>
@@ -107,6 +108,7 @@
 <translation id="1626771852476987600">มีรหัสผ่านที่ใช้ซ้ำ <ph name="COUNT" /> รหัส</translation>
 <translation id="1641113438599504367">Safe Browsing</translation>
 <translation id="1644574205037202324">ประวัติการเข้าชม</translation>
+<translation id="165008673352427892">ฟีเจอร์ใหม่</translation>
 <translation id="1650222530560417226">แตะปุ่ม "เริ่มบันทึก" เพื่อรวบรวมบันทึกและข้อผิดพลาดของคอนโซล JavaScript ในอนาคตจากทุกแท็บ ระบบจะรวบรวมบันทึก (และเก็บไว้ในหน่วยความจำเท่านั้น) จนกว่าหน้านี้จะปิดหรือมีการแตะ "หยุดบันทึก"</translation>
 <translation id="1653432787084483144">{count,plural, =1{รหัสผ่านที่บันทึกไว้ {count} รายการพร้อมให้ใช้งานอยู่เหนือแป้นพิมพ์}other{รหัสผ่านที่บันทึกไว้ {count} รายการพร้อมให้ใช้งานอยู่เหนือแป้นพิมพ์}}</translation>
 <translation id="1657011748321897393">การแชร์ล้มเหลวเนื่องจากคุณไม่ได้เชื่อมต่อเครือข่าย</translation>
@@ -120,6 +122,7 @@
 <translation id="1700629756560807968">เลือก <ph name="NUMBER_OF_SELECTED_BOOKMARKS" /> รายการ</translation>
 <translation id="1715515772563243997">หากคุณเชื่อถือ <ph name="SITE" /> ก็ใช้รหัสผ่านที่บันทึกไว้ในการลงชื่อเข้าใช้ได้</translation>
 <translation id="1740468249224277719">แตะ 2 ครั้งเพื่อติดตั้ง</translation>
+<translation id="1750238553597293878">ใช้รหัสผ่านในบัญชี Google ต่อไป</translation>
 <translation id="1752547299766512813">บันทึกรหัสผ่าน</translation>
 <translation id="1753905327828125965">เข้าชมบ่อยสุด</translation>
 <translation id="1767766085187034454">Google แปลภาษา</translation>
@@ -402,6 +405,7 @@
 <translation id="3810973564298564668">จัดการ</translation>
 <translation id="3818293389945649617">ค้นหาถัดไป</translation>
 <translation id="3819183753496523827">คุณออฟไลน์อยู่ ตรวจสอบการเชื่อมต่ออินเทอร์เน็ตแล้วลองอีกครั้ง</translation>
+<translation id="3832419617903252251">บันทึกรหัสผ่านไว้ในอุปกรณ์นี้เท่านั้น</translation>
 <translation id="3835964409414434850">ไปที่แท็บถัดไป</translation>
 <translation id="3838691874161539578">ตรวจสอบรหัสผ่านที่บันทึกไว้เพื่อเสริมความปลอดภัยในโลกออนไลน์ให้มากยิ่งขึ้น</translation>
 <translation id="385051799172605136">กลับ</translation>
@@ -630,6 +634,7 @@
 <translation id="54401264925851789">ข้อมูลเกี่ยวกับการรักษาความปลอดภัยของหน้าเว็บ</translation>
 <translation id="5443952882982198570">บัตรเครดิต</translation>
 <translation id="5444892875087332195">บุ๊กมาร์ก</translation>
+<translation id="5453250766792920795">{count,plural, =1{บันทึกบุ๊กมาร์กไว้ในบัญชีของคุณ {email} แล้ว}other{บันทึกบุ๊กมาร์กไว้ในบัญชีของคุณ {email} แล้ว}}</translation>
 <translation id="5457226814769348910">เปิดเวอร์ชันออฟไลน์</translation>
 <translation id="5489208564673669003">ดู<ph name="BEGIN_LINK" />การตั้งค่าคุกกี้<ph name="END_LINK" />เพื่อจัดการคุกกี้สำหรับทุกเว็บไซต์</translation>
 <translation id="5490005495580364134">บล็อกคุกกี้ทั้งหมด (ไม่แนะนำ)</translation>
@@ -656,6 +661,7 @@
 <translation id="5669528293118408608">www</translation>
 <translation id="5669617676038747374">สร้างคิวอาร์โค้ด</translation>
 <translation id="567881659373499783">รุ่น <ph name="PRODUCT_VERSION" /></translation>
+<translation id="5683499062697987550">โปรดยืนยันว่าเป็นคุณเพื่อใช้และบันทึกรหัสผ่านในบัญชี Google</translation>
 <translation id="5690398455483874150">{count,plural, =1{กำลังแสดงหน้าต่าง Chrome 1 หน้าต่าง}other{กำลังแสดงหน้าต่าง Chrome {count} หน้าต่าง}}</translation>
 <translation id="5701270923492462699">อนุญาตให้เข้าถึงกล้อง</translation>
 <translation id="5704908597376970822">ลงชื่อเข้าใช้ไม่ได้</translation>
@@ -788,6 +794,7 @@
 
 ข้อมูลของคุณได้รับการเข้ารหัสด้วยรหัสผ่านการซิงค์เมื่อวันที่ <ph name="TIME" /> โปรดป้อนรหัสผ่านเพื่อเริ่มซิงค์</translation>
 <translation id="6418346271604475326">กำลังเตรียม PDF</translation>
+<translation id="6421095165635308">{count,plural, =1{บันทึกบุ๊กมาร์กไปยัง {title} ในบัญชีของคุณ {email} แล้ว}other{บันทึกบุ๊กมาร์กไปยัง {title} ในบัญชีของคุณ {email} แล้ว}}</translation>
 <translation id="6429213933892582367">เปิดตัวเลือกรหัสผ่าน</translation>
 <translation id="6434591244308415567">เกิดข้อผิดพลาด โปรดลองอีกครั้งในภายหลัง</translation>
 <translation id="6435236283694032571">เพิ่มไปยังเรื่องรออ่าน</translation>
@@ -876,6 +883,7 @@
 <translation id="6888009575607455378">คุณแน่ใจไหมว่าต้องการทิ้งการเปลี่ยนแปลง</translation>
 <translation id="6896758677409633944">คัดลอก</translation>
 <translation id="6897187120838603299">ระบบจะบันทึกรหัสผ่านไว้ในอุปกรณ์</translation>
+<translation id="6906448540340261898">ตรวจสอบว่าคุณใช้รหัสผ่านในบัญชี Google ได้เสมอ</translation>
 <translation id="6913136913033237761"><ph name="FOLDER_NAME" /> เฉพาะในอุปกรณ์นี้</translation>
 <translation id="6914583639806229067">ค้นหารูปภาพที่คุณคัดลอก</translation>
 <translation id="6914783257214138813">คนที่ดูไฟล์ที่ส่งออกได้จะเห็นรหัสผ่านของคุณ</translation>
@@ -1162,6 +1170,7 @@
 <translation id="8978059030508051916">{count,plural, =0{ไม่มีรหัสผ่านที่ถูกละเมิด}=1{มีรหัสผ่านที่ถูกละเมิด {count} รหัส}other{มีรหัสผ่านที่ถูกละเมิด {count} รหัส}}</translation>
 <translation id="8981454092730389528">ส่วนควบคุมกิจกรรมของ Google</translation>
 <translation id="8985320356172329008">ลงชื่อเข้าใช้ Google ด้วย</translation>
+<translation id="8998289560386111590">ใช้ไม่ได้ในอุปกรณ์ของคุณ</translation>
 <translation id="9000089900434778519">เครื่องมือค้นหาของคุณคือ <ph name="DSE_NAME" /> ดูวิธีลบประวัติการค้นหา (หากมี) ของเครื่องมือค้นหาที่คุณใช้</translation>
 <translation id="9008201768610948239">ไม่สนใจ</translation>
 <translation id="9034759925968272072">คุณจะไม่ออกจากระบบบัญชี Google บัญชี Google ของคุณอาจมีประวัติการท่องเว็บในรูปแบบอื่นๆ ที่ <ph name="BEGIN_LINK" />history.google.com<ph name="END_LINK" /></translation>

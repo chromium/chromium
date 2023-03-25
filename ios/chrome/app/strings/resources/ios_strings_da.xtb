@@ -1162,6 +1162,7 @@ Websites kan bruge cookies til at se din browseraktivitet på forskellige websit
 <translation id="8978059030508051916">{count,plural, =0{Ingen kompromitterede adgangskoder}=1{{count} kompromitteret adgangskode}one{{count} kompromitteret adgangskode}other{{count} kompromitterede adgangskoder}}</translation>
 <translation id="8981454092730389528">Aktivitetsadministration på Google</translation>
 <translation id="8985320356172329008">Du er logget ind på Google som</translation>
+<translation id="8998289560386111590">Ikke tilgængelig på din enhed</translation>
 <translation id="9000089900434778519">Dine standardsøgemaskine er <ph name="DSE_NAME" />. Se din søgemaskines vejledning i, hvordan du sletter din søgehistorik, hvis det er relevant.</translation>
 <translation id="9008201768610948239">Ignorer</translation>
 <translation id="9034759925968272072">Du logges ikke ud af din Google-konto. Din Google-konto kan have andre former for browserhistorik på <ph name="BEGIN_LINK" />history.google.com<ph name="END_LINK" />.</translation>

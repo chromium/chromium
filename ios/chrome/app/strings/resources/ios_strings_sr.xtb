@@ -1172,6 +1172,7 @@ Handoff треба да се омогући у одељку General (Опште)
 <translation id="8978059030508051916">{count,plural, =0{Нема угрожених лозинки}=1{{count} угрожена лозинка}one{{count} угрожена лозинка}few{{count} угрожене лозинке}other{{count} угрожених лозинки}}</translation>
 <translation id="8981454092730389528">Google контроле активности</translation>
 <translation id="8985320356172329008">Пријављени сте на Google као</translation>
+<translation id="8998289560386111590">Није доступно на вашем уређају</translation>
 <translation id="9000089900434778519">Ваш претраживач је <ph name="DSE_NAME" />. Погледајте упутства тог претраживача за брисање историје претраге ако је то примењиво.</translation>
 <translation id="9008201768610948239">Игнориши</translation>
 <translation id="9034759925968272072">Нећемо вас одјавити са Google налога. Google налог можда има друге облике историје прегледања на <ph name="BEGIN_LINK" />history.google.com<ph name="END_LINK" />.</translation>

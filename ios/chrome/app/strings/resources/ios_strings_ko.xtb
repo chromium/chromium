@@ -1162,6 +1162,7 @@ Google이 아닌 다른 검색엔진을 사용 중이라면 해당 검색엔진�
 <translation id="8978059030508051916">{count,plural, =0{유출된 비밀번호 없음}=1{유출된 비밀번호 {count}개}other{유출된 비밀번호 {count}개}}</translation>
 <translation id="8981454092730389528">Google 활동 제어</translation>
 <translation id="8985320356172329008">다음 계정으로 Google에 로그인함:</translation>
+<translation id="8998289560386111590">내 기기에서 사용할 수 없음</translation>
 <translation id="9000089900434778519">사용 중인 검색엔진은 <ph name="DSE_NAME" />입니다. 해당 검색엔진에서 검색 기록을 삭제할 수 있는 경우 검색 기록 삭제 안내를 확인하세요.</translation>
 <translation id="9008201768610948239">무시</translation>
 <translation id="9034759925968272072">Google 계정에서 로그아웃되지 않습니다. <ph name="BEGIN_LINK" />history.google.com<ph name="END_LINK" />에서 내 Google 계정에 있는 다른 형식의 탐색 기록을 확인할 수 있습니다.</translation>

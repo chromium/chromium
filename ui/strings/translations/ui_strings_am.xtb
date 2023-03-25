@@ -38,7 +38,6 @@
 <translation id="208586643495776849">እባክዎ እንደገና ይሞክሩ</translation>
 <translation id="2141853158323869627">{DAYS,plural, =1{1ቀ}one{#ቀ}other{#ቀ}}</translation>
 <translation id="2148716181193084225">ዛሬ</translation>
-<translation id="2161656808144014275">ጽሁፍ</translation>
 <translation id="2168039046890040389">ወደላይ አንቀሳቅስ</translation>
 <translation id="2190355936436201913">(ባዶ)</translation>
 <translation id="2192232475740621500">ዝቅተኛ ትፍገትን ተጠቀም</translation>
@@ -90,7 +89,6 @@
 <translation id="3622035490309591977">የቅንጥብ ሰሌዳ ታሪክ</translation>
 <translation id="364720409959344976">የሚሰቀል ዓቃፊ ይምረጡ</translation>
 <translation id="3660179305079774227">የላይ ቀስት</translation>
-<translation id="3670030362669914947">ቁጥር</translation>
 <translation id="3740362395218339114"><ph name="QUANTITY" /> ጊባ/ሰ</translation>
 <translation id="3757388668994797779"><ph name="QUANTITY" /> ጊባ</translation>
 <translation id="3804247818991980532"><ph name="TYPE_1" />። <ph name="TYPE_2" />።</translation>

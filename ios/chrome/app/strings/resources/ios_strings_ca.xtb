@@ -1162,6 +1162,7 @@ Els llocs web poden fer servir galetes per veure la teva activitat de navegació
 <translation id="8978059030508051916">{count,plural, =0{Cap contrasenya en perill}=1{{count} contrasenya en perill}other{{count} contrasenyes en perill}}</translation>
 <translation id="8981454092730389528">Controls d'activitat de Google</translation>
 <translation id="8985320356172329008">Has iniciat la sessió a Google com a</translation>
+<translation id="8998289560386111590">No disponible al teu dispositiu</translation>
 <translation id="9000089900434778519">El teu motor de cerca és <ph name="DSE_NAME" />. Consulta'n les instruccions per suprimir l'historial de cerques, si escau.</translation>
 <translation id="9008201768610948239">Ignora</translation>
 <translation id="9034759925968272072">No se us tancarà la sessió del compte de Google, el qual és possible que tingui altres formes de l'historial de navegació a <ph name="BEGIN_LINK" />history.google.com<ph name="END_LINK" />.</translation>

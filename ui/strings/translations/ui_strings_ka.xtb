@@ -38,7 +38,6 @@
 <translation id="208586643495776849">გთხოვთ, ცადოთ ხელახლა</translation>
 <translation id="2141853158323869627">{DAYS,plural, =1{1 დღ}other{# დღ}}</translation>
 <translation id="2148716181193084225">დღეს</translation>
-<translation id="2161656808144014275">ტექსტი</translation>
 <translation id="2168039046890040389">ერთი გვერდით ზემოთ</translation>
 <translation id="2190355936436201913">(ცარიელი)</translation>
 <translation id="2192232475740621500">დაბალი სიმკვრივის გამოყენება</translation>
@@ -90,7 +89,6 @@
 <translation id="3622035490309591977">გაცვლის ბუფერის ისტორია</translation>
 <translation id="364720409959344976">აირჩიეთ საქაღალდე ატვირთვისთვის</translation>
 <translation id="3660179305079774227">ზემოთ მიმართული ისარი</translation>
-<translation id="3670030362669914947">ნომერი</translation>
 <translation id="3740362395218339114"><ph name="QUANTITY" /> გიგაბაიტი/წ</translation>
 <translation id="3757388668994797779"><ph name="QUANTITY" /> გიგაბაიტი</translation>
 <translation id="3804247818991980532"><ph name="TYPE_1" />. <ph name="TYPE_2" />.</translation>

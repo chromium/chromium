@@ -123,6 +123,7 @@
 <translation id="15373452373711364">મોટું માઉસ કર્સર</translation>
 <translation id="1546492247443594934">ડેસ્ક 2</translation>
 <translation id="1546930421365146760">તમારા ઍડમિનિસ્ટ્રેટરને Google Admin કન્સોલમાં આ ડિવાઇસનું સેટઅપ કરવા માટે કહો</translation>
+<translation id="1549512626801247439">સ્ટોરેજ મેનેજમેન્ટ</translation>
 <translation id="1550406609415860283">ડિવાઇસ ઉપલબ્ધ છે</translation>
 <translation id="1550523713251050646">વધુ વિકલ્પો માટે ક્લિક કરો</translation>
 <translation id="1555130319947370107">વાદળી</translation>
@@ -245,6 +246,7 @@
 <translation id="2148716181193084225">આજે</translation>
 <translation id="2149229036084364364">પાછલા ટ્રૅક પર જાઓ</translation>
 <translation id="2161132820593978283">કૅમેરા ફ્રેમિંગ અજમાવી જુઓ, જેથી તમે વીડિયો કૉલમાં સ્ક્રીનની મધ્યમાં રહેશો. ઝડપી સેટિંગમાં જઈને તેને ચાલુ કરો.</translation>
+<translation id="2165966740263283349">સ્ટોરેજનો વપરાશ</translation>
 <translation id="2170530631236737939">ઓવરવ્યૂમાંથી બહાર નીકળવા માટે, ત્રણ આંગળી વડે નીચેની તરફ સ્વાઇપ કરો</translation>
 <translation id="2185166372312820725">પાછલી ટૅબ પર જાઓ</translation>
 <translation id="219905428774326614">લૉન્ચર, બધી ઍપ</translation>
@@ -279,6 +281,7 @@
 <translation id="2352467521400612932">સ્ટાઇલસની સેટિંગ</translation>
 <translation id="2354174487190027830"><ph name="NAME" /> ને સક્રિય કરી રહ્યું છે</translation>
 <translation id="2359808026110333948">આગળ વધો</translation>
+<translation id="2360398059912971776">બૅટરી</translation>
 <translation id="2367186422933365202">તમારી Chromebookમાં સાઇન ઇન કરી શકતા નથી</translation>
 <translation id="2367972762794486313">ઍપ્લિકેશનો બતાવો</translation>
 <translation id="2369165858548251131">ચીની ભાષામાં "નમસ્કાર"</translation>
@@ -311,6 +314,7 @@
 <translation id="2515586267016047495">Alt</translation>
 <translation id="2526581474998477112">વિન્ડો અનલૉક કરો</translation>
 <translation id="2530896289327917474">ટેક્સ્ટના કર્સર વડે બ્રાઉઝ કરવાનું ચાલુ અથવા બંધ કરો</translation>
+<translation id="2531025035050312891">ડિવાઇસ ધીમું છે</translation>
 <translation id="2542089167727451762">તમારા પ્રોફાઇલ ફોટા પર ટૅપ કરો</translation>
 <translation id="255671100581129685">જાહેર સત્રમાં Google Assistant ઉપલબ્ધ હોતું નથી.</translation>
 <translation id="256712445991462162">ડૉક કરેલું મૅગ્નિફાયર</translation>
@@ -322,6 +326,7 @@
 <translation id="2596078834055697711">વિંડો સ્ક્રીનશૉટ લો</translation>
 <translation id="2598725286293895280">ડેસ્કમાં અનસપોર્ટેડ ઍપ</translation>
 <translation id="2607678425161541573">ઑનલાઇન સાઇન-ઇન કરવું આવશ્યક છે</translation>
+<translation id="2612072250312279703">ઍક્ટિવિટી મૉનિટર</translation>
 <translation id="2612614436418177118">ઍપ ગ્રિડની અંદર ઍપનું આઇકન ખસેડો</translation>
 <translation id="2620016719323068571">તમારી <ph name="CATEGORY" />, ફાઇલો, ઍપ અને બીજું ઘણું શોધો…</translation>
 <translation id="2620436844016719705">સિસ્ટમ</translation>
@@ -460,12 +465,14 @@
 <translation id="3308453408813785101"><ph name="USER_EMAIL_ADDRESS" /> હજીએ થોડા સમય પછી સાઇન ઇન કરી શકશે.</translation>
 <translation id="3321628682574733415">માતાપિતાનો કોડ ખોટો</translation>
 <translation id="332827762492701193">નોટિફિકેશન છુપાવેલા છે</translation>
+<translation id="3338855835380298613">CPUનો વપરાશ</translation>
 <translation id="3339826665088060472">સ્ક્રીન કૅપ્ચર, સ્ક્રીનશૉટ લેવા અને સ્ક્રીન રેકોર્ડિંગ કરવા માટેના ટૂલ છે</translation>
 <translation id="3340978935015468852">સેટિંગ</translation>
 <translation id="3341303451326249809">સ્ક્રીનશૉટ કૅપ્ચર કર્યો</translation>
 <translation id="334252345105450327">સ્ક્રીનશૉટ લો</translation>
 <translation id="3349345708646875009">'કાર્યના મેનેજર' સુવિધા ખોલો</translation>
 <translation id="3351879221545518001">તમે હાલમાં સ્ક્રીનને કાસ્ટ કરી રહ્યા છો.</translation>
+<translation id="3354555338129305222">મારું ડિવાઇસ શા માટે ધીમું છે</translation>
 <translation id="3364721542077212959">સ્ટાઇલસનાં સાધનો</translation>
 <translation id="3365977133351922112">તમારો ફોન ઘણો દૂર છે. તમારો ફોન થોડો નજીક લાવો.</translation>
 <translation id="3368922792935385530">કનેક્ટેડ</translation>
@@ -567,6 +574,7 @@
 <translation id="3779139509281456663"><ph name="NAME" /> કનેક્ટ કરી રહ્યાં છીએ</translation>
 <translation id="3783640748446814672">alt</translation>
 <translation id="3784455785234192852">લૉક છે</translation>
+<translation id="3796198851576711985">બૅટરીની અવસ્થા</translation>
 <translation id="3796746699333205839">કોઈ ઍપ્લિકેશન તમારા કૅમેરા અને માઇક્રોફોનનો ઉપયોગ કરી રહી છે</translation>
 <translation id="3798670284305777884">સ્પીકર (આંતરિક)</translation>
 <translation id="3799080171973636491">તમે પૂર્ણ-સ્ક્રીન મેગ્નિફાયર માટેનો કીબોર્ડ શૉર્ટકટ દબાવેલ છે. શું તમે તેને ચાલુ કરવા માગો છો?</translation>
@@ -720,8 +728,10 @@
 <translation id="4527045527269911712">Bluetooth ડિવાઇસ "<ph name="DEVICE_NAME" />" ને જોડી બનાવવા માટે પરવાનગી જોઈએ છે.</translation>
 <translation id="4533343294786968049">તમારી બૅટરીની આવરદા વધારી રહ્યાં છીએ. બૅટરી <ph name="FULLY_CHARGE_TIME" /> વાગ્યા સુધીમાં પૂરી ચાર્જ થઈ જશે.</translation>
 <translation id="453661520163887813">પૂર્ણપણે ચાર્જ થવામાં <ph name="TIME" /></translation>
+<translation id="4536664881735498710">RAMનો વપરાશ</translation>
 <translation id="4538824937723742295">પૂર્ણ સ્ક્રીનનો સ્ક્રીનશૉટ લો</translation>
 <translation id="4544483149666270818">રેકોર્ડ કરવા માટે વિન્ડો પસંદ કરો</translation>
+<translation id="454541942614298893">મારું ડિવાઇસ</translation>
 <translation id="4548482551627849548">સક્રિય વિન્ડોને ડાબી બાજુએ ડેસ્ક પર ખસેડો</translation>
 <translation id="4560576029703263363">ચાલુ</translation>
 <translation id="4561267230861221837">3G</translation>
@@ -835,9 +845,11 @@
 <translation id="5043679421800073804">શેલ્ફ પર છેલ્લા આઇકન પર ક્લિક અથવા ટૅપ કરો</translation>
 <translation id="504465286040788597">પહેલાંનો ફકરો</translation>
 <translation id="5045550434625856497">ખોટો પાસવર્ડ</translation>
+<translation id="5062496344832867502">RAM</translation>
 <translation id="5078796286268621944">ખોટો PIN</translation>
 <translation id="5083553833479578423">Assistantની વધુ સુવિધાઓને અનલૉક કરો.</translation>
 <translation id="5092436659250499817">કીબોર્ડની બૅકલાઇટ ચાલુ/બંધ કરો</translation>
+<translation id="5094577350232361255">વિશે</translation>
 <translation id="509790653408515442">જ્યારે તમે તમારા ફોનની ઍપ સ્ટ્રીમ કરશો, ત્યારે તે અહીં દેખાશે</translation>
 <translation id="5098537242461068432">ડેસ્ક અને વિન્ડો ફરીથી ખોલવામાં આવી</translation>
 <translation id="5104236669533825617">સ્ક્રીનકાસ્ટ બનાવી શકાતું નથી</translation>
@@ -936,6 +948,7 @@
 <translation id="557563299383177668">આગલો ફકરો</translation>
 <translation id="5577082622442191756">બ્લૂટૂથ ટૉગલ કરો. <ph name="STATE_TEXT" />.</translation>
 <translation id="5577281275355252094">ફોન હબનો ઉપયોગ કરવા માટે, ચેક કરો કે તમારા ફોન પર બ્લૂટૂથ ચાલુ કરવામાં આવ્યું છે</translation>
+<translation id="5578188167649348993">મેમરી</translation>
 <translation id="5580000943347215299">લાઇબ્રેરી</translation>
 <translation id="558849140439112033">કૅપ્ચર કરવાના વિસ્તારને પસંદ કરવા માટે ખેંચો</translation>
 <translation id="5597451508971090205"><ph name="SHORT_WEEKDAY" />, <ph name="DATE" /></translation>
@@ -1003,6 +1016,7 @@
 <translation id="589817443623831496">પૉઇન્ટ સ્કૅનિંગ</translation>
 <translation id="5901316534475909376">Shift + Esc</translation>
 <translation id="5901630391730855834">પીળો</translation>
+<translation id="5902162043476810127">રેન્ડમ ઍક્સેસ મેમરી</translation>
 <translation id="5909862606227538307">નિષ્ક્રિય ડેસ્કટૉપ.</translation>
 <translation id="5911231045062997865">Lacros વિન્ડોને હાલમાં સપોર્ટ કરવામાં આવતો નથી. અન્ય ઍપ સાચવવામાં આવશે.</translation>
 <translation id="5911909173233110115"><ph name="USERNAME" /> (<ph name="MAIL" />)</translation>
@@ -1108,6 +1122,7 @@
 <translation id="6431865393913628856">સ્ક્રીન રેકૉર્ડ કરો</translation>
 <translation id="6442259747294754014">ડિવાઇસના માઇક્રોફોનનો ઍક્સેસ બંધ છે</translation>
 <translation id="6445835306623867477"><ph name="RECEIVER_NAME" /> પર <ph name="ROUTE_TITLE" /></translation>
+<translation id="6445915701151710649">CPU</translation>
 <translation id="6447111710783417522"><ph name="DATE" />, <ph name="NUMBER" /> ઇવેન્ટ</translation>
 <translation id="6449483711453944360">Linux ઍપ અને છૂપી વિન્ડોને હાલમાં સપોર્ટ કરવામાં આવતો નથી</translation>
 <translation id="6452181791372256707">નકારો</translation>
@@ -1181,6 +1196,7 @@
 <translation id="6752912906630585008">ડેસ્ક <ph name="REMOVED_DESK" /> કાઢી નાખ્યું અને ડેસ્ક <ph name="RECEIVE_DESK" /> સાથે મર્જ કર્યું</translation>
 <translation id="6753390234084146956">ટૅબ</translation>
 <translation id="6757237461819837179">કોઈ મીડિયા ચલાવી રહ્યાં નથી</translation>
+<translation id="6768043681523654438">સ્ટોરેજ</translation>
 <translation id="6777216307882431711">કનેક્ટ કરેલા બધા USB-C ડિવાઇસને પાવર સપ્લાય આપી રહ્યાં છીએ</translation>
 <translation id="6781002679438061620">ડેસ્ક 9</translation>
 <translation id="6782182743534150858">ડેસ્ક 13</translation>
@@ -1365,12 +1381,12 @@
 <translation id="7684531502177797067">કૅમેરા ઇનપુટને <ph name="CAMERA_NAME" /> પર સેટ કર્યું.</translation>
 <translation id="7689817529363080918">આ માઇક્રોફોનની પરવાનગી ધરાવતી <ph name="APP1_NAME" />, <ph name="APP2_NAME" /> અને બધી ઍપ તથા વેબસાઇટ માટે, માઇક્રોફોનના ઍક્સેસની મંજૂરી આપે છે</translation>
 <translation id="7705524343798198388">VPN</translation>
-<translation id="770741401784017797">GIF બનાવી રહ્યાં છીએ</translation>
 <translation id="7714767791242455379">નવું સેલ્યુલર નેટવર્ક ઉમેરો</translation>
 <translation id="7720400844887872976"><ph name="TIME" /> સુધી ચાલુ રાખો</translation>
 <translation id="7720410380936703141">ફરી પ્રયાસ કરો</translation>
 <translation id="7723389094756330927">{NUM_NOTIFICATIONS,plural, =1{1 નોટિફિકેશન}one{# નોટિફિકેશન}other{# નોટિફિકેશન}}</translation>
 <translation id="7724603315864178912">કાપો</translation>
+<translation id="77365090426890123">મેમરીનો વપરાશ</translation>
 <translation id="7742327441377685481">કોઈ નોટિફિકેશન નથી</translation>
 <translation id="7749443890790263709">ડેસ્કની મહત્તમ સંખ્યા પર પહોંચી ગયા.</translation>
 <translation id="776344839111254542">અપડેટની વિગતો જોવા માટે ક્લિક કરો</translation>
@@ -1598,6 +1614,8 @@
 <translation id="8853703225951107899">તમારો પિન કે પાસવર્ડ હજી પણ ચકાસી શકાયો નથી. નોંધ: જો તમે તમારો પાસવર્ડ તાજેતરમાં બદલ્યો હોય, તો તમારા જૂના પાસવર્ડનો ઉપયોગ કરો. એકવાર તમે સાઇન આઉટ કરો, તે પછી તમારો નવો પાસવર્ડ લાગુ કરવામાં આવશે.</translation>
 <translation id="8855885154700222542">પૂર્ણસ્ક્રીન કી</translation>
 <translation id="8858369206579825206">પ્રાઇવસીને લગતાં નિયંત્રણ</translation>
+<translation id="8860817004574502558">બૅટરી આવરદા</translation>
+<translation id="8863602954531760927"><ph name="STORAGE_TOTAL_SIZE" />માંથી / <ph name="STORAGE_IN_USE_SIZE" /> ઉપયોગમાં છે</translation>
 <translation id="8870509716567206129">ઍપ સ્ક્રીન-વિભાજનને સહાય કરતી નથી.</translation>
 <translation id="8874184842967597500">કનેક્ટ નથી</translation>
 <translation id="8875021410787719674">સૌથી નીચેના જમણા ખૂણા, લૉન્ચર, ઍડ્રેસ બાર, બુકમાર્ક બાર, ખુલ્લી હોય તે વેબસાઇટ અને ડાઉનલોડ વચ્ચે ખસેડો</translation>

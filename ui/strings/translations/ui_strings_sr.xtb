@@ -38,7 +38,6 @@
 <translation id="208586643495776849">Пробајте поново</translation>
 <translation id="2141853158323869627">{DAYS,plural, =1{1 д}one{# д}few{# д}other{# д}}</translation>
 <translation id="2148716181193084225">Данас</translation>
-<translation id="2161656808144014275">Текст</translation>
 <translation id="2168039046890040389">Страница нагоре</translation>
 <translation id="2190355936436201913">(празно)</translation>
 <translation id="2192232475740621500">Користи ниску густину</translation>
@@ -90,7 +89,6 @@
 <translation id="3622035490309591977">Историја привремене меморије</translation>
 <translation id="364720409959344976">Избор директоријума за отпремање</translation>
 <translation id="3660179305079774227">Стрелица нагоре</translation>
-<translation id="3670030362669914947">Број</translation>
 <translation id="3740362395218339114"><ph name="QUANTITY" /> GB/s</translation>
 <translation id="3757388668994797779"><ph name="QUANTITY" /> GB</translation>
 <translation id="3804247818991980532"><ph name="TYPE_1" />. <ph name="TYPE_2" />.</translation>

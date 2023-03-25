@@ -38,7 +38,6 @@
 <translation id="208586643495776849">Повторіть спробу</translation>
 <translation id="2141853158323869627">{DAYS,plural, =1{1 д.}one{# д.}few{# дн.}many{# дн.}other{# дн.}}</translation>
 <translation id="2148716181193084225">Сьогодні</translation>
-<translation id="2161656808144014275">Текст</translation>
 <translation id="2168039046890040389">Сторінка вгору</translation>
 <translation id="2190355936436201913">(пусто)</translation>
 <translation id="2192232475740621500">Використовувати низьку щільність</translation>
@@ -90,7 +89,6 @@
 <translation id="3622035490309591977">Історія буфера обміну</translation>
 <translation id="364720409959344976">Виберіть папку для завантаження</translation>
 <translation id="3660179305079774227">Курсор угору</translation>
-<translation id="3670030362669914947">Номер</translation>
 <translation id="3740362395218339114"><ph name="QUANTITY" /> ГБ/сек.</translation>
 <translation id="3757388668994797779"><ph name="QUANTITY" /> ГБ</translation>
 <translation id="3804247818991980532"><ph name="TYPE_1" />. <ph name="TYPE_2" />.</translation>

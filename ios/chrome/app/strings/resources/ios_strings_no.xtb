@@ -1172,6 +1172,7 @@ Nettsteder kan bruke informasjonskapsler til å se nettleseraktiviteten din på 
 <translation id="8978059030508051916">{count,plural, =0{Ingen passord er utsatt for sikkerhetsbrudd}=1{{count} passord er utsatt for sikkerhetsbrudd}other{{count} passord er utsatt for sikkerhetsbrudd}}</translation>
 <translation id="8981454092730389528">Google Aktivitetslagring</translation>
 <translation id="8985320356172329008">Logget på Google som</translation>
+<translation id="8998289560386111590">Ikke tilgjengelig på enheten din</translation>
 <translation id="9000089900434778519">Søkemotoren din er <ph name="DSE_NAME" />. Se eventuelt instruksjonene deres om hvordan du sletter søkeloggen din.</translation>
 <translation id="9008201768610948239">Ignorer</translation>
 <translation id="9034759925968272072">Du blir ikke logget av Google-kontoen din, og det kan hende den har andre typer nettleserlogger på <ph name="BEGIN_LINK" />history.google.com<ph name="END_LINK" />.</translation>

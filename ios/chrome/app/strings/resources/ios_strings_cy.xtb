@@ -1161,6 +1161,7 @@ Gall gwefannau ddefnyddio cwcis i weld eich gweithgarwch pori ar draws gwahanol 
 <translation id="8978059030508051916">{count,plural, =0{Nid oes unrhyw gyfrineiriau sydd wedi'u darganfod}=1{{count} Cyfrinair sydd wedi'i Ddarganfod}two{{count} Gyfrinair sydd wedi'u Darganfod}few{{count} Chyfrinair sydd wedi'u Darganfod}many{{count} Chyfrinair sydd wedi'u Darganfod}other{{count} Cyfrinair sydd wedi'u Darganfod}}</translation>
 <translation id="8981454092730389528">Rheolaethau Gweithgarwch Google</translation>
 <translation id="8985320356172329008">Wedi mewngofnodi i Google fel</translation>
+<translation id="8998289560386111590">Dim ar gael ar eich dyfais</translation>
 <translation id="9000089900434778519"><ph name="DSE_NAME" /> yw eich peiriant chwilio. Gweler ei gyfarwyddiadau ar gyfer dileu eich hanes chwilio, os yw'n berthnasol.</translation>
 <translation id="9008201768610948239">Anwybyddu</translation>
 <translation id="9034759925968272072">Ni fyddwch wedi'ch allgofnodi o'ch Cyfrif Google. Mae'n bosib y bydd gan eich Cyfrif Google fathau eraill o hanes pori yn <ph name="BEGIN_LINK" />history.google.com<ph name="END_LINK" />.</translation>

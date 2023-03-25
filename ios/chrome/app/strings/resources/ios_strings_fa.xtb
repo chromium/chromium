@@ -1162,6 +1162,7 @@ Handoff باید در بخش عمومی تنظیمات نیز فعال شود و
 <translation id="8978059030508051916">{count,plural, =0{گذرواژه لورفته‌ای ندارید}=1{{count} گذرواژه لورفته}one{{count} گذرواژه لورفته}other{{count} گذرواژه لورفته}}</translation>
 <translation id="8981454092730389528">‏کنترل‌های فعالیت Google</translation>
 <translation id="8985320356172329008">‏ورود به سیستم Google به‌عنوان</translation>
+<translation id="8998289560386111590">در دستگاهتان دردسترس نیست</translation>
 <translation id="9000089900434778519">موتور جستجوی شما <ph name="DSE_NAME" /> است. برای اینکه سابقه جستجویتان را درصورت امکان حذف کنید، به دستورالعمل‌های موتور جستجو مراجعه کنید.</translation>
 <translation id="9008201768610948239">نادیده گرفتن</translation>
 <translation id="9034759925968272072">‏از حساب Google خود خارج نمی‌شوید. حساب Google شما ممکن است ممکن است اشکال دیگری از سابقه مرورتان در <ph name="BEGIN_LINK" />history.google.com<ph name="END_LINK" /> وجود داشته باشد.</translation>

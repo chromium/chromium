@@ -38,7 +38,6 @@
 <translation id="208586643495776849">कृपया फेरि प्रयास गर्नुहोस्</translation>
 <translation id="2141853158323869627">{DAYS,plural, =1{१ दिन}other{# दिन}}</translation>
 <translation id="2148716181193084225">आज</translation>
-<translation id="2161656808144014275">पाठ</translation>
 <translation id="2168039046890040389">पृष्ठ माथि</translation>
 <translation id="2190355936436201913">(खालि)</translation>
 <translation id="2192232475740621500">न्यून घनत्व प्रयोग गर्नुहोस्</translation>
@@ -90,7 +89,6 @@
 <translation id="3622035490309591977">क्लिपबोर्डको इतिहास</translation>
 <translation id="364720409959344976">अपलोड गर्न फोल्डर चयन गर्नुहोस्</translation>
 <translation id="3660179305079774227">माथि वाण</translation>
-<translation id="3670030362669914947">अङ्क</translation>
 <translation id="3740362395218339114"><ph name="QUANTITY" /> जीबी/से</translation>
 <translation id="3757388668994797779"><ph name="QUANTITY" /> जीबी</translation>
 <translation id="3804247818991980532"><ph name="TYPE_1" />। <ph name="TYPE_2" />।</translation>

@@ -1162,6 +1162,7 @@ Spletna mesta lahko uporabljajo piškotke za ogled dejavnosti brskanja na razli�
 <translation id="8978059030508051916">{count,plural, =0{Ni ogroženih gesel}=1{{count} ogroženo geslo}one{{count} ogroženo geslo}two{{count} ogroženi gesli}few{{count} ogrožena gesla}other{{count} ogroženih gesel}}</translation>
 <translation id="8981454092730389528">Googlovi kontrolniki za dejavnost</translation>
 <translation id="8985320356172329008">V Google ste prijavljeni kot</translation>
+<translation id="8998289560386111590">Ni na voljo v vaši napravi</translation>
 <translation id="9000089900434778519">Vaš iskalnik je <ph name="DSE_NAME" />. Oglejte si navodila iskalnika za brisanje zgodovine iskanja, če je na voljo.</translation>
 <translation id="9008201768610948239">Prezri</translation>
 <translation id="9034759925968272072">Iz Google Računa ne boste odjavljeni. V Google Računu so morda druge vrste zgodovine brskanja na <ph name="BEGIN_LINK" />history.google.com<ph name="END_LINK" />.</translation>

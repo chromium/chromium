@@ -531,6 +531,7 @@
 <translation id="4737560986434232178">البحث في علامات التبويب الأخيرة</translation>
 <translation id="473775607612524610">تحديث</translation>
 <translation id="4747097190499141774">‏لا يتضمّن التشفير باستخدام عبارة المرور طرق الدفع والعناوين من Google Pay. ولن يتمكّن أي شخص من الاطّلاع على بياناتك المشفرة إلا من يعرف عبارة مرورك. لا تُرسَل عبارة المرور إلى شركة Google ولا تُخزّن لديها. في حال نسيان عبارة المرور أو الرغبة في تغيير هذا الإعداد، ستحتاج إلى إعادة ضبط المزامنة. <ph name="BEGIN_LINK" />مزيد من المعلومات<ph name="END_LINK" /></translation>
+<translation id="4751162929052964260">حفظ <ph name="URL" /> باسم "<ph name="TITLE" />" بالحالة "<ph name="STATE" />" على هذا الجهاز فقط</translation>
 <translation id="4751645464639803239">علامة تبويب جديدة في وضع التصفّح المتخفي</translation>
 <translation id="4766112107778026136">ميزتا "اقتراحات" و"محتوى تتابعه"</translation>
 <translation id="4775879719735953715">المتصفح التلقائي</translation>
@@ -962,6 +963,7 @@
 <translation id="7600965453749440009">عدم الترجمة مطلقًا من اللغة <ph name="LANGUAGE" /></translation>
 <translation id="7603852183842204213">تم حظر النوافذ المنبثقة (<ph name="NUMBER_OF_BLOCKED_POPUPS" />)</translation>
 <translation id="7607521702806708809">حذف كلمة المرور</translation>
+<translation id="7611459119367035420">يمكنك العثور على علامات التبويب المثبَّتة هنا.</translation>
 <translation id="7638584964844754484">عبارة مرور غير صحيحة</translation>
 <translation id="7646263789464975852">القائمة ← الإعدادات ← التحقّق من الأمان</translation>
 <translation id="7646772052135772216">مزامنة كلمات المرور لا تعمل</translation>
@@ -975,6 +977,7 @@
 <translation id="7711440461521638739">لم يتم العثور على أي كلمات مرور مستخدَمة لحساب آخر.</translation>
 <translation id="7720410380936703141">إعادة المحاولة</translation>
 <translation id="7726702057919861819">القائمة ← السجلّ ← محو بيانات التصفُّح</translation>
+<translation id="7733646263819020771">حفظ الإشارة المرجعية باسم "<ph name="BOOKMRK_NAME" />" على هذا الجهاز فقط</translation>
 <translation id="7738120385185846461">الإبلاغ عن مشكلة…</translation>
 <translation id="7741325291586284254">صفحة علامة تبويب جديدة في وضع التصفّح المتخفي</translation>
 <translation id="7744394900930577716">كلمات المرور في التطبيقات الأخرى</translation>
@@ -1162,6 +1165,7 @@
 <translation id="8978059030508051916">{count,plural, =0{ما مِن كلمات مرور محتمَل تعرّضها للاختراق}=1{هناك كلمة مرور واحدة ({count}) محتمَل تعرّضها للاختراق}two{هناك كلِمتَا مرور ({count}) محتمَل تعرّضهما للاختراق}few{هناك {count} كلمات مرور محتمَل تعرّضها للاختراق}many{هناك {count} كلمة مرور محتمَل تعرّضها للاختراق}other{هناك {count} كلمة مرور محتمَل تعرّضها للاختراق}}</translation>
 <translation id="8981454092730389528">‏عناصر التحكم في النشاط على Google</translation>
 <translation id="8985320356172329008">‏أنت مسجّل الدخول إلى Google باستخدام</translation>
+<translation id="8998289560386111590">الوضع غير متاح على جهازك.</translation>
 <translation id="9000089900434778519">محرّك بحثك هو <ph name="DSE_NAME" />. اطّلِع على تعليمات محرّك البحث الذي تستخدمه بشأن حذف سجلّ البحث، إن أمكن.</translation>
 <translation id="9008201768610948239">تجاهل</translation>
 <translation id="9034759925968272072">‏لن يتم تسجيل خروجك من حسابك في Google. قد يتضمن حسابك في Google نماذج أخرى من سجل التصفح في <ph name="BEGIN_LINK" />history.google.com<ph name="END_LINK" />.</translation>

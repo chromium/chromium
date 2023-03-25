@@ -1160,6 +1160,7 @@ Handoff-ыг Тохиргооны ерөнхий хэсэгт идэвхижүү
 <translation id="8978059030508051916">{count,plural, =0{Ямар ч алдагдсан нууц үг алга}=1{Алдагдсан {count} нууц үг}other{Алдагдсан {count} нууц үг}}</translation>
 <translation id="8981454092730389528">Google-н Ашиглалтын удирдлага</translation>
 <translation id="8985320356172329008">Google-д дараахаар нэвтэрсэн</translation>
+<translation id="8998289560386111590">Таны төхөөрөмжид боломжгүй</translation>
 <translation id="9000089900434778519">Таны хайлтын систем <ph name="DSE_NAME" /> байна. Хэрэв боломжтой бол хайлтын түүхээ устгахын тулд үүний зааварчилгааг харна уу.</translation>
 <translation id="9008201768610948239">Алгас</translation>
 <translation id="9034759925968272072">Таныг Google Бүртгэлээс гаргахгүй. Таны Google Бүртгэл <ph name="BEGIN_LINK" />history.google.com<ph name="END_LINK" />-д хайлтын түүхийн өөр хэлбэртэй байна.</translation>

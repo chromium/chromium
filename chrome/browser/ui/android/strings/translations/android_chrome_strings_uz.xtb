@@ -592,7 +592,7 @@ Ishonch tokenlari Internetdagi maxfiylikni oshiradi va shaxsiy maʼlumotlaringiz
 <translation id="4269820728363426813">Havola manzilini nusxalash</translation>
 <translation id="4283102315569707115">Standart holatda saytning kompyuter versiyasini ochish soʻralsinmi?</translation>
 <translation id="4291407919474070700"><ph name="BEGIN_LINK" />Android sozlamalari orqali ekran qulfini yoqing<ph name="END_LINK" /></translation>
-<translation id="4296252229500326964">Yangi inkognito varaq</translation>
+<translation id="4296252229500326964">Yangi Inkognito varaq</translation>
 <translation id="4298388696830689168">Aloqador saytlar</translation>
 <translation id="4303044213806199882">chrome_screenshot_<ph name="CURRENT_TIMESTAMP_MS" /></translation>
 <translation id="4307992518367153382">Asosiy</translation>
@@ -794,6 +794,7 @@ Bu sozlamani almashtirish uchun <ph name="BEGIN_LINK" />sinxronizatsiyani tiklan
 <translation id="5342314432463739672">Ruxsat talablari</translation>
 <translation id="53537532693258630">Olib tashlangan saytlar shu yerda chiqadi</translation>
 <translation id="5355191726083956201">Kengaytirilgan himoya yoniq</translation>
+<translation id="5361107212971249203">matn</translation>
 <translation id="5368227114232678694">Bu qurilmada maxfiy kezish uchun Inkognito rejimidan foydalaning</translation>
 <translation id="5375577065097716013">Google Lens orqali rasm qidiring <ph name="BEGIN_NEW" />Yangi<ph name="END_NEW" /></translation>
 <translation id="5401851137404501592">Davom etish uchun <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> ism, email manzil va profil rasmingizni bu sayt bilan ulashadi.</translation>
@@ -1088,7 +1089,7 @@ Masalan, qaysi sahifalarga kirganligingizdan qat’i nazar, ba’zi saytlarda re
 <translation id="686366188661646310">Parol oʻchirilsinmi?</translation>
 <translation id="6864459304226931083">Rasmni yuklab olish</translation>
 <translation id="6865313869410766144">Avtomatik to‘ldirish ma’lumotlari</translation>
-<translation id="6867400383614725881">Yangi inkognito varaq</translation>
+<translation id="6867400383614725881">Yangi Inkognito varaq</translation>
 <translation id="6869056123412990582">kompyuter</translation>
 <translation id="6882836635272038266">Zararli deb hisoblangan sayt, yuklanma va kengaytmalarga qarshi standart himoya</translation>
 <translation id="6883204995689174413">Ulashish</translation>
@@ -1320,6 +1321,7 @@ Masalan, qaysi sahifalarga kirganligingizdan qat’i nazar, ba’zi saytlarda re
 <translation id="8058746566562539958">Yangi Chrome oynasida ochish</translation>
 <translation id="8062594758852531064">Kengaytirilgan oldindan yuklash:</translation>
 <translation id="8063895661287329888">Xatcho‘pni qo‘shib bo‘lmadi.</translation>
+<translation id="8066816452984416180">Bu sahifani tez bukmarklash. Bu yorliqni tahrirlash uchun ustiga bosib turing.</translation>
 <translation id="806745655614357130">Ma’lumotlar alohida saqlansin</translation>
 <translation id="8073388330009372546">&amp;Rasmni yangi ichki oynada ochish</translation>
 <translation id="8076492880354921740">Varaqlar</translation>
@@ -1351,6 +1353,7 @@ Masalan, qaysi sahifalarga kirganligingizdan qat’i nazar, ba’zi saytlarda re
 <translation id="8216351761227087153">Tamosha qilish</translation>
 <translation id="8218622182176210845">Hisobingizni boshqaring</translation>
 <translation id="8223642481677794647">Quyi bildirgi menyu</translation>
+<translation id="8236097722223016103">Bukmarklash</translation>
 <translation id="8250920743982581267">Hujjatlar</translation>
 <translation id="8255617931166444521">Saytlar cookie fayllarni faqatgina u saytni kezish vaqtingizda koʻradi</translation>
 <translation id="8259179246279078674">Oldindan yuklanadigan sahifalar shifrlanadi. Google bunday sahifalar tarkibi haqida hech narsani bila olmaydi. Google serverlari qaysi saytlar maxfiy tarzda oldindan yuklanganligini biladi. Bu maʼlumot faqat saytlarni oldindan yuklash uchun ishlatiladi va Google hisobingizdagi boshqa maʼlumotlarga ulanmaydi.</translation>
@@ -1488,7 +1491,7 @@ Masalan, qaysi sahifalarga kirganligingizdan qat’i nazar, ba’zi saytlarda re
 <translation id="8942627711005830162">Yangi oynada ochish</translation>
 <translation id="8945143127965743188"><ph name="LANG" /> – Bu til yuklab olinmadi. Keyinroq urining.</translation>
 <translation id="8955719471735800169">Boshiga o‘tish</translation>
-<translation id="8964479563882643397">Yangi inkognito varagʻini ochish uchun menyuni oching</translation>
+<translation id="8964479563882643397">Yangi Inkognito varaq ochish uchun menyuni oching</translation>
 <translation id="8965591936373831584">kutilmoqda</translation>
 <translation id="8968085728801125376">{TAB_COUNT,plural, =1{yana <ph name="TAB_COUNT_ONE" /> ta varaq yopiladi (<ph name="INCOGNITO_TAB_COUNT" /> tasi inkognito)}other{yana <ph name="TAB_COUNT_MANY" /> ta varaq yopiladi (<ph name="INCOGNITO_TAB_COUNT" /> tasi inkognito)}}</translation>
 <translation id="8970887620466824814">Xatolik yuz berdi.</translation>

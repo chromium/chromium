@@ -1162,6 +1162,7 @@ Sites mogen cookies gebruiken om je browse-activiteit op verschillende sites te 
 <translation id="8978059030508051916">{count,plural, =0{Geen gehackte wachtwoorden}=1{{count} gehackt wachtwoord}other{{count} gehackte wachtwoorden}}</translation>
 <translation id="8981454092730389528">Google-activiteitsopties</translation>
 <translation id="8985320356172329008">Ingelogd bij Google als</translation>
+<translation id="8998289560386111590">Niet beschikbaar op je apparaat</translation>
 <translation id="9000089900434778519">Je zoekmachine is <ph name="DSE_NAME" />. Bekijk de instructies van je zoekmachine voor het verwijderen van je zoekgeschiedenis (indien van toepassing).</translation>
 <translation id="9008201768610948239">Negeren</translation>
 <translation id="9034759925968272072">Je wordt niet uitgelogd van je Google-account. Voor je Google-account kunnen andere vormen van browsegeschiedenis beschikbaar zijn via <ph name="BEGIN_LINK" />history.google.com<ph name="END_LINK" />.</translation>

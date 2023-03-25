@@ -38,7 +38,6 @@
 <translation id="208586643495776849">請再試一次</translation>
 <translation id="2141853158323869627">{DAYS,plural, =1{1 天}other{# 天}}</translation>
 <translation id="2148716181193084225">今天</translation>
-<translation id="2161656808144014275">文字</translation>
 <translation id="2168039046890040389">向上翻頁</translation>
 <translation id="2190355936436201913">(空白)</translation>
 <translation id="2192232475740621500">使用低密度模式</translation>
@@ -90,7 +89,6 @@
 <translation id="3622035490309591977">剪貼簿記錄</translation>
 <translation id="364720409959344976">選取要上傳的資料夾</translation>
 <translation id="3660179305079774227">向上鍵</translation>
-<translation id="3670030362669914947">號碼</translation>
 <translation id="3740362395218339114"><ph name="QUANTITY" /> GB/秒</translation>
 <translation id="3757388668994797779"><ph name="QUANTITY" /> GB</translation>
 <translation id="3804247818991980532"><ph name="TYPE_1" />。<ph name="TYPE_2" />。</translation>

@@ -1161,6 +1161,7 @@ Handoff-ը պետք է միացված լինի նաև Կարգավորումնե
 <translation id="8978059030508051916">{count,plural, =0{Կոտրված գաղտնաբառեր չկան}=1{{count} կոտրված գաղտնաբառ}one{{count} կոտրված գաղտնաբառ}other{{count} կոտրված գաղտնաբառ}}</translation>
 <translation id="8981454092730389528">Google-ի գործունեության կառավարներ</translation>
 <translation id="8985320356172329008">Մուտք եք գործել Google որպես՝</translation>
+<translation id="8998289560386111590">Հասանելի չէ ձեր սարքում</translation>
 <translation id="9000089900434778519">Դուք օգտագործում եք <ph name="DSE_NAME" /> որոնողական համակարգը։ Որոնումների պատմությունը ջնջելու համար կարդացեք համապատասխան ցուցումները։</translation>
 <translation id="9008201768610948239">Անտեսել</translation>
 <translation id="9034759925968272072">Դուք դուրս չեք գա ձեր Google հաշվից: Ձեր Google հաշվում կարող են լինել այցելությունների պատմության այլ ձևեր ևս: Դրանք կարող եք գտնել <ph name="BEGIN_LINK" />history.google.com<ph name="END_LINK" /> էջում:</translation>

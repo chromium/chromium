@@ -1161,6 +1161,7 @@ Les sites peuvent utiliser des témoins afin de voir votre activité de navigati
 <translation id="8978059030508051916">{count,plural, =0{Aucun mot de passe compromis}=1{{count} mot de passe compromis}one{{count} mot de passe compromis}other{{count} mots de passe compromis}}</translation>
 <translation id="8981454092730389528">Commandes d'activité Google</translation>
 <translation id="8985320356172329008">Connecté(e) à Google en tant que</translation>
+<translation id="8998289560386111590">Non accessible sur votre appareil</translation>
 <translation id="9000089900434778519">Vous utilisez <ph name="DSE_NAME" /> comme moteur de recherche. Consultez les instructions de celui-ci pour supprimer votre historique de recherche, le cas échéant.</translation>
 <translation id="9008201768610948239">OK</translation>
 <translation id="9034759925968272072">Vous ne serez pas déconnecté de votre compte Google. D'autres formes d'historique de navigation peuvent exister sur votre compte Google. Plus de détails à <ph name="BEGIN_LINK" />history.google.com<ph name="END_LINK" />.</translation>

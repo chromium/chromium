@@ -1172,6 +1172,7 @@
 <translation id="8978059030508051916">{count,plural, =0{沒有任何密碼外洩}=1{{count} 組密碼外洩}other{{count} 組密碼外洩}}</translation>
 <translation id="8981454092730389528">Google 活動控制項</translation>
 <translation id="8985320356172329008">已使用下列帳戶登入 Google：</translation>
+<translation id="8998289560386111590">這項功能無法在你的裝置上使用</translation>
 <translation id="9000089900434778519">你的搜尋引擎是 <ph name="DSE_NAME" />。如要瞭解如何刪除搜尋記錄，請查看搜尋引擎的操作說明 (如果有的話)。</translation>
 <translation id="9008201768610948239">略過</translation>
 <translation id="9034759925968272072">您並不會因此登出 Google 帳戶，不過帳戶中可能仍保留了其他類型的瀏覽記錄 (可前往 <ph name="BEGIN_LINK" />history.google.com<ph name="END_LINK" /> 查詢)。</translation>

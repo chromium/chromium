@@ -1162,6 +1162,7 @@ Siteler, örneğin reklamları kişiselleştirmek amacıyla farklı sitelerde ta
 <translation id="8978059030508051916">{count,plural, =0{Güvenliği İhlal Edilmiş Şifre Yok}=1{Güvenliği İhlal Edilmiş {count} Şifre}other{Güvenliği İhlal Edilmiş {count} Şifre}}</translation>
 <translation id="8981454092730389528">Google Etkinlik Kontrolleri</translation>
 <translation id="8985320356172329008">Google'da Şu Hesapla Oturum Açıldı:</translation>
+<translation id="8998289560386111590">Cihazınızda kullanılamıyor</translation>
 <translation id="9000089900434778519">Arama motorunuz <ph name="DSE_NAME" />. Arama geçmişinizi silmek için arama motorunuzun talimatlarını (varsa) inceleyin.</translation>
 <translation id="9008201768610948239">Yoksay</translation>
 <translation id="9034759925968272072">Google Hesabınızdaki oturumunuz kapatılmayacaktır. Google hesabınızla ilişkili başka biçimlerde tarama geçmişi <ph name="BEGIN_LINK" />history.google.com<ph name="END_LINK" /> adresinde bulunabilir.</translation>

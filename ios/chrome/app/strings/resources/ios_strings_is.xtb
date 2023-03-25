@@ -1161,6 +1161,7 @@ Vefsvæði geta notað fótspor til að sjá vafranotkun þína á mismunandi ve
 <translation id="8978059030508051916">{count,plural, =0{Engin aðgangsorð í hættu}=1{{count} aðgangsorð í hættu}one{{count} aðgangsorð í hættu}other{{count} aðgangsorð í hættu}}</translation>
 <translation id="8981454092730389528">Virknistýringar Google</translation>
 <translation id="8985320356172329008">Innskráð(ur) á Google sem</translation>
+<translation id="8998289560386111590">Ekki í boði í tækinu þínu</translation>
 <translation id="9000089900434778519">Leitarvélin þín er <ph name="DSE_NAME" />. Skoðaðu leiðbeiningar hennar um að eyða leitarferlinum ef það á við.</translation>
 <translation id="9008201768610948239">Hunsa</translation>
 <translation id="9034759925968272072">Google reikningurinn þinn kann að vera með annars konar vefskoðunarferil á <ph name="BEGIN_LINK" />history.google.com<ph name="END_LINK" />.</translation>

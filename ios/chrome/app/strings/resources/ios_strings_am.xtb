@@ -1161,6 +1161,7 @@ Handoff እንዲሁም በSettings ውስጥ ባለው የGeneral ክፍል ላ
 <translation id="8978059030508051916">{count,plural, =0{ምንም የተጠለፈ የይለፍ ቃል የለም}=1{{count} የተጠለፈ የይለፍ ቃል}one{{count} የተጠለፈ የይለፍ ቃል}other{{count} የተጠለፉ የይለፍ ቃላት}}</translation>
 <translation id="8981454092730389528">የGoogle እንቅስቃሴ መቆጣጠሪያዎች</translation>
 <translation id="8985320356172329008">እንደሚከተለው ሆነው ወደ Google በመለያ ገብተዋል፦</translation>
+<translation id="8998289560386111590">መሣሪያዎ ላይ አይገኝም</translation>
 <translation id="9000089900434778519">የእርስዎ የፍለጋ ፕሮግራም <ph name="DSE_NAME" /> ነው። መተግበር የሚችል ከሆነ የፍለጋ ታሪክዎን ለመሰረዝ መመሪያዎቻቸውን ይመልከቱ።</translation>
 <translation id="9008201768610948239">ችላ በል</translation>
 <translation id="9034759925968272072">ከእርስዎ የGoogle መለያ ዘግተው እንዲወጡ አይደረጉም። የእርስዎ Google መለያ በ<ph name="BEGIN_LINK" />history.google.com<ph name="END_LINK" /> ውስጥ ሌሎች ዓይነቶች የአሰሳ ታሪኮች ሊኖሩት ይችላል።</translation>

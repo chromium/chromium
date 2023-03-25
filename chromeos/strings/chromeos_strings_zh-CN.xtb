@@ -274,6 +274,7 @@
 <translation id="3456078764689556234">已打印 <ph name="PRINTED_PAGES" /> 页（共 <ph name="TOTAL_PAGES" /> 页）。</translation>
 <translation id="345898999683440380">正在扫描第 <ph name="PAGE_NUM" /> 页。已完成 <ph name="PERCENTAGE_VALUE" />%。</translation>
 <translation id="3459509316159669723">打印</translation>
+<translation id="346423161771747987">电流</translation>
 <translation id="346539236881580388">重拍</translation>
 <translation id="3484914941826596830">固件更新期间，请不要拔掉此外部设备的电源插头或关闭您的计算机。您可以最小化此窗口。此更新可能需要几分钟时间，在此期间，您的外部设备可能无法正常使用。</translation>
 <translation id="3486220673238053218">定义</translation>

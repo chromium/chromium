@@ -1172,6 +1172,7 @@ Web lokacije mogu koristiti kolačiće da vide vašu aktivnost pregledanja na ra
 <translation id="8978059030508051916">{count,plural, =0{Nema ugroženih lozinki}=1{{count} ugrožena lozinka}one{{count} ugrožena lozinka}few{{count} ugrožene lozinke}other{{count} ugroženih lozinki}}</translation>
 <translation id="8981454092730389528">Kontrole aktivnosti na Googleu</translation>
 <translation id="8985320356172329008">Prijavljeni ste na Google kao</translation>
+<translation id="8998289560386111590">Nije dostupno na vašem uređaju</translation>
 <translation id="9000089900434778519">Vaš pretraživač je <ph name="DSE_NAME" />. Ako je primjenjivo, pogledajte uputstva pretraživača da saznate kako izbrisati historiju pretraživanja.</translation>
 <translation id="9008201768610948239">Zanemari</translation>
 <translation id="9034759925968272072">Nećete biti odjavljeni s Google računa. Vaš Google račun može imati druge oblike historije pregledanja na <ph name="BEGIN_LINK" />history.google.com<ph name="END_LINK" />.</translation>

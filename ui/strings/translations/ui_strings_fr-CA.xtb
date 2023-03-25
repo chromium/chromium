@@ -38,7 +38,6 @@
 <translation id="208586643495776849">Veuillez réessayer</translation>
 <translation id="2141853158323869627">{DAYS,plural, =1{1 j}one{# j}other{# j}}</translation>
 <translation id="2148716181193084225">Aujourd'hui</translation>
-<translation id="2161656808144014275">Texte</translation>
 <translation id="2168039046890040389">Page précédente</translation>
 <translation id="2190355936436201913">(vide)</translation>
 <translation id="2192232475740621500">Utiliser faible densité</translation>
@@ -90,7 +89,6 @@
 <translation id="3622035490309591977">Historique du presse-papiers</translation>
 <translation id="364720409959344976">Sélectionner le dossier à téléverser</translation>
 <translation id="3660179305079774227">Flèche vers le haut</translation>
-<translation id="3670030362669914947">Numéro</translation>
 <translation id="3740362395218339114"><ph name="QUANTITY" /> Go/s</translation>
 <translation id="3757388668994797779"><ph name="QUANTITY" /> Go</translation>
 <translation id="3804247818991980532"><ph name="TYPE_1" />. <ph name="TYPE_2" />.</translation>

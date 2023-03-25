@@ -628,6 +628,7 @@
 <translation id="2469153820345007638">从 1 到 N 的顺序</translation>
 <translation id="2470767536994572628">当您修改注释时，此文档会恢复为单页视图和原始方向</translation>
 <translation id="2479410451996844060">搜索网址无效。</translation>
+<translation id="2480300195898055381">在您的 Google 帐号 <ph name="USER_EMAIL" /> 中更新</translation>
 <translation id="2482878487686419369">通知</translation>
 <translation id="248348093745724435">设备政策</translation>
 <translation id="2491120439723279231">服务器证书中包含错误。</translation>
@@ -841,6 +842,7 @@
 <translation id="3029752078111257850">全球新闻</translation>
 <translation id="3037177537145227281">正在跟踪价格</translation>
 <translation id="3037605927509011580">喔唷，崩溃啦！</translation>
+<translation id="3041450980936463495">您可以在各种 Google 产品中使用已保存的地址。这个地址已保存到您的 Google 帐号 (<ph name="ACCOUNT" />)。</translation>
 <translation id="3041612393474885105">证书信息</translation>
 <translation id="305162504811187366">Chrome 远程桌面历史记录，包括时间戳、主机和客户端会话 ID</translation>
 <translation id="3052964831964880138"><ph name="PRODUCT_NAME" />降价 <ph name="PRICE_DROP" /></translation>
@@ -1924,6 +1926,7 @@
 <translation id="5695542892312572833">使用 Windows Hello 验证并完成您的购买交易？</translation>
 <translation id="5701381305118179107">居中</translation>
 <translation id="570530837424789914">管理…</translation>
+<translation id="5706906618852913030">要保存到帐号吗？</translation>
 <translation id="5707154300732650394">继续您的历程</translation>
 <translation id="57094364128775171">建议安全系数高的密码…</translation>
 <translation id="571403275720188526">(arm64)</translation>

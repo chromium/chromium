@@ -1163,6 +1163,7 @@ Ils peuvent également s'en servir pour voir votre activité de navigation sur l
 <translation id="8978059030508051916">{count,plural, =0{Aucun mot de passe compromis}=1{{count} mot de passe compromis}one{{count} mot de passe compromis}other{{count} mots de passe compromis}}</translation>
 <translation id="8981454092730389528">Commandes Google relatives à l'activité</translation>
 <translation id="8985320356172329008">Connecté à Google en tant que</translation>
+<translation id="8998289560386111590">Non disponible sur votre appareil</translation>
 <translation id="9000089900434778519">Votre moteur de recherche est <ph name="DSE_NAME" />. Lisez les instructions pour supprimer l'historique de vos recherches, le cas échéant.</translation>
 <translation id="9008201768610948239">Ignorer</translation>
 <translation id="9034759925968272072">Vous ne serez pas déconnecté de votre compte Google. Celui-ci conserve peut-être d'autres formes d'historique de navigation sur la page <ph name="BEGIN_LINK" />history.google.com<ph name="END_LINK" />.</translation>

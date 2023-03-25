@@ -1170,6 +1170,7 @@ Witryny mogą używać plików cookie do śledzenia Twojej aktywności związane
 <translation id="8978059030508051916">{count,plural, =0{Brak przejętych haseł}=1{{count} przejęte hasło}few{{count} przejęte hasła}many{{count} przejętych haseł}other{{count} przejętego hasła}}</translation>
 <translation id="8981454092730389528">Zarządzanie aktywnością w Google</translation>
 <translation id="8985320356172329008">Jesteś zalogowany w Google jako</translation>
+<translation id="8998289560386111590">Niedostępne na Twoim urządzeniu</translation>
 <translation id="9000089900434778519">Twoja wyszukiwarka to <ph name="DSE_NAME" />. Zapoznaj się z jej instrukcjami, jeśli chcesz usunąć historię wyszukiwania.</translation>
 <translation id="9008201768610948239">Ignoruj</translation>
 <translation id="9034759925968272072">Nie spowoduje to wylogowania z konta Google. Inne rodzaje historii przeglądania mogą być nadal dostępne na Twoim koncie Google na <ph name="BEGIN_LINK" />history.google.com<ph name="END_LINK" />.</translation>

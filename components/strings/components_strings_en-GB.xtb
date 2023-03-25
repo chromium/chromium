@@ -628,6 +628,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="2469153820345007638">1-to-N order</translation>
 <translation id="2470767536994572628">When you edit annotations, this document will return to single-page view and its original rotation</translation>
 <translation id="2479410451996844060">Invalid search URL.</translation>
+<translation id="2480300195898055381">In your Google Account, <ph name="USER_EMAIL" /></translation>
 <translation id="2482878487686419369">Notifications</translation>
 <translation id="248348093745724435">Machine policies</translation>
 <translation id="2491120439723279231">Server's certificate contains errors.</translation>
@@ -841,6 +842,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="3029752078111257850">World news</translation>
 <translation id="3037177537145227281">Tracking price</translation>
 <translation id="3037605927509011580">Aw, Snap!</translation>
+<translation id="3041450980936463495">You can use saved addresses across Google products. This address is saved in your Google Account (<ph name="ACCOUNT" />).</translation>
 <translation id="3041612393474885105">Certificate Information</translation>
 <translation id="305162504811187366">Chrome Remote Desktop history, including timestamps, hosts and client session ids</translation>
 <translation id="3052964831964880138"><ph name="PRICE_DROP" /> price drop on <ph name="PRODUCT_NAME" /></translation>
@@ -1928,6 +1930,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="5695542892312572833">Use Windows Hello to verify and complete your purchase?</translation>
 <translation id="5701381305118179107">Centre</translation>
 <translation id="570530837424789914">Manage...</translation>
+<translation id="5706906618852913030">Save in Account?</translation>
 <translation id="5707154300732650394">Resume your journey</translation>
 <translation id="57094364128775171">Suggest strong password…</translation>
 <translation id="571403275720188526">(arm64)</translation>
@@ -2528,7 +2531,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="7219179957768738017">The connection uses <ph name="SSL_VERSION" />.</translation>
 <translation id="7220786058474068424">Processing</translation>
 <translation id="7221855153210829124">Show notifications</translation>
-<translation id="722454870747268814">New incognito tab</translation>
+<translation id="722454870747268814">New Incognito tab</translation>
 <translation id="7233592378249864828">Print confirmation sheet</translation>
 <translation id="7234638337680728591">Gas prices and vehicle fueling</translation>
 <translation id="7236417832106250253"><ph name="PROGRESS_PERCENT" />% completed | <ph name="ESTIMATED_REMAINING_TIME" /></translation>

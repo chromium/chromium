@@ -274,6 +274,7 @@
 <translation id="3456078764689556234">Iphrinte ikhasi elingu-<ph name="PRINTED_PAGES" /> kwangu-<ph name="TOTAL_PAGES" />.</translation>
 <translation id="345898999683440380">Iskena ikhasi <ph name="PAGE_NUM" />. Kuqedwe <ph name="PERCENTAGE_VALUE" />%.</translation>
 <translation id="3459509316159669723">Iyaphrinta</translation>
+<translation id="346423161771747987">Okwamanje</translation>
 <translation id="346539236881580388">Thatha futhi</translation>
 <translation id="3484914941826596830">Ngenkathi i-firmware ibuyekeza, ungakhiphi ukuxhuma le divayisi yangaphandle noma ucishe ikhompyutha. Unganciphisa leli windi. Lesi sibuyekezo singase sithathe imizuzu embalwa futhi idivayisi yakho yangaphandle ingase ingasebenzi phakathi nalesi sikhathi.</translation>
 <translation id="3486220673238053218">incazelo</translation>
@@ -697,6 +698,7 @@
 <translation id="7103252855940681301">Idivayisi engu-<ph name="INDEX" /> kwangu-<ph name="COUNT" /> ebizwa ngokuthi i-<ph name="NAME" />.</translation>
 <translation id="7108668606237948702">i-enter</translation>
 <translation id="7130438335435247835">Igama lephoyinti lokufinyelela (APN)</translation>
+<translation id="7131634559772719176">Qinisekisa ukusetha ngaphambilini</translation>
 <translation id="7134436342991564651">{0,plural, =1{Igama leseva}one{Igama lamaseva}other{Igama lamaseva}}</translation>
 <translation id="7143207342074048698">Iyaxhuma</translation>
 <translation id="7144878232160441200">Zama futhi</translation>
@@ -800,6 +802,7 @@
 <translation id="80398733265834479">Nika amandla imodi yombala ozenzakalelayo</translation>
 <translation id="8041089156583427627">Thumela impendulo</translation>
 <translation id="8045012663542226664">Ukuthulisa kwemakrofoni</translation>
+<translation id="8050091914317269817">Ukukhetha lesi isithombe sangemuva kuzovula imodi emnyama ngokuzenzakalelayo kanye nokufanisa umbala wesithombe sangemuva.</translation>
 <translation id="8075838845814659848">Inkokhelo esele</translation>
 <translation id="8076492880354921740">Okwamathebhu</translation>
 <translation id="8082366717211101304">Ayikwazi ukuxazulula i-DNS kusukela kuma-app we-Android</translation>

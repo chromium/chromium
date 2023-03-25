@@ -1172,6 +1172,7 @@ Na základe súborov cookie si môžu zobraziť vašu históriu prehliadania v 
 <translation id="8978059030508051916">{count,plural, =0{Žiadne odhalené heslá}=1{{count} odhalené heslo}few{{count} odhalené heslá}many{{count} Compromised Passwords}other{{count} odhalených hesiel}}</translation>
 <translation id="8981454092730389528">Riadenie aktivity Google</translation>
 <translation id="8985320356172329008">Prihlásený účet Google</translation>
+<translation id="8998289560386111590">V zariadení nie je k dispozícii</translation>
 <translation id="9000089900434778519">Používate vyhľadávač <ph name="DSE_NAME" />. Prečítajte si jeho pokyny, ako odstrániť históriu vyhľadávania (ak je to možné).</translation>
 <translation id="9008201768610948239">Ignorovať</translation>
 <translation id="9034759925968272072">Neodhlásime vás z účtu Google. Váš účet Google môže mať ďalšie formy histórie prehliadania na adrese <ph name="BEGIN_LINK" />history.google.com<ph name="END_LINK" />.</translation>

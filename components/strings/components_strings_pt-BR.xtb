@@ -498,6 +498,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="2119867082804433120">Perfuração na parte inferior direita</translation>
 <translation id="2122719317867821810">A política está funcionando da maneira esperada, mas um valor conflitante foi definido em outro lugar e foi substituído por esta política.</translation>
 <translation id="2126374524350484896">Criador do PDF:</translation>
+<translation id="2128262927290305126">Na sua Conta do Google <ph name="ACCOUNT" /></translation>
 <translation id="2130448033692577677">Os modelos que você especificou podem não ser aplicados, porque a política DnsOverHttpsMode não foi definida.</translation>
 <translation id="2130699163006053678">A3x7</translation>
 <translation id="2135799067377889518">Roupas masculinas</translation>
@@ -543,6 +544,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="2219735899272417925">É necessário redefinir o dispositivo</translation>
 <translation id="2224337661447660594">Sem Internet</translation>
 <translation id="2225927550500503913">Cartão virtual ativado</translation>
+<translation id="2226636330183131181"><ph name="BEGIN_LINK" />Fazendo login<ph name="END_LINK" /> na rede Wi-Fi</translation>
 <translation id="2239100178324503013">Enviar agora</translation>
 <translation id="2241693394036365668">Um arquivo é transferido por download</translation>
 <translation id="2246264294482514010">10 x 12 pol.</translation>
@@ -1083,6 +1085,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="3631244953324577188">Biometria</translation>
 <translation id="3632503704576938756">O compartilhamento de tela foi retomado</translation>
 <translation id="3632892046558972264">O compartilhamento de tela foi pausado</translation>
+<translation id="3633035844150606508">Salvar endereço na sua Conta do Google, <ph name="ACCOUNT" /></translation>
 <translation id="3633738897356909127">Botão "Atualizar o Chrome". Pressione "Enter" para atualizar o Chrome pelas configurações dele</translation>
 <translation id="3634530185120165534">Bandeja 5</translation>
 <translation id="3634567936866541746">Você acabou de digitar sua senha em um site suspeito. Para proteger suas contas, o Chrome recomenda conferir as senhas salvas.</translation>
@@ -1983,6 +1986,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="5830698870816298009">uso e movimento da câmera</translation>
 <translation id="583281660410589416">Desconhecido</translation>
 <translation id="5838278095973806738">É recomendado não fornecer informações confidencial a esse site (por exemplo, senhas ou cartões de crédito), porque elas podem ser roubadas por invasores.</translation>
+<translation id="5841338463993781099">Salvar na conta?</translation>
 <translation id="5851548754964597211">Lista de guias</translation>
 <translation id="5852909432155870672">RA4</translation>
 <translation id="5860033963881614850">Desativado</translation>

@@ -1165,6 +1165,7 @@
 <translation id="8978059030508051916">{count,plural, =0{No Compromised Passwords}=1{{count} धोक्यात असलेला पासवर्ड}other{{count} धोक्यात असलेले पासवर्ड}}</translation>
 <translation id="8981454092730389528">Google ॲक्टिव्हिटी नियंत्रणे</translation>
 <translation id="8985320356172329008">Google मध्ये हे म्हणून साइन इन केले</translation>
+<translation id="8998289560386111590">तुमच्या डिव्हाइसवर उपलब्ध नाही</translation>
 <translation id="9000089900434778519"><ph name="DSE_NAME" /> हे तुमचे शोध इंजीन आहे. लागू असल्यास, तुमचा शोध इतिहास हटवण्यासाठी, त्याच्या सूचना पहा.</translation>
 <translation id="9008201768610948239">दुर्लक्ष करा</translation>
 <translation id="9034759925968272072">तुम्हाला आपल्या Google खात्यामधून साइन आउट केले जाणार नाही. आपल्या Google खात्यात <ph name="BEGIN_LINK" />history.google.com<ph name="END_LINK" /> वर ब्राउझिंग इतिहासाची इतर स्वरूपे असू शकतात.</translation>

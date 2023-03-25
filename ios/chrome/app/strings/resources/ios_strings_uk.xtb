@@ -1162,6 +1162,7 @@
 <translation id="8978059030508051916">{count,plural, =0{Немає зламаних паролів}=1{{count} зламаний пароль}one{{count} зламаний пароль}few{{count} зламані паролі}many{{count} зламаних паролів}other{{count} зламаного пароля}}</translation>
 <translation id="8981454092730389528">Відстеження дій у Google</translation>
 <translation id="8985320356172329008">Ви ввійшли в обліковий запис Google як</translation>
+<translation id="8998289560386111590">Недоступно на вашому пристрої</translation>
 <translation id="9000089900434778519">Ваша пошукова система – <ph name="DSE_NAME" />. Перегляньте її вказівки щодо того, як видалити історію пошуку (якщо вона є).</translation>
 <translation id="9008201768610948239">Ігнорувати</translation>
 <translation id="9034759925968272072">Ви не вийдете з облікового запису Google. Історія веб-перегляду може також зберігатися у вашому обліковому записі Google на сторінці  <ph name="BEGIN_LINK" />history.google.com<ph name="END_LINK" />.</translation>

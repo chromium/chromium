@@ -1162,6 +1162,7 @@
 <translation id="8978059030508051916">{count,plural, =0{Няма компрометирани пароли}=1{{count} компрометирана парола}other{{count} компрометирани пароли}}</translation>
 <translation id="8981454092730389528">Контроли за активността в Google</translation>
 <translation id="8985320356172329008">Влезли сте в Google като</translation>
+<translation id="8998289560386111590">Не е налице на устройството ви</translation>
 <translation id="9000089900434778519">Търсещата ви машина е <ph name="DSE_NAME" />. Вижте инструкциите на търсещата си машина относно изтриването на историята на търсенията ви (ако е приложимо).</translation>
 <translation id="9008201768610948239">Пренебрегване</translation>
 <translation id="9034759925968272072">Няма да излезете от профила си в Google. Възможно е в него да има други видове история на сърфиране, съхранявани на адрес <ph name="BEGIN_LINK" />history.google.com<ph name="END_LINK" />.</translation>

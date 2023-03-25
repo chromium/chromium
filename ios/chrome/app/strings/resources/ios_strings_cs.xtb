@@ -1162,6 +1162,7 @@ Weby pomocí souborů cookie mohou sledovat vaši aktivitu prohlížení na růz
 <translation id="8978059030508051916">{count,plural, =0{Nebyla nalezena žádná prolomená hesla}=1{{count} prolomené heslo}few{{count} prolomená hesla}many{{count} prolomeného hesla}other{{count} prolomených hesel}}</translation>
 <translation id="8981454092730389528">Ovládací prvky aktivity Google</translation>
 <translation id="8985320356172329008">Jste přihlášeni do Googlu jako</translation>
+<translation id="8998289560386111590">Na vašem zařízení není k dispozici</translation>
 <translation id="9000089900434778519">Váš vyhledávač je <ph name="DSE_NAME" />. Prostudujte si pokyny vyhledávače pro smazání historie vyhledávání (pokud je k dispozici)</translation>
 <translation id="9008201768610948239">Ignorovat</translation>
 <translation id="9034759925968272072">Nebudete odhlášeni ze svého účtu Google. Na stránce <ph name="BEGIN_LINK" />history.google.com<ph name="END_LINK" /> mohou být k dispozici další formy historie prohlížení zaznamenané ve vašem účtu Google.</translation>

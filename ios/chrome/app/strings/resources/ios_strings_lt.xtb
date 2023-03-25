@@ -479,6 +479,7 @@ Peržiūrėkite paieškos variklio instrukcijas, kaip ištrinti paieškos istori
 <translation id="4342946437867096381">Jau išsaugojote šios svetainės slaptažodį „Google“ paskyroje. „Google“ gali pasirinkti naujausią slaptažodį už jus.</translation>
 <translation id="4343046787186034850">Leidžiama pasiekti vaizdo kamerą ir mikrofoną</translation>
 <translation id="4359125752503270327">Šis puslapis bus atidarytas kitoje programoje.</translation>
+<translation id="4371526908359194219">El. pašto pranešimai</translation>
 <translation id="4375040482473363939">QR kodo paieška</translation>
 <translation id="4378154925671717803">Telefonas</translation>
 <translation id="4389019817280890563">Palieskite, kad pakeistumėte kalbą.</translation>
@@ -580,6 +581,7 @@ Jei norite pakeisti šį nustatymą, <ph name="BEGIN_LINK" />iš naujo nustatyki
 <translation id="4986678885919050584">Pašalinti iš šio įrenginio</translation>
 <translation id="498985224078955265">Jei norite siųsti šį skirtuką į kitą įrenginį, prisijunkite prie „Chrome“ abiejuose įrenginiuose</translation>
 <translation id="5005498671520578047">Kopijuoti slaptažodį</translation>
+<translation id="5016420433031926653">Siųsti: <ph name="USER_EMAIL" /></translation>
 <translation id="5017828934289857214">Priminti vėliau</translation>
 <translation id="5037676449506322593">Pasirinkti viską</translation>
 <translation id="5039804452771397117">Leisti</translation>
@@ -1170,6 +1172,7 @@ Svetainės gali naudoti slapukus, kad sužinotų apie naršymo veiklą skirtingo
 <translation id="8978059030508051916">{count,plural, =0{Pažeistų slaptažodžių nėra}=1{{count} pažeistas slaptažodis}one{{count} pažeistas slaptažodis}few{{count} pažeisti slaptažodžiai}many{{count} pažeisto slaptažodžio}other{{count} pažeistų slaptažodžių}}</translation>
 <translation id="8981454092730389528">„Google“ veiklos valdikliai</translation>
 <translation id="8985320356172329008">Prisijungta prie „Google“ kaip</translation>
+<translation id="8998289560386111590">Nepasiekiama jūsų įrenginyje</translation>
 <translation id="9000089900434778519">Jūsų paieškos variklis yra „<ph name="DSE_NAME" />“. Peržiūrėkite jo instrukcijas, kaip ištrinti paieškos istoriją (jei taikoma).</translation>
 <translation id="9008201768610948239">Nepaisyti</translation>
 <translation id="9034759925968272072">Nebūsite atjungti nuo „Google“ paskyros. Adresu <ph name="BEGIN_LINK" />history.google.com<ph name="END_LINK" /> gali būti pateikta kitų formų jūsų „Google“ paskyros istorija.</translation>

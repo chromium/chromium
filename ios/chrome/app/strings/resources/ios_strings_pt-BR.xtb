@@ -755,6 +755,7 @@ A "Transição" também deve ser ativada na seção "Geral" das configurações.
 <translation id="6219550825416862075">Que bom que você voltou</translation>
 <translation id="6219688215832490856">Nunca traduzir</translation>
 <translation id="6223816392543092032">Tenha seus favoritos, seu histórico, suas senhas e outras configurações em todos os seus dispositivos.</translation>
+<translation id="6224759905509595045">Confirme que é você…</translation>
 <translation id="6229318421047648685">Acessar o site para computador</translation>
 <translation id="6231782223312638214">Sugerido</translation>
 <translation id="6232329973559504466">Pesquisa anônima</translation>
@@ -915,6 +916,7 @@ Na navegação anônima, eles não podem usar cookies para ver suas atividades d
 <translation id="7108762695052995889">Visitar site</translation>
 <translation id="7133798577887235672">Nome completo</translation>
 <translation id="7136892417564438900">A câmera não está disponível</translation>
+<translation id="7161230316646448869">Sincronize seus favoritos, histórico e muito mais em todos os dispositivos</translation>
 <translation id="7162168282402939716">Desbloquear guias anônimas com o <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /></translation>
 <translation id="7172852049901402487">Manter suas senhas protegidas contra problemas de segurança</translation>
 <translation id="7173114856073700355">Abrir "Configurações"</translation>
@@ -1170,6 +1172,7 @@ Eles também podem usar cookies para ver sua atividade de navegação em diferen
 <translation id="8978059030508051916">{count,plural, =0{Nenhuma senha comprometida}=1{{count} senha comprometida}one{{count} senha comprometida}other{{count} senhas comprometidas}}</translation>
 <translation id="8981454092730389528">Controles de atividades do Google</translation>
 <translation id="8985320356172329008">Conectado(a) ao Google como</translation>
+<translation id="8998289560386111590">Indisponível no seu dispositivo</translation>
 <translation id="9000089900434778519">Seu mecanismo de pesquisa é o <ph name="DSE_NAME" />. Veja as instruções para excluir o histórico de pesquisa, se aplicável.</translation>
 <translation id="9008201768610948239">Ignorar</translation>
 <translation id="9034759925968272072">Você não será desconectado da sua Conta do Google. É possível que sua Conta do Google tenha outras formas de histórico de navegação em <ph name="BEGIN_LINK" />history.google.com<ph name="END_LINK" />.</translation>

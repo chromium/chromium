@@ -1161,6 +1161,7 @@ Tamén poden utilizalas para ver a túa actividade de navegación en varios siti
 <translation id="8978059030508051916">{count,plural, =0{Ningún contrasinal vulnerado}=1{{count} contrasinal vulnerado}other{{count} contrasinais vulnerados}}</translation>
 <translation id="8981454092730389528">Controis de actividade de Google</translation>
 <translation id="8985320356172329008">Iniciaches sesión en Google como</translation>
+<translation id="8998289560386111590">Non está dispoñible no teu dispositivo</translation>
 <translation id="9000089900434778519">O teu motor de busca é <ph name="DSE_NAME" />. En caso aplicable, consulta as súas instrucións para eliminar o historial de busca.</translation>
 <translation id="9008201768610948239">Ignorar</translation>
 <translation id="9034759925968272072">Non se pechará sesión na túa conta de Google. É posible que a túa conta de Google teña outras formas do historial de navegación en <ph name="BEGIN_LINK" />history.google.com<ph name="END_LINK" />.</translation>

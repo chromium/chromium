@@ -1161,6 +1161,7 @@ Handoff Жөндөөлөрдүн жалпы бөлүмүндө да иштети
 <translation id="8978059030508051916">{count,plural, =0{Уурдалган сырсөздөр жок}=1{{count} уурдалган сырсөз бар}other{{count} уурдалган сырсөз бар}}</translation>
 <translation id="8981454092730389528">Google'дагы аракеттерди башкаруу каражаттары</translation>
 <translation id="8985320356172329008">Google'га төмөнкү ат менен кирдиңиз</translation>
+<translation id="8998289560386111590">Түзмөгүңүздө жеткиликтүү эмес</translation>
 <translation id="9000089900434778519">Издөө каражатыңыз: <ph name="DSE_NAME" />. Издөө таржымалын өчүрүү үчүн, бар болсо, издөө каражатындагы нускамаларды караңыз.</translation>
 <translation id="9008201768610948239">Этибарга албоо</translation>
 <translation id="9034759925968272072">Google Каттоо эсебиңизден чыкпайсыз. Google Аккаунтуңуздун серептөө таржымалынын башка түрлөрү <ph name="BEGIN_LINK" />history.google.com<ph name="END_LINK" /> дарегинде болушу мүмкүн.</translation>

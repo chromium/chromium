@@ -38,7 +38,6 @@
 <translation id="208586643495776849">يُرجى إعادة المحاولة</translation>
 <translation id="2141853158323869627">{DAYS,plural, =1{يوم واحد}zero{# يوم}two{يومان (#)}few{# أيام}many{# يومًا}other{# يوم}}</translation>
 <translation id="2148716181193084225">اليوم</translation>
-<translation id="2161656808144014275">نص</translation>
 <translation id="2168039046890040389">صفحة  إلى أعلى</translation>
 <translation id="2190355936436201913">(فارغ)</translation>
 <translation id="2192232475740621500">استخدام كثافة منخفضة</translation>
@@ -90,7 +89,6 @@
 <translation id="3622035490309591977">سجلّ الحافظة</translation>
 <translation id="364720409959344976">حدد مجلدًا للتحميل</translation>
 <translation id="3660179305079774227">مفتاح سهم متّجه للأعلى</translation>
-<translation id="3670030362669914947">رقم</translation>
 <translation id="3740362395218339114"><ph name="QUANTITY" /> غيغابايت/ثانية</translation>
 <translation id="3757388668994797779"><ph name="QUANTITY" /> غيغابايت</translation>
 <translation id="3804247818991980532"><ph name="TYPE_1" />. <ph name="TYPE_2" />.</translation>

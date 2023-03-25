@@ -1162,6 +1162,7 @@ Puwedeng gumamit ng cookies ang mga site para makita ang iyong aktibidad sa pag-
 <translation id="8978059030508051916">{count,plural, =0{Walang Nakompromisong Password}=1{{count} Nakompromisong Password}one{{count} Nakompromisong Password}other{{count} na Nakompromisong Password}}</translation>
 <translation id="8981454092730389528">Mga Kontrol ng Aktibidad ng Google</translation>
 <translation id="8985320356172329008">Naka-sign In ka sa Google bilang</translation>
+<translation id="8998289560386111590">Hindi available sa iyong device</translation>
 <translation id="9000089900434778519"><ph name="DSE_NAME" /> ang iyong search engine. Tingnan ang mga tagubilin nito para sa pag-delete sa iyong history ng paghahanap, kung naaangkop.</translation>
 <translation id="9008201768610948239">Balewalain</translation>
 <translation id="9034759925968272072">Hindi ka masa-sign out sa iyong Google Account. Maaaring mayroong ibang mga uri ng history ng pag-browse ang iyong Google Account sa <ph name="BEGIN_LINK" />history.google.com<ph name="END_LINK" />.</translation>

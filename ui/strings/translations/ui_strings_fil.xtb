@@ -38,7 +38,6 @@
 <translation id="208586643495776849">Pakisubukang muli</translation>
 <translation id="2141853158323869627">{DAYS,plural, =1{1 araw}one{# araw}other{# na araw}}</translation>
 <translation id="2148716181193084225">Ngayong Araw</translation>
-<translation id="2161656808144014275">Text</translation>
 <translation id="2168039046890040389">Pataas</translation>
 <translation id="2190355936436201913">(walang laman)</translation>
 <translation id="2192232475740621500">Gumamit ng mababang density</translation>
@@ -90,7 +89,6 @@
 <translation id="3622035490309591977">History ng clipboard</translation>
 <translation id="364720409959344976">Pumili ng Folder na I-a-upload</translation>
 <translation id="3660179305079774227">Up Arrow</translation>
-<translation id="3670030362669914947">Numero</translation>
 <translation id="3740362395218339114"><ph name="QUANTITY" /> (na) GB/s</translation>
 <translation id="3757388668994797779"><ph name="QUANTITY" /> (na) GB</translation>
 <translation id="3804247818991980532"><ph name="TYPE_1" />. <ph name="TYPE_2" />.</translation>

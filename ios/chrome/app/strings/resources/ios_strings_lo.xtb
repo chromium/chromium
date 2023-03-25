@@ -1161,6 +1161,7 @@ Handoff ຍັງ​ຕ້ອງ​ໄດ້​ເປີດ​ໃຊ້​ງາ
 <translation id="8978059030508051916">{count,plural, =0{ບໍ່ມີລະຫັດຜ່ານທີ່ຖືກລະເມີດ}=1{{count} ລະຫັດຜ່ານທີ່ຖືກລະເມີດ}other{{count} ລະຫັດຜ່ານທີ່ຖືກລະເມີດ}}</translation>
 <translation id="8981454092730389528">ການຄວບຄຸມກິດຈະກຳ Google</translation>
 <translation id="8985320356172329008">ເຂົ້າສູ່ລະບົບ Google ເປັນ</translation>
+<translation id="8998289560386111590">ບໍ່ມີໃຫ້ໃນອຸປະກອນຂອງທ່ານ</translation>
 <translation id="9000089900434778519">ໂປຣແກຣມຊອກຫາຂອງທ່ານແມ່ນ <ph name="DSE_NAME" />. ກະລຸນາອ່ານຄຳແນະນຳສຳລັບການລຶບປະຫວັດການຊອກຫາ, ຖ້າມີ.</translation>
 <translation id="9008201768610948239">ບໍ່ສົນໃຈ</translation>
 <translation id="9034759925968272072">ທ່ານຈະບໍ່ຖືກນຳອອກຈາກລະບົບບັນຊີ Google ຂອງທ່ານ. ບັນຊີ Google ຂອງທ່ານອາດຈະມີປະຫວັດການທ່ອງເວັບຮູບແບບອື່ນຢູ່ <ph name="BEGIN_LINK" />history.google.com<ph name="END_LINK" />.</translation>

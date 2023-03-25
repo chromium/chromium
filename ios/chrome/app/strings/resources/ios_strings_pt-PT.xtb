@@ -1172,6 +1172,7 @@ Os sites podem utilizar cookies para ver a sua atividade de navegação em difer
 <translation id="8978059030508051916">{count,plural, =0{Nenhuma palavra-passe comprometida}=1{{count} palavra-passe comprometida}other{{count} palavras-passe comprometidas}}</translation>
 <translation id="8981454092730389528">Controlos da atividade Google</translation>
 <translation id="8985320356172329008">Iniciou sessão no Google como</translation>
+<translation id="8998289560386111590">Não disponível no seu dispositivo</translation>
 <translation id="9000089900434778519">O seu motor de pesquisa é o <ph name="DSE_NAME" />. Se aplicável, consulte as instruções para eliminar o histórico de pesquisas.</translation>
 <translation id="9008201768610948239">Ignorar</translation>
 <translation id="9034759925968272072">A sessão na sua Conta Google não é terminada. A sua Conta Google pode ter outras formas do histórico de navegação em <ph name="BEGIN_LINK" />history.google.com<ph name="END_LINK" />.</translation>

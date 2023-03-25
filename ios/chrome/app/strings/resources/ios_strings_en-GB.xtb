@@ -58,6 +58,7 @@ Only someone with your passphrase can read your encrypted data. The passphrase i
 <translation id="1283524564873030414">Last 24 hours</translation>
 <translation id="1285320974508926690">Never translate this site</translation>
 <translation id="1291506870746876680"><ph name="BEGIN_BOLD" />'<ph name="SITE_NAME" />'<ph name="END_BOLD" /> permissions will reset to off when you leave this site.</translation>
+<translation id="1305822519689023679">To make sure that you can always use the passwords in your Google Account, verify that it's you.</translation>
 <translation id="1312721752506309252">Enhanced protection is on</translation>
 <translation id="1321993286294231467">Error saving image.</translation>
 <translation id="1322735045095424339">Your organisation requires Incognito mode</translation>
@@ -107,6 +108,7 @@ Only someone with your passphrase can read your encrypted data. The passphrase i
 <translation id="1626771852476987600"><ph name="COUNT" /> reused passwords</translation>
 <translation id="1641113438599504367">Safe Browsing</translation>
 <translation id="1644574205037202324">History</translation>
+<translation id="165008673352427892">New feature</translation>
 <translation id="1650222530560417226">Tap the 'Start Logging' button to collect future JavaScript console logs and errors from all tabs. Logs will be collected (and stored only in memory) until this page is closed or 'Stop Logging' is tapped.</translation>
 <translation id="1653432787084483144">{count,plural, =1{{count} saved password available above your keyboard.}other{{count} saved passwords available above your keyboard.}}</translation>
 <translation id="1657011748321897393">Sharing failed because you are not connected to the network.</translation>
@@ -120,6 +122,7 @@ Only someone with your passphrase can read your encrypted data. The passphrase i
 <translation id="1700629756560807968"><ph name="NUMBER_OF_SELECTED_BOOKMARKS" /> selected</translation>
 <translation id="1715515772563243997">If you trust <ph name="SITE" />, you can use a saved password to sign in.</translation>
 <translation id="1740468249224277719">Double tap to install.</translation>
+<translation id="1750238553597293878">Keep using the passwords in your Google Account</translation>
 <translation id="1752547299766512813">Save Passwords</translation>
 <translation id="1753905327828125965">Most Visited</translation>
 <translation id="1767766085187034454">Google Translate</translation>
@@ -402,6 +405,7 @@ See your search engine’s instructions for deleting your search history, if app
 <translation id="3810973564298564668">Manage</translation>
 <translation id="3818293389945649617">Find Next</translation>
 <translation id="3819183753496523827">You're offline. Check your Internet connection and try again.</translation>
+<translation id="3832419617903252251">Password saved only on this device</translation>
 <translation id="3835964409414434850">Go to next tab</translation>
 <translation id="3838691874161539578">Check your saved passwords to strengthen your security and stay safer online</translation>
 <translation id="385051799172605136">Back</translation>
@@ -630,6 +634,7 @@ To change this setting, <ph name="BEGIN_LINK" />reset sync<ph name="END_LINK" />
 <translation id="54401264925851789">Page Security Info</translation>
 <translation id="5443952882982198570">Credit cards</translation>
 <translation id="5444892875087332195">Bookmarks</translation>
+<translation id="5453250766792920795">{count,plural, =1{Bookmark saved in your account, {email}}other{Bookmarks saved in your account, {email}}}</translation>
 <translation id="5457226814769348910">Open offline version</translation>
 <translation id="5489208564673669003">To manage cookies for all sites, see <ph name="BEGIN_LINK" />Cookie settings<ph name="END_LINK" />.</translation>
 <translation id="5490005495580364134">Block all cookies (not recommended)</translation>
@@ -656,6 +661,7 @@ Handoff must also be enabled in the General section of Settings, and your device
 <translation id="5669528293118408608">www</translation>
 <translation id="5669617676038747374">Create a QR Code</translation>
 <translation id="567881659373499783">Version <ph name="PRODUCT_VERSION" /></translation>
+<translation id="5683499062697987550">To use and save passwords in your Google Account, verify that it's you.</translation>
 <translation id="5690398455483874150">{count,plural, =1{Now showing 1 Chrome window}other{Now showing {count} Chrome windows}}</translation>
 <translation id="5701270923492462699">Camera access allowed</translation>
 <translation id="5704908597376970822">Can't sign in.</translation>
@@ -788,6 +794,7 @@ Handoff must also be enabled in the General section of Settings, and your device
 
 Your data was encrypted with your sync passphrase on <ph name="TIME" />. Enter it to start sync.</translation>
 <translation id="6418346271604475326">Preparing PDF</translation>
+<translation id="6421095165635308">{count,plural, =1{Bookmark saved to {title} in your account, {email}}other{Bookmarks saved to {title} in your account, {email}}}</translation>
 <translation id="6429213933892582367">Open Password options</translation>
 <translation id="6434591244308415567">An error occurred. Try again later.</translation>
 <translation id="6435236283694032571">Add to reading list</translation>
@@ -876,6 +883,7 @@ While in Incognito, sites can't use cookies to see your browsing activity across
 <translation id="6888009575607455378">Are you sure that you want to discard your changes?</translation>
 <translation id="6896758677409633944">Copy</translation>
 <translation id="6897187120838603299">Your password will be saved to your device.</translation>
+<translation id="6906448540340261898">Make sure that you can always use the passwords in your Google Account</translation>
 <translation id="6913136913033237761"><ph name="FOLDER_NAME" />. Only on this device.</translation>
 <translation id="6914583639806229067">Search for image that you copied</translation>
 <translation id="6914783257214138813">Your passwords will be visible to anyone who can see the exported file.</translation>
@@ -917,7 +925,7 @@ While in Incognito, sites can't use cookies to see your browsing activity across
 <translation id="721597782417389033">Invalid card nickname</translation>
 <translation id="7221173315674413369">Explore new features and tips in 'What’s new'</translation>
 <translation id="7223102419539744003">Close tab</translation>
-<translation id="722454870747268814">New incognito tab</translation>
+<translation id="722454870747268814">New Incognito tab</translation>
 <translation id="7265758999917665941">Never for this site</translation>
 <translation id="7272437679830969316">Can't verify your identity. Password not copied.</translation>
 <translation id="7291368939935408496">Preparing Passwords…</translation>
@@ -1162,6 +1170,7 @@ Sites can use cookies to see your browsing activity across different sites, for 
 <translation id="8978059030508051916">{count,plural, =0{No compromised passwords}=1{{count} compromised password}other{{count} compromised passwords}}</translation>
 <translation id="8981454092730389528">Google Activity Controls</translation>
 <translation id="8985320356172329008">Signed In to Google as</translation>
+<translation id="8998289560386111590">Not available on your device</translation>
 <translation id="9000089900434778519">Your search engine is <ph name="DSE_NAME" />. See their instructions for deleting your search history, if applicable.</translation>
 <translation id="9008201768610948239">Ignore</translation>
 <translation id="9034759925968272072">You won't be signed out of your Google Account. Your Google Account may have other forms of browsing history at <ph name="BEGIN_LINK" />history.google.com<ph name="END_LINK" />.</translation>

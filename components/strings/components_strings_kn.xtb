@@ -628,6 +628,7 @@
 <translation id="2469153820345007638">1-ಇಂದ-N ಆರ್ಡರ್</translation>
 <translation id="2470767536994572628">ನೀವು ಟಿಪ್ಪಣಿಗಳನ್ನು ಎಡಿಟ್ ಮಾಡಿದಾಗ, ಈ ಡಾಕ್ಯುಮೆಂಟ್ ಒಂದೇ ಪುಟದ ವೀಕ್ಷಣೆಗೆ ಮತ್ತು ತನ್ನ ಮೂಲ ರೊಟೇಶನ್ ಸ್ಥಾನಕ್ಕೆ ಮರಳುತ್ತದೆ</translation>
 <translation id="2479410451996844060">ಅಮಾನ್ಯವಾದ ಹುಡುಕಾಟ URL.</translation>
+<translation id="2480300195898055381">ನಿಮ್ಮ <ph name="USER_EMAIL" /> Google ಖಾತೆಯಲ್ಲಿ</translation>
 <translation id="2482878487686419369">ಸೂಚನೆಗಳು</translation>
 <translation id="248348093745724435">ಯಂತ್ರದ ಕಾರ್ಯನೀತಿಗಳು</translation>
 <translation id="2491120439723279231">ಸರ್ವರ್‌ನ ಪ್ರಮಾಣಪತ್ರವು ದೋಷಗಳನ್ನು ಹೊಂದಿದೆ.</translation>
@@ -841,6 +842,7 @@
 <translation id="3029752078111257850">ಜಾಗತಿಕ ಸಮಾಚಾರ</translation>
 <translation id="3037177537145227281">ದರವನ್ನು ಟ್ರ್ಯಾಕ್ ಮಾಡಲಾಗುತ್ತಿದೆ</translation>
 <translation id="3037605927509011580">ಓಹ್, ಹೋಯ್ತು!</translation>
+<translation id="3041450980936463495">ಉಳಿಸಿದ ವಿಳಾಸಗಳನ್ನು ನೀವು Google ಉತ್ಪನ್ನಗಳಾದ್ಯಂತ ಬಳಸಬಹುದು. ಈ ವಿಳಾಸವನ್ನು ನಿಮ್ಮ Google ಖಾತೆಯಲ್ಲಿ (<ph name="ACCOUNT" />) ಉಳಿಸಲಾಗಿದೆ.</translation>
 <translation id="3041612393474885105">ಪ್ರಮಾಣಪತ್ರ ಮಾಹಿತಿ</translation>
 <translation id="305162504811187366">ಟೈಮ್‌ಸ್ಟ್ಯಾಂಪ್‌ಗಳು, ಹೋಸ್ಟ್‌ಗಳು ಮತ್ತು ಕ್ಲೈಂಟ್ ಸೆಷನ್ ಐಡಿಗಳು ಸೇರಿದಂತೆ Chrome ರಿಮೋಟ್ ಡೆಸ್ಕ್‌ಟಾಪ್ ಇತಿಹಾಸ</translation>
 <translation id="3052964831964880138"><ph name="PRODUCT_NAME" /> ಉತ್ಪನ್ನದ ಮೇಲೆ <ph name="PRICE_DROP" /> ದರ ಇಳಿಕೆ</translation>
@@ -1925,6 +1927,7 @@
 <translation id="5695542892312572833">ನಿಮ್ಮ ಖರೀದಿಯನ್ನು ಖಚಿತಪಡಿಸಲು ಮತ್ತು ಪೂರ್ಣಗೊಳಿಸಲು Windows Hello ಬಳಸಬೇಕೆ?</translation>
 <translation id="5701381305118179107">ಮಧ್ಯಕ್ಕೆ</translation>
 <translation id="570530837424789914">ನಿರ್ವಹಿಸಿ...</translation>
+<translation id="5706906618852913030">ಖಾತೆಯಲ್ಲಿ ಉಳಿಸಬೇಕೆ?</translation>
 <translation id="5707154300732650394">ನಿಮ್ಮ ಪ್ರಯಾಣವನ್ನು ಪುನರಾರಂಭಿಸಿ</translation>
 <translation id="57094364128775171">ಸದೃಢವಾದ ಪಾಸ್‌ವರ್ಡ್ ಸೂಚಿಸಿ…</translation>
 <translation id="571403275720188526">(arm64)</translation>

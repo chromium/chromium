@@ -1162,6 +1162,7 @@ Saidid saavad küpsisefailide abil eri saitidel teie sirvimistegevust jälgida, 
 <translation id="8978059030508051916">{count,plural, =0{Ükski parool ei ole ohus}=1{{count} ohustatud parool}other{{count} ohustatud parooli}}</translation>
 <translation id="8981454092730389528">Google'i kontotegevuste haldus</translation>
 <translation id="8985320356172329008">Google'isse sisse logitud kasutajana</translation>
+<translation id="8998289560386111590">Pole teie seadmes saadaval</translation>
 <translation id="9000089900434778519">Teie otsingumootor on <ph name="DSE_NAME" />. Vaadake selle juhiseid otsinguajaloo kustutamise kohta, kui see on asjakohane.</translation>
 <translation id="9008201768610948239">Eira</translation>
 <translation id="9034759925968272072">Teid ei logita Google'i kontolt välja. Aadressil <ph name="BEGIN_LINK" />history.google.com<ph name="END_LINK" /> võib teie Google'i kontol olla muus vormis sirvimisajalugu.</translation>

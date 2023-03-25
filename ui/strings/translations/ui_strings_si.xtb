@@ -38,7 +38,6 @@
 <translation id="208586643495776849">නැවත උත්සාහ කරන්න</translation>
 <translation id="2141853158323869627">{DAYS,plural, =1{1d}one{#d}other{#d}}</translation>
 <translation id="2148716181193084225">අද</translation>
-<translation id="2161656808144014275">පාඨය</translation>
 <translation id="2168039046890040389">පිටුව ඉහළට</translation>
 <translation id="2190355936436201913">(හිස්)</translation>
 <translation id="2192232475740621500">අඩු ඝනත්වය භාවිතා කරන්න</translation>
@@ -90,7 +89,6 @@
 <translation id="3622035490309591977">පසුරු පුවරු ඉතිහාසය</translation>
 <translation id="364720409959344976">අපගත කිරීමට ෆෝල්ඩරය තෝරන්න</translation>
 <translation id="3660179305079774227">ඉහල ඊතලය</translation>
-<translation id="3670030362669914947">අංකය</translation>
 <translation id="3740362395218339114"><ph name="QUANTITY" /> GB/s</translation>
 <translation id="3757388668994797779"><ph name="QUANTITY" /> GB</translation>
 <translation id="3804247818991980532"><ph name="TYPE_1" />. <ph name="TYPE_2" />.</translation>

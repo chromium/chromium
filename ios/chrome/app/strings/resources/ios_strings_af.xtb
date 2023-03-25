@@ -918,7 +918,7 @@ Terwyl jy in Incognito is, kan werwe nie webkoekies gebruik om jou blaai-aktiwit
 <translation id="721597782417389033">Ongeldige kaartbynaam</translation>
 <translation id="7221173315674413369">Verken nuwe kenmerke en wenke in Wat's nuut</translation>
 <translation id="7223102419539744003">Maak oortjie toe</translation>
-<translation id="722454870747268814">Nuwe incognito-oortjie</translation>
+<translation id="722454870747268814">Nuwe Incognito-oortjie</translation>
 <translation id="7265758999917665941">Nooit vir hierdie werf nie</translation>
 <translation id="7272437679830969316">Kan nie jou identiteit verifieer nie. Wagwoord is nie gekopieer nie.</translation>
 <translation id="7291368939935408496">Maak tans wagwoorde gereed …</translation>
@@ -1163,6 +1163,7 @@ Werwe kan webkoekies gebruik om jou blaai-aktiwiteit op verskillende werwe te si
 <translation id="8978059030508051916">{count,plural, =0{Geen gekompromitteerde wagwoorde nie}=1{{count} gekompromitteerde wagwoord}other{{count} gekompromitteerde wagwoorde}}</translation>
 <translation id="8981454092730389528">Google-aktiwiteitkontroles</translation>
 <translation id="8985320356172329008">By Google aangemeld as</translation>
+<translation id="8998289560386111590">Nie op jou toestel beskikbaar nie</translation>
 <translation id="9000089900434778519">Jou soekenjin is <ph name="DSE_NAME" />. Sien hulle instruksies om jou soekgeskiedenis uit te vee, indien nodig.</translation>
 <translation id="9008201768610948239">Ignoreer</translation>
 <translation id="9034759925968272072">Jy sal nie uit jou Google-rekening afgemeld word nie. Jou Google-rekening het dalk ander vorme van blaaigeskiedenis by <ph name="BEGIN_LINK" />history.google.com<ph name="END_LINK" /></translation>
