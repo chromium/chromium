@@ -33,6 +33,41 @@ class SimilarVisitDeduperClusterFinalizerTest : public ::testing::Test {
   base::test::TaskEnvironment task_environment_;
 };
 
+TEST_F(SimilarVisitDeduperClusterFinalizerTest, DedupeBySearchNormalizedUrl) {
+  // canonical_visit has the same URL as Visit1.
+  history::ClusterVisit visit = testing::CreateClusterVisit(
+      testing::CreateDefaultAnnotatedVisit(1, GURL("https://google.com/")));
+  visit.annotated_visit.url_row.set_title(u"sametitle");
+  visit.annotated_visit.context_annotations.total_foreground_duration =
+      base::Seconds(20);
+  visit.annotated_visit.content_annotations.search_normalized_url =
+      GURL("https://google.com/search?q=query");
+  visit.url_for_deduping = GURL("https://google.com/shouldbeignored");
+  visit.url_for_display = u"someurl";
+
+  history::ClusterVisit canonical_visit = testing::CreateClusterVisit(
+      testing::CreateDefaultAnnotatedVisit(2, GURL("https://google.com/#abc")));
+  canonical_visit.annotated_visit.url_row.set_title(u"sametitle");
+  canonical_visit.annotated_visit.content_annotations.search_normalized_url =
+      GURL("https://google.com/search?q=query");
+  canonical_visit.url_for_deduping =
+      GURL("https://google.com/shouldalsobeignored");
+  canonical_visit.url_for_display = u"someurl";
+
+  history::Cluster cluster;
+  cluster.visits = {visit, canonical_visit};
+  FinalizeCluster(cluster);
+  EXPECT_THAT(testing::ToVisitResults({cluster}),
+              ElementsAre(ElementsAre(testing::VisitResult(
+                  2, 1.0, {history::DuplicateClusterVisit{1}}))));
+  const auto& actual_canonical_visit = cluster.visits.at(0);
+  // Make sure total foreground duration is updated correctly even if some don't
+  // have the field populated.
+  EXPECT_EQ(actual_canonical_visit.annotated_visit.context_annotations
+                .total_foreground_duration,
+            base::Seconds(20));
+}
+
 TEST_F(SimilarVisitDeduperClusterFinalizerTest, DedupeExactSimilarVisit) {
   // canonical_visit has the same URL as Visit1.
   history::ClusterVisit visit = testing::CreateClusterVisit(

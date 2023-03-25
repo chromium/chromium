@@ -102,6 +102,7 @@ class ContextClustererHistoryServiceObserver
 
   // Creates a cluster visit from `normalized_url` and `visit_row`.
   history::ClusterVisit CreateClusterVisit(const std::string& normalized_url,
+                                           bool is_search_normalized_url,
                                            const history::VisitRow& visit_row);
 
   // Overrides `clock_` for testing.
