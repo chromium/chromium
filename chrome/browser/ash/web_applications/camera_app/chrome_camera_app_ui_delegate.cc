@@ -308,9 +308,6 @@ void ChromeCameraAppUIDelegate::PopulateLoadTimeData(
   source->AddString("board_name", base::SysInfo::GetLsbReleaseBoard());
   source->AddString("device_type",
                     DeviceTypeToString(chromeos::GetDeviceType()));
-  source->AddBoolean(
-      "lowStorageWarning",
-      base::FeatureList::IsEnabled(ash::features::kCameraAppLowStorageWarning));
   source->AddBoolean("timeLapse", base::FeatureList::IsEnabled(
                                       ash::features::kCameraAppTimeLapse));
 }

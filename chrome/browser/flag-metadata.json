@@ -903,11 +903,6 @@
     "expiry_milestone": 113
   },
   {
-    "name": "camera-app-low-storage-warning",
-    "owners": [ "kamchonlathorn" ],
-    "expiry_milestone": 114
-  },
-  {
     "name": "camera-app-time-lapse",
     "owners": [ "kamchonlathorn", "chromeos-camera-app-eng@google.com" ],
     "expiry_milestone": 120

@@ -6,6 +6,5 @@
  * Name of the chrome flags.
  */
 export enum Flag {
-  LOW_STORAGE_WARNING = 'lowStorageWarning',
   TIME_LAPSE = 'timeLapse',
 }

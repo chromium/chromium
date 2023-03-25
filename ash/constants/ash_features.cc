@@ -295,11 +295,6 @@ BASE_FEATURE(kCalendarJelly,
              "CalendarJelly",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Enables to allow low storage warning feature in the camera app.
-BASE_FEATURE(kCameraAppLowStorageWarning,
-             "CameraAppLowStorageWarning",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Enables to allow time-lapse video recording in the camera app.
 BASE_FEATURE(kCameraAppTimeLapse,
              "CameraAppTimeLapse",
