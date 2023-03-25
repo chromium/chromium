@@ -391,15 +391,22 @@ class SystemAccessProcessPrintBrowserTestBase
     print_job->AddObserver(*this);
   }
 
-  void SetUpPrintViewManager(content::WebContents* web_contents) {
+  TestPrintViewManager* SetUpAndReturnPrintViewManager(
+      content::WebContents* web_contents) {
     auto manager = std::make_unique<TestPrintViewManager>(
         web_contents,
         base::BindRepeating(
             &SystemAccessProcessPrintBrowserTestBase::OnCreatedPrintJob,
             base::Unretained(this)));
     manager->AddObserver(*this);
+    TestPrintViewManager* manager_ptr = manager.get();
     web_contents->SetUserData(PrintViewManager::UserDataKey(),
                               std::move(manager));
+    return manager_ptr;
+  }
+
+  void SetUpPrintViewManager(content::WebContents* web_contents) {
+    std::ignore = SetUpAndReturnPrintViewManager(web_contents);
   }
 
   void PrintAfterPreviewIsReadyAndLoaded() {
@@ -1630,6 +1637,17 @@ IN_PROC_BROWSER_TEST_P(SystemAccessProcessServicePrintBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(SystemAccessProcessSandboxedServicePrintBrowserTest,
                        StartBasicPrintConcurrent) {
+  // Linux allows concurrent printing, so regular setup for printing is needed.
+  // It is uninteresting to do a full print in this case, it is better to exit
+  // the print sequence early, but at a known time after when PrintNow() would
+  // fail if concurrent printing isn't allowed.  That can be achieved by just
+  // canceling out from asking for settings.
+#if BUILDFLAG(IS_LINUX)
+  AddPrinter("printer1");
+  SetPrinterNameForSubsequentContexts("printer1");
+  PrimeForCancelInAskUserForSettings();
+#endif
+
   ASSERT_TRUE(embedded_test_server()->Started());
   GURL url(embedded_test_server()->GetURL("/printing/test3.html"));
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
@@ -1638,15 +1656,28 @@ IN_PROC_BROWSER_TEST_F(SystemAccessProcessSandboxedServicePrintBrowserTest,
       browser()->tab_strip_model()->GetActiveWebContents();
   ASSERT_TRUE(web_contents);
   TestPrintViewManager* print_view_manager =
-      TestPrintViewManager::CreateForWebContents(web_contents);
+      SetUpAndReturnPrintViewManager(web_contents);
 
   // Pretend that a window has started a system print.
   absl::optional<PrintBackendServiceManager::ClientId> client_id =
       PrintBackendServiceManager::GetInstance().RegisterQueryWithUiClient();
   ASSERT_TRUE(client_id.has_value());
 
+#if BUILDFLAG(IS_LINUX)
+  // The expected events for this are:
+  // 1.  Get the default settings.
+  // 2.  Ask the user for settings, which indicates to cancel the print
+  //     request.  No further printing calls are made.
+  // No print job is created because of such an early cancel.
+  SetNumExpectedMessages(/*num=*/2);
+#endif
+
   // Now initiate a system print that would exist concurrently with that.
   StartBasicPrint(web_contents);
+
+#if BUILDFLAG(IS_LINUX)
+  WaitUntilCallbackReceived();
+#endif
 
   const absl::optional<bool>& result = print_view_manager->print_now_result();
   ASSERT_TRUE(result.has_value());
