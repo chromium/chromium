@@ -8090,6 +8090,27 @@
             ]
         }
     ],
+    "NetworkServiceSandboxLinuxAndChromeOS": [
+        {
+            "platforms": [
+                "linux",
+                "chromeos",
+                "chromeos_lacros"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "NetworkServiceSandbox"
+                    ],
+                    "disable_features": [
+                        "NetworkServiceFileAllowlist",
+                        "NetworkServiceSyscallFilter"
+                    ]
+                }
+            ]
+        }
+    ],
     "NeuralPalmRejectionModelForRedrix": [
         {
             "platforms": [
