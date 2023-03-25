@@ -5,8 +5,8 @@
 <translation id="1181037720776840403">Olib tashlash</translation>
 <translation id="125153950246128346">Boshqa varaqni ochish uchun bosing</translation>
 <translation id="1403228085774130835">Yopilgan varaqlar Chrome asosiy menyusidagi Oxirgi varaqlar bandida chiqadi</translation>
-<translation id="1455506303394048917">Bu inkognito varaqlardagi xatti-harakatlaringiz ushbu qurilmadan tozalanadi</translation>
-<translation id="1499635324672558517">Barcha inkognito varaqlar yopilsinmi?</translation>
+<translation id="1455506303394048917">Bu Inkognito varaqlardagi xatti-harakatlaringiz ushbu qurilmadan tozalanadi</translation>
+<translation id="1499635324672558517">Barcha Inkognito varaqlar yopilsinmi?</translation>
 <translation id="1657719826150349398">Varaqni pastga tushirish</translation>
 <translation id="1869137256605757565">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> ta varaq}other{<ph name="TABS_COUNT_MANY" /> ta varaq}}</translation>
 <translation id="2050597508048557928">{TABS_COUNT,plural, =1{Tanlangan <ph name="TABS_COUNT_ONE" /> ta varaqni bukmarklash}other{Tanlangan <ph name="TABS_COUNT_MANY" /> ta varaqni bukmarklash}}</translation>

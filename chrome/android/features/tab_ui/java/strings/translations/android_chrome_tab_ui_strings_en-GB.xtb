@@ -5,8 +5,8 @@
 <translation id="1181037720776840403">Remove</translation>
 <translation id="125153950246128346">Tap to see another tab</translation>
 <translation id="1403228085774130835">You can find your closed tabs in Recent tabs under the Chrome main menu</translation>
-<translation id="1455506303394048917">Your activity in these incognito tabs will be cleared from this device</translation>
-<translation id="1499635324672558517">Close all incognito tabs?</translation>
+<translation id="1455506303394048917">Your activity in these Incognito tabs will be cleared from this device</translation>
+<translation id="1499635324672558517">Close all Incognito tabs?</translation>
 <translation id="1657719826150349398">Move tab down</translation>
 <translation id="1869137256605757565">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> tab}other{<ph name="TABS_COUNT_MANY" /> tabs}}</translation>
 <translation id="2050597508048557928">{TABS_COUNT,plural, =1{Bookmark <ph name="TABS_COUNT_ONE" /> selected tab}other{Bookmark <ph name="TABS_COUNT_MANY" /> selected tabs}}</translation>
