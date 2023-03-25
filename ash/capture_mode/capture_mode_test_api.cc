@@ -124,7 +124,7 @@ bool CaptureModeTestApi::GetAudioRecordingEnabled() const {
 }
 
 void CaptureModeTestApi::FlushRecordingServiceForTesting() {
-  DCHECK(controller_->is_recording_in_progress());
+  DCHECK(controller_->recording_service_remote_.is_bound());
   controller_->recording_service_remote_.FlushForTesting();
 }
 
