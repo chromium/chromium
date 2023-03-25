@@ -125,7 +125,7 @@
       </div>
       <div class="top-stripe left-stripe buttons circle">
         <button id="back-to-review-document" tabindex="0"
-                i18n-aria="back_button"></button>
+                i18n-label="back_button"></button>
       </div>
       <div class="top-stripe right-stripe circle buttons">
         <input id="toggle-mic" type="checkbox" tabindex="0"
@@ -614,12 +614,14 @@
             <button class="text-button pill dark inkdrop secondary"
               i18n-text="cancel_review_button" tabindex="0"></button>
             <div class="separator"></div>
+            <button class="icon-button dark inkdrop" id="doc-scan-menu-button"
+              tabindex="0" i18n-label="doc_scan_menu_button"></button>
             <button class="icon-button dark inkdrop"
-              i18n-aria="add_new_page_button" tabindex="0"></button>
+              i18n-label="add_new_page_button" tabindex="0"></button>
             <button class="icon-button dark inkdrop"
-              i18n-aria="label_share" tabindex="0"></button>
+              i18n-label="label_share" tabindex="0"></button>
             <button class="icon-button dark inkdrop"
-              i18n-aria="fix_page_button" tabindex="0"></button>
+              i18n-label="fix_page_button" tabindex="0"></button>
           </div>
           <div class="button-group right">
             <button class="text-button pill dark inkdrop secondary"
@@ -645,9 +647,9 @@
         <div class="buttons-container">
           <div class="review-crop-rotation-button-group button-group">
             <button class="icon-button dark inkdrop"
-              i18n-aria="rotate_clockwise_button" tabindex="0"></button>
+              i18n-label="rotate_clockwise_button" tabindex="0"></button>
             <button class="icon-button dark inkdrop"
-              i18n-aria="rotate_counterclockwise_button" tabindex="0"></button>
+              i18n-label="rotate_counterclockwise_button" tabindex="0"></button>
           </div>
           <div class="button-group right">
             <button class="text-button pill dark inkdrop primary"
@@ -660,8 +662,8 @@
       <div class="page" tabindex="-1" aria-selected="false" role="tab"
         i18n-aria="select_page_button">
         <div class="delete-container">
-          <button class="delete" i18n-aria="delete_page_button"
-                  tabindex="0"></button>
+          <button class="delete icon-button dark inkdrop"
+                  i18n-label="delete_page_button" tabindex="0"></button>
         </div>
         <div class="thumbnail-container">
           <img class="thumbnail">
@@ -675,6 +677,12 @@
     </template>
     <template id="menu-item">
       <li class="item" role="menuitem"></li>
+    </template>
+    <template id="doc-scan-menu-item-content">
+      <div class="menu-item-content">
+        <img alt="" class="menu-item-icon">
+        <div class="menu-item-label"></div>
+      </div>
     </template>
   </body>
 </html>

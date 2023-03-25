@@ -33,6 +33,7 @@ export enum I18nString {
   DELETE_PAGE_MESSAGE = 'delete_page_message',
   DIALOG_CANCEL_BUTTON = 'dialog_cancel_button',
   DIALOG_OK_BUTTON = 'dialog_ok_button',
+  DOC_SCAN_MENU_BUTTON = 'doc_scan_menu_button',
   DOCUMENT_CORNER_MOVE_DESC = 'document_corner_move_desc',
   ERROR_MSG_CAMERA_PAUSED = 'error_msg_camera_paused',
   ERROR_MSG_EMPTY_RECORDING = 'error_msg_empty_recording',

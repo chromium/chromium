@@ -53,6 +53,10 @@ export enum Mode {
   PREVIEW,
 }
 
+// The class to set on page element when the page is selected.
+const ACTIVE_PAGE_CLASS = 'active';
+const DELETE_PAGE_BUTTON_SELECTOR = '.delete';
+
 /**
  * View controller for reviewing document scanning.
  */
@@ -83,17 +87,6 @@ export class DocumentReview extends View {
    */
   private mode = Mode.PREVIEW;
 
-  private readonly classes = {
-    active: 'active',
-    delete: 'delete',
-    page: 'page',
-    pages: 'document-pages',
-    preview: 'document-preview',
-    thumbnail: 'thumbnail',
-  } as const;
-
-  private readonly pageTemplateSelector = '#document-review-page';
-
   private readonly modes: {
     [Mode.FIX]: DocumentFixMode,
     [Mode.PREVIEW]: DocumentPreviewMode,
@@ -118,13 +111,14 @@ export class DocumentReview extends View {
   private fixCount = 0;
 
   constructor(protected readonly resultSaver: ResultSaver) {
-    super(
-        ViewName.DOCUMENT_REVIEW,
-        {dismissByEsc: true, defaultFocusSelector: 'primary'});
+    super(ViewName.DOCUMENT_REVIEW, {
+      dismissByEsc: true,
+      defaultFocusSelector: '.show .primary',
+    });
     this.pagesElement =
-        dom.getFrom(this.root, `.${this.classes.pages}`, HTMLDivElement);
+        dom.getFrom(this.root, '.document-pages', HTMLDivElement);
     this.previewElement =
-        dom.getFrom(this.root, `.${this.classes.preview}`, HTMLDivElement);
+        dom.getFrom(this.root, '.document-preview', HTMLDivElement);
     this.pagesElement.addEventListener('keydown', (e) => {
       const key = getKeyboardShortcut(e);
       if (key === ' ') {
@@ -134,14 +128,14 @@ export class DocumentReview extends View {
     });
     this.pagesElement.addEventListener('click', async (e: MouseEvent) => {
       const target = assertInstanceof(e.target, HTMLElement);
-      const pageElement = target.closest(`.${this.classes.page}`);
+      const pageElement = target.closest('.page');
       if (pageElement === null) {
         return;
       }
       const index = Array.from(this.pagesElement.children).indexOf(pageElement);
       await this.waitForUpdatingPage();
       const clickOnDeleteButton =
-          target.closest(`.${this.classes.delete}`) !== null;
+          target.closest(DELETE_PAGE_BUTTON_SELECTOR) !== null;
       if (clickOnDeleteButton) {
         await this.onDeletePage(index);
         return;
@@ -246,7 +240,7 @@ export class DocumentReview extends View {
   }
 
   private async addPageView(blob: Blob): Promise<void> {
-    const fragment = instantiateTemplate(this.pageTemplateSelector);
+    const fragment = instantiateTemplate('#document-review-page');
     await this.updatePageView(fragment, blob);
     this.pagesElement.appendChild(fragment);
   }
@@ -311,6 +305,7 @@ export class DocumentReview extends View {
       this.modes[mode].show();
       this.mode = mode;
     }
+    this.modes[this.mode].focusDefaultElement();
   }
 
   /**
@@ -433,13 +428,13 @@ export class DocumentReview extends View {
   private selectPageView(index: number): void {
     for (let i = 0; i < this.pagesElement.children.length; i++) {
       const pageElement = this.pagesElement.children[i];
-      pageElement.classList.remove(this.classes.active);
+      pageElement.classList.remove(ACTIVE_PAGE_CLASS);
       pageElement.setAttribute('aria-selected', 'false');
       pageElement.setAttribute('tabindex', '-1');
     }
     const activePageElement =
         assertInstanceof(this.pagesElement.children[index], HTMLElement);
-    activePageElement.classList.add(this.classes.active);
+    activePageElement.classList.add(ACTIVE_PAGE_CLASS);
     activePageElement.setAttribute('aria-selected', 'true');
     activePageElement.setAttribute('tabindex', '0');
     activePageElement.focus();
@@ -470,7 +465,7 @@ export class DocumentReview extends View {
   }
 
   private getPageImageElement(node: ParentNode) {
-    return dom.getFrom(node, `.${this.classes.thumbnail}`, HTMLImageElement);
+    return dom.getFrom(node, '.thumbnail', HTMLImageElement);
   }
 
   protected override leaving(): boolean {
@@ -537,7 +532,7 @@ export class DocumentReview extends View {
   private updateDeleteButtonLabels() {
     for (let i = 0; i < this.pagesElement.children.length; i++) {
       const deleteButton = dom.getFrom(
-          this.pagesElement.children[i], `.${this.classes.delete}`,
+          this.pagesElement.children[i], DELETE_PAGE_BUTTON_SELECTOR,
           HTMLElement);
       deleteButton.setAttribute(
           'aria-label', getI18nMessage(I18nString.DELETE_PAGE_BUTTON, i + 1));

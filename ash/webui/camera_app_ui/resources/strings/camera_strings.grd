@@ -669,6 +669,9 @@ If your feedback is about image or video quality, please attach a sample photo o
       <message desc="Label for scanned document page tab list." name="IDS_SCANNED_PAGE_LIST">
         Scanned page list
       </message>
+      <message desc="Label for the button that opens actions menu in the document scanning feature view." name="IDS_DOC_SCAN_MENU_BUTTON">
+        Actions
+      </message>
     </messages>
   </release>
 </grit>

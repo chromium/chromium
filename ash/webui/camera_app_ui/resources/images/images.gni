@@ -47,6 +47,7 @@ in_app_images = [
   "document_review_delete_page.svg",
   "document_review_fix_page.svg",
   "external_link_icon.svg",
+  "more_horizontal.svg",
   "new_feature_toast_icon.svg",
   "ptz_pan_left.svg",
   "ptz_pan_right.svg",

@@ -42,6 +42,7 @@ const struct {
     {"delete_page_message", IDS_DELETE_PAGE_MESSAGE},
     {"dialog_cancel_button", IDS_DIALOG_CANCEL_BUTTON},
     {"dialog_ok_button", IDS_DIALOG_OK_BUTTON},
+    {"doc_scan_menu_button", IDS_DOC_SCAN_MENU_BUTTON},
     {"document_corner_move_desc", IDS_DOCUMENT_CORNER_MOVE_DESC},
     {"error_msg_camera_paused", IDS_ERROR_MSG_CAMERA_PAUSED},
     {"error_msg_empty_recording", IDS_ERROR_MSG_EMPTY_RECORDING},

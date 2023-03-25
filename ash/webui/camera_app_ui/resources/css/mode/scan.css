@@ -311,7 +311,6 @@ body.enable-scan-barcode .barcode-scan-box {
   white-space: nowrap;
 }
 
-
 body.doc-mode-reviewing :is(#back-to-review-document, #document-page-count) {
   visibility: visible;
 }
@@ -323,7 +322,7 @@ body.doc-mode-reviewing :is(#back-to-review-document, #document-page-count) {
 
 #document-page-count {
   align-items: center;
-  color: rgb(232, 234, 237);
+  color: var(--grey-200);
   display: flex;
   font-size: 12px;
   justify-content: center;
@@ -332,14 +331,13 @@ body.doc-mode-reviewing :is(#back-to-review-document, #document-page-count) {
 
 #view-document-review {
   --buttons-container-height: calc(var(--bottom-line) * 2);
-  --preview-area-padding-inline-end: calc(var(--right-line) * 2);
-  --preview-area-padding-inline-start: calc(var(--left-line) * 2);
+  --preview-area-padding-inline-end: 32px;
+  --preview-area-padding-inline-start: 32px;
   display: flex;
 }
 
 #view-document-review:has(.page:nth-child(2)) {
-  --preview-area-padding-inline-end: 22px;
-  --preview-area-padding-inline-start: 26px;
+  --preview-area-padding-inline-start: 8px;
 }
 
 #view-document-review .document-pages {
@@ -370,6 +368,7 @@ body.doc-mode-reviewing :is(#back-to-review-document, #document-page-count) {
   display: flex;
   justify-content: center;
   position: relative;
+  width: 48px;
 }
 
 #view-document-review .delete-container::before {
@@ -377,16 +376,14 @@ body.doc-mode-reviewing :is(#back-to-review-document, #document-page-count) {
   color: var(--grey-200);
   content: counter(page-count);
   counter-increment: page-count;
-  font: 400 12px/28px Roboto;
+  font-size: 13px;
   position: absolute;
 }
 
 #view-document-review .delete {
-  background: url(/images/document_review_delete_page.svg) no-repeat center;
+  background-image: url(/images/document_review_delete_page.svg);
   border-radius: 50%;
-  height: 48px;
   visibility: hidden;
-  width: 48px;
 }
 
 #view-document-review .page.active .delete {
@@ -397,9 +394,9 @@ body.doc-mode-reviewing :is(#back-to-review-document, #document-page-count) {
   align-items: center;
   display: flex;
   justify-content: center;
-  max-height: 120px;
-  min-height: 96px;
-  width: 120px;
+  max-height: 90px;
+  min-height: 60px;
+  width: 60px;
 }
 
 #view-document-review .thumbnail {
@@ -439,6 +436,11 @@ body.doc-mode-reviewing :is(#back-to-review-document, #document-page-count) {
   inset-inline-end: 0;
 }
 
+#view-document-review .icon-button {
+  height: 32px;
+  width: 32px;
+}
+
 .document-preview-mode {
   display: none;
 }
@@ -458,11 +460,6 @@ body.doc-mode-reviewing :is(#back-to-review-document, #document-page-count) {
   max-width: 100%;
 }
 
-.document-preview-mode .icon-button {
-  height: 32px;
-  width: 32px;
-}
-
 .document-preview-mode .preview-area {
   align-items: center;
   display: flex;
@@ -473,16 +470,28 @@ body.doc-mode-reviewing :is(#back-to-review-document, #document-page-count) {
   display: none;
 }
 
-.document-preview-mode button[i18n-aria=add_new_page_button] {
+.document-preview-mode button[i18n-label=add_new_page_button] {
   background-image: url(/images/document_review_add_page.svg);
+  display: none;
 }
 
-.document-preview-mode button[i18n-aria=label_share] {
+.document-preview-mode button[i18n-label=label_share] {
   background-image: url(/images/document_review_share.svg);
+  display: none;
 }
 
-.document-preview-mode button[i18n-aria=fix_page_button] {
+.document-preview-mode button[i18n-label=fix_page_button] {
   background-image: url(/images/document_review_fix_page.svg);
+  display: none;
+}
+
+.document-preview-mode #doc-scan-menu-button {
+  background-image: url(/images/more_horizontal.svg);
+}
+
+.document-preview-mode .menu-item-content {
+  display: flex;
+  gap: 16px;
 }
 
 .document-fix-mode {
@@ -566,11 +575,6 @@ body.keyboard-navigation .document-fix-mode .dot:focus::after {
   width: var(--focus-size);
 }
 
-.document-fix-mode .icon-button {
-  height: 32px;
-  width: 32px;
-}
-
 .document-fix-mode .review-crop-rotation-button-group {
   bottom: 0;
   left: 50%;
@@ -579,10 +583,28 @@ body.keyboard-navigation .document-fix-mode .dot:focus::after {
   transform: translateX(-50%);
 }
 
-.document-fix-mode button[i18n-aria=rotate_clockwise_button] {
+.document-fix-mode button[i18n-label=rotate_clockwise_button] {
   background-image: url(/images/crop_document_clockwise_rotate.svg);
 }
 
-.document-fix-mode button[i18n-aria=rotate_counterclockwise_button] {
+.document-fix-mode button[i18n-label=rotate_counterclockwise_button] {
   background-image: url(/images/crop_document_counterclockwise_rotate.svg);
+}
+
+@media (min-width: 680px) {
+  #view-document-review .thumbnail-container {
+    max-height: 120px;
+    min-height: 96px;
+    width: 120px;
+  }
+  #view-document-review :is(
+    button[i18n-label=label_share],
+    button[i18n-label=fix_page_button],
+    button[i18n-label=add_new_page_button]
+  ) {
+    display: block;
+  }
+  .document-preview-mode #doc-scan-menu-button {
+    display: none;
+  }
 }
