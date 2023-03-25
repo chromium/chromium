@@ -20,6 +20,7 @@
 #include "cc/trees/effect_node.h"
 #include "cc/trees/layer_tree_host.h"
 #include "cc/trees/layer_tree_settings.h"
+#include "cc/trees/property_tree.h"
 #include "cc/trees/scroll_node.h"
 #include "cc/trees/transform_node.h"
 #include "cc/view_transition/view_transition_request.h"
@@ -4652,6 +4653,36 @@ TEST_P(PaintArtifactCompositorTest, AddNonCompositedScrollNodes) {
   WTF::Vector<const TransformPaintPropertyNode*> scroll_translation_nodes;
   scroll_translation_nodes.push_back(&scroll_state.Transform());
 
+  Update(TestPaintArtifact()
+             .Chunk(1)
+             .Properties(scroll_state.Transform(), c0(), e0())
+             .Build(),
+         ViewportProperties(), scroll_translation_nodes);
+
+  const auto& scroll_tree = GetPropertyTrees().scroll_tree();
+  auto* scroll_node = scroll_tree.FindNodeFromElementId(
+      scroll_state.Transform().ScrollNode()->GetCompositorElementId());
+  EXPECT_TRUE(scroll_node);
+  EXPECT_FALSE(scroll_node->is_composited);
+}
+
+TEST_P(PaintArtifactCompositorTest, AddUnpaintedNonCompositedScrollNodes) {
+  // This test requires scroll unification.
+  if (!base::FeatureList::IsEnabled(::features::kScrollUnification)) {
+    return;
+  }
+
+  const uint32_t main_thread_scrolling_reason =
+      cc::MainThreadScrollingReason::kNotOpaqueForTextAndLCDText;
+  ASSERT_TRUE(cc::MainThreadScrollingReason::HasNonCompositedScrollReasons(
+      main_thread_scrolling_reason));
+  auto scroll_state =
+      ScrollState1(PropertyTreeState::Root(), CompositingReason::kNone,
+                   main_thread_scrolling_reason);
+
+  WTF::Vector<const TransformPaintPropertyNode*> scroll_translation_nodes;
+  scroll_translation_nodes.push_back(&scroll_state.Transform());
+
   TestPaintArtifact artifact;
   Update(artifact.Build(), ViewportProperties(), scroll_translation_nodes);
 
@@ -4660,6 +4691,7 @@ TEST_P(PaintArtifactCompositorTest, AddNonCompositedScrollNodes) {
       scroll_state.Transform().ScrollNode()->GetCompositorElementId());
   EXPECT_TRUE(scroll_node);
   EXPECT_FALSE(scroll_node->is_composited);
+  EXPECT_EQ(scroll_node->transform_id, cc::kInvalidPropertyNodeId);
 }
 
 TEST_P(PaintArtifactCompositorTest, RepaintIndirectScrollHitTest) {

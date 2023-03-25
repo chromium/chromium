@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<style>
+  #scroller {
+    position: absolute;
+    overflow: scroll;
+    background: yellow;
+    left: 10px;
+    top: 10px;
+    width: 100px;
+    height: 0px; /* 0-height causes scroller to be unpainted. */
+  }
+</style>
+<div id="scroller"></div>
+
+<body>
+  <script>
+    scroller.animate(
+      [
+        {
+          "transform": "translateX(-10px)",
+          "opacity": "0.8",
+        },
+        {
+          "transform": "translateX(-20px)",
+          "opacity": "0.9",
+        },
+      ], { duration: 1000 });
+    if (window.testRunner)
+      testRunner.dumpAsText();
+  </script>
+  This test passes if it doesn't crash.
+</body>
+
+</html>

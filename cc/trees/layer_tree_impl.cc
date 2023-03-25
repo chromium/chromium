@@ -238,10 +238,13 @@ void LayerTreeImpl::DidUpdateScrollOffset(ElementId id) {
       !base::FeatureList::IsEnabled(features::kScrollUnification) ||
       scroll_tree.CanRealizeScrollsOnCompositor(*scroll_node);
 
-  DCHECK(scroll_node->transform_id != kInvalidPropertyNodeId);
-  TransformTree& transform_tree = property_trees()->transform_tree_mutable();
-  auto* transform_node = transform_tree.Node(scroll_node->transform_id);
-  if (should_realize_scroll_on_compositor) {
+  // A ScrollNode may have an invalid transform_id if its scroller is
+  // unpainted. Since an unpainted scroller would not be visible to the
+  // user, realizing this scroll is a nop.
+  if (should_realize_scroll_on_compositor &&
+      scroll_node->transform_id != kInvalidPropertyNodeId) {
+    TransformTree& transform_tree = property_trees()->transform_tree_mutable();
+    auto* transform_node = transform_tree.Node(scroll_node->transform_id);
     if (transform_node->scroll_offset !=
         scroll_tree.current_scroll_offset(id)) {
       transform_node->scroll_offset = scroll_tree.current_scroll_offset(id);

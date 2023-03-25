@@ -214,12 +214,12 @@ void PropertyTreeManager::DirectlySetScrollOffset(
   }
 }
 
-void PropertyTreeManager::EnsureCompositorScrollNodes(
+void PropertyTreeManager::EnsureCompositorScrollTranslationNodes(
     const Vector<const TransformPaintPropertyNode*>& scroll_translation_nodes) {
   DCHECK(base::FeatureList::IsEnabled(features::kScrollUnification));
 
   for (auto* node : scroll_translation_nodes)
-    EnsureCompositorScrollNode(*node);
+    EnsureCompositorScrollAndTransformNode(*node);
 }
 
 void PropertyTreeManager::SetupRootTransformNode() {
@@ -425,7 +425,8 @@ int PropertyTreeManager::EnsureCompositorTransformNode(
         transform_tree_.EnsureStickyPositionData(id);
     sticky_data.constraints = *sticky_constraint;
     const auto& scroll_ancestor = transform_node.NearestScrollTranslationNode();
-    sticky_data.scroll_ancestor = EnsureCompositorScrollNode(scroll_ancestor);
+    sticky_data.scroll_ancestor =
+        EnsureCompositorScrollAndTransformNode(scroll_ancestor);
     const auto& scroll_ancestor_compositor_node =
         *scroll_tree_.Node(sticky_data.scroll_ancestor);
     if (scroll_ancestor_compositor_node.scrolls_outer_viewport)
@@ -458,6 +459,7 @@ int PropertyTreeManager::EnsureCompositorTransformNode(
     compositor_node.element_id = compositor_element_id;
   }
 
+  transform_node.SetCcNodeId(new_sequence_number_, id);
   // If this transform is a scroll offset translation, create the associated
   // compositor scroll property node and adjust the compositor transform node's
   // scroll offset.
@@ -465,8 +467,7 @@ int PropertyTreeManager::EnsureCompositorTransformNode(
   if (auto* scroll_node = transform_node.ScrollNode()) {
     compositor_node.scrolls = true;
     compositor_node.should_be_snapped = true;
-    CreateCompositorScrollNode(*scroll_node, compositor_node,
-                               transform_node.HasDirectCompositingReasons());
+    EnsureCompositorScrollNode(*scroll_node, transform_node);
   }
 
   compositor_node.visible_frame_element_id =
@@ -485,7 +486,6 @@ int PropertyTreeManager::EnsureCompositorTransformNode(
   }
   compositor_node.parent_frame_id = parent_frame_id;
 
-  transform_node.SetCcNodeId(new_sequence_number_, id);
   transform_tree_.set_needs_update(true);
 
   return id;
@@ -530,11 +530,48 @@ int PropertyTreeManager::EnsureCompositorClipNode(
   return id;
 }
 
-void PropertyTreeManager::CreateCompositorScrollNode(
+static const TransformPaintPropertyNode* GetScrollTranslationNodeForParent(
     const ScrollPaintPropertyNode& scroll_node,
-    const cc::TransformNode& scroll_offset_translation,
-    bool is_composited) {
-  DCHECK(!scroll_tree_.Node(scroll_node.CcNodeId(new_sequence_number_)));
+    const TransformPaintPropertyNode& scroll_translation_node) {
+  const ScrollPaintPropertyNode* parent_scroll_node = scroll_node.Parent();
+  const TransformPaintPropertyNode* parent_scroll_translation =
+      &scroll_translation_node.UnaliasedParent()
+           ->NearestScrollTranslationNode();
+
+  if (parent_scroll_node != parent_scroll_translation->ScrollNode()) {
+    // The transform tree and the scroll tree have different hierarchies
+    // because of fixed-position elements.
+    parent_scroll_translation = scroll_translation_node.UnaliasedParent();
+    while (parent_scroll_translation) {
+      const auto* scroll_translation_for_fixed =
+          parent_scroll_translation->ScrollTranslationForFixed();
+      if (scroll_translation_for_fixed &&
+          scroll_translation_for_fixed->ScrollNode() == parent_scroll_node) {
+        parent_scroll_translation = scroll_translation_for_fixed;
+        break;
+      }
+      parent_scroll_translation = parent_scroll_translation->UnaliasedParent();
+    }
+  }
+  return parent_scroll_translation;
+}
+
+void PropertyTreeManager::EnsureCompositorScrollNode(
+    const ScrollPaintPropertyNode& scroll_node,
+    const TransformPaintPropertyNode& scroll_translation_node) {
+  if (scroll_tree_.Node(scroll_node.CcNodeId(new_sequence_number_))) {
+    return;
+  }
+
+  const ScrollPaintPropertyNode* parent_scroll_node = scroll_node.Parent();
+  // Look for the ScrollTranslation node corresponding to its parent scroll
+  // node.
+  const auto* parent_scroll_translation =
+      GetScrollTranslationNodeForParent(scroll_node, scroll_translation_node);
+
+  DCHECK(parent_scroll_translation);
+  DCHECK_EQ(parent_scroll_node, parent_scroll_translation->ScrollNode());
+  EnsureCompositorScrollNode(*parent_scroll_node, *parent_scroll_translation);
 
   int parent_id = scroll_node.Parent()->CcNodeId(new_sequence_number_);
   // Compositor transform nodes up to scroll_offset_translation must exist.
@@ -572,16 +609,19 @@ void PropertyTreeManager::CreateCompositorScrollNode(
     scroll_tree_.SetElementIdForNodeId(id, compositor_element_id);
   }
 
-  compositor_node.transform_id = scroll_offset_translation.id;
-  compositor_node.is_composited = is_composited;
+  compositor_node.transform_id =
+      scroll_translation_node.CcNodeId(new_sequence_number_);
+  compositor_node.is_composited =
+      scroll_translation_node.HasDirectCompositingReasons();
 
   scroll_node.SetCcNodeId(new_sequence_number_, id);
 
-  scroll_tree_.SetScrollOffset(compositor_element_id,
-                               scroll_offset_translation.scroll_offset);
+  scroll_tree_.SetScrollOffset(
+      compositor_element_id, gfx::PointAtOffsetFromOrigin(
+                                 -scroll_translation_node.Get2dTranslation()));
 }
 
-int PropertyTreeManager::EnsureCompositorScrollNode(
+int PropertyTreeManager::EnsureCompositorScrollAndTransformNode(
     const TransformPaintPropertyNode& scroll_offset_translation) {
   // TODO(ScrollUnification): Remove this function and let
   // EnsureCompositorScrollNodes() call EnsureCompositorTransformNode() and
@@ -596,14 +636,16 @@ int PropertyTreeManager::EnsureCompositorScrollNode(
 
 int PropertyTreeManager::EnsureCompositorInnerScrollNode(
     const TransformPaintPropertyNode& scroll_offset_translation) {
-  int node_id = EnsureCompositorScrollNode(scroll_offset_translation);
+  int node_id =
+      EnsureCompositorScrollAndTransformNode(scroll_offset_translation);
   scroll_tree_.Node(node_id)->scrolls_inner_viewport = true;
   return node_id;
 }
 
 int PropertyTreeManager::EnsureCompositorOuterScrollNode(
     const TransformPaintPropertyNode& scroll_offset_translation) {
-  int node_id = EnsureCompositorScrollNode(scroll_offset_translation);
+  int node_id =
+      EnsureCompositorScrollAndTransformNode(scroll_offset_translation);
   scroll_tree_.Node(node_id)->scrolls_outer_viewport = true;
   return node_id;
 }
@@ -645,7 +687,7 @@ void PropertyTreeManager::EmitClipMaskLayer() {
       root_layer_.property_tree_sequence_number());
   mask_layer->SetTransformTreeIndex(
       EnsureCompositorTransformNode(*current_.transform));
-  int scroll_id = EnsureCompositorScrollNode(
+  int scroll_id = EnsureCompositorScrollAndTransformNode(
       current_.transform->NearestScrollTranslationNode());
   mask_layer->SetScrollTreeIndex(scroll_id);
   mask_layer->SetClipTreeIndex(mask_effect.clip_id);

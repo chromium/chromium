@@ -1274,6 +1274,7 @@ InputHandler::ScrollStatus InputHandler::TryScroll(
     const ScrollTree& scroll_tree,
     ScrollNode* scroll_node) const {
   DCHECK(!base::FeatureList::IsEnabled(features::kScrollUnification));
+  DCHECK(scroll_node->transform_id != kInvalidPropertyNodeId);
 
   InputHandler::ScrollStatus scroll_status;
   scroll_status.main_thread_scrolling_reasons =
@@ -1616,6 +1617,10 @@ bool InputHandler::CalculateLocalScrollDeltaAndStartPoint(
     const gfx::Vector2dF& viewport_delta,
     gfx::Vector2dF* out_local_scroll_delta,
     gfx::PointF* out_local_start_point /*= nullptr*/) {
+  if (scroll_node.transform_id == kInvalidPropertyNodeId) {
+    return false;
+  }
+
   // Layers with non-invertible screen space transforms should not have passed
   // the scroll hit test in the first place.
   const gfx::Transform screen_space_transform =

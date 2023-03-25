@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1">
+<script src="../../resources/testharness.js"></script>
+<script src="../../resources/testharnessreport.js"></script>
+<script src="../../resources/testdriver.js"></script>
+<script src="../../resources/testdriver-actions.js"></script>
+<script src="../../resources/testdriver-vendor.js"></script>
+<script src="../../resources/gesture-util.js"></script>
+
+<style>
+  #scroller {
+    width: 100px;
+    height: 100px;
+    overflow: scroll;
+    position: relative;
+    background-color: red;
+  }
+
+  #spacer {
+    width: 100px;
+    height: 1000px;
+    background-color: gray;
+    border: solid 1px black;
+  }
+</style>
+
+<body onload="runTest()">
+  <div id="scroller">
+    <div id="spacer"></div>
+  </div>
+  <script>
+
+    function resetScrollerStyle() {
+      scroller.style.transform = '';
+    }
+
+    function listener() {
+      if (scroller.style.transform == '') {
+        scroller.style.transform = 'translateY(1000vh)';
+      }
+    }
+
+    function runTest() {
+      promise_test(async (t) => {
+        await waitForScrollReset(scroller);
+        resetScrollerStyle();
+        waitForCompositorCommit();
+
+        scroller.addEventListener('scroll', listener);
+        let scroller_rect = scroller.getBoundingClientRect();
+        let y = (scroller_rect.top + scroller_rect.bottom) / 2;
+        let x = (scroller_rect.left + scroller_rect.right) / 2;
+
+        let scrollend_promise = waitForScrollendEvent(scroller);
+        await swipe(y - scroller_rect.top,
+          x,
+          y,
+          "up",
+          SPEED_INSTANT /* touch_velocity, fast enough to cause fling */,
+          0             /* fling_velocity, should be zero for touch */,
+          GestureSourceType.TOUCH_INPUT);
+        await scrollend_promise;
+
+        // In the short-term, for a fling, we are okay with simply knowing
+        // that a scroll happened.
+        // TODO(awogbemila): In the long-term, we want to know that the scroll
+        // was completed so this should test for more than just that a scroll
+        // happened.
+        assert_true(scroller.scrollTop > 0, 'fling should happen');
+        assert_greater_than(scroller.getBoundingClientRect().top,
+                            visualViewport.height,
+                            "scroller should be off-screen");
+
+        // Bring the scroller back on-screen and verify that touch-scrolling works.
+        scroller.removeEventListener('scroll', listener);
+        resetScrollerStyle();
+        await waitForScrollReset(scroller);
+        await waitForCompositorCommit();
+        assert_equals(scroller.scrollTop, 0);
+
+        scrollend_promise = waitForScrollendEvent(scroller);
+        await smoothScroll(y - scroller_rect.top,
+          x,
+          y,
+          GestureSourceType.TOUCH_INPUT,
+          "down");
+        await scrollend_promise;
+
+        assert_greater_than(scroller.getBoundingClientRect().top,
+                            visualViewport.offsetTop,
+                            "scroller on-screen, scroller top > viewport top");
+        assert_greater_than(visualViewport.offsetTop + visualViewport.height,
+                            scroller.getBoundingClientRect().bottom,
+                            "scroller on-screen, scroller bottom < viewport bottom.");
+        assert_equals(scroller.scrollTop, y - scroller_rect.top);
+      }, 'fling');
+    }
+  </script>
+</body>

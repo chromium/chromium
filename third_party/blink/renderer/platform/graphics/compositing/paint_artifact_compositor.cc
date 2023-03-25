@@ -420,6 +420,15 @@ void PaintArtifactCompositor::LayerizeGroup(
   // O(p) due to copying the chunk list. Subtotal: O((qd + p)d) = O(qd^2 + pd)
   // Assuming p > d, the total complexity would be O(pqd + qd^2 + pd) = O(pqd)
   while (chunk_cursor != artifact->PaintChunks().end()) {
+    // Track painted ScrollTranslation nodes. with ScrollUnification enabled,
+    // PaintArtifactCompositor::Update uses this to know which
+    // ScrollTranslation nodes we need to create composited Transform nodes
+    // for.
+    if (chunk_cursor->hit_test_data &&
+        chunk_cursor->hit_test_data->scroll_translation) {
+      scroll_translation_nodes_.insert(
+          chunk_cursor->hit_test_data->scroll_translation.get());
+    }
     // Look at the effect node of the next chunk. There are 3 possible cases:
     // A. The next chunk belongs to the current group but no subgroup.
     // B. The next chunk does not belong to the current group.
@@ -680,6 +689,7 @@ void PaintArtifactCompositor::Update(
   wtf_size_t old_size = pending_layers_.size();
   OldPendingLayerMatcher old_pending_layer_matcher(std::move(pending_layers_));
   pending_layers_.reserve(old_size);
+  scroll_translation_nodes_.clear();
 
   // Make compositing decisions, storing the result in |pending_layers_|.
   CollectPendingLayers(std::move(artifact));
@@ -692,11 +702,6 @@ void PaintArtifactCompositor::Update(
 
   UpdateCompositorViewportProperties(viewport_properties, property_tree_manager,
                                      host);
-
-  // With ScrollUnification, we ensure a cc::ScrollNode for all
-  // |scroll_translation_nodes|.
-  if (unification_enabled)
-    property_tree_manager.EnsureCompositorScrollNodes(scroll_translation_nodes);
 
   for (auto& entry : synthesized_clip_cache_)
     entry.in_use = false;
@@ -737,7 +742,8 @@ void PaintArtifactCompositor::Update(
     const auto& scroll_translation =
         NearestScrollTranslationForLayer(pending_layer);
     int scroll_id =
-        property_tree_manager.EnsureCompositorScrollNode(scroll_translation);
+        property_tree_manager.EnsureCompositorScrollAndTransformNode(
+            scroll_translation);
 
     layer_list_builder.Add(&layer);
 
@@ -758,6 +764,35 @@ void PaintArtifactCompositor::Update(
       host->property_trees()
           ->effect_tree_mutable()
           .AddTransitionPseudoElementEffectId(effect_id);
+    }
+  }
+
+  if (unification_enabled) {
+    // We want to create a cc::TransformNode only if the scroller is painted.
+    // This avoids violating an assumption in CompositorAnimations that an
+    // element has property nodes for either all or none of its animating
+    // properties (see crbug.com/1385575).
+    // However, we want to create a cc::ScrollNode regardless of whether the
+    // scroller is painted. This ensures that scroll offset animations aren't
+    // affected by becoming unpainted."
+    Vector<const TransformPaintPropertyNode*> scroll_node_only;
+    for (auto* node : scroll_translation_nodes) {
+      if (scroll_translation_nodes_.Contains(node)) {
+        property_tree_manager.EnsureCompositorScrollAndTransformNode(*node);
+      } else {
+        // We can't ensure ScrollNode-only scroll translation nodes yet because
+        // we don't have a guarantee about the order of
+        // |scroll_translation_nodes|. If an unpainted child is encountered
+        // before its parent, EnsureCompositorScrollNode will create its parent
+        // node with invalid transform_id.
+        scroll_node_only.push_back(node);
+      }
+    }
+
+    // Ensure ScrollNode-only scroll translation nodes.
+    for (auto* node : scroll_node_only) {
+      property_tree_manager.EnsureCompositorScrollNode(*node->ScrollNode(),
+                                                       *node);
     }
   }
 
@@ -786,6 +821,7 @@ void PaintArtifactCompositor::Update(
   host->property_trees()->ResetCachedData();
   previous_update_for_testing_ = PreviousUpdateType::kFull;
   needs_update_ = false;
+  scroll_translation_nodes_.clear();
 
   UpdateDebugInfo();
 

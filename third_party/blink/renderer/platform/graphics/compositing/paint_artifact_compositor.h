@@ -22,6 +22,7 @@
 #include "third_party/blink/renderer/platform/graphics/paint/geometry_mapper.h"
 #include "third_party/blink/renderer/platform/graphics/paint/paint_chunk_subset.h"
 #include "third_party/blink/renderer/platform/graphics/paint/paint_controller.h"
+#include "third_party/blink/renderer/platform/graphics/paint/transform_paint_property_node.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 
@@ -339,6 +340,10 @@ class PLATFORM_EXPORT PaintArtifactCompositor final
   using PendingLayers = Vector<PendingLayer, 0>;
   class OldPendingLayerMatcher;
   PendingLayers pending_layers_;
+
+  // ScrollTranslationNodes of the PaintArtifact which are painted.
+  // This member variable is only used in PaintArtifactCompositor::Update.
+  HashSet<const TransformPaintPropertyNode*> scroll_translation_nodes_;
 
   friend class StubChromeClientForCAP;
   friend class PaintArtifactCompositorTest;
