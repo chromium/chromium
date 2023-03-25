@@ -8,6 +8,7 @@ css_files = [
   "flash.css",
   "inkdrop.css",
   "main.css",
+  "menu.css",
   "mode/mode.css",
   "mode/scan.css",
   "mode/video.css",

@@ -95,9 +95,12 @@ const KEYBOARD_KEYS = [
   'AudioVolumeUp',
   'AudioVolumeDown',
   'BrowserBack',
-  'Delete',
+  'Delete',  // Alt + Backspace
+  'End',     // Ctrl + Alt + ArrowDown
   'Enter',
   'Escape',
+  'Home',  // Ctrl + Alt + ArrowUp
+  'Tab',
 ] as const;
 const KEYBOARD_KEY_SET = new Set(KEYBOARD_KEYS);
 type KeyboardKey = typeof KEYBOARD_KEYS[number];

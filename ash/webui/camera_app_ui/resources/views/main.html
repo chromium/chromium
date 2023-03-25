@@ -8,6 +8,7 @@
     <meta charset="utf-8">
     <!-- main.css contains all :root styles require to be loaded first. -->
     <link rel="stylesheet" href="/css/main.css">
+    <link rel="stylesheet" href="/css/menu.css">
     <link rel="stylesheet" href="/css/button.css">
     <link rel="stylesheet" href="/css/custom_toast.css">
     <link rel="stylesheet" href="/css/flash.css">
@@ -666,6 +667,14 @@
           <img class="thumbnail">
         </div>
       </div>
+    </template>
+    <!-- Use `menu-root` and `item` as class name instead of existing `menu` and
+         `menu-item. -->
+    <template id="menu">
+      <ul class="menu-root" role="menu"></ul>
+    </template>
+    <template id="menu-item">
+      <li class="item" role="menuitem"></li>
     </template>
   </body>
 </html>

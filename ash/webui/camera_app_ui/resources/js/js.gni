@@ -43,6 +43,7 @@ compile_js_files = [
   "lib/comlink_protocol.ts",
   "lib/ffmpeg.js",
   "main.ts",
+  "menu.ts",
   "metrics.ts",
   "models/async_interval.ts",
   "models/async_writer.ts",
