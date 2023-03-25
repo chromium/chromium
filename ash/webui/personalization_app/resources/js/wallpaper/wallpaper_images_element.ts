@@ -62,7 +62,9 @@ export function getImageTiles(
   const tileMap = images.reduce((result, next) => {
     if (result.has(next.unitId)) {
       const tile = result.get(next.unitId)! as ImageTile;
-      tile.preview.push(next.url);
+      if (!tile.hasPreviewImage) {
+        tile.preview.push(next.url);
+      }
     } else {
       result.set(next.unitId, {
         preview: [next.url],
@@ -88,6 +90,12 @@ export function getImageTiles(
       case OnlineImageType.kMorning:
       case OnlineImageType.kLateAfternoon:
         tile.isTimeOfDayWallpaper = true;
+        tile.assetId = next.assetId;
+        tile.attribution = next.attribution;
+        break;
+      case OnlineImageType.kPreview:
+        tile.hasPreviewImage = true;
+        tile.preview = [next.url];
         tile.assetId = next.assetId;
         tile.attribution = next.attribution;
         break;

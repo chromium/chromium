@@ -226,6 +226,70 @@ suite('WallpaperImagesTest', function() {
         'element has correct data attribute');
   });
 
+  test(
+      'displays one preview tile for images with the same unitId', async () => {
+        personalizationStore.data.wallpaper.backdrop.images = {
+          'id_0': [
+            {
+              assetId: BigInt(0),
+              attribution: ['Late Afternoon Image 0-0'],
+              type: OnlineImageType.kPreview,
+              unitId: BigInt(1),
+              url: {url: 'https://id_0-0/'},
+            },
+            {
+              assetId: BigInt(1),
+              attribution: ['Light Image 0-1'],
+              type: OnlineImageType.kLight,
+              unitId: BigInt(1),
+              url: {url: 'https://id_0-1/'},
+            },
+            {
+              assetId: BigInt(2),
+              attribution: ['Dark Image 0-2'],
+              type: OnlineImageType.kDark,
+              unitId: BigInt(1),
+              url: {url: 'https://id_0-2/'},
+            },
+            {
+              assetId: BigInt(3),
+              attribution: ['Morning Image 0-3'],
+              type: OnlineImageType.kMorning,
+              unitId: BigInt(1),
+              url: {url: 'https://id_0-3/'},
+            },
+            {
+              assetId: BigInt(4),
+              attribution: ['Late Afternoon Image 0-4'],
+              type: OnlineImageType.kLateAfternoon,
+              unitId: BigInt(1),
+              url: {url: 'https://id_0-4/'},
+            },
+          ],
+        };
+        personalizationStore.data.wallpaper.backdrop.collections =
+            wallpaperProvider.collections;
+        personalizationStore.data.wallpaper.loading.images = {
+          'id_0': false,
+        };
+        personalizationStore.data.wallpaper.loading.collections = false;
+
+        wallpaperImagesElement =
+            initElement(WallpaperImages, {collectionId: 'id_0'});
+        await waitAfterNextRender(wallpaperImagesElement);
+
+        const elements =
+            Array.from(wallpaperImagesElement.shadowRoot!
+                           .querySelectorAll<WallpaperGridItem>(
+                               `${WallpaperGridItem.is}:not([hidden])`));
+
+        assertDeepEquals(
+            [
+              {url: 'https://id_0-0/'},
+            ],
+            elements[0]!.src, 'preview image has only one url');
+      });
+
   test('displays dark light tile for images with same unitId', async () => {
     wallpaperImagesElement = await createWithDefaultData();
 

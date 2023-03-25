@@ -31,4 +31,5 @@ export interface ImageTile {
   unitId?: bigint;
   preview: Url[];
   isTimeOfDayWallpaper?: boolean;
+  hasPreviewImage?: boolean;
 }
