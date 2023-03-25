@@ -499,24 +499,17 @@ HeapLinkedHashSet<WeakMember<Element>>* GetExplicitlySetElementsForAttr(
 bool ElementIsDescendantOfShadowIncludingAncestor(
     const Element& attribute_element,
     const Element& candidate) {
-  // TODO(meredithl): Update this to allow setting relationships for elements
-  // outside of the DOM once the spec is finalized. For consistency and
-  // simplicity, for now it is disallowed.
-  if (!attribute_element.IsInTreeScope() || !candidate.IsInTreeScope()) {
-    return false;
-  }
-  ShadowRoot* nearest_root = attribute_element.ContainingShadowRoot();
-  const Element* shadow_host = &attribute_element;
-  while (nearest_root) {
-    shadow_host = &nearest_root->host();
-    if (candidate.IsDescendantOf(nearest_root)) {
+  auto* candidate_root = &candidate.TreeRoot();
+  auto* element_root = &attribute_element.TreeRoot();
+  while (true) {
+    if (candidate_root == element_root) {
       return true;
     }
-    nearest_root = shadow_host->ContainingShadowRoot();
+    if (!element_root->IsInShadowTree()) {
+      return false;
+    }
+    element_root = &element_root->OwnerShadowHost()->TreeRoot();
   }
-
-  Element* document_element = shadow_host->GetDocument().documentElement();
-  return candidate.IsDescendantOf(document_element);
 }
 
 // The first algorithm in
