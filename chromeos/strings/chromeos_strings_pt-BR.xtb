@@ -274,6 +274,7 @@
 <translation id="3456078764689556234"><ph name="PRINTED_PAGES" /> página impressa de <ph name="TOTAL_PAGES" />.</translation>
 <translation id="345898999683440380">Digitalizando página <ph name="PAGE_NUM" />. <ph name="PERCENTAGE_VALUE" />% concluído.</translation>
 <translation id="3459509316159669723">Imprimir</translation>
+<translation id="346423161771747987">Corrente</translation>
 <translation id="346539236881580388">Tirar outra</translation>
 <translation id="3484914941826596830">Não desconecte este dispositivo externo ou desligue o computador enquanto o firmware estiver atualizando. Você pode minimizar esta janela. Esta atualização pode levar alguns minutos e é possível que o dispositivo externo não funcione durante esse período.</translation>
 <translation id="3486220673238053218">definição</translation>
@@ -697,6 +698,7 @@
 <translation id="7103252855940681301">Dispositivo <ph name="INDEX" /> de <ph name="COUNT" />, chamado <ph name="NAME" />.</translation>
 <translation id="7108668606237948702">enter</translation>
 <translation id="7130438335435247835">Nome do ponto de acesso (APN)</translation>
+<translation id="7131634559772719176">Confirmar predefinição</translation>
 <translation id="7134436342991564651">{0,plural, =1{Servidor de nomes}one{Servidor de nomes}other{Servidores de nomes}}</translation>
 <translation id="7143207342074048698">Conectando</translation>
 <translation id="7144878232160441200">Tentar novamente</translation>
@@ -800,6 +802,7 @@
 <translation id="80398733265834479">Ativar o modo de cor automático</translation>
 <translation id="8041089156583427627">Enviar comentários</translation>
 <translation id="8045012663542226664">Desativar o microfone</translation>
+<translation id="8050091914317269817">Se você selecionar este plano de fundo, o modo escuro automático e a correspondência de cor do plano de fundo serão ativados.</translation>
 <translation id="8075838845814659848">Carga restante</translation>
 <translation id="8076492880354921740">Guias</translation>
 <translation id="8082366717211101304">Não foi possível resolver o DNS em apps Android</translation>

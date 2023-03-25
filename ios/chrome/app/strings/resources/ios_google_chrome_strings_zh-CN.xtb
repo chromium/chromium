@@ -68,6 +68,7 @@
 <translation id="5119391094379141756">选择“Chrome”</translation>
 <translation id="5162467219239570114">Chrome 版本太旧。如果 <ph name="BEGIN_LINK" />App Store<ph name="END_LINK" /> 中无任何可用更新，则可能是因为您的设备不再支持新版 Chrome。</translation>
 <translation id="5389212809648216794">由于另一个应用正在使用您的相机，因此 Google Chrome 无法使用</translation>
+<translation id="5395376160638294582">请确保您可以一直使用 Google 帐号中的 Chrome 数据</translation>
 <translation id="5460571915754665838">4. 选择“Chrome”</translation>
 <translation id="5492504007368565877">Google 密码管理工具无法检查您的密码。</translation>
 <translation id="5552137475244467770">Chrome 会定期检查您的密码是否已被列在网上发布的外泄密码列表内。当 Chrome 进行这项检查时，您的密码和用户名都会被加密，所以绝不会被任何人员/任何一方（包括 Google）读取。</translation>
@@ -122,6 +123,7 @@
 <translation id="8370517070665726704">版权所有 <ph name="YEAR" /> Google LLC. 保留所有权利。</translation>
 <translation id="840168496893712993">部分插件导致 Chrome 崩溃，请尝试卸载这些插件。</translation>
 <translation id="8414886616817913619">根据贵单位的要求，您必须登录才能使用 Chrome。<ph name="BEGIN_LINK" />了解详情<ph name="END_LINK" /></translation>
+<translation id="84594714173170813">请继续使用您的 Google 帐号中的 Chrome 数据</translation>
 <translation id="8459495907675268833">所选数据已从 Chrome 和同步的设备中移除。不过，您的 Google 帐号在 history.google.com 上可能有其他形式的浏览记录（例如，在其他 Google 服务中的搜索记录和活动记录）。</translation>
 <translation id="850555388806794946">若要将 Chrome 设为默认浏览器，请执行以下操作：
   1. 打开“设置”

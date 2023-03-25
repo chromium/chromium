@@ -97,6 +97,7 @@
 <translation id="1773212559869067373">身份验证证书遭到本地拒绝</translation>
 <translation id="1775381402323441512">视频信息</translation>
 <translation id="180035236176489073">您必须在线访问这些文件。</translation>
+<translation id="1805030087840125683">{COUNT,plural, =1{具有以下 ID 的扩展程序}other{具有以下 ID 的扩展程序}}</translation>
 <translation id="1807938677607439181">所有文件</translation>
 <translation id="1810764548349082891">无法预览</translation>
 <translation id="1812302367230252929">阿姆哈拉语音译</translation>
@@ -130,6 +131,7 @@
 <translation id="2084108471225856927">设备设置</translation>
 <translation id="2084809735218147718">一个人在用手势表达谢意</translation>
 <translation id="2088690981887365033">VPN 网络</translation>
+<translation id="2111134541987263231">开启<ph name="BEGIN_BOLD" />在无痕模式下启用<ph name="END_BOLD" /></translation>
 <translation id="2114191879048183086"><ph name="NUMBER_OF_ITEMS" /> 项内容将被删除且无法恢复。</translation>
 <translation id="2122305276694332719">自动连接至隐藏的网络会导致其他人能查看您的设备和一些网络设置，因此我们建议不要这样做。</translation>
 <translation id="2125607626296734455">高棉语</translation>
@@ -228,6 +230,7 @@
 <translation id="290843123675549676">马拉地语</translation>
 <translation id="2923240520113693977">爱沙尼亚语</translation>
 <translation id="2938685643439809023">蒙古语</translation>
+<translation id="293972288692056847">{COUNT,plural, =1{找不到扩展程序}other{找不到扩展程序}}</translation>
 <translation id="2943503720238418293">请使用一个较短的名称</translation>
 <translation id="2949781154072577687">正在将“<ph name="DRIVE_NAME" />”格式化…</translation>
 <translation id="2951236788251446349">海蜇</translation>
@@ -282,6 +285,7 @@
 <translation id="3356580349448036450">已完成</translation>
 <translation id="3358452157379365236">吉他</translation>
 <translation id="3368922792935385530">已连接</translation>
+<translation id="3372635229069101468">点击<ph name="BEGIN_BOLD" />详细信息<ph name="END_BOLD" /></translation>
 <translation id="3382143449143186018">尼泊尔语 InScript 键盘</translation>
 <translation id="338691029516748599">第 <ph name="NETWORK_INDEX" /> 个网络（共 <ph name="NETWORK_COUNT" /> 个），<ph name="NETWORK_NAME" />，<ph name="SECURITY_STATUS" />，信号强度为 <ph name="SIGNAL_STRENGTH" />%，由您的管理员管理，连接</translation>
 <translation id="3408072735282270043">激活，<ph name="NETWORK_NAME" /></translation>
@@ -366,6 +370,7 @@
 <translation id="4124935795427217608">独角兽</translation>
 <translation id="4131235941541910880">将不需要的内容移至回收站</translation>
 <translation id="4134804435730168042">第 <ph name="NETWORK_INDEX" /> 个网络（共 <ph name="NETWORK_COUNT" /> 个），<ph name="NETWORK_NAME" />，<ph name="NETWORK_PROVIDER_NAME" />，在设备完成设置后启用</translation>
+<translation id="41501027364808384">{COUNT,plural, =1{在无痕模式下启用以下扩展程序：}other{在无痕模式下启用以下扩展程序：}}</translation>
 <translation id="4153015322587141338">只需右键点击某个文件并选择“<ph name="PIN_COMMAND" />”，即可在任务栏中快速访问相应文件。</translation>
 <translation id="4157569377477607576">管理员政策不建议：</translation>
 <translation id="4159731583141908892">已移动 <ph name="FILE_NAME" />。</translation>
@@ -462,8 +467,10 @@
 <translation id="4801956050125744859">保留两种版本</translation>
 <translation id="4804827417948292437">牛油果</translation>
 <translation id="4805966553127040832">正在恢复 <ph name="COUNT" /> 项内容</translation>
+<translation id="4816695657735045067">{COUNT,plural, =1{根据贵单位的要求，您必须安装一个扩展程序才能使用无痕模式}other{根据贵单位的要求，您必须安装一些扩展程序才能使用无痕模式}}</translation>
 <translation id="4823651846660089135">设备目前处于只读模式</translation>
 <translation id="4826849268470072925">泰米尔语 ITRANS</translation>
+<translation id="482932175346970750">在浏览器中输入 <ph name="BEGIN_BOLD" />chrome://extensions<ph name="END_BOLD" /></translation>
 <translation id="4839847978919684242">已经选择 <ph name="SELCTED_FILES_COUNT" /> 个文件或目录</translation>
 <translation id="4843566743023903107">Chromebase</translation>
 <translation id="4850886885716139402">视图</translation>
@@ -528,6 +535,7 @@
 <translation id="5262311848634918433"><ph name="MARKUP_1" />可随时随地访问文件，即使处于离线状态也没关系。<ph name="MARKUP_2" />Google 云端硬盘上的文件是最新的，并可通过任意设备访问。<ph name="MARKUP_3" /><ph name="MARKUP_4" />可确保文件安全。<ph name="MARKUP_5" />无论您的设备出现什么状况，您的文件都会安全地存储在 Google 云端硬盘上。<ph name="MARKUP_6" /><ph name="MARKUP_7" />文件集中存储，方便您与他人在同一个地方共享、创建和协作处理<ph name="MARKUP_8" />文件。<ph name="MARKUP_9" /></translation>
 <translation id="5275973617553375938">从 Google 云端硬盘恢复的文件</translation>
 <translation id="5278111733643988471">若要恢复这项内容，请将其拖至回收站以外的新文件夹。这项内容的原始文件夹“<ph name="PARENT_FOLDER_NAME" />”已被删除。</translation>
+<translation id="5283101102242354279">要在无痕模式下启用扩展程序，请执行以下操作：</translation>
 <translation id="5286194356314741248">正在扫描</translation>
 <translation id="5288441970121584418">汉堡包</translation>
 <translation id="5288481194217812690"><ph name="FILENAME" /></translation>
@@ -774,6 +782,7 @@
 <translation id="7238643356913091553"><ph name="NETWORK_NAME" />，详细信息</translation>
 <translation id="7246947237293279874">FTP 代理</translation>
 <translation id="7248671827512403053">应用</translation>
+<translation id="7252604552361840748">查找以上扩展程序</translation>
 <translation id="7256405249507348194">无法识别的错误：<ph name="DESC" /></translation>
 <translation id="7268659760406822741">可用服务</translation>
 <translation id="7292816689782057017">管理员政策会限制您将文件保存到某些位置。</translation>
@@ -787,6 +796,7 @@
 <translation id="7359359531237882347">正在复制 <ph name="NUMBER_OF_ITEMS" /> 项内容…</translation>
 <translation id="7375951387215729722">文件列表按<ph name="COLUMN_NAME" />降序排列。</translation>
 <translation id="7377161162143020057">管理员政策禁止复制此文件</translation>
+<translation id="7392500733467492920">未能找到。如需了解详情，请联系您的管理员。</translation>
 <translation id="7402503521691663770">ChromeOS Flex 设备</translation>
 <translation id="7408870451288633753">捷克语</translation>
 <translation id="7417453074306512035">埃塞俄比亚语键盘</translation>

@@ -274,6 +274,7 @@
 <translation id="3456078764689556234">Bola vytlačená <ph name="PRINTED_PAGES" />. strana z <ph name="TOTAL_PAGES" />.</translation>
 <translation id="345898999683440380">Skenuje sa <ph name="PAGE_NUM" />. strana. Dokončené: <ph name="PERCENTAGE_VALUE" /> %.</translation>
 <translation id="3459509316159669723">Tlač</translation>
+<translation id="346423161771747987">Prúd</translation>
 <translation id="346539236881580388">Odfotiť znova</translation>
 <translation id="3484914941826596830">Počas aktualizovania firmvéru neodpájajte toto zariadenie ani nevypínajte počítač. Toto okno môžete minimalizovať. Táto aktualizácia môže trvať niekoľko minút a vaše externé zariadenie nemusí počas nej fungovať.</translation>
 <translation id="3486220673238053218">definícia</translation>
@@ -697,6 +698,7 @@
 <translation id="7103252855940681301"><ph name="INDEX" />. zariadenie z <ph name="COUNT" /> s názvom <ph name="NAME" />.</translation>
 <translation id="7108668606237948702">enter</translation>
 <translation id="7130438335435247835">Názov prístupového bodu (APN)</translation>
+<translation id="7131634559772719176">Potvrdiť predvoľbu</translation>
 <translation id="7134436342991564651">{0,plural, =1{Menný server}few{Menné servery}many{Name servers}other{Menné servery}}</translation>
 <translation id="7143207342074048698">Pripája sa</translation>
 <translation id="7144878232160441200">Skúsiť znova</translation>
@@ -800,6 +802,7 @@
 <translation id="80398733265834479">Povoliť automatický farebný režim</translation>
 <translation id="8041089156583427627">Odoslať spätnú väzbu</translation>
 <translation id="8045012663542226664">Vypnutie zvuku mikrofónu</translation>
+<translation id="8050091914317269817">Keď vyberiete túto tapetu, automaticky sa bude zapínať tmavý režim a zodpovedajúca farba tapety.</translation>
 <translation id="8075838845814659848">Zostávajúca úroveň batérie</translation>
 <translation id="8076492880354921740">Karty</translation>
 <translation id="8082366717211101304">DNS sa nedá preložiť v aplikáciách pre Android</translation>

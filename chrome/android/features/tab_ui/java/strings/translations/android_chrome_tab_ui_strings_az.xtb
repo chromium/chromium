@@ -5,8 +5,8 @@
 <translation id="1181037720776840403">Silin</translation>
 <translation id="125153950246128346">Başqa taba baxmaq üçün klikləyin</translation>
 <translation id="1403228085774130835">Qapalı tablarınızı Chrome əsas menyusunda Son tablarda tapa bilərsiniz</translation>
-<translation id="1455506303394048917">Bu Anonim tablardakı fəaliyyətiniz bu cihazdan silinəcək</translation>
-<translation id="1499635324672558517">Bütün Anonim tablar bağlansın?</translation>
+<translation id="1455506303394048917">Incognito tablarındakı fəaliyyətiniz bu cihazdan silinəcək</translation>
+<translation id="1499635324672558517">Bütün Incognito tabları qapadılsın?</translation>
 <translation id="1657719826150349398">Tabı aşağıya daşıyın</translation>
 <translation id="1869137256605757565">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> tab}other{<ph name="TABS_COUNT_MANY" /> tab}}</translation>
 <translation id="2050597508048557928">{TABS_COUNT,plural, =1{Seçilmiş <ph name="TABS_COUNT_ONE" /> taba əlfəcin əlavə edin}other{Seçilmiş <ph name="TABS_COUNT_MANY" /> taba əlfəcin əlavə edin}}</translation>

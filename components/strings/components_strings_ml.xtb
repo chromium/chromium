@@ -498,6 +498,7 @@
 <translation id="2119867082804433120">താഴെ വലതുവശത്ത് പഞ്ച് ചെയ്യുക</translation>
 <translation id="2122719317867821810">ഈ നയം ഉദ്ദേശിച്ചത് പോലെ പ്രവർത്തിക്കുന്നുണ്ട്, എന്നാൽ മറ്റൊരു ഉറവിടത്തിൽ വൈരുദ്ധ്യമുള്ള മൂല്യം സജ്ജീകരിച്ചതിനെ തുടർന്ന് ഈ നയം അസാധുവാക്കി.</translation>
 <translation id="2126374524350484896">PDF പ്രൊഡ്യൂസർ:</translation>
+<translation id="2128262927290305126">നിങ്ങളുടെ <ph name="ACCOUNT" /> എന്ന Google അക്കൗണ്ടിൽ</translation>
 <translation id="2130448033692577677">DnsOverHttpsMode നയം സജ്ജീകരിക്കാത്തതിനാൽ നിങ്ങൾ വ്യക്തമാക്കിയ ടെംപ്ലേറ്റുകൾ ബാധകമാക്കാനായേക്കില്ല.</translation>
 <translation id="2130699163006053678">A3x7</translation>
 <translation id="2135799067377889518">പുരുഷൻമാർക്കുള്ള വസ്‌ത്രങ്ങൾ</translation>
@@ -543,6 +544,7 @@
 <translation id="2219735899272417925">ഉപകരണ റീസെറ്റ് ആവശ്യമാണ്</translation>
 <translation id="2224337661447660594">ഇന്റർനെറ്റ് ഇല്ല</translation>
 <translation id="2225927550500503913">വെർച്വൽ കാർഡ് ഓണാക്കി</translation>
+<translation id="2226636330183131181">വൈഫൈ നെറ്റ്‌വർക്കിലേക്ക് <ph name="BEGIN_LINK" />സൈൻ ഇൻ ചെയ്യുന്നു<ph name="END_LINK" /></translation>
 <translation id="2239100178324503013">ഇപ്പോൾ അയയ്‌ക്കുക</translation>
 <translation id="2241693394036365668">ഫയൽ ഡൗൺലോഡ് ചെയ്യുമ്പോൾ</translation>
 <translation id="2246264294482514010">10 x 12 ഇഞ്ച്</translation>
@@ -628,6 +630,7 @@
 <translation id="2469153820345007638">1-N ക്രമത്തിൽ</translation>
 <translation id="2470767536994572628">നിങ്ങൾ കുറിപ്പുകൾ എഡിറ്റ് ചെയ്യുമ്പോൾ, ഈ ഡോക്യുമെന്റ് ഒറ്റ പേജ് കാഴ്ചയിലേക്കും അതിന്റെ ഒറിജിനൽ റൊട്ടേഷനിലേക്കും മടങ്ങുന്നു</translation>
 <translation id="2479410451996844060">തിരയൽ URL അസാധുവാണ്.</translation>
+<translation id="2480300195898055381">നിങ്ങളുടെ <ph name="USER_EMAIL" /> എന്ന Google അക്കൗണ്ടിൽ</translation>
 <translation id="2482878487686419369">അറിയിപ്പുകൾ</translation>
 <translation id="248348093745724435">മെഷീന്‍ നയങ്ങള്‍</translation>
 <translation id="2491120439723279231">സെർവറിന്റെ സർട്ടിഫിക്കറ്റിൽ പിശകുകൾ ഉണ്ട്.</translation>
@@ -841,6 +844,7 @@
 <translation id="3029752078111257850">ലോക വാർത്തകൾ</translation>
 <translation id="3037177537145227281">നിരക്ക് ട്രാക്ക് ചെയ്യുന്നു</translation>
 <translation id="3037605927509011580">കഷ്ടം!</translation>
+<translation id="3041450980936463495">സംരക്ഷിച്ച വിലാസങ്ങൾ നിങ്ങൾക്ക് Google ഉൽപ്പന്നങ്ങളിലുടനീളം ഉപയോഗിക്കാം. ഈ വിലാസം നിങ്ങളുടെ Google അക്കൗണ്ടിൽ (<ph name="ACCOUNT" />) സംരക്ഷിച്ചിരിക്കുന്നു.</translation>
 <translation id="3041612393474885105">സര്‍‌ട്ടിഫിക്കറ്റ് വിവരങ്ങള്‍‌</translation>
 <translation id="305162504811187366">Chrome വിദൂര ഡെസ്‌ക്‌ടോപ്പ് ചരിത്രം, ടൈംസ്റ്റാമ്പുകളും ഹോസ്റ്റുകളും ക്ലയന്റ് സെഷൻ ഐഡികളും ഉൾപ്പെടെ</translation>
 <translation id="3052964831964880138"><ph name="PRODUCT_NAME" /> എന്നതിന് <ph name="PRICE_DROP" /> വിലക്കുറവ്</translation>
@@ -1081,6 +1085,7 @@
 <translation id="3631244953324577188">ബയോമെട്രിക്‌സ്</translation>
 <translation id="3632503704576938756">സ്ക്രീൻ പങ്കിടൽ പുനരാരംഭിച്ചു</translation>
 <translation id="3632892046558972264">സ്ക്രീൻ പങ്കിടൽ താൽക്കാലികമായി നിർത്തി</translation>
+<translation id="3633035844150606508">നിങ്ങളുടെ <ph name="ACCOUNT" /> എന്ന Google അക്കൗണ്ടിൽ വിലാസം സംരക്ഷിക്കുക</translation>
 <translation id="3633738897356909127">'Chrome അപ്ഡേറ്റ് ചെയ്യുക' ബട്ടൺ, നിങ്ങളുടെ Chrome ക്രമീകരണത്തിൽ Chrome അപ്ഡേറ്റ് ചെയ്യാൻ 'Enter' അമർത്തുക</translation>
 <translation id="3634530185120165534">ട്രേ 5</translation>
 <translation id="3634567936866541746">വഞ്ചനാപരമായ സൈറ്റിൽ നിങ്ങൾ ഇപ്പോൾ പാസ്‍വേഡ് നൽകി. അക്കൗണ്ടുകൾ സുരക്ഷിതമാക്കാൻ, നിങ്ങളുടെ സംരക്ഷിച്ച പാസ്‌വേഡുകൾ ഇപ്പോൾ തന്നെ പരിശോധിക്കാൻ Chrome നിർദ്ദേശിക്കുന്നു.</translation>
@@ -1846,7 +1851,6 @@
     <ph name="LINE_BREAK" />
     നിങ്ങളുടെ സിസ്‌റ്റം അഡ്‌മിനിസ്‌ട്രേറ്ററുമായി ബന്ധപ്പെടാൻ ശ്രമിക്കുക.</translation>
 <translation id="549333378215107354">വലുപ്പം 3</translation>
-<translation id="5503356662318814623">സന്ദേശം അയയ്‌ക്കുക</translation>
 <translation id="5509762909502811065">B0</translation>
 <translation id="5509780412636533143">നിയന്ത്രിത ബുക്കുമാർക്കുകൾ</translation>
 <translation id="5510481203689988000">കുക്കികളുടെ ക്രമീകരണത്തിൽ ഈ ക്രമീകരണം നിയന്ത്രിച്ചിരിക്കുന്നു.</translation>
@@ -1932,6 +1936,7 @@
 <translation id="5695542892312572833">പരിശോധിച്ചുറപ്പിക്കാനും വാങ്ങൽ പൂർത്തിയാക്കാനും Windows Hello ഉപയോഗിക്കണോ?</translation>
 <translation id="5701381305118179107">മധ്യഭാഗം</translation>
 <translation id="570530837424789914">മാനേജ് ചെയ്യുക...</translation>
+<translation id="5706906618852913030">അക്കൗണ്ടിൽ സംരക്ഷിക്കണോ?</translation>
 <translation id="5707154300732650394">നിങ്ങളുടെ ജേർണി പുനരാരംഭിക്കുക</translation>
 <translation id="57094364128775171">ശക്തമായ പാസ്‌വേഡ് നിർദ്ദേശിക്കുക…</translation>
 <translation id="571403275720188526">(arm64)</translation>
@@ -1984,6 +1989,7 @@
 <translation id="5830698870816298009">ക്യാമറയുടെ ഉപയോഗവും ചലനവും</translation>
 <translation id="583281660410589416">അജ്ഞാതം</translation>
 <translation id="5838278095973806738">അക്രമകാരികൾ മോഷ്‌ടിക്കാൻ സാധ്യതയുള്ളതിനാൽ ഈ സൈറ്റിൽ നിങ്ങളുടെ രഹസ്യ വിവരങ്ങളൊന്നും (ഉദാഹരണത്തിന്, പാസ്‌വേഡുകളോ ക്രെഡിറ്റ് കാർഡുകളോ പോലുള്ളവ) നൽകരുത്.</translation>
+<translation id="5841338463993781099">അക്കൗണ്ടിൽ സംരക്ഷിക്കണോ?</translation>
 <translation id="5851548754964597211">ടാബ് ലിസ്റ്റ്</translation>
 <translation id="5852909432155870672">RA4</translation>
 <translation id="5860033963881614850">ഓഫാക്കുക</translation>

@@ -274,6 +274,7 @@
 <translation id="3456078764689556234">已列印 <ph name="PRINTED_PAGES" /> 頁 (共 <ph name="TOTAL_PAGES" /> 頁)。</translation>
 <translation id="345898999683440380">正在掃描第 <ph name="PAGE_NUM" /> 頁，目前已完成 <ph name="PERCENTAGE_VALUE" />%。</translation>
 <translation id="3459509316159669723">列印</translation>
+<translation id="346423161771747987">電流</translation>
 <translation id="346539236881580388">重拍</translation>
 <translation id="3484914941826596830">在韌體更新期間，請勿拔除這台外部裝置的插頭或關閉電腦。你可以將這個視窗縮到最小。更新作業可能需要幾分鐘才會完成，這段期間外部裝置可能無法正常運作。</translation>
 <translation id="3486220673238053218">定義</translation>
@@ -697,6 +698,7 @@
 <translation id="7103252855940681301">裝置 <ph name="INDEX" /> (共 <ph name="COUNT" /> 個)，名稱為<ph name="NAME" />。</translation>
 <translation id="7108668606237948702">輸入</translation>
 <translation id="7130438335435247835">存取點名稱 (APN)</translation>
+<translation id="7131634559772719176">確認預設設定</translation>
 <translation id="7134436342991564651">{0,plural, =1{名稱伺服器}other{名稱伺服器}}</translation>
 <translation id="7143207342074048698">連線中</translation>
 <translation id="7144878232160441200">重試</translation>
@@ -800,6 +802,7 @@
 <translation id="80398733265834479">啟用自動色彩模式</translation>
 <translation id="8041089156583427627">提供意見</translation>
 <translation id="8045012663542226664">將麥克風設為靜音</translation>
+<translation id="8050091914317269817">如果選取這張桌布，系統將開啟自動深色模式並調整桌布配色。</translation>
 <translation id="8075838845814659848">剩餘電量</translation>
 <translation id="8076492880354921740">分頁</translation>
 <translation id="8082366717211101304">無法從 Android 應用程式解析 DNS</translation>

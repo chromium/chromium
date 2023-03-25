@@ -97,6 +97,7 @@
 <translation id="1773212559869067373">Certificato di autenticazione rifiutato localmente</translation>
 <translation id="1775381402323441512">Info video</translation>
 <translation id="180035236176489073">Per poter accedere a questi file devi essere online.</translation>
+<translation id="1805030087840125683">{COUNT,plural, =1{L'estensione con l'ID}other{Le estensioni con gli ID}}</translation>
 <translation id="1807938677607439181">Tutti i file</translation>
 <translation id="1810764548349082891">Anteprima non disponibile</translation>
 <translation id="1812302367230252929">Traslitterazione amarico</translation>
@@ -130,6 +131,7 @@
 <translation id="2084108471225856927">Impostazioni dispositivo</translation>
 <translation id="2084809735218147718">Gesto di ringraziamento</translation>
 <translation id="2088690981887365033">Rete VPN</translation>
+<translation id="2111134541987263231">Attiva l'opzione <ph name="BEGIN_BOLD" />Consenti modalità di navigazione in incognito<ph name="END_BOLD" /></translation>
 <translation id="2114191879048183086"><ph name="NUMBER_OF_ITEMS" /> elementi verranno eliminati e non potrai ripristinarli.</translation>
 <translation id="2122305276694332719">La connessione automatica a una rete nascosta consente ad altre persone di rilevare il tuo dispositivo e alcune impostazioni di rete, pertanto è sconsigliata.</translation>
 <translation id="2125607626296734455">Khmer</translation>
@@ -228,6 +230,7 @@
 <translation id="290843123675549676">Marathi</translation>
 <translation id="2923240520113693977">Estone</translation>
 <translation id="2938685643439809023">Mongolo</translation>
+<translation id="293972288692056847">{COUNT,plural, =1{Impossibile trovare l'estensione}other{Impossibile trovare le estensioni}}</translation>
 <translation id="2943503720238418293">Utilizza un nome più corto</translation>
 <translation id="2949781154072577687">Formattazione di <ph name="DRIVE_NAME" />…</translation>
 <translation id="2951236788251446349">Medusa</translation>
@@ -282,6 +285,7 @@
 <translation id="3356580349448036450">Fine</translation>
 <translation id="3358452157379365236">Chitarra</translation>
 <translation id="3368922792935385530">Connesso</translation>
+<translation id="3372635229069101468">Fai clic su <ph name="BEGIN_BOLD" />Dettagli<ph name="END_BOLD" /></translation>
 <translation id="3382143449143186018">Nepalese con tastiera InScript</translation>
 <translation id="338691029516748599">Rete <ph name="NETWORK_INDEX" /> di <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, intensità del segnale <ph name="SIGNAL_STRENGTH" />%, gestita dall'amministratore, connetti</translation>
 <translation id="3408072735282270043">Attiva, <ph name="NETWORK_NAME" /></translation>
@@ -366,6 +370,7 @@
 <translation id="4124935795427217608">Unicorno</translation>
 <translation id="4131235941541910880">Sposta nel cestino gli elementi che non ti servono</translation>
 <translation id="4134804435730168042">Rete <ph name="NETWORK_INDEX" /> di <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" />, Attiva dopo la configurazione del dispositivo</translation>
+<translation id="41501027364808384">{COUNT,plural, =1{Attiva la seguente estensione in modalità di navigazione in incognito:}other{Attiva le seguenti estensioni in modalità di navigazione in incognito:}}</translation>
 <translation id="4153015322587141338">Fai clic con il tasto destro del mouse su un file e seleziona "<ph name="PIN_COMMAND" />" per accedervi rapidamente dalla barra delle app.</translation>
 <translation id="4157569377477607576">Il criterio dell'amministratore sconsiglia:</translation>
 <translation id="4159731583141908892">Elemento <ph name="FILE_NAME" /> spostato.</translation>
@@ -462,8 +467,10 @@
 <translation id="4801956050125744859">Conserva entrambe</translation>
 <translation id="4804827417948292437">Avocado</translation>
 <translation id="4805966553127040832">Ripristino di <ph name="COUNT" /> elementi in corso…</translation>
+<translation id="4816695657735045067">{COUNT,plural, =1{La tua organizzazione richiede un'estensione per usare la modalità di navigazione in incognito}other{La tua organizzazione richiede alcune estensioni per usare la modalità di navigazione in incognito}}</translation>
 <translation id="4823651846660089135">Il dispositivo è in sola lettura</translation>
 <translation id="4826849268470072925">Tamil ITRANS</translation>
+<translation id="482932175346970750">Digita <ph name="BEGIN_BOLD" />chrome://extensions<ph name="END_BOLD" /> nel browser</translation>
 <translation id="4839847978919684242"><ph name="SELCTED_FILES_COUNT" /> elementi selezionati</translation>
 <translation id="4843566743023903107">I Chromebase</translation>
 <translation id="4850886885716139402">Visualizza</translation>
@@ -532,6 +539,7 @@
     <ph name="MARKUP_7" />Condividi, crea e collabora<ph name="MARKUP_8" /> a file con altre persone, il tutto in un'unica posizione.<ph name="MARKUP_9" /></translation>
 <translation id="5275973617553375938">File recuperati da Google Drive</translation>
 <translation id="5278111733643988471">Per ripristinare questo elemento, trascinalo in una nuova cartella fuori dal cestino. La cartella originale "<ph name="PARENT_FOLDER_NAME" />" di questo elemento è stata eliminata.</translation>
+<translation id="5283101102242354279">Attiva un'estensione in modalità di navigazione in incognito:</translation>
 <translation id="5286194356314741248">Ricerca</translation>
 <translation id="5288441970121584418">Hamburger</translation>
 <translation id="5288481194217812690"><ph name="FILENAME" /></translation>
@@ -627,6 +635,7 @@
 <translation id="603895874132768835">Non potrai utilizzare questa rete finché non configuri un nuovo PIN</translation>
 <translation id="6040143037577758943">Chiudi</translation>
 <translation id="6055907707645252013">Rete <ph name="NETWORK_TYPE" />, non collegata</translation>
+<translation id="6073060579181816027">Più posizioni dei file</translation>
 <translation id="6074825444536523002">Modulo Google</translation>
 <translation id="6079871810119356840">Ungherese con tastiera Qwerty</translation>
 <translation id="6096979789310008754">Testo di ricerca cancellato, sono visualizzati tutti i file e tutte le cartelle.</translation>
@@ -777,6 +786,7 @@
 <translation id="7238643356913091553"><ph name="NETWORK_NAME" />, dettagli</translation>
 <translation id="7246947237293279874">Proxy FTP</translation>
 <translation id="7248671827512403053">Applicazione</translation>
+<translation id="7252604552361840748">Cerca l'estensione indicata in alto</translation>
 <translation id="7256405249507348194">Errore non riconosciuto: <ph name="DESC" /></translation>
 <translation id="7268659760406822741">Servizi disponibili</translation>
 <translation id="7292816689782057017">Il criterio dell'amministratore limita il salvataggio ad alcune posizioni.</translation>
@@ -790,6 +800,7 @@
 <translation id="7359359531237882347">Copia di <ph name="NUMBER_OF_ITEMS" /> elementi...</translation>
 <translation id="7375951387215729722">Elenco di file ordinato per <ph name="COLUMN_NAME" /> in ordine decrescente.</translation>
 <translation id="7377161162143020057">La copia di questo file è bloccata dal criterio dell'amministratore</translation>
+<translation id="7392500733467492920">non possono essere trovate. Contatta l'amministratore.</translation>
 <translation id="7402503521691663770">Dispositivi ChromeOS Flex</translation>
 <translation id="7408870451288633753">Ceco</translation>
 <translation id="7417453074306512035">Tastiera Etiope</translation>

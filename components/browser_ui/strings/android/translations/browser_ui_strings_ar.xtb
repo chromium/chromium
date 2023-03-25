@@ -192,6 +192,7 @@
 <translation id="4440642537584213025">توسيع <ph name="TARGET_DESCRIPTION" /></translation>
 <translation id="4468959413250150279">كتم صوت موقع إلكتروني معين.</translation>
 <translation id="4475912480633855319">{COOKIES,plural, =1{ملف تعريف ارتباط واحد}zero{# ملف تعريف ارتباط}two{ملفّا تعريف ارتباط}few{# ملفات تعريف ارتباط}many{# ملف تعريف ارتباط}other{# ملف تعريف ارتباط}}</translation>
+<translation id="4478158430052450698">تسهيل تخصيص عملية التكبير أو التصغير لمحتوى مواقع إلكترونية مختلفة</translation>
 <translation id="4479647676395637221">السؤال أولاً قبل السماح للمواقع الإلكترونية باستخدام الكاميرا (موصى به)</translation>
 <translation id="4505788138578415521">‏تم توسيع عنوان URL.</translation>
 <translation id="4534723447064627427">‏للسماح لتطبيق <ph name="APP_NAME" /> بالوصول إلى الميكروفون، يُرجى أيضًا تفعيل الميكروفون في <ph name="BEGIN_LINK" />إعدادات Android<ph name="END_LINK" />.</translation>

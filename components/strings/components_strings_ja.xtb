@@ -386,6 +386,7 @@
 <translation id="1822540298136254167">アクセスしたウェブサイトと閲覧時間</translation>
 <translation id="1824402189105105503">ロール 8</translation>
 <translation id="1826516787628120939">確認中</translation>
+<translation id="1826968372364864056">フォームをクリア</translation>
 <translation id="1828959155404624835">レンタカー</translation>
 <translation id="1834321415901700177">このサイトには有害なプログラムが含まれています</translation>
 <translation id="1838374766361614909">検索をクリア</translation>
@@ -808,6 +809,7 @@
 <translation id="2951588413176968965">自分の用紙受け</translation>
 <translation id="2952820037279740115">すべてのシークレット ウィンドウを閉じる</translation>
 <translation id="2952904171810469095">A2x5</translation>
+<translation id="2954624054936281172">保存されたお支払い方法の表</translation>
 <translation id="295526156371527179">警告: このポリシーは辞書でないため、ポリシーで指定されているとおりに辞書として統合されませんでした。</translation>
 <translation id="2955913368246107853">検索バーを閉じる</translation>
 <translation id="2958544468932521864">クリケット</translation>
@@ -1845,7 +1847,6 @@
     <ph name="LINE_BREAK" />
     システム管理者にお問い合わせください。</translation>
 <translation id="549333378215107354">サイズ 3</translation>
-<translation id="5503356662318814623">メッセージを送信する</translation>
 <translation id="5509762909502811065">B0</translation>
 <translation id="5509780412636533143">管理対象のブックマーク</translation>
 <translation id="5510481203689988000">この設定は Cookie 設定で管理されています。</translation>
@@ -1967,6 +1968,7 @@
 <translation id="5786044859038896871">カード情報を入力しますか？</translation>
 <translation id="578633867165174378">たった今使用したパスワードがデータ侵害で検出されました。このパスワードを今すぐ変更することをおすすめします。</translation>
 <translation id="5789643057113097023">.</translation>
+<translation id="5793777472500812427">{COUNT,plural, =0{なし}=1{1 件のアカウントのログインデータ}other{# 件のアカウントのログインデータ}}</translation>
 <translation id="580241730938216256">更新を開始</translation>
 <translation id="5803412860119678065"><ph name="CARD_DETAIL" /> を入力しますか？</translation>
 <translation id="5804241973901381774">権限</translation>
@@ -2522,6 +2524,7 @@
 <translation id="7201591969684833065">管理者は、以下の情報を確認できます。</translation>
 <translation id="7202217080450895452"><ph name="LAUNCH_INCOGNITO_FOCUSED_FRIENDLY_MATCH_TEXT" /> です。Tab キー、Enter キーの順に押すと、新しいシークレット タブを開いてシークレット モードでブラウジングします</translation>
 <translation id="7203375778433816396">Chrome をシステムの既定のブラウザとして設定します</translation>
+<translation id="7207736436284129083">{COUNT,plural, =0{なし}=1{1 件のパスキー}other{# 件のパスキー}}</translation>
 <translation id="7210863904660874423"><ph name="HOST_NAME" /> ではセキュリティ規格が遵守されていません。</translation>
 <translation id="7210993021468939304">コンテナ内の Linux アクティビティ、コンテナ内での Linux アプリのインストールと実行</translation>
 <translation id="721197778055552897">この問題の詳細については、<ph name="BEGIN_LINK" />こちら<ph name="END_LINK" />をご覧ください。</translation>
@@ -2774,6 +2777,7 @@
 <translation id="7736959720849233795">リンクのアドレスをコピー</translation>
 <translation id="7740996059027112821">標準</translation>
 <translation id="77424286611022110">このサイトでは煩わしい広告または誤解を招く広告が表示されます。<ph name="LEARN_MORE_LINK_TEXT" /></translation>
+<translation id="7744505202669469867">保存された住所の表</translation>
 <translation id="774634243536837715">危険なコンテンツがブロックされました。</translation>
 <translation id="7751971323486164747">Chrome のフォントサイズと書体をカスタマイズします</translation>
 <translation id="7752995774971033316">管理されていません</translation>
@@ -3015,6 +3019,7 @@
 <translation id="8347658365704983341">遠隔学習</translation>
 <translation id="8349305172487531364">ブックマーク バー</translation>
 <translation id="8351131234907093545">メモを作成</translation>
+<translation id="835203957414790336">印刷するページのコンテンツとプリンタに関する情報は、分析のため Google Cloud または第三者に送信されます。たとえば、機密データがないかスキャンされます。</translation>
 <translation id="8355270400102541638">ローカル クラッシュ コンテキスト:</translation>
 <translation id="8363502534493474904">機内モードをオフにする</translation>
 <translation id="8364627913115013041">未設定</translation>

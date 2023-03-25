@@ -58,6 +58,7 @@
 <translation id="1283524564873030414">Последние 24 часа</translation>
 <translation id="1285320974508926690">Никогда не переводить этот сайт</translation>
 <translation id="1291506870746876680">Когда вы покинете сайт <ph name="BEGIN_BOLD" /><ph name="SITE_NAME" /><ph name="END_BOLD" />, все разрешения для него будут отключены.</translation>
+<translation id="1305822519689023679">Чтобы всегда иметь доступ к паролям, сохраненным в аккаунте Google, подтвердите свою личность.</translation>
 <translation id="1312721752506309252">Улучшенная защита включена</translation>
 <translation id="1321993286294231467">При сохранении изображения возникла ошибка.</translation>
 <translation id="1322735045095424339">В вашей организации обязательно использовать режим инкогнито.</translation>
@@ -107,6 +108,7 @@
 <translation id="1626771852476987600">Повторяющихся паролей: <ph name="COUNT" /></translation>
 <translation id="1641113438599504367">Безопасный просмотр</translation>
 <translation id="1644574205037202324">История</translation>
+<translation id="165008673352427892">Новая функция</translation>
 <translation id="1650222530560417226">Чтобы фиксировать журналы консоли JavaScript и ошибки на всех вкладках, нажмите кнопку "Начать запись журнала". Журналы будут записываться и храниться в памяти, пока вы не закроете страницу или не нажмете кнопку "Остановить запись журнала".</translation>
 <translation id="1653432787084483144">{count,plural, =1{{count} сохраненный пароль показан над клавиатурой.}one{{count} сохраненный пароль показан над клавиатурой.}few{{count} сохраненных пароля показаны над клавиатурой.}many{{count} сохраненных паролей показаны над клавиатурой.}other{{count} сохраненного пароля показаны над клавиатурой.}}</translation>
 <translation id="1657011748321897393">Не удалось опубликовать запись из-за ошибки сети.</translation>
@@ -120,6 +122,7 @@
 <translation id="1700629756560807968">Выбрано закладок: <ph name="NUMBER_OF_SELECTED_BOOKMARKS" /></translation>
 <translation id="1715515772563243997">Если вы доверяете сайту <ph name="SITE" />, то можете использовать для входа сохраненный пароль.</translation>
 <translation id="1740468249224277719">Нажмите дважды, чтобы установить</translation>
+<translation id="1750238553597293878">Продолжайте использовать пароли в аккаунте Google.</translation>
 <translation id="1752547299766512813">Сохр. пароли</translation>
 <translation id="1753905327828125965">Наиболее посещаемые</translation>
 <translation id="1767766085187034454">Google Переводчик</translation>
@@ -402,6 +405,7 @@
 <translation id="3810973564298564668">Управление</translation>
 <translation id="3818293389945649617">Найти следующую</translation>
 <translation id="3819183753496523827">Нет подключения к интернету. Проверьте соединение и повторите попытку.</translation>
+<translation id="3832419617903252251">Пароль сохранен только на этом устройстве</translation>
 <translation id="3835964409414434850">Перейти на следующую вкладку</translation>
 <translation id="3838691874161539578">Чтобы надежнее защитить аккаунт, проверьте безопасность сохраненных паролей</translation>
 <translation id="385051799172605136">Назад</translation>
@@ -630,6 +634,7 @@
 <translation id="54401264925851789">Сведения о надежности страницы</translation>
 <translation id="5443952882982198570">Кредитные карты</translation>
 <translation id="5444892875087332195">Закладки</translation>
+<translation id="5453250766792920795">{count,plural, =1{Закладка сохранена в вашем аккаунте ({email}).}one{Закладки сохранены в вашем аккаунте ({email}).}few{Закладки сохранены в вашем аккаунте ({email}).}many{Закладки сохранены в вашем аккаунте ({email}).}other{Закладки сохранены в вашем аккаунте ({email}).}}</translation>
 <translation id="5457226814769348910">Открыть офлайн-версию</translation>
 <translation id="5489208564673669003">Вы можете <ph name="BEGIN_LINK" />настроить файлы cookie<ph name="END_LINK" /> для разных сайтов.</translation>
 <translation id="5490005495580364134">Блокировать все файлы cookie (не рекомендуется)</translation>
@@ -656,6 +661,7 @@
 <translation id="5669528293118408608">www</translation>
 <translation id="5669617676038747374">Создать QR-код</translation>
 <translation id="567881659373499783">Версия <ph name="PRODUCT_VERSION" /></translation>
+<translation id="5683499062697987550">Чтобы использовать и сохранять пароли в аккаунте Google, подтвердите свою личность.</translation>
 <translation id="5690398455483874150">{count,plural, =1{Показано одно окно Chrome}one{Показано {count} окно Chrome}few{Показано {count} окна Chrome}many{Показано {count} окон Chrome}other{Показано {count} окна Chrome}}</translation>
 <translation id="5701270923492462699">Доступ к камере разрешен</translation>
 <translation id="5704908597376970822">Не удается войти.</translation>
@@ -749,6 +755,7 @@
 <translation id="6219550825416862075">С возвращением!</translation>
 <translation id="6219688215832490856">Никогда не переводить</translation>
 <translation id="6223816392543092032">Синхронизировать закладки, историю, пароли и другие настройки на всех ваших устройствах</translation>
+<translation id="6224759905509595045">Подтвердить личность</translation>
 <translation id="6229318421047648685">Версия для ПК</translation>
 <translation id="6231782223312638214">Рекомендуется</translation>
 <translation id="6232329973559504466">Поиск в режиме инкогнито</translation>
@@ -788,6 +795,7 @@
 
 Данные были зашифрованы с помощью кодовой фразы <ph name="TIME" />. Введите ее, чтобы начать синхронизацию.</translation>
 <translation id="6418346271604475326">Подготовка PDF</translation>
+<translation id="6421095165635308">{count,plural, =1{Закладка добавлена в папку "{title}" в вашем аккаунте ({email}).}one{Закладки добавлены в папку "{title}" в вашем аккаунте ({email}).}few{Закладки добавлены в папку "{title}" в вашем аккаунте ({email}).}many{Закладки добавлены в папку "{title}" в вашем аккаунте ({email}).}other{Закладки добавлены в папку "{title}" в вашем аккаунте ({email}).}}</translation>
 <translation id="6429213933892582367">Откройте раздел "Настройки паролей".</translation>
 <translation id="6434591244308415567">Произошла ошибка. Повторите попытку позже.</translation>
 <translation id="6435236283694032571">Добавить в список для чтения</translation>
@@ -876,6 +884,7 @@
 <translation id="6888009575607455378">Отменить изменения?</translation>
 <translation id="6896758677409633944">Копировать</translation>
 <translation id="6897187120838603299">Пароль будет сохранен на вашем устройстве.</translation>
+<translation id="6906448540340261898">Обеспечьте доступ к паролям в аккаунте Google.</translation>
 <translation id="6913136913033237761">Папка <ph name="FOLDER_NAME" />. Только на этом устройстве.</translation>
 <translation id="6914583639806229067">Поиск по скопированному изображению</translation>
 <translation id="6914783257214138813">Ваши пароли будут видны всем, у кого есть доступ к файлу экспорта.</translation>
@@ -907,6 +916,7 @@
 <translation id="7108762695052995889">Открыть сайт</translation>
 <translation id="7133798577887235672">Полное имя</translation>
 <translation id="7136892417564438900">Камера недоступна</translation>
+<translation id="7161230316646448869">Синхронизируйте закладки, историю и другие данные на всех своих устройствах</translation>
 <translation id="7162168282402939716">Разблокировать вкладки инкогнито с помощью: <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /></translation>
 <translation id="7172852049901402487">Убедитесь в надежности паролей</translation>
 <translation id="7173114856073700355">Открыть настройки</translation>

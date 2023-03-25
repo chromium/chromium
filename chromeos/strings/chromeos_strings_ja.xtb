@@ -1,8 +1,10 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="ja">
+<translation id="1014750484722996375">デスク</translation>
 <translation id="1018219910092211213">DNS を解決できません</translation>
 <translation id="1018656279737460067">キャンセルされました</translation>
+<translation id="1022433422498218992">一般設定</translation>
 <translation id="1047458377670401304"><ph name="CPU_NAME" />（スレッド数 <ph name="THREAD_COUNT" />、<ph name="CPU_MAX_CLOCK_SPEED" /> GHz）</translation>
 <translation id="1047773237499189053">新しい機能があります。上矢印キーで詳細を確認できます。</translation>
 <translation id="1059913517121127803">スキャンを開始できませんでした</translation>
@@ -84,10 +86,12 @@
 <translation id="1662989795263954667">停止 - インク切れ</translation>
 <translation id="1664796644829245314">「<ph name="PREVIEW_OBJECT" />」をプレビュー</translation>
 <translation id="1668469839109562275">組み込みの VPN</translation>
+<translation id="1669047024429367828">表示設定</translation>
 <translation id="1672499492233627739">ウェブカメラの動画フィード</translation>
 <translation id="1676557873873341166">動画を撮影しています</translation>
 <translation id="1703835215927279855">Letter</translation>
 <translation id="1706391837335750954">DNS Resolver の存在</translation>
+<translation id="1710499924611012470">ユーザー補助の操作</translation>
 <translation id="1715359911173058521">スキャナとの通信に問題が発生しました。ネットワークまたは USB の接続を確認してから、もう一度お試しください。</translation>
 <translation id="1717874160321062422"><ph name="FIRST_MANAGER" /> と <ph name="SECOND_MANAGER" /> によって管理されています</translation>
 <translation id="1726100011689679555">ネームサーバー</translation>
@@ -102,6 +106,7 @@
 <translation id="1759842336958782510">Chrome</translation>
 <translation id="1768959921651994223">認証タイプ</translation>
 <translation id="1782199038061388045">翻訳</translation>
+<translation id="1790209694022261219">ウィンドウとデスク</translation>
 <translation id="1792647875738159689">スキャンをキャンセルしています</translation>
 <translation id="1801418420130173017">ダークモードを無効にする</translation>
 <translation id="1807246157184219062">明</translation>
@@ -135,6 +140,7 @@
 <translation id="2056550196601855911">IPv4 / IPv6</translation>
 <translation id="2080070583977670716">詳細設定</translation>
 <translation id="2085089206770112532">ディスプレイの明るさを下げる</translation>
+<translation id="2102231663024125441">テキスト編集</translation>
 <translation id="2105810540595158374">デバイスの種類はゲーム コントローラです。</translation>
 <translation id="2119172414412204879"><ph name="BOARD_NAME" />、バージョン <ph name="MILESTONE_VERSION" /></translation>
 <translation id="2126937207024182736"><ph name="AVAILABLE_MEMORY" /> GB / <ph name="TOTAL_MEMORY" /> GB 使用可能</translation>
@@ -211,6 +217,7 @@
 <translation id="2859243502336719778">重要なアップデート</translation>
 <translation id="2860473693272905224">スキャナに次のページを置いてください</translation>
 <translation id="2872961005593481000">終了</translation>
+<translation id="2873483161362553159">ブラウザ操作</translation>
 <translation id="2874939134665556319">前のトラック</translation>
 <translation id="2878387241690264070"><ph name="NUM_SECONDS" /> 秒で <ph name="RATE" /> 放電しました。</translation>
 <translation id="2902312830803030883">その他の操作</translation>
@@ -367,6 +374,7 @@
 <translation id="4311195029067684288">100%</translation>
 <translation id="4333390807948134856"><ph name="KEY_NAME" /> キーを押しました</translation>
 <translation id="435692326371619097">ネットワークの APN 設定を管理します。APN は、モバイル ネットワークとインターネットの間の接続を確立します。<ph name="BEGIN_LINK" />詳細<ph name="END_LINK" /></translation>
+<translation id="437294888293595148">すべてのショートカットをリセットする</translation>
 <translation id="4378373042927530923">未実行</translation>
 <translation id="4378551569595875038">接続中...</translation>
 <translation id="4382484599443659549">PDF</translation>
@@ -659,6 +667,7 @@
 <translation id="6766275201586212568">DNS 解決に失敗しました</translation>
 <translation id="6768237774506518020">DNS 解決の失敗率が高くなっています</translation>
 <translation id="6791471867139427246">キーボード ライトの色</translation>
+<translation id="6798678288485555829">テキスト内の移動</translation>
 <translation id="680983167891198932">キー</translation>
 <translation id="6816797338148849397">選択した項目に関連する情報があります。上矢印キーでアクセスできます。</translation>
 <translation id="6838167112108853532">この APN を無効化または削除できません。有効になっている接続済みの APN を無効化または削除しようとしていることを確認します。</translation>

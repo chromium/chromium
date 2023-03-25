@@ -274,6 +274,7 @@
 <translation id="3456078764689556234">Printed page <ph name="PRINTED_PAGES" /> out of <ph name="TOTAL_PAGES" />.</translation>
 <translation id="345898999683440380">Scanning page <ph name="PAGE_NUM" />. <ph name="PERCENTAGE_VALUE" />% completed.</translation>
 <translation id="3459509316159669723">Printing</translation>
+<translation id="346423161771747987">Current</translation>
 <translation id="346539236881580388">Retake</translation>
 <translation id="3484914941826596830">While the firmware is updating, do not unplug this external device or shut down your computer. You can minimise this window. This update may take a few minutes and your external device may not work during this time.</translation>
 <translation id="3486220673238053218">definition</translation>

@@ -16,6 +16,7 @@
 <translation id="1054745118061919935">தொடர்வதன் மூலம் <ph name="BEGIN_LINK" />சேவை விதிமுறைகளை<ph name="END_LINK" /> ஏற்கிறீர்கள்.</translation>
 <translation id="1063454504051558093">வேறொரு கடவுச்சொல்லைப் பயன்படுத்தவும்...</translation>
 <translation id="1066060668811609597">ஒத்திசைவை நிர்வகித்தல்</translation>
+<translation id="1069154182096085577">இந்தக் கடவுச்சொல் ஏற்கெனவே உள்ளது</translation>
 <translation id="1076421457278169141">குறியீடு ஸ்கேன் செய்யப்பட்டது</translation>
 <translation id="1076785341346483463">நிர்வகிக்கப்படும் கணக்குடன் ஒத்திசைத்தல்</translation>
 <translation id="1084365883616172403">Facebook இடுகை நிறைவுபெற்றது.</translation>
@@ -121,6 +122,7 @@
 <translation id="1740468249224277719">நிறுவ, இருமுறை தட்டவும்.</translation>
 <translation id="1752547299766512813">கடவுச்சொற்களைச் சேமி</translation>
 <translation id="1753905327828125965">அதிகமாகப் பார்க்கப்பட்டவை</translation>
+<translation id="1767766085187034454">Google Translate</translation>
 <translation id="1789803444939621101">மீண்டும் வரவேற்கிறோம், <ph name="USER_NAME" /></translation>
 <translation id="1803264062614276815">கார்டு உரிமையாளரின் பெயர்</translation>
 <translation id="1809939268435598390">ஃபோல்டரை நீக்கு</translation>
@@ -215,6 +217,7 @@
 <translation id="2523363575747517183">இந்த இணையதளம், மற்றொரு பயன்பாட்டைத் திறப்பதற்கு மீண்டும் மீண்டும் முயல்கிறது.</translation>
 <translation id="2529021024822217800">எல்லாவற்றையும் திற</translation>
 <translation id="2547458583188611426">ஒத்திசைவு இயங்கவில்லை. ஒத்திசைவைத் தொடங்க கடவுச்சொற்றொடரை உள்ளிடவும்.</translation>
+<translation id="2551153019974022505">கணக்குப் பிழை</translation>
 <translation id="2556092377360758201">பாதுகாப்பு அல்லாத பயன்முறை (பரிந்துரைக்கப்படவில்லை)</translation>
 <translation id="2562041823070056534"><ph name="DEVICE_NAME" />க்கு அனுப்புகிறது...</translation>
 <translation id="2576499762020411840">எனது Google கணக்கில் இருந்து கடவுச்சொற்களைப் பயன்படுத்திச் சேமி</translation>
@@ -417,6 +420,7 @@
 <translation id="3928666092801078803">எனது தரவை ஒன்றிணை</translation>
 <translation id="3929457972718048006">முகவரிகள்</translation>
 <translation id="3943492037546055397">கடவுச்சொற்கள்</translation>
+<translation id="3951717558054674026">{count,plural, =1{{count} வலுவற்ற கடவுச்சொல்}other{{count} வலுவற்ற கடவுச்சொற்கள்}}</translation>
 <translation id="3959736869653157332">மெனு → புதிய மறைநிலைப் பக்கம்</translation>
 <translation id="3967822245660637423">பதிவிறக்கம் முடிந்தது</translation>
 <translation id="3968505803272650567">ஆர்வங்களை நிர்வகி</translation>
@@ -468,6 +472,7 @@
 <translation id="4334428914252001502">படிக்காத கட்டுரை 1 உள்ளது.</translation>
 <translation id="4338650699862464074">நீங்கள் பார்வையிடும் பக்கங்களின் URLகளை Googleளுக்கு அனுப்பும்.</translation>
 <translation id="4342054591427973606">{count,plural, =1{இதில் இருந்தும் நீங்கள் உள்நுழைந்துள்ள பிற சாதனங்களில் இருந்தும் இந்த முகவரி நீக்கப்படும்.}other{இதில் இருந்தும் நீங்கள் உள்நுழைந்துள்ள பிற சாதனங்களில் இருந்தும் இந்த முகவரிகள் நீக்கப்படும்.}}</translation>
+<translation id="4342946437867096381">இந்தத் தளத்திற்கான கடவுச்சொல்லை ஏற்கெனவே உங்கள் Google கணக்கில் சேமித்துள்ளீர்கள். மிகவும் சமீபத்திய கடவுச்சொல்லை Google உங்களுக்காகத் தேர்வுசெய்ய முடியும்.</translation>
 <translation id="4343046787186034850">கேமரா மற்றும் மைக்ரோஃபோனுக்கான அணுகல் வழங்கப்பட்டது</translation>
 <translation id="4359125752503270327">இந்தப் பக்கம் மற்றொரு பயன்பாட்டில் திறக்கப்படும்.</translation>
 <translation id="4375040482473363939">QR குறியீட்டுத் தேடல்</translation>
@@ -483,6 +488,7 @@
 <translation id="4474494258097106883">iPhoneனுக்காக உருவாக்கப்பட்டது</translation>
 <translation id="4476574785019001431">அமைப்புகள்</translation>
 <translation id="448433063499977729">ஒத்திசைவு முடக்கப்பட்டுள்ளது</translation>
+<translation id="4488754974567924717">உங்கள் கடவுச்சொற்கள் களவாடப்பட்டிருந்தால் உங்களுக்குத் தெரியப்படுத்துவோம்</translation>
 <translation id="4489536976005181779">{count,plural, =1{உங்கள் கணக்கில் ({email}) உள்ள வாசிப்புப் பட்டியலில் பக்கம் சேர்க்கப்பட்டது}other{உங்கள் கணக்கில் ({email}) உள்ள வாசிப்புப் பட்டியலில் பக்கங்கள் சேர்க்கப்பட்டன}}</translation>
 <translation id="4496373720959965247">தாவல்களைச் சேர்த்து, பக்கங்களுக்கு இடையில் மாறலாம்</translation>
 <translation id="4502566650163919158">இப்போது சரிபார்</translation>
@@ -589,6 +595,7 @@
 <translation id="5150492518600715772">வேறு சாதனத்திற்கு அனுப்பு</translation>
 <translation id="5168414296986405587">iPadOSஸுக்காக உருவாக்கப்பட்டது</translation>
 <translation id="5173088371991956744">ஒத்திசைக்க இது நீங்கள்தான் என உறுதிசெய்ய வேண்டும்</translation>
+<translation id="5176312250994681348">சமீபத்திய கடவுச்சொல் மட்டும் இருக்கட்டும்</translation>
 <translation id="5181140330217080051">பதிவிறக்குகிறது</translation>
 <translation id="5184329579814168207">Chrome இல் திற</translation>
 <translation id="5186185447130319458">தனிப்பட்டது</translation>
@@ -964,6 +971,7 @@
 <translation id="7679915578945954324">தள முகவரிகள் நகலெடுக்கப்பட்டன</translation>
 <translation id="7687508192620387263">கேலெண்டர் ஃபைல் உள்ளது</translation>
 <translation id="7701040980221191251">எதுவுமில்லை</translation>
+<translation id="7711440461521638739">நீங்கள் எந்தக் கடவுச்சொற்களையும் மீண்டும் பயன்படுத்தவில்லை</translation>
 <translation id="7720410380936703141">மீண்டும் முயல்க</translation>
 <translation id="7726702057919861819">மெனு → பதிவு → உலாவிய தரவை அழி</translation>
 <translation id="7733646263819020771"><ph name="BOOKMRK_NAME" />. இந்தச் சாதனத்தில் மட்டும்.</translation>
@@ -1068,6 +1076,7 @@
 <translation id="8393889347136007944"><ph name="THRESHOLD" /> நாட்களாகப் பயன்படுத்தப்படாத பக்கங்கள்</translation>
 <translation id="8407669440184693619">இந்தத் தளத்திற்கான கடவுச்சொற்கள் எதுவும் இல்லை</translation>
 <translation id="842017693807136194">இதன் மூலம் உள்நுழைந்துள்ளீர்கள்:</translation>
+<translation id="8425693829365242963">உங்கள் கடவுச்சொற்கள் தனித்துவமானவை</translation>
 <translation id="8428045167754449968">மாநகரம் / நகரம்</translation>
 <translation id="8428213095426709021">அமைப்புகள்</translation>
 <translation id="8428634594422941299">நிராகரி</translation>
@@ -1088,6 +1097,7 @@
 <translation id="8533670235862049797">பாதுகாப்பு உலாவல் இயக்கப்பட்டுள்ளது</translation>
 <translation id="8534481786647257214">Google+ இடுகை நிறைவுபெற்றது.</translation>
 <translation id="8548878600947630424">பக்கத்தில் கண்டறி</translation>
+<translation id="8556590991644167667">{count,plural, =1{{count} எச்சரிக்கையை நிராகரித்துள்ளீர்கள்}other{{count} எச்சரிக்கைகளை நிராகரித்துள்ளீர்கள்}}</translation>
 <translation id="8558480467877843976">நீங்கள் உலாவும் போது அல்லது மெசேஜ்கள், ஆவணங்கள் அல்லது பிற ஆப்ஸில் உள்ள இணைப்புகளைக் கிளிக் செய்யும்போதெல்லாம் Chromeமை பயன்படுத்தலாம்.</translation>
 <translation id="8588404856427128947">ஆஃப்</translation>
 <translation id="8591976964826315682">மறைநிலையில் மூன்றாம் தரப்பு குக்கீகளைத் தடு</translation>
@@ -1096,9 +1106,11 @@
 <translation id="8626393685701737946">அமைப்புகள் &gt; உள்ளடக்க அமைப்புகள் என்பதில் இயல்புத் தளக் காட்சியை ‘டெக்ஸ்டாப்’ என மாற்றலாம்</translation>
 <translation id="8636825310635137004">உங்கள் பிற சாதனங்களிலிருந்து தாவல்களைப் பெற, ஒத்திசைவை இயக்கவும்.</translation>
 <translation id="8654802032646794042">ரத்துசெய்</translation>
+<translation id="8663764600409216912">நீங்கள் பயன்படுத்தும் கடவுச்சொற்களை யூகிப்பது கடினம்</translation>
 <translation id="8668210798914567634">இந்தப் பக்கம் உங்கள் வாசிப்புப் பட்டியலில் சேமிக்கப்பட்டது.</translation>
 <translation id="8680787084697685621">கணக்கு உள்நுழைவு விவரங்கள் காலாவதியாகிவிட்டன.</translation>
 <translation id="8693663554456874301">{count,plural, =1{தாவலை மூடுக}other{தாவல்களை மூடுக}}</translation>
+<translation id="8703536910991780768">உங்கள் கடவுச்சொற்கள் வலிமையாக உள்ளன</translation>
 <translation id="8706588385081740091">கடவுச்சொற்கள்</translation>
 <translation id="8717864919010420084">இணைப்பை நகலெடு</translation>
 <translation id="8721297211384281569">கருவிகள் மெனு</translation>
@@ -1147,6 +1159,7 @@
 <translation id="8974714402877957201">1. iPad அமைப்புகளைத் திறக்கவும்</translation>
 <translation id="8976382372951310360">உதவி</translation>
 <translation id="8976414606286374109">கார்டுகள் உங்கள் Google கணக்கில் சேமிக்கப்படும்.</translation>
+<translation id="8978059030508051916">{count,plural, =0{களவாடப்பட்ட கடவுச்சொற்கள் எதுவுமில்லை}=1{{count} களவாடப்பட்ட கடவுச்சொல்}other{{count} களவாடப்பட்ட கடவுச்சொற்கள்}}</translation>
 <translation id="8981454092730389528">Google செயல்பாட்டுக் கட்டுப்பாடுகள்</translation>
 <translation id="8985320356172329008">Google இல் உள்நுழைந்திருக்கும் கணக்கு</translation>
 <translation id="9000089900434778519">உங்கள் தேடல் இன்ஜின்: <ph name="DSE_NAME" />. தேடல் விவரங்களை நீக்க அதன் வழிமுறைகளைப் பாருங்கள் (நீக்க அனுமதித்தால்).</translation>
