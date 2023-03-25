@@ -47,6 +47,13 @@ declare_args() {
   # on supported platforms and GN targets.
   enable_local_libstd = true
 
+  # When true, uses the locally-built std in all Rust targets.
+  #
+  # As an internal implementation detail this can be overridden on specific
+  # targets (e.g. to run build.rs scripts while building std), but this
+  # generally should not be done.
+  use_local_std_by_default = false
+
   # Chromium currently has a Rust toolchain for Android and Linux, but
   # if you wish to experiment on more platforms you can use this
   # argument to specify an alternative toolchain.

@@ -12,23 +12,12 @@ rust_static_library("test_local_std") {
   sources = [ "lib.rs" ]
   crate_root = "lib.rs"
   build_native_rust_unit_tests = true
-
-  # Override the normal stdlib.
-  #
-  # TODO(crbug.com/1368806): add a better switch for using the prebuilt std vs
-  # locally built std.
-  no_std = true
-  deps = [ "//build/rust/std:local_std_for_rustc" ]
+  use_local_std = true
 }
 
 rust_executable("test_local_std_exe") {
   sources = [ "main.rs" ]
   crate_root = "main.rs"
   deps = [ ":test_local_std" ]
-
-  # Override the normal stdlib.
-  #
-  # TODO(crbug.com/1368806): add a better switch for using the prebuilt std vs
-  # locally built std.
-  no_std = true
+  use_local_std = true
 }

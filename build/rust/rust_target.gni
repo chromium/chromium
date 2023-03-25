@@ -100,6 +100,11 @@ template("rust_target") {
     _visibility = invoker.visibility
   }
 
+  _use_local_std = use_local_std_by_default
+  if (defined(invoker.use_local_std)) {
+    _use_local_std = invoker.use_local_std
+  }
+
   _rustflags = []
   if (defined(invoker.rustflags)) {
     _rustflags += invoker.rustflags
@@ -220,6 +225,7 @@ template("rust_target") {
                  "_support_use_from_cpp",
                  "_test_deps",
                  "_testonly",
+                 "_use_local_std",
                  "_visibility",
                ])
   } else {
@@ -241,11 +247,21 @@ template("rust_target") {
         # target that depends on a rust target directly may need access to Cxx
         # as well, which means it must appear in public_deps.
         public_deps += [ "//build/rust:cxx_cppdeps" ]
+
+        # cxx_cppdeps pulls in the default libstd, so make sure the default was
+        # not overridden.
+        assert(
+            _use_local_std == use_local_std_by_default,
+            "Rust targets with cxx bindings cannot override the default libstd")
       } else if (!defined(invoker.no_std) || !invoker.no_std) {
         # If C++ depends on and links in the library, we need to make sure C++
         # links in the Rust stdlib. This is orthogonal to if the library exports
         # bindings for C++ to use.
-        deps = [ "//build/rust/std" ]
+        if (_use_local_std) {
+          deps = [ "//build/rust/std:link_local_std" ]
+        } else {
+          deps = [ "//build/rust/std:link_prebuilt_std" ]
+        }
       }
     }
 
@@ -265,7 +281,13 @@ template("rust_target") {
     }
 
     if (!defined(invoker.no_std) || !invoker.no_std) {
-      _rust_deps += [ "//build/rust/std:prebuilt_std_for_rustc" ]
+      if (_use_local_std) {
+        _rust_deps += [ "//build/rust/std:local_std_for_rustc" ]
+      } else {
+        _rust_deps += [ "//build/rust/std:prebuilt_std_for_rustc" ]
+      }
+    } else {
+      not_needed([ "_use_local_std" ])
     }
 
     # You must go through the groups above to get to these targets.

@@ -229,11 +229,30 @@ if (toolchain_has_rust) {
     deps = [ ":prebuilt_rustc_sysroot" ]
   }
 
-  config("rust_stdlib_config") {
+  config("prebuilt_rust_stdlib_config") {
     ldflags = []
-    out_libdir = rebase_path(target_out_dir, root_build_dir)
+    lib_dir = rebase_path("$prebuilt_rustc_sysroot/$sysroot_lib_subdir",
+                          root_build_dir)
     foreach(lib, stdlib_files) {
-      this_file = "$out_libdir/lib$lib.rlib"
+      this_file = "$lib_dir/lib$lib.rlib"
+      ldflags += [ this_file ]
+    }
+    if (is_win) {
+      # Our C++ builds already link against a wide variety of Windows API import libraries,
+      # but the Rust stdlib requires a few extra.
+      ldflags += [
+        "bcrypt.lib",
+        "userenv.lib",
+      ]
+    }
+  }
+
+  config("local_rust_stdlib_config") {
+    ldflags = []
+    lib_dir =
+        rebase_path("$local_rustc_sysroot/$sysroot_lib_subdir", root_build_dir)
+    foreach(lib, stdlib_files) {
+      this_file = "$lib_dir/lib$lib.rlib"
       ldflags += [ this_file ]
     }
     if (is_win) {
@@ -255,14 +274,29 @@ if (toolchain_has_rust) {
 
   # TODO(crbug.com/1368806): rework this so when using locally-built std, we
   # don't link the prebuilt std as well.
-  group("std") {
+
+  # Provides std libs to non-rustc linkers.
+  group("link_prebuilt_std") {
     assert(
         enable_rust,
         "Some C++ target is including Rust code even though enable_rust=false")
-    all_dependent_configs = [ ":rust_stdlib_config" ]
+    all_dependent_configs = [ ":prebuilt_rust_stdlib_config" ]
     deps = [
-      ":find_stdlib",
+      ":prebuilt_rustc_sysroot",
       ":remap_alloc",
     ]
+  }
+
+  if (local_libstd_supported) {
+    group("link_local_std") {
+      assert(
+          enable_rust,
+          "Some C++ target is including Rust code even though enable_rust=false")
+      all_dependent_configs = [ ":local_rust_stdlib_config" ]
+      deps = [
+        ":local_std_for_rustc",
+        ":remap_alloc",
+      ]
+    }
   }
 }
