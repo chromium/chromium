@@ -153,6 +153,10 @@ TEST_F(HidStatusIconTest, SingleProfileNonEmptyName) {
   TestSingleProfile();
 }
 
+TEST_F(HidStatusIconTest, ProfileShownWhileUnstaging) {
+  TestProfileShownWhileUnstaging();
+}
+
 TEST_F(HidStatusIconTest, MultipleProfiles) {
   TestMultipleProfiles();
 }

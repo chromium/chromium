@@ -89,6 +89,10 @@ TEST_F(HidPinnedNotificationTest, SingleProfileEmptyName) {
   TestSingleProfile();
 }
 
+TEST_F(HidPinnedNotificationTest, ProfileShownWhileUnstaging) {
+  TestProfileShownWhileUnstaging();
+}
+
 TEST_F(HidPinnedNotificationTest, SingleProfileNonEmptyName) {
   TestSingleProfile();
 }

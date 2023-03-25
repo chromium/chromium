@@ -22,6 +22,9 @@ class MockHidConnectionTracker : public HidConnectionTracker {
 
 class HidSystemTrayIconTestBase : public BrowserWithTestWindowTest {
  public:
+  HidSystemTrayIconTestBase()
+      : BrowserWithTestWindowTest(
+            base::test::TaskEnvironment::TimeSource::MOCK_TIME) {}
   // Check if the hid system tray icon is shown and all the action buttons work
   // correctly with the given |profile_connection_counts|.
   virtual void CheckIcon(const std::vector<std::pair<Profile*, size_t>>&
@@ -43,6 +46,9 @@ class HidSystemTrayIconTestBase : public BrowserWithTestWindowTest {
   // Test the scenario involving multiple profiles including profile
   // destruction.
   void TestMultipleProfiles();
+
+  // Test the scenario when a profile is unstaging.
+  void TestProfileShownWhileUnstaging();
 
   // Test the scenario with single profile.
   void TestSingleProfile();

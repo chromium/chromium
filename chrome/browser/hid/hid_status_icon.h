@@ -20,13 +20,14 @@ class HidStatusIcon : public HidSystemTrayIcon,
   HidStatusIcon& operator=(const HidStatusIcon&) = delete;
   ~HidStatusIcon() override;
 
-  void AddProfile(Profile* profile) override;
-  void RemoveProfile(Profile* profile) override;
   void NotifyConnectionCountUpdated(Profile* profile) override;
 
  private:
   // For using ExecuteCommand to simulate button click.
   friend class WebHidExtensionBrowserTest;
+
+  void AddProfile(Profile* profile) override;
+  void RemoveProfile(Profile* profile) override;
 
   // Get the total connection count from all the profiles being tracked.
   size_t GetTotalConnectionCount();

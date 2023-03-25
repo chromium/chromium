@@ -1052,6 +1052,7 @@ Permissions you've already given to websites and apps may apply to this account.
         <!-- WebHID system tray icon -->
         <message name="IDS_WEBHID_SYSTEM_TRAY_ICON_TOOLTIP" desc="Tooltip for the WebHID system tray icon when one or more HID devices are being accessed.">
             {NUM_DEVICES, plural,
+            =0 {Google Chrome was connected to a HID device}
             =1 {Google Chrome is connected to a HID device}
             other {Google Chrome is connected to HID devices}}
         </message>

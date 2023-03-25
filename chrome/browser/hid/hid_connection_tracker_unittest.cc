@@ -56,6 +56,8 @@ GetHidConnectionTrackerTestingFactory() {
 
 class MockHidSystemTrayIcon : public HidSystemTrayIcon {
  public:
+  MOCK_METHOD(void, StageProfile, (Profile*), (override));
+  MOCK_METHOD(void, UnstageProfile, (Profile*, bool), (override));
   MOCK_METHOD(void, AddProfile, (Profile*), (override));
   MOCK_METHOD(void, RemoveProfile, (Profile*), (override));
   MOCK_METHOD(void, NotifyConnectionCountUpdated, (Profile*), (override));
@@ -204,13 +206,14 @@ class HidConnectionTrackerTest : public BrowserWithTestWindowTest {
 }  // namespace
 
 TEST_F(HidConnectionTrackerTest, DeviceConnection) {
-  EXPECT_CALL(hid_system_tray_icon(), AddProfile(profile()));
+  EXPECT_CALL(hid_system_tray_icon(), StageProfile(profile()));
   hid_connection_tracker().IncrementConnectionCount();
   EXPECT_CALL(hid_system_tray_icon(), NotifyConnectionCountUpdated(profile()));
   hid_connection_tracker().IncrementConnectionCount();
   EXPECT_CALL(hid_system_tray_icon(), NotifyConnectionCountUpdated(profile()));
   hid_connection_tracker().DecrementConnectionCount();
-  EXPECT_CALL(hid_system_tray_icon(), RemoveProfile(profile()));
+  EXPECT_CALL(hid_system_tray_icon(),
+              UnstageProfile(profile(), /*immediate*/ false));
   hid_connection_tracker().DecrementConnectionCount();
 }
 
@@ -226,11 +229,12 @@ TEST_F(HidConnectionTrackerTest, DeviceConnectionWithNullSystemTrayIcon) {
 
 TEST_F(HidConnectionTrackerTest, ProfileDestroyed) {
   CreateTestingProfile(kTestProfileName);
-  EXPECT_CALL(hid_system_tray_icon(), AddProfile(profile()));
+  EXPECT_CALL(hid_system_tray_icon(), StageProfile(profile()));
   hid_connection_tracker().IncrementConnectionCount();
   EXPECT_CALL(hid_system_tray_icon(), NotifyConnectionCountUpdated(profile()));
   hid_connection_tracker().IncrementConnectionCount();
-  EXPECT_CALL(hid_system_tray_icon(), RemoveProfile(profile()));
+  EXPECT_CALL(hid_system_tray_icon(),
+              UnstageProfile(profile(), /*immediate*/ true));
   profile_manager()->DeleteTestingProfile(kTestProfileName);
 }
 

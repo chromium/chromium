@@ -74,7 +74,7 @@ void HidConnectionTracker::IncrementConnectionCount() {
   }
 
   if (connection_count_ == 1) {
-    hid_system_tray_icon->AddProfile(profile_);
+    hid_system_tray_icon->StageProfile(profile_);
   } else {
     hid_system_tray_icon->NotifyConnectionCountUpdated(profile_);
   }
@@ -88,7 +88,7 @@ void HidConnectionTracker::DecrementConnectionCount() {
   }
 
   if (connection_count_ == 0) {
-    hid_system_tray_icon->RemoveProfile(profile_);
+    hid_system_tray_icon->UnstageProfile(profile_, /*immediate=*/false);
   } else {
     hid_system_tray_icon->NotifyConnectionCountUpdated(profile_);
   }
@@ -144,6 +144,6 @@ void HidConnectionTracker::CleanUp() {
     connection_count_ = 0;
     auto* hid_system_tray_icon = g_browser_process->hid_system_tray_icon();
     if (hid_system_tray_icon)
-      hid_system_tray_icon->RemoveProfile(profile_);
+      hid_system_tray_icon->UnstageProfile(profile_, /*immediate=*/true);
   }
 }
