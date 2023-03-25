@@ -35,9 +35,24 @@ void RichAnswersPreTargetHandler::OnKeyEvent(ui::KeyEvent* key_event) {
   }
 
   auto key_code = key_event->key_code();
-  if (key_code == ui::VKEY_ESCAPE) {
-    QuickAnswersController::Get()->DismissQuickAnswers(
-        quick_answers::QuickAnswersExitPoint::kUnspecified);
+  switch (key_code) {
+    case ui::VKEY_ESCAPE: {
+      QuickAnswersController::Get()->DismissQuickAnswers(
+          quick_answers::QuickAnswersExitPoint::kUnspecified);
+      return;
+    }
+    case ui::VKEY_SPACE:
+    case ui::VKEY_UP:
+    case ui::VKEY_DOWN:
+    case ui::VKEY_LEFT:
+    case ui::VKEY_RIGHT: {
+      // TODO(b/275106457): Handle key navigation of focus on the
+      // rich answers card view.
+      key_event->StopPropagation();
+      return;
+    }
+    default:
+      return;
   }
 }
 
@@ -51,6 +66,23 @@ void RichAnswersPreTargetHandler::OnMouseEvent(ui::MouseEvent* mouse_event) {
     // Dismiss the rich answers view when the user clicks outside the bounds.
     QuickAnswersController::Get()->DismissQuickAnswers(
         quick_answers::QuickAnswersExitPoint::kUnspecified);
+  }
+
+  // While the rich answers view is visible, do not pass on unhandled
+  // mouse events up the hierarchy. The rich answers view should be dismissed
+  // before allowing mouse event handling by other windows and views.
+  if (mouse_event->cancelable()) {
+    mouse_event->StopPropagation();
+  }
+}
+
+void RichAnswersPreTargetHandler::OnScrollEvent(ui::ScrollEvent* scroll_event) {
+  // TODO(b/265255821): handle scrolling of the rich answers view card.
+  // Limit scroll events to the rich answers card while it is visible.
+  // This means other windows and views will not be scrollable until the rich
+  // answers view is dismissed.
+  if (scroll_event->cancelable()) {
+    scroll_event->StopPropagation();
   }
 }
 

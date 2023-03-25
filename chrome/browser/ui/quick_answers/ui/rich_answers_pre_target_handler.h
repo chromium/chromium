@@ -29,6 +29,7 @@ class RichAnswersPreTargetHandler : public ui::EventHandler {
   // ui::EventHandler:
   void OnKeyEvent(ui::KeyEvent* key_event) override;
   void OnMouseEvent(ui::MouseEvent* mouse_event) override;
+  void OnScrollEvent(ui::ScrollEvent* scroll_event) override;
 
  private:
   // Associated view handled by this class.
