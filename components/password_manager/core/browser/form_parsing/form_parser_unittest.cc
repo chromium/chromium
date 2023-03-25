@@ -1021,6 +1021,9 @@ TEST(FormParserTest, DisabledFields) {
 }
 
 TEST(FormParserTest, SkippingFieldsWithCreditCardFields) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(
+      password_manager::features::kDisablePasswordsDropdownForCvcFields);
   CheckTestData({
       {
           .description_for_logging =
@@ -1771,6 +1774,9 @@ TEST(FormParserTest, ComplementingResults) {
 
 // The parser should avoid identifying CVC fields as passwords.
 TEST(FormParserTest, IgnoreCvcFields) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(
+      password_manager::features::kDisablePasswordsDropdownForCvcFields);
   CheckTestData({
       {
           .description_for_logging =
@@ -1876,6 +1882,9 @@ TEST(FormParserTest, ServerHintsForCvcFieldsOverrideAutocomplete) {
 // relatively safe as it should be unlikely that the server misclassifies a
 // field as a CC Number field.
 TEST(FormParserTest, CCNumber) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(
+      password_manager::features::kDisablePasswordsDropdownForCvcFields);
   CheckTestData({
       {
           .description_for_logging = "Server hints: CREDIT_CARD_NUMBER.",

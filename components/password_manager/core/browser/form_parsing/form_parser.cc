@@ -615,7 +615,9 @@ std::vector<const FormFieldData*> GetRelevantPasswords(
   // don't keep CC fields even for fallback filling and let non-password
   // Autofill handle these fields. Fallback saving is fine because saving UIs of
   // Autofill and the password manager are not mutually exclusive.
-  if (mode == FormDataParser::Mode::kFilling) {
+  if (mode == FormDataParser::Mode::kFilling &&
+      base::FeatureList::IsEnabled(
+          password_manager::features::kDisablePasswordsDropdownForCvcFields)) {
     base::EraseIf(passwords, [](const ProcessedField* processed_field) {
       // TODO(crbug/1425423): This code does not use |StringMatchesCVC| because
       // the underlying regex has a high false positive rate, i.e. matches many
