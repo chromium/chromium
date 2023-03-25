@@ -27,6 +27,7 @@ import org.chromium.chrome.browser.translate.TranslateBridgeJni;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.LinkedHashSet;
 
 /**
@@ -44,6 +45,7 @@ public class AppLanguagePromoDialogTest {
     LanguageItem mLangAz;
     LanguageItem mLangEnGb;
     LanguageItem mLangEnUs;
+    LanguageItem mLangEs;
     LanguageItem mLangZu;
     // List of potential UI languages.
     LinkedHashSet<LanguageItem> mUiLanguages;
@@ -82,6 +84,7 @@ public class AppLanguagePromoDialogTest {
         mLangEnGb = new LanguageItem("en-GB", "English (UK)", "English (UK)", true);
         mLangEnUs = new LanguageItem(
                 "en-US", "English (United States)", "English (United States", true);
+        mLangEs = new LanguageItem("es", "Spanish", "español", true);
         mLangZu = new LanguageItem("zu", "Zulu", "isiZulu", true);
         mUiLanguages =
                 new LinkedHashSet<>(Arrays.asList(mLangAf, mLangAz, mLangEnGb, mLangEnUs, mLangZu));
@@ -162,7 +165,7 @@ public class AppLanguagePromoDialogTest {
                 new ArrayList<>(topLanguages), Arrays.asList(mFollowSystem, mLangAf, mLangZu));
     }
 
-    // Test isOverrideLanguageOriginalSystemLanguage
+    // Test getPotentialUILanguage
     @Test
     @SmallTest
     public void testGetPotentialUILanguage() {
@@ -180,23 +183,100 @@ public class AppLanguagePromoDialogTest {
                 AppLanguagePromoDialog.getPotentialUILanguage("es-419", uiLanguages), "es-419");
     }
 
-    // Test LanguageItemAdapter
+    // Test LanguageItemAdapter getItemCount
     @Test
     @SmallTest
-    public void testLanguageItemAdapter() {
-        ArrayList<LanguageItem> topLanguages = new ArrayList<>(Arrays.asList(mLangAf, mLangAz));
-        ArrayList<LanguageItem> otherLanguages =
-                new ArrayList<>(Arrays.asList(mLangEnGb, mLangEnUs, mLangZu));
-        LanguageItem currentLanguage = mLangAf;
+    public void testLanguageItemAdapterGetItemCount() {
         LanguageItemAdapter adapter =
-                new LanguageItemAdapter(topLanguages, otherLanguages, currentLanguage);
+                makeLanguageItemAdapter(Arrays.asList(mLangAf, mLangAz), // top languages
+                        Arrays.asList(mLangEnGb, mLangEnUs, mLangZu), // other languages,
+                        mLangAf // current language
+                );
 
         // Only the top languages plus "More languages" item are showing to start.
         Assert.assertEquals(3, adapter.getItemCount());
+        Assert.assertFalse(adapter.areOtherLanguagesShown());
 
         adapter.showOtherLanguages();
         // All languages should now be showing.
         Assert.assertEquals(6, adapter.getItemCount());
+        Assert.assertTrue(adapter.areOtherLanguagesShown());
+    }
+
+    // Test LanguageItemAdapter getLanguageItemAt
+    @Test
+    @SmallTest
+    public void testLanguageItemAdapterGetLanguageItemAt() {
+        LanguageItemAdapter adapter =
+                makeLanguageItemAdapter(Arrays.asList(mLangAf, mLangAz), // top languages
+                        Arrays.asList(mLangEnGb, mLangEnUs, mLangZu), // other languages,
+                        mLangAf // current language
+                );
+
+        Assert.assertEquals(mLangAz, adapter.getLanguageItemAt(1)); // topLanguage
+        Assert.assertEquals(mLangEnGb, adapter.getLanguageItemAt(3)); // otherLanguage
+        Assert.assertThrows(AssertionError.class, () -> adapter.getLanguageItemAt(2)); // separator
+    }
+
+    // Test LanguageItemAdapter getPositionForLanguageItem
+    @Test
+    @SmallTest
+    public void testLanguageItemAdapterGetPositionForLanguageItem() {
+        LanguageItemAdapter adapter =
+                makeLanguageItemAdapter(Arrays.asList(mLangAf, mLangAz), // top languages
+                        Arrays.asList(mLangEnGb, mLangEnUs, mLangZu), // other languages,
+                        mLangAf // current language
+                );
+
+        Assert.assertEquals(1, adapter.getPositionForLanguageItem(mLangAz)); // topLanguage
+        Assert.assertEquals(3, adapter.getPositionForLanguageItem(mLangEnGb)); // otherLanguage
+        Assert.assertEquals(-1, adapter.getPositionForLanguageItem(mLangEs)); // not found
+    }
+
+    // Test LanguageItemAdapter getItemViewType
+    @Test
+    @SmallTest
+    public void testLanguageItemAdapterGetItemViewType() {
+        LanguageItemAdapter adapter =
+                makeLanguageItemAdapter(Arrays.asList(mLangAf, mLangAz), // top languages
+                        Arrays.asList(mLangEnGb, mLangEnUs, mLangZu), // other languages,
+                        mLangAf // current language
+                );
+
+        // More Languages is showing to start
+        Assert.assertEquals(AppLanguagePromoDialog.ItemType.LANGUAGE, adapter.getItemViewType(0));
+        Assert.assertEquals(AppLanguagePromoDialog.ItemType.LANGUAGE, adapter.getItemViewType(1));
+        Assert.assertEquals(
+                AppLanguagePromoDialog.ItemType.MORE_LANGUAGES, adapter.getItemViewType(2));
+        Assert.assertEquals(AppLanguagePromoDialog.ItemType.LANGUAGE, adapter.getItemViewType(4));
+
+        adapter.showOtherLanguages();
+
+        // The separator is showing after
+        Assert.assertEquals(AppLanguagePromoDialog.ItemType.LANGUAGE, adapter.getItemViewType(0));
+        Assert.assertEquals(AppLanguagePromoDialog.ItemType.LANGUAGE, adapter.getItemViewType(1));
+        Assert.assertEquals(AppLanguagePromoDialog.ItemType.SEPARATOR, adapter.getItemViewType(2));
+        Assert.assertEquals(AppLanguagePromoDialog.ItemType.LANGUAGE, adapter.getItemViewType(4));
+    }
+
+    // Test LanguageItemAdapter setSelectedLanguage
+    @Test
+    @SmallTest
+    public void testLanguageItemAdapterSetSelectedLanguage() {
+        LanguageItemAdapter adapter =
+                makeLanguageItemAdapter(Arrays.asList(mLangAf, mLangAz), // top languages
+                        Arrays.asList(mLangEnGb, mLangEnUs, mLangZu), // other languages,
+                        mLangAf // current language
+                );
+
+        Assert.assertTrue(adapter.isTopLanguageSelected());
+        Assert.assertEquals(mLangAf, adapter.getSelectedLanguage());
+        adapter.setSelectedLanguage(1);
+        Assert.assertEquals(mLangAz, adapter.getSelectedLanguage());
+        Assert.assertThrows(AssertionError.class, () -> adapter.setSelectedLanguage(2));
+        adapter.setSelectedLanguage(4);
+        Assert.assertFalse(adapter.isTopLanguageSelected());
+        Assert.assertEquals(mLangEnUs, adapter.getSelectedLanguage());
     }
 
     // Test shouldShowPrompt conditions
@@ -237,5 +317,12 @@ public class AppLanguagePromoDialogTest {
         // Prompt is shown if it is forced on for testing.
         ShadowChromeFeatureList.sEnableForceAppLanguagePrompt = true;
         Assert.assertTrue(AppLanguagePromoDialog.shouldShowPrompt(online));
+    }
+
+    private static LanguageItemAdapter makeLanguageItemAdapter(
+            Collection<LanguageItem> topLanguages, Collection<LanguageItem> otherLanguages,
+            LanguageItem currentLanguage) {
+        return new AppLanguagePromoDialog.LanguageItemAdapter(
+                topLanguages, otherLanguages, currentLanguage);
     }
 }

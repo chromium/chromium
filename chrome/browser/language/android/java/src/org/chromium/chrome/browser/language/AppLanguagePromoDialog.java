@@ -60,7 +60,8 @@ public class AppLanguagePromoDialog {
     /** Annotation for row item type. Either a LanguageItem or separator */
     @IntDef({ItemType.LANGUAGE, ItemType.SEPARATOR, ItemType.MORE_LANGUAGES})
     @Retention(RetentionPolicy.SOURCE)
-    private @interface ItemType {
+    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
+    @interface ItemType {
         int LANGUAGE = 0;
         int SEPARATOR = 1;
         int MORE_LANGUAGES = 2;
@@ -212,12 +213,16 @@ public class AppLanguagePromoDialog {
 
         /**
          * Set the currently selected LanguageItem based on the position.
-         * TODO(https://crbug.com/1325522) Refactor to not use notifyDataSetChanged.
          * @param position Offset of the LanguageItem to select.
          */
         public void setSelectedLanguage(int position) {
+            int oldPosition = getPositionForLanguageItem(mCurrentLanguage);
+            // Exit early if the current language was selected
+            if (oldPosition == position) return;
+
             mCurrentLanguage = getLanguageItemAt(position);
-            notifyDataSetChanged();
+            notifyItemChanged(oldPosition);
+            notifyItemChanged(position);
         }
 
         /**
@@ -246,7 +251,8 @@ public class AppLanguagePromoDialog {
             return mShowOtherLanguages;
         }
 
-        protected LanguageItem getLanguageItemAt(int position) {
+        @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
+        LanguageItem getLanguageItemAt(int position) {
             if (position < mTopLanguages.size()) {
                 return mTopLanguages.get(position);
             } else if (position > mTopLanguages.size()) {
@@ -255,6 +261,19 @@ public class AppLanguagePromoDialog {
             }
             assert false : "The language item at the separator can not be accessed";
             return null;
+        }
+
+        @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
+        int getPositionForLanguageItem(LanguageItem languageItem) {
+            int position = mTopLanguages.indexOf(languageItem);
+            // Return the position if |languageItem| is found in top languages.
+            if (position != -1) return position;
+
+            position = mOtherLanguages.indexOf(languageItem);
+            // If |languageItem| is in other languages add the size of the top languages
+            // plus one for the separator.
+            if (position != -1) return position + mTopLanguages.size() + 1;
+            return -1;
         }
     }
 
@@ -322,7 +341,6 @@ public class AppLanguagePromoDialog {
 
         @Override
         public void onClick(View row) {
-            // TODO(https://crbug.com/1325471) Add meteric recording action.
             LanguageItemAdapter adapter = (LanguageItemAdapter) getBindingAdapter();
             adapter.showOtherLanguages();
         }
