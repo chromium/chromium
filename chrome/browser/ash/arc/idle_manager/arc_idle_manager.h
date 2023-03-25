@@ -68,8 +68,6 @@ class ArcIdleManager : public KeyedService,
   // ash::ThrottleService:
   // This is the main idle toggle.
   void ThrottleInstance(bool should_idle) override;
-  void RecordCpuRestrictionDisabledUMA(const std::string& observer_name,
-                                       base::TimeDelta delta) override {}
 
  private:
   std::unique_ptr<Delegate> delegate_;

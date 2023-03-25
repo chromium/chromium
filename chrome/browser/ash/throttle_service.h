@@ -83,7 +83,7 @@ class ThrottleService {
   // it was effective. Derived classes can implement this function to record UMA
   // metrics.
   virtual void RecordCpuRestrictionDisabledUMA(const std::string& observer_name,
-                                               base::TimeDelta delta) = 0;
+                                               base::TimeDelta delta) {}
 
   const std::vector<std::unique_ptr<ThrottleObserver>>& observers() const {
     return observers_;

@@ -58,8 +58,6 @@ class CrostiniThrottle : public KeyedService, public ash::ThrottleService {
  private:
   // ash::ThrottleService:
   void ThrottleInstance(bool should_throttle) override;
-  void RecordCpuRestrictionDisabledUMA(const std::string& observer_name,
-                                       base::TimeDelta delta) override {}
 
   std::unique_ptr<Delegate> delegate_;
 };
