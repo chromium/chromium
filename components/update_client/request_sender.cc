@@ -125,6 +125,7 @@ void RequestSender::SendInternalComplete(
     const std::string& response_cup_server_proof,
     int retry_after_sec) {
   VLOG(2) << "Omaha response received: " << response_body;
+  VLOG_IF(2, error) << "Omaha send error: " << error;
 
   if (!error) {
     if (!use_signing_) {
@@ -159,7 +160,6 @@ void RequestSender::SendInternalComplete(
     return;
   }
 
-  VLOG(2) << "Omaha send error: " << response_body;
   HandleSendError(error, retry_after_sec);
 }
 
