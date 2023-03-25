@@ -37,7 +37,7 @@ void QueryWebFeedTask::Run() {
     Done(WebFeedQueryRequestStatus::kAbortWebFeedQueryPendingClearAll);
     return;
   }
-  if (!url_.is_valid()) {
+  if (web_feed_id_.empty() && !url_.is_valid()) {
     Done(WebFeedQueryRequestStatus::kFailedInvalidUrl);
     return;
   }
