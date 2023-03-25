@@ -328,6 +328,7 @@ public abstract class UrlBar extends AutocompleteEditText {
     public void onFinishInflate() {
         super.onFinishInflate();
         setPrivateImeOptions(IME_OPTION_RESTRICT_STYLUS_WRITING_AREA);
+        ApiCompatibilityUtils.clearHandwritingBoundsOffsetBottom(this);
     }
 
     /**
