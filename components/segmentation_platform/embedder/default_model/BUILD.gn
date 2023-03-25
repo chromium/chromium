@@ -34,6 +34,8 @@ static_library("default_model") {
   ]
   if (is_android) {
     sources += [
+      "device_tier_segment.cc",
+      "device_tier_segment.h",
       "frequent_feature_user_model.cc",
       "frequent_feature_user_model.h",
       "intentional_user_model.cc",
@@ -66,6 +68,7 @@ source_set("unit_tests") {
 
   if (is_android) {
     sources += [
+      "device_tier_segment_unittest.cc",
       "frequent_feature_user_model_unittest.cc",
       "intentional_user_model_unittest.cc",
       "power_user_segment_unittest.cc",

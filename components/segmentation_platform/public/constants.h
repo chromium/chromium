@@ -141,6 +141,14 @@ const char kSearchUserModelLabelLow[] = "Low";
 const char kSearchUserModelLabelMedium[] = "Medium";
 const char kSearchUserModelLabelHigh[] = "High";
 
+// Labels for device tier model.
+// Any updates to these strings need to also update the field trials allowlist
+// in go/segmentation-field-trials-map.;
+const char kDeviceTierSegmentLabelNone[] = "None";
+const char kDeviceTierSegmentLabelLow[] = "Low";
+const char kDeviceTierSegmentLabelMedium[] = "Medium";
+const char kDeviceTierSegmentLabelHigh[] = "High";
+
 // Custom inputs for contextual page actions model.
 const char kContextualPageActionModelInputPriceTracking[] = "can_track_price";
 const char kContextualPageActionModelInputReaderMode[] = "has_reader_mode";

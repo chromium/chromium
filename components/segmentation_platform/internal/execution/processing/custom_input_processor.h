@@ -74,6 +74,21 @@ class CustomInputProcessor : public QueryProcessor {
   bool AddPredictionTime(const proto::CustomInput& custom_input,
                          std::vector<ProcessedValue>& out_tensor);
 
+  // Add a tensor value for CustomInput::FILL_DEVICE_RAM type and return
+  // whether it succeeded.
+  bool AddDeviceRAMInMB(const proto::CustomInput& custom_input,
+                        std::vector<ProcessedValue>& out_tensor);
+
+  // Add a tensor value for CustomInput::FILL_DEVICE_OS type and return
+  // whether it succeeded.
+  bool AddDeviceOSVersionNumber(const proto::CustomInput& custom_input,
+                                std::vector<ProcessedValue>& out_tensor);
+
+  // Add a tensor value for CustomInput::FILL_DEVICE_PPI type and return
+  // whether it succeeded.
+  bool AddDevicePPI(const proto::CustomInput& custom_input,
+                    std::vector<ProcessedValue>& out_tensor);
+
   // Add a tensor value for CustomInput::TIME_RANGE_BEFORE_PREDICTION type and
   // return whether it succeeded.
   bool AddTimeRangeBeforePrediction(const proto::CustomInput& custom_input,

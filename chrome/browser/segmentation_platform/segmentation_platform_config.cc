@@ -13,6 +13,7 @@
 #include "chrome/browser/metrics/chrome_metrics_service_accessor.h"
 #include "components/segmentation_platform/embedder/default_model/cross_device_user_segment.h"
 #include "components/segmentation_platform/embedder/default_model/device_switcher_model.h"
+#include "components/segmentation_platform/embedder/default_model/device_tier_segment.h"
 #include "components/segmentation_platform/embedder/default_model/feed_user_segment.h"
 #include "components/segmentation_platform/embedder/default_model/frequent_feature_user_model.h"
 #include "components/segmentation_platform/embedder/default_model/low_user_engagement_model.h"
@@ -130,6 +131,7 @@ std::vector<std::unique_ptr<Config>> GetSegmentationPlatformConfig(
   configs.emplace_back(IntentionalUserModel::GetConfig());
   configs.emplace_back(PowerUserSegment::GetConfig());
   configs.emplace_back(FrequentFeatureUserModel::GetConfig());
+  configs.emplace_back(DeviceTierSegment::GetConfig());
 #endif
 
   configs.emplace_back(LowUserEngagementModel::GetConfig());

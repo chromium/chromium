@@ -5,6 +5,7 @@
 #include "components/segmentation_platform/internal/execution/processing/custom_input_processor.h"
 
 #include "base/strings/string_number_conversions.h"
+#include "base/system/sys_info.h"
 #include "base/task/sequenced_task_runner.h"
 #include "components/segmentation_platform/internal/database/ukm_types.h"
 #include "components/segmentation_platform/internal/execution/processing/feature_processor_state.h"
@@ -32,6 +33,11 @@ absl::optional<int> GetArgAsInt(
     return absl::optional<int>();
 
   return absl::optional<int>(value);
+}
+
+int ProcessOsVersionString(std::string os_version) {
+  // TODO(ritikagup@) : Add the implementation logic here.
+  return 0;
 }
 
 }  // namespace
@@ -193,6 +199,24 @@ QueryProcessor::Tensor CustomInputProcessor::ProcessSingleCustomInput(
       feature_processor_state->SetError(
           stats::FeatureProcessingError::kCustomInputError);
   } else if (custom_input.fill_policy() ==
+             proto::CustomInput::FILL_DEVICE_RAM_MB) {
+    if (!AddDeviceRAMInMB(custom_input, tensor_result)) {
+      feature_processor_state->SetError(
+          stats::FeatureProcessingError::kCustomInputError);
+    }
+  } else if (custom_input.fill_policy() ==
+             proto::CustomInput::FILL_DEVICE_OS_VERSION_NUMBER) {
+    if (!AddDeviceOSVersionNumber(custom_input, tensor_result)) {
+      feature_processor_state->SetError(
+          stats::FeatureProcessingError::kCustomInputError);
+    }
+  } else if (custom_input.fill_policy() ==
+             proto::CustomInput::FILL_DEVICE_PPI) {
+    if (!AddDevicePPI(custom_input, tensor_result)) {
+      feature_processor_state->SetError(
+          stats::FeatureProcessingError::kCustomInputError);
+    }
+  } else if (custom_input.fill_policy() ==
              proto::CustomInput::PRICE_TRACKING_HINTS) {
     feature_processor_state->SetError(
         stats::FeatureProcessingError::kCustomInputError);
@@ -258,6 +282,40 @@ bool CustomInputProcessor::AddTimeRangeBeforePrediction(
     return false;
   }
 
+  return true;
+}
+
+bool CustomInputProcessor::AddDeviceRAMInMB(
+    const proto::CustomInput& custom_input,
+    std::vector<ProcessedValue>& out_tensor) {
+  if (custom_input.tensor_length() != 1) {
+    return false;
+  }
+  int device_ram_in_mb = base::SysInfo::AmountOfPhysicalMemoryMB();
+  out_tensor.emplace_back(device_ram_in_mb);
+  return true;
+}
+
+bool CustomInputProcessor::AddDeviceOSVersionNumber(
+    const proto::CustomInput& custom_input,
+    std::vector<ProcessedValue>& out_tensor) {
+  if (custom_input.tensor_length() != 1) {
+    return false;
+  }
+  std::string os_version = base::SysInfo::OperatingSystemVersion();
+  int device_os_version = ProcessOsVersionString(os_version);
+  out_tensor.emplace_back(device_os_version);
+  return true;
+}
+
+bool CustomInputProcessor::AddDevicePPI(
+    const proto::CustomInput& custom_input,
+    std::vector<ProcessedValue>& out_tensor) {
+  if (custom_input.tensor_length() != 1) {
+    return false;
+  }
+  // TODO(crbug.com/1424539) : Add logic to read device max PPI and add it in
+  // out_tensor. out_tensor.emplace_back(device_max_ppi);
   return true;
 }
 

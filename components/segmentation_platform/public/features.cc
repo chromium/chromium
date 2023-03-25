@@ -79,4 +79,8 @@ BASE_FEATURE(kSegmentationPlatformSegmentInfoCache,
 BASE_FEATURE(kSegmentationDefaultReportingSegments,
              "SegmentationDefaultReportingSegments",
              base::FEATURE_ENABLED_BY_DEFAULT);
+
+BASE_FEATURE(kSegmentationPlatformDeviceTier,
+             "SegmentationPlatformDeviceTier",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 }  // namespace segmentation_platform::features

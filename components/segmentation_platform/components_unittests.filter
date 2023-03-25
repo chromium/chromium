@@ -9,6 +9,7 @@ DatabaseMaintenanceImplTest.*
 DefaultModelManagerTest.*
 DeviceSwitcherModelTest.*
 DeviceSwitcherResultDispatcherTest.*
+DeviceTierSegmentTest.*
 DummyModelProviderFactoryImplTest.*
 DummySegmentationPlatformServiceTest.*
 FailedUkmDatabaseTest.*
