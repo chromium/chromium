@@ -2043,7 +2043,21 @@
       base_feature: "LoadInputImageWithoutObject",
     },
     {
+      // Enable AnimationFrameTimingMonitor, which measures long animation
+      // frames. Can be used for UKM or for the perofrmance API.
+      name: "LongAnimationFrameMonitoring",
+      implied_by: ["LongAnimationFrameTiming", "LongAnimationFrameUKM"],
+      status: "experimental"
+    },
+    {
+      // Enables long aniamtion frames as a performance API (the
+      // "long-animation-frame" timeline entry)
       name: "LongAnimationFrameTiming",
+      status: "experimental"
+    },
+    {
+      // Enables long aniamtion frame logging to UKM
+      name: "LongAnimationFrameUKM",
       status: "experimental"
     },
     {

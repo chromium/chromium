@@ -17400,6 +17400,630 @@ be describing additional metrics about the same event.
   </metric>
 </event>
 
+<event name="PerformanceAPI.LongAnimationFrame.AfterLoad.BlockingFrame">
+  <owner>nrosenthal@chromium.org</owner>
+  <summary>
+    This event is associated with the LongAnimationFrame Web Platform API. The
+    metrics are recorded when a long animation frame is detected and reported to
+    the page. For more details see https://crbug.com/1392685.
+  </summary>
+  <metric name="DidPause" enum="Boolean">
+    <summary>
+      True if there was a pause (sync XHR, dialog) during the long frame.
+    </summary>
+  </metric>
+  <metric name="Duration.DelayDefer">
+    <summary>
+      A positive or negative duration in milliseconds, representing the time
+      between the desired time for rendering the frame and rendering it in
+      practice. Positive means delayed, negative means deferred.
+    </summary>
+    <aggregation>
+      <history>
+        <statistics>
+          <quantiles type="std-percentiles"/>
+        </statistics>
+      </history>
+    </aggregation>
+  </metric>
+  <metric name="Duration.EffectiveBlocking">
+    <summary>
+      The duration in milliseconds, representing the time the LoAF blocked an
+      actual UI event or pending render.
+    </summary>
+    <aggregation>
+      <history>
+        <statistics>
+          <quantiles type="std-percentiles"/>
+        </statistics>
+      </history>
+    </aggregation>
+  </metric>
+  <metric name="Duration.LongScript.JSCompilation">
+    <summary>
+      The total duration of long-script JS compilation, in milliseconds.
+    </summary>
+    <aggregation>
+      <history>
+        <statistics>
+          <quantiles type="std-percentiles"/>
+        </statistics>
+      </history>
+    </aggregation>
+  </metric>
+  <metric name="Duration.LongScript.JSExecution">
+    <summary>
+      The total duration of long-script JS execution, not including compilation,
+      in milliseconds.
+    </summary>
+    <aggregation>
+      <history>
+        <statistics>
+          <quantiles type="std-percentiles"/>
+        </statistics>
+      </history>
+    </aggregation>
+  </metric>
+  <metric name="Duration.StyleAndLayout.Forced">
+    <summary>
+      The total duration of forced style and layout in long scripts.
+    </summary>
+    <aggregation>
+      <history>
+        <statistics>
+          <quantiles type="std-percentiles"/>
+        </statistics>
+      </history>
+    </aggregation>
+  </metric>
+  <metric name="Duration.StyleAndLayout.RenderPhase">
+    <summary>
+      The total duration of the style and layout lifecycle phase, not including
+      forced style and layout.
+    </summary>
+    <aggregation>
+      <history>
+        <statistics>
+          <quantiles type="std-percentiles"/>
+        </statistics>
+      </history>
+    </aggregation>
+  </metric>
+  <metric name="Duration.Total">
+    <summary>
+      The duration of the long animation frame in milliseconds. Mirrors the
+      value reported in PerformanceEntry.duration.
+    </summary>
+    <aggregation>
+      <history>
+        <statistics>
+          <quantiles type="std-percentiles"/>
+        </statistics>
+      </history>
+    </aggregation>
+  </metric>
+</event>
+
+<event name="PerformanceAPI.LongAnimationFrame.AfterLoad.BlockingInput">
+  <owner>nrosenthal@chromium.org</owner>
+  <summary>
+    This event is associated with the LongAnimationFrame Web Platform API. The
+    metrics are recorded when a long animation frame is detected and reported to
+    the page. For more details see https://crbug.com/1392685.
+  </summary>
+  <metric name="DidPause" enum="Boolean">
+    <summary>
+      True if there was a pause (sync XHR, dialog) during the long frame.
+    </summary>
+  </metric>
+  <metric name="Duration.DelayDefer">
+    <summary>
+      A positive or negative duration in milliseconds, representing the time
+      between the desired time for rendering the frame and rendering it in
+      practice. Positive means delayed, negative means deferred.
+    </summary>
+    <aggregation>
+      <history>
+        <statistics>
+          <quantiles type="std-percentiles"/>
+        </statistics>
+      </history>
+    </aggregation>
+  </metric>
+  <metric name="Duration.EffectiveBlocking">
+    <summary>
+      The duration in milliseconds, representing the time the LoAF blocked an
+      actual UI event or pending render.
+    </summary>
+    <aggregation>
+      <history>
+        <statistics>
+          <quantiles type="std-percentiles"/>
+        </statistics>
+      </history>
+    </aggregation>
+  </metric>
+  <metric name="Duration.LongScript.JSCompilation">
+    <summary>
+      The total duration of long-script JS compilation, in milliseconds.
+    </summary>
+    <aggregation>
+      <history>
+        <statistics>
+          <quantiles type="std-percentiles"/>
+        </statistics>
+      </history>
+    </aggregation>
+  </metric>
+  <metric name="Duration.LongScript.JSExecution">
+    <summary>
+      The total duration of long-script JS execution, not including compilation,
+      in milliseconds.
+    </summary>
+    <aggregation>
+      <history>
+        <statistics>
+          <quantiles type="std-percentiles"/>
+        </statistics>
+      </history>
+    </aggregation>
+  </metric>
+  <metric name="Duration.StyleAndLayout.Forced">
+    <summary>
+      The total duration of forced style and layout in long scripts.
+    </summary>
+    <aggregation>
+      <history>
+        <statistics>
+          <quantiles type="std-percentiles"/>
+        </statistics>
+      </history>
+    </aggregation>
+  </metric>
+  <metric name="Duration.StyleAndLayout.RenderPhase">
+    <summary>
+      The total duration of the style and layout lifecycle phase, not including
+      forced style and layout.
+    </summary>
+    <aggregation>
+      <history>
+        <statistics>
+          <quantiles type="std-percentiles"/>
+        </statistics>
+      </history>
+    </aggregation>
+  </metric>
+  <metric name="Duration.Total">
+    <summary>
+      The duration of the long animation frame in milliseconds. Mirrors the
+      value reported in PerformanceEntry.duration.
+    </summary>
+    <aggregation>
+      <history>
+        <statistics>
+          <quantiles type="std-percentiles"/>
+        </statistics>
+      </history>
+    </aggregation>
+  </metric>
+</event>
+
+<event name="PerformanceAPI.LongAnimationFrame.AfterLoad.NonBlocking">
+  <owner>nrosenthal@chromium.org</owner>
+  <summary>
+    This event is associated with the LongAnimationFrame Web Platform API. The
+    metrics are recorded when a long animation frame is detected and reported to
+    the page. For more details see https://crbug.com/1392685.
+  </summary>
+  <metric name="DidPause" enum="Boolean">
+    <summary>
+      True if there was a pause (sync XHR, dialog) during the long frame.
+    </summary>
+  </metric>
+  <metric name="Duration.DelayDefer">
+    <summary>
+      A positive or negative duration in milliseconds, representing the time
+      between the desired time for rendering the frame and rendering it in
+      practice. Positive means delayed, negative means deferred.
+    </summary>
+    <aggregation>
+      <history>
+        <statistics>
+          <quantiles type="std-percentiles"/>
+        </statistics>
+      </history>
+    </aggregation>
+  </metric>
+  <metric name="Duration.EffectiveBlocking">
+    <summary>
+      The duration in milliseconds, representing the time the LoAF blocked an
+      actual UI event or pending render.
+    </summary>
+    <aggregation>
+      <history>
+        <statistics>
+          <quantiles type="std-percentiles"/>
+        </statistics>
+      </history>
+    </aggregation>
+  </metric>
+  <metric name="Duration.LongScript.JSCompilation">
+    <summary>
+      The total duration of long-script JS compilation, in milliseconds.
+    </summary>
+    <aggregation>
+      <history>
+        <statistics>
+          <quantiles type="std-percentiles"/>
+        </statistics>
+      </history>
+    </aggregation>
+  </metric>
+  <metric name="Duration.LongScript.JSExecution">
+    <summary>
+      The total duration of long-script JS execution, not including compilation,
+      in milliseconds.
+    </summary>
+    <aggregation>
+      <history>
+        <statistics>
+          <quantiles type="std-percentiles"/>
+        </statistics>
+      </history>
+    </aggregation>
+  </metric>
+  <metric name="Duration.StyleAndLayout.Forced">
+    <summary>
+      The total duration of forced style and layout in long scripts.
+    </summary>
+    <aggregation>
+      <history>
+        <statistics>
+          <quantiles type="std-percentiles"/>
+        </statistics>
+      </history>
+    </aggregation>
+  </metric>
+  <metric name="Duration.StyleAndLayout.RenderPhase">
+    <summary>
+      The total duration of the style and layout lifecycle phase, not including
+      forced style and layout.
+    </summary>
+    <aggregation>
+      <history>
+        <statistics>
+          <quantiles type="std-percentiles"/>
+        </statistics>
+      </history>
+    </aggregation>
+  </metric>
+  <metric name="Duration.Total">
+    <summary>
+      The duration of the long animation frame in milliseconds. Mirrors the
+      value reported in PerformanceEntry.duration.
+    </summary>
+    <aggregation>
+      <history>
+        <statistics>
+          <quantiles type="std-percentiles"/>
+        </statistics>
+      </history>
+    </aggregation>
+  </metric>
+</event>
+
+<event name="PerformanceAPI.LongAnimationFrame.BeforeLoad.BlockingFrame">
+  <owner>nrosenthal@chromium.org</owner>
+  <summary>
+    This event is associated with the LongAnimationFrame Web Platform API. The
+    metrics are recorded when a long animation frame is detected and reported to
+    the page. For more details see https://crbug.com/1392685.
+  </summary>
+  <metric name="DidPause" enum="Boolean">
+    <summary>
+      True if there was a pause (sync XHR, dialog) during the long frame.
+    </summary>
+  </metric>
+  <metric name="Duration.DelayDefer">
+    <summary>
+      A positive or negative duration in milliseconds, representing the time
+      between the desired time for rendering the frame and rendering it in
+      practice. Positive means delayed, negative means deferred.
+    </summary>
+    <aggregation>
+      <history>
+        <statistics>
+          <quantiles type="std-percentiles"/>
+        </statistics>
+      </history>
+    </aggregation>
+  </metric>
+  <metric name="Duration.EffectiveBlocking">
+    <summary>
+      The duration in milliseconds, representing the time the LoAF blocked an
+      actual UI event or pending render.
+    </summary>
+    <aggregation>
+      <history>
+        <statistics>
+          <quantiles type="std-percentiles"/>
+        </statistics>
+      </history>
+    </aggregation>
+  </metric>
+  <metric name="Duration.LongScript.JSCompilation">
+    <summary>
+      The total duration of long-script JS compilation, in milliseconds.
+    </summary>
+    <aggregation>
+      <history>
+        <statistics>
+          <quantiles type="std-percentiles"/>
+        </statistics>
+      </history>
+    </aggregation>
+  </metric>
+  <metric name="Duration.LongScript.JSExecution">
+    <summary>
+      The total duration of long-script JS execution, not including compilation,
+      in milliseconds.
+    </summary>
+    <aggregation>
+      <history>
+        <statistics>
+          <quantiles type="std-percentiles"/>
+        </statistics>
+      </history>
+    </aggregation>
+  </metric>
+  <metric name="Duration.StyleAndLayout.Forced">
+    <summary>
+      The total duration of forced style and layout in long scripts.
+    </summary>
+    <aggregation>
+      <history>
+        <statistics>
+          <quantiles type="std-percentiles"/>
+        </statistics>
+      </history>
+    </aggregation>
+  </metric>
+  <metric name="Duration.StyleAndLayout.RenderPhase">
+    <summary>
+      The total duration of the style and layout lifecycle phase, not including
+      forced style and layout.
+    </summary>
+    <aggregation>
+      <history>
+        <statistics>
+          <quantiles type="std-percentiles"/>
+        </statistics>
+      </history>
+    </aggregation>
+  </metric>
+  <metric name="Duration.Total">
+    <summary>
+      The duration of the long animation frame in milliseconds. Mirrors the
+      value reported in PerformanceEntry.duration.
+    </summary>
+    <aggregation>
+      <history>
+        <statistics>
+          <quantiles type="std-percentiles"/>
+        </statistics>
+      </history>
+    </aggregation>
+  </metric>
+</event>
+
+<event name="PerformanceAPI.LongAnimationFrame.BeforeLoad.BlockingInput">
+  <owner>nrosenthal@chromium.org</owner>
+  <summary>
+    This event is associated with the LongAnimationFrame Web Platform API. The
+    metrics are recorded when a long animation frame is detected and reported to
+    the page. For more details see https://crbug.com/1392685.
+  </summary>
+  <metric name="DidPause" enum="Boolean">
+    <summary>
+      True if there was a pause (sync XHR, dialog) during the long frame.
+    </summary>
+  </metric>
+  <metric name="Duration.DelayDefer">
+    <summary>
+      A positive or negative duration in milliseconds, representing the time
+      between the desired time for rendering the frame and rendering it in
+      practice. Positive means delayed, negative means deferred.
+    </summary>
+    <aggregation>
+      <history>
+        <statistics>
+          <quantiles type="std-percentiles"/>
+        </statistics>
+      </history>
+    </aggregation>
+  </metric>
+  <metric name="Duration.EffectiveBlocking">
+    <summary>
+      The duration in milliseconds, representing the time the LoAF blocked an
+      actual UI event or pending render.
+    </summary>
+    <aggregation>
+      <history>
+        <statistics>
+          <quantiles type="std-percentiles"/>
+        </statistics>
+      </history>
+    </aggregation>
+  </metric>
+  <metric name="Duration.LongScript.JSCompilation">
+    <summary>
+      The total duration of long-script JS compilation, in milliseconds.
+    </summary>
+    <aggregation>
+      <history>
+        <statistics>
+          <quantiles type="std-percentiles"/>
+        </statistics>
+      </history>
+    </aggregation>
+  </metric>
+  <metric name="Duration.LongScript.JSExecution">
+    <summary>
+      The total duration of long-script JS execution, not including compilation,
+      in milliseconds.
+    </summary>
+    <aggregation>
+      <history>
+        <statistics>
+          <quantiles type="std-percentiles"/>
+        </statistics>
+      </history>
+    </aggregation>
+  </metric>
+  <metric name="Duration.StyleAndLayout.Forced">
+    <summary>
+      The total duration of forced style and layout in long scripts.
+    </summary>
+    <aggregation>
+      <history>
+        <statistics>
+          <quantiles type="std-percentiles"/>
+        </statistics>
+      </history>
+    </aggregation>
+  </metric>
+  <metric name="Duration.StyleAndLayout.RenderPhase">
+    <summary>
+      The total duration of the style and layout lifecycle phase, not including
+      forced style and layout.
+    </summary>
+    <aggregation>
+      <history>
+        <statistics>
+          <quantiles type="std-percentiles"/>
+        </statistics>
+      </history>
+    </aggregation>
+  </metric>
+  <metric name="Duration.Total">
+    <summary>
+      The duration of the long animation frame in milliseconds. Mirrors the
+      value reported in PerformanceEntry.duration.
+    </summary>
+    <aggregation>
+      <history>
+        <statistics>
+          <quantiles type="std-percentiles"/>
+        </statistics>
+      </history>
+    </aggregation>
+  </metric>
+</event>
+
+<event name="PerformanceAPI.LongAnimationFrame.BeforeLoad.NonBlocking">
+  <owner>nrosenthal@chromium.org</owner>
+  <summary>
+    This event is associated with the LongAnimationFrame Web Platform API. The
+    metrics are recorded when a long animation frame is detected and reported to
+    the page. For more details see https://crbug.com/1392685.
+  </summary>
+  <metric name="DidPause" enum="Boolean">
+    <summary>
+      True if there was a pause (sync XHR, dialog) during the long frame.
+    </summary>
+  </metric>
+  <metric name="Duration.DelayDefer">
+    <summary>
+      A positive or negative duration in milliseconds, representing the time
+      between the desired time for rendering the frame and rendering it in
+      practice. Positive means delayed, negative means deferred.
+    </summary>
+    <aggregation>
+      <history>
+        <statistics>
+          <quantiles type="std-percentiles"/>
+        </statistics>
+      </history>
+    </aggregation>
+  </metric>
+  <metric name="Duration.EffectiveBlocking">
+    <summary>
+      The duration in milliseconds, representing the time the LoAF blocked an
+      actual UI event or pending render.
+    </summary>
+    <aggregation>
+      <history>
+        <statistics>
+          <quantiles type="std-percentiles"/>
+        </statistics>
+      </history>
+    </aggregation>
+  </metric>
+  <metric name="Duration.LongScript.JSCompilation">
+    <summary>
+      The total duration of long-script JS compilation, in milliseconds.
+    </summary>
+    <aggregation>
+      <history>
+        <statistics>
+          <quantiles type="std-percentiles"/>
+        </statistics>
+      </history>
+    </aggregation>
+  </metric>
+  <metric name="Duration.LongScript.JSExecution">
+    <summary>
+      The total duration of long-script JS execution, not including compilation,
+      in milliseconds.
+    </summary>
+    <aggregation>
+      <history>
+        <statistics>
+          <quantiles type="std-percentiles"/>
+        </statistics>
+      </history>
+    </aggregation>
+  </metric>
+  <metric name="Duration.StyleAndLayout.Forced">
+    <summary>
+      The total duration of forced style and layout in long scripts.
+    </summary>
+    <aggregation>
+      <history>
+        <statistics>
+          <quantiles type="std-percentiles"/>
+        </statistics>
+      </history>
+    </aggregation>
+  </metric>
+  <metric name="Duration.StyleAndLayout.RenderPhase">
+    <summary>
+      The total duration of the style and layout lifecycle phase, not including
+      forced style and layout.
+    </summary>
+    <aggregation>
+      <history>
+        <statistics>
+          <quantiles type="std-percentiles"/>
+        </statistics>
+      </history>
+    </aggregation>
+  </metric>
+  <metric name="Duration.Total">
+    <summary>
+      The duration of the long animation frame in milliseconds. Mirrors the
+      value reported in PerformanceEntry.duration.
+    </summary>
+    <aggregation>
+      <history>
+        <statistics>
+          <quantiles type="std-percentiles"/>
+        </statistics>
+      </history>
+    </aggregation>
+  </metric>
+</event>
+
 <event name="PerformanceAPI.LongTask">
   <owner>hpayer@chromium.org</owner>
   <owner>mlippautz@chromium.org</owner>

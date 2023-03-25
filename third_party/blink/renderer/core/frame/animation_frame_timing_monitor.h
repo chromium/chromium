@@ -6,6 +6,8 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_FRAME_ANIMATION_FRAME_TIMING_MONITOR_H_
 
 #include "base/task/sequence_manager/task_time_observer.h"
+#include "services/metrics/public/cpp/ukm_recorder.h"
+#include "services/metrics/public/cpp/ukm_source_id.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/core_probe_sink.h"
 #include "third_party/blink/renderer/core/frame/frame.h"
@@ -36,6 +38,9 @@ class CORE_EXPORT AnimationFrameTimingMonitor final
     virtual void ReportLongAnimationFrameTiming(AnimationFrameTimingInfo*) = 0;
     virtual bool ShouldReportLongAnimationFrameTiming() const = 0;
     virtual bool RequestedMainFramePending() = 0;
+    virtual ukm::UkmRecorder* MainFrameUkmRecorder() = 0;
+    virtual ukm::SourceId MainFrameUkmSourceId() = 0;
+    virtual bool IsMainFrameFullyLoaded() const = 0;
   };
   AnimationFrameTimingMonitor(Client&, CoreProbeSink*);
   AnimationFrameTimingMonitor(const AnimationFrameTimingMonitor&) = delete;
@@ -81,6 +86,18 @@ class CORE_EXPORT AnimationFrameTimingMonitor final
   void Did(const probe::UserCallback&);
   void Will(const probe::CallFunction&);
   void Did(const probe::CallFunction&);
+  void DidRunJavaScriptDialog() { did_pause_ = true; }
+
+  void WillLoadXHR(ExecutionContext*,
+                   const AtomicString& method,
+                   const KURL&,
+                   bool async,
+                   const HTTPHeaderMap& headers,
+                   bool include_crendentials) {
+    if (!async) {
+      did_pause_ = true;
+    }
+  }
 
   void SetDesiredRenderStartTime(base::TimeTicks time) {
     desired_render_start_time_ = time;
@@ -113,6 +130,8 @@ class CORE_EXPORT AnimationFrameTimingMonitor final
     return DidExecuteScript(probe, probe.context);
   }
 
+  void RecordLongAnimationFrameUKM(const AnimationFrameTimingInfo&);
+
   absl::optional<PendingScriptInfo> pending_script_info_;
   Client& client_;
 
@@ -135,6 +154,7 @@ class CORE_EXPORT AnimationFrameTimingMonitor final
 
   base::TimeTicks desired_render_start_time_;
   base::TimeTicks first_ui_event_timestamp_;
+  bool did_pause_ = false;
 
   bool enabled_ = false;
 };

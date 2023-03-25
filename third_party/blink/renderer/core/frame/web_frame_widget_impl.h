@@ -328,6 +328,9 @@ class CORE_EXPORT WebFrameWidgetImpl
   void ReportLongAnimationFrameTiming(AnimationFrameTimingInfo* info) override;
   bool ShouldReportLongAnimationFrameTiming() const override;
   bool RequestedMainFramePending() override;
+  ukm::UkmRecorder* MainFrameUkmRecorder() override;
+  ukm::SourceId MainFrameUkmSourceId() override;
+  bool IsMainFrameFullyLoaded() const override;
 
   // WebFrameWidget overrides.
   void InitializeNonCompositing(WebNonCompositedWidgetClient* client) override;

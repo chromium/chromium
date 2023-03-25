@@ -2390,7 +2390,7 @@ void MainThreadSchedulerImpl::OnTaskCompleted(
   if (queue) {
     queue->OnTaskRunTimeReported(task_timing);
 
-    if (RuntimeEnabledFeatures::LongAnimationFrameTimingEnabled()) {
+    if (RuntimeEnabledFeatures::LongAnimationFrameMonitoringEnabled()) {
       if (FrameSchedulerImpl* frame_scheduler = queue->GetFrameScheduler()) {
         frame_scheduler->OnTaskCompleted(task_timing,
                                          task.GetDesiredExecutionTime());
