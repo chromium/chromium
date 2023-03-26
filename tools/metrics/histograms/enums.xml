@@ -60358,6 +60358,7 @@ from previous Chrome versions.
   <int value="-721685663" label="WebViewMixedContentAutoupgrades:enabled"/>
   <int value="-721649087" label="HighEfficiencyModeAvailable:enabled"/>
   <int value="-721245076" label="DesktopPWAsStayInWindow:disabled"/>
+  <int value="-720304697" label="LauncherImageSearch:enabled"/>
   <int value="-719819631" label="TranslateUI:disabled"/>
   <int value="-719698123" label="LegacyTLSWarnings:enabled"/>
   <int value="-719147284" label="ExperimentalProductivityFeatures:disabled"/>
@@ -62656,6 +62657,7 @@ from previous Chrome versions.
   <int value="559695461" label="UseChimeAndroidSdk:enabled"/>
   <int value="559903013"
       label="AutofillEnableMerchantOptOutErrorDialog:enabled"/>
+  <int value="560369327" label="LauncherImageSearch:disabled"/>
   <int value="560953355"
       label="ExtractRelatedSearchesFromPrefetchedZPSResponse:disabled"/>
   <int value="561374433" label="SCTAuditing:disabled"/>

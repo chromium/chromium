@@ -6252,6 +6252,11 @@ const char kLauncherKeywordExtractionScoringDescription[] =
     "Enables extraction of keywords from query then calculate score from "
     "extracted keyword in the launcher.";
 
+const char kLauncherLocalImageSearchName[] =
+    "Enable launcher local image search";
+const char kLauncherLocalImageSearchDescription[] =
+    "Enables on-device local image search in the launcher.";
+
 const char kLauncherFuzzyMatchForOmniboxName[] =
     "Omnibox Results Fuzzy match experiment";
 const char kLauncherFuzzyMatchForOmniboxDescription[] =

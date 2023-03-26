@@ -7726,6 +7726,10 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kAppCollectionFolderRefreshName,
      flag_descriptions::kAppCollectionFolderRefreshDescription, kOsCrOS,
      FEATURE_VALUE_TYPE(ash::features::kAppCollectionFolderRefresh)},
+    {"launcher-local-image-search",
+     flag_descriptions::kLauncherLocalImageSearchName,
+     flag_descriptions::kLauncherLocalImageSearchDescription, kOsCrOS,
+     FEATURE_VALUE_TYPE(search_features::kLauncherImageSearch)},
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)

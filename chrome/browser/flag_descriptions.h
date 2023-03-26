@@ -3609,6 +3609,9 @@ extern const char kLauncherGameSearchDescription[];
 extern const char kLauncherKeywordExtractionScoring[];
 extern const char kLauncherKeywordExtractionScoringDescription[];
 
+extern const char kLauncherLocalImageSearchName[];
+extern const char kLauncherLocalImageSearchDescription[];
+
 extern const char kLauncherFuzzyMatchForOmniboxName[];
 extern const char kLauncherFuzzyMatchForOmniboxDescription[];
 

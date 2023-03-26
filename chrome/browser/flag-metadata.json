@@ -4745,6 +4745,11 @@
     "expiry_milestone": 115
   },
   {
+    "name": "launcher-local-image-search",
+    "owners": ["dgrebenyuk", "nbowe"],
+    "expiry_milestone": 120
+  },
+  {
     "name": "launcher-system-info-answer-cards",
     "owners": ["laurencom", "wrong", "amandadeacon"],
     "expiry_milestone": 120
