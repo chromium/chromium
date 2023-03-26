@@ -13,7 +13,7 @@ source_set("thread") {
   ]
 
   if (use_blink) {
-    deps += [ "//ios/web/content" ]
+    deps += [ "//ios/web/content:threads" ]
   }
 
   sources = [
