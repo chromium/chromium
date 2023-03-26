@@ -296,16 +296,18 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_DRIVEFS) PinManager
   void OnFreeSpaceRetrieved2(int64_t free_space);
 
   // Creates the Search Query.
-  void StartSearchQuery();
+  using Query = mojo::Remote<mojom::SearchQuery>;
+  Query StartSearchQuery();
 
   // Gets the next batch of items when listing files.
-  void GetNextPage();
+  void GetNextPage(Query query);
 
   // Once the free disk space has been retrieved, this method will be invoked
   // after every batch of searches to Drive complete. This is required as the
   // user may already have files pinned (which the `GetQuotaUsage` will include
   // in it's calculation).
   void OnSearchResult(
+      Query query,
       drive::FileError error,
       absl::optional<std::vector<drivefs::mojom::QueryItemPtr>> items);
 
@@ -379,8 +381,6 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_DRIVEFS) PinManager
   Progress progress_ GUARDED_BY_CONTEXT(sequence_checker_);
   base::ObserverList<Observer> observers_ GUARDED_BY_CONTEXT(sequence_checker_);
 
-  mojo::Remote<mojom::SearchQuery> search_query_
-      GUARDED_BY_CONTEXT(sequence_checker_);
   base::ElapsedTimer timer_ GUARDED_BY_CONTEXT(sequence_checker_);
   base::ElapsedTimer progress_timer_ GUARDED_BY_CONTEXT(sequence_checker_);
 

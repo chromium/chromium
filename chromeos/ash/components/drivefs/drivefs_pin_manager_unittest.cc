@@ -1977,11 +1977,12 @@ TEST_F(DriveFsPinManagerTest, OnTransientError) {
   manager.progress_.stage = Stage::kListingFiles;
 
   EXPECT_CALL(drivefs_, OnStartSearchQuery(_)).Times(1);
-  manager.StartSearchQuery();
+  PinManager::Query query = manager.StartSearchQuery();
+  ASSERT_TRUE(query);
 
   EXPECT_CALL(drivefs_, OnGetNextPage(_))
       .WillOnce(Return(FileError::FILE_ERROR_NO_CONNECTION));
-  manager.GetNextPage();
+  manager.GetNextPage(std::move(query));
   EXPECT_EQ(manager.progress_.stage, Stage::kListingFiles);
 
   task_environment_.FastForwardBy(Seconds(4));

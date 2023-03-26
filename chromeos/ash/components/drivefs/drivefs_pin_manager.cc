@@ -53,12 +53,6 @@ int Percentage(const int64_t a, const int64_t b) {
   return b ? 100 * a / b : 100;
 }
 
-mojom::QueryParametersPtr CreateMyDriveQuery() {
-  mojom::QueryParametersPtr query = mojom::QueryParameters::New();
-  query->page_size = 1000;
-  return query;
-}
-
 // Calls the spaced daemon.
 void GetFreeSpace(const Path& path, PinManager::SpaceResult callback) {
   ash::SpacedClient* const spaced = ash::SpacedClient::Get();
@@ -630,8 +624,9 @@ void PinManager::OnFreeSpaceRetrieved1(const int64_t free_space) {
   progress_.stage = Stage::kListingFiles;
   NotifyProgress();
 
-  StartSearchQuery();
-  GetNextPage();
+  Query query = StartSearchQuery();
+  DCHECK(query);
+  GetNextPage(std::move(query));
 }
 
 void PinManager::CheckFreeSpace() {
@@ -664,22 +659,38 @@ void PinManager::OnFreeSpaceRetrieved2(const int64_t free_space) {
       space_check_interval_);
 }
 
-void PinManager::StartSearchQuery() {
+PinManager::Query PinManager::StartSearchQuery() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  drivefs_->StartSearchQuery(search_query_.BindNewPipeAndPassReceiver(),
-                             CreateMyDriveQuery());
+  mojom::QueryParametersPtr params = mojom::QueryParameters::New();
+  params->page_size = 1000;
+
+  Query query;
+  drivefs_->StartSearchQuery(query.BindNewPipeAndPassReceiver(),
+                             std::move(params));
+  return query;
 }
 
-void PinManager::GetNextPage() {
+void PinManager::GetNextPage(Query query) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK_EQ(progress_.stage, Stage::kListingFiles);
-  DCHECK(search_query_);
+  DCHECK(query);
   VLOG(2) << "Getting next batch of items";
-  search_query_->GetNextPage(
-      base::BindOnce(&PinManager::OnSearchResult, GetWeakPtr()));
+  mojom::SearchQuery* const p = query.get();
+  DCHECK(p);
+  p->GetNextPage(base::BindOnce(
+      [](base::WeakPtr<PinManager> pin_manager, Query query,
+         const drive::FileError error,
+         absl::optional<std::vector<mojom::QueryItemPtr>> items) {
+        if (pin_manager) {
+          pin_manager->OnSearchResult(std::move(query), error,
+                                      std::move(items));
+        }
+      },
+      GetWeakPtr(), std::move(query)));
 }
 
 void PinManager::OnSearchResult(
+    Query query,
     const drive::FileError error,
     const absl::optional<std::vector<mojom::QueryItemPtr>> items) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -696,7 +707,9 @@ void PinManager::OnSearchResult(
         const TimeDelta delay = base::Seconds(5);
         LOG(ERROR) << "Will retry in " << Quote(delay);
         SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
-            FROM_HERE, base::BindOnce(&PinManager::GetNextPage, GetWeakPtr()),
+            FROM_HERE,
+            base::BindOnce(&PinManager::GetNextPage, GetWeakPtr(),
+                           std::move(query)),
             delay);
         return;
     }
@@ -705,7 +718,7 @@ void PinManager::OnSearchResult(
   DCHECK(items);
   if (items->empty()) {
     VLOG(1) << "No more files to list";
-    search_query_.reset();
+    query.reset();
     return StartPinning();
   }
 
@@ -721,7 +734,7 @@ void PinManager::OnSearchResult(
           << Quote(timer_.Elapsed()) << ", Skipped " << progress_.skipped_items
           << " items, Tracking " << files_to_track_.size() << " files";
   NotifyProgress();
-  GetNextPage();
+  GetNextPage(std::move(query));
 }
 
 void PinManager::Complete(const Stage stage) {
@@ -747,7 +760,6 @@ void PinManager::Complete(const Stage stage) {
   }
 
   weak_ptr_factory_.InvalidateWeakPtrs();
-  search_query_.reset();
   files_to_pin_.clear();
   files_to_track_.clear();
   progress_.syncing_files = 0;
