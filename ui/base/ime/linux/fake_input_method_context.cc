@@ -36,7 +36,8 @@ void FakeInputMethodContext::SetSurroundingText(
 void FakeInputMethodContext::SetContentType(TextInputType type,
                                             TextInputMode mode,
                                             uint32_t flags,
-                                            bool should_do_learning) {}
+                                            bool should_do_learning,
+                                            bool can_compose_inline) {}
 
 void FakeInputMethodContext::SetGrammarFragmentAtCursor(
     const ui::GrammarFragment& fragment) {}

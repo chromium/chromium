@@ -52,7 +52,8 @@ class ZWPTextInputWrapperV1 : public ZWPTextInputWrapper {
   void SetContentType(TextInputType type,
                       TextInputMode mode,
                       uint32_t flags,
-                      bool should_do_learning) override;
+                      bool should_do_learning,
+                      bool can_compose_inline) override;
   void SetGrammarFragmentAtCursor(const ui::GrammarFragment& fragment) override;
   void SetAutocorrectInfo(const gfx::Range& autocorrect_range,
                           const gfx::Rect& autocorrect_bounds) override;

@@ -292,7 +292,8 @@ void InputMethodContextImplGtk::SetContextClientWindow(
 void InputMethodContextImplGtk::SetContentType(ui::TextInputType type,
                                                ui::TextInputMode mode,
                                                uint32_t flags,
-                                               bool should_do_learning) {
+                                               bool should_do_learning,
+                                               bool can_compose_inline) {
   if (flags & ui::TEXT_INPUT_FLAG_VERTICAL) {
     g_object_set(gtk_context_, "input-hints", GTK_INPUT_HINT_VERTICAL_WRITING,
                  nullptr);

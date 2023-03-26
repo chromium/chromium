@@ -56,7 +56,8 @@ class WaylandInputMethodContext : public LinuxInputMethodContext,
   void SetContentType(TextInputType type,
                       TextInputMode mode,
                       uint32_t flags,
-                      bool should_do_learning) override;
+                      bool should_do_learning,
+                      bool can_compose_inline) override;
   void WillUpdateFocus(TextInputClient* old_client,
                        TextInputClient* new_client) override;
   void UpdateFocus(bool has_client,

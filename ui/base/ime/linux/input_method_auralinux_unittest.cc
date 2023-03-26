@@ -98,6 +98,7 @@ class LinuxInputMethodContextForTesting : public LinuxInputMethodContext {
   TextInputMode input_mode() const { return input_mode_; }
   uint32_t input_flags() const { return input_flags_; }
   bool should_do_learning() const { return should_do_learning_; }
+  bool can_compose_inline() const { return can_compose_inline_; }
   TextInputClient* old_client() { return old_client_; }
   TextInputClient* new_client() { return new_client_; }
   void DropClients() {
@@ -176,11 +177,13 @@ class LinuxInputMethodContextForTesting : public LinuxInputMethodContext {
   void SetContentType(TextInputType type,
                       TextInputMode mode,
                       uint32_t flags,
-                      bool should_do_learning) override {
+                      bool should_do_learning,
+                      bool can_compose_inline) override {
     input_type_ = type;
     input_mode_ = mode;
     input_flags_ = flags;
     should_do_learning_ = should_do_learning;
+    can_compose_inline_ = can_compose_inline;
   }
 
   void SetGrammarFragmentAtCursor(
@@ -199,6 +202,7 @@ class LinuxInputMethodContextForTesting : public LinuxInputMethodContext {
   TextInputMode input_mode_;
   uint32_t input_flags_;
   bool should_do_learning_;
+  bool can_compose_inline_;
   raw_ptr<TextInputClient> old_client_ = nullptr;
   raw_ptr<TextInputClient> new_client_ = nullptr;
 };
@@ -246,7 +250,11 @@ class TextInputClientForTesting : public DummyTextInputClient {
 
   absl::optional<gfx::Rect> caret_not_in_rect;
 
+  bool can_compose_inline = false;
+
  protected:
+  bool CanComposeInline() const override { return can_compose_inline; }
+
   void SetCompositionText(const CompositionText& composition) override {
     composition_text = composition.text;
     TestResult::GetInstance()->RecordAction(u"compositionstart");
@@ -1247,6 +1255,22 @@ TEST_F(InputMethodAuraLinuxTest, SetContentTypeWithUpdateFocus) {
   EXPECT_EQ(context_->new_client(), nullptr);
 
   RemoveLastClient(client1.get());
+}
+
+TEST_F(InputMethodAuraLinuxTest, CanComposeInline) {
+  auto client1 =
+      std::make_unique<TextInputClientForTesting>(TEXT_INPUT_TYPE_TEXT);
+  auto client2 =
+      std::make_unique<TextInputClientForTesting>(TEXT_INPUT_TYPE_TEXT);
+
+  client1->can_compose_inline = false;
+  client2->can_compose_inline = true;
+
+  input_method_auralinux_->SetFocusedTextInputClient(client1.get());
+  EXPECT_EQ(context_->can_compose_inline(), false);
+
+  input_method_auralinux_->SetFocusedTextInputClient(client2.get());
+  EXPECT_EQ(context_->can_compose_inline(), true);
 }
 
 }  // namespace

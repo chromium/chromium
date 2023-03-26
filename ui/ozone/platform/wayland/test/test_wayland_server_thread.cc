@@ -20,6 +20,7 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/test/bind.h"
 #include "ui/ozone/platform/wayland/test/test_gtk_primary_selection.h"
+#include "ui/ozone/platform/wayland/test/test_zcr_text_input_extension.h"
 #include "ui/ozone/platform/wayland/test/test_zwp_primary_selection.h"
 
 namespace wl {
@@ -134,8 +135,21 @@ bool TestWaylandServerThread::Start(const ServerConfig& config) {
 
   if (!zcr_stylus_.Initialize(display_.get()))
     return false;
-  if (!zcr_text_input_extension_v1_.Initialize(display_.get()))
+
+  switch (config.text_input_extension_version) {
+    case TextInputExtensionVersion::kV7:
+      zcr_text_input_extension_v1_ =
+          std::make_unique<TestZcrTextInputExtensionV1>(7);
+      break;
+    case TextInputExtensionVersion::kV8:
+      zcr_text_input_extension_v1_ =
+          std::make_unique<TestZcrTextInputExtensionV1>(8);
+      break;
+  }
+  if (!zcr_text_input_extension_v1_->Initialize(display_.get())) {
     return false;
+  }
+
   if (!zwp_text_input_manager_v1_.Initialize(display_.get()))
     return false;
   if (!SetupExplicitSynchronizationProtocol(

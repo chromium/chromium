@@ -46,7 +46,8 @@ class InputMethodContextImplGtk : public ui::LinuxInputMethodContext {
   void SetContentType(ui::TextInputType type,
                       ui::TextInputMode mode,
                       uint32_t flags,
-                      bool should_do_learning) override;
+                      bool should_do_learning,
+                      bool can_compose_inline) override;
   void SetGrammarFragmentAtCursor(
       const ui::GrammarFragment& fragment) override {}
   void SetAutocorrectInfo(const gfx::Range& autocorrect_range,

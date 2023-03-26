@@ -131,7 +131,8 @@ class ZWPTextInputWrapper {
   virtual void SetContentType(ui::TextInputType type,
                               ui::TextInputMode mode,
                               uint32_t flags,
-                              bool should_do_learning) = 0;
+                              bool should_do_learning,
+                              bool can_compose_inline) = 0;
 
   virtual void SetGrammarFragmentAtCursor(
       const ui::GrammarFragment& fragment) = 0;

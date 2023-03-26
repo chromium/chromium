@@ -20,7 +20,7 @@ class MockZcrExtendedTextInput;
 // Manage zcr_text_input_extension_v1 object.
 class TestZcrTextInputExtensionV1 : public GlobalObject {
  public:
-  TestZcrTextInputExtensionV1();
+  explicit TestZcrTextInputExtensionV1(uint32_t version);
   TestZcrTextInputExtensionV1(const TestZcrTextInputExtensionV1&) = delete;
   TestZcrTextInputExtensionV1& operator=(const TestZcrTextInputExtensionV1&) =
       delete;

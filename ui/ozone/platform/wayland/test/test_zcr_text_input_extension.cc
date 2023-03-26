@@ -12,8 +12,6 @@ namespace wl {
 
 namespace {
 
-constexpr uint32_t kTextInputExtensionVersion = 6;
-
 void GetExtendedTextInput(struct wl_client* client,
                           struct wl_resource* resource,
                           uint32_t id,
@@ -32,10 +30,10 @@ const struct zcr_text_input_extension_v1_interface
         &GetExtendedTextInput,  // get_extended_text_input
 };
 
-TestZcrTextInputExtensionV1::TestZcrTextInputExtensionV1()
+TestZcrTextInputExtensionV1::TestZcrTextInputExtensionV1(uint32_t version)
     : GlobalObject(&zcr_text_input_extension_v1_interface,
                    &kTestZcrTextInputExtensionV1Impl,
-                   kTextInputExtensionVersion) {}
+                   version) {}
 
 TestZcrTextInputExtensionV1::~TestZcrTextInputExtensionV1() = default;
 

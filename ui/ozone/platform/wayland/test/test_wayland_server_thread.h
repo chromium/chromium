@@ -54,10 +54,13 @@ struct DisplayDeleter {
 // Server configuration related enums and structs.
 enum class PrimarySelectionProtocol { kNone, kGtk, kZwp };
 enum class CompositorVersion { kV3, kV4 };
+enum class TextInputExtensionVersion { kV7, kV8 };
 enum class ShouldUseExplicitSynchronizationProtocol { kNone, kUse };
 enum class EnableAuraShellProtocol { kEnabled, kDisabled };
 
 struct ServerConfig {
+  TextInputExtensionVersion text_input_extension_version =
+      TextInputExtensionVersion::kV8;
   CompositorVersion compositor_version = CompositorVersion::kV4;
   PrimarySelectionProtocol primary_selection_protocol =
       PrimarySelectionProtocol::kNone;
@@ -142,7 +145,7 @@ class TestWaylandServerThread : public base::Thread,
   TestZAuraShell* zaura_shell() { return &zaura_shell_; }
   TestOutput* output() { return &output_; }
   TestZcrTextInputExtensionV1* text_input_extension_v1() {
-    return &zcr_text_input_extension_v1_;
+    return zcr_text_input_extension_v1_.get();
   }
   TestZwpTextInputManagerV1* text_input_manager_v1() {
     return &zwp_text_input_manager_v1_;
@@ -233,7 +236,11 @@ class TestWaylandServerThread : public base::Thread,
   TestZAuraShell zaura_shell_;
   MockZcrColorManagerV1 zcr_color_manager_v1_;
   TestZcrStylus zcr_stylus_;
-  TestZcrTextInputExtensionV1 zcr_text_input_extension_v1_;
+  // The version of text_input_extension_v1 can be selected dynamically when
+  // Start is called, but the versions of GlobalObjects need to be supplied on
+  // construction, so we have to delay construction of this particular global.
+  // TODO(crbug.com/1315587): Consider not heap-allocating GlobalObjects.
+  std::unique_ptr<TestZcrTextInputExtensionV1> zcr_text_input_extension_v1_;
   TestZwpTextInputManagerV1 zwp_text_input_manager_v1_;
   TestZwpLinuxExplicitSynchronizationV1 zwp_linux_explicit_synchronization_v1_;
   MockZwpLinuxDmabufV1 zwp_linux_dmabuf_v1_;

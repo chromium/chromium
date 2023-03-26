@@ -29,11 +29,18 @@ class MockZcrExtendedTextInput : public ServerObject {
   ~MockZcrExtendedTextInput() override;
 
   MOCK_METHOD(void,
-              SetInputType,
+              DeprecatedSetInputType,
               (uint32_t input_type,
                uint32_t input_mode,
                uint32_t input_flags,
                uint32_t learning_mode));
+  MOCK_METHOD(void,
+              SetInputType,
+              (uint32_t input_type,
+               uint32_t input_mode,
+               uint32_t input_flags,
+               uint32_t learning_mode,
+               uint32_t inline_composition_support));
   MOCK_METHOD(void,
               SetGrammarFragmentAtCursor,
               (const gfx::Range& range, const std::string& suggestion));
@@ -41,6 +48,7 @@ class MockZcrExtendedTextInput : public ServerObject {
               SetAutocorrectInfo,
               (const gfx::Range& range, const gfx::Rect& bounds));
   MOCK_METHOD(void, FinalizeVirtualKeyboardChanges, ());
+  MOCK_METHOD(void, SetFocusReason, (uint32_t reason));
 };
 
 }  // namespace wl

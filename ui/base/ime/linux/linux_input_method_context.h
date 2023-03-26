@@ -54,7 +54,8 @@ class COMPONENT_EXPORT(UI_BASE_IME_LINUX) LinuxInputMethodContext {
   virtual void SetContentType(TextInputType type,
                               TextInputMode mode,
                               uint32_t flags,
-                              bool should_do_learning) = 0;
+                              bool should_do_learning,
+                              bool can_compose_inline) = 0;
 
   // Sets grammar fragment at the cursor position. If not exists, sends a
   // fragment with empty range.

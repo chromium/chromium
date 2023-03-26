@@ -8,14 +8,26 @@ namespace wl {
 
 namespace {
 
+void DeprecatedSetInputType(wl_client* client,
+                            wl_resource* resource,
+                            uint32_t input_type,
+                            uint32_t input_mode,
+                            uint32_t input_flags,
+                            uint32_t learning_mode) {
+  GetUserDataAs<MockZcrExtendedTextInput>(resource)->DeprecatedSetInputType(
+      input_type, input_mode, input_flags, learning_mode);
+}
+
 void SetInputType(wl_client* client,
                   wl_resource* resource,
                   uint32_t input_type,
                   uint32_t input_mode,
                   uint32_t input_flags,
-                  uint32_t learning_mode) {
+                  uint32_t learning_mode,
+                  uint32_t inline_composition_support) {
   GetUserDataAs<MockZcrExtendedTextInput>(resource)->SetInputType(
-      input_type, input_mode, input_flags, learning_mode);
+      input_type, input_mode, input_flags, learning_mode,
+      inline_composition_support);
 }
 
 void SetGrammarFragmentAtCursor(wl_client* client,
@@ -44,15 +56,21 @@ void FinalizeVirtualKeyboardChanges(wl_client* client, wl_resource* resource) {
       ->FinalizeVirtualKeyboardChanges();
 }
 
+void SetFocusReason(wl_client* client, wl_resource* resource, uint32_t reason) {
+  GetUserDataAs<MockZcrExtendedTextInput>(resource)->SetFocusReason(reason);
+}
+
 }  // namespace
 
 const struct zcr_extended_text_input_v1_interface
     kMockZcrExtendedTextInputV1Impl = {
         &DestroyResource,                 // destroy
-        &SetInputType,                    // set_input_type
+        &DeprecatedSetInputType,          // deprecated_set_input_type
         &SetGrammarFragmentAtCursor,      // set_grammar_fragment_at_cursor
         &SetAutocorrectInfo,              // set_autocorrect_info
         &FinalizeVirtualKeyboardChanges,  // finalize_virtual_keyboard_changes
+        &SetFocusReason,                  // set_focus_reason
+        &SetInputType,                    // set_input_type
 };
 
 MockZcrExtendedTextInput::MockZcrExtendedTextInput(wl_resource* resource)

@@ -351,10 +351,12 @@ void WaylandInputMethodContext::SetSurroundingText(
 void WaylandInputMethodContext::SetContentType(TextInputType type,
                                                TextInputMode mode,
                                                uint32_t flags,
-                                               bool should_do_learning) {
+                                               bool should_do_learning,
+                                               bool can_compose_inline) {
   if (!text_input_)
     return;
-  text_input_->SetContentType(type, mode, flags, should_do_learning);
+  text_input_->SetContentType(type, mode, flags, should_do_learning,
+                              can_compose_inline);
 }
 
 void WaylandInputMethodContext::SetGrammarFragmentAtCursor(

@@ -364,12 +364,15 @@ void InputMethodAuraLinux::UpdateContextFocusState() {
   TextInputMode mode = TEXT_INPUT_MODE_DEFAULT;
   int flags = TEXT_INPUT_FLAG_NONE;
   bool should_do_learning = false;
+  bool can_compose_inline = true;
   if (client) {
     mode = client->GetTextInputMode();
     flags = client->GetTextInputFlags();
     should_do_learning = client->ShouldDoLearning();
+    can_compose_inline = client->CanComposeInline();
   }
-  context_->SetContentType(text_input_type_, mode, flags, should_do_learning);
+  context_->SetContentType(text_input_type_, mode, flags, should_do_learning,
+                           can_compose_inline);
 }
 
 void InputMethodAuraLinux::OnTextInputTypeChanged(TextInputClient* client) {
