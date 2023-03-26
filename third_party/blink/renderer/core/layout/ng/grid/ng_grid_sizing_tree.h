@@ -19,7 +19,7 @@ namespace blink {
 // relative to its parent's area and writing mode) and a pointer to the actual
 // |NGGridLayoutData| of the grid that directly contains the subgridded item.
 class NGSubgriddedItemData {
-  STACK_ALLOCATED();
+  DISALLOW_NEW();
 
  public:
   NGSubgriddedItemData() = default;
@@ -80,19 +80,18 @@ class CORE_EXPORT NGGridSizingTree {
     return *tree_data_[index];
   }
 
-  GridTreeNode& TreeRootData() const { return At(0); }
-
-  wtf_size_t SubtreeSize(wtf_size_t index) const {
-    DCHECK_LT(index, tree_data_.size());
-    return tree_data_[index]->subtree_size;
-  }
-
   // Creates a copy of the current grid geometry for the entire tree in a new
   // `NGGridLayoutTree` instance, which doesn't hold the grid items and its
   // stored in a `scoped_refptr` to be shared by multiple subtrees.
   scoped_refptr<const NGGridLayoutTree> FinalizeTree() const;
 
   wtf_size_t Size() const { return tree_data_.size(); }
+  GridTreeNode& TreeRootData() const { return At(0); }
+
+  wtf_size_t SubtreeSize(wtf_size_t index) const {
+    DCHECK_LT(index, tree_data_.size());
+    return tree_data_[index]->subtree_size;
+  }
 
  private:
   Vector<std::unique_ptr<GridTreeNode>, 16> tree_data_;

@@ -66,10 +66,8 @@ class NGGridLayoutAlgorithmTest : public NGBaseLayoutAlgorithmTest,
 
   LayoutUnit BaseRowSizeForChild(const NGGridLayoutAlgorithm& algorithm,
                                  wtf_size_t index) {
-    LayoutUnit offset, size;
-    algorithm.ComputeGridItemOffsetAndSize(GridItem(index), layout_data_.Rows(),
-                                           &offset, &size);
-    return size;
+    return algorithm.ComputeGridItemAvailableSize(GridItem(index),
+                                                  layout_data_.Rows());
   }
 
   // Helper methods to access private data on NGGridLayoutAlgorithm. This class

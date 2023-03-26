@@ -177,23 +177,24 @@ GridItemData::GridItemData(
 
   if (node.IsGrid()) {
     // TODO(ethavar): Don't consider subgrids with size containment.
-    has_subgridded_columns = style.GridTemplateColumns().IsSubgriddedAxis();
-    has_subgridded_rows = style.GridTemplateRows().IsSubgriddedAxis();
+    has_subgridded_columns =
+        is_parallel_with_root_grid
+            ? style.GridTemplateColumns().IsSubgriddedAxis()
+            : style.GridTemplateRows().IsSubgriddedAxis();
+
+    has_subgridded_rows = is_parallel_with_root_grid
+                              ? style.GridTemplateRows().IsSubgriddedAxis()
+                              : style.GridTemplateColumns().IsSubgriddedAxis();
   }
 
   if (parent_must_consider_grid_items_for_column_sizing) {
-    is_considered_for_column_sizing = is_parallel_with_root_grid
-                                          ? !has_subgridded_columns
-                                          : !has_subgridded_rows;
-    must_consider_grid_items_for_column_sizing =
-        !is_considered_for_column_sizing;
+    must_consider_grid_items_for_column_sizing = has_subgridded_columns;
+    is_considered_for_column_sizing = !has_subgridded_columns;
   }
 
   if (parent_must_consider_grid_items_for_row_sizing) {
-    is_considered_for_row_sizing = is_parallel_with_root_grid
-                                       ? !has_subgridded_rows
-                                       : !has_subgridded_columns;
-    must_consider_grid_items_for_row_sizing = !is_considered_for_row_sizing;
+    must_consider_grid_items_for_row_sizing = has_subgridded_rows;
+    is_considered_for_row_sizing = !has_subgridded_rows;
   }
 }
 

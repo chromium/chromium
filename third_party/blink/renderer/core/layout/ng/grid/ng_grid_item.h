@@ -58,6 +58,11 @@ struct CORE_EXPORT GridItemData {
 
   bool IsBaselineAlignedForDirection(
       GridTrackSizingDirection track_direction) const {
+    // TODO(ethavar): Baseline alignment for subgrids is dependent on
+    // accumulating the baseline in `ComputeSubgridContributionSize`.
+    if (has_subgridded_columns || has_subgridded_rows) {
+      return false;
+    }
     return (track_direction == kForColumns)
                ? (InlineAxisAlignment() == AxisEdge::kFirstBaseline ||
                   InlineAxisAlignment() == AxisEdge::kLastBaseline)
@@ -67,6 +72,11 @@ struct CORE_EXPORT GridItemData {
 
   bool IsBaselineSpecifiedForDirection(
       GridTrackSizingDirection track_direction) const {
+    // TODO(ethavar): Baseline alignment for subgrids is dependent on
+    // accumulating the baseline in `ComputeSubgridContributionSize`.
+    if (has_subgridded_columns || has_subgridded_rows) {
+      return false;
+    }
     return (track_direction == kForColumns)
                ? (inline_axis_alignment == AxisEdge::kFirstBaseline ||
                   inline_axis_alignment == AxisEdge::kLastBaseline)
