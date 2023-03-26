@@ -6690,5 +6690,3 @@ crbug.com/1427239 [ Mac ] virtual/view-transition/external/wpt/css/css-view-tran
 # https://chromium-review.googlesource.com/c/devtools/devtools-frontend/+/4370249
 crbug.com/1427397 http/tests/devtools/persistence/persistence-navigator-unique-names.js [ Failure Pass ]
 
-# Sheriff 2023-02-24 Flaky
-crbug.com/1427576 external/wpt/soft-navigation-heuristics/navigation-api-view-transition.tentative.html [ Failure Pass ]
