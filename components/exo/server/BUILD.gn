@@ -10,6 +10,8 @@ source_set("server") {
   sources = [
     "wayland_server_controller.cc",
     "wayland_server_controller.h",
+    "wayland_server_handle.cc",
+    "wayland_server_handle.h",
   ]
 
   deps = [

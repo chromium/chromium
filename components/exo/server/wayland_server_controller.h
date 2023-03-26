@@ -25,13 +25,10 @@ class InputMethodSurfaceManager;
 class NotificationSurfaceManager;
 class ToastSurfaceManager;
 class WMHelper;
+class WaylandServerHandle;
 
 class WaylandServerController {
  public:
-  // Token that clients use to identify servers that they created using
-  // CreateServer().
-  using ServerToken = int;
-
   static std::unique_ptr<WaylandServerController> CreateForArcIfNecessary(
       std::unique_ptr<DataExchangeDelegate> data_exchange_delegate);
 
@@ -79,16 +76,12 @@ class WaylandServerController {
   void DeleteServer(const base::FilePath& path);
 
   // Creates a wayland server from the given |socket|, with the privileges of
-  // the |security_delegate|. Invokes |callback| with true and a handle to a
-  // wayland sever (for use in CloseSocket() below) on success, false and
-  // nullptr on failure.
-  void ListenOnSocket(std::unique_ptr<SecurityDelegate> security_delegate,
-                      base::ScopedFD socket,
-                      base::OnceCallback<void(bool, ServerToken)> callback);
-
-  // Removes the wayland server that was created by ListenOnSocket() which
-  // returned the given |server|.
-  void CloseSocket(ServerToken server);
+  // the |security_delegate|. Invokes |callback| with a handle to a wayland
+  // server on success, nullptr on failure.
+  void ListenOnSocket(
+      std::unique_ptr<SecurityDelegate> security_delegate,
+      base::ScopedFD socket,
+      base::OnceCallback<void(std::unique_ptr<WaylandServerHandle>)> callback);
 
  private:
   void OnStarted(std::unique_ptr<wayland::Server> server,
@@ -96,16 +89,22 @@ class WaylandServerController {
                  bool success,
                  const base::FilePath& path);
 
-  void OnSocketAdded(std::unique_ptr<wayland::Server> server,
-                     base::OnceCallback<void(bool, ServerToken)> callback,
-                     bool success,
-                     const base::FilePath& path);
+  void OnSocketAdded(
+      std::unique_ptr<wayland::Server> server,
+      base::OnceCallback<void(std::unique_ptr<WaylandServerHandle>)> callback,
+      bool success,
+      const base::FilePath& path);
+
+  // Removes the wayland server that was created by ListenOnSocket() which
+  // returned the given |handle|.
+  friend class WaylandServerHandle;
+  void CloseSocket(WaylandServerHandle* handle);
 
   std::unique_ptr<WMHelper> wm_helper_;
   std::unique_ptr<Display> display_;
   // TODO(b/270254359): remove servers_ map, replace with on_demand_servers_.
   base::flat_map<base::FilePath, std::unique_ptr<wayland::Server>> servers_;
-  base::flat_map<ServerToken, std::unique_ptr<wayland::Server>>
+  base::flat_map<WaylandServerHandle*, std::unique_ptr<wayland::Server>>
       on_demand_servers_;
   base::WeakPtrFactory<WaylandServerController> weak_factory_{this};
 };
