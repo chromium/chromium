@@ -164,7 +164,7 @@ void RequestSender::SendInternalComplete(
 }
 
 void RequestSender::OnResponseStarted(int response_code,
-                                      int64_t content_length) {
+                                      int64_t /*content_length*/) {
   response_code_ = response_code;
 }
 

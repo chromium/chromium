@@ -325,12 +325,8 @@ void NetworkFetcher::HeadersAvailable() {
   net_error_ =
       QueryHeadersInt(request_handle_.get(), WINHTTP_QUERY_CONTENT_LENGTH,
                       WINHTTP_HEADER_NAME_BY_INDEX, &content_length);
-  if (FAILED(net_error_)) {
-    CompleteFetch();
-    return;
-  }
-
-  std::move(fetch_started_callback_).Run(response_code_, content_length);
+  std::move(fetch_started_callback_)
+      .Run(response_code_, SUCCEEDED(net_error_) ? content_length : -1);
 
   // Start reading the body of response.
   net_error_ = ReadData();

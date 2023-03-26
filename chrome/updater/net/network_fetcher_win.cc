@@ -141,9 +141,9 @@ void NetworkFetcher::DownloadToFile(
                      base::Unretained(this)));
 }
 
-void NetworkFetcher::PostRequestComplete(int /*response_code*/) {
+void NetworkFetcher::PostRequestComplete(int response_code) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  VLOG(2) << __func__;
+  VLOG(2) << __func__ << ": response code=" << response_code;
 
   // Attempt to get some response headers.  Not all headers may be present so
   // this is best effort only.
