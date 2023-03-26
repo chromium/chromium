@@ -267445,11 +267445,11 @@
   "support": {
    ".cache": {
     "gitignore2.json": [
-     "5fc1dcf652ae8b16176ff6a81db223941d655ce2",
+     "cb399a848f0a52a7c0b551a755f55252bd5dde28",
      []
     ],
     "mtime.json": [
-     "6c27a38ba052ad153dbf61e4c569037090348d16",
+     "064454c3a391ed49199164c0c82c2c6c59195fe2",
      []
     ]
    },
@@ -312091,6 +312091,10 @@
         "e406e2475bc24243cff8e192f4e9932c18c06e55",
         []
        ],
+       "shape-image-016.html.ini": [
+        "091549153313cdd8d091d0574b83d678555b0c11",
+        []
+       ],
        "shape-image-018.html.ini": [
         "36b41ba3e33f2b9dea290e76bda87d797c793ce7",
         []
@@ -322417,6 +322421,10 @@
        []
       ]
      },
+     "transition-events-with-document-change.html.ini": [
+      "8038a95ce09360c73a50f16dcb87d47f6735817a",
+      []
+     ],
      "transitioncancel-002.html.ini": [
       "ad398f3897842d5300b9c1b28e915ea99f43bf0b",
       []
@@ -323588,6 +323596,14 @@
        "57c6eb8f88bb60ce4dac4ee4d4727c8597a0c812",
        []
       ],
+      "kind-of-widget-fallback-input-reset-border-inline-end-style-001.html.ini": [
+       "eb2f5fbc407abc8145c7569df8b1e81c729982f9",
+       []
+      ],
+      "kind-of-widget-fallback-input-reset-border-inline-end-width-001.html.ini": [
+       "b43c4d0ba87af207336f6d7aaf51f121c7ac0870",
+       []
+      ],
       "kind-of-widget-fallback-input-reset-border-left-color-001.html.ini": [
        "5e986e0106069e78502c5c7a58f4f59b7724824d",
        []
@@ -323705,7 +323721,7 @@
        []
       ],
       "kind-of-widget-fallback-input-submit-background-position-001.html.ini": [
-       "c0e9d5d88c4e16d73fa1ca1ad2221d34e15f5fce",
+       "e4c08ebe85e065ba6d38d2c1cf7a2f39a425a6ec",
        []
       ],
       "kind-of-widget-fallback-input-submit-background-size-001.html.ini": [
@@ -387154,7 +387170,7 @@
       []
      ],
      "021.html.ini": [
-      "61e41429a5765676dd90acda8d8a646c8126c5f0",
+      "7e1db6e1240d7873ab7c6812ddc273b0e8ffc022",
       []
      ]
     },
@@ -453301,6 +453317,13 @@
      ],
      "transition-duration-shorthand.html": [
       "181d52b38899ddbfb8f018c7536a79560e90ca97",
+      [
+       null,
+       {}
+      ]
+     ],
+     "transition-events-with-document-change.html": [
+      "90b79f0c1d03796a444e34323f1cdb0d31f1828d",
       [
        null,
        {}
