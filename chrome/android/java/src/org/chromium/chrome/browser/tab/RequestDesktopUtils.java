@@ -50,6 +50,7 @@ import org.chromium.components.messages.MessageIdentifier;
 import org.chromium.components.messages.PrimaryActionClickBehavior;
 import org.chromium.components.profile_metrics.BrowserProfileType;
 import org.chromium.components.ukm.UkmRecorder;
+import org.chromium.components.variations.SyntheticTrialAnnotationMode;
 import org.chromium.content_public.browser.ContentFeatureList;
 import org.chromium.ui.display.DisplayAndroid;
 import org.chromium.ui.display.DisplayAndroidManager;
@@ -916,15 +917,16 @@ public class RequestDesktopUtils {
                 : GLOBAL_DEFAULTS_ENABLED_COHORT_NAME + cohortId;
 
         if (!isControlGroup && !ChromeFeatureList.isEnabled(syntheticFeatureName)) {
-            UmaSessionStats.registerSyntheticFieldTrial(
-                    syntheticFeatureName, baseGroupName + ENABLED_GROUP_SUFFIX);
+            UmaSessionStats.registerSyntheticFieldTrial(syntheticFeatureName,
+                    baseGroupName + ENABLED_GROUP_SUFFIX, SyntheticTrialAnnotationMode.CURRENT_LOG);
         } else if (isControlGroup && !ChromeFeatureList.isEnabled(syntheticFeatureName)) {
-            UmaSessionStats.registerSyntheticFieldTrial(
-                    syntheticFeatureName, baseGroupName + CONTROL_GROUP_SUFFIX);
+            UmaSessionStats.registerSyntheticFieldTrial(syntheticFeatureName,
+                    baseGroupName + CONTROL_GROUP_SUFFIX, SyntheticTrialAnnotationMode.CURRENT_LOG);
         }
 
         String syntheticFeatureNameForUma = GLOBAL_DEFAULTS_COHORT_NAME + cohortId;
-        UmaSessionStats.registerSyntheticFieldTrial(syntheticFeatureNameForUma, baseGroupName);
+        UmaSessionStats.registerSyntheticFieldTrial(syntheticFeatureNameForUma, baseGroupName,
+                SyntheticTrialAnnotationMode.CURRENT_LOG);
     }
 
     private static void maybeRegisterSyntheticFieldTrials(
@@ -944,11 +946,11 @@ public class RequestDesktopUtils {
         }
 
         if (!isControlGroup && !ChromeFeatureList.isEnabled(syntheticFeatureName)) {
-            UmaSessionStats.registerSyntheticFieldTrial(
-                    syntheticFeatureName, baseGroupName + ENABLED_GROUP_SUFFIX);
+            UmaSessionStats.registerSyntheticFieldTrial(syntheticFeatureName,
+                    baseGroupName + ENABLED_GROUP_SUFFIX, SyntheticTrialAnnotationMode.CURRENT_LOG);
         } else if (isControlGroup && !ChromeFeatureList.isEnabled(syntheticFeatureName)) {
-            UmaSessionStats.registerSyntheticFieldTrial(
-                    syntheticFeatureName, baseGroupName + CONTROL_GROUP_SUFFIX);
+            UmaSessionStats.registerSyntheticFieldTrial(syntheticFeatureName,
+                    baseGroupName + CONTROL_GROUP_SUFFIX, SyntheticTrialAnnotationMode.CURRENT_LOG);
         }
     }
 
