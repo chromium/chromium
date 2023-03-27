@@ -19,7 +19,6 @@
 namespace blink {
 
 class Hyphenation;
-class NGBlockBreakToken;
 class NGColumnSpannerPath;
 class NGInlineBreakToken;
 class NGInlineItem;
@@ -59,11 +58,6 @@ class CORE_EXPORT NGLineBreaker {
   void NextLine(NGLineInfo*);
 
   bool IsFinished() const { return item_index_ >= Items().size(); }
-
-  void PropagateBreakToken(const NGBlockBreakToken*);
-  HeapVector<Member<const NGBlockBreakToken>>& PropagatedBreakTokens() {
-    return propagated_break_tokens_;
-  }
 
   // Computing |NGLineBreakerMode::kMinContent| with |MaxSizeCache| caches
   // information that can help computing |kMaxContent|. It is recommended to set
@@ -367,8 +361,6 @@ class CORE_EXPORT NGLineBreaker {
   // This is copied from NGInlineNode, then updated after each forced line break
   // if 'unicode-bidi: plaintext'.
   TextDirection base_direction_;
-
-  HeapVector<Member<const NGBlockBreakToken>> propagated_break_tokens_;
 
   // Fields for `box-decoration-break: clone`.
   unsigned cloned_box_decorations_count_ = 0;

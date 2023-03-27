@@ -91,6 +91,12 @@ class CORE_EXPORT NGLineInfo {
   void SetBreakToken(const NGInlineBreakToken* break_token) {
     break_token_ = break_token;
   }
+  HeapVector<Member<const NGBlockBreakToken>>& PropagatedBreakTokens() {
+    return propagated_break_tokens_;
+  }
+  void PropagateBreakToken(const NGBlockBreakToken* token) {
+    propagated_break_tokens_.push_back(token);
+  }
 
   void SetTextIndent(LayoutUnit indent) { text_indent_ = indent; }
   LayoutUnit TextIndent() const { return text_indent_; }
@@ -235,6 +241,7 @@ class CORE_EXPORT NGLineInfo {
   NGBfcOffset bfc_offset_;
 
   const NGInlineBreakToken* break_token_ = nullptr;
+  HeapVector<Member<const NGBlockBreakToken>> propagated_break_tokens_;
 
   const NGLayoutResult* block_in_inline_layout_result_ = nullptr;
 

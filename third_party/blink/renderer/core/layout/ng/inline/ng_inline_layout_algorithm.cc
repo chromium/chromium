@@ -233,8 +233,7 @@ void NGInlineLayoutAlgorithm::CheckBoxStates(
 void NGInlineLayoutAlgorithm::CreateLine(
     const NGLineLayoutOpportunity& opportunity,
     NGLineInfo* line_info,
-    NGLogicalLineItems* line_box,
-    NGLineBreaker* line_breaker) {
+    NGLogicalLineItems* line_box) {
   // Needs MutableResults to move ShapeResult out of the NGLineInfo.
   NGInlineItemResults* line_items = line_info->MutableResults();
   // Clear the current line without releasing the buffer.
@@ -496,8 +495,7 @@ void NGInlineLayoutAlgorithm::CreateLine(
     // [1]
     // https://wpt.live/css/css-inline/initial-letter/initial-letter-floats-005.html
     PlaceFloatingObjects(*line_info, line_box_metrics, opportunity,
-                         line_info->ComputeBlockStartAdjustment(), line_box,
-                         line_breaker);
+                         line_info->ComputeBlockStartAdjustment(), line_box);
   }
 
   // Apply any relative positioned offsets to *items* which have relative
@@ -847,8 +845,7 @@ void NGInlineLayoutAlgorithm::PlaceFloatingObjects(
     const FontHeight& line_box_metrics,
     const NGLineLayoutOpportunity& opportunity,
     LayoutUnit ruby_block_start_adjust,
-    NGLogicalLineItems* line_box,
-    NGLineBreaker* line_breaker) {
+    NGLogicalLineItems* line_box) {
   DCHECK(line_info.IsEmptyLine() || !line_box_metrics.IsEmpty())
       << "Non-empty lines must have a valid set of linebox metrics.";
 
@@ -884,14 +881,14 @@ void NGInlineLayoutAlgorithm::PlaceFloatingObjects(
         NGBlockNode float_node(To<LayoutBox>(child.unpositioned_float.Get()));
         auto* break_before = NGBlockBreakToken::CreateBreakBefore(
             float_node, /* is_forced_break */ false);
-        line_breaker->PropagateBreakToken(break_before);
+        context_->PropagateBreakToken(break_before);
         continue;
       } else {
         // If the float broke inside, we need to propagate the break token to
         // the block container, so that we'll resume in the next fragmentainer.
         if (const NGBreakToken* token =
                 positioned_float.layout_result->PhysicalFragment().BreakToken())
-          line_breaker->PropagateBreakToken(To<NGBlockBreakToken>(token));
+          context_->PropagateBreakToken(To<NGBlockBreakToken>(token));
         child.layout_result = std::move(positioned_float.layout_result);
         child.bfc_offset = positioned_float.bfc_offset;
         child.unpositioned_float = nullptr;
@@ -1415,9 +1412,17 @@ const NGLayoutResult* NGInlineLayoutAlgorithm::Layout() {
       line_info.SetAvailableWidth(line_opportunity.AvailableInlineSize());
     }
 
+    // Propagate any break tokens for floats that we fragmented before or inside
+    // to the block container in 3 steps: 1) in `PositionLeadingFloats`, 2) from
+    // `NGLineInfo` here, 3) then `CreateLine` may propagate more.
+    for (const NGBlockBreakToken* float_break_token :
+         line_info.PropagatedBreakTokens()) {
+      context_->PropagateBreakToken(float_break_token);
+    }
+
     PrepareBoxStates(line_info, break_token);
 
-    CreateLine(line_opportunity, &line_info, line_box, &line_breaker);
+    CreateLine(line_opportunity, &line_info, line_box);
     is_line_created = true;
 
     // Adjust the line BFC block-offset if we have a ruby annotation, raise
@@ -1493,12 +1498,6 @@ const NGLayoutResult* NGInlineLayoutAlgorithm::Layout() {
     // Success!
     container_builder_.SetBreakToken(line_info.BreakToken());
     container_builder_.SetBaseDirection(line_info.BaseDirection());
-
-    // Propagate any break tokens for floats that we fragmented before or inside
-    // to the block container.
-    for (const NGBlockBreakToken* float_break_token :
-         line_breaker.PropagatedBreakTokens())
-      context_->PropagateBreakToken(float_break_token);
 
     if (line_info.IsEmptyLine()) {
       DCHECK_EQ(container_builder_.BlockSize(), LayoutUnit());

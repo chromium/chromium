@@ -415,9 +415,7 @@ NGLineBreaker::NGLineBreaker(NGInlineNode node,
   SetCurrentStyle(*line_initial_style);
 }
 
-NGLineBreaker::~NGLineBreaker() {
-  propagated_break_tokens_.clear();
-}
+NGLineBreaker::~NGLineBreaker() = default;
 
 inline NGInlineItemResult* NGLineBreaker::AddItem(const NGInlineItem& item,
                                                   unsigned end_offset,
@@ -2380,7 +2378,7 @@ void NGLineBreaker::HandleFloat(const NGInlineItem& item,
       // algorithm. The float will start in the next fragmentainer.
       auto* break_before = NGBlockBreakToken::CreateBreakBefore(
           unpositioned_float.node, /* is_forced_break */ false);
-      PropagateBreakToken(break_before);
+      line_info->PropagateBreakToken(break_before);
       return;
     }
     // If we broke inside the float, we also need to propagate a break token to
@@ -2389,7 +2387,7 @@ void NGLineBreaker::HandleFloat(const NGInlineItem& item,
     const NGPhysicalFragment& fragment =
         item_result->positioned_float->layout_result->PhysicalFragment();
     if (const NGBreakToken* token = fragment.BreakToken())
-      PropagateBreakToken(To<NGBlockBreakToken>(token));
+      line_info->PropagateBreakToken(To<NGBlockBreakToken>(token));
   }
 
   NGLayoutOpportunity opportunity = exclusion_space_->FindLayoutOpportunity(
@@ -3109,10 +3107,6 @@ const NGInlineBreakToken* NGLineBreaker::CreateBreakToken(
 
   return NGInlineBreakToken::Create(node_, current_style_.get(), item_index_,
                                     offset_, flags, sub_break_token);
-}
-
-void NGLineBreaker::PropagateBreakToken(const NGBlockBreakToken* token) {
-  propagated_break_tokens_.push_back(token);
 }
 
 }  // namespace blink
