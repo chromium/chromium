@@ -25,7 +25,7 @@ class IdentityManager;
 
 namespace ash {
 
-class AnnotatorPageHandlerImpl;
+class UntrustedAnnotatorPageHandlerImpl;
 struct AnnotatorTool;
 struct ProjectorScreencastVideo;
 struct NewScreencastPrecondition;
@@ -160,11 +160,13 @@ class ProjectorAppClient {
 
   // Registers the AnnotatorPageHandlerImpl that is owned by the WebUI that
   // contains the Projector annotator.
-  virtual void SetAnnotatorPageHandler(AnnotatorPageHandlerImpl* handler) = 0;
+  virtual void SetAnnotatorPageHandler(
+      UntrustedAnnotatorPageHandlerImpl* handler) = 0;
 
   // Resets the stored AnnotatorPageHandlerImpl if it matches the one that is
   // passed in.
-  virtual void ResetAnnotatorPageHandler(AnnotatorPageHandlerImpl* handler) = 0;
+  virtual void ResetAnnotatorPageHandler(
+      UntrustedAnnotatorPageHandlerImpl* handler) = 0;
 
   // Sets the tool inside the annotator WebUI.
   virtual void SetTool(const AnnotatorTool& tool) = 0;

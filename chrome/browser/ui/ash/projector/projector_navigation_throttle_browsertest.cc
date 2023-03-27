@@ -390,21 +390,6 @@ IN_PROC_BROWSER_TEST_F(ProjectorNavigationThrottleDisabledTest,
   EXPECT_EQ(tab->GetVisibleURL(), untrusted_annotator_url);
 }
 
-// Verifies that chrome://projector-annotator is not accessible when the app is
-// disabled.
-IN_PROC_BROWSER_TEST_F(ProjectorNavigationThrottleDisabledTest,
-                       TrustedAnnotatorNavigationInvalidUrl) {
-  GURL trusted_annotator_url(kChromeUITrustedAnnotatorUrl);
-
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), trusted_annotator_url));
-  content::WebContents* tab =
-      browser()->tab_strip_model()->GetActiveWebContents();
-  ASSERT_TRUE(tab);
-  EXPECT_EQ(tab->GetController().GetVisibleEntry()->GetPageType(),
-            content::PAGE_TYPE_ERROR);
-  EXPECT_EQ(tab->GetVisibleURL(), trusted_annotator_url);
-}
-
 class ProjectorNavigationThrottleLocaleTest
     : public ProjectorNavigationThrottleTest,
       public testing::WithParamInterface<std::string> {

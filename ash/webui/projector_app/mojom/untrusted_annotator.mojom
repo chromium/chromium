@@ -8,7 +8,7 @@ import "ash/webui/projector_app/public/mojom/annotator_structs.mojom";
 
 // AnnotatorPage interface implemented in the Javascript. Used by the browser
 // process to send events to Javascript.
-interface AnnotatorPage {
+interface UntrustedAnnotatorPage {
     // Clears the annotations on the annotator canvas.
     Clear();
     // Undo the last stroke on the annotator canvas.
@@ -21,7 +21,7 @@ interface AnnotatorPage {
 
 // AnnotatoPagerHandler interface implemented in C++ in the browser process.
 // Used by Javascript to communicate with the browser process.
-interface AnnotatorPageHandler {
+interface UntrustedAnnotatorPageHandler {
    // Notifies the browser that that undo/redo availability
    // changed for annotator.
    OnUndoRedoAvailabilityChanged(bool undo_available,
@@ -30,17 +30,13 @@ interface AnnotatorPageHandler {
   // Notifies the browser process that the annotation canvas
   // has been initialized.
   OnCanvasInitialized(bool success);
-
-  // Notifies the browser process that an error has occurred
-  // in the renderer and sends the error messages to it.
-  OnError(array<string> errors);
 };
 
 // Interface used to setup the communication between Javascript and C++
 // in the browser process.
-interface AnnotatorPageHandlerFactory {
+interface UntrustedAnnotatorPageHandlerFactory {
   // Creates the AnnotatorPageHandler in the browser process and binds it
   // to receive calls from Javascript.
-  Create(pending_receiver<AnnotatorPageHandler> handler,
-         pending_remote<AnnotatorPage> annotator);
+  Create(pending_receiver<UntrustedAnnotatorPageHandler> handler,
+         pending_remote<UntrustedAnnotatorPage> annotator);
 };
