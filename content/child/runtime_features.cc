@@ -82,7 +82,7 @@ void SetRuntimeFeatureDefaultsForPlatform(
   WebRuntimeFeatures::EnableCanvas2dImageChromium(
       enable_canvas_2d_image_chromium);
 
-#if BUILDFLAG(IS_MAC)
+#if BUILDFLAG(IS_APPLE)
   const bool enable_web_gl_image_chromium =
       command_line.HasSwitch(
           blink::switches::kEnableGpuMemoryBufferCompositorResources) &&
