@@ -343,9 +343,8 @@ class ExtensionBrowserTest : virtual public InProcessBrowserTest,
   base::Value ExecuteScriptInBackgroundPage(
       const std::string& extension_id,
       const std::string& script,
-      extensions::browsertest_util::ScriptUserActivation
-          script_user_activation =
-              extensions::browsertest_util::ScriptUserActivation::kActivate);
+      browsertest_util::ScriptUserActivation script_user_activation =
+          browsertest_util::ScriptUserActivation::kDontActivate);
 
   // Waits until |script| calls "window.domAutomationController.send(result)",
   // where |result| is a string, and returns |result|. Fails the test and
@@ -356,9 +355,8 @@ class ExtensionBrowserTest : virtual public InProcessBrowserTest,
   std::string ExecuteScriptInBackgroundPageDeprecated(
       const std::string& extension_id,
       const std::string& script,
-      extensions::browsertest_util::ScriptUserActivation
-          script_user_activation =
-              extensions::browsertest_util::ScriptUserActivation::kActivate);
+      browsertest_util::ScriptUserActivation script_user_activation =
+          browsertest_util::ScriptUserActivation::kDontActivate);
 
   bool ExecuteScriptInBackgroundPageNoWait(const std::string& extension_id,
                                            const std::string& script);

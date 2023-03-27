@@ -37,7 +37,7 @@ base::Value ExecuteScriptInBackgroundPage(
     const std::string& extension_id,
     const std::string& script,
     ScriptUserActivation script_user_activation =
-        ScriptUserActivation::kActivate);
+        ScriptUserActivation::kDontActivate);
 
 // Same as ExecuteScriptInBackgroundPage, but doesn't wait for the script
 // to return a result. Fails the test and returns false if |extension_id|
@@ -58,7 +58,7 @@ std::string ExecuteScriptInBackgroundPageDeprecated(
     const std::string& extension_id,
     const std::string& script,
     ScriptUserActivation script_user_activation =
-        ScriptUserActivation::kActivate);
+        ScriptUserActivation::kDontActivate);
 
 // Synchronously stops the service worker registered by the extension with the
 // given `extension_id` at global scope. The extension must be installed and
