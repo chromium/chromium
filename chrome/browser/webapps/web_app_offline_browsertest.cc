@@ -496,6 +496,14 @@ class WebAppOfflineDarkModeTest
  public:
   WebAppOfflineDarkModeTest() {
     std::vector<base::test::FeatureRef> disabled_features;
+#if BUILDFLAG(IS_CHROMEOS)
+    disabled_features.push_back(chromeos::features::kDarkLightMode);
+#endif
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+    disabled_features.push_back(ash::features::kNotificationsRefresh);
+#endif
+
     feature_list_.InitWithFeatures({features::kPWAsDefaultOfflinePage,
                                     blink::features::kWebAppEnableDarkMode},
                                    {disabled_features});
