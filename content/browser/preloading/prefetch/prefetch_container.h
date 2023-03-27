@@ -427,6 +427,11 @@ class CONTENT_EXPORT PrefetchContainer {
   base::WeakPtrFactory<PrefetchContainer> weak_method_factory_{this};
 };
 
+// For debug logs.
+CONTENT_EXPORT std::ostream& operator<<(
+    std::ostream& ostream,
+    const PrefetchContainer& prefetch_container);
+
 }  // namespace content
 
 #endif  // CONTENT_BROWSER_PRELOADING_PREFETCH_PREFETCH_CONTAINER_H_

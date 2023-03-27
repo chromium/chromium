@@ -271,6 +271,8 @@ void PrefetchService::PrefetchUrl(
       default:
         // TODO(crbug.com/1382315): determine if kPreloadingDisabled or
         // kBatterySaverEnabled should be handled.
+        DVLOG(1) << *prefetch_container
+                 << ": not prefetched (PrefetchServiceDelegate)";
         return;
     }
 
@@ -286,6 +288,8 @@ void PrefetchService::PrefetchUrl(
               RenderFrameHost::FromID(
                   prefetch_container->GetReferringRenderFrameHostId())
                   ->GetLastCommittedURL())) {
+        DVLOG(1) << *prefetch_container
+                 << ": not prefetched (not in allow list)";
         return;
       }
     }
@@ -565,6 +569,9 @@ void PrefetchService::OnGotEligibilityResult(
   }
 
   if (!eligible && !is_decoy) {
+    DVLOG(1) << *prefetch_container
+             << ": not prefetched (not eligible nor decoy. PrefetchStatus="
+             << static_cast<int>(*status) << ")";
     return;
   }
 
@@ -772,6 +779,8 @@ void PrefetchService::StartSinglePrefetch(
   // `PopNextPrefetchContainer` because we want to compare against the
   // prefetches that would have been dispatched.
   if (CheckAndSetPrefetchHoldbackStatus(prefetch_container)) {
+    DVLOG(1) << *prefetch_container
+             << ": not prefetched (holdback control group)";
     return;
   }
 
@@ -863,6 +872,8 @@ void PrefetchService::StartSinglePrefetch(
                               base::Unretained(this), prefetch_container));
 
   prefetch_container->TakeStreamingURLLoader(std::move(streaming_loader));
+
+  DVLOG(1) << *prefetch_container << ": PrefetchStreamingURLLoader is created.";
 
   active_prefetches_.insert(prefetch_container->GetPrefetchContainerKey());
 
@@ -1124,6 +1135,8 @@ void PrefetchService::PrepareToServe(
   // Ensure |this| has this prefetch.
   if (all_prefetches_.find(prefetch_container->GetPrefetchContainerKey()) ==
       all_prefetches_.end()) {
+    DVLOG(1) << *prefetch_container
+             << ": didn't promote to ready (not in all_prefetches_)";
     return;
   }
 
@@ -1131,9 +1144,16 @@ void PrefetchService::PrepareToServe(
       prefetch_container->IsPrefetchServable(PrefetchCacheableDuration());
   bool block_until_head = prefetch_container->ShouldBlockUntilHeadReceived();
 
+  if (prefetch_container->HaveDefaultContextCookiesChanged(url)) {
+    DVLOG(1) << *prefetch_container
+             << ": didn't promote to ready (cookies changed)";
+    return;
+  }
+
   // If the prefetch isn't ready to be served, then stop.
-  if (prefetch_container->HaveDefaultContextCookiesChanged(url) ||
-      (!is_servable && !block_until_head)) {
+  if (!is_servable && !block_until_head) {
+    DVLOG(1) << *prefetch_container
+             << ": didn't promote to ready (not servable)";
     return;
   }
 
@@ -1147,10 +1167,14 @@ void PrefetchService::PrepareToServe(
   // |prefetches_ready_to_serve_|, then don't do anything.
   if (prefetches_ready_to_serve_.find(url) !=
       prefetches_ready_to_serve_.end()) {
+    DVLOG(1) << *prefetch_container
+             << ": didn't promote to ready (another ready prefetch)";
     return;
   }
 
   // Move prefetch into |prefetches_ready_to_serve_|.
+  DVLOG(1) << *prefetch_container << ": promoted to ready"
+           << (block_until_head ? " and is blocked until head" : "");
   prefetches_ready_to_serve_[url] = prefetch_container;
 
   if (is_servable) {
@@ -1213,11 +1237,35 @@ void PrefetchService::OnGotIsolatedCookiesForCopy(
   }
 }
 
+void PrefetchService::DumpPrefetchesForDebug() const {
+#if DCHECK_IS_ON()
+  std::ostringstream ss;
+  ss << "PrefetchService[" << this << "]:" << std::endl;
+
+  ss << "Owned:" << std::endl;
+  for (const auto& entry : owned_prefetches_) {
+    ss << *entry.second.first << std::endl;
+  }
+
+  ss << "Ready to serve:" << std::endl;
+  for (const auto& entry : prefetches_ready_to_serve_) {
+    if (PrefetchContainer* prefetch_container = entry.second.get()) {
+      ss << *prefetch_container << std::endl;
+    }
+  }
+  DVLOG(1) << ss.str();
+#endif  // DCHECK_IS_ON()
+}
+
 void PrefetchService::GetPrefetchToServe(
     const GURL& url,
     OnPrefetchToServeReady on_prefetch_to_serve_ready) {
+  DumpPrefetchesForDebug();
+
   auto prefetch_iter = prefetches_ready_to_serve_.find(url);
   if (prefetch_iter == prefetches_ready_to_serve_.end()) {
+    DVLOG(1) << "PrefetchService::GetPrefetchToServe(" << url
+             << "): URL not found";
     std::move(on_prefetch_to_serve_ready).Run(nullptr);
     return;
   }
@@ -1225,11 +1273,15 @@ void PrefetchService::GetPrefetchToServe(
   base::WeakPtr<PrefetchContainer> prefetch_container = prefetch_iter->second;
   prefetches_ready_to_serve_.erase(prefetch_iter);
   if (!prefetch_container) {
+    DVLOG(1) << "PrefetchService::GetPrefetchToServe(" << url
+             << "): PrefetchContainer is null";
     std::move(on_prefetch_to_serve_ready).Run(nullptr);
     return;
   }
 
   if (prefetch_container->IsPrefetchServable(PrefetchCacheableDuration())) {
+    DVLOG(1) << "PrefetchService::GetPrefetchToServe(" << url
+             << "): PrefetchContainer is servable";
     prefetch_container->OnGetPrefetchToServe(/*blocked_until_head=*/false);
     ReturnPrefetchToServe(prefetch_container,
                           std::move(on_prefetch_to_serve_ready));
@@ -1237,6 +1289,8 @@ void PrefetchService::GetPrefetchToServe(
   }
 
   if (prefetch_container->ShouldBlockUntilHeadReceived()) {
+    DVLOG(1) << "PrefetchService::GetPrefetchToServe(" << url
+             << "): PrefetchContainer is blocked until head";
     prefetch_container->OnGetPrefetchToServe(/*blocked_until_head=*/false);
     prefetch_container->GetStreamingLoader()->SetOnReceivedHeadCallback(
         base::BindOnce(&PrefetchService::ReturnPrefetchToServe,
@@ -1245,6 +1299,8 @@ void PrefetchService::GetPrefetchToServe(
     return;
   }
 
+  DVLOG(1) << "PrefetchService::GetPrefetchToServe(" << url
+           << "): PrefetchContainer is not servable";
   std::move(on_prefetch_to_serve_ready).Run(nullptr);
 }
 

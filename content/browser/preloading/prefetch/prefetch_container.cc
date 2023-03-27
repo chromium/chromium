@@ -752,6 +752,12 @@ void PrefetchContainer::OnReturnPrefetchToServe(bool served) {
   }
 }
 
+std::ostream& operator<<(std::ostream& ostream,
+                         const PrefetchContainer& prefetch_container) {
+  return ostream << "PrefetchContainer[" << &prefetch_container
+                 << ", URL=" << prefetch_container.GetURL() << "]";
+}
+
 PrefetchContainer::SinglePrefetch::SinglePrefetch(const GURL& url)
     : url_(url) {}
 

@@ -242,6 +242,8 @@ class CONTENT_EXPORT PrefetchService {
   void RecordExistingPrefetchWithMatchingURL(
       base::WeakPtr<PrefetchContainer> prefetch_container) const;
 
+  void DumpPrefetchesForDebug() const;
+
   raw_ptr<BrowserContext> browser_context_;
 
   // Delegate provided by embedder that controls specific behavior of |this|.
