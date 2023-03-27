@@ -56,6 +56,7 @@
 #include "base/no_destructor.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/rand_util.h"
+#include "base/ranges/algorithm.h"
 #include "base/strings/string_piece_forward.h"
 #include "base/strings/stringprintf.h"
 #include "base/task/sequenced_task_runner.h"
@@ -71,7 +72,9 @@
 #include "ui/display/screen.h"
 #include "ui/display/util/display_util.h"
 #include "ui/gfx/color_analysis.h"
+#include "ui/gfx/image/image.h"
 #include "ui/gfx/image/image_skia.h"
+#include "ui/gfx/image/image_util.h"
 #include "url/gurl.h"
 
 using color_utils::ColorProfile;
@@ -460,6 +463,20 @@ base::TimeDelta FuzzTimeDelta(base::TimeDelta delta) {
                                          base::Time::kMillisecondsPerSecond *
                                          base::Time::kSecondsPerHour);
   return delta + random_delay;
+}
+
+scoped_refptr<base::RefCountedMemory> EncodeAndResizeImage(
+    gfx::ImageSkia image) {
+  auto resized = WallpaperResizer::GetResizedImage(image,
+                                                   /*max_size_in_dips=*/1024);
+  scoped_refptr<base::RefCountedMemory> jpg_bytes = new base::RefCountedBytes();
+  std::vector<uint8_t> jpg_buffer;
+  // Conversion quality between 0 - 100. Manually tested to use 90 for good
+  // performance with reasonable quality.
+  gfx::JPEG1xEncodedDataFromImage(gfx::Image(resized), /*quality=*/90,
+                                  &jpg_buffer);
+  jpg_bytes = base::RefCountedBytes::TakeVector(&jpg_buffer);
+  return jpg_bytes;
 }
 
 }  // namespace
@@ -1471,6 +1488,38 @@ gfx::ImageSkia WallpaperControllerImpl::GetWallpaperImage() {
   return GetWallpaper();
 }
 
+scoped_refptr<base::RefCountedMemory>
+WallpaperControllerImpl::GetPreviewImage() {
+  if (!current_wallpaper_) {
+    return nullptr;
+  }
+  auto image = current_wallpaper_->image();
+  image.MakeThreadSafe();
+  if (!IsOnlineWallpaper(current_wallpaper_->wallpaper_info().type)) {
+    return EncodeAndResizeImage(image);
+  }
+
+  auto variants = current_wallpaper_->wallpaper_info().variants;
+  auto it =
+      base::ranges::find(variants, backdrop::Image::IMAGE_TYPE_PREVIEW_MODE,
+                         &OnlineWallpaperVariant::type);
+  // No image with |backdrop::Image::IMAGE_TYPE_PREVIEW_MODE|, fallback to
+  // |resized|.
+  if (it == variants.end()) {
+    return EncodeAndResizeImage(image);
+  }
+  const auto preview_variant = *it;
+  const auto url_to_file_path_map =
+      GetOnlineWallpaperVariantPaths({preview_variant});
+  const base::FilePath& preview_file_path =
+      url_to_file_path_map.at(preview_variant.raw_url.spec());
+  DCHECK(!preview_file_path.empty());
+
+  std::string data;
+  base::ReadFileToString(preview_file_path, &data);
+  return base::MakeRefCounted<base::RefCountedString>(std::move(data));
+}
+
 bool WallpaperControllerImpl::IsWallpaperBlurredForLockState() const {
   return is_wallpaper_blurred_for_lock_state_;
 }
@@ -1565,8 +1614,9 @@ void WallpaperControllerImpl::OnShellDestroying() {
 void WallpaperControllerImpl::OnWallpaperResized() {
   CalculateWallpaperColors();
   compositor_lock_.reset();
-  for (auto& observer : observers_)
+  for (auto& observer : observers_) {
     observer.OnWallpaperResized();
+  }
 }
 
 void WallpaperControllerImpl::OnColorCalculationComplete(

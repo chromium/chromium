@@ -507,13 +507,9 @@ TEST_F(PersonalizationAppWallpaperProviderImplTest, GetWallpaperAsJpegBytes) {
       }));
   loop.Run();
 
-  // Jpeg bytes of a solid black image scaled up to 1024x1024.
-  scoped_refptr<base::RefCountedBytes> expected_jpeg_bytes =
-      base::MakeRefCounted<base::RefCountedBytes>();
-  gfx::JPEGCodec::Encode(CreateSolidImageSkia(1024, 1024, SK_ColorRED)
-                             .GetRepresentation(/*scale=*/1)
-                             .GetBitmap(),
-                         /*quality=*/90, &expected_jpeg_bytes->data());
+  // Jpeg bytes of the preview image.
+  scoped_refptr<base::RefCountedMemory> expected_jpeg_bytes =
+      test_wallpaper_controller()->GetPreviewImage();
 
   EXPECT_TRUE(expected_jpeg_bytes->Equals(jpeg_bytes));
 }

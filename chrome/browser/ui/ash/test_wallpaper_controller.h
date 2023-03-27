@@ -11,6 +11,8 @@
 #include "ash/public/cpp/wallpaper/wallpaper_drivefs_delegate.h"
 #include "ash/public/cpp/wallpaper/wallpaper_types.h"
 #include "base/files/file_path.h"
+#include "base/memory/ref_counted_memory.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/observer_list.h"
 #include "base/strings/string_util.h"
 #include "components/account_id/account_id.h"
@@ -153,6 +155,7 @@ class TestWallpaperController : public ash::WallpaperController {
   void AddObserver(ash::WallpaperControllerObserver* observer) override;
   void RemoveObserver(ash::WallpaperControllerObserver* observer) override;
   gfx::ImageSkia GetWallpaperImage() override;
+  scoped_refptr<base::RefCountedMemory> GetPreviewImage() override;
   bool IsWallpaperBlurredForLockState() const override;
   bool IsActiveUserWallpaperControlledByPolicy() override;
   bool IsWallpaperControlledByPolicy(

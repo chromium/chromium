@@ -16,6 +16,7 @@
 #include "base/containers/lru_cache.h"
 #include "base/files/file_path.h"
 #include "base/functional/callback_helpers.h"
+#include "base/memory/ref_counted_memory.h"
 #include "base/time/time.h"
 #include "components/user_manager/user_type.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -290,6 +291,10 @@ class ASH_PUBLIC_EXPORT WallpaperController {
 
   // Returns the wallpaper image currently being shown.
   virtual gfx::ImageSkia GetWallpaperImage() = 0;
+
+  // Returns the preview image of the currently shown wallpaper. Nullable if the
+  // current wallpaper is not available.
+  virtual scoped_refptr<base::RefCountedMemory> GetPreviewImage() = 0;
 
   // Returns whether the current wallpaper is blurred on lock/login screen.
   virtual bool IsWallpaperBlurredForLockState() const = 0;

@@ -16,6 +16,7 @@
 #include "components/user_manager/user_type.h"
 #include "test_wallpaper_controller.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "ui/gfx/image/image.h"
 #include "url/gurl.h"
 
 TestWallpaperController::TestWallpaperController() : id_cache_(0) {}
@@ -265,6 +266,12 @@ void TestWallpaperController::RemoveObserver(
 
 gfx::ImageSkia TestWallpaperController::GetWallpaperImage() {
   return current_wallpaper;
+}
+
+scoped_refptr<base::RefCountedMemory>
+TestWallpaperController::GetPreviewImage() {
+  current_wallpaper.MakeThreadSafe();
+  return gfx::Image(current_wallpaper).As1xPNGBytes();
 }
 
 bool TestWallpaperController::IsWallpaperBlurredForLockState() const {

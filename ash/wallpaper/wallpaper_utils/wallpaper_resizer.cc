@@ -16,6 +16,7 @@
 #include "base/time/time.h"
 #include "third_party/skia/include/core/SkImage.h"
 #include "ui/gfx/geometry/skia_conversions.h"
+#include "ui/gfx/image/image_skia_operations.h"
 #include "ui/gfx/image/image_skia_rep.h"
 
 namespace ash {
@@ -83,6 +84,21 @@ void Resize(const gfx::ImageSkia image,
 uint32_t WallpaperResizer::GetImageId(const gfx::ImageSkia& image) {
   const gfx::ImageSkiaRep& image_rep = image.GetRepresentation(1.0f);
   return image_rep.is_null() ? 0 : image_rep.GetBitmap().getGenerationID();
+}
+
+// static
+gfx::ImageSkia WallpaperResizer::GetResizedImage(const gfx::ImageSkia& image,
+                                                 int max_size_in_dips) {
+  float aspect_ratio =
+      static_cast<float>(image.width()) / static_cast<float>(image.height());
+  int height = max_size_in_dips;
+  int width = static_cast<int>(aspect_ratio * height);
+  if (width > max_size_in_dips) {
+    width = max_size_in_dips;
+    height = static_cast<int>(width / aspect_ratio);
+  }
+  return gfx::ImageSkiaOperations::CreateResizedImage(
+      image, skia::ImageOperations::RESIZE_BEST, gfx::Size(width, height));
 }
 
 WallpaperResizer::WallpaperResizer(const gfx::ImageSkia& image,

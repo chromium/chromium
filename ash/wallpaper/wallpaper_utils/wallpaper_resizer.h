@@ -33,6 +33,10 @@ class ASH_EXPORT WallpaperResizer {
   // is modified, its ID will change.
   static uint32_t GetImageId(const gfx::ImageSkia& image);
 
+  // Synchronously resizes the image while maintaining the aspect ratio.
+  static gfx::ImageSkia GetResizedImage(const gfx::ImageSkia& image,
+                                        int max_size_in_dips);
+
   WallpaperResizer(const gfx::ImageSkia& image,
                    const gfx::Size& target_size,
                    const WallpaperInfo& info,

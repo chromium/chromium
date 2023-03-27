@@ -1104,6 +1104,7 @@ TEST_F(WallpaperControllerTest, ColorsCalculatedForMostRecentWallpaper) {
   EXPECT_EQ(controller_->calculated_colors()->k_mean_color, SK_ColorBLUE);
   EXPECT_FALSE(pref_manager_->GetCachedKMeanColor("old"));
   EXPECT_TRUE(pref_manager_->GetCachedKMeanColor("new"));
+  EXPECT_TRUE(controller_->GetPreviewImage());
 }
 
 TEST_F(WallpaperControllerTest, CelebiNotSavedWhenJellyIsDisabled) {

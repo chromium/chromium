@@ -26,6 +26,7 @@
 #include "ash/public/cpp/window_backdrop.h"
 #include "ash/style/dark_light_mode_controller_impl.h"
 #include "ash/wallpaper/wallpaper_utils/wallpaper_online_variant_utils.h"
+#include "ash/wallpaper/wallpaper_utils/wallpaper_resizer.h"
 #include "ash/webui/personalization_app/mojom/personalization_app.mojom.h"
 #include "ash/webui/personalization_app/mojom/personalization_app_mojom_traits.h"
 #include "ash/webui/personalization_app/proto/backdrop_wallpaper.pb.h"
@@ -87,20 +88,6 @@ using ash::personalization_app::GetUser;
 constexpr int kLocalImageThumbnailSizeDip = 256;
 constexpr int kCurrentWallpaperThumbnailSizeDip = 1024;
 
-const gfx::ImageSkia GetResizedImage(const gfx::ImageSkia& image) {
-  // Resize the image maintaining our aspect ratio.
-  float aspect_ratio =
-      static_cast<float>(image.width()) / static_cast<float>(image.height());
-  int height = kCurrentWallpaperThumbnailSizeDip;
-  int width = static_cast<int>(aspect_ratio * height);
-  if (width > kCurrentWallpaperThumbnailSizeDip) {
-    width = kCurrentWallpaperThumbnailSizeDip;
-    height = static_cast<int>(width / aspect_ratio);
-  }
-  return gfx::ImageSkiaOperations::CreateResizedImage(
-      image, skia::ImageOperations::RESIZE_BEST, gfx::Size(width, height));
-}
-
 // Return the online wallpaper key. Use |info.unit_id| if available so we might
 // be able to fallback to the cached attribution.
 const std::string GetOnlineWallpaperKey(ash::WallpaperInfo info) {
@@ -108,21 +95,8 @@ const std::string GetOnlineWallpaperKey(ash::WallpaperInfo info) {
                                   : base::UnguessableToken::Create().ToString();
 }
 
-scoped_refptr<base::RefCountedMemory> ResizeAndEncodeWallpaperImage(
-    gfx::ImageSkia image) {
-  auto resized = gfx::Image(GetResizedImage(image));
-  scoped_refptr<base::RefCountedMemory> jpg_bytes = new base::RefCountedBytes();
-  std::vector<uint8_t> jpg_buffer;
-  // Conversion quality between 0 - 100. Manually tested to use 90 for good
-  // performance with reasonable quality.
-  const int quality = 90;
-  if (gfx::JPEG1xEncodedDataFromImage(resized, quality, &jpg_buffer)) {
-    jpg_bytes = base::RefCountedBytes::TakeVector(&jpg_buffer);
-  } else {
-    // Cannot convert to JPEG, use PNG
-    jpg_bytes = resized.As1xPNGBytes();
-  }
-  return jpg_bytes;
+scoped_refptr<base::RefCountedMemory> GetPreviewWallpaper() {
+  return WallpaperController::Get()->GetPreviewImage();
 }
 
 std::string GetJpegDataUrl(const unsigned char* data, size_t size) {
@@ -189,15 +163,11 @@ void PersonalizationAppWallpaperProviderImpl::GetWallpaperAsJpegBytes(
   // on the UI thread right after user makes a new selection. Make sure to do
   // resizing and encoding on a task runner to avoid locking up the UI as the
   // user's wallpaper is being set.
-  auto* wallpaper_controller = ash::WallpaperController::Get();
-  auto image = wallpaper_controller->GetWallpaperImage();
-  image.MakeThreadSafe();
   base::ThreadPool::PostTaskAndReplyWithResult(
       FROM_HERE,
       {base::TaskPriority::USER_VISIBLE,
        base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN},
-      base::BindOnce(&ResizeAndEncodeWallpaperImage, image),
-      std::move(callback));
+      base::BindOnce(&GetPreviewWallpaper), std::move(callback));
 }
 
 bool PersonalizationAppWallpaperProviderImpl::IsEligibleForGooglePhotos() {
@@ -520,8 +490,8 @@ void PersonalizationAppWallpaperProviderImpl::OnWallpaperResized() {
 void PersonalizationAppWallpaperProviderImpl::OnWallpaperPreviewEnded() {
   DCHECK(wallpaper_observer_remote_.is_bound());
   wallpaper_observer_remote_->OnWallpaperPreviewEnded();
-  // Make sure to fire another |OnWallpaperResized| after preview is over so
-  // that personalization app ends up with correct wallpaper state.
+  // Make sure to fire another |OnWallpaperResized| after preview is over
+  // so that personalization app ends up with correct wallpaper state.
   OnWallpaperResized();
 }
 
@@ -954,8 +924,10 @@ void PersonalizationAppWallpaperProviderImpl::OnGetDefaultImage(
     std::move(callback).Run(GURL());
     return;
   }
-  std::move(callback).Run(
-      GURL(webui::GetBitmapDataUrl(*GetResizedImage(image).bitmap())));
+  std::move(callback).Run(GURL(
+      webui::GetBitmapDataUrl(*WallpaperResizer::GetResizedImage(
+                                   image, kCurrentWallpaperThumbnailSizeDip)
+                                   .bitmap())));
 }
 
 void PersonalizationAppWallpaperProviderImpl::OnGetLocalImages(
