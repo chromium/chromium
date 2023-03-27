@@ -7,6 +7,12 @@
     margin-inline-start: 8px;
   }
 
+  :host-context(.focus-outline-visible) #showAllButton:focus,
+  #showAllButton:focus-visible {
+    box-shadow: var(--ntp-focus-shadow);
+    outline: none;
+  }
+
   #showAllButton {
     background-color: var(--color-new-tab-page-module-background);
     border: none;
@@ -44,6 +50,15 @@
   .related-searches-tile {
     grid-column: 2 / 3;
     grid-row: 2 / 3;
+  }
+
+  /* Set styles for high contrast mode in Windows. */
+  @media (forced-colors: active) {
+    /* Set focus outline since box-shadow isn't visible in hcm */
+    :host-context(.focus-outline-visible) #showAllButton:focus,
+    #showAllButton:focus-visible {
+      outline: var(--cr-focus-outline-hcm);
+    }
   }
 
   /* At less than 768px + 2*18px side gaps, switch to the one column
