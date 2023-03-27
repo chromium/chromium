@@ -98,9 +98,8 @@ SidePanelToolbarContainer::SidePanelToolbarContainer(BrowserView* browser_view)
   pref_change_registrar_.Init(browser_view->GetProfile()->GetPrefs());
   pref_change_registrar_.Add(
       prefs::kSidePanelCompanionEntryPinnedToToolbar,
-      base::BindRepeating(
-          &SidePanelToolbarContainer::UpdatePinnedButtonsVisibility,
-          base::Unretained(this)));
+      base::BindRepeating(&SidePanelToolbarContainer::OnPinnedButtonPrefChanged,
+                          base::Unretained(this)));
   // So we only get enter/exit messages when the mouse enters/exits the whole
   // container, even if it is entering/exiting a specific toolbar pinned entry
   // button view, too.
@@ -210,6 +209,11 @@ void SidePanelToolbarContainer::UpdateSidePanelContainerButtonsState() {
 void SidePanelToolbarContainer::ReorderViews() {
   // The main button is always last.
   ReorderChildView(main_item(), children().size());
+}
+
+void SidePanelToolbarContainer::OnPinnedButtonPrefChanged() {
+  UpdatePinnedButtonsVisibility();
+  browser_view_->side_panel_coordinator()->UpdateHeaderPinButtonState();
 }
 
 void SidePanelToolbarContainer::UpdatePinnedButtonsVisibility() {

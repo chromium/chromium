@@ -67,6 +67,8 @@ class SidePanelToolbarContainer : public ToolbarIconContainerView {
   // side panel button).
   void ReorderViews();
 
+  void OnPinnedButtonPrefChanged();
+
   void UpdatePinnedButtonsVisibility();
 
   const raw_ptr<BrowserView> browser_view_;

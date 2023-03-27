@@ -62,18 +62,9 @@ SidePanelEntry::Id GetDefaultEntry() {
              : SidePanelEntry::Id::kReadingList;
 }
 
-std::unique_ptr<views::ImageButton> CreateControlButton(
-    views::View* host,
-    base::RepeatingClosure pressed_callback,
-    const gfx::VectorIcon& icon,
-    const std::u16string& tooltip_text,
-    ui::ElementIdentifier view_id,
-    int dip_size) {
-  auto button = views::CreateVectorImageButtonWithNativeTheme(pressed_callback,
-                                                              icon, dip_size);
-  button->SetTooltipText(tooltip_text);
+void ConfigureControlButton(views::ImageButton* button) {
   button->SetImageHorizontalAlignment(views::ImageButton::ALIGN_CENTER);
-  views::InstallCircleHighlightPathGenerator(button.get());
+  views::InstallCircleHighlightPathGenerator(button);
 
   int minimum_button_size = ChromeLayoutProvider::Get()->GetDistanceMetric(
       ChromeDistanceMetric::DISTANCE_SIDE_PANEL_HEADER_BUTTON_MINIMUM_SIZE);
@@ -87,6 +78,44 @@ std::unique_ptr<views::ImageButton> CreateControlButton(
   button->SetProperty(
       views::kFlexBehaviorKey,
       views::FlexSpecification().WithAlignment(views::LayoutAlignment::kEnd));
+}
+
+std::unique_ptr<views::ToggleImageButton> CreatePinToggleButton(
+    base::RepeatingClosure pressed_callback) {
+  auto button =
+      std::make_unique<views::ToggleImageButton>(std::move(pressed_callback));
+  views::ConfigureVectorImageButton(button.get());
+  ConfigureControlButton(button.get());
+  button->SetTooltipText(
+      l10n_util::GetStringUTF16(IDS_SIDE_PANEL_TOOLBAR_BUTTON_CXMENU_PIN));
+  button->SetToggledTooltipText(
+      l10n_util::GetStringUTF16(IDS_SIDE_PANEL_TOOLBAR_BUTTON_CXMENU_UNPIN));
+
+  int dip_size = ChromeLayoutProvider::Get()->GetDistanceMetric(
+      ChromeDistanceMetric::DISTANCE_SIDE_PANEL_HEADER_VECTOR_ICON_SIZE);
+  views::SetImageFromVectorIconWithColorId(button.get(), views::kPinIcon,
+                                           ui::kColorIcon,
+                                           ui::kColorIconDisabled, dip_size);
+  const ui::ImageModel& normal_image = ui::ImageModel::FromVectorIcon(
+      views::kUnpinIcon, ui::kColorIcon, dip_size);
+  const ui::ImageModel& disabled_image = ui::ImageModel::FromVectorIcon(
+      views::kUnpinIcon, ui::kColorIconDisabled, dip_size);
+  button->SetToggledImageModel(views::Button::STATE_NORMAL, normal_image);
+  button->SetToggledImageModel(views::Button::STATE_DISABLED, disabled_image);
+  return button;
+}
+
+std::unique_ptr<views::ImageButton> CreateControlButton(
+    views::View* host,
+    base::RepeatingClosure pressed_callback,
+    const gfx::VectorIcon& icon,
+    const std::u16string& tooltip_text,
+    ui::ElementIdentifier view_id,
+    int dip_size) {
+  auto button = views::CreateVectorImageButtonWithNativeTheme(pressed_callback,
+                                                              icon, dip_size);
+  button->SetTooltipText(tooltip_text);
+  ConfigureControlButton(button.get());
   button->SetProperty(views::kElementIdentifierKey, view_id);
 
   return button;
@@ -516,10 +545,9 @@ void SidePanelCoordinator::PopulateSidePanel(
   header_open_in_new_tab_button_->SetVisible(
       current_entry_->SupportsNewTabButton());
   UpdateNewTabButtonState();
-  header_pin_button_->SetVisible(current_entry_->key().id() ==
-                                 SidePanelEntry::Id::kSearchCompanion);
   if (auto* side_panel_container =
           browser_view_->toolbar()->side_panel_container()) {
+    UpdateHeaderPinButtonState();
     side_panel_container->UpdateSidePanelContainerButtonsState();
   }
 }
@@ -614,15 +642,9 @@ std::unique_ptr<views::View> SidePanelCoordinator::CreateHeader() {
                                 kSidePanelComboboxElementId);
 
   // TODO(corising): Update icon and tooltip once provided by UX.
-  header_pin_button_ = header->AddChildView(CreateControlButton(
-      header.get(),
-      base::BindRepeating(&SidePanelCoordinator::UpdatePinState,
-                          base::Unretained(this)),
-      views::kPinIcon,
-      l10n_util::GetStringUTF16(IDS_SIDE_PANEL_TOOLBAR_BUTTON_CXMENU_UNPIN),
-      kSidePanelPinButtonElementId,
-      ChromeLayoutProvider::Get()->GetDistanceMetric(
-          ChromeDistanceMetric::DISTANCE_SIDE_PANEL_HEADER_VECTOR_ICON_SIZE)));
+  header_pin_button_ =
+      header->AddChildView(CreatePinToggleButton(base::BindRepeating(
+          &SidePanelCoordinator::UpdatePinState, base::Unretained(this))));
   header_pin_button_->SetFocusBehavior(views::View::FocusBehavior::ALWAYS);
   // The icon is later set as visible for side panels that support it.
   header_pin_button_->SetVisible(false);
@@ -922,6 +944,21 @@ void SidePanelCoordinator::UpdateNewTabButtonState() {
     header_open_in_new_tab_button_->SetEnabled(
         current_entry_->GetOpenInNewTabURL().is_valid());
   }
+}
+
+void SidePanelCoordinator::UpdateHeaderPinButtonState() {
+  if (!GetContentView()) {
+    return;
+  }
+
+  PrefService* pref_service = browser_view_->GetProfile()->GetPrefs();
+  if (pref_service) {
+    bool pinned = pref_service->GetBoolean(
+        prefs::kSidePanelCompanionEntryPinnedToToolbar);
+    header_pin_button_->SetToggled(pinned);
+  }
+  header_pin_button_->SetVisible(current_entry_->key().id() ==
+                                 SidePanelEntry::Id::kSearchCompanion);
 }
 
 void SidePanelCoordinator::UpdateToolbarButtonHighlight(
