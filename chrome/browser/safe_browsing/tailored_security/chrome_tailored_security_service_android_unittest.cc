@@ -87,8 +87,7 @@ class TestTabModel : public TabModel {
  public:
   explicit TestTabModel(TestingProfile* profile)
       : TabModel(profile, chrome::android::ActivityType::kCustomTab),
-        profile_(profile),
-        tab_count_() {}
+        profile_(profile) {}
 
   int GetTabCount() const override { return tab_count_; }
   int GetActiveIndex() const override { return 0; }
