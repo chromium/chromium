@@ -267443,6 +267443,16 @@
    }
   },
   "support": {
+   ".cache": {
+    "gitignore2.json": [
+     "d14ad630c03e8d0619ad95b56ef3007a441a3490",
+     []
+    ],
+    "mtime.json": [
+     "e925d358f44bfb292ee7b55a8784315f4b809692",
+     []
+    ]
+   },
    ".gitignore": [
     "d93e645d547894b50149d3726de2654957b6e06f",
     []
@@ -312071,6 +312081,10 @@
        ],
        "shape-image-004.html.ini": [
         "461a202b5972e2da219fa1d18784033872891be9",
+        []
+       ],
+       "shape-image-006.html.ini": [
+        "5464a8ca606447382f7ae37f8f3a14c738644e3f",
         []
        ],
        "shape-image-014.html.ini": [
@@ -365934,7 +365948,7 @@
       []
      ],
      "loaf-script-block.html.ini": [
-      "f7a8b1aef4984b62a5f57b1b531eba0f7b11e2ed",
+      "8b5c9fa63607cc2d18d9eba06219092c42f39447",
       []
      ],
      "loaf-visibility.html.ini": [
@@ -387294,6 +387308,18 @@
      "398b9661cbbe6b9bb34487216d97d3a5b5b34015",
      []
     ],
+    "prelu.https.any-expected.txt": [
+     "07469cfba321101484bad3705e3ab6d4a1e7c41a",
+     []
+    ],
+    "prelu.https.any.js.ini": [
+     "9cf6e47b28341aed6d84753a0068f943ff0ecd40",
+     []
+    ],
+    "prelu.https.any.worker-expected.txt": [
+     "88368d4a6f4b0d15bc93896bbad5eb4abc91dd49",
+     []
+    ],
     "reduction.https.any-expected.txt": [
      "6257e70f7946e50d223d2aa9b6fd8a936fac5432",
      []
@@ -387412,6 +387438,10 @@
        "d6c9f592df7b4103ec477dcd2a49cdc482c88672",
        []
       ],
+      "prelu.json": [
+       "f3855b0f4e19b4e8b70b8fafb0a5f32b733ee7bd",
+       []
+      ],
       "reduce_max.json": [
        "4dd7098d03f4fd89a25124b0d3ffdb2d43405704",
        []
@@ -387482,7 +387512,7 @@
       ]
      },
      "utils.js": [
-      "0c903998f17dda13f31485dc3f2597a1bb3852c6",
+      "1aec133aef00d6e1e910c217ba9e144d390214c3",
       []
      ]
     },
@@ -389037,7 +389067,7 @@
        []
       ],
       "constructor.any.js.ini": [
-       "d3a42adb47a8848d42fcd3fcbd0c6fe075f80d37",
+       "149394c10ca3822b9f8310c416d43db18cae49c0",
        []
       ],
       "constructor.any.serviceworker_wpt_flags=h2-expected.txt": [
@@ -390325,6 +390355,10 @@
        ],
        "embedded_style_media_queries-ref.html": [
         "d132b132b44b2349c0f1017c484a1f85d9ea8f44",
+        []
+       ],
+       "embedded_style_media_queries.html.ini": [
+        "327d620d44446db19999b1646cb304e578f5d9d0",
         []
        ],
        "embedded_style_media_queries_resized-ref.html": [
@@ -626341,6 +626375,57 @@
         [
          "title",
          "test WebNN API pooling operations"
+        ],
+        [
+         "global",
+         "window,dedicatedworker"
+        ],
+        [
+         "script",
+         "./resources/utils.js"
+        ],
+        [
+         "timeout",
+         "long"
+        ]
+       ],
+       "timeout": "long"
+      }
+     ]
+    ],
+    "prelu.https.any.js": [
+     "c1b2e9fa2a0afffb60eec2c1445a230bca8030f9",
+     [
+      "webnn/prelu.https.any.html",
+      {
+       "script_metadata": [
+        [
+         "title",
+         "test WebNN API prelu operation"
+        ],
+        [
+         "global",
+         "window,dedicatedworker"
+        ],
+        [
+         "script",
+         "./resources/utils.js"
+        ],
+        [
+         "timeout",
+         "long"
+        ]
+       ],
+       "timeout": "long"
+      }
+     ],
+     [
+      "webnn/prelu.https.any.worker.html",
+      {
+       "script_metadata": [
+        [
+         "title",
+         "test WebNN API prelu operation"
         ],
         [
          "global",
