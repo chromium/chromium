@@ -1,11 +1,9 @@
 create {
   platform_re: "linux-.*"
-  source {
-    url {
-      download_url: "https://gitlab.freedesktop.org/libinput/libei/-/archive/0.4.1/libei-0.4.1.tar.gz"
-      version: "0.4.1"
-    }
-    unpack_archive: true
+  source { script { name: "fetch.py" } }
+  build {
+    dep: "chromium/third_party/dbus"
+    install: "install.sh"
   }
 }
 

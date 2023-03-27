@@ -1,0 +1,125 @@
+From 6b59355bac02d02048dc0cff5ec28f196467aea3 Mon Sep 17 00:00:00 2001
+From: Salman Malik <salmanmalik@chromium.org>
+Date: Sat, 25 Mar 2023 23:22:01 +0000
+Subject: [PATCH] config: Make memfd_create optional
+
+`memfd_create` doesn't seem to be supported on
+all platforms (e.g. ubuntu 18 has trouble with it).
+Even though, I was able to substitute `memfd_create`
+with a direct system call, I was not able to get
+the `MFD_CLOXEC` flag (from fcntl.h) working cleanly
+(there were redefinitions/conflicts for other
+structures when trying to use <linux/*> headers).
+Making it optional for time being till we have
+figured out how to make it work broadly.
+---
+ meson.build             | 3 +++
+ src/util-memfile.c      | 7 ++++++-
+ src/util-memfile.h      | 2 ++
+ test/test-ei-device.c   | 2 ++
+ tools/eis-demo-server.c | 2 ++
+ 5 files changed, 15 insertions(+), 1 deletion(-)
+
+diff --git a/meson.build b/meson.build
+index 61d78f8..63bafc8 100644
+--- a/meson.build
++++ b/meson.build
+@@ -51,6 +51,9 @@ config_h = configuration_data()
+ config_h.set('_GNU_SOURCE', '1')
+ config_h.set_quoted('EI_VERSION', meson.project_version())
+ config_h.set_quoted('EIS_VERSION', meson.project_version())
++if cc.has_function('memfd_create', prefix: '#define _GNU_SOURCE\n#include <sys/mman.h>')
++  config_h.set('HAVE_MEMFD_CREATE', true)
++endif
+ 
+ dep_libxkbcommon = dependency('xkbcommon', required: false)
+ config_h.set10('HAVE_LIBXKBCOMMON', dep_libxkbcommon.found())
+diff --git a/src/util-memfile.c b/src/util-memfile.c
+index c4b8270..f74f7ec 100644
+--- a/src/util-memfile.c
++++ b/src/util-memfile.c
+@@ -26,9 +26,12 @@
+ 
+ #include <stddef.h>
+ #include <unistd.h>
+-#include <sys/mman.h>
+ #include <fcntl.h>
+ 
++#ifdef HAVE_MEMFD_CREATE
++#include <sys/mman.h>
++#endif
++
+ #include "util-memfile.h"
+ #include "util-mem.h"
+ #include "util-io.h"
+@@ -55,6 +58,7 @@ OBJECT_IMPLEMENT_REF(memfile);
+ OBJECT_IMPLEMENT_GETTER(memfile, fd, int);
+ OBJECT_IMPLEMENT_GETTER(memfile, size, size_t);
+ 
++#ifdef HAVE_MEMFD_CREATE
+ struct memfile *
+ memfile_new(const char *data, size_t sz) {
+ 	_unref_(memfile) *memfile = memfile_create(NULL);
+@@ -81,3 +85,4 @@ memfile_new(const char *data, size_t sz) {
+ 
+ 	return steal(&memfile);
+ }
++#endif
+diff --git a/src/util-memfile.h b/src/util-memfile.h
+index 66bdc28..51673f9 100644
+--- a/src/util-memfile.h
++++ b/src/util-memfile.h
+@@ -28,8 +28,10 @@
+ 
+ struct memfile;
+ 
++#ifdef HAVE_MEMFD_CREATE
+ struct memfile *
+ memfile_new(const char *data, size_t sz);
++#endif
+ 
+ struct memfile *
+ memfile_ref(struct memfile *memfile);
+diff --git a/test/test-ei-device.c b/test/test-ei-device.c
+index ae7e698..529cc68 100644
+--- a/test/test-ei-device.c
++++ b/test/test-ei-device.c
+@@ -1015,6 +1015,7 @@ MUNIT_TEST(test_ei_device_multitouch)
+ 	return MUNIT_OK;
+ }
+ 
++#ifdef HAVE_MEMFD_CREATE
+ MUNIT_TEST(test_ei_keymap_invalid)
+ {
+ 	_unref_(peck) *peck = peck_new();
+@@ -1121,6 +1122,7 @@ MUNIT_TEST(test_ei_keymap_set)
+ 
+ 	return MUNIT_OK;
+ }
++#endif
+ 
+ MUNIT_TEST(test_ei_keyboard_modifiers)
+ {
+diff --git a/tools/eis-demo-server.c b/tools/eis-demo-server.c
+index 14195d6..b2a3acc 100644
+--- a/tools/eis-demo-server.c
++++ b/tools/eis-demo-server.c
+@@ -207,6 +207,7 @@ setup_keymap(struct eis_demo_server *server, struct eis_device *device)
+ 	const char *str = xkb_keymap_get_as_string(keymap, XKB_KEYMAP_FORMAT_TEXT_V1);
+ 	size_t len = strlen(str) - 1;
+ 
++#ifdef HAVE_MEMFD_CREATE
+ 	struct memfile *f = memfile_new(str, len);
+ 	if (!f)
+ 		return;
+@@ -216,6 +217,7 @@ setup_keymap(struct eis_demo_server *server, struct eis_device *device)
+ 						memfile_get_size(f));
+ 	eis_keymap_add(k);
+ 	memfile_unref(f);
++#endif
+ 
+ 	_unref_(xkb_state) *state = xkb_state_new(keymap);
+ 	if (!state)
+-- 
+2.40.0.348.gf938b09366-goog
+
