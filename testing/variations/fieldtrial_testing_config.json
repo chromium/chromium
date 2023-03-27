@@ -7971,7 +7971,11 @@
             "experiments": [
                 {
                     "name": "AndroidExperiments",
-                    "params": {},
+                    "params": {
+                        "RepeatableQueriesIgnoreDuplicateVisits": "true",
+                        "RepeatableQueriesMaxAgeDays": "7",
+                        "RepeatableQueriesMinVisitCount": "12"
+                    },
                     "enable_features": [
                         "AndroidAuxiliarySearch",
                         "NewTabPageTilesTitleWrapAround",

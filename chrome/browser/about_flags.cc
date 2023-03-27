@@ -1626,37 +1626,34 @@ const FeatureEntry::FeatureVariation kOmniboxSuggestionHeightVariations[] = {
      std::size(kOmniboxUniformRowHeight40), nullptr},
 };
 
-const FeatureEntry::FeatureParam
-    kOrganicRepeatableQueriesCappedWithHighPrivilege[] = {
-        {"MaxNumRepeatableQueries", "4"},
-        {"ScaleRepeatableQueriesScores", "true"},
-        {"PrivilegeRepeatableQueries", "true"}};
-const FeatureEntry::FeatureParam
-    kOrganicRepeatableQueriesCappedWithLowPrivilege[] = {
-        {"MaxNumRepeatableQueries", "4"},
-        {"ScaleRepeatableQueriesScores", "true"},
-        {"PrivilegeRepeatableQueries", "false"}};
-const FeatureEntry::FeatureParam
-    kOrganicRepeatableQueriesUncappedWithHighPrivilege[] = {
-        {"ScaleRepeatableQueriesScores", "true"},
-        {"PrivilegeRepeatableQueries", "true"}};
-const FeatureEntry::FeatureParam
-    kOrganicRepeatableQueriesUncappedWithLowPrivilege[] = {
-        {"ScaleRepeatableQueriesScores", "true"},
-        {"PrivilegeRepeatableQueries", "false"}};
+const FeatureEntry::FeatureParam kRepeatableQueries_6Searches_90Days[] = {
+    {"RepeatableQueriesIgnoreDuplicateVisits", "true"},
+    {"RepeatableQueriesMinVisitCount", "6"},
+};
+const FeatureEntry::FeatureParam kRepeatableQueries_12Searches_90Days[] = {
+    {"RepeatableQueriesIgnoreDuplicateVisits", "true"},
+    {"RepeatableQueriesMinVisitCount", "12"},
+};
+const FeatureEntry::FeatureParam kRepeatableQueries_6Searches_7Days[] = {
+    {"RepeatableQueriesIgnoreDuplicateVisits", "true"},
+    {"RepeatableQueriesMinVisitCount", "6"},
+    {"RepeatableQueriesMaxAgeDays", "7"},
+};
+const FeatureEntry::FeatureParam kRepeatableQueries_12Searches_7Days[] = {
+    {"RepeatableQueriesIgnoreDuplicateVisits", "true"},
+    {"RepeatableQueriesMinVisitCount", "12"},
+    {"RepeatableQueriesMaxAgeDays", "7"},
+};
 
 const FeatureEntry::FeatureVariation kOrganicRepeatableQueriesVariations[] = {
-    {"- No max, High privilege",
-     kOrganicRepeatableQueriesUncappedWithHighPrivilege,
-     std::size(kOrganicRepeatableQueriesUncappedWithHighPrivilege), nullptr},
-    {"- No max, Low privilege",
-     kOrganicRepeatableQueriesUncappedWithLowPrivilege,
-     std::size(kOrganicRepeatableQueriesUncappedWithLowPrivilege), nullptr},
-    {"- Max 4, High privilege",
-     kOrganicRepeatableQueriesCappedWithHighPrivilege,
-     std::size(kOrganicRepeatableQueriesCappedWithHighPrivilege), nullptr},
-    {"- Max 4, Low privilege", kOrganicRepeatableQueriesCappedWithLowPrivilege,
-     std::size(kOrganicRepeatableQueriesCappedWithLowPrivilege), nullptr},
+    {"6+ uses, once in last 90d", kRepeatableQueries_6Searches_90Days,
+     std::size(kRepeatableQueries_6Searches_90Days), nullptr},
+    {"12+ uses, once in last 90d", kRepeatableQueries_12Searches_90Days,
+     std::size(kRepeatableQueries_12Searches_90Days), nullptr},
+    {"6+ uses, once in last 7d", kRepeatableQueries_6Searches_7Days,
+     std::size(kRepeatableQueries_6Searches_7Days), nullptr},
+    {"12+ uses, once in last 7d", kRepeatableQueries_12Searches_7Days,
+     std::size(kRepeatableQueries_12Searches_7Days), nullptr},
 };
 
 const FeatureEntry::FeatureParam kMinimumTabWidthSettingPinned[] = {
