@@ -268,39 +268,47 @@ public class TabGridItemTouchHelperCallback extends ItemTouchHelper.SimpleCallba
                 mActionAttempted = true;
             }
 
-            // The following is the entry point for the longpress action for TabSelectionEditorV2.
-            // If the conditions mentioned below are avoided, the block will trigger and perform a
-            // longpress action on the held tab, bringing up the selection editor interface.
+            // There is a bug with ItemTouchHelper where on longpress, if the held tab is not
+            // dragged (no movement occurs), then the gesture will not actually be consumed by the
+            // ItemTouchHelper. This manifests as a MOTION_UP event being propagated to child view
+            // click handlers and resulting in a real "click" occurring despite the action having
+            // technically been consumed as a longpress by this class. The downstream click
+            // handlers running can result in a tab being selected or closed in an unexpected manner
+            // and due to a race condition between animations a phantom tab can even remain in the
+            // UI (see crbug.com/1425336).
+            //
+            // To avoid this it is necessary for TabListMediator to attach an additional
+            // OnItemTouchListener that resolves after the OnItemTouchListener attached by the
+            // ItemTouchHelper that TabGridItemTouchHelperCallback is bound to. This additional
+            // OnItemTouchListener will block the MOTION_UP event preventing the unintended action
+            // from resolving.
             //
             // This block will not trigger if:
             //      a swipe was started but unfinished as mSelectedTabIndex may not be set.
             //      a swipe, move or group/ungroup happens.
             //      a tab is moved beyond a minimum distance from its original location.
             //
-            // An edge case exists where on longpress, if the held tab is not dragged (no movement
-            // occurs), the MOTION_UP event on release will not be intercepted by the below attached
-            // onLongPressTabItemEventListener. After processing the longpress action, the MOTION_UP
-            // event will propagate down to the subsequent recyclerViews and be consumed there,
-            // resulting in a click on the tab grid card. The unwanted click behaviour will be
-            // blocked by the logic below if the conditions are met.
-            if (mOnLongPressTabItemEventListener != null
-                    && (mSelectedTabIndex != TabModel.INVALID_TAB_INDEX
-                            && mSelectedTabIndex < mModel.size() && !mActionAttempted
-                            && mModel.get(mSelectedTabIndex).model.get(CARD_TYPE) == TAB
-                            && TabUiFeatureUtilities.ENABLE_TAB_SELECTION_EDITOR_V2_LONGPRESS_ENTRY
-                                       .getValue())) {
-                int tabId = mModel.get(mSelectedTabIndex).model.get(TabProperties.TAB_ID);
+            // Otherwise, the unwanted click behaviour will be blocked.
+            if (mSelectedTabIndex != TabModel.INVALID_TAB_INDEX && mSelectedTabIndex < mModel.size()
+                    && !mActionAttempted
+                    && mModel.get(mSelectedTabIndex).model.get(CARD_TYPE) == TAB) {
                 // If the child was ever dragged or swiped do not consume the next action, as the
                 // longpress will resolve safely due to the listener intercepting the DRAG event
                 // and negating any further action. However, if we just release the tab without
                 // starting a swipe or drag then it is possible the longpress instead resolves as a
-                // MOTION_UP click event which leads to tab selection occurring in the selection
-                // editor or resulting in clicking the tab itself. This issue can be avoided by
-                // requesting to block the next action.
+                // MOTION_UP click event leading to the problems described above.
                 if (!mActionStarted) {
                     mShouldBlockAction = true;
                 }
-                mOnLongPressTabItemEventListener.onLongPressEvent(tabId);
+
+                // The following is the entry point for the longpress action for
+                // TabSelectionEditorV2.
+                if (mOnLongPressTabItemEventListener != null
+                        && TabUiFeatureUtilities.ENABLE_TAB_SELECTION_EDITOR_V2_LONGPRESS_ENTRY
+                                   .getValue()) {
+                    int tabId = mModel.get(mSelectedTabIndex).model.get(TabProperties.TAB_ID);
+                    mOnLongPressTabItemEventListener.onLongPressEvent(tabId);
+                }
             }
             mHoveredTabIndex = TabModel.INVALID_TAB_INDEX;
             mSelectedTabIndex = TabModel.INVALID_TAB_INDEX;
