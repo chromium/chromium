@@ -59,8 +59,7 @@ import java.io.IOException;
  */
 @RunWith(ChromeJUnit4ClassRunner.class)
 @DoNotBatch(reason = "TODO(crbug.com/1168590): SyncTestRule doesn't support batching.")
-@EnableFeatures({ChromeFeatureList.MESSAGES_FOR_ANDROID_INFRASTRUCTURE,
-        ChromeFeatureList.MESSAGES_FOR_ANDROID_SYNC_ERROR})
+@EnableFeatures({ChromeFeatureList.MESSAGES_FOR_ANDROID_INFRASTRUCTURE})
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 public class SyncErrorMessageTest {
     @Mock
