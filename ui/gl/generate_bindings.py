@@ -720,6 +720,14 @@ GL_FUNCTIONS = [
                 'extensions': ['GL_ANGLE_shader_pixel_local_storage']}],
   'arguments': 'GLint plane, const GLuint* value', },
 { 'return_type': 'void',
+  'versions': [{'name': 'glFramebufferPixelLocalStorageInterruptANGLE',
+                'extensions': ['GL_ANGLE_shader_pixel_local_storage']}],
+  'arguments': '', },
+{ 'return_type': 'void',
+  'versions': [{'name': 'glFramebufferPixelLocalStorageRestoreANGLE',
+                'extensions': ['GL_ANGLE_shader_pixel_local_storage']}],
+  'arguments': '', },
+{ 'return_type': 'void',
   'names': ['glFramebufferRenderbufferEXT', 'glFramebufferRenderbuffer'],
   'arguments':
       'GLenum target, GLenum attachment, GLenum renderbuffertarget, '

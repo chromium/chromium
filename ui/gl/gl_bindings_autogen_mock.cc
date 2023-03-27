@@ -1631,6 +1631,18 @@ MockGLInterface::Mock_glFramebufferPixelLocalClearValueuivANGLE(
 }
 
 void GL_BINDING_CALL
+MockGLInterface::Mock_glFramebufferPixelLocalStorageInterruptANGLE() {
+  MakeGlMockFunctionUnique("glFramebufferPixelLocalStorageInterruptANGLE");
+  interface_->FramebufferPixelLocalStorageInterruptANGLE();
+}
+
+void GL_BINDING_CALL
+MockGLInterface::Mock_glFramebufferPixelLocalStorageRestoreANGLE() {
+  MakeGlMockFunctionUnique("glFramebufferPixelLocalStorageRestoreANGLE");
+  interface_->FramebufferPixelLocalStorageRestoreANGLE();
+}
+
+void GL_BINDING_CALL
 MockGLInterface::Mock_glFramebufferRenderbuffer(GLenum target,
                                                 GLenum attachment,
                                                 GLenum renderbuffertarget,
@@ -5974,6 +5986,12 @@ MockGLInterface::GetGLProcAddress(const char* name) {
   if (strcmp(name, "glFramebufferPixelLocalClearValueuivANGLE") == 0)
     return reinterpret_cast<GLFunctionPointerType>(
         Mock_glFramebufferPixelLocalClearValueuivANGLE);
+  if (strcmp(name, "glFramebufferPixelLocalStorageInterruptANGLE") == 0)
+    return reinterpret_cast<GLFunctionPointerType>(
+        Mock_glFramebufferPixelLocalStorageInterruptANGLE);
+  if (strcmp(name, "glFramebufferPixelLocalStorageRestoreANGLE") == 0)
+    return reinterpret_cast<GLFunctionPointerType>(
+        Mock_glFramebufferPixelLocalStorageRestoreANGLE);
   if (strcmp(name, "glFramebufferRenderbuffer") == 0)
     return reinterpret_cast<GLFunctionPointerType>(
         Mock_glFramebufferRenderbuffer);

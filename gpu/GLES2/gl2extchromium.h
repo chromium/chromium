@@ -385,6 +385,8 @@ glBeginPixelLocalStorageANGLE(GLsizei n, const GLenum loadops[]);
 GL_APICALL void GL_APIENTRY
 glEndPixelLocalStorageANGLE(GLsizei n, const GLenum storeops[]);
 GL_APICALL void GL_APIENTRY glPixelLocalStorageBarrierANGLE(void);
+GL_APICALL void GL_APIENTRY glFramebufferPixelLocalStorageInterruptANGLE(void);
+GL_APICALL void GL_APIENTRY glFramebufferPixelLocalStorageRestoreANGLE(void);
 GL_APICALL void GL_APIENTRY
 glGetFramebufferPixelLocalStorageParameterfvANGLE(GLint plane,
                                                   GLenum pname,

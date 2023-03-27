@@ -1313,6 +1313,8 @@ class GLES2DecoderImpl : public GLES2Decoder,
   void DoBeginPixelLocalStorageANGLE(GLsizei n, const volatile GLenum* loadops);
   void DoEndPixelLocalStorageANGLE(GLsizei n, const volatile GLenum* storeops);
   void DoPixelLocalStorageBarrierANGLE();
+  void DoFramebufferPixelLocalStorageInterruptANGLE();
+  void DoFramebufferPixelLocalStorageRestoreANGLE();
   void DoGetFramebufferPixelLocalStorageParameterfvANGLE(GLint plane,
                                                          GLenum pname,
                                                          GLfloat* params,
@@ -19331,6 +19333,14 @@ void GLES2DecoderImpl::DoEndPixelLocalStorageANGLE(
 }
 
 void GLES2DecoderImpl::DoPixelLocalStorageBarrierANGLE() {
+  NOTIMPLEMENTED();
+}
+
+void GLES2DecoderImpl::DoFramebufferPixelLocalStorageInterruptANGLE() {
+  NOTIMPLEMENTED();
+}
+
+void GLES2DecoderImpl::DoFramebufferPixelLocalStorageRestoreANGLE() {
   NOTIMPLEMENTED();
 }
 

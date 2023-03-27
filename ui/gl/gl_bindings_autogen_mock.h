@@ -685,6 +685,8 @@ Mock_glFramebufferPixelLocalClearValueivANGLE(GLint plane, const GLint* value);
 static void GL_BINDING_CALL
 Mock_glFramebufferPixelLocalClearValueuivANGLE(GLint plane,
                                                const GLuint* value);
+static void GL_BINDING_CALL Mock_glFramebufferPixelLocalStorageInterruptANGLE();
+static void GL_BINDING_CALL Mock_glFramebufferPixelLocalStorageRestoreANGLE();
 static void GL_BINDING_CALL
 Mock_glFramebufferRenderbuffer(GLenum target,
                                GLenum attachment,

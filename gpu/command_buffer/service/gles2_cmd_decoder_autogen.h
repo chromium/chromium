@@ -5803,6 +5803,32 @@ error::Error GLES2DecoderImpl::HandlePixelLocalStorageBarrierANGLE(
   return error::kNoError;
 }
 
+error::Error GLES2DecoderImpl::HandleFramebufferPixelLocalStorageInterruptANGLE(
+    uint32_t immediate_data_size,
+    const volatile void* cmd_data) {
+  if (!feature_info_->IsWebGL2OrES3OrHigherContext())
+    return error::kUnknownCommand;
+  if (!features().angle_shader_pixel_local_storage) {
+    return error::kUnknownCommand;
+  }
+
+  DoFramebufferPixelLocalStorageInterruptANGLE();
+  return error::kNoError;
+}
+
+error::Error GLES2DecoderImpl::HandleFramebufferPixelLocalStorageRestoreANGLE(
+    uint32_t immediate_data_size,
+    const volatile void* cmd_data) {
+  if (!feature_info_->IsWebGL2OrES3OrHigherContext())
+    return error::kUnknownCommand;
+  if (!features().angle_shader_pixel_local_storage) {
+    return error::kUnknownCommand;
+  }
+
+  DoFramebufferPixelLocalStorageRestoreANGLE();
+  return error::kNoError;
+}
+
 error::Error
 GLES2DecoderImpl::HandleGetFramebufferPixelLocalStorageParameterfvANGLE(
     uint32_t immediate_data_size,

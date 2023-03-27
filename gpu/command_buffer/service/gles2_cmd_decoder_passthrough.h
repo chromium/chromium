@@ -428,13 +428,10 @@ class GPU_GLES2_EXPORT GLES2DecoderPassthroughImpl
     return feature_info_->feature_flags();
   }
 
-  class ScopedPixelLocalStorageDeactivate {
+  class ScopedPixelLocalStorageInterrupt {
    public:
-    static void StashIfNeeded(gl::GLApi*, GLint active_plane_count);
-    static void RestoreIfNeeded(gl::GLApi* api, GLint stashed_plane_count);
-
-    ScopedPixelLocalStorageDeactivate(const GLES2DecoderPassthroughImpl*);
-    ~ScopedPixelLocalStorageDeactivate();
+    ScopedPixelLocalStorageInterrupt(const GLES2DecoderPassthroughImpl*);
+    ~ScopedPixelLocalStorageInterrupt();
 
    private:
     raw_ptr<const GLES2DecoderPassthroughImpl> impl_;
@@ -965,9 +962,9 @@ class GPU_GLES2_EXPORT GLES2DecoderPassthroughImpl
   // If this context supports both read and draw framebuffer bindings
   bool supports_separate_fbo_bindings_ = false;
 
-  // Tracks the number of ANGLE_shader_pixel_local_storage planes to turn off
-  // and back on in the event that a rendering pass gets interrupted.
-  GLint active_pls_plane_count_ = 0;
+  // Tracks if the context has ever called glBeginPixelLocalStorageANGLE. If it
+  // has, we need to start using the pixel local storage interrupt mechanism.
+  bool has_activated_pixel_local_storage_ = false;
 
   // Tracing
   std::unique_ptr<GPUTracer> gpu_tracer_;

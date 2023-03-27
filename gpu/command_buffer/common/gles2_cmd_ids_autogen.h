@@ -349,8 +349,10 @@
   OP(BeginPixelLocalStorageANGLEImmediate)                     /* 590 */ \
   OP(EndPixelLocalStorageANGLEImmediate)                       /* 591 */ \
   OP(PixelLocalStorageBarrierANGLE)                            /* 592 */ \
-  OP(GetFramebufferPixelLocalStorageParameterfvANGLE)          /* 593 */ \
-  OP(GetFramebufferPixelLocalStorageParameterivANGLE)          /* 594 */
+  OP(FramebufferPixelLocalStorageInterruptANGLE)               /* 593 */ \
+  OP(FramebufferPixelLocalStorageRestoreANGLE)                 /* 594 */ \
+  OP(GetFramebufferPixelLocalStorageParameterfvANGLE)          /* 595 */ \
+  OP(GetFramebufferPixelLocalStorageParameterivANGLE)          /* 596 */
 
 enum CommandId {
   kOneBeforeStartPoint =

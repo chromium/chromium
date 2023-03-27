@@ -1257,6 +1257,10 @@ void EndPixelLocalStorageANGLE(GLsizei count, const GLenum* storeops) override;
 
 void PixelLocalStorageBarrierANGLE() override;
 
+void FramebufferPixelLocalStorageInterruptANGLE() override;
+
+void FramebufferPixelLocalStorageRestoreANGLE() override;
+
 void GetFramebufferPixelLocalStorageParameterfvANGLE(GLint plane,
                                                      GLenum pname,
                                                      GLfloat* params) override;

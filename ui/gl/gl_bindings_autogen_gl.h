@@ -507,6 +507,9 @@ typedef void(GL_BINDING_CALL* glFramebufferPixelLocalClearValueivANGLEProc)(
 typedef void(GL_BINDING_CALL* glFramebufferPixelLocalClearValueuivANGLEProc)(
     GLint plane,
     const GLuint* value);
+typedef void(
+    GL_BINDING_CALL* glFramebufferPixelLocalStorageInterruptANGLEProc)();
+typedef void(GL_BINDING_CALL* glFramebufferPixelLocalStorageRestoreANGLEProc)();
 typedef void(GL_BINDING_CALL* glFramebufferRenderbufferEXTProc)(
     GLenum target,
     GLenum attachment,
@@ -2268,6 +2271,10 @@ struct ProcsGL {
       glFramebufferPixelLocalClearValueivANGLEFn;
   glFramebufferPixelLocalClearValueuivANGLEProc
       glFramebufferPixelLocalClearValueuivANGLEFn;
+  glFramebufferPixelLocalStorageInterruptANGLEProc
+      glFramebufferPixelLocalStorageInterruptANGLEFn;
+  glFramebufferPixelLocalStorageRestoreANGLEProc
+      glFramebufferPixelLocalStorageRestoreANGLEFn;
   glFramebufferRenderbufferEXTProc glFramebufferRenderbufferEXTFn;
   glFramebufferTexture2DEXTProc glFramebufferTexture2DEXTFn;
   glFramebufferTexture2DMultisampleEXTProc
@@ -3104,6 +3111,8 @@ class GL_EXPORT GLApi {
   virtual void glFramebufferPixelLocalClearValueuivANGLEFn(
       GLint plane,
       const GLuint* value) = 0;
+  virtual void glFramebufferPixelLocalStorageInterruptANGLEFn() = 0;
+  virtual void glFramebufferPixelLocalStorageRestoreANGLEFn() = 0;
   virtual void glFramebufferRenderbufferEXTFn(GLenum target,
                                               GLenum attachment,
                                               GLenum renderbuffertarget,
@@ -4654,6 +4663,10 @@ class GL_EXPORT GLApi {
   ::gl::g_current_gl_context->glFramebufferPixelLocalClearValueivANGLEFn
 #define glFramebufferPixelLocalClearValueuivANGLE \
   ::gl::g_current_gl_context->glFramebufferPixelLocalClearValueuivANGLEFn
+#define glFramebufferPixelLocalStorageInterruptANGLE \
+  ::gl::g_current_gl_context->glFramebufferPixelLocalStorageInterruptANGLEFn
+#define glFramebufferPixelLocalStorageRestoreANGLE \
+  ::gl::g_current_gl_context->glFramebufferPixelLocalStorageRestoreANGLEFn
 #define glFramebufferRenderbufferEXT \
   ::gl::g_current_gl_context->glFramebufferRenderbufferEXTFn
 #define glFramebufferTexture2DEXT \

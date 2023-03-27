@@ -3275,6 +3275,28 @@ TEST_F(GLES2ImplementationTest, PixelLocalStorageBarrierANGLE) {
   EXPECT_EQ(0, memcmp(&expected, commands_, sizeof(expected)));
 }
 
+TEST_F(GLES2ImplementationTest, FramebufferPixelLocalStorageInterruptANGLE) {
+  struct Cmds {
+    cmds::FramebufferPixelLocalStorageInterruptANGLE cmd;
+  };
+  Cmds expected;
+  expected.cmd.Init();
+
+  gl_->FramebufferPixelLocalStorageInterruptANGLE();
+  EXPECT_EQ(0, memcmp(&expected, commands_, sizeof(expected)));
+}
+
+TEST_F(GLES2ImplementationTest, FramebufferPixelLocalStorageRestoreANGLE) {
+  struct Cmds {
+    cmds::FramebufferPixelLocalStorageRestoreANGLE cmd;
+  };
+  Cmds expected;
+  expected.cmd.Init();
+
+  gl_->FramebufferPixelLocalStorageRestoreANGLE();
+  EXPECT_EQ(0, memcmp(&expected, commands_, sizeof(expected)));
+}
+
 TEST_F(GLES2ImplementationTest,
        GetFramebufferPixelLocalStorageParameterfvANGLE) {
   struct Cmds {

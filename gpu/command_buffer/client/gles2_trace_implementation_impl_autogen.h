@@ -2603,6 +2603,18 @@ void GLES2TraceImplementation::PixelLocalStorageBarrierANGLE() {
   gl_->PixelLocalStorageBarrierANGLE();
 }
 
+void GLES2TraceImplementation::FramebufferPixelLocalStorageInterruptANGLE() {
+  TRACE_EVENT_BINARY_EFFICIENT0(
+      "gpu", "GLES2Trace::FramebufferPixelLocalStorageInterruptANGLE");
+  gl_->FramebufferPixelLocalStorageInterruptANGLE();
+}
+
+void GLES2TraceImplementation::FramebufferPixelLocalStorageRestoreANGLE() {
+  TRACE_EVENT_BINARY_EFFICIENT0(
+      "gpu", "GLES2Trace::FramebufferPixelLocalStorageRestoreANGLE");
+  gl_->FramebufferPixelLocalStorageRestoreANGLE();
+}
+
 void GLES2TraceImplementation::GetFramebufferPixelLocalStorageParameterfvANGLE(
     GLint plane,
     GLenum pname,

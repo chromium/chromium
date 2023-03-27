@@ -1223,6 +1223,18 @@ void DriverGL::InitializeDynamicBindings(const GLVersionInfo* ver,
             GetGLProcAddress("glFramebufferPixelLocalClearValueuivANGLE"));
   }
 
+  if (ext.b_GL_ANGLE_shader_pixel_local_storage) {
+    fn.glFramebufferPixelLocalStorageInterruptANGLEFn =
+        reinterpret_cast<glFramebufferPixelLocalStorageInterruptANGLEProc>(
+            GetGLProcAddress("glFramebufferPixelLocalStorageInterruptANGLE"));
+  }
+
+  if (ext.b_GL_ANGLE_shader_pixel_local_storage) {
+    fn.glFramebufferPixelLocalStorageRestoreANGLEFn =
+        reinterpret_cast<glFramebufferPixelLocalStorageRestoreANGLEProc>(
+            GetGLProcAddress("glFramebufferPixelLocalStorageRestoreANGLE"));
+  }
+
   if (ver->IsAtLeastGL(3u, 0u) || ver->is_es) {
     fn.glFramebufferRenderbufferEXTFn =
         reinterpret_cast<glFramebufferRenderbufferEXTProc>(
@@ -4022,6 +4034,14 @@ void GLApiBase::glFramebufferPixelLocalClearValueuivANGLEFn(
     GLint plane,
     const GLuint* value) {
   driver_->fn.glFramebufferPixelLocalClearValueuivANGLEFn(plane, value);
+}
+
+void GLApiBase::glFramebufferPixelLocalStorageInterruptANGLEFn() {
+  driver_->fn.glFramebufferPixelLocalStorageInterruptANGLEFn();
+}
+
+void GLApiBase::glFramebufferPixelLocalStorageRestoreANGLEFn() {
+  driver_->fn.glFramebufferPixelLocalStorageRestoreANGLEFn();
 }
 
 void GLApiBase::glFramebufferRenderbufferEXTFn(GLenum target,
@@ -7648,6 +7668,18 @@ void TraceGLApi::glFramebufferPixelLocalClearValueuivANGLEFn(
   TRACE_EVENT_BINARY_EFFICIENT0(
       "gpu", "TraceGLAPI::glFramebufferPixelLocalClearValueuivANGLE");
   gl_api_->glFramebufferPixelLocalClearValueuivANGLEFn(plane, value);
+}
+
+void TraceGLApi::glFramebufferPixelLocalStorageInterruptANGLEFn() {
+  TRACE_EVENT_BINARY_EFFICIENT0(
+      "gpu", "TraceGLAPI::glFramebufferPixelLocalStorageInterruptANGLE");
+  gl_api_->glFramebufferPixelLocalStorageInterruptANGLEFn();
+}
+
+void TraceGLApi::glFramebufferPixelLocalStorageRestoreANGLEFn() {
+  TRACE_EVENT_BINARY_EFFICIENT0(
+      "gpu", "TraceGLAPI::glFramebufferPixelLocalStorageRestoreANGLE");
+  gl_api_->glFramebufferPixelLocalStorageRestoreANGLEFn();
 }
 
 void TraceGLApi::glFramebufferRenderbufferEXTFn(GLenum target,
@@ -12044,6 +12076,20 @@ void LogGLApi::glFramebufferPixelLocalClearValueuivANGLEFn(
                  << "(" << plane << ", " << static_cast<const void*>(value)
                  << ")");
   gl_api_->glFramebufferPixelLocalClearValueuivANGLEFn(plane, value);
+}
+
+void LogGLApi::glFramebufferPixelLocalStorageInterruptANGLEFn() {
+  GL_SERVICE_LOG("glFramebufferPixelLocalStorageInterruptANGLE"
+                 << "("
+                 << ")");
+  gl_api_->glFramebufferPixelLocalStorageInterruptANGLEFn();
+}
+
+void LogGLApi::glFramebufferPixelLocalStorageRestoreANGLEFn() {
+  GL_SERVICE_LOG("glFramebufferPixelLocalStorageRestoreANGLE"
+                 << "("
+                 << ")");
+  gl_api_->glFramebufferPixelLocalStorageRestoreANGLEFn();
 }
 
 void LogGLApi::glFramebufferRenderbufferEXTFn(GLenum target,
@@ -16878,6 +16924,14 @@ void NoContextGLApi::glFramebufferPixelLocalClearValueuivANGLEFn(
     GLint plane,
     const GLuint* value) {
   NoContextHelper("glFramebufferPixelLocalClearValueuivANGLE");
+}
+
+void NoContextGLApi::glFramebufferPixelLocalStorageInterruptANGLEFn() {
+  NoContextHelper("glFramebufferPixelLocalStorageInterruptANGLE");
+}
+
+void NoContextGLApi::glFramebufferPixelLocalStorageRestoreANGLEFn() {
+  NoContextHelper("glFramebufferPixelLocalStorageRestoreANGLE");
 }
 
 void NoContextGLApi::glFramebufferRenderbufferEXTFn(GLenum target,

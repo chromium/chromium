@@ -391,6 +391,8 @@ MOCK_METHOD2(FramebufferPixelLocalClearValueivANGLE,
              void(GLint plane, const GLint* value));
 MOCK_METHOD2(FramebufferPixelLocalClearValueuivANGLE,
              void(GLint plane, const GLuint* value));
+MOCK_METHOD0(FramebufferPixelLocalStorageInterruptANGLE, void());
+MOCK_METHOD0(FramebufferPixelLocalStorageRestoreANGLE, void());
 MOCK_METHOD4(FramebufferRenderbufferEXT,
              void(GLenum target,
                   GLenum attachment,

@@ -5130,6 +5130,40 @@ error::Error GLES2DecoderPassthroughImpl::HandlePixelLocalStorageBarrierANGLE(
   return error::kNoError;
 }
 
+error::Error
+GLES2DecoderPassthroughImpl::HandleFramebufferPixelLocalStorageInterruptANGLE(
+    uint32_t immediate_data_size,
+    const volatile void* cmd_data) {
+  if (!feature_info_->IsWebGL2OrES3OrHigherContext())
+    return error::kUnknownCommand;
+  if (!features().angle_shader_pixel_local_storage) {
+    return error::kUnknownCommand;
+  }
+
+  error::Error error = DoFramebufferPixelLocalStorageInterruptANGLE();
+  if (error != error::kNoError) {
+    return error;
+  }
+  return error::kNoError;
+}
+
+error::Error
+GLES2DecoderPassthroughImpl::HandleFramebufferPixelLocalStorageRestoreANGLE(
+    uint32_t immediate_data_size,
+    const volatile void* cmd_data) {
+  if (!feature_info_->IsWebGL2OrES3OrHigherContext())
+    return error::kUnknownCommand;
+  if (!features().angle_shader_pixel_local_storage) {
+    return error::kUnknownCommand;
+  }
+
+  error::Error error = DoFramebufferPixelLocalStorageRestoreANGLE();
+  if (error != error::kNoError) {
+    return error;
+  }
+  return error::kNoError;
+}
+
 error::Error GLES2DecoderPassthroughImpl::
     HandleGetFramebufferPixelLocalStorageParameterfvANGLE(
         uint32_t immediate_data_size,

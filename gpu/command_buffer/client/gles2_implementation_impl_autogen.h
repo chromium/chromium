@@ -3789,6 +3789,24 @@ void GLES2Implementation::PixelLocalStorageBarrierANGLE() {
   CheckGLError();
 }
 
+void GLES2Implementation::FramebufferPixelLocalStorageInterruptANGLE() {
+  GPU_CLIENT_SINGLE_THREAD_CHECK();
+  GPU_CLIENT_LOG("[" << GetLogPrefix()
+                     << "] glFramebufferPixelLocalStorageInterruptANGLE("
+                     << ")");
+  helper_->FramebufferPixelLocalStorageInterruptANGLE();
+  CheckGLError();
+}
+
+void GLES2Implementation::FramebufferPixelLocalStorageRestoreANGLE() {
+  GPU_CLIENT_SINGLE_THREAD_CHECK();
+  GPU_CLIENT_LOG("[" << GetLogPrefix()
+                     << "] glFramebufferPixelLocalStorageRestoreANGLE("
+                     << ")");
+  helper_->FramebufferPixelLocalStorageRestoreANGLE();
+  CheckGLError();
+}
+
 void GLES2Implementation::GetFramebufferPixelLocalStorageParameterfvANGLE(
     GLint plane,
     GLenum pname,

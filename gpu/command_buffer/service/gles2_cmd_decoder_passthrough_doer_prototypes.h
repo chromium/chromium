@@ -1108,6 +1108,8 @@ error::Error DoBeginPixelLocalStorageANGLE(GLsizei n,
 error::Error DoEndPixelLocalStorageANGLE(GLsizei n,
                                          const volatile GLenum* storeops);
 error::Error DoPixelLocalStorageBarrierANGLE();
+error::Error DoFramebufferPixelLocalStorageInterruptANGLE();
+error::Error DoFramebufferPixelLocalStorageRestoreANGLE();
 error::Error DoGetFramebufferPixelLocalStorageParameterfvANGLE(GLint plane,
                                                                GLenum pname,
                                                                GLsizei bufsize,

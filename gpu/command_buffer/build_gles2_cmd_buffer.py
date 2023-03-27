@@ -4164,6 +4164,20 @@ _FUNCTION_INFO = {
     'es3': True,
     'decoder_func': 'DoPixelLocalStorageBarrierANGLE',
   },
+  'FramebufferPixelLocalStorageInterruptANGLE': {
+    'extension': 'ANGLE_shader_pixel_local_storage',
+    'extension_flag': 'angle_shader_pixel_local_storage',
+    'unit_test': False,
+    'es3': True,
+    'decoder_func': 'DoFramebufferPixelLocalStorageInterruptANGLE',
+  },
+  'FramebufferPixelLocalStorageRestoreANGLE': {
+    'extension': 'ANGLE_shader_pixel_local_storage',
+    'extension_flag': 'angle_shader_pixel_local_storage',
+    'unit_test': False,
+    'es3': True,
+    'decoder_func': 'DoFramebufferPixelLocalStorageRestoreANGLE',
+  },
   'GetFramebufferPixelLocalStorageParameterfvANGLE': {
     'extension': 'ANGLE_shader_pixel_local_storage',
     'extension_flag': 'angle_shader_pixel_local_storage',

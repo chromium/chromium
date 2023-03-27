@@ -216,8 +216,8 @@ void ResizeRenderbuffer(const GLES2DecoderPassthroughImpl* impl,
                         GLsizei samples,
                         GLenum internal_format) {
   gl::GLApi* api = impl->api();
-  GLES2DecoderPassthroughImpl::ScopedPixelLocalStorageDeactivate
-      scoped_pls_deactivate(impl);
+  GLES2DecoderPassthroughImpl::ScopedPixelLocalStorageInterrupt
+      scoped_pls_interrupt(impl);
   ScopedRenderbufferBindingReset scoped_renderbuffer_reset(api);
 
   api->glBindRenderbufferEXTFn(GL_RENDERBUFFER, renderbuffer);
@@ -313,38 +313,19 @@ void ReturnProgramInfoData(DecoderClient* client,
 
 }  // anonymous namespace
 
-void GLES2DecoderPassthroughImpl::ScopedPixelLocalStorageDeactivate::
-    StashIfNeeded(gl::GLApi* api, GLint active_plane_count) {
-  if (active_plane_count != 0) {
-    DCHECK_LE(active_plane_count, kPassthroughMaxPLSPlanes);
-    active_plane_count = std::min(active_plane_count, kPassthroughMaxPLSPlanes);
-    GLenum storeops[kPassthroughMaxPLSPlanes];
-    std::fill(storeops, storeops + active_plane_count, GL_STORE_OP_STORE_ANGLE);
-    api->glEndPixelLocalStorageANGLEFn(active_plane_count, storeops);
-  }
-}
-
-void GLES2DecoderPassthroughImpl::ScopedPixelLocalStorageDeactivate::
-    RestoreIfNeeded(gl::GLApi* api, int stashed_plane_count) {
-  if (stashed_plane_count != 0) {
-    DCHECK_LE(stashed_plane_count, kPassthroughMaxPLSPlanes);
-    stashed_plane_count =
-        std::min(stashed_plane_count, kPassthroughMaxPLSPlanes);
-    GLenum loadops[kPassthroughMaxPLSPlanes];
-    std::fill(loadops, loadops + stashed_plane_count, GL_LOAD_OP_LOAD_ANGLE);
-    api->glBeginPixelLocalStorageANGLEFn(stashed_plane_count, loadops);
-  }
-}
-
-GLES2DecoderPassthroughImpl::ScopedPixelLocalStorageDeactivate::
-    ScopedPixelLocalStorageDeactivate(const GLES2DecoderPassthroughImpl* impl)
+GLES2DecoderPassthroughImpl::ScopedPixelLocalStorageInterrupt::
+    ScopedPixelLocalStorageInterrupt(const GLES2DecoderPassthroughImpl* impl)
     : impl_(impl) {
-  StashIfNeeded(impl_->api(), impl_->active_pls_plane_count_);
+  if (impl_->has_activated_pixel_local_storage_) {
+    impl_->api()->glFramebufferPixelLocalStorageInterruptANGLEFn();
+  }
 }
 
-GLES2DecoderPassthroughImpl::ScopedPixelLocalStorageDeactivate::
-    ~ScopedPixelLocalStorageDeactivate() {
-  RestoreIfNeeded(impl_->api(), impl_->active_pls_plane_count_);
+GLES2DecoderPassthroughImpl::ScopedPixelLocalStorageInterrupt::
+    ~ScopedPixelLocalStorageInterrupt() {
+  if (impl_->has_activated_pixel_local_storage_) {
+    impl_->api()->glFramebufferPixelLocalStorageRestoreANGLEFn();
+  }
 }
 
 GLES2DecoderPassthroughImpl::TexturePendingBinding::TexturePendingBinding(
@@ -517,8 +498,8 @@ void PassthroughResources::SharedImageData::EnsureClear(
 
     // Back up all state we are about to change.
     gl::GLApi* api = impl->api();
-    GLES2DecoderPassthroughImpl::ScopedPixelLocalStorageDeactivate
-        scoped_pls_deactivate(impl);
+    GLES2DecoderPassthroughImpl::ScopedPixelLocalStorageInterrupt
+        scoped_pls_interrupt(impl);
     ScopedFramebufferBindingReset fbo_reset(
         api, false /* supports_seperate_fbo_bindings */);
     ScopedTextureBindingReset texture_reset(api, texture->target());
@@ -647,7 +628,7 @@ GLES2DecoderPassthroughImpl::BufferShadowUpdate::operator=(
 GLES2DecoderPassthroughImpl::EmulatedColorBuffer::EmulatedColorBuffer(
     const GLES2DecoderPassthroughImpl* impl)
     : impl_(impl) {
-  ScopedPixelLocalStorageDeactivate scoped_pls_deactivate(impl_);
+  ScopedPixelLocalStorageInterrupt scoped_pls_interrupt(impl_);
   ScopedTextureBindingReset scoped_texture_reset(api(), GL_TEXTURE_2D);
 
   GLuint color_buffer_texture = 0;
@@ -670,7 +651,7 @@ void GLES2DecoderPassthroughImpl::EmulatedColorBuffer::Resize(
   }
   size = new_size;
 
-  ScopedPixelLocalStorageDeactivate scoped_pls_deactivate(impl_);
+  ScopedPixelLocalStorageInterrupt scoped_pls_interrupt(impl_);
   ScopedTextureBindingReset scoped_texture_reset(api(), GL_TEXTURE_2D);
 
   DCHECK(texture);
@@ -697,7 +678,7 @@ void GLES2DecoderPassthroughImpl::EmulatedColorBuffer::Destroy(
 GLES2DecoderPassthroughImpl::EmulatedDefaultFramebuffer::
     EmulatedDefaultFramebuffer(const GLES2DecoderPassthroughImpl* impl)
     : impl_(impl) {
-  ScopedPixelLocalStorageDeactivate scoped_pls_deactivate(impl_);
+  ScopedPixelLocalStorageInterrupt scoped_pls_interrupt(impl_);
   ScopedFramebufferBindingReset scoped_fbo_reset(
       api(), impl_->supports_separate_fbo_bindings_);
   ScopedRenderbufferBindingReset scoped_renderbuffer_reset(api());
@@ -772,7 +753,7 @@ GLES2DecoderPassthroughImpl::EmulatedDefaultFramebuffer::SetColorBuffer(
   color_texture = std::move(new_color_buffer);
 
   // Bind the new texture to this FBO
-  ScopedPixelLocalStorageDeactivate scoped_pls_deactivate(impl_);
+  ScopedPixelLocalStorageInterrupt scoped_pls_interrupt(impl_);
   ScopedFramebufferBindingReset scoped_fbo_reset(
       api(), impl_->supports_separate_fbo_bindings_);
   api()->glBindFramebufferEXTFn(GL_FRAMEBUFFER, framebuffer_service_id);
@@ -788,7 +769,7 @@ void GLES2DecoderPassthroughImpl::EmulatedDefaultFramebuffer::Blit(
   DCHECK(target != nullptr);
   DCHECK_EQ(target->size, size);
 
-  ScopedPixelLocalStorageDeactivate scoped_pls_deactivate(impl_);
+  ScopedPixelLocalStorageInterrupt scoped_pls_interrupt(impl_);
   ScopedFramebufferBindingReset scoped_fbo_reset(
       api(), impl_->supports_separate_fbo_bindings_);
 
@@ -840,7 +821,7 @@ bool GLES2DecoderPassthroughImpl::EmulatedDefaultFramebuffer::Resize(
 
   // Check that the framebuffer is complete
   {
-    ScopedPixelLocalStorageDeactivate scoped_pls_deactivate(impl_);
+    ScopedPixelLocalStorageInterrupt scoped_pls_interrupt(impl_);
     ScopedFramebufferBindingReset scoped_fbo_reset(
         api(), impl_->supports_separate_fbo_bindings_);
     api()->glBindFramebufferEXTFn(GL_FRAMEBUFFER, framebuffer_service_id);
@@ -2158,13 +2139,15 @@ void GLES2DecoderPassthroughImpl::BeginDecoding() {
     it->second.command_processing_start_time = base::TimeTicks::Now();
   }
 
-  ScopedPixelLocalStorageDeactivate::RestoreIfNeeded(api(),
-                                                     active_pls_plane_count_);
+  if (has_activated_pixel_local_storage_) {
+    api()->glFramebufferPixelLocalStorageRestoreANGLEFn();
+  }
 }
 
 void GLES2DecoderPassthroughImpl::EndDecoding() {
-  ScopedPixelLocalStorageDeactivate::StashIfNeeded(api(),
-                                                   active_pls_plane_count_);
+  if (has_activated_pixel_local_storage_) {
+    api()->glFramebufferPixelLocalStorageInterruptANGLEFn();
+  }
 
 #if BUILDFLAG(IS_WIN)
   resources_->SuspendSharedImageAccessIfNeeded();
@@ -2620,7 +2603,7 @@ GLES2DecoderPassthroughImpl::LazySharedContextState::LazySharedContextState(
 
 GLES2DecoderPassthroughImpl::LazySharedContextState::~LazySharedContextState() {
   if (shared_context_state_) {
-    ScopedPixelLocalStorageDeactivate scoped_pls_deactivate(impl_);
+    ScopedPixelLocalStorageInterrupt scoped_pls_interrupt(impl_);
     ui::ScopedMakeCurrent smc(shared_context_state_->context(),
                               shared_context_state_->surface());
     shared_context_state_.reset();
@@ -2659,7 +2642,7 @@ bool GLES2DecoderPassthroughImpl::LazySharedContextState::Initialize() {
   }
 
   // Make current context using `gl_context` and `gl_surface`
-  ScopedPixelLocalStorageDeactivate scoped_pls_deactivate(impl_);
+  ScopedPixelLocalStorageInterrupt scoped_pls_interrupt(impl_);
   ui::ScopedMakeCurrent smc(gl_context.get(), gl_surface.get());
 
   ContextGroup* group = impl_->GetContextGroup();

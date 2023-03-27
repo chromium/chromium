@@ -1790,6 +1790,12 @@ void GL_APIENTRY GLES2EndPixelLocalStorageANGLE(GLsizei count,
 void GL_APIENTRY GLES2PixelLocalStorageBarrierANGLE() {
   gles2::GetGLContext()->PixelLocalStorageBarrierANGLE();
 }
+void GL_APIENTRY GLES2FramebufferPixelLocalStorageInterruptANGLE() {
+  gles2::GetGLContext()->FramebufferPixelLocalStorageInterruptANGLE();
+}
+void GL_APIENTRY GLES2FramebufferPixelLocalStorageRestoreANGLE() {
+  gles2::GetGLContext()->FramebufferPixelLocalStorageRestoreANGLE();
+}
 void GL_APIENTRY
 GLES2GetFramebufferPixelLocalStorageParameterfvANGLE(GLint plane,
                                                      GLenum pname,
@@ -3240,6 +3246,16 @@ extern const NameToFunc g_gles2_function_table[] = {
     {
         "glPixelLocalStorageBarrierANGLE",
         reinterpret_cast<GLES2FunctionPointer>(glPixelLocalStorageBarrierANGLE),
+    },
+    {
+        "glFramebufferPixelLocalStorageInterruptANGLE",
+        reinterpret_cast<GLES2FunctionPointer>(
+            glFramebufferPixelLocalStorageInterruptANGLE),
+    },
+    {
+        "glFramebufferPixelLocalStorageRestoreANGLE",
+        reinterpret_cast<GLES2FunctionPointer>(
+            glFramebufferPixelLocalStorageRestoreANGLE),
     },
     {
         "glGetFramebufferPixelLocalStorageParameterfvANGLE",

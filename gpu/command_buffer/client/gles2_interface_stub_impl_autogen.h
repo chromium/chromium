@@ -1223,6 +1223,8 @@ void GLES2InterfaceStub::EndPixelLocalStorageANGLE(
     GLsizei /* count */,
     const GLenum* /* storeops */) {}
 void GLES2InterfaceStub::PixelLocalStorageBarrierANGLE() {}
+void GLES2InterfaceStub::FramebufferPixelLocalStorageInterruptANGLE() {}
+void GLES2InterfaceStub::FramebufferPixelLocalStorageRestoreANGLE() {}
 void GLES2InterfaceStub::GetFramebufferPixelLocalStorageParameterfvANGLE(
     GLint /* plane */,
     GLenum /* pname */,

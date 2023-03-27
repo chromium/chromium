@@ -5835,6 +5835,28 @@ TEST_F(GLES2FormatTest, PixelLocalStorageBarrierANGLE) {
   CheckBytesWrittenMatchesExpectedSize(next_cmd, sizeof(cmd));
 }
 
+TEST_F(GLES2FormatTest, FramebufferPixelLocalStorageInterruptANGLE) {
+  cmds::FramebufferPixelLocalStorageInterruptANGLE& cmd =
+      *GetBufferAs<cmds::FramebufferPixelLocalStorageInterruptANGLE>();
+  void* next_cmd = cmd.Set(&cmd);
+  EXPECT_EQ(static_cast<uint32_t>(
+                cmds::FramebufferPixelLocalStorageInterruptANGLE::kCmdId),
+            cmd.header.command);
+  EXPECT_EQ(sizeof(cmd), cmd.header.size * 4u);
+  CheckBytesWrittenMatchesExpectedSize(next_cmd, sizeof(cmd));
+}
+
+TEST_F(GLES2FormatTest, FramebufferPixelLocalStorageRestoreANGLE) {
+  cmds::FramebufferPixelLocalStorageRestoreANGLE& cmd =
+      *GetBufferAs<cmds::FramebufferPixelLocalStorageRestoreANGLE>();
+  void* next_cmd = cmd.Set(&cmd);
+  EXPECT_EQ(static_cast<uint32_t>(
+                cmds::FramebufferPixelLocalStorageRestoreANGLE::kCmdId),
+            cmd.header.command);
+  EXPECT_EQ(sizeof(cmd), cmd.header.size * 4u);
+  CheckBytesWrittenMatchesExpectedSize(next_cmd, sizeof(cmd));
+}
+
 TEST_F(GLES2FormatTest, GetFramebufferPixelLocalStorageParameterfvANGLE) {
   cmds::GetFramebufferPixelLocalStorageParameterfvANGLE& cmd =
       *GetBufferAs<cmds::GetFramebufferPixelLocalStorageParameterfvANGLE>();

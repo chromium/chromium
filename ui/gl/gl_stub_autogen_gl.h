@@ -436,6 +436,8 @@ void glFramebufferPixelLocalClearValueivANGLEFn(GLint plane,
 void glFramebufferPixelLocalClearValueuivANGLEFn(GLint plane,
                                                  const GLuint* value) override {
 }
+void glFramebufferPixelLocalStorageInterruptANGLEFn() override {}
+void glFramebufferPixelLocalStorageRestoreANGLEFn() override {}
 void glFramebufferRenderbufferEXTFn(GLenum target,
                                     GLenum attachment,
                                     GLenum renderbuffertarget,

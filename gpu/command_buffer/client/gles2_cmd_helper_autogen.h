@@ -3418,6 +3418,22 @@ void PixelLocalStorageBarrierANGLE() {
   }
 }
 
+void FramebufferPixelLocalStorageInterruptANGLE() {
+  gles2::cmds::FramebufferPixelLocalStorageInterruptANGLE* c =
+      GetCmdSpace<gles2::cmds::FramebufferPixelLocalStorageInterruptANGLE>();
+  if (c) {
+    c->Init();
+  }
+}
+
+void FramebufferPixelLocalStorageRestoreANGLE() {
+  gles2::cmds::FramebufferPixelLocalStorageRestoreANGLE* c =
+      GetCmdSpace<gles2::cmds::FramebufferPixelLocalStorageRestoreANGLE>();
+  if (c) {
+    c->Init();
+  }
+}
+
 void GetFramebufferPixelLocalStorageParameterfvANGLE(
     GLint plane,
     GLenum pname,

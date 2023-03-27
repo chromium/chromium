@@ -2512,7 +2512,7 @@ error::Error GLES2DecoderPassthroughImpl::DoReadbackARGBImagePixelsINTERNAL(
       return error::kNoError;
     }
   }
-  ScopedPixelLocalStorageDeactivate scoped_pls_deactivate(this);
+  ScopedPixelLocalStorageInterrupt scoped_pls_interrupt(this);
   ui::ScopedMakeCurrent smc(lazy_context_->shared_context_state()->context(),
                             lazy_context_->shared_context_state()->surface());
 
@@ -5119,7 +5119,7 @@ error::Error GLES2DecoderPassthroughImpl::DoConvertRGBAToYUVAMailboxesINTERNAL(
       return error::kNoError;
     }
   }
-  ScopedPixelLocalStorageDeactivate scoped_pls_deactivate(this);
+  ScopedPixelLocalStorageInterrupt scoped_pls_interrupt(this);
   ui::ScopedMakeCurrent smc(lazy_context_->shared_context_state()->context(),
                             lazy_context_->shared_context_state()->surface());
   CopySharedImageHelper helper(group_->shared_image_representation_factory(),
@@ -5143,7 +5143,7 @@ error::Error GLES2DecoderPassthroughImpl::DoConvertYUVAMailboxesToRGBINTERNAL(
       return error::kNoError;
     }
   }
-  ScopedPixelLocalStorageDeactivate scoped_pls_deactivate(this);
+  ScopedPixelLocalStorageInterrupt scoped_pls_interrupt(this);
   ui::ScopedMakeCurrent smc(lazy_context_->shared_context_state()->context(),
                             lazy_context_->shared_context_state()->surface());
   CopySharedImageHelper helper(group_->shared_image_representation_factory(),
@@ -5171,7 +5171,7 @@ error::Error GLES2DecoderPassthroughImpl::DoCopySharedImageINTERNAL(
       return error::kNoError;
     }
   }
-  ScopedPixelLocalStorageDeactivate scoped_pls_deactivate(this);
+  ScopedPixelLocalStorageInterrupt scoped_pls_interrupt(this);
   ui::ScopedMakeCurrent smc(lazy_context_->shared_context_state()->context(),
                             lazy_context_->shared_context_state()->surface());
   CopySharedImageHelper helper(group_->shared_image_representation_factory(),
@@ -5201,7 +5201,7 @@ error::Error GLES2DecoderPassthroughImpl::DoCopySharedImageToTextureINTERNAL(
       return error::kNoError;
     }
   }
-  ScopedPixelLocalStorageDeactivate scoped_pls_deactivate(this);
+  ScopedPixelLocalStorageInterrupt scoped_pls_interrupt(this);
   ui::ScopedMakeCurrent smc(lazy_context_->shared_context_state()->context(),
                             lazy_context_->shared_context_state()->surface());
 
@@ -5333,10 +5333,7 @@ error::Error GLES2DecoderPassthroughImpl::DoBeginPixelLocalStorageANGLE(
   GLenum loadops_copy[kPassthroughMaxPLSPlanes];
   std::copy(loadops, loadops + n, loadops_copy);
   api()->glBeginPixelLocalStorageANGLEFn(n, loadops_copy);
-  // Query GL_PIXEL_LOCAL_STORAGE_ACTIVE_PLANES_ANGLE in case there was an error
-  // and the number of active planes isn't actually <n>.
-  api()->glGetIntegervFn(GL_PIXEL_LOCAL_STORAGE_ACTIVE_PLANES_ANGLE,
-                         &active_pls_plane_count_);
+  has_activated_pixel_local_storage_ = true;
   return error::kNoError;
 }
 
@@ -5360,10 +5357,6 @@ error::Error GLES2DecoderPassthroughImpl::DoEndPixelLocalStorageANGLE(
   GLenum storeops_copy[kPassthroughMaxPLSPlanes];
   std::copy(storeops, storeops + n, storeops_copy);
   api()->glEndPixelLocalStorageANGLEFn(n, storeops_copy);
-  // Query GL_PIXEL_LOCAL_STORAGE_ACTIVE_PLANES_ANGLE in case there was an error
-  // and the number of active planes isn't actually zero.
-  api()->glGetIntegervFn(GL_PIXEL_LOCAL_STORAGE_ACTIVE_PLANES_ANGLE,
-                         &active_pls_plane_count_);
   return error::kNoError;
 }
 
@@ -5373,6 +5366,24 @@ error::Error GLES2DecoderPassthroughImpl::DoPixelLocalStorageBarrierANGLE() {
     return error::kNoError;
   }
   api()->glPixelLocalStorageBarrierANGLEFn();
+  return error::kNoError;
+}
+
+error::Error
+GLES2DecoderPassthroughImpl::DoFramebufferPixelLocalStorageInterruptANGLE() {
+  if (IsEmulatedFramebufferBound(GL_DRAW_FRAMEBUFFER)) {
+    return error::kNoError;
+  }
+  api()->glFramebufferPixelLocalStorageInterruptANGLEFn();
+  return error::kNoError;
+}
+
+error::Error
+GLES2DecoderPassthroughImpl::DoFramebufferPixelLocalStorageRestoreANGLE() {
+  if (IsEmulatedFramebufferBound(GL_DRAW_FRAMEBUFFER)) {
+    return error::kNoError;
+  }
+  api()->glFramebufferPixelLocalStorageRestoreANGLEFn();
   return error::kNoError;
 }
 

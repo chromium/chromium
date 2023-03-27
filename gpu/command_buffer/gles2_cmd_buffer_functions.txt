@@ -406,5 +406,7 @@ GL_APICALL void         GL_APIENTRY glFramebufferPixelLocalClearValueuivANGLE (G
 GL_APICALL void         GL_APIENTRY glBeginPixelLocalStorageANGLE (GLsizei count, const GLenum* loadops);
 GL_APICALL void         GL_APIENTRY glEndPixelLocalStorageANGLE (GLsizei count, const GLenum* storeops);
 GL_APICALL void         GL_APIENTRY glPixelLocalStorageBarrierANGLE (void);
+GL_APICALL void         GL_APIENTRY glFramebufferPixelLocalStorageInterruptANGLE (void);
+GL_APICALL void         GL_APIENTRY glFramebufferPixelLocalStorageRestoreANGLE (void);
 GL_APICALL void         GL_APIENTRY glGetFramebufferPixelLocalStorageParameterfvANGLE (GLint plane, GLenum pname, GLfloat* params);
 GL_APICALL void         GL_APIENTRY glGetFramebufferPixelLocalStorageParameterivANGLE (GLint plane, GLenum pname, GLint* params);
