@@ -147,7 +147,11 @@ void MediaRemoter::Stop(media::mojom::RemotingStopReason reason) {
   audio_config_ = absl::nullopt;
   video_config_ = absl::nullopt;
 
-  state_ = STOPPING_REMOTING;
+  // Don't change `state_` if remoting is disabled so that it won't attempt to
+  // start remoting again after mirroring resumed.
+  if (state_ != REMOTING_DISABLED) {
+    state_ = STOPPING_REMOTING;
+  }
   remoting_source_->OnStopped(reason);
   // Prevent the start of remoting until switching completes.
   remoting_source_->OnSinkGone();
