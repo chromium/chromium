@@ -104,8 +104,6 @@ VaapiVideoEncodeAccelerator::GetSupportedProfiles() {
 
 VaapiVideoEncodeAccelerator::VaapiVideoEncodeAccelerator()
     : can_use_encoder_(num_instances_.Increment() < kMaxNumOfInstances),
-      output_buffer_byte_size_(0),
-      state_(kUninitialized),
       child_task_runner_(base::SequencedTaskRunner::GetCurrentDefault()),
       // TODO(akahuang): Change to use SequencedTaskRunner to see if the
       // performance is affected.
@@ -394,7 +392,8 @@ void VaapiVideoEncodeAccelerator::InitializeTask(const Config& config) {
   const size_t max_ref_frames = encoder_->GetMaxNumOfRefFrames();
   num_frames_in_flight_ = std::max(kMinNumFramesInFlight, max_ref_frames);
   DVLOGF(1) << "Frames in flight: " << num_frames_in_flight_;
-
+  max_pending_results_size_ =
+      num_frames_in_flight_ * std::max<size_t>(1, config.spatial_layers.size());
   if (!vaapi_wrapper_->CreateContext(encoder_->GetCodedSize())) {
     NOTIFY_ERROR(kPlatformFailureError, "Failed creating VAContext");
     return;
@@ -437,17 +436,6 @@ void VaapiVideoEncodeAccelerator::RecycleVASurface(
   DVLOGF(4) << "va_surface_id: " << va_surface_id;
 
   va_surfaces->push_back(std::move(va_surface));
-
-  // At least one surface must available in |available_encode_surfaces_|
-  // to succeed in EncodePendingInputs(). Checks here to avoid redundant
-  // EncodePendingInputs() call.
-  for (const auto& surfaces : available_encode_surfaces_) {
-    if (surfaces.second.empty())
-      return;
-  }
-
-  if (!input_queue_.empty())
-    EncodePendingInputs();
 }
 
 void VaapiVideoEncodeAccelerator::TryToReturnBitstreamBuffers() {
@@ -735,10 +723,9 @@ scoped_refptr<VASurface> VaapiVideoEncodeAccelerator::CreateEncodeSurface(
   const VASurfaceID id = scoped_va_surface->id();
   const gfx::Size& size = scoped_va_surface->size();
   const unsigned int format = scoped_va_surface->format();
-  VASurface::ReleaseCB release_cb =
-      base::BindPostTaskToCurrentDefault(base::BindOnce(
-          &VaapiVideoEncodeAccelerator::RecycleVASurface, encoder_weak_this_,
-          &surfaces, std::move(scoped_va_surface)));
+  VASurface::ReleaseCB release_cb = base::BindOnce(
+      &VaapiVideoEncodeAccelerator::RecycleVASurface, encoder_weak_this_,
+      &surfaces, std::move(scoped_va_surface));
 
   return base::MakeRefCounted<VASurface>(id, size, format,
                                          std::move(release_cb));
@@ -857,7 +844,15 @@ void VaapiVideoEncodeAccelerator::EncodePendingInputs() {
 
   TRACE_EVENT1("media,gpu", "VAVEA::EncodePendingInputs",
                "pending input frames", input_queue_.size());
-  while (state_ == kEncoding && !input_queue_.empty()) {
+  // Encode all the frames in |input_queue_|. So that we avoid a number of
+  // encoded chunks are stuck at |pending_encode_results_|, we breaks if the
+  // queue size is more than |max_pending_encode_results_size|. Since the
+  // pending frames to be encoded are held in |input_queue_|, a client that
+  // recycles the VideoFrames will not input any more frames until an available
+  // bitstream buffer is given and a pending frame is released thanks to
+  // the resumed encode.
+  while (state_ == kEncoding && !input_queue_.empty() &&
+         pending_encode_results_.size() < max_pending_results_size_) {
     const InputFrameRef& input_frame = input_queue_.front();
     if (!input_frame.frame) {
       // If this is a flush (null) frame, don't create/submit a new encode
@@ -963,6 +958,11 @@ void VaapiVideoEncodeAccelerator::UseOutputBitstreamBufferTask(
 
   available_bitstream_buffers_.push(std::move(buffer));
   TryToReturnBitstreamBuffers();
+  // If there is a pending frame, it is pended because of the bitstream buffer
+  // shortage. Try to encode it.
+  if (!input_queue_.empty()) {
+    EncodePendingInputs();
+  }
 }
 
 void VaapiVideoEncodeAccelerator::RequestEncodingParametersChange(
@@ -1064,8 +1064,6 @@ void VaapiVideoEncodeAccelerator::DestroyTask() {
   if (vaapi_wrapper_)
     vaapi_wrapper_->DestroyContext();
 
-  available_encode_surfaces_.clear();
-
   if (vpp_vaapi_wrapper_)
     vpp_vaapi_wrapper_->DestroyContext();
 
@@ -1081,6 +1079,11 @@ void VaapiVideoEncodeAccelerator::DestroyTask() {
   pending_encode_results_ = {};
 
   encoder_.reset();
+
+  // Clear |available_encode_surfaces_| after |encoder_| is destroyed because
+  // the reconstructed surface in the reference frame pool owned by |encoder_|
+  // are back to |available_encode_surfaces_|.
+  available_encode_surfaces_.clear();
 
   delete this;
 }

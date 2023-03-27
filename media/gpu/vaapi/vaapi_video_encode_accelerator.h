@@ -245,7 +245,9 @@ class MEDIA_GPU_EXPORT VaapiVideoEncodeAccelerator
   gfx::Rect visible_rect_;
 
   // Size in bytes required for output bitstream buffers.
-  size_t output_buffer_byte_size_;
+  size_t output_buffer_byte_size_ = 0;
+  // Size of the max size of |pending_encode_results_|.
+  size_t max_pending_results_size_ = 0;
 
   // This flag signals when the client is sending NV12 + DmaBuf-backed
   // VideoFrames to encode, which allows for skipping a copy-adaptation on
@@ -253,13 +255,13 @@ class MEDIA_GPU_EXPORT VaapiVideoEncodeAccelerator
   bool native_input_mode_ = false;
 
   // The number of frames that needs to be held on encoding.
-  size_t num_frames_in_flight_;
+  size_t num_frames_in_flight_ = 0;
 
   // All of the members below must be accessed on the encoder_task_runner_,
   // while it is running.
 
   // Encoder state. Encode tasks will only run in kEncoding state.
-  State state_;
+  State state_ = State::kUninitialized;
 
   // Encoder instance managing video codec state and preparing encode jobs.
   // Should only be used on |encoder_task_runner_|.
