@@ -37,7 +37,7 @@ class WebCodecsIntegrationTest(gpu_integration_test.GpuIntegrationTest):
   @classmethod
   def GenerateGpuTests(cls, options: ct.ParsedCmdArgs) -> ct.TestGenerator:
     tests = itertools.chain(cls.GenerateFrameTests(), cls.GenerateVideoTests(),
-                            cls.GenerateAudioTests())
+                            cls.GenerateAudioTests(), cls.BitrateTests())
     for test in tests:
       yield test
 
@@ -79,6 +79,22 @@ class WebCodecsIntegrationTest(gpu_integration_test.GpuIntegrationTest):
         'aac_format':
         'adts'
     }])
+
+  @classmethod
+  def BitrateTests(cls) -> ct.TestGenerator:
+    high_res_codecs = ['avc1.420034', 'vp8', 'vp09.00.10.08', 'av01.0.04M.08']
+    for codec in high_res_codecs:
+      for acc in accelerations:
+        for bitrate_mode in ['constant', 'variable']:
+          for bitrate in [1500000, 2000000, 3000000]:
+            args = (codec, acc, bitrate_mode, bitrate)
+            yield ('WebCodecs_EncodingRateControl_%s_%s_%s_%s' % args,
+                   'encoding-rate-control.html', [{
+                       'codec': codec,
+                       'acceleration': acc,
+                       'bitrate_mode': bitrate_mode,
+                       'bitrate': bitrate
+                   }])
 
   @classmethod
   def GenerateVideoTests(cls) -> ct.TestGenerator:
