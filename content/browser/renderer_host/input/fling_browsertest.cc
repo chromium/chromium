@@ -485,8 +485,10 @@ IN_PROC_BROWSER_TEST_F(BrowserSideFlingBrowserTest,
 
 // Checks that the fling controller of the oopif stops the fling when the
 // bubbled inertial GSUs are not consumed by the parent's renderer.
-IN_PROC_BROWSER_TEST_F(BrowserSideFlingBrowserTest,
-                       DISABLE_InertialGSUBubblingStopsWhenParentCannotScroll) {
+// Flaky test https://crbug.com/1344075
+IN_PROC_BROWSER_TEST_F(
+    BrowserSideFlingBrowserTest,
+    DISABLED_InertialGSUBubblingStopsWhenParentCannotScroll) {
   LoadPageWithOOPIF();
   // Scroll the parent down so that it is scrollable upward.
 

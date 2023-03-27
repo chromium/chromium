@@ -203,7 +203,7 @@ class CONTENT_EXPORT RenderWidgetHostInputEventRouter final
  private:
   FRIEND_TEST_ALL_PREFIXES(
       BrowserSideFlingBrowserTest,
-      DISABLE_InertialGSUBubblingStopsWhenParentCannotScroll);
+      DISABLED_InertialGSUBubblingStopsWhenParentCannotScroll);
 
   using FrameSinkIdOwnerMap =
       std::unordered_map<viz::FrameSinkId,
