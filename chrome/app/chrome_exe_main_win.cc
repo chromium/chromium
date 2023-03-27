@@ -315,7 +315,7 @@ int main() {
   // emplaced.
   // Note: The DLL is patched separately, in chrome/app/chrome_main.cc.
   base::debug::HandleHooks::AddIATPatch(CURRENT_MODULE());
-#endif  // !defined(COMPONENT_BUILD) && !DCHECK_IS_ON()
+#endif  // !defined(COMPONENT_BUILD) && DCHECK_IS_ON()
 
   // Confirm that an explicit prefetch profile is used for all process types
   // except for the browser process. Any new process type will have to assign
