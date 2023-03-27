@@ -315,6 +315,10 @@ tast_disabled_tests_from_chrome_all = [
   "crostini.AppVscode.bullseye_clamshell_stable",
   "crostini.AppVscode.clamshell_stable",
 
+  # https://crbug.com/1427905
+  "inputs.VirtualKeyboardHandwriting.floating",
+  "inputs.VirtualKeyboardTypingUserMode.incognito",
+
   # READ COMMENT AT TOP BEFORE ADDING NEW TESTS HERE.
 ]
 
@@ -348,8 +352,4 @@ tast_disabled_tests_from_lacros_all = [
   "tast.inputs.VirtualKeyboardDeadKeys.*@jacuzzi",
   "tast.inputs.PhysicalKeyboardShapeBasedChineseTyping.array_lacros",
   "tast.inputs.VirtualKeyboardSpeech.lacros",
-
-  # https://crbug.com/1427905
-  "tast.inputs.VirtualKeyboardHandwriting.floating",
-  "tast.inputs.VirtualKeyboardTypingUserMode.incognito",
 ]
