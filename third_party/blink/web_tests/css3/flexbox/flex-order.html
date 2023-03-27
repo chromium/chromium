@@ -83,8 +83,7 @@ body {
   <div class="third"  style=""></div>
 </div>
 
-<!-- Values greater than what can be stored in an int are clamped from
-     -2,147,483,646 (int min + 2) to 2,147,483,647. -->
+<!-- Values greater than what can be stored in an int are clamped from -2,147,483,648 to 2,147,483,647. -->
 <div class="horizontal-box">
   <div class="third"  style="order: 4000000000"></div>
   <div class="fourth" style="order: 3000000000"></div>
@@ -101,15 +100,15 @@ body {
 
 <div class="horizontal-box">
   <div class="third"  style="order: -2147483645"></div>
-  <div class="first"  style="order: -2147483646"></div>
-  <div class="second" style="order: -2147483647"></div>
+  <div class="second"  style="order: -2147483646"></div>
+  <div class="first" style="order: -2147483647"></div>
   <div class="fourth" style=""></div>
 </div>
 
 <div class="horizontal-box">
   <div class="third"  style="order: calc(-2147483640 - 5)"></div>
-  <div class="first"  style="order: calc(-2147483640 - 6)"></div>
-  <div class="second" style="order: calc(-2147483640 - 7)"></div>
+  <div class="second"  style="order: calc(-2147483640 - 6)"></div>
+  <div class="first" style="order: calc(-2147483640 - 7)"></div>
   <div class="fourth" style=""></div>
 </div>
 

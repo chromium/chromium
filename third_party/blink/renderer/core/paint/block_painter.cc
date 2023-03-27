@@ -166,16 +166,6 @@ void BlockPainter::PaintChild(const LayoutBox& child,
   ObjectPainter(child).PaintAllPhasesAtomically(float_paint_info);
 }
 
-void BlockPainter::PaintChildrenAtomically(const OrderIterator& order_iterator,
-                                           const PaintInfo& paint_info) {
-  if (paint_info.DescendantPaintingBlocked())
-    return;
-  for (const LayoutBox* child = order_iterator.First(); child;
-       child = order_iterator.Next()) {
-    PaintAllChildPhasesAtomically(*child, paint_info);
-  }
-}
-
 void BlockPainter::PaintAllChildPhasesAtomically(const LayoutBox& child,
                                                  const PaintInfo& paint_info) {
   if (paint_info.DescendantPaintingBlocked())

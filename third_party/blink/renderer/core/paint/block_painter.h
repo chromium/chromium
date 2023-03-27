@@ -7,7 +7,6 @@
 
 #include "base/gtest_prod_util.h"
 #include "third_party/blink/renderer/core/core_export.h"
-#include "third_party/blink/renderer/core/layout/order_iterator.h"
 #include "third_party/blink/renderer/platform/geometry/layout_rect.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 
@@ -35,7 +34,6 @@ class BlockPainter {
 
   // See ObjectPainter::PaintAllPhasesAtomically().
   void PaintAllChildPhasesAtomically(const LayoutBox&, const PaintInfo&);
-  void PaintChildrenAtomically(const OrderIterator&, const PaintInfo&);
   static void PaintInlineBox(const InlineBox&, const PaintInfo&);
 
  private:

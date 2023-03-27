@@ -3179,14 +3179,6 @@ class ComputedStyleBuilder final : public ComputedStyleBuilderBase {
     SetOpacityInternal(v);
   }
 
-  // order
-  void SetOrder(int o) {
-    // TODO(ikilpatrick): Remove this setter once OrderIterator is removed.
-    // We restrict the smallest value to int min + 2 because we use int min and
-    // int min + 1 as special values in a hash set.
-    SetOrderInternal(max(std::numeric_limits<int>::min() + 2, o));
-  }
-
   // orphans
   void SetOrphans(int16_t o) { SetOrphansInternal(ClampTo<int16_t>(o, 1)); }
 

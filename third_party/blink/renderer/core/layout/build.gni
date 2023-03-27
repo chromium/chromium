@@ -650,8 +650,6 @@ blink_core_sources_layout = [
   "ng/table/ng_table_row_layout_algorithm.h",
   "ng/table/ng_table_section_layout_algorithm.cc",
   "ng/table/ng_table_section_layout_algorithm.h",
-  "order_iterator.cc",
-  "order_iterator.h",
   "overflow_model.h",
   "pointer_events_hit_rules.cc",
   "pointer_events_hit_rules.h",
