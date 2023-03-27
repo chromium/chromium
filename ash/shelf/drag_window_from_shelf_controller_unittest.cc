@@ -1575,6 +1575,7 @@ TEST_F(FloatDragWindowFromShelfControllerTest, DraggingFloatedWindow) {
   // does nothing.
   GetEventGenerator()->PressTouch(drag_point_under_float);
   GetEventGenerator()->MoveTouchBy(0, -200);
+  GetEventGenerator()->ReleaseTouch();
   EXPECT_FALSE(GetDragWindowFromShelfController()->drag_started());
 }
 

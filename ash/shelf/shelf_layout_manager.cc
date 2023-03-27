@@ -244,6 +244,32 @@ int GetScrollOffsetInAllowedDirection(int offset, bool app_list_visible) {
   return app_list_visible ? -offset : offset;
 }
 
+// The floated window is the dragged window if it is not tucked, magnetized to
+// the bottom, and above the event.
+bool CanDragFloatedWindowFromShelf(aura::Window* floated_window,
+                                   const gfx::Point& location_in_screen) {
+  if (!Shell::Get()->float_controller()->IsFloatedWindowAlignedWithShelf(
+          floated_window)) {
+    return false;
+  }
+  DCHECK(floated_window->IsVisible());
+  const gfx::Rect floated_window_bounds = floated_window->GetBoundsInScreen();
+  return location_in_screen.x() <= floated_window_bounds.right() &&
+         location_in_screen.x() >= floated_window_bounds.x();
+}
+
+// Checks if the only visible window is floated and not the dragged window, in
+// which case we treat it as swipe home to overview.
+bool IsDragOverShelfWithFloatedWindow(const gfx::Point& location_in_screen) {
+  aura::Window* top_window = window_util::GetTopNonFloatedWindow();
+  if (top_window && top_window->IsVisible()) {
+    return false;
+  }
+  aura::Window* floated_window = window_util::GetFloatedWindowForActiveDesk();
+  return floated_window &&
+         !CanDragFloatedWindowFromShelf(floated_window, location_in_screen);
+}
+
 // Returns the window that can be dragged from shelf into home screen or
 // overview at |location_in_screen|. Returns nullptr if there is no such
 // window.
@@ -267,20 +293,11 @@ aura::Window* GetWindowForDragToHomeOrOverview(
     return nullptr;
   }
 
-  // Checks for a floated window. The floated window is the dragged window if it
-  // is not tucked, magnetized to the bottom, and above the event.
   if (aura::Window* floated_window =
-          window_util::GetFloatedWindowForActiveDesk()) {
-    if (Shell::Get()->float_controller()->IsFloatedWindowAlignedWithShelf(
-            floated_window)) {
-      const gfx::Rect floated_window_bounds =
-          floated_window->GetBoundsInScreen();
-      if (location_in_screen.x() <= floated_window_bounds.right() &&
-          location_in_screen.x() >= floated_window_bounds.x()) {
-        DCHECK(floated_window->IsVisible());
-        return floated_window;
-      }
-    }
+          window_util::GetFloatedWindowForActiveDesk();
+      floated_window &&
+      CanDragFloatedWindowFromShelf(floated_window, location_in_screen)) {
+    return floated_window;
   }
 
   // If split view mode is not active, use the first MRU window.
@@ -2448,8 +2465,10 @@ bool ShelfLayoutManager::StartGestureDrag(
   // In tablet mode, let swipe_home_to_overview_controller handle swipe up
   // gestures on the home launcher screen.
   if (Shell::Get()->IsInTabletMode() &&
-      Shell::Get()->app_list_controller()->IsVisible(display_.id()) &&
-      Shell::Get()->app_list_controller()->GetTargetVisibility(display_.id()) &&
+      ((Shell::Get()->app_list_controller()->IsVisible(display_.id()) &&
+        Shell::Get()->app_list_controller()->GetTargetVisibility(
+            display_.id())) ||
+       IsDragOverShelfWithFloatedWindow(gesture_in_screen.location())) &&
       scroll_y_hint < 0) {
     drag_status_ = kDragHomeToOverviewInProgress;
     swipe_home_to_overview_controller_ =
