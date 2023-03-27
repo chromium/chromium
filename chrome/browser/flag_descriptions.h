@@ -1979,9 +1979,6 @@ extern const char kPassthroughYuvRgbConversionDescription[];
 extern const char kUseMultiPlaneFormatForHardwareVideoName[];
 extern const char kUseMultiPlaneFormatForHardwareVideoDescription[];
 
-extern const char kDurableClientHintsCacheName[];
-extern const char kDurableClientHintsCacheDescription[];
-
 extern const char kReduceAcceptLanguageName[];
 extern const char kReduceAcceptLanguageDescription[];
 

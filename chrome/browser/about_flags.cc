@@ -8871,11 +8871,6 @@ const FeatureEntry kFeatureEntries[] = {
                                     "MerchantWidePromotion")},
 #endif
 
-    {"durable-client-hints-cache",
-     flag_descriptions::kDurableClientHintsCacheName,
-     flag_descriptions::kDurableClientHintsCacheDescription, kOsAll,
-     FEATURE_VALUE_TYPE(blink::features::kDurableClientHintsCache)},
-
     {"edit-context", flag_descriptions::kEditContextName,
      flag_descriptions::kEditContextDescription, kOsAll,
      FEATURE_VALUE_TYPE(blink::features::kEditContext)},

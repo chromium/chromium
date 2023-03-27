@@ -295,10 +295,6 @@ const char kDisable2dCanvasClipAntialiasing[] = "disable-2d-canvas-clip-aa";
 // Has no effect unless GPU rasterization is enabled.
 const char kDisableYUVImageDecoding[] = "disable-yuv-image-decoding";
 
-// Enables the Accept-CH cache for client hints to be durable past browser
-// restarts.
-const char kDurableClientHintsCache[] = "durable-client-hints-cache";
-
 // Enables LCD text.
 const char kEnableLCDText[]                 = "enable-lcd-text";
 

@@ -1640,11 +1640,6 @@
     "expiry_milestone": 114
   },
   {
-    "name": "durable-client-hints-cache",
-    "owners": [ "abeyad", "aarontag"],
-    "expiry_milestone": 110
-  },
-  {
     "name": "dynamic-color-gamut",
     "owners": [ "cblume", "ccameron" ],
     "expiry_milestone": 90

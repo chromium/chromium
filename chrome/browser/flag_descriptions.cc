@@ -3443,10 +3443,6 @@ const char kUseMultiPlaneFormatForHardwareVideoDescription[] =
     "Enable single shared image and mailbox for multi-plane formats for "
     "hardware video decoder";
 
-const char kDurableClientHintsCacheName[] = "Persistent client hints";
-const char kDurableClientHintsCacheDescription[] =
-    "Persist the client hints cache beyond browser restarts.";
-
 const char kSkipServiceWorkerFetchHandlerName[] =
     "Skip Service Worker Fetch Handler if skippable";
 const char kSkipServiceWorkerFetchHandlerDescription[] =
