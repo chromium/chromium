@@ -8,6 +8,8 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import org.chromium.base.annotations.CalledByNative;
+import org.chromium.chrome.browser.omnibox.action.OmniboxActionType;
+import org.chromium.chrome.browser.omnibox.action.OmniboxPedalType;
 import org.chromium.url.GURL;
 
 /**
@@ -17,10 +19,11 @@ import org.chromium.url.GURL;
 public class HistoryClustersAction extends OmniboxPedal {
     private final String mQuery;
 
-    public HistoryClustersAction(int id, @NonNull String hint, @NonNull String suggestionContents,
+    public HistoryClustersAction(@NonNull String hint, @NonNull String suggestionContents,
             @NonNull String accessibilitySuffix, @NonNull String accessibilityHint,
             @Nullable GURL url, @NonNull String query) {
-        super(id, hint, suggestionContents, accessibilitySuffix, accessibilityHint, url);
+        super(OmniboxActionType.HISTORY_CLUSTERS, OmniboxPedalType.NONE, hint, suggestionContents,
+                accessibilitySuffix, accessibilityHint, url);
         mQuery = query;
     }
 
@@ -29,10 +32,10 @@ public class HistoryClustersAction extends OmniboxPedal {
     }
 
     @CalledByNative
-    private static HistoryClustersAction build(int id, @NonNull String hint,
+    private static HistoryClustersAction build(@NonNull String hint,
             @NonNull String suggestionContents, @NonNull String accessibilitySuffix,
             @NonNull String accessibilityHint, @Nullable GURL url, @NonNull String query) {
         return new HistoryClustersAction(
-                id, hint, suggestionContents, accessibilitySuffix, accessibilityHint, url, query);
+                hint, suggestionContents, accessibilitySuffix, accessibilityHint, url, query);
     }
 }

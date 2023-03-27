@@ -176,6 +176,10 @@ class OmniboxPedal : public OmniboxAction {
 
   OmniboxPedal(OmniboxPedalId id, LabelStrings strings, GURL url);
 
+  // Return an OmniboxPedal instance if the supplied OmniboxAction instance
+  // represents one.
+  static const OmniboxPedal* FromAction(const OmniboxAction* action);
+
   // Called after the OmniboxPedalProvider finishes loading all pedals data.
   // This can be used to override implementation bits based on flags, etc.
   virtual void OnLoaded();
@@ -208,7 +212,7 @@ class OmniboxPedal : public OmniboxAction {
   virtual std::vector<SynonymGroupSpec> SpecifySynonymGroups(
       bool locale_is_english) const;
 
-  OmniboxPedalId id() const { return id_; }
+  OmniboxPedalId PedalId() const { return id_; }
 
   // Sometimes pedals report different IDs for metrics, either to enable
   // feature discrimination (e.g. incognito mode) or to unify metrics
@@ -228,7 +232,7 @@ class OmniboxPedal : public OmniboxAction {
   const gfx::VectorIcon& GetVectorIcon() const override;
 #endif
   size_t EstimateMemoryUsage() const override;
-  int32_t GetID() const override;
+  OmniboxActionId ActionId() const override;
 
 #if BUILDFLAG(IS_ANDROID)
   base::android::ScopedJavaGlobalRef<jobject> GetJavaObject() const override;

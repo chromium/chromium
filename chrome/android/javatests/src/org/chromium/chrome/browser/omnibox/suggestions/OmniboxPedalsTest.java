@@ -164,7 +164,7 @@ public class OmniboxPedalsTest {
         for (int i = 0; i < coordinator.getSuggestionCount(); ++i) {
             AutocompleteMatch suggestion = coordinator.getSuggestionAt(i);
             if (suggestion != null && !suggestion.getActions().isEmpty()
-                    && suggestion.getActions().get(0).getPedalID() == pedalType) {
+                    && suggestion.getActions().get(0).getPedalId() == pedalType) {
                 return suggestion;
             }
         }
@@ -265,16 +265,16 @@ public class OmniboxPedalsTest {
     private AutocompleteMatch createDummyPedalSuggestion(String name, @OmniboxPedalType int id) {
         return AutocompleteMatchBuilder.searchWithType(OmniboxSuggestionType.SEARCH_SUGGEST)
                 .setDisplayText(name)
-                .setActions(Arrays.asList(new OmniboxPedal(id, "hints", "suggestionContents",
-                        "accessibilitySuffix", "accessibilityHint", GURL.emptyGURL())))
+                .setActions(Arrays.asList(
+                        new OmniboxPedal(OmniboxActionType.PEDAL, id, "hints", "suggestionContents",
+                                "accessibilitySuffix", "accessibilityHint", GURL.emptyGURL())))
                 .build();
     }
 
     private AutocompleteMatch createDummyHistoryClustersAction(String name) {
         return AutocompleteMatchBuilder.searchWithType(OmniboxSuggestionType.SEARCH_SUGGEST)
                 .setDisplayText(name)
-                .setActions(Arrays.asList(new HistoryClustersAction(
-                        OmniboxActionType.HISTORY_CLUSTERS, "hints", "suggestionContents",
+                .setActions(Arrays.asList(new HistoryClustersAction("hints", "suggestionContents",
                         "accessibilitySuffix", "accessibilityHint", GURL.emptyGURL(), name)))
                 .build();
     }

@@ -6,7 +6,7 @@
 #define COMPONENTS_OMNIBOX_BROWSER_ACTIONS_OMNIBOX_PEDAL_JNI_WRAPPER_H_
 
 base::android::ScopedJavaGlobalRef<jobject> BuildOmniboxPedal(
-    int id,
+    OmniboxPedalId pedal_id,
     std::u16string hint,
     std::u16string suggestion_contents,
     std::u16string accessibility_suffix,
@@ -14,7 +14,6 @@ base::android::ScopedJavaGlobalRef<jobject> BuildOmniboxPedal(
     GURL url);
 
 base::android::ScopedJavaGlobalRef<jobject> BuildHistoryClustersAction(
-    int id,
     std::u16string hint,
     std::u16string suggestion_contents,
     std::u16string accessibility_suffix,

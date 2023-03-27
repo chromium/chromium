@@ -61,15 +61,9 @@ public class ActionChipsDelegateImpl implements ActionChipsDelegate {
         mModalDialogManagerSupplier = modalDialogManagerSupplier;
     }
 
-    @Override
-    public void execute(OmniboxPedal omniboxPedal) {
-        if (omniboxPedal.hasActionId()) {
-            executeNonPedalAction(omniboxPedal);
-            return;
-        }
-
+    private void executePedalAction(OmniboxPedal omniboxPedal) {
         @OmniboxPedalType
-        int omniboxPedalType = omniboxPedal.getPedalID();
+        int omniboxPedalType = omniboxPedal.getPedalId();
         SettingsLauncher settingsLauncher = new SettingsLauncherImpl();
         switch (omniboxPedalType) {
             case OmniboxPedalType.CLEAR_BROWSING_DATA:
@@ -139,8 +133,13 @@ public class ActionChipsDelegateImpl implements ActionChipsDelegate {
         return;
     }
 
-    private void executeNonPedalAction(OmniboxPedal omniboxPedal) {
-        switch (omniboxPedal.getActionID()) {
+    @Override
+    public void execute(OmniboxPedal omniboxPedal) {
+        switch (omniboxPedal.getActionId()) {
+            case OmniboxActionType.PEDAL:
+                executePedalAction(omniboxPedal);
+                break;
+
             case OmniboxActionType.HISTORY_CLUSTERS:
                 if (mHistoryClustersCoordinator != null) {
                     assert omniboxPedal instanceof HistoryClustersAction;
@@ -186,12 +185,12 @@ public class ActionChipsDelegateImpl implements ActionChipsDelegate {
 
     @Override
     public @NonNull ChipIcon getIcon(OmniboxPedal omniboxPedal) {
-        if (!omniboxPedal.hasPedalId()) {
+        if (omniboxPedal.getActionId() != OmniboxActionType.PEDAL) {
             return getActionIcon(omniboxPedal);
         }
 
         @OmniboxPedalType
-        int omniboxPedalType = omniboxPedal.getPedalID();
+        int omniboxPedalType = omniboxPedal.getPedalId();
 
         switch (omniboxPedalType) {
             case OmniboxPedalType.CLEAR_BROWSING_DATA:
@@ -218,7 +217,7 @@ public class ActionChipsDelegateImpl implements ActionChipsDelegate {
 
     /** Returns the icon for an action that's not a pedal. */
     private ChipIcon getActionIcon(OmniboxPedal omniboxPedal) {
-        int omniboxActionType = omniboxPedal.getActionID();
+        int omniboxActionType = omniboxPedal.getActionId();
 
         switch (omniboxActionType) {
             case OmniboxActionType.HISTORY_CLUSTERS:

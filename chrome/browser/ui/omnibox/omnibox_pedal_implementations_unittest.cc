@@ -17948,13 +17948,13 @@ class OmniboxPedalImplementationsTest : public testing::Test {
         EXPECT_NE(iter, pedals.end()) << "Pedal not found for: " << expression;
         EXPECT_EQ(iter->second.get(), canonical_pedal)
             << "Found wrong Pedal for: " << expression;
-        const int found_id = static_cast<int>(iter->second->id());
+        const int found_id = static_cast<int>(iter->second->PedalId());
         std::advance(iter, 1);
         iter = std::find_if(iter, pedals.end(), is_match);
         EXPECT_EQ(iter, pedals.end())
             << "Found more than one Pedal match for: " << expression
             << " -- IDs: first " << found_id << " then "
-            << static_cast<int>(iter->second->id());
+            << static_cast<int>(iter->second->PedalId());
       }
     }
   }
@@ -17968,7 +17968,7 @@ class OmniboxPedalImplementationsTest : public testing::Test {
 
 TEST_F(OmniboxPedalImplementationsTest, PedalClearBrowsingDataExecutes) {
   const OmniboxPedal* pedal = provider()->FindPedalMatch(u"clear browser data");
-  EXPECT_EQ(OmniboxPedalId::CLEAR_BROWSING_DATA, pedal->id());
+  EXPECT_EQ(OmniboxPedalId::CLEAR_BROWSING_DATA, pedal->PedalId());
 
   EXPECT_EQ(GURL("chrome://settings/clearBrowserData"),
             ExecuteContextAndReturnResult(pedal));
@@ -17981,7 +17981,7 @@ TEST_F(OmniboxPedalImplementationsTest,
   // Note, there is only one Pedal for clearing browser data but it behaves
   // differently depending on incognito status. The incognito behavior does
   // not navigate but the non-incognito behavior does navigate.
-  EXPECT_EQ(OmniboxPedalId::CLEAR_BROWSING_DATA, pedal->id());
+  EXPECT_EQ(OmniboxPedalId::CLEAR_BROWSING_DATA, pedal->PedalId());
   EXPECT_EQ(GURL(""), ExecuteContextAndReturnResult(pedal));
 }
 

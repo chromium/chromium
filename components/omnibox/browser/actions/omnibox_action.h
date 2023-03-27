@@ -12,6 +12,7 @@
 #include "base/memory/ref_counted.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
+#include "components/omnibox/browser/actions/omnibox_action_concepts.h"
 #include "components/omnibox/browser/autocomplete_match_type.h"
 #include "components/omnibox/browser/buildflags.h"
 #include "components/search_engines/template_url.h"
@@ -164,7 +165,7 @@ class OmniboxAction : public base::RefCounted<OmniboxAction> {
   virtual size_t EstimateMemoryUsage() const;
 
   // Returns an ID used to identify the action.
-  virtual int32_t GetID() const;
+  virtual OmniboxActionId ActionId() const;
 
 #if BUILDFLAG(IS_ANDROID)
   virtual base::android::ScopedJavaGlobalRef<jobject> GetJavaObject() const;

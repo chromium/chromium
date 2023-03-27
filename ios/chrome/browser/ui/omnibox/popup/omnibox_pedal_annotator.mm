@@ -44,26 +44,22 @@ const CGFloat kSymbolSize = 18;
   // predicate or iterating through `match.actions`. In that case,
   // the static_casts below should also be removed in favor of generic
   // use of the OmniboxAction base class.
-  const OmniboxAction* pedalAction =
-      match.GetActionWhere([](const auto& action) {
-        // Pedal action is a match action with an ID in
-        // 0 ..< OmniboxPedalId::TOTAL_COUNT range (and ID 0 is NONE).
-        return action->GetID() < static_cast<int>(OmniboxPedalId::TOTAL_COUNT);
-      });
-  if (!pedalAction) {
+  const OmniboxPedal* omniboxPedal =
+      OmniboxPedal::FromAction(match.GetActionWhere([](const auto& action) {
+        return action->ActionId() == OmniboxActionId::PEDAL;
+      }));
+  if (!omniboxPedal) {
     return nil;
   }
   __weak id<ApplicationCommands> pedalsEndpoint = self.pedalsEndpoint;
   __weak id<OmniboxCommands> omniboxCommandHandler = self.omniboxCommandHandler;
 
   NSString* hint =
-      base::SysUTF16ToNSString(pedalAction->GetLabelStrings().hint);
+      base::SysUTF16ToNSString(omniboxPedal->GetLabelStrings().hint);
   NSString* suggestionContents = base::SysUTF16ToNSString(
-      pedalAction->GetLabelStrings().suggestion_contents);
-  NSInteger pedalType = static_cast<NSInteger>(
-      static_cast<const OmniboxPedal*>(pedalAction)->GetMetricsId());
-
-  OmniboxPedalId pedalId = static_cast<OmniboxPedalId>(pedalAction->GetID());
+      omniboxPedal->GetLabelStrings().suggestion_contents);
+  NSInteger pedalType = static_cast<NSInteger>(omniboxPedal->GetMetricsId());
+  OmniboxPedalId pedalId = omniboxPedal->PedalId();
 
   UIImage* image;
 

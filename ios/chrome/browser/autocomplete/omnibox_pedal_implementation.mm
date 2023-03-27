@@ -72,7 +72,8 @@ class OmniboxPedalClearBrowsingData : public OmniboxPedal {
   // This method override enables this Pedal to spoof its ID for metrics
   // reporting, making it possible to distinguish incognito usage.
   OmniboxPedalId GetMetricsId() const override {
-    return incognito_ ? OmniboxPedalId::INCOGNITO_CLEAR_BROWSING_DATA : id();
+    return incognito_ ? OmniboxPedalId::INCOGNITO_CLEAR_BROWSING_DATA
+                      : PedalId();
   }
 
  protected:
@@ -465,7 +466,8 @@ std::unordered_map<OmniboxPedalId, scoped_refptr<OmniboxPedal>>
 GetPedalImplementations(bool incognito, bool testing) {
   std::unordered_map<OmniboxPedalId, scoped_refptr<OmniboxPedal>> pedals;
   __unused const auto add = [&](OmniboxPedal* pedal) {
-    pedals.insert(std::make_pair(pedal->id(), base::WrapRefCounted(pedal)));
+    pedals.insert(
+        std::make_pair(pedal->PedalId(), base::WrapRefCounted(pedal)));
   };
 
   if (!incognito) {

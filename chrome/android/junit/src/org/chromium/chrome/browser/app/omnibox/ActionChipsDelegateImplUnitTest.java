@@ -99,7 +99,7 @@ public class ActionChipsDelegateImplUnitTest {
 
     /** List of all supported OmniboxActionTypes. */
     public static final Set<Integer> SUPPORTED_ACTIONS =
-            ImmutableSet.of(OmniboxActionType.HISTORY_CLUSTERS);
+            ImmutableSet.of(OmniboxActionType.PEDAL, OmniboxActionType.HISTORY_CLUSTERS);
 
     public @Rule MockitoRule mMockitoRule = MockitoJUnit.rule();
     private @Mock HistoryClustersCoordinator mHistoryClustersCoordinator;
@@ -162,38 +162,46 @@ public class ActionChipsDelegateImplUnitTest {
     }
 
     /**
+     * Create Omnibox Action action of a given type.
+     */
+    private OmniboxPedal buildAction(@OmniboxActionType int type) {
+        return new OmniboxPedal(type, OmniboxPedalType.NONE, "hint", "contents",
+                "accessibility suffix", "accessibility hint", null);
+    }
+
+    /**
      * Create Omnibox Pedal action of a given type.
      */
-    private OmniboxPedal buildAction(@OmniboxPedalType int type) {
-        return new OmniboxPedal(
-                type, "hint", "contents", "accessibility suffix", "accessibility hint", null);
+    private OmniboxPedal buildPedal(@OmniboxPedalType int type) {
+        return new OmniboxPedal(OmniboxActionType.PEDAL, type, "hint", "contents",
+                "accessibility suffix", "accessibility hint", null);
     }
 
     /**
      * Create HistoryCluster Action with a supplied query.
      */
     private HistoryClustersAction buildHistoryClustersAction(String query) {
-        return new HistoryClustersAction(OmniboxActionType.HISTORY_CLUSTERS, "hint", "contents",
-                "accessibility suffix", "accessibility hint", null, query);
+        return new HistoryClustersAction(
+                "hint", "contents", "accessibility suffix", "accessibility hint", null, query);
     }
 
     @Test
     public void executePedal_manageChromeSettings() {
-        mDelegate.execute(buildAction(OmniboxPedalType.MANAGE_CHROME_SETTINGS));
+        mDelegate.execute(buildPedal(OmniboxPedalType.MANAGE_CHROME_SETTINGS));
         checkSettingsActivityFragmentStarted(null);
         checkOmniboxPedalUsageRecorded(OmniboxPedalType.MANAGE_CHROME_SETTINGS);
     }
 
     @Test
     public void executePedal_clearBrowsingData() {
-        mDelegate.execute(buildAction(OmniboxPedalType.CLEAR_BROWSING_DATA));
+        mDelegate.execute(buildPedal(OmniboxPedalType.CLEAR_BROWSING_DATA));
         checkSettingsActivityFragmentStarted(ClearBrowsingDataTabsFragment.class);
         checkOmniboxPedalUsageRecorded(OmniboxPedalType.CLEAR_BROWSING_DATA);
     }
 
     @Test
     public void executePedal_managePasswords() {
-        mDelegate.execute(buildAction(OmniboxPedalType.MANAGE_PASSWORDS));
+        mDelegate.execute(buildPedal(OmniboxPedalType.MANAGE_PASSWORDS));
         assertTrue(ShadowPasswordManagerLauncher.sPasswordSettingsRequested);
         ShadowPasswordManagerLauncher.reset();
         checkOmniboxPedalUsageRecorded(OmniboxPedalType.MANAGE_PASSWORDS);
@@ -201,35 +209,35 @@ public class ActionChipsDelegateImplUnitTest {
 
     @Test
     public void executePedal_updateCreditCard() {
-        mDelegate.execute(buildAction(OmniboxPedalType.UPDATE_CREDIT_CARD));
+        mDelegate.execute(buildPedal(OmniboxPedalType.UPDATE_CREDIT_CARD));
         checkSettingsActivityFragmentStarted(AutofillPaymentMethodsFragment.class);
         checkOmniboxPedalUsageRecorded(OmniboxPedalType.UPDATE_CREDIT_CARD);
     }
 
     @Test
     public void executePedal_runChromeSafetyCheck() {
-        mDelegate.execute(buildAction(OmniboxPedalType.RUN_CHROME_SAFETY_CHECK));
+        mDelegate.execute(buildPedal(OmniboxPedalType.RUN_CHROME_SAFETY_CHECK));
         checkSettingsActivityFragmentStarted(SafetyCheckSettingsFragment.class);
         checkOmniboxPedalUsageRecorded(OmniboxPedalType.RUN_CHROME_SAFETY_CHECK);
     }
 
     @Test
     public void executePedal_manageSiteSettings() {
-        mDelegate.execute(buildAction(OmniboxPedalType.MANAGE_SITE_SETTINGS));
+        mDelegate.execute(buildPedal(OmniboxPedalType.MANAGE_SITE_SETTINGS));
         checkSettingsActivityFragmentStarted(SiteSettings.class);
         checkOmniboxPedalUsageRecorded(OmniboxPedalType.MANAGE_SITE_SETTINGS);
     }
 
     @Test
     public void executePedal_manageChromeAccessibility() {
-        mDelegate.execute(buildAction(OmniboxPedalType.MANAGE_CHROME_ACCESSIBILITY));
+        mDelegate.execute(buildPedal(OmniboxPedalType.MANAGE_CHROME_ACCESSIBILITY));
         checkSettingsActivityFragmentStarted(AccessibilitySettings.class);
         checkOmniboxPedalUsageRecorded(OmniboxPedalType.MANAGE_CHROME_ACCESSIBILITY);
     }
 
     @Test
     public void executePedal_launchIncognito_fromCustomActivity() {
-        mDelegate.execute(buildAction(OmniboxPedalType.LAUNCH_INCOGNITO));
+        mDelegate.execute(buildPedal(OmniboxPedalType.LAUNCH_INCOGNITO));
 
         var intent = mShadowActivity.getNextStartedActivity();
         assertEquals(Intent.ACTION_VIEW, intent.getAction());
@@ -240,7 +248,7 @@ public class ActionChipsDelegateImplUnitTest {
 
     @Test
     public void executePedal_viewChromeHistory_fromCustomActivity() {
-        mDelegate.execute(buildAction(OmniboxPedalType.VIEW_CHROME_HISTORY));
+        mDelegate.execute(buildPedal(OmniboxPedalType.VIEW_CHROME_HISTORY));
 
         var intent = mShadowActivity.getNextStartedActivity();
         assertEquals(HistoryActivity.class.getName(), intent.getComponent().getClassName());
@@ -251,7 +259,7 @@ public class ActionChipsDelegateImplUnitTest {
 
     @Test
     public void executePedal_playChromeDinoGame_fromCustomActivity() {
-        mDelegate.execute(buildAction(OmniboxPedalType.PLAY_CHROME_DINO_GAME));
+        mDelegate.execute(buildPedal(OmniboxPedalType.PLAY_CHROME_DINO_GAME));
 
         var intent = mShadowActivity.getNextStartedActivity();
         assertEquals(Intent.ACTION_VIEW, intent.getAction());
@@ -288,7 +296,7 @@ public class ActionChipsDelegateImplUnitTest {
                 ImmutableMap.of(OmniboxPedalType.PLAY_CHROME_DINO_GAME, R.drawable.ic_dino);
 
         for (var entry : SUPPORTED_PEDALS) {
-            var icon = mDelegate.getIcon(buildAction(entry));
+            var icon = mDelegate.getIcon(buildPedal(entry));
 
             var expectedIconRes =
                     customResourceMap.getOrDefault(entry, R.drawable.fre_product_logo);
@@ -312,13 +320,13 @@ public class ActionChipsDelegateImplUnitTest {
 
             // "Local variables referenced by lambda must be effectively final"
             final int pedalType = type;
-            assertThrows(AssertionError.class, () -> mDelegate.getIcon(buildAction(pedalType)));
+            assertThrows(AssertionError.class, () -> mDelegate.getIcon(buildPedal(pedalType)));
         }
     }
 
     @Test
     public void verifyDecorations_omniboxActions() {
-        var icon = mDelegate.getIcon(buildAction(OmniboxActionType.HISTORY_CLUSTERS));
+        var icon = mDelegate.getIcon(buildHistoryClustersAction("test"));
         assertEquals(R.drawable.ic_journeys, icon.iconRes);
         assertTrue(icon.tintWithTextColor);
     }
@@ -328,7 +336,7 @@ public class ActionChipsDelegateImplUnitTest {
         // This test catches introduction of any new action types to make sure we
         // account for these actions in the verifyDecorations_omniboxActions test.
         // Guarantees that no new actions can be enabled without proper test coverage.
-        for (int type = OmniboxActionType.FIRST; type < OmniboxActionType.LAST; type++) {
+        for (int type = OmniboxActionType.UNKNOWN; type <= OmniboxActionType.LAST; type++) {
             // Skip past actions we already know we support.
             if (SUPPORTED_ACTIONS.contains(type)) continue;
 

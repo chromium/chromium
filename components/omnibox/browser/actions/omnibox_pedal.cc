@@ -236,6 +236,14 @@ OmniboxPedal::OmniboxPedal(OmniboxPedalId id, LabelStrings strings, GURL url)
 #endif
 }
 
+/* static */ const OmniboxPedal* OmniboxPedal::FromAction(
+    const OmniboxAction* action) {
+  if (action && action->ActionId() == OmniboxActionId::PEDAL) {
+    return static_cast<const OmniboxPedal*>(action);
+  }
+  return nullptr;
+}
+
 OmniboxPedal::~OmniboxPedal() = default;
 
 void OmniboxPedal::OnLoaded() {
@@ -275,7 +283,7 @@ std::vector<OmniboxPedal::SynonymGroupSpec> OmniboxPedal::SpecifySynonymGroups(
 }
 
 OmniboxPedalId OmniboxPedal::GetMetricsId() const {
-  return id();
+  return PedalId();
 }
 
 bool OmniboxPedal::IsConceptMatch(TokenSequence& match_sequence) const {
@@ -312,8 +320,8 @@ size_t OmniboxPedal::EstimateMemoryUsage() const {
   return total;
 }
 
-int32_t OmniboxPedal::GetID() const {
-  return static_cast<int32_t>(id());
+OmniboxActionId OmniboxPedal::ActionId() const {
+  return OmniboxActionId::PEDAL;
 }
 
 #if BUILDFLAG(IS_ANDROID)
@@ -324,7 +332,7 @@ base::android::ScopedJavaGlobalRef<jobject> OmniboxPedal::GetJavaObject()
 
 void OmniboxPedal::CreateOrUpdateJavaObject() {
   j_omnibox_action_.Reset(BuildOmniboxPedal(
-      GetID(), strings_.hint, strings_.suggestion_contents,
+      PedalId(), strings_.hint, strings_.suggestion_contents,
       strings_.accessibility_suffix, strings_.accessibility_hint, url_));
 }
 #endif

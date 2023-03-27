@@ -105,8 +105,8 @@ size_t OmniboxAction::EstimateMemoryUsage() const {
   return total;
 }
 
-int32_t OmniboxAction::GetID() const {
-  return 0;
+OmniboxActionId OmniboxAction::ActionId() const {
+  return OmniboxActionId::UNKNOWN;
 }
 
 #if BUILDFLAG(IS_ANDROID)

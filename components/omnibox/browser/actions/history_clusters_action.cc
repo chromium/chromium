@@ -168,8 +168,8 @@ void HistoryClustersAction::Execute(ExecutionContext& context) const {
   OmniboxAction::Execute(context);
 }
 
-int32_t HistoryClustersAction::GetID() const {
-  return static_cast<int32_t>(OmniboxActionId::HISTORY_CLUSTERS);
+OmniboxActionId HistoryClustersAction::ActionId() const {
+  return OmniboxActionId::HISTORY_CLUSTERS;
 }
 
 #if defined(SUPPORT_PEDALS_VECTOR_ICONS)
@@ -186,7 +186,7 @@ HistoryClustersAction::GetJavaObject() const {
 
 void HistoryClustersAction::CreateOrUpdateJavaObject(const std::string& query) {
   j_omnibox_action_.Reset(BuildHistoryClustersAction(
-      GetID(), strings_.hint, strings_.suggestion_contents,
+      strings_.hint, strings_.suggestion_contents,
       strings_.accessibility_suffix, strings_.accessibility_hint, url_, query));
 }
 #endif

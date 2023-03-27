@@ -113,8 +113,8 @@ class HistoryClustersActionTest : public testing::Test {
     for (size_t i = 0; i < matches_data.size(); ++i) {
       bool has_history_clusters_action =
           result.match_at(i)->GetPrimaryAction() &&
-          result.match_at(i)->GetPrimaryAction()->GetID() ==
-              static_cast<int32_t>(OmniboxActionId::HISTORY_CLUSTERS);
+          result.match_at(i)->GetPrimaryAction()->ActionId() ==
+              OmniboxActionId::HISTORY_CLUSTERS;
       EXPECT_EQ(has_history_clusters_action,
                 matches_data[i].expect_history_clusters_action);
     }

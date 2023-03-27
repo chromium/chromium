@@ -17,17 +17,20 @@ import org.chromium.url.GURL;
  * please check on OmniboxAction class definition on native side.
  */
 public class OmniboxPedal {
-    private final @OmniboxPedalType int mId;
+    private final @OmniboxActionType int mActionId;
+    private final @OmniboxPedalType int mPedalId;
     private final @NonNull String mHint;
     private final @NonNull String mSuggestionContents;
     private final @NonNull String mAccessibilitySuffix;
     private final @NonNull String mAccessibilityHint;
     private final @Nullable GURL mUrl;
 
-    public OmniboxPedal(@OmniboxPedalType int id, @NonNull String hint,
-            @NonNull String suggestionContents, @NonNull String accessibilitySuffix,
-            @NonNull String accessibilityHint, @Nullable GURL url) {
-        mId = id;
+    public OmniboxPedal(@OmniboxActionType int actionId, @OmniboxPedalType int pedalId,
+            @NonNull String hint, @NonNull String suggestionContents,
+            @NonNull String accessibilitySuffix, @NonNull String accessibilityHint,
+            @Nullable GURL url) {
+        mActionId = actionId;
+        mPedalId = pedalId;
         mHint = hint;
         mSuggestionContents = suggestionContents;
         mAccessibilitySuffix = accessibilitySuffix;
@@ -35,28 +38,18 @@ public class OmniboxPedal {
         mUrl = url;
     }
 
-    public boolean hasPedalId() {
-        return (mId >= OmniboxPedalType.NONE) && mId < (OmniboxPedalType.TOTAL_COUNT);
-    }
-
-    public boolean hasActionId() {
-        return (mId >= OmniboxActionType.FIRST) && mId < (OmniboxActionType.LAST);
-    }
-
     /**
      * @return an ID used to identify the underlying pedal.
      */
-    public @OmniboxPedalType int getPedalID() {
-        assert hasPedalId();
-        return mId;
+    public @OmniboxPedalType int getPedalId() {
+        return mPedalId;
     }
 
     /**
      * @return an ID used to identify the underlying action.
      */
-    public @OmniboxActionType int getActionID() {
-        assert hasActionId();
-        return mId;
+    public @OmniboxActionType int getActionId() {
+        return mActionId;
     }
 
     /**
@@ -98,7 +91,7 @@ public class OmniboxPedal {
     private static OmniboxPedal build(int id, @NonNull String hint,
             @NonNull String suggestionContents, @NonNull String accessibilitySuffix,
             @NonNull String accessibilityHint, @Nullable GURL url) {
-        return new OmniboxPedal(
-                id, hint, suggestionContents, accessibilitySuffix, accessibilityHint, url);
+        return new OmniboxPedal(OmniboxActionType.PEDAL, id, hint, suggestionContents,
+                accessibilitySuffix, accessibilityHint, url);
     }
 }

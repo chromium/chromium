@@ -92,10 +92,9 @@ public class ActionChipsProcessor {
 
             modelList.add(new ListItem(ActionChipsProperties.ViewType.CHIP, chipModel));
 
-            if (chip.hasPedalId()) {
-                mLastVisiblePedals.add(chip.getPedalID());
-            } else if (chip.hasActionId()
-                    && chip.getActionID() == OmniboxActionType.HISTORY_CLUSTERS) {
+            if (chip.getActionId() == OmniboxActionType.PEDAL) {
+                mLastVisiblePedals.add(chip.getPedalId());
+            } else if (chip.getActionId() == OmniboxActionType.HISTORY_CLUSTERS) {
                 mJourneysActionShownPosition = position;
             }
         }
@@ -108,8 +107,7 @@ public class ActionChipsProcessor {
     }
 
     private void executeAction(@NonNull OmniboxPedal omniboxPedal, int position) {
-        if (omniboxPedal.hasActionId()
-                && omniboxPedal.getActionID() == OmniboxActionType.HISTORY_CLUSTERS) {
+        if (omniboxPedal.getActionId() == OmniboxActionType.HISTORY_CLUSTERS) {
             RecordHistogram.recordEnumeratedHistogram("Omnibox.SuggestionUsed.ResumeJourney",
                     position, SuggestionsMetrics.MAX_AUTOCOMPLETE_POSITION);
         }
