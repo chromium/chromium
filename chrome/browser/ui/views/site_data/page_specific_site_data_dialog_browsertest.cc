@@ -555,6 +555,36 @@ IN_PROC_BROWSER_TEST_P(PageSpecificSiteDataDialogBrowserTest,
   // TODO(crbug.com/1344787): Check the histograms value.
 }
 
+IN_PROC_BROWSER_TEST_P(PageSpecificSiteDataDialogBrowserTest,
+                       SameOriginNavigationDeletion) {
+  if (!GetParam()) {
+    return;
+  }
+
+  // Regression test for crbug.com/1421521. As the dialog remains open during
+  // same-origin navigations, it mustn't cache any pointers owned by the
+  // PageSpecificContentSettings, which is _page_ specific, and so changes even
+  // on same-origin navigations. Attempting a deletion is sufficient to access
+  // the BrowsingDataModel, which is owned by the PageSpecificContentSettings,
+  // and so must _not_ have pointers cached by the dialog.
+
+  auto* dialog = OpenDialog();
+
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), https_server()->GetURL("a.test", "/cookie2.html")));
+  EXPECT_FALSE(dialog->IsClosed());
+
+  ui::ElementContext context =
+      views::ElementTrackerViews::GetContextForWidget(dialog);
+  auto* view = GetViewByIdentifier(context, kPageSpecificSiteDataDialogRow);
+  auto* row_view = static_cast<SiteDataRowView*>(view);
+  EXPECT_TRUE(row_view->GetVisible());
+
+  EXPECT_TRUE(row_view->delete_button_for_testing()->GetVisible());
+  ClickButton(row_view->delete_button_for_testing());
+  EXPECT_FALSE(dialog->IsClosed());
+}
+
 // Run tests with kPageSpecificSiteDataDialog flag enabled and disabled.
 INSTANTIATE_TEST_SUITE_P(All,
                          PageSpecificSiteDataDialogBrowserTest,
