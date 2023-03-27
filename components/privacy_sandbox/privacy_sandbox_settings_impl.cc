@@ -5,12 +5,15 @@
 #include "components/privacy_sandbox/privacy_sandbox_settings_impl.h"
 #include <cstddef>
 
+#include "base/containers/contains.h"
 #include "base/feature_list.h"
 #include "base/json/values_util.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/observer_list.h"
 #include "base/ranges/algorithm.h"
 #include "base/time/time.h"
+#include "base/values.h"
+#include "components/browsing_topics/common/semantic_tree.h"
 #include "components/content_settings/core/browser/cookie_settings.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/content_settings/core/common/pref_names.h"
@@ -162,14 +165,19 @@ bool PrivacySandboxSettingsImpl::IsTopicAllowed(const CanonicalTopic& topic) {
   const auto& blocked_topics =
       pref_service_->GetList(prefs::kPrivacySandboxBlockedTopics);
 
-  for (const auto& item : blocked_topics) {
+  std::vector<browsing_topics::Topic> ancestor_topics =
+      browsing_topics::SemanticTree().GetAncestorTopics(topic.topic_id());
+  for (const base::Value& item : blocked_topics) {
     auto blocked_topic =
         CanonicalTopic::FromValue(*item.GetDict().Find(kBlockedTopicsTopicKey));
     if (!blocked_topic) {
       continue;
     }
 
-    if (topic == *blocked_topic) {
+    if (topic.topic_id() == blocked_topic->topic_id()) {
+      return false;
+    }
+    if (base::Contains(ancestor_topics, blocked_topic->topic_id())) {
       return false;
     }
   }

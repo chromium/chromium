@@ -4,10 +4,12 @@
 
 #include "components/browsing_topics/epoch_topics.h"
 
+#include "base/containers/contains.h"
 #include "base/hash/legacy_hash.h"
 #include "base/json/values_util.h"
 #include "base/logging.h"
 #include "base/numerics/checked_math.h"
+#include "components/browsing_topics/common/semantic_tree.h"
 #include "components/browsing_topics/util.h"
 #include "third_party/blink/public/common/features.h"
 #include "url/gurl.h"
@@ -209,15 +211,22 @@ void EpochTopics::ClearTopics() {
 }
 
 void EpochTopics::ClearTopic(Topic topic) {
-  for (TopicAndDomains& topic_and_domains : top_topics_and_observing_domains_) {
-    if (topic_and_domains.topic() != topic)
-      continue;
-
+  for (TopicAndDomains& top_topic_and_domains :
+       top_topics_and_observing_domains_) {
     // Invalidate `topic_and_domains`. We cannot delete the entry from
     // `top_topics_and_observing_domains_` because it would modify the list of
     // topics, and would break the ability to return the same topic for the same
     // site for the epoch .
-    topic_and_domains = TopicAndDomains();
+    if (top_topic_and_domains.topic() == topic) {
+      top_topic_and_domains = TopicAndDomains();
+      continue;
+    }
+    SemanticTree semantic_tree;
+    std::vector<Topic> top_topic_ancestors =
+        semantic_tree.GetAncestorTopics(top_topic_and_domains.topic());
+    if (base::Contains(top_topic_ancestors, topic)) {
+      top_topic_and_domains = TopicAndDomains();
+    }
   }
 }
 

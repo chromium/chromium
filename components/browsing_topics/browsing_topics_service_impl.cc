@@ -5,6 +5,7 @@
 #include "components/browsing_topics/browsing_topics_service_impl.h"
 
 #include <random>
+#include <vector>
 
 #include "base/metrics/histogram_functions.h"
 #include "base/notreached.h"
@@ -18,6 +19,7 @@
 #include "components/browsing_topics/mojom/browsing_topics_internals.mojom.h"
 #include "components/browsing_topics/util.h"
 #include "components/optimization_guide/content/browser/page_content_annotations_service.h"
+#include "components/privacy_sandbox/canonical_topic.h"
 #include "content/public/browser/browsing_topics_site_data_manager.h"
 #include "net/base/registry_controlled_domains/registry_controlled_domain.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
@@ -32,17 +34,10 @@ namespace {
 // Returns whether the topics should all be cleared given
 // `browsing_topics_data_accessible_since` and `is_topic_allowed_by_settings`.
 // Returns true if `browsing_topics_data_accessible_since` is greater than the
-// last calculation time, or if any top topic is disallowed from the settings.
-// The latter could happen if the topic became disallowed when
-// `browsing_topics_state` was still loading (and we didn't get a chance to
-// clear it). This is an unlikely edge case, so it's fine to over-delete.
+// last calculation time.
 bool ShouldClearTopicsOnStartup(
     const BrowsingTopicsState& browsing_topics_state,
-    base::Time browsing_topics_data_accessible_since,
-    base::RepeatingCallback<bool(const privacy_sandbox::CanonicalTopic&)>
-        is_topic_allowed_by_settings) {
-  DCHECK(!is_topic_allowed_by_settings.is_null());
-
+    base::Time browsing_topics_data_accessible_since) {
   if (browsing_topics_state.epochs().empty())
     return false;
 
@@ -56,25 +51,39 @@ bool ShouldClearTopicsOnStartup(
     return true;
   }
 
+  return false;
+}
+
+// Returns a vector of top topics which are disallowed and thus should be
+// cleared. This could happen if the topic became disallowed when
+// `browsing_topics_state` was still loading (and we didn't get a chance to
+// clear it).
+std::vector<privacy_sandbox::CanonicalTopic> TopTopicsToClearOnStartup(
+    const BrowsingTopicsState& browsing_topics_state,
+    base::RepeatingCallback<bool(const privacy_sandbox::CanonicalTopic&)>
+        is_topic_allowed_by_settings) {
+  DCHECK(!is_topic_allowed_by_settings.is_null());
+  std::vector<privacy_sandbox::CanonicalTopic> top_topics_to_clear;
   for (const EpochTopics& epoch : browsing_topics_state.epochs()) {
     for (const TopicAndDomains& topic_and_domains :
          epoch.top_topics_and_observing_domains()) {
       if (!topic_and_domains.IsValid())
         continue;
-
-      if (!is_topic_allowed_by_settings.Run(privacy_sandbox::CanonicalTopic(
-              topic_and_domains.topic(), epoch.taxonomy_version()))) {
-        return true;
+      privacy_sandbox::CanonicalTopic canonical_topic =
+          privacy_sandbox::CanonicalTopic(topic_and_domains.topic(),
+                                          epoch.taxonomy_version());
+      if (!is_topic_allowed_by_settings.Run(canonical_topic)) {
+        top_topics_to_clear.emplace_back(canonical_topic);
       }
     }
   }
-
-  return false;
+  return top_topics_to_clear;
 }
 
 struct StartupCalculateDecision {
-  bool clear_topics_data = true;
+  bool clear_all_topics_data = true;
   base::TimeDelta next_calculation_delay;
+  std::vector<privacy_sandbox::CanonicalTopic> topics_to_clear;
 };
 
 StartupCalculateDecision GetStartupCalculationDecision(
@@ -87,17 +96,21 @@ StartupCalculateDecision GetStartupCalculationDecision(
   // topics should have already been cleared when initializing the
   // `BrowsingTopicsState`.
   if (browsing_topics_state.next_scheduled_calculation_time().is_null()) {
-    return StartupCalculateDecision{
-        .clear_topics_data = false,
-        .next_calculation_delay = base::TimeDelta()};
+    return StartupCalculateDecision{.clear_all_topics_data = false,
+                                    .next_calculation_delay = base::TimeDelta(),
+                                    .topics_to_clear = {}};
   }
 
   // This could happen when clear-on-exit is turned on and has caused the
-  // cookies to be deleted on startup, of if a topic became disallowed when
-  // `browsing_topics_state` was still loading.
-  bool should_clear_topics_data = ShouldClearTopicsOnStartup(
-      browsing_topics_state, browsing_topics_data_accessible_since,
-      is_topic_allowed_by_settings);
+  // cookies to be deleted on startup
+  bool should_clear_all_topics_data = ShouldClearTopicsOnStartup(
+      browsing_topics_state, browsing_topics_data_accessible_since);
+
+  std::vector<privacy_sandbox::CanonicalTopic> topics_to_clear;
+  if (!should_clear_all_topics_data) {
+    topics_to_clear = TopTopicsToClearOnStartup(browsing_topics_state,
+                                                is_topic_allowed_by_settings);
+  }
 
   base::TimeDelta presumed_next_calculation_delay =
       browsing_topics_state.next_scheduled_calculation_time() -
@@ -106,8 +119,9 @@ StartupCalculateDecision GetStartupCalculationDecision(
   // The scheduled calculation time was reached before the startup.
   if (presumed_next_calculation_delay <= base::TimeDelta()) {
     return StartupCalculateDecision{
-        .clear_topics_data = should_clear_topics_data,
-        .next_calculation_delay = base::TimeDelta()};
+        .clear_all_topics_data = should_clear_all_topics_data,
+        .next_calculation_delay = base::TimeDelta(),
+        .topics_to_clear = topics_to_clear};
   }
 
   // This could happen if the machine time has changed since the last
@@ -116,13 +130,15 @@ StartupCalculateDecision GetStartupCalculationDecision(
   if (presumed_next_calculation_delay >=
       2 * blink::features::kBrowsingTopicsTimePeriodPerEpoch.Get()) {
     return StartupCalculateDecision{
-        .clear_topics_data = should_clear_topics_data,
-        .next_calculation_delay = base::TimeDelta()};
+        .clear_all_topics_data = should_clear_all_topics_data,
+        .next_calculation_delay = base::TimeDelta(),
+        .topics_to_clear = topics_to_clear};
   }
 
   return StartupCalculateDecision{
-      .clear_topics_data = should_clear_topics_data,
-      .next_calculation_delay = presumed_next_calculation_delay};
+      .clear_all_topics_data = should_clear_all_topics_data,
+      .next_calculation_delay = presumed_next_calculation_delay,
+      .topics_to_clear = topics_to_clear};
 }
 
 void RecordBrowsingTopicsApiResultMetrics(ApiAccessResult result,
@@ -601,8 +617,15 @@ void BrowsingTopicsServiceImpl::OnBrowsingTopicsStateLoaded() {
           &privacy_sandbox::PrivacySandboxSettings::IsTopicAllowed,
           base::Unretained(privacy_sandbox_settings_)));
 
-  if (decision.clear_topics_data)
+  if (decision.clear_all_topics_data) {
     browsing_topics_state_.ClearAllTopics();
+  } else if (!decision.topics_to_clear.empty()) {
+    for (const privacy_sandbox::CanonicalTopic& canonical_topic :
+         decision.topics_to_clear) {
+      browsing_topics_state_.ClearTopic(canonical_topic.topic_id(),
+                                        canonical_topic.taxonomy_version());
+    }
+  }
 
   site_data_manager_->ExpireDataBefore(browsing_topics_data_sccessible_since);
 

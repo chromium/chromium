@@ -60,7 +60,9 @@ class EpochTopics {
   // reset `padded_top_topics_start_index_` to 0.
   void ClearTopics();
 
-  // Clear an entry in `top_topics_and_observing_domains_` that matches `topic`.
+  // Clear an entry in `top_topics_and_observing_domains_` that matches `topic`
+  // and any entry in `top_topics_and_observing_domains_` that is a topic
+  // descended from `topic`.
   void ClearTopic(Topic topic);
 
   // Clear the domains in `top_topics_and_observing_domains_`  that match

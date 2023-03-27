@@ -1863,22 +1863,22 @@ TEST_F(BrowsingTopicsServiceImplTest, ClearTopic) {
   // Finish file loading and two calculations.
   task_environment()->FastForwardBy(2 * kCalculatorDelay + kEpoch);
 
+  // Clearing topic 7 should clear child topic 8 as well.
   browsing_topics_service_->ClearTopic(
-      privacy_sandbox::CanonicalTopic(Topic(3), /*taxonomy_version=*/1));
+      privacy_sandbox::CanonicalTopic(Topic(7), /*taxonomy_version=*/1));
 
   std::vector<privacy_sandbox::CanonicalTopic> result =
       browsing_topics_service_->GetTopTopicsForDisplay();
 
-  EXPECT_EQ(result.size(), 9u);
+  EXPECT_EQ(result.size(), 8u);
   EXPECT_EQ(result[0].topic_id(), Topic(1));
   EXPECT_EQ(result[1].topic_id(), Topic(2));
-  EXPECT_EQ(result[2].topic_id(), Topic(4));
-  EXPECT_EQ(result[3].topic_id(), Topic(5));
-  EXPECT_EQ(result[4].topic_id(), Topic(6));
-  EXPECT_EQ(result[5].topic_id(), Topic(7));
-  EXPECT_EQ(result[6].topic_id(), Topic(8));
-  EXPECT_EQ(result[7].topic_id(), Topic(9));
-  EXPECT_EQ(result[8].topic_id(), Topic(10));
+  EXPECT_EQ(result[2].topic_id(), Topic(3));
+  EXPECT_EQ(result[3].topic_id(), Topic(4));
+  EXPECT_EQ(result[4].topic_id(), Topic(5));
+  EXPECT_EQ(result[5].topic_id(), Topic(6));
+  EXPECT_EQ(result[6].topic_id(), Topic(9));
+  EXPECT_EQ(result[7].topic_id(), Topic(10));
 }
 
 TEST_F(BrowsingTopicsServiceImplTest, ClearTopicBeforeLoadFinish) {
@@ -1911,11 +1911,15 @@ TEST_F(BrowsingTopicsServiceImplTest, ClearTopicBeforeLoadFinish) {
   // Finish file loading.
   task_environment()->RunUntilIdle();
 
-  // If a topic in the settings is cleared before load finish, all pre-existing
-  // topics data will be cleared in the `BrowsingTopicsState` after load finish.
+  // If a topic in the settings is cleared before load finish,
+  // that topic and its descendants will be cleared after load finish.
   std::vector<privacy_sandbox::CanonicalTopic> result =
       browsing_topics_service_->GetTopTopicsForDisplay();
-  EXPECT_EQ(result.size(), 0u);
+  EXPECT_EQ(result.size(), 4u);
+  EXPECT_EQ(result[0].topic_id(), Topic(1));
+  EXPECT_EQ(result[1].topic_id(), Topic(2));
+  EXPECT_EQ(result[2].topic_id(), Topic(4));
+  EXPECT_EQ(result[3].topic_id(), Topic(5));
 }
 
 TEST_F(BrowsingTopicsServiceImplTest, ClearAllTopicsData) {

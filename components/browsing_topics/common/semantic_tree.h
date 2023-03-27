@@ -24,6 +24,7 @@ class COMPONENT_EXPORT(BROWSING_TOPICS_COMMON) SemanticTree {
   SemanticTree(const SemanticTree& other) = delete;
   ~SemanticTree();
   std::set<Topic> GetDescendantTopics(const Topic& topic);
+  std::vector<Topic> GetAncestorTopics(const Topic& topic);
   absl::optional<int> GetLocalizedNameMessageId(const Topic& topic,
                                                 int taxonomy_version);
 

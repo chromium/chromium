@@ -31,7 +31,7 @@ EpochTopics CreateTestEpochTopics() {
   top_topics_and_observing_domains.emplace_back(
       TopicAndDomains(Topic(4), {HashedDomain(2), HashedDomain(3)}));
   top_topics_and_observing_domains.emplace_back(
-      TopicAndDomains(Topic(5), {HashedDomain(1)}));
+      TopicAndDomains(Topic(100), {HashedDomain(1)}));
 
   EpochTopics epoch_topics(std::move(top_topics_and_observing_domains),
                            kPaddedTopTopicsStartIndex, kTaxonomySize,
@@ -222,7 +222,7 @@ TEST_F(EpochTopicsTest, ClearTopics) {
   EXPECT_FALSE(candidate_topic.IsValid());
 }
 
-TEST_F(EpochTopicsTest, ClearTopic) {
+TEST_F(EpochTopicsTest, ClearTopic_NoDescendants) {
   EpochTopics epoch_topics = CreateTestEpochTopics();
 
   EXPECT_FALSE(epoch_topics.empty());
@@ -235,6 +235,22 @@ TEST_F(EpochTopicsTest, ClearTopic) {
   EXPECT_TRUE(epoch_topics.top_topics_and_observing_domains()[1].IsValid());
   EXPECT_FALSE(epoch_topics.top_topics_and_observing_domains()[2].IsValid());
   EXPECT_TRUE(epoch_topics.top_topics_and_observing_domains()[3].IsValid());
+  EXPECT_TRUE(epoch_topics.top_topics_and_observing_domains()[4].IsValid());
+}
+
+TEST_F(EpochTopicsTest, ClearTopic_WithDescendants) {
+  EpochTopics epoch_topics = CreateTestEpochTopics();
+
+  EXPECT_FALSE(epoch_topics.empty());
+
+  epoch_topics.ClearTopic(Topic(1));
+
+  EXPECT_FALSE(epoch_topics.empty());
+
+  EXPECT_FALSE(epoch_topics.top_topics_and_observing_domains()[0].IsValid());
+  EXPECT_FALSE(epoch_topics.top_topics_and_observing_domains()[1].IsValid());
+  EXPECT_FALSE(epoch_topics.top_topics_and_observing_domains()[2].IsValid());
+  EXPECT_FALSE(epoch_topics.top_topics_and_observing_domains()[3].IsValid());
   EXPECT_TRUE(epoch_topics.top_topics_and_observing_domains()[4].IsValid());
 }
 

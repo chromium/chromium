@@ -48,6 +48,30 @@ TEST_F(SemanticTreeUnittest, GetDescendantTopicsMultipleLevelsOfDescendants) {
   EXPECT_EQ(topics, expected_descendants);
 }
 
+TEST_F(SemanticTreeUnittest, GetAncestorTopicsTopicNotInMap) {
+  std::vector<Topic> topics = semantic_tree_.GetAncestorTopics(Topic(10000));
+  EXPECT_TRUE(topics.empty());
+}
+
+TEST_F(SemanticTreeUnittest, GetAncestorTopicsNoAncestors) {
+  std::vector<Topic> topics = semantic_tree_.GetAncestorTopics(Topic(1));
+  EXPECT_TRUE(topics.empty());
+}
+
+TEST_F(SemanticTreeUnittest, GetAncestorTopicsOneAncestor) {
+  std::vector<Topic> topics = semantic_tree_.GetAncestorTopics(Topic(2));
+  EXPECT_FALSE(topics.empty());
+  std::vector<Topic> expected_ancestors = {Topic(1)};
+  EXPECT_EQ(topics, expected_ancestors);
+}
+
+TEST_F(SemanticTreeUnittest, GetAncestorTopicsMultipleAncestors) {
+  std::vector<Topic> topics = semantic_tree_.GetAncestorTopics(Topic(36));
+  EXPECT_FALSE(topics.empty());
+  std::vector<Topic> expected_ancestors = {Topic(33), Topic(23), Topic(1)};
+  EXPECT_EQ(topics, expected_ancestors);
+}
+
 TEST_F(SemanticTreeUnittest, GetLocalizedNameMessageIdValidTopicAndTaxonomy) {
   absl::optional<int> message_id =
       semantic_tree_.GetLocalizedNameMessageId(Topic(100), 1);

@@ -4,6 +4,8 @@
 
 #include "components/browsing_topics/common/semantic_tree.h"
 
+#include <vector>
+
 #include "base/containers/fixed_flat_map.h"
 #include "base/no_destructor.h"
 #include "components/strings/grit/components_strings.h"
@@ -1843,6 +1845,23 @@ std::set<Topic> SemanticTree::GetDescendantTopics(const Topic& topic) {
   GetDescendantTopicsHelper(topic, parent_to_child_topic_map_.value(),
                             descendant_topics);
   return descendant_topics;
+}
+
+std::vector<Topic> SemanticTree::GetAncestorTopics(const Topic& topic) {
+  std::vector<Topic> ancestor_topics;
+  base::fixed_flat_map<Topic, SemanticTreeNodeInformation,
+                       kSemanticTreeSize>::const_iterator tree_node_it =
+      GetSemanticTreeInternal().find(topic);
+  while (tree_node_it != GetSemanticTreeInternal().end()) {
+    const SemanticTreeNodeInformation& node_info = tree_node_it->second;
+    if (!node_info.parent_topic.has_value()) {
+      break;
+    }
+    ancestor_topics.emplace_back(node_info.parent_topic.value());
+    tree_node_it =
+        GetSemanticTreeInternal().find(node_info.parent_topic.value());
+  }
+  return ancestor_topics;
 }
 
 absl::optional<int> SemanticTree::GetLocalizedNameMessageId(

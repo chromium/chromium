@@ -849,63 +849,105 @@ TEST_F(PrivacySandboxSettingsTest, OnFirstPartySetsEnabledChanged) {
 TEST_F(PrivacySandboxSettingsTest, IsTopicAllowed) {
   // Confirm that allowing / blocking topics is correctly reflected by
   // IsTopicsAllowed().
-  CanonicalTopic topic_one(Topic(1), CanonicalTopic::AVAILABLE_TAXONOMY);
-  CanonicalTopic topic_two(Topic(2), CanonicalTopic::AVAILABLE_TAXONOMY);
+  CanonicalTopic topic(Topic(1), CanonicalTopic::AVAILABLE_TAXONOMY);
+  CanonicalTopic child_topic(Topic(7), CanonicalTopic::AVAILABLE_TAXONOMY);
+  CanonicalTopic grandchild_topic(Topic(8), CanonicalTopic::AVAILABLE_TAXONOMY);
 
-  privacy_sandbox_settings()->SetTopicAllowed(topic_one, false);
-  EXPECT_FALSE(privacy_sandbox_settings()->IsTopicAllowed(topic_one));
-  EXPECT_TRUE(privacy_sandbox_settings()->IsTopicAllowed(topic_two));
+  CanonicalTopic unrelated_topic(Topic(57), CanonicalTopic::AVAILABLE_TAXONOMY);
 
-  privacy_sandbox_settings()->SetTopicAllowed(topic_two, false);
-  EXPECT_FALSE(privacy_sandbox_settings()->IsTopicAllowed(topic_one));
-  EXPECT_FALSE(privacy_sandbox_settings()->IsTopicAllowed(topic_two));
+  // Check that a topic and its descendants get blocked.
+  privacy_sandbox_settings()->SetTopicAllowed(topic, false);
+  EXPECT_FALSE(privacy_sandbox_settings()->IsTopicAllowed(topic));
+  EXPECT_FALSE(privacy_sandbox_settings()->IsTopicAllowed(child_topic));
+  EXPECT_FALSE(privacy_sandbox_settings()->IsTopicAllowed(grandchild_topic));
+  EXPECT_TRUE(privacy_sandbox_settings()->IsTopicAllowed(unrelated_topic));
 
-  privacy_sandbox_settings()->SetTopicAllowed(topic_two, true);
-  EXPECT_FALSE(privacy_sandbox_settings()->IsTopicAllowed(topic_one));
-  EXPECT_TRUE(privacy_sandbox_settings()->IsTopicAllowed(topic_two));
+  // Check that explicitly blocking an implicitly blocked topic works.
+  privacy_sandbox_settings()->SetTopicAllowed(child_topic, false);
+  EXPECT_FALSE(privacy_sandbox_settings()->IsTopicAllowed(topic));
+  EXPECT_FALSE(privacy_sandbox_settings()->IsTopicAllowed(child_topic));
+  EXPECT_FALSE(privacy_sandbox_settings()->IsTopicAllowed(grandchild_topic));
+  EXPECT_TRUE(privacy_sandbox_settings()->IsTopicAllowed(unrelated_topic));
 
-  privacy_sandbox_settings()->SetTopicAllowed(topic_one, true);
-  EXPECT_TRUE(privacy_sandbox_settings()->IsTopicAllowed(topic_one));
-  EXPECT_TRUE(privacy_sandbox_settings()->IsTopicAllowed(topic_two));
+  // Check that a topic remains blocked if its parent is blocked even if the
+  // topic is set allowed.
+  privacy_sandbox_settings()->SetTopicAllowed(child_topic, true);
+  EXPECT_FALSE(privacy_sandbox_settings()->IsTopicAllowed(topic));
+  EXPECT_FALSE(privacy_sandbox_settings()->IsTopicAllowed(child_topic));
+  EXPECT_FALSE(privacy_sandbox_settings()->IsTopicAllowed(grandchild_topic));
+  EXPECT_TRUE(privacy_sandbox_settings()->IsTopicAllowed(unrelated_topic));
+
+  // Check that unblocking an ancestor unblocks a topic as long as it wasn't
+  // explicitly blocked or implicitly blocked by another ancestor.
+  privacy_sandbox_settings()->SetTopicAllowed(topic, true);
+  EXPECT_TRUE(privacy_sandbox_settings()->IsTopicAllowed(topic));
+  EXPECT_TRUE(privacy_sandbox_settings()->IsTopicAllowed(child_topic));
+  EXPECT_TRUE(privacy_sandbox_settings()->IsTopicAllowed(grandchild_topic));
+  EXPECT_TRUE(privacy_sandbox_settings()->IsTopicAllowed(unrelated_topic));
+
+  // Check that blocking a descendant doesn't block an ancestor.
+  privacy_sandbox_settings()->SetTopicAllowed(child_topic, false);
+  EXPECT_TRUE(privacy_sandbox_settings()->IsTopicAllowed(topic));
+  EXPECT_FALSE(privacy_sandbox_settings()->IsTopicAllowed(child_topic));
+  EXPECT_FALSE(privacy_sandbox_settings()->IsTopicAllowed(grandchild_topic));
+  EXPECT_TRUE(privacy_sandbox_settings()->IsTopicAllowed(unrelated_topic));
+
+  // Check that blocking and unblocking an ancestor doesn't unblock an
+  // explicitly blocked descendant or a descendant implicitly blocked by another
+  // ancestor.
+  privacy_sandbox_settings()->SetTopicAllowed(topic, false);
+  privacy_sandbox_settings()->SetTopicAllowed(topic, true);
+  EXPECT_TRUE(privacy_sandbox_settings()->IsTopicAllowed(topic));
+  EXPECT_FALSE(privacy_sandbox_settings()->IsTopicAllowed(child_topic));
+  EXPECT_FALSE(privacy_sandbox_settings()->IsTopicAllowed(grandchild_topic));
+  EXPECT_TRUE(privacy_sandbox_settings()->IsTopicAllowed(unrelated_topic));
+
+  // Check that blocking an unrelated topic doesn't affect our topic or its
+  // descendants.
+  privacy_sandbox_settings()->SetTopicAllowed(unrelated_topic, false);
+  EXPECT_TRUE(privacy_sandbox_settings()->IsTopicAllowed(topic));
+  EXPECT_FALSE(privacy_sandbox_settings()->IsTopicAllowed(child_topic));
+  EXPECT_FALSE(privacy_sandbox_settings()->IsTopicAllowed(grandchild_topic));
+  EXPECT_FALSE(privacy_sandbox_settings()->IsTopicAllowed(unrelated_topic));
 }
 
 TEST_F(PrivacySandboxSettingsTest, ClearingTopicSettings) {
   // Confirm that time range deletions affect the correct settings.
-  CanonicalTopic topic_one(Topic(1), CanonicalTopic::AVAILABLE_TAXONOMY);
-  CanonicalTopic topic_two(Topic(2), CanonicalTopic::AVAILABLE_TAXONOMY);
-  CanonicalTopic topic_three(Topic(3), CanonicalTopic::AVAILABLE_TAXONOMY);
-  EXPECT_TRUE(privacy_sandbox_settings()->IsTopicAllowed(topic_one));
-  EXPECT_TRUE(privacy_sandbox_settings()->IsTopicAllowed(topic_two));
-  EXPECT_TRUE(privacy_sandbox_settings()->IsTopicAllowed(topic_three));
+  CanonicalTopic topic_a(Topic(1), CanonicalTopic::AVAILABLE_TAXONOMY);
+  CanonicalTopic topic_b(Topic(57), CanonicalTopic::AVAILABLE_TAXONOMY);
+  CanonicalTopic topic_c(Topic(86), CanonicalTopic::AVAILABLE_TAXONOMY);
+  EXPECT_TRUE(privacy_sandbox_settings()->IsTopicAllowed(topic_a));
+  EXPECT_TRUE(privacy_sandbox_settings()->IsTopicAllowed(topic_b));
+  EXPECT_TRUE(privacy_sandbox_settings()->IsTopicAllowed(topic_c));
 
-  privacy_sandbox_settings()->SetTopicAllowed(topic_one, false);
+  privacy_sandbox_settings()->SetTopicAllowed(topic_a, false);
   task_environment()->AdvanceClock(base::Hours(1));
 
   const auto kSecondSettingTime = base::Time::Now();
-  privacy_sandbox_settings()->SetTopicAllowed(topic_two, false);
+  privacy_sandbox_settings()->SetTopicAllowed(topic_b, false);
 
   task_environment()->AdvanceClock(base::Hours(1));
-  privacy_sandbox_settings()->SetTopicAllowed(topic_three, false);
+  privacy_sandbox_settings()->SetTopicAllowed(topic_c, false);
 
-  EXPECT_FALSE(privacy_sandbox_settings()->IsTopicAllowed(topic_one));
-  EXPECT_FALSE(privacy_sandbox_settings()->IsTopicAllowed(topic_two));
-  EXPECT_FALSE(privacy_sandbox_settings()->IsTopicAllowed(topic_three));
+  EXPECT_FALSE(privacy_sandbox_settings()->IsTopicAllowed(topic_a));
+  EXPECT_FALSE(privacy_sandbox_settings()->IsTopicAllowed(topic_b));
+  EXPECT_FALSE(privacy_sandbox_settings()->IsTopicAllowed(topic_c));
 
   // Construct a deletion which only targets the second setting.
   privacy_sandbox_settings()->ClearTopicSettings(
       kSecondSettingTime - base::Seconds(1),
       kSecondSettingTime + base::Seconds(1));
-  EXPECT_FALSE(privacy_sandbox_settings()->IsTopicAllowed(topic_one));
-  EXPECT_TRUE(privacy_sandbox_settings()->IsTopicAllowed(topic_two));
-  EXPECT_FALSE(privacy_sandbox_settings()->IsTopicAllowed(topic_three));
+  EXPECT_FALSE(privacy_sandbox_settings()->IsTopicAllowed(topic_a));
+  EXPECT_TRUE(privacy_sandbox_settings()->IsTopicAllowed(topic_b));
+  EXPECT_FALSE(privacy_sandbox_settings()->IsTopicAllowed(topic_c));
 
   // Perform a maximmal time range deletion, which should remove the two
   // remaining settings.
   privacy_sandbox_settings()->ClearTopicSettings(base::Time(),
                                                  base::Time::Max());
-  EXPECT_TRUE(privacy_sandbox_settings()->IsTopicAllowed(topic_one));
-  EXPECT_TRUE(privacy_sandbox_settings()->IsTopicAllowed(topic_two));
-  EXPECT_TRUE(privacy_sandbox_settings()->IsTopicAllowed(topic_three));
+  EXPECT_TRUE(privacy_sandbox_settings()->IsTopicAllowed(topic_a));
+  EXPECT_TRUE(privacy_sandbox_settings()->IsTopicAllowed(topic_b));
+  EXPECT_TRUE(privacy_sandbox_settings()->IsTopicAllowed(topic_c));
 }
 
 class PrivacySandboxSettingsTestCookiesClearOnExitTurnedOff
