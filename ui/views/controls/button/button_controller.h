@@ -50,9 +50,6 @@ class VIEWS_EXPORT ButtonController {
   virtual bool OnKeyReleased(const ui::KeyEvent& event);
   virtual void OnGestureEvent(ui::GestureEvent* event);
 
-  // Updates |node_data| for a button based on the functionality.
-  virtual void UpdateAccessibleNodeData(ui::AXNodeData* node_data);
-
   // Methods that parallel respective methods in Button:
   virtual bool IsTriggerableEvent(const ui::Event& event);
 

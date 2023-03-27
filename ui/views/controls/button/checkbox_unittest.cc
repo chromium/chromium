@@ -61,10 +61,24 @@ TEST_F(CheckboxTest, AccessibilityTest) {
 
   ui::AXNodeData ax_data;
   checkbox()->GetAccessibleNodeData(&ax_data);
-
   EXPECT_EQ(ax_data.GetString16Attribute(ax::mojom::StringAttribute::kName),
             label_text);
+  EXPECT_EQ(checkbox()->GetAccessibleName(), label_text);
   EXPECT_EQ(ax_data.role, ax::mojom::Role::kCheckBox);
+  EXPECT_EQ(checkbox()->GetAccessibleRole(), ax::mojom::Role::kCheckBox);
+  EXPECT_EQ(ax_data.GetCheckedState(), ax::mojom::CheckedState::kFalse);
+
+  ax_data = ui::AXNodeData();
+  checkbox()->SetChecked(true);
+  checkbox()->GetAccessibleNodeData(&ax_data);
+  EXPECT_EQ(ax_data.GetCheckedState(), ax::mojom::CheckedState::kTrue);
+
+  ax_data = ui::AXNodeData();
+  checkbox()->SetAccessibleRole(ax::mojom::Role::kMenuItemCheckBox);
+  checkbox()->GetAccessibleNodeData(&ax_data);
+  EXPECT_EQ(ax_data.role, ax::mojom::Role::kMenuItemCheckBox);
+  EXPECT_EQ(checkbox()->GetAccessibleRole(),
+            ax::mojom::Role::kMenuItemCheckBox);
 }
 
 }  // namespace views

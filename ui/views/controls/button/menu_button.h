@@ -41,6 +41,7 @@ class VIEWS_EXPORT MenuButton : public LabelButton {
 
   // Button:
   void SetCallback(PressedCallback callback) override;
+  void GetAccessibleNodeData(ui::AXNodeData* node_data) override;
 
  protected:
   // Button:
