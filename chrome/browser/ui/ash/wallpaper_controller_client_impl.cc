@@ -574,7 +574,7 @@ void WallpaperControllerClientImpl::FetchGooglePhotosPhoto(
     Profile* profile = ProfileHelper::Get()->GetProfileByAccountId(account_id);
     google_photos_photos_fetchers_.insert(
         {account_id,
-         std::make_unique<wallpaper_handlers::GooglePhotosPhotosFetcher>(
+         wallpaper_fetcher_delegate_->CreateGooglePhotosPhotosFetcher(
              profile)});
   }
   auto fetched_callback =
@@ -595,7 +595,7 @@ void WallpaperControllerClientImpl::FetchDailyGooglePhotosPhoto(
     Profile* profile = ProfileHelper::Get()->GetProfileByAccountId(account_id);
     google_photos_photos_fetchers_.insert(
         {account_id,
-         std::make_unique<wallpaper_handlers::GooglePhotosPhotosFetcher>(
+         wallpaper_fetcher_delegate_->CreateGooglePhotosPhotosFetcher(
              profile)});
   }
   auto fetched_callback = base::BindOnce(

@@ -30,4 +30,32 @@ TestWallpaperFetcherDelegate::CreateBackdropImageInfoFetcher(
       collection_id);
 }
 
+std::unique_ptr<GooglePhotosAlbumsFetcher>
+TestWallpaperFetcherDelegate::CreateGooglePhotosAlbumsFetcher(
+    Profile* profile) const {
+  return std::make_unique<testing::NiceMock<MockGooglePhotosAlbumsFetcher>>(
+      profile);
+}
+
+std::unique_ptr<GooglePhotosSharedAlbumsFetcher>
+TestWallpaperFetcherDelegate::CreateGooglePhotosSharedAlbumsFetcher(
+    Profile* profile) const {
+  return std::make_unique<
+      testing::NiceMock<MockGooglePhotosSharedAlbumsFetcher>>(profile);
+}
+
+std::unique_ptr<GooglePhotosEnabledFetcher>
+TestWallpaperFetcherDelegate::CreateGooglePhotosEnabledFetcher(
+    Profile* profile) const {
+  return std::make_unique<testing::NiceMock<MockGooglePhotosEnabledFetcher>>(
+      profile);
+}
+
+std::unique_ptr<GooglePhotosPhotosFetcher>
+TestWallpaperFetcherDelegate::CreateGooglePhotosPhotosFetcher(
+    Profile* profile) const {
+  return std::make_unique<testing::NiceMock<MockGooglePhotosPhotosFetcher>>(
+      profile);
+}
+
 }  // namespace wallpaper_handlers

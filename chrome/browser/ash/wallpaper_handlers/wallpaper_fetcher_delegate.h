@@ -8,10 +8,16 @@
 #include <memory>
 #include <string>
 
+#include "chrome/browser/profiles/profile.h"
+
 namespace wallpaper_handlers {
 
 class BackdropCollectionInfoFetcher;
 class BackdropImageInfoFetcher;
+class GooglePhotosAlbumsFetcher;
+class GooglePhotosSharedAlbumsFetcher;
+class GooglePhotosEnabledFetcher;
+class GooglePhotosPhotosFetcher;
 
 // Delegate class for creating backdrop fetchers. Abstract class to allow
 // mocking out in test.
@@ -24,6 +30,18 @@ class WallpaperFetcherDelegate {
 
   virtual std::unique_ptr<BackdropImageInfoFetcher>
   CreateBackdropImageInfoFetcher(const std::string& collection_id) const = 0;
+
+  virtual std::unique_ptr<GooglePhotosAlbumsFetcher>
+  CreateGooglePhotosAlbumsFetcher(Profile* profile) const = 0;
+
+  virtual std::unique_ptr<GooglePhotosSharedAlbumsFetcher>
+  CreateGooglePhotosSharedAlbumsFetcher(Profile* profile) const = 0;
+
+  virtual std::unique_ptr<GooglePhotosEnabledFetcher>
+  CreateGooglePhotosEnabledFetcher(Profile* profile) const = 0;
+
+  virtual std::unique_ptr<GooglePhotosPhotosFetcher>
+  CreateGooglePhotosPhotosFetcher(Profile* profile) const = 0;
 };
 
 class WallpaperFetcherDelegateImpl : public WallpaperFetcherDelegate {
@@ -42,6 +60,18 @@ class WallpaperFetcherDelegateImpl : public WallpaperFetcherDelegate {
 
   std::unique_ptr<BackdropImageInfoFetcher> CreateBackdropImageInfoFetcher(
       const std::string& collection_id) const override;
+
+  std::unique_ptr<GooglePhotosAlbumsFetcher> CreateGooglePhotosAlbumsFetcher(
+      Profile* profile) const override;
+
+  std::unique_ptr<GooglePhotosSharedAlbumsFetcher>
+  CreateGooglePhotosSharedAlbumsFetcher(Profile* profile) const override;
+
+  std::unique_ptr<GooglePhotosEnabledFetcher> CreateGooglePhotosEnabledFetcher(
+      Profile* profile) const override;
+
+  std::unique_ptr<GooglePhotosPhotosFetcher> CreateGooglePhotosPhotosFetcher(
+      Profile* profile) const override;
 };
 
 }  // namespace wallpaper_handlers

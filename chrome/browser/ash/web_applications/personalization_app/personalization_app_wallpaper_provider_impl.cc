@@ -257,8 +257,7 @@ void PersonalizationAppWallpaperProviderImpl::FetchGooglePhotosAlbums(
 
   if (!google_photos_albums_fetcher_) {
     google_photos_albums_fetcher_ =
-        std::make_unique<wallpaper_handlers::GooglePhotosAlbumsFetcher>(
-            profile_);
+        wallpaper_fetcher_delegate_->CreateGooglePhotosAlbumsFetcher(profile_);
   }
   google_photos_albums_fetcher_->AddRequestAndStartIfNecessary(
       resume_token, std::move(callback));
@@ -276,7 +275,7 @@ void PersonalizationAppWallpaperProviderImpl::FetchGooglePhotosSharedAlbums(
 
   if (!google_photos_shared_albums_fetcher_) {
     google_photos_shared_albums_fetcher_ =
-        std::make_unique<wallpaper_handlers::GooglePhotosSharedAlbumsFetcher>(
+        wallpaper_fetcher_delegate_->CreateGooglePhotosSharedAlbumsFetcher(
             profile_);
   }
   google_photos_shared_albums_fetcher_->AddRequestAndStartIfNecessary(
@@ -296,8 +295,7 @@ void PersonalizationAppWallpaperProviderImpl::FetchGooglePhotosEnabled(
 
   if (!google_photos_enabled_fetcher_) {
     google_photos_enabled_fetcher_ =
-        std::make_unique<wallpaper_handlers::GooglePhotosEnabledFetcher>(
-            profile_);
+        wallpaper_fetcher_delegate_->CreateGooglePhotosEnabledFetcher(profile_);
   }
   // base::Unretained is safe to use because |this| outlives
   // |google_photos_enabled_fetcher_|.
@@ -323,8 +321,7 @@ void PersonalizationAppWallpaperProviderImpl::FetchGooglePhotosPhotos(
 
   if (!google_photos_photos_fetcher_) {
     google_photos_photos_fetcher_ =
-        std::make_unique<wallpaper_handlers::GooglePhotosPhotosFetcher>(
-            profile_);
+        wallpaper_fetcher_delegate_->CreateGooglePhotosPhotosFetcher(profile_);
   }
   google_photos_photos_fetcher_->AddRequestAndStartIfNecessary(
       item_id, album_id, resume_token, /*shuffle=*/false,

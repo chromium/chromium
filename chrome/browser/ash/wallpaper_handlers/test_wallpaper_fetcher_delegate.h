@@ -30,6 +30,14 @@ class TestWallpaperFetcherDelegate : public WallpaperFetcherDelegate {
   CreateBackdropCollectionInfoFetcher() const override;
   std::unique_ptr<BackdropImageInfoFetcher> CreateBackdropImageInfoFetcher(
       const std::string& collection_id) const override;
+  std::unique_ptr<GooglePhotosAlbumsFetcher> CreateGooglePhotosAlbumsFetcher(
+      Profile* profile) const override;
+  std::unique_ptr<GooglePhotosSharedAlbumsFetcher>
+  CreateGooglePhotosSharedAlbumsFetcher(Profile* profile) const override;
+  std::unique_ptr<GooglePhotosEnabledFetcher> CreateGooglePhotosEnabledFetcher(
+      Profile* profile) const override;
+  std::unique_ptr<GooglePhotosPhotosFetcher> CreateGooglePhotosPhotosFetcher(
+      Profile* profile) const override;
 };
 
 }  // namespace wallpaper_handlers
