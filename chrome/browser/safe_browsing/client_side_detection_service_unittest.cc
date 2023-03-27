@@ -112,16 +112,20 @@ class ClientSideDetectionServiceTest
       : profile_manager_(TestingBrowserProcess::GetGlobal()) {
     EXPECT_TRUE(profile_manager_.SetUp());
     profile_ = profile_manager_.CreateTestingProfile("test-user");
-    std::vector<base::test::FeatureRef> enabled_features = {
-        kSafeBrowsingRemoveCookiesInAuthRequests};
+    std::vector<base::test::FeatureRefAndParams> enabled_features = {
+        {kSafeBrowsingRemoveCookiesInAuthRequests, {}}};
     if (ShouldEnableCacao()) {
-      enabled_features.push_back(kClientSideDetectionModelOptimizationGuide);
+      enabled_features.push_back(
+          {kClientSideDetectionModelOptimizationGuide, {}});
     }
     if (ShouldEnableESBDailyPhishingLimit()) {
-      enabled_features.push_back(kSafeBrowsingDailyPhishingReportsLimit);
+      base::FieldTrialParams params;
+      params["kMaxReportsPerIntervalESB"] = "10";
+      enabled_features.push_back(
+          {kSafeBrowsingDailyPhishingReportsLimit, params});
     }
 
-    feature_list_.InitWithFeatures(enabled_features, {});
+    feature_list_.InitWithFeaturesAndParameters(enabled_features, {});
   }
   bool ShouldEnableCacao() { return get<0>(GetParam()); }
 

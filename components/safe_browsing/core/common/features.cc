@@ -272,7 +272,7 @@ BASE_FEATURE(kSafeBrowsingDailyPhishingReportsLimit,
 
 constexpr base::FeatureParam<int> kSafeBrowsingDailyPhishingReportsLimitESB{
     &kSafeBrowsingDailyPhishingReportsLimit,
-    /*name=*/"kMaxReportsPerIntervalESB", /*default_value=*/20};
+    /*name=*/"kMaxReportsPerIntervalESB", /*default_value=*/3};
 
 namespace {
 // List of Safe Browsing features. Boolean value for each list member should
