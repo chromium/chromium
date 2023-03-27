@@ -12,7 +12,7 @@
 It's neither "the" chrome compositor (of course we have many), nor a compositor at all any more.
 danakj suggests "content collator" as an alternative name.
 
-cc is embedded via ui/compositor or Android code in the browser process, as well as ui/compositor in mus utility processes.
+cc is embedded via ui/compositor or Android code in the browser process.
 It is also embedded in the renderer process via Blink / RenderWidget.
 cc is responsible for taking painted inputs from its embedder, figuring out where and if they appear on screen, rasterizing and decoding and animating images from the painted input into gpu textures, and finally forwarding those textures on to the display compositor in the form of a compositor frame.
 cc also handles input forwarded from the browser process to handle pinch and scroll gestures responsively without involving Blink.
@@ -235,18 +235,16 @@ Each PictureLayer provides a set of Tiles to rasterize, where each Tile is a sub
 
 The TileManager finds all the tiles that are required to draw on the active tree, all the tiles that are required to activate on the pending tree, less important tiles that are close to the viewport but are not visible, and also offscreen images to decode.
 
-There are currently three modes of raster in cc:
+There are currently two modes of raster in cc:
 
 * software raster: generate software bitmaps in the raster worker
 
-* gpu raster: generate gpu textures by sending gl commands over the command buffer
+* gpu raster: generate gpu textures by sending paint commands over the command buffer
 
-* oop raster: generate gpu textures by sending paint commands over the command buffer
-
-The TileManager is instructed to do software vs hardware raster based on whether the [LayerTreeFrameSink](https://docs.google.com/document/d/1tFdX9StXn9do31hddfLuZd0KJ_dBFgtYmxgvGKxd0rY/edit) that it uses to submit compositor frames on has a context provider or not.
-It is always in one mode or the other.
+The TileManager always uses software raster for software compositing. For GPU compositing the
+decisions is based on RasterContextProvider capabilities. It is always in one mode or the other.
+See [Raster Buffer Providers](#raster-buffer-providers) for further details.
 Switching modes destroys all resources.
-GPU raster is also currently deprecated and will be replaced by OOP (out-of-process) raster in all cases eventually.
 A common reason for switching modes is that the gpu process has crashed too much and all of Chrome switches from gpu to software raster and compositing modes.
 
 Once the TileManager decides the set of work to do, it generates a TaskGraph with dependencies and schedules that work across worker threads.
@@ -273,13 +271,13 @@ The compositing mode affects the choice of RasterBufferProvider that cc provides
 
 * BitmapRasterBufferProvider: rasters software bitmaps for software compositing
 
-* OneCopyRasterBufferProvider: rasters software bitmaps for gpu compositing into shared memory, which are then uploaded in the gpu process
+* OneCopyRasterBufferProvider: rasters software bitmaps for gpu compositing into shared memory, which are then uploaded to gpu memory in the gpu process
 
-* ZeroCopyRasterBufferProvider: rasters software bitmaps for gpu compositing directly into a GpuMemoryBuffer (e.g. IOSurface), which can immediately be used by the display compositor
+* ZeroCopyRasterBufferProvider: rasters software bitmaps for gpu compositing directly into a GpuMemoryBuffer (e.g. IOSurface), which is memory that can be mapped by CPU and used by the GPU
 
-* GpuRasterBufferProvider: rasters gpu textures for gpu compositing over a command buffer via gl (for gpu raster) or via paint commands (for oop raster)
+* GpuRasterBufferProvider: rasters gpu textures for gpu compositing over a command buffer via paint commands (for gpu raster)
 
-Note, due to locks on the context, gpu and oop raster are limited to one worker thread at a time, although image decoding can proceed in parallel on other threads.
+Note, due to locks on the context, gpu raster is limited to one worker thread at a time, although image decoding can proceed in parallel on other threads.
 This single thread limitation is solved with a lock and not with thread affinity.
 
 ## Animation
@@ -297,7 +295,7 @@ They are extremely similar to Skia data structures, but are mutable, introspecta
 They also handle security concerns (e.g. [TOCTOU](https://en.wikipedia.org/wiki/Time_of_check_to_time_of_use) issues serializing out of shared memory that a malicious renderer could be manipulating as it is read by the gpu process) that Skia does not want to think about.
 
 PaintRecord (aka PaintOpBuffer) is the SkPicture equivalent that stores a number of PaintOps.
-A PaintRecord can either be rasterized by a raster buffer provider into a bitmap or a gpu texture (when using software or gpu raster), or it can be serialized (when using oop raster).
+A PaintRecord can either be rasterized by a raster buffer provider into a bitmap (when using software raster) or it can be serialized (when using gpu raster).
 
 PaintCanvas is the abstract class to record paint commands.
 It can be backed by either a SkiaPaintCanvas (to go from paint ops to SkCanvas) or a PaintRecordCanvas (to turn paint ops into a recorded PaintRecord).
