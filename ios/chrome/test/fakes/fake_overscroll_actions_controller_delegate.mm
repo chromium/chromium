@@ -18,9 +18,16 @@
   return self;
 }
 
-- (void)overscrollActionsController:(OverscrollActionsController*)controller
-                   didTriggerAction:(OverscrollAction)action {
-  _selectedAction = action;
+- (void)overscrollActionNewTab:(OverscrollActionsController*)controller {
+  _selectedAction = OverscrollAction::NEW_TAB;
+}
+
+- (void)overscrollActionCloseTab:(OverscrollActionsController*)controller {
+  _selectedAction = OverscrollAction::CLOSE_TAB;
+}
+
+- (void)overscrollActionRefresh:(OverscrollActionsController*)controller {
+  _selectedAction = OverscrollAction::REFRESH;
 }
 
 - (BOOL)shouldAllowOverscrollActionsForOverscrollActionsController:

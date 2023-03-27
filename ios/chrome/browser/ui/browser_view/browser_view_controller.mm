@@ -2613,35 +2613,23 @@ NSString* const kBrowserViewControllerSnackbarCategory =
 }
 
 #pragma mark - OverscrollActionsControllerDelegate methods.
-// TODO(crbug.com/1272486) : Separate action handling for overscroll from UI
-// management.
 
-- (void)overscrollActionsController:(OverscrollActionsController*)controller
-                   didTriggerAction:(OverscrollAction)action {
-  switch (action) {
-    case OverscrollAction::NEW_TAB:
-      base::RecordAction(base::UserMetricsAction("MobilePullGestureNewTab"));
-      [self.applicationCommandsHandler
-          openURLInNewTab:[OpenNewTabCommand
-                              commandWithIncognito:_isOffTheRecord]];
-      break;
-    case OverscrollAction::CLOSE_TAB:
-      base::RecordAction(base::UserMetricsAction("MobilePullGestureCloseTab"));
-      [self.browserCoordinatorCommandsHandler closeCurrentTab];
-      break;
-    case OverscrollAction::REFRESH:
-      base::RecordAction(base::UserMetricsAction("MobilePullGestureReload"));
-      // Instruct the SnapshotTabHelper to ignore the next load event.
-      // Attempting to snapshot while the overscroll "bounce back" animation is
-      // occurring will cut the animation short.
-      DCHECK(self.currentWebState);
-      SnapshotTabHelper::FromWebState(self.currentWebState)->IgnoreNextLoad();
-      _webNavigationBrowserAgent->Reload();
-      break;
-    case OverscrollAction::NONE:
-      NOTREACHED();
-      break;
-  }
+- (void)overscrollActionNewTab:(OverscrollActionsController*)controller {
+  [self.applicationCommandsHandler
+      openURLInNewTab:[OpenNewTabCommand commandWithIncognito:_isOffTheRecord]];
+}
+
+- (void)overscrollActionCloseTab:(OverscrollActionsController*)controller {
+  [self.browserCoordinatorCommandsHandler closeCurrentTab];
+}
+
+- (void)overscrollActionRefresh:(OverscrollActionsController*)controller {
+  // Instruct the SnapshotTabHelper to ignore the next load event.
+  // Attempting to snapshot while the overscroll "bounce back" animation is
+  // occurring will cut the animation short.
+  DCHECK(self.currentWebState);
+  SnapshotTabHelper::FromWebState(self.currentWebState)->IgnoreNextLoad();
+  _webNavigationBrowserAgent->Reload();
 }
 
 - (BOOL)shouldAllowOverscrollActionsForOverscrollActionsController:

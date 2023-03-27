@@ -1218,29 +1218,21 @@ bool IsNTPActiveForWebState(web::WebState* web_state) {
 
 #pragma mark - OverscrollActionsControllerDelegate
 
-- (void)overscrollActionsController:(OverscrollActionsController*)controller
-                   didTriggerAction:(OverscrollAction)action {
+- (void)overscrollActionNewTab:(OverscrollActionsController*)controller {
   id<ApplicationCommands> applicationCommandsHandler = HandlerForProtocol(
       self.browser->GetCommandDispatcher(), ApplicationCommands);
+  [applicationCommandsHandler openURLInNewTab:[OpenNewTabCommand command]];
+}
+
+- (void)overscrollActionCloseTab:(OverscrollActionsController*)controller {
   id<BrowserCoordinatorCommands> browserCoordinatorCommandsHandler =
       HandlerForProtocol(self.browser->GetCommandDispatcher(),
                          BrowserCoordinatorCommands);
+  [browserCoordinatorCommandsHandler closeCurrentTab];
+}
 
-  switch (action) {
-    case OverscrollAction::NEW_TAB: {
-      [applicationCommandsHandler openURLInNewTab:[OpenNewTabCommand command]];
-    } break;
-    case OverscrollAction::CLOSE_TAB: {
-      [browserCoordinatorCommandsHandler closeCurrentTab];
-      base::RecordAction(base::UserMetricsAction("OverscrollActionCloseTab"));
-    } break;
-    case OverscrollAction::REFRESH:
-      [self reload];
-      break;
-    case OverscrollAction::NONE:
-      NOTREACHED();
-      break;
-  }
+- (void)overscrollActionRefresh:(OverscrollActionsController*)controller {
+  [self reload];
 }
 
 - (BOOL)shouldAllowOverscrollActionsForOverscrollActionsController:

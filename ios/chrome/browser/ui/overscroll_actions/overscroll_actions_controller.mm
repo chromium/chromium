@@ -11,6 +11,9 @@
 
 #import "base/check_op.h"
 #import "base/metrics/histogram_macros.h"
+#import "base/metrics/user_metrics.h"
+#import "base/metrics/user_metrics_action.h"
+#import "base/notreached.h"
 #import "base/time/time.h"
 #import "ios/chrome/browser/shared/ui/util/rtl_geometry.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
@@ -579,6 +582,28 @@ NSString* const kOverscrollActionsDidEnd = @"OverscrollActionsDidStop";
 
 #pragma mark - Private
 
+- (void)handleAction:(OverscrollAction)action {
+  // The action index holds the current triggered action which are numbered left
+  // to right.
+  switch (action) {
+    case OverscrollAction::NEW_TAB:
+      base::RecordAction(base::UserMetricsAction("MobilePullGestureNewTab"));
+      [self.delegate overscrollActionNewTab:self];
+      break;
+    case OverscrollAction::CLOSE_TAB:
+      base::RecordAction(base::UserMetricsAction("MobilePullGestureCloseTab"));
+      [self.delegate overscrollActionCloseTab:self];
+      break;
+    case OverscrollAction::REFRESH:
+      base::RecordAction(base::UserMetricsAction("MobilePullGestureReload"));
+      [self.delegate overscrollActionRefresh:self];
+      break;
+    case OverscrollAction::NONE:
+      NOTREACHED();
+      break;
+  }
+}
+
 - (BOOL)viewportAdjustsContentInset {
   if (_webViewProxy.shouldUseViewContentInset)
     return YES;
@@ -749,8 +774,7 @@ NSString* const kOverscrollActionsDidEnd = @"OverscrollActionsDidStop";
         dispatch_async(dispatch_get_main_queue(), ^{
           [self recordMetricForTriggeredAction:selectedAction];
           TriggerHapticFeedbackForImpact(UIImpactFeedbackStyleMedium);
-          [self.delegate overscrollActionsController:self
-                                    didTriggerAction:selectedAction];
+          [self handleAction:selectedAction];
         });
       }
     }
@@ -1008,9 +1032,7 @@ NSString* const kOverscrollActionsDidEnd = @"OverscrollActionsDidStop";
   [self startBounceWithInitialVelocity:CGPointZero];
 
   TriggerHapticFeedbackForImpact(UIImpactFeedbackStyleMedium);
-  [self.delegate
-      overscrollActionsController:self
-                 didTriggerAction:self.overscrollActionView.selectedAction];
+  [self handleAction:self.overscrollActionView.selectedAction];
 }
 
 - (void)overscrollActionsView:(OverscrollActionsView*)view
