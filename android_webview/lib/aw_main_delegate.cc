@@ -70,7 +70,6 @@
 #include "services/network/public/cpp/features.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
 #include "third_party/blink/public/common/features.h"
-#include "third_party/blink/public/common/switches.h"
 #include "tools/v8_context_snapshot/buildflags.h"
 #include "ui/base/ui_base_paths.h"
 #include "ui/base/ui_base_switches.h"
@@ -314,13 +313,6 @@ absl::optional<int> AwMainDelegate::BasicStartupComplete() {
 
     // FedCM is not yet supported on WebView.
     features.DisableIfNotSet(::features::kFedCm);
-  }
-
-  // Enable Event.path on Beta and Stable. The feature has been deprecated and
-  // removed on other platforms, but needs more time on WebView.
-  // See crbug.com/1277431 for more details.
-  if (version_info::android::GetChannel() >= version_info::Channel::BETA) {
-    cl->AppendSwitch(blink::switches::kEventPathEnabledByDefault);
   }
 
   android_webview::RegisterPathProvider();
