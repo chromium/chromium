@@ -343,7 +343,7 @@ wheel: <
 >
 wheel: <
   name: "infra/python/wheels/aioquic/${vpython_platform}"
-  version: "version:0.9.15"
+  version: "version:0.9.20.chromium.1"
 >
 wheel: <
   name: "infra/python/wheels/pylsqpack/${vpython_platform}"
@@ -573,7 +573,7 @@ wheel: <
 >
 wheel: <
   name: "infra/python/wheels/pyopenssl-py2_py3"
-  version: "version:19.0.0"
+  version: "version:20.0.0"
 >
 
 # Used by //tools/md_browser to render Markdown.
