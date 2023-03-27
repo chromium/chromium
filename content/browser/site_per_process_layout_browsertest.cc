@@ -441,21 +441,23 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
 
   // Wait until dppx becomes 2 if the frame's dpr hasn't beeen updated
   // to 2 yet.
-  const char kScript[] =
-      "function sendDpr() "
-      "{window.domAutomationController.send(window.devicePixelRatio);}; "
-      "if (window.devicePixelRatio == 2) sendDpr();"
-      "window.matchMedia('screen and "
-      "(min-resolution: 2dppx)').addListener(function(e) { if (e.matches) { "
-      "sendDpr();}})";
+  const char kScript[] = R"(
+      new Promise(resolve => {
+        if (window.devicePixelRatio == 2)
+          resolve(window.devicePixelRatio);
+        window.matchMedia('screen and (min-resolution: 2dppx)')
+            .addListener(function(e) {
+          if (e.matches) {
+            resolve(window.devicePixelRatio);
+          }
+        });
+      });
+      )";
   // Make sure that both main frame and iframe are updated to 2x.
-  EXPECT_EQ(expected_dip_scale,
-            EvalJs(child, kScript, content::EXECUTE_SCRIPT_USE_MANUAL_REPLY)
-                .ExtractDouble());
+  EXPECT_EQ(expected_dip_scale, EvalJs(child, kScript).ExtractDouble());
 
-  EXPECT_EQ(expected_dip_scale, EvalJs(web_contents(), kScript,
-                                       content::EXECUTE_SCRIPT_USE_MANUAL_REPLY)
-                                    .ExtractDouble());
+  EXPECT_EQ(expected_dip_scale,
+            EvalJs(web_contents(), kScript).ExtractDouble());
 }
 
 #endif
@@ -2275,10 +2277,8 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
   FrameTreeNode* root = web_contents()->GetPrimaryFrameTree().root();
 
   // Add an onmessage handler to the subframe to send back its width.
-  EXPECT_TRUE(ExecJs(root->child_at(0), R"(
-      window.addEventListener('message', function(event) {
-        domAutomationController.send(document.body.clientWidth);
-      });)"));
+  EXPECT_TRUE(ExecJs(root->child_at(0),
+                     WaitForMessageScript("document.body.clientWidth")));
 
   // Drop the visual properties ACKs from the child renderer.  To do this,
   // unsubscribe the child's RenderWidgetHost from its
@@ -2294,14 +2294,14 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
 
   // Now, resize the subframe twice from the main frame and send it a
   // postMessage. The postMessage handler should see the second updated size.
-  EXPECT_EQ(700, EvalJs(root, R"(
+  EXPECT_TRUE(ExecJs(root, R"(
       var f = document.querySelector('iframe');
       f.width = 500;
       f.offsetTop; // force layout; this sends a resize IPC for width of 500.
       f.width = 700;
       f.offsetTop; // force layout; this sends a resize IPC for width of 700.
-      f.contentWindow.postMessage('foo', '*');)",
-                        EXECUTE_SCRIPT_USE_MANUAL_REPLY));
+      f.contentWindow.postMessage('foo', '*');)"));
+  EXPECT_EQ(700, EvalJs(root->child_at(0), "onMessagePromise"));
 }
 
 // This test verifies that when scrolling an OOPIF in a pinched-zoomed page,

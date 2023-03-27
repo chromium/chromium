@@ -30,6 +30,8 @@ class SitePerProcessBrowserTestBase : public ContentBrowserTest {
  protected:
   std::string DepictFrameTree(FrameTreeNode* node);
 
+  std::string WaitForMessageScript(const std::string& result_expression);
+
   void SetUpCommandLine(base::CommandLine* command_line) override;
   void SetUpOnMainThread() override;
 

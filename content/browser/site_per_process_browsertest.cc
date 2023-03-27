@@ -460,6 +460,17 @@ std::string SitePerProcessBrowserTestBase::DepictFrameTree(
   return visualizer_.DepictFrameTree(node);
 }
 
+std::string SitePerProcessBrowserTestBase::WaitForMessageScript(
+    const std::string& result_expression) {
+  return base::StringPrintf(
+      "var onMessagePromise = new Promise(resolve => {"
+      "  window.addEventListener('message', function(event) {"
+      "    resolve(%s);"
+      "  });"
+      "});",
+      result_expression.c_str());
+}
+
 void SitePerProcessBrowserTestBase::SetUpCommandLine(
     base::CommandLine* command_line) {
   ContentBrowserTest::SetUpCommandLine(command_line);
@@ -8370,26 +8381,29 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
   // Make sure the subframe can communicate to both the root remote frame
   // (where the postMessage should go to the current RenderFrameHost rather
   // than the pending one) and its sibling remote frame in the a.com process.
-  EXPECT_TRUE(ExecJs(child->current_frame_host(),
-                     "window.addEventListener('message', function(event) {\n"
-                     "  domAutomationController.send(event.data);\n"
-                     "});"));
+  EXPECT_TRUE(
+      ExecJs(child->current_frame_host(), WaitForMessageScript("event.data")));
+  EXPECT_TRUE(ExecJs(child, "parent.postMessage('root-ping', '*')"));
   EXPECT_EQ("root-ping-reply",
-            EvalJs(child, "parent.postMessage('root-ping', '*')",
-                   EXECUTE_SCRIPT_USE_MANUAL_REPLY));
+            EvalJs(child->current_frame_host(), "onMessagePromise"));
 
+  EXPECT_TRUE(
+      ExecJs(child->current_frame_host(), WaitForMessageScript("event.data")));
+  EXPECT_TRUE(
+      ExecJs(child, "parent.frames[1].postMessage('sibling-ping', '*')"));
   EXPECT_EQ("sibling-ping-subframe-reply",
-            EvalJs(child, "parent.frames[1].postMessage('sibling-ping', '*')",
-                   EXECUTE_SCRIPT_USE_MANUAL_REPLY));
+            EvalJs(child->current_frame_host(), "onMessagePromise"));
 
   // Cancel the pending main frame navigation, and verify that the subframe can
   // still communicate with the (old) main frame.
   root->navigator().CancelNavigation(root, NavigationDiscardReason::kCancelled);
   EXPECT_FALSE(root->render_manager()->speculative_frame_host());
 
+  EXPECT_TRUE(
+      ExecJs(child->current_frame_host(), WaitForMessageScript("event.data")));
+  EXPECT_TRUE(ExecJs(child, "parent.postMessage('root-ping', '*')"));
   EXPECT_EQ("root-ping-reply",
-            EvalJs(child, "parent.postMessage('root-ping', '*')",
-                   EXECUTE_SCRIPT_USE_MANUAL_REPLY));
+            EvalJs(child->current_frame_host(), "onMessagePromise"));
 }
 
 // Similar to TwoCrossSitePendingNavigations* tests above, but checks the case
@@ -8438,25 +8452,25 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
   // Make sure the second tab can communicate to its (old) opener remote frame.
   // The postMessage should go to the current RenderFrameHost rather than the
   // pending one in the first tab's main frame.
-  EXPECT_TRUE(ExecJs(popup_shell->web_contents(),
-                     "window.addEventListener('message', function(event) {\n"
-                     "  domAutomationController.send(event.data);\n"
-                     "});"));
+  EXPECT_TRUE(
+      ExecJs(popup_shell->web_contents(), WaitForMessageScript("event.data")));
 
+  EXPECT_TRUE(ExecJs(popup_shell->web_contents(),
+                     "opener.postMessage('opener-ping', '*');"));
   EXPECT_EQ("opener-ping-reply",
-            EvalJs(popup_shell->web_contents(),
-                   "opener.postMessage('opener-ping', '*');",
-                   EXECUTE_SCRIPT_USE_MANUAL_REPLY));
+            EvalJs(popup_shell->web_contents(), "onMessagePromise"));
 
   // Cancel the pending main frame navigation, and verify that the subframe can
   // still communicate with the (old) main frame.
   root->navigator().CancelNavigation(root, NavigationDiscardReason::kCancelled);
   EXPECT_FALSE(root->render_manager()->speculative_frame_host());
 
+  EXPECT_TRUE(
+      ExecJs(popup_shell->web_contents(), WaitForMessageScript("event.data")));
+  EXPECT_TRUE(ExecJs(popup_shell->web_contents(),
+                     "opener.postMessage('opener-ping', '*')"));
   EXPECT_EQ("opener-ping-reply",
-            EvalJs(popup_shell->web_contents(),
-                   "opener.postMessage('opener-ping', '*')",
-                   EXECUTE_SCRIPT_USE_MANUAL_REPLY));
+            EvalJs(popup_shell->web_contents(), "onMessagePromise"));
 }
 
 IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
@@ -10714,20 +10728,18 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
 
   // Add an onmessage handler to the subframe to send back a bool of whether
   // the subframe has focus.
-  EXPECT_TRUE(ExecJs(root->child_at(0),
-                     "window.addEventListener('message', function(event) {\n"
-                     "  domAutomationController.send(document.hasFocus());\n"
-                     "});"));
+  EXPECT_TRUE(
+      ExecJs(root->child_at(0), WaitForMessageScript("document.hasFocus()")));
 
   // Now, send a postMessage from main frame to subframe, and then focus the
   // subframe in the same script.  postMessage should be scheduled after the
   // focus() call, so the IPC to focus the subframe should arrive before the
   // postMessage IPC, and the subframe should already know that it's focused in
   // the onmessage handler.
-  EXPECT_EQ(true, EvalJs(root,
+  EXPECT_EQ(true, ExecJs(root,
                          "frames[0].postMessage('','*');\n"
-                         "frames[0].focus();\n",
-                         EXECUTE_SCRIPT_USE_MANUAL_REPLY));
+                         "frames[0].focus();\n"));
+  EXPECT_EQ(true, EvalJs(root->child_at(0), "onMessagePromise"));
 }
 
 // Ensure that if a cross-process postMessage is scheduled, and then the target
