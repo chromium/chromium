@@ -52,6 +52,12 @@
         font_size: 11,
         font_weight: 400,
         line_height: 16,
+      },
+      button_2: {
+        font_family: '$font_family_google_sans',
+        font_size: 13,
+        font_weight: 500,
+        line_height: 20,
       }
     }
   },

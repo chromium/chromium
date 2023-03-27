@@ -131,6 +131,9 @@ export class ZoneCustomizationElement extends WithPersonalizationStore {
       case 'right':
         selector.selectNext();
         break;
+      case 'enter':
+        this.zoneSelected_ = Number(this.ironSelectedZone_.id);
+        break;
       default:
         return;
     }
@@ -146,7 +149,7 @@ export class ZoneCustomizationElement extends WithPersonalizationStore {
     e.detail.keyboardEvent.preventDefault();
   }
 
-  private onClickZoneButton_(event: Event) {
+  private onClickZoneTab_(event: Event) {
     if (!isSelectionEvent(event)) {
       return;
     }
@@ -185,7 +188,9 @@ export class ZoneCustomizationElement extends WithPersonalizationStore {
   }
 
   private getZoneTabIndex_(zoneIdx: number): string {
-    return zoneIdx === 0 ? '0' : '1';
+    // Set only the first zone to be tabbable (tabindex="0") and others are not
+    // tabbable (tabindex="-1") by default.
+    return zoneIdx === 0 ? '0' : '-1';
   }
 
   private getZoneAriaChecked_(zoneIdx: number, zoneSelected: number) {

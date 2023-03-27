@@ -284,10 +284,9 @@ suite('KeyboardBacklightTest', function() {
         keyboardBacklightElement.shadowRoot!.querySelector(
             'zone-customization');
     assertTrue(!!zoneCustomizationElement);
-    const zoneButtons =
-        zoneCustomizationElement.shadowRoot!.querySelectorAll('.zone-button');
+    const zoneTabs =
+        zoneCustomizationElement.shadowRoot!.querySelectorAll('.zone-tab');
     assertEquals(
-        5, zoneButtons!.length,
-        '5 zones should display in customization dialog');
+        5, zoneTabs!.length, '5 zones should display in customization dialog');
   });
 });

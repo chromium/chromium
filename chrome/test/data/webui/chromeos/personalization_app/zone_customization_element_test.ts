@@ -68,11 +68,10 @@ suite('ZoneCustomizationElementTest', function() {
             zoneCustomizationElement!.shadowRoot!.getElementById(
                 'zoneSelector');
         assertTrue(!!zoneSelector, 'zone selector should display');
-        const zoneButtons =
-            zoneCustomizationElement!.shadowRoot!.querySelectorAll(
-                '.zone-button');
+        const zoneTabs =
+            zoneCustomizationElement!.shadowRoot!.querySelectorAll('.zone-tab');
         assertEquals(
-            5, zoneButtons!.length,
+            5, zoneTabs!.length,
             '5 zones should display in customization dialog');
         const colorSelectorElement =
             zoneCustomizationElement!.shadowRoot!.querySelector(
@@ -100,11 +99,10 @@ suite('ZoneCustomizationElementTest', function() {
             zoneCustomizationElement!.shadowRoot!.getElementById(
                 'zoneSelector');
         assertTrue(!!zoneSelector, 'zone selector should display');
-        const zoneButtons =
-            zoneCustomizationElement!.shadowRoot!.querySelectorAll(
-                '.zone-button');
+        const zoneTabs =
+            zoneCustomizationElement!.shadowRoot!.querySelectorAll('.zone-tab');
         assertEquals(
-            4, zoneButtons!.length,
+            4, zoneTabs!.length,
             '4 zones should display in customization dialog');
         const colorIcons =
             zoneCustomizationElement!.shadowRoot!.querySelectorAll(
@@ -149,13 +147,12 @@ suite('ZoneCustomizationElementTest', function() {
     const zoneSelector =
         zoneCustomizationElement!.shadowRoot!.getElementById('zoneSelector');
     assertTrue(!!zoneSelector, 'zone selector should display');
-    const zoneButtons =
-        zoneCustomizationElement!.shadowRoot!.querySelectorAll('.zone-button');
+    const zoneTabs =
+        zoneCustomizationElement!.shadowRoot!.querySelectorAll('.zone-tab');
     assertEquals(
-        4, zoneButtons!.length,
-        '4 zones should display in customization dialog');
+        4, zoneTabs!.length, '4 zones should display in customization dialog');
     // Zone 2 has zone color as red, expect red color button to be highlighted.
-    (zoneButtons[1] as CrButtonElement).click();
+    (zoneTabs[1] as CrButtonElement).click();
     const colorSelectorElement =
         zoneCustomizationElement!.shadowRoot!.querySelector('color-selector');
     assertTrue(!!colorSelectorElement, 'color-selector should display.');
@@ -166,7 +163,7 @@ suite('ZoneCustomizationElementTest', function() {
 
     // Zone 4 has zone color as yellow, expect yellow color button to be
     // highlighted.
-    (zoneButtons[3] as CrButtonElement).click();
+    (zoneTabs[3] as HTMLDivElement).click();
     await waitAfterNextRender(zoneCustomizationElement!);
     verifyColorContainerAriaChecked('yellowColor', colorContainers);
   });
@@ -179,14 +176,13 @@ suite('ZoneCustomizationElementTest', function() {
     const zoneSelector =
         zoneCustomizationElement!.shadowRoot!.getElementById('zoneSelector');
     assertTrue(!!zoneSelector, 'zone selector should display');
-    const zoneButtons =
-        zoneCustomizationElement!.shadowRoot!.querySelectorAll('.zone-button');
+    const zoneTabs =
+        zoneCustomizationElement!.shadowRoot!.querySelectorAll('.zone-tab');
     assertEquals(
-        4, zoneButtons!.length,
-        '4 zones should display in customization dialog');
+        4, zoneTabs!.length, '4 zones should display in customization dialog');
 
     // Click on zone 2, expect red color icon to be highlighted.
-    (zoneButtons[1] as CrButtonElement).click();
+    (zoneTabs[1] as HTMLDivElement).click();
     const colorSelectorElement =
         zoneCustomizationElement!.shadowRoot!.querySelector('color-selector') as
         HTMLElement;
