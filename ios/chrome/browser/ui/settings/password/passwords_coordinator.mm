@@ -211,7 +211,8 @@ using password_manager::WarningType;
   DCHECK(!self.passwordCheckupCoordinator);
   self.passwordCheckupCoordinator = [[PasswordCheckupCoordinator alloc]
       initWithBaseNavigationController:self.baseNavigationController
-                               browser:self.browser];
+                               browser:self.browser
+                          reauthModule:self.reauthModule];
   self.passwordCheckupCoordinator.delegate = self;
   [self.passwordCheckupCoordinator start];
 }

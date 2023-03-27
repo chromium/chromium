@@ -26,6 +26,7 @@
 #endif
 
 using password_manager::InsecurePasswordCounts;
+using password_manager::WarningType;
 
 namespace {
 
@@ -414,8 +415,16 @@ void SetUpTrailingIconAndAccessoryType(
       static_cast<ItemType>([model itemTypeForIndexPath:indexPath]);
   switch (itemType) {
     case ItemTypeCompromisedPasswords:
+      [self.handler showPasswordIssuesWithWarningType:
+                        WarningType::kCompromisedPasswordsWarning];
+      break;
     case ItemTypeReusedPasswords:
+      [self.handler showPasswordIssuesWithWarningType:
+                        WarningType::kReusedPasswordsWarning];
+      break;
     case ItemTypeWeakPasswords:
+      [self.handler
+          showPasswordIssuesWithWarningType:WarningType::kWeakPasswordsWarning];
       break;
     case ItemTypePasswordCheckupTimestamp:
       break;

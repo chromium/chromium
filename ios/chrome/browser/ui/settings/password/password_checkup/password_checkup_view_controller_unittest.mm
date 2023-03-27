@@ -23,6 +23,7 @@
 #import "ios/chrome/browser/shared/ui/table_view/table_view_utils.h"
 #import "ios/chrome/browser/ui/icons/symbols.h"
 #import "ios/chrome/browser/ui/settings/cells/settings_check_item.h"
+#import "ios/chrome/browser/ui/settings/password/password_checkup/password_checkup_commands.h"
 #import "ios/chrome/browser/ui/settings/password/password_checkup/password_checkup_constants.h"
 #import "ios/chrome/browser/ui/settings/password/password_checkup/password_checkup_mediator+private.h"
 #import "ios/chrome/browser/ui/settings/password/password_checkup/password_checkup_mediator.h"
@@ -31,6 +32,8 @@
 #import "ios/chrome/grit/ios_strings.h"
 #import "ios/web/public/test/web_task_environment.h"
 #import "testing/gtest_mac.h"
+#import "third_party/ocmock/OCMock/OCMock.h"
+#import "third_party/ocmock/gtest_support.h"
 #import "ui/base/l10n/l10n_util.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
@@ -41,6 +44,7 @@ using password_manager::CredentialUIEntry;
 using password_manager::InsecureType;
 using password_manager::PasswordForm;
 using password_manager::TestPasswordStore;
+using password_manager::WarningType;
 
 // Test fixture for testing PasswordCheckupViewController class.
 class PasswordCheckupViewControllerTest : public ChromeTableViewControllerTest {
@@ -79,6 +83,9 @@ class PasswordCheckupViewControllerTest : public ChromeTableViewControllerTest {
                                              browser_state_.get())];
     view_controller.delegate = mediator_;
     mediator_.consumer = view_controller;
+
+    handler_ = OCMStrictProtocolMock(@protocol(PasswordCheckupCommands));
+    view_controller.handler = handler_;
 
     // Add a saved password since Password Checkup is not available when the
     // user doesn't have any saved passwords.
@@ -252,6 +259,13 @@ class PasswordCheckupViewControllerTest : public ChromeTableViewControllerTest {
         IDS_IOS_PASSWORD_CHECKUP_HOMEPAGE_NO_WEAK_PASSWORDS_SUBTITLE);
   }
 
+  // Simulates a tap on an item in the tableView.
+  void SimulateTap(int index, int section) {
+    [controller() tableView:controller().tableView
+        didSelectRowAtIndexPath:[NSIndexPath indexPathForItem:index
+                                                    inSection:section]];
+  }
+
   void RunUntilIdle() { task_environment_.RunUntilIdle(); }
 
   web::WebTaskEnvironment task_environment_;
@@ -259,6 +273,7 @@ class PasswordCheckupViewControllerTest : public ChromeTableViewControllerTest {
   std::unique_ptr<TestBrowser> browser_;
   PasswordCheckupMediator* mediator_;
   base::test::ScopedFeatureList feature_list;
+  id<PasswordCheckupCommands> handler_;
   // Strings for the insecure types section.
   NSString* compromised_text_;
   NSString* compromised_detail_text_;
@@ -546,4 +561,48 @@ TEST_F(PasswordCheckupViewControllerTest,
                                 /*is_enabled=*/true);
 
   [GetPasswordCheckupViewController() settingsWillBeDismissed];
+}
+
+// Verifies that tapping on the compromised passwords cell tells the handler to
+// show compromised issues.
+TEST_F(PasswordCheckupViewControllerTest,
+       TestTapCompromisedPasswordsNotifiesHandler) {
+  AddSavedInsecureForm(InsecureType::kLeaked);
+  ChangePasswordCheckupHomepageState(PasswordCheckupHomepageStateDone);
+
+  OCMExpect([handler_ showPasswordIssuesWithWarningType:
+                          WarningType::kCompromisedPasswordsWarning]);
+
+  SimulateTap(/*index=*/0, /*section=*/0);
+
+  EXPECT_OCMOCK_VERIFY((id)handler_);
+}
+
+// Verifies that tapping on the reused passwords cell tells the handler to show
+// reused issues.
+TEST_F(PasswordCheckupViewControllerTest,
+       TestTapReusedPasswordsNotifiesHandler) {
+  AddSavedInsecureForm(InsecureType::kReused);
+  ChangePasswordCheckupHomepageState(PasswordCheckupHomepageStateDone);
+
+  OCMExpect([handler_
+      showPasswordIssuesWithWarningType:WarningType::kReusedPasswordsWarning]);
+
+  SimulateTap(/*index=*/1, /*section=*/0);
+
+  EXPECT_OCMOCK_VERIFY((id)handler_);
+}
+
+// Verifies that tapping on the weak passwords cell tells the handler to
+// show weak issues.
+TEST_F(PasswordCheckupViewControllerTest, TestTapWeakPasswordsNotifiesHandler) {
+  AddSavedInsecureForm(InsecureType::kWeak);
+  ChangePasswordCheckupHomepageState(PasswordCheckupHomepageStateDone);
+
+  OCMExpect([handler_
+      showPasswordIssuesWithWarningType:WarningType::kWeakPasswordsWarning]);
+
+  SimulateTap(/*index=*/2, /*section=*/0);
+
+  EXPECT_OCMOCK_VERIFY((id)handler_);
 }
