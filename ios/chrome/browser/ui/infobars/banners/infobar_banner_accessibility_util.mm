@@ -13,8 +13,15 @@
 void UpdateBannerAccessibilityForPresentation(
     UIViewController* presenting_view_controller,
     UIView* banner_view) {
-  DCHECK(presenting_view_controller);
-  DCHECK(banner_view);
+  if (!presenting_view_controller.view || !banner_view) {
+    // Sometimes banner presentation completion block results in either being
+    // null (crbug.com/1215961). Return early while keeping the DCHECK fail to
+    // minimize crashes while still keeping pre-stable crash signal for further
+    // investigation.
+    DCHECK(banner_view);
+    DCHECK(presenting_view_controller);
+    return;
+  }
   // Set the banner's superview accessibilityViewIsModal property to NO. This
   // will allow the selection of the banner sibling views (e.g. the
   // presentingViewController views).
