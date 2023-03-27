@@ -1534,30 +1534,6 @@
             ]
         }
     ],
-    "BFCachePerformanceManagerPolicy": [
-        {
-            "platforms": [
-                "chromeos",
-                "fuchsia",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "EnabledPolicy_CacheSize6_20220921",
-                    "params": {
-                        "cache_size": "6",
-                        "foreground_cache_size": "0"
-                    },
-                    "enable_features": [
-                        "BFCachePerformanceManagerPolicy",
-                        "BackForwardCacheSize"
-                    ]
-                }
-            ]
-        }
-    ],
     "BackForwardCache": [
         {
             "platforms": [
@@ -1771,25 +1747,6 @@
                     },
                     "enable_features": [
                         "BackForwardCacheMemoryControls"
-                    ]
-                }
-            ]
-        }
-    ],
-    "BackForwardCacheSizeOnAndroid": [
-        {
-            "platforms": [
-                "android"
-            ],
-            "experiments": [
-                {
-                    "name": "ForegroundCacheSize1_CacheSize4_20221202",
-                    "params": {
-                        "cache_size": "4",
-                        "foreground_cache_size": "1"
-                    },
-                    "enable_features": [
-                        "BackForwardCacheSize"
                     ]
                 }
             ]
