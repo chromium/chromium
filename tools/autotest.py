@@ -245,11 +245,14 @@ def FindMatchingTestFiles(target):
 
   test_files = exact if len(exact) > 0 else close
   if len(test_files) > 1:
-    # Arbitrarily capping at 10 results so we don't print the name of every file
-    # in the repo if the target is poorly specified.
-    test_files = test_files[:10]
-    ExitWithMessage(f'Target "{target}" is ambiguous. Matching files: '
-                    f'{test_files}')
+    if len(test_files) < 10:
+      test_files = [HaveUserPickFile(test_files)]
+    else:
+      # Arbitrarily capping at 10 results so we don't print the name of every
+      # file in the repo if the target is poorly specified.
+      test_files = test_files[:10]
+      ExitWithMessage(f'Target "{target}" is ambiguous. Matching files: '
+                      f'{test_files}')
   if not test_files:
     ExitWithMessage(f'Target "{target}" did not match any files.')
   return test_files
@@ -259,6 +262,19 @@ def IsTestTarget(target):
   if _TEST_TARGET_REGEX.search(target):
     return True
   return target in _OTHER_TEST_TARGETS
+
+
+def HaveUserPickFile(paths):
+  paths = sorted(paths, key=lambda p: (len(p), p))
+  path_list = '\n'.join(f'{i}. {t}' for i, t in enumerate(paths))
+
+  while True:
+    user_input = input(f'Please choose the path you mean.\n{path_list}\n')
+    try:
+      value = int(user_input)
+      return paths[value]
+    except (ValueError, IndexError):
+      print('Try again')
 
 
 def HaveUserPickTarget(paths, targets):
