@@ -241,7 +241,7 @@ xsltDocumentFunction(xmlXPathParserContextPtr ctxt, int nargs)
         obj2 = valuePop(ctxt);
     }
 
-    if (ctxt->value->type == XPATH_NODESET) {
+    if ((ctxt->value != NULL) && (ctxt->value->type == XPATH_NODESET)) {
         int i;
         xmlXPathObjectPtr newobj, ret;
 
@@ -260,6 +260,8 @@ xsltDocumentFunction(xmlXPathParserContextPtr ctxt, int nargs)
                               xmlXPathNewNodeSet(obj->nodesetval->
                                                  nodeTab[i]));
                 }
+                if (ctxt->error)
+                    break;
                 xsltDocumentFunction(ctxt, 2);
                 newobj = valuePop(ctxt);
                 if (newobj != NULL) {
@@ -380,6 +382,12 @@ xsltKeyFunction(xmlXPathParserContextPtr ctxt, int nargs){
 	xmlXPathObjectPtr newobj, ret;
 
 	ret = xmlXPathNewNodeSet(NULL);
+        if (ret == NULL) {
+            ctxt->error = XPATH_MEMORY_ERROR;
+            xmlXPathFreeObject(obj1);
+            xmlXPathFreeObject(obj2);
+            return;
+        }
 
 	if (obj2->nodesetval != NULL) {
 	    for (i = 0; i < obj2->nodesetval->nodeNr; i++) {
@@ -653,7 +661,8 @@ xsltFormatNumberFunction(xmlXPathParserContextPtr ctxt, int nargs)
         return;
     }
 
-    if ((formatValues != NULL) && (formatObj != NULL) && (numberObj != NULL)) {
+    if ((ctxt->error == 0) &&
+        (formatValues != NULL) && (formatObj != NULL) && (numberObj != NULL)) {
 	if (xsltFormatNumberConversion(formatValues,
 				       formatObj->stringval,
 				       numberObj->floatval,

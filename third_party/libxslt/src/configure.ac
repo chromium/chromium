@@ -564,7 +564,5 @@ doc/EXSLT/devhelp/Makefile
 xslt-config
 libxslt.spec
 ])
-AC_CONFIG_LINKS([tests/fuzz/xpath.xml:tests/fuzz/xpath.xml])
-AC_CONFIG_LINKS([tests/fuzz/xslt.xml:tests/fuzz/xslt.xml])
 
 AC_OUTPUT

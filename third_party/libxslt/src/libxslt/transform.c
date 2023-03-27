@@ -5767,6 +5767,8 @@ xsltCleanupSourceDoc(xmlDocPtr doc) {
         if (cur->children != NULL && cur->type != XML_ENTITY_REF_NODE) {
             cur = cur->children;
         } else {
+            if (cur == (xmlNodePtr) doc)
+                return;
             while (cur->next == NULL) {
                 cur = cur->parent;
                 if (cur == (xmlNodePtr) doc)

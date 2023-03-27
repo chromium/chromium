@@ -53,6 +53,35 @@ static void xsltFixImportedCompSteps(xsltStylesheetPtr master,
     }
 }
 
+static int
+xsltCheckCycle(xsltStylesheetPtr style, const xmlChar *URI) {
+    xsltStylesheetPtr ancestor;
+    xsltDocumentPtr docptr;
+
+    /*
+     * in order to detect recursion, we check all previously included
+     * stylesheets.
+     */
+    docptr = style->includes;
+    while (docptr != NULL) {
+        if (xmlStrEqual(docptr->doc->URL, URI))
+	    return(-1);
+	docptr = docptr->includes;
+    }
+
+    /*
+     * Also check imported stylesheets.
+     */
+    ancestor = style;
+    while (ancestor != NULL) {
+	if (xmlStrEqual(ancestor->doc->URL, URI))
+	    return(-1);
+	ancestor = ancestor->parent;
+    }
+
+    return(0);
+}
+
 /**
  * xsltParseStylesheetImport:
  * @style:  the XSLT stylesheet
@@ -91,16 +120,10 @@ xsltParseStylesheetImport(xsltStylesheetPtr style, xmlNodePtr cur) {
 	goto error;
     }
 
-    res = style;
-    while (res != NULL) {
-        if (res->doc == NULL)
-	    break;
-	if (xmlStrEqual(res->doc->URL, URI)) {
-	    xsltTransformError(NULL, style, cur,
-	       "xsl:import : recursion detected on imported URL %s\n", URI);
-	    goto error;
-	}
-	res = res->parent;
+    if (xsltCheckCycle(style, URI) < 0) {
+        xsltTransformError(NULL, style, cur,
+           "xsl:import : recursion detected on imported URL %s\n", URI);
+        goto error;
     }
 
     /*
@@ -170,7 +193,6 @@ xsltParseStylesheetInclude(xsltStylesheetPtr style, xmlNodePtr cur) {
     xmlChar *URI = NULL;
     xsltStylesheetPtr result;
     xsltDocumentPtr include;
-    xsltDocumentPtr docptr;
     int oldNopreproc;
 
     if ((cur == NULL) || (style == NULL))
@@ -191,18 +213,10 @@ xsltParseStylesheetInclude(xsltStylesheetPtr style, xmlNodePtr cur) {
 	goto error;
     }
 
-    /*
-     * in order to detect recursion, we check all previously included
-     * stylesheets.
-     */
-    docptr = style->includes;
-    while (docptr != NULL) {
-        if (xmlStrEqual(docptr->doc->URL, URI)) {
-	    xsltTransformError(NULL, style, cur,
-	        "xsl:include : recursion detected on included URL %s\n", URI);
-	    goto error;
-	}
-	docptr = docptr->includes;
+    if (xsltCheckCycle(style, URI) < 0) {
+        xsltTransformError(NULL, style, cur,
+            "xsl:include : recursion detected on included URL %s\n", URI);
+        goto error;
     }
 
     include = xsltLoadStyleDocument(style, URI);

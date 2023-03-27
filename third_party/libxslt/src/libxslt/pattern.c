@@ -311,10 +311,6 @@ xsltCompMatchAdd(xsltParserContextPtr ctxt, xsltCompMatchPtr comp,
 	     "xsltCompMatchAdd: memory re-allocation failure.\n");
 	    if (ctxt->style != NULL)
 		ctxt->style->errors++;
-	    if (value)
-	        xmlFree(value);
-	    if (value2)
-	        xmlFree(value2);
 	    return (-1);
 	}
         comp->maxStep *= 2;
@@ -1508,6 +1504,7 @@ xsltCompileStepPattern(xsltParserContextPtr ctxt, xmlChar *token, int novar) {
     xmlChar *name = NULL;
     const xmlChar *URI = NULL;
     xmlChar *URL = NULL;
+    xmlChar *ret = NULL;
     int level;
     xsltAxis axis = 0;
 
@@ -1584,7 +1581,6 @@ parse_node_test:
 		    xsltTransformError(NULL, NULL, NULL,
 			    "xsltCompileStepPattern : Name expected\n");
 		    ctxt->error = 1;
-                    xmlFree(URL);
 		    goto error;
 		}
 	    } else {
@@ -1647,7 +1643,6 @@ parse_predicate:
     level = 0;
     while (CUR == '[') {
 	const xmlChar *q;
-	xmlChar *ret = NULL;
 
 	level++;
 	NEXT;
@@ -1691,6 +1686,10 @@ error:
 	xmlFree(token);
     if (name != NULL)
 	xmlFree(name);
+    if (URL != NULL)
+	xmlFree(URL);
+    if (ret != NULL)
+	xmlFree(ret);
 }
 
 /**

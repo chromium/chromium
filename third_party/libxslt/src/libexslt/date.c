@@ -1740,16 +1740,16 @@ _exsltDateAddDurCalc (exsltDateDurValPtr ret, exsltDateDurValPtr x,
 		      exsltDateDurValPtr y)
 {
     /* months */
-    if ((x->mon > 0 && y->mon > LONG_MAX - x->mon) ||
-        (x->mon < 0 && y->mon < LONG_MIN - x->mon)) {
+    if ((x->mon > 0 && y->mon >  LONG_MAX - x->mon) ||
+        (x->mon < 0 && y->mon <= LONG_MIN - x->mon)) {
         /* Overflow */
         return 0;
     }
     ret->mon = x->mon + y->mon;
 
     /* days */
-    if ((x->day > 0 && y->day > LONG_MAX - x->day) ||
-        (x->day < 0 && y->day < LONG_MIN - x->day)) {
+    if ((x->day > 0 && y->day >  LONG_MAX - x->day) ||
+        (x->day < 0 && y->day <= LONG_MIN - x->day)) {
         /* Overflow */
         return 0;
     }
