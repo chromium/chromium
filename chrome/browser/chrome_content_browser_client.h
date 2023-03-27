@@ -647,6 +647,10 @@ class ChromeContentBrowserClient : public content::ContentBrowserClient {
   GetWebAuthenticationRequestDelegate(
       content::RenderFrameHost* render_frame_host) override;
 #endif
+#if BUILDFLAG(IS_CHROMEOS)
+  content::SmartCardDelegate* GetSmartCardDelegate(
+      content::BrowserContext* browser_context) override;
+#endif
   bool ShowPaymentHandlerWindow(
       content::BrowserContext* browser_context,
       const GURL& url,
@@ -978,6 +982,10 @@ class ChromeContentBrowserClient : public content::ContentBrowserClient {
 #endif
   std::unique_ptr<permissions::BluetoothDelegateImpl> bluetooth_delegate_;
   std::unique_ptr<ChromeUsbDelegate> usb_delegate_;
+
+#if BUILDFLAG(IS_CHROMEOS)
+  std::unique_ptr<content::SmartCardDelegate> smart_card_delegate_;
+#endif
 
 #if BUILDFLAG(ENABLE_VR)
   std::unique_ptr<vr::ChromeXrIntegrationClient> xr_integration_client_;

@@ -298,6 +298,14 @@ SmartCardProviderPrivateAPI::SmartCardProviderPrivateAPI(
 
 SmartCardProviderPrivateAPI::~SmartCardProviderPrivateAPI() = default;
 
+mojo::PendingRemote<device::mojom::SmartCardContextFactory>
+SmartCardProviderPrivateAPI::GetSmartCardContextFactory() {
+  mojo::PendingRemote<device::mojom::SmartCardContextFactory> pending_remote;
+  context_factory_receivers_.Add(
+      this, pending_remote.InitWithNewPipeAndPassReceiver());
+  return pending_remote;
+}
+
 void SmartCardProviderPrivateAPI::CreateContext(
     CreateContextCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);

@@ -4361,6 +4361,7 @@ static_library("browser") {
       "//chrome/browser/resource_coordinator:intervention_policy_database_proto",
       "//chrome/browser/resources:component_extension_resources",
       "//chrome/browser/share/proto:proto",
+      "//chrome/browser/smart_card",
       "//chrome/browser/support_tool:support_tool_proto",
       "//chrome/browser/ui/color:color_headers",
       "//chrome/browser/ui/webui/access_code_cast:mojo_bindings",

@@ -12,6 +12,7 @@
 #include "base/types/id_type.h"
 #include "extensions/browser/browser_context_keyed_api_factory.h"
 #include "extensions/browser/extension_function.h"
+#include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
 #include "services/device/public/mojom/smart_card.mojom.h"
@@ -48,6 +49,9 @@ class SmartCardProviderPrivateAPI
   explicit SmartCardProviderPrivateAPI(content::BrowserContext* context);
 
   ~SmartCardProviderPrivateAPI() override;
+
+  mojo::PendingRemote<device::mojom::SmartCardContextFactory>
+  GetSmartCardContextFactory();
 
   // device::mojom::SmartCardContextFactory overrides:
   void CreateContext(CreateContextCallback) override;
@@ -173,6 +177,9 @@ class SmartCardProviderPrivateAPI
   RequestId::Generator request_id_generator_;
   const raw_ref<content::BrowserContext> browser_context_;
   const raw_ref<EventRouter> event_router_;
+
+  mojo::ReceiverSet<device::mojom::SmartCardContextFactory>
+      context_factory_receivers_;
 
   mojo::ReceiverSet<device::mojom::SmartCardContext, ContextId>
       context_receivers_;

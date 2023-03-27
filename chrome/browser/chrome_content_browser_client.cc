@@ -466,6 +466,7 @@
 #include "chrome/browser/chromeos/tablet_mode/chrome_content_browser_client_tablet_mode_part.h"
 #include "chrome/browser/policy/networking/policy_cert_service.h"
 #include "chrome/browser/policy/networking/policy_cert_service_factory.h"
+#include "chrome/browser/smart_card/chromeos_smart_card_delegate.h"
 #include "chrome/common/chromeos/extensions/chromeos_system_extension_info.h"
 #include "components/crash/core/app/breakpad_linux.h"
 #include "third_party/cros_system_api/switches/chrome_switches.h"
@@ -6568,6 +6569,16 @@ bool ChromeContentBrowserClient::HandleWebUI(
 
   return true;
 }
+
+#if BUILDFLAG(IS_CHROMEOS)
+content::SmartCardDelegate* ChromeContentBrowserClient::GetSmartCardDelegate(
+    content::BrowserContext* browser_context) {
+  if (!smart_card_delegate_) {
+    smart_card_delegate_ = std::make_unique<ChromeOsSmartCardDelegate>();
+  }
+  return smart_card_delegate_.get();
+}
+#endif
 
 bool ChromeContentBrowserClient::ShowPaymentHandlerWindow(
     content::BrowserContext* browser_context,
