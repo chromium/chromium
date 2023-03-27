@@ -235,7 +235,7 @@ void PowerBookmarkDatabaseImpl::DatabaseErrorCallback(int error,
 
   // After this call, the `db_` handle is poisoned so that future calls will
   // return errors until the handle is re-opened.
-  db_.RazeAndClose();
+  db_.RazeAndPoison();
 }
 
 bool PowerBookmarkDatabaseImpl::InitSchema() {
