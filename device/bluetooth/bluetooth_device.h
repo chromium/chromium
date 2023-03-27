@@ -19,6 +19,7 @@
 #include "base/containers/flat_set.h"
 #include "base/functional/callback.h"
 #include "base/gtest_prod_util.h"
+#include "base/memory/raw_ptr_exclusion.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/strings/string_piece_forward.h"
 #include "base/time/time.h"
@@ -805,7 +806,10 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothDevice {
 
   // Raw pointer to adapter owning this device object. Subclasses use platform
   // specific pointers via adapter_.
-  BluetoothAdapter* const adapter_;
+  // This field is not a raw_ptr<> because problems related to passing to a
+  // templated && parameter, which is later forwarded to something that doesn't
+  // vibe with raw_ptr<T>.
+  RAW_PTR_EXCLUSION BluetoothAdapter* const adapter_;
 
   // Indicates whether this device supports limited discovery of a specific
   // service. This is configured by the constructor of subclasses. If false,

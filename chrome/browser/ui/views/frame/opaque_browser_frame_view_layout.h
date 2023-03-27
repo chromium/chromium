@@ -8,6 +8,7 @@
 #include <vector>
 
 #include "base/memory/raw_ptr.h"
+#include "base/memory/raw_ptr_exclusion.h"
 #include "chrome/browser/ui/views/frame/opaque_browser_frame_view.h"
 #include "ui/views/layout/layout_manager.h"
 #include "ui/views/window/frame_buttons.h"
@@ -238,10 +239,12 @@ class OpaqueBrowserFrameViewLayout : public views::LayoutManager {
   int forced_window_caption_spacing_;
 
   // Window controls.
-  views::Button* minimize_button_;
-  views::Button* maximize_button_;
-  views::Button* restore_button_;
-  views::Button* close_button_;
+  // These fields are not raw_ptr<> because they are assigned to |auto*| in
+  // ranged loop on an array initializer literal comprising of those pointers.
+  RAW_PTR_EXCLUSION views::Button* minimize_button_;
+  RAW_PTR_EXCLUSION views::Button* maximize_button_;
+  RAW_PTR_EXCLUSION views::Button* restore_button_;
+  RAW_PTR_EXCLUSION views::Button* close_button_;
 
   raw_ptr<views::View> window_icon_;
   raw_ptr<views::Label, DanglingUntriaged> window_title_;

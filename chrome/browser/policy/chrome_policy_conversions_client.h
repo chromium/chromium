@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_POLICY_CHROME_POLICY_CONVERSIONS_CLIENT_H_
 #define CHROME_BROWSER_POLICY_CHROME_POLICY_CONVERSIONS_CLIENT_H_
 
+#include "base/memory/raw_ptr_exclusion.h"
 #include "build/chromeos_buildflags.h"
 #include "components/policy/core/browser/policy_conversions_client.h"
 
@@ -42,7 +43,9 @@ class ChromePolicyConversionsClient : public PolicyConversionsClient {
 #endif
 
  private:
-  Profile* profile_;
+  // This field is not a raw_ptr<> because of missing |.get()| in not-rewritten
+  // platform specific code.
+  RAW_PTR_EXCLUSION Profile* profile_;
 };
 
 }  // namespace policy

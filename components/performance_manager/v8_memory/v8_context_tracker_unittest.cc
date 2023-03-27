@@ -9,6 +9,7 @@
 #include <utility>
 
 #include "base/memory/raw_ptr.h"
+#include "base/memory/raw_ptr_exclusion.h"
 #include "base/test/gtest_util.h"
 #include "base/types/optional_util.h"
 #include "components/performance_manager/execution_context/execution_context_registry_impl.h"
@@ -69,7 +70,9 @@ class V8ContextTrackerTest : public GraphTestHarness {
   }
 
   raw_ptr<execution_context::ExecutionContextRegistry> registry_ = nullptr;
-  V8ContextTracker* tracker_ = nullptr;
+  // This field is not a raw_ptr<> because of incompatibilities with tracing
+  // (TRACE_EVENT*), perfetto::TracedDictionary::Add and gmock/EXPECT_THAT.
+  RAW_PTR_EXCLUSION V8ContextTracker* tracker_ = nullptr;
   std::unique_ptr<MockSinglePageWithMultipleProcessesGraph> mock_graph_;
 };
 

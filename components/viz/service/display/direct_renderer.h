@@ -129,8 +129,8 @@ class VIZ_SERVICE_EXPORT DirectRenderer {
     raw_ptr<const AggregatedRenderPassList> render_passes_in_draw_order =
         nullptr;
     raw_ptr<const AggregatedRenderPass> root_render_pass = nullptr;
-    // This field is not a raw_ptr<> because it was filtered by the rewriter
-    // for: #addr-of
+    // This field is not a raw_ptr<> because of a reference to raw_ptr in
+    // not-rewritten platform specific code and #addr-of.
     RAW_PTR_EXCLUSION const AggregatedRenderPass* current_render_pass = nullptr;
 
     gfx::Rect root_damage_rect;

@@ -21,6 +21,7 @@
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/raw_ptr_exclusion.h"
 #include "base/memory/ref_counted_memory.h"
 #include "base/no_destructor.h"
 #include "base/notreached.h"
@@ -450,7 +451,8 @@ class TraceLog::OptionalAutoLock {
   }
 
  private:
-  Lock* lock_;
+  // This field is not a raw_ptr<> because it is needed for lock annotations.
+  RAW_PTR_EXCLUSION Lock* lock_;
   bool locked_ = false;
 };
 

@@ -9,6 +9,7 @@
 #include <set>
 
 #include "base/memory/raw_ptr.h"
+#include "base/memory/raw_ptr_exclusion.h"
 #include "base/scoped_multi_source_observation.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
@@ -159,7 +160,9 @@ class WebUITabStripContainerView : public TabStripUIEmbedder,
   const raw_ptr<views::WebView> web_view_;
   const raw_ptr<views::View> top_container_;
   raw_ptr<views::View> tab_contents_container_;
-  views::View* tab_counter_ = nullptr;
+  // This field is not a raw_ptr<> because of conflicting types in an
+  // initializer list.
+  RAW_PTR_EXCLUSION views::View* tab_counter_ = nullptr;
   raw_ptr<views::View> new_tab_button_ = nullptr;
 
 #if BUILDFLAG(IS_WIN)

@@ -173,8 +173,10 @@ class CC_EXPORT TilingSetRasterQueueAll {
     // `tiling_` and `tiling_data_` are not a raw_ptr<...> for performance
     // reasons (based on analysis of sampling profiler data and
     // tab_search:top100:2020).
-    PictureLayerTiling* tiling_;
-    TilingData* tiling_data_;
+    // These fields are not raw_ptr<> for performance based on sampling profiler
+    // data and tab_search:top100:2020 profiler data.
+    RAW_PTR_EXCLUSION PictureLayerTiling* tiling_;
+    RAW_PTR_EXCLUSION TilingData* tiling_data_;
 
     Phase phase_;
 

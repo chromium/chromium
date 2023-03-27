@@ -76,7 +76,9 @@ class PrintDialogGtk : public printing::PrintDialogLinuxInterface,
 
   // Print dialog settings. PrintDialogGtk owns |dialog_| and holds references
   // to the other objects.
-  GtkWidget* dialog_ = nullptr;
+  // This field is not a raw_ptr<> because of a static_cast not related by
+  // inheritance.
+  RAW_PTR_EXCLUSION GtkWidget* dialog_ = nullptr;
   raw_ptr<GtkPrintSettings> gtk_settings_ = nullptr;
   raw_ptr<GtkPageSetup> page_setup_ = nullptr;
   raw_ptr<GtkPrinter> printer_ = nullptr;

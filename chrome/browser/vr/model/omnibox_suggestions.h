@@ -7,6 +7,7 @@
 
 #include <string>
 
+#include "base/memory/raw_ptr_exclusion.h"
 #include "chrome/browser/vr/vr_base_export.h"
 #include "components/omnibox/browser/autocomplete_match.h"
 #include "url/gurl.h"
@@ -49,7 +50,10 @@ struct VR_BASE_EXPORT OmniboxSuggestion {
   std::u16string description;
   AutocompleteMatch::ACMatchClassifications contents_classifications;
   AutocompleteMatch::ACMatchClassifications description_classifications;
-  const gfx::VectorIcon* icon = nullptr;
+  // This field is not a raw_ptr<> because of problems related to lambdas with
+  // no return type, where the return value is raw_ptr<T>, but
+  // variable/parameter receiving the lambda.
+  RAW_PTR_EXCLUSION const gfx::VectorIcon* icon = nullptr;
   GURL destination;
   Autocompletion autocompletion;
 };

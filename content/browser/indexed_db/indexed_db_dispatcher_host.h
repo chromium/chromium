@@ -13,6 +13,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/memory/raw_ptr_exclusion.h"
 #include "base/sequence_checker.h"
 #include "components/services/storage/privileged/mojom/indexed_db_client_state_checker.mojom.h"
 #include "components/services/storage/public/cpp/buckets/bucket_info.h"
@@ -149,7 +150,9 @@ class CONTENT_EXPORT IndexedDBDispatcherHost : public blink::mojom::IDBFactory {
   base::SequencedTaskRunner* IDBTaskRunner() const;
 
   // IndexedDBDispatcherHost is owned by IndexedDBContextImpl.
-  IndexedDBContextImpl* indexed_db_context_;
+  // This field is not a raw_ptr<> because templates made it difficult for the
+  // rewriter to see that |.get()| needs to be appended.
+  RAW_PTR_EXCLUSION IndexedDBContextImpl* indexed_db_context_;
 
   // Shared task runner used for async I/O while reading blob files.
   const scoped_refptr<base::TaskRunner> io_task_runner_;

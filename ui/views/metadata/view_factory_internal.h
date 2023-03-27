@@ -82,7 +82,9 @@ class ClassPropertyValueSetter : public PropertySetterBase {
   }
 
  private:
-  const ui::ClassProperty<TValue>* property_;
+  // This field is not a raw_ptr<> because of compiler error when passed to
+  // templated param T*.
+  RAW_PTR_EXCLUSION const ui::ClassProperty<TValue>* property_;
   TValue value_;
 };
 

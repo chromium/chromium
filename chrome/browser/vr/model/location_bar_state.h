@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_VR_MODEL_LOCATION_BAR_STATE_H_
 #define CHROME_BROWSER_VR_MODEL_LOCATION_BAR_STATE_H_
 
+#include "base/memory/raw_ptr_exclusion.h"
 #include "chrome/browser/vr/vr_base_export.h"
 #include "components/security_state/core/security_state.h"
 #include "url/gurl.h"
@@ -32,7 +33,10 @@ struct VR_BASE_EXPORT LocationBarState {
 
   GURL gurl;
   security_state::SecurityLevel security_level;
-  const gfx::VectorIcon* vector_icon;
+  // This field is not a raw_ptr<> because of problems related to lambdas with
+  // no return type, where the return value is raw_ptr<T>, but
+  // variable/parameter receiving the lambda expects the raw pointer type.
+  RAW_PTR_EXCLUSION const gfx::VectorIcon* vector_icon;
   bool should_display_url;
   bool offline_page;
 };

@@ -13,6 +13,7 @@
 
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/raw_ptr_exclusion.h"
 #include "base/memory/weak_ptr.h"
 #include "components/viz/common/surfaces/surface_id.h"
 #include "components/viz/host/hit_test/hit_test_query.h"
@@ -356,15 +357,22 @@ class CONTENT_EXPORT RenderWidgetHostInputEventRouter final
 
   FrameSinkIdOwnerMap owner_map_;
   TargetMap touchscreen_gesture_target_map_;
-  RenderWidgetHostViewBase* touch_target_ = nullptr;
+  // This field is not a raw_ptr<> because of a reference to raw_ptr in
+  // not-rewritten platform specific code.
+  RAW_PTR_EXCLUSION RenderWidgetHostViewBase* touch_target_ = nullptr;
   base::WeakPtr<RenderWidgetHostViewBase> touchscreen_gesture_target_;
   bool touchscreen_gesture_target_moved_recently_ = false;
-  RenderWidgetHostViewBase* touchpad_gesture_target_ = nullptr;
+  // // This field is not a raw_ptr<> because of a reference to raw_ptr in
+  // not-rewritten platform specific code.
+  RAW_PTR_EXCLUSION RenderWidgetHostViewBase* touchpad_gesture_target_ =
+      nullptr;
   raw_ptr<RenderWidgetHostViewBase> bubbling_gesture_scroll_target_ = nullptr;
   raw_ptr<RenderWidgetHostViewChildFrame> bubbling_gesture_scroll_origin_ =
       nullptr;
   // Used to target wheel events for the duration of a scroll.
-  RenderWidgetHostViewBase* wheel_target_ = nullptr;
+  // This field is not a raw_ptr<> because of missing |.get()| in not-rewritten
+  // platform specific code.
+  RAW_PTR_EXCLUSION RenderWidgetHostViewBase* wheel_target_ = nullptr;
   // Maintains the same target between mouse down and mouse up.
   raw_ptr<RenderWidgetHostViewBase> mouse_capture_target_ = nullptr;
 

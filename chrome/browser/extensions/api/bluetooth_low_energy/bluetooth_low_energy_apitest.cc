@@ -8,6 +8,7 @@
 #include <tuple>
 #include <utility>
 
+#include "base/memory/raw_ptr_exclusion.h"
 #include "base/test/gmock_callback_support.h"
 #include "base/test/gmock_move_support.h"
 #include "chrome/browser/extensions/extension_apitest.h"
@@ -200,7 +201,10 @@ class BluetoothLowEnergyApiTest : public extensions::ExtensionApiTest {
         ->event_router();
   }
 
-  testing::StrictMock<MockBluetoothAdapter>* mock_adapter_;
+  // This field is not a raw_ptr<> because problems related to passing to a
+  // templated && parameter, which is later forwarded to something that doesn't
+  // vibe with raw_ptr<T>.
+  RAW_PTR_EXCLUSION testing::StrictMock<MockBluetoothAdapter>* mock_adapter_;
   std::unique_ptr<testing::NiceMock<MockBluetoothDevice>> device0_;
   std::unique_ptr<testing::NiceMock<MockBluetoothDevice>> device1_;
   std::unique_ptr<testing::NiceMock<MockBluetoothGattService>> service0_;

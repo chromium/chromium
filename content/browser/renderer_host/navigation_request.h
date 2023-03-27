@@ -14,6 +14,7 @@
 #include "base/functional/callback.h"
 #include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/raw_ptr_exclusion.h"
 #include "base/memory/safe_ref.h"
 #include "base/memory/weak_ptr.h"
 #include "base/strings/string_util.h"
@@ -1843,7 +1844,9 @@ class CONTENT_EXPORT NavigationRequest
   StoragePartition* GetStoragePartitionWithCurrentSiteInfo();
 
   // Never null. The pointee node owns this navigation request instance.
-  FrameTreeNode* const frame_tree_node_;
+  // This field is not a raw_ptr because of incompatibilities with tracing
+  // (TRACE_EVENT*), perfetto::TracedDictionary::Add and gmock/EXPECT_THAT.
+  RAW_PTR_EXCLUSION FrameTreeNode* const frame_tree_node_;
 
   // Used for short-lived NavigationRequest created at DidCommit time for the
   // purpose of committing navigation that were not driven by the browser

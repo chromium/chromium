@@ -12,6 +12,7 @@
 
 #include "base/files/file_path.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/raw_ptr_exclusion.h"
 #include "base/memory/weak_ptr.h"
 #include "base/task/cancelable_task_tracker.h"
 #include "base/time/time.h"
@@ -262,11 +263,15 @@ class DownloadItemView : public views::View,
   raw_ptr<views::StyledLabel> warning_label_;
   raw_ptr<views::StyledLabel> deep_scanning_label_;
 
-  views::MdTextButton* open_now_button_;
-  views::MdTextButton* save_button_;
-  views::MdTextButton* discard_button_;
-  views::MdTextButton* scan_button_;
-  views::MdTextButton* review_button_;
+  // These fields are not raw_ptr<> because they are assigned to |auto*| in
+  // ranged loop on an array initializer literal comprising of those pointers.
+  RAW_PTR_EXCLUSION views::MdTextButton* open_now_button_;
+  RAW_PTR_EXCLUSION views::MdTextButton* save_button_;
+  RAW_PTR_EXCLUSION views::MdTextButton* discard_button_;
+  RAW_PTR_EXCLUSION views::MdTextButton* scan_button_;
+  // This field is not a raw_ptr<> because of conflicting types in an
+  // initializer list.
+  RAW_PTR_EXCLUSION views::MdTextButton* review_button_;
   raw_ptr<views::ImageButton> dropdown_button_;
 
   // Whether the dropdown is currently pressed.

@@ -5,6 +5,7 @@
 #ifndef UI_GFX_SCOPED_NS_GRAPHICS_CONTEXT_SAVE_GSTATE_MAC_H_
 #define UI_GFX_SCOPED_NS_GRAPHICS_CONTEXT_SAVE_GSTATE_MAC_H_
 
+#include "base/memory/raw_ptr_exclusion.h"
 #include "ui/gfx/gfx_export.h"
 
 #if defined(__OBJC__)
@@ -28,7 +29,9 @@ class GFX_EXPORT ScopedNSGraphicsContextSaveGState {
   ~ScopedNSGraphicsContextSaveGState();
 
  private:
-  NSGraphicsContext* context_;  // weak
+  // This field is not a raw_ptr<> because it is a pointer to Objective-C
+  // object.
+  RAW_PTR_EXCLUSION NSGraphicsContext* context_;  // weak
 };
 
 }  // namespace gfx

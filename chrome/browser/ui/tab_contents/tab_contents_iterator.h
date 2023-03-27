@@ -7,6 +7,7 @@
 
 #include <iterator>
 
+#include "base/memory/raw_ptr_exclusion.h"
 #include "chrome/browser/ui/browser_list.h"
 
 namespace content {
@@ -86,7 +87,9 @@ class AllTabContentsesList {
     // Current WebContents, or null if we're at the end of the list. This can be
     // extracted given the browser iterator and index, but it's nice to cache
     // this since the caller may access the current tab contents many times.
-    content::WebContents* cur_;
+    // This field is not a raw_ptr to avoid returning a reference to a temporary
+    // T* (result of implicitly casting raw_ptr<T> to T*).
+    RAW_PTR_EXCLUSION content::WebContents* cur_;
 
     // An iterator over all the browsers.
     BrowserList::const_iterator browser_iterator_;

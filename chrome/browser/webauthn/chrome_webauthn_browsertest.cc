@@ -9,6 +9,7 @@
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/raw_ptr_exclusion.h"
 #include "base/memory/weak_ptr.h"
 #include "base/run_loop.h"
 #include "base/task/sequenced_task_runner.h"
@@ -782,7 +783,9 @@ class WebAuthnCableSecondFactor : public WebAuthnBrowserTest {
 
  protected:
   std::ostringstream trace_;
-  AuthenticatorRequestDialogModel* model_ = nullptr;
+  // This field is not a raw_ptr<> to avoid returning a reference to a temporary
+  // T* (result of implicitly casting raw_ptr<T> to T*).
+  RAW_PTR_EXCLUSION AuthenticatorRequestDialogModel* model_ = nullptr;
 };
 
 // TODO(https://crbug.com/1219708): this test is flaky on Mac.

@@ -10,6 +10,7 @@
 #include <stddef.h>
 
 #include "base/memory/raw_ptr.h"
+#include "base/memory/raw_ptr_exclusion.h"
 #include "build/build_config.h"
 #include "net/base/net_export.h"
 #include "net/disk_cache/blockfile/file.h"
@@ -60,7 +61,10 @@ class NET_EXPORT_PRIVATE MappedFile : public File {
 #if BUILDFLAG(IS_WIN)
   HANDLE section_;
 #endif
-  void* buffer_;  // Address of the memory mapped buffer.
+  // This field is not a raw_ptr<> because it is using mmap, MapViewOfFile or
+  // base::AllocPages directly.
+  // TODO(bartekn): This one has a malloc() path, consider rewriting after all.
+  RAW_PTR_EXCLUSION void* buffer_;  // Address of the memory mapped buffer.
   size_t view_size_;  // Size of the memory pointed by buffer_.
 #if BUILDFLAG(POSIX_BYPASS_MMAP)
   raw_ptr<void>

@@ -106,8 +106,8 @@ class VIEWS_EXPORT LayoutManager {
 
  private:
   friend class views::View;
-  // This field is not a raw_ptr<> because it was filtered by the rewriter for:
-  // #addr-of
+  // This field is not a raw_ptr<> because of a reference to raw_ptr in
+  // not-rewritten platform specific code and #addr-of.
   RAW_PTR_EXCLUSION View* view_setting_visibility_on_ = nullptr;
 };
 

@@ -168,7 +168,9 @@ TEST(CBORExtract, Basic) {
 
 TEST(CBORExtract, MissingRequired) {
   struct Dummy {
-    const int64_t* value;
+    // This field is not a raw_ptr<> because ELEMENT() treats the raw_ptr<T> as
+    // a void*.
+    RAW_PTR_EXCLUSION const int64_t* value;
   };
 
   static constexpr cbor_extract::StepOrByte<Dummy> kSteps[] = {
@@ -184,7 +186,9 @@ TEST(CBORExtract, MissingRequired) {
 
 TEST(CBORExtract, WrongType) {
   struct Dummy {
-    const int64_t* value;
+    // This field is not a raw_ptr<> because ELEMENT() treats the raw_ptr<T> as
+    // a void*.
+    RAW_PTR_EXCLUSION const int64_t* value;
   };
 
   static constexpr cbor_extract::StepOrByte<Dummy> kSteps[] = {
@@ -202,7 +206,9 @@ TEST(CBORExtract, WrongType) {
 
 TEST(CBORExtract, RequiredInOptionalMap) {
   struct Dummy {
-    const int64_t* value;
+    // This field is not a raw_ptr<> because ELEMENT() treats the raw_ptr<T> as
+    // a void*.
+    RAW_PTR_EXCLUSION const int64_t* value;
   };
 
   static constexpr cbor_extract::StepOrByte<Dummy> kSteps[] = {

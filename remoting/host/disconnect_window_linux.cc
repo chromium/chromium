@@ -9,6 +9,7 @@
 #include "base/check_op.h"
 #include "base/compiler_specific.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/raw_ptr_exclusion.h"
 #include "base/numerics/math_constants.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
@@ -61,8 +62,10 @@ class DisconnectWindowGtk : public HostWindow {
   // Used to disconnect the client session.
   base::WeakPtr<ClientSessionControl> client_session_control_;
 
-  GtkWidget* disconnect_window_;
-  GtkWidget* message_;
+  // These fields are not a raw_ptr<> because of a static_cast not related by
+  // inheritance.
+  RAW_PTR_EXCLUSION GtkWidget* disconnect_window_;
+  RAW_PTR_EXCLUSION GtkWidget* message_;
   raw_ptr<GtkWidget> button_;
 
   // Used to distinguish resize events from other types of "configure-event"

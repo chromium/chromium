@@ -13,6 +13,7 @@
 #include "base/i18n/message_formatter.h"
 #include "base/location.h"
 #include "base/logging.h"
+#include "base/memory/raw_ptr_exclusion.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
@@ -56,7 +57,9 @@ class It2MeConfirmationDialogLinux : public It2MeConfirmationDialog {
                      GtkDialog*,
                      int);
 
-  GtkWidget* confirmation_window_ = nullptr;
+  // This field is not a raw_ptr<> because of a static_cast not related by
+  // inheritance.
+  RAW_PTR_EXCLUSION GtkWidget* confirmation_window_ = nullptr;
 
   ResultCallback result_callback_;
 

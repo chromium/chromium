@@ -9,6 +9,7 @@
 #include <utility>
 
 #include "base/functional/bind.h"
+#include "base/memory/raw_ptr_exclusion.h"
 #include "base/memory/weak_ptr.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/threading/sequence_bound.h"
@@ -46,7 +47,9 @@ class GtkFileChooserOnUiThread {
   void RunCallback(FileChooser::Result result);
   void CleanUp();
 
-  GObject* file_dialog_ = nullptr;
+  // This field is not a raw_ptr<> because of a static_cast not related by
+  // inheritance.
+  RAW_PTR_EXCLUSION GObject* file_dialog_ = nullptr;
   scoped_refptr<base::SequencedTaskRunner> caller_task_runner_;
   base::WeakPtr<FileChooserLinux> file_chooser_linux_;
 };

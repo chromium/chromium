@@ -17,6 +17,7 @@
 #include "base/functional/callback.h"
 #include "base/json/json_writer.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/raw_ptr_exclusion.h"
 #include "base/memory/weak_ptr.h"
 #include "base/process/process.h"
 #include "base/run_loop.h"
@@ -1777,7 +1778,9 @@ class TestNavigationManager : public WebContentsObserver {
   void ResumeIfPaused();
 
   const GURL url_;
-  NavigationRequest* request_ = nullptr;
+  // This field is not a raw_ptr<> because of incompatibilities with tracing
+  // (TRACE_EVENT*), perfetto::TracedDictionary::Add and gmock/EXPECT_THAT.
+  RAW_PTR_EXCLUSION NavigationRequest* request_ = nullptr;
   bool navigation_paused_ = false;
   NavigationState current_state_ = NavigationState::INITIAL;
   NavigationState desired_state_ = NavigationState::WILL_START;

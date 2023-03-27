@@ -18,6 +18,7 @@
 #include "base/files/file_path.h"
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/raw_ptr_exclusion.h"
 #include "base/memory/shared_memory_mapping.h"
 #include "base/strings/string_piece.h"
 #include "build/build_config.h"
@@ -634,7 +635,11 @@ class BASE_EXPORT PersistentMemoryAllocator {
   // Implementation of Flush that accepts how much to flush.
   virtual void FlushPartial(size_t length, bool sync);
 
-  volatile char* const mem_base_;  // Memory base. (char so sizeof guaranteed 1)
+  // This field is not a raw_ptr<> because a pointer to stale non-PA allocation
+  // could be confused as a pointer to PA memory when that address space is
+  // reused. crbug.com/1173851 crbug.com/1169582
+  RAW_PTR_EXCLUSION volatile char* const
+      mem_base_;                   // Memory base. (char so sizeof guaranteed 1)
   const MemoryType mem_type_;      // Type of memory allocation.
   const uint32_t mem_size_;        // Size of entire memory segment.
   const uint32_t mem_page_;        // Page size allocations shouldn't cross.

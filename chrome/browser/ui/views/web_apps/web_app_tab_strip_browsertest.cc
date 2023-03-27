@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "base/memory/raw_ptr.h"
+#include "base/memory/raw_ptr_exclusion.h"
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
@@ -71,7 +72,9 @@ class WebAppTabStripBrowserTest : public WebAppControllerBrowserTest {
     AppId id;
     raw_ptr<Browser> browser;
     raw_ptr<BrowserView> browser_view;
-    content::WebContents* web_contents;
+    // This field is not a raw_ptr<> because of missing |.get()| in
+    // not-rewritten platform specific code.
+    RAW_PTR_EXCLUSION content::WebContents* web_contents;
   };
 
   App InstallAndLaunch() {

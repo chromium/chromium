@@ -268,7 +268,9 @@ class ChromotingHostTest : public testing::Test {
   std::string owner_email_;
   raw_ptr<protocol::FakeConnectionToClient> connection1_;
   std::unique_ptr<protocol::FakeConnectionToClient> owned_connection1_;
-  ClientSession* client1_;
+  // This field is not a raw_ptr<> to avoid returning a reference to a temporary
+  // T* (result of implicitly casting raw_ptr<T> to T*).
+  RAW_PTR_EXCLUSION ClientSession* client1_;
   std::string session_jid1_;
   raw_ptr<MockSession> session1_;  // Owned by |connection_|.
   std::unique_ptr<SessionConfig> session_config1_;
@@ -276,7 +278,9 @@ class ChromotingHostTest : public testing::Test {
   MockHostStub host_stub1_;
   raw_ptr<protocol::FakeConnectionToClient> connection2_;
   std::unique_ptr<protocol::FakeConnectionToClient> owned_connection2_;
-  ClientSession* client2_;
+  // This field is not a raw_ptr<> to avoid returning a reference to a temporary
+  // T* (result of implicitly casting raw_ptr<T> to T*).
+  RAW_PTR_EXCLUSION ClientSession* client2_;
   std::string session_jid2_;
   raw_ptr<MockSession> session2_;  // Owned by |connection2_|.
   std::unique_ptr<SessionConfig> session_config2_;

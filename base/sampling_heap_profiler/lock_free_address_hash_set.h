@@ -12,6 +12,7 @@
 #include "base/base_export.h"
 #include "base/check_op.h"
 #include "base/compiler_specific.h"
+#include "base/memory/raw_ptr_exclusion.h"
 
 namespace base {
 
@@ -77,7 +78,8 @@ class BASE_EXPORT LockFreeAddressHashSet {
   struct Node {
     ALWAYS_INLINE Node(void* key, Node* next);
     std::atomic<void*> key;
-    Node* next;
+    // This field is not a raw_ptr<> to avoid out-of-line destructor.
+    RAW_PTR_EXCLUSION Node* next;
   };
 
   ALWAYS_INLINE static uint32_t Hash(void* key);

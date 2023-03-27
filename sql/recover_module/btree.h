@@ -9,6 +9,7 @@
 #include <ostream>
 
 #include "base/check.h"
+#include "base/memory/raw_ptr_exclusion.h"
 #include "base/sequence_checker.h"
 
 namespace sql {
@@ -74,7 +75,9 @@ class InnerPageDecoder {
   //
   // Raw pointer usage is acceptable because this instance's owner is expected
   // to ensure that the DatabasePageReader outlives this.
-  DatabasePageReader* const db_reader_;
+  // This field is not a raw_ptr<> because it caused a
+  // std::is_trivially_destructible static_assert failure.
+  RAW_PTR_EXCLUSION DatabasePageReader* const db_reader_;
   // Caches the ComputeCellCount() value for this reader's page.
   const int cell_count_ = ComputeCellCount(db_reader_);
 
@@ -169,7 +172,9 @@ class LeafPageDecoder {
   //
   // Raw pointer usage is acceptable because this instance's owner is expected
   // to ensure that the DatabasePageReader outlives this.
-  DatabasePageReader* const db_reader_;
+  // This field is not a raw_ptr<> because it caused a
+  // std::is_trivially_destructible static_assert failure.
+  RAW_PTR_EXCLUSION DatabasePageReader* const db_reader_;
   // Caches the ComputeCellCount() value for this reader's page.
   const int cell_count_ = ComputeCellCount(db_reader_);
 

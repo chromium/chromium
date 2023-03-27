@@ -10,6 +10,7 @@
 
 #include "base/compiler_specific.h"
 #include "base/logging.h"
+#include "base/memory/raw_ptr_exclusion.h"
 #include "base/strings/utf_string_conversions.h"
 #include "remoting/base/string_resources.h"
 #include "ui/base/glib/glib_signal.h"
@@ -36,7 +37,9 @@ class ContinueWindowGtk : public ContinueWindow {
 
   CHROMEG_CALLBACK_1(ContinueWindowGtk, void, OnResponse, GtkDialog*, int);
 
-  GtkWidget* continue_window_;
+  // This field is not a raw_ptr<> because of a static_cast not related by
+  // inheritance.
+  RAW_PTR_EXCLUSION GtkWidget* continue_window_;
 };
 
 ContinueWindowGtk::ContinueWindowGtk() : continue_window_(nullptr) {}

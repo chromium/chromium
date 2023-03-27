@@ -10,6 +10,7 @@
 #include <vector>
 
 #include "base/memory/raw_ptr.h"
+#include "base/memory/raw_ptr_exclusion.h"
 #include "chrome/browser/ui/tabs/tab_change_type.h"
 #include "components/sessions/core/session_id.h"
 #include "components/tab_groups/tab_group_id.h"
@@ -75,7 +76,9 @@ class TabStripModelChange {
 
     void WriteIntoTrace(perfetto::TracedValue context) const;
 
-    content::WebContents* contents;
+    // This field is not a raw_ptr<> because of incompatibilities with tracing
+    // in not-rewritten platform specific code.
+    RAW_PTR_EXCLUSION content::WebContents* contents;
     int index;
     RemoveReason remove_reason;
     absl::optional<SessionID> session_id;
