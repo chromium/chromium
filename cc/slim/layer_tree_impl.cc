@@ -431,6 +431,7 @@ void LayerTreeImpl::GenerateCompositorFrame(
        /*parent_transform_to_target=*/gfx::Transform(),
        /*parent_clip_in_target=*/nullptr, gfx::RectF(device_viewport_rect_),
        /*opacity=*/1.0f);
+  render_pass->filters = root_->GetFilters();
 
   if (background_color_.fA &&
       !frame_data.occlusion_in_target.Contains(device_viewport_rect_)) {
@@ -560,7 +561,7 @@ void LayerTreeImpl::Draw(Layer& layer,
   }
 
   std::unique_ptr<viz::CompositorRenderPass> new_pass;
-  gfx::Rect new_pass_content_bounds;
+  gfx::Rect new_pass_clip;
   // Scale can be applied when drawing layers into the new pass, or when
   // drawing the new pass into its target pass. Generally prefer the former to
   // avoid visual artifacts when scaling the output of the new pass. Therefore
@@ -596,23 +597,16 @@ void LayerTreeImpl::Draw(Layer& layer,
         gfx::Transform::MakeScale(scale_to_new_pass.x(), scale_to_new_pass.y());
 
     // First clip in layer space, then transform to parent target space.
-    new_pass_content_bounds.set_size(layer.bounds());
-    new_pass_content_bounds.Intersect(gfx::ToEnclosedRect(clip_in_layer));
-    new_pass_content_bounds =
-        transform_to_target.MapRect(new_pass_content_bounds);
-    // Clip to max texture size.
-    int max_texture_size = frame_sink_->GetMaxTextureSize();
-    new_pass_content_bounds.set_width(
-        std::min(new_pass_content_bounds.width(), max_texture_size));
-    new_pass_content_bounds.set_height(
-        std::min(new_pass_content_bounds.height(), max_texture_size));
-
+    new_pass_clip = gfx::ToEnclosedRect(clip_in_layer);
+    if (layer.masks_to_bounds()) {
+      new_pass_clip.Intersect(gfx::Rect(layer.bounds()));
+    }
+    new_pass_clip = transform_to_target.MapRect(new_pass_clip);
     new_pass = viz::CompositorRenderPass::Create();
-    // Note output_rect and damage_rect are updated below.
+    // Note output_rect and damage_rect are further updated below.
     viz::CompositorRenderPassId new_pass_id(layer.id());
-    new_pass->SetNew(new_pass_id, /*output_rect=*/new_pass_content_bounds,
-                     /*damage_rect=*/new_pass_content_bounds,
-                     new_pass_transform_to_root);
+    new_pass->SetNew(new_pass_id, /*output_rect=*/new_pass_clip,
+                     /*damage_rect=*/new_pass_clip, new_pass_transform_to_root);
   }
 
   // If a new pass is created, then there is no target clip when drawing into
@@ -650,22 +644,6 @@ void LayerTreeImpl::Draw(Layer& layer,
   }
   viz::SharedQuadState* shared_quad_state =
       parent_pass.CreateAndAppendSharedQuadState();
-  // Any clip introduced by this layer is already applied by the bounds of the
-  // new pass, so only need to apply any clips in parents target that came
-  // from parent.
-  absl::optional<gfx::Rect> clip_opt;
-  if (parent_clip_in_target) {
-    clip_opt = gfx::ToEnclosingRect(*parent_clip_in_target);
-  }
-  const bool new_pass_contents_opaque =
-      occlusion_in_new_pass.Contains(new_pass_content_bounds);
-  shared_quad_state->SetAll(
-      transform_new_pass_to_parent_target, new_pass_content_bounds,
-      new_pass_content_bounds, gfx::MaskFilterInfo(), clip_opt,
-      new_pass_contents_opaque, parent_opacity * layer.opacity(),
-      SkBlendMode::kSrcOver, 0);
-  auto* quad =
-      parent_pass.CreateAndAppendDrawQuad<viz::CompositorRenderPassDrawQuad>();
 
   // Union through quad list in new pass to compute content rect.
   gfx::Rect content_rect;
@@ -674,7 +652,27 @@ void LayerTreeImpl::Draw(Layer& layer,
         new_pass_quad->shared_quad_state->quad_to_target_transform.MapRect(
             new_pass_quad->rect));
   }
-  content_rect.Intersect(new_pass_content_bounds);
+  content_rect.Intersect(new_pass_clip);
+  // Clip to max texture size.
+  int max_texture_size = frame_sink_->GetMaxTextureSize();
+  content_rect.set_width(std::min(content_rect.width(), max_texture_size));
+  content_rect.set_height(std::min(content_rect.height(), max_texture_size));
+
+  // Any clip introduced by this layer is already applied by the bounds of the
+  // new pass, so only need to apply any clips in parents target that came
+  // from parent.
+  absl::optional<gfx::Rect> clip_opt;
+  if (parent_clip_in_target) {
+    clip_opt = gfx::ToEnclosingRect(*parent_clip_in_target);
+  }
+  const bool new_pass_contents_opaque =
+      occlusion_in_new_pass.Contains(content_rect);
+  shared_quad_state->SetAll(
+      transform_new_pass_to_parent_target, content_rect, content_rect,
+      gfx::MaskFilterInfo(), clip_opt, new_pass_contents_opaque,
+      parent_opacity * layer.opacity(), SkBlendMode::kSrcOver, 0);
+  auto* quad =
+      parent_pass.CreateAndAppendDrawQuad<viz::CompositorRenderPassDrawQuad>();
 
   gfx::RectF tex_coord_rect(gfx::Rect(content_rect.size()));
   quad->SetAll(shared_quad_state, content_rect, content_rect,
@@ -692,6 +690,7 @@ void LayerTreeImpl::Draw(Layer& layer,
   // `has_damage_from_contributing_content`.
   new_pass->output_rect = content_rect;
   new_pass->damage_rect = content_rect;
+  new_pass->filters = layer.GetFilters();
   data.frame.render_pass_list.push_back(std::move(new_pass));
 }
 

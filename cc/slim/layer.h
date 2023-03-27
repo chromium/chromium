@@ -11,6 +11,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/scoped_refptr.h"
+#include "cc/paint/filter_operations.h"
 #include "cc/slim/filter.h"
 #include "cc/slim/frame_data.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -202,6 +203,7 @@ class COMPONENT_EXPORT(CC_SLIM) Layer : public base::RefCounted<Layer> {
   gfx::Transform ComputeTransformToParent() const;
   absl::optional<gfx::Transform> ComputeTransformFromParent() const;
   bool HasFilters() const;
+  cc::FilterOperations GetFilters() const;
   // This method counts this layer, This is different from
   // `NumDescendantsThatDrawContent` which counts descendent layers only.
   int GetNumDrawingLayersInSubtree() const;

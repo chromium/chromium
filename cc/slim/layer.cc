@@ -14,7 +14,6 @@
 #include "base/ranges/algorithm.h"
 #include "cc/layers/layer.h"
 #include "cc/paint/filter_operation.h"
-#include "cc/paint/filter_operations.h"
 #include "cc/slim/features.h"
 #include "cc/slim/layer_tree.h"
 #include "cc/slim/layer_tree_impl.h"
@@ -445,6 +444,10 @@ bool Layer::HasFilters() const {
   return !filters_.empty();
 }
 
+cc::FilterOperations Layer::GetFilters() const {
+  return ToCcFilters(filters_);
+}
+
 int Layer::GetNumDrawingLayersInSubtree() const {
   return num_descendants_that_draw_content_ + (draws_content_ ? 1 : 0);
 }
@@ -463,8 +466,6 @@ viz::SharedQuadState* Layer::CreateAndAppendSharedQuadState(
     const gfx::Rect* clip_in_target,
     const gfx::Rect& visible_rect,
     float opacity) {
-  DCHECK(!HasFilters() || render_pass.filters.IsEmpty());
-  render_pass.filters = ToCcFilters(filters_);
   viz::SharedQuadState* quad_state =
       render_pass.CreateAndAppendSharedQuadState();
   const gfx::Rect layer_rect{bounds()};

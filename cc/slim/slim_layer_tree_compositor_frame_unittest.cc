@@ -1168,8 +1168,9 @@ TEST_F(SlimLayerTreeCompositorFrameTest, ChildPassOutputRect) {
     auto* render_pass_quad = viz::CompositorRenderPassDrawQuad::MaterialCast(
         root_pass->quad_list.ElementAt(0));
     auto* shared_quad_state = render_pass_quad->shared_quad_state;
-    EXPECT_EQ(shared_quad_state->quad_layer_rect, gfx::Rect(50, 50));
-    EXPECT_EQ(shared_quad_state->visible_quad_layer_rect, gfx::Rect(50, 50));
+    EXPECT_EQ(shared_quad_state->quad_layer_rect, gfx::Rect(20, 20, 30, 30));
+    EXPECT_EQ(shared_quad_state->visible_quad_layer_rect,
+              gfx::Rect(20, 20, 30, 30));
     EXPECT_EQ(shared_quad_state->clip_rect, absl::nullopt);
   }
 }
@@ -1236,6 +1237,71 @@ TEST_F(SlimLayerTreeCompositorFrameTest, Filters) {
     EXPECT_EQ(shared_quad_state->quad_layer_rect, gfx::Rect(40, 40));
     EXPECT_EQ(shared_quad_state->visible_quad_layer_rect, gfx::Rect(40, 40));
     EXPECT_EQ(shared_quad_state->clip_rect, absl::nullopt);
+  }
+}
+
+TEST_F(SlimLayerTreeCompositorFrameTest, FiltersOnNonDrawingLayer) {
+  auto root_layer = CreateSolidColorLayer(viewport_.size(), SkColors::kGray);
+  layer_tree_->SetRoot(root_layer);
+
+  auto filter_layer = cc::slim::Layer::Create();
+  filter_layer->SetFilters({cc::slim::Filter::CreateBrightness(0.5f)});
+  auto solid_color_layer =
+      CreateSolidColorLayer(gfx::Size(50, 50), SkColors::kRed);
+  filter_layer->AddChild(solid_color_layer);
+  root_layer->AddChild(filter_layer);
+
+  {
+    viz::CompositorFrame frame = ProduceFrame();
+    ASSERT_EQ(frame.render_pass_list.size(), 2u);
+    auto& child_pass = frame.render_pass_list.front();
+    ASSERT_THAT(child_pass->quad_list,
+                ElementsAre(AllOf(viz::IsSolidColorQuad(SkColors::kRed),
+                                  viz::HasRect(gfx::Rect(50, 50)),
+                                  viz::HasVisibleRect(gfx::Rect(50, 50)))));
+    EXPECT_EQ(child_pass->output_rect, gfx::Rect(50, 50));
+    EXPECT_THAT(child_pass->filters.operations(),
+                ElementsAre(cc::FilterOperation::CreateBrightnessFilter(0.5f)));
+    auto& root_pass = frame.render_pass_list.back();
+    ASSERT_THAT(
+        root_pass->quad_list,
+        ElementsAre(AllOf(viz::IsCompositorRenderPassQuad(child_pass->id),
+                          viz::HasRect(gfx::Rect(50, 50)),
+                          viz::HasVisibleRect(gfx::Rect(50, 50))),
+                    viz::IsSolidColorQuad(SkColors::kGray)));
+  }
+
+  // Clip the child pass.
+  filter_layer->SetBounds(gfx::Size(25, 25));
+  filter_layer->SetMasksToBounds(true);
+  {
+    viz::CompositorFrame frame = ProduceFrame();
+    ASSERT_EQ(frame.render_pass_list.size(), 2u);
+    auto& child_pass = frame.render_pass_list.front();
+    ASSERT_THAT(child_pass->quad_list,
+                ElementsAre(AllOf(viz::IsSolidColorQuad(SkColors::kRed),
+                                  viz::HasRect(gfx::Rect(50, 50)),
+                                  viz::HasVisibleRect(gfx::Rect(25, 25)))));
+    EXPECT_EQ(child_pass->output_rect, gfx::Rect(25, 25));
+    EXPECT_THAT(child_pass->filters.operations(),
+                ElementsAre(cc::FilterOperation::CreateBrightnessFilter(0.5f)));
+    auto& root_pass = frame.render_pass_list.back();
+    ASSERT_THAT(
+        root_pass->quad_list,
+        ElementsAre(AllOf(viz::IsCompositorRenderPassQuad(child_pass->id),
+                          viz::HasRect(gfx::Rect(25, 25)),
+                          viz::HasVisibleRect(gfx::Rect(25, 25))),
+                    viz::IsSolidColorQuad(SkColors::kGray)));
+  }
+
+  // Completely clip the child pass.
+  filter_layer->SetBounds(gfx::Size(0, 0));
+  {
+    viz::CompositorFrame frame = ProduceFrame();
+    ASSERT_EQ(frame.render_pass_list.size(), 1u);
+    auto& root_pass = frame.render_pass_list.back();
+    ASSERT_THAT(root_pass->quad_list,
+                ElementsAre(viz::IsSolidColorQuad(SkColors::kGray)));
   }
 }
 
@@ -1443,17 +1509,20 @@ TEST_F(SlimLayerTreeCompositorFrameTest, OcclusionWithRenderPass) {
     ASSERT_THAT(
         root_pass->quad_list,
         ElementsAre(AllOf(viz::IsCompositorRenderPassQuad(child_pass->id),
-                          // RenderPassQuad is not fully covered.
-                          viz::AreContentsOpaque(false)),
+                          // Pass rects shrinks to content rect.
+                          viz::HasRect(gfx::Rect(100, 25)),
+                          viz::HasVisibleRect(gfx::Rect(100, 25)),
+                          viz::AreContentsOpaque(true)),
                     AllOf(viz::IsSolidColorQuad(SkColors::kGray),
                           viz::HasRect(viewport_),
                           // Occluded by child pass.
                           viz::HasVisibleRect(gfx::Rect(0, 25, 100, 75)))));
   }
 
-  // Add another layer to fully cover the child quad.
+  // Add another layer so that the bottom right corner of the render pass is not
+  // covered.
   auto child_pass_layer_2 =
-      CreateSolidColorLayer(gfx::Size(200, 50), SkColors::kBlue);
+      CreateSolidColorLayer(gfx::Size(100, 50), SkColors::kGreen);
   child_pass_layer_2->SetPosition(gfx::PointF(0.0f, 50.0f));
   child_pass_root->AddChild(child_pass_layer_2);
   {
@@ -1461,9 +1530,9 @@ TEST_F(SlimLayerTreeCompositorFrameTest, OcclusionWithRenderPass) {
     ASSERT_EQ(frame.render_pass_list.size(), 2u);
     auto& child_pass = frame.render_pass_list.front();
     ASSERT_THAT(child_pass->quad_list,
-                ElementsAre(AllOf(viz::IsSolidColorQuad(SkColors::kBlue),
-                                  viz::HasRect(gfx::Rect(200, 50)),
-                                  viz::HasVisibleRect(gfx::Rect(200, 50))),
+                ElementsAre(AllOf(viz::IsSolidColorQuad(SkColors::kGreen),
+                                  viz::HasRect(gfx::Rect(100, 50)),
+                                  viz::HasVisibleRect(gfx::Rect(100, 50))),
                             AllOf(viz::IsSolidColorQuad(SkColors::kRed),
                                   viz::HasRect(gfx::Rect(200, 50)),
                                   viz::HasVisibleRect(gfx::Rect(200, 50)))));
@@ -1472,6 +1541,42 @@ TEST_F(SlimLayerTreeCompositorFrameTest, OcclusionWithRenderPass) {
     ASSERT_THAT(
         root_pass->quad_list,
         ElementsAre(AllOf(viz::IsCompositorRenderPassQuad(child_pass->id),
+                          viz::HasRect(gfx::Rect(100, 50)),
+                          viz::HasVisibleRect(gfx::Rect(100, 50)),
+                          // RenderPassQuad is fully covered.
+                          viz::AreContentsOpaque(false)),
+                    AllOf(viz::IsSolidColorQuad(SkColors::kGray),
+                          viz::HasRect(viewport_),
+                          // Occluded by child pass.
+                          viz::HasVisibleRect(gfx::Rect(0, 25, 100, 75)))));
+  }
+
+  // Add another layer to fully cover the child pass.
+  auto child_pass_layer_3 =
+      CreateSolidColorLayer(gfx::Size(100, 50), SkColors::kBlue);
+  child_pass_layer_3->SetPosition(gfx::PointF(100.0f, 50.0f));
+  child_pass_root->AddChild(child_pass_layer_3);
+  {
+    viz::CompositorFrame frame = ProduceFrame();
+    ASSERT_EQ(frame.render_pass_list.size(), 2u);
+    auto& child_pass = frame.render_pass_list.front();
+    ASSERT_THAT(child_pass->quad_list,
+                ElementsAre(AllOf(viz::IsSolidColorQuad(SkColors::kBlue),
+                                  viz::HasRect(gfx::Rect(100, 50)),
+                                  viz::HasVisibleRect(gfx::Rect(100, 50))),
+                            AllOf(viz::IsSolidColorQuad(SkColors::kGreen),
+                                  viz::HasRect(gfx::Rect(100, 50)),
+                                  viz::HasVisibleRect(gfx::Rect(100, 50))),
+                            AllOf(viz::IsSolidColorQuad(SkColors::kRed),
+                                  viz::HasRect(gfx::Rect(200, 50)),
+                                  viz::HasVisibleRect(gfx::Rect(200, 50)))));
+
+    auto& root_pass = frame.render_pass_list.back();
+    ASSERT_THAT(
+        root_pass->quad_list,
+        ElementsAre(AllOf(viz::IsCompositorRenderPassQuad(child_pass->id),
+                          viz::HasRect(gfx::Rect(100, 50)),
+                          viz::HasVisibleRect(gfx::Rect(100, 50)),
                           // RenderPassQuad is fully covered.
                           viz::AreContentsOpaque(true)),
                     AllOf(viz::IsSolidColorQuad(SkColors::kGray),
@@ -1480,7 +1585,7 @@ TEST_F(SlimLayerTreeCompositorFrameTest, OcclusionWithRenderPass) {
                           viz::HasVisibleRect(gfx::Rect(0, 50, 100, 50)))));
   }
 
-  // Expand child layer so it's partially occluded by child layer 2.
+  // Expand child layer so it's partially occluded by child layer 2 and 3.
   child_pass_layer->SetBounds(gfx::Size(200, 100));
   {
     viz::CompositorFrame frame = ProduceFrame();
@@ -1488,8 +1593,11 @@ TEST_F(SlimLayerTreeCompositorFrameTest, OcclusionWithRenderPass) {
     auto& child_pass = frame.render_pass_list.front();
     ASSERT_THAT(child_pass->quad_list,
                 ElementsAre(AllOf(viz::IsSolidColorQuad(SkColors::kBlue),
-                                  viz::HasRect(gfx::Rect(200, 50)),
-                                  viz::HasVisibleRect(gfx::Rect(200, 50))),
+                                  viz::HasRect(gfx::Rect(100, 50)),
+                                  viz::HasVisibleRect(gfx::Rect(100, 50))),
+                            AllOf(viz::IsSolidColorQuad(SkColors::kGreen),
+                                  viz::HasRect(gfx::Rect(100, 50)),
+                                  viz::HasVisibleRect(gfx::Rect(100, 50))),
                             AllOf(viz::IsSolidColorQuad(SkColors::kRed),
                                   viz::HasRect(gfx::Rect(200, 100)),
                                   // Partially occluded.
