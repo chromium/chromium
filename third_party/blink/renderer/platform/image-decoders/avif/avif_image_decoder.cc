@@ -297,7 +297,7 @@ void AVIFImageDecoder::OnSetData(SegmentReader* data) {
 }
 
 cc::YUVSubsampling AVIFImageDecoder::GetYUVSubsampling() const {
-  switch (decoder_->image->yuvFormat) {
+  switch (avif_yuv_format_) {
     case AVIF_PIXEL_FORMAT_YUV420:
       return cc::YUVSubsampling::k420;
     case AVIF_PIXEL_FORMAT_YUV422:
@@ -307,10 +307,16 @@ cc::YUVSubsampling AVIFImageDecoder::GetYUVSubsampling() const {
     case AVIF_PIXEL_FORMAT_YUV400:
       return cc::YUVSubsampling::kUnknown;
     case AVIF_PIXEL_FORMAT_NONE:
-    case AVIF_PIXEL_FORMAT_COUNT:
-      NOTREACHED();
+      // avif_yuv_format_ is initialized to AVIF_PIXEL_FORMAT_NONE in the
+      // constructor. If we have called SetSize() successfully at the end
+      // of UpdateDemuxer(), avif_yuv_format_ cannot possibly be
+      // AVIF_PIXEL_FORMAT_NONE.
+      CHECK(!IsDecodedSizeAvailable());
       return cc::YUVSubsampling::kUnknown;
+    case AVIF_PIXEL_FORMAT_COUNT:
+      break;
   }
+  NOTREACHED_NORETURN() << "Invalid YUV format: " << avif_yuv_format_;
 }
 
 gfx::Size AVIFImageDecoder::DecodedYUVSize(cc::YUVIndex index) const {
@@ -849,6 +855,15 @@ bool AVIFImageDecoder::UpdateDemuxer() {
       ImageIsHighBitDepth() &&
       high_bit_depth_decoding_option_ == kHighBitDepthToHalfFloat;
 
+  // Verify that AVIF_PIXEL_FORMAT_{YUV444,YUV422,YUV420,YUV400} are
+  // consecutive.
+  static_assert(AVIF_PIXEL_FORMAT_YUV422 == AVIF_PIXEL_FORMAT_YUV444 + 1);
+  static_assert(AVIF_PIXEL_FORMAT_YUV420 == AVIF_PIXEL_FORMAT_YUV422 + 1);
+  static_assert(AVIF_PIXEL_FORMAT_YUV400 == AVIF_PIXEL_FORMAT_YUV420 + 1);
+  // Assert that container->yuvFormat is one of the four YUV formats in AV1.
+  CHECK(container->yuvFormat >= AVIF_PIXEL_FORMAT_YUV444 &&
+        container->yuvFormat <= AVIF_PIXEL_FORMAT_YUV400)
+      << "Invalid YUV format: " << container->yuvFormat;
   avif_yuv_format_ = container->yuvFormat;
   avifPixelFormatInfo format_info;
   avifGetPixelFormatInfo(container->yuvFormat, &format_info);
