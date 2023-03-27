@@ -1066,6 +1066,7 @@
 ../core/testing/data/move_range_selection_extent_input_field.html
 ../core/testing/data/navigate_to_same.html
 ../core/testing/data/navigation-api/onnavigate-preventDefault.html
+../core/testing/data/navigation-api/onnavigate-window-stop.html
 ../core/testing/data/no_scale_for_you.html
 ../core/testing/data/no_viewport_tag.html
 ../core/testing/data/nodeimage.html
