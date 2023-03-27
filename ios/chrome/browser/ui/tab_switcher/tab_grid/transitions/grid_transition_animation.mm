@@ -473,7 +473,7 @@ CGFloat CalculateResizeDampingCorrection(GridTransitionLayout* layout) {
   [cell positionCellViews];
 }
 
-// Prepares all of the items for an expansion anumation.
+// Prepares all of the items for an expansion animation.
 - (void)prepareAllItemsForExpansion {
   for (GridTransitionItem* item in self.layout.inactiveItems) {
     [self positionItemInGrid:item];
