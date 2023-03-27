@@ -132,6 +132,7 @@ chrome_junit_test_java_sources = [
   "junit/src/org/chromium/chrome/browser/customtabs/features/partialcustomtab/PartialCustomTabHandleStrategyFactoryTest.java",
   "junit/src/org/chromium/chrome/browser/customtabs/features/partialcustomtab/PartialCustomTabSideSheetStrategyTest.java",
   "junit/src/org/chromium/chrome/browser/customtabs/features/partialcustomtab/PartialCustomTabTestRule.java",
+  "junit/src/org/chromium/chrome/browser/customtabs/features/partialcustomtab/PartialCustomTabVersionCompatTest.java",
   "junit/src/org/chromium/chrome/browser/customtabs/features/sessionrestore/SessionRestoreManagerUnitTest.java",
   "junit/src/org/chromium/chrome/browser/customtabs/features/sessionrestore/SessionRestoreMessageControllerUnitTest.java",
   "junit/src/org/chromium/chrome/browser/customtabs/features/sessionrestore/SessionRestoreUtilsUnitTest.java",
