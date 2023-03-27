@@ -331,7 +331,6 @@ class LenientFakeBackgroundTracingManager
     return true;
   }
 
-  void WhenIdle(IdleCallback idle_callback) override {}
   bool HasTraceToUpload() override { return false; }
   std::string GetLatestTraceToUpload() override { return std::string(); }
   std::unique_ptr<content::BackgroundTracingConfig> GetBackgroundTracingConfig(

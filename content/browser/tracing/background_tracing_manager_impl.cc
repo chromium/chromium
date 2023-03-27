@@ -359,16 +359,6 @@ void BackgroundTracingManagerImpl::OnStartTracingDone() {
   }
 }
 
-void BackgroundTracingManagerImpl::WhenIdle(
-    base::RepeatingClosure idle_callback) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  idle_callback_ = std::move(idle_callback);
-
-  if (!active_scenario_) {
-    idle_callback_.Run();
-  }
-}
-
 bool BackgroundTracingManagerImpl::IsAllowedFinalization(
     bool is_crash_scenario) const {
   return !delegate_ ||
@@ -408,10 +398,6 @@ void BackgroundTracingManagerImpl::OnScenarioAborted() {
 
   for (auto* observer : background_tracing_observers_) {
     observer->OnScenarioAborted();
-  }
-
-  if (!idle_callback_.is_null()) {
-    idle_callback_.Run();
   }
 }
 

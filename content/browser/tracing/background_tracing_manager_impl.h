@@ -120,7 +120,6 @@ class BackgroundTracingManagerImpl : public BackgroundTracingManager {
   CONTENT_EXPORT BackgroundTracingActiveScenario* GetActiveScenarioForTesting();
   CONTENT_EXPORT void InvalidateTriggersCallbackForTesting();
   CONTENT_EXPORT bool IsTracingForTesting();
-  void WhenIdle(IdleCallback idle_callback) override;
   CONTENT_EXPORT void AbortScenarioForTesting() override;
   CONTENT_EXPORT void SetTraceToUploadForTesting(
       std::unique_ptr<std::string> trace_data) override;
@@ -158,8 +157,6 @@ class BackgroundTracingManagerImpl : public BackgroundTracingManager {
 
   std::map<int, mojo::Remote<tracing::mojom::BackgroundTracingAgentProvider>>
       pending_agents_;
-
-  IdleCallback idle_callback_;
 
   // This field contains serialized trace log proto.
   std::string trace_to_upload_;

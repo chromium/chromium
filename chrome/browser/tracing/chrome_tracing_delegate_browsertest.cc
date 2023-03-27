@@ -174,11 +174,9 @@ IN_PROC_BROWSER_TEST_F(ChromeTracingDelegateBrowserTest,
       R"({"state":3,"upload_times":[{"scenario":"TestScenario","time":"*"}]})"))
       << "Actual: " << state;
 
+  TestBackgroundTracingHelper background_tracing_helper;
   content::BackgroundTracingManager::GetInstance().AbortScenarioForTesting();
-  base::RunLoop wait_for_abort;
-  content::BackgroundTracingManager::GetInstance().WhenIdle(
-      wait_for_abort.QuitClosure());
-  wait_for_abort.Run();
+  background_tracing_helper.WaitForScenarioAborted();
 
   EXPECT_FALSE(
       content::BackgroundTracingManager::GetInstance().HasActiveScenario());
@@ -307,11 +305,9 @@ IN_PROC_BROWSER_TEST_F(ChromeTracingDelegateBrowserTest,
   WaitForUpload();
   EXPECT_EQ(get_receive_count(), 1);
 
+  TestBackgroundTracingHelper background_tracing_helper;
   content::BackgroundTracingManager::GetInstance().AbortScenarioForTesting();
-  base::RunLoop wait_for_abort;
-  content::BackgroundTracingManager::GetInstance().WhenIdle(
-      wait_for_abort.QuitClosure());
-  wait_for_abort.Run();
+  background_tracing_helper.WaitForScenarioAborted();
 
   EXPECT_FALSE(
       content::BackgroundTracingManager::GetInstance().HasActiveScenario());
@@ -339,11 +335,11 @@ IN_PROC_BROWSER_TEST_F(ChromeTracingDelegateBrowserTest,
   WaitForUpload();
   EXPECT_EQ(get_receive_count(), 1);
 
-  content::BackgroundTracingManager::GetInstance().AbortScenarioForTesting();
-  base::RunLoop wait_for_abort;
-  content::BackgroundTracingManager::GetInstance().WhenIdle(
-      wait_for_abort.QuitClosure());
-  wait_for_abort.Run();
+  {
+    TestBackgroundTracingHelper background_tracing_helper;
+    content::BackgroundTracingManager::GetInstance().AbortScenarioForTesting();
+    background_tracing_helper.WaitForScenarioAborted();
+  }
 
   EXPECT_FALSE(
       content::BackgroundTracingManager::GetInstance().HasActiveScenario());

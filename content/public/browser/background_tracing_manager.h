@@ -98,11 +98,6 @@ class BackgroundTracingManager {
       ReceiveCallback receive_callback,
       DataFiltering data_filtering) = 0;
 
-  // Notifies the caller when the manager is idle (not recording or uploading),
-  // so that a call to SetActiveScenario() is likely to succeed.
-  using IdleCallback = base::RepeatingCallback<void()>;
-  virtual void WhenIdle(IdleCallback idle_callback) = 0;
-
   // Notifies that a manual trigger event has occurred. Returns true if the
   // trigger caused a scenario to either begin recording or finalize the trace
   // depending on the config, or false if the trigger had no effect. If the
