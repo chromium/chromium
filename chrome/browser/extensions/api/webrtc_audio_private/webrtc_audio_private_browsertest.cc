@@ -223,8 +223,8 @@ IN_PROC_BROWSER_TEST_F(WebrtcAudioPrivateTest, TriggerEvent) {
   service->OnDevicesChanged(base::SystemMonitor::DEVTYPE_AUDIO);
 
   // Check that the extension got the notification.
-  std::string result = ExecuteScriptInBackgroundPage(extension->id(),
-                                                     "reportIfGot()");
+  std::string result =
+      ExecuteScriptInBackgroundPageDeprecated(extension->id(), "reportIfGot()");
   EXPECT_EQ("true", result);
 }
 

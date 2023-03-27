@@ -390,6 +390,16 @@ class DeclarativeNetRequestBrowserTest
       EXPECT_FALSE(IsNavigationBlocked(url)) << url;
   }
 
+  std::string ExecuteScriptInBackgroundPageAndReturnString(
+      const std::string& extension_id,
+      const std::string& script,
+      browsertest_util::ScriptUserActivation script_user_activation =
+          browsertest_util::ScriptUserActivation::kActivate) {
+    base::Value result = ExecuteScriptInBackgroundPage(extension_id, script,
+                                                       script_user_activation);
+    return result.is_string() ? result.GetString() : "";
+  }
+
   TestRule CreateMainFrameBlockRule(const std::string& filter) {
     TestRule rule = CreateGenericRule();
     rule.condition->url_filter = filter;
@@ -441,7 +451,7 @@ class DeclarativeNetRequestBrowserTest
       chrome.declarativeNetRequest.updateStaticRules(
           {rulesetId: $1, disableRuleIds: $2, enableRuleIds: $3},
           () => {
-            window.domAutomationController.send(chrome.runtime.lastError ?
+            chrome.test.sendScriptResult(chrome.runtime.lastError ?
                 chrome.runtime.lastError.message : 'success');
           });
     )";
@@ -458,8 +468,9 @@ class DeclarativeNetRequestBrowserTest
     const std::string script = content::JsReplace(
         kScript, ruleset_id, base::Value(std::move(ids_to_disable)),
         base::Value(std::move(ids_to_enable)));
-    std::string result = ExecuteScriptInBackgroundPage(extension_id, script);
 
+    std::string result =
+        ExecuteScriptInBackgroundPageAndReturnString(extension_id, script);
     ASSERT_EQ("success", result);
   }
 
@@ -478,18 +489,18 @@ class DeclarativeNetRequestBrowserTest
           {rulesetId: $1},
           (disabledRuleIds) => {
             if (chrome.runtime.lastError) {
-              window.domAutomationController.send(
+              chrome.test.sendScriptResult(
                   'error: ' + chrome.runtime.lastError.message);
               return;
             }
             if (!disabledRuleIds) {
-              window.domAutomationController.send('no result');
+              chrome.test.sendScriptResult('no result');
               return;
             }
 
             let actual = JSON.stringify(disabledRuleIds);
             let expected = JSON.stringify($2);
-            window.domAutomationController.send(actual == expected
+            chrome.test.sendScriptResult(actual == expected
                 ? 'success'
                 : ['expected:', expected, '; actual:', actual].join(''));
           });
@@ -498,7 +509,7 @@ class DeclarativeNetRequestBrowserTest
                                      .Append(expected_disabled_rule_ids.begin(),
                                              expected_disabled_rule_ids.end())
                                      .Build();
-    std::string result = ExecuteScriptInBackgroundPage(
+    std::string result = ExecuteScriptInBackgroundPageAndReturnString(
         extension_id,
         content::JsReplace(kScript, ruleset_id_string, std::move(expected)));
     ASSERT_EQ("success", result);
@@ -521,13 +532,13 @@ class DeclarativeNetRequestBrowserTest
     static constexpr char kSetExtensionActionOptionsScript[] = R"(
       chrome.declarativeNetRequest.setExtensionActionOptions(%s,
         () => {
-          window.domAutomationController.send(chrome.runtime.lastError ?
+          chrome.test.sendScriptResult(chrome.runtime.lastError ?
               chrome.runtime.lastError.message : 'success');
         }
       );
     )";
 
-    return ExecuteScriptInBackgroundPage(
+    return ExecuteScriptInBackgroundPageAndReturnString(
         extension_id,
         base::StringPrintf(kSetExtensionActionOptionsScript, options.c_str()));
   }
@@ -558,7 +569,7 @@ class DeclarativeNetRequestBrowserTest
   // E.g. "<rule_1>,<tab_1>|<rule_2>,<tab_2>|<rule_3>,<tab_3>"
   std::string GetRuleAndTabIdsMatched(const ExtensionId& extension_id,
                                       absl::optional<int> tab_id) {
-    const char kGetMatchedRulesScript[] = R"(
+    static constexpr char kGetMatchedRulesScript[] = R"(
       chrome.declarativeNetRequest.getMatchedRules({%s}, (rules) => {
         // |ruleAndTabIds| is a list of `${ruleId},${tabId}`
         var ruleAndTabIds = rules.rulesMatchedInfo.map(rule => {
@@ -570,13 +581,13 @@ class DeclarativeNetRequestBrowserTest
         }).map(ruleAndTabId => ruleAndTabId.join());
 
         // Join the comma separated (ruleId,tabId) pairs with '|'.
-        window.domAutomationController.send(ruleAndTabIds.join('|'));
+        chrome.test.sendScriptResult(ruleAndTabIds.join('|'));
       });
     )";
 
     std::string tab_id_param =
         tab_id ? base::StringPrintf("tabId: %d", *tab_id) : "";
-    return ExecuteScriptInBackgroundPage(
+    return ExecuteScriptInBackgroundPageAndReturnString(
         extension_id,
         base::StringPrintf(kGetMatchedRulesScript, tab_id_param.c_str()),
         browsertest_util::ScriptUserActivation::kDontActivate);
@@ -594,15 +605,15 @@ class DeclarativeNetRequestBrowserTest
       absl::optional<base::Time> timestamp,
       browsertest_util::ScriptUserActivation script_user_activation =
           browsertest_util::ScriptUserActivation::kDontActivate) {
-    const char kGetMatchedRulesScript[] = R"(
+    static constexpr char kGetMatchedRulesScript[] = R"(
       chrome.declarativeNetRequest.getMatchedRules(%s, (rules) => {
         if (chrome.runtime.lastError) {
-          window.domAutomationController.send(chrome.runtime.lastError.message);
+          chrome.test.sendScriptResult(chrome.runtime.lastError.message);
           return;
         }
 
         var rule_count = rules.rulesMatchedInfo.length;
-        window.domAutomationController.send(rule_count.toString());
+        chrome.test.sendScriptResult(rule_count.toString());
       });
     )";
 
@@ -615,25 +626,25 @@ class DeclarativeNetRequestBrowserTest
                                  timestamp_in_js)
             : base::StringPrintf("{minTimeStamp: %f}", timestamp_in_js);
 
-    return ExecuteScriptInBackgroundPage(
+    return ExecuteScriptInBackgroundPageAndReturnString(
         extension_id,
         base::StringPrintf(kGetMatchedRulesScript, param_string.c_str()),
         script_user_activation);
   }
 
   std::string GetAvailableStaticRuleCount(const ExtensionId& extension_id) {
-    const char kGetAvailableStaticRuleCountScript[] = R"(
+    static constexpr char kGetAvailableStaticRuleCountScript[] = R"(
       chrome.declarativeNetRequest.getAvailableStaticRuleCount((rule_count) => {
         if (chrome.runtime.lastError) {
-          window.domAutomationController.send(chrome.runtime.lastError.message);
+          chrome.test.sendScriptResult(chrome.runtime.lastError.message);
           return;
         }
 
-        window.domAutomationController.send(rule_count.toString());
+        chrome.test.sendScriptResult(rule_count.toString());
       });
     )";
 
-    return ExecuteScriptInBackgroundPage(
+    return ExecuteScriptInBackgroundPageAndReturnString(
         extension_id, kGetAvailableStaticRuleCountScript,
         browsertest_util::ScriptUserActivation::kDontActivate);
   }
@@ -707,7 +718,7 @@ class DeclarativeNetRequestBrowserTest
       chrome.declarativeNetRequest.%s(
         {addRules: $1, removeRuleIds: $2},
         function() {
-          window.domAutomationController.send(chrome.runtime.lastError ?
+          chrome.test.sendScriptResult(chrome.runtime.lastError ?
               chrome.runtime.lastError.message : 'success');
         });
     )";
@@ -737,7 +748,8 @@ class DeclarativeNetRequestBrowserTest
         content::JsReplace(base::StringPrintf(kScript, function_name),
                            base::Value(rules_to_add_builder.Build()),
                            base::Value(std::move(rule_ids_to_remove_value)));
-    ASSERT_EQ("success", ExecuteScriptInBackgroundPage(extension_id, script));
+    ASSERT_EQ("success", ExecuteScriptInBackgroundPageAndReturnString(
+                             extension_id, script));
   }
 
   // Helper to load an extension. |has_dynamic_ruleset| should be true if the
@@ -863,7 +875,7 @@ class DeclarativeNetRequestBrowserTest
         disableRulesetIds: $1,
         enableRulesetIds: $2
       }, () => {
-        window.domAutomationController.send(chrome.runtime.lastError ?
+        chrome.test.sendScriptResult(chrome.runtime.lastError ?
             chrome.runtime.lastError.message : 'success');
       });
     )";
@@ -880,7 +892,7 @@ class DeclarativeNetRequestBrowserTest
     const std::string script =
         content::JsReplace(kScript, base::Value(std::move(ids_to_remove)),
                            base::Value(std::move(ids_to_add)));
-    return ExecuteScriptInBackgroundPage(extension_id, script);
+    return ExecuteScriptInBackgroundPageAndReturnString(extension_id, script);
   }
 
   void InitializeHttpsServer() {
@@ -3305,7 +3317,7 @@ IN_PROC_BROWSER_TEST_P(DeclarativeNetRequestBrowserTest,
   // separated pairs of <rule_id>,<ruleset_id>, sorted by rule ids, e.g.
   // "ruleId1,rulesetId1|ruleId2,rulesetId2".
   auto get_matched_rules = [this](int tab_id) {
-    const char kGetMatchedRulesScript[] = R"(
+    static constexpr char kGetMatchedRulesScript[] = R"(
       chrome.declarativeNetRequest.getMatchedRules({tabId: %d}, (matches) => {
         // Sort by |ruleId|.
         matches.rulesMatchedInfo.sort((a, b) => a.rule.ruleId - b.rule.ruleId);
@@ -3313,11 +3325,11 @@ IN_PROC_BROWSER_TEST_P(DeclarativeNetRequestBrowserTest,
         var ruleAndRulesetIDs = matches.rulesMatchedInfo.map(
           match => [match.rule.ruleId, match.rule.rulesetId].join());
 
-        window.domAutomationController.send(ruleAndRulesetIDs.join('|'));
+        chrome.test.sendScriptResult(ruleAndRulesetIDs.join('|'));
       });
     )";
 
-    return ExecuteScriptInBackgroundPage(
+    return ExecuteScriptInBackgroundPageAndReturnString(
         last_loaded_extension_id(),
         base::StringPrintf(kGetMatchedRulesScript, tab_id),
         browsertest_util::ScriptUserActivation::kDontActivate);
@@ -3357,7 +3369,7 @@ IN_PROC_BROWSER_TEST_P(DeclarativeNetRequestBrowserTest, WebRequestEvents) {
                                             "/pages_with_script/index.html");
 
   // Set up web request listeners listening to request to |url|.
-  const char kWebRequestListenerScript[] = R"(
+  static constexpr char kWebRequestListenerScript[] = R"(
     let filter = {'urls' : ['%s'], 'types' : ['main_frame']};
 
     let onBeforeRequestSeen = false;
@@ -3414,7 +3426,7 @@ IN_PROC_BROWSER_TEST_P(DeclarativeNetRequestBrowserTest, WebRequestPriority) {
                              {URLPattern::kAllUrlsPattern}));
 
   // Set up a web request listener to block the request to example.com.
-  const char kWebRequestBlockScript[] = R"(
+  static constexpr char kWebRequestBlockScript[] = R"(
     let filter = {'urls' : ['%s'], 'types' : ['main_frame']};
     chrome.webRequest.onBeforeRequest.addListener((details) => {
       chrome.test.sendMessage('SEEN')
@@ -3571,11 +3583,11 @@ IN_PROC_BROWSER_TEST_P(DeclarativeNetRequestBrowserTest,
   auto query_badge_text = [this](const ExtensionId& extension_id, int tab_id) {
     static constexpr char kBadgeTextQueryScript[] = R"(
         chrome.browserAction.getBadgeText({tabId: %d}, badgeText => {
-          window.domAutomationController.send(badgeText);
+          chrome.test.sendScriptResult(badgeText);
         });
       )";
 
-    return ExecuteScriptInBackgroundPage(
+    return ExecuteScriptInBackgroundPageAndReturnString(
         extension_id, base::StringPrintf(kBadgeTextQueryScript, tab_id));
   };
 
@@ -4226,13 +4238,14 @@ IN_PROC_BROWSER_TEST_P(DeclarativeNetRequestBrowserTest,
   ASSERT_NO_FATAL_FAILURE(LoadExtensionWithRules(
       {}, "test_extension", {URLPattern::kAllUrlsPattern}));
 
-  const char kGetOnRuleMatchedDebugScript[] = R"(
+  static constexpr char kGetOnRuleMatchedDebugScript[] = R"(
     const hasEvent = !!chrome.declarativeNetRequest.onRuleMatchedDebug ?
       'true' : 'false';
-    window.domAutomationController.send(hasEvent);
+    chrome.test.sendScriptResult(hasEvent);
   )";
-  std::string actual_event_availability = ExecuteScriptInBackgroundPage(
-      last_loaded_extension_id(), kGetOnRuleMatchedDebugScript);
+  std::string actual_event_availability =
+      ExecuteScriptInBackgroundPageAndReturnString(
+          last_loaded_extension_id(), kGetOnRuleMatchedDebugScript);
 
   std::string expected_event_availability =
       GetParam() == ExtensionLoadType::UNPACKED ? "true" : "false";
@@ -4280,7 +4293,7 @@ IN_PROC_BROWSER_TEST_P(DeclarativeNetRequestBrowserTest_Unpacked,
   ASSERT_TRUE(WasFrameWithScriptLoaded(GetPrimaryMainFrame()));
 
   // Start the onRuleMatchedDebug observer.
-  const char kOnRuleMatchedDebugScript[] = R"(
+  static constexpr char kOnRuleMatchedDebugScript[] = R"(
     var matchedRules = [];
     var onRuleMatchedDebugCallback = (rule) => {
       matchedRules.push(rule);
@@ -4288,7 +4301,7 @@ IN_PROC_BROWSER_TEST_P(DeclarativeNetRequestBrowserTest_Unpacked,
 
     chrome.declarativeNetRequest.onRuleMatchedDebug.addListener(
       onRuleMatchedDebugCallback);
-    window.domAutomationController.send('ready');
+    chrome.test.sendScriptResult('ready');
   )";
 
   ASSERT_EQ("ready", ExecuteScriptInBackgroundPage(last_loaded_extension_id(),
@@ -4300,14 +4313,14 @@ IN_PROC_BROWSER_TEST_P(DeclarativeNetRequestBrowserTest_Unpacked,
   NavigateFrame(kFrameName1, set_cookie_and_referer_url);
 
   // Now query the onRuleMatchedDebug results.
-  const char kQueryMatchedRulesScript[] = R"(
+  static constexpr char kQueryMatchedRulesScript[] = R"(
     chrome.declarativeNetRequest.onRuleMatchedDebug.removeListener(
       onRuleMatchedDebugCallback);
     var ruleIds = matchedRules.map(matchedRule => matchedRule.rule.ruleId);
-    window.domAutomationController.send(ruleIds.sort().join());
+    chrome.test.sendScriptResult(ruleIds.sort().join());
   )";
 
-  std::string matched_rule_ids = ExecuteScriptInBackgroundPage(
+  std::string matched_rule_ids = ExecuteScriptInBackgroundPageAndReturnString(
       last_loaded_extension_id(), kQueryMatchedRulesScript);
 
   // The request to |set_cookie_and_referer_url| should be matched with the
@@ -4567,17 +4580,17 @@ IN_PROC_BROWSER_TEST_P(DeclarativeNetRequestBrowserTest,
   // |start_time|.
   NavigateFrame(kFrameName1, sub_frame_url);
 
-  const char getMatchedRuleTimestampScript[] = R"(
+  static constexpr char getMatchedRuleTimestampScript[] = R"(
     chrome.declarativeNetRequest.getMatchedRules((rules) => {
       var rule_count = rules.rulesMatchedInfo.length;
       var timestamp = rule_count === 1 ?
           rules.rulesMatchedInfo[0].timeStamp.toString() : '';
 
-      window.domAutomationController.send(timestamp);
+      chrome.test.sendScriptResult(timestamp);
     });
   )";
 
-  std::string timestamp_string = ExecuteScriptInBackgroundPage(
+  std::string timestamp_string = ExecuteScriptInBackgroundPageAndReturnString(
       extension_id, getMatchedRuleTimestampScript,
       browsertest_util::ScriptUserActivation::kDontActivate);
 
@@ -5662,7 +5675,7 @@ IN_PROC_BROWSER_TEST_P(DeclarativeNetRequestSubresourceWebBundlesBrowserTest,
   rules.push_back(rule);
   ASSERT_NO_FATAL_FAILURE(LoadExtensionWithRules(rules));
 
-  const char kPageHtml[] = R"(
+  static constexpr char kPageHtml[] = R"(
         <title>Loaded</title>
         <body>
         <script>
@@ -5744,7 +5757,7 @@ IN_PROC_BROWSER_TEST_P(DeclarativeNetRequestSubresourceWebBundlesBrowserTest,
   rules.push_back(rule);
   ASSERT_NO_FATAL_FAILURE(LoadExtensionWithRules(rules));
 
-  const char kPageHtml[] = R"(
+  static constexpr char kPageHtml[] = R"(
         <title>Loaded</title>
         <body>
         <script>
@@ -5805,9 +5818,9 @@ IN_PROC_BROWSER_TEST_P(DeclarativeNetRequestSubresourceWebBundlesBrowserTest,
 // inside the web bundle whose URL is uuid-in-package:.
 IN_PROC_BROWSER_TEST_P(DeclarativeNetRequestSubresourceWebBundlesBrowserTest,
                        RequestCanceledUuidInPackageUrl) {
-  const char pass_js_url[] =
+  static constexpr char pass_js_url[] =
       "uuid-in-package:fc80c15b-69e9-4a45-ab41-9c90d2b55976";
-  const char cancel_js_url[] =
+  static constexpr char cancel_js_url[] =
       "uuid-in-package:15d749ad-7d9f-49d9-94f7-83a866e7fef8";
   TestRule rule = CreateGenericRule();
   std::vector<TestRule> rules;
@@ -5877,7 +5890,7 @@ IN_PROC_BROWSER_TEST_P(DeclarativeNetRequestSubresourceWebBundlesBrowserTest,
 // subresources inside the web bundle.
 IN_PROC_BROWSER_TEST_P(DeclarativeNetRequestSubresourceWebBundlesBrowserTest,
                        RequestRedirected) {
-  const char kPageHtml[] = R"(
+  static constexpr char kPageHtml[] = R"(
         <title>Loaded</title>
         <body>
         <script>
@@ -6398,7 +6411,7 @@ IN_PROC_BROWSER_TEST_P(DeclarativeNetRequestBrowserTest,
       {"excluded", "DELETE,GET,HEAD,POST,PUT"},
       {"combination", "GET"}};
 
-  const char kPerformRequestWithAllMethodsScript[] = R"(
+  static constexpr char kPerformRequestWithAllMethodsScript[] = R"(
     {
       const allRequestMethods = ["DELETE", "GET", "HEAD", "OPTIONS", "PATCH",
                                  "POST", "PUT", "UNKNOWN"];
@@ -6477,7 +6490,7 @@ IN_PROC_BROWSER_TEST_P(DeclarativeNetRequestBrowserTest,
   std::string websocket_url =
       websocket_test_server.GetURL("echo-with-no-extension").spec();
 
-  const char kOpenWebSocketsScript[] = R"(
+  static constexpr char kOpenWebSocketsScript[] = R"(
     {
       const websocketUrl = "%s";
       const testCases = ["default", "all_methods", "some_methods",
@@ -6563,7 +6576,7 @@ IN_PROC_BROWSER_TEST_P(DeclarativeNetRequestWebTransportTest, BlockRequests) {
   ASSERT_TRUE(
       ui_test_utils::NavigateToURL(browser(), https_server()->GetURL("/echo")));
 
-  const char kOpenWebTransportScript[] = R"((
+  static constexpr char kOpenWebTransportScript[] = R"((
     async () =>
     {
       const testCases = ["echo1_default", "echo2_include", "echo3_exclude" ];
@@ -6601,8 +6614,8 @@ IN_PROC_BROWSER_TEST_P(DeclarativeNetRequestWebTransportTest, BlockRequests) {
 // and that if they try to redirect requests, the request is blocked, instead of
 // being redirected.
 IN_PROC_BROWSER_TEST_P(DeclarativeNetRequestBrowserTest, FledgeAuctionScripts) {
-  const char kAddedHeaderName[] = "Header-Name";
-  const char kAddedHeaderValue[] = "Header-Value";
+  static constexpr char kAddedHeaderName[] = "Header-Name";
+  static constexpr char kAddedHeaderValue[] = "Header-Value";
 
   ASSERT_TRUE(https_server()->Start());
 

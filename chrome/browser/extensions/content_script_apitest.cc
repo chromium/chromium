@@ -1023,14 +1023,14 @@ IN_PROC_BROWSER_TEST_F(ContentScriptApiTest, ContentScriptSameSiteCookies) {
   ASSERT_TRUE(extension);
   GURL url = embedded_test_server()->GetURL("a.com", "/extensions/body1.html");
   ResultCatcher catcher;
-  constexpr char kScript[] =
+  static constexpr char kScript[] =
       R"(chrome.tabs.create({url: '%s'}, () => {
            let message = 'success';
            if (chrome.runtime.lastError)
              message = chrome.runtime.lastError.message;
-           domAutomationController.send(message);
+           chrome.test.sendScriptResult(message);
          });)";
-  std::string result = ExecuteScriptInBackgroundPage(
+  base::Value result = ExecuteScriptInBackgroundPage(
       extension->id(), base::StringPrintf(kScript, url.spec().c_str()));
 
   EXPECT_EQ("success", result);
@@ -1044,21 +1044,22 @@ IN_PROC_BROWSER_TEST_F(ContentScriptApiTest, ExecuteScriptFileSameSiteCookies) {
   ASSERT_TRUE(extension);
   GURL url = embedded_test_server()->GetURL("b.com", "/extensions/body1.html");
   ResultCatcher catcher;
-  constexpr char kScript[] =
+  static constexpr char kScript[] =
       R"(chrome.tabs.create({url: '%s'}, (tab) => {
            if (chrome.runtime.lastError) {
-             domAutomationController.send(chrome.runtime.lastError.message);
+             chrome.test.sendScriptResult(chrome.runtime.lastError.message);
              return;
            }
            chrome.tabs.executeScript(tab.id, {file: 'cookies.js'}, () => {
              let message = 'success';
              if (chrome.runtime.lastError)
                message = chrome.runtime.lastError.message;
-             domAutomationController.send(message);
+             chrome.test.sendScriptResult(message);
            });
          });)";
-  std::string result = ExecuteScriptInBackgroundPage(
+  base::Value result = ExecuteScriptInBackgroundPage(
       extension->id(), base::StringPrintf(kScript, url.spec().c_str()));
+  ASSERT_TRUE(result.is_string());
 
   EXPECT_EQ("success", result);
   EXPECT_TRUE(catcher.GetNextResult()) << catcher.message();
@@ -1071,10 +1072,10 @@ IN_PROC_BROWSER_TEST_F(ContentScriptApiTest, ExecuteScriptCodeSameSiteCookies) {
   ASSERT_TRUE(extension);
   GURL url = embedded_test_server()->GetURL("b.com", "/extensions/body1.html");
   ResultCatcher catcher;
-  constexpr char kScript[] =
+  static constexpr char kScript[] =
       R"(chrome.tabs.create({url: '%s'}, (tab) => {
            if (chrome.runtime.lastError) {
-             domAutomationController.send(chrome.runtime.lastError.message);
+             chrome.test.sendScriptResult(chrome.runtime.lastError.message);
              return;
            }
            fetch(chrome.runtime.getURL('cookies.js')).then((response) => {
@@ -1084,14 +1085,15 @@ IN_PROC_BROWSER_TEST_F(ContentScriptApiTest, ExecuteScriptCodeSameSiteCookies) {
                let message = 'success';
                if (chrome.runtime.lastError)
                  message = chrome.runtime.lastError.message;
-               domAutomationController.send(message);
+               chrome.test.sendScriptResult(message);
              });
            }).catch((e) => {
-             domAutomationController.send(e);
+             chrome.test.sendScriptResult(e);
            });
          });)";
-  std::string result = ExecuteScriptInBackgroundPage(
+  base::Value result = ExecuteScriptInBackgroundPage(
       extension->id(), base::StringPrintf(kScript, url.spec().c_str()));
+  ASSERT_TRUE(result.is_string());
 
   EXPECT_EQ("success", result);
   EXPECT_TRUE(catcher.GetNextResult()) << catcher.message();

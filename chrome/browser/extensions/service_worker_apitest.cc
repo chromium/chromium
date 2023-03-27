@@ -1253,7 +1253,7 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerTest,
   const char* kScript = R"(
     let channel = new MessageChannel();
     test.waitForMessage(channel.port1).then(message => {
-      window.domAutomationController.send(message);
+      chrome.test.sendScriptResult(message);
     });
     test.registeredServiceWorker.postMessage(
         {port: channel.port2}, [channel.port2]);
@@ -1291,7 +1291,8 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerTest, OnBeforeRequest) {
   EXPECT_EQ("hello", result);
   EXPECT_EQ(
       "/extensions/api_test/service_worker/webrequest/hello.txt?fallthrough",
-      ExecuteScriptInBackgroundPage(extension->id(), "getLastHookedPath()"));
+      ExecuteScriptInBackgroundPageDeprecated(extension->id(),
+                                              "getLastHookedPath()"));
 
   // Initiate a fetch that results in calling fetch() in the service worker.
   result.clear();
@@ -1301,7 +1302,8 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerTest, OnBeforeRequest) {
   EXPECT_EQ(
       "/extensions/api_test/service_worker/webrequest/"
       "hello.txt?respondWithFetch",
-      ExecuteScriptInBackgroundPage(extension->id(), "getLastHookedPath()"));
+      ExecuteScriptInBackgroundPageDeprecated(extension->id(),
+                                              "getLastHookedPath()"));
 }
 
 IN_PROC_BROWSER_TEST_F(ServiceWorkerTest, SWServedBackgroundPageReceivesEvent) {
@@ -1378,7 +1380,7 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerTest,
       "  messagePromise = test.waitForMessage(navigator.serviceWorker);\n"
       "}\n"
       "messagePromise.then(function(message) {\n"
-      "  window.domAutomationController.send(String(message == 'success'));\n"
+      "  chrome.test.sendScriptResult(String(message == 'success'));\n"
       "})\n";
   EXPECT_EQ("true", ExecuteScriptInBackgroundPage(extension->id(), kScript));
 }
@@ -1393,7 +1395,7 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerTest,
   const char* kScript =
       "var mc = new MessageChannel();\n"
       "test.waitForMessage(mc.port1).then(function(message) {\n"
-      "  window.domAutomationController.send(String(message == 'hello'));\n"
+      "  chrome.test.sendScriptResult(String(message == 'hello'));\n"
       "});\n"
       "test.registeredServiceWorker.postMessage(\n"
       "    {message: 'hello', port: mc.port2}, [mc.port2])\n";

@@ -149,15 +149,15 @@ void SetActionVisibleOnTab(Profile* profile,
   ASSERT_TRUE(extension_action);
   EXPECT_FALSE(extension_action->GetIsVisible(tab_id));
 
-  constexpr char kScriptTemplate[] =
+  static constexpr char kScriptTemplate[] =
       R"(chrome.pageAction.show(%d, () => {
-           domAutomationController.send(
+           chrome.test.sendScriptResult(
                chrome.runtime.lastError ?
                    chrome.runtime.lastError.message :
                    'success');
          });)";
 
-  std::string set_result = browsertest_util::ExecuteScriptInBackgroundPage(
+  base::Value set_result = browsertest_util::ExecuteScriptInBackgroundPage(
       profile, extension.id(), base::StringPrintf(kScriptTemplate, tab_id));
   EXPECT_EQ("success", set_result);
   EXPECT_TRUE(extension_action->GetIsVisible(tab_id));
@@ -195,13 +195,13 @@ void SendKeyPressToAction(Browser* browser,
   // rather than using WaitUntilSatisfied(), which in turn allows this method
   // to exercise both the case of expecting dispatch and expecting *not* to
   // dispatch.
-  constexpr char kScript[] =
+  static constexpr char kScript[] =
       R"(chrome.test.sendMessage(
              'run loop hack',
              () => {
-               domAutomationController.send('success');
+               chrome.test.sendScriptResult('success');
              });)";
-  std::string set_result = browsertest_util::ExecuteScriptInBackgroundPage(
+  base::Value set_result = browsertest_util::ExecuteScriptInBackgroundPage(
       profile, extension.id(), kScript);
   EXPECT_EQ("success", set_result);
   EXPECT_EQ(expect_dispatch, click_listener.was_satisfied());

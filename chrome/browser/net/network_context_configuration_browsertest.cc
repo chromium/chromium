@@ -840,10 +840,10 @@ IN_PROC_BROWSER_TEST_P(NetworkContextConfigurationBrowserTest,
   std::string script = R"((url => {
     var xhr = new XMLHttpRequest();
     xhr.open('GET', url, true);
-    xhr.onload = () => domAutomationController.send(xhr.responseText);
+    xhr.onload = () => chrome.test.sendScriptResult(xhr.responseText);
     xhr.send();
   }))";
-  std::string result =
+  base::Value result =
       extensions::browsertest_util::ExecuteScriptInBackgroundPage(
           GetProfile(), extension->id(), script + "('" + url.spec() + "')");
   EXPECT_EQ("cookie", result);

@@ -54,22 +54,47 @@ IN_PROC_BROWSER_TEST_F(ExtensionBrowsertestUtilTest,
   EXPECT_EQ(extension()->id(),
             ExecuteScriptInBackgroundPage(
                 browser_context(), extension()->id(),
-                "window.domAutomationController.send(chrome.runtime.id);"));
+                "chrome.test.sendScriptResult(chrome.runtime.id);"));
 
-  // Check that executing a script doesn't block the browser process.
-  EXPECT_EQ(std::string("/") + extensions::kGeneratedBackgroundPageFilename,
+  // Tests a successful test injection, including running nested tasks in the
+  // browser process (via an asynchronous extension API).
+  EXPECT_EQ("success",
             ExecuteScriptInBackgroundPage(
                 browser_context(), extension()->id(),
-                "chrome.runtime.getBackgroundPage(function(result) {\n"
-                "  let url = new URL(result.location.href);\n"
-                "  window.domAutomationController.send(url.pathname);\n"
-                "});"));
+                R"(chrome.runtime.setUninstallURL('http://example.com',
+                                                  function() {
+                     chrome.test.sendScriptResult('success');
+                   });)"));
+
+  // Return a non-string argument.
+  EXPECT_EQ(3,
+            ExecuteScriptInBackgroundPage(browser_context(), extension()->id(),
+                                          "chrome.test.sendScriptResult(3);")
+                .GetInt());
+}
+
+IN_PROC_BROWSER_TEST_F(ExtensionBrowsertestUtilTest,
+                       ExecuteScriptInBackgroundPageDeprecated) {
+  EXPECT_EQ(extension()->id(),
+            ExecuteScriptInBackgroundPageDeprecated(
+                browser_context(), extension()->id(),
+                "window.domAutomationController.send(chrome.runtime.id);"));
+
+  // Tests a successful test injection, including running nested tasks in the
+  // browser process (via an asynchronous extension API).
+  EXPECT_EQ(std::string("/") + extensions::kGeneratedBackgroundPageFilename,
+            ExecuteScriptInBackgroundPageDeprecated(
+                browser_context(), extension()->id(),
+                R"(chrome.runtime.getBackgroundPage(function(result) {
+                     let url = new URL(result.location.href);
+                     window.domAutomationController.send(url.pathname);
+                   });)"));
 
   // An argument that isn't a string should cause a failure, not a hang.
-  EXPECT_NONFATAL_FAILURE(
-      ExecuteScriptInBackgroundPage(browser_context(), extension()->id(),
-                                    "window.domAutomationController.send(3);"),
-      "send(3)");
+  EXPECT_NONFATAL_FAILURE(ExecuteScriptInBackgroundPageDeprecated(
+                              browser_context(), extension()->id(),
+                              "window.domAutomationController.send(3);"),
+                          "send(3)");
 }
 
 IN_PROC_BROWSER_TEST_F(ExtensionBrowsertestUtilTest,

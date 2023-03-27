@@ -164,13 +164,13 @@ IN_PROC_BROWSER_TEST_F(ExtensionApiTest, FileURLs) {
   EXPECT_TRUE(background_page_ready.WaitUntilSatisfied());
 
   auto can_xhr_file_urls = [this, &extension_id]() {
-    constexpr char script[] = R"(
+    static constexpr char script[] = R"(
       var req = new XMLHttpRequest();
       var url = '%s';
       req.open('GET', url, true);
       req.onload = function() {
         if (req.responseText === 'Hello!')
-          window.domAutomationController.send('true');
+          chrome.test.sendScriptResult('true');
 
         // Even for a successful request, the status code might be 0. Ensure
         // that onloadend is not subsequently called if the request is
@@ -183,20 +183,20 @@ IN_PROC_BROWSER_TEST_F(ExtensionApiTest, FileURLs) {
       // 'error' event).
       req.onloadend = function() {
         if (req.status === 0)
-          window.domAutomationController.send('false');
+          chrome.test.sendScriptResult('false');
       };
       req.send();
     )";
 
     base::FilePath test_file =
         test_data_dir_.DirName().AppendASCII("test_file.txt");
-    std::string result = ExecuteScriptInBackgroundPage(
+    base::Value result = ExecuteScriptInBackgroundPage(
         extension_id,
         base::StringPrintf(script,
                            net::FilePathToFileURL(test_file).spec().c_str()));
 
-    EXPECT_TRUE(result == "true" || result == "false");
-    return result == "true";
+    EXPECT_TRUE(result.is_string() && (result == "true" || result == "false"));
+    return result.is_string() && result == "true";
   };
 
   auto can_load_file_iframe = [this, &extension_id]() {
@@ -230,7 +230,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionApiTest, FileURLs) {
   };
 
   auto can_script_tab = [this, &extension_id](int tab_id) {
-    constexpr char script[] = R"(
+    static constexpr char script[] = R"(
       var tabID = %d;
       chrome.tabs.executeScript(
           tabID, {code: 'console.log("injected");'}, function() {
@@ -240,19 +240,20 @@ IN_PROC_BROWSER_TEST_F(ExtensionApiTest, FileURLs) {
 
             if (chrome.runtime.lastError &&
                 expectedError != chrome.runtime.lastError.message) {
-              window.domAutomationController.send(
+              chrome.test.sendScriptResult(
                   'unexpected error: ' + chrome.runtime.lastError.message);
             } else {
-              window.domAutomationController.send(
+              chrome.test.sendScriptResult(
                   chrome.runtime.lastError ? 'false' : 'true');
             }
           });
     )";
 
-    std::string result = ExecuteScriptInBackgroundPage(
+    base::Value result = ExecuteScriptInBackgroundPage(
         extension_id, base::StringPrintf(script, tab_id));
-    EXPECT_TRUE(result == "true" || result == "false") << result;
-    return result == "true";
+    EXPECT_TRUE(result.is_string());
+    EXPECT_TRUE(result == "true" || result == "false");
+    return result.is_string() && result == "true";
   };
 
   auto get_active_tab_id = [this]() {

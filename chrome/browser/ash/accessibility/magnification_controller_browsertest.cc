@@ -124,11 +124,11 @@ class FullscreenMagnifierControllerTest : public InProcessBrowserTest {
             () => {
               window.accessibilityCommon.magnifier_.setIsInitializingForTest(
                   false);
-              window.domAutomationController.send('ready');
+              chrome.test.sendScriptResult('ready');
             });
       })();
     )JS");
-    std::string result =
+    base::Value result =
         extensions::browsertest_util::ExecuteScriptInBackgroundPage(
             browser()->profile(),
             extension_misc::kAccessibilityCommonExtensionId, script);

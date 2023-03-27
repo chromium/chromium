@@ -1260,24 +1260,27 @@ IN_PROC_BROWSER_TEST_F(MessagingApiTest, MessagingUserGesture) {
           sender->id(),
           base::StringPrintf(
               "if (chrome.test.isProcessingUserGesture()) {\n"
-              "  domAutomationController.send("
+              "  chrome.test.sendScriptResult("
               "      'Error: unexpected user gesture');\n"
               "} else {\n"
               "  chrome.runtime.sendMessage('%s', {}, function(response) {\n"
-              "    domAutomationController.send('' + response.result);\n"
+              "    chrome.test.sendScriptResult('' + response.result);\n"
               "  });\n"
               "}",
               receiver->id().c_str()),
           extensions::browsertest_util::ScriptUserActivation::kDontActivate));
 
-  EXPECT_EQ("true",
-      ExecuteScriptInBackgroundPage(sender->id(),
-                                    base::StringPrintf(
-          "chrome.test.runWithUserGesture(function() {\n"
-          "  chrome.runtime.sendMessage('%s', {}, function(response)  {\n"
-          "    window.domAutomationController.send('' + response.result);\n"
-          "  });\n"
-          "});", receiver->id().c_str())));
+  EXPECT_EQ(
+      "true",
+      ExecuteScriptInBackgroundPage(
+          sender->id(),
+          base::StringPrintf(
+              "chrome.test.runWithUserGesture(function() {\n"
+              "  chrome.runtime.sendMessage('%s', {}, function(response)  {\n"
+              "    chrome.test.sendScriptResult('' + response.result);\n"
+              "  });\n"
+              "});",
+              receiver->id().c_str())));
 }
 
 IN_PROC_BROWSER_TEST_F(MessagingApiTest, UserGestureFromContentScript) {
@@ -1365,7 +1368,7 @@ IN_PROC_BROWSER_TEST_F(MessagingApiTest,
   base::CommandLine::ForCurrentProcess()->AppendSwitch(
       embedder_support::kDisablePopupBlocking);
 
-  const char kManifest[] = R"({
+  static constexpr char kManifest[] = R"({
     "name": "activation_state_thru_send_reply",
     "version": "1.0",
     "background": {
@@ -1395,13 +1398,13 @@ IN_PROC_BROWSER_TEST_F(MessagingApiTest,
   const Extension* sender = LoadExtension(sender_dir.UnpackedPath());
   ASSERT_TRUE(sender);
 
-  const char send_script_template[] = R"(
+  static constexpr char send_script_template[] = R"(
     log = [];
     log.push('sender-initial:' + navigator.userActivation.isActive);
     chrome.runtime.sendMessage('%s', {}, response => {
       log.push('receiver:' + response.active);
       log.push('sender-received:' + navigator.userActivation.isActive);
-      window.domAutomationController.send(log.toString());
+      chrome.test.sendScriptResult(log.toString());
     });
     log.push('sender-sent:' + navigator.userActivation.isActive);
   )";

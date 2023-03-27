@@ -334,19 +334,32 @@ class ExtensionBrowserTest : virtual public InProcessBrowserTest,
                                   const std::string& path,
                                   int expected_hosts);
 
-  // Returns
-  // browsertest_util::ExecuteScriptInBackgroundPage(profile(),
-  // extension_id, script).
-  std::string ExecuteScriptInBackgroundPage(
+  // Waits until `script` calls "chrome.test.sendScriptResult(result)",
+  // where `result` is a serializable value, and returns `result`. Fails
+  // the test and returns an empty base::Value if `extension_id` isn't
+  // installed in the test's profile or doesn't have a background page, or
+  // if executing the script fails. The argument `script_user_activation`
+  // determines if the script should be executed after a user activation.
+  base::Value ExecuteScriptInBackgroundPage(
       const std::string& extension_id,
       const std::string& script,
       extensions::browsertest_util::ScriptUserActivation
           script_user_activation =
               extensions::browsertest_util::ScriptUserActivation::kActivate);
 
-  // Returns
-  // browsertest_util::ExecuteScriptInBackgroundPageNoWait(
-  // profile(), extension_id, script).
+  // Waits until |script| calls "window.domAutomationController.send(result)",
+  // where |result| is a string, and returns |result|. Fails the test and
+  // returns an empty base::Value if |extension_id| isn't installed in test's
+  // profile or doesn't have a background page, or if executing the script
+  // fails. The argument |script_user_activation| determines if the script
+  // should be executed after a user activation.
+  std::string ExecuteScriptInBackgroundPageDeprecated(
+      const std::string& extension_id,
+      const std::string& script,
+      extensions::browsertest_util::ScriptUserActivation
+          script_user_activation =
+              extensions::browsertest_util::ScriptUserActivation::kActivate);
+
   bool ExecuteScriptInBackgroundPageNoWait(const std::string& extension_id,
                                            const std::string& script);
 

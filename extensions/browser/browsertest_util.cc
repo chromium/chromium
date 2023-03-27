@@ -4,6 +4,7 @@
 
 #include "extensions/browser/browsertest_util.h"
 
+#include "base/values.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/service_worker_context.h"
 #include "content/public/browser/storage_partition.h"
@@ -28,7 +29,30 @@ std::string GetScriptToLog(const std::string& script) {
 
 }  // namespace
 
-std::string ExecuteScriptInBackgroundPage(
+base::Value ExecuteScriptInBackgroundPage(
+    content::BrowserContext* context,
+    const std::string& extension_id,
+    const std::string& script,
+    ScriptUserActivation script_user_activation) {
+  BackgroundScriptExecutor script_executor(context);
+  base::Value value = script_executor.ExecuteScript(
+      extension_id, script,
+      BackgroundScriptExecutor::ResultCapture::kSendScriptResult,
+      script_user_activation);
+  if (value.is_none()) {
+    ADD_FAILURE() << "Bad return value. Script: " << GetScriptToLog(script);
+  }
+  return value;
+}
+
+bool ExecuteScriptInBackgroundPageNoWait(content::BrowserContext* context,
+                                         const std::string& extension_id,
+                                         const std::string& script) {
+  return BackgroundScriptExecutor::ExecuteScriptAsync(
+      context, extension_id, script, ScriptUserActivation::kActivate);
+}
+
+std::string ExecuteScriptInBackgroundPageDeprecated(
     content::BrowserContext* context,
     const std::string& extension_id,
     const std::string& script,
@@ -47,13 +71,6 @@ std::string ExecuteScriptInBackgroundPage(
   }
 
   return value.GetString();
-}
-
-bool ExecuteScriptInBackgroundPageNoWait(content::BrowserContext* context,
-                                         const std::string& extension_id,
-                                         const std::string& script) {
-  return BackgroundScriptExecutor::ExecuteScriptAsync(
-      context, extension_id, script, ScriptUserActivation::kActivate);
 }
 
 void StopServiceWorkerForExtensionGlobalScope(content::BrowserContext* context,

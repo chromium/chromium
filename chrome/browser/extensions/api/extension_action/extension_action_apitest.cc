@@ -303,13 +303,13 @@ IN_PROC_BROWSER_TEST_F(BrowserActionAPITest, TestNoUnnecessaryIO) {
   ASSERT_TRUE(ready_listener.WaitUntilSatisfied());
 
   // The script template to update the browser action.
-  constexpr char kUpdate[] =
+  static constexpr char kUpdate[] =
       R"(chrome.browserAction.setBadgeText(%s);
-         domAutomationController.send('pass');)";
+         chrome.test.sendScriptResult('pass');)";
   content::WebContents* web_contents =
       browser()->tab_strip_model()->GetActiveWebContents();
   SessionID tab_id = sessions::SessionTabHelper::IdForTab(web_contents);
-  constexpr char kBrowserActionKey[] = "browser_action";
+  static constexpr char kBrowserActionKey[] = "browser_action";
   TestStateStoreObserver test_state_store_observer(profile(), extension->id());
 
   {

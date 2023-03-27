@@ -202,7 +202,7 @@ void ExecuteScriptInChromeVox(Browser* browser, const std::string& script) {
       window.domAutomationController.send('done');
   })())JS";
 
-  extensions::browsertest_util::ExecuteScriptInBackgroundPage(
+  extensions::browsertest_util::ExecuteScriptInBackgroundPageDeprecated(
       browser->profile(), extension_misc::kChromeVoxExtensionId,
       execute_script);
 }

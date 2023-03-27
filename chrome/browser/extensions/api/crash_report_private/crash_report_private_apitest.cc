@@ -51,12 +51,12 @@ class CrashReportPrivateApiTest : public ExtensionApiTest {
   void SetUpOnMainThread() override {
     ExtensionApiTest::SetUpOnMainThread();
 
-    constexpr char kKey[] =
+    static constexpr char kKey[] =
         "MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQC+uU63MD6T82Ldq5wjrDFn5mGmPnnnj"
         "WZBWxYXfpG4kVf0s+p24VkXwTXsxeI12bRm8/ft9sOq0XiLfgQEh5JrVUZqvFlaZYoS+g"
         "iZfUqzKFGMLa4uiSMDnvv+byxrqAepKz5G8XX/q5Wm5cvpdjwgiu9z9iM768xJy+Ca/G5"
         "qQwIDAQAB";
-    constexpr char kManifestTemplate[] =
+    static constexpr char kManifestTemplate[] =
         R"({
       "key": "%s",
       "name": "chrome.crashReportPrivate basic extension tests",
@@ -97,12 +97,12 @@ class CrashReportPrivateApiTest : public ExtensionApiTest {
 };
 
 IN_PROC_BROWSER_TEST_F(CrashReportPrivateApiTest, Basic) {
-  constexpr char kTestScript[] = R"(
+  static constexpr char kTestScript[] = R"(
     chrome.crashReportPrivate.reportError({
         message: "hi",
         url: "http://www.test.com",
       },
-      () => window.domAutomationController.send(""));
+      () => chrome.test.sendScriptResult(""));
   )";
   ExecuteScriptInBackgroundPage(extension_->id(), kTestScript);
 
@@ -126,7 +126,7 @@ IN_PROC_BROWSER_TEST_F(CrashReportPrivateApiTest, Basic) {
 }
 
 IN_PROC_BROWSER_TEST_F(CrashReportPrivateApiTest, ExtraParamsAndStackTrace) {
-  constexpr char kTestScript[] = R"-(
+  static constexpr char kTestScript[] = R"-(
     chrome.crashReportPrivate.reportError({
         message: "hi",
         url: "http://www.test.com/foo",
@@ -137,7 +137,7 @@ IN_PROC_BROWSER_TEST_F(CrashReportPrivateApiTest, ExtraParamsAndStackTrace) {
         debugId: "2751679EE:233977D75E03BAC9DA/255DD0",
         stackTrace: "   at <anonymous>:1:1",
       },
-      () => window.domAutomationController.send(""));
+      () => chrome.test.sendScriptResult(""));
   )-";
   ExecuteScriptInBackgroundPage(extension_->id(), kTestScript);
 
@@ -165,7 +165,7 @@ IN_PROC_BROWSER_TEST_F(CrashReportPrivateApiTest, ExtraParamsAndStackTrace) {
 }
 
 IN_PROC_BROWSER_TEST_F(CrashReportPrivateApiTest, StackTraceWithErrorMessage) {
-  constexpr char kTestScript[] = R"(
+  static constexpr char kTestScript[] = R"(
     chrome.crashReportPrivate.reportError({
         message: "hi",
         url: "http://www.test.com/foo",
@@ -175,7 +175,7 @@ IN_PROC_BROWSER_TEST_F(CrashReportPrivateApiTest, StackTraceWithErrorMessage) {
         columnNumber: 456,
         stackTrace: 'hi'
       },
-      () => window.domAutomationController.send(""));
+      () => chrome.test.sendScriptResult(""));
   )";
   ExecuteScriptInBackgroundPage(extension_->id(), kTestScript);
 
@@ -201,7 +201,7 @@ IN_PROC_BROWSER_TEST_F(CrashReportPrivateApiTest, StackTraceWithErrorMessage) {
 IN_PROC_BROWSER_TEST_F(CrashReportPrivateApiTest, RedactMessage) {
   // We use the feedback APIs redaction tool, which scrubs many different types
   // of PII. As a sanity check, test if MAC addresses are redacted.
-  constexpr char kTestScript[] = R"(
+  static constexpr char kTestScript[] = R"(
     chrome.crashReportPrivate.reportError({
         message: "06-00-00-00-00-00",
         url: "http://www.test.com/foo",
@@ -210,7 +210,7 @@ IN_PROC_BROWSER_TEST_F(CrashReportPrivateApiTest, RedactMessage) {
         lineNumber: 123,
         columnNumber: 456,
       },
-      () => window.domAutomationController.send(""));
+      () => chrome.test.sendScriptResult(""));
   )";
   ExecuteScriptInBackgroundPage(extension_->id(), kTestScript);
 
@@ -244,13 +244,13 @@ IN_PROC_BROWSER_TEST_F(CrashReportPrivateApiTest, SuppressedIfDevtoolsOpen) {
   DevToolsWindow* devtools_window =
       DevToolsWindowTesting::OpenDevToolsWindowSync(
           web_contents, false /** is devtools docked. */);
-  constexpr char kTestScript[] = R"(
+  static constexpr char kTestScript[] = R"(
     chrome.crashReportPrivate.reportError({
         message: "hi",
         url: "http://www.test.com",
       },
       () => {
-        window.domAutomationController.send(chrome.runtime.lastError ?
+        chrome.test.sendScriptResult(chrome.runtime.lastError ?
             chrome.runtime.lastError.message : "")
       });
   )";
@@ -278,7 +278,7 @@ IN_PROC_BROWSER_TEST_F(CrashReportPrivateApiTest, CalledFromWebContentsInTab) {
       browser()->tab_strip_model()->GetActiveWebContents();
   EXPECT_TRUE(NavigateToURL(web_content, extension_context_url));
 
-  constexpr char kTestScript[] = R"(
+  static constexpr char kTestScript[] = R"(
     chrome.crashReportPrivate.reportError({
         message: "hi",
         url: "http://www.test.com",
@@ -339,7 +339,7 @@ IN_PROC_BROWSER_TEST_P(CrashReportPrivateCalledFromSwaTest,
   const GURL extension_context_url("chrome://media-app");
   EXPECT_TRUE(NavigateToURL(web_content, extension_context_url));
 
-  constexpr char kTestScript[] = R"(
+  static constexpr char kTestScript[] = R"(
     chrome.crashReportPrivate.reportError({
         message: "hi",
         url: "http://www.test.com",
@@ -376,7 +376,7 @@ IN_PROC_BROWSER_TEST_P(CrashReportPrivateCalledFromSwaTest,
   MockCrashEndpoint endpoint(embedded_test_server());
   ScopedMockChromeJsErrorReportProcessor processor(endpoint);
 
-  constexpr char kTestScript[] = R"(
+  static constexpr char kTestScript[] = R"(
     chrome.crashReportPrivate.reportError({
         message: "hi",
         url: "http://www.test.com",

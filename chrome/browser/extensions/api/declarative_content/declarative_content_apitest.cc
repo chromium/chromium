@@ -81,17 +81,28 @@ constexpr char kBackgroundHelpers[] =
     R"(var PageStateMatcher = chrome.declarativeContent.PageStateMatcher;
        var ShowAction = chrome.declarativeContent.ShowAction;
        var onPageChanged = chrome.declarativeContent.onPageChanged;
-       var reply = window.domAutomationController.send.bind(
-           window.domAutomationController);
+
+       function setRulesInPageEnvironment(rules, responseString) {
+         onPageChanged.removeRules(undefined, function() {
+           onPageChanged.addRules(rules, function() {
+             if (chrome.runtime.lastError) {
+               window.domAutomationController.send(
+                   chrome.runtime.lastError.message);
+               return;
+             }
+             window.domAutomationController.send(responseString);
+           });
+         });
+       };
 
        function setRules(rules, responseString) {
          onPageChanged.removeRules(undefined, function() {
            onPageChanged.addRules(rules, function() {
              if (chrome.runtime.lastError) {
-               reply(chrome.runtime.lastError.message);
+               chrome.test.sendScriptResult(chrome.runtime.lastError.message);
                return;
              }
-             reply(responseString);
+             chrome.test.sendScriptResult(responseString);
            });
          });
        };
@@ -99,20 +110,20 @@ constexpr char kBackgroundHelpers[] =
        function addRules(rules, responseString) {
          onPageChanged.addRules(rules, function() {
            if (chrome.runtime.lastError) {
-             reply(chrome.runtime.lastError.message);
+             chrome.test.sendScriptResult(chrome.runtime.lastError.message);
              return;
            }
-           reply(responseString);
+           chrome.test.sendScriptResult(responseString);
          });
        };
 
        function removeRule(id, responseString) {
          onPageChanged.removeRules([id], function() {
            if (chrome.runtime.lastError) {
-             reply(chrome.runtime.lastError.message);
+             chrome.test.sendScriptResult(chrome.runtime.lastError.message);
              return;
            }
-           reply(responseString);
+           chrome.test.sendScriptResult(responseString);
          });
        };)";
 
@@ -235,10 +246,11 @@ void DeclarativeContentApiTest::CheckBookmarkEvents(bool match_is_bookmarked) {
            actions: [new ShowAction()]
          }], 'test_rule');)";
 
-  EXPECT_EQ("test_rule", ExecuteScriptInBackgroundPage(
-      extension->id(),
-      base::StringPrintf(kSetIsBookmarkedRule,
-                         match_is_bookmarked ? "true" : "false")));
+  EXPECT_EQ("test_rule",
+            ExecuteScriptInBackgroundPage(
+                extension->id(),
+                base::StringPrintf(kSetIsBookmarkedRule,
+                                   match_is_bookmarked ? "true" : "false")));
   EXPECT_EQ(!match_is_bookmarked, action->GetIsVisible(tab_id));
 
   // Check rule evaluation on add/remove bookmark.
@@ -504,7 +516,7 @@ void ParameterizedShowActionDeclarativeContentApiTest::TestShowAction(
       browser()->tab_strip_model()->GetActiveWebContents();
 
   static constexpr char kScript[] =
-      R"(setRules([{
+      R"(setRulesInPageEnvironment([{
            conditions: [new PageStateMatcher({pageUrl: {hostPrefix: 'test'}})],
            actions: [new chrome.declarativeContent.%s()]
          }], 'test_rule');)";
@@ -851,7 +863,7 @@ IN_PROC_BROWSER_TEST_F(DeclarativeContentApiTest,
 
   static constexpr char kRemoveScript[] =
       R"(onPageChanged.removeRules(undefined, function() {
-           window.domAutomationController.send('removed');
+           chrome.test.sendScriptResult('removed');
          });)";
   EXPECT_EQ("removed",
             ExecuteScriptInBackgroundPage(extension->id(), kRemoveScript));
@@ -866,7 +878,7 @@ IN_PROC_BROWSER_TEST_F(DeclarativeContentApiTest,
       FILE_PATH_LITERAL("background.js"),
       R"(var PageStateMatcher = chrome.declarativeContent.PageStateMatcher;
          function Return(obj) {
-           window.domAutomationController.send('' + obj);
+            chrome.test.sendScriptResult('' + obj);
          })");
   const Extension* extension = LoadExtension(ext_dir_.UnpackedPath());
   ASSERT_TRUE(extension);
@@ -885,9 +897,11 @@ IN_PROC_BROWSER_TEST_F(DeclarativeContentApiTest,
          } catch (e) {
            Return(e.message);
          })";
-  EXPECT_THAT(
-      ExecuteScriptInBackgroundPage(extension->id(), kSelectorNotAnArrayScript),
-      testing::ContainsRegex("css.*xpected '?array'?"));
+  base::Value result =
+      ExecuteScriptInBackgroundPage(extension->id(), kSelectorNotAnArrayScript);
+  ASSERT_TRUE(result.is_string());
+  EXPECT_THAT(result.GetString(),
+              testing::ContainsRegex("css.*xpected '?array'?"));
 
   // CSS selector is not a string.
   static constexpr char kSelectorNotStringScript[] =
@@ -897,9 +911,11 @@ IN_PROC_BROWSER_TEST_F(DeclarativeContentApiTest,
          } catch (e) {
            Return(e.message);
          })";
-  EXPECT_THAT(
-      ExecuteScriptInBackgroundPage(extension->id(), kSelectorNotStringScript),
-      testing::ContainsRegex("css.*0.*xpected '?string'?"));
+  result =
+      ExecuteScriptInBackgroundPage(extension->id(), kSelectorNotStringScript);
+  ASSERT_TRUE(result.is_string());
+  EXPECT_THAT(result.GetString(),
+              testing::ContainsRegex("css.*0.*xpected '?string'?"));
 
   // Invalid CSS selector.
   static constexpr char kInvalidSelectorScript[] =
@@ -909,9 +925,10 @@ IN_PROC_BROWSER_TEST_F(DeclarativeContentApiTest,
          } catch (e) {
            Return(e.message);
          })";
-  EXPECT_THAT(
-      ExecuteScriptInBackgroundPage(extension->id(), kInvalidSelectorScript),
-      testing::ContainsRegex("valid.*: input''$"));
+  result =
+      ExecuteScriptInBackgroundPage(extension->id(), kInvalidSelectorScript);
+  ASSERT_TRUE(result.is_string());
+  EXPECT_THAT(result.GetString(), testing::ContainsRegex("valid.*: input''$"));
 
   // "Complex" CSS selector.
   static constexpr char kComplexSelectorScript[] =
@@ -921,9 +938,11 @@ IN_PROC_BROWSER_TEST_F(DeclarativeContentApiTest,
          } catch (e) {
            Return(e.message);
          })";
-  EXPECT_THAT(
-      ExecuteScriptInBackgroundPage(extension->id(), kComplexSelectorScript),
-      testing::ContainsRegex("selector.*: div input$"));
+  result =
+      ExecuteScriptInBackgroundPage(extension->id(), kComplexSelectorScript);
+  ASSERT_TRUE(result.is_string());
+  EXPECT_THAT(result.GetString(),
+              testing::ContainsRegex("selector.*: div input$"));
 }
 
 // Tests that the rules with isBookmarked: true are evaluated when handling

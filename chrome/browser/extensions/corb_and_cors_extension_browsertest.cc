@@ -380,27 +380,26 @@ class CorbAndCorsExtensionBrowserTest : public CorbAndCorsExtensionTestBase {
 
   bool RegisterServiceWorkerForExtension(
       const std::string& service_worker_script) {
-    const char kServiceWorkerPath[] = "service_worker.js";
+    static constexpr char kServiceWorkerPath[] = "service_worker.js";
     dir_.WriteFile(base::FilePath::FromASCII(kServiceWorkerPath).value(),
                    service_worker_script);
 
-    const char kRegistrationScript[] = R"(
+    static constexpr char kRegistrationScript[] = R"(
         navigator.serviceWorker.register($1).then(function() {
           // Wait until the service worker is active.
           return navigator.serviceWorker.ready;
         }).then(function(r) {
-          window.domAutomationController.send('SUCCESS');
+          chrome.test.sendScriptResult('SUCCESS');
         }).catch(function(err) {
-          window.domAutomationController.send('ERROR: ' + err.message);
+          chrome.test.sendScriptResult('ERROR: ' + err.message);
         }); )";
     std::string registration_script =
         content::JsReplace(kRegistrationScript, kServiceWorkerPath);
 
-    std::string result =
+    base::Value result =
         ExecuteScriptInBackgroundPage(extension_->id(), registration_script);
     if (result != "SUCCESS") {
       ADD_FAILURE() << "Failed to register the service worker: " << result;
-      return false;
     }
     return !::testing::Test::HasFailure();
   }

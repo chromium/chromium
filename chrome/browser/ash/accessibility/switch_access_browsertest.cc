@@ -94,7 +94,7 @@ class SwitchAccessTest : public InProcessBrowserTest {
         << test_support_path;
 
     std::string result =
-        extensions::browsertest_util::ExecuteScriptInBackgroundPage(
+        extensions::browsertest_util::ExecuteScriptInBackgroundPageDeprecated(
             browser()->profile(), extension_misc::kSwitchAccessExtensionId,
             script);
     ASSERT_EQ("ready", result);
@@ -103,7 +103,7 @@ class SwitchAccessTest : public InProcessBrowserTest {
   // Run js snippet and wait for it to finish.
   void WaitForJS(const std::string& js_to_eval) {
     std::string result =
-        extensions::browsertest_util::ExecuteScriptInBackgroundPage(
+        extensions::browsertest_util::ExecuteScriptInBackgroundPageDeprecated(
             browser()->profile(), extension_misc::kSwitchAccessExtensionId,
             js_to_eval,
             extensions::browsertest_util::ScriptUserActivation::kDontActivate);

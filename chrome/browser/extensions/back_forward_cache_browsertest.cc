@@ -171,15 +171,15 @@ class ExtensionBackForwardCacheBrowserTest : public ExtensionBrowserTest {
   }
 
   void ExpectTitleChangeFail(const Extension& extension) {
-    constexpr char kScript[] =
+    static constexpr char kScript[] =
         R"(
           chrome.tabs.executeScript({code: "document.title='fail'"},
             () => {
               if (chrome.runtime.lastError) {
-                window.domAutomationController.send(
+                chrome.test.sendScriptResult(
                   chrome.runtime.lastError.message);
               } else {
-                window.domAutomationController.send("Unexpected success");
+                chrome.test.sendScriptResult("Unexpected success");
               }
             });
         )";
@@ -519,13 +519,13 @@ IN_PROC_BROWSER_TEST_F(ExtensionBackForwardCacheBrowserTest,
 
   // 5) Ensure that the runtime.onConnect listener in the restored page still
   // works.
-  constexpr char kScript[] =
+  static constexpr char kScript[] =
       R"HTML(
       var p;
       chrome.tabs.query({}, (t) => {
         p = chrome.tabs.connect(t[0].id);
         p.onMessage.addListener(
-         (m) => {window.domAutomationController.send(m)}
+         (m) => {chrome.test.sendScriptResult(m)}
         );
       });
     )HTML";
@@ -683,7 +683,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionBackForwardCacheBrowserTest,
       ui_test_utils::NavigateToURL(browser(), url_a));
   std::u16string expected_title = u"connected";
 
-  constexpr char kScript[] =
+  static constexpr char kScript[] =
       R"HTML(
       chrome.tabs.query({}, (t) => {
         p = chrome.tabs.connect(t[0].id);
@@ -691,7 +691,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionBackForwardCacheBrowserTest,
         // later.
         port = p;
         p.onMessage.addListener(
-         (m) => {window.domAutomationController.send(m)}
+         (m) => {chrome.test.sendScriptResult(m)}
         );
       });
     )HTML";
@@ -804,24 +804,24 @@ IN_PROC_BROWSER_TEST_F(ExtensionBackForwardCacheBrowserTest,
       ui_test_utils::NavigateToURL(browser(), url_a));
   std::u16string expected_title = u"connected";
 
-  constexpr char kScript[] =
+  static constexpr char kScript[] =
       R"HTML(
       var p;
       chrome.tabs.query({}, (t) => {
         p = chrome.tabs.connect(t[0].id);
         p.onMessage.addListener(
-         (m) => {window.domAutomationController.send(m)}
+         (m) => {chrome.test.sendScriptResult(m)}
         );
       });
     )HTML";
   EXPECT_EQ("connected",
             ExecuteScriptInBackgroundPage(extension->id(), kScript));
 
-  constexpr char kDisconnectScript[] =
+  static constexpr char kDisconnectScript[] =
       R"HTML(
       p.postMessage('disconnect');
       p.onDisconnect.addListener(() => {
-        window.domAutomationController.send('disconnect')
+        chrome.test.sendScriptResult('disconnect')
       });
     )HTML";
   EXPECT_EQ("disconnect",
@@ -958,13 +958,13 @@ IN_PROC_BROWSER_TEST_F(ExtensionBackForwardCacheBrowserTest,
   auto title_watcher = std::make_unique<content::TitleWatcher>(
       browser()->tab_strip_model()->GetActiveWebContents(), expected_title);
 
-  constexpr char kScript[] =
+  static constexpr char kScript[] =
       R"HTML(
         chrome.tabs.executeScript({frameId: %d,
                                    code: "document.title='foo'",
                                    matchAboutBlank: true
                                   }, (e) => {
-          window.domAutomationController.send(chrome.runtime.lastError ? 'false'
+          chrome.test.sendScriptResult(chrome.runtime.lastError ? 'false'
         : 'true')});
       )HTML";
   EXPECT_EQ("false",

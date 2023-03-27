@@ -545,10 +545,11 @@ class DictationTestBase : public InProcessBrowserTest,
   }
 
   std::string ExecuteAccessibilityCommonScript(const std::string& script) {
-    return extensions::browsertest_util::ExecuteScriptInBackgroundPage(
-        /*context=*/browser()->profile(),
-        /*extension_id=*/extension_misc::kAccessibilityCommonExtensionId,
-        /*script=*/script);
+    return extensions::browsertest_util::
+        ExecuteScriptInBackgroundPageDeprecated(
+            /*context=*/browser()->profile(),
+            /*extension_id=*/extension_misc::kAccessibilityCommonExtensionId,
+            /*script=*/script);
   }
 
   std::string GetClipboardText() {

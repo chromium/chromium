@@ -63,7 +63,7 @@ class BackgroundXhrTest : public ExtensionBrowserTest {
       var xhr = new XMLHttpRequest();
       xhr.open('GET', '%s');
       xhr.send();
-      domAutomationController.send('');
+      chrome.test.sendScriptResult('');
     )";
     ExecuteScriptInBackgroundPage(
         extension->id(),

@@ -547,12 +547,12 @@ IN_PROC_BROWSER_TEST_F(UserInstalledContentVerifierTest,
   EXPECT_EQ("Test", ExecuteScriptInBackgroundPage(
                         kStoragePermissionExtensionId,
                         R"(chrome.storage.local.set({key: "Test"}, () =>
-             domAutomationController.send("Test")))"));
+             chrome.test.sendScriptResult("Test")))"));
 
   EXPECT_EQ("Test", ExecuteScriptInBackgroundPage(
                         kStoragePermissionExtensionId,
                         R"(chrome.storage.local.get(['key'], ({key}) =>
-             domAutomationController.send(key)))"));
+             chrome.test.sendScriptResult(key)))"));
   // Corrupt the extension
   {
     base::FilePath resource_path = extension->path().Append(kResourcePath);
@@ -626,7 +626,7 @@ IN_PROC_BROWSER_TEST_F(UserInstalledContentVerifierTest,
   EXPECT_EQ("Test", ExecuteScriptInBackgroundPage(
                         kStoragePermissionExtensionId,
                         R"(chrome.storage.local.get(['key'], ({key}) =>
-             domAutomationController.send(key)))"));
+             chrome.test.sendScriptResult(key)))"));
 }
 
 // Tests that verification failure during navigating to an extension resource

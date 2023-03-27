@@ -180,7 +180,7 @@ void LoggedInSpokenFeedbackTest::DisableEarcons() {
 
 void LoggedInSpokenFeedbackTest::ImportJSModuleForChromeVox(std::string name,
                                                             std::string path) {
-  extensions::browsertest_util::ExecuteScriptInBackgroundPage(
+  extensions::browsertest_util::ExecuteScriptInBackgroundPageDeprecated(
       browser()->profile(), extension_misc::kChromeVoxExtensionId,
       "import('" + path +
           "').then(mod => {"

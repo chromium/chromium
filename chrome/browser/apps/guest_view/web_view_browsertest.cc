@@ -5540,9 +5540,9 @@ IN_PROC_BROWSER_TEST_F(GuestViewExtensionNameCollisionTest,
   ASSERT_TRUE(loaded_listener.WaitUntilSatisfied());
 
   const std::string script =
-      "window.domAutomationController.send("
+      "chrome.test.sendScriptResult("
       "    window.testPassed ? 'PASSED' : 'FAILED');";
-  const std::string test_passed =
+  const base::Value test_passed =
       ExecuteScriptInBackgroundPage(extension->id(), script);
   EXPECT_EQ("PASSED", test_passed);
 }

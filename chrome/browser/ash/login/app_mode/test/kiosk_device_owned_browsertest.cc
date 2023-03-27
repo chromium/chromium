@@ -690,19 +690,19 @@ IN_PROC_BROWSER_TEST_F(
   // Extension should be loaded only once.
   EXPECT_EQ(ready_observer.fired_times(), 1);
 
-  constexpr char kSetInStorageAPI[] =
+  static constexpr char kSetInStorageAPI[] =
       R"(chrome.storage.local.set(
              {test: 'testValue'},
-             () => { domAutomationController.send('') });)";
+             () => { chrome.test.sendScriptResult('') });)";
   // Store some data using Storage API for the extension.
   extensions::browsertest_util::ExecuteScriptInBackgroundPage(
       app_profile, extension_misc::kChromeVoxExtensionId, kSetInStorageAPI);
 
   // Expect the data to be saved.
-  constexpr char kGetFromStorageAPI[] =
+  static constexpr char kGetFromStorageAPI[] =
       R"(chrome.storage.local.get(
              'test',
-             (value) => domAutomationController.send(value.test));)";
+             (value) => chrome.test.sendScriptResult(value.test));)";
   EXPECT_EQ("testValue",
             extensions::browsertest_util::ExecuteScriptInBackgroundPage(
                 app_profile, extension_misc::kChromeVoxExtensionId,
@@ -746,12 +746,12 @@ IN_PROC_BROWSER_TEST_F(
   EXPECT_EQ(ready_observer.fired_times(), 1);
 
   // Expect the data to be cleared.
-  constexpr char kGetFromStorageAPI[] =
+  static constexpr char kGetFromStorageAPI[] =
       R"(
       chrome.storage.local.get(
           "test",
           function(value) {
-              domAutomationController.send(value.test == undefined ?
+              chrome.test.sendScriptResult(value.test == undefined ?
                   "<none>" : value.test);
           }
       );
@@ -761,9 +761,9 @@ IN_PROC_BROWSER_TEST_F(
                 app_profile, extension_misc::kChromeVoxExtensionId,
                 kGetFromStorageAPI));
 
-  constexpr char kGetFromLocalStorage[] =
+  static constexpr char kGetFromLocalStorage[] =
       R"(
-      domAutomationController.send(
+      chrome.test.sendScriptResult(
           localStorage.getItem('test2') == undefined ?
               "<none>" : localStorage.getItem('test2'));
       )";
