@@ -1,6 +1,14 @@
-<style>
+<style include="cr-shared-style">
   :host {
     width: 100%;
+  }
+
+  :host([selected]) [focus-row-container] {
+    background-color: var(--cros-highlight-color);
+  }
+
+  :host(:not([selected])) [focus-row-container]:hover {
+    background-color: var(--cros-highlight-color-hover);
   }
 
   #searchResultRow {
@@ -8,14 +16,20 @@
     display: flex;
     height: 48px;
     justify-content: center;
-    margin-inline-start: 24px;
   }
 
   #searchResultText {
+    align-items: center;
+    display: flex;
     flex-grow: 1;
+    height: 100%;
+    padding-inline-start: 24px;
   }
 </style>
 
-<div id="searchResultRow">
-  <div id="searchResultText">[[getSearchResultText(searchResult)]]</div>
+<div id="searchResultRow" focus-row-container>
+  <div id="searchResultText" aria-disabled="true" selectable focus-row-control
+      focus-type="rowWrapper">
+        [[getSearchResultText(searchResult)]]
+  </div>
 </div>

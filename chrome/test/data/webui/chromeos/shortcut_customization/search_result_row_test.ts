@@ -41,6 +41,7 @@ suite('searchResultRowTest', function() {
 
     searchResultRowElement.searchResult = SnapWindowLeftSearchResult;
     await flush();
-    assertEquals('Snap Window Left', searchResultTextElement.textContent);
+    assertEquals(
+        'Snap Window Left', searchResultTextElement.textContent?.trim());
   });
 });

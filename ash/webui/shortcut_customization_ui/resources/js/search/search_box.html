@@ -62,9 +62,11 @@
 
   iron-list {
     max-height: 50vh;
+    user-select: none;
   }
 
   #noSearchResultsContainer {
+    color: var(--cros-text-color-secondary);
     height: 32px;
     line-height: 32px;
     margin-inline-start: 24px;
@@ -87,9 +89,8 @@
 </style>
 
 <!-- TODO(longbowei): Localize string -->
-<cr-toolbar-search-field id="search"
-        label="Search for keyboard shortcuts"
-        on-keydown="onKeyDown">
+<cr-toolbar-search-field id="search" label="Search for keyboard shortcuts"
+    on-search-icon-clicked="onSearchIconClicked">
 </cr-toolbar-search-field>
 <iron-dropdown id="searchResults" opened="[[shouldShowDropdown]]"
     allow-outside-scroll no-cancel-on-outside-click>
@@ -98,15 +99,22 @@
         iron-dropdown's open() is called on the JS side. -->
   <div slot="dropdown-content">
     <div class="separator"></div>
-    <iron-list id="searchResultList" selection-enabled
-        items="[[searchResults]]">
+    <iron-list id="searchResultList" selection-enabled items="[[searchResults]]"
+        selected-item="{{selectedItem}}">
       <template>
-        <search-result-row search-result="[[item]]"></search-result-row>
+        <search-result-row
+            selected="[[isItemSelected(item, selectedItem)]]"
+            search-result="[[item]]"
+            last-focused="{{lastFocused}}"
+            list-blurred="{{listBlurred}}"
+            tabindex$="[[getRowTabIndex(item, selectedItem, shouldShowDropdown)]]"
+            iron-list-tab-index$="[[getRowTabIndex(item, selectedItem,
+                shouldShowDropdown)]]">
+        </search-result-row>
       </template>
     </iron-list>
     <div id="noSearchResultsContainer" hidden="[[searchResultsExist]]">
-      <!-- TODO(cambickel) localize this string -->
-      No search results!
+      [[i18n('searchNoResults')]]
     </div>
   </div>
 </iron-dropdown>

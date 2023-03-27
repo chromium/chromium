@@ -3803,6 +3803,9 @@
         <message name="IDS_SHORTCUT_CUSTOMIZATION_SHORTCUT_WITH_CONFILICT_STATUS_MESSAGE" desc="The status message that displays when user clicks button to override an accelerator" translateable="false">
           Shortcut is used by <ph name="CONFLICT_ACCEL_NAME">$1<ex>BRIGHTNESS_UP</ex></ph>. Press a new shortcut or press the same one again to use it for this action instead.
         </message>
+        <message name="IDS_SHORTCUT_CUSTOMIZATION_SEARCH_NO_RESULTS" desc="Text description of a search that has no results." translateable="false">
+          No search results found
+        </message>
         <message name="IDS_SHORTCUT_CUSTOMIZATION_CATEGORY_GENERAL" desc="Category named 'General' shown on the navigation sidebar">
           General
         </message>
