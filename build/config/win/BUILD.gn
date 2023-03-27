@@ -11,6 +11,7 @@ import("//build/config/win/control_flow_guard.gni")
 import("//build/config/win/visual_studio_version.gni")
 import("//build/timestamp.gni")
 import("//build/toolchain/goma.gni")
+import("//build/toolchain/rbe.gni")
 import("//build/toolchain/toolchain.gni")
 
 assert(is_win)
@@ -131,13 +132,13 @@ config("compiler") {
       cflags += [ "-msse3" ]
     }
 
-    if (exec_script("//build/win/use_ansi_codes.py", [], "trim string") ==
+    # Enable ANSI escape codes if something emulating them is around (cmd.exe
+    # doesn't understand ANSI escape codes by default). Make sure to not enable
+    # this if goma/remoteexec is in use, because this will lower cache hits.
+    if (!use_goma && !use_remoteexec &&
+        exec_script("//build/win/use_ansi_codes.py", [], "trim string") ==
         "True") {
-      cflags += [
-        # cmd.exe doesn't understand ANSI escape codes by default,
-        # so only enable them if something emulating them is around.
-        "-fansi-escape-codes",
-      ]
+      cflags += [ "-fansi-escape-codes" ]
     }
 
     if (use_clang_diagnostics_format) {
