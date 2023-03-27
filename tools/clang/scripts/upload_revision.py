@@ -284,8 +284,16 @@ def main():
                       action='store_true',
                       default=False,
                       help=('Skip updating the rust revision.'))
+  parser.add_argument('--skip-clang',
+                      action='store_true',
+                      default=False,
+                      help=('Skip updating the clang revision.'))
 
   args = parser.parse_args()
+
+  if args.skip_clang and args.skip_rust:
+    print('Cannot set both --skip-clang and --skip-rust.')
+    sys.exit(1)
 
   if args.clang_git_hash:
     clang_git_hash = args.clang_git_hash
@@ -313,7 +321,9 @@ def main():
   branch_name = f'clang-{clang_version}_rust-{rust_version}'
   Git('checkout', 'origin/main', '-b', branch_name, no_run=args.no_git)
 
-  old_clang_version = PatchClangRevision(clang_version)
+  old_clang_version = clang_version
+  if not args.skip_clang:
+    old_clang_version = PatchClangRevision(clang_version)
   if args.skip_rust:
     assert (clang_version !=
             old_clang_version), ('Change the sub-revision of Clang if there is '
@@ -329,11 +339,15 @@ def main():
     # compiler.
     # PatchRustRemoveFallback()
 
-  clang_change = f'{old_clang_version} : {clang_version}'
-  clang_change_log = (
-      f'{LLVM_GIT_URL}/+log/'
-      f'{old_clang_version.short_git_hash}..{clang_version.short_git_hash}'
-      f'\n\n')
+  if args.skip_clang:
+    clang_change = '[skipping Clang]'
+    clang_change_log = ''
+  else:
+    clang_change = f'{old_clang_version} : {clang_version}'
+    clang_change_log = (
+        f'{LLVM_GIT_URL}/+log/'
+        f'{old_clang_version.short_git_hash}..{clang_version.short_git_hash}'
+        f'\n\n')
 
   if args.skip_rust:
     rust_change = '[skipping Rust]'
