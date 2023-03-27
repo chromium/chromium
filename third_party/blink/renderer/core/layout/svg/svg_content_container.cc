@@ -45,11 +45,7 @@ bool SVGContentContainer::IsChildAllowed(const LayoutObject& child) {
   // The above IsSVG() check is not enough for a <svg> in a foreign element
   // with `display: contents` because SVGSVGElement::LayoutObjectIsNeeded()
   // doesn't check HasSVGParent().
-  if (RuntimeEnabledFeatures::
-          SvgContainersRejectSvgInDisplayContentsEnabled()) {
-    return !child.IsSVGRoot();
-  }
-  return true;
+  return !child.IsSVGRoot();
 }
 
 void SVGContentContainer::Layout(const SVGContainerLayoutInfo& layout_info) {

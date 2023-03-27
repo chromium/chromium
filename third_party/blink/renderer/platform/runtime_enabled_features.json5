@@ -3241,11 +3241,6 @@
       base_feature: "none",
     },
     {
-      // crbug.com/1393223
-      name: "SvgContainersRejectSvgInDisplayContents",
-      status: "stable",
-    },
-    {
       name: "SvgRasterOptimizations",
       status: "experimental",
     },
