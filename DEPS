@@ -2016,6 +2016,17 @@ deps = {
     'dep_type': 'cipd',
   },
 
+  'src/ash/webui/personalization_app/resources': {
+    'packages': [
+      {
+        'package': 'chromeos_internal/assistant/time_of_day',
+        'version': '7okw0Y1HdRp76vhM8AGsWOloCQ83hwMd7Y1k2sDYMJcC',
+      },
+    ],
+    'condition': 'checkout_chromeos and checkout_src_internal',
+    'dep_type': 'cipd',
+  },
+
   'src/ash/webui/projector_app/resources/prod': {
     'packages': [
       {

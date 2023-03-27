@@ -169,5 +169,17 @@ build_webui("build") {
     optimize_webui_in_files = [ "js/personalization_app.js" ]
   }
 
+  # Time of day assets cannot be made public until after the feature is
+  # released. Thus, they are currently hosted in CIPD and downloaded to
+  # this directory only if an internal chrome-branded checkout is being used.
+  # TODO(b/275379819): Create a custom GN arg like "tod_screensaver_enabled" and set it based
+  # on "feature_management" use flag in chromeos-chrome.ebuild.
+  if (is_chrome_branded) {
+    static_files += [
+      "time_of_day/thumbnails/clouds.jpg",
+      "time_of_day/thumbnails/new_mexico.jpg",
+    ]
+  }
+
   grit_output_dir = "$root_gen_dir/ash/webui"
 }
