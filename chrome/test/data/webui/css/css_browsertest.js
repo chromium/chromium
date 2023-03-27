@@ -4,6 +4,7 @@
 
 GEN('#include "build/chromeos_buildflags.h"');
 GEN('#include "content/public/test/browser_test.h"');
+GEN('#include "ui/base/ui_base_features.h"');
 
 var CssTest = class extends testing.Test {
   /** @override */
@@ -30,7 +31,22 @@ var TextDefaultsTest = class extends CssTest {
 };
 
 TEST_F('TextDefaultsTest', 'All', function() {
-  mocha.run();
+  runMochaSuite('TextDefaults')
+});
+
+var TextDefaultsSystemFontTest = class extends TextDefaultsTest {
+  /** @override */
+  get featureList() {
+    return {
+      enabled: [
+        'features::kWebUiSystemFont',
+      ],
+    };
+  }
+}
+
+TEST_F('TextDefaultsSystemFontTest', 'All', function() {
+  runMochaSuite('TextDefaultsSystemFont')
 });
 
 var ColorProviderCSSColorsTest = class extends CssTest {
