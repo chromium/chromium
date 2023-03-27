@@ -12,7 +12,7 @@
 // Android webview) has been set. The agents on the two iframes will
 // be different but access should still be allowed.
 async_test(t => {
-  internals.settings.setUniversalAccessFromFileURLs(true);
+  internals.settings.setAllowUniversalAccessFromFileURLs(true);
 
   // create same origin iframe
   let iframe = document.createElement('iframe');
@@ -29,7 +29,7 @@ async_test(t => {
 
   t.add_cleanup(() => {
     document.body.removeChild(iframe);
-    internals.settings.setUniversalAccessFromFileURLs(false);
+    internals.settings.setAllowUniversalAccessFromFileURLs(false);
   });
 }, 'Same-origin documents must share the same agent.');
 

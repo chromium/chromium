@@ -24,36 +24,31 @@
  */
 
 interface InternalSettings : InternalSettingsGenerated {
-    // All methods which access Page::settings() can raise an exception
-    // when the page cannot be accessed. (Such as during page tear-down.)
-    [RaisesException] void setHideScrollbars(boolean enabled);
-    [RaisesException] void setMockGestureTapHighlightsEnabled(boolean enabled);
-    [RaisesException] void setStandardFontFamily(DOMString family, DOMString script);
-    [RaisesException] void setSerifFontFamily(DOMString family, DOMString script);
-    [RaisesException] void setSansSerifFontFamily(DOMString family, DOMString script);
-    [RaisesException] void setFixedFontFamily(DOMString family, DOMString script);
-    [RaisesException] void setCursiveFontFamily(DOMString family, DOMString script);
-    [RaisesException] void setFantasyFontFamily(DOMString family, DOMString script);
-    [RaisesException] void setMathFontFamily(DOMString family, DOMString script);
-    [RaisesException] void setTextAutosizingEnabled(boolean enabled);
-    [RaisesException] void setTextAutosizingWindowSizeOverride(long width, long height);
+    // Only methods that are not automatically generated in
+    // InternalSettingsGenerated need to be defined here.
+    // For example, the setting editingBehaviorType is of type
+    // mojom::EditingBehavior which is not an idl type so
+    // InternalSettingsGenerated doesn't have setEditingBehaviorType.
+    // setEditingBehavior() defined here accepts a DOMString parameter which
+    // will be converted to an enum value passed to
+    // Settings::SetEditingBehaviorType().
+    void setStandardFontFamily(DOMString family, DOMString script);
+    void setSerifFontFamily(DOMString family, DOMString script);
+    void setSansSerifFontFamily(DOMString family, DOMString script);
+    void setFixedFontFamily(DOMString family, DOMString script);
+    void setCursiveFontFamily(DOMString family, DOMString script);
+    void setFantasyFontFamily(DOMString family, DOMString script);
+    void setMathFontFamily(DOMString family, DOMString script);
+    void setTextAutosizingWindowSizeOverride(long width, long height);
     [RaisesException] void setTextTrackKindUserPreference(DOMString preference);
-    [RaisesException] void setAccessibilityFontScaleFactor(float fontScaleFactor);
-    [RaisesException] void setMediaTypeOverride(DOMString mediaTypeOverride);
     [RaisesException] void setDisplayModeOverride(DOMString displayModeOverride);
     [RaisesException] void setEditingBehavior(DOMString behavior);
-    [RaisesException] void setImagesEnabled(boolean enabled);
-    [RaisesException] void setDefaultVideoPosterURL(DOMString poster);
-    [RaisesException] void setViewportEnabled(boolean enabled);
-    [RaisesException] void setViewportMetaEnabled(boolean enabled);
     [RaisesException] void setViewportStyle(DOMString style);
     [RaisesException] void setAvailablePointerTypes(DOMString pointers);
     [RaisesException] void setPrimaryPointerType(DOMString pointer);
     [RaisesException] void setAvailableHoverTypes(DOMString types);
     [RaisesException] void setPrimaryHoverType(DOMString type);
     [RaisesException] void setImageAnimationPolicy(DOMString policy);
-    [RaisesException] void setPresentationReceiver(boolean enabled);
     [RaisesException] void setAutoplayPolicy(DOMString policy);
-    [RaisesException] void setUniversalAccessFromFileURLs(boolean enabled);
-    [RaisesException] void setPreferCompositingToLCDTextEnabled(boolean enabled);
+    void setPreferCompositingToLCDTextEnabled(boolean enabled);
 };

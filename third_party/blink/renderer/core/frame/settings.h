@@ -56,6 +56,9 @@ class CORE_EXPORT Settings {
 
  public:
   Settings();
+
+  // Default copy and assignment are forbidden because SettingsDelegate only
+  // supports 1:1 relationship with Settings.
   Settings(const Settings&) = delete;
   Settings& operator=(const Settings&) = delete;
 

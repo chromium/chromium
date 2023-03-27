@@ -10,31 +10,38 @@
 
 namespace blink {
 
-InternalSettingsGenerated::InternalSettingsGenerated(Page* page)
-    : page_(page)
-    {% for setting in settings if setting.type|to_idl_type %}
-    , {{setting.name}}_(page->GetSettings().Get{{setting.name.to_upper_camel_case()}}())
-    {% endfor %}
-{
+InternalSettingsGenerated::InternalSettingsGenerated(Page& page)
+    : InternalSettingsPageSupplementBase(page) {
+{% for setting in settings %}
+  backup_.Set{{setting.name.to_upper_camel_case()}}(
+      GetSettings().Get{{setting.name.to_upper_camel_case()}}());
+{% endfor %}
 }
 
 InternalSettingsGenerated::~InternalSettingsGenerated() {}
 
-void InternalSettingsGenerated::resetToConsistentState() {
-  {% for setting in settings if setting.type|to_idl_type %}
-  page_->GetSettings().Set{{setting.name.to_upper_camel_case()}}({{setting.name}}_);
-  {% endfor %}
+void InternalSettingsGenerated::ResetToConsistentState() {
+{% for setting in settings %}
+  GetSettings().Set{{setting.name.to_upper_camel_case()}}(
+      backup_.Get{{setting.name.to_upper_camel_case()}}());
+{% endfor %}
 }
 {% for setting in settings if setting.type|to_idl_type %}
 
-void InternalSettingsGenerated::set{{setting.name.to_upper_camel_case()}}({{setting.type|to_passing_type}} {{setting.name}}) {
-  page_->GetSettings().Set{{setting.name.to_upper_camel_case()}}({{setting.name}});
+void InternalSettingsGenerated::set{{setting.name.to_upper_camel_case()}}(
+    {{setting.type|to_passing_type}} {{setting.name}}) {
+  GetSettings().Set{{setting.name.to_upper_camel_case()}}({{setting.name}});
 }
 {% endfor %}
 
 void InternalSettingsGenerated::Trace(Visitor* visitor) const {
-  visitor->Trace(page_);
   ScriptWrappable::Trace(visitor);
+  InternalSettingsPageSupplementBase::Trace(visitor);
+}
+
+Settings& InternalSettingsGenerated::GetSettings() {
+  CHECK(GetSupplementable());
+  return GetSupplementable()->GetSettings();
 }
 
 } // namespace blink

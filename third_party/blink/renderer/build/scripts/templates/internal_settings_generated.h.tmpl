@@ -7,6 +7,8 @@
 #define {{header_guard}}
 
 #include "base/memory/scoped_refptr.h"
+#include "third_party/blink/renderer/core/frame/settings.h"
+#include "third_party/blink/renderer/core/page/page.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/heap/member.h"
@@ -15,27 +17,31 @@
 
 namespace blink {
 
-class Page;
-
-class InternalSettingsGenerated : public ScriptWrappable {
+class InternalSettingsGenerated : public ScriptWrappable,
+                                  public InternalSettingsPageSupplementBase {
   DEFINE_WRAPPERTYPEINFO();
 
  public:
-  explicit InternalSettingsGenerated(Page*);
+  explicit InternalSettingsGenerated(Page&);
   virtual ~InternalSettingsGenerated();
-  void resetToConsistentState();
+
   {% for setting in settings if setting.type|to_idl_type %}
   void set{{setting.name.to_upper_camel_case()}}({{setting.type|to_passing_type}} {{setting.name}});
   {% endfor %}
 
   void Trace(Visitor*) const override;
 
- private:
-  Member<Page> page_;
+ protected:
+  Settings& GetSettings();
 
-  {% for setting in settings if setting.type|to_idl_type %}
-  {{setting.type}} {{setting.name}}_;
-  {% endfor %}
+  // Resets all settings to be the initial state when this is constructed.
+  // This also includes settings without an idl type (thus without an
+  // automatically generated setter method in this class), in case the settings
+  // are changed by custom methods defined in InternalSettings.
+  void ResetToConsistentState();
+
+ private:
+  Settings backup_;
 };
 
 }  // namespace blink
