@@ -44,7 +44,9 @@ describe('CdpClient', () => {
     const cdpConnection = new CdpConnection(mockCdpServer);
 
     const cdpClient = cdpConnection.browserClient();
-    cdpClient.sendCommand('Target.activateTarget', {targetId: TEST_TARGET_ID});
+    void cdpClient.sendCommand('Target.activateTarget', {
+      targetId: TEST_TARGET_ID,
+    });
 
     sinon.assert.calledOnceWithExactly(
       mockCdpServer.sendMessage,
@@ -70,7 +72,7 @@ describe('CdpClient', () => {
     await mockCdpServer.emulateIncomingMessage({id: 0, result: {}});
 
     // Assert 'cdpClient' resolved message promise.
-    expect(commandPromise).to.eventually.equal({});
+    await expect(commandPromise).to.eventually.deep.equal({});
   });
 
   it(`when some command is called 2 times and it's done each command promise is resolved with proper results`, async () => {
@@ -177,7 +179,7 @@ describe('CdpClient', () => {
       });
 
       // Assert sendCommand resolved message promise.
-      expect(commandPromise).to.eventually.equal({
+      await expect(commandPromise).to.eventually.deep.equal({
         targetId: TEST_TARGET_ID,
       });
     });

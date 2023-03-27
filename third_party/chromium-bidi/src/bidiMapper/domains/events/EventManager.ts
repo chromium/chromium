@@ -76,7 +76,7 @@ export interface IEventManager {
     events: Session.SubscribeParametersEvent[],
     contextIds: (CommonDataTypes.BrowsingContext | null)[],
     channel: string | null
-  ): Promise<void>;
+  ): Promise<void> | void;
 
   get isNetworkDomainEnabled(): boolean;
 }
@@ -229,11 +229,11 @@ export class EventManager implements IEventManager {
     }
   }
 
-  async unsubscribe(
+  unsubscribe(
     eventNames: Session.SubscribeParametersEvent[],
     contextIds: (CommonDataTypes.BrowsingContext | null)[],
     channel: string | null
-  ): Promise<void> {
+  ) {
     this.#subscriptionManager.unsubscribeAll(eventNames, contextIds, channel);
   }
 

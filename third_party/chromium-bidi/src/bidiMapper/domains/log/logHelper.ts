@@ -73,7 +73,7 @@ export function logMessageFormatter(
         }
       } else {
         // %o, %O, %c
-        output += toJson(arg as CommonDataTypes.RemoteValue);
+        output += toJson(arg);
       }
     } else {
       output += token;
@@ -140,7 +140,7 @@ function toJson(arg: CommonDataTypes.RemoteValue): string {
   }
 
   if (arg.type === 'array') {
-    return `[${arg.value?.map((val) => toJson(val)).join(',')}]`;
+    return `[${arg.value?.map((val) => toJson(val)).join(',') ?? ''}]`;
   }
 
   throw Error(`Invalid value type: ${arg.toString()}`);
@@ -158,13 +158,13 @@ function stringFromArg(arg: CommonDataTypes.RemoteValue): string {
     case 'bigint':
       return String(arg.value);
     case 'regexp':
-      return `/${arg.value.pattern}/${arg.value.flags}`;
+      return `/${arg.value.pattern}/${arg.value.flags ?? ''}`;
     case 'date':
       return new Date(arg.value).toString();
     case 'object':
-      return `Object(${arg.value?.length})`;
+      return `Object(${arg.value?.length ?? ''})`;
     case 'array':
-      return `Array(${arg.value?.length})`;
+      return `Array(${arg.value?.length ?? ''})`;
     case 'map':
       return `Map(${arg.value.length})`;
     case 'set':

@@ -83,7 +83,7 @@ export class BrowsingContextImpl {
     this.#initListeners();
   }
 
-  static async create(
+  static create(
     cdpTarget: CdpTarget,
     realmStorage: RealmStorage,
     contextId: string,
@@ -91,7 +91,7 @@ export class BrowsingContextImpl {
     eventManager: IEventManager,
     browsingContextStorage: BrowsingContextStorage,
     logger?: LoggerFn
-  ): Promise<void> {
+  ) {
     const context = new BrowsingContextImpl(
       cdpTarget,
       realmStorage,
@@ -244,7 +244,7 @@ export class BrowsingContextImpl {
 
     this.#cdpTarget.cdpClient.on(
       'Page.lifecycleEvent',
-      async (params: Protocol.Page.LifecycleEventEvent) => {
+      (params: Protocol.Page.LifecycleEventEvent) => {
         if (this.contextId !== params.frameId) {
           return;
         }
@@ -402,13 +402,11 @@ export class BrowsingContextImpl {
     await this.awaitUnblocked();
 
     // TODO: handle loading errors.
-    const cdpNavigateResult = await this.#cdpTarget.cdpClient.sendCommand(
-      'Page.navigate',
-      {
+    const cdpNavigateResult: Protocol.Page.NavigateResponse =
+      await this.#cdpTarget.cdpClient.sendCommand('Page.navigate', {
         url,
         frameId: this.contextId,
-      }
-    );
+      });
 
     if (cdpNavigateResult.errorText) {
       throw new Message.UnknownException(cdpNavigateResult.errorText);
@@ -438,9 +436,6 @@ export class BrowsingContextImpl {
           await this.#defers.Page.lifecycleEvent.load;
         }
         break;
-
-      default:
-        throw new Error(`Not implemented wait '${wait}'`);
     }
 
     return {

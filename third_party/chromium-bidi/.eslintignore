@@ -1,6 +1,7 @@
 __pycache__
 .build
 .cache
+.eslintrc.js
 .idea
 chromium-bidi-*
 chromium-bidi.iml

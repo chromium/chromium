@@ -52,12 +52,16 @@ export class BidiServerRunner {
    */
   run(
     bidiPort: number,
-    onNewBidiConnectionOpen: (bidiServer: ITransport) => Promise<() => void>
+    onNewBidiConnectionOpen: (
+      bidiServer: ITransport
+    ) => Promise<() => void> | (() => void)
   ) {
     const server = http.createServer(
       async (request: http.IncomingMessage, response: http.ServerResponse) => {
         debugInternal(
-          `${new Date()} Received ${request.method} request for ${request.url}`
+          `${new Date().toString()} Received ${
+            request.method ?? 'UNKNOWN METHOD'
+          } request for ${request.url ?? 'UNKNOWN URL'}`
         );
         if (!request.url) return response.end(404);
 
@@ -79,7 +83,9 @@ export class BidiServerRunner {
           );
         } else if (request.url.startsWith('/session')) {
           debugInternal(
-            `Unknown session command ${request.method} request for ${
+            `Unknown session command ${
+              request.method ?? 'UNKNOWN METHOD'
+            } request for ${
               request.url
             } with payload ${await getHttpRequestPayload(
               request
@@ -148,7 +154,9 @@ export class BidiServerRunner {
 
       connection.on('close', () => {
         debugInternal(
-          `${new Date()} Peer ${connection.remoteAddress} disconnected.`
+          `${new Date().toString()} Peer ${
+            connection.remoteAddress
+          } disconnected.`
         );
 
         onBidiConnectionClosed();
@@ -188,7 +196,7 @@ export class BidiServerRunner {
       errorCode,
       errorMessage
     );
-    this.#sendClientMessage(errorResponse, connection);
+    void this.#sendClientMessage(errorResponse, connection);
   }
 
   #getErrorResponse(
@@ -219,11 +227,11 @@ class BidiServer implements ITransport {
   #handlers: ((message: string) => void)[] = [];
   #sendBidiMessage: ((message: string) => Promise<void>) | null = null;
 
-  setOnMessage(handler: (messageStr: string) => Promise<void>): void {
+  setOnMessage(handler: Parameters<ITransport['setOnMessage']>[0]) {
     this.#handlers.push(handler);
   }
 
-  sendMessage(message: string): Promise<void> {
+  sendMessage(message: string) {
     if (!this.#sendBidiMessage)
       throw new Error('Bidi connection is not initialised yet');
 
@@ -232,11 +240,11 @@ class BidiServer implements ITransport {
 
   close() {}
 
-  initialise(sendBidiMessage: (messageStr: string) => Promise<void>): void {
+  initialise(sendBidiMessage: (messageStr: string) => Promise<void>) {
     this.#sendBidiMessage = sendBidiMessage;
   }
 
-  onMessage(messageStr: string): void {
+  onMessage(messageStr: string) {
     for (const handler of this.#handlers) handler(messageStr);
   }
 }

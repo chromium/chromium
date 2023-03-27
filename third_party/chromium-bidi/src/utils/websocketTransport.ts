@@ -36,7 +36,7 @@ export class WebSocketTransport implements ITransport {
     this.#onMessage = onMessage;
   }
 
-  async sendMessage(message: string): Promise<void> {
+  sendMessage(message: string) {
     this.#websocket.send(message);
   }
 

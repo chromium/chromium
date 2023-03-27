@@ -73,8 +73,8 @@ export class BrowsingContextProcessor {
 
     cdpClient.on(
       'Page.frameAttached',
-      async (params: Protocol.Page.FrameAttachedEvent) => {
-        await this.#handleFrameAttachedEvent(params);
+      (params: Protocol.Page.FrameAttachedEvent) => {
+        this.#handleFrameAttachedEvent(params);
       }
     );
     cdpClient.on(
@@ -89,12 +89,12 @@ export class BrowsingContextProcessor {
   //   "params": {
   //     "frameId": "0A639AB1D9A392DF2CE02C53CC4ED3A6",
   //     "parentFrameId": "722BB0526C73B067A479BED6D0DB1156" } }
-  async #handleFrameAttachedEvent(params: Protocol.Page.FrameAttachedEvent) {
+  #handleFrameAttachedEvent(params: Protocol.Page.FrameAttachedEvent) {
     const parentBrowsingContext = this.#browsingContextStorage.findContext(
       params.parentFrameId
     );
     if (parentBrowsingContext !== undefined) {
-      await BrowsingContextImpl.create(
+      BrowsingContextImpl.create(
         parentBrowsingContext.cdpTarget,
         this.#realmStorage,
         params.frameId,
@@ -170,7 +170,7 @@ export class BrowsingContextProcessor {
         .getKnownContext(targetInfo.targetId)
         .updateCdpTarget(cdpTarget);
     } else {
-      await BrowsingContextImpl.create(
+      BrowsingContextImpl.create(
         cdpTarget,
         this.#realmStorage,
         targetInfo.targetId,

@@ -20,7 +20,7 @@
  * a WebSocket, pipe, or Window binding.
  */
 export interface ITransport {
-  setOnMessage: (handler: (message: string) => Promise<void>) => void;
-  sendMessage: (message: string) => Promise<void>;
+  setOnMessage: (handler: (message: string) => Promise<void> | void) => void;
+  sendMessage: (message: string) => Promise<void> | void;
   close(): void;
 }

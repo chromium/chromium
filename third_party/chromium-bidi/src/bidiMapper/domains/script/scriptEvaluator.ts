@@ -117,7 +117,7 @@ export class ScriptEvaluator {
 
     return {
       type: 'success',
-      result: await realm.cdpToBidiValue(cdpEvaluateResult, resultOwnership),
+      result: realm.cdpToBidiValue(cdpEvaluateResult, resultOwnership),
       realm: realm.realmId,
     };
   }
@@ -191,10 +191,7 @@ export class ScriptEvaluator {
     }
     return {
       type: 'success',
-      result: await realm.cdpToBidiValue(
-        cdpCallFunctionResult,
-        resultOwnership
-      ),
+      result: realm.cdpToBidiValue(cdpCallFunctionResult, resultOwnership),
       realm: realm.realmId,
     };
   }
@@ -446,7 +443,7 @@ export class ScriptEvaluator {
         const channelHandle = createChannelHandleResult.result.objectId;
 
         // Long-poll the message queue asynchronously.
-        this.#initChannelListener(argumentValue, channelHandle, realm);
+        void this.#initChannelListener(argumentValue, channelHandle, realm);
 
         const sendMessageArgResult = await realm.cdpClient.sendCommand(
           'Runtime.callFunctionOn',
@@ -545,22 +542,22 @@ export class ScriptEvaluator {
         }
       );
 
-      this.#eventManager.registerPromiseEvent(
-        realm
-          .cdpToBidiValue(message, channel.value.ownership ?? 'none')
-          .then((data) => ({
-            method: Script.EventNames.MessageEvent,
-            params: {
-              channel: channelId,
-              data,
-              source: {
-                realm: realm.realmId,
-                context: realm.browsingContextId,
-              },
+      this.#eventManager.registerEvent(
+        {
+          method: Script.EventNames.MessageEvent,
+          params: {
+            channel: channelId,
+            data: realm.cdpToBidiValue(
+              message,
+              channel.value.ownership ?? 'none'
+            ),
+            source: {
+              realm: realm.realmId,
+              context: realm.browsingContextId,
             },
-          })),
-        realm.browsingContextId,
-        Script.EventNames.MessageEvent
+          },
+        },
+        realm.browsingContextId
       );
     }
   }

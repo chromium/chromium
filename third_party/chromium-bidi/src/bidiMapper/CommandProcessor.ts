@@ -245,7 +245,7 @@ export class CommandProcessor extends EventEmitter<CommandProcessorEvents> {
       );
     } catch (e) {
       if (e instanceof Message.ErrorResponseClass) {
-        const errorResponse = e as Message.ErrorResponseClass;
+        const errorResponse = e;
         this.emit(
           'response',
           OutgoingBidiMessage.createResolved(

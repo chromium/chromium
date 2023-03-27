@@ -608,7 +608,7 @@ export namespace Script {
     handles: string[];
   };
 
-  export type DisownResult = {result: {}};
+  export type DisownResult = {result: Record<string, unknown>};
 
   export type CallFunctionCommand = {
     method: 'script.callFunction';
@@ -792,7 +792,7 @@ export namespace BrowsingContext {
     context: CommonDataTypes.BrowsingContext;
   };
 
-  export type CloseResult = {result: {}};
+  export type CloseResult = {result: Record<string, unknown>};
 
   export type CaptureScreenshotCommand = {
     method: 'browsingContext.captureScreenshot';
@@ -1086,7 +1086,7 @@ export namespace Session {
 
   export type StatusCommand = {
     method: 'session.status';
-    params: {};
+    params: Record<string, unknown>;
   };
 
   export type StatusResult = {
@@ -1120,12 +1120,12 @@ export namespace Session {
     contexts?: CommonDataTypes.BrowsingContext[];
   };
 
-  export type SubscribeResult = {result: {}};
+  export type SubscribeResult = {result: Record<string, unknown>};
 
   export type UnsubscribeCommand = {
     method: 'session.unsubscribe';
     params: SubscribeParameters;
   };
 
-  export type UnsubscribeResult = {result: {}};
+  export type UnsubscribeResult = {result: Record<string, unknown>};
 }

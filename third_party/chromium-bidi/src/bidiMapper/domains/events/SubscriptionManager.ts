@@ -263,27 +263,33 @@ export class SubscriptionManager {
     event: Session.SubscribeParametersEvent,
     contextId: CommonDataTypes.BrowsingContext | null,
     channel: string | null
-  ): Function {
+  ): () => void {
     // All the subscriptions are handled on the top-level contexts.
     contextId = this.#findTopLevelContextId(contextId);
 
     if (!this.#channelToContextToEventMap.has(channel)) {
       throw new InvalidArgumentException(
-        `Cannot unsubscribe from ${event}, ${contextId}. No subscription found.`
+        `Cannot unsubscribe from ${event}, ${
+          contextId === null ? 'null' : contextId
+        }. No subscription found.`
       );
     }
     const contextToEventMap = this.#channelToContextToEventMap.get(channel)!;
 
     if (!contextToEventMap.has(contextId)) {
       throw new InvalidArgumentException(
-        `Cannot unsubscribe from ${event}, ${contextId}. No subscription found.`
+        `Cannot unsubscribe from ${event}, ${
+          contextId === null ? 'null' : contextId
+        }. No subscription found.`
       );
     }
     const eventMap = contextToEventMap.get(contextId)!;
 
     if (!eventMap.has(event)) {
       throw new InvalidArgumentException(
-        `Cannot unsubscribe from ${event}, ${contextId}. No subscription found.`
+        `Cannot unsubscribe from ${event}, ${
+          contextId === null ? 'null' : contextId
+        }. No subscription found.`
       );
     }
 

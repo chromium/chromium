@@ -40,7 +40,7 @@ export class BidiServer extends EventEmitter<BidiServerEvents> {
   #realmStorage: RealmStorage;
   #logger?: LoggerFn;
 
-  #handleIncomingMessage = async (message: Message.RawCommandRequest) => {
+  #handleIncomingMessage = (message: Message.RawCommandRequest) => {
     this.#commandProcessor.processCommand(message);
   };
 

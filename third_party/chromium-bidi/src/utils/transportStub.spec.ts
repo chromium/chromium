@@ -33,7 +33,7 @@ export class StubTransport implements ITransport {
   sendMessage: TypedSpy<ITransport['sendMessage']>;
   close: TypedSpy<ITransport['close']>;
 
-  #getOnMessage(): (str: string) => void {
+  #getOnMessage(): (_: string) => unknown {
     assert.called(this.setOnMessage);
     return this.setOnMessage.getCall(0).args[0];
   }

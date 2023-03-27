@@ -102,7 +102,7 @@ export class CdpConnection {
     });
   }
 
-  #onMessage = async (message: string) => {
+  #onMessage = (message: string) => {
     const parsed = JSON.parse(message);
     const messagePretty = JSON.stringify(parsed, null, 2);
     this.#log('received ◂', messagePretty);

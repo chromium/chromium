@@ -120,9 +120,9 @@ export class NetworkRequest {
       throw new Error('RequestWillBeSentExtraInfoEvent is not set');
     }
 
-    const requestWillBeSentEvent = this.#requestWillBeSentEvent!;
+    const requestWillBeSentEvent = this.#requestWillBeSentEvent;
     const requestWillBeSentExtraInfoEvent =
-      this.#requestWillBeSentExtraInfoEvent!;
+      this.#requestWillBeSentExtraInfoEvent;
 
     const baseEventParams = {
       context: requestWillBeSentEvent.frameId ?? null,
@@ -272,13 +272,12 @@ export class NetworkRequest {
       throw new Error('RequestWillBeSentExtraInfoEvent is not set');
     }
 
-    const requestWillBeSentEvent = this.#requestWillBeSentEvent!;
+    const requestWillBeSentEvent = this.#requestWillBeSentEvent;
     const requestWillBeSentExtraInfoEvent =
-      this.#requestWillBeSentExtraInfoEvent!;
+      this.#requestWillBeSentExtraInfoEvent;
 
-    const responseReceivedEvent = this.#responseReceivedEvent!;
-    const responseReceivedExtraInfoEvent =
-      this.#responseReceivedExtraInfoEvent!;
+    const responseReceivedEvent = this.#responseReceivedEvent;
+    const responseReceivedExtraInfoEvent = this.#responseReceivedExtraInfoEvent;
 
     const baseEventParams = {
       context: responseReceivedEvent.frameId ?? null,

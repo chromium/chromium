@@ -19,8 +19,8 @@ import type {Message} from '../protocol/protocol.js';
 
 export interface BidiTransport {
   setOnMessage: (
-    handler: (message: Message.RawCommandRequest) => Promise<void>
+    handler: (message: Message.RawCommandRequest) => Promise<void> | void
   ) => void;
-  sendMessage: (message: Message.OutgoingMessage) => Promise<void>;
+  sendMessage: (message: Message.OutgoingMessage) => Promise<void> | void;
   close(): void;
 }

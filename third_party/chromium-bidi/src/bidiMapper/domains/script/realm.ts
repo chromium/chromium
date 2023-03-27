@@ -90,12 +90,12 @@ export class Realm {
     this.#realmStorage.knownHandlesToRealm.delete(handle);
   }
 
-  async cdpToBidiValue(
+  cdpToBidiValue(
     cdpValue:
       | Protocol.Runtime.CallFunctionOnResponse
       | Protocol.Runtime.EvaluateResponse,
     resultOwnership: Script.ResultOwnership
-  ): Promise<CommonDataTypes.RemoteValue> {
+  ): CommonDataTypes.RemoteValue {
     const cdpWebDriverValue = cdpValue.result.webDriverValue!;
     const bidiValue = this.webDriverValueToBiDi(cdpWebDriverValue);
 
@@ -109,7 +109,7 @@ export class Realm {
         this.#realmStorage.knownHandlesToRealm.set(objectId, this.realmId);
       } else {
         // No need in awaiting for the object to be released.
-        this.cdpClient.sendCommand('Runtime.releaseObject', {objectId});
+        void this.cdpClient.sendCommand('Runtime.releaseObject', {objectId});
       }
     }
 
@@ -129,6 +129,7 @@ export class Realm {
 
     if (result.type === 'node') {
       if (Object.hasOwn(bidiValue, 'backendNodeId')) {
+        // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
         bidiValue.sharedId = `${this.navigableId}${SHARED_ID_DIVIDER}${bidiValue.backendNodeId}`;
         delete bidiValue['backendNodeId'];
       }

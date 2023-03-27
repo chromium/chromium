@@ -38,7 +38,7 @@ describe('CdpConnection', () => {
       id: 0,
       method: 'Browser.getVersion',
     });
-    cdpConnection.browserClient().sendCommand('Browser.getVersion');
+    void cdpConnection.browserClient().sendCommand('Browser.getVersion');
 
     sinon.assert.calledOnceWithExactly(
       mockCdpServer.sendMessage,

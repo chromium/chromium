@@ -61,7 +61,7 @@ declare global {
 // Initiate `setSelfTargetId` as soon as possible to prevent race condition.
 const waitSelfTargetIdPromise = waitSelfTargetId();
 
-(async () => {
+void (async () => {
   generatePage();
 
   // Needed to filter out info related to BiDi target.
@@ -90,11 +90,11 @@ function createCdpConnection() {
       };
     }
 
-    setOnMessage(onMessage: (message: string) => Promise<void>): void {
+    setOnMessage(onMessage: Parameters<ITransport['setOnMessage']>[0]) {
       this.#onMessage = onMessage;
     }
 
-    async sendMessage(message: string): Promise<void> {
+    sendMessage(message: string) {
       window.cdp.send(message);
     }
 
@@ -136,13 +136,11 @@ async function createBidiServer(selfTargetId: string) {
       };
     }
 
-    setOnMessage(
-      onMessage: (message: Message.RawCommandRequest) => Promise<void>
-    ): void {
+    setOnMessage(onMessage: Parameters<BidiTransport['setOnMessage']>[0]) {
       this.#onMessage = onMessage;
     }
 
-    async sendMessage(message: Message.OutgoingMessage): Promise<void> {
+    sendMessage(message: Message.OutgoingMessage) {
       const messageStr = JSON.stringify(message);
       window.sendBidiResponse(messageStr);
       log(LogType.bidi, 'sent ▸', messageStr);
@@ -284,7 +282,7 @@ class BidiParserImpl implements BidiParser {
     return Parser.Script.parseDisownParams(params);
   }
   parseSendCommandParams(params: object): CDP.SendCommandParams {
-    return Parser.CDP.parseSendCommandParams(params) as CDP.SendCommandParams;
+    return Parser.CDP.parseSendCommandParams(params);
   }
   parseGetSessionParams(params: object): CDP.GetSessionParams {
     return Parser.CDP.parseGetSessionParams(params);
