@@ -3735,7 +3735,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="PasswordManager.WellKnownChangePasswordResult"
-    enum="WellKnownChangePasswordResult" expires_after="2023-04-20">
+    enum="WellKnownChangePasswordResult" expires_after="2023-10-20">
   <owner>kolos@chromium.org</owner>
   <owner>jkeitel@google.com</owner>
   <summary>
