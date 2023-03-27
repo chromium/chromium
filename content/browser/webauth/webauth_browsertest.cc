@@ -166,9 +166,8 @@ constexpr char kCreatePublicKeyTemplate[] =
     "     authenticatorAttachment: '$5',"
     "  },"
     "  attestation: '$6',"
-    "}}).then(c => window.domAutomationController.send('webauth: OK'),"
-    "         e => window.domAutomationController.send("
-    "                  'webauth: ' + e.toString()));";
+    "}}).then(c => 'webauth: OK',"
+    "         e => 'webauth: ' + e.toString())";
 
 constexpr char kCreatePublicKeyWithAbortSignalTemplate[] =
     "navigator.credentials.create({ publicKey: {"
@@ -188,9 +187,8 @@ constexpr char kCreatePublicKeyWithAbortSignalTemplate[] =
     "  },"
     "  attestation: '$6',"
     "}, signal: _signal_}"
-    ").then(c => window.domAutomationController.send('webauth: OK'),"
-    "       e => window.domAutomationController.send("
-    "                'webauth: ' + e.toString()));";
+    ").then(c => 'webauth: OK',"
+    "       e => 'webauth: ' + e.toString())";
 
 constexpr char kShortTimeout[] = "100";
 
@@ -239,9 +237,8 @@ constexpr char kGetPublicKeyTemplate[] =
     "  userVerification: '$1',"
     "  allowCredentials: $2,"
     "  timeout: $3}"
-    "}).then(c => window.domAutomationController.send('webauth: OK'),"
-    "        e => window.domAutomationController.send("
-    "                  'webauth: ' + e.toString()));";
+    "}).then(c => 'webauth: OK',"
+    "        e => 'webauth: ' + e.toString())";
 
 constexpr char kGetPublicKeyWithAbortSignalTemplate[] =
     "navigator.credentials.get({ publicKey: {"
@@ -250,8 +247,7 @@ constexpr char kGetPublicKeyWithAbortSignalTemplate[] =
     "  allowCredentials: $2,"
     "  timeout: $3,"
     "}, signal: $4}"
-    ").catch(c => window.domAutomationController.send("
-    "                  'webauth: ' + c.toString()));";
+    ").catch(c => 'webauth: ' + c.toString())";
 
 // Default values for kGetPublicKeyTemplate.
 struct GetParameters {
@@ -276,6 +272,12 @@ std::string BuildGetCallWithParameters(const GetParameters& parameters) {
   substitutions.push_back(parameters.signal);
   return base::ReplaceStringPlaceholders(kGetPublicKeyWithAbortSignalTemplate,
                                          substitutions, nullptr);
+}
+
+std::string SendViaDomAutomationController(
+    const std::string& promise_expression) {
+  return promise_expression +
+         ".then((value) => window.domAutomationController.send(value));";
 }
 
 // Helper class that executes the given |closure| the very last moment before
@@ -851,8 +853,7 @@ IN_PROC_BROWSER_TEST_F(WebAuthJavascriptClientBrowserTest,
   CreateParameters parameters;
   parameters.rp_id = "localhost";
   std::string result = EvalJs(shell()->web_contents()->GetPrimaryMainFrame(),
-                              BuildCreateCallWithParameters(parameters),
-                              EXECUTE_SCRIPT_USE_MANUAL_REPLY)
+                              BuildCreateCallWithParameters(parameters))
                            .ExtractString();
 
   ASSERT_EQ(kRelyingPartySecurityErrorMessage,
@@ -870,9 +871,9 @@ IN_PROC_BROWSER_TEST_F(WebAuthJavascriptClientBrowserTest,
   ASSERT_TRUE(offset != std::string::npos);
   script.replace(offset, sizeof(kExpectedSubstr) - 1, "null");
 
-  std::string result = EvalJs(shell()->web_contents()->GetPrimaryMainFrame(),
-                              script, EXECUTE_SCRIPT_USE_MANUAL_REPLY)
-                           .ExtractString();
+  std::string result =
+      EvalJs(shell()->web_contents()->GetPrimaryMainFrame(), script)
+          .ExtractString();
   ASSERT_EQ(kPublicKeyErrorMessage, result);
 }
 
@@ -888,8 +889,7 @@ IN_PROC_BROWSER_TEST_F(WebAuthJavascriptClientBrowserTest,
     parameters.user_verification = "required";
     parameters.timeout = kShortTimeout;
     std::string result = EvalJs(shell()->web_contents()->GetPrimaryMainFrame(),
-                                BuildCreateCallWithParameters(parameters),
-                                EXECUTE_SCRIPT_USE_MANUAL_REPLY)
+                                BuildCreateCallWithParameters(parameters))
                              .ExtractString();
     ASSERT_EQ(kNotAllowedErrorMessage, result);
   }
@@ -906,8 +906,7 @@ IN_PROC_BROWSER_TEST_F(WebAuthJavascriptClientBrowserTest,
     CreateParameters parameters;
     parameters.require_resident_key = true;
     std::string result = EvalJs(shell()->web_contents()->GetPrimaryMainFrame(),
-                                BuildCreateCallWithParameters(parameters),
-                                EXECUTE_SCRIPT_USE_MANUAL_REPLY)
+                                BuildCreateCallWithParameters(parameters))
                              .ExtractString();
 
     ASSERT_EQ(kResidentCredentialsErrorMessage, result);
@@ -926,8 +925,7 @@ IN_PROC_BROWSER_TEST_F(WebAuthJavascriptClientBrowserTest,
     parameters.algorithm_identifier = "123";
     parameters.timeout = kShortTimeout;
     std::string result = EvalJs(shell()->web_contents()->GetPrimaryMainFrame(),
-                                BuildCreateCallWithParameters(parameters),
-                                EXECUTE_SCRIPT_USE_MANUAL_REPLY)
+                                BuildCreateCallWithParameters(parameters))
                              .ExtractString();
 
     ASSERT_EQ(kNotAllowedErrorMessage, result);
@@ -946,8 +944,7 @@ IN_PROC_BROWSER_TEST_F(WebAuthJavascriptClientBrowserTest,
     parameters.authenticator_attachment = "platform";
     parameters.timeout = kShortTimeout;
     std::string result = EvalJs(shell()->web_contents()->GetPrimaryMainFrame(),
-                                BuildCreateCallWithParameters(parameters),
-                                EXECUTE_SCRIPT_USE_MANUAL_REPLY)
+                                BuildCreateCallWithParameters(parameters))
                              .ExtractString();
 
     ASSERT_EQ(kNotAllowedErrorMessage, result);
@@ -969,9 +966,9 @@ IN_PROC_BROWSER_TEST_F(WebAuthJavascriptClientBrowserTest,
         "authAbortSignal = authAbortController.signal;" +
         BuildCreateCallWithParameters(parameters);
 
-    std::string result = EvalJs(shell()->web_contents()->GetPrimaryMainFrame(),
-                                script, EXECUTE_SCRIPT_USE_MANUAL_REPLY)
-                             .ExtractString();
+    std::string result =
+        EvalJs(shell()->web_contents()->GetPrimaryMainFrame(), script)
+            .ExtractString();
     ASSERT_EQ(kOkMessage, result);
   }
 }
@@ -988,9 +985,9 @@ IN_PROC_BROWSER_TEST_F(WebAuthJavascriptClientBrowserTest,
       "authAbortController.abort();" +
       BuildCreateCallWithParameters(parameters);
 
-  std::string result = EvalJs(shell()->web_contents()->GetPrimaryMainFrame(),
-                              script, EXECUTE_SCRIPT_USE_MANUAL_REPLY)
-                           .ExtractString();
+  std::string result =
+      EvalJs(shell()->web_contents()->GetPrimaryMainFrame(), script)
+          .ExtractString();
   ASSERT_EQ(kAbortErrorMessage, result.substr(0, strlen(kAbortErrorMessage)));
 }
 
@@ -1008,9 +1005,9 @@ IN_PROC_BROWSER_TEST_F(
       "authAbortController.abort('Error');" +
       BuildCreateCallWithParameters(parameters);
 
-  std::string result = EvalJs(shell()->web_contents()->GetPrimaryMainFrame(),
-                              script, EXECUTE_SCRIPT_USE_MANUAL_REPLY)
-                           .ExtractString();
+  std::string result =
+      EvalJs(shell()->web_contents()->GetPrimaryMainFrame(), script)
+          .ExtractString();
   ASSERT_EQ(kAbortReasonMessage, result.substr(0, strlen(kAbortReasonMessage)));
 }
 
@@ -1033,13 +1030,16 @@ IN_PROC_BROWSER_TEST_F(WebAuthJavascriptClientBrowserTest,
   parameters.signal = "authAbortSignal";
   std::string script =
       "authAbortController = new AbortController();"
-      "authAbortSignal = authAbortController.signal;" +
+      "authAbortSignal = authAbortController.signal;"
+      "const promise = " +
       BuildCreateCallWithParameters(parameters) +
-      "authAbortController.abort();";
+      ";"
+      "authAbortController.abort();"
+      "promise;";
 
-  std::string result = EvalJs(shell()->web_contents()->GetPrimaryMainFrame(),
-                              script, EXECUTE_SCRIPT_USE_MANUAL_REPLY)
-                           .ExtractString();
+  std::string result =
+      EvalJs(shell()->web_contents()->GetPrimaryMainFrame(), script)
+          .ExtractString();
   ASSERT_EQ(kAbortErrorMessage, result.substr(0, strlen(kAbortErrorMessage)));
 }
 
@@ -1064,13 +1064,16 @@ IN_PROC_BROWSER_TEST_F(
   parameters.signal = "authAbortSignal";
   std::string script =
       "authAbortController = new AbortController();"
-      "authAbortSignal = authAbortController.signal;" +
+      "authAbortSignal = authAbortController.signal;"
+      "const promise = " +
       BuildCreateCallWithParameters(parameters) +
-      "authAbortController.abort('Error');";
+      ";"
+      "authAbortController.abort('Error');"
+      "promise;";
 
-  std::string result = EvalJs(shell()->web_contents()->GetPrimaryMainFrame(),
-                              script, EXECUTE_SCRIPT_USE_MANUAL_REPLY)
-                           .ExtractString();
+  std::string result =
+      EvalJs(shell()->web_contents()->GetPrimaryMainFrame(), script)
+          .ExtractString();
   ASSERT_EQ(kAbortReasonMessage, result.substr(0, strlen(kAbortReasonMessage)));
 }
 
@@ -1088,8 +1091,7 @@ IN_PROC_BROWSER_TEST_F(WebAuthJavascriptClientBrowserTest,
     GetParameters parameters;
     parameters.user_verification = "required";
     std::string result = EvalJs(shell()->web_contents()->GetPrimaryMainFrame(),
-                                BuildGetCallWithParameters(parameters),
-                                EXECUTE_SCRIPT_USE_MANUAL_REPLY)
+                                BuildGetCallWithParameters(parameters))
                              .ExtractString();
     ASSERT_EQ(kNotAllowedErrorMessage, result);
   }
@@ -1110,8 +1112,7 @@ IN_PROC_BROWSER_TEST_F(WebAuthJavascriptClientBrowserTest,
       "}]";
   parameters.timeout = kShortTimeout;
   std::string result = EvalJs(shell()->web_contents()->GetPrimaryMainFrame(),
-                              BuildGetCallWithParameters(parameters),
-                              EXECUTE_SCRIPT_USE_MANUAL_REPLY)
+                              BuildGetCallWithParameters(parameters))
                            .ExtractString();
   ASSERT_EQ(kNotAllowedErrorMessage, result);
 }
@@ -1142,8 +1143,7 @@ IN_PROC_BROWSER_TEST_F(WebAuthJavascriptClientBrowserTest, HybridRecognised) {
       parameters.timeout = kShortTimeout;
     }
     std::string result = EvalJs(shell()->web_contents()->GetPrimaryMainFrame(),
-                                BuildGetCallWithParameters(parameters),
-                                EXECUTE_SCRIPT_USE_MANUAL_REPLY)
+                                BuildGetCallWithParameters(parameters))
                              .ExtractString();
 
     if (should_fail) {
@@ -1162,8 +1162,7 @@ IN_PROC_BROWSER_TEST_F(WebAuthJavascriptClientBrowserTest,
   GetParameters parameters;
   parameters.allow_credentials = "[]";
   std::string result = EvalJs(shell()->web_contents()->GetPrimaryMainFrame(),
-                              BuildGetCallWithParameters(parameters),
-                              EXECUTE_SCRIPT_USE_MANUAL_REPLY)
+                              BuildGetCallWithParameters(parameters))
                            .ExtractString();
   ASSERT_EQ(kResidentCredentialsErrorMessage, result);
 }
@@ -1184,9 +1183,9 @@ IN_PROC_BROWSER_TEST_F(WebAuthJavascriptClientBrowserTest,
         "authAbortSignal = authAbortController.signal;" +
         BuildGetCallWithParameters(parameters);
 
-    std::string result = EvalJs(shell()->web_contents()->GetPrimaryMainFrame(),
-                                script, EXECUTE_SCRIPT_USE_MANUAL_REPLY)
-                             .ExtractString();
+    std::string result =
+        EvalJs(shell()->web_contents()->GetPrimaryMainFrame(), script)
+            .ExtractString();
     ASSERT_EQ(kNotAllowedErrorMessage, result);
   }
 }
@@ -1203,9 +1202,9 @@ IN_PROC_BROWSER_TEST_F(WebAuthJavascriptClientBrowserTest,
       "authAbortController.abort();" +
       BuildGetCallWithParameters(parameters);
 
-  std::string result = EvalJs(shell()->web_contents()->GetPrimaryMainFrame(),
-                              script, EXECUTE_SCRIPT_USE_MANUAL_REPLY)
-                           .ExtractString();
+  std::string result =
+      EvalJs(shell()->web_contents()->GetPrimaryMainFrame(), script)
+          .ExtractString();
   ASSERT_EQ(kAbortErrorMessage, result.substr(0, strlen(kAbortErrorMessage)));
 }
 
@@ -1222,9 +1221,9 @@ IN_PROC_BROWSER_TEST_F(WebAuthJavascriptClientBrowserTest,
       "authAbortController.abort('Error');" +
       BuildGetCallWithParameters(parameters);
 
-  std::string result = EvalJs(shell()->web_contents()->GetPrimaryMainFrame(),
-                              script, EXECUTE_SCRIPT_USE_MANUAL_REPLY)
-                           .ExtractString();
+  std::string result =
+      EvalJs(shell()->web_contents()->GetPrimaryMainFrame(), script)
+          .ExtractString();
   ASSERT_EQ(kAbortReasonMessage, result.substr(0, strlen(kAbortReasonMessage)));
 }
 
@@ -1247,12 +1246,16 @@ IN_PROC_BROWSER_TEST_F(WebAuthJavascriptClientBrowserTest,
   parameters.signal = "authAbortSignal";
   std::string script =
       "authAbortController = new AbortController();"
-      "authAbortSignal = authAbortController.signal;" +
-      BuildGetCallWithParameters(parameters) + "authAbortController.abort();";
+      "authAbortSignal = authAbortController.signal;"
+      "const promise = " +
+      BuildGetCallWithParameters(parameters) +
+      ";"
+      "authAbortController.abort();"
+      "promise";
 
-  std::string result = EvalJs(shell()->web_contents()->GetPrimaryMainFrame(),
-                              script, EXECUTE_SCRIPT_USE_MANUAL_REPLY)
-                           .ExtractString();
+  std::string result =
+      EvalJs(shell()->web_contents()->GetPrimaryMainFrame(), script)
+          .ExtractString();
   ASSERT_EQ(kAbortErrorMessage, result.substr(0, strlen(kAbortErrorMessage)));
 }
 
@@ -1276,13 +1279,16 @@ IN_PROC_BROWSER_TEST_F(WebAuthJavascriptClientBrowserTest,
   parameters.signal = "authAbortSignal";
   std::string script =
       "authAbortController = new AbortController();"
-      "authAbortSignal = authAbortController.signal;" +
+      "authAbortSignal = authAbortController.signal;"
+      "const promise = " +
       BuildGetCallWithParameters(parameters) +
-      "authAbortController.abort('Error');";
+      ";"
+      "authAbortController.abort('Error');"
+      "promise;";
 
-  std::string result = EvalJs(shell()->web_contents()->GetPrimaryMainFrame(),
-                              script, EXECUTE_SCRIPT_USE_MANUAL_REPLY)
-                           .ExtractString();
+  std::string result =
+      EvalJs(shell()->web_contents()->GetPrimaryMainFrame(), script)
+          .ExtractString();
   ASSERT_EQ(kAbortReasonMessage, result.substr(0, strlen(kAbortReasonMessage)));
 }
 
@@ -1378,8 +1384,7 @@ IN_PROC_BROWSER_TEST_F(WebAuthJavascriptClientBrowserTest,
     CreateParameters create_parameters;
     create_parameters.rp_id = test.cross_origin ? "notacme.com" : "acme.com";
     std::string result =
-        EvalJs(iframe, BuildCreateCallWithParameters(create_parameters),
-               EXECUTE_SCRIPT_USE_MANUAL_REPLY)
+        EvalJs(iframe, BuildCreateCallWithParameters(create_parameters))
             .ExtractString();
     if (test.create_should_work) {
       EXPECT_EQ(std::string(kOkMessage), result);
@@ -1395,9 +1400,8 @@ IN_PROC_BROWSER_TEST_F(WebAuthJavascriptClientBrowserTest,
         "   id: new Uint8Array([%d]),"
         "}]",
         credential_id);
-    result = EvalJs(iframe, BuildGetCallWithParameters(get_params),
-                    EXECUTE_SCRIPT_USE_MANUAL_REPLY)
-                 .ExtractString();
+    result =
+        EvalJs(iframe, BuildGetCallWithParameters(get_params)).ExtractString();
     if (test.get_should_work) {
       EXPECT_EQ(std::string(kOkMessage), result);
     } else {
@@ -1429,7 +1433,9 @@ IN_PROC_BROWSER_TEST_F(WebAuthJavascriptClientBrowserTest,
   // message is for whom.
   absl::optional<std::string> result = ExecuteScriptAndExtractPrefixedString(
       shell()->web_contents(),
-      BuildCreateCallWithParameters(CreateParameters()), "webauth: ");
+      SendViaDomAutomationController(
+          BuildCreateCallWithParameters(CreateParameters())),
+      "webauth: ");
   ASSERT_TRUE(result);
   ASSERT_EQ(kOkMessage, *result);
   ASSERT_TRUE(prompt_callback_was_invoked);
@@ -1487,7 +1493,9 @@ IN_PROC_BROWSER_TEST_F(WebAuthJavascriptClientBrowserTest,
     // NavigateIframeToURL uses it internally and they get confused about which
     // message is for whom.
     absl::optional<std::string> result = ExecuteScriptAndExtractPrefixedString(
-        shell()->web_contents(), BuildCreateCallWithParameters(parameters),
+        shell()->web_contents(),
+        SendViaDomAutomationController(
+            BuildCreateCallWithParameters(parameters)),
         "webauth: ");
     ASSERT_TRUE(result);
     ASSERT_EQ(kOkMessage, *result);
@@ -1526,8 +1534,7 @@ IN_PROC_BROWSER_TEST_F(WebAuthJavascriptClientBrowserTest,
       "}";
   ASSERT_EQ(kNotAllowedErrorMessage,
             EvalJs(shell()->web_contents()->GetPrimaryMainFrame(),
-                   BuildGetCallWithParameters(parameters),
-                   EXECUTE_SCRIPT_USE_MANUAL_REPLY));
+                   BuildGetCallWithParameters(parameters)));
 }
 
 // VerifyDevicePublicKeyOutput checks the result of a DPK-enabled operation.
@@ -1656,7 +1663,9 @@ IN_PROC_BROWSER_TEST_F(WebAuthJavascriptClientBrowserTest, WinMakeCredential) {
 
   absl::optional<std::string> result = ExecuteScriptAndExtractPrefixedString(
       shell()->web_contents(),
-      BuildCreateCallWithParameters(CreateParameters()), "webauth: ");
+      SendViaDomAutomationController(
+          BuildCreateCallWithParameters(CreateParameters())),
+      "webauth: ");
   ASSERT_TRUE(result);
   ASSERT_EQ(kOkMessage, *result);
 }
@@ -1693,7 +1702,9 @@ IN_PROC_BROWSER_TEST_F(WebAuthJavascriptClientBrowserTest,
 
     absl::optional<std::string> result = ExecuteScriptAndExtractPrefixedString(
         shell()->web_contents(),
-        BuildCreateCallWithParameters(CreateParameters()), "webauth: ");
+        SendViaDomAutomationController(
+            BuildCreateCallWithParameters(CreateParameters())),
+        "webauth: ");
     EXPECT_TRUE(result);
     EXPECT_EQ(*result, error.second);
   }
@@ -1715,7 +1726,9 @@ IN_PROC_BROWSER_TEST_F(WebAuthJavascriptClientBrowserTest, WinGetAssertion) {
       "[{ type: 'public-key', id: new TextEncoder().encode('AAA')}]";
 
   absl::optional<std::string> result = ExecuteScriptAndExtractPrefixedString(
-      shell()->web_contents(), BuildGetCallWithParameters(get_parameters),
+      shell()->web_contents(),
+      SendViaDomAutomationController(
+          BuildGetCallWithParameters(get_parameters)),
       "webauth: ");
   ASSERT_TRUE(result);
   ASSERT_EQ(kOkMessage, *result);
@@ -1743,7 +1756,9 @@ IN_PROC_BROWSER_TEST_F(WebAuthJavascriptClientBrowserTest,
     fake_api.set_hresult(error);
 
     absl::optional<std::string> result = ExecuteScriptAndExtractPrefixedString(
-        shell()->web_contents(), BuildGetCallWithParameters(GetParameters()),
+        shell()->web_contents(),
+        SendViaDomAutomationController(
+            BuildGetCallWithParameters(GetParameters())),
         "webauth: ");
     ASSERT_EQ(*result, kNotAllowedErrorMessage);
   }
@@ -1761,7 +1776,9 @@ IN_PROC_BROWSER_TEST_F(WebAuthJavascriptClientBrowserTest,
       "TextEncoder().encode('A')})";
 
   absl::optional<std::string> result = ExecuteScriptAndExtractPrefixedString(
-      shell()->web_contents(), BuildGetCallWithParameters(get_parameters),
+      shell()->web_contents(),
+      SendViaDomAutomationController(
+          BuildGetCallWithParameters(get_parameters)),
       "webauth: ");
   ASSERT_TRUE(result);
   ASSERT_EQ(kAllowCredentialsRangeErrorMessage, *result);
@@ -1777,7 +1794,8 @@ IN_PROC_BROWSER_TEST_F(WebAuthJavascriptClientBrowserTest,
       "Array(65).fill({type: 'public-key', id: new TextEncoder().encode('A')})";
 
   absl::optional<std::string> result = ExecuteScriptAndExtractPrefixedString(
-      shell()->web_contents(), BuildCreateCallWithParameters(parameters),
+      shell()->web_contents(),
+      SendViaDomAutomationController(BuildCreateCallWithParameters(parameters)),
       "webauth: ");
   ASSERT_TRUE(result);
   ASSERT_EQ(kExcludeCredentialsRangeErrorMessage, *result);
