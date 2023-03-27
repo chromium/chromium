@@ -1,0 +1,5 @@
+Tests debugger disconnect while removing a regexp breakpoint.
+Called setBreakpointByUrl (with regex)
+Called removeBreakpoint (with regex)
+Disconnected
+
