@@ -97,6 +97,7 @@
 <translation id="1773212559869067373">Verificatiecertificaat lokaal geweigerd</translation>
 <translation id="1775381402323441512">Videogegevens</translation>
 <translation id="180035236176489073">Je moet online zijn om deze bestanden te openen.</translation>
+<translation id="1805030087840125683">{COUNT,plural, =1{Een extensie met de ID}other{Een extensie met de ID's}}</translation>
 <translation id="1807938677607439181">Alle bestanden</translation>
 <translation id="1810764548349082891">Geen voorbeeld beschikbaar</translation>
 <translation id="1812302367230252929">Amhaars (transliteratie)</translation>
@@ -130,6 +131,7 @@
 <translation id="2084108471225856927">Apparaatinstellingen</translation>
 <translation id="2084809735218147718">Persoon die iemand bedankt</translation>
 <translation id="2088690981887365033">VPN-netwerk</translation>
+<translation id="2111134541987263231">Zet <ph name="BEGIN_BOLD" />Toestaan in incognitomodus<ph name="END_BOLD" /> aan</translation>
 <translation id="2114191879048183086"><ph name="NUMBER_OF_ITEMS" /> items worden verwijderd en je kunt ze niet herstellen.</translation>
 <translation id="2122305276694332719">Als er automatisch verbinding wordt gemaakt met een verborgen netwerk, kunnen anderen je apparaat en bepaalde netwerkinstellingen zien. Dit wordt niet aanbevolen.</translation>
 <translation id="2125607626296734455">Khmer</translation>
@@ -228,6 +230,7 @@
 <translation id="290843123675549676">Marathi</translation>
 <translation id="2923240520113693977">Estlands</translation>
 <translation id="2938685643439809023">Mongools</translation>
+<translation id="293972288692056847">{COUNT,plural, =1{Kan extensie niet vinden}other{Kan extensies niet vinden}}</translation>
 <translation id="2943503720238418293">Gebruik een kortere naam</translation>
 <translation id="2949781154072577687"><ph name="DRIVE_NAME" /> formatteren…</translation>
 <translation id="2951236788251446349">Kwal</translation>
@@ -282,6 +285,7 @@
 <translation id="3356580349448036450">Voltooid</translation>
 <translation id="3358452157379365236">Gitaar</translation>
 <translation id="3368922792935385530">Verbonden</translation>
+<translation id="3372635229069101468">Klik op <ph name="BEGIN_BOLD" />Details<ph name="END_BOLD" /></translation>
 <translation id="3382143449143186018">Nepalees met InScript-toetsenbord</translation>
 <translation id="338691029516748599">Netwerk <ph name="NETWORK_INDEX" /> van <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, signaalsterkte <ph name="SIGNAL_STRENGTH" />%, beheerd door je beheerder, verbinden</translation>
 <translation id="3408072735282270043">Activeren, <ph name="NETWORK_NAME" /></translation>
@@ -366,6 +370,7 @@
 <translation id="4124935795427217608">Eenhoorn</translation>
 <translation id="4131235941541910880">Verplaats overbodige items naar de prullenbak.</translation>
 <translation id="4134804435730168042">Netwerk <ph name="NETWORK_INDEX" /> van <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" />, activeren na apparaatinstelling</translation>
+<translation id="41501027364808384">{COUNT,plural, =1{Zet de volgende extensie aan in de incognitomodus:}other{Zet de volgende extensies aan in de incognitomodus:}}</translation>
 <translation id="4153015322587141338">Klik met de rechtermuisknop op een bestand en selecteer '<ph name="PIN_COMMAND" />' voor snelle toegang tot je bestanden op de plank.</translation>
 <translation id="4157569377477607576">Op basis van het beheerdersbeleid wordt het volgende afgeraden:</translation>
 <translation id="4159731583141908892"><ph name="FILE_NAME" /> verplaatst.</translation>
@@ -462,8 +467,10 @@
 <translation id="4801956050125744859">Beide behouden</translation>
 <translation id="4804827417948292437">Avocado</translation>
 <translation id="4805966553127040832"><ph name="COUNT" /> items herstellen</translation>
+<translation id="4816695657735045067">{COUNT,plural, =1{Je organisatie vereist een extensie voor het gebruik van de incognitomodus}other{Je organisatie vereist bepaalde extensies voor het gebruik van de incognitomodus}}</translation>
 <translation id="4823651846660089135">Apparaat is alleen-lezen</translation>
 <translation id="4826849268470072925">Tamil (ITRANS)</translation>
+<translation id="482932175346970750">Typ <ph name="BEGIN_BOLD" />chrome://extensions<ph name="END_BOLD" /> in de browser</translation>
 <translation id="4839847978919684242"><ph name="SELCTED_FILES_COUNT" /> items geselecteerd</translation>
 <translation id="4843566743023903107">Chromebases</translation>
 <translation id="4850886885716139402">Weergave</translation>
@@ -534,6 +541,7 @@
     met anderen allemaal op één locatie.<ph name="MARKUP_9" /></translation>
 <translation id="5275973617553375938">Bestanden hersteld vanaf Google Drive</translation>
 <translation id="5278111733643988471">Als je dit item wilt herstellen, sleep je het naar een nieuwe map buiten de prullenbak. De oorspronkelijke map <ph name="PARENT_FOLDER_NAME" /> voor dit item is verwijderd.</translation>
+<translation id="5283101102242354279">Zet een extensie aan in de incognitomodus:</translation>
 <translation id="5286194356314741248">Scannen</translation>
 <translation id="5288441970121584418">Hamburger</translation>
 <translation id="5288481194217812690"><ph name="FILENAME" /></translation>
@@ -780,6 +788,7 @@
 <translation id="7238643356913091553"><ph name="NETWORK_NAME" />, details</translation>
 <translation id="7246947237293279874">FTP-proxy</translation>
 <translation id="7248671827512403053">Applicatie</translation>
+<translation id="7252604552361840748">Zoek de bovenstaande extensie</translation>
 <translation id="7256405249507348194">Onbekende fout: <ph name="DESC" /></translation>
 <translation id="7268659760406822741">Beschikbare services</translation>
 <translation id="7292816689782057017">Op basis van het beheerdersbeleid is opslaan beperkt tot bepaalde locaties.</translation>
@@ -793,6 +802,7 @@
 <translation id="7359359531237882347"><ph name="NUMBER_OF_ITEMS" /> items kopiëren...</translation>
 <translation id="7375951387215729722">Lijst met bestanden gesorteerd op <ph name="COLUMN_NAME" /> in aflopende volgorde.</translation>
 <translation id="7377161162143020057">Dit bestand kopiëren is geblokkeerd door het beheerdersbeleid</translation>
+<translation id="7392500733467492920">kan niet worden gevonden. Neem contact op met je beheerder.</translation>
 <translation id="7402503521691663770">Chrome OS Flex-apparaten</translation>
 <translation id="7408870451288633753">Tsjechië</translation>
 <translation id="7417453074306512035">Ethiopisch toetsenbord</translation>

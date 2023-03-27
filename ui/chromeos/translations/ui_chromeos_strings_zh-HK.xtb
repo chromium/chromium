@@ -97,7 +97,7 @@
 <translation id="1773212559869067373">本機已拒絕驗證憑證</translation>
 <translation id="1775381402323441512">影片資料</translation>
 <translation id="180035236176489073">您必須連接網絡才能存取這些檔案。</translation>
-<translation id="1805030087840125683">{COUNT,plural, =1{系統找不到下列 ID 的擴充功能：}other{系統找不到下列 ID 的擴充功能：}}</translation>
+<translation id="1805030087840125683">{COUNT,plural, =1{系統找不到以下 ID 的擴充程式：}other{系統找不到以下 ID 的擴充程式：}}</translation>
 <translation id="1807938677607439181">所有檔案</translation>
 <translation id="1810764548349082891">無法預覽</translation>
 <translation id="1812302367230252929">阿姆哈拉文 (音譯)</translation>
@@ -230,7 +230,7 @@
 <translation id="290843123675549676">馬拉地文</translation>
 <translation id="2923240520113693977">愛沙尼亞文</translation>
 <translation id="2938685643439809023">蒙古文</translation>
-<translation id="293972288692056847">{COUNT,plural, =1{找不到擴充功能}other{找不到擴充功能}}</translation>
+<translation id="293972288692056847">{COUNT,plural, =1{找不到擴充程式}other{找不到擴充程式}}</translation>
 <translation id="2943503720238418293">請使用較短的名稱</translation>
 <translation id="2949781154072577687">正在格式化「<ph name="DRIVE_NAME" />」…</translation>
 <translation id="2951236788251446349">水母</translation>
@@ -285,7 +285,7 @@
 <translation id="3356580349448036450">完成</translation>
 <translation id="3358452157379365236">結他</translation>
 <translation id="3368922792935385530">已連線</translation>
-<translation id="3372635229069101468">按一下「詳細資料」<ph name="BEGIN_BOLD" /><ph name="END_BOLD" />。</translation>
+<translation id="3372635229069101468">按一下 [詳情]<ph name="BEGIN_BOLD" /><ph name="END_BOLD" /></translation>
 <translation id="3382143449143186018">尼泊爾文，InScript 鍵盤</translation>
 <translation id="338691029516748599">第 <ph name="NETWORK_INDEX" /> 個網絡，一共有 <ph name="NETWORK_COUNT" /> 個網絡，<ph name="NETWORK_NAME" />，<ph name="SECURITY_STATUS" />，訊號強度係 <ph name="SIGNAL_STRENGTH" />%，由管理員管理，連接</translation>
 <translation id="3408072735282270043">啟用，<ph name="NETWORK_NAME" /></translation>
@@ -370,7 +370,7 @@
 <translation id="4124935795427217608">獨角獸</translation>
 <translation id="4131235941541910880">將不需要的項目移至垃圾桶</translation>
 <translation id="4134804435730168042">第 <ph name="NETWORK_INDEX" /> 個網絡，總共 <ph name="NETWORK_COUNT" /> 個網絡，<ph name="NETWORK_NAME" />，<ph name="NETWORK_PROVIDER_NAME" />，喺裝置完成設定之後啟用</translation>
-<translation id="41501027364808384">{COUNT,plural, =1{在無痕模式中開啟以下擴充功能：}other{在無痕模式中開啟以下擴充功能：}}</translation>
+<translation id="41501027364808384">{COUNT,plural, =1{在無痕模式中開啟以下擴充程式：}other{在無痕模式中開啟以下擴充程式：}}</translation>
 <translation id="4153015322587141338">在檔案上按一下右鍵，然後選取 [<ph name="PIN_COMMAND" />]，以便在捷徑列中快速存取檔案。</translation>
 <translation id="4157569377477607576">管理員政策不建議：</translation>
 <translation id="4159731583141908892">已移動 <ph name="FILE_NAME" />。</translation>
@@ -467,7 +467,7 @@
 <translation id="4801956050125744859">兩個版本都保留</translation>
 <translation id="4804827417948292437">牛油果</translation>
 <translation id="4805966553127040832">正在還原 <ph name="COUNT" /> 個項目</translation>
-<translation id="4816695657735045067">{COUNT,plural, =1{如要使用無痕模式，貴機構必須允許執行特定擴充功能}other{如要使用無痕模式，貴機構必須允許執行特定擴充功能}}</translation>
+<translation id="4816695657735045067">{COUNT,plural, =1{如要使用無痕模式，機構必須允許執行特定擴充程式}other{如要使用無痕模式，機構必須允許執行特定擴充程式}}</translation>
 <translation id="4823651846660089135">裝置處於唯讀模式</translation>
 <translation id="4826849268470072925">泰米爾文 (ITRANS)</translation>
 <translation id="482932175346970750">在瀏覽器中輸入 <ph name="BEGIN_BOLD" />chrome://extensions<ph name="END_BOLD" /></translation>
@@ -540,7 +540,7 @@
     方便共用、建立內容並與他人協同合作。<ph name="MARKUP_9" /></translation>
 <translation id="5275973617553375938">從 Google 雲端硬碟復原檔案</translation>
 <translation id="5278111733643988471">如要還原此項目，請將項目從垃圾桶中拖曳到新資料夾。此項目的原始資料夾「<ph name="PARENT_FOLDER_NAME" />」已刪除。</translation>
-<translation id="5283101102242354279">在無痕模式中開啟擴充功能：</translation>
+<translation id="5283101102242354279">在無痕模式中開啟擴充程式：</translation>
 <translation id="5286194356314741248">正在掃瞄</translation>
 <translation id="5288441970121584418">漢堡包</translation>
 <translation id="5288481194217812690"><ph name="FILENAME" /></translation>
@@ -787,7 +787,7 @@
 <translation id="7238643356913091553"><ph name="NETWORK_NAME" />，詳情</translation>
 <translation id="7246947237293279874">FTP Proxy</translation>
 <translation id="7248671827512403053">應用程式</translation>
-<translation id="7252604552361840748">找出上述擴充功能</translation>
+<translation id="7252604552361840748">找出上述擴充程式</translation>
 <translation id="7256405249507348194">無法識別的錯誤：<ph name="DESC" /></translation>
 <translation id="7268659760406822741">可用服務</translation>
 <translation id="7292816689782057017">管理員政策已限制儲存至部份位置。</translation>
@@ -801,7 +801,7 @@
 <translation id="7359359531237882347">正在複製 <ph name="NUMBER_OF_ITEMS" />個項目…</translation>
 <translation id="7375951387215729722">已經按 <ph name="COLUMN_NAME" /> 遞減排列檔案清單。</translation>
 <translation id="7377161162143020057">管理員政策已禁止複製此檔案</translation>
-<translation id="7392500733467492920">請與管理員聯絡。</translation>
+<translation id="7392500733467492920">找不到這些擴充程式。請聯絡您的管理員。</translation>
 <translation id="7402503521691663770">ChromeOS Flex 裝置</translation>
 <translation id="7408870451288633753">捷克文</translation>
 <translation id="7417453074306512035">埃塞俄比亞文鍵盤</translation>

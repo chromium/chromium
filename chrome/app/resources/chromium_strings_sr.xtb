@@ -96,6 +96,7 @@
 <translation id="3258596308407688501">Chromium не може да чита податке из директоријума са подацима нити да их уписује у њега:
 
 <ph name="USER_DATA_DIRECTORY" /></translation>
+<translation id="3259037713047794342">Овај водич вам помаже да разумете изабране опције да би Chromium радио онако како желите</translation>
 <translation id="3283186697780795848">Инсталирана је верзија Chromium-а <ph name="PRODUCT_VERSION" /></translation>
 <translation id="3286538390144397061">Рестартуј одмах</translation>
 <translation id="328888136576916638">Недостају шифре за Google API. Неке функције Chromium-а ће бити онемогућене.</translation>
@@ -384,6 +385,7 @@ Chromium не може да врати подешавања.</translation>
 <translation id="924957577793602335">Прилагодите Chromium себи</translation>
 <translation id="93478295209880648">Chromium можда неће исправно функционисати зато што више није подржан на Windows XP-у или Windows Vista-и</translation>
 <translation id="942598560705308788">Сертификати којима управља Chromium</translation>
+<translation id="959579472876010517">Искористите Chromium на најбољи начин</translation>
 <translation id="965162752251293939">Ко користи Chromium?</translation>
 <translation id="967427899662692980">Набавите најјачу Chromium заштиту</translation>
 <translation id="9792300276217204">Увек обришите податке о сајтовима са уређаја када затворите Chromium</translation>

@@ -498,6 +498,7 @@
 <translation id="2119867082804433120">Дзірка знізу справа</translation>
 <translation id="2122719317867821810">Гэта палітыка працуе належным чынам, але перавызначае канфліктуючае значэнне, зададзенае з іншай крыніцы.</translation>
 <translation id="2126374524350484896">Пераўтваральнік PDF:</translation>
+<translation id="2128262927290305126">Ва Уліковым запісе Google <ph name="ACCOUNT" /></translation>
 <translation id="2130448033692577677">Зададзеныя вамі шаблоны могуць не прымяніцца, бо палітыка DnsOverHttpsMode не вызначана.</translation>
 <translation id="2130699163006053678">A3x7</translation>
 <translation id="2135799067377889518">Мужчынскае адзенне</translation>
@@ -543,6 +544,7 @@
 <translation id="2219735899272417925">Патрабуецца скід прылады</translation>
 <translation id="2224337661447660594">Няма падключэння да інтэрнэту</translation>
 <translation id="2225927550500503913">Віртуальная картка ўключана</translation>
+<translation id="2226636330183131181"><ph name="BEGIN_LINK" />Уваход<ph name="END_LINK" /> у сетку Wi-Fi</translation>
 <translation id="2239100178324503013">Адправіць</translation>
 <translation id="2241693394036365668">Спампоўваецца файл</translation>
 <translation id="2246264294482514010">10 x 12 цаляў</translation>
@@ -809,6 +811,7 @@
 <translation id="2951588413176968965">Мая паштовая скрынка</translation>
 <translation id="2952820037279740115">Закрыць усе вокны ў рэжыме інкогніта</translation>
 <translation id="2952904171810469095">A2x5</translation>
+<translation id="2954624054936281172">Табліца захаваных спосабаў аплаты</translation>
 <translation id="295526156371527179">Увага: гэта палітыка не была аб'яднана як слоўнік згодна з параметрамі, бо яна не з'яўляецца слоўнікам.</translation>
 <translation id="2955913368246107853">Закрыць панэль пошуку</translation>
 <translation id="2958544468932521864">Крыкет</translation>
@@ -1080,6 +1083,7 @@
 <translation id="3631244953324577188">Біяметрыя</translation>
 <translation id="3632503704576938756">Абагульванне экрана ўзноўлена</translation>
 <translation id="3632892046558972264">Абагульванне экрана прыпынена</translation>
+<translation id="3633035844150606508">Захаванне адраса ва Уліковым запісе Google <ph name="ACCOUNT" /></translation>
 <translation id="3633738897356909127">Кнопка "Абнавіць Chrome". Каб абнавіць браўзер Chrome праз яго налады, націсніце Enter</translation>
 <translation id="3634530185120165534">Латок 5</translation>
 <translation id="3634567936866541746">Вы толькі што ўвялі свой пароль на сайце, вядомым падманнымі паводзінамі. Chrome рэкамендуе вам праверыць захаваныя паролі, каб абараніць свае ўліковыя запісы.</translation>
@@ -1982,6 +1986,7 @@
 <translation id="5830698870816298009">выкарыстоўванне і рух камеры</translation>
 <translation id="583281660410589416">Невядома</translation>
 <translation id="5838278095973806738">Раім не ўводзіць на гэтым сайце ніякай канфідэнцыяльнай інфармацыі (пароляў, даных крэдытных картак і інш.), бо гэту інфармацыю могуць украсці зламыснікі.</translation>
+<translation id="5841338463993781099">Захаваць ва ўліковым запісе?</translation>
 <translation id="5851548754964597211">Спіс укладак</translation>
 <translation id="5852909432155870672">RA4</translation>
 <translation id="5860033963881614850">Выключана</translation>
@@ -2776,6 +2781,7 @@
 <translation id="7736959720849233795">Скапіраваць адрас спасылкі</translation>
 <translation id="7740996059027112821">Стандартны</translation>
 <translation id="77424286611022110">Гэты сайт паказвае назойлівую рэкламу або рэкламу, якая ўводзіць у зман. <ph name="LEARN_MORE_LINK_TEXT" /></translation>
+<translation id="7744505202669469867">Табліца захаваных адрасоў</translation>
 <translation id="774634243536837715">Небяспечнае змесціва заблакіравана.</translation>
 <translation id="7751971323486164747">Наладзіць памеры і тыпы шрыфтоў у Chrome</translation>
 <translation id="7752995774971033316">Не пад кіраваннем</translation>
@@ -3017,6 +3023,7 @@
 <translation id="8347658365704983341">Дыстанцыйнае навучанне</translation>
 <translation id="8349305172487531364">Панэль закладак</translation>
 <translation id="8351131234907093545">Стварыць нататку</translation>
+<translation id="835203957414790336">Змесціва старонак, якія вы друкуеце, а таксама інфармацыя аб прынтары перасылаюцца для аналізу ў Google Cloud або староннія сэрвісы (напрыклад, для праверкі на наяўнасць канфідэнцыяльных даных).</translation>
 <translation id="8355270400102541638">Лакальны ідэнтыфікатар збою:</translation>
 <translation id="8363502534493474904">Выключыць рэжым палёту</translation>
 <translation id="8364627913115013041">Не зададзена</translation>

@@ -30,6 +30,7 @@
 <translation id="1022669824195822609">Уређајем управља <ph name="DOMAIN" />. Администратори могу да приступају подацима свих профила на овом уређају.</translation>
 <translation id="1026655690966755180">Додајте порт</translation>
 <translation id="1026822031284433028">Учитај слику</translation>
+<translation id="1026959648338730078">Windows Hello или спољни безбедносни кључ</translation>
 <translation id="1028604629594230522">Chrome предучитава странице које ћете вероватно посетити, како би се брже учитавале када их посетите.</translation>
 <translation id="1028700151766901954">Разлог: LBS подразумевано остаје у прегледачу <ph name="DEFAULT_OPEN_BROWSER" />.</translation>
 <translation id="1029317248976101138">Зумирај</translation>
@@ -936,6 +937,7 @@
 <translation id="1797117170091578105">Играјте помоћу Chromebook тастатуре. Можете да прилагодите тастере одређеним радњама.</translation>
 <translation id="1800502858278951817">Ниједан додатак није затражио да чита и мења <ph name="SITE_NAME" /></translation>
 <translation id="180203835522132923">Тастер за претрагу + O, а затим W</translation>
+<translation id="1802457294427928325">Промени понашање F тастера у ChromeOS радње у горњем реду</translation>
 <translation id="1802624026913571222">Пређи у стање спавања када се поклопац затвори</translation>
 <translation id="1802687198411089702">Страница се не одазива. Можете да сачекате да почне да се одазива или да је затворите.</translation>
 <translation id="1803531841600994172">Језик на који желите да преводите</translation>
@@ -1267,6 +1269,7 @@
 <translation id="208634871997892083">Стално укључен VPN</translation>
 <translation id="2087822576218954668">Штампање: <ph name="PRINT_NAME" /></translation>
 <translation id="2088092308059522196">Регистровање је подржано само када инсталирате <ph name="DEVICE_OS" />.</translation>
+<translation id="2088564884469682888">Уграђени TrackPoint</translation>
 <translation id="2089090684895656482">Мање</translation>
 <translation id="208928984520943006">Да бисте дошли на почетни екран у било ком тренутку, превуците нагоре од дна.</translation>
 <translation id="2089566709556890888">Прегледајте безбедно уз Google Chrome</translation>
@@ -1460,6 +1463,7 @@
 <translation id="2235344399760031203">Колачићи треће стране су блокирани</translation>
 <translation id="2238379619048995541">Подаци о стању фреквенције</translation>
 <translation id="2241053333139545397">Читање и мењање података на више веб-сајтова</translation>
+<translation id="2241242047787527912">За сваки тастер наведен у наставку одаберите радњу коју желите да обавља</translation>
 <translation id="2241634353105152135">Само једном</translation>
 <translation id="2242687258748107519">Информације о датотеци</translation>
 <translation id="2245603955208828424">Користите тастере са стрелицама да бисте се кретали кроз ставке слово по слово</translation>
@@ -1498,12 +1502,14 @@
 <translation id="2271986192355138465">Сазнајте како да инсталирате веб-апликације</translation>
 <translation id="2272430695183451567">0 прекидача је додељено</translation>
 <translation id="2272570998639520080">Чаша за мартини</translation>
+<translation id="2272830751703114341">Омогућите тастер система/покретача ради промене понашања тастера у горњем реду</translation>
 <translation id="2273119997271134996">Проблем са видео портом базне станице</translation>
 <translation id="2274840746523584236">Напуните Chromebook</translation>
 <translation id="2276503375879033601">Додај још апликација</translation>
 <translation id="2276910256003242519">Подаци се бришу...</translation>
 <translation id="2278562042389100163">Отварање прозора прегледача</translation>
 <translation id="2278668501808246459">Покреће се менаџер контејнера</translation>
+<translation id="2279051792571591988">Врати на подразумевано</translation>
 <translation id="2280486287150724112">Десна маргина</translation>
 <translation id="2281863813036651454">Клик на леви тастер миша</translation>
 <translation id="2282146716419988068">GPU процес</translation>
@@ -2815,6 +2821,7 @@
 <translation id="3441663102605358937">Поново се пријавите на <ph name="ACCOUNT" /> да бисте верификовали овај налог</translation>
 <translation id="3442674350323953953">Дозволите Google-у да користи податке о хардверу како би побољшао <ph name="DEVICE_OS" />. Ако одбијете, ти подаци се ипак шаљу Google-у да би се утврдила одговарајућа ажурирања, али се не чувају нити користе на неки други начин.</translation>
 <translation id="3443744348829035122">Време за <ph name="BRAND" /> је истекло</translation>
+<translation id="3443754338602062261">Већ имате лозинке за ове налоге у услузи <ph name="BRAND" />. Ако одлучите да увезете неку од лозинки у наставку, она ће заменити постојећу.</translation>
 <translation id="3444726579402183581"><ph name="ORIGIN" /> ће моћи да прегледа <ph name="FILENAME" /></translation>
 <translation id="3445047461171030979">Брзи одговори Google помоћника</translation>
 <translation id="3445288400492335833"><ph name="MINUTES" /> мин</translation>
@@ -3061,6 +3068,7 @@
 <translation id="3659550105763988702">Користите приступни кôд за апликацију <ph name="APP_NAME" /></translation>
 <translation id="3659929705630080526">Превише пута сте унели нетачан приступни кôд. Пробајте поново касније.</translation>
 <translation id="3660234220361471169">Непоуздани</translation>
+<translation id="3661297433172569100">{NUM_PASSWORDS,plural, =1{Пронађена је 1 постојећа лозинка}one{Пронађена је {NUM_PASSWORDS} постојећа лозинка}few{Пронађене су {NUM_PASSWORDS} постојеће лозинке}other{Пронађено је {NUM_PASSWORDS} постојећих лозинки}}</translation>
 <translation id="3664511988987167893">Икона додатка</translation>
 <translation id="3665589677786828986">Chrome је открио да је други програм оштетио нека од подешавања и ресетовао их је на првобитне подразумеване вредности.</translation>
 <translation id="3665919494326051362">Актуелна верзија је <ph name="CURRENT_VERSION" /></translation>
@@ -3076,6 +3084,7 @@
 <translation id="3677959414150797585">Укључује апликације, веб-странице и друго. Шаље статистику да би се побољшали предлози само ако сте одабрали да делите податке о коришћењу.</translation>
 <translation id="3678156199662914018">Додатак: <ph name="EXTENSION_NAME" /></translation>
 <translation id="3678188444105291936">Странице које видите у овом прозору се неће појављивати у историји прегледача и неће остављати друге трагове, попут колачића, на рачунару после одјављивања. Фајлови које преузмете и обележивачи које направите неће бити сачувани.</translation>
+<translation id="3679126865530709868">Уграђени тачпед</translation>
 <translation id="368019053277764111">Отворите претрагу на бочној табли</translation>
 <translation id="3680683624079082902">Глас за претварање текста у говор</translation>
 <translation id="3681311097828166361">Хвала вам на повратним информацијама. Тренутно сте офлајн и касније ћемо вам послати извештај.</translation>
@@ -4255,6 +4264,7 @@
 <translation id="47158868804223727">Кликните на назив групе да бисте је проширили или скупили</translation>
 <translation id="4716483597559580346">Powerwash ради веће безбедности</translation>
 <translation id="471759229191973607">Промени тему</translation>
+<translation id="4718564115458102525">Није откривена ниједна тастатура</translation>
 <translation id="4722735765955348426">Лозинка за <ph name="USERNAME" /></translation>
 <translation id="4722920479021006856"><ph name="APP_NAME" /> дели екран.</translation>
 <translation id="4722989931633062466">Приказивање упита за пријављивање треће стране није дозвољено</translation>
@@ -5473,6 +5483,7 @@
 <translation id="5841270259333717135">Конфигуришите етернет</translation>
 <translation id="5842497610951477805">Омогући Bluetooth</translation>
 <translation id="5844574845205796324">Предлажи нов садржај за истраживање</translation>
+<translation id="5845424750482472447">{COUNT,plural, =1{1 поново мапирани кључ}one{{COUNT} поново мапирани кључ}few{{COUNT} поново мапирана кључа}other{{COUNT} поново мапираних кључева}}</translation>
 <translation id="5846200638699387931">Синтаксичка грешка односа вредности: <ph name="ERROR_LINE" /></translation>
 <translation id="5846455742152785308">Без сенке</translation>
 <translation id="5846504156837627898">Управљајте дозволама за сајт</translation>
@@ -5598,6 +5609,7 @@
 <translation id="5945002094477276055">Фајл <ph name="FILE_NAME" /> је можда опасан. Желите да га пошаљете Google безбедном прегледању на скенирање?</translation>
 <translation id="5945363896952315544">Безбедносни кључ не може више да чува отиске прстију. Да бисте додали нови отисак прста, прво избришите неки постојећи отисак прста.</translation>
 <translation id="5946591249682680882">ИД извештаја <ph name="WEBRTC_LOG_REPORT_ID" /></translation>
+<translation id="5948476936444935795">Откажи увоз</translation>
 <translation id="5948536763493709626">Повежите тастатуру или миш или наставите подешавање помоћу додирног екрана. Ако користите Bluetooth уређаје, уверите се да су уређаји спремни за упаривање.</translation>
 <translation id="5949544233750246342">Рашчлањивање датотеке није успело</translation>
 <translation id="5951303645598168883"><ph name="ORIGIN" /> жели да користи локалне фонтове</translation>
@@ -5854,6 +5866,7 @@
 <translation id="6177412385419165772">Уклања се…</translation>
 <translation id="6178664161104547336">Избор сертификата</translation>
 <translation id="6178682841350631965">Подаци за пријављивање су ажурирани</translation>
+<translation id="6179893151569852357">Конвертуј F тастере у ChromeOS тастере из горњег реда</translation>
 <translation id="6180510783007738939">Алатка за линије</translation>
 <translation id="6180550893222597997">Који приступни кôд желите да користите за апликацију <ph name="APP_NAME" />?</translation>
 <translation id="6181431612547969857">Преузимање је блокирано</translation>
@@ -6054,6 +6067,7 @@
 <translation id="636850387210749493">Пријављивање за издање за предузећа</translation>
 <translation id="6370021412472292592">Учитавање манифеста није могуће.</translation>
 <translation id="637135143619858508">Размакнуто</translation>
+<translation id="6372856076511744743">Поново мапирај тастере на тастатури</translation>
 <translation id="6374077068638737855">Iceweasel</translation>
 <translation id="6374469231428023295">Пробај поново</translation>
 <translation id="6374635887697228982">Желите да остварите попусте?</translation>
@@ -6500,6 +6514,7 @@
 <translation id="677646486571529447">Додај белешку</translation>
 <translation id="6776589734354015877">Набавите додатне функције</translation>
 <translation id="6776729248872343918">Омогући Брзо упаривање</translation>
+<translation id="677778081766640955">Држите тастер да бисте пребацивали са F тастера на ChromeOS радње и обрнуто</translation>
 <translation id="6777817260680419853">Преусмеравање је блокирано</translation>
 <translation id="6779092717724412415">Да бисте направили истицање попут овог, изаберите било који текст и кликните десним тастером.</translation>
 <translation id="6779447100905857289">корпе</translation>
@@ -7673,6 +7688,7 @@
 <translation id="780301667611848630">Не, хвала</translation>
 <translation id="7804072833593604762">Картица је затворена</translation>
 <translation id="7805768142964895445">Статус</translation>
+<translation id="7805906048382884326">Затвори савет</translation>
 <translation id="7807067443225230855">Претрага и Помоћник</translation>
 <translation id="7807117920154132308">Изгледа да је <ph name="SUPERVISED_USER_NAME" /> већ подесио/ла Google помоћник на другом уређају. <ph name="SUPERVISED_USER_NAME" /> може још боље да искористи Помоћник ако укључи контекст са екрана на овом уређају.</translation>
 <translation id="7807711621188256451">Увек дозволи да <ph name="HOST" /> приступа камери</translation>

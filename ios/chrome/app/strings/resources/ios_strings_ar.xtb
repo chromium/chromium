@@ -58,6 +58,7 @@
 <translation id="1283524564873030414">آخر 24 ساعة</translation>
 <translation id="1285320974508926690">عدم ترجمة هذا الموقع مطلقًا</translation>
 <translation id="1291506870746876680">بعد مغادرة الموقع الإلكتروني <ph name="BEGIN_BOLD" />"<ph name="SITE_NAME" />"<ph name="END_BOLD" />، ستتم إعادة ضبط أذوناته على وضع الإيقاف.</translation>
+<translation id="1305822519689023679">‏عليك إثبات هويتك للتأكُّد من أنّه يمكنك استخدام كلمات المرور في حسابك على Google في أي وقت.</translation>
 <translation id="1312721752506309252">ميزة الحماية المُحسَّنة مفعَّلة.</translation>
 <translation id="1321993286294231467">حدث خطأ أثناء حفظ الصورة.</translation>
 <translation id="1322735045095424339">تفرض مؤسستك استخدام "وضع التصفُّح المتخفي".</translation>
@@ -109,6 +110,7 @@
 <translation id="1626771852476987600">‫<ph name="COUNT" /> كلمة مرور مستخدَمة لحساب آخر</translation>
 <translation id="1641113438599504367">التصفح الآمن</translation>
 <translation id="1644574205037202324">السجل</translation>
+<translation id="165008673352427892">ميزة جديدة</translation>
 <translation id="1650222530560417226">‏انقر على الزر "بدء تسجيل الدخول" لجمع سجلَّات وحدة تحكُّم JavaScript وأخطائها من جميع علامات التبويب. سيتم جمع السجلَّات (وتخزينها فقط في الذاكرة) حتى يتم إغلاق هذه الصفحة أو النقر على "إيقاف تسجيل الدخول".</translation>
 <translation id="1653432787084483144">{count,plural, =1{تتوفّر كلمة مرور واحدة ({count}) محفوظة أعلى لوحة المفاتيح.}zero{تتوفّر {count} كلمة مرور محفوظة أعلى لوحة المفاتيح.}two{تتوفّر كلمتا مرور ({count}) محفوظتَان أعلى لوحة المفاتيح.}few{تتوفّر {count} كلمات مرور محفوظة أعلى لوحة المفاتيح.}many{تتوفّر {count} كلمة مرور محفوظة أعلى لوحة المفاتيح.}other{تتوفّر {count} كلمة مرور محفوظة أعلى لوحة المفاتيح.}}</translation>
 <translation id="1657011748321897393">تعذّرت المشاركة بسبب عدم اتصالك بالشبكة.</translation>
@@ -122,6 +124,7 @@
 <translation id="1700629756560807968">تم اختيار <ph name="NUMBER_OF_SELECTED_BOOKMARKS" /></translation>
 <translation id="1715515772563243997">إذا كنت تثق بالموقع الإلكتروني <ph name="SITE" />، يمكنك استخدام كلمة مرور محفوظة لتسجيل الدخول.</translation>
 <translation id="1740468249224277719">انقر مرّتين للتثبيت.</translation>
+<translation id="1750238553597293878">‏مواصلة استخدام كلمات المرور في حسابك على Google</translation>
 <translation id="1752547299766512813">حفظ كلمات المرور</translation>
 <translation id="1753905327828125965">الأكثر زيارة</translation>
 <translation id="1767766085187034454">‏ترجمة Google</translation>
@@ -404,6 +407,7 @@
 <translation id="3810973564298564668">إدارة</translation>
 <translation id="3818293389945649617">العثور على النتيجة التالية</translation>
 <translation id="3819183753496523827">لا يتوفّر اتصال بالإنترنت. يُرجى التحقّق من الاتصال بالإنترنت ثم إعادة المحاولة.</translation>
+<translation id="3832419617903252251">تم حفظ كلمة المرور على هذا الجهاز فقط.</translation>
 <translation id="3835964409414434850">الانتقال إلى علامة التبويب التالية</translation>
 <translation id="3838691874161539578">يُرجى التحقّق من كلمات المرور المحفوظة لتعزيز مستوى الحماية وتصفُّح الإنترنت بأمان.</translation>
 <translation id="385051799172605136">رجوع</translation>
@@ -477,6 +481,7 @@
 <translation id="4342946437867096381">‏سبق أن حفظت كلمة مرور لهذا الموقع الإلكتروني في حسابك على Google. يمكن أن تختار Google أحدث كلمة مرور لاستخدامها.</translation>
 <translation id="4343046787186034850">الوصول إلى الكاميرا والميكروفون مسموح به.</translation>
 <translation id="4359125752503270327">ستفتح هذه الصفحة في تطبيق آخر.</translation>
+<translation id="4371526908359194219">الإشعارات عبر البريد الإلكتروني</translation>
 <translation id="4375040482473363939">البحث عن رمز الاستجابة السريعة</translation>
 <translation id="4378154925671717803">هاتف</translation>
 <translation id="4389019817280890563">انقر لتغيير اللغة.</translation>
@@ -579,6 +584,7 @@
 <translation id="4986678885919050584">‏إزالة حساب Google من هذا الجهاز</translation>
 <translation id="498985224078955265">‏لإرسال علامة التبويب هذه إلى جهاز آخر، عليك تسجيل الدخول إلى Chrome على كلا الجهازين.</translation>
 <translation id="5005498671520578047">نسخ كلمة المرور</translation>
+<translation id="5016420433031926653">سيتم الإرسال إلى <ph name="USER_EMAIL" />.</translation>
 <translation id="5017828934289857214">تذكيري لاحقًا</translation>
 <translation id="5037676449506322593">اختيار الكل</translation>
 <translation id="5039804452771397117">سماح</translation>
@@ -633,6 +639,7 @@
 <translation id="54401264925851789">معلومات أمان الصفحة</translation>
 <translation id="5443952882982198570">بطاقات الائتمان</translation>
 <translation id="5444892875087332195">الإشارات المرجعية</translation>
+<translation id="5453250766792920795">{count,plural, =1{تم حفظ الإشارة المرجعية في حسابك، {email}.}zero{تم حفظ الإشارات المرجعية في حسابك، {email}.}two{تم حفظ الإشارتَين المرجعيتَين في حسابك، {email}.}few{تم حفظ الإشارات المرجعية في حسابك، {email}.}many{تم حفظ الإشارات المرجعية في حسابك، {email}.}other{تم حفظ الإشارات المرجعية في حسابك، {email}.}}</translation>
 <translation id="5457226814769348910">فتح نسخة بلا إنترنت</translation>
 <translation id="5489208564673669003">لإدارة ملفات تعريف الارتباط لجميع المواقع الإلكترونية، يمكنك الاطّلاع على <ph name="BEGIN_LINK" />إعدادات ملفات تعريف الارتباط<ph name="END_LINK" />.</translation>
 <translation id="5490005495580364134">حظر كل ملفات تعريف الارتباط (غير مُستحسَن)</translation>
@@ -659,6 +666,7 @@
 <translation id="5669528293118408608">www</translation>
 <translation id="5669617676038747374">إنشاء رمز استجابة سريعة</translation>
 <translation id="567881659373499783">الإصدار <ph name="PRODUCT_VERSION" /></translation>
+<translation id="5683499062697987550">‏عليك إثبات هويتك لاستخدام كلمات المرور وحفظها في حسابك على Google.</translation>
 <translation id="5690398455483874150">{count,plural, =1{‏يتم الآن عرض نافذة Chrome واحدة.}zero{‏يتم الآن عرض {count} نافذة Chrome.}two{‏يتم الآن عرض نافذتَي Chrome.({count})}few{‏يتم الآن عرض {count} نوافذ Chrome.}many{‏يتم الآن عرض {count} نافذة Chrome.}other{‏يتم الآن عرض {count} نافذة Chrome.}}</translation>
 <translation id="5701270923492462699">الوصول إلى الكاميرا مسموح به.</translation>
 <translation id="5704908597376970822">تعذّر تسجيل الدخول.</translation>
@@ -752,6 +760,7 @@
 <translation id="6219550825416862075">مرحبًا بك من جديد</translation>
 <translation id="6219688215832490856">عدم الترجمة مطلقًا</translation>
 <translation id="6223816392543092032">يمكنك الحصول على الإشارات المرجعية والسجلّ وكلمات المرور والإعدادات الأخرى على جميع أجهزتك</translation>
+<translation id="6224759905509595045">إثبات هويتك…</translation>
 <translation id="6229318421047648685">طلب عرض الموقع الإلكتروني المتوافق مع أجهزة الكمبيوتر المكتبي</translation>
 <translation id="6231782223312638214">مقترح</translation>
 <translation id="6232329973559504466">البحث في وضع التصفُّح المتخفي</translation>
@@ -791,6 +800,7 @@
 
 تم ترميز بياناتك باستخدام عبارة مرور المزامنة في <ph name="TIME" />. أدخلها لبدء المزامنة.</translation>
 <translation id="6418346271604475326">‏جارٍ إعداد PDF</translation>
+<translation id="6421095165635308">{count,plural, =1{تم حفظ الإشارة المرجعية في مجلّد "{title}" في حسابك، {email}.}zero{تم حفظ الإشارات المرجعية في مجلّد "{title}" في حسابك، {email}.}two{تم حفظ الإشارتَين المرجعيتَين في مجلّد "{title}" في حسابك، {email}.}few{تم حفظ الإشارات المرجعية في مجلّد "{title}" في حسابك، {email}.}many{تم حفظ الإشارات المرجعية في مجلّد "{title}" في حسابك، {email}.}other{تم حفظ الإشارات المرجعية في مجلّد "{title}" في حسابك، {email}.}}</translation>
 <translation id="6429213933892582367">‏افتح Password Options (خيارات كلمات المرور).</translation>
 <translation id="6434591244308415567">حدث خطأ. يُرجى إعادة المحاولة لاحقًا.</translation>
 <translation id="6435236283694032571">الإضافة إلى "قائمة القراءة"</translation>
@@ -879,6 +889,7 @@
 <translation id="6888009575607455378">هل تريد فعلاً تجاهل التغييرات؟</translation>
 <translation id="6896758677409633944">نسخ</translation>
 <translation id="6897187120838603299">سيتم حفظ كلمة المرور في جهازك.</translation>
+<translation id="6906448540340261898">‏يُرجى التأكُّد من أنّه يمكنك استخدام كلمات المرور في حسابك على Google في أي وقت.</translation>
 <translation id="6913136913033237761">سيتم حفظ المجلد باسم "<ph name="FOLDER_NAME" />" على هذا الجهاز فقط.</translation>
 <translation id="6914583639806229067">البحث عن الصورة التي نسختها</translation>
 <translation id="6914783257214138813">ستكون كلمات مرورك مرئية لأي شخص يمكنه الاطلاع على الملف الذي تم تصديره.</translation>
@@ -910,6 +921,7 @@
 <translation id="7108762695052995889">زيارة الموقع الإلكتروني</translation>
 <translation id="7133798577887235672">الاسم بالكامل</translation>
 <translation id="7136892417564438900">الكاميرا غير متاحة</translation>
+<translation id="7161230316646448869">مزامنة الإشارات المرجعية والسجلّ وغير ذلك على جميع الأجهزة</translation>
 <translation id="7162168282402939716">فتح علامات التبويب في وضع التصفّح المتخفي باستخدام <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /></translation>
 <translation id="7172852049901402487">يمكنك حماية كلمات المرور والتحقق من مشاكل الأمان.</translation>
 <translation id="7173114856073700355">فتح الإعدادات</translation>

@@ -697,6 +697,7 @@
 <translation id="7103252855940681301">Прылада <ph name="INDEX" /> з <ph name="COUNT" />. Назва: <ph name="NAME" />.</translation>
 <translation id="7108668606237948702">Enter</translation>
 <translation id="7130438335435247835">Назва пункта доступу (APN)</translation>
+<translation id="7131634559772719176">Пацвярджэнне набору налад</translation>
 <translation id="7134436342991564651">{0,plural, =1{Сервер даменных імён}one{Серверы даменных імён}few{Серверы даменных імён}many{Серверы даменных імён}other{Серверы даменных імён}}</translation>
 <translation id="7143207342074048698">Падключэнне</translation>
 <translation id="7144878232160441200">Паўтарыць</translation>
@@ -800,6 +801,7 @@
 <translation id="80398733265834479">Уключыць рэжым аўтакарэкцыі колераў</translation>
 <translation id="8041089156583427627">Адправіць водгук</translation>
 <translation id="8045012663542226664">Выключэнне гуку мікрафона</translation>
+<translation id="8050091914317269817">Пры выбары гэтых шпалер уключаецца аўтаматычны цёмны рэжым і падбор колераў да шпалер.</translation>
 <translation id="8075838845814659848">Узровень зараду акумулятара</translation>
 <translation id="8076492880354921740">Укладкі</translation>
 <translation id="8082366717211101304">Не ўдалося ажыццявіць DNS-пераўтварэнне з праграм для Android</translation>
