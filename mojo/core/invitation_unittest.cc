@@ -570,9 +570,15 @@ DEFINE_TEST_CLIENT(SendInvitationMultiplePipesClient) {
   EXPECT_EQ(MOJO_RESULT_OK, MojoClose(pipes[1]));
 }
 
-#if !BUILDFLAG(IS_FUCHSIA)
 // Fuchsia has no named pipe support.
-TEST_F(InvitationTest, SendInvitationWithServer) {
+#if !BUILDFLAG(IS_FUCHSIA)
+// TODO(crbug.com/1426421): Flaky on Linux TSAN.
+#if BUILDFLAG(IS_LINUX) && defined(THREAD_SANITIZER)
+#define MAYBE_SendInvitationWithServer DISABLED_SendInvitationWithServer
+#else
+#define MAYBE_SendInvitationWithServer SendInvitationWithServer
+#endif
+TEST_F(InvitationTest, MAYBE_SendInvitationWithServer) {
   MojoHandle primordial_pipe;
   base::Process child_process = LaunchChildTestClient(
       "SendInvitationWithServerClient", &primordial_pipe, 1,
