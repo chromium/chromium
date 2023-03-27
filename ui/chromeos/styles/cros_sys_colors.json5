@@ -132,7 +132,7 @@
       light: '$cros.ref.neutral99',
       dark:  '$cros.ref.neutral10',
     },
-    'app-base-elevated': {
+    'base-elevated': {
       light: '$cros.ref.neutralvariant100',
       /* In dark mode we layer primary80 @ 11% ontop of neutral80 @ 2% ontop of neutral 10. */
       dark: 'blend(rgba($cros.ref.primary80.rgb, .11), blend(rgba($cros.ref.neutral80.rgb, .02), $cros.ref.neutral10))',
@@ -198,11 +198,11 @@
       dark: 'rgba($cros.ref.neutralvariant0.rgb, 0.14)',
     },
 
-    'input-field-light': {
+    'input-field-on-shaded': {
       light: '$cros.ref.neutral99',
       dark: 'rgba($cros.ref.neutral50.rgb, 0.4)'
     },
-    'input-field-dark': {
+    'input-field-on-base': {
       light: '$cros.ref.neutral95',
       dark: 'rgba($cros.ref.neutral0.rgb, 0.6)'
     },

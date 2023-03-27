@@ -242,18 +242,14 @@ void RemapLegacySemanticColors(ui::ColorMixer& mixer) {
       cros_tokens::kCrosSysOnPrimaryContainer};
 
   mixer[cros_tokens::kBgColor] = {cros_tokens::kCrosSysAppBase};
-  mixer[cros_tokens::kBgColorElevation1] = {
-      cros_tokens::kCrosSysAppBaseElevated};
+  mixer[cros_tokens::kBgColorElevation1] = {cros_tokens::kCrosSysBaseElevated};
   mixer[cros_tokens::kBgColorElevation2Light] = {
-      cros_tokens::kCrosSysAppBaseElevatedLight};
+      cros_tokens::kCrosSysBaseElevatedLight};
   mixer[cros_tokens::kBgColorElevation2Dark] = {
-      cros_tokens::kCrosSysAppBaseElevatedDark};
-  mixer[cros_tokens::kBgColorElevation3] = {
-      cros_tokens::kCrosSysAppBaseElevated};
-  mixer[cros_tokens::kBgColorElevation4] = {
-      cros_tokens::kCrosSysAppBaseElevated};
-  mixer[cros_tokens::kBgColorElevation5] = {
-      cros_tokens::kCrosSysAppBaseElevated};
+      cros_tokens::kCrosSysBaseElevatedDark};
+  mixer[cros_tokens::kBgColorElevation3] = {cros_tokens::kCrosSysBaseElevated};
+  mixer[cros_tokens::kBgColorElevation4] = {cros_tokens::kCrosSysBaseElevated};
+  mixer[cros_tokens::kBgColorElevation5] = {cros_tokens::kCrosSysBaseElevated};
   mixer[cros_tokens::kBgColorDroppedElevation1] = {
       cros_tokens::kCrosSysAppBaseShaded};
   mixer[cros_tokens::kBgColorDroppedElevation2] = {
@@ -299,7 +295,7 @@ void RemapLegacySemanticColors(ui::ColorMixer& mixer) {
       cros_tokens::kCrosSysRipplePrimary};
   mixer[cros_tokens::kHighlightColor] = {cros_tokens::kCrosSysPrimary};
   mixer[cros_tokens::kTextfieldBackgroundColor] = {
-      cros_tokens::kCrosSysInputFieldLight};
+      cros_tokens::kCrosSysInputFieldOnShaded};
   mixer[cros_tokens::kTextfieldLabelColor] = {cros_tokens::kCrosSysOnSurface};
 
   mixer[cros_tokens::kSliderColorActive] = {cros_tokens::kCrosSysPrimary};
@@ -567,7 +563,7 @@ void AddAshColorMixer(ui::ColorProvider* provider,
 
   mixer[ui::kColorAshSystemUIMenuBackground] = {
       chromeos::features::IsJellyEnabled()
-          ? static_cast<ui::ColorId>(cros_tokens::kCrosSysAppBaseElevated)
+          ? static_cast<ui::ColorId>(cros_tokens::kCrosSysBaseElevated)
           : kColorAshShieldAndBase80};
   mixer[ui::kColorAshSystemUIMenuIcon] = {kColorAshIconColorPrimary};
   mixer[ui::kColorAshSystemUIMenuItemBackgroundSelected] = {kColorAshInkDrop};

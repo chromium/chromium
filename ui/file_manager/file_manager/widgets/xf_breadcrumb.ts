@@ -589,7 +589,7 @@ function getCSS() {
     }
 
     cr-action-menu {
-      --cr-menu-background-color: var(--cros-sys-app_base_elevated);
+      --cr-menu-background-color: var(--cros-sys-base_elevated);
       --cr-menu-background-sheen: none;
       /* TODO(wenbojie): use elevation variable when it's ready.
       --cros-sys-elevation3 */

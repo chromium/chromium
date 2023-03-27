@@ -167,7 +167,7 @@ To get Chrome OS System Colors, an element must:
 
 /* Dialog */
 :host-context(body.jelly-enabled) cr-dialog::part(dialog) {
-  --cr-dialog-background-color: var(--cros-sys-app_base_elevated);
+  --cr-dialog-background-color: var(--cros-sys-base_elevated);
   background-image: none;
 
   /* TODO(b/266837484) Replace with cros.sys.app-elevation3 when available */
@@ -185,7 +185,7 @@ To get Chrome OS System Colors, an element must:
 :host-context(body.jelly-enabled) cr-input,
 :host-context(body.jelly-enabled) cr-search-field::part(searchInput),
 :host-context(body.jelly-enabled) cr-textarea {
-  --cr-input-background-color: var(--cros-sys-input_field_dark);
+  --cr-input-background-color: var(--cros-sys-input_field_on_base);
   --cr-input-error-color: var(--cros-sys-error);
   --cr-input-focus-color: var(--cros-sys-primary);
   --cr-input-placeholder-color: var(--cros-sys-secondary);
@@ -193,9 +193,9 @@ To get Chrome OS System Colors, an element must:
 
 /* md-select */
 :host-context(body.jelly-enabled) .md-select {
-  --md-select-bg-color: var(--cros-sys-input_field_dark);
+  --md-select-bg-color: var(--cros-sys-input_field_on_base);
   --md-select-focus-shadow-color: var(--cros-sys-primary);
-  --md-select-option-bg-color: var(--cros-sys-app_base_elevated);
+  --md-select-option-bg-color: var(--cros-sys-base_elevated);
   --md-select-text-color: var(--cros-sys-on_surface);
 }
 
