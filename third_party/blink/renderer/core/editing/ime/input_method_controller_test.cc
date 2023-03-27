@@ -3422,8 +3422,6 @@ TEST_F(InputMethodControllerTest, AutocapitalizeTextInputFlags) {
 }
 
 TEST_F(InputMethodControllerTest, VerticalTextInputFlags) {
-  if (!RuntimeEnabledFeatures::ImeVerticalFlagEnabled())
-    return;
   Vector<std::pair<String, int>> element_html_and_expected_flags = {
       {"<div contenteditable='true'></div>", 0},
       {"<div contenteditable='true' style='writing-mode:vertical-rl;'></div>",

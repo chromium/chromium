@@ -1623,8 +1623,7 @@ WebTextInputInfo InputMethodController::TextInputInfo() const {
   if (const Node* start_node = first_range.StartPosition().AnchorNode()) {
     if (start_node->GetComputedStyle() &&
         !start_node->GetComputedStyle()->IsHorizontalWritingMode()) {
-      if (RuntimeEnabledFeatures::ImeVerticalFlagEnabled())
-        info.flags |= kWebTextInputFlagVertical;
+      info.flags |= kWebTextInputFlagVertical;
     }
   }
 
