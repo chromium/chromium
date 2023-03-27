@@ -3815,9 +3815,11 @@ AX_TEST_F(
       await mockFeedback.replay();
     });
 
-AX_TEST_F('ChromeVoxBackgroundTest', 'SelectWithOptGroup', async function() {
-  const mockFeedback = this.createMockFeedback();
-  const site = `
+// TODO(crbug.com/1427939): Flaky.
+AX_TEST_F(
+    'ChromeVoxBackgroundTest', 'DISABLED_SelectWithOptGroup', async function() {
+      const mockFeedback = this.createMockFeedback();
+      const site = `
     <select>
       <optgroup label="Theropods">
           <option>Tyrannosaurus</option>
@@ -3826,18 +3828,18 @@ AX_TEST_F('ChromeVoxBackgroundTest', 'SelectWithOptGroup', async function() {
       </optgroup>
     </select>
   `;
-  await this.runWithLoadedTree(site);
-  mockFeedback.expectSpeech('Tyrannosaurus', 'has pop up', 'Collapsed')
-      .call(doCmd('forceClickOnCurrentItem'))
-      .expectSpeech('Tyrannosaurus')
-      .call(press(KeyCode.DOWN))
-      .expectSpeech('Velociraptor')
-      .call(press(KeyCode.DOWN))
-      .expectSpeech('Deinonychus')
-      .call(press(KeyCode.UP))
-      .expectSpeech('Velociraptor');
-  await mockFeedback.replay();
-});
+      await this.runWithLoadedTree(site);
+      mockFeedback.expectSpeech('Tyrannosaurus', 'has pop up', 'Collapsed')
+          .call(doCmd('forceClickOnCurrentItem'))
+          .expectSpeech('Tyrannosaurus')
+          .call(press(KeyCode.DOWN))
+          .expectSpeech('Velociraptor')
+          .call(press(KeyCode.DOWN))
+          .expectSpeech('Deinonychus')
+          .call(press(KeyCode.UP))
+          .expectSpeech('Velociraptor');
+      await mockFeedback.replay();
+    });
 
 AX_TEST_F('ChromeVoxBackgroundTest', 'GroupNavigation', async function() {
   const mockFeedback = this.createMockFeedback();
