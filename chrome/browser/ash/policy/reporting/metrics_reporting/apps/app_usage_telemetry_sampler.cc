@@ -1,0 +1,119 @@
+// Copyright 2023 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#include "chrome/browser/ash/policy/reporting/metrics_reporting/apps/app_usage_telemetry_sampler.h"
+
+#include <memory>
+
+#include "base/time/time.h"
+#include "chrome/browser/apps/app_service/metrics/app_platform_metrics.h"
+#include "chrome/browser/apps/app_service/metrics/app_platform_metrics_utils.h"
+#include "chrome/browser/ash/profiles/profile_helper.h"
+#include "chrome/browser/profiles/profile.h"
+#include "components/prefs/pref_service.h"
+#include "components/prefs/scoped_user_pref_update.h"
+#include "components/reporting/metrics/sampler.h"
+#include "components/reporting/proto/synced/metric_data.pb.h"
+#include "components/services/app_service/public/cpp/app_types.h"
+#include "components/user_manager/user.h"
+#include "components/user_manager/user_manager.h"
+#include "content/public/browser/browser_task_traits.h"
+#include "content/public/browser/browser_thread.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
+
+namespace reporting {
+namespace {
+
+// Returns the primary user profile. We use this every time we need to access
+// the profile so we can prevent dangling pointer references.
+Profile* GetPrimaryUserProfile() {
+  const ::user_manager::User* const primary_user =
+      ::user_manager::UserManager::Get()->GetPrimaryUser();
+  DCHECK(primary_user);
+  DCHECK(primary_user->is_profile_created());
+  auto* const profile =
+      ::ash::ProfileHelper::Get()->GetProfileByUser(primary_user);
+  DCHECK(profile);
+  return profile;
+}
+
+}  // namespace
+
+AppUsageTelemetrySampler::AppUsageTelemetrySampler() = default;
+
+AppUsageTelemetrySampler::~AppUsageTelemetrySampler() = default;
+
+void AppUsageTelemetrySampler::MaybeCollect(OptionalMetricCallback callback) {
+  if (!::content::BrowserThread::CurrentlyOn(::content::BrowserThread::UI)) {
+    ::content::GetUIThreadTaskRunner({})->PostTask(
+        FROM_HERE,
+        base::BindOnce(&AppUsageTelemetrySampler::MaybeCollect,
+                       weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
+    return;
+  }
+  auto* const profile = GetPrimaryUserProfile();
+  MetricData metric_data;
+  auto* const app_usage_data = metric_data.mutable_telemetry_data()
+                                   ->mutable_app_telemetry()
+                                   ->mutable_app_usage_data();
+  const PrefService* const user_prefs = profile->GetPrefs();
+  if (!user_prefs->HasPrefPath(::apps::kAppUsageTime)) {
+    // No usage data in the pref store.
+    std::move(callback).Run(absl::nullopt);
+    return;
+  }
+
+  // Parse app instance usage from the pref store and populate `app_usage_data`.
+  for (auto usage_it : user_prefs->GetDict(::apps::kAppUsageTime)) {
+    ::apps::AppPlatformMetrics::UsageTime usage_time(usage_it.second);
+    if (usage_time.reporting_usage_time.is_zero()) {
+      // No reporting usage tracked by the `AppUsageCollector` since it was last
+      // enabled, so we skip. The `AppPlatformMetrics` component will
+      // subsequently delete this entry once it reports its UKM snapshot.
+      continue;
+    }
+
+    ::apps::AppType app_type = ::apps::GetAppType(profile, usage_time.app_id);
+    AppUsageData::AppUsage* const app_usage =
+        app_usage_data->mutable_app_usage()->Add();
+    app_usage->set_app_instance_id(usage_it.first);
+    app_usage->set_app_id(usage_time.app_id);
+    app_usage->set_app_type(
+        ::apps::ConvertAppTypeToProtoApplicationType(app_type));
+    app_usage->set_running_time_ms(
+        usage_time.reporting_usage_time.InMilliseconds());
+  }
+
+  if (app_usage_data->app_usage().empty()) {
+    // No app instance usage to report.
+    std::move(callback).Run(absl::nullopt);
+    return;
+  }
+
+  std::move(callback).Run(metric_data);
+  ResetAppUsageDataInPrefStore(app_usage_data);
+}
+
+void AppUsageTelemetrySampler::ResetAppUsageDataInPrefStore(
+    const AppUsageData* app_usage_data) {
+  DCHECK_CURRENTLY_ON(::content::BrowserThread::UI);
+  auto* const profile = GetPrimaryUserProfile();
+  ScopedDictPrefUpdate usage_dict_pref(profile->GetPrefs(),
+                                       ::apps::kAppUsageTime);
+  for (const auto& usage_info : app_usage_data->app_usage()) {
+    const std::string& instance_id = usage_info.app_instance_id();
+    DCHECK(usage_dict_pref->contains(instance_id))
+        << "Missing app usage data for instance: " << instance_id;
+
+    // Reduce usage time tracked in the pref store based on the data that was
+    // reported.
+    const auto running_time = base::Milliseconds(usage_info.running_time_ms());
+    ::apps::AppPlatformMetrics::UsageTime usage_time(
+        *usage_dict_pref->FindByDottedPath(instance_id));
+    usage_time.reporting_usage_time -= running_time;
+    usage_dict_pref->SetByDottedPath(instance_id, usage_time.ConvertToDict());
+  }
+}
+
+}  // namespace reporting
