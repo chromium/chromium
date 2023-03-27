@@ -606,12 +606,6 @@ void ExecuteScriptAsyncWithoutUserGesture(const ToRenderFrameHost& adapter,
     const std::string& script,
     std::string* result);
 
-// Same as above but the script executed without user gesture.
-[[nodiscard]] bool ExecuteScriptWithoutUserGestureAndExtractString(
-    const ToRenderFrameHost& adapter,
-    const std::string& script,
-    std::string* result);
-
 // JsLiteralHelper is a helper class that determines what types are legal to
 // pass to StringifyJsLiteral. Legal types include int, string, StringPiece,
 // char*, bool, double, GURL, url::Origin, and base::Value&&.
@@ -1074,9 +1068,6 @@ void SetFileSystemAccessPermissionContext(
     FileSystemAccessPermissionContext* permission_context);
 
 // Waits until all resources have loaded in the given RenderFrameHost.
-// When the load completes, this function sends a "pageLoadComplete" message
-// via domAutomationController. The caller should make sure this extra
-// message is handled properly.
 [[nodiscard]] bool WaitForRenderFrameReady(RenderFrameHost* rfh);
 
 // Enable accessibility support for all of the frames in this WebContents

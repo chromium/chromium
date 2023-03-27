@@ -1521,24 +1521,6 @@ bool ExecuteScriptAndExtractString(const ToRenderFrameHost& adapter,
   return false;
 }
 
-bool ExecuteScriptWithoutUserGestureAndExtractString(
-    const ToRenderFrameHost& adapter,
-    const std::string& script,
-    std::string* result) {
-  DCHECK(result);
-  std::unique_ptr<base::Value> value;
-  if (!ExecuteScriptHelper(adapter.render_frame_host(), script, false,
-                           ISOLATED_WORLD_ID_GLOBAL, &value)) {
-    return false;
-  }
-
-  if (value && value->is_string()) {
-    *result = value->GetString();
-    return true;
-  }
-  return false;
-}
-
 // EvalJsResult methods.
 EvalJsResult::EvalJsResult(base::Value value, const std::string& error)
     : value(error.empty() ? std::move(value) : base::Value()), error(error) {}
@@ -2188,24 +2170,20 @@ void SetFileSystemAccessPermissionContext(
 bool WaitForRenderFrameReady(RenderFrameHost* rfh) {
   if (!rfh)
     return false;
-  // TODO(nick): This can't switch to EvalJs yet, because of hardcoded
-  // dependencies on 'pageLoadComplete' in some interstitial implementations.
-  std::string result;
-  EXPECT_TRUE(ExecuteScriptWithoutUserGestureAndExtractString(
-      rfh,
-      "(async function() {"
-      "  if (document.readyState != 'complete') {"
-      "    await new Promise((resolve) =>"
-      "      document.addEventListener('readystatechange', event => {"
-      "        if (document.readyState == 'complete') {"
-      "          resolve();"
-      "        }"
-      "      }));"
-      "  }"
-      "})().then(() => {"
-      "  window.domAutomationController.send('pageLoadComplete');"
-      "});",
-      &result));
+  std::string result =
+      EvalJs(rfh,
+             "(async function() {"
+             "  if (document.readyState != 'complete') {"
+             "    await new Promise((resolve) =>"
+             "      document.addEventListener('readystatechange', event => {"
+             "        if (document.readyState == 'complete') {"
+             "          resolve();"
+             "        }"
+             "      }));"
+             "  }"
+             "})().then(() => 'pageLoadComplete');",
+             EXECUTE_SCRIPT_NO_USER_GESTURE)
+          .ExtractString();
   EXPECT_EQ("pageLoadComplete", result);
   return "pageLoadComplete" == result;
 }

@@ -2249,19 +2249,17 @@ IN_PROC_BROWSER_TEST_F(PasswordManagerBrowserTest,
   // Click in the middle of the frame to avoid the border.
   content::SimulateMouseClickOrTapElementWithId(WebContents(), "iframe");
 
-  std::string username_field;
-  std::string password_field;
-
-  ASSERT_TRUE(content::ExecuteScriptWithoutUserGestureAndExtractString(
-      RenderFrameHost(), "sendMessage('get_username');", &username_field));
-
-  ASSERT_TRUE(content::ExecuteScriptWithoutUserGestureAndExtractString(
-      RenderFrameHost(), "sendMessage('get_password');", &password_field));
-
   // Verify username and password have not been autofilled due to an insecure
   // origin.
-  EXPECT_TRUE(username_field.empty());
-  EXPECT_TRUE(password_field.empty());
+  EXPECT_TRUE(content::EvalJs(RenderFrameHost(), "sendMessage('get_username');",
+                              content::EXECUTE_SCRIPT_NO_USER_GESTURE)
+                  .ExtractString()
+                  .empty());
+
+  EXPECT_TRUE(content::EvalJs(RenderFrameHost(), "sendMessage('get_password');",
+                              content::EXECUTE_SCRIPT_NO_USER_GESTURE)
+                  .ExtractString()
+                  .empty());
 }
 
 // Check that a username and password are not filled in forms in iframes
@@ -2314,15 +2312,13 @@ IN_PROC_BROWSER_TEST_F(PasswordManagerBrowserTest,
   content::SimulateMouseClickOrTapElementWithId(WebContents(), "iframe");
 
   // Verify username is not autofilled
-  std::string empty_username;
-  ASSERT_TRUE(content::ExecuteScriptWithoutUserGestureAndExtractString(
-      RenderFrameHost(), "sendMessage('get_username');", &empty_username));
-  EXPECT_EQ("", empty_username);
+  EXPECT_EQ("",
+            content::EvalJs(RenderFrameHost(), "sendMessage('get_username');",
+                            content::EXECUTE_SCRIPT_NO_USER_GESTURE));
   // Verify password is not autofilled
-  std::string empty_password;
-  ASSERT_TRUE(content::ExecuteScriptWithoutUserGestureAndExtractString(
-      RenderFrameHost(), "sendMessage('get_password');", &empty_password));
-  EXPECT_EQ("", empty_password);
+  EXPECT_EQ("",
+            content::EvalJs(RenderFrameHost(), "sendMessage('get_password');",
+                            content::EXECUTE_SCRIPT_NO_USER_GESTURE));
 }
 
 // Check that a password form in an iframe of same origin will not be
@@ -2683,13 +2679,10 @@ IN_PROC_BROWSER_TEST_F(PasswordManagerBrowserTest,
                       "mypassword");
 
   std::string get_new_password =
-      "window.domAutomationController.send("
-      "  document.getElementById("
-      "    'change_pwd_but_no_autocomplete').elements[2].value);";
-  std::string new_password;
-  ASSERT_TRUE(content::ExecuteScriptWithoutUserGestureAndExtractString(
-      RenderFrameHost(), get_new_password, &new_password));
-  EXPECT_EQ("", new_password);
+      "document.getElementById("
+      "  'change_pwd_but_no_autocomplete').elements[2].value;";
+  EXPECT_EQ("", content::EvalJs(RenderFrameHost(), get_new_password,
+                                content::EXECUTE_SCRIPT_NO_USER_GESTURE));
 }
 
 // Test whether the change password form having username and password fields
@@ -2723,12 +2716,9 @@ IN_PROC_BROWSER_TEST_F(
   WaitForElementValue("change_pwd", 1 /* elements_index */, "mypassword");
 
   std::string get_new_password =
-      "window.domAutomationController.send("
-      "  document.getElementById('change_pwd').elements[2].value);";
-  std::string new_password;
-  ASSERT_TRUE(content::ExecuteScriptWithoutUserGestureAndExtractString(
-      RenderFrameHost(), get_new_password, &new_password));
-  EXPECT_EQ("", new_password);
+      "document.getElementById('change_pwd').elements[2].value;";
+  EXPECT_EQ("", content::EvalJs(RenderFrameHost(), get_new_password,
+                                content::EXECUTE_SCRIPT_NO_USER_GESTURE));
 }
 
 // Test whether the change password form having username and password fields
@@ -2759,31 +2749,22 @@ IN_PROC_BROWSER_TEST_F(
       WebContents(), 0, blink::WebMouseEvent::Button::kLeft, gfx::Point(1, 1));
 
   std::string get_username =
-      "window.domAutomationController.send("
-      "  document.getElementById("
-      "    'change_pwd_but_no_old_pwd').elements[0].value);";
-  std::string actual_username;
-  ASSERT_TRUE(content::ExecuteScriptWithoutUserGestureAndExtractString(
-      RenderFrameHost(), get_username, &actual_username));
-  EXPECT_EQ("", actual_username);
+      "document.getElementById("
+      "  'change_pwd_but_no_old_pwd').elements[0].value;";
+  EXPECT_EQ("", content::EvalJs(RenderFrameHost(), get_username,
+                                content::EXECUTE_SCRIPT_NO_USER_GESTURE));
 
   std::string get_new_password =
-      "window.domAutomationController.send("
-      "  document.getElementById("
-      "    'change_pwd_but_no_old_pwd').elements[1].value);";
-  std::string new_password;
-  ASSERT_TRUE(content::ExecuteScriptWithoutUserGestureAndExtractString(
-      RenderFrameHost(), get_new_password, &new_password));
-  EXPECT_EQ("", new_password);
+      "document.getElementById("
+      "  'change_pwd_but_no_old_pwd').elements[1].value;";
+  EXPECT_EQ("", content::EvalJs(RenderFrameHost(), get_new_password,
+                                content::EXECUTE_SCRIPT_NO_USER_GESTURE));
 
   std::string get_retype_password =
-      "window.domAutomationController.send("
-      "  document.getElementById("
-      "    'change_pwd_but_no_old_pwd').elements[2].value);";
-  std::string retyped_password;
-  ASSERT_TRUE(content::ExecuteScriptWithoutUserGestureAndExtractString(
-      RenderFrameHost(), get_retype_password, &retyped_password));
-  EXPECT_EQ("", retyped_password);
+      "document.getElementById("
+      "  'change_pwd_but_no_old_pwd').elements[2].value;";
+  EXPECT_EQ("", content::EvalJs(RenderFrameHost(), get_retype_password,
+                                content::EXECUTE_SCRIPT_NO_USER_GESTURE));
 }
 
 // When there are multiple HttpAuthObservers (e.g., multiple HTTP auth dialogs
@@ -3431,15 +3412,16 @@ IN_PROC_BROWSER_TEST_F(PasswordManagerBrowserTest,
   // enough for this timer to fire before checking the password.  Note that we
   // can't wait for any other events here, because when the test passes, there
   // should be no password manager IPCs sent from the renderer to browser.
-  std::string empty_password;
-  EXPECT_TRUE(content::ExecuteScriptWithoutUserGestureAndExtractString(
-      frame,
-      "setTimeout(function() {"
-      "    domAutomationController.send("
-      "        document.getElementById('password_field').value);"
-      "}, 1000);",
-      &empty_password));
-  EXPECT_EQ("", empty_password);
+  EXPECT_EQ(
+      "",
+      content::EvalJs(
+          frame,
+          "new Promise(resolve => {"
+          "    setTimeout(function() {"
+          "        resolve(document.getElementById('password_field').value);"
+          "    }, 1000);"
+          "});",
+          content::EXECUTE_SCRIPT_NO_USER_GESTURE));
 
   EXPECT_TRUE(frame->IsRenderFrameLive());
 }
@@ -3831,34 +3813,31 @@ IN_PROC_BROWSER_TEST_F(PasswordManagerBrowserTest, ParserAnnotations) {
       autofill::switches::kShowAutofillSignatures);
   NavigateToFile("/password/password_form.html");
   const char kGetAnnotation[] =
-      "window.domAutomationController.send("
-      "  document.getElementById('%s').getAttribute('pm_parser_annotation'));";
+      "document.getElementById('%s').getAttribute('pm_parser_annotation');";
 
-  std::string username_annotation;
-  ASSERT_TRUE(content::ExecuteScriptWithoutUserGestureAndExtractString(
-      RenderFrameHost(), base::StringPrintf(kGetAnnotation, "username_field"),
-      &username_annotation));
-  EXPECT_EQ("username_element", username_annotation);
+  EXPECT_EQ(
+      "username_element",
+      content::EvalJs(RenderFrameHost(),
+                      base::StringPrintf(kGetAnnotation, "username_field"),
+                      content::EXECUTE_SCRIPT_NO_USER_GESTURE));
 
-  std::string password_annotation;
-  ASSERT_TRUE(content::ExecuteScriptWithoutUserGestureAndExtractString(
-      RenderFrameHost(), base::StringPrintf(kGetAnnotation, "password_field"),
-      &password_annotation));
-  EXPECT_EQ("password_element", password_annotation);
+  EXPECT_EQ(
+      "password_element",
+      content::EvalJs(RenderFrameHost(),
+                      base::StringPrintf(kGetAnnotation, "password_field"),
+                      content::EXECUTE_SCRIPT_NO_USER_GESTURE));
 
-  std::string new_password_annotation;
-  ASSERT_TRUE(content::ExecuteScriptWithoutUserGestureAndExtractString(
-      RenderFrameHost(),
-      base::StringPrintf(kGetAnnotation, "chg_new_password_1"),
-      &new_password_annotation));
-  EXPECT_EQ("new_password_element", new_password_annotation);
+  EXPECT_EQ(
+      "new_password_element",
+      content::EvalJs(RenderFrameHost(),
+                      base::StringPrintf(kGetAnnotation, "chg_new_password_1"),
+                      content::EXECUTE_SCRIPT_NO_USER_GESTURE));
 
-  std::string cofirmation_password_annotation;
-  ASSERT_TRUE(content::ExecuteScriptWithoutUserGestureAndExtractString(
-      RenderFrameHost(),
-      base::StringPrintf(kGetAnnotation, "chg_new_password_2"),
-      &cofirmation_password_annotation));
-  EXPECT_EQ("confirmation_password_element", cofirmation_password_annotation);
+  EXPECT_EQ(
+      "confirmation_password_element",
+      content::EvalJs(RenderFrameHost(),
+                      base::StringPrintf(kGetAnnotation, "chg_new_password_2"),
+                      content::EXECUTE_SCRIPT_NO_USER_GESTURE));
 }
 
 // Test if |PasswordManager.FormVisited.PerProfileType| and

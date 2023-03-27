@@ -32,6 +32,17 @@ function returnToTest(message) {
   silentReturnToTest(message);
 }
 
+/**
+ * Logs a value and returns it.
+ *
+ * @param {string} message The message to return.
+ * @return {string}
+ */
+function logAndReturn(message) {
+  debug('Returning ' + message + ' to test.');
+  return message;
+}
+
 
 /**
  * Fails the test by generating an exception. If the test automation is calling

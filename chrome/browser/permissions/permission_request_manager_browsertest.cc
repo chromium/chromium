@@ -167,14 +167,13 @@ class PermissionRequestManagerBrowserTest : public InProcessBrowserTest {
         permissions::PermissionRequestManager::AutoResponseType::DENY_ALL);
 
     // Simulate a notification permission request that is denied by the user.
-    std::string result;
     content::WebContents* web_contents =
         browser()->tab_strip_model()->GetActiveWebContents();
-    ASSERT_TRUE(content::ExecuteScriptWithoutUserGestureAndExtractString(
-        web_contents, "requestNotification();", &result));
+    ASSERT_EQ("denied",
+              content::EvalJs(web_contents, "requestNotification();",
+                              content::EXECUTE_SCRIPT_NO_USER_GESTURE));
     ASSERT_EQ(1, bubble_factory()->show_count());
     ASSERT_EQ(1, bubble_factory()->TotalRequestCount());
-    ASSERT_EQ("denied", result);
 
     // In response, simulate the website automatically triggering a
     // renderer-initiated cross-origin navigation without user gesture.
@@ -189,17 +188,19 @@ class PermissionRequestManagerBrowserTest : public InProcessBrowserTest {
 
     // Request the notification permission again from a different origin.
     // Cross-origin permission prompt cool-down should be in effect.
-    ASSERT_TRUE(content::ExecuteScriptWithoutUserGestureAndExtractString(
-        web_contents, "requestNotification();", &result));
+    ASSERT_EQ("default",
+              content::EvalJs(web_contents, "requestNotification();",
+                              content::EXECUTE_SCRIPT_NO_USER_GESTURE));
     ASSERT_EQ(0, bubble_factory()->show_count());
     ASSERT_EQ(0, bubble_factory()->TotalRequestCount());
-    ASSERT_EQ("default", result);
 
     // Now try one of a number other kinds of navigations, and request the
     // notification permission again.
     navigation_action(web_contents, kThirdURL);
-    ASSERT_TRUE(content::ExecuteScriptAndExtractString(
-        web_contents, "requestNotification();", &result));
+    std::string result =
+        content::EvalJs(web_contents, "requestNotification();",
+                        content::EXECUTE_SCRIPT_NO_USER_GESTURE)
+            .ExtractString();
 
     // Cross-origin prompt cool-down may or may not be in effect anymore
     // depending on the type of navigation.
@@ -515,10 +516,7 @@ IN_PROC_BROWSER_TEST_F(PermissionRequestManagerBrowserTest,
       browser(),
       embedded_test_server()->GetURL("/permissions/killswitch_tester.html")));
 
-  std::string result;
-  EXPECT_TRUE(content::ExecuteScriptAndExtractString(
-      web_contents, "requestGeolocation();", &result));
-  EXPECT_EQ("denied", result);
+  EXPECT_EQ("denied", content::EvalJs(web_contents, "requestGeolocation();"));
   EXPECT_EQ(1, bubble_factory()->show_count());
   EXPECT_EQ(1, bubble_factory()->TotalRequestCount());
 }
@@ -538,14 +536,12 @@ IN_PROC_BROWSER_TEST_F(PermissionRequestManagerBrowserTest,
       permissions::PermissionRequestManager::AutoResponseType::DENY_ALL);
 
   // Simulate a notification permission request that is denied by the user.
-  std::string result;
   content::WebContents* web_contents =
       browser()->tab_strip_model()->GetActiveWebContents();
-  ASSERT_TRUE(content::ExecuteScriptWithoutUserGestureAndExtractString(
-      web_contents, "requestNotification();", &result));
+  ASSERT_EQ("denied", content::EvalJs(web_contents, "requestNotification();",
+                                      content::EXECUTE_SCRIPT_NO_USER_GESTURE));
   ASSERT_EQ(1, bubble_factory()->show_count());
   ASSERT_EQ(1, bubble_factory()->TotalRequestCount());
-  ASSERT_EQ("denied", result);
 
   // In response, simulate the website automatically triggering a
   // renderer-initiated cross-origin navigation without user gesture.
@@ -559,11 +555,11 @@ IN_PROC_BROWSER_TEST_F(PermissionRequestManagerBrowserTest,
   bubble_factory()->ResetCounts();
   bubble_factory()->set_response_type(
       permissions::PermissionRequestManager::AutoResponseType::ACCEPT_ALL);
-  ASSERT_TRUE(content::ExecuteScriptWithoutUserGestureAndExtractString(
-      web_contents, "requestNotification();", &result));
+  ASSERT_EQ("default",
+            content::EvalJs(web_contents, "requestNotification();",
+                            content::EXECUTE_SCRIPT_NO_USER_GESTURE));
   EXPECT_EQ(0, bubble_factory()->show_count());
   EXPECT_EQ(0, bubble_factory()->TotalRequestCount());
-  EXPECT_EQ("default", result);
 }
 
 // Regression test for crbug.com/900997.
@@ -640,7 +636,8 @@ IN_PROC_BROWSER_TEST_F(PermissionRequestManagerBrowserTest,
 
   content::WebContents* web_contents =
       browser()->tab_strip_model()->GetActiveWebContents();
-  EXPECT_TRUE(content::ExecuteScript(web_contents, "requestNotification();"));
+  EXPECT_TRUE(content::ExecJs(web_contents, "requestNotification();",
+                              content::EXECUTE_SCRIPT_NO_RESOLVE_PROMISES));
   bubble_factory()->WaitForPermissionBubble();
   EXPECT_EQ(1, bubble_factory()->show_count());
   EXPECT_EQ(1, bubble_factory()->TotalRequestCount());
@@ -648,10 +645,7 @@ IN_PROC_BROWSER_TEST_F(PermissionRequestManagerBrowserTest,
   // Now enable the notifications killswitch.
   EnableKillSwitch(ContentSettingsType::NOTIFICATIONS);
 
-  std::string result;
-  EXPECT_TRUE(content::ExecuteScriptAndExtractString(
-      web_contents, "requestNotification();", &result));
-  EXPECT_EQ("denied", result);
+  EXPECT_EQ("denied", content::EvalJs(web_contents, "requestNotification();"));
   EXPECT_EQ(1, bubble_factory()->show_count());
   EXPECT_EQ(1, bubble_factory()->TotalRequestCount());
 }

@@ -686,30 +686,26 @@ IN_PROC_BROWSER_TEST_F(ExtensionBindingsApiTest,
       browser()->tab_strip_model()->GetActiveWebContents();
 
   constexpr char kScript[] =
-      R"(chrome.tabs.query({}, (tabs) => {
+      R"(
+          new Promise(resolve => {
+            chrome.tabs.query({}, resolve);
+          }).then((tabs) => {
            let message;
            if (chrome.runtime.lastError)
              message = 'Unexpected error: ' + chrome.runtime.lastError;
            else
              message = 'Has gesture: ' + chrome.test.isProcessingUserGesture();
-           domAutomationController.send(message);
+           return message;
          });)";
 
-  {
-    // Triggering an API without an active gesture shouldn't result in a
-    // gesture in the callback.
-    std::string message;
-    EXPECT_TRUE(content::ExecuteScriptWithoutUserGestureAndExtractString(
-        tab, kScript, &message));
-    EXPECT_EQ("Has gesture: false", message);
-  }
-  {
-    // If there was an active gesture at the time of the API call, there should
-    // be an active gesture in the callback.
-    std::string message;
-    EXPECT_TRUE(content::ExecuteScriptAndExtractString(tab, kScript, &message));
-    EXPECT_EQ("Has gesture: true", message);
-  }
+  // Triggering an API without an active gesture shouldn't result in a
+  // gesture in the callback.
+  EXPECT_EQ(
+      "Has gesture: false",
+      content::EvalJs(tab, kScript, content::EXECUTE_SCRIPT_NO_USER_GESTURE));
+  // If there was an active gesture at the time of the API call, there should
+  // be an active gesture in the callback.
+  EXPECT_EQ("Has gesture: true", content::EvalJs(tab, kScript));
 }
 
 // Tests that a web page can consume a user gesture after an extension sends and

@@ -145,15 +145,12 @@ void RunGetDisplayMedia(content::WebContents* tab,
   const std::string script = base::StringPrintf(
       "runGetDisplayMedia(%s, \"top-level-document\", \"%s\");",
       constraints.c_str(), expected_error.c_str());
-  std::string result;
-
-  if (with_user_gesture) {
-    EXPECT_TRUE(
-        content::ExecuteScriptAndExtractString(adapter, script, &result));
-  } else {
-    EXPECT_TRUE(content::ExecuteScriptWithoutUserGestureAndExtractString(
-        adapter, script, &result));
-  }
+  std::string result =
+      content::EvalJs(adapter, script,
+                      with_user_gesture
+                          ? content::EXECUTE_SCRIPT_DEFAULT_OPTIONS
+                          : content::EXECUTE_SCRIPT_NO_USER_GESTURE)
+          .ExtractString();
 
 #if BUILDFLAG(IS_MAC)
   if (!is_fake_ui && !is_tab_capture &&
@@ -786,13 +783,10 @@ class GetDisplayMediaVideoTrackBrowserTest
     tab_ = OpenTestPageInNewTab(kMainHtmlPage);
 
     // Initiate the capture.
-    std::string result;
-    ASSERT_TRUE(content::ExecuteScriptAndExtractString(
-        tab_->GetPrimaryMainFrame(),
-        "runGetDisplayMedia({video: true, audio: true}, "
-        "\"top-level-document\");",
-        &result));
-    ASSERT_EQ(result, "capture-success");
+    ASSERT_EQ("capture-success",
+              content::EvalJs(tab_->GetPrimaryMainFrame(),
+                              "runGetDisplayMedia({video: true, audio: true}, "
+                              "\"top-level-document\");"));
   }
 
   void SetUpCommandLine(base::CommandLine* command_line) override {

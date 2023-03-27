@@ -21,20 +21,21 @@
       audio_track = stream.getAudioTracks()[0];
     }
     video.play();
-    returnToTest("capture-success");
+    return logAndReturn("capture-success");
   }
 
   function compareErrors(expectedError) {
     return function(error) {
       console.log('getUserMedia error: ' + error.name, error);
-      returnToTest(error.toString() == expectedError ? "expected-error"
-                                                     : "unexpected-error");
+      return logAndReturn(error.toString() == expectedError
+          ? "expected-error"
+          : "unexpected-error");
     }
   }
 
   function handleError(error) {
     console.log('getUserMedia error: ' + error.name, error);
-    returnToTest("capture-failure");
+    return logAndReturn("capture-failure");
   }
 
   function runGetDisplayMedia(constraints, frame, expectedError) {
@@ -44,7 +45,7 @@
       return;
     }
 
-    navigator.mediaDevices.getDisplayMedia(constraints).
+    return navigator.mediaDevices.getDisplayMedia(constraints).
       then(handleSuccess).catch(expectedError ? compareErrors(expectedError)
                                               : handleError);
   }

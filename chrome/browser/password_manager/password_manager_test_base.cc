@@ -668,12 +668,13 @@ void PasswordManagerBrowserTestBase::CheckElementValue(
       "else "
       "  var element = document.getElementById('%s');"
       "var value = element ? element.value : 'element not found';"
-      "window.domAutomationController.send(value);",
+      "value;",
       iframe_id.c_str(), iframe_id.c_str(), element_id.c_str(),
       element_id.c_str());
-  std::string return_value;
-  ASSERT_TRUE(content::ExecuteScriptWithoutUserGestureAndExtractString(
-      RenderFrameHost(), value_get_script, &return_value));
+  std::string return_value =
+      content::EvalJs(RenderFrameHost(), value_get_script,
+                      content::EXECUTE_SCRIPT_NO_USER_GESTURE)
+          .ExtractString();
   EXPECT_EQ(expected_value, return_value) << "element_id = " << element_id;
 }
 

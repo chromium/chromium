@@ -6,25 +6,23 @@ permissions.
 -->
 <script>
 function requestGeolocation() {
-  navigator.geolocation.getCurrentPosition(function(){}, geoErrorCallback);
+  return new Promise(resolve => navigator.geolocation.getCurrentPosition(function(){}, resolve))
+    .then(geoErrorCallback);
 }
 
 function requestNotification() {
-  Notification.requestPermission(notificationCallback);
+  return new Promise(resolve => Notification.requestPermission(resolve))
+    .then(sendResultToTest);
 }
 
 function geoErrorCallback(error) {
   switch(error.code) {
     case error.PERMISSION_DENIED:
-      sendResultToTest("denied");
+      return sendResultToTest("denied");
       break;
     default:
-      sendResultToTest(error.code);
+      return sendResultToTest(error.code);
   }
-}
-
-function notificationCallback(status) {
-  sendResultToTest(status);
 }
 
 // Sends a result back to the main test logic.
@@ -33,7 +31,7 @@ function sendResultToTest(result) {
   var stringResult = "" + result;
   if (typeof stringResult != "string")
     stringResult = JSON.stringify(result);
-  window.domAutomationController.send(stringResult);
+  return stringResult;
 }
 </script>
 <body>
