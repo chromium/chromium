@@ -16,6 +16,7 @@
 #include "gpu/command_buffer/service/shared_image/shared_image_format_utils.h"
 #include "gpu/command_buffer/service/shared_image/shared_image_manager.h"
 #include "gpu/command_buffer/service/shared_image/shared_image_representation.h"
+#include "gpu/command_buffer/service/shared_image/shared_image_test_base.h"
 #include "gpu/config/gpu_driver_bug_workarounds.h"
 #include "gpu/config/gpu_feature_info.h"
 #include "gpu/config/gpu_preferences.h"
@@ -30,10 +31,7 @@
 #include "third_party/skia/include/gpu/GrBackendSurface.h"
 #include "third_party/skia/include/gpu/ganesh/SkImageGanesh.h"
 #include "ui/gl/buildflags.h"
-#include "ui/gl/gl_context.h"
-#include "ui/gl/gl_surface.h"
-#include "ui/gl/gl_utils.h"
-#include "ui/gl/init/gl_factory.h"
+#include "ui/gl/gl_bindings.h"
 #include "ui/gl/progress_reporter.h"
 
 #if BUILDFLAG(USE_DAWN)
@@ -54,62 +52,27 @@ bool IsGLSupported(viz::SharedImageFormat format) {
 
 }  // namespace
 
-class IOSurfaceImageBackingFactoryTest : public testing::Test {
+class IOSurfaceImageBackingFactoryTest : public SharedImageTestBase {
  public:
   void SetUp() override {
-    surface_ = gl::init::CreateOffscreenGLSurface(gl::GetDefaultDisplayEGL(),
-                                                  gfx::Size());
-    ASSERT_TRUE(surface_);
-    context_ = gl::init::CreateGLContext(nullptr, surface_.get(),
-                                         gl::GLContextAttribs());
-    ASSERT_TRUE(context_);
-    bool result = context_->MakeCurrent(surface_.get());
-    ASSERT_TRUE(result);
-
-    GpuPreferences preferences;
-    preferences.use_passthrough_cmd_decoder = true;
-    preferences.texture_target_exception_list.push_back(
+    ASSERT_TRUE(gpu_preferences_.use_passthrough_cmd_decoder);
+    gpu_preferences_.texture_target_exception_list.push_back(
         gfx::BufferUsageAndFormat(gfx::BufferUsage::SCANOUT,
                                   gfx::BufferFormat::RGBA_8888));
 
-    GpuDriverBugWorkarounds workarounds;
-    scoped_refptr<gl::GLShareGroup> share_group = new gl::GLShareGroup();
-    context_state_ = base::MakeRefCounted<SharedContextState>(
-        std::move(share_group), surface_, context_,
-        /*use_virtualized_gl_contexts=*/false, base::DoNothing());
-    context_state_->InitializeGrContext(preferences, workarounds, nullptr);
-    auto feature_info =
-        base::MakeRefCounted<gles2::FeatureInfo>(workarounds, GpuFeatureInfo());
-    context_state_->InitializeGL(preferences, std::move(feature_info));
+    ASSERT_NO_FATAL_FAILURE(InitializeContext(GrContextType::kGL));
 
     backing_factory_ = std::make_unique<IOSurfaceImageBackingFactory>(
-        preferences, workarounds, context_state_->feature_info(),
+        gpu_preferences_, gpu_workarounds_, context_state_->feature_info(),
         /*progress_reporter=*/nullptr);
-
-    memory_type_tracker_ = std::make_unique<MemoryTypeTracker>(nullptr);
-    shared_image_representation_factory_ =
-        std::make_unique<SharedImageRepresentationFactory>(
-            &shared_image_manager_, nullptr);
   }
 
-  GrDirectContext* gr_context() { return context_state_->gr_context(); }
-
  protected:
-  scoped_refptr<gl::GLSurface> surface_;
-  scoped_refptr<gl::GLContext> context_;
-  scoped_refptr<SharedContextState> context_state_;
-  std::unique_ptr<IOSurfaceImageBackingFactory> backing_factory_;
-  SharedImageManager shared_image_manager_;
-  std::unique_ptr<MemoryTypeTracker> memory_type_tracker_;
-  std::unique_ptr<SharedImageRepresentationFactory>
-      shared_image_representation_factory_;
-
   void CheckSkiaPixels(const Mailbox& mailbox,
                        const gfx::Size& size,
                        const std::vector<uint8_t> expected_color) {
-    auto skia_representation =
-        shared_image_representation_factory_->ProduceSkia(mailbox,
-                                                          context_state_);
+    auto skia_representation = shared_image_representation_factory_.ProduceSkia(
+        mailbox, context_state_);
     ASSERT_NE(skia_representation, nullptr);
 
     std::unique_ptr<SkiaImageRepresentation::ScopedReadAccess>
@@ -172,13 +135,12 @@ TEST_F(IOSurfaceImageBackingFactoryTest, GL_SkiaGL) {
 
   GLenum expected_target = gpu::GetPlatformSpecificTextureTarget();
   std::unique_ptr<SharedImageRepresentationFactoryRef> factory_ref =
-      shared_image_manager_.Register(std::move(backing),
-                                     memory_type_tracker_.get());
+      shared_image_manager_.Register(std::move(backing), &memory_type_tracker_);
 
   // Create a GLTextureImageRepresentation.
   {
     auto gl_representation =
-        shared_image_representation_factory_->ProduceGLTexturePassthrough(
+        shared_image_representation_factory_.ProduceGLTexturePassthrough(
             mailbox);
     EXPECT_TRUE(gl_representation);
     EXPECT_EQ(expected_target,
@@ -251,11 +213,10 @@ TEST_F(IOSurfaceImageBackingFactoryTest, Dawn_SkiaGL) {
   EXPECT_TRUE(backing);
 
   std::unique_ptr<SharedImageRepresentationFactoryRef> factory_ref =
-      shared_image_manager_.Register(std::move(backing),
-                                     memory_type_tracker_.get());
+      shared_image_manager_.Register(std::move(backing), &memory_type_tracker_);
 
   // Create a DawnImageRepresentation.
-  auto dawn_representation = shared_image_representation_factory_->ProduceDawn(
+  auto dawn_representation = shared_image_representation_factory_.ProduceDawn(
       mailbox, device.Get(), WGPUBackendType_Metal, {});
   EXPECT_TRUE(dawn_representation);
 
@@ -319,13 +280,12 @@ TEST_F(IOSurfaceImageBackingFactoryTest, GL_Dawn_Skia_UnclearTexture) {
 
   GLenum expected_target = GL_TEXTURE_RECTANGLE;
   std::unique_ptr<SharedImageRepresentationFactoryRef> factory_ref =
-      shared_image_manager_.Register(std::move(backing),
-                                     memory_type_tracker_.get());
+      shared_image_manager_.Register(std::move(backing), &memory_type_tracker_);
 
   {
     // Create a GLTextureImageRepresentation.
     auto gl_representation =
-        shared_image_representation_factory_->ProduceGLTexturePassthrough(
+        shared_image_representation_factory_.ProduceGLTexturePassthrough(
             mailbox);
     EXPECT_TRUE(gl_representation);
     EXPECT_EQ(expected_target,
@@ -380,9 +340,8 @@ TEST_F(IOSurfaceImageBackingFactoryTest, GL_Dawn_Skia_UnclearTexture) {
   DawnProcTable procs = dawn::native::GetProcs();
   dawnProcSetProcs(&procs);
   {
-    auto dawn_representation =
-        shared_image_representation_factory_->ProduceDawn(
-            mailbox, device.Get(), WGPUBackendType_Metal, {});
+    auto dawn_representation = shared_image_representation_factory_.ProduceDawn(
+        mailbox, device.Get(), WGPUBackendType_Metal, {});
     ASSERT_TRUE(dawn_representation);
 
     auto dawn_scoped_access = dawn_representation->BeginScopedAccess(
@@ -444,8 +403,7 @@ TEST_F(IOSurfaceImageBackingFactoryTest, UnclearDawn_SkiaFails) {
   ASSERT_NE(backing, nullptr);
 
   std::unique_ptr<SharedImageRepresentationFactoryRef> factory_ref =
-      shared_image_manager_.Register(std::move(backing),
-                                     memory_type_tracker_.get());
+      shared_image_manager_.Register(std::move(backing), &memory_type_tracker_);
 
   // Create dawn device
   dawn::native::Instance instance;
@@ -470,9 +428,8 @@ TEST_F(IOSurfaceImageBackingFactoryTest, UnclearDawn_SkiaFails) {
   DawnProcTable procs = dawn::native::GetProcs();
   dawnProcSetProcs(&procs);
   {
-    auto dawn_representation =
-        shared_image_representation_factory_->ProduceDawn(
-            mailbox, device.Get(), WGPUBackendType_Metal, {});
+    auto dawn_representation = shared_image_representation_factory_.ProduceDawn(
+        mailbox, device.Get(), WGPUBackendType_Metal, {});
     ASSERT_TRUE(dawn_representation);
 
     auto dawn_scoped_access = dawn_representation->BeginScopedAccess(
@@ -509,8 +466,8 @@ TEST_F(IOSurfaceImageBackingFactoryTest, UnclearDawn_SkiaFails) {
   EXPECT_FALSE(factory_ref->IsCleared());
 
   // Produce skia representation
-  auto skia_representation = shared_image_representation_factory_->ProduceSkia(
-      mailbox, context_state_);
+  auto skia_representation =
+      shared_image_representation_factory_.ProduceSkia(mailbox, context_state_);
   ASSERT_NE(skia_representation, nullptr);
 
   // Expect BeginScopedReadAccess to fail because sharedImage is uninitialized
@@ -538,11 +495,10 @@ TEST_F(IOSurfaceImageBackingFactoryTest, SkiaAccessFirstFails) {
   ASSERT_NE(backing, nullptr);
 
   std::unique_ptr<SharedImageRepresentationFactoryRef> factory_ref =
-      shared_image_manager_.Register(std::move(backing),
-                                     memory_type_tracker_.get());
+      shared_image_manager_.Register(std::move(backing), &memory_type_tracker_);
 
-  auto skia_representation = shared_image_representation_factory_->ProduceSkia(
-      mailbox, context_state_);
+  auto skia_representation =
+      shared_image_representation_factory_.ProduceSkia(mailbox, context_state_);
   ASSERT_NE(skia_representation, nullptr);
   EXPECT_FALSE(skia_representation->IsCleared());
 
@@ -551,30 +507,6 @@ TEST_F(IOSurfaceImageBackingFactoryTest, SkiaAccessFirstFails) {
           skia_representation->BeginScopedReadAccess(nullptr, nullptr);
   // Expect BeginScopedReadAccess to fail because sharedImage is uninitialized
   EXPECT_EQ(scoped_read_access, nullptr);
-}
-
-void CreateSharedContext(const GpuDriverBugWorkarounds& workarounds,
-                         scoped_refptr<gl::GLSurface>& surface,
-                         scoped_refptr<gl::GLContext>& context,
-                         scoped_refptr<SharedContextState>& context_state,
-                         scoped_refptr<gles2::FeatureInfo>& feature_info) {
-  surface =
-      gl::init::CreateOffscreenGLSurface(gl::GetDefaultDisplay(), gfx::Size());
-  ASSERT_TRUE(surface);
-  context =
-      gl::init::CreateGLContext(nullptr, surface.get(), gl::GLContextAttribs());
-  ASSERT_TRUE(context);
-  bool result = context->MakeCurrent(surface.get());
-  ASSERT_TRUE(result);
-
-  scoped_refptr<gl::GLShareGroup> share_group = new gl::GLShareGroup();
-  feature_info =
-      base::MakeRefCounted<gles2::FeatureInfo>(workarounds, GpuFeatureInfo());
-  context_state = base::MakeRefCounted<SharedContextState>(
-      std::move(share_group), surface, context,
-      /*use_virtualized_gl_contexts=*/false, base::DoNothing());
-  context_state->InitializeGrContext(GpuPreferences(), workarounds, nullptr);
-  context_state->InitializeGL(GpuPreferences(), feature_info);
 }
 
 class MockProgressReporter : public gl::ProgressReporter {
@@ -587,21 +519,18 @@ class MockProgressReporter : public gl::ProgressReporter {
 };
 
 class IOSurfaceImageBackingFactoryWithFormatTestBase
-    : public testing::TestWithParam<viz::SharedImageFormat> {
+    : public SharedImageTestBase,
+      public testing::WithParamInterface<viz::SharedImageFormat> {
  public:
-  explicit IOSurfaceImageBackingFactoryWithFormatTestBase()
-      : shared_image_manager_(
-            std::make_unique<SharedImageManager>(/*thread_safe=*/false)) {}
-  ~IOSurfaceImageBackingFactoryWithFormatTestBase() override {
-    // |context_state_| must be destroyed on its own context.
-    context_state_->MakeCurrent(surface_.get(), /*needs_gl=*/true);
-  }
+  IOSurfaceImageBackingFactoryWithFormatTestBase() = default;
+  ~IOSurfaceImageBackingFactoryWithFormatTestBase() override = default;
 
   void SetUp() override {
-    GpuDriverBugWorkarounds workarounds;
-    scoped_refptr<gles2::FeatureInfo> feature_info;
-    CreateSharedContext(workarounds, surface_, context_, context_state_,
-                        feature_info);
+    ASSERT_TRUE(gpu_preferences_.use_passthrough_cmd_decoder);
+
+    ASSERT_NO_FATAL_FAILURE(InitializeContext(GrContextType::kGL));
+    auto* feature_info = context_state_->feature_info();
+
     supports_etc1_ =
         feature_info->validators()->compressed_texture_format.IsValid(
             GL_ETC1_RGB8_OES);
@@ -612,30 +541,15 @@ class IOSurfaceImageBackingFactoryWithFormatTestBase
     supports_ycbcr_p010_ =
         feature_info->feature_flags().chromium_image_ycbcr_p010;
 
-    GpuPreferences preferences;
-    preferences.use_passthrough_cmd_decoder = true;
     backing_factory_ = std::make_unique<IOSurfaceImageBackingFactory>(
-        preferences, workarounds, context_state_->feature_info(),
+        gpu_preferences_, gpu_workarounds_, context_state_->feature_info(),
         &progress_reporter_);
-
-    memory_type_tracker_ = std::make_unique<MemoryTypeTracker>(nullptr);
-    shared_image_representation_factory_ =
-        std::make_unique<SharedImageRepresentationFactory>(
-            shared_image_manager_.get(), nullptr);
   }
 
   viz::SharedImageFormat get_format() { return GetParam(); }
 
  protected:
   ::testing::NiceMock<MockProgressReporter> progress_reporter_;
-  scoped_refptr<gl::GLSurface> surface_;
-  scoped_refptr<gl::GLContext> context_;
-  scoped_refptr<SharedContextState> context_state_;
-  std::unique_ptr<IOSurfaceImageBackingFactory> backing_factory_;
-  std::unique_ptr<SharedImageManager> shared_image_manager_;
-  std::unique_ptr<MemoryTypeTracker> memory_type_tracker_;
-  std::unique_ptr<SharedImageRepresentationFactory>
-      shared_image_representation_factory_;
   bool supports_etc1_ = false;
   bool supports_ar30_ = false;
   bool supports_ab30_ = false;
@@ -691,12 +605,11 @@ TEST_P(IOSurfaceImageBackingFactoryScanoutTest, Basic) {
 
   // First, validate a GLTexturePassthroughImageRepresentation.
   std::unique_ptr<SharedImageRepresentationFactoryRef> shared_image =
-      shared_image_manager_->Register(std::move(backing),
-                                      memory_type_tracker_.get());
+      shared_image_manager_.Register(std::move(backing), &memory_type_tracker_);
   EXPECT_TRUE(shared_image);
   {
     auto gl_representation =
-        shared_image_representation_factory_->ProduceGLTexturePassthrough(
+        shared_image_representation_factory_.ProduceGLTexturePassthrough(
             mailbox);
     EXPECT_TRUE(gl_representation);
     EXPECT_TRUE(gl_representation->GetTexturePassthrough()->service_id());
@@ -713,7 +626,7 @@ TEST_P(IOSurfaceImageBackingFactoryScanoutTest, Basic) {
   }
 
   // Finally, validate a SkiaImageRepresentation.
-  auto skia_representation = shared_image_representation_factory_->ProduceSkia(
+  auto skia_representation = shared_image_representation_factory_.ProduceSkia(
       mailbox, context_state_.get());
   EXPECT_TRUE(skia_representation);
   std::vector<GrBackendSemaphore> begin_semaphores;
@@ -777,14 +690,13 @@ TEST_P(IOSurfaceImageBackingFactoryScanoutTest, InitialData) {
 
   // Validate via a GLTextureImageRepresentation(Passthrough).
   std::unique_ptr<SharedImageRepresentationFactoryRef> shared_image =
-      shared_image_manager_->Register(std::move(backing),
-                                      memory_type_tracker_.get());
+      shared_image_manager_.Register(std::move(backing), &memory_type_tracker_);
   EXPECT_TRUE(shared_image);
   GLenum expected_target = gpu::GetPlatformSpecificTextureTarget();
 
   {
     auto gl_representation =
-        shared_image_representation_factory_->ProduceGLTexturePassthrough(
+        shared_image_representation_factory_.ProduceGLTexturePassthrough(
             mailbox);
     EXPECT_TRUE(gl_representation);
     EXPECT_TRUE(gl_representation->GetTexturePassthrough()->service_id());
@@ -822,12 +734,11 @@ TEST_P(IOSurfaceImageBackingFactoryScanoutTest, InitialDataImage) {
 
   // Validate via a GLTextureImageRepresentation(Passthrough).
   std::unique_ptr<SharedImageRepresentationFactoryRef> shared_image =
-      shared_image_manager_->Register(std::move(backing),
-                                      memory_type_tracker_.get());
+      shared_image_manager_.Register(std::move(backing), &memory_type_tracker_);
   EXPECT_TRUE(shared_image);
   {
     auto gl_representation =
-        shared_image_representation_factory_->ProduceGLTexturePassthrough(
+        shared_image_representation_factory_.ProduceGLTexturePassthrough(
             mailbox);
     EXPECT_TRUE(gl_representation);
     EXPECT_TRUE(gl_representation->GetTexturePassthrough()->service_id());
@@ -923,9 +834,8 @@ TEST_P(IOSurfaceImageBackingFactoryScanoutTest, EstimatedSize) {
   EXPECT_GT(backing_estimated_size, 0u);
 
   std::unique_ptr<SharedImageRepresentationFactoryRef> shared_image =
-      shared_image_manager_->Register(std::move(backing),
-                                      memory_type_tracker_.get());
-  EXPECT_EQ(backing_estimated_size, memory_type_tracker_->GetMemRepresented());
+      shared_image_manager_.Register(std::move(backing), &memory_type_tracker_);
+  EXPECT_EQ(backing_estimated_size, memory_type_tracker_.GetMemRepresented());
 
   shared_image.reset();
 }
@@ -1035,12 +945,11 @@ TEST_P(IOSurfaceImageBackingFactoryGMBTest, Basic) {
 
   // First, validate a GLTexturePassthroughImageRepresentation.
   std::unique_ptr<SharedImageRepresentationFactoryRef> shared_image =
-      shared_image_manager_->Register(std::move(backing),
-                                      memory_type_tracker_.get());
+      shared_image_manager_.Register(std::move(backing), &memory_type_tracker_);
   EXPECT_TRUE(shared_image);
   {
     auto gl_representation =
-        shared_image_representation_factory_->ProduceGLTexturePassthrough(
+        shared_image_representation_factory_.ProduceGLTexturePassthrough(
             mailbox);
     EXPECT_TRUE(gl_representation);
     for (int plane = 0; plane < format.NumberOfPlanes(); plane++) {
@@ -1055,7 +964,7 @@ TEST_P(IOSurfaceImageBackingFactoryGMBTest, Basic) {
   }
 
   // Finally, validate a SkiaImageRepresentation.
-  auto skia_representation = shared_image_representation_factory_->ProduceSkia(
+  auto skia_representation = shared_image_representation_factory_.ProduceSkia(
       mailbox, context_state_.get());
   EXPECT_TRUE(skia_representation);
   std::vector<GrBackendSemaphore> begin_semaphores;

@@ -23,6 +23,7 @@
 #include "gpu/command_buffer/service/shared_image/shared_image_format_utils.h"
 #include "gpu/command_buffer/service/shared_image/shared_image_manager.h"
 #include "gpu/command_buffer/service/shared_image/shared_image_representation.h"
+#include "gpu/command_buffer/service/shared_image/shared_image_test_base.h"
 #include "gpu/command_buffer/service/texture_manager.h"
 #include "gpu/config/gpu_driver_bug_workarounds.h"
 #include "gpu/config/gpu_feature_info.h"
@@ -36,9 +37,6 @@
 #include "third_party/skia/include/gpu/GrBackendSurface.h"
 #include "ui/gfx/color_space.h"
 #include "ui/gfx/gpu_memory_buffer.h"
-#include "ui/gl/gl_surface.h"
-#include "ui/gl/gl_utils.h"
-#include "ui/gl/init/gl_factory.h"
 #include "ui/gl/progress_reporter.h"
 
 using testing::AtLeast;
@@ -73,41 +71,9 @@ std::vector<SkBitmap> AllocateRedBitmaps(viz::SharedImageFormat format,
   return bitmaps;
 }
 
-std::vector<SkPixmap> GetSkPixmaps(const std::vector<SkBitmap>& bitmaps) {
-  std::vector<SkPixmap> pixmaps;
-  for (auto& bitmap : bitmaps) {
-    pixmaps.push_back(bitmap.pixmap());
-  }
-  return pixmaps;
-}
-
 bool IsGLSupported(viz::SharedImageFormat format) {
   return format.is_single_plane() && !format.IsLegacyMultiplanar() &&
          format != viz::SinglePlaneFormat::kBGR_565;
-}
-
-void CreateSharedContext(const GpuDriverBugWorkarounds& workarounds,
-                         scoped_refptr<gl::GLSurface>& surface,
-                         scoped_refptr<gl::GLContext>& context,
-                         scoped_refptr<SharedContextState>& context_state,
-                         scoped_refptr<gles2::FeatureInfo>& feature_info) {
-  surface =
-      gl::init::CreateOffscreenGLSurface(gl::GetDefaultDisplay(), gfx::Size());
-  ASSERT_TRUE(surface);
-  context =
-      gl::init::CreateGLContext(nullptr, surface.get(), gl::GLContextAttribs());
-  ASSERT_TRUE(context);
-  bool result = context->MakeCurrent(surface.get());
-  ASSERT_TRUE(result);
-
-  scoped_refptr<gl::GLShareGroup> share_group = new gl::GLShareGroup();
-  feature_info =
-      base::MakeRefCounted<gles2::FeatureInfo>(workarounds, GpuFeatureInfo());
-  context_state = base::MakeRefCounted<SharedContextState>(
-      std::move(share_group), surface, context,
-      /*use_virtualized_gl_contexts=*/false, base::DoNothing());
-  context_state->InitializeGrContext(GpuPreferences(), workarounds, nullptr);
-  context_state->InitializeGL(GpuPreferences(), feature_info);
 }
 
 class MockProgressReporter : public gl::ProgressReporter {
@@ -119,21 +85,14 @@ class MockProgressReporter : public gl::ProgressReporter {
   MOCK_METHOD0(ReportProgress, void());
 };
 
-class GLTextureImageBackingFactoryTestBase : public testing::Test {
+class GLTextureImageBackingFactoryTestBase : public SharedImageTestBase {
  public:
-  explicit GLTextureImageBackingFactoryTestBase(bool is_thread_safe)
-      : shared_image_manager_(
-            std::make_unique<SharedImageManager>(is_thread_safe)) {}
-  ~GLTextureImageBackingFactoryTestBase() override {
-    // |context_state_| must be destroyed on its own context.
-    context_state_->MakeCurrent(surface_.get(), /*needs_gl=*/true);
-  }
+  GLTextureImageBackingFactoryTestBase() = default;
+  ~GLTextureImageBackingFactoryTestBase() override = default;
 
-  void SetUpBase(const GpuDriverBugWorkarounds& workarounds,
-                 bool for_cpu_upload_usage) {
-    scoped_refptr<gles2::FeatureInfo> feature_info;
-    CreateSharedContext(workarounds, surface_, context_, context_state_,
-                        feature_info);
+  void SetUpBase(bool for_cpu_upload_usage) {
+    ASSERT_NO_FATAL_FAILURE(InitializeContext(GrContextType::kGL));
+    auto* feature_info = context_state_->feature_info();
 
     // Check if platform should support various formats.
     supports_r_rg_ =
@@ -153,22 +112,9 @@ class GLTextureImageBackingFactoryTestBase : public testing::Test {
     supports_ar30_ = feature_info->feature_flags().chromium_image_ar30;
     supports_ab30_ = feature_info->feature_flags().chromium_image_ab30;
 
-    GpuPreferences preferences;
-    preferences.use_passthrough_cmd_decoder = use_passthrough();
     backing_factory_ = std::make_unique<GLTextureImageBackingFactory>(
-        preferences, workarounds, context_state_->feature_info(),
+        gpu_preferences_, gpu_workarounds_, context_state_->feature_info(),
         &progress_reporter_, for_cpu_upload_usage);
-
-    memory_type_tracker_ = std::make_unique<MemoryTypeTracker>(nullptr);
-    shared_image_representation_factory_ =
-        std::make_unique<SharedImageRepresentationFactory>(
-            shared_image_manager_.get(), nullptr);
-  }
-
-  bool use_passthrough() const {
-    return gles2::UsePassthroughCommandDecoder(
-               base::CommandLine::ForCurrentProcess()) &&
-           gles2::PassthroughCommandDecoderSupported();
   }
 
   bool IsFormatSupport(viz::SharedImageFormat format) const {
@@ -197,14 +143,6 @@ class GLTextureImageBackingFactoryTestBase : public testing::Test {
 
  protected:
   ::testing::NiceMock<MockProgressReporter> progress_reporter_;
-  scoped_refptr<gl::GLSurface> surface_;
-  scoped_refptr<gl::GLContext> context_;
-  scoped_refptr<SharedContextState> context_state_;
-  std::unique_ptr<GLTextureImageBackingFactory> backing_factory_;
-  std::unique_ptr<SharedImageManager> shared_image_manager_;
-  std::unique_ptr<MemoryTypeTracker> memory_type_tracker_;
-  std::unique_ptr<SharedImageRepresentationFactory>
-      shared_image_representation_factory_;
   bool supports_r_rg_ = false;
   bool supports_rg16_ = false;
   bool supports_rgba_f16_ = false;
@@ -217,12 +155,7 @@ class GLTextureImageBackingFactoryTestBase : public testing::Test {
 class GLTextureImageBackingFactoryTest
     : public GLTextureImageBackingFactoryTestBase {
  public:
-  GLTextureImageBackingFactoryTest()
-      : GLTextureImageBackingFactoryTestBase(false) {}
-  void SetUp() override {
-    GpuDriverBugWorkarounds workarounds;
-    SetUpBase(workarounds, /*for_cpu_upload_usage=*/false);
-  }
+  void SetUp() override { SetUpBase(/*for_cpu_upload_usage=*/false); }
 };
 
 // SharedImageFormat parameterized tests.
@@ -244,12 +177,7 @@ class GLTextureImageBackingFactoryWithUploadTest
     : public GLTextureImageBackingFactoryTestBase,
       public testing::WithParamInterface<viz::SharedImageFormat> {
  public:
-  GLTextureImageBackingFactoryWithUploadTest()
-      : GLTextureImageBackingFactoryTestBase(false) {}
-  void SetUp() override {
-    GpuDriverBugWorkarounds workarounds;
-    SetUpBase(workarounds, /*for_cpu_upload_usage=*/true);
-  }
+  void SetUp() override { SetUpBase(/*for_cpu_upload_usage=*/true); }
   viz::SharedImageFormat get_format() { return GetParam(); }
 };
 
@@ -293,9 +221,8 @@ TEST_F(GLTextureImageBackingFactoryTest, EstimatedSize) {
   EXPECT_GT(backing_estimated_size, 0u);
 
   std::unique_ptr<SharedImageRepresentationFactoryRef> shared_image =
-      shared_image_manager_->Register(std::move(backing),
-                                      memory_type_tracker_.get());
-  EXPECT_EQ(backing_estimated_size, memory_type_tracker_->GetMemRepresented());
+      shared_image_manager_.Register(std::move(backing), &memory_type_tracker_);
+  EXPECT_EQ(backing_estimated_size, memory_type_tracker_.GetMemRepresented());
 
   shared_image.reset();
 }
@@ -408,13 +335,12 @@ TEST_P(GLTextureImageBackingFactoryWithFormatTest, Basic) {
 
   // First, validate via a GLTextureImageRepresentation.
   std::unique_ptr<SharedImageRepresentationFactoryRef> shared_image =
-      shared_image_manager_->Register(std::move(backing),
-                                      memory_type_tracker_.get());
+      shared_image_manager_.Register(std::move(backing), &memory_type_tracker_);
   EXPECT_TRUE(shared_image);
   GLenum expected_target = GL_TEXTURE_2D;
   if (!use_passthrough()) {
     auto gl_representation =
-        shared_image_representation_factory_->ProduceGLTexture(mailbox);
+        shared_image_representation_factory_.ProduceGLTexture(mailbox);
     EXPECT_TRUE(gl_representation);
     auto* texture = gl_representation->GetTexture(/*plane_index=*/0);
     EXPECT_TRUE(texture->service_id());
@@ -429,7 +355,7 @@ TEST_P(GLTextureImageBackingFactoryWithFormatTest, Basic) {
   // Next, validate a GLTexturePassthroughImageRepresentation.
   if (use_passthrough()) {
     auto gl_representation =
-        shared_image_representation_factory_->ProduceGLTexturePassthrough(
+        shared_image_representation_factory_.ProduceGLTexturePassthrough(
             mailbox);
     EXPECT_TRUE(gl_representation);
     auto texture = gl_representation->GetTexturePassthrough(/*plane_index=*/0);
@@ -443,7 +369,7 @@ TEST_P(GLTextureImageBackingFactoryWithFormatTest, Basic) {
   }
 
   // Finally, validate a SkiaImageRepresentation.
-  auto skia_representation = shared_image_representation_factory_->ProduceSkia(
+  auto skia_representation = shared_image_representation_factory_.ProduceSkia(
       mailbox, context_state_.get());
   EXPECT_TRUE(skia_representation);
   std::vector<GrBackendSemaphore> begin_semaphores;
@@ -535,13 +461,12 @@ TEST_P(GLTextureImageBackingFactoryInitialDataTest, InitialData) {
 
   // Validate via a GLTextureImageRepresentation(Passthrough).
   std::unique_ptr<SharedImageRepresentationFactoryRef> shared_image =
-      shared_image_manager_->Register(std::move(backing),
-                                      memory_type_tracker_.get());
+      shared_image_manager_.Register(std::move(backing), &memory_type_tracker_);
   EXPECT_TRUE(shared_image);
   GLenum expected_target = GL_TEXTURE_2D;
   if (!use_passthrough()) {
     auto gl_representation =
-        shared_image_representation_factory_->ProduceGLTexture(mailbox);
+        shared_image_representation_factory_.ProduceGLTexture(mailbox);
     EXPECT_TRUE(gl_representation);
     EXPECT_TRUE(gl_representation->GetTexture()->service_id());
     EXPECT_EQ(expected_target, gl_representation->GetTexture()->target());
@@ -552,7 +477,7 @@ TEST_P(GLTextureImageBackingFactoryInitialDataTest, InitialData) {
     gl_representation.reset();
   } else {
     auto gl_representation =
-        shared_image_representation_factory_->ProduceGLTexturePassthrough(
+        shared_image_representation_factory_.ProduceGLTexturePassthrough(
             mailbox);
     EXPECT_TRUE(gl_representation);
     EXPECT_TRUE(gl_representation->GetTexturePassthrough()->service_id());

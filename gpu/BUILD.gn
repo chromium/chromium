@@ -305,6 +305,8 @@ test("gl_tests") {
     "command_buffer/service/shared_image/shared_image_factory_unittest.cc",
     "command_buffer/service/shared_image/shared_image_manager_unittest.cc",
     "command_buffer/service/shared_image/shared_image_representation_unittest.cc",
+    "command_buffer/service/shared_image/shared_image_test_base.cc",
+    "command_buffer/service/shared_image/shared_image_test_base.h",
     "command_buffer/service/shared_image/test_utils.cc",
     "command_buffer/service/shared_image/test_utils.h",
     "command_buffer/service/shared_image/wrapped_sk_image_backing_factory_unittest.cc",
@@ -399,6 +401,7 @@ test("gl_tests") {
     "//gpu/ipc:gl_in_process_context",
     "//gpu/ipc/host",
     "//gpu/ipc/service",
+    "//gpu/vulkan:buildflags",
     "//gpu/webgpu:common",
     "//mojo/core/embedder",
     "//testing/gmock",
@@ -415,6 +418,10 @@ test("gl_tests") {
 
   if (use_ozone) {
     deps += [ "//ui/ozone" ]
+  }
+
+  if (enable_vulkan) {
+    deps += [ "//gpu/vulkan/init:init" ]
   }
 
   libs = []
@@ -440,7 +447,6 @@ test("gl_tests") {
     # Simply loading the Vulkan driver leaks crbug.com/1134681
     # CFI error in third_party/vulkan_memory_allocator crbug.com/1139916
     if (enable_vulkan && !is_lsan && !is_cfi) {
-      deps += [ "//gpu/vulkan/init:init" ]
       sources += [ "command_buffer/service/shared_image/external_vk_image_backing_factory_unittest.cc" ]
     }
   }

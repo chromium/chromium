@@ -17,7 +17,7 @@
 #include "gpu/command_buffer/service/shared_image/shared_image_factory.h"
 #include "gpu/command_buffer/service/shared_image/shared_image_manager.h"
 #include "gpu/command_buffer/service/shared_image/shared_image_representation.h"
-#include "gpu/config/gpu_driver_bug_workarounds.h"
+#include "gpu/command_buffer/service/shared_image/shared_image_test_base.h"
 #include "gpu/config/gpu_feature_info.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/skia/include/core/SkAlphaType.h"
@@ -28,11 +28,6 @@
 #include "third_party/skia/include/core/SkPromiseImageTexture.h"
 #include "third_party/skia/include/gpu/GrBackendSemaphore.h"
 #include "third_party/skia/include/gpu/ganesh/SkImageGanesh.h"
-#include "ui/gl/gl_context.h"
-#include "ui/gl/gl_share_group.h"
-#include "ui/gl/gl_surface.h"
-#include "ui/gl/gl_utils.h"
-#include "ui/gl/init/gl_factory.h"
 
 namespace gpu {
 namespace {
@@ -44,85 +39,28 @@ constexpr uint32_t kUsage = SHARED_IMAGE_USAGE_DISPLAY_READ |
                             SHARED_IMAGE_USAGE_RASTER |
                             SHARED_IMAGE_USAGE_CPU_UPLOAD;
 
-// Allocate a bitmap with red pixels. RED_8 will be filled with 0xFF repeating
-// and RG_88 will be filled with OxFF00 repeating.
-SkBitmap MakeRedBitmap(SkColorType color_type, const gfx::Size& size) {
-  SkBitmap bitmap;
-  bitmap.allocPixels(SkImageInfo::Make(size.width(), size.height(), color_type,
-                                       kOpaque_SkAlphaType));
-
-  bitmap.eraseColor(SK_ColorRED);
-  return bitmap;
-}
-
-std::vector<SkPixmap> GetSkPixmaps(const std::vector<SkBitmap>& bitmaps) {
-  std::vector<SkPixmap> pixmaps;
-  for (auto& bitmap : bitmaps) {
-    pixmaps.push_back(bitmap.pixmap());
-  }
-  return pixmaps;
-}
-
 class WrappedSkImageBackingFactoryTest
-    : public testing::TestWithParam<viz::SharedImageFormat> {
+    : public SharedImageTestBase,
+      public testing::WithParamInterface<viz::SharedImageFormat> {
  public:
   WrappedSkImageBackingFactoryTest() = default;
-  ~WrappedSkImageBackingFactoryTest() override {
-    if (context_state_) {
-      // |context_state_| must be destroyed while current.
-      context_state_->MakeCurrent(surface_.get(), /*needs_gl=*/true);
-    }
-  }
+  ~WrappedSkImageBackingFactoryTest() override = default;
 
   viz::SharedImageFormat GetFormat() { return GetParam(); }
 
   void SetUp() override {
-    GpuPreferences preferences;
-
     // We don't use WrappedSkImage with ALPHA8 if it's GL context.
     // Note, that `gr_context_type` is not wired right now and is always GL.
     if (GetFormat() == viz::SinglePlaneFormat::kALPHA_8 &&
-        preferences.gr_context_type == GrContextType::kGL) {
+        gpu_preferences_.gr_context_type == GrContextType::kGL) {
       GTEST_SKIP();
     }
 
-    surface_ = gl::init::CreateOffscreenGLSurface(gl::GetDefaultDisplay(),
-                                                  gfx::Size());
-    ASSERT_TRUE(surface_);
-
-    auto context = gl::init::CreateGLContext(nullptr, surface_.get(),
-                                             gl::GLContextAttribs());
-    ASSERT_TRUE(context);
-    bool result = context->MakeCurrent(surface_.get());
-    ASSERT_TRUE(result);
-
-    context_state_ = base::MakeRefCounted<SharedContextState>(
-        base::MakeRefCounted<gl::GLShareGroup>(), surface_, std::move(context),
-        /*use_virtualized_gl_contexts=*/false, base::DoNothing());
-
-    GpuDriverBugWorkarounds workarounds;
-    scoped_refptr<gles2::FeatureInfo> feature_info =
-        base::MakeRefCounted<gles2::FeatureInfo>(workarounds, GpuFeatureInfo());
-    ASSERT_TRUE(
-        context_state_->InitializeGrContext(preferences, workarounds, nullptr));
-    ASSERT_TRUE(context_state_->InitializeGL(preferences, feature_info));
+    ASSERT_NO_FATAL_FAILURE(InitializeContext(GrContextType::kGL));
 
     backing_factory_ =
         std::make_unique<WrappedSkImageBackingFactory>(context_state_);
-
-    shared_image_representation_factory_ =
-        std::make_unique<SharedImageRepresentationFactory>(
-            &shared_image_manager_, nullptr);
   }
-
- protected:
-  MemoryTypeTracker memory_type_tracker_{nullptr};
-  SharedImageManager shared_image_manager_{/*thread_safe=*/false};
-  scoped_refptr<gl::GLSurface> surface_;
-  scoped_refptr<SharedContextState> context_state_;
-  std::unique_ptr<WrappedSkImageBackingFactory> backing_factory_;
-  std::unique_ptr<SharedImageRepresentationFactory>
-      shared_image_representation_factory_;
 };
 
 // Verify creation and Skia access works as expected.
@@ -145,7 +83,7 @@ TEST_P(WrappedSkImageBackingFactoryTest, Basic) {
       shared_image_manager_.Register(std::move(backing), &memory_type_tracker_);
 
   // Validate SkiaImageRepresentation works.
-  auto skia_representation = shared_image_representation_factory_->ProduceSkia(
+  auto skia_representation = shared_image_representation_factory_.ProduceSkia(
       mailbox, context_state_.get());
   EXPECT_TRUE(skia_representation);
 
@@ -213,7 +151,7 @@ TEST_P(WrappedSkImageBackingFactoryTest, Upload) {
       shared_image_manager_.Register(std::move(backing), &memory_type_tracker_);
 
   // Validate SkiaImageRepresentation works.
-  auto skia_representation = shared_image_representation_factory_->ProduceSkia(
+  auto skia_representation = shared_image_representation_factory_.ProduceSkia(
       mailbox, context_state_.get());
   EXPECT_TRUE(skia_representation);
   std::vector<GrBackendSemaphore> begin_semaphores;
