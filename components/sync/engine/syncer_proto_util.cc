@@ -52,7 +52,6 @@ SyncerError ServerConnectionErrorAsSyncerError(
       return SyncerError::HttpError(http_status_code);
     case HttpResponse::SERVER_CONNECTION_OK:
     case HttpResponse::NONE:
-    default:
       NOTREACHED();
       return SyncerError();
   }
@@ -379,7 +378,12 @@ SyncerError SyncerProtoUtil::PostClientToServerMessage(
         cycle->context()->connection_manager()->server_status();
 
     DCHECK_NE(server_status, HttpResponse::NONE);
-    DCHECK_NE(server_status, HttpResponse::SERVER_CONNECTION_OK);
+
+    if (server_status == HttpResponse::SERVER_CONNECTION_OK) {
+      // The server returned a response but there was a failure in processing
+      // it.
+      return SyncerError(SyncerError::SERVER_RESPONSE_VALIDATION_FAILED);
+    }
 
     return ServerConnectionErrorAsSyncerError(
         server_status, cycle->context()->connection_manager()->net_error_code(),
