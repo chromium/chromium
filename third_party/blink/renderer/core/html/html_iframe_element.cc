@@ -285,7 +285,8 @@ void HTMLIFrameElement::ParseAttribute(
       UseCounter::Count(GetDocument(), WebFeature::kIFrameCSPAttribute);
     }
   } else if (name == html_names::kBrowsingtopicsAttr) {
-    if (RuntimeEnabledFeatures::TopicsAPIEnabled(GetExecutionContext())) {
+    if (RuntimeEnabledFeatures::TopicsAPIEnabled(GetExecutionContext()) &&
+        GetExecutionContext()->IsSecureContext()) {
       bool old_browsing_topics = !params.old_value.IsNull();
       bool new_browsing_topics = !params.new_value.IsNull();
 
@@ -585,8 +586,12 @@ void HTMLIFrameElement::DidChangeAttributes() {
   auto attributes = mojom::blink::IframeAttributes::New();
   attributes->parsed_csp_attribute = csp.empty() ? nullptr : std::move(csp[0]);
   attributes->credentialless = credentialless_;
-  attributes->browsing_topics =
-      !FastGetAttribute(html_names::kBrowsingtopicsAttr).IsNull();
+
+  if (RuntimeEnabledFeatures::TopicsAPIEnabled(GetExecutionContext()) &&
+      GetExecutionContext()->IsSecureContext()) {
+    attributes->browsing_topics =
+        !FastGetAttribute(html_names::kBrowsingtopicsAttr).IsNull();
+  }
 
   attributes->id = ConvertToReportValue(id_);
   attributes->name = ConvertToReportValue(name_);

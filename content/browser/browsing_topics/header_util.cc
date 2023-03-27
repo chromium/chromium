@@ -40,7 +40,8 @@ void HandleTopicsEligibleResponse(
     const url::Origin& caller_origin,
     RenderFrameHost& request_initiator_frame,
     browsing_topics::ApiCallerSource caller_source) {
-  DCHECK_EQ(caller_source, browsing_topics::ApiCallerSource::kFetch);
+  DCHECK(caller_source == browsing_topics::ApiCallerSource::kFetch ||
+         caller_source == browsing_topics::ApiCallerSource::kIframeAttribute);
 
   std::string header_value;
   headers.GetNormalizedHeader("Observe-Browsing-Topics", &header_value);

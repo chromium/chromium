@@ -26,6 +26,9 @@ enum class ApiCallerSource {
   // fetch(<url>, {browsingTopics: true}), or XMLHttpRequest.send() with the
   // `deprecatedBrowsingTopics` property set to true.
   kFetch,
+
+  // The API usage is from <iframe src=[url] browsingtopics>.
+  kIframeAttribute,
 };
 
 // Represents the different reasons why the topics API access is denied. These

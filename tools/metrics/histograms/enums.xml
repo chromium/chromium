@@ -13863,6 +13863,8 @@ Called by update_bad_message_reasons.py.-->
   <int value="1" label="get and observe via document api"/>
   <int value="2" label="get via fetch-like api"/>
   <int value="3" label="observe via fetch-like api"/>
+  <int value="4" label="get via iframe attribute api"/>
+  <int value="5" label="observe via iframe attribute api"/>
 </enum>
 
 <enum name="BrowsingTopicsCalculatorResultStatus">

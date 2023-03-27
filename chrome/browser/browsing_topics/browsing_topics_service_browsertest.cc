@@ -328,6 +328,24 @@ class BrowsingTopicsBrowserTest : public BrowsingTopicsBrowserTestBase {
   }
 
  protected:
+  void CreateIframe(const GURL& url, bool browsing_topics_attribute = false) {
+    content::TestNavigationObserver nav_observer(web_contents());
+
+    ExecuteScriptAsync(web_contents(),
+                       content::JsReplace(R"(
+      {
+        const iframe = document.createElement("iframe");
+        iframe.browsingTopics = $1;
+        iframe.src = $2;
+        document.body.appendChild(iframe);
+      }
+                )",
+                                          browsing_topics_attribute, url));
+
+    nav_observer.WaitForNavigationFinished();
+    EXPECT_TRUE(nav_observer.last_navigation_succeeded());
+  }
+
   void ExpectResultTopicsEqual(
       const std::vector<TopicAndDomains>& result,
       std::vector<std::pair<Topic, std::set<HashedDomain>>> expected) {
@@ -1989,6 +2007,295 @@ IN_PROC_BROWSER_TEST_F(BrowsingTopicsBrowserTest, UseCounter_Xhr) {
                                        blink::mojom::WebFeature::kTopicsAPIXhr,
                                        1);
   }
+}
+
+// For a page that contains a static <iframe> with a "browsingtopics"
+// attribute, the iframe navigation request should be eligible for topics.
+IN_PROC_BROWSER_TEST_F(BrowsingTopicsBrowserTest,
+                       CrossOriginStaticIframeWithTopicsAttribute) {
+  base::StringPairs replacement;
+  replacement.emplace_back(std::make_pair("{{STATUS}}", "200 OK"));
+  replacement.emplace_back(std::make_pair("{{OBSERVE_BROWSING_TOPICS_HEADER}}",
+                                          "Observe-Browsing-Topics: ?1"));
+  replacement.emplace_back(std::make_pair("{{REDIRECT_HEADER}}", ""));
+
+  GURL subframe_url = https_server_.GetURL(
+      "a.test", net::test_server::GetFilePathWithReplacements(
+                    "/browsing_topics/"
+                    "page_with_custom_topics_header.html",
+                    replacement));
+
+  base::StringPairs topics_attribute_replacement;
+  topics_attribute_replacement.emplace_back(
+      "{{MAYBE_BROWSING_TOPICS_ATTRIBUTE}}", "browsingtopics");
+
+  topics_attribute_replacement.emplace_back("{{SRC_URL}}", subframe_url.spec());
+
+  GURL main_frame_url = https_server_.GetURL(
+      "b.test", net::test_server::GetFilePathWithReplacements(
+                    "/browsing_topics/page_with_custom_attribute_iframe.html",
+                    topics_attribute_replacement));
+
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), main_frame_url));
+
+  absl::optional<std::string> topics_header_value =
+      GetTopicsHeaderForRequestPath(
+          "/browsing_topics/page_with_custom_topics_header.html");
+  EXPECT_TRUE(topics_header_value);
+  EXPECT_EQ(*topics_header_value, kExpectedHeaderValueForSiteB);
+
+  // A new observation should have been recorded in addition to the pre-existing
+  // one.
+  std::vector<ApiUsageContext> api_usage_contexts =
+      content::GetBrowsingTopicsApiUsage(browsing_topics_site_data_manager());
+  EXPECT_EQ(api_usage_contexts.size(), 2u);
+  EXPECT_EQ(
+      api_usage_contexts[0].hashed_main_frame_host,
+      HashMainFrameHostForStorage(https_server_.GetURL("b.test", "/").host()));
+  EXPECT_EQ(api_usage_contexts[0].hashed_context_domain,
+            GetHashedDomain("a.test"));
+  EXPECT_EQ(api_usage_contexts[1].hashed_main_frame_host,
+            HashMainFrameHostForStorage("foo1.com"));
+  EXPECT_EQ(api_usage_contexts[1].hashed_context_domain, HashedDomain(1));
+}
+
+// For a page that contains a static <iframe> without a "browsingtopics"
+// attribute, the iframe navigation request should not be eligible for topics.
+IN_PROC_BROWSER_TEST_F(BrowsingTopicsBrowserTest,
+                       CrossOriginStaticIframeWithoutTopicsAttribute) {
+  base::StringPairs replacement;
+  replacement.emplace_back(std::make_pair("{{STATUS}}", "200 OK"));
+  replacement.emplace_back(std::make_pair("{{OBSERVE_BROWSING_TOPICS_HEADER}}",
+                                          "Observe-Browsing-Topics: ?1"));
+  replacement.emplace_back(std::make_pair("{{REDIRECT_HEADER}}", ""));
+
+  GURL subframe_url = https_server_.GetURL(
+      "a.test", net::test_server::GetFilePathWithReplacements(
+                    "/browsing_topics/"
+                    "page_with_custom_topics_header.html",
+                    replacement));
+
+  base::StringPairs topics_attribute_replacement;
+  topics_attribute_replacement.emplace_back(
+      "{{MAYBE_BROWSING_TOPICS_ATTRIBUTE}}", "");
+
+  topics_attribute_replacement.emplace_back("{{SRC_URL}}", subframe_url.spec());
+
+  GURL main_frame_url = https_server_.GetURL(
+      "b.test", net::test_server::GetFilePathWithReplacements(
+                    "/browsing_topics/page_with_custom_attribute_iframe.html",
+                    topics_attribute_replacement));
+
+  absl::optional<std::string> topics_header_value =
+      GetTopicsHeaderForRequestPath(
+          "/browsing_topics/page_with_custom_topics_header.html");
+  EXPECT_FALSE(topics_header_value);
+
+  // Since the request wasn't eligible for topics, no observation should have
+  // been recorded in addition to the pre-existing one, even though the response
+  // contains a `Observe-Browsing-Topics: ?1` header.
+  std::vector<ApiUsageContext> api_usage_contexts =
+      content::GetBrowsingTopicsApiUsage(browsing_topics_site_data_manager());
+  EXPECT_EQ(api_usage_contexts.size(), 1u);
+}
+
+// For a page with a dynamically appended iframe with iframe.browsingTopics set
+// to true, the iframe navigation request should be eligible for topics.
+IN_PROC_BROWSER_TEST_F(BrowsingTopicsBrowserTest,
+                       CrossOriginDynamicIframeWithTopicsAttribute) {
+  GURL main_frame_url =
+      https_server_.GetURL("b.test", "/browsing_topics/empty_page.html");
+
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), main_frame_url));
+
+  base::StringPairs replacement;
+  replacement.emplace_back(std::make_pair("{{STATUS}}", "200 OK"));
+  replacement.emplace_back(std::make_pair("{{OBSERVE_BROWSING_TOPICS_HEADER}}",
+                                          "Observe-Browsing-Topics: ?1"));
+  replacement.emplace_back(std::make_pair("{{REDIRECT_HEADER}}", ""));
+
+  GURL subframe_url = https_server_.GetURL(
+      "a.test", net::test_server::GetFilePathWithReplacements(
+                    "/browsing_topics/"
+                    "page_with_custom_topics_header.html",
+                    replacement));
+
+  CreateIframe(subframe_url, /*browsing_topics_attribute=*/true);
+
+  absl::optional<std::string> topics_header_value =
+      GetTopicsHeaderForRequestPath(
+          "/browsing_topics/page_with_custom_topics_header.html");
+  EXPECT_TRUE(topics_header_value);
+  EXPECT_EQ(*topics_header_value, kExpectedHeaderValueForSiteB);
+
+  // A new observation should have been recorded in addition to the pre-existing
+  // one.
+  std::vector<ApiUsageContext> api_usage_contexts =
+      content::GetBrowsingTopicsApiUsage(browsing_topics_site_data_manager());
+  EXPECT_EQ(api_usage_contexts.size(), 2u);
+  EXPECT_EQ(
+      api_usage_contexts[0].hashed_main_frame_host,
+      HashMainFrameHostForStorage(https_server_.GetURL("b.test", "/").host()));
+  EXPECT_EQ(api_usage_contexts[0].hashed_context_domain,
+            GetHashedDomain("a.test"));
+  EXPECT_EQ(api_usage_contexts[1].hashed_main_frame_host,
+            HashMainFrameHostForStorage("foo1.com"));
+  EXPECT_EQ(api_usage_contexts[1].hashed_context_domain, HashedDomain(1));
+}
+
+// For a page with a dynamically appended iframe with iframe.browsingTopics set
+// to true, the iframe navigation request should not be eligible for topics.
+IN_PROC_BROWSER_TEST_F(BrowsingTopicsBrowserTest,
+                       CrossOriginDynamicIframeWithoutTopicsAttribute) {
+  GURL main_frame_url =
+      https_server_.GetURL("b.test", "/browsing_topics/empty_page.html");
+
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), main_frame_url));
+
+  base::StringPairs replacement;
+  replacement.emplace_back(std::make_pair("{{STATUS}}", "200 OK"));
+  replacement.emplace_back(std::make_pair("{{OBSERVE_BROWSING_TOPICS_HEADER}}",
+                                          "Observe-Browsing-Topics: ?1"));
+  replacement.emplace_back(std::make_pair("{{REDIRECT_HEADER}}", ""));
+
+  GURL subframe_url = https_server_.GetURL(
+      "a.test", net::test_server::GetFilePathWithReplacements(
+                    "/browsing_topics/"
+                    "page_with_custom_topics_header.html",
+                    replacement));
+
+  CreateIframe(subframe_url);
+
+  absl::optional<std::string> topics_header_value =
+      GetTopicsHeaderForRequestPath(
+          "/browsing_topics/page_with_custom_topics_header.html");
+  EXPECT_FALSE(topics_header_value);
+
+  // Since the request wasn't eligible for topics, no observation should have
+  // been recorded in addition to the pre-existing one, even though the response
+  // contains a `Observe-Browsing-Topics: ?1` header.
+  std::vector<ApiUsageContext> api_usage_contexts =
+      content::GetBrowsingTopicsApiUsage(browsing_topics_site_data_manager());
+  EXPECT_EQ(api_usage_contexts.size(), 1u);
+}
+
+// Only allow topics from origin c.test, and test <iframe browsingtopics>
+// requests to b.test and c.test to verify that only c.test gets the header.
+IN_PROC_BROWSER_TEST_F(
+    BrowsingTopicsBrowserTest,
+    CrossOriginIframe_TopicsNotEligibleDueToPermissionsPolicyAgainstRequestOrigin) {
+  base::StringPairs allowed_origin_replacement;
+  allowed_origin_replacement.emplace_back(
+      "{{ALLOWED_ORIGIN}}", https_server_.GetOrigin("c.test").Serialize());
+
+  GURL main_frame_url = https_server_.GetURL(
+      "a.test", net::test_server::GetFilePathWithReplacements(
+                    "/browsing_topics/"
+                    "one_iframe_page_browsing_topics_allow_certain_origin.html",
+                    allowed_origin_replacement));
+
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), main_frame_url));
+
+  {
+    GURL subframe_url =
+        https_server_.GetURL("b.test", "/browsing_topics/empty_page.html");
+
+    CreateIframe(subframe_url, /*browsing_topics_attribute=*/true);
+
+    // No topics header was sent, as the permissions policy denied it.
+    absl::optional<std::string> topics_header_value =
+        GetTopicsHeaderForRequestPath("/browsing_topics/empty_page.html");
+    EXPECT_FALSE(topics_header_value);
+  }
+
+  {
+    GURL subframe_url =
+        https_server_.GetURL("c.test", "/browsing_topics/empty_page.html");
+
+    CreateIframe(subframe_url, /*browsing_topics_attribute=*/true);
+
+    absl::optional<std::string> topics_header_value =
+        GetTopicsHeaderForRequestPath("/browsing_topics/empty_page.html");
+    EXPECT_TRUE(topics_header_value);
+  }
+}
+
+// On site b.test, test <iframe browsingtopics> request to a.test that gets
+// redirected to c.test. The topics header should be calculated for them
+// individually (i.e. given that only a.test has observed the candidate topics
+// for site b.test, the request to a.test should have a non-empty topics header,
+// while the redirected request to c.test should have an empty topics header.)
+IN_PROC_BROWSER_TEST_F(BrowsingTopicsBrowserTest,
+                       CrossOriginIframeWithRedirect) {
+  GURL main_frame_url =
+      https_server_.GetURL("b.test", "/browsing_topics/empty_page.html");
+
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), main_frame_url));
+
+  base::StringPairs redirect_replacement;
+  redirect_replacement.emplace_back(std::make_pair("{{STATUS}}", "200 OK"));
+  redirect_replacement.emplace_back(std::make_pair(
+      "{{OBSERVE_BROWSING_TOPICS_HEADER}}", "Observe-Browsing-Topics: ?1"));
+  redirect_replacement.emplace_back(std::make_pair("{{REDIRECT_HEADER}}", ""));
+
+  GURL redirect_url = https_server_.GetURL(
+      "c.test", net::test_server::GetFilePathWithReplacements(
+                    "/browsing_topics/"
+                    "page_with_custom_topics_header2.html",
+                    redirect_replacement));
+
+  base::StringPairs replacement;
+  replacement.emplace_back(
+      std::make_pair("{{STATUS}}", "301 Moved Permanently"));
+  replacement.emplace_back(std::make_pair("{{OBSERVE_BROWSING_TOPICS_HEADER}}",
+                                          "Observe-Browsing-Topics: ?1"));
+  replacement.emplace_back(std::make_pair("{{REDIRECT_HEADER}}",
+                                          "Location: " + redirect_url.spec()));
+
+  GURL subframe_url = https_server_.GetURL(
+      "a.test", net::test_server::GetFilePathWithReplacements(
+                    "/browsing_topics/"
+                    "page_with_custom_topics_header.html",
+                    replacement));
+
+  CreateIframe(subframe_url, /*browsing_topics_attribute=*/true);
+
+  {
+    absl::optional<std::string> topics_header_value =
+        GetTopicsHeaderForRequestPath(
+            "/browsing_topics/page_with_custom_topics_header.html");
+    EXPECT_TRUE(topics_header_value);
+    EXPECT_EQ(*topics_header_value, kExpectedHeaderValueForSiteB);
+  }
+  {
+    absl::optional<std::string> topics_header_value =
+        GetTopicsHeaderForRequestPath(
+            "/browsing_topics/page_with_custom_topics_header2.html");
+    EXPECT_TRUE(topics_header_value);
+
+    // An empty topics header value was sent, because "c.test" did not observe
+    // the candidate topics.
+    EXPECT_TRUE(topics_header_value->empty());
+  }
+
+  // Two new observations should have been recorded in addition to the
+  // pre-existing one.
+  std::vector<ApiUsageContext> api_usage_contexts =
+      content::GetBrowsingTopicsApiUsage(browsing_topics_site_data_manager());
+  EXPECT_EQ(api_usage_contexts.size(), 3u);
+  EXPECT_EQ(
+      api_usage_contexts[0].hashed_main_frame_host,
+      HashMainFrameHostForStorage(https_server_.GetURL("b.test", "/").host()));
+  EXPECT_EQ(api_usage_contexts[0].hashed_context_domain,
+            GetHashedDomain("c.test"));
+  EXPECT_EQ(
+      api_usage_contexts[1].hashed_main_frame_host,
+      HashMainFrameHostForStorage(https_server_.GetURL("b.test", "/").host()));
+  EXPECT_EQ(api_usage_contexts[1].hashed_context_domain,
+            GetHashedDomain("a.test"));
+  EXPECT_EQ(api_usage_contexts[2].hashed_main_frame_host,
+            HashMainFrameHostForStorage("foo1.com"));
+  EXPECT_EQ(api_usage_contexts[2].hashed_context_domain, HashedDomain(1));
 }
 
 }  // namespace browsing_topics

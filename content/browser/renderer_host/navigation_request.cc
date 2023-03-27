@@ -43,6 +43,7 @@
 #include "components/attribution_reporting/os_support.mojom.h"
 #include "content/browser/attribution_reporting/attribution_manager.h"
 #include "content/browser/blob_storage/chrome_blob_storage_context.h"
+#include "content/browser/browsing_topics/header_util.h"
 #include "content/browser/child_process_security_policy_impl.h"
 #include "content/browser/client_hints/client_hints.h"
 #include "content/browser/devtools/devtools_instrumentation.h"
@@ -1052,6 +1053,81 @@ void PersistOriginTrialsFromHeaders(
                                                   tokens, base::Time::Now());
 }
 
+// Returns the topics header for a navigation request. Returns absl::nullopt if
+// the request isn't eligible for topics. This should align with the handling in
+// `GetTopicsHeaderValueForSubresourceRequest()`.
+absl::optional<std::string> GetTopicsHeaderValueForNavigationRequest(
+    FrameTreeNode* frame_tree_node,
+    const GURL& url) {
+  // Skip if the <iframe> does not have the "browsingtopics" opt-in attribute.
+  if (!frame_tree_node->browsing_topics()) {
+    return absl::nullopt;
+  }
+
+  RenderFrameHostImpl* rfh = frame_tree_node->current_frame_host();
+
+  // Skip top frame navigation.
+  // TODO(crbug.com/1424261): This should be checked at the mojom boundary of
+  // RenderFrameHostImpl::DidChangeIframeAttributes, and should be a DCHECK
+  // here.
+  if (rfh->is_main_frame()) {
+    return absl::nullopt;
+  }
+
+  // Skip fenced frames.
+  if (rfh->IsNestedWithinFencedFrame()) {
+    return absl::nullopt;
+  }
+
+  // Skip inactive pages (e.g. portal, prerendered pages).
+  if (!rfh->GetPage().IsPrimary()) {
+    return absl::nullopt;
+  }
+
+  // TODO(crbug.com/1244137): IsPrimary() doesn't actually detect portals yet.
+  // Remove this when it does.
+  if (!static_cast<RenderFrameHostImpl*>(rfh->GetMainFrame())
+           ->IsOutermostMainFrame()) {
+    return absl::nullopt;
+  }
+
+  url::Origin origin = url::Origin::Create(url);
+  if (origin.opaque()) {
+    return absl::nullopt;
+  }
+
+  if (!network::IsOriginPotentiallyTrustworthy(origin)) {
+    return absl::nullopt;
+  }
+
+  const blink::PermissionsPolicy* parent_policy =
+      rfh->GetParent()->permissions_policy();
+
+  DCHECK(parent_policy);
+
+  if (!parent_policy->IsFeatureEnabledForOrigin(
+          blink::mojom::PermissionsPolicyFeature::kBrowsingTopics, origin) ||
+      !parent_policy->IsFeatureEnabledForOrigin(
+          blink::mojom::PermissionsPolicyFeature::
+              kBrowsingTopicsBackwardCompatible,
+          origin)) {
+    return absl::nullopt;
+  }
+
+  std::vector<blink::mojom::EpochTopicPtr> topics;
+  bool topics_eligible = GetContentClient()->browser()->HandleTopicsWebApi(
+      origin, rfh->GetMainFrame(),
+      browsing_topics::ApiCallerSource::kIframeAttribute,
+      /*get_topics=*/true,
+      /*observe=*/false, topics);
+
+  if (!topics_eligible) {
+    return absl::nullopt;
+  }
+
+  return DeriveTopicsHeaderValue(topics);
+}
+
 }  // namespace
 
 NavigationRequest::PrerenderActivationNavigationState::
@@ -1864,6 +1940,16 @@ NavigationRequest::NavigationRequest(
       // along with the body in FrameNavigationEntry::page_state_.
       headers.GetHeader(net::HttpRequestHeaders::kContentType,
                         &commit_params_->post_content_type);
+    }
+
+    absl::optional<std::string> topics_header_value =
+        GetTopicsHeaderValueForNavigationRequest(frame_tree_node,
+                                                 common_params_->url);
+
+    topics_eligible_ = topics_header_value.has_value();
+
+    if (topics_eligible_) {
+      headers.SetHeader(kBrowsingTopicsRequestHeaderKey, *topics_header_value);
     }
   }
 
@@ -4923,6 +5009,44 @@ void NavigationRequest::OnRedirectChecksComplete(
 
   net::HttpRequestHeaders modified_headers = TakeModifiedRequestHeaders();
   std::vector<std::string> removed_headers = TakeRemovedRequestHeaders();
+
+  // The topics a request is allowed to see can change within its redirect
+  // chain thus we need to recalculate them. For example, different caller
+  // origins (i.e. navigation URL's origin) may receive different topics, as the
+  // callers can only get the topics about the sites they were on. Besides,
+  // regardless of cross-origin-ness, the timestamp can also affect the
+  // candidate epochs where the topics are derived from, thus resulting in
+  // different topics across redirects.
+  if (topics_eligible_) {
+    topics_eligible_ = false;
+
+    // Removes the topics header from the request that was passed on from the
+    // previous one.
+    removed_headers.push_back(kBrowsingTopicsRequestHeaderKey);
+
+    // At this point we may not have a valid `GetRenderFrameHost()` if the
+    // navigation is during a cross-site redirect. Thus, pass in the current/old
+    // RenderFrameHost here. This is fine, because it should still give us the
+    // desired IsPrimary() status and the desired top-level frame that
+    // `HandleTopicsEligibleResponse()` is interested in knowing.
+    HandleTopicsEligibleResponse(
+        *commit_params_->redirect_response.back().get()->headers.get(),
+        url::Origin::Create(commit_params_->redirects.back()),
+        *frame_tree_node_->current_frame_host(),
+        browsing_topics::ApiCallerSource::kIframeAttribute);
+  }
+
+  absl::optional<std::string> topics_header_value =
+      GetTopicsHeaderValueForNavigationRequest(frame_tree_node_,
+                                               common_params_->url);
+
+  topics_eligible_ = topics_header_value.has_value();
+
+  if (topics_eligible_) {
+    modified_headers.SetHeader(kBrowsingTopicsRequestHeaderKey,
+                               *topics_header_value);
+  }
+
   // Removes all Client Hints from the request, that were passed on from the
   // previous one.
   for (const auto& elem : network::GetClientHintToNameMap()) {
@@ -5295,6 +5419,10 @@ void NavigationRequest::CommitErrorPage(
     }
   }
 
+  if (topics_eligible_) {
+    topics_eligible_ = false;
+  }
+
   ReadyToCommitNavigation(true /* is_error */);
 
   PopulateDocumentTokenForCrossDocumentNavigation();
@@ -5386,6 +5514,17 @@ void NavigationRequest::CommitNavigation() {
   commit_params_->session_storage_key =
       frame_tree_node()->frame_tree().GetSessionStorageKey(
           commit_params_->storage_key);
+
+  if (topics_eligible_) {
+    topics_eligible_ = false;
+
+    if (response()) {
+      HandleTopicsEligibleResponse(
+          *response()->headers.get(), url::Origin::Create(common_params_->url),
+          *GetRenderFrameHost(),
+          browsing_topics::ApiCallerSource::kIframeAttribute);
+    }
+  }
 
   if (IsServedFromBackForwardCache() || IsPrerenderedPageActivation()) {
     CommitPageActivation();
