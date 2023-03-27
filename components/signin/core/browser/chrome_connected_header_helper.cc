@@ -6,7 +6,6 @@
 
 #include <vector>
 
-#include "base/feature_list.h"
 #include "base/logging.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
@@ -15,7 +14,6 @@
 #include "build/chromeos_buildflags.h"
 #include "components/google/core/common/google_util.h"
 #include "components/signin/core/browser/cookie_settings_util.h"
-#include "components/signin/public/base/signin_switches.h"
 #include "components/signin/public/identity_manager/tribool.h"
 #include "google_apis/gaia/gaia_auth_util.h"
 #include "net/base/registry_controlled_domains/registry_controlled_domain.h"
@@ -61,13 +59,6 @@ GAIAServiceType GetGAIAServiceTypeFromHeader(const std::string& header_value) {
     return GAIA_SERVICE_TYPE_DEFAULT;
   else
     return GAIA_SERVICE_TYPE_NONE;
-}
-
-bool NewRequestHeaderCheckOrder() {
-  // The result is computed once and cached because the code is on the hot path.
-  static bool new_order =
-      base::FeatureList::IsEnabled(switches::kNewSigninRequestHeaderCheckOrder);
-  return new_order;
 }
 
 }  // namespace
@@ -132,25 +123,13 @@ ManageAccountsParams ChromeConnectedHeaderHelper::BuildManageAccountsParams(
 bool ChromeConnectedHeaderHelper::ShouldBuildRequestHeader(
     const GURL& url,
     const content_settings::CookieSettings* cookie_settings) {
-  // The 'new order' refers to the order of the two checks performed in this
-  // function. In the new order the less expensive URL-based check is performed
-  // first in the most common case (non-Google URLs), and the cookie-based
-  // check is performed second.
-  bool new_order = NewRequestHeaderCheckOrder();
-
-  // Check if url is eligible for the header. New order.
-  if (new_order && !IsUrlEligibleForRequestHeader(url))
+  // Check if url is eligible for the header.
+  if (!IsUrlEligibleForRequestHeader(url)) {
     return false;
+  }
 
   // If signin cookies are not allowed, don't add the header.
-  if (!SettingsAllowSigninCookies(cookie_settings))
-    return false;
-
-  // Check if url is eligible for the header. Old order.
-  if (!new_order && !IsUrlEligibleForRequestHeader(url))
-    return false;
-
-  return true;
+  return SettingsAllowSigninCookies(cookie_settings);
 }
 
 bool ChromeConnectedHeaderHelper::IsUrlEligibleToIncludeGaiaId(

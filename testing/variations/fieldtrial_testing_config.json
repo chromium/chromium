@@ -374,7 +374,6 @@
                     "disable_features": [
                         "AndroidScrollOptimizations",
                         "CacheSiteIsolationMemoryThreshold",
-                        "NewSigninRequestHeaderCheckOrder",
                         "UseGetrandomForRandBytes"
                     ]
                 }

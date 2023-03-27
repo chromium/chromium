@@ -23,8 +23,6 @@ namespace switches {
 BASE_DECLARE_FEATURE(kGaiaIdCacheInAccountManagerFacade);
 #endif
 
-BASE_DECLARE_FEATURE(kNewSigninRequestHeaderCheckOrder);
-
 extern const char kClearTokenService[];
 
 extern const char kDisableSigninScopedDeviceId[];
