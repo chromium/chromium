@@ -524,7 +524,8 @@ TEST_F(SelectFileDialogMacTest, KeepExtensionVisible) {
   EXPECT_FALSE(panel.extensionHidden);
 }
 
-TEST_F(SelectFileDialogMacTest, DontCrashWithBogusExtension) {
+// TODO(crbug.com/1427906): This has been flaky.
+TEST_F(SelectFileDialogMacTest, DISABLED_DontCrashWithBogusExtension) {
   SelectFileDialog::FileTypeInfo file_type_info;
   file_type_info.extensions = {{"bogus type", "j.pg"}};
 
