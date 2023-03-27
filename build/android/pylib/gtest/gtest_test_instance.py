@@ -31,6 +31,7 @@ BROWSER_TEST_SUITES = [
     'android_sync_integration_tests',
     'components_browsertests',
     'content_browsertests',
+    'weblayer_browsertests',
 ]
 
 # The max number of tests to run on a shard during the test run.

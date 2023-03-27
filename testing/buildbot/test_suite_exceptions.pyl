@@ -4571,6 +4571,24 @@
       },
     },
   },
+  'weblayer_browsertests': {
+    'modifications': {
+      'android-12-x64-rel': {
+        'ci_only': True,
+      },
+      # If you change this, make similar changes in android-x86-code-coverage below
+      'android-nougat-x86-rel': {
+        'ci_only': True,
+      },
+      'android-pie-arm64-rel': {
+        'ci_only': True,
+      },
+      # Keep this same as android-nougat-x86-rel above
+      'android-x86-code-coverage': {
+        'ci_only': True,
+      },
+    },
+  },
   'webview_64_cts_tests': {
     'modifications': {
       'android-pie-arm64-rel': {

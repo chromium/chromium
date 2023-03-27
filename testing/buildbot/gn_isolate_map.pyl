@@ -1988,6 +1988,10 @@
       "${ISOLATED_OUTDIR}",
     ],
   },
+  "weblayer_browsertests": {
+    "label": "//weblayer/test:weblayer_browsertests",
+    "type": "windowed_test_launcher",
+  },
   "webview_cts_tests": {
     "args": [
       "--skip-expected-failures",

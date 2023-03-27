@@ -78,6 +78,11 @@ PACKAGE_INFO.update({
     chrome.PackageInfo('org.chromium.webview_ui_test',
                        'org.chromium.webview_ui_test.WebViewUiTestActivity',
                        'webview-command-line', None),
+    'weblayer_browsertests':
+    chrome.PackageInfo(
+        'org.chromium.weblayer_browsertests_apk',
+        'org.chromium.weblayer_browsertests_apk.WebLayerBrowserTestsActivity',
+        'chrome-native-tests-command-line', None),
 })
 
 

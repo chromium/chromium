@@ -5383,6 +5383,7 @@
 
     'webengine_android_gtests': {
       'webengine_support_instrumentation_test_apk': {},
+      'weblayer_browsertests': {},
     },
 
     'webrtc_chromium_baremetal_gtests': {
