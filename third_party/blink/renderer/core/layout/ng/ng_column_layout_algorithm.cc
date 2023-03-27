@@ -767,10 +767,10 @@ const NGLayoutResult* NGColumnLayoutAlgorithm::LayoutRow(
 
     do {
       // Lay out one column. Each column will become a fragment.
-      NGConstraintSpace child_space = CreateConstraintSpaceForColumns(
-          ConstraintSpace(), column_size, ColumnPercentageResolutionSize(),
-          allow_discard_start_margin, balance_columns,
-          min_break_appeal.value_or(kBreakAppealLastResort));
+      NGConstraintSpace child_space = CreateConstraintSpaceForFragmentainer(
+          ConstraintSpace(), kFragmentColumn, column_size,
+          ColumnPercentageResolutionSize(), allow_discard_start_margin,
+          balance_columns, min_break_appeal.value_or(kBreakAppealLastResort));
 
       NGFragmentGeometry fragment_geometry =
           CalculateInitialFragmentGeometry(child_space, Node(), BreakToken());

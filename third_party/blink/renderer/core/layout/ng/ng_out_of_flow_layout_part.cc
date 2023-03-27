@@ -2464,12 +2464,10 @@ NGConstraintSpace NGOutOfFlowLayoutPart::GetFragmentainerConstraintSpace(
   // rather than moving to the next one).
   NGBreakAppeal min_break_appeal = kBreakAppealLastResort;
 
-  // TODO(bebeaudr): Need to handle different fragmentation types. It won't
-  // always be multi-column.
-  return CreateConstraintSpaceForColumns(
-      ConstraintSpace(), column_size, percentage_resolution_size,
-      allow_discard_start_margin, /* balance_columns */ false,
-      min_break_appeal);
+  return CreateConstraintSpaceForFragmentainer(
+      ConstraintSpace(), GetFragmentainerType(), column_size,
+      percentage_resolution_size, allow_discard_start_margin,
+      /* balance_columns */ false, min_break_appeal);
 }
 
 // Compute in which fragmentainer the OOF element will start its layout and

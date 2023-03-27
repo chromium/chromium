@@ -454,10 +454,12 @@ inline const NGColumnSpannerPath* FollowColumnSpannerPath(
   return nullptr;
 }
 
-// Calculate the constraint space for columns of a multi-column layout.
-NGConstraintSpace CreateConstraintSpaceForColumns(
+// Set up a constraint space for columns in multi-column layout, or for pages
+// when printing; as specified by fragmentation_type.
+NGConstraintSpace CreateConstraintSpaceForFragmentainer(
     const NGConstraintSpace& parent_space,
-    LogicalSize column_size,
+    NGFragmentationType fragmentation_type,
+    LogicalSize fragmentainer_size,
     LogicalSize percentage_resolution_size,
     bool allow_discard_start_margin,
     bool balance_columns,

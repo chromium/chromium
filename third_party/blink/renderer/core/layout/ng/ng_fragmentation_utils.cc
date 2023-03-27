@@ -1163,25 +1163,30 @@ bool IsEarlyBreakTarget(const NGEarlyBreak& early_break,
   return early_break.IsBreakBefore() && early_break.BlockNode() == child;
 }
 
-NGConstraintSpace CreateConstraintSpaceForColumns(
+NGConstraintSpace CreateConstraintSpaceForFragmentainer(
     const NGConstraintSpace& parent_space,
-    LogicalSize column_size,
+    NGFragmentationType fragmentation_type,
+    LogicalSize fragmentainer_size,
     LogicalSize percentage_resolution_size,
     bool allow_discard_start_margin,
     bool balance_columns,
     NGBreakAppeal min_break_appeal) {
   NGConstraintSpaceBuilder space_builder(
       parent_space, parent_space.GetWritingDirection(), /* is_new_fc */ true);
-  space_builder.SetAvailableSize(column_size);
+  space_builder.SetAvailableSize(fragmentainer_size);
   space_builder.SetPercentageResolutionSize(percentage_resolution_size);
   space_builder.SetInlineAutoBehavior(NGAutoBehavior::kStretchImplicit);
-  space_builder.SetFragmentationType(kFragmentColumn);
+  space_builder.SetFragmentationType(fragmentation_type);
   space_builder.SetShouldPropagateChildBreakValues();
-  space_builder.SetFragmentainerBlockSize(column_size.block_size);
+  space_builder.SetFragmentainerBlockSize(fragmentainer_size.block_size);
   space_builder.SetIsAnonymous(true);
-  space_builder.SetIsInColumnBfc();
-  if (balance_columns)
+  if (fragmentation_type == kFragmentColumn) {
+    space_builder.SetIsInColumnBfc();
+  }
+  if (balance_columns) {
+    DCHECK_EQ(fragmentation_type, kFragmentColumn);
     space_builder.SetIsInsideBalancedColumns();
+  }
   space_builder.SetMinBreakAppeal(min_break_appeal);
   if (allow_discard_start_margin) {
     // Unless it's the first column in the multicol container, or the first
