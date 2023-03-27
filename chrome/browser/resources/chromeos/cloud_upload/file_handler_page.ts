@@ -64,7 +64,7 @@ export class FileHandlerPageElement extends HTMLElement {
       assert(dialogArgs.args.tasks);
       // Adjust the dialog's size if there are no local tasks to display.
       if (dialogArgs.args.tasks.length == 0) {
-        this.style.height = '310px';
+        this.style.height = '311px';
       }
 
       const {name, icon, type} =
