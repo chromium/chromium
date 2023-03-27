@@ -6,9 +6,7 @@
 #define FUCHSIA_WEB_WEBENGINE_TEST_SCOPED_CONNECTION_CHECKER_H_
 
 #include <lib/fdio/directory.h>
-#include <lib/fidl/cpp/wire/connect_service.h>
 #include <lib/vfs/cpp/service.h>
-
 #include <memory>
 #include <string>
 
@@ -16,8 +14,8 @@
 #include "testing/gtest/include/gtest/gtest.h"
 
 // Verifies that a connection was made, or never attempted, for a given
-// `Protocol` without needing to provide an implementation.
-template <typename Protocol, bool expect_connection>
+// |Service| without needing to provide an implementation.
+template <typename Service, bool expect_connection>
 class ScopedConnectionCheckerBase {
  public:
   explicit ScopedConnectionCheckerBase(
@@ -27,7 +25,7 @@ class ScopedConnectionCheckerBase {
             [this](zx::channel channel, async_dispatcher_t*) {
               pending_channels_.push_back(std::move(channel));
             }),
-        fidl::DiscoverableProtocolName<Protocol>);
+        std::string(Service::Name_));
 
     ZX_CHECK(status == ZX_OK, status) << "OutgoingDirectory::AddPublicService";
   }
@@ -45,16 +43,16 @@ class ScopedConnectionCheckerBase {
 
  private:
   // Client channels are held in a pending (unconnected) state for the
-  // lifetime of `this`, so that the client never sees a disconnection event.
+  // lifetime of |this|, so that the client never sees a disconnection event.
   std::vector<zx::channel> pending_channels_;
 };
 
-// Checks that no client attempted to connect to `Protocol`.
-template <typename Protocol>
-using NeverConnectedChecker = ScopedConnectionCheckerBase<Protocol, false>;
+// Checks that no client attempted to connect to |Service|.
+template <typename Service>
+using NeverConnectedChecker = ScopedConnectionCheckerBase<Service, false>;
 
-// Checks that at least one client attempted to connect to `Protocol`.
-template <typename Protocol>
-using EnsureConnectedChecker = ScopedConnectionCheckerBase<Protocol, true>;
+// Checks that at least one client attempted to connect to |Service|.
+template <typename Service>
+using EnsureConnectedChecker = ScopedConnectionCheckerBase<Service, true>;
 
 #endif  // FUCHSIA_WEB_WEBENGINE_TEST_SCOPED_CONNECTION_CHECKER_H_

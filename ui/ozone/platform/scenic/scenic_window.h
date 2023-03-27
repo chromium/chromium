@@ -5,10 +5,9 @@
 #ifndef UI_OZONE_PLATFORM_SCENIC_SCENIC_WINDOW_H_
 #define UI_OZONE_PLATFORM_SCENIC_SCENIC_WINDOW_H_
 
-#include <fidl/fuchsia.ui.input3/cpp/fidl.h>
 #include <fuchsia/ui/gfx/cpp/fidl.h>
 #include <fuchsia/ui/input/cpp/fidl.h>
-#include <fuchsia/ui/views/cpp/fidl.h>
+#include <fuchsia/ui/input3/cpp/fidl.h>
 #include <lib/ui/scenic/cpp/resources.h>
 #include <lib/ui/scenic/cpp/session.h>
 #include <lib/ui/scenic/cpp/view_ref_pair.h>
@@ -17,7 +16,6 @@
 #include <vector>
 
 #include "base/component_export.h"
-#include "base/fuchsia/fidl_event_handler.h"
 #include "ui/base/ime/fuchsia/keyboard_client.h"
 #include "ui/events/fuchsia/input_event_sink.h"
 #include "ui/events/fuchsia/pointer_events_handler.h"
@@ -147,9 +145,7 @@ class COMPONENT_EXPORT(OZONE) ScenicWindow final : public PlatformWindow,
   // Used to coordinate window closure requests with the shell.
   fuchsia::element::ViewControllerPtr view_controller_;
 
-  fidl::Client<fuchsia_ui_input3::Keyboard> keyboard_fidl_client_;
-  base::FidlErrorEventLogger<fuchsia_ui_input3::Keyboard>
-      fidl_error_event_logger_;
+  fuchsia::ui::input3::KeyboardPtr keyboard_service_;
   std::unique_ptr<KeyboardClient> keyboard_client_;
 
   // React to view-focus coming and going.

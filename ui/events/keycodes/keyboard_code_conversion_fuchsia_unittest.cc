@@ -4,7 +4,8 @@
 
 #include "ui/events/keycodes/keyboard_code_conversion_fuchsia.h"
 
-#include <fidl/fuchsia.ui.input3/cpp/fidl.h>
+#include <fuchsia/input/cpp/fidl.h>
+#include <fuchsia/ui/input3/cpp/fidl.h>
 #include <cstdint>
 
 #include "base/logging.h"
@@ -14,9 +15,9 @@
 
 namespace {
 
-using fuchsia_input::Key;
-using fuchsia_ui_input3::KeyMeaning;
-using fuchsia_ui_input3::NonPrintableKey;
+using fuchsia::input::Key;
+using fuchsia::ui::input3::KeyMeaning;
+using fuchsia::ui::input3::NonPrintableKey;
 
 #define EXPECT_CODEPOINT_MAPS(codepoint)                                     \
   EXPECT_EQ(                                                                 \
@@ -59,8 +60,8 @@ TEST(FuchsiaKeyboardCodeConversion, FuchsiaKeyToDomKeySpecificValues) {
 
   // Check that NonPrintableKeys are converted correctly.
   EXPECT_EQ(ui::DomKey::ENTER,
-            ui::DomKeyFromFuchsiaKeyMeaning(
-                KeyMeaning::WithNonPrintableKey(NonPrintableKey::kEnter)));
+            ui::DomKeyFromFuchsiaKeyMeaning(KeyMeaning::WithNonPrintableKey(
+                NonPrintableKey(NonPrintableKey::ENTER))));
 }
 
 }  // namespace
