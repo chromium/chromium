@@ -16,6 +16,8 @@
 #include "content/browser/service_worker/embedded_worker_status.h"
 #include "content/browser/service_worker/service_worker_fetch_dispatcher.h"
 #include "content/common/content_export.h"
+#include "content/common/service_worker/race_network_request_url_loader_client.h"
+#include "content/common/service_worker/service_worker_resource_loader.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
@@ -42,7 +44,8 @@ class ServiceWorkerVersion;
 // bound to a URLLoader request. After it is bound |this| is kept alive until
 // the Mojo connection to this URLLoader is dropped.
 class CONTENT_EXPORT ServiceWorkerMainResourceLoader
-    : public network::mojom::URLLoader {
+    : public network::mojom::URLLoader,
+      public ServiceWorkerResourceLoader {
  public:
   // Created by ServiceWorkerControlleeRequestHandler
   // after it determines the load should go through a service worker.
@@ -110,11 +113,6 @@ class CONTENT_EXPORT ServiceWorkerMainResourceLoader
     // occurred so the request was not handled.
     kCompleted,
   };
-  enum class FetchResponseFrom {
-    kNoResponseYet,
-    kServiceWorker,
-    kWithoutServiceWorker,
-  };
   // Indicates what kind of preload request is dispatched before starting
   // the ServiceWorker.
   //
@@ -147,22 +145,22 @@ class CONTENT_EXPORT ServiceWorkerMainResourceLoader
 
   // Calls url_loader_client_->OnReceiveResponse() with given |response_head|.
   void CommitResponseHeaders(
-      const network::mojom::URLResponseHeadPtr& response_head);
+      const network::mojom::URLResponseHeadPtr& response_head) override;
 
   // Calls url_loader_client_->OnReceiveResponse() with
   // |response_head|, |response_body| and |cached_metadata|.
   void CommitResponseBody(
       const network::mojom::URLResponseHeadPtr& response_head,
       mojo::ScopedDataPipeConsumerHandle response_body,
-      absl::optional<mojo_base::BigBuffer> cached_metadata);
+      absl::optional<mojo_base::BigBuffer> cached_metadata) override;
 
   // Creates and sends an empty response's body with the net::OK status.
   // Sends net::ERR_INSUFFICIENT_RESOURCES when it can't be created.
-  void CommitEmptyResponseAndComplete();
+  void CommitEmptyResponseAndComplete() override;
 
   // Calls url_loader_client_->OnComplete(). |reason| will be recorded as an
   // argument of TRACE_EVENT.
-  void CommitCompleted(int error_code, const char* reason);
+  void CommitCompleted(int error_code, const char* reason) override;
 
   // network::mojom::URLLoader:
   void FollowRedirect(
@@ -268,13 +266,11 @@ class CONTENT_EXPORT ServiceWorkerMainResourceLoader
   absl::optional<EmbeddedWorkerStatus> initial_embedded_worker_status_;
   bool is_detached_ = false;
 
-  FetchResponseFrom fetch_response_from_ = FetchResponseFrom::kNoResponseYet;
-
   scoped_refptr<network::SharedURLLoaderFactory>
       race_network_request_url_loader_factory_;
   mojo::PendingRemote<network::mojom::URLLoader>
       race_network_request_url_loader_;
-  std::unique_ptr<RaceNetworkRequestURLLoaderClient>
+  std::unique_ptr<ServiceWorkerRaceNetworkRequestURLLoaderClient>
       race_network_request_loader_client_;
 
   base::WeakPtrFactory<ServiceWorkerMainResourceLoader> weak_factory_{this};
