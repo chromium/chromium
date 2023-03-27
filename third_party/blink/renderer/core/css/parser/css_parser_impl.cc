@@ -2199,7 +2199,8 @@ void CSSParserImpl::ConsumeDeclaration(CSSParserTokenStream& stream,
   }
 
   if (observer_ &&
-      (rule_type == StyleRule::kStyle || rule_type == StyleRule::kKeyframe)) {
+      (rule_type == StyleRule::kStyle || rule_type == StyleRule::kKeyframe ||
+       rule_type == StyleRule::kTry)) {
     // The end offset is the offset of the terminating token, which is peeked
     // but not yet consumed.
     observer_->ObserveProperty(decl_offset_start, stream.LookAheadOffset(),

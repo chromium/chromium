@@ -56,6 +56,10 @@ class CSSPositionFallbackRule final : public CSSRule {
   CSSPositionFallbackRule(StyleRulePositionFallback*, CSSStyleSheet* parent);
   ~CSSPositionFallbackRule() final;
 
+  StyleRulePositionFallback* PositionFallback() {
+    return position_fallback_rule_.Get();
+  }
+
   String name() const { return position_fallback_rule_->Name(); }
 
   Type GetType() const final { return kPositionFallbackRule; }

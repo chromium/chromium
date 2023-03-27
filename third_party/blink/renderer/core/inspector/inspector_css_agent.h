@@ -159,6 +159,7 @@ class CORE_EXPORT InspectorCSSAgent final
       protocol::Maybe<
           protocol::Array<protocol::CSS::InheritedPseudoElementMatches>>*,
       protocol::Maybe<protocol::Array<protocol::CSS::CSSKeyframesRule>>*,
+      protocol::Maybe<protocol::Array<protocol::CSS::CSSPositionFallbackRule>>*,
       protocol::Maybe<int>*) override;
   protocol::Response getInlineStylesForNode(
       int node_id,
@@ -319,6 +320,9 @@ class CORE_EXPORT InspectorCSSAgent final
   protocol::Response MultipleStyleTextsActions(
       std::unique_ptr<protocol::Array<protocol::CSS::StyleDeclarationEdit>>,
       HeapVector<Member<StyleSheetAction>>* actions);
+
+  std::unique_ptr<protocol::Array<protocol::CSS::CSSPositionFallbackRule>>
+  PositionFallbackRulesForNode(Element* element);
 
   // If the |animating_element| is a pseudo element, then |element| is a
   // reference to its originating DOM element.

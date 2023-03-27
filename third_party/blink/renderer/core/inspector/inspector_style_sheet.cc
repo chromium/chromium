@@ -35,6 +35,7 @@
 #include "third_party/blink/renderer/core/css/css_keyframes_rule.h"
 #include "third_party/blink/renderer/core/css/css_layer_block_rule.h"
 #include "third_party/blink/renderer/core/css/css_media_rule.h"
+#include "third_party/blink/renderer/core/css/css_position_fallback_rule.h"
 #include "third_party/blink/renderer/core/css/css_property_names.h"
 #include "third_party/blink/renderer/core/css/css_property_value_set.h"
 #include "third_party/blink/renderer/core/css/css_rule_list.h"
@@ -43,6 +44,7 @@
 #include "third_party/blink/renderer/core/css/css_style_sheet.h"
 #include "third_party/blink/renderer/core/css/css_style_sheet_ids.h"
 #include "third_party/blink/renderer/core/css/css_supports_rule.h"
+#include "third_party/blink/renderer/core/css/css_try_rule.h"
 #include "third_party/blink/renderer/core/css/parser/css_parser.h"
 #include "third_party/blink/renderer/core/css/parser/css_parser_local_context.h"
 #include "third_party/blink/renderer/core/css/parser/css_parser_observer.h"
@@ -615,6 +617,7 @@ void FlattenSourceData(const CSSRuleSourceDataList& data_list,
       case StyleRule::kFontFace:
       case StyleRule::kKeyframe:
       case StyleRule::kFontFeature:
+      case StyleRule::kTry:
         result->push_back(data);
         break;
       case StyleRule::kStyle:
@@ -625,6 +628,7 @@ void FlattenSourceData(const CSSRuleSourceDataList& data_list,
       case StyleRule::kContainer:
       case StyleRule::kLayerBlock:
       case StyleRule::kFontFeatureValues:
+      case StyleRule::kPositionFallback:
         result->push_back(data);
         FlattenSourceData(data->child_rules, result);
         break;
@@ -660,6 +664,10 @@ CSSRuleList* AsCSSRuleList(CSSRule* rule) {
   if (auto* layer_rule = DynamicTo<CSSLayerBlockRule>(rule))
     return layer_rule->cssRules();
 
+  if (auto* position_fallback_rule = DynamicTo<CSSPositionFallbackRule>(rule)) {
+    return position_fallback_rule->cssRules();
+  }
+
   return nullptr;
 }
 
@@ -681,6 +689,7 @@ void CollectFlatRules(RuleList rule_list, CSSRuleVector* result) {
       case CSSRule::kViewportRule:
       case CSSRule::kKeyframeRule:
       case CSSRule::kFontFeatureRule:
+      case CSSRule::kTryRule:
         result->push_back(rule);
         break;
       case CSSRule::kStyleRule:
@@ -691,6 +700,7 @@ void CollectFlatRules(RuleList rule_list, CSSRuleVector* result) {
       case CSSRule::kContainerRule:
       case CSSRule::kLayerBlockRule:
       case CSSRule::kFontFeatureValuesRule:
+      case CSSRule::kPositionFallbackRule:
         result->push_back(rule);
         CollectFlatRules(AsCSSRuleList(rule), result);
         break;
@@ -1894,6 +1904,19 @@ InspectorStyleSheet::BuildObjectForRuleUsage(CSSRule* rule, bool was_used) {
           .setUsed(was_used)
           .build();
 
+  return result;
+}
+
+std::unique_ptr<protocol::CSS::CSSTryRule>
+InspectorStyleSheet::BuildObjectForTryRule(CSSTryRule* try_rule) {
+  std::unique_ptr<protocol::CSS::CSSTryRule> result =
+      protocol::CSS::CSSTryRule::create()
+          .setOrigin(origin_)
+          .setStyle(BuildObjectForStyle(try_rule->style()))
+          .build();
+  if (CanBind(origin_) && !Id().empty()) {
+    result->setStyleSheetId(Id());
+  }
   return result;
 }
 

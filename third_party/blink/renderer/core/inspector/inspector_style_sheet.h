@@ -41,6 +41,7 @@
 
 namespace blink {
 
+class CSSTryRule;
 class CSSKeyframeRule;
 class CSSMediaRule;
 class CSSContainerRule;
@@ -198,6 +199,7 @@ class InspectorStyleSheet : public InspectorStyleSheetBase {
       CSSStyleRule*);
   std::unique_ptr<protocol::CSS::RuleUsage> BuildObjectForRuleUsage(CSSRule*,
                                                                     bool);
+  std::unique_ptr<protocol::CSS::CSSTryRule> BuildObjectForTryRule(CSSTryRule*);
   std::unique_ptr<protocol::CSS::CSSKeyframeRule> BuildObjectForKeyframeRule(
       CSSKeyframeRule*);
   std::unique_ptr<protocol::CSS::SelectorList> BuildObjectForSelectorList(

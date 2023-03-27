@@ -4,6 +4,8 @@ The test verifies functionality of querying style information for view-transitio
     result : {
         cssKeyframesRules : [
         ]
+        cssPositionFallbackRules : [
+        ]
         inherited : [
         ]
         inheritedPseudoElements : [

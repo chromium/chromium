@@ -1,0 +1,13 @@
+Test that position-fallback rules are reported.
+Dumping CSS position-fallback rules: 
+@position-fallback --top-first {
+    @try {
+        top: anchor(--anchor top); @[14:8-14:34]
+        top: anchor(--anchor top); @[undefined-undefined]
+    }
+    @try {
+        top: anchor(--anchor bottom); @[18:8-18:37]
+        top: anchor(--anchor bottom); @[undefined-undefined]
+    }
+}
+

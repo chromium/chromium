@@ -44,6 +44,7 @@
 #include "third_party/blink/renderer/core/css/css_layer_block_rule.h"
 #include "third_party/blink/renderer/core/css/css_layer_statement_rule.h"
 #include "third_party/blink/renderer/core/css/css_media_rule.h"
+#include "third_party/blink/renderer/core/css/css_position_fallback_rule.h"
 #include "third_party/blink/renderer/core/css/css_property_name.h"
 #include "third_party/blink/renderer/core/css/css_property_names.h"
 #include "third_party/blink/renderer/core/css/css_property_value_set.h"
@@ -987,6 +988,8 @@ Response InspectorCSSAgent::getMatchedStylesForNode(
         inherited_pseudo_id_matches,
     Maybe<protocol::Array<protocol::CSS::CSSKeyframesRule>>*
         css_keyframes_rules,
+    Maybe<protocol::Array<protocol::CSS::CSSPositionFallbackRule>>*
+        css_position_fallback_rules,
     Maybe<int>* parentLayoutNodeId) {
   Response response = AssertEnabled();
   if (!response.IsSuccess())
@@ -1103,6 +1106,7 @@ Response InspectorCSSAgent::getMatchedStylesForNode(
   }
 
   *css_keyframes_rules = AnimationsForNode(element, animating_element);
+  *css_position_fallback_rules = PositionFallbackRulesForNode(element);
 
   auto* parentLayoutNode = LayoutTreeBuilderTraversal::LayoutParent(*element);
   if (parentLayoutNode) {
@@ -1116,8 +1120,12 @@ Response InspectorCSSAgent::getMatchedStylesForNode(
 template <class CSSRuleCollection>
 static CSSKeyframesRule* FindKeyframesRule(CSSRuleCollection* css_rules,
                                            StyleRuleKeyframes* keyframes_rule) {
+  if (!css_rules) {
+    return nullptr;
+  }
+
   CSSKeyframesRule* result = nullptr;
-  for (unsigned j = 0; css_rules && j < css_rules->length() && !result; ++j) {
+  for (unsigned j = 0; j < css_rules->length() && !result; ++j) {
     CSSRule* css_rule = css_rules->item(j);
     if (auto* css_style_rule = DynamicTo<CSSKeyframesRule>(css_rule)) {
       if (css_style_rule->Keyframes() == keyframes_rule)
@@ -1129,6 +1137,105 @@ static CSSKeyframesRule* FindKeyframesRule(CSSRuleCollection* css_rules,
     }
   }
   return result;
+}
+
+template <class CSSRuleCollection>
+static CSSPositionFallbackRule* FindPositionFallbackRule(
+    CSSRuleCollection* css_rules,
+    StyleRulePositionFallback* position_fallback_rule) {
+  if (!css_rules) {
+    return nullptr;
+  }
+
+  CSSPositionFallbackRule* result = nullptr;
+  for (unsigned j = 0; j < css_rules->length() && !result; ++j) {
+    CSSRule* css_rule = css_rules->item(j);
+    if (auto* css_style_rule = DynamicTo<CSSPositionFallbackRule>(css_rule)) {
+      if (css_style_rule->PositionFallback() == position_fallback_rule) {
+        result = css_style_rule;
+      }
+    } else if (auto* css_import_rule = DynamicTo<CSSImportRule>(css_rule)) {
+      result = FindPositionFallbackRule(css_import_rule->styleSheet(),
+                                        position_fallback_rule);
+    } else {
+      result = FindPositionFallbackRule(css_rule->cssRules(),
+                                        position_fallback_rule);
+    }
+  }
+  return result;
+}
+
+std::unique_ptr<protocol::Array<protocol::CSS::CSSPositionFallbackRule>>
+InspectorCSSAgent::PositionFallbackRulesForNode(Element* element) {
+  auto css_position_fallback_rules = std::make_unique<
+      protocol::Array<protocol::CSS::CSSPositionFallbackRule>>();
+  Document& document = element->GetDocument();
+  DCHECK(!document.NeedsLayoutTreeUpdateForNode(*element));
+
+  const ComputedStyle* style = element->EnsureComputedStyle();
+  if (!style) {
+    return css_position_fallback_rules;
+  }
+
+  const ScopedCSSName* position_fallback = style->PositionFallback();
+  if (!position_fallback) {
+    return css_position_fallback_rules;
+  }
+
+  const TreeScope* tree_scope = position_fallback->GetTreeScope();
+  if (!tree_scope) {
+    tree_scope = &document;
+  }
+
+  StyleResolver& style_resolver = document.GetStyleResolver();
+  StyleRulePositionFallback* position_fallback_rule =
+      style_resolver.ResolvePositionFallbackRule(tree_scope,
+                                                 position_fallback->GetName());
+
+  // Find CSSOM wrapper from internal Style rule.
+  CSSPositionFallbackRule* css_position_fallback_rule = nullptr;
+  for (CSSStyleSheet* style_sheet :
+       *document_to_css_style_sheets_.at(&document)) {
+    css_position_fallback_rule =
+        FindPositionFallbackRule(style_sheet, position_fallback_rule);
+    if (css_position_fallback_rule) {
+      break;
+    }
+  }
+
+  if (!css_position_fallback_rule) {
+    return css_position_fallback_rules;
+  }
+
+  auto try_rules =
+      std::make_unique<protocol::Array<protocol::CSS::CSSTryRule>>();
+  for (unsigned j = 0; j < css_position_fallback_rule->length(); ++j) {
+    InspectorStyleSheet* inspector_style_sheet =
+        BindStyleSheet(css_position_fallback_rule->parentStyleSheet());
+    try_rules->emplace_back(inspector_style_sheet->BuildObjectForTryRule(
+        css_position_fallback_rule->Item(j)));
+  }
+
+  InspectorStyleSheet* inspector_style_sheet =
+      BindStyleSheet(css_position_fallback_rule->parentStyleSheet());
+  CSSRuleSourceData* source_data =
+      inspector_style_sheet->SourceDataForRule(css_position_fallback_rule);
+  std::unique_ptr<protocol::CSS::Value> name =
+      protocol::CSS::Value::create()
+          .setText(css_position_fallback_rule->name())
+          .build();
+  if (source_data) {
+    name->setRange(inspector_style_sheet->BuildSourceRangeObject(
+        source_data->rule_header_range));
+  }
+
+  css_position_fallback_rules->emplace_back(
+      protocol::CSS::CSSPositionFallbackRule::create()
+          .setName(std::move(name))
+          .setTryRules(std::move(try_rules))
+          .build());
+
+  return css_position_fallback_rules;
 }
 
 std::unique_ptr<protocol::Array<protocol::CSS::CSSKeyframesRule>>

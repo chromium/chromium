@@ -186,6 +186,22 @@
     }
   }
 
+  async loadAndDumpCSSPositionFallbacksForNode(nodeId) {
+    var {result} =
+        await this._dp.CSS.getMatchedStylesForNode({'nodeId': nodeId});
+    this._testRunner.log('Dumping CSS position-fallback rules: ');
+    for (var cssPositionFallbackRule of result.cssPositionFallbackRules) {
+      this._testRunner.log(
+          '@position-fallback ' + cssPositionFallbackRule.name.text + ' {');
+      for (var tryRule of cssPositionFallbackRule.tryRules) {
+        this._indentLog(4, '@try {');
+        this.dumpStyle(tryRule.style, 4);
+        this._indentLog(4, '}');
+      }
+      this._testRunner.log('}');
+    }
+  }
+
   async loadAndDumpCSSAnimationsForNode(nodeId) {
     var {result} =
         await this._dp.CSS.getMatchedStylesForNode({'nodeId': nodeId});
