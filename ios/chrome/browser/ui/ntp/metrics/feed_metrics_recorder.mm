@@ -640,13 +640,6 @@ using feed::FeedUserActionType;
   }
 }
 
-#pragma mark - FeedRefreshStateTracker
-
-- (BOOL)isNTPAndFeedVisible {
-  // This method is deprecated and usage is replaced with `isNTPVisible`.
-  return self.isNTPVisible;
-}
-
 #pragma mark - Follow
 
 - (void)recordFollowRequestedWithType:(FollowRequestType)followRequestType {
@@ -1298,7 +1291,7 @@ using feed::FeedUserActionType;
 - (void)refreshTimerEnded {
   [self.refreshTimer invalidate];
   self.refreshTimer = nil;
-  if (![self isNTPAndFeedVisible]) {
+  if (!self.isNTPVisible) {
     // The feed refresher checks feed engagement criteria.
     self.feedRefresher->RefreshFeed(
         FeedRefreshTrigger::kForegroundFeedNotVisible);
