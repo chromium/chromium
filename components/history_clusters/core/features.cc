@@ -37,6 +37,9 @@ BASE_FEATURE(kJourneysImages,
              "JourneysImages",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+const base::FeatureParam<bool> kJourneysImagesCover{
+    &kJourneysImages, "JourneysImagesCover", true};
+
 BASE_FEATURE(kPersistedClusters,
              "HistoryClustersPersistedClusters",
              base::FEATURE_ENABLED_BY_DEFAULT);

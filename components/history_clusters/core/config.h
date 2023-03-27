@@ -90,6 +90,9 @@ struct Config {
   // a proof of concept implementation for Entities only).
   bool images = false;
 
+  // Whether the image covers the whole icon container.
+  bool images_cover = true;
+
   // The `kPersistedClusters` feature and child params.
 
   // If enabled, updating clusters will persist the results to the history DB

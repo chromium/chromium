@@ -1404,6 +1404,13 @@ const FeatureEntry::FeatureVariation kJourneysContentClusteringVariations[] = {
      kJourneysSearchVisitsWithPairwiseMergeParams,
      std::size(kJourneysSearchVisitsWithPairwiseMergeParams), nullptr},
 };
+const FeatureEntry::FeatureParam kJourneysImagesCoverParams[] = {
+    {"JourneysImagesCover", "false"},
+};
+const FeatureEntry::FeatureVariation kJourneysImagesVariations[] = {
+    {"Image Does Not Cover Container", kJourneysImagesCoverParams,
+     std::size(kJourneysImagesCoverParams), nullptr},
+};
 const FeatureEntry::FeatureParam
     kJourneysLabelsWithSearchVisitEntitiesParams[] = {
         {"labels_from_search_visit_entities", "true"},
@@ -5781,7 +5788,9 @@ const FeatureEntry kFeatureEntries[] = {
 
     {"history-journeys-images", flag_descriptions::kJourneysImagesName,
      flag_descriptions::kJourneysImagesDescription, kOsDesktop,
-     FEATURE_VALUE_TYPE(history_clusters::internal::kJourneysImages)},
+     FEATURE_WITH_PARAMS_VALUE_TYPE(history_clusters::internal::kJourneysImages,
+                                    kJourneysImagesVariations,
+                                    "HistoryJourneysImages")},
 
     {"history-journeys-labels", flag_descriptions::kJourneysLabelsName,
      flag_descriptions::kJourneysLabelsDescription, kOsDesktop | kOsAndroid,

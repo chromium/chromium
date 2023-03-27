@@ -77,6 +77,12 @@ class PageFavicon extends PolymerElement {
         type: Object,
         value: null,
       },
+
+      isImageCover_: {
+        type: Boolean,
+        value: () => loadTimeData.getBoolean('isHistoryClustersImageCover'),
+        reflectToAttribute: true,
+      },
     };
   }
 
