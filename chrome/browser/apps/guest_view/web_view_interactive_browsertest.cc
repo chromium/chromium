@@ -153,6 +153,11 @@ class WebViewInteractiveTest : public extensions::PlatformAppBrowserTest {
     command_line->AppendSwitch(blink::switches::kAllowPreCommitInput);
   }
 
+  void SetUpOnMainThread() override {
+    host_resolver()->AddRule("*", "127.0.0.1");
+    extensions::PlatformAppBrowserTest::SetUpOnMainThread();
+  }
+
   TestGuestViewManager* GetGuestViewManager() {
     TestGuestViewManager* manager = static_cast<TestGuestViewManager*>(
         TestGuestViewManager::FromBrowserContext(browser()->profile()));
@@ -1658,34 +1663,9 @@ IN_PROC_BROWSER_TEST_F(WebViewFocusInteractiveTest,
 }
 #endif
 
-// Base class for interactive tests that enable site isolation in <webview>
-// guests.
-class SitePerProcessWebViewInteractiveTest : public WebViewInteractiveTest {
- public:
-  SitePerProcessWebViewInteractiveTest() = default;
-  ~SitePerProcessWebViewInteractiveTest() override = default;
-  SitePerProcessWebViewInteractiveTest(
-      const SitePerProcessWebViewInteractiveTest&) = delete;
-  SitePerProcessWebViewInteractiveTest& operator=(
-      const SitePerProcessWebViewInteractiveTest&) = delete;
-
-  void SetUp() override {
-    feature_list_.InitAndEnableFeature(features::kSiteIsolationForGuests);
-    WebViewInteractiveTest::SetUp();
-  }
-
-  void SetUpOnMainThread() override {
-    host_resolver()->AddRule("*", "127.0.0.1");
-    WebViewInteractiveTest::SetUpOnMainThread();
-  }
-
- private:
-  base::test::ScopedFeatureList feature_list_;
-};
-
 // Check that when a focused <webview> navigates cross-process, the focus
 // is preserved in the new page. See https://crbug.com/1358210.
-IN_PROC_BROWSER_TEST_F(SitePerProcessWebViewInteractiveTest,
+IN_PROC_BROWSER_TEST_F(WebViewInteractiveTest,
                        FocusPreservedAfterCrossProcessNavigation) {
   // Load and show a platform app with a <webview> on a data: URL.
   ASSERT_TRUE(StartEmbeddedTestServer());
