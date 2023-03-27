@@ -27,10 +27,8 @@ SerialChooserController::SerialChooserController(
     content::RenderFrameHost* render_frame_host,
     std::vector<blink::mojom::SerialPortFilterPtr> filters,
     content::SerialChooser::Callback callback)
-    : ChooserController(CreateExtensionAwareChooserTitle(
-          render_frame_host,
-          IDS_SERIAL_PORT_CHOOSER_PROMPT_ORIGIN,
-          IDS_SERIAL_PORT_CHOOSER_PROMPT_EXTENSION_NAME)),
+    : ChooserController(CreateChooserTitle(render_frame_host,
+                                           IDS_SERIAL_PORT_CHOOSER_PROMPT)),
       filters_(std::move(filters)),
       callback_(std::move(callback)),
       initiator_document_(render_frame_host->GetWeakDocumentPtr()) {

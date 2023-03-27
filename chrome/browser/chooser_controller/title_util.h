@@ -11,12 +11,12 @@ namespace content {
 class RenderFrameHost;
 }
 
-// Creates a title for a chooser. For extensions the extension name is used if
-// possible. In all other cases the origin of the main frame for
+// Creates a title for a chooser.
+// For Isolated Web Apps the app name is used if possible.
+// For extensions the extension name is used if possible.
+// In all other cases the origin of the main frame for
 // `render_frame_host` is used.
-std::u16string CreateExtensionAwareChooserTitle(
-    content::RenderFrameHost* render_frame_host,
-    int title_string_id_origin,
-    int title_string_id_extension);
+std::u16string CreateChooserTitle(content::RenderFrameHost* render_frame_host,
+                                  int title_string_id);
 
 #endif  // CHROME_BROWSER_CHOOSER_CONTROLLER_TITLE_UTIL_H_

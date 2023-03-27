@@ -8,36 +8,52 @@
 #include "chrome/grit/generated_resources.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "components/strings/grit/components_strings.h"
+#include "content/public/test/navigation_simulator.h"
+#include "url/gurl.h"
+#include "url/origin.h"
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
 #include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/extensions/test_extension_system.h"
-#include "content/public/test/navigation_simulator.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/extension_builder.h"
 #include "extensions/common/value_builder.h"
-#include "url/gurl.h"
-#include "url/origin.h"
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS)
+
+#if !BUILDFLAG(IS_ANDROID)
+#include "chrome/browser/ui/web_applications/test/isolated_web_app_test_utils.h"
+#include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 namespace {
 
-constexpr int kNonExtensionTitleResourceId =
-    IDS_USB_DEVICE_CHOOSER_PROMPT_ORIGIN;
-constexpr int kExtensionTitleResourceId =
-    IDS_USB_DEVICE_CHOOSER_PROMPT_EXTENSION_NAME;
+constexpr int kTitleResourceId = IDS_USB_DEVICE_CHOOSER_PROMPT;
 
-using ExtensionsAwareChooserTitleTest = ChromeRenderViewHostTestHarness;
+using CreateChooserTitleTest = ChromeRenderViewHostTestHarness;
 
-TEST_F(ExtensionsAwareChooserTitleTest, NoFrame) {
-  EXPECT_EQ(u"", CreateExtensionAwareChooserTitle(nullptr,
-                                                  kNonExtensionTitleResourceId,
-                                                  kExtensionTitleResourceId));
+TEST_F(CreateChooserTitleTest, NoFrame) {
+  EXPECT_EQ(u"", CreateChooserTitle(nullptr, kTitleResourceId));
+}
+
+TEST_F(CreateChooserTitleTest, UrlFrameTree) {
+  NavigateAndCommit(GURL("https://main-frame.com"));
+  content::RenderFrameHost* subframe =
+      content::NavigationSimulator::NavigateAndCommitFromDocument(
+          GURL("https://sub-frame.com"),
+          content::RenderFrameHostTester::For(main_rfh())
+              ->AppendChild("subframe"));
+
+  EXPECT_EQ("main-frame.com", main_rfh()->GetLastCommittedOrigin().host());
+  EXPECT_EQ(u"main-frame.com wants to connect",
+            CreateChooserTitle(main_rfh(), kTitleResourceId));
+  EXPECT_EQ("sub-frame.com", subframe->GetLastCommittedOrigin().host());
+  EXPECT_EQ(u"main-frame.com wants to connect",
+            CreateChooserTitle(subframe, kTitleResourceId));
 }
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
-TEST_F(ExtensionsAwareChooserTitleTest, FrameTree) {
+TEST_F(CreateChooserTitleTest, ExtensionsFrameTree) {
   extensions::DictionaryBuilder manifest;
   manifest.Set("name", "Chooser Title Subframe Test")
       .Set("version", "0.1")
@@ -63,17 +79,39 @@ TEST_F(ExtensionsAwareChooserTitleTest, FrameTree) {
           content::RenderFrameHostTester::For(main_rfh())
               ->AppendChild("subframe"));
 
-  EXPECT_EQ(extension->id(), main_rfh()->GetLastCommittedOrigin().host());
-  EXPECT_EQ(
-      u"\"Chooser Title Subframe Test\" wants to connect",
-      CreateExtensionAwareChooserTitle(main_rfh(), kNonExtensionTitleResourceId,
-                                       kExtensionTitleResourceId));
-  EXPECT_NE(extension->id(), subframe->GetLastCommittedOrigin().host());
-  EXPECT_EQ(
-      u"\"Chooser Title Subframe Test\" wants to connect",
-      CreateExtensionAwareChooserTitle(subframe, kNonExtensionTitleResourceId,
-                                       kExtensionTitleResourceId));
+  ASSERT_EQ(extension->id(), main_rfh()->GetLastCommittedOrigin().host());
+  EXPECT_EQ(u"Chooser Title Subframe Test wants to connect",
+            CreateChooserTitle(main_rfh(), kTitleResourceId));
+  ASSERT_NE(extension->id(), subframe->GetLastCommittedOrigin().host());
+  EXPECT_EQ(u"Chooser Title Subframe Test wants to connect",
+            CreateChooserTitle(subframe, kTitleResourceId));
 }
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS)
+
+#if !BUILDFLAG(IS_ANDROID)
+TEST_F(CreateChooserTitleTest, IsolatedWebAppFrameTree) {
+  const GURL app_url(
+      "isolated-app://"
+      "berugqztij5biqquuk3mfwpsaibuegaqcitgfchwuosuofdjabzqaaic");
+  const std::string app_name("Chooser Title FrameTree IWA Name");
+
+  web_app::test::AwaitStartWebAppProviderAndSubsystems(profile());
+  web_app::AddDummyIsolatedAppToRegistry(profile(), app_url, app_name);
+
+  NavigateAndCommit(app_url);
+  content::RenderFrameHost* subframe =
+      content::NavigationSimulator::NavigateAndCommitFromDocument(
+          GURL("data:text/html,"),
+          content::RenderFrameHostTester::For(main_rfh())
+              ->AppendChild("subframe"));
+
+  ASSERT_EQ(app_url, main_rfh()->GetLastCommittedOrigin().GetURL());
+  EXPECT_EQ(u"Chooser Title FrameTree IWA Name wants to connect",
+            CreateChooserTitle(main_rfh(), kTitleResourceId));
+  ASSERT_NE(app_url, subframe->GetLastCommittedOrigin().GetURL());
+  EXPECT_EQ(u"Chooser Title FrameTree IWA Name wants to connect",
+            CreateChooserTitle(subframe, kTitleResourceId));
+}
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 }  // namespace

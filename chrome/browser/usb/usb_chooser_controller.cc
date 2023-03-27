@@ -90,10 +90,8 @@ UsbChooserController::UsbChooserController(
     RenderFrameHost* render_frame_host,
     std::vector<device::mojom::UsbDeviceFilterPtr> device_filters,
     blink::mojom::WebUsbService::GetPermissionCallback callback)
-    : ChooserController(CreateExtensionAwareChooserTitle(
-          render_frame_host,
-          IDS_USB_DEVICE_CHOOSER_PROMPT_ORIGIN,
-          IDS_USB_DEVICE_CHOOSER_PROMPT_EXTENSION_NAME)),
+    : ChooserController(
+          CreateChooserTitle(render_frame_host, IDS_USB_DEVICE_CHOOSER_PROMPT)),
       filters_(std::move(device_filters)),
       callback_(std::move(callback)),
       requesting_frame_(render_frame_host) {

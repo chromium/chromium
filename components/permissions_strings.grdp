@@ -161,7 +161,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
   </message>
   <!-- Device Chooser -->
   <if expr="not is_android">
-    <message name="IDS_BLUETOOTH_DEVICE_CHOOSER_PROMPT_ORIGIN" desc="The label that is used to introduce Bluetooth chooser details to the user in a popup when it is from a website.">
+    <message name="IDS_BLUETOOTH_DEVICE_CHOOSER_PROMPT" desc="The label that is used to introduce Bluetooth chooser details to the user in a popup.">
       <ph name="Origin">$1<ex>www.google.com</ex></ph> wants to pair
     </message>
     <message name="IDS_BLUETOOTH_DEVICE_CHOOSER_NO_DEVICES_FOUND_PROMPT" desc="The label shown to the user to inform them that no Bluetooth devices were found matching the requirements that the application provided.">
@@ -183,7 +183,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 
   <!-- Bluetooth Scanning Prompt -->
   <if expr="not is_android">
-    <message name="IDS_BLUETOOTH_SCANNING_PROMPT_ORIGIN" desc="The label that is used to introduce Bluetooth scanning prompt details to the user when it is from a website.">
+    <message name="IDS_BLUETOOTH_SCANNING_PROMPT" desc="The label that is used to introduce Bluetooth scanning prompt details to the user.">
       <ph name="Origin">$1<ex>www.google.com</ex></ph> wants to scan for nearby Bluetooth devices. The following devices have been found:
     </message>
     <message name="IDS_BLUETOOTH_SCANNING_DEVICE_UNKNOWN" desc="Text to identify Bluetooth devices of unknown or unsupported class.">
@@ -206,7 +206,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
   <message name="IDS_DEVICE_CHOOSER_NO_DEVICES_FOUND_PROMPT" desc="The label shown to the user to inform them that no USB devices were found matching the requirements that the application provided.">
     No compatible devices found.
   </message>
-  <message name="IDS_USB_DEVICE_CHOOSER_PROMPT_ORIGIN" desc="The label that is used to introduce USB chooser details to the user in a popup when it is from a website.">
+  <message name="IDS_USB_DEVICE_CHOOSER_PROMPT" desc="The label that is used to introduce USB chooser details to the user in a popup.">
     <ph name="Origin">$1<ex>www.google.com</ex></ph> wants to connect
   </message>
   <message name="IDS_USB_DEVICE_CHOOSER_CONNECT_BUTTON_TEXT" desc="Label on the button that closes the USB chooser popup and connects the selected device.">

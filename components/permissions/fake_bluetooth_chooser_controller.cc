@@ -15,7 +15,7 @@ namespace permissions {
 FakeBluetoothChooserController::FakeBluetoothChooserController(
     std::vector<FakeDevice> devices)
     : ChooserController(
-          l10n_util::GetStringFUTF16(IDS_BLUETOOTH_DEVICE_CHOOSER_PROMPT_ORIGIN,
+          l10n_util::GetStringFUTF16(IDS_BLUETOOTH_DEVICE_CHOOSER_PROMPT,
                                      u"example.com")),
       devices_(std::move(devices)) {}
 

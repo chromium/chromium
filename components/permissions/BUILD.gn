@@ -25,8 +25,6 @@ source_set("permissions") {
     "bluetooth_delegate_impl.h",
     "chooser_controller.cc",
     "chooser_controller.h",
-    "chooser_title_util.cc",
-    "chooser_title_util.h",
     "contexts/accessibility_permission_context.cc",
     "contexts/accessibility_permission_context.h",
     "contexts/bluetooth_chooser_context.cc",
@@ -256,7 +254,6 @@ source_set("test_support") {
 source_set("unit_tests") {
   testonly = true
   sources = [
-    "chooser_title_util_unittest.cc",
     "contexts/camera_pan_tilt_zoom_permission_context_unittest.cc",
     "contexts/geolocation_permission_context_unittest.cc",
     "contexts/midi_permission_context_unittest.cc",

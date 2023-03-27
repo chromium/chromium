@@ -83,10 +83,8 @@ HidChooserController::HidChooserController(
     std::vector<blink::mojom::HidDeviceFilterPtr> filters,
     std::vector<blink::mojom::HidDeviceFilterPtr> exclusion_filters,
     content::HidChooser::Callback callback)
-    : ChooserController(CreateExtensionAwareChooserTitle(
-          render_frame_host,
-          IDS_HID_CHOOSER_PROMPT_ORIGIN,
-          IDS_HID_CHOOSER_PROMPT_EXTENSION_NAME)),
+    : ChooserController(
+          CreateChooserTitle(render_frame_host, IDS_HID_CHOOSER_PROMPT)),
       filters_(std::move(filters)),
       exclusion_filters_(std::move(exclusion_filters)),
       callback_(std::move(callback)),
