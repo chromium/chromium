@@ -37,6 +37,19 @@ mojo::PendingRemote<mojom::ChromotingHostServices> ConnectToServer(
     return {};
   }
 #if BUILDFLAG(IS_WIN)
+  DWORD peer_session_id;
+  if (!GetNamedPipeServerSessionId(endpoint.platform_handle().GetHandle().get(),
+                                   &peer_session_id)) {
+    PLOG(ERROR) << "GetNamedPipeServerSessionId failed";
+    return {};
+  }
+  // '0' (default) corresponds to the session the network process runs in.
+  if (peer_session_id != 0) {
+    LOG(ERROR)
+        << "Cannot establish connection with IPC server running in session: "
+        << peer_session_id;
+    return {};
+  }
   // TODO(crbug.com/1378803): Make Windows hosts work with non-isolated
   // connections.
   auto message_pipe = connection.Connect(std::move(endpoint));
