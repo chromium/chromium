@@ -570,7 +570,7 @@ void SavedTabGroupBar::MaybeShowOverflowMenu() {
   }
 
   auto bubble_delegate = std::make_unique<views::BubbleDialogDelegate>(
-      this, views::BubbleBorder::TOP_RIGHT);
+      overflow_button_, views::BubbleBorder::TOP_LEFT);
 
   bubble_delegate_ = bubble_delegate.get();
   bubble_delegate_->SetShowTitle(false);
@@ -578,9 +578,12 @@ void SavedTabGroupBar::MaybeShowOverflowMenu() {
   bubble_delegate_->SetButtons(ui::DIALOG_BUTTON_NONE);
   bubble_delegate_->set_margins(gfx::Insets());
   bubble_delegate_->set_fixed_width(200);
+  bubble_delegate_->set_adjust_if_offscreen(true);
+  bubble_delegate_->set_close_on_deactivate(true);
 
   overflow_menu_ =
       bubble_delegate_->SetContentsView(std::make_unique<OverflowMenu>(*this));
+
   const gfx::Insets insets = gfx::Insets::TLBR(16, 16, 16, 48);
   auto box = std::make_unique<views::BoxLayout>(
       views::BoxLayout::Orientation::kVertical, insets,
