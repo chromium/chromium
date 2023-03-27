@@ -114,7 +114,7 @@ TEST_F(PrefsMigratorTest, PrefsMigratorForAdaptiveToolbar) {
       result_in_new_prefs.value().client_result();
   EXPECT_EQ(expected_output_config.SerializeAsString(),
             client_result.output_config().SerializeAsString());
-  EXPECT_THAT(client_result.result(), testing::ElementsAre(1, 0, 0));
+  EXPECT_THAT(client_result.result(), testing::ElementsAre(1, 0, 0, 0, 0));
 
   new_result_prefs_->SaveClientResultToPrefs(kAdaptiveToolbarSegmentationKey,
                                              result_in_new_prefs);
@@ -135,7 +135,7 @@ TEST_F(PrefsMigratorTest, PrefsMigratorForAdaptiveToolbar) {
   client_result = result_in_new_prefs.value().client_result();
   EXPECT_EQ(expected_output_config.SerializeAsString(),
             client_result.output_config().SerializeAsString());
-  EXPECT_THAT(client_result.result(), testing::ElementsAre(0, 1, 0));
+  EXPECT_THAT(client_result.result(), testing::ElementsAre(0, 1, 0, 0, 0));
 }
 
 TEST_F(PrefsMigratorTest, PrefsMigratorForOtherConfig) {

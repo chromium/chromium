@@ -32,6 +32,12 @@ AdaptiveToolbarButtonVariant ActionLabelToAdaptiveToolbarButtonVariant(
     button_variant = AdaptiveToolbarButtonVariant::kShare;
   } else if (label == segmentation_platform::kAdaptiveToolbarModelLabelVoice) {
     button_variant = AdaptiveToolbarButtonVariant::kVoice;
+  } else if (label ==
+             segmentation_platform::kAdaptiveToolbarModelLabelTranslate) {
+    button_variant = AdaptiveToolbarButtonVariant::kTranslate;
+  } else if (label ==
+             segmentation_platform::kAdaptiveToolbarModelLabelAddToBookmarks) {
+    button_variant = AdaptiveToolbarButtonVariant::kAddToBookmarks;
   }
   return button_variant;
 }

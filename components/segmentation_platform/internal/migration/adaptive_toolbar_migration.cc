@@ -14,9 +14,10 @@ namespace segmentation_platform::pref_migration_utils {
 
 namespace {
 
-constexpr std::array<const char*, 3> kAdaptiveToolbarModelLabels = {
+constexpr std::array<const char*, 5> kAdaptiveToolbarModelLabels = {
     kAdaptiveToolbarModelLabelNewTab, kAdaptiveToolbarModelLabelShare,
-    kAdaptiveToolbarModelLabelVoice};
+    kAdaptiveToolbarModelLabelVoice, kAdaptiveToolbarModelLabelTranslate,
+    kAdaptiveToolbarModelLabelAddToBookmarks};
 
 proto::OutputConfig CreateOutputConfigForAdaptiveToolbar(Config* config) {
   DCHECK(config->segments.size() >= 1);
@@ -37,7 +38,7 @@ proto::OutputConfig CreateOutputConfigForAdaptiveToolbar(Config* config) {
 std::vector<float> PopulateModelScoresForAdaptiveToolbar(
     Config* config,
     const SelectedSegment& old_result) {
-  std::vector<float> model_scores = {0, 0, 0};
+  std::vector<float> model_scores = {0, 0, 0, 0, 0};
   proto::SegmentId segment_id = old_result.segment_id;
   switch (segment_id) {
     case SegmentId::OPTIMIZATION_TARGET_SEGMENTATION_NEW_TAB:

@@ -10,9 +10,10 @@
 
 namespace segmentation_platform::migration_test_utils {
 
-constexpr std::array<const char*, 3> kAdaptiveToolbarModelLabels = {
+constexpr std::array<const char*, 5> kAdaptiveToolbarModelLabels = {
     kAdaptiveToolbarModelLabelNewTab, kAdaptiveToolbarModelLabelShare,
-    kAdaptiveToolbarModelLabelVoice};
+    kAdaptiveToolbarModelLabelVoice, kAdaptiveToolbarModelLabelTranslate,
+    kAdaptiveToolbarModelLabelAddToBookmarks};
 
 std::unique_ptr<Config> GetTestConfigForBinaryClassifier(
     const std::string& segmentation_key,

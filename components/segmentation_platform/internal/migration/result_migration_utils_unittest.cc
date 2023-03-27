@@ -32,7 +32,7 @@ TEST_F(ResultMigrationUtilsTest, CreateClientResultForAdaptiveToolbar) {
   proto::PredictionResult pred_result = client_result.client_result();
   EXPECT_EQ(expected_output_config.SerializeAsString(),
             pred_result.output_config().SerializeAsString());
-  EXPECT_THAT(pred_result.result(), testing::ElementsAre(0, 0, 1));
+  EXPECT_THAT(pred_result.result(), testing::ElementsAre(0, 0, 1, 0, 0));
 }
 
 TEST_F(ResultMigrationUtilsTest, CreateClientResultForBinaryClassifier) {

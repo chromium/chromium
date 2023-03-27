@@ -128,6 +128,8 @@ proto::Predictor::PredictorTypeCase GetClassifierType(
 const char kAdaptiveToolbarModelLabelNewTab[] = "NewTab";
 const char kAdaptiveToolbarModelLabelShare[] = "Share";
 const char kAdaptiveToolbarModelLabelVoice[] = "Voice";
+const char kAdaptiveToolbarModelLabelTranslate[] = "Translate";
+const char kAdaptiveToolbarModelLabelAddToBookmarks[] = "AddToBookmarks";
 
 // Labels for contextual page actions model.
 const char kContextualPageActionModelLabelPriceTracking[] = "price_tracking";
