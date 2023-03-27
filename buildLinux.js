@@ -7,7 +7,7 @@ const chromium = process.cwd();
 
 const branch = process.env["BUILDKITE_BRANCH"];
 
-syncRepo(chromium, branch);
+syncRepo(chromium, `origin/${branch}`);
 
 const deps = getChromiumDeps();
 
