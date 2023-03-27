@@ -3,7 +3,7 @@
 # found in the LICENSE file.
 
 # [VPYTHON:BEGIN]
-# python_version: "3"
+# python_version: "3.8"
 # wheel: <
 #   name: "infra/python/wheels/pywin32/${vpython_platform}"
 #    version: "version:300"
