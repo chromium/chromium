@@ -108,8 +108,8 @@ TEST_F(FeaturedClientTest, HandleSeedFetched_Success) {
   EXPECT_EQ(FeaturedClient::Get(), nullptr);
 }
 
-// Check that HandleSeedFetched runs the callback with a false success value if
-// the server (platform) returns an error responses.
+// Check that `HandleSeedFetched` runs the callback with a false success value
+// if the server (platform) returns an error responses.
 TEST_F(FeaturedClientTest, HandleSeedFetched_Failure_ErrorResponse) {
   EXPECT_CALL(*proxy_,
               DoCallMethod(_, dbus::ObjectProxy::TIMEOUT_USE_DEFAULT, _))
@@ -144,8 +144,8 @@ TEST_F(FeaturedClientTest, HandleSeedFetched_Failure_ErrorResponse) {
   EXPECT_EQ(FeaturedClient::Get(), nullptr);
 }
 
-// Check that HandleSeedFetched runs the callback with a false success value if
-// the method call is unsuccessful (response is a nullptr).
+// Check that `HandleSeedFetched` runs the callback with a false success value
+// if the method call is unsuccessful (response is a nullptr).
 TEST_F(FeaturedClientTest, HandleSeedFetched_Failure_NullResponse) {
   EXPECT_CALL(*proxy_,
               DoCallMethod(_, dbus::ObjectProxy::TIMEOUT_USE_DEFAULT, _))
@@ -175,40 +175,15 @@ TEST_F(FeaturedClientTest, HandleSeedFetched_Failure_NullResponse) {
   EXPECT_EQ(FeaturedClient::Get(), nullptr);
 }
 
-// Check that Fake runs HandleSeedFetched callback with a true success value by
-// default.
-TEST_F(FeaturedClientTest, FakeHandleSeedFetched_Success) {
+// Check that Fake runs `HandleSeedFetched` callback with a false success value
+// by default (no expected responses added).
+TEST_F(FeaturedClientTest, FakeHandleSeedFetched_InvokeFalseByDefault) {
   FeaturedClient::InitializeFake();
   FakeFeaturedClient* client = FakeFeaturedClient::Get();
 
   ASSERT_NE(client, nullptr);
 
   ::featured::SeedDetails safe_seed;
-
-  bool ran_callback = false;
-  client->HandleSeedFetched(
-      safe_seed, base::BindLambdaForTesting([&ran_callback](bool success) {
-        EXPECT_TRUE(success);
-        ran_callback = true;
-      }));
-  // Ensures the callback was executed.
-  EXPECT_TRUE(ran_callback);
-
-  FeaturedClient::Shutdown();
-
-  EXPECT_EQ(FakeFeaturedClient::Get(), nullptr);
-}
-
-// Check that Fake runs HandleSeedFetched callback with a false success value
-// when set.
-TEST_F(FeaturedClientTest, FakeHandleSeedFetched_Failure) {
-  FeaturedClient::InitializeFake();
-  FakeFeaturedClient* client = FakeFeaturedClient::Get();
-
-  ASSERT_NE(client, nullptr);
-
-  ::featured::SeedDetails safe_seed;
-  client->SetCallbackSuccess(false);
 
   bool ran_callback = false;
   client->HandleSeedFetched(
@@ -218,6 +193,33 @@ TEST_F(FeaturedClientTest, FakeHandleSeedFetched_Failure) {
       }));
   // Ensures the callback was executed.
   EXPECT_TRUE(ran_callback);
+  EXPECT_EQ(client->handle_seed_fetched_attempts(), 1);
+
+  FeaturedClient::Shutdown();
+
+  EXPECT_EQ(FakeFeaturedClient::Get(), nullptr);
+}
+
+// Check that Fake runs `HandleSeedFetched` callback with value added by
+// `AddResponse`.
+TEST_F(FeaturedClientTest, FakeHandleSeedFetched_InvokeSuccessWhenSet) {
+  FeaturedClient::InitializeFake();
+  FakeFeaturedClient* client = FakeFeaturedClient::Get();
+
+  ASSERT_NE(client, nullptr);
+
+  ::featured::SeedDetails safe_seed;
+  client->AddResponse(true);
+
+  bool ran_callback = false;
+  client->HandleSeedFetched(
+      safe_seed, base::BindLambdaForTesting([&ran_callback](bool success) {
+        EXPECT_TRUE(success);
+        ran_callback = true;
+      }));
+  // Ensures the callback was executed.
+  EXPECT_TRUE(ran_callback);
+  EXPECT_EQ(client->handle_seed_fetched_attempts(), 1);
 
   FeaturedClient::Shutdown();
 

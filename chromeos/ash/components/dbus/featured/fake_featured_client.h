@@ -6,7 +6,9 @@
 #define CHROMEOS_ASH_COMPONENTS_DBUS_FEATURED_FAKE_FEATURED_CLIENT_H_
 
 #include "base/component_export.h"
+#include "base/containers/queue.h"
 #include "base/functional/callback.h"
+#include "base/logging.h"
 #include "chromeos/ash/components/dbus/featured/featured.pb.h"
 #include "chromeos/ash/components/dbus/featured/featured_client.h"
 
@@ -17,25 +19,35 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_DBUS_FEATURED) FakeFeaturedClient
     : public FeaturedClient {
  public:
   FakeFeaturedClient();
+
   FakeFeaturedClient(const FakeFeaturedClient&) = delete;
   FakeFeaturedClient& operator=(const FakeFeaturedClient&) = delete;
+
   ~FakeFeaturedClient() override;
 
   // Returns the global FakeFeaturedClient instance. Returns `nullptr` if
   // it is not initialized.
   static FakeFeaturedClient* Get();
 
-  // Sets the callback parameter for `HandleSeedFetched`.
-  void SetCallbackSuccess(bool success);
-
-  // |callback| is run with true by default. Call |SetCallbackSuccess|
-  // to change the callback parameter.
+  // |callback| is run with the first response in `responses_`. Call
+  // `AddResponse` to add a response. |callback| is invoked with false if not
+  // enough responses are provided.
   void HandleSeedFetched(
       const ::featured::SeedDetails& safe_seed,
       base::OnceCallback<void(bool success)> callback) override;
 
+  // Adds a response to call `HandleSeedFetched` with.
+  void AddResponse(bool success);
+
+  // Returns the number of times `HandleSeedFetched` was called. Used for
+  // testing.
+  int handle_seed_fetched_attempts() const {
+    return handle_seed_fetched_attempts_;
+  }
+
  private:
-  bool success_ = true;
+  base::queue<bool> responses_;
+  size_t handle_seed_fetched_attempts_ = 0;
 };
 
 }  // namespace ash::featured

@@ -8,8 +8,15 @@
 #include <memory>
 #include <string>
 
+#include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
+#include "build/chromeos_buildflags.h"
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "components/variations/cros/featured.pb.h"
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 class PrefRegistrySimple;
 class PrefService;
@@ -86,6 +93,8 @@ class SafeSeedManager {
   void RecordSuccessfulFetch(VariationsSeedStore* seed_store);
 
  private:
+  FRIEND_TEST_ALL_PREFIXES(SafeSeedManagerTest, GetSafeSeedStateForPlatform);
+
   // The combined server and client state needed to save an active seed as a
   // safe seed. Not set when running in safe mode.
   struct ActiveSeedState {
@@ -121,6 +130,28 @@ class SafeSeedManager {
   // The pref service used to persist the variations seed. Weak reference; must
   // outlive |this| instance.
   raw_ptr<PrefService> local_state_;
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  // Gets the combined server and client state used for early boot variations
+  // platform disaster recovery.
+  featured::SeedDetails GetSafeSeedStateForPlatform();
+
+  // Retries sending the safe seed to platform. Does not retry after two failed
+  // attempts.
+  void MaybeRetrySendSafeSeed(const featured::SeedDetails& safe_seed,
+                              bool success);
+
+  // Sends the safe seed to the platform.
+  void SendSafeSeedToPlatform(const featured::SeedDetails& safe_seed);
+
+  // A counter that keeps track of how many times the current safe seed is sent
+  // to platform.
+  size_t send_seed_to_platform_attempts_ = 0;
+
+  // Note: This should remain the last member so it'll be destroyed and
+  // invalidate its weak pointers before any other members are destroyed.
+  base::WeakPtrFactory<SafeSeedManager> weak_ptr_factory_{this};
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 };
 
 }  // namespace variations

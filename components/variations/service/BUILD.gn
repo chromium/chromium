@@ -4,6 +4,7 @@
 
 import("//build/buildflag_header.gni")
 import("//build/config/chrome_build.gni")
+import("//build/config/chromeos/ui_mode.gni")
 
 declare_args() {
   # Set to true make a build that disables activation of field trial tests
@@ -70,6 +71,13 @@ static_library("service") {
     "//services/network/public/cpp",
     "//ui/base",
   ]
+
+  if (is_chromeos_ash) {
+    deps += [
+      "//chromeos/ash/components/dbus/featured",
+      "//components/variations/cros:proto",
+    ]
+  }
 }
 
 source_set("unit_tests") {
@@ -105,4 +113,11 @@ source_set("unit_tests") {
     "//services/network/public/cpp",
     "//testing/gtest",
   ]
+
+  if (is_chromeos_ash) {
+    deps += [
+      "//chromeos/ash/components/dbus/featured",
+      "//components/variations/cros:proto",
+    ]
+  }
 }
