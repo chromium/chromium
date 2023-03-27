@@ -6,6 +6,7 @@
 #include "base/containers/contains.h"
 #include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/browser/form_structure.h"
+#include "components/autofill/core/common/autofill_util.h"
 
 namespace autofill {
 
@@ -58,16 +59,18 @@ bool FieldHasExpirationDateType(const AutofillField* field) {
   return base::Contains(kExpirationDateTypes, field->Type().GetStorableType());
 }
 
-bool FormHasAllCreditCardFields(const FormStructure& form_structure) {
+bool FormHasAllEmtyCreditCardFields(const FormStructure& form_structure) {
   bool has_card_number_field = base::ranges::any_of(
       form_structure, [](const std::unique_ptr<AutofillField>& autofill_field) {
         return autofill_field->Type().GetStorableType() ==
-               ServerFieldType::CREDIT_CARD_NUMBER;
+                   ServerFieldType::CREDIT_CARD_NUMBER &&
+               SanitizedFieldIsEmpty(autofill_field->value);
       });
 
   bool has_expiration_date_field = base::ranges::any_of(
       form_structure, [](const std::unique_ptr<AutofillField>& autofill_field) {
-        return FieldHasExpirationDateType(autofill_field.get());
+        return FieldHasExpirationDateType(autofill_field.get()) &&
+               SanitizedFieldIsEmpty(autofill_field->value);
       });
 
   return has_card_number_field && has_expiration_date_field;

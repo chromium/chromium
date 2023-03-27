@@ -69,7 +69,7 @@ TouchToFillDelegateImpl::DryRunResult TouchToFillDelegateImpl::DryRun(
 
   // Trigger only for complete forms (contining the fields for the card number
   // and the card expiration date).
-  if (!FormHasAllCreditCardFields(*form)) {
+  if (!FormHasAllEmtyCreditCardFields(*form)) {
     return {TriggerOutcome::kIncompleteForm, {}};
   }
   // Trigger only if not shown before.

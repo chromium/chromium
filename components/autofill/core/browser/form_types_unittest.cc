@@ -8,33 +8,57 @@
 #include "components/autofill/core/browser/autofill_test_utils.h"
 #include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/browser/form_structure_test_api.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace autofill {
 
-class FormTypesTest : public testing::Test {
+using autofill::ServerFieldType;
+using std::string;
+
+struct FormTypesTestCase {
+  std::vector<ServerFieldType> field_types;
+  std::vector<std::u16string> field_values;
+  bool expected_result;
+};
+
+autofill::FormFieldData CreateFieldWithValue(std::u16string value) {
+  FormFieldData field;
+  field.value = value;
+  return field;
+}
+
+class FormTypesTest : public testing::TestWithParam<FormTypesTestCase> {
  private:
   test::AutofillUnitTestEnvironment autofill_test_environment_;
 };
 
-TEST_F(FormTypesTest, FormHasAllCreditCardFieldsReturnsTrue) {
+TEST_P(FormTypesTest, FormHasFillableCreditCardFields) {
+  FormTypesTestCase test_case = GetParam();
+
   FormData form;
-  form.fields.resize(3);
+  for (const auto& value : test_case.field_values) {
+    form.fields.emplace_back(CreateFieldWithValue(value));
+  }
   FormStructure form_structure(form);
-  FormStructureTestApi(&form_structure)
-      .SetFieldTypes({CREDIT_CARD_NUMBER, CREDIT_CARD_EXP_MONTH,
-                      CREDIT_CARD_EXP_2_DIGIT_YEAR});
+  FormStructureTestApi(&form_structure).SetFieldTypes(test_case.field_types);
 
-  EXPECT_TRUE(FormHasAllCreditCardFields(form_structure));
+  EXPECT_THAT(FormHasAllEmtyCreditCardFields(form_structure),
+              testing::Eq(test_case.expected_result));
 }
 
-TEST_F(FormTypesTest, FormHasAllCreditCardFieldsReturnsFalse) {
-  FormData incomplete_form;
-  incomplete_form.fields.resize(1);
-  FormStructure form_structure(incomplete_form);
-  FormStructureTestApi(&form_structure).SetFieldTypes({CREDIT_CARD_NUMBER});
-
-  EXPECT_FALSE(FormHasAllCreditCardFields(form_structure));
-}
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    FormTypesTest,
+    testing::Values(
+        FormTypesTestCase{{CREDIT_CARD_NUMBER, CREDIT_CARD_EXP_MONTH,
+                           CREDIT_CARD_EXP_2_DIGIT_YEAR},
+                          {u"", u"", u""},
+                          true},
+        FormTypesTestCase{{CREDIT_CARD_NUMBER}, {u""}, false},
+        FormTypesTestCase{{CREDIT_CARD_NUMBER, CREDIT_CARD_EXP_MONTH,
+                           CREDIT_CARD_EXP_2_DIGIT_YEAR},
+                          {u"411111111111", u"", u""},
+                          false}));
 
 }  // namespace autofill
