@@ -8,7 +8,8 @@ XML_HIDDEN void
 xmlInitEncodingInternal(void);
 
 XML_HIDDEN int
-xmlCharEncFirstLineInput(xmlParserInputBufferPtr input, int len);
+xmlEncInputChunk(xmlCharEncodingHandler *handler, unsigned char *out,
+                 int *outlen, const unsigned char *in, int *inlen, int flush);
 XML_HIDDEN int
 xmlCharEncInput(xmlParserInputBufferPtr input, int flush);
 XML_HIDDEN int

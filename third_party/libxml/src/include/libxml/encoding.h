@@ -203,6 +203,7 @@ XMLPUBFUN int
 	xmlCharEncInFunc		(xmlCharEncodingHandler *handler,
 					 xmlBufferPtr out,
 					 xmlBufferPtr in);
+XML_DEPRECATED
 XMLPUBFUN int
 	xmlCharEncFirstLine		(xmlCharEncodingHandler *handler,
 					 xmlBufferPtr out,

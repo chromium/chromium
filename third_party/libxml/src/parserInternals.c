@@ -409,17 +409,16 @@ xmlParserInputGrow(xmlParserInputPtr in, int len) {
  * xmlParserShrink:
  * @ctxt:  an XML parser context
  */
-int
+void
 xmlParserShrink(xmlParserCtxtPtr ctxt) {
     xmlParserInputPtr in = ctxt->input;
     xmlParserInputBufferPtr buf = in->buf;
     size_t used;
-    int ret = 0;
 
     /* Don't shrink memory buffers. */
     if ((buf == NULL) ||
         ((buf->encoder == NULL) && (buf->readcallback == NULL)))
-        return(0);
+        return;
 
     used = in->cur - in->base;
     /*
@@ -439,18 +438,7 @@ xmlParserShrink(xmlParserCtxtPtr ctxt) {
 	}
     }
 
-    if (xmlBufUse(buf->buffer) < INPUT_CHUNK)
-        ret = xmlParserInputBufferGrow(buf, INPUT_CHUNK);
-
     xmlBufSetInputBaseCur(buf->buffer, in, 0, used);
-
-    /* TODO: Get error code from xmlParserInputBufferGrow */
-    if (ret < 0) {
-        xmlErrInternal(ctxt, "Growing input buffer", NULL);
-        xmlHaltParser(ctxt);
-    }
-
-    return(ret);
 }
 
 /**
@@ -539,7 +527,7 @@ xmlNextChar(xmlParserCtxtPtr ctxt)
 	return;
     }
 
-    if (ctxt->input->end - ctxt->input->cur < 4) {
+    if (ctxt->input->end - ctxt->input->cur < INPUT_CHUNK) {
         if (xmlParserGrow(ctxt) < 0)
             return;
         if (ctxt->input->cur >= ctxt->input->end)
@@ -686,7 +674,7 @@ xmlCurrentChar(xmlParserCtxtPtr ctxt, int *len) {
     if (ctxt->instate == XML_PARSER_EOF)
 	return(0);
 
-    if ((ctxt->input->end - ctxt->input->cur < 4) &&
+    if ((ctxt->input->end - ctxt->input->cur < INPUT_CHUNK) &&
         (xmlParserGrow(ctxt) < 0))
         return(0);
 
@@ -1002,9 +990,63 @@ xmlCopyChar(int len ATTRIBUTE_UNUSED, xmlChar *out, int val) {
  *									*
  ************************************************************************/
 
-static int
-xmlSwitchInputEncodingInt(xmlParserCtxtPtr ctxt, xmlParserInputPtr input,
-                          xmlCharEncodingHandlerPtr handler, int len);
+static xmlCharEncodingHandlerPtr
+xmlDetectEBCDIC(xmlParserInputPtr input) {
+    xmlChar out[200];
+    xmlCharEncodingHandlerPtr handler;
+    int inlen, outlen, res, i;
+
+    /*
+     * To detect the EBCDIC code page, we convert the first 200 bytes
+     * to EBCDIC-US and try to find the encoding declaration.
+     */
+    handler = xmlGetCharEncodingHandler(XML_CHAR_ENCODING_EBCDIC);
+    if (handler == NULL)
+        return(NULL);
+    outlen = sizeof(out) - 1;
+    inlen = input->end - input->cur;
+    res = xmlEncInputChunk(handler, out, &outlen, input->cur, &inlen, 0);
+    if (res < 0)
+        return(handler);
+    out[outlen] = 0;
+
+    for (i = 0; i < outlen; i++) {
+        if (out[i] == '>')
+            break;
+        if ((out[i] == 'e') &&
+            (xmlStrncmp(out + i, BAD_CAST "encoding", 8) == 0)) {
+            int start, cur, quote;
+
+            i += 8;
+            while (IS_BLANK_CH(out[i]))
+                i += 1;
+            if (out[i++] != '=')
+                break;
+            while (IS_BLANK_CH(out[i]))
+                i += 1;
+            quote = out[i++];
+            if ((quote != '\'') && (quote != '"'))
+                break;
+            start = i;
+            cur = out[i];
+            while (((cur >= 'a') && (cur <= 'z')) ||
+                   ((cur >= 'A') && (cur <= 'Z')) ||
+                   ((cur >= '0') && (cur <= '9')) ||
+                   (cur == '.') || (cur == '_') ||
+                   (cur == '-'))
+                cur = out[++i];
+            if (cur != quote)
+                break;
+            out[i] = 0;
+            xmlCharEncCloseFunc(handler);
+            handler = xmlFindCharEncodingHandler((char *) out + start);
+            break;
+        }
+    }
+
+    return(handler);
+}
+
 /**
  * xmlSwitchEncoding:
  * @ctxt:  the parser context
@@ -1019,7 +1061,6 @@ int
 xmlSwitchEncoding(xmlParserCtxtPtr ctxt, xmlCharEncoding enc)
 {
     xmlCharEncodingHandlerPtr handler;
-    int len = -1;
     int ret;
 
     if (ctxt == NULL) return(-1);
@@ -1048,51 +1089,13 @@ xmlSwitchEncoding(xmlParserCtxtPtr ctxt, xmlCharEncoding enc)
 		ctxt->input->cur += 3;
 	    }
 	    return(0);
-    case XML_CHAR_ENCODING_UTF16LE:
-    case XML_CHAR_ENCODING_UTF16BE:
-        /*The raw input characters are encoded
-         *in UTF-16. As we expect this function
-         *to be called after xmlCharEncInFunc, we expect
-         *ctxt->input->cur to contain UTF-8 encoded characters.
-         *So the raw UTF16 Byte Order Mark
-         *has also been converted into
-         *an UTF-8 BOM. Let's skip that BOM.
-         */
-        if ((ctxt->input != NULL) && (ctxt->input->cur != NULL) &&
-            (ctxt->input->cur[0] == 0xEF) &&
-            (ctxt->input->cur[1] == 0xBB) &&
-            (ctxt->input->cur[2] == 0xBF)) {
-            ctxt->input->cur += 3;
-        }
-        len = 90;
-	break;
-    case XML_CHAR_ENCODING_UCS2:
-        len = 90;
-	break;
-    case XML_CHAR_ENCODING_UCS4BE:
-    case XML_CHAR_ENCODING_UCS4LE:
-    case XML_CHAR_ENCODING_UCS4_2143:
-    case XML_CHAR_ENCODING_UCS4_3412:
-        len = 180;
-	break;
-    case XML_CHAR_ENCODING_EBCDIC:
-    case XML_CHAR_ENCODING_8859_1:
-    case XML_CHAR_ENCODING_8859_2:
-    case XML_CHAR_ENCODING_8859_3:
-    case XML_CHAR_ENCODING_8859_4:
-    case XML_CHAR_ENCODING_8859_5:
-    case XML_CHAR_ENCODING_8859_6:
-    case XML_CHAR_ENCODING_8859_7:
-    case XML_CHAR_ENCODING_8859_8:
-    case XML_CHAR_ENCODING_8859_9:
-    case XML_CHAR_ENCODING_ASCII:
-    case XML_CHAR_ENCODING_2022_JP:
-    case XML_CHAR_ENCODING_SHIFT_JIS:
-    case XML_CHAR_ENCODING_EUC_JP:
-        len = 45;
-	break;
+        case XML_CHAR_ENCODING_EBCDIC:
+            handler = xmlDetectEBCDIC(ctxt->input);
+            break;
+        default:
+            handler = xmlGetCharEncodingHandler(enc);
+            break;
     }
-    handler = xmlGetCharEncodingHandler(enc);
     if (handler == NULL) {
 	/*
 	 * Default handlers.
@@ -1124,7 +1127,7 @@ xmlSwitchEncoding(xmlParserCtxtPtr ctxt, xmlCharEncoding enc)
                 return(-1);
         }
     }
-    ret = xmlSwitchInputEncodingInt(ctxt, ctxt->input, handler, len);
+    ret = xmlSwitchInputEncoding(ctxt, ctxt->input, handler);
     if ((ret < 0) || (ctxt->errNo == XML_I18N_CONV_FAILED)) {
         /*
 	 * on encoding conversion errors, stop the parser
@@ -1136,20 +1139,19 @@ xmlSwitchEncoding(xmlParserCtxtPtr ctxt, xmlCharEncoding enc)
 }
 
 /**
- * xmlSwitchInputEncodingInt:
+ * xmlSwitchInputEncoding:
  * @ctxt:  the parser context
  * @input:  the input stream
  * @handler:  the encoding handler
- * @len:  the number of bytes to convert for the first line or -1
  *
  * change the input functions when discovering the character encoding
  * of a given entity.
  *
  * Returns 0 in case of success, -1 otherwise
  */
-static int
-xmlSwitchInputEncodingInt(xmlParserCtxtPtr ctxt, xmlParserInputPtr input,
-                          xmlCharEncodingHandlerPtr handler, int len)
+int
+xmlSwitchInputEncoding(xmlParserCtxtPtr ctxt, xmlParserInputPtr input,
+                       xmlCharEncodingHandlerPtr handler)
 {
     int nbchars;
     xmlParserInputBufferPtr in;
@@ -1171,30 +1173,17 @@ xmlSwitchInputEncodingInt(xmlParserCtxtPtr ctxt, xmlParserInputPtr input,
 	return (-1);
     }
 
-    ctxt->charset = XML_CHAR_ENCODING_UTF8;
-
     if (in->encoder != NULL) {
         /*
-         * Check in case the auto encoding detection triggered
-         * in already.
+         * TODO: Detect encoding mismatch. We should start by comparing
+         * in->encoder->name and handler->name, but there are a few
+         * compatible encodings like UTF-16 and UCS-2 or UTF-32 and UCS-4.
          */
-        if (in->encoder == handler)
-            return (0);
-
-        /*
-         * Note: this is a bit dangerous, but that's what it
-         * takes to use nearly compatible signature for different
-         * encodings.
-         *
-         * FIXME: Encoders might buffer partial byte sequences, so
-         * this probably can't work. We should return an error and
-         * make sure that callers never try to switch the encoding
-         * twice.
-         */
-        xmlCharEncCloseFunc(in->encoder);
-        in->encoder = handler;
+        xmlCharEncCloseFunc(handler);
         return (0);
     }
+
+    ctxt->charset = XML_CHAR_ENCODING_UTF8;
     in->encoder = handler;
 
     /*
@@ -1242,20 +1231,7 @@ xmlSwitchInputEncodingInt(xmlParserCtxtPtr ctxt, xmlParserInputPtr input,
         in->rawconsumed = processed;
         use = xmlBufUse(in->raw);
 
-        if (ctxt->html) {
-            /*
-             * convert as much as possible of the buffer
-             */
-            nbchars = xmlCharEncInput(in, 1);
-        } else {
-            /*
-             * convert just enough to get
-             * '<?xml version="1.0" encoding="xxx"?>'
-             * parsed with the autodetected encoding
-             * into the parser reading buffer.
-             */
-            nbchars = xmlCharEncFirstLineInput(in, len);
-        }
+        nbchars = xmlCharEncInput(in, 0);
         xmlBufResetInput(in->buffer, input);
         if (nbchars < 0) {
             xmlErrInternal(ctxt,
@@ -1274,25 +1250,6 @@ xmlSwitchInputEncodingInt(xmlParserCtxtPtr ctxt, xmlParserInputPtr input,
 }
 
 /**
- * xmlSwitchInputEncoding:
- * @ctxt:  the parser context
- * @input:  the input stream
- * @handler:  the encoding handler
- *
- * DEPRECATED: Use xmlSwitchToEncoding
- *
- * change the input functions when discovering the character encoding
- * of a given entity.
- *
- * Returns 0 in case of success, -1 otherwise
- */
-int
-xmlSwitchInputEncoding(xmlParserCtxtPtr ctxt, xmlParserInputPtr input,
-                          xmlCharEncodingHandlerPtr handler) {
-    return(xmlSwitchInputEncodingInt(ctxt, input, handler, -1));
-}
-
-/**
  * xmlSwitchToEncoding:
  * @ctxt:  the parser context
  * @handler:  the encoding handler
@@ -1307,7 +1264,7 @@ xmlSwitchToEncoding(xmlParserCtxtPtr ctxt, xmlCharEncodingHandlerPtr handler)
 {
     if (ctxt == NULL)
         return(-1);
-    return(xmlSwitchInputEncodingInt(ctxt, ctxt->input, handler, -1));
+    return(xmlSwitchInputEncoding(ctxt, ctxt->input, handler));
 }
 
 /************************************************************************

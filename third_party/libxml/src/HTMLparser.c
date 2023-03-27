@@ -411,7 +411,7 @@ htmlCurrentChar(xmlParserCtxtPtr ctxt, int *len) {
 	return(ctxt->token);
     }
 
-    if ((ctxt->input->end - ctxt->input->cur < 4) &&
+    if ((ctxt->input->end - ctxt->input->cur < INPUT_CHUNK) &&
         (xmlParserGrow(ctxt) < 0))
         return(0);
 
@@ -3010,9 +3010,9 @@ htmlParseSystemLiteral(htmlParserCtxtPtr ctxt) {
         htmlParseErr(ctxt, XML_ERR_LITERAL_NOT_FINISHED,
                      "Unfinished SystemLiteral\n", NULL, NULL);
     } else {
-        NEXT;
         if (err == 0)
             ret = xmlStrndup((BASE_PTR+startPosition), len);
+        NEXT;
     }
 
     return(ret);
@@ -3065,9 +3065,9 @@ htmlParsePubidLiteral(htmlParserCtxtPtr ctxt) {
         htmlParseErr(ctxt, XML_ERR_LITERAL_NOT_FINISHED,
                      "Unfinished PubidLiteral\n", NULL, NULL);
     } else {
-        NEXT;
         if (err == 0)
             ret = xmlStrndup((BASE_PTR + startPosition), len);
+        NEXT;
     }
 
     return(ret);
@@ -3100,7 +3100,6 @@ htmlParseScript(htmlParserCtxtPtr ctxt) {
     int nbchar = 0;
     int cur,l;
 
-    SHRINK;
     cur = CUR_CHAR(l);
     while (cur != 0) {
 	if ((cur == '<') && (NXT(1) == '/')) {
@@ -3358,7 +3357,6 @@ htmlParsePI(htmlParserCtxtPtr ctxt) {
 	 * this is a Processing Instruction.
 	 */
 	SKIP(2);
-	SHRINK;
 
 	/*
 	 * Parse the target name and check for special support like
@@ -3481,7 +3479,6 @@ htmlParseComment(htmlParserCtxtPtr ctxt) {
 
     state = ctxt->instate;
     ctxt->instate = XML_PARSER_COMMENT;
-    SHRINK;
     SKIP(4);
     buf = (xmlChar *) xmlMallocAtomic(size);
     if (buf == NULL) {
@@ -4477,8 +4474,8 @@ htmlParseContent(htmlParserCtxtPtr ctxt) {
             htmlParseCharData(ctxt);
         }
 
-        GROW;
         SHRINK;
+        GROW;
     }
     if (currentNode != NULL) xmlFree(currentNode);
 }
@@ -4920,8 +4917,8 @@ htmlParseContentInternal(htmlParserCtxtPtr ctxt) {
             htmlParseCharData(ctxt);
         }
 
-        GROW;
         SHRINK;
+        GROW;
     }
     if (currentNode != NULL) xmlFree(currentNode);
 }

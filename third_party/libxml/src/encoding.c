@@ -197,7 +197,7 @@ asciiToUTF8(unsigned char* out, int *outlen,
 	} else {
 	    *outlen = out - outstart;
 	    *inlen = processed - base;
-	    return(-1);
+	    return(-2);
 	}
 
 	processed = (const unsigned char*) in;
@@ -2037,7 +2037,7 @@ xmlUconvWrapper(uconv_t *cd, int toUnicode, unsigned char *out, int *outlen,
  *     as the return value is 0, else unpredictable.
  * The value of @outlen after return is the number of octets produced.
  */
-static int
+int
 xmlEncInputChunk(xmlCharEncodingHandler *handler, unsigned char *out,
                  int *outlen, const unsigned char *in, int *inlen, int flush) {
     int ret;
@@ -2123,189 +2123,12 @@ xmlEncOutputChunk(xmlCharEncodingHandler *handler, unsigned char *out,
  * @out:  an xmlBuffer for the output.
  * @in:  an xmlBuffer for the input
  *
- * Front-end for the encoding handler input function, but handle only
- * the very first line, i.e. limit itself to 45 chars.
- *
- * Returns the number of byte written if success, or
- *     -1 general error
- *     -2 if the transcoding fails (for *in is not valid utf8 string or
- *        the result of transformation can't fit into the encoding we want), or
+ * DEPERECATED: Don't use.
  */
 int
 xmlCharEncFirstLine(xmlCharEncodingHandler *handler, xmlBufferPtr out,
                     xmlBufferPtr in) {
-    int ret;
-    int written;
-    int toconv;
-
-    if (handler == NULL) return(-1);
-    if (out == NULL) return(-1);
-    if (in == NULL) return(-1);
-
-    /* calculate space available */
-    written = out->size - out->use - 1; /* count '\0' */
-    toconv = in->use;
-    /*
-     * echo '<?xml version="1.0" encoding="UCS4"?>' | wc -c => 38
-     * 45 chars should be sufficient to reach the end of the encoding
-     * declaration without going too far inside the document content.
-     * on UTF-16 this means 90bytes, on UCS4 this means 180
-     * The actual value depending on guessed encoding is passed as @len
-     * if provided
-     */
-    if (toconv > 180)
-        toconv = 180;
-    if (toconv * 2 >= written) {
-        xmlBufferGrow(out, toconv * 2);
-	written = out->size - out->use - 1;
-    }
-
-    ret = xmlEncInputChunk(handler, &out->content[out->use], &written,
-                           in->content, &toconv, 0);
-    xmlBufferShrink(in, toconv);
-    out->use += written;
-    out->content[out->use] = 0;
-    if (ret == -1) ret = -3;
-
-#ifdef DEBUG_ENCODING
-    switch (ret) {
-        case 0:
-	    xmlGenericError(xmlGenericErrorContext,
-		    "converted %d bytes to %d bytes of input\n",
-	            toconv, written);
-	    break;
-        case -1:
-	    xmlGenericError(xmlGenericErrorContext,"converted %d bytes to %d bytes of input, %d left\n",
-	            toconv, written, in->use);
-	    break;
-        case -2:
-	    xmlGenericError(xmlGenericErrorContext,
-		    "input conversion failed due to input error\n");
-	    break;
-        case -3:
-	    xmlGenericError(xmlGenericErrorContext,"converted %d bytes to %d bytes of input, %d left\n",
-	            toconv, written, in->use);
-	    break;
-	default:
-	    xmlGenericError(xmlGenericErrorContext,"Unknown input conversion failed %d\n", ret);
-    }
-#endif /* DEBUG_ENCODING */
-    /*
-     * Ignore when input buffer is not on a boundary
-     */
-    if (ret == -3) ret = 0;
-    if (ret == -1) ret = 0;
-    return(written ? written : ret);
-}
-
-/**
- * xmlCharEncFirstLineInput:
- * @input: a parser input buffer
- * @len:  number of bytes to convert for the first line, or -1
- *
- * Front-end for the encoding handler input function, but handle only
- * the very first line. Point is that this is based on autodetection
- * of the encoding and once that first line is converted we may find
- * out that a different decoder is needed to process the input.
- *
- * Returns the number of byte written if success, or
- *     -1 general error
- *     -2 if the transcoding fails (for *in is not valid utf8 string or
- *        the result of transformation can't fit into the encoding we want), or
- */
-int
-xmlCharEncFirstLineInput(xmlParserInputBufferPtr input, int len)
-{
-    int ret;
-    size_t written;
-    size_t toconv;
-    int c_in;
-    int c_out;
-    xmlBufPtr in;
-    xmlBufPtr out;
-
-    if ((input == NULL) || (input->encoder == NULL) ||
-        (input->buffer == NULL) || (input->raw == NULL))
-        return (-1);
-    out = input->buffer;
-    in = input->raw;
-
-    toconv = xmlBufUse(in);
-    if (toconv == 0)
-        return (0);
-    written = xmlBufAvail(out);
-    /*
-     * echo '<?xml version="1.0" encoding="UCS4"?>' | wc -c => 38
-     * 45 chars should be sufficient to reach the end of the encoding
-     * declaration without going too far inside the document content.
-     * on UTF-16 this means 90bytes, on UCS4 this means 180
-     * The actual value depending on guessed encoding is passed as @len
-     * if provided
-     */
-    if (len >= 0) {
-        if (toconv > (unsigned int) len)
-            toconv = len;
-    } else {
-        if (toconv > 180)
-            toconv = 180;
-    }
-    if (toconv * 2 >= written) {
-        xmlBufGrow(out, toconv * 2);
-        written = xmlBufAvail(out);
-    }
-    if (written > 360)
-        written = 360;
-
-    c_in = toconv;
-    c_out = written;
-    ret = xmlEncInputChunk(input->encoder, xmlBufEnd(out), &c_out,
-                           xmlBufContent(in), &c_in, 0);
-    xmlBufShrink(in, c_in);
-    xmlBufAddLen(out, c_out);
-    if (ret == -1)
-        ret = -3;
-
-    switch (ret) {
-        case 0:
-#ifdef DEBUG_ENCODING
-            xmlGenericError(xmlGenericErrorContext,
-                            "converted %d bytes to %d bytes of input\n",
-                            c_in, c_out);
-#endif
-            break;
-        case -1:
-#ifdef DEBUG_ENCODING
-            xmlGenericError(xmlGenericErrorContext,
-                         "converted %d bytes to %d bytes of input, %d left\n",
-                            c_in, c_out, (int)xmlBufUse(in));
-#endif
-            break;
-        case -3:
-#ifdef DEBUG_ENCODING
-            xmlGenericError(xmlGenericErrorContext,
-                        "converted %d bytes to %d bytes of input, %d left\n",
-                            c_in, c_out, (int)xmlBufUse(in));
-#endif
-            break;
-        case -2: {
-            char buf[50];
-            const xmlChar *content = xmlBufContent(in);
-
-	    snprintf(&buf[0], 49, "0x%02X 0x%02X 0x%02X 0x%02X",
-		     content[0], content[1],
-		     content[2], content[3]);
-	    buf[49] = 0;
-	    xmlEncodingErr(XML_I18N_CONV_FAILED,
-		    "input conversion failed due to input error, bytes %s\n",
-		           buf);
-        }
-    }
-    /*
-     * Ignore when input buffer is not on a boundary
-     */
-    if (ret == -3) ret = 0;
-    if (ret == -1) ret = 0;
-    return(c_out ? c_out : ret);
+    return(xmlCharEncInFunc(handler, out, in));
 }
 
 /**

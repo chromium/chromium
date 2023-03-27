@@ -27,7 +27,7 @@ XML_HIDDEN void
 xmlHaltParser(xmlParserCtxtPtr ctxt);
 XML_HIDDEN int
 xmlParserGrow(xmlParserCtxtPtr ctxt);
-XML_HIDDEN int
+XML_HIDDEN void
 xmlParserShrink(xmlParserCtxtPtr ctxt);
 
 #endif /* XML_PARSER_H_PRIVATE__ */
