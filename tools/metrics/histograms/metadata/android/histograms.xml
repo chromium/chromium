@@ -3287,7 +3287,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Android.Survey.DownloadAttemptsBeforeAccepted" units="units"
-    expires_after="2023-04-30">
+    expires_after="2023-08-27">
   <owner>skym@chromium.org</owner>
   <owner>wenyufu@chromium.org</owner>
   <owner>clank-app-team@google.com</owner>
@@ -3332,37 +3332,8 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Android.Survey.InfoBarClosingState"
-    enum="InfoBarClosingStates" expires_after="2023-04-23">
-  <obsolete>
-    Deprecated in December 2022 as part of survey message post-launch cleanup
-    since the messages system records dismissal reasons using
-    Android.Messages.Dismissed.ChromeSurvey.
-  </obsolete>
-  <owner>twellington@chromium.org</owner>
-  <owner>wenyufu@chromium.org</owner>
-  <owner>clank-app-team@google.com</owner>
-  <summary>
-    If the infobar was visible when it was closed and if it was closed directly
-    or not.
-  </summary>
-</histogram>
-
-<histogram name="Android.Survey.ShowSurvey" enum="BooleanSuccess"
-    expires_after="2022-08-07">
-  <obsolete>
-    Deprecated in March 2022. Data available in Android.Survey.ShowSurveyStatus.
-  </obsolete>
-  <owner>twellington@chromium.org</owner>
-  <owner>wenyufu@chromium.org</owner>
-  <owner>clank-app-team@google.com</owner>
-  <summary>
-    Whether or not the survey was successfully shown after its download.
-  </summary>
-</histogram>
-
 <histogram name="Android.Survey.ShowSurveyStatus"
-    enum="SurveyPresentationStatusCode" expires_after="2023-08-08">
+    enum="SurveyPresentationStatusCode" expires_after="2023-08-27">
   <owner>aishwaryarj@google.com</owner>
   <owner>twellington@chromium.org</owner>
   <owner>wenyufu@chromium.org</owner>
@@ -3377,7 +3348,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Android.Survey.SurveyCompleted" enum="BooleanCompleted"
-    expires_after="2022-06-01">
+    expires_after="2023-08-27">
   <owner>skym@chromium.org</owner>
   <owner>wenyufu@chromium.org</owner>
   <owner>clank-app-team@google.com</owner>
