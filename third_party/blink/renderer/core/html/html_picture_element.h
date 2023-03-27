@@ -9,13 +9,25 @@
 
 namespace blink {
 
+// Description of a change to a <source> element.
+enum class ImageSourceChangeType {
+  // A <source> element was added.
+  kAdded,
+  // A <source> element was removed.
+  kRemoved,
+  // An attribute of a <source> element changed.
+  kAttribute,
+  // The 'media' condition of a <source> element changed.
+  kMedia,
+};
+
 class HTMLPictureElement final : public HTMLElement {
   DEFINE_WRAPPERTYPEINFO();
 
  public:
   explicit HTMLPictureElement(Document&);
 
-  void SourceOrMediaChanged();
+  void SourceChanged(ImageSourceChangeType);
   void SourceDimensionChanged();
   void RemoveListenerFromSourceChildren();
   void AddListenerToSourceChildren();

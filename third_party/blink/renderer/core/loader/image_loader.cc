@@ -366,6 +366,12 @@ static void ConfigureRequest(
 }
 
 inline void ImageLoader::DispatchErrorEvent() {
+  // The error event should not fire if the image data update is a result of
+  // environment change.
+  // https://html.spec.whatwg.org/C/#the-img-element:the-img-element-55
+  if (suppress_error_events_) {
+    return;
+  }
   // There can be cases where DispatchErrorEvent() is called when there is
   // already a scheduled error event for the previous load attempt.
   // In such cases we cancel the previous event (by overwriting
@@ -804,11 +810,7 @@ void ImageLoader::ImageNotifyFinished(ImageResourceContent* content) {
     if (error && error->IsAccessCheck())
       CrossSiteOrCSPViolationOccurred(AtomicString(error->FailingURL()));
 
-    // The error event should not fire if the image data update is a result of
-    // environment change.
-    // https://html.spec.whatwg.org/C/#the-img-element:the-img-element-55
-    if (!suppress_error_events_)
-      DispatchErrorEvent();
+    DispatchErrorEvent();
     return;
   }
 

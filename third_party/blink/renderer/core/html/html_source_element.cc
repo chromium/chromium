@@ -95,9 +95,9 @@ Node::InsertionNotificationRequest HTMLSourceElement::InsertedInto(
   auto* html_picture_element = parent == insertion_point
                                    ? DynamicTo<HTMLPictureElement>(parent)
                                    : nullptr;
-  if (html_picture_element)
-    html_picture_element->SourceOrMediaChanged();
-
+  if (html_picture_element) {
+    html_picture_element->SourceChanged(ImageSourceChangeType::kAdded);
+  }
   return kInsertionDone;
 }
 
@@ -111,7 +111,7 @@ void HTMLSourceElement::RemovedFrom(ContainerNode& removal_root) {
   if (auto* picture = DynamicTo<HTMLPictureElement>(parent)) {
     RemoveMediaQueryListListener();
     if (was_removed_from_parent)
-      picture->SourceOrMediaChanged();
+      picture->SourceChanged(ImageSourceChangeType::kRemoved);
   }
   HTMLElement::RemovedFrom(removal_root);
 }
@@ -184,14 +184,16 @@ void HTMLSourceElement::ParseAttribute(
     CreateMediaQueryList(params.new_value);
   if (name == html_names::kSrcsetAttr || name == html_names::kSizesAttr ||
       name == html_names::kMediaAttr || name == html_names::kTypeAttr) {
-    if (auto* picture = DynamicTo<HTMLPictureElement>(parentElement()))
-      picture->SourceOrMediaChanged();
+    if (auto* picture = DynamicTo<HTMLPictureElement>(parentElement())) {
+      picture->SourceChanged(ImageSourceChangeType::kAttribute);
+    }
   }
 }
 
 void HTMLSourceElement::NotifyMediaQueryChanged() {
-  if (auto* picture = DynamicTo<HTMLPictureElement>(parentElement()))
-    picture->SourceOrMediaChanged();
+  if (auto* picture = DynamicTo<HTMLPictureElement>(parentElement())) {
+    picture->SourceChanged(ImageSourceChangeType::kMedia);
+  }
 }
 
 void HTMLSourceElement::Trace(Visitor* visitor) const {
