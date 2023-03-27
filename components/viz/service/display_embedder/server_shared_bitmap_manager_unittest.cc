@@ -35,8 +35,8 @@ class ServerSharedBitmapManagerTest : public testing::Test {
 
 TEST_F(ServerSharedBitmapManagerTest, TestCreate) {
   gfx::Size bitmap_size(1, 1);
-  base::MappedReadOnlyRegion shm =
-      bitmap_allocation::AllocateSharedBitmap(bitmap_size, RGBA_8888);
+  base::MappedReadOnlyRegion shm = bitmap_allocation::AllocateSharedBitmap(
+      bitmap_size, SinglePlaneFormat::kRGBA_8888);
   EXPECT_TRUE(shm.IsValid());
   base::span<uint8_t> span = shm.mapping.GetMemoryAsSpan<uint8_t>();
   std::fill(span.begin(), span.end(), 0xff);
@@ -121,8 +121,8 @@ TEST_F(ServerSharedBitmapManagerTest, TestLocalCreate) {
 
 TEST_F(ServerSharedBitmapManagerTest, AddDuplicate) {
   gfx::Size bitmap_size(1, 1);
-  base::MappedReadOnlyRegion shm =
-      bitmap_allocation::AllocateSharedBitmap(bitmap_size, RGBA_8888);
+  base::MappedReadOnlyRegion shm = bitmap_allocation::AllocateSharedBitmap(
+      bitmap_size, SinglePlaneFormat::kRGBA_8888);
   EXPECT_TRUE(shm.IsValid());
   base::span<uint8_t> span = shm.mapping.GetMemoryAsSpan<uint8_t>();
   std::fill(span.begin(), span.end(), 0xff);
@@ -131,8 +131,8 @@ TEST_F(ServerSharedBitmapManagerTest, AddDuplicate) {
   // NOTE: Duplicate the mapping to compare its content later.
   manager()->ChildAllocatedSharedBitmap(shm.region.Map(), id);
 
-  base::MappedReadOnlyRegion shm2 =
-      bitmap_allocation::AllocateSharedBitmap(bitmap_size, RGBA_8888);
+  base::MappedReadOnlyRegion shm2 = bitmap_allocation::AllocateSharedBitmap(
+      bitmap_size, SinglePlaneFormat::kRGBA_8888);
   EXPECT_TRUE(shm2.IsValid());
   base::span<uint8_t> span2 = shm.mapping.GetMemoryAsSpan<uint8_t>();
   std::fill(span2.begin(), span2.end(), 0x00);
@@ -148,8 +148,8 @@ TEST_F(ServerSharedBitmapManagerTest, AddDuplicate) {
 
 TEST_F(ServerSharedBitmapManagerTest, SharedMemoryHandle) {
   gfx::Size bitmap_size(1, 1);
-  base::MappedReadOnlyRegion shm =
-      bitmap_allocation::AllocateSharedBitmap(bitmap_size, RGBA_8888);
+  base::MappedReadOnlyRegion shm = bitmap_allocation::AllocateSharedBitmap(
+      bitmap_size, SinglePlaneFormat::kRGBA_8888);
   EXPECT_TRUE(shm.IsValid());
   base::span<uint8_t> span = shm.mapping.GetMemoryAsSpan<uint8_t>();
   std::fill(span.begin(), span.end(), 0xff);

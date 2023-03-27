@@ -58,8 +58,8 @@ static SharedBitmapId CreateAndFillSharedBitmap(SharedBitmapManager* manager,
                                                 uint32_t value) {
   SharedBitmapId shared_bitmap_id = SharedBitmap::GenerateId();
 
-  base::MappedReadOnlyRegion shm =
-      bitmap_allocation::AllocateSharedBitmap(size, RGBA_8888);
+  base::MappedReadOnlyRegion shm = bitmap_allocation::AllocateSharedBitmap(
+      size, SinglePlaneFormat::kRGBA_8888);
   manager->ChildAllocatedSharedBitmap(shm.region.Map(), shared_bitmap_id);
   base::span<uint32_t> span =
       shm.mapping.GetMemoryAsSpan<uint32_t>(size.GetArea());

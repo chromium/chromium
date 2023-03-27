@@ -24,12 +24,6 @@ VIZ_COMMON_EXPORT base::MappedReadOnlyRegion AllocateSharedBitmap(
     const gfx::Size& size,
     SharedImageFormat format);
 
-// Deprecated version of the above that takes in ResourceFormat.
-// TODO(crbug.com/1378708): Convert all clients and eliminate this function.
-VIZ_COMMON_EXPORT base::MappedReadOnlyRegion AllocateSharedBitmap(
-    const gfx::Size& size,
-    ResourceFormat format);
-
 }  // namespace bitmap_allocation
 
 }  // namespace viz

@@ -44,11 +44,6 @@ void CollectMemoryUsageAndDie(const gfx::Size& size,
 namespace bitmap_allocation {
 
 base::MappedReadOnlyRegion AllocateSharedBitmap(const gfx::Size& size,
-                                                ResourceFormat format) {
-  return AllocateSharedBitmap(size, SharedImageFormat::SinglePlane(format));
-}
-
-base::MappedReadOnlyRegion AllocateSharedBitmap(const gfx::Size& size,
                                                 SharedImageFormat format) {
   DCHECK(format.IsBitmapFormatSupported())
       << "(format = " << format.ToString() << ")";

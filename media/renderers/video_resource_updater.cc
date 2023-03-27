@@ -447,7 +447,7 @@ class VideoResourceUpdater::SoftwarePlaneResource
     // Allocate SharedMemory and notify display compositor of the allocation.
     base::MappedReadOnlyRegion shm =
         viz::bitmap_allocation::AllocateSharedBitmap(
-            resource_size(), viz::ResourceFormat::RGBA_8888);
+            resource_size(), viz::SinglePlaneFormat::kRGBA_8888);
     shared_mapping_ = std::move(shm.mapping);
     shared_bitmap_reporter_->DidAllocateSharedBitmap(std::move(shm.region),
                                                      shared_bitmap_id_);

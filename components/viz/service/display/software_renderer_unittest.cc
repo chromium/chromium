@@ -81,8 +81,8 @@ class SoftwareRendererTest : public testing::Test {
 
   ResourceId AllocateAndFillSoftwareResource(const gfx::Size& size,
                                              const SkBitmap& source) {
-    base::MappedReadOnlyRegion shm =
-        bitmap_allocation::AllocateSharedBitmap(size, RGBA_8888);
+    base::MappedReadOnlyRegion shm = bitmap_allocation::AllocateSharedBitmap(
+        size, SinglePlaneFormat::kRGBA_8888);
     SkImageInfo info = SkImageInfo::MakeN32Premul(size.width(), size.height());
     source.readPixels(info, shm.mapping.memory(), info.minRowBytes(), 0, 0);
 
