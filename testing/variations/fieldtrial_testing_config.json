@@ -8987,26 +8987,6 @@
             ]
         }
     ],
-    "PageInfoAboutThisSiteMoreInfoDesktop": [
-        {
-            "platforms": [
-                "chromeos",
-                "chromeos_lacros",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled_230303",
-                    "enable_features": [
-                        "PageInfoAboutThisSiteMoreInfo",
-                        "PageInfoAboutThisSiteNonEn"
-                    ]
-                }
-            ]
-        }
-    ],
     "PageInfoAboutThisSiteNewIcon": [
         {
             "platforms": [
