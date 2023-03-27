@@ -259,6 +259,10 @@ class CONTENT_EXPORT FencedFrameReporter
     return reporting_metadata_;
   }
 
+  // Helper to notify `AttributionDataHostManager` if the report failed to be
+  // sent.
+  void NotifyFencedFrameReportingBeaconFailed(BeaconId beacon_id);
+
   scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;
 
   // Bound to the lifetime of the browser context. Could be null in Incognito

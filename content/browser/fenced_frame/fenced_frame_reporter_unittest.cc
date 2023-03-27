@@ -6,6 +6,7 @@
 
 #include <functional>
 #include <map>
+#include <memory>
 #include <string>
 #include <type_traits>
 #include <utility>
@@ -13,6 +14,8 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/strings/string_piece.h"
 #include "content/browser/attribution_reporting/attribution_manager.h"
+#include "content/browser/attribution_reporting/test/mock_attribution_data_host_manager.h"
+#include "content/browser/attribution_reporting/test/mock_attribution_manager.h"
 #include "content/browser/interest_group/test_interest_group_private_aggregation_manager.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/browser/storage_partition_impl.h"
@@ -36,6 +39,8 @@
 
 namespace content {
 namespace {
+
+using ::testing::_;
 
 using PrivateAggregationRequests =
     FencedFrameReporter::PrivateAggregationRequests;
@@ -426,6 +431,23 @@ TEST_F(FencedFrameReporterTest, SendReportsFledgeBeforeMapsReceived) {
 // URL, missing event types). No error messages are generated in this case
 // because there's nowhere to pass them
 TEST_F(FencedFrameReporterTest, SendFledgeReportsBeforeMapsReceivedWithErrors) {
+  auto attribution_data_host_manager =
+      std::make_unique<MockAttributionDataHostManager>();
+  auto* mock_attribution_data_host_manager =
+      attribution_data_host_manager.get();
+
+  auto mock_manager = std::make_unique<MockAttributionManager>();
+  mock_manager->SetDataHostManager(std::move(attribution_data_host_manager));
+  static_cast<StoragePartitionImpl*>(
+      browser_context()->GetDefaultStoragePartition())
+      ->OverrideAttributionManagerForTesting(std::move(mock_manager));
+
+  // `AttributionDataHostManager` is notified for the errors.
+  EXPECT_CALL(*mock_attribution_data_host_manager,
+              NotifyFencedFrameReportingBeaconData(_, _, /*headers=*/nullptr,
+                                                   /*is_final_response=*/true))
+      .Times(3);
+
   scoped_refptr<FencedFrameReporter> reporter =
       FencedFrameReporter::CreateForFledge(
           shared_url_loader_factory(), attribution_manager(),
@@ -466,6 +488,41 @@ TEST_F(FencedFrameReporterTest, SendFledgeReportsBeforeMapsReceivedWithErrors) {
   reporter->OnUrlMappingReady(blink::FencedFrame::ReportingDestination::kBuyer,
                               /*reporting_url_map=*/{});
   EXPECT_EQ(test_url_loader_factory_.NumPending(), 0);
+}
+
+// Test reports in the FLEDGE case, where reporting URL map is never received.
+TEST_F(FencedFrameReporterTest, SendFledgeReportsNoMapReceived) {
+  auto attribution_data_host_manager =
+      std::make_unique<MockAttributionDataHostManager>();
+  auto* mock_attribution_data_host_manager =
+      attribution_data_host_manager.get();
+
+  auto mock_manager = std::make_unique<MockAttributionManager>();
+  mock_manager->SetDataHostManager(std::move(attribution_data_host_manager));
+  static_cast<StoragePartitionImpl*>(
+      browser_context()->GetDefaultStoragePartition())
+      ->OverrideAttributionManagerForTesting(std::move(mock_manager));
+
+  // `AttributionDataHostManager` is notified for the pending events.
+  EXPECT_CALL(*mock_attribution_data_host_manager,
+              NotifyFencedFrameReportingBeaconData(_, _, /*headers=*/nullptr,
+                                                   /*is_final_response=*/true));
+  {
+    scoped_refptr<FencedFrameReporter> reporter =
+        FencedFrameReporter::CreateForFledge(
+            shared_url_loader_factory(), attribution_manager(),
+            /*direct_seller_is_seller=*/false, &private_aggregation_manager_,
+            main_frame_origin_,
+            /*winner_origin=*/report_destination_origin_);
+
+    // SendReport() is called, but a mapping is never received.
+    std::string error_message;
+    EXPECT_TRUE(
+        reporter->SendReport("event_type2", "event_data",
+                             blink::FencedFrame::ReportingDestination::kSeller,
+                             main_rfh_impl(), error_message));
+    EXPECT_EQ(test_url_loader_factory_.NumPending(), 0);
+  }
 }
 
 // Test sending non-reserved private aggregation requests, when events from

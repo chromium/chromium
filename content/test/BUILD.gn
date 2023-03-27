@@ -58,6 +58,8 @@ static_library("test_support") {
     "../browser/attribution_reporting/attribution_test_utils.h",
     "../browser/attribution_reporting/test/configurable_storage_delegate.cc",
     "../browser/attribution_reporting/test/configurable_storage_delegate.h",
+    "../browser/attribution_reporting/test/mock_attribution_data_host_manager.cc",
+    "../browser/attribution_reporting/test/mock_attribution_data_host_manager.h",
     "../browser/attribution_reporting/test/mock_attribution_host.cc",
     "../browser/attribution_reporting/test/mock_attribution_host.h",
     "../browser/attribution_reporting/test/mock_attribution_manager.cc",

@@ -18,6 +18,7 @@
 #include "content/browser/attribution_reporting/attribution_input_event.h"
 #include "content/browser/attribution_reporting/attribution_manager.h"
 #include "content/browser/attribution_reporting/attribution_test_utils.h"
+#include "content/browser/attribution_reporting/test/mock_attribution_data_host_manager.h"
 #include "content/browser/attribution_reporting/test/mock_attribution_manager.h"
 #include "content/browser/storage_partition_impl.h"
 #include "content/browser/web_contents/web_contents_impl.h"
@@ -69,78 +70,6 @@ using ::blink::mojom::AttributionNavigationType;
 
 const char kConversionUrl[] = "https://b.com";
 
-class MockDataHostManager : public AttributionDataHostManager {
- public:
-  MockDataHostManager() = default;
-  ~MockDataHostManager() override = default;
-
-  MOCK_METHOD(
-      void,
-      RegisterDataHost,
-      (mojo::PendingReceiver<blink::mojom::AttributionDataHost> data_host,
-       SuitableOrigin context_origin,
-       bool is_within_fenced_frame,
-       RegistrationType,
-       GlobalRenderFrameHostId),
-      (override));
-
-  MOCK_METHOD(
-      bool,
-      RegisterNavigationDataHost,
-      (mojo::PendingReceiver<blink::mojom::AttributionDataHost> data_host,
-       const blink::AttributionSrcToken& attribution_src_token,
-       AttributionInputEvent input_event),
-      (override));
-
-  MOCK_METHOD(void,
-              NotifyNavigationRedirectRegistration,
-              (const blink::AttributionSrcToken& attribution_src_token,
-               const net::HttpResponseHeaders* headers,
-               SuitableOrigin reporting_origin,
-               const SuitableOrigin& source_origin,
-               AttributionInputEvent input_event,
-               AttributionNavigationType,
-               bool is_within_fenced_frame,
-               GlobalRenderFrameHostId),
-              (override));
-
-  MOCK_METHOD(void,
-              NotifyNavigationForDataHost,
-              (const blink::AttributionSrcToken& attribution_src_token,
-               const SuitableOrigin& source_origin,
-               AttributionNavigationType,
-               bool is_within_fenced_frame,
-               GlobalRenderFrameHostId),
-              (override));
-
-  MOCK_METHOD(void,
-              NotifyNavigationFailure,
-              (const blink::AttributionSrcToken& attribution_src_token),
-              (override));
-
-  MOCK_METHOD(void,
-              NotifyFencedFrameReportingBeaconStarted,
-              (BeaconId beacon_id,
-               SuitableOrigin source_origin,
-               bool is_within_fenced_frame,
-               AttributionInputEvent input_event,
-               GlobalRenderFrameHostId),
-              (override));
-
-  MOCK_METHOD(void,
-              NotifyFencedFrameReportingBeaconSent,
-              (BeaconId beacon_id),
-              (override));
-
-  MOCK_METHOD(void,
-              NotifyFencedFrameReportingBeaconData,
-              (BeaconId beacon_id,
-               url::Origin reporting_origin,
-               const net::HttpResponseHeaders* headers,
-               bool is_final_response),
-              (override));
-};
-
 class AttributionHostTest : public RenderViewHostTestHarness {
  public:
   AttributionHostTest() = default;
@@ -151,7 +80,7 @@ class AttributionHostTest : public RenderViewHostTestHarness {
 
     RenderViewHostTestHarness::SetUp();
 
-    auto data_host_manager = std::make_unique<MockDataHostManager>();
+    auto data_host_manager = std::make_unique<MockAttributionDataHostManager>();
     mock_data_host_manager_ = data_host_manager.get();
 
     auto mock_manager = std::make_unique<MockAttributionManager>();
@@ -189,7 +118,7 @@ class AttributionHostTest : public RenderViewHostTestHarness {
     OverrideAttributionManager(nullptr);
   }
 
-  MockDataHostManager* mock_data_host_manager() {
+  MockAttributionDataHostManager* mock_data_host_manager() {
     return mock_data_host_manager_;
   }
 
@@ -200,7 +129,7 @@ class AttributionHostTest : public RenderViewHostTestHarness {
         ->OverrideAttributionManagerForTesting(std::move(manager));
   }
 
-  raw_ptr<MockDataHostManager> mock_data_host_manager_;
+  raw_ptr<MockAttributionDataHostManager> mock_data_host_manager_;
 
   base::test::ScopedFeatureList feature_list_;
 };

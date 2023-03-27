@@ -101,14 +101,13 @@ class AttributionDataHostManager
       AttributionInputEvent input_event,
       GlobalRenderFrameHostId render_frame_id) = 0;
 
-  // Notifies the manager that a beacon has been sent.
-  virtual void NotifyFencedFrameReportingBeaconSent(BeaconId beacon_id) = 0;
-
   // Notifies the manager whenever a response has been received to a beacon HTTP
   // request. Must be invoked for each redirect received, as well as the final
   // response. `reporting_origin` is the origin that sent `headers` that may
   // contain attribution source registration. `is_final_response` indicates
   // whether this is a redirect or a final response.
+  // An opaque origin will be set for `reporting_origin` if the beacon failed to
+  // be sent.
   virtual void NotifyFencedFrameReportingBeaconData(
       BeaconId beacon_id,
       url::Origin reporting_origin,

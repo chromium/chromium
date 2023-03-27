@@ -227,7 +227,13 @@ FencedFrameReporter::FencedFrameReporter(
   DCHECK_EQ(main_frame_origin_.has_value(), winner_origin_.has_value());
 }
 
-FencedFrameReporter::~FencedFrameReporter() = default;
+FencedFrameReporter::~FencedFrameReporter() {
+  for (const auto& [destination, destination_info] : reporting_metadata_) {
+    for (const auto& pending_event : destination_info.pending_events) {
+      NotifyFencedFrameReportingBeaconFailed(pending_event.beacon_id);
+    }
+  }
+}
 
 void FencedFrameReporter::OnUrlMappingReady(
     blink::FencedFrame::ReportingDestination reporting_destination,
@@ -237,7 +243,7 @@ void FencedFrameReporter::OnUrlMappingReady(
   DCHECK(!it->second.reporting_url_map);
 
   it->second.reporting_url_map = std::move(reporting_url_map);
-  auto pending_events = std::move(it->second.pending_events);
+  auto pending_events = std::exchange(it->second.pending_events, {});
   for (const auto& pending_event : pending_events) {
     std::string ignored_error_message;
     SendReportInternal(it->second, pending_event.type, pending_event.data,
@@ -337,6 +343,7 @@ bool FencedFrameReporter::SendReportInternal(
         {"This frame did not register reporting url for destination '",
          ReportingDestinationAsString(reporting_destination),
          "' and event_type '", event_type, "'."});
+    NotifyFencedFrameReportingBeaconFailed(beacon_id);
     return false;
   }
 
@@ -347,6 +354,7 @@ bool FencedFrameReporter::SendReportInternal(
         {"This frame registered invalid reporting url for destination '",
          ReportingDestinationAsString(reporting_destination),
          "' and event_type '", event_type, "'."});
+    NotifyFencedFrameReportingBeaconFailed(beacon_id);
     return false;
   }
 
@@ -426,9 +434,6 @@ bool FencedFrameReporter::SendReportInternal(
             },
             attribution_data_host_manager->AsWeakPtr(), beacon_id,
             std::move(simple_url_loader)));
-
-    attribution_data_host_manager->NotifyFencedFrameReportingBeaconSent(
-        beacon_id);
   } else {
     // Send out the reporting beacon.
     simple_url_loader_ptr->DownloadHeadersOnly(
@@ -552,6 +557,21 @@ FencedFrameReporter::GetPrivateAggregationEventMapForTesting() {
     }
   }
   return out;
+}
+
+void FencedFrameReporter::NotifyFencedFrameReportingBeaconFailed(
+    BeaconId beacon_id) {
+  AttributionDataHostManager* attribution_data_host_manager =
+      attribution_manager_ ? attribution_manager_->GetDataHostManager()
+                           : nullptr;
+  if (!attribution_data_host_manager) {
+    return;
+  }
+
+  attribution_data_host_manager->NotifyFencedFrameReportingBeaconData(
+      beacon_id,
+      /*reporting_origin=*/url::Origin(), /*headers=*/nullptr,
+      /*is_final_response=*/true);
 }
 
 }  // namespace content
