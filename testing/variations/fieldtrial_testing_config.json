@@ -4788,6 +4788,24 @@
             ]
         }
     ],
+    "EndOfLifeIncentive": [
+        {
+            "platforms": [
+                "chromeos"
+            ],
+            "experiments": [
+                {
+                    "name": "EnabledOffer_20230324",
+                    "params": {
+                        "incentive_type": "offer"
+                    },
+                    "enable_features": [
+                        "EolIncentive"
+                    ]
+                }
+            ]
+        }
+    ],
     "EnterpriseReportingConnectorExtensionEvents": [
         {
             "platforms": [
