@@ -7,6 +7,7 @@
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_testing.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_clamp_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_conv_2d_options.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_ml_leaky_relu_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_pool_2d_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_transpose_options.h"
 #include "third_party/blink/renderer/modules/ml/webnn/ml_graph_builder.h"
@@ -263,6 +264,61 @@ TEST_P(MLGraphTest, ReluTest) {
                                 .values = {-10.0, -0.5, 0.5, 10.0}},
                       .expected = {0.0, 0.0, 0.5, 10.0}}
         .Test(*this, scope);
+  }
+}
+
+template <typename T>
+struct LeakyReluTester {
+  OperandInfo<T> input;
+  Vector<T> expected;
+
+  void Test(MLGraphTest& helper,
+            V8TestingScope& scope,
+            MLLeakyReluOptions* options = MLLeakyReluOptions::Create()) {
+    // Build the graph.
+    auto* builder = CreateMLGraphBuilder(scope.GetExecutionContext());
+    auto* input_operand = BuildInput(builder, "input", input.dimensions,
+                                     input.type, scope.GetExceptionState());
+    auto* output_operand =
+        BuildLeakyRelu(scope, builder, input_operand, options);
+    auto [graph, build_exception] =
+        helper.BuildGraph(scope, builder, {{"output", output_operand}});
+    EXPECT_NE(graph, nullptr);
+
+    // Compute the graph.
+    MLNamedArrayBufferViews inputs(
+        {{"input",
+          CreateArrayBufferViewForOperand(input_operand, input.values)}});
+    MLNamedArrayBufferViews outputs(
+        {{"output", CreateArrayBufferViewForOperand(output_operand)}});
+    auto* compute_exception =
+        helper.ComputeGraph(scope, graph, inputs, outputs);
+    EXPECT_EQ(compute_exception, nullptr);
+    auto results = GetArrayBufferViewValues<T>(outputs[0].second);
+    EXPECT_EQ(results, expected);
+  }
+};
+
+TEST_P(MLGraphTest, LeakyReluTest) {
+  V8TestingScope scope;
+  {
+    // Test leakyRelu operator with default options.
+    auto* options = MLLeakyReluOptions::Create();
+    LeakyReluTester<float>{.input = {.type = V8MLOperandType::Enum::kFloat32,
+                                     .dimensions = {1, 2, 2, 1},
+                                     .values = {10, 5, -100, 0}},
+                           .expected = {10, 5, -1, 0}}
+        .Test(*this, scope, options);
+  }
+  {
+    // Test leakyRelu operator with alpha = 0.2.
+    auto* options = MLLeakyReluOptions::Create();
+    options->setAlpha(0.2);
+    LeakyReluTester<float>{.input = {.type = V8MLOperandType::Enum::kFloat32,
+                                     .dimensions = {1, 2, 2, 1},
+                                     .values = {10, 5, -100, 0}},
+                           .expected = {10, 5, -20, 0}}
+        .Test(*this, scope, options);
   }
 }
 

@@ -19,6 +19,7 @@
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_compute_result.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_conv_2d_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_gemm_options.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_ml_leaky_relu_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_pool_2d_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_resample_2d_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_transpose_options.h"
@@ -732,6 +733,25 @@ xnn_status DefineXnnNodeForHardSwish(
   return xnn_status_success;
 }
 
+xnn_status DefineXnnNodeForLeakyRelu(
+    xnn_subgraph_t subgraph,
+    const MLOperator* leaky_relu,
+    const OperandValueIdMap& operand_value_id_map,
+    String& error_message) {
+  const uint32_t input_id =
+      GetOperatorInputValueId(leaky_relu, operand_value_id_map);
+  const uint32_t output_id =
+      GetOperatorOutputValueId(leaky_relu, operand_value_id_map);
+  const MLLeakyReluOptions* options =
+      static_cast<const MLLeakyReluOptions*>(leaky_relu->Options());
+  CHECK(options);
+  const float negative_slope = options->alpha();
+  const uint32_t flags = 0;
+  XNN_CHECK_STATUS_AND_SET_ERROR_MESSAGE(xnn_define_leaky_relu(
+      subgraph, negative_slope, input_id, output_id, flags));
+  return xnn_status_success;
+}
+
 xnn_status DefineXnnNodeForPool2d(xnn_subgraph_t subgraph,
                                   const MLOperator* pool2d,
                                   const OperandValueIdMap& operand_value_id_map,
@@ -1095,6 +1115,10 @@ xnn_status DefineXnnNode(xnn_subgraph_t subgraph,
           subgraph, ml_operator, operand_value_id_map, error_message));
       break;
     }
+    case MLOperator::OperatorKind::kLeakyRelu:
+      XNN_CHECK_STATUS(DefineXnnNodeForLeakyRelu(
+          subgraph, ml_operator, operand_value_id_map, error_message));
+      break;
     case MLOperator::OperatorKind::kRelu:
       XNN_CHECK_STATUS(DefineXnnNodeForRelu(
           subgraph, ml_operator, operand_value_id_map, error_message));
