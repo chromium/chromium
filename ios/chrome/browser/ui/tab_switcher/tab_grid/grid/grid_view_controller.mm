@@ -407,8 +407,9 @@ NSIndexPath* CreateIndexPath(NSInteger index) {
                                 animated:NO
                           scrollPosition:UICollectionViewScrollPositionNone];
     [self updateFractionVisibleOfLastItem];
+
+    self.searchText = nil;
   }
-  self.searchText = nil;
 }
 
 - (void)setSearchText:(NSString*)searchText {
