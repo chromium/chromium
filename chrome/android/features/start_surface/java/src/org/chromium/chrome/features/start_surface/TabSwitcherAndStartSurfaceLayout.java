@@ -897,11 +897,6 @@ public class TabSwitcherAndStartSurfaceLayout extends Layout {
         return super.canHostBeFocusable();
     }
 
-    @Override
-    public boolean isRunningAnimations() {
-        return mDeferredAnimationRunnable != null || mTabToSwitcherAnimation != null;
-    }
-
     /**
      * Shrink/Expand animation is disabled for Tablet TabSwitcher launch polish.
      * @return Whether shrink/expand animation is enabled.
