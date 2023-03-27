@@ -60,6 +60,8 @@ class MetricsProvider : public ::metrics::MetricsProvider,
   void OnTuningModesChanged();
   EfficiencyMode ComputeCurrentMode() const;
 
+  void RecordAvailableMemoryMetrics();
+
   PrefChangeRegistrar pref_change_registrar_;
   const raw_ptr<PrefService> local_state_;
   EfficiencyMode current_mode_ = EfficiencyMode::kNormal;
@@ -67,6 +69,8 @@ class MetricsProvider : public ::metrics::MetricsProvider,
   bool battery_saver_enabled_ = false;
 
   bool initialized_ = false;
+
+  base::RepeatingTimer available_memory_metrics_timer_;
 };
 
 }  // namespace performance_manager
