@@ -24,6 +24,7 @@ class FeatureTilesContainerView;
 class PageIndicatorView;
 class QuickSettingsFooter;
 class QuickSettingsHeader;
+class QuickSettingsMediaViewContainer;
 class UnifiedMediaControlsContainer;
 class UnifiedSystemTrayController;
 
@@ -51,8 +52,23 @@ class ASH_EXPORT QuickSettingsView : public views::View,
   // Adds slider view.
   void AddSliderView(views::View* slider_view);
 
-  // Adds media controls view to `media_controls_container_`;
+  // Adds media controls view to `media_controls_container_`. Only called if
+  // media::kGlobalMediaControlsForChromeOS is enabled and
+  // media::kGlobalMediaControlsCrOSUpdatedUI is disabled.
   void AddMediaControlsView(views::View* media_controls);
+
+  // Shows media controls view. Only called if
+  // media::kGlobalMediaControlsForChromeOS is enabled and
+  // media::kGlobalMediaControlsCrOSUpdatedUI is disabled.
+  void ShowMediaControls();
+
+  // Adds media view to `media_view_container_`. Only called if
+  // media::kGlobalMediaControlsCrOSUpdatedUI is enabled.
+  void AddMediaView(std::unique_ptr<views::View> media_view);
+
+  // Sets whether the quick settings view should show the media view. Only
+  // called if media::kGlobalMediaControlsCrOSUpdatedUI is enabled.
+  void SetShowMediaView(bool show_media_view);
 
   // Hides the main view and shows the given `detailed_view`.
   void SetDetailedView(std::unique_ptr<views::View> detailed_view);
@@ -80,9 +96,6 @@ class ASH_EXPORT QuickSettingsView : public views::View,
   // Returns true if a detailed view is being shown in the tray. (e.g Bluetooth
   // Settings).
   bool IsDetailedViewShown() const;
-
-  // Shows media controls view.
-  void ShowMediaControls();
 
   // PaginationModelObserver:
   void TotalPagesChanged(int previous_page_count, int new_page_count) override;
@@ -123,6 +136,9 @@ class ASH_EXPORT QuickSettingsView : public views::View,
 
   // Null if media::kGlobalMediaControlsForChromeOS is disabled.
   UnifiedMediaControlsContainer* media_controls_container_ = nullptr;
+
+  // Null if media::kGlobalMediaControlsCrOSUpdatedUI is disabled.
+  QuickSettingsMediaViewContainer* media_view_container_ = nullptr;
 
   // The maximum height available to the view.
   int max_height_ = 0;

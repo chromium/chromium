@@ -33,7 +33,7 @@
 #include "ash/system/locale/locale_feature_pod_controller.h"
 #include "ash/system/locale/unified_locale_detailed_view_controller.h"
 #include "ash/system/media/media_tray.h"
-#include "ash/system/media/unified_media_controls_controller.h"
+#include "ash/system/media/quick_settings_media_view_controller.h"
 #include "ash/system/media/unified_media_controls_detailed_view_controller.h"
 #include "ash/system/model/clock_model.h"
 #include "ash/system/model/system_tray_model.h"
@@ -199,9 +199,16 @@ UnifiedSystemTrayController::CreateQuickSettingsView(int max_height) {
   if (base::FeatureList::IsEnabled(media::kGlobalMediaControlsForChromeOS) &&
       !Shell::Get()->session_controller()->IsScreenLocked() &&
       !MediaTray::IsPinnedToShelf()) {
-    media_controls_controller_ =
-        std::make_unique<UnifiedMediaControlsController>(this);
-    qs_view->AddMediaControlsView(media_controls_controller_->CreateView());
+    if (base::FeatureList::IsEnabled(
+            media::kGlobalMediaControlsCrOSUpdatedUI)) {
+      media_view_controller_ =
+          std::make_unique<QuickSettingsMediaViewController>(this);
+      qs_view->AddMediaView(media_view_controller_->CreateView());
+    } else {
+      media_controls_controller_ =
+          std::make_unique<UnifiedMediaControlsController>(this);
+      qs_view->AddMediaControlsView(media_controls_controller_->CreateView());
+    }
   }
 
   volume_slider_controller_ =
@@ -627,6 +634,10 @@ void UnifiedSystemTrayController::ShowMediaControls() {
 
 void UnifiedSystemTrayController::OnMediaControlsViewClicked() {
   ShowMediaControlsDetailedView();
+}
+
+void UnifiedSystemTrayController::SetShowMediaView(bool show_media_view) {
+  quick_settings_view_->SetShowMediaView(show_media_view);
 }
 
 void UnifiedSystemTrayController::LoadIsExpandedPref() {

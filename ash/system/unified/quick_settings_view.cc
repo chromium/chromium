@@ -6,6 +6,7 @@
 
 #include <numeric>
 
+#include "ash/system/media/quick_settings_media_view_container.h"
 #include "ash/system/media/unified_media_controls_container.h"
 #include "ash/system/tray/interacted_by_tap_recorder.h"
 #include "ash/system/tray/tray_constants.h"
@@ -150,7 +151,11 @@ QuickSettingsView::QuickSettingsView(UnifiedSystemTrayController* controller)
                                ->total_pages() > 1));
   page_indicator_view_->SetProperty(views::kMarginsKey, kPageIndicatorMargin);
 
-  if (base::FeatureList::IsEnabled(media::kGlobalMediaControlsForChromeOS)) {
+  if (base::FeatureList::IsEnabled(media::kGlobalMediaControlsCrOSUpdatedUI)) {
+    media_view_container_ = system_tray_container_->AddChildView(
+        std::make_unique<QuickSettingsMediaViewContainer>());
+  } else if (base::FeatureList::IsEnabled(
+                 media::kGlobalMediaControlsForChromeOS)) {
     media_controls_container_ = system_tray_container_->AddChildView(
         std::make_unique<UnifiedMediaControlsContainer>());
     media_controls_container_->SetExpandedAmount(1.0f);
@@ -215,6 +220,18 @@ void QuickSettingsView::ShowMediaControls() {
       CalculateHeightForFeatureTilesContainer());
 }
 
+void QuickSettingsView::AddMediaView(std::unique_ptr<views::View> media_view) {
+  DCHECK(media_view);
+  DCHECK(media_view_container_);
+  media_view_container_->AddChildView(std::move(media_view));
+}
+
+void QuickSettingsView::SetShowMediaView(bool show_media_view) {
+  DCHECK(media_view_container_);
+  media_view_container_->SetShowMediaView(show_media_view);
+  PreferredSizeChanged();
+}
+
 void QuickSettingsView::SetDetailedView(
     std::unique_ptr<views::View> detailed_view) {
   detailed_view_container_->RemoveAllChildViews();
@@ -234,6 +251,9 @@ void QuickSettingsView::ResetDetailedView() {
   detailed_view_container_->SetVisible(false);
   if (media_controls_container_) {
     media_controls_container_->MaybeShowMediaControls();
+  }
+  if (media_view_container_) {
+    media_view_container_->MaybeShowMediaView();
   }
   system_tray_container_->SetVisible(true);
 }
@@ -265,11 +285,15 @@ int QuickSettingsView::CalculateHeightForFeatureTilesContainer() {
       media_controls_container_ ? media_controls_container_->GetExpandedHeight()
                                 : 0;
 
+  int media_view_container_height =
+      media_view_container_ ? media_view_container_->GetExpandedHeight() : 0;
+
   return max_height_ - header_->GetPreferredSize().height() -
          footer_->GetPreferredSize().height() -
          page_indicator_view_->GetPreferredSize().height() -
          sliders_container_->GetPreferredSize().height() -
-         media_controls_container_height - footer_->GetPreferredSize().height();
+         media_controls_container_height - media_view_container_height -
+         footer_->GetPreferredSize().height();
 }
 
 std::u16string QuickSettingsView::GetDetailedViewAccessibleName() const {
