@@ -1429,6 +1429,28 @@ TEST_F(TabletWindowFloatTest, TuckedWindowVisibility) {
   EXPECT_TRUE(window->IsVisible());
 }
 
+// Tests that the floated window is visible when it is untucked.
+TEST_F(TabletWindowFloatTest, UntuckedWindowVisibility) {
+  Shell::Get()->tablet_mode_controller()->SetEnabledForTest(true);
+  std::unique_ptr<aura::Window> window = CreateFloatedWindow();
+
+  // Long duration for tuck animation, to allow it to be interrupted.
+  ui::ScopedAnimationDurationScaleMode test_duration(
+      ui::ScopedAnimationDurationScaleMode::SLOW_DURATION);
+
+  // Fling to tuck the window. Press the untuck handle before the window
+  // finishes the tuck animation. Test that the window is visible.
+  FlingWindow(window.get(), /*left=*/false, /*up=*/false);
+  auto* float_controller = Shell::Get()->float_controller();
+  views::Widget* tuck_handle_widget =
+      float_controller->GetTuckHandleWidget(window.get());
+  ASSERT_TRUE(tuck_handle_widget);
+  GetEventGenerator()->GestureTapAt(
+      tuck_handle_widget->GetWindowBoundsInScreen().CenterPoint());
+  ASSERT_TRUE(window->IsVisible());
+  EXPECT_FALSE(float_controller->IsFloatedWindowTuckedForTablet(window.get()));
+}
+
 // Tests that the expected window gets activation after tucking a floated
 // window, and that on untucking the floated window, it gains activation.
 TEST_F(TabletWindowFloatTest, WindowActivationAfterTuckingUntucking) {

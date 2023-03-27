@@ -247,8 +247,6 @@ void ScopedWindowTucker::AnimateTuck() {
       left_ ? -kTuckOffscreenPaddingDp : kTuckOffscreenPaddingDp, 0);
 
   views::AnimationBuilder()
-      .OnAborted(base::BindOnce(&ScopedWindowTucker::OnAnimateTuckEnded,
-                                weak_factory_.GetWeakPtr()))
       .OnEnded(base::BindOnce(&ScopedWindowTucker::OnAnimateTuckEnded,
                               weak_factory_.GetWeakPtr()))
       .SetPreemptionStrategy(
