@@ -34,7 +34,8 @@ class ScopedNaturalServiceBindingTest : public testing::Test {
 // client.
 TEST_F(ScopedNaturalServiceBindingTest, ConnectTwice) {
   ScopedNaturalServiceBinding<base_testfidl::TestInterface> binding(
-      ComponentContextForProcess()->outgoing().get(), &test_service_);
+      ComponentContextForProcess()->outgoing().get(), &test_service_,
+      async_get_default_dispatcher());
 
   auto stub =
       CreateTestInterfaceClient(test_context_.published_services_natural());
@@ -51,7 +52,7 @@ TEST_F(ScopedNaturalServiceBindingTest, ConnectTwiceNameOverride) {
 
   ScopedNaturalServiceBinding<base_testfidl::TestInterface> new_service_binding(
       ComponentContextForProcess()->outgoing().get(), &test_service_,
-      kInterfaceName);
+      async_get_default_dispatcher(), kInterfaceName);
 
   auto stub = CreateTestInterfaceClient(
       test_context_.published_services_natural(), kInterfaceName);
@@ -68,7 +69,8 @@ TEST_F(ScopedNaturalServiceBindingTest, ConnectDebugService) {
 
   // Publish the test service to the "debug" directory.
   ScopedNaturalServiceBinding<base_testfidl::TestInterface>
-      debug_service_binding(debug_dir, &test_service_);
+      debug_service_binding(debug_dir, &test_service_,
+                            async_get_default_dispatcher());
 
   // Connect a `ClientEnd` to the "debug" subdirectory.
   auto debug_directory_endpoints =
@@ -95,7 +97,8 @@ TEST_F(ScopedNaturalServiceBindingTest, ConnectDebugService) {
 // clients reaches 0.
 TEST_F(ScopedNaturalServiceBindingTest, MultipleLastClientCallback) {
   ScopedNaturalServiceBinding<base_testfidl::TestInterface> binding(
-      ComponentContextForProcess()->outgoing().get(), &test_service_);
+      ComponentContextForProcess()->outgoing().get(), &test_service_,
+      async_get_default_dispatcher());
   int disconnect_count = 0;
   binding.SetOnLastClientCallback(
       BindLambdaForTesting([&disconnect_count]() { ++disconnect_count; }));
@@ -129,7 +132,8 @@ TEST_F(ScopedNaturalServiceBindingTest, MultipleLastClientCallback) {
 // clients reaches 0.
 TEST_F(ScopedNaturalServiceBindingTest, LastClientCallbackOnlyForLastClient) {
   ScopedNaturalServiceBinding<base_testfidl::TestInterface> binding(
-      ComponentContextForProcess()->outgoing().get(), &test_service_);
+      ComponentContextForProcess()->outgoing().get(), &test_service_,
+      async_get_default_dispatcher());
   int disconnect_count = 0;
   binding.SetOnLastClientCallback(
       BindLambdaForTesting([&disconnect_count]() { ++disconnect_count; }));

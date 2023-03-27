@@ -6,6 +6,7 @@
 
 #include <fidl/base.testfidl/cpp/fidl.h>
 #include <fidl/fuchsia.logger/cpp/fidl.h>
+#include <lib/async/default.h>
 #include <lib/sys/cpp/component_context.h>
 
 #include "base/fuchsia/fuchsia_component_connect.h"
@@ -98,7 +99,8 @@ TEST_F(FidlEventHandlerTest, FidlErrorEventLogger_LogsOnServiceClosure) {
 
   {
     ScopedNaturalServiceBinding<base_testfidl::TestInterface> binding(
-        ComponentContextForProcess()->outgoing().get(), &test_service_);
+        ComponentContextForProcess()->outgoing().get(), &test_service_,
+        async_get_default_dispatcher());
 
     ASSERT_EQ(ZX_OK, VerifyTestInterface(client));
   };
@@ -153,7 +155,8 @@ TEST(FidlEventHandlerDeathTest,
     {
       TestInterfaceNaturalImpl test_service;
       ScopedNaturalServiceBinding<base_testfidl::TestInterface> binding(
-          ComponentContextForProcess()->outgoing().get(), &test_service);
+          ComponentContextForProcess()->outgoing().get(), &test_service,
+          async_get_default_dispatcher());
 
       ASSERT_EQ(ZX_OK, VerifyTestInterface(client));
     }
@@ -197,7 +200,8 @@ TEST_F(FidlEventHandlerTest, FidlErrorEventHandler_FiresOnServiceClosure) {
 
   {
     ScopedNaturalServiceBinding<base_testfidl::TestInterface> binding(
-        ComponentContextForProcess()->outgoing().get(), &test_service_);
+        ComponentContextForProcess()->outgoing().get(), &test_service_,
+        async_get_default_dispatcher());
 
     ASSERT_EQ(ZX_OK, VerifyTestInterface(client));
   };
