@@ -25,13 +25,14 @@ namespace password_manager {
 
 namespace {
 
-PasswordForm CreateForm(std::string sinon_realm,
+PasswordForm CreateForm(std::string signon_realm,
                         std::u16string username = u"username",
                         std::u16string password = u"password") {
   PasswordForm form;
-  form.signon_realm = sinon_realm;
+  form.signon_realm = signon_realm;
   form.username_value = username;
   form.password_value = password;
+  form.url = GURL(signon_realm);
   return form;
 }
 
@@ -383,6 +384,36 @@ TEST_F(PasswordsGrouperTest, EncodedCharactersInSignonRealm) {
   EXPECT_THAT(grouper().GetAffiliatedGroupsWithGroupingInfo(),
               UnorderedElementsAre(AffiliatedGroup(
                   {credential1, credential2}, {GetShownOrigin(credential1)})));
+}
+
+TEST_F(PasswordsGrouperTest, OrderIsCaseInsensitive) {
+  PasswordForm form1 = CreateForm("https://test1.com");
+  PasswordForm form2 = CreateForm("https://test2.com");
+  PasswordForm form3 = CreateForm("https://test3.com");
+
+  GroupedFacets group1 = GetSingleGroupForForm(form1);
+  group1.branding_info.name = "beta";
+  group1.branding_info.icon_url = GURL("https://test.com/favicon.ico");
+
+  GroupedFacets group2 = GetSingleGroupForForm(form2);
+  group2.branding_info.name = "Gamma";
+  group2.branding_info.icon_url = GURL("https://test.com/favicon.ico");
+
+  GroupedFacets group3 = GetSingleGroupForForm(form3);
+  group3.branding_info.name = "Alpha";
+  group3.branding_info.icon_url = GURL("https://test.com/favicon.ico");
+
+  EXPECT_CALL(affiliation_service(), GetGroupingInfo)
+      .WillRepeatedly(base::test::RunOnceCallback<1>(
+          std::vector<GroupedFacets>{group1, group2, group3}));
+  grouper().GroupPasswords({form1, form2, form3}, base::DoNothing());
+
+  CredentialUIEntry credential1(form1), credential2(form2), credential3(form3);
+  EXPECT_THAT(
+      grouper().GetAffiliatedGroupsWithGroupingInfo(),
+      ElementsAre(AffiliatedGroup({credential3}, group3.branding_info),
+                  AffiliatedGroup({credential1}, group1.branding_info),
+                  AffiliatedGroup({credential2}, group2.branding_info)));
 }
 
 }  // namespace password_manager

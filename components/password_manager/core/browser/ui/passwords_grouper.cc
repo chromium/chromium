@@ -239,7 +239,8 @@ PasswordsGrouper::GetAffiliatedGroupsWithGroupingInfo() const {
   // Sort affiliated groups.
   std::sort(affiliated_groups.begin(), affiliated_groups.end(),
             [](const AffiliatedGroup& lhs, const AffiliatedGroup& rhs) {
-              return lhs.GetDisplayName() < rhs.GetDisplayName();
+              return base::ToLowerASCII(lhs.GetDisplayName()) <
+                     base::ToLowerASCII(rhs.GetDisplayName());
             });
   return affiliated_groups;
 }
