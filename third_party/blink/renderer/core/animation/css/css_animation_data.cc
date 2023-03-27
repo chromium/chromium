@@ -40,6 +40,8 @@ bool CSSAnimationData::AnimationsMatchForStyleRecalc(
          iteration_count_list_ == other.iteration_count_list_ &&
          direction_list_ == other.direction_list_ &&
          fill_mode_list_ == other.fill_mode_list_ &&
+         range_start_list_ == other.range_start_list_ &&
+         range_end_list_ == other.range_end_list_ &&
          TimingMatchForStyleRecalc(other);
 }
 

@@ -269,6 +269,7 @@ AnimationTimeDelta ViewTimeline::CalculateIntrinsicIterationDuration(
 
     active_interval -= start;
     active_interval -= (1 - end);
+    active_interval = std::max(0., active_interval);
 
     // Start and end delays are proportional to the active interval.
     double start_delay = timing.start_delay.relative_delay.value_or(0);

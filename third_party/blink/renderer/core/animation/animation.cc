@@ -2300,6 +2300,13 @@ void Animation::OnRangeUpdate() {
   if (start_time_) {
     UpdateStartTimeForViewTimeline();
   }
+
+  UpdateFinishedState(UpdateType::kContinuous, NotificationType::kAsync);
+
+  SetCompositorPending(false);
+
+  // Inform devtools of a potential change to the play state.
+  NotifyProbe();
 }
 
 void Animation::CancelAnimationOnCompositor() {

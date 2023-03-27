@@ -17,9 +17,7 @@ CSSAnimation::CSSAnimation(ExecutionContext* execution_context,
                            const String& animation_name)
     : Animation(execution_context, timeline, content),
       animation_index_(animation_index),
-      animation_name_(animation_name),
-      ignore_css_play_state_(false),
-      ignore_css_timeline_(false) {
+      animation_name_(animation_name) {
   // The owning_element does not always equal to the target element of an
   // animation. The following spec gives an example:
   // https://drafts.csswg.org/css-animations-2/#owning-element-section
@@ -58,6 +56,18 @@ void CSSAnimation::reverse(ExceptionState& exception_state) {
 void CSSAnimation::setTimeline(AnimationTimeline* timeline) {
   Animation::setTimeline(timeline);
   ignore_css_timeline_ = true;
+}
+
+void CSSAnimation::setRangeStart(const RangeBoundary* range_start,
+                                 ExceptionState& exception_state) {
+  Animation::setRangeStart(range_start, exception_state);
+  ignore_css_range_start_ = true;
+}
+
+void CSSAnimation::setRangeEnd(const RangeBoundary* range_end,
+                               ExceptionState& exception_state) {
+  Animation::setRangeEnd(range_end, exception_state);
+  ignore_css_range_end_ = true;
 }
 
 void CSSAnimation::setStartTime(const V8CSSNumberish* start_time,

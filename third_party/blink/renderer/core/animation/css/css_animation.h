@@ -53,14 +53,23 @@ class CORE_EXPORT CSSAnimation : public Animation {
   void setTimeline(AnimationTimeline*) override;
   void setStartTime(const V8CSSNumberish* start_time,
                     ExceptionState& exception_state) override;
+  void setRangeStart(const RangeBoundary* range_start,
+                     ExceptionState& exception_state) override;
+  void setRangeEnd(const RangeBoundary* range_end,
+                   ExceptionState& exception_state) override;
 
-  // When set, subsequent changes to animation-play-state no longer affect the
-  // play state.
+  // When set, subsequent changes to animation-<property> no longer affect
+  // <property>.
   // https://drafts.csswg.org/css-animations-2/#interaction-between-animation-play-state-and-web-animations-API
-  bool getIgnoreCSSPlayState() { return ignore_css_play_state_; }
-  void resetIgnoreCSSPlayState() { ignore_css_play_state_ = false; }
+  bool GetIgnoreCSSPlayState() { return ignore_css_play_state_; }
+  void ResetIgnoreCSSPlayState() { ignore_css_play_state_ = false; }
   bool GetIgnoreCSSTimeline() const { return ignore_css_timeline_; }
   void ResetIgnoreCSSTimeline() { ignore_css_timeline_ = false; }
+  bool GetIgnoreCSSRangeStart() { return ignore_css_range_start_; }
+  void ResetIgnoreCSSRangeStart() { ignore_css_range_start_ = false; }
+  bool GetIgnoreCSSRangeEnd() { return ignore_css_range_end_; }
+  void ResetIgnoreCSSRangeEnd() { ignore_css_range_end_ = false; }
+
   void Trace(blink::Visitor* visitor) const override {
     Animation::Trace(visitor);
     visitor->Trace(owning_element_);
@@ -99,9 +108,13 @@ class CORE_EXPORT CSSAnimation : public Animation {
 
   // When set, the web-animation API is overruling the animation-play-state
   // style.
-  bool ignore_css_play_state_;
+  bool ignore_css_play_state_ = false;
   // When set, changes to the 'animation-timeline' property will be ignored.
-  bool ignore_css_timeline_;
+  bool ignore_css_timeline_ = false;
+  // When set changes to 'animation-range-*' will be ignored.
+  bool ignore_css_range_start_ = false;
+  bool ignore_css_range_end_ = false;
+
   // The owning element of an animation refers to the element or pseudo-element
   // whose animation-name property was applied that generated the animation
   // The spec: https://drafts.csswg.org/css-animations-2/#owning-element-section

@@ -208,10 +208,10 @@ class CORE_EXPORT Animation : public EventTargetWithInlineData,
   using RangeBoundary = V8UnionStringOrTimelineRangeOffset;
   const RangeBoundary* rangeStart();
   const RangeBoundary* rangeEnd();
-  void setRangeStart(const RangeBoundary* range_start,
-                     ExceptionState& exception_state);
-  void setRangeEnd(const RangeBoundary* range_end,
-                   ExceptionState& exception_state);
+  virtual void setRangeStart(const RangeBoundary* range_start,
+                             ExceptionState& exception_state);
+  virtual void setRangeEnd(const RangeBoundary* range_end,
+                           ExceptionState& exception_state);
 
   const absl::optional<TimelineOffset>& GetRangeStartInternal() const {
     return range_start_;
@@ -221,12 +221,17 @@ class CORE_EXPORT Animation : public EventTargetWithInlineData,
   }
   void SetRangeStartInternal(
       const absl::optional<TimelineOffset>& range_start) {
-    range_start_ = range_start;
-    OnRangeUpdate();
+    const TimelineOffset default_timeline_offset;
+    if (range_start_ != range_start) {
+      range_start_ = range_start;
+      OnRangeUpdate();
+    }
   }
   void SetRangeEndInternal(const absl::optional<TimelineOffset>& range_end) {
-    range_end_ = range_end;
-    OnRangeUpdate();
+    if (range_end_ != range_end) {
+      range_end_ = range_end;
+      OnRangeUpdate();
+    }
   }
 
   void OnRangeUpdate();

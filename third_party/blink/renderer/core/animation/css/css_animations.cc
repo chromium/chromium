@@ -1196,7 +1196,7 @@ void CSSAnimations::CalculateAnimationUpdate(
         bool will_be_playing = false;
         const Animation::AnimationPlayState play_state =
             animation->CalculateAnimationPlayState();
-        if (is_paused != was_paused && !animation->getIgnoreCSSPlayState()) {
+        if (is_paused != was_paused && !animation->GetIgnoreCSSPlayState()) {
           switch (play_state) {
             case Animation::kIdle:
               break;
@@ -1227,14 +1227,18 @@ void CSSAnimations::CalculateAnimationUpdate(
                                      existing_animation->Timeline());
         }
 
+        bool range_changed =
+            ((range_start != existing_animation->RangeStart()) &&
+             !animation->GetIgnoreCSSRangeStart()) ||
+            ((range_end != existing_animation->RangeEnd()) &&
+             !animation->GetIgnoreCSSRangeEnd());
+
         if (keyframes_rule != existing_animation->style_rule ||
             keyframes_rule->Version() !=
                 existing_animation->style_rule_version ||
             existing_animation->specified_timing != specified_timing ||
             is_paused != was_paused || logical_property_mapping_change ||
-            timeline != existing_animation->Timeline() ||
-            range_start != existing_animation->RangeStart() ||
-            range_end != existing_animation->RangeEnd()) {
+            timeline != existing_animation->Timeline() || range_changed) {
           DCHECK(!is_animation_style_change);
           absl::optional<AnimationTimeDelta> inherited_time;
           absl::optional<AnimationTimeDelta> timeline_duration;
@@ -1578,10 +1582,10 @@ void CSSAnimations::MaybeApplyPendingUpdate(Element* element) {
 
     if (animation->Paused()) {
       animation->Unpause();
-      animation->resetIgnoreCSSPlayState();
+      animation->ResetIgnoreCSSPlayState();
     } else {
       animation->pause();
-      animation->resetIgnoreCSSPlayState();
+      animation->ResetIgnoreCSSPlayState();
     }
     if (animation->Outdated())
       animation->Update(kTimingUpdateOnDemand);
@@ -1597,15 +1601,20 @@ void CSSAnimations::MaybeApplyPendingUpdate(Element* element) {
         effect->SetModel(entry.effect->Model());
       effect->UpdateSpecifiedTiming(entry.effect->SpecifiedTiming());
     }
-    if (entry.animation->timeline() != entry.timeline) {
-      entry.animation->setTimeline(entry.timeline);
-      To<CSSAnimation>(*entry.animation).ResetIgnoreCSSTimeline();
+    CSSAnimation& css_animation = To<CSSAnimation>(*entry.animation);
+    if (css_animation.timeline() != entry.timeline) {
+      css_animation.setTimeline(entry.timeline);
+      css_animation.ResetIgnoreCSSTimeline();
     }
-    if (entry.animation->GetRangeStartInternal() != entry.range_start) {
-      entry.animation->SetRangeStartInternal(entry.range_start);
+    if (!css_animation.GetIgnoreCSSRangeStart() &&
+        css_animation.GetRangeStartInternal() != entry.range_start) {
+      css_animation.SetRangeStartInternal(entry.range_start);
+      css_animation.ResetIgnoreCSSRangeStart();
     }
-    if (entry.animation->GetRangeEndInternal() != entry.range_end) {
-      entry.animation->SetRangeEndInternal(entry.range_end);
+    if (!css_animation.GetIgnoreCSSRangeEnd() &&
+        css_animation.GetRangeEndInternal() != entry.range_end) {
+      css_animation.SetRangeEndInternal(entry.range_end);
+      css_animation.ResetIgnoreCSSRangeEnd();
     }
 
     running_animations_[entry.index]->Update(entry);
@@ -1621,8 +1630,9 @@ void CSSAnimations::MaybeApplyPendingUpdate(Element* element) {
         *running_animations_[cancelled_indices[i]]->animation;
     animation.ClearOwningElement();
     if (animation.IsCSSAnimation() &&
-        !DynamicTo<CSSAnimation>(animation)->getIgnoreCSSPlayState())
+        !DynamicTo<CSSAnimation>(animation)->GetIgnoreCSSPlayState()) {
       animation.cancel();
+    }
     animation.Update(kTimingUpdateOnDemand);
     running_animations_.EraseAt(cancelled_indices[i]);
   }
@@ -1640,9 +1650,11 @@ void CSSAnimations::MaybeApplyPendingUpdate(Element* element) {
     animation->play();
     if (inert_animation->Paused())
       animation->pause();
-    animation->resetIgnoreCSSPlayState();
+    animation->ResetIgnoreCSSPlayState();
     animation->SetRangeStartInternal(entry.range_start);
     animation->SetRangeEndInternal(entry.range_end);
+    animation->ResetIgnoreCSSRangeStart();
+    animation->ResetIgnoreCSSRangeEnd();
     animation->Update(kTimingUpdateOnDemand);
 
     running_animations_.push_back(
