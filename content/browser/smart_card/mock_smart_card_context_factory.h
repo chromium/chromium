@@ -32,6 +32,7 @@ class MockSmartCardContextFactory
        std::vector<device::mojom::SmartCardReaderStateInPtr> reader_states,
        GetStatusChangeCallback callback),
       (override));
+  MOCK_METHOD(void, Cancel, (CancelCallback callback), (override));
   MOCK_METHOD(void,
               Connect,
               (const std::string& reader,

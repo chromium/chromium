@@ -1836,6 +1836,7 @@ enum HistogramValue {
   POWER_REPORTACTIVITY = 1773,
   PASSWORDSPRIVATE_CONTINUEIMPORT = 1774,
   PASSWORDSPRIVATE_RESETIMPORTER = 1775,
+  SMARTCARDPROVIDERPRIVATE_REPORTCANCELRESULT = 1776,
   // Last entry: Add new entries above, then run:
   // tools/metrics/histograms/update_extension_histograms.py
   ENUM_BOUNDARY

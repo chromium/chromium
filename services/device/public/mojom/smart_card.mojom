@@ -194,6 +194,10 @@ interface SmartCardContext {
                   array<SmartCardReaderStateIn> reader_states)
     => (SmartCardStatusChangeResult result);
 
+  // Terminates an outstanding GetStatusChange() call with
+  // SmartCardError::kCancelled.
+  Cancel() => (SmartCardResult result);
+
   // Establishes a connection to the specified reader.
   Connect(string reader, SmartCardShareMode share_mode,
           SmartCardProtocols preferred_protocols) =>

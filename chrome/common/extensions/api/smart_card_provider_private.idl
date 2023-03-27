@@ -144,6 +144,12 @@ namespace smartCardProviderPrivate {
         Timeout timeout,
         ReaderStateIn[] readerStates);
 
+    // Browser requested a SCardCancel call.
+    // Extension must report the result to the browser by calling
+    // reportCancelResult.
+    [maxListeners=1] static void onCancelRequested(long requestId,
+        long scardContext);
+
     // Browser requested a SCardConnect call.
     // Extension must report the result to the browser by calling
     // reportConnectResult.
@@ -176,6 +182,10 @@ namespace smartCardProviderPrivate {
       // Reports the result of a SCardGetStatusChange call.
       static void reportGetStatusChangeResult(long requestId,
           ReaderStateOut[] readerStates, ResultCode resultCode);
+
+      // Reports the result of a SCardCancel call.
+      static void reportCancelResult(long requestId,
+          ResultCode resultCode);
 
       // Reports the result of a SCardConnect call.
       static void reportConnectResult(long requestId, long scardHandle,

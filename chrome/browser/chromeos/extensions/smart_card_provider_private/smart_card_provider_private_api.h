@@ -58,6 +58,7 @@ class SmartCardProviderPrivateAPI
       base::TimeDelta timeout,
       std::vector<device::mojom::SmartCardReaderStateInPtr> reader_states,
       GetStatusChangeCallback callback) override;
+  void Cancel(CancelCallback callback) override;
   void Connect(const std::string& reader,
                device::mojom::SmartCardShareMode share_mode,
                device::mojom::SmartCardProtocolsPtr preferred_protocols,
@@ -78,6 +79,8 @@ class SmartCardProviderPrivateAPI
       RequestId request_id,
       std::vector<device::mojom::SmartCardReaderStateOutPtr> reader_states,
       device::mojom::SmartCardResultPtr result);
+  void ReportCancelResult(RequestId request_id,
+                          device::mojom::SmartCardResultPtr result);
   void ReportConnectResult(RequestId request_id,
                            Handle scard_handle,
                            device::mojom::SmartCardProtocol active_protocol,
@@ -129,6 +132,8 @@ class SmartCardProviderPrivateAPI
                             RequestId request_id);
   void OnGetStatusChangeTimeout(const std::string& provider_extension_id,
                                 RequestId request_id);
+  void OnCancelTimeout(const std::string& provider_extension_id,
+                       RequestId request_id);
   void OnConnectTimeout(const std::string& provider_extension_id,
                         RequestId request_id);
   void OnDisconnectTimeout(const std::string& provider_extension_id,
@@ -161,6 +166,7 @@ class SmartCardProviderPrivateAPI
 
   PendingResultMap<ListReadersCallback> pending_list_readers_;
   PendingResultMap<GetStatusChangeCallback> pending_get_status_change_;
+  PendingResultMap<CancelCallback> pending_cancel_;
   PendingResultMap<ConnectCallback> pending_connect_;
   PendingResultMap<DisconnectCallback> pending_disconnect_;
 
@@ -222,6 +228,17 @@ class SmartCardProviderPrivateReportGetStatusChangeResultFunction
   DECLARE_EXTENSION_FUNCTION(
       "smartCardProviderPrivate.reportGetStatusChangeResult",
       SMARTCARDPROVIDERPRIVATE_REPORTGETSTATUSCHANGERESULT)
+};
+
+class SmartCardProviderPrivateReportCancelResultFunction
+    : public ExtensionFunction {
+ private:
+  // ExtensionFunction:
+  ~SmartCardProviderPrivateReportCancelResultFunction() override;
+  ResponseAction Run() override;
+
+  DECLARE_EXTENSION_FUNCTION("smartCardProviderPrivate.reportCancelResult",
+                             SMARTCARDPROVIDERPRIVATE_REPORTCANCELRESULT)
 };
 
 class SmartCardProviderPrivateReportConnectResultFunction

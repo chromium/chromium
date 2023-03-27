@@ -526,6 +526,7 @@ enum HistogramValue {
   PDF_VIEWER_PRIVATE_ON_PDF_OCR_PREF_CHANGED = 504,
   SMART_CARD_PROVIDER_PRIVATE_ON_CONNECT_REQUESTED = 505,
   SMART_CARD_PROVIDER_PRIVATE_ON_DISCONNECT_REQUESTED = 506,
+  SMART_CARD_PROVIDER_PRIVATE_ON_CANCEL_REQUESTED = 507,
   // Last entry: Add new entries above, then run:
   // tools/metrics/histograms/update_extension_histograms.py
   ENUM_BOUNDARY

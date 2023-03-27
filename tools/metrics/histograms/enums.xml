@@ -33767,6 +33767,7 @@ Called by update_extension_histograms.py.-->
   <int value="504" label="PDF_VIEWER_PRIVATE_ON_PDF_OCR_PREF_CHANGED"/>
   <int value="505" label="SMART_CARD_PROVIDER_PRIVATE_ON_CONNECT_REQUESTED"/>
   <int value="506" label="SMART_CARD_PROVIDER_PRIVATE_ON_DISCONNECT_REQUESTED"/>
+  <int value="507" label="SMART_CARD_PROVIDER_PRIVATE_ON_CANCEL_REQUESTED"/>
 </enum>
 
 <enum name="ExtensionFileWriteResult">
@@ -35633,6 +35634,7 @@ Called by update_extension_histograms.py.-->
   <int value="1773" label="POWER_REPORTACTIVITY"/>
   <int value="1774" label="PASSWORDSPRIVATE_CONTINUEIMPORT"/>
   <int value="1775" label="PASSWORDSPRIVATE_RESETIMPORTER"/>
+  <int value="1776" label="SMARTCARDPROVIDERPRIVATE_REPORTCANCELRESULT"/>
 </enum>
 
 <enum name="ExtensionIconState">

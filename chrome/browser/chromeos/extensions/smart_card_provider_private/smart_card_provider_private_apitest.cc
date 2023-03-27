@@ -753,4 +753,81 @@ IN_PROC_BROWSER_TEST_F(SmartCardProviderPrivateApiTest,
   ASSERT_TRUE(result_catcher.GetNextResult()) << result_catcher.message();
 }
 
+IN_PROC_BROWSER_TEST_F(SmartCardProviderPrivateApiTest, Cancel) {
+  std::string background_js(kEstablishContextJs);
+  background_js.append(
+      R"(
+      chrome.smartCardProviderPrivate.onCancelRequested.addListener(
+          cancel);
+
+      function cancel(requestId, scardContext) {
+        if (scardContext != 123) {
+          chrome.smartCardProviderPrivate.reportCancelResult(requestId,
+              readerStates, "INVALID_PARAMETER");
+          return;
+        }
+
+        chrome.smartCardProviderPrivate.reportCancelResult(requestId,
+            "SUCCESS");
+      }
+    )");
+  LoadFakeProviderExtension(background_js);
+
+  auto context_result = CreateContext();
+  ASSERT_TRUE(context_result->is_context());
+  mojo::Remote<device::mojom::SmartCardContext> context(
+      std::move(context_result->get_context()));
+
+  base::test::TestFuture<device::mojom::SmartCardResultPtr> result_future;
+
+  context->Cancel(result_future.GetCallback());
+
+  SmartCardResultPtr result = result_future.Take();
+  ASSERT_TRUE(result->is_success());
+}
+
+IN_PROC_BROWSER_TEST_F(SmartCardProviderPrivateApiTest, CancelNoProvider) {
+  LoadFakeProviderExtension(kEstablishContextJs);
+
+  auto context_result = CreateContext();
+  ASSERT_TRUE(context_result->is_context());
+  mojo::Remote<device::mojom::SmartCardContext> context(
+      std::move(context_result->get_context()));
+
+  base::test::TestFuture<device::mojom::SmartCardResultPtr> result_future;
+
+  context->Cancel(result_future.GetCallback());
+
+  device::mojom::SmartCardResultPtr result = result_future.Take();
+  ASSERT_TRUE(result->is_error());
+  EXPECT_EQ(result->get_error(), SmartCardError::kNoService);
+}
+
+IN_PROC_BROWSER_TEST_F(SmartCardProviderPrivateApiTest, CancelResponseTimeout) {
+  SmartCardProviderPrivateAPI& scard_provider_api =
+      SmartCardProviderPrivateAPI::Get(*profile());
+  scard_provider_api.SetResponseTimeLimitForTesting(base::Seconds(1));
+
+  std::string background_js(kEstablishContextJs);
+  background_js.append(
+      R"(
+      chrome.smartCardProviderPrivate.onCancelRequested.addListener(
+          function(requestId, scardContext){});
+    )");
+  LoadFakeProviderExtension(background_js);
+
+  auto context_result = CreateContext();
+  ASSERT_TRUE(context_result->is_context());
+  mojo::Remote<device::mojom::SmartCardContext> context(
+      std::move(context_result->get_context()));
+
+  base::test::TestFuture<device::mojom::SmartCardResultPtr> result_future;
+
+  context->Cancel(result_future.GetCallback());
+
+  device::mojom::SmartCardResultPtr result = result_future.Take();
+  ASSERT_TRUE(result->is_error());
+  EXPECT_EQ(result->get_error(), SmartCardError::kNoService);
+}
+
 }  // namespace extensions

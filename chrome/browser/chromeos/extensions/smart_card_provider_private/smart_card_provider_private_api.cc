@@ -488,6 +488,20 @@ void SmartCardProviderPrivateAPI::ReportGetStatusChangeResult(
   std::move(pending->callback).Run(std::move(status_change_result));
 }
 
+void SmartCardProviderPrivateAPI::ReportCancelResult(
+    RequestId request_id,
+    SmartCardResultPtr result) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  std::unique_ptr<PendingResult<CancelCallback>> pending =
+      Extract(pending_cancel_, request_id);
+  if (!pending) {
+    return;
+  }
+
+  std::move(pending->callback).Run(std::move(result));
+}
+
 device::mojom::SmartCardConnectResultPtr
 SmartCardProviderPrivateAPI::CreateSmartCardConnection(
     Handle handle,
@@ -672,6 +686,21 @@ void SmartCardProviderPrivateAPI::GetStatusChange(
       std::move(event_args), std::max(base::Milliseconds(500), time_delta * 2));
 }
 
+void SmartCardProviderPrivateAPI::Cancel(CancelCallback callback) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  const ContextId scard_context = context_receivers_.current_context();
+  CHECK(!scard_context.is_null());
+
+  DispatchEventWithTimeout(
+      scard_api::OnCancelRequested::kEventName,
+      extensions::events::SMART_CARD_PROVIDER_PRIVATE_ON_CANCEL_REQUESTED,
+      std::move(callback), pending_cancel_,
+      &SmartCardProviderPrivateAPI::OnCancelTimeout,
+      /*event_arguments=*/
+      base::Value::List().Append(scard_context.GetUnsafeValue()));
+}
+
 void SmartCardProviderPrivateAPI::Connect(
     const std::string& reader,
     device::mojom::SmartCardShareMode share_mode,
@@ -730,6 +759,8 @@ ON_TIMEOUT_IMPL(GetStatusChange,
                 std::vector<device::mojom::SmartCardReaderStateOutPtr>(),
                 SmartCardResult::NewError(SmartCardError::kNoService))
 
+ON_TIMEOUT_IMPL(Cancel, SmartCardResult::NewError(SmartCardError::kNoService))
+
 ON_TIMEOUT_IMPL(Connect,
                 Handle(),
                 device::mojom::SmartCardProtocol::kUndefined,
@@ -778,6 +809,10 @@ REPORT_RESULT_FUNCTION_IMPL(
 REPORT_RESULT_FUNCTION_IMPL(
     GetStatusChange,
     ToSmartCardProviderReaderStateOutVector(params->reader_states),
+    ProviderResultCodeToSmartCardResult(params->result_code))
+
+REPORT_RESULT_FUNCTION_IMPL(
+    Cancel,
     ProviderResultCodeToSmartCardResult(params->result_code))
 
 REPORT_RESULT_FUNCTION_IMPL(
