@@ -607,8 +607,8 @@ NSArray<OverflowMenuDestination*>* SortBadgedDestinations(
   self.siteInfoDestination =
       [self createOverflowMenuDestination:IDS_IOS_TOOLS_MENU_SITE_INFORMATION
                               destination:overflow_menu::Destination::SiteInfo
-                               symbolName:kToolsMenuSiteInformation
-                             systemSymbol:YES
+                               symbolName:kTunerSymbol
+                             systemSymbol:NO
                           accessibilityID:kToolsMenuSiteInformation
                                   handler:^{
                                     [weakSelf openSiteInformation];
