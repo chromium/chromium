@@ -36,7 +36,7 @@ void DatabaseErrorCallback(sql::Database* db,
 
     // After this call, the |db| handle is poisoned so that future calls will
     // return errors until the handle is re-opened.
-    db->RazeAndClose();
+    db->RazeAndPoison();
 
     // The DLOG(WARNING) below is intended to draw immediate attention to errors
     // in newly-written code.  Database corruption is generally a result of OS
