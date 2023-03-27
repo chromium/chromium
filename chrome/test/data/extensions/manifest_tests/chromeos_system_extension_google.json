@@ -8,6 +8,7 @@
     "manifest_version": 3,
     "permissions": [
       "os.diagnostics",
+      "os.events",
       "os.telemetry"
     ],
     "optional_permissions": [

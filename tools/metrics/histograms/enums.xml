@@ -36272,6 +36272,7 @@ Called by update_extension_permission.py.-->
   <int value="245" label="kPdfViewerPrivate"/>
   <int value="246" label="kSystemLog"/>
   <int value="247" label="kSmartCardProviderPrivate"/>
+  <int value="248" label="kChromeOSEvents"/>
 </enum>
 
 <enum name="ExtensionPointEnableState">

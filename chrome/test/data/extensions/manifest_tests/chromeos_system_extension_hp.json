@@ -5,6 +5,7 @@
     "manifest_version": 3,
     "permissions": [
       "os.diagnostics",
+      "os.events",
       "os.telemetry",
       "os.telemetry.serial_number",
       "os.telemetry.network_info"
