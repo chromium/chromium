@@ -209,8 +209,14 @@ IN_PROC_BROWSER_TEST_P(ClientSideDetectionServiceBrowserTest,
   }
 }
 
+// TODO(crbug.com/1427919): Flaky on Linux Tests.
+#if BUILDFLAG(IS_LINUX)
+#define MAYBE_TfLiteClassification DISABLED_TfLiteClassification
+#else
+#define MAYBE_TfLiteClassification TfLiteClassification
+#endif
 IN_PROC_BROWSER_TEST_P(ClientSideDetectionServiceBrowserTest,
-                       TfLiteClassification) {
+                       MAYBE_TfLiteClassification) {
   GURL url(embedded_test_server()->GetURL("/empty.html"));
   ASSERT_TRUE(content::NavigateToURL(web_contents(), url));
 
