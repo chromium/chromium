@@ -350,8 +350,6 @@ HeadlessWebContentsImpl::HeadlessWebContentsImpl(
 }
 
 HeadlessWebContentsImpl::~HeadlessWebContentsImpl() {
-  for (auto& observer : observers_)
-    observer.HeadlessWebContentsDestroyed();
   agent_host_->RemoveObserver(this);
   if (render_process_host_)
     render_process_host_->RemoveObserver(this);
@@ -440,23 +438,10 @@ void HeadlessWebContentsImpl::RemoveObserver(Observer* observer) {
   observers_.RemoveObserver(observer);
 }
 
-void HeadlessWebContentsImpl::DevToolsAgentHostAttached(
-    content::DevToolsAgentHost* agent_host) {
-  for (auto& observer : observers_)
-    observer.DevToolsClientAttached();
-}
-
-void HeadlessWebContentsImpl::DevToolsAgentHostDetached(
-    content::DevToolsAgentHost* agent_host) {
-  for (auto& observer : observers_)
-    observer.DevToolsClientDetached();
-}
-
 void HeadlessWebContentsImpl::RenderProcessExited(
     content::RenderProcessHost* host,
     const content::ChildProcessTerminationInfo& info) {
   DCHECK_EQ(render_process_host_, host);
-  render_process_exited_ = true;
   for (auto& observer : observers_)
     observer.RenderProcessExited(info.status, info.exit_code);
 }

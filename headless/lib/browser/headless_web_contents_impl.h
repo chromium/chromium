@@ -75,12 +75,6 @@ class HEADLESS_EXPORT HeadlessWebContentsImpl
   void DetachClient(HeadlessDevToolsClient* client) override;
   bool IsAttached() override;
 
-  // content::DevToolsAgentHostObserver implementation:
-  void DevToolsAgentHostAttached(
-      content::DevToolsAgentHost* agent_host) override;
-  void DevToolsAgentHostDetached(
-      content::DevToolsAgentHost* agent_host) override;
-
   // content::RenderProcessHostObserver implementation:
   void RenderProcessExited(
       content::RenderProcessHost* host,
@@ -159,7 +153,6 @@ class HEADLESS_EXPORT HeadlessWebContentsImpl
   std::unique_ptr<content::WebContents> web_contents_;
   scoped_refptr<content::DevToolsAgentHost> agent_host_;
   bool devtools_target_ready_notification_sent_ = false;
-  bool render_process_exited_ = false;
   bool use_tab_target_ = false;
 
   base::ObserverList<HeadlessWebContents::Observer>::Unchecked observers_;

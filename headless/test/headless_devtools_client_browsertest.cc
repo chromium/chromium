@@ -539,29 +539,6 @@ class DevToolsNetworkOfflineEmulationTest
 
 HEADLESS_DEVTOOLED_TEST_F(DevToolsNetworkOfflineEmulationTest);
 
-class DevToolsAttachAndDetachNotifications
-    : public HeadlessDevTooledBrowserTest {
- public:
-  void DevToolsClientAttached() override { dev_tools_client_attached_ = true; }
-
-  void RunDevTooledTest() override {
-    EXPECT_TRUE(dev_tools_client_attached_);
-    FinishAsynchronousTest();
-  }
-
-  void DevToolsClientDetached() override { dev_tools_client_detached_ = true; }
-
-  void TearDownOnMainThread() override {
-    EXPECT_TRUE(dev_tools_client_detached_);
-  }
-
- private:
-  bool dev_tools_client_attached_ = false;
-  bool dev_tools_client_detached_ = false;
-};
-
-HEADLESS_DEVTOOLED_TEST_F(DevToolsAttachAndDetachNotifications);
-
 class DomTreeExtractionBrowserTest : public HeadlessDevTooledBrowserTest {
  public:
   void RunDevTooledTest() override {
