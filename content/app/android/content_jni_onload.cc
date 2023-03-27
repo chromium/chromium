@@ -9,9 +9,9 @@
 #include "base/android/base_jni_onload.h"
 #include "base/android/jni_android.h"
 #include "base/android/library_loader/library_loader_hooks.h"
-#include "base/i18n/icu_util.h"
-#include "base/trace_event/trace_event.h"
+#include "base/functional/bind.h"
 #include "content/app/android/library_loader_hooks.h"
+#include "content/public/app/content_main.h"
 
 namespace content {
 namespace android {
@@ -21,13 +21,6 @@ bool OnJNIOnLoadInit() {
     return false;
 
   base::android::SetLibraryLoadedHook(&content::LibraryLoaded);
-
-#if ICU_UTIL_DATA_IMPL == ICU_UTIL_DATA_FILE
-  // Initialize ICU early so that it can be used by JNI calls before
-  // ContentMain() is called.
-  TRACE_EVENT0("startup", "InitializeICU");
-  CHECK(base::i18n::InitializeICU());
-#endif
   return true;
 }
 
