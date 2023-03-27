@@ -16,7 +16,14 @@ struct SimilarVisit {
   SimilarVisit() = default;
   explicit SimilarVisit(const history::ClusterVisit& visit)
       : title(visit.annotated_visit.url_row.title()),
-        url_for_deduping(visit.url_for_deduping.spec()) {}
+        // TODO(sophiechang): Remove this duplication once the underlying
+        // persisted change is rolled out in Stable for at least 90 days
+        // (probably around 07/2023).
+        url_for_deduping(visit.annotated_visit.content_annotations
+                                 .search_normalized_url.is_empty()
+                             ? visit.url_for_deduping.spec()
+                             : visit.annotated_visit.content_annotations
+                                   .search_normalized_url.spec()) {}
   SimilarVisit(const SimilarVisit&) = default;
   ~SimilarVisit() = default;
 
