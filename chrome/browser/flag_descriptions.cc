@@ -4014,6 +4014,11 @@ const char kRequestDesktopSiteZoomName[] =
 const char kRequestDesktopSiteZoomDescription[] =
     "Apply default page zoom on the desktop version of websites.";
 
+const char kForceOffTextAutosizingName[] =
+    "Force off heuristics for inflating text sizes on devices with small "
+    "screens.";
+const char kForceOffTextAutosizingDescription[] = "Disable text autosizing.";
+
 const char kRevokeNotificationsPermissionIfDisabledOnAppLevelName[] =
     "Revoke site-level notification permission on Android";
 const char kRevokeNotificationsPermissionIfDisabledOnAppLevelDescription[] =

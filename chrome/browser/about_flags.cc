@@ -8756,6 +8756,11 @@ const FeatureEntry kFeatureEntries[] = {
                                     "LargeFaviconFromGoogle")},
 
 #if BUILDFLAG(IS_ANDROID)
+    {"force-off-text-autosizing",
+     flag_descriptions::kForceOffTextAutosizingName,
+     flag_descriptions::kForceOffTextAutosizingDescription, kOsAndroid,
+     FEATURE_VALUE_TYPE(features::kForceOffTextAutosizing)},
+
     {"request-desktop-site-exceptions",
      flag_descriptions::kRequestDesktopSiteExceptionsName,
      flag_descriptions::kRequestDesktopSiteExceptionsDescription, kOsAndroid,

@@ -1511,6 +1511,12 @@ BASE_FEATURE(kRequestDesktopSiteZoom,
              "RequestDesktopSiteZoom",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Text autosizing uses heuristics to inflate text sizes on devices with
+// small screens. This feature is for disabling these heuristics.
+BASE_FEATURE(kForceOffTextAutosizing,
+             "ForceOffTextAutosizing",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Screen Capture API support for Android
 BASE_FEATURE(kUserMediaScreenCapturing,
              "UserMediaScreenCapturing",
