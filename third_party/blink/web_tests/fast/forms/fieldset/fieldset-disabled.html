@@ -1,7 +1,8 @@
 <!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
 <html>
 <head>
-<script src="../../../resources/js-test.js"></script>
+<script src="../../../resources/testharness.js"></script>
+<script src="../../../resources/testharnessreport.js"></script>
 <style type="text/css">
 input {
     background:rgb(255,255,100);
@@ -33,9 +34,9 @@ input:disabled {
 </form>
 <fieldset tabindex=0 disabled id="fieldset-tabindex"></fieldset>
 <script>
-description('Tests for HTMLFieldSetElement.disabled behavior.');
+test(() => {
 
-debug('\nVerifying parser generated fieldsets.');
+// Verifying parser generated fieldsets.
 var parserGeneratedInput1 = document.getElementById("parserGeneratedInput1");
 var parserGeneratedInput2 = document.getElementById("parserGeneratedInput2");
 var parserGeneratedInput3 = document.getElementById("parserGeneratedInput3");
@@ -65,77 +66,77 @@ document.execCommand('insertText', false, 'S');
 parserGeneratedInput9.focus();
 document.execCommand('insertText', false, 'T');
 
-shouldBe('parserGeneratedInput1.value', '"L"');
-shouldBe('parserGeneratedInput2.value', '"M"');
-shouldBe('parserGeneratedInput3.value', '"NO"');
-shouldBe('parserGeneratedInput4.value', '""');
-shouldBe('parserGeneratedInput5.value', '"PQRST"');
-shouldBe('parserGeneratedInput6.value', '""');
-shouldBe('parserGeneratedInput7.value', '""');
-shouldBe('parserGeneratedInput8.value', '""');
-shouldBe('parserGeneratedInput9.value', '""');
+assert_equals(parserGeneratedInput1.value, 'L');
+assert_equals(parserGeneratedInput2.value, 'M');
+assert_equals(parserGeneratedInput3.value, 'NO');
+assert_equals(parserGeneratedInput4.value, '');
+assert_equals(parserGeneratedInput5.value, 'PQRST');
+assert_equals(parserGeneratedInput6.value, '');
+assert_equals(parserGeneratedInput7.value, '');
+assert_equals(parserGeneratedInput8.value, '');
+assert_equals(parserGeneratedInput9.value, '');
 
 
-debug('\nTesting a single fieldset element.');
+// Testing a single fieldset element.
 var fieldSet = document.createElement('fieldset');
 document.body.appendChild(fieldSet);
 var textInput = document.createElement('input');
 textInput.type = "text";
 fieldSet.appendChild(textInput);
 
-debug('Verifying HTMLFormControl can be disabled regardless of enclosing fieldset.');
+// Verifying HTMLFormControl can be disabled regardless of enclosing fieldset.
 textInput.disabled = true;
-shouldBeTrue('textInput.disabled');
+assert_true(textInput.disabled);
 textInput.focus();
 document.execCommand('insertText', false, 'A');
-shouldBe('textInput.value', '""');
-shouldBeFalse('fieldSet.disabled');
+assert_equals(textInput.value, '');
+assert_false(fieldSet.disabled);
 textInput.disabled = false;
 
-debug('Fieldset is enabled by default. A user can insertText into the text input field.');
+// Fieldset is enabled by default. A user can insertText into the text input field.
 textInput.focus();
 document.execCommand('insertText', false, 'A');
-shouldBe('textInput.value', '"A"');
+assert_equals(textInput.value, 'A');
 
-debug('Disable fieldset.');
+// Disable fieldset.
 fieldSet.disabled = true;
-shouldBeTrue('fieldSet.disabled');
+assert_true(fieldSet.disabled);
 
-debug('Once the fieldset is disabled, text cannot be inserted.');
+// Once the fieldset is disabled, text cannot be inserted.
 textInput.focus();
 document.execCommand('insertText', false, 'B');
-shouldBe('textInput.value', '"A"');
+assert_equals(textInput.value, 'A');
 
-debug("Check if the style of the text element changed.");
-shouldBe("getComputedStyle(textInput).backgroundColor", "'rgb(255, 0, 0)'");
+// Check if the style of the text element changed.
+assert_equals(getComputedStyle(textInput).backgroundColor, 'rgb(255, 0, 0)');
 
-debug('Enable fieldset.');
+// Enable fieldset.
 fieldSet.disabled = false;
-shouldBeFalse('fieldSet.disabled');
-shouldBe("getComputedStyle(textInput).backgroundColor", "'rgb(255, 255, 100)'");
+assert_false(fieldSet.disabled);
+assert_equals(getComputedStyle(textInput).backgroundColor, 'rgb(255, 255, 100)');
 
 textInput.focus();
 document.execCommand('insertText', false, 'B');
-shouldBe('textInput.value', '"AB"');
+assert_equals(textInput.value, 'AB');
 
-debug('Move the textinput element out of the fieldset.');
+// Move the textinput element out of the fieldset.
 fieldSet.removeChild(textInput);
 document.body.appendChild(textInput);
 
-debug('Disable the fieldset.');
+// Disable the fieldset.
 fieldSet.disabled = true;
-shouldBeTrue('fieldSet.disabled');
+assert_true(fieldSet.disabled);
 
-debug('Text can be inserted, because the textinput element is outside of the disabled fieldset.');
+// Text can be inserted, because the textinput element is outside of the disabled fieldset.
 textInput.focus();
 document.execCommand('insertText', false, 'C');
-shouldBe('textInput.value', '"ABC"');
+assert_equals(textInput.value, 'ABC');
 
-debug('Enable the fieldset.');
+// Enable the fieldset.
 fieldSet.disabled = false;
-shouldBeFalse('fieldSet.disabled');
+assert_false(fieldSet.disabled);
 
-debug('Insert a table into the fieldset.');
+// Insert a table into the fieldset.
 var table = document.createElement('table');
 fieldSet.appendChild(table);
 var tr = document.createElement('tr');
@@ -143,33 +144,33 @@ table.appendChild(tr);
 var td = document.createElement('td');
 tr.appendChild(td);
 
-debug('Move the textinput field into the table.');
+// Move the textinput field into the table.
 document.body.removeChild(textInput);
 td.appendChild(textInput);
 
 textInput.focus();
 document.execCommand('insertText', false, 'D');
-shouldBe('textInput.value', '"ABCD"');
+assert_equals(textInput.value, 'ABCD');
 
-debug('Disable the fieldset.');
+// Disable the fieldset.
 fieldSet.disabled = true;
-shouldBeTrue('fieldSet.disabled');
+assert_true(fieldSet.disabled);
 
-debug('Inserting text should fail.')
+// Inserting text should fail.
 textInput.focus();
 document.execCommand('insertText', false, 'E');
-shouldBe('textInput.value', '"ABCD"');
+assert_equals(textInput.value, 'ABCD');
 
-debug('Enable the fieldset.');
+// Enable the fieldset.
 fieldSet.disabled = false;
-shouldBeFalse('fieldSet.disabled');
+assert_false(fieldSet.disabled);
 
 textInput.focus();
 document.execCommand('insertText', false, 'E');
-shouldBe('textInput.value', '"ABCDE"');
+assert_equals(textInput.value, 'ABCDE');
 
 
-debug('\nTesting nested fieldset elements.');
+// Testing nested fieldset elements.
 var outerFieldSet = document.createElement('fieldset');
 document.body.appendChild(outerFieldSet);
 var innerFieldSet = document.createElement('fieldset');
@@ -181,62 +182,62 @@ var innerTextInput = document.createElement('input');
 innerTextInput.type = "text";
 innerFieldSet.appendChild(innerTextInput);
 
-debug('Verifying that subordinates of both fieldsets are enabled.');
+// Verifying that subordinates of both fieldsets are enabled.
 outerTextInput.focus();
 document.execCommand('insertText', false, 'F');
 innerTextInput.focus();
 document.execCommand('insertText', false, 'F');
-shouldBe('outerTextInput.value', '"F"');
-shouldBe('innerTextInput.value', '"F"');
+assert_equals(outerTextInput.value, 'F');
+assert_equals(innerTextInput.value, 'F');
 
-debug('Disabling the inner fieldset only.');
+// Disabling the inner fieldset only.
 innerFieldSet.disabled = true;
-shouldBeTrue('innerFieldSet.disabled');
+assert_true(innerFieldSet.disabled);
 outerTextInput.focus();
 document.execCommand('insertText', false, 'G');
 innerTextInput.focus();
 document.execCommand('insertText', false, 'G');
-shouldBe('outerTextInput.value', '"FGG"');
-shouldBe('innerTextInput.value', '"F"');
+assert_equals(outerTextInput.value, 'FGG');
+assert_equals(innerTextInput.value, 'F');
 
-debug('Enabling the inner and disabling the outer fieldset.');
+// Enabling the inner and disabling the outer fieldset.
 outerFieldSet.disabled = true;
 innerFieldSet.disabled = false;
-shouldBeTrue('outerFieldSet.disabled');
-shouldBeFalse('innerFieldSet.disabled');
+assert_true(outerFieldSet.disabled);
+assert_false(innerFieldSet.disabled);
 outerTextInput.focus();
 document.execCommand('insertText', false, 'H');
 innerTextInput.focus();
 document.execCommand('insertText', false, 'H');
-shouldBe('outerTextInput.value', '"FGG"');
-shouldBe('innerTextInput.value', '"F"');
+assert_equals(outerTextInput.value, 'FGG');
+assert_equals(innerTextInput.value, 'F');
 
-debug('Disabling both fieldset elements.');
+// Disabling both fieldset elements.
 outerFieldSet.disabled = true;
 innerFieldSet.disabled = true;
-shouldBeTrue('outerFieldSet.disabled');
-shouldBeTrue('innerFieldSet.disabled');
+assert_true(outerFieldSet.disabled);
+assert_true(innerFieldSet.disabled);
 outerTextInput.focus();
 document.execCommand('insertText', false, 'H');
 innerTextInput.focus();
 document.execCommand('insertText', false, 'H');
-shouldBe('outerTextInput.value', '"FGG"');
-shouldBe('innerTextInput.value', '"F"');
+assert_equals(outerTextInput.value, 'FGG');
+assert_equals(innerTextInput.value, 'F');
 
-debug('Enabling both fieldset elements.');
+// Enabling both fieldset elements.
 outerFieldSet.disabled = false;
 innerFieldSet.disabled = false;
-shouldBeFalse('outerFieldSet.disabled');
-shouldBeFalse('innerFieldSet.disabled');
+assert_false(outerFieldSet.disabled);
+assert_false(innerFieldSet.disabled);
 outerTextInput.focus();
 document.execCommand('insertText', false, 'H');
 innerTextInput.focus();
 document.execCommand('insertText', false, 'H');
-shouldBe('outerTextInput.value', '"FGGH"');
-shouldBe('innerTextInput.value', '"FH"');
+assert_equals(outerTextInput.value, 'FGGH');
+assert_equals(innerTextInput.value, 'FH');
 
 
-debug('\nTest behavior of the first legend element in a fieldset elements.');
+// Test behavior of the first legend element in a fieldset elements.
 var legendFieldSet = document.createElement('fieldset');
 document.body.appendChild(legendFieldSet);
 var firstLegend = document.createElement('legend');
@@ -252,17 +253,17 @@ var secondLegendTextInput = document.createElement('input');
 secondLegendTextInput.type = "text";
 secondLegend.appendChild(secondLegendTextInput);
 
-debug('Children of the first legend element in a fieldset should not get disabled with the fieldset.');
+// Children of the first legend element in a fieldset should not get disabled with the fieldset.
 legendFieldSet.disabled = true;
-shouldBeTrue('legendFieldSet.disabled');
+assert_true(legendFieldSet.disabled);
 firstLegendTextInput.focus();
 document.execCommand('insertText', false, 'I');
 secondLegendTextInput.focus()
 document.execCommand('insertText', false, 'I');
-shouldBe('firstLegendTextInput.value', '"II"');
-shouldBe('secondLegendTextInput.value', '""');
+assert_equals(firstLegendTextInput.value, 'II');
+assert_equals(secondLegendTextInput.value, '');
 
-debug('Insert another legend element before the currently first one, and check again.');
+// Insert another legend element before the currently first one, and check again.
 var insertedLegend = document.createElement('legend');
 legendFieldSet.insertBefore(insertedLegend, firstLegend);
 var insertedLegendTextInput = document.createElement('input');
@@ -274,26 +275,27 @@ firstLegendTextInput.focus();
 document.execCommand('insertText', false, 'J');
 secondLegendTextInput.focus()
 document.execCommand('insertText', false, 'J');
-shouldBe('insertedLegendTextInput.value', '"JJJ"');
-shouldBe('firstLegendTextInput.value', '"II"');
-shouldBe('secondLegendTextInput.value', '""');
+assert_equals(insertedLegendTextInput.value, 'JJJ');
+assert_equals(firstLegendTextInput.value, 'II');
+assert_equals(secondLegendTextInput.value, '');
 
-debug('Enable the fieldset again and check for sanity.');
+// Enable the fieldset again and check for sanity.
 legendFieldSet.disabled = false;
-shouldBeFalse('legendFieldSet.disabled');
+assert_false(legendFieldSet.disabled);
 insertedLegendTextInput.focus();
 document.execCommand('insertText', false, 'K');
 firstLegendTextInput.focus();
 document.execCommand('insertText', false, 'K');
 secondLegendTextInput.focus()
 document.execCommand('insertText', false, 'K');
-shouldBe('insertedLegendTextInput.value', '"JJJK"');
-shouldBe('firstLegendTextInput.value', '"IIK"');
-shouldBe('secondLegendTextInput.value', '"K"');
+assert_equals(insertedLegendTextInput.value, 'JJJK');
+assert_equals(firstLegendTextInput.value, 'IIK');
+assert_equals(secondLegendTextInput.value, 'K');
 
 var disabledFieldsetWithTabindex = document.getElementById('fieldset-tabindex');
 document.activeElement.blur();
-shouldBe('disabledFieldsetWithTabindex.focus(); document.activeElement', 'document.body');
+disabledFieldsetWithTabindex.focus();
+assert_equals(document.activeElement, disabledFieldsetWithTabindex);
 
 document.body.removeChild(document.getElementsByTagName('form')[0]);
 document.body.removeChild(fieldSet);
@@ -301,6 +303,7 @@ document.body.removeChild(outerFieldSet);
 document.body.removeChild(legendFieldSet);
 document.body.removeChild(disabledFieldsetWithTabindex);
 var successfullyParsed = true;
+}, 'Tests for HTMLFieldSetElement.disabled behavior.');
 </script>
 
 </body>

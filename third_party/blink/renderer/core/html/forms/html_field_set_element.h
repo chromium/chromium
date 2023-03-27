@@ -40,6 +40,8 @@ class CORE_EXPORT HTMLFieldSetElement final : public HTMLFormControlElement {
   HTMLLegendElement* Legend() const;
   HTMLCollection* elements();
 
+  bool IsDisabledFormControl() const override;
+
  protected:
   void DisabledAttributeChanged() override;
 

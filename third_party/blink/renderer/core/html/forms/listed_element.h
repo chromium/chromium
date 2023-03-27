@@ -198,9 +198,9 @@ class CORE_EXPORT ListedElement : public GarbageCollectedMixin {
   void SetCustomValidationMessage(const String& message);
 
   // False; There are no FIELDSET ancestors.
-  // True; There might be a FIELDSET ancestor, and thre might be no
+  // True; There might be a FIELDSET ancestor, and there might be no
   //       FIELDSET ancestors.
-  mutable bool may_have_field_set_ancestor_ = true;
+  mutable bool may_have_fieldset_ancestor_ = true;
 
  private:
   void UpdateAncestorDisabledState() const;

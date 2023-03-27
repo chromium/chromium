@@ -119,7 +119,7 @@ void ListedElement::DidMoveToNewDocument(Document& old_document) {
 void ListedElement::InsertedInto(ContainerNode& insertion_point) {
   ancestor_disabled_state_ = AncestorDisabledState::kUnknown;
   // Force traversal to find ancestor
-  may_have_field_set_ancestor_ = true;
+  may_have_fieldset_ancestor_ = true;
   data_list_ancestor_state_ = DataListAncestorState::kUnknown;
   UpdateWillValidateCache();
 
@@ -275,7 +275,7 @@ void ListedElement::FormOwnerSetNeedsValidityCheck() {
 void ListedElement::FieldSetAncestorsSetNeedsValidityCheck(Node* node) {
   if (!node)
     return;
-  if (!may_have_field_set_ancestor_)
+  if (!may_have_fieldset_ancestor_)
     return;
   for (auto* field_set =
            Traversal<HTMLFieldSetElement>::FirstAncestorOrSelf(*node);
@@ -593,11 +593,11 @@ void ListedElement::ReadonlyAttributeChanged() {
 }
 
 void ListedElement::UpdateAncestorDisabledState() const {
-  if (!may_have_field_set_ancestor_) {
+  if (!may_have_fieldset_ancestor_) {
     ancestor_disabled_state_ = AncestorDisabledState::kEnabled;
     return;
   }
-  may_have_field_set_ancestor_ = false;
+  may_have_fieldset_ancestor_ = false;
   // <fieldset> element of which |disabled| attribute affects the
   // target element.
   HTMLFieldSetElement* disabled_fieldset_ancestor = nullptr;
@@ -608,15 +608,17 @@ void ListedElement::UpdateAncestorDisabledState() const {
       last_legend_ancestor = ancestor;
       continue;
     }
-    if (!IsA<HTMLFieldSetElement>(*ancestor))
-      continue;
-    may_have_field_set_ancestor_ = true;
-    if (ancestor->IsDisabledFormControl()) {
-      auto* fieldset = To<HTMLFieldSetElement>(ancestor);
-      if (last_legend_ancestor && last_legend_ancestor == fieldset->Legend())
-        continue;
-      disabled_fieldset_ancestor = fieldset;
-      break;
+    if (HTMLFieldSetElement* fieldset_ancestor =
+            DynamicTo<HTMLFieldSetElement>(ancestor)) {
+      may_have_fieldset_ancestor_ = true;
+      if (fieldset_ancestor->is_element_disabled_) {
+        if (last_legend_ancestor &&
+            last_legend_ancestor == fieldset_ancestor->Legend()) {
+          continue;
+        }
+        disabled_fieldset_ancestor = fieldset_ancestor;
+        break;
+      }
     }
   }
   ancestor_disabled_state_ = disabled_fieldset_ancestor

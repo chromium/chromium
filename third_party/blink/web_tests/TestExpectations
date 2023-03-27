@@ -1715,7 +1715,6 @@ crbug.com/1132413 external/wpt/html/semantics/scripting-1/the-script-element/jso
 crbug.com/1232504 [ Win ] external/wpt/html/semantics/embedded-content/media-elements/ready-states/autoplay-hidden.optional.html [ Timeout ]
 crbug.com/1234199 [ Linux ] external/wpt/html/semantics/embedded-content/the-object-element/object-events.html [ Crash Failure Pass Timeout ]
 crbug.com/1234199 [ Mac ] external/wpt/html/semantics/embedded-content/the-object-element/object-events.html [ Crash Failure Pass Timeout ]
-crbug.com/1394141 [ Win ] external/wpt/html/semantics/disabled-elements/event-propagate-disabled.tentative.html [ Failure Timeout ]
 crbug.com/1395815 external/wpt/html/semantics/forms/the-input-element/range-tick-marks-02.html [ Failure ]
 crbug.com/1004760 [ Mac ] external/wpt/html/semantics/embedded-content/media-elements/ready-states/autoplay-hidden.optional.html [ Timeout ]
 crbug.com/1191547 external/wpt/html/semantics/forms/the-label-element/proxy-modifier-click-to-associated-element.tentative.html [ Timeout ]
@@ -5024,6 +5023,11 @@ crbug.com/1201406 http/tests/credentialmanagement/publickeycredential-same-origi
 # Sheriff 2021-06-14
 crbug.com/1219499 [ Release Win ] external/wpt/websockets/Create-blocked-port.any.html?wpt_flags=h2 [ Failure Pass Timeout ]
 
+# Waiting for resolution on disabled fieldsets in https://github.com/whatwg/html/issues/5886
+# We want to make fieldsets not disableable due to crbug.com/1422096 and crbug.com/1422547
+# which breaks this exhaustive test, but it will be updated after whatwg/html resolution.
+crbug.com/588760 external/wpt/html/semantics/disabled-elements/event-propagate-disabled.tentative.html [ Failure ]
+
 # Sheriff 2021-06-15
 crbug.com/1220007 [ Linux ] fullscreen/full-screen-iframe-allowed-video.html [ Failure Pass Timeout ]
 
@@ -5607,7 +5611,6 @@ crbug.com/1312266 [ Mac10.13 ] external/wpt/preload/preload-time-to-fetch.https.
 # Sheriff 2022-04-05
 crbug.com/1313282 inspector-protocol/input/dispatchMouseEvent.js [ Failure Pass Timeout ]
 crbug.com/1254163 [ Mac10.13 ] ietestcenter/css3/bordersbackgrounds/background-attachment-local-scrolling.htm [ Failure ]
-crbug.com/1313396 [ Linux ] external/wpt/dom/events/Event-dispatch-on-disabled-elements.html [ Failure Pass ]
 crbug.com/1194945 external/wpt/dom/events/scrolling/overscroll-event-fired-to-scrolled-element.html [ Failure Pass ]
 crbug.com/1244896 fast/mediacapturefromelement/CanvasCaptureMediaStream-set-size-too-large.html [ Failure Pass Timeout ]
 

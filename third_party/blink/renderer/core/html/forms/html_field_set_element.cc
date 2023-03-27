@@ -168,4 +168,14 @@ HTMLCollection* HTMLFieldSetElement::elements() {
   return EnsureCachedCollection<HTMLCollection>(kFormControls);
 }
 
+bool HTMLFieldSetElement::IsDisabledFormControl() const {
+  if (RuntimeEnabledFeatures::SendMouseEventsDisabledFormControlsEnabled()) {
+    // The fieldset element itself should never be considered disabled, it is
+    // only supposed to affect its descendants:
+    // https://html.spec.whatwg.org/multipage/form-control-infrastructure.html#concept-fe-disabled
+    return false;
+  }
+  return HTMLFormControlElement::IsDisabledFormControl();
+}
+
 }  // namespace blink
