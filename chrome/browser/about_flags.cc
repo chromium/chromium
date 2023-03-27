@@ -9842,11 +9842,11 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(ash::features::kDeskButton)},
 #endif
 
-#if !BUILDFLAG(IS_ANDROID)
-    {"settings-enable-get-the-most-out-of-program",
-     flag_descriptions::kSettingsEnableGetTheMostOutOfProgramName,
-     flag_descriptions::kSettingsEnableGetTheMostOutOfProgramDescription,
-     kOsDesktop, FEATURE_VALUE_TYPE(::features::kGetTheMostOutOfProgram)},
+#if !BUILDFLAG(IS_ANDROID) && BUILDFLAG(GOOGLE_CHROME_BRANDING)
+    {"settings-enable-get-the-most-out-of-chrome",
+     flag_descriptions::kSettingsEnableGetTheMostOutOfChromeName,
+     flag_descriptions::kSettingsEnableGetTheMostOutOfChromeDescription,
+     kOsDesktop, FEATURE_VALUE_TYPE(::features::kGetTheMostOutOfChrome)},
 #endif
 
 #if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_ANDROID)

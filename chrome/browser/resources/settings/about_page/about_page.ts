@@ -75,15 +75,17 @@ export class SettingsAboutPageElement extends SettingsAboutPageElementBase {
         },
       },
 
+      // <if expr="_google_chrome">
       /**
        * Whether to show the "Get the most out of Chrome" section.
        */
-      showGetTheMostOutOfProgramSection_: {
+      showGetTheMostOutOfChromeSection_: {
         type: Boolean,
         value() {
-          return loadTimeData.getBoolean('showGetTheMostOutOfProgramSection');
+          return loadTimeData.getBoolean('showGetTheMostOutOfChromeSection');
         },
       },
+      // </if>
 
       // <if expr="_google_chrome and is_macosx">
       promoteUpdaterStatus_: Object,
@@ -128,7 +130,10 @@ export class SettingsAboutPageElement extends SettingsAboutPageElementBase {
 
   private currentUpdateStatusEvent_: UpdateStatusChangedEvent|null;
   private isManaged_: boolean;
-  private showGetTheMostOutOfProgramSection_: boolean;
+
+  // <if expr="_google_chrome">
+  private showGetTheMostOutOfChromeSection_: boolean;
+  // </if>
 
   // <if expr="_google_chrome and is_macosx">
   private promoteUpdaterStatus_: PromoteUpdaterStatus;
@@ -211,10 +216,6 @@ export class SettingsAboutPageElement extends SettingsAboutPageElementBase {
 
   private onRelaunchTap_() {
     this.performRestart(RestartType.RELAUNCH);
-  }
-
-  private onGetTheMostOutOfProgramTap_() {
-    // TODO(crbug.com/1423278): implement.
   }
 
   // <if expr="not chromeos_ash">
@@ -339,6 +340,10 @@ export class SettingsAboutPageElement extends SettingsAboutPageElementBase {
   // <if expr="_google_chrome">
   private onReportIssueTap_() {
     this.aboutBrowserProxy_.openFeedbackDialog();
+  }
+
+  private onGetTheMostOutOfChromeTap_() {
+    // TODO(crbug.com/1423278): implement.
   }
   // </if>
 

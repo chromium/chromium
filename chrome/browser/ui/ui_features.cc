@@ -72,10 +72,10 @@ BASE_FEATURE(kEvDetailsInPageInfo,
              "EvDetailsInPageInfo",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+#if !defined(ANDROID) && BUILDFLAG(GOOGLE_CHROME_BRANDING)
 // Enables showing the "Get the most out of Chrome" section in settings.
-#if !defined(ANDROID)
-BASE_FEATURE(kGetTheMostOutOfProgram,
-             "GetTheMostOutOfProgram",
+BASE_FEATURE(kGetTheMostOutOfChrome,
+             "GetTheMostOutOfChrome",
              base::FEATURE_DISABLED_BY_DEFAULT);
 #endif
 

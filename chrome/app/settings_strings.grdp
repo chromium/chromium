@@ -50,6 +50,12 @@
     <message name="IDS_SETTINGS_ABOUT_PAGE_SEND_FEEDBACK" desc="Text of the button which allows the user to send feedback with Chrome.">
       Send feedback
     </message>
+    <message name="IDS_SETTINGS_GET_THE_MOST_OUT_OF_CHROME" desc="Section title for the 'Get the most out of Chrome' page.">
+      Get the most ouf of Chrome
+    </message>
+    <message name="IDS_SETTINGS_GET_THE_MOST_OUT_OF_CHROME_DESCRIPTION" desc="Explanatory text for the link to the 'Get the most out of Chrome' page.">
+      This guide helps you understand your choices, so that Chrome works the way you want to
+    </message>
   </if>
   <if expr="is_macosx">
     <message name="IDS_ABOUT_CHROME_AUTOUPDATE_ALL" desc="The 'Automatically update Chrome for all users.' button in the About window.  Mac-only.">

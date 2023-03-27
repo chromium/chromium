@@ -4533,11 +4533,13 @@ const char kSCTAuditingDescription[] =
     "Enables SCT auditing for users who have opted in to Safe Browsing "
     "Extended Reporting.";
 
-const char kSettingsEnableGetTheMostOutOfProgramName[] =
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+const char kSettingsEnableGetTheMostOutOfChromeName[] =
     "'Get the most out of Chrome' documentation";
-const char kSettingsEnableGetTheMostOutOfProgramDescription[] =
+const char kSettingsEnableGetTheMostOutOfChromeDescription[] =
     "When enabled, the 'Get the most out of Chrome' documentation section "
     "will be available.";
+#endif
 
 const char kSharingDesktopSharePreviewName[] = "Desktop share hub preview";
 const char kSharingDesktopSharePreviewDescription[] =

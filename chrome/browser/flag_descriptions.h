@@ -2606,8 +2606,10 @@ extern const char kPasswordManagerRedesignDescription[];
 extern const char kSCTAuditingName[];
 extern const char kSCTAuditingDescription[];
 
-extern const char kSettingsEnableGetTheMostOutOfProgramName[];
-extern const char kSettingsEnableGetTheMostOutOfProgramDescription[];
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+extern const char kSettingsEnableGetTheMostOutOfChromeName[];
+extern const char kSettingsEnableGetTheMostOutOfChromeDescription[];
+#endif
 
 extern const char kSharingDesktopSharePreviewName[];
 extern const char kSharingDesktopSharePreviewDescription[];
