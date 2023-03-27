@@ -1,0 +1,34 @@
+diff --git a/third_party/zxcvbn-cpp/native-src/zxcvbn/util.cpp b/third_party/zxcvbn-cpp/native-src/zxcvbn/util.cpp
+index 440f1e933a74d..b4c88b30aa58b 100644
+--- a/third_party/zxcvbn-cpp/native-src/zxcvbn/util.cpp
++++ b/third_party/zxcvbn-cpp/native-src/zxcvbn/util.cpp
+@@ -1,8 +1,6 @@
+ #include <zxcvbn/util.hpp>
+ 
+ #include <algorithm>
+-#include <codecvt>
+-#include <locale>
+ #include <string>
+ #include <utility>
+ 
+@@ -11,6 +9,7 @@
+ #include "base/strings/string_piece.h"
+ #include "base/strings/string_util.h"
+ #include "base/strings/utf_string_conversion_utils.h"
++#include "base/strings/utf_string_conversions.h"
+ 
+ namespace zxcvbn {
+ 
+@@ -33,10 +32,9 @@ std::string reverse_string(const std::string & in) {
+   if (!utf8_valid(in))
+     return std::string(in.rbegin(), in.rend());
+ 
+-  std::wstring_convert<std::codecvt_utf8<char32_t>, char32_t> conv;
+-  auto ret = conv.from_bytes(in);
++  std::wstring ret = base::UTF8ToWide(in);
+   std::reverse(ret.begin(), ret.end());
+-  return conv.to_bytes(ret);
++  return base::WideToUTF8(ret);
+ }
+ 
+ template<class It>

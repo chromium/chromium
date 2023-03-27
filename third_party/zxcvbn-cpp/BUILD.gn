@@ -6,12 +6,7 @@ import("//testing/libfuzzer/fuzzer_test.gni")
 import("//testing/test.gni")
 
 config("zxcvbn_internal_config") {
-  cflags = [
-    "-Wno-shadow",
-    # TODO(crbug.com/1344570) Remove once zxcvbn no longer uses
-    # std::wstring_convert.
-    "-Wno-deprecated-declarations",
-  ]
+  cflags = [ "-Wno-shadow" ]
 }
 
 config("zxcvbn_public_config") {

@@ -53,6 +53,8 @@ Applied the following patches:
 - patches/include_utility.diff: Explicitly include <utility> in optional.hpp to
   remove an implicit transitive include dependency in libc++ that will no longer
   exist once Chrome is built with -fmodules.
+- patches/no_wstring_convert.diff: Replace usages of std::wstring_convert with
+  //base equivalents as the former is deprecated in C++17.
 
 Ran the following commands to generate adjacency graphs:
 $ python ./data-scripts/build_keyboard_adjacency_graphs.py ./native-src/zxcvbn/adjacency_graphs.hpp
