@@ -109,6 +109,15 @@ void AXTreeDistiller::Distill(const ui::AXTree& tree,
   DistillViaAlgorithm(tree);
 }
 
+void AXTreeDistiller::CancelPendingTasks() {
+#if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
+  if (features::IsReadAnythingWithScreen2xEnabled() &&
+      main_content_extractor_.is_bound()) {
+    main_content_extractor_->CancelPendingMainContentExtractionTasks();
+  }
+#endif
+}
+
 void AXTreeDistiller::DistillViaAlgorithm(const ui::AXTree& tree) {
   std::vector<const ui::AXNode*> content_root_nodes;
   std::vector<ui::AXNodeID> content_node_ids;
@@ -134,9 +143,11 @@ void AXTreeDistiller::DistillViaScreen2x(const ui::AXTree& tree,
 
 void AXTreeDistiller::ProcessScreen2xResult(
     const ui::AXTree& tree,
+    const screen_ai::mojom::Screen2xMainContentExtractor::Status status,
     const std::vector<ui::AXNodeID>& content_node_ids) {
   // If content nodes were identified, run callback.
-  if (!content_node_ids.empty()) {
+  if (status == screen_ai::mojom::Screen2xMainContentExtractor::Status::kOK &&
+      !content_node_ids.empty()) {
     on_ax_tree_distilled_callback_.Run(tree.GetAXTreeID(), content_node_ids);
     return;
   }

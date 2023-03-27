@@ -180,7 +180,7 @@ bool ScreenAILibraryWrapper::PerformOcr(const SkBitmap& image,
   DCHECK(perform_ocr_);
   DCHECK(read_buffered_char_array_);
 
-  uint32_t annotation_proto_length;
+  uint32_t annotation_proto_length = 0;
   if (!perform_ocr_(image, annotation_proto_length)) {
     return false;
   }
@@ -195,7 +195,7 @@ bool ScreenAILibraryWrapper::ExtractLayout(const SkBitmap& image,
                                            std::string& annotation_proto) {
   DCHECK(extract_layout_);
   DCHECK(read_buffered_char_array_);
-  uint32_t annotation_proto_length;
+  uint32_t annotation_proto_length = 0;
   if (!extract_layout_(image, annotation_proto_length)) {
     return false;
   }
@@ -212,7 +212,7 @@ bool ScreenAILibraryWrapper::ExtractMainContent(
   DCHECK(extract_main_content_);
   DCHECK(read_buffered_int32_array_);
 
-  uint32_t nodes_count;
+  uint32_t nodes_count = 0;
   if (!extract_main_content_(serialized_view_hierarchy.data(),
                              serialized_view_hierarchy.length(), nodes_count)) {
     return false;
