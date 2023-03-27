@@ -55,36 +55,6 @@
                 "project": "chromium"
               }
             }
-          },
-          {
-            "builder_id": {
-              "bucket": "ci",
-              "builder": "mac-osxbeta-rel",
-              "project": "chromium"
-            },
-            "builder_spec": {
-              "build_gs_bucket": "chromium-fyi-archive",
-              "builder_group": "chromium.fyi",
-              "execution_mode": "TEST",
-              "legacy_chromium_config": {
-                "apply_configs": [
-                  "mb",
-                  "goma_use_local"
-                ],
-                "build_config": "Release",
-                "config": "chromium",
-                "target_bits": 64,
-                "target_platform": "mac"
-              },
-              "legacy_gclient_config": {
-                "config": "chromium"
-              },
-              "parent": {
-                "bucket": "ci",
-                "builder": "Mac Builder (dbg)",
-                "project": "chromium"
-              }
-            }
           }
         ]
       },
@@ -99,11 +69,6 @@
         {
           "bucket": "ci",
           "builder": "Mac12 Tests (dbg)",
-          "project": "chromium"
-        },
-        {
-          "bucket": "ci",
-          "builder": "mac-osxbeta-rel",
           "project": "chromium"
         }
       ],

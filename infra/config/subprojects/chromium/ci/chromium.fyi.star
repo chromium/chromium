@@ -904,13 +904,9 @@ fyi_ios_builder(
     ),
 )
 
-# This is launching & collecting entirely isolated tests.
-# OS shouldn't matter.
-ci.thin_tester(
+ci.builder(
     name = "mac-osxbeta-rel",
-    triggered_by = ["ci/Mac Builder (dbg)"],
     builder_spec = builder_config.builder_spec(
-        execution_mode = builder_config.execution_mode.TEST,
         gclient_config = builder_config.gclient_config(
             config = "chromium",
         ),
