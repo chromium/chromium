@@ -38,9 +38,6 @@ class MigratableCardView : public views::View {
   std::string GetGuid() const;
   std::u16string GetCardIdentifierString() const;
 
-  // views::View:
-  void OnThemeChanged() override;
-
  private:
   std::unique_ptr<views::View> GetMigratableCardDescriptionView(
       const MigratableCreditCard& migratable_credit_card,
