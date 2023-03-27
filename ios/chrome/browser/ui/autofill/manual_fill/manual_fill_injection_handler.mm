@@ -179,8 +179,12 @@ using base::UmaHistogramEnumeration;
   if (!activeWebState) {
     return;
   }
-  web::WebFrame* activeWebFrame = web::GetWebFrameWithId(
-      activeWebState, self.lastFocusedElementFrameIdentifier);
+  autofill::AutofillJavaScriptFeature* feature =
+      autofill::AutofillJavaScriptFeature::GetInstance();
+
+  web::WebFrame* activeWebFrame =
+      feature->GetWebFramesManager(activeWebState)
+          ->GetFrameWithId(self.lastFocusedElementFrameIdentifier);
   if (!activeWebFrame) {
     return;
   }

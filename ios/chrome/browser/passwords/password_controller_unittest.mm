@@ -293,11 +293,13 @@ class PasswordControllerTest : public PlatformTest {
   }
 
   bool SetUpUniqueIDs() {
+    autofill::FormUtilJavaScriptFeature* feature =
+        autofill::FormUtilJavaScriptFeature::GetInstance();
     __block web::WebFrame* main_frame = nullptr;
     bool success =
         WaitUntilConditionOrTimeout(kWaitForJSCompletionTimeout, ^bool {
           main_frame =
-              web_state()->GetPageWorldWebFramesManager()->GetMainWebFrame();
+              feature->GetWebFramesManager(web_state())->GetMainWebFrame();
           return main_frame != nullptr;
         });
     if (!success) {
@@ -306,8 +308,7 @@ class PasswordControllerTest : public PlatformTest {
     DCHECK(main_frame);
 
     constexpr uint32_t next_available_id = 1;
-    autofill::FormUtilJavaScriptFeature::GetInstance()
-        ->SetUpForUniqueIDsWithInitialState(main_frame, next_available_id);
+    feature->SetUpForUniqueIDsWithInitialState(main_frame, next_available_id);
 
     // Wait for `SetUpForUniqueIDsWithInitialState` to complete.
     return WaitUntilConditionOrTimeout(kWaitForJSCompletionTimeout, ^bool {
@@ -328,12 +329,14 @@ class PasswordControllerTest : public PlatformTest {
                                           FormRendererId form_id,
                                           FieldRendererId field_id,
                                           std::string value) {
-    std::string mainFrameID = web::GetMainWebFrameId(web_state());
-    WebFrame* frame = web::GetWebFrameWithId(web_state(), mainFrameID);
+    password_manager::PasswordManagerJavaScriptFeature* feature =
+        password_manager::PasswordManagerJavaScriptFeature::GetInstance();
+    WebFrame* frame =
+        feature->GetWebFramesManager(web_state())->GetMainWebFrame();
     FormActivityParams params;
     params.type = type;
     params.unique_form_id = form_id;
-    params.frame_id = mainFrameID;
+    params.frame_id = frame->GetFrameId();
     params.value = value;
     [passwordController_.sharedPasswordController webState:web_state()
                                    didRegisterFormActivity:params
@@ -343,12 +346,14 @@ class PasswordControllerTest : public PlatformTest {
   void SimulateFormRemovalObserverSignal(
       FormRendererId form_id,
       std::vector<FieldRendererId> field_ids) {
-    std::string mainFrameID = web::GetMainWebFrameId(web_state());
-    WebFrame* frame = web::GetWebFrameWithId(web_state(), mainFrameID);
+    password_manager::PasswordManagerJavaScriptFeature* feature =
+        password_manager::PasswordManagerJavaScriptFeature::GetInstance();
+    WebFrame* frame =
+        feature->GetWebFramesManager(web_state())->GetMainWebFrame();
     FormRemovalParams params;
     params.unique_form_id = form_id;
     params.removed_unowned_fields = field_ids;
-    params.frame_id = mainFrameID;
+    params.frame_id = frame->GetFrameId();
     [passwordController_.sharedPasswordController webState:web_state()
                                     didRegisterFormRemoval:params
                                                    inFrame:frame];
@@ -470,8 +475,10 @@ class PasswordControllerTest : public PlatformTest {
 
   // This method only works if there are no more than 1 iframes per page.
   web::WebFrame* GetWebFrame(bool is_main_frame) {
+    password_manager::PasswordManagerJavaScriptFeature* feature =
+        password_manager::PasswordManagerJavaScriptFeature::GetInstance();
     std::set<WebFrame*> all_frames =
-        web_state()->GetPageWorldWebFramesManager()->GetAllWebFrames();
+        feature->GetWebFramesManager(web_state())->GetAllWebFrames();
     for (auto* frame : all_frames) {
       if (is_main_frame == frame->IsMainFrame()) {
         return frame;
@@ -2051,9 +2058,10 @@ TEST_F(PasswordControllerTest, DetectSubmissionOnIFrameDetach) {
 
   WaitForFormManagersCreation();
 
-  std::string mainFrameID = web::GetMainWebFrameId(web_state());
+  autofill::FormUtilJavaScriptFeature* feature =
+      autofill::FormUtilJavaScriptFeature::GetInstance();
   std::set<WebFrame*> all_frames =
-      web_state()->GetPageWorldWebFramesManager()->GetAllWebFrames();
+      feature->GetWebFramesManager(web_state())->GetAllWebFrames();
   std::string iFrameID;
   for (auto* frame : all_frames) {
     if (!frame->IsMainFrame()) {
@@ -2131,8 +2139,9 @@ TEST_F(PasswordControllerTest,
        "frame1.parentNode.removeChild(frame1);",
       web_state());
   ASSERT_TRUE(WaitUntilConditionOrTimeout(kWaitForJSCompletionTimeout, ^bool() {
-    auto frames =
-        web_state()->GetPageWorldWebFramesManager()->GetAllWebFrames();
+    password_manager::PasswordManagerJavaScriptFeature* feature =
+        password_manager::PasswordManagerJavaScriptFeature::GetInstance();
+    auto frames = feature->GetWebFramesManager(web_state())->GetAllWebFrames();
     return frames.size() == 1;
   }));
 }

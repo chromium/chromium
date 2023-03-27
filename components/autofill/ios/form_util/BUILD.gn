@@ -20,6 +20,7 @@ source_set("form_util") {
     "unique_id_data_tab_helper.mm",
   ]
   deps = [
+    ":form_util_feature",
     "//base",
     "//components/autofill/core/common",
     "//components/autofill/ios/browser:util",

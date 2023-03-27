@@ -42,11 +42,13 @@
 #include "components/password_manager/ios/account_select_fill_data.h"
 #import "components/password_manager/ios/ios_password_manager_driver_factory.h"
 #include "components/password_manager/ios/password_manager_ios_util.h"
+#import "components/password_manager/ios/password_manager_java_script_feature.h"
 #import "components/password_manager/ios/shared_password_controller+private.h"
 #include "components/strings/grit/components_strings.h"
 #include "ios/web/common/url_scheme_util.h"
 #include "ios/web/public/js_messaging/web_frame.h"
 #include "ios/web/public/js_messaging/web_frame_util.h"
+#import "ios/web/public/js_messaging/web_frames_manager.h"
 #include "ios/web/public/navigation/navigation_context.h"
 #import "ios/web/public/web_state.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
@@ -350,8 +352,11 @@ BOOL canProcessCrossOriginIframes() {
     completion(NO);
     return;
   }
-  web::WebFrame* frame =
-      web::GetWebFrameWithId(webState, SysNSStringToUTF8(formQuery.frameID));
+
+  password_manager::PasswordManagerJavaScriptFeature* feature =
+      password_manager::PasswordManagerJavaScriptFeature::GetInstance();
+  web::WebFrame* frame = feature->GetWebFramesManager(webState)->GetFrameWithId(
+      SysNSStringToUTF8(formQuery.frameID));
 
   // Clicking on a password form field from a different form on the same page
   // triggers displaying the on-screen keyboard. When the keyboard is
@@ -424,8 +429,12 @@ BOOL canProcessCrossOriginIframes() {
     completion({}, self);
     return;
   }
+
+  password_manager::PasswordManagerJavaScriptFeature* feature =
+      password_manager::PasswordManagerJavaScriptFeature::GetInstance();
   web::WebFrame* frame =
-      web::GetWebFrameWithId(_webState, SysNSStringToUTF8(formQuery.frameID));
+      feature->GetWebFramesManager(_webState)->GetFrameWithId(
+          SysNSStringToUTF8(formQuery.frameID));
 
   if (frame == nullptr || (IsCrossOriginIframe(_webState, frame->IsMainFrame(),
                                                frame->GetSecurityOrigin()) &&
@@ -520,8 +529,11 @@ BOOL canProcessCrossOriginIframes() {
               uniqueFieldID:(FieldRendererId)uniqueFieldID
                     frameID:(NSString*)frameID
           completionHandler:(SuggestionHandledCompletion)completion {
+  password_manager::PasswordManagerJavaScriptFeature* feature =
+      password_manager::PasswordManagerJavaScriptFeature::GetInstance();
   web::WebFrame* frame =
-      web::GetWebFrameWithId(_webState, SysNSStringToUTF8(frameID));
+      feature->GetWebFramesManager(_webState)->GetFrameWithId(
+          SysNSStringToUTF8(frameID));
 
   switch (suggestion.identifier) {
     case autofill::POPUP_ITEM_ID_ALL_SAVED_PASSWORDS_ENTRY: {

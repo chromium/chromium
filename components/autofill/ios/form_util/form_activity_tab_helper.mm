@@ -13,9 +13,10 @@
 #import "components/autofill/ios/browser/autofill_util.h"
 #include "components/autofill/ios/form_util/form_activity_observer.h"
 #include "components/autofill/ios/form_util/form_activity_params.h"
+#import "components/autofill/ios/form_util/form_util_java_script_feature.h"
 #include "ios/web/public/js_messaging/script_message.h"
 #include "ios/web/public/js_messaging/web_frame.h"
-#include "ios/web/public/js_messaging/web_frame_util.h"
+#import "ios/web/public/js_messaging/web_frames_manager.h"
 #import "ios/web/public/ui/crw_web_view_proxy.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
@@ -77,7 +78,9 @@ void FormActivityTabHelper::HandleFormActivity(
     return;
   }
 
-  web::WebFrame* sender_frame = GetWebFrameWithId(web_state, params.frame_id);
+  web::WebFramesManager* frames_manager =
+      FormUtilJavaScriptFeature::GetInstance()->GetWebFramesManager(web_state);
+  web::WebFrame* sender_frame = frames_manager->GetFrameWithId(params.frame_id);
   if (!sender_frame) {
     return;
   }
@@ -95,7 +98,9 @@ void FormActivityTabHelper::HandleFormRemoval(
     return;
   }
 
-  web::WebFrame* sender_frame = GetWebFrameWithId(web_state, params.frame_id);
+  web::WebFramesManager* frames_manager =
+      FormUtilJavaScriptFeature::GetInstance()->GetWebFramesManager(web_state);
+  web::WebFrame* sender_frame = frames_manager->GetFrameWithId(params.frame_id);
   if (!sender_frame) {
     return;
   }
@@ -127,7 +132,9 @@ void FormActivityTabHelper::FormSubmissionHandler(
     return;
   }
 
-  web::WebFrame* sender_frame = GetWebFrameWithId(web_state, *frame_id);
+  web::WebFramesManager* frames_manager =
+      FormUtilJavaScriptFeature::GetInstance()->GetWebFramesManager(web_state);
+  web::WebFrame* sender_frame = frames_manager->GetFrameWithId(*frame_id);
   if (!sender_frame) {
     return;
   }

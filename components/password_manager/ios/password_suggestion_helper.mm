@@ -10,8 +10,9 @@
 #include "components/password_manager/core/browser/password_ui_utils.h"
 #include "components/password_manager/ios/account_select_fill_data.h"
 #import "components/password_manager/ios/password_manager_ios_util.h"
+#import "components/password_manager/ios/password_manager_java_script_feature.h"
 #include "ios/web/public/js_messaging/web_frame.h"
-#include "ios/web/public/js_messaging/web_frame_util.h"
+#import "ios/web/public/js_messaging/web_frames_manager.h"
 #import "ios/web/public/web_state.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
@@ -113,8 +114,12 @@ typedef void (^PasswordSuggestionsAvailableCompletion)(
   // and |completion| will not be called until
   // -processWithPasswordFormFillData: is called.
   DCHECK(_webState.get());
-  web::WebFrame* frame = web::GetWebFrameWithId(
-      _webState.get(), SysNSStringToUTF8(formQuery.frameID));
+
+  password_manager::PasswordManagerJavaScriptFeature* feature =
+      password_manager::PasswordManagerJavaScriptFeature::GetInstance();
+  web::WebFrame* frame =
+      feature->GetWebFramesManager(_webState.get())
+          ->GetFrameWithId(SysNSStringToUTF8(formQuery.frameID));
   DCHECK(frame);
 
   BOOL isPasswordField = [formQuery isOnPasswordField];

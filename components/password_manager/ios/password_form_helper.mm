@@ -24,7 +24,7 @@
 #import "components/password_manager/ios/password_manager_tab_helper.h"
 #include "components/ukm/ios/ukm_url_recorder.h"
 #import "ios/web/public/js_messaging/web_frame.h"
-#import "ios/web/public/js_messaging/web_frame_util.h"
+#import "ios/web/public/js_messaging/web_frames_manager.h"
 #import "ios/web/public/web_state.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
 
@@ -369,7 +369,9 @@ const char kFrameIdKey[] = "frame_id";
   std::string* frame_id =
       message.body()->FindStringKey(password_manager::kFrameIdKey);
   if (frame_id) {
-    frame = web::GetWebFrameWithId(_webState, *frame_id);
+    password_manager::PasswordManagerJavaScriptFeature* feature =
+        password_manager::PasswordManagerJavaScriptFeature::GetInstance();
+    frame = feature->GetWebFramesManager(_webState)->GetFrameWithId(*frame_id);
   }
   if (!frame) {
     return;

@@ -101,7 +101,9 @@ WebFrame* WebFramesManagerImpl::GetMainWebFrame() {
 }
 
 WebFrame* WebFramesManagerImpl::GetFrameWithId(const std::string& frame_id) {
-  DCHECK(!frame_id.empty());
+  if (frame_id.empty()) {
+    return nullptr;
+  }
   auto web_frames_it = web_frames_.find(frame_id);
   return web_frames_it == web_frames_.end() ? nullptr
                                             : web_frames_it->second.get();

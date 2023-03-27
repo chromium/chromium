@@ -70,9 +70,11 @@
 #error "This file requires ARC support."
 #endif
 
+using autofill::AutofillJavaScriptFeature;
 using autofill::FieldDataManager;
 using autofill::FieldRendererId;
 using autofill::FormGlobalId;
+using autofill::FormHandlersJavaScriptFeature;
 using autofill::FormRendererId;
 using autofill::FieldPropertiesFlags::kAutofilledOnUserTrigger;
 using base::NumberToString;
@@ -199,7 +201,7 @@ constexpr base::TimeDelta kA11yAnnouncementQueueDelay = base::Seconds(1);
     _webFramesManagerObserverBridge =
         std::make_unique<web::WebFramesManagerObserverBridge>(self);
     web::WebFramesManager* framesManager =
-        autofill::AutofillJavaScriptFeature::GetInstance()->GetWebFramesManager(
+        AutofillJavaScriptFeature::GetInstance()->GetWebFramesManager(
             _webState);
     framesManager->AddObserver(_webFramesManagerObserverBridge.get());
     _formActivityObserverBridge =
@@ -289,7 +291,7 @@ constexpr base::TimeDelta kA11yAnnouncementQueueDelay = base::Seconds(1);
   GURL pageURL = _webState->GetLastCommittedURL();
   GURL frameOrigin =
       frame ? frame->GetSecurityOrigin() : pageURL.DeprecatedGetOriginAsURL();
-  autofill::AutofillJavaScriptFeature::GetInstance()->FetchForms(
+  AutofillJavaScriptFeature::GetInstance()->FetchForms(
       frame, requiredFieldsCount, base::BindOnce(^(NSString* formJSON) {
         std::vector<autofill::FormData> formData;
         bool success = autofill::ExtractFormsData(
@@ -320,8 +322,10 @@ constexpr base::TimeDelta kA11yAnnouncementQueueDelay = base::Seconds(1);
                      frameID:(NSString*)frameID
                     webState:(web::WebState*)webState
            completionHandler:(SuggestionsAvailableCompletion)completion {
+  web::WebFramesManager* frames_manager =
+      AutofillJavaScriptFeature::GetInstance()->GetWebFramesManager(webState);
   web::WebFrame* frame =
-      GetWebFrameWithId(webState, SysNSStringToUTF8(frameID));
+      frames_manager->GetFrameWithId(SysNSStringToUTF8(frameID));
   autofill::BrowserAutofillManager* autofillManager =
       [self autofillManagerFromWebState:webState webFrame:frame];
   if (!autofillManager) {
@@ -364,8 +368,10 @@ constexpr base::TimeDelta kA11yAnnouncementQueueDelay = base::Seconds(1);
     return;
   }
 
+  web::WebFramesManager* frames_manager =
+      AutofillJavaScriptFeature::GetInstance()->GetWebFramesManager(_webState);
   web::WebFrame* frame =
-      web::GetWebFrameWithId(_webState, SysNSStringToUTF8(formQuery.frameID));
+      frames_manager->GetFrameWithId(SysNSStringToUTF8(formQuery.frameID));
   if (!frame) {
     completion(NO);
     return;
@@ -468,8 +474,10 @@ constexpr base::TimeDelta kA11yAnnouncementQueueDelay = base::Seconds(1);
     return;
   }
 
+  web::WebFramesManager* frames_manager =
+      AutofillJavaScriptFeature::GetInstance()->GetWebFramesManager(_webState);
   web::WebFrame* frame =
-      web::GetWebFrameWithId(_webState, SysNSStringToUTF8(frameID));
+      frames_manager->GetFrameWithId(SysNSStringToUTF8(frameID));
   if (!frame) {
     // The frame no longer exists, so the field can not be filled.
     if (_suggestionHandledCompletion) {
@@ -493,16 +501,16 @@ constexpr base::TimeDelta kA11yAnnouncementQueueDelay = base::Seconds(1);
     SuggestionHandledCompletion suggestionHandledCompletionCopy =
         [_suggestionHandledCompletion copy];
     _suggestionHandledCompletion = nil;
-    autofill::AutofillJavaScriptFeature::GetInstance()
-        ->ClearAutofilledFieldsForForm(
-            frame, uniqueFormID, uniqueFieldID,
-            base::BindOnce(^(NSString* jsonString) {
-              AutofillAgent* strongSelf = weakSelf;
-              if (!strongSelf)
-                return;
-              [strongSelf updateFieldManagerForClearedIDs:jsonString];
-              suggestionHandledCompletionCopy();
-            }));
+    AutofillJavaScriptFeature::GetInstance()->ClearAutofilledFieldsForForm(
+        frame, uniqueFormID, uniqueFieldID,
+        base::BindOnce(^(NSString* jsonString) {
+          AutofillAgent* strongSelf = weakSelf;
+          if (!strongSelf) {
+            return;
+          }
+          [strongSelf updateFieldManagerForClearedIDs:jsonString];
+          suggestionHandledCompletionCopy();
+        }));
 
   } else if (suggestion.identifier ==
              autofill::POPUP_ITEM_ID_SHOW_ACCOUNT_CARDS) {
@@ -589,7 +597,7 @@ constexpr base::TimeDelta kA11yAnnouncementQueueDelay = base::Seconds(1);
     }
     predictionData.Set(base::UTF16ToUTF8(form.data.name), std::move(fieldData));
   }
-  autofill::AutofillJavaScriptFeature::GetInstance()->FillPredictionData(
+  AutofillJavaScriptFeature::GetInstance()->FillPredictionData(
       frame, std::move(predictionData));
 }
 
@@ -697,8 +705,9 @@ constexpr base::TimeDelta kA11yAnnouncementQueueDelay = base::Seconds(1);
 
   // The frameID cannot be empty.
   DCHECK(!pendingFormData.first.empty());
-  web::WebFrame* frame =
-      web::GetWebFrameWithId(_webState, pendingFormData.first);
+  web::WebFramesManager* frames_manager =
+      AutofillJavaScriptFeature::GetInstance()->GetWebFramesManager(_webState);
+  web::WebFrame* frame = frames_manager->GetFrameWithId(pendingFormData.first);
   [self sendData:std::move(pendingFormData.second) toFrame:frame];
 }
 
@@ -717,7 +726,7 @@ constexpr base::TimeDelta kA11yAnnouncementQueueDelay = base::Seconds(1);
     _webState->RemoveObserver(_webStateObserverBridge.get());
     _webStateObserverBridge.reset();
     web::WebFramesManager* framesManager =
-        autofill::AutofillJavaScriptFeature::GetInstance()->GetWebFramesManager(
+        AutofillJavaScriptFeature::GetInstance()->GetWebFramesManager(
             _webState);
     framesManager->RemoveObserver(_webFramesManagerObserverBridge.get());
     _webFramesManagerObserverBridge.reset();
@@ -756,8 +765,7 @@ constexpr base::TimeDelta kA11yAnnouncementQueueDelay = base::Seconds(1);
 
 - (void)processPage:(web::WebState*)webState {
   web::WebFramesManager* frames_manager =
-      autofill::AutofillJavaScriptFeature::GetInstance()->GetWebFramesManager(
-          webState);
+      AutofillJavaScriptFeature::GetInstance()->GetWebFramesManager(webState);
   if (!frames_manager->GetMainWebFrame()) {
     return;
   }
@@ -781,9 +789,7 @@ constexpr base::TimeDelta kA11yAnnouncementQueueDelay = base::Seconds(1);
   if (driver->is_processed())
     return;
   driver->set_processed(true);
-  autofill::AutofillJavaScriptFeature* autofill_feature =
-      autofill::AutofillJavaScriptFeature::GetInstance();
-  autofill_feature->AddJSDelayInFrame(frame);
+  AutofillJavaScriptFeature::GetInstance()->AddJSDelayInFrame(frame);
 
   if (frame->IsMainFrame()) {
     _popupDelegate.reset();
@@ -793,8 +799,8 @@ constexpr base::TimeDelta kA11yAnnouncementQueueDelay = base::Seconds(1);
     _typedValue = nil;
   }
 
-  autofill::FormHandlersJavaScriptFeature* formHandlerFeature =
-      autofill::FormHandlersJavaScriptFeature::GetInstance();
+  FormHandlersJavaScriptFeature* formHandlerFeature =
+      FormHandlersJavaScriptFeature::GetInstance();
 
   // Use a delay of 200ms when tracking form mutations to reduce the
   // communication overhead (as mutations are likely to come in batch).
@@ -973,7 +979,7 @@ constexpr base::TimeDelta kA11yAnnouncementQueueDelay = base::Seconds(1);
   SuggestionHandledCompletion suggestionHandledCompletionCopy =
       [_suggestionHandledCompletion copy];
   _suggestionHandledCompletion = nil;
-  autofill::AutofillJavaScriptFeature::GetInstance()->FillActiveFormField(
+  AutofillJavaScriptFeature::GetInstance()->FillActiveFormField(
       frame, std::move(data), base::BindOnce(^(BOOL success) {
         AutofillAgent* strongSelf = weakSelf;
         if (!strongSelf)
@@ -1011,7 +1017,7 @@ constexpr base::TimeDelta kA11yAnnouncementQueueDelay = base::Seconds(1);
   SuggestionHandledCompletion suggestionHandledCompletionCopy =
       [_suggestionHandledCompletion copy];
   _suggestionHandledCompletion = nil;
-  autofill::AutofillJavaScriptFeature::GetInstance()->FillForm(
+  AutofillJavaScriptFeature::GetInstance()->FillForm(
       frame, std::move(data), _pendingAutocompleteFieldID,
       base::BindOnce(^(NSString* jsonString) {
         AutofillAgent* strongSelf = weakSelf;
@@ -1040,8 +1046,7 @@ constexpr base::TimeDelta kA11yAnnouncementQueueDelay = base::Seconds(1);
     return;
 
   web::WebFramesManager* frames_manager =
-      autofill::AutofillJavaScriptFeature::GetInstance()->GetWebFramesManager(
-          _webState);
+      AutofillJavaScriptFeature::GetInstance()->GetWebFramesManager(_webState);
 
   DCHECK(frames_manager);
   web::WebFrame* webFrame = frames_manager->GetFrameWithId(webFrameId);
