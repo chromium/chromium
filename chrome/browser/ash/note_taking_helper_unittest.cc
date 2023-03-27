@@ -44,6 +44,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
+#include "chrome/browser/ui/web_applications/web_app_ui_manager_impl.h"
 #include "chrome/browser/web_applications/test/fake_web_app_provider.h"
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"
@@ -53,6 +54,7 @@
 #include "chrome/test/base/browser_with_test_window_test.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/base/testing_profile_manager.h"
+#include "chrome/test/base/ui_test_utils.h"
 #include "chromeos/ash/components/dbus/cros_disks/cros_disks_client.h"
 #include "chromeos/ash/components/dbus/session_manager/fake_session_manager_client.h"
 #include "chromeos/ash/components/dbus/session_manager/session_manager_client.h"
@@ -327,6 +329,10 @@ class NoteTakingHelperTest : public BrowserWithTestWindowTest {
   }
 
   void InitWebAppProvider(Profile* profile) {
+    web_app::FakeWebAppProvider* fake_provider =
+        web_app::FakeWebAppProvider::Get(profile);
+    fake_provider->SetWebAppUiManager(
+        std::make_unique<web_app::WebAppUiManagerImpl>(profile));
     web_app::test::AwaitStartWebAppProviderAndSubsystems(profile);
   }
 
@@ -913,8 +919,11 @@ TEST_F(NoteTakingHelperTest, LaunchHardcodedWebApp) {
   // Fire a "Create Note" action and check the app is launched.
   HistogramTester histogram_tester;
   SetNoteTakingClientProfile(profile());
+
+  ui_test_utils::AllBrowserTabAddedWaiter tab_waiter;
   NoteTakingClient::GetInstance()->CreateNote();
   base::RunLoop().RunUntilIdle();
+  ASSERT_TRUE(tab_waiter.Wait());
 
   // Web app, so no launched_chrome_apps.
   EXPECT_EQ(0u, launched_chrome_apps_.size());
@@ -948,8 +957,10 @@ TEST_F(NoteTakingHelperTest, LaunchWebApp) {
   // Fire a "Create Note" action and check the app is launched.
   HistogramTester histogram_tester;
   SetNoteTakingClientProfile(profile());
+  ui_test_utils::AllBrowserTabAddedWaiter tab_added_observer;
   NoteTakingClient::GetInstance()->CreateNote();
   base::RunLoop().RunUntilIdle();
+  ASSERT_TRUE(tab_added_observer.Wait());
 
   histogram_tester.ExpectUniqueSample(
       NoteTakingHelper::kPreferredLaunchResultHistogramName,

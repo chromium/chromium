@@ -59,6 +59,7 @@
 #include "third_party/blink/public/mojom/mediastream/media_stream.mojom-shared.h"
 #endif
 
+class Browser;
 class ContentSettingsPattern;
 class ContentSettingsTypeSet;
 class Profile;
@@ -412,6 +413,15 @@ class WebAppPublisherHelper : public AppRegistrarObserver,
           callback,
       bool allowed,
       bool remember_user_choice);
+
+  void OnLaunchCompleted(
+      apps::AppLaunchParams params_for_restore,
+      bool is_system_web_app,
+      absl::optional<GURL> override_url,
+      base::OnceCallback<void(content::WebContents*)> on_complete,
+      Browser* browser,
+      content::WebContents* web_contents,
+      apps::LaunchContainer container);
 
   const raw_ptr<Profile, DanglingUntriaged> profile_;
 

@@ -43,6 +43,7 @@
 #include "chrome/common/pref_names.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/test/base/in_process_browser_test.h"
+#include "chrome/test/base/ui_test_utils.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_ui.h"
 #include "content/public/test/browser_test.h"
@@ -279,6 +280,8 @@ IN_PROC_BROWSER_TEST_F(FileHandlerDialogBrowserTest,
       FindSystemWebAppBrowser(profile(), SystemWebAppType::FILE_MANAGER);
   ASSERT_EQ(nullptr, browser);
 
+  ui_test_utils::BrowserChangeObserver browser_added_observer(
+      nullptr, ui_test_utils::BrowserChangeObserver::ChangeType::kAdded);
   // Open a files app window.
   base::RunLoop run_loop;
   file_manager::util::ShowItemInFolder(
@@ -290,6 +293,7 @@ IN_PROC_BROWSER_TEST_F(FileHandlerDialogBrowserTest,
             run_loop.Quit();
           }));
   run_loop.Run();
+  browser_added_observer.Wait();
 
   browser = FindSystemWebAppBrowser(profile(), SystemWebAppType::FILE_MANAGER);
   ASSERT_NE(nullptr, browser);
@@ -324,6 +328,8 @@ IN_PROC_BROWSER_TEST_F(FileHandlerDialogBrowserTest, ModalParentProvided) {
   ASSERT_EQ(nullptr, browser);
 
   // Open a files app window.
+  ui_test_utils::BrowserChangeObserver browser_added_observer(
+      nullptr, ui_test_utils::BrowserChangeObserver::ChangeType::kAdded);
   base::RunLoop run_loop;
   file_manager::util::ShowItemInFolder(
       profile(), files_.at(0).path(),
@@ -334,6 +340,7 @@ IN_PROC_BROWSER_TEST_F(FileHandlerDialogBrowserTest, ModalParentProvided) {
             run_loop.Quit();
           }));
   run_loop.Run();
+  browser_added_observer.Wait();
 
   browser = FindSystemWebAppBrowser(profile(), SystemWebAppType::FILE_MANAGER);
   ASSERT_NE(nullptr, browser);

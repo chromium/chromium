@@ -491,6 +491,10 @@ IN_PROC_BROWSER_TEST_F(LacrosWebAppsControllerBrowserTest, Launch) {
   auto launch_params = crosapi::mojom::LaunchParams::New();
   launch_params->app_id = app_id;
   launch_params->launch_source = apps::LaunchSource::kFromTest;
+  launch_params->container =
+      crosapi::mojom::LaunchContainer::kLaunchContainerWindow;
+  launch_params->disposition =
+      crosapi::mojom::WindowOpenDisposition::kNewWindow;
   lacros_web_apps_controller.Launch(std::move(launch_params),
                                     base::DoNothing());
   navigation_observer.Wait();
@@ -515,6 +519,10 @@ IN_PROC_BROWSER_TEST_F(LacrosWebAppsControllerBrowserTest, LaunchWithFiles) {
   navigation_observer.StartWatchingNewWebContents();
   auto launch_params = crosapi::mojom::LaunchParams::New();
   launch_params->app_id = app_id;
+  launch_params->container =
+      crosapi::mojom::LaunchContainer::kLaunchContainerWindow;
+  launch_params->disposition =
+      crosapi::mojom::WindowOpenDisposition::kNewWindow;
   launch_params->launch_source = apps::LaunchSource::kFromTest;
   launch_params->intent = crosapi::mojom::Intent::New();
   launch_params->intent->action = apps_util::kIntentActionView;
@@ -853,6 +861,10 @@ IN_PROC_BROWSER_TEST_F(LacrosWebAppsControllerBrowserTest, GetLink) {
         apps::AppServiceProxyFactory::GetForProfile(profile()), app_id,
         /*event_flags=*/0, apps::LaunchSource::kFromSharesheet,
         display::kInvalidDisplayId);
+    launch_params->container =
+        crosapi::mojom::LaunchContainer::kLaunchContainerWindow;
+    launch_params->disposition =
+        crosapi::mojom::WindowOpenDisposition::kNewWindow;
     launch_params->intent = apps_util::ConvertAppServiceToCrosapiIntent(
         apps_util::MakeShareIntent(shared_link, shared_title), profile());
 
@@ -909,7 +921,10 @@ IN_PROC_BROWSER_TEST_F(LacrosWebAppsControllerBrowserTest, ShareImage) {
         /*event_flags=*/0, apps::LaunchSource::kFromSharesheet,
         display::kInvalidDisplayId);
     launch_params->intent = std::move(crosapi_intent);
-
+    launch_params->container =
+        crosapi::mojom::LaunchContainer::kLaunchContainerWindow;
+    launch_params->disposition =
+        crosapi::mojom::WindowOpenDisposition::kNewWindow;
     static_cast<crosapi::mojom::AppController&>(lacros_web_apps_controller)
         .Launch(std::move(launch_params), base::DoNothing());
   }
@@ -972,6 +987,10 @@ IN_PROC_BROWSER_TEST_F(LacrosWebAppsControllerBrowserTest, ShareMultimedia) {
         /*event_flags=*/0, apps::LaunchSource::kFromSharesheet,
         display::kInvalidDisplayId);
     launch_params->intent = std::move(crosapi_intent);
+    launch_params->container =
+        crosapi::mojom::LaunchContainer::kLaunchContainerWindow;
+    launch_params->disposition =
+        crosapi::mojom::WindowOpenDisposition::kNewWindow;
 
     static_cast<crosapi::mojom::AppController&>(lacros_web_apps_controller)
         .Launch(std::move(launch_params), base::DoNothing());
