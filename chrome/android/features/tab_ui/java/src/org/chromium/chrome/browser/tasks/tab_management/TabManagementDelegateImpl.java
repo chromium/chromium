@@ -13,7 +13,6 @@ import android.view.ViewGroup;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-import org.chromium.base.SysUtils;
 import org.chromium.base.jank_tracker.JankTracker;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.OneshotSupplier;
@@ -82,8 +81,7 @@ public class TabManagementDelegateImpl implements TabManagementDelegate {
                 tabContentManager, browserControlsStateProvider, tabCreatorManager,
                 menuOrKeyboardActionController, containerView, multiWindowModeStateDispatcher,
                 scrimCoordinator,
-                TabUiFeatureUtilities.isTabGroupsAndroidContinuationEnabled(activity)
-                                && SysUtils.isLowEndDevice()
+                TabUiFeatureUtilities.shouldUseListMode(activity)
                         ? TabListCoordinator.TabListMode.LIST
                         : TabListCoordinator.TabListMode.GRID,
                 rootView, dynamicResourceLoaderSupplier, snackbarManager, modalDialogManager,
