@@ -7,6 +7,7 @@
 
 #include "base/memory/raw_ptr_exclusion.h"
 #include "chrome/browser/ui/toolbar/toolbar_actions_model.h"
+#include "chrome/browser/ui/views/extensions/extensions_menu_item_view.h"
 #include "ui/views/view.h"
 
 #include "ui/base/metadata/metadata_header_macros.h"
@@ -45,7 +46,8 @@ class ExtensionsMenuMainPageView : public views::View {
       std::unique_ptr<ExtensionActionViewController> action_controller,
       extensions::ExtensionId extension_id,
       bool allow_pinning,
-      bool is_site_permissions_button_visible,
+      ExtensionMenuItemView::SitePermissionsButtonState
+          site_permissions_button_state,
       int index);
 
   // Removes the menu item corresponding to `action_id`.

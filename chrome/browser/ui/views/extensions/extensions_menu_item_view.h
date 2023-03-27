@@ -28,11 +28,20 @@ class ExtensionMenuItemView : public views::FlexLayoutView {
  public:
   METADATA_HEADER(ExtensionMenuItemView);
 
+  enum class SitePermissionsButtonState {
+    // Button is not visible.
+    kHidden,
+    // Button is visible, but disabled.
+    kDisabled,
+    // Button is visible and enabled.
+    kEnabled,
+  };
+
   ExtensionMenuItemView(
       Browser* browser,
       std::unique_ptr<ToolbarActionViewController> controller,
       bool allow_pinning,
-      bool is_site_permissions_button_visible,
+      SitePermissionsButtonState site_permissions_button_state,
       views::Button::PressedCallback site_permissions_button_callback =
           base::RepeatingClosure(base::NullCallback()));
   ExtensionMenuItemView(const ExtensionMenuItemView&) = delete;
@@ -43,7 +52,7 @@ class ExtensionMenuItemView : public views::FlexLayoutView {
   void OnThemeChanged() override;
 
   // Updates the controller and child views to be on sync with the parent views.
-  void Update(bool is_site_permissions_button_visible);
+  void Update(SitePermissionsButtonState site_permissions_button_state);
 
   // Updates the pin button.
   void UpdatePinButton();

@@ -30,6 +30,15 @@ namespace {
 using PermissionsManager = extensions::PermissionsManager;
 using SitePermissionsHelper = extensions::SitePermissionsHelper;
 
+// Returns the extension for `extension_id`.
+const extensions::Extension* GetExtension(
+    Browser* browser,
+    extensions::ExtensionId extension_id) {
+  return extensions::ExtensionRegistry::Get(browser->profile())
+      ->enabled_extensions()
+      .GetByID(extension_id);
+}
+
 // Returns sorted extension ids based on their extensions name.
 std::vector<std::string> SortExtensionsByName(
     ToolbarActionsModel& toolbar_model) {
@@ -132,6 +141,62 @@ bool IsSitePermissionsButtonVisible(const extensions::Extension& extension,
   }
 }
 
+// Returns whether user can select the site access for `extension` on
+// `web_contents`.
+bool CanUserCustomizeExtensionSiteAccess(
+    const extensions::Extension& extension,
+    Profile& profile,
+    const ToolbarActionsModel& toolbar_model,
+    content::WebContents& web_contents) {
+  const GURL& url = web_contents.GetLastCommittedURL();
+  if (toolbar_model.IsRestrictedUrl(url)) {
+    // We don't allow customization of restricted sites (e.g.
+    // chrome://settings).
+    return false;
+  }
+
+  bool enterprise_forced_access = HasEnterpriseForcedAccess(extension, profile);
+  if (enterprise_forced_access) {
+    // Users can't customize the site access of enterprise-installed extensions.
+    return false;
+  }
+
+  // The extension wants site access if it at least wants "on click" access.
+  auto* permissions_manager = extensions::PermissionsManager::Get(&profile);
+  bool extension_wants_access = permissions_manager->CanUserSelectSiteAccess(
+      extension, url, PermissionsManager::UserSiteAccess::kOnClick);
+  if (!extension_wants_access) {
+    // Users can't customize site access of extensions that don't want access to
+    // begin with.
+    return false;
+  }
+
+  // Users can only customize site access when they have allowed all extensions
+  // to be customizable on the site.
+  return permissions_manager->GetUserSiteSetting(
+             web_contents.GetPrimaryMainFrame()->GetLastCommittedOrigin()) ==
+         PermissionsManager::UserSiteSetting::kCustomizeByExtension;
+}
+
+// Returns the state for the `extension`'s site permissions button.
+ExtensionMenuItemView::SitePermissionsButtonState GetSitePermissionsButtonState(
+    const extensions::Extension& extension,
+    Profile& profile,
+    const ToolbarActionsModel& toolbar_model,
+    content::WebContents& web_contents) {
+  bool is_site_permissions_button_visible = IsSitePermissionsButtonVisible(
+      extension, profile, toolbar_model, web_contents);
+  if (!is_site_permissions_button_visible) {
+    return ExtensionMenuItemView::SitePermissionsButtonState::kHidden;
+  }
+
+  bool is_site_permissions_button_enabled = CanUserCustomizeExtensionSiteAccess(
+      extension, profile, toolbar_model, web_contents);
+  return is_site_permissions_button_enabled
+             ? ExtensionMenuItemView::SitePermissionsButtonState::kEnabled
+             : ExtensionMenuItemView::SitePermissionsButtonState::kDisabled;
+}
+
 }  // namespace
 
 ExtensionsMenuViewController::ExtensionsMenuViewController(
@@ -173,6 +238,10 @@ void ExtensionsMenuViewController::OpenMainPage() {
 
 void ExtensionsMenuViewController::OpenSitePermissionsPage(
     extensions::ExtensionId extension_id) {
+  CHECK(CanUserCustomizeExtensionSiteAccess(
+      *GetExtension(browser_, extension_id), *browser_->profile(),
+      *toolbar_model_, *GetActiveWebContents()));
+
   const int icon_size = ChromeLayoutProvider::Get()->GetDistanceMetric(
       DISTANCE_EXTENSIONS_MENU_EXTENSION_ICON_SIZE);
   std::unique_ptr<ExtensionActionViewController> action_controller =
@@ -238,10 +307,10 @@ void ExtensionsMenuViewController::UpdatePage(
               .GetByID(menu_item->view_controller()->GetId());
       CHECK(extension);
 
-      bool is_site_permissions_button_visible = IsSitePermissionsButtonVisible(
-          *extension, *browser_->profile(), *toolbar_model_,
-          *GetActiveWebContents());
-      menu_item->Update(is_site_permissions_button_visible);
+      ExtensionMenuItemView::SitePermissionsButtonState
+          site_permissions_button_state = GetSitePermissionsButtonState(
+              *extension, *browser_->profile(), *toolbar_model_, *web_contents);
+      menu_item->Update(site_permissions_button_state);
     }
   }
 }
@@ -264,14 +333,15 @@ void ExtensionsMenuViewController::OnToolbarActionAdded(
   std::unique_ptr<ExtensionActionViewController> action_controller =
       ExtensionActionViewController::Create(action_id, browser_,
                                             extensions_container_);
-  bool is_site_permissions_button_visible = IsSitePermissionsButtonVisible(
-      *action_controller->extension(), *browser_->profile(), *toolbar_model_,
-      *GetActiveWebContents());
+  ExtensionMenuItemView::SitePermissionsButtonState
+      site_permissions_button_state = GetSitePermissionsButtonState(
+          *action_controller->extension(), *browser_->profile(),
+          *toolbar_model_, *GetActiveWebContents());
 
   main_page->CreateAndInsertMenuItem(
       std::move(action_controller), action_id,
       extensions_container_->CanShowActionsInToolbar(),
-      is_site_permissions_button_visible, index);
+      site_permissions_button_state, index);
 
   // TODO(crbug.com/1390952): Update requests access section once such section
   // is implemented (if the extension added requests site access, it needs to be
@@ -421,12 +491,14 @@ void ExtensionsMenuViewController::PopulateMainPage(
     std::unique_ptr<ExtensionActionViewController> action_controller =
         ExtensionActionViewController::Create(sorted_ids[i], browser_,
                                               extensions_container_);
-    bool is_site_permissions_button_visible = IsSitePermissionsButtonVisible(
-        *action_controller->extension(), *browser_->profile(), *toolbar_model_,
-        *GetActiveWebContents());
+    ExtensionMenuItemView::SitePermissionsButtonState
+        site_permissions_button_state = GetSitePermissionsButtonState(
+            *action_controller->extension(), *browser_->profile(),
+            *toolbar_model_, *GetActiveWebContents());
+
     main_page->CreateAndInsertMenuItem(std::move(action_controller),
                                        sorted_ids[i], allow_pinning,
-                                       is_site_permissions_button_visible, i);
+                                       site_permissions_button_state, i);
   }
 }
 

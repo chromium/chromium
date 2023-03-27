@@ -70,7 +70,7 @@ ExtensionMenuItemView::ExtensionMenuItemView(
     Browser* browser,
     std::unique_ptr<ToolbarActionViewController> controller,
     bool allow_pinning,
-    bool is_site_permissions_button_visible,
+    SitePermissionsButtonState site_permissions_button_state,
     views::Button::PressedCallback site_permissions_button_callback)
     : browser_(browser),
       controller_(std::move(controller)),
@@ -122,7 +122,10 @@ ExtensionMenuItemView::ExtensionMenuItemView(
                                 vector_icons::kSubmenuArrowIcon,
                                 ui::kColorIcon))))
                     .CopyAddressTo(&site_permissions_button_)
-                    .SetVisible(is_site_permissions_button_visible)
+                    .SetVisible(site_permissions_button_state !=
+                                SitePermissionsButtonState::kHidden)
+                    .SetEnabled(site_permissions_button_state ==
+                                SitePermissionsButtonState::kEnabled)
                     // Margin to align the main and secondary row text. Icon
                     // size and horizontal insets should be the values used by
                     // the extensions menu button.
@@ -207,9 +210,15 @@ void ExtensionMenuItemView::OnThemeChanged() {
   UpdatePinButton();
 }
 
-void ExtensionMenuItemView::Update(bool is_site_permissions_button_visible) {
+void ExtensionMenuItemView::Update(
+    SitePermissionsButtonState site_permissions_button_state) {
   if (site_permissions_button_) {
-    site_permissions_button_->SetVisible(is_site_permissions_button_visible);
+    site_permissions_button_->SetVisible(site_permissions_button_state !=
+                                         SitePermissionsButtonState::kHidden);
+    site_permissions_button_->SetEnabled(site_permissions_button_state ==
+                                         SitePermissionsButtonState::kEnabled);
+    // TODO(crbug.com/1390952): Display the arrow icon only when site
+    // permissions button is enabled.
   }
 
   view_controller()->UpdateState();
