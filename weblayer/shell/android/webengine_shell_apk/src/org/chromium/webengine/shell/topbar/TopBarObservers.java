@@ -19,10 +19,10 @@ import org.chromium.webengine.WebEngine;
  * Top Bar observers for Test Activities.
  */
 public class TopBarObservers implements TabObserver, NavigationObserver, TabListObserver {
-    final TopBar mTopBar;
+    final TabEventsObserver mTabEventsObserver;
     final TabManager mTabManager;
-    public TopBarObservers(TopBar topBar, TabManager tabManager) {
-        mTopBar = topBar;
+    public TopBarObservers(TabEventsObserver tabEventObserver, TabManager tabManager) {
+        mTabEventsObserver = tabEventObserver;
         mTabManager = tabManager;
 
         mTabManager.registerTabListObserver(this);
@@ -34,10 +34,10 @@ public class TopBarObservers implements TabObserver, NavigationObserver, TabList
 
     @Override
     public void onVisibleUriChanged(@NonNull Tab tab, @NonNull String uri) {
-        if (!mTopBar.isTabActive(tab)) {
+        if (!isTabActive(tab)) {
             return;
         }
-        mTopBar.setUrlBar(uri);
+        mTabEventsObserver.setUrlBar(uri);
     }
 
     @Override
@@ -53,13 +53,13 @@ public class TopBarObservers implements TabObserver, NavigationObserver, TabList
         if (activeTab == null) {
             return;
         }
-        mTopBar.setUrlBar(activeTab.getDisplayUri().toString());
-        mTopBar.setTabListSelection(activeTab);
+        mTabEventsObserver.setUrlBar(activeTab.getDisplayUri().toString());
+        mTabEventsObserver.setTabListSelection(activeTab);
     }
 
     @Override
     public void onTabAdded(@NonNull WebEngine webEngine, @NonNull Tab tab) {
-        mTopBar.addTabToList(tab);
+        mTabEventsObserver.addTabToList(tab);
         // Recursively add tab and navigation observers to any new tab.
         tab.registerTabObserver(this);
         tab.getNavigationController().registerNavigationObserver(this);
@@ -67,7 +67,7 @@ public class TopBarObservers implements TabObserver, NavigationObserver, TabList
 
     @Override
     public void onTabRemoved(@NonNull WebEngine webEngine, @NonNull Tab tab) {
-        mTopBar.removeTabFromList(tab);
+        mTabEventsObserver.removeTabFromList(tab);
     }
 
     @Override
@@ -88,9 +88,13 @@ public class TopBarObservers implements TabObserver, NavigationObserver, TabList
 
     @Override
     public void onLoadProgressChanged(@NonNull Tab tab, double progress) {
-        if (!mTopBar.isTabActive(tab)) {
+        if (!isTabActive(tab)) {
             return;
         }
-        mTopBar.setProgress(progress);
+        mTabEventsObserver.setProgress(progress);
+    }
+
+    boolean isTabActive(Tab tab) {
+        return mTabManager.getActiveTab() != null && mTabManager.getActiveTab().equals(tab);
     }
 }

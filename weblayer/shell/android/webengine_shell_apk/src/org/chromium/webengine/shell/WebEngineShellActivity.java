@@ -7,9 +7,14 @@ package org.chromium.webengine.shell;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.drawable.Drawable;
+import android.net.Uri;
 import android.os.Bundle;
+import android.util.Patterns;
+import android.view.KeyEvent;
 import android.view.View;
 import android.view.WindowManager;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
@@ -39,7 +44,7 @@ import org.chromium.webengine.TabManager;
 import org.chromium.webengine.WebEngine;
 import org.chromium.webengine.WebFragment;
 import org.chromium.webengine.WebSandbox;
-import org.chromium.webengine.shell.topbar.TopBarImpl;
+import org.chromium.webengine.shell.topbar.TabEventsObserver;
 import org.chromium.webengine.shell.topbar.TopBarObservers;
 
 import java.util.Arrays;
@@ -53,7 +58,8 @@ import java.util.Arrays;
  *  - Move cookie test to manual-test activity
  *  - Move registerWebMessageCallback to manual-test activity
  */
-public class WebEngineShellActivity extends AppCompatActivity implements FullscreenCallback {
+public class WebEngineShellActivity
+        extends AppCompatActivity implements FullscreenCallback, TabEventsObserver {
     private static final String TAG = "WebEngineShell";
 
     private static final String WEB_FRAGMENT_TAG = "WEB_FRAGMENT_TAG";
@@ -62,6 +68,16 @@ public class WebEngineShellActivity extends AppCompatActivity implements Fullscr
 
     private WebSandbox mWebSandbox;
     private TabManager mTabManager;
+
+    private ProgressBar mProgressBar;
+    private EditText mUrlBar;
+    private Button mTabCountButton;
+    private Spinner mTabListSpinner;
+    private ArrayAdapter<TabWrapper> mTabListAdapter;
+
+    private ImageButton mReloadButton;
+    private Drawable mRefreshDrawable;
+    private Drawable mStopDrawable;
 
     private DefaultObservers mDefaultTabListObserver;
 
@@ -75,6 +91,57 @@ public class WebEngineShellActivity extends AppCompatActivity implements Fullscr
         mDefaultTabListObserver = new DefaultObservers();
 
         setupActivitySpinner((Spinner) findViewById(R.id.activity_nav), this, 0);
+
+        mProgressBar = findViewById(R.id.progress_bar);
+        mUrlBar = findViewById(R.id.url_bar);
+        mTabCountButton = findViewById(R.id.tab_count);
+        mTabListSpinner = findViewById(R.id.tab_list);
+
+        mReloadButton = findViewById(R.id.reload_button);
+        mRefreshDrawable = getDrawable(R.drawable.ic_refresh);
+        mStopDrawable = getDrawable(R.drawable.ic_stop);
+
+        mUrlBar.setOnEditorActionListener(new TextView.OnEditorActionListener() {
+            @Override
+            public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
+                Uri query = Uri.parse(v.getText().toString());
+                if (query.isAbsolute()) {
+                    mTabManager.getActiveTab().getNavigationController().navigate(
+                            query.normalizeScheme().toString());
+                } else if (Patterns.DOMAIN_NAME.matcher(query.toString()).matches()) {
+                    mTabManager.getActiveTab().getNavigationController().navigate(
+                            "https://" + query);
+                } else {
+                    mTabManager.getActiveTab().getNavigationController().navigate(
+                            "https://www.google.com/search?q="
+                            + Uri.encode(v.getText().toString()));
+                }
+                // Hides keyboard on Enter key pressed
+                InputMethodManager imm = (InputMethodManager) mContext.getSystemService(
+                        Context.INPUT_METHOD_SERVICE);
+                imm.hideSoftInputFromWindow(v.getWindowToken(), 0);
+                return true;
+            }
+        });
+
+        mReloadButton.setOnClickListener(v -> {
+            if (mReloadButton.getDrawable().equals(mRefreshDrawable)) {
+                mTabManager.getActiveTab().getNavigationController().reload();
+            } else if (mReloadButton.getDrawable().equals(mStopDrawable)) {
+                mTabManager.getActiveTab().getNavigationController().stop();
+            }
+        });
+
+        mTabCountButton.setOnClickListener(v -> mTabListSpinner.performClick());
+
+        mTabListSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int pos, long id) {
+                mTabListAdapter.getItem(pos).getTab().setActive();
+            }
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {}
+        });
 
         ListenableFuture<String> sandboxVersionFuture = WebSandbox.getVersion(mContext);
 
@@ -147,14 +214,17 @@ public class WebEngineShellActivity extends AppCompatActivity implements Fullscr
         CookieManager cookieManager = webEngine.getCookieManager();
 
         Tab activeTab = mTabManager.getActiveTab();
-        ProgressBar progressBar = findViewById(R.id.progress_bar);
-        EditText urlBar = findViewById(R.id.url_bar);
-        ImageButton reloadButton = findViewById(R.id.reload_button);
-        Button tabCountButton = findViewById(R.id.tab_count);
-        Spinner tabListSpinner = findViewById(R.id.tab_list);
-        new TopBarObservers(new TopBarImpl(this, mTabManager, urlBar, progressBar, reloadButton,
-                                    tabCountButton, tabListSpinner),
-                mTabManager);
+
+        mTabCountButton.setText(String.valueOf(getTabsCount()));
+
+        mTabListAdapter =
+                new ArrayAdapter<TabWrapper>(this, android.R.layout.simple_spinner_dropdown_item);
+        for (Tab t : mTabManager.getAllTabs()) {
+            mTabListAdapter.add(new TabWrapper(t));
+        }
+        mTabListSpinner.setAdapter(mTabListAdapter);
+
+        new TopBarObservers(this, mTabManager);
 
         activeTab.setFullscreenCallback(this);
         mTabManager.registerTabListObserver(new TabListObserver() {
@@ -324,6 +394,74 @@ public class WebEngineShellActivity extends AppCompatActivity implements Fullscr
         if ((attrs.flags & WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS) != 0) {
             attrs.flags &= ~WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS;
             getWindow().setAttributes(attrs);
+        }
+    }
+
+    @Override
+    public void setUrlBar(String uri) {
+        mUrlBar.setText(uri);
+    }
+
+    @Override
+    public void setProgress(double progress) {
+        int progressValue = (int) Math.rint(progress * 100);
+        if (progressValue != mProgressBar.getMax()) {
+            mReloadButton.setImageDrawable(mStopDrawable);
+            mProgressBar.setVisibility(View.VISIBLE);
+        } else {
+            mReloadButton.setImageDrawable(mRefreshDrawable);
+            mProgressBar.setVisibility(View.INVISIBLE);
+        }
+        mProgressBar.setProgress(progressValue);
+    }
+
+    @Override
+    public void addTabToList(Tab tab) {
+        mTabCountButton.setText(String.valueOf(getTabsCount()));
+        mTabListAdapter.add(new TabWrapper(tab));
+    }
+
+    @Override
+    public void removeTabFromList(Tab tab) {
+        mTabCountButton.setText(String.valueOf(getTabsCount()));
+        for (int position = 0; position < mTabListAdapter.getCount(); ++position) {
+            TabWrapper tabAdapter = mTabListAdapter.getItem(position);
+            if (tabAdapter.getTab().equals(tab)) {
+                mTabListAdapter.remove(tabAdapter);
+                return;
+            }
+        }
+    }
+
+    @Override
+    public void setTabListSelection(Tab tab) {
+        for (int position = 0; position < mTabListAdapter.getCount(); ++position) {
+            TabWrapper tabWrapper = mTabListAdapter.getItem(position);
+            if (tabWrapper.getTab().equals(tab)) {
+                mTabListSpinner.setSelection(mTabListAdapter.getPosition(tabWrapper));
+                return;
+            }
+        }
+    }
+
+    public int getTabsCount() {
+        return mTabManager.getAllTabs().size();
+    }
+
+    static class TabWrapper {
+        final Tab mTab;
+        public TabWrapper(Tab tab) {
+            mTab = tab;
+        }
+
+        public Tab getTab() {
+            return mTab;
+        }
+
+        @NonNull
+        @Override
+        public String toString() {
+            return mTab.getDisplayUri().getAuthority() + mTab.getDisplayUri().getPath();
         }
     }
 }
