@@ -1527,8 +1527,6 @@ void WebAppPublisherHelper::Init(bool observe_media_requests) {
   }
 #endif
 
-  web_app_launch_manager_ = std::make_unique<WebAppLaunchManager>(profile_);
-
 #if BUILDFLAG(IS_CHROMEOS)
   if (observe_media_requests) {
     media_dispatcher_.Observe(MediaCaptureDevicesDispatcher::GetInstance());

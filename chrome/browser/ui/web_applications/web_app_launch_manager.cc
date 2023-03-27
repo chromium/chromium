@@ -4,36 +4,11 @@
 
 #include "chrome/browser/ui/web_applications/web_app_launch_manager.h"
 
-#include <string>
-#include <utility>
-
+#include "base/functional/callback.h"
 #include "base/no_destructor.h"
 #include "chrome/browser/apps/app_service/app_launch_params.h"
-#include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/browser.h"
-#include "chrome/browser/ui/web_applications/web_app_launch_process.h"
-#include "chrome/browser/web_applications/web_app_provider.h"
 
 namespace web_app {
-
-WebAppLaunchManager::WebAppLaunchManager(Profile* profile)
-    : profile_(profile),
-      provider_(WebAppProvider::GetForLocalAppsUnchecked(profile)) {}
-
-WebAppLaunchManager::~WebAppLaunchManager() = default;
-
-content::WebContents* WebAppLaunchManager::OpenApplication(
-    apps::AppLaunchParams&& params) {
-  if (GetOpenApplicationCallbackForTesting())
-    return GetOpenApplicationCallbackForTesting().Run(std::move(params));
-
-  WebAppProvider* provider =
-      WebAppProvider::GetForLocalAppsUnchecked(profile_.get());
-  DCHECK(provider);
-  return WebAppLaunchProcess::CreateAndRun(
-      *profile_, provider->registrar_unsafe(),
-      provider->os_integration_manager(), params);
-}
 
 // static
 void WebAppLaunchManager::SetOpenApplicationCallbackForTesting(

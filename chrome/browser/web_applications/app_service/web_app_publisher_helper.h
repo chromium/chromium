@@ -92,7 +92,6 @@ namespace web_app {
 
 class WebApp;
 class WebAppProvider;
-class WebAppLaunchManager;
 
 struct ShortcutIdTypeMarker {};
 
@@ -441,8 +440,6 @@ class WebAppPublisherHelper : public AppRegistrarObserver,
 
   base::ScopedObservation<HostContentSettingsMap, content_settings::Observer>
       content_settings_observation_{this};
-
-  std::unique_ptr<WebAppLaunchManager> web_app_launch_manager_;
 
   bool is_shutting_down_ = false;
 
