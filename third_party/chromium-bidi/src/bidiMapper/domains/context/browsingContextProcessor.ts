@@ -291,6 +291,16 @@ export class BrowsingContextProcessor {
     return context.getOrCreateSandbox(target.sandbox);
   }
 
+  async process_script_addPreloadScript(
+    _params: Script.AddPreloadScriptParameters
+  ): Promise<Script.AddPreloadScriptResult> {
+    throw new Message.UnknownException('Not implemented.');
+
+    return {
+      script: '', // TODO(#293): Populate script.
+    };
+  }
+
   async process_script_evaluate(
     params: Script.EvaluateParameters
   ): Promise<Script.EvaluateResult> {

@@ -40,6 +40,7 @@ export type BiDiMethod =
   | 'cdp.getSession'
   | 'cdp.sendCommand'
   | 'cdp.sendMessage'
+  | 'script.addPreloadScript'
   | 'script.callFunction'
   | 'script.disown'
   | 'script.evaluate'
@@ -447,12 +448,14 @@ export namespace Script {
     | EvaluateCommand
     | CallFunctionCommand
     | GetRealmsCommand
-    | DisownCommand;
+    | DisownCommand
+    | AddPreloadScriptCommand;
   export type CommandResult =
     | EvaluateResult
     | CallFunctionResult
     | GetRealmsResult
-    | DisownResult;
+    | DisownResult
+    | AddPreloadScriptResult;
   export type Event = MessageEvent;
 
   export type Realm = string;
@@ -648,6 +651,22 @@ export namespace Script {
     functionName: string;
     lineNumber: number;
     url: string;
+  };
+
+  export type PreloadScript = string;
+
+  export type AddPreloadScriptCommand = {
+    method: 'script.addPreloadScript';
+    params: AddPreloadScriptParameters;
+  };
+
+  export type AddPreloadScriptParameters = {
+    expression: string;
+    sandbox?: string;
+  };
+
+  export type AddPreloadScriptResult = {
+    script: PreloadScript;
   };
 
   export type ChannelId = string;

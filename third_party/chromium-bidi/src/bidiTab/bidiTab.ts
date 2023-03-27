@@ -269,6 +269,12 @@ async function createBidiServer(selfTargetId: string) {
 }
 
 class BidiParserImpl implements BidiParser {
+  parseAddPreloadScriptParams(
+    params: object
+  ): Script.AddPreloadScriptParameters {
+    return Parser.Script.parseAddPreloadScriptParams(params);
+  }
+
   parseGetRealmsParams(params: object): Script.GetRealmsParameters {
     return Parser.Script.parseGetRealmsParams(params);
   }
