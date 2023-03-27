@@ -447,10 +447,13 @@ class COMPONENT_EXPORT(SQL) Database {
   // Close() should still be called at some point.
   void Poison();
 
-  // Raze() the database and Poison() the handle.  Returns the return
-  // value from Raze().
-  // TODO(shess): Rename to RazeAndPoison().
+  // Deprecated: Renamed to `RazeAndPoison()`.
+  // TODO(apaseltiner): Remove this once all callers have been migrated.
   bool RazeAndClose();
+
+  // `Raze()` the database and `Poison()` the handle. Returns the return
+  // value from `Raze()`.
+  bool RazeAndPoison();
 
   // Delete the underlying database files associated with |path|. This should be
   // used on a database which is not opened by any Database instance. Open

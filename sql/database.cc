@@ -1092,6 +1092,10 @@ bool Database::Raze() {
   return CheckpointDatabase();
 }
 
+bool Database::RazeAndPoison() {
+  return RazeAndClose();
+}
+
 bool Database::RazeAndClose() {
   TRACE_EVENT0("sql", "Database::RazeAndClose");
 
