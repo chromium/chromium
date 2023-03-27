@@ -491,10 +491,6 @@ void ManagePasswordsDetailsView::SwitchToEditUsernameMode() {
   on_activity_callback_.Run();
   LogUserInteractionsInPasswordManagementBubble(
       PasswordManagementBubbleInteractions::kUsernameEditButtonClicked);
-  // Invoke OnUserInputChanged() to validate the current input. Relevant only
-  // for empty username to make sure the bubble is opened showing the username
-  // as invalid.
-  OnUserInputChanged();
 }
 
 void ManagePasswordsDetailsView::SwitchToEditNoteMode() {
@@ -513,13 +509,10 @@ void ManagePasswordsDetailsView::OnUserInputChanged() {
   on_activity_callback_.Run();
   bool is_username_invalid = false;
   if (username_textfield_ && username_textfield_->IsDrawn()) {
-    bool username_empty = username_textfield_->GetText().empty();
-    bool username_exists =
-        username_empty
-            ? false
-            : username_exists_callback_.Run(username_textfield_->GetText());
-    username_error_label_->SetVisible(username_exists);
-    is_username_invalid = username_empty || username_exists;
+    is_username_invalid =
+        !username_textfield_->GetText().empty() &&
+        username_exists_callback_.Run(username_textfield_->GetText());
+    username_error_label_->SetVisible(is_username_invalid);
     username_textfield_->SetInvalid(is_username_invalid);
   }
 
