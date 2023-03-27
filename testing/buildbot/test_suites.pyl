@@ -5477,7 +5477,8 @@
           '--num-retries=3',
           '-t',
           'Release',
-          'external/wpt/webrtc'
+          'external/wpt/webrtc',
+          'external/wpt/webrtc-svc',
         ],
         'isolate_name': 'blink_wpt_tests',
         'merge': {

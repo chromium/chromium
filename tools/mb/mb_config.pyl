@@ -1461,7 +1461,7 @@
       'linux_chromium_compile': 'release_trybot_reclient',
       'linux_chromium_compile_dbg': 'debug_bot_reclient',
       'mac_chromium_compile': 'gpu_tests_release_trybot_reclient',
-      'webrtc_linux_chromium': 'release_trybot_reclient',
+      'webrtc_linux_chromium': 'release_trybot_blink_reclient',
       'win_chromium_compile': 'gpu_tests_release_trybot_resource_allowlisting_reclient',
       'win_chromium_compile_dbg': 'gpu_tests_debug_bot_x86_no_symbols_reclient',
     },
