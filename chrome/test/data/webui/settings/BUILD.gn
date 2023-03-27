@@ -112,6 +112,7 @@ build_webui_tests("build") {
     "settings_subpage_test.ts",
     "settings_toggle_button_tests.ts",
     "settings_ui_tests.ts",
+    "simple_confirmation_dialog_test.ts",
     "site_data_test.ts",
     "site_details_permission_tests.ts",
     "site_details_permission_device_entry_tests.ts",
