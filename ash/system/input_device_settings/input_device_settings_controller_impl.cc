@@ -13,6 +13,7 @@
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
 #include "ash/system/input_device_settings/input_device_notifier.h"
+#include "ash/system/input_device_settings/input_device_settings_defaults.h"
 #include "ash/system/input_device_settings/input_device_settings_pref_names.h"
 #include "ash/system/input_device_settings/input_device_settings_utils.h"
 #include "ash/system/input_device_settings/pref_handlers/keyboard_pref_handler_impl.h"
@@ -100,6 +101,16 @@ mojom::PointingStickPtr BuildMojomPointingStick(
   return mojom_pointing_stick;
 }
 }  // namespace
+
+// suppress_meta_fkey_rewrites must never be non-default for internal
+// keyboards, otherwise the keyboard settings are not valid.
+bool keyboardSettingsAreValid(const mojom::Keyboard& keyboard,
+                              const mojom::KeyboardSettings& settings) {
+  // TODO(wangdanny): Validate modifier keys to make sure they can apply
+  // to the given device.
+  return keyboard.is_external || (settings.suppress_meta_fkey_rewrites ==
+                                  kDefaultSuppressMetaFKeyRewrites);
+}
 
 InputDeviceSettingsControllerImpl::InputDeviceSettingsControllerImpl()
     : keyboard_pref_handler_(std::make_unique<KeyboardPrefHandlerImpl>()),
@@ -310,9 +321,10 @@ void InputDeviceSettingsControllerImpl::SetKeyboardSettings(
     return;
   }
 
-  // TODO(dpad): Validate incoming settings to make sure the settings can apply
-  // to the given device.
   auto& found_keyboard = *found_keyboard_iter->second;
+  if (!keyboardSettingsAreValid(found_keyboard, *settings)) {
+    return;
+  }
   found_keyboard.settings = settings.Clone();
   keyboard_pref_handler_->UpdateKeyboardSettings(active_pref_service_,
                                                  found_keyboard);
