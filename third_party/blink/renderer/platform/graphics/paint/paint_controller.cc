@@ -742,6 +742,17 @@ void PaintController::CommitNewDisplayItems() {
   num_indexed_items_ = 0;
   num_sequential_matches_ = 0;
   num_out_of_order_matches_ = 0;
+
+  if (VLOG_IS_ON(1)) {
+    VLOG(1) << "PaintController::CommitNewDisplayItems() completed";
+    if (VLOG_IS_ON(3)) {
+      ShowDebugDataWithPaintRecords();
+    } else if (VLOG_IS_ON(2)) {
+      ShowDebugData();
+    } else if (VLOG_IS_ON(1)) {
+      ShowCompactDebugData();
+    }
+  }
 #endif
 }
 
@@ -781,18 +792,6 @@ void PaintController::FinishCycle() {
 
   for (auto& chunk : current_paint_artifact_->PaintChunks())
     chunk.client_is_just_created = false;
-
-#if DCHECK_IS_ON()
-  if (VLOG_IS_ON(1)) {
-    VLOG(1) << "PaintController::FinishCycle() completed";
-    if (VLOG_IS_ON(3))
-      ShowDebugDataWithPaintRecords();
-    else if (VLOG_IS_ON(2))
-      ShowDebugData();
-    else if (VLOG_IS_ON(1))
-      ShowCompactDebugData();
-  }
-#endif
 }
 
 size_t PaintController::ApproximateUnsharedMemoryUsage() const {
