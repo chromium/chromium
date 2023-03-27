@@ -62,9 +62,6 @@ const uint64_t kUnknownPipeIdForDebug = 0x7f7f7f7f7f7f7f7fUL;
 // invitation.
 constexpr base::StringPiece kIsolatedInvitationPipeName = {"\0\0\0\0", 4};
 
-// Set according to the field trial "MojoAvoidRandomPipeId".
-bool g_avoid_random_pipe_id;
-
 void InvokeProcessErrorCallback(MojoProcessErrorHandler handler,
                                 uintptr_t context,
                                 const std::string& error,
@@ -119,9 +116,7 @@ uint64_t MakePipeId() {
 #if BUILDFLAG(MOJO_TRACE_ENABLED)
   return base::trace_event::GetNextGlobalTraceId();
 #else
-  if (g_avoid_random_pipe_id)
-    return 0;
-  return base::RandUint64();
+  return 0;
 #endif
 }
 
@@ -1524,11 +1519,6 @@ MojoResult Core::SetDefaultProcessErrorHandler(
 void Core::GetActiveHandlesForTest(std::vector<MojoHandle>* handles) {
   base::AutoLock lock(handles_->GetLock());
   handles_->GetActiveHandlesForTest(handles);
-}
-
-// static
-void Core::set_avoid_random_pipe_id(bool avoid_random_pipe_id) {
-  g_avoid_random_pipe_id = avoid_random_pipe_id;
 }
 
 // static

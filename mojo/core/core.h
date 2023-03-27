@@ -332,8 +332,6 @@ class MOJO_SYSTEM_IMPL_EXPORT Core {
 
   void GetActiveHandlesForTest(std::vector<MojoHandle>* handles);
 
-  static void set_avoid_random_pipe_id(bool avoid_random_pipe_id);
-
  private:
   // Used to pass ownership of our NodeController over to the IO thread in the
   // event that we're torn down before said thread.
