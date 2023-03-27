@@ -3,11 +3,13 @@
 // found in the LICENSE file.
 
 #include <fcntl.h>
-#include <fuchsia/tracing/perfetto/cpp/fidl.h>
+#include <fidl/fuchsia.tracing.perfetto/cpp/fidl.h>
+#include <lib/async/default.h>
 #include <lib/fdio/fd.h>
 #include <lib/fidl/cpp/binding.h>
 #include <zircon/errors.h>
 #include <zircon/types.h>
+
 #include <memory>
 
 #include "base/files/file_util.h"
@@ -41,12 +43,14 @@ zx::handle GetHandleFromFd(int fd) {
 }
 
 class FakeProducerConnectorService
-    : public fuchsia::tracing::perfetto::ProducerConnector {
+    : public fidl::Server<fuchsia_tracing_perfetto::ProducerConnector> {
  public:
   explicit FakeProducerConnectorService(
-      fidl::InterfaceRequest<fuchsia::tracing::perfetto::ProducerConnector>
-          request)
-      : binding_(this, std::move(request)) {}
+      fidl::ServerEnd<fuchsia_tracing_perfetto::ProducerConnector> server_end)
+      : binding_(async_get_default_dispatcher(),
+                 std::move(server_end),
+                 this,
+                 fidl::kIgnoreBindingClosure) {}
   ~FakeProducerConnectorService() override = default;
 
   FakeProducerConnectorService(const FakeProducerConnectorService&) = delete;
@@ -68,37 +72,37 @@ class FakeProducerConnectorService
     zx_status_t status =
         fdio_fd_clone(fd.get(), channel.reset_and_get_address());
     ASSERT_EQ(status, ZX_OK);
-    buffer_receiver_->ProvideBuffer(
-        fidl::InterfaceHandle<::fuchsia::io::File>(std::move(channel)),
-        [](fuchsia::tracing::perfetto::BufferReceiver_ProvideBuffer_Result
-               result) { ASSERT_FALSE(result.is_err()); });
+    buffer_receiver_
+        ->ProvideBuffer(fidl::ClientEnd<fuchsia_io::File>(std::move(channel)))
+        .Then([](fidl::Result<
+                  fuchsia_tracing_perfetto::BufferReceiver::ProvideBuffer>&
+                     result) { ASSERT_FALSE(result.is_error()); });
   }
 
   // Disconnects the client of the ProducerConnector.
   void Close(zx_status_t status) { binding_.Close(status); }
 
  private:
-  // fuchsia::tracing::perfetto::ProducerConnector implementation.
-  void ConnectProducer(::zx::socket producer_socket,
-                       fuchsia::tracing::perfetto::TraceBuffer buffer,
-                       ConnectProducerCallback callback) final {
+  // fuchsia_tracing_perfetto::ProducerConnector implementation.
+  void ConnectProducer(ConnectProducerRequest& request,
+                       ConnectProducerCompleter::Sync& completer) final {
     if (should_fail_) {
-      callback(
-          fuchsia::tracing::perfetto::ProducerConnector_ConnectProducer_Result::
-              WithErr(ZX_ERR_NO_RESOURCES));
+      completer.Reply(fit::error(ZX_ERR_NO_RESOURCES));
     } else {
-      socket_ = std::move(producer_socket);
-      buffer_receiver_ = buffer.from_server().Bind();
-      callback(fuchsia::tracing::perfetto::
-                   ProducerConnector_ConnectProducer_Result::WithResponse({}));
+      socket_ = std::move(request.producer_socket());
+      ASSERT_TRUE(request.buffer().Which() ==
+                  fuchsia_tracing_perfetto::TraceBuffer::Tag::kFromServer);
+      ASSERT_TRUE(request.buffer().from_server().has_value());
+      buffer_receiver_.Bind(std::move(request.buffer().from_server().value()),
+                            async_get_default_dispatcher());
+      completer.Reply(fit::ok());
     }
   }
 
   bool should_fail_ = false;
   zx::socket socket_;
-  fidl::Binding<fuchsia::tracing::perfetto::ProducerConnector> binding_;
-  fidl::InterfacePtr<fuchsia::tracing::perfetto::BufferReceiver>
-      buffer_receiver_;
+  fidl::ServerBinding<fuchsia_tracing_perfetto::ProducerConnector> binding_;
+  fidl::Client<fuchsia_tracing_perfetto::BufferReceiver> buffer_receiver_;
 };
 
 class FuchsiaPerfettoProducerConnectorTest : public testing::Test {
@@ -112,10 +116,12 @@ class FuchsiaPerfettoProducerConnectorTest : public testing::Test {
   void SetUp() override {
     base::Thread::Options thread_options(base::MessagePumpType::IO, 0);
     service_thread_.StartWithOptions(std::move(thread_options));
-    fidl::InterfaceHandle<fuchsia::tracing::perfetto::ProducerConnector>
-        client_handle;
-    service_.emplace(service_thread_.task_runner(), client_handle.NewRequest());
-    connector_client_->SetProducerServiceForTest(std::move(client_handle));
+    auto endpoints =
+        fidl::CreateEndpoints<fuchsia_tracing_perfetto::ProducerConnector>();
+    ASSERT_TRUE(endpoints.is_ok());
+    service_.emplace(service_thread_.task_runner(),
+                     std::move(endpoints->server));
+    connector_client_->SetProducerServiceForTest(std::move(endpoints->client));
   }
 
   void TearDown() override {

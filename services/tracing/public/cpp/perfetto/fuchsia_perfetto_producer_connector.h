@@ -5,8 +5,7 @@
 #ifndef SERVICES_TRACING_PUBLIC_CPP_PERFETTO_FUCHSIA_PERFETTO_PRODUCER_CONNECTOR_H_
 #define SERVICES_TRACING_PUBLIC_CPP_PERFETTO_FUCHSIA_PERFETTO_PRODUCER_CONNECTOR_H_
 
-#include <fuchsia/tracing/perfetto/cpp/fidl.h>
-#include <lib/fidl/cpp/binding.h>
+#include <fidl/fuchsia.tracing.perfetto/cpp/fidl.h>
 #include <perfetto/ext/ipc/client.h>
 #include <perfetto/ext/tracing/core/shared_memory.h>
 
@@ -34,8 +33,7 @@ class COMPONENT_EXPORT(TRACING_CPP) FuchsiaPerfettoProducerConnector {
 
   // Injects a ProducerConnector handle.
   void SetProducerServiceForTest(
-      fidl::InterfaceHandle<fuchsia::tracing::perfetto::ProducerConnector>
-          producer);
+      fidl::ClientEnd<fuchsia_tracing_perfetto::ProducerConnector> client_end);
 
  private:
   class BufferReceiverImpl;
@@ -56,8 +54,8 @@ class COMPONENT_EXPORT(TRACING_CPP) FuchsiaPerfettoProducerConnector {
   // the system tracing service.
   void OnSharedMemoryFdReceived(base::ScopedFD fd);
 
-  fidl::InterfaceHandle<fuchsia::tracing::perfetto::ProducerConnector>
-      producer_service_for_test_;
+  fidl::ClientEnd<fuchsia_tracing_perfetto::ProducerConnector>
+      producer_connector_client_end_for_test_;
 
   // Event used to synchronously wait until a file descriptor is received
   // from the system tracing service.

@@ -4,17 +4,17 @@
 
 #include "services/tracing/public/cpp/perfetto/fuchsia_perfetto_producer_connector.h"
 
-#include <fuchsia/tracing/perfetto/cpp/fidl.h>
+#include <fidl/fuchsia.tracing.perfetto/cpp/fidl.h>
+#include <lib/async/default.h>
 #include <lib/fdio/fd.h>
-#include <lib/fidl/cpp/interface_handle.h>
 #include <lib/sys/cpp/component_context.h>
 #include <lib/zx/socket.h>
 #include <lib/zx/vmo.h>
 #include <perfetto/ext/tracing/core/shared_memory.h>
 
 #include "base/files/scoped_file.h"
+#include "base/fuchsia/fuchsia_component_connect.h"
 #include "base/fuchsia/fuchsia_logging.h"
-#include "base/fuchsia/process_context.h"
 #include "base/functional/bind.h"
 #include "base/memory/platform_shared_memory_region.h"
 #include "base/message_loop/message_pump_type.h"
@@ -30,40 +30,44 @@ namespace tracing {
 // synchronously block while waiting for a FD to arrive, and we don't want it
 // to interrupt the handling of FIDL messages.
 class FuchsiaPerfettoProducerConnector::BufferReceiverImpl
-    : public fuchsia::tracing::perfetto::BufferReceiver {
+    : public fidl::Server<fuchsia_tracing_perfetto::BufferReceiver> {
  public:
   BufferReceiverImpl(
-      fidl::InterfaceRequest<fuchsia::tracing::perfetto::BufferReceiver>
-          request,
+      fidl::ServerEnd<fuchsia_tracing_perfetto::BufferReceiver> server_end,
       base::RepeatingCallback<void(base::ScopedFD)> on_fd_received)
-      : binding_(this, std::move(request)), on_fd_received_(on_fd_received) {}
+      : binding_(async_get_default_dispatcher(),
+                 std::move(server_end),
+                 this,
+                 fidl::kIgnoreBindingClosure),
+        on_fd_received_(on_fd_received) {}
   ~BufferReceiverImpl() override = default;
 
-  void ProvideBuffer(::fidl::InterfaceHandle<fuchsia::io::File> shmem_file,
-                     ProvideBufferCallback callback) final {
-    base::ScopedFD shmem_fd;
-    if (!shmem_file) {
+  void ProvideBuffer(ProvideBufferRequest& request,
+                     ProvideBufferCompleter::Sync& completer) final {
+    if (!request.buffer()) {
       LOG(ERROR) << "Received invalid file handle.";
       on_fd_received_.Run({});
+      completer.Reply(fit::error(ZX_ERR_BAD_HANDLE));
       return;
     }
 
-    zx::channel file_handle = shmem_file.TakeChannel();
+    zx::channel file_handle = request.buffer().TakeChannel();
+    base::ScopedFD shmem_fd;
     zx_status_t status = fdio_fd_create(
         file_handle.release(), base::ScopedFD::Receiver(shmem_fd).get());
     if (status != ZX_OK) {
       ZX_LOG(ERROR, status) << "fdio_fd_create";
       on_fd_received_.Run({});
+      completer.Reply(fit::error(ZX_ERR_INVALID_ARGS));
       return;
     }
     on_fd_received_.Run(std::move(shmem_fd));
 
-    callback(fuchsia::tracing::perfetto::BufferReceiver_ProvideBuffer_Result::
-                 WithResponse({}));
+    completer.Reply(fit::ok());
   }
 
  private:
-  fidl::Binding<fuchsia::tracing::perfetto::BufferReceiver> binding_;
+  fidl::ServerBinding<fuchsia_tracing_perfetto::BufferReceiver> binding_;
 
   // Called when a buffer is received from ProvideBuffer().
   base::RepeatingCallback<void(base::ScopedFD)> on_fd_received_;
@@ -105,9 +109,8 @@ FuchsiaPerfettoProducerConnector::Connect() {
 }
 
 void FuchsiaPerfettoProducerConnector::SetProducerServiceForTest(
-    fidl::InterfaceHandle<fuchsia::tracing::perfetto::ProducerConnector>
-        producer) {
-  producer_service_for_test_ = std::move(producer);
+    fidl::ClientEnd<fuchsia_tracing_perfetto::ProducerConnector> client_end) {
+  producer_connector_client_end_for_test_ = std::move(client_end);
 }
 
 base::ScopedFD FuchsiaPerfettoProducerConnector::ConnectSocket() {
@@ -117,35 +120,45 @@ base::ScopedFD FuchsiaPerfettoProducerConnector::ConnectSocket() {
   zx_status_t status = zx::socket::create(0, &client_socket, &remote_socket);
   ZX_CHECK(status == ZX_OK, status) << "zx_socket_create";
 
-  fidl::InterfaceHandle<fuchsia::tracing::perfetto::BufferReceiver>
-      receiver_client;
-  auto receiver_request = receiver_client.NewRequest();
-  fuchsia::tracing::perfetto::TraceBuffer trace_buffer;
-  trace_buffer.set_from_server(std::move(receiver_client));
+  auto receiver_endpoints =
+      fidl::CreateEndpoints<fuchsia_tracing_perfetto::BufferReceiver>();
+  ZX_CHECK(receiver_endpoints.is_ok(), receiver_endpoints.status_value());
+  auto trace_buffer = fuchsia_tracing_perfetto::TraceBuffer::WithFromServer(
+      std::move(receiver_endpoints->client));
 
   // Call the ProducerConnector FIDL service.
   // Call is synchronous so that the caller can perform error handling if the
   // system tracing service is unavailable.
-  fuchsia::tracing::perfetto::ProducerConnectorSyncPtr producer_ptr_sync;
-  if (producer_service_for_test_) {
-    producer_ptr_sync.Bind(std::move(producer_service_for_test_));
+  fidl::SyncClient<fuchsia_tracing_perfetto::ProducerConnector>
+      producer_connector_sync;
+  if (producer_connector_client_end_for_test_) {
+    producer_connector_sync.Bind(
+        std::move(producer_connector_client_end_for_test_));
   } else {
-    base::ComponentContextForProcess()
-        ->svc()
-        ->Connect<fuchsia::tracing::perfetto::ProducerConnector>(
-            producer_ptr_sync.NewRequest());
+    auto producer_connector_client_end = base::fuchsia_component::Connect<
+        fuchsia_tracing_perfetto::ProducerConnector>();
+    if (producer_connector_client_end.is_error()) {
+      LOG(WARNING) << base::FidlConnectionErrorMessage(
+                          producer_connector_client_end)
+                   << ", system tracing disabled";
+      return {};
+    }
+    producer_connector_sync.Bind(
+        std::move(producer_connector_client_end.value()));
   }
 
-  fuchsia::tracing::perfetto::ProducerConnector_ConnectProducer_Result result;
-  status = producer_ptr_sync->ConnectProducer(std::move(remote_socket),
-                                              std::move(trace_buffer), &result);
-  if (status != ZX_OK) {
-    ZX_DLOG(WARNING, status)
-        << "Perfetto service missing, system tracing disabled.";
-    return {};
-  } else if (result.is_err()) {
-    ZX_LOG(WARNING, result.err())
-        << "Error calling ProducerConnector::ConnectProducer: ";
+  auto result = producer_connector_sync->ConnectProducer({{
+      .producer_socket = std::move(remote_socket),
+      .buffer = std::move(trace_buffer),
+  }});
+  if (result.is_error()) {
+    zx_status_t error_value =
+        result.error_value().is_framework_error()
+            ? result.error_value().framework_error().status()
+            : result.error_value().domain_error();
+    ZX_LOG(WARNING, error_value)
+        << "Error calling ProducerConnector::ConnectProducer, system tracing "
+           "disabled.";
     return {};
   }
 
@@ -155,7 +168,8 @@ base::ScopedFD FuchsiaPerfettoProducerConnector::ConnectSocket() {
   thread_options.joinable = true;
   buffer_receiver_thread_->StartWithOptions(std::move(thread_options));
   buffer_receiver_ = base::SequenceBound<BufferReceiverImpl>(
-      buffer_receiver_thread_->task_runner(), std::move(receiver_request),
+      buffer_receiver_thread_->task_runner(),
+      std::move(receiver_endpoints->server),
       base::BindRepeating(
           &FuchsiaPerfettoProducerConnector::OnSharedMemoryFdReceived,
           base::Unretained(this)));
