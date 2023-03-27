@@ -434,6 +434,10 @@ void DidCancelPrerender(
     const base::UnguessableToken& initiator_devtools_navigation_token,
     PrerenderFinalStatus status,
     const std::string& disallowed_api_method) {
+  if (!ftn) {
+    return;
+  }
+
   std::string initiating_frame_id =
       ftn->current_frame_host()->devtools_frame_token().ToString();
   DispatchToAgents(ftn, &protocol::PreloadHandler::DidCancelPrerender,
@@ -446,6 +450,10 @@ void DidUpdatePrefetchStatus(
     const base::UnguessableToken& initiator_devtools_navigation_token,
     const GURL& prefetch_url,
     PreloadingTriggeringOutcome status) {
+  if (!ftn) {
+    return;
+  }
+
   std::string initiating_frame_id =
       ftn->current_frame_host()->devtools_frame_token().ToString();
   DispatchToAgents(ftn, &protocol::PreloadHandler::DidUpdatePrefetchStatus,
