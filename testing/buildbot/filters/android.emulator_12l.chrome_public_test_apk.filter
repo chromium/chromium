@@ -1,0 +1,37 @@
+# crbug.com/1193745
+-org.chromium.chrome.browser.download.OMADownloadHandlerTest.testClearPendingOMADownloads
+-org.chromium.chrome.browser.download.OMADownloadHandlerTest.testQueryDownloadResult
+
+# crbug.com/1036571
+-org.chromium.chrome.browser.shape_detection.ShapeDetectionTest.testTextDetection
+
+# crbug.com/1036556
+-org.chromium.chrome.browser.usage_stats.TabSuspensionTest.testMediaSuspension
+-org.chromium.chrome.browser.usage_stats.TabSuspensionTest.testTabAddedFromCustomTab
+-org.chromium.chrome.browser.usage_stats.TabSuspensionTest.testMultiWindow
+
+# crbug.com/1195097
+-org.chromium.chrome.browser.permissions.RuntimePermissionTest.testDenyRuntimeDownload
+
+# crbug.com/1225709
+-org.chromium.chrome.browser.contextmenu.ContextMenuTest.testSaveDataUrl
+-org.chromium.chrome.browser.contextmenu.ContextMenuTest.testSaveImage
+-org.chromium.chrome.browser.contextmenu.ContextMenuTest.testSaveVideo
+-org.chromium.components.browser_ui.share.ShareImageFileUtilsTest.testSaveBitmapAndMediaStore
+
+# crbug.com/1225754
+-org.chromium.chrome.browser.offlinepages.OfflinePageBridgeTest.testGetLoadUrlParamsForOpeningMhtmlFileUrl
+
+# crbug.com/1231227
+-org.chromium.chrome.browser.webapps.WebappDisplayModeTest.testFullScreen
+-org.chromium.chrome.browser.webapps.WebappDisplayModeTest.testFullScreenInFullscreen
+
+# crbug.com/1231652
+-org.chromium.chrome.browser.autofill.settings.AutofillProfilesFragmentTest.testKeyboardShownOnDpadCenter
+
+# crbug.com/1297370
+-org.chromium.chrome.browser.multiwindow.MultiWindowIntegrationTest.*
+-org.chromium.chrome.browser.multiwindow.MultiWindowUtilsTest.*
+-org.chromium.chrome.browser.tabmodel.TabModelMergingTest.*
+-org.chromium.chrome.browser.tabmodel.UndoTabModelTest.testOpenRecentlyClosedTabMultiWindow
+-org.chromium.chrome.browser.tabmodel.UndoTabModelTest.testOpenRecentlyClosedTabMultiWindowFallback

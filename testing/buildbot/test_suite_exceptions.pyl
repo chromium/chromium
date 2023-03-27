@@ -1427,6 +1427,11 @@
         'ci_only': True,
         'experiment_percentage': 100,
       },
+      'android-12l-x64-dbg-tests': {
+        'args': [
+          '--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator_12l.chrome_public_test_apk.filter',
+        ],
+      },
       'android-arm64-proguard-rel': {
         'swarming': {
           'shards': 25,
