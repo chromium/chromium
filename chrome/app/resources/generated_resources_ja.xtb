@@ -601,7 +601,7 @@
 <translation id="1546031833947068368">{COUNT,plural, =1{シークレット ウィンドウは、再起動後は自動的には開きません。}other{現在開いている # 個のシークレット ウィンドウは、再起動後は自動的には開きません。}}</translation>
 <translation id="1546280085599573572">この拡張機能により、ホームボタンをクリックしたときに表示されるページが変更されました。</translation>
 <translation id="1546452108651444655"><ph name="CHILD_NAME" /> さんが次の処理を行う<ph name="EXTENSION_TYPE" />のインストールを求めています。</translation>
-<translation id="1547123415014299762">サードパーティの Cookie が許可されます</translation>
+<translation id="1547123415014299762">サードパーティの Cookie が許可されています</translation>
 <translation id="1547808936554660006">eSIM プロファイルは Powerwash で削除されないことを理解しました</translation>
 <translation id="1547936895218027488">サイドパネル アイコンをクリックして開きます</translation>
 <translation id="1549275686094429035">ARC は有効になっています</translation>
@@ -1446,7 +1446,7 @@
 <translation id="2280486287150724112">右余白</translation>
 <translation id="2281863813036651454">左マウスクリック</translation>
 <translation id="2282146716419988068">GPU プロセス</translation>
-<translation id="228293613124499805">アクセスするサイトの多くは、ユーザーのデバイスにデータを保存します。多くの場合、エクスペリエンスの向上を目的として、設定やサイトと共有した情報が保存されます。この設定はオンにしておくことをおすすめします。</translation>
+<translation id="228293613124499805">アクセスするサイトの多くは、エクスペリエンスの向上を目的として、設定内容やあなたがサイトと共有した情報をデバイス上に保存します。この設定はオンにしておくことをおすすめします。</translation>
 <translation id="2285109769884538519">{COUNT,plural, =0{すべてを新しいタブグループで開く(&amp;N)}=1{新しいタブグループで開く(&amp;N)}other{すべて（{COUNT} 個）を新しいタブグループで開く(&amp;N)}}</translation>
 <translation id="2285942871162473373">指紋を認識できませんでした。もう一度お試しください。</translation>
 <translation id="2287944065963043964">ログイン画面</translation>
@@ -3027,7 +3027,7 @@
 <translation id="3713047097299026954">このセキュリティ キーにはログインデータが保存されていません</translation>
 <translation id="3713091615825314967">自動更新が有効になっています。</translation>
 <translation id="3714195043138862580">このデモデバイスはプロビジョニングを解除されている状態です。</translation>
-<translation id="3719826155360621982">トップページ</translation>
+<translation id="3719826155360621982">ホームページ</translation>
 <translation id="372062398998492895">CUPS</translation>
 <translation id="3721119614952978349">Google の設定</translation>
 <translation id="3722108462506185496">仮想マシンサービスの起動中にエラーが発生しました。もう一度お試しください。</translation>
@@ -3354,7 +3354,7 @@
 <translation id="3984431586879874039">このサイトによるセキュリティ キーへのアクセスを許可しますか？</translation>
 <translation id="398477389655464998">選択箇所へのリンクをコピー</translation>
 <translation id="3984862166739904574">クイック アンサーの定義</translation>
-<translation id="3985022125189960801">ユーザーの興味 / 関心を推測できるサイトのプールに含める場合は、サイトをもう一度追加します</translation>
+<translation id="3985022125189960801">あなたの興味 / 関心を推測することを許可するには、サイトをプールに戻します</translation>
 <translation id="3987544746655539083">このサイトによる位置情報へのアクセスを引き続きブロックする</translation>
 <translation id="3987938432087324095">聞き取れませんでした。</translation>
 <translation id="3987993985790029246">リンクのコピー</translation>
@@ -4523,7 +4523,7 @@
 <translation id="5094721898978802975">連携するネイティブ アプリケーションと通信</translation>
 <translation id="5097002363526479830">ネットワーク「<ph name="NAME" />」に接続できませんでした: <ph name="DETAILS" /></translation>
 <translation id="5097306410549350357">位置情報の使用について詳細を確認する</translation>
-<translation id="5097349930204431044">アクセスしたサイトはユーザーの興味 / 関心を判断し、それ以降にアクセスするサイトで広告を提案できます</translation>
+<translation id="5097349930204431044">サイトがユーザーの興味 / 関心を判断し、それ以降にアクセスするサイトで広告を提案することを許可します</translation>
 <translation id="5097649414558628673">ツール: <ph name="PRINT_NAME" /></translation>
 <translation id="5097874180538493929">カーソルの停止時に自動的にクリックする</translation>
 <translation id="5101683448725092498">データをバックアップする</translation>
@@ -8088,7 +8088,7 @@
 <translation id="8373652277231415614">Crostini の共有ディレクトリ</translation>
 <translation id="8374243500935816406">全ディスプレイのウィンドウ管理をサイトに許可しない</translation>
 <translation id="8376137163494131156">Google Cast についてフィードバックをお寄せください。</translation>
-<translation id="8376384591331888629">このサイトでサードパーティの Cookie を許可する</translation>
+<translation id="8376384591331888629">サイト上のサードパーティ Cookie も含まれます</translation>
 <translation id="8376451933628734023">このウェブアプリが別のアプリになりすまそうとしている場合は、アンインストールしてください。</translation>
 <translation id="8377625247046155446">このパスキーはこのデバイスにのみ保存されます。すべてのシークレット ウィンドウを閉じた後も、パスキーはこのデバイスには残ります。</translation>
 <translation id="8378714024927312812">組織によって管理されています</translation>

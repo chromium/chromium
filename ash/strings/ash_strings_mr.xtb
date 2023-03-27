@@ -249,7 +249,7 @@
 <translation id="2292698582925480719">स्केल दाखवा</translation>
 <translation id="229397294990920565">मोबाइल डेटा बंद करत आहे...</translation>
 <translation id="2295777434187870477">माइक सुरू आहे, टॉगल केल्याने इनपुट म्यूट होईल.</translation>
-<translation id="2298170939937364391">फुल-स्क्रीन मॅग्निफायर सुरू केला आहे. तो टॉगल करून बंद करण्यासाठी पुन्हा Ctrl+Search+M दाबा.</translation>
+<translation id="2298170939937364391">फुल-स्क्रीन मॅग्निफायर सुरू केला आहे. तो टॉगल करून बंद करण्यासाठी पुन्हा Ctrl+Search+M प्रेस करा.</translation>
 <translation id="2302092602801625023">हे खाते Family Link द्वारे व्यवस्थापित केले जाते</translation>
 <translation id="2303600792989757991">विंडो विहंगावलोकन टॉगल करा</translation>
 <translation id="2315005022200073389"><ph name="HOLDING_SPACE_TITLE" />: अलीकडील स्क्रीन कॅप्चर, डाउनलोड आणि पिन केलेल्या फाइल</translation>
@@ -476,7 +476,7 @@
 <translation id="3576141592585647168">टाइमझोन बदला</translation>
 <translation id="3577473026931028326">काहीतरी चूक झाली. पुन्हा प्रयत्न करा.</translation>
 <translation id="3580650856351781466">स्पीच फाइल डाउनलोड होत आहेत</translation>
-<translation id="3593039967545720377">तुमचे क्लिपबोर्ड पाहण्यासाठी, <ph name="SHORTCUT_KEY_NAME" /> + V दाबून तुमचा क्लिपबोर्ड इतिहास ॲक्सेस करा. सुरुवात करण्यासाठी आयटम कॉपी करा.</translation>
+<translation id="3593039967545720377">तुमचे क्लिपबोर्ड पाहण्यासाठी, <ph name="SHORTCUT_KEY_NAME" /> + V प्रेस करून तुमचा क्लिपबोर्ड इतिहास ॲक्सेस करा. सुरुवात करण्यासाठी आयटम कॉपी करा.</translation>
 <translation id="3593646411856133110">उघडी अ‍ॅप्स पाहण्यासाठी वर स्वाइप करा आणि धरून ठेवा</translation>
 <translation id="3595596368722241419">बॅटरी पूर्ण चार्ज</translation>
 <translation id="3596012367874587041">अ‍ॅप सेटिंग्ज</translation>
@@ -822,7 +822,7 @@
 <translation id="5393156353051693207">तुमची ॲप्स पुन्हा क्रमाने लावण्यासाठी कुठेही स्पर्श करा आणि धरून ठेवा</translation>
 <translation id="5395308026110844773"><ph name="IN_PLACE_APP" /> च्या वर <ph name="DRAGGED_APP_NAME" />, फोल्डर तयार करण्यासाठी रिलीझ करा.</translation>
 <translation id="5397578532367286026">या वापरकर्त्याच्या वापर आणि इतिहासाचे chrome.com वरील व्यवस्थापकाद्वारे (<ph name="MANAGER_EMAIL" />) पुनरावलोकन केले जाऊ शकते.</translation>
-<translation id="5400461572260843123">क्विक सेटिंग्ज, सूचना केंद्र अ‍ॅक्सेस करण्यासाठी शोध + डावे बटण दाबा.</translation>
+<translation id="5400461572260843123">क्विक सेटिंग्ज, सूचना केंद्र अ‍ॅक्सेस करण्यासाठी शोध + डावे बटण प्रेस करा.</translation>
 <translation id="5426063383988017631">सेटिंग्ज मेनू बंद केला आहे</translation>
 <translation id="5428899915242071344">निवडणे सुरू करा</translation>
 <translation id="5429993543155113935">गुप्त विंडोना सध्या सपोर्ट नाही</translation>
@@ -1325,7 +1325,7 @@
 <translation id="8144760705599030999">तुमच्या इतर डिव्हाइसशी आणखी जलद पेअरिंग करण्यासाठी तुमचे <ph name="NAME" /> हे <ph name="EMAIL" /> वर सेव्ह करा</translation>
 <translation id="8144914663975476336">रेकॉर्डिंग फॉरमॅट निवडा</translation>
 <translation id="8149413265954228307">ब्लूटूथ सेटिंग्ज दाखवा. <ph name="STATE_TEXT" />.</translation>
-<translation id="8152092012181020186">बंद करण्यासाठी Ctrl + W दाबा.</translation>
+<translation id="8152092012181020186">बंद करण्यासाठी Ctrl + W प्रेस करा.</translation>
 <translation id="8152264887680882389"><ph name="TEXT" />, ऑटोकंप्लीट</translation>
 <translation id="8155007568264258537"><ph name="FEATURE_NAME" /> हे सेटिंग तुमच्या अ‍ॅडमिनिस्ट्रेटरद्वारे व्यवस्थापित केले जाते.</translation>
 <translation id="8155628902202578800"><ph name="USER_EMAIL_ADDRESS" /> साठी माहिती डायलॉग उघडा</translation>
@@ -1344,7 +1344,7 @@
 <translation id="8247060538831475781"><ph name="CONNECTION_STATUS" />, सिग्नल क्षमता <ph name="SIGNAL_STRENGTH" />, फोन बॅटरी <ph name="BATTERY_STATUS" /></translation>
 <translation id="8247998213073982446"><ph name="APP_NAME" />, ॲप</translation>
 <translation id="8255234195843591763">अपडेट करण्यासाठी रीसेट करा</translation>
-<translation id="826107067893790409"><ph name="USER_EMAIL_ADDRESS" /> अनलॉक करण्यासाठी एंटर दाबा</translation>
+<translation id="826107067893790409"><ph name="USER_EMAIL_ADDRESS" /> अनलॉक करण्यासाठी एंटर प्रेस करा</translation>
 <translation id="8261506727792406068">हटवा</translation>
 <translation id="8270450402312105425">{0,plural, =1{एक तासामध्ये डिव्हाइस मागील आवृत्तीवर बदला}other{# तासांमध्ये डिव्हाइस मागील आवृत्तीवर बदला}}</translation>
 <translation id="8277261673056602147">तुमच्या स्क्रीनवरील मजकूर हायलाइट करा</translation>

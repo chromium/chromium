@@ -25,7 +25,7 @@
 <translation id="1446450296470737166">MIDI機器のフルコントロールを許可</translation>
 <translation id="1448064542941920355">縮小</translation>
 <translation id="1510341833810331442">サイトはデバイスにデータを保存できません</translation>
-<translation id="1547123415014299762">サードパーティの Cookie が許可されます</translation>
+<translation id="1547123415014299762">サードパーティの Cookie が許可されています</translation>
 <translation id="1620510694547887537">カメラ</translation>
 <translation id="1633720957382884102">関連サイト</translation>
 <translation id="1644574205037202324">履歴</translation>
@@ -47,7 +47,7 @@
 <translation id="1919950603503897840">連絡先を選択</translation>
 <translation id="1923695749281512248"><ph name="BYTES_DOWNLOADED_WITH_UNITS" /> / <ph name="FILE_SIZE_WITH_UNITS" /></translation>
 <translation id="1979673356880165407">アクセスしたすべてのサイトでテキストと画像を拡大または縮小して表示します</translation>
-<translation id="1984937141057606926">サードパーティを除いて許可する</translation>
+<translation id="1984937141057606926">サードパーティ以外は許可</translation>
 <translation id="1989112275319619282">閲覧</translation>
 <translation id="1994173015038366702">サイトの URL</translation>
 <translation id="2004697686368036666">一部のサイトで機能を使用できなくなる可能性があります</translation>
@@ -65,7 +65,7 @@
 <translation id="2238944249568001759">最後のタブに基づく検索キーワードの候補</translation>
 <translation id="2241634353105152135">一回限り</translation>
 <translation id="2253414712144136228"><ph name="NAME_OF_LIST_ITEM" />　を削除</translation>
-<translation id="228293613124499805">アクセスするサイトの多くは、ユーザーのデバイスにデータを保存します。多くの場合、エクスペリエンスの向上を目的として、設定やサイトと共有した情報が保存されます。この設定はオンにしておくことをおすすめします。</translation>
+<translation id="228293613124499805">アクセスするサイトの多くは、エクスペリエンスの向上を目的として、設定内容やあなたがサイトと共有した情報をデバイス上に保存します。この設定はオンにしておくことをおすすめします。</translation>
 <translation id="2289270750774289114">サイトから近くにある Bluetooth デバイスの検出を求められたときに確認する（推奨）</translation>
 <translation id="2315043854645842844">オペレーティング システムでサポートされていないため、クライアントサイドで証明書を選択することはできません。</translation>
 <translation id="2321958826496381788">読みやすくなるまでスライダをドラッグしてください。段落をダブルタップするとテキストがこれより大きくなります。</translation>
@@ -311,7 +311,7 @@
 <translation id="6746124502594467657">下に移動</translation>
 <translation id="6749077623962119521">権限をリセットしますか？</translation>
 <translation id="6766622839693428701">閉じるには下にスワイプします。</translation>
-<translation id="6787751205395685251"><ph name="SITE_NAME" /> のオプションを選択してください</translation>
+<translation id="6787751205395685251"><ph name="SITE_NAME" /> に対する設定を選択してください</translation>
 <translation id="6790428901817661496">再生</translation>
 <translation id="6818926723028410516">アイテムを選択</translation>
 <translation id="6864395892908308021">このデバイスでは NFC を読み込めません</translation>
@@ -390,7 +390,7 @@
 <translation id="8324158725704657629">次回から表示しない</translation>
 <translation id="8362795839483915693">アクセスしたサイトを拡大、縮小できます</translation>
 <translation id="8372893542064058268">特定のサイトに対してバックグラウンド同期を許可します。</translation>
-<translation id="8376384591331888629">このサイトでサードパーティの Cookie を許可する</translation>
+<translation id="8376384591331888629">サイト上のサードパーティ Cookie も含まれます</translation>
 <translation id="83792324527827022">サイトでカメラとマイクが使用されています</translation>
 <translation id="8380167699614421159">このサイトでは煩わしい広告や誤解を招く広告が表示されます</translation>
 <translation id="8394832520002899662">タップしてサイトに戻る</translation>
