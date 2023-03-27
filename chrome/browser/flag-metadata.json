@@ -925,7 +925,7 @@
   {
     "name": "captive-portal-error-page",
     "owners": [ "stevenjb", "cros-network-health-team@google.com" ],
-    "expiry_milestone": 114
+    "expiry_milestone": 120
   },
   {
     "name": "cast-streaming-hardware-h264",
