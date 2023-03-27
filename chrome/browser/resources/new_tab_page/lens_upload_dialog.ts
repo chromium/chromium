@@ -193,11 +193,7 @@ export class LensUploadDialogElement extends LensUploadDialogElementBase {
 
   override connectedCallback() {
     super.connectedCallback();
-    // Provides the parent element with a reference to the openDialog function
-    // after component is (lazily) loaded so we do not need to reference this
-    // element directly in the parent to open the dialog.
-    this.dispatchEvent(new CustomEvent(
-        'bind-open-dialog', {detail: {fn: this.openDialog.bind(this)}}));
+    this.openDialog();
   }
 
   override disconnectedCallback() {

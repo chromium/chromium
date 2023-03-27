@@ -912,6 +912,11 @@ suite('NewTabPageAppTest', () => {
       });
     });
 
+    test('lens upload dialog closed on start', () => {
+      // Assert.
+      assertFalse(!!app.shadowRoot!.querySelector('ntp-lens-upload-dialog'));
+    });
+
     test('realbox is not visible when Lens upload dialog is open', async () => {
       // Arrange.
       callbackRouterRemote.setTheme(createTheme());
@@ -922,6 +927,7 @@ suite('NewTabPageAppTest', () => {
       await flushTasks();
 
       // Assert.
+      assertTrue(!!app.shadowRoot!.querySelector('ntp-lens-upload-dialog'));
       assertStyle($$(app, '#realbox')!, 'visibility', 'hidden');
 
       // Act.

@@ -337,7 +337,6 @@ export class AppElement extends AppElementBase {
   private promoAndModulesLoaded_: boolean;
   private removeScrim_: boolean;
   private lazyRender_: boolean;
-  private openLensDialog: Function|null;
 
   private callbackRouter_: PageCallbackRouter;
   private pageHandler_: PageHandlerRemote;
@@ -519,23 +518,8 @@ export class AppElement extends AppElementBase {
     recordVoiceAction(VoiceAction.ACTIVATE_SEARCH_BOX);
   }
 
-  /**
-   * Sets the openLensDialog function when the child LensUploadDialogComponent
-   * is lazily loaded.
-   *
-   * We use the connected callback with a custom event dispatch to get around
-   * bundling the upload dialog component with the primary bundle to call open
-   * dialog.
-   */
-  private bindOpenLensDialog_(e: CustomEvent<{fn: () => void}>) {
-    this.openLensDialog = e.detail.fn;
-  }
-
   private onOpenLensSearch_() {
-    if (this.openLensDialog) {
-      this.openLensDialog();
-      this.showLensUploadDialog_ = true;
-    }
+    this.showLensUploadDialog_ = true;
   }
 
   private onCloseLensSearch_() {
