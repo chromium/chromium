@@ -32,30 +32,30 @@ using SitePermissionsHelper = extensions::SitePermissionsHelper;
 
 // Returns sorted extension ids based on their extensions name.
 std::vector<std::string> SortExtensionsByName(
-    ToolbarActionsModel* toolbar_model) {
-  auto sort_by_name = [toolbar_model](const ToolbarActionsModel::ActionId a,
-                                      const ToolbarActionsModel::ActionId b) {
-    return base::i18n::ToLower(toolbar_model->GetExtensionName(a)) <
-           base::i18n::ToLower(toolbar_model->GetExtensionName(b));
+    ToolbarActionsModel& toolbar_model) {
+  auto sort_by_name = [&toolbar_model](const ToolbarActionsModel::ActionId a,
+                                       const ToolbarActionsModel::ActionId b) {
+    return base::i18n::ToLower(toolbar_model.GetExtensionName(a)) <
+           base::i18n::ToLower(toolbar_model.GetExtensionName(b));
   };
-  std::vector<std::string> sorted_ids(toolbar_model->action_ids().begin(),
-                                      toolbar_model->action_ids().end());
+  std::vector<std::string> sorted_ids(toolbar_model.action_ids().begin(),
+                                      toolbar_model.action_ids().end());
   std::sort(sorted_ids.begin(), sorted_ids.end(), sort_by_name);
   return sorted_ids;
 }
 
 // Returns the index of `action_id` in the toolbar model actions based on the
 // extensions name alphabetical order.
-size_t FindIndex(ToolbarActionsModel* toolbar_model,
-                 const ToolbarActionsModel::ActionId action_id) {
+size_t FindIndex(ToolbarActionsModel& toolbar_model,
+                 const ToolbarActionsModel::ActionId& action_id) {
   std::u16string extension_name =
-      base::i18n::ToLower(toolbar_model->GetExtensionName(action_id));
+      base::i18n::ToLower(toolbar_model.GetExtensionName(action_id));
   auto sorted_action_ids = SortExtensionsByName(toolbar_model);
   return static_cast<size_t>(
       base::ranges::lower_bound(sorted_action_ids, extension_name, {},
-                                [toolbar_model](std::string id) {
+                                [&toolbar_model](std::string id) {
                                   return base::i18n::ToLower(
-                                      toolbar_model->GetExtensionName(id));
+                                      toolbar_model.GetExtensionName(id));
                                 }) -
       sorted_action_ids.begin());
 }
@@ -82,10 +82,9 @@ bool HasEnterpriseForcedAccess(const extensions::Extension& extension,
 }
 
 // Returns whether the site setting toggle for `web_contents` should be visible.
-bool IsSiteSettingsToggleVisible(
-    const raw_ptr<ToolbarActionsModel> toolbar_model,
-    content::WebContents* web_contents) {
-  return !toolbar_model->IsRestrictedUrl(web_contents->GetLastCommittedURL());
+bool IsSiteSettingsToggleVisible(const ToolbarActionsModel& toolbar_model,
+                                 content::WebContents* web_contents) {
+  return !toolbar_model.IsRestrictedUrl(web_contents->GetLastCommittedURL());
 }
 
 // Returns whether the site settings toggle for `web_contents` should be on.
@@ -162,7 +161,7 @@ void ExtensionsMenuViewController::OpenMainPage() {
   content::WebContents* web_contents = GetActiveWebContents();
   std::u16string current_site = GetCurrentHost(web_contents);
   bool is_site_settings_toggle_visible =
-      IsSiteSettingsToggleVisible(toolbar_model_, web_contents);
+      IsSiteSettingsToggleVisible(*toolbar_model_, web_contents);
   bool is_site_settings_toggle_on =
       IsSiteSettingsToggleOn(browser_, web_contents);
   main_page->Update(current_site, is_site_settings_toggle_visible,
@@ -225,7 +224,7 @@ void ExtensionsMenuViewController::UpdatePage(
   if (main_page && web_contents) {
     std::u16string current_site = GetCurrentHost(web_contents);
     bool is_site_settings_toggle_visible =
-        IsSiteSettingsToggleVisible(toolbar_model_, web_contents);
+        IsSiteSettingsToggleVisible(*toolbar_model_, web_contents);
     bool is_site_settings_toggle_on =
         IsSiteSettingsToggleOn(browser_, web_contents);
     main_page->Update(current_site, is_site_settings_toggle_visible,
@@ -261,7 +260,7 @@ void ExtensionsMenuViewController::OnToolbarActionAdded(
   auto* main_page = GetMainPage(current_page_);
   DCHECK(main_page);
 
-  int index = FindIndex(toolbar_model_, action_id);
+  int index = FindIndex(*toolbar_model_, action_id);
   std::unique_ptr<ExtensionActionViewController> action_controller =
       ExtensionActionViewController::Create(action_id, browser_,
                                             extensions_container_);
@@ -414,7 +413,7 @@ void ExtensionsMenuViewController::SwitchToPage(
 void ExtensionsMenuViewController::PopulateMainPage(
     ExtensionsMenuMainPageView* main_page) {
   bool allow_pinning = extensions_container_->CanShowActionsInToolbar();
-  std::vector<std::string> sorted_ids = SortExtensionsByName(toolbar_model_);
+  std::vector<std::string> sorted_ids = SortExtensionsByName(*toolbar_model_);
   for (size_t i = 0; i < sorted_ids.size(); ++i) {
     // TODO(emiliapaz): Under MVC architecture, view should not own the view
     // controller. However, the current extensions structure depends on this
