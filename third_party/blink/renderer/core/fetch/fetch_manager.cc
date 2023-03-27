@@ -204,9 +204,10 @@ class FetchManager::Loader final
       if (result == Result::kDone) {
         SubresourceIntegrity::ReportInfo report_info;
         bool check_result = true;
-        if (response_type_ != FetchResponseType::kBasic &&
-            response_type_ != FetchResponseType::kCors &&
-            response_type_ != FetchResponseType::kDefault) {
+        bool body_is_null = !updater_;
+        if (body_is_null || (response_type_ != FetchResponseType::kBasic &&
+                             response_type_ != FetchResponseType::kCors &&
+                             response_type_ != FetchResponseType::kDefault)) {
           report_info.AddConsoleErrorMessage(
               "Subresource Integrity: The resource '" + url_.ElidedString() +
               "' has an integrity attribute, but the response is not "
@@ -232,8 +233,10 @@ class FetchManager::Loader final
       }
       String error_message =
           "Unknown error occurred while trying to verify integrity.";
-      updater_->Update(
-          BytesConsumer::CreateErrored(BytesConsumer::Error(error_message)));
+      if (updater_) {
+        updater_->Update(
+            BytesConsumer::CreateErrored(BytesConsumer::Error(error_message)));
+      }
       loader_->PerformNetworkError(error_message);
     }
 
