@@ -21,6 +21,7 @@ import org.chromium.chrome.browser.IntentHandler;
 import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider;
 import org.chromium.chrome.browser.browserservices.intents.WebappExtras;
 import org.chromium.chrome.browser.customtabs.BaseCustomTabActivity;
+import org.chromium.chrome.browser.customtabs.CustomTabLocator;
 import org.chromium.chrome.browser.customtabs.content.CustomTabActivityTabProvider;
 import org.chromium.chrome.browser.dependency_injection.ActivityScope;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
@@ -159,7 +160,7 @@ class WebappActionsNotificationManager implements PauseResumeWithNativeObserver 
 
         int tabId = IntentHandler.getTabId(intent);
         WeakReference<BaseCustomTabActivity> customTabActivityRef =
-                WebappLocator.findWebappActivityWithTabId(tabId);
+                CustomTabLocator.findCustomTabActivityWithTabId(tabId);
         if (customTabActivityRef == null) return false;
 
         BaseCustomTabActivity customTabActivity = customTabActivityRef.get();

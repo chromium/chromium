@@ -34,6 +34,7 @@ import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntent
 import org.chromium.chrome.browser.browserservices.intents.WebappConstants;
 import org.chromium.chrome.browser.browserservices.intents.WebappIntentUtils;
 import org.chromium.chrome.browser.customtabs.BaseCustomTabActivity;
+import org.chromium.chrome.browser.customtabs.CustomTabLocator;
 import org.chromium.chrome.browser.document.ChromeLauncherActivity;
 import org.chromium.chrome.browser.firstrun.FirstRunFlowSequencer;
 import org.chromium.components.webapk.lib.client.WebApkValidator;
@@ -108,7 +109,7 @@ public class WebappLauncherActivity extends Activity {
      */
     public static boolean bringWebappToFront(int tabId) {
         WeakReference<BaseCustomTabActivity> customTabActivity =
-                WebappLocator.findWebappActivityWithTabId(tabId);
+                CustomTabLocator.findCustomTabActivityWithTabId(tabId);
         if (customTabActivity == null || customTabActivity.get() == null) return false;
         customTabActivity.get().getWebContentsDelegate().activateContents();
         return true;
