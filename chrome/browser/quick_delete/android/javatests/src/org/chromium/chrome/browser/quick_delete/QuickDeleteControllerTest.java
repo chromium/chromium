@@ -18,17 +18,22 @@ import static org.chromium.ui.test.util.ViewUtils.onViewWaiting;
 import androidx.test.espresso.matcher.ViewMatchers;
 import androidx.test.filters.MediumTest;
 
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import org.chromium.base.test.util.Batch;
+import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.chrome.R;
+import org.chromium.chrome.browser.browsing_data.BrowsingDataBridge;
+import org.chromium.chrome.browser.browsing_data.BrowsingDataType;
 import org.chromium.chrome.browser.browsing_data.ClearBrowsingDataAction;
+import org.chromium.chrome.browser.browsing_data.TimePeriod;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.layouts.LayoutTestUtils;
@@ -38,9 +43,11 @@ import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.util.ChromeRenderTestRule;
 import org.chromium.chrome.test.util.browser.Features.EnableFeatures;
+import org.chromium.content_public.browser.test.util.JavaScriptUtils;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 
 import java.io.IOException;
+import java.util.concurrent.TimeoutException;
 
 /**
  * Tests for quick delete controller.
@@ -50,6 +57,8 @@ import java.io.IOException;
 @EnableFeatures({ChromeFeatureList.QUICK_DELETE_FOR_ANDROID})
 @Batch(Batch.PER_CLASS)
 public class QuickDeleteControllerTest {
+    private static final String TEST_FILE = "/content/test/data/browsing_data/site_data.html";
+
     @Rule
     public ChromeTabbedActivityTestRule mActivityTestRule = new ChromeTabbedActivityTestRule();
 
@@ -62,6 +71,40 @@ public class QuickDeleteControllerTest {
     @Before
     public void setUp() {
         mActivityTestRule.startMainActivityOnBlankPage();
+    }
+
+    private void openQuickDeleteDialog() {
+        // Open 3 dot menu.
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            AppMenuTestSupport.showAppMenu(mActivityTestRule.getAppMenuCoordinator(), null, false);
+        });
+        onViewWaiting(withId(R.id.app_menu_list))
+                .check(matches(withEffectiveVisibility(ViewMatchers.Visibility.VISIBLE)));
+
+        // Click on quick delete menu item.
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            AppMenuTestSupport.callOnItemClick(
+                    mActivityTestRule.getAppMenuCoordinator(), R.id.quick_delete_menu_id);
+        });
+    }
+
+    private void resetCookies() throws TimeoutException {
+        CallbackHelper helper = new CallbackHelper();
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            BrowsingDataBridge.getInstance().clearBrowsingData(helper::notifyCalled,
+                    new int[] {BrowsingDataType.COOKIES}, TimePeriod.LAST_15_MINUTES);
+        });
+        helper.waitForCallback(0);
+    }
+
+    private void loadSiteDataUrl() {
+        String url = mActivityTestRule.getTestServer().getURL(TEST_FILE);
+        mActivityTestRule.loadUrl(url);
+    }
+
+    private String runJavascriptSync(String type) throws Exception {
+        return JavaScriptUtils.executeJavaScriptAndWaitForResult(
+                mActivityTestRule.getWebContents(), type);
     }
 
     @Test
@@ -155,18 +198,36 @@ public class QuickDeleteControllerTest {
         histogramWatcher.assertExpected();
     }
 
-    private void openQuickDeleteDialog() {
-        // Open 3 dot menu.
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            AppMenuTestSupport.showAppMenu(mActivityTestRule.getAppMenuCoordinator(), null, false);
-        });
-        onViewWaiting(withId(R.id.app_menu_list))
-                .check(matches(withEffectiveVisibility(ViewMatchers.Visibility.VISIBLE)));
+    @Test
+    @MediumTest
+    public void testBrowsingDataDeletion_onClickedDelete() throws Exception {
+        resetCookies();
+        loadSiteDataUrl();
+        Assert.assertEquals("false", runJavascriptSync("hasCookie()"));
 
-        // Click on quick delete menu item.
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            AppMenuTestSupport.callOnItemClick(
-                    mActivityTestRule.getAppMenuCoordinator(), R.id.quick_delete_menu_id);
-        });
+        runJavascriptSync("setCookie()");
+        Assert.assertEquals("true", runJavascriptSync("hasCookie()"));
+
+        // Browsing data (cookies) should be deleted.
+        openQuickDeleteDialog();
+        onViewWaiting(withId(R.id.positive_button)).perform(click());
+        onView(withId(R.id.snackbar)).check(matches(isDisplayed()));
+        Assert.assertEquals("false", runJavascriptSync("hasCookie()"));
+    }
+
+    @Test
+    @MediumTest
+    public void testBrowsingDataDeletion_onClickedCancel() throws Exception {
+        resetCookies();
+        loadSiteDataUrl();
+        Assert.assertEquals("false", runJavascriptSync("hasCookie()"));
+
+        runJavascriptSync("setCookie()");
+        Assert.assertEquals("true", runJavascriptSync("hasCookie()"));
+
+        // Browsing data (cookies) should not be deleted.
+        openQuickDeleteDialog();
+        onViewWaiting(withId(R.id.negative_button)).perform(click());
+        Assert.assertEquals("true", runJavascriptSync("hasCookie()"));
     }
 }

@@ -24,26 +24,29 @@ public class QuickDeleteController {
     private static final MutableFlagWithSafeDefault sQuickDeleteForAndroidFlag =
             new MutableFlagWithSafeDefault(ChromeFeatureList.QUICK_DELETE_FOR_ANDROID, false);
 
-    private final @NonNull QuickDeleteDialogDelegate mQuickDeleteDialogDelegate;
-    private final @NonNull SnackbarManager mSnackbarManager;
     private final @NonNull Context mContext;
+    private final @NonNull QuickDeleteDelegate mDelegate;
+    private final @NonNull QuickDeleteDialogDelegate mDialogDelegate;
+    private final @NonNull SnackbarManager mSnackbarManager;
     private final @NonNull LayoutManager mLayoutManager;
 
     /**
      * Constructor for the QuickDeleteController with a dialog and confirmation snackbar.
      *
      * @param context The associated {@link Context}.
+     * @param delegate A {@link QuickDeleteDelegate} to perform the quick delete.
      * @param modalDialogManager A {@link ModalDialogManager} to show the quick delete modal dialog.
      * @param snackbarManager A {@link SnackbarManager} to show the quick delete snackbar.
      * @param layoutManager {@link LayoutManager} to use for showing the regular overview mode.
      */
-    public QuickDeleteController(@NonNull Context context,
+    public QuickDeleteController(@NonNull Context context, @NonNull QuickDeleteDelegate delegate,
             @NonNull ModalDialogManager modalDialogManager,
             @NonNull SnackbarManager snackbarManager, @NonNull LayoutManager layoutManager) {
         mContext = context;
+        mDelegate = delegate;
         mSnackbarManager = snackbarManager;
         mLayoutManager = layoutManager;
-        mQuickDeleteDialogDelegate =
+        mDialogDelegate =
                 new QuickDeleteDialogDelegate(context, modalDialogManager, this::onDialogDismissed);
     }
 
@@ -58,7 +61,7 @@ public class QuickDeleteController {
      * A method responsible for triggering the quick delete flow.
      */
     public void triggerQuickDeleteFlow() {
-        mQuickDeleteDialogDelegate.showDialog();
+        mDialogDelegate.showDialog();
     }
 
     /**
@@ -71,8 +74,7 @@ public class QuickDeleteController {
             case DialogDismissalCause.POSITIVE_BUTTON_CLICKED:
                 QuickDeleteMetricsDelegate.recordHistogram(
                         QuickDeleteMetricsDelegate.QuickDeleteAction.DELETE_CLICKED);
-                navigateToTabSwitcher();
-                showSnackbar();
+                mDelegate.performQuickDelete(this::onQuickDeleteFinished);
                 break;
             case DialogDismissalCause.NEGATIVE_BUTTON_CLICKED:
                 QuickDeleteMetricsDelegate.recordHistogram(
@@ -83,6 +85,12 @@ public class QuickDeleteController {
                         QuickDeleteMetricsDelegate.QuickDeleteAction.DIALOG_DISMISSED_IMPLICITLY);
                 break;
         }
+    }
+
+    private void onQuickDeleteFinished() {
+        navigateToTabSwitcher();
+        // TODO(crbug.com/1412087): Show post-delete animation.
+        showSnackbar();
     }
 
     /**

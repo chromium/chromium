@@ -7,6 +7,7 @@ import("//build/config/android/rules.gni")
 android_library("java") {
   sources = [
     "android/java/src/org/chromium/chrome/browser/quick_delete/QuickDeleteController.java",
+    "android/java/src/org/chromium/chrome/browser/quick_delete/QuickDeleteDelegate.java",
     "android/java/src/org/chromium/chrome/browser/quick_delete/QuickDeleteDialogDelegate.java",
     "android/java/src/org/chromium/chrome/browser/quick_delete/QuickDeleteMetricsDelegate.java",
   ]
@@ -82,6 +83,7 @@ android_library("javatests") {
     "//chrome/test/android:chrome_java_test_support_common",
     "//components/browsing_data/core:java",
     "//content/public/test/android:content_java_test_support",
+    "//net/android:net_java_test_support",
     "//third_party/android_deps:espresso_java",
     "//third_party/androidx:androidx_test_runner_java",
     "//third_party/junit:junit",
