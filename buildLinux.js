@@ -86,21 +86,21 @@ function getChromiumDeps() {
 
   let match = /'v8_revision': '(.*?)'/.exec(text);
   assert(match, "Could not find V8 revision");
-  results.v8 = match;
+  results.v8 = match[1];
 
   match = /'skia_revision': '(.*?)'/.exec(text);
   assert(match, "Could not find skia revision");
-  results.skia = match;
+  results.skia = match[1];
 
   match = /'https:\/\/github.com\/replayio\/chromium-webrtc.git' \+ '@' \+ '(.*?)'/.exec(
     text
   );
   assert(match, "Could not find webrtc revision");
-  results.webrtc = match;
+  results.webrtc = match[1];
 
   match = /'boringssl_revision': '(.*?)'/.exec(text);
   assert(match, "Could not find boringssl revision");
-  results.boringssl = match;
+  results.boringssl = match[1];
 
   return results;
 }
