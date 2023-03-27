@@ -130,7 +130,8 @@ void CreditCardFormEventLogger::OnDidFillSuggestion(
     const AutofillField& field,
     const base::flat_set<FieldGlobalId>& newly_filled_fields,
     const base::flat_set<FieldGlobalId>& safe_fields,
-    AutofillSyncSigninState sync_state) {
+    AutofillSyncSigninState sync_state,
+    const AutofillTriggerSource trigger_source) {
   CreditCard::RecordType record_type = credit_card.record_type();
   sync_state_ = sync_state;
   ukm::builders::Autofill_CreditCardFill builder =
@@ -201,7 +202,9 @@ void CreditCardFormEventLogger::OnDidFillSuggestion(
 
   form_interactions_ukm_logger_->Record(std::move(builder));
 
-  ++form_interaction_counts_.autofill_fills;
+  if (trigger_source != AutofillTriggerSource::kFastCheckout) {
+    ++form_interaction_counts_.autofill_fills;
+  }
   UpdateFlowId();
 }
 

@@ -98,7 +98,8 @@ class CategoryResolvedKeyMetricsTest
     autofill_manager().OnAskForValuesToFillTest(form, form.fields.front());
     autofill_manager().FillOrPreviewForm(
         mojom::RendererFormDataAction::kFill, form, form.fields.front(),
-        MakeFrontendId({.profile_id = profile.guid()}));
+        MakeFrontendId({.profile_id = profile.guid()}),
+        AutofillTriggerSource::kPopup);
   }
 
  protected:

@@ -8,6 +8,7 @@
 #include <string>
 
 #include "components/autofill/core/browser/autofill_field.h"
+#include "components/autofill/core/browser/autofill_trigger_source.h"
 #include "components/autofill/core/browser/data_model/autofill_profile.h"
 #include "components/autofill/core/browser/form_structure.h"
 #include "components/autofill/core/browser/metrics/autofill_metrics.h"
@@ -44,7 +45,8 @@ class AddressFormEventLogger : public FormEventLoggerBase {
   void OnDidFillSuggestion(const AutofillProfile& profile,
                            const FormStructure& form,
                            const AutofillField& field,
-                           AutofillSyncSigninState sync_state);
+                           AutofillSyncSigninState sync_state,
+                           const AutofillTriggerSource trigger_source);
 
   void OnDidSeeFillableDynamicForm(AutofillSyncSigninState sync_state,
                                    const FormStructure& form);

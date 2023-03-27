@@ -112,20 +112,23 @@ class MockBrowserAutofillManager : public TestBrowserAutofillManager {
               (const FormData& form,
                const FormFieldData& field,
                const CreditCard& credit_card,
-               const std::u16string& cvc),
+               const std::u16string& cvc,
+               const AutofillTriggerSource trigger_source),
               (override));
   MOCK_METHOD(void,
               FillOrPreviewCreditCardForm,
               (mojom::RendererFormDataAction action,
                const FormData& form,
                const FormFieldData& field,
-               const CreditCard* credit_card));
+               const CreditCard* credit_card,
+               const AutofillTriggerSource trigger_source));
   MOCK_METHOD(void,
               FillOrPreviewVirtualCardInformation,
               (mojom::RendererFormDataAction action,
                const std::string& guid,
                const FormData& form,
-               const FormFieldData& field));
+               const FormFieldData& field,
+               const AutofillTriggerSource trigger_source));
   MOCK_METHOD(void,
               DidShowSuggestions,
               (bool has_autofill_suggestions,

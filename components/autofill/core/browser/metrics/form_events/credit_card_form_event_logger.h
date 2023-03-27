@@ -10,6 +10,7 @@
 #include "base/memory/raw_ptr.h"
 #include "components/autofill/core/browser/autofill_client.h"
 #include "components/autofill/core/browser/autofill_field.h"
+#include "components/autofill/core/browser/autofill_trigger_source.h"
 #include "components/autofill/core/browser/data_model/credit_card.h"
 #include "components/autofill/core/browser/form_structure.h"
 #include "components/autofill/core/browser/metrics/autofill_metrics.h"
@@ -87,7 +88,8 @@ class CreditCardFormEventLogger : public FormEventLoggerBase {
       const AutofillField& field,
       const base::flat_set<FieldGlobalId>& newly_filled_fields,
       const base::flat_set<FieldGlobalId>& safe_fields,
-      AutofillSyncSigninState sync_state);
+      AutofillSyncSigninState sync_state,
+      const AutofillTriggerSource trigger_source);
 
   // Logging what type of authentication flow was prompted.
   void LogCardUnmaskAuthenticationPromptShown(UnmaskAuthFlowType flow);

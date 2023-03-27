@@ -610,7 +610,8 @@ class BrowserAutofillManagerTest : public testing::Test {
         form, field, {}, AutoselectFirstSuggestion(true),
         FormElementWasClicked(false));
     browser_autofill_manager_->FillOrPreviewForm(
-        mojom::RendererFormDataAction::kFill, form, field, unique_id);
+        mojom::RendererFormDataAction::kFill, form, field, unique_id,
+        AutofillTriggerSource::kPopup);
   }
 
   // Calls |browser_autofill_manager_->OnFillAutofillFormData()| with the
@@ -637,7 +638,7 @@ class BrowserAutofillManagerTest : public testing::Test {
         .WillOnce((DoAll(testing::SaveArg<1>(response_data),
                          testing::Return(std::vector<FieldGlobalId>{}))));
     browser_autofill_manager_->FillOrPreviewVirtualCardInformation(
-        action, guid, input_form, input_field);
+        action, guid, input_form, input_field, AutofillTriggerSource::kPopup);
   }
 
   int MakeFrontendId(
@@ -715,7 +716,8 @@ class BrowserAutofillManagerTest : public testing::Test {
     EXPECT_CALL(*autofill_driver_, FillOrPreviewForm(_, _, _, _))
         .Times(AtLeast(1));
     browser_autofill_manager_->FillOrPreviewCreditCardForm(
-        mojom::RendererFormDataAction::kFill, *form, form->fields[0], card);
+        mojom::RendererFormDataAction::kFill, *form, form->fields[0], card,
+        AutofillTriggerSource::kPopup);
   }
 
   void OnDidGetRealPan(AutofillClient::PaymentsRpcResult result,
@@ -2445,7 +2447,8 @@ TEST_F(BrowserAutofillManagerTest, OnCreditCardFetched_StoreInstrumentId) {
   FormsSeen({form});
   CreditCard credit_card = test::GetMaskedServerCard();
   browser_autofill_manager_->FillOrPreviewCreditCardForm(
-      mojom::RendererFormDataAction::kFill, form, form.fields[0], &credit_card);
+      mojom::RendererFormDataAction::kFill, form, form.fields[0], &credit_card,
+      AutofillTriggerSource::kPopup);
 
   browser_autofill_manager_->OnCreditCardFetchedForTest(
       CreditCardFetchResult::kSuccess, &credit_card,

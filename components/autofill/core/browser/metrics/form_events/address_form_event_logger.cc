@@ -12,6 +12,7 @@
 #include "base/metrics/user_metrics.h"
 #include "base/metrics/user_metrics_action.h"
 #include "components/autofill/core/browser/autofill_data_util.h"
+#include "components/autofill/core/browser/autofill_trigger_source.h"
 #include "components/autofill/core/browser/logging/log_manager.h"
 #include "components/autofill/core/browser/metrics/autofill_metrics_utils.h"
 #include "components/autofill/core/common/autofill_features.h"
@@ -35,7 +36,8 @@ void AddressFormEventLogger::OnDidFillSuggestion(
     const AutofillProfile& profile,
     const FormStructure& form,
     const AutofillField& field,
-    AutofillSyncSigninState sync_state) {
+    AutofillSyncSigninState sync_state,
+    const AutofillTriggerSource trigger_source) {
   AutofillProfile::RecordType record_type = profile.record_type();
   sync_state_ = sync_state;
 
@@ -62,7 +64,9 @@ void AddressFormEventLogger::OnDidFillSuggestion(
   base::RecordAction(
       base::UserMetricsAction("Autofill_FilledProfileSuggestion"));
 
-  ++form_interaction_counts_.autofill_fills;
+  if (trigger_source != AutofillTriggerSource::kFastCheckout) {
+    ++form_interaction_counts_.autofill_fills;
+  }
   UpdateFlowId();
 
   if (base::FeatureList::IsEnabled(

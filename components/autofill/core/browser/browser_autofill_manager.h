@@ -151,11 +151,13 @@ class BrowserAutofillManager : public AutofillManager,
   virtual void FillOrPreviewForm(mojom::RendererFormDataAction action,
                                  const FormData& form,
                                  const FormFieldData& field,
-                                 int unique_id);
+                                 int unique_id,
+                                 const AutofillTriggerSource trigger_source);
   void FillCreditCardFormImpl(const FormData& form,
                               const FormFieldData& field,
                               const CreditCard& credit_card,
-                              const std::u16string& cvc) override;
+                              const std::u16string& cvc,
+                              AutofillTriggerSource trigger_source) override;
   // Virtual for testing
   virtual void DidShowSuggestions(bool has_autofill_suggestions,
                                   const FormData& form,
@@ -165,15 +167,18 @@ class BrowserAutofillManager : public AutofillManager,
   // Assumes the form and field are valid.
   // Asks for authentication via CVC before filling with server card data.
   // TODO(crbug.com/1330108): Clean up the API.
-  virtual void FillOrPreviewCreditCardForm(mojom::RendererFormDataAction action,
-                                           const FormData& form,
-                                           const FormFieldData& field,
-                                           const CreditCard* credit_card);
+  virtual void FillOrPreviewCreditCardForm(
+      mojom::RendererFormDataAction action,
+      const FormData& form,
+      const FormFieldData& field,
+      const CreditCard* credit_card,
+      const AutofillTriggerSource trigger_source);
 
   // TODO(crbug.com/1330108): Clean up the API.
   void FillProfileFormImpl(const FormData& form,
                            const FormFieldData& field,
-                           const AutofillProfile& profile) override;
+                           const AutofillProfile& profile,
+                           AutofillTriggerSource trigger_source) override;
 
   // Fetches the related virtual card information given the related actual card
   // |guid| and fills the information into the form.
@@ -182,7 +187,8 @@ class BrowserAutofillManager : public AutofillManager,
       mojom::RendererFormDataAction action,
       const std::string& guid,
       const FormData& form,
-      const FormFieldData& field);
+      const FormFieldData& field,
+      const AutofillTriggerSource trigger_source);
 
   // Returns true if the value/identifier is deletable. Fills out
   // |title| and |body| with relevant user-facing text.
@@ -345,7 +351,10 @@ class BrowserAutofillManager : public AutofillManager,
     return ShouldTriggerRefill(form_structure);
   }
 
-  void TriggerRefillForTest(const FormData& form) { TriggerRefill(form); }
+  void TriggerRefillForTest(const FormData& form,
+                            const AutofillTriggerSource trigger_source) {
+    TriggerRefill(form, trigger_source);
+  }
 
   void PreProcessStateMatchingTypesForTest(
       const std::vector<AutofillProfile>& profiles,
@@ -392,9 +401,9 @@ class BrowserAutofillManager : public AutofillManager,
       const std::u16string* optional_cvc,
       FormStructure* form_structure,
       AutofillField* autofill_field) {
-    return FillOrPreviewDataModelForm(action, form, field,
-                                      profile_or_credit_card, optional_cvc,
-                                      form_structure, autofill_field);
+    return FillOrPreviewDataModelForm(
+        action, form, field, profile_or_credit_card, optional_cvc,
+        form_structure, autofill_field, AutofillTriggerSource::kPopup);
   }
 
   FormData* pending_form_data_for_test() { return pending_form_data_.get(); }
@@ -526,7 +535,8 @@ class BrowserAutofillManager : public AutofillManager,
   void FillOrPreviewProfileForm(mojom::RendererFormDataAction action,
                                 const FormData& form,
                                 const FormFieldData& field,
-                                const AutofillProfile& profile);
+                                const AutofillProfile& profile,
+                                const AutofillTriggerSource trigger_source);
 
   // Fills or previews |data_model| in the |form|.
   // TODO(crbug.com/1330108): Clean up the API.
@@ -539,6 +549,7 @@ class BrowserAutofillManager : public AutofillManager,
       const std::u16string* optional_cvc,
       FormStructure* form_structure,
       AutofillField* autofill_field,
+      const AutofillTriggerSource trigger_source,
       bool is_refill = false);
 
   // Returns true if the field value should not be overridden by Autofill.
@@ -659,19 +670,23 @@ class BrowserAutofillManager : public AutofillManager,
   bool ShouldTriggerRefill(const FormStructure& form_structure);
 
   // Schedules a call of TriggerRefill. Virtual for testing.
-  virtual void ScheduleRefill(const FormData& form);
+  virtual void ScheduleRefill(const FormData& form,
+                              const AutofillTriggerSource trigger_source);
 
   // Attempts to refill the form that was changed dynamically. Should only be
   // called if ShouldTriggerRefill returns true.
-  void TriggerRefill(const FormData& form);
+  void TriggerRefill(const FormData& form,
+                     const AutofillTriggerSource trigger_source);
 
   // This function is called by JavaScriptChangedAutofilledValue and may trigger
   // a refill in case the website used JavaScript to reformat an expiration date
   // like "05/2023" into "05 / 20" (i.e. it broke the year by cutting the last
   // two digits instead of stripping the first two digits).
-  void MaybeTriggerRefillForExpirationDate(const FormData& form,
-                                           const FormFieldData& field,
-                                           const std::u16string& old_value);
+  void MaybeTriggerRefillForExpirationDate(
+      const FormData& form,
+      const FormFieldData& field,
+      const std::u16string& old_value,
+      const AutofillTriggerSource trigger_source);
 
   // Checks whether JavaScript cleared an autofilled value within
   // kLimitBeforeRefill after the filling and records metrics for this. This
@@ -838,6 +853,9 @@ class BrowserAutofillManager : public AutofillManager,
 
   // When the form was submitted.
   base::TimeTicks form_submitted_timestamp_;
+
+  // The source that triggered unlocking a server card with the CVC.
+  absl::optional<AutofillTriggerSource> fetched_credit_card_trigger_source_;
 
   base::WeakPtrFactory<BrowserAutofillManager> weak_ptr_factory_{this};
 };

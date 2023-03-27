@@ -101,7 +101,8 @@ TEST_P(CardMetadataFormEventMetricsTest, LogSelectedMetrics) {
                                         form(), form().fields.back());
   autofill_manager().FillOrPreviewForm(
       mojom::RendererFormDataAction::kFill, form(), form().fields.back(),
-      MakeFrontendId({.credit_card_id = kCardGuid}));
+      MakeFrontendId({.credit_card_id = kCardGuid}),
+      AutofillTriggerSource::kPopup);
 
   // Verify that:
   // 1. if the selected card had metadata,
@@ -210,7 +211,8 @@ TEST_P(CardMetadataLatencyMetricsTest, LogMetrics) {
   test_clock.SetNowTicks(now + base::Seconds(2));
   autofill_manager().FillOrPreviewForm(
       mojom::RendererFormDataAction::kFill, form(), form().fields.front(),
-      MakeFrontendId({.credit_card_id = kTestMaskedCardId}));
+      MakeFrontendId({.credit_card_id = kTestMaskedCardId}),
+      AutofillTriggerSource::kPopup);
 
   std::string latency_histogram_prefix =
       "Autofill.CreditCard.SelectionLatencySinceShown.";

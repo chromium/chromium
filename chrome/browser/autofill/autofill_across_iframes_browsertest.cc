@@ -125,7 +125,8 @@ void FillCard(content::RenderFrameHost* rfh,
   test::SetCreditCardInfo(&card, kNameFull, kNumber, kExpMonth, kExpYear, "");
   auto* manager = TestAutofillManager::GetForRenderFrameHost(rfh);
   manager->FillCreditCardFormImpl(form, triggered_field, card,
-                                  base::ASCIIToUTF16(base::StringPiece(kCvc)));
+                                  base::ASCIIToUTF16(base::StringPiece(kCvc)),
+                                  AutofillTriggerSource::kPopup);
 }
 
 // Clicks the first input, textarea, or select in `rfh`.

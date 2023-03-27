@@ -47,10 +47,12 @@ class AndroidAutofillManager : public AutofillManager {
   void FillCreditCardFormImpl(const FormData& form,
                               const FormFieldData& field,
                               const CreditCard& credit_card,
-                              const std::u16string& cvc) override;
+                              const std::u16string& cvc,
+                              AutofillTriggerSource trigger_source) override;
   void FillProfileFormImpl(const FormData& form,
                            const FormFieldData& field,
-                           const autofill::AutofillProfile& profile) override;
+                           const autofill::AutofillProfile& profile,
+                           AutofillTriggerSource trigger_source) override;
 
   void OnFocusNoLongerOnFormImpl(bool had_interacted_form) override;
 
