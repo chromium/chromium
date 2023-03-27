@@ -111,6 +111,16 @@ export class PrefToggleButtonElement extends PrefToggleButtonElementBase {
     this.updatePrefValue_();
   }
 
+  private onToggleClick_() {
+    if (this.changeRequiresValidation) {
+      this.checked = !this.checked;
+      this.dispatchEvent(new CustomEvent(
+          'validate-and-change-pref', {bubbles: true, composed: true}));
+      return;
+    }
+    this.updatePrefValue_();
+  }
+
   private prefValueChanged_(prefValue: boolean) {
     this.checked = prefValue;
   }

@@ -26,5 +26,5 @@ export {CheckupSubpage, Page, Route, RouteObserverMixin, RouteObserverMixinInter
 export {SettingsSectionElement} from './settings_section.js';
 export {PasswordManagerSideBarElement} from './side_bar.js';
 export {SiteFaviconElement} from './site_favicon.js';
-export {TrustedVaultBannerState} from './sync_browser_proxy.js';
+export {AccountInfo, SyncBrowserProxy, SyncBrowserProxyImpl, SyncInfo, TrustedVaultBannerState} from './sync_browser_proxy.js';
 export {PasswordManagerToolbarElement} from './toolbar.js';

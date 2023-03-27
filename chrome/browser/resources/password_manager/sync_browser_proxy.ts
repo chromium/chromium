@@ -12,16 +12,47 @@ export enum TrustedVaultBannerState {
   OPTED_IN = 2,
 }
 
+/**
+ * @see chrome/browser/ui/webui/password_manager/sync_handler.cc
+ */
+export interface AccountInfo {
+  email: string;
+  avatarImage?: string;
+}
+
+export interface SyncInfo {
+  isEligibleForAccountStorage: boolean;
+}
+
+
 export interface SyncBrowserProxy {
   /**
    * Gets trusted vault banner state.
    */
   getTrustedVaultBannerState(): Promise<TrustedVaultBannerState>;
+
+  /**
+   * Gets the current sync info.
+   */
+  getSyncInfo(): Promise<SyncInfo>;
+
+  /**
+   * Gets the current account info.
+   */
+  getAccountInfo(): Promise<AccountInfo>;
 }
 
 export class SyncBrowserProxyImpl implements SyncBrowserProxy {
   getTrustedVaultBannerState() {
     return sendWithPromise('GetSyncTrustedVaultBannerState');
+  }
+
+  getSyncInfo() {
+    return sendWithPromise('GetSyncInfo');
+  }
+
+  getAccountInfo() {
+    return sendWithPromise('GetAccountInfo');
   }
 
   static getInstance(): SyncBrowserProxy {

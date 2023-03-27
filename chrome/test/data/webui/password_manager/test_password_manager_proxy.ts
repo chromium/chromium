@@ -55,6 +55,7 @@ export class TestPasswordManagerProxy extends TestBrowserProxy implements
       'getSavedPasswordList',
       'getUrlCollection',
       'muteInsecureCredential',
+      'optInForAccountStorage',
       'recordPasswordCheckInteraction',
       'removeBlockedSite',
       'removeSavedPassword',
@@ -301,5 +302,10 @@ export class TestPasswordManagerProxy extends TestBrowserProxy implements
   isOptedInForAccountStorage() {
     this.methodCalled('isOptedInForAccountStorage');
     return Promise.resolve(this.data.isOptedInAccountStorage);
+  }
+
+  optInForAccountStorage(optIn: boolean) {
+    this.methodCalled('optInForAccountStorage');
+    this.data.isOptedInAccountStorage = optIn;
   }
 }

@@ -4,7 +4,7 @@
 
 import 'chrome://password-manager/password_manager.js';
 
-import {OpenWindowProxyImpl, PasswordManagerImpl, PrefsBrowserProxyImpl, TrustedVaultBannerState} from 'chrome://password-manager/password_manager.js';
+import {OpenWindowProxyImpl, PasswordManagerImpl, PrefsBrowserProxyImpl, PrefToggleButtonElement, SyncBrowserProxyImpl, TrustedVaultBannerState} from 'chrome://password-manager/password_manager.js';
 import {webUIListenerCallback} from 'chrome://resources/js/cr.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
@@ -15,14 +15,8 @@ import {isVisible} from 'chrome://webui-test/test_util.js';
 
 import {TestPasswordManagerProxy} from './test_password_manager_proxy.js';
 import {TestPrefsBrowserProxy} from './test_prefs_browser_proxy.js';
+import {TestSyncBrowserProxy} from './test_sync_browser_proxy.js';
 import {createBlockedSiteEntry, createPasswordEntry, makePasswordManagerPrefs} from './test_util.js';
-
-// Disable clang format to keep OS-specific includes.
-// clang-format off
-// <if expr="is_win or is_macosx">
-import {PrefToggleButtonElement} from 'chrome://password-manager/password_manager.js';
- // </if>
-// clang-format on
 
 /**
  * Helper method that validates a that elements in the exception list match
@@ -45,6 +39,7 @@ suite('SettingsSectionTest', function() {
   let prefsProxy: TestPrefsBrowserProxy;
   let passwordManager: TestPasswordManagerProxy;
   let openWindowProxy: TestOpenWindowProxy;
+  let syncProxy: TestSyncBrowserProxy;
 
   setup(function() {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
@@ -55,6 +50,8 @@ suite('SettingsSectionTest', function() {
     PasswordManagerImpl.setInstance(passwordManager);
     openWindowProxy = new TestOpenWindowProxy();
     OpenWindowProxyImpl.setInstance(openWindowProxy);
+    syncProxy = new TestSyncBrowserProxy();
+    SyncBrowserProxyImpl.setInstance(syncProxy);
   });
 
   test('pref value displayed in the UI', async function() {
@@ -341,4 +338,59 @@ suite('SettingsSectionTest', function() {
     const url = await openWindowProxy.whenCalled('openUrl');
     assertEquals(url, loadTimeData.getString('trustedVaultLearnMoreUrl'));
   });
+
+  test('account storage toggle when feature is available', async function() {
+    passwordManager.data.isOptedInAccountStorage = false;
+    syncProxy.accountInfo = {
+      email: 'testemail@gmail.com',
+    };
+    syncProxy.syncInfo = {
+      isEligibleForAccountStorage: true,
+    };
+
+    const settings = document.createElement('settings-section');
+    document.body.appendChild(settings);
+    await syncProxy.whenCalled('getSyncInfo');
+    await syncProxy.whenCalled('getAccountInfo');
+    await flushTasks();
+    await flushTasks();
+
+    const accountStorageToggle =
+        settings.shadowRoot!.querySelector<PrefToggleButtonElement>(
+            '#accountStorageToggle');
+    assertTrue(!!accountStorageToggle);
+    assertFalse(accountStorageToggle.hasAttribute('checked'));
+    accountStorageToggle.click();
+
+    // Toggle should not change until authentication succeeds.
+    await passwordManager.whenCalled('optInForAccountStorage');
+    assertFalse(accountStorageToggle.hasAttribute('checked'));
+
+    // Assert that password section subscribed as a listener to opt in state and
+    // opt out from account storage.
+    assertTrue(!!passwordManager.listeners.accountStorageOptInStateListener);
+    passwordManager.data.isOptedInAccountStorage = true;
+    // Imitate listener notification after successful identification.
+    passwordManager.listeners.accountStorageOptInStateListener(true);
+    await flushTasks();
+
+    assertTrue(accountStorageToggle.checked);
+  });
+
+  // Tests that account storage toggle is not shown, if it should not be shown.
+  test(
+      'account storage pref toggle when feature is unavailable',
+      async function() {
+        syncProxy.syncInfo = {
+          isEligibleForAccountStorage: false,
+        };
+        const settings = document.createElement('settings-section');
+        document.body.appendChild(settings);
+        await syncProxy.whenCalled('getSyncInfo');
+        await flushTasks();
+
+        assertFalse(
+            !!settings.shadowRoot!.querySelector<PrefToggleButtonElement>(
+                '#accountStorageToggle'));
+      });
 });

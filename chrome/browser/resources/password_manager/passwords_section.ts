@@ -88,7 +88,7 @@ export class PasswordsSectionElement extends PasswordsSectionElementBase {
 
       showMovePasswords_: {
         type: Boolean,
-        computed: 'computeShowMovePasswords_(isOptedInForAccountStorage, ' +
+        computed: 'computeShowMovePasswords_(isAccountStoreUser, ' +
             'numberOfPasswordsOnDevice_)',
       },
       // <if expr="_google_chrome">
@@ -217,7 +217,7 @@ export class PasswordsSectionElement extends PasswordsSectionElementBase {
   private computeShowMovePasswords_(): boolean {
     // TODO(crbug.com/1420548): Check for conflicts if needed.
     return this.computeNumberOfPasswordsOnDevice_() > 0 &&
-        this.isOptedInForAccountStorage;
+        this.isAccountStoreUser;
   }
 
   private async onGroupsChanged_() {

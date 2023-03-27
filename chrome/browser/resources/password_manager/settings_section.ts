@@ -6,6 +6,7 @@ import 'chrome://resources/cr_elements/cr_link_row/cr_link_row.js';
 import 'chrome://resources/cr_elements/cr_shared_style.css.js';
 import './shared_style.css.js';
 import './prefs/pref_toggle_button.js';
+import './user_utils_mixin.js';
 
 import {CrLinkRowElement} from 'chrome://resources/cr_elements/cr_link_row/cr_link_row.js';
 import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
@@ -19,6 +20,7 @@ import {BlockedSite, BlockedSitesListChangedListener, CredentialsChangedListener
 import {PrefToggleButtonElement} from './prefs/pref_toggle_button.js';
 import {getTemplate} from './settings_section.html.js';
 import {SyncBrowserProxyImpl, TrustedVaultBannerState} from './sync_browser_proxy.js';
+import {UserUtilMixin} from './user_utils_mixin.js';
 
 export interface SettingsSectionElement {
   $: {
@@ -30,7 +32,7 @@ export interface SettingsSectionElement {
 }
 
 const SettingsSectionElementBase =
-    WebUiListenerMixin(I18nMixin(PolymerElement));
+    UserUtilMixin(WebUiListenerMixin(I18nMixin(PolymerElement)));
 
 export class SettingsSectionElement extends SettingsSectionElementBase {
   static get is() {
@@ -216,6 +218,14 @@ export class SettingsSectionElement extends SettingsSectionElementBase {
   private getAriaLabelForBlockedSite_(
       blockedSite: chrome.passwordsPrivate.ExceptionEntry): string {
     return this.i18n('removeBlockedAriaDescription', blockedSite.urls.shown);
+  }
+
+  private changeAccountStorageOptIn_() {
+    if (this.isOptedInForAccountStorage) {
+      this.optOutFromAccountStorage();
+    } else {
+      this.optInForAccountStorage();
+    }
   }
 }
 

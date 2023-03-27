@@ -294,6 +294,12 @@ export interface PasswordManagerProxy {
    * @return A promise that resolves to the opt-in state.
    */
   isOptedInForAccountStorage(): Promise<boolean>;
+
+  /**
+   * Triggers the opt-in or opt-out flow for the account storage.
+   * @param optIn Whether the user wants to opt in or opt out.
+   */
+  optInForAccountStorage(optIn: boolean): void;
 }
 
 /**
@@ -483,6 +489,10 @@ export class PasswordManagerImpl implements PasswordManagerProxy {
 
   isOptedInForAccountStorage() {
     return chrome.passwordsPrivate.isOptedInForAccountStorage();
+  }
+
+  optInForAccountStorage(optIn: boolean) {
+    chrome.passwordsPrivate.optInForAccountStorage(optIn);
   }
 
   static getInstance(): PasswordManagerProxy {

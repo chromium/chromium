@@ -32,7 +32,9 @@ export const PrefMixin = dedupingMixin(
         override connectedCallback() {
           super.connectedCallback();
 
-          assert(this.prefKey);
+          if (!this.prefKey) {
+            return;
+          }
 
           this.prefsChanged_ = this.onPrefsChangedInSettingsPrivate_.bind(this);
           PrefsBrowserProxyImpl.getInstance().addPrefsChangedListener(
@@ -42,6 +44,10 @@ export const PrefMixin = dedupingMixin(
 
         override disconnectedCallback() {
           super.disconnectedCallback();
+
+          if (!this.prefKey) {
+            return;
+          }
 
           assert(this.prefsChanged_);
           PrefsBrowserProxyImpl.getInstance().removePrefsChangedListener(

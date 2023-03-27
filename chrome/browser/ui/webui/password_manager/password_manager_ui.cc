@@ -63,6 +63,8 @@ content::WebUIDataSource* CreateAndAddPasswordsUIHTMLSource(
       IDR_PASSWORD_MANAGER_PASSWORD_MANAGER_HTML);
 
   static constexpr webui::LocalizedString kStrings[] = {
+    {"accountStorageToggleLabel",
+     IDS_PASSWORD_MANAGER_UI_ACCOUNT_STORAGE_TOGGLE_LABEL},
     {"addPassword", IDS_PASSWORD_MANAGER_UI_ADD_PASSWORD_BUTTON},
     {"addPasswordFooter", IDS_PASSWORD_MANAGER_UI_ADD_PASSWORD_FOOTNOTE},
     {"addPasswordTitle", IDS_PASSWORD_MANAGER_UI_ADD_PASSWORD},
