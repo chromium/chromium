@@ -57,6 +57,11 @@ class ViewsStyleGenerator(CSSStyleGenerator):
 
         return globals
 
+    def ShouldResolveBlendedColors(self):
+        # CSSGenerator sets this to false, we set it back to true since
+        # views does not do runtime blends.
+        return True
+
     def _CreateColorList(self):
         color_list = []
         for name, mode_values in self.model.colors.items():

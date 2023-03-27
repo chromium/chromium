@@ -18,10 +18,6 @@ class ColorMappingsStyleGenerator(CSSStyleGenerator):
     def GetName():
         return 'ColorMappings'
 
-    def __init__(self):
-        super().__init__()
-        self.resolve_blended_colors = False
-
     def GetParameters(self):
         return {
             'color_mappings': self._CreateMappings(),
@@ -54,6 +50,9 @@ class ColorMappingsStyleGenerator(CSSStyleGenerator):
             globals['header_file'] = header_file
 
         return globals
+
+    def ShouldResolveBlendedColors(self):
+        return False
 
     def _CreateMappings(self):
         mappings = collections.defaultdict(list)

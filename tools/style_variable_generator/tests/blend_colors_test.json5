@@ -11,7 +11,7 @@
     },
     highlight_color_hover: {
       light: "rgba($black.rgb, 0.2)",
-      dark: "rgba($white.rgb, 0.2)",
+      dark: "rgba($white.rgb, 0.4)",
     },
     foo_color: {
       light: "blend($highlight_color_hover, $bg_color)",

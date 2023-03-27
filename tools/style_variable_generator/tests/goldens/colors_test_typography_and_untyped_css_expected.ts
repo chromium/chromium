@@ -49,8 +49,7 @@ const DARK_MODE_OVERRIDES_CSS = window ? `
   --cros-toggle-color-rgb: var(--cros-text-color-primary-rgb);
   --cros-toggle-color: rgba(var(--cros-toggle-color-rgb), var(--cros-disabled-opacity));
 
-  --cros-bg-color-elevation-1-rgb: 41, 42, 45;
-  --cros-bg-color-elevation-1: rgb(var(--cros-bg-color-elevation-1-rgb));
+  --cros-bg-color-elevation-1: color-mix(in srgb, rgb(255, 255, 255) 4.0%, rgb(var(--google-grey-900-rgb)));
 
   --cros-reference-opacity: 1;
 ` : '';

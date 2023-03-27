@@ -42,8 +42,7 @@ html:not(body) {
   --cros-sys-primary_container-rgb: var(--cros-ref-primary50-rgb);
   --cros-sys-primary_container: rgba(var(--cros-sys-primary_container-rgb), var(--cros-sys-disabled_opacity));
 
-  --cros-sys-on_primary_container-rgb: 41, 42, 45;
-  --cros-sys-on_primary_container: rgb(var(--cros-sys-on_primary_container-rgb));
+  --cros-sys-on_primary_container: color-mix(in srgb, rgb(255, 255, 255) 4.0%, rgb(var(--cros-ref-primary50-rgb)));
 
   --cros-sys-reference_opacity: 1;
 }

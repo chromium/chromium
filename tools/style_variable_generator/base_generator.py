@@ -45,18 +45,18 @@ class BaseGenerator:
         # If specified, only generates the given mode.
         self.generate_single_mode = None
 
-        # If true, resolves all blend() colors to the RGBA values at
-        # compile time.
-        self.resolve_blended_colors = True
-
         # A dictionary of options used to alter generator function. See
         # ./README.md for each generators list of options.
         self.generator_options = {}
 
 
+    # If true, resolves all blend() colors to the RGBA values at
+    # compile time.
+    def ShouldResolveBlendedColors(self):
+        return True
+
     def GetInputFiles(self):
         return sorted(self.in_file_to_context.keys())
-
 
     def AddJSONFilesToModel(self, paths):
         '''Adds one or more JSON files to the model.
@@ -69,7 +69,7 @@ class BaseGenerator:
                 raise ValueError(f'Could not add {path}') from err
 
         self.model.PostProcess(
-            resolve_blended_colors=self.resolve_blended_colors)
+            resolve_blended_colors=self.ShouldResolveBlendedColors())
 
     def AddJSONToModel(self, json_string, in_file=None):
         '''Adds a |json_string| with variable definitions to the model.
