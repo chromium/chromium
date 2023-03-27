@@ -166,6 +166,9 @@ void ResolvedFrameData::UpdateForActiveFrame(
         }
 
         referenced_resources.push_back(resource_id);
+
+        // Update `ResolvedQuadData::remapped_resources` to have the remapped
+        // display resource_id.
         resource_id = iter->second;
       }
     }
