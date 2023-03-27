@@ -1381,6 +1381,10 @@ void Translate(Browser* browser) {
 }
 
 void ManagePasswordsForPage(Browser* browser) {
+  browser->window()->CloseFeaturePromo(
+      feature_engagement::kIPHPasswordsManagementBubbleAfterSaveFeature);
+  browser->window()->CloseFeaturePromo(
+      feature_engagement::kIPHPasswordsManagementBubbleDuringSigninFeature);
   WebContents* web_contents =
       browser->tab_strip_model()->GetActiveWebContents();
   ManagePasswordsUIController* controller =
