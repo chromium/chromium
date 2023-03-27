@@ -12,7 +12,7 @@
 #include "build/branding_buildflags.h"
 #include "chromeos/crosapi/cpp/channel_to_enum.h"
 #include "chromeos/crosapi/cpp/crosapi_constants.h"
-#include "components/variations/proto/cros_safe_seed.pb.h"
+#include "components/variations/cros/featured.pb.h"
 #include "components/variations/proto/study.pb.h"
 #include "components/variations/service/variations_field_trial_creator.h"
 
@@ -60,7 +60,7 @@ std::unique_ptr<ClientFilterableState> GetClientFilterableState(
 
 absl::optional<SafeSeed> GetSafeSeedData(const base::CommandLine* command_line,
                                          FILE* stream) {
-  variations::SeedDetails safe_seed;
+  featured::SeedDetails safe_seed;
   if (command_line->HasSwitch(kSafeSeedSwitch)) {
     // Read safe seed from |stream|.
     std::string safe_seed_data;

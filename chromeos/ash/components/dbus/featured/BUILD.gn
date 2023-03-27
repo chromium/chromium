@@ -11,8 +11,8 @@ component("featured") {
   defines = [ "IS_CHROMEOS_ASH_COMPONENTS_DBUS_FEATURED_IMPL" ]
 
   deps = [
+    ":proto",
     "//base",
-    "//components/variations/proto:cros_safe_seed_proto",
     "//dbus",
   ]
 
@@ -29,9 +29,9 @@ source_set("unit_tests") {
 
   deps = [
     ":featured",
+    ":proto",
     "//base",
     "//base/test:test_support",
-    "//components/variations/proto:cros_safe_seed_proto",
     "//dbus",
     "//dbus:test_support",
     "//testing/gmock",
@@ -39,4 +39,10 @@ source_set("unit_tests") {
   ]
 
   sources = [ "featured_client_unittest.cc" ]
+}
+
+proto_library("proto") {
+  sources = [ "//third_party/cros_system_api/dbus/featured/featured.proto" ]
+
+  proto_out_dir = "chromeos/ash/components/dbus/featured"
 }

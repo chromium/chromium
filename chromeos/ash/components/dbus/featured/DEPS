@@ -1,3 +1,0 @@
-include_rules = [
-  "+components/variations/proto/cros_safe_seed.pb.h",
-]

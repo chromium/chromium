@@ -45,11 +45,3 @@ if (is_linux && !use_fuzzing_engine_with_lpm) {
     deps = [ "devtools" ]
   }
 }
-
-# This proto is only used on CrOS. Other platforms do not support this proto
-# and should not use this library.
-proto_library("cros_safe_seed_proto") {
-  sources = [ "cros_safe_seed.proto" ]
-
-  proto_out_dir = "components/variations/proto"
-}

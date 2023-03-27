@@ -7,7 +7,7 @@
 
 #include "base/component_export.h"
 #include "base/functional/callback.h"
-#include "components/variations/proto/cros_safe_seed.pb.h"
+#include "chromeos/ash/components/dbus/featured/featured.pb.h"
 
 namespace dbus {
 class Bus;
@@ -37,7 +37,7 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_DBUS_FEATURED) FeaturedClient {
 
   // Asynchronously calls featured's `HandleSeedFetched`.
   virtual void HandleSeedFetched(
-      const variations::SeedDetails& safe_seed,
+      const ::featured::SeedDetails& safe_seed,
       base::OnceCallback<void(bool success)> callback) = 0;
 
  protected:
