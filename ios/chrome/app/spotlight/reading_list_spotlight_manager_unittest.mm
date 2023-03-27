@@ -13,6 +13,7 @@
 #import "components/favicon/core/large_icon_service_impl.h"
 #import "components/favicon/core/test/mock_favicon_service.h"
 #import "components/reading_list/core/reading_list_model.h"
+#import "ios/chrome/app/spotlight/spotlight_interface.h"
 #import "ios/chrome/app/spotlight/spotlight_manager.h"
 #import "ios/chrome/app/spotlight/spotlight_util.h"
 #import "ios/chrome/browser/browser_state/test_chrome_browser_state.h"
@@ -81,7 +82,8 @@ class ReadingListSpotlightManagerTest : public PlatformTest {
     CreateMockLargeIconService();
     readingListSpotlightManager_ = [[ReadingListSpotlightManager alloc]
         initWithLargeIconService:large_icon_service_.get()
-                readingListModel:model_];
+                readingListModel:model_
+              spotlightInterface:[SpotlightInterface defaultInterface]];
   }
 
  protected:
@@ -124,7 +126,8 @@ TEST_F(ReadingListSpotlightManagerTest, testInitAndShutdown) {
 
   ReadingListSpotlightManager* manager = [[ReadingListSpotlightManager alloc]
       initWithLargeIconService:large_icon_service_.get()
-              readingListModel:model_];
+              readingListModel:model_
+            spotlightInterface:[SpotlightInterface defaultInterface]];
 
   EXPECT_EQ(manager.model, model_);
   [manager shutdown];
