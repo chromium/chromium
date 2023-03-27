@@ -22,6 +22,7 @@
 #import "components/favicon_base/fallback_icon_style.h"
 #import "components/favicon_base/favicon_types.h"
 #import "ios/chrome/app/spotlight/bookmarks_spotlight_manager.h"
+#import "ios/chrome/app/spotlight/spotlight_interface.h"
 #import "ios/chrome/app/spotlight/spotlight_manager.h"
 #import "ios/chrome/app/spotlight/spotlight_util.h"
 #import "ios/chrome/browser/bookmarks/local_or_syncable_bookmark_model_factory.h"
@@ -73,7 +74,8 @@ class SpotlightManagerTest : public PlatformTest {
         /*google_server_client_param=*/"test_chrome"));
     bookmarksSpotlightManager_ = [[BookmarksSpotlightManager alloc]
         initWithLargeIconService:large_icon_service_.get()
-                   bookmarkModel:model_.get()];
+                   bookmarkModel:model_.get()
+              spotlightInterface:[SpotlightInterface defaultInterface]];
 
     EXPECT_CALL(mock_favicon_service_,
                 GetLargestRawFaviconForPageURL(_, _, _, _, _))

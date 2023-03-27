@@ -16,6 +16,7 @@ class BookmarkModel;
 
 @class CSSearchableItem;
 @class TopSitesSpotlightManager;
+@class SpotlightInterface;
 
 @protocol BookmarkUpdatedDelegate
 
@@ -39,8 +40,9 @@ class BookmarkModel;
 // Methods below here are for testing or debugging only.
 
 - (instancetype)
-initWithLargeIconService:(favicon::LargeIconService*)largeIconService
-           bookmarkModel:(bookmarks::BookmarkModel*)bookmarkModel;
+    initWithLargeIconService:(favicon::LargeIconService*)largeIconService
+               bookmarkModel:(bookmarks::BookmarkModel*)bookmarkModel
+          spotlightInterface:(SpotlightInterface*)spotlightInterface;
 
 // Recursively adds node ancestors titles to keywords. Permanent nodes are
 // ignored.
