@@ -63,18 +63,25 @@ from update_rust import (RUST_REVISION, RUST_TOOLCHAIN_OUT_DIR,
                          VERSION_STAMP_PATH, GetPackageVersionForBuild)
 
 EXCLUDED_TESTS = [
-    # Temporarily disabled due to https://github.com/rust-lang/rust/issues/94322
-    os.path.join('tests', 'ui', 'numeric', 'numeric-cast.rs'),
-    # Temporarily disabled due to https://github.com/rust-lang/rust/issues/96497
+    # https://github.com/rust-lang/rust/issues/45222 which appears to have
+    # regressed as of a recent LLVM update. This test is purely performance
+    # related, not correctness.
+    os.path.join('tests', 'codegen', 'issue-45222.rs'),
+    # https://github.com/rust-lang/rust/issues/96497
     os.path.join('tests', 'codegen', 'issue-96497-slice-size-nowrap.rs'),
     # TODO(crbug.com/1347563): Re-enable when fixed.
     os.path.join('tests', 'codegen', 'sanitizer-cfi-emit-type-checks.rs'),
     os.path.join('tests', 'codegen',
                  'sanitizer-cfi-emit-type-metadata-itanium-cxx-abi.rs'),
-    # Temporarily disabled due to https://github.com/rust-lang/rust/issues/45222
-    # which appears to have regressed as of a recent LLVM update. This test is
-    # purely performance related, not correctness.
-    os.path.join('tests', 'codegen', 'issue-45222.rs')
+    # https://github.com/rust-lang/rust/issues/109671 the test is being
+    # optimized in newer LLVM which breaks its expectations.
+    os.path.join('tests', 'ui', 'abi', 'stack-protector.rs'),
+    # https://github.com/rust-lang/rust/issues/109672 the second panic in a
+    # double-panic is being optimized out (reasonably correctly) by newer LLVM.
+    os.path.join('tests', 'ui', 'backtrace.rs'),
+    # https://github.com/rust-lang/rust/issues/94322 large output from
+    # compiletests is breaking json parsing of the results.
+    os.path.join('tests', 'ui', 'numeric', 'numeric-cast.rs'),
 ]
 EXCLUDED_TESTS_WINDOWS = [
     # https://github.com/rust-lang/rust/issues/96464
