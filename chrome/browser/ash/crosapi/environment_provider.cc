@@ -139,20 +139,6 @@ mojom::DefaultPathsPtr EnvironmentProvider::GetDefaultPaths() {
   return default_paths;
 }
 
-std::string EnvironmentProvider::GetDeviceAccountGaiaId() {
-  const user_manager::User* const user =
-      user_manager::UserManager::Get()->GetPrimaryUser();
-  if (!user)
-    return std::string();
-
-  const AccountId& account_id = user->GetAccountId();
-  if (account_id.GetAccountType() != AccountType::GOOGLE)
-    return std::string();
-
-  DCHECK(!account_id.GetGaiaId().empty());
-  return account_id.GetGaiaId();
-}
-
 absl::optional<account_manager::Account>
 EnvironmentProvider::GetDeviceAccount() {
   // Lacros doesn't support Multi-Login. Get the Primary User.

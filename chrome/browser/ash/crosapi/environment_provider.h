@@ -32,10 +32,6 @@ class EnvironmentProvider {
   // the device account, not the Lacros profile.
   virtual crosapi::mojom::DefaultPathsPtr GetDefaultPaths();
 
-  // Deprecated. Use `GetDeviceAccount` instead.
-  // TODO(crbug.com/1195865): Remove this in M93.
-  virtual std::string GetDeviceAccountGaiaId();
-
   // Returns the account used to sign into the device. May be a Gaia account or
   // a Microsoft Active Directory account.
   // Returns a `nullopt` for Guest Sessions, Managed Guest Sessions,
