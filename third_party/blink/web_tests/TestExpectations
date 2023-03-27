@@ -6690,3 +6690,6 @@ crbug.com/1427397 http/tests/devtools/persistence/persistence-navigator-unique-n
 
 # Sheriff 2023-03-27
 crbug.com/1427936 external/wpt/js-self-profiling/function-expression-names.https.html [ Failure Pass ]
+
+# Temporarily disabled to land crrev.com/c/4365826
+crbug.com/1417112 http/tests/devtools/network/network-update-calculator-for-all-requests.js [ Failure Pass ]

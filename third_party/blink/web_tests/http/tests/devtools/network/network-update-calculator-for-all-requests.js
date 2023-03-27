@@ -13,12 +13,15 @@
   target.reset();
 
   function appendRequest(id, type, startTime, endTime) {
-    var request = SDK.NetworkRequest.create('', '', '', '', '');
-    request.setResourceType(type);
-    request.setRequestIdForTest(id);
-    request.setIssueTime(startTime);
+    TestRunner.networkManager.dispatcher.requestWillBeSent({
+      requestId: id,
+      timestamp: startTime,
+      type,
+      request: {url: 'http://example.com/'}
+    });
+    var request = TestRunner.networkManager.requestForId(id);
     request.endTime = endTime;
-    TestRunner.networkManager.dispatcher.startNetworkRequest(request);
+
     target.refresh();
 
     var isFilteredOut = Network.NetworkLogView.isRequestFilteredOut(
@@ -32,9 +35,9 @@
         ']');
   }
 
-  appendRequest('a', Common.resourceTypes.Script, 1, 2);
-  appendRequest('b', Common.resourceTypes.XHR, 3, 4);
-  appendRequest('c', Common.resourceTypes.Script, 5, 6);
+  appendRequest('a', 'Script', 1, 2);
+  appendRequest('b', 'XHR', 3, 4);
+  appendRequest('c', 'Script', 5, 6);
 
   TestRunner.completeTest();
 })();
