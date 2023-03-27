@@ -1386,7 +1386,8 @@ AX_TEST_F('ChromeVoxBackgroundTest', 'NodeVsSubnode', async function() {
   await mockFeedback.replay();
 });
 
-AX_TEST_F('ChromeVoxBackgroundTest', 'NativeFind', async function() {
+// TODO(crbug.com/1419811): Flaky.
+AX_TEST_F('ChromeVoxBackgroundTest', 'DISABLED_NativeFind', async function() {
   const mockFeedback = this.createMockFeedback();
   const site = `
     <a href="#">grape</a>
