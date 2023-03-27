@@ -487,8 +487,7 @@ public abstract class BaseCustomTabActivity extends ChromeActivity<BaseCustomTab
             // CustomTabActivityNavigationController#FinishHandler. Pass the mode enum into
             // CustomTabActivityModule, so that it can provide the correct implementation.
             getComponent().resolveTwaFinishHandler().onFinish(defaultBehavior);
-        } else if (intentDataProvider.isPartialCustomTab()
-                && intentDataProvider.shouldAnimateOnFinish()) {
+        } else if (intentDataProvider.isPartialCustomTab()) {
             // WebContents is missing during the close animation due to android:windowIsTranslucent.
             // We let partial CCT handle the animation.
             mBaseCustomTabRootUiCoordinator.handleCloseAnimation(defaultBehavior);
