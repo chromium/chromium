@@ -1,38 +1,23 @@
 // Script used by buildkite to build Chromium for Linux in CI
-
+const fs = require("fs");
 const path = require("path");
 const { spawnSync } = require("child_process");
 
 const chromium = process.cwd();
 
-try {
-  spawnChecked("git", ["pull"], { cwd: chromium, stdio: "inherit" });
-} catch (e) {
-  // Ignore errors due to being at a detached head.
-}
-
-spawnChecked("git", ["fetch"], { cwd: `${chromium}/v8`, stdio: "inherit" });
-spawnChecked("git", ["fetch"], {
-  cwd: `${chromium}/third_party/skia`,
-  stdio: "inherit",
-});
-spawnChecked("git", ["fetch"], {
-  cwd: `${chromium}/third_party/webrtc`,
-  stdio: "inherit",
-});
-
 const branch = process.env["BUILDKITE_BRANCH"];
 
-spawnChecked("git", ["checkout", branch], {
-  cwd: chromium,
-  stdio: "inherit",
-});
+syncRepo(chromium, `origin/${branch}`);
 
-// TODO(dmiller): do we actually need to do this?
-// We need to pull again to actually update the checkout ...or do we?
-spawnChecked("git", ["pull"], { cwd: chromium, stdio: "inherit" });
+const deps = getChromiumDeps();
 
-spawnChecked("gclient", ["sync"], { cwd: chromium, stdio: "inherit" });
+syncRepo(path.join(chromium, "v8"), deps.v8);
+
+syncRepo(path.join(chromium, "third_party", "skia"), deps.skia);
+
+syncRepo(path.join(chromium, "third_party", "webrtc"), deps.webrtc);
+
+syncRepo(path.join(chromium, "third_party", "boringssl", "src"), deps.boringssl);
 
 const dockerArgs = [
   "run",
@@ -72,4 +57,50 @@ function spawnChecked(cmd, args, options) {
   }
 
   return rv;
+}
+
+function syncRepo(dir, treeish) {
+  try {
+    spawnChecked("git", ["fetch", "--all"], { cwd: dir, stdio: "inherit" });
+  } catch (e) {
+    // Ignore errors due to being at a detached head.
+  }
+
+  spawnChecked("git", ["reset", "--hard", treeish], { cwd: dir, stdio: "inherit" });
+}
+
+function assert(value, msg) {
+  if (!value) {
+    throw new Error(msg);
+  }
+}
+
+function getChromiumDeps() {
+  const text = fs.readFileSync("DEPS", "utf8");
+  let results = {
+    v8: "",
+    skia: "",
+    webrtc: "",
+    boringssl: ""
+  };
+
+  let match = /'v8_revision': '(.*?)'/.exec(text);
+  assert(match, "Could not find V8 revision");
+  results.v8 = match[1];
+
+  match = /'skia_revision': '(.*?)'/.exec(text);
+  assert(match, "Could not find skia revision");
+  results.skia = match[1];
+
+  match = /'https:\/\/github.com\/replayio\/chromium-webrtc.git' \+ '@' \+ '(.*?)'/.exec(
+    text
+  );
+  assert(match, "Could not find webrtc revision");
+  results.webrtc = match[1];
+
+  match = /'boringssl_revision': '(.*?)'/.exec(text);
+  assert(match, "Could not find boringssl revision");
+  results.boringssl = match[1];
+
+  return results;
 }
