@@ -242,11 +242,13 @@ void PageImpl::MaybeDispatchLoadEventsOnPrerenderActivation() {
 
 void PageImpl::DidActivateAllRenderViewsForPrerendering() {
   // Tell each RenderFrameHostImpl in this Page that activation finished.
-  main_document_->ForEachRenderFrameHost([this](RenderFrameHostImpl* rfh) {
-    if (&rfh->GetPage() != this)
-      return;
-    rfh->RendererDidActivateForPrerendering();
-  });
+  main_document_->ForEachRenderFrameHostIncludingSpeculative(
+      [this](RenderFrameHostImpl* rfh) {
+        if (&rfh->GetPage() != this) {
+          return;
+        }
+        rfh->RendererDidActivateForPrerendering();
+      });
 }
 
 RenderFrameHost& PageImpl::GetMainDocumentHelper() {
