@@ -3706,7 +3706,7 @@
         "args": [
           "--browser-ui-tests-verify-pixels",
           "--enable-pixel-output-in-tests",
-          "--gtest_filter=KioskPixelTest.*",
+          "--test-launcher-filter-file=../../testing/buildbot/filters/linux-chromeos.browser_tests.pixel_tests.filter",
           "--git-revision=${got_revision}"
         ],
         "experiment_percentage": 100,
