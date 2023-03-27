@@ -6,7 +6,6 @@ package org.chromium.chrome.browser.compositor.overlays.strip;
 
 import org.chromium.base.MathUtils;
 import org.chromium.chrome.browser.compositor.layouts.Layout;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.ui.base.LocalizationUtils;
 
 /**
@@ -97,13 +96,11 @@ public abstract class StripStacker {
             float tabOverlapWidth, float stripLeftMargin, float stripRightMargin, float stripWidth,
             float touchTargetOffset, float cachedTabWidth, boolean animate) {
         float rightEdge = stripLeftMargin;
-        boolean tabStripImpEnabled = ChromeFeatureList.sTabStripImprovements.isEnabled();
-
         for (StripLayoutTab tab : indexOrderedTabs) {
             float tabWidth;
             float tabDrawX;
             float tabWidthWeight;
-            if (tabStripImpEnabled && animate) {
+            if (animate) {
                 // This value is set to 1.f to avoid the new tab button jitter for the improved tab
                 // strip design. The tab.width and tab.drawX may not reflect the final values before
                 // the tab closing animations are completed.
@@ -132,12 +129,10 @@ public abstract class StripStacker {
             float stripLeftMargin, float stripRightMargin, float stripWidth,
             float newTabButtonWidth, float touchTargetOffset, float cachedTabWidth,
             boolean animate) {
-        boolean tabStripImpEnabled = ChromeFeatureList.sTabStripImprovements.isEnabled();
-
         float leftEdge = stripWidth - stripRightMargin;
 
         for (StripLayoutTab tab : indexOrderedTabs) {
-            float drawX = (tabStripImpEnabled && animate) ? tab.getIdealX() : tab.getDrawX();
+            float drawX = animate ? tab.getIdealX() : tab.getDrawX();
             leftEdge = Math.min(drawX, leftEdge);
         }
 

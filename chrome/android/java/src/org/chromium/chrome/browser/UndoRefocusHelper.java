@@ -12,7 +12,6 @@ import org.chromium.base.Callback;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.chrome.browser.compositor.layouts.LayoutManagerImpl;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.layouts.LayoutStateProvider;
 import org.chromium.chrome.browser.layouts.LayoutType;
 import org.chromium.chrome.browser.lifecycle.DestroyObserver;
@@ -56,8 +55,7 @@ public class UndoRefocusHelper implements DestroyObserver {
     public static void initialize(Context context, TabModelSelector modelSelector,
             ObservableSupplier<LayoutManagerImpl> layoutManagerObservableSupplier,
             boolean isTablet) {
-        if (!DeviceFormFactor.isNonMultiDisplayContextOnTablet(context)
-                || !ChromeFeatureList.sTabStripImprovements.isEnabled()) {
+        if (!DeviceFormFactor.isNonMultiDisplayContextOnTablet(context)) {
             return;
         }
 

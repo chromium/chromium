@@ -161,12 +161,11 @@ void TabHandleLayer::SetProperties(
   const float padding_left = tab_handle_resource->padding().x();
 
   float close_width = close_button_->bounds().width();
-  // For the min_tab_width experiments, if close button is not shown, fill
+
+  // If close button is not shown, fill
   // the remaining space with the title text
-  if (base::FeatureList::IsEnabled(chrome::android::kTabStripImprovements)) {
-    if (close_button_alpha == 0.f) {
-      close_width = 0.f;
-    }
+  if (close_button_alpha == 0.f) {
+    close_width = 0.f;
   }
 
   int divider_y;

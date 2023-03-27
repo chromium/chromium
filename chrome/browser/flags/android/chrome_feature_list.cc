@@ -304,7 +304,6 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &kTabGridLayoutAndroid,
     &kTabSelectionEditorV2,
     &kTabStateV1Optimizations,
-    &kTabStripImprovements,
     &kTabToGTSAnimation,
     &kTestDefaultDisabled,
     &kTestDefaultEnabled,
@@ -1000,10 +999,6 @@ BASE_FEATURE(kTabSelectionEditorV2,
 
 BASE_FEATURE(kTabStateV1Optimizations,
              "TabStateV1Optimizations",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
-BASE_FEATURE(kTabStripImprovements,
-             "TabStripImprovements",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kDiscoverFeedMultiColumn,

@@ -3214,11 +3214,6 @@
     "expiry_milestone": 114
   },
   {
-    "name": "enable-tab-strip-improvements",
-    "owners": [ "skavuluru", "clank-app-team@google.com" ],
-    "expiry_milestone": 114
-  },
-  {
     "name": "enable-tab-strip-redesign",
     "owners": [ "zheliooo", "skavuluru", "nemco", "clank-app-team@google.com" ],
     "expiry_milestone": 120

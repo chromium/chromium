@@ -51,12 +51,6 @@ TabStripSceneLayer::TabStripSceneLayer(JNIEnv* env,
   // while the incognito button and left/ride fade stay fixed. Put the new tab
   // button and tabs in a separate layer placed visually below the others.
   scrollable_strip_layer_->SetIsDrawable(true);
-  const bool tab_strip_improvements_enabled =
-      base::FeatureList::IsEnabled(chrome::android::kTabStripImprovements);
-  if (!tab_strip_improvements_enabled) {
-    scrollable_strip_layer_->AddChild(new_tab_button_);
-  }
-
   tab_strip_layer_->SetIsDrawable(true);
   tab_strip_layer_->AddChild(scrollable_strip_layer_);
 
@@ -65,12 +59,10 @@ TabStripSceneLayer::TabStripSceneLayer(JNIEnv* env,
   tab_strip_layer_->AddChild(model_selector_button_);
   tab_strip_layer_->AddChild(model_selector_button_background_);
   model_selector_button_background_->AddChild(model_selector_button_);
-  if (tab_strip_improvements_enabled) {
-    if (tab_strip_redesign_enabled) {
-      tab_strip_layer_->AddChild(new_tab_button_background_);
-    }
-    tab_strip_layer_->AddChild(new_tab_button_);
+  if (tab_strip_redesign_enabled) {
+    tab_strip_layer_->AddChild(new_tab_button_background_);
   }
+  tab_strip_layer_->AddChild(new_tab_button_);
   layer()->AddChild(tab_strip_layer_);
 }
 

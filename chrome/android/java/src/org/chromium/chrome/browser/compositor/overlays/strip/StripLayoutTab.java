@@ -36,9 +36,6 @@ import org.chromium.chrome.browser.tasks.tab_management.TabUiThemeUtil;
 import org.chromium.components.browser_ui.styles.ChromeColors;
 import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 import org.chromium.ui.base.LocalizationUtils;
-import org.chromium.ui.resources.AndroidResourceType;
-import org.chromium.ui.resources.LayoutResource;
-import org.chromium.ui.resources.ResourceManager;
 import org.chromium.ui.util.ColorUtils;
 
 import java.util.List;
@@ -181,8 +178,7 @@ public class StripLayoutTab implements VirtualView {
     // Close Button Constants
     // Close button padding value comes from the built-in padding in the source png.
     private static final int CLOSE_BUTTON_PADDING_DP = 7;
-    private static final int CLOSE_BUTTON_WIDTH_DP = 36;
-    private static final int CLOSE_BUTTON_WIDTH_SCROLLING_STRIP_DP = 48;
+    private static final int CLOSE_BUTTON_WIDTH_DP = 48;
 
     // Tab strip content y offset
     private static final float FOLIO_CONTENT_OFFSET_Y = 8.f;
@@ -876,9 +872,7 @@ public class StripLayoutTab implements VirtualView {
     }
 
     private RectF getCloseRect() {
-        boolean tabStripImprovementsEnabled = ChromeFeatureList.sTabStripImprovements.isEnabled();
-        int closeButtonWidth = tabStripImprovementsEnabled ? CLOSE_BUTTON_WIDTH_SCROLLING_STRIP_DP
-                                                           : CLOSE_BUTTON_WIDTH_DP;
+        int closeButtonWidth = CLOSE_BUTTON_WIDTH_DP;
         if (!LocalizationUtils.isLayoutRtl()) {
             mClosePlacement.left = getWidth() - closeButtonWidth;
             mClosePlacement.right = mClosePlacement.left + closeButtonWidth;
@@ -890,21 +884,7 @@ public class StripLayoutTab implements VirtualView {
         mClosePlacement.top = 0;
         mClosePlacement.bottom = getHeight();
 
-        float xOffset = 0;
-        if (!tabStripImprovementsEnabled) {
-            ResourceManager manager = mRenderHost.getResourceManager();
-            if (manager != null) {
-                LayoutResource resource =
-                        manager.getResource(AndroidResourceType.STATIC, getResourceId());
-                if (resource != null) {
-                    xOffset = LocalizationUtils.isLayoutRtl()
-                            ? resource.getPadding().left
-                            : -(resource.getBitmapSize().width() - resource.getPadding().right);
-                }
-            }
-        }
-
-        mClosePlacement.offset(getDrawX() + xOffset, getDrawY());
+        mClosePlacement.offset(getDrawX(), getDrawY());
         return mClosePlacement;
     }
 

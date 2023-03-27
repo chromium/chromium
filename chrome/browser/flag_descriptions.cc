@@ -4142,11 +4142,6 @@ const char kStylusRichGesturesDescription[] =
 const char kTabGroupsForTabletsName[] = "Tab groups on tablets";
 const char kTabGroupsForTabletsDescription[] = "Enable tab groups on tablets.";
 
-const char kTabStripImprovementsAndroidName[] =
-    "Tab strip improvements for Android.";
-const char kTabStripImprovementsAndroidDescription[] =
-    "Enables scrollable tab strip with tab group indicators.";
-
 const char kDiscoverFeedMultiColumnAndroidName[] =
     "Multi-column Discover feed Android.";
 const char kDiscoverFeedMultiColumnAndroidDescription[] =

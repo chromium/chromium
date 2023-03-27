@@ -68,8 +68,9 @@ import java.util.List;
 /** Tests for {@link StripLayoutHelper}. */
 @RunWith(BaseRobolectricTestRunner.class)
 // clang-format off
-@Features.EnableFeatures({ChromeFeatureList.TAB_STRIP_IMPROVEMENTS,
-        ChromeFeatureList.TAB_STRIP_REDESIGN, ChromeFeatureList.TAB_GROUPS_FOR_TABLETS})
+@Features.EnableFeatures({
+        ChromeFeatureList.TAB_STRIP_REDESIGN,
+        ChromeFeatureList.TAB_GROUPS_FOR_TABLETS})
 @Config(manifest = Config.NONE, qualifiers = "sw600dp", shadows = {ShadowAppCompatResources.class})
 
 public class StripLayoutHelperTest {
@@ -212,24 +213,12 @@ public class StripLayoutHelperTest {
     }
 
     @Test
-    @Feature("Tab Strip Improvements")
     @Config(qualifiers = "sw800dp")
-    public void testStripStacker_TabStripImprovementsEnabled_Scroll() {
+    public void testStripStacker_Scroll() {
         initializeTest(false, true, 0);
 
         // Assert
         assertFalse(mStripLayoutHelper.shouldCascadeTabs());
-    }
-
-    @Test
-    @Feature("Tab Strip Improvements")
-    @Config(qualifiers = "sw800dp")
-    @Features.DisableFeatures(ChromeFeatureList.TAB_STRIP_IMPROVEMENTS)
-    public void testStripStacker_TabStripImprovementsDisabled_Cascade() {
-        initializeTest(false, true, 0);
-
-        // Assert
-        assertTrue(mStripLayoutHelper.shouldCascadeTabs());
     }
 
     @Test
@@ -248,7 +237,6 @@ public class StripLayoutHelperTest {
     }
 
     @Test
-    @Feature("Tab Strip Improvements")
     public void testStripStacker_UpdateCloseButtons() {
         // Set fourth tab as selected
         TabUiFeatureUtilities.setTabMinWidthForTesting(TAB_WIDTH_SMALL);
@@ -269,7 +257,6 @@ public class StripLayoutHelperTest {
     }
 
     @Test
-    @Feature("Tab Strip Improvements")
     public void testTabSelected_SelectedTab_EdgeTab_HideCloseBtn() {
         // Set fourth tab as selected
         TabUiFeatureUtilities.setTabMinWidthForTesting(TAB_WIDTH_SMALL);
@@ -291,7 +278,6 @@ public class StripLayoutHelperTest {
     }
 
     @Test
-    @Feature("Tab Strip Improvements")
     public void testTabSelected_EdgeTab_Start_Ltr_HideCloseBtn() {
         // Arrange
         TabUiFeatureUtilities.setTabMinWidthForTesting(TAB_WIDTH_MEDIUM);
@@ -318,7 +304,6 @@ public class StripLayoutHelperTest {
     }
 
     @Test
-    @Feature("Tab Strip Improvements")
     public void testTabSelected_EdgeTab_End_Ltr_HideCloseBtn() {
         // Arrange
         TabUiFeatureUtilities.setTabMinWidthForTesting(TAB_WIDTH_MEDIUM);
@@ -346,7 +331,6 @@ public class StripLayoutHelperTest {
     }
 
     @Test
-    @Feature("Tab Strip Improvements")
     public void testTabSelected_LastTab_ShowCloseBtn() {
         TabUiFeatureUtilities.setTabMinWidthForTesting(TAB_WIDTH_MEDIUM);
         initializeTest(false, false, 3);
@@ -371,7 +355,6 @@ public class StripLayoutHelperTest {
     }
 
     @Test
-    @Feature("Tab Strip Improvements")
     public void testTabSelected_LastTab_EdgeTab_HideCloseBtn() {
         TabUiFeatureUtilities.setTabMinWidthForTesting(TAB_WIDTH_MEDIUM);
         initializeTest(false, false, 3);
@@ -398,7 +381,6 @@ public class StripLayoutHelperTest {
     }
 
     @Test
-    @Feature("Tab Strip Improvements")
     public void testTabSelected_EdgeTab_End_Ltr_NoModelSelBtn_HideCloseBtn() {
         // Arrange
         TabUiFeatureUtilities.setTabMinWidthForTesting(TAB_WIDTH_MEDIUM);
@@ -428,7 +410,6 @@ public class StripLayoutHelperTest {
     }
 
     @Test
-    @Feature("Tab Strip Improvements")
     public void testTabSelected_EdgeTab_Start_Rtl_HideCloseBtn() {
         // Arrange
         TabUiFeatureUtilities.setTabMinWidthForTesting(TAB_WIDTH_MEDIUM);
@@ -454,7 +435,6 @@ public class StripLayoutHelperTest {
     }
 
     @Test
-    @Feature("Tab Strip Improvements")
     public void testTabSelected_EdgeTab_End_Rtl_HideCloseBtn() {
         // Arrange
         TabUiFeatureUtilities.setTabMinWidthForTesting(TAB_WIDTH_MEDIUM);
@@ -671,7 +651,6 @@ public class StripLayoutHelperTest {
     }
 
     @Test
-    @Feature("Tab Strip Improvements")
     public void testScrollOffset_OnResume_StartOnLeft_SelectedRightmostTab() {
         // Arrange: Initialize tabs with last tab selected.
         initializeTest(false, true, false, 9, 10);
@@ -690,7 +669,6 @@ public class StripLayoutHelperTest {
     }
 
     @Test
-    @Feature("Tab Strip Improvements")
     public void testScrollOffset_OnResume_StartOnLeft_NoModelSelBtn_SelectedRightmostTab() {
         // Arrange: Initialize tabs with last tab selected.
         when(mModelSelectorBtn.isVisible()).thenReturn(false);
@@ -710,7 +688,6 @@ public class StripLayoutHelperTest {
     }
 
     @Test
-    @Feature("Tab Strip Improvements")
     public void testScrollOffset_OnResume_StartOnRight_SelectedLeftmostTab() {
         // Arrange: Initialize tabs with first tab selected.
         initializeTest(false, true, false, 0, 10);
@@ -729,7 +706,6 @@ public class StripLayoutHelperTest {
     }
 
     @Test
-    @Feature("Tab Strip Improvements")
     public void testScrollOffset_OnResume_StartOnRight_NoModelSelBtn_SelectedRightmostTab() {
         // Arrange: Initialize tabs with first tab selected.
         when(mModelSelectorBtn.isVisible()).thenReturn(false);
@@ -749,7 +725,6 @@ public class StripLayoutHelperTest {
     }
 
     @Test
-    @Feature("Tab Strip Improvements")
     public void testScrollOffset_OnOrientationChange_SelectedTabVisible() {
         // Arrange: Initialize tabs with last tab selected.
         when(mModelSelectorBtn.isVisible()).thenReturn(false);
@@ -778,7 +753,6 @@ public class StripLayoutHelperTest {
     }
 
     @Test
-    @Feature("Tab Strip Improvements")
     public void testScrollOffset_OnOrientationChange_SelectedTabNotVisible() {
         // Arrange: Initialize tabs with last tab selected.
         when(mModelSelectorBtn.isVisible()).thenReturn(false);
@@ -805,7 +779,6 @@ public class StripLayoutHelperTest {
     }
 
     @Test
-    @Feature("Tab Strip Improvements")
     public void testTabSelected_AfterTabClose_SkipsAutoScroll() {
         initializeTest(false, true, 3);
         StripLayoutTab[] tabs = getMockedStripLayoutTabs(TAB_WIDTH_MEDIUM);
@@ -821,7 +794,6 @@ public class StripLayoutHelperTest {
     }
 
     @Test
-    @Feature("Tab Strip Improvements")
     public void testTabSelected_AfterSelectedTabClose_SkipsAutoScroll() {
         initializeTest(false, true, 3);
         StripLayoutTab[] tabs = getMockedStripLayoutTabs(TAB_WIDTH_MEDIUM);
@@ -854,7 +826,6 @@ public class StripLayoutHelperTest {
     }
 
     @Test
-    @Feature("Tab Strip Improvements")
     public void testTabCreated_RestoredTab_SkipsAutoscroll() {
         initializeTest(false, true, 3);
         StripLayoutTab[] tabs = getMockedStripLayoutTabs(TAB_WIDTH_MEDIUM);
@@ -871,7 +842,6 @@ public class StripLayoutHelperTest {
     }
 
     @Test
-    @Feature("Tab Strip Improvements")
     public void testTabCreated_NonRestoredTab_SkipsAutoscroll() {
         initializeTest(false, true, 3);
         StripLayoutTab[] tabs = getMockedStripLayoutTabs(TAB_WIDTH_MEDIUM);
@@ -888,7 +858,6 @@ public class StripLayoutHelperTest {
     }
 
     @Test
-    @Feature("Tab Strip Improvements")
     public void testTabCreated_BringSelectedTabToVisibleArea_StartupRestoredUnselectedTab() {
         initializeTest(false, false, true, 1, 10);
         mStripLayoutHelper.onSizeChanged(SCREEN_WIDTH, SCREEN_HEIGHT, false, TIMESTAMP);
@@ -909,7 +878,6 @@ public class StripLayoutHelperTest {
     }
 
     @Test
-    @Feature("Tab Strip Improvements")
     public void testScrollDuration() {
         initializeTest(false, true, 3);
 
@@ -921,7 +889,6 @@ public class StripLayoutHelperTest {
     }
 
     @Test
-    @Feature("Tab Strip Improvements")
     public void testScrollDuration_Medium() {
         initializeTest(false, true, false, 3, 10);
 
@@ -933,7 +900,6 @@ public class StripLayoutHelperTest {
     }
 
     @Test
-    @Feature("Tab Strip Improvements")
     public void testScrollDuration_Large() {
         initializeTest(false, true, false, 3, 15);
 
@@ -1703,7 +1669,6 @@ public class StripLayoutHelperTest {
     }
 
     @Test
-    @Feature("Tab Strip Improvements")
     public void testTabClosing_NoTabResize() {
         // Arrange
         int tabCount = 10;
@@ -1752,7 +1717,6 @@ public class StripLayoutHelperTest {
     }
 
     @Test
-    @Feature("Tab Strip Improvements")
     public void testTabClosing_NonLastTab_TabResize() {
         // Arrange
         int tabCount = 4;
@@ -1856,7 +1820,6 @@ public class StripLayoutHelperTest {
     }
 
     @Test
-    @Feature("Tab Strip Improvements")
     public void testDrag_UpdatesScrollOffset_ScrollingStrip() {
         // Arrange
         initializeTest(false, false, false, 9, 10);
@@ -1878,60 +1841,6 @@ public class StripLayoutHelperTest {
                 mStripLayoutHelper.getScrollOffset(), 0.0);
         // Reorder mode is disabled for scrolling strip.
         assertFalse(mStripLayoutHelper.isInReorderModeForTesting());
-    }
-
-    @Test
-    public void testDrag_UpdatesScrollOffset_CascadingStrip() {
-        // Arrange
-        ChromeFeatureList.sTabStripImprovements.setForTesting(false);
-        initializeTest(false, false, false, 0, 10);
-        mStripLayoutHelper.onSizeChanged(SCREEN_WIDTH, SCREEN_HEIGHT, false, TIMESTAMP);
-        // When updateLayout is called for the first time, bringSelectedTabToVisibleArea() method is
-        // invoked. That also affects the scrollOffset value. So we call updateLayout before
-        // performing a fling so that bringSelectedTabToVisible area isn't called after the fling.
-        mStripLayoutHelper.updateLayout(TIMESTAMP);
-        mStripLayoutHelper.testSetScrollOffset(-250);
-
-        // Act: Drag and update layout.
-        float dragDeltaX = -200.f;
-        mStripLayoutHelper.drag(
-                TIMESTAMP, 374.74f, 24.276f, dragDeltaX, -0.304f, -16.078f, -4.476f);
-
-        // Assert
-        float expectedOffset = -450; // mScrollOffset + dragDeltaX = -200 - 250 = -450
-        assertEquals("Unexpected scroll offset.", expectedOffset,
-                mStripLayoutHelper.getScrollOffset(), 0.0);
-        assertFalse("Reorder mode should not enabled when totalY <= 50.",
-                mStripLayoutHelper.isInReorderModeForTesting());
-    }
-
-    @Test
-    public void testDrag_ReorderMode_CascadingStrip() {
-        // Arrange
-        ChromeFeatureList.sTabStripImprovements.setForTesting(false);
-        initializeTest(false, false, false, 5, 10);
-        mStripLayoutHelper.onSizeChanged(SCREEN_WIDTH, SCREEN_HEIGHT, false, TIMESTAMP);
-        // When updateLayout is called for the first time, bringSelectedTabToVisibleArea() method is
-        // invoked. That also affects the scrollOffset value. So we call updateLayout before
-        // performing a fling so that bringSelectedTabToVisible area isn't called after the fling.
-        mStripLayoutHelper.updateLayout(TIMESTAMP);
-        mStripLayoutHelper.testSetScrollOffset(-250);
-
-        // Assert: Ensure reorder mode is disabled when starting drag.
-        assertFalse("Reorder mode should be disabled before drag.",
-                mStripLayoutHelper.isInReorderModeForTesting());
-
-        // Act
-        float dragDeltaX = -200.f;
-        float totalY = 75.f; // Drag with totalY > 50.f to cross reorder mode threshold.
-        mStripLayoutHelper.drag(TIMESTAMP, 374.74f, 24.276f, dragDeltaX, -0.304f, -16.078f, totalY);
-
-        // Assert: Reorder mode is enabled.
-        assertTrue("Reorder mode was not enabled after drag.",
-                mStripLayoutHelper.isInReorderModeForTesting());
-        float expectedOffset = -450; // mScrollOffset + dragDeltaX = -200 - 250 = -450
-        assertEquals("Unexpected scroll offset.", expectedOffset,
-                mStripLayoutHelper.getScrollOffset(), 0.0);
     }
 
     private void setupForAnimations() {

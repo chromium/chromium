@@ -9,7 +9,6 @@ import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.is;
 import static org.mockito.Mockito.when;
 
-import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -19,7 +18,6 @@ import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.DisabledTest;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.ui.base.LocalizationUtils;
 
 /** Tests for {@link StripStacker}. */
@@ -61,12 +59,6 @@ public class StripStackerUnitTest {
             when(tab.getDrawX()).thenReturn(x);
             x += TAB_WIDTH;
         }
-        setTabStripImprovementFeature(false);
-    }
-
-    @After
-    public void tearDown() {
-        setTabStripImprovementFeature(false);
     }
 
     @Test
@@ -85,40 +77,12 @@ public class StripStackerUnitTest {
         float result = mTarget.computeNewTabButtonOffset(mInput, TAB_OVERLAP, STRIP_LEFT_MARGIN,
                 STRIP_RIGHT_MARGIN, STRIP_WIDTH, BUTTON_WIDTH, TOUCH_OFFSET, CACHED_TAB_WIDTH,
                 true);
-        assertThat("New Tab button offset does not match", result, is(130f));
-    }
-
-    @Test
-    @DisabledTest(message = "https://crbug.com/1385702")
-    public void testComputeNewTabButtonOffset_withTabStripImprovements() {
-        setTabStripImprovementFeature(true);
-        float result = mTarget.computeNewTabButtonOffset(mInput, TAB_OVERLAP, STRIP_LEFT_MARGIN,
-                STRIP_RIGHT_MARGIN, STRIP_WIDTH, BUTTON_WIDTH, TOUCH_OFFSET, CACHED_TAB_WIDTH,
-                true);
         assertThat("New Tab button offset does not match", result, is(35f));
     }
 
     @Test
     public void testComputeNewTabButtonOffsetRTL() {
         LocalizationUtils.setRtlForTesting(true);
-        float expected_res = 3f;
-        // Update drawX for RTL = ((mInput.length -1 ) * TAB_WIDTH) + TOUCH_OFFSET + BUTTON_WIDTH
-        // +expected_res = 4*25 + 5 + 10 +3
-        float draw_x = 118f;
-        for (StripLayoutTab tab : mInput) {
-            when(tab.getDrawX()).thenReturn(draw_x);
-            draw_x -= TAB_WIDTH;
-        }
-        float result = mTarget.computeNewTabButtonOffset(mInput, TAB_OVERLAP, STRIP_LEFT_MARGIN,
-                STRIP_RIGHT_MARGIN, STRIP_WIDTH, BUTTON_WIDTH, TOUCH_OFFSET, CACHED_TAB_WIDTH,
-                true);
-        assertThat("New Tab button offset does not match", result, is(expected_res));
-    }
-
-    @Test
-    public void testComputeNewTabButtonOffsetRTL_withTabStripImprovements() {
-        LocalizationUtils.setRtlForTesting(true);
-        setTabStripImprovementFeature(true);
         float expected_res = 3f;
         // Update idealX for RTL = ((mInput.length -1 ) * TAB_WIDTH) + TOUCH_OFFSET + BUTTON_WIDTH +
         // expected_res = 4*25 + 5 + 10 + 3
@@ -131,10 +95,6 @@ public class StripStackerUnitTest {
                 STRIP_RIGHT_MARGIN, STRIP_WIDTH, BUTTON_WIDTH, TOUCH_OFFSET, CACHED_TAB_WIDTH,
                 true);
         assertThat("New Tab button offset does not match", result, is(expected_res));
-    }
-
-    private void setTabStripImprovementFeature(boolean value) {
-        ChromeFeatureList.sTabStripImprovements.setForTesting(value);
     }
 
     class DummyStacker extends StripStacker {

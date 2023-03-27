@@ -62882,7 +62882,6 @@ from previous Chrome versions.
   <int value="670404276" label="ImeUsEnglishModelUpdate:disabled"/>
   <int value="671427343"
       label="DnsOverHttpsWithIdentifiersReuseOldPolicy:enabled"/>
-  <int value="671800756" label="TabStripImprovements:enabled"/>
   <int value="672067370" label="InstallableAmbientBadgeMessage:enabled"/>
   <int value="672255299" label="WebAuthFlowInBrowserTab:disabled"/>
   <int value="672599279" label="WebUiSystemFont:disabled"/>
