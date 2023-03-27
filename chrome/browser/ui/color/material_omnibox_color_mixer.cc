@@ -32,5 +32,4 @@ void AddMaterialOmniboxColorMixer(ui::ColorProvider* provider,
   mixer[kColorToolbarBackgroundSubtleEmphasisHovered] =
       ui::GetResultingPaintColor(ui::kColorSysStateHoverBrightBlendProtection,
                                  kColorToolbarBackgroundSubtleEmphasis);
-  mixer[kColorOmniboxText] = {ui::kColorSysOnSurface};
 }

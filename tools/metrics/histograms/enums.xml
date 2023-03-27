@@ -62622,6 +62622,7 @@ from previous Chrome versions.
   <int value="520982116" label="BuiltInModuleAll:enabled"/>
   <int value="521992655" label="LauncherPlayStoreSearch:disabled"/>
   <int value="522013077" label="LinkCapturingAutoDisplayIntentPicker:disabled"/>
+  <int value="524557829" label="OmniboxSteadyStateTextColor:enabled"/>
   <int value="525286392" label="PageInfoAboutThisSiteNonMsbb:disabled"/>
   <int value="527140412"
       label="AndroidAutofillViewStructureWithFormHierarchyLayer:disabled"/>
@@ -65500,6 +65501,7 @@ from previous Chrome versions.
   <int value="2107406401" label="UseDnsHttpsSvcb:disabled"/>
   <int value="2107520493" label="PolicyMergeMultiSource:enabled"/>
   <int value="2107942975" label="ApnRevamp:disabled"/>
+  <int value="2109483186" label="OmniboxSteadyStateTextColor:disabled"/>
   <int value="2110109003" label="WebAssemblyRelaxedSimd:disabled"/>
   <int value="2110832901" label="OmniboxPedalsTranslationConsole:enabled"/>
   <int value="2112312086" label="EditContext:disabled"/>
