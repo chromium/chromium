@@ -16,8 +16,8 @@ void AddBackgroundTracingEnabledStateObserverForTesting(
 
 void RemoveBackgroundTracingEnabledStateObserverForTesting(
     BackgroundTracingManager::EnabledStateTestObserver* observer) {
-  BackgroundTracingManagerImpl::GetInstance().AddEnabledStateObserverForTesting(
-      observer);
+  BackgroundTracingManagerImpl::GetInstance()
+      .RemoveEnabledStateObserverForTesting(observer);
 }
 
 }  // namespace content
