@@ -241,7 +241,8 @@ void CrosAudioConfigImpl::SetOutputMuted(bool muted) {
     return;
   }
 
-  audio_handler->SetOutputMute(muted);
+  audio_handler->SetOutputMute(
+      muted, CrasAudioHandler::AudioSettingsChangeSource::kOsSettings);
   RecordMuteStateChanged(kOutputMuteChangeHistogramName, muted);
 }
 
@@ -316,8 +317,9 @@ void CrosAudioConfigImpl::SetInputMuted(bool muted) {
     return;
   }
 
-  audio_handler->SetMuteForDevice(audio_handler->GetPrimaryActiveInputNode(),
-                                  muted);
+  audio_handler->SetMuteForDevice(
+      audio_handler->GetPrimaryActiveInputNode(), muted,
+      CrasAudioHandler::AudioSettingsChangeSource::kOsSettings);
   RecordMuteStateChanged(kInputMuteChangeHistogramName, muted);
 }
 

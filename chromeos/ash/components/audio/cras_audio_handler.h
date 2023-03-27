@@ -97,8 +97,12 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_AUDIO) CrasAudioHandler
       base::Seconds(2);
   static constexpr char kInputGainChangedSourceHistogramName[] =
       "Cras.InputGainChangedSource";
+  static constexpr char kInputGainMuteSourceHistogramName[] =
+      "Cras.InputGainMutedSource";
   static constexpr char kOutputVolumeChangedSourceHistogramName[] =
       "Cras.OutputVolumeChangedSource";
+  static constexpr char kOutputVolumeMuteSourceHistogramName[] =
+      "Cras.OutputVolumeMutedSource";
 
   class AudioObserver {
    public:
@@ -379,11 +383,22 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_AUDIO) CrasAudioHandler
   // Mutes or unmutes audio output device.
   void SetOutputMute(bool mute_on);
 
+  // Mutes or unmutes audio output device including the `source` to record to
+  // metrics.
+  void SetOutputMute(bool mute_on,
+                     CrasAudioHandler::AudioSettingsChangeSource source);
+
   // Mutes or unmutes audio output device by security curtain
   void SetOutputMuteLockedBySecurityCurtain(bool mute_on);
 
   // Mutes or unmutes audio input device.
   void SetInputMute(bool mute_on, InputMuteChangeMethod method);
+
+  // Mutes or unmutes audio input device including the `source` to record to
+  // metrics.
+  void SetInputMute(bool mute_on,
+                    InputMuteChangeMethod method,
+                    CrasAudioHandler::AudioSettingsChangeSource source);
 
   // Switches active audio device to |device|. |activate_by| indicates why
   // the device is switched to active: by user's manual choice, by priority,
@@ -397,6 +412,11 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_AUDIO) CrasAudioHandler
 
   // Sets the mute for device.
   void SetMuteForDevice(uint64_t device_id, bool mute_on);
+
+  // Sets the mute for device including the `source` to record to metrics.
+  void SetMuteForDevice(uint64_t device_id,
+                        bool mute_on,
+                        CrasAudioHandler::AudioSettingsChangeSource source);
 
   // Activates or deactivates keyboard mic if there's one.
   void SetKeyboardMicActive(bool active);

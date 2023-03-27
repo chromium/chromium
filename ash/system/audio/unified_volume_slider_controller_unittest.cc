@@ -4,15 +4,27 @@
 
 #include "ash/system/audio/unified_volume_slider_controller.h"
 
+#include <memory>
+
 #include "ash/shell.h"
+#include "ash/system/audio/unified_volume_view.h"
 #include "ash/test/ash_test_base.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
 #include "chromeos/ash/components/audio/cras_audio_handler.h"
 #include "ui/views/controls/slider.h"
+#include "ui/views/widget/widget.h"
 
 namespace ash {
+
+class FakeDelegate : public UnifiedVolumeSliderController::Delegate {
+ public:
+  FakeDelegate() = default;
+  ~FakeDelegate() override = default;
+
+  void OnAudioSettingsButtonClicked() override {}
+};
 
 class UnifiedVolumeSliderControllerTest : public AshTestBase {
  public:
@@ -26,17 +38,40 @@ class UnifiedVolumeSliderControllerTest : public AshTestBase {
 
   ~UnifiedVolumeSliderControllerTest() override = default;
 
+  void SetUp() override {
+    AshTestBase::SetUp();
+    delegate_ = std::make_unique<FakeDelegate>();
+    unified_volume_slider_controller_ =
+        std::make_unique<UnifiedVolumeSliderController>(delegate_.get());
+    widget_ = CreateFramelessTestWidget();
+    widget_->SetFullscreen(true);
+    slider_view_ = static_cast<UnifiedVolumeView*>(
+        unified_volume_slider_controller_->CreateView());
+    widget_->SetContentsView(slider_view_);
+  }
+
+  void TearDown() override {
+    widget_.reset();
+    AshTestBase::TearDown();
+  }
+
  protected:
   void UpdateSliderValue(float new_value) {
-    unified_volume_slider_controller_.SliderValueChanged(
+    unified_volume_slider_controller_->SliderValueChanged(
         /*sender=*/nullptr, new_value,
         /*old_value=*/0, views::SliderChangeReason::kByUser);
   }
 
+  void PressSliderButton() { LeftClickOn(slider_view_->button()); }
+
   base::HistogramTester histogram_tester_;
 
  private:
-  UnifiedVolumeSliderController unified_volume_slider_controller_;
+  std::unique_ptr<UnifiedVolumeSliderController>
+      unified_volume_slider_controller_;
+  std::unique_ptr<FakeDelegate> delegate_;
+  UnifiedVolumeView* slider_view_ = nullptr;
+  std::unique_ptr<views::Widget> widget_;
 };
 
 // Verify moving the slider and changing the output volume is recorded to
@@ -76,6 +111,14 @@ TEST_F(UnifiedVolumeSliderControllerTest, RecordOutputVolumeChangedSource) {
   histogram_tester_.ExpectBucketCount(
       CrasAudioHandler::kOutputVolumeChangedSourceHistogramName,
       CrasAudioHandler::AudioSettingsChangeSource::kSystemTray, 2);
+}
+
+// Verify pressing the mute button is recorded to metrics.
+TEST_F(UnifiedVolumeSliderControllerTest, RecordOuptputVolumeMuteSource) {
+  PressSliderButton();
+  histogram_tester_.ExpectBucketCount(
+      CrasAudioHandler::kOutputVolumeMuteSourceHistogramName,
+      CrasAudioHandler::AudioSettingsChangeSource::kSystemTray, 1);
 }
 
 }  // namespace ash

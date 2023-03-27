@@ -1571,7 +1571,8 @@ void VolumeDown() {
 }
 
 void VolumeMute() {
-  CrasAudioHandler::Get()->SetOutputMute(true);
+  CrasAudioHandler::Get()->SetOutputMute(
+      true, CrasAudioHandler::AudioSettingsChangeSource::kAccelerator);
 }
 
 void VolumeUp() {

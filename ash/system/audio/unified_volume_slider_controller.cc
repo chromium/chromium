@@ -101,7 +101,8 @@ void UnifiedVolumeSliderController::SliderButtonPressed() {
 
   TrackToggleUMA(/*target_toggle_state=*/mute);
 
-  audio_handler->SetOutputMute(mute);
+  audio_handler->SetOutputMute(
+      mute, CrasAudioHandler::AudioSettingsChangeSource::kSystemTray);
 }
 
 void UnifiedVolumeSliderController::RecordVolumeSourceMetric() {

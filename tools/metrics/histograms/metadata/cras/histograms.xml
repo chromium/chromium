@@ -390,6 +390,14 @@ chromium-metrics-reviews@google.com.
   <summary>Records the source of a change to the input gain.</summary>
 </histogram>
 
+<histogram name="Cras.InputGainMutedSource" enum="AudioSettingsChangeSource"
+    expires_after="2024-02-14">
+  <owner>gavinwill@chromium.org</owner>
+  <owner>yuhsuan@chromium.org</owner>
+  <owner>chromeos-audio@google.com</owner>
+  <summary>Records the source of muting/unmuting the input gain.</summary>
+</histogram>
+
 <histogram name="Cras.kHfpWidebandSpeechSelectedCodec" enum="CrasHfpCodec"
     expires_after="2022-12-01">
   <owner>hychao@chromium.org</owner>
@@ -501,6 +509,14 @@ chromium-metrics-reviews@google.com.
   <owner>yuhsuan@chromium.org</owner>
   <owner>chromeos-audio@google.com</owner>
   <summary>Records the source of a change to the output volume.</summary>
+</histogram>
+
+<histogram name="Cras.OutputVolumeMutedSource" enum="AudioSettingsChangeSource"
+    expires_after="2024-02-14">
+  <owner>gavinwill@chromium.org</owner>
+  <owner>yuhsuan@chromium.org</owner>
+  <owner>chromeos-audio@google.com</owner>
+  <summary>Records the source of muting/unmuting the output volume.</summary>
 </histogram>
 
 <histogram name="Cras.RtcDevicePair" enum="CrasDevicePair"

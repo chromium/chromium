@@ -18,6 +18,7 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/logging.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/system/sys_info.h"
 #include "base/system/system_monitor.h"
@@ -860,6 +861,14 @@ void CrasAudioHandler::SetOutputMute(bool mute_on) {
     observer.OnOutputMuteChanged(output_mute_on_);
 }
 
+void CrasAudioHandler::SetOutputMute(
+    bool mute_on,
+    CrasAudioHandler::AudioSettingsChangeSource source) {
+  SetOutputMute(mute_on);
+  base::UmaHistogramEnumeration(
+      CrasAudioHandler::kOutputVolumeMuteSourceHistogramName, source);
+}
+
 void CrasAudioHandler::SetOutputMuteLockedBySecurityCurtain(bool mute_on) {
   if (output_mute_forced_by_security_curtain_ == mute_on)
     return;
@@ -902,6 +911,15 @@ void CrasAudioHandler::SetInputMute(bool mute_on,
     for (auto& observer : observers_)
       observer.OnInputMuteChanged(input_mute_on_, method);
   }
+}
+
+void CrasAudioHandler::SetInputMute(
+    bool mute_on,
+    InputMuteChangeMethod method,
+    CrasAudioHandler::AudioSettingsChangeSource source) {
+  SetInputMute(mute_on, method);
+  base::UmaHistogramEnumeration(
+      CrasAudioHandler::kInputGainMuteSourceHistogramName, source);
 }
 
 void CrasAudioHandler::SetActiveDevice(const AudioDevice& active_device,
@@ -1004,6 +1022,20 @@ void CrasAudioHandler::SetMuteForDevice(uint64_t device_id, bool mute_on) {
   // Input device's mute state is not recorded in the pref. crbug.com/365050.
   if (device && !device->is_input)
     audio_pref_handler_->SetMuteValue(*device, mute_on);
+}
+
+void CrasAudioHandler::SetMuteForDevice(
+    uint64_t device_id,
+    bool mute_on,
+    CrasAudioHandler::AudioSettingsChangeSource source) {
+  SetMuteForDevice(device_id, mute_on);
+  if (device_id == active_output_node_id_) {
+    base::UmaHistogramEnumeration(
+        CrasAudioHandler::kOutputVolumeMuteSourceHistogramName, source);
+  } else if (device_id == active_input_node_id_) {
+    base::UmaHistogramEnumeration(
+        CrasAudioHandler::kInputGainMuteSourceHistogramName, source);
+  }
 }
 
 // If the HDMI device is the active output device, when the device enters/exits

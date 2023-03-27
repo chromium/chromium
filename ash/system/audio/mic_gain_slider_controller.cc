@@ -93,8 +93,9 @@ void MicGainSliderController::SliderButtonPressed() {
 
   TrackToggleUMA(/*target_toggle_state=*/mute);
 
-  audio_handler->SetMuteForDevice(audio_handler->GetPrimaryActiveInputNode(),
-                                  mute);
+  audio_handler->SetMuteForDevice(
+      audio_handler->GetPrimaryActiveInputNode(), mute,
+      CrasAudioHandler::AudioSettingsChangeSource::kSystemTray);
 }
 
 void MicGainSliderController::RecordGainChanged() {

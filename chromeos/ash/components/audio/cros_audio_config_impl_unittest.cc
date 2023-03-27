@@ -883,6 +883,9 @@ TEST_F(CrosAudioConfigImplTest, SetOutputMuted) {
                                       AudioMuteButtonAction::kMuted, 1);
   histogram_tester_.ExpectBucketCount(kOutputMuteChangeHistogramName,
                                       AudioMuteButtonAction::kUnmuted, 1);
+  histogram_tester_.ExpectBucketCount(
+      CrasAudioHandler::kOutputVolumeMuteSourceHistogramName,
+      CrasAudioHandler::AudioSettingsChangeSource::kOsSettings, 2);
 }
 
 TEST_F(CrosAudioConfigImplTest, SetInputMuted) {
@@ -909,6 +912,9 @@ TEST_F(CrosAudioConfigImplTest, SetInputMuted) {
                                       AudioMuteButtonAction::kMuted, 1);
   histogram_tester_.ExpectBucketCount(kInputMuteChangeHistogramName,
                                       AudioMuteButtonAction::kUnmuted, 1);
+  histogram_tester_.ExpectBucketCount(
+      CrasAudioHandler::kInputGainMuteSourceHistogramName,
+      CrasAudioHandler::AudioSettingsChangeSource::kOsSettings, 2);
 
   // Simulate turning physical switch on.
   SetInputMuteState(mojom::MuteState::kMutedExternally, /*switch_on=*/true);
@@ -931,6 +937,9 @@ TEST_F(CrosAudioConfigImplTest, SetInputMuted) {
                                       AudioMuteButtonAction::kMuted, 1);
   histogram_tester_.ExpectBucketCount(kInputMuteChangeHistogramName,
                                       AudioMuteButtonAction::kUnmuted, 1);
+  histogram_tester_.ExpectBucketCount(
+      CrasAudioHandler::kInputGainMuteSourceHistogramName,
+      CrasAudioHandler::AudioSettingsChangeSource::kOsSettings, 2);
 }
 
 // Verify merging front and rear mic into a single device returns expected

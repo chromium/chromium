@@ -4,6 +4,8 @@
 
 #include "ash/system/audio/mic_gain_slider_controller.h"
 
+#include <memory>
+
 #include "ash/constants/ash_features.h"
 #include "ash/shell.h"
 #include "ash/system/audio/mic_gain_slider_view.h"
@@ -14,6 +16,7 @@
 #include "base/time/time.h"
 #include "chromeos/ash/components/audio/cras_audio_handler.h"
 #include "ui/views/controls/slider.h"
+#include "ui/views/widget/widget.h"
 
 namespace ash {
 
@@ -35,6 +38,20 @@ class MicGainSliderControllerTest : public AshTestBase,
 
   ~MicGainSliderControllerTest() override = default;
 
+  void SetUp() override {
+    AshTestBase::SetUp();
+    widget_ = CreateFramelessTestWidget();
+    widget_->SetFullscreen(true);
+    slider_view_ = static_cast<MicGainSliderView*>(
+        mic_gain_slider_controller_.CreateView());
+    widget_->SetContentsView(slider_view_);
+  }
+
+  void TearDown() override {
+    widget_.reset();
+    AshTestBase::TearDown();
+  }
+
   bool IsQsRevampEnabled() const { return GetParam(); }
 
   views::View* GetMuteToastView() {
@@ -48,11 +65,15 @@ class MicGainSliderControllerTest : public AshTestBase,
         /*old_value=*/0, views::SliderChangeReason::kByUser);
   }
 
+  void PressSliderButton() { LeftClickOn(slider_view_->button()); }
+
   base::HistogramTester histogram_tester_;
 
  private:
   base::test::ScopedFeatureList feature_list_;
   MicGainSliderController mic_gain_slider_controller_;
+  MicGainSliderView* slider_view_ = nullptr;
+  std::unique_ptr<views::Widget> widget_;
 };
 
 INSTANTIATE_TEST_SUITE_P(QsRevamp,
@@ -115,6 +136,14 @@ TEST_P(MicGainSliderControllerTest, CreateMuteToastView) {
   // TODO(b/274820054) don't need to manually destroy the pointer after
   // switching to use unique pointer.
   delete toast_view;
+}
+
+// Verify pressing the mute button is recorded to metrics.
+TEST_P(MicGainSliderControllerTest, RecordInputGainMuteSource) {
+  PressSliderButton();
+  histogram_tester_.ExpectBucketCount(
+      CrasAudioHandler::kInputGainMuteSourceHistogramName,
+      CrasAudioHandler::AudioSettingsChangeSource::kSystemTray, 1);
 }
 
 }  // namespace ash
