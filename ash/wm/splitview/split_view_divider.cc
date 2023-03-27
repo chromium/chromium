@@ -64,7 +64,7 @@ bool IsInTabletMode() {
 }  // namespace
 
 // -----------------------------------------------------------------------------
-// DividerView:
+// AlwaysOnTopWindowTargeter:
 
 // The window targeter that is installed on the always on top container window
 // when the split view mode is active.
@@ -313,8 +313,9 @@ SplitViewDivider::SplitViewDivider(SplitViewController* controller)
   for (auto snap_pos : {SplitViewController::SnapPosition::kPrimary,
                         SplitViewController::SnapPosition::kSecondary}) {
     auto* window = controller_->GetSnappedWindow(snap_pos);
-    if (window)
+    if (window) {
       AddObservedWindow(window);
+    }
   }
 }
 
@@ -554,7 +555,16 @@ void SplitViewDivider::CreateDividerWidget(SplitViewController* controller) {
   divider_view_ = divider_widget_->SetContentsView(
       std::make_unique<DividerView>(controller, this));
   divider_widget_->SetBounds(GetDividerBoundsInScreen(/*is_dragging=*/false));
-  divider_widget_->GetNativeWindow()->SetProperty(kLockedToRootKey, true);
+  auto* divider_widget_native_window = divider_widget_->GetNativeWindow();
+  divider_widget_native_window->SetProperty(kLockedToRootKey, true);
+
+  // Use a window targeter and enlarge the hit region to allow located events
+  // that are slightly outside the divider widget bounds be consumed by
+  // `divider_widget_`.
+  auto window_targeter = std::make_unique<aura::WindowTargeter>();
+  window_targeter->SetInsets(kSplitViewDividerExtraInset);
+  divider_widget_native_window->SetEventTargeter(std::move(window_targeter));
+
   divider_widget_->Show();
 }
 

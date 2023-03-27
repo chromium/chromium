@@ -34,6 +34,7 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/gfx/geometry/point.h"
 #include "ui/gfx/geometry/rect.h"
+#include "ui/gfx/geometry/vector2d.h"
 #include "ui/gfx/image/image_skia.h"
 #include "ui/gfx/image/image_unittest_util.h"
 #include "ui/gfx/paint_vector_icon.h"
@@ -282,42 +283,18 @@ TEST_F(SnapGroupEntryPointArm1Test, ClamshellSplitViewBasicFunctionalities) {
   EXPECT_FALSE(split_view_controller()->InSplitViewMode());
 }
 
-// Tests that after snapping two windows, resize one window will end the
-// split view mode.
-TEST_F(SnapGroupEntryPointArm1Test, ResizeOneWindowWillExitSnapGroup) {
-  std::unique_ptr<aura::Window> w1(CreateTestWindow());
-  std::unique_ptr<aura::Window> w2(CreateTestWindow());
-  SnapTwoTestWindowsInArm1(w1.get(), w2.get());
-
-  auto* event_generator = GetEventGenerator();
-  wm::ActivateWindow(w1.get());
-
-  gfx::Point hover_location = w1->GetBoundsInScreen().right_center();
-  hover_location.Offset(-1, 0);
-  const int distance_delta = work_area_bounds().width() / 4;
-  event_generator->MoveMouseTo(hover_location);
-  event_generator->PressLeftButton();
-  event_generator->MoveMouseTo(hover_location.x() + distance_delta,
-                               hover_location.y());
-  event_generator->ReleaseLeftButton();
-  EXPECT_FALSE(split_view_controller()->InSplitViewMode());
-  EXPECT_FALSE(split_view_divider());
-}
-
-// Tests the basic functionalities when dragging the windows in a snap group
-// with the split view divider.
-TEST_F(SnapGroupEntryPointArm1Test,
-       ResizeWithSplitViewDividerBasicFunctionalities) {
+// Tests the snap ratio is updated correctly when resizing the windows in a snap
+// group with the split view divider.
+TEST_F(SnapGroupEntryPointArm1Test, SnapRatioTest) {
   std::unique_ptr<aura::Window> w1(CreateTestWindow());
   std::unique_ptr<aura::Window> w2(CreateTestWindow());
   SnapTwoTestWindowsInArm1(w1.get(), w2.get());
 
   const gfx::Point hover_location =
       split_view_divider_bounds_in_screen().CenterPoint();
-  const int distance_delta = -work_area_bounds().width() / 6;
   split_view_controller()->StartResizeWithDivider(hover_location);
   const auto end_point =
-      gfx::Point(hover_location.x() + distance_delta, hover_location.y());
+      hover_location + gfx::Vector2d(-work_area_bounds().width() / 6, 0);
   split_view_controller()->ResizeWithDivider(end_point);
   split_view_controller()->EndResizeWithDivider(end_point);
   EXPECT_TRUE(split_view_controller()->InSplitViewMode());
@@ -341,9 +318,8 @@ TEST_F(SnapGroupEntryPointArm1Test,
     const gfx::Point hover_location =
         split_view_divider_bounds_in_screen().CenterPoint();
     split_view_controller()->StartResizeWithDivider(hover_location);
-    const auto end_location =
-        gfx::Point(hover_location.x() + distance_delta, hover_location.y());
-    split_view_controller()->ResizeWithDivider(end_location);
+    split_view_controller()->ResizeWithDivider(
+        hover_location + gfx::Vector2d(distance_delta, 0));
     EXPECT_TRUE(split_view_controller()->InSplitViewMode());
 
     EXPECT_EQ(w1_cached_bounds.width() + distance_delta,
@@ -481,6 +457,29 @@ TEST_F(SnapGroupEntryPointArm1Test, NotShowOverviewIfEmpty) {
     SnapOneTestWindow(w1.get(), snap_state);
     EXPECT_FALSE(Shell::Get()->overview_controller()->InOverviewSession());
   }
+}
+
+// Tests that the hit area of the split view divider can be outside of its
+// bounds with the extra insets with a value of `kSplitViewDividerExtraInset`.
+TEST_F(SnapGroupEntryPointArm1Test, SplitViewDividerEnlargedHitArea) {
+  std::unique_ptr<aura::Window> w1(CreateTestWindow());
+  std::unique_ptr<aura::Window> w2(CreateTestWindow());
+  SnapTwoTestWindowsInArm1(w1.get(), w2.get(), /*horizontal=*/true);
+
+  const gfx::Point cached_divider_center_point =
+      split_view_divider_bounds_in_screen().CenterPoint();
+  auto* event_generator = GetEventGenerator();
+  gfx::Point hover_location =
+      cached_divider_center_point -
+      gfx::Vector2d(kSplitViewDividerExtraInset.width(), 0);
+  event_generator->MoveMouseTo(hover_location);
+  event_generator->PressLeftButton();
+  const auto move_vector = -gfx::Vector2d(20, 0);
+  event_generator->MoveMouseTo(hover_location + move_vector);
+  event_generator->ReleaseLeftButton();
+  EXPECT_TRUE(split_view_controller()->InSplitViewMode());
+  EXPECT_EQ(split_view_divider_bounds_in_screen().CenterPoint(),
+            cached_divider_center_point + move_vector);
 }
 
 // A test fixture that tests the user-initiated snap group entry point. This

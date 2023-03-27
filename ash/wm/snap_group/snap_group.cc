@@ -21,6 +21,19 @@ bool ShouldConsiderDivider() {
   return snap_group_controller &&
          snap_group_controller->IsArm1AutomaticallyLockEnabled();
 }
+
+bool IsStackedBelow(aura::Window* win1, aura::Window* win2) {
+  DCHECK_NE(win1, win2);
+  DCHECK_EQ(win1->parent(), win2->parent());
+
+  const auto& children = win1->parent()->children();
+  auto win1_iter = base::ranges::find(children, win1);
+  auto win2_iter = base::ranges::find(children, win2);
+  DCHECK(win1_iter != children.end());
+  DCHECK(win2_iter != children.end());
+  return win1_iter < win2_iter;
+}
+
 }  // namespace
 
 SnapGroup::SnapGroup(aura::Window* window1, aura::Window* window2) {
@@ -29,6 +42,32 @@ SnapGroup::SnapGroup(aura::Window* window1, aura::Window* window2) {
 
 SnapGroup::~SnapGroup() {
   StopObservingWindows();
+}
+
+void SnapGroup::OnWindowStackingChanged(aura::Window* window) {
+  // Update the stacking order of the other window in the snap group so that the
+  // two windows are always placed on top, both of which will be stacked below
+  // the `split_view_divider` if applicable afterwards.
+  aura::Window* top_window =
+      IsStackedBelow(window1_, window2_) ? window2_ : window1_;
+  aura::Window* target_window = top_window == window1_ ? window2_ : window1_;
+  auto* parent_container = target_window->parent();
+  parent_container->StackChildBelow(target_window, top_window);
+
+  if (ShouldConsiderDivider()) {
+    // Update the stacking order of the `split_view_divider` to be on top of the
+    // `top_window` which makes the overall stacking order become
+    // `divider_widget->GetNativeWindow()` --> `top_window` --> `target_window`.
+    aura::Window* root_window = window1_->GetRootWindow();
+    auto* split_view_controller = SplitViewController::Get(root_window);
+    DCHECK(split_view_controller);
+    auto* split_view_divider = split_view_controller->split_view_divider();
+    DCHECK(split_view_divider);
+    auto* divider_widget = split_view_divider->divider_widget();
+    DCHECK(divider_widget);
+    parent_container->StackChildAbove(divider_widget->GetNativeWindow(),
+                                      top_window);
+  }
 }
 
 void SnapGroup::OnWindowDestroying(aura::Window* window) {
@@ -40,37 +79,6 @@ void SnapGroup::OnWindowDestroying(aura::Window* window) {
   Shell::Get()->snap_group_controller()->RemoveSnapGroup(this);
 }
 
-void SnapGroup::OnWindowActivated(ActivationReason reason,
-                                  aura::Window* gained_active,
-                                  aura::Window* lost_active) {
-  if (gained_active != window1_ && gained_active != window2_) {
-    return;
-  }
-
-  // Update the stacking order of the other window in the snap group so that the
-  // two windows are always placed on top, both of which will be stacked below
-  // the `split_view_divider` if applicable afterwards.
-  aura::Window* target_window = gained_active == window1_ ? window2_ : window1_;
-  auto* parent_container = target_window->parent();
-  parent_container->StackChildBelow(target_window, gained_active);
-
-  // Update the stacking order of the `split_view_divider` to be on top of the
-  // `gained_active` window which makes the overall stacking order become
-  // `divider_widget->GetNativeWindow()` --> `gained_active` -->
-  // `target_window`.
-  if (ShouldConsiderDivider()) {
-    aura::Window* root_window = window1_->GetRootWindow();
-    auto* split_view_controller = SplitViewController::Get(root_window);
-    DCHECK(split_view_controller);
-    auto* split_view_divider = split_view_controller->split_view_divider();
-    DCHECK(split_view_divider);
-    auto* divider_widget = split_view_divider->divider_widget();
-    DCHECK(divider_widget);
-    parent_container->StackChildAbove(divider_widget->GetNativeWindow(),
-                                      gained_active);
-  }
-}
-
 void SnapGroup::StartObservingWindows(aura::Window* window1,
                                       aura::Window* window2) {
   DCHECK(window1);
@@ -79,8 +87,6 @@ void SnapGroup::StartObservingWindows(aura::Window* window1,
   window1_->AddObserver(this);
   window2_ = window2;
   window2_->AddObserver(this);
-
-  Shell::Get()->activation_client()->AddObserver(this);
 }
 
 void SnapGroup::StopObservingWindows() {
@@ -93,8 +99,6 @@ void SnapGroup::StopObservingWindows() {
     window2_->RemoveObserver(this);
     window2_ = nullptr;
   }
-
-  Shell::Get()->activation_client()->RemoveObserver(this);
 }
 
 }  // namespace ash

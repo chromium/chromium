@@ -8,6 +8,7 @@
 #include "ash/ash_export.h"
 #include "base/time/time.h"
 #include "chromeos/ui/wm/constants.h"
+#include "ui/gfx/geometry/insets.h"
 
 namespace ash {
 
@@ -86,6 +87,10 @@ constexpr float kDarkLightPreviewAreaHighlightOpacity = 0.2f;
 // `kMinDividerPositionRatio` of screen height.
 constexpr int kMinCaretKeyboardDist = 16;
 constexpr float kMinDividerPositionRatio = 0.15f;
+
+// Extra insets used to increase the hit bounds of the split view divider to
+// make it easier to handle located event.
+constexpr gfx::Insets kSplitViewDividerExtraInset = gfx::Insets::VH(0, -2);
 
 }  // namespace ash
 

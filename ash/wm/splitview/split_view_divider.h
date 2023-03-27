@@ -52,7 +52,7 @@ class ASH_EXPORT SplitViewDivider : public aura::WindowObserver,
       int divider_position,
       bool is_dragging);
 
-  views::Widget* divider_widget() { return divider_widget_; }
+  views::Widget* divider_widget() const { return divider_widget_; }
 
   // Do the divider spawning animation that adds a finishing touch to the
   // snapping animation of a window.

@@ -6,7 +6,6 @@
 #define ASH_WM_SNAP_GROUP_SNAP_GROUP_H_
 
 #include "ui/aura/window_observer.h"
-#include "ui/wm/public/activation_change_observer.h"
 
 namespace aura {
 class Window;
@@ -16,7 +15,7 @@ namespace ash {
 
 // Observes changes in the windows of the SnapGroup and manages the windows
 // accordingly.
-class SnapGroup : public aura::WindowObserver, wm::ActivationChangeObserver {
+class SnapGroup : public aura::WindowObserver {
  public:
   SnapGroup(aura::Window* window1, aura::Window* window2);
   SnapGroup(const SnapGroup&) = delete;
@@ -24,14 +23,9 @@ class SnapGroup : public aura::WindowObserver, wm::ActivationChangeObserver {
   ~SnapGroup() override;
 
   // aura::WindowObserver:
-  // TODO: Implement `OnWindowParentChanged` and maybe `OnWindowStackingChanged`
-  // in future.
+  // TODO: Implement `OnWindowParentChanged`.
+  void OnWindowStackingChanged(aura::Window* window) override;
   void OnWindowDestroying(aura::Window* window) override;
-
-  // wm::ActivationChangeObserver:
-  void OnWindowActivated(ActivationReason reason,
-                         aura::Window* gained_active,
-                         aura::Window* lost_active) override;
 
   aura::Window* window1() const { return window1_; }
   aura::Window* window2() const { return window2_; }
