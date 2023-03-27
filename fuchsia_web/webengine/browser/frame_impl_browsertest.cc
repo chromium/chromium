@@ -79,22 +79,6 @@ class MockWebContentsObserver : public content::WebContentsObserver {
                void(content::RenderViewHost* render_view_host));
 };
 
-}  // namespace
-
-// Defines a suite of tests that exercise Frame-level functionality, such as
-// navigation commands and page events.
-class FrameImplTest : public FrameImplTestBase {
- public:
-  FrameImplTest() = default;
-  ~FrameImplTest() override = default;
-
-  FrameImplTest(const FrameImplTest&) = delete;
-  FrameImplTest& operator=(const FrameImplTest&) = delete;
-
-  MOCK_METHOD1(OnServeHttpRequest,
-               void(const net::test_server::HttpRequest& request));
-};
-
 std::string GetDocumentVisibilityState(fuchsia::web::Frame* frame) {
   auto visibility = base::MakeRefCounted<base::RefCountedData<std::string>>();
   base::RunLoop loop;
@@ -118,6 +102,22 @@ std::string GetDocumentVisibilityState(fuchsia::web::Frame* frame) {
   ZX_CHECK(status == ZX_OK, status) << "zx_object_duplicate";
   return dup;
 }
+
+}  // namespace
+
+// Defines a suite of tests that exercise Frame-level functionality, such as
+// navigation commands and page events.
+class FrameImplTest : public FrameImplTestBase {
+ public:
+  FrameImplTest() = default;
+  ~FrameImplTest() override = default;
+
+  FrameImplTest(const FrameImplTest&) = delete;
+  FrameImplTest& operator=(const FrameImplTest&) = delete;
+
+  MOCK_METHOD1(OnServeHttpRequest,
+               void(const net::test_server::HttpRequest& request));
+};
 
 // Verifies that Frames are initially "hidden", changes to "visible" once the
 // View is attached to a Presenter and back to "hidden" when the View is
@@ -189,16 +189,6 @@ IN_PROC_BROWSER_TEST_F(FrameImplTest, MAYBE_VisibilityState) {
   // receives a "not visible" event as a result.
   view_controller->Dismiss();
   frame.navigation_listener().RunUntilTitleEquals("hidden");
-}
-
-void VerifyCanGoBackAndForward(FrameForTest& frame,
-                               bool can_go_back_expected,
-                               bool can_go_forward_expected) {
-  auto* state = frame.navigation_listener().current_state();
-  EXPECT_TRUE(state->has_can_go_back());
-  EXPECT_EQ(state->can_go_back(), can_go_back_expected);
-  EXPECT_TRUE(state->has_can_go_forward());
-  EXPECT_EQ(state->can_go_forward(), can_go_forward_expected);
 }
 
 // Verifies that the browser will navigate and generate a navigation listener
@@ -364,6 +354,20 @@ IN_PROC_BROWSER_TEST_F(FrameImplTest, EnsureWebSqlDisabled) {
   frame.navigation_listener().RunUntilUrlAndTitleEquals(title3, kPage3Title);
 }
 
+namespace {
+
+void VerifyCanGoBackAndForward(FrameForTest& frame,
+                               bool can_go_back_expected,
+                               bool can_go_forward_expected) {
+  auto* state = frame.navigation_listener().current_state();
+  EXPECT_TRUE(state->has_can_go_back());
+  EXPECT_EQ(state->can_go_back(), can_go_back_expected);
+  EXPECT_TRUE(state->has_can_go_forward());
+  EXPECT_EQ(state->can_go_forward(), can_go_forward_expected);
+}
+
+}  // namespace
+
 IN_PROC_BROWSER_TEST_F(FrameImplTest, GoBackAndForward) {
   auto frame = FrameForTest::Create(context(), {});
 
@@ -412,6 +416,8 @@ IN_PROC_BROWSER_TEST_F(FrameImplTest, GoBackAndForward) {
   // no-op.
   VerifyCanGoBackAndForward(frame, true, false);
 }
+
+namespace {
 
 // An HTTP response stream whose response payload can be sent as "chunks"
 // with indeterminate-length pauses in between.
@@ -528,6 +534,8 @@ class ChunkedHttpTransactionFactory : public net::test_server::HttpResponse {
  private:
   base::OnceClosure on_response_created_;
 };
+
+}  // namespace
 
 IN_PROC_BROWSER_TEST_F(FrameImplTest, NavigationEventDuringPendingLoad) {
   auto frame = FrameForTest::Create(context(), {});
@@ -797,12 +805,16 @@ IN_PROC_BROWSER_TEST_F(FrameImplTest, DelayedNavigationEventAck) {
   frame.navigation_listener().RunUntilUrlAndTitleEquals(title1, kPage1Title);
 }
 
+namespace {
+
 // Observes events specific to the Stop() test case.
 struct WebContentsObserverForStop : public content::WebContentsObserver {
   using content::WebContentsObserver::Observe;
   MOCK_METHOD1(DidStartNavigation, void(content::NavigationHandle*));
   MOCK_METHOD0(NavigationStopped, void());
 };
+
+}  // namespace
 
 IN_PROC_BROWSER_TEST_F(FrameImplTest, Stop) {
   auto frame = FrameForTest::Create(context(), {});
@@ -1256,6 +1268,8 @@ IN_PROC_BROWSER_TEST_F(FrameImplTest, Close_BeforeNavigation) {
   loop.Run();
 }
 
+namespace {
+
 // Helper class for `Frame.Close()` tests, that navigates the `Frame` to an
 // event-recording page, and connects to accumulate the list of events it
 // receives.
@@ -1315,6 +1329,10 @@ class FrameForTestWithMessageLog : public FrameForTest {
 
   const std::vector<std::string>& events() const { return events_; }
 
+  std::string EventsString() const {
+    return "[" + base::JoinString(events_, ", ") + "]";
+  }
+
  private:
   void OnMessage(fuchsia::web::WebMessage message) {
     events_.push_back(std::move(*base::StringFromMemBuffer(message.data())));
@@ -1327,6 +1345,12 @@ class FrameForTestWithMessageLog : public FrameForTest {
   std::vector<std::string> events_;
   base::test::TestFuture<zx_status_t> epitaph_;
 };
+
+constexpr char kBeforeUnloadEventName[] = "window.beforeunload";
+constexpr char kUnloadEventName[] = "window.unload";
+constexpr char kPageHideEventName[] = "window.pagehide";
+
+}  // namespace
 
 // Verifies that `Close()`ing a `Frame` without an explicit timeout allows
 // graceful teardown, including firing the expected set of events
@@ -1346,10 +1370,10 @@ IN_PROC_BROWSER_TEST_F(FrameImplTest, Close_EventsWithDefaultTimeout) {
   frame.RunUntilMessagePortClosed();
 
   // Verify that the expected events were delivered!
-  ASSERT_EQ(frame.events().size(), 3u);
-  EXPECT_EQ(frame.events()[0], "window.beforeunload");
-  EXPECT_EQ(frame.events()[1], "window.pagehide");
-  EXPECT_EQ(frame.events()[2], "window.unload");
+  ASSERT_EQ(frame.events().size(), 3u) << frame.EventsString();
+  EXPECT_EQ(frame.events()[0], kBeforeUnloadEventName);
+  EXPECT_EQ(frame.events()[1], kPageHideEventName);
+  EXPECT_EQ(frame.events()[2], kUnloadEventName);
 
   EXPECT_EQ(frame.epitaph().Get(), ZX_OK);
 }
@@ -1374,10 +1398,10 @@ IN_PROC_BROWSER_TEST_F(FrameImplTest, Close_EventsWithNonZeroTimeout) {
   frame.RunUntilMessagePortClosed();
 
   // Verify that the expected events were delivered!
-  ASSERT_EQ(frame.events().size(), 3u);
-  EXPECT_EQ(frame.events()[0], "window.beforeunload");
-  EXPECT_EQ(frame.events()[1], "window.pagehide");
-  EXPECT_EQ(frame.events()[2], "window.unload");
+  ASSERT_EQ(frame.events().size(), 3u) << frame.EventsString();
+  EXPECT_EQ(frame.events()[0], kBeforeUnloadEventName);
+  EXPECT_EQ(frame.events()[1], kPageHideEventName);
+  EXPECT_EQ(frame.events()[2], kUnloadEventName);
 
   EXPECT_EQ(frame.epitaph().Get(), ZX_OK);
 }
@@ -1396,7 +1420,7 @@ IN_PROC_BROWSER_TEST_F(FrameImplTest, Close_WithInsufficientTimeout) {
   // Request to gracefully close the Frame, by specifying a non-zero timeout.
   // This can be arbitrarily short, since we are deliberately provoking timeout.
   frame->Close(std::move(fuchsia::web::FrameCloseRequest().set_timeout(
-      base::Milliseconds(1u).ToZxDuration())));
+      base::Microseconds(1u).ToZxDuration())));
 
   // Don't wait for the MessagePort to close, since that doesn't happen in
   // ASAN builds, for some reason (crbug.com/1400304).
@@ -1421,8 +1445,10 @@ IN_PROC_BROWSER_TEST_F(FrameImplTest, Close_NoEventsWithZeroTimeout) {
 
   frame.RunUntilMessagePortClosed();
 
-  // Verify that no events were observed.
-  EXPECT_EQ(frame.events().size(), 0u);
+  // In practice it is possible for content to have time to receive & process
+  // visibility and unload events, so just check for "beforeunload".
+  EXPECT_THAT(frame.events(), Not(Contains(kBeforeUnloadEventName)))
+      << frame.EventsString();
 
   EXPECT_EQ(frame.epitaph().Get(), ZX_OK);
 }
@@ -1441,6 +1467,8 @@ IN_PROC_BROWSER_TEST_F(FrameImplTest, Disconnect_NoEvents) {
 
   frame.RunUntilMessagePortClosed();
 
-  // Verify that no events were observed.
-  EXPECT_EQ(frame.events().size(), 0u);
+  // In practice it is possible for content to have time to receive & process
+  // visibility and unload events, so just check for "beforeunload".
+  EXPECT_THAT(frame.events(), Not(Contains(kBeforeUnloadEventName)))
+      << frame.EventsString();
 }
