@@ -176,7 +176,7 @@ BASE_FEATURE(kAudioSourceFetcherResampling,
 // audio configuration. crbug.com/1092970.
 BASE_FEATURE(kAudioSettingsPage,
              "AudioSettingsPage",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Enables the Audio URL that is designed to help user debug or troubleshoot
 // common issues on ChromeOS.

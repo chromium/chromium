@@ -97,26 +97,15 @@ class DeviceSectionTest : public testing::Test {
   TestingProfile* profile_;
 };
 
-// Verify registry updated with Audio search tags when flag is enabled.
-TEST_F(DeviceSectionTest, SearchResultIncludeAudioWithFlagEnabled) {
-  feature_list_.InitAndEnableFeature(ash::features::kAudioSettingsPage);
-  device_section_ = std::make_unique<DeviceSection>(
-      profile(), search_tag_registry(), pref_service());
-
-  std::string result_id = GetSubpageSearchResultId(
-      kAudioPageOsSettingsId, IDS_OS_SETTINGS_TAG_AUDIO_SETTINGS);
-  EXPECT_TRUE(search_tag_registry()->GetTagMetadata(result_id));
-}
-
-// Verify registry not updated with Audio search tags when flag is disabled.
-TEST_F(DeviceSectionTest, SearchResultExcludeAudioWithoutFlag) {
+// Verify registry updated with Audio search tags.
+TEST_F(DeviceSectionTest, SearchResultIncludeAudio) {
   feature_list_.Reset();
   device_section_ = std::make_unique<DeviceSection>(
       profile(), search_tag_registry(), pref_service());
 
   std::string result_id = GetSubpageSearchResultId(
       kAudioPageOsSettingsId, IDS_OS_SETTINGS_TAG_AUDIO_SETTINGS);
-  EXPECT_FALSE(search_tag_registry()->GetTagMetadata(result_id));
+  EXPECT_TRUE(search_tag_registry()->GetTagMetadata(result_id));
 }
 
 // Verify registry updated with per device settings search tags when flag is
