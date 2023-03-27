@@ -68,8 +68,13 @@ class CONTENT_EXPORT AttributionHost
   // navigation beacon.
   // This function should only be invoked if Attribution Reporting API is
   // enabled on the page.
+  // `navigation_id` will be set if this beacon is being sent as the result of a
+  // top navigation initiated by a fenced frame. This is used to track
+  // attributions that occur on a navigated page after the current page has been
+  // unloaded. Otherwise `absl::nullopt`.
   void NotifyFencedFrameReportingBeaconStarted(
       BeaconId beacon_id,
+      absl::optional<int64_t> navigation_id,
       RenderFrameHostImpl* initiator_frame_host);
 
  private:

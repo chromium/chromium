@@ -104,6 +104,7 @@ class CONTENT_EXPORT AttributionDataHostManagerImpl
       const blink::AttributionSrcToken& attribution_src_token) override;
   void NotifyFencedFrameReportingBeaconStarted(
       BeaconId beacon_id,
+      absl::optional<int64_t> navigation_id,
       attribution_reporting::SuitableOrigin source_origin,
       bool is_within_fenced_frame,
       AttributionInputEvent input_event,

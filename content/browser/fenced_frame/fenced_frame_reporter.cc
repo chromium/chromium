@@ -136,11 +136,13 @@ FencedFrameReporter::PendingEvent::PendingEvent(
     const std::string& type,
     const std::string& data,
     const url::Origin& request_initiator,
-    BeaconId beacon_id)
+    BeaconId beacon_id,
+    bool is_automatic_beacon)
     : type(type),
       data(data),
       request_initiator(request_initiator),
-      beacon_id(beacon_id) {}
+      beacon_id(beacon_id),
+      is_automatic_beacon(is_automatic_beacon) {}
 
 FencedFrameReporter::PendingEvent::PendingEvent(const PendingEvent&) = default;
 
@@ -248,7 +250,9 @@ void FencedFrameReporter::OnUrlMappingReady(
     std::string ignored_error_message;
     SendReportInternal(it->second, pending_event.type, pending_event.data,
                        reporting_destination, pending_event.request_initiator,
-                       pending_event.beacon_id, ignored_error_message);
+                       pending_event.beacon_id,
+                       pending_event.is_automatic_beacon,
+                       ignored_error_message);
   }
 }
 
@@ -291,37 +295,31 @@ bool FencedFrameReporter::SendReport(
 
   static base::AtomicSequenceNumber unique_id_counter;
 
-  // The id will be a `NavigationBeaconId` only if this report is being sent as
-  // the result of a top navigation initiated by a fenced frame. This is used to
-  // track attributions that occur on a navigated page after the current page
-  // has been unloaded.
-  BeaconId beacon_id;
-  if (navigation_id.has_value()) {
-    beacon_id = NavigationBeaconId(navigation_id.value());
-  } else {
-    beacon_id = EventBeaconId(unique_id_counter.GetNext());
-  }
+  BeaconId beacon_id(unique_id_counter.GetNext());
 
   auto* attribution_host = AttributionHost::FromWebContents(
       WebContents::FromRenderFrameHost(request_initiator_frame));
   if (attribution_host) {
     attribution_host->NotifyFencedFrameReportingBeaconStarted(
-        beacon_id, request_initiator_frame);
+        beacon_id, navigation_id, request_initiator_frame);
   }
 
   const url::Origin& request_initiator =
       request_initiator_frame->GetLastCommittedOrigin();
 
+  const bool is_automatic_beacon = navigation_id.has_value();
+
   // If the reporting URL map is pending, queue the event.
   if (it->second.reporting_url_map == absl::nullopt) {
     it->second.pending_events.emplace_back(event_type, event_data,
-                                           request_initiator, beacon_id);
+                                           request_initiator, beacon_id,
+                                           is_automatic_beacon);
     return true;
   }
 
   return SendReportInternal(it->second, event_type, event_data,
                             reporting_destination, request_initiator, beacon_id,
-                            error_message);
+                            is_automatic_beacon, error_message);
 }
 
 bool FencedFrameReporter::SendReportInternal(
@@ -331,6 +329,7 @@ bool FencedFrameReporter::SendReportInternal(
     blink::FencedFrame::ReportingDestination reporting_destination,
     const url::Origin& request_initiator,
     BeaconId beacon_id,
+    bool is_automatic_beacon,
     std::string& error_message) {
   // The URL map should not be pending at this point.
   DCHECK(reporting_destination_info.reporting_url_map);
@@ -371,10 +370,9 @@ bool FencedFrameReporter::SendReportInternal(
       net::IsolationInfo::CreateTransient();
 
   if (attribution_manager_) {
-    request->headers.SetHeader("Attribution-Reporting-Eligible",
-                               absl::holds_alternative<EventBeaconId>(beacon_id)
-                                   ? "event-source"
-                                   : "navigation-source");
+    request->headers.SetHeader(
+        "Attribution-Reporting-Eligible",
+        is_automatic_beacon ? "navigation-source" : "event-source");
 
     if (base::FeatureList::IsEnabled(
             blink::features::kAttributionReportingCrossAppWeb)) {

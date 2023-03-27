@@ -37,6 +37,7 @@
 #include "components/attribution_reporting/trigger_registration.h"
 #include "content/browser/attribution_reporting/attribution_beacon_id.h"
 #include "content/browser/attribution_reporting/attribution_constants.h"
+#include "content/browser/attribution_reporting/attribution_features.h"
 #include "content/browser/attribution_reporting/attribution_input_event.h"
 #include "content/browser/attribution_reporting/attribution_manager.h"
 #include "content/browser/attribution_reporting/attribution_trigger.h"
@@ -235,7 +236,12 @@ class AttributionDataHostManagerImpl::SourceRegistrations {
     AttributionNavigationType nav_type;
   };
 
-  using Data = absl::variant<NavigationRedirect, BeaconId>;
+  struct Beacon {
+    BeaconId id;
+    absl::optional<int64_t> navigation_id;
+  };
+
+  using Data = absl::variant<NavigationRedirect, Beacon>;
 
   SourceRegistrations(SuitableOrigin source_origin,
                       bool is_within_fenced_frame,
@@ -302,8 +308,8 @@ class AttributionDataHostManagerImpl::SourceRegistrations {
             [](const NavigationRedirect& redirect) {
               return SourceRegistrationsId(redirect.attribution_src_token);
             },
-            [](const BeaconId& beacon_id) {
-              return SourceRegistrationsId(beacon_id);
+            [](const Beacon& beacon) {
+              return SourceRegistrationsId(beacon.id);
             },
         },
         data_);
@@ -795,13 +801,18 @@ void AttributionDataHostManagerImpl::OnSourceEligibleDataHostFinished(
 
 void AttributionDataHostManagerImpl::NotifyFencedFrameReportingBeaconStarted(
     BeaconId beacon_id,
+    absl::optional<int64_t> navigation_id,
     SuitableOrigin source_origin,
     bool is_within_fenced_frame,
     AttributionInputEvent input_event,
     GlobalRenderFrameHostId render_frame_id) {
-  auto [it, inserted] = registrations_.emplace(
-      std::move(source_origin), is_within_fenced_frame, std::move(input_event),
-      render_frame_id, beacon_id);
+  auto [it, inserted] =
+      registrations_.emplace(std::move(source_origin), is_within_fenced_frame,
+                             std::move(input_event), render_frame_id,
+                             SourceRegistrations::Beacon{
+                                 .id = beacon_id,
+                                 .navigation_id = navigation_id,
+                             });
   DCHECK(inserted);
 
   // Treat ongoing beacon registrations as a data host for the purpose of
@@ -819,8 +830,10 @@ void AttributionDataHostManagerImpl::NotifyFencedFrameReportingBeaconData(
     bool is_final_response) {
   auto it = registrations_.find(beacon_id);
 
-  // The registration may no longer be tracked in the event the navigation
-  // failed.
+  if (base::FeatureList::IsEnabled(kAttributionFencedFrameReportingBeacon)) {
+    DCHECK(it != registrations_.end());
+  }
+
   if (it == registrations_.end()) {
     return;
   }
@@ -855,12 +868,7 @@ void AttributionDataHostManagerImpl::OnSourceParsed(
     SourceRegistrationsId id,
     base::FunctionRef<void(const SourceRegistrations&)> handle_result) {
   auto it = registrations_.find(id);
-
-  // The registration may no longer be tracked in the event the navigation
-  // failed.
-  if (it == registrations_.end()) {
-    return;
-  }
+  DCHECK(it != registrations_.end());
 
   it->DecrementPendingSourceData();
   handle_result(*it);
@@ -874,8 +882,9 @@ void AttributionDataHostManagerImpl::OnWebSourceParsed(
     data_decoder::DataDecoder::ValueOrError result) {
   OnSourceParsed(id, [&](const SourceRegistrations& registrations) {
     auto source_type = SourceType::kNavigation;
-    if (const auto* beacon_id = absl::get_if<BeaconId>(&registrations.data());
-        beacon_id && absl::holds_alternative<EventBeaconId>(*beacon_id)) {
+    if (const auto* beacon =
+            absl::get_if<SourceRegistrations::Beacon>(&registrations.data());
+        beacon && !beacon->navigation_id.has_value()) {
       source_type = SourceType::kEvent;
     }
 

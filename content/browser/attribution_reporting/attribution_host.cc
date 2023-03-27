@@ -4,6 +4,8 @@
 
 #include "content/browser/attribution_reporting/attribution_host.h"
 
+#include <stdint.h>
+
 #include <utility>
 
 #include "base/check.h"
@@ -33,6 +35,7 @@
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/content_client.h"
 #include "mojo/public/cpp/bindings/message.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/navigation/impression.h"
@@ -418,6 +421,7 @@ void AttributionHost::BindReceiver(
 
 void AttributionHost::NotifyFencedFrameReportingBeaconStarted(
     BeaconId beacon_id,
+    absl::optional<int64_t> navigation_id,
     RenderFrameHostImpl* initiator_frame_host) {
   if (!base::FeatureList::IsEnabled(kAttributionFencedFrameReportingBeacon)) {
     return;
@@ -454,14 +458,14 @@ void AttributionHost::NotifyFencedFrameReportingBeaconStarted(
   }
 
   AttributionInputEvent input_event;
-  if (absl::holds_alternative<NavigationBeaconId>(beacon_id)) {
+  if (navigation_id.has_value()) {
     input_event = AttributionHost::FromWebContents(
                       WebContents::FromRenderFrameHost(initiator_frame_host))
                       ->GetMostRecentNavigationInputEvent();
   }
 
   data_host_manager->NotifyFencedFrameReportingBeaconStarted(
-      beacon_id, std::move(*initiator_root_frame_origin),
+      beacon_id, navigation_id, std::move(*initiator_root_frame_origin),
       initiator_frame_host->IsNestedWithinFencedFrame(), input_event,
       initiator_root_frame->GetGlobalId());
 }

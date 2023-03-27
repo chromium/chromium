@@ -194,7 +194,8 @@ class CONTENT_EXPORT FencedFrameReporter
     PendingEvent(const std::string& type,
                  const std::string& data,
                  const url::Origin& request_initiator,
-                 BeaconId beacon_id);
+                 BeaconId beacon_id,
+                 bool is_automatic_beacon);
 
     PendingEvent(const PendingEvent&);
     PendingEvent(PendingEvent&&);
@@ -208,6 +209,7 @@ class CONTENT_EXPORT FencedFrameReporter
     std::string data;
     url::Origin request_initiator;
     BeaconId beacon_id;
+    bool is_automatic_beacon;
   };
 
   // The per-blink::FencedFrame::ReportingDestination reporting information.
@@ -240,6 +242,7 @@ class CONTENT_EXPORT FencedFrameReporter
       blink::FencedFrame::ReportingDestination reporting_destination,
       const url::Origin& request_initiator,
       BeaconId beacon_id,
+      bool is_automatic_beacon,
       std::string& error_message);
 
   // Helper to send private aggregation requests in

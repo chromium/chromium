@@ -4,6 +4,8 @@
 
 #include "content/browser/attribution_reporting/attribution_host.h"
 
+#include <stdint.h>
+
 #include <memory>
 #include <vector>
 
@@ -34,6 +36,7 @@
 #include "mojo/public/cpp/test_support/test_utils.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/permissions_policy/origin_with_possible_wildcards.h"
 #include "third_party/blink/public/common/permissions_policy/permissions_policy_declaration.h"
@@ -63,12 +66,14 @@ using ::attribution_reporting::SuitableOrigin;
 using ::testing::_;
 using ::testing::Optional;
 using ::testing::Return;
-using ::testing::VariantWith;
 
 using ::attribution_reporting::mojom::RegistrationType;
 using ::blink::mojom::AttributionNavigationType;
 
 const char kConversionUrl[] = "https://b.com";
+
+constexpr BeaconId kBeaconId(123);
+constexpr int64_t kNavigationId(456);
 
 class AttributionHostTest : public RenderViewHostTestHarness {
  public:
@@ -515,7 +520,8 @@ TEST_F(AttributionHostTest, FeatureDisabled_FencedFrameReportingBeaconDropped) {
       GURL("https://fencedframe.example"), fenced_frame);
 
   conversion_host()->NotifyFencedFrameReportingBeaconStarted(
-      NavigationBeaconId(123), static_cast<RenderFrameHostImpl*>(fenced_frame));
+      kBeaconId, kNavigationId,
+      static_cast<RenderFrameHostImpl*>(fenced_frame));
 }
 
 TEST_F(AttributionHostTest, NotifyFencedFrameReportingBeaconStarted) {
@@ -533,15 +539,13 @@ TEST_F(AttributionHostTest, NotifyFencedFrameReportingBeaconStarted) {
       {"https:/secure.com", true},
   };
 
-  NavigationBeaconId navigation_id(123);
-
   for (const auto& test_case : kTestCases) {
     contents()->NavigateAndCommit(GURL(test_case.source_origin));
     if (test_case.expected_valid) {
       EXPECT_CALL(
           *mock_data_host_manager(),
           NotifyFencedFrameReportingBeaconStarted(
-              VariantWith<NavigationBeaconId>(navigation_id),
+              kBeaconId, Optional(kNavigationId),
               *SuitableOrigin::Deserialize(test_case.source_origin),
               /*is_within_fenced_frame=*/true, _, main_rfh()->GetGlobalId()));
     } else {
@@ -559,7 +563,8 @@ TEST_F(AttributionHostTest, NotifyFencedFrameReportingBeaconStarted) {
         GURL("https://fencedframe.example"), fenced_frame);
 
     conversion_host()->NotifyFencedFrameReportingBeaconStarted(
-        navigation_id, static_cast<RenderFrameHostImpl*>(fenced_frame));
+        kBeaconId, kNavigationId,
+        static_cast<RenderFrameHostImpl*>(fenced_frame));
   }
 }
 
@@ -606,7 +611,8 @@ TEST_F(AttributionHostTest, FencedFrameReportingBeacon_FeaturePolicyChecked) {
     fenced_frame = simulator->GetFinalRenderFrameHost();
 
     conversion_host()->NotifyFencedFrameReportingBeaconStarted(
-        EventBeaconId(123), static_cast<RenderFrameHostImpl*>(fenced_frame));
+        kBeaconId, /*navigation_id=*/absl::nullopt,
+        static_cast<RenderFrameHostImpl*>(fenced_frame));
   }
 }
 

@@ -5,6 +5,8 @@
 #ifndef CONTENT_BROWSER_ATTRIBUTION_REPORTING_TEST_MOCK_ATTRIBUTION_DATA_HOST_MANAGER_H_
 #define CONTENT_BROWSER_ATTRIBUTION_REPORTING_TEST_MOCK_ATTRIBUTION_DATA_HOST_MANAGER_H_
 
+#include <stdint.h>
+
 #include "components/attribution_reporting/registration_type.mojom-forward.h"
 #include "components/attribution_reporting/suitable_origin.h"
 #include "content/browser/attribution_reporting/attribution_beacon_id.h"
@@ -13,6 +15,7 @@
 #include "content/public/browser/global_routing_id.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "testing/gmock/include/gmock/gmock.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/tokens/tokens.h"
 #include "third_party/blink/public/mojom/conversions/attribution_data_host.mojom-forward.h"
 #include "third_party/blink/public/mojom/conversions/attribution_reporting.mojom-forward.h"
@@ -75,6 +78,7 @@ class MockAttributionDataHostManager : public AttributionDataHostManager {
   MOCK_METHOD(void,
               NotifyFencedFrameReportingBeaconStarted,
               (BeaconId beacon_id,
+               absl::optional<int64_t> navigation_id,
                attribution_reporting::SuitableOrigin source_origin,
                bool is_within_fenced_frame,
                AttributionInputEvent input_event,

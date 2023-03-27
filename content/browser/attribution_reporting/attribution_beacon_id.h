@@ -8,14 +8,10 @@
 #include <stdint.h>
 
 #include "base/types/strong_alias.h"
-#include "third_party/abseil-cpp/absl/types/variant.h"
 
 namespace content {
 
-using EventBeaconId = base::StrongAlias<struct EventBeaconTag, int64_t>;
-using NavigationBeaconId =
-    base::StrongAlias<struct NavigationBeaconTag, int64_t>;
-using BeaconId = absl::variant<EventBeaconId, NavigationBeaconId>;
+using BeaconId = base::StrongAlias<struct BeaconTag, int64_t>;
 
 }  // namespace content
 
