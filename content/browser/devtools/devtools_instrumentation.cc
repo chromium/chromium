@@ -428,6 +428,9 @@ void DidCancelPrerender(const GURL& prerendering_url,
                         FrameTreeNode* ftn,
                         PrerenderFinalStatus status,
                         const std::string& disallowed_api_method) {
+  if (!ftn) {
+    return;
+  }
   std::string initiating_frame_id =
       ftn->current_frame_host()->devtools_frame_token().ToString();
   DispatchToAgents(ftn, &protocol::PageHandler::DidCancelPrerender,
@@ -438,6 +441,9 @@ void DidCancelPrerender(const GURL& prerendering_url,
 void DidUpdatePrefetchStatus(FrameTreeNode* ftn,
                              const GURL& prefetch_url,
                              PreloadingTriggeringOutcome status) {
+  if (!ftn) {
+    return;
+  }
   std::string initiating_frame_id =
       ftn->current_frame_host()->devtools_frame_token().ToString();
   DispatchToAgents(ftn, &protocol::PageHandler::DidUpdatePrefetchStatus,
