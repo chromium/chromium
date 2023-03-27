@@ -54,6 +54,13 @@ export const UserUtilMixin = dedupingMixin(
               value: '',
               computed: 'computeAccountEmail_(accountInfo_)',
             },
+
+            /* Email of the primary account. */
+            avatarImage: {
+              type: String,
+              value: '',
+              computed: 'computeAvatarImage_(accountInfo_)',
+            },
           };
         }
 
@@ -61,6 +68,7 @@ export const UserUtilMixin = dedupingMixin(
         isEligibleForAccountStorage: boolean;
         isAccountStoreUser: boolean;
         accountEmail: string;
+        avatarImage: string;
         private syncInfo_: SyncInfo;
         private accountInfo_: AccountInfo;
 
@@ -119,6 +127,10 @@ export const UserUtilMixin = dedupingMixin(
           return (this.accountInfo_ ? this.accountInfo_.email : '');
         }
 
+        private computeAvatarImage_(): string {
+          return this.accountInfo_.avatarImage || '';
+        }
+
         private computeIsAccountStoreUser_(): boolean {
           return this.isEligibleForAccountStorage &&
               this.isOptedInForAccountStorage;
@@ -134,6 +146,7 @@ export interface UserUtilMixinInterface {
   isEligibleForAccountStorage: boolean;
   isAccountStoreUser: boolean;
   accountEmail: string;
+  avatarImage: string;
   optInForAccountStorage(): void;
   optOutFromAccountStorage(): void;
 }

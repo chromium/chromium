@@ -43,6 +43,7 @@ build_webui("build") {
     "dialogs/delete_password_disclaimer_dialog.ts",
     "dialogs/edit_password_dialog.ts",
     "dialogs/edit_password_disclaimer_dialog.ts",
+    "dialogs/multi_store_delete_password_dialog.ts",
     "password_details_card.ts",
     "password_details_section.ts",
     "password_list_item.ts",

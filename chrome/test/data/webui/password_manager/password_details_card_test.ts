@@ -255,4 +255,98 @@ suite('PasswordDetailsCardTest', function() {
     assertFalse(card.$.noteValue.hasAttribute('limit-note'));
     await passwordManager.whenCalled('extendAuthValidity');
   });
+
+  [chrome.passwordsPrivate.PasswordStoreSet.DEVICE_AND_ACCOUNT,
+   chrome.passwordsPrivate.PasswordStoreSet.DEVICE,
+   chrome.passwordsPrivate.PasswordStoreSet.ACCOUNT]
+      .forEach(
+          store => test(
+              `delete multi store password from ${store} `, async function() {
+                const password = createPasswordEntry({
+                  url: 'test.com',
+                  username: 'vik',
+                  id: 0,
+                });
+                password.affiliatedDomains = [
+                  createAffiliatedDomain('test.com'),
+                  createAffiliatedDomain('m.test.com'),
+                ];
+                password.storedIn =
+                    chrome.passwordsPrivate.PasswordStoreSet.DEVICE_AND_ACCOUNT;
+
+                const card = document.createElement('password-details-card');
+                card.password = password;
+                document.body.appendChild(card);
+                await flushTasks();
+
+                assertTrue(isVisible(card.$.deleteButton));
+
+                card.$.deleteButton.click();
+                await flushTasks();
+
+                // Verify that password was not deleted immediately.
+                assertEquals(
+                    0, passwordManager.getCallCount('removeSavedPassword'));
+
+                const deleteDialog = card.shadowRoot!.querySelector(
+                    'multi-store-delete-password-dialog');
+                assertTrue(!!deleteDialog);
+                assertTrue(deleteDialog.$.dialog.open);
+
+                assertTrue(deleteDialog.$.removeFromAccountCheckbox.checked);
+                assertTrue(deleteDialog.$.removeFromDeviceCheckbox.checked);
+
+                if (store === chrome.passwordsPrivate.PasswordStoreSet.DEVICE) {
+                  deleteDialog.$.removeFromAccountCheckbox.click();
+                } else if (
+                    store ===
+                    chrome.passwordsPrivate.PasswordStoreSet.ACCOUNT) {
+                  deleteDialog.$.removeFromDeviceCheckbox.click();
+                }
+                deleteDialog.$.removeButton.click();
+
+                const params =
+                    await passwordManager.whenCalled('removeSavedPassword');
+                assertEquals(password.id, params.id);
+                assertEquals(store, params.fromStores);
+              }));
+
+  test('delete disabled when no store selected', async function() {
+    const password = createPasswordEntry({
+      url: 'test.com',
+      username: 'vik',
+      id: 0,
+      inAccountStore: true,
+      inProfileStore: true,
+    });
+    password.affiliatedDomains = [
+      createAffiliatedDomain('test.com'),
+      createAffiliatedDomain('m.test.com'),
+    ];
+
+    const card = document.createElement('password-details-card');
+    card.password = password;
+    document.body.appendChild(card);
+    await flushTasks();
+
+    assertTrue(isVisible(card.$.deleteButton));
+
+    card.$.deleteButton.click();
+    await flushTasks();
+
+    // Verify that password was not deleted immediately.
+    assertEquals(0, passwordManager.getCallCount('removeSavedPassword'));
+
+    const deleteDialog =
+        card.shadowRoot!.querySelector('multi-store-delete-password-dialog');
+    assertTrue(!!deleteDialog);
+    assertTrue(deleteDialog.$.dialog.open);
+    deleteDialog.$.removeFromAccountCheckbox.click();
+    deleteDialog.$.removeFromDeviceCheckbox.click();
+
+    assertFalse(deleteDialog.$.removeFromAccountCheckbox.checked);
+    assertFalse(deleteDialog.$.removeFromDeviceCheckbox.checked);
+
+    assertTrue(deleteDialog.$.removeButton.disabled);
+  });
 });
