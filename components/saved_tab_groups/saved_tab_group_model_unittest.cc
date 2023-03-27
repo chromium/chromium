@@ -26,20 +26,6 @@
 
 namespace {
 
-base::GUID GenerateNextGUID() {
-  static uint64_t guid_increment;
-  if (!guid_increment) {
-    guid_increment = 0;
-  }
-
-  uint64_t kBytes[] = {0, guid_increment};
-  base::GUID guid =
-      base::GUID::ParseCaseInsensitive(base::RandomDataToGUIDString(kBytes));
-
-  guid_increment++;
-  return guid;
-}
-
 void CompareSavedTabGroupTabs(const std::vector<SavedTabGroupTab>& v1,
                               const std::vector<SavedTabGroupTab>& v2) {
   ASSERT_EQ(v1.size(), v2.size());
@@ -88,7 +74,7 @@ SavedTabGroupTab CreateSavedTabGroupTab(const std::string& url,
 }
 
 SavedTabGroup CreateTestSavedTabGroup() {
-  base::GUID id = GenerateNextGUID();
+  base::GUID id = base::GUID::GenerateRandomV4();
   const std::u16string title = u"Test Test";
   const tab_groups::TabGroupColorId& color = tab_groups::TabGroupColorId::kBlue;
 
@@ -183,9 +169,9 @@ class SavedTabGroupModelObserverTest : public ::testing::Test,
 class SavedTabGroupModelTest : public ::testing::Test {
  protected:
   SavedTabGroupModelTest()
-      : id_1_(GenerateNextGUID()),
-        id_2_(GenerateNextGUID()),
-        id_3_(GenerateNextGUID()) {}
+      : id_1_(base::GUID::GenerateRandomV4()),
+        id_2_(base::GUID::GenerateRandomV4()),
+        id_3_(base::GUID::GenerateRandomV4()) {}
 
   ~SavedTabGroupModelTest() override { RemoveTestData(); }
 
@@ -263,7 +249,8 @@ TEST_F(SavedTabGroupModelTest, InitialGroupsAreSaved) {
   EXPECT_TRUE(saved_tab_group_model_->Contains(id_1_));
   EXPECT_TRUE(saved_tab_group_model_->Contains(id_2_));
   EXPECT_TRUE(saved_tab_group_model_->Contains(id_3_));
-  EXPECT_FALSE(saved_tab_group_model_->Contains(GenerateNextGUID()));
+  EXPECT_FALSE(
+      saved_tab_group_model_->Contains(base::GUID::GenerateRandomV4()));
 }
 
 // Tests that the SavedTabGroupModel::GetIndexOf preserves the order the
@@ -300,7 +287,7 @@ TEST_F(SavedTabGroupModelTest, OnlyAddUniqueElements) {
 // Tests that SavedTabGroupModel::Add adds an extra element into the model and
 // keeps the data.
 TEST_F(SavedTabGroupModelTest, AddNewElement) {
-  base::GUID id_4 = GenerateNextGUID();
+  base::GUID id_4 = base::GUID::GenerateRandomV4();
   const std::u16string title_4 = u"Test Test";
   const tab_groups::TabGroupColorId& color_4 =
       tab_groups::TabGroupColorId::kBlue;
@@ -976,13 +963,13 @@ TEST_F(SavedTabGroupModelObserverTest, OnGroupClosedInTabStrip) {
 TEST_F(SavedTabGroupModelObserverTest, MoveElement) {
   SavedTabGroup stg_1(std::u16string(u"stg_1"),
                       tab_groups::TabGroupColorId::kGrey, {},
-                      GenerateNextGUID());
+                      base::GUID::GenerateRandomV4());
   SavedTabGroup stg_2(std::u16string(u"stg_2"),
                       tab_groups::TabGroupColorId::kGrey, {},
-                      GenerateNextGUID());
+                      base::GUID::GenerateRandomV4());
   SavedTabGroup stg_3(std::u16string(u"stg_3"),
                       tab_groups::TabGroupColorId::kGrey, {},
-                      GenerateNextGUID());
+                      base::GUID::GenerateRandomV4());
 
   saved_tab_group_model_->Add(stg_1);
   saved_tab_group_model_->Add(stg_2);
@@ -1002,7 +989,7 @@ TEST_F(SavedTabGroupModelObserverTest, GetGroupContainingTab) {
   SavedTabGroup matching_group = CreateTestSavedTabGroup();
   base::GUID matching_group_guid = matching_group.saved_guid();
 
-  base::GUID matching_tab_guid = GenerateNextGUID();
+  base::GUID matching_tab_guid = base::GUID::GenerateRandomV4();
   base::Token matching_local_tab_id = base::Token::CreateRandom();
 
   SavedTabGroupTab tab(GURL(url::kAboutBlankURL), std::u16string(u"title"),
@@ -1023,8 +1010,8 @@ TEST_F(SavedTabGroupModelObserverTest, GetGroupContainingTab) {
       saved_tab_group_model_->GetGroupContainingTab(matching_local_tab_id));
 
   // Expect GetGroupContainingTab to return null when there is no match.
-  EXPECT_EQ(nullptr,
-            saved_tab_group_model_->GetGroupContainingTab(GenerateNextGUID()));
+  EXPECT_EQ(nullptr, saved_tab_group_model_->GetGroupContainingTab(
+                         base::GUID::GenerateRandomV4()));
   EXPECT_EQ(nullptr,
             saved_tab_group_model_->GetGroupContainingTab(base::Token()));
 }

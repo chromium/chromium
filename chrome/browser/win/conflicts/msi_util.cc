@@ -123,13 +123,17 @@ bool GetMsiComponentPath(base::WStringPiece product_guid,
   // Internally, the Microsoft Installer uses a special formatting of the guids
   // to store the information in the registry.
   product_guid = product_guid.substr(1, 36);
-  if (!base::IsValidGUID(base::AsStringPiece16(product_guid)))
+  if (!base::GUID::ParseCaseInsensitive(base::AsStringPiece16(product_guid))
+           .is_valid()) {
     return false;
+  }
   std::wstring product_squid = InstallUtil::GuidToSquid(product_guid);
 
   component_guid = component_guid.substr(1, 36);
-  if (!base::IsValidGUID(base::AsStringPiece16(component_guid)))
+  if (!base::GUID::ParseCaseInsensitive(base::AsStringPiece16(component_guid))
+           .is_valid()) {
     return false;
+  }
   std::wstring component_squid = InstallUtil::GuidToSquid(component_guid);
 
   std::vector<std::wstring> sids = {
