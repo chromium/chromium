@@ -716,7 +716,10 @@ NSIndexPath* CreateIndexPath(NSInteger index) {
 
   UILabel* label = [[UILabel alloc] init];
   label.numberOfLines = 0;
+  label.textAlignment = NSTextAlignmentCenter;
   label.font = [UIFont preferredFontForTextStyle:UIFontTextStyleHeadline];
+  label.adjustsFontForContentSizeCategory = YES;
+  label.adjustsFontSizeToFitWidth = YES;
   label.textColor = [UIColor colorNamed:kTextPrimaryColor];
   label.text = l10n_util::GetNSString(IDS_IOS_PINNED_TABS_DRAG_TO_PIN_LABEL);
   label.translatesAutoresizingMaskIntoConstraints = NO;
@@ -728,6 +731,14 @@ NSIndexPath* CreateIndexPath(NSInteger index) {
         constraintEqualToAnchor:_dropOverlayView.centerYAnchor],
     [label.centerXAnchor
         constraintEqualToAnchor:_dropOverlayView.centerXAnchor],
+    [label.leadingAnchor
+        constraintGreaterThanOrEqualToAnchor:_dropOverlayView.leadingAnchor
+                                    constant:kPinnedViewHorizontalPadding],
+    [label.trailingAnchor
+        constraintLessThanOrEqualToAnchor:_dropOverlayView.trailingAnchor
+                                 constant:-kPinnedViewHorizontalPadding],
+    [label.bottomAnchor constraintEqualToAnchor:_dropOverlayView.bottomAnchor],
+    [label.topAnchor constraintEqualToAnchor:_dropOverlayView.topAnchor],
   ]];
 
   [self updateDropOverlayViewVisibility];
