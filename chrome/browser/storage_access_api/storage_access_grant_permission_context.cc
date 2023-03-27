@@ -91,6 +91,26 @@ content_settings::ContentSettingConstraints ComputeConstraints(
           content_settings::SessionModel::UserSession};
 }
 
+bool ShouldPersistSetting(bool permission_allowed,
+                          bool implicit_result,
+                          bool persist) {
+  // Regardless of how the result was obtained, the permissions code determined
+  // the result should not be persisted; respect that determination.
+  if (!persist) {
+    return false;
+  }
+  // Explicit responses to a prompt should be persisted to avoid user annoyance
+  // or prompt spam.
+  if (!implicit_result) {
+    return true;
+  }
+  // Implicit denials are not persisted, since they can be re-derived easily and
+  // don't have any user-facing concerns, so persistence just adds complexity.
+  // Grants, however, should be persisted to ensure the associated behavioral
+  // changes stick.
+  return permission_allowed;
+}
+
 }  // namespace
 
 StorageAccessGrantPermissionContext::StorageAccessGrantPermissionContext(
@@ -312,7 +332,8 @@ void StorageAccessGrantPermissionContext::NotifyPermissionSetInternal(
   const bool permission_allowed = (content_setting == CONTENT_SETTING_ALLOW);
   UpdateTabContext(id, requesting_origin, permission_allowed);
 
-  if (!permission_allowed || !persist) {
+  bool implicit_result = IsImplicitOutcome(outcome);
+  if (!ShouldPersistSetting(permission_allowed, implicit_result, persist)) {
     if (content_setting == CONTENT_SETTING_DEFAULT) {
       content_setting = CONTENT_SETTING_ASK;
     }
@@ -322,12 +343,14 @@ void StorageAccessGrantPermissionContext::NotifyPermissionSetInternal(
   }
 
   // Our failure cases are tracked by the prompt outcomes in the
-  // `Permissions.Action.StorageAccess` histogram. We'll only log when a grant
-  // is actually generated.
-  bool implicit_result = IsImplicitOutcome(outcome);
-  base::UmaHistogramBoolean("API.StorageAccess.GrantIsImplicit",
-                            implicit_result);
-
+  // `Permissions.Action.StorageAccess` histogram. Because implicit and not
+  // allowed results return early, in practice this means that an implicit
+  // result at this point means a grant was generated.
+  CHECK(!implicit_result || permission_allowed);
+  if (permission_allowed) {
+    base::UmaHistogramBoolean("API.StorageAccess.GrantIsImplicit",
+                              implicit_result);
+  }
   HostContentSettingsMap* settings_map =
       HostContentSettingsMapFactory::GetForProfile(browser_context());
   DCHECK(settings_map);

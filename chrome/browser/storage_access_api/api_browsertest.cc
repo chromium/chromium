@@ -31,6 +31,7 @@
 #include "components/permissions/permission_request_manager.h"
 #include "components/permissions/request_type.h"
 #include "components/permissions/test/mock_permission_prompt_factory.h"
+#include "components/permissions/test/permission_request_observer.h"
 #include "components/policy/policy_constants.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/browser/browser_context.h"
@@ -1492,6 +1493,62 @@ IN_PROC_BROWSER_TEST_P(StorageAccessAPIEnterprisePolicyBrowserTest,
   NavigateFrameTo(kHostB, "/browsing_data/site_data.html");
   storage::test::ExpectStorageForFrame(GetFrame(), /*include_cookies=*/false,
                                        !ExpectPartitionedStorage());
+}
+
+// Browser tests to ensure prompts are shown when implicit grants are not
+// available, and that the user's choice is respected.
+class StorageAccessAPIWithPromptsBrowserTest
+    : public StorageAccessAPIBaseBrowserTest {
+ public:
+  StorageAccessAPIWithPromptsBrowserTest()
+      : StorageAccessAPIBaseBrowserTest(false) {}
+
+ protected:
+  std::vector<base::test::FeatureRefAndParams> GetEnabledFeatures() override {
+    return {
+        {blink::features::kStorageAccessAPI,
+         // Disable implicit grants to ensure any request will prompt.
+         {{
+             blink::features::kStorageAccessAPIImplicitGrantLimit.name,
+             "0",
+         }}},
+    };
+  }
+};
+
+IN_PROC_BROWSER_TEST_F(StorageAccessAPIWithPromptsBrowserTest,
+                       EnsureOnePromptDenialSuffices) {
+  NavigateToPageWithFrame(kHostA);
+  NavigateFrameTo(EchoCookiesURL(kHostB));
+
+  // Automatically deny any prompts.
+  permissions::PermissionRequestManager::FromWebContents(
+      browser()->tab_strip_model()->GetActiveWebContents())
+      ->set_auto_response_for_test(
+          permissions::PermissionRequestManager::DENY_ALL);
+
+  {
+    // The first request should show a prompt, which is denied by the
+    // `auto_response_for_test`.
+    permissions::PermissionRequestObserver pre_observer(
+        browser()->tab_strip_model()->GetActiveWebContents());
+    ASSERT_FALSE(pre_observer.request_shown());
+    ASSERT_FALSE(
+        storage::test::RequestAndCheckStorageAccessForFrame(GetFrame()));
+    ASSERT_TRUE(pre_observer.request_shown());
+  }
+  {
+    // However, subsequent requests should not re-prompt.
+    permissions::PermissionRequestObserver post_observer(
+        browser()->tab_strip_model()->GetActiveWebContents());
+    // Validate that there's no stale data.
+    ASSERT_FALSE(post_observer.request_shown());
+
+    EXPECT_FALSE(
+        storage::test::RequestAndCheckStorageAccessForFrame(GetFrame()));
+    // Verify no prompt was shown after the first one was already denied.
+    EXPECT_FALSE(post_observer.request_shown());
+  }
 }
 
 }  // namespace
