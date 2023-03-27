@@ -41,11 +41,6 @@ DeviceInfoManager::~DeviceInfoManager() = default;
 //  - model (OnModelInfo)
 void DeviceInfoManager::GetDeviceInfo(
     base::OnceCallback<void(DeviceInfo)> callback) {
-  if (device_info_ != absl::nullopt) {
-    std::move(callback).Run(device_info_.value());
-    return;
-  }
-
   DeviceInfo device_info;
 
   device_info.board = base::ToLowerASCII(base::SysInfo::HardwareModelName());
@@ -69,7 +64,7 @@ void DeviceInfoManager::GetDeviceInfo(
                      chromeos::version_loader::VERSION_SHORT),
       base::BindOnce(&DeviceInfoManager::OnPlatformVersionNumber,
                      weak_ptr_factory_.GetWeakPtr(), std::move(callback),
-                     device_info));
+                     std::move(device_info)));
 }
 
 void DeviceInfoManager::OnPlatformVersionNumber(
@@ -79,7 +74,7 @@ void DeviceInfoManager::OnPlatformVersionNumber(
   device_info.version_info.platform = version.value_or("unknown");
   base::SysInfo::GetHardwareInfo(base::BindOnce(
       &DeviceInfoManager::OnModelInfo, weak_ptr_factory_.GetWeakPtr(),
-      std::move(callback), device_info));
+      std::move(callback), std::move(device_info)));
 }
 
 void DeviceInfoManager::OnModelInfo(
@@ -87,8 +82,7 @@ void DeviceInfoManager::OnModelInfo(
     DeviceInfo device_info,
     base::SysInfo::HardwareInfo hardware_info) {
   device_info.model = hardware_info.model;
-  device_info_ = device_info;
-  std::move(callback).Run(device_info);
+  std::move(callback).Run(std::move(device_info));
 }
 
 std::ostream& operator<<(std::ostream& os, const DeviceInfo& device_info) {

@@ -65,7 +65,9 @@ class DeviceInfoManager {
   ~DeviceInfoManager();
 
   // Asynchronously fetches device information. Must be called from the UI
-  // thread.
+  // thread. DeviceInfo is not expected to change over the lifetime of a
+  // Profile, so it is okay (and more efficient) to store the DeviceInfo instead
+  // of repeatedly querying this method.
   void GetDeviceInfo(base::OnceCallback<void(DeviceInfo)> callback);
 
  private:
@@ -77,7 +79,6 @@ class DeviceInfoManager {
                    base::SysInfo::HardwareInfo hardware_info);
 
   base::raw_ptr<Profile> profile_;
-  absl::optional<DeviceInfo> device_info_ = absl::nullopt;
 
   // |weak_ptr_factory_| must be the last member of this class.
   base::WeakPtrFactory<DeviceInfoManager> weak_ptr_factory_{this};
