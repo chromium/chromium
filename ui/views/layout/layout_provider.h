@@ -40,6 +40,8 @@ enum InsetsMetric {
   INSETS_VECTOR_IMAGE_BUTTON,
   // Padding used in a label button.
   INSETS_LABEL_BUTTON,
+  // Padding used in icon buttons.
+  INSETS_ICON_BUTTON,
 
   // Embedders must start Insets enum values from this value.
   VIEWS_INSETS_END,
@@ -105,6 +107,8 @@ enum DistanceMetric {
   DISTANCE_TEXTFIELD_HORIZONTAL_TEXT_PADDING,
   // Vertical spacing between controls that are logically unrelated.
   DISTANCE_UNRELATED_CONTROL_VERTICAL,
+  // Padding in vector icons. This is a general number for more vector icons.
+  DISTANCE_VECTOR_ICON_PADDING,
 
   // Embedders must start DistanceMetric enum values from here.
   VIEWS_DISTANCE_END,

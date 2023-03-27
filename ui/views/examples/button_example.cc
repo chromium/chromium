@@ -250,6 +250,11 @@ void ButtonExample::CreateExampleView(View* container) {
                           base::Unretained(this)),
       u"Fab Prototype"));
 
+  view->AddChildView(ImageButton::CreateIconButton(
+      base::BindRepeating(&ButtonExample::ImageButtonPressed,
+                          base::Unretained(this)),
+      views::kLaunchIcon, u"Icon button"));
+
   image_button_->SetImage(ImageButton::STATE_NORMAL,
                           rb.GetImageNamed(IDR_CLOSE).ToImageSkia());
   image_button_->SetImage(ImageButton::STATE_HOVERED,

@@ -69,6 +69,8 @@ gfx::Insets LayoutProvider::GetInsetsMetric(int metric) const {
       return gfx::Insets(4);
     case InsetsMetric::INSETS_LABEL_BUTTON:
       return gfx::Insets::VH(5, 6);
+    case InsetsMetric::INSETS_ICON_BUTTON:
+      return gfx::Insets(2);
   }
   NOTREACHED_NORETURN();
 }
@@ -121,6 +123,8 @@ int LayoutProvider::GetDistanceMetric(int metric) const {
       return features::IsChromeRefresh2023() ? 10 : 8;
     case DISTANCE_UNRELATED_CONTROL_VERTICAL:
       return 16;
+    case DISTANCE_VECTOR_ICON_PADDING:
+      return 4;
     case VIEWS_DISTANCE_END:
     case VIEWS_DISTANCE_MAX:
       NOTREACHED_NORETURN();

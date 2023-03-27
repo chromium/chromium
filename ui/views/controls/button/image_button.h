@@ -75,6 +75,16 @@ class VIEWS_EXPORT ImageButton : public Button {
   views::PaintInfo::ScaleType GetPaintScaleType() const override;
   void OnThemeChanged() override;
 
+  enum class MaterialIconStyle { kSmall, kLarge };
+
+  // Static method to create a Icon button with Google Material style
+  // guidelines.
+  static std::unique_ptr<ImageButton> CreateIconButton(
+      PressedCallback callback,
+      const gfx::VectorIcon& icon,
+      const std::u16string& accessible_name,
+      MaterialIconStyle icon_style = MaterialIconStyle::kLarge);
+
  protected:
   // Overridden from Button:
   void PaintButtonContents(gfx::Canvas* canvas) override;
