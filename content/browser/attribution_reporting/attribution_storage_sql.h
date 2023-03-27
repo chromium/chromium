@@ -23,6 +23,7 @@
 #include "content/common/content_export.h"
 #include "content/public/browser/attribution_data_model.h"
 #include "content/public/browser/storage_partition.h"
+#include "sql/database.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace attribution_reporting {
@@ -34,7 +35,6 @@ class GUID;
 }  // namespace base
 
 namespace sql {
-class Database;
 class Statement;
 class StatementID;
 }  // namespace sql
@@ -404,10 +404,7 @@ class CONTENT_EXPORT AttributionStorageSql : public AttributionStorage {
   absl::optional<DbStatus> db_init_status_
       GUARDED_BY_CONTEXT(sequence_checker_);
 
-  // May be null if the database:
-  //  - could not be opened
-  //  - table/index initialization failed
-  std::unique_ptr<sql::Database> db_ GUARDED_BY_CONTEXT(sequence_checker_);
+  sql::Database db_ GUARDED_BY_CONTEXT(sequence_checker_);
 
   std::unique_ptr<AttributionStorageDelegate> delegate_
       GUARDED_BY_CONTEXT(sequence_checker_);

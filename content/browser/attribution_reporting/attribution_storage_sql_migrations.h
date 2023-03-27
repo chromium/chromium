@@ -44,8 +44,8 @@ namespace content {
 // |meta_table| accordingly. Must be called with an open |db|. Returns false on
 // failure.
 [[nodiscard]] bool UpgradeAttributionStorageSqlSchema(
-    sql::Database* db,
-    sql::MetaTable* meta_table);
+    sql::Database& db,
+    sql::MetaTable& meta_table);
 
 }  // namespace content
 

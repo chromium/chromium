@@ -4,7 +4,6 @@
 
 #include "content/browser/attribution_reporting/attribution_storage_sql_migrations.h"
 
-#include "base/check.h"
 #include "base/containers/span.h"
 #include "base/functional/function_ref.h"
 #include "base/metrics/histogram_functions.h"
@@ -27,10 +26,9 @@ namespace {
 
 // Ensure that both version numbers are updated together to prevent crashes on
 // downgrades as in crbug.com/1413728.
-[[nodiscard]] bool SetVersionNumbers(sql::MetaTable* meta_table, int version) {
-  DCHECK(meta_table);
-  return meta_table->SetVersionNumber(version) &&
-         meta_table->SetCompatibleVersionNumber(version);
+[[nodiscard]] bool SetVersionNumbers(sql::MetaTable& meta_table, int version) {
+  return meta_table.SetVersionNumber(version) &&
+         meta_table.SetCompatibleVersionNumber(version);
 }
 
 // Wrap each migration in its own transaction. This results in smaller
@@ -41,18 +39,15 @@ namespace {
 // Chrome stops.
 
 [[nodiscard]] bool MaybeMigrate(
-    sql::Database* db,
-    sql::MetaTable* meta_table,
+    sql::Database& db,
+    sql::MetaTable& meta_table,
     int old_version,
-    base::FunctionRef<bool(sql::Database*)> migrate) {
-  DCHECK(db);
-  DCHECK(meta_table);
-
-  if (meta_table->GetVersionNumber() != old_version) {
+    base::FunctionRef<bool(sql::Database&)> migrate) {
+  if (meta_table.GetVersionNumber() != old_version) {
     return true;
   }
 
-  sql::Transaction transaction(db);
+  sql::Transaction transaction(&db);
 
   return transaction.Begin() &&                             //
          migrate(db) &&                                     //
@@ -60,9 +55,9 @@ namespace {
          transaction.Commit();
 }
 
-bool To36(sql::Database* db) {
+bool To36(sql::Database& db) {
   static constexpr char kDropOldIndexSql[] = "DROP INDEX sources_by_origin";
-  if (!db->Execute(kDropOldIndexSql)) {
+  if (!db.Execute(kDropOldIndexSql)) {
     return false;
   }
 
@@ -70,21 +65,21 @@ bool To36(sql::Database* db) {
       "CREATE INDEX active_sources_by_source_origin "
       "ON sources(source_origin)"
       "WHERE event_level_active=1 OR aggregatable_active=1";
-  if (!db->Execute(kCreateNewIndexSql)) {
+  if (!db.Execute(kCreateNewIndexSql)) {
     return false;
   }
 
   return true;
 }
 
-bool To37(sql::Database* db) {
+bool To37(sql::Database& db) {
   static constexpr char kNewDedupKeyTableSql[] =
       "CREATE TABLE new_dedup_keys("
       "source_id INTEGER NOT NULL,"
       "report_type INTEGER NOT NULL,"
       "dedup_key INTEGER NOT NULL,"
       "PRIMARY KEY(source_id,report_type,dedup_key))WITHOUT ROWID";
-  if (!db->Execute(kNewDedupKeyTableSql)) {
+  if (!db.Execute(kNewDedupKeyTableSql)) {
     return false;
   }
 
@@ -98,25 +93,25 @@ bool To37(sql::Database* db) {
       "INSERT INTO new_dedup_keys SELECT "
       "source_id,0,dedup_key "
       "FROM dedup_keys";
-  if (!db->Execute(kPopulateNewDedupKeyTableSql)) {
+  if (!db.Execute(kPopulateNewDedupKeyTableSql)) {
     return false;
   }
 
   static constexpr char kDropOldDedupKeyTableSql[] = "DROP TABLE dedup_keys";
-  if (!db->Execute(kDropOldDedupKeyTableSql)) {
+  if (!db.Execute(kDropOldDedupKeyTableSql)) {
     return false;
   }
 
   static constexpr char kRenameDedupKeyTableSql[] =
       "ALTER TABLE new_dedup_keys RENAME TO dedup_keys";
-  if (!db->Execute(kRenameDedupKeyTableSql)) {
+  if (!db.Execute(kRenameDedupKeyTableSql)) {
     return false;
   }
 
   return true;
 }
 
-bool To38(sql::Database* db) {
+bool To38(sql::Database& db) {
   static constexpr char kNewSourceTableSql[] =
       "CREATE TABLE new_sources("
       "source_id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,"
@@ -140,7 +135,7 @@ bool To38(sql::Database* db) {
       "aggregatable_budget_consumed INTEGER NOT NULL,"
       "aggregatable_source BLOB NOT NULL,"
       "filter_data BLOB NOT NULL)";
-  if (!db->Execute(kNewSourceTableSql)) {
+  if (!db.Execute(kNewSourceTableSql)) {
     return false;
   }
 
@@ -156,18 +151,18 @@ bool To38(sql::Database* db) {
       "source_site,debug_key,aggregatable_budget_consumed,"
       "aggregatable_source,filter_data "
       "FROM sources";
-  if (!db->Execute(kPopulateNewSourceTableSql)) {
+  if (!db.Execute(kPopulateNewSourceTableSql)) {
     return false;
   }
 
   static constexpr char kDropOldSourceTableSql[] = "DROP TABLE sources";
-  if (!db->Execute(kDropOldSourceTableSql)) {
+  if (!db.Execute(kDropOldSourceTableSql)) {
     return false;
   }
 
   static constexpr char kRenameSourceTableSql[] =
       "ALTER TABLE new_sources RENAME TO sources";
-  if (!db->Execute(kRenameSourceTableSql)) {
+  if (!db.Execute(kRenameSourceTableSql)) {
     return false;
   }
 
@@ -177,14 +172,14 @@ bool To38(sql::Database* db) {
       "ON sources"
       "(event_level_active,aggregatable_active,destination_site,"
       "reporting_origin)";
-  if (!db->Execute(kConversionDestinationIndexSql)) {
+  if (!db.Execute(kConversionDestinationIndexSql)) {
     return false;
   }
 
   static constexpr char kImpressionExpiryIndexSql[] =
       "CREATE INDEX sources_by_expiry_time "
       "ON sources(expiry_time)";
-  if (!db->Execute(kImpressionExpiryIndexSql)) {
+  if (!db.Execute(kImpressionExpiryIndexSql)) {
     return false;
   }
 
@@ -192,7 +187,7 @@ bool To38(sql::Database* db) {
       "CREATE INDEX active_sources_by_source_origin "
       "ON sources(source_origin)"
       "WHERE event_level_active=1 OR aggregatable_active=1";
-  if (!db->Execute(kImpressionOriginIndexSql)) {
+  if (!db.Execute(kImpressionOriginIndexSql)) {
     return false;
   }
 
@@ -201,14 +196,14 @@ bool To38(sql::Database* db) {
       "ON sources(source_site,reporting_origin)"
       "WHERE event_level_active=1 AND num_attributions=0 AND "
       "aggregatable_active=1 AND aggregatable_budget_consumed=0";
-  if (!db->Execute(kImpressionSiteReportingOriginIndexSql)) {
+  if (!db.Execute(kImpressionSiteReportingOriginIndexSql)) {
     return false;
   }
 
   return true;
 }
 
-bool To39(sql::Database* db) {
+bool To39(sql::Database& db) {
   // Create the new aggregatable_report_metadata table with
   // aggregation_coordinator. This follows the steps documented at
   // https://sqlite.org/lang_altertable.html#otheralter. Other approaches, like
@@ -225,7 +220,7 @@ bool To39(sql::Database* db) {
       "failed_send_attempts INTEGER NOT NULL,"
       "initial_report_time INTEGER NOT NULL,"
       "aggregation_coordinator INTEGER NOT NULL)";
-  if (!db->Execute(kNewAggregatableReportMetadataTableSql)) {
+  if (!db.Execute(kNewAggregatableReportMetadataTableSql)) {
     return false;
   }
 
@@ -243,20 +238,20 @@ bool To39(sql::Database* db) {
       "aggregation_id,source_id,trigger_time,debug_key,external_report_id,"
       "report_time,failed_send_attempts,initial_report_time,0 "
       "FROM aggregatable_report_metadata";
-  if (!db->Execute(kPopulateNewAggregatableReportMetadataSql)) {
+  if (!db.Execute(kPopulateNewAggregatableReportMetadataSql)) {
     return false;
   }
 
   static constexpr char kDropOldAggregatableReportMetadataTableSql[] =
       "DROP TABLE aggregatable_report_metadata";
-  if (!db->Execute(kDropOldAggregatableReportMetadataTableSql)) {
+  if (!db.Execute(kDropOldAggregatableReportMetadataTableSql)) {
     return false;
   }
 
   static constexpr char kRenameAggregatableReportMetadataTableSql[] =
       "ALTER TABLE new_aggregatable_report_metadata "
       "RENAME TO aggregatable_report_metadata";
-  if (!db->Execute(kRenameAggregatableReportMetadataTableSql)) {
+  if (!db.Execute(kRenameAggregatableReportMetadataTableSql)) {
     return false;
   }
 
@@ -266,28 +261,28 @@ bool To39(sql::Database* db) {
   static constexpr char kAggregateSourceIdIndexSql[] =
       "CREATE INDEX aggregate_source_id_idx "
       "ON aggregatable_report_metadata(source_id)";
-  if (!db->Execute(kAggregateSourceIdIndexSql)) {
+  if (!db.Execute(kAggregateSourceIdIndexSql)) {
     return false;
   }
 
   static constexpr char kAggregateTriggerTimeIndexSql[] =
       "CREATE INDEX aggregate_trigger_time_idx "
       "ON aggregatable_report_metadata(trigger_time)";
-  if (!db->Execute(kAggregateTriggerTimeIndexSql)) {
+  if (!db.Execute(kAggregateTriggerTimeIndexSql)) {
     return false;
   }
 
   static constexpr char kAggregateReportTimeIndexSql[] =
       "CREATE INDEX aggregate_report_time_idx "
       "ON aggregatable_report_metadata(report_time)";
-  if (!db->Execute(kAggregateReportTimeIndexSql)) {
+  if (!db.Execute(kAggregateReportTimeIndexSql)) {
     return false;
   }
 
   return true;
 }
 
-bool To40(sql::Database* db) {
+bool To40(sql::Database& db) {
   // Create the new aggregatable_contributions table with desired primary-key
   // structure.
   static constexpr char kCreateNewTableSql[] =
@@ -298,7 +293,7 @@ bool To40(sql::Database* db) {
       "key_low_bits INTEGER NOT NULL,"
       "value INTEGER NOT NULL,"
       "PRIMARY KEY(aggregation_id,contribution_id))WITHOUT ROWID";
-  if (!db->Execute(kCreateNewTableSql)) {
+  if (!db.Execute(kCreateNewTableSql)) {
     return false;
   }
 
@@ -307,43 +302,43 @@ bool To40(sql::Database* db) {
       "INSERT INTO new_aggregatable_contributions SELECT "
       "aggregation_id,contribution_id,key_high_bits,key_low_bits,value "
       "FROM aggregatable_contributions";
-  if (!db->Execute(kPopulateNewTableSql)) {
+  if (!db.Execute(kPopulateNewTableSql)) {
     return false;
   }
 
   // This implicitly drops the contribution_aggregation_id_idx index.
   static constexpr char kDropOldTableSql[] =
       "DROP TABLE aggregatable_contributions";
-  if (!db->Execute(kDropOldTableSql)) {
+  if (!db.Execute(kDropOldTableSql)) {
     return false;
   }
 
   static constexpr char kRenameTableSql[] =
       "ALTER TABLE new_aggregatable_contributions "
       "RENAME TO aggregatable_contributions";
-  if (!db->Execute(kRenameTableSql)) {
+  if (!db.Execute(kRenameTableSql)) {
     return false;
   }
 
   return true;
 }
 
-bool To41(sql::Database* db) {
+bool To41(sql::Database& db) {
   static constexpr char kAddAttestationHeaderColumnSql[] =
       "ALTER TABLE aggregatable_report_metadata "
       "ADD COLUMN attestation_token TEXT";
-  if (!db->Execute(kAddAttestationHeaderColumnSql)) {
+  if (!db.Execute(kAddAttestationHeaderColumnSql)) {
     return false;
   }
 
   return true;
 }
 
-bool To42(sql::Database* db) {
+bool To42(sql::Database& db) {
   static constexpr char kRenameDestinationOriginSql[] =
       "ALTER TABLE rate_limits "
       "RENAME COLUMN destination_origin TO context_origin";
-  if (!db->Execute(kRenameDestinationOriginSql)) {
+  if (!db.Execute(kRenameDestinationOriginSql)) {
     return false;
   }
 
@@ -351,24 +346,24 @@ bool To42(sql::Database* db) {
 
   static constexpr char kSetContextOriginSql[] =
       "UPDATE rate_limits SET context_origin=source_origin WHERE scope=0";
-  if (!db->Execute(kSetContextOriginSql)) {
+  if (!db.Execute(kSetContextOriginSql)) {
     return false;
   }
 
   static constexpr char kDropSourceOriginSql[] =
       "ALTER TABLE rate_limits DROP COLUMN source_origin";
-  if (!db->Execute(kDropSourceOriginSql)) {
+  if (!db.Execute(kDropSourceOriginSql)) {
     return false;
   }
 
   return true;
 }
 
-bool To43(sql::Database* db) {
+bool To43(sql::Database& db) {
   static constexpr char kRenameExpiryTimeSql[] =
       "ALTER TABLE rate_limits "
       "RENAME COLUMN expiry_time TO source_expiry_or_attribution_time";
-  if (!db->Execute(kRenameExpiryTimeSql)) {
+  if (!db.Execute(kRenameExpiryTimeSql)) {
     return false;
   }
 
@@ -377,14 +372,14 @@ bool To43(sql::Database* db) {
   static constexpr char kSetAttributionTimeSql[] =
       "UPDATE rate_limits "
       "SET source_expiry_or_attribution_time=time WHERE scope=1";
-  if (!db->Execute(kSetAttributionTimeSql)) {
+  if (!db.Execute(kSetAttributionTimeSql)) {
     return false;
   }
 
   return true;
 }
 
-bool To44(sql::Database* db) {
+bool To44(sql::Database& db) {
   {
     static constexpr char kConversionTableSql[] =
         "CREATE TABLE new_event_level_reports("
@@ -398,7 +393,7 @@ bool To44(sql::Database* db) {
         "external_report_id TEXT NOT NULL,"
         "debug_key INTEGER,"
         "destination_origin TEXT NOT NULL)";
-    if (!db->Execute(kConversionTableSql)) {
+    if (!db.Execute(kConversionTableSql)) {
       return false;
     }
 
@@ -411,32 +406,32 @@ bool To44(sql::Database* db) {
         "R.debug_key,I.destination_site "
         "FROM event_level_reports R "
         "JOIN sources I ON I.source_id=R.source_id";
-    if (!db->Execute(kInsertReportsSql)) {
+    if (!db.Execute(kInsertReportsSql)) {
       return false;
     }
 
-    if (!db->Execute("DROP TABLE event_level_reports")) {
+    if (!db.Execute("DROP TABLE event_level_reports")) {
       return false;
     }
 
     static constexpr char kRenameSql[] =
         "ALTER TABLE new_event_level_reports "
         "RENAME TO event_level_reports";
-    if (!db->Execute(kRenameSql)) {
+    if (!db.Execute(kRenameSql)) {
       return false;
     }
 
     static constexpr char kConversionReportTimeIndexSql[] =
         "CREATE INDEX event_level_reports_by_report_time "
         "ON event_level_reports(report_time)";
-    if (!db->Execute(kConversionReportTimeIndexSql)) {
+    if (!db.Execute(kConversionReportTimeIndexSql)) {
       return false;
     }
 
     static constexpr char kConversionImpressionIdIndexSql[] =
         "CREATE INDEX event_level_reports_by_source_id "
         "ON event_level_reports(source_id)";
-    if (!db->Execute(kConversionImpressionIdIndexSql)) {
+    if (!db.Execute(kConversionImpressionIdIndexSql)) {
       return false;
     }
   }
@@ -455,7 +450,7 @@ bool To44(sql::Database* db) {
         "aggregation_coordinator INTEGER NOT NULL,"
         "attestation_token TEXT,"
         "destination_origin TEXT NOT NULL)";
-    if (!db->Execute(kAggregatableReportMetadataTableSql)) {
+    if (!db.Execute(kAggregatableReportMetadataTableSql)) {
       return false;
     }
 
@@ -469,39 +464,39 @@ bool To44(sql::Database* db) {
         "I.destination_site "
         "FROM aggregatable_report_metadata R "
         "JOIN sources I ON I.source_id=R.source_id";
-    if (!db->Execute(kInsertReportsSql)) {
+    if (!db.Execute(kInsertReportsSql)) {
       return false;
     }
 
-    if (!db->Execute("DROP TABLE aggregatable_report_metadata")) {
+    if (!db.Execute("DROP TABLE aggregatable_report_metadata")) {
       return false;
     }
 
     static constexpr char kRenameSql[] =
         "ALTER TABLE new_aggregatable_report_metadata "
         "RENAME TO aggregatable_report_metadata";
-    if (!db->Execute(kRenameSql)) {
+    if (!db.Execute(kRenameSql)) {
       return false;
     }
 
     static constexpr char kAggregateSourceIdIndexSql[] =
         "CREATE INDEX aggregate_source_id_idx "
         "ON aggregatable_report_metadata(source_id)";
-    if (!db->Execute(kAggregateSourceIdIndexSql)) {
+    if (!db.Execute(kAggregateSourceIdIndexSql)) {
       return false;
     }
 
     static constexpr char kAggregateTriggerTimeIndexSql[] =
         "CREATE INDEX aggregate_trigger_time_idx "
         "ON aggregatable_report_metadata(trigger_time)";
-    if (!db->Execute(kAggregateTriggerTimeIndexSql)) {
+    if (!db.Execute(kAggregateTriggerTimeIndexSql)) {
       return false;
     }
 
     static constexpr char kAggregateReportTimeIndexSql[] =
         "CREATE INDEX aggregate_report_time_idx "
         "ON aggregatable_report_metadata(report_time)";
-    if (!db->Execute(kAggregateReportTimeIndexSql)) {
+    if (!db.Execute(kAggregateReportTimeIndexSql)) {
       return false;
     }
   }
@@ -509,32 +504,32 @@ bool To44(sql::Database* db) {
   return true;
 }
 
-bool To45(sql::Database* db) {
+bool To45(sql::Database& db) {
   static constexpr char kRenameSql[] =
       "ALTER TABLE event_level_reports "
       "RENAME COLUMN destination_origin TO context_origin";
-  if (!db->Execute(kRenameSql)) {
+  if (!db.Execute(kRenameSql)) {
     return false;
   }
 
   return true;
 }
 
-bool To46(sql::Database* db) {
-  if (!db->Execute("ALTER TABLE sources DROP COLUMN destination_origin")) {
+bool To46(sql::Database& db) {
+  if (!db.Execute("ALTER TABLE sources DROP COLUMN destination_origin")) {
     return false;
   }
 
   return true;
 }
 
-bool To47(sql::Database* db) {
+bool To47(sql::Database& db) {
   static constexpr char kSourceDestinationsTableSql[] =
       "CREATE TABLE source_destinations("
       "source_id INTEGER NOT NULL,"
       "destination_site TEXT NOT NULL,"
       "PRIMARY KEY(source_id,destination_site))WITHOUT ROWID";
-  if (!db->Execute(kSourceDestinationsTableSql)) {
+  if (!db.Execute(kSourceDestinationsTableSql)) {
     return false;
   }
 
@@ -542,17 +537,17 @@ bool To47(sql::Database* db) {
       "INSERT INTO source_destinations "
       "SELECT source_id,destination_site "
       "FROM sources";
-  if (!db->Execute(kInsertDestinationsSql)) {
+  if (!db.Execute(kInsertDestinationsSql)) {
     return false;
   }
 
   static constexpr char kDropDestinationSiteIndexSql[] =
       "DROP INDEX sources_by_active_destination_site_reporting_origin";
-  if (!db->Execute(kDropDestinationSiteIndexSql)) {
+  if (!db.Execute(kDropDestinationSiteIndexSql)) {
     return false;
   }
 
-  if (!db->Execute("ALTER TABLE sources DROP COLUMN destination_site")) {
+  if (!db.Execute("ALTER TABLE sources DROP COLUMN destination_site")) {
     return false;
   }
 
@@ -560,27 +555,27 @@ bool To47(sql::Database* db) {
       "CREATE INDEX sources_by_active_reporting_origin "
       "ON sources(event_level_active,"
       "aggregatable_active,reporting_origin)";
-  if (!db->Execute(kSourcesByActiveReportingOriginIndexSql)) {
+  if (!db.Execute(kSourcesByActiveReportingOriginIndexSql)) {
     return false;
   }
 
   static constexpr char kSourceDestinationsIndexSql[] =
       "CREATE INDEX sources_by_destination_site "
       "ON source_destinations(destination_site)";
-  if (!db->Execute(kSourceDestinationsIndexSql)) {
+  if (!db.Execute(kSourceDestinationsIndexSql)) {
     return false;
   }
 
   static constexpr char kDropObsoleteIndexSql[] =
       "DROP INDEX active_unattributed_sources_by_site_reporting_origin";
-  if (!db->Execute(kDropObsoleteIndexSql)) {
+  if (!db.Execute(kDropObsoleteIndexSql)) {
     return false;
   }
 
   return true;
 }
 
-bool To48(sql::Database* db) {
+bool To48(sql::Database& db) {
   static constexpr char kConversionTableSql[] =
       "CREATE TABLE new_event_level_reports("
       "report_id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,"
@@ -594,7 +589,7 @@ bool To48(sql::Database* db) {
       "external_report_id TEXT NOT NULL,"
       "debug_key INTEGER,"
       "context_origin TEXT NOT NULL)";
-  if (!db->Execute(kConversionTableSql)) {
+  if (!db.Execute(kConversionTableSql)) {
     return false;
   }
 
@@ -605,7 +600,7 @@ bool To48(sql::Database* db) {
       "external_report_id,"
       "debug_key,context_origin "
       "FROM event_level_reports";
-  if (!db->Execute(kInsertReportsSql)) {
+  if (!db.Execute(kInsertReportsSql)) {
     return false;
   }
 
@@ -615,12 +610,12 @@ bool To48(sql::Database* db) {
       "FROM event_level_reports R "
       "JOIN sources I "
       "ON I.source_id=R.source_id";
-  sql::Statement select_statement(db->GetUniqueStatement(kRetrieveReportTimes));
+  sql::Statement select_statement(db.GetUniqueStatement(kRetrieveReportTimes));
 
   static constexpr char kUpdateOriginalTime[] =
       "UPDATE new_event_level_reports SET initial_report_time=? "
       "WHERE report_id=?";
-  sql::Statement update_statement(db->GetUniqueStatement(kUpdateOriginalTime));
+  sql::Statement update_statement(db.GetUniqueStatement(kUpdateOriginalTime));
 
   while (select_statement.Step()) {
     base::Time initial_report_time;
@@ -653,28 +648,28 @@ bool To48(sql::Database* db) {
     }
   }
 
-  if (!db->Execute("DROP TABLE event_level_reports")) {
+  if (!db.Execute("DROP TABLE event_level_reports")) {
     return false;
   }
 
   static constexpr char kRenameSql[] =
       "ALTER TABLE new_event_level_reports "
       "RENAME TO event_level_reports";
-  if (!db->Execute(kRenameSql)) {
+  if (!db.Execute(kRenameSql)) {
     return false;
   }
 
   static constexpr char kConversionReportTimeIndexSql[] =
       "CREATE INDEX event_level_reports_by_report_time "
       "ON event_level_reports(report_time)";
-  if (!db->Execute(kConversionReportTimeIndexSql)) {
+  if (!db.Execute(kConversionReportTimeIndexSql)) {
     return false;
   }
 
   static constexpr char kConversionImpressionIdIndexSql[] =
       "CREATE INDEX event_level_reports_by_source_id "
       "ON event_level_reports(source_id)";
-  if (!db->Execute(kConversionImpressionIdIndexSql)) {
+  if (!db.Execute(kConversionImpressionIdIndexSql)) {
     return false;
   }
 
@@ -683,11 +678,8 @@ bool To48(sql::Database* db) {
 
 }  // namespace
 
-bool UpgradeAttributionStorageSqlSchema(sql::Database* db,
-                                        sql::MetaTable* meta_table) {
-  DCHECK(db);
-  DCHECK(meta_table);
-
+bool UpgradeAttributionStorageSqlSchema(sql::Database& db,
+                                        sql::MetaTable& meta_table) {
   base::ThreadTicks start_timestamp;
   if (base::ThreadTicks::IsSupported()) {
     start_timestamp = base::ThreadTicks::Now();

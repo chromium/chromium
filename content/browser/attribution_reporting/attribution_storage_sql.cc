@@ -457,9 +457,19 @@ AttributionStorageSql::AttributionStorageSql(
     : path_to_database_(user_data_directory.empty()
                             ? base::FilePath()
                             : DatabasePath(user_data_directory)),
+      db_(sql::DatabaseOptions{.exclusive_locking = true,
+                               .page_size = 4096,
+                               .cache_size = 32}),
       delegate_(std::move(delegate)),
       rate_limit_table_(delegate_.get()) {
   DCHECK(delegate_);
+
+  db_.set_histogram_tag("Conversions");
+
+  // `base::Unretained()` is safe because the callback will only be called
+  // while the `sql::Database` in `db_` is alive, and this instance owns `db_`.
+  db_.set_error_callback(base::BindRepeating(
+      &AttributionStorageSql::DatabaseErrorCallback, base::Unretained(this)));
 }
 
 AttributionStorageSql::~AttributionStorageSql() {
@@ -468,7 +478,7 @@ AttributionStorageSql::~AttributionStorageSql() {
 
 bool AttributionStorageSql::DeactivateSources(
     const std::vector<StoredSource::Id>& sources) {
-  sql::Transaction transaction(db_.get());
+  sql::Transaction transaction(&db_);
   if (!transaction.Begin()) {
     return false;
   }
@@ -478,7 +488,7 @@ bool AttributionStorageSql::DeactivateSources(
       "SET event_level_active=0,aggregatable_active=0 "
       "WHERE source_id=?";
   sql::Statement statement(
-      db_->GetCachedStatement(SQL_FROM_HERE, kDeactivateSourcesSql));
+      db_.GetCachedStatement(SQL_FROM_HERE, kDeactivateSourcesSql));
 
   for (StoredSource::Id id : sources) {
     statement.Reset(/*clear_bound_vars=*/true);
@@ -525,8 +535,7 @@ StoreSourceResult AttributionStorageSql::StoreSource(
         delegate_->GetMaxSourcesPerOrigin());
   }
 
-  switch (
-      rate_limit_table_.SourceAllowedForDestinationLimit(db_.get(), source)) {
+  switch (rate_limit_table_.SourceAllowedForDestinationLimit(&db_, source)) {
     case RateLimitResult::kAllowed:
       break;
     case RateLimitResult::kNotAllowed:
@@ -538,8 +547,8 @@ StoreSourceResult AttributionStorageSql::StoreSource(
       return StoreSourceResult(StorableSource::Result::kInternalError);
   }
 
-  switch (rate_limit_table_.SourceAllowedForReportingOriginLimit(db_.get(),
-                                                                 source)) {
+  switch (
+      rate_limit_table_.SourceAllowedForReportingOriginLimit(&db_, source)) {
     case RateLimitResult::kAllowed:
       break;
     case RateLimitResult::kNotAllowed:
@@ -549,7 +558,7 @@ StoreSourceResult AttributionStorageSql::StoreSource(
       return StoreSourceResult(StorableSource::Result::kInternalError);
   }
 
-  sql::Transaction transaction(db_.get());
+  sql::Transaction transaction(&db_);
   if (!transaction.Begin()) {
     return StoreSourceResult(StorableSource::Result::kInternalError);
   }
@@ -593,7 +602,7 @@ StoreSourceResult AttributionStorageSql::StoreSource(
       "aggregatable_budget_consumed,aggregatable_source,filter_data)"
       "VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,0,?,?)";
   sql::Statement statement(
-      db_->GetCachedStatement(SQL_FROM_HERE, kInsertImpressionSql));
+      db_.GetCachedStatement(SQL_FROM_HERE, kInsertImpressionSql));
   statement.BindInt64(0, SerializeUint64(reg.source_event_id));
   statement.BindString(1, serialized_source_origin);
   statement.BindString(2, common_info.reporting_origin().Serialize());
@@ -622,13 +631,13 @@ StoreSourceResult AttributionStorageSql::StoreSource(
     return StoreSourceResult(StorableSource::Result::kInternalError);
   }
 
-  const StoredSource::Id source_id(db_->GetLastInsertRowId());
+  const StoredSource::Id source_id(db_.GetLastInsertRowId());
 
   static constexpr char kInsertDestinationSql[] =
       "INSERT INTO source_destinations(source_id,destination_site)"
       "VALUES(?,?)";
   sql::Statement insert_destination_statement(
-      db_->GetCachedStatement(SQL_FROM_HERE, kInsertDestinationSql));
+      db_.GetCachedStatement(SQL_FROM_HERE, kInsertDestinationSql));
   insert_destination_statement.BindInt64(0, *source_id);
   for (const auto& site : reg.destination_set.destinations()) {
     insert_destination_statement.Reset(/*clear_bound_vars=*/false);
@@ -645,7 +654,7 @@ StoreSourceResult AttributionStorageSql::StoreSource(
       attribution_logic, *active_state, source_id,
       /*aggregatable_budget_consumed=*/0);
 
-  if (!rate_limit_table_.AddRateLimitForSource(db_.get(), stored_source)) {
+  if (!rate_limit_table_.AddRateLimitForSource(&db_, stored_source)) {
     return StoreSourceResult(StorableSource::Result::kInternalError);
   }
 
@@ -682,7 +691,7 @@ StoreSourceResult AttributionStorageSql::StoreSource(
 
   if (attribution_logic != StoredSource::AttributionLogic::kTruthfully) {
     if (!rate_limit_table_.AddRateLimitForAttribution(
-            db_.get(),
+            &db_,
             AttributionInfo(std::move(stored_source),
                             /*time=*/common_info.source_time(),
                             /*debug_key=*/absl::nullopt,
@@ -732,7 +741,7 @@ AttributionStorageSql::MaybeReplaceLowerPriorityEventLevelReport(
   // of reports per source_id. Selects the report with lowest priority,
   // and uses the greatest trigger_time to break ties. This favors sending
   // reports for report closer to the source time.
-  sql::Statement min_priority_statement(db_->GetCachedStatement(
+  sql::Statement min_priority_statement(db_.GetCachedStatement(
       SQL_FROM_HERE, attribution_queries::kMinPrioritySql));
   min_priority_statement.BindInt64(0, *source.source_id());
   min_priority_statement.BindTime(1, report.report_time());
@@ -766,7 +775,7 @@ AttributionStorageSql::MaybeReplaceLowerPriorityEventLevelReport(
     static constexpr char kDeactivateSql[] =
         "UPDATE sources SET event_level_active=0 WHERE source_id=?";
     sql::Statement deactivate_statement(
-        db_->GetCachedStatement(SQL_FROM_HERE, kDeactivateSql));
+        db_.GetCachedStatement(SQL_FROM_HERE, kDeactivateSql));
     deactivate_statement.BindInt64(0, *source.source_id());
     return deactivate_statement.Run()
                ? MaybeReplaceLowerPriorityEventLevelReportResult::
@@ -905,7 +914,7 @@ CreateReportResult AttributionStorageSql::MaybeCreateAndStoreReport(
   }
 
   absl::optional<StoredSourceData> source_to_attribute =
-      ReadSourceToAttribute(db_.get(), *source_id_to_attribute);
+      ReadSourceToAttribute(&db_, *source_id_to_attribute);
   // This is only possible if there is a corrupt DB.
   if (!source_to_attribute.has_value()) {
     return assemble_report_result(EventLevelResult::kInternalError,
@@ -956,7 +965,7 @@ CreateReportResult AttributionStorageSql::MaybeCreateAndStoreReport(
   }
 
   switch (rate_limit_table_.AttributionAllowedForAttributionLimit(
-      db_.get(), *attribution_info)) {
+      &db_, *attribution_info)) {
     case RateLimitResult::kAllowed:
       break;
     case RateLimitResult::kNotAllowed:
@@ -970,7 +979,7 @@ CreateReportResult AttributionStorageSql::MaybeCreateAndStoreReport(
   }
 
   switch (rate_limit_table_.AttributionAllowedForReportingOriginLimit(
-      db_.get(), *attribution_info)) {
+      &db_, *attribution_info)) {
     case RateLimitResult::kAllowed:
       break;
     case RateLimitResult::kNotAllowed:
@@ -984,7 +993,7 @@ CreateReportResult AttributionStorageSql::MaybeCreateAndStoreReport(
                                     AggregatableResult::kInternalError);
   }
 
-  sql::Transaction transaction(db_.get());
+  sql::Transaction transaction(&db_);
   if (!transaction.Begin()) {
     return assemble_report_result(EventLevelResult::kInternalError,
                                   AggregatableResult::kInternalError);
@@ -1060,8 +1069,7 @@ CreateReportResult AttributionStorageSql::MaybeCreateAndStoreReport(
                                   store_aggregatable_status);
   }
 
-  if (!rate_limit_table_.AddRateLimitForAttribution(db_.get(),
-                                                    *attribution_info)) {
+  if (!rate_limit_table_.AddRateLimitForAttribution(&db_, *attribution_info)) {
     return assemble_report_result(EventLevelResult::kInternalError,
                                   AggregatableResult::kInternalError);
   }
@@ -1089,7 +1097,7 @@ bool AttributionStorageSql::FindMatchingSourceForTrigger(
   // past their expiry time. The sources are fetched in order so that the
   // first one is the one that will be attributed; the others will be deleted or
   // deactivated, depending on whether they have ever been attributed.
-  sql::Statement statement(db_->GetCachedStatement(
+  sql::Statement statement(db_.GetCachedStatement(
       SQL_FROM_HERE, attribution_queries::kGetMatchingSourcesSql));
   statement.BindString(0, net::SchemefulSite(destination_origin).Serialize());
   statement.BindString(1, reporting_origin.Serialize());
@@ -1218,7 +1226,7 @@ EventLevelResult AttributionStorageSql::MaybeStoreEventLevelReport(
     return EventLevelResult::kExcessiveReports;
   }
 
-  sql::Transaction transaction(db_.get());
+  sql::Transaction transaction(&db_);
   if (!transaction.Begin()) {
     return EventLevelResult::kInternalError;
   }
@@ -1290,7 +1298,7 @@ EventLevelResult AttributionStorageSql::MaybeStoreEventLevelReport(
     static constexpr char kUpdateImpressionForConversionSql[] =
         "UPDATE sources SET num_attributions=num_attributions+1 "
         "WHERE source_id=?";
-    sql::Statement impression_update_statement(db_->GetCachedStatement(
+    sql::Statement impression_update_statement(db_.GetCachedStatement(
         SQL_FROM_HERE, kUpdateImpressionForConversionSql));
 
     // Update the attributed source.
@@ -1335,7 +1343,7 @@ AttributionStorageSql::StoreEventLevelReport(
       "external_report_id,debug_key,context_origin)"
       "VALUES(?,?,?,?,?,?,0,?,?,?)";
   sql::Statement store_report_statement(
-      db_->GetCachedStatement(SQL_FROM_HERE, kStoreReportSql));
+      db_.GetCachedStatement(SQL_FROM_HERE, kStoreReportSql));
   store_report_statement.BindInt64(0, *source_id);
   store_report_statement.BindInt64(1, SerializeUint64(trigger_data));
   store_report_statement.BindTime(2, trigger_time);
@@ -1349,7 +1357,7 @@ AttributionStorageSql::StoreEventLevelReport(
     return absl::nullopt;
   }
 
-  return AttributionReport::EventLevelData::Id(db_->GetLastInsertRowId());
+  return AttributionReport::EventLevelData::Id(db_.GetLastInsertRowId());
 }
 
 // Helper to deserialize report rows. See `GetReport()` for the expected
@@ -1359,7 +1367,7 @@ AttributionStorageSql::ReadReportFromStatement(sql::Statement& statement) {
   DCHECK_EQ(statement.ColumnCount(), kSourceColumnCount + 10);
 
   absl::optional<StoredSourceData> source_data =
-      ReadSourceFromStatement(statement, *db_);
+      ReadSourceFromStatement(statement, db_);
 
   int col = kSourceColumnCount;
   uint64_t trigger_data = DeserializeUint64(statement.ColumnInt64(col++));
@@ -1431,7 +1439,7 @@ AttributionStorageSql::GetEventLevelReportsInternal(base::Time max_report_time,
   // |report_time| no greater than |max_report_time| and their matching
   // information from the impression table. Negatives are treated as no limit
   // (https://sqlite.org/lang_select.html#limitoffset).
-  sql::Statement statement(db_->GetCachedStatement(
+  sql::Statement statement(db_.GetCachedStatement(
       SQL_FROM_HERE, attribution_queries::kGetEventLevelReportsSql));
   statement.BindTime(0, max_report_time);
   statement.BindInt(1, limit);
@@ -1472,7 +1480,7 @@ absl::optional<base::Time> AttributionStorageSql::GetNextReportTime(
     sql::StatementID id,
     const char* sql,
     base::Time time) {
-  sql::Statement statement(db_->GetCachedStatement(id, sql));
+  sql::Statement statement(db_.GetCachedStatement(id, sql));
   statement.BindTime(0, time);
 
   if (statement.Step() &&
@@ -1514,7 +1522,7 @@ std::vector<AttributionReport> AttributionStorageSql::GetReports(
 
 absl::optional<AttributionReport> AttributionStorageSql::GetReport(
     AttributionReport::EventLevelData::Id conversion_id) {
-  sql::Statement statement(db_->GetCachedStatement(
+  sql::Statement statement(db_.GetCachedStatement(
       SQL_FROM_HERE, attribution_queries::kGetEventLevelReportSql));
   statement.BindInt64(0, *conversion_id);
 
@@ -1556,7 +1564,7 @@ bool AttributionStorageSql::DeleteExpiredSources() {
 
   // Delete all sources that have no associated reports and are past
   // their expiry time. Optimized by |kImpressionExpiryIndexSql|.
-  sql::Statement select_expired_statement(db_->GetCachedStatement(
+  sql::Statement select_expired_statement(db_.GetCachedStatement(
       SQL_FROM_HERE, attribution_queries::kSelectExpiredSourcesSql));
   select_expired_statement.BindTime(0, base::Time::Now());
   select_expired_statement.BindInt(1, kMaxDeletesPerBatch);
@@ -1568,7 +1576,7 @@ bool AttributionStorageSql::DeleteExpiredSources() {
   // inactive. This is done in a separate statement from
   // |kSelectExpiredSourcesSql| so that each query is optimized by an index.
   // Optimized by |kSourcesByReportingOriginActiveIndexSql|.
-  sql::Statement select_inactive_statement(db_->GetCachedStatement(
+  sql::Statement select_inactive_statement(db_.GetCachedStatement(
       SQL_FROM_HERE, attribution_queries::kSelectInactiveSourcesSql));
   select_inactive_statement.BindInt(0, kMaxDeletesPerBatch);
   return delete_sources_from_paged_select(select_inactive_statement);
@@ -1593,7 +1601,7 @@ bool AttributionStorageSql::DeleteReportInternal(
   static constexpr char kDeleteReportSql[] =
       "DELETE FROM event_level_reports WHERE report_id=?";
   sql::Statement statement(
-      db_->GetCachedStatement(SQL_FROM_HERE, kDeleteReportSql));
+      db_.GetCachedStatement(SQL_FROM_HERE, kDeleteReportSql));
   statement.BindInt64(0, *report_id);
   return statement.Run();
 }
@@ -1621,10 +1629,10 @@ bool AttributionStorageSql::UpdateReportForSendFailure(
       },
       report_id);
 
-  sql::Statement statement(db_->GetCachedStatement(statement_id, sql_query));
+  sql::Statement statement(db_.GetCachedStatement(statement_id, sql_query));
   statement.BindTime(0, new_report_time);
   statement.BindInt64(1, report_id_int);
-  return statement.Run() && db_->GetLastChangeCount() == 1;
+  return statement.Run() && db_.GetLastChangeCount() == 1;
 }
 
 absl::optional<base::Time> AttributionStorageSql::AdjustOfflineReportTimes() {
@@ -1662,7 +1670,7 @@ bool AttributionStorageSql::AdjustOfflineReportTimes(sql::StatementID id,
                                                      base::TimeDelta min_delay,
                                                      base::TimeDelta max_delay,
                                                      base::Time now) {
-  sql::Statement statement(db_->GetCachedStatement(id, sql));
+  sql::Statement statement(db_.GetCachedStatement(id, sql));
   statement.BindTime(0, now + min_delay);
   statement.BindTimeDelta(1, max_delay - min_delay + base::Microseconds(1));
   statement.BindTime(2, now);
@@ -1707,7 +1715,7 @@ void AttributionStorageSql::ClearData(
   // Delete the data in a transaction to avoid cases where the source part
   // of a report is deleted without deleting the associated report, or
   // vice versa.
-  sql::Transaction transaction(db_.get());
+  sql::Transaction transaction(&db_);
   if (!transaction.Begin()) {
     return;
   }
@@ -1718,7 +1726,7 @@ void AttributionStorageSql::ClearData(
   // crrev.com/c/2150071/4/content/browser/conversions/conversion_storage_sql.cc#342
   //
   // TODO(crbug.com/1290377): Look into optimizing origin filter callback.
-  sql::Statement statement(db_->GetCachedStatement(
+  sql::Statement statement(db_.GetCachedStatement(
       SQL_FROM_HERE, attribution_queries::kScanCandidateData));
   statement.BindTime(0, delete_begin);
   statement.BindTime(1, delete_end);
@@ -1776,7 +1784,7 @@ void AttributionStorageSql::ClearData(
   // second report in limbo (it was not in the deletion time range).
   // Delete all unattributed reports here to ensure everything is cleaned
   // up.
-  sql::Statement delete_vestigial_statement(db_->GetCachedStatement(
+  sql::Statement delete_vestigial_statement(db_.GetCachedStatement(
       SQL_FROM_HERE, attribution_queries::kDeleteVestigialConversionSql));
   for (StoredSource::Id source_id : source_ids_to_delete) {
     delete_vestigial_statement.Reset(/*clear_bound_vars=*/true);
@@ -1785,7 +1793,7 @@ void AttributionStorageSql::ClearData(
       return;
     }
 
-    num_event_reports_deleted += db_->GetLastChangeCount();
+    num_event_reports_deleted += db_.GetLastChangeCount();
   }
 
   // Careful! At this point we can still have some vestigial entries in the DB.
@@ -1798,14 +1806,13 @@ void AttributionStorageSql::ClearData(
   }
   num_aggregatable_reports_deleted += aggregatable_maybe_deleted;
 
-  if (delete_rate_limit_data && !rate_limit_table_.ClearDataForSourceIds(
-                                    db_.get(), source_ids_to_delete)) {
+  if (delete_rate_limit_data &&
+      !rate_limit_table_.ClearDataForSourceIds(&db_, source_ids_to_delete)) {
     return;
   }
 
-  if (delete_rate_limit_data &&
-      !rate_limit_table_.ClearDataForOriginsInRange(db_.get(), delete_begin,
-                                                    delete_end, filter)) {
+  if (delete_rate_limit_data && !rate_limit_table_.ClearDataForOriginsInRange(
+                                    &db_, delete_begin, delete_end, filter)) {
     return;
   }
 
@@ -1819,7 +1826,7 @@ void AttributionStorageSql::ClearData(
 }
 
 void AttributionStorageSql::ClearAllDataAllTime(bool delete_rate_limit_data) {
-  sql::Transaction transaction(db_.get());
+  sql::Transaction transaction(&db_);
   if (!transaction.Begin()) {
     return;
   }
@@ -1827,23 +1834,23 @@ void AttributionStorageSql::ClearAllDataAllTime(bool delete_rate_limit_data) {
   static constexpr char kDeleteAllReportsSql[] =
       "DELETE FROM event_level_reports";
   sql::Statement delete_all_reports_statement(
-      db_->GetCachedStatement(SQL_FROM_HERE, kDeleteAllReportsSql));
+      db_.GetCachedStatement(SQL_FROM_HERE, kDeleteAllReportsSql));
   if (!delete_all_reports_statement.Run()) {
     return;
   }
-  int num_event_reports_deleted = db_->GetLastChangeCount();
+  int num_event_reports_deleted = db_.GetLastChangeCount();
 
   static constexpr char kDeleteAllSourcesSql[] = "DELETE FROM sources";
   sql::Statement delete_all_sources_statement(
-      db_->GetCachedStatement(SQL_FROM_HERE, kDeleteAllSourcesSql));
+      db_.GetCachedStatement(SQL_FROM_HERE, kDeleteAllSourcesSql));
   if (!delete_all_sources_statement.Run()) {
     return;
   }
-  int num_sources_deleted = db_->GetLastChangeCount();
+  int num_sources_deleted = db_.GetLastChangeCount();
 
   static constexpr char kDeleteAllDedupKeysSql[] = "DELETE FROM dedup_keys";
   sql::Statement delete_all_dedup_keys_statement(
-      db_->GetCachedStatement(SQL_FROM_HERE, kDeleteAllDedupKeysSql));
+      db_.GetCachedStatement(SQL_FROM_HERE, kDeleteAllDedupKeysSql));
   if (!delete_all_dedup_keys_statement.Run()) {
     return;
   }
@@ -1851,7 +1858,7 @@ void AttributionStorageSql::ClearAllDataAllTime(bool delete_rate_limit_data) {
   static constexpr char kDeleteAllSourceDestinationsSql[] =
       "DELETE FROM source_destinations";
   sql::Statement delete_all_source_destinations(
-      db_->GetCachedStatement(SQL_FROM_HERE, kDeleteAllSourceDestinationsSql));
+      db_.GetCachedStatement(SQL_FROM_HERE, kDeleteAllSourceDestinationsSql));
   if (!delete_all_source_destinations.Run()) {
     return;
   }
@@ -1859,7 +1866,7 @@ void AttributionStorageSql::ClearAllDataAllTime(bool delete_rate_limit_data) {
   static constexpr char kDeleteAllAggregationsSql[] =
       "DELETE FROM aggregatable_report_metadata";
   sql::Statement delete_all_aggregations_statement(
-      db_->GetCachedStatement(SQL_FROM_HERE, kDeleteAllAggregationsSql));
+      db_.GetCachedStatement(SQL_FROM_HERE, kDeleteAllAggregationsSql));
   if (!delete_all_aggregations_statement.Run()) {
     return;
   }
@@ -1867,14 +1874,13 @@ void AttributionStorageSql::ClearAllDataAllTime(bool delete_rate_limit_data) {
   static constexpr char kDeleteAllContributionsSql[] =
       "DELETE FROM aggregatable_contributions";
   sql::Statement delete_all_contributions_statement(
-      db_->GetCachedStatement(SQL_FROM_HERE, kDeleteAllContributionsSql));
+      db_.GetCachedStatement(SQL_FROM_HERE, kDeleteAllContributionsSql));
   if (!delete_all_contributions_statement.Run()) {
     return;
   }
-  int num_aggregatable_reports_deleted = db_->GetLastChangeCount();
+  int num_aggregatable_reports_deleted = db_.GetLastChangeCount();
 
-  if (delete_rate_limit_data &&
-      !rate_limit_table_.ClearAllDataAllTime(db_.get())) {
+  if (delete_rate_limit_data && !rate_limit_table_.ClearAllDataAllTime(&db_)) {
     return;
   }
 
@@ -1889,7 +1895,7 @@ void AttributionStorageSql::ClearAllDataAllTime(bool delete_rate_limit_data) {
 
 bool AttributionStorageSql::HasCapacityForStoringSource(
     const std::string& serialized_origin) {
-  sql::Statement statement(db_->GetCachedStatement(
+  sql::Statement statement(db_.GetCachedStatement(
       SQL_FROM_HERE, attribution_queries::kCountSourcesSql));
   statement.BindString(0, serialized_origin);
   if (!statement.Step()) {
@@ -1908,7 +1914,7 @@ AttributionStorageSql::ReportAlreadyStored(
     return ReportAlreadyStoredStatus::kNotStored;
   }
 
-  sql::Statement statement(db_->GetCachedStatement(
+  sql::Statement statement(db_.GetCachedStatement(
       SQL_FROM_HERE, attribution_queries::kCountReportsSql));
   statement.BindInt64(0, *source_id);
   statement.BindInt(1, SerializeReportType(report_type));
@@ -1932,11 +1938,11 @@ AttributionStorageSql::CapacityForStoringReport(
   sql::Statement statement;
   switch (report_type) {
     case AttributionReport::Type::kEventLevel:
-      statement.Assign(db_->GetCachedStatement(
+      statement.Assign(db_.GetCachedStatement(
           SQL_FROM_HERE, attribution_queries::kCountEventLevelReportsSql));
       break;
     case AttributionReport::Type::kAggregatableAttribution:
-      statement.Assign(db_->GetCachedStatement(
+      statement.Assign(db_.GetCachedStatement(
           SQL_FROM_HERE, attribution_queries::kCountAggregatableReportsSql));
       break;
   }
@@ -1962,7 +1968,7 @@ std::vector<StoredSource> AttributionStorageSql::GetActiveSources(int limit) {
   // Negatives are treated as no limit
   // (https://sqlite.org/lang_select.html#limitoffset).
 
-  sql::Statement statement(db_->GetCachedStatement(
+  sql::Statement statement(db_.GetCachedStatement(
       SQL_FROM_HERE, attribution_queries::kGetActiveSourcesSql));
   statement.BindTime(0, base::Time::Now());
   statement.BindInt(1, limit);
@@ -1970,7 +1976,7 @@ std::vector<StoredSource> AttributionStorageSql::GetActiveSources(int limit) {
   std::vector<StoredSource> sources;
   while (statement.Step()) {
     absl::optional<StoredSourceData> source_data =
-        ReadSourceFromStatement(statement, *db_);
+        ReadSourceFromStatement(statement, db_);
     if (source_data.has_value()) {
       sources.push_back(std::move(source_data->source));
     }
@@ -2002,8 +2008,8 @@ std::vector<StoredSource> AttributionStorageSql::GetActiveSources(int limit) {
 absl::optional<std::vector<uint64_t>> AttributionStorageSql::ReadDedupKeys(
     StoredSource::Id source_id,
     AttributionReport::Type report_type) {
-  sql::Statement statement(db_->GetCachedStatement(
-      SQL_FROM_HERE, attribution_queries::kDedupKeySql));
+  sql::Statement statement(
+      db_.GetCachedStatement(SQL_FROM_HERE, attribution_queries::kDedupKeySql));
   statement.BindInt64(0, *source_id);
   statement.BindInt(1, SerializeReportType(report_type));
 
@@ -2024,7 +2030,7 @@ bool AttributionStorageSql::StoreDedupKey(StoredSource::Id source_id,
   static constexpr char kInsertDedupKeySql[] =
       "INSERT INTO dedup_keys(source_id,report_type,dedup_key)VALUES(?,?,?)";
   sql::Statement statement(
-      db_->GetCachedStatement(SQL_FROM_HERE, kInsertDedupKeySql));
+      db_.GetCachedStatement(SQL_FROM_HERE, kInsertDedupKeySql));
   statement.BindInt64(0, *source_id);
   statement.BindInt(1, SerializeReportType(report_type));
   statement.BindInt64(2, SerializeUint64(dedup_key));
@@ -2034,7 +2040,7 @@ bool AttributionStorageSql::StoreDedupKey(StoredSource::Id source_id,
 void AttributionStorageSql::HandleInitializationFailure(
     const InitStatus status) {
   RecordInitializationStatus(status);
-  db_.reset();
+  db_.Close();
   db_init_status_ = DbStatus::kClosed;
 }
 
@@ -2066,17 +2072,8 @@ bool AttributionStorageSql::LazyInit(DbCreationPolicy creation_policy) {
       return true;
   }
 
-  db_ = std::make_unique<sql::Database>(sql::DatabaseOptions{
-      .exclusive_locking = true, .page_size = 4096, .cache_size = 32});
-  db_->set_histogram_tag("Conversions");
-
-  // `base::Unretained()` is safe because the callback will only be called
-  // while the `sql::Database` in `db_` is alive, and this instance owns `db_`.
-  db_->set_error_callback(base::BindRepeating(
-      &AttributionStorageSql::DatabaseErrorCallback, base::Unretained(this)));
-
   if (path_to_database_.empty()) {
-    if (!db_->OpenInMemory()) {
+    if (!db_.OpenInMemory()) {
       HandleInitializationFailure(InitStatus::kFailedToOpenDbInMemory);
       return false;
     }
@@ -2088,7 +2085,7 @@ bool AttributionStorageSql::LazyInit(DbCreationPolicy creation_policy) {
       HandleInitializationFailure(InitStatus::kFailedToCreateDir);
       return false;
     }
-    if (!db_->Open(path_to_database_)) {
+    if (!db_.Open(path_to_database_)) {
       DLOG(ERROR) << "Failed to open Conversion database";
       HandleInitializationFailure(InitStatus::kFailedToOpenDbFile);
       return false;
@@ -2115,7 +2112,7 @@ bool AttributionStorageSql::InitializeSchema(bool db_empty) {
 
   // Create the meta table if it doesn't already exist. The only version for
   // which this is the case is version 1.
-  if (!meta_table.Init(db_.get(), /*version=*/1, /*compatible_version=*/1)) {
+  if (!meta_table.Init(&db_, /*version=*/1, /*compatible_version=*/1)) {
     return false;
   }
 
@@ -2132,11 +2129,11 @@ bool AttributionStorageSql::InitializeSchema(bool db_empty) {
       meta_table.GetCompatibleVersionNumber() > kCurrentVersionNumber) {
     // Note that this also razes the meta table, so it will need to be
     // initialized again.
-    db_->Raze();
+    db_.Raze();
     return CreateSchema();
   }
 
-  return UpgradeAttributionStorageSqlSchema(db_.get(), &meta_table);
+  return UpgradeAttributionStorageSqlSchema(db_, meta_table);
 }
 
 bool AttributionStorageSql::CreateSchema() {
@@ -2145,7 +2142,7 @@ bool AttributionStorageSql::CreateSchema() {
     start_timestamp = base::ThreadTicks::Now();
   }
 
-  sql::Transaction transaction(db_.get());
+  sql::Transaction transaction(&db_);
   if (!transaction.Begin()) {
     return false;
   }
@@ -2205,7 +2202,7 @@ bool AttributionStorageSql::CreateSchema() {
       "aggregatable_budget_consumed INTEGER NOT NULL,"
       "aggregatable_source BLOB NOT NULL,"
       "filter_data BLOB NOT NULL)";
-  if (!db_->Execute(kImpressionTableSql)) {
+  if (!db_.Execute(kImpressionTableSql)) {
     return false;
   }
 
@@ -2221,7 +2218,7 @@ bool AttributionStorageSql::CreateSchema() {
       "CREATE INDEX sources_by_active_reporting_origin "
       "ON sources(event_level_active,"
       "aggregatable_active,reporting_origin)";
-  if (!db_->Execute(kSourcesByActiveReportingOriginIndexSql)) {
+  if (!db_.Execute(kSourcesByActiveReportingOriginIndexSql)) {
     return false;
   }
 
@@ -2232,7 +2229,7 @@ bool AttributionStorageSql::CreateSchema() {
   static constexpr char kImpressionExpiryIndexSql[] =
       "CREATE INDEX sources_by_expiry_time "
       "ON sources(expiry_time)";
-  if (!db_->Execute(kImpressionExpiryIndexSql)) {
+  if (!db_.Execute(kImpressionExpiryIndexSql)) {
     return false;
   }
 
@@ -2241,7 +2238,7 @@ bool AttributionStorageSql::CreateSchema() {
       "CREATE INDEX active_sources_by_source_origin "
       "ON sources(source_origin)"
       "WHERE event_level_active=1 OR aggregatable_active=1";
-  if (!db_->Execute(kImpressionOriginIndexSql)) {
+  if (!db_.Execute(kImpressionOriginIndexSql)) {
     return false;
   }
 
@@ -2273,7 +2270,7 @@ bool AttributionStorageSql::CreateSchema() {
       "external_report_id TEXT NOT NULL,"
       "debug_key INTEGER,"
       "context_origin TEXT NOT NULL)";
-  if (!db_->Execute(kConversionTableSql)) {
+  if (!db_.Execute(kConversionTableSql)) {
     return false;
   }
 
@@ -2283,7 +2280,7 @@ bool AttributionStorageSql::CreateSchema() {
   static constexpr char kConversionReportTimeIndexSql[] =
       "CREATE INDEX event_level_reports_by_report_time "
       "ON event_level_reports(report_time)";
-  if (!db_->Execute(kConversionReportTimeIndexSql)) {
+  if (!db_.Execute(kConversionReportTimeIndexSql)) {
     return false;
   }
 
@@ -2294,11 +2291,11 @@ bool AttributionStorageSql::CreateSchema() {
   static constexpr char kConversionImpressionIdIndexSql[] =
       "CREATE INDEX event_level_reports_by_source_id "
       "ON event_level_reports(source_id)";
-  if (!db_->Execute(kConversionImpressionIdIndexSql)) {
+  if (!db_.Execute(kConversionImpressionIdIndexSql)) {
     return false;
   }
 
-  if (!rate_limit_table_.CreateTable(db_.get())) {
+  if (!rate_limit_table_.CreateTable(&db_)) {
     return false;
   }
 
@@ -2308,7 +2305,7 @@ bool AttributionStorageSql::CreateSchema() {
       "report_type INTEGER NOT NULL,"
       "dedup_key INTEGER NOT NULL,"
       "PRIMARY KEY(source_id,report_type,dedup_key))WITHOUT ROWID";
-  if (!db_->Execute(kDedupKeyTableSql)) {
+  if (!db_.Execute(kDedupKeyTableSql)) {
     return false;
   }
 
@@ -2317,14 +2314,14 @@ bool AttributionStorageSql::CreateSchema() {
       "source_id INTEGER NOT NULL,"
       "destination_site TEXT NOT NULL,"
       "PRIMARY KEY(source_id,destination_site))WITHOUT ROWID";
-  if (!db_->Execute(kSourceDestinationsTableSql)) {
+  if (!db_.Execute(kSourceDestinationsTableSql)) {
     return false;
   }
 
   static constexpr char kSourceDestinationsIndexSql[] =
       "CREATE INDEX sources_by_destination_site "
       "ON source_destinations(destination_site)";
-  if (!db_->Execute(kSourceDestinationsIndexSql)) {
+  if (!db_.Execute(kSourceDestinationsIndexSql)) {
     return false;
   }
 
@@ -2364,7 +2361,7 @@ bool AttributionStorageSql::CreateSchema() {
       "aggregation_coordinator INTEGER NOT NULL,"
       "attestation_token TEXT,"
       "destination_origin TEXT NOT NULL)";
-  if (!db_->Execute(kAggregatableReportMetadataTableSql)) {
+  if (!db_.Execute(kAggregatableReportMetadataTableSql)) {
     return false;
   }
 
@@ -2373,7 +2370,7 @@ bool AttributionStorageSql::CreateSchema() {
   static constexpr char kAggregateSourceIdIndexSql[] =
       "CREATE INDEX aggregate_source_id_idx "
       "ON aggregatable_report_metadata(source_id)";
-  if (!db_->Execute(kAggregateSourceIdIndexSql)) {
+  if (!db_.Execute(kAggregateSourceIdIndexSql)) {
     return false;
   }
 
@@ -2383,7 +2380,7 @@ bool AttributionStorageSql::CreateSchema() {
   static constexpr char kAggregateTriggerTimeIndexSql[] =
       "CREATE INDEX aggregate_trigger_time_idx "
       "ON aggregatable_report_metadata(trigger_time)";
-  if (!db_->Execute(kAggregateTriggerTimeIndexSql)) {
+  if (!db_.Execute(kAggregateTriggerTimeIndexSql)) {
     return false;
   }
 
@@ -2393,7 +2390,7 @@ bool AttributionStorageSql::CreateSchema() {
   static constexpr char kAggregateReportTimeIndexSql[] =
       "CREATE INDEX aggregate_report_time_idx "
       "ON aggregatable_report_metadata(report_time)";
-  if (!db_->Execute(kAggregateReportTimeIndexSql)) {
+  if (!db_.Execute(kAggregateReportTimeIndexSql)) {
     return false;
   }
 
@@ -2413,12 +2410,12 @@ bool AttributionStorageSql::CreateSchema() {
       "key_low_bits INTEGER NOT NULL,"
       "value INTEGER NOT NULL,"
       "PRIMARY KEY(aggregation_id,contribution_id))WITHOUT ROWID";
-  if (!db_->Execute(kAggregatableContributionsTableSql)) {
+  if (!db_.Execute(kAggregatableContributionsTableSql)) {
     return false;
   }
 
-  if (sql::MetaTable meta_table; !meta_table.Init(
-          db_.get(), kCurrentVersionNumber, kCompatibleVersionNumber)) {
+  if (sql::MetaTable meta_table;
+      !meta_table.Init(&db_, kCurrentVersionNumber, kCompatibleVersionNumber)) {
     return false;
   }
 
@@ -2441,11 +2438,11 @@ void AttributionStorageSql::DatabaseErrorCallback(int extended_error,
   if (sql::Recovery::ShouldRecover(extended_error) &&
       !path_to_database_.empty()) {
     // Prevent reentrant calls.
-    db_->reset_error_callback();
+    db_.reset_error_callback();
 
     // After this call, the |db_| handle is poisoned so that future calls will
     // return errors until the handle is re-opened.
-    sql::Recovery::RecoverDatabaseWithMetaVersion(db_.get(), path_to_database_);
+    sql::Recovery::RecoverDatabaseWithMetaVersion(&db_, path_to_database_);
 
     // The DLOG(FATAL) below is intended to draw immediate attention to errors
     // in newly-written code.  Database corruption is generally a result of OS
@@ -2459,7 +2456,7 @@ void AttributionStorageSql::DatabaseErrorCallback(int extended_error,
   // The default handling is to assert on debug and to ignore on release.
   if (!sql::Database::IsExpectedSqliteError(extended_error) &&
       !ignore_errors_for_testing_) {
-    DLOG(FATAL) << db_->GetErrorMessage();
+    DLOG(FATAL) << db_.GetErrorMessage();
   }
 
   // Consider the database closed if we did not attempt to recover so we did
@@ -2469,7 +2466,7 @@ void AttributionStorageSql::DatabaseErrorCallback(int extended_error,
 
 bool AttributionStorageSql::DeleteSources(
     const std::vector<StoredSource::Id>& source_ids) {
-  sql::Transaction transaction(db_.get());
+  sql::Transaction transaction(&db_);
   if (!transaction.Begin()) {
     return false;
   }
@@ -2477,7 +2474,7 @@ bool AttributionStorageSql::DeleteSources(
   static constexpr char kDeleteSourcesSql[] =
       "DELETE FROM sources WHERE source_id=?";
   sql::Statement delete_impression_statement(
-      db_->GetCachedStatement(SQL_FROM_HERE, kDeleteSourcesSql));
+      db_.GetCachedStatement(SQL_FROM_HERE, kDeleteSourcesSql));
 
   for (StoredSource::Id source_id : source_ids) {
     delete_impression_statement.Reset(/*clear_bound_vars=*/true);
@@ -2490,7 +2487,7 @@ bool AttributionStorageSql::DeleteSources(
   static constexpr char kDeleteDedupKeySql[] =
       "DELETE FROM dedup_keys WHERE source_id=?";
   sql::Statement delete_dedup_key_statement(
-      db_->GetCachedStatement(SQL_FROM_HERE, kDeleteDedupKeySql));
+      db_.GetCachedStatement(SQL_FROM_HERE, kDeleteDedupKeySql));
 
   for (StoredSource::Id source_id : source_ids) {
     delete_dedup_key_statement.Reset(/*clear_bound_vars=*/true);
@@ -2503,7 +2500,7 @@ bool AttributionStorageSql::DeleteSources(
   static constexpr char kDeleteSourceDestinationsSql[] =
       "DELETE FROM source_destinations WHERE source_id=?";
   sql::Statement delete_source_destinations_statement(
-      db_->GetCachedStatement(SQL_FROM_HERE, kDeleteSourceDestinationsSql));
+      db_.GetCachedStatement(SQL_FROM_HERE, kDeleteSourceDestinationsSql));
 
   for (StoredSource::Id source_id : source_ids) {
     delete_source_destinations_statement.Reset(/*clear_bound_vars=*/true);
@@ -2523,14 +2520,14 @@ int AttributionStorageSql::ClearAggregatableAttributionsForOriginsInRange(
     std::vector<StoredSource::Id>& source_ids_to_delete) {
   DCHECK_LE(delete_begin, delete_end);
 
-  sql::Transaction transaction(db_.get());
+  sql::Transaction transaction(&db_);
   if (!transaction.Begin()) {
     return -1;
   }
 
   // TODO(linnan): Considering optimizing SQL query by moving some logic to C++.
   // See the comment in crrev.com/c/3379484 for more information.
-  sql::Statement statement(db_->GetCachedStatement(
+  sql::Statement statement(db_.GetCachedStatement(
       SQL_FROM_HERE, attribution_queries::kScanCandidateDataAggregatable));
   statement.BindTime(0, delete_begin);
   statement.BindTime(1, delete_end);
@@ -2561,7 +2558,7 @@ int AttributionStorageSql::ClearAggregatableAttributionsForOriginsInRange(
 
 bool AttributionStorageSql::DeleteReportInternal(
     AttributionReport::AggregatableAttributionData::Id aggregation_id) {
-  sql::Transaction transaction(db_.get());
+  sql::Transaction transaction(&db_);
   if (!transaction.Begin()) {
     return false;
   }
@@ -2569,7 +2566,7 @@ bool AttributionStorageSql::DeleteReportInternal(
   static constexpr char kDeleteAggregationSql[] =
       "DELETE FROM aggregatable_report_metadata WHERE aggregation_id=?";
   sql::Statement statement(
-      db_->GetCachedStatement(SQL_FROM_HERE, kDeleteAggregationSql));
+      db_.GetCachedStatement(SQL_FROM_HERE, kDeleteAggregationSql));
   statement.BindInt64(0, *aggregation_id);
   if (!statement.Run()) {
     return false;
@@ -2587,19 +2584,19 @@ bool AttributionStorageSql::DeleteAggregatableContributions(
   static constexpr char kDeleteContributionsSql[] =
       "DELETE FROM aggregatable_contributions WHERE aggregation_id=?";
   sql::Statement statement(
-      db_->GetCachedStatement(SQL_FROM_HERE, kDeleteContributionsSql));
+      db_.GetCachedStatement(SQL_FROM_HERE, kDeleteContributionsSql));
   statement.BindInt64(0, *aggregation_id);
   return statement.Run();
 }
 
 int AttributionStorageSql::ClearAggregatableAttributionsForSourceIds(
     const std::vector<StoredSource::Id>& source_ids) {
-  sql::Transaction transaction(db_.get());
+  sql::Transaction transaction(&db_);
   if (!transaction.Begin()) {
     return -1;
   }
 
-  sql::Statement statement(db_->GetCachedStatement(
+  sql::Statement statement(db_.GetCachedStatement(
       SQL_FROM_HERE, attribution_queries::kDeleteAggregationsSql));
 
   int num_aggregatable_reports_deleted = 0;
@@ -2620,7 +2617,7 @@ int AttributionStorageSql::ClearAggregatableAttributionsForSourceIds(
       return -1;
     }
 
-    num_aggregatable_reports_deleted += db_->GetLastChangeCount();
+    num_aggregatable_reports_deleted += db_.GetLastChangeCount();
   }
 
   if (!transaction.Commit()) {
@@ -2634,7 +2631,7 @@ std::vector<AttributionReport>
 AttributionStorageSql::GetAggregatableAttributionReportsInternal(
     base::Time max_report_time,
     int limit) {
-  sql::Statement statement(db_->GetCachedStatement(
+  sql::Statement statement(db_.GetCachedStatement(
       SQL_FROM_HERE, attribution_queries::kGetAggregatableReportsSql));
   statement.BindTime(0, max_report_time);
   statement.BindInt(1, limit);
@@ -2658,7 +2655,7 @@ AttributionStorageSql::GetAggregatableAttributionReportsInternal(
 std::vector<AggregatableHistogramContribution>
 AttributionStorageSql::GetAggregatableContributions(
     AttributionReport::AggregatableAttributionData::Id aggregation_id) {
-  sql::Statement statement(db_->GetCachedStatement(
+  sql::Statement statement(db_.GetCachedStatement(
       SQL_FROM_HERE, attribution_queries::kGetContributionsSql));
   statement.BindInt64(0, *aggregation_id);
 
@@ -2713,11 +2710,11 @@ bool AttributionStorageSql::AdjustBudgetConsumedForSource(
       "UPDATE sources "
       "SET aggregatable_budget_consumed=aggregatable_budget_consumed+? "
       "WHERE source_id=?";
-  sql::Statement statement(db_->GetCachedStatement(
-      SQL_FROM_HERE, kAdjustBudgetConsumedForSourceSql));
+  sql::Statement statement(
+      db_.GetCachedStatement(SQL_FROM_HERE, kAdjustBudgetConsumedForSourceSql));
   statement.BindInt64(0, additional_budget_consumed);
   statement.BindInt64(1, *source_id);
-  return statement.Run() && db_->GetLastChangeCount() == 1;
+  return statement.Run() && db_.GetLastChangeCount() == 1;
 }
 
 absl::optional<base::Time>
@@ -2845,7 +2842,7 @@ bool AttributionStorageSql::StoreAggregatableAttributionReport(
           &report.data());
   DCHECK(aggregatable_attribution);
 
-  sql::Transaction transaction(db_.get());
+  sql::Transaction transaction(&db_);
   if (!transaction.Begin()) {
     return false;
   }
@@ -2859,7 +2856,7 @@ bool AttributionStorageSql::StoreAggregatableAttributionReport(
       "attestation_token,destination_origin)"
       "VALUES(?,?,?,?,?,0,?,?,?,?)";
   sql::Statement insert_metadata_statement(
-      db_->GetCachedStatement(SQL_FROM_HERE, kInsertMetadataSql));
+      db_.GetCachedStatement(SQL_FROM_HERE, kInsertMetadataSql));
   insert_metadata_statement.BindInt64(0, *attribution_info.source.source_id());
   insert_metadata_statement.BindTime(1, attribution_info.time);
   BindUint64OrNull(insert_metadata_statement, 2, attribution_info.debug_key);
@@ -2881,14 +2878,14 @@ bool AttributionStorageSql::StoreAggregatableAttributionReport(
 
   aggregatable_attribution->id =
       AttributionReport::AggregatableAttributionData::Id(
-          db_->GetLastInsertRowId());
+          db_.GetLastInsertRowId());
 
   static constexpr char kInsertContributionsSql[] =
       "INSERT INTO aggregatable_contributions"
       "(aggregation_id,contribution_id,key_high_bits,key_low_bits,value)"
       "VALUES(?,?,?,?,?)";
   sql::Statement insert_contributions_statement(
-      db_->GetCachedStatement(SQL_FROM_HERE, kInsertContributionsSql));
+      db_.GetCachedStatement(SQL_FROM_HERE, kInsertContributionsSql));
 
   int contribution_id = 0;
   for (const auto& contribution : aggregatable_attribution->contributions) {
@@ -2933,7 +2930,7 @@ AttributionStorageSql::MaybeStoreAggregatableAttributionReport(
       return AggregatableResult::kInternalError;
   }
 
-  sql::Transaction transaction(db_.get());
+  sql::Transaction transaction(&db_);
   if (!transaction.Begin()) {
     return AggregatableResult::kInternalError;
   }
@@ -2974,7 +2971,7 @@ AttributionStorageSql::ReadAggregatableAttributionReportFromStatement(
   DCHECK_EQ(statement.ColumnCount(), kSourceColumnCount + 10);
 
   absl::optional<StoredSourceData> source_data =
-      ReadSourceFromStatement(statement, *db_);
+      ReadSourceFromStatement(statement, db_);
   if (!source_data.has_value()) {
     return absl::nullopt;
   }
@@ -3025,7 +3022,7 @@ AttributionStorageSql::ReadAggregatableAttributionReportFromStatement(
 
 absl::optional<AttributionReport> AttributionStorageSql::GetReport(
     AttributionReport::AggregatableAttributionData::Id report_id) {
-  sql::Statement statement(db_->GetCachedStatement(
+  sql::Statement statement(db_.GetCachedStatement(
       SQL_FROM_HERE, attribution_queries::kGetAggregatableReportSql));
   statement.BindInt64(0, *report_id);
 
@@ -3046,7 +3043,7 @@ AttributionStorageSql::GetAllDataKeys() {
   }
 
   std::vector<AttributionDataModel::DataKey> keys;
-  sql::Statement statement(db_->GetCachedStatement(
+  sql::Statement statement(db_.GetCachedStatement(
       SQL_FROM_HERE, attribution_queries::kGetSourcesDataKeysSql));
 
   while (statement.Step()) {
@@ -3057,7 +3054,7 @@ AttributionStorageSql::GetAllDataKeys() {
     keys.emplace_back(std::move(reporting_origin));
   }
 
-  rate_limit_table_.AppendRateLimitDataKeys(db_.get(), keys);
+  rate_limit_table_.AppendRateLimitDataKeys(&db_, keys);
   return base::flat_set<AttributionDataModel::DataKey>(std::move(keys))
       .extract();
 }
