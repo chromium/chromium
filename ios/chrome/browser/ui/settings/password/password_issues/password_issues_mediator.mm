@@ -39,13 +39,22 @@ using password_manager::features::IsPasswordCheckupEnabled;
 
 namespace {
 
-// Maps CredentialUIEntry to PasswordIssue and sorts them by website and
-// username.
+// Creates PasswordIssues from CredentialUIEntry to display them in the Password
+// Issues list UI for the given `warning_type`. PasswordIssues are sorted by
+// website and username.
 NSArray<PasswordIssue*>* GetSortedPasswordIssues(
+    WarningType warning_type,
     const std::vector<CredentialUIEntry>& insecure_credentials) {
   NSMutableArray<PasswordIssue*>* passwords = [[NSMutableArray alloc] init];
+
+  BOOL enable_compromised_description =
+      IsPasswordCheckupEnabled() &&
+      warning_type == WarningType::kCompromisedPasswordsWarning;
+
   for (auto credential : insecure_credentials) {
-    [passwords addObject:[[PasswordIssue alloc] initWithCredential:credential]];
+    [passwords addObject:[[PasswordIssue alloc] initWithCredential:credential
+                                      enableCompromisedDescription:
+                                          enable_compromised_description]];
   }
 
   NSSortDescriptor* origin = [[NSSortDescriptor alloc] initWithKey:@"website"
@@ -91,9 +100,11 @@ NSArray<PasswordIssueGroup*>* GroupIssuesByPassword(
   [same_password_issues
       enumerateObjectsUsingBlock:^(NSMutableArray<PasswordIssue*>* issues,
                                    NSUInteger index, BOOL* stop) {
-        // TODO(crbug.com/1406540): Add header for each group.
+        NSString* headerText =
+            l10n_util::GetNSStringF(IDS_IOS_REUSED_PASSWORD_ISSUES_GROUP_HEADER,
+                                    base::NumberToString16(issues.count));
         [password_issue_groups
-            addObject:[[PasswordIssueGroup alloc] initWithHeaderText:nil
+            addObject:[[PasswordIssueGroup alloc] initWithHeaderText:headerText
                                                       passwordIssues:issues]];
       }];
 
@@ -111,7 +122,7 @@ NSArray<PasswordIssueGroup*>* GetPasswordIssueGroups(
 
   // Sort by website and username.
   NSArray<PasswordIssue*>* sorted_issues =
-      GetSortedPasswordIssues(insecure_credentials);
+      GetSortedPasswordIssues(warning_type, insecure_credentials);
 
   // Reused issues are grouped by passwords.
   if (warning_type == WarningType::kReusedPasswordsWarning) {

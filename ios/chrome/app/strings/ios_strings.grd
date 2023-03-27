@@ -2859,6 +2859,15 @@ While in Incognito, sites can't use cookies to see your browsing activity across
       <message name="IDS_IOS_WEAK_PASSWORD_ISSUES_DESCRIPTION" desc="Header displayed on the password manager screen displaying credentials weak passwords [iOS only]" meaning="This header explains the risks of having weak passwords and provides a link to the support page explaining how create strong passwords.">
         Weak passwords are easy to guess. Make sure you’re creating strong passwords. <ph name="BEGIN_LINK">BEGIN_LINK</ph>See more security tips.<ph name="END_LINK">END_LINK</ph>
       </message>
+      <message name="IDS_IOS_REUSED_PASSWORD_ISSUES_GROUP_HEADER" desc="Header shown on top of a group of credentials sharing the same password, inside the password manager screen diplaying shared passswords. User can only have 2 or more reused passwords, so this string will always be plural. [iOS only]">
+        <ph name="COUNT">$1<ex>2</ex></ph> accounts using same password
+      </message>
+      <message name="IDS_IOS_COMPROMISED_PASSWORD_ISSUES_LEAKED_DESCRIPTION" desc="Text explaining the user one of their credentials was found in a data breach. Displayed on the password manager screen showing credentials that have been leaked or phished. [iOS only]">
+        Found in data breach
+      </message>
+      <message name="IDS_IOS_COMPROMISED_PASSWORD_ISSUES_PHISHED_DESCRIPTION" desc="Text explaining the user one of their credentials was phished. Displayed on the password manager screen showing credentials that have been leaked or phished. [iOS only]">
+        Entered on deceptive site
+      </message>
       <message name="IDS_IOS_CHANGE_COMPROMISED_PASSWORD" desc="Button which is shown on Password Details Screen when password is compromised. [iOS only]" meaning="Telling user to change password on a website since it is compromised.">
         Change Password on Website
       </message>

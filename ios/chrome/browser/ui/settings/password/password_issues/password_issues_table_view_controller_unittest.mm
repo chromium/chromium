@@ -76,7 +76,8 @@ class PasswordIssuesTableViewControllerTest
     form.signon_realm = "http://www.example.com/";
     form.scheme = password_manager::PasswordForm::Scheme::kHtml;
     PasswordIssue* password_issue = [[PasswordIssue alloc]
-        initWithCredential:password_manager::CredentialUIEntry(form)];
+                  initWithCredential:password_manager::CredentialUIEntry(form)
+        enableCompromisedDescription:NO];
     PasswordIssueGroup* issue_group =
         [[PasswordIssueGroup alloc] initWithHeaderText:nil
                                         passwordIssues:@[ password_issue ]];

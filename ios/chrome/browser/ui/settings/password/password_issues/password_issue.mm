@@ -8,15 +8,24 @@
 #import "components/password_manager/core/browser/password_ui_utils.h"
 #import "components/password_manager/core/browser/ui/credential_ui_entry.h"
 #import "ios/chrome/browser/net/crurl.h"
+#import "ios/chrome/grit/ios_strings.h"
+#import "ui/base/l10n/l10n_util_mac.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
 #endif
 
+@interface PasswordIssue () {
+  // Whether the description for compromised credentials should be displayed.
+  BOOL _compromisedDescriptionEnabled;
+}
+@end
+
 @implementation PasswordIssue
 
 - (instancetype)initWithCredential:
-    (password_manager::CredentialUIEntry)credential {
+                    (password_manager::CredentialUIEntry)credential
+      enableCompromisedDescription:(BOOL)enableCompromisedDescription {
   self = [super init];
   if (self) {
     _credential = credential;
@@ -24,8 +33,25 @@
         base::SysUTF8ToNSString(password_manager::GetShownOrigin(credential));
     _username = base::SysUTF16ToNSString(credential.username);
     _URL = [[CrURL alloc] initWithGURL:credential.GetURL()];
+    _compromisedDescriptionEnabled = enableCompromisedDescription;
   }
   return self;
+}
+
+- (NSString*)compromisedDescription {
+  if (_compromisedDescriptionEnabled) {
+    if (_credential.IsLeaked()) {
+      return l10n_util::GetNSString(
+          IDS_IOS_COMPROMISED_PASSWORD_ISSUES_LEAKED_DESCRIPTION);
+    }
+
+    if (_credential.IsPhished()) {
+      return l10n_util::GetNSString(
+          IDS_IOS_COMPROMISED_PASSWORD_ISSUES_PHISHED_DESCRIPTION);
+    }
+  }
+
+  return nil;
 }
 
 @end

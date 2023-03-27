@@ -22,11 +22,20 @@ struct CredentialUIEntry;
 @property(nonatomic, copy, readonly) NSString* website;
 // Associated username.
 @property(nonatomic, copy, readonly) NSString* username;
+// Description of type of compromised credential issue.
+// Nil for non-compromised credentials.
+@property(nonatomic, readonly) NSString* compromisedDescription;
 // Credential being displayed in Password Details screen.
 @property(nonatomic, readonly) password_manager::CredentialUIEntry credential;
 
+// Initializes a PasswordIssue from a CredentialUIEntry.
+// Pass `enableCompromisedDescription` as YES when the description of
+// compromised issues should be displayed in the UX (e.g., When displaying
+// compromised credentials in the Password Issues UX.).
 - (instancetype)initWithCredential:
-    (password_manager::CredentialUIEntry)credential NS_DESIGNATED_INITIALIZER;
+                    (password_manager::CredentialUIEntry)credential
+      enableCompromisedDescription:(BOOL)enableCompromisedDescription
+    NS_DESIGNATED_INITIALIZER;
 
 - (instancetype)init NS_UNAVAILABLE;
 
