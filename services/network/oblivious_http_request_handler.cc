@@ -13,6 +13,7 @@
 #include "net/base/load_flags.h"
 #include "net/http/http_request_headers.h"
 #include "net/http/http_status_code.h"
+#include "net/http/http_util.h"
 #include "net/log/net_log_capture_mode.h"
 #include "net/log/net_log_values.h"
 #include "net/log/net_log_with_source.h"
@@ -27,6 +28,7 @@
 #include "services/network/public/mojom/clear_data_filter.mojom.h"
 #include "services/network/public/mojom/oblivious_http_request.mojom.h"
 #include "services/network/public/mojom/url_loader_factory.mojom.h"
+#include "services/network/public/mojom/url_response_head.mojom.h"
 #include "services/network/trust_tokens/trust_token_request_helper_factory.h"
 
 namespace network {
@@ -42,8 +44,6 @@ constexpr size_t kMaxMethodSize = 16;
 constexpr size_t kMaxRequestBodySize =
     5 * 1024 * 1024;                               // Request size limit is 5MB
 constexpr size_t kMaxContentTypeSize = 256;        // Per RFC6838
-
-const std::array<char, 2> kHeaderForbiddenChars = {'\n', '\r'};
 
 // Class wrapping quiche::ObliviousHttpClient. Should be created once for each
 // request/response pair.
@@ -131,6 +131,19 @@ std::string CreateAndSerializeBhttpMessage(
     bhttp_request.AddHeaderField({header.key, header.value});
   }
   return bhttp_request.Serialize().value();
+}
+
+scoped_refptr<net::HttpResponseHeaders> GetSyntheticBhttpResponseHeader(
+    const std::vector<quiche::BinaryHttpRequest::Field>& bhttp_headers) {
+  std::string synthetic_headers = "HTTP/1.1 200 Success\r\n";
+  for (const auto& header : bhttp_headers) {
+    if (!net::HttpUtil::IsValidHeaderName(header.name) ||
+        !net::HttpUtil::IsValidHeaderValue(header.value)) {
+      return nullptr;
+    }
+    synthetic_headers += header.name + ": " + header.value + "\r\n";
+  }
+  return net::HttpResponseHeaders::TryToCreate(synthetic_headers);
 }
 
 }  // namespace
@@ -242,7 +255,8 @@ void ObliviousHttpRequestHandler::OnDoneConstructingTrustTokenHelper(
     mojo::RemoteSetElementId id,
     TrustTokenStatusOrRequestHelper status_or_helper) {
   if (!status_or_helper.ok()) {
-    RespondWithError(id, net::ERR_TRUST_TOKEN_OPERATION_FAILED);
+    RespondWithError(id, net::ERR_TRUST_TOKEN_OPERATION_FAILED,
+                     /*outer_response_error_code=*/absl::nullopt);
     return;
   }
 
@@ -264,7 +278,8 @@ void ObliviousHttpRequestHandler::OnDoneBeginningTrustTokenOperation(
     absl::optional<net::HttpRequestHeaders> headers,
     mojom::TrustTokenOperationStatus status) {
   if (status != mojom::TrustTokenOperationStatus::kOk) {
-    RespondWithError(id, net::ERR_TRUST_TOKEN_OPERATION_FAILED);
+    RespondWithError(id, net::ERR_TRUST_TOKEN_OPERATION_FAILED,
+                     /*outer_response_error_code=*/absl::nullopt);
     return;
   }
   ContinueHandlingRequest(std::move(headers), id);
@@ -329,14 +344,16 @@ void ObliviousHttpRequestHandler::ContinueHandlingRequest(
   auto maybe_client = StatefulObliviousHttpClient::CreateFromKeyConfig(
       std::move(state->request->key_config));
   if (!maybe_client) {
-    RespondWithError(id, net::ERR_INVALID_ARGUMENT);
+    RespondWithError(id, net::ERR_INVALID_ARGUMENT,
+                     /*outer_response_error_code=*/absl::nullopt);
     return;
   }
   state->ohttp_client = std::move(maybe_client);
   auto maybe_encrypted_blob =
       state->ohttp_client->EncryptRequest(std::move(padded_payload));
   if (!maybe_encrypted_blob) {
-    RespondWithError(id, net::ERR_FAILED);
+    RespondWithError(id, net::ERR_FAILED,
+                     /*outer_response_error_code=*/absl::nullopt);
     return;
   }
 
@@ -363,8 +380,10 @@ void ObliviousHttpRequestHandler::ContinueHandlingRequest(
       kMaxResponseSize);
 }
 
-void ObliviousHttpRequestHandler::RespondWithError(mojo::RemoteSetElementId id,
-                                                   int error_code) {
+void ObliviousHttpRequestHandler::RespondWithError(
+    mojo::RemoteSetElementId id,
+    int error_code,
+    absl::optional<int> outer_response_error_code) {
   mojom::ObliviousHttpClient* client = clients_.Get(id);
   auto state_iter = client_state_.find(id);
   DCHECK(client);
@@ -372,7 +391,18 @@ void ObliviousHttpRequestHandler::RespondWithError(mojo::RemoteSetElementId id,
   RequestState* state = state_iter->second.get();
   state->net_log.EndEventWithIntParams(
       net::NetLogEventType::OBLIVIOUS_HTTP_REQUEST_END, "status", error_code);
-  client->OnCompleted(absl::nullopt, error_code);
+
+  network::mojom::ObliviousHttpCompletionResultPtr response_result;
+  if (outer_response_error_code) {
+    DCHECK_NE(outer_response_error_code.value(), net::HTTP_OK);
+    response_result = network::mojom::ObliviousHttpCompletionResult::
+        NewOuterResponseErrorCode(outer_response_error_code.value());
+  } else {
+    response_result =
+        network::mojom::ObliviousHttpCompletionResult::NewNetError(error_code);
+  }
+
+  client->OnCompleted(std::move(response_result));
   clients_.Remove(id);
 
   DCHECK_EQ(1u, client_state_.count(id));
@@ -387,14 +417,22 @@ void ObliviousHttpRequestHandler::OnRequestComplete(
 
   RequestState* state = state_iter->second.get();
   if (!response) {
-    RespondWithError(id, state->loader->NetError());
+    absl::optional<int> outer_response_error_code;
+    if (state->loader->NetError() == net::ERR_HTTP_RESPONSE_CODE_FAILURE &&
+        state->loader->ResponseInfo() &&
+        state->loader->ResponseInfo()->headers) {
+      outer_response_error_code =
+          state->loader->ResponseInfo()->headers->response_code();
+    }
+    RespondWithError(id, state->loader->NetError(), outer_response_error_code);
     return;
   }
 
   auto maybe_payload =
       state->ohttp_client->DecryptResponse(std::move(*response));
   if (!maybe_payload) {
-    RespondWithError(id, net::ERR_FAILED);
+    RespondWithError(id, net::ERR_INVALID_RESPONSE,
+                     /*outer_response_error_code=*/absl::nullopt);
     return;
   }
 
@@ -410,67 +448,70 @@ void ObliviousHttpRequestHandler::OnRequestComplete(
         return dict;
       });
 
+  // Parse the inner request.
   auto bhttp_response = quiche::BinaryHttpResponse::Create(*maybe_payload);
   if (!bhttp_response.ok()) {
-    RespondWithError(id, net::ERR_FAILED);
+    RespondWithError(id, net::ERR_INVALID_RESPONSE,
+                     /*outer_response_error_code=*/absl::nullopt);
     return;
   }
 
-  // Check that the inner request was successful.
-  int status_code = bhttp_response->status_code();
-  if (status_code / 100 != 2) {
-    RespondWithError(id, net::ERR_HTTP_RESPONSE_CODE_FAILURE);
+  int inner_status_code = bhttp_response->status_code();
+  scoped_refptr<net::HttpResponseHeaders> headers =
+      GetSyntheticBhttpResponseHeader(bhttp_response->GetHeaderFields());
+  // Check that the header is valid.
+  if (!headers) {
+    RespondWithError(id, net::ERR_INVALID_RESPONSE,
+                     /*outer_response_error_code=*/absl::nullopt);
     return;
   }
 
   if (state->trust_token_helper) {
-    std::string synthetic_headers = "HTTP/1.1 200 Success\r\n";
-    for (const auto& header : bhttp_response->GetHeaderFields()) {
-      // Header names and values can not contain embedded newlines. The rest of
-      // the constraints are handled by HttpResponseHeaders::TryToCreate.
-      if (base::ranges::find_first_of(header.name, kHeaderForbiddenChars) !=
-              header.name.end() ||
-          base::ranges::find_first_of(header.value, kHeaderForbiddenChars) !=
-              header.value.end()) {
-        // Invalid header value
-        RespondWithError(id, net::ERR_INVALID_RESPONSE);
-      }
-      synthetic_headers += header.name + ": " + header.value + "\r\n";
-    }
-    scoped_refptr<net::HttpResponseHeaders> headers =
-        net::HttpResponseHeaders::TryToCreate(synthetic_headers);
-    if (!headers) {
-      RespondWithError(id, net::ERR_INVALID_RESPONSE);
-      return;
-    }
     state->trust_token_helper->Finalize(
         *headers,
         base::BindOnce(
             &ObliviousHttpRequestHandler::OnDoneFinalizingTrustTokenOperation,
-            base::Unretained(this), id, std::string(bhttp_response->body())));
+            base::Unretained(this), id, inner_status_code, std::move(headers),
+            std::string(bhttp_response->body())));
     return;
   }
 
-  NotifyComplete(id, std::string(bhttp_response->body()));
+  NotifyComplete(id, inner_status_code, std::move(headers),
+                 std::string(bhttp_response->body()));
 }
 
 void ObliviousHttpRequestHandler::OnDoneFinalizingTrustTokenOperation(
     mojo::RemoteSetElementId id,
+    int inner_response_code,
+    scoped_refptr<net::HttpResponseHeaders> headers,
     std::string body,
     mojom::TrustTokenOperationStatus status) {
   if (status != mojom::TrustTokenOperationStatus::kOk) {
-    RespondWithError(id, net::ERR_TRUST_TOKEN_OPERATION_FAILED);
+    RespondWithError(id, net::ERR_TRUST_TOKEN_OPERATION_FAILED,
+                     /*outer_response_error_code=*/absl::nullopt);
     return;
   }
-  NotifyComplete(id, std::move(body));
+  NotifyComplete(id, inner_response_code, std::move(headers), std::move(body));
 }
 
-void ObliviousHttpRequestHandler::NotifyComplete(mojo::RemoteSetElementId id,
-                                                 std::string body) {
+void ObliviousHttpRequestHandler::NotifyComplete(
+    mojo::RemoteSetElementId id,
+    int inner_response_code,
+    scoped_refptr<net::HttpResponseHeaders> headers,
+    std::string body) {
   mojom::ObliviousHttpClient* client = clients_.Get(id);
   DCHECK(client);
 
-  client->OnCompleted(std::move(body), net::OK);
+  network::mojom::ObliviousHttpResponsePtr response =
+      network::mojom::ObliviousHttpResponse::New();
+  response->response_code = inner_response_code;
+  response->response_body = std::move(body);
+  response->headers = std::move(headers);
+  network::mojom::ObliviousHttpCompletionResultPtr response_result =
+      network::mojom::ObliviousHttpCompletionResult::NewInnerResponse(
+          std::move(response));
+
+  client->OnCompleted(std::move(response_result));
   clients_.Remove(id);
   client_state_.erase(id);
 }

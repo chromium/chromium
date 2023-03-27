@@ -58,17 +58,43 @@ class OhttpTestNetworkContext : public network::TestNetworkContext {
     }
     auto it = responses_.find(resource_url);
     ASSERT_TRUE(it != responses_.end());
-    remote_->OnCompleted(responses_[resource_url].body,
-                         responses_[resource_url].net_error);
+    if (responses_[resource_url].net_error.has_value()) {
+      auto completion_result =
+          network::mojom::ObliviousHttpCompletionResult::NewNetError(
+              responses_[resource_url].net_error.value());
+      remote_->OnCompleted(std::move(completion_result));
+    } else if (responses_[resource_url].outer_response_error_code.has_value()) {
+      auto completion_result = network::mojom::ObliviousHttpCompletionResult::
+          NewOuterResponseErrorCode(
+              responses_[resource_url].outer_response_error_code.value());
+      remote_->OnCompleted(std::move(completion_result));
+    } else {
+      auto response = network::mojom::ObliviousHttpResponse::New();
+      response->response_body = std::move(responses_[resource_url].body);
+      if (responses_[resource_url].inner_response_code.has_value()) {
+        response->response_code =
+            responses_[resource_url].inner_response_code.value();
+      } else {
+        response->response_code = net::HTTP_OK;
+      }
+      auto completion_result =
+          network::mojom::ObliviousHttpCompletionResult::NewInnerResponse(
+              std::move(response));
+      remote_->OnCompleted(std::move(completion_result));
+    }
     remote_.reset();
   }
 
   void AddResponse(std::string resource_url,
-                   absl::optional<std::string> body,
-                   int net_error) {
+                   std::string body,
+                   absl::optional<int> net_error,
+                   absl::optional<int> outer_response_error_code,
+                   absl::optional<int> inner_response_code) {
     Response response;
     response.body = body;
     response.net_error = net_error;
+    response.outer_response_error_code = outer_response_error_code;
+    response.inner_response_code = inner_response_code;
     responses_[GURL(resource_url)] = std::move(response);
   }
 
@@ -82,8 +108,10 @@ class OhttpTestNetworkContext : public network::TestNetworkContext {
 
  private:
   struct Response {
-    absl::optional<std::string> body;
-    int net_error;
+    std::string body;
+    absl::optional<int> net_error;
+    absl::optional<int> outer_response_error_code;
+    absl::optional<int> inner_response_code;
   };
 
   std::map<GURL, Response> responses_;
@@ -213,7 +241,10 @@ class HashRealTimeServiceTest : public PlatformTest {
       const std::unique_ptr<V5::SearchHashesResponse>& response) {
     std::string expected_response_str;
     response->SerializeToString(&expected_response_str);
-    network_context_.AddResponse(request_url, expected_response_str, net::OK);
+    network_context_.AddResponse(request_url, expected_response_str,
+                                 /*net_error=*/absl::nullopt,
+                                 /*outer_response_error_code=*/absl::nullopt,
+                                 /*inner_response_code=*/absl::nullopt);
   }
   void SetUpLookupResponse(const std::string& request_url,
                            const std::vector<V5::FullHash>& full_hashes) {
@@ -387,13 +418,16 @@ class HashRealTimeServiceTest : public PlatformTest {
   }
   // Starts a lookup on |url| that is expected to fail. The simulated server
   // response body can be specified either by |response_full_hashes| or by
-  // |custom_response|. |net_error| represents the simulated OHTTP handler error
-  // code. Confirms that the lookup fails.
+  // |custom_response|. |net_error|, |outer_response_error_code| and
+  // |inner_response_code| represent the simulated OHTTP handler error.
+  // Confirms that the lookup fails.
   void RunRequestFailureTest(
       const GURL& url,
       const absl::optional<std::vector<V5::FullHash>>& response_full_hashes,
-      const absl::optional<std::string>& custom_response,
-      net::Error net_error,
+      const std::string& custom_response,
+      absl::optional<net::Error> net_error,
+      absl::optional<int> outer_response_error_code,
+      absl::optional<int> inner_response_code,
       int expected_prefix_count,
       int expected_network_result,
       HashRealTimeService::OperationResult expected_operation_result) {
@@ -409,11 +443,10 @@ class HashRealTimeServiceTest : public PlatformTest {
       SetUpLookupResponse(
           /*request_url=*/expected_url,
           /*full_hashes=*/response_full_hashes.value());
-    } else if (custom_response.has_value()) {
-      network_context_.AddResponse(expected_url, custom_response.value(),
-                                   net_error);
     } else {
-      network_context_.AddResponse(expected_url, absl::nullopt, net_error);
+      network_context_.AddResponse(expected_url, custom_response, net_error,
+                                   outer_response_error_code,
+                                   inner_response_code);
     }
 
     // Start lookup.
@@ -521,7 +554,9 @@ class HashRealTimeServiceTest : public PlatformTest {
       request->add_hash_prefixes(hash_prefix);
     }
     std::string expected_url = GetExpectedRequestUrl(request);
-    network_context_.AddResponse(expected_url, "", net::ERR_FAILED);
+    network_context_.AddResponse(expected_url, "", net::ERR_FAILED,
+                                 /*outer_response_error_code=*/absl::nullopt,
+                                 /*inner_response_code=*/absl::nullopt);
 
     // Start lookup.
     base::MockCallback<HPRTLookupResponseCallback> response_callback;
@@ -921,22 +956,64 @@ TEST_F(HashRealTimeServiceTest, TestLookup_DuplicateFullHashDetailsInResponse) {
       /*expected_found_unmatched_full_hashes=*/false);
 }
 
-TEST_F(HashRealTimeServiceTest, TestLookupFailure_Error) {
+TEST_F(HashRealTimeServiceTest, TestLookupFailure_NetError) {
   GURL url = GURL("https://example.test");
   RunRequestFailureTest(
       /*url=*/url, /*response_full_hashes=*/absl::nullopt,
-      /*custom_response=*/absl::nullopt,
-      /*net_error=*/net::ERR_FAILED, /*expected_prefix_count=*/1,
+      /*custom_response=*/"",
+      /*net_error=*/net::ERR_FAILED,
+      /*outer_response_error_code=*/absl::nullopt,
+      /*inner_response_code=*/absl::nullopt,
+      /*expected_prefix_count=*/1,
       /*expected_network_result=*/net::ERR_FAILED,
       /*expected_operation_result=*/
       HashRealTimeService::OperationResult::kNetworkError);
+}
+TEST_F(HashRealTimeServiceTest, TestLookupFailure_NetErrorHttpCodeFailure) {
+  GURL url = GURL("https://example.test");
+  RunRequestFailureTest(
+      /*url=*/url, /*response_full_hashes=*/absl::nullopt,
+      /*custom_response=*/"",
+      /*net_error=*/net::ERR_HTTP_RESPONSE_CODE_FAILURE,
+      /*outer_response_error_code=*/absl::nullopt,
+      /*inner_response_code=*/absl::nullopt,
+      /*expected_prefix_count=*/1,
+      /*expected_network_result=*/0,
+      /*expected_operation_result=*/
+      HashRealTimeService::OperationResult::kHttpError);
+}
+TEST_F(HashRealTimeServiceTest, TestLookupFailure_OuterResponseCodeError) {
+  GURL url = GURL("https://example.test");
+  RunRequestFailureTest(
+      /*url=*/url, /*response_full_hashes=*/absl::nullopt,
+      /*custom_response=*/"",
+      /*net_error=*/absl::nullopt,
+      /*outer_response_error_code=*/net::HTTP_NOT_FOUND,
+      /*inner_response_code=*/absl::nullopt,
+      /*expected_prefix_count=*/1,
+      /*expected_network_result=*/net::HTTP_NOT_FOUND,
+      /*expected_operation_result=*/
+      HashRealTimeService::OperationResult::kHttpError);
+}
+TEST_F(HashRealTimeServiceTest, TestLookupFailure_InnerResponseCodeError) {
+  GURL url = GURL("https://example.test");
+  RunRequestFailureTest(
+      /*url=*/url, /*response_full_hashes=*/absl::nullopt,
+      /*custom_response=*/"",
+      /*net_error=*/absl::nullopt, /*outer_response_error_code=*/absl::nullopt,
+      /*inner_response_code=*/net::HTTP_UNAUTHORIZED,
+      /*expected_prefix_count=*/1,
+      /*expected_network_result=*/net::HTTP_UNAUTHORIZED,
+      /*expected_operation_result=*/
+      HashRealTimeService::OperationResult::kHttpError);
 }
 TEST_F(HashRealTimeServiceTest, TestLookupFailure_ParseResponse) {
   GURL url = GURL("https://example.test");
   RunRequestFailureTest(
       /*url=*/url, /*response_full_hashes=*/absl::nullopt,
       /*custom_response=*/"howdy",
-      /*net_error=*/net::OK, /*expected_prefix_count=*/1,
+      /*net_error=*/absl::nullopt, /*outer_response_error_code=*/absl::nullopt,
+      /*inner_response_code=*/absl::nullopt, /*expected_prefix_count=*/1,
       /*expected_network_result=*/net::HTTP_OK,
       /*expected_operation_result=*/
       HashRealTimeService::OperationResult::kParseError);
@@ -948,8 +1025,9 @@ TEST_F(HashRealTimeServiceTest, TestLookupFailure_IncorrectFullHashLength) {
       /*url=*/url, /*response_full_hashes=*/
       absl::optional<std::vector<V5::FullHash>>({CreateFullHashProto(
           {V5::ThreatType::SOCIAL_ENGINEERING}, short_full_hash)}),
-      /*custom_response=*/absl::nullopt,
-      /*net_error=*/net::OK, /*expected_prefix_count=*/1,
+      /*custom_response=*/"",
+      /*net_error=*/absl::nullopt, /*outer_response_error_code=*/absl::nullopt,
+      /*inner_response_code=*/absl::nullopt, /*expected_prefix_count=*/1,
       /*expected_network_result=*/net::HTTP_OK,
       /*expected_operation_result=*/
       HashRealTimeService::OperationResult::kIncorrectFullHashLengthError);
@@ -963,7 +1041,8 @@ TEST_F(HashRealTimeServiceTest, TestLookupFailure_MissingCacheDuration) {
   RunRequestFailureTest(
       /*url=*/url, /*response_full_hashes=*/{},
       /*custom_response=*/response_str,
-      /*net_error=*/net::OK,
+      /*net_error=*/absl::nullopt, /*outer_response_error_code=*/absl::nullopt,
+      /*inner_response_code=*/absl::nullopt,
       /*expected_prefix_count=*/1,
       /*expected_network_result=*/net::HTTP_OK,
       /*expected_operation_result=*/

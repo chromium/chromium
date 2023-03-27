@@ -86,7 +86,13 @@ class HashRealTimeService : public KeyedService {
 
  private:
   friend class HashRealTimeServiceTest;
-  FRIEND_TEST_ALL_PREFIXES(HashRealTimeServiceTest, TestLookupFailure_Error);
+  FRIEND_TEST_ALL_PREFIXES(HashRealTimeServiceTest, TestLookupFailure_NetError);
+  FRIEND_TEST_ALL_PREFIXES(HashRealTimeServiceTest,
+                           TestLookupFailure_NetErrorHttpCodeFailure);
+  FRIEND_TEST_ALL_PREFIXES(HashRealTimeServiceTest,
+                           TestLookupFailure_OuterResponseCodeError);
+  FRIEND_TEST_ALL_PREFIXES(HashRealTimeServiceTest,
+                           TestLookupFailure_InnerResponseCodeError);
   FRIEND_TEST_ALL_PREFIXES(HashRealTimeServiceTest,
                            TestLookupFailure_ParseResponse);
   FRIEND_TEST_ALL_PREFIXES(HashRealTimeServiceTest,
@@ -157,8 +163,8 @@ class HashRealTimeService : public KeyedService {
 
   // Callback for requests sent via OHTTP. Most parameters are used by
   // |OnURLLoaderComplete|, see the description above |OnURLLoaderComplete| for
-  // details. |response_body| and |net_error| are returned from the OHTTP
-  // client.
+  // details. |response_body|, |net_error| and |response_code| are returned from
+  // the OHTTP client.
   void OnOhttpComplete(
       const GURL& url,
       const std::vector<std::string>& hash_prefixes_in_request,
@@ -168,7 +174,8 @@ class HashRealTimeService : public KeyedService {
       HPRTLookupResponseCallback response_callback,
       SBThreatType locally_cached_results_threat_type,
       const absl::optional<std::string>& response_body,
-      int net_error);
+      int net_error,
+      int response_code);
 
   // Callback for requests sent directly to the Safe Browsing server. Most
   // parameters are used by |OnURLLoaderComplete|, see the description above

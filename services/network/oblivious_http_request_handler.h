@@ -76,10 +76,12 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) ObliviousHttpRequestHandler {
   void ContinueHandlingRequest(absl::optional<net::HttpRequestHeaders> headers,
                                mojo::RemoteSetElementId id);
 
-  // Calls the completed event with the specified error code on the
-  // corresponding client. The client with the specified id must be in the
-  // `clients_` set and the `client_state_` map.
-  void RespondWithError(mojo::RemoteSetElementId id, int error_code);
+  // Calls the completed event with the specified net error code and HTTP
+  // response error code on the corresponding client. The client with the
+  // specified id must be in the `clients_` set and the `client_state_` map.
+  void RespondWithError(mojo::RemoteSetElementId id,
+                        int error_code,
+                        absl::optional<int> outer_response_error_code);
 
   // Called by the SimpleURLLoader when the outer request has completed.
   // Performs steps 5 and 6 of the OHTTP request procedure above.
@@ -91,12 +93,17 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) ObliviousHttpRequestHandler {
   // result.
   void OnDoneFinalizingTrustTokenOperation(
       mojo::RemoteSetElementId id,
+      int inner_response_code,
+      scoped_refptr<net::HttpResponseHeaders> headers,
       std::string body,
       mojom::TrustTokenOperationStatus status);
 
   // Notifies the client that the request completed successfully with the
-  // provided response body.
-  void NotifyComplete(mojo::RemoteSetElementId id, std::string body);
+  // provided response headers and body.
+  void NotifyComplete(mojo::RemoteSetElementId id,
+                      int inner_response_code,
+                      scoped_refptr<net::HttpResponseHeaders> headers,
+                      std::string body);
 
   // Handles cleaning up when an ObliviousHttpClient disconnects.
   void OnClientDisconnect(mojo::RemoteSetElementId id);

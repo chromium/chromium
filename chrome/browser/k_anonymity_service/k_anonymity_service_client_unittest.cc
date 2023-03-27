@@ -414,10 +414,29 @@ class OhttpTestNetworkContext : public network::TestNetworkContext {
       return;
     }
     if (error_) {
-      remote_->OnCompleted(absl::nullopt, error_.value());
+      auto completion_result =
+          network::mojom::ObliviousHttpCompletionResult::NewNetError(
+              error_.value());
+      remote_->OnCompleted(std::move(completion_result));
       error_.reset();
+    } else if (outer_response_error_code_) {
+      auto completion_result = network::mojom::ObliviousHttpCompletionResult::
+          NewOuterResponseErrorCode(outer_response_error_code_.value());
+      remote_->OnCompleted(std::move(completion_result));
+      outer_response_error_code_.reset();
     } else {
-      remote_->OnCompleted(body, net::OK);
+      auto response = network::mojom::ObliviousHttpResponse::New();
+      if (inner_response_code_) {
+        response->response_code = inner_response_code_.value();
+        inner_response_code_.reset();
+      } else {
+        response->response_code = net::HTTP_OK;
+      }
+      response->response_body = std::move(body);
+      auto completion_result =
+          network::mojom::ObliviousHttpCompletionResult::NewInnerResponse(
+              std::move(response));
+      remote_->OnCompleted(std::move(completion_result));
     }
     remote_.reset();
     pending_request_.reset();
@@ -425,9 +444,17 @@ class OhttpTestNetworkContext : public network::TestNetworkContext {
 
   void SetDropRequests(bool drop) { drop_requests_ = drop; }
   void SetErrorOnce(net::Error err) { error_ = err; }
+  void SetOuterResponseErrorOnce(int outer_response_error_code) {
+    outer_response_error_code_ = outer_response_error_code;
+  }
+  void SetInnerResponseErrorOnce(int inner_response_code) {
+    inner_response_code_ = inner_response_code;
+  }
 
  private:
   absl::optional<net::Error> error_;
+  absl::optional<int> outer_response_error_code_;
+  absl::optional<int> inner_response_code_;
   bool drop_requests_ = false;
   network::mojom::ObliviousHttpRequestPtr pending_request_;
   mojo::Remote<network::mojom::ObliviousHttpClient> remote_;
@@ -500,6 +527,14 @@ class KAnonymityServiceClientJoinQueryTest
   void DropOhttpRequests() { network_context_.SetDropRequests(true); }
 
   void SetOhttpErrorOnce(net::Error err) { network_context_.SetErrorOnce(err); }
+
+  void SetOhttpOuterResponseErrorOnce(int outer_response_error_code) {
+    network_context_.SetOuterResponseErrorOnce(outer_response_error_code);
+  }
+
+  void SetOhttpInnerResponseErrorOnce(int inner_response_code) {
+    network_context_.SetInnerResponseErrorOnce(inner_response_code);
+  }
 
  private:
   OhttpTestNetworkContext network_context_;
@@ -597,9 +632,58 @@ TEST_F(KAnonymityServiceClientJoinQueryTest, TryJoinSetTokenAlreadyUsedOnce) {
              {KAnonymityServiceJoinSetAction::kJoinSetSuccess, 1}});
 }
 
-TEST_F(KAnonymityServiceClientJoinQueryTest, TryJoinSetOtherErrorsNotRetried) {
+TEST_F(KAnonymityServiceClientJoinQueryTest,
+       TryJoinSetOtherNetErrorsNotRetried) {
   InitializeIdentity(true);
   SetOhttpErrorOnce(net::ERR_FAILED);
+  KAnonymityServiceClient k_service(profile());
+  base::HistogramTester hist;
+  base::RunLoop run_loop;
+  k_service.JoinSet("1", base::BindLambdaForTesting([&run_loop](bool result) {
+                      EXPECT_FALSE(result);
+                      run_loop.Quit();
+                    }));
+  RespondWithJoinKey();
+  RespondWithTrustTokenNonUniqueUserID(2);
+  RespondWithTrustTokenKeys(2);
+  RespondWithTrustTokenIssued(2);
+  RespondWithJoin();
+  run_loop.Run();
+  CheckJoinSetHistogramActions(
+      hist, {{KAnonymityServiceJoinSetAction::kJoinSet, 1},
+             {KAnonymityServiceJoinSetAction::kFetchJoinSetOHTTPKey, 1},
+             {KAnonymityServiceJoinSetAction::kSendJoinSetRequest, 1},
+             {KAnonymityServiceJoinSetAction::kJoinSetRequestFailed, 1}});
+}
+
+TEST_F(KAnonymityServiceClientJoinQueryTest,
+       TryJoinSetOtherOuterHttpStatusErrorNotRetried) {
+  InitializeIdentity(true);
+  SetOhttpOuterResponseErrorOnce(net::HTTP_NOT_FOUND);
+  KAnonymityServiceClient k_service(profile());
+  base::HistogramTester hist;
+  base::RunLoop run_loop;
+  k_service.JoinSet("1", base::BindLambdaForTesting([&run_loop](bool result) {
+                      EXPECT_FALSE(result);
+                      run_loop.Quit();
+                    }));
+  RespondWithJoinKey();
+  RespondWithTrustTokenNonUniqueUserID(2);
+  RespondWithTrustTokenKeys(2);
+  RespondWithTrustTokenIssued(2);
+  RespondWithJoin();
+  run_loop.Run();
+  CheckJoinSetHistogramActions(
+      hist, {{KAnonymityServiceJoinSetAction::kJoinSet, 1},
+             {KAnonymityServiceJoinSetAction::kFetchJoinSetOHTTPKey, 1},
+             {KAnonymityServiceJoinSetAction::kSendJoinSetRequest, 1},
+             {KAnonymityServiceJoinSetAction::kJoinSetRequestFailed, 1}});
+}
+
+TEST_F(KAnonymityServiceClientJoinQueryTest,
+       TryJoinSetOtherInnerHttpStatusErrorNotRetried) {
+  InitializeIdentity(true);
+  SetOhttpInnerResponseErrorOnce(net::HTTP_NOT_FOUND);
   KAnonymityServiceClient k_service(profile());
   base::HistogramTester hist;
   base::RunLoop run_loop;

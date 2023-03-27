@@ -7,6 +7,7 @@ module network.mojom;
 import "services/network/public/mojom/isolation_info.mojom";
 import
  "services/network/public/mojom/mutable_network_traffic_annotation_tag.mojom";
+import "services/network/public/mojom/network_param.mojom";
 import "services/network/public/mojom/trust_tokens.mojom";
 import "url/mojom/url.mojom";
 
@@ -15,6 +16,33 @@ import "url/mojom/url.mojom";
 struct ObliviousHttpRequestBody {
   string content;
   string content_type;
+};
+
+//  The inner response wrapped in binary HTTP from the OHTTP gateway.
+struct ObliviousHttpResponse {
+  // The response code of the inner gateway HTTP response.
+  int32 response_code;
+  // The headers of the inner gateway HTTP response. It should only be used to
+  // get header values. To get the response code, use `response_code` instead.
+  HttpResponseHeaders headers;
+  // The response code of the inner gateway HTTP response. It is empty if
+  // `response_code` is non-200.
+  string response_body;
+};
+
+// The structure used to deliver result to Oblivious HTTP clients.
+union ObliviousHttpCompletionResult {
+  // A general net::Error code in case of failure. If the result is net::OK, one
+  // of the other fields in the union will be populated.
+  int32 net_error;
+  // The response code of the outer relay HTTP response, used to wrap the binary
+  // HTTP (bHTTP) response. This is set iff the result fails because the outer
+  // HTTP response status code is not HTTP_OK (200). The value will never be
+  // 200.
+  int32 outer_response_error_code;
+  // The inner gateway HTTP response. Parsed out from the binary HTTP (bHTTP)
+  // structure.
+  ObliviousHttpResponse inner_response;
 };
 
 struct ObliviousHttpPaddingParameters {
@@ -57,8 +85,6 @@ struct ObliviousHttpRequest {
 
 // Callback interface for Oblivious HTTP Requests.
 interface ObliviousHttpClient {
-  // Called when the OHTTP request completes. `net_error` indicates the
-  // net::Error code for the operation. `response_body` will contain the body
-  // of the response.
-  OnCompleted(string? response_body, int32 net_error);
+  // Called when the OHTTP request completes.
+  OnCompleted(ObliviousHttpCompletionResult response);
 };

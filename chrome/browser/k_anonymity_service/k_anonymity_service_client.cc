@@ -25,6 +25,7 @@
 #include "google_apis/google_api_keys.h"
 #include "net/base/isolation_info.h"
 #include "net/base/load_flags.h"
+#include "net/http/http_status_code.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "services/data_decoder/public/cpp/data_decoder.h"
 #include "services/network/public/cpp/resource_request.h"
@@ -121,14 +122,28 @@ class KAnonObliviousHttpClient : public network::mojom::ObliviousHttpClient {
     }
   }
 
-  void OnCompleted(const absl::optional<std::string>& response,
-                   int net_error) override {
+  void OnCompleted(
+      network::mojom::ObliviousHttpCompletionResultPtr status) override {
     if (called_) {
       mojo::ReportBadMessage("OnCompleted called more than once");
       return;
     }
     called_ = true;
-    std::move(callback_).Run(response, net_error);
+    if (status->is_net_error()) {
+      std::move(callback_).Run(absl::nullopt, status->get_net_error());
+    } else if (status->is_outer_response_error_code()) {
+      std::move(callback_).Run(absl::nullopt,
+                               net::ERR_HTTP_RESPONSE_CODE_FAILURE);
+    } else {
+      DCHECK(status->is_inner_response());
+      if (status->get_inner_response()->response_code != net::HTTP_OK) {
+        std::move(callback_).Run(absl::nullopt,
+                                 net::ERR_HTTP_RESPONSE_CODE_FAILURE);
+      } else {
+        std::move(callback_).Run(status->get_inner_response()->response_body,
+                                 net::OK);
+      }
+    }
   }
 
  private:

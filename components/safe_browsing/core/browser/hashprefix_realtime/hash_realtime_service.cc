@@ -71,25 +71,43 @@ SBThreatType MapThreatTypeToSbThreatType(const V5::ThreatType& threat_type) {
 class ObliviousHttpClient : public network::mojom::ObliviousHttpClient {
  public:
   using OnCompletedCallback =
-      base::OnceCallback<void(const absl::optional<std::string>&, int)>;
+      base::OnceCallback<void(const absl::optional<std::string>&, int, int)>;
 
   explicit ObliviousHttpClient(OnCompletedCallback callback)
       : callback_(std::move(callback)) {}
 
   ~ObliviousHttpClient() override {
     if (!called_) {
-      std::move(callback_).Run(absl::nullopt, net::ERR_FAILED);
+      std::move(callback_).Run(absl::nullopt, net::ERR_FAILED,
+                               /*response_code=*/0);
     }
   }
 
-  void OnCompleted(const absl::optional<std::string>& response,
-                   int net_error) override {
+  void OnCompleted(
+      network::mojom::ObliviousHttpCompletionResultPtr status) override {
     if (called_) {
       mojo::ReportBadMessage("OnCompleted called more than once");
       return;
     }
     called_ = true;
-    std::move(callback_).Run(response, net_error);
+    if (status->is_net_error()) {
+      std::move(callback_).Run(absl::nullopt, status->get_net_error(),
+                               /*response_code=*/0);
+    } else if (status->is_outer_response_error_code()) {
+      std::move(callback_).Run(absl::nullopt,
+                               net::ERR_HTTP_RESPONSE_CODE_FAILURE,
+                               status->get_outer_response_error_code());
+    } else {
+      DCHECK(status->is_inner_response());
+      if (status->get_inner_response()->response_code != net::HTTP_OK) {
+        std::move(callback_).Run(absl::nullopt,
+                                 net::ERR_HTTP_RESPONSE_CODE_FAILURE,
+                                 status->get_inner_response()->response_code);
+      } else {
+        std::move(callback_).Run(status->get_inner_response()->response_body,
+                                 net::OK, net::HTTP_OK);
+      }
+    }
   }
 
  private:
@@ -361,19 +379,17 @@ void HashRealTimeService::OnOhttpComplete(
     HPRTLookupResponseCallback response_callback,
     SBThreatType locally_cached_results_threat_type,
     const absl::optional<std::string>& response_body,
-    int net_error) {
+    int net_error,
+    int response_code) {
   // TODO(crbug.com/1407283): Notify ohttp_key_service_ if the error is key
   // related.
   auto response_body_ptr =
       std::make_unique<std::string>(response_body.value_or(""));
-  // TODO(crbug.com/1407283): Set response_code when the mojo interface exposes
-  // response_code.
   OnURLLoaderComplete(
       url, std::move(hash_prefixes_in_request), std::move(result_full_hashes),
       request_start_time, std::move(response_callback_task_runner),
       std::move(response_callback), locally_cached_results_threat_type,
-      std::move(response_body_ptr), net_error,
-      /*response_code=*/net::HTTP_OK);
+      std::move(response_body_ptr), net_error, response_code);
 }
 
 void HashRealTimeService::OnDirectURLLoaderComplete(
@@ -417,7 +433,6 @@ void HashRealTimeService::OnURLLoaderComplete(
     int net_error,
     int response_code) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-
   base::UmaHistogramTimes("SafeBrowsing.HPRT.Network.Time",
                           base::TimeTicks::Now() - request_start_time);
   RecordHttpResponseOrErrorCode("SafeBrowsing.HPRT.Network.Result", net_error,
@@ -544,7 +559,8 @@ HashRealTimeService::ParseResponse(
     return base::unexpected(OperationResult::kParseError);
   } else if (ErrorIsRetriable(net_error, response_code)) {
     return base::unexpected(OperationResult::kRetriableError);
-  } else if (net_error != net::OK) {
+  } else if (net_error != net::OK &&
+             net_error != net::ERR_HTTP_RESPONSE_CODE_FAILURE) {
     return base::unexpected(OperationResult::kNetworkError);
   } else if (response_code != net::HTTP_OK) {
     return base::unexpected(OperationResult::kHttpError);
