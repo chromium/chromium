@@ -97,8 +97,10 @@ class QuicPacketPrinter : public QuicFramerVisitorInterface {
              << timestamp.ToDebuggingValue() << ")\n";
     return true;
   }
-  bool OnAckFrameEnd(QuicPacketNumber start) override {
-    *output_ << "OnAckFrameEnd, start: " << start << "\n";
+  bool OnAckFrameEnd(QuicPacketNumber start,
+                     const absl::optional<QuicEcnCounts>& ecn_counts) override {
+    *output_ << "OnAckFrameEnd, start: " << start << ", "
+             << ecn_counts.value_or(QuicEcnCounts()).ToString() << "\n";
     return true;
   }
   bool OnStopWaitingFrame(const QuicStopWaitingFrame& frame) override {
@@ -205,9 +207,6 @@ class QuicPacketPrinter : public QuicFramerVisitorInterface {
   void OnAuthenticatedIetfStatelessResetPacket(
       const QuicIetfStatelessResetPacket& packet) override {
     *output_ << "OnAuthenticatedIetfStatelessResetPacket\n";
-  }
-  void OnAckEcnCounts(const quic::QuicEcnCounts& counts) override {
-    *output_ << "OnAckEcnCounts\n";
   }
 
  private:
