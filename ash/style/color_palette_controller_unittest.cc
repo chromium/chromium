@@ -11,6 +11,8 @@
 #include "ash/wallpaper/wallpaper_controller_test_api.h"
 #include "ash/wallpaper/wallpaper_utils/wallpaper_calculated_colors.h"
 #include "base/functional/callback_helpers.h"
+#include "base/test/scoped_feature_list.h"
+#include "chromeos/constants/chromeos_features.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "third_party/skia/include/core/SkColor.h"
 
@@ -20,6 +22,10 @@ namespace {
 
 const char kUser[] = "user@gmail.com";
 const AccountId kAccountId = AccountId::FromUserEmailGaiaId(kUser, kUser);
+
+// A nice magenta that is in the acceptable lightness range for dark and light.
+// Hue: 281, Saturation: 100, Lightness: 50%.
+constexpr SkColor kKMeanColor = SkColorSetRGB(0xae, 0x00, 0xff);
 
 class MockPaletteObserver : public ColorPaletteController::Observer {
  public:
@@ -71,7 +77,24 @@ TEST_F(ColorPaletteControllerTest, ExpectedEmptyValues) {
             color_palette_controller()->GetStaticColor(kAccountId));
 }
 
+TEST_F(ColorPaletteControllerTest, SetColorScheme_JellyDisabled_AlwaysTonal) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(chromeos::features::kJelly);
+
+  color_palette_controller()->SetColorScheme(ColorScheme::kStatic, kAccountId,
+                                             base::DoNothing());
+  EXPECT_EQ(ColorScheme::kTonalSpot,
+            color_palette_controller()->GetColorPaletteSeed(kAccountId).scheme);
+
+  color_palette_controller()->SetColorScheme(ColorScheme::kExpressive,
+                                             kAccountId, base::DoNothing());
+  EXPECT_EQ(ColorScheme::kTonalSpot,
+            color_palette_controller()->GetColorPaletteSeed(kAccountId).scheme);
+}
+
 TEST_F(ColorPaletteControllerTest, SetColorScheme) {
+  base::test::ScopedFeatureList feature_list(chromeos::features::kJelly);
+
   ColorScheme color_scheme = ColorScheme::kExpressive;
 
   color_palette_controller()->SetColorScheme(color_scheme, kAccountId,
@@ -87,6 +110,7 @@ TEST_F(ColorPaletteControllerTest, SetColorScheme) {
 }
 
 TEST_F(ColorPaletteControllerTest, SetStaticColor) {
+  base::test::ScopedFeatureList feature_list(chromeos::features::kJelly);
   SkColor static_color = SK_ColorGRAY;
 
   color_palette_controller()->SetStaticColor(static_color, kAccountId,
@@ -100,6 +124,28 @@ TEST_F(ColorPaletteControllerTest, SetStaticColor) {
       color_palette_controller()->GetColorPaletteSeed(kAccountId);
   EXPECT_EQ(ColorScheme::kStatic, color_palette_seed.scheme);
   EXPECT_EQ(static_color, color_palette_seed.seed_color);
+}
+
+// If the Jelly flag is off, we always return the KMeans color from the
+// wallpaper controller regardless of scheme.
+TEST_F(ColorPaletteControllerTest, SetStaticColor_JellyDisabled_AlwaysKMeans) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(chromeos::features::kJelly);
+
+  WallpaperControllerTestApi wallpaper(wallpaper_controller());
+  wallpaper.SetCalculatedColors(
+      WallpaperCalculatedColors({}, kKMeanColor, SK_ColorWHITE));
+
+  color_palette_controller()->SetColorScheme(ColorScheme::kStatic, kAccountId,
+                                             base::DoNothing());
+  color_palette_controller()->SetStaticColor(SK_ColorRED, kAccountId,
+                                             base::DoNothing());
+
+  // TODO(skau): Check that this matches kKMean after color blending has been
+  // moved.
+  EXPECT_NE(
+      SK_ColorWHITE,
+      color_palette_controller()->GetColorPaletteSeed(kAccountId).seed_color);
 }
 
 TEST_F(ColorPaletteControllerTest, ColorModeTriggersObserver) {

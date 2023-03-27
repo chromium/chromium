@@ -5,6 +5,8 @@
 #ifndef ASH_STYLE_COLOR_PALETTE_CONTROLLER_H_
 #define ASH_STYLE_COLOR_PALETTE_CONTROLLER_H_
 
+#include <tuple>
+
 #include "ash/ash_export.h"
 #include "base/containers/span.h"
 #include "base/observer_list_types.h"
@@ -13,6 +15,7 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/color/color_provider_manager.h"
+#include "ui/gfx/color_palette.h"
 
 class PrefRegistrySimple;
 
@@ -35,11 +38,17 @@ enum class ASH_EXPORT ColorScheme {
 // palette.
 struct ASH_EXPORT ColorPaletteSeed {
   // The color which the palette is generated from.
-  SkColor seed_color;
+  SkColor seed_color = gfx::kGoogleBlue400;
   // The type of palette which is being generated.
-  ColorScheme scheme;
+  ColorScheme scheme = ColorScheme::kStatic;
   // Dark or light palette.
-  ui::ColorProviderManager::ColorMode color_mode;
+  ui::ColorProviderManager::ColorMode color_mode =
+      ui::ColorProviderManager::ColorMode::kLight;
+
+  bool operator==(const ColorPaletteSeed& other) const {
+    return std::tie(seed_color, scheme, color_mode) ==
+           std::tie(other.seed_color, other.scheme, other.color_mode);
+  }
 };
 
 // Samples of color schemes for the tri-color scheme previews.
@@ -107,6 +116,9 @@ class ASH_EXPORT ColorPaletteController {
   // Returns the most recently used ColorPaletteSeed.
   virtual ColorPaletteSeed GetColorPaletteSeed(
       const AccountId& account_id) const = 0;
+
+  // Returns the current seed for the current user.
+  virtual ColorPaletteSeed GetCurrentSeed() const = 0;
 
   // Returns true if using a color scheme based on the current wallpaper.
   virtual bool UsesWallpaperSeedColor(const AccountId& account_id) const = 0;

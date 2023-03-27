@@ -141,12 +141,25 @@ class ColorPaletteControllerImpl : public ColorPaletteController,
     return seed;
   }
 
+  ColorPaletteSeed GetCurrentSeed() const override {
+    const auto* session = GetActiveUserSession();
+    if (!session) {
+      return {};
+    }
+
+    return GetColorPaletteSeed(AccountFromSession(session));
+  }
+
   bool UsesWallpaperSeedColor(const AccountId& account_id) const override {
     // Scheme tracks if wallpaper color is used.
     return GetColorScheme(account_id) != ColorScheme::kStatic;
   }
 
   ColorScheme GetColorScheme(const AccountId& account_id) const override {
+    if (!chromeos::features::IsJellyEnabled()) {
+      // Pre-Jelly, this is always Tonal Spot.
+      return ColorScheme::kTonalSpot;
+    }
     PrefService* pref_service = GetUserPrefService(account_id);
     if (!pref_service) {
       DVLOG(1)
