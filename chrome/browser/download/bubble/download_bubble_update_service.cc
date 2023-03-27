@@ -49,13 +49,12 @@ using ProgressInfo = DownloadDisplayController::ProgressInfo;
 template <typename Item>
 using SortedItems = DownloadBubbleUpdateService::SortedItems<Item>;
 
-// Show 100 items by default. We will cache up to this many download items and
-// up to this many offline items.
-constexpr size_t kDefaultMaxNumItemsToShow = 100u;
-// Cache a few more items than we will return from GetAllModelsToDisplay. This
-// gives us some wiggle room and makes it more likely that we'll return enough
-// items before backfilling.
-constexpr size_t kDefaultExtraItemsToCache = 20u;
+// Show up to 30 items in total by default.
+constexpr size_t kDefaultMaxNumItemsToShow = 30u;
+// Cache a few more items of each type than we will return from
+// GetAllModelsToDisplay. This gives us some wiggle room and makes it more
+// likely that we'll return enough items before backfilling.
+constexpr size_t kDefaultExtraItemsToCache = 30u;
 // Amount of time to show an item in the bubble. Items older than this duration
 // ago will be pruned.
 constexpr base::TimeDelta kShowItemInBubbleDuration = base::Hours(24);
