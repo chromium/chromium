@@ -2205,29 +2205,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="NewTabPage.UserClassifier.AverageHoursToOpenNTP" units="hours"
-    expires_after="2021-09-05">
-  <owner>freedjm@chromium.org</owner>
-  <owner>feed@chromium.org</owner>
-  <summary>
-    Android: The estimated average number of hours between two successive times
-    when a new tab page is opened. Recorded after each opening of a NTP (and
-    after updating the model used for the estimate).
-  </summary>
-</histogram>
-
-<histogram name="NewTabPage.UserClassifier.AverageHoursToShowSuggestions"
-    units="hours" expires_after="2021-09-05">
-  <owner>freedjm@chromium.org</owner>
-  <owner>feed@chromium.org</owner>
-  <summary>
-    Android: The estimated average number of hours between two successive times
-    when the list of content suggestions on a new tab page is shown (i.e. when
-    the user scrolls below the fold). Recorded after each time the suggestions
-    are shown (and after updating the model used for the estimate).
-  </summary>
-</histogram>
-
 <histogram name="NewTabPage.UserClassifier.AverageHoursToUseSuggestions"
     units="hours" expires_after="2022-01-09">
   <owner>freedjm@chromium.org</owner>

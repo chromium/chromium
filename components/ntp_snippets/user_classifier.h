@@ -20,8 +20,8 @@ class Clock;
 namespace ntp_snippets {
 
 // Collects data about user usage patterns of content suggestions, computes
-// long-term user metrics locally using pref, and reports the metrics to UMA.
-// Based on these long-term user metrics, it classifies the user in a UserClass.
+// long-term user metrics locally using pref. Based on these long-term user
+// metrics, it classifies the user in a UserClass.
 class UserClassifier {
  public:
   // Enumeration listing user classes
@@ -40,8 +40,7 @@ class UserClassifier {
   // event in this time interval.
   // See https://en.wikipedia.org/wiki/Exponential_discounting for more details.
   // We keep track of the following events.
-  // NOTE: if you add any element, add it also in the static arrays in .cc and
-  // create another histogram.
+  // NOTE: if you add any element, add it also in the static arrays in .cc.
   enum class Metric {
     NTP_OPENED,  // When the user opens a new NTP - this indicates potential
                  // use of content suggestions.
@@ -82,7 +81,7 @@ class UserClassifier {
  private:
   // The event has happened, recompute the metric accordingly. Then store and
   // return the new value.
-  double UpdateMetricOnEvent(Metric metric);
+  void UpdateMetricOnEvent(Metric metric);
   // No event has happened but we need to get up-to-date metric, recompute and
   // return the new value. This function does not store the recomputed metric.
   double GetUpToDateMetricValue(Metric metric) const;

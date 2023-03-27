@@ -11,7 +11,6 @@
 #include "base/cxx17_backports.h"
 #include "base/logging.h"
 #include "base/metrics/field_trial_params.h"
-#include "base/metrics/histogram_macros.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/time/clock.h"
 #include "components/ntp_snippets/features.h"
@@ -53,14 +52,6 @@ const char kActiveConsumerClicksAtLeastOncePerHoursParam[] =
 const double kRareUserOpensNTPAtMostOncePerHours = 96;
 const char kRareUserOpensNTPAtMostOncePerHoursParam[] =
     "user_classifier_rare_user_opens_ntp_at_most_once_per_hours";
-
-// Histograms for logging the estimated average hours to next event.
-const char kHistogramAverageHoursToOpenNTP[] =
-    "NewTabPage.UserClassifier.AverageHoursToOpenNTP";
-const char kHistogramAverageHoursToShowSuggestions[] =
-    "NewTabPage.UserClassifier.AverageHoursToShowSuggestions";
-const char kHistogramAverageHoursToUseSuggestions[] =
-    "NewTabPage.UserClassifier.AverageHoursToUseSuggestions";
 
 // The enum used for iteration.
 const UserClassifier::Metric kMetrics[] = {
@@ -238,29 +229,7 @@ void UserClassifier::RegisterProfilePrefs(PrefRegistrySimple* registry) {
 
 void UserClassifier::OnEvent(Metric metric) {
   DCHECK_NE(metric, Metric::COUNT);
-  double metric_value = UpdateMetricOnEvent(metric);
-
-  double avg = GetEstimateHoursBetweenEvents(
-      metric_value, discount_rate_per_hour_, min_hours_, max_hours_);
-  // We use kMaxHours as the max value below as the maximum value for the
-  // histograms must be constant.
-  switch (metric) {
-    case Metric::NTP_OPENED:
-      UMA_HISTOGRAM_CUSTOM_COUNTS(kHistogramAverageHoursToOpenNTP, avg, 1,
-                                  kMaxHours, 50);
-      break;
-    case Metric::SUGGESTIONS_SHOWN:
-      UMA_HISTOGRAM_CUSTOM_COUNTS(kHistogramAverageHoursToShowSuggestions, avg,
-                                  1, kMaxHours, 50);
-      break;
-    case Metric::SUGGESTIONS_USED:
-      UMA_HISTOGRAM_CUSTOM_COUNTS(kHistogramAverageHoursToUseSuggestions, avg,
-                                  1, kMaxHours, 50);
-      break;
-    case Metric::COUNT:
-      NOTREACHED();
-      break;
-  }
+  UpdateMetricOnEvent(metric);
 }
 
 double UserClassifier::GetEstimatedAvgTime(Metric metric) const {
@@ -314,17 +283,17 @@ void UserClassifier::ClearClassificationForDebugging() {
   }
 }
 
-double UserClassifier::UpdateMetricOnEvent(Metric metric) {
+void UserClassifier::UpdateMetricOnEvent(Metric metric) {
   // The pref_service_ can be null in tests.
   if (!pref_service_) {
-    return 0;
+    return;
   }
 
   double hours_since_last_time =
       std::min(max_hours_, GetHoursSinceLastTime(metric));
   // Ignore events within the same "browsing session".
   if (hours_since_last_time < min_hours_) {
-    return GetUpToDateMetricValue(metric);
+    return;
   }
 
   SetLastTimeToNow(metric);
@@ -335,7 +304,6 @@ double UserClassifier::UpdateMetricOnEvent(Metric metric) {
       1 + DiscountMetric(metric_value, hours_since_last_time,
                          discount_rate_per_hour_);
   SetMetricValue(metric, new_metric_value);
-  return new_metric_value;
 }
 
 double UserClassifier::GetUpToDateMetricValue(Metric metric) const {

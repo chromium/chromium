@@ -8,7 +8,6 @@
 #include <string>
 #include <utility>
 
-#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/simple_test_clock.h"
 #include "base/time/time.h"
@@ -140,8 +139,7 @@ TEST_F(UserClassifierTest,
 
 class UserClassifierMetricTest
     : public UserClassifierTest,
-      public ::testing::WithParamInterface<
-          std::pair<UserClassifier::Metric, std::string>> {
+      public ::testing::WithParamInterface<UserClassifier::Metric> {
  public:
   UserClassifierMetricTest() = default;
   UserClassifierMetricTest(const UserClassifierMetricTest&) = delete;
@@ -149,7 +147,7 @@ class UserClassifierMetricTest
 };
 
 TEST_P(UserClassifierMetricTest, ShouldDecreaseEstimateAfterEvent) {
-  UserClassifier::Metric metric = GetParam().first;
+  UserClassifier::Metric metric = GetParam();
   UserClassifier* user_classifier = CreateUserClassifier();
 
   // The initial event does not decrease the estimate.
@@ -163,18 +161,8 @@ TEST_P(UserClassifierMetricTest, ShouldDecreaseEstimateAfterEvent) {
   }
 }
 
-TEST_P(UserClassifierMetricTest, ShouldReportToUmaOnEvent) {
-  UserClassifier::Metric metric = GetParam().first;
-  const std::string& histogram_name = GetParam().second;
-  base::HistogramTester histogram_tester;
-  UserClassifier* user_classifier = CreateUserClassifier();
-
-  user_classifier->OnEvent(metric);
-  EXPECT_THAT(histogram_tester.GetAllSamples(histogram_name), SizeIs(1));
-}
-
 TEST_P(UserClassifierMetricTest, ShouldConvergeTowardsPattern) {
-  UserClassifier::Metric metric = GetParam().first;
+  UserClassifier::Metric metric = GetParam();
   UserClassifier* user_classifier = CreateUserClassifier();
 
   // Have the pattern of an event every five hours and start changing it towards
@@ -199,7 +187,7 @@ TEST_P(UserClassifierMetricTest, ShouldConvergeTowardsPattern) {
 }
 
 TEST_P(UserClassifierMetricTest, ShouldIgnoreSubsequentEventsForHalfAnHour) {
-  UserClassifier::Metric metric = GetParam().first;
+  UserClassifier::Metric metric = GetParam();
   UserClassifier* user_classifier = CreateUserClassifier();
 
   // The initial event
@@ -220,7 +208,7 @@ TEST_P(UserClassifierMetricTest, ShouldIgnoreSubsequentEventsForHalfAnHour) {
 
 TEST_P(UserClassifierMetricTest,
        ShouldIgnoreSubsequentEventsWithIncreasedLimit) {
-  UserClassifier::Metric metric = GetParam().first;
+  UserClassifier::Metric metric = GetParam();
   // Increase the min_hours to 1.0, i.e. 60 minutes.
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitAndEnableFeatureWithParameters(
@@ -244,7 +232,7 @@ TEST_P(UserClassifierMetricTest,
 }
 
 TEST_P(UserClassifierMetricTest, ShouldCapDelayBetweenEvents) {
-  UserClassifier::Metric metric = GetParam().first;
+  UserClassifier::Metric metric = GetParam();
   UserClassifier* user_classifier = CreateUserClassifier();
 
   // The initial event
@@ -267,7 +255,7 @@ TEST_P(UserClassifierMetricTest, ShouldCapDelayBetweenEvents) {
 
 TEST_P(UserClassifierMetricTest,
        ShouldCapDelayBetweenEventsWithDecreasedLimit) {
-  UserClassifier::Metric metric = GetParam().first;
+  UserClassifier::Metric metric = GetParam();
   // Decrease the max_hours to 72, i.e. 3 days.
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitAndEnableFeatureWithParameters(
@@ -295,15 +283,9 @@ TEST_P(UserClassifierMetricTest,
 INSTANTIATE_TEST_SUITE_P(
     NTP,
     UserClassifierMetricTest,
-    testing::Values(
-        std::make_pair(UserClassifier::Metric::NTP_OPENED,
-                       "NewTabPage.UserClassifier.AverageHoursToOpenNTP"),
-        std::make_pair(
-            UserClassifier::Metric::SUGGESTIONS_SHOWN,
-            "NewTabPage.UserClassifier.AverageHoursToShowSuggestions"),
-        std::make_pair(
-            UserClassifier::Metric::SUGGESTIONS_USED,
-            "NewTabPage.UserClassifier.AverageHoursToUseSuggestions")));
+    testing::Values(UserClassifier::Metric::NTP_OPENED,
+                    UserClassifier::Metric::SUGGESTIONS_SHOWN,
+                    UserClassifier::Metric::SUGGESTIONS_USED));
 
 }  // namespace
 }  // namespace ntp_snippets
