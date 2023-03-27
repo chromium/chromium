@@ -18,7 +18,6 @@ import '../settings_page/settings_subpage.js';
 import '../settings_shared.css.js';
 
 import {CrLinkRowElement} from 'chrome://resources/cr_elements/cr_link_row/cr_link_row.js';
-import {OpenWindowProxyImpl} from 'chrome://resources/js/open_window_proxy.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {BaseMixin} from '../base_mixin.js';
@@ -29,7 +28,7 @@ import {Router} from '../router.js';
 
 import {getTemplate} from './autofill_page.html.js';
 import {PasswordCheckMixin} from './password_check_mixin.js';
-import {PasswordManagerImpl} from './password_manager_proxy.js';
+import {PasswordManagerImpl, PasswordManagerPage} from './password_manager_proxy.js';
 import {PasswordRequestorMixin} from './password_requestor_mixin.js';
 import {PasswordViewPageInteractions, PasswordViewPageRequestedEvent, PasswordViewPageUrlParams, recordPasswordViewInteraction} from './password_view.js';
 
@@ -141,9 +140,8 @@ export class SettingsAutofillPageElement extends
   private onPasswordsClick_() {
     PasswordManagerImpl.getInstance().recordPasswordsPageAccessInSettings();
     if (this.enableNewPasswordManagerPage_) {
-      // TODO(crbug.com/1416887): It will always open a new tab with Password
-      // Manager. Find a way to use chrome::ShowPasswordManager instead.
-      OpenWindowProxyImpl.getInstance().openUrl('chrome://password-manager');
+      PasswordManagerImpl.getInstance().showPasswordManager(
+          PasswordManagerPage.PASSWORDS);
       return;
     }
     Router.getInstance().navigateTo(routes.PASSWORDS);

@@ -44,6 +44,7 @@
 #include "chrome/browser/ui/webui/settings/import_data_handler.h"
 #include "chrome/browser/ui/webui/settings/metrics_reporting_handler.h"
 #include "chrome/browser/ui/webui/settings/on_startup_handler.h"
+#include "chrome/browser/ui/webui/settings/password_manager_handler.h"
 #include "chrome/browser/ui/webui/settings/people_handler.h"
 #include "chrome/browser/ui/webui/settings/performance_handler.h"
 #include "chrome/browser/ui/webui/settings/privacy_sandbox_handler.h"
@@ -242,6 +243,10 @@ SettingsUI::SettingsUI(content::WebUI* web_ui)
       std::make_unique<SecurityKeysBioEnrollmentHandler>());
   AddSettingsPageUIHandler(std::make_unique<SecurityKeysPhonesHandler>());
 
+  if (base::FeatureList::IsEnabled(
+          password_manager::features::kPasswordManagerRedesign)) {
+    AddSettingsPageUIHandler(std::make_unique<PasswordManagerHandler>());
+  }
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
   AddSettingsPageUIHandler(std::make_unique<PasskeysHandler>());
 #endif

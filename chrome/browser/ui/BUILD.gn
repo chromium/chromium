@@ -1640,6 +1640,8 @@ static_library("ui") {
       "webui/settings/metrics_reporting_handler.h",
       "webui/settings/on_startup_handler.cc",
       "webui/settings/on_startup_handler.h",
+      "webui/settings/password_manager_handler.cc",
+      "webui/settings/password_manager_handler.h",
       "webui/settings/people_handler.cc",
       "webui/settings/people_handler.h",
       "webui/settings/performance_handler.cc",

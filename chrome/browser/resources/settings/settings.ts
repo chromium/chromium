@@ -25,7 +25,7 @@ export {AppearanceBrowserProxy, AppearanceBrowserProxyImpl} from './appearance_p
 export {SettingsAppearancePageElement, SystemTheme} from './appearance_page/appearance_page.js';
 export {HomeUrlInputElement} from './appearance_page/home_url_input.js';
 export {SettingsAutofillPageElement} from './autofill_page/autofill_page.js';
-export {AccountStorageOptInStateChangedListener, CredentialsChangedListener, PasswordCheckInteraction, PasswordCheckReferrer, PasswordCheckStatusChangedListener, PasswordExceptionListChangedListener, PasswordManagerAuthTimeoutListener, PasswordManagerImpl, PasswordManagerProxy, PasswordsFileExportProgressListener, SavedPasswordListChangedListener} from './autofill_page/password_manager_proxy.js';
+export {AccountStorageOptInStateChangedListener, CredentialsChangedListener, PasswordCheckInteraction, PasswordCheckReferrer, PasswordCheckStatusChangedListener, PasswordExceptionListChangedListener, PasswordManagerAuthTimeoutListener, PasswordManagerImpl, PasswordManagerPage, PasswordManagerProxy, PasswordsFileExportProgressListener, SavedPasswordListChangedListener} from './autofill_page/password_manager_proxy.js';
 export {BaseMixin} from './base_mixin.js';
 export {SettingsBasicPageElement} from './basic_page/basic_page.js';
 export {ControlledRadioButtonElement} from './controls/controlled_radio_button.js';

@@ -25,6 +25,13 @@ export type PasswordCheckStatusChangedListener =
 
 export type PasswordManagerAuthTimeoutListener = () => void;
 
+// WARNING: Keep synced with
+// chrome/browser/ui/webui/settings/password_manager_handler.cc.
+export enum PasswordManagerPage {
+  PASSWORDS = 0,
+  CHECKUP = 1,
+}
+
 /**
  * Interface for all callbacks to the password API.
  */
@@ -316,6 +323,11 @@ export interface PasswordManagerProxy {
    * successful authentication.
    */
   switchBiometricAuthBeforeFillingState(): void;
+
+  /**
+   * Shows new Password Manager UI (chrome://password-manager).
+   */
+  showPasswordManager(page: PasswordManagerPage): void;
 }
 
 /**
@@ -585,6 +597,10 @@ export class PasswordManagerImpl implements PasswordManagerProxy {
     chrome.metricsPrivate.recordEnumerationValue(
         'PasswordManager.BulkCheck.PasswordCheckReferrer', referrer,
         PasswordCheckReferrer.COUNT);
+  }
+
+  showPasswordManager(page: PasswordManagerPage) {
+    chrome.send('showPasswordManager', [page]);
   }
 
   static getInstance(): PasswordManagerProxy {

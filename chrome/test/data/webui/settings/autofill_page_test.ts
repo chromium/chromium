@@ -7,7 +7,7 @@ import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {DomIf, flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {AutofillManagerImpl, PasswordsSectionElement, PasswordListItemElement, PaymentsManagerImpl, SettingsAutofillSectionElement, SettingsPaymentsSectionElement} from 'chrome://settings/lazy_load.js';
 import {buildRouter, Router, routes} from 'chrome://settings/settings.js';
-import {CrSettingsPrefs, OpenWindowProxyImpl, PasswordManagerImpl, SettingsAutofillPageElement, SettingsPluralStringProxyImpl, SettingsPrefsElement, SettingsRoutes} from 'chrome://settings/settings.js';
+import {CrSettingsPrefs, OpenWindowProxyImpl, PasswordManagerImpl, SettingsAutofillPageElement, SettingsPluralStringProxyImpl, SettingsPrefsElement, SettingsRoutes, PasswordManagerPage} from 'chrome://settings/settings.js';
 import {assertDeepEquals, assertEquals, assertFalse, assertNotEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {TestPluralStringProxy} from 'chrome://webui-test/test_plural_string_proxy.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
@@ -511,8 +511,8 @@ suite('PasswordsUITest', function() {
     assertTrue(autofillSection.$.passwordManagerButton.external);
 
     autofillSection.$.passwordManagerButton.click();
-    const url = await openWindowProxy.whenCalled('openUrl');
-    assertEquals(url, 'chrome://password-manager');
+    const param = await passwordManager.whenCalled('showPasswordManager');
+    assertEquals(PasswordManagerPage.PASSWORDS, param);
   });
 
   test('New Password Manager UI disabled', async function() {

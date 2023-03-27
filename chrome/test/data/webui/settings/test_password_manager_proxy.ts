@@ -5,7 +5,7 @@
 /** @fileoverview Test implementation of PasswordManagerProxy. */
 
 // clang-format off
-import {AccountStorageOptInStateChangedListener, CredentialsChangedListener, HatsBrowserProxyImpl, PasswordCheckInteraction, PasswordCheckReferrer, PasswordCheckStatusChangedListener, PasswordExceptionListChangedListener, PasswordManagerProxy, PasswordsFileExportProgressListener, PasswordManagerAuthTimeoutListener, SavedPasswordListChangedListener, TrustSafetyInteraction} from 'chrome://settings/settings.js';
+import {AccountStorageOptInStateChangedListener, CredentialsChangedListener, HatsBrowserProxyImpl, PasswordCheckInteraction, PasswordCheckReferrer, PasswordCheckStatusChangedListener, PasswordExceptionListChangedListener, PasswordManagerProxy, PasswordsFileExportProgressListener, PasswordManagerAuthTimeoutListener, PasswordManagerPage, SavedPasswordListChangedListener, TrustSafetyInteraction} from 'chrome://settings/settings.js';
 import {assertEquals} from 'chrome://webui-test/chai_assert.js';
 import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
 
@@ -116,6 +116,7 @@ export class TestPasswordManagerProxy extends TestBrowserProxy implements
       'recordChangePasswordFlowStarted',
       'recordPasswordCheckInteraction',
       'recordPasswordCheckReferrer',
+      'showPasswordManager',
       'removeException',
       'removeSavedPassword',
       'requestExportProgressStatus',
@@ -442,6 +443,10 @@ export class TestPasswordManagerProxy extends TestBrowserProxy implements
 
   switchBiometricAuthBeforeFillingState() {
     this.methodCalled('switchBiometricAuthBeforeFillingState');
+  }
+
+  showPasswordManager(page: PasswordManagerPage) {
+    this.methodCalled('showPasswordManager', page);
   }
 
   undoRemoveSavedPasswordOrException() {}
