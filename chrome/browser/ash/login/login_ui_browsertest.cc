@@ -11,13 +11,13 @@
 #include "ash/shell.h"
 #include "base/command_line.h"
 #include "base/test/scoped_feature_list.h"
+#include "chrome/browser/ash/login/app_mode/test/kiosk_apps_mixin.h"
 #include "chrome/browser/ash/login/lock/screen_locker_tester.h"
 #include "chrome/browser/ash/login/login_manager_test.h"
 #include "chrome/browser/ash/login/screens/user_selection_screen.h"
 #include "chrome/browser/ash/login/startup_utils.h"
 #include "chrome/browser/ash/login/test/device_state_mixin.h"
 #include "chrome/browser/ash/login/test/js_checker.h"
-#include "chrome/browser/ash/login/test/kiosk_apps_mixin.h"
 #include "chrome/browser/ash/login/test/local_state_mixin.h"
 #include "chrome/browser/ash/login/test/logged_in_user_mixin.h"
 #include "chrome/browser/ash/login/test/login_manager_mixin.h"
@@ -328,8 +328,9 @@ class UserManagementDisclosureTest : public LoginManagerTest {
 
   void LoginAndLock(const LoginManagerMixin::TestUserInfo& test_user,
                     UserPolicyMixin* user_policy_mixin) {
-    if (user_policy_mixin)
+    if (user_policy_mixin) {
       user_policy_mixin->RequestPolicyUpdate();
+    }
 
     login_manager_mixin_.SkipPostLoginScreens();
 

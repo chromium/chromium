@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ash/login/test/kiosk_apps_mixin.h"
+#include "chrome/browser/ash/login/app_mode/test/kiosk_apps_mixin.h"
 
 #include "ash/public/cpp/login_screen_test_api.h"
 #include "base/strings/strcat.h"

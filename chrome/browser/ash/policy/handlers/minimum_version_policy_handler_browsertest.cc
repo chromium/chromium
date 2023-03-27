@@ -19,11 +19,11 @@
 #include "base/time/time.h"
 #include "base/values.h"
 #include "chrome/browser/ash/login/app_mode/kiosk_launch_controller.h"
+#include "chrome/browser/ash/login/app_mode/test/kiosk_apps_mixin.h"
 #include "chrome/browser/ash/login/existing_user_controller.h"
 #include "chrome/browser/ash/login/login_manager_test.h"
 #include "chrome/browser/ash/login/login_wizard.h"
 #include "chrome/browser/ash/login/test/device_state_mixin.h"
-#include "chrome/browser/ash/login/test/kiosk_apps_mixin.h"
 #include "chrome/browser/ash/login/test/login_manager_mixin.h"
 #include "chrome/browser/ash/login/test/oobe_base_test.h"
 #include "chrome/browser/ash/login/test/oobe_screen_exit_waiter.h"
@@ -169,8 +169,9 @@ void MinimumVersionPolicyTestBase::SetUpdateEngineStatus(
     update_engine::Operation operation) {
   update_engine::StatusResult status;
   status.set_current_operation(operation);
-  if (operation == update_engine::Operation::UPDATED_NEED_REBOOT)
+  if (operation == update_engine::Operation::UPDATED_NEED_REBOOT) {
     status.set_new_version(kUpdatedVersion);
+  }
   fake_update_engine_client_->NotifyObserversThatStatusChanged(status);
 }
 
@@ -757,8 +758,9 @@ class MinimumVersionBeforeLoginHost : public MinimumVersionExistingUserTest {
 
   bool SetUpUserDataDirectory() override {
     // LoginManagerMixin sets up command line in the SetUpUserDataDirectory.
-    if (!MinimumVersionPolicyTestBase::SetUpUserDataDirectory())
+    if (!MinimumVersionPolicyTestBase::SetUpUserDataDirectory()) {
       return false;
+    }
     // Postpone login host creation.
     base::CommandLine::ForCurrentProcess()->RemoveSwitch(
         ash::switches::kForceLoginManagerInTests);

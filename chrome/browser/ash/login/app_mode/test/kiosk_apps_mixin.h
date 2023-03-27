@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_ASH_LOGIN_TEST_KIOSK_APPS_MIXIN_H_
-#define CHROME_BROWSER_ASH_LOGIN_TEST_KIOSK_APPS_MIXIN_H_
+#ifndef CHROME_BROWSER_ASH_LOGIN_APP_MODE_TEST_KIOSK_APPS_MIXIN_H_
+#define CHROME_BROWSER_ASH_LOGIN_APP_MODE_TEST_KIOSK_APPS_MIXIN_H_
 
 #include "chrome/browser/ash/app_mode/fake_cws.h"
 #include "chrome/test/base/mixin_based_in_process_browser_test.h"
@@ -42,4 +42,4 @@ class KioskAppsMixin : public InProcessBrowserTestMixin {
 
 }  // namespace ash
 
-#endif  // CHROME_BROWSER_ASH_LOGIN_TEST_KIOSK_APPS_MIXIN_H_
+#endif  // CHROME_BROWSER_ASH_LOGIN_APP_MODE_TEST_KIOSK_APPS_MIXIN_H_
