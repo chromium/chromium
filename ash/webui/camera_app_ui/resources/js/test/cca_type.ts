@@ -34,10 +34,10 @@ export const SELECTOR_MAP = {
   documentFixModeImage: '.document-fix-mode .image',
   documentPreviewModeImage: '.document-preview-mode .image',
   documentReview: '#view-document-review',
-  documentSaveAsPhotoButton:
-      '.document-preview-mode button[i18n-text=label_save_photo_document]',
   documentSaveAsPdfButton:
       '.document-preview-mode button[i18n-text=label_save_pdf_document]',
+  documentSaveAsPhotoButton:
+      '.document-preview-mode button[i18n-text=label_save_photo_document]',
   expertCustomVideoParametersOption: '#custom-video-parameters',
   expertModeButton: '#settings-expert',
   expertModeOption: '#expert-enable-expert-mode',
@@ -51,8 +51,8 @@ export const SELECTOR_MAP = {
       '#view-photo-resolution-settings .menu-item>input[data-facing="user"]',
   frontVideoResolutionOptions:
       '#view-video-resolution-settings .menu-item>input[data-facing="user"]',
+  galleryButton: '#gallery-enter',
   galleryButtonCover: '#gallery-enter>img',
-  galleryEnter: '#gallery-enter',
   gifRecordingOption: 'input[type=radio][data-state=record-type-gif]',
   gifReviewRetakeButton: '#review-retake',
   gifReviewSaveButton: '#view-review button[i18n-text=label_save]',
@@ -79,12 +79,14 @@ export const SELECTOR_MAP = {
   reviewView: '#view-review',
   scanBarcodeOption: '#scan-barcode',
   scanDocumentModeOption: '#scan-document',
-  scanModeButton: '.mode-item>input[data-mode="scan"]',
   settingsButton: '#open-settings',
+  settingsButtonContainer: 'div:has(> #open-settings)',
   shutter: '.shutter',
   switchDeviceButton: '#switch-device',
   tiltDownButton: '#tilt-down',
   tiltUpButton: '#tilt-up',
+  timeLapseRecordingOption:
+      'input[type=radio][data-state=record-type-time-lapse]',
   videoPauseResumeButton: '#pause-recordvideo',
   videoProfileSelect: '#video-profile',
   videoResolutionSettingButton: '#settings-video-resolution',
