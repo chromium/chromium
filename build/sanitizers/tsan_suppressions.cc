@@ -83,7 +83,7 @@ char kTSanDefaultSuppressions[] =
     // https://crbug.com/1405439
     "race:*::perfetto_track_event::internal::g_category_state_storage\n"
     "race:perfetto::DataSource*::static_state_\n"
-    "race:perfetto::Tracing::ResetForTesting\n"
+    "race:perfetto::*::ResetForTesting\n"
 
     // In V8 each global safepoint might lock isolate mutexes in a different
     // order. This is allowed in this context as it is always guarded by a
