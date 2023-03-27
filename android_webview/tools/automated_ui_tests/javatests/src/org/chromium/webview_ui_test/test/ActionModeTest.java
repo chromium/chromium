@@ -42,9 +42,9 @@ import android.app.Activity;
 import android.app.Instrumentation;
 import android.content.Intent;
 import android.os.Build;
-import android.support.test.InstrumentationRegistry;
 import android.view.MenuItem;
 
+import androidx.test.InstrumentationRegistry;
 import androidx.test.espresso.NoMatchingViewException;
 import androidx.test.espresso.PerformException;
 import androidx.test.espresso.Root;

@@ -5,9 +5,9 @@
 package org.chromium.android_webview.test;
 
 import android.graphics.Bitmap;
-import android.support.test.InstrumentationRegistry;
 import android.util.Pair;
 
+import androidx.test.InstrumentationRegistry;
 import androidx.test.filters.SmallTest;
 
 import org.junit.Assert;

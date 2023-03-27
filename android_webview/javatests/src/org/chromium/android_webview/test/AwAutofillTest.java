@@ -19,7 +19,6 @@ import android.os.Build.VERSION;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.os.SystemClock;
-import android.support.test.InstrumentationRegistry;
 import android.text.TextUtils;
 import android.util.Pair;
 import android.util.SparseArray;
@@ -29,6 +28,7 @@ import android.view.WindowManager;
 import android.view.autofill.AutofillValue;
 
 import androidx.annotation.RequiresApi;
+import androidx.test.InstrumentationRegistry;
 import androidx.test.filters.SmallTest;
 
 import org.junit.After;

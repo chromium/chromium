@@ -9,8 +9,8 @@ import static org.chromium.android_webview.test.AwActivityTestRule.WAIT_TIMEOUT_
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.graphics.Point;
-import android.support.test.InstrumentationRegistry;
 
+import androidx.test.InstrumentationRegistry;
 import androidx.test.filters.SmallTest;
 
 import org.junit.After;

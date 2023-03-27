@@ -5,8 +5,8 @@
 package org.chromium.android_webview.test;
 
 import android.net.http.SslError;
-import android.support.test.InstrumentationRegistry;
 
+import androidx.test.InstrumentationRegistry;
 import androidx.test.filters.SmallTest;
 
 import org.junit.Assert;

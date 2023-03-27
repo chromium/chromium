@@ -31,8 +31,8 @@ import android.content.Context;
 import android.content.pm.PackageInfo;
 import android.os.Build;
 import android.provider.Settings;
-import android.support.test.InstrumentationRegistry;
 
+import androidx.test.InstrumentationRegistry;
 import androidx.test.espresso.intent.Intents;
 import androidx.test.espresso.intent.matcher.IntentMatchers;
 import androidx.test.filters.MediumTest;

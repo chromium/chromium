@@ -4,7 +4,7 @@
 
 package org.chromium.android_webview.test;
 
-import android.support.test.InstrumentationRegistry;
+import androidx.test.InstrumentationRegistry;
 
 import org.junit.After;
 import org.junit.Assert;

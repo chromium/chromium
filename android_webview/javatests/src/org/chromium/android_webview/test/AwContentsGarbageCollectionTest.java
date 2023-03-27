@@ -11,12 +11,12 @@ import android.content.Context;
 import android.content.ContextWrapper;
 import android.os.Build;
 import android.os.ResultReceiver;
-import android.support.test.InstrumentationRegistry;
 import android.util.Pair;
 import android.view.Window;
 import android.view.WindowManager;
 import android.webkit.JavascriptInterface;
 
+import androidx.test.InstrumentationRegistry;
 import androidx.test.filters.LargeTest;
 import androidx.test.filters.SmallTest;
 

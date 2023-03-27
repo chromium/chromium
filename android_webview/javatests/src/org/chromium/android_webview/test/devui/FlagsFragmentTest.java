@@ -34,7 +34,6 @@ import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.drawable.Drawable;
 import android.os.SystemClock;
-import android.support.test.InstrumentationRegistry;
 import android.text.SpannableString;
 import android.text.style.BackgroundColorSpan;
 import android.view.MotionEvent;
@@ -44,6 +43,7 @@ import android.widget.ListView;
 import android.widget.TextView;
 
 import androidx.annotation.IntDef;
+import androidx.test.InstrumentationRegistry;
 import androidx.test.espresso.DataInteraction;
 import androidx.test.espresso.Espresso;
 import androidx.test.espresso.NoMatchingRootException;

@@ -6,8 +6,9 @@ package org.chromium.webengine.test;
 
 import android.app.Activity;
 import android.content.Context;
-import android.support.test.InstrumentationRegistry;
 import android.text.TextUtils;
+
+import androidx.test.InstrumentationRegistry;
 
 import org.junit.runner.Description;
 import org.junit.runners.model.Statement;

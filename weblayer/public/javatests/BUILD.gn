@@ -13,7 +13,7 @@ android_library("weblayer_public_javatests") {
   ]
   deps = [
     "//base:base_java_test_support",
-    "//third_party/android_support_test_runner:runner_java",
+    "//third_party/androidx:androidx_test_monitor_java",
     "//third_party/androidx:androidx_test_runner_java",
     "//third_party/junit:junit",
     "//weblayer/public/java",

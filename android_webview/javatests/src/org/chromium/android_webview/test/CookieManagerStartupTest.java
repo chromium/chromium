@@ -5,8 +5,8 @@
 package org.chromium.android_webview.test;
 
 import android.os.Looper;
-import android.support.test.InstrumentationRegistry;
 
+import androidx.test.InstrumentationRegistry;
 import androidx.test.filters.MediumTest;
 import androidx.test.filters.SmallTest;
 

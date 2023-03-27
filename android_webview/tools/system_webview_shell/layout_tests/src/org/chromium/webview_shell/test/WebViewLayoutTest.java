@@ -5,8 +5,8 @@
 package org.chromium.webview_shell.test;
 
 import android.os.Bundle;
-import android.support.test.InstrumentationRegistry;
 
+import androidx.test.InstrumentationRegistry;
 import androidx.test.filters.MediumTest;
 
 import junit.framework.ComparisonFailure;

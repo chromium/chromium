@@ -9,9 +9,9 @@ import static org.chromium.base.test.util.ScalableTimeout.scaleTimeout;
 import android.os.Handler;
 import android.os.HandlerThread;
 import android.os.Looper;
-import android.support.test.InstrumentationRegistry;
 import android.webkit.JavascriptInterface;
 
+import androidx.test.InstrumentationRegistry;
 import androidx.test.filters.SmallTest;
 
 import org.hamcrest.Matchers;

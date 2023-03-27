@@ -5,8 +5,8 @@
 package org.chromium.weblayer;
 
 import android.content.Context;
-import android.support.test.InstrumentationRegistry;
 
+import androidx.test.InstrumentationRegistry;
 import androidx.test.filters.SmallTest;
 
 import org.junit.Assert;

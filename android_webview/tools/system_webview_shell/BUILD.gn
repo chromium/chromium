@@ -125,8 +125,8 @@ instrumentation_test_apk("system_webview_shell_page_cycler_apk") {
     "//base:base_java_test_support",
     "//content/public/android:content_java",
     "//content/public/test/android:content_java_test_support",
-    "//third_party/android_support_test_runner:rules_java",
-    "//third_party/android_support_test_runner:runner_java",
+    "//third_party/androidx:androidx_test_monitor_java",
+    "//third_party/androidx:androidx_test_rules_java",
     "//third_party/androidx:androidx_test_runner_java",
     "//third_party/junit",
   ]
@@ -154,8 +154,8 @@ instrumentation_test_apk("system_webview_shell_layout_test_apk") {
     "//base:base_java",
     "//base:base_java_test_support",
     "//third_party/android_sdk:android_test_base_java",
-    "//third_party/android_support_test_runner:rules_java",
-    "//third_party/android_support_test_runner:runner_java",
+    "//third_party/androidx:androidx_test_monitor_java",
+    "//third_party/androidx:androidx_test_rules_java",
     "//third_party/androidx:androidx_test_runner_java",
     "//third_party/junit",
   ]

@@ -7,9 +7,9 @@ package org.chromium.webview_shell.test;
 import static org.chromium.base.test.util.ScalableTimeout.scaleTimeout;
 
 import android.os.Handler;
-import android.support.test.InstrumentationRegistry;
 import android.webkit.WebView;
 
+import androidx.test.InstrumentationRegistry;
 import androidx.test.filters.MediumTest;
 
 import org.junit.Assert;

@@ -4,7 +4,7 @@
 
 package org.chromium.webview_ui_test.test.util;
 
-import static android.support.test.InstrumentationRegistry.getInstrumentation;
+import static androidx.test.InstrumentationRegistry.getInstrumentation;
 
 import android.os.Looper;
 import android.webkit.ConsoleMessage;

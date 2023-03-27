@@ -7,9 +7,9 @@ package org.chromium.android_webview.test;
 import static org.chromium.android_webview.test.AwActivityTestRule.WAIT_TIMEOUT_MS;
 
 import android.os.Build;
-import android.support.test.InstrumentationRegistry;
 import android.webkit.JavascriptInterface;
 
+import androidx.test.InstrumentationRegistry;
 import androidx.test.filters.SmallTest;
 
 import com.google.common.util.concurrent.SettableFuture;
