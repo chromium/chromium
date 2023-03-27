@@ -344,7 +344,14 @@ IN_PROC_BROWSER_TEST_F(CaptionBubbleControllerViewsTest,
   EXPECT_FALSE(GetTitle()->GetVisible());
 }
 
-IN_PROC_BROWSER_TEST_F(CaptionBubbleControllerViewsTest, BubblePositioning) {
+// TODO(crbug.com/1427915): Flaky on Linux Tests.
+#if BUILDFLAG(IS_LINUX)
+#define MAYBE_BubblePositioning DISABLED_BubblePositioning
+#else
+#define MAYBE_BubblePositioning BubblePositioning
+#endif
+IN_PROC_BROWSER_TEST_F(CaptionBubbleControllerViewsTest,
+                       MAYBE_BubblePositioning) {
   int bubble_width = 536;
   gfx::Insets bubble_margins(6);
 
