@@ -3761,11 +3761,13 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="PasswordManager.{Location}.AuthenticationTime" units="ms"
-    expires_after="M115">
+    expires_after="M120">
   <owner>vsemeniuk@google.com</owner>
   <owner>vasilii@chromium.org</owner>
   <summary>Records the time it takes user to authenticate {Location}.</summary>
   <token key="Location">
+    <variant name="ManagementBubble"
+        summary="in management bubble when navigating to details view"/>
     <variant name="PasswordFilling"
         summary="on webpage after selecting a suggestion to fill"/>
     <variant name="Settings"

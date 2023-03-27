@@ -100,8 +100,11 @@ class ItemsBubbleControllerTest : public ::testing::Test {
   GetCurrentForms() const;
   void DestroyController();
 
+  base::test::TaskEnvironment& task_environment() { return task_environment_; }
+
  private:
-  content::BrowserTaskEnvironment task_environment_;
+  content::BrowserTaskEnvironment task_environment_{
+      base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   content::RenderViewHostTestEnabler rvh_enabler_;
   std::unique_ptr<TestingProfile> profile_;
   raw_ptr<syncer::TestSyncService> test_sync_service_;
@@ -310,12 +313,18 @@ TEST_F(ItemsBubbleControllerTest, OnUpdateUsernameAndPasswordNote) {
 
 TEST_F(ItemsBubbleControllerTest,
        ShouldChangeSelectedPasswordOnSuccessfulOsAuth) {
+  // The time it takes the user to complete the authentication flow in seconds.
+  const int kTimeToAuth = 10;
+  base::HistogramTester histogram_tester;
   Init();
   password_manager::PasswordForm selected_form = CreateTestForm();
 
   EXPECT_CALL(*delegate(), AuthenticateUserWithMessage)
       .WillOnce(testing::WithArg<1>(testing::Invoke(
           [&](PasswordsModelDelegate::AvailabilityCallback callback) {
+            // Waiting for kTimeToAuth seconds to simulate the time user will
+            // need to authenticate
+            task_environment().FastForwardBy(base::Seconds(kTimeToAuth));
             // Respond with true to simulate a successful user reauth.
             std::move(callback).Run(true);
           })));
@@ -323,6 +332,9 @@ TEST_F(ItemsBubbleControllerTest,
   EXPECT_CALL(mock_callback, Run(true));
   controller()->AuthenticateUserAndDisplayDetailsOf(selected_form,
                                                     mock_callback.Get());
+  histogram_tester.ExpectUniqueTimeSample(
+      "PasswordManager.ManagementBubble.AuthenticationTime",
+      base::Seconds(kTimeToAuth), 1);
   EXPECT_EQ(controller()->get_currently_selected_password(), selected_form);
 }
 

@@ -200,11 +200,14 @@ void ItemsBubbleController::AuthenticateUserAndDisplayDetailsOf(
   // bubble is closed (and controller is destructed) while the reauth flow is
   // running, no callback will be invoked upon the conclusion of the
   // authentication flow.
-  delegate_->AuthenticateUserWithMessage(
-      message,
+  auto on_reath_complete =
       base::BindOnce(&ItemsBubbleController::OnUserAuthenticationCompleted,
                      weak_ptr_factory_.GetWeakPtr(), std::move(password_form),
-                     std::move(completion)));
+                     std::move(completion));
+  delegate_->AuthenticateUserWithMessage(
+      message, metrics_util::TimeCallback(
+                   std::move(on_reath_complete),
+                   "PasswordManager.ManagementBubble.AuthenticationTime"));
 }
 
 bool ItemsBubbleController::UsernameExists(const std::u16string& username) {
