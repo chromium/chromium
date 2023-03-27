@@ -243,4 +243,24 @@ IN_PROC_BROWSER_TEST_F(LiveCaptionSpeechRecognitionHostTest,
 }
 #endif
 
+IN_PROC_BROWSER_TEST_F(LiveCaptionSpeechRecognitionHostTest, LiveTranslate) {
+  content::RenderFrameHost* frame_host = browser()
+                                             ->tab_strip_model()
+                                             ->GetActiveWebContents()
+                                             ->GetPrimaryMainFrame();
+  CreateLiveCaptionSpeechRecognitionHost(frame_host);
+
+  SetLiveCaptionEnabled(true);
+  SetLiveTranslateEnabled(true);
+
+  // Dispatching the speech recognition should be successful, but the
+  // widget should remain hidden because the test does not fetch real
+  // translations.
+  OnSpeechRecognitionRecognitionEvent(
+      frame_host, "Elephants can live over 90 years in captivity.",
+      /* expected_success= */ true);
+  base::RunLoop().RunUntilIdle();
+  ExpectIsWidgetVisible(false);
+}
+
 }  // namespace captions

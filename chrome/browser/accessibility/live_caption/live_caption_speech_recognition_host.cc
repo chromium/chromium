@@ -5,17 +5,25 @@
 #include "chrome/browser/accessibility/live_caption/live_caption_speech_recognition_host.h"
 
 #include <memory>
+#include <string>
 #include <utility>
 
+#include "base/feature_list.h"
 #include "base/functional/callback_forward.h"
 #include "build/build_config.h"
 #include "chrome/browser/accessibility/caption_bubble_context_browser.h"
 #include "chrome/browser/accessibility/live_caption/live_caption_controller_factory.h"
+#include "chrome/browser/accessibility/live_translate_controller_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "components/live_caption/live_caption_controller.h"
+#include "components/live_caption/live_translate_controller.h"
+#include "components/live_caption/pref_names.h"
 #include "components/live_caption/views/caption_bubble_model.h"
+#include "components/prefs/pref_service.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
+#include "media/base/media_switches.h"
+#include "media/mojo/mojom/speech_recognition_result.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
 
 namespace captions {
@@ -42,6 +50,8 @@ LiveCaptionSpeechRecognitionHost::LiveCaptionSpeechRecognitionHost(
   if (!web_contents)
     return;
   Observe(web_contents);
+  prefs_ = Profile::FromBrowserContext(GetWebContents()->GetBrowserContext())
+               ->GetPrefs();
   context_ = CaptionBubbleContextBrowser::Create(web_contents);
 }
 
@@ -59,8 +69,22 @@ void LiveCaptionSpeechRecognitionHost::OnSpeechRecognitionRecognitionEvent(
     std::move(reply).Run(false);
     return;
   }
-  std::move(reply).Run(
-      live_caption_controller->DispatchTranscription(context_.get(), result));
+
+  if (base::FeatureList::IsEnabled(media::kLiveTranslate) &&
+      prefs_->GetBoolean(prefs::kLiveTranslateEnabled)) {
+    std::string source_language =
+        prefs_->GetString(prefs::kLiveCaptionLanguageCode);
+    std::string target_language =
+        prefs_->GetString(prefs::kLiveTranslateTargetLanguageCode);
+    GetLiveTranslateController()->GetTranslation(
+        result, source_language, target_language,
+        base::BindOnce(&LiveCaptionSpeechRecognitionHost::OnTranslationCallback,
+                       weak_factory_.GetWeakPtr()));
+    std::move(reply).Run(!stop_transcriptions_);
+  } else {
+    std::move(reply).Run(
+        live_caption_controller->DispatchTranscription(context_.get(), result));
+  }
 }
 
 void LiveCaptionSpeechRecognitionHost::OnLanguageIdentificationEvent(
@@ -97,6 +121,13 @@ void LiveCaptionSpeechRecognitionHost::MediaEffectivelyFullscreenChanged(
 }
 #endif
 
+void LiveCaptionSpeechRecognitionHost::OnTranslationCallback(
+    media::SpeechRecognitionResult result) {
+  LiveCaptionController* live_caption_controller = GetLiveCaptionController();
+  stop_transcriptions_ =
+      !live_caption_controller->DispatchTranscription(context_.get(), result);
+}
+
 content::WebContents* LiveCaptionSpeechRecognitionHost::GetWebContents() {
   return content::WebContents::FromRenderFrameHost(&render_frame_host());
 }
@@ -111,6 +142,20 @@ LiveCaptionSpeechRecognitionHost::GetLiveCaptionController() {
   if (!profile)
     return nullptr;
   return LiveCaptionControllerFactory::GetForProfile(profile);
+}
+
+LiveTranslateController*
+LiveCaptionSpeechRecognitionHost::GetLiveTranslateController() {
+  content::WebContents* web_contents = GetWebContents();
+  if (!web_contents) {
+    return nullptr;
+  }
+  Profile* profile =
+      Profile::FromBrowserContext(web_contents->GetBrowserContext());
+  if (!profile) {
+    return nullptr;
+  }
+  return LiveTranslateControllerFactory::GetForProfile(profile);
 }
 
 }  // namespace captions

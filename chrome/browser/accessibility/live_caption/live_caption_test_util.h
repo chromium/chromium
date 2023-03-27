@@ -29,7 +29,11 @@ class LiveCaptionBrowserTest : public InProcessBrowserTest {
   // Enables/disables the live caption pref on the specified profile (or default
   // profile) and marks the SODA library as installed.
   void SetLiveCaptionEnabled(bool enabled);
+
   void SetLiveCaptionEnabledOnProfile(bool enabled, Profile* profile);
+
+  // Enables/disables the live translate pref.
+  void SetLiveTranslateEnabled(bool enabled);
 
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
