@@ -25,10 +25,12 @@ BluetoothGattServiceFloss::BluetoothGattServiceFloss(
     BluetoothAdapterFloss* adapter)
     : adapter_(adapter) {
   FlossDBusManager::Get()->GetGattManagerClient()->AddObserver(this);
+  FlossDBusManager::Get()->GetGattManagerClient()->AddServerObserver(this);
 }
 
 BluetoothGattServiceFloss::~BluetoothGattServiceFloss() {
   FlossDBusManager::Get()->GetGattManagerClient()->RemoveObserver(this);
+  FlossDBusManager::Get()->GetGattManagerClient()->RemoveServerObserver(this);
 }
 
 BluetoothAdapterFloss* BluetoothGattServiceFloss::GetAdapter() const {
@@ -59,10 +61,29 @@ void BluetoothGattServiceFloss::AddObserverForHandle(
     observer_by_handle_[handle] = observer;
 }
 
+void BluetoothGattServiceFloss::AddServerObserverForHandle(
+    int32_t handle,
+    FlossGattServerObserver* observer) {
+  DCHECK(!base::Contains(server_observer_by_handle_, handle));
+  DCHECK(observer);
+
+  if (observer) {
+    server_observer_by_handle_[handle] = observer;
+  }
+}
+
 void BluetoothGattServiceFloss::RemoveObserverForHandle(int32_t handle) {
   DCHECK(base::Contains(observer_by_handle_, handle));
 
   observer_by_handle_.erase(handle);
+}
+
+void BluetoothGattServiceFloss::RemoveServerObserverForHandle(int32_t handle) {
+  if (!base::Contains(server_observer_by_handle_, handle)) {
+    return;
+  }
+
+  server_observer_by_handle_.erase(handle);
 }
 
 void BluetoothGattServiceFloss::GattCharacteristicRead(
@@ -108,6 +129,62 @@ void BluetoothGattServiceFloss::GattNotify(std::string address,
                                            const std::vector<uint8_t>& data) {
   if (base::Contains(observer_by_handle_, handle)) {
     observer_by_handle_[handle]->GattNotify(address, handle, data);
+  }
+}
+
+void BluetoothGattServiceFloss::GattServerCharacteristicReadRequest(
+    std::string address,
+    int32_t request_id,
+    int32_t offset,
+    bool is_long,
+    int32_t handle) {
+  if (base::Contains(server_observer_by_handle_, handle)) {
+    server_observer_by_handle_[handle]->GattServerCharacteristicReadRequest(
+        address, request_id, offset, is_long, handle);
+  }
+}
+
+void BluetoothGattServiceFloss::GattServerDescriptorReadRequest(
+    std::string address,
+    int32_t request_id,
+    int32_t offset,
+    bool is_long,
+    int32_t handle) {
+  if (base::Contains(server_observer_by_handle_, handle)) {
+    server_observer_by_handle_[handle]->GattServerDescriptorReadRequest(
+        address, request_id, offset, is_long, handle);
+  }
+}
+
+void BluetoothGattServiceFloss::GattServerCharacteristicWriteRequest(
+    std::string address,
+    int32_t request_id,
+    int32_t offset,
+    int32_t length,
+    bool is_prepared_write,
+    bool needs_response,
+    int32_t handle,
+    std::vector<uint8_t> value) {
+  if (base::Contains(server_observer_by_handle_, handle)) {
+    server_observer_by_handle_[handle]->GattServerCharacteristicWriteRequest(
+        address, request_id, offset, length, is_prepared_write, needs_response,
+        handle, value);
+  }
+}
+
+void BluetoothGattServiceFloss::GattServerDescriptorWriteRequest(
+    std::string address,
+    int32_t request_id,
+    int32_t offset,
+    int32_t length,
+    bool is_prepared_write,
+    bool needs_response,
+    int32_t handle,
+    std::vector<uint8_t> value) {
+  if (base::Contains(server_observer_by_handle_, handle)) {
+    server_observer_by_handle_[handle]->GattServerDescriptorWriteRequest(
+        address, request_id, offset, length, is_prepared_write, needs_response,
+        handle, value);
   }
 }
 

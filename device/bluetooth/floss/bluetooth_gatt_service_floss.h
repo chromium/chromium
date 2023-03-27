@@ -16,7 +16,8 @@ class BluetoothAdapterFloss;
 // Subclass of |BluetoothGattService| for platforms that use Floss.
 class DEVICE_BLUETOOTH_EXPORT BluetoothGattServiceFloss
     : public device::BluetoothGattService,
-      public FlossGattClientObserver {
+      public FlossGattClientObserver,
+      public FlossGattServerObserver {
  public:
   BluetoothGattServiceFloss(const BluetoothGattServiceFloss&) = delete;
   BluetoothGattServiceFloss& operator=(const BluetoothGattServiceFloss&) =
@@ -32,9 +33,12 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothGattServiceFloss
   // Adds an observer for a specific handle. This observer will only get
   // callbacks invoked for that specific handle.
   void AddObserverForHandle(int32_t handle, FlossGattClientObserver* observer);
+  void AddServerObserverForHandle(int32_t handle,
+                                  FlossGattServerObserver* observer);
 
   // Removes the observer for a specific handle.
   void RemoveObserverForHandle(int32_t handle);
+  void RemoveServerObserverForHandle(int32_t handle);
 
   // FlossGattClientObserver overrides.
   void GattCharacteristicRead(std::string address,
@@ -55,6 +59,35 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothGattServiceFloss
                   int32_t handle,
                   const std::vector<uint8_t>& data) override;
 
+  // FlossGattServerObserver overrides.
+  void GattServerCharacteristicReadRequest(std::string address,
+                                           int32_t request_id,
+                                           int32_t offset,
+                                           bool is_long,
+                                           int32_t handle) override;
+  void GattServerDescriptorReadRequest(std::string address,
+                                       int32_t request_id,
+                                       int32_t offset,
+                                       bool is_long,
+                                       int32_t handle) override;
+  void GattServerCharacteristicWriteRequest(
+      std::string address,
+      int32_t request_id,
+      int32_t offset,
+      int32_t length,
+      bool is_prepared_write,
+      bool needs_response,
+      int32_t handle,
+      std::vector<uint8_t> value) override;
+  void GattServerDescriptorWriteRequest(std::string address,
+                                        int32_t request_id,
+                                        int32_t offset,
+                                        int32_t length,
+                                        bool is_prepared_write,
+                                        bool needs_response,
+                                        int32_t handle,
+                                        std::vector<uint8_t> value) override;
+
  protected:
   explicit BluetoothGattServiceFloss(BluetoothAdapterFloss* adapter);
   ~BluetoothGattServiceFloss() override;
@@ -63,6 +96,8 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothGattServiceFloss
   // for a specific handle within this GATT service, it is dispatched here to
   // that specific observer.
   std::map<int32_t, raw_ptr<FlossGattClientObserver>> observer_by_handle_;
+  std::map<int32_t, raw_ptr<FlossGattServerObserver>>
+      server_observer_by_handle_;
 
  private:
   // The adapter associated with (and which indirectly owns) this service.

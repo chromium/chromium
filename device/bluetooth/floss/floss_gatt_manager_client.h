@@ -369,9 +369,9 @@ class DEVICE_BLUETOOTH_EXPORT FlossGattManagerClient
 
   // Manage observers.
   void AddObserver(FlossGattClientObserver* observer);
-  void AddObserver(FlossGattServerObserver* observer);
+  void AddServerObserver(FlossGattServerObserver* observer);
   void RemoveObserver(FlossGattClientObserver* observer);
-  void RemoveObserver(FlossGattServerObserver* observer);
+  void RemoveServerObserver(FlossGattServerObserver* observer);
 
   // TODO(@sarveshkalwit): Rename client functions, ex. Connect->ClientConnect
   // Create a GATT client connection to a remote device on given transport.

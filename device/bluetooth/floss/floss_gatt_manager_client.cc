@@ -273,7 +273,8 @@ void FlossGattManagerClient::AddObserver(FlossGattClientObserver* observer) {
   gatt_client_observers_.AddObserver(observer);
 }
 
-void FlossGattManagerClient::AddObserver(FlossGattServerObserver* observer) {
+void FlossGattManagerClient::AddServerObserver(
+    FlossGattServerObserver* observer) {
   gatt_server_observers_.AddObserver(observer);
 }
 
@@ -281,7 +282,8 @@ void FlossGattManagerClient::RemoveObserver(FlossGattClientObserver* observer) {
   gatt_client_observers_.RemoveObserver(observer);
 }
 
-void FlossGattManagerClient::RemoveObserver(FlossGattServerObserver* observer) {
+void FlossGattManagerClient::RemoveServerObserver(
+    FlossGattServerObserver* observer) {
   gatt_server_observers_.RemoveObserver(observer);
 }
 
