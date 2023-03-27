@@ -58,6 +58,7 @@
 <translation id="1283524564873030414">मागील २४ तासांचा</translation>
 <translation id="1285320974508926690">या साइटचा कधीही भाषांतर करु नका</translation>
 <translation id="1291506870746876680">तुम्ही या साइटमधून बाहेर पडाल, तेव्हा <ph name="BEGIN_BOLD" />"<ph name="SITE_NAME" />"<ph name="END_BOLD" /> संबंधित परवानग्या बंदवर रीसेट केल्या जातील.</translation>
+<translation id="1305822519689023679">तुम्ही तुमच्या Google खाते मधील पासवर्ड कधीही वापरू शकता याची खात्री करण्यासाठी, हे तुम्हीच असल्याची पडताळणी करा.</translation>
 <translation id="1312721752506309252">सुधारित संरक्षण सुरू आहे</translation>
 <translation id="1321993286294231467">इमेज सेव्ह करताना एरर आली.</translation>
 <translation id="1322735045095424339">तुमच्या संस्थेनुसार गुप्त मोड वापरणे आवश्यक आहे</translation>
@@ -107,6 +108,7 @@
 <translation id="1626771852476987600"><ph name="COUNT" /> पुन्हा वापरलेले पासवर्ड</translation>
 <translation id="1641113438599504367">सुरक्षित ब्राउझिंग</translation>
 <translation id="1644574205037202324">इतिहास</translation>
+<translation id="165008673352427892">नवीन वैशिष्ट्य</translation>
 <translation id="1650222530560417226">सर्व टॅबवरून भविष्यातील JavaScript कन्सोल लॉग आणि एरर गोळा करण्यासाठी "लॉगिंग सुरू करा" बटणावर टॅप करा. हे पेज बंद केले जाईपर्यंत किंवा "लॉगिंग बंद करा" वर टॅप केले जाईपर्यंत लॉग गोळा केले जातील (आणि फक्त मेमरीमध्ये स्टोअर केले जातील).</translation>
 <translation id="1653432787084483144">{count,plural, =1{तुमच्या कीबोर्डच्या वरती सेव्ह केलेला {count} पासवर्ड उपलब्ध आहे.}other{तुमच्या कीबोर्डच्या वरती सेव्ह केलेले {count} पासवर्ड उपलब्ध आहेत.}}</translation>
 <translation id="1657011748321897393">सामायिकरण अयशस्वी झाले कारण तुम्ही नेटवर्कशी कनेक्ट केलेले नाही.</translation>
@@ -120,6 +122,7 @@
 <translation id="1700629756560807968"><ph name="NUMBER_OF_SELECTED_BOOKMARKS" /> निवडले</translation>
 <translation id="1715515772563243997"><ph name="SITE" /> वर तुमचा विश्वास असल्यास, साइन इन करण्यासाठी तुम्ही सेव्ह केलेला पासवर्ड वापरू शकता.</translation>
 <translation id="1740468249224277719">इंस्टॉल करण्यासाठी दोनदा टॅप करा.</translation>
+<translation id="1750238553597293878">तुमच्या Google खाते मधील पासवर्ड वापरणे सुरू ठेवा</translation>
 <translation id="1752547299766512813">पासवर्ड सेव्ह करा</translation>
 <translation id="1753905327828125965">सर्वाधिक भेट दिलेले</translation>
 <translation id="1767766085187034454">Google Translate</translation>
@@ -402,6 +405,7 @@
 <translation id="3810973564298564668">व्यवस्थापित करा</translation>
 <translation id="3818293389945649617">पुढील शोधा</translation>
 <translation id="3819183753496523827">तुम्ही ऑफलाइन आहात. तुमचे इंटरनेट कनेक्शन तपासा आणि पुन्हा प्रयत्न करा.</translation>
+<translation id="3832419617903252251">पासवर्ड फक्त या डिव्हाइसवर सेव्ह केला आहे</translation>
 <translation id="3835964409414434850">पुढील टॅब वर जा</translation>
 <translation id="3838691874161539578">तुमची सुरक्षा मजबूत करण्यासाठी आणि ऑनलाइन सुरक्षित राहण्यासाठी तुमचे सेव्ह केलेले पासवर्ड तपासा</translation>
 <translation id="385051799172605136">मागील</translation>
@@ -630,6 +634,7 @@
 <translation id="54401264925851789">पृष्‍ठ सुरक्षितता माहिती</translation>
 <translation id="5443952882982198570">क्रेडिट कार्ड</translation>
 <translation id="5444892875087332195">बुकमार्क</translation>
+<translation id="5453250766792920795">{count,plural, =1{बुकमार्क तुमच्या खात्यामध्ये सेव्ह केला आहे, {email}}other{बुकमार्क तुमच्या खात्यामध्ये सेव्ह केले आहेत, {email}}}</translation>
 <translation id="5457226814769348910">ऑफलाइन आवृत्ती उघडा</translation>
 <translation id="5489208564673669003">सर्व साइटसाठी कुकी व्यवस्थापित करण्यासाठी <ph name="BEGIN_LINK" />कुकी सेटिंग्ज<ph name="END_LINK" /> पहा.</translation>
 <translation id="5490005495580364134">सर्व कुकी ब्लॉक करा (शिफारस केली जात नाही)</translation>
@@ -656,6 +661,7 @@
 <translation id="5669528293118408608">www</translation>
 <translation id="5669617676038747374">QR कोड तयार करा</translation>
 <translation id="567881659373499783">आवृत्ती <ph name="PRODUCT_VERSION" /></translation>
+<translation id="5683499062697987550">तुमच्या Google खाते मध्ये पासवर्ड वापरण्यासाठी आणि ते सेव्ह करण्यासाठी, हे तुम्हीच असल्याची पडताळणी करा.</translation>
 <translation id="5690398455483874150">{count,plural, =1{आता एक Chrome विंडो दाखवत आहे}other{आता {count} Chrome विंडो दाखवत आहे}}</translation>
 <translation id="5701270923492462699">कॅमेरा अ‍ॅक्सेस करण्याची अनुमती दिली आहे</translation>
 <translation id="5704908597376970822">साइन-इन करू शकत नाही.</translation>
@@ -790,6 +796,7 @@
 
 तुमचा डेटा तुमच्या सिंक सांकेतिक पासफ्रेझसह <ph name="TIME" /> वाजता एंक्रिप्ट केलेला होता. सिंक सुरू करण्यासाठी तो एंटर करा.</translation>
 <translation id="6418346271604475326">पीडीएफ तयार करत आहे</translation>
+<translation id="6421095165635308">{count,plural, =1{तुमच्या खात्यामधील {title} मध्ये बुकमार्क सेव्ह केला आहे, {email}}other{तुमच्या खात्यामधील {title} मध्ये बुकमार्क सेव्ह केले आहेत, {email}}}</translation>
 <translation id="6429213933892582367">पासवर्ड पर्याय उघडा</translation>
 <translation id="6434591244308415567">एरर आली. नंतर पुन्हा प्रयत्न करा.</translation>
 <translation id="6435236283694032571">वाचन सूची मध्ये जोडा</translation>
@@ -878,6 +885,7 @@
 <translation id="6888009575607455378">तुम्हाला तुमचे बदल नक्की काढून टाकायचे आहेत का?</translation>
 <translation id="6896758677409633944">कॉपी करा</translation>
 <translation id="6897187120838603299">तुमचा पासवर्ड तुमच्या डिव्हाइसमध्ये सेव्ह केला जाईल.</translation>
+<translation id="6906448540340261898">तुम्ही तुमच्या Google खाते मधील पासवर्ड कधीही वापरू शकता याची खात्री करा</translation>
 <translation id="6913136913033237761"><ph name="FOLDER_NAME" />. फक्त या डिव्हाइसवर.</translation>
 <translation id="6914583639806229067">तुम्ही कॉपी केलेली इमेज शोधा</translation>
 <translation id="6914783257214138813">एक्सपोर्ट करण्यात आलेली फाइल दिसणार्‍या प्रत्येकाला, तुमचा पासवर्ड दिसेल.</translation>

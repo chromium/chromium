@@ -628,6 +628,7 @@
 <translation id="2469153820345007638">În ordinea de la 1-la-N</translation>
 <translation id="2470767536994572628">Când editezi adnotări, acest document va reveni la afișarea cu o pagină și la orientarea inițială</translation>
 <translation id="2479410451996844060">Adresă URL de căutare nevalidă.</translation>
+<translation id="2480300195898055381">În Contul Google <ph name="USER_EMAIL" /></translation>
 <translation id="2482878487686419369">Notificări</translation>
 <translation id="248348093745724435">Politicile dispozitivului</translation>
 <translation id="2491120439723279231">Certificatul serverului conține erori.</translation>
@@ -841,6 +842,7 @@
 <translation id="3029752078111257850">Știri internaționale</translation>
 <translation id="3037177537145227281">Se urmărește prețul</translation>
 <translation id="3037605927509011580">Of, nu mai merge!</translation>
+<translation id="3041450980936463495">Poți folosi adresele salvate în toate produsele Google. Această adresă este salvată în Contul tău Google (<ph name="ACCOUNT" />).</translation>
 <translation id="3041612393474885105">Informații despre certificat</translation>
 <translation id="305162504811187366">Istoricul Desktopului la distanță Chrome, inclusiv marcajele temporale, gazdele și ID-urile sesiunii de client</translation>
 <translation id="3052964831964880138">Scădere de preț de <ph name="PRICE_DROP" /> pentru <ph name="PRODUCT_NAME" /></translation>
@@ -1928,6 +1930,7 @@
 <translation id="5695542892312572833">Folosești Windows Hello ca să confirmi și finalizezi achiziția?</translation>
 <translation id="5701381305118179107">Pe centru</translation>
 <translation id="570530837424789914">Gestionează...</translation>
+<translation id="5706906618852913030">Salvezi în cont?</translation>
 <translation id="5707154300732650394">Continuă-ți parcursul</translation>
 <translation id="57094364128775171">Sugerează o parolă puternică…</translation>
 <translation id="571403275720188526">(arm64)</translation>

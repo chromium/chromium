@@ -40,6 +40,7 @@
 <translation id="1181037720776840403">Выдаліць</translation>
 <translation id="1182225749592316782">Доступ атрымаюць усе праграмы і вэб-сайты, якія маюць дазволы выкарыстоўваць мікрафон і камеру</translation>
 <translation id="1183863904939664422">Мне не цікавая гэта прапанова</translation>
+<translation id="1184126796192815024">Гэта сетка не падтрымлівае перадачу праграм плынню з вашага тэлефона. Паспрабуйце выкарыстаць хот-спот тэлефона. <ph name="LEARN_MORE" /></translation>
 <translation id="118437560755358292">Для дадатковай бяспекі ўвядзіце пароль або PIN-код</translation>
 <translation id="118532027333893379">Каб зняць увесь экран, націсніце ў любым яго месцы</translation>
 <translation id="1190609913194133056">Цэнтр апавяшчэнняў</translation>
@@ -466,6 +467,7 @@
 <translation id="3256109297135787951">Скасаваць вылучэнне элемента на паліцы</translation>
 <translation id="3260969790895726815">Запісы голасу апрацоўваюцца на прыладзе і нікуды не перадаюцца. Галасавы ўвод працуе па-за сеткай. Некаторыя галасавыя каманды могуць не працаваць.</translation>
 <translation id="3269597722229482060">Націснуць правай кнопкай мышы</translation>
+<translation id="3289364673986435196">Меню кнопкі сілкавання</translation>
 <translation id="3289544412142055976">Праграмы Linux цяпер не падтрымліваюцца</translation>
 <translation id="3289674678944039601">Ідзе зарадка праз адаптар</translation>
 <translation id="3290356915286466215">Не абаронена</translation>
@@ -693,6 +695,7 @@
 <translation id="4269883910223712419">Адміністратар гэтай прылады мае наступныя магчымасці:</translation>
 <translation id="4274537685965975248">Змянілася прызначэнне спалучэння клавіш Ctrl + Alt + стрэлка ўніз. Каб выканаць дзеянне клавішы End, націсніце <ph name="LAUNCHER_KEY_NAME" /> + стрэлка ўправа.</translation>
 <translation id="4279490309300973883">Адлюстраванне</translation>
+<translation id="4280601795273309128">Ваша прылада больш не будзе атрымліваць абнаўленні сістэмы бяспекі. Перайдзіце на новую прыладу.</translation>
 <translation id="4283888303416325161">Для дадатковай бяспекі ўвядзіце пароль</translation>
 <translation id="4285498937028063278">Адмацаваць</translation>
 <translation id="4294319844246081198">Добрай раніцы, <ph name="GIVEN_NAME" />!</translation>
@@ -883,6 +886,7 @@
 <translation id="5147567197700016471">Прылада разблакіравана</translation>
 <translation id="5150070631291639005">Налады прыватнасці</translation>
 <translation id="5155897006997040331">Хуткасць чытання</translation>
+<translation id="5163434717504750796">Стан акумулятара: <ph name="BATTERY_HEALTH_PERCENTAGE" />% | Колькасць цыклаў: <ph name="CYCLE_COUNT" /></translation>
 <translation id="5166007464919321363">Захаваць працоўны стол як шаблон</translation>
 <translation id="5168181903108465623">Ёсць даступныя прылады для трансляцыі</translation>
 <translation id="5170568018924773124">Паказаць у папцы</translation>
@@ -1357,6 +1361,7 @@
 <translation id="743058460480092004">Камера і мікрафон выкарыстоўваюцца.</translation>
 <translation id="7452560014878697800">Камера выкарыстоўваецца адной з праграм</translation>
 <translation id="7453330308669753048">Вынік выдалены з гісторыі пошуку</translation>
+<translation id="7455047553373871740"><ph name="BATTERY_PERCENTAGE" />% | <ph name="TIME" /> да поўнай зарадкі</translation>
 <translation id="7461924472993315131">PIN-код</translation>
 <translation id="746232733191930409">Рэжым запісу экрана</translation>
 <translation id="7466449121337984263">Дакраніцеся да сканера</translation>
@@ -1723,6 +1728,7 @@
 <translation id="9178475906033259337">Паказваецца 1 вынік па запыце "<ph name="QUERY" />"</translation>
 <translation id="9179259655489829027">Гэта функцыя дазваляе хутка атрымліваць доступ да карыстальнікаў, якія выканалі ўваход, – без уводу пароля. Выкарыстоўвайце гэту функцыю толькі на ўліковых запісах, якім давяраеце.</translation>
 <translation id="9183456764293710005">Поўнаэкранная лупа</translation>
+<translation id="9186811218777709815"><ph name="BATTERY_PERCENTAGE" />% | Застаецца <ph name="TIME" /></translation>
 <translation id="9193626018745640770">Трансляцыя невядомаму атрымальніку</translation>
 <translation id="9194617393863864469">Выканаць уваход для іншага карыстальніка...</translation>
 <translation id="9198992156681343238">Раздзяляльнасць экрана "<ph name="DISPLAY_NAME" />" зменена на <ph name="RESOLUTION" />. Каб захаваць змяненні, націсніце "Пацвердзіць". Папярэднія налады будуць адноўлены праз <ph name="TIMEOUT_SECONDS" />.</translation>

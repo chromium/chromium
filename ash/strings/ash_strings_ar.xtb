@@ -40,6 +40,7 @@
 <translation id="1181037720776840403">إزالة</translation>
 <translation id="1182225749592316782">يتيح هذا الإجراء السماح لجميع التطبيقات والمواقع الإلكترونية بالوصول إلى الكاميرا والميكروفون.</translation>
 <translation id="1183863904939664422">لست مهتمًا بهذا الاقتراح.</translation>
+<translation id="1184126796192815024">لا تتوافق هذه الشبكة مع تطبيقات البثّ على هاتفك. جرِّب استخدام نقطة الاتصال على هاتفك. <ph name="LEARN_MORE" /></translation>
 <translation id="118437560755358292">أدخِل كلمة المرور أو رقم التعريف الشخصي لزيادة مستوى الأمان</translation>
 <translation id="118532027333893379">انقر في أي مكان لالتقاط صورة في وضع ملء الشاشة.</translation>
 <translation id="1190609913194133056">مركز الإشعارات</translation>
@@ -1254,6 +1255,7 @@
 <translation id="685782768769951078">{NUM_DIGITS,plural, =1{يتبقى رقم واحد}zero{يتبقى # رقم}two{يتبقى رقمان}few{يتبقى # أرقام}many{يتبقى # رقمًا}other{يتبقى # رقم}}</translation>
 <translation id="6867938213751067702">تم إيقاف تنزيل <ph name="FILENAME" /> مؤقتًا.</translation>
 <translation id="6878400149835617132">تم إيقاف الاختصار</translation>
+<translation id="6878701771800702153">{NUM_APPS,plural, =1{تطبيق واحد}zero{‫# تطبيق}two{تطبيقان}few{‫# تطبيقات}many{‫# تطبيقًا}other{‫# تطبيق}}</translation>
 <translation id="6884665277231944629">العودة إلى تاريخ اليوم</translation>
 <translation id="6886172995547742638">‏قد يواجه جهاز <ph name="DEVICE_TYPE" /> انخفاضًا في الأداء. يمكنك استخدام محوِّل طاقة متوافق بقدرة <ph name="PREFERRED_MINIMUM_POWER" /> واط أو محوِّل طاقة USB-C بقدرة أعلى.</translation>
 <translation id="688631446150864480">اضغط على مفتاح السهم المتّجه للأسفل للتبديل بين النوافذ.</translation>

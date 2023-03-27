@@ -274,6 +274,7 @@
 <translation id="3456078764689556234">Ispisane stranice: <ph name="PRINTED_PAGES" /> od <ph name="TOTAL_PAGES" />.</translation>
 <translation id="345898999683440380">Skeniranje stranice <ph name="PAGE_NUM" />. Dovršeno je <ph name="PERCENTAGE_VALUE" />%.</translation>
 <translation id="3459509316159669723">Ispis</translation>
+<translation id="346423161771747987">Struja</translation>
 <translation id="346539236881580388">Snimi ponovo</translation>
 <translation id="3484914941826596830">Dok se oprema ažurira, nemojte iskopčavati ovaj vanjski uređaj niti isključivati računalo. Ovaj prozor možete minimizirati. Ažuriranje može potrajati nekoliko minuta i vaš vanjski uređaj tada možda neće funkcionirati.</translation>
 <translation id="3486220673238053218">definicija</translation>
@@ -769,6 +770,7 @@
 <translation id="7762130827864645708">Promjena zaporke je uspjela. Od sad upotrebljavajte novu zaporku.</translation>
 <translation id="7763470514545477072">Podudaranje domenskog nastavka</translation>
 <translation id="7769672763586021400">ID modela</translation>
+<translation id="7770834998503326261">Dodatne informacije u vezi s vašim odabirom</translation>
 <translation id="7778717409420828014">Vaše povratne informacije pomažu nam da poboljšamo doživljaj Chromebooka i pregledat će ih naš tim. Zbog velikog broja izvješća nećemo moći poslati odgovor.</translation>
 <translation id="7784116172884276937">Nije postavljen nijedan DNS poslužitelj</translation>
 <translation id="7791543448312431591">Dodavanje</translation>

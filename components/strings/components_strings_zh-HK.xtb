@@ -630,7 +630,7 @@
 <translation id="2469153820345007638">1 至 N 的順序</translation>
 <translation id="2470767536994572628">在您編輯註解時，此文件將會返回單頁檢視模式及轉回原本的方向</translation>
 <translation id="2479410451996844060">無效的搜尋網址。</translation>
-<translation id="2480300195898055381">儲存到 Google 帳戶 (<ph name="USER_EMAIL" />)</translation>
+<translation id="2480300195898055381">儲存在 Google 帳戶 (<ph name="USER_EMAIL" />)</translation>
 <translation id="2482878487686419369">通知</translation>
 <translation id="248348093745724435">裝置政策</translation>
 <translation id="2491120439723279231">伺服器憑證含有錯誤。</translation>
@@ -844,7 +844,7 @@
 <translation id="3029752078111257850">世界新聞</translation>
 <translation id="3037177537145227281">正在追蹤價格</translation>
 <translation id="3037605927509011580">糟糕！</translation>
-<translation id="3041450980936463495">你可以在各項 Google 產品中使用已儲存的地址。系統會將這個地址會儲存到 Google 帳戶 (<ph name="ACCOUNT" />) 中。</translation>
+<translation id="3041450980936463495">您可在不同的 Google 產品中使用已儲存的地址。此地址已儲存在您的 Google 帳戶 (<ph name="ACCOUNT" />)。</translation>
 <translation id="3041612393474885105">憑證資料</translation>
 <translation id="305162504811187366">Chrome 遠端桌面記錄，包括時間戳記、主機和用戶端工作階段 ID</translation>
 <translation id="3052964831964880138"><ph name="PRODUCT_NAME" /> 降價 <ph name="PRICE_DROP" /></translation>
@@ -1932,7 +1932,7 @@
 <translation id="5695542892312572833">要使用 Windows Hello 驗證並完成購買嗎？</translation>
 <translation id="5701381305118179107">置中</translation>
 <translation id="570530837424789914">管理…</translation>
-<translation id="5706906618852913030">要儲存到帳戶中嗎？</translation>
+<translation id="5706906618852913030">要儲存在帳戶中嗎？</translation>
 <translation id="5707154300732650394">恢復瀏覽過程</translation>
 <translation id="57094364128775171">建議安全性強的密碼…</translation>
 <translation id="571403275720188526">(arm64)</translation>

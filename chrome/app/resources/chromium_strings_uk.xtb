@@ -79,7 +79,6 @@
 <translation id="2928420929544864228">Встановлення завершено.</translation>
 <translation id="2977470724722393594">У вас остання версія Chromium</translation>
 <translation id="2977506796191543575">Якщо сайт намагається викрасти ваш пароль або ви завантажуєте шкідливий файл, Chromium також може надсилати в Безпечний перегляд URL-адреси, зокрема уривки контенту сторінки</translation>
-<translation id="3021964162552004083">{NUM_DEVICES,plural, =1{Chromium підключено до пристрою HID}one{Chromium підключено до пристроїв HID}few{Chromium підключено до пристроїв HID}many{Chromium підключено до пристроїв HID}other{Chromium підключено до пристроїв HID}}</translation>
 <translation id="3032706164202344641">Chromium не може перевірити паролі. Повторіть спробу пізніше.</translation>
 <translation id="3032787606318309379">Додавання в Chromium...</translation>
 <translation id="3038232873781883849">Очікується встановлення…</translation>

@@ -79,7 +79,6 @@ Na tym koncie mogą obowiązywać uprawnienia przyznane stronom i aplikacjom. K
 <translation id="2928420929544864228">Instalacja ukończona.</translation>
 <translation id="2977470724722393594">Masz aktualną wersję Chromium</translation>
 <translation id="2977506796191543575">Jeśli strona próbuje wykraść Twoje hasło lub pobierasz szkodliwy plik, Chromium może też wysłać URL wraz z fragmentami zawartości strony do usługi Bezpieczne przeglądanie.</translation>
-<translation id="3021964162552004083">{NUM_DEVICES,plural, =1{Przeglądarka Chromium jest połączona z urządzeniem HID}few{Przeglądarka Chromium jest połączona z urządzeniami HID}many{Przeglądarka Chromium jest połączona z urządzeniami HID}other{Przeglądarka Chromium jest połączona z urządzeniami HID}}</translation>
 <translation id="3032706164202344641">Chromium nie może sprawdzić Twoich haseł. Spróbuj później.</translation>
 <translation id="3032787606318309379">Dodawanie do Chromium...</translation>
 <translation id="3038232873781883849">Czekam na instalację…</translation>

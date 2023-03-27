@@ -79,7 +79,6 @@
 <translation id="2928420929544864228">ইনস্টলেশন শেষ হয়েছে।</translation>
 <translation id="2977470724722393594">Chromium আপ-টু-ডেট আছে</translation>
 <translation id="2977506796191543575">যদি কোনও সাইট আপনার পাসওয়ার্ড চুরি করার চেষ্টা করে বা আপনি কোনও ক্ষতিকারক ফাইল ডাউনলোড করলে, Chromium, পৃষ্ঠার কিছু কন্টেন্ট সহ URL ও হয়ত Safe Browsing-এ পাঠাতে পারে</translation>
-<translation id="3021964162552004083">{NUM_DEVICES,plural, =1{Chromium একটি HID ডিভাইসে কানেক্ট করা আছে}one{Chromium একটি HID ডিভাইসে কানেক্ট করা আছে}other{Chromium একটি HID ডিভাইসে কানেক্ট করা আছে}}</translation>
 <translation id="3032706164202344641">Chromium আপনার পাসওয়ার্ড চেক করতে পারছে না। পরে আবার চেষ্টা করুন।</translation>
 <translation id="3032787606318309379">Chromium-এ জুড়ছে...</translation>
 <translation id="3038232873781883849">ইনস্টল করার জন্য অপেক্ষা করা হচ্ছে...</translation>

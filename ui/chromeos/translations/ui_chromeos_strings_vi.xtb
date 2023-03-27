@@ -97,6 +97,7 @@
 <translation id="1773212559869067373">Chứng chỉ xác thực bị từ chối cục bộ</translation>
 <translation id="1775381402323441512">Thông tin về tệp video</translation>
 <translation id="180035236176489073">Bạn phải trực tuyến để truy cập các tệp này.</translation>
+<translation id="1805030087840125683">{COUNT,plural, =1{Không tìm thấy tiện ích có mã nhận dạng}other{Không tìm thấy các tiện ích có mã nhận dạng}}</translation>
 <translation id="1807938677607439181">Tất cả các tệp</translation>
 <translation id="1810764548349082891">Không có bản xem trước</translation>
 <translation id="1812302367230252929">Tiếng Amhara (chuyển tự)</translation>
@@ -130,6 +131,7 @@
 <translation id="2084108471225856927">Cài đặt thiết bị</translation>
 <translation id="2084809735218147718">Ra hiệu cảm ơn</translation>
 <translation id="2088690981887365033">Mạng riêng ảo (VPN)</translation>
+<translation id="2111134541987263231">Bật tuỳ chọn <ph name="BEGIN_BOLD" />Cho phép ở chế độ ẩn danh<ph name="END_BOLD" /></translation>
 <translation id="2114191879048183086"><ph name="NUMBER_OF_ITEMS" /> mục sẽ bị xoá và không thể khôi phục.</translation>
 <translation id="2122305276694332719">Việc tự động kết nối vào một mạng ẩn sẽ cho phép những người khác nhìn thấy thiết bị và một số tùy chọn cài đặt mạng của bạn. Bạn không nên bật tùy chọn này.</translation>
 <translation id="2125607626296734455">Tiếng Khmer</translation>
@@ -228,6 +230,7 @@
 <translation id="290843123675549676">Tiếng Maratha</translation>
 <translation id="2923240520113693977">Tiếng Estonia</translation>
 <translation id="2938685643439809023">Tiếng Mông Cổ</translation>
+<translation id="293972288692056847">{COUNT,plural, =1{Không tìm thấy tiện ích}other{Không tìm thấy tiện ích}}</translation>
 <translation id="2943503720238418293">Hãy sử dụng tên ngắn hơn</translation>
 <translation id="2949781154072577687">Đang định dạng <ph name="DRIVE_NAME" />...</translation>
 <translation id="2951236788251446349">Sứa</translation>
@@ -282,6 +285,7 @@
 <translation id="3356580349448036450">Hoàn tất</translation>
 <translation id="3358452157379365236">Đàn ghita</translation>
 <translation id="3368922792935385530">Đã kết nối</translation>
+<translation id="3372635229069101468">Nhấp vào <ph name="BEGIN_BOLD" />Chi tiết<ph name="END_BOLD" /></translation>
 <translation id="3382143449143186018">Tiếng Nepal bằng bàn phím InScript</translation>
 <translation id="338691029516748599">Mạng <ph name="NETWORK_INDEX" />/<ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, Cường độ tín hiệu <ph name="SIGNAL_STRENGTH" />%, Do quản trị viên của bạn quản lý, Kết nối</translation>
 <translation id="3408072735282270043">Kích hoạt, <ph name="NETWORK_NAME" /></translation>
@@ -366,6 +370,7 @@
 <translation id="4124935795427217608">Kỳ lân</translation>
 <translation id="4131235941541910880">Chuyển các mục bạn không cần vào thùng rác</translation>
 <translation id="4134804435730168042">Mạng <ph name="NETWORK_INDEX" />/<ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" />, Kích hoạt sau khi thiết lập thiết bị</translation>
+<translation id="41501027364808384">{COUNT,plural, =1{Bật tiện ích sau trong chế độ Ẩn danh:}other{Bật các tiện ích sau trong chế độ Ẩn danh:}}</translation>
 <translation id="4153015322587141338">Nhấp chuột phải vào một tệp rồi chọn "<ph name="PIN_COMMAND" />" để truy cập nhanh vào các tệp trong kệ.</translation>
 <translation id="4157569377477607576">Chính sách của quản trị viên không khuyến khích:</translation>
 <translation id="4159731583141908892">Đã di chuyển <ph name="FILE_NAME" />.</translation>
@@ -462,8 +467,10 @@
 <translation id="4801956050125744859">Giữ cả hai</translation>
 <translation id="4804827417948292437">Quả bơ</translation>
 <translation id="4805966553127040832">Đang khôi phục <ph name="COUNT" /> mục</translation>
+<translation id="4816695657735045067">{COUNT,plural, =1{Để sử dụng chế độ Ẩn danh, tổ chức của bạn cần có một tiện ích}other{Để sử dụng chế độ Ẩn danh, tổ chức của bạn cần có một số tiện ích}}</translation>
 <translation id="4823651846660089135">Thiết bị chỉ đọc</translation>
 <translation id="4826849268470072925">Tiếng Tamil (ITRANS)</translation>
+<translation id="482932175346970750">Nhập <ph name="BEGIN_BOLD" />chrome://extensions<ph name="END_BOLD" /> vào trình duyệt</translation>
 <translation id="4839847978919684242"><ph name="SELCTED_FILES_COUNT" /> mục được chọn</translation>
 <translation id="4843566743023903107">Chromebase</translation>
 <translation id="4850886885716139402">Xem</translation>
@@ -533,6 +540,7 @@
     trên các tệp với những người khác, tất cả tại cùng một địa điểm.<ph name="MARKUP_9" /></translation>
 <translation id="5275973617553375938">Tệp được khôi phục từ Google Drive</translation>
 <translation id="5278111733643988471">Để khôi phục, hãy kéo mục này vào một thư mục mới bên ngoài thùng rác. Thư mục gốc "<ph name="PARENT_FOLDER_NAME" />" của mục này đã bị xoá.</translation>
+<translation id="5283101102242354279">Bật một tiện ích ở chế độ Ẩn danh:</translation>
 <translation id="5286194356314741248">Đang quét</translation>
 <translation id="5288441970121584418">Bánh mì kẹp</translation>
 <translation id="5288481194217812690"><ph name="FILENAME" /></translation>
@@ -779,6 +787,7 @@
 <translation id="7238643356913091553"><ph name="NETWORK_NAME" />, Thông tin chi tiết</translation>
 <translation id="7246947237293279874">Proxy FTP</translation>
 <translation id="7248671827512403053">Ứng dụng</translation>
+<translation id="7252604552361840748">Tìm tiện ích ở trên</translation>
 <translation id="7256405249507348194">Lỗi không xác định: <ph name="DESC" /></translation>
 <translation id="7268659760406822741">Dịch vụ khả dụng</translation>
 <translation id="7292816689782057017">Chính sách của quản trị viên hạn chế khả năng lưu vào một số vị trí.</translation>
@@ -792,6 +801,7 @@
 <translation id="7359359531237882347">Đang sao chép <ph name="NUMBER_OF_ITEMS" /> mục...</translation>
 <translation id="7375951387215729722">Danh sách tệp được sắp xếp giảm dần theo <ph name="COLUMN_NAME" />.</translation>
 <translation id="7377161162143020057">Chính sách của quản trị viên không cho phép sao chép tệp này</translation>
+<translation id="7392500733467492920">Hãy liên hệ với quản trị viên của bạn.</translation>
 <translation id="7402503521691663770">Thiết bị ChromeOS Flex</translation>
 <translation id="7408870451288633753">Tiếng Séc</translation>
 <translation id="7417453074306512035">Bàn phím tiếng Ethiopic</translation>

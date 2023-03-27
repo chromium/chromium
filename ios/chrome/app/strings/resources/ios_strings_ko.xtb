@@ -58,6 +58,7 @@
 <translation id="1283524564873030414">지난 24시간</translation>
 <translation id="1285320974508926690">이 사이트 번역 안함</translation>
 <translation id="1291506870746876680">사이트를 나가면 <ph name="BEGIN_BOLD" />"<ph name="SITE_NAME" />"<ph name="END_BOLD" /> 권한이 사용 안함으로 재설정됩니다.</translation>
+<translation id="1305822519689023679">Google 계정에서 언제든지 비밀번호를 사용할 수 있도록 본인 인증을 완료하세요.</translation>
 <translation id="1312721752506309252">향상된 보호 모드를 사용 중입니다.</translation>
 <translation id="1321993286294231467">이미지를 저장하는 중에 오류가 발생했습니다.</translation>
 <translation id="1322735045095424339">조직에서 시크릿 모드 사용을 요구함</translation>
@@ -107,6 +108,7 @@
 <translation id="1626771852476987600">재사용된 비밀번호 <ph name="COUNT" />개</translation>
 <translation id="1641113438599504367">세이프 브라우징</translation>
 <translation id="1644574205037202324">방문 기록</translation>
+<translation id="165008673352427892">새로운 기능</translation>
 <translation id="1650222530560417226">모든 탭에서 앞으로 자바스크립트 콘솔 로그 및 오류를 수집하려면 '로그 기록 시작' 버튼을 탭하세요. 이 페이지가 닫히거나 '로그 기록 중지'를 탭할 때까지 로그가 수집됩니다(메모리에만 저장됨).</translation>
 <translation id="1653432787084483144">{count,plural, =1{키보드 위에 저장된 비밀번호 {count}개가 있습니다.}other{키보드 위에 저장된 비밀번호 {count}개가 있습니다.}}</translation>
 <translation id="1657011748321897393">네트워크에 연결되어 있지 않아 공유하지 못했습니다.</translation>
@@ -120,6 +122,7 @@
 <translation id="1700629756560807968"><ph name="NUMBER_OF_SELECTED_BOOKMARKS" />개 항목 선택됨</translation>
 <translation id="1715515772563243997"><ph name="SITE" /> 사이트를 신뢰하는 경우 저장된 비밀번호를 사용하여 로그인할 수 있습니다.</translation>
 <translation id="1740468249224277719">설치하려면 두 번 탭하세요.</translation>
+<translation id="1750238553597293878">Google 계정의 비밀번호를 계속 사용하세요.</translation>
 <translation id="1752547299766512813">비밀번호 저장</translation>
 <translation id="1753905327828125965">자주 방문한 페이지</translation>
 <translation id="1767766085187034454">Google 번역</translation>
@@ -402,6 +405,7 @@ Google이 아닌 다른 검색엔진을 사용 중이라면 해당 검색엔진�
 <translation id="3810973564298564668">관리</translation>
 <translation id="3818293389945649617">다음 찾기</translation>
 <translation id="3819183753496523827">오프라인 상태입니다. 인터넷 연결을 확인한 후 다시 시도해 보세요.</translation>
+<translation id="3832419617903252251">비밀번호가 이 기기에만 저장됨</translation>
 <translation id="3835964409414434850">다음 탭으로 이동</translation>
 <translation id="3838691874161539578">저장된 비밀번호를 점검하여 보안을 강화하고 온라인에서 더 안전하게 보호하세요.</translation>
 <translation id="385051799172605136">뒤로</translation>
@@ -630,6 +634,7 @@ Google이 아닌 다른 검색엔진을 사용 중이라면 해당 검색엔진�
 <translation id="54401264925851789">페이지 보안 정보</translation>
 <translation id="5443952882982198570">신용카드</translation>
 <translation id="5444892875087332195">북마크</translation>
+<translation id="5453250766792920795">{count,plural, =1{계정({email})에 북마크가 저장됨}other{계정({email})에 북마크가 저장됨}}</translation>
 <translation id="5457226814769348910">오프라인 버전 열기</translation>
 <translation id="5489208564673669003">모든 사이트의 쿠키를 관리하려면 <ph name="BEGIN_LINK" />쿠키 설정<ph name="END_LINK" />을 참조하세요.</translation>
 <translation id="5490005495580364134">모든 쿠키 차단(권장되지 않음)</translation>
@@ -656,6 +661,7 @@ Google이 아닌 다른 검색엔진을 사용 중이라면 해당 검색엔진�
 <translation id="5669528293118408608">www</translation>
 <translation id="5669617676038747374">QR 코드 만들기</translation>
 <translation id="567881659373499783">버전 <ph name="PRODUCT_VERSION" /></translation>
+<translation id="5683499062697987550">Google 계정에서 비밀번호를 사용하고 저장하려면 본인 인증을 완료하세요.</translation>
 <translation id="5690398455483874150">{count,plural, =1{Chrome 창 1개 표시 중}other{Chrome 창 {count}개 표시 중}}</translation>
 <translation id="5701270923492462699">카메라 액세스 허용됨</translation>
 <translation id="5704908597376970822">로그인할 수 없습니다</translation>
@@ -788,6 +794,7 @@ Google이 아닌 다른 검색엔진을 사용 중이라면 해당 검색엔진�
 
 <ph name="TIME" />에 동기화 암호로 데이터가 암호화되었습니다. 동기화를 시작하려면 입력하세요.</translation>
 <translation id="6418346271604475326">PDF 준비 중</translation>
+<translation id="6421095165635308">{count,plural, =1{계정({email})의 {title}에 북마크가 저장됨}other{계정({email})의 {title}에 북마크가 저장됨}}</translation>
 <translation id="6429213933892582367">비밀번호 옵션 열기</translation>
 <translation id="6434591244308415567">오류가 발생했습니다. 나중에 다시 시도해 보세요.</translation>
 <translation id="6435236283694032571">읽기 목록에 추가</translation>
@@ -876,6 +883,7 @@ Google이 아닌 다른 검색엔진을 사용 중이라면 해당 검색엔진�
 <translation id="6888009575607455378">변경사항을 삭제하시겠습니까?</translation>
 <translation id="6896758677409633944">복사</translation>
 <translation id="6897187120838603299">비밀번호가 현재 기기에 저장됩니다.</translation>
+<translation id="6906448540340261898">Google 계정의 비밀번호를 언제든지 사용할 수 있도록 설정하세요.</translation>
 <translation id="6913136913033237761"><ph name="FOLDER_NAME" />, 이 기기에서만 표시</translation>
 <translation id="6914583639806229067">복사한 이미지 검색</translation>
 <translation id="6914783257214138813">내보낸 파일을 볼 수 있는 모든 사용자에게 비밀번호가 표시됩니다.</translation>

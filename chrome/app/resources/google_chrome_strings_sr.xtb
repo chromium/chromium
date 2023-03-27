@@ -27,6 +27,7 @@
 <translation id="1507198376417198979">Прилагодите нови Chrome профил</translation>
 <translation id="1516530951338665275">Google Chrome захтева приступ Bluetooth-у ради настављања са 
  упаривањем. <ph name="IDS_BLUETOOTH_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
+<translation id="1535597783576881392">Овај водич вам помаже да разумете изабране опције да би Chrome радио онако како желите</translation>
 <translation id="1547295885616600893">Chrome OС je могућ захваљујући додатном <ph name="BEGIN_LINK_CROS_OSS" />софтверу са отвореним кодом<ph name="END_LINK_CROS_OSS" />.</translation>
 <translation id="1553358976309200471">Ажурирај Chrome</translation>
 <translation id="1583073672411044740">Корисник <ph name="EXISTING_USER" /> је већ пријављен на овај Chrome профил. Овим ће се направити нов Chrome профил за <ph name="USER_EMAIL_ADDRESS" /></translation>
@@ -69,6 +70,7 @@
 <translation id="2131230230468101642">Ради заштите приватности аутоматски бришемо интересовања старија од 4 недеље. Када наставите да прегледате, интересовање ће се можда поново појавити на листи. Можете и да уклањате интересовања за која не желите да их Chrome узима у обзир.</translation>
 <translation id="2139300032719313227">Рестартујте Chrome ОС</translation>
 <translation id="2151406531797534936">Поново покрените Chrome</translation>
+<translation id="2163996651553460171">Користите Chrome на најбољи начин</translation>
 <translation id="2174917724755363426">Инсталација није довршена. Желите стварно да је откажете?</translation>
 <translation id="223889379102603431">Информације о томе како Chrome управља сертификатима основног нивоа</translation>
 <translation id="2258103955319320201">Да бисте приступали Chrome прегледачу на свим уређајима, пријавите се, па укључите синхронизацију</translation>
@@ -126,7 +128,6 @@
 <translation id="3140883423282498090">Промене ће ступити на снагу када следећи пут поново покренете Google Chrome.</translation>
 <translation id="3149510190863420837">Chrome апликације</translation>
 <translation id="3169523567916669830">Током проба можете да видите и уклањате интересовања која сајтови користе да би вам приказивали огласе. Chrome процењује ваша интересовања на основу недавне историје прегледања.</translation>
-<translation id="3211604354460514046">{NUM_DEVICES,plural, =1{Google Chrome је повезан са HID уређајем}one{Google Chrome је повезан са HID уређајима}few{Google Chrome је повезан са HID уређајима}other{Google Chrome је повезан са HID уређајима}}</translation>
 <translation id="3245429137663807393">Ако делите и Chrome извештаје о коришћењу, ти извештаји обухватају URL-ове које посећујете</translation>
 <translation id="3282568296779691940">Пријављивање у Chrome</translation>
 <translation id="3286538390144397061">Рестартуј одмах</translation>

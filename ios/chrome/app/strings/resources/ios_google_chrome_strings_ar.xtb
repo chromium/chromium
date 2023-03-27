@@ -40,6 +40,7 @@
 <translation id="3167189358072330585">‏لا يعمل حسابك على Google Chrome. يُرجى الاتصال بمشرف النطاق أو استخدام حساب Google عادي لتسجيل الدخول.</translation>
 <translation id="3173834708294760622">‏صفحة Google Chrome</translation>
 <translation id="3196546062792660320">‏يوفر Chrome وقتك من خلال تجميع حساباتك على شبكة الإنترنت. ويمكنك إضافة أو إزالة حسابات في الإعدادات.</translation>
+<translation id="322254490661677575">‏عليك إدخال عبارة المرور لاستخدام بيانات Chrome وحفظها في حسابك على Google.</translation>
 <translation id="3282568296779691940">‏تسجيل الدخول إلى Chrome</translation>
 <translation id="3345341804167540816">‏استخدم Chrome في كل مكان</translation>
 <translation id="3503014945441706099">‏يمكنك الاستفادة من ميزة "الحماية المحسّنة للتصفّح الآمن" لهذا الملف الشخصي على Chrome أيضًا.</translation>
@@ -52,6 +53,7 @@
 <translation id="3980220367029651214">‏أنت تجري تبديلاً لحسابات المزامنة من <ph name="USER_EMAIL1" /> إلى <ph name="USER_EMAIL2" />. يتم إدارة بيانات Chrome الحالية من خلال <ph name="DOMAIN" />. سيؤدي ذلك إلى إزالة بياناتك من هذا الجهاز، ولكن ستظل بياناتك في <ph name="USER_EMAIL1" />.</translation>
 <translation id="3984746313391923992">‏تطلُب مؤسستك منك البقاء في وضع تسجيل الخروج من Chrome.</translation>
 <translation id="3988789688219830639">‏لا تتوفر لدي Google Chrome إمكانية الدخول إلى الصور أو الفيديوهات. تستطيع تفعيل الدخول في إعدادات iOS &gt; الخصوصية &gt; الصور.</translation>
+<translation id="4064699917955374540">‏عليك إثبات هويتك لاستخدام بيانات Chrome وحفظها في حسابك على Google.</translation>
 <translation id="417201473131094001">‏غير متاح على Chrome Canary</translation>
 <translation id="4233521129555661685">‏كان <ph name="USER_EMAIL1" /> يستخدم Chrome وتركَ إشارات مرجعية وكلمات مرور وغيرها من الإعدادات مُسجَّلة على هذا الجهاز.</translation>
 <translation id="424864128008805179">‏هل تريد تسجيل الخروج من Chrome؟</translation>
@@ -68,6 +70,7 @@
 <translation id="5119391094379141756">‏اختيار Chrome</translation>
 <translation id="5162467219239570114">‏إصدار Chrome قديم. في حال عدم توفُّر تحديث في <ph name="BEGIN_LINK" />متجر التطبيقات<ph name="END_LINK" />، قد يعني هذا أن جهازك لم يعد متوافقًا مع الإصدارات الجديدة من Chrome.</translation>
 <translation id="5389212809648216794">‏يتعذر على Google Chrome استخدام الكاميرا نظرًا لأنها قيد الاستخدام من قِبل تطبيق آخر</translation>
+<translation id="5395376160638294582">‏يُرجى التأكُّد من أنّه يمكنك استخدام بيانات Chrome في حسابك على Google في أي وقت.</translation>
 <translation id="5460571915754665838">‏4- اختيار Chrome</translation>
 <translation id="5492504007368565877">‏يتعذَّر على "مدير كلمات المرور في Google" التحقّق من كلمات المرور.</translation>
 <translation id="5552137475244467770">‏يتحقَّق Chrome من كلمات مرورك بشكلٍ دوري في البيانات التي تم نشرها على الإنترنت. وأثناء هذه العملية، تكون كلمات المرور وأسماء المستخدمين مشفّرة، ولا يمكن لأي مستخدم آخر الاطِّلاع على هذه البيانات بما في ذلك Google.</translation>
@@ -122,6 +125,7 @@
 <translation id="8370517070665726704">‏حقوق الطبع والنشر لعام <ph name="YEAR" /> لشركة Google LLC. جميع الحقوق محفوظة.</translation>
 <translation id="840168496893712993">‏تتسبب بعض الإضافات في تعطل Chrome. يُرجى محاولة إزالتها.</translation>
 <translation id="8414886616817913619">‏تطلُب المؤسسة منك تسجيل الدخول للتمكّن من استخدام Chrome. <ph name="BEGIN_LINK" />مزيد من المعلومات<ph name="END_LINK" /></translation>
+<translation id="84594714173170813">‏مواصلة استخدام بيانات Chrome في حسابك على Google</translation>
 <translation id="8459495907675268833">‏تمت إزالة البيانات المُحددة من متصفح Chrome والأجهزة التي تمت مزامنتها. قد يحتوي حسابك في Google على نماذج أخرى من سجل التصفح، مثل عمليات البحث والأنشطة من خدمات Google الأخرى في history.google.com.</translation>
 <translation id="850555388806794946">‏لجعل Chrome المتصفِّح التلقائي، اتّبِع الخطوات التالية:
   1. افتح Settings (الإعدادات).

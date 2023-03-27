@@ -122,7 +122,6 @@
 <translation id="3140883423282498090">Ваші зміни почнуть діяти після наступного перезапуску Google Chrome.</translation>
 <translation id="3149510190863420837">Додатки Chrome</translation>
 <translation id="3169523567916669830">Коли використовуються пробні версії нових функцій, ви можете переглядати й вилучати цікаві теми, на основі яких сайти показують вам оголошення. Chrome оцінює, які теми вас цікавлять, за вашою нещодавньою історією веб-перегляду.</translation>
-<translation id="3211604354460514046">{NUM_DEVICES,plural, =1{Google Chrome підключено до пристрою HID}one{Google Chrome підключено до пристроїв HID}few{Google Chrome підключено до пристроїв HID}many{Google Chrome підключено до пристроїв HID}other{Google Chrome підключено до пристроїв HID}}</translation>
 <translation id="3245429137663807393">Якщо ви також будете надсилати звіти про використання Chrome, у них буде включено дані про відвідані URL-адреси</translation>
 <translation id="3282568296779691940">Вхід у Chrome</translation>
 <translation id="3286538390144397061">Перезапустити зараз</translation>

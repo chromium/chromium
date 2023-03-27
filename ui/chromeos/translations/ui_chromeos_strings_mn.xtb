@@ -97,6 +97,7 @@
 <translation id="1773212559869067373">Баталгаажуулалтын гэрчилгээг түтгэлзүүлсэн байна</translation>
 <translation id="1775381402323441512">Видеоны мэдээлэл</translation>
 <translation id="180035236176489073">Та эдгээр файлуудад хандахын тулд онлайн байх ёстой.</translation>
+<translation id="1805030087840125683">{COUNT,plural, =1{ID-тай өргөтгөл}other{ID-тай өргөтгөлүүд}}</translation>
 <translation id="1807938677607439181">Бүх файлууд</translation>
 <translation id="1810764548349082891">Урьдчилан харах боломжгүй</translation>
 <translation id="1812302367230252929">Амхар галиг</translation>
@@ -130,6 +131,7 @@
 <translation id="2084108471225856927">Төхөөрөмжийн тохиргоонууд</translation>
 <translation id="2084809735218147718">Баярлалаа гэж дохионы хэлээр хэлж байна</translation>
 <translation id="2088690981887365033">VPN сүлжээ</translation>
+<translation id="2111134541987263231"><ph name="BEGIN_BOLD" />Нууцлалтай горимд зөвшөөрөхийг<ph name="END_BOLD" /> асаана уу</translation>
 <translation id="2114191879048183086"><ph name="NUMBER_OF_ITEMS" /> зүйлийг устгах бөгөөд та тэдгээрийг сэргээх боломжгүй болно.</translation>
 <translation id="2122305276694332719">Нуусан сүлжээнд автоматаар холбогдсоноор бусдад таны төхөөрөмж болон зарим сүлжээний тохиргоог харахыг зөвшөөрөх бөгөөд үүнийг зөвлөдөггүй.</translation>
 <translation id="2125607626296734455">Кхмер</translation>
@@ -228,6 +230,7 @@
 <translation id="290843123675549676">Марати</translation>
 <translation id="2923240520113693977">Эстон</translation>
 <translation id="2938685643439809023">Монгол</translation>
+<translation id="293972288692056847">{COUNT,plural, =1{Өргөтгөл олох боломжгүй}other{Өргөтгөлүүдийг олох боломжгүй}}</translation>
 <translation id="2943503720238418293">Богино нэр ашиглах</translation>
 <translation id="2949781154072577687"><ph name="DRIVE_NAME" />-г форматалж байна...</translation>
 <translation id="2951236788251446349">Далайн мөгөөрс</translation>
@@ -282,6 +285,7 @@
 <translation id="3356580349448036450">Бүрэн</translation>
 <translation id="3358452157379365236">Гитар</translation>
 <translation id="3368922792935385530">Холбогдсон</translation>
+<translation id="3372635229069101468"><ph name="BEGIN_BOLD" />Дэлгэрэнгүйг<ph name="END_BOLD" /> товшино уу</translation>
 <translation id="3382143449143186018">InScript гартай балба</translation>
 <translation id="338691029516748599">Сүлжээ: <ph name="NETWORK_COUNT" />-н <ph name="NETWORK_INDEX" />, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, дохионы хүч <ph name="SIGNAL_STRENGTH" />%, таны администратор удирддаг, холбогдох</translation>
 <translation id="3408072735282270043">Идэвхжүүлэх, <ph name="NETWORK_NAME" /></translation>
@@ -366,6 +370,7 @@
 <translation id="4124935795427217608">Ганц эвэртэй морь</translation>
 <translation id="4131235941541910880">Хэрэггүй зүйлсээ хогийн сав руу зөөнө үү</translation>
 <translation id="4134804435730168042"><ph name="NETWORK_COUNT" />-с <ph name="NETWORK_INDEX" />-р сүлжээ, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" />, Төхөөрөмжийг тохируулсны дараа идэвхжүүлнэ үү</translation>
+<translation id="41501027364808384">{COUNT,plural, =1{Нууцлалтай горимд дараах өргөтгөлийг асаана уу:}other{Нууцлалтай горимд дараах өргөтгөлүүдийг асаана уу:}}</translation>
 <translation id="4153015322587141338">Тавиур дээрх файлууддаа шуурхай хандахын тулд файл дээр баруун товшоод, "<ph name="PIN_COMMAND" />"-г сонгоно уу.</translation>
 <translation id="4157569377477607576">Администраторын бодлого дараахыг санал болгодоггүй:</translation>
 <translation id="4159731583141908892"><ph name="FILE_NAME" />-г зөөсөн.</translation>
@@ -462,8 +467,10 @@
 <translation id="4801956050125744859">Хоёуланг нь хадгал</translation>
 <translation id="4804827417948292437">Авокадо</translation>
 <translation id="4805966553127040832"><ph name="COUNT" /> зүйлийг сэргээж байна</translation>
+<translation id="4816695657735045067">{COUNT,plural, =1{Нууцлалтай горимыг ашиглахын тулд танай байгууллагад өргөтгөл шаардлагатай}other{Нууцлалтай горимыг ашиглахын тулд танай байгууллагад зарим өргөтгөл шаардлагатай}}</translation>
 <translation id="4823651846660089135">Төхөөрөмжийг зөвхөн унших боломжтой</translation>
 <translation id="4826849268470072925">Тамил ITRANS</translation>
+<translation id="482932175346970750">Хөтчидөө <ph name="BEGIN_BOLD" />chrome://extensions-г<ph name="END_BOLD" /> бичнэ үү</translation>
 <translation id="4839847978919684242"><ph name="SELCTED_FILES_COUNT" /> сонгогдсон зүйлс</translation>
 <translation id="4843566743023903107">Chromebase</translation>
 <translation id="4850886885716139402">Харах</translation>
@@ -531,6 +538,7 @@
     нэг газар үүсгэж, хуваалцаж, ажиллаарай.<ph name="MARKUP_9" /></translation>
 <translation id="5275973617553375938">Google Drive-аас файлуудыг сэргээлээ</translation>
 <translation id="5278111733643988471">Энэ зүйлийг сэргээхийн тулд хогийн савнаас гадагш шинэ фолдер луу чирнэ үү. Энэ зүйлийн эх фолдер болох "<ph name="PARENT_FOLDER_NAME" />"-г устгасан байна.</translation>
+<translation id="5283101102242354279">Нууцлалтай горимд өргөтгөлийг асаана уу:</translation>
 <translation id="5286194356314741248">Скан хийж байна</translation>
 <translation id="5288441970121584418">Бургер</translation>
 <translation id="5293615890992542006">Энэ файлыг зөөхийг администраторын бодлогоор блоклосон</translation>
@@ -776,6 +784,7 @@
 <translation id="7238643356913091553"><ph name="NETWORK_NAME" />, дэлгэрэнгүй мэдээлэл</translation>
 <translation id="7246947237293279874">FTP прокси</translation>
 <translation id="7248671827512403053">Аппликейшн</translation>
+<translation id="7252604552361840748">Дээрх өргөтгөлийг олно уу</translation>
 <translation id="7256405249507348194">Танигдаагүй алдаа: <ph name="DESC" /></translation>
 <translation id="7268659760406822741">Бэлэн үйлчилгээ</translation>
 <translation id="7292816689782057017">Администраторын бодлого нь зарим байршилд хадгалахыг хязгаарладаг.</translation>
@@ -789,6 +798,7 @@
 <translation id="7359359531237882347"><ph name="NUMBER_OF_ITEMS" /> зүйлийг хуулж байна...</translation>
 <translation id="7375951387215729722">Файлын жагсаалтыг <ph name="COLUMN_NAME" />-н дагуу буурах дарааллаар эрэмбэлсэн.</translation>
 <translation id="7377161162143020057">Энэ файлыг хуулахыг администраторын бодлогоор блоклосон</translation>
+<translation id="7392500733467492920">байршил тогтоох боломжгүй. Администратортайгаа холбогдоно уу.</translation>
 <translation id="7402503521691663770">ChromeOS Flex төхөөрөмжүүд</translation>
 <translation id="7408870451288633753">Чех</translation>
 <translation id="7417453074306512035">Этиоп хэлний гар</translation>

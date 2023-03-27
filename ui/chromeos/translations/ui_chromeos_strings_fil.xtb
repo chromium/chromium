@@ -97,6 +97,7 @@
 <translation id="1773212559869067373">Lokal na tinanggihan ang certificate ng pagpapatunay</translation>
 <translation id="1775381402323441512">Impormasyon ng video</translation>
 <translation id="180035236176489073">Kailangan kang mag-online upang ma-access ang mga file na ito.</translation>
+<translation id="1805030087840125683">{COUNT,plural, =1{Ang extension na may ID na}one{Ang mga extension na may mga ID na}other{Ang mga extension na may mga ID na}}</translation>
 <translation id="1807938677607439181">Lahat ng file</translation>
 <translation id="1810764548349082891">Walang available na preview</translation>
 <translation id="1812302367230252929">Amharic Transliteration</translation>
@@ -130,6 +131,7 @@
 <translation id="2084108471225856927">Mga setting ng device</translation>
 <translation id="2084809735218147718">Sumesenyas ng salamat</translation>
 <translation id="2088690981887365033">VPN network</translation>
+<translation id="2111134541987263231">I-on ang <ph name="BEGIN_BOLD" />Payagan sa Incognito<ph name="END_BOLD" />.</translation>
 <translation id="2114191879048183086"><ph name="NUMBER_OF_ITEMS" /> (na) item ang ide-delete at hindi mo mare-restore ang mga ito.</translation>
 <translation id="2122305276694332719">Ang awtomatikong pagkonekta sa nakatagong network ay nagbibigay-daan sa ibang tao na makita ang iyong device at ibang setting ng network, at hindi ito inirerekomenda.</translation>
 <translation id="2125607626296734455">Khmer</translation>
@@ -228,6 +230,7 @@
 <translation id="290843123675549676">Marathi</translation>
 <translation id="2923240520113693977">Estonian</translation>
 <translation id="2938685643439809023">Mongolian</translation>
+<translation id="293972288692056847">{COUNT,plural, =1{Hindi mahanap ang extension}one{Hindi mahanap ang mga extension}other{Hindi mahanap ang mga extension}}</translation>
 <translation id="2943503720238418293">Gumamit ng mas maikling pangalan</translation>
 <translation id="2949781154072577687">Fino-format ang <ph name="DRIVE_NAME" />...</translation>
 <translation id="2951236788251446349">Jellyfish</translation>
@@ -282,6 +285,7 @@
 <translation id="3356580349448036450">Kumpleto na</translation>
 <translation id="3358452157379365236">Gitara</translation>
 <translation id="3368922792935385530">Nakakonekta</translation>
+<translation id="3372635229069101468">I-click ang <ph name="BEGIN_BOLD" />Mga Detalye<ph name="END_BOLD" /></translation>
 <translation id="3382143449143186018">Nepali na may InScript keyboard</translation>
 <translation id="338691029516748599">Network <ph name="NETWORK_INDEX" /> sa <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, Lakas ng Signal <ph name="SIGNAL_STRENGTH" />%, Pinapamahalaan ng iyong Administrator, Kumonekta</translation>
 <translation id="3408072735282270043">I-activate, <ph name="NETWORK_NAME" /></translation>
@@ -366,6 +370,7 @@
 <translation id="4124935795427217608">Unicorn</translation>
 <translation id="4131235941541910880">Ilipat sa trash ang mga item na hindi mo kailangan</translation>
 <translation id="4134804435730168042">Network <ph name="NETWORK_INDEX" /> sa <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" />, I-activate pagkatapos ng pag-set up ng device</translation>
+<translation id="41501027364808384">{COUNT,plural, =1{I-on ang sumusunod na extension sa Incognito:}one{I-on ang mga sumusunod na extension sa Incognito:}other{I-on ang mga sumusunod na extension sa Incognito:}}</translation>
 <translation id="4153015322587141338">Mag-right click sa isang file, at piliin ang "<ph name="PIN_COMMAND" />" para sa mabilis na pag-access sa iyong mga file sa shelf.</translation>
 <translation id="4157569377477607576">Hindi inirerekomenda ng patakaran ng administrator:</translation>
 <translation id="4159731583141908892">Inilipat ang <ph name="FILE_NAME" />.</translation>
@@ -462,8 +467,10 @@
 <translation id="4801956050125744859">Panatilihin pareho</translation>
 <translation id="4804827417948292437">Abukado</translation>
 <translation id="4805966553127040832">Nire-restore ang <ph name="COUNT" /> (na) item</translation>
+<translation id="4816695657735045067">{COUNT,plural, =1{Para magamit ang Incognito, may nire-require na extension ang iyong organisasyon}one{Para magamit ang Incognito, may nire-require na ilang extension ang iyong organisasyon}other{Para magamit ang Incognito, may nire-require na ilang extension ang iyong organisasyon}}</translation>
 <translation id="4823651846660089135">Read-only ang device</translation>
 <translation id="4826849268470072925">Tamil ITRANS</translation>
+<translation id="482932175346970750">I-type ang <ph name="BEGIN_BOLD" />chrome://extensions<ph name="END_BOLD" /> sa iyong browser</translation>
 <translation id="4839847978919684242"><ph name="SELCTED_FILES_COUNT" /> (na) item ang pinili</translation>
 <translation id="4843566743023903107">Mga Chromebase</translation>
 <translation id="4850886885716139402">View</translation>
@@ -533,6 +540,7 @@
     sa mga file kasama ng iba pa, lahat sa iisang lugar.<ph name="MARKUP_9" /></translation>
 <translation id="5275973617553375938">Mga nabawing file mula sa Google Drive</translation>
 <translation id="5278111733643988471">Para i-restore ang item na ito, i-drag ito sa bagong folder sa labas ng trash. Na-delete na ang orihinal na folder na "<ph name="PARENT_FOLDER_NAME" />" para sa item na ito.</translation>
+<translation id="5283101102242354279">Mag-on ng extension sa Incognito:</translation>
 <translation id="5286194356314741248">Nagsa-scan</translation>
 <translation id="5288441970121584418">Burger</translation>
 <translation id="5288481194217812690"><ph name="FILENAME" /></translation>
@@ -779,6 +787,7 @@
 <translation id="7238643356913091553"><ph name="NETWORK_NAME" />, Mga Detalye</translation>
 <translation id="7246947237293279874">FTP Proxy</translation>
 <translation id="7248671827512403053">Application</translation>
+<translation id="7252604552361840748">Hanapin ang extension sa itaas</translation>
 <translation id="7256405249507348194">Hindi nakikilalang error: <ph name="DESC" /></translation>
 <translation id="7268659760406822741">Mga available na serbisyo</translation>
 <translation id="7292816689782057017">Pinaghihigpitan ng patakaran ng administrator ang pag-save sa ilang lokasyon.</translation>
@@ -792,6 +801,7 @@
 <translation id="7359359531237882347">Kinokopya ang <ph name="NUMBER_OF_ITEMS" /> (na) item...</translation>
 <translation id="7375951387215729722">Nakabukud-bukod ang listahan ng file ayon sa <ph name="COLUMN_NAME" /> sa pababang pagkakasunud-sunod.</translation>
 <translation id="7377161162143020057">Na-block ng patakaran ng administrator ang pagkopya ng file na ito</translation>
+<translation id="7392500733467492920">ay hindi mahanap. Makipag-ugnayan sa iyong administrator.</translation>
 <translation id="7402503521691663770">Mga ChromeOS Flex device</translation>
 <translation id="7408870451288633753">Czech</translation>
 <translation id="7417453074306512035">Ethiopic keyboard</translation>

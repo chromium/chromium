@@ -81,7 +81,6 @@ Dozvole koje ste već dali veb-sajtovima i aplikacijama mogu da važe za ovaj n
 <translation id="2928420929544864228">Instalacija je dovršena.</translation>
 <translation id="2977470724722393594">Chromium je ažuriran</translation>
 <translation id="2977506796191543575">Ako neki sajt pokuša da ukrade vašu lozinku ili probate da preuzmete štetni fajl, Chromium može da pošalje URL-ove, uključujući delove sadržaja stranice, u Bezbedno pregledanje</translation>
-<translation id="3021964162552004083">{NUM_DEVICES,plural, =1{Chromium je povezan sa HID uređajem}one{Chromium je povezan sa HID uređajima}few{Chromium je povezan sa HID uređajima}other{Chromium je povezan sa HID uređajima}}</translation>
 <translation id="3032706164202344641">Chromium ne može da vam proverava lozinke. Probajte ponovo kasnije.</translation>
 <translation id="3032787606318309379">Dodavanje u Chromium...</translation>
 <translation id="3038232873781883849">Čeka se instaliranje...</translation>
@@ -96,6 +95,7 @@ Dozvole koje ste već dali veb-sajtovima i aplikacijama mogu da važe za ovaj n
 <translation id="3258596308407688501">Chromium ne može da čita podatke iz direktorijuma sa podacima niti da ih upisuje u njega:
 
 <ph name="USER_DATA_DIRECTORY" /></translation>
+<translation id="3259037713047794342">Ovaj vodič vam pomaže da razumete izabrane opcije da bi Chromium radio onako kako želite</translation>
 <translation id="3283186697780795848">Instalirana je verzija Chromium-a <ph name="PRODUCT_VERSION" /></translation>
 <translation id="3286538390144397061">Restartuj odmah</translation>
 <translation id="328888136576916638">Nedostaju šifre za Google API. Neke funkcije Chromium-a će biti onemogućene.</translation>
@@ -384,6 +384,7 @@ Chromium ne može da vrati podešavanja.</translation>
 <translation id="924957577793602335">Prilagodite Chromium sebi</translation>
 <translation id="93478295209880648">Chromium možda neće ispravno funkcionisati zato što više nije podržan na Windows XP-u ili Windows Vista-i</translation>
 <translation id="942598560705308788">Sertifikati kojima upravlja Chromium</translation>
+<translation id="959579472876010517">Iskoristite Chromium na najbolji način</translation>
 <translation id="965162752251293939">Ko koristi Chromium?</translation>
 <translation id="967427899662692980">Nabavite najjaču Chromium zaštitu</translation>
 <translation id="9792300276217204">Uvek obrišite podatke o sajtovima sa uređaja kada zatvorite Chromium</translation>

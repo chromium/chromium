@@ -25,6 +25,7 @@
 <translation id="1507198376417198979">‏يمكنك الآن تخصيص ملفك الشخصي الجديد على Chrome.</translation>
 <translation id="1516530951338665275">‏يجب منح Google Chrome الإذن بالوصول إلى البلوتوث لمواصلة عملية 
 الإقران. <ph name="IDS_BLUETOOTH_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
+<translation id="1535597783576881392">‏يساعدك هذا الدليل على فهم خياراتك لكي يعمل Chrome على النحو الذي تريده.</translation>
 <translation id="1547295885616600893">‏أصبح نظام التشغيل Chrome متاحًا من خلال <ph name="BEGIN_LINK_CROS_OSS" />برنامج إضافي مفتوح المصدر<ph name="END_LINK_CROS_OSS" />.</translation>
 <translation id="1553358976309200471">‏تحديث Chrome‏</translation>
 <translation id="1583073672411044740">‏سبَق تسجيل دخول <ph name="EXISTING_USER" /> إلى هذا الملف الشخصي على Chrome. سيؤدي هذا الإجراء إلى إنشاء ملف شخصي جديد على Chrome لحساب <ph name="USER_EMAIL_ADDRESS" />.</translation>
@@ -67,6 +68,7 @@
 <translation id="2131230230468101642">‏لحماية خصوصيتك، نحذف تلقائيًا اهتماماتك التي يمر عليها أكثر من أربعة أسابيع. وفي حال بحثت عن أحد الاهتمامات مرّة آخرى، سيظهر في القائمة من جديد. يمكنك إزالة الاهتمامات التي لا تريد أن يضيفها Chrome إلى قائمة اهتماماتك.</translation>
 <translation id="2139300032719313227">‏إعادة تشغيل نظام التشغيل Chrome</translation>
 <translation id="2151406531797534936">‏يُرجى إعادة تشغيل Chrome الآن</translation>
+<translation id="2163996651553460171">‏الاستفادة إلى أقصى حدّ من Chrome</translation>
 <translation id="2174917724755363426">لم يكتمل التثبيت. هل تريد فعلاً الإلغاء؟</translation>
 <translation id="223889379102603431">‏معلومات حول الآلية التي يُدير بها متصفّح Chrome شهادات الجذر الخاصة به</translation>
 <translation id="2258103955319320201">‏للوصول إلى بياناتك في متصفّح Chrome من جميع أجهزتك، سجِّل الدخول وفعِّل المزامنة.</translation>
@@ -124,7 +126,6 @@
 <translation id="3140883423282498090">‏ستسري التغييرات في المرة التالية التي تعيد فيها تشغيل Google Chrome.</translation>
 <translation id="3149510190863420837">‏تطبيقات Chrome</translation>
 <translation id="3169523567916669830">‏أثناء التجارب، يمكنك الاطِّلاع على المواضيع محل الاهتمام التي استخدمتها المواقع الإلكترونية لعرض الإعلانات لك ويمكنك إزالة هذه المواضيع. ويقدِّر Chrome المواضيع محل الاهتمام بناءً على سجل التصفّح الأخير.</translation>
-<translation id="3211604354460514046">{NUM_DEVICES,plural, =1{‏‫Google Chrome متصل بجهاز HID.}zero{‏‫Google Chrome متصل بأجهزة HID.}two{‏‫Google Chrome متصل بأجهزة HID.}few{‏‫Google Chrome متصل بأجهزة HID.}many{‏‫Google Chrome متصل بأجهزة HID.}other{‏‫Google Chrome متصل بأجهزة HID.}}</translation>
 <translation id="3245429137663807393">‏في حال مشاركة تقارير استخدام Chrome أيضًا، ستتضمّن هذه التقارير عناوين URL التي تزورها</translation>
 <translation id="3282568296779691940">‏تسجيل الدخول إلى Chrome</translation>
 <translation id="3286538390144397061">إعادة التشغيل الآن</translation>

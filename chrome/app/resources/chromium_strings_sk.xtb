@@ -81,7 +81,6 @@ Povolenia, ktoré ste už udelili webom a aplikáciám, sa môžu vzťahovať n
 <translation id="2928420929544864228">Inštalácia bola dokončená.</translation>
 <translation id="2977470724722393594">Prehliadač Chromium bol aktualizovaný</translation>
 <translation id="2977506796191543575">Ak sa vám určitý web pokúsi ukradnúť heslo alebo stiahnete škodlivý súbor, Chromium môže odoslať Bezpečnému prehliadaniu aj webové adresy vrátane častí obsahu stránok</translation>
-<translation id="3021964162552004083">{NUM_DEVICES,plural, =1{Prehliadač Chromium je pripojený k zariadeniu HID}few{Prehliadač Chromium je pripojený k zariadeniam HID}many{Prehliadač Chromium je pripojený k zariadeniam HID}other{Prehliadač Chromium je pripojený k zariadeniam HID}}</translation>
 <translation id="3032706164202344641">Chromium nemôže skontrolovať heslá. Skúste to neskôr.</translation>
 <translation id="3032787606318309379">Pridáva sa do prehliadača Chromium...</translation>
 <translation id="3038232873781883849">Čaká sa na inštaláciu…</translation>

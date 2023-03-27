@@ -121,7 +121,6 @@
 <translation id="3140883423282498090">Внесенные изменения станут активны после перезапуска Google Chrome.</translation>
 <translation id="3149510190863420837">Приложения Chrome</translation>
 <translation id="3169523567916669830">Во время тестирования новых функций вы сможете просматривать и удалять потенциально интересные вам темы, используемые сайтами для показа рекламы. Chrome определяет такие темы на основе вашей недавней истории браузера.</translation>
-<translation id="3211604354460514046">{NUM_DEVICES,plural, =1{Google Chrome подключен к HID-устройству}one{Google Chrome подключен к HID-устройствам}few{Google Chrome подключен к HID-устройствам}many{Google Chrome подключен к HID-устройствам}other{Google Chrome подключен к HID-устройствам}}</translation>
 <translation id="3245429137663807393">Если вы также отправляете отчеты об использовании Chrome, в них включаются URL посещенных вами страниц.</translation>
 <translation id="3282568296779691940">Войти в Chrome</translation>
 <translation id="3286538390144397061">Перезапустить сейчас</translation>

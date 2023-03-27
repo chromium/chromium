@@ -628,6 +628,7 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="2469153820345007638">Vrstni red 1–N</translation>
 <translation id="2470767536994572628">Če boste urejali pripise, se bo ta dokument vrnil v pogled ene strani in prvotno stanje vrtenja.</translation>
 <translation id="2479410451996844060">Neveljaven URL iskanja.</translation>
+<translation id="2480300195898055381">V računu Google, <ph name="USER_EMAIL" /></translation>
 <translation id="2482878487686419369">Obvestila</translation>
 <translation id="248348093745724435">Pravilniki naprave</translation>
 <translation id="2491120439723279231">V potrdilu strežnika so napake.</translation>
@@ -841,6 +842,7 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="3029752078111257850">Svetovne novice</translation>
 <translation id="3037177537145227281">Spremljanje cene</translation>
 <translation id="3037605927509011580">Ti šment!</translation>
+<translation id="3041450980936463495">Shranjene naslove lahko uporabite v Googlovih izdelkih. Ta naslov je shranjen v računu Google (<ph name="ACCOUNT" />).</translation>
 <translation id="3041612393474885105">Informacije o potrdilu</translation>
 <translation id="305162504811187366">Zgodovina Oddaljenega namizja Chrome, vključno s časovnimi žigi, gostitelji in ID-ji sej odjemalca</translation>
 <translation id="3052964831964880138"><ph name="PRICE_DROP" />-odstotno znižanje cene izdelka <ph name="PRODUCT_NAME" /></translation>
@@ -1929,6 +1931,7 @@ Poleg tega lahko v nastavitvah Chroma kadar koli blokirate, da bi spletno mesto 
 <translation id="5695542892312572833">Ali želite za potrditev in dokončanje nakupa uporabiti Windows Hello?</translation>
 <translation id="5701381305118179107">Na sredino</translation>
 <translation id="570530837424789914">Upravljanje ...</translation>
+<translation id="5706906618852913030">Želite shraniti v računu?</translation>
 <translation id="5707154300732650394">Nadaljevanje poti</translation>
 <translation id="57094364128775171">Predlagaj zapleteno geslo …</translation>
 <translation id="571403275720188526">(arm64)</translation>
