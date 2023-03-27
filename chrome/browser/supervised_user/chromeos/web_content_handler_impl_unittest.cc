@@ -27,6 +27,9 @@ class MockSupervisedUserSettingsService
 };
 }  // namespace
 
+// TODO(b/273692421): Extend unit test scope of all the methods in
+// WebContentHandlerImpl.
+
 class WebContentHandlerImplTest : public ::testing::Test {
  public:
   WebContentHandlerImplTest() = default;
@@ -69,9 +72,7 @@ TEST_F(WebContentHandlerImplTest, LocalWebApprovalApprovedChromeOSTest) {
   const base::TimeDelta approval_duration = base::Seconds(35);
   task_environment().FastForwardBy(approval_duration);
 
-  // TODO(b/273692421): The content will need to be a raw_ptr.
-  content::WebContents* content = nullptr;
-  WebContentHandlerImpl web_content_handler(*content, url,
+  WebContentHandlerImpl web_content_handler(/*web_contents=*/nullptr, url,
                                             large_icon_service());
 
   web_content_handler.OnLocalApprovalRequestCompleted(
@@ -109,9 +110,7 @@ TEST_F(WebContentHandlerImplTest, LocalWebApprovalDeclinedChromeOSTest) {
   const base::TimeDelta approval_duration = base::Seconds(35);
   task_environment().FastForwardBy(approval_duration);
 
-  // TODO(b/273692421): The content will need to be a raw_ptr.
-  content::WebContents* content = nullptr;
-  WebContentHandlerImpl web_content_handler(*content, url,
+  WebContentHandlerImpl web_content_handler(/*web_contents=*/nullptr, url,
                                             large_icon_service());
 
   web_content_handler.OnLocalApprovalRequestCompleted(
@@ -149,9 +148,7 @@ TEST_F(WebContentHandlerImplTest, LocalWebApprovalCanceledChromeOSTest) {
   const base::TimeDelta approval_duration = base::Seconds(35);
   task_environment().FastForwardBy(approval_duration);
 
-  // TODO(b/273692421): The content will need to be a raw_ptr.
-  content::WebContents* content = nullptr;
-  WebContentHandlerImpl web_content_handler(*content, url,
+  WebContentHandlerImpl web_content_handler(/*web_contents=*/nullptr, url,
                                             large_icon_service());
 
   web_content_handler.OnLocalApprovalRequestCompleted(
@@ -187,9 +184,7 @@ TEST_F(WebContentHandlerImplTest, LocalWebApprovalErrorChromeOSTest) {
   const base::TimeDelta approval_duration = base::Seconds(35);
   task_environment().FastForwardBy(approval_duration);
 
-  // TODO(b/273692421): The content will need to be a raw_ptr.
-  content::WebContents* content = nullptr;
-  WebContentHandlerImpl web_content_handler(*content, url,
+  WebContentHandlerImpl web_content_handler(/*web_contents=*/nullptr, url,
                                             large_icon_service());
 
   web_content_handler.OnLocalApprovalRequestCompleted(

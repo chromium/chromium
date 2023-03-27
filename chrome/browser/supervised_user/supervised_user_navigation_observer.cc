@@ -53,10 +53,10 @@ std::unique_ptr<supervised_user::WebContentHandler> CreateWebContentHandler(
     Profile* profile) {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   return std::make_unique<WebContentHandlerImpl>(
-      *web_contents, url,
+      web_contents, url,
       *LargeIconServiceFactory::GetForBrowserContext(profile));
 #elif BUILDFLAG(IS_ANDROID)
-  return std::make_unique<WebContentHandlerImpl>(*web_contents);
+  return std::make_unique<WebContentHandlerImpl>(web_contents);
 #else
   return nullptr;
 #endif

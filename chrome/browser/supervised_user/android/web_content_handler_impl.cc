@@ -32,8 +32,10 @@ AndroidOutcomeToLocalApprovalResult(
 
 }  // namespace
 
-WebContentHandlerImpl::WebContentHandlerImpl(content::WebContents& web_contents)
-    : supervised_user::WebContentHandler(), web_contents_(web_contents) {}
+WebContentHandlerImpl::WebContentHandlerImpl(content::WebContents* web_contents)
+    : supervised_user::WebContentHandler(), web_contents_(web_contents) {
+  // TODO(b/4370063): Add Check on web_contents
+}
 
 WebContentHandlerImpl::~WebContentHandlerImpl() = default;
 
@@ -41,13 +43,14 @@ void WebContentHandlerImpl::RequestLocalApproval(
     const GURL& url,
     const std::u16string& child_display_name,
     ApprovalRequestInitiatedCallback callback) {
+  CHECK(web_contents_);
   supervised_user::SupervisedUserSettingsService* settings_service =
       SupervisedUserSettingsServiceFactory::GetForKey(
           Profile::FromBrowserContext(web_contents_->GetBrowserContext())
               ->GetProfileKey());
 
   WebsiteParentApproval::RequestLocalApproval(
-      &web_contents_.get(), supervised_user::NormalizeUrl(url),
+      web_contents_.get(), supervised_user::NormalizeUrl(url),
       base::BindOnce(&WebContentHandlerImpl::OnLocalApprovalRequestCompleted,
                      weak_ptr_factory_.GetWeakPtr(),
                      std::ref(*settings_service), url, base::TimeTicks::Now()));

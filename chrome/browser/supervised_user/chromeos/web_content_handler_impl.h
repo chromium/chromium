@@ -8,7 +8,6 @@
 #include <memory>
 #include <string>
 
-#include "base/allocator/partition_allocator/pointers/raw_ref.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ash/crosapi/crosapi_ash.h"
 #include "components/supervised_user/core/browser/web_content_handler.h"
@@ -28,7 +27,7 @@ class SupervisedUserFaviconRequestHandler;
 // Chrome Ash specific implementation of web content handler.
 class WebContentHandlerImpl : public supervised_user::WebContentHandler {
  public:
-  WebContentHandlerImpl(content::WebContents& web_contents,
+  WebContentHandlerImpl(content::WebContents* web_contents,
                         const GURL& url,
                         favicon::LargeIconService& large_icon_service);
 
@@ -58,7 +57,7 @@ class WebContentHandlerImpl : public supervised_user::WebContentHandler {
   FRIEND_TEST_ALL_PREFIXES(WebContentHandlerImplTest,
                            LocalWebApprovalErrorChromeOSTest);
 
-  const raw_ref<content::WebContents> web_contents_;
+  const raw_ptr<content::WebContents> web_contents_;
   std::unique_ptr<SupervisedUserFaviconRequestHandler> favicon_handler_;
   base::WeakPtrFactory<WebContentHandlerImpl> weak_ptr_factory_{this};
 };

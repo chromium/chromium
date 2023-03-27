@@ -25,6 +25,9 @@ class MockSupervisedUserSettingsService
 };
 }  // namespace
 
+// TODO(b/273692421): Extend unit test scope of all the methods in
+// WebContentHandlerImpl.
+
 class WebContentHandlerImplTest : public ::testing::Test {
  public:
   WebContentHandlerImplTest() = default;
@@ -57,9 +60,7 @@ TEST_F(WebContentHandlerImplTest,
   // Check that duration metric is recorded.
   base::TimeDelta elapsed_time = base::Minutes(1);
   task_environment().FastForwardBy(elapsed_time);
-
-  content::WebContents* content = nullptr;
-  WebContentHandlerImpl web_content_handler = WebContentHandlerImpl(*content);
+  WebContentHandlerImpl web_content_handler(/*web_contents=*/nullptr);
 
   web_content_handler.OnLocalApprovalRequestCompleted(
       supervisedUserSettingsServiceMock, url, start_time,
@@ -89,8 +90,7 @@ TEST_F(WebContentHandlerImplTest,
 
   base::TimeDelta elapsed_time = base::Minutes(5);
   task_environment().FastForwardBy(elapsed_time);
-  content::WebContents* content = nullptr;
-  WebContentHandlerImpl web_content_handler = WebContentHandlerImpl(*content);
+  WebContentHandlerImpl web_content_handler(/*web_contents=*/nullptr);
 
   // Receive a request canceled by the parent.
   // Check that no duration metric is recorded for incomplete requests.
@@ -118,8 +118,7 @@ TEST_F(WebContentHandlerImplTest,
 
   base::TimeDelta elapsed_time = base::Minutes(5);
   task_environment().FastForwardBy(elapsed_time);
-  content::WebContents* content = nullptr;
-  WebContentHandlerImpl web_content_handler = WebContentHandlerImpl(*content);
+  WebContentHandlerImpl web_content_handler(/*web_contents=*/nullptr);
 
   // Receive a request accepted by the parent with a total duration of 5
   // minutes. Check that duration metric is recorded.

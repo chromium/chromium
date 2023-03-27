@@ -4,6 +4,7 @@
 
 #include "chrome/browser/supervised_user/chromeos/web_content_handler_impl.h"
 
+#include "base/check.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/logging.h"
@@ -62,13 +63,14 @@ void HandleChromeOSErrorResult(
 }  // namespace
 
 WebContentHandlerImpl::WebContentHandlerImpl(
-    content::WebContents& web_contents,
+    content::WebContents* web_contents,
     const GURL& url,
     favicon::LargeIconService& large_icon_service)
     : web_contents_(web_contents),
       favicon_handler_(std::make_unique<SupervisedUserFaviconRequestHandler>(
           url.GetWithEmptyPath(),
           &large_icon_service)) {
+  // TODO(b/4370063): Add Check on web_contents
   if (supervised_user::IsLocalWebApprovalsEnabled()) {
     // Prefetch the favicon which will be rendered as part of the web approvals
     // ParentAccessDialog. Pass in DoNothing() for the favicon fetched callback
@@ -84,6 +86,7 @@ void WebContentHandlerImpl::RequestLocalApproval(
     const GURL& url,
     const std::u16string& child_display_name,
     ApprovalRequestInitiatedCallback callback) {
+  CHECK(web_contents_);
   supervised_user::SupervisedUserSettingsService* settings_service =
       SupervisedUserSettingsServiceFactory::GetForKey(
           Profile::FromBrowserContext(web_contents_->GetBrowserContext())
