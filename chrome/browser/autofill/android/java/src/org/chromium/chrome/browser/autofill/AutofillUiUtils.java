@@ -29,6 +29,7 @@ import android.widget.PopupWindow;
 import android.widget.TextView;
 
 import androidx.annotation.IntDef;
+import androidx.annotation.Nullable;
 import androidx.annotation.Px;
 import androidx.annotation.VisibleForTesting;
 import androidx.appcompat.content.res.AppCompatResources;
@@ -500,11 +501,13 @@ public class AutofillUiUtils {
      * @param widthId Resource Id for the width spec.
      * @param heightId Resource Id for the height spec.
      * @param showCustomIcon If true, custom card icon is fetched, else, default icon is fetched.
-     * @return {@link Drawable} that can be set as the card icon.
+     * @return {@link Drawable} that can be set as the card icon. If neither the custom icon nor the
+     *         default icon is available, returns null.
      */
-    public static Drawable getCardIcon(Context context, GURL cardArtUrl, int defaultIconId,
-            int widthId, int heightId, boolean showCustomIcon) {
-        Drawable defaultIcon = AppCompatResources.getDrawable(context, defaultIconId);
+    public static @Nullable Drawable getCardIcon(Context context, GURL cardArtUrl,
+            int defaultIconId, int widthId, int heightId, boolean showCustomIcon) {
+        Drawable defaultIcon =
+                defaultIconId == 0 ? null : AppCompatResources.getDrawable(context, defaultIconId);
         if (!showCustomIcon || !cardArtUrl.isValid()) {
             return defaultIcon;
         }

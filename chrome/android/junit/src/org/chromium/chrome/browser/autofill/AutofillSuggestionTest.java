@@ -4,9 +4,12 @@
 package org.chromium.chrome.browser.autofill;
 
 import static org.junit.Assert.assertEquals;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 import android.graphics.Bitmap;
+import android.graphics.drawable.BitmapDrawable;
 
 import androidx.test.filters.SmallTest;
 
@@ -24,10 +27,14 @@ public class AutofillSuggestionTest {
     @Test
     @SmallTest
     public void testAutofillSuggestion_toBuilder() {
-        AutofillSuggestion suggestion =
-                new AutofillSuggestion("label", "secondary_label", "sublabel", "secondary_sublabel",
-                        "item_tag", 1, true, 1, true, true, true, "feature_for_iph",
-                        mock(GURL.class), Bitmap.createBitmap(100, 200, Bitmap.Config.ARGB_8888));
+        Bitmap bitmapIcon = mock(Bitmap.class);
+        when(bitmapIcon.sameAs(any(Bitmap.class))).thenReturn(true);
+        BitmapDrawable drawableIcon = mock(BitmapDrawable.class);
+        when(drawableIcon.getBitmap()).thenReturn(bitmapIcon);
+
+        AutofillSuggestion suggestion = new AutofillSuggestion("label", "secondary_label",
+                "sublabel", "secondary_sublabel", "item_tag", 1, true, 1, true, true, true,
+                "feature_for_iph", mock(GURL.class), drawableIcon);
         assertEquals(suggestion.toBuilder().build(), suggestion);
     }
 }

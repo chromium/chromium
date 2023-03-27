@@ -720,4 +720,23 @@ public class PersonalDataManagerTest {
                                             .getBitmap()));
         });
     }
+
+    @Test
+    @SmallTest
+    @Feature({"Autofill"})
+    public void testGetCardIcon_customIconUrlAndDefaultIconIdUnavailable_nothingReturned()
+            throws TimeoutException {
+        Context context = ContextUtils.getApplicationContext();
+        int widthId = R.dimen.autofill_dropdown_icon_width;
+        int heightId = R.dimen.autofill_dropdown_icon_height;
+        Bitmap scaledTestCardArtImage = Bitmap.createScaledBitmap(TEST_CARD_ART_IMAGE,
+                context.getResources().getDimensionPixelSize(widthId),
+                context.getResources().getDimensionPixelSize(heightId), true);
+
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            // If neither the custom icon nor the default icon is available, null is returned.
+            assertEquals(null,
+                    AutofillUiUtils.getCardIcon(context, new GURL(""), 0, widthId, heightId, true));
+        });
+    }
 }

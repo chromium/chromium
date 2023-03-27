@@ -4,7 +4,8 @@
 
 package org.chromium.components.autofill;
 
-import android.graphics.Bitmap;
+import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.Drawable;
 import android.text.TextUtils;
 
 import androidx.annotation.Nullable;
@@ -38,7 +39,7 @@ public class AutofillSuggestion extends DropdownItemBase {
     @Nullable
     private final GURL mCustomIconUrl;
     @Nullable
-    private final Bitmap mCustomIcon;
+    private final Drawable mIconDrawable;
 
     /**
      * Constructs a Autofill suggestion container.
@@ -67,7 +68,7 @@ public class AutofillSuggestion extends DropdownItemBase {
             boolean isBoldLabel, @Nullable String featureForIPH) {
         this(label, /* secondaryLabel= */ null, sublabel, /* secondarySublabel= */ null, itemTag,
                 iconId, isIconAtStart, suggestionId, isDeletable, isMultilineLabel, isBoldLabel,
-                featureForIPH, /* customIconUrl= */ null, /* customIcon= */ null);
+                featureForIPH, /* customIconUrl= */ null, /* iconDrawable= */ null);
     }
 
     @VisibleForTesting
@@ -75,7 +76,7 @@ public class AutofillSuggestion extends DropdownItemBase {
             @Nullable String secondarySublabel, @Nullable String itemTag, int iconId,
             boolean isIconAtStart, int suggestionId, boolean isDeletable, boolean isMultilineLabel,
             boolean isBoldLabel, @Nullable String featureForIPH, @Nullable GURL customIconUrl,
-            @Nullable Bitmap customIcon) {
+            @Nullable Drawable iconDrawable) {
         mLabel = label;
         mSecondaryLabel = secondaryLabel;
         mSublabel = sublabel;
@@ -89,7 +90,7 @@ public class AutofillSuggestion extends DropdownItemBase {
         mIsBoldLabel = isBoldLabel;
         mFeatureForIPH = featureForIPH;
         mCustomIconUrl = customIconUrl;
-        mCustomIcon = customIcon;
+        mIconDrawable = iconDrawable;
     }
 
     @Override
@@ -159,8 +160,8 @@ public class AutofillSuggestion extends DropdownItemBase {
 
     @Override
     @Nullable
-    public Bitmap getCustomIcon() {
-        return mCustomIcon;
+    public Drawable getIconDrawable() {
+        return mIconDrawable;
     }
 
     public int getSuggestionId() {
@@ -203,8 +204,7 @@ public class AutofillSuggestion extends DropdownItemBase {
                 && this.mIsBoldLabel == other.mIsBoldLabel
                 && Objects.equals(this.mFeatureForIPH, other.mFeatureForIPH)
                 && Objects.equals(this.mCustomIconUrl, other.mCustomIconUrl)
-                && (this.mCustomIcon == null ? other.mCustomIcon == null
-                                             : this.mCustomIcon.sameAs(other.mCustomIcon));
+                && areIconsEqual(this.mIconDrawable, other.mIconDrawable);
     }
 
     public Builder toBuilder() {
@@ -222,7 +222,7 @@ public class AutofillSuggestion extends DropdownItemBase {
                 .setIsBoldLabel(mIsBoldLabel)
                 .setFeatureForIPH(mFeatureForIPH)
                 .setCustomIconUrl(mCustomIconUrl)
-                .setCustomIcon(mCustomIcon);
+                .setIconDrawable(mIconDrawable);
     }
 
     /**
@@ -231,7 +231,7 @@ public class AutofillSuggestion extends DropdownItemBase {
     public static final class Builder {
         private int mIconId;
         private GURL mCustomIconUrl;
-        private Bitmap mCustomIcon;
+        private Drawable mIconDrawable;
         private boolean mIsBoldLabel;
         private boolean mIsIconAtStart;
         private boolean mIsDeletable;
@@ -254,8 +254,8 @@ public class AutofillSuggestion extends DropdownItemBase {
             return this;
         }
 
-        public Builder setCustomIcon(Bitmap customIcon) {
-            this.mCustomIcon = customIcon;
+        public Builder setIconDrawable(Drawable iconDrawable) {
+            this.mIconDrawable = iconDrawable;
             return this;
         }
 
@@ -320,7 +320,26 @@ public class AutofillSuggestion extends DropdownItemBase {
                 : "The AutofillSuggestion sublabel can be empty but never null.";
             return new AutofillSuggestion(mLabel, mSecondaryLabel, mSubLabel, mSecondarySubLabel,
                     mItemTag, mIconId, mIsIconAtStart, mSuggestionId, mIsDeletable,
-                    mIsMultiLineLabel, mIsBoldLabel, mFeatureForIPH, mCustomIconUrl, mCustomIcon);
+                    mIsMultiLineLabel, mIsBoldLabel, mFeatureForIPH, mCustomIconUrl, mIconDrawable);
         }
+    }
+
+    public static boolean areIconsEqual(
+            @Nullable Drawable iconDrawable1, @Nullable Drawable iconDrawable2) {
+        if (iconDrawable1 == null) {
+            return iconDrawable2 == null;
+        }
+        // If the icons are custom Bitmap images.
+        if (iconDrawable1 instanceof BitmapDrawable) {
+            if (iconDrawable2 instanceof BitmapDrawable) {
+                return ((BitmapDrawable) iconDrawable1)
+                        .getBitmap()
+                        .sameAs(((BitmapDrawable) iconDrawable2).getBitmap());
+            }
+            return false;
+        }
+        // Icons with {@code iconId} which are fetched from resources are already checked for
+        // equality.
+        return true;
     }
 }
