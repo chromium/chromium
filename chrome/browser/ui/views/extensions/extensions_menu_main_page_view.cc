@@ -224,13 +224,11 @@ ExtensionsMenuMainPageView::ExtensionsMenuMainPageView(
 void ExtensionsMenuMainPageView::CreateAndInsertMenuItem(
     std::unique_ptr<ExtensionActionViewController> action_controller,
     extensions::ExtensionId extension_id,
-    bool allow_pinning,
     ExtensionMenuItemView::SitePermissionsButtonState
         site_permissions_button_state,
     int index) {
   auto item = std::make_unique<ExtensionMenuItemView>(
-      browser_, std::move(action_controller), allow_pinning,
-      site_permissions_button_state,
+      browser_, std::move(action_controller), site_permissions_button_state,
       base::BindRepeating(
           &ExtensionsMenuNavigationHandler::OpenSitePermissionsPage,
           base::Unretained(navigation_handler_), extension_id));

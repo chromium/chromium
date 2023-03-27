@@ -65,94 +65,48 @@ void SetButtonIconWithColor(HoverButton* button,
 }
 
 }  // namespace
-
 ExtensionMenuItemView::ExtensionMenuItemView(
     Browser* browser,
     std::unique_ptr<ToolbarActionViewController> controller,
-    bool allow_pinning,
-    SitePermissionsButtonState site_permissions_button_state,
-    views::Button::PressedCallback site_permissions_button_callback)
+    bool allow_pinning)
     : browser_(browser),
       controller_(std::move(controller)),
       model_(ToolbarActionsModel::Get(browser_->profile())) {
+  CHECK(!base::FeatureList::IsEnabled(
+      extensions_features::kExtensionsMenuAccessControl));
+
   views::FlexSpecification stretch_specification =
       views::FlexSpecification(views::MinimumFlexSizeRule::kScaleToZero,
                                views::MaximumFlexSizeRule::kUnbounded);
-
-  views::View* main_row;
   auto builder =
       views::Builder<ExtensionMenuItemView>(this)
           // Set so the extension button receives enter/exit on children to
           // retain hover status when hovering child views.
-          .SetNotifyEnterExitOnChild(true);
-
-  if (base::FeatureList::IsEnabled(
-          extensions_features::kExtensionsMenuAccessControl)) {
-    DCHECK(site_permissions_button_callback);
-
-    ChromeLayoutProvider* const provider = ChromeLayoutProvider::Get();
-    const int icon_size = provider->GetDistanceMetric(
-        DISTANCE_EXTENSIONS_MENU_EXTENSION_ICON_SIZE);
-    const int horizontal_inset =
-        provider->GetDistanceMetric(DISTANCE_EXTENSIONS_MENU_BUTTON_MARGIN);
-    const int icon_label_spacing =
-        provider->GetDistanceMetric(views::DISTANCE_RELATED_LABEL_HORIZONTAL);
-
-    builder.SetOrientation(views::LayoutOrientation::kVertical)
-        .SetCrossAxisAlignment(views::LayoutAlignment::kStretch)
-        .SetProperty(views::kFlexBehaviorKey, stretch_specification)
-        .AddChildren(
-            // Main row.
-            views::Builder<views::FlexLayoutView>()
-                .CopyAddressTo(&main_row)
-                .SetOrientation(views::LayoutOrientation::kHorizontal)
-                .SetIgnoreDefaultMainAxisMargins(true),
-            // Secondary row.
-            views::Builder<views::FlexLayoutView>().AddChildren(
-                // Site permissions button.
-                // TODO(crbug.com/998298): Compute title based on the extension
-                // site access.
-                // TODO(crbug.com/998298): Add tooltip after UX provides it.
-                views::Builder<HoverButton>(
-                    std::make_unique<HoverButton>(
-                        site_permissions_button_callback,
-                        /*icon_view=*/nullptr, u"site access", std::u16string(),
-                        std::make_unique<views::ImageView>(
-                            ui::ImageModel::FromVectorIcon(
-                                vector_icons::kSubmenuArrowIcon,
-                                ui::kColorIcon))))
-                    .CopyAddressTo(&site_permissions_button_)
-                    .SetVisible(site_permissions_button_state !=
-                                SitePermissionsButtonState::kHidden)
-                    .SetEnabled(site_permissions_button_state ==
-                                SitePermissionsButtonState::kEnabled)
-                    // Margin to align the main and secondary row text. Icon
-                    // size and horizontal insets should be the values used by
-                    // the extensions menu button.
-                    .SetProperty(
-                        views::kMarginsKey,
-                        gfx::Insets::VH(0, icon_size + horizontal_inset))
-                    // Border should be the same as the icon label
-                    // spacing used by the extensions menu button.
-                    .SetBorder(views::CreateEmptyBorder(
-                        gfx::Insets::VH(0, icon_label_spacing)))));
-  } else {
-    builder.CopyAddressTo(&main_row)
-        .SetOrientation(views::LayoutOrientation::kHorizontal)
-        .SetIgnoreDefaultMainAxisMargins(true);
-  }
-
-  std::move(builder).BuildChildren();
-
-  main_row->AddChildView(
-      views::Builder<ExtensionsMenuButton>(
-          std::make_unique<ExtensionsMenuButton>(browser_, controller_.get()))
-          .CopyAddressTo(&primary_action_button_)
-          .SetProperty(views::kFlexBehaviorKey, stretch_specification)
-          .Build());
+          .SetNotifyEnterExitOnChild(true)
+          .SetOrientation(views::LayoutOrientation::kHorizontal)
+          .SetIgnoreDefaultMainAxisMargins(true)
+          .AddChildren(
+              views::Builder<ExtensionsMenuButton>(
+                  std::make_unique<ExtensionsMenuButton>(browser_,
+                                                         controller_.get()))
+                  .CopyAddressTo(&primary_action_button_)
+                  .SetProperty(views::kFlexBehaviorKey, stretch_specification),
+              views::Builder<HoverButton>(
+                  std::make_unique<HoverButton>(
+                      views::Button::PressedCallback(), std::u16string()))
+                  .CopyAddressTo(&context_menu_button_)
+                  .SetID(EXTENSION_CONTEXT_MENU)
+                  .SetBorder(views::CreateEmptyBorder(
+                      ChromeLayoutProvider::Get()->GetDistanceMetric(
+                          DISTANCE_EXTENSIONS_MENU_BUTTON_MARGIN)))
+                  .SetTooltipText(l10n_util::GetStringUTF16(
+                      IDS_EXTENSIONS_MENU_CONTEXT_MENU_TOOLTIP)));
 
   if (allow_pinning) {
-    main_row->AddChildView(
+    // Pin button should be in between `primary_action_button_` and
+    // `context_menu_button_`.
+    int index = 1;
+    builder.AddChildAt(
         views::Builder<HoverButton>(
             std::make_unique<HoverButton>(
                 base::BindRepeating(&ExtensionMenuItemView::OnPinButtonPressed,
@@ -162,35 +116,97 @@ ExtensionMenuItemView::ExtensionMenuItemView(
             .SetID(EXTENSION_PINNING)
             .SetBorder(views::CreateEmptyBorder(
                 ChromeLayoutProvider::Get()->GetDistanceMetric(
-                    DISTANCE_EXTENSIONS_MENU_BUTTON_MARGIN)))
-            .Build());
+                    DISTANCE_EXTENSIONS_MENU_BUTTON_MARGIN))),
+        index);
   }
 
-  main_row->AddChildView(
-      views::Builder<HoverButton>(
-          std::make_unique<HoverButton>(views::Button::PressedCallback(),
-                                        std::u16string()))
-          .CopyAddressTo(&context_menu_button_)
-          .SetID(EXTENSION_CONTEXT_MENU)
-          .SetBorder(views::CreateEmptyBorder(
-              ChromeLayoutProvider::Get()->GetDistanceMetric(
-                  DISTANCE_EXTENSIONS_MENU_BUTTON_MARGIN)))
-          .SetTooltipText(l10n_util::GetStringUTF16(
-              IDS_EXTENSIONS_MENU_CONTEXT_MENU_TOOLTIP))
-          .Build());
+  std::move(builder).BuildChildren();
 
-  // Add a controller to the context menu
-  context_menu_controller_ = std::make_unique<ExtensionContextMenuController>(
-      controller_.get(),
-      extensions::ExtensionContextMenuModel::ContextMenuSource::kMenuItem);
+  SetupContextMenuButton();
+}
 
-  context_menu_button_->SetButtonController(
-      std::make_unique<views::MenuButtonController>(
-          context_menu_button_.get(),
-          base::BindRepeating(&ExtensionMenuItemView::OnContextMenuPressed,
-                              base::Unretained(this)),
-          std::make_unique<views::Button::DefaultButtonControllerDelegate>(
-              context_menu_button_.get())));
+ExtensionMenuItemView::ExtensionMenuItemView(
+    Browser* browser,
+    std::unique_ptr<ToolbarActionViewController> controller,
+    SitePermissionsButtonState site_permissions_button_state,
+    views::Button::PressedCallback site_permissions_button_callback)
+    : browser_(browser),
+      controller_(std::move(controller)),
+      model_(ToolbarActionsModel::Get(browser_->profile())) {
+  CHECK(base::FeatureList::IsEnabled(
+      extensions_features::kExtensionsMenuAccessControl));
+
+  views::FlexSpecification stretch_specification =
+      views::FlexSpecification(views::MinimumFlexSizeRule::kScaleToZero,
+                               views::MaximumFlexSizeRule::kUnbounded);
+  ChromeLayoutProvider* const provider = ChromeLayoutProvider::Get();
+  const int icon_size =
+      provider->GetDistanceMetric(DISTANCE_EXTENSIONS_MENU_EXTENSION_ICON_SIZE);
+  const int horizontal_inset =
+      provider->GetDistanceMetric(DISTANCE_EXTENSIONS_MENU_BUTTON_MARGIN);
+  const int icon_label_spacing =
+      provider->GetDistanceMetric(views::DISTANCE_RELATED_LABEL_HORIZONTAL);
+
+  views::Builder<ExtensionMenuItemView>(this)
+      // Set so the extension button receives enter/exit on children to
+      // retain hover status when hovering child views.
+      .SetNotifyEnterExitOnChild(true)
+      .SetOrientation(views::LayoutOrientation::kVertical)
+      .SetCrossAxisAlignment(views::LayoutAlignment::kStretch)
+      .SetProperty(views::kFlexBehaviorKey, stretch_specification)
+      .AddChildren(
+          // Main row.
+          views::Builder<views::FlexLayoutView>()
+              .SetOrientation(views::LayoutOrientation::kHorizontal)
+              .SetIgnoreDefaultMainAxisMargins(true)
+              .AddChildren(
+                  views::Builder<ExtensionsMenuButton>(
+                      std::make_unique<ExtensionsMenuButton>(browser_,
+                                                             controller_.get()))
+                      .CopyAddressTo(&primary_action_button_)
+                      .SetProperty(views::kFlexBehaviorKey,
+                                   stretch_specification),
+                  views::Builder<HoverButton>(
+                      std::make_unique<HoverButton>(
+                          views::Button::PressedCallback(), std::u16string()))
+                      .CopyAddressTo(&context_menu_button_)
+                      .SetID(EXTENSION_CONTEXT_MENU)
+                      .SetBorder(views::CreateEmptyBorder(
+                          ChromeLayoutProvider::Get()->GetDistanceMetric(
+                              DISTANCE_EXTENSIONS_MENU_BUTTON_MARGIN)))
+                      .SetTooltipText(l10n_util::GetStringUTF16(
+                          IDS_EXTENSIONS_MENU_CONTEXT_MENU_TOOLTIP))),
+          // Secondary row.
+          views::Builder<views::FlexLayoutView>().AddChildren(
+              // Site permissions button.
+              // TODO(crbug.com/998298): Compute title based on the
+              // extension site access.
+              // TODO(crbug.com/998298): Add tooltip after UX provides it.
+              views::Builder<HoverButton>(
+                  std::make_unique<HoverButton>(
+                      site_permissions_button_callback,
+                      /*icon_view=*/nullptr, u"site access", std::u16string(),
+                      std::make_unique<views::ImageView>(
+                          ui::ImageModel::FromVectorIcon(
+                              vector_icons::kSubmenuArrowIcon,
+                              ui::kColorIcon))))
+                  .CopyAddressTo(&site_permissions_button_)
+                  .SetVisible(site_permissions_button_state !=
+                              SitePermissionsButtonState::kHidden)
+                  .SetEnabled(site_permissions_button_state ==
+                              SitePermissionsButtonState::kEnabled)
+                  // Margin to align the main and secondary row text. Icon
+                  // size and horizontal insets should be the values used by
+                  // the extensions menu button.
+                  .SetProperty(views::kMarginsKey,
+                               gfx::Insets::VH(0, icon_size + horizontal_inset))
+                  // Border should be the same as the icon label
+                  // spacing used by the extensions menu button.
+                  .SetBorder(views::CreateEmptyBorder(
+                      gfx::Insets::VH(0, icon_label_spacing)))))
+      .BuildChildren();
+
+  SetupContextMenuButton();
 }
 
 ExtensionMenuItemView::~ExtensionMenuItemView() = default;
@@ -254,6 +270,21 @@ void ExtensionMenuItemView::UpdatePinButton() {
   SetButtonIconWithColor(pin_button_,
                          IsPinned() ? views::kUnpinIcon : views::kPinIcon,
                          icon_color, disabled_icon_color);
+}
+
+void ExtensionMenuItemView::SetupContextMenuButton() {
+  // Add a controller to the context menu
+  context_menu_controller_ = std::make_unique<ExtensionContextMenuController>(
+      controller_.get(),
+      extensions::ExtensionContextMenuModel::ContextMenuSource::kMenuItem);
+
+  context_menu_button_->SetButtonController(
+      std::make_unique<views::MenuButtonController>(
+          context_menu_button_.get(),
+          base::BindRepeating(&ExtensionMenuItemView::OnContextMenuPressed,
+                              base::Unretained(this)),
+          std::make_unique<views::Button::DefaultButtonControllerDelegate>(
+              context_menu_button_.get())));
 }
 
 bool ExtensionMenuItemView::IsPinned() const {

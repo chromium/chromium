@@ -37,10 +37,14 @@ class ExtensionMenuItemView : public views::FlexLayoutView {
     kEnabled,
   };
 
+  ExtensionMenuItemView(Browser* browser,
+                        std::unique_ptr<ToolbarActionViewController> controller,
+                        bool allow_pinning);
+
+  // Constructor for the kExtensionsMenuAccessControl feature.
   ExtensionMenuItemView(
       Browser* browser,
       std::unique_ptr<ToolbarActionViewController> controller,
-      bool allow_pinning,
       SitePermissionsButtonState site_permissions_button_state,
       views::Button::PressedCallback site_permissions_button_callback =
           base::RepeatingClosure(base::NullCallback()));
@@ -75,6 +79,10 @@ class ExtensionMenuItemView : public views::FlexLayoutView {
   }
 
  private:
+  // Sets ups the context menu button controllers. Must be called by the
+  // constructor.
+  void SetupContextMenuButton();
+
   // Returns whether the action corresponding to this view is pinned to the
   // toolbar.
   bool IsPinned() const;

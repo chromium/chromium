@@ -338,10 +338,8 @@ void ExtensionsMenuViewController::OnToolbarActionAdded(
           *action_controller->extension(), *browser_->profile(),
           *toolbar_model_, *GetActiveWebContents());
 
-  main_page->CreateAndInsertMenuItem(
-      std::move(action_controller), action_id,
-      extensions_container_->CanShowActionsInToolbar(),
-      site_permissions_button_state, index);
+  main_page->CreateAndInsertMenuItem(std::move(action_controller), action_id,
+                                     site_permissions_button_state, index);
 
   // TODO(crbug.com/1390952): Update requests access section once such section
   // is implemented (if the extension added requests site access, it needs to be
@@ -482,7 +480,6 @@ void ExtensionsMenuViewController::SwitchToPage(
 
 void ExtensionsMenuViewController::PopulateMainPage(
     ExtensionsMenuMainPageView* main_page) {
-  bool allow_pinning = extensions_container_->CanShowActionsInToolbar();
   std::vector<std::string> sorted_ids = SortExtensionsByName(*toolbar_model_);
   for (size_t i = 0; i < sorted_ids.size(); ++i) {
     // TODO(emiliapaz): Under MVC architecture, view should not own the view
@@ -497,7 +494,7 @@ void ExtensionsMenuViewController::PopulateMainPage(
             *toolbar_model_, *GetActiveWebContents());
 
     main_page->CreateAndInsertMenuItem(std::move(action_controller),
-                                       sorted_ids[i], allow_pinning,
+                                       sorted_ids[i],
                                        site_permissions_button_state, i);
   }
 }
