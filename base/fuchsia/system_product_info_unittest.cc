@@ -38,7 +38,7 @@ class FakeHardwareInfoProduct : public fidl::Server<fuchsia_hwinfo::Product> {
                           sys::OutgoingDirectory* outgoing_services)
       : model_(model),
         manufacturer_(manufacturer),
-        binding_(outgoing_services, this, async_get_default_dispatcher()) {}
+        binding_(outgoing_services, this) {}
   FakeHardwareInfoProduct(const FakeHardwareInfoProduct&) = delete;
   FakeHardwareInfoProduct& operator=(const FakeHardwareInfoProduct&) = delete;
   ~FakeHardwareInfoProduct() override = default;
