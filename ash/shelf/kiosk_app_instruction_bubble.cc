@@ -13,8 +13,8 @@
 #include "ash/system/tray/tray_utils.h"
 #include "base/functional/callback_helpers.h"
 #include "components/strings/grit/components_strings.h"
-#include "ui/accessibility/ax_node_data.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/layout/fill_layout.h"
 #include "ui/views/layout/layout_provider.h"
@@ -81,6 +81,10 @@ KioskAppInstructionBubble::KioskAppInstructionBubble(views::View* anchor,
           views::Emphasis::kHigh));
   GetBubbleFrameView()->SetBubbleBorder(std::move(bubble_border));
   GetBubbleFrameView()->SetBackgroundColor(GetBackgroundColor());
+
+  SetAccessibilityProperties(
+      ax::mojom::Role::kStaticText,
+      l10n_util::GetStringUTF16(IDS_SHELF_KIOSK_APP_INSTRUCTION));
 }
 
 KioskAppInstructionBubble::~KioskAppInstructionBubble() = default;
@@ -93,17 +97,14 @@ void KioskAppInstructionBubble::OnThemeChanged() {
   title_->SetEnabledColor(label_color);
 }
 
-void KioskAppInstructionBubble::GetAccessibleNodeData(
-    ui::AXNodeData* node_data) {
-  node_data->role = ax::mojom::Role::kStaticText;
-  node_data->SetName(l10n_util::GetStringUTF8(IDS_SHELF_KIOSK_APP_INSTRUCTION));
-}
-
 gfx::Size KioskAppInstructionBubble::CalculatePreferredSize() const {
   const int bubble_margin = views::LayoutProvider::Get()->GetDistanceMetric(
       views::DISTANCE_DIALOG_CONTENT_MARGIN_TOP_CONTROL);
   const int width = kBubblePreferredInternalWidth + 2 * bubble_margin;
   return gfx::Size(width, GetHeightForWidth(width));
 }
+
+BEGIN_METADATA(KioskAppInstructionBubble, views::BubbleDialogDelegateView)
+END_METADATA
 
 }  // namespace ash

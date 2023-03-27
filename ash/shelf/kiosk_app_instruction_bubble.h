@@ -8,6 +8,7 @@
 #include "ash/ash_export.h"
 #include "ash/public/cpp/shelf_types.h"
 #include "third_party/skia/include/core/SkColor.h"
+#include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
 
 namespace views {
@@ -22,6 +23,7 @@ namespace ash {
 class ASH_EXPORT KioskAppInstructionBubble
     : public views::BubbleDialogDelegateView {
  public:
+  METADATA_HEADER(KioskAppInstructionBubble);
   KioskAppInstructionBubble(views::View* anchor, ShelfAlignment alignment);
 
   KioskAppInstructionBubble(const KioskAppInstructionBubble&) = delete;
@@ -33,7 +35,6 @@ class ASH_EXPORT KioskAppInstructionBubble
   // views::View:
   void OnThemeChanged() override;
   gfx::Size CalculatePreferredSize() const override;
-  void GetAccessibleNodeData(ui::AXNodeData* node_data) override;
 
   views::Label* title_ = nullptr;
 };
