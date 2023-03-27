@@ -11,4 +11,5 @@ out/
 wptreport*.json
 .ackrc
 .envrc
+.nyc_output*
 *MANIFEST.json
