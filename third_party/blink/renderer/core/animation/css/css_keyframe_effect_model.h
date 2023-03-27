@@ -37,6 +37,8 @@ class CssKeyframeEffectModel : public StringKeyframeEffectModel {
   // physical properties.
   KeyframeEffectModelBase::KeyframeVector GetComputedKeyframes(
       Element* element) override;
+
+  bool IsCssKeyframeEffectModel() override { return true; }
 };
 
 }  // namespace blink

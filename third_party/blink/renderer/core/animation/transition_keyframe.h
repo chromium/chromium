@@ -26,7 +26,10 @@ class CORE_EXPORT TransitionKeyframe : public Keyframe {
   }
 
   TransitionKeyframe(const TransitionKeyframe& copy_from)
-      : Keyframe(copy_from.offset_, copy_from.composite_, copy_from.easing_),
+      : Keyframe(copy_from.offset_,
+                 copy_from.timeline_offset_,
+                 copy_from.composite_,
+                 copy_from.easing_),
         property_(copy_from.property_),
         value_(copy_from.value_->Clone()),
         compositor_value_(copy_from.compositor_value_) {}

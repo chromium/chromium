@@ -35,7 +35,10 @@ MutableCSSPropertyValueSet* CreateCssPropertyValueSet() {
 using PropertyResolver = StringKeyframe::PropertyResolver;
 
 StringKeyframe::StringKeyframe(const StringKeyframe& copy_from)
-    : Keyframe(copy_from.offset_, copy_from.composite_, copy_from.easing_),
+    : Keyframe(copy_from.offset_,
+               copy_from.timeline_offset_,
+               copy_from.composite_,
+               copy_from.easing_),
       tree_scope_(copy_from.tree_scope_),
       input_properties_(copy_from.input_properties_),
       presentation_attribute_map_(
@@ -172,14 +175,6 @@ PropertyHandleSet StringKeyframe::Properties() const {
   // worry about caching this result.
   EnsureCssPropertyMap();
   PropertyHandleSet properties;
-
-  // Ignore properties for a keyframe if it has an unresolved timeline offset.
-  // TODO(crbug.com/1420616): Determine if keyframes with an unresovled computed
-  // offset should be included in a getKeyframes call.
-  // See https://github.com/w3c/csswg-drafts/issues/8507.
-  if (GetTimelineOffset() && !Offset()) {
-    return properties;
-  }
 
   for (unsigned i = 0; i < css_property_map_->PropertyCount(); ++i) {
     CSSPropertyValueSet::PropertyReference property_reference =

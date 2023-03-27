@@ -153,10 +153,6 @@ CssKeyframeEffectModel::GetComputedKeyframes(Element* element) {
   computed_keyframes.ReserveInitialCapacity(keyframes.size());
   for (wtf_size_t i = 0; i < keyframes.size(); i++) {
     Keyframe* keyframe = keyframes[i];
-    // Prune keyframes with timeline offsets if not using a view timeline.
-    if (keyframe->GetTimelineOffset() && !keyframe->Offset()) {
-      continue;
-    }
 
     // TODO(crbug.com/1070627): Use computed values, prune variable references,
     // and convert logical properties to physical properties.

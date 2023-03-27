@@ -123,6 +123,7 @@ class CORE_EXPORT KeyframeEffectModelBase : public EffectModel {
 
   virtual bool IsStringKeyframeEffectModel() const { return false; }
   virtual bool IsTransitionKeyframeEffectModel() const { return false; }
+  virtual bool IsCssKeyframeEffectModel() { return false; }
 
   bool HasSyntheticKeyframes() const {
     EnsureKeyframeGroups();
@@ -216,6 +217,15 @@ class CORE_EXPORT KeyframeEffectModelBase : public EffectModel {
       ShouldSnapshotPropertyFunction should_process_property,
       ShouldSnapshotKeyframeFunction should_process_keyframe) const;
 
+  // Keyframes require tracking of the original position in the list and
+  // resolution of computed offsets for sorting. As timeline offsets are layout
+  // dependent, keyframes require shuffling whenever a timeline offset resolves
+  // to a new value. Different ordering rules are needed for generation of
+  // property specific keyframes and for reporting in a getKeyframes calls.
+  // In both cases, the ordering rules depend on a combination of the computed
+  // offset and original index.
+  void IndexKeyframesAndResolveComputedOffsets();
+
   KeyframeVector keyframes_;
   // The spec describes filtering the normalized keyframes at sampling time
   // to get the 'property-specific keyframes'. For efficiency, we cache the
@@ -250,6 +260,7 @@ class KeyframeEffectModel : public KeyframeEffectModelBase {
       bool has_named_range_keyframes = false)
       : KeyframeEffectModelBase(composite, std::move(default_keyframe_easing)) {
     keyframes_.AppendVector(keyframes);
+    IndexKeyframesAndResolveComputedOffsets();
     has_named_range_keyframes_ = has_named_range_keyframes;
   }
 

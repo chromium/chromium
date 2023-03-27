@@ -86,6 +86,48 @@ bool ValidateAndCanonicalizePseudo(String& selector) {
   return false;
 }
 
+enum class KeyframeOrderStrategy { kSpecifiedOrdering, kCssKeyframeOrdering };
+
+Vector<int> CalculateKeyframeOrdering(const KeyframeVector& keyframes,
+                                      KeyframeOrderStrategy strategy) {
+  Vector<int> indices;
+  indices.ReserveInitialCapacity(keyframes.size());
+  for (wtf_size_t i = 0; i < keyframes.size(); i++) {
+    indices.push_back(i);
+  }
+
+  if (keyframes.empty()) {
+    return indices;
+  }
+
+  if (strategy == KeyframeOrderStrategy::kSpecifiedOrdering) {
+    auto less_than = [&keyframes](int a, int b) {
+      // Sort by original index
+      return keyframes[a]->Index() < keyframes[b]->Index();
+    };
+    std::stable_sort(indices.begin(), indices.end(), less_than);
+  } else {
+    // CSS keyframe order.
+    auto less_than = [&keyframes](int a, int b) {
+      auto* first = keyframes[a].Get();
+      auto* second = keyframes[b].Get();
+      // Sort plain percentages ahead of timeline offsets
+      if (first->GetTimelineOffset().has_value() !=
+          second->GetTimelineOffset().has_value()) {
+        return second->GetTimelineOffset().has_value();
+      }
+      // Sort timeline offsets by original index.
+      if (first->GetTimelineOffset().has_value()) {
+        return first->Index() < second->Index();
+      }
+      // Sort plain percentages by offset.
+      return first->Offset() < second->Offset();
+    };
+    std::stable_sort(indices.begin(), indices.end(), less_than);
+  }
+  return indices;
+}
+
 }  // namespace
 
 KeyframeEffect* KeyframeEffect::Create(
@@ -274,14 +316,21 @@ HeapVector<ScriptValue> KeyframeEffect::getKeyframes(
                                  ? model_->GetFrames()
                                  : model_->GetComputedKeyframes(EffectTarget());
 
+  KeyframeOrderStrategy strategy =
+      ignore_css_keyframes_ || !model_->IsCssKeyframeEffectModel()
+          ? KeyframeOrderStrategy::kSpecifiedOrdering
+          : KeyframeOrderStrategy::kCssKeyframeOrdering;
+  Vector<int> indices = CalculateKeyframeOrdering(keyframes, strategy);
+
   Vector<double> computed_offsets =
       KeyframeEffectModelBase::GetComputedOffsets(keyframes);
   computed_keyframes.ReserveInitialCapacity(keyframes.size());
   ScriptState::Scope scope(script_state);
   for (wtf_size_t i = 0; i < keyframes.size(); i++) {
     V8ObjectBuilder object_builder(script_state);
-    keyframes[i]->AddKeyframePropertiesToV8Object(object_builder, target());
-    object_builder.Add("computedOffset", computed_offsets[i]);
+    keyframes[indices[i]]->AddKeyframePropertiesToV8Object(object_builder,
+                                                           target());
+    object_builder.Add("computedOffset", computed_offsets[indices[i]]);
     computed_keyframes.push_back(object_builder.GetScriptValue());
   }
 
