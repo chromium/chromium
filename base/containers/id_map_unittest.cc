@@ -32,7 +32,7 @@ struct RepeatingKeyType {
 namespace std {
 template <>
 struct hash<::base::test::id_map::RepeatingKeyType> {
-  constexpr size_t operator()(
+  size_t operator()(
       const ::base::test::id_map::RepeatingKeyType& k) const noexcept {
     return std::hash<int>()(k.i);
   }
