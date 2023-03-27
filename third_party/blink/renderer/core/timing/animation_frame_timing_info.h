@@ -131,6 +131,9 @@ class AnimationFrameTimingInfo
     scripts_ = scripts;
   }
 
+  void SetDidPause() { did_pause_ = true; }
+  bool DidPause() const { return did_pause_; }
+
   virtual void Trace(Visitor*) const;
 
  private:
@@ -157,6 +160,10 @@ class AnimationFrameTimingInfo
   base::TimeTicks first_ui_event_time;
 
   HeapVector<Member<ScriptTimingInfo>> scripts_;
+
+  // Whether the LoAF included sync XHR or alerts (pause).
+  // TODO: check if we need to be more granular about this.
+  bool did_pause_ = false;
 };
 
 }  // namespace blink

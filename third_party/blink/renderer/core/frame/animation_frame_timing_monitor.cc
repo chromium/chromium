@@ -4,6 +4,9 @@
 
 #include "third_party/blink/renderer/core/frame/animation_frame_timing_monitor.h"
 #include "base/time/time.h"
+#include "services/metrics/public/cpp/ukm_builders.h"
+#include "services/metrics/public/cpp/ukm_recorder.h"
+#include "services/metrics/public/cpp/ukm_source_id.h"
 #include "third_party/blink/public/mojom/script/script_type.mojom-blink-forward.h"
 #include "third_party/blink/renderer/core/core_probe_sink.h"
 #include "third_party/blink/renderer/core/execution_context/agent.h"
@@ -15,6 +18,7 @@
 #include "third_party/blink/renderer/platform/bindings/source_location.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/heap/persistent.h"
+#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/scheduler/public/event_loop.h"
 
 namespace blink {
@@ -62,6 +66,11 @@ void AnimationFrameTimingMonitor::DidBeginMainFrame() {
   DCHECK(!desired_render_start_time_.is_null());
   current_frame_timing_info_->SetRenderEndTime(base::TimeTicks::Now());
 
+  if (did_pause_) {
+    current_frame_timing_info_->SetDidPause();
+  }
+  did_pause_ = false;
+
   // These would be (non-event) scripts that are handled while rendering, e.g.
   // ResizeObserver and requestAnimationFrame callbacks.
   // Their desired execution time would be set to the frame's desired render
@@ -80,6 +89,7 @@ void AnimationFrameTimingMonitor::DidBeginMainFrame() {
           first_ui_event_timestamp_);
     }
     client_.ReportLongAnimationFrameTiming(current_frame_timing_info_);
+    RecordLongAnimationFrameUKM(*current_frame_timing_info_);
   }
 
   desired_render_start_time_ = base::TimeTicks();
@@ -101,6 +111,9 @@ void AnimationFrameTimingMonitor::OnTaskCompleted(
     base::TimeTicks desired_execution_time,
     LocalFrame* frame) {
   HeapVector<Member<ScriptTimingInfo>> scripts;
+
+  bool did_pause = false;
+  std::swap(did_pause, did_pause_);
 
   if (state_ != State::kProcessingTask) {
     return;
@@ -144,8 +157,134 @@ void AnimationFrameTimingMonitor::OnTaskCompleted(
       MakeGarbageCollected<AnimationFrameTimingInfo>(start_time);
   timing_info->SetRenderEndTime(end_time);
   timing_info->SetScripts(scripts);
-  DOMWindowPerformance::performance(*frame->DomWindow())
-      ->ReportLongAnimationFrameTiming(timing_info);
+  if (did_pause) {
+    timing_info->SetDidPause();
+  }
+
+  if (RuntimeEnabledFeatures::LongAnimationFrameTimingEnabled()) {
+    DOMWindowPerformance::performance(*frame->DomWindow())
+        ->ReportLongAnimationFrameTiming(timing_info);
+  }
+
+  if (frame->IsMainFrame()) {
+    RecordLongAnimationFrameUKM(*timing_info);
+  }
+}
+
+namespace {
+template <typename BuilderType>
+void BuildLongAnimationFrameUKM(ukm::UkmRecorder* recorder,
+                                ukm::SourceId source_id,
+                                const AnimationFrameTimingInfo& info) {
+  BuilderType builder(source_id);
+  builder.SetDuration_Total(info.Duration().InMilliseconds());
+  base::TimeTicks desired_start_time = info.FrameStartTime();
+  if (!info.FirstUIEventTime().is_null()) {
+    desired_start_time = info.FirstUIEventTime();
+  }
+  if (!info.DesiredRenderStartTime().is_null()) {
+    desired_start_time = info.DesiredRenderStartTime() < desired_start_time
+                             ? info.DesiredRenderStartTime()
+                             : desired_start_time;
+  }
+
+  builder.SetDuration_DelayDefer(
+      (info.FrameStartTime() - desired_start_time).InMilliseconds());
+  base::TimeTicks effective_blocking_time = info.FrameStartTime();
+  if (desired_start_time > effective_blocking_time) {
+    effective_blocking_time = desired_start_time;
+  }
+  builder.SetDuration_EffectiveBlocking(
+      (info.RenderEndTime() - effective_blocking_time).InMilliseconds());
+  builder.SetDuration_StyleAndLayout_RenderPhase(
+      (info.RenderEndTime() - info.StyleAndLayoutStartTime()).InMilliseconds());
+  base::TimeDelta total_compilation_duration;
+  base::TimeDelta total_execution_duration;
+  base::TimeDelta total_forced_style_and_layout_duration;
+  for (const Member<ScriptTimingInfo>& script : info.Scripts()) {
+    total_compilation_duration +=
+        (script->ExecutionStartTime() - script->StartTime());
+    total_execution_duration +=
+        (script->EndTime() - script->ExecutionStartTime());
+    total_forced_style_and_layout_duration += script->StyleDuration();
+    total_forced_style_and_layout_duration += script->LayoutDuration();
+  }
+  builder.SetDuration_LongScript_JSCompilation(
+      total_compilation_duration.InMilliseconds());
+  builder.SetDuration_LongScript_JSExecution(
+      total_execution_duration.InMilliseconds());
+  builder.SetDuration_StyleAndLayout_Forced(
+      total_forced_style_and_layout_duration.InMilliseconds());
+  builder.SetDidPause(info.DidPause());
+  builder.Record(recorder);
+}
+}  // namespace
+
+void AnimationFrameTimingMonitor::RecordLongAnimationFrameUKM(
+    const AnimationFrameTimingInfo& info) {
+  if (!RuntimeEnabledFeatures::LongAnimationFrameUKMEnabled()) {
+    return;
+  }
+
+  ukm::UkmRecorder* recorder = client_.MainFrameUkmRecorder();
+  ukm::SourceId source_id = client_.MainFrameUkmSourceId();
+  if (!recorder || source_id == ukm::kInvalidSourceId) {
+    return;
+  }
+
+  constexpr base::TimeDelta kBlockingThreshold = base::Milliseconds(125);
+  bool is_blocking_ui_event = false;
+  bool is_blocking_frame = false;
+  bool is_before_load_event = !client_.IsMainFrameFullyLoaded();
+
+  if (!info.FirstUIEventTime().is_null() &&
+      (info.RenderEndTime() - info.FirstUIEventTime()) > kBlockingThreshold) {
+    is_blocking_ui_event = true;
+  } else {
+    base::TimeTicks effective_start = info.RenderStartTime();
+    if (info.DesiredRenderStartTime() > effective_start) {
+      effective_start = info.DesiredRenderStartTime();
+    }
+    if ((info.RenderEndTime() - effective_start) > kBlockingThreshold) {
+      is_blocking_frame = true;
+    }
+  }
+
+  if (is_before_load_event) {
+    if (is_blocking_ui_event) {
+      BuildLongAnimationFrameUKM<
+          ukm::builders::
+              PerformanceAPI_LongAnimationFrame_BeforeLoad_BlockingInput>(
+          recorder, source_id, info);
+    } else if (is_blocking_frame) {
+      BuildLongAnimationFrameUKM<
+          ukm::builders::
+              PerformanceAPI_LongAnimationFrame_BeforeLoad_BlockingFrame>(
+          recorder, source_id, info);
+    } else {
+      BuildLongAnimationFrameUKM<
+          ukm::builders::
+              PerformanceAPI_LongAnimationFrame_BeforeLoad_NonBlocking>(
+          recorder, source_id, info);
+    }
+  } else {
+    if (is_blocking_ui_event) {
+      BuildLongAnimationFrameUKM<
+          ukm::builders::
+              PerformanceAPI_LongAnimationFrame_AfterLoad_BlockingInput>(
+          recorder, source_id, info);
+    } else if (is_blocking_frame) {
+      BuildLongAnimationFrameUKM<
+          ukm::builders::
+              PerformanceAPI_LongAnimationFrame_AfterLoad_BlockingFrame>(
+          recorder, source_id, info);
+    } else {
+      BuildLongAnimationFrameUKM<
+          ukm::builders::
+              PerformanceAPI_LongAnimationFrame_AfterLoad_NonBlocking>(
+          recorder, source_id, info);
+    }
+  }
 }
 
 void AnimationFrameTimingMonitor::Trace(Visitor* visitor) const {

@@ -313,7 +313,7 @@ WebFrameWidgetImpl::~WebFrameWidgetImpl() {
 
 void WebFrameWidgetImpl::BindLocalRoot(WebLocalFrame& local_root) {
   local_root_ = To<WebLocalFrameImpl>(local_root);
-  if (RuntimeEnabledFeatures::LongAnimationFrameTimingEnabled() &&
+  if (RuntimeEnabledFeatures::LongAnimationFrameMonitoringEnabled() &&
       !IsHidden()) {
     DCHECK(local_root_->GetFrame());
     animation_frame_timing_monitor_ =
@@ -364,6 +364,47 @@ WebLocalFrame* WebFrameWidgetImpl::LocalRoot() const {
 bool WebFrameWidgetImpl::RequestedMainFramePending() {
   return View() && View()->does_composite() && LayerTreeHost() &&
          LayerTreeHost()->RequestedMainFramePending();
+}
+
+ukm::UkmRecorder* WebFrameWidgetImpl::MainFrameUkmRecorder() {
+  DCHECK(local_root_);
+  if (!local_root_->IsOutermostMainFrame()) {
+    return nullptr;
+  }
+
+  if (!local_root_->GetFrame() || !local_root_->GetFrame()->DomWindow()) {
+    return nullptr;
+  }
+
+  return local_root_->GetFrame()->DomWindow()->UkmRecorder();
+}
+ukm::SourceId WebFrameWidgetImpl::MainFrameUkmSourceId() {
+  DCHECK(local_root_);
+  if (!local_root_->IsOutermostMainFrame()) {
+    return ukm::kInvalidSourceId;
+  }
+
+  if (!local_root_->GetFrame() || !local_root_->GetFrame()->DomWindow()) {
+    return ukm::kInvalidSourceId;
+  }
+
+  return local_root_->GetFrame()->DomWindow()->UkmSourceID();
+}
+
+bool WebFrameWidgetImpl::IsMainFrameFullyLoaded() const {
+  DCHECK(local_root_);
+  if (!local_root_->IsOutermostMainFrame()) {
+    return false;
+  }
+
+  return local_root_->GetFrame() &&
+         local_root_->GetFrame()->Loader().GetDocumentLoader() &&
+         !local_root_->GetFrame()
+              ->Loader()
+              .GetDocumentLoader()
+              ->GetTiming()
+              .LoadEventEnd()
+              .is_null();
 }
 
 gfx::Rect WebFrameWidgetImpl::ComputeBlockBound(
