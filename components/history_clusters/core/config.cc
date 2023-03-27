@@ -137,14 +137,6 @@ Config::Config() {
   {
     omnibox_action = base::FeatureList::IsEnabled(internal::kOmniboxAction);
 
-    omnibox_action_on_urls = base::GetFieldTrialParamByFeatureAsBool(
-        internal::kOmniboxAction, "omnibox_action_on_urls",
-        omnibox_action_on_urls);
-
-    omnibox_action_on_noisy_urls = base::GetFieldTrialParamByFeatureAsBool(
-        internal::kOmniboxAction, "omnibox_action_on_noisy_urls",
-        omnibox_action_on_noisy_urls);
-
     omnibox_action_with_pedals = base::GetFieldTrialParamByFeatureAsBool(
         internal::kOmniboxAction, "omnibox_action_with_pedals",
         omnibox_action_with_pedals);

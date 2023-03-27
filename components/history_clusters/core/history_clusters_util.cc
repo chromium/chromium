@@ -14,7 +14,6 @@
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "components/history/core/browser/history_types.h"
-#include "components/history/core/browser/visitsegment_database.h"
 #include "components/history_clusters/core/config.h"
 #include "components/history_clusters/core/features.h"
 #include "components/history_clusters/core/history_clusters_types.h"
@@ -165,11 +164,6 @@ GURL ComputeURLForDeduping(const GURL& url) {
 
   url_for_deduping = url_for_deduping.ReplaceComponents(replacements);
   return url_for_deduping;
-}
-
-std::string ComputeURLKeywordForLookup(const GURL& url) {
-  return history::VisitSegmentDatabase::ComputeSegmentName(
-      ComputeURLForDeduping(url));
 }
 
 std::u16string ComputeURLForDisplay(const GURL& url, bool trim_after_host) {

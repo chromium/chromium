@@ -66,10 +66,6 @@ class HistoryClustersServiceTestApi {
     history_clusters_service_->all_keywords_cache_ = cache;
   }
 
-  void SetAllUrlKeywordsCache(HistoryClustersService::URLKeywordSet cache) {
-    history_clusters_service_->all_url_keywords_cache_ = cache;
-  }
-
   HistoryClustersService* const history_clusters_service_;
   history::HistoryService* const history_service_;
 };

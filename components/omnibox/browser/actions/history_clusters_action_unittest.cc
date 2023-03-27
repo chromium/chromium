@@ -70,14 +70,7 @@ class HistoryClustersActionTest : public testing::Test {
     search_actions_config_.is_journeys_enabled_no_locale_check = true;
     search_actions_config_.omnibox_action = true;
     search_actions_config_.omnibox_action_on_navigation_intents = false;
-    search_actions_config_.omnibox_action_on_urls = false;
     SetConfigForTesting(search_actions_config_);
-
-    url_actions_config_.is_journeys_enabled_no_locale_check = true;
-    url_actions_config_.omnibox_action = true;
-    url_actions_config_.omnibox_action_on_navigation_intents = false;
-    url_actions_config_.omnibox_action_on_urls = true;
-    SetConfigForTesting(url_actions_config_);
   }
 
   // `history_clusters_service_` needs to be initialized repeatedly since it
@@ -98,8 +91,6 @@ class HistoryClustersActionTest : public testing::Test {
             history_clusters_service_.get(), history_service_.get());
     history_clusters_service_test_api_->SetAllKeywordsCache(
         {{u"keyword", history::ClusterKeywordData()}});
-    history_clusters_service_test_api_->SetAllUrlKeywordsCache(
-        {"http://keyword/"});
   }
 
   void TestAttachHistoryClustersActions(std::vector<MatchData> matches_data,
@@ -141,14 +132,12 @@ class HistoryClustersActionTest : public testing::Test {
 
   // Commonly used configs & prefs used or derived from in the tests.
   Config search_actions_config_;
-  Config url_actions_config_;
   TestingPrefServiceSimple prefs_enabled_;
 };
 
 TEST_F(HistoryClustersActionTest, AttachHistoryClustersActions) {
   {
     SCOPED_TRACE("Shouldn't add action if history cluster service is nullptr.");
-    SetUpWithConfig(search_actions_config_);
     TestAttachHistoryClustersActions({{}}, nullptr, &prefs_enabled_);
   }
 
@@ -217,19 +206,7 @@ TEST_F(HistoryClustersActionTest, AttachHistoryClustersActions) {
   }
 
   {
-    SCOPED_TRACE(
-        "Should add action if a navigation suggestion matches and "
-        "`omnibox_action_on_urls` is enabled.");
-    SetUpWithConfig(url_actions_config_);
-    TestAttachHistoryClustersActions(
-        {{.type = AutocompleteMatchType::Type::HISTORY_TITLE,
-          .expect_history_clusters_action = true}});
-  }
-
-  {
-    SCOPED_TRACE(
-        "Should not add action if a navigation suggestion matches and "
-        "`omnibox_action_on_urls` is disabled.");
+    SCOPED_TRACE("Should not add action if a navigation suggestion matches.");
     SetUpWithConfig(search_actions_config_);
     TestAttachHistoryClustersActions(
         {{.type = AutocompleteMatchType::Type::HISTORY_TITLE}});
@@ -238,8 +215,8 @@ TEST_F(HistoryClustersActionTest, AttachHistoryClustersActions) {
   {
     SCOPED_TRACE(
         "Should add action if both a search and navigation suggestions "
-        "match and `omnibox_action_on_urls` is disabled. The search suggestion "
-        "should have an action, even if it is ranked & scored lower.");
+        "match. The search suggestion should have an action, even if it is "
+        "ranked & scored lower.");
     SetUpWithConfig(search_actions_config_);
     TestAttachHistoryClustersActions(
         {{.type = AutocompleteMatchType::Type::HISTORY_TITLE},
@@ -273,16 +250,6 @@ TEST_F(HistoryClustersActionTest, AttachHistoryClustersActions) {
 
   {
     SCOPED_TRACE(
-        "Should add action to a top-scoring navigation suggestion, if it is "
-        "not high-scoring.");
-    SetUpWithConfig(url_actions_config_);
-    TestAttachHistoryClustersActions(
-        {{.type = AutocompleteMatchType::Type::HISTORY_TITLE,
-          .expect_history_clusters_action = true}});
-  }
-
-  {
-    SCOPED_TRACE(
         "Should not add action if a search suggestion matches and the top "
         "scoring suggestion is a high score navigation suggestion, even if it "
         "doesn't match.");
@@ -306,20 +273,6 @@ TEST_F(HistoryClustersActionTest, AttachHistoryClustersActions) {
         {{.relevance = 1340,
           .type = AutocompleteMatchType::Type::HISTORY_TITLE},
          {.relevance = 1350, .expect_history_clusters_action = true}});
-  }
-
-  {
-    SCOPED_TRACE(
-        "Should add action to a top scoring, high score navigation "
-        "suggestion if `omnibox_action_on_navigation_intents` is enabled.");
-    Config config = url_actions_config_;
-    config.omnibox_action_on_navigation_intents = true;
-    SetUpWithConfig(config);
-    TestAttachHistoryClustersActions({
-        {.relevance = 1350,
-         .type = AutocompleteMatchType::Type::HISTORY_TITLE,
-         .expect_history_clusters_action = true},
-    });
   }
 }
 

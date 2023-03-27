@@ -258,17 +258,6 @@ void AttachHistoryClustersActions(
             query, std::move(matched_keyword_data.value()),
             /*takes_over_match=*/false));
       }
-    } else if (GetConfig().omnibox_action_on_urls) {
-      // We do the URL stripping here, because we need it to both execute the
-      // query, as well as to feed it into the action chip so the chip navigates
-      // to the right place (with the query pre-populated).
-      std::string url_keyword =
-          history_clusters::ComputeURLKeywordForLookup(match.destination_url);
-      if (service->DoesURLMatchAnyCluster(url_keyword)) {
-        match.actions.push_back(base::MakeRefCounted<HistoryClustersAction>(
-            url_keyword, history::ClusterKeywordData(),
-            /*takes_over_match=*/false));
-      }
     }
 
     // Only ever attach one action (to the highest match), to not overwhelm

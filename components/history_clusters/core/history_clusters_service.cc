@@ -388,31 +388,10 @@ HistoryClustersService::DoesQueryMatchAnyCluster(const std::string& query) {
   return absl::nullopt;
 }
 
-bool HistoryClustersService::DoesURLMatchAnyCluster(
-    const std::string& url_keyword) {
-  if (!IsJourneysEnabled())
-    return false;
-
-  // We don't want any omnibox jank for low-end devices.
-  if (base::SysInfo::IsLowEndDevice())
-    return false;
-
-  StartKeywordCacheRefresh();
-  if (GetConfig().persist_on_query)
-    UpdateClusters();
-
-  return short_url_keywords_cache_.find(url_keyword) !=
-             short_url_keywords_cache_.end() ||
-         all_url_keywords_cache_.find(url_keyword) !=
-             all_url_keywords_cache_.end();
-}
-
 void HistoryClustersService::ClearKeywordCache() {
   all_keywords_cache_timestamp_ = base::Time();
   short_keyword_cache_timestamp_ = base::Time();
   all_keywords_cache_.clear();
-  all_url_keywords_cache_.clear();
-  short_keyword_cache_.clear();
   short_keyword_cache_.clear();
   cache_keyword_query_task_.reset();
   WriteShortCacheToPrefs();
@@ -424,13 +403,11 @@ void HistoryClustersService::PrintKeywordBagStateToLogMessage() const {
   NotifyDebugMessage("Timestamp: " +
                      GetDebugTime(short_keyword_cache_timestamp_));
   NotifyDebugMessage(GetDebugJSONForKeywordMap(short_keyword_cache_));
-  NotifyDebugMessage(GetDebugJSONForUrlKeywordSet(short_url_keywords_cache_));
 
   NotifyDebugMessage("-- Printing All-Time Keyword Bag --");
   NotifyDebugMessage("Timestamp: " +
                      GetDebugTime(all_keywords_cache_timestamp_));
   NotifyDebugMessage(GetDebugJSONForKeywordMap(all_keywords_cache_));
-  NotifyDebugMessage(GetDebugJSONForUrlKeywordSet(all_url_keywords_cache_));
 
   NotifyDebugMessage("-- Printing Keyword Bags Done --");
 }
@@ -469,9 +446,7 @@ void HistoryClustersService::StartKeywordCacheRefresh() {
         base::BindOnce(&HistoryClustersService::PopulateClusterKeywordCache,
                        weak_ptr_factory_.GetWeakPtr(), base::ElapsedTimer(),
                        /*begin_time=*/base::Time(),
-                       std::make_unique<KeywordMap>(),
-                       std::make_unique<URLKeywordSet>(), &all_keywords_cache_,
-                       &all_url_keywords_cache_));
+                       std::make_unique<KeywordMap>(), &all_keywords_cache_));
   } else if ((base::Time::Now() - all_keywords_cache_timestamp_).InSeconds() >
                  10 &&
              (base::Time::Now() - short_keyword_cache_timestamp_).InSeconds() >
@@ -488,9 +463,7 @@ void HistoryClustersService::StartKeywordCacheRefresh() {
         base::BindOnce(&HistoryClustersService::PopulateClusterKeywordCache,
                        weak_ptr_factory_.GetWeakPtr(), base::ElapsedTimer(),
                        all_keywords_cache_timestamp_,
-                       std::make_unique<KeywordMap>(),
-                       std::make_unique<URLKeywordSet>(), &short_keyword_cache_,
-                       &short_url_keywords_cache_));
+                       std::make_unique<KeywordMap>(), &short_keyword_cache_));
   }
 }
 
@@ -498,9 +471,7 @@ void HistoryClustersService::PopulateClusterKeywordCache(
     base::ElapsedTimer total_latency_timer,
     base::Time begin_time,
     std::unique_ptr<KeywordMap> keyword_accumulator,
-    std::unique_ptr<URLKeywordSet> url_keyword_accumulator,
     KeywordMap* cache,
-    URLKeywordSet* url_cache,
     std::vector<history::Cluster> clusters,
     QueryClustersContinuationParams continuation_params) {
   base::ElapsedThreadTimer populate_keywords_thread_timer;
@@ -544,26 +515,6 @@ void HistoryClustersService::PopulateClusterKeywordCache(
         }
       }
     }
-
-    // Push a simplified form of the URL for each visit into the cache.
-    if (url_keyword_accumulator->size() < max_keyword_phrases) {
-      for (const auto& visit : cluster.visits) {
-        if (visit.engagement_score >
-                GetConfig().noisy_cluster_visits_engagement_threshold &&
-            !GetConfig().omnibox_action_on_noisy_urls) {
-          // Do not add a noisy visit to the URL keyword accumulator if not
-          // enabled via flag. Note that this is at the visit-level rather than
-          // at the cluster-level, which is handled by the NoisyClusterFinalizer
-          // in the ClusteringBackend.
-          continue;
-        }
-        url_keyword_accumulator->insert(
-            (!visit.annotated_visit.content_annotations.search_normalized_url
-                  .is_empty())
-                ? visit.normalized_url.spec()
-                : ComputeURLKeywordForLookup(visit.normalized_url));
-      }
-    }
   }
 
   // Make a continuation request to get the next page of clusters and their
@@ -572,8 +523,7 @@ void HistoryClustersService::PopulateClusterKeywordCache(
   constexpr char kKeywordCacheThreadTimeUmaName[] =
       "History.Clusters.KeywordCache.ThreadTime";
   if (!continuation_params.exhausted_all_visits &&
-      (keyword_accumulator->size() < max_keyword_phrases ||
-       url_keyword_accumulator->size() < max_keyword_phrases)) {
+      keyword_accumulator->size() < max_keyword_phrases) {
     const ClusteringRequestSource clustering_request_source =
         cache == &all_keywords_cache_
             ? ClusteringRequestSource::kAllKeywordCacheRefresh
@@ -586,8 +536,7 @@ void HistoryClustersService::PopulateClusterKeywordCache(
                        weak_ptr_factory_.GetWeakPtr(),
                        std::move(total_latency_timer), begin_time,
                        // Pass on the accumulator sets to the next callback.
-                       std::move(keyword_accumulator),
-                       std::move(url_keyword_accumulator), cache, url_cache));
+                       std::move(keyword_accumulator), cache));
     // Log this even if we go back for more clusters.
     base::UmaHistogramTimes(kKeywordCacheThreadTimeUmaName,
                             populate_keywords_thread_timer.Elapsed());
@@ -598,12 +547,9 @@ void HistoryClustersService::PopulateClusterKeywordCache(
   // via the constructor for efficiency (as recommended by the flat_set docs).
   // De-duplication is handled by the flat_set itself.
   *cache = std::move(*keyword_accumulator);
-  *url_cache = std::move(*url_keyword_accumulator);
   if (ShouldNotifyDebugMessage()) {
     NotifyDebugMessage("Cache construction complete; keyword cache:");
     NotifyDebugMessage(GetDebugJSONForKeywordMap(*cache));
-    NotifyDebugMessage("Url cache:");
-    NotifyDebugMessage(GetDebugJSONForUrlKeywordSet(*url_cache));
   }
 
   // Record keyword phrase & keyword counts for the appropriate cache.
