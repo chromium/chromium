@@ -37,7 +37,23 @@ suite('<cloud-upload>', () => {
   }
 
   function checkIsWelcomePage(): void {
+    // The welcome page renders the regular non-0-step UI.
     assertTrue(cloudUploadApp.currentPage instanceof WelcomePageElement);
+    assertTrue(cloudUploadApp.$('#description')
+                   .innerText.includes('Install Microsoft 365'));
+    assertTrue(cloudUploadApp.$('#description')
+                   .innerText.includes('Connect to Microsoft OneDrive'));
+    assertEquals(cloudUploadApp.$('.action-button').innerText, 'Get started');
+  }
+
+  function checkIsWelcomePageZeroStep(): void {
+    // The welcome page renders the regular 0-step UI.
+    assertTrue(cloudUploadApp.currentPage instanceof WelcomePageElement);
+    assertEquals(
+        cloudUploadApp.$('#description').innerText,
+        'Files will move to Microsoft OneDrive when' +
+            'opening in Microsoft 365');
+    assertEquals(cloudUploadApp.$('.action-button').innerText, 'Set up');
   }
 
   function checkIsInstallPage(): void {
@@ -70,6 +86,13 @@ suite('<cloud-upload>', () => {
 
   async function doWelcomePage(): Promise<void> {
     checkIsWelcomePage();
+    const nextPagePromise = waitForNextPage();
+    cloudUploadApp.$('.action-button').click();
+    await nextPagePromise;
+  }
+
+  async function doWelcomePageZeroStep(): Promise<void> {
+    checkIsWelcomePageZeroStep();
     const nextPagePromise = waitForNextPage();
     cloudUploadApp.$('.action-button').click();
     await nextPagePromise;
@@ -185,8 +208,9 @@ suite('<cloud-upload>', () => {
   });
 
   /**
-   * Tests that there is no Office PWA install page or sign in page when the
-   * Office PWA is already installed and ODFS is already mounted.
+   * Tests that when the Office PWA is already installed and ODFS is already
+   * mounted, the welcome page shows the 0-step UI and there is no Office PWA
+   * install page or sign in page.
    */
   test(
       'Set up OneDrive with Office PWA already installed and already signed in',
@@ -198,7 +222,7 @@ suite('<cloud-upload>', () => {
           dialogPage: DialogPage.kOneDriveSetup,
         });
 
-        await doWelcomePage();
+        await doWelcomePageZeroStep();
 
         checkIsOneDriveUploadPage();
       });

@@ -11,6 +11,8 @@ import {getTemplate} from './welcome_page.html.js';
  * The WelcomePageElement represents the first page in the setup flow.
  */
 export class WelcomePageElement extends BaseSetupPageElement {
+  private isZeroStep = false;
+
   constructor() {
     super();
   }
@@ -20,11 +22,24 @@ export class WelcomePageElement extends BaseSetupPageElement {
 
     this.innerHTML = getTemplate();
 
+    const description = this.querySelector('#description') as HTMLElement;
+    if (this.isZeroStep) {
+      description.innerText = 'Files will move to Microsoft OneDrive when' +
+          'opening in Microsoft 365';
+    }
+
     const actionButton = this.querySelector('.action-button') as HTMLElement;
     actionButton.addEventListener('click', this.onActionButtonClick);
+    if (this.isZeroStep) {
+      actionButton.innerText = 'Set up';
+    }
 
     const cancelButton = this.querySelector('.cancel-button') as HTMLElement;
     cancelButton.addEventListener('click', this.onCancelButtonClick);
+  }
+
+  setZeroStep() {
+    this.isZeroStep = true;
   }
 
   private onActionButtonClick() {
