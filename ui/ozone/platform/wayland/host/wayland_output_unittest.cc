@@ -3,10 +3,10 @@
 // found in the LICENSE file.
 
 #include "ui/ozone/platform/wayland/host/wayland_output.h"
-#include "ui/ozone/platform/wayland/host/xdg_output.h"
 
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/ozone/platform/wayland/host/wayland_output_manager.h"
+#include "ui/ozone/platform/wayland/host/xdg_output.h"
 #include "ui/ozone/platform/wayland/test/wayland_test.h"
 
 using ::testing::Values;
@@ -37,6 +37,8 @@ TEST_F(WaylandOutputTest, NameAndDescriptionFallback) {
   wl_output->xdg_output_ = std::make_unique<XDGOutput>(nullptr);
   wl_output->xdg_output_->name_ = kXDGOutputName;
   wl_output->xdg_output_->description_ = kXDGOutputDescription;
+  wl_output->xdg_output_->is_ready_ = true;
+  wl_output->is_ready_ = true;
 
   EXPECT_EQ(wl_output->name(), kXDGOutputName);
   EXPECT_EQ(wl_output->description(), kXDGOutputDescription);
@@ -45,6 +47,44 @@ TEST_F(WaylandOutputTest, NameAndDescriptionFallback) {
 
   EXPECT_EQ(wl_output->name(), kWlOutputName);
   EXPECT_EQ(wl_output->description(), kWlOutputDescription);
+}
+
+// Test that if using xdg output (and surface_submission_in_pixel_coordinates is
+// enabled) the scale factor is calculated as the ratio of physical size to
+// logical size.
+TEST_F(WaylandOutputTest, ScaleFactorFallback) {
+  auto* const output_manager = connection_->wayland_output_manager();
+  ASSERT_TRUE(output_manager);
+
+  auto* wl_output = output_manager->GetPrimaryOutput();
+  ASSERT_TRUE(wl_output);
+  EXPECT_FALSE(wl_output->xdg_output_);
+  EXPECT_FALSE(connection_->surface_submission_in_pixel_coordinates());
+
+  // We only test trivial stuff here so it is okay to create an output that is
+  // not backed with a real object.
+  constexpr float kDefaultScaleFactor = 2.f;
+  wl_output->xdg_output_ = std::make_unique<XDGOutput>(nullptr);
+  wl_output->xdg_output_->logical_size_ = gfx::Size(100, 200);
+  wl_output->physical_size_ = gfx::Size(250, 500);
+  wl_output->scale_factor_ = kDefaultScaleFactor;
+
+  // When wl_output is ready but xdg_output is not yet ready, scale_factor
+  // should fall back to the value sent in wl_output::scale.
+  wl_output->is_ready_ = true;
+  wl_output->xdg_output_->is_ready_ = false;
+  EXPECT_EQ(kDefaultScaleFactor, wl_output->scale_factor());
+
+  // If xdg_output is ready but surface_submission_in_pixel_coordinates is
+  // false, scale_factor should fall back to the value sent in wl_output::scale.
+  wl_output->xdg_output_->is_ready_ = true;
+  EXPECT_EQ(kDefaultScaleFactor, wl_output->scale_factor());
+
+  // When xdg_output is ready and surface_submission_in_pixel_coordinates is
+  // true, scale_factor should be calculated as the ratio of physical to logical
+  // size.
+  connection_->set_surface_submission_in_pixel_coordinates(true);
+  EXPECT_EQ(2.5f, wl_output->scale_factor());
 }
 
 TEST_F(WaylandOutputTest, WaylandOutputIsReady) {

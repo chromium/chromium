@@ -102,12 +102,12 @@ class WaylandOutput : public wl::GlobalObjectRegistrar<WaylandOutput> {
   Metrics GetMetrics() const;
   Id output_id() const { return output_id_; }
   bool has_output(wl_output* output) const { return output_.get() == output; }
-  float scale_factor() const { return scale_factor_; }
-  int32_t panel_transform() const { return panel_transform_; }
+  float scale_factor() const;
+  int32_t panel_transform() const;
   int32_t logical_transform() const;
   gfx::Point origin() const;
   gfx::Size logical_size() const;
-  gfx::Size physical_size() const { return physical_size_; }
+  gfx::Size physical_size() const;
   gfx::Insets insets() const;
   int64_t display_id() const;
   const std::string& name() const;
@@ -133,6 +133,7 @@ class WaylandOutput : public wl::GlobalObjectRegistrar<WaylandOutput> {
 
  private:
   FRIEND_TEST_ALL_PREFIXES(WaylandOutputTest, NameAndDescriptionFallback);
+  FRIEND_TEST_ALL_PREFIXES(WaylandOutputTest, ScaleFactorFallback);
 
   static constexpr int32_t kDefaultScaleFactor = 1;
 

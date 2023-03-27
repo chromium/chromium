@@ -136,40 +136,79 @@ WaylandOutput::Metrics WaylandOutput::GetMetrics() const {
           logical_transform(), description()};
 }
 
-int32_t WaylandOutput::logical_transform() const {
-  if (aura_output_ && aura_output_->logical_transform()) {
-    return *aura_output_->logical_transform();
+float WaylandOutput::scale_factor() const {
+  if (xdg_output_ && xdg_output_->IsReady()) {
+    const gfx::Size output_logical_size = logical_size();
+    const bool can_calculate_scale =
+        connection_->surface_submission_in_pixel_coordinates() &&
+        !output_logical_size.IsEmpty();
+
+    if (can_calculate_scale) {
+      const gfx::Size output_physical_size = physical_size();
+      DCHECK(!output_physical_size.IsEmpty());
+      const float max_physical_side =
+          std::max(output_physical_size.width(), output_physical_size.height());
+      const float max_logical_side =
+          std::max(output_logical_size.width(), output_logical_size.height());
+      return max_physical_side / max_logical_side;
+    }
   }
-  return panel_transform();
+
+  // If xdg output is defined and ready but we still can't calculate the
+  // scale factor, fall back to the scale factor sent in wl_output.scale.
+  return scale_factor_;
+}
+
+int32_t WaylandOutput::panel_transform() const {
+  return panel_transform_;
+}
+
+int32_t WaylandOutput::logical_transform() const {
+  return aura_output_ && aura_output_->IsReady()
+             ? aura_output_->logical_transform().value()
+             : panel_transform();
 }
 
 gfx::Point WaylandOutput::origin() const {
-  if (xdg_output_ && xdg_output_->logical_position()) {
-    return *xdg_output_->logical_position();
-  }
-  return origin_;
+  return xdg_output_ && xdg_output_->IsReady()
+             ? xdg_output_->logical_position().value()
+             : origin_;
 }
 
 gfx::Size WaylandOutput::logical_size() const {
-  return xdg_output_ ? xdg_output_->logical_size() : gfx::Size();
+  return xdg_output_ && xdg_output_->IsReady() ? xdg_output_->logical_size()
+                                               : gfx::Size();
+}
+
+gfx::Size WaylandOutput::physical_size() const {
+  return physical_size_;
 }
 
 gfx::Insets WaylandOutput::insets() const {
-  return aura_output_ ? aura_output_->insets() : gfx::Insets();
+  return aura_output_ && aura_output_->IsReady() ? aura_output_->insets()
+                                                 : gfx::Insets();
 }
 
 const std::string& WaylandOutput::description() const {
-  return xdg_output_ ? xdg_output_->description() : description_;
+  // Description is an optional xdg_output event.
+  return xdg_output_ && xdg_output_->IsReady() &&
+                 !xdg_output_->description().empty()
+             ? xdg_output_->description()
+             : description_;
 }
 
 int64_t WaylandOutput::display_id() const {
-  return aura_output_ && aura_output_->display_id().has_value()
+  // For the non-aura case we map the global output "name" to the display_id.
+  return aura_output_ && aura_output_->IsReady()
              ? aura_output_->display_id().value()
              : output_id_;
 }
 
 const std::string& WaylandOutput::name() const {
-  return xdg_output_ ? xdg_output_->name() : name_;
+  // Name is an optional xdg_output event.
+  return xdg_output_ && xdg_output_->IsReady() && !xdg_output_->name().empty()
+             ? xdg_output_->name()
+             : name_;
 }
 
 bool WaylandOutput::IsReady() const {
@@ -190,20 +229,6 @@ void WaylandOutput::SetScaleFactorForTesting(float scale_factor) {
 }
 
 void WaylandOutput::TriggerDelegateNotifications() {
-  if (xdg_output_ && connection_->surface_submission_in_pixel_coordinates()) {
-    DCHECK(!physical_size_.IsEmpty());
-    const gfx::Size logical_size = xdg_output_->logical_size();
-    if (!logical_size.IsEmpty()) {
-      // We calculate the fractional scale factor from the long sides of the
-      // physical and logical sizes, since their orientations may be different.
-      const float max_physical_side =
-          std::max(physical_size_.width(), physical_size_.height());
-      const float max_logical_side =
-          std::max(logical_size.width(), logical_size.height());
-      scale_factor_ = max_physical_side / max_logical_side;
-    }
-  }
-
   // Wait until the all outputs receives enough information to generate display
   // information.
   if (!IsReady())
