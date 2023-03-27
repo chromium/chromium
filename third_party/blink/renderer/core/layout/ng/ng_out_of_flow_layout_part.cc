@@ -10,7 +10,6 @@
 #include "third_party/blink/renderer/core/layout/geometry/writing_mode_converter.h"
 #include "third_party/blink/renderer/core/layout/layout_block.h"
 #include "third_party/blink/renderer/core/layout/layout_box.h"
-#include "third_party/blink/renderer/core/layout/layout_flexible_box.h"
 #include "third_party/blink/renderer/core/layout/layout_inline.h"
 #include "third_party/blink/renderer/core/layout/layout_object.h"
 #include "third_party/blink/renderer/core/layout/ng/grid/ng_grid_layout_algorithm.h"
@@ -298,37 +297,9 @@ bool NGOutOfFlowLayoutPart::SweepLegacyCandidates(
     if (placed_objects.Contains(legacy_object)) {
       if (!performing_extra_legacy_check_ || !legacy_object->NeedsLayout())
         continue;
-      container_builder_->RemoveOldLegacyOOFFlexItem(*legacy_object);
     }
 
-    // Flex OOF children may have center alignment or similar, and in order
-    // to determine their static position correctly need to have a valid
-    // size first.
-    // We perform a pre-layout to correctly determine the static position.
-    // Copied from LayoutBlock::LayoutPositionedObject
-    // TODO(layout-dev): Remove this once LayoutFlexibleBox is removed.
     LayoutBox* layout_box = To<LayoutBox>(legacy_object);
-    if (layout_box->Parent()->IsFlexibleBox()) {
-      auto* parent = To<LayoutFlexibleBox>(layout_box->Parent());
-      if (parent->SetStaticPositionForPositionedLayout(*layout_box)) {
-        NGLogicalOutOfFlowPositionedNode candidate((NGBlockNode(layout_box)),
-                                                   NGLogicalStaticPosition());
-        NodeInfo node_info = SetupNodeInfo(candidate);
-        NodeToLayout node_to_layout = {
-            node_info, CalculateOffset(node_info, /* only_layout */ nullptr)};
-        LayoutOOFNode(node_to_layout,
-                      /* only_layout */ nullptr);
-        parent->SetStaticPositionForPositionedLayout(*layout_box);
-      }
-    }
-
-    // If we have a legacy OOF flex container, we'll allow some rocket science
-    // to take place, as an attempt to get things laid out in correct document
-    // order, or we might otherwise leave behind objects (OOF flex items)
-    // needing layout.
-    if (!has_legacy_flex_box_)
-      has_legacy_flex_box_ = layout_box->IsFlexibleBox();
-
     NGLogicalStaticPosition static_position =
         LayoutBoxUtils::ComputeStaticPositionFromLegacy(
             *layout_box,

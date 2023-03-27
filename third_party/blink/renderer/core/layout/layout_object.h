@@ -2963,13 +2963,7 @@ class CORE_EXPORT LayoutObject : public GarbageCollected<LayoutObject>,
 
   void Destroy();
 
-  // Virtual function helper for the new FlexibleBox Layout (display:
-  // -webkit-flex).
-  virtual bool IsFlexibleBox() const {
-    NOT_DESTROYED();
-    return false;
-  }
-
+  // TODO(1229581): Rename this function.
   virtual bool IsFlexibleBoxIncludingNG() const {
     NOT_DESTROYED();
     return false;

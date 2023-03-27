@@ -1732,20 +1732,11 @@ class CORE_EXPORT LayoutBox : public LayoutBoxModelObject {
   bool IsCustomItem() const;
   bool IsCustomItemShrinkToFit() const;
 
-  // TODO(dgrogan): Replace the rest of the calls to IsFlexItem with
-  // IsFlexItemIncludingNG when all the callsites can handle an item with an NG
-  // parent.
-  bool IsFlexItem() const {
-    NOT_DESTROYED();
-    return IsFlexItemCommon() && Parent()->IsFlexibleBox();
-  }
+  // TODO(1229581): Rename this function.
   bool IsFlexItemIncludingNG() const {
     NOT_DESTROYED();
-    return IsFlexItemCommon() && Parent()->IsFlexibleBoxIncludingNG();
-  }
-  bool IsFlexItemCommon() const {
-    NOT_DESTROYED();
-    return !IsInline() && !IsOutOfFlowPositioned() && Parent();
+    return !IsInline() && !IsOutOfFlowPositioned() && Parent() &&
+           Parent()->IsFlexibleBoxIncludingNG();
   }
 
   // TODO(1229581): Rename this function.

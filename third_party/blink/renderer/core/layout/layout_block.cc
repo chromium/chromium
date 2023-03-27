@@ -49,7 +49,6 @@
 #include "third_party/blink/renderer/core/layout/box_layout_extra_input.h"
 #include "third_party/blink/renderer/core/layout/hit_test_location.h"
 #include "third_party/blink/renderer/core/layout/hit_test_result.h"
-#include "third_party/blink/renderer/core/layout/layout_flexible_box.h"
 #include "third_party/blink/renderer/core/layout/layout_flow_thread.h"
 #include "third_party/blink/renderer/core/layout/layout_inline.h"
 #include "third_party/blink/renderer/core/layout/layout_multi_column_flow_thread.h"
@@ -60,6 +59,7 @@
 #include "third_party/blink/renderer/core/layout/layout_theme.h"
 #include "third_party/blink/renderer/core/layout/layout_view.h"
 #include "third_party/blink/renderer/core/layout/line/inline_text_box.h"
+#include "third_party/blink/renderer/core/layout/ng/flex/layout_ng_flexible_box.h"
 #include "third_party/blink/renderer/core/layout/ng/legacy_layout_tree_walking.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_constraint_space.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_length_utils.h"
@@ -962,30 +962,6 @@ void LayoutBlock::LayoutPositionedObject(LayoutBox* positioned_object,
   if (positioned_object->NeedsLayout())
     positioned_object->UpdateLayout();
 
-  LayoutObject* parent = positioned_object->Parent();
-  bool layout_changed = false;
-  if ((parent->IsLayoutNGFlexibleBox() &&
-       !positioned_object->IsLayoutNGObject() &&
-       LayoutFlexibleBox::SetStaticPositionForChildInFlexNGContainer(
-           *positioned_object, To<LayoutBlock>(parent))) ||
-      (parent->IsFlexibleBox() &&
-       To<LayoutFlexibleBox>(parent)->SetStaticPositionForPositionedLayout(
-           *positioned_object))) {
-    // The static position of an abspos child of a flexbox depends on its size
-    // (for example, they can be centered). So we may have to reposition the
-    // item after layout.
-    // TODO(cbiesinger): We could probably avoid a layout here and just
-    // reposition?
-    positioned_object->ForceLayout();
-    layout_changed = true;
-  }
-
-  // Lay out again if our estimate was wrong.
-  if (!layout_changed && needs_block_direction_location_set_before_layout &&
-      logical_top_estimate != LogicalTopForChild(*positioned_object)) {
-    positioned_object->ForceLayout();
-  }
-
   if (is_paginated)
     UpdateFragmentationInfoForChild(*positioned_object);
 }
@@ -1600,9 +1576,7 @@ MinMaxSizes LayoutBlock::PreferredLogicalWidths() const {
   // values for width.
   const ComputedStyle& style_to_use = StyleRef();
   if (!IsTableCell() && style_to_use.LogicalWidth().IsFixed() &&
-      style_to_use.LogicalWidth().Value() >= 0 &&
-      !(IsFlexItemCommon() && Parent()->StyleRef().IsDeprecatedWebkitBox() &&
-        !style_to_use.LogicalWidth().IntValue())) {
+      style_to_use.LogicalWidth().Value() >= 0) {
     sizes = AdjustBorderBoxLogicalWidthForBoxSizing(
         LayoutUnit(style_to_use.LogicalWidth().Value()));
   } else {
@@ -2268,8 +2242,8 @@ LayoutBlock* LayoutBlock::CreateAnonymousWithParentAndDisplay(
 
   LayoutBlock* layout_block;
   if (new_display == EDisplay::kFlex) {
-    layout_block = LayoutObjectFactory::CreateFlexibleBox(parent->GetDocument(),
-                                                          *new_style, legacy);
+    layout_block =
+        MakeGarbageCollected<LayoutNGFlexibleBox>(/* element */ nullptr);
   } else if (new_display == EDisplay::kGrid) {
     layout_block = MakeGarbageCollected<LayoutNGGrid>(/* element */ nullptr);
   } else if (new_display == EDisplay::kBlockMath) {
@@ -2475,11 +2449,7 @@ LayoutUnit LayoutBlock::AvailableLogicalHeightForPercentageComputation() const {
        (!style.LogicalTop().IsAuto() && !style.LogicalBottom().IsAuto()));
 
   LayoutUnit stretched_flex_height(-1);
-  if (IsFlexItem()) {
-    const auto* flex_box = To<LayoutFlexibleBox>(Parent());
-    if (flex_box->UseOverrideLogicalHeightForPerentageResolution(*this))
-      stretched_flex_height = OverrideContentLogicalHeight();
-  } else if (HasOverrideLogicalHeight() && IsOverrideLogicalHeightDefinite()) {
+  if (HasOverrideLogicalHeight() && IsOverrideLogicalHeightDefinite()) {
     stretched_flex_height = OverrideContentLogicalHeight();
   }
   if (stretched_flex_height != LayoutUnit(-1)) {

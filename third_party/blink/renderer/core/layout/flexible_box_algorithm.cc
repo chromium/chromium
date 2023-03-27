@@ -32,7 +32,6 @@
 
 #include "third_party/blink/renderer/core/frame/web_feature.h"
 #include "third_party/blink/renderer/core/layout/layout_box.h"
-#include "third_party/blink/renderer/core/layout/layout_flexible_box.h"
 #include "third_party/blink/renderer/core/layout/min_max_sizes.h"
 #include "third_party/blink/renderer/core/layout/ng/flex/ng_flex_line.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_box_fragment.h"
@@ -77,7 +76,6 @@ ContentDistributionType BoxPackToContentDistribution(EBoxPack box_pack) {
 }  // namespace
 
 FlexItem::FlexItem(const FlexLayoutAlgorithm* algorithm,
-                   LayoutBox* box,
                    const ComputedStyle& style,
                    LayoutUnit flex_base_content_size,
                    MinMaxSizes min_max_main_sizes,
@@ -91,7 +89,6 @@ FlexItem::FlexItem(const FlexLayoutAlgorithm* algorithm,
                    bool depends_on_min_max_sizes)
     : algorithm_(algorithm),
       line_number_(0),
-      box_(box),
       style_(style),
       flex_base_content_size_(flex_base_content_size),
       min_max_main_sizes_(min_max_main_sizes),
@@ -182,13 +179,6 @@ LayoutUnit FlexItem::CrossAxisMarginExtent() const {
 
 LayoutUnit FlexItem::MarginBoxAscent(bool is_last_baseline,
                                      bool is_wrap_reverse) const {
-  if (box_) {
-    LayoutUnit ascent(box_->FirstLineBoxBaseline());
-    if (ascent == -1)
-      ascent = cross_axis_size_;
-    return ascent + FlowAwareMarginBefore();
-  }
-
   DCHECK(layout_result_);
   NGBoxFragment baseline_fragment(
       baseline_writing_direction_,
@@ -294,17 +284,6 @@ void FlexItem::ComputeStretchedSize() {
   LayoutUnit stretched_size =
       std::max(cross_axis_border_padding_,
                Line()->cross_axis_extent_ - CrossAxisMarginExtent());
-  if (box_) {
-    if (MainAxisIsInlineAxis() && style_.LogicalHeight().IsAuto()) {
-      cross_axis_size_ = box_->ConstrainLogicalHeightByMinMax(
-          stretched_size, box_->IntrinsicContentLogicalHeight());
-    } else if (!MainAxisIsInlineAxis() && style_.LogicalWidth().IsAuto()) {
-      const auto* flexbox = To<LayoutFlexibleBox>(box_->Parent());
-      cross_axis_size_ = box_->ConstrainLogicalWidthByMinMax(
-          stretched_size, flexbox->CrossAxisContentExtent(), flexbox);
-    }
-    return;
-  }
 
   if ((MainAxisIsInlineAxis() && style_.LogicalHeight().IsAuto()) ||
       (!MainAxisIsInlineAxis() && style_.LogicalWidth().IsAuto())) {
@@ -314,7 +293,6 @@ void FlexItem::ComputeStretchedSize() {
 }
 
 void FlexItem::Trace(Visitor* visitor) const {
-  visitor->Trace(box_);
   visitor->Trace(ng_input_node_);
   visitor->Trace(layout_result_);
 }

@@ -66,7 +66,6 @@
 #include "third_party/blink/renderer/core/layout/hit_test_result.h"
 #include "third_party/blink/renderer/core/layout/layout_embedded_content.h"
 #include "third_party/blink/renderer/core/layout/layout_fieldset.h"
-#include "third_party/blink/renderer/core/layout/layout_flexible_box.h"
 #include "third_party/blink/renderer/core/layout/layout_inline.h"
 #include "third_party/blink/renderer/core/layout/layout_list_marker.h"
 #include "third_party/blink/renderer/core/layout/layout_multi_column_flow_thread.h"
@@ -4408,18 +4407,6 @@ bool LayoutBox::SizesLogicalWidthToFitContent(
       return true;
   }
 
-  // Flexible horizontal boxes lay out children at their intrinsic widths. Also
-  // vertical boxes that don't stretch their kids lay out their children at
-  // their intrinsic widths.
-  // FIXME: Think about writing-mode here.
-  // https://bugs.webkit.org/show_bug.cgi?id=46473
-  if ((Parent()->StyleRef().IsDeprecatedWebkitBox() &&
-       Parent()->IsFlexibleBox()) &&
-      (Parent()->StyleRef().BoxOrient() == EBoxOrient::kHorizontal ||
-       Parent()->StyleRef().BoxAlign() != EBoxAlignment::kStretch)) {
-    return true;
-  }
-
   // Button, input, select, textarea, and legend treat width value of 'auto' as
   // 'intrinsic' unless it's in a stretching column flexbox.
   // FIXME: Think about writing-mode here.
@@ -5230,11 +5217,6 @@ LayoutUnit LayoutBox::ComputeReplacedLogicalHeightUsing(
       auto* block = DynamicTo<LayoutBlock>(cb);
       if (block) {
         block->AddPercentHeightDescendant(const_cast<LayoutBox*>(this));
-        if (block->IsFlexItem()) {
-          const auto* flex_box = To<LayoutFlexibleBox>(block->Parent());
-          if (flex_box->UseOverrideLogicalHeightForPerentageResolution(*block))
-            stretched_height = block->OverrideContentLogicalHeight();
-        }
       }
 
       LayoutUnit available_height;
@@ -5319,12 +5301,8 @@ LayoutUnit LayoutBox::AvailableLogicalHeightUsing(
   }
 
   if (IsFlexItemIncludingNG()) {
-    if (IsFlexItem()) {
-      const auto& flex_box = To<LayoutFlexibleBox>(*Parent());
-      if (flex_box.UseOverrideLogicalHeightForPerentageResolution(*this))
-        return OverrideContentLogicalHeight();
-    } else if (HasOverrideContainingBlockContentLogicalWidth() &&
-               IsOrthogonalWritingModeRoot()) {
+    if (HasOverrideContainingBlockContentLogicalWidth() &&
+        IsOrthogonalWritingModeRoot()) {
       return OverrideContainingBlockContentLogicalWidth();
     } else if (HasOverrideLogicalHeight() &&
                IsOverrideLogicalHeightDefinite()) {

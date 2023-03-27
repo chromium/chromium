@@ -46,6 +46,7 @@
 #include "third_party/blink/renderer/core/layout/layout_block_flow.h"
 #include "third_party/blink/renderer/core/layout/layout_object_factory.h"
 #include "third_party/blink/renderer/core/layout/layout_theme.h"
+#include "third_party/blink/renderer/core/layout/ng/flex/layout_ng_flexible_box.h"
 #include "ui/base/ui_base_features.h"
 
 namespace blink {
@@ -317,7 +318,7 @@ HTMLInputElement* SliderContainerElement::HostInput() const {
 LayoutObject* SliderContainerElement::CreateLayoutObject(
     const ComputedStyle& style,
     LegacyLayout legacy) {
-  return LayoutObjectFactory::CreateFlexibleBox(*this, style, legacy);
+  return MakeGarbageCollected<LayoutNGFlexibleBox>(this);
 }
 
 void SliderContainerElement::DefaultEventHandler(Event& event) {

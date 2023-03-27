@@ -50,7 +50,6 @@ class FlexItem;
 class FlexLine;
 class FlexLayoutAlgorithm;
 class NGFlexLayoutAlgorithm;
-class LayoutBox;
 struct MinMaxSizes;
 struct NGFlexLine;
 
@@ -68,52 +67,6 @@ enum class TransformedWritingMode {
 
 typedef HeapVector<FlexItem, 8> FlexItemVector;
 
-class AutoClearOverrideLogicalHeight {
-  STACK_ALLOCATED();
-
- public:
-  explicit AutoClearOverrideLogicalHeight(LayoutBox* box)
-      : box_(box), old_override_height_(-1) {
-    if (box_ && box_->HasOverrideLogicalHeight()) {
-      old_override_height_ = box_->OverrideLogicalHeight();
-      box_->ClearOverrideLogicalHeight();
-    }
-  }
-  ~AutoClearOverrideLogicalHeight() {
-    if (old_override_height_ != LayoutUnit(-1)) {
-      DCHECK(box_);
-      box_->SetOverrideLogicalHeight(old_override_height_);
-    }
-  }
-
- private:
-  LayoutBox* box_;
-  LayoutUnit old_override_height_;
-};
-
-class AutoClearOverrideLogicalWidth {
-  STACK_ALLOCATED();
-
- public:
-  explicit AutoClearOverrideLogicalWidth(LayoutBox* box)
-      : box_(box), old_override_width_(-1) {
-    if (box_ && box_->HasOverrideLogicalWidth()) {
-      old_override_width_ = box_->OverrideLogicalWidth();
-      box_->ClearOverrideLogicalWidth();
-    }
-  }
-  ~AutoClearOverrideLogicalWidth() {
-    if (old_override_width_ != LayoutUnit(-1)) {
-      DCHECK(box_);
-      box_->SetOverrideLogicalWidth(old_override_width_);
-    }
-  }
-
- private:
-  LayoutBox* box_;
-  LayoutUnit old_override_width_;
-};
-
 class FlexItem {
   DISALLOW_NEW();
 
@@ -125,7 +78,6 @@ class FlexItem {
   //   border/padding.
   //   |min_max_cross_sizes| does include cross_axis_border_padding.
   FlexItem(const FlexLayoutAlgorithm*,
-           LayoutBox*,
            const ComputedStyle& style,
            LayoutUnit flex_base_content_size,
            MinMaxSizes min_max_main_sizes,
@@ -200,7 +152,6 @@ class FlexItem {
 
   const FlexLayoutAlgorithm* algorithm_;
   wtf_size_t line_number_;
-  Member<LayoutBox> box_;
   const ComputedStyle& style_;
   const LayoutUnit flex_base_content_size_;
   const MinMaxSizes min_max_main_sizes_;

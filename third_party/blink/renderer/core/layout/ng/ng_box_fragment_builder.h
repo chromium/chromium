@@ -236,14 +236,6 @@ class CORE_EXPORT NGBoxFragmentBuilder final
                                    const NGLogicalStaticPosition&,
                                    const LayoutInline* inline_container);
 
-  // Remove the fragment previously generated for an out-of-flow positioned flex
-  // item inside an out-of-flow legacy flex container. This is a work-around for
-  // OOFs being laid out out-of-document-order, which is an issue with the
-  // legacy engine (although it's not known to cause any other actual problems
-  // than this). We'll call this method to correct a document-out-of-order
-  // issue.
-  void RemoveOldLegacyOOFFlexItem(const LayoutObject&);
-
   // Before layout we'll determine whether we can tell for sure that the node
   // (or what's left of it to lay out, in case we've already broken) will fit in
   // the current fragmentainer. If this is the case, we'll know that any

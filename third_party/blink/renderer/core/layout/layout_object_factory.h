@@ -46,9 +46,6 @@ class LayoutObjectFactory {
                                           const ComputedStyle&,
                                           LegacyLayout);
   static LayoutView* CreateView(Document&, const ComputedStyle&);
-  static LayoutBlock* CreateFlexibleBox(Node&,
-                                        const ComputedStyle&,
-                                        LegacyLayout);
   static LayoutBlock* CreateMath(Node&, const ComputedStyle&, LegacyLayout);
   static LayoutBlock* CreateCustom(Node&, const ComputedStyle&, LegacyLayout);
   static LayoutObject* CreateListMarker(Node&,

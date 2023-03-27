@@ -81,7 +81,6 @@
 #include "third_party/blink/renderer/core/layout/custom_scrollbar.h"
 #include "third_party/blink/renderer/core/layout/layout_custom_scrollbar_part.h"
 #include "third_party/blink/renderer/core/layout/layout_embedded_content.h"
-#include "third_party/blink/renderer/core/layout/layout_flexible_box.h"
 #include "third_party/blink/renderer/core/layout/layout_theme.h"
 #include "third_party/blink/renderer/core/layout/layout_view.h"
 #include "third_party/blink/renderer/core/layout/ng/legacy_layout_tree_walking.h"
@@ -1082,11 +1081,6 @@ void PaintLayerScrollableArea::UpdateAfterLayout() {
           }
           in_overflow_relayout_ = false;
           scrollbar_manager_.DestroyDetachedScrollbars();
-        }
-        LayoutObject* parent = GetLayoutBox()->Parent();
-        if (parent && parent->IsFlexibleBox()) {
-          To<LayoutFlexibleBox>(parent)->ClearCachedMainSizeForChild(
-              *GetLayoutBox());
         }
       }
     }

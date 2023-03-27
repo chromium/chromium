@@ -12,7 +12,6 @@
 #include "third_party/blink/renderer/core/layout/layout_block_flow.h"
 #include "third_party/blink/renderer/core/layout/layout_counter.h"
 #include "third_party/blink/renderer/core/layout/layout_fieldset.h"
-#include "third_party/blink/renderer/core/layout/layout_flexible_box.h"
 #include "third_party/blink/renderer/core/layout/layout_frame_set.h"
 #include "third_party/blink/renderer/core/layout/layout_inside_list_marker.h"
 #include "third_party/blink/renderer/core/layout/layout_list_item.h"
@@ -130,13 +129,6 @@ LayoutBlockFlow* LayoutObjectFactory::CreateBlockFlow(
 LayoutView* LayoutObjectFactory::CreateView(Document& document,
                                             const ComputedStyle& style) {
   return MakeGarbageCollected<LayoutNGView>(&document);
-}
-
-LayoutBlock* LayoutObjectFactory::CreateFlexibleBox(Node& node,
-                                                    const ComputedStyle& style,
-                                                    LegacyLayout legacy) {
-  return CreateObject<LayoutBlock, LayoutNGFlexibleBox, LayoutFlexibleBox>(
-      node, legacy);
 }
 
 LayoutBlock* LayoutObjectFactory::CreateMath(Node& node,
