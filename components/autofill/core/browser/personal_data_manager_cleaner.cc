@@ -96,12 +96,10 @@ void PersonalDataManagerCleaner::SyncStarted(syncer::ModelType model_type) {
   }
 
   // Run deferred autofill address profile startup code.
-  // See: PersonalDataManager::OnSyncServiceInitialized
   if (model_type == syncer::AUTOFILL_PROFILE)
     ApplyAddressFixesAndCleanups();
 
   // Run deferred credit card startup code.
-  // See: PersonalDataManager::OnSyncServiceInitialized
   if (model_type == syncer::AUTOFILL_WALLET_DATA)
     ApplyCardFixesAndCleanups();
 }

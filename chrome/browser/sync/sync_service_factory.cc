@@ -12,7 +12,6 @@
 #include "base/no_destructor.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
-#include "chrome/browser/autofill/personal_data_manager_factory.h"
 #include "chrome/browser/bookmarks/bookmark_model_factory.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/consent_auditor/consent_auditor_factory.h"
@@ -174,11 +173,6 @@ std::unique_ptr<KeyedService> BuildSyncService(
       std::make_unique<syncer::SyncServiceImpl>(std::move(init_params));
   sync_service->Initialize();
 
-  // Hook |sync_service| into PersonalDataManager (a circular dependency).
-  autofill::PersonalDataManager* pdm =
-      autofill::PersonalDataManagerFactory::GetForProfile(profile);
-  pdm->OnSyncServiceInitialized(sync_service.get());
-
   // Notify PasswordStore of complete initialisation to resolve a circular
   // dependency.
   auto password_store = PasswordStoreFactory::GetForProfile(
@@ -230,7 +224,6 @@ SyncServiceFactory::SyncServiceFactory()
   // actually plumbed in ChromeSyncClient, which this factory constructs.
   DependsOn(AboutSigninInternalsFactory::GetInstance());
   DependsOn(AccountPasswordStoreFactory::GetInstance());
-  DependsOn(autofill::PersonalDataManagerFactory::GetInstance());
   DependsOn(BookmarkModelFactory::GetInstance());
   DependsOn(BookmarkSyncServiceFactory::GetInstance());
   DependsOn(BookmarkUndoServiceFactory::GetInstance());

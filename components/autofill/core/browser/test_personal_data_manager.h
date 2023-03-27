@@ -40,7 +40,6 @@ class TestPersonalDataManager : public PersonalDataManager {
   // PersonalDataManager overrides.  These functions are overridden as needed
   // for various tests, whether to skip calls to uncreated databases/services,
   // or to make things easier in general to toggle.
-  void OnSyncServiceInitialized(syncer::SyncService* sync_service) override;
   AutofillSyncSigninState GetSyncSigninState() const override;
   void RecordUseOf(absl::variant<const AutofillProfile*, const CreditCard*>
                        profile_or_credit_card) override;
@@ -136,8 +135,6 @@ class TestPersonalDataManager : public PersonalDataManager {
     return num_times_save_upi_id_called_;
   }
 
-  bool sync_service_initialized() const { return sync_service_initialized_; }
-
   void SetAutofillCreditCardEnabled(bool autofill_credit_card_enabled) {
     autofill_credit_card_enabled_ = autofill_credit_card_enabled;
   }
@@ -184,7 +181,6 @@ class TestPersonalDataManager : public PersonalDataManager {
   bool sync_feature_enabled_ = false;
   AutofillSyncSigninState sync_and_signin_state_ =
       AutofillSyncSigninState::kSignedInAndSyncFeatureEnabled;
-  bool sync_service_initialized_ = false;
   CoreAccountInfo account_info_;
 
   TestInMemoryStrikeDatabase inmemory_strike_database_;

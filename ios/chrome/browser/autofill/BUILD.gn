@@ -58,6 +58,7 @@ source_set("autofill") {
     "//ios/chrome/browser/paths",
     "//ios/chrome/browser/shared/ui/util:util_swift",
     "//ios/chrome/browser/signin",
+    "//ios/chrome/browser/sync",
     "//ios/chrome/browser/ui/image_util",
     "//ios/chrome/browser/webdata_services",
     "//ios/web/common",

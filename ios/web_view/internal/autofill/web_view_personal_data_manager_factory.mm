@@ -13,6 +13,7 @@
 #include "components/keyed_service/ios/browser_state_dependency_manager.h"
 #include "ios/web_view/internal/app/application_context.h"
 #include "ios/web_view/internal/signin/web_view_identity_manager_factory.h"
+#import "ios/web_view/internal/sync/web_view_sync_service_factory.h"
 #include "ios/web_view/internal/web_view_browser_state.h"
 #include "ios/web_view/internal/webdata_services/web_view_web_data_service_wrapper_factory.h"
 
@@ -43,6 +44,7 @@ WebViewPersonalDataManagerFactory::WebViewPersonalDataManagerFactory()
           BrowserStateDependencyManager::GetInstance()) {
   DependsOn(WebViewIdentityManagerFactory::GetInstance());
   DependsOn(WebViewWebDataServiceWrapperFactory::GetInstance());
+  DependsOn(WebViewSyncServiceFactory::GetInstance());
 }
 
 WebViewPersonalDataManagerFactory::~WebViewPersonalDataManagerFactory() {}
@@ -61,11 +63,13 @@ WebViewPersonalDataManagerFactory::BuildServiceInstanceFor(
   auto account_db =
       WebViewWebDataServiceWrapperFactory::GetAutofillWebDataForAccount(
           browser_state, ServiceAccessType::EXPLICIT_ACCESS);
+  auto* sync_service =
+      WebViewSyncServiceFactory::GetForBrowserState(browser_state);
   service->Init(
       profile_db, account_db, browser_state->GetPrefs(),
       ApplicationContext::GetInstance()->GetLocalState(),
       WebViewIdentityManagerFactory::GetForBrowserState(browser_state),
-      /*history_service=*/nullptr, /*strike_database=*/nullptr,
+      /*history_service=*/nullptr, sync_service, /*strike_database=*/nullptr,
       /*image_fetcher=*/nullptr, browser_state->IsOffTheRecord());
   return service;
 }

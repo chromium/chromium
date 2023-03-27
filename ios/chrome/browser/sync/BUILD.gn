@@ -60,7 +60,6 @@ source_set("sync") {
     "//components/version_info",
     "//google_apis",
     "//ios/chrome/browser/application_context",
-    "//ios/chrome/browser/autofill",
     "//ios/chrome/browser/bookmarks",
     "//ios/chrome/browser/browser_state",
     "//ios/chrome/browser/complex_tasks",

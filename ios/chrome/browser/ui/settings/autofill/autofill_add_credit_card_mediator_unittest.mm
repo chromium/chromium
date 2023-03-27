@@ -37,7 +37,7 @@ class AutofillAddCreditCardMediatorTest : public PlatformTest {
     personal_data_manager_ =
         autofill::PersonalDataManagerFactory::GetForBrowserState(
             chrome_browser_state_.get());
-    personal_data_manager_->OnSyncServiceInitialized(nullptr);
+    personal_data_manager_->SetSyncServiceForTest(nullptr);
 
     if (base::FeatureList::IsEnabled(
             autofill::features::kAutofillUseAlternativeStateNameMap)) {

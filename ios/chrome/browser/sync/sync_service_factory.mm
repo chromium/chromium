@@ -17,7 +17,6 @@
 #import "components/sync/driver/sync_service.h"
 #import "components/sync/driver/sync_service_impl.h"
 #import "ios/chrome/browser/application_context/application_context.h"
-#import "ios/chrome/browser/autofill/personal_data_manager_factory.h"
 #import "ios/chrome/browser/bookmarks/account_bookmark_model_factory.h"
 #import "ios/chrome/browser/bookmarks/account_bookmark_sync_service_factory.h"
 #import "ios/chrome/browser/bookmarks/local_or_syncable_bookmark_model_factory.h"
@@ -94,7 +93,6 @@ SyncServiceFactory::SyncServiceFactory()
   // The SyncService depends on various SyncableServices being around
   // when it is shut down.  Specify those dependencies here to build the proper
   // destruction order.
-  DependsOn(autofill::PersonalDataManagerFactory::GetInstance());
   DependsOn(ChromeAccountManagerServiceFactory::GetInstance());
   DependsOn(ConsentAuditorFactory::GetInstance());
   DependsOn(DeviceInfoSyncServiceFactory::GetInstance());
@@ -156,11 +154,6 @@ std::unique_ptr<KeyedService> SyncServiceFactory::BuildServiceInstanceFor(
   auto sync_service =
       std::make_unique<syncer::SyncServiceImpl>(std::move(init_params));
   sync_service->Initialize();
-
-  // Hook `sync_service` into PersonalDataManager (a circular dependency).
-  autofill::PersonalDataManager* pdm =
-      autofill::PersonalDataManagerFactory::GetForBrowserState(browser_state);
-  pdm->OnSyncServiceInitialized(sync_service.get());
 
   return sync_service;
 }

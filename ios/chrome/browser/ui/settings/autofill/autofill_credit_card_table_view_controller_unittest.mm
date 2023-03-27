@@ -44,7 +44,7 @@ class AutofillCreditCardTableViewControllerTest
     // Set circular SyncService dependency to null.
     autofill::PersonalDataManagerFactory::GetForBrowserState(
         chrome_browser_state_.get())
-        ->OnSyncServiceInitialized(nullptr);
+        ->SetSyncServiceForTest(nullptr);
   }
 
   ChromeTableViewController* InstantiateController() override {

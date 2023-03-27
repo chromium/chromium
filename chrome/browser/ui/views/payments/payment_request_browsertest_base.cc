@@ -110,7 +110,7 @@ void PaymentRequestBrowserTestBase::SetUpOnMainThread() {
       base::Unretained(this)));
 
   // Set a test sync service so that all types of cards work.
-  GetDataManager()->OnSyncServiceInitialized(&sync_service_);
+  GetDataManager()->SetSyncServiceForTest(&sync_service_);
 
   // Register all prefs with our pref testing service.
   payments::RegisterProfilePrefs(prefs_.registry());

@@ -4854,14 +4854,13 @@ TEST_F(PersonalDataManagerTest, LogStoredCreditCardMetrics) {
 // TODO(crbug.com/1052397): Revisit the macro expression once build flag switch
 // of lacros-chrome is complete.
 #if !(BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS))
-// Test that calling OnSyncServiceInitialized with a null sync service remasks
-// full server cards.
+// Test that setting a null sync service remasks full server cards.
 TEST_F(PersonalDataManagerTest, OnSyncServiceInitialized_NoSyncService) {
   base::HistogramTester histogram_tester;
   SetUpThreeCardTypes();
 
-  // Call OnSyncServiceInitialized with no sync service.
-  personal_data_->OnSyncServiceInitialized(nullptr);
+  // Set no sync service.
+  personal_data_->SetSyncServiceForTest(nullptr);
   WaitForOnPersonalDataChanged();
 
   // Check that cards were masked and other were untouched.
@@ -4873,16 +4872,15 @@ TEST_F(PersonalDataManagerTest, OnSyncServiceInitialized_NoSyncService) {
     EXPECT_TRUE(card->record_type() == CreditCard::MASKED_SERVER_CARD);
 }
 
-// Test that calling OnSyncServiceInitialized with a sync service in auth error
-// remasks full server cards.
+// Test that setting a sync service in auth error remasks full server cards.
 TEST_F(PersonalDataManagerTest, OnSyncServiceInitialized_NotActiveSyncService) {
   base::HistogramTester histogram_tester;
   SetUpThreeCardTypes();
 
-  // Call OnSyncServiceInitialized with a sync service in auth error.
+  // Set a sync service in auth error.
   syncer::TestSyncService sync_service;
   sync_service.SetPersistentAuthError();
-  personal_data_->OnSyncServiceInitialized(&sync_service);
+  personal_data_->SetSyncServiceForTest(&sync_service);
   WaitForOnPersonalDataChanged();
 
   // Remove the auth error to be able to get the server cards.
@@ -4897,7 +4895,7 @@ TEST_F(PersonalDataManagerTest, OnSyncServiceInitialized_NotActiveSyncService) {
     EXPECT_TRUE(card->record_type() == CreditCard::MASKED_SERVER_CARD);
 
   // Call OnSyncShutdown to ensure removing observer added by
-  // OnSyncServiceInitialized.
+  // SetSyncServiceForTest.
   personal_data_->OnSyncShutdown(&sync_service);
 }
 #endif  // !(BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS))
@@ -5468,7 +5466,7 @@ TEST_F(PersonalDataManagerSyncTransportModeTest,
   EXPECT_TRUE(personal_data_->ShouldShowCardsFromAccountOption());
 
   // Set a null sync service. Check that the function now returns false.
-  personal_data_->OnSyncServiceInitialized(nullptr);
+  personal_data_->SetSyncServiceForTest(nullptr);
   EXPECT_FALSE(personal_data_->ShouldShowCardsFromAccountOption());
 }
 #else   // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS) &&
@@ -5541,7 +5539,7 @@ TEST_F(PersonalDataManagerSyncTransportModeTest,
   EXPECT_FALSE(personal_data_->ShouldShowCardsFromAccountOption());
 
   // Set a null sync service. Check that the function still returns false.
-  personal_data_->OnSyncServiceInitialized(nullptr);
+  personal_data_->SetSyncServiceForTest(nullptr);
   EXPECT_FALSE(personal_data_->ShouldShowCardsFromAccountOption());
 }
 #endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS) &&

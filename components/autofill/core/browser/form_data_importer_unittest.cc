@@ -508,11 +508,11 @@ class FormDataImporterTestBase {
         /*local_state=*/prefs_.get(),
         /*identity_manager=*/identity_test_env_.identity_manager(),
         /*history_service=*/nullptr,
+        /*sync_service=*/nullptr,
         /*strike_database=*/nullptr,
         /*image_fetcher=*/nullptr,
         /*is_off_the_record=*/(user_mode == USER_MODE_INCOGNITO));
     personal_data_manager_->AddObserver(&personal_data_observer_);
-    personal_data_manager_->OnSyncServiceInitialized(nullptr);
 
     WaitForOnPersonalDataChanged();
 
@@ -4493,13 +4493,13 @@ TEST_F(FormDataImporterNonParameterizedTest,
   // We need a sync service so that
   // LocalCardMigrationManager::ShouldOfferLocalCardMigration() does not crash.
   syncer::TestSyncService sync_service;
-  personal_data_manager_->OnSyncServiceInitialized(&sync_service);
+  personal_data_manager_->SetSyncServiceForTest(&sync_service);
 
   EXPECT_FALSE(form_data_importer().ProcessCreditCardImportCandidate(
       *form_structure, credit_card_import_candidate, extracted_upi_id,
       /*payment_methods_autofill_enabled=*/true,
       /*is_credit_card_upstream_enabled=*/true));
-  personal_data_manager_->OnSyncServiceInitialized(nullptr);
+  personal_data_manager_->SetSyncServiceForTest(nullptr);
 }
 
 #if !BUILDFLAG(IS_IOS)
@@ -4524,7 +4524,7 @@ TEST_F(FormDataImporterNonParameterizedTest,
   // LocalCardMigrationManager::ShouldOfferLocalCardMigration() does not
   // crash.
   syncer::TestSyncService sync_service;
-  personal_data_manager_->OnSyncServiceInitialized(&sync_service);
+  personal_data_manager_->SetSyncServiceForTest(&sync_service);
 
   EXPECT_CALL(*virtual_card_enrollment_manager_,
               InitVirtualCardEnroll(_, VirtualCardEnrollmentSource::kDownstream,
@@ -4545,7 +4545,7 @@ TEST_F(FormDataImporterNonParameterizedTest,
       /*payment_methods_autofill_enabled=*/true,
       /*is_credit_card_upstream_enabled=*/true));
 
-  personal_data_manager_->OnSyncServiceInitialized(nullptr);
+  personal_data_manager_->SetSyncServiceForTest(nullptr);
 }
 #endif
 

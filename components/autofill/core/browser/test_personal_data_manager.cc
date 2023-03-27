@@ -17,11 +17,6 @@ TestPersonalDataManager::TestPersonalDataManager()
 
 TestPersonalDataManager::~TestPersonalDataManager() = default;
 
-void TestPersonalDataManager::OnSyncServiceInitialized(
-    syncer::SyncService* sync_service) {
-  sync_service_initialized_ = true;
-}
-
 AutofillSyncSigninState TestPersonalDataManager::GetSyncSigninState() const {
   return sync_and_signin_state_;
 }

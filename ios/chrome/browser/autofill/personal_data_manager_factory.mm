@@ -20,6 +20,7 @@
 #import "ios/chrome/browser/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/history/history_service_factory.h"
 #import "ios/chrome/browser/signin/identity_manager_factory.h"
+#import "ios/chrome/browser/sync/sync_service_factory.h"
 #import "ios/chrome/browser/webdata_services/web_data_service_factory.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
@@ -62,6 +63,7 @@ PersonalDataManagerFactory::PersonalDataManagerFactory()
   DependsOn(IdentityManagerFactory::GetInstance());
   DependsOn(ios::HistoryServiceFactory::GetInstance());
   DependsOn(ios::WebDataServiceFactory::GetInstance());
+  DependsOn(SyncServiceFactory::GetInstance());
 }
 
 PersonalDataManagerFactory::~PersonalDataManagerFactory() = default;
@@ -84,16 +86,15 @@ PersonalDataManagerFactory::BuildServiceInstanceFor(
       chrome_browser_state, ServiceAccessType::EXPLICIT_ACCESS);
   auto* strike_database =
       StrikeDatabaseFactory::GetForBrowserState(chrome_browser_state);
+  auto* sync_service =
+      SyncServiceFactory::GetForBrowserState(chrome_browser_state);
 
   service->Init(
       local_storage, account_storage, chrome_browser_state->GetPrefs(),
       GetApplicationContext()->GetLocalState(),
       IdentityManagerFactory::GetForBrowserState(chrome_browser_state),
-      history_service, strike_database, /*image_fetcher=*/nullptr,
-      chrome_browser_state->IsOffTheRecord());
-
-  if (!syncer::IsSyncAllowedByFlag())
-    service->OnSyncServiceInitialized(nullptr);
+      history_service, sync_service, strike_database,
+      /*image_fetcher=*/nullptr, chrome_browser_state->IsOffTheRecord());
 
   return service;
 }

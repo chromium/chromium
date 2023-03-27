@@ -58,7 +58,7 @@ class AutofillProfileTableViewControllerTest
     // Set circular SyncService dependency to null.
     autofill::PersonalDataManagerFactory::GetForBrowserState(
         chrome_browser_state_.get())
-        ->OnSyncServiceInitialized(nullptr);
+        ->SetSyncServiceForTest(nullptr);
   }
 
   ChromeTableViewController* InstantiateController() override {
@@ -84,7 +84,7 @@ class AutofillProfileTableViewControllerTest
           ->alternative_state_name_map_updater_for_testing()
           ->set_local_state_for_testing(local_state_.Get());
     }
-    personal_data_manager->OnSyncServiceInitialized(nullptr);
+    personal_data_manager->SetSyncServiceForTest(nullptr);
     PersonalDataManagerFinishedProfileTasksWaiter waiter(personal_data_manager);
 
     autofill::AutofillProfile autofill_profile(base::GenerateGUID(), origin);
