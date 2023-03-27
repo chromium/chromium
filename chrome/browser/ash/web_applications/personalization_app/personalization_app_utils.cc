@@ -6,7 +6,7 @@
 
 #include "base/notreached.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
-#include "chrome/browser/ash/wallpaper_handlers/backdrop_fetcher_delegate.h"
+#include "chrome/browser/ash/wallpaper_handlers/wallpaper_fetcher_delegate.h"
 #include "chrome/browser/ash/web_applications/personalization_app/personalization_app_ambient_provider_impl.h"
 #include "chrome/browser/ash/web_applications/personalization_app/personalization_app_keyboard_backlight_provider_impl.h"
 #include "chrome/browser/ash/web_applications/personalization_app/personalization_app_theme_provider_impl.h"
@@ -33,7 +33,7 @@ PersonalizationAppUI* CreatePersonalizationAppUI(content::WebUI* web_ui) {
   auto wallpaper_provider = std::make_unique<
       ash::personalization_app::PersonalizationAppWallpaperProviderImpl>(
       web_ui,
-      std::make_unique<wallpaper_handlers::BackdropFetcherDelegateImpl>());
+      std::make_unique<wallpaper_handlers::WallpaperFetcherDelegateImpl>());
   return new ash::personalization_app::PersonalizationAppUI(
       web_ui, std::move(ambient_provider),
       std::move(keyboard_backlight_provider), std::move(theme_provider),

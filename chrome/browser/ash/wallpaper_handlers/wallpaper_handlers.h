@@ -57,13 +57,13 @@ class BackdropCollectionInfoFetcher {
   virtual void Start(OnCollectionsInfoFetched callback);
 
  protected:
-  // Protected constructor forces creation via `BackdropFetcherDelegate` to
+  // Protected constructor forces creation via `WallpaperFetcherDelegate` to
   // allow mocking in test code.
   BackdropCollectionInfoFetcher();
 
  private:
   // Allow delegate to view the constructor.
-  friend class BackdropFetcherDelegateImpl;
+  friend class WallpaperFetcherDelegateImpl;
 
   // Called when the collections info download completes.
   void OnResponseFetched(const std::string& response);
@@ -93,13 +93,13 @@ class BackdropImageInfoFetcher {
   virtual void Start(OnImagesInfoFetched callback);
 
  protected:
-  // Protected constructor forces creation via `BackdropFetcherDelegate` to
+  // Protected constructor forces creation via `WallpaperFetcherDelegate` to
   // allow mocking in test code.
   explicit BackdropImageInfoFetcher(const std::string& collection_id);
 
  private:
   // Allow delegate to view the constructor.
-  friend class BackdropFetcherDelegateImpl;
+  friend class WallpaperFetcherDelegateImpl;
 
   // Called when the images info download completes.
   void OnResponseFetched(const std::string& response);

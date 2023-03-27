@@ -17,7 +17,7 @@
 #include "base/functional/bind.h"
 #include "base/memory/ptr_util.h"
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
-#include "chrome/browser/ash/wallpaper_handlers/test_backdrop_fetcher_delegate.h"
+#include "chrome/browser/ash/wallpaper_handlers/test_wallpaper_fetcher_delegate.h"
 #include "chrome/browser/image_decoder/image_decoder.h"
 #include "chrome/browser/ui/ash/test_wallpaper_controller.h"
 #include "chrome/browser/ui/ash/wallpaper_controller_client_impl.h"
@@ -88,7 +88,7 @@ class ArcWallpaperServiceTest : public testing::Test {
     // Wallpaper
     wallpaper_controller_client_ = std::make_unique<
         WallpaperControllerClientImpl>(
-        std::make_unique<wallpaper_handlers::TestBackdropFetcherDelegate>());
+        std::make_unique<wallpaper_handlers::TestWallpaperFetcherDelegate>());
     wallpaper_controller_client_->InitForTesting(&test_wallpaper_controller_);
 
     // Arc services

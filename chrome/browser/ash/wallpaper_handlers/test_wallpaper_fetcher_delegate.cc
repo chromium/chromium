@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ash/wallpaper_handlers/test_backdrop_fetcher_delegate.h"
+#include "chrome/browser/ash/wallpaper_handlers/test_wallpaper_fetcher_delegate.h"
 
 #include <memory>
 #include <string>
@@ -13,18 +13,18 @@
 
 namespace wallpaper_handlers {
 
-TestBackdropFetcherDelegate::TestBackdropFetcherDelegate() = default;
+TestWallpaperFetcherDelegate::TestWallpaperFetcherDelegate() = default;
 
-TestBackdropFetcherDelegate::~TestBackdropFetcherDelegate() = default;
+TestWallpaperFetcherDelegate::~TestWallpaperFetcherDelegate() = default;
 
 std::unique_ptr<BackdropCollectionInfoFetcher>
-TestBackdropFetcherDelegate::CreateBackdropCollectionInfoFetcher() const {
+TestWallpaperFetcherDelegate::CreateBackdropCollectionInfoFetcher() const {
   return std::make_unique<
       testing::NiceMock<MockBackdropCollectionInfoFetcher>>();
 }
 
 std::unique_ptr<BackdropImageInfoFetcher>
-TestBackdropFetcherDelegate::CreateBackdropImageInfoFetcher(
+TestWallpaperFetcherDelegate::CreateBackdropImageInfoFetcher(
     const std::string& collection_id) const {
   return std::make_unique<testing::NiceMock<MockBackdropImageInfoFetcher>>(
       collection_id);

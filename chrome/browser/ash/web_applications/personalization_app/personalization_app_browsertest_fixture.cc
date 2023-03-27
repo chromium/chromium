@@ -16,7 +16,7 @@
 #include "ash/webui/personalization_app/test/fake_personalization_app_keyboard_backlight_provider.h"
 #include "ash/webui/personalization_app/test/fake_personalization_app_theme_provider.h"
 #include "ash/webui/personalization_app/test/fake_personalization_app_user_provider.h"
-#include "chrome/browser/ash/wallpaper_handlers/test_backdrop_fetcher_delegate.h"
+#include "chrome/browser/ash/wallpaper_handlers/test_wallpaper_fetcher_delegate.h"
 #include "chrome/browser/ash/web_applications/personalization_app/personalization_app_utils.h"
 #include "chrome/browser/ash/web_applications/personalization_app/personalization_app_wallpaper_provider_impl.h"
 #include "chrome/browser/profiles/profile.h"
@@ -37,7 +37,7 @@ TestPersonalizationAppWebUIProvider::NewWebUI(content::WebUI* web_ui,
   auto wallpaper_provider =
       std::make_unique<PersonalizationAppWallpaperProviderImpl>(
           web_ui,
-          std::make_unique<wallpaper_handlers::TestBackdropFetcherDelegate>());
+          std::make_unique<wallpaper_handlers::TestWallpaperFetcherDelegate>());
   auto user_provider =
       std::make_unique<FakePersonalizationAppUserProvider>(web_ui);
   return std::make_unique<PersonalizationAppUI>(

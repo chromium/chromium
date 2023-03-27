@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_ASH_WALLPAPER_HANDLERS_BACKDROP_FETCHER_DELEGATE_H_
-#define CHROME_BROWSER_ASH_WALLPAPER_HANDLERS_BACKDROP_FETCHER_DELEGATE_H_
+#ifndef CHROME_BROWSER_ASH_WALLPAPER_HANDLERS_WALLPAPER_FETCHER_DELEGATE_H_
+#define CHROME_BROWSER_ASH_WALLPAPER_HANDLERS_WALLPAPER_FETCHER_DELEGATE_H_
 
 #include <memory>
 #include <string>
@@ -15,9 +15,9 @@ class BackdropImageInfoFetcher;
 
 // Delegate class for creating backdrop fetchers. Abstract class to allow
 // mocking out in test.
-class BackdropFetcherDelegate {
+class WallpaperFetcherDelegate {
  public:
-  virtual ~BackdropFetcherDelegate() = default;
+  virtual ~WallpaperFetcherDelegate() = default;
 
   virtual std::unique_ptr<BackdropCollectionInfoFetcher>
   CreateBackdropCollectionInfoFetcher() const = 0;
@@ -26,17 +26,17 @@ class BackdropFetcherDelegate {
   CreateBackdropImageInfoFetcher(const std::string& collection_id) const = 0;
 };
 
-class BackdropFetcherDelegateImpl : public BackdropFetcherDelegate {
+class WallpaperFetcherDelegateImpl : public WallpaperFetcherDelegate {
  public:
-  BackdropFetcherDelegateImpl();
+  WallpaperFetcherDelegateImpl();
 
-  BackdropFetcherDelegateImpl(const BackdropFetcherDelegateImpl&) = delete;
-  BackdropFetcherDelegateImpl& operator=(const BackdropFetcherDelegateImpl&) =
+  WallpaperFetcherDelegateImpl(const WallpaperFetcherDelegateImpl&) = delete;
+  WallpaperFetcherDelegateImpl& operator=(const WallpaperFetcherDelegateImpl&) =
       delete;
 
-  ~BackdropFetcherDelegateImpl() override;
+  ~WallpaperFetcherDelegateImpl() override;
 
-  // BackdropFetcherDelegate:
+  // WallpaperFetcherDelegate:
   std::unique_ptr<BackdropCollectionInfoFetcher>
   CreateBackdropCollectionInfoFetcher() const override;
 
@@ -46,4 +46,4 @@ class BackdropFetcherDelegateImpl : public BackdropFetcherDelegate {
 
 }  // namespace wallpaper_handlers
 
-#endif  // CHROME_BROWSER_ASH_WALLPAPER_HANDLERS_BACKDROP_FETCHER_DELEGATE_H_
+#endif  // CHROME_BROWSER_ASH_WALLPAPER_HANDLERS_WALLPAPER_FETCHER_DELEGATE_H_

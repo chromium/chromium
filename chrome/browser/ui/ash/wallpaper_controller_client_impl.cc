@@ -43,7 +43,7 @@
 #include "chrome/browser/ash/login/wizard_controller.h"
 #include "chrome/browser/ash/policy/core/device_local_account.h"
 #include "chrome/browser/ash/wallpaper/wallpaper_drivefs_delegate_impl.h"
-#include "chrome/browser/ash/wallpaper_handlers/backdrop_fetcher_delegate.h"
+#include "chrome/browser/ash/wallpaper_handlers/wallpaper_fetcher_delegate.h"
 #include "chrome/browser/ash/wallpaper_handlers/wallpaper_handlers.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile_manager.h"
@@ -180,9 +180,9 @@ user_manager::User* FindPublicSession(const user_manager::UserList& users) {
 }  // namespace
 
 WallpaperControllerClientImpl::WallpaperControllerClientImpl(
-    std::unique_ptr<wallpaper_handlers::BackdropFetcherDelegate>
-        backdrop_fetcher_delegate)
-    : backdrop_fetcher_delegate_(std::move(backdrop_fetcher_delegate)) {
+    std::unique_ptr<wallpaper_handlers::WallpaperFetcherDelegate>
+        wallpaper_fetcher_delegate)
+    : wallpaper_fetcher_delegate_(std::move(wallpaper_fetcher_delegate)) {
   local_state_ = g_browser_process->local_state();
   show_user_names_on_signin_subscription_ =
       ash::CrosSettings::Get()->AddSettingsObserver(
@@ -556,7 +556,8 @@ void WallpaperControllerClientImpl::FetchImagesForCollection(
     const std::string& collection_id,
     FetchImagesForCollectionCallback callback) {
   auto images_info_fetcher =
-      backdrop_fetcher_delegate_->CreateBackdropImageInfoFetcher(collection_id);
+      wallpaper_fetcher_delegate_->CreateBackdropImageInfoFetcher(
+          collection_id);
   auto* images_info_fetcher_ptr = images_info_fetcher.get();
   images_info_fetcher_ptr->Start(
       base::BindOnce(&WallpaperControllerClientImpl::OnFetchImagesForCollection,
