@@ -2639,6 +2639,7 @@ bool LayoutBox::BackgroundIsKnownToBeOpaqueInRect(
 // rules if they can improve LCD text.
 bool LayoutBox::TextIsKnownToBeOnOpaqueBackground() const {
   NOT_DESTROYED();
+  DCHECK(!RuntimeEnabledFeatures::CompositeScrollAfterPaintEnabled());
   // Text may overflow the background area.
   if (!ShouldClipOverflowAlongEitherAxis())
     return false;

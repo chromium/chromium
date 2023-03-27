@@ -461,6 +461,10 @@ class CORE_EXPORT PaintLayerScrollableArea final
   // properties which are updated based on the latter.
   bool UsesCompositedScrolling() const override;
 
+  // In CompositeScrollAfterPaint, NeedsCompositedScrolling() is false if
+  // composited scrolling will be determined after paint.
+  // TODO(crbug.com/1414885): We may need to redefine these functions for
+  // CompositeScrollAfterPaint.
   void UpdateNeedsCompositedScrolling(
       bool force_prefer_compositing_to_lcd_text);
   bool NeedsCompositedScrolling() const { return needs_composited_scrolling_; }

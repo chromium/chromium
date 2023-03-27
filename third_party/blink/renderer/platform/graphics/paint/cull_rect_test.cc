@@ -15,9 +15,9 @@ namespace blink {
 
 class CullRectTest : public testing::Test,
                      public testing::WithParamInterface<bool>,
-                     private ScopedUnifiedScrollPaintingForTest {
+                     private ScopedCompositeScrollAfterPaintForTest {
  protected:
-  CullRectTest() : ScopedUnifiedScrollPaintingForTest(GetParam()) {}
+  CullRectTest() : ScopedCompositeScrollAfterPaintForTest(GetParam()) {}
 
   bool ApplyPaintProperties(
       CullRect& cull_rect,
@@ -139,7 +139,7 @@ TEST_P(CullRectTest,
   auto& scroll_translation = state.Transform();
 
   CullRect cull_rect(gfx::Rect(0, 0, 50, 100));
-  if (RuntimeEnabledFeatures::UnifiedScrollPaintingEnabled()) {
+  if (RuntimeEnabledFeatures::CompositeScrollAfterPaintEnabled()) {
     // Same as ApplyScrollTranslationPartialScrollingContents.
     EXPECT_TRUE(ApplyScrollTranslation(cull_rect, scroll_translation));
     EXPECT_EQ(gfx::Rect(20, 1010, 7030, 7000), cull_rect.Rect());
@@ -234,7 +234,7 @@ TEST_P(CullRectTest,
   auto& scroll_translation = state.Transform();
 
   CullRect cull_rect(gfx::Rect(0, 0, 50, 100));
-  if (RuntimeEnabledFeatures::UnifiedScrollPaintingEnabled()) {
+  if (RuntimeEnabledFeatures::CompositeScrollAfterPaintEnabled()) {
     // Same as ApplyScrollTranslationWholeScrollingContents.
     EXPECT_TRUE(ApplyScrollTranslation(cull_rect, scroll_translation));
     EXPECT_EQ(gfx::Rect(20, 10, 2000, 2000), cull_rect.Rect());

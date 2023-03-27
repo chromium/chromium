@@ -23,23 +23,6 @@ namespace blink {
 
 namespace {
 
-bool IsCompositedScrollHitTest(const PaintChunk& chunk) {
-  if (!chunk.hit_test_data)
-    return false;
-  const auto scroll_translation = chunk.hit_test_data->scroll_translation;
-  return scroll_translation &&
-         scroll_translation->HasDirectCompositingReasons();
-}
-
-bool IsCompositedScrollbar(const DisplayItem& item) {
-  if (const auto* scrollbar = DynamicTo<ScrollbarDisplayItem>(item)) {
-    const auto* scroll_translation = scrollbar->ScrollTranslation();
-    return scroll_translation &&
-           scroll_translation->HasDirectCompositingReasons();
-  }
-  return false;
-}
-
 // Snap |bounds| if within floating-point numeric limits of an integral rect.
 void PreserveNearIntegralBounds(gfx::RectF& bounds) {
   constexpr float kTolerance = 1e-5f;
@@ -64,8 +47,7 @@ PendingLayer::PendingLayer(scoped_refptr<const PaintArtifact> artifact,
       is_solid_color_(first_chunk.background_color.is_solid_color),
       chunks_(std::move(artifact), first_chunk),
       property_tree_state_(
-          first_chunk.properties.GetPropertyTreeState().Unalias()),
-      compositing_type_(kOther) {
+          first_chunk.properties.GetPropertyTreeState().Unalias()) {
   DCHECK(!ChunkRequiresOwnLayer() || first_chunk.size() <= 1u);
   // Though text_known_to_be_on_opaque_background is only meaningful when
   // has_text is true, we expect text_known_to_be_on_opaque_background to be
@@ -79,17 +61,6 @@ PendingLayer::PendingLayer(scoped_refptr<const PaintArtifact> artifact,
     }
   }
   rect_known_to_be_opaque_.Intersect(bounds_);
-
-  if (IsCompositedScrollHitTest(first_chunk)) {
-    compositing_type_ = kScrollHitTestLayer;
-  } else if (first_chunk.size()) {
-    const auto& first_display_item = FirstDisplayItem();
-    if (first_display_item.IsForeignLayer()) {
-      compositing_type_ = kForeignLayer;
-    } else if (IsCompositedScrollbar(first_display_item)) {
-      compositing_type_ = kScrollbarLayer;
-    }
-  }
 }
 
 gfx::Vector2dF PendingLayer::LayerOffset() const {
@@ -138,14 +109,18 @@ gfx::RectF PendingLayer::MapRectKnownToBeOpaque(
 
 std::unique_ptr<JSONObject> PendingLayer::ToJSON() const {
   std::unique_ptr<JSONObject> result = std::make_unique<JSONObject>();
+  result->SetString("debug_name", DebugName());
   result->SetArray("bounds", RectAsJSONArray(bounds_));
   result->SetArray("rect_known_to_be_opaque",
                    RectAsJSONArray(rect_known_to_be_opaque_));
-  result->SetObject("property_tree_state", GetPropertyTreeState().ToJSON());
+  result->SetBoolean("text_known_to_be_on_opaque_background",
+                     text_known_to_be_on_opaque_background_);
+  result->SetString("property_tree_state", GetPropertyTreeState().ToString());
   result->SetArray("offset_of_decomposited_transforms",
                    VectorAsJSONArray(offset_of_decomposited_transforms_));
   result->SetArray("paint_chunks", chunks_.ToJSON());
   result->SetBoolean("draws_content", DrawsContent());
+  result->SetBoolean("is_solid_color", is_solid_color_);
   return result;
 }
 

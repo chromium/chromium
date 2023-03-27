@@ -627,6 +627,9 @@
       base_feature: "none",
     },
     {
+      name: "CompositeScrollAfterPaint",
+    },
+    {
       name: "ComputedAccessibilityInfo",
       status: "experimental",
       base_feature: "none",
@@ -3396,9 +3399,6 @@
     {
       name: "UnexposedTaskIds",
       base_feature: "none",
-    },
-    {
-      name: "UnifiedScrollPainting",
     },
     // This is a reverse OT used for a phased deprecation, on desktop
     // https://crbug.com/1071424

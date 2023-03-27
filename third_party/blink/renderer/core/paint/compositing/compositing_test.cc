@@ -2710,7 +2710,14 @@ TEST_P(CompositingSimTest, DecompositeScrollerInHiddenIframe) {
   LayoutBox* scroller = To<LayoutBox>(bottom_frame.GetDocument()
                                           ->getElementById("scroller")
                                           ->GetLayoutObject());
-  ASSERT_TRUE(scroller->GetScrollableArea()->NeedsCompositedScrolling());
+  if (RuntimeEnabledFeatures::CompositeScrollAfterPaintEnabled()) {
+    // In CompositeScrollAfterPaint, NeedsComositedScrolling returns true
+    // only if the scroller is forced to be composited.
+    EXPECT_FALSE(scroller->GetScrollableArea()->NeedsCompositedScrolling());
+  } else {
+    ASSERT_TRUE(scroller->GetScrollableArea()->NeedsCompositedScrolling());
+  }
+
   EXPECT_TRUE(CcLayerByDOMElementId("scroller"));
 
   // Hide the iframes. Scroller should be decomposited.

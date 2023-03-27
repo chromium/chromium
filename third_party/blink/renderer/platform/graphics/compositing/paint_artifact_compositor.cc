@@ -161,6 +161,91 @@ PaintArtifactCompositor::NearestScrollTranslationForLayer(
       .NearestScrollTranslationNode();
 }
 
+bool PaintArtifactCompositor::NeedsCompositedScrolling(
+    const TransformPaintPropertyNode& scroll_translation) const {
+  DCHECK(scroll_translation.ScrollNode());
+  if (scroll_translation.HasDirectCompositingReasons()) {
+    return true;
+  }
+  if (RuntimeEnabledFeatures::CompositeScrollAfterPaintEnabled()) {
+    auto it = scroll_translation_nodes_.find(&scroll_translation);
+    if (it != scroll_translation_nodes_.end()) {
+      return it->value;
+    }
+  }
+  return false;
+}
+
+bool PaintArtifactCompositor::ComputeNeedsCompositedScrolling(
+    const PaintArtifact& artifact,
+    Vector<PaintChunk>::const_iterator chunk_cursor) const {
+  // The chunk must be a ScrollHitTest chunk which contains no display items.
+  DCHECK(chunk_cursor->hit_test_data);
+  DCHECK(chunk_cursor->hit_test_data->scroll_translation);
+  DCHECK_EQ(chunk_cursor->size(), 0u);
+  const auto& scroll_translation =
+      *chunk_cursor->hit_test_data->scroll_translation;
+  DCHECK(scroll_translation.ScrollNode());
+  // This function should be called before scroll_translation is inserted into
+  // scroll_translation_nodes_.
+  DCHECK(!scroll_translation_nodes_.Contains(&scroll_translation));
+
+  if (!RuntimeEnabledFeatures::CompositeScrollAfterPaintEnabled()) {
+    return scroll_translation.HasDirectCompositingReasons();
+  }
+
+  if (scroll_translation.HasDirectCompositingReasons()) {
+    return true;
+  }
+  if (RuntimeEnabledFeatures::PreferNonCompositedScrollingEnabled()) {
+    return false;
+  }
+  // Don't automatically composite non-user-scrollable scrollers.
+  if (!scroll_translation.ScrollNode()->UserScrollableHorizontal() &&
+      !scroll_translation.ScrollNode()->UserScrollableVertical()) {
+    return false;
+  }
+  if (lcd_text_preference_ != LCDTextPreference::kStronglyPreferred ||
+      chunk_cursor + 1 == artifact.PaintChunks().end()) {
+    return true;
+  }
+  // Normally the next chunk contains the scrolling background which normally
+  // defines the opaqueness of the scrolling contents. If it has an opaque rect
+  // covering the whole scrolling contents, we can use composited scrolling
+  // without losing LCD text.
+  const PaintChunk& next_chunk = *(chunk_cursor + 1);
+  return &next_chunk.properties.Transform().Unalias() == &scroll_translation &&
+         &next_chunk.properties.Clip().Unalias() ==
+             scroll_translation.ScrollNode()->OverflowClipNode() &&
+         &next_chunk.properties.Effect().Unalias() ==
+             &chunk_cursor->properties.Effect().Unalias() &&
+         next_chunk.rect_known_to_be_opaque.Contains(
+             scroll_translation.ScrollNode()->ContentsRect());
+}
+
+PendingLayer::CompositingType PaintArtifactCompositor::ChunkCompositingType(
+    const PaintArtifact& artifact,
+    const PaintChunk& chunk) const {
+  if (chunk.hit_test_data && chunk.hit_test_data->scroll_translation &&
+      NeedsCompositedScrolling(*chunk.hit_test_data->scroll_translation)) {
+    return PendingLayer::kScrollHitTestLayer;
+  }
+  if (chunk.size() == 1) {
+    const auto& item = artifact.GetDisplayItemList()[chunk.begin_index];
+    if (item.IsForeignLayer()) {
+      return PendingLayer::kForeignLayer;
+    }
+    if (const auto* scrollbar = DynamicTo<ScrollbarDisplayItem>(item)) {
+      if (const auto* scroll_translation = scrollbar->ScrollTranslation()) {
+        if (NeedsCompositedScrolling(*scroll_translation)) {
+          return PendingLayer::kScrollbarLayer;
+        }
+      }
+    }
+  }
+  return PendingLayer::kOther;
+}
+
 namespace {
 
 cc::Layer* ForeignLayer(const PaintChunk& chunk,
@@ -420,28 +505,34 @@ void PaintArtifactCompositor::LayerizeGroup(
   // O(p) due to copying the chunk list. Subtotal: O((qd + p)d) = O(qd^2 + pd)
   // Assuming p > d, the total complexity would be O(pqd + qd^2 + pd) = O(pqd)
   while (chunk_cursor != artifact->PaintChunks().end()) {
-    // Track painted ScrollTranslation nodes. with ScrollUnification enabled,
-    // PaintArtifactCompositor::Update uses this to know which
-    // ScrollTranslation nodes we need to create composited Transform nodes
-    // for.
-    if (chunk_cursor->hit_test_data &&
-        chunk_cursor->hit_test_data->scroll_translation) {
-      scroll_translation_nodes_.insert(
-          chunk_cursor->hit_test_data->scroll_translation.get());
-    }
     // Look at the effect node of the next chunk. There are 3 possible cases:
     // A. The next chunk belongs to the current group but no subgroup.
     // B. The next chunk does not belong to the current group.
     // C. The next chunk belongs to some subgroup of the current group.
     const auto& chunk_effect = chunk_cursor->properties.Effect().Unalias();
     if (&chunk_effect == &current_group) {
+      // Track painted ScrollTranslation nodes and their composited scrolling
+      // status. With ScrollUnification enabled, Update() also uses this to
+      // know which ScrollTranslation nodes we need to create composited
+      // Transform nodes for.
+      if (chunk_cursor->hit_test_data &&
+          chunk_cursor->hit_test_data->scroll_translation) {
+        scroll_translation_nodes_.insert(
+            chunk_cursor->hit_test_data->scroll_translation.get(),
+            ComputeNeedsCompositedScrolling(*artifact, chunk_cursor));
+      }
       pending_layers_.emplace_back(artifact, *chunk_cursor);
+      pending_layers_.back().SetCompositingType(
+          ChunkCompositingType(*artifact, *chunk_cursor));
       ++chunk_cursor;
       // force_draws_content doesn't apply to pending layers that require own
       // layer, specifically scrollbar layers, foreign layers, scroll hit
       // testing layers.
-      if (pending_layers_.back().ChunkRequiresOwnLayer())
+      if (pending_layers_.back().ChunkRequiresOwnLayer()) {
+        // TODO(crbug.com/1414885): conditionally composite ScrollHitTest and
+        // scrollbar in CompositeScrollAfterPaint.
         continue;
+      }
     } else {
       const EffectPaintPropertyNode* subgroup =
           StrictUnaliasedChildOfAlongPath(current_group, chunk_effect);

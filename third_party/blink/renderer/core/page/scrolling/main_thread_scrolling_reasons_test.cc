@@ -385,6 +385,12 @@ class NonCompositedMainThreadScrollingReasonsTest
 
   void TestNonCompositedReasons(const AtomicString& style_class,
                                 const uint32_t reason) {
+    if (RuntimeEnabledFeatures::CompositeScrollAfterPaintEnabled() && reason) {
+      // TODO(crbug.com/1414885): We need a new way to test non-composited
+      // main thread scrolling reasons.
+      return;
+    }
+
     GetFrame()->GetSettings()->SetPreferCompositingToLCDTextForTesting(false);
     Document* document = GetFrame()->GetDocument();
     Element* container = document->getElementById("scroller1");

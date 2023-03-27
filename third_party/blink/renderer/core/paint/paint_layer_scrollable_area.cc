@@ -2481,8 +2481,10 @@ bool PaintLayerScrollableArea::ComputeNeedsCompositedScrolling(
       box->ComputeBackgroundPaintLocationIfComposited();
   bool needs_composited_scrolling = ComputeNeedsCompositedScrollingInternal(
       new_background_paint_location, force_prefer_compositing_to_lcd_text);
-  if (!needs_composited_scrolling)
+  if (!RuntimeEnabledFeatures::CompositeScrollAfterPaintEnabled() &&
+      !needs_composited_scrolling) {
     new_background_paint_location = kBackgroundPaintInBorderBoxSpace;
+  }
   box->GetMutableForPainting().SetBackgroundPaintLocation(
       new_background_paint_location);
 
@@ -2500,21 +2502,24 @@ bool PaintLayerScrollableArea::ComputeNeedsCompositedScrollingInternal(
   if (CompositingReasonFinder::RequiresCompositingForRootScroller(*layer_)) {
     return true;
   }
-
   if (!ScrollsOverflow()) {
     return false;
   }
-
-  if (!force_prefer_compositing_to_lcd_text &&
-      RuntimeEnabledFeatures::PreferNonCompositedScrollingEnabled()) {
+  if (force_prefer_compositing_to_lcd_text) {
+    return true;
+  }
+  if (RuntimeEnabledFeatures::CompositeScrollAfterPaintEnabled()) {
+    // We'll decide composited scrolling in PaintArtifactCompositor later.
+    return false;
+  }
+  if (RuntimeEnabledFeatures::PreferNonCompositedScrollingEnabled()) {
     return false;
   }
 
   const auto* box = GetLayoutBox();
   bool needs_composited_scrolling = true;
-  if (!force_prefer_compositing_to_lcd_text &&
-      box->GetDocument().GetSettings()->GetLCDTextPreference() ==
-          LCDTextPreference::kStronglyPreferred) {
+  if (box->GetDocument().GetSettings()->GetLCDTextPreference() ==
+      LCDTextPreference::kStronglyPreferred) {
     if (!box->TextIsKnownToBeOnOpaqueBackground()) {
       non_composited_main_thread_scrolling_reasons_ |=
           cc::MainThreadScrollingReason::kNotOpaqueForTextAndLCDText;
@@ -2895,11 +2900,17 @@ static bool ScrollControlNeedsPaintInvalidation(
 bool PaintLayerScrollableArea::ShouldDirectlyCompositeScrollbar(
     const Scrollbar& scrollbar) const {
   // Don't composite non-scrollable scrollbars.
-  if (!scrollbar.Maximum())
+  if (!scrollbar.Maximum()) {
     return false;
-  if (scrollbar.IsCustomScrollbar())
+  }
+  if (scrollbar.IsCustomScrollbar()) {
     return false;
-
+  }
+  if (RuntimeEnabledFeatures::CompositeScrollAfterPaintEnabled()) {
+    // TODO(crbug.com/1414885): We may composite all scrollbars, or assume they
+    // are before PaintArtifactCompositor::Update().
+    return true;
+  }
   return NeedsCompositedScrolling();
 }
 

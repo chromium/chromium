@@ -121,7 +121,7 @@ TEST_P(PaintLayerTest, NonCompositedScrollingNeedsRepaint) {
   PaintLayer* content_layer = GetPaintLayerByElementId("content");
   const auto& fragment = content_layer->GetLayoutObject().FirstFragment();
   EXPECT_EQ(PhysicalOffset(), content_layer->LocationWithoutPositionOffset());
-  if (RuntimeEnabledFeatures::UnifiedScrollPaintingEnabled()) {
+  if (RuntimeEnabledFeatures::CompositeScrollAfterPaintEnabled()) {
     EXPECT_EQ(gfx::Rect(0, 0, 2000, 2000),
               fragment.GetContentsCullRect().Rect());
   } else {
@@ -138,7 +138,7 @@ TEST_P(PaintLayerTest, NonCompositedScrollingNeedsRepaint) {
       content_layer->ContainingLayer()->PixelSnappedScrolledContentOffset());
 
   EXPECT_FALSE(scroll_layer->SelfNeedsRepaint());
-  if (RuntimeEnabledFeatures::UnifiedScrollPaintingEnabled()) {
+  if (RuntimeEnabledFeatures::CompositeScrollAfterPaintEnabled()) {
     EXPECT_EQ(gfx::Rect(0, 0, 2000, 2000),
               fragment.GetContentsCullRect().Rect());
     EXPECT_FALSE(content_layer->SelfNeedsRepaint());

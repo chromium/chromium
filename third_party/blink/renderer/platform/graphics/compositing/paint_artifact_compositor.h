@@ -307,6 +307,14 @@ class PLATFORM_EXPORT PaintArtifactCompositor final
       CompositorElementId& mask_isolation_id,
       CompositorElementId& mask_effect_id) final;
 
+  bool NeedsCompositedScrolling(
+      const TransformPaintPropertyNode& scroll_translation) const final;
+  bool ComputeNeedsCompositedScrolling(
+      const PaintArtifact&,
+      Vector<PaintChunk>::const_iterator chunk_cursor) const;
+  PendingLayer::CompositingType ChunkCompositingType(const PaintArtifact&,
+                                                     const PaintChunk&) const;
+
   static void UpdateRenderSurfaceForEffects(
       cc::EffectTree&,
       const cc::LayerList&,
@@ -341,9 +349,10 @@ class PLATFORM_EXPORT PaintArtifactCompositor final
   class OldPendingLayerMatcher;
   PendingLayers pending_layers_;
 
-  // ScrollTranslationNodes of the PaintArtifact which are painted.
+  // ScrollTranslationNodes of the PaintArtifact that are painted.
   // This member variable is only used in PaintArtifactCompositor::Update.
-  HashSet<const TransformPaintPropertyNode*> scroll_translation_nodes_;
+  // The value indicates if the scroll should be composited.
+  HashMap<const TransformPaintPropertyNode*, bool> scroll_translation_nodes_;
 
   friend class StubChromeClientForCAP;
   friend class PaintArtifactCompositorTest;

@@ -237,10 +237,13 @@ class PaintPropertyNode
 
   std::unique_ptr<JSONObject> ToJSONBase() const {
     auto json = std::make_unique<JSONObject>();
-    if (Parent())
+    json->SetString("this", String::Format("%p", this));
+    if (Parent()) {
       json->SetString("parent", String::Format("%p", Parent()));
-    if (IsParentAlias())
+    }
+    if (IsParentAlias()) {
       json->SetBoolean("is_alias", true);
+    }
     if (NodeChanged() != PaintPropertyChangeType::kUnchanged) {
       json->SetString("changed",
                       PaintPropertyChangeTypeToString(NodeChanged()));

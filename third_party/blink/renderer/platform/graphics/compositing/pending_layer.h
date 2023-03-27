@@ -198,7 +198,7 @@ class PLATFORM_EXPORT PendingLayer {
   gfx::Vector2dF offset_of_decomposited_transforms_;
   PaintPropertyChangeType change_of_decomposited_transforms_ =
       PaintPropertyChangeType::kUnchanged;
-  CompositingType compositing_type_;
+  CompositingType compositing_type_ = kOther;
 
   // This is set to non-null after layerization if ChunkRequiresOwnLayer() or
   // UsesSolidColorLayer() is true.

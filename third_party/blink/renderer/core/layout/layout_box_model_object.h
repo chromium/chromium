@@ -533,6 +533,7 @@ class CORE_EXPORT LayoutBoxModelObject : public LayoutObject {
   // opaque background.
   virtual bool TextIsKnownToBeOnOpaqueBackground() const {
     NOT_DESTROYED();
+    DCHECK(!RuntimeEnabledFeatures::CompositeScrollAfterPaintEnabled());
     return false;
   }
 

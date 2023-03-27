@@ -612,7 +612,18 @@ void PropertyTreeManager::EnsureCompositorScrollNode(
   compositor_node.transform_id =
       scroll_translation_node.CcNodeId(new_sequence_number_);
   compositor_node.is_composited =
-      scroll_translation_node.HasDirectCompositingReasons();
+      client_.NeedsCompositedScrolling(scroll_translation_node);
+  if (RuntimeEnabledFeatures::CompositeScrollAfterPaintEnabled() &&
+      !RuntimeEnabledFeatures::PreferNonCompositedScrollingEnabled() &&
+      !compositor_node.is_composited &&
+      compositor_node.main_thread_scrolling_reasons ==
+          cc::MainThreadScrollingReason::kNotScrollingOnMain) {
+    // TODO(crbug.com/1414885): We can't distinguish kNotOpaqueForTextAndLCDText
+    // and kCantPaintScrollingBackgroundAndLCDText here. We should probably
+    // merge the two reasons for CompositeScrollAfterPaint.
+    compositor_node.main_thread_scrolling_reasons =
+        cc::MainThreadScrollingReason::kNotOpaqueForTextAndLCDText;
+  }
 
   scroll_node.SetCcNodeId(new_sequence_number_, id);
 
