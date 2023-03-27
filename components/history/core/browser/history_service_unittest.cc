@@ -36,7 +36,9 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
+#include "components/history/core/browser/features.h"
 #include "components/history/core/browser/history_backend.h"
 #include "components/history/core/browser/history_database_params.h"
 #include "components/history/core/browser/history_db_task.h"
@@ -568,6 +570,13 @@ TEST_F(HistoryServiceTest, MostVisitedURLs) {
 TEST_F(HistoryServiceTest, QueryMostRepeatedQueriesForKeyword) {
   ASSERT_TRUE(history_service_.get());
 
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeatureWithParameters(
+      history::kOrganicRepeatableQueries,
+      {{history::kRepeatableQueriesMaxAgeDays.name, "4"},
+       {history::kRepeatableQueriesMinVisitCount.name, "1"},
+       {history::kRepeatableQueriesIgnoreDuplicateVisits.name, "true"}});
+
   const KeywordID first_keyword_id = 1;
   const KeywordID second_keyword_id = 2;
 
@@ -576,60 +585,28 @@ TEST_F(HistoryServiceTest, QueryMostRepeatedQueriesForKeyword) {
     const std::u16string term;
     base::Time time;
     const KeywordID keyword_id;
-  } pages[] = {{GURL("http://www.search.com/?q=First"), u"First",
-                base::Time::Now() - base::Days(4), first_keyword_id},
-               {GURL("http://www.search.com/?q=Second"), u"Second",
-                base::Time::Now() - base::Days(3), first_keyword_id},
-               {GURL("http://www.search.com/?q=Third"), u"Third",
-                base::Time::Now() - base::Days(2), first_keyword_id},
-               {GURL("http://www.search.com/?q=Fourth"), u"Fourth",
-                base::Time::Now() - base::Days(1), second_keyword_id}};
+  };
 
-  // Add first page for first keyword.
-  history_service_->AddPage(pages[0].url, pages[0].time,
-                            history::SOURCE_BROWSED);
-  history_service_->SetKeywordSearchTermsForURL(
-      pages[0].url, pages[0].keyword_id, pages[0].term);
+  PageData page_1 = {GURL("http://www.search.com/?q=First"), u"First",
+                     base::Time::Now() - base::Days(4), first_keyword_id};
+  PageData page_2 = {GURL("http://www.search.com/?q=Second"), u"Second",
+                     base::Time::Now() - base::Days(3), first_keyword_id};
+  PageData page_3 = {GURL("http://www.search.com/?q=Second&foo=bar"), u"Second",
+                     base::Time::Now() - base::Days(3), first_keyword_id};
+  PageData page_4 = {GURL("http://www.search.com/?q=Fourth"), u"Fourth",
+                     base::Time::Now() - base::Days(2), first_keyword_id};
+  PageData page_5 = {GURL("http://www.search.com/?q=Fifth"), u"Fifth",
+                     base::Time::Now() - base::Days(1), second_keyword_id};
 
-  // Add second page for first keyword.
-  history_service_->AddPage(pages[1].url, pages[1].time,
-                            history::SOURCE_BROWSED);
-  history_service_->SetKeywordSearchTermsForURL(
-      pages[1].url, pages[1].keyword_id, pages[1].term);
+  // Add first page from them first keyword.
+  history_service_->AddPage(page_1.url, page_1.time, history::SOURCE_BROWSED);
+  history_service_->SetKeywordSearchTermsForURL(page_1.url, page_1.keyword_id,
+                                                page_1.term);
 
-  {
-    base::HistogramTester histogram_tester;
-    QueryMostRepeatedQueriesForKeyword(first_keyword_id, 1);
-
-    ASSERT_EQ(1U, most_repeated_queries_.size());
-    EXPECT_EQ(u"second", most_repeated_queries_[0]->normalized_term);
-
-    histogram_tester.ExpectTotalCount("History.QueryMostRepeatedQueriesTimeV2",
-                                      1);
-  }
-
-  // Add third page for first keyword.
-  history_service_->AddPage(pages[2].url, pages[2].time,
-                            history::SOURCE_BROWSED);
-  history_service_->SetKeywordSearchTermsForURL(
-      pages[2].url, pages[2].keyword_id, pages[2].term);
-
-  {
-    base::HistogramTester histogram_tester;
-    QueryMostRepeatedQueriesForKeyword(first_keyword_id, 1);
-
-    ASSERT_EQ(1U, most_repeated_queries_.size());
-    EXPECT_EQ(u"third", most_repeated_queries_[0]->normalized_term);
-
-    histogram_tester.ExpectTotalCount("History.QueryMostRepeatedQueriesTimeV2",
-                                      1);
-  }
-
-  // Revisit second page for first keyword, making it the top page.
-  history_service_->AddPage(pages[1].url, pages[1].time,
-                            history::SOURCE_BROWSED);
-  history_service_->SetKeywordSearchTermsForURL(
-      pages[1].url, pages[1].keyword_id, pages[1].term);
+  // Add second page from the first keyword.
+  history_service_->AddPage(page_2.url, page_2.time, history::SOURCE_BROWSED);
+  history_service_->SetKeywordSearchTermsForURL(page_2.url, page_2.keyword_id,
+                                                page_2.term);
 
   {
     base::HistogramTester histogram_tester;
@@ -637,16 +614,33 @@ TEST_F(HistoryServiceTest, QueryMostRepeatedQueriesForKeyword) {
 
     ASSERT_EQ(1U, most_repeated_queries_.size());
     EXPECT_EQ(u"second", most_repeated_queries_[0]->normalized_term);
+    EXPECT_EQ(1, most_repeated_queries_[0]->visit_count);
 
     histogram_tester.ExpectTotalCount("History.QueryMostRepeatedQueriesTimeV2",
                                       1);
   }
 
-  // Add forth page for second keyword. This does not change the top page.
-  history_service_->AddPage(pages[3].url, pages[3].time,
-                            history::SOURCE_BROWSED);
-  history_service_->SetKeywordSearchTermsForURL(
-      pages[3].url, pages[3].keyword_id, pages[3].term);
+  // Add fourth page from the first keyword.
+  history_service_->AddPage(page_4.url, page_4.time, history::SOURCE_BROWSED);
+  history_service_->SetKeywordSearchTermsForURL(page_4.url, page_4.keyword_id,
+                                                page_4.term);
+
+  {
+    base::HistogramTester histogram_tester;
+    QueryMostRepeatedQueriesForKeyword(first_keyword_id, 1);
+
+    ASSERT_EQ(1U, most_repeated_queries_.size());
+    EXPECT_EQ(u"fourth", most_repeated_queries_[0]->normalized_term);
+    EXPECT_EQ(1, most_repeated_queries_[0]->visit_count);
+
+    histogram_tester.ExpectTotalCount("History.QueryMostRepeatedQueriesTimeV2",
+                                      1);
+  }
+
+  // Revisit second page from the first keyword, making it the top page.
+  history_service_->AddPage(page_2.url, page_2.time, history::SOURCE_BROWSED);
+  history_service_->SetKeywordSearchTermsForURL(page_2.url, page_2.keyword_id,
+                                                page_2.term);
 
   {
     base::HistogramTester histogram_tester;
@@ -654,6 +648,42 @@ TEST_F(HistoryServiceTest, QueryMostRepeatedQueriesForKeyword) {
 
     ASSERT_EQ(1U, most_repeated_queries_.size());
     EXPECT_EQ(u"second", most_repeated_queries_[0]->normalized_term);
+    EXPECT_EQ(2, most_repeated_queries_[0]->visit_count);
+
+    histogram_tester.ExpectTotalCount("History.QueryMostRepeatedQueriesTimeV2",
+                                      1);
+  }
+
+  // Add third page from the first keyword. This is considered a duplicative
+  // vist and will be ignored. This does not change the top page.
+  history_service_->AddPage(page_3.url, page_3.time, history::SOURCE_BROWSED);
+  history_service_->SetKeywordSearchTermsForURL(page_3.url, page_3.keyword_id,
+                                                page_3.term);
+
+  {
+    base::HistogramTester histogram_tester;
+    QueryMostRepeatedQueriesForKeyword(first_keyword_id, 1);
+
+    ASSERT_EQ(1U, most_repeated_queries_.size());
+    EXPECT_EQ(u"second", most_repeated_queries_[0]->normalized_term);
+    EXPECT_EQ(2, most_repeated_queries_[0]->visit_count);
+
+    histogram_tester.ExpectTotalCount("History.QueryMostRepeatedQueriesTimeV2",
+                                      1);
+  }
+
+  // Add fifth page from the second keyword. This does not change the top page.
+  history_service_->AddPage(page_5.url, page_5.time, history::SOURCE_BROWSED);
+  history_service_->SetKeywordSearchTermsForURL(page_5.url, page_5.keyword_id,
+                                                page_5.term);
+
+  {
+    base::HistogramTester histogram_tester;
+    QueryMostRepeatedQueriesForKeyword(first_keyword_id, 1);
+
+    ASSERT_EQ(1U, most_repeated_queries_.size());
+    EXPECT_EQ(u"second", most_repeated_queries_[0]->normalized_term);
+    EXPECT_EQ(2, most_repeated_queries_[0]->visit_count);
 
     histogram_tester.ExpectTotalCount("History.QueryMostRepeatedQueriesTimeV2",
                                       1);

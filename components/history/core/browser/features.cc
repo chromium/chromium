@@ -52,4 +52,26 @@ const base::FeatureParam<bool> kPrivilegeRepeatableQueries(
     "PrivilegeRepeatableQueries",
     false);
 
+// Whether duplicative visits should be ignored for the repeatable queries. A
+// duplicative visit is a visit to the same search term in an interval smaller
+// than kAutocompleteDuplicateVisitIntervalThreshold.
+const base::FeatureParam<bool> kRepeatableQueriesIgnoreDuplicateVisits(
+    &kOrganicRepeatableQueries,
+    "RepeatableQueriesIgnoreDuplicateVisits",
+    false);
+
+// The maximum number of days since the last visit (in days) in order for a
+// search query to considered as a repeatable query.
+const base::FeatureParam<int> kRepeatableQueriesMaxAgeDays(
+    &kOrganicRepeatableQueries,
+    "RepeatableQueriesMaxAgeDays",
+    90);
+
+// The minimum number of visits for a search query to considered as a
+// repeatable query.
+const base::FeatureParam<int> kRepeatableQueriesMinVisitCount(
+    &kOrganicRepeatableQueries,
+    "RepeatableQueriesMinVisitCount",
+    1);
+
 }  // namespace history

@@ -15,6 +15,9 @@ BASE_DECLARE_FEATURE(kOrganicRepeatableQueries);
 extern const base::FeatureParam<int> kMaxNumRepeatableQueries;
 extern const base::FeatureParam<bool> kScaleRepeatableQueriesScores;
 extern const base::FeatureParam<bool> kPrivilegeRepeatableQueries;
+extern const base::FeatureParam<bool> kRepeatableQueriesIgnoreDuplicateVisits;
+extern const base::FeatureParam<int> kRepeatableQueriesMaxAgeDays;
+extern const base::FeatureParam<int> kRepeatableQueriesMinVisitCount;
 
 }  // namespace history
 
