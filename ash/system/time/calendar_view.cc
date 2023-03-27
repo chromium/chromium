@@ -62,7 +62,6 @@ constexpr int kWeekRowHorizontalPadding =
     kContentHorizontalPadding - calendar_utils::kDateHorizontalPadding;
 constexpr int kExpandedCalendarPadding = 11;
 constexpr int kChevronPadding = calendar_utils::kColumnSetPadding - 1;
-constexpr int kEventListViewVerticalPadding = 6;
 constexpr int kMonthHeaderLabelTopPadding = 14;
 constexpr int kMonthHeaderLabelBottomPadding = 2;
 constexpr int kEventListViewHorizontalOffset = 1;
@@ -2042,9 +2041,9 @@ void CalendarView::SetCalendarSlidingSurfaceBounds(bool event_list_view_open) {
   const int x_position = scroll_view_->x() + kEventListViewHorizontalOffset;
   const int width = scroll_view_->GetVisibleRect().width() -
                     kEventListViewHorizontalOffset * 2;
-  const int event_list_view_height =
-      GetBoundsInScreen().bottom() - scroll_view_->GetBoundsInScreen().y() -
-      calendar_view_controller_->row_height() + kEventListViewVerticalPadding;
+  const int event_list_view_height = GetBoundsInScreen().bottom() -
+                                     scroll_view_->GetBoundsInScreen().y() -
+                                     calendar_view_controller_->row_height();
 
   // If the event list view is showing, position the calendar sliding surface
   // where the opened event list view will be.
