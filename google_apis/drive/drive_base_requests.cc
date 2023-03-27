@@ -20,6 +20,7 @@
 #include "base/strings/stringprintf.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/values.h"
+#include "google_apis/common/base_requests.h"
 #include "google_apis/common/request_sender.h"
 #include "google_apis/common/task_util.h"
 #include "google_apis/common/time_util.h"
@@ -284,8 +285,8 @@ GURL UploadRangeRequestBase::GetURL() const {
   return upload_url_;
 }
 
-std::string UploadRangeRequestBase::GetRequestType() const {
-  return "PUT";
+HttpRequestMethod UploadRangeRequestBase::GetRequestType() const {
+  return HttpRequestMethod::kPut;
 }
 
 void UploadRangeRequestBase::ProcessURLFetchResults(

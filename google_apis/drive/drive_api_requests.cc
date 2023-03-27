@@ -23,6 +23,7 @@
 #include "base/strings/stringprintf.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/values.h"
+#include "google_apis/common/base_requests.h"
 #include "google_apis/common/request_sender.h"
 #include "google_apis/common/time_util.h"
 #include "google_apis/drive/request_util.h"
@@ -326,8 +327,8 @@ FilesInsertRequest::FilesInsertRequest(
 
 FilesInsertRequest::~FilesInsertRequest() = default;
 
-std::string FilesInsertRequest::GetRequestType() const {
-  return "POST";
+HttpRequestMethod FilesInsertRequest::GetRequestType() const {
+  return HttpRequestMethod::kPost;
 }
 
 bool FilesInsertRequest::GetContentData(std::string* upload_content_type,
@@ -385,8 +386,8 @@ FilesPatchRequest::FilesPatchRequest(RequestSender* sender,
 
 FilesPatchRequest::~FilesPatchRequest() = default;
 
-std::string FilesPatchRequest::GetRequestType() const {
-  return "PATCH";
+HttpRequestMethod FilesPatchRequest::GetRequestType() const {
+  return HttpRequestMethod::kPatch;
 }
 
 std::vector<std::string> FilesPatchRequest::GetExtraRequestHeaders() const {
@@ -449,8 +450,8 @@ FilesCopyRequest::FilesCopyRequest(RequestSender* sender,
 
 FilesCopyRequest::~FilesCopyRequest() = default;
 
-std::string FilesCopyRequest::GetRequestType() const {
-  return "POST";
+HttpRequestMethod FilesCopyRequest::GetRequestType() const {
+  return HttpRequestMethod::kPost;
 }
 
 GURL FilesCopyRequest::GetURLInternal() const {
@@ -561,8 +562,8 @@ FilesDeleteRequest::FilesDeleteRequest(
 
 FilesDeleteRequest::~FilesDeleteRequest() = default;
 
-std::string FilesDeleteRequest::GetRequestType() const {
-  return "DELETE";
+HttpRequestMethod FilesDeleteRequest::GetRequestType() const {
+  return HttpRequestMethod::kDelete;
 }
 
 GURL FilesDeleteRequest::GetURL() const {
@@ -586,8 +587,8 @@ FilesTrashRequest::FilesTrashRequest(RequestSender* sender,
 
 FilesTrashRequest::~FilesTrashRequest() = default;
 
-std::string FilesTrashRequest::GetRequestType() const {
-  return "POST";
+HttpRequestMethod FilesTrashRequest::GetRequestType() const {
+  return HttpRequestMethod::kPost;
 }
 
 GURL FilesTrashRequest::GetURLInternal() const {
@@ -652,8 +653,8 @@ ChildrenInsertRequest::ChildrenInsertRequest(
 
 ChildrenInsertRequest::~ChildrenInsertRequest() = default;
 
-std::string ChildrenInsertRequest::GetRequestType() const {
-  return "POST";
+HttpRequestMethod ChildrenInsertRequest::GetRequestType() const {
+  return HttpRequestMethod::kPost;
 }
 
 GURL ChildrenInsertRequest::GetURL() const {
@@ -684,8 +685,8 @@ ChildrenDeleteRequest::ChildrenDeleteRequest(
 
 ChildrenDeleteRequest::~ChildrenDeleteRequest() = default;
 
-std::string ChildrenDeleteRequest::GetRequestType() const {
-  return "DELETE";
+HttpRequestMethod ChildrenDeleteRequest::GetRequestType() const {
+  return HttpRequestMethod::kDelete;
 }
 
 GURL ChildrenDeleteRequest::GetURL() const {
@@ -716,8 +717,8 @@ GURL InitiateUploadNewFileRequest::GetURL() const {
   return url_generator_.GetInitiateUploadNewFileUrl(!modified_date_.is_null());
 }
 
-std::string InitiateUploadNewFileRequest::GetRequestType() const {
-  return "POST";
+HttpRequestMethod InitiateUploadNewFileRequest::GetRequestType() const {
+  return HttpRequestMethod::kPost;
 }
 
 bool InitiateUploadNewFileRequest::GetContentData(
@@ -775,8 +776,8 @@ GURL InitiateUploadExistingFileRequest::GetURL() const {
       resource_id_, !modified_date_.is_null());
 }
 
-std::string InitiateUploadExistingFileRequest::GetRequestType() const {
-  return "PUT";
+HttpRequestMethod InitiateUploadExistingFileRequest::GetRequestType() const {
+  return HttpRequestMethod::kPut;
 }
 
 std::vector<std::string>
@@ -909,8 +910,8 @@ GURL MultipartUploadNewFileDelegate::GetURL() const {
   return url_generator_.GetMultipartUploadNewFileUrl(has_modified_date_);
 }
 
-std::string MultipartUploadNewFileDelegate::GetRequestType() const {
-  return "POST";
+HttpRequestMethod MultipartUploadNewFileDelegate::GetRequestType() const {
+  return HttpRequestMethod::kPost;
 }
 
 //====================== MultipartUploadExistingFileDelegate ===================
@@ -963,8 +964,8 @@ GURL MultipartUploadExistingFileDelegate::GetURL() const {
                                                           has_modified_date_);
 }
 
-std::string MultipartUploadExistingFileDelegate::GetRequestType() const {
-  return "PUT";
+HttpRequestMethod MultipartUploadExistingFileDelegate::GetRequestType() const {
+  return HttpRequestMethod::kPut;
 }
 
 //========================== DownloadFileRequest ==========================
@@ -1004,8 +1005,8 @@ GURL PermissionsInsertRequest::GetURL() const {
   return url_generator_.GetPermissionsInsertUrl(id_);
 }
 
-std::string PermissionsInsertRequest::GetRequestType() const {
-  return "POST";
+HttpRequestMethod PermissionsInsertRequest::GetRequestType() const {
+  return HttpRequestMethod::kPost;
 }
 
 bool PermissionsInsertRequest::GetContentData(std::string* upload_content_type,
@@ -1072,7 +1073,7 @@ GURL SingleBatchableDelegateRequest::GetURL() const {
   return delegate_->GetURL();
 }
 
-std::string SingleBatchableDelegateRequest::GetRequestType() const {
+HttpRequestMethod SingleBatchableDelegateRequest::GetRequestType() const {
   return delegate_->GetRequestType();
 }
 
@@ -1217,10 +1218,11 @@ void BatchUploadRequest::MayCompletePrepare() {
     DCHECK(result);
 
     const GURL url = child->request->GetURL();
-    std::string method = child->request->GetRequestType();
+    HttpRequestMethod method = child->request->GetRequestType();
     const std::string header = base::StringPrintf(
-        kBatchUploadRequestFormat, method.c_str(), url.path().c_str(),
-        url_generator_.GetBatchUploadUrl().host().c_str(), type.c_str());
+        kBatchUploadRequestFormat, HttpRequestMethodToString(method).c_str(),
+        url.path().c_str(), url_generator_.GetBatchUploadUrl().host().c_str(),
+        type.c_str());
 
     child->data_offset = header.size();
     child->data_size = data.size();
@@ -1259,8 +1261,8 @@ GURL BatchUploadRequest::GetURL() const {
   return url_generator_.GetBatchUploadUrl();
 }
 
-std::string BatchUploadRequest::GetRequestType() const {
-  return "PUT";
+HttpRequestMethod BatchUploadRequest::GetRequestType() const {
+  return HttpRequestMethod::kPut;
 }
 
 std::vector<std::string> BatchUploadRequest::GetExtraRequestHeaders() const {

@@ -198,4 +198,12 @@ TEST_F(BaseRequestsTest, UrlFetchRequestBaseResponseCodeOverride) {
   EXPECT_EQ(HTTP_SERVICE_UNAVAILABLE, error);
 }
 
+TEST(BaseRequestsHttpRequestMethodEnumTest, ConvertsToString) {
+  EXPECT_EQ(HttpRequestMethodToString(HttpRequestMethod::kGet), "GET");
+  EXPECT_EQ(HttpRequestMethodToString(HttpRequestMethod::kPost), "POST");
+  EXPECT_EQ(HttpRequestMethodToString(HttpRequestMethod::kPut), "PUT");
+  EXPECT_EQ(HttpRequestMethodToString(HttpRequestMethod::kPatch), "PATCH");
+  EXPECT_EQ(HttpRequestMethodToString(HttpRequestMethod::kDelete), "DELETE");
+}
+
 }  // namespace google_apis

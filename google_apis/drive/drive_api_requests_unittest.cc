@@ -23,6 +23,7 @@
 #include "base/test/values_test_util.h"
 #include "base/time/time.h"
 #include "base/values.h"
+#include "google_apis/common/base_requests.h"
 #include "google_apis/common/dummy_auth_service.h"
 #include "google_apis/common/request_sender.h"
 #include "google_apis/common/test_util.h"
@@ -87,7 +88,9 @@ class TestBatchableDelegate : public BatchableDelegate {
         content_data_(content_data),
         callback_(std::move(callback)) {}
   GURL GetURL() const override { return url_; }
-  std::string GetRequestType() const override { return "PUT"; }
+  HttpRequestMethod GetRequestType() const override {
+    return HttpRequestMethod::kPut;
+  }
   std::vector<std::string> GetExtraRequestHeaders() const override {
     return std::vector<std::string>();
   }

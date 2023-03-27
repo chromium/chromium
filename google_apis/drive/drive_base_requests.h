@@ -91,7 +91,7 @@ class BatchableDelegate {
 
   // See UrlFetchRequestBase.
   virtual GURL GetURL() const = 0;
-  virtual std::string GetRequestType() const = 0;
+  virtual HttpRequestMethod GetRequestType() const = 0;
   virtual std::vector<std::string> GetExtraRequestHeaders() const = 0;
   virtual void Prepare(PrepareCallback callback) = 0;
   virtual bool GetContentData(std::string* upload_content_type,
@@ -229,7 +229,7 @@ class UploadRangeRequestBase : public DriveUrlFetchRequestBase {
 
   // UrlFetchRequestBase overrides.
   GURL GetURL() const override;
-  std::string GetRequestType() const override;
+  HttpRequestMethod GetRequestType() const override;
   void ProcessURLFetchResults(
       const network::mojom::URLResponseHead* response_head,
       base::FilePath response_file,

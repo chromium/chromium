@@ -50,11 +50,17 @@ typedef base::RepeatingCallback<void(ApiErrorCode error,
                                      bool first_chunk)>
     GetContentCallback;
 
+// Most commonly used HTTP request methods.
+enum class HttpRequestMethod { kGet, kPost, kPut, kPatch, kDelete };
+
 // Parses JSON passed in |json|. Returns NULL on failure.
 std::unique_ptr<base::Value> ParseJson(const std::string& json);
 
 // Maps the error body to reason and logs the error code.
 absl::optional<std::string> MapJsonErrorToReason(const std::string& error_body);
+
+// Stringifies `HttpRequestMethod` enum value.
+std::string HttpRequestMethodToString(HttpRequestMethod method);
 
 //======================= AuthenticatedRequestInterface ======================
 
@@ -133,7 +139,7 @@ class UrlFetchRequestBase : public AuthenticatedRequestInterface,
 
   // Returns the request type. A derived class should override this method
   // for a request type other than HTTP GET.
-  virtual std::string GetRequestType() const;
+  virtual HttpRequestMethod GetRequestType() const;
 
   // Returns the extra HTTP headers for the request. A derived class should
   // override this method to specify any extra headers needed for the request.
