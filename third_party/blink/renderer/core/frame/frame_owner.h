@@ -110,50 +110,6 @@ class FrameSwapScope {
   FrameOwner* frame_owner_;
 };
 
-// TODO(dcheng): This class is an internal implementation detail of provisional
-// frames. Move this into WebLocalFrameImpl.cpp and remove existing dependencies
-// on it.
-class CORE_EXPORT DummyFrameOwner final
-    : public GarbageCollected<DummyFrameOwner>,
-      public FrameOwner {
- public:
-  void Trace(Visitor* visitor) const override { FrameOwner::Trace(visitor); }
-
-  // FrameOwner overrides:
-  Frame* ContentFrame() const override { return nullptr; }
-  void SetContentFrame(Frame&) override {}
-  void ClearContentFrame() override {}
-  const FramePolicy& GetFramePolicy() const override {
-    DEFINE_STATIC_LOCAL(FramePolicy, frame_policy, ());
-    return frame_policy;
-  }
-  void AddResourceTiming(mojom::blink::ResourceTimingInfoPtr) override {}
-  void DispatchLoad() override {}
-  void IntrinsicSizingInfoChanged() override {}
-  void SetNeedsOcclusionTracking(bool) override {}
-  AtomicString BrowsingContextContainerName() const override {
-    return AtomicString();
-  }
-  mojom::blink::ScrollbarMode ScrollbarMode() const override {
-    return mojom::blink::ScrollbarMode::kAuto;
-  }
-  int MarginWidth() const override { return -1; }
-  int MarginHeight() const override { return -1; }
-  bool AllowFullscreen() const override { return false; }
-  bool AllowPaymentRequest() const override { return false; }
-  bool IsDisplayNone() const override { return false; }
-  mojom::blink::ColorScheme GetColorScheme() const override {
-    return mojom::blink::ColorScheme::kLight;
-  }
-  bool ShouldLazyLoadChildren() const override { return false; }
-
- private:
-  // Intentionally private to prevent redundant checks when the type is
-  // already DummyFrameOwner.
-  bool IsLocal() const override { return false; }
-  bool IsRemote() const override { return false; }
-};
-
 }  // namespace blink
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_CORE_FRAME_FRAME_OWNER_H_
