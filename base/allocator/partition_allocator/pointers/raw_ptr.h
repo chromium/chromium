@@ -157,6 +157,21 @@ struct TraitsToImpl;
 
 }  // namespace raw_ptr_traits
 
+template <typename T, RawPtrTraits Traits = RawPtrTraits::kEmpty>
+class raw_ptr;
+
+}  // namespace base
+
+// This type is to be used internally, or in callbacks arguments when it is
+// known that they might receive dangling pointers. In any other cases, please
+// use one of:
+// - raw_ptr<T, DanglingUntriaged>
+// - raw_ptr<T, DisableDanglingPtrDetection>
+template <typename T, base::RawPtrTraits Traits = base::RawPtrTraits::kEmpty>
+using MayBeDangling = base::raw_ptr<T, Traits | base::RawPtrTraits::kMayDangle>;
+
+namespace base {
+
 namespace internal {
 // These classes/structures are part of the raw_ptr implementation.
 // DO NOT USE THESE CLASSES DIRECTLY YOURSELF.
@@ -503,12 +518,8 @@ struct TraitsToImpl {
 // non-default move constructor/assignment. Thus, it's possible to get an error
 // where the pointer is not actually dangling, and have to work around the
 // compiler. We have not managed to construct such an example in Chromium yet.
-template <typename T, RawPtrTraits Traits = RawPtrTraits::kEmpty>
+template <typename T, RawPtrTraits Traits>
 class PA_TRIVIAL_ABI PA_GSL_POINTER raw_ptr {
-  // Type to return from ExtractAsDangling(), which is identical except
-  // kMayDangle trait is added (if one isn't there already).
-  using DanglingRawPtrType = raw_ptr<T, Traits | RawPtrTraits::kMayDangle>;
-
  public:
   using Impl = typename raw_ptr_traits::TraitsToImpl<Traits>::Impl;
 
@@ -847,18 +858,17 @@ class PA_TRIVIAL_ABI PA_GSL_POINTER raw_ptr {
   // variable (or worse, a field)! It's meant to be used as a temporary, to be
   // passed into a cleanup & freeing function, and destructed at the end of the
   // statement.
-  PA_ALWAYS_INLINE constexpr DanglingRawPtrType ExtractAsDangling() noexcept {
-    if constexpr (std::is_same_v<
-                      typename std::remove_reference<decltype(*this)>::type,
-                      DanglingRawPtrType>) {
-      DanglingRawPtrType res(std::move(*this));
+  PA_ALWAYS_INLINE constexpr MayBeDangling<T, Traits>
+  ExtractAsDangling() noexcept {
+    if constexpr (raw_ptr_traits::Contains(Traits, RawPtrTraits::kMayDangle)) {
+      MayBeDangling<T, Traits> res(std::move(*this));
       // Not all implementation clear the source pointer on move, so do it
       // here just in case. Should be cheap.
       operator=(nullptr);
       return res;
     } else {
       T* ptr = GetForExtraction();
-      DanglingRawPtrType res(ptr);
+      MayBeDangling<T, Traits> res(ptr);
       operator=(nullptr);
       return res;
     }
@@ -1103,13 +1113,6 @@ constexpr auto DisableDanglingPtrDetection = base::RawPtrTraits::kMayDangle;
 // Annotates known dangling raw_ptr. Those haven't been triaged yet. All the
 // occurrences are meant to be removed. See https://crbug.com/1291138.
 constexpr auto DanglingUntriaged = base::RawPtrTraits::kMayDangle;
-
-// This type is to be used in callbacks arguments when it is known that they
-// might receive dangling pointers. In any other cases, please use one of:
-// - raw_ptr<T, DanglingUntriaged>
-// - raw_ptr<T, DisableDanglingPtrDetection>
-template <typename T, base::RawPtrTraits Traits = base::RawPtrTraits::kEmpty>
-using MayBeDangling = base::raw_ptr<T, Traits | base::RawPtrTraits::kMayDangle>;
 
 // The use of pointer arithmetic with raw_ptr is strongly discouraged and
 // disabled by default. Usually a container like span<> should be used
