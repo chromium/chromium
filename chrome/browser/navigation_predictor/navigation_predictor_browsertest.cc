@@ -308,7 +308,13 @@ IN_PROC_BROWSER_TEST_F(NavigationPredictorBrowserTest,
 }
 
 // Tests that anchors from iframes are reported.
-IN_PROC_BROWSER_TEST_F(NavigationPredictorBrowserTest, PageWithIframe) {
+// TODO(crbug.com/1427913): Flaky on Windows ASAN.
+#if BUILDFLAG(IS_WIN)
+#define MAYBE_PageWithIframe DISABLED_PageWithIframe
+#else
+#define MAYBE_PageWithIframe PageWithIframe
+#endif
+IN_PROC_BROWSER_TEST_F(NavigationPredictorBrowserTest, MAYBE_PageWithIframe) {
   auto test_ukm_recorder = std::make_unique<ukm::TestAutoSetUkmRecorder>();
   ResetUKM();
 
