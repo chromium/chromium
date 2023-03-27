@@ -182619,6 +182619,19 @@
         {}
        ]
       ],
+      "text-align-last-015.html": [
+       "a0d8fa4df92c4b5a1cb1e37cfb1177bcaa71e3f7",
+       [
+        null,
+        [
+         [
+          "/css/css-text/text-align/text-align-last-015-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
       "text-align-last-center.html": [
        "639156062d23e61d07130b48b573fc521f115382",
        [
@@ -267443,16 +267456,6 @@
    }
   },
   "support": {
-   ".cache": {
-    "gitignore2.json": [
-     "d14ad630c03e8d0619ad95b56ef3007a441a3490",
-     []
-    ],
-    "mtime.json": [
-     "e925d358f44bfb292ee7b55a8784315f4b809692",
-     []
-    ]
-   },
    ".gitignore": [
     "d93e645d547894b50149d3726de2654957b6e06f",
     []
@@ -282397,7 +282400,7 @@
      }
     },
     "DIR_METADATA": [
-     "275a4301518da45ba222e6ce4e6a69c6dc2b415d",
+     "c41ee089b8e083540febdab0fb23c1c8bafbbfc5",
      []
     ],
     "README.md": [
@@ -317058,6 +317061,10 @@
       ],
       "text-align-last-010-ref.html": [
        "2f26b42723d0e736ef8d01ddc72ec3cc5e69d088",
+       []
+      ],
+      "text-align-last-015-ref.html": [
+       "75fc7d22c66b1e3180d08de2208e5b3eff6dec19",
        []
       ],
       "text-align-last-center-ref.html": [
@@ -365939,16 +365946,8 @@
      []
     ],
     "tentative": {
-     "loaf-desired-exec-time.html.ini": [
-      "6462928c3a3e0a9d2efdfe48cd031a4296a512c7",
-      []
-     ],
      "loaf-first-ui-event.html.ini": [
       "a3d3fb4e0bd5cacd8cb627501073eaf076b90af7",
-      []
-     ],
-     "loaf-script-block.html.ini": [
-      "8b5c9fa63607cc2d18d9eba06219092c42f39447",
       []
      ],
      "loaf-visibility.html.ini": [
@@ -365961,7 +365960,7 @@
        []
       ],
       "utils.js": [
-       "394d81706cc8ec7f11e566b91d272e6edd3cc1fa",
+       "f956ed410186a6ea5ca0cc698fb5966974d1d90d",
        []
       ]
      }
@@ -372209,7 +372208,7 @@
    },
    "quirks": {
     "DIR_METADATA": [
-     "275a4301518da45ba222e6ce4e6a69c6dc2b415d",
+     "c41ee089b8e083540febdab0fb23c1c8bafbbfc5",
      []
     ],
     "META.yml": [
@@ -430374,14 +430373,14 @@
        ]
       ],
       "animation-shorthand.html": [
-       "b981ad3ad6893c3305183c965be973eb369331c5",
+       "464e42460b169f52b4558d0b2778c04c82eeaf36",
        [
         null,
         {}
        ]
       ],
       "animation-shorthand.tentative.html": [
-       "ac3613cf825c0e739c3ed5a27db248aeeaa2aabc",
+       "04d06080e5efd7b9a00bfc6d5e191902c0396cde",
        [
         null,
         {}
@@ -558446,7 +558445,7 @@
       ]
      ],
      "loaf-first-ui-event.html": [
-      "b30b645d2fab262e77b922c0d0d075b23d1f844d",
+      "47a3a51de215e47add78b96047d431b13eb89257",
       [
        null,
        {
@@ -558483,7 +558482,7 @@
       ]
      ],
      "loaf-script-block.html": [
-      "f896a737ce7cc14af380a772a06146b874a6c74e",
+      "866eea09e0907622ad62c53c8b5f020566ba559f",
       [
        null,
        {
@@ -589054,7 +589053,7 @@
       ]
      ],
      "animation-shorthand.html": [
-      "87e66d0f532bf85de5e19e90235e8fc71e7cb11a",
+      "7bd17b9919070006824fee9e77ec5b20e464315b",
       [
        null,
        {}
@@ -589313,7 +589312,7 @@
       ]
      ],
      "view-timeline-animation-range-update.tentative.html": [
-      "41386bd7c55baff1062e3d0caa7f663cf80c0637",
+      "6c2a792aeec0c0baf4998423a9e4750a1de2af4e",
       [
        null,
        {}
