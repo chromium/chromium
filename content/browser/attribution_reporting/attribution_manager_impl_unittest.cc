@@ -467,11 +467,6 @@ TEST_F(AttributionManagerImplTest, ImpressionConverted_ReportSent) {
   checkpoint.Call(1);
 
   task_environment_.FastForwardBy(base::Microseconds(1));
-
-  histograms.ExpectUniqueSample("Conversions.RegisterImpressionAllowed", true,
-                                1);
-  histograms.ExpectUniqueSample("Conversions.RegisterConversionAllowed", true,
-                                1);
 }
 
 TEST_F(AttributionManagerImplTest,
@@ -1669,8 +1664,9 @@ TEST_F(AttributionManagerImplTest,
   attribution_manager_->HandleSource(source, kFrameId);
   EXPECT_THAT(StoredSources(), IsEmpty());
 
-  histograms.ExpectUniqueSample("Conversions.RegisterImpressionAllowed", false,
-                                1);
+  histograms.ExpectUniqueSample(
+      "Conversions.SourceStoredStatus2",
+      StorableSource::Result::kProhibitedByBrowserPolicy, 1);
 }
 
 TEST_F(AttributionManagerImplTest,
@@ -1723,8 +1719,12 @@ TEST_F(AttributionManagerImplTest,
   attribution_manager_->HandleTrigger(trigger, kFrameId);
   EXPECT_THAT(StoredReports(), IsEmpty());
 
-  histograms.ExpectUniqueSample("Conversions.RegisterConversionAllowed", false,
-                                1);
+  histograms.ExpectUniqueSample(
+      "Conversions.CreateReportStatus7",
+      AttributionTrigger::EventLevelResult::kProhibitedByBrowserPolicy, 1);
+  histograms.ExpectUniqueSample(
+      "Conversions.AggregatableReport.CreateReportStatus3",
+      AttributionTrigger::AggregatableResult::kProhibitedByBrowserPolicy, 1);
 }
 
 TEST_F(AttributionManagerImplTest, EmbedderDisallowsReporting_ReportNotSent) {

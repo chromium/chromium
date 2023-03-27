@@ -232,16 +232,6 @@ TEST_F(AttributionHostTest, ValidAttributionSrc_ForwardedToManager) {
   navigation->Commit();
 }
 
-TEST_F(AttributionHostTest, ImpressionWithNoManagerAvailable_NoCrash) {
-  ClearAttributionManager();
-
-  auto navigation = NavigationSimulatorImpl::CreateRendererInitiated(
-      GURL(kConversionUrl), main_rfh());
-  navigation->SetInitiatorFrame(main_rfh());
-  navigation->set_impression(blink::Impression());
-  navigation->Commit();
-}
-
 TEST_F(AttributionHostTest, ImpressionInSubframe_Ignored) {
   EXPECT_CALL(*mock_data_host_manager(), NotifyNavigationForDataHost).Times(0);
 

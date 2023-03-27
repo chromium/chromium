@@ -48,7 +48,6 @@
 #include "content/browser/attribution_reporting/attribution_debug_report.h"
 #include "content/browser/attribution_reporting/attribution_features.h"
 #include "content/browser/attribution_reporting/attribution_info.h"
-#include "content/browser/attribution_reporting/attribution_metrics.h"
 #include "content/browser/attribution_reporting/attribution_observer.h"
 #include "content/browser/attribution_reporting/attribution_report.h"
 #include "content/browser/attribution_reporting/attribution_report_network_sender.h"
@@ -548,7 +547,6 @@ void AttributionManagerImpl::HandleSource(
       &*source.common_info().source_origin(),
       /*destination_origin=*/nullptr,
       &*source.common_info().reporting_origin());
-  RecordRegisterImpressionAllowed(allowed);
   if (!allowed) {
     OnSourceStored(
         source,
@@ -619,7 +617,6 @@ void AttributionManagerImpl::HandleTrigger(
       RenderFrameHost::FromID(render_frame_id),
       /*source_origin=*/nullptr, &*trigger.destination_origin(),
       &*trigger.reporting_origin());
-  RecordRegisterConversionAllowed(allowed);
   if (!allowed) {
     OnReportStored(
         trigger,
