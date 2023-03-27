@@ -8,7 +8,7 @@
 #include "base/values.h"
 #include "build/chromeos_buildflags.h"
 #include "components/prefs/testing_pref_store.h"
-#include "components/sync_preferences/syncable_prefs_database.h"
+#include "components/sync_preferences/pref_model_associator_client.h"
 #include "components/sync_preferences/test_syncable_prefs_database.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -86,15 +86,44 @@ class MockPrefStoreObserver : public PrefStore::Observer {
   MOCK_METHOD(void, OnInitializationCompleted, (bool succeeded), (override));
 };
 
+class TestPrefModelAssociatorClient : public PrefModelAssociatorClient {
+ public:
+  TestPrefModelAssociatorClient()
+      : syncable_prefs_database_(kSyncablePrefsDatabase) {}
+
+  // PrefModelAssociatorClient implementation.
+  bool IsMergeableListPreference(const std::string& pref_name) const override {
+    return false;
+  }
+
+  bool IsMergeableDictionaryPreference(
+      const std::string& pref_name) const override {
+    return false;
+  }
+
+  base::Value MaybeMergePreferenceValues(
+      const std::string& pref_name,
+      const base::Value& local_value,
+      const base::Value& server_value) const override {
+    return base::Value();
+  }
+
+  const SyncablePrefsDatabase& GetSyncablePrefsDatabase() const override {
+    return syncable_prefs_database_;
+  }
+
+ private:
+  TestSyncablePrefsDatabase syncable_prefs_database_;
+};
+
 }  // namespace
 
 class DualLayerUserPrefStoreTestBase : public testing::Test {
  public:
-  explicit DualLayerUserPrefStoreTestBase(bool initialize)
-      : syncable_prefs_database_(kSyncablePrefsDatabase) {
+  explicit DualLayerUserPrefStoreTestBase(bool initialize) {
     local_store_ = base::MakeRefCounted<TestingPrefStore>();
     dual_layer_store_ = base::MakeRefCounted<DualLayerUserPrefStore>(
-        local_store_, &syncable_prefs_database_);
+        local_store_, &pref_model_associator_client_);
 
     if (initialize) {
       local_store_->NotifyInitializationCompleted();
@@ -107,7 +136,7 @@ class DualLayerUserPrefStoreTestBase : public testing::Test {
  protected:
   scoped_refptr<TestingPrefStore> local_store_;
   scoped_refptr<DualLayerUserPrefStore> dual_layer_store_;
-  TestSyncablePrefsDatabase syncable_prefs_database_;
+  TestPrefModelAssociatorClient pref_model_associator_client_;
 };
 
 class DualLayerUserPrefStoreTest : public DualLayerUserPrefStoreTestBase {

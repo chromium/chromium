@@ -58,14 +58,9 @@ std::unique_ptr<PrefServiceSyncable> PrefServiceSyncableFactory::CreateSyncable(
     // If EnablePreferencesAccountStorage is enabled, then a
     // DualLayerUserPrefStore is used as the main user pref store, and sync is
     // hooked up directly to the underlying account store.
-    const SyncablePrefsDatabase* syncable_prefs_database = nullptr;
-    if (pref_model_associator_client_) {
-      syncable_prefs_database =
-          &pref_model_associator_client_->GetSyncablePrefsDatabase();
-    }
     auto dual_layer_user_pref_store =
         base::MakeRefCounted<sync_preferences::DualLayerUserPrefStore>(
-            user_prefs_, syncable_prefs_database);
+            user_prefs_, pref_model_associator_client_);
     auto pref_value_store = std::make_unique<PrefValueStore>(
         managed_prefs_.get(), supervised_user_prefs_.get(),
         extension_prefs_.get(), standalone_browser_prefs_.get(),

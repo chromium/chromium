@@ -20,7 +20,7 @@
 
 namespace sync_preferences {
 
-class SyncablePrefsDatabase;
+class PrefModelAssociatorClient;
 
 // A two-layer user PrefStore that combines local preferences (scoped to this
 // profile) with account-scoped preferences (scoped to the user's signed-in
@@ -33,8 +33,9 @@ class SyncablePrefsDatabase;
 //   account store.
 class DualLayerUserPrefStore : public PersistentPrefStore {
  public:
-  DualLayerUserPrefStore(scoped_refptr<PersistentPrefStore> local_pref_store,
-                         const SyncablePrefsDatabase* syncable_prefs_database);
+  DualLayerUserPrefStore(
+      scoped_refptr<PersistentPrefStore> local_pref_store,
+      const PrefModelAssociatorClient* pref_model_associator_client);
 
   DualLayerUserPrefStore(const DualLayerUserPrefStore&) = delete;
   DualLayerUserPrefStore& operator=(const DualLayerUserPrefStore&) = delete;
@@ -129,7 +130,8 @@ class DualLayerUserPrefStore : public PersistentPrefStore {
 
   base::ObserverList<PrefStore::Observer, true>::Unchecked observers_;
 
-  const SyncablePrefsDatabase* const syncable_prefs_database_ = nullptr;
+  const PrefModelAssociatorClient* const pref_model_associator_client_ =
+      nullptr;
 };
 
 }  // namespace sync_preferences
