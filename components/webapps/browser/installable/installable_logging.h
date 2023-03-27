@@ -7,7 +7,7 @@
 
 #include <string>
 
-#include "third_party/blink/public/mojom/devtools/console_message.mojom.h"
+#include "third_party/blink/public/mojom/devtools/console_message.mojom-forward.h"
 
 namespace content {
 struct InstallabilityError;
