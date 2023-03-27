@@ -85,6 +85,8 @@ class MojoJpegEncodeAcceleratorService
       int32_t coded_size_width,
       int32_t coded_size_height,
       int32_t quality,
+      bool has_input_modifier,
+      uint64_t input_modifier,
       EncodeWithDmaBufCallback callback) override;
 
   void NotifyEncodeStatus(

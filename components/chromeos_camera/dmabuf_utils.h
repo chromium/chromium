@@ -23,7 +23,8 @@ namespace chromeos_camera {
 scoped_refptr<media::VideoFrame> ConstructVideoFrame(
     std::vector<mojom::DmaBufPlanePtr> dma_buf_planes,
     media::VideoPixelFormat pixel_format,
-    const gfx::Size& coded_size);
+    const gfx::Size& coded_size,
+    uint64_t modifier = gfx::NativePixmapHandle::kNoModifier);
 
 }  // namespace chromeos_camera
 

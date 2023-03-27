@@ -56,7 +56,8 @@ bool VerifyMjpegBufferHandle(const gfx::GpuMemoryBufferHandle& gmb_handle) {
 scoped_refptr<media::VideoFrame> ConstructVideoFrame(
     std::vector<mojom::DmaBufPlanePtr> dma_buf_planes,
     media::VideoPixelFormat pixel_format,
-    const gfx::Size& coded_size) {
+    const gfx::Size& coded_size,
+    uint64_t modifier) {
   const size_t num_planes = media::VideoFrame::NumPlanes(pixel_format);
   if (num_planes != dma_buf_planes.size()) {
     DLOG(ERROR) << "The number of DMA buf planes does not match the format";
@@ -72,6 +73,7 @@ scoped_refptr<media::VideoFrame> ConstructVideoFrame(
   gfx::GpuMemoryBufferHandle gmb_handle;
   gmb_handle.type = gfx::GpuMemoryBufferType::NATIVE_PIXMAP;
   gmb_handle.native_pixmap_handle.planes.resize(num_planes);
+  gmb_handle.native_pixmap_handle.modifier = modifier;
   for (size_t i = 0; i < num_planes; ++i) {
     mojo::PlatformHandle handle =
         mojo::UnwrapPlatformHandle(std::move(dma_buf_planes[i]->fd_handle));
@@ -112,8 +114,9 @@ scoped_refptr<media::VideoFrame> ConstructVideoFrame(
         base::strict_cast<size_t>(dma_buf_planes[i]->size));
   }
   const absl::optional<media::VideoFrameLayout> layout =
-      media::VideoFrameLayout::CreateWithPlanes(pixel_format, coded_size,
-                                                std::move(planes));
+      media::VideoFrameLayout::CreateWithPlanes(
+          pixel_format, coded_size, std::move(planes),
+          media::VideoFrameLayout::kBufferAddressAlignment, modifier);
   if (!layout) {
     DLOG(ERROR) << "Failed to create video frame layout";
     return nullptr;

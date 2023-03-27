@@ -61,6 +61,8 @@ cros::mojom::CameraBufferHandlePtr RequestBuilder::CreateCameraBufferHandle(
   buffer_handle->buffer_id = buffer_info.ipc_id;
   buffer_handle->drm_format = buffer_info.drm_format;
   buffer_handle->hal_pixel_format = buffer_info.hal_pixel_format;
+  buffer_handle->has_modifier = true;
+  buffer_handle->modifier = buffer_info.modifier;
   buffer_handle->width = buffer_info.dimension.width();
   buffer_handle->height = buffer_info.dimension.height();
 

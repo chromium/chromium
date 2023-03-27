@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+// Next min version: 2
+
 module chromeos_camera.mojom;
 
 import "components/chromeos_camera/common/dmabuf.mojom";
@@ -59,7 +61,9 @@ interface JpegEncodeAccelerator {
   // onto APP1 segment in the output JPEG image. |quality| is the quality of
   // JPEG image. The range is from 1~100. High value means high quality. When
   // the task ends, it returns |status| as the status code and
-  // |encoded_buffer_size| is the actual size of the encoded JPEG.
+  // |encoded_buffer_size| is the actual size of the encoded JPEG. The
+  // |input_modifier| of input buffer is valid only if |has_input_modifier| is
+  // true.
   EncodeWithDmaBuf(
       int32 task_id,
       uint32 input_format,
@@ -69,6 +73,8 @@ interface JpegEncodeAccelerator {
       uint32 exif_buffer_size,
       int32 coded_size_width,
       int32 coded_size_height,
-      int32 quality)
+      int32 quality,
+      [MinVersion=1] bool has_input_modifier,
+      [MinVersion=1] uint64 input_modifier)
       => (uint32 encoded_buffer_size, EncodeStatus status);
 };

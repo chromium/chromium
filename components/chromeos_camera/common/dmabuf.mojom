@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+// Next min version: 2
+
 module chromeos_camera.mojom;
 
 import "media/mojo/mojom/media_types.mojom";
@@ -18,10 +20,13 @@ struct DmaBufPlane {
 // This structure defines a simplified version of media::VideoFrame backed by
 // DMA-bufs (see media/base/video_frame.h) for Chrome OS usage. The video frame
 // has pixel format |format| and coded size |coded_width|x|coded_height|.
-// Per-plane DMA-buf FDs and layouts are defined in |planes|.
+// Per-plane DMA-buf FDs and layouts are defined in |planes|. The |modifier| of
+// buffer is valid only if |has_modifier| is true.
 struct DmaBufVideoFrame {
   media.mojom.VideoPixelFormat format;
   uint32 coded_width;
   uint32 coded_height;
   array<DmaBufPlane> planes;
+  [MinVersion=1] bool has_modifier;
+  [MinVersion=1] uint64 modifier;
 };
