@@ -1732,18 +1732,18 @@ const remove = removeListener;
 
 var gestures$1 = /*#__PURE__*/Object.freeze({
   __proto__: null,
-  gestures: gestures,
-  recognizers: recognizers,
-  deepTargetFind: deepTargetFind,
-  addListener: addListener,
-  removeListener: removeListener,
-  register: register$1,
-  setTouchAction: setTouchAction,
-  prevent: prevent,
-  resetMouseCanceller: resetMouseCanceller,
-  findOriginalTarget: findOriginalTarget,
   add: add,
-  remove: remove
+  addListener: addListener,
+  deepTargetFind: deepTargetFind,
+  findOriginalTarget: findOriginalTarget,
+  gestures: gestures,
+  prevent: prevent,
+  recognizers: recognizers,
+  register: register$1,
+  remove: remove,
+  removeListener: removeListener,
+  resetMouseCanceller: resetMouseCanceller,
+  setTouchAction: setTouchAction
 });
 
 /**

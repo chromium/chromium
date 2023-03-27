@@ -59,8 +59,9 @@ def main():
         #'--comments', '/Copyright|license|LICENSE/',
 
         # Declare global variables as false, to prune out unnecessary code.
-        '--define', 'window.ShadyDOM=false',
+        '--define', 'window.HTMLImports=false',
         '--define', 'window.ShadyCSS=false',
+        '--define', 'window.ShadyDOM=false',
         '--define', 'window.Polymer.legacyOptimizations=false',
 
         '--output', minified_js])
