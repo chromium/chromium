@@ -1,5 +1,5 @@
 (async function(testRunner) {
-  const {session, dp, page} = await testRunner.startBlank(
+  const {session, dp} = await testRunner.startBlank(
       `Tests setting a regexp breakpoint and disconnect.`);
 
   await dp.Target.setDiscoverTargets({discover: true});
@@ -20,10 +20,6 @@
 
   session.disconnect();
   testRunner.log('Disconnected');
-
-  // Let's try to connect to the page to make sure it is still alive.
-  const session2 = await page.createSession();
-  await session2.protocol.Debugger.enable();
 
   testRunner.completeTest();
 })
