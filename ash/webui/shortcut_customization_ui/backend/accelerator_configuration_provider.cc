@@ -42,6 +42,25 @@ using ::ash::shortcut_customization::mojom::AcceleratorResultDataPtr;
 using ::ash::shortcut_customization::mojom::SimpleAccelerator;
 using ::ash::shortcut_customization::mojom::SimpleAcceleratorPtr;
 using mojom::AcceleratorConfigResult;
+using HiddenAcceleratorMap =
+    std::map<AcceleratorActionId, std::vector<ui::Accelerator>>;
+
+// Raw accelerator data may result in the same shortcut being displayed multiple
+// times in the frontend. GetHiddenAcceleratorMap() is used to collect such
+// accelerators and hide them from display.
+const HiddenAcceleratorMap& GetHiddenAcceleratorMap() {
+  static auto hiddenAcceleratorMap = base::NoDestructor<HiddenAcceleratorMap>(
+      {{TOGGLE_APP_LIST,
+        {ui::Accelerator(ui::VKEY_BROWSER_SEARCH, ui::EF_NONE,
+                         ui::Accelerator::KeyState::PRESSED),
+         ui::Accelerator(ui::VKEY_BROWSER_SEARCH, ui::EF_SHIFT_DOWN,
+                         ui::Accelerator::KeyState::PRESSED),
+         ui::Accelerator(ui::VKEY_LWIN, ui::EF_NONE,
+                         ui::Accelerator::KeyState::RELEASED),
+         ui::Accelerator(ui::VKEY_LWIN, ui::EF_SHIFT_DOWN,
+                         ui::Accelerator::KeyState::RELEASED)}}});
+  return *hiddenAcceleratorMap;
+}
 
 // Gets the parts of the string that don't contain replacements.
 // Ex: "Press and " -> ["Press ", " and "]
@@ -124,6 +143,17 @@ std::vector<mojom::TextAcceleratorPartPtr> GenerateTextAcceleratorParts(
   DCHECK_EQ(upto, str_size);
   DCHECK_EQ(offset_index, offsets.size());
   return result;
+}
+
+bool IsAcceleratorHidden(AcceleratorActionId action_id,
+                         const ui::Accelerator& accelerator) {
+  const auto& iter = GetHiddenAcceleratorMap().find(action_id);
+  if (iter == GetHiddenAcceleratorMap().end()) {
+    return false;
+  }
+  const std::vector<ui::Accelerator>& hidden_accelerators = iter->second;
+  return std::find(hidden_accelerators.begin(), hidden_accelerators.end(),
+                   accelerator) != hidden_accelerators.end();
 }
 
 mojom::StandardAcceleratorPropertiesPtr CreateStandardAcceleratorProps(
@@ -535,6 +565,9 @@ void AcceleratorConfigurationProvider::PopulateAshAcceleratorConfig(
     }
 
     for (const auto& accelerator : accelerators) {
+      if (IsAcceleratorHidden(layout_info.action_id, accelerator)) {
+        continue;
+      }
       // TODO(jimmyxgong): Check pref storage to determine whether the
       // AcceleratorType was user-added or default.
       CreateAndAppendAliasedAccelerators(

@@ -533,6 +533,44 @@ TEST_F(AcceleratorConfigurationProviderTest, ValidateAllAcceleratorLayouts) {
   ValidateAcceleratorLayouts(provider_->GetAcceleratorLayoutInfos());
 }
 
+TEST_F(AcceleratorConfigurationProviderTest, FilterOutHiddenAccelerators) {
+  FakeAcceleratorsUpdatedMojoObserver mojo_observer;
+  SetUpObserver(&mojo_observer);
+  EXPECT_EQ(0, mojo_observer.num_times_notified());
+  EXPECT_EQ(0, observer_.num_times_notified());
+
+  const AcceleratorData test_data[] = {
+      {/*trigger_on_press=*/true, ui::VKEY_TAB, ui::EF_ALT_DOWN,
+       CYCLE_FORWARD_MRU},
+      {/*trigger_on_press=*/true, ui::VKEY_ESCAPE, ui::EF_COMMAND_DOWN,
+       SHOW_TASK_MANAGER},
+      // Accelerators that should be hidden from display.
+      {/*trigger_on_press=*/true, ui::VKEY_BROWSER_SEARCH, ui::EF_NONE,
+       TOGGLE_APP_LIST},
+      {/*trigger_on_press=*/true, ui::VKEY_BROWSER_SEARCH, ui::EF_SHIFT_DOWN,
+       TOGGLE_APP_LIST},
+      {/*trigger_on_press=*/false, ui::VKEY_LWIN, ui::EF_NONE, TOGGLE_APP_LIST},
+      {/*trigger_on_press=*/false, ui::VKEY_LWIN, ui::EF_SHIFT_DOWN,
+       TOGGLE_APP_LIST},
+  };
+
+  // Initialize with a set of accelerators that include hidden accelerators.
+  Shell::Get()->ash_accelerator_configuration()->Initialize(test_data);
+  base::RunLoop().RunUntilIdle();
+
+  const AcceleratorData expected_test_data[]{
+      {/*trigger_on_press=*/true, ui::VKEY_TAB, ui::EF_ALT_DOWN,
+       CYCLE_FORWARD_MRU},
+      {/*trigger_on_press=*/true, ui::VKEY_ESCAPE, ui::EF_COMMAND_DOWN,
+       SHOW_TASK_MANAGER},
+  };
+  EXPECT_EQ(1, observer_.num_times_notified());
+
+  // Verify observer won't receive hidden accelerators.
+  ExpectMojomAcceleratorsEqual(mojom::AcceleratorSource::kAsh,
+                               expected_test_data, mojo_observer.config());
+}
+
 TEST_F(AcceleratorConfigurationProviderTest, TopRowKeyAcceleratorRemapped) {
   // Add a fake layout2 keyboard.
   ui::InputDevice fake_keyboard(
