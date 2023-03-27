@@ -1769,7 +1769,7 @@ IN_PROC_BROWSER_TEST_F(DevToolsExtensionTest,
 
 class DevToolsExtensionFileAccessTest : public DevToolsExtensionTest {
  protected:
-  void Run(bool allow_file_access) {
+  void Run(bool allow_file_access, const std::string& url_scheme) {
     extensions::TestExtensionDir dir;
 
     dir.WriteManifest(BuildExtensionManifest("File Access", "devtools.html"));
@@ -1793,28 +1793,36 @@ class DevToolsExtensionFileAccessTest : public DevToolsExtensionTest {
                 .AppendASCII("content/test/data/devtools/navigation.html"))
             .spec();
 
-    base::ReplaceFirstSubstringAfterOffset(&file_url, 0, "file:///", "file:");
-
     const Extension* extension =
         LoadExtensionFromPath(dir.UnpackedPath(), allow_file_access);
     ASSERT_TRUE(extension);
 
     std::string url = base::StringPrintf(
-        R"(data:text/html,<script>//%%23%%20sourceMappingURL=data:application/json,{"version":3,"sources":["file:%s"]}</script>)",
-        file_url.c_str());
+        R"(data:text/html,<script>//%%23%%20sourceMappingURL=data:application/json,{"version":3,"sources":["%s:%s"]}</script>)",
+        url_scheme.c_str(), file_url.c_str() + strlen("file:///"));
     OpenDevToolsWindow(url, false);
     RunTestFunction(window_, "waitForTestResultsAsMessage");
   }
 };
 
 IN_PROC_BROWSER_TEST_F(DevToolsExtensionFileAccessTest,
-                       CantGetFileResourceWithoutFileAccess) {
-  Run(false);
+                       CanGetFileResourceWithFileAccess) {
+  Run(true, "file:///");
 }
 
 IN_PROC_BROWSER_TEST_F(DevToolsExtensionFileAccessTest,
-                       CanGetFileResourceWithFileAccess) {
-  Run(true);
+                       CantGetFileResourceWithoutFileAccess) {
+  Run(false, "file:///");
+}
+
+IN_PROC_BROWSER_TEST_F(DevToolsExtensionFileAccessTest,
+                       CantGetFileResourceWithoutFileAccessNoSlashes) {
+  Run(false, "file:");
+}
+
+IN_PROC_BROWSER_TEST_F(DevToolsExtensionFileAccessTest,
+                       CantGetFileResourceWithoutFileAccessMixedCase) {
+  Run(false, "fILe:");
 }
 
 // Tests that scripts are not duplicated after Scripts Panel switch.
