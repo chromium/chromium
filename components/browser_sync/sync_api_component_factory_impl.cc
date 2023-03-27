@@ -43,6 +43,7 @@
 #include "components/send_tab_to_self/send_tab_to_self_sync_service.h"
 #include "components/sync/base/features.h"
 #include "components/sync/base/legacy_directory_deletion.h"
+#include "components/sync/base/model_type.h"
 #include "components/sync/base/report_unrecoverable_error.h"
 #include "components/sync/base/sync_prefs.h"
 #include "components/sync/driver/data_type_manager_impl.h"
@@ -54,6 +55,7 @@
 #include "components/sync/invalidations/sync_invalidations_service.h"
 #include "components/sync/model/forwarding_model_type_controller_delegate.h"
 #include "components/sync/model/proxy_model_type_controller_delegate.h"
+#include "components/sync_bookmarks/bookmark_model_type_controller.h"
 #include "components/sync_bookmarks/bookmark_sync_service.h"
 #include "components/sync_device_info/device_info_sync_service.h"
 #include "components/sync_preferences/pref_service_syncable.h"
@@ -327,9 +329,10 @@ SyncApiComponentFactoryImpl::CreateCommonDataTypeControllers(
                         ->GetBookmarkSyncControllerDelegate(favicon_service)
                         .get())
               : nullptr;
-      controllers.push_back(std::make_unique<ModelTypeController>(
-          syncer::BOOKMARKS, std::move(full_mode_delegate),
-          std::move(transport_mode_delegate)));
+      controllers.push_back(
+          std::make_unique<sync_bookmarks::BookmarkModelTypeController>(
+              std::move(full_mode_delegate),
+              std::move(transport_mode_delegate)));
     }
 
     if (!disabled_types.Has(syncer::POWER_BOOKMARK) &&

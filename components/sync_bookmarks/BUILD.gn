@@ -12,6 +12,8 @@ static_library("sync_bookmarks") {
     "bookmark_model_merger.h",
     "bookmark_model_observer_impl.cc",
     "bookmark_model_observer_impl.h",
+    "bookmark_model_type_controller.cc",
+    "bookmark_model_type_controller.h",
     "bookmark_model_type_processor.cc",
     "bookmark_model_type_processor.h",
     "bookmark_remote_updates_handler.cc",
