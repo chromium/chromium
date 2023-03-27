@@ -12,6 +12,7 @@
 #include "third_party/blink/renderer/bindings/core/v8/v8_throw_dom_exception.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_typedefs.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_union_arraybuffer_arraybufferview.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_socket_dns_query_type.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_udp_message.h"
 #include "third_party/blink/renderer/core/dom/abort_signal.h"
 #include "third_party/blink/renderer/core/dom/dom_exception.h"
@@ -107,6 +108,24 @@ ScriptPromise UDPWritableStreamWrapper::Write(ScriptValue chunk,
     return ScriptPromise();
   }
 
+  auto dns_query_type = net::DnsQueryType::UNSPECIFIED;
+  if (message->hasDnsQueryType()) {
+    if (mode_ == network::mojom::RestrictedUDPSocketMode::CONNECTED) {
+      exception_state.ThrowTypeError(
+          "UDPMessage: 'dnsQueryType' must not be specified "
+          "in 'connected' mode.");
+      return ScriptPromise();
+    }
+    switch (message->dnsQueryType().AsEnum()) {
+      case V8SocketDnsQueryType::Enum::kIpv4:
+        dns_query_type = net::DnsQueryType::A;
+        break;
+      case V8SocketDnsQueryType::Enum::kIpv6:
+        dns_query_type = net::DnsQueryType::AAAA;
+        break;
+    }
+  }
+
   DOMArrayPiece array_piece(message->data());
   base::span<const uint8_t> data{array_piece.Bytes(), array_piece.ByteLength()};
 
@@ -117,7 +136,8 @@ ScriptPromise UDPWritableStreamWrapper::Write(ScriptValue chunk,
   auto callback = WTF::BindOnce(&UDPWritableStreamWrapper::OnSend,
                                 WrapWeakPersistent(this));
   if (dest_addr) {
-    udp_socket_->get()->SendTo(data, *dest_addr, std::move(callback));
+    udp_socket_->get()->SendTo(data, *dest_addr, dns_query_type,
+                               std::move(callback));
   } else {
     udp_socket_->get()->Send(data, std::move(callback));
   }

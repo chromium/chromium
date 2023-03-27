@@ -8,4 +8,5 @@ dictionary UDPMessage {
   BufferSource   data;
   DOMString      remoteAddress;
   unsigned short remotePort;
+  SocketDnsQueryType dnsQueryType;
 };

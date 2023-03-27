@@ -5,6 +5,7 @@
 module network.mojom;
 
 import "mojo/public/mojom/base/read_only_buffer.mojom";
+import "services/network/public/mojom/host_resolver.mojom";
 import "services/network/public/mojom/network_param.mojom";
 import "services/network/public/mojom/udp_socket.mojom";
 
@@ -54,12 +55,16 @@ interface RestrictedUDPSocket {
       => (int32 result);
 
   // Sends a UDP datagram to a particular destination |dest_addr|.
-  // Possible hosts are currently limited to raw IPv4/IPv6 addresses, i.e.
-  // no DNS resolution takes place on the receiving side.
+  // DNS resolution hints can be provided by supplying |dns_query_type|.
   // Upon successfully handing the data to the OS, |result| is net::OK.
   // On failure, |result| is a network error code.
   // Note that this call is only valid in BOUND mode, otherwise it will
   // immediately fail with an error.
-  SendTo(mojo_base.mojom.ReadOnlyBuffer data, HostPortPair dest_addr)
+  // TODO(crbug.com/657632): Make |dns_query_type| optional once Java support
+  // lands.
+  SendTo(
+      mojo_base.mojom.ReadOnlyBuffer data,
+      HostPortPair dest_addr,
+      network.mojom.DnsQueryType dns_query_type)
       => (int32 result);
 };

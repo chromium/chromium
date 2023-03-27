@@ -3330,9 +3330,9 @@ TEST_F(NetworkContextTest, CreateRestrictedUDPSocket) {
         CreateTestMessage(static_cast<uint8_t>(j), kDatagramSize));
     {
       base::test::TestFuture<int32_t> send_future;
-      server_socket->SendTo(test_msg,
-                            net::HostPortPair::FromIPEndPoint(client_addr),
-                            send_future.GetCallback());
+      server_socket->SendTo(
+          test_msg, net::HostPortPair::FromIPEndPoint(client_addr),
+          net::DnsQueryType::UNSPECIFIED, send_future.GetCallback());
       ASSERT_EQ(send_future.Get(), net::OK);
     }
   }

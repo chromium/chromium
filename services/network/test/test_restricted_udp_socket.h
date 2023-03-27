@@ -24,6 +24,7 @@ class TestRestrictedUDPSocket : public mojom::RestrictedUDPSocket {
   void Send(base::span<const uint8_t> data, SendCallback callback) override;
   void SendTo(base::span<const uint8_t> data,
               const net::HostPortPair& dest_addr,
+              net::DnsQueryType dns_query_type,
               SendToCallback callback) override;
 
   TestUDPSocket* udp_socket() const { return udp_socket_.get(); }

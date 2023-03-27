@@ -10,6 +10,7 @@
 #include "net/base/net_errors.h"
 #include "net/base/network_anonymization_key.h"
 #include "services/network/public/cpp/simple_host_resolver.h"
+#include "services/network/public/mojom/host_resolver.mojom.h"
 #include "services/network/udp_socket.h"
 
 namespace network {
@@ -35,6 +36,7 @@ void RestrictedUDPSocket::Send(base::span<const uint8_t> data,
 
 void RestrictedUDPSocket::SendTo(base::span<const uint8_t> data,
                                  const net::HostPortPair& dest_addr,
+                                 net::DnsQueryType dns_query_type,
                                  SendToCallback callback) {
   // If a raw IP address is supplied, call SendTo() immediately.
   if (net::IPAddress address; address.AssignFromIPLiteral(dest_addr.host())) {
@@ -43,10 +45,12 @@ void RestrictedUDPSocket::SendTo(base::span<const uint8_t> data,
     return;
   }
 
+  auto params = mojom::ResolveHostParameters::New();
+  params->dns_query_type = dns_query_type;
+
   resolver_->ResolveHost(
       mojom::HostResolverHost::NewHostPortPair(dest_addr),
-      net::NetworkAnonymizationKey::CreateTransient(),
-      /*optional_parameters=*/nullptr,
+      net::NetworkAnonymizationKey::CreateTransient(), std::move(params),
       base::BindOnce(&RestrictedUDPSocket::OnResolveCompleteForSendTo,
                      base::Unretained(this),
                      /*data=*/std::vector<uint8_t>(data.begin(), data.end()),

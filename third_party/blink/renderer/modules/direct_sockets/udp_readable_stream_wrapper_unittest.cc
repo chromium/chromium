@@ -43,6 +43,7 @@ class FakeRestrictedUDPSocket
 
   void SendTo(base::span<const uint8_t> data,
               const net::HostPortPair& dest_addr,
+              net::DnsQueryType dns_query_type,
               SendToCallback callback) override {
     NOTREACHED();
   }

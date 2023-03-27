@@ -32,6 +32,7 @@ void TestRestrictedUDPSocket::Send(base::span<const uint8_t> data,
 
 void TestRestrictedUDPSocket::SendTo(base::span<const uint8_t> data,
                                      const net::HostPortPair& dest_addr,
+                                     net::DnsQueryType dns_query_type,
                                      SendToCallback callback) {
   if (net::IPAddress address; address.AssignFromIPLiteral(dest_addr.host())) {
     udp_socket_->SendTo(
