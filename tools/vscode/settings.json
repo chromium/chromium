@@ -11,6 +11,16 @@
   "editor.detectIndentation": false,
   // Add a line at 80 characters.
   "editor.rulers": [80],
+
+  "extensions": {
+    "recommendations": [
+      // The GN language server from Microsoft.
+      //
+      // Provides support for .gn and .gni files.
+      "msedge-dev.gnls",
+    ],
+  },
+
   // Forces LF instead of "auto" which uses CRLF on Windows.
   "files.eol": "\n",
   // Trim tailing whitespace on save.
@@ -22,12 +32,6 @@
   "files.associations": {
     // Adds xml syntax highlighting for grd files.
     "*.grd" : "xml",
-    // Optional: .gn and .gni are not JavaScript, but at least it gives some
-    // approximate syntax highlighting. Ignore the linter warnings!
-    // There's an extension for these files, excluding the linter headaches.
-    // https://marketplace.visualstudio.com/items?itemName=npclaudiu.vscode-gn
-    "*.gni" : "javascript",
-    "*.gn" : "javascript"
   },
 
   "files.exclude": {
