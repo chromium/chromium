@@ -8,50 +8,49 @@
 
 const Connection = {
 
-  getUrl() {
-    var request_error = "";
-    var server_error = "";
-    var url = "";
-    url = document.querySelector('#url').value;
-    if (!url) {
-      var http_requester = new XMLHttpRequest();
-      // Sync request to avoid complexity but is poor form.
-      try {
-        http_requester.open("GET", location.origin + '/discover.html', false);
-        http_requester.send();
-      }
-      catch (req_error) {
-        request_error = "Visual Debugger local server is inaccessible. \n" +
-          "Please launch the server with command:\n " +
-          "    ./launchdebugger {app_port} {remote_port} \n" +
-          " remote_port defaults to 7777 \n" +
-          " corresponds to the chromium command line\n    " +
-          " --remote-debugging-port=7777 \n" +
-          " app_port defaults to 8777. Currently app_port=" + location.port;
-      }
-
-      if (http_requester.status != 200) {
-        server_error = "Server reports error=" + http_requester.responseText;
-      }
-      else {
-        var discover_json = JSON.parse(http_requester.responseText);
-        url = discover_json.webSocketDebuggerUrl;
-      }
+  async getUrl() {
+    let url = document.querySelector("#url").value;
+    if (url) {
+      return [url, ""];
     }
-    const return_strings = [url, request_error, server_error];
-    return return_strings;
+
+    try {
+      let response = await fetch(location.origin + "/discover.json");
+      if (!response.ok) {
+        return [
+          "",
+          `Unexpected server error=${response.status} ${response.statusText}`,
+        ];
+      } else {
+        let discover_json = await response.json();
+        if (discover_json.error) {
+          // Error message from the python server
+          return ["", discover_json.error];
+        }
+
+        // Success
+        return [discover_json.webSocketDebuggerUrl, ""];
+      }
+    } catch (e) {
+      request_error =
+        "Visual Debugger local server is inaccessible. \n" +
+        "Please launch the server with command:\n " +
+        "    ./launchdebugger {app_port} {remote_port} \n" +
+        " remote_port defaults to 7777 \n" +
+        " corresponds to the chromium command line\n    " +
+        " --remote-debugging-port=7777 \n" +
+        " app_port defaults to 8777. Currently app_port=" +
+        location.port;
+      return ["", request_error];
+    }
   },
 
 
-  startConnection() {
+  async startConnection() {
     const loop_interval = 3000;
-    const connect_info = this.getUrl();
+    const connect_info = await this.getUrl();
     if (connect_info[1] != "") {
       window.alert(connect_info[1]);
-      return;
-    }
-    if (connect_info[2] != "") {
-      window.alert(connect_info[2]);
       return;
     }
     url = connect_info[0];
@@ -111,18 +110,28 @@ const Connection = {
       status.classList.add('disconnected');
       // Checks if connection can be made every
       // loop_interval number of milliseconds.
-      var testing = function() {
-        var interval = setInterval(function() {
-          if (document.getElementById('autoconnect').checked) {
-            const test_connect = Connection.getUrl();
-            if (test_connect[0] != "") {
-              clearInterval(interval);
-              Connection.startConnection();
-            }
+      let retryAfterDelay = () => {
+        setTimeout(() => {
+          if (!document.getElementById("autoconnect").checked) {
+            // Keep this setTimeout loop alive in case the user re-checks the
+            // box.
+            retryAfterDelay();
+            return;
           }
+
+          console.log("Attempting autoconnect...");
+          Connection.getUrl().then((test_connect) => {
+            if (test_connect[0] != "") {
+              Connection.startConnection();
+            } else {
+              // Failure, queue a retry.
+              retryAfterDelay();
+            }
+          });
         }, loop_interval);
-      }
-      testing();
+      };
+
+      retryAfterDelay();
     });
 
     disconnect.addEventListener('click', () => {
