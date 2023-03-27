@@ -320,6 +320,7 @@ bundle_data("google_apis_unittest_bundle_data") {
     "test/data/gaia/not_a_json.txt",
     "test/data/gaia/one_base_url.json",
     "test/data/gaia/one_url.json",
+    "test/data/tasks/task.json",
     "test/data/tasks/task_lists.json",
     "test/data/tasks/tasks.json",
   ]

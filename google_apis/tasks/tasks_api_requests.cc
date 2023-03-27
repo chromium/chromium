@@ -10,6 +10,7 @@
 #include "base/check.h"
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"
+#include "base/json/json_writer.h"
 #include "base/location.h"
 #include "base/types/expected.h"
 #include "base/values.h"
@@ -24,6 +25,8 @@
 namespace google_apis::tasks {
 namespace {
 
+constexpr char kContentTypeJson[] = "application/json; charset=utf-8";
+constexpr char kApiRequestBodyTaskStatusKey[] = "status";
 constexpr int kMaxAllowedMaxResults = 100;
 
 }
@@ -36,7 +39,7 @@ ListTaskListsRequest::ListTaskListsRequest(RequestSender* sender,
     : UrlFetchRequestBase(sender, ProgressCallback(), ProgressCallback()),
       callback_(std::move(callback)),
       page_token_(page_token) {
-  DCHECK(!callback_.is_null());
+  CHECK(!callback_.is_null());
 }
 
 ListTaskListsRequest::~ListTaskListsRequest() = default;
@@ -103,8 +106,8 @@ ListTasksRequest::ListTasksRequest(RequestSender* sender,
       callback_(std::move(callback)),
       task_list_id_(task_list_id),
       page_token_(page_token) {
-  DCHECK(!callback_.is_null());
-  DCHECK(!task_list_id_.empty());
+  CHECK(!callback_.is_null());
+  CHECK(!task_list_id_.empty());
 }
 
 ListTasksRequest::~ListTasksRequest() = default;
@@ -159,6 +162,65 @@ void ListTasksRequest::OnDataParsed(std::unique_ptr<Tasks> tasks) {
     std::move(callback_).Run(std::move(tasks));
   }
   OnProcessURLFetchResultsComplete();
+}
+
+// ----- PatchTaskRequest -----
+
+PatchTaskRequest::PatchTaskRequest(RequestSender* sender,
+                                   Callback callback,
+                                   const std::string& task_list_id,
+                                   const std::string& task_id,
+                                   Task::Status status)
+    : UrlFetchRequestBase(sender, ProgressCallback(), ProgressCallback()),
+      callback_(std::move(callback)),
+      task_list_id_(task_list_id),
+      task_id_(task_id),
+      status_(status) {
+  CHECK(!callback_.is_null());
+  CHECK(!task_list_id_.empty());
+  CHECK(!task_id_.empty());
+}
+
+PatchTaskRequest::~PatchTaskRequest() = default;
+
+GURL PatchTaskRequest::GetURL() const {
+  return GetPatchTaskUrl(task_list_id_, task_id_);
+}
+
+ApiErrorCode PatchTaskRequest::MapReasonToError(ApiErrorCode code,
+                                                const std::string& reason) {
+  return code;
+}
+
+bool PatchTaskRequest::IsSuccessfulErrorCode(ApiErrorCode error) {
+  return error == HTTP_SUCCESS;
+}
+
+HttpRequestMethod PatchTaskRequest::GetRequestType() const {
+  return HttpRequestMethod::kPatch;
+}
+
+bool PatchTaskRequest::GetContentData(std::string* upload_content_type,
+                                      std::string* upload_content) {
+  *upload_content_type = kContentTypeJson;
+
+  base::Value::Dict root;
+  root.Set(kApiRequestBodyTaskStatusKey, Task::StatusToString(status_));
+
+  base::JSONWriter::Write(root, upload_content);
+  return true;
+}
+
+void PatchTaskRequest::ProcessURLFetchResults(
+    const network::mojom::URLResponseHead* response_head,
+    base::FilePath response_file,
+    std::string response_body) {
+  std::move(callback_).Run(GetErrorCode());
+  OnProcessURLFetchResultsComplete();
+}
+
+void PatchTaskRequest::RunCallbackOnPrematureFailure(ApiErrorCode error) {
+  std::move(callback_).Run(error);
 }
 
 }  // namespace google_apis::tasks

@@ -36,6 +36,12 @@ GURL GetListTasksUrl(const std::string& task_list_id,
                      absl::optional<int> max_results,
                      const std::string& page_token);
 
+// Returns a URL to partially update the specified task.
+// `task_list_id` - task list identifier.
+// `task_id`      - task identifier.
+GURL GetPatchTaskUrl(const std::string& task_list_id,
+                     const std::string& task_id);
+
 }  // namespace google_apis::tasks
 
 #endif  // GOOGLE_APIS_TASKS_TASKS_API_URL_GENERATOR_UTILS_H_

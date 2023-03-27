@@ -87,6 +87,11 @@ TEST(TasksApiResponseTypesTest, CreatesTasksWithNextPageTokenFromResponse) {
   EXPECT_EQ(tasks->next_page_token(), "qwerty");
 }
 
+TEST(TasksApiResponseTypesTest, ConvertsTaskStatusToString) {
+  EXPECT_EQ(Task::StatusToString(Task::Status::kCompleted), "completed");
+  EXPECT_EQ(Task::StatusToString(Task::Status::kNeedsAction), "needsAction");
+}
+
 TEST(TasksApiResponseTypesTest, FailsToCreateTasksFromInvalidResponse) {
   const auto raw_tasks = test_util::LoadJSONFile("tasks/tasks.json");
   ASSERT_TRUE(raw_tasks.get());

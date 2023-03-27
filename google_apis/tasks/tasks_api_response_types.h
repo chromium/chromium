@@ -100,6 +100,9 @@ class Task {
   // class.
   static void RegisterJSONConverter(base::JSONValueConverter<Task>* converter);
 
+  // Stringifies `Status` enum value.
+  static std::string StatusToString(Status);
+
   // Task identifier.
   const std::string& id() const { return id_; }
   void set_id(const std::string& id) { id_ = id; }

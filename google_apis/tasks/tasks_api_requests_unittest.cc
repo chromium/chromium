@@ -25,12 +25,12 @@
 #include "net/traffic_annotation/network_traffic_annotation_test_helper.h"
 #include "services/network/test/test_shared_url_loader_factory.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace google_apis::tasks {
 namespace {
 
 constexpr char kTaskListId[] = "random-task-list-id";
+constexpr char kTaskId[] = "random-task-id";
 
 // Helper class to temporary override `GaiaUrls` singleton.
 class GaiaUrlsOverrider {
@@ -203,6 +203,37 @@ TEST_F(TasksApiRequestsTest, ListTasksRequestHandlesError) {
 
   EXPECT_FALSE(future.Get().has_value());
   EXPECT_EQ(future.Get().error(), HTTP_NOT_FOUND);
+}
+
+TEST_F(TasksApiRequestsTest, PatchTaskRequest) {
+  set_test_file_path("tasks/task.json");
+
+  base::test::TestFuture<ApiErrorCode> future;
+  auto request = std::make_unique<PatchTaskRequest>(
+      request_sender(), future.GetCallback(), kTaskListId, kTaskId,
+      Task::Status::kCompleted);
+  request_sender()->StartRequestWithAuthRetry(std::move(request));
+  ASSERT_TRUE(future.Wait());
+
+  EXPECT_EQ(future.Get(), HTTP_SUCCESS);
+  EXPECT_EQ(last_request().method, net::test_server::METHOD_PATCH);
+  EXPECT_EQ(last_request().GetURL(), GetPatchTaskUrl(kTaskListId, kTaskId));
+  EXPECT_EQ(last_request().headers.at("Content-Type"),
+            "application/json; charset=utf-8");
+  EXPECT_EQ(last_request().content, "{\"status\":\"completed\"}");
+}
+
+TEST_F(TasksApiRequestsTest, PatchTaskRequestHandlesError) {
+  set_test_file_path("tasks/invalid_file_to_simulate_404_error.json");
+
+  base::test::TestFuture<ApiErrorCode> future;
+  auto request = std::make_unique<PatchTaskRequest>(
+      request_sender(), future.GetCallback(), kTaskListId, kTaskId,
+      Task::Status::kCompleted);
+  request_sender()->StartRequestWithAuthRetry(std::move(request));
+  ASSERT_TRUE(future.Wait());
+
+  EXPECT_EQ(future.Get(), HTTP_NOT_FOUND);
 }
 
 }  // namespace google_apis::tasks
