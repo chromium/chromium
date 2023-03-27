@@ -891,7 +891,7 @@
     },
     {
       name: "animation-range-start",
-      property_methods: ["ParseSingleValue", "CSSValueFromComputedStyleInternal"],
+      property_methods: ["ParseSingleValue", "CSSValueFromComputedStyleInternal", "InitialValue"],
       style_builder_template: "animation",
       style_builder_template_args: {
         attribute: "RangeStart",
@@ -904,7 +904,7 @@
     },
     {
       name: "animation-range-end",
-      property_methods: ["ParseSingleValue", "CSSValueFromComputedStyleInternal"],
+      property_methods: ["ParseSingleValue", "CSSValueFromComputedStyleInternal", "InitialValue"],
       style_builder_template: "animation",
       style_builder_template_args: {
         attribute: "RangeEnd",
@@ -6611,14 +6611,14 @@
     },
     {
       // Variant of the "animation" shorthand which includes the
-      // animation-timeline longhand.
+      // animation-timeline and animation-range-* longhands.
       name: "-alternative-animation-with-timeline",
       alternative_of: "animation",
       longhands: [
         "animation-duration", "animation-timing-function",
         "animation-delay", "animation-iteration-count", "animation-direction",
         "animation-fill-mode", "animation-play-state", "animation-name",
-        "animation-timeline"
+        "animation-timeline", "animation-range-start", "animation-range-end"
       ],
       property_methods: ["ParseShorthand", "CSSValueFromComputedStyleInternal"],
       valid_for_keyframe: false,
@@ -6634,7 +6634,7 @@
         "animation-delay-start", "animation-delay-end",
         "animation-iteration-count", "animation-direction",
         "animation-fill-mode", "animation-play-state", "animation-name",
-        "animation-timeline"
+        "animation-timeline", "animation-range-start", "animation-range-end"
       ],
       property_methods: ["ParseShorthand", "CSSValueFromComputedStyleInternal"],
       valid_for_keyframe: false,

@@ -46,6 +46,8 @@ element.style { ()
         animation-play-state: running;
         animation-name: animName;
         animation-timeline: auto;
+        animation-range-start: normal;
+        animation-range-end: normal;
     display: none;
 
 [expanded] 

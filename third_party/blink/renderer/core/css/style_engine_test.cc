@@ -5980,7 +5980,7 @@ TEST_F(StyleEngineTest, AnimationShorthandFlags) {
     const CSSPropertyValueSet* set =
         css_test_helpers::ParseDeclarationBlock(css);
     ASSERT_TRUE(set);
-    EXPECT_EQ(9u, set->PropertyCount());
+    EXPECT_EQ(11u, set->PropertyCount());
     EXPECT_TRUE(set->HasProperty(CSSPropertyID::kAnimationDuration));
     EXPECT_TRUE(set->HasProperty(CSSPropertyID::kAnimationTimingFunction));
     EXPECT_TRUE(set->HasProperty(CSSPropertyID::kAnimationDelay));
@@ -5990,6 +5990,8 @@ TEST_F(StyleEngineTest, AnimationShorthandFlags) {
     EXPECT_TRUE(set->HasProperty(CSSPropertyID::kAnimationPlayState));
     EXPECT_TRUE(set->HasProperty(CSSPropertyID::kAnimationName));
     EXPECT_TRUE(set->HasProperty(CSSPropertyID::kAnimationTimeline));
+    EXPECT_TRUE(set->HasProperty(CSSPropertyID::kAnimationRangeStart));
+    EXPECT_TRUE(set->HasProperty(CSSPropertyID::kAnimationRangeEnd));
   }
   {
     ScopedCSSScrollTimelineForTest scroll_timeline_enabled(true);
@@ -5997,7 +5999,7 @@ TEST_F(StyleEngineTest, AnimationShorthandFlags) {
     const CSSPropertyValueSet* set =
         css_test_helpers::ParseDeclarationBlock(css);
     ASSERT_TRUE(set);
-    EXPECT_EQ(10u, set->PropertyCount());
+    EXPECT_EQ(12u, set->PropertyCount());
     EXPECT_TRUE(set->HasProperty(CSSPropertyID::kAnimationDuration));
     EXPECT_TRUE(set->HasProperty(CSSPropertyID::kAnimationTimingFunction));
     EXPECT_TRUE(set->HasProperty(CSSPropertyID::kAnimationDelayStart));
@@ -6008,6 +6010,8 @@ TEST_F(StyleEngineTest, AnimationShorthandFlags) {
     EXPECT_TRUE(set->HasProperty(CSSPropertyID::kAnimationPlayState));
     EXPECT_TRUE(set->HasProperty(CSSPropertyID::kAnimationName));
     EXPECT_TRUE(set->HasProperty(CSSPropertyID::kAnimationTimeline));
+    EXPECT_TRUE(set->HasProperty(CSSPropertyID::kAnimationRangeStart));
+    EXPECT_TRUE(set->HasProperty(CSSPropertyID::kAnimationRangeEnd));
   }
   // Note that the combination CSSScrollTimeline=false and
   // CSSAnimationDelayStartEnd=true is not supported, via 'depends_on'

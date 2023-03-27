@@ -481,6 +481,10 @@ const CSSValue* AnimationRangeStart::CSSValueFromComputedStyleInternal(
                                                              style);
 }
 
+const CSSValue* AnimationRangeStart::InitialValue() const {
+  return CSSIdentifierValue::Create(CSSValueID::kNormal);
+}
+
 const CSSValue* AnimationRangeEnd::ParseSingleValue(
     CSSParserTokenRange& range,
     const CSSParserContext& context,
@@ -497,6 +501,10 @@ const CSSValue* AnimationRangeEnd::CSSValueFromComputedStyleInternal(
     bool allow_visited_style) const {
   return ComputedStyleUtils::ValueForAnimationRangeEndList(style.Animations(),
                                                            style);
+}
+
+const CSSValue* AnimationRangeEnd::InitialValue() const {
+  return CSSIdentifierValue::Create(CSSValueID::kNormal);
 }
 
 const CSSValue* AnimationTimeline::ParseSingleValue(

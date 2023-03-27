@@ -81,6 +81,8 @@ CSSValue* ConsumeAnimationValue(CSSPropertyID property,
     case CSSPropertyID::kAnimationTimingFunction:
       return css_parsing_utils::ConsumeAnimationTimingFunction(range, context);
     case CSSPropertyID::kAnimationTimeline:
+    case CSSPropertyID::kAnimationRangeStart:
+    case CSSPropertyID::kAnimationRangeEnd:
       // New animation-* properties are  "reset only", see kAnimationDelayEnd.
       DCHECK(RuntimeEnabledFeatures::CSSScrollTimelineEnabled());
       return nullptr;
@@ -147,6 +149,14 @@ const CSSValue* CSSValueFromComputedAnimation(
       }
       if (CSSAnimationData::InitialDelayEnd() !=
           CSSTimingData::GetRepeated(animation_data->DelayEndList(), i)) {
+        return nullptr;
+      }
+      if (CSSAnimationData::InitialRangeStart() !=
+          CSSTimingData::GetRepeated(animation_data->RangeStartList(), i)) {
+        return nullptr;
+      }
+      if (CSSAnimationData::InitialRangeEnd() !=
+          CSSTimingData::GetRepeated(animation_data->RangeEndList(), i)) {
         return nullptr;
       }
       animations_list->Append(*list);

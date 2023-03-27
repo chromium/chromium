@@ -1561,6 +1561,22 @@ String StylePropertySerializer::GetLayeredShorthandValue(
         }
         is_initial_value = true;
       }
+      if (property->IDEquals(CSSPropertyID::kAnimationRangeStart)) {
+        auto* ident = DynamicTo<CSSIdentifierValue>(value);
+        if (!ident || (ident->GetValueID() != CSSValueID::kNormal)) {
+          DCHECK(RuntimeEnabledFeatures::CSSScrollTimelineEnabled());
+          return g_empty_string;
+        }
+        is_initial_value = true;
+      }
+      if (property->IDEquals(CSSPropertyID::kAnimationRangeEnd)) {
+        auto* ident = DynamicTo<CSSIdentifierValue>(value);
+        if (!ident || (ident->GetValueID() != CSSValueID::kNormal)) {
+          DCHECK(RuntimeEnabledFeatures::CSSScrollTimelineEnabled());
+          return g_empty_string;
+        }
+        is_initial_value = true;
+      }
 
       if (!is_initial_value) {
         if (property->IDEquals(CSSPropertyID::kBackgroundSize) ||

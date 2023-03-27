@@ -17,6 +17,8 @@ element.style { ()
         animation-play-state: running, running, running, running;
         animation-name: animName, mediaAnim, doesNotExist, styleSheetAnim;
         animation-timeline: auto, auto, auto, auto;
+        animation-range-start: normal, normal, normal, normal;
+        animation-range-end: normal, normal, normal, normal;
 
 [expanded] 
 div { (user agent stylesheet)
@@ -71,6 +73,8 @@ element.style { ()
         animation-play-state: running, running, running, running;
         animation-name: animName, mediaAnim, doesNotExist, styleSheetAnim;
         animation-timeline: auto, auto, auto, auto;
+        animation-range-start: normal, normal, normal, normal;
+        animation-range-end: normal, normal, normal, normal;
 
 [expanded] 
 div { (user agent stylesheet)
@@ -125,6 +129,8 @@ element.style { ()
         animation-play-state: running, running, running, running;
         animation-name: animName, mediaAnim, doesNotExist, styleSheetAnim;
         animation-timeline: auto, auto, auto, auto;
+        animation-range-start: normal, normal, normal, normal;
+        animation-range-end: normal, normal, normal, normal;
 
 [expanded] 
 div { (user agent stylesheet)
@@ -179,6 +185,8 @@ element.style { ()
         animation-play-state: running, running, running, running;
         animation-name: animName, mediaAnim, doesNotExist, styleSheetAnim;
         animation-timeline: auto, auto, auto, auto;
+        animation-range-start: normal, normal, normal, normal;
+        animation-range-end: normal, normal, normal, normal;
 
 [expanded] 
 div { (user agent stylesheet)
@@ -233,6 +241,8 @@ element.style { ()
         animation-play-state: running, running, running, running;
         animation-name: animName, mediaAnim, doesNotExist, styleSheetAnim;
         animation-timeline: auto, auto, auto, auto;
+        animation-range-start: normal, normal, normal, normal;
+        animation-range-end: normal, normal, normal, normal;
 
 [expanded] 
 div { (user agent stylesheet)
