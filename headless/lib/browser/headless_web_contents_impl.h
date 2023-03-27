@@ -6,7 +6,6 @@
 #define HEADLESS_LIB_BROWSER_HEADLESS_WEB_CONTENTS_IMPL_H_
 
 #include <memory>
-#include <set>
 #include <string>
 
 #include "base/memory/raw_ptr.h"
@@ -65,10 +64,6 @@ class HEADLESS_EXPORT HeadlessWebContentsImpl
   void AddObserver(Observer* observer) override;
   void RemoveObserver(Observer* observer) override;
   HeadlessDevToolsTarget* GetDevToolsTarget() override;
-  int GetMainFrameRenderProcessId() const override;
-  int GetMainFrameTreeNodeId() const override;
-  std::string GetMainFrameDevToolsId() const override;
-  std::unique_ptr<HeadlessDevToolsChannel> CreateDevToolsChannel() override;
 
   // HeadlessDevToolsTarget implementation:
   void AttachClient(HeadlessDevToolsClient* client) override;
@@ -82,10 +77,9 @@ class HEADLESS_EXPORT HeadlessWebContentsImpl
   void RenderProcessHostDestroyed(content::RenderProcessHost* host) override;
 
   // content::WebContentsObserver implementation:
-  void RenderFrameCreated(content::RenderFrameHost* render_frame_host) override;
-  void RenderFrameDeleted(content::RenderFrameHost* render_frame_host) override;
   void RenderViewReady() override;
 
+  std::unique_ptr<HeadlessDevToolsChannel> CreateDevToolsChannel();
   content::WebContents* web_contents() const;
   bool OpenURL(const GURL& url);
 

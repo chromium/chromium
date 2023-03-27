@@ -5,13 +5,8 @@
 #ifndef HEADLESS_PUBLIC_HEADLESS_WEB_CONTENTS_H_
 #define HEADLESS_PUBLIC_HEADLESS_WEB_CONTENTS_H_
 
-#include <string>
-#include <utility>
-
-#include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/process/kill.h"
-#include "headless/public/headless_devtools_channel.h"
 #include "headless/public/headless_export.h"
 #include "ui/gfx/geometry/size.h"
 #include "url/gurl.h"
@@ -69,22 +64,8 @@ class HEADLESS_EXPORT HeadlessWebContents {
   // signaled.
   virtual HeadlessDevToolsTarget* GetDevToolsTarget() = 0;
 
-  // Creates a DevTools channel corresponding to this tab. Note that this method
-  // won't return a valid value until Observer::DevToolsTargetReady has been
-  // signaled.
-  virtual std::unique_ptr<HeadlessDevToolsChannel> CreateDevToolsChannel() = 0;
-
   // Close this page. |HeadlessWebContents| object will be destroyed.
   virtual void Close() = 0;
-
-  // Returns the main frame's process id or -1 if there's no main frame.
-  virtual int GetMainFrameRenderProcessId() const = 0;
-
-  // Returns the main frame's node id or -1 if there's no main frame.
-  virtual int GetMainFrameTreeNodeId() const = 0;
-
-  // Returns the main frame's devtools id or "" if there's no main frame.
-  virtual std::string GetMainFrameDevToolsId() const = 0;
 
  protected:
   HeadlessWebContents() {}

@@ -359,23 +359,6 @@ HeadlessWebContentsImpl::~HeadlessWebContentsImpl() {
       FROM_HERE, std::move(window_tree_host_));
 }
 
-void HeadlessWebContentsImpl::RenderFrameCreated(
-    content::RenderFrameHost* render_frame_host) {
-  browser_context_->SetDevToolsFrameToken(
-      render_frame_host->GetProcess()->GetID(),
-      render_frame_host->GetRoutingID(),
-      render_frame_host->GetDevToolsFrameToken(),
-      render_frame_host->GetFrameTreeNodeId());
-}
-
-void HeadlessWebContentsImpl::RenderFrameDeleted(
-    content::RenderFrameHost* render_frame_host) {
-  browser_context_->RemoveDevToolsFrameToken(
-      render_frame_host->GetProcess()->GetID(),
-      render_frame_host->GetRoutingID(),
-      render_frame_host->GetFrameTreeNodeId());
-}
-
 void HeadlessWebContentsImpl::RenderViewReady() {
   DCHECK(web_contents()->GetPrimaryMainFrame()->IsRenderFrameLive());
 
@@ -386,27 +369,6 @@ void HeadlessWebContentsImpl::RenderViewReady() {
     observer.DevToolsTargetReady();
 
   devtools_target_ready_notification_sent_ = true;
-}
-
-int HeadlessWebContentsImpl::GetMainFrameRenderProcessId() const {
-  if (!web_contents() || !web_contents()->GetPrimaryMainFrame())
-    return -1;
-  return web_contents()->GetPrimaryMainFrame()->GetProcess()->GetID();
-}
-
-int HeadlessWebContentsImpl::GetMainFrameTreeNodeId() const {
-  if (!web_contents() || !web_contents()->GetPrimaryMainFrame())
-    return -1;
-  return web_contents()->GetPrimaryMainFrame()->GetFrameTreeNodeId();
-}
-
-std::string HeadlessWebContentsImpl::GetMainFrameDevToolsId() const {
-  if (!web_contents() || !web_contents()->GetPrimaryMainFrame())
-    return "";
-  return web_contents()
-      ->GetPrimaryMainFrame()
-      ->GetDevToolsFrameToken()
-      .ToString();
 }
 
 bool HeadlessWebContentsImpl::OpenURL(const GURL& url) {
