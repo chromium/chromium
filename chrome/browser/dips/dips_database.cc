@@ -125,10 +125,10 @@ void DIPSDatabase::DatabaseErrorCallback(int extended_error,
 
   if (sql::IsErrorCatastrophic(extended_error)) {
     // Normally this will poison the database, causing any subsequent operations
-    // to silently fail without any side effects. However, if RazeAndClose() is
+    // to silently fail without any side effects. However, if RazeAndPoison() is
     // called from the error callback in response to an error raised from within
     // sql::Database::Open, opening the now-razed database will be retried.
-    db_->RazeAndClose();
+    db_->RazeAndPoison();
   }
 
   // The default handling is to assert on debug and to ignore on release.
