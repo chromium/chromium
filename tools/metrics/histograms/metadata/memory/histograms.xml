@@ -592,46 +592,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Memory.Experimental.Debug.FailedProcessDumpsPerGlobalDump"
-    units="failures" expires_after="M82">
-  <owner>ssid@chromium.org</owner>
-  <owner>erikchen@chromium.org</owner>
-  <summary>
-    Records how many failed process dumps there were for a given global dump
-    completed by the memory instrumentation service
-    (resource_coordinator/memory_instrumentation/coordinator_impl.h). This is
-    recorded once each time a global dump request is completed.
-  </summary>
-</histogram>
-
-<histogram name="Memory.Experimental.Debug.GlobalDumpDuration" units="ms"
-    expires_after="M82">
-  <owner>ssid@chromium.org</owner>
-  <owner>erikchen@chromium.org</owner>
-  <summary>
-    Records how long it took the memory instrumentation service
-    (resource_coordinator/memory_instrumentation/coordinator_impl.h) from
-    starting working on a global memory dump request until complating that
-    request. This does not include queuing time (requests are handled serially).
-    This is recorded once each time a request is completed.
-  </summary>
-</histogram>
-
-<histogram name="Memory.Experimental.Debug.GlobalDumpQueueLength"
-    units="requests" expires_after="M77">
-  <owner>ssid@chromium.org</owner>
-  <owner>erikchen@chromium.org</owner>
-  <summary>
-    Number of global memory dump requests queued in by the memory
-    instrumentation service
-    (resource_coordinator/memory_instrumentation/coordinator_impl.h). This
-    includes the request currently being worked on if any. This is recorded once
-    each time a new request is queued. This happens at least once per UMA ping
-    to in order to compute Memory.Experimental.Renderer2,
-    Memory.Experimental.Browser2 etc.
-  </summary>
-</histogram>
-
 <histogram base="true" name="Memory.Experimental.Extension2" units="MB"
     expires_after="2024-01-10">
 <!-- Name completed by histogram_suffixes name="ProcessMemoryAllocator2" -->

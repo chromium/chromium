@@ -613,11 +613,6 @@ void QueuedRequestDispatcher::Finalize(QueuedRequest* request,
   auto& callback = request->callback;
   std::move(callback).Run(global_success, request->dump_guid,
                           std::move(global_dump));
-  UMA_HISTOGRAM_MEDIUM_TIMES("Memory.Experimental.Debug.GlobalDumpDuration",
-                             base::TimeTicks::Now() - request->start_time);
-  UMA_HISTOGRAM_COUNTS_1000(
-      "Memory.Experimental.Debug.FailedProcessDumpsPerGlobalDump",
-      request->failed_memory_dump_count);
 
   char guid_str[20];
   snprintf(guid_str, sizeof(guid_str), "0x%" PRIx64, request->dump_guid);

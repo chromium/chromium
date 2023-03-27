@@ -291,10 +291,6 @@ void CoordinatorImpl::RequestGlobalMemoryDumpInternal(
     RequestGlobalMemoryDumpInternalCallback callback) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
 
-  UMA_HISTOGRAM_COUNTS_1000(
-      "Memory.Experimental.Debug.GlobalDumpQueueLength",
-      base::saturated_cast<int32_t>(queued_memory_dump_requests_.size()));
-
   bool another_dump_is_queued = !queued_memory_dump_requests_.empty();
 
   // If this is a periodic or peak memory dump request and there already is
