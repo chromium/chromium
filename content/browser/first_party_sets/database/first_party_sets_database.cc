@@ -784,7 +784,7 @@ FirstPartySetsDatabase::InitStatus FirstPartySetsDatabase::InitializeTables() {
   sql::Transaction transaction(db_.get());
   if (!transaction.Begin()) {
     LOG(WARNING) << "First-Party Sets database begin initialization failed.";
-    db_->RazeAndClose();
+    db_->RazeAndPoison();
     return InitStatus::kError;
   }
 
@@ -900,8 +900,9 @@ bool FirstPartySetsDatabase::Destroy() {
   // Reset the value.
   run_count_ = 0;
 
-  if (db_ && db_->is_open() && !db_->RazeAndClose())
+  if (db_ && db_->is_open() && !db_->RazeAndPoison()) {
     return false;
+  }
 
   // The file already doesn't exist.
   if (db_path_.empty())
