@@ -112,6 +112,7 @@ std::vector<std::string> GetMacAddresses() {
         link_address[1] & 0xff, link_address[2] & 0xff, link_address[3] & 0xff,
         link_address[4] & 0xff, link_address[5] & 0xff));
   }
+  freeifaddrs(ifa);
   return result;
 }
 
