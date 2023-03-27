@@ -12,7 +12,9 @@
 #include "base/task/single_thread_task_runner.h"
 #include "build/build_config.h"
 #include "components/policy/core/common/cloud/cloud_policy_client_registration_helper.h"
+#include "components/policy/core/common/cloud/cloud_policy_manager.h"
 #include "components/policy/core/common/cloud/device_management_service.h"
+#include "components/policy/core/common/cloud/profile_cloud_policy_manager.h"
 #include "components/policy/core/common/cloud/user_cloud_policy_manager.h"
 #include "components/policy/core/common/policy_logger.h"
 #include "components/prefs/pref_service.h"
@@ -20,6 +22,8 @@
 #include "components/signin/public/identity_manager/account_managed_status_finder.h"
 
 namespace em = enterprise_management;
+
+namespace policy {
 
 namespace {
 
@@ -40,15 +44,23 @@ const em::DeviceRegisterRequest::Type kCloudPolicyRegistrationType =
 
 }  // namespace
 
-namespace policy {
-
 UserPolicySigninServiceBase::UserPolicySigninServiceBase(
     PrefService* local_state,
     DeviceManagementService* device_management_service,
-    UserCloudPolicyManager* policy_manager,
+    absl::variant<UserCloudPolicyManager*, ProfileCloudPolicyManager*>
+        policy_manager,
     signin::IdentityManager* identity_manager,
     scoped_refptr<network::SharedURLLoaderFactory> system_url_loader_factory)
-    : policy_manager_(policy_manager),
+    : user_policy_manager_(
+          absl::holds_alternative<UserCloudPolicyManager*>(policy_manager)
+              ? absl::get<UserCloudPolicyManager*>(policy_manager)
+              : nullptr),
+      policy_manager_(
+          absl::holds_alternative<UserCloudPolicyManager*>(policy_manager)
+              ? static_cast<CloudPolicyManager*>(
+                    absl::get<UserCloudPolicyManager*>(policy_manager))
+              : static_cast<CloudPolicyManager*>(
+                    absl::get<ProfileCloudPolicyManager*>(policy_manager))),
       identity_manager_(identity_manager),
       local_state_(local_state),
       device_management_service_(device_management_service),
@@ -64,21 +76,20 @@ void UserPolicySigninServiceBase::FetchPolicyForSignedInUser(
     PolicyFetchCallback callback) {
   DVLOG_POLICY(3, POLICY_FETCHING)
       << "Starting policy fetching for signed-in user.";
-  UserCloudPolicyManager* manager = policy_manager();
+  CloudPolicyManager* manager = policy_manager();
   DCHECK(manager);
 
   // Initialize the cloud policy manager there was no prior initialization.
   if (!manager->core()->client()) {
-    std::unique_ptr<CloudPolicyClient> client =
-        UserCloudPolicyManager::CreateCloudPolicyClient(
-            device_management_service_, profile_url_loader_factory);
+    std::unique_ptr<CloudPolicyClient> client = CreateCloudPolicyClient(
+        device_management_service_, profile_url_loader_factory);
     client->SetupRegistration(
         dm_token, client_id,
         std::vector<std::string>() /* user_affiliation_ids */);
     DCHECK(client->is_registered());
     DCHECK(!manager->core()->client());
-    InitializeUserCloudPolicyManager(account_id, std::move(client));
-    // `UserCloudPolicyManager` will initiate a policy fetch right after
+    InitializeCloudPolicyManager(account_id, std::move(client));
+    // `CloudPolicyManager` will initiate a policy fetch right after
     // initialization. Invoke `callback` after the policy is fetched.
     policy_fetch_callbacks().AddUnsafe(std::move(callback));
     return;
@@ -86,7 +97,7 @@ void UserPolicySigninServiceBase::FetchPolicyForSignedInUser(
 
   if (!manager->IsClientRegistered()) {
     // The manager already has a client but it's still registering.
-    // `UserCloudPolicyManager` will initiate a policy fetch when the client
+    // `CloudPolicyManager` will initiate a policy fetch when the client
     // registration completes. Invoke `callback` after the policy is fetched.
     policy_fetch_callbacks().AddUnsafe(std::move(callback));
     return;
@@ -118,7 +129,7 @@ void UserPolicySigninServiceBase::OnClientError(CloudPolicyClient* client) {
       base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
           FROM_HERE,
           base::BindOnce(
-              &UserPolicySigninServiceBase::ShutdownUserCloudPolicyManager,
+              &UserPolicySigninServiceBase::ShutdownCloudPolicyManager,
               weak_factory_.GetWeakPtr()));
     } else {
       DVLOG_POLICY(1, POLICY_FETCHING)
@@ -129,16 +140,16 @@ void UserPolicySigninServiceBase::OnClientError(CloudPolicyClient* client) {
 }
 
 void UserPolicySigninServiceBase::Shutdown() {
-  PrepareForUserCloudPolicyManagerShutdown();
+  PrepareForCloudPolicyManagerShutdown();
 }
 
-void UserPolicySigninServiceBase::PrepareForUserCloudPolicyManagerShutdown() {
+void UserPolicySigninServiceBase::PrepareForCloudPolicyManagerShutdown() {
   registration_helper_.reset();
   registration_helper_for_temporary_client_.reset();
   // Don't run the callbacks to be consistent with
   // `CloudPolicyService::RefreshPolicy()` behavior during shutdown.
   policy_fetch_callbacks_.reset();
-  UserCloudPolicyManager* manager = policy_manager();
+  CloudPolicyManager* manager = policy_manager();
   if (manager && manager->core()->client())
     manager->core()->client()->RemoveObserver(this);
   if (manager && manager->core()->service())
@@ -172,8 +183,8 @@ UserPolicySigninServiceBase::CreateClientForRegistrationOnly(
   device_management_service_->ScheduleInitialization(0);
 
   // Create a new CloudPolicyClient for fetching the DMToken.
-  return UserCloudPolicyManager::CreateCloudPolicyClient(
-      device_management_service_, system_url_loader_factory_);
+  return CreateCloudPolicyClient(device_management_service_,
+                                 system_url_loader_factory_);
 }
 
 bool UserPolicySigninServiceBase::ShouldLoadPolicyForUser(
@@ -189,28 +200,29 @@ bool UserPolicySigninServiceBase::ShouldLoadPolicyForUser(
 void UserPolicySigninServiceBase::InitializeForSignedInUser(
     const AccountId& account_id,
     scoped_refptr<network::SharedURLLoaderFactory> profile_url_loader_factory) {
-  DCHECK(account_id.is_valid());
-  UserCloudPolicyManager* manager = policy_manager();
-  bool should_load_policies =
-      ShouldLoadPolicyForUser(account_id.GetUserEmail());
-  manager->SetPoliciesRequired(should_load_policies);
-  if (!should_load_policies) {
-    DVLOG_POLICY(1, POLICY_FETCHING)
-        << "Policy load not enabled for user: " << account_id.GetUserEmail();
-    return;
+  if (user_policy_manager_) {
+    DCHECK(account_id.is_valid());
+    bool should_load_policies =
+        ShouldLoadPolicyForUser(account_id.GetUserEmail());
+    user_policy_manager_->SetPoliciesRequired(should_load_policies);
+    if (!should_load_policies) {
+      DVLOG_POLICY(1, POLICY_FETCHING)
+          << "Policy load not enabled for user: " << account_id.GetUserEmail();
+      return;
+    }
   }
 
+  CloudPolicyManager* manager = policy_manager();
   // Initialize the UCPM if it is not already initialized.
   if (!manager->core()->service()) {
     // If there is no cached DMToken then we can detect this when the
     // OnCloudPolicyServiceInitializationCompleted() callback is invoked and
     // this will initiate a policy fetch.
-    InitializeUserCloudPolicyManager(
-        account_id,
-        UserCloudPolicyManager::CreateCloudPolicyClient(
-            device_management_service_, profile_url_loader_factory));
-  } else {
-    manager->SetSigninAccountId(account_id);
+    InitializeCloudPolicyManager(
+        account_id, CreateCloudPolicyClient(device_management_service_,
+                                            profile_url_loader_factory));
+  } else if (user_policy_manager_) {
+    user_policy_manager_->SetSigninAccountId(account_id);
   }
 
   // If the CloudPolicyService is initialized, kick off registration.
@@ -220,12 +232,14 @@ void UserPolicySigninServiceBase::InitializeForSignedInUser(
     OnCloudPolicyServiceInitializationCompleted();
 }
 
-void UserPolicySigninServiceBase::InitializeUserCloudPolicyManager(
+void UserPolicySigninServiceBase::InitializeCloudPolicyManager(
     const AccountId& account_id,
     std::unique_ptr<CloudPolicyClient> client) {
   DCHECK(client);
-  UserCloudPolicyManager* manager = policy_manager();
-  manager->SetSigninAccountId(account_id);
+  CloudPolicyManager* manager = policy_manager();
+  if (user_policy_manager_) {
+    user_policy_manager_->SetSigninAccountId(account_id);
+  }
   DCHECK(!manager->core()->client());
   manager->Connect(local_state_, std::move(client));
   DCHECK(manager->core()->service());
@@ -236,9 +250,9 @@ void UserPolicySigninServiceBase::InitializeUserCloudPolicyManager(
   manager->core()->service()->AddObserver(this);
 }
 
-void UserPolicySigninServiceBase::ShutdownUserCloudPolicyManager() {
-  PrepareForUserCloudPolicyManagerShutdown();
-  UserCloudPolicyManager* manager = policy_manager();
+void UserPolicySigninServiceBase::ShutdownCloudPolicyManager() {
+  PrepareForCloudPolicyManagerShutdown();
+  CloudPolicyManager* manager = policy_manager();
   if (manager)
     manager->DisconnectAndRemovePolicy();
 }
@@ -298,6 +312,16 @@ void UserPolicySigninServiceBase::RegisterForPolicyWithAccountId(
       identity_manager(), account_id, std::move(registration_callback));
 }
 
+// static
+std::unique_ptr<CloudPolicyClient>
+UserPolicySigninServiceBase::CreateCloudPolicyClient(
+    DeviceManagementService* device_management_service,
+    scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory) {
+  return std::make_unique<CloudPolicyClient>(
+      device_management_service, std::move(url_loader_factory),
+      CloudPolicyClient::DeviceDMTokenCallback());
+}
+
 void UserPolicySigninServiceBase::RegisterCloudPolicyService() {
   DCHECK(
       identity_manager()->HasPrimaryAccount(GetConsentLevelForRegistration()));
@@ -335,7 +359,7 @@ base::TimeDelta UserPolicySigninServiceBase::GetTryRegistrationDelay() {
 
 void UserPolicySigninServiceBase::
     OnCloudPolicyServiceInitializationCompleted() {
-  UserCloudPolicyManager* manager = policy_manager();
+  CloudPolicyManager* manager = policy_manager();
   DCHECK(manager->core()->service()->IsInitializationComplete());
   // The service is now initialized - if the client is not yet registered, then
   // it means that there is no cached policy and so we need to initiate a new

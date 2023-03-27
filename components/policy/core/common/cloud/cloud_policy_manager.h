@@ -62,6 +62,13 @@ class POLICY_EXPORT CloudPolicyManager
   // Virtual for mocking.
   virtual bool IsClientRegistered() const;
 
+  virtual void Connect(PrefService* local_state,
+                       std::unique_ptr<CloudPolicyClient> client) {}
+
+  // Shuts down the CloudPolicyManager (removes and stops refreshing any
+  // cached cloud policy).
+  virtual void DisconnectAndRemovePolicy() {}
+
   // ConfigurationPolicyProvider:
   void Init(SchemaRegistry* registry) override;
   void Shutdown() override;

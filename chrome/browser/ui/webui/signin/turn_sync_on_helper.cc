@@ -661,7 +661,7 @@ void TurnSyncOnHelper::SwitchToProfile(Profile* new_profile) {
   DCHECK(!sync_startup_tracker_);
 
   policy::UserPolicySigninServiceFactory::GetForProfile(profile_)
-      ->ShutdownUserCloudPolicyManager();
+      ->ShutdownCloudPolicyManager();
   SetCurrentTurnSyncOnHelper(profile_, nullptr);  // Detach from old profile
   profile_ = new_profile;
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
@@ -690,7 +690,7 @@ void TurnSyncOnHelper::AttachToProfile() {
       current_helper->signin_aborted_mode_ = SigninAbortedMode::KEEP_ACCOUNT;
     }
     policy::UserPolicySigninServiceFactory::GetForProfile(profile_)
-        ->ShutdownUserCloudPolicyManager();
+        ->ShutdownCloudPolicyManager();
     current_helper->AbortAndDelete();
   }
   DCHECK(!GetCurrentTurnSyncOnHelper(profile_));
@@ -712,7 +712,7 @@ void TurnSyncOnHelper::AbortAndDelete() {
 
   if (signin_aborted_mode_ == SigninAbortedMode::REMOVE_ACCOUNT) {
     policy::UserPolicySigninServiceFactory::GetForProfile(profile_)
-        ->ShutdownUserCloudPolicyManager();
+        ->ShutdownCloudPolicyManager();
 
     // The account being removed may be the current primary account. Unblock the
     // `SigninManager` so that it can handle the state where there is a primary

@@ -217,7 +217,7 @@ void UserCloudPolicyManagerAsh::SetSystemURLLoaderFactoryForTests(
 
 UserCloudPolicyManagerAsh::~UserCloudPolicyManagerAsh() = default;
 
-void UserCloudPolicyManagerAsh::Connect(
+void UserCloudPolicyManagerAsh::ConnectManagementService(
     DeviceManagementService* device_management_service,
     scoped_refptr<network::SharedURLLoaderFactory> system_url_loader_factory) {
   DCHECK(device_management_service);

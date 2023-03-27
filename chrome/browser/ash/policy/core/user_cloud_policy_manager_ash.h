@@ -118,7 +118,7 @@ class UserCloudPolicyManagerAsh
 
   // Initializes the cloud connection. |local_state| and
   // |device_management_service| must stay valid until this object is deleted.
-  void Connect(
+  void ConnectManagementService(
       DeviceManagementService* device_management_service,
       scoped_refptr<network::SharedURLLoaderFactory> system_url_loader_factory);
 

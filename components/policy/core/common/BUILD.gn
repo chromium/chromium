@@ -285,6 +285,15 @@ source_set("internal") {
     ]
   }
 
+  if (is_win || is_mac || is_linux) {
+    sources += [
+      "cloud/profile_cloud_policy_manager.cc",
+      "cloud/profile_cloud_policy_manager.h",
+      "cloud/profile_cloud_policy_store.cc",
+      "cloud/profile_cloud_policy_store.h",
+    ]
+  }
+
   # Compile on Linux for fuzzer and since code is reused on Chrome OS.
   if (is_win || is_linux || is_chromeos) {
     sources += [
@@ -436,6 +445,13 @@ static_library("test_support") {
     ]
   }
 
+  if (is_win || is_mac || is_linux) {
+    sources += [
+      "cloud/mock_profile_cloud_policy_store.cc",
+      "cloud/mock_profile_cloud_policy_store.h",
+    ]
+  }
+
   public_deps = [
     ":common",
     "//base",
@@ -554,6 +570,13 @@ source_set("unit_tests") {
 
   if (is_win || is_mac) {
     sources += [ "policy_loader_common_unittest.cc" ]
+  }
+
+  if (is_win || is_mac || is_linux) {
+    sources += [
+      "cloud/profile_cloud_policy_manager_unittest.cc",
+      "cloud/profile_cloud_policy_store_unittest.cc",
+    ]
   }
 
   if (is_android) {

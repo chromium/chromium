@@ -76,7 +76,7 @@ class UserPolicySigninService : public UserPolicySigninServiceBase,
       const CoreAccountInfo& account_info) override;
 
   // UserPolicySigninServiceBase implementation:
-  void ShutdownUserCloudPolicyManager() override;
+  void ShutdownCloudPolicyManager() override;
 
   // ProfileAttributesStorage::Observer implementation:
   void OnProfileUserManagementAcceptanceChanged(
@@ -97,7 +97,7 @@ class UserPolicySigninService : public UserPolicySigninServiceBase,
   void Shutdown() override;
 
   // UserPolicySigninServiceBase implementation:
-  void InitializeUserCloudPolicyManager(
+  void InitializeCloudPolicyManager(
       const AccountId& account_id,
       std::unique_ptr<CloudPolicyClient> client) override;
   void ProhibitSignoutIfNeeded() override;

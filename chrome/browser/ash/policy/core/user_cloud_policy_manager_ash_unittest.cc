@@ -417,8 +417,8 @@ class UserCloudPolicyManagerAshTest
 
   void InitAndConnectManager() {
     manager_->Init(&schema_registry_);
-    manager_->Connect(&device_management_service_,
-                      /*system_url_loader_factory=*/nullptr);
+    manager_->ConnectManagementService(&device_management_service_,
+                                       /*system_url_loader_factory=*/nullptr);
     // Create the UserCloudPolicyTokenForwarder, which fetches the access
     // token using the IdentityManager and forwards it to the
     // UserCloudPolicyManagerAsh. This service is automatically created

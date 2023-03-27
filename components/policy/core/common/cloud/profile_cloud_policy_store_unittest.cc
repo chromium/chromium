@@ -1,0 +1,472 @@
+// Copyright 2023 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#include "components/policy/core/common/cloud/profile_cloud_policy_store.h"
+
+#include <memory>
+
+#include "base/files/file_util.h"
+#include "base/files/scoped_temp_dir.h"
+#include "base/run_loop.h"
+#include "base/task/single_thread_task_runner.h"
+#include "base/test/task_environment.h"
+#include "components/account_id/account_id.h"
+#include "components/policy/core/common/cloud/cloud_policy_constants.h"
+#include "components/policy/core/common/cloud/mock_cloud_external_data_manager.h"
+#include "components/policy/core/common/cloud/mock_cloud_policy_store.h"
+#include "components/policy/core/common/cloud/test/policy_builder.h"
+#include "components/policy/core/common/policy_switches.h"
+#include "components/policy/policy_constants.h"
+#include "testing/gmock/include/gmock/gmock.h"
+#include "testing/gtest/include/gtest/gtest.h"
+
+using testing::AllOf;
+using testing::Eq;
+using testing::Mock;
+using testing::Property;
+using testing::Sequence;
+
+namespace policy {
+
+namespace {
+
+void RunUntilIdle() {
+  base::RunLoop run_loop;
+  run_loop.RunUntilIdle();
+}
+
+bool WriteStringToFile(const base::FilePath path, const std::string& data) {
+  if (!base::CreateDirectory(path.DirName())) {
+    DLOG(WARNING) << "Failed to create directory " << path.DirName().value();
+    return false;
+  }
+
+  if (!base::WriteFile(path, data)) {
+    DLOG(WARNING) << "Failed to write " << path.value();
+    return false;
+  }
+
+  return true;
+}
+
+}  // namespace
+
+class ProfileCloudPolicyStoreTest : public testing::Test {
+ public:
+  ProfileCloudPolicyStoreTest()
+      : task_environment_(
+            base::test::SingleThreadTaskEnvironment::MainThreadType::UI) {}
+  ProfileCloudPolicyStoreTest(const ProfileCloudPolicyStoreTest&) = delete;
+  ProfileCloudPolicyStoreTest& operator=(const ProfileCloudPolicyStoreTest&) =
+      delete;
+
+  void SetUp() override {
+    ASSERT_TRUE(tmp_dir_.CreateUniqueTempDir());
+    store_ = std::make_unique<ProfileCloudPolicyStore>(
+        policy_file(), key_file(),
+        base::SingleThreadTaskRunner::GetCurrentDefault());
+    external_data_manager_ = std::make_unique<MockCloudExternalDataManager>();
+    external_data_manager_->SetPolicyStore(store_.get());
+    store_->AddObserver(&observer_);
+
+    // Install an initial public key, so that by default the validation of
+    // the stored/loaded policy blob succeeds (it looks like a new key
+    // provision).
+    policy_.SetDefaultInitialSigningKey();
+    policy_.policy_data().set_policy_type(
+        dm_protocol::kChromeMachineLevelUserCloudPolicyType);
+
+    InitPolicyPayload(&policy_.payload());
+
+    policy_.Build();
+  }
+
+  void TearDown() override {
+    store_->RemoveObserver(&observer_);
+    external_data_manager_.reset();
+    store_.reset();
+    RunUntilIdle();
+  }
+
+  void InitPolicyPayload(enterprise_management::CloudPolicySettings* payload) {
+    payload->mutable_searchsuggestenabled()->set_value(true);
+    payload->mutable_urlblocklist()->mutable_value()->add_entries(
+        "chromium.org");
+  }
+
+  base::FilePath policy_file() {
+    return tmp_dir_.GetPath().AppendASCII("policy");
+  }
+
+  base::FilePath key_file() {
+    return tmp_dir_.GetPath().AppendASCII("policy_key");
+  }
+
+  // Verifies that store_->policy_map() has the appropriate entries.
+  void VerifyPolicyMap(CloudPolicyStore* store) {
+    EXPECT_EQ(2U, store->policy_map().size());
+    const PolicyMap::Entry* entry =
+        store->policy_map().Get(key::kSearchSuggestEnabled);
+    ASSERT_TRUE(entry);
+    EXPECT_EQ(true, *entry->value(base::Value::Type::BOOLEAN));
+    ASSERT_TRUE(store->policy_map().Get(key::kURLBlocklist));
+  }
+
+  // Install an expectation on |observer_| for an error code.
+  void ExpectError(CloudPolicyStore* store, CloudPolicyStore::Status error) {
+    EXPECT_CALL(
+        observer_,
+        OnStoreError(
+            AllOf(Eq(store), Property(&CloudPolicyStore::status, Eq(error)))));
+  }
+
+  void StorePolicyAndEnsureLoaded(
+      const enterprise_management::PolicyFetchResponse& policy) {
+    Sequence s;
+    EXPECT_CALL(*external_data_manager_, OnPolicyStoreLoaded()).InSequence(s);
+    EXPECT_CALL(observer_, OnStoreLoaded(store_.get())).InSequence(s);
+    store_->Store(policy);
+    RunUntilIdle();
+    Mock::VerifyAndClearExpectations(external_data_manager_.get());
+    Mock::VerifyAndClearExpectations(&observer_);
+    ASSERT_TRUE(store_->policy());
+  }
+
+  UserPolicyBuilder policy_;
+  MockCloudPolicyStoreObserver observer_;
+  std::unique_ptr<ProfileCloudPolicyStore> store_;
+  std::unique_ptr<MockCloudExternalDataManager> external_data_manager_;
+
+  base::test::SingleThreadTaskEnvironment task_environment_;
+
+  base::ScopedTempDir tmp_dir_;
+};
+
+TEST_F(ProfileCloudPolicyStoreTest, LoadWithNoFile) {
+  EXPECT_FALSE(store_->policy());
+  EXPECT_TRUE(store_->policy_map().empty());
+
+  Sequence s;
+  EXPECT_CALL(*external_data_manager_, OnPolicyStoreLoaded()).InSequence(s);
+  EXPECT_CALL(observer_, OnStoreLoaded(store_.get())).InSequence(s);
+  store_->Load();
+  RunUntilIdle();
+
+  EXPECT_FALSE(store_->policy());
+  EXPECT_TRUE(store_->policy_map().empty());
+}
+
+TEST_F(ProfileCloudPolicyStoreTest, LoadWithInvalidFile) {
+  EXPECT_FALSE(store_->policy());
+  EXPECT_TRUE(store_->policy_map().empty());
+
+  // Create a bogus file.
+  ASSERT_TRUE(base::CreateDirectory(policy_file().DirName()));
+  std::string bogus_data = "bogus_data";
+  ASSERT_TRUE(base::WriteFile(policy_file(), bogus_data));
+
+  ExpectError(store_.get(), CloudPolicyStore::STATUS_LOAD_ERROR);
+  store_->Load();
+  RunUntilIdle();
+
+  EXPECT_FALSE(store_->policy());
+  EXPECT_TRUE(store_->policy_map().empty());
+}
+
+TEST_F(ProfileCloudPolicyStoreTest, LoadImmediatelyWithNoFile) {
+  EXPECT_FALSE(store_->policy());
+  EXPECT_TRUE(store_->policy_map().empty());
+
+  Sequence s;
+  EXPECT_CALL(*external_data_manager_, OnPolicyStoreLoaded()).InSequence(s);
+  EXPECT_CALL(observer_, OnStoreLoaded(store_.get())).InSequence(s);
+  store_->LoadImmediately();  // Should load without running the message loop.
+
+  EXPECT_FALSE(store_->policy());
+  EXPECT_TRUE(store_->policy_map().empty());
+}
+
+TEST_F(ProfileCloudPolicyStoreTest, LoadImmediatelyWithInvalidFile) {
+  EXPECT_FALSE(store_->policy());
+  EXPECT_TRUE(store_->policy_map().empty());
+
+  // Create a bogus file.
+  ASSERT_TRUE(base::CreateDirectory(policy_file().DirName()));
+  std::string bogus_data = "bogus_data";
+  ASSERT_TRUE(base::WriteFile(policy_file(), bogus_data));
+
+  ExpectError(store_.get(), CloudPolicyStore::STATUS_LOAD_ERROR);
+  store_->LoadImmediately();  // Should load without running the message loop.
+
+  EXPECT_FALSE(store_->policy());
+  EXPECT_TRUE(store_->policy_map().empty());
+}
+
+// Load file from cache with no key data - should give us a validation error.
+TEST_F(ProfileCloudPolicyStoreTest, ShouldFailToLoadUnsignedPolicy) {
+  UserPolicyBuilder unsigned_builder;
+  unsigned_builder.UnsetSigningKey();
+  unsigned_builder.policy_data().set_policy_type(
+      dm_protocol::kChromeMachineLevelUserCloudPolicyType);
+  InitPolicyPayload(&unsigned_builder.payload());
+  unsigned_builder.Build();
+  // Policy should be unsigned.
+  EXPECT_FALSE(unsigned_builder.policy().has_policy_data_signature());
+
+  // Write policy to disk.
+  std::string data;
+  ASSERT_TRUE(unsigned_builder.policy().SerializeToString(&data));
+  ASSERT_TRUE(base::CreateDirectory(policy_file().DirName()));
+  ASSERT_TRUE(base::WriteFile(policy_file(), data));
+
+  // Now make sure the data generates a validation error.
+  ExpectError(store_.get(), CloudPolicyStore::STATUS_VALIDATION_ERROR);
+  store_->LoadImmediately();  // Should load without running the message loop.
+  Mock::VerifyAndClearExpectations(&observer_);
+
+  // Now mimic a new policy coming down - this should result in a new key
+  // being installed.
+  StorePolicyAndEnsureLoaded(policy_.policy());
+  EXPECT_EQ(policy_.policy().new_public_key(),
+            store_->policy_signature_public_key());
+  EXPECT_TRUE(store_->policy()->has_public_key_version());
+  EXPECT_TRUE(base::PathExists(key_file()));
+}
+
+TEST_F(ProfileCloudPolicyStoreTest, Store) {
+  EXPECT_FALSE(store_->policy());
+  EXPECT_TRUE(store_->policy_map().empty());
+
+  // Store a simple policy and make sure it ends up as the currently active
+  // policy.
+  StorePolicyAndEnsureLoaded(policy_.policy());
+
+  // Policy should be decoded and stored.
+  EXPECT_EQ(policy_.policy_data().SerializeAsString(),
+            store_->policy()->SerializeAsString());
+  VerifyPolicyMap(store_.get());
+  EXPECT_EQ(CloudPolicyStore::STATUS_OK, store_->status());
+}
+
+TEST_F(ProfileCloudPolicyStoreTest, StoreThenClear) {
+  EXPECT_FALSE(store_->policy());
+  EXPECT_TRUE(store_->policy_map().empty());
+
+  // Store a simple policy and make sure the file exists.
+  // policy.
+  StorePolicyAndEnsureLoaded(policy_.policy());
+  EXPECT_FALSE(store_->policy_map().empty());
+
+  // Policy file should exist.
+  ASSERT_TRUE(base::PathExists(policy_file()));
+
+  Sequence s2;
+  EXPECT_CALL(*external_data_manager_, OnPolicyStoreLoaded()).InSequence(s2);
+  EXPECT_CALL(observer_, OnStoreLoaded(store_.get())).InSequence(s2);
+  store_->Clear();
+  RunUntilIdle();
+
+  // Policy file should not exist.
+  ASSERT_TRUE(!base::PathExists(policy_file()));
+
+  // Policy should be gone.
+  EXPECT_FALSE(store_->policy());
+  EXPECT_TRUE(store_->policy_map().empty());
+  EXPECT_EQ(CloudPolicyStore::STATUS_OK, store_->status());
+}
+
+TEST_F(ProfileCloudPolicyStoreTest, StoreRotatedKey) {
+  EXPECT_FALSE(store_->policy());
+  EXPECT_TRUE(store_->policy_map().empty());
+
+  // Store a simple policy and make sure it ends up as the currently active
+  // policy.
+  StorePolicyAndEnsureLoaded(policy_.policy());
+  EXPECT_FALSE(policy_.policy().has_new_public_key_signature());
+  std::string original_policy_key = policy_.policy().new_public_key();
+  EXPECT_EQ(original_policy_key, store_->policy_signature_public_key());
+
+  // Now do key rotation.
+  policy_.SetDefaultSigningKey();
+  policy_.SetDefaultNewSigningKey();
+  policy_.Build();
+  EXPECT_TRUE(policy_.policy().has_new_public_key_signature());
+  EXPECT_NE(original_policy_key, policy_.policy().new_public_key());
+  StorePolicyAndEnsureLoaded(policy_.policy());
+  EXPECT_EQ(policy_.policy().new_public_key(),
+            store_->policy_signature_public_key());
+}
+
+TEST_F(ProfileCloudPolicyStoreTest, ProvisionKeyTwice) {
+  EXPECT_FALSE(store_->policy());
+  EXPECT_TRUE(store_->policy_map().empty());
+
+  // Store a simple policy and make sure it ends up as the currently active
+  // policy.
+  StorePolicyAndEnsureLoaded(policy_.policy());
+
+  // Now try sending down policy signed with a different key (i.e. do key
+  // rotation with a key not signed with the original signing key).
+  policy_.UnsetSigningKey();
+  policy_.SetDefaultNewSigningKey();
+  policy_.Build();
+  EXPECT_FALSE(policy_.policy().has_new_public_key_signature());
+
+  ExpectError(store_.get(), CloudPolicyStore::STATUS_VALIDATION_ERROR);
+  store_->Store(policy_.policy());
+  RunUntilIdle();
+}
+
+TEST_F(ProfileCloudPolicyStoreTest, StoreTwoTimes) {
+  EXPECT_FALSE(store_->policy());
+  EXPECT_TRUE(store_->policy_map().empty());
+
+  // Store a simple policy then store a second policy before the first one
+  // finishes validating, and make sure the second policy ends up as the active
+  // policy.
+  UserPolicyBuilder first_policy;
+  first_policy.SetDefaultInitialSigningKey();
+  first_policy.policy_data().set_policy_type(
+      dm_protocol::kChromeMachineLevelUserCloudPolicyType);
+  first_policy.payload().mutable_searchsuggestenabled()->set_value(false);
+  first_policy.Build();
+  StorePolicyAndEnsureLoaded(first_policy.policy());
+
+  // Rebuild policy with the same signing key as |first_policy| (no rotation).
+  policy_.UnsetNewSigningKey();
+  policy_.SetDefaultSigningKey();
+  policy_.Build();
+  ASSERT_FALSE(policy_.policy().has_new_public_key());
+  StorePolicyAndEnsureLoaded(policy_.policy());
+
+  // Policy should be decoded and stored.
+  EXPECT_EQ(policy_.policy_data().SerializeAsString(),
+            store_->policy()->SerializeAsString());
+  VerifyPolicyMap(store_.get());
+  EXPECT_EQ(CloudPolicyStore::STATUS_OK, store_->status());
+}
+
+TEST_F(ProfileCloudPolicyStoreTest, StoreThenLoad) {
+  // Store a simple policy and make sure it can be read back in.
+  // policy.
+  StorePolicyAndEnsureLoaded(policy_.policy());
+  EXPECT_FALSE(store_->policy_signature_public_key().empty());
+
+  // Now, make sure the policy can be read back in from a second store.
+  std::unique_ptr<ProfileCloudPolicyStore> store2(new ProfileCloudPolicyStore(
+      policy_file(), key_file(),
+      base::SingleThreadTaskRunner::GetCurrentDefault()));
+  store2->AddObserver(&observer_);
+  EXPECT_CALL(observer_, OnStoreLoaded(store2.get()));
+  store2->Load();
+  RunUntilIdle();
+
+  ASSERT_TRUE(store2->policy());
+  EXPECT_EQ(policy_.policy_data().SerializeAsString(),
+            store2->policy()->SerializeAsString());
+  VerifyPolicyMap(store2.get());
+  EXPECT_EQ(CloudPolicyStore::STATUS_OK, store2->status());
+  store2->RemoveObserver(&observer_);
+  // Make sure that we properly resurrected the keys.
+  EXPECT_EQ(store2->policy_signature_public_key(),
+            store_->policy_signature_public_key());
+}
+
+TEST_F(ProfileCloudPolicyStoreTest, StoreThenLoadImmediately) {
+  // Store a simple policy and make sure it can be read back in.
+  // policy.
+  StorePolicyAndEnsureLoaded(policy_.policy());
+
+  // Now, make sure the policy can be read back in from a second store.
+  std::unique_ptr<ProfileCloudPolicyStore> store2(new ProfileCloudPolicyStore(
+      policy_file(), key_file(),
+      base::SingleThreadTaskRunner::GetCurrentDefault()));
+  store2->AddObserver(&observer_);
+  EXPECT_CALL(observer_, OnStoreLoaded(store2.get()));
+  store2->LoadImmediately();  // Should load without running the message loop.
+
+  ASSERT_TRUE(store2->policy());
+  EXPECT_EQ(policy_.policy_data().SerializeAsString(),
+            store2->policy()->SerializeAsString());
+  VerifyPolicyMap(store2.get());
+  EXPECT_EQ(CloudPolicyStore::STATUS_OK, store2->status());
+  store2->RemoveObserver(&observer_);
+}
+
+TEST_F(ProfileCloudPolicyStoreTest, StoreValidationError) {
+  // Create an invalid policy (no policy type).
+  policy_.policy_data().clear_policy_type();
+  policy_.Build();
+
+  // Store policy.
+  ExpectError(store_.get(), CloudPolicyStore::STATUS_VALIDATION_ERROR);
+  store_->Store(policy_.policy());
+  RunUntilIdle();
+  ASSERT_FALSE(store_->policy());
+}
+
+TEST_F(ProfileCloudPolicyStoreTest, StoreUnsigned) {
+  // Create unsigned policy, try to store it, should get a validation error.
+  policy_.policy().mutable_policy_data_signature()->clear();
+
+  // Store policy.
+  ExpectError(store_.get(), CloudPolicyStore::STATUS_VALIDATION_ERROR);
+  store_->Store(policy_.policy());
+  RunUntilIdle();
+  ASSERT_FALSE(store_->policy());
+}
+
+TEST_F(ProfileCloudPolicyStoreTest, KeyRotation) {
+  // Make sure when we load data from disk with a different key, that we trigger
+  // a server-side key rotation.
+  StorePolicyAndEnsureLoaded(policy_.policy());
+  ASSERT_TRUE(store_->policy()->has_public_key_version());
+
+  std::string key_data;
+  enterprise_management::PolicySigningKey key;
+  ASSERT_TRUE(base::ReadFileToString(key_file(), &key_data));
+  ASSERT_TRUE(key.ParseFromString(key_data));
+  key.set_verification_key("different_key");
+  key.SerializeToString(&key_data);
+  WriteStringToFile(key_file(), key_data);
+
+  // Now load this in a new store - this should trigger key rotation. The keys
+  // will still verify using the existing verification key.
+  std::unique_ptr<ProfileCloudPolicyStore> store2(new ProfileCloudPolicyStore(
+      policy_file(), key_file(),
+      base::SingleThreadTaskRunner::GetCurrentDefault()));
+  store2->AddObserver(&observer_);
+  EXPECT_CALL(observer_, OnStoreLoaded(store2.get()));
+  store2->Load();
+  RunUntilIdle();
+  ASSERT_TRUE(store2->policy());
+  ASSERT_FALSE(store2->policy()->has_public_key_version());
+  store2->RemoveObserver(&observer_);
+}
+
+TEST_F(ProfileCloudPolicyStoreTest, InvalidCachedVerificationSignature) {
+  // Make sure that we reject code with an invalid key.
+  StorePolicyAndEnsureLoaded(policy_.policy());
+
+  std::string key_data;
+  enterprise_management::PolicySigningKey key;
+  ASSERT_TRUE(base::ReadFileToString(key_file(), &key_data));
+  ASSERT_TRUE(key.ParseFromString(key_data));
+  key.set_signing_key_signature("different_key");
+  key.SerializeToString(&key_data);
+  WriteStringToFile(key_file(), key_data);
+
+  // Now load this in a new store - this should cause a validation error because
+  // the key won't verify.
+  std::unique_ptr<ProfileCloudPolicyStore> store2(new ProfileCloudPolicyStore(
+      policy_file(), key_file(),
+      base::SingleThreadTaskRunner::GetCurrentDefault()));
+  store2->AddObserver(&observer_);
+  ExpectError(store2.get(), CloudPolicyStore::STATUS_VALIDATION_ERROR);
+  store2->Load();
+  RunUntilIdle();
+  store2->RemoveObserver(&observer_);
+}
+
+}  // namespace policy

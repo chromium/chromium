@@ -95,10 +95,10 @@ void UserPolicySigninService::OnPrimaryAccountChanged(
   ProfileManager* profile_manager = g_browser_process->profile_manager();
   if (profile_manager && IsSignoutEvent(event)) {
     UpdateProfileAttributesWhenSignout(profile_, profile_manager);
-    ShutdownUserCloudPolicyManager();
+    ShutdownCloudPolicyManager();
   } else if (IsTurnOffSyncEvent(event) &&
              !CanApplyPolicies(/*check_for_refresh_token=*/true)) {
-    ShutdownUserCloudPolicyManager();
+    ShutdownCloudPolicyManager();
   }
   if (!IsAnySigninEvent(event))
     return;
@@ -108,7 +108,7 @@ void UserPolicySigninService::OnPrimaryAccountChanged(
     return;
 
   // IdentityManager has a refresh token for the primary account, so initialize
-  // the UserCloudPolicyManager.
+  // the CloudPolicyManager.
   TryInitializeForSignedInUser();
 }
 
@@ -122,14 +122,14 @@ void UserPolicySigninService::OnRefreshTokenUpdatedForAccount(
   }
 
   // ProfileOAuth2TokenService now has a refresh token for the primary account
-  // so initialize the UserCloudPolicyManager.
+  // so initialize the CloudPolicyManager.
   TryInitializeForSignedInUser();
 }
 
 void UserPolicySigninService::TryInitializeForSignedInUser() {
   DCHECK(CanApplyPolicies(/*check_for_refresh_token=*/true));
 
-  // If using a TestingProfile with no UserCloudPolicyManager, skip
+  // If using a TestingProfile with no CloudPolicyManager, skip
   // initialization.
   if (!policy_manager()) {
     DVLOG(1) << "Skipping initialization for tests due to missing components.";
@@ -145,11 +145,14 @@ void UserPolicySigninService::TryInitializeForSignedInUser() {
           ->GetURLLoaderFactoryForBrowserProcess());
 }
 
-void UserPolicySigninService::InitializeUserCloudPolicyManager(
+void UserPolicySigninService::InitializeCloudPolicyManager(
     const AccountId& account_id,
     std::unique_ptr<CloudPolicyClient> client) {
-  UserPolicySigninServiceBase::InitializeUserCloudPolicyManager(
-      account_id, std::move(client));
+  UserCloudPolicyManager* manager =
+      static_cast<UserCloudPolicyManager*>(policy_manager());
+  manager->SetSigninAccountId(account_id);
+  UserPolicySigninServiceBase::InitializeCloudPolicyManager(account_id,
+                                                            std::move(client));
   ProhibitSignoutIfNeeded();
 }
 
@@ -159,8 +162,8 @@ void UserPolicySigninService::Shutdown() {
   UserPolicySigninServiceBase::Shutdown();
 }
 
-void UserPolicySigninService::ShutdownUserCloudPolicyManager() {
-  UserPolicySigninServiceBase::ShutdownUserCloudPolicyManager();
+void UserPolicySigninService::ShutdownCloudPolicyManager() {
+  UserPolicySigninServiceBase::ShutdownCloudPolicyManager();
 }
 
 void UserPolicySigninService::OnProfileUserManagementAcceptanceChanged(
@@ -221,13 +224,13 @@ void UserPolicySigninService::InitializeOnProfileReady(Profile* profile) {
   DCHECK_EQ(profile, profile_);
 
   // If using a TestingProfile with no IdentityManager or
-  // UserCloudPolicyManager, skip initialization.
+  // CloudPolicyManager, skip initialization.
   if (!policy_manager() || !identity_manager()) {
     DVLOG(1) << "Skipping initialization for tests due to missing components.";
     return;
   }
 
-  // Shutdown the UserCloudPolicyManager when the user signs out. We start
+  // Shutdown the CloudPolicyManager when the user signs out. We start
   // observing the IdentityManager here because we don't want to get signout
   // notifications until after the profile has started initializing
   // (http://crbug.com/316229).
@@ -236,7 +239,7 @@ void UserPolicySigninService::InitializeOnProfileReady(Profile* profile) {
   AccountId account_id = AccountIdFromAccountInfo(
       identity_manager()->GetPrimaryAccountInfo(consent_level()));
   if (!CanApplyPolicies(/*check_for_refresh_token=*/false)) {
-    ShutdownUserCloudPolicyManager();
+    ShutdownCloudPolicyManager();
   } else {
     InitializeForSignedInUser(account_id,
                               profile->GetDefaultStoragePartition()

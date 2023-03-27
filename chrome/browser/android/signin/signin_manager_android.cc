@@ -178,7 +178,7 @@ void SigninManagerAndroid::OnSigninAllowedPrefChanged() const {
 }
 
 void SigninManagerAndroid::StopApplyingCloudPolicy(JNIEnv* env) {
-  user_policy_signin_service_->ShutdownUserCloudPolicyManager();
+  user_policy_signin_service_->ShutdownCloudPolicyManager();
 }
 
 void SigninManagerAndroid::RegisterPolicyWithAccount(

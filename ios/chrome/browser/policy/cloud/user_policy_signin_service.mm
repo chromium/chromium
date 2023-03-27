@@ -74,13 +74,13 @@ void UserPolicySigninService::Shutdown() {
 void UserPolicySigninService::OnPrimaryAccountChanged(
     const signin::PrimaryAccountChangeEvent& event) {
   if (IsTurnOffSyncEvent(event)) {
-    ShutdownUserCloudPolicyManager();
+    ShutdownCloudPolicyManager();
   }
 }
 
 void UserPolicySigninService::TryInitialize() {
   // If using a TestingProfile with no IdentityManager or
-  // UserCloudPolicyManager, skip initialization.
+  // CloudPolicyManager, skip initialization.
   if (!policy_manager() || !identity_manager()) {
     DVLOG_POLICY(1, POLICY_AUTH)
         << "Skipping initialization for tests due to missing components.";
@@ -93,7 +93,7 @@ void UserPolicySigninService::TryInitialize() {
     // can no longer be applied.
     DVLOG_POLICY(3, POLICY_PROCESSING)
         << "Clearing existing user policies as the feature is disabled";
-    ShutdownUserCloudPolicyManager();
+    ShutdownCloudPolicyManager();
     return;
   }
   AccountId account_id =

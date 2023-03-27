@@ -118,16 +118,6 @@ void UserCloudPolicyManager::Connect(
     external_data_manager_->Connect(std::move(url_loader_factory));
 }
 
-// static
-std::unique_ptr<CloudPolicyClient>
-UserCloudPolicyManager::CreateCloudPolicyClient(
-    DeviceManagementService* device_management_service,
-    scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory) {
-  return std::make_unique<CloudPolicyClient>(
-      device_management_service, std::move(url_loader_factory),
-      CloudPolicyClient::DeviceDMTokenCallback());
-}
-
 void UserCloudPolicyManager::DisconnectAndRemovePolicy() {
   if (external_data_manager_)
     external_data_manager_->Disconnect();

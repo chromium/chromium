@@ -20,6 +20,7 @@
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "google_apis/gaia/core_account_id.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
+#include "third_party/abseil-cpp/absl/types/variant.h"
 
 class AccountId;
 class PrefService;
@@ -28,14 +29,16 @@ namespace policy {
 
 class DeviceManagementService;
 class UserCloudPolicyManager;
+class CloudPolicyManager;
 class CloudPolicyClientRegistrationHelper;
 class CloudPolicyClient;
+class ProfileCloudPolicyManager;
 
 // The UserPolicySigninService is responsible for interacting with the policy
-// infrastructure (mainly UserCloudPolicyManager) to load policy for the signed
+// infrastructure (mainly CloudPolicyManager) to load policy for the signed
 // in user. This is the base class that contains shared behavior.
 //
-// At signin time, this class initializes the UserCloudPolicyManager and loads
+// At signin time, this class initializes the CloudPolicyManager and loads
 // policy before any other signed in services are initialized. After each
 // restart, this class ensures that the CloudPolicyClient is registered (in case
 // the policy server was offline during the initial policy fetch) and if not it
@@ -63,7 +66,8 @@ class POLICY_EXPORT UserPolicySigninServiceBase
   UserPolicySigninServiceBase(
       PrefService* local_state,
       DeviceManagementService* device_management_service,
-      UserCloudPolicyManager* policy_manager,
+      absl::variant<UserCloudPolicyManager*, ProfileCloudPolicyManager*>
+          policy_manager,
       signin::IdentityManager* identity_manager,
       scoped_refptr<network::SharedURLLoaderFactory> system_url_loader_factory);
   UserPolicySigninServiceBase(const UserPolicySigninServiceBase&) = delete;
@@ -112,6 +116,14 @@ class POLICY_EXPORT UserPolicySigninServiceBase
       const CoreAccountId& account_id,
       PolicyRegistrationCallback callback);
 
+  // Creates a CloudPolicyClient. Used in situations where
+  // callers want to create a DMToken without actually initializing the
+  // profile's policy infrastructure (for example, during signin when we
+  // want to check if the user's domain requires policy).
+  static std::unique_ptr<CloudPolicyClient> CreateCloudPolicyClient(
+      DeviceManagementService* device_management_service,
+      scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory);
+
  protected:
   // Invoked to initialize the cloud policy service for |account_id|, which is
   // the account associated with the Profile that owns this service. This is
@@ -126,17 +138,17 @@ class POLICY_EXPORT UserPolicySigninServiceBase
   // called from InitializeForSignedInUser() when the Profile already has a
   // signed in account at startup, and from FetchPolicyForSignedInUser() during
   // the initial policy fetch after signing in.
-  virtual void InitializeUserCloudPolicyManager(
+  virtual void InitializeCloudPolicyManager(
       const AccountId& account_id,
       std::unique_ptr<CloudPolicyClient> client);
 
-  // Prepares for the UserCloudPolicyManager to be shutdown due to
+  // Prepares for the CloudPolicyManager to be shutdown due to
   // user signout or profile destruction.
-  virtual void PrepareForUserCloudPolicyManagerShutdown();
+  virtual void PrepareForCloudPolicyManagerShutdown();
 
-  // Shuts down the UserCloudPolicyManager (for example, after the user signs
+  // Shuts down the CloudPolicyManager (for example, after the user signs
   // out) and deletes any cached policy.
-  virtual void ShutdownUserCloudPolicyManager();
+  virtual void ShutdownCloudPolicyManager();
 
   // Updates the timestamp of the last policy check. Implemented on mobile
   // platforms for network efficiency.
@@ -160,10 +172,14 @@ class POLICY_EXPORT UserPolicySigninServiceBase
   // |weak_factory_for_registration_| weak pointers used for registration.
   void CancelPendingRegistration();
 
-  // Convenience helpers to get the associated UserCloudPolicyManager and
+  // Convenience helpers to get the associated CloudPolicyManager and
   // IdentityManager.
-  UserCloudPolicyManager* policy_manager() { return policy_manager_; }
+  CloudPolicyManager* policy_manager() { return policy_manager_; }
   signin::IdentityManager* identity_manager() { return identity_manager_; }
+  PrefService* local_state() { return local_state_; }
+  DeviceManagementService* device_management_service() {
+    return device_management_service_;
+  }
 
   signin::ConsentLevel consent_level() const { return consent_level_; }
 
@@ -201,9 +217,10 @@ class POLICY_EXPORT UserPolicySigninServiceBase
   // Callback invoked when policy registration has finished.
   void OnRegistrationComplete();
 
-  // Weak pointer to the UserCloudPolicyManager and IdentityManager this service
+  // Weak pointer to the CloudPolicyManager and IdentityManager this service
   // is associated with.
-  raw_ptr<UserCloudPolicyManager> policy_manager_;
+  raw_ptr<UserCloudPolicyManager> user_policy_manager_;
+  raw_ptr<CloudPolicyManager> policy_manager_;
   raw_ptr<signin::IdentityManager> identity_manager_;
 
   raw_ptr<PrefService> local_state_;

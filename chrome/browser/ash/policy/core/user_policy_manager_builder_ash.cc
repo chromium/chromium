@@ -296,8 +296,9 @@ void CreateConfigurationPolicyProvider(
     }
 
     manager->Init(profile->GetPolicySchemaRegistryService()->registry());
-    manager->Connect(device_management_service,
-                     g_browser_process->shared_url_loader_factory());
+    manager->ConnectManagementService(
+        device_management_service,
+        g_browser_process->shared_url_loader_factory());
     *user_cloud_policy_manager_ash_out = std::move(manager);
   }
 }

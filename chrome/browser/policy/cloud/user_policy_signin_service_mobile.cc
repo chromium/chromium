@@ -62,9 +62,9 @@ UserPolicySigninService::UserPolicySigninService(
 
 UserPolicySigninService::~UserPolicySigninService() {}
 
-void UserPolicySigninService::ShutdownUserCloudPolicyManager() {
+void UserPolicySigninService::ShutdownCloudPolicyManager() {
   CancelPendingRegistration();
-  UserPolicySigninServiceBase::ShutdownUserCloudPolicyManager();
+  UserPolicySigninServiceBase::ShutdownCloudPolicyManager();
 }
 
 void UserPolicySigninService::Shutdown() {
@@ -80,9 +80,9 @@ void UserPolicySigninService::OnPrimaryAccountChanged(
   ProfileManager* profile_manager = g_browser_process->profile_manager();
   if (profile_manager && IsSignoutEvent(event)) {
     UpdateProfileAttributesWhenSignout(profile_, profile_manager);
-    ShutdownUserCloudPolicyManager();
+    ShutdownCloudPolicyManager();
   } else if (IsTurnOffSyncEvent(event)) {
-    ShutdownUserCloudPolicyManager();
+    ShutdownCloudPolicyManager();
   }
 }
 
@@ -99,13 +99,13 @@ void UserPolicySigninService::InitializeOnProfileReady(Profile* profile) {
   DCHECK_EQ(profile, profile_);
 
   // If using a TestingProfile with no IdentityManager or
-  // UserCloudPolicyManager, skip initialization.
+  // CloudPolicyManager, skip initialization.
   if (!policy_manager() || !identity_manager()) {
     DVLOG(1) << "Skipping initialization for tests due to missing components.";
     return;
   }
 
-  // Shutdown the UserCloudPolicyManager when the user signs out. We start
+  // Shutdown the CloudPolicyManager when the user signs out. We start
   // observing the IdentityManager here because we don't want to get signout
   // notifications until after the profile has started initializing
   // (http://crbug.com/316229).
@@ -114,7 +114,7 @@ void UserPolicySigninService::InitializeOnProfileReady(Profile* profile) {
   AccountId account_id = AccountIdFromAccountInfo(
       identity_manager()->GetPrimaryAccountInfo(consent_level()));
   if (!CanApplyPolicies(/*check_for_refresh_token=*/false)) {
-    ShutdownUserCloudPolicyManager();
+    ShutdownCloudPolicyManager();
   } else {
     InitializeForSignedInUser(account_id,
                               profile->GetDefaultStoragePartition()

@@ -21,16 +21,11 @@ namespace base {
 class SequencedTaskRunner;
 }
 
-namespace network {
-class SharedURLLoaderFactory;
-}
-
 class SchemaRegistry;
 
 namespace policy {
 
 class CloudExternalDataManager;
-class DeviceManagementService;
 class UserCloudPolicyStore;
 
 // UserCloudPolicyManager handles initialization of user policy.
@@ -70,23 +65,14 @@ class POLICY_EXPORT UserCloudPolicyManager : public CloudPolicyManager {
   // Initializes the cloud connection. |local_state| must stay valid until this
   // object is deleted or DisconnectAndRemovePolicy() gets called. Virtual for
   // mocking.
-  virtual void Connect(
-      PrefService* local_state,
-      std::unique_ptr<CloudPolicyClient> client);
+  void Connect(PrefService* local_state,
+               std::unique_ptr<CloudPolicyClient> client) override;
 
   // Shuts down the UserCloudPolicyManager (removes and stops refreshing the
   // cached cloud policy). This is typically called when a profile is being
   // disassociated from a given user (e.g. during signout). No policy will be
   // provided by this object until the next time Initialize() is invoked.
-  void DisconnectAndRemovePolicy();
-
-  // Creates a CloudPolicyClient for this client. Used in situations where
-  // callers want to create a DMToken without actually initializing the
-  // profile's policy infrastructure (for example, during signin when we
-  // want to check if the user's domain requires policy).
-  static std::unique_ptr<CloudPolicyClient> CreateCloudPolicyClient(
-      DeviceManagementService* device_management_service,
-      scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory);
+  void DisconnectAndRemovePolicy() override;
 
   // ConfigurationPolicyProvider:
   bool IsFirstPolicyLoadComplete(PolicyDomain domain) const override;

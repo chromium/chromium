@@ -45,7 +45,7 @@ class UserPolicySigninService : public UserPolicySigninServiceBase,
 
   // Overridden from UserPolicySigninServiceForProfile to cancel the pending
   // delayed registration.
-  void ShutdownUserCloudPolicyManager() override;
+  void ShutdownCloudPolicyManager() override;
 
   // signin::IdentityManager::Observer implementation:
   void OnPrimaryAccountChanged(
