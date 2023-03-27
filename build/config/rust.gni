@@ -47,13 +47,6 @@ declare_args() {
   # on supported platforms and GN targets.
   enable_local_libstd = true
 
-  # When true, uses the locally-built std in all Rust targets.
-  #
-  # As an internal implementation detail this can be overridden on specific
-  # targets (e.g. to run build.rs scripts while building std), but this
-  # generally should not be done.
-  use_local_std_by_default = false
-
   # Chromium currently has a Rust toolchain for Android and Linux, but
   # if you wish to experiment on more platforms you can use this
   # argument to specify an alternative toolchain.
@@ -90,8 +83,17 @@ declare_args() {
 }
 
 declare_args() {
-  # Individual Rust components. A separate declare_args so it can depend
-  # on the previous args.
+  # Use a separate declare_args so these variables' defaults can depend on the
+  # ones above.
+
+  # When true, uses the locally-built std in all Rust targets.
+  #
+  # As an internal implementation detail this can be overridden on specific
+  # targets (e.g. to run build.rs scripts while building std), but this
+  # generally should not be done.
+  use_local_std_by_default = enable_local_libstd && use_chromium_rust_toolchain
+
+  # Individual Rust components.
 
   # Conversions between Rust types and C++ types.
   enable_rust_base_conversions = enable_all_rust_features
