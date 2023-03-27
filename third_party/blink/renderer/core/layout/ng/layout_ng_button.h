@@ -28,6 +28,10 @@ class LayoutNGButton final : public LayoutNGFlexibleBox {
     return true;
   }
 
+  static bool ShouldCountWrongBaseline(const LayoutBox& button_box,
+                                       const ComputedStyle& style,
+                                       const ComputedStyle* parent_style);
+
  private:
   void UpdateAnonymousChildStyle(
       const LayoutObject* child,

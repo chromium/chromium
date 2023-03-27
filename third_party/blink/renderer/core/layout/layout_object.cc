@@ -1417,7 +1417,7 @@ void LayoutObject::SetChildNeedsCollectInlines() {
 
     // Stop marking at the inline formatting context root. This is usually a
     // |LayoutBlockFlow|, but some other classes can have children; e.g.,
-    // |LayoutButton| or |LayoutSVGRoot|. |LayoutInline| is the only class we
+    // |LayoutNGButton| or |LayoutSVGRoot|. |LayoutInline| is the only class we
     // collect recursively (see |CollectInlines|). Use the same condition here.
     if (!object->IsLayoutInline())
       break;

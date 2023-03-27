@@ -10,7 +10,6 @@
 #include "third_party/blink/renderer/core/frame/web_feature.h"
 #include "third_party/blink/renderer/core/html/html_frame_set_element.h"
 #include "third_party/blink/renderer/core/layout/layout_block_flow.h"
-#include "third_party/blink/renderer/core/layout/layout_button.h"
 #include "third_party/blink/renderer/core/layout/layout_counter.h"
 #include "third_party/blink/renderer/core/layout/layout_deprecated_flexible_box.h"
 #include "third_party/blink/renderer/core/layout/layout_fieldset.h"
@@ -42,7 +41,6 @@
 #include "third_party/blink/renderer/core/layout/ng/inline/layout_ng_text_fragment.h"
 #include "third_party/blink/renderer/core/layout/ng/inline/layout_ng_word_break.h"
 #include "third_party/blink/renderer/core/layout/ng/layout_ng_block_flow.h"
-#include "third_party/blink/renderer/core/layout/ng/layout_ng_button.h"
 #include "third_party/blink/renderer/core/layout/ng/layout_ng_fieldset.h"
 #include "third_party/blink/renderer/core/layout/ng/layout_ng_frame_set.h"
 #include "third_party/blink/renderer/core/layout/ng/layout_ng_progress.h"
@@ -241,12 +239,6 @@ LayoutBox* LayoutObjectFactory::CreateTableSection(Node& node,
                                                    LegacyLayout legacy) {
   return CreateObject<LayoutBox, LayoutNGTableSection, LayoutTableSection>(
       node, legacy);
-}
-
-LayoutObject* LayoutObjectFactory::CreateButton(Node& node,
-                                                const ComputedStyle& style,
-                                                LegacyLayout legacy) {
-  return CreateObject<LayoutBlock, LayoutNGButton, LayoutButton>(node, legacy);
 }
 
 LayoutObject* LayoutObjectFactory::CreateCounter(

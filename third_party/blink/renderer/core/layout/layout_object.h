@@ -988,11 +988,7 @@ class CORE_EXPORT LayoutObject : public GarbageCollected<LayoutObject>,
     NOT_DESTROYED();
     return IsOfType(kLayoutObjectQuote);
   }
-  bool IsButtonIncludingNG() const {
-    NOT_DESTROYED();
-    return IsOfType(kLayoutObjectButton) || IsOfType(kLayoutObjectNGButton);
-  }
-  bool IsLayoutNGButton() const {
+  bool IsButton() const {
     NOT_DESTROYED();
     return IsOfType(kLayoutObjectNGButton);
   }
@@ -2007,7 +2003,7 @@ class CORE_EXPORT LayoutObject : public GarbageCollected<LayoutObject>,
            SpannerPlaceholder();
   }
 
-  // We include IsButtonOrNGButton() in this check, because buttons are
+  // We include LayoutNGButton in this check, because buttons are
   // implemented using flex box but should still support things like
   // first-line, first-letter and text-overflow.
   // The flex box and grid specs require that flex box and grid do not
@@ -2019,7 +2015,7 @@ class CORE_EXPORT LayoutObject : public GarbageCollected<LayoutObject>,
   bool BehavesLikeBlockContainer() const {
     NOT_DESTROYED();
     return (IsLayoutBlockFlow() && StyleRef().IsDisplayBlockContainer()) ||
-           IsButtonIncludingNG();
+           IsButton();
   }
 
   // May be optionally passed to container() and various other similar methods
@@ -3745,7 +3741,6 @@ class CORE_EXPORT LayoutObject : public GarbageCollected<LayoutObject>,
   // The identifier name for blink::LayoutFoo should be kLayoutObjectFoo.
   enum LayoutObjectType {
     kLayoutObjectBr,
-    kLayoutObjectButton,
     kLayoutObjectCanvas,
     kLayoutObjectCounter,
     kLayoutObjectCustomScrollbarPart,

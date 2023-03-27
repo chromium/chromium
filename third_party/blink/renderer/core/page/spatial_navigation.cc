@@ -839,8 +839,9 @@ PhysicalRect ShrinkInlineBoxToLineBox(const LayoutObject& layout_object,
                                       PhysicalRect node_rect,
                                       int line_boxes) {
   if (!layout_object.IsInline() || layout_object.IsLayoutReplaced() ||
-      layout_object.IsButtonIncludingNG())
+      layout_object.IsButton()) {
     return node_rect;
+  }
 
   // If actual line-height is bigger than the inline box, we shouldn't change
   // anything. This is, for example, needed to not break

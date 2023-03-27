@@ -118,8 +118,6 @@ blink_core_sources_layout = [
   "layout_box_model_object.h",
   "layout_br.cc",
   "layout_br.h",
-  "layout_button.cc",
-  "layout_button.h",
   "layout_counter.cc",
   "layout_counter.h",
   "layout_custom_scrollbar_part.cc",

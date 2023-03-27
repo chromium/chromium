@@ -73,9 +73,6 @@ class LayoutObjectFactory {
                                        const ComputedStyle&,
                                        LegacyLayout);
 
-  static LayoutObject* CreateButton(Node& node,
-                                    const ComputedStyle& style,
-                                    LegacyLayout legacy);
   static LayoutObject* CreateCounter(PseudoElement& pseduo,
                                      const CounterContentData& counter,
                                      LegacyLayout legacy);
