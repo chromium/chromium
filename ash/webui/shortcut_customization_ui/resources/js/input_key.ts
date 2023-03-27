@@ -94,11 +94,29 @@ export class InputKeyElement extends InputKeyElementBase {
         value: KeyInputState.NOT_SELECTED,
         reflectToAttribute: true,
       },
+
+      // If this property is true, the spacing between keys will be narrower
+      // than usual.
+      narrow: {
+        type: Boolean,
+        value: false,
+        reflectToAttribute: true,
+      },
+
+      // If this property is true, keys will be styled with the bolder highlight
+      // background.
+      highlighted: {
+        type: Boolean,
+        value: false,
+        reflectToAttribute: true,
+      },
     };
   }
 
   key: string;
   keyState: KeyInputState;
+  narrow: boolean;
+  highlighted: boolean;
   private lookupManager: AcceleratorLookupManager =
       AcceleratorLookupManager.getInstance();
 

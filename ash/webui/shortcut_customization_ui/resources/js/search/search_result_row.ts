@@ -2,13 +2,17 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 import 'chrome://resources/cr_elements/cr_shared_style.css.js';
+import '../text_accelerator.js';
 
 import {FocusRowMixin} from 'chrome://resources/cr_elements/focus_row_mixin.js';
+import {assert} from 'chrome://resources/js/assert_ts.js';
 import {PolymerElementProperties} from 'chrome://resources/polymer/v3_0/polymer/interfaces.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-import {MojoSearchResult} from 'js/shortcut_types.js';
 
 import {mojoString16ToString} from '../mojo_utils.js';
+import {LayoutStyle, MojoSearchResult, TextAcceleratorInfo, TextAcceleratorPart} from '../shortcut_types.js';
+import {isTextAcceleratorInfo} from '../shortcut_utils.js';
+import {TextAcceleratorElement} from '../text_accelerator.js';
 
 import {getTemplate} from './search_result_row.html.js';
 
@@ -26,7 +30,6 @@ export class SearchResultRowElement extends SearchResultRowElementBase {
 
   static get properties(): PolymerElementProperties {
     return {
-      // TODO(longbowei): This is an incomplete type. Update it in the future.
       searchResult: {
         type: Object,
       },
@@ -42,13 +45,28 @@ export class SearchResultRowElement extends SearchResultRowElementBase {
   searchResult: MojoSearchResult;
   selected: boolean;
 
-  private getSearchResultText(): string {
+  static get template(): HTMLTemplateElement {
+    return getTemplate();
+  }
+
+  private getSearchResultDescription(): string {
     return mojoString16ToString(
         this.searchResult.acceleratorLayoutInfo.description);
   }
 
-  static get template(): HTMLTemplateElement {
-    return getTemplate();
+  private isDefaultLayout(): boolean {
+    return this.searchResult.acceleratorLayoutInfo.style ===
+        LayoutStyle.kDefault;
+  }
+
+  private isTextLayout(): boolean {
+    return !this.isDefaultLayout();
+  }
+
+  private getTextAcceleratorParts(): TextAcceleratorPart[] {
+    assert(isTextAcceleratorInfo(this.searchResult.acceleratorInfos[0]));
+    return TextAcceleratorElement.getTextAcceleratorParts(
+        this.searchResult.acceleratorInfos as TextAcceleratorInfo[]);
   }
 }
 

@@ -12,7 +12,7 @@ const fakeTimestamp: TimeTicks = {
   internalValue: BigInt(0),
 };
 
-const newTabAccelerator: MojoAcceleratorInfo = {
+const newTabAcceleratorInfo: MojoAcceleratorInfo = {
   type: AcceleratorType.kDefault,
   state: AcceleratorState.kEnabled,
   locked: true,
@@ -31,7 +31,7 @@ const newTabAccelerator: MojoAcceleratorInfo = {
   },
 };
 
-const cycleTabsAccelerator: MojoAcceleratorInfo = {
+const cycleTabsAcceleratorInfo: MojoAcceleratorInfo = {
   type: AcceleratorType.kDefault,
   state: AcceleratorState.kEnabled,
   locked: true,
@@ -145,15 +145,15 @@ export const fakeAcceleratorConfig: MojoAcceleratorConfig = {
   // TODO(michaelcheco): Separate Browser and Ambient accelerators.
   [AcceleratorSource.kAmbient]: {
     // New Tab
-    [0]: [newTabAccelerator],
-    [1]: [cycleTabsAccelerator],
+    [0]: [newTabAcceleratorInfo],
+    [1]: [cycleTabsAcceleratorInfo],
   },
 };
 
 export const fakeAmbientConfig: MojoAcceleratorConfig = {
   [AcceleratorSource.kAmbient]: {
-    [0]: [newTabAccelerator],
-    [1]: [cycleTabsAccelerator],
+    [0]: [newTabAcceleratorInfo],
+    [1]: [cycleTabsAcceleratorInfo],
   },
 };
 
@@ -297,6 +297,19 @@ export const fakeSearchResults: MojoSearchResult[] = [
 
 export const SnapWindowLeftSearchResult: MojoSearchResult =
     fakeSearchResults[0];
+
+export const CycleTabsTextSearchResult: MojoSearchResult = {
+  acceleratorLayoutInfo: {
+    category: AcceleratorCategory.kGeneral,
+    subCategory: AcceleratorSubcategory.kApps,
+    description: stringToMojoString16('Click or tap shelf icons 1-8'),
+    style: LayoutStyle.kText,
+    source: AcceleratorSource.kAsh,
+    action: 1,
+  },
+  acceleratorInfos: [cycleTabsAcceleratorInfo],
+  relevanceScore: 0.95,
+};
 
 // The following code is used to add fake accelerator entries for each icon.
 // When useFakeProvider is true, this will display all available icons for

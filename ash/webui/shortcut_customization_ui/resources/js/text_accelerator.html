@@ -3,6 +3,10 @@
     margin-inline-end: 8px;
   }
 
+  :host([narrow]) .spacing {
+    margin-inline-end: 4px;
+  }
+
   #text-wrapper {
     align-items: center;
     display: flex;
@@ -13,6 +17,11 @@
     align-items: center;
     display: flex;
     flex-wrap: wrap;
+  }
+
+  :host([narrow]) .parts-container {
+    flex-wrap: nowrap;
+    white-space: nowrap;
   }
 
   iron-icon {

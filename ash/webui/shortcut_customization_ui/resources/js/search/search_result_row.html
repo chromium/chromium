@@ -13,23 +13,65 @@
 
   #searchResultRow {
     align-items: center;
+    cursor: pointer;
     display: flex;
     height: 48px;
     justify-content: center;
   }
 
-  #searchResultText {
+  #searchResultRowInner {
     align-items: center;
     display: flex;
-    flex-grow: 1;
+    flex-direction: row;
     height: 100%;
-    padding-inline-start: 24px;
+    padding-inline-start: 16px;
+    width: 100%;
+  }
+
+  #description {
+    /* Fade out long descriptions. */
+    -webkit-mask-image: linear-gradient(to left, transparent, white 32px);
+    flex: 1;
+    margin-inline-end: 16px;
+    overflow: hidden;
+    white-space: nowrap;
+  }
+
+  #accelerators {
+    /* Fade out long accelerators. */
+    -webkit-mask-image: linear-gradient(to left, transparent, white 32px);
+    align-items: center;
+    display: flex;
+    flex: 1;
+    height: 100%;
+    overflow: hidden;
+  }
+
+  #actionIcon {
+    margin: var(--cr-toolbar-icon-margin);
+    width: var(--cr-toolbar-icon-container-size);
   }
 </style>
 
 <div id="searchResultRow" focus-row-container>
-  <div id="searchResultText" aria-disabled="true" selectable focus-row-control
-      focus-type="rowWrapper">
-        [[getSearchResultText(searchResult)]]
-  </div>
+  <div focus-row-control
+      focus-type="rowWrapper"
+      id="searchResultRowInner"
+      aria-disabled="true"
+      selectable>
+      <div id="description">[[getSearchResultDescription(searchResult)]]</div>
+      <div id="accelerators">
+        <template is="dom-if" if="[[isDefaultLayout(searchResult)]]">
+          <!-- TODO(cambickel) Add standard accelerator keys here. -->
+          <div></div>
+        </template>
+        <template is="dom-if" if="[[isTextLayout(searchResult)]]">
+          <text-accelerator parts="[[getTextAcceleratorParts(searchResult)]]"
+              highlighted="[[selected]]" narrow>
+          </text-accelerator>
+        </template>
+        <div id="gradient"></div>
+      </div>
+      <iron-icon id="actionIcon" icon="cr:arrow-forward"></iron-icon>
+    </div>
 </div>

@@ -9,14 +9,14 @@ import '../css/shortcut_customization_shared.css.js';
 import 'chrome://resources/cr_elements/cr_input/cr_input.js';
 import 'chrome://resources/polymer/v3_0/iron-icon/iron-icon.js';
 
-import {assert} from 'chrome://resources/js/assert_ts.js';
 import {PolymerElementProperties} from 'chrome://resources/polymer/v3_0/polymer/interfaces.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {getTemplate} from './accelerator_row.html.js';
 import {getShortcutProvider} from './mojo_interface_provider.js';
-import {AcceleratorInfo, AcceleratorSource, LayoutStyle, ShortcutProviderInterface, TextAcceleratorPart} from './shortcut_types.js';
-import {isCustomizationDisabled, isTextAcceleratorInfo} from './shortcut_utils.js';
+import {AcceleratorInfo, AcceleratorSource, LayoutStyle, ShortcutProviderInterface, TextAcceleratorInfo, TextAcceleratorPart} from './shortcut_types.js';
+import {isCustomizationDisabled} from './shortcut_utils.js';
+import {TextAcceleratorElement} from './text_accelerator.js';
 
 export type ShowEditDialogEvent = CustomEvent<{
   description: string,
@@ -138,14 +138,9 @@ export class AcceleratorRowElement extends PolymerElement {
         ));
   }
 
-  protected getTextAcceleratorParts(info: AcceleratorInfo[]):
+  protected getTextAcceleratorParts(infos: TextAcceleratorInfo[]):
       TextAcceleratorPart[] {
-    // For text based layout accelerators, we always expect this to be an array
-    // with a single element.
-    assert(info.length === 1);
-    const textAcceleratorInfo = info[0];
-    assert(isTextAcceleratorInfo(textAcceleratorInfo));
-    return textAcceleratorInfo.layoutProperties.textAccelerator.parts;
+    return TextAcceleratorElement.getTextAcceleratorParts(infos);
   }
 
   static get template(): HTMLTemplateElement {
