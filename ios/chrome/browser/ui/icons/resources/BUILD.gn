@@ -126,6 +126,13 @@ symbolset("plus_circle_fill") {
   ]
 }
 
+symbolset("legacy_plus_circle_fill") {
+  sources = [
+    "legacy_plus_circle_fill.symbolset/Contents.json",
+    "legacy_plus_circle_fill.symbolset/legacy.plus.circle.fill.cr.svg",
+  ]
+}
+
 imageset("plus_circle_fill_ios14") {
   sources = [
     "plus_circle_fill_ios14.imageset/Contents.json",
@@ -271,5 +278,12 @@ symbolset("chrome_product") {
   sources = [
     "chrome_product.symbolset/Contents.json",
     "chrome_product.symbolset/chrome.product.cr.svg",
+  ]
+}
+
+symbolset("tuner") {
+  sources = [
+    "tuner.symbolset/Contents.json",
+    "tuner.symbolset/tuner.cr.svg",
   ]
 }

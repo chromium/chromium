@@ -6475,6 +6475,11 @@
     "expiry_milestone": 130
   },
   {
+    "name": "sf-symbols-follow-up",
+    "owners": [ "ewannpv", "gambard", "bling-flags@google.com" ],
+    "expiry_milestone": 118
+  },
+  {
     "name": "share-sheet-migration-android",
     "owners": [ "wenyufu" ],
     "expiry_milestone": 121
@@ -7255,7 +7260,7 @@
   {
     "name": "use-sf-symbols-omnibox",
     "owners": [ "ewannpv", "gambard", "bling-flags@google.com" ],
-    "expiry_milestone": 114
+    "expiry_milestone": 116
   },
   {
     "name": "use-sha1-server-handshakes",

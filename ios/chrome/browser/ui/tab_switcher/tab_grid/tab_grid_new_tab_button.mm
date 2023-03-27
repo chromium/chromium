@@ -6,6 +6,7 @@
 
 #import "base/check.h"
 #import "base/notreached.h"
+#import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/ui/icons/symbols.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/tab_grid_constants.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
@@ -43,7 +44,12 @@ const CGFloat kLargeSymbolSize = 37;
   self = [super initWithFrame:CGRectZero];
   if (self) {
     CGFloat symbolSize = largeSize ? kLargeSymbolSize : kSmallSymbolSize;
-    _symbol = CustomSymbolWithPointSize(kPlusCircleFillSymbol, symbolSize);
+    if (base::FeatureList::IsEnabled(kSFSymbolsFollowup)) {
+      _symbol = CustomSymbolWithPointSize(kPlusCircleFillSymbol, symbolSize);
+    } else {
+      _symbol =
+          CustomSymbolWithPointSize(kLegacyPlusCircleFillSymbol, symbolSize);
+    }
     [self setImage:_symbol forState:UIControlStateNormal];
     self.pointerInteractionEnabled = YES;
     self.pointerStyleProvider = CreateLiftEffectCirclePointerStyleProvider();
