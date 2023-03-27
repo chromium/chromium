@@ -58126,6 +58126,8 @@ from previous Chrome versions.
   <int value="-1940806558" label="enable-syncfs-directory-operation"/>
   <int value="-1940377152" label="MacRTL:enabled"/>
   <int value="-1940291343" label="SpeculativeResourcePrefetching:enabled"/>
+  <int value="-1940251540"
+      label="AutofillEnableEmailOtpForVcnYellowPath:enabled"/>
   <int value="-1939525844" label="AssistantTimersV2:enabled"/>
   <int value="-1939016096"
       label="OmniboxUIExperimentHideSuggestionUrlTrivialSubdomains:enabled"/>
@@ -61322,6 +61324,8 @@ from previous Chrome versions.
   <int value="-185162926" label="IncreaseInputAudioBufferSize:enabled"/>
   <int value="-184091779"
       label="OmniboxUIExperimentWhiteBackgroundOnBlur:enabled"/>
+  <int value="-183541827"
+      label="AutofillEnableEmailOtpForVcnYellowPath:disabled"/>
   <int value="-183246373" label="enable-multilingual-spellchecker"/>
   <int value="-181590721"
       label="AutofillEnforceMinRequiredFieldsForHeuristics:enabled"/>

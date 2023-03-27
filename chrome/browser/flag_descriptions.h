@@ -232,6 +232,9 @@ extern const char kAutofillEnableCardArtImageDescription[];
 extern const char kAutofillEnableCardProductNameName[];
 extern const char kAutofillEnableCardProductNameDescription[];
 
+extern const char kAutofillEnableEmailOtpForVcnYellowPathName[];
+extern const char kAutofillEnableEmailOtpForVcnYellowPathDescription[];
+
 extern const char kAutofillEnableNewCardArtAndNetworkImagesName[];
 extern const char kAutofillEnableNewCardArtAndNetworkImagesDescription[];
 

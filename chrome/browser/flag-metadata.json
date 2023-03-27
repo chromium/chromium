@@ -494,6 +494,11 @@
     "expiry_milestone": 120
   },
   {
+    "name": "autofill-enable-email-otp-for-vcn-yellow-path",
+     "owners": ["junhuihe@google.com"],
+     "expiry_milestone": 125
+  },
+  {
     "name": "autofill-enable-fido-progress-dialog",
     "owners": [ "siashah", "yiian" ],
     "expiry_milestone": 120
