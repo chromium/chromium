@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/cfi_buildflags.h"
 #include "base/functional/callback.h"
 #include "base/functional/callback_forward.h"
 #include "base/scoped_observation.h"
@@ -322,8 +323,14 @@ IN_PROC_BROWSER_TEST_F(IntentChipButtonSkipIntentPickerBrowserTest,
   ASSERT_TRUE(IntentPickerBubbleView::intent_picker_bubble());
 }
 
+// TODO(crbug.com/1427908): Flaky on Linux CFI.
+#if BUILDFLAG(CFI_ICALL_CHECK) && BUILDFLAG(IS_LINUX)
+#define MAYBE_ShowsIntentChipCollapsed DISABLED_ShowsIntentChipCollapsed
+#else
+#define MAYBE_ShowsIntentChipCollapsed ShowsIntentChipCollapsed
+#endif
 IN_PROC_BROWSER_TEST_F(IntentChipButtonSkipIntentPickerBrowserTest,
-                       ShowsIntentChipCollapsed) {
+                       MAYBE_ShowsIntentChipCollapsed) {
   const GURL in_scope_url =
       https_server().GetURL(GetAppUrlHost(), GetInScopeUrlPath());
   const GURL out_of_scope_url =
