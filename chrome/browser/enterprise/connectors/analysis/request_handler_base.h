@@ -39,6 +39,7 @@ class RequestHandlerBase {
       const std::string& source,
       const std::string& destination,
       const std::string& user_action_id,
+      const std::string& tab_title,
       uint64_t user_action_requests_count,
       safe_browsing::DeepScanAccessPoint access_point);
 
@@ -91,6 +92,7 @@ class RequestHandlerBase {
   std::string source_;
   std::string destination_;
   std::string user_action_id_;
+  std::string tab_title_;
   uint64_t user_action_requests_count_;
   safe_browsing::DeepScanAccessPoint access_point_;
 

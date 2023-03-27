@@ -180,6 +180,7 @@ class BinaryUploadService : public KeyedService,
     const std::string& digest() const;
     const std::string& content_type() const;
     const std::string& user_action_id() const;
+    const std::string& tab_title() const;
     uint64_t user_action_requests_count() const;
     GURL tab_url() const;
 

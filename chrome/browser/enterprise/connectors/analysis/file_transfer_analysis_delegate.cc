@@ -342,9 +342,10 @@ void FileTransferAnalysisDelegate::OnGotFileURLs(
           profile_, source_url_.path()),
       SourceDestinationMatcherAsh::GetVolumeDescriptionFromPath(
           profile_, destination_url_.path()),
-      // User action id is only needed for local content analysis, leave it
-      // empty here.
-      /*user_action_id=*/std::string(), access_point_, std::move(paths),
+      // User action id and tab title are only needed for local content
+      // analysis, leave them empty here.
+      /*user_action_id=*/std::string(), /*tab_title=*/std::string(),
+      access_point_, std::move(paths),
       base::BindOnce(&FileTransferAnalysisDelegate::ContentAnalysisCompleted,
                      weak_ptr_factory_.GetWeakPtr()));
   request_handler_->UploadData();

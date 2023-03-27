@@ -77,6 +77,7 @@ FilesRequestHandler::FilesRequestHandler(
     const std::string& source,
     const std::string& destination,
     const std::string& user_action_id,
+    const std::string& tab_title,
     safe_browsing::DeepScanAccessPoint access_point,
     const std::vector<base::FilePath>& paths,
     CompletionCallback callback)
@@ -87,6 +88,7 @@ FilesRequestHandler::FilesRequestHandler(
                          source,
                          destination,
                          user_action_id,
+                         tab_title,
                          paths.size(),
                          access_point),
       paths_(paths),
@@ -105,18 +107,19 @@ std::unique_ptr<FilesRequestHandler> FilesRequestHandler::Create(
     const std::string& source,
     const std::string& destination,
     const std::string& user_action_id,
+    const std::string& tab_title,
     safe_browsing::DeepScanAccessPoint access_point,
     const std::vector<base::FilePath>& paths,
     CompletionCallback callback) {
   if (GetFactoryStorage()->is_null()) {
     return base::WrapUnique(new FilesRequestHandler(
         upload_service, profile, analysis_settings, url, source, destination,
-        user_action_id, access_point, paths, std::move(callback)));
+        user_action_id, tab_title, access_point, paths, std::move(callback)));
   } else {
     // Use the factory to create a fake FilesRequestHandler.
-    return GetFactoryStorage()->Run(upload_service, profile, analysis_settings,
-                                    url, source, destination, user_action_id,
-                                    access_point, paths, std::move(callback));
+    return GetFactoryStorage()->Run(
+        upload_service, profile, analysis_settings, url, source, destination,
+        user_action_id, tab_title, access_point, paths, std::move(callback));
   }
 }
 

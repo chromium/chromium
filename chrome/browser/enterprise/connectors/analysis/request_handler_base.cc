@@ -15,6 +15,7 @@ RequestHandlerBase::RequestHandlerBase(
     const std::string& source,
     const std::string& destination,
     const std::string& user_action_id,
+    const std::string& tab_title,
     uint64_t user_action_requests_count,
     safe_browsing::DeepScanAccessPoint access_point)
     : upload_service_(upload_service ? upload_service->AsWeakPtr() : nullptr),
@@ -24,6 +25,7 @@ RequestHandlerBase::RequestHandlerBase(
       source_(source),
       destination_(destination),
       user_action_id_(user_action_id),
+      tab_title_(tab_title),
       user_action_requests_count_(user_action_requests_count),
       access_point_(access_point) {}
 
@@ -55,6 +57,7 @@ void RequestHandlerBase::PrepareRequest(
   if (analysis_settings_->cloud_or_local_settings.is_local_analysis()) {
     request->set_user_action_id(user_action_id_);
     request->set_user_action_requests_count(user_action_requests_count_);
+    request->set_tab_title(tab_title_);
   }
 
   request->set_analysis_connector(connector);

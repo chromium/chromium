@@ -17,6 +17,7 @@ FakeFilesRequestHandler::FakeFilesRequestHandler(
     const std::string& source,
     const std::string& destination,
     const std::string& user_action_id,
+    const std::string& tab_title,
     safe_browsing::DeepScanAccessPoint access_point,
     const std::vector<base::FilePath>& paths,
     CompletionCallback callback)
@@ -27,6 +28,7 @@ FakeFilesRequestHandler::FakeFilesRequestHandler(
                                                  source,
                                                  destination,
                                                  user_action_id,
+                                                 tab_title,
                                                  access_point,
                                                  paths,
                                                  std::move(callback)),
@@ -45,12 +47,13 @@ FakeFilesRequestHandler::Create(
     const std::string& source,
     const std::string& destination,
     const std::string& user_action_id,
+    const std::string& tab_title,
     safe_browsing::DeepScanAccessPoint access_point,
     const std::vector<base::FilePath>& paths,
     enterprise_connectors::FilesRequestHandler::CompletionCallback callback) {
   return std::make_unique<FakeFilesRequestHandler>(
       fake_file_upload_callback, upload_service, profile, analysis_settings,
-      url, source, destination, user_action_id, access_point, paths,
+      url, source, destination, user_action_id, tab_title, access_point, paths,
       std::move(callback));
 }
 

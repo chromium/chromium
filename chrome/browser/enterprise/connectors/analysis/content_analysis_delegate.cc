@@ -540,7 +540,7 @@ bool ContentAnalysisDelegate::UploadData() {
     // MultiFileRequestHandler is owned by this class.
     files_request_handler_ = FilesRequestHandler::Create(
         GetBinaryUploadService(), profile_, data_.settings, url_, "", "",
-        user_action_id_, access_point_, data_.paths,
+        user_action_id_, title_, access_point_, data_.paths,
         base::BindOnce(&ContentAnalysisDelegate::FilesRequestCallback,
                        GetWeakPtr()));
     files_request_complete_ = !files_request_handler_->UploadData();

@@ -59,6 +59,7 @@ class FilesRequestHandler : public RequestHandlerBase {
       const std::string& source,
       const std::string& destination,
       const std::string& user_action_id,
+      const std::string& tab_title,
       safe_browsing::DeepScanAccessPoint access_point,
       const std::vector<base::FilePath>& paths,
       CompletionCallback callback)>;
@@ -76,6 +77,7 @@ class FilesRequestHandler : public RequestHandlerBase {
       const std::string& source,
       const std::string& destination,
       const std::string& user_action_id,
+      const std::string& tab_title,
       safe_browsing::DeepScanAccessPoint access_point,
       const std::vector<base::FilePath>& paths,
       CompletionCallback callback);
@@ -98,6 +100,7 @@ class FilesRequestHandler : public RequestHandlerBase {
       const std::string& source,
       const std::string& destination,
       const std::string& user_action_id,
+      const std::string& tab_title,
       safe_browsing::DeepScanAccessPoint access_point,
       const std::vector<base::FilePath>& paths,
       CompletionCallback callback);

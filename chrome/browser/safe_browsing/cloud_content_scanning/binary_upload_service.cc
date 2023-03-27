@@ -249,6 +249,10 @@ const std::string& BinaryUploadService::Request::user_action_id() const {
   return content_analysis_request_.user_action_id();
 }
 
+const std::string& BinaryUploadService::Request::tab_title() const {
+  return content_analysis_request_.request_data().tab_title();
+}
+
 uint64_t BinaryUploadService::Request::user_action_requests_count() const {
   return content_analysis_request_.user_action_requests_count();
 }
