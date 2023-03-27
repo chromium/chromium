@@ -11,6 +11,8 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/common/channel_info.h"
 #include "chrome/test/base/testing_profile.h"
+#include "chromeos/ash/components/system/fake_statistics_provider.h"
+#include "chromeos/ash/components/system/statistics_provider.h"
 #include "components/language/core/browser/pref_names.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/test/browser_task_environment.h"
@@ -28,12 +30,16 @@ class DeviceInfoManagerTest : public testing::Test {
   DeviceInfoManager* device_info_manager() {
     return device_info_manager_.get();
   }
+  ash::system::FakeStatisticsProvider* statistics_provider() {
+    return &fake_statistics_provider_;
+  }
 
  private:
   content::BrowserTaskEnvironment task_environment_;
   TestingProfile profile_;
 
   std::unique_ptr<DeviceInfoManager> device_info_manager_;
+  ash::system::ScopedFakeStatisticsProvider fake_statistics_provider_;
 };
 
 TEST_F(DeviceInfoManagerTest, CheckDeviceInfo) {
@@ -42,6 +48,9 @@ TEST_F(DeviceInfoManagerTest, CheckDeviceInfo) {
   CHROMEOS_RELEASE_BOARD=puff-signed-mp-v11keys
   )";
   base::test::ScopedChromeOSVersionInfo version(kLsbRelease, base::Time());
+
+  statistics_provider()->SetMachineStatistic(ash::system::kHardwareClassKey,
+                                             "FOOBAR D0G-F4N-C1UB");
 
   static constexpr char kTestLocale[] = "test_locale";
   profile()->GetPrefs()->SetString(language::prefs::kApplicationLocale,
@@ -59,6 +68,7 @@ TEST_F(DeviceInfoManagerTest, CheckDeviceInfo) {
   ASSERT_FALSE(device_info.version_info.ash_chrome.empty());
   ASSERT_EQ(device_info.version_info.platform, "123.4.5");
   ASSERT_EQ(device_info.version_info.channel, chrome::GetChannel());
+  ASSERT_EQ(device_info.hardware_id, "FOOBAR D0G-F4N-C1UB");
   ASSERT_EQ(device_info.locale, kTestLocale);
 }
 

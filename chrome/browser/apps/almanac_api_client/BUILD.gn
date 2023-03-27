@@ -21,6 +21,7 @@ source_set("almanac_api_client") {
     "//chrome/browser/apps:user_type_filter",
     "//chrome/browser/profiles:profile",
     "//chrome/common:channel_info",
+    "//chromeos/ash/components/system",
     "//chromeos/version",
     "//components/language/core/browser",
     "//components/prefs",

@@ -5,6 +5,7 @@
 #include "chrome/browser/apps/almanac_api_client/device_info_manager.h"
 
 #include "base/functional/callback.h"
+#include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
@@ -12,10 +13,12 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/channel_info.h"
+#include "chromeos/ash/components/system/statistics_provider.h"
 #include "chromeos/version/version_loader.h"
 #include "components/language/core/browser/pref_names.h"
 #include "components/prefs/pref_service.h"
 #include "components/version_info/version_info.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace apps {
 
@@ -36,6 +39,7 @@ DeviceInfoManager::~DeviceInfoManager() = default;
 //  - version_info.ash_chrome
 //  - user_type
 //  - channel
+//  - hardware_id
 // The method then asynchronously populates:
 //  - version_info.platform (OnPlatformVersionNumber)
 //  - model (OnModelInfo)
@@ -47,6 +51,12 @@ void DeviceInfoManager::GetDeviceInfo(
   device_info.version_info.ash_chrome = version_info::GetVersionNumber();
   device_info.user_type = apps::DetermineUserType(profile_);
   device_info.version_info.channel = chrome::GetChannel();
+
+  ash::system::StatisticsProvider* provider =
+      ash::system::StatisticsProvider::GetInstance();
+  absl::optional<base::StringPiece> hwid =
+      provider->GetMachineStatistic(ash::system::kHardwareClassKey);
+  device_info.hardware_id = std::string(hwid.value_or("unknown"));
 
   // Locale
   PrefService* prefs = profile_->GetPrefs();
@@ -89,6 +99,7 @@ std::ostream& operator<<(std::ostream& os, const DeviceInfo& device_info) {
   os << "Device Info: " << std::endl;
   os << "- Board: " << device_info.board << std::endl;
   os << "- Model: " << device_info.model << std::endl;
+  os << "- Hardware ID: " << device_info.hardware_id << std::endl;
   os << "- User Type: " << device_info.user_type << std::endl;
   os << "- Locale: " << device_info.locale << std::endl;
   os << device_info.version_info;

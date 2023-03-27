@@ -103,6 +103,7 @@ std::string BuildGetAppsForFirstLoginRequestBody(const apps::DeviceInfo& info) {
       info.version_info.ash_chrome);
   device_context->mutable_versions()->set_chrome_os_platform(
       info.version_info.platform);
+  device_context->set_hardware_id(info.hardware_id);
 
   apps::proto::ClientUserContext* user_context =
       request_proto.mutable_user_context();

@@ -57,6 +57,7 @@ TEST_F(AppPreloadServerConnectorTest, GetAppsForFirstLoginRequest) {
   DeviceInfo device_info;
   device_info.board = "brya";
   device_info.model = "taniks";
+  device_info.hardware_id = "FOOBAR D0G-F4N-C1UB";
   device_info.user_type = "unmanaged";
   device_info.version_info.ash_chrome = "10.10.10";
   device_info.version_info.platform = "12345.0.0";
@@ -98,6 +99,7 @@ TEST_F(AppPreloadServerConnectorTest, GetAppsForFirstLoginRequest) {
   EXPECT_EQ(request.device_context().versions().chrome_ash(), "10.10.10");
   EXPECT_EQ(request.device_context().versions().chrome_os_platform(),
             "12345.0.0");
+  EXPECT_EQ(request.device_context().hardware_id(), "FOOBAR D0G-F4N-C1UB");
 }
 
 TEST_F(AppPreloadServerConnectorTest, GetAppsForFirstLoginSuccessfulResponse) {

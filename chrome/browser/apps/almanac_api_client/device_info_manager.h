@@ -41,6 +41,11 @@ struct DeviceInfo {
   // The model of the device. e.g. "taniks"
   std::string model;
 
+  // The HWID which identifies the hardware configuration of the device. Set to
+  // "unknown" if not running on a ChromeOS device. e.g.
+  // "REDRIX-CLQY C4B-G4H-D3D-U7F-X54-I9N".
+  std::string hardware_id;
+
   // The user type of the profile currently running. e.g. "unmanaged"
   std::string user_type;
 

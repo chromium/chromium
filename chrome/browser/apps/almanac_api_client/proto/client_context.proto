@@ -63,8 +63,8 @@ message ClientDeviceContext {
   // The ChromeOS version information.
   optional Versions versions = 4;
 
-  // The SKU identifier for the device sending the request.
-  optional string sku_id = 5;
+  // The HWID identifier for the device sending the request.
+  optional string hardware_id = 5;
 }
 
 // Context about the user of the client device making this request.
