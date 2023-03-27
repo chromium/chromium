@@ -9,6 +9,13 @@
 
 namespace extensions_features {
 
+// TODO(devlin):
+// 1) Alphabetize this list. Right now, it's just random.
+// 2) Add guidance that API-related features should be in a defined form,
+//    kApi<Namespace><Method>.
+
+BASE_DECLARE_FEATURE(kApiRuntimeGetContexts);
+
 BASE_DECLARE_FEATURE(kSafeBrowsingCrxAllowlistShowWarnings);
 BASE_DECLARE_FEATURE(kSafeBrowsingCrxAllowlistAutoDisable);
 

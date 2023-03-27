@@ -35651,6 +35651,7 @@ Called by update_extension_histograms.py.-->
   <int value="1774" label="PASSWORDSPRIVATE_CONTINUEIMPORT"/>
   <int value="1775" label="PASSWORDSPRIVATE_RESETIMPORTER"/>
   <int value="1776" label="SMARTCARDPROVIDERPRIVATE_REPORTCANCELRESULT"/>
+  <int value="1777" label="RUNTIME_GETCONTEXTS"/>
 </enum>
 
 <enum name="ExtensionIconState">

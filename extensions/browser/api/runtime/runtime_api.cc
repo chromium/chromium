@@ -33,6 +33,7 @@
 #include "extensions/browser/lazy_context_task_queue.h"
 #include "extensions/browser/process_manager_factory.h"
 #include "extensions/common/api/runtime.h"
+#include "extensions/common/constants.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/manifest_handlers/background_info.h"
 #include "extensions/common/manifest_handlers/shared_module_info.h"
@@ -742,6 +743,48 @@ RuntimeGetPackageDirectoryEntryFunction::Run() {
   dict.Set("fileSystemId", filesystem.id());
   dict.Set("baseName", relative_path);
   return RespondNow(WithArguments(std::move(dict)));
+}
+
+RuntimeGetContextsFunction::RuntimeGetContextsFunction() = default;
+RuntimeGetContextsFunction::~RuntimeGetContextsFunction() = default;
+
+ExtensionFunction::ResponseAction RuntimeGetContextsFunction::Run() {
+  EXTENSION_FUNCTION_VALIDATE(extension());
+
+  std::vector<api::runtime::ExtensionContext> result;
+  if (absl::optional<api::runtime::ExtensionContext> worker =
+          GetWorkerContext()) {
+    result.push_back(std::move(*worker));
+  }
+
+  return RespondNow(
+      ArgumentList(api::runtime::GetContexts::Results::Create(result)));
+}
+
+absl::optional<api::runtime::ExtensionContext>
+RuntimeGetContextsFunction::GetWorkerContext() {
+  ProcessManager* const process_manager =
+      ProcessManager::Get(browser_context());
+  DCHECK(process_manager);
+
+  std::vector<WorkerId> active_workers =
+      process_manager->GetServiceWorkersForExtension(extension()->id());
+  CHECK_LE(active_workers.size(), 1u);
+
+  if (active_workers.empty()) {
+    return absl::nullopt;
+  }
+
+  api::runtime::ExtensionContext context;
+  context.context_type = api::runtime::CONTEXT_TYPE_BACKGROUND;
+  // TODO(crbug/1426192): Add a real context id.
+  context.context_id = "";
+  context.tab_id = extension_misc::kUnknownTabId;
+  context.window_id = extension_misc::kUnknownWindowId;
+  // TODO(devlin): Add extension_misc::kUnknownFrameId and use it here?
+  context.frame_id = -1;
+  context.incognito = browser_context()->IsOffTheRecord();
+  return context;
 }
 
 }  // namespace extensions

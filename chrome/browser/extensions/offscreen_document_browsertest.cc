@@ -230,8 +230,11 @@ IN_PROC_BROWSER_TEST_F(OffscreenDocumentBrowserTest, APIAccessIsLimited) {
              domAutomationController.send(JSON.stringify(keys.sort()));
            })";
     static constexpr char kExpectedProperties[] =
-        R"(["OnInstalledReason","OnRestartRequiredReason","PlatformArch",)"
-        R"("PlatformNaclArch","PlatformOs","RequestUpdateCheckStatus",)"
+        // Enums.
+        R"(["ContextType","OnInstalledReason","OnRestartRequiredReason",)"
+        R"("PlatformArch","PlatformNaclArch","PlatformOs",)"
+        R"("RequestUpdateCheckStatus",)"
+        // Methods and events.
         R"("connect","getURL","id","onConnect","onConnectExternal",)"
         R"("onMessage","onMessageExternal","sendMessage"])";
     EXPECT_EQ(kExpectedProperties, ExecuteScriptSync(contents, kScript));

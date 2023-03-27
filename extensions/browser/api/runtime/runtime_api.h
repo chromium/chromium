@@ -25,6 +25,7 @@
 #include "extensions/browser/process_manager_observer.h"
 #include "extensions/browser/update_observer.h"
 #include "extensions/common/api/runtime.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace base {
 class Version;
@@ -317,6 +318,23 @@ class RuntimeGetPackageDirectoryEntryFunction : public ExtensionFunction {
  protected:
   ~RuntimeGetPackageDirectoryEntryFunction() override = default;
   ResponseAction Run() override;
+};
+
+class RuntimeGetContextsFunction : public ExtensionFunction {
+ public:
+  DECLARE_EXTENSION_FUNCTION("runtime.getContexts", RUNTIME_GETCONTEXTS)
+
+  RuntimeGetContextsFunction();
+  RuntimeGetContextsFunction(const RuntimeGetContextsFunction&) = delete;
+  RuntimeGetContextsFunction& operator=(const RuntimeGetContextsFunction&) =
+      delete;
+
+ private:
+  // ExtensionFunction:
+  ~RuntimeGetContextsFunction() override;
+  ResponseAction Run() override;
+
+  absl::optional<api::runtime::ExtensionContext> GetWorkerContext();
 };
 
 }  // namespace extensions

@@ -1,4 +1,4 @@
-// Copyright 2022 The Chromium Authors
+// Copyright 2023 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -160,6 +160,34 @@ chrome.runtime.OnRestartRequiredReason = {
 };
 
 /**
+ * @enum {string}
+ * @see https://developer.chrome.com/extensions/runtime#type-ContextType
+ */
+chrome.runtime.ContextType = {
+  TAB: 'TAB',
+  POPUP: 'POPUP',
+  BACKGROUND: 'BACKGROUND',
+  OFFSCREEN_DOCUMENT: 'OFFSCREEN_DOCUMENT',
+};
+
+/**
+ * A context hosting extension content.
+ * @typedef {{
+ *   contextType: !chrome.runtime.ContextType,
+ *   contextId: string,
+ *   tabId: number,
+ *   windowId: number,
+ *   documentId: (string|undefined),
+ *   frameId: number,
+ *   documentUrl: (string|undefined),
+ *   documentOrigin: (string|undefined),
+ *   incognito: boolean
+ * }}
+ * @see https://developer.chrome.com/extensions/runtime#type-ExtensionContext
+ */
+chrome.runtime.ExtensionContext;
+
+/**
  * This will be defined during an API method callback if there was an error
  * @typedef {{
  *   message: (string|undefined)
@@ -250,10 +278,13 @@ chrome.runtime.reload = function() {};
  * version is very far out of date and you'd like to prompt a user to update.
  * Most other uses of requestUpdateCheck, such as calling it unconditionally
  * based on a repeating timer, probably only serve to waste client, network, and
- * server resources.</p>
- * @param {function(!chrome.runtime.RequestUpdateCheckStatus, ({
- *   version: string
- * }|undefined)): void} callback
+ * server resources.</p><p>Note: When called with a callback, instead of
+ * returning an object this function will return the two properties as separate
+ * arguments passed to the callback.</p>
+ * @param {function({
+ *   status: !chrome.runtime.RequestUpdateCheckStatus,
+ *   version: (string|undefined)
+ * }): void} callback
  * @see https://developer.chrome.com/extensions/runtime#method-requestUpdateCheck
  */
 chrome.runtime.requestUpdateCheck = function(callback) {};
@@ -280,13 +311,12 @@ chrome.runtime.restart = function() {};
 chrome.runtime.restartAfterDelay = function(seconds, callback) {};
 
 /**
- * Attempts to connect listeners within an extension/app (such as the
- * background page), or other extensions/apps. This is useful for content
- * scripts connecting to their extension processes, inter-app/extension
- * communication, and <a href="manifest/externally_connectable.html">web
- * messaging</a>. Note that this does not connect to any listeners in a content
- * script. Extensions may connect to content scripts embedded in tabs via
- * $(ref:tabs.connect).
+ * Attempts to connect listeners within an extension/app (such as the background
+ * page), or other extensions/apps. This is useful for content scripts
+ * connecting to their extension processes, inter-app/extension communication,
+ * and <a href="manifest/externally_connectable.html">web messaging</a>. Note
+ * that this does not connect to any listeners in a content script. Extensions
+ * may connect to content scripts embedded in tabs via $(ref:tabs.connect).
  * @param {string=} extensionId The ID of the extension or app to connect to. If
  *     omitted, a connection will be attempted with your own extension. Required
  *     if sending messages from a web page for <a
@@ -360,6 +390,14 @@ chrome.runtime.getPlatformInfo = function(callback) {};
  * @see https://developer.chrome.com/extensions/runtime#method-getPackageDirectoryEntry
  */
 chrome.runtime.getPackageDirectoryEntry = function(callback) {};
+
+/**
+ * Fetches information about active contexts associated with this extension
+ * @param {function(!Array<!chrome.runtime.ExtensionContext>): void} callback
+ *     Invoked with the matching contexts, if any.
+ * @see https://developer.chrome.com/extensions/runtime#method-getContexts
+ */
+chrome.runtime.getContexts = function(callback) {};
 
 /**
  * Fired when a profile that has this extension installed first starts up. This

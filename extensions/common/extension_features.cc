@@ -7,6 +7,11 @@
 
 namespace extensions_features {
 
+// Controls the availability of the runtime.getContexts() API.
+BASE_FEATURE(kApiRuntimeGetContexts,
+             "ApiRuntimeGetContexts",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Controls whether we show an install friction dialog when an Enhanced Safe
 // Browsing user tries to install an extension that is not included in the
 // Safe Browsing CRX allowlist. This feature also controls if we show a warning

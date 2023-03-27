@@ -543,6 +543,12 @@
     "dependencies": ["permission:nativeMessaging"],
     "contexts": ["blessed_extension"]
   },
+  "runtime.getContexts": {
+    "min_manifest_version": 3,
+    "contexts": ["blessed_extension"],
+    "channel": "trunk",
+    "feature_flag": "ApiRuntimeGetContexts"
+  },
   "runtime.getURL": {
     "contexts": [
       "blessed_extension",

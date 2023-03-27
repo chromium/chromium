@@ -137,6 +137,57 @@
         "type": "string",
         "description": "The reason that the event is being dispatched. 'app_update' is used when the restart is needed because the application is updated to a newer version. 'os_update' is used when the restart is needed because the browser/OS is updated to a newer version. 'periodic' is used when the system runs for more than the permitted uptime set in the enterprise policy.",
         "enum": ["app_update", "os_update", "periodic"]
+      },
+      {
+        "id": "ContextType",
+        "type": "string",
+        "enum": ["TAB", "POPUP", "BACKGROUND", "OFFSCREEN_DOCUMENT"]
+      },
+      {
+        "id": "ExtensionContext",
+        "type": "object",
+        "description": "A context hosting extension content.",
+        "properties": {
+          "contextType": {
+            "$ref": "ContextType",
+            "description": "The type of context this corresponds to."
+          },
+          "contextId": {
+            "type": "string",
+            "description": "A unique identifier for this context"
+          },
+          "tabId": {
+            "type": "integer",
+            "description": "The ID of the tab for this context, or -1 if this context is not hosted in a tab."
+          },
+          "windowId": {
+            "type": "integer",
+            "description": "The ID of the window for this context, or -1 if this context is not hosted in a window."
+          },
+          "documentId": {
+            "type": "string",
+            "optional": true,
+            "description": "A UUID for the document associated with this context, or undefined if this context is hosted not in a document."
+          },
+          "frameId": {
+            "type": "integer",
+            "description": "The ID of the frame for this context, or -1 if this context is not hosted in a frame."
+          },
+          "documentUrl": {
+            "type": "string",
+            "optional": true,
+            "description": "The URL of the document associated with this context, or undefined if the context is not hosted in a document."
+          },
+          "documentOrigin": {
+            "type": "string",
+            "optional": true,
+            "description": "The origin of the document associated with this context, or undefined if the context is not hosted in a document."
+          },
+          "incognito": {
+            "type": "boolean",
+            "description": "Whether the context is associated with an incognito profile."
+          }
+        }
       }
     ],
     "properties": {
@@ -434,6 +485,26 @@
             ]
           }
         ]
+      },
+      {
+        "name": "getContexts",
+        "type": "function",
+        "description": "Fetches information about active contexts associated with this extension",
+        "parameters": [
+            // TODO(crbug/1426192): Add a filter.
+        ],
+        "returns_async": {
+          "name": "callback",
+          "description": "Invoked with the matching contexts, if any.",
+          "parameters": [
+            {
+              "name": "contexts",
+              "type": "array",
+              "description": "The matching contexts, if any.",
+              "items": { "$ref": "ExtensionContext" }
+            }
+          ]
+        }
       }
     ],
     "events": [

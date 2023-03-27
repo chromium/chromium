@@ -8,6 +8,7 @@
 #include "base/run_loop.h"
 #include "base/test/bind.h"
 #include "base/test/simple_test_tick_clock.h"
+#include "base/test/values_test_util.h"
 #include "base/time/time.h"
 #include "chrome/browser/apps/platform_apps/app_browsertest_util.h"
 #include "chrome/browser/extensions/api/runtime/chrome_runtime_api_delegate.h"
@@ -15,10 +16,12 @@
 #include "chrome/browser/extensions/extension_function_test_utils.h"
 #include "chrome/browser/extensions/extension_service.h"
 #include "chrome/test/base/ui_test_utils.h"
+#include "components/version_info/channel.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/test_navigation_observer.h"
 #include "extensions/browser/api/runtime/runtime_api.h"
+#include "extensions/browser/background_script_executor.h"
 #include "extensions/browser/blocklist_extension_prefs.h"
 #include "extensions/browser/blocklist_state.h"
 #include "extensions/browser/extension_dialog_auto_confirm.h"
@@ -26,6 +29,8 @@
 #include "extensions/browser/extension_prefs.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/test_extension_registry_observer.h"
+#include "extensions/common/extension_features.h"
+#include "extensions/common/features/feature_channel.h"
 #include "extensions/test/extension_test_message_listener.h"
 #include "extensions/test/result_catcher.h"
 #include "extensions/test/test_extension_dir.h"
@@ -596,6 +601,79 @@ IN_PROC_BROWSER_TEST_P(BackgroundPageOnlyRuntimeApiTest,
     ASSERT_TRUE(url->is_string());
     ASSERT_EQ(new_tab_url.spec(), url->GetString());
   }
+}
+
+class RuntimeGetContextsApiTest : public ExtensionApiTest {
+ public:
+  RuntimeGetContextsApiTest() {
+    feature_list_.InitAndEnableFeature(
+        extensions_features::kApiRuntimeGetContexts);
+  }
+  RuntimeGetContextsApiTest(const RuntimeGetContextsApiTest&) = delete;
+  RuntimeGetContextsApiTest& operator=(const RuntimeGetContextsApiTest&) =
+      delete;
+  ~RuntimeGetContextsApiTest() override = default;
+
+  void SetUpOnMainThread() override {
+    ExtensionApiTest::SetUpOnMainThread();
+
+    static constexpr char kManifest[] =
+        R"({
+             "name": "Get Contexts",
+             "version": "0.1",
+             "manifest_version": 3,
+             "background": {
+               "service_worker": "background.js"
+             }
+           })";
+    test_dir_.WriteManifest(kManifest);
+    test_dir_.WriteFile(FILE_PATH_LITERAL("background.js"),
+                        "// Intentionally blank");
+    extension_ = LoadExtension(test_dir_.UnpackedPath());
+    ASSERT_TRUE(extension_);
+  }
+
+  // Runs `chrome.runtime.getContexts()` and returns the result as a
+  // base::Value.
+  base::Value GetContexts() {
+    static constexpr char kScript[] =
+        R"((async () => {
+             chrome.test.sendScriptResult(
+                 await chrome.runtime.getContexts());
+           })();)";
+    return BackgroundScriptExecutor::ExecuteScript(
+        profile(), extension_->id(), kScript,
+        BackgroundScriptExecutor::ResultCapture::kSendScriptResult);
+  }
+
+ private:
+  const Extension* extension_ = nullptr;
+  TestExtensionDir test_dir_;
+  ScopedCurrentChannel channel_override_{version_info::Channel::UNKNOWN};
+  base::test::ScopedFeatureList feature_list_;
+};
+
+// Tests retrieving the background service worker context using
+// `chrome.runtime.getContexts()`.
+IN_PROC_BROWSER_TEST_F(RuntimeGetContextsApiTest, GetServiceWorkerContext) {
+  base::Value background_contexts = GetContexts();
+  // Note: fields of `documentId`, `documentUrl`, and `documentOrigin` are
+  // undefined (service worker contexts don't have an associated document).
+  // `tabId`, `frameId`, and `windowId` are -1 for consistency with other
+  // APIs.
+  static constexpr char kExpected[] =
+      R"([{
+            "contextType": "BACKGROUND",
+            "contextId": "",
+            "tabId": -1,
+            "windowId": -1,
+            "frameId": -1,
+            "incognito": false
+         }])";
+  EXPECT_THAT(background_contexts, base::test::IsJson(kExpected));
+
+  // TODO(crbug/1426192): Add tests for retrieving a service worker context
+  // when there isn't an active worker.
 }
 
 }  // namespace extensions
