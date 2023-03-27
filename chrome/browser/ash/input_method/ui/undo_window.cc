@@ -104,15 +104,15 @@ void UndoWindow::OnThemeChanged() {
   const auto* const color_provider = GetColorProvider();
   learn_more_button_->SetBorder(views::CreatePaddedBorder(
       views::CreateSolidSidedBorder(
-          gfx::Insets::TLBR(1, 0, 0, 0),
-          color_provider->GetColor(ui::kColorBubbleFooterBorder)),
+          gfx::Insets::TLBR(4, 0, 4, 4),
+          color_provider->GetColor(ui::kColorButtonBackground)),
       views::LayoutProvider::Get()->GetInsetsMetric(
           views::INSETS_VECTOR_IMAGE_BUTTON)));
 
   // TODO(crbug.com/1099044): Update and use cros colors.
   learn_more_button_->SetImageModel(
       views::Button::ButtonState::STATE_NORMAL,
-      ui::ImageModel::FromVectorIcon(vector_icons::kHelpOutlineIcon,
+      ui::ImageModel::FromVectorIcon(vector_icons::kSettingsOutlineIcon,
                                      ui::kColorIconSecondary));
 
   BubbleDialogDelegateView::OnThemeChanged();
