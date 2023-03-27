@@ -8,6 +8,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "chrome/updater/mac/setup/keystone.h"
 #include "chrome/updater/registration_data.h"
+#include "chrome/updater/util/mac_util.h"
 
 namespace updater {
 
@@ -15,7 +16,8 @@ bool AppServerPosix::MigrateLegacyUpdaters(
     base::RepeatingCallback<void(const RegistrationRequest&)>
         register_callback) {
   // TODO(crbug.com/1250524): This must not run concurrently with Keystone.
-  MigrateKeystoneTickets(updater_scope(), register_callback);
+  MigrateKeystoneApps(GetKeystoneFolderPath(updater_scope()).value(),
+                      register_callback);
 
   return true;
 }

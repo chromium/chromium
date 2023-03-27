@@ -4,6 +4,7 @@
 
 #include "chrome/updater/persisted_data.h"
 
+#include <string>
 #include <vector>
 
 #include "base/base64.h"
@@ -35,12 +36,14 @@
 
 namespace {
 
-constexpr char kPV[] = "pv";    // Key for storing product version.
-constexpr char kFP[] = "fp";    // Key for storing fingerprint.
-constexpr char kECP[] = "ecp";  // Key for storing existence checker path.
-constexpr char kBC[] = "bc";    // Key for storing brand code.
-constexpr char kBP[] = "bp";    // Key for storing brand path.
-constexpr char kAP[] = "ap";    // Key for storing ap.
+constexpr char kPV[] = "pv";      // Key for storing product version.
+constexpr char kFP[] = "fp";      // Key for storing fingerprint.
+constexpr char kECP[] = "ecp";    // Key for storing existence checker path.
+constexpr char kBC[] = "bc";      // Key for storing brand code.
+constexpr char kBP[] = "bp";      // Key for storing brand path.
+constexpr char kAP[] = "ap";      // Key for storing ap.
+constexpr char kDLA[] = "dla";    // Key for storing date-last-active.
+constexpr char kDLRC[] = "dlrc";  // Key for storing date-last-rollcall.
 
 constexpr char kHadApps[] = "had_apps";
 constexpr char kUsageStatsEnabledKey[] = "usage_stats_enabled";
@@ -145,6 +148,16 @@ void PersistedData::SetAP(const std::string& id, const std::string& ap) {
 #endif
 }
 
+void PersistedData::SetDateLastActive(const std::string& id, int dla) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  SetInteger(id, kDLA, dla);
+}
+
+void PersistedData::SetDateLastRollcall(const std::string& id, int dlrc) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  SetInteger(id, kDLRC, dlrc);
+}
+
 void PersistedData::RegisterApp(const RegistrationRequest& rq) {
   VLOG(2) << __func__ << ": Registering " << rq.app_id << " at version "
           << rq.version;
@@ -162,6 +175,12 @@ void PersistedData::RegisterApp(const RegistrationRequest& rq) {
   }
   if (!rq.ap.empty()) {
     SetAP(rq.app_id, rq.ap);
+  }
+  if (rq.dla) {
+    SetDateLastActive(rq.app_id, rq.dla.value());
+  }
+  if (rq.dlrc) {
+    SetDateLastRollcall(rq.app_id, rq.dlrc.value());
   }
 }
 
@@ -228,6 +247,18 @@ base::Value::Dict* PersistedData::GetOrCreateAppKey(const std::string& id,
   base::Value::Dict* apps = root.EnsureDict("apps");
   base::Value::Dict* app = apps->EnsureDict(base::ToLowerASCII(id));
   return app;
+}
+
+void PersistedData::SetInteger(const std::string& id,
+                               const std::string& key,
+                               int value) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (!pref_service_) {
+    return;
+  }
+  ScopedDictPrefUpdate update(pref_service_,
+                              update_client::kPersistedDataPreference);
+  GetOrCreateAppKey(id, update.Get())->Set(key, value);
 }
 
 void PersistedData::SetString(const std::string& id,

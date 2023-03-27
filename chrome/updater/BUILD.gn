@@ -824,6 +824,7 @@ if (is_win || is_mac || is_linux) {
       sources += [
         "mac/keystone/ksadmin_unittest.cc",
         "mac/privileged_helper/privileged_helper_unittests.mm",
+        "mac/setup/keystone_unittest.cc",
         "mac/setup/ks_tickets_unittest.mm",
         "mac/setup/setup_unittest.mm",
         "policy/mac/managed_preference_policy_manager_impl_unittest.mm",
@@ -841,6 +842,7 @@ if (is_win || is_mac || is_linux) {
       ]
 
       data += [
+        "//chrome/test/data/updater/CountingMetrics.plist",
         "//chrome/test/data/updater/Keystone.ticketstore",
         "//chrome/test/data/updater/Keystone.withlaunchservicechecker.ticketstore",
         "//chrome/test/data/updater/Keystone.legacy.ticketstore",

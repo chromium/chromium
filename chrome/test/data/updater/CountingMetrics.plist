@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>com.chromium.popularapp</key>
+	<dict>
+		<key>DayOfLastActive</key>
+		<integer>5921</integer>
+		<key>DayOfLastRollcall</key>
+		<integer>5922</integer>
+		<key>LastActivePingDate</key>
+		<date>2023-03-20T19:43:31Z</date>
+		<key>PingFreshness</key>
+		<string>53838040-FB56-40F8-8B50-244CEC1ADB40</string>
+		<key>ProductState</key>
+		<integer>1</integer>
+	</dict>
+	<key>om.chromium.kipple</key>
+	<dict>
+		<key>DayOfLastRollcall</key>
+		<string>5912</string>
+		<key>LastActivePingDate</key>
+		<date>2023-03-20T19:43:31Z</date>
+		<key>PingFreshness</key>
+		<string>CAC43E38-89E0-430F-92FB-0CA5B899B3C5</string>
+		<key>ProductState</key>
+		<integer>1</integer>
+	</dict>
+	<key>com.chromium.corruptedapp</key>
+	<dict>
+		<key>DayOfLastActive</key>
+		<integer>50001</integer>
+		<key>DayOfLastRollcall</key>
+		<integer>2999</integer>
+		<key>LastActivePingDate</key>
+		<date>2023-03-20T19:43:31Z</date>
+		<key>PingFreshness</key>
+		<string>CAC43E39-89E0-430F-92FB-0CA5B899B3C5</string>
+		<key>ProductState</key>
+		<integer>1</integer>
+	</dict>
+	<key>com.no.such.app</key>
+	<dict>
+		<key>DayOfLastActive</key>
+		<integer>5922</integer>
+		<key>DayOfLastRollcall</key>
+		<integer>5923</integer>
+		<key>LastActivePingDate</key>
+		<date>2023-03-20T19:43:31Z</date>
+		<key>PingFreshness</key>
+		<string>CAC43E48-89E0-430F-92FB-0CA5B899B3C5</string>
+		<key>ProductState</key>
+		<integer>1</integer>
+	</dict>
+</dict>
+</plist>

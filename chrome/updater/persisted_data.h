@@ -74,6 +74,11 @@ class PersistedData : public base::RefCountedThreadSafe<PersistedData> {
   std::string GetAP(const std::string& id) const;
   void SetAP(const std::string& id, const std::string& ap);
 
+  // These functions set the client-regulated-counting data for the specified
+  // id. The functions are for app migration only.
+  void SetDateLastActive(const std::string& id, int dla);
+  void SetDateLastRollcall(const std::string& id, int dlrc);
+
   // This function sets any non-empty field in the registration request object
   // into the persistent data store.
   void RegisterApp(const RegistrationRequest& rq);
@@ -129,6 +134,7 @@ class PersistedData : public base::RefCountedThreadSafe<PersistedData> {
   base::Value::Dict* GetOrCreateAppKey(const std::string& id,
                                        base::Value::Dict& root);
 
+  void SetInteger(const std::string& id, const std::string& key, int value);
   std::string GetString(const std::string& id, const std::string& key) const;
   void SetString(const std::string& id,
                  const std::string& key,
