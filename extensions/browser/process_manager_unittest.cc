@@ -5,13 +5,11 @@
 #include "extensions/browser/process_manager.h"
 
 #include "content/public/browser/content_browser_client.h"
-#include "content/public/browser/notification_service.h"
 #include "content/public/browser/site_instance.h"
 #include "content/public/common/content_client.h"
 #include "content/public/test/test_browser_context.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/extensions_test.h"
-#include "extensions/browser/notification_types.h"
 #include "extensions/browser/process_manager_delegate.h"
 #include "extensions/browser/test_extensions_browser_client.h"
 
