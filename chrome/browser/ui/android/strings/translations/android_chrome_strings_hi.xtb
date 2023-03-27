@@ -357,7 +357,7 @@
 <translation id="2946420957526726953">Chrome को अन्य डिवाइसों से कनेक्ट करने के लिए, अपडेट किया जा रहा है</translation>
 <translation id="2951071800649516099">बाद के लिए, अपनी रीडिंग लिस्ट में पेज जोड़ें</translation>
 <translation id="2961208450284224863">{READING_LIST_UNREAD_PAGE_COUNT,plural, =1{<ph name="READING_LIST_UNREAD_PAGE_COUNT_ONE" /> पेज नहीं पढ़ा गया}one{<ph name="READING_LIST_UNREAD_PAGE_COUNT_MANY" /> पेज नहीं पढ़ा गया}other{<ph name="READING_LIST_UNREAD_PAGE_COUNT_MANY" /> पेज नहीं पढ़े गए}}</translation>
-<translation id="2961210776189273067">शीर्षक</translation>
+<translation id="2961210776189273067">टाइटल</translation>
 <translation id="2979025552038692506">चयनित गुप्त टैब</translation>
 <translation id="2979639724566107830">नई विंडो में खोलें</translation>
 <translation id="2981364137500752533">आप ज़्यादा से ज़्यादा पांच विंडो खोल सकते हैं.</translation>
@@ -768,7 +768,7 @@
 <translation id="5139940364318403933">Google डिस्क के इस्तेमाल का तरीका जानें</translation>
 <translation id="5142281402488957685">फ़ीड का कॉन्टेंट रीफ़्रेश करने के लिए, पेज को नीचे खींचें, ताकि नई स्टोरी दिखें</translation>
 <translation id="5152843274749979095">भुगतान करने के लिए कोई ऐप्लिकेशन इंस्‍टॉल नहीं है</translation>
-<translation id="5161254044473106830">शीर्षक आवश्‍यक</translation>
+<translation id="5161254044473106830">टाइटल आवश्‍यक</translation>
 <translation id="5170568018924773124">फ़ोल्डर में दिखाएं</translation>
 <translation id="5171045022955879922">यूआरएल खोजें या टाइप करें</translation>
 <translation id="517734441743343109">जारी रखने का मतलब है कि आप Chrome की <ph name="BEGIN_TOS_LINK" />सेवा की शर्तों<ph name="END_TOS_LINK" /> और <ph name="BEGIN_PRIVACY_LINK" />निजता नीति<ph name="END_PRIVACY_LINK" /> से सहमत हैं.</translation>
