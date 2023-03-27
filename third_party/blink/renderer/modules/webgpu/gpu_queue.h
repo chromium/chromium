@@ -86,6 +86,7 @@ class GPUQueue : public DawnObject<WGPUQueue> {
   void OnWorkDoneCallback(ScriptPromiseResolver* resolver,
                           WGPUQueueWorkDoneStatus status);
   void CopyFromVideoElement(const ExternalTextureSource source,
+                            const WGPUExtent2D& video_frame_natural_size,
                             const WGPUOrigin2D& origin,
                             const WGPUExtent3D& copy_size,
                             const WGPUImageCopyTexture& destination,
