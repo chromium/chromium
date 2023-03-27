@@ -40,7 +40,6 @@
 #include "third_party/blink/renderer/core/html_names.h"
 #include "third_party/blink/renderer/core/layout/layout_block_flow.h"
 #include "third_party/blink/renderer/core/layout/layout_embedded_content.h"
-#include "third_party/blink/renderer/core/layout/layout_file_upload_control.h"
 #include "third_party/blink/renderer/core/layout/layout_inline.h"
 #include "third_party/blink/renderer/core/layout/layout_list_item.h"
 #include "third_party/blink/renderer/core/layout/layout_list_marker.h"
@@ -175,12 +174,6 @@ void LayoutTreeAsText::WriteLayoutObject(WTF::TextStream& ts,
   ts << " " << rect;
 
   if (!(o.IsText() && !o.IsBR())) {
-    if (o.IsFileUploadControl()) {
-      ts << " "
-         << QuoteAndEscapeNonPrintables(
-                To<LayoutFileUploadControl>(o).FileTextValue());
-    }
-
     if (o.Parent()) {
       Color color = o.ResolveColor(GetCSSPropertyColor());
       if (o.Parent()->ResolveColor(GetCSSPropertyColor()) != color)

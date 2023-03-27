@@ -80,9 +80,6 @@ class LayoutObjectFactory {
                                      const CounterContentData& counter,
                                      LegacyLayout legacy);
   static LayoutBlock* CreateFieldset(Node&, const ComputedStyle&, LegacyLayout);
-  static LayoutBlockFlow* CreateFileUploadControl(Node& node,
-                                                  const ComputedStyle& style,
-                                                  LegacyLayout legacy);
   static LayoutBox* CreateFrameSet(HTMLFrameSetElement& element,
                                    const ComputedStyle& style,
                                    LegacyLayout legacy);

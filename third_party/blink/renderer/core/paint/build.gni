@@ -54,8 +54,6 @@ blink_core_sources_paint = [
   "fieldset_painter.h",
   "fieldset_paint_info.cc",
   "fieldset_paint_info.h",
-  "file_upload_control_painter.cc",
-  "file_upload_control_painter.h",
   "filter_effect_builder.cc",
   "filter_effect_builder.h",
   "find_paint_offset_needing_update.h",

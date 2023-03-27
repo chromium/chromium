@@ -67,7 +67,6 @@
 #include "third_party/blink/renderer/core/layout/layout_deprecated_flexible_box.h"
 #include "third_party/blink/renderer/core/layout/layout_embedded_content.h"
 #include "third_party/blink/renderer/core/layout/layout_fieldset.h"
-#include "third_party/blink/renderer/core/layout/layout_file_upload_control.h"
 #include "third_party/blink/renderer/core/layout/layout_flexible_box.h"
 #include "third_party/blink/renderer/core/layout/layout_inline.h"
 #include "third_party/blink/renderer/core/layout/layout_list_marker.h"
@@ -255,6 +254,9 @@ LayoutUnit TextFieldIntrinsicBlockSize(const HTMLInputElement& input,
 
 LayoutUnit FileUploadControlIntrinsicInlineSize(const HTMLInputElement& input,
                                                 const LayoutBox& box) {
+  // This should match to margin-inline-end of ::-webkit-file-upload-button UA
+  // style.
+  constexpr int kAfterButtonSpacing = 4;
   // Figure out how big the filename space needs to be for a given number of
   // characters (using "0" as the nominal character).
   constexpr int kDefaultWidthNumChars = 34;
@@ -274,8 +276,7 @@ LayoutUnit FileUploadControlIntrinsicInlineSize(const HTMLInputElement& input,
     if (LayoutObject* button_layout_object = button->GetLayoutObject()) {
       default_label_width +=
           button_layout_object->PreferredLogicalWidths().max_size +
-          (LayoutFileUploadControl::kAfterButtonSpacing *
-           box.StyleRef().EffectiveZoom());
+          (kAfterButtonSpacing * box.StyleRef().EffectiveZoom());
     }
   }
   return LayoutUnit(
@@ -3007,8 +3008,7 @@ PhysicalRect LayoutBox::OverflowClipRect(
 
 bool LayoutBox::HasControlClip() const {
   NOT_DESTROYED();
-  return UNLIKELY(IsTextFieldIncludingNG() || IsFileUploadControl() ||
-                  IsMenuList(this) ||
+  return UNLIKELY(IsTextFieldIncludingNG() || IsMenuList(this) ||
                   (IsButtonIncludingNG() && IsA<HTMLInputElement>(GetNode())));
 }
 

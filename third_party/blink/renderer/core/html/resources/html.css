@@ -669,7 +669,7 @@ input[type="file" i]::-webkit-file-upload-button {
     -webkit-user-modify: read-only !important;
     white-space: nowrap;
     margin: 0;
-    margin-inline-end: 4px;
+    margin-inline-end: 4px; /* See FileUploadControlIntrinsicInlineSize() */
     font-size: inherit;
 }
 

@@ -38,8 +38,7 @@
 #include "third_party/blink/renderer/core/html_names.h"
 #include "third_party/blink/renderer/core/input_type_names.h"
 #include "third_party/blink/renderer/core/inspector/console_message.h"
-#include "third_party/blink/renderer/core/layout/layout_block_flow.h"
-#include "third_party/blink/renderer/core/layout/layout_object_factory.h"
+#include "third_party/blink/renderer/core/layout/ng/layout_ng_block_flow.h"
 #include "third_party/blink/renderer/core/page/chrome_client.h"
 #include "third_party/blink/renderer/core/page/drag_data.h"
 #include "third_party/blink/renderer/core/probe/core_probes.h"
@@ -219,8 +218,7 @@ void FileInputType::AdjustStyle(ComputedStyleBuilder& builder) {
 
 LayoutObject* FileInputType::CreateLayoutObject(const ComputedStyle& style,
                                                 LegacyLayout legacy) const {
-  return LayoutObjectFactory::CreateFileUploadControl(GetElement(), style,
-                                                      legacy);
+  return MakeGarbageCollected<LayoutNGBlockFlow>(&GetElement());
 }
 
 InputType::ValueMode FileInputType::GetValueMode() const {
@@ -348,8 +346,6 @@ void FileInputType::CreateShadowSubtree() {
   button->SetActive(GetElement().CanReceiveDroppedFiles());
   GetElement().UserAgentShadowRoot()->AppendChild(button);
 
-  // The following element is used only in LayoutNG.
-  // See LayoutFileUploadControl::IsChildAllowed().
   auto* span = document.CreateRawElement(html_names::kSpanTag);
   GetElement().UserAgentShadowRoot()->AppendChild(span);
 
@@ -577,10 +573,6 @@ String FileInputType::FileStatusText() const {
 }
 
 void FileInputType::UpdateView() {
-  auto* layout_object = GetElement().GetLayoutObject();
-  if (layout_object && layout_object->IsFileUploadControl())
-    layout_object->SetShouldDoFullPaintInvalidation();
-
   if (auto* span = FileStatusElement())
     span->setTextContent(FileStatusText());
 }

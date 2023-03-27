@@ -892,10 +892,6 @@ class CORE_EXPORT LayoutObject : public GarbageCollected<LayoutObject>,
     NOT_DESTROYED();
     return IsFieldset() || IsLayoutNGFieldset();
   }
-  bool IsFileUploadControl() const {
-    NOT_DESTROYED();
-    return IsOfType(kLayoutObjectFileUploadControl);
-  }
   bool IsFrame() const {
     NOT_DESTROYED();
     return IsOfType(kLayoutObjectFrame);
@@ -3755,7 +3751,6 @@ class CORE_EXPORT LayoutObject : public GarbageCollected<LayoutObject>,
     kLayoutObjectCustomScrollbarPart,
     kLayoutObjectEmbeddedObject,
     kLayoutObjectFieldset,
-    kLayoutObjectFileUploadControl,
     kLayoutObjectFrame,
     kLayoutObjectFrameSet,
     kLayoutObjectIFrame,

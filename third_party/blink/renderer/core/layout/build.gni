@@ -132,8 +132,6 @@ blink_core_sources_layout = [
   "layout_embedded_object.h",
   "layout_fieldset.cc",
   "layout_fieldset.h",
-  "layout_file_upload_control.cc",
-  "layout_file_upload_control.h",
   "layout_flexible_box.cc",
   "layout_flexible_box.h",
   "layout_flow_thread.cc",

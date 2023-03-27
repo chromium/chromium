@@ -109,7 +109,6 @@
 #include "third_party/blink/renderer/core/input_type_names.h"
 #include "third_party/blink/renderer/core/layout/layout_block_flow.h"
 #include "third_party/blink/renderer/core/layout/layout_box_model_object.h"
-#include "third_party/blink/renderer/core/layout/layout_file_upload_control.h"
 #include "third_party/blink/renderer/core/layout/layout_inline.h"
 #include "third_party/blink/renderer/core/layout/layout_object.h"
 #include "third_party/blink/renderer/core/layout/layout_table.h"
@@ -3163,9 +3162,6 @@ String AXNodeObject::GetValueForControl() const {
             .GetString();
     return aria_value_text;
   }
-
-  if (GetLayoutObject() && GetLayoutObject()->IsFileUploadControl())
-    return To<LayoutFileUploadControl>(GetLayoutObject())->FileTextValue();
 
   // Handle other HTML input elements that aren't text controls, like date and
   // time controls, by returning their value converted to text, with the

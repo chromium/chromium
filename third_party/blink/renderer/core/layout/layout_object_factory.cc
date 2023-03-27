@@ -14,7 +14,6 @@
 #include "third_party/blink/renderer/core/layout/layout_counter.h"
 #include "third_party/blink/renderer/core/layout/layout_deprecated_flexible_box.h"
 #include "third_party/blink/renderer/core/layout/layout_fieldset.h"
-#include "third_party/blink/renderer/core/layout/layout_file_upload_control.h"
 #include "third_party/blink/renderer/core/layout/layout_flexible_box.h"
 #include "third_party/blink/renderer/core/layout/layout_frame_set.h"
 #include "third_party/blink/renderer/core/layout/layout_inside_list_marker.h"
@@ -269,14 +268,6 @@ LayoutBlock* LayoutObjectFactory::CreateFieldset(Node& node,
                                                  LegacyLayout legacy) {
   return CreateObject<LayoutBlock, LayoutNGFieldset, LayoutFieldset>(node,
                                                                      legacy);
-}
-
-LayoutBlockFlow* LayoutObjectFactory::CreateFileUploadControl(
-    Node& node,
-    const ComputedStyle& style,
-    LegacyLayout legacy) {
-  return CreateObject<LayoutBlockFlow, LayoutNGBlockFlow,
-                      LayoutFileUploadControl>(node, legacy);
 }
 
 LayoutBox* LayoutObjectFactory::CreateFrameSet(HTMLFrameSetElement& element,
