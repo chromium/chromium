@@ -8,19 +8,15 @@
 #include "ui/events/events_base_export.h"
 #include "ui/events/keycodes/dom/dom_key.h"
 
-namespace fuchsia {
-namespace ui {
-namespace input3 {
+namespace fuchsia_ui_input3 {
 class KeyMeaning;
-}  // namespace input3
-}  // namespace ui
-}  // namespace fuchsia
+}  // namespace fuchsia_ui_input3
 
 namespace ui {
 
 // Converts a Fuchsia KeyMeaning to a DomKey.
 EVENTS_BASE_EXPORT DomKey
-DomKeyFromFuchsiaKeyMeaning(const fuchsia::ui::input3::KeyMeaning& key_meaning);
+DomKeyFromFuchsiaKeyMeaning(const fuchsia_ui_input3::KeyMeaning& key_meaning);
 
 }  // namespace ui
 
