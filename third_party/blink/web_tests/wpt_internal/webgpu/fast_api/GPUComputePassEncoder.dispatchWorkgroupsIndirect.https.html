@@ -40,7 +40,9 @@ promise_test(async t => {
     hotLoop(1, computePassEncoder, indirectBuffer, 0x20000000000000);
   } catch(e) {
     assert_true(e instanceof TypeError);
+    return;
   }
+  assert_unreached("A TypeError should be thrown.");
 });
 </script>
 </body>

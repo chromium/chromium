@@ -6,13 +6,13 @@
 </head>
 <body>
 <script>
-function optimizedMethodCall(computePassEncoder, workgroupCountX, workgroupCountY, workgroupCountZ) {
-  computePassEncoder.dispatchWorkgroups(workgroupCountX, workgroupCountY, workgroupCountZ);
+function optimizedMethodCall(commandEncoder, buffer, offset, size) {
+    commandEncoder.clearBuffer(buffer, offset, size);
 }
 
-function test(t, hotLoop, computePassEncoder, workgroupCountX, workgroupCountY, workgroupCountZ) {
+function test(t, hotLoop, commandEncoder, buffer, offset, size) {
   try {
-    hotLoop(1, computePassEncoder, workgroupCountX, workgroupCountY, workgroupCountZ);
+    hotLoop(1, commandEncoder, buffer, offset, size);
   } catch(e) {
     assert_true(e instanceof TypeError);
     return;
@@ -27,22 +27,26 @@ promise_test(async t => {
   assert_true(device instanceof GPUDevice, 'Failed to request WebGPU device');
 
   const encoder = device.createCommandEncoder();
-  const computePassEncoder = encoder.beginComputePass();
 
-  function hotLoop(count, computePassEncoder, workgroupCountX, workgroupCountY, workgroupCountZ) {
+  const buffer = device.createBuffer({
+    size: 8,
+    usage: GPUBufferUsage.COPY_SRC | GPUBufferUsage.COPY_DST,
+  });
+
+  function hotLoop(count, commandEncoder, buffer, offset, size) {
     for (let i = 0; i < count; ++i) {
-      optimizedMethodCall(computePassEncoder, workgroupCountX, workgroupCountY, workgroupCountZ);
+      optimizedMethodCall(commandEncoder, buffer, offset, size);
     }
   }
-  hotLoop(100, computePassEncoder, 8, 8, 8);
+  hotLoop(100, encoder, buffer, 4, 4);
 
   // Wait a bit for V8 to optimize. Then call again with an out-of-bounds value.
   // An exception should be thrown.
   await new Promise(resolve => t.step_timeout(resolve, 50));
 
-  test(t, hotLoop, computePassEncoder, 0xFFFFFFFF + 1, 1, 1);
-  test(t, hotLoop, computePassEncoder, 1, 0xFFFFFFFF + 1, 1);
-  test(t, hotLoop, computePassEncoder, 1, 1, 0xFFFFFFFF + 1);
+  // kJSMaxInteger = 0x20000000000000 - 1;
+  test(t, hotLoop, encoder, buffer, 0x20000000000000, 4);
+  test(t, hotLoop, encoder, buffer, 4, 0x20000000000000);
 });
 </script>
 </body>

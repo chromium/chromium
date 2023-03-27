@@ -11,7 +11,7 @@
     [RaisesException] GPURenderPassEncoder beginRenderPass(GPURenderPassDescriptor descriptor);
     [RaisesException] GPUComputePassEncoder beginComputePass(optional GPUComputePassDescriptor descriptor = {});
 
-    void copyBufferToBuffer(
+    [NoAllocDirectCall] void copyBufferToBuffer(
         GPUBuffer src,
         GPUSize64 srcOffset,
         GPUBuffer dst,
@@ -34,10 +34,10 @@
         GPUExtent3D copySize);
 
     void pushDebugGroup(USVString groupLabel);
-    void popDebugGroup();
+    [NoAllocDirectCall] void popDebugGroup();
     void insertDebugMarker(USVString markerLabel);
 
-    void resolveQuerySet(
+    [NoAllocDirectCall] void resolveQuerySet(
         GPUQuerySet querySet,
         GPUSize32 firstQuery,
         GPUSize32 queryCount,
@@ -46,7 +46,7 @@
 
    [RaisesException] void writeTimestamp(GPUQuerySet querySet, GPUSize32 queryIndex);
 
-    void clearBuffer(
+    [NoAllocDirectCall] void clearBuffer(
         GPUBuffer buffer,
         optional GPUSize64 offset = 0,
         optional GPUSize64 size);

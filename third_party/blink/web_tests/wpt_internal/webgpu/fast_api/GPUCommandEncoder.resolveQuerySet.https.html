@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html>
+<head>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+</head>
+<body>
+<script>
+function optimizedMethodCall(commandEncoder, querySet, firstQuery, queryCount, destination, destinationOffset) {
+    commandEncoder.resolveQuerySet(querySet, firstQuery, queryCount, destination, destinationOffset);
+}
+
+function test(t, hotLoop, commandEncoder, querySet, firstQuery, queryCount, destination, destinationOffset) {
+  try {
+    hotLoop(1, commandEncoder, querySet, firstQuery, queryCount, destination, destinationOffset);
+  } catch(e) {
+    assert_true(e instanceof TypeError);
+    return;
+  }
+  assert_unreached("A TypeError should be thrown.");
+}
+
+promise_test(async t => {
+  const adapter = await navigator.gpu.requestAdapter();
+  assert_true(adapter instanceof GPUAdapter, 'Failed to request WebGPU adapter');
+  const device = await adapter.requestDevice();
+  assert_true(device instanceof GPUDevice, 'Failed to request WebGPU device');
+
+  const encoder = device.createCommandEncoder();
+
+  const resolveBuffer = device.createBuffer({
+    size: 32,
+    usage: GPUBufferUsage.COPY_SRC | GPUBufferUsage.QUERY_RESOLVE,
+  });
+  const occlusionQuerySet = device.createQuerySet({
+    type: 'occlusion',
+    count: 4,
+  });
+
+  function hotLoop(count, commandEncoder, querySet, firstQuery, queryCount, destination, destinationOffset) {
+    for (let i = 0; i < count; ++i) {
+      optimizedMethodCall(commandEncoder, querySet, firstQuery, queryCount, destination, destinationOffset);
+    }
+  }
+  hotLoop(100, encoder, occlusionQuerySet, 1, 2, resolveBuffer, 8);
+
+  // Wait a bit for V8 to optimize. Then call again with an out-of-bounds value.
+  // An exception should be thrown.
+  await new Promise(resolve => t.step_timeout(resolve, 50));
+
+  // kJSMaxInteger = 0x20000000000000 - 1;
+  test(t, hotLoop, encoder, occlusionQuerySet, 0xFFFFFFFF + 1, 2, resolveBuffer, 8);
+  test(t, hotLoop, encoder, occlusionQuerySet, 1, 0xFFFFFFFF + 1, resolveBuffer, 8);
+  test(t, hotLoop, encoder, occlusionQuerySet, 1, 2, resolveBuffer, 0x20000000000000);
+});
+</script>
+</body>
+</html>

@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html>
+<head>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+</head>
+<body>
+<script>
+function optimizedMethodCall(commandEncoder, src, srcOffset, dst, dstOffset, size) {
+    commandEncoder.copyBufferToBuffer(src, srcOffset, dst, dstOffset, size);
+}
+
+function test(t, hotLoop, commandEncoder, src, srcOffset, dst, dstOffset, size) {
+  try {
+    hotLoop(1, commandEncoder, src, srcOffset, dst, dstOffset, size);
+  } catch(e) {
+    assert_true(e instanceof TypeError);
+    return;
+  }
+  assert_unreached("A TypeError should be thrown.");
+}
+
+promise_test(async t => {
+  const adapter = await navigator.gpu.requestAdapter();
+  assert_true(adapter instanceof GPUAdapter, 'Failed to request WebGPU adapter');
+  const device = await adapter.requestDevice();
+  assert_true(device instanceof GPUDevice, 'Failed to request WebGPU device');
+
+  const encoder = device.createCommandEncoder();
+
+  const srcBuffer = device.createBuffer({
+    size: 8,
+    usage: GPUBufferUsage.COPY_SRC | GPUBufferUsage.COPY_DST,
+  });
+  const dstBuffer = device.createBuffer({
+    size: 8,
+    usage: GPUBufferUsage.COPY_SRC | GPUBufferUsage.COPY_DST,
+  });
+
+  function hotLoop(count, commandEncoder, src, srcOffset, dst, dstOffset, size) {
+    for (let i = 0; i < count; ++i) {
+      optimizedMethodCall(commandEncoder, src, srcOffset, dst, dstOffset, size);
+    }
+  }
+  hotLoop(100, encoder, srcBuffer, 4, dstBuffer, 4, 4);
+
+  // Wait a bit for V8 to optimize. Then call again with an out-of-bounds value.
+  // An exception should be thrown.
+  await new Promise(resolve => t.step_timeout(resolve, 50));
+
+  // kJSMaxInteger = 0x20000000000000 - 1;
+  test(t, hotLoop, encoder, srcBuffer, 0x20000000000000, dstBuffer, 4, 4);
+  test(t, hotLoop, encoder, srcBuffer, 4, dstBuffer, 0x20000000000000, 4);
+  test(t, hotLoop, encoder, srcBuffer, 4, dstBuffer, 4, 0x20000000000000);
+});
+</script>
+</body>
+</html>

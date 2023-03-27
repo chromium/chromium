@@ -8,6 +8,7 @@
 #include "third_party/blink/renderer/bindings/modules/v8/v8_typedefs.h"
 #include "third_party/blink/renderer/modules/webgpu/dawn_object.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
+#include "third_party/blink/renderer/platform/bindings/no_alloc_direct_call_host.h"
 
 namespace blink {
 
@@ -22,7 +23,8 @@ class GPURenderPassDescriptor;
 class GPURenderPassEncoder;
 class GPUImageCopyTexture;
 
-class GPUCommandEncoder : public DawnObject<WGPUCommandEncoder> {
+class GPUCommandEncoder : public DawnObject<WGPUCommandEncoder>,
+                          public NoAllocDirectCallHost {
   DEFINE_WRAPPERTYPEINFO();
 
  public:
