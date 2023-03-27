@@ -20,6 +20,7 @@
 #include "ash/wallpaper/wallpaper_constants.h"
 #include "ash/wallpaper/wallpaper_view.h"
 #include "ash/wallpaper/wallpaper_widget_controller.h"
+#include "ash/wm/desks/desks_util.h"
 #include "ash/wm/float/float_controller.h"
 #include "ash/wm/mru_window_tracker.h"
 #include "ash/wm/overview/overview_constants.h"
@@ -242,8 +243,20 @@ DragWindowFromShelfController::DragWindowFromShelfController(
       other_window_copy_ = wm::RecreateLayers(other_window_);
       other_window_copy_->root()->SetVisible(true);
       other_window_copy_->root()->SetOpacity(1.f);
-      other_window_->layer()->parent()->StackAbove(other_window_copy_->root(),
-                                                   other_window_->layer());
+
+      // If `other_window_` is the floated window, we need to move the copy to
+      // the active desk container. The float container will be moved under the
+      // desk containers (see `ScopedFloatContainerStacker `), so that the
+      // overview item does not appear above the dragged window during the drag.
+      if (other_window_ == floated_window) {
+        ui::Layer* new_parent = desks_util::GetActiveDeskContainerForRoot(
+                                    Shell::GetPrimaryRootWindow())
+                                    ->layer();
+        new_parent->Add(other_window_copy_->root());
+      } else {
+        other_window_->layer()->parent()->StackAbove(other_window_copy_->root(),
+                                                     other_window_->layer());
+      }
     }
   }
 
@@ -628,12 +641,16 @@ void DragWindowFromShelfController::UpdateDraggedWindow(
     copy_scale = 1.f - base::clamp(copy_scale, 0.f, 1.f);
 
     other_window_copy_->root()->SetOpacity(copy_scale);
-    const float copy_transform_scale =
-        base::clamp(copy_scale, kOtherWindowMaxScale, 1.f);
-    const gfx::Transform copy_transform = gfx::GetScaleTransform(
-        other_window_copy_->root()->bounds().CenterPoint(),
-        copy_transform_scale);
-    other_window_copy_->root()->SetTransform(copy_transform);
+
+    CHECK(other_window_);
+    if (!WindowState::Get(other_window_)->IsFloated()) {
+      const float copy_transform_scale =
+          base::clamp(copy_scale, kOtherWindowMaxScale, 1.f);
+      const gfx::Transform copy_transform = gfx::GetScaleTransform(
+          other_window_copy_->root()->bounds().CenterPoint(),
+          copy_transform_scale);
+      other_window_copy_->root()->SetTransform(copy_transform);
+    }
   }
 }
 

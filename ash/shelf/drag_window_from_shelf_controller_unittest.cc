@@ -1488,12 +1488,13 @@ TEST_F(FloatDragWindowFromShelfControllerTest, DragMaximizedWindow) {
   ui::Layer* other_window_copy_layer = GetOtherWindowCopyLayer();
   ASSERT_TRUE(other_window_copy_layer);
 
-  // To check if the copy is of the floated window, we check the parent and
-  // bounds.
-  EXPECT_EQ(floated_window->layer()->parent(),
-            other_window_copy_layer->parent());
+  // To check if the copy is of the floated window, we check the bounds. The
+  // float container gets stacked under the desk containers during overview, so
+  // the copy should be on a different parent.
   EXPECT_EQ(floated_window->layer()->bounds(),
             other_window_copy_layer->bounds());
+  EXPECT_NE(floated_window->layer()->parent(),
+            other_window_copy_layer->parent());
 
   Drag(gfx::Point(0, 200), 1.f, 1.f);
   EndDrag(shelf_bounds.CenterPoint(), /*velocity_y=*/absl::nullopt);
