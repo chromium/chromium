@@ -621,7 +621,7 @@
   {
     "name": "autofill-keyboard-accessory-view",
     "owners": [ "fhorschig@chromium.org" ],
-    "expiry_milestone": 114
+    "expiry_milestone": 116
   },
   {
     "name": "autofill-more-prominent-popup",
@@ -1834,7 +1834,7 @@
   {
     "name": "enable-autofill-manual-fallback",
     "owners": [ "fhorschig@chromium.org" ],
-    "expiry_milestone": 114
+    "expiry_milestone": 116
   },
   {
     "name": "enable-autofill-touch-to-fill-for-credit-cards",
@@ -6228,7 +6228,7 @@
   {
     "name": "recover-from-never-save-android",
     "owners": [ "ioanap", "fhorschig" ],
-    "expiry_milestone": 114
+    "expiry_milestone": 116
   },
   {
     "name": "reduce-accept-language",
