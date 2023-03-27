@@ -403,9 +403,7 @@ void PasswordAutofillManager::DidSelectSuggestion(
     return;
   }
 
-  bool success =
-      PreviewSuggestion(GetUsernameFromSuggestion(value), frontend_id);
-  DCHECK(success);
+  PreviewSuggestion(GetUsernameFromSuggestion(value), frontend_id);
 }
 
 void PasswordAutofillManager::OnUnlockItemAccepted(
@@ -863,6 +861,10 @@ bool PasswordAutofillManager::PreviewSuggestion(const std::u16string& username,
   if (item_id == autofill::POPUP_ITEM_ID_WEBAUTHN_CREDENTIAL) {
     password_manager_driver_->PreviewSuggestion(username, /*password=*/u"");
     return true;
+  }
+  if (password_client_->GetPasswordFeatureManager()
+          ->IsBiometricAuthenticationBeforeFillingEnabled()) {
+    return false;
   }
   autofill::PasswordAndMetadata password_and_meta_data;
   if (fill_data_ &&
