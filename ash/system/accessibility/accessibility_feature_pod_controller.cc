@@ -43,8 +43,9 @@ FeaturePodButton* AccessibilityFeaturePodController::CreateButton() {
                        login_status == LoginStatus::LOCKED ||
                        delegate->ShouldShowAccessibilityMenu();
   button->SetVisible(visible);
-  if (visible)
+  if (visible) {
     TrackVisibilityUMA();
+  }
 
   return button;
 }
@@ -68,6 +69,17 @@ std::unique_ptr<FeatureTile> AccessibilityFeaturePodController::CreateTile(
       base::BindRepeating(&FeaturePodControllerBase::OnLabelPressed,
                           weak_ptr_factory_.GetWeakPtr()),
       tooltip_text);
+
+  AccessibilityDelegate* delegate = Shell::Get()->accessibility_delegate();
+  LoginStatus login_status = Shell::Get()->session_controller()->login_status();
+  const bool visible = login_status == LoginStatus::NOT_LOGGED_IN ||
+                       login_status == LoginStatus::LOCKED ||
+                       delegate->ShouldShowAccessibilityMenu();
+  feature_tile->SetVisible(visible);
+  if (visible) {
+    TrackVisibilityUMA();
+  }
+
   return feature_tile;
 }
 
