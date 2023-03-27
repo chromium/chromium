@@ -201,11 +201,7 @@ source_set("audio") {
       "ios/audio_manager_ios.cc",
       "ios/audio_manager_ios.h",
       "ios/audio_private_api.h",
-      "ios/audio_session_manager_ios.h",
-      "ios/audio_session_manager_ios.mm",
     ]
-
-    frameworks += [ "AVFoundation.framework" ]
   }
 
   if (is_win) {
