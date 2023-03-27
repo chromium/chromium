@@ -315,9 +315,18 @@ TEST_F(ArcAppPerformanceTracingTest, DestroySurface) {
   views::Widget* const arc_widget = StartArcFocusAppTracing();
   ASSERT_TRUE(tracing_helper().GetTracingSession());
   EXPECT_TRUE(tracing_helper().GetTracingSession()->tracing_active());
+  exo::SetShellRootSurface(arc_widget->GetNativeWindow(), nullptr);
   ResetRootSurface();
   ASSERT_TRUE(tracing_helper().GetTracingSession());
   EXPECT_FALSE(tracing_helper().GetTracingSession()->tracing_active());
+
+  // Try to re-active window without surface
+  tracing_helper().GetTracing()->OnWindowActivated(
+      wm::ActivationChangeObserver::ActivationReason::ACTIVATION_CLIENT,
+      arc_widget->GetNativeWindow(), arc_widget->GetNativeWindow());
+
+  EXPECT_FALSE(tracing_helper().GetTracingSession());
+
   arc_widget->Close();
 }
 

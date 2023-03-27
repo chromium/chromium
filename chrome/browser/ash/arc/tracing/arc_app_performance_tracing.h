@@ -137,7 +137,7 @@ class ArcAppPerformanceTracing : public KeyedService,
   void MaybeStopTracing();
 
   // Attaches observer to the |window| and stores at as |arc_active_window_|.
-  void AttachActiveWindow(aura::Window* window);
+  void AttachActiveWindow(aura::Window* window, exo::Surface* surface);
 
   // Detaches observer from |arc_active_window_| and resets
   // |arc_active_window_|.

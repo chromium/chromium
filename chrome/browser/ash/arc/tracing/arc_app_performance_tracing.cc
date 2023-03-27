@@ -210,15 +210,22 @@ void ArcAppPerformanceTracing::OnWindowActivated(ActivationReason reason,
   DetachActiveWindow();
 
   // Ignore any non-ARC++ window.
-  if (arc::GetWindowTaskId(gained_active) <= 0)
+  const auto maybe_task_id = arc::GetWindowTaskId(gained_active);
+  if (!maybe_task_id.has_value()) {
     return;
+  }
 
   // Ghost window is not an actual app window.
   if (gained_active->GetProperty(ash::full_restore::kArcGhostSurface))
     return;
 
+  exo::Surface* const surface = exo::GetShellRootSurface(gained_active);
+  if (!surface) {
+    return;
+  }
+
   // Observe active ARC++ window.
-  AttachActiveWindow(gained_active);
+  AttachActiveWindow(gained_active, surface);
 
   StartJankinessTracing();
 
@@ -459,14 +466,13 @@ void ArcAppPerformanceTracing::MaybeStopTracing() {
   session_.reset();
 }
 
-void ArcAppPerformanceTracing::AttachActiveWindow(aura::Window* window) {
+void ArcAppPerformanceTracing::AttachActiveWindow(aura::Window* window,
+                                                  exo::Surface* surface) {
   DCHECK(window);
   DCHECK(!arc_active_window_);
   arc_active_window_ = window;
   arc_active_window_->AddObserver(this);
 
-  exo::Surface* const surface = exo::GetShellRootSurface(window);
-  DCHECK(surface);
   // Use scoped surface observer to be safe on the surface
   // destruction. |exo::GetShellRootSurface| would fail in case
   // the surface gets destroyed before widget.
