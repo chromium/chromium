@@ -2,11 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ash/constants/ash_features.h"
 #include "ash/constants/ash_switches.h"
 #include "ash/webui/shimless_rma/url_constants.h"
 #include "base/test/metrics/histogram_tester.h"
-#include "base/test/scoped_feature_list.h"
 #include "chrome/browser/ash/system_web_apps/test_support/system_web_app_integration_test.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
 #include "components/webapps/browser/install_result_code.h"
@@ -18,11 +16,6 @@
 
 class ShimlessRMAIntegrationTest : public ash::SystemWebAppIntegrationTest {
  public:
-  ShimlessRMAIntegrationTest() {
-    scoped_feature_list_.InitWithFeatures({ash::features::kShimlessRMAFlow},
-                                          {});
-  }
-
   void SetUpCommandLine(base::CommandLine* command_line) override {
     SystemWebAppIntegrationTest::SetUpCommandLine(command_line);
     command_line->AppendSwitch(ash::switches::kLaunchRma);
@@ -30,9 +23,6 @@ class ShimlessRMAIntegrationTest : public ash::SystemWebAppIntegrationTest {
 
  protected:
   base::HistogramTester histogram_tester_;
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 // Test that the Shimless RMA App installs and launches correctly by

@@ -1289,13 +1289,9 @@ void PopulateChromeWebUIFrameBinders(
         map);
   }
 
-  // TODO(crbug.com/1218492): When boot RMA state is available disable this when
-  // not in RMA.
-  if (ash::features::IsShimlessRMAFlowEnabled()) {
-    RegisterWebUIControllerInterfaceBinder<
-        ash::shimless_rma::mojom::ShimlessRmaService, ash::ShimlessRMADialogUI>(
-        map);
-  }
+  RegisterWebUIControllerInterfaceBinder<
+      ash::shimless_rma::mojom::ShimlessRmaService, ash::ShimlessRMADialogUI>(
+      map);
 
   if (base::FeatureList::IsEnabled(features::kShortcutCustomizationApp)) {
     RegisterWebUIControllerInterfaceBinder<

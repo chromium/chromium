@@ -384,8 +384,7 @@ bool IsShimlessRmaAllowed() {
       *base::CommandLine::ForCurrentProcess();
   // Do not attempt to launch RMA in safe mode as RMA will prevent login, and
   // any option to attempt repairs.
-  return ash::features::IsShimlessRMAFlowEnabled() &&
-         !command_line.HasSwitch(switches::kRmaNotAllowed) &&
+  return !command_line.HasSwitch(switches::kRmaNotAllowed) &&
          !command_line.HasSwitch(switches::kSafeMode);
 }
 

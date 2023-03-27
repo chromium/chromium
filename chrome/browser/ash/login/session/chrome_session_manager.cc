@@ -222,9 +222,7 @@ void StartUserSession(Profile* user_profile, const std::string& login_user_id) {
 }
 
 void LaunchShimlessRma() {
-  if (features::IsShimlessRMAFlowEnabled()) {
-    VLOG(1) << "ChromeSessionManager::LaunchShimlessRma";
-  }
+  VLOG(1) << "ChromeSessionManager::LaunchShimlessRma";
   session_manager::SessionManager::Get()->SetSessionState(
       session_manager::SessionState::RMA);
 
@@ -237,9 +235,7 @@ void LaunchShimlessRma() {
 
 // The callback invoked when RmadClient determines that RMA is required.
 void OnRmaIsRequiredResponse() {
-  if (features::IsShimlessRMAFlowEnabled()) {
-    VLOG(1) << "ChromeSessionManager::OnRmaIsRequiredResponse";
-  }
+  VLOG(1) << "ChromeSessionManager::OnRmaIsRequiredResponse";
   switch (session_manager::SessionManager::Get()->session_state()) {
     case session_manager::SessionState::UNKNOWN:
       LOG(ERROR) << "OnRmaIsRequiredResponse callback triggered unexpectedly";
@@ -327,9 +323,7 @@ void ChromeSessionManager::Initialize(
     RmadClient::Get()->SetRmaRequiredCallbackForSessionManager(
         base::BindOnce(&OnRmaIsRequiredResponse));
   } else {
-    if (features::IsShimlessRMAFlowEnabled()) {
-      VLOG(1) << "ChromeSessionManager::Initialize Shimless RMA is not allowed";
-    }
+    VLOG(1) << "ChromeSessionManager::Initialize Shimless RMA is not allowed";
   }
 
   if (base::FeatureList::IsEnabled(arc::kEnableArcVmDataMigration) &&

@@ -6039,9 +6039,6 @@ const char kShelfAutoHideSeparationDescription[] =
     "Allows for the shelf's auto-hide preference to be specified separately "
     "for clamshell and tablet mode.";
 
-const char kShimlessRMAFlowName[] = "Enable shimless RMA flow";
-const char kShimlessRMAFlowDescription[] = "Enable shimless RMA flow";
-
 const char kShimlessRMAOsUpdateName[] = "Enable OS updates in shimless RMA";
 const char kShimlessRMAOsUpdateDescription[] =
     "Turns on OS updating in Shimless RMA";

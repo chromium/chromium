@@ -6,13 +6,11 @@
 
 #include <memory>
 
-#include "ash/constants/ash_features.h"
 #include "ash/constants/ash_switches.h"
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
 #include "base/command_line.h"
 #include "base/run_loop.h"
-#include "base/test/scoped_feature_list.h"
 #include "chrome/browser/ash/login/lock/screen_locker_tester.h"
 #include "chrome/browser/ash/login/login_manager_test.h"
 #include "chrome/browser/ash/login/test/device_state_mixin.h"
@@ -246,18 +244,11 @@ IN_PROC_BROWSER_TEST_F(ChromeSessionManagerExistingUsersTest,
 
 class ChromeSessionManagerRmaTest : public ChromeSessionManagerTest {
  public:
-  ChromeSessionManagerRmaTest() {
-    scoped_feature_list_.InitWithFeatures({features::kShimlessRMAFlow}, {});
-  }
-
   // LoginManagerTest:
   void SetUpCommandLine(base::CommandLine* command_line) override {
     ChromeSessionManagerTest::SetUpCommandLine(command_line);
     command_line->AppendSwitch(switches::kLaunchRma);
   }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 IN_PROC_BROWSER_TEST_F(ChromeSessionManagerRmaTest, DeviceInRma) {

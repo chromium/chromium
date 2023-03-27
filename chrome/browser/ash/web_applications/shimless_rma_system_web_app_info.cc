@@ -66,5 +66,5 @@ bool ShimlessRMASystemAppDelegate::ShouldAllowScriptsToCloseWindows() const {
 }
 
 bool ShimlessRMASystemAppDelegate::IsAppEnabled() const {
-  return ash::features::IsShimlessRMAFlowEnabled();
+  return true;
 }
