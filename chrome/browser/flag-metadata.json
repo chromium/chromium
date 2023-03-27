@@ -1955,7 +1955,7 @@
   {
     "name": "enable-commerce-developer",
     "owners": [ "chrome-shopping@google.com" ],
-    "expiry_milestone": 110
+    "expiry_milestone": 125
   },
   {
     "name": "enable-commerce-hint-android",
