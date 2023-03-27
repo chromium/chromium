@@ -14,7 +14,6 @@
 #include "base/check.h"
 #include "base/check_op.h"
 #include "base/files/file_path.h"
-#include "base/files/file_util.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/sequence_checker.h"
@@ -908,7 +907,7 @@ bool FirstPartySetsDatabase::Destroy() {
   if (db_path_.empty())
     return true;
 
-  return base::DeleteFile(db_path_);
+  return sql::Database::Delete(db_path_);
 }
 
 }  // namespace content

@@ -142,7 +142,7 @@ bool SqlDatabase::RazeDb() {
   DVLOG(1) << "Razing db.";
   if (db_ && db_->is_open()) {
     // Sometimes it fails to do it due to locks or open handles.
-    if (!db_->Raze() && !base::DeleteFile(path_to_db_)) {
+    if (!db_->Raze() && !sql::Database::Delete(path_to_db_)) {
       return false;
     }
     db_.reset();
