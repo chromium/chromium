@@ -1351,6 +1351,44 @@ TEST_F(SlimLayerTreeCompositorFrameTest, SimpleOcclusion) {
                                 viz::HasVisibleRect(viewport_))));
 }
 
+TEST_F(SlimLayerTreeCompositorFrameTest, OcclusionWithNonOpaqueLayer) {
+  auto root_layer = CreateSolidColorLayer(viewport_.size(), SkColors::kGray);
+  layer_tree_->SetRoot(root_layer);
+
+  auto lower_layer = CreateSolidColorLayer(gfx::Size(50, 50), SkColors::kRed);
+  root_layer->AddChild(lower_layer);
+
+  // Middle layer is not opaque so should not contribute to occlusion.
+  auto middle_layer =
+      CreateSolidColorLayer(gfx::Size(50, 50), SkColors::kGreen);
+  middle_layer->SetPosition(gfx::PointF(25.0f, 0.0f));
+  middle_layer->SetOpacity(0.5f);
+  root_layer->AddChild(middle_layer);
+
+  // Top layer should partially occlude middle layer.
+  auto top_layer = CreateSolidColorLayer(gfx::Size(50, 50), SkColors::kBlue);
+  top_layer->SetPosition(gfx::PointF(50.0f, 0.0f));
+  root_layer->AddChild(top_layer);
+
+  viz::CompositorFrame frame = ProduceFrame();
+  ASSERT_EQ(frame.render_pass_list.size(), 1u);
+  auto& pass = frame.render_pass_list.back();
+  EXPECT_THAT(
+      pass->quad_list,
+      ElementsAre(
+          AllOf(viz::IsSolidColorQuad(SkColors::kBlue),
+                viz::HasVisibleRect(gfx::Rect(50, 50))),
+          AllOf(viz::IsSolidColorQuad(SkColors::kGreen),
+                // Middle layer occluded on the right by top layer.
+                viz::HasVisibleRect(gfx::Rect(25, 50))),
+          AllOf(viz::IsSolidColorQuad(SkColors::kRed),
+                // Lower layer not occluded by non-opaque middle layer.
+                viz::HasVisibleRect(gfx::Rect(50, 50))),
+          AllOf(viz::IsSolidColorQuad(SkColors::kGray), viz::HasRect(viewport_),
+                // Top half is occluded by lower and top layer.
+                viz::HasVisibleRect(gfx::Rect(0, 50, 100, 50)))));
+}
+
 TEST_F(SlimLayerTreeCompositorFrameTest, OcclusionWithRenderPass) {
   auto root_layer = CreateSolidColorLayer(viewport_.size(), SkColors::kGray);
   layer_tree_->SetRoot(root_layer);

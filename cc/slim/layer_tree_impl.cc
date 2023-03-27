@@ -733,9 +733,10 @@ bool LayerTreeImpl::UpdateOcclusionRect(
     const gfx::Transform& transform_to_target,
     float opacity,
     gfx::RectF& visible_rect) {
-  if (opacity < 1.0f || !layer.contents_opaque()) {
-    return true;
-  }
+  // Skip occlusion calculations on non-axis aligned layers.
+  // Note this is to reduce complexity of occlusion tracking (eg can use
+  // Transform::MapRect on RectF directly and only need to worry about
+  // rounding). It is possible to remove this restriction.
   if (!transform_to_target.Preserves2dAxisAlignment()) {
     return true;
   }
@@ -757,6 +758,10 @@ bool LayerTreeImpl::UpdateOcclusionRect(
       visible_rect.Subtract(
           from_target.MapRect(gfx::RectF(data.occlusion_in_target.GetRect(i))));
     }
+  }
+
+  if (opacity < 1.0f || !layer.contents_opaque()) {
+    return true;
   }
 
   // Add unoccluded visible rect to occlusion.
