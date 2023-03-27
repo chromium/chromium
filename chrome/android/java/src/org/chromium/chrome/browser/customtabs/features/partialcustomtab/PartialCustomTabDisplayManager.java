@@ -23,7 +23,6 @@ import org.chromium.chrome.R;
 import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider;
 import org.chromium.chrome.browser.customtabs.features.partialcustomtab.PartialCustomTabBaseStrategy.PartialCustomTabType;
 import org.chromium.chrome.browser.customtabs.features.toolbar.CustomTabToolbar;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.fullscreen.FullscreenManager;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.lifecycle.ConfigurationChangedObserver;
@@ -210,14 +209,13 @@ public class PartialCustomTabDisplayManager
 
     private @PartialCustomTabType int calculatePartialCustomTabType() {
         return calculatePartialCustomTabType(mActivity, mUnclampedInitialWidth,
-                mUnclampedInitialHeight, mVersionCompat::getDisplayWidthDp, mBreakPointDp,
-                ChromeFeatureList.sCctResizableSideSheetForThirdParties.isEnabled());
+                mUnclampedInitialHeight, mVersionCompat::getDisplayWidthDp, mBreakPointDp);
     }
 
     @VisibleForTesting
     static @PartialCustomTabType int calculatePartialCustomTabType(Activity activity,
             int initialWidth, int initialHeight, Supplier<Integer> displayWidthDpSupplier,
-            int breakPointDp, boolean ssEnabled) {
+            int breakPointDp) {
         // TODO(crbug.com/1407227) Until we are able to handle multi-window case for both
         // bottom-sheet and side-sheet we will display a full-size PCCT.
         if (MultiWindowUtils.getInstance().isInMultiWindowMode(activity)) {
@@ -229,13 +227,13 @@ public class PartialCustomTabDisplayManager
         int displayWidthDp = -1;
         if (initialWidth > 0 && initialHeight > 0) {
             if (displayWidthDp < 0) displayWidthDp = displayWidthDpSupplier.get();
-            return displayWidthDp < breakPointDp || !ssEnabled ? PartialCustomTabType.BOTTOM_SHEET
-                                                               : PartialCustomTabType.SIDE_SHEET;
+            return displayWidthDp < breakPointDp ? PartialCustomTabType.BOTTOM_SHEET
+                                                 : PartialCustomTabType.SIDE_SHEET;
         }
         if (initialWidth > 0) {
             if (displayWidthDp < 0) displayWidthDp = displayWidthDpSupplier.get();
-            return displayWidthDp < breakPointDp || !ssEnabled ? PartialCustomTabType.FULL_SIZE
-                                                               : PartialCustomTabType.SIDE_SHEET;
+            return displayWidthDp < breakPointDp ? PartialCustomTabType.FULL_SIZE
+                                                 : PartialCustomTabType.SIDE_SHEET;
         }
         if (initialHeight > 0) {
             return PartialCustomTabType.BOTTOM_SHEET;
@@ -262,8 +260,7 @@ public class PartialCustomTabDisplayManager
         @PartialCustomTabType
         int type = calculatePartialCustomTabType(activity, provider.getInitialActivityWidth(),
                 provider.getInitialActivityHeight(), displayWidthDpSupplier,
-                provider.getActivityBreakPoint(),
-                ChromeFeatureList.sCctResizableSideSheetForThirdParties.isEnabled());
+                provider.getActivityBreakPoint());
 
         @AnimRes
         int start_anim_id = defaultResId;

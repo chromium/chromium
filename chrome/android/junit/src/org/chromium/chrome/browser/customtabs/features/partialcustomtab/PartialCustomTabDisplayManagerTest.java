@@ -183,35 +183,6 @@ public class PartialCustomTabDisplayManagerTest {
     }
 
     @Test
-    @Features.DisableFeatures({ChromeFeatureList.CCT_RESIZABLE_SIDE_SHEET_FOR_THIRD_PARTIES})
-    public void
-    transitionFromBottomSheetTo900dpBottomSheetWhenOrientationChangedToLandscape_andDisable3P() {
-        mPCCTTestRule.configPortraitMode();
-        PartialCustomTabDisplayManager displayManager = createPcctDisplayManager();
-
-        assertEquals("Bottom-Sheet should be the active strategy",
-                PartialCustomTabType.BOTTOM_SHEET, displayManager.getActiveStrategyType());
-        verify(mPCCTTestRule.mOnActivityLayoutCallback)
-                .onActivityLayout(anyInt(), anyInt(), anyInt(), anyInt(),
-                        eq(ACTIVITY_LAYOUT_STATE_BOTTOM_SHEET));
-        clearInvocations(mPCCTTestRule.mOnActivityLayoutCallback);
-        mPCCTTestRule.configLandscapeMode();
-        displayManager.onConfigurationChanged(mPCCTTestRule.mConfiguration);
-
-        PartialCustomTabTestRule.waitForAnimationToFinish();
-
-        // the density in this case is 1.0
-        assertEquals("Should be 900dp width bottom sheet", BOTTOM_SHEET_MAX_WIDTH_DP,
-                (int) (mPCCTTestRule.getWindowAttributes().width));
-        assertEquals("Bottom-Sheet should be the active strategy",
-                PartialCustomTabType.BOTTOM_SHEET, displayManager.getActiveStrategyType());
-        verify(mPCCTTestRule.mOnActivityLayoutCallback)
-                .onActivityLayout(anyInt(), anyInt(), anyInt(), anyInt(),
-                        eq(ACTIVITY_LAYOUT_STATE_BOTTOM_SHEET));
-        clearInvocations(mPCCTTestRule.mOnActivityLayoutCallback);
-    }
-
-    @Test
     public void
     transitionFromBottomSheetTo900dpBottomSheetWhenOrientationChangedToLandscape_andHeightSetWidthNot() {
         mPCCTTestRule.configPortraitMode();
@@ -403,26 +374,25 @@ public class PartialCustomTabDisplayManagerTest {
         int initHeight = 0;
         Supplier<Integer> displayWidthDp = null;
         int breakPointDp = 0;
-        boolean ssEnabled = true; // side sheet feature flag
 
         // Multi-window mode -> FULL
         MultiWindowUtils.getInstance().setIsInMultiWindowModeForTesting(true);
         assertEquals("Type should be FULL_SIZE", PartialCustomTabType.FULL_SIZE,
                 PartialCustomTabDisplayManager.calculatePartialCustomTabType(
-                        null, initWidth, initHeight, displayWidthDp, breakPointDp, ssEnabled));
+                        null, initWidth, initHeight, displayWidthDp, breakPointDp));
 
         // Zero initial width/height -> FULL
         MultiWindowUtils.getInstance().setIsInMultiWindowModeForTesting(false);
         assertEquals("Type should be FULL_SIZE", PartialCustomTabType.FULL_SIZE,
                 PartialCustomTabDisplayManager.calculatePartialCustomTabType(
-                        null, initWidth, initHeight, displayWidthDp, breakPointDp, ssEnabled));
+                        null, initWidth, initHeight, displayWidthDp, breakPointDp));
 
         // Non-zero height -> BOTTOM_SHEET
         initWidth = 0;
         initHeight = 500;
         assertEquals("Type should be BOTTOM_SHEET", PartialCustomTabType.BOTTOM_SHEET,
                 PartialCustomTabDisplayManager.calculatePartialCustomTabType(
-                        null, initWidth, initHeight, displayWidthDp, breakPointDp, ssEnabled));
+                        null, initWidth, initHeight, displayWidthDp, breakPointDp));
 
         // Non-zero width -> either FULL_SIZE or SIDE_SHEET
         initWidth = 500;
@@ -431,18 +401,12 @@ public class PartialCustomTabDisplayManagerTest {
         breakPointDp = 1200;
         assertEquals("Type should be FULL_SIZE", PartialCustomTabType.FULL_SIZE,
                 PartialCustomTabDisplayManager.calculatePartialCustomTabType(
-                        null, initWidth, initHeight, displayWidthDp, breakPointDp, ssEnabled));
+                        null, initWidth, initHeight, displayWidthDp, breakPointDp));
 
         breakPointDp = 800;
         assertEquals("Type should be SIDE_SHEET", PartialCustomTabType.SIDE_SHEET,
                 PartialCustomTabDisplayManager.calculatePartialCustomTabType(
-                        null, initWidth, initHeight, displayWidthDp, breakPointDp, ssEnabled));
-
-        ssEnabled = false;
-        assertEquals("Type should be FULL_SIZE", PartialCustomTabType.FULL_SIZE,
-                PartialCustomTabDisplayManager.calculatePartialCustomTabType(
-                        null, initWidth, initHeight, displayWidthDp, breakPointDp, ssEnabled));
-        ssEnabled = true;
+                        null, initWidth, initHeight, displayWidthDp, breakPointDp));
 
         // Non-zero width/height -> either SIDE_SHEET or BOTTOM_SHEET
         initWidth = 300;
@@ -451,13 +415,7 @@ public class PartialCustomTabDisplayManagerTest {
         breakPointDp = 400;
         assertEquals("Type should be SIDE_SHEET", PartialCustomTabType.SIDE_SHEET,
                 PartialCustomTabDisplayManager.calculatePartialCustomTabType(
-                        null, initWidth, initHeight, displayWidthDp, breakPointDp, ssEnabled));
-
-        ssEnabled = false;
-        assertEquals("Type should be BOTTOM SHEET", PartialCustomTabType.BOTTOM_SHEET,
-                PartialCustomTabDisplayManager.calculatePartialCustomTabType(
-                        null, initWidth, initHeight, displayWidthDp, breakPointDp, ssEnabled));
-        ssEnabled = true;
+                        null, initWidth, initHeight, displayWidthDp, breakPointDp));
 
         initWidth = 300;
         initHeight = 500;
@@ -465,7 +423,7 @@ public class PartialCustomTabDisplayManagerTest {
         breakPointDp = 1200;
         assertEquals("Type should be BOTTOM_SHEET", PartialCustomTabType.BOTTOM_SHEET,
                 PartialCustomTabDisplayManager.calculatePartialCustomTabType(
-                        null, initWidth, initHeight, displayWidthDp, breakPointDp, ssEnabled));
+                        null, initWidth, initHeight, displayWidthDp, breakPointDp));
     }
 
     @Test
