@@ -2074,6 +2074,8 @@ extern const char kCCTResizableForThirdPartiesName[];
 extern const char kCCTResizableForThirdPartiesDescription[];
 extern const char kCCTResizableSideSheetName[];
 extern const char kCCTResizableSideSheetDescription[];
+extern const char kCCTResizableSideSheetDiscoverFeedSettingsName[];
+extern const char kCCTResizableSideSheetDiscoverFeedSettingsDescription[];
 extern const char kCCTResizableSideSheetForThirdPartiesName[];
 extern const char kCCTResizableSideSheetForThirdPartiesDescription[];
 

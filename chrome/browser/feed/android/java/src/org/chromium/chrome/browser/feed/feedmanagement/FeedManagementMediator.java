@@ -14,7 +14,9 @@ import android.view.View;
 import android.view.View.OnClickListener;
 
 import androidx.annotation.VisibleForTesting;
+import androidx.browser.customtabs.CustomTabsClient;
 import androidx.browser.customtabs.CustomTabsIntent;
+import androidx.browser.customtabs.CustomTabsSession;
 
 import org.chromium.base.Log;
 import org.chromium.base.compat.ApiHelperForM;
@@ -22,6 +24,7 @@ import org.chromium.chrome.browser.feed.FeedServiceBridge;
 import org.chromium.chrome.browser.feed.R;
 import org.chromium.chrome.browser.feed.StreamKind;
 import org.chromium.chrome.browser.feed.v2.FeedUserActionType;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
 import org.chromium.ui.modelutil.ModelListAdapter;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -41,6 +44,8 @@ public class FeedManagementMediator {
     private final FollowManagementLauncher mFollowManagementLauncher;
     private final AutoplayManagementLauncher mAutoplayManagementLauncher;
     private final @StreamKind int mInitiatingStreamKind;
+    private CustomTabsClient mClient;
+    private CustomTabsSession mCustomTabsSession;
 
     /**
      * Interface to supply a method which can launch the FollowManagementActivity.
@@ -103,25 +108,51 @@ public class FeedManagementMediator {
 
     // TODO(petewil): Borrowed these from code we can't link to.  How do I keep them in sync?
     static final String TRUSTED_APPLICATION_CODE_EXTRA = "trusted_application_code_extra";
+    // TODO(katzz): Replace with intent extras to be defined in AndroidX;
+    static final String EXTRA_ACTIVITY_INITIAL_WIDTH_PX =
+            "androidx.browser.customtabs.extra.INITIAL_ACTIVITY_WIDTH_PX";
+    static final String EXTRA_ACTIVITY_INITIAL_HEIGHT_PX =
+            "androidx.browser.customtabs.extra.INITIAL_ACTIVITY_HEIGHT_PX";
+    static final String EXTRA_ACTIVITY_SIDE_SHEET_BREAKPOINT_DP =
+            "androidx.browser.customtabs.extra.ACTIVITY_SIDE_SHEET_BREAKPOINT_DP";
 
     // Launch a new activity in the same task with the given uri as a CCT.
     private void launchUriActivity(String uri) {
         CustomTabsIntent.Builder builder = new CustomTabsIntent.Builder();
         builder.setShowTitle(true);
         builder.setShareState(CustomTabsIntent.SHARE_STATE_ON);
-        Intent intent = builder.build().intent;
-        intent.setData(Uri.parse(uri));
-        intent.setAction(Intent.ACTION_VIEW);
-        intent.setClassName(mContext, "org.chromium.chrome.browser.customtabs.CustomTabActivity");
+        if (ChromeFeatureList.sCctResizableSideSheetDiscoverFeedSettings.isEnabled()) {
+            int displayHeight = mContext.getResources().getDisplayMetrics().heightPixels;
+            int displayWidth = mContext.getResources().getDisplayMetrics().widthPixels;
+            int initialHeight = Math.max(displayHeight, displayWidth);
+            int initialWidth = Math.max(displayHeight, displayWidth) / 2;
+            int breakPoint = (int) (Math.min(displayHeight, displayWidth)
+                            / mContext.getResources().getDisplayMetrics().density
+                    + 1);
 
-        // Do the things that createCustomTabActivityIntent does:
-        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK); // Needed for pre-N versions of android.
-        intent.putExtra(Browser.EXTRA_APPLICATION_ID, mContext.getPackageName());
-
-        // Adding trusted extras lets us know that the intent came from Chrome.
-        intent.setPackage(mContext.getPackageName());
-        intent.putExtra(TRUSTED_APPLICATION_CODE_EXTRA, getAuthenticationToken());
-        mContext.startActivity(intent);
+            CustomTabsIntent customTabsIntent = builder.build();
+            customTabsIntent.intent.setPackage(mContext.getPackageName());
+            // Adding trusted extras lets us know that the intent came from Chrome.
+            customTabsIntent.intent.putExtra(
+                    TRUSTED_APPLICATION_CODE_EXTRA, getAuthenticationToken());
+            customTabsIntent.intent.setData(Uri.parse(uri));
+            customTabsIntent.intent.putExtra(EXTRA_ACTIVITY_INITIAL_HEIGHT_PX, initialHeight);
+            customTabsIntent.intent.putExtra(EXTRA_ACTIVITY_INITIAL_WIDTH_PX, initialWidth);
+            customTabsIntent.intent.putExtra(EXTRA_ACTIVITY_SIDE_SHEET_BREAKPOINT_DP, breakPoint);
+            customTabsIntent.launchUrl(mContext, Uri.parse(uri));
+        } else {
+            Intent intent = builder.build().intent;
+            intent.setPackage(mContext.getPackageName());
+            // Adding trusted extras lets us know that the intent came from Chrome.
+            intent.putExtra(TRUSTED_APPLICATION_CODE_EXTRA, getAuthenticationToken());
+            intent.setData(Uri.parse(uri));
+            intent.setAction(Intent.ACTION_VIEW);
+            intent.setClassName(
+                    mContext, "org.chromium.chrome.browser.customtabs.CustomTabActivity");
+            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK); // Needed for pre-N versions of android.
+            intent.putExtra(Browser.EXTRA_APPLICATION_ID, mContext.getPackageName());
+            mContext.startActivity(intent);
+        }
         // TODO(https://crbug.com/1195209): Record uma by calling ReportOtherUserAction
         // on the stream.
     }

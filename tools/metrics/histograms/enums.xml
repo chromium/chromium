@@ -64622,6 +64622,8 @@ from previous Chrome versions.
   <int value="1249861983" label="WebViewUseMetricsUploadService:disabled"/>
   <int value="1250071868" label="disable-timezone-tracking-option"/>
   <int value="1250776846" label="DnsProxyEnableDOH:enabled"/>
+  <int value="1251097300"
+      label="CCTResizableSideSheetDiscoverFeedSettings:enabled"/>
   <int value="1251663392" label="ArcImageCopyPasteCompat:disabled"/>
   <int value="1253001092" label="FeedShare:enabled"/>
   <int value="1253698118" label="ash-disable-stable-overview-order"/>
@@ -65360,6 +65362,8 @@ from previous Chrome versions.
   <int value="1667584730" label="WebXR:disabled"/>
   <int value="1667886516"
       label="PageInfoAboutThisSiteImprovedBottomSheet:enabled"/>
+  <int value="1667943654"
+      label="CCTResizableSideSheetDiscoverFeedSettings:disabled"/>
   <int value="1668006393"
       label="AutofillShowAutocompleteDeleteButton:disabled"/>
   <int value="1668611601" label="enable-encrypted-media"/>

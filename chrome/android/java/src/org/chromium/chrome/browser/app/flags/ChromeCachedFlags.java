@@ -81,6 +81,7 @@ public class ChromeCachedFlags {
                 ChromeFeatureList.sCctResizable90MaximumHeight,
                 ChromeFeatureList.sCctResizableForThirdParties,
                 ChromeFeatureList.sCctResizableSideSheet,
+                ChromeFeatureList.sCctResizableSideSheetDiscoverFeedSettings,
                 ChromeFeatureList.sCctResizableSideSheetForThirdParties,
                 ChromeFeatureList.sCctRetainableStateInMemory,
                 ChromeFeatureList.sCctToolbarCustomizations,
