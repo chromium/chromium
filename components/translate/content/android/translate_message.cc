@@ -15,6 +15,7 @@
 #include "base/android/jni_array.h"
 #include "base/android/jni_string.h"
 #include "base/containers/contains.h"
+#include "base/debug/dump_without_crashing.h"
 #include "base/logging.h"
 #include "base/metrics/field_trial_params.h"
 #include "base/metrics/histogram_macros.h"
@@ -312,6 +313,11 @@ void TranslateMessage::HandlePrimaryAction(JNIEnv* env) {
       ui_delegate_->Translate();
       break;
 
+    case State::kTranslating:
+      // Should not happen, but per https://crbug.com/1409304 it may, so add
+      // logging.
+      base::debug::DumpWithoutCrashing();
+      break;
     case State::kAfterTranslateWithAutoAlwaysConfirmation:
       // The user clicked "Undo" on a translated page when the
       // auto-always-translate confirmation message was showing, so turn off
@@ -336,7 +342,11 @@ void TranslateMessage::HandlePrimaryAction(JNIEnv* env) {
       ui_delegate_->SetLanguageBlocked(false);
       bridge_->Dismiss(env);
       break;
-
+    case State::kDismissed:
+      // Should not happen, but per https://crbug.com/1409304 it may, so add
+      // logging.
+      base::debug::DumpWithoutCrashing();
+      break;
     default:
       NOTREACHED();
       break;
