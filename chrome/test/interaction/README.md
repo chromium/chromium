@@ -12,6 +12,9 @@ the API calls for you.
 This page provides technical documentation. For a cookbook/FAQ/troubleshooting
 guide, see our [Kombucha Playbook](goto.google.com/kombucha-playbook).
 
+ - [Changelog](#changelog)
+ - [Known Issues](#known-issues-and-incompatibilities)
+
 [TOC]
 
 ## Getting Started
@@ -443,12 +446,8 @@ to the top level test sequence. **We may change this behavior in the future.**
 
 Sometimes a test won't run on a specific build bot or in a specific environment
 due to a known incompatibility (as opposed to something legitimately failing).
-Current known incompatibilities include:
- - `ActivateSurface()` does not work on the `linux-wayland` buildbot unless the
-   surface is already active, due to vanilla Wayland not supporting programmatic
-   window activation.
- - `Screenshot()` only works in specific pixel test jobs on the `win-rel`
-   buildbot.
+See [Known Incompatibilities](#known-issues-and-incompatibilities) for more
+info.
 
 Normally, if you know that the test won't run on an entire platform (i.e. you
 can use `BUILDFLAG()` to differentiate) you should disable or skip the tests in
@@ -650,3 +649,55 @@ to support interactive testing:
 You should only rarely have to use these classes directly; if you do, it's
 likely that Kombucha is missing some common verb that would cover your use case.
 Please reach out to us!
+
+## Changelog
+
+### March 2023
+
+Quality of life improvements:
+ - You can now add Kombucha API to existing test fixtures using the following
+   template mix-ins.
+    - This removes the need for a lot of boilerplate when adding
+      `InteractiveBrowserTestApi`.
+    - See [Custom Test Fixtures](#custom-test-fixtures) for more info.
+ - `base::BindOnce()` and `base::BindLambdaForTesting()` are no longer required
+    in many cases.
+     - This makes many steps less verbose - and less highly-indented - than they
+       were previously.
+     - See [Test Functions and Callbacks](#test-functions-and-callbacks) for
+       more info.
+
+New control-flow features (see [Control Flow](#control-flow) for more info):
+ - `InParallel` runs several subsequences at once.
+ - `If`, `IfMatches`, `IfView`, etc. conditionally run a subsequence.
+    - Also added the ability to specify an optional "else" clause.
+
+Bugfixes:
+ - Slightly improved drag-handling on ChromeOS.
+
+## Known Issues and Incompatibilities
+
+The following will generate an error unless
+[explicitly handled](#handling-incompatibilities):
+ - `ActivateSurface()` does not work on the `linux-wayland` buildbot unless the
+   surface is already active, due to vanilla Wayland not supporting programmatic
+   window activation.
+ - `Screenshot()` currently only works in specific pixel test jobs on the
+   `win-rel` buildbot.
+
+The following may produce unexpected or inconsistent behavior:
+ - When `ClickMouse()` is used on Mac with right mouse button, events are sent
+   asynchronously to avoid getting caught in a context menu run loop.
+    - Most tests should still function normally, but be aware of the behavioral
+      difference.
+ - `DragMouse()` or `MoveMouseTo()` on Windows may result in Windows entering a
+   drag loop that may hang or otherwise impact the test.
+    - Tab dragging works as expected but other drag tests may be flaky or fail
+      on the platform.
+
+## Upcoming Features
+
+To be supported in the near-future:
+ - Touch input on ChromeOS
+ - Touch input on Windows
+ - More reliable drag-drop on Windows
