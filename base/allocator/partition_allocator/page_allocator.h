@@ -66,12 +66,19 @@ enum class PageAccessibilityDisposition {
 // these tags are used to name anonymous mappings.
 enum class PageTag {
   kFirst = 240,           // Minimum tag value.
+  kSimulation = 251,      // Memory simulator tool.
   kBlinkGC = 252,         // Blink GC pages.
   kPartitionAlloc = 253,  // PartitionAlloc, no matter the partition.
   kChromium = 254,        // Chromium page.
   kV8 = 255,              // V8 heap pages.
   kLast = kV8             // Maximum tag value.
 };
+
+// See
+// https://github.com/apple-oss-distributions/xnu/blob/5c2921b07a2480ab43ec66f5b9e41cb872bc554f/osfmk/mach/vm_statistics.h#L687
+static_assert(
+    static_cast<int>(PageTag::kLast) < 256,
+    "Tags are only 1 byte long on macOS, see vm_statistics.h in XNU.");
 
 PA_COMPONENT_EXPORT(PARTITION_ALLOC)
 uintptr_t NextAlignedWithOffset(uintptr_t ptr,

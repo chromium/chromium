@@ -199,6 +199,7 @@ group("gn_all") {
       "//third_party/blink/renderer/platform/wtf:wtf_unittests",
       "//third_party/libjingle_xmpp:libjingle_xmpp_unittests",
       "//tools/imagediff",
+      "//tools/memory:all",
       "//ui/display:display_unittests",
       "//ui/gl:gl_unittests",
       "//ui/latency:latency_unittests",
@@ -434,10 +435,6 @@ group("gn_all") {
       "//third_party/breakpad:minidump-2-core",
       "//tools/dump_process_memory:dump_process",
     ]
-  }
-
-  if (is_linux || is_chromeos || is_android || is_mac) {
-    deps += [ "//tools/memory/partition_allocator:all" ]
   }
 
   if (is_chromeos_ash) {

@@ -1,0 +1,47 @@
+# Copyright 2023 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//testing/test.gni")
+
+group("all") {
+  deps = [ ":memory_simulator" ]
+}
+
+static_library("memory_simulator_lib") {
+  sources = [
+    "contiguous_memory_holder.cc",
+    "contiguous_memory_holder.h",
+    "memory_holder.cc",
+    "memory_holder.h",
+    "memory_simulator.cc",
+    "memory_simulator.h",
+    "metrics_printer.cc",
+    "metrics_printer.h",
+    "metrics_provider.cc",
+    "metrics_provider.h",
+    "simulator_metrics_provider.cc",
+    "simulator_metrics_provider.h",
+    "utils.cc",
+    "utils.h",
+  ]
+
+  if (is_mac) {
+    sources += [
+      "process_metrics_provider_mac.cc",
+      "process_metrics_provider_mac.h",
+      "system_metrics_provider_mac.cc",
+      "system_metrics_provider_mac.h",
+    ]
+  }
+
+  deps = [ "//base" ]
+}
+
+executable("memory_simulator") {
+  sources = [ "memory_simulator_main.cc" ]
+  deps = [
+    ":memory_simulator_lib",
+    "//base",
+  ]
+}

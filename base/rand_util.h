@@ -20,6 +20,10 @@
 #include "third_party/boringssl/src/include/openssl/rand.h"
 #endif
 
+namespace memory_simulator {
+class MemoryHolder;
+}
+
 namespace base {
 
 namespace internal {
@@ -168,6 +172,10 @@ class BASE_EXPORT InsecureRandomGenerator {
   // base::Rand*() is too high, using something more representative than a
   // microbenchmark.
 
+  // Uses the generator to fill memory pages with random content to make them
+  // hard to compress, in a simulation tool not bundled with Chrome. CPU
+  // overhead must be minimized to correctly measure memory effects.
+  friend class memory_simulator::MemoryHolder;
   // Uses the generator to sub-sample metrics.
   friend class MetricsSubSampler;
 
