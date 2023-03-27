@@ -12,6 +12,8 @@ import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
+import android.graphics.Insets;
+import android.graphics.Point;
 import android.graphics.Rect;
 import android.media.MediaPlayer;
 import android.net.Uri;
@@ -20,13 +22,14 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
 import android.text.TextUtils;
-import android.util.DisplayMetrics;
 import android.util.Log;
 import android.util.Pair;
+import android.view.Display;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
+import android.view.WindowInsets;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
@@ -972,12 +975,17 @@ public class MainActivity
         @Px
         int res = 0;
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-            Rect rect = this.getWindowManager().getMaximumWindowMetrics().getBounds();
-            res = Math.max(rect.width(), rect.height());
+            Insets navbarInsets =
+                    getWindowManager().getCurrentWindowMetrics().getWindowInsets().getInsets(
+                            WindowInsets.Type.navigationBars() | WindowInsets.Type.displayCutout());
+            int navbarWidth = navbarInsets.left + navbarInsets.right;
+            Rect windowBounds = getWindowManager().getCurrentWindowMetrics().getBounds();
+            res = windowBounds.width() - navbarWidth;
         } else {
-            DisplayMetrics displayMetrics = new DisplayMetrics();
-            this.getWindowManager().getDefaultDisplay().getRealMetrics(displayMetrics);
-            res = Math.max(displayMetrics.widthPixels, displayMetrics.heightPixels);
+            Display display = getWindowManager().getDefaultDisplay();
+            Point size = new Point();
+            display.getSize(size);
+            res = size.x;
         }
         return res;
     }
