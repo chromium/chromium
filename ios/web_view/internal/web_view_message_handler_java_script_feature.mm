@@ -5,6 +5,7 @@
 #import "ios/web_view/internal/web_view_message_handler_java_script_feature.h"
 
 #import "base/logging.h"
+#import "ios/web/public/browser_state.h"
 #import "ios/web/public/js_messaging/script_message.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
@@ -12,6 +13,9 @@
 #endif
 
 namespace {
+
+const char kWebViewMessageHandlerJavaScriptFeatureKeyName[] =
+    "web_view_message_handler_java_script_feature";
 
 const char kScriptName[] = "cwv_messaging";
 
@@ -39,6 +43,24 @@ WebViewMessageHandlerJavaScriptFeature::WebViewMessageHandlerJavaScriptFeature()
               FeatureScript::ReinjectionBehavior::kInjectOncePerWindow)}) {}
 WebViewMessageHandlerJavaScriptFeature::
     ~WebViewMessageHandlerJavaScriptFeature() = default;
+
+// static
+WebViewMessageHandlerJavaScriptFeature*
+WebViewMessageHandlerJavaScriptFeature::FromBrowserState(
+    web::BrowserState* browser_state) {
+  DCHECK(browser_state);
+
+  WebViewMessageHandlerJavaScriptFeature* feature =
+      static_cast<WebViewMessageHandlerJavaScriptFeature*>(
+          browser_state->GetUserData(
+              kWebViewMessageHandlerJavaScriptFeatureKeyName));
+  if (!feature) {
+    feature = new WebViewMessageHandlerJavaScriptFeature();
+    browser_state->SetUserData(kWebViewMessageHandlerJavaScriptFeatureKeyName,
+                               base::WrapUnique(feature));
+  }
+  return feature;
+}
 
 void WebViewMessageHandlerJavaScriptFeature::RegisterHandler(
     std::string& command,
@@ -68,7 +90,22 @@ void WebViewMessageHandlerJavaScriptFeature::ScriptMessageReceived(
   }
   base::Value::Dict message_body = std::move(script_message.body()->GetDict());
 
-  std::string* command = message_body.FindString(kScriptMessageCommandKey);
+  // Pass messages from the non-static instances to the static instance during
+  // transition.
+  // TODO(crbug.com/1426917): Remove static instance of feature.
+  WebViewMessageHandlerJavaScriptFeature* static_instance =
+      WebViewMessageHandlerJavaScriptFeature::GetInstance();
+  if (this != static_instance) {
+    static_instance->NotifyHandlers(message_body);
+  }
+
+  NotifyHandlers(message_body);
+}
+
+void WebViewMessageHandlerJavaScriptFeature::NotifyHandlers(
+    const base::Value::Dict& message_body) {
+  const std::string* command =
+      message_body.FindString(kScriptMessageCommandKey);
   if (!command) {
     return;
   }
@@ -77,7 +114,8 @@ void WebViewMessageHandlerJavaScriptFeature::ScriptMessageReceived(
     return;
   }
 
-  base::Value::Dict* payload = message_body.FindDict(kScriptMessagePayloadKey);
+  const base::Value::Dict* payload =
+      message_body.FindDict(kScriptMessagePayloadKey);
   if (!payload) {
     return;
   }

@@ -287,6 +287,11 @@ NSString* const kWebViewShellJavaScriptDialogTextFieldAccessibilityIdentifier =
   [configuration.autofillDataManager addObserver:self];
   configuration.syncController.delegate = self;
   [configuration.leakCheckService addObserver:self];
+  [configuration.userContentController
+      addMessageHandler:^(NSDictionary* payload) {
+        NSLog(@"message handler payload received =\n%@", payload);
+      }
+             forCommand:@"messageHandlerCommand"];
   self.webView = [self createWebViewWithConfiguration:configuration];
 }
 
@@ -1021,9 +1026,9 @@ NSString* const kWebViewShellJavaScriptDialogTextFieldAccessibilityIdentifier =
 
   [webView
       addMessageHandler:^(NSDictionary* payload) {
-        NSLog(@"message handler payload received =\n%@", payload);
+        NSLog(@"webview message handler payload received =\n%@", payload);
       }
-             forCommand:@"messageHandlerCommand"];
+             forCommand:@"webViewMessageHandlerCommand"];
 
   return webView;
 }
@@ -1033,7 +1038,7 @@ NSString* const kWebViewShellJavaScriptDialogTextFieldAccessibilityIdentifier =
   [_webView removeObserver:self forKeyPath:@"canGoBack"];
   [_webView removeObserver:self forKeyPath:@"canGoForward"];
   [_webView removeObserver:self forKeyPath:@"loading"];
-  [_webView removeMessageHandlerForCommand:@"messageHandlerCommand"];
+  [_webView removeMessageHandlerForCommand:@"webViewMessageHandlerCommand"];
 
   _webView = nil;
 }
@@ -1042,7 +1047,7 @@ NSString* const kWebViewShellJavaScriptDialogTextFieldAccessibilityIdentifier =
   [_webView removeObserver:self forKeyPath:@"canGoBack"];
   [_webView removeObserver:self forKeyPath:@"canGoForward"];
   [_webView removeObserver:self forKeyPath:@"loading"];
-  [_webView removeMessageHandlerForCommand:@"messageHandlerCommand"];
+  [_webView removeMessageHandlerForCommand:@"webViewMessageHandlerCommand"];
 }
 
 - (BOOL)textFieldShouldReturn:(UITextField*)field {

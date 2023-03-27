@@ -96,15 +96,16 @@ base::RefCountedMemory* WebViewWebClient::GetDataResourceBytes(
 
 std::vector<web::JavaScriptFeature*> WebViewWebClient::GetJavaScriptFeatures(
     web::BrowserState* browser_state) const {
-  return {autofill::AutofillJavaScriptFeature::GetInstance(),
-          autofill::FormHandlersJavaScriptFeature::GetInstance(),
-          autofill::SuggestionControllerJavaScriptFeature::GetInstance(),
-          language::LanguageDetectionJavaScriptFeature::GetInstance(),
-          password_manager::PasswordManagerJavaScriptFeature::GetInstance(),
-          security_interstitials::IOSSecurityInterstitialJavaScriptFeature::
-              GetInstance(),
-          translate::TranslateJavaScriptFeature::GetInstance(),
-          WebViewMessageHandlerJavaScriptFeature::GetInstance()};
+  return {
+      autofill::AutofillJavaScriptFeature::GetInstance(),
+      autofill::FormHandlersJavaScriptFeature::GetInstance(),
+      autofill::SuggestionControllerJavaScriptFeature::GetInstance(),
+      language::LanguageDetectionJavaScriptFeature::GetInstance(),
+      password_manager::PasswordManagerJavaScriptFeature::GetInstance(),
+      security_interstitials::IOSSecurityInterstitialJavaScriptFeature::
+          GetInstance(),
+      translate::TranslateJavaScriptFeature::GetInstance(),
+      WebViewMessageHandlerJavaScriptFeature::FromBrowserState(browser_state)};
 }
 
 NSString* WebViewWebClient::GetDocumentStartScriptForMainFrame(

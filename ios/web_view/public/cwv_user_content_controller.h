@@ -29,6 +29,33 @@ CWV_EXPORT
 // Removes all associated user scripts.
 - (void)removeAllUserScripts;
 
+// Adds a message handler for messages sent from JavaScript for all CWVWebViews
+// associated with a CWVWebViewConfiguration referencing this
+// `userContentController`.
+// `handler` will be called each time a message is sent with the corresponding
+// value of `command`. To send messages from JavaScript, use the WebKit
+// message handler `CWVWebViewMessage` and provide values for the `command` and
+// `payload` keys.
+// `command` must be a string and match the registered handler `command` string
+// `payload` must be a dictionary.
+//
+// Example call from JavaScript:
+//
+//  let message = {
+//    'command': 'myFeatureMessage',
+//    'payload' : {'key1':'value1', 'key2':42}
+//  }
+//  window.webkit.messageHandlers['CWVWebViewMessage'].postMessage(message);
+//
+// NOTE: Only a single `handler` may be registered for a given `command` per
+// user content controller.
+- (void)addMessageHandler:(void (^)(NSDictionary* payload))handler
+               forCommand:(NSString*)command;
+
+// Removes the message handler associated with `command` previously added with
+// `addMessageHandler:forCommand:`.
+- (void)removeMessageHandlerForCommand:(NSString*)nsCommand;
+
 @end
 
 NS_ASSUME_NONNULL_END

@@ -72,4 +72,8 @@
 // Supports -[CWVWebViewConfiguration leakCheckService].
 #define IOS_WEB_VIEW_SUPPORTS_LEAK_CHECK_SERVICE 1
 
+// Supports -[CWVUserContentController addMessageHandler:forCommand:] and
+// -[CWVUserContentController removeMessageHandlerForCommand] APIs.
+#define IOS_WEB_VIEW_SUPPORTS_USER_CONTENT_CONTROLLER_MESSAGE_HANDLERS 1
+
 #endif  // IOS_WEB_VIEW_PUBLIC_CWV_DEFINES_H_

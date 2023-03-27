@@ -228,7 +228,10 @@ CWV_EXPORT
 - (void)evaluateJavaScript:(NSString*)javaScriptString
                 completion:(void (^)(id result, NSError* error))completion;
 
-// Adds a message handler for messages sent from JavaScript.
+// DEPRECATED: Use `CWVUserContentController addMessageHandler:forCommand:`
+// instead.
+// Adds a message handler for messages sent from JavaScript from *any*
+// CWVWebView.
 // `handler` will be called each time a message is sent with the corresponding
 // value of `command`. To send messages from JavaScript, use the WebKit
 // message handler `CWVWebViewMessage` and provide values for the `command` and
@@ -248,6 +251,8 @@ CWV_EXPORT
 - (void)addMessageHandler:(void (^)(NSDictionary* payload))handler
                forCommand:(NSString*)command;
 
+// DEPRECATED: Use `CWVUserContentController removeMessageHandlerForCommand:`
+// instead.
 // Removes the message handler associated with `command` previously added with
 // `addMessageHandler:forCommand:`.
 - (void)removeMessageHandlerForCommand:(NSString*)command;
