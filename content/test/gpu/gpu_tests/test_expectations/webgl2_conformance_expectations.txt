@@ -224,10 +224,13 @@ crbug.com/1345782 [ mac amd-0x67ef passthrough angle-opengl ] deqp/functional/gl
 crbug.com/1426916 [ chromeos chromeos-board-amd64-generic passthrough ] conformance/extensions/webgl-compressed-texture-astc.html [ Slow ]
 crbug.com/1426916 [ chromeos chromeos-board-amd64-generic passthrough ] conformance/extensions/s3tc-and-rgtc.html [ Slow ]
 crbug.com/1426916 [ chromeos chromeos-board-amd64-generic passthrough ] conformance/textures/canvas_sub_rectangle/tex-2d-rgba-rgba-unsigned_short_4_4_4_4.html [ Slow ]
+crbug.com/1426916 [ chromeos chromeos-board-amd64-generic passthrough ] conformance/textures/misc/tex-image-and-sub-image-2d-with-array-buffer-view.html [ Slow ]
 crbug.com/1426916 [ chromeos chromeos-board-amd64-generic passthrough ] conformance2/extensions/webgl-multi-draw-instanced-base-vertex-base-instance.html [ Slow ]
+crbug.com/1426916 [ chromeos chromeos-board-amd64-generic passthrough ] conformance2/sync/sync-webgl-specific.html [ Slow ]
 crbug.com/1426916 [ chromeos chromeos-board-amd64-generic passthrough ] conformance2/textures/canvas_sub_rectangle/tex-2d-rg32f-rg-float.html [ Slow ]
 crbug.com/1426916 [ chromeos chromeos-board-amd64-generic passthrough ] conformance2/textures/canvas_sub_rectangle/tex-2d-rg8ui-rg_integer-unsigned_byte.html [ Slow ]
 crbug.com/1426916 [ chromeos chromeos-board-amd64-generic passthrough ] conformance2/uniforms/incompatible-texture-type-for-sampler.html [ Slow ]
+crbug.com/1426916 [ chromeos chromeos-board-amd64-generic passthrough ] deqp/functional/gles3/uniformapi/random.html [ Slow ]
 
 ###################
 # Failures/Flakes #
@@ -748,8 +751,6 @@ crbug.com/1238075 [ chromeos chromeos-board-amd64-generic ] conformance/renderin
 crbug.com/1241179 [ chromeos chromeos-board-amd64-generic passthrough ] conformance2/extensions/ext-texture-norm16.html [ Failure ]
 crbug.com/1241183 [ chromeos chromeos-board-amd64-generic passthrough ] conformance2/textures/misc/immutable-tex-render-feedback.html [ Failure ]
 crbug.com/1399117 [ chromeos chromeos-board-amd64-generic passthrough ] WebglExtension_WEBGL_provoking_vertex [ Skip ]
-
-crbug.com/1426913 [ chromeos chromeos-board-amd64-generic passthrough ] conformance2/sync/sync-webgl-specific.html [ RetryOnFailure ]
 
 # Must investigate ChromeOS failures with passthrough command decoder.
 crbug.com/angleproject/5038 [ chromeos passthrough ] conformance/extensions/ext-color-buffer-half-float.html [ Failure ]
