@@ -69,6 +69,12 @@ function syncRepo(dir, treeish) {
   spawnChecked("git", ["reset", "--hard", treeish], { cwd: dir, stdio: "inherit" });
 }
 
+function assert(value, msg) {
+  if (!value) {
+    throw new Error(msg);
+  }
+}
+
 function getChromiumDeps() {
   const text = fs.readFileSync("DEPS", "utf8");
   let results = {
