@@ -252,6 +252,11 @@ class SwapWithNewProcFactory : public CertVerifyProcFactory {
   scoped_refptr<CertVerifyProc> verify_proc_;
 };
 
+scoped_refptr<CertVerifyProcFactory> SwapWithNotCalledProcFactory() {
+  return base::MakeRefCounted<SwapWithNewProcFactory>(
+      base::MakeRefCounted<NotCalledCertVerifyProc>());
+}
+
 struct TrialReportInfo {
   TrialReportInfo(const std::string& hostname,
                   const scoped_refptr<X509Certificate>& unverified_cert,
@@ -347,8 +352,10 @@ TEST_F(TrialComparisonCertVerifierTest, InitiallyDisallowed) {
   auto verify_proc = base::MakeRefCounted<FakeCertVerifyProc>(OK, dummy_result);
   std::vector<TrialReportInfo> reports;
   TrialComparisonCertVerifier verifier(
-      verify_proc, nullptr, base::MakeRefCounted<NotCalledCertVerifyProc>(),
-      nullptr, base::BindRepeating(&RecordTrialReport, &reports));
+      verify_proc, SwapWithNotCalledProcFactory(),
+      base::MakeRefCounted<NotCalledCertVerifyProc>(),
+      SwapWithNotCalledProcFactory(),
+      base::BindRepeating(&RecordTrialReport, &reports));
   CertVerifier::RequestParams params(leaf_cert_1_, "127.0.0.1", /*flags=*/0,
                                      /*ocsp_response=*/std::string(),
                                      /*sct_list=*/std::string());
@@ -408,7 +415,8 @@ TEST_F(TrialComparisonCertVerifierTest, InitiallyDisallowedThenAllowed) {
 
   std::vector<TrialReportInfo> reports;
   TrialComparisonCertVerifier verifier(
-      verify_proc1, nullptr, verify_proc2, nullptr,
+      verify_proc1, SwapWithNotCalledProcFactory(), verify_proc2,
+      SwapWithNotCalledProcFactory(),
       base::BindRepeating(&RecordTrialReport, &reports));
 
   CertVerifier::RequestParams params(leaf, "t0.test", /*flags=*/0,
@@ -491,7 +499,8 @@ TEST_F(TrialComparisonCertVerifierTest, InitiallyAllowedThenDisallowed) {
 
   std::vector<TrialReportInfo> reports;
   TrialComparisonCertVerifier verifier(
-      verify_proc1, nullptr, verify_proc2, nullptr,
+      verify_proc1, SwapWithNotCalledProcFactory(), verify_proc2,
+      SwapWithNotCalledProcFactory(),
       base::BindRepeating(&RecordTrialReport, &reports));
   verifier.set_trial_allowed(true);
 
@@ -552,8 +561,10 @@ TEST_F(TrialComparisonCertVerifierTest,
 
   std::vector<TrialReportInfo> reports;
   TrialComparisonCertVerifier verifier(
-      verify_proc1, nullptr, base::MakeRefCounted<NotCalledCertVerifyProc>(),
-      nullptr, base::BindRepeating(&RecordTrialReport, &reports));
+      verify_proc1, SwapWithNotCalledProcFactory(),
+      base::MakeRefCounted<NotCalledCertVerifyProc>(),
+      SwapWithNotCalledProcFactory(),
+      base::BindRepeating(&RecordTrialReport, &reports));
   verifier.set_trial_allowed(true);
 
   CertVerifier::RequestParams params(leaf_cert_1_, "127.0.0.1", /*flags=*/0,
@@ -588,6 +599,81 @@ TEST_F(TrialComparisonCertVerifierTest,
   EXPECT_TRUE(reports.empty());
 }
 
+TEST_F(TrialComparisonCertVerifierTest, ConfigChangedBeforeVerification) {
+  // Primary verifier returns an error status.
+  CertVerifyResult primary_result;
+  primary_result.verified_cert = cert_chain_1_;
+  primary_result.cert_status = CERT_STATUS_DATE_INVALID;
+  scoped_refptr<FakeCertVerifyProc> verify_proc1 =
+      base::MakeRefCounted<FakeCertVerifyProc>(ERR_CERT_DATE_INVALID,
+                                               primary_result);
+
+  CertVerifyResult secondary_result;
+  secondary_result.verified_cert = cert_chain_1_;
+  scoped_refptr<FakeCertVerifyProc> verify_proc2 =
+      base::MakeRefCounted<FakeCertVerifyProc>(OK, secondary_result);
+
+  std::vector<TrialReportInfo> reports;
+  // Both verifiers are initially NotCalledCertVerifyProc, but should swap to
+  // verify_proc1 and verify_proc2 when UpdateChromeRootStoreData is called.
+  TrialComparisonCertVerifier verifier(
+      base::MakeRefCounted<NotCalledCertVerifyProc>(),
+      base::MakeRefCounted<SwapWithNewProcFactory>(verify_proc1),
+      base::MakeRefCounted<NotCalledCertVerifyProc>(),
+      base::MakeRefCounted<SwapWithNewProcFactory>(verify_proc2),
+      base::BindRepeating(&RecordTrialReport, &reports));
+  verifier.set_trial_allowed(true);
+
+  // Change the verifier Chrome Root Store data before verification, so the
+  // Verify should call the verifiers that were swapped in by the factories
+  // instead of the initial ones.
+  verifier.UpdateChromeRootStoreData(nullptr, nullptr);
+
+  CertVerifier::RequestParams params(leaf_cert_1_, "127.0.0.1", /*flags=*/0,
+                                     /*ocsp_response=*/std::string(),
+                                     /*sct_list=*/std::string());
+  CertVerifyResult result;
+  TestCompletionCallback callback;
+  std::unique_ptr<CertVerifier::Request> request;
+  int error = verifier.Verify(params, &result, callback.callback(), &request,
+                              NetLogWithSource());
+  ASSERT_THAT(error, IsError(ERR_IO_PENDING));
+  EXPECT_TRUE(request);
+
+  error = callback.WaitForResult();
+  EXPECT_THAT(error, IsError(ERR_CERT_DATE_INVALID));
+
+  verify_proc2->WaitForVerifyCall();
+  RunUntilIdle();
+
+  // Expect a report.
+  ASSERT_EQ(1U, reports.size());
+  const TrialReportInfo& report = reports[0];
+
+  EXPECT_EQ(CERT_STATUS_DATE_INVALID, report.primary_result.cert_status);
+  EXPECT_EQ(0U, report.trial_result.cert_status);
+
+  EXPECT_TRUE(report.primary_result.verified_cert->EqualsIncludingChain(
+      cert_chain_1_.get()));
+  EXPECT_TRUE(report.trial_result.verified_cert->EqualsIncludingChain(
+      cert_chain_1_.get()));
+  EXPECT_TRUE(report.unverified_cert->EqualsIncludingChain(leaf_cert_1_.get()));
+
+  EXPECT_FALSE(report.enable_rev_checking);
+  EXPECT_FALSE(report.require_rev_checking_local_anchors);
+  EXPECT_FALSE(report.enable_sha1_local_anchors);
+  EXPECT_FALSE(report.disable_symantec_enforcement);
+
+  EXPECT_EQ(1, verify_proc1->num_verifications());
+  EXPECT_EQ(1, verify_proc2->num_verifications());
+  histograms_.ExpectTotalCount("Net.CertVerifier_Job_Latency_TrialPrimary", 1);
+  histograms_.ExpectTotalCount("Net.CertVerifier_Job_Latency_TrialSecondary",
+                               1);
+  histograms_.ExpectUniqueSample(
+      "Net.CertVerifier_TrialComparisonResult",
+      TrialComparisonResult::kPrimaryErrorSecondaryValid, 1);
+}
+
 TEST_F(TrialComparisonCertVerifierTest,
        CertVerifyProcChangedDuringPrimaryVerification) {
   CertVerifyResult primary_result;
@@ -595,13 +681,12 @@ TEST_F(TrialComparisonCertVerifierTest,
   scoped_refptr<FakeCertVerifyProc> verify_proc1 =
       base::MakeRefCounted<FakeCertVerifyProc>(OK, primary_result);
 
-  scoped_refptr<SwapWithNewProcFactory> swap_proc =
-      base::MakeRefCounted<SwapWithNewProcFactory>(
-          base::MakeRefCounted<NotCalledCertVerifyProc>());
   std::vector<TrialReportInfo> reports;
   TrialComparisonCertVerifier verifier(
-      verify_proc1, swap_proc, base::MakeRefCounted<NotCalledCertVerifyProc>(),
-      nullptr, base::BindRepeating(&RecordTrialReport, &reports));
+      verify_proc1, SwapWithNotCalledProcFactory(),
+      base::MakeRefCounted<NotCalledCertVerifyProc>(),
+      SwapWithNotCalledProcFactory(),
+      base::BindRepeating(&RecordTrialReport, &reports));
   verifier.set_trial_allowed(true);
 
   CertVerifier::RequestParams params(leaf_cert_1_, "127.0.0.1", /*flags=*/0,
@@ -651,7 +736,8 @@ TEST_F(TrialComparisonCertVerifierTest, ConfigChangedDuringTrialVerification) {
 
   std::vector<TrialReportInfo> reports;
   TrialComparisonCertVerifier verifier(
-      verify_proc1, nullptr, verify_proc2, nullptr,
+      verify_proc1, SwapWithNotCalledProcFactory(), verify_proc2,
+      SwapWithNotCalledProcFactory(),
       base::BindRepeating(&RecordTrialReport, &reports));
   verifier.set_trial_allowed(true);
 
@@ -710,12 +796,10 @@ TEST_F(TrialComparisonCertVerifierTest,
       base::MakeRefCounted<FakeCertVerifyProc>(ERR_CERT_DATE_INVALID,
                                                secondary_result);
 
-  scoped_refptr<SwapWithNewProcFactory> swap_proc =
-      base::MakeRefCounted<SwapWithNewProcFactory>(
-          base::MakeRefCounted<NotCalledCertVerifyProc>());
   std::vector<TrialReportInfo> reports;
   TrialComparisonCertVerifier verifier(
-      verify_proc1, nullptr, verify_proc2, swap_proc,
+      verify_proc1, SwapWithNotCalledProcFactory(), verify_proc2,
+      SwapWithNotCalledProcFactory(),
       base::BindRepeating(&RecordTrialReport, &reports));
   verifier.set_trial_allowed(true);
 
@@ -767,7 +851,8 @@ TEST_F(TrialComparisonCertVerifierTest, SameResult) {
 
   std::vector<TrialReportInfo> reports;
   TrialComparisonCertVerifier verifier(
-      verify_proc1, nullptr, verify_proc2, nullptr,
+      verify_proc1, SwapWithNotCalledProcFactory(), verify_proc2,
+      SwapWithNotCalledProcFactory(),
       base::BindRepeating(&RecordTrialReport, &reports));
   verifier.set_trial_allowed(true);
 
@@ -816,7 +901,8 @@ TEST_F(TrialComparisonCertVerifierTest, PrimaryVerifierErrorSecondaryOk) {
 
   std::vector<TrialReportInfo> reports;
   TrialComparisonCertVerifier verifier(
-      verify_proc1, nullptr, verify_proc2, nullptr,
+      verify_proc1, SwapWithNotCalledProcFactory(), verify_proc2,
+      SwapWithNotCalledProcFactory(),
       base::BindRepeating(&RecordTrialReport, &reports));
   verifier.set_trial_allowed(true);
 
@@ -881,7 +967,8 @@ TEST_F(TrialComparisonCertVerifierTest, PrimaryVerifierOkSecondaryError) {
 
   std::vector<TrialReportInfo> reports;
   TrialComparisonCertVerifier verifier(
-      verify_proc1, nullptr, verify_proc2, nullptr,
+      verify_proc1, SwapWithNotCalledProcFactory(), verify_proc2,
+      SwapWithNotCalledProcFactory(),
       base::BindRepeating(&RecordTrialReport, &reports));
   verifier.set_trial_allowed(true);
 
@@ -945,7 +1032,8 @@ TEST_F(TrialComparisonCertVerifierTest, BothVerifiersDifferentErrors) {
 
   std::vector<TrialReportInfo> reports;
   TrialComparisonCertVerifier verifier(
-      verify_proc1, nullptr, verify_proc2, nullptr,
+      verify_proc1, SwapWithNotCalledProcFactory(), verify_proc2,
+      SwapWithNotCalledProcFactory(),
       base::BindRepeating(&RecordTrialReport, &reports));
   verifier.set_trial_allowed(true);
 
@@ -1005,7 +1093,8 @@ TEST_F(TrialComparisonCertVerifierTest,
 
   std::vector<TrialReportInfo> reports;
   TrialComparisonCertVerifier verifier(
-      verify_proc1, nullptr, verify_proc2, nullptr,
+      verify_proc1, SwapWithNotCalledProcFactory(), verify_proc2,
+      SwapWithNotCalledProcFactory(),
       base::BindRepeating(&RecordTrialReport, &reports));
   verifier.set_trial_allowed(true);
 
@@ -1068,7 +1157,8 @@ TEST_F(TrialComparisonCertVerifierTest,
 
   std::vector<TrialReportInfo> reports;
   TrialComparisonCertVerifier verifier(
-      verify_proc1, nullptr, verify_proc2, nullptr,
+      verify_proc1, SwapWithNotCalledProcFactory(), verify_proc2,
+      SwapWithNotCalledProcFactory(),
       base::BindRepeating(&RecordTrialReport, &reports));
   verifier.set_trial_allowed(true);
 
@@ -1135,7 +1225,8 @@ TEST_F(TrialComparisonCertVerifierTest,
 
   std::vector<TrialReportInfo> reports;
   TrialComparisonCertVerifier verifier(
-      verify_proc1, nullptr, verify_proc2, nullptr,
+      verify_proc1, SwapWithNotCalledProcFactory(), verify_proc2,
+      SwapWithNotCalledProcFactory(),
       base::BindRepeating(&RecordTrialReport, &reports));
   verifier.set_trial_allowed(true);
 
@@ -1231,7 +1322,8 @@ TEST_F(TrialComparisonCertVerifierTest,
 
   std::vector<TrialReportInfo> reports;
   TrialComparisonCertVerifier verifier(
-      verify_proc1, nullptr, verify_proc2, nullptr,
+      verify_proc1, SwapWithNotCalledProcFactory(), verify_proc2,
+      SwapWithNotCalledProcFactory(),
       base::BindRepeating(&RecordTrialReport, &reports));
   verifier.set_trial_allowed(true);
 
@@ -1284,7 +1376,8 @@ TEST_F(TrialComparisonCertVerifierTest, BothVerifiersOkDifferentCertStatus) {
 
   std::vector<TrialReportInfo> reports;
   TrialComparisonCertVerifier verifier(
-      verify_proc1, nullptr, verify_proc2, nullptr,
+      verify_proc1, SwapWithNotCalledProcFactory(), verify_proc2,
+      SwapWithNotCalledProcFactory(),
       base::BindRepeating(&RecordTrialReport, &reports));
   verifier.set_trial_allowed(true);
 
@@ -1356,7 +1449,8 @@ TEST_F(TrialComparisonCertVerifierTest, CancelledDuringPrimaryVerification) {
 
   std::vector<TrialReportInfo> reports;
   TrialComparisonCertVerifier verifier(
-      verify_proc1, nullptr, verify_proc2, nullptr,
+      verify_proc1, SwapWithNotCalledProcFactory(), verify_proc2,
+      SwapWithNotCalledProcFactory(),
       base::BindRepeating(&RecordTrialReport, &reports));
   verifier.set_trial_allowed(true);
 
@@ -1415,8 +1509,10 @@ TEST_F(TrialComparisonCertVerifierTest, DeletedDuringPrimaryVerification) {
 
   std::vector<TrialReportInfo> reports;
   auto verifier = std::make_unique<TrialComparisonCertVerifier>(
-      verify_proc1, nullptr, base::MakeRefCounted<NotCalledCertVerifyProc>(),
-      nullptr, base::BindRepeating(&RecordTrialReport, &reports));
+      verify_proc1, SwapWithNotCalledProcFactory(),
+      base::MakeRefCounted<NotCalledCertVerifyProc>(),
+      SwapWithNotCalledProcFactory(),
+      base::BindRepeating(&RecordTrialReport, &reports));
   verifier->set_trial_allowed(true);
 
   CertVerifier::RequestParams params(leaf_cert_1_, "127.0.0.1", /*flags=*/0,
@@ -1462,8 +1558,10 @@ TEST_F(TrialComparisonCertVerifierTest, DeletedDuringVerificationResult) {
 
   std::vector<TrialReportInfo> reports;
   auto verifier = std::make_unique<TrialComparisonCertVerifier>(
-      verify_proc1, nullptr, base::MakeRefCounted<NotCalledCertVerifyProc>(),
-      nullptr, base::BindRepeating(&RecordTrialReport, &reports));
+      verify_proc1, SwapWithNotCalledProcFactory(),
+      base::MakeRefCounted<NotCalledCertVerifyProc>(),
+      SwapWithNotCalledProcFactory(),
+      base::BindRepeating(&RecordTrialReport, &reports));
   verifier->set_trial_allowed(true);
 
   CertVerifier::RequestParams params(leaf_cert_1_, "127.0.0.1", /*flags=*/0,
@@ -1525,7 +1623,8 @@ TEST_F(TrialComparisonCertVerifierTest, DeletedDuringTrialReport) {
   bool was_report_callback_called = false;
   std::unique_ptr<TrialComparisonCertVerifier> verifier;
   verifier = std::make_unique<TrialComparisonCertVerifier>(
-      verify_proc1, nullptr, verify_proc2, nullptr,
+      verify_proc1, SwapWithNotCalledProcFactory(), verify_proc2,
+      SwapWithNotCalledProcFactory(),
       base::BindLambdaForTesting(
           [&verifier, &was_report_callback_called](
               const std::string& hostname,
@@ -1590,7 +1689,8 @@ TEST_F(TrialComparisonCertVerifierTest, DeletedAfterTrialVerificationStarted) {
 
   std::vector<TrialReportInfo> reports;
   auto verifier = std::make_unique<TrialComparisonCertVerifier>(
-      verify_proc1, nullptr, verify_proc2, nullptr,
+      verify_proc1, SwapWithNotCalledProcFactory(), verify_proc2,
+      SwapWithNotCalledProcFactory(),
       base::BindRepeating(&RecordTrialReport, &reports));
   verifier->set_trial_allowed(true);
 
@@ -1665,7 +1765,8 @@ TEST_F(TrialComparisonCertVerifierTest, MacUndesiredRevocationChecking) {
 
   std::vector<TrialReportInfo> reports;
   TrialComparisonCertVerifier verifier(
-      verify_proc1, nullptr, verify_proc2, nullptr,
+      verify_proc1, SwapWithNotCalledProcFactory(), verify_proc2,
+      SwapWithNotCalledProcFactory(),
       base::BindRepeating(&RecordTrialReport, &reports));
   verifier.set_trial_allowed(true);
 
@@ -1736,7 +1837,8 @@ TEST_F(TrialComparisonCertVerifierTest, PrimaryRevokedSecondaryOk) {
 
   std::vector<TrialReportInfo> reports;
   TrialComparisonCertVerifier verifier(
-      verify_proc1, nullptr, verify_proc2, nullptr,
+      verify_proc1, SwapWithNotCalledProcFactory(), verify_proc2,
+      SwapWithNotCalledProcFactory(),
       base::BindRepeating(&RecordTrialReport, &reports));
   verifier.set_trial_allowed(true);
 
@@ -1808,7 +1910,8 @@ TEST_F(TrialComparisonCertVerifierTest, MultipleEVPolicies) {
 
   std::vector<TrialReportInfo> reports;
   TrialComparisonCertVerifier verifier(
-      verify_proc1, nullptr, verify_proc2, nullptr,
+      verify_proc1, SwapWithNotCalledProcFactory(), verify_proc2,
+      SwapWithNotCalledProcFactory(),
       base::BindRepeating(&RecordTrialReport, &reports));
   verifier.set_trial_allowed(true);
 
@@ -1873,7 +1976,8 @@ TEST_F(TrialComparisonCertVerifierTest, MultipleEVPoliciesNoneValidForRoot) {
 
   std::vector<TrialReportInfo> reports;
   TrialComparisonCertVerifier verifier(
-      verify_proc1, nullptr, verify_proc2, nullptr,
+      verify_proc1, SwapWithNotCalledProcFactory(), verify_proc2,
+      SwapWithNotCalledProcFactory(),
       base::BindRepeating(&RecordTrialReport, &reports));
   verifier.set_trial_allowed(true);
 
@@ -1942,7 +2046,8 @@ TEST_F(TrialComparisonCertVerifierTest, MultiplePoliciesOnlyOneIsEV) {
 
   std::vector<TrialReportInfo> reports;
   TrialComparisonCertVerifier verifier(
-      verify_proc1, nullptr, verify_proc2, nullptr,
+      verify_proc1, SwapWithNotCalledProcFactory(), verify_proc2,
+      SwapWithNotCalledProcFactory(),
       base::BindRepeating(&RecordTrialReport, &reports));
   verifier.set_trial_allowed(true);
 
@@ -1994,7 +2099,8 @@ TEST_F(TrialComparisonCertVerifierTest, LocallyTrustedLeaf) {
 
   std::vector<TrialReportInfo> reports;
   TrialComparisonCertVerifier verifier(
-      verify_proc1, nullptr, verify_proc2, nullptr,
+      verify_proc1, SwapWithNotCalledProcFactory(), verify_proc2,
+      SwapWithNotCalledProcFactory(),
       base::BindRepeating(&RecordTrialReport, &reports));
   verifier.set_trial_allowed(true);
 
@@ -2047,7 +2153,8 @@ TEST_F(TrialComparisonCertVerifierTest, SHA1Ignored) {
 
   std::vector<TrialReportInfo> reports;
   TrialComparisonCertVerifier verifier(
-      verify_proc1, nullptr, verify_proc2, nullptr,
+      verify_proc1, SwapWithNotCalledProcFactory(), verify_proc2,
+      SwapWithNotCalledProcFactory(),
       base::BindRepeating(&RecordTrialReport, &reports));
   verifier.set_trial_allowed(true);
 
@@ -2101,7 +2208,8 @@ TEST_F(TrialComparisonCertVerifierTest, BothAuthorityInvalidIgnored) {
 
   std::vector<TrialReportInfo> reports;
   TrialComparisonCertVerifier verifier(
-      verify_proc1, nullptr, verify_proc2, nullptr,
+      verify_proc1, SwapWithNotCalledProcFactory(), verify_proc2,
+      SwapWithNotCalledProcFactory(),
       base::BindRepeating(&RecordTrialReport, &reports));
   verifier.set_trial_allowed(true);
 
@@ -2156,7 +2264,8 @@ TEST_F(TrialComparisonCertVerifierTest, BothKnownRootsIgnored) {
 
   std::vector<TrialReportInfo> reports;
   TrialComparisonCertVerifier verifier(
-      verify_proc1, nullptr, verify_proc2, nullptr,
+      verify_proc1, SwapWithNotCalledProcFactory(), verify_proc2,
+      SwapWithNotCalledProcFactory(),
       base::BindRepeating(&RecordTrialReport, &reports));
   verifier.set_trial_allowed(true);
 
@@ -2211,7 +2320,8 @@ TEST_F(TrialComparisonCertVerifierTest, RevCheckingIgnoredWin) {
 
   std::vector<TrialReportInfo> reports;
   TrialComparisonCertVerifier verifier(
-      verify_proc1, nullptr, verify_proc2, nullptr,
+      verify_proc1, SwapWithNotCalledProcFactory(), verify_proc2,
+      SwapWithNotCalledProcFactory(),
       base::BindRepeating(&RecordTrialReport, &reports));
   verifier.set_trial_allowed(true);
 
@@ -2269,7 +2379,8 @@ TEST_F(TrialComparisonCertVerifierTest,
 
   std::vector<TrialReportInfo> reports;
   TrialComparisonCertVerifier verifier(
-      verify_proc1, nullptr, verify_proc2, nullptr,
+      verify_proc1, SwapWithNotCalledProcFactory(), verify_proc2,
+      SwapWithNotCalledProcFactory(),
       base::BindRepeating(&RecordTrialReport, &reports));
   verifier.set_trial_allowed(true);
 
@@ -2319,7 +2430,8 @@ TEST_F(TrialComparisonCertVerifierTest, LetsEncryptSpecialCase) {
 
   std::vector<TrialReportInfo> reports;
   TrialComparisonCertVerifier verifier(
-      verify_proc1, nullptr, verify_proc2, nullptr,
+      verify_proc1, SwapWithNotCalledProcFactory(), verify_proc2,
+      SwapWithNotCalledProcFactory(),
       base::BindRepeating(&RecordTrialReport, &reports));
   verifier.set_trial_allowed(true);
 
@@ -2371,7 +2483,8 @@ TEST_F(TrialComparisonCertVerifierTest, AndroidPreferDate) {
 
   std::vector<TrialReportInfo> reports;
   TrialComparisonCertVerifier verifier(
-      verify_proc1, nullptr, verify_proc2, nullptr,
+      verify_proc1, SwapWithNotCalledProcFactory(), verify_proc2,
+      SwapWithNotCalledProcFactory(),
       base::BindRepeating(&RecordTrialReport, &reports));
   verifier.set_trial_allowed(true);
 

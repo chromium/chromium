@@ -37,12 +37,12 @@ scoped_refptr<CertVerifyProc> CreateCertVerifyProc() {
 #if BUILDFLAG(CHROME_ROOT_STORE_OPTIONAL)
   if (base::FeatureList::IsEnabled(features::kChromeRootStoreUsed)) {
     return CertVerifyProc::CreateBuiltinWithChromeRootStore(
-        /*cert_net_fetcher=*/nullptr);
+        /*cert_net_fetcher=*/nullptr, /*root_store_data=*/nullptr);
   }
 #endif
 #if BUILDFLAG(CHROME_ROOT_STORE_ONLY)
   return CertVerifyProc::CreateBuiltinWithChromeRootStore(
-      /*cert_net_fetcher=*/nullptr);
+      /*cert_net_fetcher=*/nullptr, /*root_store_data=*/nullptr);
 #elif BUILDFLAG(IS_FUCHSIA) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
   return CertVerifyProc::CreateBuiltinVerifyProc(/*cert_net_fetcher=*/nullptr);
 #else

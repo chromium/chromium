@@ -84,9 +84,11 @@ class NET_EXPORT CertVerifyProc
 
 #if BUILDFLAG(CHROME_ROOT_STORE_SUPPORTED)
   // Creates and returns a CertVerifyProcBuiltin using the Chrome Root Store
-  // SystemTrustStore.
+  // SystemTrustStore and the given |root_store_data|, which may be nullptr to
+  // use the default.
   static scoped_refptr<CertVerifyProc> CreateBuiltinWithChromeRootStore(
-      scoped_refptr<CertNetFetcher> cert_net_fetcher);
+      scoped_refptr<CertNetFetcher> cert_net_fetcher,
+      const ChromeRootStoreData* root_store_data);
 #endif
 
   CertVerifyProc(const CertVerifyProc&) = delete;

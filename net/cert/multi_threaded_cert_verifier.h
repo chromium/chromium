@@ -34,7 +34,6 @@ class ChromeRootStoreData;
 class NET_EXPORT_PRIVATE MultiThreadedCertVerifier
     : public CertVerifierWithUpdatableProc {
  public:
-  explicit MultiThreadedCertVerifier(scoped_refptr<CertVerifyProc> verify_proc);
   explicit MultiThreadedCertVerifier(
       scoped_refptr<CertVerifyProc> verify_proc,
       scoped_refptr<CertVerifyProcFactory> verify_proc_factory);
