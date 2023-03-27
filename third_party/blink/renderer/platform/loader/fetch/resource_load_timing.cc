@@ -59,31 +59,6 @@ scoped_refptr<ResourceLoadTiming> ResourceLoadTiming::Create() {
   return base::AdoptRef(new ResourceLoadTiming);
 }
 
-scoped_refptr<ResourceLoadTiming> ResourceLoadTiming::FromMojo(
-    const network::mojom::blink::LoadTimingInfo* mojo_timing) {
-  if (!mojo_timing)
-    return ResourceLoadTiming::Create();
-  return base::AdoptRef(new ResourceLoadTiming(
-      mojo_timing->request_start, mojo_timing->proxy_resolve_start,
-      mojo_timing->proxy_resolve_end,
-      mojo_timing->connect_timing->domain_lookup_start,
-      mojo_timing->connect_timing->domain_lookup_end,
-      mojo_timing->connect_timing->connect_start,
-      mojo_timing->connect_timing->connect_end,
-      mojo_timing->service_worker_start_time,
-      mojo_timing->service_worker_ready_time,
-      mojo_timing->service_worker_fetch_start,
-      mojo_timing->service_worker_respond_with_settled, mojo_timing->send_start,
-      mojo_timing->send_end, mojo_timing->receive_headers_start,
-      mojo_timing->receive_headers_end,
-      mojo_timing->receive_non_informational_headers_start,
-      mojo_timing->first_early_hints_time,
-
-      mojo_timing->connect_timing->ssl_start,
-      mojo_timing->connect_timing->ssl_end, mojo_timing->push_start,
-      mojo_timing->push_end));
-}
-
 network::mojom::blink::LoadTimingInfoPtr ResourceLoadTiming::ToMojo() const {
   network::mojom::blink::LoadTimingInfoPtr timing =
       network::mojom::blink::LoadTimingInfo::New(

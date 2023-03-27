@@ -39,8 +39,6 @@ class PLATFORM_EXPORT ResourceLoadTiming
  public:
   static scoped_refptr<ResourceLoadTiming> Create();
 
-  static scoped_refptr<ResourceLoadTiming> FromMojo(
-      const network::mojom::blink::LoadTimingInfo*);
   network::mojom::blink::LoadTimingInfoPtr ToMojo() const;
 
   void SetDomainLookupStart(base::TimeTicks);
