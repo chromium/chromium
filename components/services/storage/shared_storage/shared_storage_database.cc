@@ -219,8 +219,9 @@ SharedStorageDatabase::~SharedStorageDatabase() {
 
 bool SharedStorageDatabase::Destroy() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (db_.is_open() && !db_.RazeAndClose())
+  if (db_.is_open() && !db_.RazeAndPoison()) {
     return false;
+  }
 
   // The file already doesn't exist.
   if (!is_filebacked())
@@ -1261,7 +1262,7 @@ SharedStorageDatabase::InitStatus SharedStorageDatabase::InitImpl() {
   sql::Transaction transaction(&db_);
   if (!transaction.Begin()) {
     LOG(WARNING) << "Shared storage database begin initialization failed.";
-    db_.RazeAndClose();
+    db_.RazeAndPoison();
     return InitStatus::kError;
   }
 
@@ -1274,7 +1275,7 @@ SharedStorageDatabase::InitStatus SharedStorageDatabase::InitImpl() {
 
   if (meta_table_.GetCompatibleVersionNumber() > kCurrentVersionNumber) {
     LOG(WARNING) << "Shared storage database is too new.";
-    db_.RazeAndClose();
+    db_.RazeAndPoison();
     return InitStatus::kTooNew;
   }
 
@@ -1282,21 +1283,21 @@ SharedStorageDatabase::InitStatus SharedStorageDatabase::InitImpl() {
 
   if (cur_version <= kDeprecatedVersionNumber) {
     LOG(WARNING) << "Shared storage database is too old to be compatible.";
-    db_.RazeAndClose();
+    db_.RazeAndPoison();
     return InitStatus::kTooOld;
   }
 
   if (cur_version < kCurrentVersionNumber &&
       !UpgradeSharedStorageDatabaseSchema(db_, meta_table_, clock_)) {
     LOG(WARNING) << "Shared storage database upgrade failed.";
-    db_.RazeAndClose();
+    db_.RazeAndPoison();
     return InitStatus::kUpgradeFailed;
   }
 
   // The initialization is complete.
   if (!transaction.Commit()) {
     LOG(WARNING) << "Shared storage database initialization commit failed.";
-    db_.RazeAndClose();
+    db_.RazeAndPoison();
     return InitStatus::kError;
   }
 
