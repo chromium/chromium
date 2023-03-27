@@ -3989,7 +3989,7 @@
   {
     "name": "force-password-initial-sync-when-decryption-fails",
     "owners": [ "derinel@google.com", "mamir" ],
-    "expiry_milestone": 114
+    "expiry_milestone": 118
   },
   {
     "name": "force-resync-drive",
@@ -5851,7 +5851,7 @@
   {
     "name": "password-notes",
     "owners": ["mamir", "derinel@google.com", "rgod@google.com"],
-    "expiry_milestone": 114
+    "expiry_milestone": 118
   },
   {
     "name": "password-strength-indicator",
@@ -5861,7 +5861,7 @@
   {
     "name": "password-view-page-in-settings",
     "owners": ["mamir", "derinel@google.com"],
-    "expiry_milestone": 114
+    "expiry_milestone": 118
   },
   {
     "name": "passwords-grouping",
@@ -6712,7 +6712,7 @@
   {
     "name": "skip-undecryptable-passwords",
     "owners": [ "derinel@google.com", "mamir" ],
-    "expiry_milestone": 114
+    "expiry_milestone": 118
   },
   {
     "name": "slim-compositor",
