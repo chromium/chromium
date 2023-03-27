@@ -6844,6 +6844,9 @@ def CheckNoJsInIos(input_api, output_api):
 
 def CheckLibcxxRevisionsMatch(input_api, output_api):
     """Check to make sure the libc++ version matches across deps files."""
+    # Disable check for changes to sub-repositories.
+    if input_api.PresubmitLocalPath() != input_api.change.RepositoryRoot():
+      return []
 
     DEPS_FILES = [ 'DEPS', 'buildtools/deps_revisions.gni' ]
 
