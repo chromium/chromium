@@ -39,6 +39,7 @@
 #include "content/services/auction_worklet/trusted_signals.h"
 #include "content/services/auction_worklet/trusted_signals_request_manager.h"
 #include "content/services/auction_worklet/worklet_loader.h"
+#include "context_recycler.h"
 #include "gin/converter.h"
 #include "gin/dictionary.h"
 #include "mojo/public/cpp/bindings/associated_remote.h"
@@ -55,6 +56,7 @@
 #include "url/origin.h"
 #include "v8/include/v8-container.h"
 #include "v8/include/v8-context.h"
+#include "v8/include/v8-exception.h"
 #include "v8/include/v8-forward.h"
 #include "v8/include/v8-object.h"
 #include "v8/include/v8-primitive.h"
@@ -64,6 +66,15 @@
 namespace auction_worklet {
 
 namespace {
+
+class DeepFreezeAllowAll : public v8::Context::DeepFreezeDelegate {
+ public:
+  bool FreezeEmbedderObjectAndGetChildren(
+      v8::Local<v8::Object> obj,
+      std::vector<v8::Local<v8::Object>>& children_out) override {
+    return true;
+  }
+};
 
 bool AppendJsonValueOrNull(AuctionV8Helper* const v8_helper,
                            v8::Local<v8::Context> context,
@@ -492,18 +503,6 @@ void BidderWorklet::V8State::ReportWin(
   // Short lived context, to avoid leaking data at global scope between either
   // repeated calls to this worklet, or to calls to any other worklet.
   ContextRecycler context_recycler(v8_helper_.get());
-  context_recycler.AddReportBindings();
-  context_recycler.AddRegisterAdBeaconBindings();
-  context_recycler.AddPrivateAggregationBindings(
-      permissions_policy_state_->private_aggregation_allowed);
-
-  if (base::FeatureList::IsEnabled(blink::features::kSharedStorageAPI)) {
-    context_recycler.AddSharedStorageBindings(
-        shared_storage_host_remote_.is_bound()
-            ? shared_storage_host_remote_.get()
-            : nullptr,
-        permissions_policy_state_->shared_storage_allowed);
-  }
 
   ContextRecyclerScope context_recycler_scope(context_recycler);
   v8::Local<v8::Context> context = context_recycler_scope.GetContext();
@@ -584,13 +583,39 @@ void BidderWorklet::V8State::ReportWin(
   v8_helper_->MaybeTriggerInstrumentationBreakpoint(
       *debug_id_, "beforeBidderWorkletReportingStart");
 
+  v8::Local<v8::UnboundScript> unbound_worklet_script =
+      worklet_script_.Get(isolate);
   TRACE_EVENT_NESTABLE_ASYNC_BEGIN0("fledge", "report_win", trace_id);
   bool script_failed =
+      !v8_helper_->RunScript(context, unbound_worklet_script, debug_id_.get(),
+                             /*script_timeout=*/absl::nullopt, errors_out);
+  if (script_failed) {
+    TRACE_EVENT_NESTABLE_ASYNC_END0("fledge", "report_win", trace_id);
+    PostReportWinCallbackToUserThread(
+        std::move(callback), /*report_url=*/absl::nullopt,
+        /*ad_beacon_map=*/{},
+        /*pa_requests=*/{}, std::move(errors_out));
+    return;
+  }
+
+  context_recycler.AddReportBindings();
+  context_recycler.AddRegisterAdBeaconBindings();
+  context_recycler.AddPrivateAggregationBindings(
+      permissions_policy_state_->private_aggregation_allowed);
+
+  if (base::FeatureList::IsEnabled(blink::features::kSharedStorageAPI)) {
+    context_recycler.AddSharedStorageBindings(
+        shared_storage_host_remote_.is_bound()
+            ? shared_storage_host_remote_.get()
+            : nullptr,
+        permissions_policy_state_->shared_storage_allowed);
+  }
+  script_failed =
       v8_helper_
-          ->RunScript(context, worklet_script_.Get(isolate), debug_id_.get(),
-                      AuctionV8Helper::ExecMode::kTopLevelAndFunction,
-                      "reportWin", args, /*script_timeout=*/absl::nullopt,
-                      errors_out)
+          ->CallFunction(context, debug_id_.get(),
+                         v8_helper_->FormatScriptName(unbound_worklet_script),
+                         "reportWin", args, /*script_timeout=*/absl::nullopt,
+                         errors_out)
           .IsEmpty();
   TRACE_EVENT_NESTABLE_ASYNC_END0("fledge", "report_win", trace_id);
 
@@ -759,6 +784,7 @@ BidderWorklet::V8State::GenerateSingleBid(
   }
 
   base::TimeTicks start = base::TimeTicks::Now();
+  std::vector<std::string> errors_out;
 
   AuctionV8Helper::FullIsolateScope isolate_scope(v8_helper_.get());
   v8::Isolate* isolate = v8_helper_->isolate();
@@ -766,53 +792,73 @@ BidderWorklet::V8State::GenerateSingleBid(
   std::unique_ptr<ContextRecycler> fresh_context_recycler;
 
   bool reused_context = false;
-  // See if we can reuse an existing context in group-by-origin mode.
-  bool group_by_origin_mode =
-      (bidder_worklet_non_shared_params.execution_mode ==
-       blink::mojom::InterestGroup::ExecutionMode::kGroupedByOriginMode);
-  if (group_by_origin_mode && context_recycler_for_origin_group_mode_ &&
-      join_origin_for_origin_group_mode_ == interest_group_join_origin) {
-    context_recycler = context_recycler_for_origin_group_mode_.get();
-    reused_context = true;
+  bool should_deep_freeze = false;
+  // See if we can reuse an existing context.
+  switch (bidder_worklet_non_shared_params.execution_mode) {
+    case blink::mojom::InterestGroup::ExecutionMode::kGroupedByOriginMode:
+      if (context_recycler_for_origin_group_mode_ &&
+          join_origin_for_origin_group_mode_ == interest_group_join_origin) {
+        context_recycler = context_recycler_for_origin_group_mode_.get();
+        reused_context = true;
+      }
+      break;
+    case blink::mojom::InterestGroup::ExecutionMode::kFrozenContext:
+      should_deep_freeze = true;
+      if (context_recycler_for_frozen_context_) {
+        context_recycler = context_recycler_for_frozen_context_.get();
+        reused_context = true;
+      }
+      break;
+    case blink::mojom::InterestGroup::ExecutionMode::kCompatibilityMode:
+      break;
   }
+
   base::UmaHistogramBoolean("Ads.InterestGroup.Auction.ContextReused",
                             reused_context);
 
-  // See if we can reuse a context for k-anon re-run. The group-by-origin mode
-  // would do that, too, so this is only a fallback for when that's not on.
+  // See if we can reuse a context for k-anon re-run. The group-by-origin and
+  // frozen context mode would do that, too, so this is only a fallback for
+  // when that's not on.
   if (!context_recycler && context_recycler_for_rerun) {
     context_recycler = context_recycler_for_rerun.get();
     reused_context = true;
   }
 
+  v8_helper_->MaybeTriggerInstrumentationBreakpoint(
+      *debug_id_, "beforeBidderWorkletBiddingStart");
+
   // No recycled context, make a fresh one.
   if (!context_recycler) {
-    fresh_context_recycler =
-        std::make_unique<ContextRecycler>(v8_helper_.get());
-    fresh_context_recycler->AddForDebuggingOnlyBindings();
-    fresh_context_recycler->AddPrivateAggregationBindings(
-        permissions_policy_state_->private_aggregation_allowed);
+    fresh_context_recycler = CreateContextRecyclerAndRunTopLevelForGenerateBid(
+        trace_id, per_buyer_timeout, should_deep_freeze, errors_out);
 
-    if (base::FeatureList::IsEnabled(blink::features::kSharedStorageAPI)) {
-      fresh_context_recycler->AddSharedStorageBindings(
-          shared_storage_host_remote_.is_bound()
-              ? shared_storage_host_remote_.get()
-              : nullptr,
-          permissions_policy_state_->shared_storage_allowed);
+    if (!fresh_context_recycler) {
+      return absl::make_optional(SingleGenerateBidResult(
+          std::unique_ptr<ContextRecycler>(), mojom::BidderWorkletBidPtr(),
+          /*bidding_signals_data_version=*/absl::nullopt,
+          /*debug_loss_report_url=*/absl::nullopt,
+          /*debug_win_report_url=*/absl::nullopt,
+          /*set_priority=*/absl::nullopt,
+          /*update_priority_signals_overrides=*/{},
+          /*pa_requests=*/{}, std::move(errors_out)));
     }
 
-    fresh_context_recycler->AddSetBidBindings();
-    fresh_context_recycler->AddSetPriorityBindings();
-    fresh_context_recycler->AddSetPrioritySignalsOverrideBindings();
-    fresh_context_recycler->AddInterestGroupLazyFiller();
-    fresh_context_recycler->AddBiddingBrowserSignalsLazyFiller();
     context_recycler = fresh_context_recycler.get();
-  }
 
-  // Save a reusable context.
-  if (group_by_origin_mode && fresh_context_recycler) {
-    context_recycler_for_origin_group_mode_ = std::move(fresh_context_recycler);
-    join_origin_for_origin_group_mode_ = interest_group_join_origin;
+    // Save the context for next time (if applicable).
+    switch (bidder_worklet_non_shared_params.execution_mode) {
+      case blink::mojom::InterestGroup::ExecutionMode::kGroupedByOriginMode:
+        context_recycler_for_origin_group_mode_ =
+            std::move(fresh_context_recycler);
+        join_origin_for_origin_group_mode_ = interest_group_join_origin;
+        break;
+      case blink::mojom::InterestGroup::ExecutionMode::kFrozenContext:
+        context_recycler_for_frozen_context_ =
+            std::move(fresh_context_recycler);
+        break;
+      case blink::mojom::InterestGroup::ExecutionMode::kCompatibilityMode:
+        break;
+    }
   }
 
   base::RepeatingCallback<bool(const GURL&)> should_exclude_ad_due_to_kanon =
@@ -842,6 +888,7 @@ BidderWorklet::V8State::GenerateSingleBid(
 
   ContextRecyclerScope context_recycler_scope(*context_recycler);
   v8::Local<v8::Context> context = context_recycler_scope.GetContext();
+
   context_recycler->set_bid_bindings()->ReInitialize(
       start, browser_signal_top_level_seller_origin != nullptr,
       &bidder_worklet_non_shared_params, should_exclude_ad_due_to_kanon,
@@ -966,7 +1013,6 @@ BidderWorklet::V8State::GenerateSingleBid(
 
   args.push_back(browser_signals);
 
-  std::vector<std::string> errors_out;
   v8::Local<v8::Object> direct_from_seller_signals = v8::Object::New(isolate);
   gin::Dictionary direct_from_seller_signals_dict(isolate,
                                                   direct_from_seller_signals);
@@ -984,16 +1030,13 @@ BidderWorklet::V8State::GenerateSingleBid(
   args.push_back(direct_from_seller_signals);
 
   v8::Local<v8::Value> generate_bid_result;
-  v8_helper_->MaybeTriggerInstrumentationBreakpoint(
-      *debug_id_, "beforeBidderWorkletBiddingStart");
 
   TRACE_EVENT_NESTABLE_ASYNC_BEGIN0("fledge", "generate_bid", trace_id);
   bool got_return_value =
       v8_helper_
-          ->RunScript(
-              context, worklet_script_.Get(isolate), debug_id_.get(),
-              reused_context ? AuctionV8Helper::ExecMode::kFunctionOnly
-                             : AuctionV8Helper::ExecMode::kTopLevelAndFunction,
+          ->CallFunction(
+              context, debug_id_.get(),
+              v8_helper_->FormatScriptName(worklet_script_.Get(isolate)),
               "generateBid", args, std::move(per_buyer_timeout), errors_out)
           .ToLocal(&generate_bid_result);
   TRACE_EVENT_NESTABLE_ASYNC_END0("fledge", "generate_bid", trace_id);
@@ -1044,6 +1087,66 @@ BidderWorklet::V8State::GenerateSingleBid(
       context_recycler->private_aggregation_bindings()
           ->TakePrivateAggregationRequests(),
       std::move(errors_out)));
+}
+
+std::unique_ptr<ContextRecycler>
+BidderWorklet::V8State::CreateContextRecyclerAndRunTopLevelForGenerateBid(
+    uint64_t trace_id,
+    const absl::optional<base::TimeDelta> per_buyer_timeout,
+    bool should_deep_freeze,
+    std::vector<std::string>& errors_out) {
+  base::TimeTicks start = base::TimeTicks::Now();
+  std::unique_ptr<ContextRecycler> context_recycler =
+      std::make_unique<ContextRecycler>(v8_helper_.get());
+
+  ContextRecyclerScope context_recycler_scope(*context_recycler);
+  v8::Local<v8::Context> context = context_recycler_scope.GetContext();
+
+  v8::Local<v8::UnboundScript> unbound_worklet_script =
+      worklet_script_.Get(v8_helper_->isolate());
+
+  TRACE_EVENT_NESTABLE_ASYNC_BEGIN0("fledge", "biddingScript", trace_id);
+  bool success =
+      v8_helper_->RunScript(context, unbound_worklet_script, debug_id_.get(),
+                            per_buyer_timeout, errors_out);
+  TRACE_EVENT_NESTABLE_ASYNC_END0("fledge", "biddingScript", trace_id);
+  base::UmaHistogramTimes("Ads.InterestGroup.Auction.BidScriptTime",
+                          base::TimeTicks::Now() - start);
+
+  if (!success) {
+    return nullptr;
+  }
+
+  context_recycler->AddForDebuggingOnlyBindings();
+  context_recycler->AddPrivateAggregationBindings(
+      permissions_policy_state_->private_aggregation_allowed);
+
+  if (base::FeatureList::IsEnabled(blink::features::kSharedStorageAPI)) {
+    context_recycler->AddSharedStorageBindings(
+        shared_storage_host_remote_.is_bound()
+            ? shared_storage_host_remote_.get()
+            : nullptr,
+        permissions_policy_state_->shared_storage_allowed);
+  }
+
+  context_recycler->AddSetBidBindings();
+  context_recycler->AddSetPriorityBindings();
+  context_recycler->AddSetPrioritySignalsOverrideBindings();
+  context_recycler->AddInterestGroupLazyFiller();
+  context_recycler->AddBiddingBrowserSignalsLazyFiller();
+
+  if (should_deep_freeze) {
+    v8::TryCatch try_catch(v8_helper_->isolate());
+    DeepFreezeAllowAll allow_jsapiobject;
+    context->DeepFreeze(&allow_jsapiobject);
+    if (try_catch.HasCaught()) {
+      errors_out.push_back(AuctionV8Helper::FormatExceptionMessage(
+          context, try_catch.Message()));
+      return nullptr;
+    }
+  }
+
+  return context_recycler;
 }
 
 void BidderWorklet::V8State::ConnectDevToolsAgent(

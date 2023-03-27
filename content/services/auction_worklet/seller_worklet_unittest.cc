@@ -3179,37 +3179,39 @@ TEST_F(SellerWorkletTest, BasicDevToolsDebug) {
       script_parsed1.value.GetDict().FindStringByDottedPath("params.url");
   ASSERT_TRUE(url1);
   EXPECT_EQ(*url1, kUrl1);
-  absl::optional<int> context_id1 =
-      script_parsed1.value.GetDict().FindIntByDottedPath(
-          "params.executionContextId");
-  ASSERT_TRUE(context_id1.has_value());
 
   // Next there is the breakpoint.
   TestDevToolsAgentClient::Event breakpoint_hit1 =
       debug1.WaitForMethodNotification("Debugger.paused");
 
   base::Value::List* hit_breakpoints =
-      breakpoint_hit1.value.GetDict().FindListByDottedPath(
-          "params.hitBreakpoints");
+      breakpoint_hit1.value.GetDict().FindDict("params")->FindList(
+          "hitBreakpoints");
   ASSERT_TRUE(hit_breakpoints);
   ASSERT_EQ(1u, hit_breakpoints->size());
   ASSERT_TRUE((*hit_breakpoints)[0].is_string());
   EXPECT_EQ("1:2:0:http://example.com/first.js",
             (*hit_breakpoints)[0].GetString());
+  std::string* callframe_id1 = breakpoint_hit1.value.GetDict()
+                                   .FindDict("params")
+                                   ->FindList("callFrames")
+                                   ->front()
+                                   .GetDict()
+                                   .FindString("callFrameId");
 
   // Override the score value.
   const char kCommandTemplate[] = R"({
     "id": 5,
-    "method": "Runtime.evaluate",
+    "method": "Debugger.evaluateOnCallFrame",
     "params": {
-      "expression": "global_score = %s",
-      "contextId": %d
+      "callFrameId": "%s",
+      "expression": "global_score = %s"
     }
   })";
 
   debug1.RunCommandAndWaitForResult(
-      TestDevToolsAgentClient::Channel::kIO, 5, "Runtime.evaluate",
-      base::StringPrintf(kCommandTemplate, "100.5", context_id1.value()));
+      TestDevToolsAgentClient::Channel::kIO, 5, "Debugger.evaluateOnCallFrame",
+      base::StringPrintf(kCommandTemplate, callframe_id1->c_str(), "100.5"));
 
   // Let worklet 1 finish. The callback set by RunScoreAdOnWorkletAsync() will
   // verify the result.
@@ -3231,18 +3233,20 @@ TEST_F(SellerWorkletTest, BasicDevToolsDebug) {
       script_parsed2.value.GetDict().FindStringByDottedPath("params.url");
   ASSERT_TRUE(url2);
   EXPECT_EQ(*url2, kUrl2);
-  absl::optional<int> context_id2 =
-      script_parsed2.value.GetDict().FindIntByDottedPath(
-          "params.executionContextId");
-  ASSERT_TRUE(context_id2.has_value());
 
   // Wait for breakpoint, and then change the result to be trouble.
   TestDevToolsAgentClient::Event breakpoint_hit2 =
       debug2.WaitForMethodNotification("Debugger.paused");
+  std::string* callframe_id2 = breakpoint_hit2.value.GetDict()
+                                   .FindDict("params")
+                                   ->FindList("callFrames")
+                                   ->front()
+                                   .GetDict()
+                                   .FindString("callFrameId");
   debug2.RunCommandAndWaitForResult(
-      TestDevToolsAgentClient::Channel::kIO, 5, "Runtime.evaluate",
-      base::StringPrintf(kCommandTemplate, R"(\"not a score\")",
-                         context_id2.value()));
+      TestDevToolsAgentClient::Channel::kIO, 5, "Debugger.evaluateOnCallFrame",
+      base::StringPrintf(kCommandTemplate, callframe_id2->c_str(),
+                         R"(\"not a score\")"));
 
   // Let worklet 2 finish. The callback set by RunScoreAdOnWorkletAsync() will
   // verify the result.

@@ -8505,7 +8505,7 @@ TEST_F(AuctionRunnerTest, ExecutionModeGroupByOrigin) {
   // distinct groups are kept separate.
   const char kScript[] = R"(
     if (!('count' in globalThis))
-      globalThis.count = 0;
+      globalThis.count = 1;
     function generateBid() {
       ++count;
       return {ad: ["ad"], bid:count, render:"https://response.test/"};
@@ -8531,22 +8531,29 @@ TEST_F(AuctionRunnerTest, ExecutionModeGroupByOrigin) {
                                          kSellerScript);
 
   std::vector<StorageInterestGroup> bidders;
-  // Add 5 group-by-origin, 2 regular execution mode IGs.
-  for (int i = 0; i < 7; ++i) {
+  // Add 5 group-by-origin, 2 frozen, 2 regular execution mode IGs.
+  for (int i = 0; i < 9; ++i) {
     StorageInterestGroup ig = MakeInterestGroup(
         kBidder1, kBidder1Name + base::NumberToString(i), kBidder1Url,
         /* trusted_bidding_signals_url=*/absl::nullopt,
         /* trusted_bidding_signals_keys=*/{}, GURL("https://response.test/"));
     ig.joining_origin = url::Origin::Create(GURL("https://sports.example.org"));
-    ig.interest_group.execution_mode =
-        i < 5 ? blink::InterestGroup::ExecutionMode::kGroupedByOriginMode
-              : blink::InterestGroup::ExecutionMode::kCompatibilityMode;
+    if (i < 5) {
+      ig.interest_group.execution_mode =
+          blink::InterestGroup::ExecutionMode::kGroupedByOriginMode;
+    } else if (i < 7) {
+      ig.interest_group.execution_mode =
+          blink::InterestGroup::ExecutionMode::kFrozenContext;
+    } else {
+      ig.interest_group.execution_mode =
+          blink::InterestGroup::ExecutionMode::kCompatibilityMode;
+    }
     bidders.push_back(std::move(ig));
   }
 
   // Add one with different join origin.
   StorageInterestGroup ig = MakeInterestGroup(
-      kBidder1, kBidder1Name + std::string("8"), kBidder1Url,
+      kBidder1, kBidder1Name + std::string("10"), kBidder1Url,
       /* trusted_bidding_signals_url=*/absl::nullopt,
       /* trusted_bidding_signals_keys=*/{}, GURL("https://response.test/"));
   ig.joining_origin = url::Origin::Create(GURL("https://shopping.example.us"));
@@ -8559,7 +8566,7 @@ TEST_F(AuctionRunnerTest, ExecutionModeGroupByOrigin) {
   EXPECT_THAT(result_.errors, testing::ElementsAre());
   ASSERT_TRUE(result_.winning_group_id);
   EXPECT_THAT(result_.report_urls,
-              testing::ElementsAre(GURL("https://adplatform.com/metrics/5")));
+              testing::ElementsAre(GURL("https://adplatform.com/metrics/6")));
 }
 
 // Test the case where the only bidder times out due to the

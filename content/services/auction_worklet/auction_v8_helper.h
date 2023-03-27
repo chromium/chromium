@@ -63,9 +63,6 @@ class CONTENT_EXPORT AuctionV8Helper
   // Timeout for script execution.
   static const base::TimeDelta kScriptTimeout;
 
-  // Controls how much RunScript() actually executes; see there for more.
-  enum class ExecMode { kTopLevelAndFunction, kFunctionOnly };
-
   // Helper class to set up v8 scopes to use Isolate. All methods expect a
   // FullIsolateScope to be have been created on the current thread, and a
   // context to be entered.
@@ -258,17 +255,8 @@ class CONTENT_EXPORT AuctionV8Helper
   v8::MaybeLocal<v8::WasmModuleObject> CloneWasmModule(
       v8::Local<v8::WasmModuleObject> in);
 
-  // Binds a script and runs it in the passed in context, returning the result.
-  // Note that the returned value could include references to objects or
-  // functions contained within the context, so is likely not safe to use in
-  // other contexts without sanitization.
-  //
-  // If `exec_mode` is kTopLevelAndFunction, the script body itself will be run.
-  // This should normally happen at least the first time the script is run in
-  // the given context.
-  //
-  // Regardless of the mode, function `function_name` will be called passing in
-  // `args` as arguments.
+  // Binds a script and runs it in the passed in context, returning true if it
+  // succeeded.
   //
   // If `debug_id` is not nullptr, and a debugger connection has been
   // instantiated, will notify debugger of `context`.
@@ -280,11 +268,37 @@ class CONTENT_EXPORT AuctionV8Helper
   // default timeout.
   //
   // In case of an error sets `error_out`.
-  v8::MaybeLocal<v8::Value> RunScript(
+  bool RunScript(v8::Local<v8::Context> context,
+                 v8::Local<v8::UnboundScript> script,
+                 const DebugId* debug_id,
+                 absl::optional<base::TimeDelta> script_timeout,
+                 std::vector<std::string>& error_out);
+
+  // Calls a bound function (by name) attached to the global context in the
+  // passed in context and returns the value returned by the function. Note that
+  // the returned value could include references to objects or functions
+  // contained within the context, so is likely not safe to use in other
+  // contexts without sanitization.
+  //
+  // `script_name` is the name of the script for debugging. Can be found by
+  // calling `FormatScriptName` on the `script` passed to `RunScript()`.
+  //
+  // `function_name` will be called passing in `args` as arguments.
+  //
+  // If `debug_id` is not nullptr, and a debugger connection has been
+  // instantiated, will notify debugger of `context`.
+  //
+  // Assumes passed in context is the active context. Passed in context must be
+  // using the Helper's isolate.
+  //
+  // If `script_timeout` has no value, kScriptTimeout will be used as the
+  // default timeout.
+  //
+  // In case of an error sets `error_out`.
+  v8::MaybeLocal<v8::Value> CallFunction(
       v8::Local<v8::Context> context,
-      v8::Local<v8::UnboundScript> script,
       const DebugId* debug_id,
-      ExecMode exec_mode,
+      const std::string& script_name,
       base::StringPiece function_name,
       base::span<v8::Local<v8::Value>> args,
       absl::optional<base::TimeDelta> script_timeout,
@@ -345,6 +359,9 @@ class CONTENT_EXPORT AuctionV8Helper
   // Helper for formatting script name for debug messages.
   std::string FormatScriptName(v8::Local<v8::UnboundScript> script);
 
+  static std::string FormatExceptionMessage(v8::Local<v8::Context> context,
+                                            v8::Local<v8::Message> message);
+
  private:
   friend class base::RefCountedDeleteOnSequence<AuctionV8Helper>;
   friend class base::DeleteHelper<AuctionV8Helper>;
@@ -364,8 +381,6 @@ class CONTENT_EXPORT AuctionV8Helper
   void AbortDebuggerPauses(int context_group_id);
   void FreeContextGroupId(int context_group_id);
 
-  static std::string FormatExceptionMessage(v8::Local<v8::Context> context,
-                                            v8::Local<v8::Message> message);
   static std::string FormatValue(v8::Isolate* isolate,
                                  v8::Local<v8::Value> val);
 

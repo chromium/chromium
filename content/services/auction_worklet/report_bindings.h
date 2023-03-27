@@ -26,10 +26,9 @@ class ReportBindings : public Bindings {
   ReportBindings& operator=(const ReportBindings&) = delete;
   ~ReportBindings() override;
 
-  // Add report method to `global_template`. The ReportBindings must outlive
-  // the template.
-  void FillInGlobalTemplate(
-      v8::Local<v8::ObjectTemplate> global_template) override;
+  // Add report method to global context. The ReportBindings must outlive
+  // the context.
+  void AttachToContext(v8::Local<v8::Context> context) override;
   void Reset() override;
 
   const absl::optional<GURL>& report_url() const { return report_url_; }

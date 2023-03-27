@@ -38,8 +38,7 @@ class CONTENT_EXPORT SetBidBindings : public Bindings {
       base::RepeatingCallback<bool(const GURL&)> is_ad_excluded,
       base::RepeatingCallback<bool(const GURL&)> is_component_ad_excluded);
 
-  void FillInGlobalTemplate(
-      v8::Local<v8::ObjectTemplate> global_template) override;
+  void AttachToContext(v8::Local<v8::Context> context) override;
   void Reset() override;
 
   bool has_bid() const { return !bid_.is_null(); }

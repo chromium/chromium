@@ -26,10 +26,9 @@ class ForDebuggingOnlyBindings : public Bindings {
   ForDebuggingOnlyBindings& operator=(const ForDebuggingOnlyBindings&) = delete;
   ~ForDebuggingOnlyBindings() override;
 
-  // Add forDebuggingOnly object to `global_template`. The
-  // ForDebuggingOnlyBindings must outlive the template.
-  void FillInGlobalTemplate(
-      v8::Local<v8::ObjectTemplate> global_template) override;
+  // Add forDebuggingOnly object to the global context. The
+  // ForDebuggingOnlyBindings must outlive the context.
+  void AttachToContext(v8::Local<v8::Context> context) override;
   void Reset() override;
 
   absl::optional<GURL> TakeLossReportUrl() {

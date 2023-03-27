@@ -30,9 +30,8 @@ class SetPrioritySignalsOverrideBindings : public Bindings {
       delete;
   ~SetPrioritySignalsOverrideBindings() override;
 
-  // Add report method to `global_template`. `this` must outlive the template.
-  void FillInGlobalTemplate(
-      v8::Local<v8::ObjectTemplate> global_template) override;
+  // Add report method to global context. `this` must outlive the context.
+  void AttachToContext(v8::Local<v8::Context> context) override;
   void Reset() override;
 
   base::flat_map<std::string, mojom::PrioritySignalsDoublePtr>

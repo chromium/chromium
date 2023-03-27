@@ -836,25 +836,6 @@ TEST_F(ValidateBlinkInterestGroupTest, InvalidPriority) {
   }
 }
 
-TEST_F(ValidateBlinkInterestGroupTest, InvalidExecutionMode) {
-  struct {
-    blink::InterestGroup::ExecutionMode execution_mode;
-    const char* execution_mode_text;
-  } test_cases[] = {
-      {blink::InterestGroup::ExecutionMode::kFrozenContext, "2"},
-  };
-  for (const auto& test_case : test_cases) {
-    SCOPED_TRACE(test_case.execution_mode);
-    mojom::blink::InterestGroupPtr blink_interest_group =
-        CreateMinimalInterestGroup();
-    blink_interest_group->execution_mode = test_case.execution_mode;
-    ExpectInterestGroupIsNotValid(
-        blink_interest_group, /*expected_error_field_name=*/"executionMode",
-        /*expected_error_field_value=*/test_case.execution_mode_text,
-        /*expected_error=*/"execution mode is not valid.");
-  }
-}
-
 TEST_F(ValidateBlinkInterestGroupTest, InvalidAdSizes) {
   constexpr char kSizeError[] =
       "Ad sizes must have a valid (non-zero/non-infinite) width and height.";

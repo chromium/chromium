@@ -154,7 +154,9 @@ bool ValidateBlinkInterestGroup(const mojom::blink::InterestGroup& group,
   if (group.execution_mode !=
           mojom::blink::InterestGroup::ExecutionMode::kCompatibilityMode &&
       group.execution_mode !=
-          mojom::blink::InterestGroup::ExecutionMode::kGroupedByOriginMode) {
+          mojom::blink::InterestGroup::ExecutionMode::kGroupedByOriginMode &&
+      group.execution_mode !=
+          mojom::blink::InterestGroup::ExecutionMode::kFrozenContext) {
     error_field_name = "executionMode";
     error_field_value = String::Number(static_cast<int>(group.execution_mode));
     error = "execution mode is not valid.";

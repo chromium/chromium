@@ -563,11 +563,51 @@ v8::MaybeLocal<v8::WasmModuleObject> AuctionV8Helper::CloneWasmModule(
                                                   in->GetCompiledModule());
 }
 
-v8::MaybeLocal<v8::Value> AuctionV8Helper::RunScript(
+bool AuctionV8Helper::RunScript(v8::Local<v8::Context> context,
+                                v8::Local<v8::UnboundScript> script,
+                                const DebugId* debug_id,
+                                absl::optional<base::TimeDelta> script_timeout,
+                                std::vector<std::string>& error_out) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  DCHECK_EQ(isolate(), context->GetIsolate());
+
+  std::string script_name = FormatScriptName(script);
+  DebugContextScope maybe_debug(inspector(), context, debug_id, script_name);
+
+  v8::TryCatch try_catch(isolate());
+  ScriptTimeoutHelper timeout_helper(this, timer_task_runner_,
+                                     script_timeout.value_or(script_timeout_));
+
+  TRACE_EVENT1("devtools.timeline", "EvaluateScript", "data",
+               [&](perfetto::TracedValue trace_context) {
+                 TraceTopLevel(script_name, std::move(trace_context));
+               });
+
+  v8::Local<v8::Script> local_script = script->BindToCurrentContext();
+
+  v8::MaybeLocal<v8::Value> result = local_script->Run(context);
+  if (try_catch.HasTerminated()) {
+    error_out.push_back(
+        base::StrCat({script_name, " top-level execution timed out."}));
+    return false;
+  }
+
+  if (try_catch.HasCaught()) {
+    error_out.push_back(FormatExceptionMessage(context, try_catch.Message()));
+    return false;
+  }
+
+  if (result.IsEmpty()) {
+    return false;
+  }
+
+  return true;
+}
+
+v8::MaybeLocal<v8::Value> AuctionV8Helper::CallFunction(
     v8::Local<v8::Context> context,
-    v8::Local<v8::UnboundScript> script,
     const DebugId* debug_id,
-    ExecMode exec_mode,
+    const std::string& script_name,
     base::StringPiece function_name,
     base::span<v8::Local<v8::Value>> args,
     absl::optional<base::TimeDelta> script_timeout,
@@ -575,41 +615,15 @@ v8::MaybeLocal<v8::Value> AuctionV8Helper::RunScript(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK_EQ(isolate(), context->GetIsolate());
 
-  std::string script_name = FormatScriptName(script);
   DebugContextScope maybe_debug(inspector(), context, debug_id, script_name);
-
-  v8::Local<v8::String> v8_function_name;
-  if (!CreateUtf8String(function_name).ToLocal(&v8_function_name))
-    return v8::MaybeLocal<v8::Value>();
 
   v8::TryCatch try_catch(isolate());
   ScriptTimeoutHelper timeout_helper(this, timer_task_runner_,
                                      script_timeout.value_or(script_timeout_));
 
-  // Run top-level, to create the function from `script` and do any init that's
-  // needed.
-  if (exec_mode != ExecMode::kFunctionOnly) {
-    TRACE_EVENT1("devtools.timeline", "EvaluateScript", "data",
-                 [&](perfetto::TracedValue trace_context) {
-                   TraceTopLevel(script_name, std::move(trace_context));
-                 });
-
-    v8::Local<v8::Script> local_script = script->BindToCurrentContext();
-
-    v8::MaybeLocal<v8::Value> result = local_script->Run(context);
-    if (try_catch.HasTerminated()) {
-      error_out.push_back(
-          base::StrCat({script_name, " top-level execution timed out."}));
-      return v8::MaybeLocal<v8::Value>();
-    }
-
-    if (try_catch.HasCaught()) {
-      error_out.push_back(FormatExceptionMessage(context, try_catch.Message()));
-      return v8::MaybeLocal<v8::Value>();
-    }
-
-    if (result.IsEmpty())
-      return v8::MaybeLocal<v8::Value>();
+  v8::Local<v8::String> v8_function_name;
+  if (!CreateUtf8String(function_name).ToLocal(&v8_function_name)) {
+    return v8::MaybeLocal<v8::Value>();
   }
 
   v8::Local<v8::Value> function;

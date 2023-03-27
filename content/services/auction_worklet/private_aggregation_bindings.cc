@@ -27,9 +27,9 @@
 #include "v8/include/v8-exception.h"
 #include "v8/include/v8-external.h"
 #include "v8/include/v8-function-callback.h"
+#include "v8/include/v8-function.h"
 #include "v8/include/v8-local-handle.h"
 #include "v8/include/v8-object.h"
-#include "v8/include/v8-template.h"
 
 namespace auction_worklet {
 
@@ -304,8 +304,8 @@ PrivateAggregationBindings::PrivateAggregationBindings(
 
 PrivateAggregationBindings::~PrivateAggregationBindings() = default;
 
-void PrivateAggregationBindings::FillInGlobalTemplate(
-    v8::Local<v8::ObjectTemplate> global_template) {
+void PrivateAggregationBindings::AttachToContext(
+    v8::Local<v8::Context> context) {
   if (!base::FeatureList::IsEnabled(blink::features::kPrivateAggregationApi) ||
       !blink::features::kPrivateAggregationApiEnabledInFledge.Get()) {
     return;
@@ -314,41 +314,44 @@ void PrivateAggregationBindings::FillInGlobalTemplate(
   v8::Local<v8::External> v8_this =
       v8::External::New(v8_helper_->isolate(), this);
 
-  v8::Local<v8::ObjectTemplate> private_aggregation_template =
-      v8::ObjectTemplate::New(v8_helper_->isolate());
+  v8::Local<v8::Object> private_aggregation =
+      v8::Object::New(v8_helper_->isolate());
 
-  v8::Local<v8::FunctionTemplate> send_histogram_report_template =
-      v8::FunctionTemplate::New(
-          v8_helper_->isolate(),
-          &PrivateAggregationBindings::SendHistogramReport, v8_this);
-  send_histogram_report_template->RemovePrototype();
-  private_aggregation_template->Set(
-      v8_helper_->CreateStringFromLiteral("sendHistogramReport"),
-      send_histogram_report_template);
+  v8::Local<v8::Function> send_histogram_report_function =
+      v8::Function::New(
+          context, &PrivateAggregationBindings::SendHistogramReport, v8_this)
+          .ToLocalChecked();
+  private_aggregation
+      ->Set(context, v8_helper_->CreateStringFromLiteral("sendHistogramReport"),
+            send_histogram_report_function)
+      .Check();
 
   if (blink::features::kPrivateAggregationApiFledgeExtensionsEnabled.Get()) {
-    v8::Local<v8::FunctionTemplate> report_contribution_for_event_template =
-        v8::FunctionTemplate::New(
-            v8_helper_->isolate(),
-            &PrivateAggregationBindings::ReportContributionForEvent, v8_this);
-    report_contribution_for_event_template->RemovePrototype();
-    private_aggregation_template->Set(
-        v8_helper_->CreateStringFromLiteral("reportContributionForEvent"),
-        report_contribution_for_event_template);
+    v8::Local<v8::Function> report_contribution_for_event_function =
+        v8::Function::New(
+            context, &PrivateAggregationBindings::ReportContributionForEvent,
+            v8_this)
+            .ToLocalChecked();
+    private_aggregation
+        ->Set(context,
+              v8_helper_->CreateStringFromLiteral("reportContributionForEvent"),
+              report_contribution_for_event_function)
+        .Check();
   }
 
-  v8::Local<v8::FunctionTemplate> enable_debug_mode_template =
-      v8::FunctionTemplate::New(v8_helper_->isolate(),
-                                &PrivateAggregationBindings::EnableDebugMode,
-                                v8_this);
-  enable_debug_mode_template->RemovePrototype();
-  private_aggregation_template->Set(
-      v8_helper_->CreateStringFromLiteral("enableDebugMode"),
-      enable_debug_mode_template);
+  v8::Local<v8::Function> enable_debug_mode_function =
+      v8::Function::New(context, &PrivateAggregationBindings::EnableDebugMode,
+                        v8_this)
+          .ToLocalChecked();
+  private_aggregation
+      ->Set(context, v8_helper_->CreateStringFromLiteral("enableDebugMode"),
+            enable_debug_mode_function)
+      .Check();
 
-  global_template->Set(
-      v8_helper_->CreateStringFromLiteral("privateAggregation"),
-      private_aggregation_template);
+  context->Global()
+      ->Set(context, v8_helper_->CreateStringFromLiteral("privateAggregation"),
+            private_aggregation)
+      .Check();
 }
 
 void PrivateAggregationBindings::Reset() {

@@ -24,7 +24,7 @@
 #include "v8/include/v8-exception.h"
 #include "v8/include/v8-external.h"
 #include "v8/include/v8-function-callback.h"
-#include "v8/include/v8-template.h"
+#include "v8/include/v8-function.h"
 
 namespace auction_worklet {
 
@@ -151,15 +151,15 @@ void SetBidBindings::ReInitialize(
   is_component_ad_excluded_ = std::move(is_component_ad_excluded);
 }
 
-void SetBidBindings::FillInGlobalTemplate(
-    v8::Local<v8::ObjectTemplate> global_template) {
+void SetBidBindings::AttachToContext(v8::Local<v8::Context> context) {
   v8::Local<v8::External> v8_this =
       v8::External::New(v8_helper_->isolate(), this);
-  v8::Local<v8::FunctionTemplate> v8_template = v8::FunctionTemplate::New(
-      v8_helper_->isolate(), &SetBidBindings::SetBid, v8_this);
-  v8_template->RemovePrototype();
-  global_template->Set(v8_helper_->CreateStringFromLiteral("setBid"),
-                       v8_template);
+  v8::Local<v8::Function> v8_function =
+      v8::Function::New(context, &SetBidBindings::SetBid, v8_this)
+          .ToLocalChecked();
+  context->Global()
+      ->Set(context, v8_helper_->CreateStringFromLiteral("setBid"), v8_function)
+      .Check();
 }
 
 void SetBidBindings::Reset() {

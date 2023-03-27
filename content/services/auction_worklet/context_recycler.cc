@@ -125,21 +125,18 @@ void ContextRecycler::AddSetPrioritySignalsOverrideBindings() {
 }
 
 void ContextRecycler::AddBindings(Bindings* bindings) {
-  DCHECK(context_.IsEmpty());  // should be called before GetContext()
+  DCHECK(!context_.IsEmpty());  // should be called after GetContext()
+  bindings->AttachToContext(context_.Get(v8_helper_->isolate()));
   bindings_list_.push_back(bindings);
 }
 
 v8::Local<v8::Context> ContextRecycler::GetContext() {
   v8::Isolate* isolate = v8_helper_->isolate();
   if (context_.IsEmpty()) {
-    v8::Local<v8::ObjectTemplate> global_template =
-        v8::ObjectTemplate::New(isolate);
-    for (Bindings* bindings : bindings_list_)
-      bindings->FillInGlobalTemplate(global_template);
-    context_.Reset(isolate, v8_helper_->CreateContext(global_template));
+    context_.Reset(isolate, v8_helper_->CreateContext());
   }
 
-  return v8::Local<v8::Context>::New(isolate, context_);
+  return context_.Get(isolate);
 }
 
 void ContextRecycler::ResetForReuse() {

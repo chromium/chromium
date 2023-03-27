@@ -20,6 +20,7 @@
 #include "v8/include/v8-exception.h"
 #include "v8/include/v8-external.h"
 #include "v8/include/v8-function-callback.h"
+#include "v8/include/v8-function.h"
 #include "v8/include/v8-template.h"
 
 namespace auction_worklet {
@@ -28,12 +29,10 @@ ForDebuggingOnlyBindings::ForDebuggingOnlyBindings(AuctionV8Helper* v8_helper)
     : v8_helper_(v8_helper) {}
 ForDebuggingOnlyBindings::~ForDebuggingOnlyBindings() = default;
 
-void ForDebuggingOnlyBindings::FillInGlobalTemplate(
-    v8::Local<v8::ObjectTemplate> global_template) {
+void ForDebuggingOnlyBindings::AttachToContext(v8::Local<v8::Context> context) {
   v8::Isolate* isolate = v8_helper_->isolate();
   v8::Local<v8::External> v8_this = v8::External::New(isolate, this);
-  v8::Local<v8::ObjectTemplate> debugging_template =
-      v8::ObjectTemplate::New(isolate);
+  v8::Local<v8::Object> debugging = v8::Object::New(isolate);
 
   v8::Local<v8::FunctionTemplate> loss_template = v8::FunctionTemplate::New(
       isolate, &ForDebuggingOnlyBindings::ReportAdAuctionLoss, v8_this);
@@ -50,16 +49,21 @@ void ForDebuggingOnlyBindings::FillInGlobalTemplate(
     win_template = v8::FunctionTemplate::New(isolate);
   }
   loss_template->RemovePrototype();
-  debugging_template->Set(
-      v8_helper_->CreateStringFromLiteral("reportAdAuctionLoss"),
-      loss_template);
+  debugging
+      ->Set(context, v8_helper_->CreateStringFromLiteral("reportAdAuctionLoss"),
+            loss_template->GetFunction(context).ToLocalChecked())
+      .Check();
 
   win_template->RemovePrototype();
-  debugging_template->Set(
-      v8_helper_->CreateStringFromLiteral("reportAdAuctionWin"), win_template);
+  debugging
+      ->Set(context, v8_helper_->CreateStringFromLiteral("reportAdAuctionWin"),
+            win_template->GetFunction(context).ToLocalChecked())
+      .Check();
 
-  global_template->Set(v8_helper_->CreateStringFromLiteral("forDebuggingOnly"),
-                       debugging_template);
+  context->Global()
+      ->Set(context, v8_helper_->CreateStringFromLiteral("forDebuggingOnly"),
+            debugging)
+      .Check();
 }
 
 void ForDebuggingOnlyBindings::Reset() {

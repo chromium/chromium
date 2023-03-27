@@ -431,6 +431,13 @@ class CONTENT_EXPORT BidderWorklet : public mojom::BidderWorklet,
         std::unique_ptr<ContextRecycler> context_recycler_for_rerun,
         bool restrict_to_kanon_ads);
 
+    std::unique_ptr<ContextRecycler>
+    CreateContextRecyclerAndRunTopLevelForGenerateBid(
+        uint64_t trace_id,
+        const absl::optional<base::TimeDelta> per_buyer_timeout,
+        bool should_deep_freeze,
+        std::vector<std::string>& errors_out);
+
     void FinishInit(mojo::PendingRemote<mojom::AuctionSharedStorageHost>
                         shared_storage_host_remote);
 
@@ -472,6 +479,7 @@ class CONTENT_EXPORT BidderWorklet : public mojom::BidderWorklet,
 
     std::unique_ptr<ContextRecycler> context_recycler_for_origin_group_mode_;
     url::Origin join_origin_for_origin_group_mode_;
+    std::unique_ptr<ContextRecycler> context_recycler_for_frozen_context_;
 
     mojo::Remote<mojom::AuctionSharedStorageHost> shared_storage_host_remote_;
 

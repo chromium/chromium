@@ -654,18 +654,6 @@ void SellerWorklet::V8State::ScoreAd(
   // Short lived context, to avoid leaking data at global scope between either
   // repeated calls to this worklet, or to calls to any other worklet.
   ContextRecycler context_recycler(v8_helper_.get());
-  context_recycler.AddForDebuggingOnlyBindings();
-  context_recycler.AddPrivateAggregationBindings(
-      permissions_policy_state_->private_aggregation_allowed);
-
-  if (base::FeatureList::IsEnabled(blink::features::kSharedStorageAPI)) {
-    context_recycler.AddSharedStorageBindings(
-        shared_storage_host_remote_.is_bound()
-            ? shared_storage_host_remote_.get()
-            : nullptr,
-        permissions_policy_state_->shared_storage_allowed);
-  }
-
   ContextRecyclerScope context_recycler_scope(context_recycler);
   v8::Local<v8::Context> context = context_recycler_scope.GetContext();
 
@@ -755,17 +743,49 @@ void SellerWorklet::V8State::ScoreAd(
       *debug_id_, "beforeSellerWorkletScoringStart");
 
   TRACE_EVENT_NESTABLE_ASYNC_BEGIN0("fledge", "score_ad", trace_id);
-  bool got_return_value =
+  v8::Local<v8::UnboundScript> unbound_worklet_script =
+      worklet_script_.Get(isolate);
+  bool success =
+      v8_helper_->RunScript(context, unbound_worklet_script, debug_id_.get(),
+                            seller_timeout, errors_out);
+  if (!success) {
+    TRACE_EVENT_NESTABLE_ASYNC_END0("fledge", "score_ad", trace_id);
+    // Keep debug loss reports and Private Aggregation API requests since
+    // `scoreAd()` might use them to detect script timeout or failures.
+    PostScoreAdCallbackToUserThread(
+        std::move(callback), /*score=*/0,
+        /*reject_reason=*/mojom::RejectReason::kNotAvailable,
+        /*component_auction_modified_bid_params=*/nullptr,
+        /*scoring_signals_data_version=*/absl::nullopt,
+        /*debug_loss_report_url=*/absl::nullopt,
+        /*debug_win_report_url=*/absl::nullopt,
+        /*pa_requests=*/{}, std::move(errors_out));
+    return;
+  }
+  context_recycler.AddForDebuggingOnlyBindings();
+  context_recycler.AddPrivateAggregationBindings(
+      permissions_policy_state_->private_aggregation_allowed);
+
+  if (base::FeatureList::IsEnabled(blink::features::kSharedStorageAPI)) {
+    context_recycler.AddSharedStorageBindings(
+        shared_storage_host_remote_.is_bound()
+            ? shared_storage_host_remote_.get()
+            : nullptr,
+        permissions_policy_state_->shared_storage_allowed);
+  }
+
+  success =
       v8_helper_
-          ->RunScript(context, worklet_script_.Get(isolate), debug_id_.get(),
-                      AuctionV8Helper::ExecMode::kTopLevelAndFunction,
-                      "scoreAd", args, std::move(seller_timeout), errors_out)
+          ->CallFunction(context, debug_id_.get(),
+                         v8_helper_->FormatScriptName(unbound_worklet_script),
+                         "scoreAd", args, std::move(seller_timeout), errors_out)
           .ToLocal(&score_ad_result);
+
   TRACE_EVENT_NESTABLE_ASYNC_END0("fledge", "score_ad", trace_id);
   base::UmaHistogramTimes("Ads.InterestGroup.Auction.ScoreAdTime",
                           base::TimeTicks::Now() - start);
 
-  if (!got_return_value) {
+  if (!success) {
     // Keep debug loss reports and Private Aggregation API requests since
     // `scoreAd()` might use them to detect script timeout or failures.
     PostScoreAdCallbackToUserThread(
@@ -964,18 +984,6 @@ void SellerWorklet::V8State::ReportResult(
   // Short lived context, to avoid leaking data at global scope between either
   // repeated calls to this worklet, or to calls to any other worklet.
   ContextRecycler context_recycler(v8_helper_.get());
-  context_recycler.AddReportBindings();
-  context_recycler.AddRegisterAdBeaconBindings();
-  context_recycler.AddPrivateAggregationBindings(
-      permissions_policy_state_->private_aggregation_allowed);
-
-  if (base::FeatureList::IsEnabled(blink::features::kSharedStorageAPI)) {
-    context_recycler.AddSharedStorageBindings(
-        shared_storage_host_remote_.is_bound()
-            ? shared_storage_host_remote_.get()
-            : nullptr,
-        permissions_policy_state_->shared_storage_allowed);
-  }
 
   ContextRecyclerScope context_recycler_scope(context_recycler);
   v8::Local<v8::Context> context = context_recycler_scope.GetContext();
@@ -1069,19 +1077,48 @@ void SellerWorklet::V8State::ReportResult(
   v8_helper_->MaybeTriggerInstrumentationBreakpoint(
       *debug_id_, "beforeSellerWorkletReportingStart");
 
+  v8::Local<v8::UnboundScript> unbound_worklet_script =
+      worklet_script_.Get(isolate);
   TRACE_EVENT_NESTABLE_ASYNC_BEGIN0("fledge", "report_result", trace_id);
-  bool got_return_value =
+  bool success =
+      v8_helper_->RunScript(context, unbound_worklet_script, debug_id_.get(),
+                            /*script_timeout=*/absl::nullopt, errors_out);
+
+  if (!success) {
+    TRACE_EVENT_NESTABLE_ASYNC_END0("fledge", "report_result", trace_id);
+    PostReportResultCallbackToUserThread(
+        std::move(callback), /*signals_for_winner=*/absl::nullopt,
+        /*report_url=*/absl::nullopt, /*ad_beacon_map=*/{},
+        /*pa_requests=*/{}, std::move(errors_out));
+    return;
+  }
+
+  context_recycler.AddReportBindings();
+  context_recycler.AddRegisterAdBeaconBindings();
+  context_recycler.AddPrivateAggregationBindings(
+      permissions_policy_state_->private_aggregation_allowed);
+
+  if (base::FeatureList::IsEnabled(blink::features::kSharedStorageAPI)) {
+    context_recycler.AddSharedStorageBindings(
+        shared_storage_host_remote_.is_bound()
+            ? shared_storage_host_remote_.get()
+            : nullptr,
+        permissions_policy_state_->shared_storage_allowed);
+  }
+
+  success =
       v8_helper_
-          ->RunScript(context, worklet_script_.Get(isolate), debug_id_.get(),
-                      AuctionV8Helper::ExecMode::kTopLevelAndFunction,
-                      "reportResult", args, /*script_timeout=*/absl::nullopt,
-                      errors_out)
+          ->CallFunction(context, debug_id_.get(),
+                         v8_helper_->FormatScriptName(unbound_worklet_script),
+                         "reportResult", args,
+                         /*script_timeout=*/absl::nullopt, errors_out)
           .ToLocal(&signals_for_winner_value);
+
   TRACE_EVENT_NESTABLE_ASYNC_END0("fledge", "report_result", trace_id);
 
-  if (!got_return_value) {
-    // Keep Private Aggregation API requests since `reportReport()` might use it
-    // to detect script timeout or failures.
+  if (!success) {
+    // Keep Private Aggregation API requests since `reportReport()` might use
+    // it to detect script timeout or failures.
     PostReportResultCallbackToUserThread(
         std::move(callback), /*signals_for_winner=*/absl::nullopt,
         /*report_url=*/absl::nullopt, /*ad_beacon_map=*/{},

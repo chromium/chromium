@@ -527,6 +527,9 @@ bool CopyExecutionModeFromIdlToMojo(const ExecutionContext& execution_context,
              input.executionMode() == "groupByOrigin") {
     output.execution_mode =
         mojom::blink::InterestGroup::ExecutionMode::kGroupedByOriginMode;
+  } else if (input.executionMode() == "frozen-context") {
+    output.execution_mode =
+        mojom::blink::InterestGroup::ExecutionMode::kFrozenContext;
   }
   // For forward compatibility with new values, don't throw if unrecognized enum
   // values encountered.

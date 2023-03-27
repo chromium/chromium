@@ -166,7 +166,9 @@ bool InterestGroup::IsValid() const {
   if (execution_mode !=
           blink::mojom::InterestGroup::ExecutionMode::kCompatibilityMode &&
       execution_mode !=
-          blink::mojom::InterestGroup::ExecutionMode::kGroupedByOriginMode) {
+          blink::mojom::InterestGroup::ExecutionMode::kGroupedByOriginMode &&
+      execution_mode !=
+          blink::mojom::InterestGroup::ExecutionMode::kFrozenContext) {
     return false;
   }
 

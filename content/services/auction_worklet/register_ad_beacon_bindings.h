@@ -28,10 +28,9 @@ class RegisterAdBeaconBindings : public Bindings {
   RegisterAdBeaconBindings& operator=(const RegisterAdBeaconBindings&) = delete;
   ~RegisterAdBeaconBindings() override;
 
-  // Add registerAdBeaconBindings object to `global_template`. The
-  // RegisterAdBeaconBindings must outlive the template.
-  void FillInGlobalTemplate(
-      v8::Local<v8::ObjectTemplate> global_template) override;
+  // Add registerAdBeaconBindings object to the global context. The
+  // RegisterAdBeaconBindings must outlive the context.
+  void AttachToContext(v8::Local<v8::Context> context) override;
   void Reset() override;
 
   base::flat_map<std::string, GURL> TakeAdBeaconMap() {

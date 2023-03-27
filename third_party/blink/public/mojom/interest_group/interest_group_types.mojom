@@ -60,11 +60,9 @@ struct InterestGroup {
     kGroupedByOriginMode,
     // kFrozenContext mode uses a "frozen" JavaScript context to execute the
     // bidding scripts for all interest groups that share a common biddnig
-    // script. Before the script is loaded the global object is recursively
-    // frozen to prevent persisting state. After the script is loaded, the
-    // script context is also frozen and checked for any state that may persist
-    // between function execution. If any potentially persistent state is
-    // identified, execution abandoned.
+    // script. After the script is loaded, the script context is frozen and
+    // checked for any state that may persist between function execution. If any
+    // potentially persistent state is identified, execution abandoned.
     kFrozenContext,
   };
 

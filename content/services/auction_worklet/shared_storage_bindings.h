@@ -28,10 +28,9 @@ class CONTENT_EXPORT SharedStorageBindings : public Bindings {
   SharedStorageBindings& operator=(const SharedStorageBindings&) = delete;
   ~SharedStorageBindings() override;
 
-  // Add privateAggregation object to `global_template`. `this` must outlive the
-  // template.
-  void FillInGlobalTemplate(
-      v8::Local<v8::ObjectTemplate> global_template) override;
+  // Add privateAggregation object to global context. `this` must outlive the
+  // context.
+  void AttachToContext(v8::Local<v8::Context> context) override;
   void Reset() override;
 
  private:

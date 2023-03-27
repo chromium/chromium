@@ -26,10 +26,9 @@ class SetPriorityBindings : public Bindings {
   SetPriorityBindings& operator=(const SetPriorityBindings&) = delete;
   ~SetPriorityBindings() override;
 
-  // Add report method to `global_template`. The ReportBindings must outlive
-  // the template.
-  void FillInGlobalTemplate(
-      v8::Local<v8::ObjectTemplate> global_template) override;
+  // Add report method to the global context. The ReportBindings must outlive
+  // the context.
+  void AttachToContext(v8::Local<v8::Context> context) override;
   void Reset() override;
 
   const absl::optional<double>& set_priority() const { return set_priority_; }

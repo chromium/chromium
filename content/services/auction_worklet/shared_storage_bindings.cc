@@ -17,9 +17,9 @@
 #include "v8/include/v8-exception.h"
 #include "v8/include/v8-external.h"
 #include "v8/include/v8-function-callback.h"
+#include "v8/include/v8-function.h"
 #include "v8/include/v8-local-handle.h"
 #include "v8/include/v8-object.h"
-#include "v8/include/v8-template.h"
 
 namespace auction_worklet {
 
@@ -64,44 +64,48 @@ SharedStorageBindings::SharedStorageBindings(
 
 SharedStorageBindings::~SharedStorageBindings() = default;
 
-void SharedStorageBindings::FillInGlobalTemplate(
-    v8::Local<v8::ObjectTemplate> global_template) {
+void SharedStorageBindings::AttachToContext(v8::Local<v8::Context> context) {
   v8::Local<v8::External> v8_this =
       v8::External::New(v8_helper_->isolate(), this);
 
-  v8::Local<v8::ObjectTemplate> shared_storage_template =
-      v8::ObjectTemplate::New(v8_helper_->isolate());
+  v8::Local<v8::Object> shared_storage = v8::Object::New(v8_helper_->isolate());
 
-  v8::Local<v8::FunctionTemplate> set_method_template =
-      v8::FunctionTemplate::New(v8_helper_->isolate(),
-                                &SharedStorageBindings::Set, v8_this);
-  set_method_template->RemovePrototype();
-  shared_storage_template->Set(v8_helper_->CreateStringFromLiteral("set"),
-                               set_method_template);
+  v8::Local<v8::Function> set_method_function =
+      v8::Function::New(context, &SharedStorageBindings::Set, v8_this)
+          .ToLocalChecked();
+  shared_storage
+      ->Set(context, v8_helper_->CreateStringFromLiteral("set"),
+            set_method_function)
+      .Check();
 
-  v8::Local<v8::FunctionTemplate> append_method_template =
-      v8::FunctionTemplate::New(v8_helper_->isolate(),
-                                &SharedStorageBindings::Append, v8_this);
-  append_method_template->RemovePrototype();
-  shared_storage_template->Set(v8_helper_->CreateStringFromLiteral("append"),
-                               append_method_template);
+  v8::Local<v8::Function> append_method_function =
+      v8::Function::New(context, &SharedStorageBindings::Append, v8_this)
+          .ToLocalChecked();
+  shared_storage
+      ->Set(context, v8_helper_->CreateStringFromLiteral("append"),
+            append_method_function)
+      .Check();
 
-  v8::Local<v8::FunctionTemplate> delete_method_template =
-      v8::FunctionTemplate::New(v8_helper_->isolate(),
-                                &SharedStorageBindings::Delete, v8_this);
-  delete_method_template->RemovePrototype();
-  shared_storage_template->Set(v8_helper_->CreateStringFromLiteral("delete"),
-                               delete_method_template);
+  v8::Local<v8::Function> delete_method_function =
+      v8::Function::New(context, &SharedStorageBindings::Delete, v8_this)
+          .ToLocalChecked();
+  shared_storage
+      ->Set(context, v8_helper_->CreateStringFromLiteral("delete"),
+            delete_method_function)
+      .Check();
 
-  v8::Local<v8::FunctionTemplate> clear_method_template =
-      v8::FunctionTemplate::New(v8_helper_->isolate(),
-                                &SharedStorageBindings::Clear, v8_this);
-  clear_method_template->RemovePrototype();
-  shared_storage_template->Set(v8_helper_->CreateStringFromLiteral("clear"),
-                               clear_method_template);
+  v8::Local<v8::Function> clear_method_function =
+      v8::Function::New(context, &SharedStorageBindings::Clear, v8_this)
+          .ToLocalChecked();
+  shared_storage
+      ->Set(context, v8_helper_->CreateStringFromLiteral("clear"),
+            clear_method_function)
+      .Check();
 
-  global_template->Set(v8_helper_->CreateStringFromLiteral("sharedStorage"),
-                       shared_storage_template);
+  context->Global()
+      ->Set(context, v8_helper_->CreateStringFromLiteral("sharedStorage"),
+            shared_storage)
+      .Check();
 }
 
 void SharedStorageBindings::Reset() {}

@@ -34,7 +34,7 @@ class InterestGroupLazyFiller;
 
 // Base class for bindings used with contexts used with ContextRecycler.
 // The expected lifecycle is:
-// 1) FillInGlobalTemplate()
+// 1) AttachToContext()
 // 2) Use by script
 // 3) Reset()
 // 4) Use by script
@@ -44,8 +44,7 @@ class Bindings {
  public:
   Bindings();
   virtual ~Bindings();
-  virtual void FillInGlobalTemplate(
-      v8::Local<v8::ObjectTemplate> global_template) = 0;
+  virtual void AttachToContext(v8::Local<v8::Context> context) = 0;
   virtual void Reset() = 0;
 };
 
@@ -159,7 +158,7 @@ class CONTENT_EXPORT ContextRecycler {
  private:
   friend class ContextRecyclerScope;
 
-  // Should be called before GetContext(); assumes `bindings` is already owned
+  // Should be called after GetContext(); assumes `bindings` is already owned
   // by one of the fields.
   void AddBindings(Bindings* bindings);
 
