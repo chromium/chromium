@@ -415,7 +415,7 @@ std::unique_ptr<StoredPage> PrerenderHost::Activate(
   TRACE_EVENT1("navigation", "PrerenderHost::Activate", "navigation_request",
                &navigation_request);
 
-  DCHECK(is_ready_for_activation_);
+  CHECK(is_ready_for_activation_);
   is_ready_for_activation_ = false;
 
   FrameTree& target_frame_tree = web_contents_->GetPrimaryFrameTree();
@@ -423,7 +423,7 @@ std::unique_ptr<StoredPage> PrerenderHost::Activate(
   // There should be no ongoing main-frame navigation during activation.
   // TODO(https://crbug.com/1190644): Make sure sub-frame navigations are
   // fine.
-  DCHECK(!frame_tree_->root()->HasNavigation());
+  CHECK(!frame_tree_->root()->HasNavigation());
 
   // Before the root's current_frame_host is cleared, collect the subframes of
   // `frame_tree_` whose FrameTree will need to be updated.
@@ -467,8 +467,8 @@ std::unique_ptr<StoredPage> PrerenderHost::Activate(
   navigation_request.SetPrerenderActivationNavigationState(
       std::move(nav_entry), prior_replication_state);
 
-  DCHECK_EQ(&target_frame_tree,
-            &navigation_request.frame_tree_node()->frame_tree());
+  CHECK_EQ(&target_frame_tree,
+           &navigation_request.frame_tree_node()->frame_tree());
 
   // We support activating the prerendered page only to the topmost
   // RenderFrameHost.

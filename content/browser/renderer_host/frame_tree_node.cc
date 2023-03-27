@@ -225,11 +225,11 @@ FrameTreeNode::~FrameTreeNode() {
     DCHECK(!opener());  // Prerendered frame trees can't have openers.
 
     // Activation is not allowed during ongoing navigations.
-    DCHECK(!navigation_request_);
+    CHECK(!navigation_request_);
 
     // TODO(https://crbug.com/1199693): Need to determine how to handle pending
     // deletions, as observers will be notified.
-    DCHECK(!render_manager()->speculative_frame_host());
+    CHECK(!render_manager()->speculative_frame_host());
   }
 
   // If the removed frame was created by a script, then its history entry will
