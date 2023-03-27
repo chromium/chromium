@@ -2735,7 +2735,7 @@ void InterestGroupStorage::DeleteAllInterestGroupData() {
   if (!EnsureDBInitialized())
     return;
 
-  db_->RazeAndClose();
+  db_->RazeAndPoison();
   db_.reset();
 }
 
@@ -2830,10 +2830,10 @@ void InterestGroupStorage::DatabaseErrorCallback(int extended_error,
 
   if (sql::IsErrorCatastrophic(extended_error)) {
     // Normally this will poison the database, causing any subsequent operations
-    // to silently fail without any side effects. However, if RazeAndClose() is
+    // to silently fail without any side effects. However, if RazeAndPoison() is
     // called from the error callback in response to an error raised from within
     // sql::Database::Open, opening the now-razed database will be retried.
-    db_->RazeAndClose();
+    db_->RazeAndPoison();
     return;
   }
 
