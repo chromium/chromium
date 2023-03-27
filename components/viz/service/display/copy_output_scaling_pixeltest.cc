@@ -216,7 +216,7 @@ class CopyOutputScalingPixelTest
       gfx::Rect rect = smaller_pass_rects[i] - copy_rect.OffsetFromOrigin();
       rect = copy_output::ComputeResultRect(rect, scale_from_, scale_to_);
       expected_bitmap.erase(
-          smaller_pass_colors[i], nullptr /* SkColorSpace* colorSpace */,
+          smaller_pass_colors[i],
           SkIRect{rect.x(), rect.y(), rect.right(), rect.bottom()});
     }
 

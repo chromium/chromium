@@ -132,7 +132,7 @@ void SkiaOutputSurfaceImplTest::CopyRequestCallbackOnGpuThread(
   SkBitmap expected;
   expected.allocPixels(SkImageInfo::MakeN32Premul(
       output_rect.width(), output_rect.height(), color_space.ToSkColorSpace()));
-  expected.eraseColor(kOutputColor, /*colorSpace=*/nullptr);
+  expected.eraseColor(kOutputColor);
 
   EXPECT_TRUE(
       cc::MatchesBitmap(result_bitmap, expected, cc::ExactPixelComparator()));
