@@ -7,6 +7,9 @@
 
 #include <utility>
 
+// TODO(crbug.com/1427626): Remove this include once the explicit
+// async_get_default_dispatcher() is no longer needed.
+#include <lib/async/default.h>
 #include <lib/fidl/cpp/binding.h>
 #include <lib/fidl/cpp/binding_set.h>
 #include <lib/fidl/cpp/interface_request.h>
@@ -74,26 +77,32 @@ class BASE_EXPORT ScopedNaturalServiceBinding {
   ScopedNaturalServiceBinding(
       sys::OutgoingDirectory* outgoing_directory,
       fidl::Server<Protocol>* impl,
-      async_dispatcher_t* dispatcher,
       base::StringPiece name = fidl::DiscoverableProtocolName<Protocol>)
-      : publisher_(outgoing_directory,
-                   bindings_.CreateHandler(impl,
-                                           dispatcher,
-                                           [](fidl::UnbindInfo info) {}),
-                   name) {}
+      : publisher_(
+            outgoing_directory,
+            bindings_.CreateHandler(
+                impl,
+                // TODO(crbug.com/1427626): Remove this param once there's an
+                // overload of `CreateHandler` that doesn't require it.
+                async_get_default_dispatcher(),
+                [](fidl::UnbindInfo info) {}),
+            name) {}
 
   // Publishes a service in the specified |pseudo_dir|. |pseudo_dir| and |impl|
   // must outlive the binding. The service is unpublished on destruction.
   ScopedNaturalServiceBinding(
       vfs::PseudoDir* pseudo_dir,
       fidl::Server<Protocol>* impl,
-      async_dispatcher_t* dispatcher,
       base::StringPiece name = fidl::DiscoverableProtocolName<Protocol>)
-      : publisher_(pseudo_dir,
-                   bindings_.CreateHandler(impl,
-                                           dispatcher,
-                                           [](fidl::UnbindInfo info) {}),
-                   name) {}
+      : publisher_(
+            pseudo_dir,
+            bindings_.CreateHandler(
+                impl,
+                // TODO(crbug.com/1427626): Remove this param once there's an
+                // overload of `CreateHandler` that doesn't require it.
+                async_get_default_dispatcher(),
+                [](fidl::UnbindInfo info) {}),
+            name) {}
 
   ScopedNaturalServiceBinding(const ScopedNaturalServiceBinding&) = delete;
   ScopedNaturalServiceBinding& operator=(const ScopedNaturalServiceBinding&) =
