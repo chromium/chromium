@@ -1031,10 +1031,10 @@ if (is_chromeos_ash) {
     if (use_v4l2_codec || use_vaapi) {
       data_deps += [
         "//components/chromeos_camera:jpeg_encode_accelerator_unittest",
-        "//media/gpu:video_decode_accelerator_perf_tests",
-        "//media/gpu:video_decode_accelerator_tests",
-        "//media/gpu:video_encode_accelerator_perf_tests",
-        "//media/gpu:video_encode_accelerator_tests",
+        "//media/gpu/test/:video_decode_accelerator_perf_tests",
+        "//media/gpu/test/:video_decode_accelerator_tests",
+        "//media/gpu/test/:video_encode_accelerator_perf_tests",
+        "//media/gpu/test/:video_encode_accelerator_tests",
         "//media/gpu/chromeos:image_processor_test",
       ]
       if (use_vaapi) {
