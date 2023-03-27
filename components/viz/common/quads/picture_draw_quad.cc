@@ -26,7 +26,6 @@ void PictureDrawQuad::SetNew(const SharedQuadState* shared_quad_state,
                              const gfx::RectF& tex_coord_rect,
                              const gfx::Size& texture_size,
                              bool nearest_neighbor,
-                             ResourceFormat format,
                              const gfx::Rect& content,
                              float scale,
                              ImageAnimationMap animation_map,
@@ -39,7 +38,6 @@ void PictureDrawQuad::SetNew(const SharedQuadState* shared_quad_state,
   contents_scale = scale;
   image_animation_map = std::move(animation_map);
   display_item_list = std::move(display_items);
-  texture_format = format;
 }
 
 const PictureDrawQuad* PictureDrawQuad::MaterialCast(const DrawQuad* quad) {
@@ -51,7 +49,6 @@ void PictureDrawQuad::ExtendValue(base::trace_event::TracedValue* value) const {
   ContentDrawQuadBase::ExtendValue(value);
   cc::MathUtil::AddToTracedValue("content_rect", content_rect, value);
   value->SetDouble("contents_scale", contents_scale);
-  value->SetInteger("texture_format", texture_format);
   // TODO(piman): display_item_list?
 }
 
