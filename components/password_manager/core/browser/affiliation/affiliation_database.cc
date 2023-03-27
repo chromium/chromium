@@ -494,10 +494,10 @@ void AffiliationDatabase::SQLErrorCallback(int error,
                                            sql::Statement* statement) {
   if (sql::IsErrorCatastrophic(error)) {
     // Normally this will poison the database, causing any subsequent operations
-    // to silently fail without any side effects. However, if RazeAndClose() is
+    // to silently fail without any side effects. However, if RazeAndPoison() is
     // called from the error callback in response to an error raised from within
     // sql::Database::Open, opening the now-razed database will be retried.
-    sql_connection_->RazeAndClose();
+    sql_connection_->RazeAndPoison();
     return;
   }
 
