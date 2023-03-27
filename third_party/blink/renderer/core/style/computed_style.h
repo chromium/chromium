@@ -95,6 +95,7 @@ class CSSVariableData;
 class FilterOperations;
 class Font;
 class Hyphenation;
+class LayoutBox;
 class LayoutTheme;
 class Longhand;
 class NinePieceImage;

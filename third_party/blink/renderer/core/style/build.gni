@@ -39,8 +39,6 @@ blink_core_sources_style = [
   "grid_enums.h",
   "grid_length.h",
   "grid_position.h",
-  "grid_positions_resolver.cc",
-  "grid_positions_resolver.h",
   "grid_track_list.cc",
   "grid_track_list.h",
   "grid_track_size.h",
