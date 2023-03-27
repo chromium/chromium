@@ -13,9 +13,9 @@
 namespace {
 
 const char kSearchInputToNavigationStart[] =
-    "Omnibox.SuggestionUsed.Search.InputToNavigationStart";
+    "Omnibox.SuggestionUsed.Search.InputToNavigationStart2";
 const char kURLInputToNavigationStart[] =
-    "Omnibox.SuggestionUsed.URL.InputToNavigationStart";
+    "Omnibox.SuggestionUsed.URL.InputToNavigationStart2";
 
 const char kSearchFirstContentfulPaint[] =
     "Omnibox.SuggestionUsed.Search.NavigationToFirstContentfulPaint";
@@ -84,15 +84,21 @@ void OmniboxSuggestionUsedMetricsObserver::OnFirstContentfulPaintInPage(
     if (ui::PageTransitionCoreTypeIs(transition_type_,
                                      ui::PAGE_TRANSITION_GENERATED)) {
       if (timing.input_to_navigation_start) {
-        PAGE_LOAD_HISTOGRAM(kSearchInputToNavigationStart,
-                            timing.input_to_navigation_start.value());
+        // Use `PAGE_LOAD_SHORT_HISTOGRAM()`, and not `PAGE_LOAD_HISTOGRAM()`,
+        // as this has many (30-55%) of events <10ms, and almost no events
+        // >1minute.
+        PAGE_LOAD_SHORT_HISTOGRAM(kSearchInputToNavigationStart,
+                                  timing.input_to_navigation_start.value());
       }
       PAGE_LOAD_HISTOGRAM(kSearchFirstContentfulPaint, fcp);
     } else if (ui::PageTransitionCoreTypeIs(transition_type_,
                                             ui::PAGE_TRANSITION_TYPED)) {
       if (timing.input_to_navigation_start) {
-        PAGE_LOAD_HISTOGRAM(kURLInputToNavigationStart,
-                            timing.input_to_navigation_start.value());
+        // Use `PAGE_LOAD_SHORT_HISTOGRAM()`, and not `PAGE_LOAD_HISTOGRAM()`,
+        // as this has many (30-55%) of events <10ms, and almost no events
+        // >1minute.
+        PAGE_LOAD_SHORT_HISTOGRAM(kURLInputToNavigationStart,
+                                  timing.input_to_navigation_start.value());
       }
       PAGE_LOAD_HISTOGRAM(kURLFirstContentfulPaint, fcp);
     }

@@ -1917,7 +1917,7 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Omnibox.SuggestionUsed.Search.InputToNavigationStart"
+<histogram name="Omnibox.SuggestionUsed.Search.InputToNavigationStart2"
     units="ms" expires_after="2023-08-20">
   <owner>spelchat@chromium.org</owner>
   <owner>chrome-brapp-loading@google.com</owner>
@@ -2012,7 +2012,7 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Omnibox.SuggestionUsed.URL.InputToNavigationStart" units="ms"
+<histogram name="Omnibox.SuggestionUsed.URL.InputToNavigationStart2" units="ms"
     expires_after="2023-08-20">
   <owner>spelchat@chromium.org</owner>
   <owner>chrome-brapp-loading@google.com</owner>
