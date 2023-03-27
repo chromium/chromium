@@ -55,6 +55,10 @@ declare_args() {
   # <home dir>/.rustup/toolchains/nightly-<something>-<something>
   rust_sysroot_absolute = ""
 
+  # If you're using an external Rust toolchain, set this to a Rust
+  # the output of rustc -V.
+  rustc_version = ""
+
   # If you're using a Rust toolchain as specified by rust_sysroot_absolute,
   # you can specify whether it supports nacl here.
   rust_toolchain_supports_nacl = false
@@ -136,12 +140,14 @@ toolchain_has_rust =
 # (so e.g. rust targets are rebuilt, and the standard library is re-copied when
 # the toolchain changes). It is left empty for custom toolchains.
 rustc_revision = ""
-if (toolchain_has_rust && rust_sysroot_absolute == "") {
+if (toolchain_has_rust) {
   if (use_chromium_rust_toolchain) {
     update_rust_args = [ "--print-package-version" ]
     rustc_revision = exec_script("//tools/rust/update_rust.py",
                                  update_rust_args,
                                  "trim string")
+  } else if (rust_sysroot_absolute != "") {
+    rustc_revision = rustc_version
   } else {
     # Android toolchain version.
     rustc_revision = "rustc 1.64.0-dev (Android Rust Toolchain version 9099361)"
