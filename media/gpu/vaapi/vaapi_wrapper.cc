@@ -1939,13 +1939,6 @@ bool VaapiWrapper::IsVppSupportedForJpegDecodedSurfaceToFourCC(
   if (!IsDecodingSupportedForInternalFormat(VAProfileJPEGBaseline, rt_format))
     return false;
 
-  // Workaround: for Mesa VAAPI driver, VPP only supports internal surface
-  // format for 4:2:0 JPEG image.
-  DCHECK_NE(VAImplementation::kInvalid, GetImplementationType());
-  if (GetImplementationType() == VAImplementation::kMesaGallium &&
-      rt_format != VA_RT_FORMAT_YUV420) {
-    return false;
-  }
 
   return IsVppFormatSupported(fourcc);
 }
