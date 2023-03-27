@@ -875,11 +875,12 @@ const char* AlreadySeenSigninViewPreferenceKey(
 // Starts the sign-in only flow.
 - (void)startSignInOnlyFlow {
   signin_metrics::RecordSigninUserActionForAccessPoint(self.accessPoint);
-  _authenticationFlow =
-      [[AuthenticationFlow alloc] initWithBrowser:_browser
-                                         identity:self.identity
-                                 postSignInAction:PostSignInAction::kNone
-                         presentingViewController:_baseViewController];
+  _authenticationFlow = [[AuthenticationFlow alloc]
+               initWithBrowser:_browser
+                      identity:self.identity
+              postSignInAction:PostSignInAction::
+                                   kEnableBookmarkReadingListAccountStorage
+      presentingViewController:_baseViewController];
   __weak id<SigninPromoViewConsumer> weakConsumer = self.consumer;
   [_authenticationFlow startSignInWithCompletion:^(BOOL success) {
     if ([weakConsumer respondsToSelector:@selector(signinDidFinish)]) {

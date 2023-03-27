@@ -8,6 +8,7 @@
 #import "base/check_op.h"
 #import "base/ios/block_types.h"
 #import "base/notreached.h"
+#import "components/bookmarks/common/bookmark_features.h"
 #import "ios/chrome/browser/application_context/application_context.h"
 #import "ios/chrome/browser/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/main/browser.h"
@@ -44,6 +45,7 @@ enum AuthenticationState {
   CLEAR_DATA,
   SIGN_IN,
   COMMIT_SYNC,
+  ENABLE_BOOKMARK_READING_LIST_ACCOUNT_STORAGE,
   REGISTER_FOR_USER_POLICY,
   FETCH_USER_POLICY,
   COMPLETE_WITH_SUCCESS,
@@ -192,6 +194,7 @@ enum AuthenticationState {
     case CLEAR_DATA:
     case SIGN_IN:
     case COMMIT_SYNC:
+    case ENABLE_BOOKMARK_READING_LIST_ACCOUNT_STORAGE:
     case REGISTER_FOR_USER_POLICY:
     case FETCH_USER_POLICY:
       return COMPLETE_WITH_FAILURE;
@@ -247,12 +250,16 @@ enum AuthenticationState {
       switch (self.postSignInAction) {
         case PostSignInAction::kCommitSync:
           return COMMIT_SYNC;
+        case PostSignInAction::kEnableBookmarkReadingListAccountStorage:
+          return ENABLE_BOOKMARK_READING_LIST_ACCOUNT_STORAGE;
         case PostSignInAction::kNone:
           return COMPLETE_WITH_SUCCESS;
       }
     case COMMIT_SYNC:
       if (policy::IsUserPolicyEnabled() && _shouldFetchUserPolicy)
         return REGISTER_FOR_USER_POLICY;
+      return COMPLETE_WITH_SUCCESS;
+    case ENABLE_BOOKMARK_READING_LIST_ACCOUNT_STORAGE:
       return COMPLETE_WITH_SUCCESS;
     case REGISTER_FOR_USER_POLICY:
       if (!_dmToken.length || !_clientID.length) {
@@ -332,6 +339,10 @@ enum AuthenticationState {
       [self continueSignin];
       return;
 
+    case ENABLE_BOOKMARK_READING_LIST_ACCOUNT_STORAGE:
+      [self optInBookmarkReadingListAccountStorage];
+      return;
+
     case REGISTER_FOR_USER_POLICY:
       [_performer registerUserPolicy:browserState
                          forIdentity:_identityToSignIn];
@@ -383,6 +394,7 @@ enum AuthenticationState {
     case PostSignInAction::kCommitSync:
       [self checkMergeCaseForUnsupervisedAccounts];
       break;
+    case PostSignInAction::kEnableBookmarkReadingListAccountStorage:
     case PostSignInAction::kNone:
       [self continueSignin];
       break;
@@ -501,6 +513,16 @@ enum AuthenticationState {
                        }
                        viewController:_presentingViewController
                               browser:_browser];
+}
+
+// Opts in the bookmark and reading list account storage and continues the
+// sign-in flow.
+- (void)optInBookmarkReadingListAccountStorage {
+  DCHECK(
+      base::FeatureList::IsEnabled(bookmarks::kEnableBookmarksAccountStorage));
+  // TODO(crbug.com/1427044): Need to call the right APIs to opt in, as soon as
+  // those APIs will be implemented.
+  [self continueSignin];
 }
 
 #pragma mark AuthenticationFlowPerformerDelegate

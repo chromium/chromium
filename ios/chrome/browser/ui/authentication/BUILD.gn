@@ -29,6 +29,7 @@ source_set("authentication") {
     "resources:signin_confirmation_more",
     "resources:signin_promo_close_gray",
     "unified_consent",
+    "//components/bookmarks/common",
     "//components/consent_auditor",
     "//components/infobars/core",
     "//components/policy/core/common",

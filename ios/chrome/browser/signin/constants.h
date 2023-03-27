@@ -34,6 +34,8 @@ typedef enum {
 enum class PostSignInAction {
   // No post action after sign-in.
   kNone,
+  // Enables bookmark and reading list account storage.
+  kEnableBookmarkReadingListAccountStorage,
   // Starts sign-in flow for a sync consent.
   // The owner of `AuthenticationFlow` still needs to:
   //  * Record the sync dialog strings.
