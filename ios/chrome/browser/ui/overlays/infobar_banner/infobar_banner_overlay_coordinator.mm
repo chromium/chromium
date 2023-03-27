@@ -113,7 +113,7 @@
                    animated:animated
                  completion:^{
                    InfobarBannerOverlayCoordinator* strongSelf = weakSelf;
-                   if (strongSelf) {
+                   if (strongSelf && strongSelf.started) {
                      [strongSelf finishPresentation];
                    }
                  }];
