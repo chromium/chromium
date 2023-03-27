@@ -10,7 +10,7 @@
     // fuchsia.web/CreateContextParams.service_directory.
     {
       directory: "svc",
-      rights: [ "rw*" ],
+      rights: [ "connect", "enumerate", "traverse" ],
       path: "/svc",
     },
   ],

@@ -201,7 +201,7 @@ class InstanceBuilder {
   void ServeOptionalDirectory(
       OptionalDirectory directory,
       std::unique_ptr<vfs::internal::Directory> fs_directory,
-      bool writeable);
+      fuchsia::io::Operations rights);
 
   // Offers the directory `directory` from `void`.
   void OfferOptionalDirectoryFromVoid(OptionalDirectory directory);
@@ -210,7 +210,7 @@ class InstanceBuilder {
   // read-only or a read-write (if `writeable`) directory.
   void ServeDirectory(base::StringPiece name,
                       std::unique_ptr<vfs::internal::Directory> fs_directory,
-                      bool writeable);
+                      fuchsia::io::Operations rights);
 
   const raw_ref<sys::OutgoingDirectory> outgoing_directory_;
   const raw_ref<fuchsia::component::Realm> realm_;
@@ -291,9 +291,10 @@ void InstanceBuilder::AppendOffersForServices(
 void InstanceBuilder::ServeServiceDirectory(
     fidl::InterfaceHandle<fuchsia::io::Directory> service_directory) {
   DCHECK(instance_dir_);
-  ServeDirectory("svc",
-                 std::make_unique<vfs::RemoteDir>(std::move(service_directory)),
-                 /*writeable=*/true);
+  ServeDirectory(
+      "svc", std::make_unique<vfs::RemoteDir>(std::move(service_directory)),
+      fuchsia::io::Operations::CONNECT | fuchsia::io::Operations::ENUMERATE |
+          fuchsia::io::Operations::TRAVERSE);
 }
 
 void InstanceBuilder::ServeDataDirectory(
@@ -302,7 +303,7 @@ void InstanceBuilder::ServeDataDirectory(
   ServeOptionalDirectory(
       OptionalDirectory::kData,
       std::make_unique<vfs::RemoteDir>(std::move(data_directory)),
-      /*writeable=*/true);
+      fuchsia::io::RW_STAR_DIR);
 }
 
 zx_status_t InstanceBuilder::ServeContentDirectories(
@@ -323,8 +324,7 @@ zx_status_t InstanceBuilder::ServeContentDirectories(
   }
 
   ServeOptionalDirectory(OptionalDirectory::kContentDirectories,
-                         std::move(content_dirs),
-                         /*writeable=*/false);
+                         std::move(content_dirs), fuchsia::io::R_STAR_DIR);
   return ZX_OK;
 }
 
@@ -334,13 +334,13 @@ void InstanceBuilder::ServeCdmDataDirectory(
   ServeOptionalDirectory(
       OptionalDirectory::kCdmData,
       std::make_unique<vfs::RemoteDir>(std::move(cdm_data_directory)),
-      /*writeable=*/true);
+      fuchsia::io::RW_STAR_DIR);
 }
 
 void InstanceBuilder::ServeTmpDirectory(fuchsia::io::DirectoryHandle tmp_dir) {
   ServeOptionalDirectory(OptionalDirectory::kTmp,
                          std::make_unique<vfs::RemoteDir>(std::move(tmp_dir)),
-                         /*writeable=*/true);
+                         fuchsia::io::RW_STAR_DIR);
 }
 
 void InstanceBuilder::SetDebugRequest(
@@ -421,8 +421,7 @@ void InstanceBuilder::ServeCommandLine() {
   ZX_DCHECK(status == ZX_OK, status);
 
   ServeOptionalDirectory(OptionalDirectory::kCommandLineConfig,
-                         std::move(config_dir),
-                         /*writeable=*/false);
+                         std::move(config_dir), fuchsia::io::R_STAR_DIR);
 }
 
 void InstanceBuilder::OfferMissingDirectoriesFromVoid() {
@@ -454,13 +453,12 @@ base::StringPiece InstanceBuilder::GetDirectoryName(
 void InstanceBuilder::ServeOptionalDirectory(
     OptionalDirectory directory,
     std::unique_ptr<vfs::internal::Directory> fs_directory,
-    bool writeable) {
+    fuchsia::io::Operations rights) {
   DCHECK(instance_dir_);
   DCHECK(!is_directory_served(directory));
 
   set_directory_served(directory);
-  ServeDirectory(GetDirectoryName(directory), std::move(fs_directory),
-                 writeable);
+  ServeDirectory(GetDirectoryName(directory), std::move(fs_directory), rights);
 }
 
 void InstanceBuilder::OfferOptionalDirectoryFromVoid(
@@ -480,7 +478,7 @@ void InstanceBuilder::OfferOptionalDirectoryFromVoid(
 void InstanceBuilder::ServeDirectory(
     base::StringPiece name,
     std::unique_ptr<vfs::internal::Directory> fs_directory,
-    bool writeable) {
+    fuchsia::io::Operations rights) {
   DCHECK(instance_dir_);
   zx_status_t status =
       instance_dir_->AddEntry(std::string(name), std::move(fs_directory));
@@ -491,8 +489,7 @@ void InstanceBuilder::ServeDirectory(
                     .set_source(fcdecl::Ref::WithSelf({}))
                     .set_source_name(kCollectionName)
                     .set_target_name(std::string(name))
-                    .set_rights(writeable ? ::fuchsia::io::RW_STAR_DIR
-                                          : ::fuchsia::io::R_STAR_DIR)
+                    .set_rights(rights)
                     .set_subdir(base::StrCat({name_, "/", name}))
                     .set_dependency_type(fcdecl::DependencyType::STRONG)
                     .set_availability(fcdecl::Availability::REQUIRED))));
