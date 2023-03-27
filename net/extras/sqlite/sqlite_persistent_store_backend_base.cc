@@ -233,8 +233,8 @@ void SQLitePersistentStoreBackendBase::DatabaseErrorCallback(
 
   // Don't just do the close/delete here, as we are being called by |db| and
   // that seems dangerous.
-  // TODO(shess): Consider just calling RazeAndClose() immediately.
-  // db_ may not be safe to reset at this point, but RazeAndClose()
+  // TODO(shess): Consider just calling RazeAndPoison() immediately.
+  // db_ may not be safe to reset at this point, but RazeAndPoison()
   // would cause the stack to unwind safely with errors.
   PostBackgroundTask(
       FROM_HERE,
@@ -247,7 +247,7 @@ void SQLitePersistentStoreBackendBase::KillDatabase() {
   if (db_) {
     // This Backend will now be in-memory only. In a future run we will recreate
     // the database. Hopefully things go better then!
-    db_->RazeAndClose();
+    db_->RazeAndPoison();
     meta_table_.Reset();
     db_.reset();
   }
