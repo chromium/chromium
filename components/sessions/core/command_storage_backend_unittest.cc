@@ -18,6 +18,7 @@
 #include "base/run_loop.h"
 #include "base/strings/string_util.h"
 #include "base/test/bind.h"
+#include "base/test/simple_test_clock.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
 #include "components/sessions/core/command_storage_manager.h"
@@ -81,10 +82,11 @@ class CommandStorageBackendTest : public testing::Test {
   }
 
   scoped_refptr<CommandStorageBackend> CreateBackend(
-      const std::vector<uint8_t>& decryption_key = {}) {
+      const std::vector<uint8_t>& decryption_key = {},
+      base::Clock* clock = nullptr) {
     return MakeRefCounted<CommandStorageBackend>(
         task_environment_.GetMainThreadTaskRunner(), file_path_,
-        CommandStorageManager::SessionType::kOther, decryption_key);
+        CommandStorageManager::SessionType::kOther, decryption_key, clock);
   }
 
   scoped_refptr<CommandStorageBackend> CreateBackendWithRestoreType() {
@@ -780,19 +782,17 @@ TEST_F(CommandStorageBackendTest, RestoresFileWithMarkerAfterFailure) {
   SessionCommands commands;
   commands.push_back(CreateCommandFromData(data));
   backend->AppendCommands(std::move(commands), true, base::DoNothing());
-  const base::FilePath path1 = backend->current_path();
-  EXPECT_FALSE(path1.empty());
+  EXPECT_TRUE(backend->IsFileOpen());
 
   // Make appending fail, which should close the file.
   backend->ForceAppendCommandsToFailForTesting();
   backend->AppendCommands({}, false, base::DoNothing());
+  EXPECT_FALSE(backend->IsFileOpen());
 
-  // Append again, with another fail. Should attempt to reopen file.
+  // Append again, with another fail. Should attempt to reopen file and file.
   backend->ForceAppendCommandsToFailForTesting();
   backend->AppendCommands({}, true, base::DoNothing());
-  const base::FilePath path2 = backend->current_path();
-  EXPECT_FALSE(path2.empty());
-  EXPECT_NE(path1, path2);
+  EXPECT_FALSE(backend->IsFileOpen());
 
   // Reopen and read last session. Should get `data` and marker.
   backend = nullptr;
@@ -801,6 +801,37 @@ TEST_F(CommandStorageBackendTest, RestoresFileWithMarkerAfterFailure) {
   commands = backend->ReadLastSessionCommands().commands;
   ASSERT_EQ(1u, commands.size());
   AssertCommandEqualsData(data, commands[0].get());
+}
+
+TEST_F(CommandStorageBackendTest, PathTimeIncreases) {
+  base::SimpleTestClock test_clock;
+  test_clock.SetNow(base::Time::Now());
+  scoped_refptr<CommandStorageBackend> backend = CreateBackend({}, &test_clock);
+  // Write `data` and a marker.
+  struct TestData data = {11, "X"};
+  SessionCommands commands;
+  commands.push_back(CreateCommandFromData(data));
+  backend->AppendCommands(std::move(commands), true, base::DoNothing());
+  const base::FilePath path1 = backend->current_path();
+  EXPECT_FALSE(path1.empty());
+  base::Time path1_time;
+  EXPECT_TRUE(CommandStorageBackend::TimestampFromPath(path1, path1_time));
+
+  test_clock.Advance(base::Seconds(-1));
+  SessionCommands commands2;
+  commands2.push_back(CreateCommandFromData(data));
+  backend->AppendCommands(std::move(commands2), true, base::DoNothing());
+  const base::FilePath path2 = backend->current_path();
+  EXPECT_FALSE(path2.empty());
+  EXPECT_NE(path1, path2);
+  base::Time path2_time;
+  EXPECT_TRUE(CommandStorageBackend::TimestampFromPath(path2, path2_time));
+  // Even though the current time is before the previous time, the timestamp
+  // of the file should increase.
+  EXPECT_GT(path2_time, path1_time);
+  // Backend needs to be destroyed before test_clock so we don't end up with
+  // dangling reference.
+  backend.reset();
 }
 
 }  // namespace sessions

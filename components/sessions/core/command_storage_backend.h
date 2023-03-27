@@ -22,6 +22,7 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace base {
+class Clock;
 class File;
 }
 
@@ -89,7 +90,8 @@ class SESSIONS_EXPORT CommandStorageBackend
       scoped_refptr<base::SequencedTaskRunner> owning_task_runner,
       const base::FilePath& path,
       CommandStorageManager::SessionType type,
-      const std::vector<uint8_t>& decryption_key = {});
+      const std::vector<uint8_t>& decryption_key = {},
+      base::Clock* clock = nullptr);
   CommandStorageBackend(const CommandStorageBackend&) = delete;
   CommandStorageBackend& operator=(const CommandStorageBackend&) = delete;
 
@@ -97,7 +99,14 @@ class SESSIONS_EXPORT CommandStorageBackend
   static bool IsValidFile(const base::FilePath& path);
 
   // Returns the path the files are being written to.
-  const base::FilePath& current_path() const { return current_path_; }
+  const base::FilePath current_path() const {
+    return open_file_ ? open_file_->path : base::FilePath();
+  }
+
+  bool IsFileOpen() const {
+    return open_file_.get() != nullptr;
+    ;
+  }
 
   base::SequencedTaskRunner* owning_task_runner() {
     return base::RefCountedDeleteOnSequence<
@@ -150,6 +159,16 @@ class SESSIONS_EXPORT CommandStorageBackend
   struct SessionInfo {
     base::FilePath path;
     base::Time timestamp;
+  };
+
+  struct OpenFile {
+    OpenFile();
+    ~OpenFile();
+
+    base::FilePath path;
+    std::unique_ptr<base::File> file;
+    // Set to true once `kInitialStateMarkerCommandId` is written.
+    bool did_write_marker = false;
   };
 
   ~CommandStorageBackend();
@@ -243,11 +262,10 @@ class SESSIONS_EXPORT CommandStorageBackend
   // TaskRunner that the callback is added to.
   scoped_refptr<base::SequencedTaskRunner> callback_task_runner_;
 
-  // Path commands are currently being saved to.
-  base::FilePath current_path_;
+  raw_ptr<base::Clock> clock_;
 
-  // This may be null, created as necessary.
-  std::unique_ptr<base::File> file_;
+  // File and path commands are being written.
+  std::unique_ptr<OpenFile> open_file_;
 
   // Whether DoInit() was called. DoInit() is called on the background task
   // runner.
@@ -258,9 +276,6 @@ class SESSIONS_EXPORT CommandStorageBackend
 
   // Incremented every time a command is written.
   int commands_written_ = 0;
-
-  // Set to true once `kInitialStateMarkerCommandId` is written.
-  bool did_write_marker_ = false;
 
   // Timestamp when this session was started.
   base::Time timestamp_;

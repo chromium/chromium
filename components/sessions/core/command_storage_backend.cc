@@ -19,6 +19,7 @@
 #include "base/strings/string_util.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/single_thread_task_runner.h"
+#include "base/time/default_clock.h"
 #include "build/build_config.h"
 #include "components/sessions/core/session_constants.h"
 #include "components/sessions/core/session_service_commands.h"
@@ -423,6 +424,9 @@ CommandStorageBackend::ReadCommandsResult::~ReadCommandsResult() = default;
 // CommandStorageBackend
 // -------------------------------------------------------------
 
+CommandStorageBackend::OpenFile::OpenFile() = default;
+CommandStorageBackend::OpenFile::~OpenFile() = default;
+
 // static
 const int CommandStorageBackend::kFileReadBufferSize = 1024;
 
@@ -434,12 +438,14 @@ CommandStorageBackend::CommandStorageBackend(
     scoped_refptr<base::SequencedTaskRunner> owning_task_runner,
     const base::FilePath& path,
     SessionType type,
-    const std::vector<uint8_t>& decryption_key)
+    const std::vector<uint8_t>& decryption_key,
+    base::Clock* clock)
     : RefCountedDeleteOnSequence(owning_task_runner),
       type_(type),
       supplied_path_(path),
       initial_decryption_key_(decryption_key),
-      callback_task_runner_(base::SingleThreadTaskRunner::GetCurrentDefault()) {
+      callback_task_runner_(base::SingleThreadTaskRunner::GetCurrentDefault()),
+      clock_(clock ? clock : base::DefaultClock::GetInstance()) {
   // This is invoked on the main thread, don't do file access here.
 }
 
@@ -465,8 +471,9 @@ void CommandStorageBackend::AppendCommands(
   // initial state has been supplied. To do otherwise would mean the file never
   // contains the marker, and would not be considered
   // valid. This includes first time through.
-  if (!truncate && (!file_ || !file_->IsValid()))
+  if (!truncate && !open_file_) {
     return;
+  }
 
   if (truncate) {
     CloseFile();
@@ -485,30 +492,38 @@ void CommandStorageBackend::AppendCommands(
     DCHECK(crypto_key.empty());
   }
 
-  // Make sure and check |file_|, if opening the file failed |file_| will be
-  // null.
-  if (truncate || !file_ || !file_->IsValid())
+  // Make sure and check `open_file_`, if opening the file failed `open_file_`
+  // will be null.
+  if (truncate || !open_file_) {
     TruncateOrOpenFile();
+  }
 
-  // Check |file_| again as TruncateOrOpenFile() may fail.
-  if (file_ && file_->IsValid() &&
-      !AppendCommandsToFile(file_.get(), commands)) {
+  // Check `open_file_` again as TruncateOrOpenFile() may fail.
+  if (open_file_ && !AppendCommandsToFile(open_file_->file.get(), commands)) {
     CloseFile();
   }
 
-  if (truncate && file_ && file_->IsValid()) {
-    did_write_marker_ = true;
+  if (truncate && open_file_) {
+    // When `truncate` is true, a new file should be created, which means
+    // `did_write_marker` should be false.
+    DCHECK(!open_file_->did_write_marker);
+    open_file_->did_write_marker = true;
     if (last_file_with_valid_marker_) {
-      DCHECK_NE(*last_file_with_valid_marker_, current_path_);
+      // `last_file_with_valid_marker_` is only set after a truncation, which
+      // signals a new path should be used and that the two paths should not
+      // be equal (TruncateOrOpenFile() assigns a new path every time it's
+      // called).
+      DCHECK_NE(*last_file_with_valid_marker_, open_file_->path);
       base::DeleteFile(*last_file_with_valid_marker_);
       last_file_with_valid_marker_.reset();
     }
-    last_file_with_valid_marker_ = current_path_;
+    last_file_with_valid_marker_ = open_file_->path;
   }
 
-  // If `file_` is null, there was an error in writing.
-  if (!file_ && error_callback)
+  // If `open_file_` is null, there was an error in writing.
+  if (!open_file_ && error_callback) {
     callback_task_runner_->PostTask(FROM_HERE, std::move(error_callback));
+  }
 }
 
 // static
@@ -574,8 +589,6 @@ void CommandStorageBackend::MoveCurrentSessionToLastSession() {
   }
   last_session_info_ = new_last_session_info;
 
-  // This ensures TruncateOrOpenFile() opens the file.
-  current_path_.clear();
   TruncateOrOpenFile();
 }
 
@@ -639,22 +652,27 @@ CommandStorageBackend::ReadCommandsFromFile(
 }
 
 void CommandStorageBackend::CloseFile() {
-  file_.reset();
+  if (!open_file_) {
+    return;
+  }
+
+  // Close the file first, so that if we delete the file we won't have it open
+  // for writing (which may cause deletion to fail).
+  open_file_->file.reset();
 
   // If a marker wasn't written, no need to keep the current file.
-  if (!did_write_marker_ && !current_path_.empty())
-    base::DeleteFile(current_path_);
+  if (!open_file_->did_write_marker) {
+    base::DeleteFile(open_file_->path);
+  }
+
+  open_file_.reset();
 }
 
 void CommandStorageBackend::TruncateOrOpenFile() {
   DCHECK(inited_);
   CloseFile();
-  DCHECK(!file_);
-  base::Time new_timestamp = base::Time::Now();
-  // Ensure we don't reuse the current file (this is extremely unlikely to
-  // ever be true).
-  if (new_timestamp == timestamp_)
-    new_timestamp += base::Microseconds(1);
+  DCHECK(!open_file_);
+  base::Time new_timestamp = clock_->Now();
   if (last_session_info_) {
     // Ensure that the last session's timestamp is before the current file's.
     // This might not be true if the system clock has changed.
@@ -662,11 +680,20 @@ void CommandStorageBackend::TruncateOrOpenFile() {
       new_timestamp = last_session_info_->timestamp + base::Microseconds(1);
     }
   }
+  // Ensure we don't reuse the timestamp, and that it's always increasing. If
+  // we didn't do this, and the clock time goes backwards, we could potentially
+  // reuse a filepath, resulting in writing on top of an existing file.
+  if (new_timestamp <= timestamp_) {
+    new_timestamp = timestamp_ + base::Microseconds(1);
+  }
   timestamp_ = new_timestamp;
-  current_path_ = FilePathFromTime(type_, supplied_path_, timestamp_);
-  file_ = OpenAndWriteHeader(current_path_);
+  std::unique_ptr<OpenFile> open_file = std::make_unique<OpenFile>();
+  open_file->path = FilePathFromTime(type_, supplied_path_, timestamp_);
+  open_file->file = OpenAndWriteHeader(open_file->path);
+  if (open_file->file) {
+    open_file_ = std::move(open_file);
+  }
   commands_written_ = 0;
-  did_write_marker_ = false;
 }
 
 std::unique_ptr<base::File> CommandStorageBackend::OpenAndWriteHeader(
@@ -769,8 +796,8 @@ bool CommandStorageBackend::AppendEncryptedCommandToFile(
 absl::optional<CommandStorageBackend::SessionInfo>
 CommandStorageBackend::FindLastSessionFile() const {
   // Determine the session with the most recent timestamp. This is called
-  // at startup, before `current_path_` is set, so no need to check it.
-  DCHECK(current_path_.empty());
+  // at startup, before a file has been opened for writing.
+  DCHECK(!open_file_);
   for (const SessionInfo& session : GetSessionFilesSortedByReverseTimestamp()) {
     if (CanUseFileForLastSession(session.path))
       return session;
@@ -788,8 +815,8 @@ CommandStorageBackend::FindLastSessionFile() const {
 
 void CommandStorageBackend::DeleteLastSessionFiles() const {
   // Delete session files whose paths do not match the last session path. This
-  // at startup, before `current_path_` is set, so no need to check it.
-  DCHECK(current_path_.empty());
+  // is called at startup, before a file has been opened for writing.
+  DCHECK(!open_file_);
   for (const SessionInfo& session : GetSessionFilesSortedByReverseTimestamp()) {
     if (!last_session_info_ || session.path != last_session_info_->path)
       base::DeleteFile(session.path);
