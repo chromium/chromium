@@ -198,7 +198,11 @@ export class PowerBookmarksEditDialogElement extends PolymerElement {
 
   private onFolderSelected_(
       event: DomRepeatEvent<chrome.bookmarks.BookmarkTreeNode>) {
-    this.selectedFolder_ = event.model.item;
+    if (this.selectedFolder_ === event.model.item) {
+      this.selectedFolder_ = undefined;
+    } else {
+      this.selectedFolder_ = event.model.item;
+    }
   }
 
   private onNewFolder_() {
