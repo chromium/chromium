@@ -269,4 +269,30 @@ TEST_F(AccessiblePaneViewTest, MAYBE_DoesntCrashOnEscapeWithRemovedView) {
   EXPECT_TRUE(test_view2->AcceleratorPressed(test_view2->escape_key()));
 }
 
+TEST_F(AccessiblePaneViewTest, AccessibleProperties) {
+  TestBarView* test_view = new TestBarView();
+  test_view->SetAccessibleName(u"Name");
+  test_view->SetAccessibleDescription(u"Description");
+  EXPECT_EQ(test_view->GetAccessibleName(), u"Name");
+  EXPECT_EQ(test_view->GetAccessibleDescription(), u"Description");
+  EXPECT_EQ(test_view->GetAccessibleRole(), ax::mojom::Role::kPane);
+
+  ui::AXNodeData data;
+  test_view->GetAccessibleNodeData(&data);
+  EXPECT_EQ(data.GetString16Attribute(ax::mojom::StringAttribute::kName),
+            u"Name");
+  EXPECT_EQ(data.GetString16Attribute(ax::mojom::StringAttribute::kDescription),
+            u"Description");
+  EXPECT_EQ(data.role, ax::mojom::Role::kPane);
+
+  data = ui::AXNodeData();
+  test_view->SetAccessibleRole(ax::mojom::Role::kToolbar);
+  test_view->GetAccessibleNodeData(&data);
+  EXPECT_EQ(data.GetString16Attribute(ax::mojom::StringAttribute::kName),
+            u"Name");
+  EXPECT_EQ(data.GetString16Attribute(ax::mojom::StringAttribute::kDescription),
+            u"Description");
+  EXPECT_EQ(data.role, ax::mojom::Role::kToolbar);
+}
+
 }  // namespace views

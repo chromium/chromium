@@ -927,4 +927,18 @@ TEST_F(ButtonTest, SetTooltipTextNotifiesAccessibilityEvent) {
   EXPECT_EQ(test_tooltip_text, base::ASCIIToUTF16(name));
 }
 
+TEST_F(ButtonTest, AccessibleRole) {
+  ui::AXNodeData data;
+  button()->GetAccessibleNodeData(&data);
+  EXPECT_EQ(data.role, ax::mojom::Role::kButton);
+  EXPECT_EQ(button()->GetAccessibleRole(), ax::mojom::Role::kButton);
+
+  button()->SetAccessibleRole(ax::mojom::Role::kCheckBox);
+
+  data = ui::AXNodeData();
+  button()->GetAccessibleNodeData(&data);
+  EXPECT_EQ(data.role, ax::mojom::Role::kCheckBox);
+  EXPECT_EQ(button()->GetAccessibleRole(), ax::mojom::Role::kCheckBox);
+}
+
 }  // namespace views

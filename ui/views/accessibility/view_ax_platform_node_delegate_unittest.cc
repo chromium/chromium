@@ -408,11 +408,8 @@ TEST_F(ViewAXPlatformNodeDelegateTest, GetAuthorUniqueIdNonDefault) {
 
 TEST_F(ViewAXPlatformNodeDelegateTest, OverrideNameAndDescription) {
   // Initially the button has no name and no description.
-  // TODO(accessibility): If nothing has set the name, should the NameFrom
-  // be kNone or kUninitialized instead of kAttribute?
   EXPECT_EQ(button_accessibility()->GetName(), "");
-  EXPECT_EQ(button_accessibility()->GetNameFrom(),
-            ax::mojom::NameFrom::kAttribute);
+  EXPECT_EQ(button_accessibility()->GetNameFrom(), ax::mojom::NameFrom::kNone);
   EXPECT_EQ(button_accessibility()->GetDescription(), "");
   EXPECT_EQ(button_accessibility()->GetDescriptionFrom(),
             ax::mojom::DescriptionFrom::kNone);

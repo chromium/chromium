@@ -16,7 +16,6 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
 #include "ui/accessibility/ax_enums.mojom.h"
-#include "ui/accessibility/ax_node_data.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/color/color_id.h"
 #include "ui/color/color_provider.h"
@@ -79,7 +78,11 @@ struct StyledLabel::LayoutViews {
   std::vector<std::unique_ptr<View>> owned_views;
 };
 
-StyledLabel::StyledLabel() = default;
+StyledLabel::StyledLabel() {
+  SetAccessibilityProperties(text_context_ == style::CONTEXT_DIALOG_TITLE
+                                 ? ax::mojom::Role::kTitleBar
+                                 : ax::mojom::Role::kStaticText);
+}
 
 StyledLabel::~StyledLabel() = default;
 
@@ -96,6 +99,7 @@ void StyledLabel::SetText(std::u16string text) {
     return;
 
   text_ = text;
+  SetAccessibleName(text_);
   style_ranges_.clear();
   RemoveOrDeleteAllChildViews();
   OnPropertyChanged(&text_, kPropertyEffectsPreferredSizeChanged);
@@ -135,6 +139,9 @@ void StyledLabel::SetTextContext(int text_context) {
     return;
 
   text_context_ = text_context;
+  SetAccessibleRole(text_context_ == style::CONTEXT_DIALOG_TITLE
+                        ? ax::mojom::Role::kTitleBar
+                        : ax::mojom::Role::kStaticText);
   OnPropertyChanged(&text_context_, kPropertyEffectsPreferredSizeChanged);
 }
 
@@ -217,13 +224,6 @@ void StyledLabel::SizeToFit(int fixed_width) {
   gfx::Size size = layout_size_info_.total_size;
   size.set_width(std::max(size.width(), fixed_width));
   SetSize(size);
-}
-
-void StyledLabel::GetAccessibleNodeData(ui::AXNodeData* node_data) {
-  node_data->role = (text_context_ == style::CONTEXT_DIALOG_TITLE)
-                        ? ax::mojom::Role::kTitleBar
-                        : ax::mojom::Role::kStaticText;
-  node_data->SetName(GetText());
 }
 
 gfx::Size StyledLabel::CalculatePreferredSize() const {

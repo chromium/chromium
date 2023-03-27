@@ -420,9 +420,10 @@ void LabelButton::Layout() {
 }
 
 void LabelButton::GetAccessibleNodeData(ui::AXNodeData* node_data) {
-  if (GetIsDefault())
-    node_data->AddState(ax::mojom::State::kDefault);
   Button::GetAccessibleNodeData(node_data);
+  if (GetIsDefault()) {
+    node_data->AddState(ax::mojom::State::kDefault);
+  }
 }
 
 ui::NativeTheme::Part LabelButton::GetThemePart() const {

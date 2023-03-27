@@ -4567,6 +4567,22 @@ TEST_F(TextfieldTest, AccessiblePasswordTest) {
   EXPECT_TRUE(node_data_protected.HasState(ax::mojom::State::kProtected));
 }
 
+TEST_F(TextfieldTest, AccessibleRole) {
+  InitTextfield();
+
+  ui::AXNodeData data;
+  textfield_->GetAccessibleNodeData(&data);
+  EXPECT_EQ(data.role, ax::mojom::Role::kTextField);
+  EXPECT_EQ(textfield_->GetAccessibleRole(), ax::mojom::Role::kTextField);
+
+  textfield_->SetAccessibleRole(ax::mojom::Role::kSearchBox);
+
+  data = ui::AXNodeData();
+  textfield_->GetAccessibleNodeData(&data);
+  EXPECT_EQ(data.role, ax::mojom::Role::kSearchBox);
+  EXPECT_EQ(textfield_->GetAccessibleRole(), ax::mojom::Role::kSearchBox);
+}
+
 // Verify that cursor visibility is controlled by SetCursorEnabled.
 TEST_F(TextfieldTest, CursorVisibility) {
   InitTextfield();

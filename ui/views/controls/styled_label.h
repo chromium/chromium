@@ -171,7 +171,6 @@ class VIEWS_EXPORT StyledLabel : public View {
   void SizeToFit(int fixed_width);
 
   // View:
-  void GetAccessibleNodeData(ui::AXNodeData* node_data) override;
   gfx::Size CalculatePreferredSize() const override;
   int GetHeightForWidth(int w) const override;
   void Layout() override;

@@ -73,6 +73,7 @@ float GetNearestAllowedValue(const base::flat_set<float>& allowed_values,
 Slider::Slider(SliderListener* listener) : listener_(listener) {
   highlight_animation_.SetSlideDuration(base::Milliseconds(150));
   SetFlipCanvasOnPaintForRTLUI(true);
+  SetAccessibilityProperties(ax::mojom::Role::kSlider);
 
 #if BUILDFLAG(IS_MAC)
   SetFocusBehavior(FocusBehavior::ACCESSIBLE_ONLY);
@@ -321,7 +322,7 @@ bool Slider::OnKeyPressed(const ui::KeyEvent& event) {
 }
 
 void Slider::GetAccessibleNodeData(ui::AXNodeData* node_data) {
-  node_data->role = ax::mojom::Role::kSlider;
+  View::GetAccessibleNodeData(node_data);
   node_data->SetValue(base::UTF8ToUTF16(
       base::StringPrintf("%d%%", static_cast<int>(value_ * 100 + 0.5))));
   node_data->AddAction(ax::mojom::Action::kIncrement);

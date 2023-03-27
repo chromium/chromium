@@ -242,12 +242,12 @@ IN_PROC_BROWSER_TEST_F(PluginVmInstallerViewBrowserTestWithFeatureEnabled,
   auto* progress_view = view_->GetDownloadProgressMessageViewForTesting();
   EXPECT_NE(nullptr, progress_view);
 
-  // The message and title labels should each have fired an accessibility event
-  // as a result of the introductory/set-up text being displayed. Because the
-  // download has not started, there should be no event from the download
-  // progress label.
-  EXPECT_EQ(1, counter.GetCount(ax::mojom::Event::kTextChanged, title_view));
-  EXPECT_EQ(1, counter.GetCount(ax::mojom::Event::kTextChanged, message_view));
+  // Views should only fire property-change events when the property changes;
+  // not when a value is initialized. As a result, there should not be any
+  // text-changed accessibility fired as a result of the introductory/set-up
+  // text being displayed.
+  EXPECT_EQ(0, counter.GetCount(ax::mojom::Event::kTextChanged, title_view));
+  EXPECT_EQ(0, counter.GetCount(ax::mojom::Event::kTextChanged, message_view));
   EXPECT_EQ(0, counter.GetCount(ax::mojom::Event::kTextChanged, progress_view));
 
   counter.ResetAllCounts();

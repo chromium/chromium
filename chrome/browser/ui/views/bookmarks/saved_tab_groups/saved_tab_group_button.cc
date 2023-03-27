@@ -84,8 +84,12 @@ SavedTabGroupButton::SavedTabGroupButton(
               &SavedTabGroupButton::CreateDialogModelForContextMenu,
               base::Unretained(this)),
           views::MenuRunner::CONTEXT_MENU | views::MenuRunner::IS_NESTED) {
+  SetAccessibilityProperties(
+      ax::mojom::Role::kPopUpButton, group.title(),
+      /*description*/ absl::nullopt,
+      l10n_util::GetStringUTF16(
+          IDS_ACCNAME_SAVED_TAB_GROUP_BUTTON_ROLE_DESCRIPTION));
   SetText(group.title());
-  SetAccessibleName(group.title());
   SetTooltipText(group.title());
   SetID(VIEW_ID_BOOKMARK_BAR_ELEMENT);
   SetProperty(views::kElementIdentifierKey, kSavedTabGroupButtonElementId);
@@ -157,17 +161,15 @@ std::u16string SavedTabGroupButton::GetTooltipText(const gfx::Point& p) const {
 }
 
 void SavedTabGroupButton::GetAccessibleNodeData(ui::AXNodeData* node_data) {
+  views::MenuButton::GetAccessibleNodeData(node_data);
+
+  // TODO(crbug.com/1411342): Under what circumstances would there be no
+  // name? Please read the bug description and update accordingly.
   // If the button would have no name, avoid crashing by setting the name
   // explicitly empty.
   if (GetAccessibleName().empty()) {
     node_data->SetNameExplicitlyEmpty();
   }
-
-  views::MenuButton::GetAccessibleNodeData(node_data);
-  node_data->AddStringAttribute(
-      ax::mojom::StringAttribute::kRoleDescription,
-      l10n_util::GetStringUTF8(
-          IDS_ACCNAME_SAVED_TAB_GROUP_BUTTON_ROLE_DESCRIPTION));
 }
 
 void SavedTabGroupButton::OnPaintBackground(gfx::Canvas* canvas) {

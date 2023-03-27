@@ -519,8 +519,7 @@ void Button::OnPaint(gfx::Canvas* canvas) {
 }
 
 void Button::GetAccessibleNodeData(ui::AXNodeData* node_data) {
-  node_data->role = ax::mojom::Role::kButton;
-  node_data->SetName(GetAccessibleName());
+  View::GetAccessibleNodeData(node_data);
   if (!GetEnabled())
     node_data->SetRestriction(ax::mojom::Restriction::kDisabled);
 
@@ -606,6 +605,8 @@ Button::Button(PressedCallback callback)
   // TODO(pbos): Investigate not setting a default color so that we can DCHECK
   // if one hasn't been set.
   InkDrop::Get(this)->SetBaseColor(gfx::kPlaceholderColor);
+
+  SetAccessibilityProperties(ax::mojom::Role::kButton);
 }
 
 void Button::RequestFocusFromEvent() {

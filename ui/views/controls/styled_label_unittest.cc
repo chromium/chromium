@@ -875,4 +875,36 @@ TEST_F(StyledLabelTest, PreferredSizeAcrossConstCall) {
   EXPECT_EQ(size, styled()->GetPreferredSize());
 }
 
+TEST_F(StyledLabelTest, AccessibleNameAndRole) {
+  const std::string text("Text");
+  InitStyledLabel(text);
+  EXPECT_EQ(styled()->GetAccessibleName(), base::UTF8ToUTF16(text));
+  EXPECT_EQ(styled()->GetAccessibleRole(), ax::mojom::Role::kStaticText);
+
+  ui::AXNodeData data;
+  styled()->GetAccessibleNodeData(&data);
+  EXPECT_EQ(data.GetStringAttribute(ax::mojom::StringAttribute::kName), text);
+  EXPECT_EQ(data.role, ax::mojom::Role::kStaticText);
+
+  styled()->SetTextContext(style::CONTEXT_DIALOG_TITLE);
+  EXPECT_EQ(styled()->GetAccessibleName(), base::UTF8ToUTF16(text));
+  EXPECT_EQ(styled()->GetAccessibleRole(), ax::mojom::Role::kTitleBar);
+
+  data = ui::AXNodeData();
+  styled()->GetAccessibleNodeData(&data);
+  EXPECT_EQ(data.GetStringAttribute(ax::mojom::StringAttribute::kName), text);
+  EXPECT_EQ(data.role, ax::mojom::Role::kTitleBar);
+
+  styled()->SetText(u"New Text");
+  styled()->SetAccessibleRole(ax::mojom::Role::kLink);
+  EXPECT_EQ(styled()->GetAccessibleName(), u"New Text");
+  EXPECT_EQ(styled()->GetAccessibleRole(), ax::mojom::Role::kLink);
+
+  data = ui::AXNodeData();
+  styled()->GetAccessibleNodeData(&data);
+  EXPECT_EQ(data.GetString16Attribute(ax::mojom::StringAttribute::kName),
+            u"New Text");
+  EXPECT_EQ(data.role, ax::mojom::Role::kLink);
+}
+
 }  // namespace views

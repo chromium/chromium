@@ -21,6 +21,7 @@
 #include "ui/events/gesture_event_details.h"
 #include "ui/events/keycodes/keyboard_codes.h"
 #include "ui/events/test/event_generator.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/test/ax_event_counter.h"
 #include "ui/views/test/slider_test_api.h"
 #include "ui/views/test/views_test_base.h"
@@ -287,6 +288,20 @@ TEST_P(SliderTest, NukeAllowedValues) {
           position - test::SliderTestApi(slider()).initial_button_offset()) /
           (slider()->width() - kThumbWidth),
       slider()->GetValue());
+}
+
+TEST_P(SliderTest, AccessibleRole) {
+  ui::AXNodeData data;
+  slider()->GetViewAccessibility().GetAccessibleNodeData(&data);
+  EXPECT_EQ(data.role, ax::mojom::Role::kSlider);
+  EXPECT_EQ(slider()->GetAccessibleRole(), ax::mojom::Role::kSlider);
+
+  slider()->SetAccessibleRole(ax::mojom::Role::kMeter);
+
+  data = ui::AXNodeData();
+  slider()->GetViewAccessibility().GetAccessibleNodeData(&data);
+  EXPECT_EQ(data.role, ax::mojom::Role::kMeter);
+  EXPECT_EQ(slider()->GetAccessibleRole(), ax::mojom::Role::kMeter);
 }
 
 // No touch on desktop Mac. Tracked in http://crbug.com/445520.

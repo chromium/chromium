@@ -88,6 +88,9 @@ const nodeNameContainedInStaticTextChildren = function(node) {
     if (child.role !== Role.STATIC_TEXT) {
       return false;
     }
+    if (child.name === undefined) {
+      return false;
+    }
     if (name.substring(nameIndex, nameIndex + child.name.length) !==
         child.name) {
       return false;

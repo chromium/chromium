@@ -53,7 +53,6 @@ class VIEWS_EXPORT AccessiblePaneView : public View,
   FocusTraversable* GetPaneFocusTraversable() override;
   bool AcceleratorPressed(const ui::Accelerator& accelerator) override;
   void SetVisible(bool flag) override;
-  void GetAccessibleNodeData(ui::AXNodeData* node_data) override;
   void RequestFocus() override;
 
   // Overridden from FocusChangeListener:
