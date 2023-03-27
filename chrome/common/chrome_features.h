@@ -894,6 +894,11 @@ bool IsParentAccessCodeForOnlineLoginEnabled();
 COMPONENT_EXPORT(CHROME_FEATURES)
 BASE_DECLARE_FEATURE(kOmniboxTriggerForPrerender2);
 
+// This flag is used for enabling Bookmark triggered prerendering. See
+// crbug.com/1422819 for more details of Bookmark triggered prerendering.
+COMPONENT_EXPORT(CHROME_FEATURES)
+BASE_DECLARE_FEATURE(kBookmarkTriggerForPrerender2);
+
 // This flag controls whether to trigger prerendering when the default search
 // engine suggests to prerender a search result. It also enables
 // Prerender2-related features on the blink side. This flag takes effect only
