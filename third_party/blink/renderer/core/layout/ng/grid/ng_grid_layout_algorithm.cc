@@ -1433,8 +1433,7 @@ wtf_size_t NGGridLayoutAlgorithm::ComputeAutomaticRepetitionsForSubgrid(
     return 0;
   }
 
-  const wtf_size_t tracks_per_repeat =
-      track_list.RepeaterCount() * track_list.AutoRepeatTrackCount();
+  const wtf_size_t tracks_per_repeat = track_list.AutoRepeatTrackCount();
   if (tracks_per_repeat > subgrid_span_size) {
     // No room left for auto repetitions because each repetition is too large.
     return 0;

@@ -226,8 +226,13 @@ NGGridRangeVector NGGridRangeBuilder::FinalizeRanges() {
     DCHECK_GT(range.track_count, 0u);
 
     // Compute current repeater's index, size, and offset.
+    // TODO(ethavar): Simplify this logic.
     range.begin_set_index = current_set_index;
-    if (current_explicit_repeater_index != kNotFound) {
+    if (explicit_tracks_.IsSubgriddedAxis()) {
+      // Subgridded axis specified on standalone grid, use 'auto'.
+      range.repeater_index = kNotFound;
+      range.repeater_offset = 0u;
+    } else if (current_explicit_repeater_index != kNotFound) {
       current_repeater_size =
           explicit_tracks_.RepeatSize(current_explicit_repeater_index);
 
@@ -913,10 +918,12 @@ void NGGridSizingTrackCollection::BuildSets(
     };
 
     if (range.repeater_index == kNotFound) {
-      // The only case where a range doesn't have a repeater index is when the
-      // range is in the implicit grid and there are no auto track definitions;
-      // fill the entire range with a single set of 'auto' tracks.
-      DCHECK(range.IsImplicit());
+      // The only cases where a range doesn't have a repeater index are when the
+      // range is in the implicit grid and there are no auto track definitions,
+      // or when 'subgrid' is specified on a track definition but it's not a
+      // child of a grid (and thus not a subgrid); in both cases, fill the
+      // entire range with a single set of 'auto' tracks.
+      DCHECK(range.IsImplicit() || explicit_track_list.IsSubgriddedAxis());
       CacheSetProperties(sets_.emplace_back(range.track_count));
     } else {
       const auto& specified_track_list =
