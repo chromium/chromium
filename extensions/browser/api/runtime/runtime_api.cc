@@ -153,6 +153,51 @@ std::string GetUninstallURL(ExtensionPrefs* prefs,
   return url_string;
 }
 
+// Returns true if the given `context` matches the `filter`.
+bool ExtensionContextMatchesFilter(
+    const api::runtime::ExtensionContext& context,
+    const api::runtime::ContextFilter& filter) {
+  if (filter.context_types &&
+      !base::Contains(*filter.context_types, context.context_type)) {
+    return false;
+  }
+  if (filter.context_ids &&
+      !base::Contains(*filter.context_ids, context.context_id)) {
+    return false;
+  }
+  if (filter.tab_ids && !base::Contains(*filter.tab_ids, context.tab_id)) {
+    return false;
+  }
+  if (filter.window_ids &&
+      !base::Contains(*filter.window_ids, context.window_id)) {
+    return false;
+  }
+  if (filter.document_ids &&
+      (!context.document_id ||
+       !base::Contains(*filter.document_ids, *context.document_id))) {
+    return false;
+  }
+  if (filter.frame_ids &&
+      !base::Contains(*filter.frame_ids, context.frame_id)) {
+    return false;
+  }
+  if (filter.document_urls &&
+      (!context.document_url ||
+       !base::Contains(*filter.document_urls, *context.document_url))) {
+    return false;
+  }
+  if (filter.document_origins &&
+      (!context.document_origin ||
+       !base::Contains(*filter.document_origins, *context.document_origin))) {
+    return false;
+  }
+  if (filter.incognito && *filter.incognito != context.incognito) {
+    return false;
+  }
+
+  return true;
+}
+
 }  // namespace
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -751,11 +796,28 @@ RuntimeGetContextsFunction::~RuntimeGetContextsFunction() = default;
 ExtensionFunction::ResponseAction RuntimeGetContextsFunction::Run() {
   EXTENSION_FUNCTION_VALIDATE(extension());
 
+  auto params = api::runtime::GetContexts::Params::Create(args());
+  EXTENSION_FUNCTION_VALIDATE(params);
+  const api::runtime::ContextFilter& filter = params->filter;
+
   std::vector<api::runtime::ExtensionContext> result;
-  if (absl::optional<api::runtime::ExtensionContext> worker =
-          GetWorkerContext()) {
-    result.push_back(std::move(*worker));
+
+  // Minor optimization: only construct the context if there's a chance it will
+  // match the filter.
+  if (!filter.context_types ||
+      base::Contains(*filter.context_types,
+                     api::runtime::CONTEXT_TYPE_BACKGROUND)) {
+    if (absl::optional<api::runtime::ExtensionContext> worker =
+            GetWorkerContext()) {
+      result.push_back(std::move(*worker));
+    }
   }
+
+  // Erase any contexts that don't match the specified filter.
+  base::EraseIf(result,
+                [&filter](const api::runtime::ExtensionContext& context) {
+                  return !ExtensionContextMatchesFilter(context, filter);
+                });
 
   return RespondNow(
       ArgumentList(api::runtime::GetContexts::Results::Create(result)));

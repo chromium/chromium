@@ -6,6 +6,7 @@
 
 #include "base/json/json_reader.h"
 #include "base/run_loop.h"
+#include "base/strings/stringprintf.h"
 #include "base/test/bind.h"
 #include "base/test/simple_test_tick_clock.h"
 #include "base/test/values_test_util.h"
@@ -635,15 +636,60 @@ class RuntimeGetContextsApiTest : public ExtensionApiTest {
 
   // Runs `chrome.runtime.getContexts()` and returns the result as a
   // base::Value.
-  base::Value GetContexts() {
-    static constexpr char kScript[] =
+  base::Value GetContexts(const char* filter) {
+    static constexpr char kScriptTemplate[] =
         R"((async () => {
              chrome.test.sendScriptResult(
-                 await chrome.runtime.getContexts());
+                 await chrome.runtime.getContexts(%s));
            })();)";
+    std::string script = base::StringPrintf(kScriptTemplate, filter);
     return BackgroundScriptExecutor::ExecuteScript(
-        profile(), extension_->id(), kScript,
+        profile(), extension_->id(), script,
         BackgroundScriptExecutor::ResultCapture::kSendScriptResult);
+  }
+
+  // Runs `chrome.runtime.getContexts()` and returns the result as a vector
+  // of strongly-typed `ExtensionContext`s. Expects the getContexts() call to
+  // return a valid value (i.e., not throw an error).
+  std::vector<api::runtime::ExtensionContext> GetContextStructs(
+      const char* filter) {
+    base::Value value = GetContexts(filter);
+    if (!value.is_list()) {
+      ADD_FAILURE() << "Invalid return value: " << value;
+      return {};
+    }
+
+    std::vector<api::runtime::ExtensionContext> result;
+    result.reserve(value.GetList().size());
+    for (const auto& entry : value.GetList()) {
+      if (!entry.is_dict()) {
+        ADD_FAILURE() << "Invalid return value: " << value;
+        return {};
+      }
+      auto context = api::runtime::ExtensionContext::FromValue(entry.GetDict());
+      if (!context) {
+        ADD_FAILURE() << "Invalid return value: " << value;
+        return {};
+      }
+
+      result.push_back(std::move(*context));
+    }
+
+    return result;
+  }
+
+  // Returns a matcher that expects an ExtensionContext to be a valid
+  // background context (without testing details of the entry).
+  auto GetBackgroundMatcher() {
+    return testing::AllOf(
+        testing::Field(&api::runtime::ExtensionContext::context_type,
+                       testing::Eq(api::runtime::CONTEXT_TYPE_BACKGROUND)),
+        testing::Field(&api::runtime::ExtensionContext::tab_id,
+                       testing::Eq(-1)),
+        testing::Field(&api::runtime::ExtensionContext::window_id,
+                       testing::Eq(-1)),
+        testing::Field(&api::runtime::ExtensionContext::frame_id,
+                       testing::Eq(-1)));
   }
 
  private:
@@ -656,7 +702,10 @@ class RuntimeGetContextsApiTest : public ExtensionApiTest {
 // Tests retrieving the background service worker context using
 // `chrome.runtime.getContexts()`.
 IN_PROC_BROWSER_TEST_F(RuntimeGetContextsApiTest, GetServiceWorkerContext) {
-  base::Value background_contexts = GetContexts();
+  // An empty dictionary filter should match all contexts (of which there is
+  // only one).
+  base::Value contexts = GetContexts("{}");
+
   // Note: fields of `documentId`, `documentUrl`, and `documentOrigin` are
   // undefined (service worker contexts don't have an associated document).
   // `tabId`, `frameId`, and `windowId` are -1 for consistency with other
@@ -670,10 +719,51 @@ IN_PROC_BROWSER_TEST_F(RuntimeGetContextsApiTest, GetServiceWorkerContext) {
             "frameId": -1,
             "incognito": false
          }])";
-  EXPECT_THAT(background_contexts, base::test::IsJson(kExpected));
+  EXPECT_THAT(contexts, base::test::IsJson(kExpected));
 
   // TODO(crbug/1426192): Add tests for retrieving a service worker context
   // when there isn't an active worker.
+}
+
+// Tests the filter matching behavior of `runtime.getContexts()`.
+IN_PROC_BROWSER_TEST_F(RuntimeGetContextsApiTest, FilterMatching) {
+  // Currently, there is only one context: the background service worker.
+
+  {
+    // Passing a filter to match background contexts should match the worker.
+    std::vector<api::runtime::ExtensionContext> contexts =
+        GetContextStructs(R"({"contextTypes": ["BACKGROUND"]})");
+    EXPECT_THAT(contexts, testing::ElementsAre(GetBackgroundMatcher()));
+  }
+  {
+    // Try passing a filter for a different context type. No contexts should
+    // match.
+    std::vector<api::runtime::ExtensionContext> contexts =
+        GetContextStructs(R"({"contextTypes": ["POPUP"]})");
+    EXPECT_THAT(contexts, testing::IsEmpty());
+  }
+  {
+    // Filter properties support an array of options; if the context matches an
+    // entry in the array, it matches the filter for that property. Thus,
+    // passing both "BACKGROUND" and "POPUP" should match the service worker
+    // context.
+    std::vector<api::runtime::ExtensionContext> contexts =
+        GetContextStructs(R"({"contextTypes": ["BACKGROUND", "POPUP"]})");
+    EXPECT_THAT(contexts, testing::ElementsAre(GetBackgroundMatcher()));
+  }
+  {
+    // All specified filter properties must match. Thus, if we look for a
+    // background context and also specify a tab ID, nothing should match
+    // (since the background context doesn't have an associated tab).
+    static constexpr char kFilter[] =
+        R"({
+             "contextTypes": ["BACKGROUND"],
+             "tabIds": [2]
+           })";
+    std::vector<api::runtime::ExtensionContext> contexts =
+        GetContextStructs(kFilter);
+    EXPECT_THAT(contexts, testing::IsEmpty());
+  }
 }
 
 }  // namespace extensions

@@ -188,6 +188,23 @@ chrome.runtime.ContextType = {
 chrome.runtime.ExtensionContext;
 
 /**
+ * A filter to match against certain extension contexts. Matching contexts must match all specified filters; any filter that is not specified matches all available contexts. Thus, a filter of `{}` will match all available contexts.
+ * @typedef {{
+ *   contextTypes: (!Array<!chrome.runtime.ContextType>|undefined),
+ *   contextIds: (!Array<string>|undefined),
+ *   tabIds: (!Array<number>|undefined),
+ *   windowIds: (!Array<number>|undefined),
+ *   documentIds: (!Array<string>|undefined),
+ *   frameIds: (!Array<number>|undefined),
+ *   documentUrls: (!Array<string>|undefined),
+ *   documentOrigins: (!Array<string>|undefined),
+ *   incognito: (boolean|undefined)
+ * }}
+ * @see https://developer.chrome.com/extensions/runtime#type-ContextFilter
+ */
+chrome.runtime.ContextFilter;
+
+/**
  * This will be defined during an API method callback if there was an error
  * @typedef {{
  *   message: (string|undefined)
@@ -393,11 +410,14 @@ chrome.runtime.getPackageDirectoryEntry = function(callback) {};
 
 /**
  * Fetches information about active contexts associated with this extension
+ * @param {!chrome.runtime.ContextFilter} filter A filter to find matching
+ *     contexts. A context matches if it matches all specified fields in the
+ *     filter. Any unspecified field in the filter matches all contexts.
  * @param {function(!Array<!chrome.runtime.ExtensionContext>): void} callback
  *     Invoked with the matching contexts, if any.
  * @see https://developer.chrome.com/extensions/runtime#method-getContexts
  */
-chrome.runtime.getContexts = function(callback) {};
+chrome.runtime.getContexts = function(filter, callback) {};
 
 /**
  * Fired when a profile that has this extension installed first starts up. This

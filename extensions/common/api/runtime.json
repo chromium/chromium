@@ -188,6 +188,57 @@
             "description": "Whether the context is associated with an incognito profile."
           }
         }
+      },
+      {
+        "id": "ContextFilter",
+        "type": "object",
+        "description": "A filter to match against certain extension contexts. Matching contexts must match all specified filters; any filter that is not specified matches all available contexts. Thus, a filter of `{}` will match all available contexts.",
+        "properties": {
+          "contextTypes": {
+            "type": "array",
+            "items": { "$ref": "ContextType" },
+            "optional": true
+          },
+          "contextIds": {
+            "type": "array",
+            "items": { "type": "string" },
+            "optional": true
+          },
+          "tabIds": {
+            "type": "array",
+            "items": { "type": "integer" },
+            "optional": true
+          },
+          "windowIds": {
+            "type": "array",
+            "items": { "type": "integer" },
+            "optional": true
+          },
+          "documentIds": {
+            "type": "array",
+            "items": { "type": "string" },
+            "optional": true
+          },
+          "frameIds": {
+            "type": "array",
+            "items": { "type": "integer" },
+            "optional": true
+          },
+          "documentUrls": {
+            "type": "array",
+            "items": { "type": "string" },
+            "optional": true
+          },
+          "documentOrigins": {
+            "type": "array",
+            "items": { "type": "string" },
+            "optional": true
+          },
+          "incognito": {
+            "type": "boolean",
+            "optional": true
+          }
+        }
       }
     ],
     "properties": {
@@ -491,7 +542,11 @@
         "type": "function",
         "description": "Fetches information about active contexts associated with this extension",
         "parameters": [
-            // TODO(crbug/1426192): Add a filter.
+          {
+            "$ref": "ContextFilter",
+            "name": "filter",
+            "description": "A filter to find matching contexts. A context matches if it matches all specified fields in the filter. Any unspecified field in the filter matches all contexts."
+          }
         ],
         "returns_async": {
           "name": "callback",
