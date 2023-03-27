@@ -11,8 +11,9 @@
 #include "base/values.h"
 #include "chrome/browser/apps/almanac_api_client/almanac_api_util.h"
 #include "chrome/browser/apps/almanac_api_client/device_info_manager.h"
+#include "chrome/browser/apps/almanac_api_client/proto/client_context.pb.h"
 #include "chrome/browser/apps/app_preload_service/preload_app_definition.h"
-#include "chrome/browser/apps/app_preload_service/proto/app_provisioning.pb.h"
+#include "chrome/browser/apps/app_preload_service/proto/app_preload.pb.h"
 #include "chrome/browser/apps/user_type_filter.h"
 #include "components/version_info/channel.h"
 #include "google_apis/google_api_keys.h"
@@ -25,8 +26,7 @@
 namespace {
 
 // Endpoint for requesting app preload data on the ChromeOS Almanac API.
-constexpr char kAppPreloadAlmanacEndpoint[] =
-    "v1/app_provisioning/apps?alt=proto";
+constexpr char kAppPreloadAlmanacEndpoint[] = "v1/app-preload?alt=proto";
 
 // Maximum accepted size of an APS Response. 1MB.
 constexpr int kMaxResponseSizeInBytes = 1024 * 1024;
@@ -59,51 +59,56 @@ constexpr net::NetworkTrafficAnnotationTag kTrafficAnnotation =
       }
     )");
 
-apps::proto::AppProvisioningListAppsRequest::UserType
-ConvertStringUserTypeToProto(const std::string& user_type) {
+apps::proto::ClientUserContext::UserType ConvertStringUserTypeToProto(
+    const std::string& user_type) {
   if (user_type == apps::kUserTypeUnmanaged) {
-    return apps::proto::AppProvisioningListAppsRequest::USERTYPE_UNMANAGED;
+    return apps::proto::ClientUserContext::USERTYPE_UNMANAGED;
   } else if (user_type == apps::kUserTypeManaged) {
-    return apps::proto::AppProvisioningListAppsRequest::USERTYPE_MANAGED;
+    return apps::proto::ClientUserContext::USERTYPE_MANAGED;
   } else if (user_type == apps::kUserTypeChild) {
-    return apps::proto::AppProvisioningListAppsRequest::USERTYPE_CHILD;
+    return apps::proto::ClientUserContext::USERTYPE_CHILD;
   } else if (user_type == apps::kUserTypeGuest) {
-    return apps::proto::AppProvisioningListAppsRequest::USERTYPE_GUEST;
+    return apps::proto::ClientUserContext::USERTYPE_GUEST;
   }
-  return apps::proto::AppProvisioningListAppsRequest::USERTYPE_UNKNOWN;
+  return apps::proto::ClientUserContext::USERTYPE_UNKNOWN;
 }
 
-apps::proto::AppProvisioningListAppsRequest::Channel ConvertChannelTypeToProto(
+apps::proto::ClientDeviceContext::Channel ConvertChannelTypeToProto(
     const version_info::Channel channel) {
   switch (channel) {
     case version_info::Channel::CANARY:
-      return apps::proto::AppProvisioningListAppsRequest::CHANNEL_CANARY;
+      return apps::proto::ClientDeviceContext::CHANNEL_CANARY;
     case version_info::Channel::DEV:
-      return apps::proto::AppProvisioningListAppsRequest::CHANNEL_DEV;
+      return apps::proto::ClientDeviceContext::CHANNEL_DEV;
     case version_info::Channel::BETA:
-      return apps::proto::AppProvisioningListAppsRequest::CHANNEL_BETA;
+      return apps::proto::ClientDeviceContext::CHANNEL_BETA;
     case version_info::Channel::STABLE:
-      return apps::proto::AppProvisioningListAppsRequest::CHANNEL_STABLE;
+      return apps::proto::ClientDeviceContext::CHANNEL_STABLE;
     case version_info::Channel::UNKNOWN:
-      return apps::proto::AppProvisioningListAppsRequest::CHANNEL_UNDEFINED;
+      return apps::proto::ClientDeviceContext::CHANNEL_INTERNAL;
   }
 }
 
 std::string BuildGetAppsForFirstLoginRequestBody(const apps::DeviceInfo& info) {
-  apps::proto::AppProvisioningListAppsRequest request_proto;
-  request_proto.set_board(info.board);
-  request_proto.set_model(info.model);
-  request_proto.set_language(info.locale);
-  request_proto.set_user_type(ConvertStringUserTypeToProto(info.user_type));
-  // TODO(b/258566986): Load the device's real SKU ID.
-  request_proto.set_sku_id("unknown");
+  apps::proto::AppPreloadListRequest request_proto;
 
-  request_proto.mutable_chrome_os_version()->set_ash_chrome(
-      info.version_info.ash_chrome);
-  request_proto.mutable_chrome_os_version()->set_platform(
-      info.version_info.platform);
-  request_proto.mutable_chrome_os_version()->set_channel(
+  apps::proto::ClientDeviceContext* device_context =
+      request_proto.mutable_device_context();
+
+  device_context->set_board(info.board);
+  device_context->set_model(info.model);
+  device_context->set_channel(
       ConvertChannelTypeToProto(info.version_info.channel));
+  device_context->mutable_versions()->set_chrome_ash(
+      info.version_info.ash_chrome);
+  device_context->mutable_versions()->set_chrome_os_platform(
+      info.version_info.platform);
+
+  apps::proto::ClientUserContext* user_context =
+      request_proto.mutable_user_context();
+
+  user_context->set_language(info.locale);
+  user_context->set_user_type(ConvertStringUserTypeToProto(info.user_type));
 
   return request_proto.SerializeAsString();
 }
@@ -182,7 +187,7 @@ void AppPreloadServerConnector::OnGetAppsForFirstLoginResponse(
   base::UmaHistogramTimes(kServerRoundTripTimeForFirstLogin,
                           base::TimeTicks::Now() - request_start_time);
 
-  proto::AppProvisioningListAppsResponse response;
+  proto::AppPreloadListResponse response;
 
   if (!response.ParseFromString(*response_body)) {
     LOG(ERROR) << "Parsing failed";

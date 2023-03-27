@@ -8,7 +8,7 @@
 #include <ostream>
 #include <string>
 
-#include "chrome/browser/apps/app_preload_service/proto/app_provisioning.pb.h"
+#include "chrome/browser/apps/app_preload_service/proto/app_preload.pb.h"
 #include "chrome/browser/apps/app_service/package_id.h"
 #include "components/services/app_service/public/cpp/app_types.h"
 
@@ -20,8 +20,7 @@ namespace apps {
 // extraction and conversion of information.
 class PreloadAppDefinition {
  public:
-  explicit PreloadAppDefinition(
-      proto::AppProvisioningListAppsResponse_App app_proto);
+  explicit PreloadAppDefinition(proto::AppPreloadListResponse_App app_proto);
   PreloadAppDefinition(const PreloadAppDefinition&);
   PreloadAppDefinition& operator=(const PreloadAppDefinition&);
   ~PreloadAppDefinition();
@@ -47,7 +46,7 @@ class PreloadAppDefinition {
   GURL GetWebAppManifestId() const;
 
  private:
-  proto::AppProvisioningListAppsResponse_App app_proto_;
+  proto::AppPreloadListResponse_App app_proto_;
   absl::optional<apps::PackageId> package_id_;
 };
 

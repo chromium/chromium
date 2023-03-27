@@ -12,8 +12,9 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/test_future.h"
 #include "chrome/browser/apps/almanac_api_client/device_info_manager.h"
+#include "chrome/browser/apps/almanac_api_client/proto/client_context.pb.h"
 #include "chrome/browser/apps/app_preload_service/preload_app_definition.h"
-#include "chrome/browser/apps/app_preload_service/proto/app_provisioning.pb.h"
+#include "chrome/browser/apps/app_preload_service/proto/app_preload.pb.h"
 #include "components/version_info/channel.h"
 #include "content/public/test/browser_task_environment.h"
 #include "net/http/http_request_headers.h"
@@ -84,22 +85,23 @@ TEST_F(AppPreloadServerConnectorTest, GetAppsForFirstLoginRequest) {
   EXPECT_EQ(method_override_header, "GET");
   EXPECT_EQ(content_type, "application/x-protobuf");
 
-  proto::AppProvisioningListAppsRequest request;
+  proto::AppPreloadListRequest request;
   ASSERT_TRUE(request.ParseFromString(body));
 
-  EXPECT_EQ(request.board(), "brya");
-  EXPECT_EQ(request.language(), "en-US");
-  EXPECT_EQ(request.model(), "taniks");
-  EXPECT_EQ(request.user_type(),
-            apps::proto::AppProvisioningListAppsRequest::USERTYPE_UNMANAGED);
-  EXPECT_EQ(request.chrome_os_version().ash_chrome(), "10.10.10");
-  EXPECT_EQ(request.chrome_os_version().platform(), "12345.0.0");
-  EXPECT_EQ(request.chrome_os_version().channel(),
-            apps::proto::AppProvisioningListAppsRequest::CHANNEL_STABLE);
+  EXPECT_EQ(request.device_context().board(), "brya");
+  EXPECT_EQ(request.device_context().model(), "taniks");
+  EXPECT_EQ(request.device_context().channel(),
+            apps::proto::ClientDeviceContext::CHANNEL_STABLE);
+  EXPECT_EQ(request.user_context().language(), "en-US");
+  EXPECT_EQ(request.user_context().user_type(),
+            apps::proto::ClientUserContext::USERTYPE_UNMANAGED);
+  EXPECT_EQ(request.device_context().versions().chrome_ash(), "10.10.10");
+  EXPECT_EQ(request.device_context().versions().chrome_os_platform(),
+            "12345.0.0");
 }
 
 TEST_F(AppPreloadServerConnectorTest, GetAppsForFirstLoginSuccessfulResponse) {
-  proto::AppProvisioningListAppsResponse response;
+  proto::AppPreloadListResponse response;
   auto* app = response.add_apps_to_install();
   app->set_name("Peanut Types");
 

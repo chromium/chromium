@@ -12,7 +12,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
 #include "chrome/browser/apps/app_preload_service/app_preload_service_factory.h"
-#include "chrome/browser/apps/app_preload_service/proto/app_provisioning.pb.h"
+#include "chrome/browser/apps/app_preload_service/proto/app_preload.pb.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/ash/app_list/arc/arc_app_list_prefs.h"
@@ -147,7 +147,7 @@ TEST_F(AppPreloadServiceTest, FirstLoginStartedPrefSet) {
 TEST_F(AppPreloadServiceTest, FirstLoginCompletedPrefSetAfterSuccess) {
   // An empty response indicates that the request completed successfully, but
   // there are no apps to install.
-  proto::AppProvisioningListAppsResponse response;
+  proto::AppPreloadListResponse response;
 
   url_loader_factory_.AddResponse(
       AppPreloadServerConnector::GetServerUrl().spec(),
@@ -183,11 +183,10 @@ TEST_F(AppPreloadServiceTest, IgnoreAndroidAppInstall) {
   constexpr char kPackageName[] = "com.peanuttypes";
   constexpr char kActivityName[] = "com.peanuttypes.PeanutTypesActivity";
 
-  proto::AppProvisioningListAppsResponse response;
+  proto::AppPreloadListResponse response;
   auto* app = response.add_apps_to_install();
   app->set_name("Peanut Types");
-  app->set_install_reason(
-      proto::AppProvisioningListAppsResponse::INSTALL_REASON_OEM);
+  app->set_install_reason(proto::AppPreloadListResponse::INSTALL_REASON_OEM);
 
   url_loader_factory_.AddResponse(
       AppPreloadServerConnector::GetServerUrl().spec(),

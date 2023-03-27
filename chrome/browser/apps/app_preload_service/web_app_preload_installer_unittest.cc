@@ -5,7 +5,7 @@
 #include "chrome/browser/apps/app_preload_service/web_app_preload_installer.h"
 
 #include "chrome/browser/apps/app_preload_service/preload_app_definition.h"
-#include "chrome/browser/apps/app_preload_service/proto/app_provisioning.pb.h"
+#include "chrome/browser/apps/app_preload_service/proto/app_preload.pb.h"
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
 #include "chrome/test/base/testing_profile.h"
 #include "content/public/test/browser_task_environment.h"
@@ -33,7 +33,7 @@ class WebAppPreloadInstallerTest : public testing::Test {
 TEST_F(WebAppPreloadInstallerTest, GetAppId) {
   WebAppPreloadInstaller installer(profile());
 
-  proto::AppProvisioningListAppsResponse_App app;
+  proto::AppPreloadListResponse_App app;
   app.set_package_id("web:https://cursive.apps.chrome/");
 
   ASSERT_EQ(installer.GetAppId(PreloadAppDefinition(app)),

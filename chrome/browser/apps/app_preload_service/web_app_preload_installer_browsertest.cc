@@ -8,7 +8,7 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/test_future.h"
 #include "chrome/browser/apps/app_preload_service/preload_app_definition.h"
-#include "chrome/browser/apps/app_preload_service/proto/app_provisioning.pb.h"
+#include "chrome/browser/apps/app_preload_service/proto/app_preload.pb.h"
 #include "chrome/browser/apps/app_preload_service/web_app_preload_installer.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
@@ -90,11 +90,10 @@ class WebAppPreloadInstallerBrowserTest : public InProcessBrowserTest {
 IN_PROC_BROWSER_TEST_F(WebAppPreloadInstallerBrowserTest, InstallOemApp) {
   WebAppPreloadInstaller installer(profile());
 
-  proto::AppProvisioningListAppsResponse_App app;
+  proto::AppPreloadListResponse_App app;
   app.set_name("Example App");
   app.set_package_id("web:https://www.example.com/index.html");
-  app.set_install_reason(
-      proto::AppProvisioningListAppsResponse::INSTALL_REASON_OEM);
+  app.set_install_reason(proto::AppPreloadListResponse::INSTALL_REASON_OEM);
 
   auto* web_extras = app.mutable_web_extras();
   web_extras->set_original_manifest_url(
@@ -134,11 +133,10 @@ IN_PROC_BROWSER_TEST_F(WebAppPreloadInstallerBrowserTest,
                        InstallWithManifestId) {
   WebAppPreloadInstaller installer(profile());
 
-  proto::AppProvisioningListAppsResponse_App app;
+  proto::AppPreloadListResponse_App app;
   app.set_name("Example App");
   app.set_package_id("web:https://www.example.com/manifest_id");
-  app.set_install_reason(
-      proto::AppProvisioningListAppsResponse::INSTALL_REASON_OEM);
+  app.set_install_reason(proto::AppPreloadListResponse::INSTALL_REASON_OEM);
 
   auto* web_extras = app.mutable_web_extras();
   web_extras->set_original_manifest_url(
@@ -177,11 +175,10 @@ IN_PROC_BROWSER_TEST_F(WebAppPreloadInstallerBrowserTest, InstallOverUserApp) {
   auto app_id = web_app::test::InstallDummyWebApp(profile(), kUserAppName,
                                                   GURL(kStartUrl));
 
-  proto::AppProvisioningListAppsResponse_App app;
+  proto::AppPreloadListResponse_App app;
   app.set_name("OEM Installed app");
   app.set_package_id(base::StrCat({"web:", kStartUrl}));
-  app.set_install_reason(
-      proto::AppProvisioningListAppsResponse::INSTALL_REASON_OEM);
+  app.set_install_reason(proto::AppPreloadListResponse::INSTALL_REASON_OEM);
 
   auto* web_extras = app.mutable_web_extras();
   web_extras->set_manifest_url(https_server()->GetURL("/manifest.json").spec());
@@ -210,11 +207,10 @@ IN_PROC_BROWSER_TEST_F(WebAppPreloadInstallerBrowserTest,
                        InstallMismatchedDataManifestId) {
   WebAppPreloadInstaller installer(profile());
 
-  proto::AppProvisioningListAppsResponse_App app;
+  proto::AppPreloadListResponse_App app;
   app.set_name("Example App");
   app.set_package_id("web:https://www.example.com/manifest_id");
-  app.set_install_reason(
-      proto::AppProvisioningListAppsResponse::INSTALL_REASON_OEM);
+  app.set_install_reason(proto::AppPreloadListResponse::INSTALL_REASON_OEM);
 
   auto* web_extras = app.mutable_web_extras();
   web_extras->set_original_manifest_url(
@@ -250,11 +246,10 @@ IN_PROC_BROWSER_TEST_F(WebAppPreloadInstallerBrowserTest,
                        ManifestFileIsNotJSON) {
   WebAppPreloadInstaller installer(profile());
 
-  proto::AppProvisioningListAppsResponse_App app;
+  proto::AppPreloadListResponse_App app;
   app.set_name("Example App");
   app.set_package_id("web:https://www.example.com/manifest_id");
-  app.set_install_reason(
-      proto::AppProvisioningListAppsResponse::INSTALL_REASON_OEM);
+  app.set_install_reason(proto::AppPreloadListResponse::INSTALL_REASON_OEM);
 
   auto* web_extras = app.mutable_web_extras();
   web_extras->set_original_manifest_url(
@@ -278,11 +273,10 @@ IN_PROC_BROWSER_TEST_F(WebAppPreloadInstallerBrowserTest,
                        ManifestFileIsHasMissingFields) {
   WebAppPreloadInstaller installer(profile());
 
-  proto::AppProvisioningListAppsResponse_App app;
+  proto::AppPreloadListResponse_App app;
   app.set_name("Example App");
   app.set_package_id("web:https://www.example.com/manifest_id");
-  app.set_install_reason(
-      proto::AppProvisioningListAppsResponse::INSTALL_REASON_OEM);
+  app.set_install_reason(proto::AppPreloadListResponse::INSTALL_REASON_OEM);
 
   auto* web_extras = app.mutable_web_extras();
   web_extras->set_original_manifest_url(
@@ -313,11 +307,10 @@ IN_PROC_BROWSER_TEST_F(WebAppPreloadInstallerBrowserTest,
                        ManifestWithFailingIcons) {
   WebAppPreloadInstaller installer(profile());
 
-  proto::AppProvisioningListAppsResponse_App app;
+  proto::AppPreloadListResponse_App app;
   app.set_name("Example App");
   app.set_package_id("web:https://www.example.com/manifest_id");
-  app.set_install_reason(
-      proto::AppProvisioningListAppsResponse::INSTALL_REASON_OEM);
+  app.set_install_reason(proto::AppPreloadListResponse::INSTALL_REASON_OEM);
 
   auto* web_extras = app.mutable_web_extras();
   web_extras->set_original_manifest_url(

@@ -11,7 +11,7 @@
 namespace apps {
 
 PreloadAppDefinition::PreloadAppDefinition(
-    proto::AppProvisioningListAppsResponse_App app_proto)
+    proto::AppPreloadListResponse_App app_proto)
     : app_proto_(app_proto),
       package_id_(PackageId::FromString(app_proto_.package_id())) {}
 
@@ -34,7 +34,7 @@ AppType PreloadAppDefinition::GetPlatform() const {
 
 bool PreloadAppDefinition::IsOemApp() const {
   return app_proto_.install_reason() ==
-         proto::AppProvisioningListAppsResponse::INSTALL_REASON_OEM;
+         proto::AppPreloadListResponse::INSTALL_REASON_OEM;
 }
 
 GURL PreloadAppDefinition::GetWebAppManifestUrl() const {

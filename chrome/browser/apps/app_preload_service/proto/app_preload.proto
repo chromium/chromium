@@ -1,4 +1,4 @@
-// Copyright 2022 The Chromium Authors
+// Copyright 2023 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,94 +8,21 @@ option optimize_for = LITE_RUNTIME;
 
 package apps.proto;
 
+import "chrome/browser/apps/almanac_api_client/proto/client_context.proto";
+
 // This file is a mirror of the proto file maintained in the server code base at
-// go/app-provisioning-service-proto. Changes should be made by updating the
+// go/app-preload-service-proto. Changes should be made by updating the
 // server code base and then copying the result to Chromium.
-// In the future this file will be add only, however breaking changes can be
-// be made until the interface is finalized (currently aimed for M110).
 
-message AppProvisioningListAppsRequest {
-  enum UserType {
-    // Default for deserialization when an unexpected value is encountered.
-    // Indicates to the client that the server has a new platform and needs
-    // the proto file updated.
-    USERTYPE_UNKNOWN = 0;
+message AppPreloadListRequest {
+  // Context information about the device making this request.
+  optional ClientDeviceContext device_context = 1;
 
-    // Normal consumer.
-    USERTYPE_UNMANAGED = 1;
-
-    // Enterprise, education, etc.
-    USERTYPE_MANAGED = 2;
-
-    // A child account that has restricted access to adult content.
-    USERTYPE_CHILD = 3;
-
-    // A guest account on the device.
-    USERTYPE_GUEST = 4;
-  }
-
-  enum Channel {
-    // Default for deserialization when an unexpected value is encountered.
-    // Indicates to the client that the server has a new platform and needs
-    // the proto file updated.
-    CHANNEL_UNKNOWN = 0;
-
-    // Channel used for test images, local dev, etc. where a channel is not
-    // explicitly defined.
-    // Note: Confusingly on the client-side ChromeOS calls this "unknown"
-    CHANNEL_UNDEFINED = 1;
-
-    // Canary channel.
-    CHANNEL_CANARY = 2;
-
-    // Developer channel.
-    CHANNEL_DEV = 3;
-
-    // Beta channel.
-    CHANNEL_BETA = 4;
-
-    // Stable channel.
-    CHANNEL_STABLE = 5;
-  }
-
-  // The board identifier for the device sending the request.
-  optional string board = 1;
-
-  // The model identifier for the device sending the request.
-  optional string model = 2;
-
-  // The SKU identifier for the device sending the request.
-  optional string sku_id = 3;
-
-  // The language-country identifier for the user in language in
-  // "language-COUNTRY" format, and must match one of the valid Google
-  // recognised codes. See:
-  // //i18n/identifiers/languagecodeconverter.h
-  // Note: this should ideally be the user's preferred language, if absent
-  // use the language specified by the UI. The server will attempt to honour
-  // this explicitly, but if it cannot it wil fall-back onto the next best
-  // available or en-US in the worst.case.
-  optional string language = 4;
-
-  // The ChromeOS version information.
-  optional ChromeOSVersion chrome_os_version = 5;
-
-  message ChromeOSVersion {
-    // Ash Chrome version.
-    optional string ash_chrome = 1;
-
-    // Chrome OS platform version.
-    optional string platform = 2;
-
-    // The channel the device is using.
-    optional Channel channel = 3;
-  }
-
-  // The type of user account making this request.
-  optional UserType user_type = 6;
+  // Context information about the user making this request.
+  optional ClientUserContext user_context = 2;
 }
 
-message AppProvisioningListAppsResponse {
+message AppPreloadListResponse {
   // A list of zero or more apps for APS to install.
   repeated App apps_to_install = 1;
 
