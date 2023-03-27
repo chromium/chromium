@@ -322,7 +322,8 @@ class Internals final : public ScriptWrappable {
 
   // This is used to test rect based hit testing like what's done on touch
   // screens.
-  StaticNodeList* nodesFromRect(Document*,
+  StaticNodeList* nodesFromRect(ScriptState* script_state,
+                                Document*,
                                 int x,
                                 int y,
                                 int width,

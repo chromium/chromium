@@ -172,7 +172,8 @@
     DOMString svgNamespace();
     sequence<DOMString> svgTags();
 
-    [RaisesException] NodeList nodesFromRect(Document document, long x, long y,
+    [RaisesException, CallWith=ScriptState] NodeList nodesFromRect(
+        Document document, long x, long y,
         unsigned long width, unsigned long height, boolean ignoreClipping,
         boolean allowChildFrameContent);
 

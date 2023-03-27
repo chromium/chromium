@@ -2355,6 +2355,7 @@ Vector<AtomicString> Internals::svgTags() {
 }
 
 StaticNodeList* Internals::nodesFromRect(
+    ScriptState* script_state,
     Document* document,
     int x,
     int y,
@@ -2391,6 +2392,13 @@ StaticNodeList* Internals::nodesFromRect(
   HitTestResult result(request, location);
   frame->ContentLayoutObject()->HitTest(location, result);
   HeapVector<Member<Node>> matches(result.ListBasedTestResult());
+
+  // Ensure WindowProxy instances for child frames. crbug.com/1407555.
+  for (auto& node : matches) {
+    if (node->IsDocumentNode() && node.Get() != document) {
+      node->GetDocument().GetFrame()->GetWindowProxy(script_state->World());
+    }
+  }
 
   return StaticNodeList::Adopt(matches);
 }
