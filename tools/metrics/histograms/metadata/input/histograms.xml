@@ -1724,6 +1724,9 @@ is owned by the Blink input team.
 
 <histogram name="Viewport.DidScalePage" enum="BooleanDidScalePage"
     expires_after="M108">
+  <obsolete>
+    Removed in M108.
+  </obsolete>
   <owner>bokan@chromium.org</owner>
   <owner>input-dev@chromium.org</owner>
   <summary>
@@ -1736,6 +1739,9 @@ is owned by the Blink input team.
 
 <histogram name="Viewport.MaxPageScale" enum="PageScaleFactorRange"
     expires_after="M108">
+  <obsolete>
+    Removed in M108.
+  </obsolete>
   <owner>bokan@chromium.org</owner>
   <owner>input-dev@chromium.org</owner>
   <summary>
@@ -1749,7 +1755,7 @@ is owned by the Blink input team.
 </histogram>
 
 <histogram name="Viewport.MetaTagType" enum="MetaTagTypeEnum"
-    expires_after="M108">
+    expires_after="2024-03-23">
   <owner>bokan@chromium.org</owner>
   <owner>input-dev@chromium.org</owner>
   <summary>

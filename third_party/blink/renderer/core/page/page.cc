@@ -885,7 +885,6 @@ void Page::DidCommitLoad(LocalFrame* frame) {
     // TODO(loonybear): Most of this doesn't appear to take into account that
     // each SVGImage gets it's own Page instance.
     GetDeprecation().ClearSuppression();
-    GetVisualViewport().SendUMAMetrics();
     // Need to reset visual viewport position here since before commit load we
     // would update the previous history item, Page::didCommitLoad is called
     // after a new history item is created in FrameLoader.

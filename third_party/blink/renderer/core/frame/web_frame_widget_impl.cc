@@ -2680,10 +2680,6 @@ WebInputEventResult WebFrameWidgetImpl::HandleInputEvent(
   if (IsProvisional())
     return WebInputEventResult::kHandledSuppressed;
 
-  // Only record metrics for the root frame.
-  if (ForTopMostMainFrame())
-    GetPage()->GetVisualViewport().StartTrackingPinchStats();
-
   // If a drag-and-drop operation is in progress, ignore input events except
   // PointerCancel and GestureLongPress.
   if (doing_drag_and_drop_ &&

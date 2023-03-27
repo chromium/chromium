@@ -3835,7 +3835,6 @@ void WebViewImpl::ApplyViewportChanges(const ApplyViewportChangesArgs& args) {
 
   if (args.page_scale_delta != 1) {
     double_tap_zoom_pending_ = false;
-    visual_viewport.UserDidChangeScale();
   }
 
   elastic_overscroll_ += args.elastic_overscroll_delta;

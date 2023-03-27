@@ -95,8 +95,6 @@ VisualViewport::VisualViewport(Page& owner)
       scale_(1),
       is_pinch_gesture_active_(false),
       browser_controls_adjustment_(0),
-      max_page_scale_(-1),
-      track_pinch_zoom_stats_for_page_(false),
       needs_paint_property_update_(true),
       overscroll_type_(ComputeOverscrollType()) {
   UniqueObjectId unique_id = NewUniqueObjectId();
@@ -370,9 +368,7 @@ PaintPropertyChangeType VisualViewport::UpdatePaintPropertyNodesIfNeeded(
   return change;
 }
 
-VisualViewport::~VisualViewport() {
-  SendUMAMetrics();
-}
+VisualViewport::~VisualViewport() = default;
 
 void VisualViewport::Trace(Visitor* visitor) const {
   visitor->Trace(page_);
@@ -1072,48 +1068,6 @@ gfx::Point VisualViewport::RootFrameToViewport(
   // FIXME: How to snap to pixels?
   return gfx::ToFlooredPoint(
       RootFrameToViewport(gfx::PointF(point_in_root_frame)));
-}
-
-void VisualViewport::StartTrackingPinchStats() {
-  DCHECK(IsActiveViewport());
-
-  Document* document = LocalMainFrame().GetDocument();
-  if (!document)
-    return;
-
-  if (!document->Url().ProtocolIsInHTTPFamily())
-    return;
-
-  track_pinch_zoom_stats_for_page_ = !ShouldDisableDesktopWorkarounds();
-}
-
-void VisualViewport::UserDidChangeScale() {
-  DCHECK(IsActiveViewport());
-  if (!track_pinch_zoom_stats_for_page_)
-    return;
-
-  max_page_scale_ = std::max(max_page_scale_, scale_);
-}
-
-void VisualViewport::SendUMAMetrics() {
-  if (track_pinch_zoom_stats_for_page_) {
-    bool did_scale = max_page_scale_ > 0;
-
-    base::UmaHistogramBoolean("Viewport.DidScalePage", did_scale);
-
-    if (did_scale) {
-      int zoom_percentage = floor(max_page_scale_ * 100);
-
-      // Note: while defined as an exact linear histogram with 21 buckets here,
-      // the UMA itself is tagged as an enumeration (PageScaleFactor) in
-      // histograms.xml to make it easy to identify the buckets...
-      int bucket = floor(zoom_percentage / 25.f);
-      base::UmaHistogramExactLinear("Viewport.MaxPageScale", bucket, 21);
-    }
-  }
-
-  max_page_scale_ = -1;
-  track_pinch_zoom_stats_for_page_ = false;
 }
 
 bool VisualViewport::ShouldDisableDesktopWorkarounds() const {
