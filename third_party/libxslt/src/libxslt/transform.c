@@ -40,6 +40,7 @@
 #include "xslt.h"
 #include "xsltInternals.h"
 #include "xsltutils.h"
+#include "xsltlocale.h"
 #include "pattern.h"
 #include "transform.h"
 #include "variables.h"
@@ -119,26 +120,18 @@ xsltApplyXSLTTemplate(xsltTransformContextPtr ctxt,
 static int
 templPush(xsltTransformContextPtr ctxt, xsltTemplatePtr value)
 {
-    if (ctxt->templMax == 0) {
-        ctxt->templMax = 4;
-        ctxt->templTab =
-            (xsltTemplatePtr *) xmlMalloc(ctxt->templMax *
-                                          sizeof(ctxt->templTab[0]));
-        if (ctxt->templTab == NULL) {
-            xmlGenericError(xmlGenericErrorContext, "malloc failed !\n");
-            return (0);
-        }
-    }
-    else if (ctxt->templNr >= ctxt->templMax) {
-        ctxt->templMax *= 2;
-        ctxt->templTab =
-            (xsltTemplatePtr *) xmlRealloc(ctxt->templTab,
-                                           ctxt->templMax *
-                                           sizeof(ctxt->templTab[0]));
-        if (ctxt->templTab == NULL) {
+    if (ctxt->templNr >= ctxt->templMax) {
+        xsltTemplatePtr *tmp;
+        int newMax = ctxt->templMax == 0 ? 4 : ctxt->templMax * 2;
+
+        tmp = (xsltTemplatePtr *) xmlRealloc(ctxt->templTab,
+                newMax * sizeof(*tmp));
+        if (tmp == NULL) {
             xmlGenericError(xmlGenericErrorContext, "realloc failed !\n");
             return (0);
         }
+        ctxt->templTab = tmp;
+        ctxt->templMax = newMax;
     }
     ctxt->templTab[ctxt->templNr] = value;
     ctxt->templ = value;
@@ -706,6 +699,10 @@ xsltNewTransformContext(xsltStylesheetPtr style, xmlDocPtr doc) {
     cur->xinclude = xsltGetXIncludeDefault();
     cur->keyInitLevel = 0;
 
+    cur->newLocale = xsltNewLocale;
+    cur->freeLocale = xsltFreeLocale;
+    cur->genSortKey = xsltStrxfrm;
+
     return(cur);
 
 internal_err:
@@ -716,7 +713,7 @@ internal_err:
 
 /**
  * xsltFreeTransformContext:
- * @ctxt:  an XSLT parser context
+ * @ctxt:  an XSLT transform context
  *
  * Free up the memory allocated by @ctxt
  */
@@ -1090,8 +1087,10 @@ xsltCopyText(xsltTransformContextPtr ctxt, xmlNodePtr target,
 	if (xmlDictOwns(ctxt->dict, cur->content))
 	    copy->content = cur->content;
 	else {
-	    if ((copy->content = xmlStrdup(cur->content)) == NULL)
+	    if ((copy->content = xmlStrdup(cur->content)) == NULL) {
+                xmlFreeNode(copy);
 		return NULL;
+            }
 	}
 
 	ctxt->lasttext = NULL;
@@ -2224,26 +2223,18 @@ xsltLocalVariablePush(xsltTransformContextPtr ctxt,
 		      xsltStackElemPtr variable,
 		      int level)
 {
-    if (ctxt->varsMax == 0) {
-	ctxt->varsMax = 10;
-	ctxt->varsTab =
-	    (xsltStackElemPtr *) xmlMalloc(ctxt->varsMax *
-	    sizeof(ctxt->varsTab[0]));
-	if (ctxt->varsTab == NULL) {
-	    xmlGenericError(xmlGenericErrorContext, "malloc failed !\n");
-	    return (-1);
-	}
-    }
     if (ctxt->varsNr >= ctxt->varsMax) {
-	ctxt->varsMax *= 2;
-	ctxt->varsTab =
-	    (xsltStackElemPtr *) xmlRealloc(ctxt->varsTab,
-	    ctxt->varsMax *
-	    sizeof(ctxt->varsTab[0]));
-	if (ctxt->varsTab == NULL) {
+        xsltStackElemPtr *tmp;
+        int newMax = ctxt->varsMax == 0 ? 10 : 2 * ctxt->varsMax;
+
+	tmp = (xsltStackElemPtr *) xmlRealloc(ctxt->varsTab,
+                newMax * sizeof(*tmp));
+	if (tmp == NULL) {
 	    xmlGenericError(xmlGenericErrorContext, "realloc failed !\n");
 	    return (-1);
 	}
+        ctxt->varsTab = tmp;
+        ctxt->varsMax = newMax;
     }
     ctxt->varsTab[ctxt->varsNr++] = variable;
     ctxt->vars = variable;

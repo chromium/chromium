@@ -151,7 +151,7 @@ xsltEvalXPathStringNs(xsltTransformContextPtr ctxt, xmlXPathCompExprPtr comp,
     if (res != NULL) {
 	if (res->type != XPATH_STRING)
 	    res = xmlXPathConvertString(res);
-	if (res->type == XPATH_STRING) {
+	if ((res != NULL) && (res->type == XPATH_STRING)) {
             ret = res->stringval;
 	    res->stringval = NULL;
 	} else {
@@ -229,7 +229,7 @@ xsltEvalTemplateString(xsltTransformContextPtr ctxt,
     insert = xmlNewDocNode(ctxt->output, NULL,
 	                   (const xmlChar *)"fake", NULL);
     if (insert == NULL) {
-	xsltTransformError(ctxt, NULL, contextNode,
+	xsltTransformError(ctxt, NULL, inst,
 		"Failed to create temporary node\n");
 	return(NULL);
     }

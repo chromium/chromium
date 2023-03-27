@@ -116,7 +116,7 @@ xsltIsLetterDigit(int val) {
 #define IS_DIGIT_ONE(x) xsltIsDigitZero((x)-1)
 
 static int
-xsltIsDigitZero(unsigned int ch)
+xsltIsDigitZero(int ch)
 {
     /*
      * Reference: ftp://ftp.unicode.org/Public/UNIDATA/UnicodeData.txt

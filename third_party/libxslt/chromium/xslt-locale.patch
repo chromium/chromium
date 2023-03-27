@@ -5,39 +5,41 @@ break third_party/WebKit/LayoutTests/fast/xsl/sort-locale.xml. By disabling
 POSIX and Windows locale support, we preserve the behavior WebKit expects in
 XsltUnicodeSortFunction.
 
-diff --git a/src/libxslt/xsltlocale.h b/src/libxslt/xsltlocale.h
---- src/libxslt/xsltlocale.h
-+++ src/libxslt/xsltlocale.h
-@@ -14,7 +14,12 @@
- #include <libxml/xmlstring.h>
- #include "xsltexports.h"
+In addition, it would seem that strxfrm_l is not supported on Fuchsia as using
+it without this patch causes a compile error.
+
+diff --git a/libxslt/xsltlocale.c b/libxslt/xsltlocale.c
+index 5a929188..9324f284 100644
+--- a/libxslt/xsltlocale.c
++++ b/libxslt/xsltlocale.c
+@@ -19,29 +19,7 @@
+ #include "xsltlocale.h"
+ #include "xsltutils.h"
  
 -#ifdef HAVE_STRXFRM_L
-+#if defined(_WIN32) && !defined(__CYGWIN__)
-+#include <windows.h>
-+#include <winnls.h>
-+#endif
-+
-+#if 0
- 
- /*
-  * XSLT_LOCALE_POSIX:
-@@ -32,7 +37,7 @@
- typedef locale_t xsltLocale;
- typedef xmlChar xsltLocaleChar;
- 
--#elif defined(_WIN32)
-+#elif 0
- 
- /*
-  * XSLT_LOCALE_WINAPI:
-@@ -40,9 +45,6 @@
-  */
- #define XSLT_LOCALE_WINAPI
- 
--#include <windows.h>
--#include <winnls.h>
 -
- typedef LCID xsltLocale;
- typedef wchar_t xsltLocaleChar;
+-  #define XSLT_LOCALE_POSIX
+-
+-  #ifdef HAVE_LOCALE_H
+-    #include <locale.h>
+-  #endif
+-  #ifdef HAVE_XLOCALE_H
+-    #include <xlocale.h>
+-  #endif
+-
+-#elif defined(_WIN32)
+-
+-  #define XSLT_LOCALE_WINAPI
+-
+-  #include <windows.h>
+-  #include <winnls.h>
+-
+-#else
+-
+-  #define XSLT_LOCALE_NONE
+-
+-#endif
++#define XSLT_LOCALE_NONE
  
+ #define TOUPPER(c) (c & ~0x20)
+ #define TOLOWER(c) (c | 0x20)

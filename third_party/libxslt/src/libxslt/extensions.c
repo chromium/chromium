@@ -28,6 +28,7 @@
 #include <libxml/xmlIO.h>
 #include "xslt.h"
 #include "xsltInternals.h"
+#include "xsltlocale.h"
 #include "xsltutils.h"
 #include "imports.h"
 #include "extensions.h"
@@ -738,8 +739,11 @@ xsltStyleInitializeStylesheetModule(xsltStylesheetPtr style,
     * Store the user-data in the context of the given stylesheet.
     */
     dataContainer = xsltNewExtData(module, userData);
-    if (dataContainer == NULL)
+    if (dataContainer == NULL) {
+	if (module->styleShutdownFunc)
+	    module->styleShutdownFunc(style, URI, userData);
 	return (NULL);
+    }
 
     if (xmlHashAddEntry(style->extInfos, URI,
 	(void *) dataContainer) < 0)
@@ -920,9 +924,8 @@ xsltGetExtData(xsltTransformContextPtr ctxt, const xmlChar * URI)
                 return (NULL);
 
             data = xsltNewExtData(module, extData);
-            if (data == NULL)
-                return (NULL);
-            if (xmlHashAddEntry(ctxt->extInfos, URI, (void *) data) < 0) {
+            if ((data == NULL) ||
+                (xmlHashAddEntry(ctxt->extInfos, URI, (void *) data) < 0)) {
                 xsltTransformError(ctxt, NULL, NULL,
                                    "Failed to register module data: %s\n",
                                    URI);
@@ -994,6 +997,8 @@ xsltInitCtxtExt(void *payload, void *data, const xmlChar * URI)
     }
     ctxtData = xsltNewExtData(module, extData);
     if (ctxtData == NULL) {
+        if (module->shutdownFunc)
+            module->shutdownFunc(ctxt->ctxt, URI, extData);
         ctxt->ret = -1;
         return;
     }
@@ -1001,6 +1006,9 @@ xsltInitCtxtExt(void *payload, void *data, const xmlChar * URI)
     if (ctxt->ctxt->extInfos == NULL)
         ctxt->ctxt->extInfos = xmlHashCreate(10);
     if (ctxt->ctxt->extInfos == NULL) {
+        if (module->shutdownFunc)
+            module->shutdownFunc(ctxt->ctxt, URI, extData);
+        xsltFreeExtData(ctxtData);
         ctxt->ret = -1;
         return;
     }

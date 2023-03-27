@@ -87,6 +87,7 @@ typedef xsltAttrSetContext *xsltAttrSetContextPtr;
 struct _xsltAttrSetContext {
     xsltStylesheetPtr topStyle;
     xsltStylesheetPtr style;
+    int error;
 };
 
 static void
@@ -421,9 +422,12 @@ xsltParseStylesheetAttributeSet(xsltStylesheetPtr style, xmlNodePtr cur) {
     set = xmlHashLookup2(style->attributeSets, ncname, nsUri);
     if (set == NULL) {
         set = xsltNewAttrSet();
-        if (set == NULL)
+        if ((set == NULL) ||
+            (xmlHashAddEntry2(style->attributeSets, ncname, nsUri, set) < 0)) {
+	    xsltGenericError(xsltGenericErrorContext, "memory error\n");
+            xsltFreeAttrSet(set);
             return;
-        xmlHashAddEntry2(style->attributeSets, ncname, nsUri, set);
+        }
     }
 
     /*
@@ -663,6 +667,12 @@ xsltResolveSASCallback(void *payload, void *data,
     xsltStylesheetPtr topStyle = asctx->topStyle;
     xsltStylesheetPtr style = asctx->style;
 
+    if (asctx->error) {
+        if (style != topStyle)
+            xsltFreeAttrSet(set);
+        return;
+    }
+
     xsltResolveAttrSet(set, topStyle, style, name, ns, 1);
 
     /* Move attribute sets to top stylesheet. */
@@ -675,6 +685,8 @@ xsltResolveSASCallback(void *payload, void *data,
 	    xsltGenericError(xsltGenericErrorContext,
                 "xsl:attribute-set : internal error, can't move imported "
                 " attribute set %s\n", name);
+            asctx->error = 1;
+            xsltFreeAttrSet(set);
         }
     }
 }
@@ -695,6 +707,7 @@ xsltResolveStylesheetAttributeSet(xsltStylesheetPtr style) {
 	    "Resolving attribute sets references\n");
 #endif
     asctx.topStyle = style;
+    asctx.error = 0;
     cur = style;
     while (cur != NULL) {
 	if (cur->attributeSets != NULL) {

@@ -1111,9 +1111,9 @@ xsltGetInheritedNsList(xsltStylesheetPtr style,
 	               xmlNodePtr node)
 {
     xmlNsPtr cur;
-    xmlNsPtr *ret = NULL;
+    xmlNsPtr *ret = NULL, *tmp;
     int nbns = 0;
-    int maxns = 10;
+    int maxns = 0;
     int i;
 
     if ((style == NULL) || (template == NULL) || (node == NULL) ||
@@ -1138,17 +1138,6 @@ xsltGetInheritedNsList(xsltStylesheetPtr style,
 		    if (xmlStrEqual(cur->href, style->exclPrefixTab[i]))
 			goto skip_ns;
 		}
-                if (ret == NULL) {
-                    ret =
-                        (xmlNsPtr *) xmlMalloc((maxns + 1) *
-                                               sizeof(xmlNsPtr));
-                    if (ret == NULL) {
-                        xmlGenericError(xmlGenericErrorContext,
-                                        "xsltGetInheritedNsList : out of memory!\n");
-                        return(0);
-                    }
-                    ret[nbns] = NULL;
-                }
 		/*
 		* Skip shadowed namespace bindings.
 		*/
@@ -1159,16 +1148,16 @@ xsltGetInheritedNsList(xsltStylesheetPtr style,
                 }
                 if (i >= nbns) {
                     if (nbns >= maxns) {
-                        maxns *= 2;
-                        ret = (xmlNsPtr *) xmlRealloc(ret,
-                                                      (maxns +
-                                                       1) *
-                                                      sizeof(xmlNsPtr));
-                        if (ret == NULL) {
+                        maxns = (maxns == 0) ? 10 : 2 * maxns;
+                        tmp = (xmlNsPtr *) xmlRealloc(ret,
+                                (maxns + 1) * sizeof(xmlNsPtr));
+                        if (tmp == NULL) {
                             xmlGenericError(xmlGenericErrorContext,
                                             "xsltGetInheritedNsList : realloc failed!\n");
+                            xmlFree(ret);
                             return(0);
                         }
+                        ret = tmp;
                     }
                     ret[nbns++] = cur;
                     ret[nbns] = NULL;
@@ -1324,8 +1313,10 @@ xsltParseStylesheetOutput(xsltStylesheetPtr style, xmlNodePtr cur)
     if (elements != NULL) {
         if (style->cdataSection == NULL)
             style->cdataSection = xmlHashCreate(10);
-        if (style->cdataSection == NULL)
+        if (style->cdataSection == NULL) {
+            xmlFree(elements);
             return;
+        }
 
         element = elements;
         while (*element != 0) {
@@ -1563,8 +1554,10 @@ xsltParseStylesheetPreserveSpace(xsltStylesheetPtr style, xmlNodePtr cur) {
 
     if (style->stripSpaces == NULL)
 	style->stripSpaces = xmlHashCreate(10);
-    if (style->stripSpaces == NULL)
+    if (style->stripSpaces == NULL) {
+        xmlFree(elements);
 	return;
+    }
 
     element = elements;
     while (*element != 0) {
@@ -1692,6 +1685,11 @@ xsltParseStylesheetStripSpace(xsltStylesheetPtr style, xmlNodePtr cur) {
     if ((cur == NULL) || (style == NULL) || (cur->type != XML_ELEMENT_NODE))
 	return;
 
+    if (style->stripSpaces == NULL)
+	style->stripSpaces = xmlHashCreate(10);
+    if (style->stripSpaces == NULL)
+	return;
+
     elements = xmlGetNsProp(cur, (const xmlChar *)"elements", NULL);
     if (elements == NULL) {
 	xsltTransformError(NULL, style, cur,
@@ -1699,11 +1697,6 @@ xsltParseStylesheetStripSpace(xsltStylesheetPtr style, xmlNodePtr cur) {
 	if (style != NULL) style->warnings++;
 	return;
     }
-
-    if (style->stripSpaces == NULL)
-	style->stripSpaces = xmlHashCreate(10);
-    if (style->stripSpaces == NULL)
-	return;
 
     element = elements;
     while (*element != 0) {
@@ -6838,7 +6831,8 @@ xsltParseStylesheetPI(const xmlChar *value) {
 	    if (val == NULL)
 		return(NULL);
 	    if ((xmlStrcasecmp(val, BAD_CAST "text/xml")) &&
-		(xmlStrcasecmp(val, BAD_CAST "text/xsl"))) {
+		(xmlStrcasecmp(val, BAD_CAST "text/xsl")) &&
+		(xmlStrcasecmp(val, BAD_CAST "application/xslt+xml"))) {
                 xmlFree(val);
 		break;
 	    }

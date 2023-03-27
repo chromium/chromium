@@ -98,13 +98,18 @@ exsltSaxonExpressionFunction (xmlXPathParserContextPtr ctxt, int nargs) {
     ret = xmlHashLookup(hash, arg);
 
     if (ret == NULL) {
-	 ret = xmlXPathCtxtCompile(tctxt->xpathCtxt, arg);
-	 if (ret == NULL) {
-	      xmlFree(arg);
-              xmlXPathSetError(ctxt, XPATH_EXPR_ERROR);
-	      return;
-	 }
-	 xmlHashAddEntry(hash, arg, (void *) ret);
+        ret = xmlXPathCtxtCompile(tctxt->xpathCtxt, arg);
+        if (ret == NULL) {
+            xmlFree(arg);
+            xmlXPathSetError(ctxt, XPATH_EXPR_ERROR);
+            return;
+        }
+        if (xmlHashAddEntry(hash, arg, (void *) ret) < 0) {
+            xmlXPathFreeCompExpr(ret);
+            xmlFree(arg);
+            xmlXPathSetError(ctxt, XPATH_MEMORY_ERROR);
+            return;
+        }
     }
 
     xmlFree(arg);

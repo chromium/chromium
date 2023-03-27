@@ -294,6 +294,8 @@ xsltAddKey(xsltStylesheetPtr style, const xmlChar *name,
 #endif
 
     key = xsltNewKeyDef(name, nameURI);
+    if (key == NULL)
+        return(-1);
     key->match = xmlStrdup(match);
     key->use = xmlStrdup(use);
     key->inst = inst;
@@ -827,7 +829,10 @@ fprintf(stderr, "xsltInitCtxtKey %s : %d\n", keyDef->name, ctxt->keyInitLevel);
 		keylist = xmlXPathNodeSetCreate(cur);
 		if (keylist == NULL)
 		    goto error;
-		xmlHashAddEntry(table->keys, str, keylist);
+		if (xmlHashAddEntry(table->keys, str, keylist) < 0) {
+                    xmlXPathFreeNodeSet(keylist);
+                    goto error;
+                }
 	    } else {
 		/*
 		* TODO: How do we know if this function failed?

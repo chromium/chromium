@@ -483,16 +483,12 @@ xsltReverseCompMatch(xsltParserContextPtr ctxt, xsltCompMatchPtr comp) {
 static int
 xsltPatPushState(xsltTransformContextPtr ctxt, xsltStepStates *states,
                  int step, xmlNodePtr node) {
-    if ((states->states == NULL) || (states->maxstates <= 0)) {
-        states->maxstates = 4;
-	states->nbstates = 0;
-	states->states = xmlMalloc(4 * sizeof(xsltStepState));
-    }
-    else if (states->maxstates <= states->nbstates) {
+    if (states->maxstates <= states->nbstates) {
         xsltStepState *tmp;
+        int newMax = states->maxstates == 0 ? 4 : 2 * states->maxstates;
 
 	tmp = (xsltStepStatePtr) xmlRealloc(states->states,
-			       2 * states->maxstates * sizeof(xsltStepState));
+                newMax * sizeof(xsltStepState));
 	if (tmp == NULL) {
 	    xsltGenericError(xsltGenericErrorContext,
 	     "xsltPatPushState: memory re-allocation failure.\n");
@@ -500,7 +496,7 @@ xsltPatPushState(xsltTransformContextPtr ctxt, xsltStepStates *states,
 	    return(-1);
 	}
 	states->states = tmp;
-	states->maxstates *= 2;
+	states->maxstates = newMax;
     }
     states->states[states->nbstates].step = step;
     states->states[states->nbstates++].node = node;
@@ -2087,6 +2083,8 @@ xsltAddTemplate(xsltStylesheetPtr style, xsltTemplatePtr cur,
     if (pat == NULL)
 	return(-1);
     while (pat) {
+        int success = 0;
+
 	next = pat->next;
 	pat->next = NULL;
 	name = NULL;
@@ -2158,17 +2156,15 @@ xsltAddTemplate(xsltStylesheetPtr style, xsltTemplatePtr cur,
 	if (name != NULL) {
 	    if (style->templatesHash == NULL) {
 		style->templatesHash = xmlHashCreate(1024);
-		if (style->templatesHash == NULL) {
-		    xsltFreeCompMatch(pat);
-		    return(-1);
-		}
-		xmlHashAddEntry3(style->templatesHash, name, mode, modeURI, pat);
+		success = (style->templatesHash != NULL) &&
+                          (xmlHashAddEntry3(style->templatesHash, name, mode,
+                                            modeURI, pat) >= 0);
 	    } else {
 		list = (xsltCompMatchPtr) xmlHashLookup3(style->templatesHash,
 							 name, mode, modeURI);
 		if (list == NULL) {
-		    xmlHashAddEntry3(style->templatesHash, name,
-				     mode, modeURI, pat);
+		    success = (xmlHashAddEntry3(style->templatesHash, name,
+				                mode, modeURI, pat) >= 0);
 		} else {
 		    /*
 		     * Note '<=' since one must choose among the matching
@@ -2188,6 +2184,7 @@ xsltAddTemplate(xsltStylesheetPtr style, xsltTemplatePtr cur,
 			pat->next = list->next;
 			list->next = pat;
 		    }
+                    success = 1;
 		}
 	    }
 	} else if (top != NULL) {
@@ -2207,10 +2204,13 @@ xsltAddTemplate(xsltStylesheetPtr style, xsltTemplatePtr cur,
 		pat->next = list->next;
 		list->next = pat;
 	    }
-	} else {
+            success = 1;
+	}
+        if (success == 0) {
 	    xsltTransformError(NULL, style, NULL,
 			     "xsltAddTemplate: invalid compiled pattern\n");
 	    xsltFreeCompMatch(pat);
+            xsltFreeCompMatchList(next);
 	    return(-1);
 	}
 #ifdef WITH_XSLT_DEBUG_PATTERN
