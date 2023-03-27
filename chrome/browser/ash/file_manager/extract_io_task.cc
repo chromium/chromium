@@ -50,7 +50,7 @@ ExtractIOTask::ExtractIOTask(
       file_system_context_(std::move(file_system_context)) {
   progress_.type = OperationType::kExtract;
   progress_.state = State::kQueued;
-  progress_.destination_folder = parent_folder_;
+  progress_.SetDestinationFolder(parent_folder_, profile);
   progress_.bytes_transferred = 0;
   progress_.total_bytes = 0;
   // Store all the ZIP files in the selection so we have
@@ -227,16 +227,16 @@ void ExtractIOTask::ExtractAllSources() {
 void ExtractIOTask::GotFreeDiskSpace(int64_t free_space) {
   auto* drive_integration_service =
       drive::util::GetIntegrationServiceByProfile(profile_);
-  if (progress_.destination_folder.filesystem_id() ==
+  if (progress_.GetDestinationFolder().filesystem_id() ==
           util::GetDownloadsMountPointName(profile_) ||
       (drive_integration_service &&
        drive_integration_service->GetMountPointPath().IsParent(
-           progress_.destination_folder.path()))) {
+           progress_.GetDestinationFolder().path()))) {
     free_space -= cryptohome::kMinFreeSpaceInBytes;
   }
 
   if (progress_.total_bytes > free_space) {
-    progress_.outputs.emplace_back(progress_.destination_folder,
+    progress_.outputs.emplace_back(progress_.GetDestinationFolder(),
                                    base::File::FILE_ERROR_NO_SPACE);
     progress_.state = State::kError;
     RecordUmaExtractStatus(ExtractStatus::kInsufficientDiskSpace);

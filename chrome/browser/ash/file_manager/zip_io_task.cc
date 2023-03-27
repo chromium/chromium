@@ -49,10 +49,11 @@ int64_t ComputeSize(base::FilePath src_dir,
   for (const base::FilePath& relative_path : src_files) {
     const base::FilePath absolute_path = src_dir.Append(relative_path);
 
-    if (base::GetFileInfo(absolute_path, &info))
+    if (base::GetFileInfo(absolute_path, &info)) {
       total_bytes += info.is_directory
                          ? base::ComputeDirectorySize(absolute_path)
                          : info.size;
+    }
   }
   VLOG(1) << "<<< Total size is " << total_bytes << " bytes";
   return total_bytes;
@@ -71,7 +72,7 @@ ZipIOTask::ZipIOTask(
       file_system_context_(file_system_context) {
   progress_.state = State::kQueued;
   progress_.type = OperationType::kZip;
-  progress_.destination_folder = std::move(parent_folder);
+  progress_.SetDestinationFolder(std::move(parent_folder), profile);
   progress_.bytes_transferred = 0;
   progress_.total_bytes = 0;
 
@@ -100,10 +101,10 @@ void ZipIOTask::Execute(IOTask::ProgressCallback progress_callback,
   progress_.state = State::kInProgress;
 
   // Convert the destination folder URL to absolute path.
-  source_dir_ = progress_.destination_folder.path();
-  if (!ash::FileSystemBackend::CanHandleURL(progress_.destination_folder) ||
+  source_dir_ = progress_.GetDestinationFolder().path();
+  if (!ash::FileSystemBackend::CanHandleURL(progress_.GetDestinationFolder()) ||
       source_dir_.empty()) {
-    progress_.outputs.emplace_back(progress_.destination_folder,
+    progress_.outputs.emplace_back(progress_.GetDestinationFolder(),
                                    base::File::FILE_ERROR_NOT_FOUND);
     Complete(State::kError);
     return;
@@ -188,7 +189,7 @@ void ZipIOTask::GenerateZipNameAfterGotTotalBytes(int64_t total_bytes) {
     zip_name = source_relative_paths_[0].BaseName().ReplaceExtension("zip");
   }
   util::GenerateUnusedFilename(
-      progress_.destination_folder, zip_name, file_system_context_,
+      progress_.GetDestinationFolder(), zip_name, file_system_context_,
       base::BindOnce(&ZipIOTask::ZipItems, weak_ptr_factory_.GetWeakPtr()));
 }
 
@@ -196,7 +197,7 @@ void ZipIOTask::GenerateZipNameAfterGotTotalBytes(int64_t total_bytes) {
 void ZipIOTask::ZipItems(
     base::FileErrorOr<storage::FileSystemURL> destination_result) {
   if (!destination_result.has_value()) {
-    progress_.outputs.emplace_back(progress_.destination_folder,
+    progress_.outputs.emplace_back(progress_.GetDestinationFolder(),
                                    destination_result.error());
     Complete(State::kError);
     return;

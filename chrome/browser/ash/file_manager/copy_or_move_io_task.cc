@@ -36,7 +36,7 @@ CopyOrMoveIOTask::CopyOrMoveIOTask(
   DCHECK(type == OperationType::kCopy || type == OperationType::kMove);
   progress_.state = State::kQueued;
   progress_.type = type;
-  progress_.destination_folder = std::move(destination_folder);
+  progress_.SetDestinationFolder(std::move(destination_folder), profile);
   progress_.bytes_transferred = 0;
   progress_.total_bytes = 0;
 
@@ -77,18 +77,18 @@ void CopyOrMoveIOTask::Execute(IOTask::ProgressCallback progress_callback,
   if (scanning_feature_enabled) {
     scanning_settings =
         enterprise_connectors::FileTransferAnalysisDelegate::IsEnabledVec(
-            profile_, source_urls_, progress_.destination_folder);
+            profile_, source_urls_, progress_.GetDestinationFolder());
   }
 
   if (scanning_feature_enabled && !scanning_settings.empty()) {
     impl_ = std::make_unique<CopyOrMoveIOTaskScanningImpl>(
         progress_.type, progress_, std::move(destination_file_names_),
-        std::move(scanning_settings), progress_.destination_folder, profile_,
-        file_system_context_, progress_.show_notification);
+        std::move(scanning_settings), progress_.GetDestinationFolder(),
+        profile_, file_system_context_, progress_.show_notification);
   } else {
     impl_ = std::make_unique<CopyOrMoveIOTaskImpl>(
         progress_.type, progress_, std::move(destination_file_names_),
-        progress_.destination_folder, profile_, file_system_context_,
+        progress_.GetDestinationFolder(), profile_, file_system_context_,
         progress_.show_notification);
   }
 

@@ -868,7 +868,8 @@ chrome.fileManagerPrivate.ResumeParams;
  *   showNotification: boolean,
  *   errorName: string,
  *   pauseParams: (!chrome.fileManagerPrivate.PauseParams|undefined),
- *   outputs: (!Array<Entry>|undefined)
+ *   outputs: (!Array<Entry>|undefined),
+ *   destinationVolumeId: string
  * }}
  */
 chrome.fileManagerPrivate.ProgressStatus;

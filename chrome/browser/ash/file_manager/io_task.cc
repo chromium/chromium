@@ -10,6 +10,8 @@
 #include "base/functional/callback.h"
 #include "base/task/sequenced_task_runner.h"
 #include "chrome/browser/ash/file_manager/path_util.h"
+#include "chrome/browser/ash/file_manager/volume_manager.h"
+#include "chrome/browser/profiles/profile.h"
 #include "storage/browser/file_system/file_system_url.h"
 
 namespace file_manager::io_task {
@@ -54,6 +56,22 @@ std::string ProgressStatus::GetSourceName(Profile* profile) const {
       .value();
 }
 
+void ProgressStatus::SetDestinationFolder(storage::FileSystemURL folder,
+                                          Profile* profile) {
+  destination_folder_ = std::move(folder);
+  if (!profile) {
+    return;
+  }
+  if (VolumeManager* const volume_manager = VolumeManager::Get(profile);
+      volume_manager) {
+    base::WeakPtr<Volume> volume =
+        volume_manager->FindVolumeFromPath(destination_folder_.path());
+    if (volume) {
+      destination_volume_id_ = volume->volume_id();
+    }
+  }
+}
+
 DummyIOTask::DummyIOTask(std::vector<storage::FileSystemURL> source_urls,
                          storage::FileSystemURL destination_folder,
                          OperationType type,
@@ -61,7 +79,7 @@ DummyIOTask::DummyIOTask(std::vector<storage::FileSystemURL> source_urls,
     : IOTask(show_notifications) {
   progress_.state = State::kQueued;
   progress_.type = type;
-  progress_.destination_folder = std::move(destination_folder);
+  progress_.SetDestinationFolder(std::move(destination_folder));
   progress_.bytes_transferred = 0;
   progress_.total_bytes = 2;
 

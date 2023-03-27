@@ -1196,9 +1196,9 @@ void EventRouter::OnIOTaskStatus(const io_task::ProgressStatus& status) {
   // notifications for folders outside of those being watched by a file watcher.
   if (status.IsCompleted()) {
     std::set<std::pair<base::FilePath, url::Origin>> updated_paths;
-    if (status.destination_folder.is_valid()) {
-      updated_paths.emplace(status.destination_folder.virtual_path(),
-                            status.destination_folder.origin());
+    if (status.GetDestinationFolder().is_valid()) {
+      updated_paths.emplace(status.GetDestinationFolder().virtual_path(),
+                            status.GetDestinationFolder().origin());
     }
     for (const auto& source : status.sources) {
       updated_paths.emplace(source.url.virtual_path().DirName(),
@@ -1219,6 +1219,7 @@ void EventRouter::OnIOTaskStatus(const io_task::ProgressStatus& status) {
   event_status.task_id = status.task_id;
   event_status.type = GetIOTaskType(status.type);
   event_status.state = GetIOTaskState(status.state);
+  event_status.destination_volume_id = status.GetDestinationVolumeId();
   event_status.show_notification = status.show_notification;
 
   // Speedometer can produce infinite result which can't be serialized to JSON
@@ -1227,9 +1228,9 @@ void EventRouter::OnIOTaskStatus(const io_task::ProgressStatus& status) {
     event_status.remaining_seconds = status.remaining_seconds;
   }
 
-  if (status.destination_folder.is_valid()) {
+  if (status.GetDestinationFolder().is_valid()) {
     event_status.destination_name =
-        util::GetDisplayablePath(profile_, status.destination_folder)
+        util::GetDisplayablePath(profile_, status.GetDestinationFolder())
             .value_or(base::FilePath())
             .BaseName()
             .value();

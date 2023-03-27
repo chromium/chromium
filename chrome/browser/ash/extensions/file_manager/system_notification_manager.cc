@@ -86,7 +86,7 @@ std::u16string GetIOTaskMessage(Profile* profile,
   bool is_destination_drive =
       drive_integration_service &&
       drive_integration_service->GetMountPointPath().IsParent(
-          status.destination_folder.path());
+          status.GetDestinationFolder().path());
 
   switch (status.type) {
     case OperationType::kCopy:

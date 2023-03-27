@@ -52,6 +52,7 @@ using ::testing::ElementsAre;
 using ::testing::ElementsAreArray;
 using ::testing::Field;
 using ::testing::IsEmpty;
+using ::testing::Property;
 using ::testing::Return;
 
 namespace file_manager {
@@ -120,7 +121,7 @@ class CopyOrMoveIOTaskTest : public testing::TestWithParam<OperationType> {
     progress_.sources.emplace_back(CreateFileSystemURL("foo.txt"),
                                    absl::nullopt);
     base::CreateDirectory(temp_dir_.GetPath().Append("dest_folder"));
-    progress_.destination_folder = CreateFileSystemURL("dest_folder/");
+    progress_.SetDestinationFolder(CreateFileSystemURL("dest_folder/"));
     CopyOrMoveIOTaskImpl task(GetParam(), progress_, {},
                               CreateFileSystemURL(""), &profile_,
                               file_system_context_);
@@ -136,7 +137,7 @@ class CopyOrMoveIOTaskTest : public testing::TestWithParam<OperationType> {
     progress_.sources.emplace_back(CreateFileSystemURL("foo.txt"),
                                    absl::nullopt);
     base::CreateDirectory(temp_dir_.GetPath().Append("dest_folder"));
-    progress_.destination_folder = CreateFileSystemURL("dest_folder/");
+    progress_.SetDestinationFolder(CreateFileSystemURL("dest_folder/"));
     CopyOrMoveIOTaskImpl task(GetParam(), progress_, {},
                               CreateFileSystemURL(""), &profile_,
                               file_system_context_);
@@ -178,7 +179,7 @@ TEST_P(CopyOrMoveIOTaskTest, Basic) {
   auto base_matcher =
       AllOf(Field(&ProgressStatus::type, GetParam()),
             Field(&ProgressStatus::sources, EntryStatusUrls(source_urls)),
-            Field(&ProgressStatus::destination_folder, dest),
+            Property(&ProgressStatus::GetDestinationFolder, dest),
             Field(&ProgressStatus::total_bytes, 2 * kTestFileSize));
   base::MockRepeatingCallback<void(const ProgressStatus&)> progress_callback;
   base::MockOnceCallback<void(ProgressStatus)> complete_callback;
@@ -259,7 +260,7 @@ TEST_P(CopyOrMoveIOTaskTest, FolderTransfer) {
   auto base_matcher =
       AllOf(Field(&ProgressStatus::type, GetParam()),
             Field(&ProgressStatus::sources, EntryStatusUrls(source_urls)),
-            Field(&ProgressStatus::destination_folder, dest),
+            Property(&ProgressStatus::GetDestinationFolder, dest),
             Field(&ProgressStatus::total_bytes, 2 * kTestFileSize));
   base::MockOnceCallback<void(ProgressStatus)> complete_callback;
   EXPECT_CALL(
@@ -337,7 +338,7 @@ TEST_P(CopyOrMoveIOTaskTest, MissingSource) {
   EXPECT_CALL(
       complete_callback,
       Run(AllOf(Field(&ProgressStatus::type, GetParam()),
-                Field(&ProgressStatus::destination_folder, dest),
+                Property(&ProgressStatus::GetDestinationFolder, dest),
                 Field(&ProgressStatus::state, State::kError),
                 Field(&ProgressStatus::bytes_transferred, 0),
                 Field(&ProgressStatus::sources, EntryStatusUrls(source_urls)),
@@ -380,7 +381,7 @@ TEST_P(CopyOrMoveIOTaskTest, MissingDestination) {
   EXPECT_CALL(
       complete_callback,
       Run(AllOf(Field(&ProgressStatus::type, GetParam()),
-                Field(&ProgressStatus::destination_folder, dest),
+                Property(&ProgressStatus::GetDestinationFolder, dest),
                 Field(&ProgressStatus::state, State::kError),
                 Field(&ProgressStatus::bytes_transferred, 2 * kTestFileSize),
                 Field(&ProgressStatus::total_bytes, 2 * kTestFileSize),
@@ -435,7 +436,7 @@ TEST_P(CopyOrMoveIOTaskTest, DestinationNamesDifferentToSourceNames) {
   EXPECT_CALL(
       complete_callback,
       Run(AllOf(Field(&ProgressStatus::type, GetParam()),
-                Field(&ProgressStatus::destination_folder, dest),
+                Property(&ProgressStatus::GetDestinationFolder, dest),
                 Field(&ProgressStatus::state, State::kSuccess),
                 Field(&ProgressStatus::bytes_transferred, 2 * kTestFileSize),
                 Field(&ProgressStatus::total_bytes, 2 * kTestFileSize),
@@ -770,7 +771,7 @@ class CopyOrMoveIOTaskWithScansTest
         Field(&ProgressStatus::type, GetOperationType()),
         Field(&ProgressStatus::sources,
               EntryStatusUrls(GetSourceUrlsFromFileInfos(file_infos))),
-        Field(&ProgressStatus::destination_folder, dest),
+        Property(&ProgressStatus::GetDestinationFolder, dest),
         Field(&ProgressStatus::total_bytes, total_num_files * kTestFileSize));
   }
 
@@ -808,7 +809,7 @@ class CopyOrMoveIOTaskWithScansTest
             Field(&ProgressStatus::type, GetOperationType()),
             Field(&ProgressStatus::sources,
                   EntryStatusUrls(GetSourceUrlsFromFileInfos(file_infos))),
-            Field(&ProgressStatus::destination_folder, dest),
+            Property(&ProgressStatus::GetDestinationFolder, dest),
             Field(&ProgressStatus::total_bytes, 0))))
         .Times(num_calls);
   }

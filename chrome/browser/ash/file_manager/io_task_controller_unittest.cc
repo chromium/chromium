@@ -19,6 +19,7 @@ using testing::_;
 using testing::AllOf;
 using testing::Field;
 using testing::Invoke;
+using testing::Property;
 
 namespace file_manager {
 namespace io_task {
@@ -63,7 +64,7 @@ TEST_F(IOTaskControllerTest, SimpleQueueing) {
   auto base_matcher =
       AllOf(Field(&ProgressStatus::type, OperationType::kCopy),
             Field(&ProgressStatus::sources, EntryStatusUrls(source_urls)),
-            Field(&ProgressStatus::destination_folder, dest));
+            Property(&ProgressStatus::GetDestinationFolder, dest));
 
   // The controller should synchronously send out a progress status when queued.
   EXPECT_CALL(observer, OnIOTaskStatus(
@@ -115,7 +116,7 @@ TEST_F(IOTaskControllerTest, Cancel) {
   auto base_matcher =
       AllOf(Field(&ProgressStatus::type, OperationType::kMove),
             Field(&ProgressStatus::sources, EntryStatusUrls(source_urls)),
-            Field(&ProgressStatus::destination_folder, dest));
+            Property(&ProgressStatus::GetDestinationFolder, dest));
 
   // The controller should synchronously send out a progress status when queued.
   EXPECT_CALL(observer, OnIOTaskStatus(

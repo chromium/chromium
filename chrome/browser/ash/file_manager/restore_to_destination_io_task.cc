@@ -45,7 +45,7 @@ RestoreToDestinationIOTask::RestoreToDestinationIOTask(
       base_path_(base_path) {
   progress_.state = State::kQueued;
   progress_.type = OperationType::kRestoreToDestination;
-  progress_.destination_folder = std::move(destination_folder);
+  progress_.SetDestinationFolder(std::move(destination_folder), profile);
   progress_.bytes_transferred = 0;
   progress_.total_bytes = 0;
 
@@ -135,9 +135,8 @@ void RestoreToDestinationIOTask::OnTrashInfoParsed(
     // parent task is tied to the life of the child task.
     move_io_task_ = std::make_unique<CopyOrMoveIOTask>(
         OperationType::kMove, std::move(source_urls_),
-        std::move(destination_file_names_),
-        std::move(progress_.destination_folder), profile_,
-        file_system_context_);
+        std::move(destination_file_names_), progress_.GetDestinationFolder(),
+        profile_, file_system_context_);
 
     // The existing callbacks need to be intercepted to ensure the IOTask
     // progress that is propagated is sent from the `RestoreToDestinationIOTask`

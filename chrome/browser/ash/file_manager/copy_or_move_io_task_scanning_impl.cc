@@ -195,8 +195,9 @@ void CopyOrMoveIOTaskScanningImpl::MaybeScanForDisallowedFiles(size_t idx) {
   file_transfer_analysis_delegates_[idx] =
       enterprise_connectors::FileTransferAnalysisDelegate::Create(
           safe_browsing::DeepScanAccessPoint::FILE_TRANSFER,
-          progress_.sources[idx].url, progress_.destination_folder, profile_,
-          file_system_context_.get(), std::move(settings_[idx].value()));
+          progress_.sources[idx].url, progress_.GetDestinationFolder(),
+          profile_, file_system_context_.get(),
+          std::move(settings_[idx].value()));
 
   file_transfer_analysis_delegates_[idx]->UploadData(
       base::BindOnce(&CopyOrMoveIOTaskScanningImpl::MaybeScanForDisallowedFiles,

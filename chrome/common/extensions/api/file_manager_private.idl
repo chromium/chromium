@@ -1098,6 +1098,10 @@ dictionary ProgressStatus {
 
   // The files affected by the IOTask. Currently only returned for TrashIOTask.
   [instanceOf=Entry] object[]? outputs;
+
+  // Volume id of the destination for operations that transfer files to a
+  // directory (e.g. copy or move).
+  DOMString destinationVolumeId;
 };
 
 dictionary DlpMetadata {

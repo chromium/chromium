@@ -227,7 +227,7 @@ void CopyOrMoveIOTaskImpl::GetFileSize(size_t idx) {
   DCHECK(idx < progress_.sources.size());
 
   const base::FilePath& source = progress_.sources[idx].url.path();
-  const base::FilePath& destination = progress_.destination_folder.path();
+  const base::FilePath& destination = progress_.GetDestinationFolder().path();
 
   constexpr auto metadata_fields =
       storage::FileSystemOperation::GET_METADATA_FIELD_IS_DIRECTORY |
@@ -301,17 +301,18 @@ void CopyOrMoveIOTaskImpl::GotFileSize(size_t idx,
   // Got file size for all files at this point!
   speedometer_.SetTotalBytes(progress_.total_bytes);
 
-  if (util::IsNonNativeFileSystemType(progress_.destination_folder.type())) {
+  if (util::IsNonNativeFileSystemType(
+          progress_.GetDestinationFolder().type())) {
     // Destination is a virtual filesystem, so skip checking free space.
     GenerateDestinationURL(0);
   } else {
     // For Drive, check we have enough local disk first, then check quota.
-    base::FilePath path = progress_.destination_folder.path();
+    base::FilePath path = progress_.GetDestinationFolder().path();
     auto* drive_integration_service =
         drive::util::GetIntegrationServiceByProfile(profile_);
     if (drive_integration_service && drive_integration_service->IsMounted() &&
         drive_integration_service->GetMountPointPath().IsParent(
-            progress_.destination_folder.path())) {
+            progress_.GetDestinationFolder().path())) {
       path = drive_integration_service->GetDriveFsHost()->GetDataPath();
     }
     base::ThreadPool::PostTaskAndReplyWithResult(
@@ -329,8 +330,8 @@ void CopyOrMoveIOTaskImpl::GotFreeDiskSpace(int64_t free_space) {
   bool is_drive = drive_integration_service &&
                   drive_integration_service->IsMounted() &&
                   drive_integration_service->GetMountPointPath().IsParent(
-                      progress_.destination_folder.path());
-  if (progress_.destination_folder.filesystem_id() ==
+                      progress_.GetDestinationFolder().path());
+  if (progress_.GetDestinationFolder().filesystem_id() ==
           util::GetDownloadsMountPointName(profile_) ||
       is_drive) {
     free_space -= cryptohome::kMinFreeSpaceInBytes;
@@ -342,14 +343,14 @@ void CopyOrMoveIOTaskImpl::GotFreeDiskSpace(int64_t free_space) {
   if (progress_.type == OperationType::kMove) {
     for (size_t i = 0; i < source_sizes_.size(); i++) {
       if (!IsCrossFileSystem(profile_, progress_.sources[i].url,
-                             progress_.destination_folder)) {
+                             progress_.GetDestinationFolder())) {
         required_bytes -= source_sizes_[i];
       }
     }
   }
 
   if (required_bytes > free_space) {
-    progress_.outputs.emplace_back(progress_.destination_folder,
+    progress_.outputs.emplace_back(progress_.GetDestinationFolder(),
                                    base::File::FILE_ERROR_NO_SPACE);
     LOG(ERROR) << "Insufficient free space in destination";
     Complete(State::kError);
@@ -358,7 +359,7 @@ void CopyOrMoveIOTaskImpl::GotFreeDiskSpace(int64_t free_space) {
 
   if (is_drive) {
     bool is_shared_drive = drive_integration_service->IsSharedDrive(
-        progress_.destination_folder.path());
+        progress_.GetDestinationFolder().path());
     drive_integration_service->GetPooledQuotaUsage(
         base::BindOnce(base::BindOnce(
             &CopyOrMoveIOTaskImpl::GotDrivePooledQuota,
@@ -389,7 +390,7 @@ void CopyOrMoveIOTaskImpl::GotDrivePooledQuota(
         !is_shared_drive && usage->total_user_bytes != -1 &&
         (usage->total_user_bytes - usage->used_user_bytes) < required_bytes;
     if (org_exceeded || user_exceeded) {
-      progress_.outputs.emplace_back(progress_.destination_folder,
+      progress_.outputs.emplace_back(progress_.GetDestinationFolder(),
                                      base::File::FILE_ERROR_NO_SPACE);
       LOG(ERROR) << "Insufficient drive quota";
       Complete(State::kError);
@@ -403,7 +404,7 @@ void CopyOrMoveIOTaskImpl::GotDrivePooledQuota(
   if (is_shared_drive && drive_integration_service &&
       drive_integration_service->IsMounted()) {
     drive_integration_service->GetMetadata(
-        progress_.destination_folder.path(),
+        progress_.GetDestinationFolder().path(),
         base::BindOnce(&CopyOrMoveIOTaskImpl::GotSharedDriveMetadata,
                        weak_ptr_factory_.GetWeakPtr(), required_bytes));
     return;
@@ -426,7 +427,7 @@ void CopyOrMoveIOTaskImpl::GotSharedDriveMetadata(
     const auto& quota = metadata->shared_drive_quota;
     if ((quota->individual_quota_bytes_total -
          quota->quota_bytes_used_in_drive) < required_bytes) {
-      progress_.outputs.emplace_back(progress_.destination_folder,
+      progress_.outputs.emplace_back(progress_.GetDestinationFolder(),
                                      base::File::FILE_ERROR_NO_SPACE);
       LOG(ERROR) << "Insufficient shared drive quota";
       Complete(State::kError);
@@ -450,7 +451,8 @@ void CopyOrMoveIOTaskImpl::GenerateDestinationURL(size_t idx) {
           : progress_.sources[idx].url.path().BaseName();
 
   util::GenerateUnusedFilename(
-      progress_.destination_folder, destination_file_name, file_system_context_,
+      progress_.GetDestinationFolder(), destination_file_name,
+      file_system_context_,
       base::BindOnce(&CopyOrMoveIOTaskImpl::CopyOrMoveFile,
                      weak_ptr_factory_.GetWeakPtr(), idx));
 }
@@ -462,7 +464,8 @@ void CopyOrMoveIOTaskImpl::CopyOrMoveFile(
   DCHECK(idx < progress_.sources.size());
 
   if (!destination_result.has_value()) {
-    progress_.outputs.emplace_back(progress_.destination_folder, absl::nullopt);
+    progress_.outputs.emplace_back(progress_.GetDestinationFolder(),
+                                   absl::nullopt);
     OnCopyOrMoveComplete(idx, destination_result.error());
     return;
   }
@@ -484,9 +487,9 @@ void CopyOrMoveIOTaskImpl::CopyOrMoveFile(
   // as the parent directory.
   auto basename = source_url.path().BaseName();
   auto replace_url = file_system_context_->CreateCrackedFileSystemURL(
-      progress_.destination_folder.storage_key(),
-      progress_.destination_folder.mount_type(),
-      progress_.destination_folder.virtual_path().Append(
+      progress_.GetDestinationFolder().storage_key(),
+      progress_.GetDestinationFolder().mount_type(),
+      progress_.GetDestinationFolder().virtual_path().Append(
           base::FilePath::FromUTF8Unsafe(basename.AsUTF8Unsafe())));
 
   // If the source url and replace url are the same, the copy/move operation
@@ -534,9 +537,9 @@ void CopyOrMoveIOTaskImpl::CopyOrMoveFile(
   progress_.pause_params.conflict_is_directory =
       progress_.sources[idx].is_directory;
   auto destination_folder = file_system_context_->CreateCrackedFileSystemURL(
-      progress_.destination_folder.storage_key(),
-      progress_.destination_folder.mount_type(),
-      progress_.destination_folder.virtual_path());
+      progress_.GetDestinationFolder().storage_key(),
+      progress_.GetDestinationFolder().mount_type(),
+      progress_.GetDestinationFolder().virtual_path());
   progress_.pause_params.conflict_target_url =
       destination_folder.ToGURL().spec();
   progress_callback_.Run(progress_);

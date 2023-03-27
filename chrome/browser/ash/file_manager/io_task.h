@@ -112,7 +112,8 @@ struct EntryStatus {
 };
 
 // Represents the current progress of an I/O task.
-struct ProgressStatus {
+class ProgressStatus {
+ public:
   // Out-of-line constructors to appease the style linter.
   ProgressStatus();
   ProgressStatus(const ProgressStatus& other) = delete;
@@ -132,6 +133,14 @@ struct ProgressStatus {
   // Returns a default method for obtaining the source name.
   std::string GetSourceName(Profile* profile) const;
 
+  // Setter for the destination folder and the destination volume id.
+  void SetDestinationFolder(const storage::FileSystemURL folder,
+                            Profile* profile = nullptr);
+  storage::FileSystemURL GetDestinationFolder() const {
+    return destination_folder_;
+  }
+  std::string GetDestinationVolumeId() const { return destination_volume_id_; }
+
   // Task state.
   State state;
 
@@ -147,10 +156,6 @@ struct ProgressStatus {
   // Entries created by the I/O task. These files aren't necessarily related to
   // |sources|.
   std::vector<EntryStatus> outputs;
-
-  // Optional destination folder for operations that transfer files to a
-  // directory (e.g. copy or move).
-  storage::FileSystemURL destination_folder;
 
   // I/O task state::PAUSED parameters.
   PauseParams pause_params;
@@ -169,6 +174,15 @@ struct ProgressStatus {
 
   // Whether notifications should be shown on progress status.
   bool show_notification = true;
+
+ private:
+  // Optional destination folder for operations that transfer files to a
+  // directory (e.g. copy or move).
+  storage::FileSystemURL destination_folder_;
+
+  // Volume id of the destination directory for operations that transfer files
+  // to a directory (e.g. copy or move).
+  std::string destination_volume_id_;
 };
 
 // An IOTask represents an I/O operation over multiple files, and is responsible
