@@ -46,6 +46,12 @@ int GetLayoutConstant(LayoutConstant constant) {
       }
     case LOCATION_BAR_ICON_SIZE:
       return touch_ui ? 20 : 16;
+    case LOCATION_BAR_LEADING_ICON_SIZE:
+      return GetLayoutConstant(LOCATION_BAR_ICON_SIZE);
+    case LOCATION_BAR_TRAILING_ICON_SIZE:
+      return base::FeatureList::IsEnabled(features::kChromeRefresh2023)
+                 ? 20
+                 : GetLayoutConstant(LOCATION_BAR_ICON_SIZE);
     case TAB_AFTER_TITLE_PADDING:
       return touch_ui ? 8 : 4;
     case TAB_ALERT_INDICATOR_CAPTURE_ICON_WIDTH:

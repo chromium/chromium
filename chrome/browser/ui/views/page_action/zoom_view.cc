@@ -14,6 +14,7 @@
 #include "ui/accessibility/ax_node_data.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/base/ui_base_features.h"
 #include "ui/events/event.h"
 #include "ui/gfx/geometry/size.h"
 
@@ -73,10 +74,20 @@ void ZoomView::ZoomChangedForActiveTab(bool can_show_bubble) {
     current_zoom_percent_ = zoom_controller->GetZoomPercent();
 
     // The icon is hidden when the zoom level is default.
-    icon_ = zoom_controller && zoom_controller->GetZoomRelativeToDefault() ==
-                                   zoom::ZoomController::ZOOM_BELOW_DEFAULT_ZOOM
-                ? &kZoomMinusIcon
-                : &kZoomPlusIcon;
+
+    if (features::IsChromeRefresh2023()) {
+      icon_ =
+          zoom_controller && zoom_controller->GetZoomRelativeToDefault() ==
+                                 zoom::ZoomController::ZOOM_BELOW_DEFAULT_ZOOM
+              ? &kZoomMinusChromeRefreshIcon
+              : &kZoomPlusChromeRefreshIcon;
+    } else {
+      icon_ =
+          zoom_controller && zoom_controller->GetZoomRelativeToDefault() ==
+                                 zoom::ZoomController::ZOOM_BELOW_DEFAULT_ZOOM
+              ? &kZoomMinusIcon
+              : &kZoomPlusIcon;
+    }
     UpdateIconImage();
 
     // Visibility must be enabled before the bubble is shown to ensure the

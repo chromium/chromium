@@ -34,6 +34,7 @@
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/url_constants.h"
 #include "extensions/common/constants.h"
+#include "ui/base/ui_base_features.h"
 
 #if !BUILDFLAG(IS_ANDROID)
 #include "components/omnibox/browser/vector_icons.h"  // nogncheck
@@ -184,7 +185,9 @@ const gfx::VectorIcon* ChromeLocationBarModelDelegate::GetVectorIconOverride()
   GetURL(&url);
 
   if (url.SchemeIs(content::kChromeUIScheme))
-    return &omnibox::kProductIcon;
+    return (features::IsChromeRefresh2023())
+               ? &omnibox::kProductChromeRefreshIcon
+               : &omnibox::kProductIcon;
 
   if (url.SchemeIs(extensions::kExtensionScheme))
     return &omnibox::kExtensionAppIcon;

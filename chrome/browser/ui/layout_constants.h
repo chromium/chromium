@@ -44,7 +44,17 @@ enum LayoutConstant {
   LOCATION_BAR_HEIGHT,
 
   // The size of the icons used inside the LocationBar.
+  // TODO(crbug.com/1399991): Deprecate this after the size of all location bar
+  // icons have moved to
+  // either `LOCATION_BAR_LEADING_ICON_SIZE` or
+  // `LOCATION_BAR_TRAILING_ICON_SIZE`
   LOCATION_BAR_ICON_SIZE,
+
+  // The size of the leading icons used inside the LocationBar.
+  LOCATION_BAR_LEADING_ICON_SIZE,
+
+  // The size of the trailing icons used inside the LocationBar.
+  LOCATION_BAR_TRAILING_ICON_SIZE,
 
   // The size of icons used in PageInfo bubbles.
   PAGE_INFO_ICON_SIZE,
