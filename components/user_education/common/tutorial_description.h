@@ -236,12 +236,12 @@ struct TutorialDescription {
     }
 
     Step& InAnyContext() {
-      context_mode = TutorialDescription::ContextMode::kAny;
+      context_mode = ContextMode::kAny;
       return *this;
     }
 
     Step& InSameContext() {
-      context_mode = TutorialDescription::ContextMode::kFromPreviousStep;
+      context_mode = ContextMode::kFromPreviousStep;
       return *this;
     }
   };
@@ -369,6 +369,30 @@ struct TutorialDescription {
                event_type_) {}
   };
 
+  // TutorialDescription::Create<"Prefix">(step1, step2, ...)
+  //
+  // Create a tutorial description with the given steps
+  // This will also generate the histograms with the given prefix
+  template <const char histogram_name[], typename... Args>
+  static TutorialDescription Create(Args&&... steps) {
+    TutorialDescription description;
+    description.steps = Steps(steps...);
+    description.histograms =
+        user_education::MakeTutorialHistograms<histogram_name>(
+            description.steps.size());
+    return description;
+  }
+
+  // TutorialDescription::Steps(step1, step2, {step3, step4}, ...)
+  //
+  // Turn steps and step vectors into a flattened vector of steps
+  template <typename... Args>
+  static std::vector<TutorialDescription::Step> Steps(Args&&... steps) {
+    std::vector<TutorialDescription::Step> flat_steps = {};
+    (AddStep(flat_steps, std::forward<Args>(steps)), ...);
+    return flat_steps;
+  }
+
   // the list of TutorialDescription steps
   std::vector<Step> steps;
 
@@ -381,6 +405,16 @@ struct TutorialDescription {
   // cases this flag should be set to false so that the restart tutorial button
   // is not displayed.
   bool can_be_restarted = false;
+
+ private:
+  static void AddStep(std::vector<Step>& dest, Step step) {
+    dest.emplace_back(step);
+  }
+  static void AddStep(std::vector<Step>& dest, const std::vector<Step>& src) {
+    for (auto& step : src) {
+      dest.emplace_back(step);
+    }
+  }
 };
 
 }  // namespace user_education

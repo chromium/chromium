@@ -694,4 +694,53 @@ TEST_F(TutorialTest, NoTimeoutIfBubbleShowing) {
   EXPECT_CALL(aborted, Run).Times(1);
 }
 
+TEST_F(TutorialTest, RegisterTutorialWithCreate) {
+  std::unique_ptr<TutorialRegistry> registry =
+      std::make_unique<TutorialRegistry>();
+
+  {
+    auto description = TutorialDescription::Create<kHistogramName1>(
+        TutorialDescription::BubbleStep(kTestIdentifier1)
+            .SetBubbleBodyText(IDS_OK));
+    description.can_be_restarted = true;
+    EXPECT_TRUE(description.steps.size() == 1);
+
+    registry->AddTutorial(kTestTutorial1, std::move(description));
+  }
+
+  std::unique_ptr<HelpBubbleFactoryRegistry> bubble_factory_registry =
+      std::make_unique<HelpBubbleFactoryRegistry>();
+
+  EXPECT_TRUE(registry->IsTutorialRegistered(kTestTutorial1));
+}
+
+TEST_F(TutorialTest, RegisterTutorialWithCreateFromVector) {
+  std::unique_ptr<TutorialRegistry> registry =
+      std::make_unique<TutorialRegistry>();
+
+  {
+    TutorialDescription::Step first_step =
+        TutorialDescription::BubbleStep(kTestIdentifier1)
+            .SetBubbleBodyText(IDS_OK);
+
+    std::vector<TutorialDescription::Step> next_steps = {
+        TutorialDescription::BubbleStep(kTestIdentifier2)
+            .SetBubbleBodyText(IDS_OK),
+        TutorialDescription::BubbleStep(kTestIdentifier3)
+            .SetBubbleBodyText(IDS_OK)};
+
+    auto description =
+        TutorialDescription::Create<kHistogramName1>(first_step, next_steps);
+    description.can_be_restarted = true;
+    EXPECT_TRUE(description.steps.size() == 3);
+
+    registry->AddTutorial(kTestTutorial1, std::move(description));
+  }
+
+  std::unique_ptr<HelpBubbleFactoryRegistry> bubble_factory_registry =
+      std::make_unique<HelpBubbleFactoryRegistry>();
+
+  EXPECT_TRUE(registry->IsTutorialRegistered(kTestTutorial1));
+}
+
 }  // namespace user_education
