@@ -274,7 +274,7 @@ std::unique_ptr<gfx::RenderText> OmniboxTextView::CreateRenderText(
   render_text->SetElideBehavior(gfx::ELIDE_TAIL);
   const gfx::FontList& font = views::style::GetFont(
       (use_deemphasized_font_ ? CONTEXT_OMNIBOX_DEEMPHASIZED
-                              : CONTEXT_OMNIBOX_PRIMARY),
+                              : CONTEXT_OMNIBOX_POPUP),
       kTextStyle);
   render_text->SetFontList(font);
   render_text->SetText(text);

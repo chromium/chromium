@@ -61,7 +61,7 @@ class OmniboxRowView::HeaderView : public views::View {
     header_label_->SetHorizontalAlignment(gfx::HorizontalAlignment::ALIGN_LEFT);
 
     const gfx::FontList& font =
-        views::style::GetFont(CONTEXT_OMNIBOX_PRIMARY,
+        views::style::GetFont(CONTEXT_OMNIBOX_SECTION_HEADER,
                               views::style::STYLE_PRIMARY)
             .DeriveWithWeight(gfx::Font::Weight::MEDIUM);
     header_label_->SetFontList(font);
