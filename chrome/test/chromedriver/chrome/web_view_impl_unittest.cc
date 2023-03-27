@@ -770,7 +770,6 @@ class CallUserSyncScriptArgs
     : public testing::TestWithParam<std::pair<std::string, bool>> {
  public:
   void SetUp() override {
-    BrowserInfo browser_info;
     std::unique_ptr<FakeDevToolsClient> client_uptr =
         std::make_unique<FakeDevToolsClient>("root");
     client_ptr = client_uptr.get();
@@ -783,14 +782,15 @@ class CallUserSyncScriptArgs
   }
 
   void TearDown() override {
-    view.reset();
     client_ptr = nullptr;
+    view.reset();
   }
 
   bool IsW3C() { return GetParam().second; }
 
   std::string ElementKey() { return GetParam().first; }
 
+  BrowserInfo browser_info;
   std::unique_ptr<WebViewImpl> view;
   base::raw_ptr<FakeDevToolsClient> client_ptr;
 };
