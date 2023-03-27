@@ -368,6 +368,8 @@ bool HTMLSelectMenuElement::open() const {
 void HTMLSelectMenuElement::OpenListbox() {
   if (listbox_part_ && !open()) {
     listbox_part_->showPopover(ASSERT_NO_EXCEPTION);
+    PseudoStateChanged(CSSSelector::kPseudoClosed);
+    PseudoStateChanged(CSSSelector::kPseudoOpen);
     if (selectedOption()) {
       selectedOption()->Focus();
     }
@@ -383,6 +385,8 @@ void HTMLSelectMenuElement::CloseListbox() {
           HidePopoverFocusBehavior::kNone,
           HidePopoverTransitionBehavior::kFireEventsAndWaitForTransitions,
           /*exception_state=*/nullptr);
+      PseudoStateChanged(CSSSelector::kPseudoClosed);
+      PseudoStateChanged(CSSSelector::kPseudoOpen);
     }
     if (button_part_) {
       button_part_->Focus();

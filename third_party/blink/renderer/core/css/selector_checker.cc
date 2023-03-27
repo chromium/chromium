@@ -1691,6 +1691,9 @@ bool SelectorChecker::CheckPseudoClass(const SelectorCheckingContext& context,
       break;
     }
     case CSSSelector::kPseudoOpen:
+      if (auto* selectmenu = DynamicTo<HTMLSelectMenuElement>(element)) {
+        return selectmenu->open();
+      }
       if (auto* html_element = DynamicTo<HTMLElement>(element);
           html_element && html_element->HasPopoverAttribute()) {
         return html_element->popoverOpen();
@@ -1703,6 +1706,9 @@ bool SelectorChecker::CheckPseudoClass(const SelectorCheckingContext& context,
         // that uses :closed, with `dialog:not(:not(:closed))`, so it's
         // important to *match* when the feature is *disabled*.
         return true;
+      }
+      if (auto* selectmenu = DynamicTo<HTMLSelectMenuElement>(element)) {
+        return !selectmenu->open();
       }
       if (auto* html_element = DynamicTo<HTMLElement>(element);
           html_element && html_element->HasPopoverAttribute()) {
