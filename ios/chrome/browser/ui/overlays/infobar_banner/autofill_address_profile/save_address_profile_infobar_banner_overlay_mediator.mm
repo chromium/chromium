@@ -66,7 +66,9 @@ using autofill_address_profile_infobar_overlays::
   [self.consumer
       setSubtitleText:base::SysUTF16ToNSString(self.config->description())];
 
-  if (!self.config->is_migration_to_account()) {
+  if (!self.config->is_migration_to_account() &&
+      (!self.config->is_profile_an_account_profile() ||
+       self.config->is_update_banner())) {
     [self.consumer setRestrictSubtitleTextToSingleLine:YES];
   }
 

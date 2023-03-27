@@ -18,6 +18,7 @@ NSString* kProfileDataDiffKey = @"ProfileDataDiffKey";
 NSString* kUpdateModalDescriptionKey = @"UpdateModalDescriptionKey";
 NSString* kSyncingUserEmailKey = @"SyncingUserEmailKey";
 NSString* kIsMigrationToAccountKey = @"IsMigrationToAccountKey";
+NSString* kIsProfileAnAccountProfileKey = @"IsProfileAnAccountProfileKey";
 }  // namespace
 
 // Consumer for model to push configurations to the SaveAddressProfile UI.

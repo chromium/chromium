@@ -45,11 +45,14 @@ source_set("unit_tests") {
   deps = [
     ":modals",
     "//base/test:test_support",
+    "//components/strings:components_strings_grit",
+    "//ios/chrome/app/strings:ios_strings_grit",
     "//ios/chrome/browser/shared/ui/table_view",
     "//ios/chrome/browser/shared/ui/table_view:test_support",
     "//ios/chrome/browser/ui/autofill:autofill_ui_type",
     "//ios/chrome/test:test_support",
     "//testing/gtest",
     "//third_party/ocmock",
+    "//ui/base",
   ]
 }

@@ -88,6 +88,9 @@ const CGFloat kSymbolSize = 16;
 @property(nonatomic, copy) NSString* syncingUserEmail;
 // If YES, denotes that the profile will be added to the Google Account.
 @property(nonatomic, assign) BOOL isMigrationToAccount;
+// IF YES, for update prompt, the profile belongs to the Google Account.
+// For save prompt, denotes that the profile will be saved to Google Account.
+@property(nonatomic, assign) BOOL profileAnAccountProfile;
 
 @end
 
@@ -136,11 +139,13 @@ const CGFloat kSymbolSize = 16;
   self.navigationController.navigationBar.prefersLargeTitles = NO;
 
   if (self.isUpdateModal) {
-    self.navigationItem.title =
+    self.title =
         l10n_util::GetNSString(IDS_IOS_AUTOFILL_UPDATE_ADDRESS_PROMPT_TITLE);
   } else {
-    self.navigationItem.title =
-        l10n_util::GetNSString(IDS_IOS_AUTOFILL_SAVE_ADDRESS_PROMPT_TITLE);
+    self.title = l10n_util::GetNSString(
+        self.isMigrationToAccount
+            ? IDS_IOS_AUTOFILL_SAVE_ADDRESS_IN_ACCOUNT_PROMPT_TITLE
+            : IDS_IOS_AUTOFILL_SAVE_ADDRESS_PROMPT_TITLE);
   }
 
   [self loadModel];
@@ -256,6 +261,8 @@ const CGFloat kSymbolSize = 16;
   self.updateModalDescription = prefs[kUpdateModalDescriptionKey];
   self.isMigrationToAccount = [prefs[kIsMigrationToAccountKey] boolValue];
   self.syncingUserEmail = prefs[kSyncingUserEmailKey];
+  self.profileAnAccountProfile =
+      [prefs[kIsProfileAnAccountProfileKey] boolValue];
   [self.tableView reloadData];
 }
 
@@ -350,8 +357,14 @@ const CGFloat kSymbolSize = 16;
     }
   }
 
+  if (self.profileAnAccountProfile) {
+    DCHECK([self.syncingUserEmail length] > 0);
+    [model addItem:[self updateFooterItem]
+        toSectionWithIdentifier:SectionIdentifierUpdateModalFields];
+  }
+
   // Remove the separator after the last field.
-  lastAddedItem.useCustomSeparator = NO;
+  lastAddedItem.useCustomSeparator = self.profileAnAccountProfile;
 
   [model addItem:[self saveUpdateButton]
       toSectionWithIdentifier:SectionIdentifierUpdateModalFields];
@@ -389,14 +402,15 @@ const CGFloat kSymbolSize = 16;
     lastAddedItem = phoneItem;
   }
 
-  if (self.isMigrationToAccount) {
+  if (self.isMigrationToAccount || self.profileAnAccountProfile) {
     DCHECK([self.syncingUserEmail length] > 0);
-    [model addItem:[self footerItem]
+    [model addItem:[self saveFooterItem]
         toSectionWithIdentifier:SectionIdentifierSaveModalFields];
   }
 
   // Remove the separator after the last field.
-  lastAddedItem.useCustomSeparator = self.isMigrationToAccount;
+  lastAddedItem.useCustomSeparator =
+      (self.isMigrationToAccount || self.profileAnAccountProfile);
 
   [model addItem:[self saveUpdateButton]
       toSectionWithIdentifier:SectionIdentifierSaveModalFields];
@@ -548,13 +562,25 @@ const CGFloat kSymbolSize = 16;
   return detailItem;
 }
 
-- (TableViewTextItem*)footerItem {
+- (TableViewTextItem*)saveFooterItem {
   // TODO(crbug.com/1407666): Align the text with the icon of the other fields.
   TableViewTextItem* item =
       [[TableViewTextItem alloc] initWithType:ItemTypeFooter];
   item.text =
       l10n_util::GetNSStringF(IDS_IOS_AUTOFILL_SAVE_ADDRESS_IN_ACCOUNT_FOOTER,
                               base::SysNSStringToUTF16(self.syncingUserEmail));
+  item.textFont = [UIFont preferredFontForTextStyle:UIFontTextStyleFootnote];
+  item.textColor = [UIColor colorNamed:kTextSecondaryColor];
+  return item;
+}
+
+- (TableViewTextItem*)updateFooterItem {
+  // TODO(crbug.com/1407666): Align the text with the icon of the other fields.
+  TableViewTextItem* item =
+      [[TableViewTextItem alloc] initWithType:ItemTypeFooter];
+  item.text = l10n_util::GetNSStringF(
+      IDS_IOS_SETTINGS_AUTOFILL_ACCOUNT_ADDRESS_FOOTER_TEXT,
+      base::SysNSStringToUTF16(self.syncingUserEmail));
   item.textFont = [UIFont preferredFontForTextStyle:UIFontTextStyleFootnote];
   item.textColor = [UIColor colorNamed:kTextSecondaryColor];
   return item;

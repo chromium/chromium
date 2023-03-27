@@ -78,8 +78,8 @@ std::u16string AutofillSaveUpdateAddressProfileDelegateIOS::GetEmailAddress()
 
 std::u16string AutofillSaveUpdateAddressProfileDelegateIOS::GetDescription()
     const {
-  if (is_migration_to_account_) {
-    DCHECK(profile_.source() != autofill::AutofillProfile::Source::kAccount);
+  if (is_migration_to_account_ ||
+      (IsProfileAnAccountProfile() && !original_profile_.has_value())) {
     DCHECK(syncing_user_email_);
     return l10n_util::GetStringFUTF16(
         IDS_IOS_AUTOFILL_SAVE_ADDRESS_IN_ACCOUNT_MESSAGE_SUBTITLE,

@@ -39,6 +39,10 @@ class SaveAddressProfileBannerRequestConfig
 
   BOOL is_migration_to_account() const { return is_migration_to_account_; }
 
+  BOOL is_profile_an_account_profile() const {
+    return is_profile_an_account_profile_;
+  }
+
  private:
   OVERLAY_USER_DATA_SETUP(SaveAddressProfileBannerRequestConfig);
   explicit SaveAddressProfileBannerRequestConfig(infobars::InfoBar* infobar);
@@ -59,6 +63,9 @@ class SaveAddressProfileBannerRequestConfig
 
   // Determines the type of the banner, true for save and false for the update.
   bool is_update_banner_ = false;
+
+  // Denotes that the profile is an account profile.
+  bool is_profile_an_account_profile_ = false;
 };
 
 }  // namespace autofill_address_profile_infobar_overlays

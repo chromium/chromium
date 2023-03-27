@@ -60,6 +60,10 @@ class SaveAddressProfileModalRequestConfig
     return syncing_user_email_;
   }
 
+  bool is_profile_an_account_profile() const {
+    return is_profile_an_account_profile_;
+  }
+
  private:
   OVERLAY_USER_DATA_SETUP(SaveAddressProfileModalRequestConfig);
   explicit SaveAddressProfileModalRequestConfig(InfoBarIOS* infobar);
@@ -94,6 +98,9 @@ class SaveAddressProfileModalRequestConfig
 
   // Denotes that the profile will be saved to Google Account.
   bool is_migration_to_account_ = false;
+
+  // Denotes that the profile is an account profile.
+  bool is_profile_an_account_profile_ = false;
 
   // Denotes the email address of the syncing account.
   absl::optional<std::u16string> syncing_user_email_;

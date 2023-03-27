@@ -32,6 +32,7 @@ SaveAddressProfileBannerRequestConfig::SaveAddressProfileBannerRequestConfig(
   description_ = delegate->GetDescription();
   is_update_banner_ = delegate->GetOriginalProfile() ? true : false;
   is_migration_to_account_ = delegate->IsMigrationToAccount();
+  is_profile_an_account_profile_ = delegate->IsProfileAnAccountProfile();
 }
 
 SaveAddressProfileBannerRequestConfig::
