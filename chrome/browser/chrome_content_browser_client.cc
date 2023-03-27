@@ -13,6 +13,7 @@
 
 #include "base/base_switches.h"
 #include "base/command_line.h"
+#include "base/containers/fixed_flat_set.h"
 #include "base/dcheck_is_on.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
@@ -1114,7 +1115,19 @@ bool URLHasExtensionPermission(extensions::ProcessMap* process_map,
          process_map->Contains(extension->id(), render_process_id);
 }
 
-#endif
+// Returns true if |extension_id| is allowed to run as an Isolated Context,
+// giving it access to additional APIs.
+bool IsExtensionIdAllowedToUseIsolatedContext(base::StringPiece extension_id) {
+  static constexpr auto kAllowedIsolatedContextExtensionIds =
+      base::MakeFixedFlatSet<base::StringPiece>({
+          "algkcnfjnajfhgimadimbjhmpaeohhln",  // Secure Shell Extension (dev)
+          "iodihamcpbpeioajjeobimgagajmlibd",  // Secure Shell Extension
+                                               // (stable)
+      });
+  return base::Contains(kAllowedIsolatedContextExtensionIds, extension_id);
+}
+
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
 mojo::PendingRemote<prerender::mojom::PrerenderCanceler> GetPrerenderCanceler(
     base::OnceCallback<content::WebContents*()> wc_getter) {
@@ -2493,7 +2506,9 @@ bool ChromeContentBrowserClient::IsIsolatedContextAllowedForUrl(
   auto* extension = extensions::ExtensionRegistry::Get(browser_context)
                         ->enabled_extensions()
                         .GetExtensionOrAppByURL(lock_url);
-  return extension && extension->is_platform_app();
+  return extension &&
+         (extension->is_platform_app() ||
+          IsExtensionIdAllowedToUseIsolatedContext(extension->id()));
 #else
   return false;
 #endif
