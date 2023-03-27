@@ -87,7 +87,7 @@ class MockKioskProfileLoadFailedObserver
 class KioskLaunchControllerTest : public extensions::ExtensionServiceTestBase {
  public:
   using AppState = KioskLaunchController::AppState;
-  using NetworkUIState = NetworkUiController::NetworkUIState;
+  using NetworkUIState = KioskLaunchController::NetworkUIState;
 
   KioskLaunchControllerTest()
       : extensions::ExtensionServiceTestBase(
@@ -136,11 +136,11 @@ class KioskLaunchControllerTest : public extensions::ExtensionServiceTestBase {
 
   KioskLaunchController& controller() { return *controller_; }
 
-  KioskAppLauncher::NetworkDelegate& network_delegate() {
-    return *controller_->GetNetworkUiControllerForTesting();
-  }
+  KioskAppLauncher::NetworkDelegate& network_delegate() { return *controller_; }
 
   KioskProfileLoader::Delegate& profile_controls() { return *controller_; }
+
+  AppLaunchSplashScreenView::Delegate& view_controls() { return *controller_; }
 
   FakeKioskAppLauncher& launcher() { return *app_launcher_; }
 
@@ -150,9 +150,9 @@ class KioskLaunchControllerTest : public extensions::ExtensionServiceTestBase {
     return testing::AllOf(
         testing::Field("app_state", &KioskLaunchController::app_state_,
                        Eq(app_state)),
-        testing::Property("network_ui_state",
-                          &KioskLaunchController::GetNetworkUiStateForTesting,
-                          Eq(network_state)));
+        testing::Field("network_ui_state",
+                       &KioskLaunchController::network_ui_state_,
+                       Eq(network_state)));
   }
 
   auto HasViewState(AppLaunchSplashScreenView::AppLaunchState launch_state) {

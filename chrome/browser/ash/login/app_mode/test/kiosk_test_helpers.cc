@@ -6,7 +6,6 @@
 
 #include "chrome/browser/ash/app_mode/kiosk_app_manager.h"
 #include "chrome/browser/ash/app_mode/web_app/web_kiosk_app_manager.h"
-#include "chrome/browser/ash/login/app_mode/network_ui_controller.h"
 #include "chrome/browser/ash/ownership/fake_owner_settings_service.h"
 #include "chrome/browser/profiles/profile_manager.h"
 
@@ -50,14 +49,14 @@ ScopedCanConfigureNetwork::ScopedCanConfigureNetwork(bool can_configure,
       needs_owner_auth_callback_(base::BindRepeating(
           &ScopedCanConfigureNetwork::NeedsOwnerAuthToConfigureNetwork,
           base::Unretained(this))) {
-  NetworkUiController::SetCanConfigureNetworkCallbackForTesting(
+  KioskLaunchController::SetCanConfigureNetworkCallbackForTesting(
       &can_configure_network_callback_);
-  NetworkUiController::SetNeedOwnerAuthToConfigureNetworkCallbackForTesting(
+  KioskLaunchController::SetNeedOwnerAuthToConfigureNetworkCallbackForTesting(
       &needs_owner_auth_callback_);
 }
 ScopedCanConfigureNetwork::~ScopedCanConfigureNetwork() {
-  NetworkUiController::SetCanConfigureNetworkCallbackForTesting(nullptr);
-  NetworkUiController::SetNeedOwnerAuthToConfigureNetworkCallbackForTesting(
+  KioskLaunchController::SetCanConfigureNetworkCallbackForTesting(nullptr);
+  KioskLaunchController::SetNeedOwnerAuthToConfigureNetworkCallbackForTesting(
       nullptr);
 }
 
