@@ -21,14 +21,12 @@ std::wstring FirstComponent(const std::wstring& original) {
 
 TEST(FilePathSanitizationTests, NormalizePath) {
 #if defined(ARCH_CPU_ARM64)
-  // on Win Arm64, ::GetLongPathName fails on c:\program files.
-  base::FilePath expected_path =
-      base::FilePath(L"c:\\program files (arm)\\desktop.ini");
-  EXPECT_EQ(NormalizePath(base::FilePath(L"C:\\PROGRA~2\\DESKTOP.INI")),
-            expected_path);
-  EXPECT_EQ(
-      NormalizePath(base::FilePath(L"c:\\pRoGrAm FiLeS (Arm)\\desktop.INI")),
-      expected_path);
+  // desktop.ini is not in C:\Program Files on ARM64 devices and the directory
+  // where it does exist (C:\Program Files (Arm)) doesn't have an 8.3 name.
+  // So, this is the best normalization test we can do.
+  base::FilePath expected_path = base::FilePath(L"c:\\program files");
+  EXPECT_EQ(NormalizePath(base::FilePath(L"C:\\PROGRA~1")), expected_path);
+  EXPECT_EQ(NormalizePath(base::FilePath(L"c:\\pRoGrAm FiLeS")), expected_path);
 #else
   base::FilePath expected_path =
       base::FilePath(L"c:\\program files\\desktop.ini");
