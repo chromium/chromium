@@ -65,10 +65,6 @@ class CORE_EXPORT LayoutFlexibleBox : public LayoutBlock {
     NOT_DESTROYED();
     return true;
   }
-  bool IsFlexibleBoxIncludingDeprecatedAndNG() const final {
-    NOT_DESTROYED();
-    return true;
-  }
   void UpdateBlockLayout(bool relayout_children) final;
 
   bool IsChildAllowed(LayoutObject* object,

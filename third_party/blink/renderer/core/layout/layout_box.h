@@ -1732,12 +1732,6 @@ class CORE_EXPORT LayoutBox : public LayoutBoxModelObject {
   bool IsCustomItem() const;
   bool IsCustomItemShrinkToFit() const;
 
-  bool IsFlexItemIncludingDeprecatedAndNG() const {
-    NOT_DESTROYED();
-    return IsFlexItemCommon() &&
-           Parent()->IsFlexibleBoxIncludingDeprecatedAndNG();
-  }
-
   // TODO(dgrogan): Replace the rest of the calls to IsFlexItem with
   // IsFlexItemIncludingNG when all the callsites can handle an item with an NG
   // parent.

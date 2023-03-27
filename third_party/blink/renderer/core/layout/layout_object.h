@@ -2963,21 +2963,9 @@ class CORE_EXPORT LayoutObject : public GarbageCollected<LayoutObject>,
 
   void Destroy();
 
-  // Virtual function helpers for the deprecated Flexible Box Layout (display:
-  // -webkit-box).
-  virtual bool IsDeprecatedFlexibleBox() const {
-    NOT_DESTROYED();
-    return false;
-  }
-
   // Virtual function helper for the new FlexibleBox Layout (display:
   // -webkit-flex).
   virtual bool IsFlexibleBox() const {
-    NOT_DESTROYED();
-    return false;
-  }
-
-  virtual bool IsFlexibleBoxIncludingDeprecatedAndNG() const {
     NOT_DESTROYED();
     return false;
   }

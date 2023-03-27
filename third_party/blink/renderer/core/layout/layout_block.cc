@@ -1887,22 +1887,6 @@ LayoutUnit LayoutBlock::BaselinePosition(
     LayoutUnit baseline_pos = (IsWritingModeRoot() && !IsRubyRun())
                                   ? LayoutUnit(-1)
                                   : InlineBlockBaseline(direction);
-
-    if (IsDeprecatedFlexibleBox()) {
-      // Historically, we did this check for all baselines. But we can't
-      // remove this code from deprecated flexbox, because it effectively
-      // breaks -webkit-line-clamp, which is used in the wild -- we would
-      // calculate the baseline as if -webkit-line-clamp wasn't used.
-      // For simplicity, we use this for all uses of deprecated flexbox.
-      LayoutUnit bottom_of_content =
-          direction == kHorizontalLine
-              ? Size().Height() - BorderBottom() - PaddingBottom() -
-                    ComputeScrollbars().bottom
-              : Size().Width() - BorderLeft() - PaddingLeft() -
-                    ComputeScrollbars().left;
-      if (baseline_pos > bottom_of_content)
-        baseline_pos = LayoutUnit(-1);
-    }
     if (baseline_pos != -1)
       return BeforeMarginInLineDirection(direction) + baseline_pos;
 

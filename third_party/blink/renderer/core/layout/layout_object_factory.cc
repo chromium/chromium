@@ -11,7 +11,6 @@
 #include "third_party/blink/renderer/core/html/html_frame_set_element.h"
 #include "third_party/blink/renderer/core/layout/layout_block_flow.h"
 #include "third_party/blink/renderer/core/layout/layout_counter.h"
-#include "third_party/blink/renderer/core/layout/layout_deprecated_flexible_box.h"
 #include "third_party/blink/renderer/core/layout/layout_fieldset.h"
 #include "third_party/blink/renderer/core/layout/layout_flexible_box.h"
 #include "third_party/blink/renderer/core/layout/layout_frame_set.h"
@@ -126,15 +125,6 @@ LayoutBlockFlow* LayoutObjectFactory::CreateBlockFlow(
 
   // Create a plain LayoutBlockFlow
   return CreateObject<LayoutBlockFlow, LayoutNGBlockFlow>(node, legacy);
-}
-
-// static
-LayoutBlock* LayoutObjectFactory::CreateBlockForLineClamp(
-    Node& node,
-    const ComputedStyle& style,
-    LegacyLayout legacy) {
-  return CreateObject<LayoutBlock, LayoutNGBlockFlow,
-                      LayoutDeprecatedFlexibleBox>(node, legacy);
 }
 
 LayoutView* LayoutObjectFactory::CreateView(Document& document,

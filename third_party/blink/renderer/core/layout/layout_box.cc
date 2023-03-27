@@ -64,7 +64,6 @@
 #include "third_party/blink/renderer/core/layout/custom_scrollbar.h"
 #include "third_party/blink/renderer/core/layout/geometry/physical_rect.h"
 #include "third_party/blink/renderer/core/layout/hit_test_result.h"
-#include "third_party/blink/renderer/core/layout/layout_deprecated_flexible_box.h"
 #include "third_party/blink/renderer/core/layout/layout_embedded_content.h"
 #include "third_party/blink/renderer/core/layout/layout_fieldset.h"
 #include "third_party/blink/renderer/core/layout/layout_flexible_box.h"
@@ -4094,20 +4093,12 @@ void LayoutBox::ComputeLogicalWidth(
     return;
   }
 
-  // FIXME: Account for writing-mode in flexible boxes.
-  // https://bugs.webkit.org/show_bug.cgi?id=46418
-  bool in_vertical_box =
-      Parent()->IsDeprecatedFlexibleBox() &&
-      (Parent()->StyleRef().BoxOrient() == EBoxOrient::kVertical);
-  bool stretching =
-      (Parent()->StyleRef().BoxAlign() == EBoxAlignment::kStretch);
   // TODO (lajava): Stretching is the only reason why we don't want the box to
   // be treated as a replaced element, so we could perhaps refactor all this
   // logic, not only for flex and grid since alignment is intended to be applied
   // to any block.
-  bool treat_as_replaced = ShouldComputeSizeAsReplaced() &&
-                           (!in_vertical_box || !stretching) &&
-                           !HasStretchedLogicalWidth();
+  bool treat_as_replaced =
+      ShouldComputeSizeAsReplaced() && !HasStretchedLogicalWidth();
   const ComputedStyle& style_to_use = StyleRef();
   LayoutUnit container_logical_width =
       std::max(LayoutUnit(), ContainingBlockLogicalWidthForContent());
@@ -4158,8 +4149,8 @@ void LayoutBox::ComputeLogicalWidth(
       container_logical_width !=
           (computed_values.extent_ + computed_values.margins_.start_ +
            computed_values.margins_.end_) &&
-      !IsFloating() && !IsInline() &&
-      !cb->IsFlexibleBoxIncludingDeprecatedAndNG() && !cb->IsLayoutNGGrid()) {
+      !IsFloating() && !IsInline() && !cb->IsFlexibleBoxIncludingNG() &&
+      !cb->IsLayoutNGGrid()) {
     LayoutUnit new_margin_total =
         container_logical_width - computed_values.extent_;
     bool has_inverted_direction = cb->StyleRef().IsLeftToRightDirection() !=
@@ -4332,11 +4323,6 @@ bool LayoutBox::ColumnFlexItemHasStretchAlignment() const {
 bool LayoutBox::IsStretchingColumnFlexItem() const {
   NOT_DESTROYED();
   LayoutObject* parent = Parent();
-  if (parent->StyleRef().IsDeprecatedWebkitBox() &&
-      parent->StyleRef().BoxOrient() == EBoxOrient::kVertical &&
-      parent->StyleRef().BoxAlign() == EBoxAlignment::kStretch)
-    return true;
-
   // We don't stretch multiline flexboxes because they need to apply line
   // spacing (align-content) first.
   if (parent->IsFlexibleBoxIncludingNG() &&
@@ -4426,12 +4412,12 @@ bool LayoutBox::SizesLogicalWidthToFitContent(
   // their intrinsic widths.
   // FIXME: Think about writing-mode here.
   // https://bugs.webkit.org/show_bug.cgi?id=46473
-  if ((Parent()->IsDeprecatedFlexibleBox() ||
-       (Parent()->StyleRef().IsDeprecatedWebkitBox() &&
-        Parent()->IsFlexibleBox())) &&
+  if ((Parent()->StyleRef().IsDeprecatedWebkitBox() &&
+       Parent()->IsFlexibleBox()) &&
       (Parent()->StyleRef().BoxOrient() == EBoxOrient::kHorizontal ||
-       Parent()->StyleRef().BoxAlign() != EBoxAlignment::kStretch))
+       Parent()->StyleRef().BoxAlign() != EBoxAlignment::kStretch)) {
     return true;
+  }
 
   // Button, input, select, textarea, and legend treat width value of 'auto' as
   // 'intrinsic' unless it's in a stretching column flexbox.
@@ -4922,7 +4908,7 @@ bool LayoutBox::SkipContainingBlockForPercentHeightCalculation(
          !containing_block->IsOutOfFlowPositioned() &&
          !containing_block->HasOverridePercentageResolutionBlockSize() &&
          !containing_block->IsLayoutNGGrid() &&
-         !containing_block->IsFlexibleBoxIncludingDeprecatedAndNG() &&
+         !containing_block->IsFlexibleBoxIncludingNG() &&
          !containing_block->IsLayoutNGCustom();
 }
 

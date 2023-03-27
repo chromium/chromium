@@ -74,7 +74,6 @@
 #include "third_party/blink/renderer/core/layout/hit_test_result.h"
 #include "third_party/blink/renderer/core/layout/layout_counter.h"
 #include "third_party/blink/renderer/core/layout/layout_custom_scrollbar_part.h"
-#include "third_party/blink/renderer/core/layout/layout_deprecated_flexible_box.h"
 #include "third_party/blink/renderer/core/layout/layout_embedded_content.h"
 #include "third_party/blink/renderer/core/layout/layout_fieldset.h"
 #include "third_party/blink/renderer/core/layout/layout_flexible_box.h"
@@ -390,8 +389,7 @@ LayoutObject* LayoutObject::CreateObject(Element* element,
     case EDisplay::kWebkitBox:
     case EDisplay::kWebkitInlineBox:
       if (style.IsDeprecatedWebkitBoxWithVerticalLineClamp()) {
-        return LayoutObjectFactory::CreateBlockForLineClamp(*element, style,
-                                                            legacy);
+        return MakeGarbageCollected<LayoutNGBlockFlow>(element);
       }
       UseCounter::Count(element->GetDocument(),
                         WebFeature::kWebkitBoxWithoutWebkitLineClamp);

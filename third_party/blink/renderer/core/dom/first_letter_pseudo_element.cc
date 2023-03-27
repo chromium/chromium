@@ -192,8 +192,7 @@ LayoutText* FirstLetterPseudoElement::FirstLetterTextLayoutObject(
                first_letter_text_layout_object->IsButton() ||
                IsMenuList(first_letter_text_layout_object)) {
       return nullptr;
-    } else if (first_letter_text_layout_object
-                   ->IsFlexibleBoxIncludingDeprecatedAndNG() ||
+    } else if (first_letter_text_layout_object->IsFlexibleBoxIncludingNG() ||
                first_letter_text_layout_object->IsLayoutNGGrid()) {
       first_letter_text_layout_object =
           first_letter_text_layout_object->NextSibling();

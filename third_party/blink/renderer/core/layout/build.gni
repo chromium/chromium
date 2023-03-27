@@ -122,8 +122,6 @@ blink_core_sources_layout = [
   "layout_counter.h",
   "layout_custom_scrollbar_part.cc",
   "layout_custom_scrollbar_part.h",
-  "layout_deprecated_flexible_box.cc",
-  "layout_deprecated_flexible_box.h",
   "layout_embedded_content.cc",
   "layout_embedded_content.h",
   "layout_embedded_object.cc",
