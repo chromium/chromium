@@ -502,7 +502,7 @@ export class BrowsingContextImpl {
       landscape: params.orientation === 'landscape',
       pageRanges: params.pageRanges?.join(',') ?? '',
       scale: params.scale,
-      // TODO(#518): Use `shrinkToFit`.
+      preferCSSPageSize: !params.shrinkToFit,
     };
 
     if (params.margin?.bottom) {
