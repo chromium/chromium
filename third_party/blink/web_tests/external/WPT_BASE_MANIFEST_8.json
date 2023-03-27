@@ -267443,16 +267443,6 @@
    }
   },
   "support": {
-   ".cache": {
-    "gitignore2.json": [
-     "cb399a848f0a52a7c0b551a755f55252bd5dde28",
-     []
-    ],
-    "mtime.json": [
-     "064454c3a391ed49199164c0c82c2c6c59195fe2",
-     []
-    ]
-   },
    ".gitignore": [
     "d93e645d547894b50149d3726de2654957b6e06f",
     []
@@ -418309,7 +418299,7 @@
      ]
     ],
     "decompression-corrupt-input.tentative.any.js": [
-     "2de587b6c86312df839cc61de331c0ffa3112aa5",
+     "edf6dedaee08c35b58a803707ed5bd4771a7432f",
      [
       "compression/decompression-corrupt-input.tentative.any.html",
       {}
