@@ -264,25 +264,6 @@ TEST_F(SafeBrowsingMetricsCollectorTest,
   histograms.ExpectUniqueSample("SafeBrowsing.EsbDisabled.LastBypassEventType",
                                 /* sample */ EventType::CSD_INTERSTITIAL_BYPASS,
                                 /* expected_count */ 1);
-  histograms.ExpectUniqueTimeSample(
-      "SafeBrowsing.EsbDisabled.LastBypassEventInterval.CsdInterstitialBypass",
-      /* sample */ base::Hours(1),
-      /* expected_count */ 1);
-  histograms.ExpectBucketCount(
-      "SafeBrowsing.EsbDisabled.BypassCountLast28Days."
-      "DatabaseInterstitialBypass",
-      /* sample */ 2,
-      /* expected_count */ 1);
-  histograms.ExpectBucketCount(
-      "SafeBrowsing.EsbDisabled.BypassCountLast28Days."
-      "CsdInterstitialBypass",
-      /* sample */ 2,
-      /* expected_count */ 1);
-  histograms.ExpectBucketCount(
-      "SafeBrowsing.EsbDisabled.BypassCountLast28Days."
-      "RealTimeInterstitialBypass",
-      /* sample */ 0,
-      /* expected_count */ 1);
 
   // Changing standard protection to enhanced protection shouldn't log the
   // metric.
@@ -298,30 +279,6 @@ TEST_F(SafeBrowsingMetricsCollectorTest,
   SetSafeBrowsingState(&pref_service_, SafeBrowsingState::NO_SAFE_BROWSING);
   histograms.ExpectTotalCount("SafeBrowsing.EsbDisabled.LastBypassEventType",
                               /* expected_count */ 2);
-  histograms.ExpectBucketCount(
-      "SafeBrowsing.EsbDisabled.LastBypassEventType",
-      /* sample */ EventType::REAL_TIME_INTERSTITIAL_BYPASS,
-      /* expected_count */ 1);
-  histograms.ExpectTimeBucketCount(
-      "SafeBrowsing.EsbDisabled.LastBypassEventInterval."
-      "RealTimeInterstitialBypass",
-      /* sample */ base::Days(1),
-      /* expected_count */ 1);
-  histograms.ExpectBucketCount(
-      "SafeBrowsing.EsbDisabled.BypassCountLast28Days."
-      "DatabaseInterstitialBypass",
-      /* sample */ 2,
-      /* expected_count */ 2);
-  histograms.ExpectBucketCount(
-      "SafeBrowsing.EsbDisabled.BypassCountLast28Days."
-      "CsdInterstitialBypass",
-      /* sample */ 2,
-      /* expected_count */ 2);
-  histograms.ExpectBucketCount(
-      "SafeBrowsing.EsbDisabled.BypassCountLast28Days."
-      "RealTimeInterstitialBypass",
-      /* sample */ 1,
-      /* expected_count */ 1);
 
   // Changing no protection to enhanced protection shouldn't log the metric.
   SetSafeBrowsingState(&pref_service_, SafeBrowsingState::ENHANCED_PROTECTION);
@@ -344,21 +301,6 @@ TEST_F(SafeBrowsingMetricsCollectorTest,
       "SafeBrowsing.EsbDisabled.LastSecuritySensitiveEventType",
       /* sample */ EventType::SECURITY_SENSITIVE_SAFE_BROWSING_INTERSTITIAL,
       /* expected_count */ 1);
-  histograms.ExpectUniqueTimeSample(
-      "SafeBrowsing.EsbDisabled.LastSecuritySensitiveEventInterval."
-      "SafeBrowsingInterstitial",
-      /* sample */ base::Hours(1),
-      /* expected_count */ 1);
-  histograms.ExpectBucketCount(
-      "SafeBrowsing.EsbDisabled.SecuritySensitiveCountLast28Days."
-      "SafeBrowsingInterstitial",
-      /* sample */ 1,
-      /* expected_count */ 1);
-  histograms.ExpectBucketCount(
-      "SafeBrowsing.EsbDisabled.SecuritySensitiveCountLast28Days."
-      "SSLInterstitial",
-      /* sample */ 0,
-      /* expected_count */ 1);
 
   // Changing standard protection to enhanced protection shouldn't log the
   // metric.
@@ -376,16 +318,6 @@ TEST_F(SafeBrowsingMetricsCollectorTest,
   histograms.ExpectTotalCount(
       "SafeBrowsing.EsbDisabled.LastSecuritySensitiveEventType",
       /* expected_count */ 2);
-  histograms.ExpectTimeBucketCount(
-      "SafeBrowsing.EsbDisabled.LastSecuritySensitiveEventInterval."
-      "SafeBrowsingInterstitial",
-      /* sample */ base::Days(1),
-      /* expected_count */ 1);
-  histograms.ExpectBucketCount(
-      "SafeBrowsing.EsbDisabled.SecuritySensitiveCountLast28Days."
-      "SafeBrowsingInterstitial",
-      /* sample */ 2,
-      /* expected_count */ 1);
 
   // Changing no protection to enhanced protection shouldn't log the metric.
   SetSafeBrowsingState(&pref_service_, SafeBrowsingState::ENHANCED_PROTECTION);
@@ -637,21 +569,6 @@ TEST_F(SafeBrowsingMetricsCollectorTest, LogDailyEventMetrics_LoggedDaily) {
       "SafeBrowsing.Daily.BypassCountLast28Days.EnhancedProtection.AllEvents",
       /* sample */ 4,
       /* expected_count */ 1);
-  histograms.ExpectBucketCount(
-      "SafeBrowsing.Daily.BypassCountLast28Days.EnhancedProtection."
-      "DatabaseInterstitialBypass",
-      /* sample */ 2,
-      /* expected_count */ 1);
-  histograms.ExpectBucketCount(
-      "SafeBrowsing.Daily.BypassCountLast28Days.EnhancedProtection."
-      "CsdInterstitialBypass",
-      /* sample */ 1,
-      /* expected_count */ 1);
-  histograms.ExpectBucketCount(
-      "SafeBrowsing.Daily.BypassCountLast28Days.EnhancedProtection."
-      "RealTimeInterstitialBypass",
-      /* sample */ 1,
-      /* expected_count */ 1);
   histograms.ExpectTotalCount(
       "SafeBrowsing.Daily.SecuritySensitiveCountLast28Days.EnhancedProtection."
       "AllEvents",
@@ -659,11 +576,6 @@ TEST_F(SafeBrowsingMetricsCollectorTest, LogDailyEventMetrics_LoggedDaily) {
   histograms.ExpectBucketCount(
       "SafeBrowsing.Daily.SecuritySensitiveCountLast28Days.EnhancedProtection."
       "AllEvents",
-      /* sample */ 2,
-      /* expected_count */ 1);
-  histograms.ExpectBucketCount(
-      "SafeBrowsing.Daily.SecuritySensitiveCountLast28Days.EnhancedProtection."
-      "SafeBrowsingInterstitial",
       /* sample */ 2,
       /* expected_count */ 1);
 
@@ -676,11 +588,6 @@ TEST_F(SafeBrowsingMetricsCollectorTest, LogDailyEventMetrics_LoggedDaily) {
       "SafeBrowsing.Daily.BypassCountLast28Days.EnhancedProtection.AllEvents",
       /* sample */ 5,
       /* expected_count */ 1);
-  histograms.ExpectBucketCount(
-      "SafeBrowsing.Daily.BypassCountLast28Days.EnhancedProtection."
-      "CsdInterstitialBypass",
-      /* sample */ 2,
-      /* expected_count */ 1);
 
   task_environment_.FastForwardBy(base::Days(1));
   histograms.ExpectTotalCount(
@@ -689,11 +596,6 @@ TEST_F(SafeBrowsingMetricsCollectorTest, LogDailyEventMetrics_LoggedDaily) {
   histograms.ExpectBucketCount(
       "SafeBrowsing.Daily.BypassCountLast28Days.EnhancedProtection.AllEvents",
       /* sample */ 5,
-      /* expected_count */ 2);
-  histograms.ExpectBucketCount(
-      "SafeBrowsing.Daily.BypassCountLast28Days.EnhancedProtection."
-      "CsdInterstitialBypass",
-      /* sample */ 2,
       /* expected_count */ 2);
 }
 
@@ -715,26 +617,11 @@ TEST_F(SafeBrowsingMetricsCollectorTest,
       "SafeBrowsing.Daily.BypassCountLast28Days.EnhancedProtection.AllEvents",
       /* sample */ 1,
       /* expected_count */ 1);
-  histograms.ExpectBucketCount(
-      "SafeBrowsing.Daily.BypassCountLast28Days.EnhancedProtection."
-      "DatabaseInterstitialBypass",
-      /* sample */ 0,
-      /* expected_count */ 0);
-  histograms.ExpectBucketCount(
-      "SafeBrowsing.Daily.BypassCountLast28Days.EnhancedProtection."
-      "DatabaseInterstitialBypass",
-      /* sample */ 1,
-      /* expected_count */ 1);
 
   task_environment_.FastForwardBy(base::Days(28));
   // The event is older than 28 days, so it shouldn't be counted.
   histograms.ExpectBucketCount(
       "SafeBrowsing.Daily.BypassCountLast28Days.EnhancedProtection.AllEvents",
-      /* sample */ 0,
-      /* expected_count */ 1);
-  histograms.ExpectBucketCount(
-      "SafeBrowsing.Daily.BypassCountLast28Days.EnhancedProtection."
-      "DatabaseInterstitialBypass",
       /* sample */ 0,
       /* expected_count */ 1);
 }
@@ -790,10 +677,6 @@ TEST_F(SafeBrowsingMetricsCollectorTest,
   task_environment_.FastForwardBy(base::Days(1));
   // The CSD event is also removed because it was logged more than 30 days now.
   EXPECT_EQ(0u, csd_timestamps.size());
-
-  histograms.ExpectUniqueSample("SafeBrowsing.MetricsCollector.IsPrefValid",
-                                /* sample */ 1,
-                                /* expected_count */ 32);
 }
 
 TEST_F(SafeBrowsingMetricsCollectorTest, GetUserState) {

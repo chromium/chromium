@@ -127,21 +127,11 @@ void SafeBrowsingMetricsCollector::LogDailyEventMetrics() {
     if (IsBypassEventType(event_type)) {
       int bypass_count = GetEventCountSince(user_state, event_type,
                                             base::Time::Now() - base::Days(28));
-      base::UmaHistogramCounts100("SafeBrowsing.Daily.BypassCountLast28Days." +
-                                      GetUserStateMetricSuffix(user_state) +
-                                      "." +
-                                      GetEventTypeMetricSuffix(event_type),
-                                  bypass_count);
       total_bypass_count += bypass_count;
     }
     if (IsSecuritySensitiveEventType(event_type)) {
       int security_sensitive_event_count = GetEventCountSince(
           user_state, event_type, base::Time::Now() - base::Days(28));
-      base::UmaHistogramCounts100(
-          "SafeBrowsing.Daily.SecuritySensitiveCountLast28Days." +
-              GetUserStateMetricSuffix(user_state) + "." +
-              GetEventTypeMetricSuffix(event_type),
-          security_sensitive_event_count);
       total_security_sensitive_event_count += security_sensitive_event_count;
     }
   }
@@ -159,13 +149,6 @@ void SafeBrowsingMetricsCollector::RemoveOldEventsFromPref() {
   ScopedDictPrefUpdate update(pref_service_,
                               prefs::kSafeBrowsingEventTimestamps);
   base::Value::Dict& mutable_state_dict = update.Get();
-
-  // Histogram to check whether prefs::kSafeBrowsingEventTimestamp is a dict.
-  // Prefs DCHECKs if it's the wrong type, or not registered, so this is not
-  // actually needed.
-  //
-  // TODO(mmenke): Remove this histogram.
-  base::UmaHistogramBoolean("SafeBrowsing.MetricsCollector.IsPrefValid", true);
 
   for (auto state_map : mutable_state_dict) {
     for (auto event_map : state_map.second.GetDict()) {
@@ -356,25 +339,6 @@ void SafeBrowsingMetricsCollector::
     return;
   }
 
-  for (int event_type_int = 0; event_type_int <= EventType::kMaxValue;
-       event_type_int += 1) {
-    EventType event_type = static_cast<EventType>(event_type_int);
-    if (IsBypassEventType(event_type)) {
-      base::UmaHistogramCounts100(
-          "SafeBrowsing.EsbDisabled.BypassCountLast28Days." +
-              GetEventTypeMetricSuffix(event_type),
-          GetEventCountSince(UserState::kEnhancedProtection, event_type,
-                             base::Time::Now() - base::Days(28)));
-    }
-    if (IsSecuritySensitiveEventType(event_type)) {
-      base::UmaHistogramCounts100(
-          "SafeBrowsing.EsbDisabled.SecuritySensitiveCountLast28Days." +
-              GetEventTypeMetricSuffix(event_type),
-          GetEventCountSince(UserState::kEnhancedProtection, event_type,
-                             base::Time::Now() - base::Days(28)));
-    }
-  }
-
   absl::optional<SafeBrowsingMetricsCollector::Event> latest_bypass_event =
       GetLatestEventFromEventTypeFilter(
           UserState::kEnhancedProtection,
@@ -384,12 +348,6 @@ void SafeBrowsingMetricsCollector::
     base::UmaHistogramEnumeration(
         "SafeBrowsing.EsbDisabled.LastBypassEventType",
         latest_bypass_event->type);
-    base::UmaHistogramCustomTimes(
-        "SafeBrowsing.EsbDisabled.LastBypassEventInterval." +
-            GetEventTypeMetricSuffix(latest_bypass_event->type),
-        /* sample */ base::Time::Now() - latest_bypass_event->timestamp,
-        /* min */ base::Seconds(1),
-        /* max */ base::Days(1), /* buckets */ 50);
   }
 
   absl::optional<SafeBrowsingMetricsCollector::Event>
@@ -401,13 +359,6 @@ void SafeBrowsingMetricsCollector::
     base::UmaHistogramEnumeration(
         "SafeBrowsing.EsbDisabled.LastSecuritySensitiveEventType",
         latest_security_sensitive_event->type);
-    base::UmaHistogramCustomTimes(
-        "SafeBrowsing.EsbDisabled.LastSecuritySensitiveEventInterval." +
-            GetEventTypeMetricSuffix(latest_security_sensitive_event->type),
-        /* sample */ base::Time::Now() -
-            latest_security_sensitive_event->timestamp,
-        /* min */ base::Seconds(1),
-        /* max */ base::Days(1), /* buckets */ 50);
   }
 
   const absl::optional<Event> latest_enabled_event =

@@ -60,31 +60,6 @@ chromium-metrics-reviews@google.com.
   <variant name="URT" summary="the URL real-time mechanism"/>
 </variants>
 
-<variants name="MetricsCollectorBypassEventType">
-  <variant name="CsdInterstitialBypass"
-      summary="client-side detection interstitial bypass"/>
-  <variant name="DangerousDownloadBypass"
-      summary="dangerous download warning bypass"/>
-  <variant name="DatabaseInterstitialBypass"
-      summary="Safe Browsing database interstitial bypass"/>
-  <variant name="ExtensionAllowlistInstallBypass"
-      summary="extension allowlist install bypass"/>
-  <variant name="NonAllowlistedExtensionReEnabled"
-      summary="non allowlisted extension re-enabled"/>
-  <variant name="PasswordReuseModalBypass"
-      summary="password reuse modal warning bypass"/>
-  <variant name="RealTimeInterstitialBypass"
-      summary="real time URL check warning bypass"/>
-</variants>
-
-<variants name="MetricsCollectorSecuritySensitiveEventType">
-  <variant name="Download" summary="download"/>
-  <variant name="PasswordProtection" summary="password protection"/>
-  <variant name="SafeBrowsingInterstitial"
-      summary="safe browsing interstitial"/>
-  <variant name="SSLInterstitial" summary="SSL interstitial"/>
-</variants>
-
 <variants name="MetricsCollectorTimesDisabledEnabledDuration">
   <variant name="LongEnabled"
       summary="ESB enabled duration was greater than 24 hours"/>
@@ -494,35 +469,29 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram
-    name="SafeBrowsing.Daily.BypassCountLast28Days.{UserState}.{EventType}"
-    units="events" expires_after="2024-01-04">
+    name="SafeBrowsing.Daily.BypassCountLast28Days.{UserState}.AllEvents"
+    units="events" expires_after="2024-03-23">
   <owner>xinghuilu@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
-    Logs the total number of {EventType} in the last 28 days. Recorded for all
+    Logs the total number of bypass events in the last 28 days. Recorded for all
     non-Incognito profiles that are under {UserState} every 24 hours and at
     startup if the last recording was more than 24 hours ago.
   </summary>
   <token key="UserState" variants="MetricsCollectorUserState"/>
-  <token key="EventType" variants="MetricsCollectorBypassEventType">
-    <variant name="AllEvents" summary="any type of events"/>
-  </token>
 </histogram>
 
 <histogram
-    name="SafeBrowsing.Daily.SecuritySensitiveCountLast28Days.{UserState}.{EventType}"
-    units="events" expires_after="2023-03-08">
+    name="SafeBrowsing.Daily.SecuritySensitiveCountLast28Days.{UserState}.AllEvents"
+    units="events" expires_after="2024-03-23">
   <owner>xinghuilu@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
-    Logs the total number of security sensitive {EventType} in the last 28 days.
+    Logs the total number of security sensitive events in the last 28 days.
     Recorded for all non-Incognito profiles that are under {UserState} every 24
     hours and at startup if the last recording was more than 24 hours ago.
   </summary>
   <token key="UserState" variants="MetricsCollectorUserState"/>
-  <token key="EventType" variants="MetricsCollectorSecuritySensitiveEventType">
-    <variant name="AllEvents" summary="any type of events"/>
-  </token>
 </histogram>
 
 <histogram name="SafeBrowsing.DelayedWarnings.Event"
@@ -568,35 +537,8 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="SafeBrowsing.EsbDisabled.BypassCountLast28Days.{EventType}"
-    units="events" expires_after="2024-01-04">
-  <owner>xinghuilu@chromium.org</owner>
-  <owner>chrome-counter-abuse-alerts@google.com</owner>
-  <summary>
-    Records the total number of {EventType} in the last 28 days. Logged each
-    time a user disables Enhanced Safe Browsing. Logged at most three times a
-    week. If ESB is disabled for more than three times a week, later records
-    will be dropped.
-  </summary>
-  <token key="EventType" variants="MetricsCollectorBypassEventType"/>
-</histogram>
-
-<histogram name="SafeBrowsing.EsbDisabled.LastBypassEventInterval.{EventType}"
-    units="ms" expires_after="2024-01-04">
-  <owner>xinghuilu@chromium.org</owner>
-  <owner>chrome-counter-abuse-alerts@google.com</owner>
-  <summary>
-    Records the time between the last bypass event and when the user disables
-    Enhanced Safe Browsing. Logged each time a user disables Enhanced Safe
-    Browsing and the {EventType} is the last bypass event type. Logged at most
-    three times a week. If ESB is disabled for more than three times a week,
-    later records will be dropped.
-  </summary>
-  <token key="EventType" variants="MetricsCollectorBypassEventType"/>
-</histogram>
-
 <histogram name="SafeBrowsing.EsbDisabled.LastBypassEventType"
-    enum="SBMetricsCollectorEventType" expires_after="2023-08-27">
+    enum="SBMetricsCollectorEventType" expires_after="2024-03-23">
   <owner>xinghuilu@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
@@ -618,23 +560,8 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram
-    name="SafeBrowsing.EsbDisabled.LastSecuritySensitiveEventInterval.{EventType}"
-    units="ms" expires_after="2023-03-08">
-  <owner>xinghuilu@chromium.org</owner>
-  <owner>chrome-counter-abuse-alerts@google.com</owner>
-  <summary>
-    Records the time between the last security sensitive event and when the user
-    disables Enhanced Safe Browsing. Logged each time a user disables Enhanced
-    Safe Browsing and the {EventType} is the last security sensitive event type.
-    Logged at most three times a week. If ESB is disabled for more than three
-    times a week, later records will be dropped.
-  </summary>
-  <token key="EventType" variants="MetricsCollectorSecuritySensitiveEventType"/>
-</histogram>
-
 <histogram name="SafeBrowsing.EsbDisabled.LastSecuritySensitiveEventType"
-    enum="SBMetricsCollectorEventType" expires_after="2023-03-08">
+    enum="SBMetricsCollectorEventType" expires_after="2024-03-23">
   <owner>xinghuilu@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
@@ -642,20 +569,6 @@ chromium-metrics-reviews@google.com.
     Enhanced Safe Browsing. Logged each time a user disables Enhanced Safe
     Browsing. Logged at most three times a week.
   </summary>
-</histogram>
-
-<histogram
-    name="SafeBrowsing.EsbDisabled.SecuritySensitiveCountLast28Days.{EventType}"
-    units="events" expires_after="2023-03-08">
-  <owner>xinghuilu@chromium.org</owner>
-  <owner>chrome-counter-abuse-alerts@google.com</owner>
-  <summary>
-    Records the total number of {EventType} in the last 28 days. Logged each
-    time a user disables Enhanced Safe Browsing. Logged at most three times a
-    week. If ESB is disabled for more than three times a week, later records
-    will be dropped.
-  </summary>
-  <token key="EventType" variants="MetricsCollectorSecuritySensitiveEventType"/>
 </histogram>
 
 <histogram
@@ -1408,16 +1321,6 @@ chromium-metrics-reviews@google.com.
   <summary>
     Records the size (in KB) of a download if it is a PDF or Office document
     before Safe Browsing client side checks are started.
-  </summary>
-</histogram>
-
-<histogram name="SafeBrowsing.MetricsCollector.IsPrefValid" enum="BooleanValid"
-    expires_after="2023-08-20">
-  <owner>xinghuilu@chromium.org</owner>
-  <owner>chrome-counter-abuse-alerts@google.com</owner>
-  <summary>
-    Records whether the pref for storing Safe Browsing events is valid. This is
-    logged each time old events are removed. It is logged daily.
   </summary>
 </histogram>
 
