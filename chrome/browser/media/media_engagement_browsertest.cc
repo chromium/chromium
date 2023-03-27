@@ -977,29 +977,18 @@ IN_PROC_BROWSER_TEST_F(MediaEngagementContentsObserverPrerenderBrowserTest,
                        DoNotSendEngagementLevelToRenderFrameInPrerendering) {
   ASSERT_TRUE(embedded_test_server()->Start());
 
+  MockAutoplayConfigurationClient client;
+  OverrideInterface(GetWebContents()->GetPrimaryMainFrame(), &client);
+
   const GURL& initial_url = embedded_test_server()->GetURL("/empty.html");
   SetScores(url::Origin::Create(initial_url), 24, 20);
 
-  content::TestNavigationManager navigation_manager(GetWebContents(),
-                                                    initial_url);
-
-  content::NavigationController::LoadURLParams params(initial_url);
-  params.transition_type = ui::PAGE_TRANSITION_LINK;
-  params.frame_tree_node_id =
-      GetWebContents()->GetPrimaryMainFrame()->GetFrameTreeNodeId();
-  GetWebContents()->GetController().LoadURLWithParams(params);
-
-  EXPECT_TRUE(navigation_manager.WaitForResponse());
-
-  MockAutoplayConfigurationClient client;
-  OverrideInterface(
-      navigation_manager.GetNavigationHandle()->GetRenderFrameHost(), &client);
   // AddAutoplayFlags should be called once after navigating |initial_url| in
   // the main frame.
   EXPECT_CALL(client, AddAutoplayFlags(testing::_, testing::_)).Times(1);
 
-  navigation_manager.ResumeNavigation();
-  EXPECT_TRUE(navigation_manager.WaitForNavigationFinished());
+  // Navigate to an initial page.
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), initial_url));
 
   // Loads a page in a prerendered page.
   GURL prerender_url = embedded_test_server()->GetURL("/title1.html");
@@ -1056,29 +1045,18 @@ IN_PROC_BROWSER_TEST_F(MediaEngagementContentsObserverFencedFrameBrowserTest,
                        SendEngagementLevelToRenderFrameOnFencedFrame) {
   ASSERT_TRUE(embedded_test_server()->Start());
 
+  MockAutoplayConfigurationClient client;
+  OverrideInterface(GetWebContents()->GetPrimaryMainFrame(), &client);
+
   const GURL& initial_url =
       embedded_test_server()->GetURL("a.com", "/empty.html");
   SetScores(url::Origin::Create(initial_url), 24, 20);
-  content::TestNavigationManager navigation_manager(GetWebContents(),
-                                                    initial_url);
 
-  content::NavigationController::LoadURLParams params(initial_url);
-  params.transition_type = ui::PAGE_TRANSITION_LINK;
-  params.frame_tree_node_id =
-      GetWebContents()->GetPrimaryMainFrame()->GetFrameTreeNodeId();
-  GetWebContents()->GetController().LoadURLWithParams(params);
-
-  EXPECT_TRUE(navigation_manager.WaitForResponse());
-
-  MockAutoplayConfigurationClient client;
-  OverrideInterface(
-      navigation_manager.GetNavigationHandle()->GetRenderFrameHost(), &client);
-  // AddAutoplayFlags should be called once after navigating |initial_url| in
-  // the main frame.
+  // AddAutoplayFlags should be called on the primary main frame.
   EXPECT_CALL(client, AddAutoplayFlags(testing::_, testing::_)).Times(1);
 
-  navigation_manager.ResumeNavigation();
-  EXPECT_TRUE(navigation_manager.WaitForNavigationFinished());
+  // Navigate to an initial page.
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), initial_url));
 
   // Create a fenced frame.
   GURL fenced_frame_url =
@@ -1089,29 +1067,17 @@ IN_PROC_BROWSER_TEST_F(MediaEngagementContentsObserverFencedFrameBrowserTest,
   EXPECT_NE(nullptr, fenced_frame_host);
 
   // AddAutoplayFlags should be called on the fenced frame.
+  MockAutoplayConfigurationClient fenced_frame_client;
+  OverrideInterface(fenced_frame_host, &fenced_frame_client);
   GURL fenced_frame_navigate_url =
       embedded_test_server()->GetURL("b.com", "/fenced_frames/title2.html");
-  content::TestNavigationManager navigation_manager2(GetWebContents(),
-                                                     fenced_frame_navigate_url);
-  EXPECT_TRUE(ExecJs(
-      fenced_frame_host,
-      content::JsReplace("location.href = $1;", fenced_frame_navigate_url)));
-
-  EXPECT_TRUE(navigation_manager2.WaitForResponse());
-  MockAutoplayConfigurationClient fenced_frame_client;
-  OverrideInterface(
-      navigation_manager2.GetNavigationHandle()->GetRenderFrameHost(),
-      &fenced_frame_client);
-  // AddAutoplayFlags should be called once after navigating |initial_url| in
-  // the main frame.
   base::RunLoop run_loop;
   EXPECT_CALL(fenced_frame_client,
               AddAutoplayFlags(url::Origin::Create(fenced_frame_navigate_url),
                                testing::_))
       .Times(1)
       .WillOnce(base::test::RunClosure(run_loop.QuitClosure()));
-
-  navigation_manager2.ResumeNavigation();
-  EXPECT_TRUE(navigation_manager2.WaitForNavigationFinished());
+  fenced_frame_test_helper().NavigateFrameInFencedFrameTree(
+      fenced_frame_host, fenced_frame_navigate_url);
   run_loop.Run();
 }
