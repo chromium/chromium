@@ -55,6 +55,7 @@
 #include "chrome/browser/ssl/cert_verifier_browser_test.h"
 #include "chrome/browser/ssl/certificate_reporting_test_utils.h"
 #include "chrome/browser/ssl/chrome_security_blocking_page_factory.h"
+#include "chrome/browser/ssl/https_upgrades_util.h"
 #include "chrome/browser/ssl/security_state_tab_helper.h"
 #include "chrome/browser/ssl/ssl_browsertest_util.h"
 #include "chrome/browser/ssl/ssl_error_controller_client.h"
@@ -109,6 +110,7 @@
 #include "components/security_interstitials/content/ssl_error_handler.h"
 #include "components/security_interstitials/content/stateful_ssl_host_state_delegate.h"
 #include "components/security_interstitials/core/controller_client.h"
+#include "components/security_interstitials/core/https_only_mode_metrics.h"
 #include "components/security_interstitials/core/metrics_helper.h"
 #include "components/security_interstitials/core/pref_names.h"
 #include "components/security_state/core/security_state.h"
@@ -6451,16 +6453,24 @@ IN_PROC_BROWSER_TEST_F(SSLUITest,
   ASSERT_TRUE(embedded_test_server()->Start());
   ASSERT_TRUE(https_server_.Start());
 
+  // This test posts to does-not-exist.test. Disable HTTPS upgrades on this
+  // hostname for the test to work.
+  // TODO(crbug.com/1394910): Remove the allowlist entry.
+  ScopedAllowHttpForHostnamesForTesting scoped_allow_http(
+      {"does-not-exist.test"}, browser()->profile()->GetPrefs());
+
   std::string replacement_path = GetFilePathWithHostAndPortReplacement(
       "/ssl/page_displays_form_redirects_301_insecure.html",
       embedded_test_server()->host_port_pair());
 
   ASSERT_TRUE(ui_test_utils::NavigateToURL(
       browser(), https_server_.GetURL(replacement_path)));
+
   WebContents* tab = browser()->tab_strip_model()->GetActiveWebContents();
   content::TestNavigationObserver nav_observer(tab, 1);
   ASSERT_TRUE(content::ExecuteScript(tab, "submitForm();"));
   nav_observer.Wait();
+
   security_interstitials::SecurityInterstitialTabHelper* helper =
       security_interstitials::SecurityInterstitialTabHelper::FromWebContents(
           tab);
@@ -6486,6 +6496,12 @@ IN_PROC_BROWSER_TEST_F(SSLUITest,
       "Security.MixedForm.InterstitialTriggerState";
   ASSERT_TRUE(embedded_test_server()->Start());
   ASSERT_TRUE(https_server_.Start());
+
+  // This test posts to does-not-exist.test. Disable HTTPS upgrades on this
+  // hostname for the test to work.
+  // TODO(crbug.com/1394910): Remove the allowlist entry.
+  ScopedAllowHttpForHostnamesForTesting scoped_allow_http(
+      {"does-not-exist.test"}, browser()->profile()->GetPrefs());
 
   std::string replacement_path = GetFilePathWithHostAndPortReplacement(
       "/ssl/page_displays_form_redirects_302_insecure.html",
@@ -6550,6 +6566,12 @@ IN_PROC_BROWSER_TEST_F(SSLUITest,
   https_server_.RegisterRequestHandler(
       base::BindRepeating(&FormActionHTTPRedirectHandler, &https_server_));
   ASSERT_TRUE(https_server_.Start());
+
+  // This test redirects to example.org. Disable HTTPS upgrades on this
+  // hostname for the test to work.
+  // TODO(crbug.com/1394910): Remove the allowlist entry.
+  ScopedAllowHttpForHostnamesForTesting scoped_allow_http(
+      {"example.org"}, browser()->profile()->GetPrefs());
 
   std::string replacement_path = GetFilePathWithHostAndPortReplacement(
       "/ssl/page_displays_form_redirects_insecure_get.html",

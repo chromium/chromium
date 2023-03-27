@@ -31,6 +31,7 @@
 #include "chrome/browser/profiles/profile_window.h"
 #include "chrome/browser/safe_browsing/chrome_password_protection_service.h"
 #include "chrome/browser/ssl/cert_verifier_browser_test.h"
+#include "chrome/browser/ssl/https_upgrades_util.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_finder.h"
@@ -1362,6 +1363,10 @@ IN_PROC_BROWSER_TEST_F(SecurityStateTabHelperIncognitoTest, HttpErrorPage) {
   SecurityStateTabHelper* helper =
       SecurityStateTabHelper::FromWebContents(contents);
   ASSERT_TRUE(helper);
+
+  // Disable HTTPS upgrades on nonexistent.test for this test to work.
+  ScopedAllowHttpForHostnamesForTesting scoped_allow_http(
+      {"nonexistent.test"}, browser()->profile()->GetPrefs());
 
   // Navigate to a URL that results in an error page. Even though the displayed
   // URL is http://, there shouldn't be a Not Secure warning because the browser

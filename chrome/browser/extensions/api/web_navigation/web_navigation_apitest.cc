@@ -26,6 +26,7 @@
 #include "chrome/browser/extensions/extension_apitest.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/renderer_context_menu/render_view_context_menu_test_util.h"
+#include "chrome/browser/ssl/https_upgrades_util.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_navigator_params.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
@@ -303,6 +304,11 @@ IN_PROC_BROWSER_TEST_P(WebNavigationApiPrerenderTestWithContextType, GetFrame) {
 
 IN_PROC_BROWSER_TEST_P(WebNavigationApiPrerenderTestWithContextType,
                        Prerendering) {
+  // TODO(crbug.com/1394910): Use https in the test and remove this allowlist
+  // entry.
+  ScopedAllowHttpForHostnamesForTesting scoped_allow_http(
+      {"a.test"}, browser()->profile()->GetPrefs());
+
   ASSERT_TRUE(StartEmbeddedTestServer());
   ASSERT_TRUE(RunExtensionTest("webnavigation/prerendering")) << message_;
 }
@@ -369,6 +375,11 @@ IN_PROC_BROWSER_TEST_P(WebNavigationApiTestWithContextType, MAYBE_Download) {
 
 IN_PROC_BROWSER_TEST_P(WebNavigationApiTestWithContextType,
                        ServerRedirectSingleProcess) {
+  // TODO(crbug.com/1394910): Use https in the test and remove these allowlist
+  // entries.
+  ScopedAllowHttpForHostnamesForTesting scoped_allow_http(
+      {"www.a.com", "www.b.com"}, browser()->profile()->GetPrefs());
+
   ASSERT_TRUE(StartEmbeddedTestServer());
 
   // Set max renderers to 1 to force running out of processes.
@@ -674,6 +685,11 @@ IN_PROC_BROWSER_TEST_P(WebNavigationApiTestWithContextType, PendingDeletion) {
 }
 
 IN_PROC_BROWSER_TEST_P(WebNavigationApiTestWithContextType, Crash) {
+  // TODO(crbug.com/1394910): Use https in the test and remove this allowlist
+  // entry.
+  ScopedAllowHttpForHostnamesForTesting scoped_allow_http(
+      {"www.a.com"}, browser()->profile()->GetPrefs());
+
   content::ScopedAllowRendererCrashes scoped_allow_renderer_crashes;
   ASSERT_TRUE(StartEmbeddedTestServer());
 

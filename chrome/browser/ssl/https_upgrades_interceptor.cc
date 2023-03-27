@@ -314,8 +314,8 @@ void HttpsUpgradesInterceptor::MaybeCreateLoaderOnHstsQueryCompleted(
   // Don't upgrade navigation if it is allowlisted.
   // First, check the enterprise policy HTTP allowlist.
   PrefService* prefs = profile->GetPrefs();
-  if (IsHostnameInAllowlist(tentative_resource_request.url,
-                            prefs->GetList(prefs::kHttpAllowlist))) {
+  if (IsHostnameInHttpAllowlist(tentative_resource_request.url,
+                                profile->GetPrefs())) {
     RecordNavigationRequestSecurityLevel(
         NavigationRequestSecurityLevel::kAllowlisted);
     std::move(callback).Run({});
