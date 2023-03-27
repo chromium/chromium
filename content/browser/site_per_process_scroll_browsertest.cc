@@ -231,8 +231,7 @@ class SitePerProcessProgrammaticScrollTest : public SitePerProcessBrowserTest {
   void RunCommandAndWaitForResponse(FrameTreeNode* node,
                                     const std::string& command,
                                     const std::string& response) {
-    ASSERT_EQ(response,
-              EvalJs(node, command, content::EXECUTE_SCRIPT_USE_MANUAL_REPLY));
+    ASSERT_EQ(response, EvalJs(node, command));
   }
 
   gfx::Rect GetRectFromString(const std::string& str) {

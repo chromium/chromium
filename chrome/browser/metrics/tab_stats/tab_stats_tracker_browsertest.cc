@@ -465,8 +465,7 @@ IN_PROC_BROWSER_TEST_F(TabStatsTrackerBrowserTest, AddObserverAudibleTab) {
   // Start the audio.
   base::RunLoop run_loop;
   AudioStartObserver audio_start_observer(web_contents, run_loop.QuitClosure());
-  EXPECT_EQ("OK", content::EvalJs(web_contents, "StartOscillator();",
-                                  content::EXECUTE_SCRIPT_USE_MANUAL_REPLY));
+  EXPECT_EQ("OK", content::EvalJs(web_contents, "StartOscillator();"));
   run_loop.Run();
 
   // Adding an observer now should receive the OnTabIsAudibleChanged() call.

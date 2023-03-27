@@ -145,23 +145,19 @@ class NetInfoBrowserTest : public content::ContentBrowserTest {
   }
 
   std::string RunScriptExtractString(const std::string& script) {
-    return EvalJs(shell(), script, content::EXECUTE_SCRIPT_USE_MANUAL_REPLY)
-        .ExtractString();
+    return EvalJs(shell(), script).ExtractString();
   }
 
   bool RunScriptExtractBool(const std::string& script) {
-    return EvalJs(shell(), script, content::EXECUTE_SCRIPT_USE_MANUAL_REPLY)
-        .ExtractBool();
+    return EvalJs(shell(), script).ExtractBool();
   }
 
   double RunScriptExtractDouble(const std::string& script) {
-    return EvalJs(shell(), script, content::EXECUTE_SCRIPT_USE_MANUAL_REPLY)
-        .ExtractDouble();
+    return EvalJs(shell(), script).ExtractDouble();
   }
 
   int RunScriptExtractInt(const std::string& script) {
-    return EvalJs(shell(), script, content::EXECUTE_SCRIPT_USE_MANUAL_REPLY)
-        .ExtractInt();
+    return EvalJs(shell(), script).ExtractInt();
   }
 
  private:

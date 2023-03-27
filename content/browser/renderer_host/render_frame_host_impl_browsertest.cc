@@ -3560,7 +3560,8 @@ IN_PROC_BROWSER_TEST_F(RenderFrameHostImplBrowserTest,
 
   auto* rfh = web_contents()->GetPrimaryMainFrame();
   TestNavigationObserver observer(web_contents());
-  EXPECT_TRUE(ExecJs(rfh, JsReplace("setUrl($1, true);", object_url)));
+  EXPECT_TRUE(ExecJs(rfh, JsReplace("setUrl($1);", object_url),
+                     EXECUTE_SCRIPT_NO_RESOLVE_PROMISES));
   observer.Wait();
   EXPECT_EQ(rfh->GetLastCommittedOrigin().Serialize(),
             EvalJs(web_contents(), "window.origin"));

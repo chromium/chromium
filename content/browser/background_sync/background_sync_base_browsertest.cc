@@ -186,8 +186,7 @@ bool BackgroundSyncBaseBrowserTest::LoadTestPage(const std::string& path) {
 
 std::string BackgroundSyncBaseBrowserTest::RunScript(
     const std::string& script) {
-  return EvalJs(web_contents(), script, EXECUTE_SCRIPT_USE_MANUAL_REPLY)
-      .ExtractString();
+  return EvalJs(web_contents(), script).ExtractString();
 }
 
 void BackgroundSyncBaseBrowserTest::SetTestClock(base::SimpleTestClock* clock) {

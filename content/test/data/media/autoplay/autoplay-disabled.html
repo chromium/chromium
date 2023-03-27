@@ -5,8 +5,8 @@
 <iframe></iframe>
 <script>
 function attemptPlay() {
-  document.getElementById('video').play()
-    .then(() => window.domAutomationController.send(true))
-    .catch(() => window.domAutomationController.send(false));
+  return document.getElementById('video').play()
+    .then(() => true)
+    .catch(() => false);
 }
 </script>

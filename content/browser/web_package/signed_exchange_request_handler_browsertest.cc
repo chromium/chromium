@@ -1076,15 +1076,14 @@ IN_PROC_BROWSER_TEST_P(SignedExchangeRequestHandlerBrowserTest,
       "  try {"
       "    const registration = await navigator.serviceWorker.register("
       "        'publisher-service-worker.js', {scope: './'});"
-      "    window.domAutomationController.send(true);"
+      "    return true;"
       "  } catch (e) {"
-      "    window.domAutomationController.send(false);"
+      "    return false;"
       "  }"
       "})();";
   // serviceWorker.register() fails because the document URL of
   // ServiceWorkerHost is empty.
-  EXPECT_EQ(false, EvalJs(shell()->web_contents(), register_sw_script,
-                          EXECUTE_SCRIPT_USE_MANUAL_REPLY));
+  EXPECT_EQ(false, EvalJs(shell()->web_contents(), register_sw_script));
 }
 
 class SignedExchangeAcceptHeaderBrowserTest
@@ -1397,25 +1396,26 @@ IN_PROC_BROWSER_TEST_P(SignedExchangeAcceptHeaderBrowserTest,
       "    link.href = url;"
       "    document.body.appendChild(link);"
       "  }"
-      "  function check() {"
-      "    const entries = performance.getEntriesByType('resource');"
-      "    const url_set = new Set(urls);"
-      "    for (let entry of entries) {"
-      "      url_set.delete(entry.name);"
-      "    }"
-      "    if (!url_set.size) {"
-      "      window.domAutomationController.send(true);"
-      "    } else {"
-      "      setTimeout(check, 100);"
+      "  async function check() {"
+      "    while (true) {"
+      "      const entries = performance.getEntriesByType('resource');"
+      "      const url_set = new Set(urls);"
+      "      for (let entry of entries) {"
+      "        url_set.delete(entry.name);"
+      "      }"
+      "      if (!url_set.size) {"
+      "        return true;"
+      "      } else {"
+      "        await new Promise(resolve => setTimeout(resolve, 100));"
+      "      }"
       "    }"
       "  }"
-      "  check();"
+      "  return check();"
       "})(['%s'])",
       prefetch_target.spec().c_str());
 
   NavigateAndWaitForTitle(target_url, "Done");
-  EXPECT_EQ(true, EvalJs(shell()->web_contents(), load_prefetch_script,
-                         EXECUTE_SCRIPT_USE_MANUAL_REPLY));
+  EXPECT_EQ(true, EvalJs(shell()->web_contents(), load_prefetch_script));
   CheckPrefetchAcceptHeader({prefetch_target});
   ClearInterceptedAcceptHeaders();
 }

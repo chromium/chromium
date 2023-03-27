@@ -13,42 +13,47 @@ try {
 }
 
 // Creates a table named "table1" with one text column named "data".
-function createTable() {
+async function createTable() {
   if (!g_db)
     return;
-  g_db.transaction(
-      function(tx) {
-        tx.executeSql("CREATE TABLE table1 (data TEXT)");
-      },
-      function(error) {
-        sendValueToTest(error);
-      },
-      function() {
-        sendValueToTest("done");
-      });
+  try {
+    await new Promise((resolve, reject) => {
+      g_db.transaction(
+        function(tx) {
+          tx.executeSql("CREATE TABLE table1 (data TEXT)");
+        },
+        reject, resolve);
+    });
+    return "done";
+  } catch (error) {
+    return error;
+  }
 }
 
 // Inserts a record into the database.
-function insertRecord(text) {
-  g_db.transaction(
+async function insertRecord(text) {
+  try {
+    await new Promise((resolve, reject) => {
+      g_db.transaction(
       function(tx) {
         tx.executeSql("INSERT INTO table1 VALUES (?)", [text]);
-      },
-      function(error) {
-        sendValueToTest(error);
-      },
-      function() {
-        sendValueToTest("done");
-      });
+      }, reject, resolve);
+    });
+    return "done";
+  } catch (error) {
+    return error;
+  }
 }
 
 
 // Updates a record at the given index with the given text. The indices are
 // 0-based and are ordered from oldest record, to newest record.
-function updateRecord(index, text) {
+async function updateRecord(index, text) {
   var didUpdate = false;
-  findId(index, function(rowId) {
-    g_db.transaction(
+  try {
+    const rowId = await findId(index);
+    return new Promise((resolve, reject) => {
+      g_db.transaction(
         function(tx) {
           tx.executeSql(
               "UPDATE table1 SET data=? WHERE ROWID=?",
@@ -57,84 +62,94 @@ function updateRecord(index, text) {
                 if (result.rowsAffected == 1)
                   didUpdate = true;
                 else if (result.rowsAffected == 0)
-                  sendValueToTest("could not update index: " + index);
+                  reject("could not update index: " + index);
                 else
-                  sendValueToTest("multiple rows with index: " + index);
+                  reject("multiple rows with index: " + index);
               });
         },
         function(error) {
-          sendValueToTest("update error: " + error);
+          reject("update error: " + error);
         },
         function() {
           if (didUpdate)
-            sendValueToTest("done");
+            resolve("done");
         });
-  });
+    });
+  } catch (error) {
+    return error;
+  }
 }
 
 // Deletes a record at the given index.
-function deleteRecord(index) {
-  findId(index, function(rowId) {
-    g_db.transaction(
+async function deleteRecord(index) {
+  try {
+    const rowId = await findId(index);
+    await new Promise((resolve, reject) => {
+      g_db.transaction(
         function(tx) {
           tx.executeSql("DELETE FROM table1 WHERE ROWID=?", [rowId]);
         },
         function(error) {
-          sendValueToTest("delete error: " + error);
-        },
-        function() {
-          sendValueToTest("done");
-        });
-  });
+          reject("delete error: " + error);
+        }, resolve);
+      });
+    return "done";
+  } catch (error) {
+    return error;
+  }
 }
 
 // Gets all the records in the database, ordered by their age.
-function getRecords() {
-  g_db.readTransaction(function(tx) {
-    tx.executeSql(
-        "SELECT data FROM table1 ORDER BY ROWID",
-        [],
-        function(tx, result) {
-          items = "";
-          for (var i = 0; i < result.rows.length; i++) {
-            if (items != "")
-              items += ", ";
-            items += result.rows.item(i).data;
-          }
-          sendValueToTest(items);
-        },
-        function(tx, error) {
-          sendValueToTest("getRecords error: " + error);
-        });
-  });
+async function getRecords() {
+  try {
+    const result = await new Promise((resolve, reject) => {
+      g_db.readTransaction(function(tx) {
+      tx.executeSql(
+          "SELECT data FROM table1 ORDER BY ROWID",
+          [],
+          function(tx, result) {
+            resolve(result);
+          },
+          function(tx, error) {
+            reject("getRecords error: " + error);
+          });
+      });
+    });
+    let items = "";
+    for (var i = 0; i < result.rows.length; i++) {
+      if (items != "")
+        items += ", ";
+      items += result.rows.item(i).data;
+    }
+    return items;
+  } catch (error) {
+    return error;
+  }
 }
 
 // Helper function that finds the ID for a record based on a given index.
-function findId(index, callback) {
-  g_db.readTransaction(function(tx) {
-    // |ROWID| is a special sqlite column. It is unique and is incremented
-    // automatically when a new record is created.
-    // |LIMIT| is a nonstandard clause supported by sqlite that lets us pick
-    // rows from the database by index. E.g., LIMIT 2,10 will give us 10 records
-    // starting at offset 2.
-    tx.executeSql(
+async function findId(index) {
+  return new Promise((resolve, reject) => {
+    g_db.readTransaction(function(tx) {
+      // |ROWID| is a special sqlite column. It is unique and is incremented
+      // automatically when a new record is created.
+      // |LIMIT| is a nonstandard clause supported by sqlite that lets us pick
+      // rows from the database by index. E.g., LIMIT 2,10 will give us 10 records
+      // starting at offset 2.
+      tx.executeSql(
         "SELECT ROWID AS id FROM table1 ORDER BY ROWID LIMIT ?,1",
         [index],
         function(tx, result) {
           if (result.rows.length >= 1)
-            callback(result.rows.item(0).id);
+            resolve(result.rows.item(0).id);
           else
-            sendValueToTest("could not find row with index: " + index);
+            reject("could not find row with index: " + index);
         },
         function(tx, error) {
-        sendValueToTest("findId error: " + error);
+          reject("findId error: " + error);
         });
+    });
   });
-}
-
-function sendValueToTest(value) {
-  //alert(value);
-  window.domAutomationController.send(value);
 }
 
 </script>

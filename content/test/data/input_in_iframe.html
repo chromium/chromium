@@ -20,17 +20,18 @@
   </style>
   <script>
     loaded = false;
-    notifyBrowser = false;
+    notifyBrowser = null;
     function notifyWhenLoaded() {
       if (loaded)
-        window.domAutomationController.send("OUTER_LOADED");
-      else
-        window.notifyBrowser = true;
+        return "OUTER_LOADED";
+      return new Promise(resolve => {
+        window.notifyBrowser = resolve;
+      });
     }
     window.addEventListener('load', () => {
       window.loaded = true;
       if (window.notifyBrowser)
-        notifyWhenLoaded();
+        window.notifyBrowser('OUTER_LOADED');
     });
   </script>
 </head>

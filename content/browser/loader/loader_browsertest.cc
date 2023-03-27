@@ -598,14 +598,15 @@ IN_PROC_BROWSER_TEST_F(LoaderBrowserTest, SubresourceRedirectToDataURLBlocked) {
   std::string script = R"((url => {
     var xhr = new XMLHttpRequest();
     xhr.open('GET', url, true);
-    xhr.onload = () => domAutomationController.send("ALLOWED");
-    xhr.onerror = () => domAutomationController.send("BLOCKED");
-    xhr.send();
+    return new Promise(resolve => {
+      xhr.onload = () => resolve("ALLOWED");
+      xhr.onerror = () => resolve("BLOCKED");
+      xhr.send();
+    });
   }))";
 
   EXPECT_EQ("BLOCKED",
-            EvalJs(shell(), script + "('" + subresource_url.spec() + "')",
-                   EXECUTE_SCRIPT_USE_MANUAL_REPLY));
+            EvalJs(shell(), script + "('" + subresource_url.spec() + "')"));
 }
 
 IN_PROC_BROWSER_TEST_F(LoaderBrowserTest, RedirectToDataURLBlocked) {
@@ -629,17 +630,18 @@ GURL CreateFileSystemURL(Shell* window) {
   std::string filesystem_url_string = EvalJs(window, R"(
       var blob = new Blob(['<html><body>hello</body></html>'],
                           {type: 'text/html'});
-      window.webkitRequestFileSystem(TEMPORARY, blob.size, fs => {
-        fs.root.getFile('foo.html', {create: true}, file => {
-          file.createWriter(writer => {
-            writer.write(blob);
-            writer.onwriteend = () => {
-              domAutomationController.send(file.toURL());
-            }
+      new Promise(resolve => {
+        window.webkitRequestFileSystem(TEMPORARY, blob.size, fs => {
+          fs.root.getFile('foo.html', {create: true}, file => {
+            file.createWriter(writer => {
+              writer.write(blob);
+              writer.onwriteend = () => {
+                resolve(file.toURL());
+              }
+            });
           });
         });
-      });)",
-                                             EXECUTE_SCRIPT_USE_MANUAL_REPLY)
+      });)")
                                           .ExtractString();
   GURL filesystem_url(filesystem_url_string);
   EXPECT_TRUE(filesystem_url.is_valid());
@@ -660,14 +662,15 @@ IN_PROC_BROWSER_TEST_F(LoaderBrowserTest,
   std::string script = R"((url => {
     var xhr = new XMLHttpRequest();
     xhr.open('GET', url, true);
-    xhr.onload = () => domAutomationController.send("ALLOWED");
-    xhr.onerror = () => domAutomationController.send("BLOCKED");
-    xhr.send();
+    return new Promise(resolve => {
+      xhr.onload = () => resolve("ALLOWED");
+      xhr.onerror = () => resolve("BLOCKED");
+      xhr.send();
+    });
   }))";
 
   EXPECT_EQ("BLOCKED",
-            EvalJs(shell(), script + "('" + subresource_url.spec() + "')",
-                   EXECUTE_SCRIPT_USE_MANUAL_REPLY));
+            EvalJs(shell(), script + "('" + subresource_url.spec() + "')"));
 }
 
 IN_PROC_BROWSER_TEST_F(LoaderBrowserTest, RedirectToFileSystemURLBlocked) {

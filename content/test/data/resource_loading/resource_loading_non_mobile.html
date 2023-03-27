@@ -11,21 +11,19 @@
 <body>
   <script>
 
-  function sendValueToTest(value) {
-    window.domAutomationController.send(value);
-  }
-
   var resourcesNumber = -1;
   window.onload = function () {
       resourcesNumber = window.performance.getEntriesByType("resource").length;
   };
 
   function getResourceNumber() {
+    return new Promise(resolve => {
       setInterval(function() {
         if (resourcesNumber != -1) {
-              sendValueToTest(resourcesNumber);
+          resolve(resourcesNumber);
         }
       }, 300);
+    });
   }
 
   function getResources() {

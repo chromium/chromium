@@ -69,9 +69,7 @@ class ShapeDetectionBrowserTest
     EXPECT_TRUE(NavigateToURL(shell(), html_url));
     const std::string js_command = "detectShapesOnImageUrl('" + detector_name +
                                    "', '" + image_url.spec() + "')";
-    std::string response_string =
-        EvalJs(shell(), js_command, EXECUTE_SCRIPT_USE_MANUAL_REPLY)
-            .ExtractString();
+    std::string response_string = EvalJs(shell(), js_command).ExtractString();
 
     base::StringTokenizer outer_tokenizer(response_string, "#");
     std::vector<std::vector<float>> detected_bounding_boxes;

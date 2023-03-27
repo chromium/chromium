@@ -161,12 +161,10 @@ IN_PROC_BROWSER_TEST_P(TouchpadPinchBrowserTest, WheelListenerAllowingPinch) {
   PerformTouchpadPinch(shell()->web_contents(), pinch_position, 1.23);
 
   // Ensure that the page saw the synthetic wheel.
-  ASSERT_EQ(false,
-            EvalJs(shell()->web_contents(),
-                   "handlerPromise.then(function(e) {"
-                   "  window.domAutomationController.send(e.defaultPrevented);"
-                   "});",
-                   EXECUTE_SCRIPT_USE_MANUAL_REPLY));
+  ASSERT_EQ(false, EvalJs(shell()->web_contents(),
+                          "handlerPromise.then(function(e) {"
+                          "  return e.defaultPrevented;"
+                          "});"));
 
   // Since the listener did not cancel the synthetic wheel, we should still
   // change the page scale.
@@ -192,12 +190,10 @@ void TouchpadPinchBrowserTest::EnsureNoScaleChangeWhenCanceled(
   std::move(send_events).Run(shell()->web_contents(), pinch_position);
 
   // Ensure the page handled a wheel event that it was able to cancel.
-  ASSERT_EQ(true,
-            EvalJs(shell()->web_contents(),
-                   "handlerPromise.then(function(e) {"
-                   "  window.domAutomationController.send(e.defaultPrevented);"
-                   "});",
-                   EXECUTE_SCRIPT_USE_MANUAL_REPLY));
+  ASSERT_EQ(true, EvalJs(shell()->web_contents(),
+                         "handlerPromise.then(function(e) {"
+                         "  return e.defaultPrevented;"
+                         "});"));
 
   const double last_scale_factor =
       EvalJs(shell()->web_contents(), "window.visualViewport.scale;")

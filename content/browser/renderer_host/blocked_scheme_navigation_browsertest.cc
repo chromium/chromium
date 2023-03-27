@@ -213,21 +213,22 @@ class BlockedSchemeNavigationBrowserTest
                            const std::string& mime_type) {
     const char kCreateFilesystemUrlScript[] =
         "var contents = `%s`;"
-        "webkitRequestFileSystem(window.TEMPORARY, 1024, fs => {"
-        "  fs.root.getFile('%s', {create: true}, entry => {"
-        "    entry.createWriter(w => {"
-        "      w.write(new Blob([contents], {type: '%s'}));"
-        "      w.onwrite = function(evt) {"
-        "        domAutomationController.send(entry.toURL());"
-        "      }"
+        "new Promise(resolve => {"
+        "    webkitRequestFileSystem(window.TEMPORARY, 1024, fs => {"
+        "    fs.root.getFile('%s', {create: true}, entry => {"
+        "      entry.createWriter(w => {"
+        "        w.write(new Blob([contents], {type: '%s'}));"
+        "        w.onwrite = function(evt) {"
+        "          resolve(entry.toURL());"
+        "        }"
+        "      });"
         "    });"
         "  });"
         "});";
     std::string filesystem_url_string =
         EvalJs(shell()->web_contents()->GetPrimaryMainFrame(),
                base::StringPrintf(kCreateFilesystemUrlScript, content.c_str(),
-                                  filename.c_str(), mime_type.c_str()),
-               EXECUTE_SCRIPT_USE_MANUAL_REPLY)
+                                  filename.c_str(), mime_type.c_str()))
             .ExtractString();
     GURL filesystem_url(filesystem_url_string);
     EXPECT_TRUE(filesystem_url.is_valid());

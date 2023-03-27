@@ -47,14 +47,14 @@ static const char kCanvasPageString[] =
     "    function fillWithColor(color) {"
     "      ctx.fillStyle = color;"
     "      ctx.fillRect(0, 0, 64, 64);"
-    "      window.domAutomationController.send(color);"
+    "      return color;"
     "    }"
     "    var offset = 150;"
     "    function openNewWindow() {"
     "      window.open(\"/test\", \"\", "
     "          \"top=\"+offset+\",left=\"+offset+\",width=200,height=200\");"
     "      offset += 50;"
-    "      window.domAutomationController.send(true);"
+    "      return true;"
     "    }"
     "    window.document.title = \"Ready\";"
     "  </script>"
@@ -233,8 +233,7 @@ IN_PROC_BROWSER_TEST_F(SnapshotBrowserTest, MAYBE_SingleWindowTest) {
     std::string colorString = base::StringPrintf(
         "#%02x%02x%02x", expected.color.r, expected.color.g, expected.color.b);
     std::string script = std::string("fillWithColor(\"") + colorString + "\");";
-    EXPECT_EQ(colorString, EvalJs(GetWebContents(shell()), script,
-                                  EXECUTE_SCRIPT_USE_MANUAL_REPLY));
+    EXPECT_EQ(colorString, EvalJs(GetWebContents(shell()), script));
 
     expected_snapshots_.push_back(expected);
 
@@ -272,8 +271,7 @@ IN_PROC_BROWSER_TEST_F(SnapshotBrowserTest, MAYBE_SyncMultiWindowTest) {
   SetupTestServer();
 
   for (int i = 0; i < 3; ++i) {
-    EXPECT_EQ(true, EvalJs(GetWebContents(shell()), "openNewWindow()",
-                           EXECUTE_SCRIPT_USE_MANUAL_REPLY));
+    EXPECT_EQ(true, EvalJs(GetWebContents(shell()), "openNewWindow()"));
   }
 
   base::RunLoop().RunUntilIdle();
@@ -300,8 +298,7 @@ IN_PROC_BROWSER_TEST_F(SnapshotBrowserTest, MAYBE_SyncMultiWindowTest) {
                              expected.color.g, expected.color.b);
       std::string script =
           std::string("fillWithColor(\"") + colorString + "\");";
-      EXPECT_EQ(colorString, EvalJs(GetWebContents(browser), script,
-                                    EXECUTE_SCRIPT_USE_MANUAL_REPLY));
+      EXPECT_EQ(colorString, EvalJs(GetWebContents(browser), script));
       expected_snapshots_.push_back(expected);
       // Get the snapshot from the surface rather than the window. The
       // on-screen display path is verified by the GPU tests, and it
@@ -339,8 +336,7 @@ IN_PROC_BROWSER_TEST_F(SnapshotBrowserTest, MAYBE_AsyncMultiWindowTest) {
   SetupTestServer();
 
   for (int i = 0; i < 3; ++i) {
-    EXPECT_EQ(true, EvalJs(GetWebContents(shell()), "openNewWindow()",
-                           EXECUTE_SCRIPT_USE_MANUAL_REPLY));
+    EXPECT_EQ(true, EvalJs(GetWebContents(shell()), "openNewWindow()"));
   }
 
   base::RunLoop().RunUntilIdle();
@@ -379,8 +375,7 @@ IN_PROC_BROWSER_TEST_F(SnapshotBrowserTest, MAYBE_AsyncMultiWindowTest) {
                                                    expected.g, expected.b);
       std::string script =
           std::string("fillWithColor(\"") + colorString + "\");";
-      EXPECT_EQ(colorString, EvalJs(GetWebContents(browser), script,
-                                    EXECUTE_SCRIPT_USE_MANUAL_REPLY));
+      EXPECT_EQ(colorString, EvalJs(GetWebContents(browser), script));
       // Get the snapshot from the surface rather than the window. The
       // on-screen display path is verified by the GPU tests, and it
       // seems difficult to figure out the colorspace transformation

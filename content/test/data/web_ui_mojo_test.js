@@ -42,5 +42,5 @@ async function doTest() {
 }
 
 window.runTest = async function() {
-  window.domAutomationController.send(await doTest());
+  return doTest();
 }

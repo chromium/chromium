@@ -5,6 +5,17 @@ var urls  = url.searchParams.get('urls').split(',');
 var numFrames = urls.length;
 var numSubresources = parseInt(url.searchParams.get('numSubresources'), 10);
 function createFrames() {
+  // Wait for |numFrame| messages. Each message is received when a given frame
+  // finishes (errors/completes) all of its subresources.
+  var numMessages = 0;
+  var completePromise = new Promise(resolve => {
+    window.addEventListener('message', function(e) {
+      numMessages++;
+      if (numMessages == numFrames)
+        resolve(true);
+    });
+  });
+
   for (var i = 0; i < numFrames; i++) {
     var frame = document.createElement('iframe');
     frame.src =
@@ -12,14 +23,8 @@ function createFrames() {
         urls[i] + "&numSubresources=" + numSubresources;
     document.body.appendChild(frame);
   }
+
+  return completePromise;
 }
 
-// Wait for |numFrame| messages. Each message is received when a given frame
-// finishes (errors/completes) all of its subresources.
-var numMessages = 0;
-window.addEventListener('message', function(e) {
-  numMessages++;
-  if (numMessages == numFrames)
-    window.domAutomationController.send(true);
-});
 </script>

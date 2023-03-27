@@ -760,10 +760,12 @@ IN_PROC_BROWSER_TEST_F(NavigationBrowserTest, PostUploadIllegalFilePath) {
   // Use EvalJs and respond back to the browser process before doing the actual
   // submission. This will ensure that the process termination is guaranteed to
   // arrive after the response from the executed JavaScript.
-  EXPECT_EQ(true, EvalJs(shell(),
-                         "window.domAutomationController.send(true);"
-                         "document.getElementById('file-form').submit();",
-                         EXECUTE_SCRIPT_USE_MANUAL_REPLY));
+  EXPECT_EQ(
+      true,
+      EvalJs(
+          shell(),
+          "setTimeout(() => document.getElementById('file-form').submit(), 0);"
+          "true;"));
   EXPECT_EQ(bad_message::ILLEGAL_UPLOAD_PARAMS, process_kill_waiter.Wait());
 }
 

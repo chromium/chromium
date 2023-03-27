@@ -254,8 +254,7 @@ IN_PROC_BROWSER_TEST_F(SoundContentSettingObserverBrowserTest,
   base::RunLoop run_loop;
   TestAudioStateObserver audio_state_observer(web_contents(),
                                               run_loop.QuitClosure());
-  EXPECT_EQ("OK", content::EvalJs(web_contents(), "StartOscillator();",
-                                  content::EXECUTE_SCRIPT_USE_MANUAL_REPLY));
+  EXPECT_EQ("OK", content::EvalJs(web_contents(), "StartOscillator();"));
   run_loop.Run();
 
   SoundContentSettingObserver* observer =

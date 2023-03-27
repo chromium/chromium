@@ -49,7 +49,7 @@ class DataSaverWebAPIsBrowserTest : public InProcessBrowserTest {
  private:
   bool RunScriptExtractBool(Browser* browser, const std::string& script) {
     return content::EvalJs(browser->tab_strip_model()->GetActiveWebContents(),
-                           script, content::EXECUTE_SCRIPT_USE_MANUAL_REPLY)
+                           script)
         .ExtractBool();
   }
 

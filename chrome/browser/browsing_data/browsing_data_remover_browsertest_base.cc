@@ -177,10 +177,7 @@ void BrowsingDataRemoverBrowserTestBase::RunScriptAndCheckResult(
     content::WebContents* web_contents) {
   if (!web_contents)
     web_contents = GetActiveWebContents();
-  std::string data;
-  ASSERT_TRUE(
-      content::ExecuteScriptAndExtractString(web_contents, script, &data));
-  ASSERT_EQ(data, result);
+  ASSERT_EQ(result, content::EvalJs(web_contents, script));
 }
 
 bool BrowsingDataRemoverBrowserTestBase::RunScriptAndGetBool(

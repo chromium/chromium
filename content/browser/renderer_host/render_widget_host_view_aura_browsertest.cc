@@ -579,12 +579,10 @@ IN_PROC_BROWSER_TEST_F(RenderWidgetHostViewAuraActiveWidgetTest,
 
   // Ensure both the main page and the iframe are loaded.
   ASSERT_EQ("OUTER_LOADED",
-            EvalJs(root->current_frame_host(), "notifyWhenLoaded()",
-                   content::EXECUTE_SCRIPT_USE_MANUAL_REPLY));
+            EvalJs(root->current_frame_host(), "notifyWhenLoaded()"));
   ASSERT_EQ("LOADED", EvalJs(root->current_frame_host(),
                              "document.querySelector(\"iframe\").contentWindow."
-                             "notifyWhenLoaded();",
-                             content::EXECUTE_SCRIPT_USE_MANUAL_REPLY));
+                             "notifyWhenLoaded();"));
   // TODO(b/204006085): Remove this sleep call and replace with polling.
   GiveItSomeTime();
 

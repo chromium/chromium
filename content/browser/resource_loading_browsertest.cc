@@ -32,14 +32,12 @@ IN_PROC_BROWSER_TEST_F(ResourceLoadingBrowserTest,
   ASSERT_TRUE(embedded_test_server()->Start());
   GURL url = embedded_test_server()->GetURL(kResourceLoadingNonMobilePage);
   EXPECT_TRUE(NavigateToURL(shell(), url));
-  int resoureceNumber =
-      EvalJs(shell(), "getResourceNumber()", EXECUTE_SCRIPT_USE_MANUAL_REPLY)
-          .ExtractInt();
+  int resourceNumber = EvalJs(shell(), "getResourceNumber()").ExtractInt();
   // Hacky way to get the flaky extra resource timing entry content to logs.
-  if (resoureceNumber != 9) {
+  if (resourceNumber != 9) {
     EXPECT_EQ("", EvalJs(shell(), "getResources()"));
   }
-  EXPECT_EQ(9, resoureceNumber);
+  EXPECT_EQ(9, resourceNumber);
 }
 
 } // namespace content

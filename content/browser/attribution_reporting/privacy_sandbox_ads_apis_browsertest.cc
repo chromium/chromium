@@ -241,16 +241,19 @@ IN_PROC_BROWSER_TEST_F(PrivacySandboxAdsAPIsAllEnabledBrowserTest,
                               R"(
     const xhr = new XMLHttpRequest();
 
-    xhr.onreadystatechange = function() {
-      if (xhr.readyState == XMLHttpRequest.DONE) {
-        domAutomationController.send('success');
+    const completePromise = new Promise(resolve => {
+      xhr.onreadystatechange = function() {
+        if (xhr.readyState == XMLHttpRequest.DONE) {
+          resolve('success');
+        }
       }
-    }
+    });
 
     xhr.open('GET', 'https://example.test/page_without_ads_apis_ot.html');
     xhr.deprecatedBrowsingTopics = true;
-    xhr.send();)",
-                              EXECUTE_SCRIPT_USE_MANUAL_REPLY));
+    xhr.send();
+    completePromise;
+    )"));
 
   EXPECT_TRUE(last_request_is_topics_request());
   EXPECT_TRUE(last_topics_header());
@@ -269,16 +272,19 @@ IN_PROC_BROWSER_TEST_F(PrivacySandboxAdsAPIsAllEnabledBrowserTest,
                               R"(
     const xhr = new XMLHttpRequest();
 
-    xhr.onreadystatechange = function() {
-      if (xhr.readyState == XMLHttpRequest.DONE) {
-        domAutomationController.send('success');
+    const completePromise = new Promise(resolve => {
+      xhr.onreadystatechange = function() {
+        if (xhr.readyState == XMLHttpRequest.DONE) {
+          resolve('success');
+        }
       }
-    }
+    });
 
     xhr.open('GET', 'https://example.test/page_without_ads_apis_ot.html');
     xhr.deprecatedBrowsingTopics = true;
-    xhr.send();)",
-                              EXECUTE_SCRIPT_USE_MANUAL_REPLY));
+    xhr.send();
+    completePromise;
+    )"));
 
   EXPECT_FALSE(last_request_is_topics_request());
   EXPECT_FALSE(last_topics_header());
@@ -387,16 +393,19 @@ IN_PROC_BROWSER_TEST_F(PrivacySandboxAdsAPIsTopicsDisabledBrowserTest,
                               R"(
     const xhr = new XMLHttpRequest();
 
-    xhr.onreadystatechange = function() {
-      if (xhr.readyState == XMLHttpRequest.DONE) {
-        domAutomationController.send('success');
+    const completePromise = new Promise(resolve => {
+      xhr.onreadystatechange = function() {
+        if (xhr.readyState == XMLHttpRequest.DONE) {
+          resolve('success');
+        }
       }
-    }
+    });
 
     xhr.open('GET', 'https://example.test/page_without_ads_apis_ot.html');
     xhr.deprecatedBrowsingTopics = true;
-    xhr.send();)",
-                              EXECUTE_SCRIPT_USE_MANUAL_REPLY));
+    xhr.send();
+    completePromise;
+    )"));
 
   EXPECT_FALSE(last_request_is_topics_request());
   EXPECT_FALSE(last_topics_header());
@@ -455,16 +464,19 @@ IN_PROC_BROWSER_TEST_F(PrivacySandboxAdsAPIsTopicsXHRDisabledBrowserTest,
                               R"(
     const xhr = new XMLHttpRequest();
 
-    xhr.onreadystatechange = function() {
-      if (xhr.readyState == XMLHttpRequest.DONE) {
-        domAutomationController.send('success');
+    const completePromise = new Promise(resolve => {
+      xhr.onreadystatechange = function() {
+        if (xhr.readyState == XMLHttpRequest.DONE) {
+          resolve('success');
+        }
       }
-    }
+    });
 
     xhr.open('GET', 'https://example.test/page_without_ads_apis_ot.html');
     xhr.deprecatedBrowsingTopics = true;
-    xhr.send();)",
-                              EXECUTE_SCRIPT_USE_MANUAL_REPLY));
+    xhr.send();
+    completePromise;
+    )"));
 
   EXPECT_FALSE(last_request_is_topics_request());
   EXPECT_FALSE(last_topics_header());

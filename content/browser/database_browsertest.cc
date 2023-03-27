@@ -30,8 +30,7 @@ class MAYBE_DatabaseTest : public ContentBrowserTest {
   void RunScriptAndCheckResult(Shell* shell,
                                const std::string& script,
                                const std::string& result) {
-    ASSERT_EQ(result, EvalJs(shell->web_contents(), script,
-                             EXECUTE_SCRIPT_USE_MANUAL_REPLY));
+    ASSERT_EQ(result, EvalJs(shell->web_contents(), script));
   }
 
   void Navigate(Shell* shell) {
@@ -63,9 +62,7 @@ class MAYBE_DatabaseTest : public ContentBrowserTest {
   }
 
   bool HasTable(Shell* shell) {
-    std::string data =
-        EvalJs(shell, "getRecords()", EXECUTE_SCRIPT_USE_MANUAL_REPLY)
-            .ExtractString();
+    std::string data = EvalJs(shell, "getRecords()").ExtractString();
     return data != "getRecords error: [object SQLError]";
   }
 };

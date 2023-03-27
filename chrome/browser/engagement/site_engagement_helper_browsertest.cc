@@ -233,7 +233,8 @@ IN_PROC_BROWSER_TEST_F(SiteEngagementHelperBrowserTest,
   EXPECT_TRUE(host_observer.was_activated());
 
   EXPECT_TRUE(
-      content::ExecJs(web_contents()->GetPrimaryMainFrame(), "attemptPlay();"));
+      content::EvalJs(web_contents()->GetPrimaryMainFrame(), "attemptPlay();")
+          .ExtractBool());
 
   tester.WaitForEngagementEvent(EngagementType::kMediaVisible);
   EXPECT_EQ(tester.last_updated_type(), EngagementType::kMediaVisible);

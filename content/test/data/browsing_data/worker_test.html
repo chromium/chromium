@@ -1,30 +1,29 @@
 <html>
 <script>
 
-  function success_() {
-    domAutomationController.send(true);
+  async function installServiceWorker() {
+    try {
+      await navigator.serviceWorker.register('/?file=empty_worker.js');
+      await navigator.serviceWorker.ready;
+      return true;
+    } catch {
+      return false;
+    }
   }
 
-  function failure_() {
-    domAutomationController.send(false);
+  async function updateServiceWorker() {
+    try {
+      const registrations = await navigator.serviceWorker.getRegistrations();
+      await registrations[0].update();
+      return true;
+    } catch {
+      return false;
+    }
   }
 
-  function installServiceWorker() {
-    navigator.serviceWorker.register('/?file=empty_worker.js').then(function() {
-      navigator.serviceWorker.ready.then(success_);
-    }).catch(failure_);
-  }
-
-  function updateServiceWorker() {
-    navigator.serviceWorker.getRegistrations().then(function (registrations) {
-      registrations[0].update().then(success_).catch(failure_);
-    });
-  }
-
-  function hasServiceWorker() {
-    navigator.serviceWorker.getRegistrations().then(function (registrations) {
-      domAutomationController.send(registrations.length > 0);
-    });
+  async function hasServiceWorker() {
+    const registrations = await navigator.serviceWorker.getRegistrations();
+    return registrations.length > 0;
   }
 
 </script>

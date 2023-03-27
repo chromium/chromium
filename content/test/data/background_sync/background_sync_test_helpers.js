@@ -6,40 +6,26 @@
 
 const resultQueue = new ResultQueue();
 
-// Sends data back to the test. This must be in response to an earlier
-// request, but it's ok to respond asynchronously. The request blocks until
-// the response is sent.
-function sendResultToTest(result) {
-  console.log('sendResultToTest: ' + result);
-  if (window.domAutomationController) {
-    domAutomationController.send('' + result);
-  }
-}
-
-function sendErrorToTest(error) {
-  sendResultToTest(error.name + ' - ' + error.message);
-}
-
 function registerServiceWorker() {
-  navigator.serviceWorker.register('service_worker.js', {scope: './'})
+  return navigator.serviceWorker.register('service_worker.js', {scope: './'})
     .then(() => {
       return navigator.serviceWorker.ready;
     })
     .then((swRegistration) => {
-      sendResultToTest('ok - service worker registered');
+      return 'ok - service worker registered';
     })
-    .catch(sendErrorToTest);
+    .catch(formatError);
 }
 
 function registerOneShotSync(tag) {
-  navigator.serviceWorker.ready
+  return navigator.serviceWorker.ready
     .then((swRegistration) => {
       return swRegistration.sync.register(tag);
     })
     .then(() => {
-      sendResultToTest('ok - ' + tag + ' registered');
+      return 'ok - ' + tag + ' registered';
     })
-    .catch(sendErrorToTest);
+    .catch(formatError);
 }
 
 function registerOneShotSyncFromLocalFrame(frame_url) {
@@ -56,9 +42,9 @@ function registerOneShotSyncFromLocalFrame(frame_url) {
       return frame_registration.sync.register('foo');
     })
     .then(() => {
-      sendResultToTest('ok - iframe registered sync');
+      return 'ok - iframe registered sync';
     })
-    .catch(sendErrorToTest);
+    .catch(formatError);
 }
 
 function registerOneShotSyncFromCrossOriginFrame(cross_frame_url) {
@@ -69,25 +55,24 @@ function registerOneShotSyncFromCrossOriginFrame(cross_frame_url) {
     .then((message) => {
       console.log(message);
       if (message !== 'registration failed') {
-        sendResultToTest('failed - ' + message);
-        return;
+        return 'failed - ' + message;
       }
-      sendResultToTest('ok - frame failed to register sync');
+      return 'ok - frame failed to register sync';
     });
 }
 
 function registerOneShotSyncFromServiceWorker(tag) {
-  navigator.serviceWorker.ready
+  return navigator.serviceWorker.ready
     .then((swRegistration) => {
       swRegistration.active.postMessage(
           {action: 'registerOneShotSync', tag: tag});
-      sendResultToTest('ok - ' + tag + ' register sent to SW');
+      return 'ok - ' + tag + ' register sent to SW';
     })
-    .catch(sendErrorToTest);
+    .catch(formatError);
 }
 
 function registerPeriodicSync(tag, minInterval) {
-  navigator.serviceWorker.ready
+  return navigator.serviceWorker.ready
     .then((swRegistration) => {
       if (minInterval !== undefined) {
         return swRegistration.periodicSync.register(
@@ -97,9 +82,9 @@ function registerPeriodicSync(tag, minInterval) {
       }
     })
     .then(() => {
-      sendResultToTest('ok - ' + tag + ' registered');
+      return 'ok - ' + tag + ' registered';
     })
-    .catch(sendErrorToTest);
+    .catch(formatError);
 }
 
 function registerPeriodicSyncFromLocalFrame(frame_url) {
@@ -117,9 +102,9 @@ function registerPeriodicSyncFromLocalFrame(frame_url) {
           'foo', {});
     })
     .then(() => {
-      sendResultToTest('ok - iframe registered periodicSync');
+      return 'ok - iframe registered periodicSync';
     })
-    .catch(sendErrorToTest);
+    .catch(formatError);
 }
 
 function registerPeriodicSyncFromCrossOriginFrame(cross_frame_url) {
@@ -127,15 +112,14 @@ function registerPeriodicSyncFromCrossOriginFrame(cross_frame_url) {
     .then((frame) => receiveMessage())
     .then((message) => {
       if (message !== 'registration failed') {
-        sendResultToTest('failed - ' + message);
-        return;
+        return 'failed - ' + message;
       }
-      sendResultToTest('ok - frame failed to register periodicSync');
+      return 'ok - frame failed to register periodicSync';
     });
 }
 
 function registerPeriodicSyncFromServiceWorker(tag, minInterval) {
-  navigator.serviceWorker.ready
+  return navigator.serviceWorker.ready
     .then((swRegistration) => {
       if (minInterval !== undefined) {
         swRegistration.active.postMessage(
@@ -145,121 +129,119 @@ function registerPeriodicSyncFromServiceWorker(tag, minInterval) {
           {action: 'registerPeriodicSync', tag: tag});
       }
 
-      sendResultToTest('ok - ' + tag + ' register sent to SW');
+      return 'ok - ' + tag + ' register sent to SW';
     })
-    .catch(sendErrorToTest);
+    .catch(formatError);
 }
 
 function hasOneShotSyncTag(tag) {
-  navigator.serviceWorker.ready
+  return navigator.serviceWorker.ready
     .then((swRegistration) => {
       return swRegistration.sync.getTags();
     })
     .then((tags) => {
       if (tags.indexOf(tag) >= 0) {
-        sendResultToTest('ok - ' + tag + ' found');
+        return 'ok - ' + tag + ' found';
       } else {
-        sendResultToTest('error - ' + tag + ' not found');
-        return;
+        return 'error - ' + tag + ' not found';
       }
     })
-    .catch(sendErrorToTest);
+    .catch(formatError);
 }
 
 function hasPeriodicSyncTag(tag) {
-  navigator.serviceWorker.ready
+  return navigator.serviceWorker.ready
     .then((swRegistration) => {
       return swRegistration.periodicSync.getTags();
     })
     .then((tags) => {
       if (tags.indexOf(tag) >= 0) {
-        sendResultToTest('ok - ' + tag + ' found');
+        return 'ok - ' + tag + ' found';
       } else {
-        sendResultToTest('error - ' + tag + ' not found');
-        return;
+        return 'error - ' + tag + ' not found';
       }
     })
-    .catch(sendErrorToTest);
+    .catch(formatError);
 }
 
 function hasOneShotSyncTagFromServiceWorker(tag) {
-  navigator.serviceWorker.ready
+  return navigator.serviceWorker.ready
     .then((swRegistration) => {
       swRegistration.active.postMessage(
           {action: 'hasOneShotSyncTag', tag: tag});
-      sendResultToTest('ok - hasTag sent to SW');
+      return 'ok - hasTag sent to SW';
     })
-    .catch(sendErrorToTest);
+    .catch(formatError);
 }
 
 function hasPeriodicSyncTagFromServiceWorker(tag) {
-  navigator.serviceWorker.ready
+  return navigator.serviceWorker.ready
     .then((swRegistration) => {
       swRegistration.active.postMessage(
           {action: 'hasPeriodicSyncTag', tag: tag});
-      sendResultToTest('ok - hasTag sent to SW');
+      return 'ok - hasTag sent to SW';
     })
-    .catch(sendErrorToTest);
+    .catch(formatError);
 }
 
 function getOneShotSyncTags() {
-  navigator.serviceWorker.ready
+  return navigator.serviceWorker.ready
     .then((swRegistration) => {
       return swRegistration.sync.getTags();
     })
     .then((tags) => {
-      sendResultToTest('ok - ' + tags.toString());
+      return 'ok - ' + tags.toString();
     })
-    .catch(sendErrorToTest);
+    .catch(formatError);
 }
 
 function getOneShotSyncTagsFromServiceWorker() {
-  navigator.serviceWorker.ready
+  return navigator.serviceWorker.ready
     .then((swRegistration) => {
       swRegistration.active.postMessage({action: 'getOneShotSyncTags'});
-      sendResultToTest('ok - getTags sent to SW');
+      return 'ok - getTags sent to SW';
     })
-    .catch(sendErrorToTest);
+    .catch(formatError);
 }
 
 function unregister(tag) {
-  navigator.serviceWorker.ready
+  return navigator.serviceWorker.ready
     .then(swRegistration => {
         return swRegistration.periodicSync.unregister(tag);
     })
     .then(() => {
-      sendResultToTest('ok - ' + tag + ' unregistered');
+      return 'ok - ' + tag + ' unregistered';
     })
-    .catch(sendErrorToTest);
+    .catch(formatError);
 }
 
 function unregisterFromServiceWorker(tag) {
-  navigator.serviceWorker.ready
+  return navigator.serviceWorker.ready
     .then(swRegistration => {
       swRegistration.active.postMessage({action: 'unregister', tag: tag});
-      sendResultToTest('ok - ' + tag + ' unregister sent to SW');
+      return 'ok - ' + tag + ' unregister sent to SW';
     })
-    .catch(sendErrorToTest);
+    .catch(formatError);
 }
 
 function completeDelayedSyncEvent() {
-  navigator.serviceWorker.ready
+  return navigator.serviceWorker.ready
     .then((swRegistration) => {
       swRegistration.active.postMessage({
           action: 'completeDelayedSyncEvent'
         });
-      sendResultToTest('ok - delay completing');
+      return ('ok - delay completing');
     })
-    .catch(sendErrorToTest);
+    .catch(formatError);
 }
 
 function rejectDelayedSyncEvent() {
-  navigator.serviceWorker.ready
+  return navigator.serviceWorker.ready
     .then((swRegistration) => {
       swRegistration.active.postMessage({action: 'rejectDelayedSyncEvent'});
-      sendResultToTest('ok - delay rejecting');
+      return 'ok - delay rejecting';
     })
-    .catch(sendErrorToTest);
+    .catch(formatError);
 }
 
 function createFrame(url) {
@@ -280,12 +262,12 @@ function receiveMessage() {
 }
 
 function getNumPeriodicSyncEvents() {
-  navigator.serviceWorker.ready
+  return navigator.serviceWorker.ready
     .then(swRegistration => {
       swRegistration.active.postMessage({action: 'getPeriodicSyncEventCount'});
-      sendResultToTest('ok - getting count of periodicsync events');
+      return 'ok - getting count of periodicsync events';
     })
-    .catch(sendErrorToTest);
+    .catch(formatError);
 }
 
 navigator.serviceWorker.addEventListener('message', (event) => {

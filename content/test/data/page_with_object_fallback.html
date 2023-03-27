@@ -9,34 +9,29 @@
 </object>
 <p>Some text so the document is ready for input.</p>
 <script>
-  var send_object_load = false;
   var fallback = document.getElementById("fallback-content");
   var object = document.querySelector("object");
 
-  object.addEventListener("load", () => {
-    if (send_object_load)
-      window.domAutomationController.send("OBJECT_LOAD");
-  });
-
-  function setUrl(url, send_load) {
-    send_object_load = send_load;
-    object.data = url;
+  function setUrl(url) {
+    return new Promise(resolve => {
+      object.addEventListener("load", () => {
+        resolve("OBJECT_LOAD");
+      }, {once: true});
+      object.data = url;
+    });
   }
 
-  function fallbackVisible(alsoNotifyBrowser) {
+  function fallbackVisible() {
     let rect = fallback.getBoundingClientRect();
     let hasLayout = (rect.width * rect.height) > 0;
-    if (alsoNotifyBrowser) {
-      window.domAutomationController.send(hasLayout);
-    }
     return hasLayout;
   }
 
-  function notifyWhenFallbackShown() {
-    if (!fallbackVisible(false)) {
-      return window.setTimeout(notifyWhenFallbackShown, 10);
+  async function notifyWhenFallbackShown() {
+    while (!fallbackVisible()) {
+      await new Promise(resolve => window.setTimeout(resolve, 10));
     }
-    fallbackVisible(true);
+    return true;
   }
 </script>
 </body>

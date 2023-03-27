@@ -13,26 +13,32 @@
   function detectShapesOnImageUrl(detector, url) {
     var detector = eval('new ' + detector + '()');
     console.log(detector);
-    img.onload = function() {
-      console.log('image loaded');
-      var results = "";
-      detector.detect(img)
-        .then(detectedObjects => {
-          console.log('something detected');
-          for (var i = 0; i < detectedObjects.length; i++) {
-            var boundingBox = detectedObjects[i].boundingBox;
-            var result = boundingBox.x + "," + boundingBox.y + "," +
-                         boundingBox.width + "," + boundingBox.height;
-            results += result + "#";
-          }
-          window.domAutomationController.send(results);
-        })
-        .catch(error => {
-          console.error(error.message);
-          window.domAutomationController.send(error.message);
-        });
-    }
+    const completePromise = new Promise(resolve => {
+        img.onload = function() {
+          console.log('image loaded');
+          resolve();
+        };
+      })
+      .then(() => detector.detect(img))
+      .then(detectedObjects => {
+        var results = "";
+        console.log('something detected');
+        for (var i = 0; i < detectedObjects.length; i++) {
+          var boundingBox = detectedObjects[i].boundingBox;
+          var result = boundingBox.x + "," + boundingBox.y + "," +
+                      boundingBox.width + "," + boundingBox.height;
+          results += result + "#";
+        }
+        return results;
+      })
+      .catch(error => {
+        console.error(error.message);
+        return error.message;
+      });
+
     img.src = url;
+
+    return completePromise;
   }
   </script>
 </html>

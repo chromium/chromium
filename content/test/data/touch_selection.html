@@ -26,15 +26,15 @@ function get_point_inside(element) {
     x: rect.left + 8,
     y: rect.top + 8
   };
-  window.domAutomationController.send(JSON.stringify(point));
+  return JSON.stringify(point);
 }
 
 function get_point_inside_text() {
-  get_point_inside(document.getElementById('textDiv'));
+  return get_point_inside(document.getElementById('textDiv'));
 }
 
 function get_point_inside_textfield() {
-  get_point_inside(document.getElementById('textfield'));
+  return get_point_inside(document.getElementById('textfield'));
 }
 
 </script>

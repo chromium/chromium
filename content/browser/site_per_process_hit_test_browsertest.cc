@@ -5553,12 +5553,10 @@ IN_PROC_BROWSER_TEST_F(SitePerProcessHitTestBrowserTest,
                                               rwhv_child);
 
   // Ensure the child frame saw the wheel event.
-  ASSERT_EQ(false,
-            EvalJs(child_frame_host,
-                   "handlerPromise.then(function(e) {"
-                   "  window.domAutomationController.send(e.defaultPrevented);"
-                   "});",
-                   EXECUTE_SCRIPT_USE_MANUAL_REPLY));
+  ASSERT_EQ(false, EvalJs(child_frame_host,
+                          "handlerPromise.then(function(e) {"
+                          "  return e.defaultPrevented;"
+                          "});"));
 
   scale_observer.WaitForPageScaleUpdate();
 }
@@ -5683,12 +5681,10 @@ IN_PROC_BROWSER_TEST_F(SitePerProcessHitTestBrowserTest,
                             ui::LatencyInfo(ui::SourceEventType::WHEEL));
 
   // Ensure the child frame saw the wheel event.
-  EXPECT_EQ(false,
-            EvalJs(child_frame_host,
-                   "handlerPromise.then(function(e) {"
-                   "  window.domAutomationController.send(e.defaultPrevented);"
-                   "});",
-                   EXECUTE_SCRIPT_USE_MANUAL_REPLY));
+  EXPECT_EQ(false, EvalJs(child_frame_host,
+                          "handlerPromise.then(function(e) {"
+                          "  return e.defaultPrevented;"
+                          "});"));
 
   // TODO(mcnee): Support double-tap zoom gesture for OOPIFs. For now, we
   // only test that any scale change still happens in the main frame when

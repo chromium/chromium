@@ -31,7 +31,7 @@
   <p> Iframe should be positioned way above </p>
   <script>
   window.loaded = false;
-  window.notifyBrowser = false;
+  window.notifyBrowser = null;
   const kInfinity = 1000000;
   const kMarginOfError = 1;
   const tinyTimeout = 50;
@@ -40,15 +40,19 @@
     document.scrollingElement.scrollTop = kInfinity;
     document.scrollingElement.scrollLeft = kInfinity;
     window.loaded = true;
-    if (window.notifyBrowser)
-      notifyWhenLoaded();
+    if (window.notifyBrowser) {
+      window.notifyBrowser("LOADED");
+      window.notifyBrowser = null;
+    }
   });
 
   function notifyWhenLoaded() {
-    if (loaded)
-      window.domAutomationController.send("LOADED");
-    else
-      window.notifyBrowser = true;
+    return new Promise(resolve => {
+      if (loaded)
+        resolve("LOADED");
+      else
+        window.notifyBrowser = resolve;
+    });
   }
 
   // Waits until the |visualViewport| reaches the given size (approximately).
@@ -103,14 +107,13 @@
   }
 
   // Waits until the given element is inside the |visualViewport|.
-  function notifyWhenVisible(el) {
-    if (intersect(el.getBoundingClientRect(), visualViewportAsRect())) {
-      window.domAutomationController.send("VISIBLE");
-    } else {
-      window.setTimeout(() => {
-        notifyWhenVisible(el);
-      }, tinyTimeout);
+  async function notifyWhenVisible(el) {
+    while (!intersect(el.getBoundingClientRect(), visualViewportAsRect())) {
+      await new Promise(resolve => {
+        window.setTimeout(resolve, tinyTimeout);
+      });
     }
+    return "VISIBLE";
   }
   </script>
 </body>

@@ -196,18 +196,14 @@ class TouchSelectionControllerClientAuraTest : public ContentBrowserTest {
 
   gfx::PointF GetPointInsideText() {
     gfx::PointF point;
-    JSONToPoint(EvalJs(shell(), "get_point_inside_text()",
-                       EXECUTE_SCRIPT_USE_MANUAL_REPLY)
-                    .ExtractString(),
+    JSONToPoint(EvalJs(shell(), "get_point_inside_text()").ExtractString(),
                 &point);
     return point;
   }
 
   gfx::PointF GetPointInsideTextfield() {
     gfx::PointF point;
-    JSONToPoint(EvalJs(shell(), "get_point_inside_textfield()",
-                       EXECUTE_SCRIPT_USE_MANUAL_REPLY)
-                    .ExtractString(),
+    JSONToPoint(EvalJs(shell(), "get_point_inside_textfield()").ExtractString(),
                 &point);
     return point;
   }
@@ -499,8 +495,7 @@ IN_PROC_BROWSER_TEST_P(TouchSelectionControllerClientAuraSiteIsolationTest,
 
   // Find the location of some text to select.
   gfx::PointF point_f;
-  JSONToPoint(EvalJs(child->current_frame_host(), "get_point_inside_text()",
-                     EXECUTE_SCRIPT_USE_MANUAL_REPLY)
+  JSONToPoint(EvalJs(child->current_frame_host(), "get_point_inside_text()")
                   .ExtractString(),
               &point_f);
   point_f = child_view->TransformPointToRootCoordSpaceF(point_f);
@@ -621,8 +616,7 @@ IN_PROC_BROWSER_TEST_P(TouchSelectionControllerClientAuraSiteIsolationTest,
 
   // Find the location of some text to select.
   gfx::PointF point_f;
-  JSONToPoint(EvalJs(child->current_frame_host(), "get_point_inside_text()",
-                     EXECUTE_SCRIPT_USE_MANUAL_REPLY)
+  JSONToPoint(EvalJs(child->current_frame_host(), "get_point_inside_text()")
                   .ExtractString(),
               &point_f);
   point_f = child_view->TransformPointToRootCoordSpaceF(point_f);

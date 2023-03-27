@@ -6,6 +6,6 @@ var oscillator = context.createOscillator();
 oscillator.connect(context.destination);
 function StartOscillator() {
   oscillator.start();
-  window.domAutomationController.send('OK');
+  return 'OK';
 }
 </script>

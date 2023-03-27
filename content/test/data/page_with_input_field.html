@@ -1,11 +1,15 @@
 <!DOCTYPE html>
 <html>
 <head>
+<script src="./result_queue.js"></script>
 <script>
+
+var resultQueue = new ResultQueue();
 
 function focusInputField() {
   var inputField = document.getElementById("text-field");
   inputField.focus();
+  return resultQueue.pop();
 }
 
 function getInputFieldText() {
@@ -13,12 +17,30 @@ function getInputFieldText() {
   return inputField.value;
 }
 
+async function waitForBlur() {
+  while (true) {
+    const result = await resultQueue.pop();
+    if (result == "input-blur") {
+      return true;
+    }
+  }
+}
+
+async function waitForInput() {
+  while (true) {
+    const result = await resultQueue.pop();
+    if (result != "input-focus" && result != "input-blur") {
+      return result;
+    }
+  }
+}
+
 function onInputFocus() {
-  domAutomationController.send("input-focus");
+  resultQueue.push("input-focus");
 }
 
 function onInputBlur() {
-  domAutomationController.send("input-blur");
+  resultQueue.push("input-blur");
 }
 
 </script>

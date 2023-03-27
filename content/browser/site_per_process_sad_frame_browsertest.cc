@@ -513,8 +513,7 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTestWithSadFrameTabReload,
   GURL out_of_view_url(
       embedded_test_server()->GetURL("a.com", "/iframe_out_of_view.html"));
   EXPECT_TRUE(NavigateToURL(shell(), out_of_view_url));
-  EXPECT_EQ("LOADED", EvalJs(shell(), "notifyWhenLoaded();",
-                             EXECUTE_SCRIPT_USE_MANUAL_REPLY));
+  EXPECT_EQ("LOADED", EvalJs(shell(), "notifyWhenLoaded();"));
   NavigateIframeToURL(web_contents(), "test_iframe",
                       embedded_test_server()->GetURL("b.com", "/title1.html"));
 

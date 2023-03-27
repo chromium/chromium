@@ -38,15 +38,8 @@ async function doTest(): Promise<boolean> {
   return true;
 }
 
-type WindowWithDomAutomationController = Window & {
-  domAutomationController: {
-    send: (success: boolean) => void;
-  }
-};
-
-async function runTest() {
-  (window as unknown as WindowWithDomAutomationController)
-      .domAutomationController.send(await doTest());
+async function runTest(): Promise<boolean> {
+  return doTest();
 }
 
 Object.assign(window, {runTest});

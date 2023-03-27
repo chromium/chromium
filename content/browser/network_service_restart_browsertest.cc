@@ -172,17 +172,19 @@ class NetworkServiceRestartBrowserTest : public ContentBrowserTest {
         "xhr.open('GET', '");
     script += test_url.spec() +
               "', true);"
-              "xhr.onload = function (e) {"
-              "  if (xhr.readyState === 4) {"
-              "    window.domAutomationController.send(xhr.status === 200);"
-              "  }"
-              "};"
-              "xhr.onerror = function () {"
-              "  window.domAutomationController.send(false);"
-              "};"
-              "xhr.send(null)";
+              "new Promise(resolve => {"
+              "  xhr.onload = function (e) {"
+              "    if (xhr.readyState === 4) {"
+              "      resolve(xhr.status === 200);"
+              "    }"
+              "  };"
+              "  xhr.onerror = function () {"
+              "    resolve(false);"
+              "  };"
+              "  xhr.send(null);"
+              "});";
     // The JS call will fail if disallowed because the process will be killed.
-    return EvalJs(shell, script, EXECUTE_SCRIPT_USE_MANUAL_REPLY).ExtractBool();
+    return EvalJs(shell, script).ExtractBool();
   }
 
   // Will reuse the single opened windows through the test case.
@@ -193,24 +195,28 @@ class NetworkServiceRestartBrowserTest : public ContentBrowserTest {
         "xhr.open('GET', '%s', true);"
         "xhr.onload = function (e) {"
         "  if (xhr.readyState === 4) {"
-        "    window.opener.domAutomationController.send(xhr.status === 200);"
+        "    window.opener.postMessage(xhr.status === 200, '*');"
         "  }"
         "};"
         "xhr.onerror = function () {"
-        "  window.opener.domAutomationController.send(false);"
+        "  window.opener.postMessage(false, '*');"
         "};"
         "xhr.send(null)",
         test_url.spec().c_str());
     std::string window_open_script = base::StringPrintf(
         "var new_window = new_window || window.open('');"
         "var inject_script = document.createElement('script');"
-        "inject_script.innerHTML = \"%s\";"
-        "new_window.document.body.appendChild(inject_script);",
+        "new Promise(resolve => {"
+        "  window.addEventListener('message', (event) => {"
+        "    resolve(event.data);"
+        "  });"
+        "  inject_script.innerHTML = \"%s\";"
+        "  new_window.document.body.appendChild(inject_script);"
+        "});",
         inject_script.c_str());
 
     // The JS call will fail if disallowed because the process will be killed.
-    return EvalJs(shell(), window_open_script, EXECUTE_SCRIPT_USE_MANUAL_REPLY)
-        .ExtractBool();
+    return EvalJs(shell(), window_open_script).ExtractBool();
   }
 
   // Workers will live throughout the test case unless terminated.
@@ -223,21 +229,22 @@ class NetworkServiceRestartBrowserTest : public ContentBrowserTest {
         "var workers = workers || {};"
         "var worker_name = '%s';"
         "workers[worker_name] = workers[worker_name] || new Worker('%s');"
-        "workers[worker_name].onmessage = evt => {"
-        "  if (evt.data != 'wait')"
-        "    window.domAutomationController.send(evt.data === 200);"
-        "};"
-        "workers[worker_name].postMessage(\"eval "
-        "  fetch(new Request('%s'))"
-        "    .then(res => postMessage(res.status))"
-        "    .catch(error => postMessage(error.toString()));"
-        "  'wait'"
-        "\");",
+        "new Promise(resolve => {"
+        "  workers[worker_name].onmessage = evt => {"
+        "    if (evt.data != 'wait')"
+        "      resolve(evt.data === 200);"
+        "  };"
+        "  workers[worker_name].postMessage(\"eval "
+        "    fetch(new Request('%s'))"
+        "      .then(res => postMessage(res.status))"
+        "      .catch(error => postMessage(error.toString()));"
+        "    'wait'"
+        "  \");"
+        "});",
         worker_name.c_str(), worker_url.spec().c_str(),
         fetch_url.spec().c_str());
     // The JS call will fail if disallowed because the process will be killed.
-    return EvalJs(shell(), script, EXECUTE_SCRIPT_USE_MANUAL_REPLY)
-        .ExtractBool();
+    return EvalJs(shell(), script).ExtractBool();
   }
 
   // Terminate and delete the worker.
@@ -248,14 +255,13 @@ class NetworkServiceRestartBrowserTest : public ContentBrowserTest {
         "if (workers[worker_name]) {"
         "  workers[worker_name].terminate();"
         "  delete workers[worker_name];"
-        "  window.domAutomationController.send(true);"
+        "  true;"
         "} else {"
-        "  window.domAutomationController.send(false);"
+        "  false;"
         "}",
         worker_name.c_str());
     // The JS call will fail if disallowed because the process will be killed.
-    return EvalJs(shell(), script, EXECUTE_SCRIPT_USE_MANUAL_REPLY)
-        .ExtractBool();
+    return EvalJs(shell(), script).ExtractBool();
   }
 
   // Called by |embedded_test_server()|.

@@ -842,8 +842,7 @@ IN_PROC_BROWSER_TEST_F(RenderProcessHostTest, KillProcessZerosAudioStreams) {
                                 run_loop.QuitClosure());
 
     std::string result;
-    EXPECT_EQ("OK", EvalJs(shell(), "StartOscillator();",
-                           EXECUTE_SCRIPT_USE_MANUAL_REPLY))
+    EXPECT_EQ("OK", EvalJs(shell(), "StartOscillator();"))
         << "Failed to execute javascript.";
     run_loop.Run();
 

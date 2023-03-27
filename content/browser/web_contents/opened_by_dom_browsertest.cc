@@ -61,12 +61,10 @@ class OpenedByDOMTest : public ContentBrowserTest {
         "window.close();"
         // Report back after an event loop iteration; the close IPC isn't sent
         // immediately.
-        "setTimeout(function() {"
-        "window.domAutomationController.send(0);"
-        "});";
-    CHECK_EQ(0, EvalJs(web_contents, kCloseWindowScript,
-                       EXECUTE_SCRIPT_USE_MANUAL_REPLY)
-                    .ExtractInt());
+        "new Promise(resolve => setTimeout(() => {"
+        "  resolve(0);"
+        "}));";
+    CHECK_EQ(0, EvalJs(web_contents, kCloseWindowScript).ExtractInt());
 
     web_contents->SetDelegate(old_delegate);
     return close_tracking_delegate.close_contents_called();

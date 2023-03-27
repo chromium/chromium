@@ -21,23 +21,25 @@ var pathPrefix = "http://bar.com/site_isolation/";
 // value (e.g., "bytes=10-20").
 function sendRequest(resourceUrl, rangeHeader) {
   var xhr = new XMLHttpRequest();
-  xhr.onreadystatechange = function() {
-    if (xhr.readyState == 4) {
-      // When a document is blocked, it will appear as the empty string.
-      var wasBlocked = xhr.responseText == "";
-      document.getElementById("response_body").value +=
-          ("\n" + "response to " + resourceUrl + "(" +
-           xhr.getResponseHeader("content-type") + ") " +
-           (wasBlocked ? "blocked" : "not-blocked"));
+  return new Promise(resolve => {
+    xhr.onreadystatechange = function() {
+      if (xhr.readyState == 4) {
+        // When a document is blocked, it will appear as the empty string.
+        var wasBlocked = xhr.responseText == "";
+        document.getElementById("response_body").value +=
+            ("\n" + "response to " + resourceUrl + "(" +
+            xhr.getResponseHeader("content-type") + ") " +
+            (wasBlocked ? "blocked" : "not-blocked"));
 
-      domAutomationController.send(wasBlocked);
+        resolve(wasBlocked);
+      }
     }
-  }
-  xhr.open('GET', pathPrefix + resourceUrl);
-  if (rangeHeader) {
-    xhr.setRequestHeader("Range", rangeHeader);
-  }
-  xhr.send();
+    xhr.open('GET', pathPrefix + resourceUrl);
+    if (rangeHeader) {
+      xhr.setRequestHeader("Range", rangeHeader);
+    }
+    xhr.send();
+  });
 }
 </script>
 <textarea rows=20 cols=50 id='response_body'></textarea>

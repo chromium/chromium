@@ -241,9 +241,7 @@ class ClearSiteDataHandlerBrowserTest : public ContentBrowserTest {
   }
 
   bool RunScriptAndGetBool(const std::string& script) {
-    return EvalJs(shell()->web_contents(), script,
-                  EXECUTE_SCRIPT_USE_MANUAL_REPLY)
-        .ExtractBool();
+    return EvalJs(shell()->web_contents(), script).ExtractBool();
   }
 
  private:

@@ -20,9 +20,9 @@
           icons,
           url,
         });
-        sendResultToTest('ok');
+        return 'ok';
       } catch (e) {
-        sendErrorToTest(e);
+        return formatError(e);
       }
     }
 
