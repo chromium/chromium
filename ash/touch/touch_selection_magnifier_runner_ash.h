@@ -7,7 +7,7 @@
 
 #include "ash/ash_export.h"
 #include "base/memory/raw_ptr.h"
-#include "ui/gfx/geometry/rounded_corners_f.h"
+#include "ui/color/color_provider_source_observer.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/touch_selection/touch_selection_magnifier_runner.h"
 
@@ -23,7 +23,8 @@ namespace ash {
 
 // Ash implementation for TouchSelectionMagnifierRunner.
 class ASH_EXPORT TouchSelectionMagnifierRunnerAsh
-    : public ui::TouchSelectionMagnifierRunner {
+    : public ui::TouchSelectionMagnifierRunner,
+      public ui::ColorProviderSourceObserver {
  public:
   TouchSelectionMagnifierRunnerAsh();
 
@@ -34,15 +35,14 @@ class ASH_EXPORT TouchSelectionMagnifierRunnerAsh
 
   ~TouchSelectionMagnifierRunnerAsh() override;
 
-  static constexpr float kMagnifierScale = 2.0f;
+  static constexpr float kMagnifierScale = 1.25f;
 
-  static constexpr gfx::Size kMagnifierLayerSize{100, 48};
-
-  static constexpr gfx::RoundedCornersF kMagnifierRoundedCorners{20};
+  // Size of the magnifier zoom layer, which excludes border and shadows.
+  static constexpr gfx::Size kMagnifierSize{100, 40};
 
   // Offset to apply so that the magnifier is shown vertically above the point
   // of interest. The offset specifies vertical displacement from the center of
-  // the text selection caret to the center of the magnifier bounds.
+  // the text selection caret to the center of the magnifier zoom layer.
   static constexpr int kMagnifierVerticalOffset = -32;
 
   // ui::TouchSelectionMagnifierRunner:
@@ -51,20 +51,37 @@ class ASH_EXPORT TouchSelectionMagnifierRunnerAsh
   void CloseMagnifier() override;
   bool IsRunning() const override;
 
+  // ui::ColorProviderSourceObserver:
+  void OnColorProviderChanged() override;
+
   const aura::Window* GetCurrentContextForTesting() const;
 
   const ui::Layer* GetMagnifierLayerForTesting() const;
 
+  const ui::Layer* GetZoomLayerForTesting() const;
+
  private:
-  void CreateMagnifierLayer(aura::Window* root_window,
+  class BorderRenderer;
+
+  void CreateMagnifierLayer(aura::Window* parent_container,
                             const gfx::PointF& position_in_root);
 
   // Current context window in which the magnifier is being shown, or `nullptr`
   // if no magnifier is running.
   raw_ptr<aura::Window> current_context_ = nullptr;
 
-  // The magnifier layer, which draws the background with a zoom filter applied.
+  // The magnifier layer is the parent of the zoom layer and border layer. The
+  // layer bounds should be updated when selection updates occur.
   std::unique_ptr<ui::Layer> magnifier_layer_;
+
+  // Draws the background with a zoom filter applied.
+  std::unique_ptr<ui::Layer> zoom_layer_;
+
+  // Draws a border and shadow. `border_layer_` must be ordered after
+  // `border_renderer_` so that it is destroyed before `border_renderer_`.
+  // Otherwise `border_layer_` will have a pointer to a deleted delegate.
+  std::unique_ptr<BorderRenderer> border_renderer_;
+  std::unique_ptr<ui::Layer> border_layer_;
 };
 
 }  // namespace ash

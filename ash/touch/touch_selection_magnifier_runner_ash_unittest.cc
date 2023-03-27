@@ -43,6 +43,34 @@ class TouchSelectionMagnifierRunnerAshTest : public NoSessionAshTestBase {
     NoSessionAshTestBase::SetUp();
   }
 
+  // Verifies that the magnifier has the correct bounds given the point of
+  // interest in context window coordinates.
+  // TODO(b/273613374): For now, we assume that the context window, root
+  // window, and magnifier parent container have the same bounds, but in
+  // practice this might not always be the case. Rewrite these tests once the
+  // bounds related parts of the magnifier have been cleaned up.
+  void VerifyMagnifierBounds(gfx::PointF point_of_interest) {
+    TouchSelectionMagnifierRunnerAsh* magnifier_runner = GetMagnifierRunner();
+    ASSERT_TRUE(magnifier_runner);
+
+    const ui::Layer* magnifier_layer =
+        magnifier_runner->GetMagnifierLayerForTesting();
+    const ui::Layer* zoom_layer = magnifier_runner->GetZoomLayerForTesting();
+    ASSERT_TRUE(magnifier_layer);
+    ASSERT_TRUE(zoom_layer);
+
+    gfx::Rect zoom_layer_bounds_in_context =
+        zoom_layer->bounds() + magnifier_layer->bounds().OffsetFromOrigin();
+    EXPECT_EQ(zoom_layer_bounds_in_context.size(),
+              TouchSelectionMagnifierRunnerAsh::kMagnifierSize);
+    EXPECT_EQ(
+        zoom_layer_bounds_in_context.CenterPoint(),
+        gfx::Point(
+            point_of_interest.x(),
+            point_of_interest.y() +
+                TouchSelectionMagnifierRunnerAsh::kMagnifierVerticalOffset));
+  }
+
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
 };
@@ -106,79 +134,34 @@ TEST_F(TouchSelectionMagnifierRunnerAshTest, NewContext) {
   EXPECT_FALSE(magnifier_runner->GetCurrentContextForTesting());
 }
 
-// Tests that the magnifier layer is created and destroyed.
-TEST_F(TouchSelectionMagnifierRunnerAshTest, Layer) {
+// Tests that the magnifier and zoom layers are created and destroyed.
+TEST_F(TouchSelectionMagnifierRunnerAshTest, CreatesAndDestroysLayers) {
   TouchSelectionMagnifierRunnerAsh* magnifier_runner = GetMagnifierRunner();
   ASSERT_TRUE(magnifier_runner);
 
   magnifier_runner->ShowMagnifier(GetContext(), gfx::PointF(300, 200));
   ASSERT_TRUE(magnifier_runner->GetMagnifierLayerForTesting());
+  ASSERT_TRUE(magnifier_runner->GetZoomLayerForTesting());
 
   magnifier_runner->CloseMagnifier();
   RunPendingMessages();
   EXPECT_FALSE(magnifier_runner->GetMagnifierLayerForTesting());
+  EXPECT_FALSE(magnifier_runner->GetZoomLayerForTesting());
 }
 
-// Tests that the magnifier layer is positioned with the correct bounds.
-TEST_F(TouchSelectionMagnifierRunnerAshTest, LayerBounds) {
+// Tests that the magnifier bounds are set correctly.
+TEST_F(TouchSelectionMagnifierRunnerAshTest, CorrectBounds) {
   TouchSelectionMagnifierRunnerAsh* magnifier_runner = GetMagnifierRunner();
   ASSERT_TRUE(magnifier_runner);
 
   gfx::PointF position(300, 200);
   magnifier_runner->ShowMagnifier(GetContext(), position);
-  const ui::Layer* magnifier_layer =
-      magnifier_runner->GetMagnifierLayerForTesting();
-  ASSERT_TRUE(magnifier_layer);
-
-  gfx::Rect bounds = magnifier_layer->bounds();
-  EXPECT_EQ(bounds.size(),
-            TouchSelectionMagnifierRunnerAsh::kMagnifierLayerSize);
-  EXPECT_EQ(
-      bounds.CenterPoint(),
-      gfx::Point(
-          position.x(),
-          position.y() +
-              TouchSelectionMagnifierRunnerAsh::kMagnifierVerticalOffset));
-
-  magnifier_runner->CloseMagnifier();
-  RunPendingMessages();
-}
-
-// Tests that the magnifier layer bounds update correctly.
-TEST_F(TouchSelectionMagnifierRunnerAshTest, LayerUpdatesBounds) {
-  TouchSelectionMagnifierRunnerAsh* magnifier_runner = GetMagnifierRunner();
-  ASSERT_TRUE(magnifier_runner);
-
-  gfx::PointF position(300, 200);
-  magnifier_runner->ShowMagnifier(GetContext(), position);
-  const ui::Layer* magnifier_layer =
-      magnifier_runner->GetMagnifierLayerForTesting();
-  ASSERT_TRUE(magnifier_layer);
-
-  gfx::Rect bounds = magnifier_layer->bounds();
-  EXPECT_EQ(bounds.size(),
-            TouchSelectionMagnifierRunnerAsh::kMagnifierLayerSize);
-  EXPECT_EQ(
-      bounds.CenterPoint(),
-      gfx::Point(
-          position.x(),
-          position.y() +
-              TouchSelectionMagnifierRunnerAsh::kMagnifierVerticalOffset));
+  VerifyMagnifierBounds(position);
 
   // Move the magnifier.
   position = gfx::PointF(400, 150);
   magnifier_runner->ShowMagnifier(GetContext(), position);
-  EXPECT_EQ(magnifier_layer, magnifier_runner->GetMagnifierLayerForTesting());
-
-  bounds = magnifier_layer->bounds();
-  EXPECT_EQ(bounds.size(),
-            TouchSelectionMagnifierRunnerAsh::kMagnifierLayerSize);
-  EXPECT_EQ(
-      bounds.CenterPoint(),
-      gfx::Point(
-          position.x(),
-          position.y() +
-              TouchSelectionMagnifierRunnerAsh::kMagnifierVerticalOffset));
+  VerifyMagnifierBounds(position);
 
   magnifier_runner->CloseMagnifier();
   RunPendingMessages();
