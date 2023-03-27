@@ -65,6 +65,14 @@ void VideoConferenceManagerAsh::GetMediaApps(
               }
             }
 
+            // Sort all apps based on last activity time.
+            std::sort(
+                apps.begin(), apps.end(),
+                [](const crosapi::mojom::VideoConferenceMediaAppInfoPtr& app1,
+                   const crosapi::mojom::VideoConferenceMediaAppInfoPtr& app2) {
+                  return app1->last_activity_time > app2->last_activity_time;
+                });
+
             // Call bound |ui_callback| with aggregated app info structs.
             std::move(callback).Run(std::move(apps));
           },

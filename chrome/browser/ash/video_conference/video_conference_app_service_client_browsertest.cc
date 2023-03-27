@@ -112,7 +112,7 @@ class FakeAppInstance {
     // Ideally, the following should be automatically triggered by showing the
     // window_; but that is not the case for now.
     auto instance = instance_->Clone();
-    instance->UpdateState(apps::InstanceState::kVisible, base::Time::Now());
+    instance->UpdateState(apps::InstanceState::kActive, base::Time::Now());
     instance_registry_->OnInstance(std::move(instance));
   }
 

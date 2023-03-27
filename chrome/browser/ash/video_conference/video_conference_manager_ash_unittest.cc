@@ -103,13 +103,16 @@ class VideoConferenceManagerAshTest : public testing::Test {
 // Tests |VideoConferenceManagerAsh::GetMediaApps| returns correct aggregated
 // results from all VcClients.
 TEST_F(VideoConferenceManagerAshTest, VcManagerGetMediaApps) {
+  const auto now = base::Time::Now();
+  const auto duration = base::Seconds(1);
+
   std::unique_ptr<FakeVcManagerCppClient> client1 =
       std::make_unique<FakeVcManagerCppClient>(vc_manager());
   client1->apps_.push_back(crosapi::mojom::VideoConferenceMediaAppInfo::New(
       /*id=*/base::UnguessableToken::Create(),
-      /*last_activity_time=*/base::Time::Now(),
+      /*last_activity_time=*/now,
       /*is_capturing_camera=*/false, /*is_capturing_microphone=*/false,
-      /*is_capturing_screen=*/true, /*title=*/u"Test App",
+      /*is_capturing_screen=*/true, /*title=*/u"Test App0",
       /*url=*/absl::nullopt));
 
   vc_manager().RegisterCppClient(client1.get(), client1->id_);
@@ -119,6 +122,7 @@ TEST_F(VideoConferenceManagerAshTest, VcManagerGetMediaApps) {
   vc_manager().GetMediaApps(base::BindLambdaForTesting(
       [&](VideoConferenceManagerAsh::MediaApps apps) {
         EXPECT_EQ(apps.size(), 1u);
+        EXPECT_EQ(apps[0]->title, u"Test App0");
 
         auto status = GetAggregatedCaptureStatus(std::move(apps));
 
@@ -131,15 +135,17 @@ TEST_F(VideoConferenceManagerAshTest, VcManagerGetMediaApps) {
 
   client1->apps_.push_back(crosapi::mojom::VideoConferenceMediaAppInfo::New(
       /*id=*/base::UnguessableToken::Create(),
-      /*last_activity_time=*/base::Time::Now(),
+      /*last_activity_time=*/now + duration * 10,
       /*is_capturing_camera=*/true, /*is_capturing_microphone=*/false,
-      /*is_capturing_screen=*/true, /*title=*/u"Test App",
+      /*is_capturing_screen=*/true, /*title=*/u"Test App1",
       /*url=*/absl::nullopt));
 
   base::RunLoop run_loop2;
   vc_manager().GetMediaApps(base::BindLambdaForTesting(
       [&](VideoConferenceManagerAsh::MediaApps apps) {
         EXPECT_EQ(apps.size(), 2UL);
+        EXPECT_EQ(apps[0]->title, u"Test App1");
+        EXPECT_EQ(apps[1]->title, u"Test App0");
 
         auto status = GetAggregatedCaptureStatus(std::move(apps));
 
@@ -156,9 +162,9 @@ TEST_F(VideoConferenceManagerAshTest, VcManagerGetMediaApps) {
         std::make_unique<FakeVcManagerCppClient>(vc_manager());
     client2->apps_.push_back(crosapi::mojom::VideoConferenceMediaAppInfo::New(
         /*id=*/base::UnguessableToken::Create(),
-        /*last_activity_time=*/base::Time::Now(),
+        /*last_activity_time=*/now + duration * 2,
         /*is_capturing_camera=*/false, /*is_capturing_microphone=*/true,
-        /*is_capturing_screen=*/false, /*title=*/u"Test App",
+        /*is_capturing_screen=*/false, /*title=*/u"Test App2",
         /*url=*/absl::nullopt));
 
     vc_manager().RegisterCppClient(client2.get(), client2->id_);
@@ -167,6 +173,9 @@ TEST_F(VideoConferenceManagerAshTest, VcManagerGetMediaApps) {
     vc_manager().GetMediaApps(base::BindLambdaForTesting(
         [&](VideoConferenceManagerAsh::MediaApps apps) {
           EXPECT_EQ(apps.size(), 3UL);
+          EXPECT_EQ(apps[0]->title, u"Test App1");
+          EXPECT_EQ(apps[1]->title, u"Test App2");
+          EXPECT_EQ(apps[2]->title, u"Test App0");
 
           auto status = GetAggregatedCaptureStatus(std::move(apps));
 

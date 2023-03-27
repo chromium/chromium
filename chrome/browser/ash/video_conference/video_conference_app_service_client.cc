@@ -205,6 +205,11 @@ void VideoConferenceAppServiceClient::OnInstanceUpdate(
     const apps::InstanceUpdate& update) {
   const AppIdString& app_id = update.AppId();
 
+  // We only care about the apps being tracked already.
+  if (!base::Contains(id_to_app_state_, app_id)) {
+    return;
+  }
+
   // An instance of app_id is about to be destructed.
   if (update.IsDestruction() &&
       instance_registry_->GetInstances(app_id).size() <= 1) {
@@ -218,8 +223,7 @@ void VideoConferenceAppServiceClient::OnInstanceUpdate(
   }
 
   if (update.StateChanged() &&
-      update.State() == apps::InstanceState::kVisible &&
-      base::Contains(id_to_app_state_, app_id)) {
+      (update.State() & apps::InstanceState::kActive) != 0) {
     id_to_app_state_[app_id].last_activity_time = update.LastUpdatedTime();
     return;
   }

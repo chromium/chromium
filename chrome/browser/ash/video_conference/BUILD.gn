@@ -20,17 +20,3 @@ source_set("video_conference") {
     "//components/prefs",
   ]
 }
-
-source_set("unit_tests") {
-  testonly = true
-  sources = [ "video_conference_manager_ash_unittest.cc" ]
-  deps = [
-    ":video_conference",
-    "//ash",
-    "//base",
-    "//base/test:test_support",
-    "//chromeos/crosapi/mojom",
-    "//testing/gmock",
-    "//testing/gtest",
-  ]
-}
