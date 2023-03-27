@@ -1577,11 +1577,6 @@
     "expiry_milestone": 112
   },
   {
-    "name": "dns-proxy-enable-doh",
-    "owners": [ "garrick", "jasongustaman" ],
-    "expiry_milestone": 111
-  },
-  {
     "name": "document-picture-in-picture-api",
     "owners": [ "steimel", "media-dev" ],
     "expiry_milestone": 120
@@ -2276,11 +2271,6 @@
     "name": "enable-discover-multi-column",
     "owners": [ "skavuluru", "clank-app-team@google.com" ],
     "expiry_milestone": 118
-  },
-  {
-    "name": "enable-dns-proxy",
-    "owners": [ "garrick", "jasongustaman", "cros-networking@google.com" ],
-    "expiry_milestone": 111
   },
   {
     "name": "enable-download-service-foreground-session",
