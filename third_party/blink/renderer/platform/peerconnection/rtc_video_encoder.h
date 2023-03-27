@@ -16,6 +16,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/synchronization/lock.h"
 #include "media/base/video_decoder_config.h"
+#include "media/video/video_encode_accelerator.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
 #include "third_party/blink/renderer/platform/wtf/functional.h"
 #include "third_party/webrtc/api/video/video_bitrate_allocation.h"
@@ -79,6 +80,8 @@ class PLATFORM_EXPORT RTCVideoEncoder : public webrtc::VideoEncoder {
  private:
   class Impl;
 
+  int32_t InitializeEncoder(
+      const media::VideoEncodeAccelerator::Config& vea_config);
   void UpdateEncoderInfo(
       media::VideoEncoderInfo encoder_info,
       std::vector<webrtc::VideoFrameBuffer::Type> preferred_pixel_formats);

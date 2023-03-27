@@ -1668,6 +1668,36 @@ RTCVideoEncoder::~RTCVideoEncoder() {
   DCHECK(!impl_);
 }
 
+int32_t RTCVideoEncoder::InitializeEncoder(
+    const media::VideoEncodeAccelerator::Config& vea_config) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(webrtc_sequence_checker_);
+  TRACE_EVENT1("webrtc", "RTCVideoEncoder::InitEncode", "config",
+               vea_config.AsHumanReadableString());
+  DVLOG(1) << __func__ << ": config=" << vea_config.AsHumanReadableString();
+  auto init_start = base::TimeTicks::Now();
+  // This wait is necessary because this task is completed in GPU process
+  // asynchronously but WebRTC API is synchronous.
+  base::ScopedAllowBaseSyncPrimitivesOutsideBlockingScope allow_wait;
+  base::WaitableEvent initialization_waiter(
+      base::WaitableEvent::ResetPolicy::MANUAL,
+      base::WaitableEvent::InitialState::NOT_SIGNALED);
+  int32_t initialization_retval = WEBRTC_VIDEO_CODEC_UNINITIALIZED;
+  PostCrossThreadTask(
+      *gpu_task_runner_.get(), FROM_HERE,
+      CrossThreadBindOnce(
+          &RTCVideoEncoder::Impl::CreateAndInitializeVEA, weak_impl_,
+          vea_config,
+          SignaledValue(&initialization_waiter, &initialization_retval)));
+  // webrtc::VideoEncoder expects this call to be synchronous.
+  initialization_waiter.Wait();
+  if (initialization_retval == WEBRTC_VIDEO_CODEC_OK) {
+    UMA_HISTOGRAM_TIMES("WebRTC.RTCVideoEncoder.Initialize",
+                        base::TimeTicks::Now() - init_start);
+  }
+  RecordInitEncodeUMA(initialization_retval, profile_);
+  return initialization_retval;
+}
+
 int32_t RTCVideoEncoder::InitEncode(
     const webrtc::VideoCodec* codec_settings,
     const webrtc::VideoEncoder::Settings& settings) {
@@ -1772,24 +1802,7 @@ int32_t RTCVideoEncoder::InitEncode(
       /*gop_length=*/absl::nullopt,
       /*h264_output_level=*/absl::nullopt, is_constrained_h264_, storage_type,
       vea_content_type, spatial_layers, inter_layer_pred);
-
-  // This wait is necessary because this task is completed in GPU process
-  // asynchronously but WebRTC API is synchronous.
-  base::ScopedAllowBaseSyncPrimitivesOutsideBlockingScope allow_wait;
-  base::WaitableEvent initialization_waiter(
-      base::WaitableEvent::ResetPolicy::MANUAL,
-      base::WaitableEvent::InitialState::NOT_SIGNALED);
-  int32_t initialization_retval = WEBRTC_VIDEO_CODEC_UNINITIALIZED;
-  PostCrossThreadTask(
-      *gpu_task_runner_.get(), FROM_HERE,
-      CrossThreadBindOnce(
-          &RTCVideoEncoder::Impl::CreateAndInitializeVEA, weak_impl_,
-          vea_config,
-          SignaledValue(&initialization_waiter, &initialization_retval)));
-  // webrtc::VideoEncoder expects this call to be synchronous.
-  initialization_waiter.Wait();
-  RecordInitEncodeUMA(initialization_retval, profile_);
-  return initialization_retval;
+  return InitializeEncoder(vea_config);
 }
 
 int32_t RTCVideoEncoder::Encode(
