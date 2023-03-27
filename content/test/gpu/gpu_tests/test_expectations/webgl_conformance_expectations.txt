@@ -335,6 +335,8 @@ crbug.com/1426916 [ chromeos chromeos-board-amd64-generic no-passthrough ] confo
 crbug.com/1426916 [ chromeos chromeos-board-amd64-generic no-passthrough ] conformance/extensions/webgl-compressed-texture-astc.html [ Slow ]
 crbug.com/1426916 [ chromeos chromeos-board-amd64-generic no-passthrough ] conformance/reading/read-pixels-test.html [ Slow ]
 crbug.com/1426916 [ chromeos chromeos-board-amd64-generic no-passthrough ] conformance/textures/misc/tex-image-and-sub-image-2d-with-array-buffer-view.html [ Slow ]
+crbug.com/1427243 [ fuchsia fuchsia-board-astro ] conformance/glsl/bugs/complex-glsl-does-not-crash.html [ Slow ]
+crbug.com/1427243 [ fuchsia fuchsia-board-sherlock ] conformance/glsl/bugs/complex-glsl-does-not-crash.html [ Slow ]
 
 ###################
 # Failures/Flakes #
