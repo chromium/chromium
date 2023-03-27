@@ -1,4 +1,4 @@
 monorail {
-  component: "Blink>CSS"
+  component: "Blink>Canvas"
 }
-team_email: "layout-dev@chromium.org"
+team_email: "canvas-dev@chromium.org"
