@@ -80,7 +80,7 @@ class WebTestWithWebState : public WebTest {
       const std::vector<base::Value>& parameters,
       JavaScriptFeature* feature);
   // Synchronously executes JavaScript and returns result as id.
-  id ExecuteJavaScript(NSString* script);
+  virtual id ExecuteJavaScript(NSString* script);
 
   // Returns the base URL of the loaded page.
   std::string BaseUrl() const;
