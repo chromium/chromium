@@ -192,9 +192,16 @@ LocaleMac::DateTimeFormatterWithoutSeconds() {
 }
 
 String LocaleMac::DateFormat() {
-  if (!date_format_.IsNull())
+  if (!date_format_.IsNull()) {
+    recordreplay::Assert("[RUN-1548] LocaleMac::DateFormat #1 %s",
+                         date_format_.Utf8().c_str());
     return date_format_;
+  }
   date_format_ = [ShortDateFormatter() dateFormat];
+
+  recordreplay::Assert("[RUN-1548] LocaleMac::DateFormat #2 %s",
+                       date_format_.Utf8().c_str());
+
   return date_format_;
 }
 

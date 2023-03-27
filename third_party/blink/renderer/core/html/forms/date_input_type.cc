@@ -106,6 +106,10 @@ void DateInputType::SetupLayoutParameters(
     DateTimeEditElement::LayoutParameters& layout_parameters,
     const DateComponents& date) const {
   layout_parameters.date_time_format = layout_parameters.locale.DateFormat();
+
+  recordreplay::Assert("[RUN-1548] DateInputType::SetupLayoutParameters %s",
+                       layout_parameters.date_time_format.Utf8().c_str());
+
   layout_parameters.fallback_date_time_format = "yyyy-MM-dd";
   if (!ParseToDateComponents(
           GetElement().FastGetAttribute(html_names::kMinAttr),

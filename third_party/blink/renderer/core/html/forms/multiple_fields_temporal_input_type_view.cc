@@ -580,6 +580,12 @@ void MultipleFieldsTemporalInputTypeView::UpdateView() {
                      AtomicString(layout_parameters.date_time_format),
                      ASSERT_NO_EXCEPTION);
   const AtomicString pattern = edit->FastGetAttribute(html_names::kPatternAttr);
+
+  recordreplay::Assert("[RUN-1548] MultipleFieldsTemporalInputTypeView::UpdateView #1 %s %s %d",
+                       layout_parameters.date_time_format.Utf8().c_str(),
+                       pattern.Utf8().c_str(),
+                       pattern.empty());
+
   if (!pattern.empty())
     layout_parameters.date_time_format = pattern;
 

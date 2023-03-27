@@ -72,7 +72,18 @@ void WaitableEvent::Reset() {
 }
 
 void WaitableEvent::Signal() {
+  recordreplay::Diagnostic("[RUN-1551] WaitableEvent::Signal %d %d %d",
+                           record_replay_ordered_lock_id_,
+                           (int)send_right_.get(),
+                           recordreplay::AreEventsDisallowed());
+
   RecordReplayEnsureOrdered(record_replay_ordered_lock_id_);
+
+  if (record_replay_ordered_lock_id_) {
+    recordreplay::Assert("[RUN-1551] WaitableEvent::Signal %d %d",
+                         record_replay_ordered_lock_id_,
+                         (int)send_right_.get());
+  }
 
   absl::optional<recordreplay::AutoDisallowEvents> disallow;
   if (!record_replay_ordered_lock_id_)
