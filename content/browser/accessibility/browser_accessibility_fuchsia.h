@@ -5,7 +5,7 @@
 #ifndef CONTENT_BROWSER_ACCESSIBILITY_BROWSER_ACCESSIBILITY_FUCHSIA_H_
 #define CONTENT_BROWSER_ACCESSIBILITY_BROWSER_ACCESSIBILITY_FUCHSIA_H_
 
-#include <fuchsia/accessibility/semantics/cpp/fidl.h>
+#include <fidl/fuchsia.accessibility.semantics/cpp/fidl.h>
 
 #include <vector>
 
@@ -36,7 +36,7 @@ class CONTENT_EXPORT BrowserAccessibilityFuchsia : public BrowserAccessibility {
 
   // Returns the fuchsia representation of the AXNode to which this
   // BrowserAccessibility object refers.
-  fuchsia::accessibility::semantics::Node ToFuchsiaNodeData() const;
+  fuchsia_accessibility_semantics::Node ToFuchsiaNodeData() const;
 
   // Returns the fuchsia ID of this node's offset container if the offset
   // container ID is valid. Otherwise, returns the ID of this tree's root node.
@@ -58,13 +58,13 @@ class CONTENT_EXPORT BrowserAccessibilityFuchsia : public BrowserAccessibility {
 
   void UpdateNode();
   void DeleteNode();
-  std::vector<fuchsia::accessibility::semantics::Action> GetFuchsiaActions()
+  std::vector<fuchsia_accessibility_semantics::Action> GetFuchsiaActions()
       const;
-  fuchsia::accessibility::semantics::Role GetFuchsiaRole() const;
-  fuchsia::accessibility::semantics::States GetFuchsiaStates() const;
-  fuchsia::accessibility::semantics::Attributes GetFuchsiaAttributes() const;
-  fuchsia::ui::gfx::BoundingBox GetFuchsiaLocation() const;
-  fuchsia::ui::gfx::mat4 GetFuchsiaTransform() const;
+  fuchsia_accessibility_semantics::Role GetFuchsiaRole() const;
+  fuchsia_accessibility_semantics::States GetFuchsiaStates() const;
+  fuchsia_accessibility_semantics::Attributes GetFuchsiaAttributes() const;
+  fuchsia_ui_gfx::BoundingBox GetFuchsiaLocation() const;
+  fuchsia_ui_gfx::Mat4 GetFuchsiaTransform() const;
   std::vector<uint32_t> GetFuchsiaChildIDs() const;
 
   // Returns true if this AXNode has role AXRole::kList.
