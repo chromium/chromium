@@ -14,6 +14,7 @@
 #include "content/public/browser/render_view_host.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
+#include "content/public/test/browser_test_utils.h"
 #include "content/public/test/fenced_frame_test_util.h"
 #include "content/public/test/test_navigation_observer.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
@@ -57,12 +58,9 @@ class AutoplayPolicyTest : public PolicyTest {
   }
 
   bool TryAutoplay(content::RenderFrameHost* rfh) {
-    bool result = false;
-
-    EXPECT_TRUE(content::ExecuteScriptWithoutUserGestureAndExtractBool(
-        rfh, "tryPlayback();", &result));
-
-    return result;
+    return content::EvalJs(rfh, "tryPlayback();",
+                           content::EXECUTE_SCRIPT_NO_USER_GESTURE)
+        .ExtractBool();
   }
 
   content::WebContents* GetWebContents() {
@@ -311,10 +309,9 @@ class AutoplayPolicyFencedFrameTest : public AutoplayPolicyTest {
   }
 
   bool TryAutoplay(content::RenderFrameHost* rfh) {
-    bool result = false;
-    EXPECT_TRUE(content::ExecuteScriptWithoutUserGestureAndExtractBool(
-        rfh, "attemptPlay();", &result));
-    return result;
+    return content::EvalJs(rfh, "attemptPlay();",
+                           content::EXECUTE_SCRIPT_NO_USER_GESTURE)
+        .ExtractBool();
   }
 
  protected:

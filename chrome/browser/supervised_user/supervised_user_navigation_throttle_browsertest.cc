@@ -495,27 +495,21 @@ const GURL& SupervisedUserIframeFilterTest::GetBlockedFrameURL(int frame_id) {
 bool SupervisedUserIframeFilterTest::IsInterstitialBeingShownInFrame(
     int frame_id) {
   std::string command =
-      "domAutomationController.send("
-      "(document.getElementsByClassName('supervised-user-block') != null) "
-      "? (true) : (false));";
+      "document.getElementsByClassName('supervised-user-block') != null";
   return RunCommandAndGetBooleanFromFrame(frame_id, command);
 }
 
 bool SupervisedUserIframeFilterTest::IsRemoteApprovalsButtonBeingShown(
     int frame_id) {
   std::string command =
-      "domAutomationController.send("
-      "(document.getElementById('remote-approvals-button').hidden"
-      "? (false) : (true)));";
+      "!document.getElementById('remote-approvals-button').hidden";
   return RunCommandAndGetBooleanFromFrame(frame_id, command);
 }
 
 bool SupervisedUserIframeFilterTest::IsLocalApprovalsButtonBeingShown(
     int frame_id) {
   std::string command =
-      "domAutomationController.send("
-      "(document.getElementById('local-approvals-button').hidden"
-      "? (false) : (true)));";
+      "!document.getElementById('local-approvals-button').hidden";
   return RunCommandAndGetBooleanFromFrame(frame_id, command);
 }
 
@@ -523,27 +517,25 @@ void SupervisedUserIframeFilterTest::CheckPreferredApprovalButton(
     int frame_id) {
   if (supervised_user::IsLocalWebApprovalThePreferredButton()) {
     std::string command =
-        "domAutomationController.send("
-        "(document.getElementById('local-approvals-button').classList.contains("
+        "document.getElementById('local-approvals-button').classList.contains("
         "'primary-button') &&"
         " !document.getElementById('local-approvals-button').classList."
         "contains('secondary-button') &&"
         " document.getElementById('remote-approvals-button').classList."
         "contains('secondary-button') &&"
         " !document.getElementById('remote-approvals-button').classList."
-        "contains('primary-button')));";
+        "contains('primary-button');";
     ASSERT_TRUE(RunCommandAndGetBooleanFromFrame(frame_id, command));
   } else {
     std::string command =
-        "domAutomationController.send("
-        "(document.getElementById('remote-approvals-button').classList."
+        "document.getElementById('remote-approvals-button').classList."
         "contains('primary-button') &&"
         " !document.getElementById('remote-approvals-button').classList."
         "contains('secondary-button') &&"
         " document.getElementById('local-approvals-button').classList.contains("
         "'secondary-button') &&"
         " !document.getElementById('local-approvals-button').classList."
-        "contains('primary-button')));";
+        "contains('primary-button');";
     ASSERT_TRUE(RunCommandAndGetBooleanFromFrame(frame_id, command));
   }
 }
@@ -551,10 +543,8 @@ void SupervisedUserIframeFilterTest::CheckPreferredApprovalButton(
 bool SupervisedUserIframeFilterTest::IsLocalApprovalsInsteadButtonBeingShown(
     int frame_id) {
   std::string command =
-      "domAutomationController.send("
-      "(document.getElementById('local-approvals-remote-request-sent-button')."
-      "hidden"
-      "? (false) : (true)));";
+      "!document.getElementById('local-approvals-remote-request-sent-button')."
+      "hidden";
   return RunCommandAndGetBooleanFromFrame(frame_id, command);
 }
 
@@ -593,11 +583,10 @@ bool SupervisedUserIframeFilterTest::RunCommandAndGetBooleanFromFrame(
   auto* render_frame_host = tracker()->GetHost(frame_id);
   DCHECK(render_frame_host->IsRenderFrameLive());
 
-  bool value = false;
   auto target = content::ToRenderFrameHost(render_frame_host);
-  EXPECT_TRUE(content::ExecuteScriptWithoutUserGestureAndExtractBool(
-      target, command, &value));
-  return value;
+  return content::EvalJs(target, command,
+                         content::EXECUTE_SCRIPT_NO_USER_GESTURE)
+      .ExtractBool();
 }
 
 void SupervisedUserIframeFilterTest::InitFeatures() {
@@ -759,19 +748,14 @@ IN_PROC_BROWSER_TEST_P(SupervisedUserIframeFilterTest, TestBackButton) {
 
   SendCommandToFrame(kRemoteUrlAccessCommand, blocked[0]);
 
-  std::string command =
-      "domAutomationController.send("
-      "(document.getElementById('back-button').hidden));";
+  std::string command = "document.getElementById('back-button').hidden;";
 
   auto* render_frame_host = tracker()->GetHost(blocked[0]);
   DCHECK(render_frame_host->IsRenderFrameLive());
-  bool value = false;
   auto target = content::ToRenderFrameHost(render_frame_host);
-  EXPECT_TRUE(content::ExecuteScriptWithoutUserGestureAndExtractBool(
-      target, command, &value));
-
   // Back button should be hidden in iframes.
-  EXPECT_TRUE(value);
+  EXPECT_EQ(true, content::EvalJs(target, command,
+                                  content::EXECUTE_SCRIPT_NO_USER_GESTURE));
 }
 
 IN_PROC_BROWSER_TEST_P(SupervisedUserIframeFilterTest,
@@ -792,16 +776,14 @@ IN_PROC_BROWSER_TEST_P(SupervisedUserIframeFilterTest,
 
   SendCommandToFrame(kRemoteUrlAccessCommand, blocked[0]);
 
-  std::string command =
-      "domAutomationController.send("
-      "(document.getElementById('back-button').hidden));";
+  std::string command = "document.getElementById('back-button').hidden;";
   auto* render_frame_host = tracker()->GetHost(blocked[0]);
   DCHECK(render_frame_host->IsRenderFrameLive());
 
-  bool value = false;
   auto target = content::ToRenderFrameHost(render_frame_host);
-  EXPECT_TRUE(content::ExecuteScriptWithoutUserGestureAndExtractBool(
-      target, command, &value));
+  bool value =
+      content::EvalJs(target, command, content::EXECUTE_SCRIPT_NO_USER_GESTURE)
+          .ExtractBool();
 
   // Back button should be hidden only when local web approvals is enabled due
   // to new UI for local web approvals.

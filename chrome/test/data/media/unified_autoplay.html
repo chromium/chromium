@@ -5,10 +5,10 @@
 <video src='bigbuck.webm'></video>
 <script>
 function attemptPlay() {
-  document.querySelector('video').play().then(function() {
-    window.domAutomationController.send(true);
+  return document.querySelector('video').play().then(function() {
+    return true;
   }, function() {
-    window.domAutomationController.send(false);
+    return false;
   });
 }
 </script>

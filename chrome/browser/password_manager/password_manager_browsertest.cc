@@ -3002,11 +3002,10 @@ IN_PROC_BROWSER_TEST_F(PasswordManagerBrowserTest,
   std::string find_logs =
       "var text = document.getElementById('log-entries').innerText;"
       "var logs_found = /PasswordAutofillAgent::/.test(text);"
-      "window.domAutomationController.send(logs_found);";
-  bool logs_found = false;
-  ASSERT_TRUE(content::ExecuteScriptWithoutUserGestureAndExtractBool(
-      internals_web_contents->GetPrimaryMainFrame(), find_logs, &logs_found));
-  EXPECT_TRUE(logs_found);
+      "logs_found;";
+  EXPECT_EQ(true, content::EvalJs(internals_web_contents->GetPrimaryMainFrame(),
+                                  find_logs,
+                                  content::EXECUTE_SCRIPT_NO_USER_GESTURE));
 }
 
 // Check that the internals page contains logs from the browser.
@@ -3025,11 +3024,10 @@ IN_PROC_BROWSER_TEST_F(PasswordManagerBrowserTest, InternalsPage_Browser) {
   std::string find_logs =
       "var text = document.getElementById('log-entries').innerText;"
       "var logs_found = /PasswordManager::/.test(text);"
-      "window.domAutomationController.send(logs_found);";
-  bool logs_found = false;
-  ASSERT_TRUE(content::ExecuteScriptWithoutUserGestureAndExtractBool(
-      internals_web_contents->GetPrimaryMainFrame(), find_logs, &logs_found));
-  EXPECT_TRUE(logs_found);
+      "logs_found;";
+  EXPECT_EQ(true, content::EvalJs(internals_web_contents->GetPrimaryMainFrame(),
+                                  find_logs,
+                                  content::EXECUTE_SCRIPT_NO_USER_GESTURE));
 }
 
 // Tests that submitted credentials are saved on a password form without

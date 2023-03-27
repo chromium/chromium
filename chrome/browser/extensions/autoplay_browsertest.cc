@@ -82,8 +82,6 @@ IN_PROC_BROWSER_TEST_F(AutoplayExtensionBrowserTest,
       app_browser->tab_strip_model()->GetActiveWebContents();
   EXPECT_TRUE(content::WaitForLoadStop(web_contents));
 
-  bool result = false;
-  EXPECT_TRUE(content::ExecuteScriptWithoutUserGestureAndExtractBool(
-      web_contents, "runTest();", &result));
-  EXPECT_TRUE(result);
+  EXPECT_EQ(true, content::EvalJs(web_contents, "runTest();",
+                                  content::EXECUTE_SCRIPT_NO_USER_GESTURE));
 }

@@ -607,10 +607,6 @@ void ExecuteScriptAsyncWithoutUserGesture(const ToRenderFrameHost& adapter,
     std::string* result);
 
 // Same as above but the script executed without user gesture.
-[[nodiscard]] bool ExecuteScriptWithoutUserGestureAndExtractBool(
-    const ToRenderFrameHost& adapter,
-    const std::string& script,
-    bool* result);
 [[nodiscard]] bool ExecuteScriptWithoutUserGestureAndExtractString(
     const ToRenderFrameHost& adapter,
     const std::string& script,

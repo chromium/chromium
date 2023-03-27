@@ -10,10 +10,10 @@
 <script>
 function tryPlayback() {
   const video = document.getElementById('video');
-  video.play().then(() => {
-    window.domAutomationController.send(true);
+  return video.play().then(() => {
+    return true;
   }, (e) => {
-    window.domAutomationController.send(e.name != 'NotAllowedError');
+    return e.name != 'NotAllowedError';
   });
 }
 </script>

@@ -96,10 +96,9 @@ class UnifiedAutoplayBrowserTest : public InProcessBrowserTest {
   }
 
   bool AttemptPlay(content::WebContents* web_contents) {
-    bool played = false;
-    EXPECT_TRUE(content::ExecuteScriptWithoutUserGestureAndExtractBool(
-        web_contents, "attemptPlay();", &played));
-    return played;
+    return content::EvalJs(web_contents, "attemptPlay();",
+                           content::EXECUTE_SCRIPT_NO_USER_GESTURE)
+        .ExtractBool();
   }
 
   bool NavigateInRenderer(content::WebContents* web_contents, const GURL& url) {
@@ -435,10 +434,9 @@ class UnifiedAutoplaySettingBrowserTest : public UnifiedAutoplayBrowserTest {
   }
 
   bool AutoplayAllowed(const content::ToRenderFrameHost& adapter) {
-    bool played = false;
-    EXPECT_TRUE(content::ExecuteScriptWithoutUserGestureAndExtractBool(
-        adapter, "tryPlayback();", &played));
-    return played;
+    return content::EvalJs(adapter, "tryPlayback();",
+                           content::EXECUTE_SCRIPT_NO_USER_GESTURE)
+        .ExtractBool();
   }
 
   void NavigateFrameAndWait(content::RenderFrameHost* rfh, const GURL& url) {

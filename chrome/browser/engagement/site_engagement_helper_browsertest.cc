@@ -220,9 +220,9 @@ IN_PROC_BROWSER_TEST_F(SiteEngagementHelperBrowserTest,
   // Since the prerendered page couldn't have a user gesture, it runs JS with
   // EXECUTE_SCRIPT_NO_USER_GESTURE. Requesting playing video without a user
   // gesture results in the promise rejected.
-  EXPECT_FALSE(
-      content::ExecJs(prerendered_frame_host, "attemptPlay();",
-                      content::EvalJsOptions::EXECUTE_SCRIPT_NO_USER_GESTURE));
+  EXPECT_EQ(false, content::EvalJs(
+                       prerendered_frame_host, "attemptPlay();",
+                       content::EvalJsOptions::EXECUTE_SCRIPT_NO_USER_GESTURE));
 
   EXPECT_EQ(tester.last_updated_type(), EngagementType::kNavigation);
   EXPECT_EQ(tester.last_updated_url(), url);

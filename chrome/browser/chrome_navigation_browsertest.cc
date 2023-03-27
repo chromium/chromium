@@ -1475,11 +1475,8 @@ IN_PROC_BROWSER_TEST_F(ChromeNavigationBrowserTest,
   observer.Wait();
 
   // Make sure popup attempt fails due to lack of transient user activation.
-  bool opened = false;
-  EXPECT_TRUE(content::ExecuteScriptWithoutUserGestureAndExtractBool(
-      main_contents, "window.domAutomationController.send(!!window.open());",
-      &opened));
-  EXPECT_FALSE(opened);
+  EXPECT_EQ(false, content::EvalJs(main_contents, "!!window.open();",
+                                   content::EXECUTE_SCRIPT_NO_USER_GESTURE));
 
   EXPECT_EQ(embedded_test_server()->GetURL("/title1.html"),
             main_contents->GetLastCommittedURL());
