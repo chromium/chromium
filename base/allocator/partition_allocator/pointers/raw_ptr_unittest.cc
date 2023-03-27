@@ -355,11 +355,22 @@ TEST_F(RawPtrTest, ArrowDereference) {
 TEST_F(RawPtrTest, Delete) {
   CountingRawPtr<int> ptr = new int(42);
   delete ptr.ExtractAsDangling();
-  // The pointer was extracted using implicit cast before passing to |delete|.
+  // The pointer is first internally converted to MayDangle kind, then extracted
+  // using implicit cast before passing to |delete|.
   EXPECT_THAT((CountingRawPtrExpectations<RawPtrCountingImpl>{
+                  .get_for_dereference_cnt = 0,
+                  .get_for_extraction_cnt = 0,
+                  .get_for_comparison_cnt = 0,
+                  .wrap_raw_ptr_for_dup_cnt = 0,
+                  .get_for_duplication_cnt = 1,
+              }),
+              CountersMatch());
+  EXPECT_THAT((CountingRawPtrExpectations<RawPtrCountingMayDangleImpl>{
                   .get_for_dereference_cnt = 0,
                   .get_for_extraction_cnt = 1,
                   .get_for_comparison_cnt = 0,
+                  .wrap_raw_ptr_for_dup_cnt = 1,
+                  .get_for_duplication_cnt = 0,
               }),
               CountersMatch());
 }
@@ -412,6 +423,8 @@ TEST_F(RawPtrTest, ExtractAsDangling) {
                   .release_wrapped_ptr_cnt = 0,
                   .get_for_dereference_cnt = 0,
                   .wrapped_ptr_swap_cnt = 0,
+                  .wrap_raw_ptr_for_dup_cnt = 0,
+                  .get_for_duplication_cnt = 0,
               }),
               CountersMatch());
   EXPECT_THAT((CountingRawPtrExpectations<RawPtrCountingMayDangleImpl>{
@@ -419,6 +432,8 @@ TEST_F(RawPtrTest, ExtractAsDangling) {
                   .release_wrapped_ptr_cnt = 0,
                   .get_for_dereference_cnt = 0,
                   .wrapped_ptr_swap_cnt = 0,
+                  .wrap_raw_ptr_for_dup_cnt = 0,
+                  .get_for_duplication_cnt = 0,
               }),
               CountersMatch());
 
@@ -431,13 +446,17 @@ TEST_F(RawPtrTest, ExtractAsDangling) {
                   .release_wrapped_ptr_cnt = 1,
                   .get_for_dereference_cnt = 0,
                   .wrapped_ptr_swap_cnt = 0,
+                  .wrap_raw_ptr_for_dup_cnt = 0,
+                  .get_for_duplication_cnt = 1,
               }),
               CountersMatch());
   EXPECT_THAT((CountingRawPtrExpectations<RawPtrCountingMayDangleImpl>{
-                  .wrap_raw_ptr_cnt = 1,
+                  .wrap_raw_ptr_cnt = 0,
                   .release_wrapped_ptr_cnt = 0,
                   .get_for_dereference_cnt = 0,
                   .wrapped_ptr_swap_cnt = 0,
+                  .wrap_raw_ptr_for_dup_cnt = 1,
+                  .get_for_duplication_cnt = 0,
               }),
               CountersMatch());
 
@@ -455,6 +474,8 @@ TEST_F(RawPtrTest, ExtractAsDanglingFromDangling) {
                   .release_wrapped_ptr_cnt = 0,
                   .get_for_dereference_cnt = 0,
                   .wrapped_ptr_swap_cnt = 0,
+                  .wrap_raw_ptr_for_dup_cnt = 0,
+                  .get_for_duplication_cnt = 0,
               }),
               CountersMatch());
 
@@ -467,6 +488,8 @@ TEST_F(RawPtrTest, ExtractAsDanglingFromDangling) {
                   .release_wrapped_ptr_cnt = 1,
                   .get_for_dereference_cnt = 0,
                   .wrapped_ptr_swap_cnt = 0,
+                  .wrap_raw_ptr_for_dup_cnt = 0,
+                  .get_for_duplication_cnt = 0,
               }),
               CountersMatch());
 

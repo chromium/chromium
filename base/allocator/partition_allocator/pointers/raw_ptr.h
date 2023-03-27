@@ -860,18 +860,13 @@ class PA_TRIVIAL_ABI PA_GSL_POINTER raw_ptr {
   // statement.
   PA_ALWAYS_INLINE constexpr MayBeDangling<T, Traits>
   ExtractAsDangling() noexcept {
-    if constexpr (raw_ptr_traits::Contains(Traits, RawPtrTraits::kMayDangle)) {
-      MayBeDangling<T, Traits> res(std::move(*this));
-      // Not all implementation clear the source pointer on move, so do it
-      // here just in case. Should be cheap.
-      operator=(nullptr);
-      return res;
-    } else {
-      T* ptr = GetForExtraction();
-      MayBeDangling<T, Traits> res(ptr);
-      operator=(nullptr);
-      return res;
-    }
+    MayBeDangling<T, Traits> res(std::move(*this));
+    // Not all implementation clear the source pointer on move. Furthermore,
+    // even for implemtantions that do, cross-kind conversions (that add
+    // kMayDangle) fall back to a copy, instead of move. So do it here just in
+    // case. Should be cheap.
+    operator=(nullptr);
+    return res;
   }
 
   // Comparison operators between raw_ptr and raw_ptr<U>/U*/std::nullptr_t.
