@@ -30,9 +30,13 @@
 
 #include "third_party/blink/public/web/web_form_control_element.h"
 
+#include "base/time/time.h"
+#include "third_party/blink/public/common/input/web_input_event.h"
+#include "third_party/blink/public/common/input/web_keyboard_event.h"
 #include "third_party/blink/public/mojom/input/focus_type.mojom-blink.h"
 #include "third_party/blink/renderer/core/dom/events/event.h"
 #include "third_party/blink/renderer/core/dom/node_computed_style.h"
+#include "third_party/blink/renderer/core/events/keyboard_event.h"
 #include "third_party/blink/renderer/core/html/forms/html_form_control_element.h"
 #include "third_party/blink/renderer/core/html/forms/html_form_element.h"
 #include "third_party/blink/renderer/core/html/forms/html_input_element.h"
@@ -40,6 +44,8 @@
 #include "third_party/blink/renderer/core/html/forms/html_select_menu_element.h"
 #include "third_party/blink/renderer/core/html/forms/html_text_area_element.h"
 #include "third_party/blink/renderer/core/input_type_names.h"
+#include "third_party/blink/renderer/platform/keyboard_codes.h"
+#include "ui/events/keycodes/dom/dom_key.h"
 
 #include "base/memory/scoped_refptr.h"
 
@@ -184,12 +190,33 @@ void WebFormControlElement::SetAutofillValue(const WebString& value,
   if (IsA<HTMLInputElement>(*private_) || IsA<HTMLTextAreaElement>(*private_)) {
     if (!Focused())
       DispatchFocusEvent();
-    Unwrap<Element>()->DispatchScopedEvent(
-        *Event::CreateBubble(event_type_names::kKeydown));
+
+    auto send_event = [local_dom_window =
+                           Unwrap<Element>()->GetDocument().domWindow(),
+                       this](WebInputEvent::Type event_type) {
+      WebKeyboardEvent web_event{event_type, WebInputEvent::kNoModifiers,
+                                 base::TimeTicks::Now()};
+      web_event.dom_key = ui::DomKey::UNIDENTIFIED;
+      web_event.dom_code = static_cast<int>(ui::DomKey::UNIDENTIFIED);
+      web_event.native_key_code = blink::VKEY_UNKNOWN;
+      web_event.windows_key_code = blink::VKEY_UNKNOWN;
+      web_event.text[0] = blink::VKEY_UNKNOWN;
+      web_event.unmodified_text[0] = blink::VKEY_UNKNOWN;
+
+      KeyboardEvent* event = KeyboardEvent::Create(web_event, local_dom_window);
+      Unwrap<Element>()->DispatchScopedEvent(*event);
+    };
+
+    // Simulate key events in case the website checks via JS that a keyboard
+    // interaction took place.
+    send_event(WebInputEvent::Type::kRawKeyDown);
+
     Unwrap<TextControlElement>()->SetAutofillValue(
         value, value.IsEmpty() ? WebAutofillState::kNotFilled : autofill_state);
-    Unwrap<Element>()->DispatchScopedEvent(
-        *Event::CreateBubble(event_type_names::kKeyup));
+
+    send_event(WebInputEvent::Type::kChar);
+    send_event(WebInputEvent::Type::kKeyUp);
+
     if (!Focused())
       DispatchBlurEvent();
   } else if (auto* select = ::blink::DynamicTo<HTMLSelectElement>(*private_)) {

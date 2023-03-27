@@ -79,6 +79,7 @@ blink_core_tests_exported = [
   "web_document_test.cc",
   "web_drag_data_test.cc",
   "web_element_test.cc",
+  "web_form_control_element_test.cc",
   "web_frame_serializer_sanitization_test.cc",
   "web_frame_serializer_test.cc",
   "web_frame_serializer_test_helper.cc",
