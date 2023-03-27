@@ -2821,7 +2821,7 @@ Android アプリの場合はパッケージ名（<ph name="DEFAULT_HANDLERS_FOR
 <translation id="3717409415785131989">このポリシーを有効に設定するか未設定のままにした場合、<ph name="PRODUCT_NAME" /> で新しいダウンロード バブル UI が表示されます。
 
       このポリシーを無効に設定した場合、<ph name="PRODUCT_NAME" /> では引き続き従来のダウンロード シェルフ UI が表示されます。</translation>
-<translation id="3719826155360621982">トップページ</translation>
+<translation id="3719826155360621982">ホームページ</translation>
 <translation id="372668389978450673">このポリシーを true に設定するか未設定のままにした場合、<ph name="PRODUCT_NAME" /> と <ph name="LACROS_NAME" /> はユーザー マネージャーからの新しいユーザーの追加を許可します。
 
       このポリシーを false に設定した場合、<ph name="PRODUCT_NAME" /> と <ph name="LACROS_NAME" /> はユーザー マネージャーからの新しいユーザーの追加を許可しません。

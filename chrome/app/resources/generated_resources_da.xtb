@@ -1817,7 +1817,7 @@ Du kan administrere indstillingerne for denne konto ved at installere Family Lin
 <translation id="2550596535588364872">Vil du tillade, at <ph name="EXTENSION_NAME" /> åbner <ph name="FILE_NAME" />?</translation>
 <translation id="2552230905527343195">Den aktuelle fane kan ikke tilføjes</translation>
 <translation id="2552966063069741410">Tidszone</translation>
-<translation id="2553290675914258594">Bekræftet adgang</translation>
+<translation id="2553290675914258594">Verificeret adgang</translation>
 <translation id="2553340429761841190"><ph name="PRODUCT_NAME" /> kunne ikke oprette forbindelse til <ph name="NETWORK_ID" />. Vælg et andet netværk, eller prøv igen.</translation>
 <translation id="2553440850688409052">Skjul dette plugin</translation>
 <translation id="2554553592469060349">Den valgte fil er for stor (maksimal størrelse: 3 MB).</translation>

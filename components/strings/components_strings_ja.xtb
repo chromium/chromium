@@ -1383,7 +1383,7 @@
 <translation id="437040971055499437">セキュリティ イベントの発生</translation>
 <translation id="4371591986692297148">無効</translation>
 <translation id="4372948949327679948"><ph name="VALUE_TYPE" /> 値が想定されます。</translation>
-<translation id="4375864595697821259">Chrome でユーザーの興味 / 関心を推測する際に選択対象とするトピックのプールに含める場合は、トピックをもう一度追加します</translation>
+<translation id="4375864595697821259">あなたの興味 / 関心を推測する際に Chrome が使用しても構わないトピックについては、プールに戻します</translation>
 <translation id="4377125064752653719"><ph name="DOMAIN" /> にアクセスしようとしましたが、サーバーから提示された証明書は発行元により取り消されています。これは、サーバーから提示されたセキュリティ認証情報が信頼できないことを示しており、悪意のあるユーザーと通信しようとしている可能性があります。</translation>
 <translation id="4378154925671717803">電話</translation>
 <translation id="4384395682990721132">A4x3</translation>

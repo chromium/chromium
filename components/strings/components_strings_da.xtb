@@ -2427,7 +2427,7 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="7050187094878475250">Du forsøgte at gå til <ph name="DOMAIN" />, men serveren præsenterede et certifikat, hvis gyldighedsperiode er for lang til at være pålidelig.</translation>
 <translation id="705310974202322020">{NUM_CARDS,plural, =1{Kortet kan ikke tilføjes lige nu}one{Kortet kan ikke tilføjes lige nu}other{Kortene kan ikke tilføjes lige nu}}</translation>
 <translation id="7053983685419859001">Bloker</translation>
-<translation id="7058163556978339998"><ph name="BROWSER" /> bekræftede, at <ph name="ISSUER" /> har udstedt dette websites certifikat.</translation>
+<translation id="7058163556978339998"><ph name="BROWSER" /> verificerede, at <ph name="ISSUER" /> har udstedt dette websites certifikat.</translation>
 <translation id="7058774143982824355">Parsingtjeneste til CSV-adgangskode</translation>
 <translation id="7061777300866737982">Sikkerhed i hjemmet</translation>
 <translation id="7062635574500127092">Grønblå</translation>
