@@ -107,22 +107,44 @@ const SimpleFontData* FontFallbackList::DeterminePrimarySimpleFontDataCore(
     const FontDescription& font_description) {
   bool should_load_custom_font = true;
 
+  recordreplay::Assert(
+    "[RUN-1219-1597] FontFallbackList::DeterminePrimarySimpleFontDataCore #0"
+  );
   for (unsigned font_index = 0;; ++font_index) {
+    recordreplay::Assert(
+      "[RUN-1219-1597] FontFallbackList::DeterminePrimarySimpleFontDataCore #1 fontidx=%u",
+      font_index
+    );
     const FontData* font_data = FontDataAt(font_description, font_index);
     if (!font_data) {
       // All fonts are custom fonts and are loading. Return the first FontData.
       font_data = FontDataAt(font_description, 0);
-      if (font_data)
+      if (font_data) {
+        recordreplay::Assert(
+          "[RUN-1219-1597] FontFallbackList::DeterminePrimarySimpleFontDataCore #2 fontidx=%u gotFontData",
+          font_index
+        );
         return font_data->FontDataForCharacter(kSpaceCharacter);
+      }
 
       FontCache& font_cache = FontCache::Get();
       SimpleFontData* last_resort_fallback =
           font_cache.GetLastResortFallbackFont(font_description).get();
       DCHECK(last_resort_fallback);
+      recordreplay::Assert(
+        "[RUN-1219-1597] FontFallbackList::DeterminePrimarySimpleFontDataCore #3 fontidx=%u lastResortFb=%d",
+        font_index,
+        !!last_resort_fallback
+      );
       return last_resort_fallback;
     }
 
     const auto* segmented = DynamicTo<SegmentedFontData>(font_data);
+    recordreplay::Assert(
+      "[RUN-1219-1597] FontFallbackList::DeterminePrimarySimpleFontDataCore #4 fontidx=%u segmented=%d",
+      font_index,
+      !!segmented
+    );
     if (segmented && !segmented->ContainsCharacter(kSpaceCharacter))
       continue;
 
@@ -133,15 +155,27 @@ const SimpleFontData* FontFallbackList::DeterminePrimarySimpleFontDataCore(
     // When a custom font is loading, we should use the correct fallback font to
     // layout the text.  Here skip the temporary font for the loading custom
     // font which may not act as the correct fallback font.
-    if (!font_data_for_space->IsLoadingFallback())
+    if (!font_data_for_space->IsLoadingFallback()) {
+      recordreplay::Assert(
+        "[RUN-1219-1597] FontFallbackList::DeterminePrimarySimpleFontDataCore #5 fontidx=%u fontDataForSpace=%d",
+        font_index,
+        !!font_data_for_space
+      );
       return font_data_for_space;
+    }
 
     if (segmented) {
       for (unsigned i = 0; i < segmented->NumFaces(); i++) {
         const SimpleFontData* range_font_data =
             segmented->FaceAt(i)->FontData();
-        if (!range_font_data->IsLoadingFallback())
+        if (!range_font_data->IsLoadingFallback()) {
+          recordreplay::Assert(
+            "[RUN-1219-1597] FontFallbackList::DeterminePrimarySimpleFontDataCore #6 fontidx=%u rangeFontData=%d",
+            font_index,
+            !!range_font_data
+          );
           return range_font_data;
+        }
       }
       if (font_data->IsLoading())
         should_load_custom_font = false;
