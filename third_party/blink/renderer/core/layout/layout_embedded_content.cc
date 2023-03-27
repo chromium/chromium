@@ -316,8 +316,6 @@ void LayoutEmbeddedContent::StyleDidChange(StyleDifference diff,
 void LayoutEmbeddedContent::UpdateLayout() {
   NOT_DESTROYED();
   DCHECK(NeedsLayout());
-  if (!RuntimeEnabledFeatures::LayoutNGUnifyUpdateAfterLayoutEnabled())
-    UpdateAfterLayout();
   ClearNeedsLayout();
 }
 

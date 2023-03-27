@@ -1273,23 +1273,6 @@ void LayoutBox::UpdateAfterLayout() {
     Layer()->UpdateSizeAndScrollingAfterLayout();
   }
 
-  // When we've finished layout, if we aren't a LayoutNG object, we need to
-  // reset our cached layout result. LayoutNG inside of
-  // |NGBlockNode::RunOldLayout| will call |LayoutBox::SetCachedLayoutResult|
-  // with a new synthesized layout result, if we are still being laid out by an
-  // NG container.
-  //
-  // We also want to make sure that if our entrance point into layout changes,
-  // e.g. an OOF-positioned object is laid out by an NG containing block, then
-  // Legacy, then NG again, NG won't use a stale layout result.
-  if (!RuntimeEnabledFeatures::LayoutNGUnifyUpdateAfterLayoutEnabled() &&
-      !IsLayoutNGObject() &&
-      // When side effects are disabled, it's not possible to disable side
-      // effects completely for |RunLegacyLayout|, but at least keep the
-      // fragment tree unaffected.
-      !NGDisableSideEffectsScope::IsDisabled())
-    ClearLayoutResults();
-
   GetFrame()->GetInputMethodController().DidUpdateLayout(*this);
   if (IsPositioned())
     GetFrame()->GetInputMethodController().DidLayoutSubtree(*this);

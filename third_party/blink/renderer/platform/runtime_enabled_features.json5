@@ -1986,12 +1986,6 @@
       base_feature: "none",
     },
     {
-      // Merge UpdateAfterLayout() calls for LayoutReplaced into one in
-      // CopyFragmentDataToLayoutBox(). crbug.com/1353190
-      name: "LayoutNGUnifyUpdateAfterLayout",
-      status: "stable",
-    },
-    {
       name: "LazyFrameLoading",
       public: true,
       status: "stable",

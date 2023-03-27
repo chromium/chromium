@@ -135,9 +135,6 @@ void LayoutReplaced::UpdateLayout() {
   ClearSelfNeedsLayoutOverflowRecalc();
   ClearChildNeedsLayoutOverflowRecalc();
 
-  if (!RuntimeEnabledFeatures::LayoutNGUnifyUpdateAfterLayoutEnabled())
-    UpdateAfterLayout();
-
   ClearNeedsLayout();
 
   if (ReplacedContentRectFrom(SizeFromNG(), BorderPaddingFromNG()) !=

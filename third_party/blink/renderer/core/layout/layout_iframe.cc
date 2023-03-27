@@ -53,9 +53,6 @@ void LayoutIFrame::UpdateLayout() {
   }
 
   ClearLayoutOverflow();
-  if (!RuntimeEnabledFeatures::LayoutNGUnifyUpdateAfterLayoutEnabled())
-    UpdateAfterLayout();
-
   ClearNeedsLayout();
 }
 
