@@ -1921,8 +1921,15 @@ TEST_P(HoldingSpaceKeyedServiceWithExperimentalFeatureTest,
 // `kMaxFileAge`, when the predictability feature is off.
 // Verifies that files restored from persistence are restored, regardless of
 // `kMaxFileAge`, when the predictability feature is on.
+// TODO(crbug.com/1427927): Flaky on Linux.
+#if BUILDFLAG(IS_LINUX)
+#define MAYBE_RemoveOlderFilesFromPersistence \
+  DISABLED_RemoveOlderFilesFromPersistence
+#else
+#define MAYBE_RemoveOlderFilesFromPersistence RemoveOlderFilesFromPersistence
+#endif
 TEST_P(HoldingSpaceKeyedServiceWithExperimentalFeatureTest,
-       RemoveOlderFilesFromPersistence) {
+       MAYBE_RemoveOlderFilesFromPersistence) {
   // Create file system mount point.
   std::unique_ptr<ScopedTestMountPoint> downloads_mount =
       ScopedTestMountPoint::CreateAndMountDownloads(GetProfile());
