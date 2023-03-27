@@ -100,7 +100,6 @@ class ASH_EXPORT LoginScreenController : public LoginScreen,
   void ShowParentAccessHelpApp();
   void ShowLockScreenNotificationSettings();
   void FocusOobeDialog();
-  void NotifyUserActivity();
 
   // Enable or disable authentication for the debug overlay.
   enum class ForceFailAuth { kOff, kImmediate, kDelayed };

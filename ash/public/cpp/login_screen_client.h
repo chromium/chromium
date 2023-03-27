@@ -162,9 +162,6 @@ class ASH_PUBLIC_EXPORT LoginScreenClient {
   // Called when the lock screen is shown.
   virtual void OnLoginScreenShown() = 0;
 
-  // Used by Ash to signal that user activity occurred on the login screen.
-  virtual void OnUserActivity() = 0;
-
   // Get login screen widget. Currently used to set proper accessibility
   // navigation.
   virtual views::Widget* GetLoginWindowWidget() = 0;

@@ -17,6 +17,7 @@
 #include "ash/public/cpp/login_screen.h"
 #include "ash/public/cpp/notification_utils.h"
 #include "base/barrier_closure.h"
+#include "base/check_is_test.h"
 #include "base/command_line.h"
 #include "base/compiler_specific.h"
 #include "base/functional/bind.h"
@@ -127,6 +128,8 @@
 #include "services/network/public/mojom/network_context.mojom.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/user_activity/user_activity_detector.h"
+#include "ui/base/user_activity/user_activity_observer.h"
 #include "ui/message_center/public/cpp/notification.h"
 #include "ui/message_center/public/cpp/notification_delegate.h"
 #include "ui/views/widget/widget.h"
@@ -383,6 +386,12 @@ ExistingUserController::ExistingUserController()
                           base::Unretained(this)));
 
   observed_user_manager_.Observe(user_manager::UserManager::Get());
+
+  if (ui::UserActivityDetector::Get()) {
+    ui::UserActivityDetector::Get()->AddObserver(this);
+  } else {
+    CHECK_IS_TEST();
+  }
 }
 
 void ExistingUserController::Init(const user_manager::UserList& users) {
@@ -495,7 +504,12 @@ void ExistingUserController::Observe(
 ////////////////////////////////////////////////////////////////////////////////
 // ExistingUserController, private:
 
-ExistingUserController::~ExistingUserController() = default;
+ExistingUserController::~ExistingUserController() {
+  ui::UserActivityDetector* activity_detector = ui::UserActivityDetector::Get();
+  if (activity_detector) {
+    activity_detector->RemoveObserver(this);
+  }
+}
 
 ////////////////////////////////////////////////////////////////////////////////
 // ExistingUserController, LoginDisplay::Delegate implementation:
@@ -1352,7 +1366,7 @@ void ExistingUserController::ConfigureAutoLogin() {
   }
 }
 
-void ExistingUserController::ResetAutoLoginTimer() {
+void ExistingUserController::OnUserActivity(const ui::Event* event) {
   // Only restart the auto-login timer if it's already running.
   if (auto_login_timer_ && auto_login_timer_->IsRunning()) {
     StopAutoLoginTimer();

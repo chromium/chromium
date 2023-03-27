@@ -202,7 +202,7 @@ TEST_F(ExistingUserControllerAutoLoginTest, ResetAutoLoginTimer) {
   EXPECT_FALSE(auto_login_timer());
 
   // When the timer isn't running, nothing should happen.
-  existing_user_controller()->ResetAutoLoginTimer();
+  existing_user_controller()->OnUserActivity(/*event=*/nullptr);
   EXPECT_FALSE(auto_login_timer());
 
   // Start the timer.
@@ -216,7 +216,7 @@ TEST_F(ExistingUserControllerAutoLoginTest, ResetAutoLoginTimer) {
   // User activity should restart the timer, so check to see that the
   // timer delay was modified.
   set_auto_login_delay(kAutoLoginDelay1);
-  existing_user_controller()->ResetAutoLoginTimer();
+  existing_user_controller()->OnUserActivity(/*event=*/nullptr);
   ASSERT_TRUE(auto_login_timer());
   EXPECT_TRUE(auto_login_timer()->IsRunning());
   EXPECT_EQ(auto_login_timer()->GetCurrentDelay().InMilliseconds(),

@@ -375,14 +375,6 @@ void LoginScreenClientImpl::SetPublicSessionKeyboardLayout(
       account_id, locale, result);
 }
 
-void LoginScreenClientImpl::OnUserActivity() {
-  if (ash::LoginDisplayHost::default_host()) {
-    ash::LoginDisplayHost::default_host()
-        ->GetExistingUserController()
-        ->ResetAutoLoginTimer();
-  }
-}
-
 views::Widget* LoginScreenClientImpl::GetLoginWindowWidget() {
   if (ash::LoginDisplayHost::default_host()) {
     return ash::LoginDisplayHost::default_host()->GetLoginWindowWidget();

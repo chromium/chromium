@@ -12,38 +12,19 @@ namespace ash {
 
 // LoginDisplayWebUI, public: --------------------------------------------------
 
-LoginDisplayWebUI::~LoginDisplayWebUI() {
-  ui::UserActivityDetector* activity_detector = ui::UserActivityDetector::Get();
-  if (activity_detector && activity_detector->HasObserver(this))
-    activity_detector->RemoveObserver(this);
-}
+LoginDisplayWebUI::~LoginDisplayWebUI() = default;
 
 // LoginDisplay implementation: ------------------------------------------------
 
 LoginDisplayWebUI::LoginDisplayWebUI() = default;
 
 void LoginDisplayWebUI::Init(const user_manager::UserList& users,
-                             bool show_guest) {
-  ui::UserActivityDetector* activity_detector = ui::UserActivityDetector::Get();
-  if (activity_detector && !activity_detector->HasObserver(this))
-    activity_detector->AddObserver(this);
-}
-
-// ---- Common methods
-
-// ---- Gaia screen methods
-
-// ---- Not yet classified methods
+                             bool show_guest) {}
 
 void LoginDisplayWebUI::SetUIEnabled(bool is_enabled) {
   LoginDisplayHost* host = LoginDisplayHost::default_host();
   if (host && host->GetWebUILoginView())
     host->GetWebUILoginView()->SetUIEnabled(is_enabled);
-}
-
-void LoginDisplayWebUI::OnUserActivity(const ui::Event* event) {
-  if (delegate_)
-    delegate_->ResetAutoLoginTimer();
 }
 
 }  // namespace ash

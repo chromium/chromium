@@ -26,9 +26,6 @@ class LoginDisplay {
     // Called when the user requests kiosk enable screen.
     virtual void OnStartKioskEnableScreen() = 0;
 
-    // Restarts the auto-login timer if it is running.
-    virtual void ResetAutoLoginTimer() = 0;
-
    protected:
     virtual ~Delegate();
   };

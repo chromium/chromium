@@ -128,7 +128,6 @@ class LoginScreenClientImpl : public ash::LoginScreenClient {
   void OnFocusLeavingSystemTray(bool reverse) override;
   void OnSystemTrayBubbleShown() override;
   void OnLoginScreenShown() override;
-  void OnUserActivity() override;
   views::Widget* GetLoginWindowWidget() override;
 
  private:
