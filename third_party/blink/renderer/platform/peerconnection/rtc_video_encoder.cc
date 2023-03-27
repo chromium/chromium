@@ -259,6 +259,13 @@ struct CrossThreadCopier<FrameChunk>
 };
 
 template <>
+struct CrossThreadCopier<media::VideoEncodeAccelerator::Config>
+    : public CrossThreadCopierPassThrough<
+          media::VideoEncodeAccelerator::Config> {
+  STATIC_ONLY(CrossThreadCopier);
+};
+
+template <>
 struct CrossThreadCopier<SignaledValue> {
   static SignaledValue Copy(SignaledValue sv) {
     return sv;  // this is a move in fact.
@@ -558,14 +565,7 @@ class RTCVideoEncoder::Impl : public media::VideoEncodeAccelerator::Client {
   // RTCVideoEncoder expects to be able to call this function synchronously from
   // its own thread, hence the |init_event| argument.
   void CreateAndInitializeVEA(
-      const gfx::Size& input_visible_size,
-      uint32_t bitrate,
-      media::VideoCodecProfile profile,
-      bool is_constrained_h264,
-      const std::vector<media::VideoEncodeAccelerator::Config::SpatialLayer>&
-          spatial_layers,
-      media::VideoEncodeAccelerator::Config::InterLayerPredMode
-          inter_layer_pred,
+      const media::VideoEncodeAccelerator::Config& vea_config,
       SignaledValue init_event);
 
   // Enqueue a frame from WebRTC for encoding.
@@ -779,13 +779,7 @@ RTCVideoEncoder::Impl::Impl(
 }
 
 void RTCVideoEncoder::Impl::CreateAndInitializeVEA(
-    const gfx::Size& input_visible_size,
-    uint32_t bitrate,
-    media::VideoCodecProfile profile,
-    bool is_constrained_h264,
-    const std::vector<media::VideoEncodeAccelerator::Config::SpatialLayer>&
-        spatial_layers,
-    media::VideoEncodeAccelerator::Config::InterLayerPredMode inter_layer_pred,
+    const media::VideoEncodeAccelerator::Config& vea_config,
     SignaledValue init_event) {
   TRACE_EVENT0("webrtc", "RTCVideoEncoder::Impl::CreateAndInitializeVEA");
   DVLOG(3) << __func__;
@@ -795,78 +789,34 @@ void RTCVideoEncoder::Impl::CreateAndInitializeVEA(
   async_init_event_ = ScopedSignaledValue(std::move(init_event));
   async_encode_event_.reset();
 
-  // Check for overflow converting bitrate (kilobits/sec) to bits/sec.
-  uint32_t bitrate_bps;
-  if (!ConvertKbpsToBps(bitrate, &bitrate_bps)) {
-    LogAndNotifyError(FROM_HERE, "Overflow converting bitrate from kbps to bps",
-                      media::VideoEncodeAccelerator::kInvalidArgumentError);
-    return;
-  }
-
-  // Check that |profile| supports |input_visible_size|.
-  if (base::FeatureList::IsEnabled(features::kWebRtcUseMinMaxVEADimensions)) {
-    const auto vea_supported_profiles =
-        gpu_factories_->GetVideoEncodeAcceleratorSupportedProfiles().value_or(
-            media::VideoEncodeAccelerator::SupportedProfiles());
-
-    for (const auto& vea_profile : vea_supported_profiles) {
-      if (vea_profile.profile == profile &&
-          (input_visible_size.width() > vea_profile.max_resolution.width() ||
-           input_visible_size.height() > vea_profile.max_resolution.height() ||
-           input_visible_size.width() < vea_profile.min_resolution.width() ||
-           input_visible_size.height() < vea_profile.min_resolution.height())) {
-        LogAndNotifyError(
-            FROM_HERE,
-            base::StringPrintf(
-                "Requested dimensions (%s) beyond accelerator limits (%s - %s)",
-                input_visible_size.ToString().c_str(),
-                vea_profile.min_resolution.ToString().c_str(),
-                vea_profile.max_resolution.ToString().c_str())
-                .c_str(),
-            media::VideoEncodeAccelerator::kInvalidArgumentError);
-        return;
-      }
-    }
-  }
-
   video_encoder_ = gpu_factories_->CreateVideoEncodeAccelerator();
   if (!video_encoder_) {
     LogAndNotifyError(FROM_HERE, "Error creating VideoEncodeAccelerator",
                       media::VideoEncodeAccelerator::kPlatformFailureError);
     return;
   }
-  input_visible_size_ = input_visible_size;
-  media::VideoPixelFormat pixel_format = media::PIXEL_FORMAT_I420;
-  auto storage_type =
-      media::VideoEncodeAccelerator::Config::StorageType::kShmem;
-  if (IsZeroCopyEnabled(video_content_type_)) {
-    // Use import mode for camera when GpuMemoryBuffer-based video capture is
-    // enabled.
-    pixel_format = media::PIXEL_FORMAT_NV12;
-    storage_type =
-        media::VideoEncodeAccelerator::Config::StorageType::kGpuMemoryBuffer;
-    use_native_input_ = true;
 
+  input_visible_size_ = vea_config.input_visible_size;
+  // The valid config is NV12+kGpuMemoryBuffer and I420+kShmem.
+  CHECK_EQ(
+      vea_config.input_format == media::PIXEL_FORMAT_NV12,
+      vea_config.storage_type ==
+          media::VideoEncodeAccelerator::Config::StorageType::kGpuMemoryBuffer);
+  if (vea_config.storage_type ==
+      media::VideoEncodeAccelerator::Config::StorageType::kGpuMemoryBuffer) {
+    use_native_input_ = true;
     preferred_pixel_formats_ = {webrtc::VideoFrameBuffer::Type::kNV12};
   }
-  media::VideoEncodeAccelerator::Config config(
-      pixel_format, input_visible_size_, profile,
-      media::Bitrate::ConstantBitrate(bitrate_bps), absl::nullopt,
-      absl::nullopt, absl::nullopt, is_constrained_h264, storage_type,
-      video_content_type_ == webrtc::VideoContentType::SCREENSHARE
-          ? media::VideoEncodeAccelerator::Config::ContentType::kDisplay
-          : media::VideoEncodeAccelerator::Config::ContentType::kCamera,
-      spatial_layers, inter_layer_pred);
 
   // When we don't have built in H264 software encoding, allow usage of any
   // software encoders provided by the platform.
 #if !BUILDFLAG(ENABLE_OPENH264) && BUILDFLAG(RTC_USE_H264)
   if (profile >= media::H264PROFILE_MIN && profile <= media::H264PROFILE_MAX) {
-    config.required_encoder_type =
+    vea_config.required_encoder_type =
         media::VideoEncodeAccelerator::Config::EncoderType::kNoPreference;
   }
 #endif
-  if (!video_encoder_->Initialize(config, this,
+  if (!video_encoder_->Initialize(vea_config, this,
                                   std::make_unique<media::NullMediaLog>())) {
     LogAndNotifyError(FROM_HERE, "Error initializing video_encoder",
                       media::VideoEncodeAccelerator::kInvalidArgumentError);
@@ -874,10 +824,12 @@ void RTCVideoEncoder::Impl::CreateAndInitializeVEA(
   }
 
   current_spatial_layer_resolutions_.clear();
-  for (const auto& layer : spatial_layers)
+  for (const auto& layer : vea_config.spatial_layers) {
     current_spatial_layer_resolutions_.emplace_back(layer.width, layer.height);
-  highest_active_spatial_index_ =
-      spatial_layers.empty() ? 0u : spatial_layers.size() - 1;
+  }
+  highest_active_spatial_index_ = vea_config.spatial_layers.empty()
+                                      ? 0u
+                                      : vea_config.spatial_layers.size() - 1;
 
   // RequireBitstreamBuffers or NotifyError will be called and the waiter will
   // be signaled.
@@ -1741,6 +1693,54 @@ int32_t RTCVideoEncoder::InitEncode(
 
   has_error_ = false;
 
+  uint32_t bitrate_bps = 0;
+  // Check for overflow converting bitrate (kilobits/sec) to bits/sec.
+  if (!ConvertKbpsToBps(codec_settings->startBitrate, &bitrate_bps)) {
+    DLOG(ERROR) << "Overflow converting bitrate from kbps to bps: bps="
+                << codec_settings->startBitrate;
+    return WEBRTC_VIDEO_CODEC_ERR_PARAMETER;
+  }
+
+  std::vector<media::VideoEncodeAccelerator::Config::SpatialLayer>
+      spatial_layers;
+  auto inter_layer_pred =
+      media::VideoEncodeAccelerator::Config::InterLayerPredMode::kOff;
+  if (!CreateSpatialLayersConfig(*codec_settings, &spatial_layers,
+                                 &inter_layer_pred)) {
+    return WEBRTC_VIDEO_CODEC_FALLBACK_SOFTWARE;
+  }
+
+  gfx::Size input_visible_size(codec_settings->width, codec_settings->height);
+  // Check that |profile| supports |input_visible_size|.
+  if (base::FeatureList::IsEnabled(features::kWebRtcUseMinMaxVEADimensions)) {
+    const auto vea_supported_profiles =
+        gpu_factories_->GetVideoEncodeAcceleratorSupportedProfiles().value_or(
+            media::VideoEncodeAccelerator::SupportedProfiles());
+
+    for (const auto& vea_profile : vea_supported_profiles) {
+      if (vea_profile.profile == profile_ &&
+          (input_visible_size.width() > vea_profile.max_resolution.width() ||
+           input_visible_size.height() > vea_profile.max_resolution.height() ||
+           input_visible_size.width() < vea_profile.min_resolution.width() ||
+           input_visible_size.height() < vea_profile.min_resolution.height())) {
+        DLOG(ERROR) << "Requested dimensions (" << input_visible_size.ToString()
+                    << ") beyond accelerator limits ("
+                    << vea_profile.min_resolution.ToString() << " - "
+                    << vea_profile.max_resolution.ToString() << ")";
+        return WEBRTC_VIDEO_CODEC_FALLBACK_SOFTWARE;
+      }
+    }
+  }
+
+  auto webrtc_content_type = webrtc::VideoContentType::UNSPECIFIED;
+  auto vea_content_type =
+      media::VideoEncodeAccelerator::Config::ContentType::kCamera;
+  if (codec_settings->mode == webrtc::VideoCodecMode::kScreensharing) {
+    webrtc_content_type = webrtc::VideoContentType::SCREENSHARE;
+    vea_content_type =
+        media::VideoEncodeAccelerator::Config::ContentType::kDisplay;
+  }
+
   // base::Unretained(this) is safe because |impl_| is synchronously destroyed
   // in Release() so that |impl_| does not call UpdateEncoderInfo() after this
   // is destructed.
@@ -1753,24 +1753,26 @@ int32_t RTCVideoEncoder::InitEncode(
 
   impl_ = std::make_unique<Impl>(
       gpu_factories_, ProfileToWebRtcVideoCodecType(profile_),
-      (codec_settings->mode == webrtc::VideoCodecMode::kScreensharing)
-          ? webrtc::VideoContentType::SCREENSHARE
-          : webrtc::VideoContentType::UNSPECIFIED,
-      update_encoder_info_callback, execute_software_fallback, weak_impl_);
+      webrtc_content_type, update_encoder_info_callback,
+      execute_software_fallback, weak_impl_);
 
-  std::vector<media::VideoEncodeAccelerator::Config::SpatialLayer>
-      spatial_layers;
-  auto inter_layer_pred =
-      media::VideoEncodeAccelerator::Config::InterLayerPredMode::kOff;
-  if (!CreateSpatialLayersConfig(*codec_settings, &spatial_layers,
-                                 &inter_layer_pred)) {
-    return WEBRTC_VIDEO_CODEC_FALLBACK_SOFTWARE;
+  media::VideoPixelFormat pixel_format = media::PIXEL_FORMAT_I420;
+  auto storage_type =
+      media::VideoEncodeAccelerator::Config::StorageType::kShmem;
+  if (IsZeroCopyEnabled(webrtc_content_type)) {
+    pixel_format = media::PIXEL_FORMAT_NV12;
+    storage_type =
+        media::VideoEncodeAccelerator::Config::StorageType::kGpuMemoryBuffer;
   }
 
-  TRACE_EVENT2(
-      "webrtc", "RTCVideoEncoder::InitEncode", "profile",
-      media::GetProfileName(profile_), "resolution",
-      gfx::Size(codec_settings->width, codec_settings->height).ToString());
+  media::VideoEncodeAccelerator::Config vea_config(
+      pixel_format, input_visible_size, profile_,
+      media::Bitrate::ConstantBitrate(bitrate_bps),
+      /*initial_framerate=*/absl::nullopt,
+      /*gop_length=*/absl::nullopt,
+      /*h264_output_level=*/absl::nullopt, is_constrained_h264_, storage_type,
+      vea_content_type, spatial_layers, inter_layer_pred);
+
   // This wait is necessary because this task is completed in GPU process
   // asynchronously but WebRTC API is synchronous.
   base::ScopedAllowBaseSyncPrimitivesOutsideBlockingScope allow_wait;
@@ -1782,11 +1784,8 @@ int32_t RTCVideoEncoder::InitEncode(
       *gpu_task_runner_.get(), FROM_HERE,
       CrossThreadBindOnce(
           &RTCVideoEncoder::Impl::CreateAndInitializeVEA, weak_impl_,
-          gfx::Size(codec_settings->width, codec_settings->height),
-          codec_settings->startBitrate, profile_, is_constrained_h264_,
-          spatial_layers, inter_layer_pred,
+          vea_config,
           SignaledValue(&initialization_waiter, &initialization_retval)));
-
   // webrtc::VideoEncoder expects this call to be synchronous.
   initialization_waiter.Wait();
   RecordInitEncodeUMA(initialization_retval, profile_);
