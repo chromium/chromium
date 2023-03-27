@@ -340,10 +340,11 @@ def main():
     print(RELEASE_VERSION)
     return 0
 
+  output_dir = LLVM_BUILD_DIR
   if args.output_dir:
-    global LLVM_BUILD_DIR, STAMP_FILE
-    LLVM_BUILD_DIR = os.path.abspath(args.output_dir)
-    STAMP_FILE = os.path.join(LLVM_BUILD_DIR, 'cr_build_revision')
+    global STAMP_FILE
+    output_dir = os.path.abspath(args.output_dir)
+    STAMP_FILE = os.path.join(output_dir, 'cr_build_revision')
 
   if args.print_revision:
     if args.llvm_force_head_revision:
@@ -368,7 +369,7 @@ def main():
     print('--llvm-force-head-revision can only be used for --print-revision')
     return 1
 
-  return UpdatePackage(args.package, args.host_os)
+  return UpdatePackage(args.package, args.host_os, output_dir)
 
 
 if __name__ == '__main__':
