@@ -65,11 +65,11 @@ void PasswordSyncControllerDelegateAndroid::OnSyncStarting(
   // we either couldn't obtain sync status before OnSyncStarting was called, or
   // sync was already active and this is called on browser start up. In either
   // case we shouldn't react.
-  // TODO(crbug.com/1260837): Record whether OnSyncStarting is called before
+  // TODO(crbug.com/1312392): Record whether OnSyncStarting is called before
   // |is_sync_enabled_| holds value.
   if (is_sync_enabled_.has_value() &&
       is_sync_enabled_.value() == IsSyncEnabled(false)) {
-    // TODO(crbug.com/1260837): Sync was enabled. Move passwords from local
+    // TODO(crbug.com/1312392): Sync was enabled. Move passwords from local
     // storage to syncing storage.
     NOTIMPLEMENTED();
   }
@@ -99,7 +99,7 @@ void PasswordSyncControllerDelegateAndroid::OnSyncStopping(
       // sync data in the dashboard (birthday reset) or, at least in theory, the
       // sync server reporting that all sync metadata is obsolete (i.e.
       // CLIENT_DATA_OBSOLETE in the sync protocol).
-      // TODO(crbug.com/1260837): Sync was disabled. Move passwords from syncing
+      // TODO(crbug.com/1312392): Sync was disabled. Move passwords from syncing
       // storage to local storage.
       NOTIMPLEMENTED();
       is_sync_enabled_ = IsSyncEnabled(false);
