@@ -181,7 +181,7 @@ TEST(DrawPolygonConstructionTest, SimpleNormal) {
   EXPECT_NORMAL(polygon_i, 0.0f, 0.0f, 1.0f);
 }
 
-TEST(DrawPolygonConstructionTest, DISABLED_NormalInvertXY) {
+TEST(DrawPolygonConstructionTest, NormalInvertXY) {
   gfx::RectF src(-0.1f, -10.0f, 0.2f, 20.0f);
 
   auto transform =
@@ -191,7 +191,7 @@ TEST(DrawPolygonConstructionTest, DISABLED_NormalInvertXY) {
   EXPECT_NORMAL(polygon_a, 0.0f, 0.0f, 1.0f);
 }
 
-TEST(DrawPolygonConstructionTest, DISABLED_NormalInvertXZ) {
+TEST(DrawPolygonConstructionTest, NormalInvertXZ) {
   gfx::RectF src(-0.1f, -10.0f, 0.2f, 20.0f);
 
   auto transform =
@@ -201,7 +201,7 @@ TEST(DrawPolygonConstructionTest, DISABLED_NormalInvertXZ) {
   EXPECT_NORMAL(polygon_b, 1.0f, 0.0f, 0.0f);
 }
 
-TEST(DrawPolygonConstructionTest, DISABLED_NormalInvertYZ) {
+TEST(DrawPolygonConstructionTest, NormalInvertYZ) {
   gfx::RectF src(-0.1f, -10.0f, 0.2f, 20.0f);
 
   auto transform =
