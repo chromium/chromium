@@ -542,8 +542,8 @@ IN_PROC_BROWSER_TEST_F(LockscreenWebUiTest, MAYBE_ShowNetworkDialog) {
   reauth_dialog_helper->ExpectVerifyAccountScreenHidden();
 }
 
-// TODO(crbug.com/1414002): Flaky on ChromeOS MSAN.
-#if defined(MEMORY_SANITIZER)
+// TODO(crbug.com/1414002): Flaky on ChromeOS MSAN and linux-chromeos-rel.
+#if defined(MEMORY_SANITIZER) || BUILDFLAG(IS_CHROMEOS)
 #define MAYBE_TriggerDialogOnNetworkOff DISABLED_TriggerDialogOnNetworkOff
 #else
 #define MAYBE_TriggerDialogOnNetworkOff TriggerDialogOnNetworkOff
