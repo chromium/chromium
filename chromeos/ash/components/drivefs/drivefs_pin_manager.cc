@@ -25,6 +25,8 @@ namespace {
 
 using base::SequencedTaskRunner;
 using base::TimeDelta;
+using mojom::FileMetadata;
+using mojom::FileMetadataPtr;
 using std::ostream;
 using Path = PinManager::Path;
 
@@ -119,8 +121,8 @@ ostream& operator<<(ostream& out, Quoter<absl::optional<T>> q) {
   return out << Quote(*q.value);
 }
 
-ostream& operator<<(ostream& out, Quoter<mojom::FileMetadata::Type> q) {
-  using Type = mojom::FileMetadata::Type;
+ostream& operator<<(ostream& out, Quoter<FileMetadata::Type> q) {
+  using Type = FileMetadata::Type;
   switch (q.value) {
 #define PRINT(s)   \
   case Type::k##s: \
@@ -192,11 +194,11 @@ ostream& operator<<(ostream& out, Quoter<mojom::ShortcutDetails> q) {
              << ", status: " << Quote(q.value.target_lookup_status) << "}";
 }
 
-ostream& operator<<(ostream& out, Quoter<mojom::FileMetadata> q) {
-  const mojom::FileMetadata& md = q.value;
+ostream& operator<<(ostream& out, Quoter<FileMetadata> q) {
+  const FileMetadata& md = q.value;
   out << "{" << Quote(md.type) << " " << PinManager::Id(md.stable_id)
       << ", size: " << HumanReadableSize(md.size) << ", pinned: " << md.pinned
-      << ", can_pin: " << (md.can_pin == mojom::FileMetadata::CanPinStatus::kOk)
+      << ", can_pin: " << (md.can_pin == FileMetadata::CanPinStatus::kOk)
       << ", available_offline: " << md.available_offline;
   if (md.shortcut_details) {
     out << ", shortcut_details: " << Quote(*md.shortcut_details);
@@ -252,11 +254,10 @@ int64_t RoundToBlockSize(int64_t size) {
   return (size + mask) & ~mask;
 }
 
-int64_t GetSize(const mojom::FileMetadata& metadata) {
+int64_t GetSize(const FileMetadata& metadata) {
   const int64_t kAverageHostedFileSize = 7800;
-  return metadata.type == mojom::FileMetadata::Type::kHosted
-             ? kAverageHostedFileSize
-             : metadata.size;
+  return metadata.type == FileMetadata::Type::kHosted ? kAverageHostedFileSize
+                                                      : metadata.size;
 }
 
 }  // namespace
@@ -345,8 +346,8 @@ bool Progress::HasEnoughFreeSpace() const {
 
 constexpr TimeDelta kStalledFileInterval = base::Seconds(10);
 
-bool PinManager::CanPin(const mojom::FileMetadata& md, const Path& path) {
-  using Type = mojom::FileMetadata::Type;
+bool PinManager::CanPin(const FileMetadata& md, const Path& path) {
+  using Type = FileMetadata::Type;
   const auto id = PinManager::Id(md.stable_id);
 
   if (md.shortcut_details) {
@@ -360,7 +361,7 @@ bool PinManager::CanPin(const mojom::FileMetadata& md, const Path& path) {
     return false;
   }
 
-  if (md.can_pin != mojom::FileMetadata::CanPinStatus::kOk) {
+  if (md.can_pin != FileMetadata::CanPinStatus::kOk) {
     VLOG(2) << "Skipped " << id << " " << Quote(path) << ": Cannot be pinned";
     return false;
   }
@@ -380,7 +381,7 @@ bool PinManager::CanPin(const mojom::FileMetadata& md, const Path& path) {
   return true;
 }
 
-bool PinManager::Add(const mojom::FileMetadata& md, const Path& path) {
+bool PinManager::Add(const FileMetadata& md, const Path& path) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   const Id id = Id(md.stable_id);
@@ -1134,11 +1135,10 @@ void PinManager::CheckStalledFiles() {
       kStalledFileInterval);
 }
 
-void PinManager::OnMetadataForCreatedFile(
-    const Id id,
-    const Path& path,
-    const drive::FileError error,
-    const mojom::FileMetadataPtr metadata) {
+void PinManager::OnMetadataForCreatedFile(const Id id,
+                                          const Path& path,
+                                          const drive::FileError error,
+                                          const FileMetadataPtr metadata) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   if (error != drive::FILE_ERROR_OK) {
@@ -1148,7 +1148,7 @@ void PinManager::OnMetadataForCreatedFile(
   }
 
   DCHECK(metadata);
-  const mojom::FileMetadata& md = *metadata;
+  const FileMetadata& md = *metadata;
   DCHECK_EQ(id, Id(md.stable_id));
   VLOG(2) << "Got metadata of created " << id << " " << Quote(path) << ": "
           << Quote(md);
@@ -1158,11 +1158,10 @@ void PinManager::OnMetadataForCreatedFile(
   }
 }
 
-void PinManager::OnMetadataForModifiedFile(
-    const Id id,
-    const Path& path,
-    const drive::FileError error,
-    const mojom::FileMetadataPtr metadata) {
+void PinManager::OnMetadataForModifiedFile(const Id id,
+                                           const Path& path,
+                                           const drive::FileError error,
+                                           const FileMetadataPtr metadata) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   if (error != drive::FILE_ERROR_OK) {
@@ -1172,7 +1171,7 @@ void PinManager::OnMetadataForModifiedFile(
   }
 
   DCHECK(metadata);
-  const mojom::FileMetadata& md = *metadata;
+  const FileMetadata& md = *metadata;
   DCHECK_EQ(id, Id(md.stable_id));
 
   const Files::iterator it = files_to_track_.find(id);
