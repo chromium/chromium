@@ -64,7 +64,7 @@ class CONTENT_EXPORT AttributionStorageSql : public AttributionStorage {
   //
   // Note that all versions >=15 were introduced during the transitional state
   // of the Attribution Reporting API and can be removed when done.
-  static constexpr int kDeprecatedVersionNumber = 34;
+  static constexpr int kDeprecatedVersionNumber = 35;
 
   static_assert(kCompatibleVersionNumber <= kCurrentVersionNumber);
   static_assert(kDeprecatedVersionNumber < kCompatibleVersionNumber);

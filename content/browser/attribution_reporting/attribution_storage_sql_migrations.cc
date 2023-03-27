@@ -55,23 +55,6 @@ namespace {
          transaction.Commit();
 }
 
-bool To36(sql::Database& db) {
-  static constexpr char kDropOldIndexSql[] = "DROP INDEX sources_by_origin";
-  if (!db.Execute(kDropOldIndexSql)) {
-    return false;
-  }
-
-  static constexpr char kCreateNewIndexSql[] =
-      "CREATE INDEX active_sources_by_source_origin "
-      "ON sources(source_origin)"
-      "WHERE event_level_active=1 OR aggregatable_active=1";
-  if (!db.Execute(kCreateNewIndexSql)) {
-    return false;
-  }
-
-  return true;
-}
-
 bool To37(sql::Database& db) {
   static constexpr char kNewDedupKeyTableSql[] =
       "CREATE TABLE new_dedup_keys("
@@ -685,11 +668,10 @@ bool UpgradeAttributionStorageSqlSchema(sql::Database& db,
     start_timestamp = base::ThreadTicks::Now();
   }
 
-  static_assert(AttributionStorageSql::kDeprecatedVersionNumber + 1 == 35,
+  static_assert(AttributionStorageSql::kDeprecatedVersionNumber + 1 == 36,
                 "Remove migration(s) below.");
 
-  bool ok = MaybeMigrate(db, meta_table, 35, &To36) &&
-            MaybeMigrate(db, meta_table, 36, &To37) &&
+  bool ok = MaybeMigrate(db, meta_table, 36, &To37) &&
             MaybeMigrate(db, meta_table, 37, &To38) &&
             MaybeMigrate(db, meta_table, 38, &To39) &&
             MaybeMigrate(db, meta_table, 39, &To40) &&
