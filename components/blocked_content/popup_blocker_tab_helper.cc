@@ -114,13 +114,6 @@ void PopupBlockerTabHelper::ShowBlockedPopup(
   if (it == blocked_popups_.end())
     return;
 
-  blocked_content::ListItemPosition position =
-      blocked_content::GetListItemPositionFromDistance(
-          std::distance(blocked_popups_.begin(), it), blocked_popups_.size());
-
-  UMA_HISTOGRAM_ENUMERATION("ContentSettings.Popups.ClickThroughPosition",
-                            position);
-
   BlockedRequest* popup = it->second.get();
 
   absl::optional<WindowOpenDisposition> updated_disposition;

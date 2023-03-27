@@ -282,59 +282,6 @@ IN_PROC_BROWSER_TEST_F(PopupBlockerBrowserTest,
                kDontCheckTitle);
 }
 
-IN_PROC_BROWSER_TEST_F(PopupBlockerBrowserTest, PopupPositionMetrics) {
-  const GURL url(
-      embedded_test_server()->GetURL("/popup_blocker/popup-many.html"));
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
-  EXPECT_EQ(2, GetBlockedContentsCount());
-
-  // Open two more popups.
-  content::WebContents* web_contents =
-      browser()->tab_strip_model()->GetActiveWebContents();
-  EXPECT_TRUE(content::ExecuteScriptWithoutUserGesture(web_contents, "test()"));
-  EXPECT_EQ(4, GetBlockedContentsCount());
-
-  auto* popup_blocker =
-      blocked_content::PopupBlockerTabHelper::FromWebContents(web_contents);
-  std::vector<int32_t> ids;
-  for (const auto& it : popup_blocker->GetBlockedPopupRequests())
-    ids.push_back(it.first);
-  ASSERT_EQ(4u, ids.size());
-
-  WindowOpenDisposition disposition = WindowOpenDisposition::NEW_BACKGROUND_TAB;
-
-  base::HistogramTester tester;
-  const char kClickThroughPosition[] =
-      "ContentSettings.Popups.ClickThroughPosition";
-
-  popup_blocker->ShowBlockedPopup(ids[1], disposition);
-  tester.ExpectBucketCount(
-      kClickThroughPosition,
-      static_cast<int>(blocked_content::ListItemPosition::kMiddleItem), 1);
-
-  popup_blocker->ShowBlockedPopup(ids[0], disposition);
-  tester.ExpectBucketCount(
-      kClickThroughPosition,
-      static_cast<int>(blocked_content::ListItemPosition::kFirstItem), 1);
-
-  popup_blocker->ShowBlockedPopup(ids[3], disposition);
-  tester.ExpectBucketCount(
-      kClickThroughPosition,
-      static_cast<int>(blocked_content::ListItemPosition::kLastItem), 1);
-
-  popup_blocker->ShowBlockedPopup(ids[2], disposition);
-  tester.ExpectBucketCount(
-      kClickThroughPosition,
-      static_cast<int>(blocked_content::ListItemPosition::kOnlyItem), 1);
-
-  tester.ExpectTotalCount(kClickThroughPosition, 4);
-
-  // Requests to show popups not on the list should do nothing.
-  EXPECT_FALSE(base::Contains(ids, 5));
-  popup_blocker->ShowBlockedPopup(5, disposition);
-  tester.ExpectTotalCount(kClickThroughPosition, 4);
-}
-
 IN_PROC_BROWSER_TEST_F(PopupBlockerBrowserTest, PopupMetrics) {
   const char kPopupActions[] = "ContentSettings.Popups.BlockerActions";
   base::HistogramTester tester;

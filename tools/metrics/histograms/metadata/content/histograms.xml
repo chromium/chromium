@@ -226,19 +226,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="ContentSettings.Popups.ClickThroughPosition"
-    enum="ListItemPosition" expires_after="2020-08-30">
-  <owner>csharrison@chromium.org</owner>
-  <summary>
-    The blocked popup list contains a list of links that Chrome has blocked via
-    the popup blocker. If a user clicks on the link, the popup is opened. This
-    metric records the position of the popup in the list that a user clicks
-    through. Currently it should only be recorded on desktop platforms, because
-    the mobile UI for popup blocking does not currently allow for specific
-    exceptions.
-  </summary>
-</histogram>
-
 <histogram name="ContentSettings.Popups.EngagementTime" units="ms"
     expires_after="M77">
   <owner>csharrison@chromium.org</owner>
