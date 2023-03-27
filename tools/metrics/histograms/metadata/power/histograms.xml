@@ -2347,6 +2347,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Power.SuspendDelay" units="seconds" expires_after="2023-12-31">
+  <owner>niwa@chromium.org</owner>
+  <owner>puthik@chromium.org</owner>
+  <owner>chromeos-platform-power@google.com</owner>
+  <summary>
+    The amount of time powerd waited until all clients (e.g. Bluetooth Manager)
+    to be ready to suspend after receiving a suspend request. The maximum
+    recorded value is 60 seconds.
+  </summary>
+</histogram>
+
 <histogram name="Power.SuspendResult" enum="SuspendResult"
     expires_after="2023-09-17">
   <owner>puthik@chromium.org</owner>
