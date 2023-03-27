@@ -109,6 +109,10 @@ class ASH_EXPORT DarkLightModeControllerImpl
 
   OobeDialogState oobe_state_ = OobeDialogState::HIDDEN;
 
+  // Keep track of the last value that was sent to avoid multiple
+  // notifications.
+  absl::optional<bool> last_value_;
+
   // absl::nullopt in case no user pod is focused.
   absl::optional<bool> is_dark_mode_enabled_for_focused_pod_;
 

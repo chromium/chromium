@@ -294,8 +294,14 @@ const char* DarkLightModeControllerImpl::GetFeatureName() const {
 void DarkLightModeControllerImpl::NotifyColorModeChanges() {
   const bool is_enabled = IsDarkModeEnabled();
   cros_styles::SetDarkModeEnabled(is_enabled);
-  for (auto& observer : observers_)
+  if (last_value_ == is_enabled) {
+    // Updating the pref causes a notification. Skip it if it happens.
+    return;
+  }
+  last_value_ = is_enabled;
+  for (auto& observer : observers_) {
     observer.OnColorModeChanged(is_enabled);
+  }
 
   RefreshColorsOnColorMode(IsDarkModeEnabled());
 }

@@ -71,7 +71,9 @@ class ColorPaletteControllerImpl : public ColorPaletteController,
       WallpaperControllerImpl* wallpaper_controller)
       : wallpaper_controller_(wallpaper_controller),
         dark_light_mode_controller_(dark_light_mode_controller) {
+    dark_light_observation_.Observe(dark_light_mode_controller);
     wallpaper_observation_.Observe(wallpaper_controller);
+
     wallpaper_color_[ColorMode::kDark] = SK_ColorTRANSPARENT;
     wallpaper_color_[ColorMode::kLight] = SK_ColorTRANSPARENT;
   }
@@ -248,6 +250,9 @@ class ColorPaletteControllerImpl : public ColorPaletteController,
   }
 
   base::flat_map<ui::ColorProviderManager::ColorMode, SkColor> wallpaper_color_;
+
+  base::ScopedObservation<DarkLightModeController, ColorModeObserver>
+      dark_light_observation_{this};
 
   base::ScopedObservation<WallpaperController, WallpaperControllerObserver>
       wallpaper_observation_{this};

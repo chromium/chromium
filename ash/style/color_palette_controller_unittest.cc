@@ -8,7 +8,10 @@
 #include "ash/style/dark_light_mode_controller_impl.h"
 #include "ash/test/ash_test_base.h"
 #include "ash/wallpaper/wallpaper_controller_impl.h"
+#include "ash/wallpaper/wallpaper_controller_test_api.h"
+#include "ash/wallpaper/wallpaper_utils/wallpaper_calculated_colors.h"
 #include "base/functional/callback_helpers.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "third_party/skia/include/core/SkColor.h"
 
 namespace ash {
@@ -18,6 +21,14 @@ namespace {
 const char kUser[] = "user@gmail.com";
 const AccountId kAccountId = AccountId::FromUserEmailGaiaId(kUser, kUser);
 
+class MockPaletteObserver : public ColorPaletteController::Observer {
+ public:
+  MOCK_METHOD(void,
+              OnColorPaletteChanging,
+              (const ColorPaletteSeed& seed),
+              (override));
+};
+
 }  // namespace
 
 class ColorPaletteControllerTest : public NoSessionAshTestBase {
@@ -26,24 +37,31 @@ class ColorPaletteControllerTest : public NoSessionAshTestBase {
     NoSessionAshTestBase::SetUp();
     GetSessionControllerClient()->Reset();
     GetSessionControllerClient()->AddUserSession(kAccountId, kUser);
-    color_palette_controller_ = ColorPaletteController::Create(
-        Shell::Get()->dark_light_mode_controller(),
-        Shell::Get()->wallpaper_controller());
+    dark_light_mode_controller_ = Shell::Get()->dark_light_mode_controller();
+    wallpaper_controller_ = Shell::Get()->wallpaper_controller();
+    color_palette_controller_ = Shell::Get()->color_palette_controller();
   }
 
-  void TearDown() override {
-    // Must release the controller before Shell is destructed.
-    color_palette_controller_.reset();
-
-    NoSessionAshTestBase::TearDown();
-  }
+  void TearDown() override { NoSessionAshTestBase::TearDown(); }
 
   ColorPaletteController* color_palette_controller() {
-    return color_palette_controller_.get();
+    return color_palette_controller_;
+  }
+
+  DarkLightModeControllerImpl* dark_light_controller() {
+    return dark_light_mode_controller_;
+  }
+
+  WallpaperControllerImpl* wallpaper_controller() {
+    return wallpaper_controller_;
   }
 
  private:
-  std::unique_ptr<ColorPaletteController> color_palette_controller_;
+  base::raw_ptr<DarkLightModeControllerImpl>
+      dark_light_mode_controller_;                               // unowned
+  base::raw_ptr<WallpaperControllerImpl> wallpaper_controller_;  // unowned
+
+  base::raw_ptr<ColorPaletteController> color_palette_controller_;
 };
 
 TEST_F(ColorPaletteControllerTest, ExpectedEmptyValues) {
@@ -82,6 +100,23 @@ TEST_F(ColorPaletteControllerTest, SetStaticColor) {
       color_palette_controller()->GetColorPaletteSeed(kAccountId);
   EXPECT_EQ(ColorScheme::kStatic, color_palette_seed.scheme);
   EXPECT_EQ(static_color, color_palette_seed.seed_color);
+}
+
+TEST_F(ColorPaletteControllerTest, ColorModeTriggersObserver) {
+  // Initialize Dark mode to a known state.
+  dark_light_controller()->SetDarkModeEnabledForTest(false);
+
+  MockPaletteObserver observer;
+  base::ScopedObservation<ColorPaletteController,
+                          ColorPaletteController::Observer>
+      observation(&observer);
+  observation.Observe(color_palette_controller());
+
+  EXPECT_CALL(observer, OnColorPaletteChanging(testing::Field(
+                            &ColorPaletteSeed::color_mode,
+                            ui::ColorProviderManager::ColorMode::kDark)))
+      .Times(1);
+  dark_light_controller()->SetDarkModeEnabledForTest(true);
 }
 
 }  // namespace ash
