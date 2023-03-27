@@ -23,6 +23,7 @@ import org.chromium.content_public.common.ContentFeatures;
 import org.chromium.content_public.common.ContentSwitches;
 import org.chromium.gpu.config.GpuFeatures;
 import org.chromium.gpu.config.GpuSwitches;
+import org.chromium.net.NetFeatures;
 import org.chromium.services.network.NetworkServiceFeatures;
 import org.chromium.ui.accessibility.AccessibilityFeatures;
 
@@ -389,6 +390,9 @@ public final class ProductionSupportedFlagList {
             Flag.baseFeature("LessChattyNetworkService"),
             Flag.baseFeature(BlinkFeatures.AUTOFILL_DETECT_REMOVED_FORM_CONTROLS,
                     "Enables Autofill to detect if form controls are removed from the DOM"),
+            Flag.baseFeature(NetFeatures.SUPPORT_PARTITIONED_BLOB_URL,
+                    "Enables the new Blob URL implementation needed for third-party storage"
+                            + " partitioning"),
             // Add new commandline switches and features above. The final entry should have a
             // trailing comma for cleaner diffs.
     };
