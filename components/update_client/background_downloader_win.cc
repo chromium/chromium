@@ -577,8 +577,6 @@ void BackgroundDownloader::EndDownload(HRESULT error) {
 
   const int error_to_report = SUCCEEDED(error) ? 0 : error;
 
-  CHECK(static_cast<bool>(error_to_report) == !base::PathExists(response_));
-
   DownloadMetrics download_metrics;
   download_metrics.url = url();
   download_metrics.downloader = DownloadMetrics::kBits;
