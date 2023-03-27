@@ -55,6 +55,23 @@ public abstract class SelectableItemViewBase<E> extends ViewLookupCachingFrameLa
      */
     public SelectableItemViewBase(Context context, AttributeSet attrs) {
         super(context, attrs);
+
+        setOnTouchListener(this);
+        setOnClickListener(this);
+        setOnLongClickListener(this);
+        setAccessibilityDelegate(new AccessibilityDelegate() {
+            @Override
+            public void onInitializeAccessibilityNodeInfo(View host, AccessibilityNodeInfo info) {
+                super.onInitializeAccessibilityNodeInfo(host, info);
+
+                // Announce checked state if selection mode is on. The actual read out from talkback
+                // is "checked/unchecked, {content description of this view.}"
+                boolean checkable = mSelectionDelegate != null
+                        && mSelectionDelegate.isSelectionEnabled() && mItem != null;
+                info.setCheckable(checkable);
+                info.setChecked(isChecked());
+            }
+        });
     }
 
     /**
@@ -103,29 +120,6 @@ public abstract class SelectableItemViewBase<E> extends ViewLookupCachingFrameLa
         return mItem;
     }
 
-    // FrameLayout implementations.
-    @Override
-    protected void onFinishInflate() {
-        super.onFinishInflate();
-
-        setOnTouchListener(this);
-        setOnClickListener(this);
-        setOnLongClickListener(this);
-        setAccessibilityDelegate(new AccessibilityDelegate() {
-            @Override
-            public void onInitializeAccessibilityNodeInfo(View host, AccessibilityNodeInfo info) {
-                super.onInitializeAccessibilityNodeInfo(host, info);
-
-                // Announce checked state if selection mode is on. The actual read out from talkback
-                // is "checked/unchecked, {content description of this view.}"
-                boolean checkable = mSelectionDelegate != null
-                        && mSelectionDelegate.isSelectionEnabled() && mItem != null;
-                info.setCheckable(checkable);
-                info.setChecked(isChecked());
-            }
-        });
-    }
-
     @Override
     protected void onAttachedToWindow() {
         super.onAttachedToWindow();
@@ -155,6 +149,7 @@ public abstract class SelectableItemViewBase<E> extends ViewLookupCachingFrameLa
     }
 
     // OnClickListener implementation.
+
     @Override
     public void onClick(View view) {
         assert view == this;

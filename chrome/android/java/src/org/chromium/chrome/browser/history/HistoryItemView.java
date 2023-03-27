@@ -5,7 +5,6 @@
 package org.chromium.chrome.browser.history;
 
 import android.content.Context;
-import android.content.res.ColorStateList;
 import android.graphics.drawable.Drawable;
 import android.util.AttributeSet;
 import android.view.View;
@@ -23,7 +22,6 @@ import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.ui.favicon.FaviconHelper.DefaultFaviconHelper;
 import org.chromium.chrome.browser.ui.favicon.FaviconUtils;
-import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 import org.chromium.components.browser_ui.util.TraceEventVectorDrawableCompat;
 import org.chromium.components.browser_ui.widget.RoundedIconGenerator;
 import org.chromium.components.browser_ui.widget.selectable_list.SelectableItemView;
@@ -56,9 +54,6 @@ public class HistoryItemView extends SelectableItemView<HistoryItem> {
         mIconGenerator = FaviconUtils.createCircularIconGenerator(context);
         mEndPadding =
                 context.getResources().getDimensionPixelSize(R.dimen.default_list_row_padding);
-
-        mStartIconSelectedColorList =
-                ColorStateList.valueOf(SemanticColorUtils.getDefaultIconColorInverse(context));
     }
 
     @Override

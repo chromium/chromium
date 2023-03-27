@@ -95,10 +95,7 @@ public class PowerBookmarkShoppingItemRowTest extends BlankUiTestActivityTestCas
 
             getActivity().setContentView(mContentView, params);
             mPowerBookmarkShoppingItemRow =
-                    (PowerBookmarkShoppingItemRow) getActivity()
-                            .getLayoutInflater()
-                            .inflate(R.layout.power_bookmark_shopping_item_row, mContentView, true)
-                            .findViewById(R.id.power_bookmark_shopping_row);
+                    BookmarkManagerCoordinator.buildShoppingItemView(mContentView);
             mPowerBookmarkShoppingItemRow.setBackgroundColor(
                     SemanticColorUtils.getDefaultBgColor(getActivity()));
             ((TextView) mPowerBookmarkShoppingItemRow.findViewById(R.id.title))

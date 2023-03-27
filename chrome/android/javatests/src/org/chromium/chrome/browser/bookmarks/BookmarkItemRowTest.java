@@ -97,10 +97,7 @@ public class BookmarkItemRowTest extends BlankUiTestActivityTestCase {
                     ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
 
             getActivity().setContentView(mContentView, params);
-            mBookmarkItemRow = (BookmarkItemRow) getActivity()
-                                       .getLayoutInflater()
-                                       .inflate(R.layout.bookmark_item_row, mContentView, true)
-                                       .findViewById(R.id.bookmark_item_row);
+            mBookmarkItemRow = BookmarkManagerCoordinator.buildBookmarkItemView(mContentView);
             mBookmarkItemRow.setRoundedIconGeneratorForTesting(mRoundedIconGenerator);
             mBookmarkItemRow.onDelegateInitialized(mDelegate);
         });

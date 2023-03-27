@@ -9,6 +9,7 @@ import static org.mockito.Mockito.doAnswer;
 
 import android.graphics.Bitmap;
 import android.graphics.Color;
+import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
 import android.widget.LinearLayout;
@@ -95,7 +96,7 @@ public class PowerBookmarkShoppingItemRowRenderTest {
 
     private Bitmap mBitmap;
     private PowerBookmarkShoppingItemRow mPowerBookmarkShoppingItemRow;
-    private ViewGroup mContentView;
+    private LinearLayout mContentView;
 
     public PowerBookmarkShoppingItemRowRenderTest(boolean nightModeEnabled) {
         // Sets a fake background color to make the screenshots easier to compare with bare eyes.
@@ -133,19 +134,18 @@ public class PowerBookmarkShoppingItemRowRenderTest {
 
             FrameLayout.LayoutParams params = new FrameLayout.LayoutParams(
                     ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
-
             mActivityTestRule.getActivity().setContentView(mContentView, params);
+
             mPowerBookmarkShoppingItemRow =
-                    (PowerBookmarkShoppingItemRow) mActivityTestRule.getActivity()
-                            .getLayoutInflater()
-                            .inflate(R.layout.power_bookmark_shopping_item_row, mContentView, true)
-                            .findViewById(R.id.power_bookmark_shopping_row);
+                    BookmarkManagerCoordinator.buildShoppingItemView(mContentView);
+            mContentView.addView(mPowerBookmarkShoppingItemRow);
             mPowerBookmarkShoppingItemRow.setBackgroundColor(
                     SemanticColorUtils.getDefaultBgColor(mActivityTestRule.getActivity()));
             ((TextView) mPowerBookmarkShoppingItemRow.findViewById(R.id.title))
                     .setText("Test Bookmark");
             ((TextView) mPowerBookmarkShoppingItemRow.findViewById(R.id.description))
                     .setText("http://google.com");
+            mPowerBookmarkShoppingItemRow.findViewById(R.id.more).setVisibility(View.VISIBLE);
             mPowerBookmarkShoppingItemRow.init(
                     mImageFetcher, mBookmarkModel, mSnackbarManager, mProfile);
             mPowerBookmarkShoppingItemRow.setCurrencyFormatterForTesting(mCurrencyFormatter);

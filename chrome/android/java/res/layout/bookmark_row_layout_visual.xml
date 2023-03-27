@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-Copyright 2021 The Chromium Authors
+Copyright 2023 The Chromium Authors
 Use of this source code is governed by a BSD-style license that can be
 found in the LICENSE file.
 -->
@@ -13,22 +13,25 @@ found in the LICENSE file.
 
     <ImageView
       android:id="@+id/start_icon"
+      android:background="@drawable/list_item_icon_modern_bg_rect"
       style="@style/ListItemStartIconV2"
       android:importantForAccessibility="no" />
 
     <!-- Common title/description shared between list item views. -->
     <include layout="@layout/title_and_description_layout" />
 
-    <!-- TODO(crbug.com/1241509): Allow an arbitrary amount of buttons to be added here. -->
     <org.chromium.ui.widget.ChromeImageButton
-        android:id="@+id/optional_button"
+        android:id="@+id/end_icon"
         android:visibility="gone"
         style="@style/ListItemEndIconV2" />
 
-    <org.chromium.ui.widget.ChromeImageButton
-        android:id="@+id/end_button"
-        android:visibility="gone"
-        style="@style/ListItemEndIconV2"
-        android:layout_marginEnd="4dp" />
+    <!-- List menu button used for contextual options. -->
+    <include layout="@layout/list_menu_button" />
 
+    <org.chromium.ui.widget.ChromeImageButton
+        android:id="@+id/drag_handle"
+        android:visibility="gone"
+        android:src="@drawable/ic_drag_handle_grey600_24dp"
+        android:tint="@color/default_icon_color_tint_list"
+        style="@style/ListItemEndIconV2" />
 </LinearLayout>

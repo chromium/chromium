@@ -81,7 +81,7 @@ class HistoryClusterView extends SelectableItemView<HistoryCluster> {
     protected void onClick() {}
 
     @Override
-    protected @Nullable ColorStateList getDefaultStartIconTint() {
+    protected @Nullable ColorStateList getDefaultIconTint() {
         return ColorStateList.valueOf(
                 SemanticColorUtils.getDefaultIconColorSecondary(getContext()));
     }
@@ -94,13 +94,9 @@ class HistoryClusterView extends SelectableItemView<HistoryCluster> {
         mDescriptionView.setText(text);
     }
 
-    void setIconDrawable(Drawable drawable) {
-        super.setStartIconDrawable(drawable);
-    }
-
     public void setStartIconBackgroundRes(@DrawableRes int resId) {
         mStartIconView.setBackgroundResource(resId);
-        ImageViewCompat.setImageTintList(mStartIconView, getDefaultStartIconTint());
+        ImageViewCompat.setImageTintList(mStartIconView, getDefaultIconTint());
     }
 
     void setEndButtonDrawable(Drawable drawable) {

@@ -22,6 +22,7 @@ import org.chromium.url.GURL;
 /**
  * A row view that shows bookmark info in the bookmarks UI.
  */
+// TODO (crbug.com/1424431): Make this class more extensible.
 public class BookmarkItemRow extends BookmarkRow implements LargeIconCallback {
     private GURL mUrl;
     private RoundedIconGenerator mIconGenerator;
@@ -30,19 +31,30 @@ public class BookmarkItemRow extends BookmarkRow implements LargeIconCallback {
     private boolean mFaviconCancelled;
 
     /**
-     * Constructor for inflating from XML.
+     * Factory constructor for building the view programmatically.
+     * @param context The calling context, usually the parent view.
+     * @param isVisualRefreshEnabled Whether to show the visual or compact bookmark row.
      */
+    public static BookmarkItemRow buildView(Context context, boolean isVisualRefreshEnabled) {
+        BookmarkItemRow row = new BookmarkItemRow(context, null);
+        BookmarkRow.buildView(row, context, isVisualRefreshEnabled);
+        return row;
+    }
+
+    /** Constructor for inflating from XML. */
     public BookmarkItemRow(Context context, AttributeSet attrs) {
         super(context, attrs);
-        mMinIconSize = isVisualRefreshEnabled()
+
+        boolean isVisualRefreshEnabled = BookmarkFeatures.isBookmarksVisualRefreshEnabled();
+        mMinIconSize = isVisualRefreshEnabled
                 ? getResources().getDimensionPixelSize(R.dimen.bookmark_refresh_min_start_icon_size)
                 : getResources().getDimensionPixelSize(R.dimen.default_favicon_min_size);
 
-        mDisplayedIconSize = isVisualRefreshEnabled()
+        mDisplayedIconSize = isVisualRefreshEnabled
                 ? getResources().getDimensionPixelSize(
                         R.dimen.bookmark_refresh_preferred_start_icon_size)
                 : getResources().getDimensionPixelSize(R.dimen.default_favicon_size);
-        if (isVisualRefreshEnabled()) {
+        if (isVisualRefreshEnabled) {
             mIconGenerator = new RoundedIconGenerator(mDisplayedIconSize, mDisplayedIconSize,
                     mDisplayedIconSize / 2,
                     getContext().getColor(R.color.default_favicon_background_color),
@@ -98,7 +110,7 @@ public class BookmarkItemRow extends BookmarkRow implements LargeIconCallback {
         if (mFaviconCancelled) return;
         Drawable iconDrawable = FaviconUtils.getIconDrawableWithoutFilter(
                 icon, mUrl, fallbackColor, mIconGenerator, getResources(), mDisplayedIconSize);
-        setStartIconDrawable(iconDrawable);
+        setIconDrawable(iconDrawable);
     }
 
     protected boolean getFaviconCancelledForTesting() {

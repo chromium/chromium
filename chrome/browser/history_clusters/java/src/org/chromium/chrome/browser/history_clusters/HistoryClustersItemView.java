@@ -5,7 +5,6 @@
 package org.chromium.chrome.browser.history_clusters;
 
 import android.content.Context;
-import android.graphics.drawable.Drawable;
 import android.util.AttributeSet;
 import android.view.View;
 import android.widget.ImageView;
@@ -57,10 +56,6 @@ class HistoryClustersItemView extends SelectableItemView<ClusterVisit> {
 
     void setHostText(CharSequence text) {
         mDescriptionView.setText(text);
-    }
-
-    void setIconDrawable(Drawable drawable) {
-        super.setStartIconDrawable(drawable);
     }
 
     void setEndButtonClickHandler(OnClickListener onClickListener) {

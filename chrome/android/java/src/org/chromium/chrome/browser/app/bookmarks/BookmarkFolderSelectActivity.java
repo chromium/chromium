@@ -28,6 +28,7 @@ import androidx.vectordrawable.graphics.drawable.VectorDrawableCompat;
 import org.chromium.base.IntentUtils;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.SynchronousInitializationActivity;
+import org.chromium.chrome.browser.bookmarks.BookmarkFolderRow;
 import org.chromium.chrome.browser.bookmarks.BookmarkModel;
 import org.chromium.chrome.browser.bookmarks.BookmarkModelObserver;
 import org.chromium.chrome.browser.bookmarks.BookmarkUtils;
@@ -36,7 +37,6 @@ import org.chromium.chrome.browser.read_later.ReadingListUtils;
 import org.chromium.components.bookmarks.BookmarkId;
 import org.chromium.components.bookmarks.BookmarkItem;
 import org.chromium.components.browser_ui.util.TraceEventVectorDrawableCompat;
-import org.chromium.components.browser_ui.widget.selectable_list.SelectableItemView;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -428,7 +428,7 @@ public class BookmarkFolderSelectActivity
                 iconDrawable = vectorDrawable;
             }
 
-            SelectableItemView.applyModernIconStyle(startIcon, iconDrawable, entry.mIsSelected);
+            BookmarkFolderRow.applyModernIconStyle(startIcon, iconDrawable, entry.mIsSelected);
         }
 
         /**
