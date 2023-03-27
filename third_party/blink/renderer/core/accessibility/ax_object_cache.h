@@ -245,6 +245,10 @@ class CORE_EXPORT AXObjectCache : public GarbageCollected<AXObjectCache> {
       bool& had_load_complete_messages,
       bool& need_to_send_location_changes) = 0;
 
+  // Returns a vector of the images found in |updates|.
+  virtual void GetImagesToAnnotate(ui::AXTreeUpdate& updates,
+                                   std::vector<ui::AXNodeData*>&) = 0;
+
   virtual void ClearDirtyObjectsAndPendingEvents() = 0;
 
   // Note that any pending event also causes its corresponding object to

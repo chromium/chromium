@@ -477,6 +477,9 @@ class MODULES_EXPORT AXObjectCacheImpl
       bool& had_load_complete_messages,
       bool& need_to_send_location_changes) override;
 
+  void GetImagesToAnnotate(ui::AXTreeUpdate& updates,
+                           std::vector<ui::AXNodeData*>& nodes) override;
+
   void ClearDirtyObjectsAndPendingEvents() override {
     dirty_objects_.clear();
     pending_events_.clear();

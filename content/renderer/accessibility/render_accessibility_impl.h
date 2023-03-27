@@ -261,7 +261,7 @@ class CONTENT_EXPORT RenderAccessibilityImpl : public RenderAccessibility,
                                  bool mark_plugin_subtree_dirty);
 
   void AddImageAnnotations(const blink::WebDocument& document,
-                           std::vector<ui::AXNodeData>&);
+                           std::vector<ui::AXNodeData*>&);
   void AddImageAnnotationsForNode(blink::WebAXObject& src, ui::AXNodeData* dst);
 
   static void IgnoreProtocolChecksForTesting();

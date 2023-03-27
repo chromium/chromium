@@ -110,6 +110,11 @@ void WebAXContext::SerializeDirtyObjectsAndEvents(
       had_load_complete_messages, need_to_send_location_changes);
 }
 
+void WebAXContext::GetImagesToAnnotate(ui::AXTreeUpdate& updates,
+                                       std::vector<ui::AXNodeData*>& nodes) {
+  private_->GetAXObjectCache().GetImagesToAnnotate(updates, nodes);
+}
+
 void WebAXContext::ClearDirtyObjectsAndPendingEvents() {
   if (!HasActiveDocument()) {
     return;

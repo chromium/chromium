@@ -1156,26 +1156,20 @@ bool FindExactlyOneInnerImageInMaxDepthThree(WebAXObject obj,
 
 void RenderAccessibilityImpl::AddImageAnnotations(
     const WebDocument& document,
-    std::vector<ui::AXNodeData>& nodes) {
+    std::vector<ui::AXNodeData*>& nodes) {
   if (accessibility_mode_.has_mode(ui::AXMode::kPDF))
     return;
-  for (auto& node : nodes) {
-    WebAXObject src = WebAXObject::FromWebDocumentByID(document, node.id);
+  for (auto* node : nodes) {
+    WebAXObject src = WebAXObject::FromWebDocumentByID(document, node->id);
 
-    // This logic is equivalent to the early-outs in
-    // BlinkAXTreeSource::SerializeNode
-    if (src.IsDetached() || !src.AccessibilityIsIncludedInTree() ||
-        (src.AccessibilityIsIgnored() &&
-         !node.HasState(ax::mojom::State::kFocusable)))
-      continue;
-
-    if (ui::IsImage(node.role)) {
-      AddImageAnnotationsForNode(src, &node);
-    } else if ((ui::IsLink(node.role) || ui::IsPlatformDocument(node.role)) &&
-               node.GetNameFrom() != ax::mojom::NameFrom::kAttribute) {
+    if (ui::IsImage(node->role)) {
+      AddImageAnnotationsForNode(src, node);
+    } else {
+      DCHECK((ui::IsLink(node->role) || ui::IsPlatformDocument(node->role)) &&
+             node->GetNameFrom() != ax::mojom::NameFrom::kAttribute);
       WebAXObject inner_image;
       if (FindExactlyOneInnerImageInMaxDepthThree(src, &inner_image))
-        AddImageAnnotationsForNode(inner_image, &node);
+        AddImageAnnotationsForNode(inner_image, node);
     }
   }
 }
@@ -1214,7 +1208,9 @@ bool RenderAccessibilityImpl::SerializeUpdatesAndEvents(
       AddPluginTreeToUpdate(&update, mark_plugin_subtree_dirty);
     }
 
-    AddImageAnnotations(document, update.nodes);
+    std::vector<ui::AXNodeData*> image_nodes;
+    ax_context_->GetImagesToAnnotate(update, image_nodes);
+    AddImageAnnotations(document, image_nodes);
   }
 
   if (had_end_of_test_event) {

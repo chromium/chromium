@@ -4051,6 +4051,32 @@ void AXObjectCacheImpl::SerializeDirtyObjectsAndEvents(
   }
 }
 
+void AXObjectCacheImpl::GetImagesToAnnotate(
+    ui::AXTreeUpdate& update,
+    std::vector<ui::AXNodeData*>& nodes) {
+  for (auto& node : update.nodes) {
+    AXObject* src = ObjectFromAXID(node.id);
+    if (!src || src->IsDetached() || !src->AccessibilityIsIncludedInTree() ||
+        (src->AccessibilityIsIgnored() &&
+         !node.HasState(ax::mojom::blink::State::kFocusable))) {
+      continue;
+    }
+
+    if (src->IsImage()) {
+      nodes.push_back(&node);
+      // This else clause matches links/documents because we would like to find
+      // an image that is in the near-descendant subtree of the link/document,
+      // since that image may be semantically representative of that
+      // link/document. See FindExactlyOneInnerImageInMaxDepthThree (not in
+      // this file), which is used by the caller of this method to find such
+      // an image.
+    } else if ((src->IsLink() || ui::IsPlatformDocument(node.role)) &&
+               node.GetNameFrom() != ax::mojom::blink::NameFrom::kAttribute) {
+      nodes.push_back(&node);
+    }
+  }
+}
+
 bool AXObjectCacheImpl::AddPendingEvent(const ui::AXEvent& event,
                                         bool insert_at_beginning) {
   if (insert_at_beginning)

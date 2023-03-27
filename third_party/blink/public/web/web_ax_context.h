@@ -70,6 +70,10 @@ class BLINK_EXPORT WebAXContext {
                                       bool& had_load_complete_messages,
                                       bool& need_to_send_location_changes);
 
+  // Returns a vector of the images found in |updates|.
+  void GetImagesToAnnotate(ui::AXTreeUpdate& updates,
+                           std::vector<ui::AXNodeData*>&);
+
   // Clears out the list of dirty AXObjects and of pending events.
   void ClearDirtyObjectsAndPendingEvents();
 
