@@ -17664,6 +17664,9 @@ In case of new special images, values 3 to 9 can be used. -->
 Called by update_net_error_codes.py.-->
 
   <int value="-1478" label="SSL_CLIENT_AUTH_NO_COMMON_ALGORITHMS (old)"/>
+  <int value="-811" label="DNS_NO_MATCHING_SUPPORTED_ALPN"/>
+  <int value="-810" label="DNS_REQUEST_CANCELLED"/>
+  <int value="-809" label="DNS_NAME_HTTPS_ONLY"/>
   <int value="-808" label="DNS_SECURE_RESOLVER_HOSTNAME_RESOLUTION_FAILED"/>
   <int value="-807" label="DNS_HTTP_FAILED"/>
   <int value="-806" label="DNS_SORT_ERROR"/>
@@ -17717,6 +17720,11 @@ Called by update_net_error_codes.py.-->
   <int value="-402" label="CACHE_WRITE_FAILURE"/>
   <int value="-401" label="CACHE_READ_FAILURE"/>
   <int value="-400" label="CACHE_MISS"/>
+  <int value="-384"
+      label="CACHED_IP_ADDRESS_SPACE_BLOCKED_BY_LOCAL_NETWORK_ACCESS_POLICY"/>
+  <int value="-383" label="INCONSISTENT_IP_ADDRESS_SPACE"/>
+  <int value="-382" label="TOO_MANY_ACCEPT_CH_RESTARTS"/>
+  <int value="-381" label="QUIC_GOAWAY_REQUEST_CAN_BE_RETRIED"/>
   <int value="-380" label="QUIC_CERT_ROOT_NOT_KNOWN"/>
   <int value="-379" label="HTTP_RESPONSE_CODE_FAILURE"/>
   <int value="-378" label="HTTP2_PUSHED_RESPONSE_DOES_NOT_MATCH"/>
@@ -17802,6 +17810,9 @@ Called by update_net_error_codes.py.-->
   <int value="-202" label="CERT_AUTHORITY_INVALID"/>
   <int value="-201" label="CERT_DATE_INVALID"/>
   <int value="-200" label="CERT_COMMON_NAME_INVALID"/>
+  <int value="-184" label="ECH_FALLBACK_CERTIFICATE_INVALID"/>
+  <int value="-183" label="ECH_NOT_NEGOTIATED"/>
+  <int value="-182" label="INVALID_ECH_CONFIG_LIST"/>
   <int value="-181" label="SSL_KEY_USAGE_INCOMPATIBLE"/>
   <int value="-180" label="TLS13_DOWNGRADE_DETECTED"/>
   <int value="-179" label="WRONG_VERSION_ON_EARLY_DATA"/>
@@ -17880,6 +17891,9 @@ Called by update_net_error_codes.py.-->
   <int value="-102" label="CONNECTION_REFUSED"/>
   <int value="-101" label="CONNECTION_RESET"/>
   <int value="-100" label="CONNECTION_CLOSED"/>
+  <int value="-32" label="BLOCKED_BY_ORB"/>
+  <int value="-31" label="H2_OR_QUIC_REQUIRED"/>
+  <int value="-30" label="BLOCKED_BY_CSP"/>
   <int value="-29" label="CLEARTEXT_NOT_PERMITTED"/>
   <int value="-28" label="BLOCKED_BY_XSS_AUDITOR"/>
   <int value="-27" label="BLOCKED_BY_RESPONSE"/>
@@ -70921,6 +70935,9 @@ Called by update_net_error_codes.py.-->
   <int value="27" label="BLOCKED_BY_RESPONSE"/>
   <int value="28" label="BLOCKED_BY_XSS_AUDITOR"/>
   <int value="29" label="CLEARTEXT_NOT_PERMITTED"/>
+  <int value="30" label="BLOCKED_BY_CSP"/>
+  <int value="31" label="H2_OR_QUIC_REQUIRED"/>
+  <int value="32" label="BLOCKED_BY_ORB"/>
   <int value="100" label="CONNECTION_CLOSED"/>
   <int value="101" label="CONNECTION_RESET"/>
   <int value="102" label="CONNECTION_REFUSED"/>
@@ -71003,6 +71020,9 @@ Called by update_net_error_codes.py.-->
   <int value="179" label="WRONG_VERSION_ON_EARLY_DATA"/>
   <int value="180" label="TLS13_DOWNGRADE_DETECTED"/>
   <int value="181" label="SSL_KEY_USAGE_INCOMPATIBLE"/>
+  <int value="182" label="INVALID_ECH_CONFIG_LIST"/>
+  <int value="183" label="ECH_NOT_NEGOTIATED"/>
+  <int value="184" label="ECH_FALLBACK_CERTIFICATE_INVALID"/>
   <int value="200" label="CERT_COMMON_NAME_INVALID"/>
   <int value="201" label="CERT_DATE_INVALID"/>
   <int value="202" label="CERT_AUTHORITY_INVALID"/>
@@ -71090,6 +71110,11 @@ Called by update_net_error_codes.py.-->
   <int value="378" label="HTTP2_PUSHED_RESPONSE_DOES_NOT_MATCH"/>
   <int value="379" label="HTTP_RESPONSE_CODE_FAILURE"/>
   <int value="380" label="QUIC_CERT_ROOT_NOT_KNOWN"/>
+  <int value="381" label="QUIC_GOAWAY_REQUEST_CAN_BE_RETRIED"/>
+  <int value="382" label="TOO_MANY_ACCEPT_CH_RESTARTS"/>
+  <int value="383" label="INCONSISTENT_IP_ADDRESS_SPACE"/>
+  <int value="384"
+      label="CACHED_IP_ADDRESS_SPACE_BLOCKED_BY_LOCAL_NETWORK_ACCESS_POLICY"/>
   <int value="400" label="CACHE_MISS"/>
   <int value="401" label="CACHE_READ_FAILURE"/>
   <int value="402" label="CACHE_WRITE_FAILURE"/>
@@ -71143,6 +71168,9 @@ Called by update_net_error_codes.py.-->
   <int value="806" label="DNS_SORT_ERROR"/>
   <int value="807" label="DNS_HTTP_FAILED"/>
   <int value="808" label="DNS_SECURE_RESOLVER_HOSTNAME_RESOLUTION_FAILED"/>
+  <int value="809" label="DNS_NAME_HTTPS_ONLY"/>
+  <int value="810" label="DNS_REQUEST_CANCELLED"/>
+  <int value="811" label="DNS_NO_MATCHING_SUPPORTED_ALPN"/>
   <int value="1478" label="SSL_CLIENT_AUTH_NO_COMMON_ALGORITHMS_0"/>
 </enum>
 

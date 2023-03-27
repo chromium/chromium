@@ -96,6 +96,19 @@ const char kDeviceActiveClientTransitionOutOfIdleMinute[] =
 const char kDeviceActiveClientTransitionToCheckInMinute[] =
     "Ash.DeviceActiveClient.RecordedTransitionToCheckInMinute";
 
+// Record the NetError status integer returned by the OPRF network response.
+const char kDeviceActiveClientPsmOprfResponseNetErrorCode[] =
+    "Ash.DeviceActiveClient.PsmOprfResponseNetErrorCode";
+
+// Record a boolean success if the PSM Oprf response body exists.
+const char kDeviceActiveClientIsPsmOprfResponseBodySet[] =
+    "Ash.DeviceActiveClient.IsPsmOprfResponseBodySet";
+
+// Record a boolean success if the PSM Oprf response body was parsed correctly
+// to the FresnelPsmRlweOprfResponse proto object.
+const char kDeviceActiveClientIsPsmOprfResponseParsedCorrectly[] =
+    "Ash.DeviceActiveClient.IsPsmOprfResponseParsedCorrectly";
+
 // Traffic annotation for check device activity status
 const net::NetworkTrafficAnnotationTag check_membership_traffic_annotation =
     net::DefineNetworkTrafficAnnotation(
@@ -301,6 +314,26 @@ void RecordCheckMembershipCases(
     DeviceActivityClient::CheckMembershipResponseCases check_membership_case) {
   base::UmaHistogramEnumeration(kCheckMembershipProcessCase,
                                 check_membership_case);
+}
+
+// Histogram to record the NetError code returned apart of the PSM Oprf
+// Response.
+void RecordPsmOprfResponseNetErrorCode(int net_error) {
+  base::UmaHistogramSparse(kDeviceActiveClientPsmOprfResponseNetErrorCode,
+                           net_error);
+}
+
+// Histogram to record whether the PSM Oprf response body is set.
+void RecordIsPsmOprfResponseBodySet(bool is_set) {
+  base::UmaHistogramBoolean(kDeviceActiveClientIsPsmOprfResponseBodySet,
+                            is_set);
+}
+
+// Histogram to record whether the PSM Oprf response was able to be parsed
+// correctly.
+void RecordIsPsmOprfResponseParsedCorrectly(bool is_parsed_correctly) {
+  base::UmaHistogramBoolean(kDeviceActiveClientIsPsmOprfResponseParsedCorrectly,
+                            is_parsed_correctly);
 }
 
 std::unique_ptr<network::ResourceRequest> GenerateResourceRequest(
@@ -1066,11 +1099,20 @@ void DeviceActivityClient::OnCheckMembershipOprfDone(
   auto url_loader = std::move(url_loader_);
 
   int net_code = url_loader->NetError();
-  RecordResponseStateMetric(state_, net_code);
 
   // Convert serialized response body to oprf response protobuf.
   FresnelPsmRlweOprfResponse psm_oprf_response;
-  if (!response_body || !psm_oprf_response.ParseFromString(*response_body)) {
+  bool is_response_body_set = response_body.get() != nullptr;
+  bool is_response_body_parsed_correctly =
+      psm_oprf_response.ParseFromString(*response_body);
+
+  // Add UMA histogram for diagnostic purposes.
+  RecordIsPsmOprfResponseBodySet(is_response_body_set);
+  RecordIsPsmOprfResponseParsedCorrectly(is_response_body_parsed_correctly);
+  RecordResponseStateMetric(state_, net_code);
+  RecordPsmOprfResponseNetErrorCode(net_code);
+
+  if (!is_response_body_set || !is_response_body_parsed_correctly) {
     RecordDurationStateMetric(state_, state_timer_.Elapsed());
     RecordCheckMembershipCases(
         DeviceActivityClient::CheckMembershipResponseCases::

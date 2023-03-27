@@ -2579,6 +2579,28 @@ chromium-metrics-reviews@google.com.
   <token key="DeviceActiveClientState" variants="DeviceActiveClientState"/>
 </histogram>
 
+<histogram name="Ash.DeviceActiveClient.IsPsmOprfResponseBodySet"
+    enum="BooleanSuccess" expires_after="2023-10-01">
+  <owner>hirthanan@google.com</owner>
+  <owner>chromeos-data-team@google.com</owner>
+  <summary>
+    Record success if the PSM OPRF response contains a value. This network
+    request is called after browser start if the last ping timestamp of the
+    Chromebook is not known. ChromeOS only.
+  </summary>
+</histogram>
+
+<histogram name="Ash.DeviceActiveClient.IsPsmOprfResponseParsedCorrectly"
+    enum="BooleanSuccess" expires_after="2023-10-01">
+  <owner>hirthanan@google.com</owner>
+  <owner>chromeos-data-team@google.com</owner>
+  <summary>
+    Record success if the PSM OPRF response is able to be parsed correctly. This
+    network request is called after browser start if the last ping timestamp of
+    the Chromebook is not known. ChromeOS only.
+  </summary>
+</histogram>
+
 <histogram name="Ash.DeviceActiveClient.PreservedFileState"
     enum="DeviceActiveClientPreservedFileState" expires_after="2023-09-01">
   <owner>hirthanan@google.com</owner>
@@ -2587,6 +2609,18 @@ chromium-metrics-reviews@google.com.
     Record the states after reading preserved file over DBus for last active utc
     dates. PreservedFileState is defined in
     //chromeos/ash/components/device_activity_client.h. ChromeOS only.
+  </summary>
+</histogram>
+
+<histogram name="Ash.DeviceActiveClient.PsmOprfResponseNetErrorCode"
+    enum="NetErrorCodes" expires_after="2023-10-01">
+  <owner>hirthanan@google.com</owner>
+  <owner>chromeos-data-team@google.com</owner>
+  <summary>
+    Emit the NetError code associated with the PSM OPRF response. This network
+    request is called after browser start if the last ping timestamp of the
+    Chromebook is not known. ChromeOS only. Enum for histogram will contain 0 -
+    899. Ranges are defined //net/base/net_error_list.h;l=14-23.
   </summary>
 </histogram>
 
