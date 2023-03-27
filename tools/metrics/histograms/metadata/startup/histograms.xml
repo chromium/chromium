@@ -670,16 +670,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram
-    name="Startup.FirstWebContents.RenderProcessHostInit.ToNonEmptyPaint"
-    units="ms" expires_after="M78">
-  <owner>hans@chromium.org</owner>
-  <summary>
-    Time between RenderFrameHostImpl::Init and
-    Startup.FirstWebContents.NonEmptyPaint2.
-  </summary>
-</histogram>
-
 <histogram name="Startup.IncognitoForcedStart" enum="IncognitoForcedStart"
     expires_after="M111">
   <owner>arabm@google.com</owner>

@@ -506,11 +506,6 @@ void RecordFirstWebContentsNonEmptyPaint(
       &base::UmaHistogramLongTimes100,
       "Startup.BrowserMessageLoopStart.To.NonEmptyPaint2",
       now - g_message_loop_start_ticks);
-
-  UmaHistogramWithTemperature(
-      &base::UmaHistogramLongTimes100,
-      "Startup.FirstWebContents.RenderProcessHostInit.ToNonEmptyPaint",
-      now - render_process_host_init_time);
 }
 
 void RecordFirstWebContentsMainNavigationStart(base::TimeTicks ticks) {

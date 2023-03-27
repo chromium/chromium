@@ -36,7 +36,6 @@ constexpr const char* kStartupMetrics[] = {
     "Startup.FirstWebContents.MainNavigationFinished",
     "Startup.FirstWebContents.MainNavigationStart",
     "Startup.FirstWebContents.NonEmptyPaint3",
-    "Startup.FirstWebContents.RenderProcessHostInit.ToNonEmptyPaint",
 #endif  // !BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(IS_WIN)
