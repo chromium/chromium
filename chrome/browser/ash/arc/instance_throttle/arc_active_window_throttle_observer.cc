@@ -9,7 +9,7 @@
 namespace arc {
 
 ArcActiveWindowThrottleObserver::ArcActiveWindowThrottleObserver()
-    : WindowThrottleObserverBase("ArcWindowIsActiveWindow") {}
+    : WindowThrottleObserverBase(kArcActiveWindowThrottleObserverName) {}
 
 bool ArcActiveWindowThrottleObserver::ProcessWindowActivation(
     ActivationReason reason,

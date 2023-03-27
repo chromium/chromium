@@ -9,6 +9,11 @@
 
 namespace arc {
 
+namespace {
+constexpr char kArcActiveWindowThrottleObserverName[] =
+    "ArcWindowIsActiveWindow";
+}  // namespace
+
 // This class observes window activations and sets the state to active if the
 // currently active window is an ARC window.
 class ArcActiveWindowThrottleObserver : public ash::WindowThrottleObserverBase {
