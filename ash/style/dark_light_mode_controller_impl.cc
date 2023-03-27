@@ -52,10 +52,14 @@ void RefreshColorsOnColorMode(bool is_dark_mode_enabled) {
   native_theme->NotifyOnNativeThemeUpdated();
 
   auto* native_theme_web = ui::NativeTheme::GetInstanceForWeb();
-  native_theme_web->set_use_dark_colors(is_dark_mode_enabled);
-  native_theme_web->set_preferred_color_scheme(
-      is_dark_mode_enabled ? ui::NativeTheme::PreferredColorScheme::kDark
-                           : ui::NativeTheme::PreferredColorScheme::kLight);
+  if (!native_theme_web->IsForcedDarkMode()) {
+    // If we're in forced dark mode, leave the value alone to allow the tests to
+    // work.
+    native_theme_web->set_use_dark_colors(is_dark_mode_enabled);
+    native_theme_web->set_preferred_color_scheme(
+        is_dark_mode_enabled ? ui::NativeTheme::PreferredColorScheme::kDark
+                             : ui::NativeTheme::PreferredColorScheme::kLight);
+  }
   native_theme_web->set_user_color(themed_color);
   native_theme_web->NotifyOnNativeThemeUpdated();
 }
