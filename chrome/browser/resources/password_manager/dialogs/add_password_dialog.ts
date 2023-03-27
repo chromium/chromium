@@ -8,6 +8,7 @@ import 'chrome://resources/cr_elements/cr_input/cr_input.js';
 import 'chrome://resources/cr_elements/cr_textarea/cr_textarea.js';
 import 'chrome://resources/cr_elements/cr_icons.css.js';
 import 'chrome://resources/cr_elements/cr_shared_style.css.js';
+import 'chrome://resources/cr_elements/md_select.css.js';
 import '../shared_style.css.js';
 
 import {CrButtonElement} from 'chrome://resources/cr_elements/cr_button/cr_button.js';
@@ -22,6 +23,7 @@ import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bu
 import {PasswordManagerImpl} from '../password_manager_proxy.js';
 import {Page, Router} from '../router.js';
 import {ShowPasswordMixin} from '../show_password_mixin.js';
+import {UserUtilMixin} from '../user_utils_mixin.js';
 
 import {getTemplate} from './add_password_dialog.html.js';
 
@@ -32,6 +34,7 @@ export interface AddPasswordDialogElement {
     noteInput: CrTextareaElement,
     passwordInput: CrInputElement,
     showPasswordButton: CrIconButtonElement,
+    storePicker: HTMLSelectElement,
     usernameInput: CrInputElement,
     viewExistingPasswordLink: HTMLAnchorElement,
     websiteInput: CrInputElement,
@@ -51,7 +54,7 @@ export const PASSWORD_NOTE_WARNING_CHARACTER_COUNT = 900;
 export const PASSWORD_NOTE_MAX_CHARACTER_COUNT = 1000;
 
 const AddPasswordDialogElementBase =
-    ShowPasswordMixin(I18nMixin(PolymerElement));
+    UserUtilMixin(ShowPasswordMixin(I18nMixin(PolymerElement)));
 
 function getUsernamesByOrigin(
     passwords: chrome.passwordsPrivate.PasswordUiEntry[]):
@@ -113,7 +116,25 @@ export class AddPasswordDialogElement extends AddPasswordDialogElementBase {
         computed: 'computeCanAddPassword_(websiteErrorMessage_, username_, ' +
             'password_, note_)',
       },
+
+      storeOptionAccountValue_: {
+        type: String,
+        value: chrome.passwordsPrivate.PasswordStoreSet.ACCOUNT,
+        readonly: true,
+      },
+
+      storeOptionDeviceValue_: {
+        type: String,
+        value: chrome.passwordsPrivate.PasswordStoreSet.DEVICE,
+        readonly: true,
+      },
     };
+  }
+
+  static get observers() {
+    return [
+      'updateDefaultStore_(isAccountStoreUser)',
+    ];
   }
 
   private website_: string;
@@ -124,6 +145,8 @@ export class AddPasswordDialogElement extends AddPasswordDialogElementBase {
   private websiteErrorMessage_: string|null;
   private usernameErrorMessage_: string|null;
   private urlCollection_: chrome.passwordsPrivate.UrlCollection|null;
+  private readonly storeOptionAccountValue_: string;
+  private readonly storeOptionDeviceValue_: string;
 
   private setSavedPasswordsListener_: (
       (entries: chrome.passwordsPrivate.PasswordUiEntry[]) => void)|null = null;
@@ -146,6 +169,17 @@ export class AddPasswordDialogElement extends AddPasswordDialogElementBase {
     PasswordManagerImpl.getInstance().removeSavedPasswordListChangedListener(
         this.setSavedPasswordsListener_);
     this.setSavedPasswordsListener_ = null;
+  }
+
+  private updateDefaultStore_() {
+    if (this.isAccountStoreUser) {
+      PasswordManagerImpl.getInstance().isAccountStoreDefault().then(
+          isAccountStoreDefault => {
+            this.$.storePicker.value = isAccountStoreDefault ?
+                this.storeOptionAccountValue_ :
+                this.storeOptionDeviceValue_;
+          });
+    }
   }
 
   private onCancel_() {
@@ -232,13 +266,16 @@ export class AddPasswordDialogElement extends AddPasswordDialogElementBase {
   private onAddClick_() {
     assert(this.computeCanAddPassword_());
     assert(this.urlCollection_);
+    const useAccountStore = this.isAccountStoreUser &&
+        (this.$.storePicker.value === this.storeOptionAccountValue_);
+
     PasswordManagerImpl.getInstance()
         .addPassword({
           url: this.urlCollection_.signonRealm,
           username: this.username_,
           password: this.password_,
           note: this.note_,
-          useAccountStore: false,
+          useAccountStore: useAccountStore,
         })
         .then(() => {
           this.$.dialog.close();

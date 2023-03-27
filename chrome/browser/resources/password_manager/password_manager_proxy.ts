@@ -300,6 +300,14 @@ export interface PasswordManagerProxy {
    * @param optIn Whether the user wants to opt in or opt out.
    */
   optInForAccountStorage(optIn: boolean): void;
+
+  /**
+   * Requests whether the account store is a default location for saving
+   * passwords. False means the device store is a default one. Must be called
+   * when the current user has already opted-in for account storage.
+   * @return A promise that resolves to whether the account store is default.
+   */
+  isAccountStoreDefault(): Promise<boolean>;
 }
 
 /**
@@ -493,6 +501,10 @@ export class PasswordManagerImpl implements PasswordManagerProxy {
 
   optInForAccountStorage(optIn: boolean) {
     chrome.passwordsPrivate.optInForAccountStorage(optIn);
+  }
+
+  isAccountStoreDefault() {
+    return chrome.passwordsPrivate.isAccountStoreDefault();
   }
 
   static getInstance(): PasswordManagerProxy {

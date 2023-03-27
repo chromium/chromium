@@ -4,20 +4,25 @@
 
 import 'chrome://password-manager/password_manager.js';
 
-import {Page, PasswordManagerImpl, Router} from 'chrome://password-manager/password_manager.js';
+import {Page, PasswordManagerImpl, Router, SyncBrowserProxyImpl} from 'chrome://password-manager/password_manager.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
+import {isVisible} from 'chrome://webui-test/test_util.js';
 
 import {TestPasswordManagerProxy} from './test_password_manager_proxy.js';
+import {TestSyncBrowserProxy} from './test_sync_browser_proxy.js';
 import {createAffiliatedDomain, createPasswordEntry} from './test_util.js';
 
 suite('AddPasswordDialogTest', function() {
   let passwordManager: TestPasswordManagerProxy;
+  let syncProxy: TestSyncBrowserProxy;
 
   setup(function() {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
     passwordManager = new TestPasswordManagerProxy();
     PasswordManagerImpl.setInstance(passwordManager);
+    syncProxy = new TestSyncBrowserProxy();
+    SyncBrowserProxyImpl.setInstance(syncProxy);
     return flushTasks();
   });
 
@@ -25,7 +30,7 @@ suite('AddPasswordDialogTest', function() {
     const dialog = document.createElement('add-password-dialog');
     document.body.appendChild(dialog);
     await flushTasks();
-
+    assertFalse(isVisible(dialog.$.storePicker));
     assertFalse(dialog.$.websiteInput.invalid);
 
     // Make url invalid
@@ -68,6 +73,7 @@ suite('AddPasswordDialogTest', function() {
     const dialog = document.createElement('add-password-dialog');
     document.body.appendChild(dialog);
     await flushTasks();
+    assertFalse(isVisible(dialog.$.storePicker));
 
     // Enter website for which user has a saved password.
     dialog.$.websiteInput.value = 'www.example.com';
@@ -111,6 +117,7 @@ suite('AddPasswordDialogTest', function() {
     const dialog = document.createElement('add-password-dialog');
     document.body.appendChild(dialog);
     await flushTasks();
+    assertFalse(isVisible(dialog.$.storePicker));
 
     assertEquals(
         dialog.i18n('showPassword'), dialog.$.showPasswordButton.title);
@@ -134,7 +141,7 @@ suite('AddPasswordDialogTest', function() {
     const dialog = document.createElement('add-password-dialog');
     document.body.appendChild(dialog);
     await flushTasks();
-
+    assertFalse(isVisible(dialog.$.storePicker));
     assertFalse(dialog.$.noteInput.invalid);
 
     // Make note 899 characters long.
@@ -171,6 +178,7 @@ suite('AddPasswordDialogTest', function() {
     const dialog = document.createElement('add-password-dialog');
     document.body.appendChild(dialog);
     await flushTasks();
+    assertFalse(isVisible(dialog.$.storePicker));
 
     // Enter website
     dialog.$.websiteInput.value = 'www.example.com';
@@ -204,6 +212,7 @@ suite('AddPasswordDialogTest', function() {
     const dialog = document.createElement('add-password-dialog');
     document.body.appendChild(dialog);
     await flushTasks();
+    assertFalse(isVisible(dialog.$.storePicker));
 
     // Enter website
     dialog.$.websiteInput.value = 'www.example.com';
@@ -218,5 +227,107 @@ suite('AddPasswordDialogTest', function() {
     assertEquals(Page.PASSWORD_DETAILS, Router.getInstance().currentRoute.page);
     assertEquals(
         dialog.$.websiteInput.value, Router.getInstance().currentRoute.details);
+  });
+
+  test('account picker shows preferred storage account', async function() {
+    passwordManager.data.isOptedInAccountStorage = true;
+    passwordManager.data.isAccountStorageDefault = true;
+    syncProxy.syncInfo = {
+      isEligibleForAccountStorage: true,
+    };
+
+    const dialog = document.createElement('add-password-dialog');
+    document.body.appendChild(dialog);
+    await flushTasks();
+
+    assertTrue(isVisible(dialog.$.storePicker));
+    assertEquals(
+        chrome.passwordsPrivate.PasswordStoreSet.ACCOUNT,
+        dialog.$.storePicker.value);
+  });
+
+  test('account picker shows preferred storage device', async function() {
+    passwordManager.data.isOptedInAccountStorage = true;
+    passwordManager.data.isAccountStorageDefault = false;
+    syncProxy.syncInfo = {
+      isEligibleForAccountStorage: true,
+    };
+
+    const dialog = document.createElement('add-password-dialog');
+    document.body.appendChild(dialog);
+    await flushTasks();
+
+    assertTrue(isVisible(dialog.$.storePicker));
+    assertEquals(
+        chrome.passwordsPrivate.PasswordStoreSet.DEVICE,
+        dialog.$.storePicker.value);
+  });
+
+  test('save to account', async function() {
+    passwordManager.data.isOptedInAccountStorage = true;
+    syncProxy.syncInfo = {
+      isEligibleForAccountStorage: true,
+    };
+
+    const dialog = document.createElement('add-password-dialog');
+    document.body.appendChild(dialog);
+    await flushTasks();
+
+    dialog.$.storePicker.value =
+        chrome.passwordsPrivate.PasswordStoreSet.ACCOUNT;
+
+    // Enter website
+    dialog.$.websiteInput.value = 'www.example.com';
+    dialog.$.usernameInput.value = 'test';
+    dialog.$.passwordInput.value = 'lastPass';
+    dialog.$.noteInput.value = 'secret note.';
+    dialog.$.websiteInput.dispatchEvent(new CustomEvent('input'));
+
+    await passwordManager.whenCalled('getUrlCollection');
+
+    assertFalse(dialog.$.addButton.disabled);
+    dialog.$.addButton.click();
+
+    const params = await passwordManager.whenCalled('addPassword');
+
+    assertEquals('https://www.example.com/login', params.url);
+    assertEquals(dialog.$.usernameInput.value, params.username);
+    assertEquals(dialog.$.passwordInput.value, params.password);
+    assertEquals(dialog.$.noteInput.value, params.note);
+    assertEquals(true, params.useAccountStore);
+  });
+
+  test('save to device', async function() {
+    passwordManager.data.isOptedInAccountStorage = true;
+    syncProxy.syncInfo = {
+      isEligibleForAccountStorage: true,
+    };
+
+    const dialog = document.createElement('add-password-dialog');
+    document.body.appendChild(dialog);
+    await flushTasks();
+
+    dialog.$.storePicker.value =
+        chrome.passwordsPrivate.PasswordStoreSet.DEVICE;
+
+    // Enter website
+    dialog.$.websiteInput.value = 'www.example.com';
+    dialog.$.usernameInput.value = 'test';
+    dialog.$.passwordInput.value = 'lastPass';
+    dialog.$.noteInput.value = 'secret note.';
+    dialog.$.websiteInput.dispatchEvent(new CustomEvent('input'));
+
+    await passwordManager.whenCalled('getUrlCollection');
+
+    assertFalse(dialog.$.addButton.disabled);
+    dialog.$.addButton.click();
+
+    const params = await passwordManager.whenCalled('addPassword');
+
+    assertEquals('https://www.example.com/login', params.url);
+    assertEquals(dialog.$.usernameInput.value, params.username);
+    assertEquals(dialog.$.passwordInput.value, params.password);
+    assertEquals(dialog.$.noteInput.value, params.note);
+    assertEquals(false, params.useAccountStore);
   });
 });

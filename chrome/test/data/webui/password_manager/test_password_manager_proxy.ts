@@ -21,6 +21,7 @@ export class TestPasswordManagerProxy extends TestBrowserProxy implements
     groups: chrome.passwordsPrivate.CredentialGroup[],
     insecureCredentials: chrome.passwordsPrivate.PasswordUiEntry[],
     isOptedInAccountStorage: boolean,
+    isAccountStorageDefault: boolean,
     passwords: chrome.passwordsPrivate.PasswordUiEntry[],
   };
 
@@ -46,6 +47,7 @@ export class TestPasswordManagerProxy extends TestBrowserProxy implements
       'changeSavedPassword',
       'exportPasswords',
       'extendAuthValidity',
+      'isAccountStoreDefault',
       'isOptedInForAccountStorage',
       'getBlockedSitesList',
       'getCredentialGroups',
@@ -78,6 +80,7 @@ export class TestPasswordManagerProxy extends TestBrowserProxy implements
       groups: [],
       insecureCredentials: [],
       isOptedInAccountStorage: false,
+      isAccountStorageDefault: false,
       passwords: [],
     };
 
@@ -307,5 +310,10 @@ export class TestPasswordManagerProxy extends TestBrowserProxy implements
   optInForAccountStorage(optIn: boolean) {
     this.methodCalled('optInForAccountStorage');
     this.data.isOptedInAccountStorage = optIn;
+  }
+
+  isAccountStoreDefault() {
+    this.methodCalled('isAccountStoreDefault');
+    return Promise.resolve(this.data.isAccountStorageDefault);
   }
 }
