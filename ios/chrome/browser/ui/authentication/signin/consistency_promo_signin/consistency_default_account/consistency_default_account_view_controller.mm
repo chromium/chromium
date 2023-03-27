@@ -42,7 +42,7 @@ constexpr CGFloat kContentSpacing = 16.;
 @property(nonatomic, strong) IdentityButtonControl* identityButtonControl;
 // Button to
 // 1. confirm the default identity and sign-in when an account is available, or
-// 2. add an account when no account is available on the device
+// 2. add an account when no account is available on the device.
 @property(nonatomic, strong) UIButton* primaryButton;
 // Title for `self.primaryButton` when it needs to show the text "Continue as…".
 // This property is needed to hide the title the activity indicator is shown.
@@ -84,6 +84,8 @@ constexpr CGFloat kContentSpacing = 16.;
   DCHECK(self.activityIndicatorView);
   [self.activityIndicatorView removeFromSuperview];
   self.activityIndicatorView = nil;
+  // Show the IdentityButtonControl, since it may be hidden.
+  self.identityButtonControl.hidden = NO;
   // Enable buttons.
   self.identityButtonControl.enabled = YES;
   self.primaryButton.enabled = YES;
@@ -203,7 +205,7 @@ constexpr CGFloat kContentSpacing = 16.;
     [self.identityButtonControl.widthAnchor
         constraintEqualToAnchor:self.contentView.widthAnchor]
   ]];
-  // Add the primary button (the "Continue as"/"Sign in" button)
+  // Add the primary button (the "Continue as"/"Sign in" button).
   self.primaryButton =
       PrimaryActionButton(/* pointer_interaction_enabled */ YES);
   self.primaryButton.accessibilityIdentifier =
@@ -242,7 +244,8 @@ constexpr CGFloat kContentSpacing = 16.;
 
 - (void)primaryButtonAction:
     (ConsistencyDefaultAccountViewController*)viewController {
-  // if the IBC is hidden, then there is no account avaiable on the device
+  // If the IdentityButtonControl is hidden, there is no account avaiable on the
+  // device.
   if (!self.identityButtonControl.hidden) {
     [self.actionDelegate
         consistencyDefaultAccountViewControllerContinueWithSelectedIdentity:
@@ -291,12 +294,16 @@ constexpr CGFloat kContentSpacing = 16.;
   }
   self.continueAsTitle = l10n_util::GetNSStringF(
       IDS_IOS_SIGNIN_PROMO_CONTINUE_AS, base::SysNSStringToUTF16(givenName));
-  [self.primaryButton setTitle:self.continueAsTitle
-                      forState:UIControlStateNormal];
+
   [self.identityButtonControl setIdentityName:fullName email:email];
   [self.identityButtonControl setIdentityAvatar:avatar];
 
-  self.identityButtonControl.hidden = NO;
+  // If spinner is active, delay UI updates until stopSpinner() is called.
+  if (!self.activityIndicatorView) {
+    [self.primaryButton setTitle:self.continueAsTitle
+                        forState:UIControlStateNormal];
+    self.identityButtonControl.hidden = NO;
+  }
 }
 
 - (void)hideDefaultAccount {
@@ -304,8 +311,8 @@ constexpr CGFloat kContentSpacing = 16.;
     [self view];
   }
 
-  // hide the IdentityButtonControl, and update the primary button to serve as
-  // a "Sign in…" button
+  // Hide the IdentityButtonControl, and update the primary button to serve as
+  // a "Sign in…" button.
   self.identityButtonControl.hidden = YES;
   [self.primaryButton
       setTitle:l10n_util::GetNSString(IDS_IOS_CONSISTENCY_PROMO_SIGN_IN)
