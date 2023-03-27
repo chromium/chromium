@@ -9,6 +9,7 @@
 #include <memory>
 
 #include "base/component_export.h"
+#include "base/guid.h"
 #include "base/values.h"
 #include "components/app_restore/app_restore_data.h"
 
@@ -40,7 +41,8 @@ class COMPONENT_EXPORT(APP_RESTORE) RestoreData {
 
   std::unique_ptr<RestoreData> Clone() const;
 
-  // Converts |app_id_to_launch_list_| to base::Value, e.g.:
+  // Converts `app_id_to_launch_list_` and `removing_desk_guid_` to base::Value,
+  // e.g.:
   // {
   //   "odknhmnlageboeamepcngndbggdpaobj":    // app_id
   //     {
@@ -51,6 +53,7 @@ class COMPONENT_EXPORT(APP_RESTORE) RestoreData {
   //           "display_id": "22000000",
   //           "index": 3,
   //           "desk_id": 1,
+  //           "desk_guid": "d782accb-232f-4f47-ad24-a7100f9c0ec0",
   //           "restored_bounds": { 0, 100, 200, 300 },
   //           "current_bounds": { 100, 200, 200, 300 },
   //           "window_state_type": 256,
@@ -70,6 +73,9 @@ class COMPONENT_EXPORT(APP_RESTORE) RestoreData {
   //           ...
   //         },
   //     },
+  //   ...
+  //   "removing_desk_guid":
+  //     "d782accb-232f-4f47-ad24-a7100f9c0ec0"  // removing_desk_guid
   // }
   base::Value ConvertToValue() const;
 
@@ -187,6 +193,10 @@ class COMPONENT_EXPORT(APP_RESTORE) RestoreData {
     return app_id_to_launch_list_;
   }
 
+  void set_removing_desk_guid(const base::GUID& removing_desk_guid) {
+    removing_desk_guid_ = removing_desk_guid;
+  }
+
  private:
   // Returns the pointer to AppRestoreData for the given |app_id| and
   // |window_id|. Returns null if there is no AppRestoreData.
@@ -197,6 +207,10 @@ class COMPONENT_EXPORT(APP_RESTORE) RestoreData {
 
   // Saves the next restore window_id to be handled for each chrome app.
   std::map<std::string, int> chrome_app_id_to_current_window_id_;
+
+  // The GUID of a desk that is being removed. This will only be valid if a desk
+  // is in the process of being removed.
+  base::GUID removing_desk_guid_;
 };
 
 }  // namespace app_restore

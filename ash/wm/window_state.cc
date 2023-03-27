@@ -853,6 +853,10 @@ void WindowState::TrackDragToMaximizeBehavior() {
       &WindowState::CheckAndRecordDragMaximizedBehavior);
 }
 
+base::AutoReset<bool> WindowState::GetScopedIgnorePropertyChange() {
+  return base::AutoReset<bool>(&ignore_property_change_, true);
+}
+
 void WindowState::CreateDragDetails(const gfx::PointF& point_in_parent,
                                     int window_component,
                                     ::wm::WindowMoveSource source) {
@@ -1362,7 +1366,7 @@ void WindowState::OnWindowPropertyChanged(aura::Window* window,
     }
     return;
   }
-  if (key == aura::client::kWindowWorkspaceKey) {
+  if (key == aura::client::kWindowWorkspaceKey || key == kDeskGuidKey) {
     // Save the window for window restore purposes unless
     // |ignore_property_change_| is true. Note that moving windows across
     // displays will also trigger a kWindowWorkspaceKey change, even if the

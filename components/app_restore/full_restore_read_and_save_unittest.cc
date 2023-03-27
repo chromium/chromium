@@ -27,6 +27,7 @@
 #include "components/services/app_service/public/cpp/intent.h"
 #include "components/services/app_service/public/cpp/intent_util.h"
 #include "content/public/test/browser_task_environment.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/aura/client/aura_constants.h"
 #include "ui/aura/test/aura_test_helper.h"
@@ -40,6 +41,9 @@
 namespace full_restore {
 
 namespace {
+
+using testing::ElementsAre;
+using testing::Pair;
 
 constexpr char kAppId[] = "aaa";
 
@@ -68,6 +72,10 @@ constexpr char kExampleUrl2[] = "https://www.example2.com";
 constexpr char kLacrosWindowId[] = "123";
 
 constexpr uint32_t kBrowserSessionId = 56;
+
+// Randomly generated desk GUID to test saving removing desk GUID.
+const base::GUID kRemovingDeskGuid = base::GUID::GenerateRandomV4();
+const base::GUID kNonRemovingDeskGuid = base::GUID::GenerateRandomV4();
 
 }  // namespace
 
@@ -334,7 +342,8 @@ class FullRestoreReadAndSaveTest : public testing::Test {
   std::unique_ptr<aura::Window> CreateWindowInfo(
       int32_t id,
       int32_t index,
-      ash::AppType app_type = ash::AppType::BROWSER) {
+      ash::AppType app_type = ash::AppType::BROWSER,
+      base::GUID desk_guid = base::GUID()) {
     std::unique_ptr<aura::Window> window(
         aura::test::CreateTestWindowWithId(id, nullptr));
     app_restore::WindowInfo window_info;
@@ -342,6 +351,7 @@ class FullRestoreReadAndSaveTest : public testing::Test {
     window->SetProperty(aura::client::kAppType, static_cast<int>(app_type));
     window->SetProperty(app_restore::kWindowIdKey, id);
     window_info.activation_index = index;
+    window_info.desk_guid = desk_guid;
     full_restore::SaveWindowInfo(window_info);
     return window;
   }
@@ -1166,6 +1176,46 @@ TEST_F(FullRestoreReadAndSaveTest,
   const auto* restore_data = GetRestoreData(GetPath());
   ASSERT_TRUE(restore_data);
   EXPECT_TRUE(restore_data->app_id_to_launch_list().empty());
+}
+
+// Verifies that saving a removing desk's GUID in `RestoreData` allows for us to
+// prevent the windows in that desk from being restored.
+TEST_F(FullRestoreReadAndSaveTest, PreventWindowsOnRemovingDeskFromRestoring) {
+  FullRestoreSaveHandler* save_handler = GetSaveHandler();
+  base::OneShotTimer* timer = save_handler->GetTimerForTesting();
+
+  // Add app launch info, and verify the timer starts.
+  AddAppLaunchInfo(GetPath(), kId1);
+  ASSERT_TRUE(timer->IsRunning());
+
+  // Add one more app launch info, and verify the timer is still running.
+  AddAppLaunchInfo(GetPath(), kId2);
+  ASSERT_TRUE(timer->IsRunning());
+
+  // Create two windows. Establish that `window1` will be on the removing desk
+  // and `window2` will be on the non-removing desk.
+  std::unique_ptr<aura::Window> window1 = CreateWindowInfo(
+      kId1, kActivationIndex1, ash::AppType::BROWSER, kRemovingDeskGuid);
+  std::unique_ptr<aura::Window> window2 = CreateWindowInfo(
+      kId2, kActivationIndex2, ash::AppType::BROWSER, kNonRemovingDeskGuid);
+
+  // Establish that the desk with `kRemovingDeskGuid` as its GUID is being
+  // removed.
+  save_handler->SaveRemovingDeskGuid(kRemovingDeskGuid);
+
+  // Simulate timeout, which should trigger a save, and verify the timer stops.
+  timer->FireNow();
+  task_environment().RunUntilIdle();
+
+  ReadFromFile(GetPath());
+
+  // Verify the restore data can be read correctly.
+  const auto* restore_data = GetRestoreData(GetPath());
+  ASSERT_TRUE(restore_data);
+
+  // The launch list in `restore_data` should only have `window2`.
+  EXPECT_THAT(restore_data->app_id_to_launch_list(),
+              ElementsAre(Pair(kAppId, ElementsAre(Pair(kId2, testing::_)))));
 }
 
 }  // namespace full_restore

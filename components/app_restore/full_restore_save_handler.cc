@@ -326,6 +326,16 @@ void FullRestoreSaveHandler::SaveWindowInfo(
   ModifyWindowInfo(window_id, window_info);
 }
 
+void FullRestoreSaveHandler::SaveRemovingDeskGuid(
+    const base::GUID& removing_desk_guid) {
+  profile_path_to_restore_data_[active_profile_path_].set_removing_desk_guid(
+      removing_desk_guid);
+
+  pending_save_profile_paths_.insert(active_profile_path_);
+
+  MaybeStartSaveTimer(active_profile_path_);
+}
+
 void FullRestoreSaveHandler::OnLacrosChromeAppWindowAdded(
     const std::string& app_id,
     const std::string& window_id) {

@@ -13,6 +13,7 @@
 
 #include "base/component_export.h"
 #include "base/containers/flat_map.h"
+#include "base/guid.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_multi_source_observation.h"
@@ -109,6 +110,10 @@ class COMPONENT_EXPORT(APP_RESTORE) FullRestoreSaveHandler
 
   // Saves |window_info| to |profile_path_to_restore_data_|.
   void SaveWindowInfo(const app_restore::WindowInfo& window_info);
+
+  // Saves `removing_desk_guid` to the restore data for the currently active
+  // profile path.
+  void SaveRemovingDeskGuid(const base::GUID& removing_desk_guid);
 
   // Invoked when an Chrome app Lacros window is created. `app_id` is the
   // AppService id, and `window_id` is the wayland app_id property for the

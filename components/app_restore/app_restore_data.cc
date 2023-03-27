@@ -32,6 +32,7 @@ constexpr char kAppNameKey[] = "app_name";
 constexpr char kActivationIndexKey[] = "index";
 constexpr char kFirstNonPinnedTabIndexKey[] = "first_non_pinned_tab_index";
 constexpr char kDeskIdKey[] = "desk_id";
+constexpr char kDeskGuidKey[] = "desk_guid";
 constexpr char kCurrentBoundsKey[] = "current_bounds";
 constexpr char kWindowStateTypeKey[] = "window_state_type";
 constexpr char kPreMinimizedShowStateTypeKey[] = "pre_min_state";
@@ -219,6 +220,14 @@ absl::optional<ui::WindowShowState> GetPreMinimizedShowStateTypeFromDict(
              : absl::nullopt;
 }
 
+base::GUID GetGuidValueFromDict(const base::Value::Dict& dict,
+                                const std::string& key_name) {
+  if (const std::string* value = dict.FindString(key_name)) {
+    return base::GUID::ParseCaseInsensitive(*value);
+  }
+  return base::GUID();
+}
+
 }  // namespace
 
 AppRestoreData::AppRestoreData() = default;
@@ -239,6 +248,7 @@ AppRestoreData::AppRestoreData(base::Value::Dict&& data) {
   first_non_pinned_tab_index =
       GetIntValueFromDict(data, kFirstNonPinnedTabIndexKey);
   desk_id = GetIntValueFromDict(data, kDeskIdKey);
+  desk_guid = GetGuidValueFromDict(data, kDeskGuidKey);
   current_bounds = GetBoundsRectFromDict(data, kCurrentBoundsKey);
   window_state_type = GetWindowStateTypeFromDict(data);
   pre_minimized_show_state_type = GetPreMinimizedShowStateTypeFromDict(data);
@@ -329,6 +339,10 @@ std::unique_ptr<AppRestoreData> AppRestoreData::Clone() const {
 
   if (desk_id.has_value())
     data->desk_id = desk_id.value();
+
+  if (desk_guid.is_valid()) {
+    data->desk_guid = desk_guid;
+  }
 
   if (current_bounds.has_value())
     data->current_bounds = current_bounds.value();
@@ -427,6 +441,10 @@ base::Value AppRestoreData::ConvertToValue() const {
   if (desk_id.has_value())
     launch_info_dict.Set(kDeskIdKey, desk_id.value());
 
+  if (desk_guid.is_valid()) {
+    launch_info_dict.Set(kDeskGuidKey, desk_guid.AsLowercaseString());
+  }
+
   if (current_bounds.has_value()) {
     launch_info_dict.Set(kCurrentBoundsKey,
                          ConvertRectToList(current_bounds.value()));
@@ -483,6 +501,10 @@ void AppRestoreData::ModifyWindowInfo(const WindowInfo& window_info) {
   if (window_info.desk_id.has_value())
     desk_id = window_info.desk_id.value();
 
+  if (window_info.desk_guid.is_valid()) {
+    desk_guid = window_info.desk_guid;
+  }
+
   if (window_info.current_bounds.has_value())
     current_bounds = window_info.current_bounds.value();
 
@@ -519,6 +541,7 @@ void AppRestoreData::ModifyThemeColor(uint32_t window_primary_color,
 void AppRestoreData::ClearWindowInfo() {
   activation_index.reset();
   desk_id.reset();
+  desk_guid = base::GUID();
   current_bounds.reset();
   window_state_type.reset();
   pre_minimized_show_state_type.reset();
@@ -561,6 +584,10 @@ std::unique_ptr<WindowInfo> AppRestoreData::GetWindowInfo() const {
 
   if (desk_id.has_value())
     window_info->desk_id = desk_id.value();
+
+  if (desk_guid.is_valid()) {
+    window_info->desk_guid = desk_guid;
+  }
 
   if (current_bounds.has_value())
     window_info->current_bounds = current_bounds.value();
@@ -635,7 +662,8 @@ bool AppRestoreData::operator==(const AppRestoreData& other) const {
          app_type_browser == other.app_type_browser &&
          app_name == other.app_name && title == other.title &&
          activation_index == other.activation_index &&
-         desk_id == other.desk_id && current_bounds == other.current_bounds &&
+         desk_id == other.desk_id && desk_guid == other.desk_guid &&
+         current_bounds == other.current_bounds &&
          window_state_type == other.window_state_type &&
          pre_minimized_show_state_type == other.pre_minimized_show_state_type &&
          snap_percentage == other.snap_percentage &&

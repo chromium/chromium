@@ -75,4 +75,13 @@ void OnLacrosChromeAppWindowRemoved(const std::string& app_id,
       app_id, window_id);
 }
 
+void SaveRemovingDeskGuid(const base::GUID& removing_desk_guid) {
+  FullRestoreSaveHandler::GetInstance()->SaveRemovingDeskGuid(
+      removing_desk_guid);
+}
+
+void ResetRemovingDeskGuid() {
+  FullRestoreSaveHandler::GetInstance()->SaveRemovingDeskGuid(base::GUID());
+}
+
 }  // namespace full_restore

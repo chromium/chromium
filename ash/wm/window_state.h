@@ -14,6 +14,7 @@
 #include "ash/wm/drag_details.h"
 #include "ash/wm/multi_display/persistent_window_info.h"
 #include "ash/wm/wm_metrics.h"
+#include "base/auto_reset.h"
 #include "base/gtest_prod_util.h"
 #include "base/observer_list.h"
 #include "base/time/time.h"
@@ -440,6 +441,9 @@ class ASH_EXPORT WindowState : public aura::WindowObserver {
   // Called when `window_` is dragged to maximized to track if it's a
   // mis-triggered drag to maximize behavior.
   void TrackDragToMaximizeBehavior();
+
+  // Allows for caller to prevent property changes within scope.
+  base::AutoReset<bool> GetScopedIgnorePropertyChange();
 
   // Returns a pointer to DragDetails during drag operations.
   const DragDetails* drag_details() const { return drag_details_.get(); }

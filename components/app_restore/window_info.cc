@@ -40,6 +40,11 @@ std::string ToPrefixedString(absl::optional<std::u16string> val,
   return prefix + ": " + base::UTF16ToASCII(val.value_or(u""));
 }
 
+std::string ToPrefixedString(base::GUID val, const std::string& prefix) {
+  return prefix + ": " +
+         (val.is_valid() ? val : base::GUID()).AsLowercaseString();
+}
+
 }  // namespace
 
 WindowInfo::ArcExtraInfo::ArcExtraInfo() = default;
@@ -58,6 +63,7 @@ WindowInfo* WindowInfo::Clone() {
   new_window_info->window = window;
   new_window_info->activation_index = activation_index;
   new_window_info->desk_id = desk_id;
+  new_window_info->desk_guid = desk_guid;
   new_window_info->current_bounds = current_bounds;
   new_window_info->window_state_type = window_state_type;
   new_window_info->pre_minimized_show_state_type =
@@ -72,6 +78,7 @@ WindowInfo* WindowInfo::Clone() {
 std::string WindowInfo::ToString() const {
   return ToPrefixedString(activation_index, "Activation index") +
          ToPrefixedString(desk_id, "Desk") +
+         ToPrefixedString(desk_guid, "Desk guid") +
          ToPrefixedString(current_bounds, "Current bounds") +
          ToPrefixedString(window_state_type, "Window state") +
          ToPrefixedString(pre_minimized_show_state_type,
