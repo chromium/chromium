@@ -172,9 +172,10 @@ class CONTENT_EXPORT PrefetchContainer {
   // The |PrefetchDocumentManager| that requested |this|.
   PrefetchDocumentManager* GetPrefetchDocumentManager() const;
 
-  // Called when a navigation is started that could pottentially use this
-  // prefetch.
-  void OnNavigationToPrefetch() { navigated_to_ = true; }
+  // Called when |PrefetchService::GetPrefetchToServe| and
+  // |PrefetchService::ReturnPrefetchToServe| with |this|.
+  void OnGetPrefetchToServe(bool blocked_until_head);
+  void OnReturnPrefetchToServe(bool served);
 
   // Returns whether or not this prefetch has been considered to serve for a
   // navigation in the past. If it has, then it shouldn't be used for any future
@@ -418,6 +419,10 @@ class CONTENT_EXPORT PrefetchContainer {
   // triggered by SpeculationRules.
   const absl::optional<base::UnguessableToken>
       initiator_devtools_navigation_token_;
+
+  // The time at which |PrefetchService| started blocking until the head of
+  // |this| was received.
+  absl::optional<base::TimeTicks> blocked_until_head_start_time_;
 
   base::WeakPtrFactory<PrefetchContainer> weak_method_factory_{this};
 };

@@ -27,6 +27,36 @@ chromium-metrics-reviews@google.com.
   <variant name="TLS" summary="TLS canary check"/>
 </variants>
 
+<variants name="SpeculationEagerness">
+  <variant name="Conservative" summary="Conservative"/>
+  <variant name="Eager" summary="Eager"/>
+  <variant name="Moderate" summary="Moderate"/>
+</variants>
+
+<histogram
+    name="PrefetchProxy.AfterClick.BlockUntilHeadDuration.{WasServed}.{SpeculationEagerness}"
+    units="ms" expires_after="2023-09-10">
+  <owner>curranmax@chromium.org</owner>
+  <owner>ryansturm@chromium.org</owner>
+  <owner>spelchat@chromium.org</owner>
+  <summary>
+    If a prefetch request has started but the head of the prefetch response has
+    not been received yet when a navigation to a URL that matches the prefetch,
+    then the prefetch service will block until the head of the prefetch response
+    is received and then decide to serve or not serve the prefetch.
+
+    This histogram records the amount of time that the prefetch service blocked
+    until the head of the prefetch response was received. This histogram is only
+    recorded for prefetches that are {WasServed} and with an Eagerness of
+    {SpeculationEagerness}.
+  </summary>
+  <token key="WasServed">
+    <variant name="NotServed" summary="not served"/>
+    <variant name="Served" summary="served"/>
+  </token>
+  <token key="SpeculationEagerness" variants="SpeculationEagerness"/>
+</histogram>
+
 <histogram
     name="PrefetchProxy.AfterClick.Mainframe.CookieCopyStartToInterceptorCheck"
     units="ms" expires_after="2024-04-25">
@@ -115,6 +145,25 @@ chromium-metrics-reviews@google.com.
     after a prefetched link is navigated to. Note this does not include the time
     it takes to read the cookies from the isolated network context.
   </summary>
+</histogram>
+
+<histogram
+    name="PrefetchProxy.AfterClick.WasBlockedUntilHeadWhenServing.{SpeculationEagerness}"
+    enum="Boolean" expires_after="2023-09-10">
+  <owner>curranmax@chromium.org</owner>
+  <owner>ryansturm@chromium.org</owner>
+  <owner>spelchat@chromium.org</owner>
+  <summary>
+    If a prefetch request has started but the head of the prefetch response has
+    not been received yet when a navigation to a URL that matches the prefetch,
+    then the prefetch service will block until the head of the prefetch response
+    is received and then decide to serve or not serve the prefetch.
+
+    This histogram records whether or not prefetch service will block or not for
+    a prefetch. This histogram is only for prefetches with an Eagerness of
+    {SpeculationEagerness}.
+  </summary>
+  <token key="SpeculationEagerness" variants="SpeculationEagerness"/>
 </histogram>
 
 <histogram

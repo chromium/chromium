@@ -70,6 +70,31 @@ bool PrefetchStreamingURLLoader::Servable(
               response_complete_time_.value() + cacheable_duration);
 }
 
+bool PrefetchStreamingURLLoader::Failed() const {
+  switch (status_) {
+    case PrefetchStreamingURLLoaderStatus::kWaitingOnHead:
+    case PrefetchStreamingURLLoaderStatus::kHeadReceivedWaitingOnBody:
+    case PrefetchStreamingURLLoaderStatus::kSuccessfulNotServed:
+    case PrefetchStreamingURLLoaderStatus::kSuccessfulServedAfterCompletion:
+    case PrefetchStreamingURLLoaderStatus::kSuccessfulServedBeforeCompletion:
+    case PrefetchStreamingURLLoaderStatus::kPrefetchWasDecoy:
+    case PrefetchStreamingURLLoaderStatus::kFollowRedirect:
+    case PrefetchStreamingURLLoaderStatus::kPauseRedirectForEligibilityCheck:
+      return false;
+    case PrefetchStreamingURLLoaderStatus::kFailedInvalidHead:
+    case PrefetchStreamingURLLoaderStatus::kFailedInvalidHeaders:
+    case PrefetchStreamingURLLoaderStatus::kFailedNon2XX:
+    case PrefetchStreamingURLLoaderStatus::kFailedMIMENotSupported:
+    case PrefetchStreamingURLLoaderStatus::kFailedNetError:
+    case PrefetchStreamingURLLoaderStatus::kFailedNetErrorButServed:
+    case PrefetchStreamingURLLoaderStatus::kFailedInvalidRedirect:
+      return true;
+    case PrefetchStreamingURLLoaderStatus::kRedirected_DEPRECATED:
+      NOTREACHED();
+      return true;
+  }
+}
+
 void PrefetchStreamingURLLoader::DisconnectPrefetchURLLoaderMojo() {
   prefetch_url_loader_.reset();
   prefetch_url_loader_client_receiver_.reset();
