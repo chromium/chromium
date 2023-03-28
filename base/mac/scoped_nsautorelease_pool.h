@@ -6,21 +6,23 @@
 #define BASE_MAC_SCOPED_NSAUTORELEASE_POOL_H_
 
 #include "base/base_export.h"
-
-#if defined(__OBJC__)
-@class NSAutoreleasePool;
-#else  // __OBJC__
-class NSAutoreleasePool;
-#endif  // __OBJC__
+#include "base/threading/thread_checker.h"
 
 namespace base::mac {
 
-// ScopedNSAutoreleasePool allocates an NSAutoreleasePool when instantiated and
-// sends it a -drain message when destroyed.  This allows an autorelease pool to
-// be maintained in ordinary C++ code without bringing in any direct Objective-C
-// dependency.
+// ScopedNSAutoreleasePool creates an autorelease pool when instantiated and
+// pops it when destroyed.  This allows an autorelease pool to be maintained in
+// ordinary C++ code without bringing in any direct Objective-C dependency.
 //
-// Use only in C++ code; use @autoreleasepool in Obj-C(++) code.
+// Before using, please be aware that the semantics of autorelease pools do not
+// match the semantics of a C++ class. In particular, recycling or destructing a
+// pool lower on the stack destroys all pools higher on the stack, which does
+// not mesh well with the existence of C++ objects for each pool.
+//
+// TODO(https://crbug.com/1424190): Enforce stack-only use via the
+// STACK_ALLOCATED annotation.
+//
+// Use this class only in C++ code; use @autoreleasepool in Obj-C(++) code.
 
 class BASE_EXPORT ScopedNSAutoreleasePool {
  public:
@@ -28,16 +30,21 @@ class BASE_EXPORT ScopedNSAutoreleasePool {
 
   ScopedNSAutoreleasePool(const ScopedNSAutoreleasePool&) = delete;
   ScopedNSAutoreleasePool& operator=(const ScopedNSAutoreleasePool&) = delete;
+  ScopedNSAutoreleasePool(ScopedNSAutoreleasePool&&) = delete;
+  ScopedNSAutoreleasePool& operator=(ScopedNSAutoreleasePool&&) = delete;
 
   ~ScopedNSAutoreleasePool();
 
-  // Clear out the pool in case its position on the stack causes it to be
-  // alive for long periods of time (such as the entire length of the app).
-  // Only use then when you're certain the items currently in the pool are
-  // no longer needed.
+  // Clear out the pool in case its position on the stack causes it to be alive
+  // for long periods of time (such as the entire length of the app). Only use
+  // then when you're certain the items currently in the pool are no longer
+  // needed.
   void Recycle();
+
  private:
-  NSAutoreleasePool* autorelease_pool_;
+  void* autorelease_pool_ GUARDED_BY_CONTEXT(thread_checker_);
+
+  THREAD_CHECKER(thread_checker_);
 };
 
 }  // namespace base::mac
