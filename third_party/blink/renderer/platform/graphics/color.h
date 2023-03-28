@@ -98,6 +98,8 @@ class PLATFORM_EXPORT Color {
     // to 6.0, and the rest are in the rance from 0.0 to 1.0.
     // interval.
     kHWB,
+    // An uninitialized color.
+    kNone,
   };
 
   static bool IsColorFunction(ColorSpace color_space) {
@@ -193,28 +195,6 @@ class PLATFORM_EXPORT Color {
                         absl::optional<float> b,
                         absl::optional<float> a);
 
-  enum class ColorInterpolationSpace : uint8_t {
-    // Linear in light intensity
-    kXYZD65,
-    kXYZD50,
-    kSRGBLinear,
-    // Perceptually uniform
-    kLab,
-    kOklab,
-    // Maximizing chroma
-    kLch,
-    kOklch,
-    // Standard RGB
-    kSRGB,
-    // Polar spaces
-    kHSL,
-    kHWB,
-    // Legacy RGB. Like kSRGB, but serialized differently.
-    kSRGBLegacy,
-    // Not specified
-    kNone,
-  };
-  ColorInterpolationSpace GetColorInterpolationSpace() const;
   enum class HueInterpolationMethod : uint8_t {
     kShorter,
     kLonger,
@@ -225,7 +205,7 @@ class PLATFORM_EXPORT Color {
   // Creates a color with the Color-Mix method in CSS Color 5. This will produce
   // an interpolation between two colors, and apply an alpha multiplier if the
   // proportion was not 100% when parsing.
-  static Color FromColorMix(ColorInterpolationSpace interpolation_space,
+  static Color FromColorMix(ColorSpace interpolation_space,
                             absl::optional<HueInterpolationMethod> hue_method,
                             Color color1,
                             Color color2,
@@ -244,7 +224,7 @@ class PLATFORM_EXPORT Color {
   // color1 and 1.0 returns color2. It is unbounded, so it is possible to
   // interpolate beyond these bounds with percentages outside the range [0, 1].
   static Color InterpolateColors(
-      ColorInterpolationSpace interpolation_space,
+      ColorSpace interpolation_space,
       absl::optional<HueInterpolationMethod> hue_method,
       Color color1,
       Color color2,
@@ -266,6 +246,12 @@ class PLATFORM_EXPORT Color {
   // Canvas colors are serialized somewhat differently:
   // https://html.spec.whatwg.org/multipage/canvas.html#serialisation-of-a-color
   String SerializeAsCanvasColor() const;
+  // For appending color interpolation spaces and hue interpolation methods to
+  // the serialization of gradients and color-mix functions.
+  static String SerializeInterpolationSpace(
+      Color::ColorSpace color_space,
+      Color::HueInterpolationMethod hue_interpolation_method =
+          Color::HueInterpolationMethod::kShorter);
 
   // Returns the color serialized as either #RRGGBB or #RRGGBBAA. The latter
   // format is not a valid CSS color, and should only be seen in DRT dumps.
@@ -347,20 +333,19 @@ class PLATFORM_EXPORT Color {
   inline bool operator!=(const Color& other) const { return !(*this == other); }
 
   unsigned GetHash() const;
+  // Returns true if the color is of a type that predates CSS Color 4. Includes
+  // rgb(), rgba(), hex color, named color, hsl() and hwb() types. These colors
+  // are always assumed to be in the sRGB color space and interpolate and
+  // serialize differently from other color types.
   bool IsLegacyColor() const;
 
-  // For appending color interpolation spaces to the serialization of gradients
-  // and color-mix functions.
-  static String ColorInterpolationSpaceToString(
-      Color::ColorInterpolationSpace color_space,
-      Color::HueInterpolationMethod hue_interpolation_method =
-          Color::HueInterpolationMethod::kShorter);
+  // What colorspace space a color wants to interpolate in. This is not
+  // equivalent to the colorspace of the color itself.
+  // https://www.w3.org/TR/css-color-4/#interpolation
+  Color::ColorSpace GetColorInterpolationSpace() const;
 
   ColorSpace GetColorSpace() const { return color_space_; }
-  static ColorSpace ColorInterpolationSpaceToColorSpace(
-      Color::ColorInterpolationSpace color_interpolation_space);
-  void ConvertToColorInterpolationSpace(
-      ColorInterpolationSpace interpolation_space);
+  void ConvertToColorSpace(ColorSpace interpolation_space);
 
   FRIEND_TEST_ALL_PREFIXES(BlinkColor, ColorMixNone);
   FRIEND_TEST_ALL_PREFIXES(BlinkColor, ColorInterpolation);

@@ -19,13 +19,12 @@ namespace cssvalue {
 // https://www.w3.org/TR/css-color-5/#color-mix
 class CORE_EXPORT CSSColorMixValue : public CSSValue {
  public:
-  CSSColorMixValue(
-      const CSSValue* color1,
-      const CSSValue* color2,
-      const CSSPrimitiveValue* p1,
-      const CSSPrimitiveValue* p2,
-      const Color::ColorInterpolationSpace color_interpolation_space,
-      const Color::HueInterpolationMethod hue_interpolation_method)
+  CSSColorMixValue(const CSSValue* color1,
+                   const CSSValue* color2,
+                   const CSSPrimitiveValue* p1,
+                   const CSSPrimitiveValue* p2,
+                   const Color::ColorSpace color_interpolation_space,
+                   const Color::HueInterpolationMethod hue_interpolation_method)
       : CSSValue(kColorMixClass),
         color1_(color1),
         color2_(color2),
@@ -44,7 +43,7 @@ class CORE_EXPORT CSSColorMixValue : public CSSValue {
   const CSSValue& Color2() const { return *color2_; }
   const CSSPrimitiveValue* Percentage1() const { return percentage1_; }
   const CSSPrimitiveValue* Percentage2() const { return percentage2_; }
-  Color::ColorInterpolationSpace ColorInterpolationSpace() const {
+  Color::ColorSpace ColorInterpolationSpace() const {
     return color_interpolation_space_;
   }
   Color::HueInterpolationMethod HueInterpolationMethod() const {
@@ -61,7 +60,7 @@ class CORE_EXPORT CSSColorMixValue : public CSSValue {
   Member<const CSSValue> color2_;
   Member<const CSSPrimitiveValue> percentage1_;
   Member<const CSSPrimitiveValue> percentage2_;
-  const Color::ColorInterpolationSpace color_interpolation_space_;
+  const Color::ColorSpace color_interpolation_space_;
   const Color::HueInterpolationMethod hue_interpolation_method_;
 };
 

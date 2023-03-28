@@ -67,9 +67,7 @@ class CORE_EXPORT InterpolableColor : public InterpolableValue {
   double Param1() const { return param1_.Value(); }
   double Param2() const { return param2_.Value(); }
   double Alpha() const { return alpha_.Value(); }
-  Color::ColorInterpolationSpace ColorInterpolationSpace() const {
-    return color_interpolation_space_;
-  }
+  Color::ColorSpace ColorSpace() const { return color_space_; }
 
   double GetColorFraction(ColorKeyword keyword) const {
     int keyword_index = static_cast<int>(keyword);
@@ -91,10 +89,9 @@ class CORE_EXPORT InterpolableColor : public InterpolableValue {
                     InterpolableNumber param2,
                     InterpolableNumber alpha,
                     InterpolableNumberList color_keyword_fractions,
-                    Color::ColorInterpolationSpace color_interpolation_space);
+                    Color::ColorSpace color_space);
 
-  void ConvertToColorInterpolationSpace(
-      Color::ColorInterpolationSpace color_interpolation_space);
+  void ConvertToColorSpace(Color::ColorSpace color_space);
   InterpolableColor* RawClone() const final;
   InterpolableColor* RawCloneAndZero() const final;
 
@@ -107,8 +104,7 @@ class CORE_EXPORT InterpolableColor : public InterpolableValue {
 
   InterpolableNumberList color_keyword_fractions_;
 
-  Color::ColorInterpolationSpace color_interpolation_space_ =
-      Color::ColorInterpolationSpace::kNone;
+  Color::ColorSpace color_space_ = Color::ColorSpace::kNone;
 };
 
 template <>

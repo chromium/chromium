@@ -80,8 +80,7 @@ class CORE_EXPORT StyleColor {
     Color Resolve(const Color& current_color) const;
 
    private:
-    Color::ColorInterpolationSpace color_interpolation_space_ =
-        Color::ColorInterpolationSpace::kNone;
+    Color::ColorSpace color_interpolation_space_ = Color::ColorSpace::kNone;
     Color::HueInterpolationMethod hue_interpolation_method_ =
         Color::HueInterpolationMethod::kShorter;
     ColorOrUnresolvedColorMix color1_;

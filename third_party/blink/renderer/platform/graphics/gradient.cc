@@ -144,34 +144,34 @@ SkGradientShader::Interpolation Gradient::ResolveSkInterpolation() const {
   SkGradientShader::Interpolation sk_interpolation;
 
   switch (color_space_interpolation_space_) {
-    case Color::ColorInterpolationSpace::kXYZD65:
-    case Color::ColorInterpolationSpace::kXYZD50:
-    case Color::ColorInterpolationSpace::kSRGBLinear:
+    case Color::ColorSpace::kXYZD65:
+    case Color::ColorSpace::kXYZD50:
+    case Color::ColorSpace::kSRGBLinear:
       sk_interpolation.fColorSpace = sk_colorspace::kSRGBLinear;
       break;
-    case Color::ColorInterpolationSpace::kLab:
+    case Color::ColorSpace::kLab:
       sk_interpolation.fColorSpace = sk_colorspace::kLab;
       break;
-    case Color::ColorInterpolationSpace::kOklab:
+    case Color::ColorSpace::kOklab:
       sk_interpolation.fColorSpace = sk_colorspace::kOKLab;
       break;
-    case Color::ColorInterpolationSpace::kLch:
+    case Color::ColorSpace::kLch:
       sk_interpolation.fColorSpace = sk_colorspace::kLCH;
       break;
-    case Color::ColorInterpolationSpace::kOklch:
+    case Color::ColorSpace::kOklch:
       sk_interpolation.fColorSpace = sk_colorspace::kOKLCH;
       break;
-    case Color::ColorInterpolationSpace::kSRGB:
-    case Color::ColorInterpolationSpace::kSRGBLegacy:
+    case Color::ColorSpace::kSRGB:
+    case Color::ColorSpace::kSRGBLegacy:
       sk_interpolation.fColorSpace = sk_colorspace::kSRGB;
       break;
-    case Color::ColorInterpolationSpace::kHSL:
+    case Color::ColorSpace::kHSL:
       sk_interpolation.fColorSpace = sk_colorspace::kHSL;
       break;
-    case Color::ColorInterpolationSpace::kHWB:
+    case Color::ColorSpace::kHWB:
       sk_interpolation.fColorSpace = sk_colorspace::kHWB;
       break;
-    case Color::ColorInterpolationSpace::kNone:
+    case Color::ColorSpace::kNone:
       if (HasNonLegacyColor()) {
         // If no colorspace is provided and the gradient is not entirely
         // composed of legacy colors, Oklab is the default interpolation space.
@@ -180,6 +180,14 @@ SkGradientShader::Interpolation Gradient::ResolveSkInterpolation() const {
         // TODO(crbug.com/1379462): This should be kSRGB.
         sk_interpolation.fColorSpace = sk_colorspace::kDestination;
       }
+      break;
+    // We do not yet support interpolation in these spaces.
+    case Color::ColorSpace::kDisplayP3:
+    case Color::ColorSpace::kA98RGB:
+    case Color::ColorSpace::kProPhotoRGB:
+    case Color::ColorSpace::kRec2020:
+      NOTREACHED();
+      break;
   }
 
   switch (hue_interpolation_method_) {

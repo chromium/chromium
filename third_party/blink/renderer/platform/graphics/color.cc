@@ -25,6 +25,7 @@
 
 #include "third_party/blink/renderer/platform/graphics/color.h"
 
+#include "base/check_op.h"
 #include "base/notreached.h"
 #include "build/build_config.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -224,7 +225,7 @@ Color Color::FromHWBA(absl::optional<float> h,
 }
 
 // static
-Color Color::FromColorMix(Color::ColorInterpolationSpace interpolation_space,
+Color Color::FromColorMix(Color::ColorSpace interpolation_space,
                           absl::optional<HueInterpolationMethod> hue_method,
                           Color color1,
                           Color color2,
@@ -341,38 +342,8 @@ void Color::CarryForwardAnalogousMissingComponents(
 }
 
 // static
-Color::ColorSpace Color::ColorInterpolationSpaceToColorSpace(
-    Color::ColorInterpolationSpace color_interpolation_space) {
-  switch (color_interpolation_space) {
-    case (ColorInterpolationSpace::kXYZD65):
-      return ColorSpace::kXYZD65;
-    case (ColorInterpolationSpace::kXYZD50):
-      return ColorSpace::kXYZD50;
-    case (ColorInterpolationSpace::kSRGBLinear):
-      return ColorSpace::kSRGBLinear;
-    case (ColorInterpolationSpace::kLab):
-      return ColorSpace::kLab;
-    case (ColorInterpolationSpace::kOklab):
-      return ColorSpace::kOklab;
-    case (ColorInterpolationSpace::kLch):
-      return ColorSpace::kLch;
-    case (ColorInterpolationSpace::kOklch):
-      return ColorSpace::kOklch;
-    case (ColorInterpolationSpace::kHSL):
-      return ColorSpace::kHSL;
-    case (ColorInterpolationSpace::kHWB):
-      return ColorSpace::kHWB;
-    case (ColorInterpolationSpace::kSRGBLegacy):
-      return ColorSpace::kSRGBLegacy;
-    case (ColorInterpolationSpace::kSRGB):
-    case (ColorInterpolationSpace::kNone):
-      return ColorSpace::kSRGB;
-  }
-}
-
-// static
 Color Color::InterpolateColors(
-    Color::ColorInterpolationSpace interpolation_space,
+    Color::ColorSpace interpolation_space,
     absl::optional<HueInterpolationMethod> hue_method,
     Color color1,
     Color color2,
@@ -382,9 +353,9 @@ Color Color::InterpolateColors(
   DCHECK(percentage >= 0.0f && percentage <= 1.0f);
 
   const auto color1_prev_color_space = color1.GetColorSpace();
-  color1.ConvertToColorInterpolationSpace(interpolation_space);
+  color1.ConvertToColorSpace(interpolation_space);
   const auto color2_prev_color_space = color2.GetColorSpace();
-  color2.ConvertToColorInterpolationSpace(interpolation_space);
+  color2.ConvertToColorSpace(interpolation_space);
 
   CarryForwardAnalogousMissingComponents(color1, color1_prev_color_space);
   CarryForwardAnalogousMissingComponents(color2, color2_prev_color_space);
@@ -420,8 +391,8 @@ Color Color::InterpolateColors(
       (color1.param0_is_none_ || color2.param0_is_none_)
           ? HandleNoneInterpolation(color1.param0_, color1.param0_is_none_,
                                     color2.param0_, color2.param0_is_none_)
-      : (interpolation_space == ColorInterpolationSpace::kHSL ||
-         interpolation_space == ColorInterpolationSpace::kHWB)
+      : (interpolation_space == ColorSpace::kHSL ||
+         interpolation_space == ColorSpace::kHWB)
           // TODO(aaronhk): Historically we store hue in the range [0, 6] for
           // hsl and hwb. This is so that primary and secondary colors are
           // integers. With the addition of lch and oklch, this makes less
@@ -442,8 +413,8 @@ Color Color::InterpolateColors(
       (color1.param2_is_none_ || color2.param2_is_none_)
           ? HandleNoneInterpolation(color1.param2_, color1.param2_is_none_,
                                     color2.param2_, color2.param2_is_none_)
-      : (interpolation_space == ColorInterpolationSpace::kLch ||
-         interpolation_space == ColorInterpolationSpace::kOklch)
+      : (interpolation_space == ColorSpace::kLch ||
+         interpolation_space == ColorSpace::kOklch)
           ? HueInterpolation(color1.param2_, color2.param2_, percentage,
                              hue_method.value())
           : blink::Blend(color1.param2_, color2.param2_, percentage);
@@ -456,10 +427,8 @@ Color Color::InterpolateColors(
           ? absl::optional<float>(absl::nullopt)
           : blink::Blend(alpha1.value(), alpha2.value(), percentage);
 
-  Color result;
-  ColorSpace result_color_space =
-      ColorInterpolationSpaceToColorSpace(interpolation_space);
-  result = FromColorSpace(result_color_space, param0, param1, param2, alpha);
+  Color result =
+      FromColorSpace(interpolation_space, param0, param1, param2, alpha);
 
   result.UnpremultiplyColor();
 
@@ -500,6 +469,9 @@ std::tuple<float, float, float> Color::ExportAsXYZD50Floats() const {
       auto [x, y, z] = gfx::OklabToXYZD65(l, a, b);
       return gfx::XYZD65ToD50(x, y, z);
     }
+    case ColorSpace::kNone:
+      NOTREACHED();
+      return std::tuple<float, float, float>();
     case ColorSpace::kHSL:
     case ColorSpace::kHWB:
       SkColor4f srgb_color = toSkColor4f();
@@ -507,15 +479,13 @@ std::tuple<float, float, float> Color::ExportAsXYZD50Floats() const {
   }
 }
 
-void Color::ConvertToColorInterpolationSpace(
-    Color::ColorInterpolationSpace interpolation_space) {
-  if (color_space_ ==
-      ColorInterpolationSpaceToColorSpace(interpolation_space)) {
+void Color::ConvertToColorSpace(Color::ColorSpace destination_color_space) {
+  if (color_space_ == destination_color_space) {
     return;
   }
 
-  switch (interpolation_space) {
-    case ColorInterpolationSpace::kXYZD65: {
+  switch (destination_color_space) {
+    case ColorSpace::kXYZD65: {
       if (color_space_ == ColorSpace::kOklab) {
         std::tie(param0_, param1_, param2_) =
             gfx::OklabToXYZD65(param0_, param1_, param2_);
@@ -526,18 +496,18 @@ void Color::ConvertToColorInterpolationSpace(
       color_space_ = ColorSpace::kXYZD65;
       return;
     }
-    case ColorInterpolationSpace::kXYZD50: {
+    case ColorSpace::kXYZD50: {
       std::tie(param0_, param1_, param2_) = ExportAsXYZD50Floats();
       color_space_ = ColorSpace::kXYZD50;
       return;
     }
-    case ColorInterpolationSpace::kSRGBLinear: {
+    case ColorSpace::kSRGBLinear: {
       auto [x, y, z] = ExportAsXYZD50Floats();
       std::tie(param0_, param1_, param2_) = gfx::XYZD50TosRGBLinear(x, y, z);
       color_space_ = ColorSpace::kSRGBLinear;
       return;
     }
-    case ColorInterpolationSpace::kLab: {
+    case ColorSpace::kLab: {
       if (color_space_ == ColorSpace::kLch) {
         std::tie(param0_, param1_, param2_) =
             gfx::LchToLab(param0_, param1_, param2_);
@@ -548,11 +518,11 @@ void Color::ConvertToColorInterpolationSpace(
       color_space_ = ColorSpace::kLab;
       return;
     }
-    case ColorInterpolationSpace::kOklab:
+    case ColorSpace::kOklab:
     // As per CSS Color 4 Spec, "If the host syntax does not define what color
     // space interpolation should take place in, it defaults to OKLab".
     // (https://www.w3.org/TR/css-color-4/#interpolation-space)
-    case ColorInterpolationSpace::kNone: {
+    case ColorSpace::kNone: {
       if (color_space_ == ColorSpace::kOklab) {
         return;
       }
@@ -577,7 +547,7 @@ void Color::ConvertToColorInterpolationSpace(
       color_space_ = ColorSpace::kOklab;
       return;
     }
-    case ColorInterpolationSpace::kLch: {
+    case ColorSpace::kLch: {
       // Conversion to lch is done through lab.
       auto [l, a, b] = [&]() {
         if (color_space_ == ColorSpace::kLab) {
@@ -593,7 +563,7 @@ void Color::ConvertToColorInterpolationSpace(
       color_space_ = ColorSpace::kLch;
       return;
     }
-    case ColorInterpolationSpace::kOklch: {
+    case ColorSpace::kOklch: {
       if (color_space_ == ColorSpace::kOklab) {
         std::tie(param0_, param1_, param2_) =
             gfx::LabToLch(param0_, param1_, param2_);
@@ -617,31 +587,38 @@ void Color::ConvertToColorInterpolationSpace(
       color_space_ = ColorSpace::kOklch;
       return;
     }
-    case ColorInterpolationSpace::kSRGB:
-    case ColorInterpolationSpace::kSRGBLegacy: {
+    case ColorSpace::kSRGB:
+    case ColorSpace::kSRGBLegacy: {
       SkColor4f sRGB_color = toSkColor4f();
       param0_ = sRGB_color.fR;
       param1_ = sRGB_color.fG;
       param2_ = sRGB_color.fB;
-      color_space_ = (interpolation_space == ColorInterpolationSpace::kSRGB)
+      color_space_ = (destination_color_space == ColorSpace::kSRGB)
                          ? ColorSpace::kSRGB
                          : ColorSpace::kSRGBLegacy;
       return;
     }
-    case ColorInterpolationSpace::kHSL: {
+    case ColorSpace::kHSL: {
       SkColor4f sRGB_color = toSkColor4f();
       std::tie(param0_, param1_, param2_) =
           gfx::SRGBToHSL(sRGB_color.fR, sRGB_color.fG, sRGB_color.fB);
       color_space_ = ColorSpace::kHSL;
       return;
     }
-    case ColorInterpolationSpace::kHWB: {
+    case ColorSpace::kHWB: {
       SkColor4f sRGB_color = toSkColor4f();
       std::tie(param0_, param1_, param2_) =
           gfx::SRGBToHWB(sRGB_color.fR, sRGB_color.fG, sRGB_color.fB);
       color_space_ = ColorSpace::kHWB;
       return;
     }
+    // We do not yet interpolate in these spaces.
+    case ColorSpace::kDisplayP3:
+    case ColorSpace::kA98RGB:
+    case ColorSpace::kProPhotoRGB:
+    case ColorSpace::kRec2020:
+      NOTREACHED();
+      break;
   }
 }
 
@@ -829,6 +806,9 @@ String Color::ColorSpaceToString(Color::ColorSpace color_space) {
       return "HSL";
     case Color::ColorSpace::kHWB:
       return "HWB";
+    case ColorSpace::kNone:
+      NOTREACHED();
+      return "None";
   }
 }
 
@@ -1188,59 +1168,66 @@ bool Color::IsLegacyColor() const {
 // However, user agents may handle interpolation between legacy sRGB color
 // formats (hex colors, named colors, rgb(), hsl() or hwb() and the equivalent
 // alpha-including forms) in gamma-encoded sRGB space.
-Color::ColorInterpolationSpace Color::GetColorInterpolationSpace() const {
+Color::ColorSpace Color::GetColorInterpolationSpace() const {
   if (IsLegacyColor())
-    return ColorInterpolationSpace::kSRGB;
+    return ColorSpace::kSRGBLegacy;
 
-  return ColorInterpolationSpace::kOklab;
+  return ColorSpace::kOklab;
 }
 
 // static
-String Color::ColorInterpolationSpaceToString(
-    Color::ColorInterpolationSpace color_space,
+String Color::SerializeInterpolationSpace(
+    Color::ColorSpace color_space,
     Color::HueInterpolationMethod hue_interpolation_method) {
   StringBuilder result;
   switch (color_space) {
-    case Color::ColorInterpolationSpace::kLab:
+    case Color::ColorSpace::kLab:
       result.Append("lab");
       break;
-    case Color::ColorInterpolationSpace::kOklab:
+    case Color::ColorSpace::kOklab:
       result.Append("oklab");
       break;
-    case Color::ColorInterpolationSpace::kLch:
+    case Color::ColorSpace::kLch:
       result.Append("lch");
       break;
-    case Color::ColorInterpolationSpace::kOklch:
+    case Color::ColorSpace::kOklch:
       result.Append("oklch");
       break;
-    case Color::ColorInterpolationSpace::kSRGBLinear:
+    case Color::ColorSpace::kSRGBLinear:
       result.Append("srgb-linear");
       break;
-    case Color::ColorInterpolationSpace::kSRGB:
+    case Color::ColorSpace::kSRGB:
+    case Color::ColorSpace::kSRGBLegacy:
       result.Append("srgb");
       break;
-    case Color::ColorInterpolationSpace::kXYZD65:
+    case Color::ColorSpace::kXYZD65:
       result.Append("xyz-d65");
       break;
-    case Color::ColorInterpolationSpace::kXYZD50:
+    case Color::ColorSpace::kXYZD50:
       result.Append("xyz-d50");
       break;
-    case Color::ColorInterpolationSpace::kHSL:
+    case Color::ColorSpace::kHSL:
       result.Append("hsl");
       break;
-    case Color::ColorInterpolationSpace::kHWB:
+    case Color::ColorSpace::kHWB:
       result.Append("hwb");
       break;
-    case Color::ColorInterpolationSpace::kNone:
-    case Color::ColorInterpolationSpace::kSRGBLegacy:
+    case Color::ColorSpace::kNone:
       result.Append("none");
+      break;
+    // These are not yet implemented as interpolation spaces.
+    case ColorSpace::kDisplayP3:
+    case ColorSpace::kA98RGB:
+    case ColorSpace::kProPhotoRGB:
+    case ColorSpace::kRec2020:
+      NOTREACHED();
       break;
   }
 
-  if (color_space == Color::ColorInterpolationSpace::kLch ||
-      color_space == Color::ColorInterpolationSpace::kOklch ||
-      color_space == Color::ColorInterpolationSpace::kHSL ||
-      color_space == Color::ColorInterpolationSpace::kHWB) {
+  if (color_space == Color::ColorSpace::kLch ||
+      color_space == Color::ColorSpace::kOklch ||
+      color_space == Color::ColorSpace::kHSL ||
+      color_space == Color::ColorSpace::kHWB) {
     switch (hue_interpolation_method) {
       case Color::HueInterpolationMethod::kDecreasing:
         result.Append(" decreasing hue");

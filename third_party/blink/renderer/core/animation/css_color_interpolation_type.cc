@@ -71,8 +71,8 @@ std::tuple<double, double, double, double> AddPremultipliedColor(
     double alpha,
     double fraction,
     Color color,
-    Color::ColorInterpolationSpace color_interpolation_space) {
-  color.ConvertToColorInterpolationSpace(color_interpolation_space);
+    Color::ColorSpace color_space) {
+  color.ConvertToColorSpace(color_space);
   return std::make_tuple(
       param0 + fraction * color.Param0() * color.FloatAlpha(),
       param1 + fraction * color.Param1() * color.FloatAlpha(),
@@ -99,8 +99,7 @@ Color CSSColorInterpolationType::ResolveInterpolableColor(
   double param1 = color.Param1();
   double param2 = color.Param2();
   double alpha = color.Alpha();
-  Color::ColorInterpolationSpace color_interpolation_space =
-      color.ColorInterpolationSpace();
+  Color::ColorSpace color_space = color.ColorSpace();
 
   if (double currentcolor_fraction = color.GetColorFraction(
           InterpolableColor::ColorKeyword::kCurrentcolor)) {
@@ -126,27 +125,27 @@ Color CSSColorInterpolationType::ResolveInterpolableColor(
         param0, param1, param2, alpha, currentcolor_fraction,
         current_style_color.Resolve(Color(),
                                     state.StyleBuilder().UsedColorScheme()),
-        color_interpolation_space);
+        color_space);
   }
   const TextLinkColors& colors = state.GetDocument().GetTextLinkColors();
   if (double webkit_activelink_fraction = color.GetColorFraction(
           InterpolableColor::ColorKeyword::kWebkitActivelink)) {
     std::tie(param0, param1, param2, alpha) = AddPremultipliedColor(
         param0, param1, param2, alpha, webkit_activelink_fraction,
-        colors.ActiveLinkColor(), color_interpolation_space);
+        colors.ActiveLinkColor(), color_space);
   }
   if (double webkit_link_fraction = color.GetColorFraction(
           InterpolableColor::ColorKeyword::kWebkitLink)) {
     std::tie(param0, param1, param2, alpha) = AddPremultipliedColor(
         param0, param1, param2, alpha, webkit_link_fraction,
         is_visited ? colors.VisitedLinkColor() : colors.LinkColor(),
-        color_interpolation_space);
+        color_space);
   }
   if (double quirk_inherit_fraction = color.GetColorFraction(
           InterpolableColor::ColorKeyword::kQuirkInherit)) {
     std::tie(param0, param1, param2, alpha) = AddPremultipliedColor(
         param0, param1, param2, alpha, quirk_inherit_fraction,
-        colors.TextColor(), color_interpolation_space);
+        colors.TextColor(), color_space);
   }
 
   alpha = ClampTo<double>(alpha, 0, 1);
@@ -155,12 +154,10 @@ Color CSSColorInterpolationType::ResolveInterpolableColor(
   std::tie(param0, param1, param2) =
       UnpremultiplyColor(param0, param1, param2, alpha);
 
-  switch (color_interpolation_space) {
-    case Color::ColorInterpolationSpace::kSRGB:
-      return Color::FromRGBAFloat(param0, param1, param2, alpha);
-    case Color::ColorInterpolationSpace::kOklab:
-      return Color::FromColorSpace(Color::ColorSpace::kOklab, param0, param1,
-                                   param2, alpha);
+  switch (color_space) {
+    case Color::ColorSpace::kSRGBLegacy:
+    case Color::ColorSpace::kOklab:
+      return Color::FromColorSpace(color_space, param0, param1, param2, alpha);
     default:
       // There is no way for the user to specify which color spaces should be
       // used for interpolation, so sRGB (for legacy colors) and Oklab are

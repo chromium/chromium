@@ -20,10 +20,10 @@ InterpolableColor::InterpolableColor() = default;
 std::unique_ptr<InterpolableColor> InterpolableColor::Create(Color color) {
   std::unique_ptr<InterpolableColor> result =
       std::make_unique<InterpolableColor>();
-  result->color_interpolation_space_ = color.GetColorInterpolationSpace();
+  result->color_space_ = color.GetColorInterpolationSpace();
 
   // A color is not necessarily "in" it's desired interpolation space.
-  color.ConvertToColorInterpolationSpace(result->color_interpolation_space_);
+  color.ConvertToColorSpace(result->color_space_);
 
   // All params are stored pre-multiplied.
   // https://www.w3.org/TR/css-color-4/#interpolation-alpha
@@ -49,7 +49,7 @@ std::unique_ptr<InterpolableColor> InterpolableColor::Create(
   // the proper fraction of the keyword color is added in.
   result->color_keyword_fractions_.Set(keyword_index, InterpolableNumber(1));
   // Keyword colors are functionally legacy colors for interpolation.
-  result->color_interpolation_space_ = Color::ColorInterpolationSpace::kSRGB;
+  result->color_space_ = Color::ColorSpace::kSRGBLegacy;
 
   return result;
 }
@@ -83,28 +83,27 @@ InterpolableColor::InterpolableColor(
     InterpolableNumber param2,
     InterpolableNumber alpha,
     InterpolableNumberList color_keyword_fractions,
-    Color::ColorInterpolationSpace color_interpolation_space)
+    Color::ColorSpace color_space)
     : param0_(std::move(param0)),
       param1_(std::move(param1)),
       param2_(std::move(param2)),
       alpha_(std::move(alpha)),
       color_keyword_fractions_(std::move(color_keyword_fractions)),
-      color_interpolation_space_(color_interpolation_space) {
+      color_space_(color_space) {
   DCHECK_EQ(color_keyword_fractions_.length(), kColorKeywordCount);
 }
 
 InterpolableColor* InterpolableColor::RawClone() const {
   DCHECK_EQ(color_keyword_fractions_.length(), kColorKeywordCount);
   return new InterpolableColor(param0_, param1_, param2_, alpha_,
-                               color_keyword_fractions_.Clone(),
-                               color_interpolation_space_);
+                               color_keyword_fractions_.Clone(), color_space_);
 }
 
 InterpolableColor* InterpolableColor::RawCloneAndZero() const {
   return new InterpolableColor(InterpolableNumber(0), InterpolableNumber(0),
                                InterpolableNumber(0), InterpolableNumber(0),
                                color_keyword_fractions_.CloneAndZero(),
-                               color_interpolation_space_);
+                               color_space_);
 }
 
 Color InterpolableColor::GetColor() const {
@@ -118,16 +117,14 @@ Color InterpolableColor::GetColor() const {
   float param2 = param2_.Value() / alpha_.Value();
   float alpha = ClampTo<double>(alpha_.Value(), 0, 1);
 
-  switch (color_interpolation_space_) {
-    case Color::ColorInterpolationSpace::kSRGB:
-      return Color::FromRGBAFloat(param0, param1, param2, alpha);
-    case Color::ColorInterpolationSpace::kOklab:
-      return Color::FromColorSpace(Color::ColorSpace::kOklab, param0, param1,
-                                   param2, alpha);
+  switch (color_space_) {
+    // There is no way for the user to specify which color spaces should be
+    // used for interpolation, so sRGB (for legacy colors) and Oklab are the
+    // only possibilities.
+    case Color::ColorSpace::kSRGBLegacy:
+    case Color::ColorSpace::kOklab:
+      return Color::FromColorSpace(color_space_, param0, param1, param2, alpha);
     default:
-      // There is no way for the user to specify which color spaces should be
-      // used for interpolation, so sRGB (for legacy colors) and Oklab are the
-      // only possibilities.
       NOTREACHED();
       return Color();
   }
@@ -136,7 +133,7 @@ Color InterpolableColor::GetColor() const {
 void InterpolableColor::AssertCanInterpolateWith(
     const InterpolableValue& other) const {
   const InterpolableColor& other_color = To<InterpolableColor>(other);
-  DCHECK_EQ(color_interpolation_space_, other_color.color_interpolation_space_);
+  DCHECK_EQ(color_space_, other_color.color_space_);
   param0_.AssertCanInterpolateWith(other_color.param0_);
   param1_.AssertCanInterpolateWith(other_color.param1_);
   param2_.AssertCanInterpolateWith(other_color.param2_);
@@ -158,37 +155,36 @@ bool InterpolableColor::IsKeywordColor() const {
   return true;
 }
 
-void InterpolableColor::ConvertToColorInterpolationSpace(
-    Color::ColorInterpolationSpace color_interpolation_space) {
-  if (color_interpolation_space_ == color_interpolation_space)
+void InterpolableColor::ConvertToColorSpace(Color::ColorSpace color_space) {
+  if (color_space_ == color_space) {
     return;
+  }
 
   Color underlying_color = GetColor();
-  underlying_color.ConvertToColorInterpolationSpace(color_interpolation_space);
+  underlying_color.ConvertToColorSpace(color_space);
   param0_.Set(underlying_color.Param0() * underlying_color.FloatAlpha());
   param1_.Set(underlying_color.Param1() * underlying_color.FloatAlpha());
   param2_.Set(underlying_color.Param2() * underlying_color.FloatAlpha());
   alpha_.Set(underlying_color.FloatAlpha());
 
-  color_interpolation_space_ = color_interpolation_space;
+  color_space_ = color_space;
 }
 
 // static
 void InterpolableColor::SetupColorInterpolationSpaces(InterpolableColor& to,
                                                       InterpolableColor& from) {
   // In the event that the two colorspaces are the same, there's nothing to do.
-  if (to.color_interpolation_space_ == from.color_interpolation_space_)
+  if (to.color_space_ == from.color_space_) {
     return;
+  }
 
   // sRGB and Oklab are the only possible interpolation spaces, so one should be
   // in Oklab and we should convert the other.
-  DCHECK(from.color_interpolation_space_ ==
-             Color::ColorInterpolationSpace::kOklab ||
-         to.color_interpolation_space_ ==
-             Color::ColorInterpolationSpace::kOklab);
+  DCHECK(from.color_space_ == Color::ColorSpace::kOklab ||
+         to.color_space_ == Color::ColorSpace::kOklab);
 
-  to.ConvertToColorInterpolationSpace(Color::ColorInterpolationSpace::kOklab);
-  from.ConvertToColorInterpolationSpace(Color::ColorInterpolationSpace::kOklab);
+  to.ConvertToColorSpace(Color::ColorSpace::kOklab);
+  from.ConvertToColorSpace(Color::ColorSpace::kOklab);
 }
 
 void InterpolableColor::Scale(double scale) {
@@ -234,9 +230,8 @@ void InterpolableColor::Interpolate(const InterpolableValue& to,
   const InterpolableColor& to_color = To<InterpolableColor>(to);
   InterpolableColor& result_color = To<InterpolableColor>(result);
 
-  DCHECK_EQ(to_color.color_interpolation_space_, color_interpolation_space_);
-  DCHECK_EQ(result_color.color_interpolation_space_,
-            color_interpolation_space_);
+  DCHECK_EQ(to_color.color_space_, color_space_);
+  DCHECK_EQ(result_color.color_space_, color_space_);
 
   param0_.Interpolate(to_color.param0_, progress, result_color.param0_);
   param1_.Interpolate(to_color.param1_, progress, result_color.param1_);

@@ -64,8 +64,8 @@ String CSSColorMixValue::CustomCSSText() const {
   // Color keywords should be handled similarly.
   StringBuilder result;
   result.Append("color-mix(in ");
-  result.Append(Color::ColorInterpolationSpaceToString(
-      color_interpolation_space_, hue_interpolation_method_));
+  result.Append(Color::SerializeInterpolationSpace(color_interpolation_space_,
+                                                   hue_interpolation_method_));
   result.Append(", ");
   result.Append(color1_->CssText());
   if (percentage1_) {

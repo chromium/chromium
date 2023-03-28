@@ -219,7 +219,7 @@ struct CSSGradientValue::GradientDesc {
 static void ReplaceColorHintsWithColorStops(
     Vector<GradientStop>& stops,
     const HeapVector<CSSGradientColorStop, 2>& css_gradient_stops,
-    Color::ColorInterpolationSpace color_interpolation_space,
+    Color::ColorSpace color_interpolation_space,
     Color::HueInterpolationMethod hue_interpolation_method) {
   // This algorithm will replace each color interpolation hint with 9 regular
   // color stops. The color values for the new color stops will be calculated
@@ -238,8 +238,8 @@ static void ReplaceColorHintsWithColorStops(
 
   // Support legacy gradients with color hints when no interpolation space is
   // specified.
-  if (color_interpolation_space == Color::ColorInterpolationSpace::kNone) {
-    color_interpolation_space = Color::ColorInterpolationSpace::kSRGBLegacy;
+  if (color_interpolation_space == Color::ColorSpace::kNone) {
+    color_interpolation_space = Color::ColorSpace::kSRGBLegacy;
   }
 
   int index_offset = 0;
@@ -484,12 +484,12 @@ bool NormalizeAndAddStops(const Vector<GradientStop>& stops,
 // value for that point.
 void ClampNegativeOffsets(
     Vector<GradientStop>& stops,
-    Color::ColorInterpolationSpace color_interpolation_space,
+    Color::ColorSpace color_interpolation_space,
     Color::HueInterpolationMethod hue_interpolation_method) {
   // Support legacy gradients with color hints when no interpolation space is
   // specified.
-  if (color_interpolation_space == Color::ColorInterpolationSpace::kNone) {
-    color_interpolation_space = Color::ColorInterpolationSpace::kSRGBLegacy;
+  if (color_interpolation_space == Color::ColorSpace::kNone) {
+    color_interpolation_space = Color::ColorSpace::kSRGBLegacy;
   }
   float last_negative_offset = 0;
 
@@ -883,7 +883,7 @@ void CSSGradientValue::TraceAfterDispatch(blink::Visitor* visitor) const {
 }
 
 bool CSSGradientValue::ShouldSerializeColorSpace() const {
-  if (color_interpolation_space_ == Color::ColorInterpolationSpace::kNone) {
+  if (color_interpolation_space_ == Color::ColorSpace::kNone) {
     return false;
   }
 
@@ -897,14 +897,14 @@ bool CSSGradientValue::ShouldSerializeColorSpace() const {
   // OKLab is the default and should not be serialized unless all colors are
   // legacy colors.
   if (!has_only_legacy_colors &&
-      color_interpolation_space_ == Color::ColorInterpolationSpace::kOklab) {
+      color_interpolation_space_ == Color::ColorSpace::kOklab) {
     return false;
   }
 
   // sRGB is the default if all colors are legacy colors and should not be
   // serialized.
   if (has_only_legacy_colors &&
-      color_interpolation_space_ == Color::ColorInterpolationSpace::kSRGB) {
+      color_interpolation_space_ == Color::ColorSpace::kSRGB) {
     return false;
   }
 
@@ -985,7 +985,7 @@ String CSSLinearGradientValue::CustomCSSText() const {
       }
       wrote_something = true;
       result.Append("in ");
-      result.Append(Color::ColorInterpolationSpaceToString(
+      result.Append(Color::SerializeInterpolationSpace(
           color_interpolation_space_, hue_interpolation_method_));
     }
 
@@ -1371,7 +1371,7 @@ String CSSRadialGradientValue::CustomCSSText() const {
 
     if (ShouldSerializeColorSpace()) {
       result.Append(" in ");
-      result.Append(Color::ColorInterpolationSpaceToString(
+      result.Append(Color::SerializeInterpolationSpace(
           color_interpolation_space_, hue_interpolation_method_));
     }
 
@@ -1421,7 +1421,7 @@ String CSSRadialGradientValue::CustomCSSText() const {
       }
       result.Append("in ");
       wrote_something = true;
-      result.Append(Color::ColorInterpolationSpaceToString(
+      result.Append(Color::SerializeInterpolationSpace(
           color_interpolation_space_, hue_interpolation_method_));
     }
 
@@ -1748,7 +1748,7 @@ String CSSConicGradientValue::CustomCSSText() const {
     }
     result.Append("in ");
     wrote_something = true;
-    result.Append(Color::ColorInterpolationSpaceToString(
+    result.Append(Color::SerializeInterpolationSpace(
         color_interpolation_space_, hue_interpolation_method_));
   }
 
