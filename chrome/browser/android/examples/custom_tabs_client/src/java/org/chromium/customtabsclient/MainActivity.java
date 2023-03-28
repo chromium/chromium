@@ -22,6 +22,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
 import android.text.TextUtils;
+import android.util.DisplayMetrics;
 import android.util.Log;
 import android.util.Pair;
 import android.view.Display;
@@ -30,6 +31,7 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.view.WindowInsets;
+import android.view.WindowMetrics;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
@@ -591,7 +593,8 @@ public class MainActivity
     }
 
     private void initializeBreakpointSlider() {
-        int maxBreakpointDp = getMaximumPossibleSizeDp();
+        int maxBreakpointDp =
+                (int) (getMaximumPossibleSizePx() / getResources().getDisplayMetrics().density);
         mPcctBreakpointSlider = findViewById(R.id.pcct_breakpoint_slider);
         mPcctBreakpointLabel = findViewById(R.id.pcct_breakpoint_slider_label);
         mPcctBreakpointSlider.setMax(maxBreakpointDp);
@@ -972,25 +975,29 @@ public class MainActivity
     }
 
     private @Px int getMaximumPossibleSizePx() {
-        @Px
-        int res = 0;
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-            Insets navbarInsets =
-                    getWindowManager().getCurrentWindowMetrics().getWindowInsets().getInsets(
-                            WindowInsets.Type.navigationBars() | WindowInsets.Type.displayCutout());
+            WindowMetrics windowMetrics = getWindowManager().getCurrentWindowMetrics();
+            Insets navbarInsets = windowMetrics.getWindowInsets().getInsets(
+                    WindowInsets.Type.navigationBars() | WindowInsets.Type.displayCutout());
             int navbarWidth = navbarInsets.left + navbarInsets.right;
             Rect windowBounds = getWindowManager().getCurrentWindowMetrics().getBounds();
-            res = windowBounds.width() - navbarWidth;
+            int width = windowBounds.width() - navbarWidth;
+            int height = windowMetrics.getBounds().height();
+            return Math.max(width, height);
         } else {
             Display display = getWindowManager().getDefaultDisplay();
             Point size = new Point();
             display.getSize(size);
-            res = size.x;
-        }
-        return res;
-    }
+            int width = size.x;
 
-    private int getMaximumPossibleSizeDp() {
-        return (int) (getMaximumPossibleSizePx() / getResources().getDisplayMetrics().density);
+            DisplayMetrics displayMetrics = new DisplayMetrics();
+            if (isInMultiWindowMode()) {
+                display.getMetrics(displayMetrics);
+            } else {
+                display.getRealMetrics(displayMetrics);
+            }
+            int height = displayMetrics.heightPixels;
+            return Math.max(width, height);
+        }
     }
 }
