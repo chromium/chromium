@@ -59,9 +59,7 @@ public class QuickDeleteMetricsDelegateTest {
     public void testRecordHistogram(
             @QuickDeleteMetricsDelegate.QuickDeleteAction int quickDeleteAction) {
         HistogramWatcher histogramWatcher =
-                HistogramWatcher.newBuilder()
-                        .expectIntRecords("Privacy.QuickDelete", quickDeleteAction, 1)
-                        .build();
+                HistogramWatcher.newSingleRecordWatcher("Privacy.QuickDelete", quickDeleteAction);
 
         QuickDeleteMetricsDelegate.recordHistogram(quickDeleteAction);
 
@@ -72,11 +70,8 @@ public class QuickDeleteMetricsDelegateTest {
     @SmallTest
     public void testRecordClearBrowsingDataActionHistogram() {
         HistogramWatcher histogramWatcher =
-                HistogramWatcher.newBuilder()
-                        .expectIntRecords("Privacy.ClearBrowsingData.Action",
-                                ClearBrowsingDataAction.QUICK_DELETE_LAST15_MINUTES, 1)
-                        .build();
-
+                HistogramWatcher.newSingleRecordWatcher("Privacy.ClearBrowsingData.Action",
+                                ClearBrowsingDataAction.QUICK_DELETE_LAST15_MINUTES);
         QuickDeleteMetricsDelegate.recordHistogram(
                 QuickDeleteMetricsDelegate.QuickDeleteAction.DELETE_CLICKED);
 

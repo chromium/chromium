@@ -137,10 +137,8 @@ public class QuickDeleteControllerTest {
         openQuickDeleteDialog();
 
         HistogramWatcher histogramWatcher =
-                HistogramWatcher.newBuilder()
-                        .expectIntRecords("Privacy.QuickDelete",
-                                QuickDeleteMetricsDelegate.QuickDeleteAction.DELETE_CLICKED, 1)
-                        .build();
+                HistogramWatcher.newSingleRecordWatcher("Privacy.QuickDelete",
+                                QuickDeleteMetricsDelegate.QuickDeleteAction.DELETE_CLICKED);
 
         onViewWaiting(withId(R.id.positive_button)).perform(click());
 
@@ -153,10 +151,8 @@ public class QuickDeleteControllerTest {
         openQuickDeleteDialog();
 
         HistogramWatcher histogramWatcher =
-                HistogramWatcher.newBuilder()
-                        .expectIntRecords("Privacy.ClearBrowsingData.Action",
-                                ClearBrowsingDataAction.QUICK_DELETE_LAST15_MINUTES, 1)
-                        .build();
+                HistogramWatcher.newSingleRecordWatcher("Privacy.ClearBrowsingData.Action",
+                                ClearBrowsingDataAction.QUICK_DELETE_LAST15_MINUTES);
 
         onViewWaiting(withId(R.id.positive_button)).perform(click());
 
@@ -169,10 +165,8 @@ public class QuickDeleteControllerTest {
         openQuickDeleteDialog();
 
         HistogramWatcher histogramWatcher =
-                HistogramWatcher.newBuilder()
-                        .expectIntRecords("Privacy.QuickDelete",
-                                QuickDeleteMetricsDelegate.QuickDeleteAction.CANCEL_CLICKED, 1)
-                        .build();
+                HistogramWatcher.newSingleRecordWatcher("Privacy.QuickDelete",
+                                QuickDeleteMetricsDelegate.QuickDeleteAction.CANCEL_CLICKED);
 
         onViewWaiting(withId(R.id.negative_button)).perform(click());
 
@@ -185,12 +179,9 @@ public class QuickDeleteControllerTest {
         openQuickDeleteDialog();
 
         HistogramWatcher histogramWatcher =
-                HistogramWatcher.newBuilder()
-                        .expectIntRecords("Privacy.QuickDelete",
+                HistogramWatcher.newSingleRecordWatcher("Privacy.QuickDelete",
                                 QuickDeleteMetricsDelegate.QuickDeleteAction
-                                        .DIALOG_DISMISSED_IMPLICITLY,
-                                1)
-                        .build();
+                                        .DIALOG_DISMISSED_IMPLICITLY);
 
         // Implicitly dismiss pop up by pressing Clank's back button.
         pressBack();

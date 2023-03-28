@@ -9,7 +9,6 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
-import static org.mockito.Mockito.times;
 
 import android.view.View;
 
@@ -365,7 +364,7 @@ public class StartSurfaceCoordinatorUnitTest {
 
     private static HistogramWatcher expectMvtClickHistogramRecords(int times) {
         return HistogramWatcher.newBuilder()
-                .expectAnyRecords(USER_ACTION_START_SURFACE_MVT_CLICK, times)
+                .expectAnyRecordTimes(USER_ACTION_START_SURFACE_MVT_CLICK, times)
                 .build();
     }
 }
