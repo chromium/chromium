@@ -360,8 +360,8 @@ public class AllSiteSettings extends SiteSettingsPreferenceFragment
             // Find entries matching the current search.
             for (WebsiteEntry entry : entries) {
                 if (mSearch == null || mSearch.isEmpty() || entry.matches(mSearch)) {
-                    preferences.add(new WebsiteRowPreference(
-                            getStyledContext(), getSiteSettingsDelegate(), entry));
+                    preferences.add(new WebsiteRowPreference(getStyledContext(),
+                            getSiteSettingsDelegate(), entry, getActivity().getLayoutInflater()));
                 }
             }
             Collections.sort(preferences);
