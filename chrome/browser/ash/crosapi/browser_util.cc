@@ -427,11 +427,6 @@ bool IsLacrosEnabledForMigration(const User* user,
 }
 
 bool IsProfileMigrationEnabled() {
-  if (base::FeatureList::IsEnabled(
-          ash::features::kLacrosProfileMigrationForceOff)) {
-    return false;
-  }
-
   const UserManager* user_manager = UserManager::Get();
   if (!user_manager) {
     return false;
@@ -442,7 +437,16 @@ bool IsProfileMigrationEnabled() {
     return false;
   }
 
-  return IsLacrosEnabledForMigration(user, PolicyInitState::kAfterInit);
+  return IsProfileMigrationEnabledWithUserAndPolicyInitState(
+      user, PolicyInitState::kAfterInit);
+}
+
+bool IsProfileMigrationEnabledWithUserAndPolicyInitState(
+    const user_manager::User* user,
+    PolicyInitState policy_init_state) {
+  return !base::FeatureList::IsEnabled(
+             ash::features::kLacrosProfileMigrationForceOff) &&
+         IsLacrosEnabledForMigration(user, policy_init_state);
 }
 
 bool IsProfileMigrationAvailable() {

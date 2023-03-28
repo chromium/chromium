@@ -404,6 +404,10 @@ void ClearLacrosSelectionCacheForTest();
 // enabled, the completion of it is required to enable Lacros.
 bool IsProfileMigrationEnabled();
 
+bool IsProfileMigrationEnabledWithUserAndPolicyInitState(
+    const user_manager::User* user,
+    PolicyInitState policy_init_state);
+
 // Returns true if the profile migration is enabled, but not yet completed.
 bool IsProfileMigrationAvailable();
 
