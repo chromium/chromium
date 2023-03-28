@@ -325,7 +325,7 @@ void AddNewTabPageColorMixer(ui::ColorProvider* provider,
                                    gfx::kGoogleGrey900),
         /* 10% opacity */ 0.1 * SK_AlphaOPAQUE);
     mixer[kColorRealboxResultsDimSelected] = {
-        kColorOmniboxResultsBackgroundSelected};
+        kColorOmniboxResultsTextDimmedSelected};
     mixer[kColorRealboxResultsForeground] = {kColorOmniboxText};
     mixer[kColorRealboxResultsForegroundDimmed] = {
         kColorOmniboxResultsTextDimmed};
