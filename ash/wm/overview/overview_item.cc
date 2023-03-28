@@ -806,13 +806,13 @@ void OverviewItem::UpdateRoundedCornersAndShadow() {
            ->GetAnimator()
            ->is_animating();
   if (should_show_shadow) {
-    // The shadow should match the size of the transformed window or preview
-    // window if unclipped. If clipped, the shadow should match the size of the
-    // item minus the border and header.
-    const gfx::RectF shadow_bounds = unclipped_size_
-                                         ? GetWindowTargetBoundsWithInsets()
-                                         : GetUnclippedShadowBounds();
-    SetShadowBounds(absl::make_optional(shadow_bounds));
+    // The shadow should always match the size of the item minus the border and
+    // header instead of the transformed window or preview view, since for the
+    // window which has `kPillarBoxed` or `kLetterBoxed` dimension types, it
+    // doesn't occupy the whole remaining area of the overview item widget minus
+    // the header view in which case, the shadow looks weird if it matches the
+    // size of the transformed window or preview view.
+    SetShadowBounds(absl::make_optional(GetWindowTargetBoundsWithInsets()));
   } else {
     SetShadowBounds(absl::nullopt);
   }

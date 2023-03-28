@@ -2580,6 +2580,13 @@ TEST_P(OverviewSessionTest, ShadowBounds) {
     return boundsf.width() / boundsf.height();
   };
 
+  // Helper function which returns the ratio of the item width and height minus
+  // the header and window margin.
+  auto item_ratio = [](OverviewItem* item) {
+    gfx::RectF boundsf = item->GetWindowTargetBoundsWithInsets();
+    return boundsf.width() / boundsf.height();
+  };
+
   // Add three windows which in overview mode will be considered wide, tall and
   // normal. Set top view insets to 0 so it is easy to check the ratios of the
   // shadows match the ratios of the untransformed windows.
@@ -2614,9 +2621,11 @@ TEST_P(OverviewSessionTest, ShadowBounds) {
   EXPECT_TRUE(contains(tall_widget, tall_item));
   EXPECT_TRUE(contains(normal_widget, normal_item));
 
-  // Verify the shadows preserve the ratios of the original windows.
-  EXPECT_NEAR(shadow_ratio(wide_item), 4.f, 0.01f);
-  EXPECT_NEAR(shadow_ratio(tall_item), 0.25f, 0.01f);
+  // Verify the shadow of window with normal type preserves the ratio of the
+  // original window. Otherwise, it preserves the ratio of the item bounds minus
+  // the header of window margin.
+  EXPECT_NEAR(shadow_ratio(wide_item), item_ratio(wide_item), 0.01f);
+  EXPECT_NEAR(shadow_ratio(tall_item), item_ratio(tall_item), 0.01f);
   EXPECT_NEAR(shadow_ratio(normal_item), 1.f, 0.01f);
 
   // Verify all the shadows are within the bounds of their respective item
@@ -2628,8 +2637,8 @@ TEST_P(OverviewSessionTest, ShadowBounds) {
   EXPECT_TRUE(contains(tall_widget, tall_item));
   EXPECT_TRUE(contains(normal_widget, normal_item));
 
-  EXPECT_NEAR(shadow_ratio(wide_item), 4.f, 0.01f);
-  EXPECT_NEAR(shadow_ratio(tall_item), 0.25f, 0.01f);
+  EXPECT_NEAR(shadow_ratio(wide_item), item_ratio(wide_item), 0.01f);
+  EXPECT_NEAR(shadow_ratio(tall_item), item_ratio(tall_item), 0.01f);
   EXPECT_NEAR(shadow_ratio(normal_item), 1.f, 0.01f);
 
   // Test that leaving overview mode cleans up properly.
