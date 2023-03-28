@@ -730,8 +730,9 @@ void xdg_wm_base_create_positioner(wl_client* client,
   wl_resource* positioner_resource = wl_resource_create(
       client, &xdg_positioner_interface, wl_resource_get_version(resource), id);
 
-  SetImplementation(positioner_resource, &xdg_positioner_implementation,
-                    std::make_unique<WaylandPositioner>());
+  SetImplementation(
+      positioner_resource, &xdg_positioner_implementation,
+      std::make_unique<WaylandPositioner>(WaylandPositioner::Version::STABLE));
 }
 
 void xdg_wm_base_get_xdg_surface(wl_client* client,

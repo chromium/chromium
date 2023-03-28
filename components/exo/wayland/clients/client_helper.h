@@ -43,6 +43,7 @@
 #include <xdg-decoration-unstable-v1-client-protocol.h>
 #include <xdg-output-unstable-v1-client-protocol.h>
 #include <xdg-shell-client-protocol.h>
+#include <xdg-shell-unstable-v6-client-protocol.h>
 #include "base/scoped_generic.h"
 
 #if defined(USE_GBM)
@@ -105,6 +106,7 @@ DEFAULT_DELETER_FDECL(wl_data_device_manager)
 DEFAULT_DELETER_FDECL(wp_content_type_manager_v1)
 DEFAULT_DELETER_FDECL(wp_content_type_v1)
 DEFAULT_DELETER_FDECL(wp_viewporter)
+DEFAULT_DELETER_FDECL(zxdg_shell_v6)
 DEFAULT_DELETER_FDECL(xdg_wm_base)
 DEFAULT_DELETER_FDECL(zwp_text_input_manager_v1)
 DEFAULT_DELETER_FDECL(zcr_secure_output_v1)
@@ -129,6 +131,8 @@ DEFAULT_DELETER_FDECL(zxdg_decoration_manager_v1)
 DEFAULT_DELETER_FDECL(zcr_extended_drag_v1)
 DEFAULT_DELETER_FDECL(xdg_surface)
 DEFAULT_DELETER_FDECL(xdg_toplevel)
+DEFAULT_DELETER_FDECL(zxdg_surface_v6)
+DEFAULT_DELETER_FDECL(zxdg_toplevel_v6)
 DEFAULT_DELETER_FDECL(zxdg_output_manager_v1)
 DEFAULT_DELETER_FDECL(weston_test)
 DEFAULT_DELETER_FDECL(zwp_idle_inhibit_manager_v1)

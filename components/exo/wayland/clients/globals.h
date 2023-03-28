@@ -59,6 +59,7 @@ struct Globals {
   Object<wl_touch> touch;
   Object<zaura_shell> aura_shell;
   Object<zaura_output> aura_output;
+  Object<zxdg_shell_v6> xdg_shell_v6;
   Object<xdg_wm_base> xdg_wm_base;
   Object<zwp_fullscreen_shell_v1> fullscreen_shell;
   Object<zwp_input_timestamps_manager_v1> input_timestamps_manager;
