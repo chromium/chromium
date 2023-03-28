@@ -71,7 +71,7 @@ void ScopedSVGPaintState::ApplyEffects() {
   // LayoutSVGRoot and LayoutSVGForeignObject always have a self-painting
   // PaintLayer (hence comments below about PaintLayerPainter).
   bool is_svg_root_or_foreign_object =
-      object_.IsSVGRoot() || object_.IsSVGForeignObjectIncludingNG();
+      object_.IsSVGRoot() || object_.IsSVGForeignObject();
   if (is_svg_root_or_foreign_object) {
     // PaintLayerPainter takes care of clip path.
     DCHECK(object_.HasLayer() || !properties || !properties->ClipPathMask());

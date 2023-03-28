@@ -931,7 +931,7 @@ void FragmentPaintPropertyTreeBuilder::UpdateTransformForSVGChild(
   DCHECK(object_.IsSVGChild());
   // SVG does not use paint offset internally, except for SVGForeignObject which
   // has different SVG and HTML coordinate spaces.
-  DCHECK(object_.IsSVGForeignObjectIncludingNG() ||
+  DCHECK(object_.IsSVGForeignObject() ||
          context_.current.paint_offset.IsZero());
 
   if (NeedsPaintPropertyUpdate()) {

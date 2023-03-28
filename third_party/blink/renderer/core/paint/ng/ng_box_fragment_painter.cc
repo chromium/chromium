@@ -410,7 +410,7 @@ void NGBoxFragmentPainter::Paint(const PaintInfo& paint_info) {
       !box_fragment_.HasSelfPaintingLayer() &&
       paint_info.phase != PaintPhase::kOverlayOverflowControls) {
     PaintAllPhasesAtomically(paint_info);
-  } else if (layout_object && layout_object->IsNGSVGForeignObject()) {
+  } else if (layout_object && layout_object->IsSVGForeignObject()) {
     ScopedSVGPaintState paint_state(*layout_object, paint_info);
     PaintTiming::From(layout_object->GetDocument()).MarkFirstContentfulPaint();
     PaintInternal(paint_info);

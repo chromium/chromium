@@ -1391,8 +1391,9 @@ void LayoutObject::SetNeedsCollectInlines() {
     return;
 
   if (UNLIKELY(IsSVGChild() && !IsNGSVGText() && !IsSVGInline() &&
-               !IsSVGInlineText() && !IsNGSVGForeignObject()))
+               !IsSVGInlineText() && !IsSVGForeignObject())) {
     return;
+  }
 
   // Don't mark |LayoutFlowThread| because |CollectInlines()| skips them.
   if (!IsLayoutFlowThread())
@@ -1786,8 +1787,7 @@ bool LayoutObject::ComputeIsFixedContainer(const ComputedStyle* style) const {
   // select elements inside that are created by user agent shadow DOM, and we
   // have (C++) code that assumes that the elements are indeed contained by the
   // text control. So just make sure this is the case.
-  if (IsA<LayoutView>(this) || IsSVGForeignObjectIncludingNG() ||
-      IsTextControl()) {
+  if (IsA<LayoutView>(this) || IsSVGForeignObject() || IsTextControl()) {
     return true;
   }
 

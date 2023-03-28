@@ -66,8 +66,7 @@ LayoutSVGResourceClipper* ResolveElementReference(
 // Is the reference box (as returned by LocalReferenceBox) for |clip_path_owner|
 // zoomed with EffectiveZoom()?
 static bool UsesZoomedReferenceBox(const LayoutObject& clip_path_owner) {
-  return !clip_path_owner.IsSVGChild() ||
-         clip_path_owner.IsSVGForeignObjectIncludingNG();
+  return !clip_path_owner.IsSVGChild() || clip_path_owner.IsSVGForeignObject();
 }
 
 CompositedPaintStatus CompositeClipPathStatus(Node* node) {

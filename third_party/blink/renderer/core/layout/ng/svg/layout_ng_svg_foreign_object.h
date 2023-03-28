@@ -15,7 +15,28 @@ extern template class CORE_EXTERN_TEMPLATE_EXPORT LayoutNGMixin<LayoutSVGBlock>;
 extern template class CORE_EXTERN_TEMPLATE_EXPORT
     LayoutNGBlockFlowMixin<LayoutSVGBlock>;
 
-// The LayoutNG representation of SVG <foreignObject>.
+// LayoutNGSVGForeignObject is the LayoutObject associated with <foreignobject>.
+// http://www.w3.org/TR/SVG/extend.html#ForeignObjectElement
+//
+// Foreign object is a way of inserting arbitrary non-SVG content into SVG.
+// A good example of this is HTML in SVG. Because of this, CSS content has to
+// be aware of SVG: e.g. when determining containing blocks we stop at the
+// enclosing foreign object (see LayoutObject::ComputeIsFixedContainer).
+//
+// Note that SVG is also allowed in HTML with the HTML5 parsing rules so SVG
+// content also has to be aware of CSS objects.
+// See http://www.w3.org/TR/html5/syntax.html#elements-0 with the rules for
+// 'foreign elements'. TODO(jchaffraix): Find a better place for this paragraph.
+//
+// The coordinate space for the descendants of the foreignObject does not
+// include the effective zoom (it is baked into any lengths as usual). The
+// transform that defines the userspace of the element is:
+//
+//   [CSS transform] * [inverse effective zoom] (* ['x' and 'y' translation])
+//
+// Because of this, the frame rect and visual rect includes effective zoom. The
+// object bounding box (ObjectBoundingBox method) is however not zoomed to be
+// compatible with the expectations of the getBBox() DOM interface.
 class LayoutNGSVGForeignObject final
     : public LayoutNGBlockFlowMixin<LayoutSVGBlock> {
  public:
@@ -65,7 +86,7 @@ class LayoutNGSVGForeignObject final
 template <>
 struct DowncastTraits<LayoutNGSVGForeignObject> {
   static bool AllowFrom(const LayoutObject& object) {
-    return object.IsNGSVGForeignObject();
+    return object.IsSVGForeignObject();
   }
 };
 

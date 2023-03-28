@@ -217,7 +217,7 @@ void SVGLayoutSupport::MapAncestorToLocal(const LayoutObject& object,
   // computing the transform to the SVG root is always what we want to do here.
   DCHECK_NE(ancestor, &object);
   DCHECK(object.IsSVGContainer() || object.IsSVGShape() ||
-         object.IsSVGImage() || object.IsSVGForeignObjectIncludingNG());
+         object.IsSVGImage() || object.IsSVGForeignObject());
   AffineTransform local_to_svg_root;
   const LayoutSVGRoot& svg_root =
       ComputeTransformToSVGRoot(object, local_to_svg_root, nullptr);

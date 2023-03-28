@@ -1463,7 +1463,7 @@ static bool IsHitCandidateForDepthOrder(
   // foreignObject; if it weren't for that case we could test z_offset
   // and then DCHECK(transform_state) inside of it.
   DCHECK(!z_offset || transform_state ||
-         hit_layer->GetLayoutObject().IsSVGForeignObjectIncludingNG());
+         hit_layer->GetLayoutObject().IsSVGForeignObject());
   if (z_offset && transform_state) {
     // This is actually computing our z, but that's OK because the hitLayer is
     // coplanar with us.
@@ -1575,7 +1575,7 @@ PaintLayer* PaintLayer::HitTestLayer(
   // IsReplacedNormalFlowStacking() true for LayoutSVGForeignObject),
   // where the hit_test_rect has already been transformed to local coordinates.
   bool use_transform = false;
-  if (!layout_object.IsSVGForeignObjectIncludingNG() &&
+  if (!layout_object.IsSVGForeignObject() &&
       // Only a layer that can contain all descendants can become a transform
       // container. This excludes layout objects having transform nodes created
       // for animating opacity etc. or for backface-visibility:hidden.
@@ -2037,7 +2037,7 @@ bool PaintLayer::HitTestFragmentWithPhase(
 }
 
 bool PaintLayer::IsReplacedNormalFlowStacking() const {
-  return GetLayoutObject().IsSVGForeignObjectIncludingNG();
+  return GetLayoutObject().IsSVGForeignObject();
 }
 
 PaintLayer* PaintLayer::HitTestChildren(
@@ -2165,7 +2165,7 @@ bool PaintLayer::HitTestClippedOutByClipPath(
         To<ShapeClipPathOperation>(clip_path_operation);
     float zoom = GetLayoutObject().StyleRef().EffectiveZoom();
     DCHECK(!GetLayoutObject().IsSVGChild() ||
-           GetLayoutObject().IsSVGForeignObjectIncludingNG());
+           GetLayoutObject().IsSVGForeignObject());
     return !clip_path->GetPath(reference_box, zoom).Contains(point);
   }
   DCHECK_EQ(clip_path_operation->GetType(), ClipPathOperation::kReference);
@@ -2291,8 +2291,9 @@ bool PaintLayer::SupportsSubsequenceCaching() const {
       return false;
 
     // SVG root and SVG foreign object paint atomically.
-    if (box->IsSVGRoot() || box->IsSVGForeignObjectIncludingNG())
+    if (box->IsSVGRoot() || box->IsSVGForeignObject()) {
       return true;
+    }
 
     // Don't create subsequence for the document element because the subsequence
     // for LayoutView serves the same purpose. This can avoid unnecessary paint

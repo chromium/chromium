@@ -52,8 +52,9 @@ gfx::RectF SVGResources::ReferenceBoxForEffects(
   // position is already baked into the transform, and we don't want to re-apply
   // the offset when, e.g., using "objectBoundingBox" for clipPathUnits.
   // Use the frame size since it should have the proper zoom applied.
-  if (layout_object.IsSVGForeignObjectIncludingNG())
+  if (layout_object.IsSVGForeignObject()) {
     return gfx::RectF(gfx::SizeF(To<LayoutBox>(layout_object).Size()));
+  }
 
   // Text "sub-elements" (<tspan>, <textpath>, <a>) should use the entire
   // <text>s object bounding box rather then their own.

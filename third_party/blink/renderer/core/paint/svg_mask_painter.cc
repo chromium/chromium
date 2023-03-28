@@ -62,7 +62,7 @@ void SVGMaskPainter::Paint(GraphicsContext& context,
     content_transformation.Translate(reference_box.x(), reference_box.y());
     content_transformation.ScaleNonUniform(reference_box.width(),
                                            reference_box.height());
-  } else if (layout_object.IsSVGForeignObjectIncludingNG()) {
+  } else if (layout_object.IsSVGForeignObject()) {
     content_transformation.Scale(style.EffectiveZoom());
   }
 

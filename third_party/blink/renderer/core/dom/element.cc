@@ -2018,7 +2018,7 @@ gfx::Rect Element::BoundsInWidget() const {
   // codepath below.
   auto* svg_element = DynamicTo<SVGElement>(this);
   if (svg_element && GetLayoutObject() &&
-      !GetLayoutObject()->IsSVGForeignObjectIncludingNG()) {
+      !GetLayoutObject()->IsSVGForeignObject()) {
     // Get the bounding rectangle from the SVG model.
     // TODO(pdr): This should include stroke.
     if (IsA<SVGGraphicsElement>(svg_element)) {
@@ -2118,7 +2118,7 @@ void Element::ClientQuads(Vector<gfx::QuadF>& quads) const {
   // codepath below.
   const auto* svg_element = DynamicTo<SVGElement>(this);
   if (svg_element && !element_layout_object->IsSVGRoot() &&
-      !element_layout_object->IsSVGForeignObjectIncludingNG()) {
+      !element_layout_object->IsSVGForeignObject()) {
     // Get the bounding rectangle from the SVG model.
     // TODO(pdr): ObjectBoundingBox does not include stroke and the spec is not
     // clear (see: https://github.com/w3c/svgwg/issues/339, crbug.com/529734).
