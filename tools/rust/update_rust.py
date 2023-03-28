@@ -23,11 +23,12 @@ from pathlib import Path
 
 # Add Clang scripts to path so we can import them later (if running within a
 # Chromium checkout.)
+# Note: Imports cannot be done until after the --print-rust-revision flag
+# has been processed, since that needs to work when running this script
+# in isolation.
 sys.path.append(
     os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', 'clang',
                  'scripts'))
-
-from update import (CHROMIUM_DIR)
 
 # These fields are written by //tools/clang/scripts/upload_revision.py, and
 # should not be changed manually.
@@ -72,6 +73,7 @@ FALLBACK_REVISION = 'ac4379fea9e83465d814bb05005689f49bd2141e-2-llvmorg-17-init-
 STAGE0_JSON_SHA256 = 'b45d1f388bfe54887d5776937e05a135ec819b6d2190b8794bb87bd7072e5553'
 
 THIS_DIR = os.path.abspath(os.path.dirname(__file__))
+CHROMIUM_DIR = os.path.abspath(os.path.join(THIS_DIR, '..', '..'))
 THIRD_PARTY_DIR = os.path.join(CHROMIUM_DIR, 'third_party')
 RUST_TOOLCHAIN_OUT_DIR = os.path.join(THIRD_PARTY_DIR, 'rust-toolchain')
 VERSION_STAMP_PATH = os.path.join(RUST_TOOLCHAIN_OUT_DIR, 'VERSION')
