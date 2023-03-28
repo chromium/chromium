@@ -216,8 +216,9 @@ void ExtensionMenuItemView::OnThemeChanged() {
   const auto* const color_provider = GetColorProvider();
   const SkColor icon_color = color_provider->GetColor(kColorExtensionMenuIcon);
 
-  if (pin_button_)
+  if (pin_button_) {
     views::InkDrop::Get(pin_button_)->SetBaseColor(icon_color);
+  }
 
   SetButtonIconWithColor(
       context_menu_button_, kBrowserToolsIcon, icon_color,
@@ -241,26 +242,29 @@ void ExtensionMenuItemView::Update(
 }
 
 void ExtensionMenuItemView::UpdatePinButton() {
-  if (!pin_button_)
+  if (!pin_button_) {
     return;
+  }
 
   bool is_force_pinned =
       model_ && model_->IsActionForcePinned(controller_->GetId());
   int pin_button_string_id = 0;
-  if (is_force_pinned)
+  if (is_force_pinned) {
     pin_button_string_id = IDS_EXTENSIONS_PINNED_BY_ADMIN;
-  else if (IsPinned())
+  } else if (IsPinned()) {
     pin_button_string_id = IDS_EXTENSIONS_UNPIN_FROM_TOOLBAR;
-  else
+  } else {
     pin_button_string_id = IDS_EXTENSIONS_PIN_TO_TOOLBAR;
+  }
   pin_button_->SetTooltipText(l10n_util::GetStringUTF16(pin_button_string_id));
   // Extension pinning is not available in Incognito as it leaves a trace of
   // user activity.
   pin_button_->SetEnabled(!is_force_pinned &&
                           !browser_->profile()->IsOffTheRecord());
 
-  if (!GetWidget())
+  if (!GetWidget()) {
     return;
+  }
   const auto* const color_provider = GetColorProvider();
   const SkColor icon_color = color_provider->GetColor(
       IsPinned() ? kColorExtensionMenuPinButtonIcon : kColorExtensionMenuIcon);

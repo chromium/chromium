@@ -41,10 +41,7 @@ std::u16string GetShowRequestsToggleAccessibleName(bool is_toggle_on) {
 
 ExtensionsMenuSitePermissionsPageView::ExtensionsMenuSitePermissionsPageView(
     Browser* browser,
-    std::u16string extension_name,
-    ui::ImageModel extension_icon,
     extensions::ExtensionId extension_id,
-    bool is_show_requests_toggle_on,
     ExtensionsMenuNavigationHandler* navigation_handler)
     : browser_(browser), extension_id_(extension_id) {
   // TODO(crbug.com/1390952): Same stretch specification as
@@ -88,10 +85,11 @@ ExtensionsMenuSitePermissionsPageView::ExtensionsMenuSitePermissionsPageView(
                       .SetCrossAxisAlignment(views::LayoutAlignment::kStretch)
                       .SetProperty(views::kFlexBehaviorKey,
                                    stretch_specification)
-                      .AddChildren(views::Builder<views::ImageView>().SetImage(
-                                       extension_icon),
-                                   views::Builder<views::Label>().SetText(
-                                       extension_name)),
+                      .AddChildren(
+                          views::Builder<views::ImageView>().CopyAddressTo(
+                              &extension_icon_),
+                          views::Builder<views::Label>().CopyAddressTo(
+                              &extension_name_)),
                   // Close button.
                   views::Builder<views::Button>(
                       views::BubbleFrameView::CreateCloseButton(
@@ -114,10 +112,6 @@ ExtensionsMenuSitePermissionsPageView::ExtensionsMenuSitePermissionsPageView(
                                   IDS_EXTENSIONS_MENU_SITE_PERMISSIONS_PAGE_SHOW_REQUESTS_LABEL)),
                           views::Builder<views::ToggleButton>()
                               .CopyAddressTo(&show_requests_toggle_)
-                              .SetIsOn(is_show_requests_toggle_on)
-                              .SetAccessibleName(
-                                  GetShowRequestsToggleAccessibleName(
-                                      is_show_requests_toggle_on))
                               .SetCallback(base::BindRepeating(
                                   &ExtensionsMenuSitePermissionsPageView::
                                       OnShowRequestsTogglePressed,
@@ -130,7 +124,7 @@ ExtensionsMenuSitePermissionsPageView::ExtensionsMenuSitePermissionsPageView(
                              extensions::ExtensionId extension_id) {
                             chrome::ShowExtensions(browser, extension_id);
                           },
-                          browser, extension_id),
+                          browser, extension_id_),
                       /*icon_view=*/nullptr,
                       l10n_util::GetStringUTF16(
                           IDS_EXTENSIONS_MENU_SITE_PERMISSIONS_PAGE_SETTINGS_BUTTON),
@@ -143,9 +137,21 @@ ExtensionsMenuSitePermissionsPageView::ExtensionsMenuSitePermissionsPageView(
       .BuildChildren();
 }
 
+void ExtensionsMenuSitePermissionsPageView::Update(
+    const std::u16string& extension_name,
+    const ui::ImageModel& extension_icon,
+    bool is_show_requests_toggle_on) {
+  extension_icon_->SetImage(extension_icon);
+  extension_name_->SetText(extension_name);
+
+  UpdateShowRequestsToggle(is_show_requests_toggle_on);
+}
+
 void ExtensionsMenuSitePermissionsPageView::UpdateShowRequestsToggle(
     bool is_on) {
   show_requests_toggle_->SetIsOn(is_on);
+  show_requests_toggle_->SetAccessibleName(
+      GetShowRequestsToggleAccessibleName(is_on));
 }
 
 void ExtensionsMenuSitePermissionsPageView::OnShowRequestsTogglePressed() {

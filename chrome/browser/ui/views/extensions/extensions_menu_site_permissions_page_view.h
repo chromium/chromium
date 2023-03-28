@@ -13,6 +13,8 @@ class ImageModel;
 }  // namespace ui
 
 namespace views {
+class ImageView;
+class Label;
 class ToggleButton;
 }  // namespace views
 
@@ -25,16 +27,18 @@ class ExtensionsMenuSitePermissionsPageView : public views::View {
 
   explicit ExtensionsMenuSitePermissionsPageView(
       Browser* browser,
-      std::u16string extension_name,
-      ui::ImageModel extension_icon,
       extensions::ExtensionId extension_id,
-      bool is_show_requests_toggle_on,
       ExtensionsMenuNavigationHandler* navigation_handler);
   ExtensionsMenuSitePermissionsPageView(
       const ExtensionsMenuSitePermissionsPageView&) = delete;
   const ExtensionsMenuSitePermissionsPageView& operator=(
       const ExtensionsMenuSitePermissionsPageView&) = delete;
   ~ExtensionsMenuSitePermissionsPageView() override = default;
+
+  // Updates the page contents with the given parameters.
+  void Update(const std::u16string& extension_name,
+              const ui::ImageModel& extension_icon,
+              bool is_show_requests_toggle_on);
 
   // Updates `show_requests_toggle_` state to `is_on`.
   void UpdateShowRequestsToggle(bool is_on);
@@ -54,6 +58,8 @@ class ExtensionsMenuSitePermissionsPageView : public views::View {
   const raw_ptr<Browser> browser_;
   extensions::ExtensionId extension_id_;
 
+  raw_ptr<views::ImageView> extension_icon_;
+  raw_ptr<views::Label> extension_name_;
   raw_ptr<views::ToggleButton> show_requests_toggle_;
 };
 

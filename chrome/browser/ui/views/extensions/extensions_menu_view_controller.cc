@@ -242,6 +242,10 @@ void ExtensionsMenuViewController::OpenSitePermissionsPage(
       *GetExtension(browser_, extension_id), *browser_->profile(),
       *toolbar_model_, *GetActiveWebContents()));
 
+  auto site_permissions_page =
+      std::make_unique<ExtensionsMenuSitePermissionsPageView>(
+          browser_, extension_id, this);
+
   const int icon_size = ChromeLayoutProvider::Get()->GetDistanceMetric(
       DISTANCE_EXTENSIONS_MENU_EXTENSION_ICON_SIZE);
   std::unique_ptr<ExtensionActionViewController> action_controller =
@@ -254,11 +258,9 @@ void ExtensionsMenuViewController::OpenSitePermissionsPage(
   bool is_show_requests_toggle_on =
       extensions::SitePermissionsHelper(browser_->profile())
           .ShowAccessRequestsInToolbar(extension_id);
+  site_permissions_page->Update(extension_name, extension_icon,
+                                is_show_requests_toggle_on);
 
-  auto site_permissions_page =
-      std::make_unique<ExtensionsMenuSitePermissionsPageView>(
-          browser_, extension_name, extension_icon, extension_id,
-          is_show_requests_toggle_on, this);
   SwitchToPage(std::move(site_permissions_page));
 }
 
@@ -289,29 +291,64 @@ void ExtensionsMenuViewController::UpdatePage(
     content::WebContents* web_contents) {
   DCHECK(current_page_);
 
-  ExtensionsMenuMainPageView* main_page = GetMainPage(current_page_);
-  if (main_page && web_contents) {
-    std::u16string current_site = GetCurrentHost(web_contents);
-    bool is_site_settings_toggle_visible =
-        IsSiteSettingsToggleVisible(*toolbar_model_, web_contents);
-    bool is_site_settings_toggle_on =
-        IsSiteSettingsToggleOn(browser_, web_contents);
-    main_page->Update(current_site, is_site_settings_toggle_visible,
-                      is_site_settings_toggle_on);
+  if (!web_contents) {
+    return;
+  }
 
-    std::vector<ExtensionMenuItemView*> menu_items = main_page->GetMenuItems();
-    for (auto* menu_item : menu_items) {
-      const extensions::Extension* extension =
-          extensions::ExtensionRegistry::Get(browser_->profile())
-              ->enabled_extensions()
-              .GetByID(menu_item->view_controller()->GetId());
-      CHECK(extension);
+  auto* site_permissions_page = GetSitePermissionsPage(current_page_);
+  if (site_permissions_page) {
+    extensions::ExtensionId extension_id =
+        site_permissions_page->extension_id();
 
-      ExtensionMenuItemView::SitePermissionsButtonState
-          site_permissions_button_state = GetSitePermissionsButtonState(
-              *extension, *browser_->profile(), *toolbar_model_, *web_contents);
-      menu_item->Update(site_permissions_button_state);
+    // Navigate back to the main page if extension should not have a site
+    // permissions page.
+    if (!CanUserCustomizeExtensionSiteAccess(
+            *GetExtension(browser_, extension_id), *browser_->profile(),
+            *toolbar_model_, *web_contents)) {
+      OpenMainPage();
+      return;
     }
+
+    // Otherwise, update the page content.
+    const int icon_size = ChromeLayoutProvider::Get()->GetDistanceMetric(
+        DISTANCE_EXTENSIONS_MENU_EXTENSION_ICON_SIZE);
+    std::unique_ptr<ExtensionActionViewController> action_controller =
+        ExtensionActionViewController::Create(extension_id, browser_,
+                                              extensions_container_);
+
+    std::u16string extension_name = action_controller->GetActionName();
+    ui::ImageModel extension_icon = action_controller->GetIcon(
+        GetActiveWebContents(), gfx::Size(icon_size, icon_size));
+    bool is_show_requests_toggle_on =
+        extensions::SitePermissionsHelper(browser_->profile())
+            .ShowAccessRequestsInToolbar(extension_id);
+
+    site_permissions_page->Update(extension_name, extension_icon,
+                                  is_show_requests_toggle_on);
+    return;
+  }
+
+  ExtensionsMenuMainPageView* main_page = GetMainPage(current_page_);
+  DCHECK(main_page);
+
+  std::u16string current_site = GetCurrentHost(web_contents);
+  bool is_site_settings_toggle_visible =
+      IsSiteSettingsToggleVisible(*toolbar_model_, web_contents);
+  bool is_site_settings_toggle_on =
+      IsSiteSettingsToggleOn(browser_, web_contents);
+  main_page->Update(current_site, is_site_settings_toggle_visible,
+                    is_site_settings_toggle_on);
+
+  std::vector<ExtensionMenuItemView*> menu_items = main_page->GetMenuItems();
+  for (auto* menu_item : menu_items) {
+    const extensions::Extension* extension =
+        GetExtension(browser_, menu_item->view_controller()->GetId());
+    CHECK(extension);
+
+    ExtensionMenuItemView::SitePermissionsButtonState
+        site_permissions_button_state = GetSitePermissionsButtonState(
+            *extension, *browser_->profile(), *toolbar_model_, *web_contents);
+    menu_item->Update(site_permissions_button_state);
   }
 }
 

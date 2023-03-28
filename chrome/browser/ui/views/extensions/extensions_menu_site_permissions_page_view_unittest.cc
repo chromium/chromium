@@ -271,3 +271,66 @@ TEST_F(ExtensionsSitePermissionsPageViewUnitTest,
       site_permissions_page()->GetShowRequestsToggleForTesting()->GetIsOn());
   EXPECT_THAT(GetExtensionsShowingRequests(), testing::IsEmpty());
 }
+
+// Test that navigating to a new site where the user doesn't have runtime host
+// permissions controls (e.g restricted site) closes the site permissions page.
+TEST_F(ExtensionsSitePermissionsPageViewUnitTest,
+       PageNavigationWithMenuOpen_UserLosesRuntimeHostPermissionsControls) {
+  content::WebContentsTester* web_contents_tester =
+      AddWebContentsAndGetTester();
+
+  auto extension =
+      InstallExtensionWithHostPermissions("Extension", {"<all_urls>"});
+
+  const GURL url("http://www.non-restricted.com");
+  web_contents_tester->NavigateAndCommit(url);
+  WaitForAnimation();
+
+  ShowSitePermissionsPage(extension->id());
+  EXPECT_FALSE(IsMainPageOpened());
+  EXPECT_TRUE(IsSitePermissionsPageOpened(extension->id()));
+
+  // While the menu is open, navigate to an url where extension should not have
+  // a site permissions page.
+  const GURL restricted_url("chrome://extensions");
+  web_contents_tester->NavigateAndCommit(restricted_url);
+  WaitForAnimation();
+
+  // Menu should navigate back to main page since site permissions page should
+  // not be visible for the new url.
+  EXPECT_TRUE(IsMainPageOpened());
+  EXPECT_FALSE(IsSitePermissionsPageOpened(extension->id()));
+}
+
+// Test that navigating to a new site where the user still has runtime host
+// permissions controls updates the page contents.
+TEST_F(ExtensionsSitePermissionsPageViewUnitTest,
+       PageNavigationWithMenuOpen_UserMaintainsRuntimeHostPermissionsControls) {
+  content::WebContentsTester* web_contents_tester =
+      AddWebContentsAndGetTester();
+
+  auto extension =
+      InstallExtensionWithHostPermissions("Extension", {"<all_urls>"});
+
+  const GURL url_a("http://www.a.com");
+  web_contents_tester->NavigateAndCommit(url_a);
+  WaitForAnimation();
+
+  ShowSitePermissionsPage(extension->id());
+  EXPECT_FALSE(IsMainPageOpened());
+  EXPECT_TRUE(IsSitePermissionsPageOpened(extension->id()));
+
+  // While the menu is open, navigate to an url where extension also should have
+  // a site permissions page.
+  const GURL url_b("http://www.b.com");
+  web_contents_tester->NavigateAndCommit(url_b);
+  WaitForAnimation();
+
+  // Menu should stay open in site permissions page for `extension`.
+  EXPECT_FALSE(IsMainPageOpened());
+  EXPECT_TRUE(IsSitePermissionsPageOpened(extension->id()));
+}
+
+// TODO(crbug.com/1390952): Verify page content changes when extension is
+// updated. This will be easier to do once we have the site access radio
+// buttons, as we can change to the correct site access.
