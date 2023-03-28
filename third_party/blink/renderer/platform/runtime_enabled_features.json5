@@ -769,8 +769,7 @@
     },
     {
       name: "CSSDisplayAnimation",
-      status: "test",
-      base_feature: "none",
+      status: "experimental",
     },
     // Exists so that we can run a reverse-Finch experiment to assess its performance.
     {
@@ -1098,7 +1097,7 @@
     },
     {
       name: "CSSTransitionDiscrete",
-      status: "test",
+      status: "experimental",
     },
     {
       // Support for tree-scoped [1] timeline names (e.g. produced by
