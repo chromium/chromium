@@ -98,7 +98,6 @@ class RebaselineCL(AbstractParallelRebaselineCommand):
         self._tool = tool
         self.git_cl = None
         self._builders = []
-        self._resultdb_fetcher = False
 
     def _check_builders(self, option, _opt_str, value, parser):
         selected_builders = getattr(parser.values, option.dest, set())
@@ -126,11 +125,6 @@ class RebaselineCL(AbstractParallelRebaselineCommand):
     def execute(self, options, args, tool):
         self._tool = tool
         self._dry_run = options.dry_run
-        self._resultdb_fetcher = options.resultDB
-        if not self._resultdb_fetcher:
-            _log.warning('`--no-resultDB` is unsupported and will be '
-                         'removed soon (crbug.com/1406660).')
-            self._tool.user.prompt('Press enter to acknowledge: ')
         self.git_cl = self.git_cl or GitCL(tool)
         # '--dry-run' implies '--no-trigger-jobs'.
         options.trigger_jobs = options.trigger_jobs and not self._dry_run
@@ -256,26 +250,10 @@ class RebaselineCL(AbstractParallelRebaselineCommand):
                 continue
 
             step_names = results_fetcher.get_layout_test_step_names(build)
-            unavailable_step_names = []
             for step_name in step_names:
-                if self._resultdb_fetcher:
-                    maybe_result = results_fetcher.gather_results(
-                        build, step_name)
-                else:
-                    maybe_result = results_fetcher.fetch_results(
-                        build, False, step_name)
-                if maybe_result:
-                    builds_to_results[build].append(maybe_result)
-                else:
-                    unavailable_step_names.append(step_name)
-
-            if unavailable_step_names:
-                _log.warning('Failed to fetch some results for "%s".',
-                             build.builder_name)
-                for step_name in unavailable_step_names:
-                    results_url = results_fetcher.results_url(
-                        build.builder_name, build.build_number, step_name)
-                    _log.warning('Results URL: %s/results.html', results_url)
+                results = results_fetcher.gather_results(build, step_name)
+                if len(results) > 0:
+                    builds_to_results[build].append(results)
         return builds_to_results
 
     def _make_test_baseline_set_from_file(self, filename, builds_to_results):

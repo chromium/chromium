@@ -205,9 +205,7 @@ class WebTestResultsTest(unittest.TestCase):
     def test_suffixes_for_test_result(self):
         results = WebTestResults.results_from_string(
             self.example_full_results_json)
-        self.assertSetEqual(
-            results.result_for_test('fast/dom/many-mismatches.html').
-            suffixes_for_test_result(), {'txt', 'png'})
-        self.assertSetEqual(
-            results.result_for_test('fast/dom/missing-text.html').
-            suffixes_for_test_result(), {'txt'})
+        result = results.result_for_test('fast/dom/many-mismatches.html')
+        self.assertEqual(set(result.baselines_by_suffix()), {'txt', 'png'})
+        result = results.result_for_test('fast/dom/missing-text.html')
+        self.assertEqual(set(result.baselines_by_suffix()), {'txt'})

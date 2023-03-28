@@ -28,11 +28,16 @@
 
 import collections
 import json
-from typing import List, Optional
+from typing import Dict, List, NamedTuple, Optional
 
 from blinkpy.common.memoized import memoized
 from blinkpy.web_tests.layout_package import json_results_generator
 from blinkpy.web_tests.models.typ_types import ResultType
+
+
+class Artifact(NamedTuple):
+    url: str
+    digest: Optional[str] = None
 
 
 class WebTestResult:
@@ -44,27 +49,18 @@ class WebTestResult:
         return "WebTestResult(test_name=%s, result_dict=%s)" % \
             (repr(self._test_name), repr(self._result_dict))
 
-    def suffixes_for_test_result(self):
-        suffixes = set()
-        artifact_names = self._result_dict.get('artifacts', {}).keys()
+    def baselines_by_suffix(self) -> Dict[str, List[Artifact]]:
+        artifacts = self._result_dict.get('artifacts', {})
+        baselines = collections.defaultdict(list)
         # Add extensions for mismatches.
-        if 'actual_text' in artifact_names:
-            suffixes.add('txt')
-        if 'actual_image' in artifact_names:
-            suffixes.add('png')
-        if 'actual_audio' in artifact_names:
-            suffixes.add('wav')
-        # Add extensions for missing baselines.
-        if self.is_missing_text():
-            suffixes.add('txt')
-        if self.is_missing_image():
-            suffixes.add('png')
-        if self.is_missing_audio():
-            suffixes.add('wav')
-        return suffixes
-
-    def result_dict(self):
-        return self._result_dict
+        for artifact_name, suffix in [
+            ('actual_text', 'txt'),
+            ('actual_image', 'png'),
+            ('actual_audio', 'wav'),
+        ]:
+            for url in artifacts.get(artifact_name, []):
+                baselines[suffix].append(Artifact(url))
+        return baselines
 
     def test_name(self):
         return self._test_name
@@ -208,6 +204,9 @@ class WebTestResults:
 
     def __iter__(self):
         yield from self._results_by_name.values()
+
+    def __len__(self):
+        return len(self._results_by_name)
 
     def step_name(self):
         return self._step_name

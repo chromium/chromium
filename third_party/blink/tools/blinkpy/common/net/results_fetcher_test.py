@@ -33,6 +33,7 @@ import unittest
 from blinkpy.common.host_mock import MockHost
 from blinkpy.common.net.results_fetcher import TestResultsFetcher, Build, filter_latest_builds
 from blinkpy.common.net.web_mock import MockWeb
+from blinkpy.common.net.web_test_results import Artifact
 from blinkpy.common.system.log_testing import LoggingTestCase
 
 
@@ -230,11 +231,12 @@ class BuilderTest(LoggingTestCase):
         result = results.result_for_test('should-pass.html')
         self.assertEqual(result.actual_results(), ['FAIL', 'PASS'])
         self.assertFalse(result.did_run_as_expected())
-        self.assertEqual(result.result_dict()['artifacts'], {
-            'actual_text': [
-                'https://results.usercontent.cr.dev/actual_text',
-            ],
-        })
+        self.assertEqual(
+            result.baselines_by_suffix(), {
+                'txt': [
+                    Artifact('https://results.usercontent.cr.dev/actual_text'),
+                ],
+            })
 
         result = results.result_for_test('external/wpt/timeout.html')
         self.assertEqual(result.actual_results(), ['TIMEOUT'])

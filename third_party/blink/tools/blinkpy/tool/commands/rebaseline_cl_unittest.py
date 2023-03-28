@@ -96,8 +96,10 @@ class RebaselineCLTest(BaseTestCase, LoggingTestCase):
                         'expected': 'FAIL',
                         'actual': 'FAIL',
                         'artifacts': {
-                            'expected_text': ['expected-fail-expected.txt'],
-                            'actual_text': ['expected-fail-actual.txt']
+                            'expected_text':
+                            ['https://results.api.cr.dev/expected_text'],
+                            'actual_text':
+                            ['https://results.api.cr.dev/actual_text']
                         }
                     },
                     'flaky-fail.html': {
@@ -105,8 +107,10 @@ class RebaselineCLTest(BaseTestCase, LoggingTestCase):
                         'actual': 'PASS FAIL',
                         'is_unexpected': True,
                         'artifacts': {
-                            'expected_audio': ['flaky-fail-expected.wav'],
-                            'actual_audio': ['flaky-fail-actual.wav']
+                            'expected_audio':
+                            ['https://results.api.cr.dev/expected_audio'],
+                            'actual_audio':
+                            ['https://results.api.cr.dev/actual_audio']
                         }
                     },
                     'missing.html': {
@@ -114,7 +118,8 @@ class RebaselineCLTest(BaseTestCase, LoggingTestCase):
                         'actual': 'FAIL',
                         'is_unexpected': True,
                         'artifacts': {
-                            'actual_image': ['missing-actual.png']
+                            'actual_image':
+                            ['https://results.api.cr.dev/actual_image']
                         },
                         'is_missing_image': True
                     },
@@ -123,8 +128,10 @@ class RebaselineCLTest(BaseTestCase, LoggingTestCase):
                         'actual': 'FAIL',
                         'is_unexpected': True,
                         'artifacts': {
-                            'actual_text': ['slow-fail-actual.txt'],
-                            'expected_text': ['slow-fail-expected.txt']
+                            'actual_text':
+                            ['https://results.api.cr.dev/actual_text'],
+                            'expected_text':
+                            ['https://results.api.cr.dev/expected_text']
                         }
                     },
                     'text-fail.html': {
@@ -132,8 +139,10 @@ class RebaselineCLTest(BaseTestCase, LoggingTestCase):
                         'actual': 'FAIL',
                         'is_unexpected': True,
                         'artifacts': {
-                            'actual_text': ['text-fail-actual.txt'],
-                            'expected_text': ['text-fail-expected.txt']
+                            'actual_text':
+                            ['https://results.api.cr.dev/actual_text'],
+                            'expected_text':
+                            ['https://results.api.cr.dev/expected_text']
                         }
                     },
                     'unexpected-pass.html': {
@@ -148,8 +157,10 @@ class RebaselineCLTest(BaseTestCase, LoggingTestCase):
                         'actual': 'FAIL',
                         'is_unexpected': True,
                         'artifacts': {
-                            'actual_image': ['image-fail-actual.png'],
-                            'expected_image': ['image-fail-expected.png']
+                            'actual_image':
+                            ['https://results.api.cr.dev/actual_image'],
+                            'expected_image':
+                            ['https://results.api.cr.dev/expected_image']
                         }
                     }
                 },
@@ -212,7 +223,6 @@ class RebaselineCLTest(BaseTestCase, LoggingTestCase):
             'builders': [],
             'patchset': None,
             'flag_specific': None,
-            'resultDB': True,
         }
         options.update(kwargs)
         return optparse.Values(options)
@@ -525,29 +535,14 @@ class RebaselineCLTest(BaseTestCase, LoggingTestCase):
         self.command.rebaseline(self.command_options(), test_baseline_set)
         self._mock_copier.find_baselines_to_copy.assert_called_once_with(
             'one/flaky-fail.html', 'wav', test_baseline_set)
-        self.tool.main.assert_has_calls([
-            mock.call([
-                'echo',
-                'rebaseline-test-internal',
-                '--test',
-                'one/flaky-fail.html',
-                '--suffixes',
-                'wav',
-                '--port-name',
-                'test-win-win7',
-                '--builder',
-                'MOCK Try Win',
-                '--build-number',
-                '5000',
-                '--step-name',
-                'blink_web_tests (with patch)',
-            ]),
-            mock.call([
-                'echo',
-                'optimize-baselines',
-                '--no-manifest-update',
-                'one/flaky-fail.html',
-            ]),
+        self._assert_baseline_downloaded(
+            'https://results.api.cr.dev/actual_audio',
+            'platform/test-win-win7/one/flaky-fail-expected.wav')
+        self.tool.main.assert_called_once_with([
+            'echo',
+            'optimize-baselines',
+            '--no-manifest-update',
+            'one/flaky-fail.html',
         ])
 
     def test_rebaseline_command_invocations_multiple_steps(self):
@@ -591,61 +586,28 @@ class RebaselineCLTest(BaseTestCase, LoggingTestCase):
                          'not_site_per_process_blink_web_tests (with patch)')
         self._mock_copier.find_baselines_to_copy.assert_called_once_with(
             'one/text-fail.html', 'txt', baseline_set)
-        self.tool.main.assert_has_calls([
-            mock.call([
-                'echo',
-                'rebaseline-test-internal',
-                '--test',
-                'one/text-fail.html',
-                '--suffixes',
-                'txt',
-                '--port-name',
-                'test-linux-trusty',
-                '--builder',
-                'MOCK Try Linux Multiple Steps',
-                '--build-number',
-                '9000',
-                '--step-name',
-                'blink_web_tests (with patch)',
-            ]),
-            mock.call([
-                'echo',
-                'rebaseline-test-internal',
-                '--test',
-                'one/text-fail.html',
-                '--suffixes',
-                'txt',
-                '--port-name',
-                'test-linux-trusty',
-                '--flag-specific',
-                'disable-site-isolation-trials',
-                '--builder',
-                'MOCK Try Linux Multiple Steps',
-                '--build-number',
-                '9000',
-                '--step-name',
-                'not_site_per_process_blink_web_tests (with patch)',
-            ]),
-            mock.call([
-                'echo',
-                'optimize-baselines',
-                '--no-manifest-update',
-                'one/text-fail.html',
-            ]),
+        self._assert_baseline_downloaded(
+            'https://results.api.cr.dev/actual_text',
+            'platform/test-linux-trusty/one/text-fail-expected.txt')
+        self._assert_baseline_downloaded(
+            'https://results.api.cr.dev/actual_text',
+            'flag-specific/disable-site-isolation-trials/one/text-fail-expected.txt'
+        )
+        self.tool.main.assert_called_once_with([
+            'echo',
+            'optimize-baselines',
+            '--no-manifest-update',
+            'one/text-fail.html',
         ])
 
     def test_execute_missing_results_with_no_fill_missing_prompts(self):
         self.tool.results_fetcher.set_results(
-            Build('MOCK Try Win', 5000, 'Build-1'), None,
+            Build('MOCK Try Win', 5000, 'Build-1'), WebTestResults([]),
             'blink_web_tests (with patch)')
         exit_code = self.command.execute(self.command_options(), [], self.tool)
         self.assertEqual(exit_code, 1)
         self.assertLog([
             'INFO: All builds finished.\n',
-            'WARNING: Failed to fetch some results for "MOCK Try Win".\n',
-            ('WARNING: Results URL: https://test-results.appspot.com/data/layout_results/'
-             'MOCK_Try_Win/5000/blink_web_tests%20%28with%20patch%29/layout-test-results/results.html\n'
-             ),
             'WARNING: Some builders have no results:\n',
             'WARNING:   MOCK Try Win\n',
             'INFO: Would you like to continue?\n',
@@ -683,7 +645,7 @@ class RebaselineCLTest(BaseTestCase, LoggingTestCase):
 
     def test_execute_missing_results_with_fill_missing_continues(self):
         self.tool.results_fetcher.set_results(
-            Build('MOCK Try Win', 5000, 'Build-1'), None,
+            Build('MOCK Try Win', 5000, 'Build-1'), WebTestResults([]),
             'blink_web_tests (with patch)')
         exit_code = self.command.execute(
             self.command_options(fill_missing=True), ['one/flaky-fail.html'],
@@ -691,10 +653,7 @@ class RebaselineCLTest(BaseTestCase, LoggingTestCase):
         self.assertEqual(exit_code, 0)
         self.assertLog([
             'INFO: All builds finished.\n',
-            'WARNING: Failed to fetch some results for "MOCK Try Win".\n',
-            ('WARNING: Results URL: https://test-results.appspot.com/data/layout_results/'
-             'MOCK_Try_Win/5000/blink_web_tests%20%28with%20patch%29/layout-test-results/results.html\n'
-             ), 'WARNING: Some builders have no results:\n',
+            'WARNING: Some builders have no results:\n',
             'WARNING:   MOCK Try Win\n', 'INFO: For one/flaky-fail.html:\n',
             'INFO: Using "MOCK Try Linux" build 6000 for test-win-win7.\n',
             'INFO: Rebaselining one/flaky-fail.html\n'

@@ -50,14 +50,6 @@ class MockTestResultsFetcher(TestResultsFetcher):
         step = BuilderStep(build=build, step_name=step_name)
         self._canned_results[step] = results
 
-    def make_results_from_raw_rdb(self, test_results, artifacts,
-                                  **kwargs) -> WebTestResults:
-        return WebTestResults.from_rdb_responses(
-            self._group_test_results_by_test_name(test_results),
-            self._group_artifacts_by_test_name(artifacts),
-            **kwargs,
-        )
-
     def gather_results(self,
                        build: Build,
                        step_name: str,
