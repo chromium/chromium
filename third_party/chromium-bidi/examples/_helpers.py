@@ -41,7 +41,10 @@ async def get_websocket():
     # Try to connect directly via WebSocket. If not available, connect via
     # WebDriver Classic with BiDi capabilities.
     try:
-        websocket = await websockets.connect(f'ws://localhost:{port}/session')
+        # `max_size` is needed for `browsingContext.captureScreenshot` and
+        # `browsingContext.print` commands, both of which return a big payload.
+        websocket = await websockets.connect(f'ws://localhost:{port}/session',
+                                             max_size=None)
         # Init BiDi session.
         await run_and_wait_command(
             {
