@@ -7,6 +7,7 @@
 #include "ash/constants/ash_features.h"
 #include "base/functional/callback_helpers.h"
 #include "base/no_destructor.h"
+#include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/ui/webui/ash/cloud_upload/cloud_upload_dialog.h"
 #include "chrome/browser/ui/webui/ash/smb_shares/smb_handler.h"
@@ -106,7 +107,7 @@ void FilesSection::AddLoadTimeData(content::WebUIDataSource* html_source) {
       {"googleDriveEnabledLabel", IDS_SETTINGS_GOOGLE_DRIVE_ENABLED},
       {"googleDriveDisabledLabel", IDS_SETTINGS_GOOGLE_DRIVE_DISABLED},
       {"googleDriveDisconnectLabel", IDS_SETTINGS_GOOGLE_DRIVE_DISCONNECT},
-      {"googleDriveSignedInAs", IDS_SETTINGS_GOOGLE_DRIVE_SIGNED_IN_AS},
+      {"googleDriveConnectLabel", IDS_SETTINGS_GOOGLE_DRIVE_CONNECT},
       {"googleDriveOfflineTitle", IDS_SETTINGS_GOOGLE_DRIVE_OFFLINE_TITLE},
       {"googleDriveOfflineSubtitle",
        IDS_SETTINGS_GOOGLE_DRIVE_OFFLINE_SUBTITLE},
@@ -155,6 +156,14 @@ void FilesSection::AddLoadTimeData(content::WebUIDataSource* html_source) {
       ProfileHelper::Get()->GetUserByProfile(profile());
   html_source->AddBoolean("isActiveDirectoryUser",
                           user && user->IsActiveDirectoryUser());
+
+  if (user && user->GetAccountId().is_valid()) {
+    html_source->AddString(
+        "googleDriveSignedInAs",
+        l10n_util::GetStringFUTF16(
+            IDS_SETTINGS_GOOGLE_DRIVE_SIGNED_IN_AS,
+            base::ASCIIToUTF16(user->GetAccountId().GetUserEmail())));
+  }
 
   html_source->AddBoolean("enableDriveFsBulkPinning",
                           features::IsDriveFsBulkPinningEnabled());

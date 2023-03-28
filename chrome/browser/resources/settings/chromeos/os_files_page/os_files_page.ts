@@ -17,6 +17,7 @@ import './smb_shares_page.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
+import {PrefsMixin} from '../../prefs/prefs_mixin.js';
 import {DeepLinkingMixin} from '../deep_linking_mixin.js';
 import {Setting} from '../mojom-webui/setting.mojom-webui.js';
 import {routes} from '../os_settings_routes.js';
@@ -26,7 +27,7 @@ import {Route, Router} from '../router.js';
 import {getTemplate} from './os_files_page.html.js';
 
 const OsSettingsFilesPageElementBase =
-    DeepLinkingMixin(RouteObserverMixin(PolymerElement));
+    PrefsMixin(DeepLinkingMixin(RouteObserverMixin(PolymerElement)));
 
 class OsSettingsFilesPageElement extends OsSettingsFilesPageElementBase {
   static get is() {
@@ -39,14 +40,6 @@ class OsSettingsFilesPageElement extends OsSettingsFilesPageElementBase {
 
   static get properties() {
     return {
-      /**
-       * Preferences state.
-       */
-      prefs: {
-        type: Object,
-        notify: true,
-      },
-
       /**
        * Used by DeepLinkingMixin to focus this page's deep links.
        */
@@ -84,7 +77,17 @@ class OsSettingsFilesPageElement extends OsSettingsFilesPageElementBase {
     };
   }
 
-  prefs: Object;
+  /**
+   * Observe the state of `prefs.gdata.disabled` if it gets changed from another
+   * location (e.g. enterprise policy).
+   */
+  static get observers() {
+    return [
+      `updateDriveDisabled_(prefs.gdata.disabled.*)`,
+    ];
+  }
+
+  private driveDisabled_: boolean;
   private focusConfig_: Map<string, string>;
 
   override currentRouteChanged(route: Route, _oldRoute?: Route) {
@@ -106,6 +109,17 @@ class OsSettingsFilesPageElement extends OsSettingsFilesPageElementBase {
 
   private onTapOffice_() {
     Router.getInstance().navigateTo(routes.OFFICE);
+  }
+
+  private updateDriveDisabled_() {
+    const disabled = this.getPref('gdata.disabled').value;
+    this.driveDisabled_ = disabled;
+  }
+
+  private getGoogleDriveStatus_(): string {
+    return this.driveDisabled_ ?
+        loadTimeData.getString('googleDriveDisabledLabel') :
+        loadTimeData.getString('googleDriveEnabledLabel');
   }
 }
 

@@ -1,0 +1,15 @@
+<style include="settings-shared"></style>
+<cr-dialog id="dialog" show-on-attach close-text="$i18n{close}"
+    on-cancel="onDialogCancel_" on-close="onDialogClose_">
+  <div slot="title">$i18n{disconnectGoogleDriveAccount}</div>
+  <!-- TODO(b/274857477): Update text once defined. -->
+  <div slot="body">Replace this text with the correct copy.</div>
+  <div slot="button-container">
+    <cr-button class="cancel-button" on-click="onCancelTap_">
+      $i18n{cancel}
+    </cr-button>
+    <cr-button class="action-button" on-click="onDisconnectTap_">
+      $i18n{googleDriveDisconnectLabel}
+    </cr-button>
+  </div>
+</cr-dialog>

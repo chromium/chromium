@@ -4,22 +4,30 @@
     class="settings-box two-line first"
     deep-link-focus-id$="[[Setting.kGoogleDriveConnection]]">
   <div class="start">
-    <!-- TODO(b/273399125): email associated with current drive account -->
-    $i18n{googleDriveSignedInAs}
+    $i18nRaw{googleDriveSignedInAs}
   </div>
-  <cr-button role="button">
-    $i18n{googleDriveDisconnectLabel}
-  </cr-button>
+  <controlled-button id="driveConnectDisconnect"
+      on-click="onConnectDisconnectTap_"
+      pref="{{prefs.gdata.disabled}}"
+      label="[[getConnectDisconnectButtonLabel_(driveDisabled_)]]"
+      deep-link-focus-id$="[[Setting.kGoogleDriveConnection]]">
+  </controlled-button>
+  <template is="dom-if" if="[[showDisconnectDriveConfirmationDialog_]]" restamp>
+    <settings-disconnect-drive-confirmation-dialog
+        id="drive-disconnect-dialog"
+        on-close="onDriveDisconnectConfirmationDialogClose_">
+    </settings-disconnect-drive-confirmation-dialog>
+  </template>
 </div>
 
 <div class="hr"></div>
 
+<!-- TODO(b/274857720): Update pref to drivefs.bulk_pinning_enabled -->
 <settings-toggle-button
-    id="disconnectGoogleDriveAccount"
+    id="driveBulkPinning"
     pref="{{prefs.gdata.disabled}}"
     label="$i18n{googleDriveOfflineTitle}"
-    sub-label="$i18n{googleDriveOfflineSubtitle}"
-    deep-link-focus-id$="[[Setting.kGoogleDriveConnection]]">
+    sub-label="$i18n{googleDriveOfflineSubtitle}">
 </settings-toggle-button>
 
 <div class="settings-box two-line">

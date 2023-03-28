@@ -224,6 +224,7 @@ build_webui_tests("build") {
     "os_bluetooth_page/os_bluetooth_true_wireless_images_tests.js",
     "os_bluetooth_page/test_os_bluetooth_subpage_browser_proxy.ts",
 
+    "os_files_page/google_drive_page_test.ts",
     "os_files_page/office_page_test.ts",
 
     "os_languages_page/smart_inputs_page_test.ts",
