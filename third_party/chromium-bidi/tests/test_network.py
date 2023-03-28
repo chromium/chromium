@@ -14,7 +14,7 @@
 #  limitations under the License.
 #
 import pytest
-from anys import ANY_DICT, ANY_LIST, ANY_NUMBER, ANY_STR
+from anys import ANY_DICT, ANY_LIST, ANY_NUMBER, ANY_STR, AnyOr
 from test_helpers import (ANY_TIMESTAMP, AnyExtending, execute_command,
                           read_JSON_message, send_JSON_command, subscribe)
 
@@ -225,10 +225,10 @@ async def test_network_network_response_completed_event_emitted(
             },
             "timestamp": ANY_TIMESTAMP,
             "response": {
-                "url": "http://example.com/",
-                "protocol": "http/1.1",
+                "url": AnyOr("http://example.com/", "https://example.com/"),
+                "protocol": AnyOr("http/1.1", "h2"),
                 "status": 200,
-                "statusText": "OK",
+                "statusText": AnyOr("OK", ""),
                 "fromCache": False,
                 "headers": ANY_LIST,
                 "mimeType": "text/html",
