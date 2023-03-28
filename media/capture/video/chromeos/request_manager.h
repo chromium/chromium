@@ -263,6 +263,16 @@ class CAPTURE_EXPORT RequestManager final
                          StreamType stream_type,
                          cros::mojom::Camera3ErrorMsgCode error_code);
 
+  // RequestStreamBuffers receives output buffer requests and a callback to
+  // receive results.
+  void RequestStreamBuffers(
+      std::vector<cros::mojom::Camera3BufferRequestPtr> buffer_reqs,
+      RequestStreamBuffersCallback callback) override;
+
+  // ReturnStreamBuffers receives returned output buffers.
+  void ReturnStreamBuffers(
+      std::vector<cros::mojom::Camera3StreamBufferPtr> buffers) override;
+
   // Submits the captured buffer of frame |frame_number_| for the given
   // |stream_type| to Chrome if all the required metadata and the captured
   // buffer are received.  After the buffer is submitted the function then

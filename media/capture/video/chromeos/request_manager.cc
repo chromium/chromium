@@ -885,6 +885,17 @@ void RequestManager::HandleNotifyError(
   }
 }
 
+void RequestManager::RequestStreamBuffers(
+    std::vector<cros::mojom::Camera3BufferRequestPtr> buffer_reqs,
+    RequestStreamBuffersCallback callback) {
+  // TODO(b/226688669): Implement RequestManager::RequestStreamBuffers.
+}
+
+void RequestManager::ReturnStreamBuffers(
+    std::vector<cros::mojom::Camera3StreamBufferPtr> buffers) {
+  // TODO(b/226688669): Implement RequestManager::ReturnStreamBuffers.
+}
+
 void RequestManager::SubmitCaptureResult(
     uint32_t frame_number,
     StreamType stream_type,

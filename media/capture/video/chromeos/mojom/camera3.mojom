@@ -163,6 +163,35 @@ struct Camera3NotifyMsg {
   Camera3NotifyMsgMessage message;
 };
 
+enum Camera3BufferRequestStatus {
+  CAMERA3_BUF_REQ_OK = 0,
+  CAMERA3_BUF_REQ_FAILED_PARTIAL = 1,
+  CAMERA3_BUF_REQ_FAILED_CONFIGURING = 2,
+  CAMERA3_BUF_REQ_FAILED_ILLEGAL_ARGUMENTS = 3,
+  CAMERA3_BUF_REQ_FAILED_UNKNOWN = 4,
+  CAMERA3_BUF_REQ_NUM_STATUS
+};
+
+enum Camera3StreamBufferReqStatus {
+  CAMERA3_PS_BUF_REQ_OK = 0,
+  CAMERA3_PS_BUF_REQ_NO_BUFFER_AVAILABLE = 1,
+  CAMERA3_PS_BUF_REQ_MAX_BUFFER_EXCEEDED = 2,
+  CAMERA3_PS_BUF_REQ_STREAM_DISCONNECTED = 3,
+  CAMERA3_PS_BUF_REQ_UNKNOWN_ERROR = 4,
+  CAMERA3_PS_BUF_REQ_NUM_STATUS
+};
+
+struct Camera3BufferRequest {
+  uint64 stream_id;
+  uint32 num_buffers_requested;
+};
+
+struct Camera3StreamBufferRet {
+  uint64 stream_id;
+  Camera3StreamBufferReqStatus status;
+  array<Camera3StreamBuffer>? output_buffers;
+};
+
 enum Camera3RequestTemplate {
   CAMERA3_TEMPLATE_PREVIEW = 1,
   CAMERA3_TEMPLATE_STILL_CAPTURE = 2,
@@ -204,7 +233,7 @@ struct Camera3CaptureResult {
 // in Android camera HAL v3.  For the work flow of the functions in
 // Camera3CallbackOps, see the comments about Camera3DeviceOps above.
 //
-// Next method ID: 2
+// Next method ID: 4
 interface Camera3CallbackOps {
   // ProcessCaptureResult() is called by the camera HAL to send result metadata
   // and filled buffer to the client.
@@ -213,6 +242,18 @@ interface Camera3CallbackOps {
   // Notify() is called by the camera HAL to notify the client of the start of
   // each capture, and of errors encountered.
   Notify@1(Camera3NotifyMsg msg);
+
+  // RequestStreamBuffers() is called by the camera HAL to request output
+  // buffers from the client.
+  [MinVersion=5]
+  RequestStreamBuffers@2(array<Camera3BufferRequest> buffer_reqs) =>
+      (Camera3BufferRequestStatus result,
+       array<Camera3StreamBufferRet>? returned_buf_reqs);
+
+  // ReturnStreamBuffers() is called by the camera HAL to return output buffers
+  // to the client.
+  [MinVersion=5]
+  ReturnStreamBuffers@3(array<Camera3StreamBuffer> buffers);
 };
 
 // Camera3DeviceOps is mostly a translation of the camera3_device_ops_t API from
@@ -269,7 +310,7 @@ interface Camera3CallbackOps {
 //
 //    7. Close() closes the camera device.
 //
-// Next method ID: 9
+// Next method ID: 10
 interface Camera3DeviceOps {
   // Initialize() is called once after the camera device is opened to register
   // the Camera3CallbackOps handle.
@@ -332,4 +373,11 @@ interface Camera3DeviceOps {
   ConfigureStreamsAndGetAllocatedBuffers@8(Camera3StreamConfiguration config) =>
       (int32 result, Camera3StreamConfiguration? updated_config,
        map<uint64, array<Camera3StreamBuffer>> allocated_buffers);
+
+  // SignalStreamFlush() can be called when the client is about to call
+  // ConfigureStreams(). The camera HAL must finish in-flight requests normally
+  // and return all buffers belonging to the designated streams through
+  // ProcessCaptureResult() or ReturnStreamBuffers().
+  [MinVersion=5]
+  SignalStreamFlush@9(array<uint64> stream_ids);
 };
