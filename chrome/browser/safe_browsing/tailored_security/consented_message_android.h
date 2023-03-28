@@ -27,6 +27,7 @@ class TailoredSecurityConsentedModalAndroid {
   ~TailoredSecurityConsentedModalAndroid();
 
  private:
+  friend class TailoredSecurityConsentedModalAndroidTest;
   void DismissMessageInternal(messages::DismissReason dismiss_reason);
   void HandleSettingsClicked();
   void HandleMessageAccepted();

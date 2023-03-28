@@ -8603,6 +8603,7 @@ test("unit_tests") {
       "../browser/component_updater/real_time_url_checks_allowlist_component_installer_unittest.cc",
       "../browser/safe_browsing/android/password_reuse_controller_android_unittest.cc",
       "../browser/safe_browsing/tailored_security/chrome_tailored_security_service_android_unittest.cc",
+      "../browser/safe_browsing/tailored_security/consented_message_android_unittest.cc",
       "../browser/safe_browsing/telemetry/android/android_telemetry_service_unittest.cc",
     ]
 
