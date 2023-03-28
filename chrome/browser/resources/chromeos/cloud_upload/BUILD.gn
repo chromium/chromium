@@ -28,7 +28,6 @@ build_webui("build") {
   ]
   web_component_files = [
     "base_setup_page.ts",
-    "drive_upload_page.ts",
     "file_handler_card.ts",
     "file_handler_page.ts",
     "move_confirmation_page.ts",

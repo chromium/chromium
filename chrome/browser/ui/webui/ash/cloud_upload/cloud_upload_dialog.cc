@@ -710,9 +710,6 @@ void CloudOpenTask::OnDialogComplete(const std::string& user_response) {
     StartUpload();
   } else if (user_response == kUserActionUploadToOneDrive) {
     StartUpload();
-  } else if (user_response == kUserActionSetUpGoogleDrive) {
-    cloud_provider_ = CloudProvider::kGoogleDrive;
-    InitAndShowDialog(mojom::DialogPage::kGoogleDriveSetup);
   } else if (user_response == kUserActionSetUpOneDrive) {
     cloud_provider_ = CloudProvider::kOneDrive;
     InitAndShowDialog(mojom::DialogPage::kOneDriveSetup);
@@ -895,9 +892,6 @@ const int kDialogWidthForFileHandlerDialog = 512;
 const int kDialogHeightForFileHandlerDialog = 475;
 const int kDialogHeightForFileHandlerDialogNoLocalApp = 311;
 
-const int kDialogWidthForDriveSetup = 512;
-const int kDialogHeightForDriveSetup = 220;
-
 const int kDialogWidthForMoveConfirmation = 512;
 const int kDialogHeightForMoveConfirmationWithCheckbox = 500;
 
@@ -916,11 +910,6 @@ void CloudUploadDialog::GetDialogSize(gfx::Size* size) const {
     case mojom::DialogPage::kOneDriveSetup: {
       size->set_width(kDialogWidthForOneDriveSetup);
       size->set_height(kDialogHeightForOneDriveSetup);
-      return;
-    }
-    case mojom::DialogPage::kGoogleDriveSetup: {
-      size->set_width(kDialogWidthForDriveSetup);
-      size->set_height(kDialogHeightForDriveSetup);
       return;
     }
     case mojom::DialogPage::kMoveConfirmationGoogleDrive:

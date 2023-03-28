@@ -272,7 +272,6 @@ export class FileHandlerPageElement extends HTMLElement {
         continue;
       }
       if (providerCard.type === CloudProviderType.DRIVE) {
-        // TODO(petermarshall): Remove kSetUpGoogleDrive step or use it here.
         this.proxy.handler.respondWithUserActionAndClose(
             UserAction.kConfirmOrUploadToGoogleDrive);
         return;

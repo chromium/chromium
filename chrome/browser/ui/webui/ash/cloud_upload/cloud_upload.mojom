@@ -7,7 +7,6 @@ module ash.cloud_upload.mojom;
 // The selected action when the user closes the dialog.
 enum UserAction {
   kCancel,
-  kSetUpGoogleDrive,
   kSetUpOneDrive,
   kUploadToGoogleDrive,
   kUploadToOneDrive,
@@ -21,8 +20,6 @@ enum DialogPage {
   kFileHandlerDialog,
   // Set up OneDrive (multi-page).
   kOneDriveSetup,
-  // Set up Google Drive (one-page confirmation screen).
-  kGoogleDriveSetup,
   // Confirm that the user wants to move the file to OneDrive.
   kMoveConfirmationOneDrive,
   // Confirm that the user wants to move the file to Google Drive.

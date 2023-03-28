@@ -44,7 +44,6 @@ struct ODFSFileSystemAndPath {
 
 // The string conversions of ash::cloud_upload::mojom::UserAction.
 const char kUserActionCancel[] = "cancel";
-const char kUserActionSetUpGoogleDrive[] = "setup-drive";
 const char kUserActionSetUpOneDrive[] = "setup-onedrive";
 const char kUserActionUploadToGoogleDrive[] = "upload-drive";
 const char kUserActionUploadToOneDrive[] = "upload-onedrive";
