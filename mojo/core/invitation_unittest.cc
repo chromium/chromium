@@ -52,14 +52,20 @@ enum class TransportType {
 
 const char kSecondaryChannelHandleSwitch[] = "test-secondary-channel-handle";
 
-class InvitationTest : public test::MojoTestBase {
+// TODO(https://crbug.com/1428561): Flaky on Tsan.
+#if defined(THREAD_SANITIZER)
+#define MAYBE_InvitationTest DISABLED_InvitationTest
+#else
+#define MAYBE_InvitationTest InvitationTest
+#endif
+class MAYBE_InvitationTest : public test::MojoTestBase {
  public:
-  InvitationTest() = default;
+  MAYBE_InvitationTest() = default;
 
-  InvitationTest(const InvitationTest&) = delete;
-  InvitationTest& operator=(const InvitationTest&) = delete;
+  MAYBE_InvitationTest(const MAYBE_InvitationTest&) = delete;
+  MAYBE_InvitationTest& operator=(const MAYBE_InvitationTest&) = delete;
 
-  ~InvitationTest() override = default;
+  ~MAYBE_InvitationTest() override = default;
 
  protected:
   static base::Process LaunchChildTestClient(
@@ -111,7 +117,7 @@ void PrepareToPassRemoteEndpoint(PlatformChannel* channel,
   command_line->AppendSwitchASCII(std::string(switch_name), value);
 }
 
-TEST_F(InvitationTest, Create) {
+TEST_F(MAYBE_InvitationTest, Create) {
   MojoHandle invitation;
   EXPECT_EQ(MOJO_RESULT_OK, MojoCreateInvitation(nullptr, &invitation));
   EXPECT_EQ(MOJO_RESULT_OK, MojoClose(invitation));
@@ -123,7 +129,7 @@ TEST_F(InvitationTest, Create) {
   EXPECT_EQ(MOJO_RESULT_OK, MojoClose(invitation));
 }
 
-TEST_F(InvitationTest, InvalidArguments) {
+TEST_F(MAYBE_InvitationTest, InvalidArguments) {
   MojoHandle invitation;
   MojoCreateInvitationOptions invalid_create_options;
   invalid_create_options.struct_size = 0;
@@ -231,7 +237,7 @@ TEST_F(InvitationTest, InvalidArguments) {
   EXPECT_EQ(MOJO_RESULT_OK, MojoClose(invitation));
 }
 
-TEST_F(InvitationTest, AttachAndExtractLocally) {
+TEST_F(MAYBE_InvitationTest, AttachAndExtractLocally) {
   MojoHandle invitation;
   EXPECT_EQ(MOJO_RESULT_OK, MojoCreateInvitation(nullptr, &invitation));
 
@@ -256,7 +262,7 @@ TEST_F(InvitationTest, AttachAndExtractLocally) {
   EXPECT_EQ(MOJO_RESULT_OK, MojoClose(pipe1));
 }
 
-TEST_F(InvitationTest, ClosedInvitationClosesAttachments) {
+TEST_F(MAYBE_InvitationTest, ClosedInvitationClosesAttachments) {
   MojoHandle invitation;
   EXPECT_EQ(MOJO_RESULT_OK, MojoCreateInvitation(nullptr, &invitation));
 
@@ -273,7 +279,7 @@ TEST_F(InvitationTest, ClosedInvitationClosesAttachments) {
   EXPECT_EQ(MOJO_RESULT_OK, MojoClose(pipe));
 }
 
-TEST_F(InvitationTest, AttachNameInUse) {
+TEST_F(MAYBE_InvitationTest, AttachNameInUse) {
   constexpr uint32_t kName0 = 0;
   constexpr uint32_t kName1 = 1;
   MojoHandle invitation;
@@ -301,7 +307,7 @@ TEST_F(InvitationTest, AttachNameInUse) {
 }
 
 // static
-base::Process InvitationTest::LaunchChildTestClient(
+base::Process MAYBE_InvitationTest::LaunchChildTestClient(
     const std::string& test_client_name,
     MojoHandle* primordial_pipes,
     size_t num_primordial_pipes,
@@ -374,7 +380,7 @@ base::Process InvitationTest::LaunchChildTestClient(
 }
 
 // static
-void InvitationTest::SendInvitationToClient(
+void MAYBE_InvitationTest::SendInvitationToClient(
     PlatformHandle endpoint_handle,
     base::ProcessHandle process,
     MojoHandle* primordial_pipes,
@@ -427,7 +433,7 @@ void InvitationTest::SendInvitationToClient(
                               error_handler, error_handler_context, &options));
 }
 
-class TestClientBase : public InvitationTest {
+class TestClientBase : public MAYBE_InvitationTest {
  public:
   TestClientBase(const TestClientBase&) = delete;
   TestClientBase& operator=(const TestClientBase&) = delete;
@@ -485,7 +491,7 @@ const std::string kTestMessage2 = "i push the messages down the pipe";
 const std::string kTestMessage3 = "i am the shover robot";
 const std::string kTestMessage4 = "i shove the messages down the pipe";
 
-TEST_F(InvitationTest, SendInvitation) {
+TEST_F(MAYBE_InvitationTest, SendInvitation) {
   MojoHandle primordial_pipe;
   base::Process child_process = LaunchChildTestClient(
       "SendInvitationClient", &primordial_pipe, 1, TransportType::kChannel,
@@ -521,7 +527,7 @@ DEFINE_TEST_CLIENT(SendInvitationClient) {
   ASSERT_EQ(MOJO_RESULT_OK, MojoClose(primordial_pipe));
 }
 
-TEST_F(InvitationTest, SendInvitationMultiplePipes) {
+TEST_F(MAYBE_InvitationTest, SendInvitationMultiplePipes) {
   MojoHandle pipes[2];
   base::Process child_process = LaunchChildTestClient(
       "SendInvitationMultiplePipesClient", pipes, 2, TransportType::kChannel,
@@ -578,7 +584,7 @@ DEFINE_TEST_CLIENT(SendInvitationMultiplePipesClient) {
 #else
 #define MAYBE_SendInvitationWithServer SendInvitationWithServer
 #endif
-TEST_F(InvitationTest, MAYBE_SendInvitationWithServer) {
+TEST_F(MAYBE_InvitationTest, MAYBE_SendInvitationWithServer) {
   MojoHandle primordial_pipe;
   base::Process child_process = LaunchChildTestClient(
       "SendInvitationWithServerClient", &primordial_pipe, 1,
@@ -673,7 +679,7 @@ void TestProcessErrorHandler(uintptr_t context,
                      details->flags & MOJO_PROCESS_ERROR_FLAG_DISCONNECTED);
 }
 
-TEST_F(InvitationTest, ProcessErrors) {
+TEST_F(MAYBE_InvitationTest, ProcessErrors) {
   RemoteProcessState process_state;
   MojoHandle pipe;
   base::Process child_process = LaunchChildTestClient(
@@ -734,7 +740,7 @@ DEFINE_TEST_CLIENT(ProcessErrorsClient) {
 }
 
 // Temporary removed support for reinvitation for non-isolated connections.
-TEST_F(InvitationTest, DISABLED_Reinvitation) {
+TEST_F(MAYBE_InvitationTest, DISABLED_Reinvitation) {
   // The gist of this test is that a process should be able to accept an
   // invitation, lose its connection to the process network, and then accept a
   // new invitation to re-establish communication.
@@ -817,7 +823,7 @@ DEFINE_TEST_CLIENT(ReinvitationClient) {
   EXPECT_EQ(kDisconnectMessage, ReadMessage(new_pipe.get().value()));
 }
 
-TEST_F(InvitationTest, SendIsolatedInvitation) {
+TEST_F(MAYBE_InvitationTest, SendIsolatedInvitation) {
   MojoHandle primordial_pipe;
   base::Process child_process = LaunchChildTestClient(
       "SendIsolatedInvitationClient", &primordial_pipe, 1,
@@ -854,7 +860,7 @@ DEFINE_TEST_CLIENT(SendIsolatedInvitationClient) {
   ASSERT_EQ(MOJO_RESULT_OK, MojoClose(primordial_pipe));
 }
 
-TEST_F(InvitationTest, SendMultipleIsolatedInvitations) {
+TEST_F(MAYBE_InvitationTest, SendMultipleIsolatedInvitations) {
   if (mojo::core::IsMojoIpczEnabled()) {
     // This feature is not particularly useful in a world where isolated
     // connections are only supported between broker nodes.
@@ -940,7 +946,7 @@ DEFINE_TEST_CLIENT(SendMultipleIsolatedInvitationsClient) {
   ASSERT_EQ(MOJO_RESULT_OK, MojoClose(primordial_pipe));
 }
 
-TEST_F(InvitationTest, SendIsolatedInvitationWithDuplicateName) {
+TEST_F(MAYBE_InvitationTest, SendIsolatedInvitationWithDuplicateName) {
   if (mojo::core::IsMojoIpczEnabled()) {
     // This feature is not particularly useful in a world where isolated
     // connections are only supported between broker nodes.
@@ -969,7 +975,7 @@ TEST_F(InvitationTest, SendIsolatedInvitationWithDuplicateName) {
   EXPECT_EQ(MOJO_RESULT_OK, MojoClose(pipe1));
 }
 
-TEST_F(InvitationTest, SendIsolatedInvitationToSelf) {
+TEST_F(MAYBE_InvitationTest, SendIsolatedInvitationToSelf) {
   if (IsMojoIpczEnabled()) {
     GTEST_SKIP() << "MojoIpcz does not support nodes sending isolated "
                  << "invitations to themselves.";
@@ -992,7 +998,7 @@ TEST_F(InvitationTest, SendIsolatedInvitationToSelf) {
   EXPECT_EQ(MOJO_RESULT_OK, MojoClose(pipe1));
 }
 
-TEST_F(InvitationTest, BrokenInvitationTransportBreaksAttachedPipe) {
+TEST_F(MAYBE_InvitationTest, BrokenInvitationTransportBreaksAttachedPipe) {
   MojoHandle primordial_pipe;
   base::Process child_process = LaunchChildTestClient(
       "BrokenTransportClient", &primordial_pipe, 1, TransportType::kChannel,
@@ -1009,7 +1015,8 @@ TEST_F(InvitationTest, BrokenInvitationTransportBreaksAttachedPipe) {
   EXPECT_EQ(0, wait_result);
 }
 
-TEST_F(InvitationTest, BrokenIsolatedInvitationTransportBreaksAttachedPipe) {
+TEST_F(MAYBE_InvitationTest,
+       BrokenIsolatedInvitationTransportBreaksAttachedPipe) {
   MojoHandle primordial_pipe;
   base::Process child_process = LaunchChildTestClient(
       "BrokenTransportClient", &primordial_pipe, 1, TransportType::kChannel,
