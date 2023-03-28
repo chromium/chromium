@@ -341,7 +341,7 @@ html.col-resize .jelly-splitter:not(.splitter-active):hover {
 body.check-select .dialog-header {
   border-bottom: 1px solid var(--cros-separator-color);
   border-top: 1px solid transparent;
-  color: var(--cros-text-color-prominent);
+  color: var(--cros-sys-on_primary_container);
 }
 
 /* Display a border during check-select mode if we're in a dialog. (This
@@ -351,31 +351,28 @@ body[type='open-multi-file'].check-select .dialog-header {
 }
 
 .dialog-header > .spacer {
-  flex: auto;
+  flex: 1 0 48px;
 }
 
 .dialog-header cr-button {
-  --active-bg: var(--cros-ripple-color);
-  --hover-bg-color: var(--cros-ripple-color);
-  --ink-color: var(--cros-ripple-color);
+  --hover-bg-color: var(--cros-sys-hover_on_subtle);
+  --ink-color: var(--cros-sys-ripple_neutral_on_subtle);
   --ripple-opacity: 100%;
   --text-color: currentColor;
-  border: 2px solid transparent;
+  border: none;
   border-radius: 18px;
   box-sizing: border-box;
-  color: var(--cros-text-color-primary);
+  color: var(--cros-sys-on_surface);
   cursor: pointer;
   height: 36px;
-  margin: 0 6px;
-  min-width: 36px;
-  padding: 0;
+  min-width: 48px;
   position: relative;
   text-transform: uppercase;
   z-index: 1;
 }
 
 html.pointer-active .dialog-header cr-button:not(:active):hover {
-  background-color: unset;
+  --hover-bg-color: none;
   cursor: default;
 }
 
@@ -387,33 +384,16 @@ html.pointer-active .dialog-header cr-button:not(:active):hover {
 }
 
 .dialog-header cr-button[menu-shown] {
- background: var(--cros-icon-button-pressed-color);
+  background-color: var(--cros-sys-primary_container);
+  color: var(--cros-sys-on_primary_container);
 }
 
-.dialog-header cr-button:not([menu-shown]):not(:active):hover {
-  background-color: var(--cros-ripple-color);
-}
-
-html.pointer-active .dialog-header cr-button:not([menu-shown]):not(:active):hover {
-  background-color: unset;
-  cursor: default;
-}
-
-.dialog-header cr-button:active {
-  background: var(--cros-icon-button-pressed-color);
+.dialog-header cr-button:not([aria-haspopup]):active {
+  background-color: var(--cros-sys-pressed_on_subtle);
 }
 
 html.focus-outline-visible .dialog-header cr-button:not(:active):focus {
-  border: 2px solid var(--cros-focus-ring-color);
-}
-
-body.check-select button,
-body.check-select button:hover {
-  color: var(--cros-text-color-primary);
-}
-
-body.check-select .dialog-header button paper-ripple {
-  color: var(--cros-text-color-primary);
+  outline: 2px solid var(--cros-sys-focus_ring);
 }
 
 /** Avoid highlighting if element doesn't have focus by tab (tabindex=-1)
@@ -425,7 +405,7 @@ html.focus-outline-visible .dialog-header
 
 body.check-select .dialog-header
     .menu-button:focus:not([tabindex='-1']):not(:active) {
-  background-color: var(--cros-ripple-color);
+  background-color: var(--cros-sys-ripple_neutral_on_subtle);
 }
 
 .dialog-header iron-icon,
@@ -434,33 +414,25 @@ body.check-select .dialog-header
   width: 16px;
 }
 
-.dialog-header cr-button {
-  line-height: 32px;
-  padding: 0 8px;
+.dialog-header cr-button.icon-button {
+  border-radius: 12px;
+  height: 40px;
+  margin: 4px;
+  min-width: 40px;
+  padding: 0;
+  width: 40px;
 }
 
-.dialog-header button.icon-button {
-  -webkit-app-region: no-drag;
-  background-color: transparent;
-  background-image: none;
-  background-position: center;
-  background-repeat: no-repeat;
-  box-shadow: none;
-  outline: none;
-  position: relative;
+.dialog-header cr-button.icon-button[aria-haspopup] {
+  --ink-color: var(--cros-sys-ripple_primary);
 }
 
 .dialog-header cr-button.icon-button > .icon {
   background-position: center;
   background-repeat: no-repeat;
-  height: 48px;
-  left: 0;
-  margin-inline-end: -8px;
-  margin-inline-start: -8px;
-  margin-top: -8px;
+  height: 20px;
   position: absolute;
-  top: 0;
-  width: 48px;
+  width: 20px;
 }
 
 .dialog-header cr-button.icon-button > xf-icon {
@@ -468,9 +440,15 @@ body.check-select .dialog-header
 }
 
 .dialog-header #tasks {
-  border-radius: 4px;
-  height: 32px;
-  padding: 0 12px;
+  color: var(--cros-sys-primary);
+  margin: 0 8px;
+  padding-bottom: 0;
+  padding-inline: 16px;
+  padding-top: 2px;
+}
+
+.dialog-header #tasks[multiple] {
+  padding-inline-end: 12px;
 }
 
 .dialog-header cr-button > .icon,
@@ -488,23 +466,27 @@ body.check-select .dialog-header
 
 .dialog-header.files-ng #search-wrapper {
   align-items: center;
-  border-radius: 4px;
-  height: 40px;
+  border-radius: 8px;
+  height: 48px;
   transition: background-color 200ms ease;
 }
 
 .dialog-header.files-ng #search-wrapper.has-cursor,
 .dialog-header.files-ng #search-wrapper.has-text,
 .dialog-header.files-ng #search-wrapper.hide-pending {
-  background-color: var(--cros-textfield-background-color);
-  margin-inline-end: 16px;
+  background-color: var(--cros-sys-input_field_on_base);
 }
 
 .dialog-header #search-box cr-input {
   --cr-input-background-color: transparent;
+  --cr-input-border-bottom: transparent;
   --cr-input-border-radius: 0;
+  --cr-input-color: var(--cros-sys-on_surface);
   --cr-input-error-display: none;
-  --cr-input-padding-end: 20px;
+  --cr-input-focus-color: transparent;
+  --cr-input-min-height: 20px;
+  --cr-input-placeholder-color: var(--cros-sys-secondary);
+  --cr-input-padding-end: 0;
   --cr-input-padding-start: 0;
   display: inline-block;
   transition: width 200ms ease;
@@ -585,7 +567,7 @@ body:not(.check-select) #selection-menu-button {
 }
 
 body.files-ng #files-selected-label {
-  margin-inline-start: 8px;
+  margin-inline: 8px 12px;
 }
 
 body.check-select #files-selected-label {
@@ -593,7 +575,7 @@ body.check-select #files-selected-label {
 }
 
 #cancel-selection-button {
-  --ink-color: var(--cros-ripple-color);
+  --ink-color: var(--cros-sys-ripple_neutral_on_subtle);
   border: none;
   box-shadow: none;
   color: currentColor;
@@ -601,15 +583,16 @@ body.check-select #files-selected-label {
   text-transform: none;
 }
 
-/* TODO(adanilo) document the calc() reason. */
 body.files-ng #cancel-selection-button {
-  border: 2px solid transparent;
-  margin-inline-start: calc(10px + 1px);
-  width: 36px;
+  height: 32px;
+  margin-inline-start: 12px;
+  min-width: 32px;
+  padding: 6px;
+  width: 32px;
 }
 
 html.focus-outline-visible body.files-ng #cancel-selection-button:focus:not([tabindex='-1']):not(:active) {
-  border: 2px solid var(--cros-icon-color-prominent);
+  outline: 2px solid var(--cros-sys-focus_ring);
 }
 
 body.files-ng #cancel-selection-button > span#cancel-selection-label {
@@ -620,7 +603,7 @@ body.files-ng #cancel-selection-button .icon-arrow-back {
   -webkit-mask-image: url(../images/files/ui/list_check.svg);
   -webkit-mask-position: center;
   -webkit-mask-repeat: no-repeat;
-  background-color: var(--cros-icon-color-prominent);
+  background-color: currentColor;
   flex: none;
   height: 20px;
   width: 20px;
@@ -659,15 +642,9 @@ body.check-select #search-button {
   font-size: 14px;
 }
 
-.dialog-header.files-ng #search-box cr-input {
-  --cr-input-border-bottom: transparent;
-  --cr-input-color: var(--cros-text-color-primary);
-  --cr-input-focus-color: transparent;
-  --cr-input-placeholder-color: var(--cros-text-color-secondary);
-}
-
 .dialog-header.files-ng #search-box cr-input::part(input) {
-  caret-color: var(--cr-input-color);
+  caret-color: var(--cros-sys-primary);
+  margin-inline-end: 16px;
 }
 
 body.check-select #search-box {
@@ -699,8 +676,10 @@ body.check-select #search-box {
 
 .dialog-header.files-ng #search-box .clear {
   background: none;
-  height: 36px;
-  width: 36px;
+  height: 32px;
+  margin-inline-end: 4px;
+  padding: 0;
+  width: 32px;
 }
 
 html:not(.pointer-active) .dialog-header.files-ng #search-box .clear:hover {
@@ -732,22 +711,21 @@ html[dir='rtl'] #search-box .clear {
 }
 
 .dialog-header.files-ng #pinned-toggle-label {
-  color: var(--cros-text-color-primary);
-  margin-inline-end: 16px;
-  margin-inline-start: 12px;
+  color: var(--cros-sys-on_surface);
 }
 
 .dialog-header.files-ng cr-toggle {
-  --cr-toggle-checked-bar-color: var(--cros-switch-track-color-active);
+  --cr-toggle-checked-bar-color: var(--cros-sys-primary);
   /* bar color above already defines the opacity, so use 100% here */
   --cr-toggle-checked-bar-opacity: 100%;
-  --cr-toggle-checked-button-color: var(--cros-switch-knob-color-active);
+  --cr-toggle-checked-button-color: var(--cros-sys-on_primary);
   --cr-toggle-checked-ripple-color: var(--cros-focus-aura-color);
-  --cr-toggle-unchecked-bar-color: var(--cros-switch-track-color-inactive);
-  --cr-toggle-unchecked-button-color: var(--cros-switch-knob-color-inactive);
+  --cr-toggle-unchecked-bar-color: var(--cros-sys-secondary);
+  --cr-toggle-unchecked-button-color: var(--cros-sys-on_secondary);
   --cr-toggle-unchecked-ripple-color: var(--cros-ripple-color);
   --cr-toggle-box-shadow: var(--cros-elevation-1-shadow);
   --cr-toggle-ripple-diameter: 32px;
+  margin-inline: 6px;
 }
 
 /* only show the ripple ring for tab navigation */
@@ -1011,7 +989,7 @@ html.focus-outline-visible .dialog-footer select:focus {
   flex-direction: row;
   overflow: hidden;
   padding-bottom: 4px;
-  padding-inline: 8px 48px;
+  padding-inline-start: 8px;
   padding-top: 4px;
 }
 
@@ -1022,14 +1000,13 @@ body.check-select .breadcrumbs {
 /* The toolbar indicator that means the current directory is read only. */
 #read-only-indicator {
   align-items: center;
-  background-color: var(--cros-highlight-color-hover);
-  border-radius: 16px;
+  background-color: var(--cros-sys-disabled_container);
+  border: 1px solid var(--cros-sys-separator);
+  border-radius: 8px;
   display: flex;
   flex: none;
   height: 32px;
-  margin-inline-start: 12px;
-  padding: 0 16px;
-  padding-inline: 16px 12px;
+  padding-inline: 8px 12px;
 }
 
 body.check-select #read-only-indicator {

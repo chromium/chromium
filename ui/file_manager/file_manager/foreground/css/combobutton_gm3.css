@@ -1,0 +1,61 @@
+/* Copyright 2023 The Chromium Authors
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file. */
+
+.dialog-header button.combobutton {
+  align-items: stretch;
+  background: transparent;
+  border-radius: 3px;
+  cursor: pointer;
+  display: flex;
+  flex: none;
+  font-weight: 500;
+  outline: none;
+  padding: 8px;
+  position: relative;
+  user-select: none;
+}
+
+.dialog-header .combobutton > .button {
+  align-items: center;
+  display: flex;
+}
+
+.dialog-header .combobutton > .button > .action {
+  background-position: left center;
+  background-repeat: no-repeat;
+  background-size: 16px 16px;
+  padding-top: 1px;
+  z-index: 1;
+}
+
+html[dir='rtl'] .dialog-header .combobutton > .button > .action {
+  background-position: right center;
+}
+
+.dialog-header .combobutton > .button > .trigger {
+  align-items: center;
+  display: inline-flex;
+  height: 20px;
+  justify-content: center;
+  margin-inline-start: 8px;
+  width: 20px;
+}
+
+/* This pseudo element expands clickable area of the .trigger */
+.dialog-header .combobutton > .button > .trigger::before {
+  content: '';
+  display: block;
+  height: 48px;
+  position: absolute;
+  right: 12px; /* Same value as padding-inline-end of the button. */
+  width: 20px;
+}
+
+.dialog-header .combobutton:not([multiple]) > .button > .trigger {
+  display: none;
+}
+
+.dialog-header .combobutton[hidden] {
+  display: none;
+}
