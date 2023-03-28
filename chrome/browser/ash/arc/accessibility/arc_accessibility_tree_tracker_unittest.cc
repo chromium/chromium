@@ -243,9 +243,13 @@ TEST_F(ArcAccessibilityTreeTrackerTest, TrackArcGhostWindow) {
 
   // A ghost window is replaced with an actual ARC window.
   exo::SetShellApplicationId(test_window.get(), "org.chromium.arc.1");
-  exo::SetShellClientAccessibilityId(test_window.get(), 10);
   test_window->SetProperty(aura::client::kAppType,
                            static_cast<int>(ash::AppType::ARC_APP));
+
+  std::unique_ptr<aura::Window> child_window =
+      CreateWindow(ash::AppType::NON_APP);
+  exo::SetShellClientAccessibilityId(child_window.get(), 10);
+  test_window->AddChild(child_window.get());
 
   tree_tracker.OnAccessibilityEvent(event.Clone().get());
   ASSERT_EQ(1U, key_to_tree.size());

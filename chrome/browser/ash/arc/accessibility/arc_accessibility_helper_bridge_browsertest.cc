@@ -195,17 +195,24 @@ IN_PROC_BROWSER_TEST_F(ArcAccessibilityHelperBridgeBrowserTest,
 IN_PROC_BROWSER_TEST_F(ArcAccessibilityHelperBridgeBrowserTest,
                        RequestTreeSyncOnWindowIdChange) {
   auto shell_surface1 = MakeTestArcWindow("org.chromium.arc.1");
+  aura::Window* window1 = shell_surface1->GetWidget()->GetNativeWindow();
+  aura::Window child_window1 = aura::Window(nullptr);
+  child_window1.Init(ui::LAYER_NOT_DRAWN);
+  window1->AddChild(&child_window1);
+
   auto shell_surface2 = MakeTestArcWindow("org.chromium.arc.2");
+  aura::Window* window2 = shell_surface2->GetWidget()->GetNativeWindow();
+  aura::Window child_window2 = aura::Window(nullptr);
+  child_window2.Init(ui::LAYER_NOT_DRAWN);
+  window2->AddChild(&child_window2);
 
   wm::ActivationClient* activation_client =
       ash::Shell::Get()->activation_client();
-  activation_client->ActivateWindow(
-      shell_surface1->GetWidget()->GetNativeWindow());
+  activation_client->ActivateWindow(window1);
 
   AccessibilityManager::Get()->EnableSpokenFeedback(true);
 
-  exo::SetShellClientAccessibilityId(
-      shell_surface1->GetWidget()->GetNativeWindow(), 10);
+  exo::SetShellClientAccessibilityId(&child_window1, 10);
 
   EXPECT_TRUE(
       fake_accessibility_helper_instance_->last_requested_tree_window_key()
@@ -214,15 +221,13 @@ IN_PROC_BROWSER_TEST_F(ArcAccessibilityHelperBridgeBrowserTest,
       10U, fake_accessibility_helper_instance_->last_requested_tree_window_key()
                ->get_window_id());
 
-  exo::SetShellClientAccessibilityId(
-      shell_surface2->GetWidget()->GetNativeWindow(), 20);
+  exo::SetShellClientAccessibilityId(&child_window2, 20);
 
   EXPECT_EQ(
       20U, fake_accessibility_helper_instance_->last_requested_tree_window_key()
                ->get_window_id());
 
-  exo::SetShellClientAccessibilityId(
-      shell_surface2->GetWidget()->GetNativeWindow(), 21);
+  exo::SetShellClientAccessibilityId(&child_window2, 21);
 
   EXPECT_EQ(
       21U, fake_accessibility_helper_instance_->last_requested_tree_window_key()

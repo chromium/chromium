@@ -147,9 +147,6 @@ class ArcAccessibilityTreeTracker : public aura::EnvObserver {
   // window change.
   void UpdateChildWindowIds(aura::Window* window);
 
-  // Should be notified for mapping from |window_id| to |task_id|.
-  void UpdateWindowIdAndTaskId(int32_t window_id, int32_t task_id);
-
   // Updates properties set to the given aura::Window.
   void UpdateWindowProperties(aura::Window* window);
 
