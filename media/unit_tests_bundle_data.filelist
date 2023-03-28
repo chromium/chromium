@@ -350,6 +350,7 @@
 //media/test/data/negative_ts.flac
 //media/test/data/no_audio_video.webm
 //media/test/data/no_streams.webm
+//media/test/data/noise-xhe-aac-44kHz.mp4
 //media/test/data/noise-xhe-aac-mono.mp4
 //media/test/data/noise-xhe-aac.mp4
 //media/test/data/nonzero-start-time.webm
