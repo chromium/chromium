@@ -413,7 +413,9 @@ void ClientSideDetectionService::UpdateCache() {
 }
 
 bool ClientSideDetectionService::OverPhishingReportLimit() {
+  // `delegate_` and prefs can be null in unit tests.
   if (base::FeatureList::IsEnabled(kSafeBrowsingDailyPhishingReportsLimit) &&
+      (delegate_ && delegate_->GetPrefs()) &&
       IsEnhancedProtectionEnabled(*delegate_->GetPrefs())) {
     return GetPhishingNumReports() >
            kSafeBrowsingDailyPhishingReportsLimitESB.Get();
@@ -561,7 +563,7 @@ void ClientSideDetectionService::ClassifyPhishingThroughThresholds(
     base::UmaHistogramEnumeration(
         "SBClientPhishing.ClassifyThresholdsResult",
         SBClientDetectionClassifyThresholdsResult::kModelSizeMismatch);
-    DVLOG(0)
+    VLOG(0)
         << "Model is misconfigured. Size is mismatched. Verdict scores size is "
         << static_cast<int>(verdict->tflite_model_scores().size())
         << " and model thresholds size is "

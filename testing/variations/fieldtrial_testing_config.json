@@ -10963,6 +10963,25 @@
             ]
         }
     ],
+    "SafeBrowsingDailyPhishingReportsLimit": [
+        {
+            "platforms": [
+                "android",
+                "chromeos",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabledv2",
+                    "enable_features": [
+                        "SafeBrowsingDailyPhishingReportsLimit"
+                    ]
+                }
+            ]
+        }
+    ],
     "SafeBrowsingDelayedWarnings": [
         {
             "platforms": [
@@ -11015,6 +11034,25 @@
                     "name": "Enabled",
                     "enable_features": [
                         "SafeBrowsingLookupMechanismExperiment"
+                    ]
+                }
+            ]
+        }
+    ],
+    "SafeBrowsingPhishingClassificationESBThreshold": [
+        {
+            "platforms": [
+                "android",
+                "chromeos",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "SafeBrowsingPhishingClassificationESBThreshold"
                     ]
                 }
             ]
