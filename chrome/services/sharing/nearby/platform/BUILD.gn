@@ -97,6 +97,7 @@ source_set("unit_tests") {
     "bidirectional_stream_unittest.cc",
     "ble_medium_unittest.cc",
     "ble_v2_medium_unittest.cc",
+    "ble_v2_peripheral_unittest.cc",
     "bluetooth_adapter_unittest.cc",
     "bluetooth_classic_medium_unittest.cc",
     "bluetooth_server_socket_unittest.cc",

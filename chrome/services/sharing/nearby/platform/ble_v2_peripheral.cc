@@ -6,7 +6,8 @@
 
 namespace nearby::chrome {
 
-BleV2Peripheral::BleV2Peripheral() = default;
+BleV2Peripheral::BleV2Peripheral(bluetooth::mojom::DeviceInfoPtr device_info)
+    : device_info_(std::move(device_info)) {}
 
 BleV2Peripheral::BleV2Peripheral(BleV2Peripheral&&) = default;
 
@@ -15,7 +16,13 @@ BleV2Peripheral& BleV2Peripheral::operator=(BleV2Peripheral&&) = default;
 BleV2Peripheral::~BleV2Peripheral() = default;
 
 std::string BleV2Peripheral::GetAddress() const {
-  return "NOT_IMPLEMENTED";
+  return device_info_->address;
+}
+
+void BleV2Peripheral::UpdateDeviceInfo(
+    bluetooth::mojom::DeviceInfoPtr device_info) {
+  DCHECK_EQ(device_info_->address, device_info->address);
+  device_info_ = std::move(device_info);
 }
 
 }  // namespace nearby::chrome

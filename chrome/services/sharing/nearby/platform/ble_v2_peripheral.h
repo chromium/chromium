@@ -7,6 +7,7 @@
 
 #include <string>
 
+#include "device/bluetooth/public/mojom/adapter.mojom.h"
 #include "third_party/nearby/src/internal/platform/implementation/ble_v2.h"
 
 namespace nearby::chrome {
@@ -14,9 +15,7 @@ namespace nearby::chrome {
 // Concrete BleV2Peripheral implementation.
 class BleV2Peripheral : public api::ble_v2::BlePeripheral {
  public:
-  // The default constructor will eventually be replaced by constructing with
-  // needed metadata like device info and etc, when the class is productionized.
-  BleV2Peripheral();
+  explicit BleV2Peripheral(bluetooth::mojom::DeviceInfoPtr device_info);
   BleV2Peripheral(const BleV2Peripheral&) = delete;
   BleV2Peripheral& operator=(const BleV2Peripheral&) = delete;
   BleV2Peripheral(BleV2Peripheral&&);
@@ -25,6 +24,10 @@ class BleV2Peripheral : public api::ble_v2::BlePeripheral {
   ~BleV2Peripheral() override;
 
   std::string GetAddress() const override;
+  void UpdateDeviceInfo(bluetooth::mojom::DeviceInfoPtr device_info);
+
+ private:
+  bluetooth::mojom::DeviceInfoPtr device_info_;
 };
 
 }  // namespace nearby::chrome
