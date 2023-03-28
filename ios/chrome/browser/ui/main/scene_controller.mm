@@ -47,7 +47,6 @@
 #import "ios/chrome/browser/crash_report/crash_keys_helper.h"
 #import "ios/chrome/browser/crash_report/crash_loop_detection_util.h"
 #import "ios/chrome/browser/crash_report/crash_report_helper.h"
-#import "ios/chrome/browser/crash_report/crash_restore_helper.h"
 #import "ios/chrome/browser/default_browser/promo_source.h"
 #import "ios/chrome/browser/feature_engagement/tracker_factory.h"
 #import "ios/chrome/browser/first_run/first_run.h"
@@ -819,30 +818,6 @@ void InjectNTP(Browser* browser) {
   self.sceneState.UIEnabled = YES;
 }
 
-// Returns YES if restore prompt can be shown.
-// The restore prompt shouldn't appear if its appearance may be in conflict
-// with the expected behavior by the user.
-// The following cases will not show restore prompt:
-//   1- New tab / Navigation startup parameters are specified.
-//   2- Load URL User activity is queud.
-//   3- Move tab user activity is queued.
-//   4- Only incognito mode is available.
-// In these cases if a restore prompt was shown, it may be dismissed immediately
-// and the user will not have a chance to restore the session.
-- (BOOL)shouldShowRestorePrompt {
-  BOOL shouldShow = !self.startupParameters && ![self isIncognitoForced];
-  if (shouldShow) {
-    for (NSUserActivity* activity in self.sceneState.connectionOptions
-             .userActivities) {
-      if (ActivityIsTabMove(activity) || ActivityIsURLLoad(activity)) {
-        shouldShow = NO;
-        break;
-      }
-    }
-  }
-  return shouldShow;
-}
-
 // Starts up a single chrome window and its UI.
 - (void)startUpChromeUI {
   DCHECK(!self.browserViewWrangler);
@@ -924,30 +899,7 @@ void InjectNTP(Browser* browser) {
       initWithBrowserInterfaceProvider:self.browserViewWrangler];
   [self.sceneState.scene.screenshotService setDelegate:self.screenshotDelegate];
 
-  // Only create the restoration helper if the session with the current session
-  // id was backed up successfully.
-  if (self.sceneState.appState.sessionRestorationRequired &&
-      !self.sceneState.appState.startupInformation.isFirstRun) {
-    if ([CrashRestoreHelper
-            isBackedUpSessionID:self.sceneState.sceneSessionID
-                   browserState:mainBrowser->GetBrowserState()]) {
-      self.sceneState.appState.startupInformation.restoreHelper =
-          [[CrashRestoreHelper alloc] initWithBrowser:mainBrowser];
-    }
-  }
-
-  // If the application crashed, clear incognito state.
-  if (self.sceneState.appState.postCrashAction ==
-      PostCrashAction::kStashTabsAndShowNTP)
-    [self clearIOSSpecificIncognitoData];
-
   [self createInitialUI:[self initialUIMode]];
-
-  if ([self shouldShowRestorePrompt]) {
-    [self.sceneState.appState.startupInformation
-            .restoreHelper showRestorePrompt];
-    self.sceneState.appState.startupInformation.restoreHelper = nil;
-  }
 
   // Make sure the geolocation controller is created to observe permission
   // events.
@@ -1003,12 +955,6 @@ void InjectNTP(Browser* browser) {
     }
   }
 
-  // If the app crashed, always launch in normal mode.
-  if (self.sceneState.appState.postCrashAction ==
-      PostCrashAction::kStashTabsAndShowNTP) {
-    return ApplicationMode::NORMAL;
-  }
-
   // Launch in the mode that matches the state of the scene when the application
   // was terminated. If the scene was showing the incognito UI, but there are
   // no incognito tabs open (e.g. the tab switcher was active and user closed
@@ -1062,7 +1008,6 @@ void InjectNTP(Browser* browser) {
   // the current webState.
   if (self.sceneState.appState.postCrashAction ==
       PostCrashAction::kShowNTPWithReturnToTab) {
-    DCHECK(base::FeatureList::IsEnabled(kRemoveCrashInfobar));
     InjectNTP(browser);
   }
 
@@ -2727,16 +2672,6 @@ void InjectNTP(Browser* browser) {
     [self openOrReuseTabInMode:targetMode
              withUrlLoadParams:urlLoadParams
            tabOpenedCompletion:tabOpenedCompletion];
-  }
-
-  if (self.sceneState.appState.startupInformation.restoreHelper) {
-    // Now that all the operations on the tabs have been done, display the
-    // restore infobar if needed.
-    dispatch_async(dispatch_get_main_queue(), ^{
-      [self.sceneState.appState.startupInformation
-              .restoreHelper showRestorePrompt];
-      self.sceneState.appState.startupInformation.restoreHelper = nil;
-    });
   }
 }
 

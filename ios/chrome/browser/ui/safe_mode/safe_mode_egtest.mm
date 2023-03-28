@@ -159,10 +159,9 @@ void AssertTryAgainButtonOnPage() {
       disabled:{}
       relaunchPolicy:ForceRelaunchByCleanShutdown];
   [SafeModeAppInterface setFailedStartupAttemptCount:2];
-  [[AppLaunchManager sharedManager]
-      ensureAppLaunchedWithFeaturesEnabled:{kRemoveCrashInfobar}
-                                  disabled:{}
-                            relaunchPolicy:ForceRelaunchByKilling];
+  [[AppLaunchManager sharedManager] ensureAppLaunchedWithFeaturesEnabled:{}
+      disabled:{}
+      relaunchPolicy:ForceRelaunchByKilling];
   [ChromeEarlGrey waitForMainTabCount:3];
   [ChromeEarlGrey waitForIncognitoTabCount:1];
   [[EarlGrey

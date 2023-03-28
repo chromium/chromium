@@ -832,11 +832,6 @@ const char kRecordSnapshotSizeDescription[] =
     "snapshots. PDF snaphot will be taken just for the purpose of the "
     "histogram recording.";
 
-const char kRemoveCrashInfobarName[] = "Remove Crash Infobars";
-const char kRemoveCrashInfobarDescription[] =
-    "When enabled, always auto restore tabs rather than showing a crash "
-    "infobar";
-
 const char kRemoveExcessNTPsExperimentName[] = "Remove extra New Tab Pages";
 const char kRemoveExcessNTPsExperimentDescription[] =
     "When enabled, extra tabs with the New Tab Page open and no navigation "

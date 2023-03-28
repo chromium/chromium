@@ -73,9 +73,6 @@ BASE_DECLARE_FEATURE(kIOSLocationBarUseNativeContextMenu);
 // Feature flag that swaps the omnibox textfield implementation.
 BASE_DECLARE_FEATURE(kIOSNewOmniboxImplementation);
 
-// Feature flag that removes the crash infobar.
-BASE_DECLARE_FEATURE(kRemoveCrashInfobar);
-
 // Feature flag to enable using Lens to search for images.
 BASE_DECLARE_FEATURE(kUseLensToSearchForImage);
 

@@ -732,9 +732,6 @@ extern const char kRestoreSessionFromCacheDescription[];
 extern const char kRecordSnapshotSizeName[];
 extern const char kRecordSnapshotSizeDescription[];
 
-extern const char kRemoveCrashInfobarName[];
-extern const char kRemoveCrashInfobarDescription[];
-
 // Title and description for the flag to remove excess NTP tabs that don't have
 // navigation history.
 extern const char kRemoveExcessNTPsExperimentName[];

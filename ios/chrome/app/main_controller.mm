@@ -69,7 +69,6 @@
 #import "ios/chrome/browser/crash_report/crash_keys_helper.h"
 #import "ios/chrome/browser/crash_report/crash_loop_detection_util.h"
 #import "ios/chrome/browser/crash_report/crash_report_helper.h"
-#import "ios/chrome/browser/crash_report/crash_restore_helper.h"
 #import "ios/chrome/browser/credential_provider/credential_provider_buildflags.h"
 #import "ios/chrome/browser/download/download_directory_util.h"
 #import "ios/chrome/browser/external_files/external_file_remover_factory.h"
@@ -375,8 +374,6 @@ void MainControllerAuthenticationServiceDelegate::ClearBrowsingData(
 @end
 
 @implementation MainController
-// Defined by MainControllerGuts.
-@synthesize restoreHelper = _restoreHelper;
 
 // Defined by public protocols.
 // - BrowserLauncher
@@ -512,9 +509,7 @@ void MainControllerAuthenticationServiceDelegate::ClearBrowsingData(
 }
 
 // This initialization must happen before any windows are created.
-// Returns YES iff there's a session restore available.
-- (BOOL)startUpBeforeFirstWindowCreatedAndPrepareForRestorationPostCrash:
-    (BOOL)showPostCrashLaunchInfobar {
+- (void)startUpBeforeFirstWindowCreated {
   GetApplicationContext()->OnAppEnterForeground();
 
   // Although this duplicates some metrics_service startup logic also in
@@ -545,17 +540,6 @@ void MainControllerAuthenticationServiceDelegate::ClearBrowsingData(
   DCHECK_EQ(chromeBrowserState, self.appState.mainBrowserState);
 #endif  // !defined(NDEBUG)
 
-  // The CrashRestoreHelper must clean up the old browser state information.
-  // `self.restoreHelper` must be kept alive until the BVC receives the
-  // browser state.
-  BOOL needRestoration = NO;
-  if (showPostCrashLaunchInfobar) {
-    NSSet<NSString*>* sessions =
-        [[PreviousSessionInfo sharedInstance] connectedSceneSessionsIDs];
-    needRestoration =
-        [CrashRestoreHelper moveAsideSessions:sessions
-                              forBrowserState:self.appState.mainBrowserState];
-  }
   if (!base::ios::IsMultipleScenesSupported()) {
     NSSet<NSString*>* previousSessions =
         [PreviousSessionInfo sharedInstance].connectedSceneSessionsIDs;
@@ -586,8 +570,6 @@ void MainControllerAuthenticationServiceDelegate::ClearBrowsingData(
 #endif
 
   _windowConfigurationRecorder = [[WindowConfigurationRecorder alloc] init];
-
-  return needRestoration;
 }
 
 // This initialization must only happen once there's at least one Chrome window
@@ -626,14 +608,7 @@ void MainControllerAuthenticationServiceDelegate::ClearBrowsingData(
   if (GetApplicationContext()->WasLastShutdownClean())
     return PostCrashAction::kRestoreTabsCleanShutdown;
 
-  bool show_crash_infobar = !base::FeatureList::IsEnabled(kRemoveCrashInfobar);
-  // When `kRemoveCrashInfobar` launches, remove the isFirstLaunchAfterUpgrade
-  // check entirely.
-  if (show_crash_infobar && ![self isFirstLaunchAfterUpgrade]) {
-    return PostCrashAction::kStashTabsAndShowNTP;
-  }
-
-  if (!show_crash_infobar && crash_util::GetFailedStartupAttemptCount() >= 2) {
+  if (crash_util::GetFailedStartupAttemptCount() >= 2) {
     return PostCrashAction::kShowNTPWithReturnToTab;
   }
 
@@ -645,10 +620,7 @@ void MainControllerAuthenticationServiceDelegate::ClearBrowsingData(
   // crashes.
 
   self.appState.postCrashAction = [self postCrashAction];
-  self.appState.sessionRestorationRequired =
-      [self startUpBeforeFirstWindowCreatedAndPrepareForRestorationPostCrash:
-                self.appState.postCrashAction ==
-                PostCrashAction::kStashTabsAndShowNTP];
+  [self startUpBeforeFirstWindowCreated];
   base::UmaHistogramEnumeration("Stability.IOS.PostCrashAction",
                                 self.appState.postCrashAction);
 }
@@ -1028,10 +1000,8 @@ void MainControllerAuthenticationServiceDelegate::ClearBrowsingData(
   // If the user chooses to restore their session, some cached snapshots and
   // session states may be needed. Otherwise, cleanup the snapshots and session
   // states
-  if (self.appState.postCrashAction != PostCrashAction::kStashTabsAndShowNTP) {
-    [self scheduleSnapshotsCleanup];
-    [self scheduleSessionStateCacheCleanup];
-  }
+  [self scheduleSnapshotsCleanup];
+  [self scheduleSessionStateCacheCleanup];
 }
 
 - (void)scheduleMemoryDebuggingTools {

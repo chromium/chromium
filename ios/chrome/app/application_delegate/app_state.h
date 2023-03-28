@@ -35,8 +35,8 @@ enum class PostCrashAction {
   kRestoreTabsCleanShutdown = 0,
   // Restore tabs normally after an unclean shutdown.
   kRestoreTabsUncleanShutdown = 1,
-  // Don't restore tabs, show crash infobar and NTP.
-  kStashTabsAndShowNTP = 2,
+  // kStashTabsAndShowNTP is no longer used, but the value 2 cannot be reused
+  // as it would break histograms.
   // Restore tabs with `return to previous tab` NTP.
   kShowNTPWithReturnToTab = 3,
   // Show safe mode.
@@ -93,9 +93,6 @@ initWithBrowserLauncher:(id<BrowserLauncher>)browserLauncher
 
 // YES if the app is resuming from safe mode.
 @property(nonatomic) BOOL resumingFromSafeMode;
-
-// Indicates that session restoration might be required for connecting scenes.
-@property(nonatomic, assign) BOOL sessionRestorationRequired;
 
 // The last window which received a tap.
 @property(nonatomic, weak) UIWindow* lastTappedWindow;

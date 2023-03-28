@@ -50,7 +50,6 @@ enum class ExternalFilesLoadedInWebStateFeature {
 @synthesize appLaunchTime = _appLaunchTime;
 @synthesize didFinishLaunchingTime = _didFinishLaunchingTime;
 @synthesize firstSceneConnectionTime = _firstSceneConnectionTime;
-@synthesize restoreHelper = _restoreHelper;
 
 - (FirstUserActionRecorder*)firstUserActionRecorder {
   return nil;

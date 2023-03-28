@@ -5,7 +5,6 @@
 #ifndef IOS_CHROME_APP_APPLICATION_DELEGATE_STARTUP_INFORMATION_H_
 #define IOS_CHROME_APP_APPLICATION_DELEGATE_STARTUP_INFORMATION_H_
 
-@class CrashRestoreHelper;
 class FirstUserActionRecorder;
 
 namespace base {
@@ -28,9 +27,6 @@ class TimeTicks;
 @property(nonatomic, assign) base::TimeTicks didFinishLaunchingTime;
 // Tick of the first scene connection, used for UMA.
 @property(nonatomic, assign) base::TimeTicks firstSceneConnectionTime;
-
-// Keeps track of the restore state during startup.
-@property(nonatomic, strong) CrashRestoreHelper* restoreHelper;
 
 // Only for iOS 12 compat.
 - (NSDictionary*)launchOptions;

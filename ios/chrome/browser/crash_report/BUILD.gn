@@ -55,8 +55,6 @@ source_set("crash_report_internal") {
     "crash_report_helper.mm",
     "crash_reporter_url_observer.h",
     "crash_reporter_url_observer.mm",
-    "crash_restore_helper.h",
-    "crash_restore_helper.mm",
   ]
   deps = [
     ":crash_report",
@@ -74,10 +72,6 @@ source_set("crash_report_internal") {
     "//ios/chrome/browser/infobars:public",
     "//ios/chrome/browser/main:public",
     "//ios/chrome/browser/paths",
-    "//ios/chrome/browser/sessions",
-    "//ios/chrome/browser/sessions:restoration_agent",
-    "//ios/chrome/browser/sessions:serialisation",
-    "//ios/chrome/browser/sessions:session_service",
     "//ios/chrome/browser/shared/public/features",
     "//ios/chrome/browser/ui/icons:symbols",
     "//ios/chrome/browser/ui/main:scene_state_header",
@@ -96,7 +90,6 @@ source_set("unit_tests") {
     "crash_loop_detection_util_unittest.mm",
     "crash_reporter_breadcrumb_observer_unittest.mm",
     "crash_reporter_url_observer_unittest.mm",
-    "crash_restore_helper_unittest.mm",
     "main_thread_freeze_detector_unittest.mm",
   ]
   deps = [
@@ -111,8 +104,6 @@ source_set("unit_tests") {
     "//ios/chrome/browser/browser_state:test_support",
     "//ios/chrome/browser/crash_report/breadcrumbs",
     "//ios/chrome/browser/main:test_support",
-    "//ios/chrome/browser/sessions:serialisation",
-    "//ios/chrome/browser/sessions:session_service",
     "//ios/chrome/browser/web_state_list:test_support",
     "//ios/chrome/browser/web_state_list:web_state_list",
     "//ios/chrome/common/crash_report",
