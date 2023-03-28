@@ -1,0 +1,49 @@
+This is a testharness.js-based test.
+PASS No trustedBiddingSignalsKeys or trustedBiddingSignalsUrl.
+PASS trustedBiddingSignalsKeys but no trustedBiddingSignalsUrl.
+PASS trustedBiddingSignalsUrl without trustedBiddingSignalsKeys.
+PASS trustedBiddingSignalsUrl closes the connection without sending anything.
+PASS Trusted bidding signals response is HTTP 404 error.
+PASS Trusted bidding signals response has no content-type.
+PASS Trusted bidding signals response has wrong content-type.
+PASS Trusted bidding signals response does not allow fledge.
+PASS Trusted bidding signals response has wrong X-Allow-FLEDGE header.
+PASS Trusted bidding signals response has no X-Allow-FLEDGE header.
+PASS Trusted bidding signals response has no body.
+PASS Trusted bidding signals response is not JSON.
+PASS Trusted bidding signals response is a JSON array.
+PASS Trusted bidding signals response in invalid JSON object.
+PASS Trusted bidding signals response has no keys object.
+PASS Trusted bidding signals response has no keys.
+PASS Trusted bidding signals response keys is incorrectly an array.
+PASS Trusted bidding signals response has key not in trustedBiddingSignalsKeys.
+PASS Trusted bidding signals response null value for key.
+PASS Trusted bidding signals response has a number value for key.
+PASS Trusted bidding signals response has string value for key.
+PASS Trusted bidding signals response has array value for key.
+PASS Trusted bidding signals response has object value for key.
+PASS Trusted bidding signals receives empty string key.
+PASS Trusted bidding signals response has multiple keys.
+PASS Trusted bidding signals receives escaped key.
+PASS Trusted bidding signals receives null key.
+PASS Trusted bidding signals receives interest group name.
+PASS Trusted bidding signals receives escaped interest group name.
+PASS Trusted bidding signals receives empty interest group name.
+PASS Trusted bidding signals receives hostname field.
+PASS Trusted bidding signals response has no data-version.
+PASS Trusted bidding signals response has numeric Data-Version.
+PASS Trusted bidding signals response has min Data-Version.
+PASS Trusted bidding signals response has max Data-Version.
+PASS Trusted bidding signals response has too large Data-Version.
+PASS Trusted bidding signals response has Data-Version with leading 0.
+PASS Trusted bidding signals response has negative Data-Version.
+PASS Trusted bidding signals response has decimal in Data-Version.
+PASS Trusted bidding signals response has space in Data-Version.
+PASS Trusted bidding signals response has hex Data-Version.
+PASS Trusted bidding signals response has Data-Version and no trustedBiddingSignalsKeys.
+PASS Trusted bidding signals response with Data-Version and empty body.
+PASS Trusted bidding signals response with Data-Version and JSON array body.
+PASS Trusted bidding signals response with Data-Version and double JSON object body.
+PASS Trusted bidding signals response with Data-Version and invalid keys entry
+Harness: the test ran to completion.
+

@@ -6,6 +6,13 @@ const BASE_PATH = (new URL(BASE_URL)).pathname;
 
 const DEFAULT_INTEREST_GROUP_NAME = 'default name';
 
+// Unlike other URLs, the trustedBiddingSignalsUrl can't have a query string
+// that's set by tests, since FLEDGE controls it entirely, so tests that
+// exercise it use a fixed URL string. Special keys and interest group names
+// control the response.
+const TRUSTED_BIDDING_SIGNALS_URL =
+    `${BASE_URL}resources/trusted_bidding_signals.py`;
+
 // Creates a URL that will be sent to the URL request tracker script.
 // `uuid` is used to identify the stash shard to use.
 // `dispatch` affects what the tracker script does.
@@ -230,6 +237,18 @@ async function runBasicFledgeAuctionAndNavigate(test, uuid,
   fencedFrame.src = url;
   document.body.appendChild(fencedFrame);
   test.add_cleanup(() => { document.body.removeChild(fencedFrame); });
+}
+
+// Joins an interest group and runs an auction, expecting a winner to be
+// returned. "testConfig" can optionally modify the interest group or
+// auctionConfig.
+async function runBasicFledgeTestExpectingWinner(test, testConfig = {}) {
+  const uuid = generateUuid(test);
+  await joinInterestGroup(test, uuid, testConfig.interestGroupOverrides);
+  let url = await runBasicFledgeAuction(
+      test, uuid, testConfig.auctionConfigOverrides);
+  assert_equals(typeof url, 'string',
+      `Wrong value type returned from auction: ${typeof url}`);
 }
 
 // Joins an interest group and runs an auction, expecting no winner to be
