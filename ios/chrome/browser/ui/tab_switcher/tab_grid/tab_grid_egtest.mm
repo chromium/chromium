@@ -1330,6 +1330,11 @@ void EchoURLDefaultSearchEngineResponseProvider::GetResponseHeadersAndBody(
 
 // Tests adding items to the readinglist from the tab grid edit mode.
 - (void)testTabGridBulkActionAddToReadingList {
+  // TODO(crbug.com/1428591): Test flakes when run on iOS 16.
+  if (@available(iOS 16, *)) {
+    EARL_GREY_TEST_DISABLED(@"Fails on iOS 16.");
+  }
+
   [ChromeEarlGrey loadURL:_URL1];
   [ChromeEarlGrey waitForWebStateContainingText:kResponse1];
 
