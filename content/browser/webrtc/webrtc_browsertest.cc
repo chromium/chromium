@@ -49,10 +49,9 @@ class MAYBE_WebRtcBrowserTest : public WebRtcContentBrowserTestBase {
  protected:
   // Convenience function since most peerconnection-call.html tests just load
   // the page, kick off some javascript and wait for the title to change to OK.
-  void MakeTypicalPeerConnectionCall(const std::string& javascript,
-                                     bool use_manual_reply = true) {
+  void MakeTypicalPeerConnectionCall(const std::string& javascript) {
     MakeTypicalCall(javascript, "/media/peerconnection-call.html",
-                    use_manual_reply);
+                    /*use_manual_reply=*/false);
   }
 
   void SetConfigurationTest(const std::string& javascript) {
@@ -63,8 +62,7 @@ class MAYBE_WebRtcBrowserTest : public WebRtcContentBrowserTestBase {
 };
 
 IN_PROC_BROWSER_TEST_F(MAYBE_WebRtcBrowserTest, CanSetupAudioAndVideoCall) {
-  MakeTypicalPeerConnectionCall("call({video: true, audio: true});",
-                                /*use_manual_reply=*/false);
+  MakeTypicalPeerConnectionCall("call({video: true, audio: true});");
 }
 
 // Flaky on Android and Linux ASAN https://crbug.com/1099365.
@@ -78,11 +76,9 @@ IN_PROC_BROWSER_TEST_F(MAYBE_WebRtcBrowserTest,
                        MAYBE_NetworkProcessCrashRecovery) {
   if (!IsOutOfProcessNetworkService())
     return;
-  MakeTypicalPeerConnectionCall("call({video: true, audio: true});",
-                                /*use_manual_reply=*/false);
+  MakeTypicalPeerConnectionCall("call({video: true, audio: true});");
   SimulateNetworkServiceCrash();
-  MakeTypicalPeerConnectionCall("call({video: true, audio: true});",
-                                /*use_manual_reply=*/false);
+  MakeTypicalPeerConnectionCall("call({video: true, audio: true});");
 }
 
 IN_PROC_BROWSER_TEST_F(MAYBE_WebRtcBrowserTest,
@@ -197,23 +193,20 @@ IN_PROC_BROWSER_TEST_F(MAYBE_WebRtcBrowserTest,
 #endif
 IN_PROC_BROWSER_TEST_F(MAYBE_WebRtcBrowserTest,
                        MAYBE_CanSetupAudioAndVideoCallWithoutMsidAndBundle) {
-  MakeTypicalPeerConnectionCall("callWithoutMsidAndBundle();",
-                                /*use_manual_reply=*/false);
+  MakeTypicalPeerConnectionCall("callWithoutMsidAndBundle();");
 }
 
 // This test will modify the SDP offer to an unsupported codec, which should
 // cause SetLocalDescription to fail.
 IN_PROC_BROWSER_TEST_F(MAYBE_WebRtcBrowserTest,
                        NegotiateUnsupportedVideoCodec) {
-  MakeTypicalPeerConnectionCall("negotiateUnsupportedVideoCodec();",
-                                /*use_manual_reply=*/false);
+  MakeTypicalPeerConnectionCall("negotiateUnsupportedVideoCodec();");
 }
 
 // This test will modify the SDP offer to use no encryption, which should
 // cause SetLocalDescription to fail.
 IN_PROC_BROWSER_TEST_F(MAYBE_WebRtcBrowserTest, NegotiateNonCryptoCall) {
-  MakeTypicalPeerConnectionCall("negotiateNonCryptoCall();",
-                                /*use_manual_reply=*/false);
+  MakeTypicalPeerConnectionCall("negotiateNonCryptoCall();");
 }
 
 // This test can negotiate an SDP offer that includes a b=AS:xx to control
@@ -243,8 +236,7 @@ IN_PROC_BROWSER_TEST_F(MAYBE_WebRtcBrowserTest, CreateOfferWithOfferOptions) {
 }
 
 IN_PROC_BROWSER_TEST_F(MAYBE_WebRtcBrowserTest, CallInsideIframe) {
-  MakeTypicalPeerConnectionCall("callInsideIframe({video: true, audio:true});",
-                                /*use_manual_reply=*/false);
+  MakeTypicalPeerConnectionCall("callInsideIframe({video: true, audio:true});");
 }
 
 // Tests that SetConfiguration succeeds and triggers an ICE restart on the next
