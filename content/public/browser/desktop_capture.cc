@@ -30,13 +30,13 @@ webrtc::DesktopCaptureOptions CreateDesktopCaptureOptions() {
   // Leave desktop effects enabled during WebRTC captures.
   options.set_disable_effects(false);
 #if BUILDFLAG(IS_WIN)
+  // TODO(crbug.com/webrtc/15045): Possibly remove this flag. Keeping for now
+  // to force fallback to GDI.
   static BASE_FEATURE(kDirectXCapturer, "DirectXCapturer",
                       base::FEATURE_ENABLED_BY_DEFAULT);
   if (base::FeatureList::IsEnabled(kDirectXCapturer)) {
+    // Results in DirectX as main capture API and GDI as fallback solution.
     options.set_allow_directx_capturer(true);
-    options.set_allow_use_magnification_api(false);
-  } else {
-    options.set_allow_use_magnification_api(true);
   }
   options.set_enumerate_current_process_windows(
       ShouldEnumerateCurrentProcessWindows());
