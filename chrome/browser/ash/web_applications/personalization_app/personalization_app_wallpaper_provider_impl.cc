@@ -255,11 +255,7 @@ void PersonalizationAppWallpaperProviderImpl::FetchGooglePhotosAlbums(
     return;
   }
 
-  if (!google_photos_albums_fetcher_) {
-    google_photos_albums_fetcher_ =
-        wallpaper_fetcher_delegate_->CreateGooglePhotosAlbumsFetcher(profile_);
-  }
-  google_photos_albums_fetcher_->AddRequestAndStartIfNecessary(
+  GetOrCreateGooglePhotosAlbumsFetcher()->AddRequestAndStartIfNecessary(
       resume_token, std::move(callback));
 }
 
@@ -273,12 +269,7 @@ void PersonalizationAppWallpaperProviderImpl::FetchGooglePhotosSharedAlbums(
     return;
   }
 
-  if (!google_photos_shared_albums_fetcher_) {
-    google_photos_shared_albums_fetcher_ =
-        wallpaper_fetcher_delegate_->CreateGooglePhotosSharedAlbumsFetcher(
-            profile_);
-  }
-  google_photos_shared_albums_fetcher_->AddRequestAndStartIfNecessary(
+  GetOrCreateGooglePhotosSharedAlbumsFetcher()->AddRequestAndStartIfNecessary(
       resume_token, std::move(callback));
 }
 
@@ -293,15 +284,12 @@ void PersonalizationAppWallpaperProviderImpl::FetchGooglePhotosEnabled(
     return;
   }
 
-  if (!google_photos_enabled_fetcher_) {
-    google_photos_enabled_fetcher_ =
-        wallpaper_fetcher_delegate_->CreateGooglePhotosEnabledFetcher(profile_);
-  }
   // base::Unretained is safe to use because |this| outlives
   // |google_photos_enabled_fetcher_|.
-  google_photos_enabled_fetcher_->AddRequestAndStartIfNecessary(base::BindOnce(
-      &PersonalizationAppWallpaperProviderImpl::OnFetchGooglePhotosEnabled,
-      base::Unretained(this), std::move(callback)));
+  GetOrCreateGooglePhotosEnabledFetcher()->AddRequestAndStartIfNecessary(
+      base::BindOnce(
+          &PersonalizationAppWallpaperProviderImpl::OnFetchGooglePhotosEnabled,
+          base::Unretained(this), std::move(callback)));
 }
 
 void PersonalizationAppWallpaperProviderImpl::FetchGooglePhotosPhotos(
@@ -319,11 +307,7 @@ void PersonalizationAppWallpaperProviderImpl::FetchGooglePhotosPhotos(
     return;
   }
 
-  if (!google_photos_photos_fetcher_) {
-    google_photos_photos_fetcher_ =
-        wallpaper_fetcher_delegate_->CreateGooglePhotosPhotosFetcher(profile_);
-  }
-  google_photos_photos_fetcher_->AddRequestAndStartIfNecessary(
+  GetOrCreateGooglePhotosPhotosFetcher()->AddRequestAndStartIfNecessary(
       item_id, album_id, resume_token, /*shuffle=*/false,
       base::BindOnce(
           &PersonalizationAppWallpaperProviderImpl::OnFetchGooglePhotosPhotos,
@@ -803,32 +787,43 @@ void PersonalizationAppWallpaperProviderImpl::CancelPreviewWallpaper() {
 }
 
 wallpaper_handlers::GooglePhotosAlbumsFetcher*
-PersonalizationAppWallpaperProviderImpl::SetGooglePhotosAlbumsFetcherForTest(
-    std::unique_ptr<wallpaper_handlers::GooglePhotosAlbumsFetcher> fetcher) {
-  google_photos_albums_fetcher_ = std::move(fetcher);
+PersonalizationAppWallpaperProviderImpl::
+    GetOrCreateGooglePhotosAlbumsFetcher() {
+  if (!google_photos_albums_fetcher_) {
+    google_photos_albums_fetcher_ =
+        wallpaper_fetcher_delegate_->CreateGooglePhotosAlbumsFetcher(profile_);
+  }
   return google_photos_albums_fetcher_.get();
 }
 
 wallpaper_handlers::GooglePhotosSharedAlbumsFetcher*
 PersonalizationAppWallpaperProviderImpl::
-    SetGooglePhotosSharedAlbumsFetcherForTest(
-        std::unique_ptr<wallpaper_handlers::GooglePhotosSharedAlbumsFetcher>
-            fetcher) {
-  google_photos_shared_albums_fetcher_ = std::move(fetcher);
+    GetOrCreateGooglePhotosSharedAlbumsFetcher() {
+  if (!google_photos_shared_albums_fetcher_) {
+    google_photos_shared_albums_fetcher_ =
+        wallpaper_fetcher_delegate_->CreateGooglePhotosSharedAlbumsFetcher(
+            profile_);
+  }
   return google_photos_shared_albums_fetcher_.get();
 }
 
 wallpaper_handlers::GooglePhotosEnabledFetcher*
-PersonalizationAppWallpaperProviderImpl::SetGooglePhotosEnabledFetcherForTest(
-    std::unique_ptr<wallpaper_handlers::GooglePhotosEnabledFetcher> fetcher) {
-  google_photos_enabled_fetcher_ = std::move(fetcher);
+PersonalizationAppWallpaperProviderImpl::
+    GetOrCreateGooglePhotosEnabledFetcher() {
+  if (!google_photos_enabled_fetcher_) {
+    google_photos_enabled_fetcher_ =
+        wallpaper_fetcher_delegate_->CreateGooglePhotosEnabledFetcher(profile_);
+  }
   return google_photos_enabled_fetcher_.get();
 }
 
 wallpaper_handlers::GooglePhotosPhotosFetcher*
-PersonalizationAppWallpaperProviderImpl::SetGooglePhotosPhotosFetcherForTest(
-    std::unique_ptr<wallpaper_handlers::GooglePhotosPhotosFetcher> fetcher) {
-  google_photos_photos_fetcher_ = std::move(fetcher);
+PersonalizationAppWallpaperProviderImpl::
+    GetOrCreateGooglePhotosPhotosFetcher() {
+  if (!google_photos_photos_fetcher_) {
+    google_photos_photos_fetcher_ =
+        wallpaper_fetcher_delegate_->CreateGooglePhotosPhotosFetcher(profile_);
+  }
   return google_photos_photos_fetcher_.get();
 }
 

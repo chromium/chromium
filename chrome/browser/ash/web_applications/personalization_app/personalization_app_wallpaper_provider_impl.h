@@ -188,21 +188,16 @@ class PersonalizationAppWallpaperProviderImpl
   void CancelPreviewWallpaper() override;
 
   wallpaper_handlers::GooglePhotosAlbumsFetcher*
-  SetGooglePhotosAlbumsFetcherForTest(
-      std::unique_ptr<wallpaper_handlers::GooglePhotosAlbumsFetcher> fetcher);
+  GetOrCreateGooglePhotosAlbumsFetcher();
 
   wallpaper_handlers::GooglePhotosSharedAlbumsFetcher*
-  SetGooglePhotosSharedAlbumsFetcherForTest(
-      std::unique_ptr<wallpaper_handlers::GooglePhotosSharedAlbumsFetcher>
-          fetcher);
+  GetOrCreateGooglePhotosSharedAlbumsFetcher();
 
   wallpaper_handlers::GooglePhotosEnabledFetcher*
-  SetGooglePhotosEnabledFetcherForTest(
-      std::unique_ptr<wallpaper_handlers::GooglePhotosEnabledFetcher> fetcher);
+  GetOrCreateGooglePhotosEnabledFetcher();
 
   wallpaper_handlers::GooglePhotosPhotosFetcher*
-  SetGooglePhotosPhotosFetcherForTest(
-      std::unique_ptr<wallpaper_handlers::GooglePhotosPhotosFetcher> fetcher);
+  GetOrCreateGooglePhotosPhotosFetcher();
 
  private:
   friend class PersonalizationAppWallpaperProviderImplTest;

@@ -10,6 +10,7 @@
 #include "ash/webui/personalization_app/proto/backdrop_wallpaper.pb.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
 #include "base/task/sequenced_task_runner.h"
 #include "chrome/browser/ash/wallpaper_handlers/wallpaper_handlers.h"
@@ -61,6 +62,46 @@ backdrop::Image GenerateFakeBackdropImage(const std::string& collection_id,
   image.set_unit_id(asset_id);
   image.set_image_type(backdrop::Image_ImageType_IMAGE_TYPE_UNKNOWN);
   return image;
+}
+
+ash::personalization_app::mojom::FetchGooglePhotosPhotosResponsePtr
+CreateFakeGooglePhotosPhotosResponse() {
+  auto response =
+      ash::personalization_app::mojom::FetchGooglePhotosPhotosResponse::New();
+  std::vector<ash::personalization_app::mojom::GooglePhotosPhotoPtr> photos;
+  for (auto i = 0; i < 3; i++) {
+    auto photo = ash::personalization_app::mojom::GooglePhotosPhoto::New();
+    std::string id = base::StringPrintf("fake_google_photos_photo_id_%i", i);
+    photo->id = id;
+    photo->name = id;
+    photo->dedup_key = id;
+    photo->url = GURL(kDataUrlPrefix + base::NumberToString(i));
+    photos.push_back(std::move(photo));
+  }
+  response->photos = std::move(photos);
+  response->resume_token = absl::nullopt;
+  return response;
+}
+
+ash::personalization_app::mojom::FetchGooglePhotosAlbumsResponsePtr
+CreateFakeGooglePhotosSharedAlbumsResponse() {
+  std::vector<ash::personalization_app::mojom::GooglePhotosAlbumPtr> result;
+  for (int i = 0; i < 3; i++) {
+    auto album = ash::personalization_app::mojom::GooglePhotosAlbum::New();
+    std::string id =
+        base::StringPrintf("fake_google_photos_shared_album_id_%i", i);
+    album->id = id;
+    album->is_shared = true;
+    // Shared albums always have `photo_count == 0` due to technical debt on
+    // server side.
+    album->photo_count = 0;
+    album->preview = GURL(kDataUrlPrefix + base::NumberToString(i));
+    album->timestamp = base::Time::Now();
+    album->title = id;
+    result.push_back(std::move(album));
+  }
+  return ash::personalization_app::mojom::FetchGooglePhotosAlbumsResponse::New(
+      std::move(result), absl::nullopt);
 }
 
 }  // namespace
@@ -138,12 +179,13 @@ MockGooglePhotosSharedAlbumsFetcher::MockGooglePhotosSharedAlbumsFetcher(
   ON_CALL(*this, AddRequestAndStartIfNecessary)
       .WillByDefault(
           [](const absl::optional<std::string>& resume_token,
-             base::OnceCallback<void(GooglePhotosAlbumsCbkArgs)> callback) {
-            auto response = FetchGooglePhotosAlbumsResponse::New(
-                std::vector<GooglePhotosAlbumPtr>(), absl::nullopt);
+             base::OnceCallback<void(ash::personalization_app::mojom::
+                                         FetchGooglePhotosAlbumsResponsePtr)>
+                 callback) {
             base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
                 FROM_HERE,
-                base::BindOnce(std::move(callback), std::move(response)));
+                base::BindOnce(std::move(callback),
+                               CreateFakeGooglePhotosSharedAlbumsResponse()));
           });
 
   ON_CALL(*this, ParseResponse)
@@ -194,12 +236,13 @@ MockGooglePhotosPhotosFetcher::MockGooglePhotosPhotosFetcher(Profile* profile)
           [](const absl::optional<std::string>& item_id,
              const absl::optional<std::string>& album_id,
              const absl::optional<std::string>& resume_token, bool shuffle,
-             base::OnceCallback<void(GooglePhotosPhotosCbkArgs)> callback) {
-            auto response = FetchGooglePhotosPhotosResponse::New(
-                std::vector<GooglePhotosPhotoPtr>(), absl::nullopt);
+             base::OnceCallback<void(ash::personalization_app::mojom::
+                                         FetchGooglePhotosPhotosResponsePtr)>
+                 callback) {
             base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
                 FROM_HERE,
-                base::BindOnce(std::move(callback), std::move(response)));
+                base::BindOnce(std::move(callback),
+                               CreateFakeGooglePhotosPhotosResponse()));
           });
 
   ON_CALL(*this, ParseResponse)

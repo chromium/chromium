@@ -458,10 +458,7 @@ class PersonalizationAppWallpaperProviderImplGooglePhotosTest
     // Mock a fetcher for the enablement state query.
     auto* const google_photos_enabled_fetcher = static_cast<::testing::NiceMock<
         wallpaper_handlers::MockGooglePhotosEnabledFetcher>*>(
-        delegate()->SetGooglePhotosEnabledFetcherForTest(
-            std::make_unique<::testing::NiceMock<
-                wallpaper_handlers::MockGooglePhotosEnabledFetcher>>(
-                profile())));
+        delegate()->GetOrCreateGooglePhotosEnabledFetcher());
 
     EXPECT_CALL(*google_photos_enabled_fetcher, AddRequestAndStartIfNecessary)
         .Times(num_fetches);
@@ -492,17 +489,12 @@ TEST_F(PersonalizationAppWallpaperProviderImplGooglePhotosTest, FetchAlbums) {
   // Mock a fetcher for the albums query.
   auto* const google_photos_albums_fetcher = static_cast<
       ::testing::NiceMock<wallpaper_handlers::MockGooglePhotosAlbumsFetcher>*>(
-      delegate()->SetGooglePhotosAlbumsFetcherForTest(
-          std::make_unique<::testing::NiceMock<
-              wallpaper_handlers::MockGooglePhotosAlbumsFetcher>>(profile())));
+      delegate()->GetOrCreateGooglePhotosAlbumsFetcher());
 
   auto* const google_photos_shared_albums_fetcher =
       static_cast<::testing::NiceMock<
           wallpaper_handlers::MockGooglePhotosSharedAlbumsFetcher>*>(
-          delegate()->SetGooglePhotosSharedAlbumsFetcherForTest(
-              std::make_unique<::testing::NiceMock<
-                  wallpaper_handlers::MockGooglePhotosSharedAlbumsFetcher>>(
-                  profile())));
+          delegate()->GetOrCreateGooglePhotosSharedAlbumsFetcher());
 
   // Simulate the client making multiple requests for the same information to
   // test that all callbacks for that query are called.
@@ -542,9 +534,7 @@ TEST_F(PersonalizationAppWallpaperProviderImplGooglePhotosTest,
   // Mock a fetcher for the albums query.
   auto* const google_photos_albums_fetcher = static_cast<
       ::testing::NiceMock<wallpaper_handlers::MockGooglePhotosAlbumsFetcher>*>(
-      delegate()->SetGooglePhotosAlbumsFetcherForTest(
-          std::make_unique<::testing::NiceMock<
-              wallpaper_handlers::MockGooglePhotosAlbumsFetcher>>(profile())));
+      delegate()->GetOrCreateGooglePhotosAlbumsFetcher());
 
   // The albums fetcher should never be called.
   EXPECT_CALL(*google_photos_albums_fetcher, AddRequestAndStartIfNecessary)
@@ -570,9 +560,7 @@ TEST_F(PersonalizationAppWallpaperProviderImplGooglePhotosTest, FetchPhotos) {
   // Mock a fetcher for the photos query.
   auto* const google_photos_photos_fetcher = static_cast<
       ::testing::NiceMock<wallpaper_handlers::MockGooglePhotosPhotosFetcher>*>(
-      delegate()->SetGooglePhotosPhotosFetcherForTest(
-          std::make_unique<::testing::NiceMock<
-              wallpaper_handlers::MockGooglePhotosPhotosFetcher>>(profile())));
+      delegate()->GetOrCreateGooglePhotosPhotosFetcher());
 
   // Simulate the client making multiple requests for the same information to
   // test that all callbacks for that query are called.
@@ -604,9 +592,7 @@ TEST_F(PersonalizationAppWallpaperProviderImplGooglePhotosTest,
        FetchPhotosBeforeEnabled) {
   auto* const google_photos_photos_fetcher = static_cast<
       ::testing::NiceMock<wallpaper_handlers::MockGooglePhotosPhotosFetcher>*>(
-      delegate()->SetGooglePhotosPhotosFetcherForTest(
-          std::make_unique<::testing::NiceMock<
-              wallpaper_handlers::MockGooglePhotosPhotosFetcher>>(profile())));
+      delegate()->GetOrCreateGooglePhotosPhotosFetcher());
 
   const std::string item_id = "itemId";
   const std::string album_id = "albumId";
