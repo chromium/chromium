@@ -11,7 +11,7 @@
 import {AnchorAlignment, CrActionMenuElement} from 'chrome://resources/cr_elements/cr_action_menu/cr_action_menu.js';
 import {CrButtonElement} from 'chrome://resources/cr_elements/cr_button/cr_button.js';
 
-import {css, CSSResultGroup, customElement, html, property, query, state, XfBase} from './xf_base.js';
+import {css, CSSResultGroup, customElement, html, property, query, XfBase} from './xf_base.js';
 
 /**
  * The data structure used to set the new options on the select element.
@@ -102,11 +102,6 @@ export class XfSelect extends XfBase {
   @query('cr-action-menu') private $optionsMenu_?: CrActionMenuElement;
 
   /**
-   * Keeps track of whether we are showing the options menu.
-   */
-  @state() private optionsVisible_: boolean = false;
-
-  /**
    * The currently selected option.
    */
   private selectedOption_: XfSelectedValue = {
@@ -138,7 +133,7 @@ export class XfSelect extends XfBase {
    * collapsed.
    */
   get expanded(): boolean {
-    return this.optionsVisible_;
+    return this.$optionsMenu_ ? this.$optionsMenu_.open : false;
   }
 
   /**
@@ -157,7 +152,7 @@ export class XfSelect extends XfBase {
     return html`
       <cr-button id="dropdown-toggle"
               aria-haspopup="menu"
-              aria-expanded=${this.optionsVisible_}
+              aria-expanded=${this.expanded}
               @click=${this.onToggleOptions_}>
         ${iconPart}${labelPart}<span id="dropdown-icon"></span>
       </cr-button>`;
@@ -248,7 +243,7 @@ export class XfSelect extends XfBase {
    * dropdown options.
    */
   private onToggleOptions_(): void {
-    if (this.optionsVisible_) {
+    if (this.expanded) {
       this.closeOptions_();
     } else {
       this.openOptions_();
@@ -259,12 +254,11 @@ export class XfSelect extends XfBase {
    * Opens the dropdown options, providing they were closed.
    */
   private openOptions_() {
-    if (!this.optionsVisible_) {
+    if (!this.expanded) {
       const element: HTMLElement = this.$toggleDropdownButton_!;
       const top = element.offsetTop + element.offsetHeight + 8;
       this.$optionsMenu_!.showAt(
           element, {top: top, anchorAlignmentX: AnchorAlignment.AFTER_START});
-      this.optionsVisible_ = true;
     }
   }
 
@@ -272,9 +266,8 @@ export class XfSelect extends XfBase {
    * Closes the dropdown options, providing they were open.
    */
   private closeOptions_() {
-    if (this.optionsVisible_) {
+    if (this.expanded) {
       this.$optionsMenu_!.close();
-      this.optionsVisible_ = false;
     }
   }
 
