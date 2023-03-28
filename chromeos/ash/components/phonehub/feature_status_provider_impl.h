@@ -16,8 +16,7 @@
 #include "components/session_manager/core/session_manager_observer.h"
 #include "device/bluetooth/bluetooth_adapter.h"
 
-namespace ash {
-namespace phonehub {
+namespace ash::phonehub {
 
 // FeatureStatusProvider implementation which utilizes DeviceSyncClient,
 // MultiDeviceSetupClient and BluetoothAdapter to determine the current status.
@@ -91,7 +90,6 @@ class FeatureStatusProviderImpl
   base::WeakPtrFactory<FeatureStatusProviderImpl> weak_ptr_factory_{this};
 };
 
-}  // namespace phonehub
-}  // namespace ash
+}  // namespace ash::phonehub
 
 #endif  // CHROMEOS_ASH_COMPONENTS_PHONEHUB_FEATURE_STATUS_PROVIDER_IMPL_H_

@@ -6,6 +6,8 @@
 #define CHROMEOS_ASH_COMPONENTS_PHONEHUB_PING_MANAGER_IMPL_H_
 
 #include "base/timer/timer.h"
+#include "chromeos/ash/components/phonehub/feature_status.h"
+#include "chromeos/ash/components/phonehub/feature_status_provider.h"
 #include "chromeos/ash/components/phonehub/message_receiver.h"
 #include "chromeos/ash/components/phonehub/ping_manager.h"
 #include "chromeos/ash/components/phonehub/proto/phonehub_api.pb.h"
@@ -18,9 +20,12 @@ namespace ash::phonehub {
 
 class MessageSender;
 
-class PingManagerImpl : public PingManager, public MessageReceiver::Observer {
+class PingManagerImpl : public PingManager,
+                        public MessageReceiver::Observer,
+                        public FeatureStatusProvider::Observer {
  public:
   PingManagerImpl(secure_channel::ConnectionManager* connection_manager,
+                  FeatureStatusProvider* feature_status_provider,
                   MessageReceiver* message_receiver,
                   MessageSender* message_sender);
   ~PingManagerImpl() override;
@@ -32,22 +37,32 @@ class PingManagerImpl : public PingManager, public MessageReceiver::Observer {
       proto::PhoneStatusUpdate phone_status_update) override;
   void OnPingResponseReceived() override;
 
+  // // FeatureStatusProvider::Observer:
+  void OnFeatureStatusChanged() override;
+
   // PingManager:
   void SendPingRequest() override;
 
   bool IsPingTimeoutTimerRunning();
 
-  bool is_ping_supported_by_phone() { return is_ping_supported_by_phone_; }
-  bool is_waiting_for_response() { return is_waiting_for_response_; }
-  void set_is_ping_supported_by_phone(bool is_ping_supported_by_phone) {
+  // Test Helpers
+  bool is_ping_supported_by_phone_for_test() {
+    return is_ping_supported_by_phone_;
+  }
+  bool is_waiting_for_response_for_test() { return is_waiting_for_response_; }
+  void set_is_ping_supported_by_phone_for_test(
+      bool is_ping_supported_by_phone) {
     is_ping_supported_by_phone_ = is_ping_supported_by_phone;
   }
-  void set_is_waiting_for_response(bool is_waiting_for_response) {
+  void set_is_waiting_for_response_for_test(bool is_waiting_for_response) {
     is_waiting_for_response_ = is_waiting_for_response;
   }
 
  private:
   friend class PingManagerImplTest;
+
+  // PingManager:
+  void Reset() override;
 
   void OnPingTimerFired();
   void UpdatePhoneSupport(proto::PhoneProperties phone_properties);
@@ -55,6 +70,7 @@ class PingManagerImpl : public PingManager, public MessageReceiver::Observer {
   base::OneShotTimer ping_timeout_timer_;
   base::TimeTicks ping_sent_timestamp_;
   secure_channel::ConnectionManager* connection_manager_;
+  FeatureStatusProvider* feature_status_provider_;
   MessageReceiver* message_receiver_;
   MessageSender* message_sender_;
   bool is_ping_supported_by_phone_ = false;

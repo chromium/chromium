@@ -12,6 +12,7 @@
 #include "chromeos/ash/components/phonehub/message_sender_impl.h"
 #include "chromeos/ash/components/phonehub/proto/phonehub_api.pb.h"
 #include "chromeos/ash/services/secure_channel/public/cpp/client/connection_manager.h"
+#include "feature_status.h"
 
 namespace ash::phonehub {
 
@@ -19,19 +20,24 @@ const proto::PingRequest kDefaultPingRequest;
 
 PingManagerImpl::PingManagerImpl(
     secure_channel::ConnectionManager* connection_manager,
+    FeatureStatusProvider* feature_status_provider,
     MessageReceiver* message_receiver,
     MessageSender* message_sender)
     : connection_manager_(connection_manager),
+      feature_status_provider_(feature_status_provider),
       message_receiver_(message_receiver),
       message_sender_(message_sender) {
   DCHECK(connection_manager);
+  DCHECK(feature_status_provider);
   DCHECK(message_receiver);
   DCHECK(message_sender);
 
+  feature_status_provider_->AddObserver(this);
   message_receiver_->AddObserver(this);
 }
 
 PingManagerImpl::~PingManagerImpl() {
+  feature_status_provider_->RemoveObserver(this);
   message_receiver_->RemoveObserver(this);
 }
 
@@ -43,6 +49,17 @@ void PingManagerImpl::OnPhoneStatusSnapshotReceived(
 void PingManagerImpl::OnPhoneStatusUpdateReceived(
     proto::PhoneStatusUpdate phone_status_update) {
   UpdatePhoneSupport(phone_status_update.properties());
+}
+
+void PingManagerImpl::OnFeatureStatusChanged() {
+  if (!is_waiting_for_response_ || !IsPingTimeoutTimerRunning()) {
+    return;
+  }
+
+  if (feature_status_provider_->GetStatus() !=
+      FeatureStatus::kEnabledAndConnected) {
+    Reset();
+  }
 }
 
 void PingManagerImpl::OnPingResponseReceived() {
@@ -71,6 +88,15 @@ void PingManagerImpl::SendPingRequest() {
                             base::BindOnce(&PingManagerImpl::OnPingTimerFired,
                                            base::Unretained(this)));
   is_waiting_for_response_ = true;
+}
+
+void PingManagerImpl::Reset() {
+  PA_LOG(INFO) << "Reseting ping state.";
+  is_waiting_for_response_ = false;
+
+  if (IsPingTimeoutTimerRunning()) {
+    ping_timeout_timer_.AbandonAndStop();
+  }
 }
 
 void PingManagerImpl::OnPingTimerFired() {

@@ -9,8 +9,7 @@
 #include "base/observer_list_types.h"
 #include "chromeos/ash/components/phonehub/feature_status.h"
 
-namespace ash {
-namespace phonehub {
+namespace ash::phonehub {
 
 // Provides the current status of Phone Hub and notifies observers when the
 // status changes.
@@ -42,7 +41,6 @@ class FeatureStatusProvider {
   base::ObserverList<Observer> observer_list_;
 };
 
-}  // namespace phonehub
-}  // namespace ash
+}  // namespace ash::phonehub
 
 #endif  // CHROMEOS_ASH_COMPONENTS_PHONEHUB_FEATURE_STATUS_PROVIDER_H_

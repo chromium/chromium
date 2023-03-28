@@ -7,8 +7,7 @@
 
 #include <ostream>
 
-namespace ash {
-namespace phonehub {
+namespace ash::phonehub {
 
 // Enum representing potential status values for the Phone Hub feature. Note
 // that there is no value representing "prohibited" - when the feature is
@@ -62,7 +61,6 @@ enum class FeatureStatus {
 
 std::ostream& operator<<(std::ostream& stream, FeatureStatus status);
 
-}  // namespace phonehub
-}  // namespace ash
+}  // namespace ash::phonehub
 
 #endif  // CHROMEOS_ASH_COMPONENTS_PHONEHUB_FEATURE_STATUS_H_

@@ -185,12 +185,13 @@ PhoneHubManagerImpl::PhoneHubManagerImpl(
                     message_receiver_.get(),
                     multidevice_feature_access_manager_.get())
               : nullptr),
-      ping_manager_(
-          features::IsPhoneHubPingOnBubbleOpenEnabled()
-              ? std::make_unique<PingManagerImpl>(connection_manager_.get(),
-                                                  message_receiver_.get(),
-                                                  message_sender_.get())
-              : nullptr) {}
+      ping_manager_(features::IsPhoneHubPingOnBubbleOpenEnabled()
+                        ? std::make_unique<PingManagerImpl>(
+                              connection_manager_.get(),
+                              feature_status_provider_.get(),
+                              message_receiver_.get(),
+                              message_sender_.get())
+                        : nullptr) {}
 
 PhoneHubManagerImpl::~PhoneHubManagerImpl() = default;
 

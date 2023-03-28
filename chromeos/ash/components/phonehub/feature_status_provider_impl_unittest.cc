@@ -20,8 +20,8 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace ash {
-namespace phonehub {
+namespace ash::phonehub {
+
 namespace {
 
 using multidevice_setup::mojom::Feature;
@@ -620,5 +620,4 @@ TEST_F(FeatureStatusProviderImplTest, HandlePowerSuspend) {
   EXPECT_EQ(3u, GetNumObserverCalls());
 }
 
-}  // namespace phonehub
-}  // namespace ash
+}  // namespace ash::phonehub

@@ -31,4 +31,8 @@ bool FakePingManager::GetIsWaitingForResponse() const {
   return is_waiting_for_response_;
 }
 
+void FakePingManager::Reset() {
+  is_waiting_for_response_ = false;
+}
+
 }  // namespace ash::phonehub

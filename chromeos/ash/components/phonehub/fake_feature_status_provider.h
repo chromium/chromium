@@ -7,8 +7,7 @@
 
 #include "chromeos/ash/components/phonehub/feature_status_provider.h"
 
-namespace ash {
-namespace phonehub {
+namespace ash::phonehub {
 
 class FakeFeatureStatusProvider : public FeatureStatusProvider {
  public:
@@ -26,7 +25,6 @@ class FakeFeatureStatusProvider : public FeatureStatusProvider {
   FeatureStatus status_;
 };
 
-}  // namespace phonehub
-}  // namespace ash
+}  // namespace ash::phonehub
 
 #endif  // CHROMEOS_ASH_COMPONENTS_PHONEHUB_FAKE_FEATURE_STATUS_PROVIDER_H_

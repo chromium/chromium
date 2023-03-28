@@ -23,6 +23,9 @@ class FakePingManager : public PingManager {
   bool GetIsWaitingForResponse() const;
 
  private:
+  // PingManager:
+  void Reset() override;
+
   int num_ping_requests_ = 0;
   bool is_waiting_for_response_;
 };

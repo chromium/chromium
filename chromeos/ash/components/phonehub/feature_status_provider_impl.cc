@@ -16,8 +16,8 @@
 #include "chromeos/ash/components/multidevice/software_feature_state.h"
 #include "device/bluetooth/bluetooth_adapter_factory.h"
 
-namespace ash {
-namespace phonehub {
+namespace ash::phonehub {
+
 namespace {
 
 using multidevice::RemoteDeviceRef;
@@ -298,5 +298,4 @@ void FeatureStatusProviderImpl::SuspendDone(base::TimeDelta sleep_duration) {
   UpdateStatus();
 }
 
-}  // namespace phonehub
-}  // namespace ash
+}  // namespace ash::phonehub

@@ -19,6 +19,9 @@ class PingManager {
 
   virtual void SendPingRequest() = 0;
 
+ private:
+  virtual void Reset() = 0;
+
  protected:
   PingManager() = default;
 };
