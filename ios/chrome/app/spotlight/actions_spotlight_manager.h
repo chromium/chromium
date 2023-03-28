@@ -8,6 +8,7 @@
 #import "ios/chrome/app/spotlight/base_spotlight_manager.h"
 
 @class AppStartupParameters;
+@class SpotlightInterface;
 
 namespace spotlight {
 
@@ -32,6 +33,17 @@ BOOL SetStartupParametersForSpotlightAction(
 
 // Creates an ActionsSpotlightManager.
 + (ActionsSpotlightManager*)actionsSpotlightManager;
+
+- (instancetype)initWithLargeIconService:
+                    (favicon::LargeIconService*)largeIconService
+                                  domain:(spotlight::Domain)domain
+                      spotlightInterface:(SpotlightInterface*)spotlightInterface
+    NS_DESIGNATED_INITIALIZER;
+
+- (instancetype)initWithLargeIconService:
+                    (favicon::LargeIconService*)largeIconService
+                                  domain:(spotlight::Domain)domain
+    NS_UNAVAILABLE;
 
 // Updates the index with the Spotlight actions if the EnableSpotlightActions
 // experimental flag is set. Otherwise the index is only cleared.
