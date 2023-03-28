@@ -32,32 +32,8 @@ PolymerTest.prototype = {
 };
 
 /**
- * Imports the HTML file.
- * @param {string} src The URL to load.
- * @return {!Promise} A promise that is resolved/rejected on success/failure.
- */
-PolymerTest.importHtml = function(src) {
-  var link = document.createElement('link');
-  link.rel = 'import';
-  var promise = new Promise(function(resolve, reject) {
-    link.onload = resolve;
-    link.onerror = reject;
-  });
-  link.href = src;
-  document.head.appendChild(link);
-  return promise;
-};
-
-/**
- * Removes all content from the body. In a vulcanized build, this retains the
- * inlined tags so stylesheets and dom-modules are not discarded.
+ * Removes all content from the body.
  */
 PolymerTest.clearBody = function() {
-  // Save the div where vulcanize inlines content before clearing the page.
-  var vulcanizeDiv =
-      document.querySelector('body > div[hidden][by-polymer-bundler]');
-  document.body.innerHTML = '';
-  if (vulcanizeDiv) {
-    document.body.appendChild(vulcanizeDiv);
-  }
+  document.body.innerHTML = window.trustedTypes.emptyHTML;
 };
