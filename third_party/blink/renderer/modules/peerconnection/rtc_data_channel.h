@@ -57,7 +57,7 @@ class MODULES_EXPORT RTCDataChannel final
 
  public:
   RTCDataChannel(ExecutionContext*,
-                 scoped_refptr<webrtc::DataChannelInterface> channel,
+                 rtc::scoped_refptr<webrtc::DataChannelInterface> channel,
                  RTCPeerConnectionHandler* peer_connection_handler);
   ~RTCDataChannel() override;
 
@@ -126,13 +126,13 @@ class MODULES_EXPORT RTCDataChannel final
    public:
     Observer(scoped_refptr<base::SingleThreadTaskRunner> main_thread,
              RTCDataChannel* blink_channel,
-             scoped_refptr<webrtc::DataChannelInterface> channel);
+             rtc::scoped_refptr<webrtc::DataChannelInterface> channel);
     ~Observer() override;
 
     // Returns a reference to |webrtc_channel_|. Typically called from the main
     // thread except for on observer registration, done in a synchronous call to
     // the signaling thread (safe because the call is synchronous).
-    const scoped_refptr<webrtc::DataChannelInterface>& channel() const;
+    const rtc::scoped_refptr<webrtc::DataChannelInterface>& channel() const;
 
     // Clears the |blink_channel_| reference, disassociates this observer from
     // the |webrtc_channel_| and releases the |webrtc_channel_| pointer. Must be
@@ -152,7 +152,7 @@ class MODULES_EXPORT RTCDataChannel final
 
     const scoped_refptr<base::SingleThreadTaskRunner> main_thread_;
     WeakPersistent<RTCDataChannel> blink_channel_;
-    scoped_refptr<webrtc::DataChannelInterface> webrtc_channel_;
+    rtc::scoped_refptr<webrtc::DataChannelInterface> webrtc_channel_;
   };
 
   void OnStateChange(webrtc::DataChannelInterface::DataState state);
@@ -164,7 +164,7 @@ class MODULES_EXPORT RTCDataChannel final
   void ScheduleDispatchEvent(Event*);
   void ScheduledEventTimerFired(TimerBase*);
 
-  const scoped_refptr<webrtc::DataChannelInterface>& channel() const;
+  const rtc::scoped_refptr<webrtc::DataChannelInterface>& channel() const;
   bool ValidateSendLength(size_t length, ExceptionState& exception_state);
   void SendRawData(const char* data, size_t length);
   void SendDataBuffer(webrtc::DataBuffer data_buffer);

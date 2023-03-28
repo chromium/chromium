@@ -241,7 +241,7 @@ class RTCDataChannelTest : public ::testing::Test {
 }  // namespace
 
 TEST_F(RTCDataChannelTest, ChangeStateEarly) {
-  scoped_refptr<MockDataChannel> webrtc_channel(
+  rtc::scoped_refptr<MockDataChannel> webrtc_channel(
       new rtc::RefCountedObject<MockDataChannel>(signaling_thread()));
 
   // Change state on the webrtc channel before creating the blink channel.
@@ -250,7 +250,7 @@ TEST_F(RTCDataChannelTest, ChangeStateEarly) {
   std::unique_ptr<MockPeerConnectionHandler> pc(
       new MockPeerConnectionHandler(signaling_thread()));
   auto* channel = MakeGarbageCollected<RTCDataChannel>(
-      execution_context_, webrtc_channel.get(), pc.get());
+      execution_context_, webrtc_channel, pc.get());
 
   // In RTCDataChannel::Create, the state change update is posted from the
   // signaling thread to the main thread. Wait for posted the task to be
@@ -262,12 +262,12 @@ TEST_F(RTCDataChannelTest, ChangeStateEarly) {
 }
 
 TEST_F(RTCDataChannelTest, BufferedAmount) {
-  scoped_refptr<MockDataChannel> webrtc_channel(
+  rtc::scoped_refptr<MockDataChannel> webrtc_channel(
       new rtc::RefCountedObject<MockDataChannel>(signaling_thread()));
   std::unique_ptr<MockPeerConnectionHandler> pc(
       new MockPeerConnectionHandler(signaling_thread()));
   auto* channel = MakeGarbageCollected<RTCDataChannel>(
-      execution_context_, webrtc_channel.get(), pc.get());
+      execution_context_, webrtc_channel, pc.get());
   webrtc_channel->ChangeState(webrtc::DataChannelInterface::kOpen);
 
   String message(std::string(100, 'A').c_str());
@@ -279,12 +279,12 @@ TEST_F(RTCDataChannelTest, BufferedAmount) {
 }
 
 TEST_F(RTCDataChannelTest, BufferedAmountLow) {
-  scoped_refptr<MockDataChannel> webrtc_channel(
+  rtc::scoped_refptr<MockDataChannel> webrtc_channel(
       new rtc::RefCountedObject<MockDataChannel>(signaling_thread()));
   std::unique_ptr<MockPeerConnectionHandler> pc(
       new MockPeerConnectionHandler(signaling_thread()));
   auto* channel = MakeGarbageCollected<RTCDataChannel>(
-      execution_context_, webrtc_channel.get(), pc.get());
+      execution_context_, webrtc_channel, pc.get());
   webrtc_channel->ChangeState(webrtc::DataChannelInterface::kOpen);
 
   channel->setBufferedAmountLowThreshold(1);
@@ -300,34 +300,34 @@ TEST_F(RTCDataChannelTest, BufferedAmountLow) {
 }
 
 TEST_F(RTCDataChannelTest, Open) {
-  scoped_refptr<MockDataChannel> webrtc_channel(
+  rtc::scoped_refptr<MockDataChannel> webrtc_channel(
       new rtc::RefCountedObject<MockDataChannel>(signaling_thread()));
   std::unique_ptr<MockPeerConnectionHandler> pc(
       new MockPeerConnectionHandler(signaling_thread()));
   auto* channel = MakeGarbageCollected<RTCDataChannel>(
-      execution_context_, webrtc_channel.get(), pc.get());
+      execution_context_, webrtc_channel, pc.get());
   channel->OnStateChange(webrtc::DataChannelInterface::kOpen);
   EXPECT_EQ("open", channel->readyState());
 }
 
 TEST_F(RTCDataChannelTest, Close) {
-  scoped_refptr<MockDataChannel> webrtc_channel(
+  rtc::scoped_refptr<MockDataChannel> webrtc_channel(
       new rtc::RefCountedObject<MockDataChannel>(signaling_thread()));
   std::unique_ptr<MockPeerConnectionHandler> pc(
       new MockPeerConnectionHandler(signaling_thread()));
   auto* channel = MakeGarbageCollected<RTCDataChannel>(
-      execution_context_, webrtc_channel.get(), pc.get());
+      execution_context_, webrtc_channel, pc.get());
   channel->OnStateChange(webrtc::DataChannelInterface::kClosed);
   EXPECT_EQ("closed", channel->readyState());
 }
 
 TEST_F(RTCDataChannelTest, Message) {
-  scoped_refptr<MockDataChannel> webrtc_channel(
+  rtc::scoped_refptr<MockDataChannel> webrtc_channel(
       new rtc::RefCountedObject<MockDataChannel>(signaling_thread()));
   std::unique_ptr<MockPeerConnectionHandler> pc(
       new MockPeerConnectionHandler(signaling_thread()));
   auto* channel = MakeGarbageCollected<RTCDataChannel>(
-      execution_context_, webrtc_channel.get(), pc.get());
+      execution_context_, webrtc_channel, pc.get());
 
   std::unique_ptr<webrtc::DataBuffer> message(new webrtc::DataBuffer("A"));
   channel->OnMessage(std::move(message));
@@ -336,12 +336,12 @@ TEST_F(RTCDataChannelTest, Message) {
 }
 
 TEST_F(RTCDataChannelTest, SendAfterContextDestroyed) {
-  scoped_refptr<MockDataChannel> webrtc_channel(
+  rtc::scoped_refptr<MockDataChannel> webrtc_channel(
       new rtc::RefCountedObject<MockDataChannel>(signaling_thread()));
   std::unique_ptr<MockPeerConnectionHandler> pc(
       new MockPeerConnectionHandler(signaling_thread()));
   auto* channel = MakeGarbageCollected<RTCDataChannel>(
-      execution_context_, webrtc_channel.get(), pc.get());
+      execution_context_, webrtc_channel, pc.get());
   webrtc_channel->ChangeState(webrtc::DataChannelInterface::kOpen);
 
   channel->ContextDestroyed();
@@ -354,12 +354,12 @@ TEST_F(RTCDataChannelTest, SendAfterContextDestroyed) {
 }
 
 TEST_F(RTCDataChannelTest, CloseAfterContextDestroyed) {
-  scoped_refptr<MockDataChannel> webrtc_channel(
+  rtc::scoped_refptr<MockDataChannel> webrtc_channel(
       new rtc::RefCountedObject<MockDataChannel>(signaling_thread()));
   std::unique_ptr<MockPeerConnectionHandler> pc(
       new MockPeerConnectionHandler(signaling_thread()));
   auto* channel = MakeGarbageCollected<RTCDataChannel>(
-      execution_context_, webrtc_channel.get(), pc.get());
+      execution_context_, webrtc_channel, pc.get());
   webrtc_channel->ChangeState(webrtc::DataChannelInterface::kOpen);
 
   channel->ContextDestroyed();
@@ -374,12 +374,12 @@ TEST_F(RTCDataChannelTest, StopsThrottling) {
   EXPECT_FALSE(scheduler->OptedOutFromAggressiveThrottlingForTest());
 
   // Creating an RTCDataChannel doesn't enable the opt-out.
-  scoped_refptr<MockDataChannel> webrtc_channel(
+  rtc::scoped_refptr<MockDataChannel> webrtc_channel(
       new rtc::RefCountedObject<MockDataChannel>(signaling_thread()));
   std::unique_ptr<MockPeerConnectionHandler> pc(
       new MockPeerConnectionHandler(signaling_thread()));
   auto* channel = MakeGarbageCollected<RTCDataChannel>(
-      scope.GetExecutionContext(), webrtc_channel.get(), pc.get());
+      scope.GetExecutionContext(), webrtc_channel, pc.get());
   EXPECT_EQ("connecting", channel->readyState());
   EXPECT_FALSE(scheduler->OptedOutFromAggressiveThrottlingForTest());
 

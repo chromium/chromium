@@ -2019,7 +2019,7 @@ RTCDataChannel* RTCPeerConnection::createDataChannel(
   }
   // Further checks of DataChannelId are done in the webrtc layer.
 
-  scoped_refptr<webrtc::DataChannelInterface> webrtc_channel =
+  rtc::scoped_refptr<webrtc::DataChannelInterface> webrtc_channel =
       peer_handler_->CreateDataChannel(label, init);
   if (!webrtc_channel) {
     exception_state.ThrowDOMException(DOMExceptionCode::kOperationError,
@@ -2579,7 +2579,7 @@ void RTCPeerConnection::SetAssociatedMediaStreams(
 }
 
 void RTCPeerConnection::DidAddRemoteDataChannel(
-    scoped_refptr<webrtc::DataChannelInterface> channel) {
+    rtc::scoped_refptr<webrtc::DataChannelInterface> channel) {
   DCHECK(!closed_);
   DCHECK(GetExecutionContext()->IsContextThread());
 

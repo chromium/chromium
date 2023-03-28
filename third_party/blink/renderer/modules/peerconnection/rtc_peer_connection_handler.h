@@ -222,7 +222,7 @@ class MODULES_EXPORT RTCPeerConnectionHandler {
   virtual webrtc::RTCErrorOr<std::unique_ptr<RTCRtpTransceiverPlatform>>
   RemoveTrack(blink::RTCRtpSenderPlatform* web_sender);
 
-  virtual scoped_refptr<webrtc::DataChannelInterface> CreateDataChannel(
+  virtual rtc::scoped_refptr<webrtc::DataChannelInterface> CreateDataChannel(
       const String& label,
       const webrtc::DataChannelInit& init);
   virtual webrtc::PeerConnectionInterface* NativePeerConnection();
@@ -313,7 +313,7 @@ class MODULES_EXPORT RTCPeerConnectionHandler {
       std::vector<blink::RtpTransceiverState> transceiver_states,
       bool is_remote_description,
       bool is_rollback);
-  void OnDataChannel(scoped_refptr<webrtc::DataChannelInterface> channel);
+  void OnDataChannel(rtc::scoped_refptr<webrtc::DataChannelInterface> channel);
   void OnIceCandidate(const String& sdp,
                       const String& sdp_mid,
                       int sdp_mline_index,

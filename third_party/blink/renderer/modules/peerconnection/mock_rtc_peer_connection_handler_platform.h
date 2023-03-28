@@ -94,7 +94,7 @@ class MockRTCPeerConnectionHandlerPlatform : public RTCPeerConnectionHandler {
       const MediaStreamDescriptorVector&) override;
   webrtc::RTCErrorOr<std::unique_ptr<RTCRtpTransceiverPlatform>> RemoveTrack(
       RTCRtpSenderPlatform*) override;
-  scoped_refptr<webrtc::DataChannelInterface> CreateDataChannel(
+  rtc::scoped_refptr<webrtc::DataChannelInterface> CreateDataChannel(
       const String& label,
       const webrtc::DataChannelInit&) override;
   webrtc::PeerConnectionInterface* NativePeerConnection() override;

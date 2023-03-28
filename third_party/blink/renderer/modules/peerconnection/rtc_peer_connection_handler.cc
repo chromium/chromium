@@ -794,8 +794,7 @@ class RTCPeerConnectionHandler::Observer
         *main_thread_.get(), FROM_HERE,
         CrossThreadBindOnce(
             &RTCPeerConnectionHandler::Observer::OnDataChannelImpl,
-            WrapCrossThreadPersistent(this),
-            base::WrapRefCounted<DataChannelInterface>(data_channel.get())));
+            WrapCrossThreadPersistent(this), data_channel));
   }
 
   void OnNegotiationNeededEvent(uint32_t event_id) override {
@@ -905,10 +904,10 @@ class RTCPeerConnectionHandler::Observer
             String::FromUTF8(url), error_code, String::FromUTF8(error_text)));
   }
 
-  void OnDataChannelImpl(scoped_refptr<DataChannelInterface> channel) {
+  void OnDataChannelImpl(rtc::scoped_refptr<DataChannelInterface> channel) {
     DCHECK(main_thread_->BelongsToCurrentThread());
     if (handler_)
-      handler_->OnDataChannel(std::move(channel));
+      handler_->OnDataChannel(channel);
   }
 
   void OnIceCandidateImpl(const String& sdp,
@@ -1978,7 +1977,8 @@ void RTCPeerConnectionHandler::OnWebRtcEventLogWrite(
   }
 }
 
-scoped_refptr<DataChannelInterface> RTCPeerConnectionHandler::CreateDataChannel(
+rtc::scoped_refptr<DataChannelInterface>
+RTCPeerConnectionHandler::CreateDataChannel(
     const String& label,
     const webrtc::DataChannelInit& init) {
   DCHECK(task_runner_->RunsTasksInCurrentSequence());
@@ -1998,8 +1998,7 @@ scoped_refptr<DataChannelInterface> RTCPeerConnectionHandler::CreateDataChannel(
         PeerConnectionTracker::kSourceLocal);
   }
 
-  return base::WrapRefCounted<DataChannelInterface>(
-      webrtc_channel.value().get());
+  return webrtc_channel.value();
 }
 
 void RTCPeerConnectionHandler::Close() {
@@ -2250,7 +2249,7 @@ void RTCPeerConnectionHandler::OnModifyTransceivers(
 }
 
 void RTCPeerConnectionHandler::OnDataChannel(
-    scoped_refptr<DataChannelInterface> channel) {
+    rtc::scoped_refptr<DataChannelInterface> channel) {
   DCHECK(task_runner_->RunsTasksInCurrentSequence());
   TRACE_EVENT0("webrtc", "RTCPeerConnectionHandler::OnDataChannelImpl");
 

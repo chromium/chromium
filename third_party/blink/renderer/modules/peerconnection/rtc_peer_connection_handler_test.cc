@@ -1193,7 +1193,7 @@ TEST_F(RTCPeerConnectionHandlerTest, CreateDataChannel) {
   EXPECT_CALL(*mock_tracker_.Get(),
               TrackCreateDataChannel(pc_handler_.get(), testing::NotNull(),
                                      PeerConnectionTracker::kSourceLocal));
-  scoped_refptr<webrtc::DataChannelInterface> channel =
+  rtc::scoped_refptr<webrtc::DataChannelInterface> channel =
       pc_handler_->CreateDataChannel("d1", webrtc::DataChannelInit());
   EXPECT_TRUE(channel.get());
   EXPECT_EQ(label.Utf8(), channel->label());
