@@ -15,7 +15,7 @@
 
 BASE_FEATURE(kSystemProfileSelectionDefaultNone,
              "SystemProfileSelectionDefaultNone",
-             base::FeatureState::FEATURE_DISABLED_BY_DEFAULT);
+             base::FeatureState::FEATURE_ENABLED_BY_DEFAULT);
 
 bool AreKeyedServicesDisabledForProfileByDefault(const Profile* profile) {
   if (profile && profile->IsSystemProfile()) {
