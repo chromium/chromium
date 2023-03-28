@@ -16,8 +16,6 @@ import org.chromium.base.annotations.CalledByNative;
 import org.chromium.chrome.browser.customtabs.CustomTabsConnection;
 import org.chromium.chrome.browser.directactions.DirectActionCoordinator;
 import org.chromium.chrome.browser.feedback.FeedbackReporter;
-import org.chromium.chrome.browser.feedback.HelpAndFeedbackLauncher;
-import org.chromium.chrome.browser.feedback.HelpAndFeedbackLauncherImpl;
 import org.chromium.chrome.browser.gsa.GSAHelper;
 import org.chromium.chrome.browser.historyreport.AppIndexingReporter;
 import org.chromium.chrome.browser.init.ChromeStartupDelegate;
@@ -141,13 +139,6 @@ public abstract class AppHooks {
      */
     public GSAHelper createGsaHelper() {
         return new GSAHelper();
-    }
-
-    /**
-     * Returns a new instance of HelpAndFeedbackLauncher.
-     */
-    public HelpAndFeedbackLauncher createHelpAndFeedbackLauncher() {
-        return new HelpAndFeedbackLauncherImpl();
     }
 
     public InstantAppsHandler createInstantAppsHandler() {

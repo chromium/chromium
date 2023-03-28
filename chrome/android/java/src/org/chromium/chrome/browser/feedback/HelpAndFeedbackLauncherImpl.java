@@ -14,20 +14,16 @@ import android.text.TextUtils;
 
 import androidx.annotation.Nullable;
 
-import org.chromium.base.Log;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.chrome.R;
-import org.chromium.chrome.browser.AppHooks;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.profiles.ProfileKeyedMap;
 import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.components.embedder_support.util.UrlUtilitiesJni;
 
 import java.util.Map;
-
-import javax.annotation.Nonnull;
 
 /**
  * Launches an activity that displays a relevant support page and has an option to provide feedback.
@@ -39,8 +35,7 @@ public class HelpAndFeedbackLauncherImpl implements HelpAndFeedbackLauncher {
 
     private static ProfileKeyedMap<HelpAndFeedbackLauncher> sProfileToLauncherMap;
     private final HelpAndFeedbackLauncherDelegate mDelegate;
-
-    private Profile mProfile;
+    private final Profile mProfile;
 
     /**
      * @return The HelpAndFeedbackLauncher for a given profile, creating it if needed.
@@ -52,49 +47,13 @@ public class HelpAndFeedbackLauncherImpl implements HelpAndFeedbackLauncher {
             sProfileToLauncherMap =
                     new ProfileKeyedMap<>(ProfileKeyedMap.NO_REQUIRED_CLEANUP_ACTION);
         }
-        return sProfileToLauncherMap.getForProfile(profile, () -> {
-            HelpAndFeedbackLauncherImpl launcher =
-                    (HelpAndFeedbackLauncherImpl) AppHooks.get().createHelpAndFeedbackLauncher();
-            // TODO(tedchoc): De-app-hook-ify HelpAndFeedbackLauncher and pass in the profile into
-            //                the constructor.
-            launcher.mProfile = profile;
-            return launcher;
-        });
+        return sProfileToLauncherMap.getForProfile(
+                profile, () -> new HelpAndFeedbackLauncherImpl(profile));
     }
 
-    // TODO(tedchoc): Reduce visibility to private and pass in the Profile once the de-AppHooks
-    //                changes land.
-    public HelpAndFeedbackLauncherImpl() {
+    private HelpAndFeedbackLauncherImpl(Profile profile) {
+        mProfile = profile;
         mDelegate = new HelpAndFeedbackLauncherDelegateImpl();
-    }
-
-    /**
-     * Starts an activity showing a help page for the specified context ID.
-     *
-     * @param activity The activity to use for starting the help activity and to take a
-     *                 screenshot of.
-     * @param helpContext One of the CONTEXT_* constants. This should describe the user's current
-     *                    context and will be used to show a more relevant help page.
-     * @param collector the {@link FeedbackCollector} to use for extra data. Must not be null.
-     */
-    // TODO(tedchoc): Remove once the de-AppHooks changes land.
-    protected void show(
-            Activity activity, String helpContext, @Nonnull FeedbackCollector collector) {
-        Log.d(TAG, "Feedback data: " + collector.getBundle());
-        launchFallbackSupportUri(activity);
-    }
-
-    /**
-     * Starts an activity prompting the user to enter feedback.
-     *
-     * @param activity The activity to use for starting the feedback activity and to take a
-     *                 screenshot of.
-     * @param collector the {@link FeedbackCollector} to use for extra data. Must not be null.
-     */
-    // TODO(tedchoc): Remove once the de-AppHooks changes land.
-    protected void showFeedback(Activity activity, @Nonnull FeedbackCollector collector) {
-        Log.d(TAG, "Feedback data: " + collector.getBundle());
-        launchFallbackSupportUri(activity);
     }
 
     /**
