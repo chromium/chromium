@@ -265,7 +265,7 @@ FaviconDatabase::~FaviconDatabase() {
 sql::InitStatus FaviconDatabase::Init(const base::FilePath& db_name) {
   // TODO(shess): Consider separating database open from schema setup.
   // With that change, this code could Raze() from outside the
-  // transaction, rather than needing RazeAndClose() in InitImpl().
+  // transaction, rather than needing RazeAndPoison() in InitImpl().
 
   // Retry failed setup in case the recovery system fixed things.
   const size_t kAttempts = 2;
@@ -1144,14 +1144,14 @@ sql::InitStatus FaviconDatabase::InitImpl(const base::FilePath& db_name) {
   if (!db_.DoesColumnExist("favicons", "icon_type")) {
     LOG(ERROR) << "Raze because of missing favicon.icon_type";
 
-    db_.RazeAndClose();
+    db_.RazeAndPoison();
     return sql::INIT_FAILURE;
   }
 
   if (cur_version < 7 && !db_.DoesColumnExist("favicons", "sizes")) {
     LOG(ERROR) << "Raze because of missing favicon.sizes";
 
-    db_.RazeAndClose();
+    db_.RazeAndPoison();
     return sql::INIT_FAILURE;
   }
 
@@ -1183,7 +1183,7 @@ sql::InitStatus FaviconDatabase::InitImpl(const base::FilePath& db_name) {
   if (IsFaviconDBStructureIncorrect()) {
     LOG(ERROR) << "Raze because of invalid favicon db structure.";
 
-    db_.RazeAndClose();
+    db_.RazeAndPoison();
     return sql::INIT_FAILURE;
   }
 
