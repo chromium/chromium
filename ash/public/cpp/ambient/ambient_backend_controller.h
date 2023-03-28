@@ -96,11 +96,7 @@ class ASH_PUBLIC_EXPORT AmbientBackendController {
       base::OnceCallback<void(const ScreenUpdate&)>;
   using OnPreviewImagesFetchedCallback =
       base::OnceCallback<void(const std::vector<GURL>& preview_urls)>;
-  using GetSettingsCallback =
-      base::OnceCallback<void(const absl::optional<AmbientSettings>& settings)>;
   using UpdateSettingsCallback = base::OnceCallback<void(bool success)>;
-  using OnPersonalAlbumsFetchedCallback =
-      base::OnceCallback<void(PersonalAlbums)>;
   // TODO(wutao): Make |settings| move only.
   using OnSettingsAndAlbumsFetchedCallback =
       base::OnceCallback<void(const absl::optional<AmbientSettings>& settings,
@@ -134,18 +130,9 @@ class ASH_PUBLIC_EXPORT AmbientBackendController {
   virtual void FetchPreviewImages(const gfx::Size& preview_size,
                                   OnPreviewImagesFetchedCallback callback) = 0;
 
-  // Get ambient mode Settings from server.
-  virtual void GetSettings(GetSettingsCallback callback) = 0;
-
   // Update ambient mode Settings to server.
   virtual void UpdateSettings(const AmbientSettings& settings,
                               UpdateSettingsCallback callback) = 0;
-
-  virtual void FetchPersonalAlbums(int banner_width,
-                                   int banner_height,
-                                   int num_albums,
-                                   const std::string& resume_token,
-                                   OnPersonalAlbumsFetchedCallback) = 0;
 
   // Fetch the Settings and albums as one API.
   virtual void FetchSettingsAndAlbums(int banner_width,

@@ -138,30 +138,12 @@ void FakeAmbientBackendControllerImpl::FetchPreviewImages(
       FROM_HERE, base::BindOnce(std::move(callback), urls));
 }
 
-void FakeAmbientBackendControllerImpl::GetSettings(
-    GetSettingsCallback callback) {
-  // Pretend to respond asynchronously.
-  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-      FROM_HERE, base::BindOnce(std::move(callback), CreateFakeSettings()));
-}
-
 void FakeAmbientBackendControllerImpl::UpdateSettings(
     const AmbientSettings& settings,
     UpdateSettingsCallback callback) {
   // |show_weather| should always be set to true.
   DCHECK(settings.show_weather);
   pending_update_callback_ = std::move(callback);
-}
-
-void FakeAmbientBackendControllerImpl::FetchPersonalAlbums(
-    int banner_width,
-    int banner_height,
-    int num_albums,
-    const std::string& resume_token,
-    OnPersonalAlbumsFetchedCallback callback) {
-  // Pretend to respond asynchronously.
-  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-      FROM_HERE, base::BindOnce(std::move(callback), CreateFakeAlbums()));
 }
 
 void FakeAmbientBackendControllerImpl::FetchSettingsAndAlbums(
