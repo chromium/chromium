@@ -11693,7 +11693,9 @@ interface XRPlaneSet
     method values
 interface XRPose
     attribute @@toStringTag
+    getter angularVelocity
     getter emulatedPosition
+    getter linearVelocity
     getter transform
     method constructor
 interface XRProjectionLayer : XRCompositionLayer

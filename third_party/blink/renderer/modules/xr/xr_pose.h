@@ -14,6 +14,7 @@ namespace blink {
 
 class XRRigidTransform;
 
+class DOMPointReadOnly;
 class XRPose : public ScriptWrappable {
   DEFINE_WRAPPERTYPEINFO();
 
@@ -22,6 +23,8 @@ class XRPose : public ScriptWrappable {
   ~XRPose() override = default;
 
   XRRigidTransform* transform() const { return transform_; }
+  DOMPointReadOnly* linearVelocity() const { return nullptr; }
+  DOMPointReadOnly* angularVelocity() const { return nullptr; }
   bool emulatedPosition() const { return emulated_position_; }
 
   void Trace(Visitor*) const override;

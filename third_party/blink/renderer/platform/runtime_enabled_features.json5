@@ -3902,6 +3902,13 @@
       base_feature: "none",
     },
     {
+      name: "WebXRPoseMotionData",
+      depends_on: ["WebXR"],
+      public: true,
+      status: "experimental",
+      base_feature: "none",
+    },
+    {
       name: "WGIGamepadTriggerRumble",
       status: "test",
       base_feature: "none",

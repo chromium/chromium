@@ -9,5 +9,7 @@
     RuntimeEnabled=WebXR
 ] interface XRPose {
   [SameObject] readonly attribute XRRigidTransform transform;
+  [RuntimeEnabled=WebXRPoseMotionData, SameObject] readonly attribute DOMPointReadOnly? linearVelocity;
+  [RuntimeEnabled=WebXRPoseMotionData, SameObject] readonly attribute DOMPointReadOnly? angularVelocity;
   readonly attribute boolean emulatedPosition;
 };

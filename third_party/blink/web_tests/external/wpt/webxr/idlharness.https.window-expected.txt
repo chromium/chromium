@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-Found 297 tests; 284 PASS, 13 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 297 tests; 286 PASS, 11 FAIL, 0 TIMEOUT, 0 NOTRUN.
 PASS idl_test setup
 PASS idl_test validation
 PASS Partial interface Navigator: original interface defined
@@ -182,8 +182,8 @@ PASS XRPose interface: existence and properties of interface prototype object
 PASS XRPose interface: existence and properties of interface prototype object's "constructor" property
 PASS XRPose interface: existence and properties of interface prototype object's @@unscopables property
 PASS XRPose interface: attribute transform
-FAIL XRPose interface: attribute linearVelocity assert_true: The prototype object must have a property "linearVelocity" expected true got false
-FAIL XRPose interface: attribute angularVelocity assert_true: The prototype object must have a property "angularVelocity" expected true got false
+PASS XRPose interface: attribute linearVelocity
+PASS XRPose interface: attribute angularVelocity
 PASS XRPose interface: attribute emulatedPosition
 PASS XRViewerPose interface: existence and properties of interface object
 PASS XRViewerPose interface object length
