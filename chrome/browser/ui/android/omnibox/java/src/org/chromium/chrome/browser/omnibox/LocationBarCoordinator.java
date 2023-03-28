@@ -458,9 +458,19 @@ public class LocationBarCoordinator
         updateButtonVisibility();
     }
 
+    @Override
+    public boolean shouldClearOmniboxOnFocus() {
+        return mLocationBarMediator.shouldClearOmniboxOnFocus();
+    }
+
     /** @see UrlBarCoordinator#getVisibleTextPrefixHint() */
     public CharSequence getOmniboxVisibleTextPrefixHint() {
         return mUrlCoordinator.getVisibleTextPrefixHint();
+    }
+
+    /** @see UrlBarCoordinator#getTextWithoutAutocomplete() */
+    public String getUrlBarTextWithoutAutocomplete() {
+        return mUrlCoordinator.getTextWithoutAutocomplete();
     }
 
     /**

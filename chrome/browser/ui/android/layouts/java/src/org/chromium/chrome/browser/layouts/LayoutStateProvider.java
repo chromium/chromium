@@ -54,19 +54,28 @@ public interface LayoutStateProvider {
     }
 
     /**
-     * @return Whether or not the {@link Layout} is visible.
-     * @param layoutType whether the {@link Layout} give {@link LayoutType} is visible.
+     * Determines whether the layout for a specific type is visible.
+     * @return {@code true} if the {@link Layout} is visible, {@code false} otherwise.
+     * @param layoutType The {@link LayoutType} of the {@link Layout} that is visible.
      */
     boolean isLayoutVisible(@LayoutType int layoutType);
 
     /**
-     * @return Whether or not the {@link Layout} is starting to hide.
-     * @param layoutType whether the {@link Layout} give {@link LayoutType} is starting to hide.
+     * Determines whether a layout has started and is in the process of hiding.
+     * @return {@code true} if the {@link Layout} is starting to hide, {@code false} otherwise.
+     * @param layoutType The {@link LayoutType} of the {@link Layout} that is starting to hide.
      */
     boolean isLayoutStartingToHide(@LayoutType int layoutType);
 
     /**
-     * Get the type of the layout that is currently active.
+     * Determines whether a layout has started and is in the process of showing.
+     * @return {@code true} if the {@link Layout} is starting to show, {@code false} otherwise.
+     * @param layoutType The {@link LayoutType} of the {@link Layout} that is starting to show.
+     */
+    boolean isLayoutStartingToShow(@LayoutType int layoutType);
+
+    /**
+     * Gets the type of the layout that is currently active.
      * @return The {@link LayoutType} of the active layout.
      */
     @LayoutType

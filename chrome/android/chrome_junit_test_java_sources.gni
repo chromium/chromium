@@ -293,6 +293,7 @@ chrome_junit_test_java_sources = [
   "junit/src/org/chromium/chrome/browser/toolbar/top/StartSurfaceToolbarMediatorUnitTest.java",
   "junit/src/org/chromium/chrome/browser/ui/AppLaunchDrawBlockerUnitTest.java",
   "junit/src/org/chromium/chrome/browser/ui/IncognitoRestoreAppLaunchDrawBlockerUnitTest.java",
+  "junit/src/org/chromium/chrome/browser/ui/fold_transitions/FoldTransitionControllerUnitTest.java",
   "junit/src/org/chromium/chrome/browser/usage_stats/EventTrackerTest.java",
   "junit/src/org/chromium/chrome/browser/usage_stats/PageViewObserverTest.java",
   "junit/src/org/chromium/chrome/browser/webapps/MockWebappDataStorageClockRule.java",

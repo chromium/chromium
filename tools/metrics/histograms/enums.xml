@@ -75784,6 +75784,8 @@ Called by update_net_trust_anchors.py.-->
   <int value="10" label="Launched new incognito tab."/>
   <int value="11" label="Menu or keyboard action."/>
   <int value="12" label="Unfocus."/>
+  <int value="13" label="Query tiles NTP omnibox tapped."/>
+  <int value="14" label="Focus restored on fold configuration change."/>
 </enum>
 
 <enum name="OmniboxFocusType">

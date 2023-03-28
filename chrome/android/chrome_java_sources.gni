@@ -1142,6 +1142,7 @@ chrome_java_sources = [
   "java/src/org/chromium/chrome/browser/ui/MediaCaptureOverlayController.java",
   "java/src/org/chromium/chrome/browser/ui/RootUiCoordinator.java",
   "java/src/org/chromium/chrome/browser/ui/ViewDrawBlocker.java",
+  "java/src/org/chromium/chrome/browser/ui/fold_transitions/FoldTransitionController.java",
   "java/src/org/chromium/chrome/browser/ui/system/StatusBarColorController.java",
   "java/src/org/chromium/chrome/browser/undo_tab_close_snackbar/UndoBarController.java",
   "java/src/org/chromium/chrome/browser/upgrade/PackageReplacedBroadcastReceiver.java",

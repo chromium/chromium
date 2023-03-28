@@ -14,4 +14,11 @@ public interface UrlBarDelegate {
      * @param text The text that should be displayed in the omnibox.
      */
     void setOmniboxEditingText(String text);
+
+    /**
+     * Returns {@code true} when the omnibox should be cleared on focus, {@code false} otherwise.
+     */
+    default boolean shouldClearOmniboxOnFocus() {
+        return true;
+    }
 }
