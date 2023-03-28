@@ -80,6 +80,18 @@ void LogConfirmUsernameMessageDismissalReason(
       "UpdateWithUsernameConfirmation",
       reason);
 }
+
+bool UPMExploratoryStringsEnabledWithSupportedParam() {
+  if (!base::FeatureList::IsEnabled(
+          password_manager::features::kExploratorySaveUpdatePasswordStrings)) {
+    return false;
+  }
+
+  int string_version =
+      password_manager::features::kSaveUpdatePromptSyncingStringVersion.Get();
+  return string_version == 2 || string_version == 3;
+}
+
 }  // namespace
 
 SaveUpdatePasswordMessageDelegate::SaveUpdatePasswordMessageDelegate()
@@ -293,8 +305,7 @@ std::u16string SaveUpdatePasswordMessageDelegate::GetMessageDescription(
     const password_manager::PasswordForm& pending_credentials,
     bool update_password,
     bool unified_password_manager) {
-  if (base::FeatureList::IsEnabled(
-          password_manager::features::kExploratorySaveUpdatePasswordStrings)) {
+  if (UPMExploratoryStringsEnabledWithSupportedParam()) {
     return GetExploratoryStringsMessageDescription(update_password);
   }
 
