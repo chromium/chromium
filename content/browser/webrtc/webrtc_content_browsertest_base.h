@@ -28,13 +28,10 @@ class WebRtcContentBrowserTestBase : public ContentBrowserTest {
   // last-evaluated statement, which must be a string.
   std::string EvalJsInShell(const std::string& javascript);
 
-  // Waits for the javascript to return OK via the automation controller.
-  // If the javascript returns != OK or times out, we fail the test.
-  void ExecuteJavascriptAndWaitForOk(const std::string& javascript);
-
   // Execute a typical javascript call after having started the webserver.
   void MakeTypicalCall(const std::string& javascript,
-                       const std::string& html_file);
+                       const std::string& html_file,
+                       bool use_manual_reply = true);
 
   // Generates javascript code for a getUserMedia call.
   std::string GenerateGetUserMediaCall(const char* function_name,

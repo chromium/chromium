@@ -143,7 +143,7 @@ IN_PROC_BROWSER_TEST_F(WebRtcAudioDebugRecordingsBrowserTest,
   // Make a call.
   GURL url(embedded_test_server()->GetURL("/media/peerconnection-call.html"));
   EXPECT_TRUE(NavigateToURL(shell(), url));
-  ExecuteJavascriptAndWaitForOk("call({video: true, audio: true});");
+  EXPECT_EQ("OK", EvalJsInShell("call({video: true, audio: true});"));
   EXPECT_EQ("OK", EvalJsInShell("hangup();"));
 
   WebRTCInternals::GetInstance()->DisableAudioDebugRecordings();
@@ -233,7 +233,7 @@ IN_PROC_BROWSER_TEST_F(WebRtcAudioDebugRecordingsBrowserTest,
   // Make a call.
   GURL url(embedded_test_server()->GetURL("/media/peerconnection-call.html"));
   EXPECT_TRUE(NavigateToURL(shell(), url));
-  ExecuteJavascriptAndWaitForOk("call({video: true, audio: true});");
+  EXPECT_EQ("OK", EvalJsInShell("call({video: true, audio: true});"));
   EXPECT_EQ("OK", EvalJsInShell("hangup();"));
 
   // Verify that no files exist and remove temp dir.
@@ -284,9 +284,8 @@ IN_PROC_BROWSER_TEST_F(WebRtcAudioDebugRecordingsBrowserTest,
   GURL url(embedded_test_server()->GetURL("/media/peerconnection-call.html"));
   EXPECT_TRUE(NavigateToURL(shell(), url));
   EXPECT_TRUE(NavigateToURL(shell2, url));
-  ExecuteJavascriptAndWaitForOk("call({video: true, audio: true});");
-  EXPECT_EQ("OK", EvalJs(shell2, "call({video: true, audio: true});",
-                         EXECUTE_SCRIPT_USE_MANUAL_REPLY));
+  EXPECT_EQ("OK", EvalJsInShell("call({video: true, audio: true});"));
+  EXPECT_EQ("OK", EvalJs(shell2, "call({video: true, audio: true});"));
 
   EXPECT_EQ("OK", EvalJsInShell("hangup();"));
   EXPECT_EQ("OK", EvalJs(shell2, "hangup();"));

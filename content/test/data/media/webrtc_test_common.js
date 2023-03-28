@@ -5,7 +5,6 @@
 // Default transform functions, overridden by some test cases.
 var transformSdp = function(sdp) { return sdp; };
 var transformRemoteSdp = function(sdp) { return sdp; };
-var onLocalDescriptionError = function(error) { failTest(error); };
 
 // Provide functions to set the transform functions.
 function setOfferSdpTransform(newTransform) {
@@ -13,9 +12,6 @@ function setOfferSdpTransform(newTransform) {
 }
 function setRemoteSdpTransform(newTransform) {
   transformRemoteSdp = newTransform;
-}
-function setOnLocalDescriptionError(newHandler) {
-  onLocalDescriptionError = newHandler;
 }
 
 /**
@@ -31,7 +27,7 @@ function setOnLocalDescriptionError(newHandler) {
  * Args:
  *   caller, callee: RTCPeerConnection instances.
  */
-function negotiateBetween(caller, callee) {
+async function negotiateBetween(caller, callee) {
   console.log("Negotiating call...");
   // Not stable = negotiation is ongoing. The behavior of re-negotiating while
   // a negotiation is ongoing is more or less undefined, so avoid this.
@@ -40,77 +36,69 @@ function negotiateBetween(caller, callee) {
 
   connectOnIceCandidate_(caller, callee);
 
-  caller.createOffer(
-    function (offer) {
-      onOfferCreated_(offer, caller, callee);
-    },
-    function(error) {}
-  );
+  const offer = await new Promise((resolve, reject) => {
+    caller.createOffer(resolve, reject);
+  })
+  return onOfferCreated_(offer, caller, callee);
 }
 
 /**
  * @private
  */
-function onOfferCreated_(offer, caller, callee) {
+async function onOfferCreated_(offer, caller, callee) {
   offer.sdp = transformSdp(offer.sdp);
   console.log('Offer:\n' + offer.sdp);
-  caller.setLocalDescription(offer, function() {
-    assertEquals('have-local-offer', caller.signalingState);
-    receiveOffer_(offer.sdp, caller, callee);
-  }, onLocalDescriptionError);
+  await new Promise((resolve, reject) => {
+    caller.setLocalDescription(offer, resolve, reject);
+  });
+  assertEqualsSync('have-local-offer', caller.signalingState);
+  return receiveOffer_(offer.sdp, caller, callee);
 }
 
 /**
  * @private
  */
-function receiveOffer_(offerSdp, caller, callee) {
+async function receiveOffer_(offerSdp, caller, callee) {
   console.log("Receiving offer...");
   offerSdp = transformRemoteSdp(offerSdp);
 
   var parsedOffer = new RTCSessionDescription({ type: 'offer',
                                                 sdp: offerSdp });
-  callee.setRemoteDescription(parsedOffer,
-                              function() {
-                                assertEquals('have-remote-offer',
-                                             callee.signalingState);
-                                callee.createAnswer(
-                                  function (answer) {
-                                    onAnswerCreated_(answer, caller, callee);
-                                  },
-                                  function(error) {
-                                  }
-                                );
-                              },
-                              failTest);
+  await new Promise((resolve, reject) => {
+    callee.setRemoteDescription(parsedOffer, resolve, reject);
+  });
+  assertEqualsSync('have-remote-offer', callee.signalingState);
+  const answer = await new Promise((resolve, reject) => {
+    callee.createAnswer(resolve, reject);
+  });
+  return onAnswerCreated_(answer, caller, callee);
 }
 
 /**
  * @private
  */
-function onAnswerCreated_(answer, caller, callee) {
+async function onAnswerCreated_(answer, caller, callee) {
   answer.sdp = transformSdp(answer.sdp);
   console.log('Answer:\n' + answer.sdp);
-  callee.setLocalDescription(answer,
-                             function () {
-                               assertEquals('stable', callee.signalingState);
-                             },
-                             onLocalDescriptionError);
-  receiveAnswer_(answer.sdp, caller);
+  await new Promise((resolve, reject) => {
+    callee.setLocalDescription(answer, resolve, reject);
+  });
+  assertEqualsSync('stable', callee.signalingState);
+  return receiveAnswer_(answer.sdp, caller);
 }
 
 /**
  * @private
  */
-function receiveAnswer_(answerSdp, caller) {
+async function receiveAnswer_(answerSdp, caller) {
   console.log("Receiving answer...");
   answerSdp = transformRemoteSdp(answerSdp);
   var parsedAnswer = new RTCSessionDescription({ type: 'answer',
                                                  sdp: answerSdp });
-  caller.setRemoteDescription(parsedAnswer,
-                              function() {
-                                assertEquals('stable', caller.signalingState);
-                              },
-                              failTest);
+  await new Promise((resolve, reject) => {
+    caller.setRemoteDescription(parsedAnswer, resolve, reject);
+  });
+  assertEqualsSync('stable', caller.signalingState);
 }
 
 /**
@@ -128,13 +116,13 @@ function connectOnIceCandidate_(caller, callee) {
 /**
  * @private
  */
-function onIceCandidate_(event, originator, target) {
+async function onIceCandidate_(event, originator, target) {
   if (event.candidate) {
     var candidate = new RTCIceCandidate(event.candidate);
     target.addIceCandidate(candidate);
   } else {
     // The spec guarantees that the special "null" candidate will be fired
     // *after* changing the gathering state to "complete".
-    assertEquals('complete', originator.iceGatheringState);
+    assertEqualsSync('complete', originator.iceGatheringState);
   }
 }

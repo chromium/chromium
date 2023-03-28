@@ -24,14 +24,14 @@
   // video in this call since we expect video to be playing).
   function call(constraints) {
     createConnections();
-    navigator.mediaDevices.getUserMedia(constraints)
-        .then(addStreamToBothConnectionsAndNegotiate)
-        .catch(failTest);
-
-    Promise.all([
+    return Promise.all([
+      navigator.mediaDevices.getUserMedia(constraints)
+          .then(addStreamToBothConnectionsAndNegotiate),
       detectVideoPlaying('remote-view-1'),
       detectVideoPlaying('remote-view-2')
-    ]).then(reportTestSuccess);
+    ])
+    .then(logSuccess)
+    .catch(toStackTrace);
   }
 
   function oldStyleCall() {
@@ -199,14 +199,14 @@
     createConnections();
     setOfferSdpTransform(removeBundle);
     setRemoteSdpTransform(removeMsid);
-    navigator.mediaDevices.getUserMedia({audio: true, video: true})
-        .then(addStreamToBothConnectionsAndNegotiate)
-        .catch(failTest);
-
-    Promise.all([
+    return Promise.all([
+      navigator.mediaDevices.getUserMedia({audio: true, video: true})
+          .then(addStreamToBothConnectionsAndNegotiate),
       detectVideoPlaying('remote-view-1'),
       detectVideoPlaying('remote-view-1')
-    ]).then(reportTestSuccess);
+    ])
+    .then(logSuccess)
+    .catch(toStackTrace);
   }
 
   // Test that we can't setup a call with an unsupported video codec
@@ -214,31 +214,35 @@
     createConnections();
     setOfferSdpTransform(removeVideoCodec);
 
-    setOnLocalDescriptionError(function(error) {
-      var expectedMsg = "Failed to set local offer sdp: Failed to set local " +
-          "video description recv parameters for m-section with mid='1'.";
-      assertEquals(expectedMsg, error.message);
-      reportTestSuccess();
-    });
-    navigator.mediaDevices.getUserMedia({audio: true, video: true})
+    return navigator.mediaDevices.getUserMedia({audio: true, video: true})
         .then(addStreamToBothConnectionsAndNegotiate)
-        .catch(failTest);
+        .then(
+          () => toStackTrace('Expected to fail, but succeeded'),
+          (error) => {
+          var expectedMsg = "Failed to set local offer sdp: Failed to set local " +
+              "video description recv parameters for m-section with mid='1'.";
+          assertEqualsSync(expectedMsg, error.message);
+          return logSuccess();
+        })
+        .catch(toStackTrace);
   }
 
   // Test that we can't setup a call if one peer does not support encryption
   function negotiateNonCryptoCall() {
     createConnections();
     setOfferSdpTransform(removeCrypto);
-    setOnLocalDescriptionError(function(error) {
-      // Note: Per spec, error should be 'IllegalModificationError'
-      // https://crbug.com/823036
-      var expectedError = 'OperationError';
-      assertEquals(expectedError, error.name);
-      reportTestSuccess();
-    });
-    navigator.mediaDevices.getUserMedia({audio: true, video: true})
+    return navigator.mediaDevices.getUserMedia({audio: true, video: true})
         .then(addStreamToBothConnectionsAndNegotiate)
-        .catch(failTest);
+        .then(() => {
+          return toStackTrace('Expected to fail, but succeeded');
+        }, (error) => {
+          // Note: Per spec, error should be 'IllegalModificationError'
+          // https://crbug.com/823036
+          var expectedError = 'OperationError';
+          assertEqualsSync(expectedError, error.name);
+          return logSuccess();
+        })
+        .catch(toStackTrace);
   }
 
   // Test that we can negotiate a call with an SDP offer that includes a
@@ -347,23 +351,24 @@
   // Loads this page inside itself using an iframe, and ensures we can make a
   // successful getUserMedia + peerconnection call inside the iframe.
   function callInsideIframe(constraints) {
-    runInsideIframe(function(iframe) {
+    return createIframe().then(function(iframe) {
       // Run a regular webrtc call inside the iframe.
-      iframe.contentWindow.call(constraints);
+      return iframe.contentWindow.call(constraints);
     });
   }
 
-  // Func should accept an iframe as its first argument.
-  function runInsideIframe(func) {
+  function createIframe() {
     var iframe = document.createElement('iframe');
     document.body.appendChild(iframe);
-    iframe.onload = onIframeLoaded;
-    iframe.src = window.location;
+    return new Promise(resolve => {
+      iframe.onload = onIframeLoaded;
+      iframe.src = window.location;
 
-    function onIframeLoaded() {
-      var iframe = window.document.querySelector('iframe');
-      func(iframe);
-    }
+      function onIframeLoaded() {
+        var iframe = window.document.querySelector('iframe');
+        resolve(iframe);
+      }
+    });
   }
 
   // Test call with a stream that has been created by getUserMedia, clone
@@ -447,7 +452,7 @@
     displayAndRemember(localStream);
     gFirstConnection.addStream(localStream);
     gSecondConnection.addStream(localStream);
-    negotiate();
+    return negotiate();
   }
 
   // Called if getUserMedia succeeds when we want to send from one connection.
@@ -469,7 +474,7 @@
   }
 
   function negotiate() {
-    negotiateBetween(gFirstConnection, gSecondConnection);
+    return negotiateBetween(gFirstConnection, gSecondConnection);
   }
 
   function iceCandidateIsLoopback(candidate) {

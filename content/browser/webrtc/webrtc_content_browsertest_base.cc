@@ -72,21 +72,20 @@ std::string WebRtcContentBrowserTestBase::EvalJsInShell(
 
 void WebRtcContentBrowserTestBase::MakeTypicalCall(
     const std::string& javascript,
-    const std::string& html_file) {
+    const std::string& html_file,
+    bool use_manual_reply) {
   if (!embedded_test_server()->Started())
     ASSERT_TRUE(embedded_test_server()->Start());
 
   GURL url(embedded_test_server()->GetURL(html_file));
   EXPECT_TRUE(NavigateToURL(shell(), url));
 
-  ExecuteJavascriptAndWaitForOk(javascript);
-}
+  int options = EXECUTE_SCRIPT_DEFAULT_OPTIONS;
+  if (use_manual_reply) {
+    options |= EXECUTE_SCRIPT_USE_MANUAL_REPLY;
+  }
 
-void WebRtcContentBrowserTestBase::ExecuteJavascriptAndWaitForOk(
-    const std::string& javascript) {
-  std::string result =
-      EvalJs(shell(), javascript, EXECUTE_SCRIPT_USE_MANUAL_REPLY)
-          .ExtractString();
+  std::string result = EvalJs(shell(), javascript, options).ExtractString();
   if (result != "OK") {
     if (result.empty())
       result = "(nothing)";
@@ -94,7 +93,7 @@ void WebRtcContentBrowserTestBase::ExecuteJavascriptAndWaitForOk(
            javascript.c_str());
     FAIL();
   }
- }
+}
 
  std::string WebRtcContentBrowserTestBase::GenerateGetUserMediaCall(
      const char* function_name,

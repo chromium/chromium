@@ -686,7 +686,7 @@ IN_PROC_BROWSER_TEST_F(MAYBE_WebRtcInternalsBrowserTest,
   ASSERT_TRUE(embedded_test_server()->Start());
   GURL url(embedded_test_server()->GetURL("/media/peerconnection-call.html"));
   EXPECT_TRUE(NavigateToURL(shell(), url));
-  ASSERT_TRUE(ExecuteJavascript("call({video:true});"));
+  ASSERT_EQ(true, EvalJs(shell(), "call({video:true});"));
   ExpectTitle("OK");
 
   // Open webrtc-internals in the second window.

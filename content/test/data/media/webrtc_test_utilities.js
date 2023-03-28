@@ -270,6 +270,12 @@ function assertEquals(expected, actual) {
   }
 }
 
+function assertEqualsSync(expected, actual) {
+  if (actual != expected) {
+    throw new Error('expected \'' + expected + '\', got \'' + actual + '\'.');
+  }
+}
+
 function assertNotEquals(expected, actual) {
   if (actual === expected) {
     failTest('expected \'' + expected + '\', got \'' + actual + '\'.');
