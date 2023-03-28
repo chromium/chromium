@@ -4568,6 +4568,9 @@ class FencedFrameReportEventBrowserTest
     // Whether the navigation should be via a urn:uuid or a normal URL.
     // (This should always be false when `!is_embedder_initiated`.
     bool is_opaque = false;
+    // Whether attribution-reporting permission policy is expected to be
+    // allowed.
+    bool expect_attribution_reporting_allowed = true;
 
     struct Event {
       std::string type;
@@ -4700,7 +4703,8 @@ class FencedFrameReportEventBrowserTest
         std::string final_destination_origin =
             step.redirects.empty() ? step.destination.origin
                                    : step.redirects.back().origin;
-        if (final_destination_origin != reporting_origin) {
+        if (final_destination_origin != reporting_origin &&
+            step.expect_attribution_reporting_allowed) {
           // The reporting beacon is cross-origin. Two requests will be sent.
           // First is the preflight request, the second is the actual request.
           responses.emplace_back(
@@ -4880,7 +4884,8 @@ class FencedFrameReportEventBrowserTest
         std::string final_destination_origin =
             step.redirects.empty() ? step.destination.origin
                                    : step.redirects.back().origin;
-        if (final_destination_origin != reporting_origin) {
+        if (final_destination_origin != reporting_origin &&
+            step.expect_attribution_reporting_allowed) {
           auto& preflight_response = *responses[response_index];
           // Verify the preflight request contains the eligibility header under
           // "Access-Control-Request-Headers".
@@ -4905,9 +4910,14 @@ class FencedFrameReportEventBrowserTest
             response.http_request()->content,
             step.event.type + " " + base::NumberToString(navigation_index));
         // Verify the request contains the eligibility header.
-        EXPECT_EQ(response.http_request()->headers.at(
-                      "Attribution-Reporting-Eligible"),
-                  "event-source");
+        if (step.expect_attribution_reporting_allowed) {
+          EXPECT_EQ(response.http_request()->headers.at(
+                        "Attribution-Reporting-Eligible"),
+                    "event-source");
+        } else {
+          EXPECT_FALSE(base::Contains(response.http_request()->headers,
+                                      "Attribution-Reporting-Eligible"));
+        }
         EXPECT_FALSE(base::Contains(response.http_request()->headers,
                                     "Attribution-Reporting-Support"));
         response.Done();
@@ -5267,6 +5277,48 @@ IN_PROC_BROWSER_TEST_F(FencedFrameReportEventBrowserTest,
                   {"b.test", "/fenced_frames/redirect2.html"},
                   {"a.test", "/fenced_frames/title1.html"},
               },
+          .report_event_result = Step::Result::kSuccess,
+      },
+  };
+  RunTest(config);
+}
+
+// Attribution Reporting headers are not set if attribution-reporting permission
+// policy is disallowed for the fenced frame.
+IN_PROC_BROWSER_TEST_F(FencedFrameReportEventBrowserTest,
+                       FencedFrameReportEventAttributionReportingDisallowed) {
+  std::vector<Step> config = {
+      {
+          .is_embedder_initiated = true,
+          .is_opaque = true,
+          .expect_attribution_reporting_allowed = false,
+          .destination =
+              {"a.test",
+               "/fenced_frames/attribution_reporting_disallowed.html"},
+          .report_event_result = Step::Result::kSuccess,
+      },
+  };
+  RunTest(config);
+}
+
+// Attribution Reporting headers are not set if attribution-reporting permission
+// policy is disallowed for the nested iframe.
+IN_PROC_BROWSER_TEST_F(
+    FencedFrameReportEventBrowserTest,
+    FencedFrameReportEventNestedIframeAttributionReportingDisallowed) {
+  std::vector<Step> config = {
+      {
+          .is_embedder_initiated = true,
+          .is_opaque = true,
+          .destination = {"a.test", "/fenced_frames/title1.html"},
+          .report_event_result = Step::Result::kSuccess,
+      },
+      {
+          .is_target_nested_iframe = true,
+          .expect_attribution_reporting_allowed = false,
+          .destination =
+              {"a.test",
+               "/fenced_frames/attribution_reporting_disallowed.html"},
           .report_event_result = Step::Result::kSuccess,
       },
   };

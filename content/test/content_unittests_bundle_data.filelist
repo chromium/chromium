@@ -405,6 +405,8 @@ data/fenced_frames/ad_with_fenced_frame_private_aggregation_reporting.html
 data/fenced_frames/ad_with_fenced_frame_private_aggregation_reporting.html.mock-http-headers
 data/fenced_frames/ad_with_fenced_frame_reporting.html
 data/fenced_frames/ad_with_fenced_frame_reporting.html.mock-http-headers
+data/fenced_frames/attribution_reporting_disallowed.html
+data/fenced_frames/attribution_reporting_disallowed.html.mock-http-headers
 data/fenced_frames/basic.html
 data/fenced_frames/basic.html.mock-http-headers
 data/fenced_frames/basic_fenced_frame_src.html

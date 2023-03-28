@@ -190,12 +190,17 @@ class CONTENT_EXPORT FencedFrameReporter
   friend class base::RefCounted<FencedFrameReporter>;
   friend class FencedFrameURLMappingTestPeer;
 
+  struct AttributionReportingData {
+    BeaconId beacon_id;
+    bool is_automatic_beacon;
+  };
+
   struct PendingEvent {
-    PendingEvent(const std::string& type,
-                 const std::string& data,
-                 const url::Origin& request_initiator,
-                 BeaconId beacon_id,
-                 bool is_automatic_beacon);
+    PendingEvent(
+        const std::string& type,
+        const std::string& data,
+        const url::Origin& request_initiator,
+        absl::optional<AttributionReportingData> attribution_reporting_data);
 
     PendingEvent(const PendingEvent&);
     PendingEvent(PendingEvent&&);
@@ -208,8 +213,9 @@ class CONTENT_EXPORT FencedFrameReporter
     std::string type;
     std::string data;
     url::Origin request_initiator;
-    BeaconId beacon_id;
-    bool is_automatic_beacon;
+    // The data necessary for attribution reporting. Will be `absl::nullopt` if
+    // attribution reporting is disallowed in the initiator frame.
+    absl::optional<AttributionReportingData> attribution_reporting_data;
   };
 
   // The per-blink::FencedFrame::ReportingDestination reporting information.
@@ -241,8 +247,8 @@ class CONTENT_EXPORT FencedFrameReporter
       const std::string& event_data,
       blink::FencedFrame::ReportingDestination reporting_destination,
       const url::Origin& request_initiator,
-      BeaconId beacon_id,
-      bool is_automatic_beacon,
+      const absl::optional<AttributionReportingData>&
+          attribution_reporting_data,
       std::string& error_message);
 
   // Helper to send private aggregation requests in
@@ -264,7 +270,9 @@ class CONTENT_EXPORT FencedFrameReporter
 
   // Helper to notify `AttributionDataHostManager` if the report failed to be
   // sent.
-  void NotifyFencedFrameReportingBeaconFailed(BeaconId beacon_id);
+  void NotifyFencedFrameReportingBeaconFailed(
+      const absl::optional<AttributionReportingData>&
+          attribution_reporting_data);
 
   scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;
 
