@@ -46,7 +46,18 @@ namespace content {
 
 namespace {
 
-bool ShouldHaveChildTree(const ui::AXNode& node) {
+bool SkipUrlMatch(const std::vector<std::string>& skip_urls,
+                  const std::string& url) {
+  for (auto& skip_url : skip_urls) {
+    if (url.find(skip_url) != std::string::npos) {
+      return true;
+    }
+  }
+  return false;
+}
+
+bool ShouldHaveChildTree(const ui::AXNode& node,
+                         const std::vector<std::string>& skip_urls) {
   const ui::AXNodeData& data = node.data();
   if (data.GetRestriction() == ax::mojom::Restriction::kDisabled) {
     DCHECK(!data.HasStringAttribute(ax::mojom::StringAttribute::kChildTreeId));
@@ -59,26 +70,72 @@ bool ShouldHaveChildTree(const ui::AXNode& node) {
   // If has a child tree owner role or a child tree id, then expect some
   // child tree content. In some cases IsChildTreeOwner(role) will be false,
   // if an ARIA role was used, e.g. <iframe role="region">.
-  return ui::IsChildTreeOwner(node.GetRole()) ||
-         data.HasStringAttribute(ax::mojom::StringAttribute::kChildTreeId);
+  if (data.HasStringAttribute(ax::mojom::StringAttribute::kChildTreeId)) {
+    return true;
+  }
+  if (!ui::IsChildTreeOwner(node.GetRole())) {
+    return false;
+  }
+  std::string url = node.GetStringAttribute(ax::mojom::StringAttribute::kUrl);
+  return (!url.empty() && !SkipUrlMatch(skip_urls, url));
 }
 
-bool AccessibilityTreeContainsAllChildTrees(const ui::AXNode& node) {
-  size_t num_children = node.GetChildCountCrossingTreeBoundary();
-  if (!num_children) {
-    // No children. All content is contained unless there is supposed to be
-    // a child tree for this node.
-    return !ShouldHaveChildTree(node);
-  }
+class AXTreeChangeWaiter : public ui::AXTreeObserver {
+ public:
+  AXTreeChangeWaiter()
+      : loop_runner_(std::make_unique<base::RunLoop>()),
+        loop_runner_quit_closure_(loop_runner_->QuitClosure()) {}
 
-  for (size_t i = 0; i < num_children; i++) {
-    if (!AccessibilityTreeContainsAllChildTrees(
-            *node.GetChildAtIndexCrossingTreeBoundary(i))) {
-      return false;
+  void OnStringAttributeChanged(ui::AXTree* tree,
+                                ui::AXNode* node,
+                                ax::mojom::StringAttribute attr,
+                                const std::string& old_value,
+                                const std::string& new_value) override {
+    if (attr == ax::mojom::StringAttribute::kChildTreeId) {
+      tree->RemoveObserver(this);
+      loop_runner_quit_closure_.Run();
     }
   }
 
-  return true;
+  void OnChildTreeConnectionChanged(ui::AXNode* host_node) override {
+    host_node->tree()->RemoveObserver(this);
+    loop_runner_quit_closure_.Run();
+  }
+
+  void WaitForChange(ui::AXTree* tree) {
+    tree->AddObserver(this);
+    loop_runner_->Run();
+    loop_runner_.reset();
+    loop_runner_quit_closure_.Reset();
+  }
+
+ private:
+  std::unique_ptr<base::RunLoop> loop_runner_;
+  base::RepeatingClosure loop_runner_quit_closure_;
+};
+
+void WaitForChildTrees(const ui::AXNode& node,
+                       const std::vector<std::string>& skip_urls) {
+  while (true) {
+    size_t num_children = node.GetChildCountCrossingTreeBoundary();
+    if (!num_children && ShouldHaveChildTree(node, skip_urls)) {
+      AXTreeChangeWaiter waiter;
+      waiter.WaitForChange(node.tree());
+      continue;
+    }
+
+    // Any node that is the connection point for a child tree should have
+    // exactly one child.
+    DCHECK(!ShouldHaveChildTree(node, skip_urls) || num_children == 1u)
+        << "AXNode (" << node << ") has an unexpected number of "
+        << "children :" << num_children;
+
+    for (size_t i = 0; i < num_children; i++) {
+      WaitForChildTrees(*node.GetChildAtIndexCrossingTreeBoundary(i),
+                        skip_urls);
+    }
+    break;
+  }
 }
 
 bool IsLoadedDocWithUrl(const BrowserAccessibility* node,
@@ -302,11 +359,14 @@ void DumpAccessibilityTestBase::WaitForFinalTreeContents(ui::AXMode mode) {
   // is complete.
   PerformAndWaitForDefaultActions(mode);
 
-  // Wait for expected text from @WAIT-FOR.
-  WaitForExpectedText(mode);
-
-  // Wait until all accessibility events and dirty objects have been processed.
-  WaitForEndOfTest(mode);
+  if (scenario_.wait_for.size()) {
+    // Wait for expected text from @WAIT-FOR.
+    WaitForExpectedText(mode);
+  } else {
+    // Wait until all accessibility events and dirty objects have been
+    // processed.
+    WaitForEndOfTest(mode);
+  }
 }
 
 void DumpAccessibilityTestBase::RunTestForPlatform(
@@ -444,16 +504,8 @@ std::map<std::string, unsigned> DumpAccessibilityTestBase::CollectAllFrameUrls(
     // WebContents as the node doesn't have a url set.
 
     std::string url = node->current_url().spec();
-
-    // sometimes we expect a url to never load, in these cases, don't wait.
-    bool skip_url = false;
-    for (std::string no_load_url : skip_urls) {
-      if (url.find(no_load_url) != std::string::npos) {
-        skip_url = true;
-        break;
-      }
-    }
-    if (!skip_url && url != url::kAboutBlankURL && !url.empty() &&
+    if (url != url::kAboutBlankURL && !url.empty() &&
+        !SkipUrlMatch(skip_urls, url) &&
         node->frame_owner_element_type() !=
             blink::FrameOwnerElementType::kPortal) {
       all_frame_urls[url] += 1;
@@ -479,16 +531,10 @@ void DumpAccessibilityTestBase::WaitForAllFramesLoaded(ui::AXMode mode) {
       BrowserAccessibility* accessibility_root =
           manager->GetBrowserAccessibilityRoot();
 
-      // Check to see if all frames have loaded. If not, we invoke
-      // WaitForEndOfTest to listen for a kEndOfTest signal which will be
-      // fired for each loaded child tree.
-      if (!AccessibilityTreeContainsAllChildTrees(
-              *accessibility_root->node())) {
-        WaitForEndOfTest(mode);
-        continue;
-      }
+      WaitForChildTrees(*accessibility_root->node(),
+                        scenario_.no_load_expected);
 
-      bool all_frames_loaded = true;
+      bool all_expected_urls_loaded = true;
       // A test may change the url for a frame, for example by setting
       // window.location.href, so collect the current list of urls.
       const std::map<std::string, unsigned> all_frame_urls =
@@ -498,13 +544,13 @@ void DumpAccessibilityTestBase::WaitForAllFramesLoaded(ui::AXMode mode) {
                 accessibility_root, url, num_expected)) {
           VLOG(1) << "Still waiting on " << num_remaining
                   << " frame(s) to load: " << url;
-          all_frames_loaded = false;
+          all_expected_urls_loaded = false;
           break;
         }
       }
-      // If all frames have loaded, we're done.
-      if (all_frames_loaded)
+      if (all_expected_urls_loaded) {
         break;
+      }
     }
 
     // Block until the next accessibility notification in any frame.

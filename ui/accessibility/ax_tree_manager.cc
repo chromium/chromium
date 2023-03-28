@@ -367,6 +367,7 @@ void AXTreeManager::ParentConnectionChanged(AXNode* parent) {
   }
   connected_to_parent_tree_node_ = true;
 
+  parent->tree()->NotifyChildTreeConnectionChanged(parent, ax_tree_.get());
   UpdateAttributesOnParent(parent);
   AXTreeManager* parent_manager = parent->GetManager();
   parent = parent_manager->RetargetForEvents(

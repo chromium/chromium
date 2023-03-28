@@ -229,6 +229,9 @@ class DumpAccessibilityTestBase
       const char* attr,
       const std::string& value) const;
 
+  // The entries in skip_urls will be omitted from the result. This is used,
+  // e.g., in support of the @NO-LOAD-EXPECTED directive, when an element has an
+  // invalid src attribute.
   std::map<std::string, unsigned> CollectAllFrameUrls(
       const std::vector<std::string>& skip_urls);
 

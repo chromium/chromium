@@ -1882,6 +1882,14 @@ void AXTree::NotifyNodeHasBeenReparentedOrCreated(
   }
 }
 
+void AXTree::NotifyChildTreeConnectionChanged(AXNode* node,
+                                              AXTree* child_tree) {
+  DCHECK(node->tree() == this);
+  for (AXTreeObserver& observer : observers_) {
+    observer.OnChildTreeConnectionChanged(node);
+  }
+}
+
 void AXTree::NotifyNodeAttributesWillChange(
     AXNode* node,
     AXTreeUpdateState& update_state,

@@ -257,6 +257,8 @@ class AX_EXPORT AXTree {
   // same tree.
   void NotifyTreeManagerWillBeRemoved(AXTreeID previous_tree_id);
 
+  void NotifyChildTreeConnectionChanged(AXNode* node, AXTree* child_tree);
+
  private:
   friend class ScopedTreeUpdateInProgressStateSetter;
   friend class AXTableInfoTest;

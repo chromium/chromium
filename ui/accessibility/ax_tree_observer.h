@@ -137,6 +137,10 @@ class AX_EXPORT AXTreeObserver : public base::CheckedObserver {
   // updating.
   virtual void OnNodeChanged(AXTree* tree, AXNode* node) {}
 
+  // Called when a child tree hosted by `host_node` is connected or
+  // disconnected.
+  virtual void OnChildTreeConnectionChanged(AXNode* host_node) {}
+
   // Called just before a tree manager is removed from the AXTreeManagerMap.
   //
   // Why is this needed?
