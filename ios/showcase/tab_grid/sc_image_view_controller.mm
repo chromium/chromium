@@ -4,7 +4,7 @@
 
 #import "ios/showcase/tab_grid/sc_image_view_controller.h"
 
-#import "ios/chrome/browser/ui/elements/top_aligned_image_view.h"
+#import "ios/chrome/browser/shared/ui/elements/top_aligned_image_view.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."

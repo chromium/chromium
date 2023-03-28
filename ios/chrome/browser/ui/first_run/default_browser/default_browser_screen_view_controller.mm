@@ -5,7 +5,7 @@
 #import "ios/chrome/browser/ui/first_run/default_browser/default_browser_screen_view_controller.h"
 
 #import "ios/chrome/browser/first_run/first_run_metrics.h"
-#import "ios/chrome/browser/ui/elements/instruction_view.h"
+#import "ios/chrome/browser/shared/ui/elements/instruction_view.h"
 #import "ios/chrome/browser/ui/first_run/first_run_constants.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/grit/ios_chromium_strings.h"

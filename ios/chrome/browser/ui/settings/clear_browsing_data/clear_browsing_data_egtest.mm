@@ -6,11 +6,11 @@
 
 #import "base/ios/ios_util.h"
 #import "base/mac/foundation_util.h"
+#import "ios/chrome/browser/shared/ui/elements/activity_overlay_egtest_util.h"
+#import "ios/chrome/browser/shared/ui/elements/elements_constants.h"
 #import "ios/chrome/browser/signin/fake_system_identity.h"
 #import "ios/chrome/browser/ui/authentication/signin_earl_grey.h"
 #import "ios/chrome/browser/ui/authentication/signin_earl_grey_ui_test_util.h"
-#import "ios/chrome/browser/ui/elements/activity_overlay_egtest_util.h"
-#import "ios/chrome/browser/ui/elements/elements_constants.h"
 #import "ios/chrome/browser/ui/popup_menu/popup_menu_constants.h"
 #import "ios/chrome/browser/ui/settings/cells/clear_browsing_data_constants.h"
 #import "ios/chrome/grit/ios_strings.h"

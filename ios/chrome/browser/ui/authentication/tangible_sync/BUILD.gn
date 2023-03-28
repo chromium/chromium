@@ -26,11 +26,11 @@ source_set("tangible_sync") {
     "//ios/chrome/browser/first_run",
     "//ios/chrome/browser/main:public",
     "//ios/chrome/browser/shared/public/commands",
+    "//ios/chrome/browser/shared/ui/elements:activity_overlay",
     "//ios/chrome/browser/signin",
     "//ios/chrome/browser/sync",
     "//ios/chrome/browser/ui/authentication",
     "//ios/chrome/browser/ui/authentication/signin",
-    "//ios/chrome/browser/ui/elements:activity_overlay",
     "//ios/chrome/browser/unified_consent",
   ]
   public_deps =
@@ -48,8 +48,8 @@ source_set("signin_ui") {
   deps = [
     "//components/signin/public/base",
     "//ios/chrome/app/strings",
+    "//ios/chrome/browser/shared/ui/elements",
     "//ios/chrome/browser/ui/authentication",
-    "//ios/chrome/browser/ui/elements",
     "//ios/chrome/browser/ui/first_run:field_trial",
     "//ios/chrome/browser/ui/icons:symbols",
     "//ios/chrome/common/ui/colors",

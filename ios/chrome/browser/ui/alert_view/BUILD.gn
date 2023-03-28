@@ -13,8 +13,8 @@ source_set("alert_view") {
   deps = [
     "//base",
     "//ios/chrome/browser/shared/public/features",
+    "//ios/chrome/browser/shared/ui/elements",
     "//ios/chrome/browser/shared/ui/util",
-    "//ios/chrome/browser/ui/elements",
     "//ios/chrome/browser/ui/presenters",
     "//ios/chrome/common:button_config",
     "//ios/chrome/common/ui/colors",

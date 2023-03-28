@@ -9,7 +9,7 @@
 #import "ios/chrome/browser/overlays/public/overlay_request.h"
 #import "ios/chrome/browser/overlays/public/overlay_response.h"
 #import "ios/chrome/browser/overlays/public/web_content_area/alert_overlay.h"
-#import "ios/chrome/browser/ui/elements/text_field_configuration.h"
+#import "ios/chrome/browser/shared/ui/elements/text_field_configuration.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "testing/gtest_mac.h"
 #import "testing/platform_test.h"

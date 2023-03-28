@@ -10,7 +10,7 @@
 #import "ios/chrome/browser/overlays/public/web_content_area/alert_constants.h"
 #import "ios/chrome/browser/overlays/public/web_content_area/alert_overlay.h"
 #import "ios/chrome/browser/overlays/public/web_content_area/java_script_dialog_overlay_utils.h"
-#import "ios/chrome/browser/ui/elements/text_field_configuration.h"
+#import "ios/chrome/browser/shared/ui/elements/text_field_configuration.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ui/base/l10n/l10n_util.h"
 

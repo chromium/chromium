@@ -5,7 +5,7 @@
 #ifndef IOS_CHROME_BROWSER_UI_BADGES_BADGE_BUTTON_H_
 #define IOS_CHROME_BROWSER_UI_BADGES_BADGE_BUTTON_H_
 
-#import "ios/chrome/browser/ui/elements/extended_touch_target_button.h"
+#import "ios/chrome/browser/shared/ui/elements/extended_touch_target_button.h"
 
 #import "ios/chrome/browser/ui/badges/badge_type.h"
 

@@ -8,9 +8,9 @@
 
 #import "base/ios/ios_util.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
+#import "ios/chrome/browser/shared/ui/elements/instruction_view.h"
 #import "ios/chrome/browser/shared/ui/table_view/table_view_navigation_controller.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
-#import "ios/chrome/browser/ui/elements/instruction_view.h"
 #import "ios/chrome/browser/ui/whats_new/whats_new_detail_view_action_handler.h"
 #import "ios/chrome/browser/ui/whats_new/whats_new_detail_view_delegate.h"
 #import "ios/chrome/common/button_configuration_util.h"

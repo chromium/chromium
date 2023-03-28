@@ -17,7 +17,7 @@ source_set("tab_grid") {
   ]
   deps = [
     "//base",
-    "//ios/chrome/browser/ui/elements",
+    "//ios/chrome/browser/shared/ui/elements",
     "//ios/chrome/browser/ui/tab_switcher/",
     "//ios/chrome/browser/ui/tab_switcher/tab_grid:tab_grid_ui",
     "//ios/chrome/browser/ui/tab_switcher/tab_grid/grid:grid_ui",

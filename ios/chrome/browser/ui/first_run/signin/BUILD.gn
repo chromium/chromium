@@ -47,8 +47,8 @@ source_set("signin_ui") {
   deps = [
     "//ios/chrome/app/strings",
     "//ios/chrome/browser/shared/public/commands",
+    "//ios/chrome/browser/shared/ui/elements:elements_internal",
     "//ios/chrome/browser/ui/authentication/views",
-    "//ios/chrome/browser/ui/elements:elements_internal",
     "//ios/chrome/browser/ui/first_run:constants",
     "//ios/chrome/browser/ui/first_run:field_trial",
     "//ios/chrome/browser/ui/first_run:utils",

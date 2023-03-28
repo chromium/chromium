@@ -4,7 +4,7 @@
 
 #import "ios/chrome/browser/ui/side_swipe/swipe_view.h"
 
-#import "ios/chrome/browser/ui/elements/top_aligned_image_view.h"
+#import "ios/chrome/browser/shared/ui/elements/top_aligned_image_view.h"
 #import "ios/web/common/features.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
