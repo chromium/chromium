@@ -22,10 +22,8 @@ namespace {
 // Fields used inside the hint file.
 const char kPath[] = "Path";
 
-base::FilePath GetPath(const base::Value& dict) {
-  DCHECK(dict.is_dict());
-
-  auto* path_str = dict.FindStringKey(kPath);
+base::FilePath GetPath(const base::Value::Dict& dict) {
+  auto* path_str = dict.FindString(kPath);
   if (!path_str) {
     DLOG(ERROR) << "CDM hint file missing " << kPath;
     return base::FilePath();
@@ -46,8 +44,8 @@ bool UpdateWidevineCdmHintFile(const base::FilePath& cdm_base_path) {
   CHECK(base::PathService::Get(chrome::FILE_COMPONENT_WIDEVINE_CDM_HINT,
                                &hint_file_path));
 
-  base::Value dict(base::Value::Type::DICT);
-  dict.SetStringPath(kPath, cdm_base_path.value());
+  base::Value::Dict dict;
+  dict.Set(kPath, cdm_base_path.value());
 
   std::string json_string;
   JSONStringValueSerializer serializer(&json_string);
@@ -87,5 +85,5 @@ base::FilePath GetLatestComponentUpdatedWidevineCdmDirectory() {
     return base::FilePath();
   }
 
-  return GetPath(*dict);
+  return GetPath(dict->GetDict());
 }
