@@ -4466,18 +4466,13 @@ void RenderFrameHostImpl::CancelInitialHistoryLoad() {
 
 void RenderFrameHostImpl::DidChangeBackForwardCacheDisablingFeatures(
     BackForwardCacheBlockingDetails details) {
-  renderer_reported_bfcache_disabling_features_.Clear();
-  for (auto& feature_details : details) {
-    renderer_reported_bfcache_disabling_features_.Put(
-        static_cast<blink::scheduler::WebSchedulerTrackedFeature>(
-            feature_details->feature));
-  }
+  renderer_reported_bfcache_blocking_details_ = std::move(details);
 
   MaybeEvictFromBackForwardCache();
 
   if (back_forward_cache_disabling_features_callback_for_testing_) {
     back_forward_cache_disabling_features_callback_for_testing_.Run(
-        renderer_reported_bfcache_disabling_features_);
+        GetBackForwardCacheDisablingFeatures());
   }
 }
 
@@ -4526,19 +4521,33 @@ void RenderFrameHostImpl::OnBackForwardCacheDisablingFeatureRemoved(
 
 RenderFrameHostImpl::BackForwardCacheDisablingFeatures
 RenderFrameHostImpl::GetBackForwardCacheDisablingFeatures() const {
-  BackForwardCacheDisablingFeatures features =
-      renderer_reported_bfcache_disabling_features_;
+  BackForwardCacheDisablingFeatures features;
+  for (const auto& details : GetBackForwardCacheBlockingDetails()) {
+    features.Put(static_cast<blink::scheduler::WebSchedulerTrackedFeature>(
+        details->feature));
+  }
+  return features;
+}
 
-  features.PutAll(
+RenderFrameHostImpl::BackForwardCacheBlockingDetails
+RenderFrameHostImpl::GetBackForwardCacheBlockingDetails() const {
+  BackForwardCacheBlockingDetails combined_details_list =
       DedicatedWorkerHostsForDocument::GetOrCreateForCurrentDocument(
           const_cast<RenderFrameHostImpl*>(this))
-          ->GetBackForwardCacheDisablingFeatures());
+          ->GetBackForwardCacheBlockingDetails();
 
-  for (const auto& it : browser_reported_bfcache_disabling_features_counts_) {
-    features.Put(it.first);
+  for (const auto& details : renderer_reported_bfcache_blocking_details_) {
+    combined_details_list.push_back(details.Clone());
   }
 
-  return features;
+  for (const auto& it : browser_reported_bfcache_disabling_features_counts_) {
+    // Browser reported features do not have JS location details. Create a
+    // blocking details struct with only the feature filled.
+    auto details_ptr = blink::mojom::BlockingDetails::New();
+    details_ptr->feature = static_cast<uint32_t>(it.first);
+    combined_details_list.push_back(std::move(details_ptr));
+  }
+  return combined_details_list;
 }
 
 RenderFrameHostImpl::BackForwardCacheDisablingFeatureHandle
@@ -12566,7 +12575,7 @@ void RenderFrameHostImpl::DidCommitNewDocument(
   DCHECK(params.embedding_token.has_value());
   SetEmbeddingToken(params.embedding_token.value());
 
-  renderer_reported_bfcache_disabling_features_.Clear();
+  renderer_reported_bfcache_blocking_details_.clear();
   browser_reported_bfcache_disabling_features_counts_.clear();
 
   TakeNewDocumentPropertiesFromNavigation(navigation_request);

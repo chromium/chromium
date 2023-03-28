@@ -228,6 +228,9 @@ class DedicatedWorkerHost final
   blink::scheduler::WebSchedulerTrackedFeatures
   GetBackForwardCacheDisablingFeatures() const;
 
+  const BackForwardCacheBlockingDetails& GetBackForwardCacheBlockingDetails()
+      const;
+
   base::WeakPtr<ServiceWorkerContainerHost> GetServiceWorkerContainerHost();
 
   mojo::PendingRemote<blink::mojom::BackForwardCacheControllerHost>
@@ -413,7 +416,7 @@ class DedicatedWorkerHost final
   // JavaScript / WebAssembly resources.
   CodeCacheHostImpl::ReceiverSet code_cache_host_receivers_;
 
-  blink::scheduler::WebSchedulerTrackedFeatures bfcache_disabling_features_;
+  BackForwardCacheBlockingDetails bfcache_blocking_details_;
 
   base::WeakPtrFactory<DedicatedWorkerHost> weak_factory_{this};
 };

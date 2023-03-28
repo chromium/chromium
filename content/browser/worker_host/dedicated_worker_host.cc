@@ -959,12 +959,7 @@ void DedicatedWorkerHost::DidChangeBackForwardCacheDisablingFeatures(
     // The frame may have already been closed.
     return;
   }
-  bfcache_disabling_features_.Clear();
-  for (auto& feature_details : details) {
-    bfcache_disabling_features_.Put(
-        static_cast<blink::scheduler::WebSchedulerTrackedFeature>(
-            feature_details->feature));
-  }
+  bfcache_blocking_details_ = std::move(details);
   ancestor_render_frame_host->MaybeEvictFromBackForwardCache();
 }
 
@@ -1016,7 +1011,17 @@ GlobalRenderFrameHostId DedicatedWorkerHost::GetAssociatedRenderFrameHostId()
 
 blink::scheduler::WebSchedulerTrackedFeatures
 DedicatedWorkerHost::GetBackForwardCacheDisablingFeatures() const {
-  return bfcache_disabling_features_;
+  blink::scheduler::WebSchedulerTrackedFeatures features;
+  for (auto& details : bfcache_blocking_details_) {
+    features.Put(static_cast<blink::scheduler::WebSchedulerTrackedFeature>(
+        details->feature));
+  }
+  return features;
+}
+
+const DedicatedWorkerHost::BackForwardCacheBlockingDetails&
+DedicatedWorkerHost::GetBackForwardCacheBlockingDetails() const {
+  return bfcache_blocking_details_;
 }
 
 base::WeakPtr<ServiceWorkerContainerHost>

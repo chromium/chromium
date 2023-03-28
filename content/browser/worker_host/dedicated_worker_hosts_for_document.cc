@@ -4,6 +4,7 @@
 
 #include "content/browser/worker_host/dedicated_worker_hosts_for_document.h"
 
+#include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/browser/service_worker/service_worker_container_host.h"
 #include "content/browser/worker_host/dedicated_worker_host.h"
 
@@ -31,11 +32,24 @@ void DedicatedWorkerHostsForDocument::Remove(
 
 blink::scheduler::WebSchedulerTrackedFeatures
 DedicatedWorkerHostsForDocument::GetBackForwardCacheDisablingFeatures() const {
-  blink::scheduler::WebSchedulerTrackedFeatures features;
-  for (auto worker : dedicated_workers_) {
-    features.PutAll(worker->GetBackForwardCacheDisablingFeatures());
+  RenderFrameHostImpl::BackForwardCacheDisablingFeatures features;
+  for (auto& feature_detail : GetBackForwardCacheBlockingDetails()) {
+    features.Put(static_cast<blink::scheduler::WebSchedulerTrackedFeature>(
+        feature_detail->feature));
   }
   return features;
+}
+
+DedicatedWorkerHost::BackForwardCacheBlockingDetails
+DedicatedWorkerHostsForDocument::GetBackForwardCacheBlockingDetails() const {
+  DedicatedWorkerHost::BackForwardCacheBlockingDetails combined_details;
+  for (auto worker : dedicated_workers_) {
+    auto& details_for_worker = worker->GetBackForwardCacheBlockingDetails();
+    for (auto& details : details_for_worker) {
+      combined_details.push_back(details.Clone());
+    }
+  }
+  return combined_details;
 }
 
 void DedicatedWorkerHostsForDocument::OnEnterBackForwardCache() {
