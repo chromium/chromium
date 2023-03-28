@@ -21,19 +21,22 @@ found in the LICENSE file.
         android:layout_height="wrap_content"
         android:layout_weight="1"
         android:orientation="vertical">
+
+      <!--- TODO(b/275071728): revert style to android:TextAppearance -->
       <TextView
           android:id="@+id/account_text_primary"
           android:layout_width="match_parent"
           android:layout_height="wrap_content"
           android:gravity="top"
-          android:textAppearance="@style/TextAppearance.TextLarge.Primary"
+          style="@style/TextAppearance.TextLarge.Primary"
           tools:text="John Doe"/>
+      <!--- TODO(b/275071728): revert style to android:TextAppearance -->
       <TextView
           android:id="@+id/account_text_secondary"
           android:layout_width="match_parent"
           android:layout_height="wrap_content"
           android:gravity="top"
-          android:textAppearance="@style/TextAppearance.TextMedium.Secondary"
+          style="@style/TextAppearance.TextMedium.Secondary"
           tools:text="john.doe@example.com"/>
     </LinearLayout>
 

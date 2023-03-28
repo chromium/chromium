@@ -19,6 +19,7 @@ found in the LICENSE file.
         android:importantForAccessibility="no"
         app:srcCompat="@drawable/ic_warning_red_24dp" />
 
+    <!--- TODO(b/275071728): revert style to android:TextAppearance -->
     <TextView
         android:id="@+id/account_picker_general_error_title"
         android:layout_width="match_parent"
@@ -26,9 +27,10 @@ found in the LICENSE file.
         android:layout_marginTop="12dp"
         android:layout_marginBottom="8dp"
         android:gravity="center_horizontal"
-        android:textAppearance="@style/TextAppearance.TextLarge.Primary"
+        style="@style/TextAppearance.TextLarge.Primary"
         android:text="@string/signin_account_picker_bottom_sheet_error_title" />
 
+    <!--- TODO(b/275071728): revert style to android:TextAppearance -->
     <org.chromium.ui.widget.TextViewWithLeading
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -36,7 +38,7 @@ found in the LICENSE file.
         android:layout_marginEnd="24dp"
         android:layout_marginBottom="16dp"
         android:gravity="center_horizontal"
-        android:textAppearance="@style/TextAppearance.TextMedium.Secondary"
+        style="@style/TextAppearance.TextMedium.Secondary"
         android:text="@string/signin_account_picker_general_error_subtitle"
         app:leading="@dimen/text_size_medium_leading" />
 

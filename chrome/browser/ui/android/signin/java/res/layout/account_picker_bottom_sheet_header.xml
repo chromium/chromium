@@ -16,6 +16,7 @@ found in the LICENSE file.
       android:importantForAccessibility="no"
       app:srcCompat="@drawable/chrome_sync_logo" />
 
+  <!--- TODO(b/275071728): revert style to android:TextAppearance -->
   <TextView
       android:id="@+id/account_picker_header_title"
       android:layout_width="match_parent"
@@ -23,9 +24,10 @@ found in the LICENSE file.
       android:layout_marginTop="12dp"
       android:layout_marginBottom="8dp"
       android:gravity="center_horizontal"
-      android:textAppearance="@style/TextAppearance.TextLarge.Primary"
+      style="@style/TextAppearance.TextLarge.Primary"
       android:text="@string/signin_account_picker_dialog_title" />
 
+  <!--- TODO(b/275071728): revert style to android:TextAppearance -->
   <org.chromium.ui.widget.TextViewWithLeading
       android:id="@+id/account_picker_header_subtitle"
       android:layout_width="match_parent"
@@ -35,7 +37,7 @@ found in the LICENSE file.
       android:layout_marginBottom="16dp"
       android:focusable="true"
       android:gravity="center_horizontal"
-      android:textAppearance="@style/TextAppearance.TextMedium.Secondary"
+      style="@style/TextAppearance.TextMedium.Secondary"
       android:text="@string/signin_account_picker_bottom_sheet_subtitle"
       app:leading="@dimen/text_size_medium_leading" />
 </merge>
