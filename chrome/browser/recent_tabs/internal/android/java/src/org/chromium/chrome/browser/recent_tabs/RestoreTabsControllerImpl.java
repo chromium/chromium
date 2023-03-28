@@ -13,17 +13,23 @@ public class RestoreTabsControllerImpl {
     private RestoreTabsFeatureHelper mHelper;
     private RestoreTabsCoordinator mRestoreTabsCoordinator;
 
-    public RestoreTabsControllerImpl() {
+    public RestoreTabsControllerImpl(
+            Profile profile, RestoreTabsControllerFactory.ControllerListener listener) {
         mHelper = new RestoreTabsFeatureHelperImpl();
-        mRestoreTabsCoordinator = new RestoreTabsCoordinator();
-        mRestoreTabsCoordinator.initialize();
+        mRestoreTabsCoordinator = new RestoreTabsCoordinator(profile, listener);
+    }
+
+    public void destroy() {
+        mRestoreTabsCoordinator.destroy();
+        mRestoreTabsCoordinator = null;
+        mHelper = null;
     }
 
     public RestoreTabsFeatureHelper getFeatureHelper() {
         return mHelper;
     }
 
-    public void showBottomSheet(Profile profile) {
-        mRestoreTabsCoordinator.showOptions(profile);
+    public void showBottomSheet() {
+        mRestoreTabsCoordinator.showOptions();
     }
 }

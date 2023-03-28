@@ -18,6 +18,8 @@ android_library("java") {
     "android/java/src/org/chromium/chrome/browser/recent_tabs/RestoreTabsFeatureHelperImpl.java",
     "android/java/src/org/chromium/chrome/browser/recent_tabs/RestoreTabsMediator.java",
     "android/java/src/org/chromium/chrome/browser/recent_tabs/RestoreTabsProperties.java",
+    "android/java/src/org/chromium/chrome/browser/recent_tabs/ui/ForeignSessionItemProperties.java",
+    "android/java/src/org/chromium/chrome/browser/recent_tabs/ui/RestoreTabsDetailScreenCoordinator.java",
     "android/java/src/org/chromium/chrome/browser/recent_tabs/ui/RestoreTabsPromoScreenCoordinator.java",
   ]
 
@@ -38,12 +40,15 @@ robolectric_library("junit") {
   testonly = true
 
   sources = [
+    "android/java/src/org/chromium/chrome/browser/recent_tabs/RestoreTabsCoordinatorUnitTest.java",
     "android/java/src/org/chromium/chrome/browser/recent_tabs/RestoreTabsFeatureHelperUnitTest.java",
     "android/java/src/org/chromium/chrome/browser/recent_tabs/RestoreTabsMediatorUnitTest.java",
+    "android/java/src/org/chromium/chrome/browser/recent_tabs/ui/ForeignSessionItemPropertiesUnitTest.java",
   ]
 
   deps = [
     ":java",
+    "//base:base_java_test_support",
     "//base:base_junit_test_support",
     "//base/test:test_support_java",
     "//chrome/browser/feature_engagement:java",

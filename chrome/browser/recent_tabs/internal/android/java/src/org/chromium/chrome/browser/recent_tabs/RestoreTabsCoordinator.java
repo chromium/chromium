@@ -5,27 +5,36 @@
 package org.chromium.chrome.browser.recent_tabs;
 
 import org.chromium.chrome.browser.profiles.Profile;
-import org.chromium.chrome.browser.recent_tabs.ForeignSessionHelper.ForeignSession;
 import org.chromium.ui.modelutil.PropertyModel;
-
-import java.util.List;
 
 /**
  * Coordinator to manage the Restore Tabs on FRE feature.
  */
 public class RestoreTabsCoordinator {
-    private RestoreTabsMediator mMediator = new RestoreTabsMediator();
+    private ForeignSessionHelper mForeignSessionHelper;
+    private RestoreTabsMediator mMediator;
     private PropertyModel mModel = RestoreTabsProperties.createDefaultModel();
 
-    public void initialize() {
-        mMediator.initialize(mModel);
+    public RestoreTabsCoordinator(
+            Profile profile, RestoreTabsControllerFactory.ControllerListener listener) {
+        this(new ForeignSessionHelper(profile), new RestoreTabsMediator(), listener);
     }
 
-    public void showOptions(Profile profile) {
-        ForeignSessionHelper foreignSessionHelper = new ForeignSessionHelper(profile);
-        List<ForeignSession> sessions = foreignSessionHelper.getForeignSessions();
-        foreignSessionHelper.destroy();
+    protected RestoreTabsCoordinator(ForeignSessionHelper helper, RestoreTabsMediator mediator,
+            RestoreTabsControllerFactory.ControllerListener listener) {
+        mForeignSessionHelper = helper;
+        mMediator = mediator;
+        mMediator.initialize(mModel, listener);
+    }
 
-        mMediator.showOptions(sessions);
+    public void destroy() {
+        mForeignSessionHelper.destroy();
+        mForeignSessionHelper = null;
+        mMediator.destroy();
+        mMediator = null;
+    }
+
+    public void showOptions() {
+        mMediator.showOptions(mForeignSessionHelper.getForeignSessions());
     }
 }

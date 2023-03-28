@@ -4,22 +4,27 @@
 
 package org.chromium.chrome.browser.recent_tabs;
 
-import org.chromium.base.ThreadUtils;
+import org.chromium.chrome.browser.profiles.Profile;
 
 /**
  * A factory interface for building a RestoreTabsController instance.
  */
 public class RestoreTabsControllerFactory {
-    private static RestoreTabsControllerImpl sInstance;
+    /**
+     * A listener to indicate the lifecycle status of the RestoreTabs feature.
+     */
+    public interface ControllerListener {
+        /**
+         * Action to perform when the restore tabs promo is done showing.
+         */
+        public void onDismissed();
+    }
 
     /**
-     * @return The singleton instance of RestoreTabsControllerImpl.
+     * @return An instance of RestoreTabsControllerImpl.
      */
-    public static RestoreTabsControllerImpl getInstance() {
-        ThreadUtils.assertOnUiThread();
-        if (sInstance == null) {
-            sInstance = new RestoreTabsControllerImpl();
-        }
-        return sInstance;
+    public static RestoreTabsControllerImpl createInstance(
+            Profile profile, RestoreTabsControllerFactory.ControllerListener listener) {
+        return new RestoreTabsControllerImpl(profile, listener);
     }
 }

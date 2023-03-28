@@ -17,6 +17,7 @@ android_library("java") {
     "//chrome/browser/profiles/android:java",
     "//chrome/browser/tab:java",
     "//content/public/android:content_java",
+    "//third_party/androidx:androidx_annotation_annotation_java",
     "//url:gurl_java",
   ]
 
@@ -28,6 +29,7 @@ android_library_factory("factory_java") {
 
   deps = [
     ":java",
+    "//chrome/browser/profiles/android:java",
     "//chrome/browser/recent_tabs/internal:java",
   ]
 }

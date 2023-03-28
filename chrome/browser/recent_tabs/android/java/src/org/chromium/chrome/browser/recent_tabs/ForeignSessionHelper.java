@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.recent_tabs;
 
+import androidx.annotation.VisibleForTesting;
+
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.NativeMethods;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -44,7 +46,8 @@ public class ForeignSessionHelper {
         public final long modifiedTime;
         public final List<ForeignSessionWindow> windows = new ArrayList<ForeignSessionWindow>();
 
-        protected ForeignSession(String tag, String name, long modifiedTime) {
+        @VisibleForTesting
+        public ForeignSession(String tag, String name, long modifiedTime) {
             this.tag = tag;
             this.name = name;
             this.modifiedTime = modifiedTime;
