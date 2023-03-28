@@ -167,11 +167,11 @@ ResultExpr RestrictCloneToThreadsAndEPERMFork() {
 ResultExpr RestrictPrctl() {
   // Will need to add seccomp compositing in the future. PR_SET_PTRACER is
   // used by breakpad but not needed anymore.
-  const Arg<int> option(0);
+  const Arg<int> option(0), arg(1);
   return Switch(option)
       .Cases({PR_GET_NAME, PR_SET_NAME, PR_GET_DUMPABLE, PR_SET_DUMPABLE
 #if BUILDFLAG(IS_ANDROID)
-              , PR_SET_VMA, PR_SET_PTRACER, PR_SET_TIMERSLACK
+              , PR_SET_PTRACER, PR_SET_TIMERSLACK
               , PR_GET_NO_NEW_PRIVS, PR_PAC_RESET_KEYS
 
 // Enable PR_SET_TIMERSLACK_PID, an Android custom prctl which is used in:
@@ -203,6 +203,10 @@ ResultExpr RestrictPrctl() {
 #endif  // BUILDFLAG(IS_ANDROID)
               },
              Allow())
+#if BUILDFLAG(IS_ANDROID)
+      .Cases({PR_SET_VMA},
+             If(arg == PR_SET_VMA_ANON_NAME, Allow()).Else(CrashSIGSYSPrctl()))
+#endif
       .Default(
           If(option == PR_SET_PTRACER, Error(EPERM)).Else(CrashSIGSYSPrctl()));
 }
