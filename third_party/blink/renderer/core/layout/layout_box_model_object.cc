@@ -845,8 +845,9 @@ bool LayoutBoxModelObject::UpdateStickyPositionConstraints() {
   // Skip anonymous containing blocks except for anonymous fieldset content box.
   while (sticky_container->IsAnonymous()) {
     if (sticky_container->Parent() &&
-        sticky_container->Parent()->IsLayoutNGFieldset())
+        sticky_container->Parent()->IsFieldset()) {
       break;
+    }
     sticky_container = sticky_container->ContainingBlock();
   }
 

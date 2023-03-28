@@ -11,7 +11,6 @@
 #include "third_party/blink/renderer/core/html/html_frame_set_element.h"
 #include "third_party/blink/renderer/core/layout/layout_block_flow.h"
 #include "third_party/blink/renderer/core/layout/layout_counter.h"
-#include "third_party/blink/renderer/core/layout/layout_fieldset.h"
 #include "third_party/blink/renderer/core/layout/layout_frame_set.h"
 #include "third_party/blink/renderer/core/layout/layout_inside_list_marker.h"
 #include "third_party/blink/renderer/core/layout/layout_list_item.h"
@@ -39,7 +38,6 @@
 #include "third_party/blink/renderer/core/layout/ng/inline/layout_ng_text_fragment.h"
 #include "third_party/blink/renderer/core/layout/ng/inline/layout_ng_word_break.h"
 #include "third_party/blink/renderer/core/layout/ng/layout_ng_block_flow.h"
-#include "third_party/blink/renderer/core/layout/ng/layout_ng_fieldset.h"
 #include "third_party/blink/renderer/core/layout/ng/layout_ng_frame_set.h"
 #include "third_party/blink/renderer/core/layout/ng/layout_ng_progress.h"
 #include "third_party/blink/renderer/core/layout/ng/layout_ng_ruby_as_block.h"
@@ -233,13 +231,6 @@ LayoutObject* LayoutObjectFactory::CreateCounter(
   if (force_legacy)
     new_object->SetForceLegacyLayout();
   return new_object;
-}
-
-LayoutBlock* LayoutObjectFactory::CreateFieldset(Node& node,
-                                                 const ComputedStyle& style,
-                                                 LegacyLayout legacy) {
-  return CreateObject<LayoutBlock, LayoutNGFieldset, LayoutFieldset>(node,
-                                                                     legacy);
 }
 
 LayoutBox* LayoutObjectFactory::CreateFrameSet(HTMLFrameSetElement& element,

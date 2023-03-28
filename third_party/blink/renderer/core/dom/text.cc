@@ -256,9 +256,8 @@ static inline bool CanHaveWhitespaceChildren(
     const ComputedStyle& style,
     const Text::AttachContext& context) {
   const LayoutObject& parent = *context.parent;
-  // <button> and <fieldset> should allow whitespace even though
-  // LayoutFlexibleBox doesn't.
-  if (parent.IsButton() || parent.IsFieldset()) {
+  // <button> should allow whitespace even though LayoutFlexibleBox doesn't.
+  if (parent.IsButton()) {
     return true;
   }
 

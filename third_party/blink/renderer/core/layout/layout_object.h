@@ -882,15 +882,7 @@ class CORE_EXPORT LayoutObject : public GarbageCollected<LayoutObject>,
   }
   bool IsFieldset() const {
     NOT_DESTROYED();
-    return IsOfType(kLayoutObjectFieldset);
-  }
-  bool IsLayoutNGFieldset() const {
-    NOT_DESTROYED();
     return IsOfType(kLayoutObjectNGFieldset);
-  }
-  bool IsFieldsetIncludingNG() const {
-    NOT_DESTROYED();
-    return IsFieldset() || IsLayoutNGFieldset();
   }
   bool IsFrame() const {
     NOT_DESTROYED();
@@ -3722,7 +3714,6 @@ class CORE_EXPORT LayoutObject : public GarbageCollected<LayoutObject>,
     kLayoutObjectCounter,
     kLayoutObjectCustomScrollbarPart,
     kLayoutObjectEmbeddedObject,
-    kLayoutObjectFieldset,
     kLayoutObjectFrame,
     kLayoutObjectFrameSet,
     kLayoutObjectIFrame,

@@ -119,9 +119,7 @@ class CORE_EXPORT NGLayoutInputNode {
     return To<LayoutNGOutsideListMarker>(box_.Get())->NeedsOccupyWholeLine();
   }
   bool IsButton() const { return IsBlock() && box_->IsButton(); }
-  bool IsFieldsetContainer() const {
-    return IsBlock() && box_->IsLayoutNGFieldset();
-  }
+  bool IsFieldsetContainer() const { return IsBlock() && box_->IsFieldset(); }
   bool IsInitialLetterBox() const { return box_->IsInitialLetterBox(); }
   bool IsMedia() const { return box_->IsMedia(); }
   bool IsRubyRun() const { return IsBlock() && box_->IsRubyRun(); }

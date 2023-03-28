@@ -6,7 +6,6 @@
 
 #include "third_party/blink/renderer/core/css/properties/longhands.h"
 #include "third_party/blink/renderer/core/dom/layout_tree_builder_traversal.h"
-#include "third_party/blink/renderer/core/layout/layout_fieldset.h"
 #include "third_party/blink/renderer/core/layout/layout_object_factory.h"
 
 namespace blink {
@@ -54,8 +53,7 @@ void LayoutNGFieldset::AddChild(LayoutObject* new_child,
   // >   the '::before' and '::after' pseudo-elements) of the fieldset
   // >   element except for the rendered legend, if there is one.
 
-  if (new_child->IsRenderedLegendCandidate() &&
-      !LayoutFieldset::FindInFlowLegend(*this)) {
+  if (new_child->IsRenderedLegendCandidate() && !FindInFlowLegend()) {
     LayoutNGBlockFlow::AddChild(new_child, FirstChild());
     return;
   }
@@ -180,7 +178,7 @@ bool LayoutNGFieldset::IsOfType(LayoutObjectType type) const {
 void LayoutNGFieldset::InvalidatePaint(
     const PaintInvalidatorContext& context) const {
   // Fieldset's box decoration painting depends on the legend geometry.
-  const LayoutBox* legend_box = LayoutFieldset::FindInFlowLegend(*this);
+  const LayoutBox* legend_box = FindInFlowLegend();
   if (legend_box && legend_box->ShouldCheckLayoutForPaintInvalidation()) {
     GetMutableForPainting().SetShouldDoFullPaintInvalidation(
         PaintInvalidationReason::kLayout);
@@ -192,8 +190,9 @@ bool LayoutNGFieldset::BackgroundIsKnownToBeOpaqueInRect(
     const PhysicalRect& local_rect) const {
   // If the field set has a legend, then it probably does not completely fill
   // its background.
-  if (LayoutFieldset::FindInFlowLegend(*this))
+  if (FindInFlowLegend()) {
     return false;
+  }
 
   return LayoutBlockFlow::BackgroundIsKnownToBeOpaqueInRect(local_rect);
 }
@@ -208,6 +207,18 @@ LayoutUnit LayoutNGFieldset::ScrollHeight() const {
   if (const auto* content = FindAnonymousFieldsetContentBox())
     return content->ScrollHeight();
   return LayoutNGBlockFlow::ScrollHeight();
+}
+
+// static
+LayoutBox* LayoutNGFieldset::FindInFlowLegend(const LayoutBlock& fieldset) {
+  DCHECK(fieldset.IsFieldset());
+  for (LayoutObject* legend = fieldset.FirstChild(); legend;
+       legend = legend->NextSibling()) {
+    if (legend->IsRenderedLegendCandidate()) {
+      return To<LayoutBox>(legend);
+    }
+  }
+  return nullptr;
 }
 
 }  // namespace blink

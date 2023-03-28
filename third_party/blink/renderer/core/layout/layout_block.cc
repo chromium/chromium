@@ -1047,7 +1047,7 @@ void LayoutBlock::RemovePositionedObject(LayoutBox* o) {
 
 bool LayoutBlock::IsAnonymousNGFieldsetContentWrapper() const {
   NOT_DESTROYED();
-  return Parent() && Parent()->IsLayoutNGFieldset() && IsAnonymous();
+  return Parent() && Parent()->IsFieldset() && IsAnonymous();
 }
 
 void LayoutBlock::InvalidatePaint(

@@ -4308,8 +4308,9 @@ void LayoutBlockFlow::CreateOrDestroyMultiColumnFlowThreadIfNeeded(
   // For LayoutNG, the multi-column display type will be applied to the
   // anonymous content box. Thus, the flow thread should be added to the
   // anonymous content box instead of the fieldset itself.
-  if (IsFieldsetIncludingNG())
+  if (IsFieldset()) {
     return;
+  }
 
   // Form controls are replaced content (also when implemented as a regular
   // block), and are therefore not supposed to support multicol.

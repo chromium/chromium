@@ -70,7 +70,6 @@ class LayoutObjectFactory {
   static LayoutObject* CreateCounter(PseudoElement& pseduo,
                                      const CounterContentData& counter,
                                      LegacyLayout legacy);
-  static LayoutBlock* CreateFieldset(Node&, const ComputedStyle&, LegacyLayout);
   static LayoutBox* CreateFrameSet(HTMLFrameSetElement& element,
                                    const ComputedStyle& style,
                                    LegacyLayout legacy);

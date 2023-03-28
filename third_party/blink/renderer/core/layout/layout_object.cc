@@ -75,7 +75,6 @@
 #include "third_party/blink/renderer/core/layout/layout_counter.h"
 #include "third_party/blink/renderer/core/layout/layout_custom_scrollbar_part.h"
 #include "third_party/blink/renderer/core/layout/layout_embedded_content.h"
-#include "third_party/blink/renderer/core/layout/layout_fieldset.h"
 #include "third_party/blink/renderer/core/layout/layout_flow_thread.h"
 #include "third_party/blink/renderer/core/layout/layout_image.h"
 #include "third_party/blink/renderer/core/layout/layout_image_resource_style_image.h"
@@ -94,6 +93,7 @@
 #include "third_party/blink/renderer/core/layout/ng/flex/layout_ng_flexible_box.h"
 #include "third_party/blink/renderer/core/layout/ng/inline/layout_ng_text_combine.h"
 #include "third_party/blink/renderer/core/layout/ng/layout_ng_block_flow.h"
+#include "third_party/blink/renderer/core/layout/ng/layout_ng_fieldset.h"
 #include "third_party/blink/renderer/core/layout/ng/list/layout_ng_list_item.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_block_node.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_layout_result.h"
@@ -800,7 +800,7 @@ bool LayoutObject::IsRenderedLegendInternal() const {
 
   const auto* parent_layout_block = DynamicTo<LayoutBlock>(parent);
   return parent_layout_block && IsA<HTMLFieldSetElement>(parent->GetNode()) &&
-         LayoutFieldset::FindInFlowLegend(*parent_layout_block) == this;
+         LayoutNGFieldset::FindInFlowLegend(*parent_layout_block) == this;
 }
 
 bool LayoutObject::IsListMarkerForSummary() const {
@@ -1790,7 +1790,7 @@ bool LayoutObject::ComputeIsFixedContainer(const ComputedStyle* style) const {
 
   // crbug.com/1153042: If <fieldset> is a fixed container, its anonymous
   // content box should be a fixed container.
-  if (IsAnonymous() && Parent() && Parent()->IsLayoutNGFieldset() &&
+  if (IsAnonymous() && Parent() && Parent()->IsFieldset() &&
       Parent()->CanContainFixedPositionObjects()) {
     return true;
   }
@@ -1823,7 +1823,7 @@ bool LayoutObject::ComputeIsAbsoluteContainer(
          ComputeIsFixedContainer(style) ||
          // crbug.com/1153042: If <fieldset> is an absolute container, its
          // anonymous content box should be an absolute container.
-         (IsAnonymous() && Parent() && Parent()->IsLayoutNGFieldset() &&
+         (IsAnonymous() && Parent() && Parent()->IsFieldset() &&
           Parent()->StyleRef().CanContainAbsolutePositionObjects());
 }
 
@@ -3948,8 +3948,9 @@ void LayoutObject::DestroyAndCleanupAnonymousWrappers(
       break;
     // The anonymous fieldset contents wrapper should be kept.
     if (destroy_root_parent->Parent() &&
-        destroy_root_parent->Parent()->IsLayoutNGFieldset())
+        destroy_root_parent->Parent()->IsFieldset()) {
       break;
+    }
     // RubyBase should be kept if RubyText exists
     if (destroy_root_parent->IsRubyBase()) {
       auto* ruby_run = DynamicTo<LayoutRubyRun>(destroy_root_parent->Parent());

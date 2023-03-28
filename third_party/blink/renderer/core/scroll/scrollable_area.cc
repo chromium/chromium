@@ -866,8 +866,9 @@ ScrollableArea::GetCompositorTaskRunner() {
 Node* ScrollableArea::EventTargetNode() const {
   const LayoutBox* box = GetLayoutBox();
   Node* node = box->GetNode();
-  if (!node && box->Parent() && box->Parent()->IsLayoutNGFieldset())
+  if (!node && box->Parent() && box->Parent()->IsFieldset()) {
     node = box->Parent()->GetNode();
+  }
   if (node && IsA<Element>(node)) {
     const LayoutBox* layout_box_for_scrolling =
         To<Element>(node)->GetLayoutBoxForScrolling();

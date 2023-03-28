@@ -50,8 +50,6 @@ blink_core_sources_paint = [
   "embedded_content_painter.h",
   "embedded_object_painter.cc",
   "embedded_object_painter.h",
-  "fieldset_painter.cc",
-  "fieldset_painter.h",
   "fieldset_paint_info.cc",
   "fieldset_paint_info.h",
   "filter_effect_builder.cc",

@@ -29,6 +29,12 @@ class CORE_EXPORT LayoutNGFieldset final : public LayoutNGBlockFlow {
 
   LayoutBlock* FindAnonymousFieldsetContentBox() const;
 
+  static LayoutBox* FindInFlowLegend(const LayoutBlock& fieldset);
+  LayoutBox* FindInFlowLegend() const {
+    NOT_DESTROYED();
+    return FindInFlowLegend(*this);
+  }
+
  protected:
   bool IsOfType(LayoutObjectType) const override;
   void InsertedIntoTree() override;
@@ -50,7 +56,7 @@ class CORE_EXPORT LayoutNGFieldset final : public LayoutNGBlockFlow {
 template <>
 struct DowncastTraits<LayoutNGFieldset> {
   static bool AllowFrom(const LayoutObject& object) {
-    return object.IsLayoutNGFieldset();
+    return object.IsFieldset();
   }
 };
 
