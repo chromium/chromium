@@ -8,32 +8,23 @@
 #include <utility>
 #include <vector>
 
-#include "ash/constants/ash_features.h"
 #include "ash/constants/ash_switches.h"
 #include "ash/public/cpp/wallpaper/online_wallpaper_params.h"
-#include "ash/public/cpp/wallpaper/online_wallpaper_variant.h"
 #include "ash/public/cpp/wallpaper/wallpaper_controller.h"
 #include "ash/webui/personalization_app/mojom/personalization_app.mojom.h"
 #include "ash/webui/personalization_app/personalization_app_url_constants.h"
 #include "ash/webui/personalization_app/proto/backdrop_wallpaper.pb.h"
 #include "ash/webui/system_apps/public/system_web_app_type.h"
 #include "base/command_line.h"
-#include "base/files/file_util.h"
 #include "base/functional/bind.h"
 #include "base/hash/hash.h"
 #include "base/hash/sha1.h"
-#include "base/json/json_reader.h"
-#include "base/memory/scoped_refptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/path_service.h"
 #include "base/rand_util.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/task/sequenced_task_runner.h"
-#include "base/task/thread_pool.h"
-#include "base/unguessable_token.h"
-#include "base/values.h"
-#include "chrome/browser/apps/app_service/app_launch_params.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/apps/app_service/launch_utils.h"
@@ -52,24 +43,17 @@
 #include "chrome/browser/ui/ash/system_web_apps/system_web_app_ui_utils.h"
 #include "chrome/browser/ui/webui/settings/ash/pref_names.h"
 #include "chrome/common/chrome_paths.h"
-#include "chrome/common/extensions/extension_constants.h"
 #include "chrome/common/pref_names.h"
 #include "chromeos/ash/components/cryptohome/system_salt_getter.h"
 #include "chromeos/ash/components/settings/cros_settings_names.h"
 #include "components/account_id/account_id.h"
 #include "components/prefs/pref_service.h"
 #include "components/services/app_service/public/cpp/app_launch_util.h"
-#include "components/services/app_service/public/cpp/app_types.h"
 #include "components/session_manager/core/session_manager.h"
-#include "components/signin/public/identity_manager/access_token_info.h"
-#include "components/signin/public/identity_manager/primary_account_access_token_fetcher.h"
-#include "components/sync/base/pref_names.h"
 #include "components/sync/driver/sync_service.h"
 #include "components/sync/driver/sync_user_settings.h"
 #include "components/user_manager/known_user.h"
 #include "components/user_manager/user_manager.h"
-#include "google_apis/gaia/gaia_constants.h"
-#include "google_apis/gaia/google_service_auth_error.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/display/screen.h"
 #include "url/gurl.h"
@@ -610,17 +594,8 @@ void WallpaperControllerClientImpl::FetchDailyGooglePhotosPhoto(
 void WallpaperControllerClientImpl::FetchGooglePhotosAccessToken(
     const AccountId& account_id,
     FetchGooglePhotosAccessTokenCallback callback) {
-  Profile* profile = ProfileHelper::Get()->GetProfileByAccountId(account_id);
-  auto fetcher = std::make_unique<signin::PrimaryAccountAccessTokenFetcher>(
-      "wallpaper_controller_client",
-      IdentityManagerFactory::GetForProfile(profile),
-      signin::ScopeSet({GaiaConstants::kPhotosModuleImageOAuth2Scope}),
-      signin::PrimaryAccountAccessTokenFetcher::Mode::kImmediate,
-      signin::ConsentLevel::kSignin);
-  auto* fetcher_ptr = fetcher.get();
-  fetcher_ptr->Start(base::BindOnce(
-      &WallpaperControllerClientImpl::OnGooglePhotosTokenFetched,
-      weak_factory_.GetWeakPtr(), std::move(callback), std::move(fetcher)));
+  wallpaper_fetcher_delegate_->FetchGooglePhotosAccessToken(
+      account_id, std::move(callback));
 }
 
 bool WallpaperControllerClientImpl::ShouldShowUserNamesOnLogin() const {
@@ -731,21 +706,6 @@ void WallpaperControllerClientImpl::OnGooglePhotosDailyAlbumFetched(
   DCHECK(success);
   std::move(callback).Run(std::move(selected),
                           /*success=*/true);
-}
-
-void WallpaperControllerClientImpl::OnGooglePhotosTokenFetched(
-    FetchGooglePhotosAccessTokenCallback callback,
-    std::unique_ptr<signin::PrimaryAccountAccessTokenFetcher> fetcher,
-    GoogleServiceAuthError error,
-    signin::AccessTokenInfo access_token_info) {
-  if (error.state() != GoogleServiceAuthError::NONE) {
-    LOG(ERROR) << "Failed to fetch auth token to download Google Photos photo:"
-               << error.error_message();
-    std::move(callback).Run(absl::nullopt);
-    return;
-  }
-  std::move(callback).Run(access_token_info.token);
-  return;
 }
 
 void WallpaperControllerClientImpl::ObserveVolumeManagerForAccountId(

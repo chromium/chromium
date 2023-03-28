@@ -7,6 +7,7 @@
 #include <memory>
 #include <string>
 
+#include "base/task/sequenced_task_runner.h"
 #include "chrome/browser/ash/wallpaper_handlers/mock_wallpaper_handlers.h"
 #include "chrome/browser/ash/wallpaper_handlers/wallpaper_handlers.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -56,6 +57,15 @@ TestWallpaperFetcherDelegate::CreateGooglePhotosPhotosFetcher(
     Profile* profile) const {
   return std::make_unique<testing::NiceMock<MockGooglePhotosPhotosFetcher>>(
       profile);
+}
+
+void TestWallpaperFetcherDelegate::FetchGooglePhotosAccessToken(
+    const AccountId& account_id,
+    ash::WallpaperControllerClient::FetchGooglePhotosAccessTokenCallback
+        callback) const {
+  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE,
+      base::BindOnce(std::move(callback), "fake_google_photos_access_token"));
 }
 
 }  // namespace wallpaper_handlers

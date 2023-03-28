@@ -38,6 +38,10 @@ class TestWallpaperFetcherDelegate : public WallpaperFetcherDelegate {
       Profile* profile) const override;
   std::unique_ptr<GooglePhotosPhotosFetcher> CreateGooglePhotosPhotosFetcher(
       Profile* profile) const override;
+  void FetchGooglePhotosAccessToken(
+      const AccountId& account_id,
+      ash::WallpaperControllerClient::FetchGooglePhotosAccessTokenCallback
+          callback) const override;
 };
 
 }  // namespace wallpaper_handlers

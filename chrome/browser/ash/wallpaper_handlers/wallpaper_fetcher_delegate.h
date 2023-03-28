@@ -8,7 +8,10 @@
 #include <memory>
 #include <string>
 
+#include "ash/public/cpp/wallpaper/wallpaper_controller_client.h"
 #include "chrome/browser/profiles/profile.h"
+
+class AccountId;
 
 namespace wallpaper_handlers {
 
@@ -42,6 +45,11 @@ class WallpaperFetcherDelegate {
 
   virtual std::unique_ptr<GooglePhotosPhotosFetcher>
   CreateGooglePhotosPhotosFetcher(Profile* profile) const = 0;
+
+  virtual void FetchGooglePhotosAccessToken(
+      const AccountId& account_id,
+      ash::WallpaperControllerClient::FetchGooglePhotosAccessTokenCallback
+          callback) const = 0;
 };
 
 class WallpaperFetcherDelegateImpl : public WallpaperFetcherDelegate {
@@ -72,6 +80,11 @@ class WallpaperFetcherDelegateImpl : public WallpaperFetcherDelegate {
 
   std::unique_ptr<GooglePhotosPhotosFetcher> CreateGooglePhotosPhotosFetcher(
       Profile* profile) const override;
+
+  void FetchGooglePhotosAccessToken(
+      const AccountId& account_id,
+      ash::WallpaperControllerClient::FetchGooglePhotosAccessTokenCallback
+          callback) const override;
 };
 
 }  // namespace wallpaper_handlers
