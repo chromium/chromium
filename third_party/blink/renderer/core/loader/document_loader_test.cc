@@ -583,7 +583,7 @@ TEST_P(DocumentLoaderTest, SameOriginNavigation_WithStorageAccess) {
       WebNavigationParams::CreateWithHTMLBufferForTesting(
           SharedBuffer::Create(), same_origin_url);
   params->requestor_origin = WebSecurityOrigin::Create(WebURL(requestor_url));
-  params->has_storage_access = true;
+  params->load_with_storage_access = true;
   LocalFrame* local_frame =
       To<LocalFrame>(web_view_impl->GetPage()->MainFrame());
   base::HistogramTester histogram_tester;

@@ -815,7 +815,7 @@ class CORE_EXPORT DocumentLoader : public GarbageCollected<DocumentLoader>,
 
   // Indicates whether the document should be loaded with its has_storage_access
   // bit set.
-  const bool has_storage_access_;
+  const bool load_with_storage_access_;
 
   // Only container-initiated navigations (e.g. iframe change src) report
   // their resource timing to the parent.

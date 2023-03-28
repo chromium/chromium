@@ -171,6 +171,13 @@ struct BeginNavigationParams {
   // True if the initiator requested the tab become fullscreen after navigation.
   // See: https://chromestatus.com/feature/6002307972464640
   bool is_fullscreen_requested = false;
+
+  // Whether this navigation can include cookies via the Storage Access API,
+  // according to the renderer. Note that this is not trusted; cookies will not
+  // actually be attached unless there is also a matching permission grant
+  // created by the browser process. (Also note that the Storage Access API is
+  // only relevant when third-party cookies are blocked.)
+  bool has_storage_access = false;
 };
 
 // Provided by the browser or the renderer -------------------------------------
@@ -277,11 +284,6 @@ struct CommonNavigationParams {
   network.mojom.RequestDestination request_destination =
       network.mojom.RequestDestination.kEmpty;
 
-  // Indicates whether the target document of this navigation should load with
-  // the `has_storage_access` bit set. When this is sent from the renderer to
-  // the browser, it is a suggestion that the browser will validate - and
-  // possibly override, during the navigation for the next document.
-  bool has_storage_access = false;
 };
 
 // Provided by the browser -----------------------------------------------------
@@ -587,4 +589,8 @@ struct CommitNavigationParams {
   // served from back/forward cache if applicable. This is only sent for
   // cross-document main frame history navigations.
   blink.mojom.BackForwardCacheNotRestoredReasons? not_restored_reasons;
+
+  // Indicates whether the target document of this navigation should load with
+  // the `has_storage_access` bit set.
+  bool load_with_storage_access = false;
 };

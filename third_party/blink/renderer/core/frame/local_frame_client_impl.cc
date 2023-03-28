@@ -583,18 +583,13 @@ void LocalFrameClientImpl::BeginNavigation(
   navigation_info->impression = impression;
   navigation_info->is_fullscreen_requested = is_fullscreen_requested;
 
-  // Propagate `has_storage_access` to the next document under certain
-  // circumstances. This corresponds to the "snapshotting source snapshot
-  // params" change and some of the "create navigation params by fetching"
-  // changes in the Storage Access API spec:
-  // https://privacycg.github.io/storage-access/#navigation
+  // Allow cookie access via Storage Access API during the navigation, if the
+  // initiator has obtained storage access. Note that the network service still
+  // applies cookie semantics and user settings, and that this bool is not
+  // trusted by the browser process. (The Storage Access API is only relevant
+  // when third-party cookies are blocked.)
   navigation_info->has_storage_access =
-      origin_window && origin_window->HasStorageAccess() &&
-      navigation_info->initiator_frame_token.has_value() &&
-      navigation_info->initiator_frame_token.value() ==
-          web_frame_->GetLocalFrameToken() &&
-      web_frame_->GetSecurityOrigin().IsSameOriginWith(
-          WebSecurityOrigin::Create(navigation_info->url_request.Url()));
+      origin_window && origin_window->HasStorageAccess();
 
   // Can be null.
   LocalFrame* local_parent_frame = GetLocalParentFrame(web_frame_);

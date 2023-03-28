@@ -600,7 +600,7 @@ blink::mojom::CommonNavigationParamsPtr MakeCommonNavigationParams(
       info->should_check_main_world_content_security_policy,
       initiator_origin_trial_features, info->href_translate.Latin1(),
       is_history_navigation_in_new_child_frame, info->input_start,
-      request_destination, info->has_storage_access);
+      request_destination);
 }
 
 WebFrameLoadType NavigationTypeToLoadType(
@@ -2786,7 +2786,8 @@ void RenderFrameImpl::CommitNavigationWithParams(
   navigation_params->frame_load_type = load_type;
   navigation_params->history_item = item_for_history_navigation;
 
-  navigation_params->has_storage_access = common_params->has_storage_access;
+  navigation_params->load_with_storage_access =
+      commit_params->load_with_storage_access;
 
   if (!container_info) {
     // An empty network provider will always be created since it is expected in
@@ -5798,7 +5799,7 @@ void RenderFrameImpl::BeginNavigationInternal(
           info->impression, renderer_before_unload_start,
           renderer_before_unload_end, web_bundle_token_params,
           initiator_activation_and_ad_status, info->is_container_initiated,
-          info->is_fullscreen_requested);
+          info->is_fullscreen_requested, info->has_storage_access);
 
   mojo::PendingAssociatedRemote<mojom::NavigationClient>
       navigation_client_remote;

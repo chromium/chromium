@@ -871,8 +871,7 @@ NavigationEntryImpl::ConstructCommonNavigationParams(
       has_user_gesture(), false /* has_text_fragment_token */,
       network::mojom::CSPDisposition::CHECK, std::vector<int>(), std::string(),
       false /* is_history_navigation_in_new_child_frame */, input_start,
-      network::mojom::RequestDestination::kEmpty,
-      false /* has_storage_access */);
+      network::mojom::RequestDestination::kEmpty);
 }
 
 blink::mojom::CommitNavigationParamsPtr
@@ -955,7 +954,8 @@ NavigationEntryImpl::ConstructCommitNavigationParams(
           /*modified_runtime_features=*/
           base::flat_map<::blink::mojom::RuntimeFeatureState, bool>(),
           /*fenced_frame_properties=*/absl::nullopt,
-          /*not_restored_reasons=*/nullptr);
+          /*not_restored_reasons=*/nullptr,
+          /*load_with_storage_access=*/false);
 #if BUILDFLAG(IS_ANDROID)
   // `data_url_as_string` is saved in NavigationEntry but should only be used by
   // main frames, because loadData* navigations can only happen on the main

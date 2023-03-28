@@ -534,7 +534,7 @@ struct BLINK_EXPORT WebNavigationParams {
       modified_runtime_features;
 
   // Whether the document should be loaded with the has_storage_access bit set.
-  bool has_storage_access = false;
+  bool load_with_storage_access = false;
 };
 
 }  // namespace blink

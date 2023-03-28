@@ -239,7 +239,8 @@ class NavigationURLLoaderImplTest : public testing::Test {
             blink::mojom::NavigationInitiatorActivationAndAdStatus::
                 kDidNotStartWithTransientActivation,
             false /* is_container_initiated */,
-            false /* is_fullscreen_requested */);
+            false /* is_fullscreen_requested */,
+            false /* has_storage_access */);
 
     auto common_params = blink::CreateCommonNavigationParams();
     common_params->url = url;
