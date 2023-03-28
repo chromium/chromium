@@ -47,7 +47,6 @@
 #include "components/strings/grit/components_strings.h"
 #include "ios/web/common/url_scheme_util.h"
 #include "ios/web/public/js_messaging/web_frame.h"
-#include "ios/web/public/js_messaging/web_frame_util.h"
 #import "ios/web/public/js_messaging/web_frames_manager.h"
 #include "ios/web/public/navigation/navigation_context.h"
 #import "ios/web/public/web_state.h"
@@ -260,10 +259,14 @@ BOOL canProcessCrossOriginIframes() {
     UniqueIDDataTabHelper* uniqueIDDataTabHelper =
         UniqueIDDataTabHelper::FromWebState(_webState);
     uint32_t maxUniqueID = uniqueIDDataTabHelper->GetNextAvailableRendererID();
+    password_manager::PasswordManagerJavaScriptFeature* feature =
+        password_manager::PasswordManagerJavaScriptFeature::GetInstance();
+    web::WebFrame* mainFrame =
+        feature->GetWebFramesManager(_webState)->GetMainWebFrame();
     [self didFinishPasswordFormExtraction:std::vector<FormData>()
                           withMaxUniqueID:maxUniqueID
                     triggeredByFormChange:false
-                                  inFrame:web::GetMainFrame(_webState)];
+                                  inFrame:mainFrame];
   }
 }
 

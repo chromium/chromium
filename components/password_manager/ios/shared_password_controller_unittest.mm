@@ -25,6 +25,7 @@
 #import "components/password_manager/ios/password_controller_driver_helper.h"
 #import "components/password_manager/ios/password_form_helper.h"
 #import "components/password_manager/ios/password_manager_ios_util.h"
+#import "components/password_manager/ios/password_manager_java_script_feature.h"
 #import "components/password_manager/ios/password_suggestion_helper.h"
 #import "components/password_manager/ios/shared_password_controller+private.h"
 #include "components/password_manager/ios/test_helpers.h"
@@ -169,7 +170,11 @@ class SharedPasswordControllerTest : public PlatformTest {
 
     auto web_frames_manager = std::make_unique<web::FakeWebFramesManager>();
     web_frames_manager_ = web_frames_manager.get();
-    web_state_.SetWebFramesManager(std::move(web_frames_manager));
+    web::ContentWorld content_world =
+        PasswordManagerJavaScriptFeature::GetInstance()
+            ->GetSupportedContentWorld();
+    web_state_.SetWebFramesManager(content_world,
+                                   std::move(web_frames_manager));
 
     web_state_.SetCurrentURL(GURL(kTestURL));
   }
@@ -813,7 +818,11 @@ class SharedPasswordControllerTestWithRealSuggestionHelper
 
     auto web_frames_manager = std::make_unique<web::FakeWebFramesManager>();
     web_frames_manager_ = web_frames_manager.get();
-    web_state_.SetWebFramesManager(std::move(web_frames_manager));
+    web::ContentWorld content_world =
+        PasswordManagerJavaScriptFeature::GetInstance()
+            ->GetSupportedContentWorld();
+    web_state_.SetWebFramesManager(content_world,
+                                   std::move(web_frames_manager));
 
     web_state_.SetCurrentURL(GURL(kTestURL));
   }
