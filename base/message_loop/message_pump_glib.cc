@@ -162,10 +162,14 @@ GSourceFuncs g_fd_watch_source_funcs = {
 }  // namespace
 
 struct MessagePumpGlib::RunState {
-  raw_ptr<Delegate> delegate;
+  explicit RunState(raw_ptr<Delegate> delegate) : delegate(delegate) {
+    CHECK(delegate);
+  }
+
+  const raw_ptr<Delegate> delegate;
 
   // Used to flag that the current Run() invocation should return ASAP.
-  bool should_quit;
+  bool should_quit = false;
 
   // The information of the next task available at this run-level. Stored in
   // RunState because different set of tasks can be accessible at various
@@ -371,9 +375,7 @@ void MessagePumpGlib::HandleDispatch() {
 }
 
 void MessagePumpGlib::Run(Delegate* delegate) {
-  RunState state;
-  state.delegate = delegate;
-  state.should_quit = false;
+  RunState state(delegate);
 
   RunState* previous_state = state_;
   state_ = &state;
