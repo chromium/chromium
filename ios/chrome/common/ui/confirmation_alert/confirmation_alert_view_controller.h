@@ -25,6 +25,7 @@ extern NSString* const kConfirmationAlertSecondaryActionAccessibilityIdentifier;
 // Setting those properties will make those buttons be added to the view
 // controller.
 @interface ConfirmationAlertViewController : UIViewController
+
 // The navigation bar title view. Nil if not needed. If needed, must be set
 // before the view is loaded.
 @property(nonatomic, strong) UIView* titleView;
@@ -99,6 +100,13 @@ extern NSString* const kConfirmationAlertSecondaryActionAccessibilityIdentifier;
 
 // The action handler for interactions in this View Controller.
 @property(nonatomic, weak) id<ConfirmationAlertActionHandler> actionHandler;
+
+// Designated initializer.
+- (instancetype)init NS_DESIGNATED_INITIALIZER;
+
+- (instancetype)initWithCoder:(NSCoder*)coder NS_UNAVAILABLE;
+- (instancetype)initWithNibName:(NSString*)name
+                         bundle:(NSBundle*)bundle NS_UNAVAILABLE;
 
 // Can be overridden by subclasses to customize the secondary title, e.g. set a
 // different style, or a UITextViewDelegate. The default implementation does

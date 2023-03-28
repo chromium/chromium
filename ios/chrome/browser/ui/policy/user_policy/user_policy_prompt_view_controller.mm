@@ -25,7 +25,7 @@ constexpr CGFloat kCustomSpacingAfterImageIOS15 = 1;
 @implementation UserPolicyPromptViewController
 
 - (instancetype)initWithManagedDomain:(NSString*)managedDomain {
-  if (self = [super initWithNibName:nil bundle:nil]) {
+  if (self = [super init]) {
     self.titleString =
         l10n_util::GetNSString(IDS_IOS_USER_POLICY_NOTIFICATION_TITLE);
     self.subtitleString =

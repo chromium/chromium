@@ -89,7 +89,7 @@ const CGFloat kFaviconBadgeSideLength = 24;
 #pragma mark - Public
 
 - (instancetype)init {
-  self = [super init];
+  self = [super initWithNibName:nil bundle:nil];
   if (self) {
     _customSpacingAfterImage = kStackViewSpacingAfterIllustration;
     _showDismissBarButton = YES;

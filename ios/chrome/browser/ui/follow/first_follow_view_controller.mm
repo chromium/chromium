@@ -35,7 +35,7 @@ constexpr CGFloat customSpacingAfterImage = 24;
 - (instancetype)initWithTitle:(NSString*)title
                        active:(BOOL)active
                 faviconSource:(FirstFollowFaviconSource)faviconSource {
-  if ((self = [super initWithNibName:nil bundle:nil])) {
+  if ((self = [super init])) {
     _webSiteTitle = base::SysNSStringToUTF16(title);
     _webSiteHasActiveContent = active;
     _faviconSource = faviconSource;

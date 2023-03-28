@@ -27,7 +27,7 @@
 
 - (instancetype)initWithActionHandler:
     (id<PasswordsAccountStorageNoticeActionHandler>)actionHandler {
-  self = [super initWithNibName:nil bundle:nil];
+  self = [super init];
   if (!self) {
     return nil;
   }

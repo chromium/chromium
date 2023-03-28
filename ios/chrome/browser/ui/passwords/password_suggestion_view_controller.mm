@@ -38,7 +38,7 @@ constexpr CGFloat customSpacingAfterImage = 1;
 
 - (instancetype)initWithPasswordSuggestion:(NSString*)passwordSuggestion
                                  userEmail:(NSString*)userEmail {
-  if (self = [super initWithNibName:nil bundle:nil]) {
+  if (self = [super init]) {
     _userEmail = userEmail;
     _passwordSuggestion = passwordSuggestion;
   }
