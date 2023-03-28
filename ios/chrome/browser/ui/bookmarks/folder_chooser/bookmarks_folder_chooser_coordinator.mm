@@ -103,7 +103,7 @@
   DCHECK(folder);
   DCHECK(folder->is_folder());
   _selectedFolder = folder;
-  _mediator.selectedFolder = _selectedFolder;
+  _mediator.selectedFolderNode = _selectedFolder;
 }
 
 #pragma mark - ChromeCoordinator
@@ -123,7 +123,7 @@
                                 browserState)];
   _hiddenNodes.clear();
   _mediator.delegate = self;
-  _mediator.selectedFolder = _selectedFolder;
+  _mediator.selectedFolderNode = _selectedFolder;
   _viewController = [[BookmarksFolderChooserViewController alloc]
       initWithAllowsCancel:!_baseNavigationController
           allowsNewFolders:_allowsNewFolders];
@@ -188,15 +188,16 @@
 
 #pragma mark - BookmarksFolderChooserViewControllerPresentationDelegate
 
-- (void)showBookmarksFolderEditorWithParentFolder:
-    (const bookmarks::BookmarkNode*)parent {
+- (void)showBookmarksFolderEditorWithParentFolderNode:
+    (const bookmarks::BookmarkNode*)parentNode {
   DCHECK(!_folderEditorCoordinator);
+  DCHECK(parentNode);
   _folderEditorCoordinator = [[BookmarksFolderEditorCoordinator alloc]
       initWithBaseNavigationController:(_baseNavigationController
                                             ? _baseNavigationController
                                             : _navigationController)
                                browser:self.browser
-                      parentFolderNode:parent];
+                      parentFolderNode:parentNode];
   _folderEditorCoordinator.delegate = self;
   [_folderEditorCoordinator start];
 }

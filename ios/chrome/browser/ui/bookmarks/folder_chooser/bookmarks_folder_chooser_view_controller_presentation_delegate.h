@@ -19,8 +19,8 @@ class BookmarkNode;
 // (shown only if `allowsNewFolders` is true).
 // `parent` is used as the parent folder inside which a new folder will be
 // created.
-- (void)showBookmarksFolderEditorWithParentFolder:
-    (const bookmarks::BookmarkNode*)parent;
+- (void)showBookmarksFolderEditorWithParentFolderNode:
+    (const bookmarks::BookmarkNode*)parentNode;
 // Called when a bookmark folder is selected. `folder` is the newly selected
 // folder.
 - (void)bookmarksFolderChooserViewController:

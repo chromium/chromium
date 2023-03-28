@@ -138,9 +138,8 @@ using bookmarks::BookmarkNode;
         NSInteger itemType =
             [self.tableViewModel itemTypeForIndexPath:indexPath];
         if (itemType == ItemTypeCreateNewFolder) {
-          [self.delegate
-              showBookmarksFolderEditorWithParentFolder:[_dataSource
-                                                            selectedFolder]];
+          [self.delegate showBookmarksFolderEditorWithParentFolderNode:
+                             [_dataSource selectedFolderNode]];
           return;
         }
         // If new folders are allowed, we need to offset by 1 to get
@@ -148,7 +147,7 @@ using bookmarks::BookmarkNode;
         folderIndex--;
       }
       const BookmarkNode* folder = _folders[folderIndex];
-      [_mutator setSelectedFolder:folder];
+      [_mutator setSelectedFolderNode:folder];
       [self delayedNotifyDelegateOfSelection];
       break;
     }
@@ -168,7 +167,7 @@ using bookmarks::BookmarkNode;
       base::UserMetricsAction("MobileBookmarksFolderChooserDone"));
   [self.delegate
       bookmarksFolderChooserViewController:self
-                       didFinishWithFolder:[_dataSource selectedFolder]];
+                       didFinishWithFolder:[_dataSource selectedFolderNode]];
 }
 
 - (void)cancel:(id)sender {
@@ -206,8 +205,9 @@ using bookmarks::BookmarkNode;
   }
 
   // Add Folders entries.
-  _folders = [_dataSource visibleFolders];
-  const BookmarkNode* rootFolder = [_dataSource rootFolder];
+  _folders = [_dataSource.profileDataSource visibleFolderNodes];
+  const BookmarkNode* rootFolder =
+      [_dataSource.profileDataSource rootFolderNode];
   for (NSUInteger row = 0; row < _folders.size(); row++) {
     const BookmarkNode* folderNode = _folders[row];
     TableViewBookmarksFolderItem* folderItem =
@@ -215,7 +215,7 @@ using bookmarks::BookmarkNode;
             initWithType:ItemTypeBookmarkFolder
                    style:BookmarksFolderStyleFolderEntry];
     folderItem.title = bookmark_utils_ios::TitleForBookmarkNode(folderNode);
-    folderItem.currentFolder = ([_dataSource selectedFolder] == folderNode);
+    folderItem.currentFolder = ([_dataSource selectedFolderNode] == folderNode);
     folderItem.shouldDisplayCloudSlashIcon =
         [_dataSource shouldDisplayCloudIconForProfileBookmarks];
 

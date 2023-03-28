@@ -31,7 +31,7 @@ class SyncService;
 @property(nonatomic, weak) id<BookmarksFolderChooserConsumer> consumer;
 @property(nonatomic, weak) id<BookmarksFolderChooserMediatorDelegate> delegate;
 // The currently selected folder.
-@property(nonatomic, assign) const bookmarks::BookmarkNode* selectedFolder;
+@property(nonatomic, assign) const bookmarks::BookmarkNode* selectedFolderNode;
 
 // Initialize the mediator with a bookmark model.
 // `bookmarkModel` must not be `nullptr` and must be loaded.

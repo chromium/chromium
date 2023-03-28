@@ -17,7 +17,7 @@ class BookmarkNode;
 
 // TODO(crbug.com/1405746): Change parameter signature. View controller should
 // not know about BookmarkNode.
-- (void)setSelectedFolder:(const bookmarks::BookmarkNode*)folder;
+- (void)setSelectedFolderNode:(const bookmarks::BookmarkNode*)folderNode;
 
 @end
 
