@@ -13,10 +13,12 @@
 #include "base/files/file_path.h"
 #include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
+#include "base/scoped_observation.h"
 #include "base/task/cancelable_task_tracker.h"
 #include "base/task/sequenced_task_runner.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/apps/app_service/app_icon/app_icon_factory.h"
+#include "chrome/browser/profiles/profile_observer.h"
 #include "components/services/app_service/public/cpp/icon_types.h"
 #include "extensions/common/constants.h"
 #include "ui/gfx/image/image_skia.h"
@@ -71,19 +73,22 @@ struct AdaptiveIconPaths {
 // * Allow easy additions to the icon loader if necessary (like new effects or
 // backups).
 // Must be created & run from the UI thread.
-class AppIconLoader : public base::RefCounted<AppIconLoader> {
+class AppIconLoader : public base::RefCounted<AppIconLoader>,
+                      public ProfileObserver {
  public:
   static const int kFaviconFallbackImagePx =
       extension_misc::EXTENSION_ICON_BITTY;
 
-  AppIconLoader(IconType icon_type,
+  AppIconLoader(Profile* profile,
+                IconType icon_type,
                 int size_hint_in_dip,
                 bool is_placeholder_icon,
                 apps::IconEffects icon_effects,
                 int fallback_icon_resource,
                 LoadIconCallback callback);
 
-  AppIconLoader(IconType icon_type,
+  AppIconLoader(Profile* profile,
+                IconType icon_type,
                 int size_hint_in_dip,
                 bool is_placeholder_icon,
                 apps::IconEffects icon_effects,
@@ -106,8 +111,7 @@ class AppIconLoader : public base::RefCounted<AppIconLoader> {
 
   void LoadWebAppIcon(const std::string& web_app_id,
                       const GURL& launch_url,
-                      web_app::WebAppIconManager& icon_manager,
-                      Profile* profile);
+                      web_app::WebAppIconManager& icon_manager);
 
   void LoadExtensionIcon(const extensions::Extension* extension,
                          content::BrowserContext* context);
@@ -156,15 +160,14 @@ class AppIconLoader : public base::RefCounted<AppIconLoader> {
 
   // Requests a compressed icon data with `scale_factor` for a Guest OS app
   // identified by `app_id`.
-  void GetGuestOSAppCompressedIconData(Profile* profile,
-                                       const std::string& app_id,
+  void GetGuestOSAppCompressedIconData(const std::string& app_id,
                                        ui::ResourceScaleFactor scale_factor);
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
  private:
   friend class base::RefCounted<AppIconLoader>;
 
-  ~AppIconLoader();
+  ~AppIconLoader() override;
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   void OnGetArcAppCompressedIconData(AdaptiveIconPaths app_icon_paths,
@@ -209,6 +212,16 @@ class AppIconLoader : public base::RefCounted<AppIconLoader> {
 
   void MaybeLoadFallbackOrCompleteEmpty();
 
+  // ProfileManagerObserver overrides.
+  void OnProfileWillBeDestroyed(Profile* profile) override;
+
+  // If non-null, points to the profile necessary to support the icon loading.
+  // Not used by all codepaths, so this isn't mandatory in the constructor,
+  // and could be reset to null if the profile is torn down whilst async icon
+  // loading is in-flight.
+  raw_ptr<Profile> profile_ = nullptr;
+  base::ScopedObservation<Profile, ProfileObserver> profile_observation_{this};
+
   const IconType icon_type_ = IconType::kUnknown;
 
   const int size_hint_in_dip_ = 0;
@@ -228,7 +241,6 @@ class AppIconLoader : public base::RefCounted<AppIconLoader> {
   // first fallback method attempted in MaybeLoadFallbackOrCompleteEmpty().
   // These members are only populated from LoadWebAppIcon or LoadExtensionIcon.
   GURL fallback_favicon_url_;
-  raw_ptr<Profile, DanglingUntriaged> profile_ = nullptr;
 
   // If |fallback_icon_resource_| is not |kInvalidIconResource|, then it is the
   // second fallback method attempted in MaybeLoadFallbackOrCompleteEmpty()

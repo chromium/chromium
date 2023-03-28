@@ -296,13 +296,15 @@ bool AdaptiveIconPaths::IsEmpty() {
          background_icon_path.empty();
 }
 
-AppIconLoader::AppIconLoader(IconType icon_type,
+AppIconLoader::AppIconLoader(Profile* profile,
+                             IconType icon_type,
                              int size_hint_in_dip,
                              bool is_placeholder_icon,
                              apps::IconEffects icon_effects,
                              int fallback_icon_resource,
                              LoadIconCallback callback)
-    : AppIconLoader(icon_type,
+    : AppIconLoader(profile,
+                    icon_type,
                     size_hint_in_dip,
                     is_placeholder_icon,
                     icon_effects,
@@ -311,6 +313,7 @@ AppIconLoader::AppIconLoader(IconType icon_type,
                     std::move(callback)) {}
 
 AppIconLoader::AppIconLoader(
+    Profile* profile,
     IconType icon_type,
     int size_hint_in_dip,
     bool is_placeholder_icon,
@@ -318,7 +321,8 @@ AppIconLoader::AppIconLoader(
     int fallback_icon_resource,
     base::OnceCallback<void(LoadIconCallback)> fallback,
     LoadIconCallback callback)
-    : icon_type_(icon_type),
+    : profile_(profile),
+      icon_type_(icon_type),
       size_hint_in_dip_(size_hint_in_dip),
       icon_size_in_px_(apps_util::ConvertDipToPx(
           size_hint_in_dip,
@@ -329,7 +333,11 @@ AppIconLoader::AppIconLoader(
       icon_effects_(icon_effects),
       fallback_icon_resource_(fallback_icon_resource),
       callback_(std::move(callback)),
-      fallback_callback_(std::move(fallback)) {}
+      fallback_callback_(std::move(fallback)) {
+  if (profile) {
+    profile_observation_.Observe(profile);
+  }
+}
 
 AppIconLoader::AppIconLoader(
     int size_hint_in_dip,
@@ -412,12 +420,11 @@ void AppIconLoader::ApplyBadges(IconEffects icon_effects, IconValuePtr iv) {
 
 void AppIconLoader::LoadWebAppIcon(const std::string& web_app_id,
                                    const GURL& launch_url,
-                                   web_app::WebAppIconManager& icon_manager,
-                                   Profile* profile) {
+                                   web_app::WebAppIconManager& icon_manager) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK(profile_);
 
   fallback_favicon_url_ = launch_url;
-  profile_ = profile;
 
   // In all other callpaths MaybeApplyEffectsAndComplete() uses
   // |icon_scale_for_compressed_response_| to apps::EncodeImageToPngBytes(). In
@@ -496,6 +503,7 @@ void AppIconLoader::LoadWebAppIcon(const std::string& web_app_id,
 void AppIconLoader::LoadExtensionIcon(const extensions::Extension* extension,
                                       content::BrowserContext* context) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK(profile_);
 
   if (!extension) {
     MaybeLoadFallbackOrCompleteEmpty();
@@ -504,7 +512,6 @@ void AppIconLoader::LoadExtensionIcon(const extensions::Extension* extension,
 
   fallback_favicon_url_ =
       extensions::AppLaunchInfo::GetFullLaunchURL(extension);
-  profile_ = Profile::FromBrowserContext(context);
   switch (icon_type_) {
     case IconType::kCompressed:
       [[fallthrough]];
@@ -711,6 +718,7 @@ void AppIconLoader::GetChromeAppCompressedIconData(
     content::BrowserContext* context,
     ui::ResourceScaleFactor scale_factor) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK(profile_);
 
   if (!extension || icon_type_ == IconType::kUnknown) {
     MaybeLoadFallbackOrCompleteEmpty();
@@ -718,7 +726,6 @@ void AppIconLoader::GetChromeAppCompressedIconData(
   }
 
   icon_scale_ = ui::GetScaleForResourceScaleFactor(scale_factor);
-  profile_ = Profile::FromBrowserContext(context);
   extensions::ImageLoader::Get(context)->LoadImageAtEveryScaleFactorAsync(
       extension, gfx::Size(size_hint_in_dip_, size_hint_in_dip_),
       ImageToImageSkia(
@@ -771,13 +778,11 @@ void AppIconLoader::GetArcAppCompressedIconData(
 }
 
 void AppIconLoader::GetGuestOSAppCompressedIconData(
-    Profile* profile,
     const std::string& app_id,
     ui::ResourceScaleFactor scale_factor) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  DCHECK(profile);
+  CHECK(profile_);
 
-  profile_ = profile;
   auto* registry =
       guest_os::GuestOsRegistryServiceFactory::GetForProfile(profile_);
   if (!registry) {
@@ -873,7 +878,11 @@ void AppIconLoader::OnGetGuestOSAppCompressedIconData(base::FilePath png_path,
 
 void AppIconLoader::TranscodeIconFromSvg(base::FilePath svg_path,
                                          base::FilePath png_path) {
-  DCHECK(profile_);
+  if (!profile_) {
+    // Profile has been destroyed.
+    return;
+  }
+
   gfx::Size kPreferredSize = gfx::Size(128, 128);
   if (!svg_icon_transcoder_) {
     svg_icon_transcoder_ = std::make_unique<SvgIconTranscoder>(profile_);
@@ -1117,7 +1126,7 @@ void AppIconLoader::OnReadChromeAppForCompressedIconData(gfx::ImageSkia image) {
 }
 
 void AppIconLoader::MaybeLoadFallbackOrCompleteEmpty() {
-  if (fallback_favicon_url_.is_valid() &&
+  if (profile_ && fallback_favicon_url_.is_valid() &&
       icon_size_in_px_ == kFaviconFallbackImagePx) {
     GURL favicon_url = fallback_favicon_url_;
     // Reset to avoid infinite loops.
@@ -1172,6 +1181,12 @@ void AppIconLoader::MaybeLoadFallbackOrCompleteEmpty() {
   }
 
   std::move(callback_).Run(std::make_unique<IconValue>());
+}
+
+void AppIconLoader::OnProfileWillBeDestroyed(Profile* profile) {
+  profile_ = nullptr;
+  profile_observation_.Reset();
+  cancelable_task_tracker_.TryCancelAll();
 }
 
 }  // namespace apps

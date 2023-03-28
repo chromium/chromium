@@ -512,8 +512,9 @@ void LoadIconFromExtension(IconType icon_type,
   constexpr bool is_placeholder_icon = false;
   scoped_refptr<AppIconLoader> icon_loader =
       base::MakeRefCounted<AppIconLoader>(
-          icon_type, size_hint_in_dip, is_placeholder_icon, icon_effects,
-          IDR_APP_DEFAULT_ICON, std::move(callback));
+          Profile::FromBrowserContext(context), icon_type, size_hint_in_dip,
+          is_placeholder_icon, icon_effects, IDR_APP_DEFAULT_ICON,
+          std::move(callback));
   icon_loader->LoadExtensionIcon(
       extensions::ExtensionRegistry::Get(context)->GetInstalledExtension(
           extension_id),
@@ -536,12 +537,13 @@ void LoadIconFromWebApp(content::BrowserContext* context,
   constexpr bool is_placeholder_icon = false;
   scoped_refptr<AppIconLoader> icon_loader =
       base::MakeRefCounted<AppIconLoader>(
-          icon_type, size_hint_in_dip, is_placeholder_icon, icon_effects,
-          IDR_APP_DEFAULT_ICON, std::move(callback));
+          Profile::FromBrowserContext(context), icon_type, size_hint_in_dip,
+          is_placeholder_icon, icon_effects, IDR_APP_DEFAULT_ICON,
+          std::move(callback));
   icon_loader->LoadWebAppIcon(
       web_app_id,
       web_app_provider->registrar_unsafe().GetAppStartUrl(web_app_id),
-      web_app_provider->icon_manager(), Profile::FromBrowserContext(context));
+      web_app_provider->icon_manager());
 }
 
 #if BUILDFLAG(IS_CHROMEOS)
@@ -559,8 +561,9 @@ void GetWebAppCompressedIconData(content::BrowserContext* context,
   DCHECK(web_app_provider);
   scoped_refptr<AppIconLoader> icon_loader =
       base::MakeRefCounted<AppIconLoader>(
-          IconType::kCompressed, size_in_dip, /*is_placeholder_icon=*/false,
-          IconEffects::kNone, kInvalidIconResource, std::move(callback));
+          Profile::FromBrowserContext(context), IconType::kCompressed,
+          size_in_dip, /*is_placeholder_icon=*/false, IconEffects::kNone,
+          kInvalidIconResource, std::move(callback));
   icon_loader->GetWebAppCompressedIconData(web_app_id, scale_factor,
                                            web_app_provider->icon_manager());
 }
@@ -574,8 +577,9 @@ void GetChromeAppCompressedIconData(content::BrowserContext* context,
 
   scoped_refptr<AppIconLoader> icon_loader =
       base::MakeRefCounted<AppIconLoader>(
-          IconType::kCompressed, size_in_dip, /*is_placeholder_icon=*/false,
-          IconEffects::kNone, kInvalidIconResource, std::move(callback));
+          Profile::FromBrowserContext(context), IconType::kCompressed,
+          size_in_dip, /*is_placeholder_icon=*/false, IconEffects::kNone,
+          kInvalidIconResource, std::move(callback));
   icon_loader->GetChromeAppCompressedIconData(
       extensions::ExtensionRegistry::Get(context)->GetInstalledExtension(
           extension_id),
@@ -600,8 +604,9 @@ void GetArcAppCompressedIconData(content::BrowserContext* context,
 
   scoped_refptr<AppIconLoader> icon_loader =
       base::MakeRefCounted<AppIconLoader>(
-          IconType::kCompressed, size_in_dip, /*is_placeholder_icon=*/false,
-          IconEffects::kNone, kInvalidIconResource, std::move(callback));
+          Profile::FromBrowserContext(context), IconType::kCompressed,
+          size_in_dip, /*is_placeholder_icon=*/false, IconEffects::kNone,
+          kInvalidIconResource, std::move(callback));
   icon_loader->GetArcAppCompressedIconData(app_id, prefs, scale_factor);
 }
 
@@ -615,10 +620,10 @@ void GetGuestOSAppCompressedIconData(content::BrowserContext* context,
 
   scoped_refptr<AppIconLoader> icon_loader =
       base::MakeRefCounted<AppIconLoader>(
-          IconType::kCompressed, size_in_dip, /*is_placeholder_icon=*/false,
-          IconEffects::kNone, kInvalidIconResource, std::move(callback));
-  icon_loader->GetGuestOSAppCompressedIconData(
-      Profile::FromBrowserContext(context), app_id, scale_factor);
+          Profile::FromBrowserContext(context), IconType::kCompressed,
+          size_in_dip, /*is_placeholder_icon=*/false, IconEffects::kNone,
+          kInvalidIconResource, std::move(callback));
+  icon_loader->GetGuestOSAppCompressedIconData(app_id, scale_factor);
 }
 
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
@@ -635,8 +640,9 @@ void LoadIconFromFileWithFallback(
 
   scoped_refptr<AppIconLoader> icon_loader =
       base::MakeRefCounted<AppIconLoader>(
-          icon_type, size_hint_in_dip, is_placeholder_icon, icon_effects,
-          kInvalidIconResource, std::move(fallback), std::move(callback));
+          /*profile=*/nullptr, icon_type, size_hint_in_dip, is_placeholder_icon,
+          icon_effects, kInvalidIconResource, std::move(fallback),
+          std::move(callback));
   icon_loader->LoadCompressedIconFromFile(path);
 }
 
@@ -650,8 +656,8 @@ void LoadIconFromCompressedData(IconType icon_type,
 
   scoped_refptr<AppIconLoader> icon_loader =
       base::MakeRefCounted<AppIconLoader>(
-          icon_type, size_hint_in_dip, is_placeholder_icon, icon_effects,
-          kInvalidIconResource, std::move(callback));
+          /*profile=*/nullptr, icon_type, size_hint_in_dip, is_placeholder_icon,
+          icon_effects, kInvalidIconResource, std::move(callback));
   icon_loader->LoadIconFromCompressedData(compressed_icon_data);
 }
 
@@ -667,8 +673,8 @@ void LoadIconFromResource(IconType icon_type,
 
   scoped_refptr<AppIconLoader> icon_loader =
       base::MakeRefCounted<AppIconLoader>(
-          icon_type, size_hint_in_dip, is_placeholder_icon, icon_effects,
-          fallback_icon_resource, std::move(callback));
+          /*profile=*/nullptr, icon_type, size_hint_in_dip, is_placeholder_icon,
+          icon_effects, fallback_icon_resource, std::move(callback));
   icon_loader->LoadIconFromResource(resource_id);
 }
 
