@@ -26,7 +26,6 @@
 #include "media/base/media_switches.h"
 #include "media/base/media_tracks.h"
 #include "media/base/mock_media_log.h"
-#include "media/base/supported_types.h"
 #include "media/base/test_data_util.h"
 #include "media/base/timestamp_constants.h"
 #include "media/cdm/aes_decryptor.h"
@@ -38,10 +37,6 @@
 #include "media/test/test_media_source.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "url/gurl.h"
-
-#if BUILDFLAG(IS_ANDROID)
-#include "media/filters/android/media_codec_audio_decoder.h"
-#endif
 
 #if BUILDFLAG(IS_MAC)
 #include "media/filters/mac/audio_toolbox_audio_decoder.h"
@@ -2101,28 +2096,20 @@ TEST_F(PipelineIntegrationTest, BasicPlaybackHashed_M4A) {
   // EXPECT_HASH_EQ("3.77,4.53,4.75,3.48,3.67,3.76,", GetAudioHash());
 }
 
-#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_ANDROID)
-std::unique_ptr<AudioDecoder> CreateXheAacDecoder(
-    scoped_refptr<base::SequencedTaskRunner> task_runner) {
+// TODO(crbug.com/1289825): Make this work on Android.
 #if BUILDFLAG(IS_MAC)
-  return std::make_unique<AudioToolboxAudioDecoder>();
-#elif BUILDFLAG(IS_ANDROID)
-  return std::make_unique<MediaCodecAudioDecoder>(task_runner);
-#else
-#error "xHE-AAC decoding is not supported on this platform.";
-#endif
-}
+constexpr char kXHE_AACAudioHash[] = "34.02,8.92,-11.02,12.15,16.11,10.75,";
 
 TEST_F(PipelineIntegrationTest, BasicPlaybackXHE_AAC) {
-  if (!IsSupportedAudioType(
-          {AudioCodec::kAAC, AudioCodecProfile::kXHE_AAC, false})) {
+  if (__builtin_available(macOS 10.15, *)) {
+    // Annoyingly !__builtin_available() doesn't work.
+  } else {
     GTEST_SKIP() << "Unsupported platform.";
   }
 
-  auto prepend_audio_decoders_cb = base::BindLambdaForTesting([this]() {
+  auto prepend_audio_decoders_cb = base::BindLambdaForTesting([]() {
     std::vector<std::unique_ptr<AudioDecoder>> audio_decoders;
-    audio_decoders.push_back(
-        CreateXheAacDecoder(task_environment_.GetMainThreadTaskRunner()));
+    audio_decoders.push_back(std::make_unique<AudioToolboxAudioDecoder>());
     return audio_decoders;
   });
 
@@ -2132,24 +2119,24 @@ TEST_F(PipelineIntegrationTest, BasicPlaybackXHE_AAC) {
   Play();
   ASSERT_TRUE(WaitUntilOnEnded());
 
-  // Note: We don't test hashes for xHE-AAC content since the decoder is
-  // provided by the operating system and will apply DRC based on device
-  // specific params.
+  // Hash testing may be a poor choice here since we're using the OS decoders,
+  // but lets wait to see what the test says on Android before removing.
+  EXPECT_HASH_EQ(kXHE_AACAudioHash, GetAudioHash());
 
   // TODO(crbug.com/1289825): Seeking doesn't always work properly when using
   // ffmpeg since it doesn't handle non-keyframe xHE-AAC samples properly.
 }
 
 TEST_F(PipelineIntegrationTest, MSE_BasicPlaybackXHE_AAC) {
-  if (!IsSupportedAudioType(
-          {AudioCodec::kAAC, AudioCodecProfile::kXHE_AAC, false})) {
+  if (__builtin_available(macOS 10.15, *)) {
+    // Annoyingly !__builtin_available() doesn't work.
+  } else {
     GTEST_SKIP() << "Unsupported platform.";
   }
 
-  auto prepend_audio_decoders_cb = base::BindLambdaForTesting([this]() {
+  auto prepend_audio_decoders_cb = base::BindLambdaForTesting([]() {
     std::vector<std::unique_ptr<AudioDecoder>> audio_decoders;
-    audio_decoders.push_back(
-        CreateXheAacDecoder(task_environment_.GetMainThreadTaskRunner()));
+    audio_decoders.push_back(std::make_unique<AudioToolboxAudioDecoder>());
     return audio_decoders;
   });
 
@@ -2161,9 +2148,9 @@ TEST_F(PipelineIntegrationTest, MSE_BasicPlaybackXHE_AAC) {
   ASSERT_TRUE(WaitUntilOnEnded());
   Pause();
 
-  // Note: We don't test hashes for xHE-AAC content since the decoder is
-  // provided by the operating system and will apply DRC based on device
-  // specific params.
+  // Hash testing may be a poor choice here since we're using the OS decoders,
+  // but lets wait to see what the test says on Android before removing.
+  EXPECT_HASH_EQ(kXHE_AACAudioHash, GetAudioHash());
 
   // Seek to ensure a flushing and playback resumption works properly.
   auto seek_time = pipeline_->GetMediaDuration() / 2;
@@ -2173,7 +2160,7 @@ TEST_F(PipelineIntegrationTest, MSE_BasicPlaybackXHE_AAC) {
   Play();
   ASSERT_TRUE(WaitUntilOnEnded());
 }
-#endif  // BUILDFLAG(IS_MAC) || BUILDFLAG(IS_ANDROID)
+#endif  // BUILDFLAG(IS_MAC)
 
 TEST_F(PipelineIntegrationTest, BasicPlaybackHi10P) {
   ASSERT_EQ(PIPELINE_OK, Start("bear-320x180-hi10p.mp4"));
