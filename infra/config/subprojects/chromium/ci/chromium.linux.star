@@ -106,7 +106,6 @@ ci.builder(
         ),
         build_gs_bucket = "chromium-linux-archive",
     ),
-    os = os.LINUX_BIONIC,
     # TODO(crbug.com/1173333): Make it tree-closing.
     tree_closing = False,
     console_view_entry = consoles.console_view_entry(
@@ -463,6 +462,7 @@ ci.builder(
         ),
         build_gs_bucket = "chromium-linux-archive",
     ),
+    # Focal is needed for better C++20 support. See crbug.com/1284275.
     os = os.LINUX_FOCAL,
     console_view_entry = consoles.console_view_entry(
         category = "release",
