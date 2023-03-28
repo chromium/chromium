@@ -105,10 +105,19 @@ BluetoothLocalGattServiceFloss::GetCharacteristic(
   return service == characteristics_.end() ? nullptr : service->second.get();
 }
 
-void BluetoothLocalGattServiceFloss::AddCharacteristic(
+int32_t BluetoothLocalGattServiceFloss::AddCharacteristic(
     std::unique_ptr<BluetoothLocalGattCharacteristicFloss> characteristic) {
   DCHECK(!base::Contains(characteristics_, characteristic->GetIdentifier()));
   characteristics_[characteristic->GetIdentifier()] = std::move(characteristic);
+  return characteristics_.size() - 1;
+}
+
+// static
+uint32_t BluetoothLocalGattServiceFloss::instance_id_tracker_ = 1000;
+
+// static
+uint32_t BluetoothLocalGattServiceFloss::NewInstanceId() {
+  return instance_id_tracker_++;
 }
 
 }  // namespace floss

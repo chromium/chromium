@@ -8,6 +8,7 @@
 #include "base/memory/ptr_util.h"
 #include "base/rand_util.h"
 #include "base/strings/stringprintf.h"
+#include "device/bluetooth/floss/floss_dbus_manager.h"
 
 namespace floss {
 
@@ -20,7 +21,8 @@ BluetoothLocalGattDescriptorFloss::Create(
   auto* descriptor =
       new BluetoothLocalGattDescriptorFloss(uuid, permissions, characteristic);
   auto weak_ptr = descriptor->weak_ptr_factory_.GetWeakPtr();
-  characteristic->AddDescriptor(base::WrapUnique(descriptor));
+  weak_ptr->index_ =
+      characteristic->AddDescriptor(base::WrapUnique(descriptor));
   return weak_ptr;
 }
 
@@ -28,39 +30,72 @@ BluetoothLocalGattDescriptorFloss::BluetoothLocalGattDescriptorFloss(
     const device::BluetoothUUID& uuid,
     device::BluetoothGattCharacteristic::Permissions permissions,
     BluetoothLocalGattCharacteristicFloss* characteristic)
-    : characteristic_(raw_ref<BluetoothLocalGattCharacteristicFloss>::from_ptr(
-          characteristic)) {
-  DCHECK(characteristic);
+    : uuid_(uuid),
+      permissions_(permissions),
+      characteristic_(raw_ref<BluetoothLocalGattCharacteristicFloss>::from_ptr(
+          characteristic)),
+      client_instance_id_(characteristic_->service_->NewInstanceId()) {}
 
-  descriptor_.uuid = uuid;
-  descriptor_.permissions = permissions;
-  // TODO: Redesign after the GATT server registration wiring is finished.
-  // Temporarily use a random number to prefill the instance_id, as the
-  // application may want to access the object before GATT service registration
-  // when an instance_id is provided by the daemon through DBUS callback.
-  descriptor_.instance_id = static_cast<int32_t>(base::RandUint64());
+BluetoothLocalGattDescriptorFloss::~BluetoothLocalGattDescriptorFloss() {
+  characteristic_->service_->RemoveServerObserverForHandle(floss_instance_id_);
 }
 
-BluetoothLocalGattDescriptorFloss::~BluetoothLocalGattDescriptorFloss() =
-    default;
-
 std::string BluetoothLocalGattDescriptorFloss::GetIdentifier() const {
-  return base::StringPrintf("%s/%d", characteristic_->GetIdentifier().c_str(),
-                            descriptor_.instance_id);
+  return base::StringPrintf(
+      "%s-%s/%04x",
+      characteristic_->service_->GetAdapter()->GetAddress().c_str(),
+      GetUUID().value().c_str(), client_instance_id_);
 }
 
 device::BluetoothUUID BluetoothLocalGattDescriptorFloss::GetUUID() const {
-  return descriptor_.uuid;
+  return uuid_;
 }
 
 device::BluetoothGattCharacteristic::Permissions
 BluetoothLocalGattDescriptorFloss::GetPermissions() const {
-  return descriptor_.permissions;
+  return permissions_;
 }
 
 device::BluetoothLocalGattCharacteristic*
 BluetoothLocalGattDescriptorFloss::GetCharacteristic() const {
   return &*characteristic_;
+}
+
+GattDescriptor BluetoothLocalGattDescriptorFloss::ToGattDescriptor() {
+  GattDescriptor descriptor;
+  descriptor.uuid = uuid_;
+  descriptor.instance_id = floss_instance_id_;
+  descriptor.permissions = permissions_;
+  return descriptor;
+}
+
+void BluetoothLocalGattDescriptorFloss::ResolveInstanceId(
+    const GattCharacteristic& characteristic) {
+  DCHECK(characteristic.descriptors[index_].uuid == GetUUID());
+  floss_instance_id_ = characteristic.descriptors[index_].instance_id;
+  characteristic_->service_->AddServerObserverForHandle(floss_instance_id_,
+                                                        this);
+}
+
+void BluetoothLocalGattDescriptorFloss::GattServerDescriptorReadRequest(
+    std::string address,
+    int32_t request_id,
+    int32_t offset,
+    bool is_long,
+    int32_t handle) {
+  NOTIMPLEMENTED();
+}
+
+void BluetoothLocalGattDescriptorFloss::GattServerDescriptorWriteRequest(
+    std::string address,
+    int32_t request_id,
+    int32_t offset,
+    int32_t length,
+    bool is_prepared_write,
+    bool needs_response,
+    int32_t handle,
+    std::vector<uint8_t> value) {
+  NOTIMPLEMENTED();
 }
 
 }  // namespace floss

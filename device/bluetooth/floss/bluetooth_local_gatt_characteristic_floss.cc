@@ -12,6 +12,7 @@
 #include "device/bluetooth/floss/bluetooth_adapter_floss.h"
 #include "device/bluetooth/floss/bluetooth_gatt_service_floss.h"
 #include "device/bluetooth/floss/bluetooth_local_gatt_service_floss.h"
+#include "device/bluetooth/floss/floss_dbus_manager.h"
 
 namespace floss {
 
@@ -25,7 +26,8 @@ BluetoothLocalGattCharacteristicFloss::Create(
   auto* characteristic = new BluetoothLocalGattCharacteristicFloss(
       uuid, properties, permissions, service);
   auto weak_ptr = characteristic->weak_ptr_factory_.GetWeakPtr();
-  service->AddCharacteristic(base::WrapUnique(characteristic));
+  weak_ptr->index_ =
+      service->AddCharacteristic(base::WrapUnique(characteristic));
   return weak_ptr;
 }
 
@@ -34,37 +36,35 @@ BluetoothLocalGattCharacteristicFloss::BluetoothLocalGattCharacteristicFloss(
     Properties properties,
     Permissions permissions,
     BluetoothLocalGattServiceFloss* service)
-    : service_(raw_ref<BluetoothLocalGattServiceFloss>::from_ptr(service)) {
-  characteristic_.uuid = uuid;
-  characteristic_.properties = properties;
-  characteristic_.permissions = permissions;
-  // TODO: Redesign after the GATT server registration wiring is finished.
-  // Temporarily use a random number to prefill the instance_id, as the
-  // application may want to access the object before GATT service registration
-  // when an instance_id is provided by the daemon through DBUS callback.
-  characteristic_.instance_id = static_cast<int32_t>(base::RandUint64());
-}
+    : uuid_(uuid),
+      properties_(properties),
+      permissions_(permissions),
+      service_(raw_ref<BluetoothLocalGattServiceFloss>::from_ptr(service)),
+      client_instance_id_(service_->NewInstanceId()) {}
 
 BluetoothLocalGattCharacteristicFloss::
-    ~BluetoothLocalGattCharacteristicFloss() = default;
+    ~BluetoothLocalGattCharacteristicFloss() {
+  service_->RemoveServerObserverForHandle(floss_instance_id_);
+}
 
 std::string BluetoothLocalGattCharacteristicFloss::GetIdentifier() const {
-  return base::StringPrintf("%s/%d", service_->GetIdentifier().c_str(),
-                            characteristic_.instance_id);
+  return base::StringPrintf("%s-%s/%04x",
+                            service_->GetAdapter()->GetAddress().c_str(),
+                            GetUUID().value().c_str(), client_instance_id_);
 }
 
 device::BluetoothUUID BluetoothLocalGattCharacteristicFloss::GetUUID() const {
-  return characteristic_.uuid;
+  return uuid_;
 }
 
 device::BluetoothGattCharacteristic::Properties
 BluetoothLocalGattCharacteristicFloss::GetProperties() const {
-  return characteristic_.properties;
+  return properties_;
 }
 
 device::BluetoothGattCharacteristic::Permissions
 BluetoothLocalGattCharacteristicFloss::GetPermissions() const {
-  return characteristic_.permissions;
+  return permissions_;
 }
 
 device::BluetoothLocalGattCharacteristic::NotificationStatus
@@ -72,10 +72,10 @@ BluetoothLocalGattCharacteristicFloss::NotifyValueChanged(
     const device::BluetoothDevice* device,
     const std::vector<uint8_t>& new_value,
     bool indicate) {
-  if (indicate && !(characteristic_.properties & PROPERTY_INDICATE)) {
+  if (indicate && !(properties_ & PROPERTY_INDICATE)) {
     return INDICATE_PROPERTY_NOT_SET;
   }
-  if (!indicate && !(characteristic_.properties & PROPERTY_NOTIFY)) {
+  if (!indicate && !(properties_ & PROPERTY_NOTIFY)) {
     return NOTIFY_PROPERTY_NOT_SET;
   }
   return service_->GetAdapter()->SendValueChanged(this, new_value)
@@ -88,9 +88,50 @@ BluetoothLocalGattCharacteristicFloss::GetService() const {
   return &*service_;
 }
 
-void BluetoothLocalGattCharacteristicFloss::AddDescriptor(
+GattCharacteristic
+BluetoothLocalGattCharacteristicFloss::ToGattCharacteristic() {
+  GattCharacteristic characteristic;
+  characteristic.uuid = uuid_;
+  characteristic.properties = properties_;
+  characteristic.permissions = permissions_;
+  for (auto& descriptor : descriptors_) {
+    characteristic.descriptors.push_back(descriptor->ToGattDescriptor());
+  }
+  return characteristic;
+}
+
+void BluetoothLocalGattCharacteristicFloss::ResolveInstanceId(
+    const GattService& service) {
+  DCHECK(service.characteristics[index_].uuid == GetUUID());
+  floss_instance_id_ = service.characteristics[index_].instance_id;
+  service_->AddServerObserverForHandle(floss_instance_id_, this);
+}
+
+void BluetoothLocalGattCharacteristicFloss::GattServerCharacteristicReadRequest(
+    std::string address,
+    int32_t request_id,
+    int32_t offset,
+    bool is_long,
+    int32_t handle) {
+  NOTIMPLEMENTED();
+}
+
+void BluetoothLocalGattCharacteristicFloss::
+    GattServerCharacteristicWriteRequest(std::string address,
+                                         int32_t request_id,
+                                         int32_t offset,
+                                         int32_t length,
+                                         bool is_prepared_write,
+                                         bool needs_response,
+                                         int32_t handle,
+                                         std::vector<uint8_t> value) {
+  NOTIMPLEMENTED();
+}
+
+int32_t BluetoothLocalGattCharacteristicFloss::AddDescriptor(
     std::unique_ptr<BluetoothLocalGattDescriptorFloss> descriptor) {
   descriptors_.push_back(std::move(descriptor));
+  return descriptors_.size() - 1;
 }
 
 const std::vector<std::unique_ptr<BluetoothLocalGattDescriptorFloss>>&

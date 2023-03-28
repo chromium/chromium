@@ -59,6 +59,7 @@ class BluetoothLocalGattServiceFloss
 
  private:
   friend class BluetoothLocalGattCharacteristicFloss;
+  friend class BluetoothLocalGattDescriptorFloss;
 
   BluetoothLocalGattServiceFloss(BluetoothAdapterFloss* adapter,
                                  const device::BluetoothUUID& uuid,
@@ -70,8 +71,15 @@ class BluetoothLocalGattServiceFloss
                            const std::string& error_name,
                            const std::string& error_message);
 
-  void AddCharacteristic(
+  int32_t AddCharacteristic(
       std::unique_ptr<BluetoothLocalGattCharacteristicFloss> characteristic);
+
+  // Function to generate a new, unique instance id for each GATT attribute.
+  static uint32_t NewInstanceId();
+
+  // A tracker to guarantee unique instance ids for newly created GATT
+  // attributes.
+  static uint32_t instance_id_tracker_;
 
   // If this service is primary.
   const bool is_primary_;
