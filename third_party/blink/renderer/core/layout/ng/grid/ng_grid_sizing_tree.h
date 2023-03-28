@@ -29,7 +29,6 @@ class NGSubgriddedItemData {
       : item_data_in_parent_(&item_data_in_parent),
         parent_layout_data_(&parent_layout_data) {}
 
-  explicit operator bool() const { return item_data_in_parent_ != nullptr; }
   const GridItemData* operator->() const { return item_data_in_parent_; }
 
   const GridItemData& operator*() const {
@@ -37,13 +36,17 @@ class NGSubgriddedItemData {
     return *item_data_in_parent_;
   }
 
-  std::unique_ptr<NGGridLayoutTrackCollection> CreateSubgridCollection(
-      GridTrackSizingDirection track_direction) const;
+  bool IsSubgrid() const {
+    return item_data_in_parent_ && item_data_in_parent_->IsSubgrid();
+  }
 
   const NGGridLayoutData& ParentLayoutData() const {
     DCHECK(parent_layout_data_);
     return *parent_layout_data_;
   }
+
+  std::unique_ptr<NGGridLayoutTrackCollection> CreateSubgridCollection(
+      GridTrackSizingDirection track_direction) const;
 
  private:
   const GridItemData* item_data_in_parent_{nullptr};
