@@ -60,6 +60,7 @@
 #include "third_party/blink/renderer/core/layout/line/inline_text_box.h"
 #include "third_party/blink/renderer/core/layout/ng/flex/layout_ng_flexible_box.h"
 #include "third_party/blink/renderer/core/layout/ng/legacy_layout_tree_walking.h"
+#include "third_party/blink/renderer/core/layout/ng/mathml/layout_ng_mathml_block.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_constraint_space.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_length_utils.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_physical_box_fragment.h"
@@ -2237,8 +2238,8 @@ LayoutBlock* LayoutBlock::CreateAnonymousWithParentAndDisplay(
   } else if (new_display == EDisplay::kGrid) {
     layout_block = MakeGarbageCollected<LayoutNGGrid>(/* element */ nullptr);
   } else if (new_display == EDisplay::kBlockMath) {
-    layout_block = LayoutObjectFactory::CreateMath(parent->GetDocument(),
-                                                   *new_style, legacy);
+    layout_block =
+        MakeGarbageCollected<LayoutNGMathMLBlock>(/* element */ nullptr);
   } else {
     DCHECK(new_display == EDisplay::kBlock ||
            new_display == EDisplay::kFlowRoot);

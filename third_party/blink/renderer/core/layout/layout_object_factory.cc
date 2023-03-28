@@ -102,33 +102,6 @@ LayoutBlockFlow* LayoutObjectFactory::CreateBlockFlow(
   return CreateObject<LayoutBlockFlow, LayoutNGBlockFlow>(node, legacy);
 }
 
-LayoutView* LayoutObjectFactory::CreateView(Document& document,
-                                            const ComputedStyle& style) {
-  return MakeGarbageCollected<LayoutNGView>(&document);
-}
-
-LayoutBlock* LayoutObjectFactory::CreateMath(Node& node,
-                                             const ComputedStyle& style,
-                                             LegacyLayout legacy) {
-  DCHECK(IsA<MathMLElement>(node) || node.IsDocumentNode() /* is_anonymous */);
-  bool disable_ng_for_type = !RuntimeEnabledFeatures::MathMLCoreEnabled();
-  if (IsA<MathMLTokenElement>(node)) {
-    return CreateObject<LayoutBlockFlow, LayoutNGMathMLBlockFlow,
-                        LayoutBlockFlow>(node, legacy, disable_ng_for_type);
-  }
-  return CreateObject<LayoutBlock, LayoutNGMathMLBlock, LayoutBlockFlow>(
-      node, legacy, disable_ng_for_type);
-}
-
-LayoutBlock* LayoutObjectFactory::CreateCustom(Node& node,
-                                               const ComputedStyle& style,
-                                               LegacyLayout legacy) {
-  DCHECK(node.IsElementNode());
-  bool disable_ng_for_type = !RuntimeEnabledFeatures::CSSLayoutAPIEnabled();
-  return CreateObject<LayoutBlock, LayoutNGCustom, LayoutBlockFlow>(
-      node, legacy, disable_ng_for_type);
-}
-
 LayoutObject* LayoutObjectFactory::CreateListMarker(Node& node,
                                                     const ComputedStyle& style,
                                                     LegacyLayout legacy) {

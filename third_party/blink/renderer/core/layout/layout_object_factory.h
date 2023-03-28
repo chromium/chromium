@@ -25,7 +25,6 @@ class LayoutProgress;
 class LayoutRubyAsBlock;
 class LayoutText;
 class LayoutTextFragment;
-class LayoutView;
 class Node;
 class PseudoElement;
 
@@ -44,9 +43,6 @@ class LayoutObjectFactory {
   static LayoutBlockFlow* CreateBlockFlow(Node&,
                                           const ComputedStyle&,
                                           LegacyLayout);
-  static LayoutView* CreateView(Document&, const ComputedStyle&);
-  static LayoutBlock* CreateMath(Node&, const ComputedStyle&, LegacyLayout);
-  static LayoutBlock* CreateCustom(Node&, const ComputedStyle&, LegacyLayout);
   static LayoutObject* CreateListMarker(Node&,
                                         const ComputedStyle&,
                                         LegacyLayout);
