@@ -660,7 +660,9 @@ bool CSPDirectiveListAllowInline(
 
   auto* html_script_element = DynamicTo<HTMLScriptElement>(element);
   if (html_script_element &&
-      inline_type == ContentSecurityPolicy::InlineType::kScript &&
+      (inline_type == ContentSecurityPolicy::InlineType::kScript ||
+       inline_type ==
+           ContentSecurityPolicy::InlineType::kScriptSpeculationRules) &&
       !html_script_element->Loader()->IsParserInserted() &&
       CSPDirectiveListAllowDynamic(csp, type)) {
     return true;
