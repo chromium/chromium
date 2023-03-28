@@ -16,7 +16,9 @@
 #include "base/path_service.h"
 #include "base/strings/strcat.h"
 #include "base/system/sys_info.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_running_on_chromeos.h"
+#include "chrome/browser/ash/app_list/search/system_info/system_info_util.h"
 #include "chrome/browser/ash/app_list/search/test/test_search_controller.h"
 #include "chrome/browser/ash/file_manager/fake_disk_mount_manager.h"
 #include "chrome/browser/ash/file_manager/path_util.h"
@@ -43,6 +45,16 @@ namespace app_list::test {
 namespace {
 
 namespace healthd_mojom = ash::cros_healthd::mojom;
+
+constexpr char kBatteryDataError[] =
+    "Apps.AppList.SystemInfoProvider.Error.Battery";
+
+constexpr char kProbeErrorBatteryInfo[] =
+    "Apps.AppList.SystemInfoProvider.CrosHealthdProbeError.BatteryInfo";
+constexpr char kProbeErrorCpuInfo[] =
+    "Apps.AppList.SystemInfoProvider.CrosHealthdProbeError.CpuInfo";
+constexpr char kProbeErrorMemoryInfo[] =
+    "Apps.AppList.SystemInfoProvider.CrosHealthdProbeError.MemoryInfo";
 
 void SetProbeTelemetryInfoResponse(healthd_mojom::BatteryInfoPtr battery_info,
                                    healthd_mojom::CpuInfoPtr cpu_info,
@@ -252,6 +264,50 @@ void AddFile(const std::string& file_name,
   ASSERT_EQ(expected_size, stat.st_size);
 }
 
+healthd_mojom::ProbeErrorPtr CreateProbeError(
+    healthd_mojom::ErrorType error_type) {
+  auto probe_error = healthd_mojom::ProbeError::New();
+  probe_error->type = error_type;
+  probe_error->msg = "probe error";
+  return probe_error;
+}
+
+void VerifyProbeErrorBucketCounts(const base::HistogramTester& tester,
+                                  const std::string& metric_name,
+                                  size_t expected_unknown_error,
+                                  size_t expected_parse_error,
+                                  size_t expected_service_unavailable,
+                                  size_t expected_system_utility_error,
+                                  size_t expected_file_read_error) {
+  tester.ExpectBucketCount(metric_name, healthd_mojom::ErrorType::kUnknown,
+                           expected_unknown_error);
+  tester.ExpectBucketCount(metric_name, healthd_mojom::ErrorType::kParseError,
+                           expected_parse_error);
+  tester.ExpectBucketCount(metric_name,
+                           healthd_mojom::ErrorType::kServiceUnavailable,
+                           expected_service_unavailable);
+  tester.ExpectBucketCount(metric_name,
+                           healthd_mojom::ErrorType::kSystemUtilityError,
+                           expected_system_utility_error);
+  tester.ExpectBucketCount(metric_name,
+                           healthd_mojom::ErrorType::kFileReadError,
+                           expected_file_read_error);
+}
+
+void VerifyBatteryDataErrorBucketCounts(
+    const base::HistogramTester& tester,
+    size_t expected_no_data_error,
+    size_t expected_not_a_number_error,
+    size_t expected_expectation_not_met_error) {
+  tester.ExpectBucketCount(kBatteryDataError, BatteryDataError::kNoData,
+                           expected_no_data_error);
+  tester.ExpectBucketCount(kBatteryDataError, BatteryDataError::kNotANumber,
+                           expected_not_a_number_error);
+  tester.ExpectBucketCount(kBatteryDataError,
+                           BatteryDataError::kExpectationNotMet,
+                           expected_expectation_not_met_error);
+}
+
 }  // namespace
 
 class SystemInfoCardProviderTest : public testing::Test {
@@ -323,7 +379,7 @@ class SystemInfoCardProviderTest : public testing::Test {
   std::unique_ptr<SystemInfoCardProvider> provider_;
 };
 
-TEST_F(SystemInfoCardProviderTest, version) {
+TEST_F(SystemInfoCardProviderTest, Version) {
   StartSearch(u"version");
   Wait();
   std::u16string official =
@@ -361,7 +417,7 @@ TEST_F(SystemInfoCardProviderTest, version) {
   EXPECT_TRUE(details.GetTextTags().empty());
 }
 
-TEST_F(SystemInfoCardProviderTest, cpu) {
+TEST_F(SystemInfoCardProviderTest, Cpu) {
   int temp_1 = 40;
   int temp_2 = 50;
   int temp_3 = 15;
@@ -400,7 +456,29 @@ TEST_F(SystemInfoCardProviderTest, cpu) {
   EXPECT_TRUE(details.GetTextTags().empty());
 }
 
-TEST_F(SystemInfoCardProviderTest, memory) {
+TEST_F(SystemInfoCardProviderTest, CpuProbeError) {
+  auto info = healthd_mojom::TelemetryInfo::New();
+  base::HistogramTester histogram_tester;
+
+  auto cpu_result = healthd_mojom::CpuResult::NewError(
+      CreateProbeError(healthd_mojom::ErrorType::kFileReadError));
+  info->cpu_result = std::move(cpu_result);
+  ash::cros_healthd::FakeCrosHealthd::Get()
+      ->SetProbeTelemetryInfoResponseForTesting(info);
+
+  StartSearch(u"cpu");
+  Wait();
+
+  EXPECT_TRUE(results().empty());
+  VerifyProbeErrorBucketCounts(histogram_tester, kProbeErrorCpuInfo,
+                               /*expected_unknown_error=*/0,
+                               /*expected_parse_error=*/0,
+                               /*expected_service_unavailable=*/0,
+                               /*expected_system_utility_error=*/0,
+                               /*expected_file_read_error=*/1);
+}
+
+TEST_F(SystemInfoCardProviderTest, Memory) {
   const uint32_t total_memory_kib = 8000000;
   const uint32_t free_memory_kib = 2000000;
   const uint32_t available_memory_kib = 4000000;
@@ -425,18 +503,40 @@ TEST_F(SystemInfoCardProviderTest, memory) {
 
   ASSERT_EQ(results()[0]->title_text_vector().size(), 1u);
   const auto& title = results()[0]->title_text_vector()[0];
-  ASSERT_EQ(title.GetType(), ash::SearchResultTextItemType::kString);
+  EXPECT_EQ(title.GetType(), ash::SearchResultTextItemType::kString);
   EXPECT_EQ(title.GetText(), u"");
   EXPECT_TRUE(title.GetTextTags().empty());
 
   ASSERT_EQ(results()[0]->details_text_vector().size(), 1u);
   const auto& details = results()[0]->details_text_vector()[0];
-  ASSERT_EQ(details.GetType(), ash::SearchResultTextItemType::kString);
+  EXPECT_EQ(details.GetType(), ash::SearchResultTextItemType::kString);
   EXPECT_EQ(details.GetText(), u"3.8 GB of 7.6 GB available");
   EXPECT_TRUE(details.GetTextTags().empty());
 }
 
-TEST_F(SystemInfoCardProviderTest, battery) {
+TEST_F(SystemInfoCardProviderTest, MemoryProbeError) {
+  auto info = healthd_mojom::TelemetryInfo::New();
+  base::HistogramTester histogram_tester;
+
+  auto memory_result = healthd_mojom::MemoryResult::NewError(
+      CreateProbeError(healthd_mojom::ErrorType::kSystemUtilityError));
+  info->memory_result = std::move(memory_result);
+  ash::cros_healthd::FakeCrosHealthd::Get()
+      ->SetProbeTelemetryInfoResponseForTesting(info);
+
+  StartSearch(u"memory");
+  Wait();
+
+  EXPECT_TRUE(results().empty());
+  VerifyProbeErrorBucketCounts(histogram_tester, kProbeErrorMemoryInfo,
+                               /*expected_unknown_error=*/0,
+                               /*expected_parse_error=*/0,
+                               /*expected_service_unavailable=*/0,
+                               /*expected_system_utility_error=*/1,
+                               /*expected_file_read_error=*/0);
+}
+
+TEST_F(SystemInfoCardProviderTest, Battery) {
   const double charge_full_now = 20;
   const double charge_full_design = 26;
   const int32_t cycle_count = 500;
@@ -503,7 +603,95 @@ TEST_F(SystemInfoCardProviderTest, battery) {
   EXPECT_TRUE(updated_title.GetTextTags().empty());
 }
 
-TEST_F(SystemInfoCardProviderTest, storage) {
+TEST_F(SystemInfoCardProviderTest, BatteryProbeError) {
+  auto info = healthd_mojom::TelemetryInfo::New();
+  base::HistogramTester histogram_tester;
+
+  auto battery_result = healthd_mojom::BatteryResult::NewError(
+      CreateProbeError(healthd_mojom::ErrorType::kParseError));
+  info->battery_result = std::move(battery_result);
+  ash::cros_healthd::FakeCrosHealthd::Get()
+      ->SetProbeTelemetryInfoResponseForTesting(info);
+
+  const auto power_source =
+      power_manager::PowerSupplyProperties_ExternalPower_AC;
+  const auto battery_state =
+      power_manager::PowerSupplyProperties_BatteryState_CHARGING;
+  const bool is_calculating_battery_time = false;
+  const int64_t time_to_full_secs = 1000;
+  const int64_t time_to_empty_secs = 0;
+  const double battery_percent = 94.0;
+
+  SetPowerManagerProperties(power_source, battery_state,
+                            is_calculating_battery_time, time_to_full_secs,
+                            time_to_empty_secs, battery_percent);
+
+  StartSearch(u"battery");
+  Wait();
+
+  VerifyProbeErrorBucketCounts(histogram_tester, kProbeErrorBatteryInfo,
+                               /*expected_unknown_error=*/0,
+                               /*expected_parse_error=*/1,
+                               /*expected_service_unavailable=*/0,
+                               /*expected_system_utility_error=*/0,
+                               /*expected_file_read_error=*/0);
+  EXPECT_TRUE(results().empty());
+}
+
+TEST_F(SystemInfoCardProviderTest, BatteryProbeDataError) {
+  auto info = healthd_mojom::TelemetryInfo::New();
+  base::HistogramTester histogram_tester;
+
+  SetCrosHealthdBatteryHealthResponse(0, 0, 0);
+
+  const auto power_source =
+      power_manager::PowerSupplyProperties_ExternalPower_AC;
+  const auto battery_state =
+      power_manager::PowerSupplyProperties_BatteryState_CHARGING;
+  const bool is_calculating_battery_time = false;
+  const int64_t time_to_full_secs = 1000;
+  const int64_t time_to_empty_secs = 0;
+  const double battery_percent = 94.0;
+
+  SetPowerManagerProperties(power_source, battery_state,
+                            is_calculating_battery_time, time_to_full_secs,
+                            time_to_empty_secs, battery_percent);
+
+  StartSearch(u"battery");
+  Wait();
+
+  VerifyBatteryDataErrorBucketCounts(histogram_tester,
+                                     /*expected_no_data_error=*/0,
+                                     /*expected_not_a_number_error=*/0,
+                                     /*expected_expectation_not_met_error=*/1);
+  EXPECT_TRUE(results().empty());
+}
+
+TEST_F(SystemInfoCardProviderTest, BatteryPowerManagerError) {
+  auto info = healthd_mojom::TelemetryInfo::New();
+  base::HistogramTester histogram_tester;
+
+  const double charge_full_now = 20;
+  const double charge_full_design = 26;
+  const int32_t cycle_count = 500;
+
+  SetCrosHealthdBatteryHealthResponse(charge_full_now, charge_full_design,
+                                      cycle_count);
+
+  absl::nullopt_t props = absl::nullopt;
+  chromeos::FakePowerManagerClient::Get()->UpdatePowerProperties(props);
+
+  StartSearch(u"battery");
+  Wait();
+
+  VerifyBatteryDataErrorBucketCounts(histogram_tester,
+                                     /*expected_no_data_error=*/1,
+                                     /*expected_not_a_number_error=*/0,
+                                     /*expected_expectation_not_met_error=*/0);
+  EXPECT_TRUE(results().empty());
+}
+
+TEST_F(SystemInfoCardProviderTest, Storage) {
   base::ScopedAllowBlockingForTesting allow_blocking;
 
   // Get local filesystem storage statistics.

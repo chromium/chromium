@@ -25,20 +25,6 @@ namespace healthd = ash::cros_healthd::mojom;
 
 constexpr int kMilliampsInAnAmp = 1000;
 
-// The enums below are used in histograms, do not remove/renumber entries. If
-// you're adding to any of these enums, update the corresponding enum listing in
-// tools/metrics/histograms/enums.xml: CrosDiagnosticsDataError.
-enum class DataError {
-  // Null or nullptr value.
-  kNoData = 0,
-  // For numeric values that are NaN.
-  kNotANumber = 1,
-  // Expectation about data not met. Ex. routing prefix is between zero and
-  // thirty-two.
-  kExpectationNotMet = 2,
-  kMaxValue = kExpectationNotMet,
-};
-
 const std::string GetMetricNameForSourceType(
     const base::StringPiece source_type) {
   if (source_type == "cpu info") {
@@ -70,11 +56,6 @@ void EmitCrosHealthdProbeError(const base::StringPiece source_type,
   base::UmaHistogramEnumeration(metric_name, error_type);
 }
 
-void EmitBatteryDataError(DataError error) {
-  base::UmaHistogramEnumeration("Apps.AppList.SystemInfoProvider.Error.Battery",
-                                error);
-}
-
 template <typename TResult, typename TTag>
 
 bool CheckResponse(const TResult& result,
@@ -100,6 +81,11 @@ bool CheckResponse(const TResult& result,
 
 }  // namespace
 
+void EmitBatteryDataError(BatteryDataError error) {
+  base::UmaHistogramEnumeration("Apps.AppList.SystemInfoProvider.Error.Battery",
+                                error);
+}
+
 healthd::MemoryInfo* GetMemoryInfo(const healthd::TelemetryInfo& info) {
   const healthd::MemoryResultPtr& memory_result = info.memory_result;
   if (!CheckResponse(memory_result, healthd::MemoryResult::Tag::kMemoryInfo,
@@ -117,7 +103,25 @@ const healthd::BatteryInfo* GetBatteryInfo(const healthd::TelemetryInfo& info) {
     return nullptr;
   }
 
-  return battery_result->get_battery_info().get();
+  const healthd::BatteryInfo* battery_info =
+      battery_result->get_battery_info().get();
+  if (battery_info->charge_full == 0) {
+    LOG(ERROR) << "charge_full from battery_info should not be zero.";
+    EmitBatteryDataError(BatteryDataError::kExpectationNotMet);
+    return nullptr;
+  }
+
+  // Handle values in battery_info which could cause a SIGFPE. See b/227485637.
+  if (isnan(battery_info->charge_full) ||
+      isnan(battery_info->charge_full_design) ||
+      battery_info->charge_full_design == 0) {
+    LOG(ERROR) << "battery_info values could cause SIGFPE crash: { "
+               << "charge_full_design: " << battery_info->charge_full_design
+               << ", charge_full: " << battery_info->charge_full << " }";
+    return nullptr;
+  }
+
+  return battery_info;
 }
 
 healthd::CpuInfo* GetCpuInfo(const healthd::TelemetryInfo& info) {
@@ -195,26 +199,9 @@ void PopulateAverageScaledClockSpeed(const healthd::CpuInfo& cpu_info,
       total_scaled_ghz / cpu_info.physical_cpus[0]->logical_cpus.size());
 }
 
-void PopulateBatteryHealth(
-    const ash::cros_healthd::mojom::BatteryInfo& battery_info,
-    BatteryHealth& battery_health) {
+void PopulateBatteryHealth(const healthd::BatteryInfo& battery_info,
+                           BatteryHealth& battery_health) {
   battery_health.SetCycleCount(battery_info.cycle_count);
-
-  if (battery_info.charge_full == 0) {
-    LOG(ERROR) << "charge_full from battery_info should not be zero.";
-    EmitBatteryDataError(DataError::kExpectationNotMet);
-  }
-
-  // Handle values in battery_info which could cause a SIGFPE. See b/227485637.
-  if (isnan(battery_info.charge_full) ||
-      isnan(battery_info.charge_full_design) ||
-      battery_info.charge_full_design == 0) {
-    LOG(ERROR) << "battery_info values could cause SIGFPE crash: { "
-               << "charge_full_design: " << battery_info.charge_full_design
-               << ", charge_full: " << battery_info.charge_full << " }";
-    battery_health.SetBatteryWearPercentage(0);
-    return;
-  }
 
   double charge_full_now_milliamp_hours =
       battery_info.charge_full * kMilliampsInAnAmp;
