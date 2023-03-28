@@ -213,13 +213,6 @@ public class TabUiFeatureUtilities {
     public static Float sTabMinWidthForTesting;
 
     /**
-     * Set the min tab width for testing.
-     */
-    public static void setTabMinWidthForTesting(@Nullable Float minWidth) {
-        sTabMinWidthForTesting = minWidth;
-    }
-
-    /**
      * @return Whether the "Open in new tab in group" context menu item should show before the
      * "Open in new tab" item.
      */
