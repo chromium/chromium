@@ -58,7 +58,12 @@ class PLATFORM_EXPORT AgentGroupSchedulerImpl : public AgentGroupScheduler {
   scoped_refptr<MainThreadTaskQueue> compositor_task_queue_;
   scoped_refptr<base::SingleThreadTaskRunner> compositor_task_runner_;
   MainThreadSchedulerImpl& main_thread_scheduler_;  // Not owned.
-  Persistent<HeapHashSet<WeakMember<Agent>>> agents_;
+  Persistent<
+      HeapHashSet<WeakMember<Agent>, WTF::MemberHashRecordReplayId<Agent>>>
+      agents_;
+  Persistent<
+      HeapHashSet<Member<Agent>>>
+      replay_agents_strong_;
 
   BrowserInterfaceBrokerProxy broker_;
 };

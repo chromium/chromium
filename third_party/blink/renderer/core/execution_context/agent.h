@@ -114,12 +114,18 @@ class CORE_EXPORT Agent : public GarbageCollected<Agent>,
 
   RejectedPromises& GetRejectedPromises();
 
+  virtual int RecordReplayId() const {
+    return record_replay_id_;
+  }
+
  protected:
   Agent(v8::Isolate* isolate,
         const base::UnguessableToken& cluster_id,
         std::unique_ptr<v8::MicrotaskQueue> microtask_queue,
         bool is_origin_agent_cluster,
         bool origin_agent_cluster_left_as_default);
+
+  int record_replay_id_ = 0;
 
  private:
   scoped_refptr<RejectedPromises> rejected_promises_;

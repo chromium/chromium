@@ -31,7 +31,9 @@ void AnimationTimeline::AnimationAttached(Animation* animation) {
 
 void AnimationTimeline::AnimationDetached(Animation* animation) {
   animations_.erase(animation);
-  record_replay_animations_strong_.erase(animation);
+  if (recordreplay::IsRecordingOrReplaying("avoid-weak-pointers"))
+    record_replay_animations_strong_.erase(animation);
+
   animations_needing_update_.erase(animation);
   if (animation->Outdated())
     outdated_animation_count_--;
