@@ -188,8 +188,7 @@ ReplacementFragment::ReplacementFragment(Document* document,
       // register an event handler.
       &&
       !(shadow_ancestor_element && shadow_ancestor_element->GetLayoutObject() &&
-        shadow_ancestor_element->GetLayoutObject()
-            ->IsTextControlIncludingNG()) &&
+        shadow_ancestor_element->GetLayoutObject()->IsTextControl()) &&
       IsRichlyEditable(*editable_root)) {
     RemoveInterchangeNodes(fragment_);
     return;

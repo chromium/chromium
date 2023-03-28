@@ -1068,21 +1068,18 @@ class CORE_EXPORT LayoutObject : public GarbageCollected<LayoutObject>,
     NOT_DESTROYED();
     return IsTableSection() && !IsLayoutNGObject();
   }
-  bool IsTextAreaIncludingNG() const {
+  bool IsTextArea() const {
     NOT_DESTROYED();
-    return IsOfType(kLayoutObjectTextControlMultiLine) ||
-           IsOfType(kLayoutObjectNGTextControlMultiLine);
+    return IsOfType(kLayoutObjectNGTextControlMultiLine);
   }
-  bool IsTextControlIncludingNG() const {
+  bool IsTextControl() const {
     NOT_DESTROYED();
-    return IsOfType(kLayoutObjectTextControl) ||
-           IsOfType(kLayoutObjectNGTextControlMultiLine) ||
+    return IsOfType(kLayoutObjectNGTextControlMultiLine) ||
            IsOfType(kLayoutObjectNGTextControlSingleLine);
   }
-  bool IsTextFieldIncludingNG() const {
+  bool IsTextField() const {
     NOT_DESTROYED();
-    return IsOfType(kLayoutObjectTextControlSingleLine) ||
-           IsOfType(kLayoutObjectNGTextControlSingleLine);
+    return IsOfType(kLayoutObjectNGTextControlSingleLine);
   }
   bool IsVideo() const {
     NOT_DESTROYED();
@@ -3758,9 +3755,6 @@ class CORE_EXPORT LayoutObject : public GarbageCollected<LayoutObject>,
     kLayoutObjectTableCol,
     kLayoutObjectTableRow,
     kLayoutObjectTableSection,
-    kLayoutObjectTextControl,
-    kLayoutObjectTextControlMultiLine,
-    kLayoutObjectTextControlSingleLine,
     kLayoutObjectVideo,
     kLayoutObjectView,
     kLayoutObjectWidget,

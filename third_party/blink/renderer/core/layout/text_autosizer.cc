@@ -137,7 +137,7 @@ static bool IsIndependentDescendant(const LayoutBlock* layout_object) {
          (containing_block && containing_block->IsHorizontalWritingMode() !=
                                   layout_object->IsHorizontalWritingMode()) ||
          layout_object->StyleRef().IsDisplayReplacedType() ||
-         layout_object->IsTextAreaIncludingNG() ||
+         layout_object->IsTextArea() ||
          layout_object->StyleRef().UsedUserModify() != EUserModify::kReadOnly;
 }
 
@@ -792,7 +792,7 @@ bool TextAutosizer::ClusterHasEnoughTextToAutosize(
 
   // TextAreas and user-modifiable areas get a free pass to autosize regardless
   // of text content.
-  if (root->IsTextAreaIncludingNG() ||
+  if (root->IsTextArea() ||
       (root->Style() &&
        root->StyleRef().UsedUserModify() != EUserModify::kReadOnly)) {
     cluster->has_enough_text_to_autosize_ = kHasEnoughText;

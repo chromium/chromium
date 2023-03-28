@@ -1316,7 +1316,7 @@ Element* FocusController::NextFocusableElementForImeAndAutofill(
       return next_element;
     }
     LayoutObject* layout = next_element->GetLayoutObject();
-    if (layout && layout->IsTextControlIncludingNG()) {
+    if (layout && layout->IsTextControl()) {
       // TODO(crbug.com/1320441): Extend it for radio buttons and checkboxes.
       return next_element;
     }

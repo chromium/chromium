@@ -23,44 +23,19 @@
 #include "third_party/blink/renderer/core/layout/layout_text_control.h"
 
 #include "third_party/blink/renderer/core/css/style_change_reason.h"
-#include "third_party/blink/renderer/core/html/forms/html_text_area_element.h"
-#include "third_party/blink/renderer/core/html/forms/text_control_element.h"
-#include "third_party/blink/renderer/core/layout/hit_test_result.h"
-#include "third_party/blink/renderer/core/layout/layout_object_inlines.h"
+#include "third_party/blink/renderer/core/html/html_element.h"
+#include "third_party/blink/renderer/core/layout/layout_block.h"
+#include "third_party/blink/renderer/core/layout/text_run_constructor.h"
 #include "third_party/blink/renderer/core/page/chrome_client.h"
 #include "third_party/blink/renderer/core/page/page.h"
-#include "third_party/blink/renderer/core/scroll/scrollbar_theme.h"
 
 namespace blink {
 
-LayoutTextControl::LayoutTextControl(TextControlElement* element)
-    : LayoutBlockFlow(element) {
-  DCHECK(element);
-}
+namespace layout_text_control {
 
-LayoutTextControl::~LayoutTextControl() = default;
-
-TextControlElement* LayoutTextControl::GetTextControlElement() const {
-  NOT_DESTROYED();
-  return ToTextControl(GetNode());
-}
-
-TextControlInnerEditorElement* LayoutTextControl::InnerEditorElement() const {
-  NOT_DESTROYED();
-  return GetTextControlElement()->InnerEditorElement();
-}
-
-void LayoutTextControl::StyleDidChange(StyleDifference diff,
-                                       const ComputedStyle* old_style) {
-  NOT_DESTROYED();
-  LayoutBlockFlow::StyleDidChange(diff, old_style);
-  StyleDidChange(InnerEditorElement(), old_style, StyleRef());
-}
-
-// static
-void LayoutTextControl::StyleDidChange(HTMLElement* inner_editor,
-                                       const ComputedStyle* old_style,
-                                       const ComputedStyle& new_style) {
+void StyleDidChange(HTMLElement* inner_editor,
+                    const ComputedStyle* old_style,
+                    const ComputedStyle& new_style) {
   if (!inner_editor)
     return;
   LayoutBlock* inner_editor_layout_object =
@@ -89,20 +64,18 @@ void LayoutTextControl::StyleDidChange(HTMLElement* inner_editor,
   }
 }
 
-// static
-int LayoutTextControl::ScrollbarThickness(const LayoutBox& box) {
+int ScrollbarThickness(const LayoutBox& box) {
   const Page& page = *box.GetDocument().GetPage();
   return page.GetScrollbarTheme().ScrollbarThickness(
       page.GetChromeClient().WindowToViewportScalar(box.GetFrame(), 1.0f),
       box.StyleRef().ScrollbarWidth());
 }
 
-void LayoutTextControl::HitInnerEditorElement(
-    const LayoutBox& box,
-    HTMLElement& inner_editor,
-    HitTestResult& result,
-    const HitTestLocation& hit_test_location,
-    const PhysicalOffset& accumulated_offset) {
+void HitInnerEditorElement(const LayoutBox& box,
+                           HTMLElement& inner_editor,
+                           HitTestResult& result,
+                           const HitTestLocation& hit_test_location,
+                           const PhysicalOffset& accumulated_offset) {
   if (!inner_editor.GetLayoutObject())
     return;
 
@@ -155,7 +128,7 @@ static const char* const kFontFamiliesWithInvalidCharWidth[] = {
 // avgCharWidth from the width of a '0'. This only seems to apply to a fixed
 // number of Mac fonts, but, in order to get similar rendering across platforms,
 // we do this check for all platforms.
-bool LayoutTextControl::HasValidAvgCharWidth(const Font& font) {
+bool HasValidAvgCharWidth(const Font& font) {
   const SimpleFontData* font_data = font.PrimaryFont();
   DCHECK(font_data);
   if (!font_data)
@@ -185,8 +158,7 @@ bool LayoutTextControl::HasValidAvgCharWidth(const Font& font) {
   return !font_families_with_invalid_char_width_map->Contains(family);
 }
 
-// static
-float LayoutTextControl::GetAvgCharWidth(const ComputedStyle& style) {
+float GetAvgCharWidth(const ComputedStyle& style) {
   const Font& font = style.GetFont();
   const SimpleFontData* primary_font = font.PrimaryFont();
   if (primary_font && HasValidAvgCharWidth(font)) {
@@ -206,60 +178,6 @@ float LayoutTextControl::GetAvgCharWidth(const ComputedStyle& style) {
   return font.Width(text_run);
 }
 
-void LayoutTextControl::AddOutlineRects(Vector<PhysicalRect>& rects,
-                                        OutlineInfo* info,
-                                        const PhysicalOffset& additional_offset,
-                                        NGOutlineType) const {
-  NOT_DESTROYED();
-  rects.emplace_back(additional_offset, Size());
-  if (info)
-    *info = OutlineInfo::GetFromStyle(StyleRef());
-}
-
-LayoutObject* LayoutTextControl::LayoutSpecialExcludedChild(
-    bool relayout_children,
-    SubtreeLayoutScope& layout_scope) {
-  NOT_DESTROYED();
-  HTMLElement* placeholder = ToTextControl(GetNode())->PlaceholderElement();
-  LayoutObject* placeholder_layout_object =
-      placeholder ? placeholder->GetLayoutObject() : nullptr;
-  if (!placeholder_layout_object)
-    return nullptr;
-  if (relayout_children)
-    layout_scope.SetChildNeedsLayout(placeholder_layout_object);
-  return placeholder_layout_object;
-}
-
-LayoutUnit LayoutTextControl::FirstLineBoxBaseline() const {
-  NOT_DESTROYED();
-  if (ShouldApplyLayoutContainment())
-    return LayoutUnit(-1);
-
-  LayoutUnit result = LayoutBlock::FirstLineBoxBaseline();
-  if (result != -1)
-    return result;
-
-  // When the text is empty, |LayoutBlock::firstLineBoxBaseline()| cannot
-  // compute the baseline because lineboxes do not exist.
-  Element* inner_editor = InnerEditorElement();
-  if (!inner_editor || !inner_editor->GetLayoutObject())
-    return LayoutUnit(-1);
-
-  LayoutBlock* inner_editor_layout_object =
-      To<LayoutBlock>(inner_editor->GetLayoutObject());
-  const SimpleFontData* font_data =
-      inner_editor_layout_object->Style(true)->GetFont().PrimaryFont();
-  DCHECK(font_data);
-  if (!font_data)
-    return LayoutUnit(-1);
-
-  LayoutUnit baseline(font_data->GetFontMetrics().Ascent(kAlphabeticBaseline));
-  for (LayoutObject* box = inner_editor_layout_object; box && box != this;
-       box = box->Parent()) {
-    if (box->IsBox())
-      baseline += To<LayoutBox>(box)->LogicalTop();
-  }
-  return baseline;
-}
+}  // namespace layout_text_control
 
 }  // namespace blink

@@ -210,8 +210,6 @@ blink_core_sources_paint = [
   "table_row_painter.h",
   "table_section_painter.cc",
   "table_section_painter.h",
-  "text_control_single_line_painter.cc",
-  "text_control_single_line_painter.h",
   "text_decoration_info.cc",
   "text_decoration_info.h",
   "text_painter_base.cc",

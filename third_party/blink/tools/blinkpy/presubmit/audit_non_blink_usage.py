@@ -557,6 +557,7 @@ _CONFIG = [
             'keywords::.+',
             'layered_api::.+',
             'layout_invalidation_reason::.+',
+            'layout_text_control::.+',
             'media_constraints_impl::.+',
             'media_element_parser_helpers::.+',
             'file_system_access_error::.+',

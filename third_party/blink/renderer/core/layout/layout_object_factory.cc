@@ -25,8 +25,6 @@
 #include "third_party/blink/renderer/core/layout/layout_table_section.h"
 #include "third_party/blink/renderer/core/layout/layout_text.h"
 #include "third_party/blink/renderer/core/layout/layout_text_combine.h"
-#include "third_party/blink/renderer/core/layout/layout_text_control_multi_line.h"
-#include "third_party/blink/renderer/core/layout/layout_text_control_single_line.h"
 #include "third_party/blink/renderer/core/layout/layout_text_fragment.h"
 #include "third_party/blink/renderer/core/layout/layout_view.h"
 #include "third_party/blink/renderer/core/layout/ng/custom/layout_ng_custom.h"
@@ -42,9 +40,6 @@
 #include "third_party/blink/renderer/core/layout/ng/layout_ng_progress.h"
 #include "third_party/blink/renderer/core/layout/ng/layout_ng_ruby_as_block.h"
 #include "third_party/blink/renderer/core/layout/ng/layout_ng_ruby_text.h"
-#include "third_party/blink/renderer/core/layout/ng/layout_ng_text_control_inner_editor.h"
-#include "third_party/blink/renderer/core/layout/ng/layout_ng_text_control_multi_line.h"
-#include "third_party/blink/renderer/core/layout/ng/layout_ng_text_control_single_line.h"
 #include "third_party/blink/renderer/core/layout/ng/layout_ng_view.h"
 #include "third_party/blink/renderer/core/layout/ng/list/layout_ng_inside_list_marker.h"
 #include "third_party/blink/renderer/core/layout/ng/list/layout_ng_list_item.h"
@@ -245,30 +240,6 @@ LayoutObject* LayoutObjectFactory::CreateSliderTrack(Node& node,
                                                      LegacyLayout legacy) {
   return CreateObject<LayoutBlock, LayoutNGBlockFlow, LayoutSliderTrack>(
       node, legacy);
-}
-
-LayoutObject* LayoutObjectFactory::CreateTextControlInnerEditor(
-    Node& node,
-    const ComputedStyle& style,
-    LegacyLayout legacy) {
-  return CreateObject<LayoutBlockFlow, LayoutNGTextControlInnerEditor,
-                      LayoutTextControlInnerEditor>(node, legacy);
-}
-
-LayoutObject* LayoutObjectFactory::CreateTextControlMultiLine(
-    Node& node,
-    const ComputedStyle& style,
-    LegacyLayout legacy) {
-  return CreateObject<LayoutBlockFlow, LayoutNGTextControlMultiLine,
-                      LayoutTextControlMultiLine>(node, legacy);
-}
-
-LayoutObject* LayoutObjectFactory::CreateTextControlSingleLine(
-    Node& node,
-    const ComputedStyle& style,
-    LegacyLayout legacy) {
-  return CreateObject<LayoutBlockFlow, LayoutNGTextControlSingleLine,
-                      LayoutTextControlSingleLine>(node, legacy);
 }
 
 LayoutText* LayoutObjectFactory::CreateText(Node* node,

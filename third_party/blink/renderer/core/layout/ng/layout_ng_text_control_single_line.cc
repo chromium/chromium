@@ -39,8 +39,8 @@ void LayoutNGTextControlSingleLine::StyleDidChange(
     StyleDifference style_diff,
     const ComputedStyle* old_style) {
   LayoutNGBlockFlow::StyleDidChange(style_diff, old_style);
-  LayoutTextControl::StyleDidChange(InnerEditorElement(), old_style,
-                                    StyleRef());
+  layout_text_control::StyleDidChange(InnerEditorElement(), old_style,
+                                      StyleRef());
 }
 
 bool LayoutNGTextControlSingleLine::NodeAtPoint(
@@ -67,7 +67,7 @@ bool LayoutNGTextControlSingleLine::NodeAtPoint(
   if (result.InnerNode()->IsDescendantOf(inner_editor) ||
       result.InnerNode() == GetNode() ||
       (container && container == result.InnerNode())) {
-    LayoutTextControl::HitInnerEditorElement(
+    layout_text_control::HitInnerEditorElement(
         *this, *inner_editor, result, hit_test_location, accumulated_offset);
   }
   return stop_hit_testing;

@@ -380,9 +380,9 @@ bool AXLayoutObject::IsPlaceholder() const {
     return false;
 
   LayoutObject* parent_layout_object = parent_object->GetLayoutObject();
-  if (!parent_layout_object ||
-      !parent_layout_object->IsTextControlIncludingNG())
+  if (!parent_layout_object || !parent_layout_object->IsTextControl()) {
     return false;
+  }
 
   const auto* text_control_element =
       To<TextControlElement>(parent_layout_object->GetNode());

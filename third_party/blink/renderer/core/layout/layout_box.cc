@@ -155,9 +155,9 @@ LayoutUnit TextAreaIntrinsicInlineSize(const HTMLTextAreaElement& textarea,
   //
   // See |NGBlockLayoutAlgorithm::ComputeMinMaxSizes()| and |LayoutBlock::
   // ComputeIntrinsicLogicalWidths()|.
-  return LayoutUnit(ceilf(LayoutTextControl::GetAvgCharWidth(box.StyleRef()) *
+  return LayoutUnit(ceilf(layout_text_control::GetAvgCharWidth(box.StyleRef()) *
                           textarea.cols())) +
-         LayoutTextControl::ScrollbarThickness(box);
+         layout_text_control::ScrollbarThickness(box);
 }
 
 LayoutUnit TextFieldIntrinsicInlineSize(const HTMLInputElement& input,
@@ -167,13 +167,14 @@ LayoutUnit TextFieldIntrinsicInlineSize(const HTMLInputElement& input,
   if (factor <= 0)
     factor = 20;
 
-  const float char_width = LayoutTextControl::GetAvgCharWidth(box.StyleRef());
+  const float char_width = layout_text_control::GetAvgCharWidth(box.StyleRef());
   float float_result = char_width * factor;
 
   float max_char_width = 0.f;
   const Font& font = box.StyleRef().GetFont();
-  if (LayoutTextControl::HasValidAvgCharWidth(font))
+  if (layout_text_control::HasValidAvgCharWidth(font)) {
     max_char_width = font.PrimaryFont()->MaxCharWidth();
+  }
 
   // For text inputs, IE adds some extra width.
   if (max_char_width > char_width)
@@ -224,7 +225,7 @@ LayoutUnit TextAreaIntrinsicBlockSize(const HTMLTextAreaElement& textarea,
   if (box.StyleRef().OverflowInlineDirection() == EOverflow::kScroll ||
       (box.StyleRef().OverflowInlineDirection() == EOverflow::kAuto &&
        inner_style.OverflowWrap() == EOverflowWrap::kNormal))
-    scrollbar_thickness = LayoutTextControl::ScrollbarThickness(box);
+    scrollbar_thickness = layout_text_control::ScrollbarThickness(box);
   return inner_box.LineHeight(true,
                               inner_style.IsHorizontalWritingMode()
                                   ? kHorizontalLine
@@ -1401,9 +1402,10 @@ LayoutUnit LayoutBox::DefaultIntrinsicContentBlockSize() const {
     return ListBoxItemHeight(*select, *this) * select->ListBoxSize() -
            ComputeLogicalScrollbars().BlockSum();
   }
-  if (IsTextFieldIncludingNG())
+  if (IsTextField()) {
     return TextFieldIntrinsicBlockSize(*To<HTMLInputElement>(GetNode()), *this);
-  if (IsTextAreaIncludingNG()) {
+  }
+  if (IsTextArea()) {
     return TextAreaIntrinsicBlockSize(*To<HTMLTextAreaElement>(GetNode()),
                                       *this);
   }
@@ -2969,7 +2971,7 @@ PhysicalRect LayoutBox::OverflowClipRect(
   if (UNLIKELY(input)) {
     // As for LayoutButton, ControlClip is to for not BUTTONs but INPUT
     // buttons for IE/Firefox compatibility.
-    if (IsTextFieldIncludingNG() || IsButton()) {
+    if (IsTextField() || IsButton()) {
       DCHECK(HasControlClip());
       PhysicalRect control_clip = PhysicalPaddingBoxRect();
       control_clip.Move(location);
@@ -2989,7 +2991,7 @@ PhysicalRect LayoutBox::OverflowClipRect(
 
 bool LayoutBox::HasControlClip() const {
   NOT_DESTROYED();
-  return UNLIKELY(IsTextFieldIncludingNG() || IsMenuList(this) ||
+  return UNLIKELY(IsTextField() || IsMenuList(this) ||
                   (IsButton() && IsA<HTMLInputElement>(GetNode())));
 }
 
@@ -4587,12 +4589,14 @@ void LayoutBox::ComputeLogicalHeight(
     if (default_height != kIndefiniteSize) {
       height = default_height + BorderAndPaddingLogicalHeight();
       // <textarea>'s intrinsic size should ignore scrollbar existence.
-      if (!IsTextAreaIncludingNG())
+      if (!IsTextArea()) {
         height += ComputeLogicalScrollbars().BlockSum();
+      }
       // FIXME: The logical height of the inner editor box should have been
       // added before calling ComputeLogicalHeight to avoid this hack.
-      if (IsTextControlIncludingNG())
+      if (IsTextControl()) {
         SetIntrinsicContentLogicalHeight(default_height);
+      }
     } else if (ShouldApplySizeContainment()) {
       height = BorderAndPaddingLogicalHeight() +
                ComputeLogicalScrollbars().BlockSum();

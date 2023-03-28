@@ -23,76 +23,32 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_LAYOUT_TEXT_CONTROL_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_LAYOUT_TEXT_CONTROL_H_
 
-#include "third_party/blink/renderer/core/core_export.h"
-#include "third_party/blink/renderer/core/layout/layout_block_flow.h"
-
 namespace blink {
 
-class TextControlElement;
-class TextControlInnerEditorElement;
+class ComputedStyle;
+class Font;
+class HTMLElement;
+class HitTestLocation;
+class HitTestResult;
+class LayoutBox;
+struct PhysicalOffset;
 
-class CORE_EXPORT LayoutTextControl : public LayoutBlockFlow {
- public:
-  ~LayoutTextControl() override;
+namespace layout_text_control {
 
-  TextControlElement* GetTextControlElement() const;
-  const char* GetName() const override {
-    NOT_DESTROYED();
-    return "LayoutTextControl";
-  }
+void StyleDidChange(HTMLElement* inner_editor,
+                    const ComputedStyle* old_style,
+                    const ComputedStyle& new_style);
+int ScrollbarThickness(const LayoutBox& box);
+float GetAvgCharWidth(const ComputedStyle& style);
+bool HasValidAvgCharWidth(const Font& font);
 
-  bool CreatesNewFormattingContext() const final {
-    NOT_DESTROYED();
-    // INPUT and other replaced elements rendered by Blink itself should be
-    // completely contained.
-    return true;
-  }
+void HitInnerEditorElement(const LayoutBox& box,
+                           HTMLElement& inner_editor,
+                           HitTestResult&,
+                           const HitTestLocation&,
+                           const PhysicalOffset& accumulated_offset);
 
-  static void StyleDidChange(HTMLElement* inner_editor,
-                             const ComputedStyle* old_style,
-                             const ComputedStyle& new_style);
-  static int ScrollbarThickness(const LayoutBox& box);
-  static float GetAvgCharWidth(const ComputedStyle& style);
-  static bool HasValidAvgCharWidth(const Font& font);
-
-  static void HitInnerEditorElement(const LayoutBox& box,
-                                    HTMLElement& inner_editor,
-                                    HitTestResult&,
-                                    const HitTestLocation&,
-                                    const PhysicalOffset& accumulated_offset);
-
- protected:
-  LayoutTextControl(TextControlElement*);
-
-  // This convenience function should not be made public because
-  // innerEditorElement may outlive the layout tree.
-  TextControlInnerEditorElement* InnerEditorElement() const;
-
-  void StyleDidChange(StyleDifference, const ComputedStyle* old_style) override;
-
-  LayoutObject* LayoutSpecialExcludedChild(bool relayout_children,
-                                           SubtreeLayoutScope&) override;
-
-  LayoutUnit FirstLineBoxBaseline() const override;
-
-  bool IsOfType(LayoutObjectType type) const override {
-    NOT_DESTROYED();
-    return type == kLayoutObjectTextControl || LayoutBlockFlow::IsOfType(type);
-  }
-
- private:
-  void RemoveLeftoverAnonymousBlock(LayoutBlock*) final { NOT_DESTROYED(); }
-
-  void AddOutlineRects(Vector<PhysicalRect>&,
-                       OutlineInfo*,
-                       const PhysicalOffset& additional_offset,
-                       NGOutlineType) const final;
-
-  bool CanBeProgrammaticallyScrolled() const final {
-    NOT_DESTROYED();
-    return true;
-  }
-};
+}  // namespace layout_text_control
 
 }  // namespace blink
 

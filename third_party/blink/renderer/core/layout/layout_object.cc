@@ -180,8 +180,9 @@ inline bool MightTraversePhysicalFragments(const LayoutObject& obj) {
     return false;
   // Text controls have some logic in the layout objects that will be missed if
   // we traverse the fragment tree when hit-testing.
-  if (obj.IsTextControlIncludingNG())
+  if (obj.IsTextControl()) {
     return false;
+  }
   return true;
 }
 
@@ -1352,8 +1353,9 @@ static inline bool ObjectIsRelayoutBoundary(const LayoutObject* object) {
   if (!style->Width().IsFixed() || !style->Height().IsFixed())
     return false;
 
-  if (object->IsTextControlIncludingNG())
+  if (object->IsTextControl()) {
     return true;
+  }
 
   if (!object->ShouldClipOverflowAlongBothAxis())
     return false;
@@ -1785,8 +1787,9 @@ bool LayoutObject::ComputeIsFixedContainer(const ComputedStyle* style) const {
   // have (C++) code that assumes that the elements are indeed contained by the
   // text control. So just make sure this is the case.
   if (IsA<LayoutView>(this) || IsSVGForeignObjectIncludingNG() ||
-      IsTextControlIncludingNG())
+      IsTextControl()) {
     return true;
+  }
 
   // crbug.com/1153042: If <fieldset> is a fixed container, its anonymous
   // content box should be a fixed container.

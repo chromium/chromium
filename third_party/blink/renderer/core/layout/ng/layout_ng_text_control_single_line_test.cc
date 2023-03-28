@@ -2,19 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "third_party/blink/renderer/core/layout/layout_text_control_single_line.h"
-
-#include "build/build_config.h"
 #include "third_party/blink/renderer/core/testing/core_unit_test_helper.h"
-#include "ui/base/ui_base_features.h"
 
 namespace blink {
 
 namespace {
 
-class LayoutTextControlSingleLineTest : public RenderingTest {};
+class LayoutNGTextControlSingleLineTest : public RenderingTest {};
 
-TEST_F(LayoutTextControlSingleLineTest, VisualOverflowCleared) {
+TEST_F(LayoutNGTextControlSingleLineTest, VisualOverflowCleared) {
   SetBodyInnerHTML(R"HTML(
     <style>
       #input {

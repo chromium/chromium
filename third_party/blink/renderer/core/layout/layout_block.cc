@@ -1523,8 +1523,9 @@ MinMaxSizes LayoutBlock::ComputeIntrinsicLogicalWidths() const {
     if (default_inline_size != kIndefiniteSize) {
       sizes.max_size += default_inline_size;
       // <textarea>'s intrinsic size should ignore scrollbar existence.
-      if (IsTextAreaIncludingNG())
+      if (IsTextArea()) {
         sizes -= scrollbar_thickness;
+      }
       if (!StyleRef().LogicalWidth().IsPercentOrCalc())
         sizes.min_size = sizes.max_size;
       return sizes;

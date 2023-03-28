@@ -76,15 +76,6 @@ class LayoutObjectFactory {
   static LayoutObject* CreateSliderTrack(Node& node,
                                          const ComputedStyle& style,
                                          LegacyLayout legacy);
-  static LayoutObject* CreateTextControlInnerEditor(Node& node,
-                                                    const ComputedStyle& style,
-                                                    LegacyLayout legacy);
-  static LayoutObject* CreateTextControlMultiLine(Node& node,
-                                                  const ComputedStyle& style,
-                                                  LegacyLayout legacy);
-  static LayoutObject* CreateTextControlSingleLine(Node& node,
-                                                   const ComputedStyle& style,
-                                                   LegacyLayout legacy);
 
   static LayoutText* CreateText(Node*, scoped_refptr<StringImpl>, LegacyLayout);
   static LayoutText* CreateTextCombine(Node*,
