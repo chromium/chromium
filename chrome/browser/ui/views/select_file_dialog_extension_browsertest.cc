@@ -24,6 +24,7 @@
 #include "build/build_config.h"
 #include "chrome/browser/ash/file_manager/file_manager_test_util.h"
 #include "chrome/browser/ash/file_manager/volume_manager.h"
+#include "chrome/browser/chromeos/policy/dlp/dlp_file_destination.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_rules_manager_factory.h"
 #include "chrome/browser/chromeos/policy/dlp/mock_dlp_rules_manager.h"
 #include "chrome/browser/extensions/extension_browsertest.h"
@@ -763,14 +764,14 @@ class SelectFileDialogExtensionPolicyTest
 
     MOCK_METHOD(void,
                 CheckIfDownloadAllowed,
-                (const DlpFileDestination&,
+                (const policy::DlpFileDestination&,
                  const base::FilePath&,
                  base::OnceCallback<void(bool)>),
                 (override));
     MOCK_METHOD(void,
                 FilterDisallowedUploads,
                 (std::vector<ui::SelectedFileInfo>,
-                 const DlpFileDestination&,
+                 const policy::DlpFileDestination&,
                  base::OnceCallback<void(std::vector<ui::SelectedFileInfo>)>),
                 (override));
   };
@@ -822,9 +823,8 @@ IN_PROC_BROWSER_TEST_P(SelectFileDialogExtensionPolicyTest, DlpDownloadAllow) {
                                      &caller));
 
   EXPECT_CALL(*mock_files_controller_.get(),
-              CheckIfDownloadAllowed(
-                  policy::DlpFilesController::DlpFileDestination(url),
-                  test_file, base::test::IsNotNullCallback()))
+              CheckIfDownloadAllowed(policy::DlpFileDestination(url), test_file,
+                                     base::test::IsNotNullCallback()))
       .WillOnce(base::test::RunOnceCallback<2>(true));
 
   // Click the "Save" button.
@@ -855,9 +855,8 @@ IN_PROC_BROWSER_TEST_P(SelectFileDialogExtensionPolicyTest, DlpDownloadBlock) {
                                      &caller));
 
   EXPECT_CALL(*mock_files_controller_.get(),
-              CheckIfDownloadAllowed(
-                  policy::DlpFilesController::DlpFileDestination(url),
-                  test_file, base::test::IsNotNullCallback()))
+              CheckIfDownloadAllowed(policy::DlpFileDestination(url), test_file,
+                                     base::test::IsNotNullCallback()))
       .WillOnce(base::test::RunOnceCallback<2>(false));
 
   // Click the "Save" button.
@@ -904,9 +903,8 @@ IN_PROC_BROWSER_TEST_P(SelectFileDialogExtensionPolicyTest, DlpUploadAllow) {
   selected_files.push_back(std::move(selected_file));
   EXPECT_CALL(
       *mock_files_controller_.get(),
-      FilterDisallowedUploads(
-          selected_files, policy::DlpFilesController::DlpFileDestination(url),
-          base::test::IsNotNullCallback()))
+      FilterDisallowedUploads(selected_files, policy::DlpFileDestination(url),
+                              base::test::IsNotNullCallback()))
       .WillOnce(base::test::RunOnceCallback<2>(selected_files));
 
   // Click the "Save" button.
@@ -952,10 +950,9 @@ IN_PROC_BROWSER_TEST_P(SelectFileDialogExtensionPolicyTest, DlpUploadBlock) {
   selected_file.virtual_path = test_file_virtual_path;
   selected_files.push_back(std::move(selected_file));
   EXPECT_CALL(*mock_files_controller_.get(),
-              FilterDisallowedUploads(
-                  std::move(selected_files),
-                  policy::DlpFilesController::DlpFileDestination(url),
-                  base::test::IsNotNullCallback()))
+              FilterDisallowedUploads(std::move(selected_files),
+                                      policy::DlpFileDestination(url),
+                                      base::test::IsNotNullCallback()))
       .WillOnce(
           base::test::RunOnceCallback<2>(std::vector<ui::SelectedFileInfo>()));
 

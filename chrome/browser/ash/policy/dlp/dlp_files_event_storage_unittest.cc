@@ -17,6 +17,7 @@
 #include "base/test/test_future.h"
 #include "base/test/test_mock_time_task_runner.h"
 #include "base/time/time.h"
+#include "chrome/browser/chromeos/policy/dlp/dlp_file_destination.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_histogram_helper.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_rules_manager.h"
 #include "chrome/test/base/testing_profile.h"
@@ -66,9 +67,8 @@ TEST_F(DlpFilesEventStorageTest, UpsertEvents) {
       base::MakeRefCounted<base::TestMockTimeTaskRunner>();
   storage.SetTaskRunnerForTesting(task_runner);
 
-  const auto dst1 = DlpFilesController::DlpFileDestination(kExampleUrl1);
-  const auto dst2 = DlpFilesController::DlpFileDestination(
-      DlpRulesManager::Component::kDrive);
+  const auto dst1 = DlpFileDestination(kExampleUrl1);
+  const auto dst2 = DlpFileDestination(DlpRulesManager::Component::kDrive);
 
   // Insertion
   ASSERT_TRUE(storage.StoreEventAndCheckIfItShouldBeReported(kInode1, dst1));
@@ -114,8 +114,8 @@ TEST_F(DlpFilesEventStorageTest, LimitEvents) {
   for (size_t inode = 0; inode < max_inode; ++inode) {
     for (size_t dst_index = 0; dst_index < max_dst_index; ++dst_index) {
       count++;
-      auto dst = DlpFilesController::DlpFileDestination(
-          "https://example" + base::NumberToString(dst_index) + ".com/");
+      auto dst = DlpFileDestination("https://example" +
+                                    base::NumberToString(dst_index) + ".com/");
       if (count <= kEntriesLimit) {
         ASSERT_TRUE(storage.StoreEventAndCheckIfItShouldBeReported(inode, dst));
         ASSERT_THAT(storage.GetSizeForTesting(), count);

@@ -61,6 +61,7 @@
 #include "chrome/browser/ash/fileapi/recent_disk_source.h"
 #include "chrome/browser/ash/policy/dlp/dlp_files_controller.h"
 #include "chrome/browser/browser_process.h"
+#include "chrome/browser/chromeos/policy/dlp/dlp_file_destination.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_rules_manager.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_rules_manager_factory.h"
 #include "chrome/browser/metrics/chrome_metrics_service_accessor.h"
@@ -1055,7 +1056,7 @@ FileManagerPrivateInternalGetDlpMetadataFunction::Run() {
   policy::DlpFilesController* files_controller =
       rules_manager->GetDlpFilesController();
 
-  absl::optional<policy::DlpFilesController::DlpFileDestination> destination;
+  absl::optional<policy::DlpFileDestination> destination;
   content::WebContents* web_contents = GetSenderWebContents();
   if (!web_contents) {
     LOG(WARNING) << "Failed to locate WebContents";
@@ -1188,7 +1189,7 @@ FileManagerPrivateGetDlpBlockedComponentsFunction::Run() {
 
 ExtensionFunction::ResponseAction
 FileManagerPrivateGetDialogCallerFunction::Run() {
-  absl::optional<policy::DlpFilesController::DlpFileDestination> caller =
+  absl::optional<policy::DlpFileDestination> caller =
       SelectFileDialogExtensionUserData::GetDialogCallerForWebContents(
           GetSenderWebContents());
   base::Value::Dict info;

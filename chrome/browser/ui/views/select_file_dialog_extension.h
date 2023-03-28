@@ -11,6 +11,7 @@
 
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ash/policy/dlp/dlp_files_controller.h"
+#include "chrome/browser/chromeos/policy/dlp/dlp_file_destination.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/color/color_provider_source_observer.h"
 #include "ui/gfx/native_widget_types.h"  // gfx::NativeWindow
@@ -102,8 +103,7 @@ class SelectFileDialogExtension : public ui::SelectFileDialog {
     bool is_lacros = false;
     // The URL or Component type of the caller that opened the dialog (Save
     // As/File Picker).
-    absl::optional<policy::DlpFilesController::DlpFileDestination>
-        dialog_caller;
+    absl::optional<policy::DlpFileDestination> dialog_caller;
   };
   void SelectFileWithFileManagerParams(Type type,
                                        const std::u16string& title,
@@ -154,8 +154,7 @@ class SelectFileDialogExtension : public ui::SelectFileDialog {
 
   // Applies DLP policies if there's any, then notifies listeners accordingly.
   void ApplyPolicyAndNotifyListener(
-      absl::optional<policy::DlpFilesController::DlpFileDestination>
-          dialog_caller);
+      absl::optional<policy::DlpFileDestination> dialog_caller);
 
   // Invokes the appropriate file selection callback on our listener.
   void NotifyListener(std::vector<ui::SelectedFileInfo> selection_files);

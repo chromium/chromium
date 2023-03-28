@@ -14,7 +14,7 @@
 #include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
-#include "chrome/browser/ash/policy/dlp/dlp_files_controller.h"
+#include "chrome/browser/chromeos/policy/dlp/dlp_file_destination.h"
 
 namespace policy {
 
@@ -35,9 +35,8 @@ class DlpFilesEventStorage {
   // recent previous call has been performed with the same `inode` and any
   // `dst`. Finally, it returns false also when the current number of entries
   // in `events_` is `entries_limit_`.
-  bool StoreEventAndCheckIfItShouldBeReported(
-      ino64_t inode,
-      const DlpFilesController::DlpFileDestination& dst);
+  bool StoreEventAndCheckIfItShouldBeReported(ino64_t inode,
+                                              const DlpFileDestination& dst);
 
   // Returns the time during which an event is filtered if an exactly similar
   // one has been already received.
@@ -62,21 +61,19 @@ class DlpFilesEventStorage {
     base::OneShotTimer eviction_timer;
   };
 
-  using DestinationsMap =
-      std::map<DlpFilesController::DlpFileDestination, EventEntry>;
+  using DestinationsMap = std::map<DlpFileDestination, EventEntry>;
   using EventsMap = base::flat_map<ino64_t, DestinationsMap>;
 
   // Adds a new destination for an existing inode.
   void AddDestinationToInode(EventsMap::iterator inode_it,
                              ino64_t inode,
-                             const DlpFilesController::DlpFileDestination& dst,
+                             const DlpFileDestination& dst,
                              const base::TimeTicks timestamp);
 
   // Inserts a new (inode, destination) pair.
-  void InsertNewInodeAndDestinationPair(
-      ino64_t inode,
-      const DlpFilesController::DlpFileDestination& dst,
-      const base::TimeTicks timestamp);
+  void InsertNewInodeAndDestinationPair(ino64_t inode,
+                                        const DlpFileDestination& dst,
+                                        const base::TimeTicks timestamp);
 
   // Updates an existing (inode, destination) pair.
   void UpdateInodeAndDestinationPair(DestinationsMap::iterator dst_it,
@@ -85,12 +82,11 @@ class DlpFilesEventStorage {
   // Starts the eviction timer for an (inode, destination) pair. When the timer
   // runs out of time, it calls `OnEvictionTimerUp`.
   void StartEvictionTimer(ino64_t inode,
-                          const DlpFilesController::DlpFileDestination& dst,
+                          const DlpFileDestination& dst,
                           EventEntry& event_value);
 
   // Removes the given (inode, destination) pair from `events_`.
-  void OnEvictionTimerUp(ino64_t inode,
-                         DlpFilesController::DlpFileDestination dst);
+  void OnEvictionTimerUp(ino64_t inode, DlpFileDestination dst);
 
   EventsMap events_;
 

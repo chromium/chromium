@@ -8,6 +8,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/single_thread_task_runner.h"
+#include "chrome/browser/chromeos/policy/dlp/dlp_file_destination.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_histogram_helper.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_rules_manager.h"
 
@@ -26,7 +27,7 @@ DlpFilesEventStorage::EventEntry::~EventEntry() = default;
 
 bool DlpFilesEventStorage::StoreEventAndCheckIfItShouldBeReported(
     ino64_t inode,
-    const DlpFilesController::DlpFileDestination& dst) {
+    const DlpFileDestination& dst) {
   if (entries_num_ == entries_num_limit_) {
     // If we end up here we probably have already spammed the server with a lot
     // of events, better to stop for a while.
@@ -83,7 +84,7 @@ void DlpFilesEventStorage::SetTaskRunnerForTesting(
 void DlpFilesEventStorage::AddDestinationToInode(
     EventsMap::iterator inode_it,
     ino64_t inode,
-    const DlpFilesController::DlpFileDestination& dst,
+    const DlpFileDestination& dst,
     const base::TimeTicks timestamp) {
   const auto [it, _] = inode_it->second.emplace(dst, timestamp);
   StartEvictionTimer(inode, dst, it->second);
@@ -94,10 +95,10 @@ void DlpFilesEventStorage::AddDestinationToInode(
 
 void DlpFilesEventStorage::InsertNewInodeAndDestinationPair(
     ino64_t inode,
-    const DlpFilesController::DlpFileDestination& dst,
+    const DlpFileDestination& dst,
     const base::TimeTicks timestamp) {
-  const auto [inode_it, _] = events_.emplace(
-      inode, std::map<DlpFilesController::DlpFileDestination, EventEntry>());
+  const auto [inode_it, _] =
+      events_.emplace(inode, std::map<DlpFileDestination, EventEntry>());
   const auto [dst_it, __] = inode_it->second.emplace(dst, timestamp);
   StartEvictionTimer(inode, dst, dst_it->second);
   entries_num_++;
@@ -115,10 +116,9 @@ void DlpFilesEventStorage::UpdateInodeAndDestinationPair(
                     entries_num_limit_);
 }
 
-void DlpFilesEventStorage::StartEvictionTimer(
-    ino64_t inode,
-    const DlpFilesController::DlpFileDestination& dst,
-    EventEntry& event_value) {
+void DlpFilesEventStorage::StartEvictionTimer(ino64_t inode,
+                                              const DlpFileDestination& dst,
+                                              EventEntry& event_value) {
   event_value.eviction_timer.SetTaskRunner(task_runner_);
   event_value.eviction_timer.Start(
       FROM_HERE, cooldown_delta_,
@@ -126,9 +126,8 @@ void DlpFilesEventStorage::StartEvictionTimer(
                      base::Unretained(this), inode, dst));
 }
 
-void DlpFilesEventStorage::OnEvictionTimerUp(
-    ino64_t inode,
-    DlpFilesController::DlpFileDestination dst) {
+void DlpFilesEventStorage::OnEvictionTimerUp(ino64_t inode,
+                                             DlpFileDestination dst) {
   auto event_it = events_.find(inode);
   DCHECK(event_it != events_.end());
   DCHECK(event_it->second.count(dst));

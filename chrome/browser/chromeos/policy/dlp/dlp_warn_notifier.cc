@@ -7,6 +7,7 @@
 #include <memory>
 
 #include "base/containers/cxx20_erase.h"
+#include "chrome/browser/chromeos/policy/dlp/dlp_file_destination.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_warn_dialog.h"
 #include "ui/aura/client/aura_constants.h"
 #include "ui/aura/window.h"
@@ -55,14 +56,13 @@ void DlpWarnNotifier::ShowDlpVideoCaptureWarningDialog(
 base::WeakPtr<views::Widget> DlpWarnNotifier::ShowDlpFilesWarningDialog(
     OnDlpRestrictionCheckedCallback callback,
     const std::vector<DlpConfidentialFile>& confidential_files,
-    absl::optional<DlpRulesManager::Component> dst_component,
-    const absl::optional<std::string>& destination_pattern,
+    const DlpFileDestination& files_destination,
     DlpFilesController::FileAction files_action) {
   return ShowDlpWarningDialog(
       std::move(callback),
       DlpWarnDialog::DlpWarnDialogOptions(DlpWarnDialog::Restriction::kFiles,
-                                          confidential_files, dst_component,
-                                          destination_pattern, files_action));
+                                          confidential_files, files_destination,
+                                          files_action));
 }
 
 base::WeakPtr<views::Widget> DlpWarnNotifier::ShowDlpScreenShareWarningDialog(

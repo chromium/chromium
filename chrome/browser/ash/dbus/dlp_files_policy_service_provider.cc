@@ -11,6 +11,7 @@
 #include "base/functional/bind.h"
 #include "base/logging.h"
 #include "chrome/browser/ash/policy/dlp/dlp_files_controller.h"
+#include "chrome/browser/chromeos/policy/dlp/dlp_file_destination.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_rules_manager.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_rules_manager_factory.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_warn_dialog.h"
@@ -40,6 +41,26 @@ policy::DlpFilesController::FileAction MapProtoToFileAction(
     // TODO(crbug.com/1378653): Return share FileAction.
     case dlp::FileAction::TRANSFER:
       return policy::DlpFilesController::FileAction::kTransfer;
+  }
+}
+
+// Maps |component| to DlpRulesManager::Component.
+policy::DlpRulesManager::Component MapProtoToPolicyComponent(
+    ::dlp::DlpComponent component) {
+  switch (component) {
+    case ::dlp::DlpComponent::ARC:
+      return policy::DlpRulesManager::Component::kArc;
+    case ::dlp::DlpComponent::CROSTINI:
+      return policy::DlpRulesManager::Component::kCrostini;
+    case ::dlp::DlpComponent::PLUGIN_VM:
+      return policy::DlpRulesManager::Component::kPluginVm;
+    case ::dlp::DlpComponent::USB:
+      return policy::DlpRulesManager::Component::kUsb;
+    case ::dlp::DlpComponent::GOOGLE_DRIVE:
+      return policy::DlpRulesManager::Component::kDrive;
+    case ::dlp::DlpComponent::UNKNOWN_COMPONENT:
+    case ::dlp::DlpComponent::SYSTEM:
+      return policy::DlpRulesManager::Component::kUnknownComponent;
   }
 }
 
@@ -169,9 +190,10 @@ void DlpFilesPolicyServiceProvider::IsFilesTransferRestricted(
     return;
   }
 
-  absl::optional<policy::DlpFilesController::DlpFileDestination> destination;
+  absl::optional<policy::DlpFileDestination> destination;
   if (request.has_destination_component()) {
-    destination.emplace(request.destination_component());
+    destination.emplace(
+        MapProtoToPolicyComponent(request.destination_component()));
   } else {
     destination.emplace(request.destination_url());
   }

@@ -24,7 +24,7 @@
 #include "chrome/browser/ash/guest_os/guest_os_terminal.h"
 #include "chrome/browser/ash/plugin_vm/plugin_vm_features.h"
 #include "chrome/browser/ash/plugin_vm/plugin_vm_util.h"
-#include "chrome/browser/ash/policy/dlp/dlp_files_controller.h"
+#include "chrome/browser/chromeos/policy/dlp/dlp_file_destination.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_rules_manager.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/chrome_select_file_policy.h"
@@ -239,7 +239,7 @@ void VmApplicationsServiceProvider::SelectFile(
     ui::EndpointType source = ui::EndpointType::kUnknownVm;
     if (request.vm_name() == crostini::kCrostiniDefaultVmName) {
       source = ui::EndpointType::kCrostini;
-      owner.dialog_caller = policy::DlpFilesController::DlpFileDestination(
+      owner.dialog_caller = policy::DlpFileDestination(
           policy::DlpRulesManager::Component::kCrostini);
     }
     std::vector<base::FilePath> paths =

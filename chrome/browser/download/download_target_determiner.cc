@@ -17,6 +17,7 @@
 #include "base/task/thread_pool.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
+#include "chrome/browser/chromeos/policy/dlp/dlp_file_destination.h"
 #include "chrome/browser/download/chrome_download_manager_delegate.h"
 #include "chrome/browser/download/download_confirmation_reason.h"
 #include "chrome/browser/download/download_crx_util.h"
@@ -1238,8 +1239,7 @@ bool DownloadTargetDeterminer::IsDownloadDlpBlocked(
   const GURL authority_url = download::BaseFile::GetEffectiveAuthorityURL(
       download_->GetURL(), download_->GetReferrerUrl());
   return files_controller->ShouldPromptBeforeDownload(
-      policy::DlpFilesController::DlpFileDestination(authority_url.spec()),
-      download_path);
+      policy::DlpFileDestination(authority_url.spec()), download_path);
 #else
   return false;
 #endif

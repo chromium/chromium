@@ -127,6 +127,8 @@ source_set("chromeos") {
     "policy/dlp/dlp_drag_drop_notifier.h",
     "policy/dlp/dlp_file_access_copy_or_move_delegate_factory.cc",
     "policy/dlp/dlp_file_access_copy_or_move_delegate_factory.h",
+    "policy/dlp/dlp_file_destination.cc",
+    "policy/dlp/dlp_file_destination.h",
     "policy/dlp/dlp_histogram_helper.cc",
     "policy/dlp/dlp_histogram_helper.h",
     "policy/dlp/dlp_notification_helper.cc",

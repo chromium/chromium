@@ -12,6 +12,7 @@
 #include "chrome/browser/ash/policy/dlp/dlp_files_controller.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_confidential_contents.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_confidential_file.h"
+#include "chrome/browser/chromeos/policy/dlp/dlp_file_destination.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_rules_manager.h"
 #include "components/strings/grit/components_strings.h"
 #include "components/vector_icons/vector_icons.h"
@@ -83,10 +84,26 @@ constexpr int kConfidentialContentLineHeight = 20;
 // This can hold seven rows.
 constexpr int kConfidentialContentListMaxHeight = 240;
 
-// Returns the destination name for |dst_component|
+// Returns the domain of the |destination|'s |url_or_path| if it can be
+// obtained, or the full value otherwise, converted to u16string. Fails if
+// |url_or_path| is empty.
+std::u16string GetDestinationURLForFiles(DlpFileDestination destination) {
+  DCHECK(destination.url_or_path.has_value());
+  DCHECK(!destination.url_or_path->empty());
+  std::string url = destination.url_or_path.value();
+  GURL gurl(url);
+  if (gurl.is_valid() && gurl.has_host()) {
+    return base::UTF8ToUTF16(gurl.host());
+  }
+  return base::UTF8ToUTF16(url);
+}
+
+// Returns the u16string formatted name for |destination|'s |component|. Fails
+// if |component| is empty.
 const std::u16string GetDestinationComponentForFiles(
-    DlpRulesManager::Component dst_component) {
-  switch (dst_component) {
+    DlpFileDestination destination) {
+  DCHECK(destination.component.has_value());
+  switch (destination.component.value()) {
     case DlpRulesManager::Component::kArc:
       return l10n_util::GetStringUTF16(
           IDS_FILE_BROWSER_ANDROID_FILES_ROOT_LABEL);
@@ -104,6 +121,14 @@ const std::u16string GetDestinationComponentForFiles(
       NOTREACHED();
       return u"";
   }
+}
+
+// Returns the u16string formatted |destination|. Fails if both |component| and
+// |url_or_path| are empty. Returns the |component| if both are non-empty.
+const std::u16string GetDestinationForFiles(DlpFileDestination destination) {
+  return destination.component.has_value()
+             ? GetDestinationComponentForFiles(destination)
+             : GetDestinationURLForFiles(destination);
 }
 
 // Returns the OK button label for |files_action|.
@@ -169,59 +194,46 @@ const std::u16string GetTitleForFiles(
 const std::u16string GetMessageForFiles(
     const DlpWarnDialog::DlpWarnDialogOptions& options) {
   DCHECK(options.files_action.has_value());
+  DCHECK(options.files_destination.has_value());
+
+  DlpFileDestination destination_value = options.files_destination.value();
+
   std::u16string destination;
   int num_files;
   int message_id;
   switch (options.files_action.value()) {
     case DlpFilesController::FileAction::kDownload:
-      DCHECK(options.destination_component.has_value());
-      destination = GetDestinationComponentForFiles(
-          options.destination_component.value());
+      destination = GetDestinationComponentForFiles(destination_value);
       num_files = 1;  // Download action is only for one file.
       message_id = IDS_POLICY_DLP_FILES_DOWNLOAD_WARN_MESSAGE;
       break;
     case DlpFilesController::FileAction::kUpload:
-      DCHECK(!options.destination_pattern->empty());
-      destination = base::UTF8ToUTF16(options.destination_pattern.value());
+      destination = GetDestinationURLForFiles(destination_value);
       num_files = options.confidential_files.size();
       message_id = IDS_POLICY_DLP_FILES_UPLOAD_WARN_MESSAGE;
       break;
     case DlpFilesController::FileAction::kCopy:
       // TODO(b/273521961): Handle urls.
-      destination = GetDestinationComponentForFiles(
-          options.destination_component.value());
+      destination = GetDestinationComponentForFiles(destination_value);
       num_files = options.confidential_files.size();
       message_id = IDS_POLICY_DLP_FILES_COPY_WARN_MESSAGE;
       break;
     case DlpFilesController::FileAction::kMove:
       // TODO(b/273521961): Handle urls.
-      destination = GetDestinationComponentForFiles(
-          options.destination_component.value());
+      destination = GetDestinationComponentForFiles(destination_value);
       num_files = options.confidential_files.size();
       message_id = IDS_POLICY_DLP_FILES_MOVE_WARN_MESSAGE;
       break;
     case DlpFilesController::FileAction::kOpen:
     case DlpFilesController::FileAction::kShare:
-      if (options.destination_component.has_value()) {
-        destination = GetDestinationComponentForFiles(
-            options.destination_component.value());
-      } else {
-        DCHECK(!options.destination_pattern->empty());
-        destination = base::UTF8ToUTF16(options.destination_pattern.value());
-      }
+      destination = GetDestinationForFiles(destination_value);
       num_files = options.confidential_files.size();
       message_id = IDS_POLICY_DLP_FILES_OPEN_WARN_MESSAGE;
       break;
     case DlpFilesController::FileAction::kTransfer:
     case DlpFilesController::FileAction::kUnknown:
-      // TODO(crbug.com/1361900): Set proper text when file action is unknown
-      if (options.destination_component.has_value()) {
-        destination = GetDestinationComponentForFiles(
-            options.destination_component.value());
-      } else {
-        DCHECK(!options.destination_pattern->empty());
-        destination = base::UTF8ToUTF16(options.destination_pattern.value());
-      }
+      // TODO(crbug.com/1361900): Set proper text when file action is unknown.
+      destination = GetDestinationForFiles(destination_value);
       num_files = options.confidential_files.size();
       message_id = IDS_POLICY_DLP_FILES_TRANSFER_WARN_MESSAGE;
       break;
@@ -486,13 +498,11 @@ DlpWarnDialog::DlpWarnDialogOptions::DlpWarnDialogOptions(
 DlpWarnDialog::DlpWarnDialogOptions::DlpWarnDialogOptions(
     Restriction restriction,
     const std::vector<DlpConfidentialFile>& confidential_files,
-    absl::optional<DlpRulesManager::Component> dst_component,
-    const absl::optional<std::string>& destination_pattern,
+    absl::optional<DlpFileDestination> files_destination,
     DlpFilesController::FileAction files_action)
     : restriction(restriction),
       confidential_files(confidential_files),
-      destination_component(dst_component),
-      destination_pattern(destination_pattern),
+      files_destination(files_destination),
       files_action(files_action) {
   DCHECK(restriction == Restriction::kFiles);
 }

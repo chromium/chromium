@@ -12,6 +12,7 @@
 #include "base/files/file_path.h"
 #include "base/functional/callback_forward.h"
 #include "base/memory/weak_ptr.h"
+#include "chrome/browser/chromeos/policy/dlp/dlp_file_destination.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_rules_manager.h"
 #include "chromeos/dbus/dlp/dlp_service.pb.h"
 #include "components/file_access/scoped_file_access_copy.h"
@@ -124,34 +125,6 @@ class DlpFilesController {
     base::FilePath path;
     // Source URL from which the file was downloaded.
     GURL source_url;
-  };
-
-  // DlpFileDestination represents the destination for file transfer. It either
-  // has a url or a component.
-  struct DlpFileDestination {
-    DlpFileDestination();
-    explicit DlpFileDestination(const std::string& url);
-    explicit DlpFileDestination(const ::dlp::DlpComponent component);
-    explicit DlpFileDestination(const DlpRulesManager::Component component);
-
-    DlpFileDestination(const DlpFileDestination&);
-    DlpFileDestination& operator=(const DlpFileDestination&);
-    DlpFileDestination(DlpFileDestination&&);
-    DlpFileDestination& operator=(DlpFileDestination&&);
-
-    bool operator==(const DlpFileDestination&) const;
-    bool operator!=(const DlpFileDestination&) const;
-    bool operator<(const DlpFileDestination& other) const;
-    bool operator<=(const DlpFileDestination& other) const;
-    bool operator>(const DlpFileDestination& other) const;
-    bool operator>=(const DlpFileDestination& other) const;
-
-    ~DlpFileDestination();
-
-    // Destination url or destination path.
-    absl::optional<std::string> url_or_path;
-    // Destination component.
-    absl::optional<DlpRulesManager::Component> component;
   };
 
   using GetDisallowedTransfersCallback =

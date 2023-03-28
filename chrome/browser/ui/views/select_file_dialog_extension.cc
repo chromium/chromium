@@ -31,6 +31,7 @@
 #include "chrome/browser/ash/login/ui/webui_login_view.h"
 #include "chrome/browser/ash/policy/dlp/dlp_files_controller.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
+#include "chrome/browser/chromeos/policy/dlp/dlp_file_destination.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_rules_manager.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_rules_manager_factory.h"
 #include "chrome/browser/download/download_prefs.h"
@@ -557,8 +558,7 @@ bool SelectFileDialogExtension::IsResizeable() const {
 }
 
 void SelectFileDialogExtension::ApplyPolicyAndNotifyListener(
-    absl::optional<policy::DlpFilesController::DlpFileDestination>
-        dialog_caller) {
+    absl::optional<policy::DlpFileDestination> dialog_caller) {
   if (!listener_)
     return;
 

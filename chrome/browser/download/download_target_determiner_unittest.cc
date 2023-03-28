@@ -71,6 +71,7 @@
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
 #include "chrome/browser/ash/policy/dlp/dlp_files_controller.h"
+#include "chrome/browser/chromeos/policy/dlp/dlp_file_destination.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_rules_manager.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_rules_manager_factory.h"
 #include "chrome/browser/chromeos/policy/dlp/mock_dlp_rules_manager.h"
@@ -2845,7 +2846,7 @@ class DownloadTargetDeterminerDlpTest : public DownloadTargetDeterminerTest {
 
     MOCK_METHOD(bool,
                 ShouldPromptBeforeDownload,
-                (const DlpFileDestination&, const base::FilePath&),
+                (const policy::DlpFileDestination&, const base::FilePath&),
                 (override));
   };
 

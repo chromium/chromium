@@ -11,6 +11,7 @@
 #include "chrome/browser/ash/policy/dlp/dlp_files_controller.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_confidential_contents.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_confidential_file.h"
+#include "chrome/browser/chromeos/policy/dlp/dlp_file_destination.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/window/dialog_delegate.h"
@@ -53,8 +54,7 @@ class DlpWarnDialog : public views::DialogDelegateView {
     DlpWarnDialogOptions(
         Restriction restriction,
         const std::vector<DlpConfidentialFile>& confidential_files,
-        absl::optional<DlpRulesManager::Component> dst_component,
-        const absl::optional<std::string>& destination_pattern,
+        absl::optional<DlpFileDestination> files_destination,
         DlpFilesController::FileAction files_action);
     DlpWarnDialogOptions(const DlpWarnDialogOptions& other);
     DlpWarnDialogOptions& operator=(const DlpWarnDialogOptions& other);
@@ -67,8 +67,7 @@ class DlpWarnDialog : public views::DialogDelegateView {
                            const DlpWarnDialogOptions& b) {
       return a.restriction == b.restriction &&
              a.application_title == b.application_title &&
-             a.destination_component == b.destination_component &&
-             a.destination_pattern == b.destination_pattern &&
+             a.files_destination == b.files_destination &&
              a.files_action == b.files_action &&
              EqualWithTitles(a.confidential_contents,
                              b.confidential_contents) &&
@@ -80,17 +79,15 @@ class DlpWarnDialog : public views::DialogDelegateView {
     }
 
     Restriction restriction;
-    // May have content only if the |restriction| is not kFiles.
-    DlpConfidentialContents confidential_contents;
-    // May have files only if the |restriction| is kFiles.
-    std::vector<DlpConfidentialFile> confidential_files;
     absl::optional<std::u16string> application_title;
 
-    // May have value only if the |restriction| is kFiles.
-    absl::optional<DlpRulesManager::Component> destination_component;
-    // Has value only if the |restriction| is kFiles.
-    absl::optional<std::string> destination_pattern;
-    // Has value only if the |restriction| is kFiles.
+    // Non-empty only if the |restriction| is one of kScreenCapture,
+    // kVideoCapture, or kScreenshare.
+    DlpConfidentialContents confidential_contents;
+
+    // Have value only if the |restriction| is kFiles:
+    std::vector<DlpConfidentialFile> confidential_files;
+    absl::optional<DlpFileDestination> files_destination;
     absl::optional<DlpFilesController::FileAction> files_action;
   };
 
