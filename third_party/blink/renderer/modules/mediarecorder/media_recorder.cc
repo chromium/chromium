@@ -428,8 +428,7 @@ void MediaRecorder::WriteData(const void* data,
 }
 
 void MediaRecorder::OnError(DOMExceptionCode code, const String& message) {
-  DLOG(ERROR) << message.Ascii();
-  StopRecording();
+  DVLOG(1) << __func__ << " message=" << message.Ascii();
 
   ScriptState* script_state =
       ToScriptStateForMainWorld(DomWindow()->GetFrame());
@@ -440,10 +439,20 @@ void MediaRecorder::OnError(DOMExceptionCode code, const String& message) {
   event_init->setError(error_value);
   ScheduleDispatchEvent(
       ErrorEvent::Create(script_state, event_type_names::kError, event_init));
+  StopRecording();
 }
 
 void MediaRecorder::OnAllTracksEnded() {
+  DVLOG(1) << __func__;
   StopRecording();
+}
+
+void MediaRecorder::OnStreamChanged(const String& message) {
+  DVLOG(1) << __func__ << " message=" << message.Ascii()
+           << " state_=" << static_cast<int>(state_);
+  if (state_ != State::kInactive) {
+    OnError(DOMExceptionCode::kInvalidModificationError, message);
+  }
 }
 
 void MediaRecorder::CreateBlobEvent(Blob* blob, double timecode) {

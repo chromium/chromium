@@ -84,6 +84,10 @@ class MODULES_EXPORT MediaRecorder
                          double timecode);
   virtual void OnError(DOMExceptionCode code, const String& message);
 
+  // This causes an invalid modification error to be sent and recording to be
+  // stopped if recording is not inactive.
+  void OnStreamChanged(const String& message);
+
   // Causes recording to be stopped, remaining data to be written, and onstop to
   // be sent, unless recording isn't active in which case nothing happens.
   void OnAllTracksEnded();

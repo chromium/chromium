@@ -165,8 +165,16 @@ void MediaElementEventListener::Invoke(ExecutionContext* context,
 
   if (event->type() == event_type_names::kEnded) {
     const MediaStreamTrackVector tracks = media_stream_->getTracks();
+    // Stop all tracks before removing them. This ensures multi-track stream
+    // consumers like the MediaRecorder sees all tracks ended before they're
+    // removed from the stream, which is interpreted as an error if happening
+    // earlier, see for example
+    // https://www.w3.org/TR/mediastream-recording/#dom-mediarecorder-start
+    // step 14.4.
     for (const auto& track : tracks) {
       track->stopTrack(context);
+    }
+    for (const auto& track : tracks) {
       media_stream_->RemoveTrackByComponentAndFireEvents(
           track->Component(),
           MediaStreamDescriptorClient::DispatchEventTiming::kScheduled);
