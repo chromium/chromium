@@ -809,7 +809,7 @@ void AddSuggestionsDetails(int error_code,
         suggestions_details,
         IDS_ERRORPAGES_SUGGESTION_NETWORK_PREDICTION_HEADER,
         IDS_ERRORPAGES_SUGGESTION_NETWORK_PREDICTION_BODY, true);
-    suggestions_details.back().SetStringPath(
+    suggestions_details.back().GetDict().Set(
         "noNetworkPredictionTitle",
         l10n_util::GetStringUTF16(IDS_NETWORK_PREDICTION_ENABLED_DESCRIPTION));
   }
@@ -828,12 +828,12 @@ void AddSuggestionsDetails(int error_code,
         true);
 
     // Custom body string.
-    suggestions_details.back().SetStringPath(
+    suggestions_details.back().GetDict().Set(
         "body", l10n_util::GetStringFUTF16(
                     IDS_ERRORPAGES_SUGGESTION_PROXY_CONFIG_BODY,
                     l10n_util::GetStringUTF16(
                         IDS_ERRORPAGES_SUGGESTION_PROXY_DISABLE_PLATFORM)));
-    suggestions_details.back().SetStringPath(
+    suggestions_details.back().GetDict().Set(
         "proxyTitle",
         l10n_util::GetStringUTF16(IDS_OPTIONS_PROXIES_CONFIGURE_BUTTON));
   }
