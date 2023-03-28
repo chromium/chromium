@@ -4,6 +4,8 @@
 
 package org.chromium.webengine.shell;
 
+import android.graphics.Bitmap;
+
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
@@ -36,6 +38,13 @@ public class DefaultObservers implements TabListObserver, TabObserver, Navigatio
     @Override
     public void onRenderProcessGone(@NonNull Tab tab) {
         Log.i(TAG, this + "received Tab Event: 'onRenderProcessGone()'");
+    }
+
+    @Override
+    public void onFaviconChanged(@NonNull Tab tab, @Nullable Bitmap favicon) {
+        Log.i(TAG,
+                this + "received Tab Event: 'onFaviconChanged("
+                        + (favicon == null ? "null" : favicon.toString()) + ")'");
     }
 
     // NavigationObserver implementation.

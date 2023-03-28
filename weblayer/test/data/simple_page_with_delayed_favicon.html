@@ -1,0 +1,19 @@
+<html>
+  <head>
+    <title>OK</title>
+  </head>
+<body>
+Basic html test.
+</body>
+<script>
+function createFavicon() {
+    const link = document.createElement('link');
+    link.rel = 'icon';
+    link.href = 'favicon.png';
+    document.head.appendChild(link);
+}
+window.addEventListener('message', () => {
+    createFavicon();
+});
+</script>
+</html>

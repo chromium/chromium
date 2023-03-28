@@ -4,6 +4,7 @@
 
 package org.chromium.weblayer;
 
+import android.graphics.Bitmap;
 import android.os.Handler;
 import android.os.Looper;
 import android.os.RemoteException;
@@ -34,6 +35,7 @@ class TabProxy extends ITabProxy.Stub {
             new WebFragmentNavigationDelegate();
     private FullscreenCallbackDelegate mFullscreenCallbackDelegate =
             new FullscreenCallbackDelegate();
+    private FaviconFetcher mFaviconFetcher;
 
     // Only use one callback for all the message event listeners. This is to avoid sending the same
     // message over multiple times. The message can then be proxied to all valid listeners.
@@ -48,6 +50,12 @@ class TabProxy extends ITabProxy.Stub {
 
         tab.registerTabCallback(mTabObserverDelegate);
         tab.setFullscreenCallback(mFullscreenCallbackDelegate);
+        mFaviconFetcher = tab.createFaviconFetcher(new FaviconCallback() {
+            @Override
+            public void onFaviconChanged(Bitmap favicon) {
+                mTabObserverDelegate.notifyFaviconChanged(favicon);
+            }
+        });
     }
 
     void invalidate() {
@@ -56,6 +64,8 @@ class TabProxy extends ITabProxy.Stub {
 
         mTabObserverDelegate = null;
         mNavigationObserverDelegate = null;
+        mFaviconFetcher.destroy();
+        mFaviconFetcher = null;
     }
 
     boolean isValid() {
