@@ -79,7 +79,8 @@ DCLayerResult ValidateYUVQuad(
     bool has_overlay_support,
     int allowed_yuv_overlay_count,
     int processed_yuv_overlay_count,
-    DisplayResourceProvider* resource_provider) {
+    DisplayResourceProvider* resource_provider,
+    bool is_page_fullscreen_mode) {
   // Note: Do not override this value based on base::Feature values. It is the
   // result after the GPU blocklist has been consulted.
   if (!has_overlay_support)
@@ -101,6 +102,14 @@ DCLayerResult ValidateYUVQuad(
 
   if (!quad->shared_quad_state->quad_to_target_transform
            .Preserves2dAxisAlignment()) {
+    return DC_LAYER_FAILED_COMPLEX_TRANSFORM;
+  }
+
+  // TODO(crbug.com/1425907): Remove this restriction after fixing overlay 180
+  // deg rotation in full screen mode in DirectComposition.
+  if (is_page_fullscreen_mode &&
+      !quad->shared_quad_state->quad_to_target_transform
+           .IsPositiveScaleOrTranslation()) {
     return DC_LAYER_FAILED_COMPLEX_TRANSFORM;
   }
 
@@ -715,10 +724,11 @@ void DCLayerOverlayProcessor::Process(
     DCLayerResult result;
     switch (it->material) {
       case DrawQuad::Material::kYuvVideoContent:
-        result = ValidateYUVQuad(
-            YUVVideoDrawQuad::MaterialCast(*it), backdrop_filter_rects,
-            has_overlay_support_, allowed_yuv_overlay_count_,
-            processed_yuv_overlay_count_, resource_provider);
+        result = ValidateYUVQuad(YUVVideoDrawQuad::MaterialCast(*it),
+                                 backdrop_filter_rects, has_overlay_support_,
+                                 allowed_yuv_overlay_count_,
+                                 processed_yuv_overlay_count_,
+                                 resource_provider, is_page_fullscreen_mode);
         yuv_quads_in_quad_list++;
 
         if (no_undamaged_overlay_promotion_) {
