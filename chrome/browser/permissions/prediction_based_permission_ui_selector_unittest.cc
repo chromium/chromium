@@ -249,6 +249,7 @@ TEST_F(PredictionBasedPermissionUiSelectorTest, GetPredictionTypeToUse) {
           features::kPermissionPredictions,
           features::kPermissionGeolocationPredictions,
           permissions::features::kPermissionOnDeviceNotificationPredictions,
+          permissions::features::kPermissionOnDeviceGeolocationPredictions,
       },
       {
           features::kQuietNotificationPrompts,
@@ -268,6 +269,7 @@ TEST_F(PredictionBasedPermissionUiSelectorTest, GetPredictionTypeToUse) {
           features::kPermissionPredictions,
           features::kPermissionGeolocationPredictions,
           permissions::features::kPermissionOnDeviceNotificationPredictions,
+          permissions::features::kPermissionOnDeviceGeolocationPredictions,
           features::kQuietNotificationPrompts,
       },
       {
@@ -287,6 +289,7 @@ TEST_F(PredictionBasedPermissionUiSelectorTest, GetPredictionTypeToUse) {
           features::kPermissionPredictions,
           features::kPermissionGeolocationPredictions,
           permissions::features::kPermissionOnDeviceNotificationPredictions,
+          permissions::features::kPermissionOnDeviceGeolocationPredictions,
           features::kQuietNotificationPrompts,
           permissions::features::kPermissionQuietChip,
       },
@@ -295,7 +298,7 @@ TEST_F(PredictionBasedPermissionUiSelectorTest, GetPredictionTypeToUse) {
             prediction_selector.GetPredictionTypeToUse(
                 permissions::RequestType::kNotifications));
   // On device only works for notification permission request.
-  EXPECT_EQ(PredictionSource::USE_SERVER_SIDE,
+  EXPECT_EQ(PredictionSource::USE_ANY,
             prediction_selector.GetPredictionTypeToUse(
                 permissions::RequestType::kGeolocation));
 
@@ -304,6 +307,7 @@ TEST_F(PredictionBasedPermissionUiSelectorTest, GetPredictionTypeToUse) {
   feature_list_->InitWithFeatures(
       {
           permissions::features::kPermissionOnDeviceNotificationPredictions,
+          permissions::features::kPermissionOnDeviceGeolocationPredictions,
           features::kQuietNotificationPrompts,
           permissions::features::kPermissionQuietChip,
       },
@@ -314,7 +318,7 @@ TEST_F(PredictionBasedPermissionUiSelectorTest, GetPredictionTypeToUse) {
   EXPECT_EQ(PredictionSource::USE_ONDEVICE,
             prediction_selector.GetPredictionTypeToUse(
                 permissions::RequestType::kNotifications));
-  EXPECT_EQ(PredictionSource::USE_NONE,
+  EXPECT_EQ(PredictionSource::USE_ONDEVICE,
             prediction_selector.GetPredictionTypeToUse(
                 permissions::RequestType::kGeolocation));
 
@@ -329,6 +333,7 @@ TEST_F(PredictionBasedPermissionUiSelectorTest, GetPredictionTypeToUse) {
       },
       {
           permissions::features::kPermissionOnDeviceNotificationPredictions,
+          permissions::features::kPermissionOnDeviceGeolocationPredictions,
       });
   EXPECT_EQ(PredictionSource::USE_SERVER_SIDE,
             prediction_selector.GetPredictionTypeToUse(
