@@ -120,7 +120,6 @@ build_webui_tests("build") {
     "os_sync_controls_subpage_test.js",
     "people_page_account_manager_subpage_test.js",
     "per_device_keyboard_subsection_test.js",
-    "per_device_keyboard_remap_keys_test.js",
     "per_device_pointing_stick_subsection_test.js",
     "personalization_page_with_personalization_hub_test.js",
     "privacy_hub_subpage_tests.js",
@@ -201,6 +200,7 @@ build_webui_tests("build") {
 
     "device_page/device_page_tests.js",
     "device_page/per_device_keyboard_test.js",
+    "device_page/per_device_keyboard_remap_keys_test.ts",
     "device_page/per_device_mouse_subsection_test.ts",
     "device_page/per_device_mouse_test.ts",
     "device_page/per_device_pointing_stick_test.ts",

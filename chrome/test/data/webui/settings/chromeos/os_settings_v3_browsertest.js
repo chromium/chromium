@@ -270,6 +270,11 @@ TEST_F('OSSettingsCrostiniExtraContainerPageV3Test', 'AllJsTests', () => {
    {enabled: ['ash::features::kInputDeviceSettingsSplit']}
  ],
  [
+   'DevicePagePerDeviceKeyboardRemapKeys',
+   'device_page/per_device_keyboard_remap_keys_test.js',
+   {enabled: ['ash::features::kInputDeviceSettingsSplit']}
+ ],
+ [
    'DevicePagePerDeviceMouse', 'device_page/per_device_mouse_test.js',
    {enabled: ['ash::features::kInputDeviceSettingsSplit']}
  ],
@@ -479,10 +484,6 @@ TEST_F('OSSettingsCrostiniExtraContainerPageV3Test', 'AllJsTests', () => {
    {enabled: ['ash::features::kLacrosSupport']},
  ],
  ['PeoplePageQuickUnlock', 'quick_unlock_authenticate_browsertest_chromeos.js'],
- [
-   'PerDeviceKeyboardRemapKeys', 'per_device_keyboard_remap_keys_test.js',
-   {enabled: ['ash::features::kInputDeviceSettingsSplit']}
- ],
  [
    'PerDeviceKeyboardSubsection',
    'per_device_keyboard_subsection_test.js',

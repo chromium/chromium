@@ -115,7 +115,7 @@ export * as fakeCrosAudioConfig from './device_page/fake_cros_audio_config.js';
 export {fakeKeyboards, fakeKeyboards2, fakeMice, fakeMice2, fakePointingSticks, fakePointingSticks2, fakeTouchpads, fakeTouchpads2} from './device_page/fake_input_device_data.js';
 export {FakeInputDeviceSettingsProvider} from './device_page/fake_input_device_settings_provider.js';
 export {getInputDeviceSettingsProvider, setInputDeviceSettingsProviderForTesting, setupFakeInputDeviceSettingsProvider} from './device_page/input_device_mojo_interface_provider.js';
-export {MetaKey, ModifierKey, Mouse} from './device_page/input_device_settings_types.js';
+export {Keyboard, MetaKey, ModifierKey, Mouse} from './device_page/input_device_settings_types.js';
 export {KeyboardRemapModifierKeyRowElement} from './device_page/keyboard_remap_modifier_key_row.js';
 export {SettingsPerDeviceKeyboardElement} from './device_page/per_device_keyboard.js';
 export {SettingsPerDeviceKeyboardRemapKeysElement} from './device_page/per_device_keyboard_remap_keys.js';
