@@ -76,9 +76,6 @@ class CONTENT_EXPORT SiteIsolationPolicy {
   // persisted across restarts.
   static bool ShouldPersistIsolatedCOOPSites();
 
-  // Returns true when site isolation is turned on for <webview> guests.
-  static bool IsSiteIsolationForGuestsEnabled();
-
   // Applies isolated origins from all available sources, including the
   // command-line switch, field trials, enterprise policy, and the embedder.
   // See also AreIsolatedOriginsEnabled. These origins apply globally to the

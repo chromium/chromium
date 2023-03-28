@@ -935,13 +935,10 @@ void WebViewGuest::UserAgentOverrideSet(
 void WebViewGuest::FrameNameChanged(RenderFrameHost* render_frame_host,
                                     const std::string& name) {
   // WebViewGuest does not support back/forward cache or prerendering so
-  // |render_frame_host| should be either active or pending deletion. Note that
-  // the pending deletion state becomes possible with site isolation for
-  // <webview> (crbug.com/1267977).
+  // |render_frame_host| should be either active or pending deletion.
   DCHECK(render_frame_host->IsActive() ||
-         (content::SiteIsolationPolicy::IsSiteIsolationForGuestsEnabled() &&
-          render_frame_host->IsInLifecycleState(
-              RenderFrameHost::LifecycleState::kPendingDeletion)));
+         render_frame_host->IsInLifecycleState(
+             RenderFrameHost::LifecycleState::kPendingDeletion));
   if (render_frame_host->GetParentOrOuterDocument())
     return;
 

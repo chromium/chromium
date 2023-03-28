@@ -142,8 +142,8 @@ StoragePartition* BrowserContext::GetStoragePartition(
 StoragePartition* BrowserContext::GetStoragePartitionForUrl(
     const GURL& url,
     bool can_create) {
-  auto storage_partition_config = SiteInfo::GetStoragePartitionConfigForUrl(
-      this, url, /*is_site_url=*/false);
+  auto storage_partition_config =
+      SiteInfo::GetStoragePartitionConfigForUrl(this, url);
 
   return GetStoragePartition(storage_partition_config, can_create);
 }

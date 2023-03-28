@@ -4654,14 +4654,12 @@ NavigationRequest::ErrorPageProcess NavigationRequest::ComputeErrorPageProcess(
   if (frame_tree_node_->IsErrorPageIsolationEnabled())
     return ErrorPageProcess::kIsolatedProcess;
 
-  // Site-isolated <webview> guests do not currently support committing
-  // error pages with an unknown URL scheme (such as when navigating a guest to
-  // an external protocol) in the process computed for the destination URL.
-  // Therefore, leave such cases in the original process. See
-  // https://crbug.com/1366450.
+  // <webview> guests do not currently support committing error pages with
+  // an unknown URL scheme (such as when navigating a guest to an external
+  // protocol) in the process computed for the destination URL. Therefore,
+  // leave such cases in the original process. See https://crbug.com/1366450.
   if (net_error == net::ERR_UNKNOWN_URL_SCHEME &&
-      frame_tree_node_->current_frame_host()->GetSiteInstance()->IsGuest() &&
-      SiteIsolationPolicy::IsSiteIsolationForGuestsEnabled()) {
+      frame_tree_node_->current_frame_host()->GetSiteInstance()->IsGuest()) {
     return ErrorPageProcess::kCurrentProcess;
   }
 

@@ -1463,9 +1463,8 @@ TEST_P(RenderFrameHostManagerTest, CleanUpProxiesOnProcessCrash) {
             rfh2->GetRenderViewHost()->opener_frame_token());
 }
 
-// Test guest navigation behavior when navigating across sites.  With site
-// isolation for guests, we should swap guest SiteInstances, otherwise the
-// guest SiteInstance should be reused.
+// Test guest navigation behavior when navigating across sites.  Since guests
+// support site isolation, we should swap guest SiteInstances as usual.
 TEST_P(RenderFrameHostManagerTest, GuestNavigations) {
   // Create a custom StoragePartitionConfig for the guest SiteInstance. The
   // resulting SiteInstance should become associated with this
@@ -1503,29 +1502,22 @@ TEST_P(RenderFrameHostManagerTest, GuestNavigations) {
   EXPECT_EQ(first_instance->GetStoragePartitionConfig(), kGuestPartitionConfig);
   EXPECT_TRUE(first_instance->IsGuest());
 
-  // Without site isolation for guests, we should stay in the same initial
-  // RenderFrameHost and SiteInstance.  With site isolation for guests, we have
-  // to swap SiteInstances and RenderFrameHosts, since the initial SiteInstance
-  // (`instance`) has an empty site and process lock, whereas the navigation
-  // needs a SiteInstance with the site URL that corresponds to `kUrl1`.  Note
-  // that even in that case, there will be no speculative RenderFrameHost since
-  // the new RenderFrameHost will be committed right away due to the early
-  // commit optimization. This behavior may change if the early commit
-  // optimization is removed in https://crbug.com/1072817.
-  if (SiteIsolationPolicy::IsSiteIsolationForGuestsEnabled()) {
-    EXPECT_NE(first_instance, initial_instance);
-    EXPECT_NE(host, initial_host);
-    // This test may run without strict site isolation, e.g. on Android.  In
-    // that case, the navigation will end up in a default SiteInstance.
-    if (AreAllSitesIsolatedForTesting()) {
-      EXPECT_EQ("http://google.com/",
-                first_instance->GetSiteInfo().site_url().spec());
-    } else {
-      EXPECT_TRUE(first_instance->IsDefaultSiteInstance());
-    }
+  // We have to swap SiteInstances and RenderFrameHosts, since the initial
+  // SiteInstance (`instance`) has an empty site and process lock, whereas the
+  // navigation needs a SiteInstance with the site URL that corresponds to
+  // `kUrl1`.  Note that there will be no speculative RenderFrameHost in that
+  // case, since the new RenderFrameHost will be committed right away due to
+  // the early commit optimization. This behavior may change if the early
+  // commit optimization is removed in https://crbug.com/1072817.
+  EXPECT_NE(first_instance, initial_instance);
+  EXPECT_NE(host, initial_host);
+  // This test may run without strict site isolation, e.g. on Android.  In
+  // that case, the navigation will end up in a default SiteInstance.
+  if (AreAllSitesIsolatedForTesting()) {
+    EXPECT_EQ("http://google.com/",
+              first_instance->GetSiteInfo().site_url().spec());
   } else {
-    EXPECT_EQ(first_instance, initial_instance);
-    EXPECT_EQ(host, initial_host);
+    EXPECT_TRUE(first_instance->IsDefaultSiteInstance());
   }
   EXPECT_FALSE(manager->speculative_frame_host());
   EXPECT_EQ(host, manager->current_frame_host());
@@ -1537,9 +1529,8 @@ TEST_P(RenderFrameHostManagerTest, GuestNavigations) {
   EXPECT_TRUE(host->GetSiteInstance()->HasSite());
 
   // 2) Second navigation. ------------------------
-  // Navigate to a different site. If site isolation for guests is enabled, and
-  // strict site isolation is also enabled, this will swap processes.
-  // Otherwise, the guest will stay in the same process.
+  // Navigate to a different site. If strict site isolation is enabled, this
+  // will swap processes. Otherwise, the guest will stay in the same process.
   const GURL kUrl2("http://www.chromium.org");
   const url::Origin kInitiatorOrigin =
       url::Origin::Create(GURL("https://initiator.example.com"));
@@ -1553,9 +1544,8 @@ TEST_P(RenderFrameHostManagerTest, GuestNavigations) {
   host = NavigateToEntry(manager, &entry2);
 
   // The first RenderFrameHost will be reused only when there's no site
-  // isolation for guests (or no site isolation between the two sites).
-  if (SiteIsolationPolicy::IsSiteIsolationForGuestsEnabled() &&
-      AreAllSitesIsolatedForTesting()) {
+  // isolation between the two sites.
+  if (AreAllSitesIsolatedForTesting()) {
     EXPECT_NE(host, manager->current_frame_host());
     EXPECT_TRUE(manager->speculative_frame_host());
   } else {
@@ -1569,9 +1559,7 @@ TEST_P(RenderFrameHostManagerTest, GuestNavigations) {
   ASSERT_TRUE(host);
   EXPECT_TRUE(host->GetSiteInstance()->IsGuest());
 
-  // We should swap SiteInstances with site isolation for guests.
-  if (SiteIsolationPolicy::IsSiteIsolationForGuestsEnabled() &&
-      AreAllSitesIsolatedForTesting()) {
+  if (AreAllSitesIsolatedForTesting()) {
     EXPECT_NE(host->GetSiteInstance(), first_instance);
     EXPECT_EQ("http://chromium.org/",
               host->GetSiteInstance()->GetSiteInfo().site_url().spec());

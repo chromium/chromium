@@ -2896,11 +2896,6 @@ const char kIsolationByDefaultDescription[] =
     "behaviors for the web, this flag is likely to break your experience on "
     "sites you visit today.";
 
-const char kWebViewTagSiteIsolationName[] = "Site isolation for <webview> tags";
-const char kWebViewTagSiteIsolationDescription[] =
-    "Enables site isolation for content rendered inside <webview> tags. This "
-    "increases security for Chrome Apps and WebUI pages that use <webview>.";
-
 const char kSiteIsolationOptOutName[] = "Disable site isolation";
 const char kSiteIsolationOptOutDescription[] =
     "Disables site isolation "

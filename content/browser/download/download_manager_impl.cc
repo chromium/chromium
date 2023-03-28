@@ -469,8 +469,7 @@ void DownloadManagerImpl::OnHistoryNextIdRetrived(uint32_t next_id) {
 
 StoragePartitionConfig DownloadManagerImpl::GetStoragePartitionConfigForSiteUrl(
     const GURL& site_url) {
-  return SiteInfo::GetStoragePartitionConfigForUrl(browser_context_, site_url,
-                                                   /*is_site_url=*/true);
+  return SiteInfo::GetStoragePartitionConfigForUrl(browser_context_, site_url);
 }
 
 void DownloadManagerImpl::DetermineDownloadTarget(

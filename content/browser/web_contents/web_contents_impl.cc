@@ -4078,14 +4078,10 @@ FrameTree* WebContentsImpl::CreateNewWindow(
   scoped_refptr<SiteInstance> site_instance;
   if (params.opener_suppressed) {
     if (is_guest) {
-      // For site-isolated guests, noopener windows can be created in a new
-      // BrowsingInstance as long as they preserve the guest's StoragePartition.
-      // For non-isolated guests, we preserve the legacy behavior of keeping the
-      // new window in the old SiteInstance and BrowsingInstance.
-      site_instance = SiteIsolationPolicy::IsSiteIsolationForGuestsEnabled()
-                          ? SiteInstance::CreateForGuest(GetBrowserContext(),
-                                                         partition_config)
-                          : source_site_instance;
+      // For guests, noopener windows can be created in a new BrowsingInstance
+      // as long as they preserve the guest's StoragePartition.
+      site_instance =
+          SiteInstance::CreateForGuest(GetBrowserContext(), partition_config);
     } else {
       site_instance = SiteInstance::Create(GetBrowserContext());
     }

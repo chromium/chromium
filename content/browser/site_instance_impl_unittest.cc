@@ -1805,17 +1805,12 @@ TEST_F(SiteInstanceTest, CreateForGuest) {
   }
 
   // Verify that a SiteInstance created with CreateForGuest() is considered
-  // a <webview> guest.  Without site isolation for guests, its site URL
-  // should reflect the guest's StoragePartition configuration.
+  // a <webview> guest and has the correct StoragePartition.
   const StoragePartitionConfig kGuestConfig = StoragePartitionConfig::Create(
       context(), "appid", "partition_name", /*in_memory=*/false);
-  const GURL kGuestSiteUrl(std::string(kGuestScheme) +
-                           "://appid/persist?partition_name#nofallback");
   auto instance2 = SiteInstanceImpl::CreateForGuest(context(), kGuestConfig);
   EXPECT_TRUE(instance2->IsGuest());
   EXPECT_EQ(instance2->GetStoragePartitionConfig(), kGuestConfig);
-  if (!SiteIsolationPolicy::IsSiteIsolationForGuestsEnabled())
-    EXPECT_EQ(kGuestSiteUrl, instance2->GetSiteURL());
 }
 
 // TODO(https://crbug.com/1377466): Test is flaky for android builders.

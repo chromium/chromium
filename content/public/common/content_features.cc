@@ -1211,11 +1211,6 @@ const base::FeatureParam<base::TimeDelta>
         &kSiteIsolationForCrossOriginOpenerPolicy, "expiration_timeout",
         base::Days(7)};
 
-// This feature turns on site isolation support in <webview> guests.
-BASE_FEATURE(kSiteIsolationForGuests,
-             "SiteIsolationForGuests",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // When enabled, OOPIFs will not try to reuse compatible processes from
 // unrelated tabs.
 BASE_FEATURE(kDisableProcessReuse,

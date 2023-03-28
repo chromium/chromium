@@ -2216,15 +2216,6 @@ RenderFrameHostManager::GetSiteInstanceForNavigation(
 
   SiteInstanceImpl* current_instance = render_frame_host_->GetSiteInstance();
 
-  // Do not currently swap processes for navigations in webview tag guests,
-  // unless site isolation is enabled for them.
-  if (current_instance->IsGuest() &&
-      !SiteIsolationPolicy::IsSiteIsolationForGuestsEnabled()) {
-    AppendReason(reason,
-                 "GetSiteInstanceForNavigation => current_instance (IsGuest)");
-    return current_instance;
-  }
-
   // Determine if we need a new BrowsingInstance for this entry.  If true, this
   // implies that it will get a new SiteInstance (and likely process), and that
   // other tabs in the current BrowsingInstance will be unable to script it.
@@ -2936,11 +2927,9 @@ scoped_refptr<SiteInstanceImpl> RenderFrameHostManager::ConvertToSiteInstance(
 
   // If the current SiteInstance is for a guest, the new unrelated
   // SiteInstance must also be for a guest and must stay in the same
-  // StoragePartition.  Note that we should only attempt BrowsingInstance
-  // swaps in guests when site isolation for guests is enabled.
+  // StoragePartition.
   UrlInfo dest_url_info = descriptor.dest_url_info;
   if (current_instance->IsGuest()) {
-    DCHECK(SiteIsolationPolicy::IsSiteIsolationForGuestsEnabled());
     dest_url_info.storage_partition_config =
         current_instance->GetSiteInfo().storage_partition_config();
   }
@@ -4096,9 +4085,7 @@ void RenderFrameHostManager::CommitPending(
       // it would end up trying to focus the root view. Instead, we need to
       // focus the new main frame's RenderWidgetHost, which would set the new
       // widget as focused and also propagate page-level focus to the
-      // corresponding renderer process. Note that for <webview> guests, this
-      // case is only reached when cross-process navigations are possible,
-      // which requires features::kSiteIsolationForGuests.
+      // corresponding renderer process.
       if (frame_tree_node_->GetParentOrOuterDocumentOrEmbedder()) {
         render_frame_host_->GetRenderWidgetHost()->Focus();
       } else {
