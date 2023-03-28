@@ -48,7 +48,8 @@ class MAYBE_WebRtcStressPauseBrowserTest : public WebRtcContentBrowserTestBase {
 
  protected:
   void MakeTypicalPeerConnectionCall(const std::string& javascript) {
-    MakeTypicalCall(javascript, "/media/peerconnection-pause-play.html");
+    MakeTypicalCall(javascript, "/media/peerconnection-pause-play.html",
+                    /*use_manual_reply=*/false);
   }
 };
 

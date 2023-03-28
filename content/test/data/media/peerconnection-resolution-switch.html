@@ -41,12 +41,13 @@ class TestRunner {
 
   runTest() {
     const promises = this.peerConnections.map((conn) => conn.start());
-    Promise.all(promises)
+    return Promise.all(promises)
         .then(() => {
           this.startTime = Date.now();
-          this.switchResolutionLoop();
+          return this.switchResolutionLoop();
         })
-        .catch((e) => {throw e});
+        .then(logSuccess)
+        .catch(toStackTrace);
   }
 
   switchResolutionLoop() {
@@ -54,15 +55,13 @@ class TestRunner {
     this.status = this.getStatusInternal_();
     $('status').textContent = this.status;
     if (this.status === 'ok-done') {
-      reportTestSuccess();
+      return;
     }
-    else {
-      Promise.all(this.peerConnections.map((pc) => pc.switchToRandomStream()))
-          .then(
-              () => setTimeout(
-                  () => this.switchResolutionLoop(),
-                  this.switchResolutionDelayMillis));
-    }
+    return Promise.all(this.peerConnections.map((pc) => pc.switchToRandomStream()))
+        .then(
+            () => setTimeout(
+                () => this.switchResolutionLoop(),
+                this.switchResolutionDelayMillis));
   }
 
   getStatus() {
@@ -73,12 +72,7 @@ class TestRunner {
     if (this.iteration == 0) {
       return 'not-started';
     }
-    try {
-      this.peerConnections.forEach((conn) => conn.verifyState());
-    } catch (e) {
-      failTest(e);
-      return `failure: ${e.message}`;
-    }
+    this.peerConnections.forEach((conn) => conn.verifyState());
     const timeSpent = Date.now() - this.startTime;
     if (timeSpent >= this.runtimeSeconds * 1000) {
       return 'ok-done';
@@ -93,7 +87,7 @@ function startTest(
   for (let i = 0; i < numPeerConnections; i++) {
     testRunner.addPeerConnection();
   }
-  testRunner.runTest();
+  return testRunner.runTest();
 }
 
 function getStatus() {

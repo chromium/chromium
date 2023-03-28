@@ -51,7 +51,8 @@ class MAYBE_WebRtcStressResolutionSwitchBrowserTest
 
  protected:
   void MakeTypicalPeerConnectionCall(const std::string& javascript) {
-    MakeTypicalCall(javascript, "/media/peerconnection-resolution-switch.html");
+    MakeTypicalCall(javascript, "/media/peerconnection-resolution-switch.html",
+                    /*use_manual_reply=*/false);
   }
 };
 

@@ -43,12 +43,13 @@ class TestRunner {
           videoElement, [MAIN_FEED_RESOLUTION]));
     }
     const promises = this.peerConnections.map((conn) => conn.start());
-    Promise.all(promises)
+    return Promise.all(promises)
         .then(() => {
           this.startTime = Date.now();
-          this.switchFeedLoop();
+          return this.switchFeedLoop();
         })
-        .catch((e) => {throw e});
+        .then(logSuccess)
+        .catch(toStackTrace);
   }
 
   switchFeedLoop() {
@@ -56,15 +57,16 @@ class TestRunner {
     this.status = this.getStatusInternal_();
     $('status').textContent = this.status;
     if (this.status == 'ok-done') {
-      reportTestSuccess();
-    } else {
-      const switchWith = Math.floor(Math.random() * this.videoElements.length);
-      const newMainSrc = this.videoElements[switchWith].srcObject;
-      this.videoElements[switchWith].srcObject = this.mainFeed.srcObject;
-      this.mainFeed.srcObject = newMainSrc;
-      setTimeout(
-          () => this.switchFeedLoop(), this.iterationDelayMillis);
+      return;
     }
+    const switchWith = Math.floor(Math.random() * this.videoElements.length);
+    const newMainSrc = this.videoElements[switchWith].srcObject;
+    this.videoElements[switchWith].srcObject = this.mainFeed.srcObject;
+    this.mainFeed.srcObject = newMainSrc;
+    return new Promise(resolve => {
+      setTimeout(resolve, this.iterationDelayMillis);
+    })
+    .then(() => this.switchFeedLoop());
   }
 
   getStatus() {
@@ -92,7 +94,7 @@ function startTest(
     runtimeSeconds, numPeerConnections, iterationDelayMillis) {
   const testRunner = new TestRunner(
       numPeerConnections, runtimeSeconds, iterationDelayMillis);
-  testRunner.runTest();
+  return testRunner.runTest();
 }
 
 function getStatus() {

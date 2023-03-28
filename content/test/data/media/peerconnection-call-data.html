@@ -8,12 +8,6 @@
     return document.getElementById(id);
   };
 
-  window.onerror = function(errorMsg, url, lineNumber, column, errorObj) {
-    failTest('Error: ' + errorMsg + '\nScript: ' + url +
-             '\nLine: ' + lineNumber + '\nColumn: ' + column +
-             '\nStackTrace: ' + errorObj);
-  }
-
   var gFirstConnection = null;
   var gSecondConnection = null;
   var gLocalStream = null;
@@ -22,23 +16,26 @@
 
   function callWithSctpDataOnly() {
     createConnections();
-    promiseSctpDataChannelExchange({reliable: true})
-        .then(reportTestSuccess);
-    negotiate();
+    return Promise.all([
+      promiseSctpDataChannelExchange({reliable: true}),
+      negotiate(),
+    ])
+    .then(logSuccess)
+    .catch(toStackTrace);
   }
 
   function callWithSctpDataAndMedia() {
     createConnections();
     var hasExchanged = promiseSctpDataChannelExchange({reliable: true});
-    navigator.mediaDevices.getUserMedia({audio: true, video: true})
-        .then(addStreamToBothConnectionsAndNegotiate)
-        .catch(failTest);
-
-    Promise.all([
+    return Promise.all([
+      navigator.mediaDevices.getUserMedia({audio: true, video: true})
+          .then(addStreamToBothConnectionsAndNegotiate),
       hasExchanged,
       detectVideoPlaying('remote-view-1'),
       detectVideoPlaying('remote-view-2')
-    ]).then(reportTestSuccess);
+    ])
+    .then(logSuccess)
+    .catch(toStackTrace)
   }
 
   // This function is used for setting up a test that:

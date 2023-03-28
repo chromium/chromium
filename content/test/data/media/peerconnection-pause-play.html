@@ -28,7 +28,7 @@ class TestRunner {
     } else if (elementType === 'audio') {
       resolution = {w: -1, h: -1};  // -1 is interpreted as disabled
     } else {
-      failTest('elementType must be one of "audio" or "video"');
+      throw new Error('elementType must be one of "audio" or "video"');
     }
     this.elements.push(element);
     this.peerConnections.push(new PeerConnection(element, [resolution]));
@@ -36,12 +36,13 @@ class TestRunner {
 
   runTest() {
     let promises = this.peerConnections.map((conn) => conn.start());
-    Promise.all(promises)
+    return Promise.all(promises)
         .then(() => {
           this.startTime = Date.now();
-          this.pauseAndPlayLoop();
+          return this.pauseAndPlayLoop();
         })
-        .catch((e) => {failTest(e.message)});
+        .then(logSuccess)
+        .catch(toStackTrace);
   }
 
   pauseAndPlayLoop() {
@@ -56,13 +57,12 @@ class TestRunner {
     const status = this.getStatus();
     $('status').textContent = status
     if (status != 'ok-done') {
-      setTimeout(
-          () => {this.pauseAndPlayLoop()}, this.pausePlayIterationDelayMillis);
+      return new Promise(resolve => setTimeout(resolve, this.pausePlayIterationDelayMillis))
+        .then(() => this.pauseAndPlayLoop());
     } else {  // We're done. Pause all feeds.
       this.elements.forEach((feed) => {
         feed.pause();
       });
-      reportTestSuccess();
     }
   }
 
@@ -91,7 +91,7 @@ function runPausePlayTest(
   for (let i = 0; i < numPeerConnections; i++) {
     testRunner.addPeerConnection(elementType);
   }
-  testRunner.runTest();
+  return testRunner.runTest();
 }
 
 function getStatus() {
