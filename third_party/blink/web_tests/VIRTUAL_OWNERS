@@ -7,7 +7,7 @@
 #   run the test suite on Linux if it can be run on any platform.
 #
 # - If the CL adds virtual tests (by adding new virtual suites or new
-#   directories to existing virtual suties), how many tests the CL adds.
+#   directories to existing virtual suites), how many tests the CL adds.
 #
 # - If the number of new tests is big (e.g. >=200)
 #   - Whether the new tests need to run on platforms other than Linux.
@@ -31,6 +31,7 @@
 #
 # [1] https://chromium.googlesource.com/chromium/src/+/main/docs/testing/web_tests.md#testing-runtime-flags
 
+andruud@chromium.org
 dom@chromium.org
 ikilpatrick@chromium.org
 kojii@chromium.org
