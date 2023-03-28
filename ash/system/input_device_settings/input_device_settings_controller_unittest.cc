@@ -280,6 +280,16 @@ TEST_F(InputDeviceSettingsControllerTest, KeyboardSettingsAreValid) {
 
   EXPECT_EQ(observer_->num_keyboards_settings_updated(), 0u);
   EXPECT_EQ(keyboard_pref_handler_->num_keyboard_settings_updated(), 0u);
+
+  // The keyboard is internal and it doesn't have capslock remapping.
+  settings->suppress_meta_fkey_rewrites = kDefaultSuppressMetaFKeyRewrites;
+  settings->modifier_remappings[ui::mojom::ModifierKey::kCapsLock] =
+      ui::mojom::ModifierKey::kAlt;
+  controller_->SetKeyboardSettings((DeviceId)kSampleKeyboardInternal.id,
+                                   settings.Clone());
+
+  EXPECT_EQ(observer_->num_keyboards_settings_updated(), 0u);
+  EXPECT_EQ(keyboard_pref_handler_->num_keyboard_settings_updated(), 0u);
 }
 
 // Tests that given an invalid id, keyboard settings are not updated and

@@ -104,10 +104,16 @@ mojom::PointingStickPtr BuildMojomPointingStick(
 
 // suppress_meta_fkey_rewrites must never be non-default for internal
 // keyboards, otherwise the keyboard settings are not valid.
+// Modifier remappings must only contain valid modifiers within the
+// modifier_keys array.
 bool keyboardSettingsAreValid(const mojom::Keyboard& keyboard,
                               const mojom::KeyboardSettings& settings) {
-  // TODO(wangdanny): Validate modifier keys to make sure they can apply
-  // to the given device.
+  for (const auto& remapping : settings.modifier_remappings) {
+    auto it = base::ranges::find(keyboard.modifier_keys, remapping.first);
+    if (it == keyboard.modifier_keys.end()) {
+      return false;
+    }
+  }
   return keyboard.is_external || (settings.suppress_meta_fkey_rewrites ==
                                   kDefaultSuppressMetaFKeyRewrites);
 }
