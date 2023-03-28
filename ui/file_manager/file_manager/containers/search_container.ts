@@ -273,6 +273,7 @@ export class SearchContainer extends EventTarget {
       this.pathDisplay_.removeAttribute('hidden');
       this.pathDisplay_.path = path;
     } else {
+      this.pathDisplay_.path = '';
       this.pathDisplay_.setAttribute('hidden', '');
     }
   }
@@ -283,29 +284,17 @@ export class SearchContainer extends EventTarget {
    */
   private getSelectedPath_(state: State): string {
     const keys = state.currentDirectory?.selection?.keys;
-    if (!keys) {
+    if (!keys || keys.length !== 1) {
       return '';
     }
-    const pathSet = new Set();
-    for (const dirKey of keys) {
-      const entry = state.allEntries[dirKey!]?.entry;
-      if (!entry) {
-        continue;
-      }
-      // TODO(b:274559834): Improve efficiency of these computations.
-      const parts: PathComponent[] =
-          PathComponent.computeComponentsFromEntry(entry, this.volumeManager_);
-      // Drop the file name; keep the folders only.
-      pathSet.add(parts.slice(0, -1).map(p => p.name).join('/'));
-    }
-    if (pathSet.size === 0) {
+    const entry = state.allEntries[keys[0]!]?.entry;
+    if (!entry) {
       return '';
     }
-    if (pathSet.size === 1) {
-      return pathSet.values().next().value;
-    }
-
-    return str('SEARCH_RESULTS_MULTIPLE_SELECTION');
+    // TODO(b:274559834): Improve efficiency of these computations.
+    const parts: PathComponent[] =
+        PathComponent.computeComponentsFromEntry(entry, this.volumeManager_);
+    return parts.map(p => p.name).join('/');
   }
 
   /**

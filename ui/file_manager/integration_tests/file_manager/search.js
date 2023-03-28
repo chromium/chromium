@@ -737,25 +737,27 @@ testcase.selectionPath = async () => {
   const singleSelectionPath = await remoteCall.waitForElement(appId, [
     'xf-path-display',
   ]);
+  chrome.test.assertFalse(singleSelectionPath.hidden);
   chrome.test.assertEq(
-      'My files/Downloads', singleSelectionPath.attributes.path);
-  // Select now the desktop entry, too. Both are in the same
-  // directory, so the path should not change.
+      'My files/Downloads/' + ENTRIES.hello.nameText,
+      singleSelectionPath.attributes.path);
+  // Select now the desktop entry, too. Two or more selected files,
+  // regardless of the directory in which they sit, result in no path.
   await remoteCall.waitAndClickElement(
       appId, `#file-list [file-name="${ENTRIES.desktop.nameText}"]`,
       {ctrl: true});
-  const twoFilesOneFolderPath = await remoteCall.waitForElement(appId, [
+  const twoFilesSelectedPath = await remoteCall.waitForElement(appId, [
     'xf-path-display',
   ]);
-  chrome.test.assertEq(
-      'My files/Downloads', twoFilesOneFolderPath.attributes.path);
+  chrome.test.assertTrue(twoFilesSelectedPath.hidden);
+  chrome.test.assertEq('', twoFilesSelectedPath.attributes.path);
   await remoteCall.waitAndClickElement(
       appId,
       `#file-list [file-name="${ENTRIES.deeplyBurriedSmallJpeg.nameText}"]`,
       {ctrl: true});
-  const threeFilesTwoFolderPath = await remoteCall.waitForElement(appId, [
+  const threeFilesSelectedPath = await remoteCall.waitForElement(appId, [
     'xf-path-display',
   ]);
-  chrome.test.assertEq(
-      'Multiple file locations', threeFilesTwoFolderPath.attributes.path);
+  chrome.test.assertTrue(threeFilesSelectedPath.hidden);
+  chrome.test.assertEq('', threeFilesSelectedPath.attributes.path);
 };
