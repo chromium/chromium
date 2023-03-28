@@ -729,6 +729,12 @@
       ],
     },
   },
+  'LACROS_ASH_TOT': {
+    'args': [
+      '--deploy-lacros',
+    ],
+    'identifier': 'Ash ToT',
+  },
   'LACROS_BETTY_PI_ARC': {
     'args': [
       '--board=betty-pi-arc',

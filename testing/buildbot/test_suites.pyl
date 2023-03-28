@@ -6949,6 +6949,24 @@
       },
     },
 
+    'gpu_fyi_lacros_device_release_telemetry_tests': {
+      # TODO(crbug.com/1392806): Enable more tests if bots are not busy.
+      'gpu_common_and_optional_telemetry_tests': {
+        'variants': [
+          'LACROS_ASH_TOT',
+        ]
+      },
+      # 'gpu_mediapipe_passthrough_telemetry_tests',
+      'gpu_passthrough_telemetry_tests': {
+        'variants': [
+          'LACROS_ASH_TOT',
+        ]
+      },
+      # 'gpu_webcodecs_telemetry_test',
+      # 'gpu_webgl2_conformance_gles_passthrough_telemetry_tests',
+      # 'gpu_webgl_conformance_gles_passthrough_telemetry_tests',
+    },
+
     'ios16_beta_simulator_tests': {
       'ios_common_tests': {
         'variants': [

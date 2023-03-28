@@ -581,6 +581,7 @@
       'GPU FYI Win x64 DX12 Vulkan Builder': 'gpu_fyi_tests_dx12vk_release_trybot_reclient',
       'GPU FYI Win x64 DX12 Vulkan Builder (dbg)': 'gpu_fyi_tests_dx12vk_debug_trybot_reclient',
       'GPU FYI XR Win x64 Builder': 'gpu_fyi_tests_release_trybot_reclient',
+      'Lacros FYI Release (octopus)': 'gpu_tests_lacros_octopus_release_trybot_dcheck_off_no_symbols_reclient',
       'Linux FYI GPU TSAN Release': 'gpu_fyi_tests_release_trybot_tsan_reclient',
     },
 
@@ -2677,6 +2678,11 @@
 
     'gpu_tests_debug_trybot_reclient': [
       'gpu_tests', 'debug', 'no_symbols', 'dcheck_always_on', 'static', 'reclient'
+    ],
+
+    'gpu_tests_lacros_octopus_release_trybot_dcheck_off_no_symbols_reclient': [
+      'gpu_tests', 'chromeos_octopus_reclient', 'release_trybot_dcheck_off_reclient', 'no_symbols',
+      'also_build_lacros_chrome_for_architecture_amd64',
     ],
 
     'gpu_tests_ozone_linux_non_x11_release_trybot_reclient': [
