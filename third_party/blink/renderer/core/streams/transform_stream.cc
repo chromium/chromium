@@ -99,13 +99,8 @@ class TransformStream::TransformAlgorithm final : public StreamAlgorithm {
     }
     ExceptionState exception_state(script_state->GetIsolate(),
                                    ExceptionState::kUnknownContext, "", "");
-    ScriptPromise promise;
-    {
-      // This is needed because the realm of the transformer can be different
-      // from the realm of the transform stream.
-      ScriptState::Scope scope(transformer_script_state);
-      promise = transformer_->Transform(argv[0], controller_, exception_state);
-    }
+    ScriptPromise promise =
+        transformer_->Transform(argv[0], controller_, exception_state);
     if (exception_state.HadException()) {
       auto exception = exception_state.GetException();
       exception_state.ClearException();
@@ -245,7 +240,7 @@ TransformStream* TransformStream::Create(
 
   // 11. Perform ! SetUpTransformStreamDefaultController(stream, controller,
   //     transformAlgorithm, flushAlgorithm).
-  TransformStreamDefaultController::SetUp(stream, controller,
+  TransformStreamDefaultController::SetUp(script_state, stream, controller,
                                           transform_algorithm, flush_algorithm);
 
   // 12. Let startResult be the result of performing startAlgorithm. (This may

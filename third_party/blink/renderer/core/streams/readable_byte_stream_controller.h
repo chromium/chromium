@@ -23,10 +23,10 @@ class DOMArrayBufferView;
 class ExceptionState;
 class ReadableStream;
 class ReadableStreamBYOBRequest;
+class ReadRequest;
 class ScriptState;
 class StreamAlgorithm;
 class StreamStartAlgorithm;
-class StreamPromiseResolver;
 class UnderlyingSource;
 
 class CORE_EXPORT ReadableByteStreamController
@@ -215,7 +215,7 @@ class CORE_EXPORT ReadableByteStreamController
   // https://streams.spec.whatwg.org/#abstract-opdef-readablebytestreamcontrollerfillreadrequestfromqueue
   static void FillReadRequestFromQueue(ScriptState*,
                                        ReadableByteStreamController*,
-                                       StreamPromiseResolver* read_request);
+                                       ReadRequest* read_request);
 
   // https://streams.spec.whatwg.org/#readable-byte-stream-controller-pull-into
   static void PullInto(ScriptState*,
@@ -274,7 +274,7 @@ class CORE_EXPORT ReadableByteStreamController
                                      v8::Local<v8::Value> reason) override;
 
   // https://streams.spec.whatwg.org/#rbs-controller-private-pull
-  StreamPromiseResolver* PullSteps(ScriptState*) override;
+  void PullSteps(ScriptState*, ReadRequest*) override;
 
   // https://streams.spec.whatwg.org/#abstract-opdef-readablebytestreamcontroller-releasesteps
   void ReleaseSteps() override;

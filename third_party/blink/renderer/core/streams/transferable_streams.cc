@@ -7,7 +7,6 @@
 
 #include "third_party/blink/renderer/core/streams/transferable_streams.h"
 
-#include "third_party/blink/renderer/bindings/core/v8/iterable.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_function.h"
 #include "third_party/blink/renderer/bindings/core/v8/to_v8_traits.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_dom_exception.h"
@@ -20,6 +19,7 @@
 #include "third_party/blink/renderer/core/messaging/message_port.h"
 #include "third_party/blink/renderer/core/streams/miscellaneous_operations.h"
 #include "third_party/blink/renderer/core/streams/promise_handler.h"
+#include "third_party/blink/renderer/core/streams/read_request.h"
 #include "third_party/blink/renderer/core/streams/readable_stream.h"
 #include "third_party/blink/renderer/core/streams/readable_stream_default_controller.h"
 #include "third_party/blink/renderer/core/streams/readable_stream_default_controller_with_script_scope.h"
@@ -114,6 +114,7 @@ void PackAndPostMessage(ScriptState* script_state,
                         ExceptionState& exception_state) {
   DVLOG(3) << "PackAndPostMessage sending message type "
            << static_cast<int>(type);
+  v8::Context::Scope v8_context_scope(script_state->GetContext());
   auto* isolate = script_state->GetIsolate();
 
   // https://streams.spec.whatwg.org/#abstract-opdef-packandpostmessage
@@ -401,6 +402,7 @@ class CrossRealmTransformWritable::WriteAlgorithm final
 
     // 2. Return the result of reacting to backpressurePromise with the
     //    following fulfillment steps:
+
     return StreamThenPromise(
         script_state->GetContext(),
         writable_->backpressure_promise_->V8Promise(isolate),
@@ -798,74 +800,66 @@ class ConcatenatingUnderlyingSource final : public UnderlyingSourceBase {
     const Member<ConcatenatingUnderlyingSource> source_;
   };
 
-  class OnReadingSource1Success final : public ScriptFunction::Callable {
+  class ConcatenatingUnderlyingSourceReadRequest final : public ReadRequest {
    public:
-    explicit OnReadingSource1Success(ConcatenatingUnderlyingSource* source)
-        : source_(source) {}
+    explicit ConcatenatingUnderlyingSourceReadRequest(
+        ConcatenatingUnderlyingSource* source,
+        StreamPromiseResolver* resolver)
+        : source_(source), resolver_(resolver) {}
 
-    void Trace(Visitor* visitor) const override {
-      visitor->Trace(source_);
-      ScriptFunction::Callable::Trace(visitor);
-    }
-    ScriptValue Call(ScriptState* script_state,
-                     ScriptValue read_result) override {
-      DCHECK(read_result.IsObject());
-      v8::Local<v8::Value> value;
-      bool done = false;
-      CHECK(V8UnpackIterationResult(
-          script_state, read_result.V8Value().As<v8::Object>(), &value, &done));
-      if (done) {
-        // We've finished reading `source1_`. Let's start reading `source2_`.
-        source_->has_finished_reading_stream1_ = true;
-        ReadableStreamDefaultController* controller =
-            source_->Controller()->GetOriginalController();
-        // TODO(ricea): Remove or demote to DCHECK once
-        // https://crbug.com/1418910 has been fixed.
-        CHECK(controller);
-        return source_->source2_
-            ->startWrapper(script_state,
-                           ScriptValue::From(script_state, controller))
-            .Then(CreateFunction<PullSource2>(script_state, source_))
-            .AsScriptValue();
-      }
-      source_->Controller()->Enqueue(value);
-      return ScriptPromise::CastUndefined(script_state).AsScriptValue();
+    void ChunkSteps(ScriptState* script_state,
+                    v8::Local<v8::Value> chunk) const override {
+      source_->Controller()->Enqueue(chunk);
+      resolver_->ResolveWithUndefined(script_state);
     }
 
-   private:
-    const Member<ConcatenatingUnderlyingSource> source_;
-  };
-
-  class OnReadingSource1Fail final : public ScriptFunction::Callable {
-   public:
-    explicit OnReadingSource1Fail(ConcatenatingUnderlyingSource* source)
-        : source_(source) {}
-
-    void Trace(Visitor* visitor) const override {
-      visitor->Trace(source_);
-      ScriptFunction::Callable::Trace(visitor);
+    void CloseSteps(ScriptState* script_state) const override {
+      // We've finished reading `source1_`. Let's start reading `source2_`.
+      source_->has_finished_reading_stream1_ = true;
+      ReadableStreamDefaultController* controller =
+          source_->Controller()->GetOriginalController();
+      // TODO(ricea): Remove or demote to DCHECK once
+      // https://crbug.com/1418910 has been fixed.
+      CHECK(controller);
+      resolver_->Resolve(
+          script_state,
+          ToV8(source_->source2_
+                   ->startWrapper(script_state,
+                                  ScriptValue::From(script_state, controller))
+                   .Then(CreateFunction<PullSource2>(script_state, source_)),
+               script_state->GetContext()->Global(),
+               script_state->GetIsolate()));
     }
 
-    ScriptValue Call(ScriptState* script_state, ScriptValue value) override {
-      ScriptValue reason(script_state->GetIsolate(),
-                         v8::Undefined(script_state->GetIsolate()));
-
+    void ErrorSteps(ScriptState* script_state,
+                    v8::Local<v8::Value> e) const override {
       ReadableStream* dummy_stream =
           ReadableStream::CreateWithCountQueueingStrategy(
               script_state, source_->source2_,
               /*high_water_mark=*/0);
+
       ExceptionState exception_state(script_state->GetIsolate(),
                                      ExceptionState::kUnknownContext, "", "");
-      dummy_stream->cancel(script_state, reason, exception_state);
+      dummy_stream->cancel(
+          script_state,
+          ScriptValue(script_state->GetIsolate(),
+                      v8::Undefined(script_state->GetIsolate())),
+          exception_state);
       // We don't care about the result of the cancellation, including
       // exceptions.
       exception_state.ClearException();
+      resolver_->Reject(script_state, e);
+    }
 
-      return ScriptPromise::Reject(script_state, value).AsScriptValue();
+    void Trace(Visitor* visitor) const override {
+      visitor->Trace(source_);
+      visitor->Trace(resolver_);
+      ReadRequest::Trace(visitor);
     }
 
    private:
-    const Member<ConcatenatingUnderlyingSource> source_;
+    Member<ConcatenatingUnderlyingSource> source_;
+    Member<StreamPromiseResolver> resolver_;
   };
 
   ConcatenatingUnderlyingSource(ScriptState* script_state,
@@ -879,7 +873,7 @@ class ConcatenatingUnderlyingSource final : public UnderlyingSourceBase {
     ExceptionState exception_state(script_state->GetIsolate(),
                                    ExceptionState::kUnknownContext, "", "");
     reader_for_stream1_ = ReadableStream::AcquireDefaultReader(
-        script_state, stream1_, /*for_author_code=*/false, exception_state);
+        script_state, stream1_, exception_state);
     if (exception_state.HadException()) {
       return ScriptPromise::Reject(script_state, exception_state);
     }
@@ -891,16 +885,13 @@ class ConcatenatingUnderlyingSource final : public UnderlyingSourceBase {
     if (has_finished_reading_stream1_) {
       return source2_->pull(script_state);
     }
-    ExceptionState exception_state(script_state->GetIsolate(),
-                                   ExceptionState::kUnknownContext, "", "");
-    ScriptPromise read_promise =
-        reader_for_stream1_->read(script_state, exception_state);
-    if (exception_state.HadException()) {
-      return ScriptPromise::Reject(script_state, exception_state);
-    }
-    return read_promise.Then(
-        CreateFunction<OnReadingSource1Success>(script_state, this),
-        CreateFunction<OnReadingSource1Fail>(script_state, this));
+    auto* promise = MakeGarbageCollected<StreamPromiseResolver>(script_state);
+    auto* read_request =
+        MakeGarbageCollected<ConcatenatingUnderlyingSourceReadRequest>(this,
+                                                                       promise);
+    ReadableStreamDefaultReader::Read(script_state, reader_for_stream1_,
+                                      read_request);
+    return promise->GetScriptPromise(script_state);
   }
 
   ScriptPromise Cancel(ScriptState* script_state, ScriptValue reason) override {

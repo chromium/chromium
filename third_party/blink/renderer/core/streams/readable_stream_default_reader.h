@@ -17,9 +17,9 @@ namespace blink {
 
 class ExceptionState;
 class ReadableStream;
+class ReadRequest;
 class ScriptPromise;
 class ScriptState;
-class StreamPromiseResolver;
 
 class CORE_EXPORT ReadableStreamDefaultReader
     : public ReadableStreamGenericReader,
@@ -57,8 +57,9 @@ class CORE_EXPORT ReadableStreamDefaultReader
   //
 
   // https://streams.spec.whatwg.org/#readable-stream-default-reader-read
-  static StreamPromiseResolver* Read(ScriptState*,
-                                     ReadableStreamDefaultReader* reader);
+  static void Read(ScriptState*,
+                   ReadableStreamDefaultReader* reader,
+                   ReadRequest*);
 
   // https://streams.spec.whatwg.org/#abstract-opdef-readablestreamdefaultreadererrorreadrequests
   static void ErrorReadRequests(ScriptState*,
@@ -74,11 +75,13 @@ class CORE_EXPORT ReadableStreamDefaultReader
 
  private:
   friend class ReadableByteStreamController;
+  friend class ReadableStreamController;
   friend class ReadableStreamDefaultController;
   friend class ReadableStream;
 
-  HeapDeque<Member<StreamPromiseResolver>> read_requests_;
-  bool for_author_code_ = true;
+  class DefaultReaderReadRequest;
+
+  HeapDeque<Member<ReadRequest>> read_requests_;
 };
 
 template <>

@@ -15,6 +15,7 @@ blink_core_sources_streams = [
   "queue_with_sizes.h",
   "queuing_strategy_common.cc",
   "queuing_strategy_common.h",
+  "read_request.h",
   "readable_byte_stream_controller.cc",
   "readable_byte_stream_controller.h",
   "readable_stream.cc",

@@ -43,8 +43,7 @@ class CORE_EXPORT ReadableStreamBytesConsumer final : public BytesConsumer {
   void Trace(Visitor*) const override;
 
  private:
-  class Fulfilled;
-  class Rejected;
+  class BytesConsumerReadRequest;
 
   void OnRead(DOMUint8Array*);
   void OnReadDone();
@@ -59,6 +58,7 @@ class CORE_EXPORT ReadableStreamBytesConsumer final : public BytesConsumer {
   size_t pending_offset_ = 0;
   PublicState state_ = PublicState::kReadableOrWaiting;
   bool is_reading_ = false;
+  bool is_inside_read_ = false;
 };
 
 }  // namespace blink

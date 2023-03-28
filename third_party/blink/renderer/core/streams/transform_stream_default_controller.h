@@ -15,6 +15,7 @@ namespace blink {
 
 class ExceptionState;
 class ReadableStreamDefaultController;
+class ScriptFunction;
 class ScriptState;
 class StreamAlgorithm;
 class TransformStream;
@@ -48,7 +49,8 @@ class CORE_EXPORT TransformStreamDefaultController : public ScriptWrappable {
   class DefaultTransformAlgorithm;
 
   // https://streams.spec.whatwg.org/#set-up-transform-stream-default-controller
-  static void SetUp(TransformStream*,
+  static void SetUp(ScriptState*,
+                    TransformStream*,
                     TransformStreamDefaultController*,
                     StreamAlgorithm* transform_algorithm,
                     StreamAlgorithm* flush_algorithm);
@@ -89,6 +91,7 @@ class CORE_EXPORT TransformStreamDefaultController : public ScriptWrappable {
   Member<TransformStream> controlled_transform_stream_;
   Member<StreamAlgorithm> flush_algorithm_;
   Member<StreamAlgorithm> transform_algorithm_;
+  Member<ScriptFunction> reject_function_;
 };
 
 }  // namespace blink

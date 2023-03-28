@@ -4,7 +4,6 @@
 
 #include "third_party/blink/renderer/core/streams/readable_stream.h"
 
-#include "third_party/blink/renderer/bindings/core/v8/iterable.h"
 #include "third_party/blink/renderer/bindings/core/v8/native_value_traits_impl.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_function.h"
 #include "third_party/blink/renderer/bindings/core/v8/to_v8_traits.h"
@@ -18,10 +17,12 @@
 #include "third_party/blink/renderer/bindings/core/v8/v8_union_readablestreambyobreader_readablestreamdefaultreader.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_writable_stream.h"
 #include "third_party/blink/renderer/core/dom/abort_signal.h"
+#include "third_party/blink/renderer/core/execution_context/agent.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/frame/web_feature.h"
 #include "third_party/blink/renderer/core/streams/miscellaneous_operations.h"
 #include "third_party/blink/renderer/core/streams/promise_handler.h"
+#include "third_party/blink/renderer/core/streams/read_request.h"
 #include "third_party/blink/renderer/core/streams/readable_byte_stream_controller.h"
 #include "third_party/blink/renderer/core/streams/readable_stream_controller.h"
 #include "third_party/blink/renderer/core/streams/readable_stream_default_controller.h"
@@ -45,7 +46,9 @@
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/heap/persistent.h"
 #include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
+#include "third_party/blink/renderer/platform/scheduler/public/event_loop.h"
 #include "third_party/blink/renderer/platform/wtf/deque.h"
+#include "third_party/blink/renderer/platform/wtf/functional.h"
 
 namespace blink {
 
@@ -193,52 +196,53 @@ class ReadableStream::PipeToEngine final
 
   // This is the main entrypoint for ReadableStreamPipeTo().
   ScriptPromise Start(ReadableStream* readable, WritableStream* destination) {
-    // 1. Assert: ! IsReadableStream(source) is true.
+    // 1. Assert: source implements ReadableStream.
     DCHECK(readable);
 
-    // 2. Assert: ! IsWritableStream(dest) is true.
+    // 2. Assert: dest implements WritableStream.
     DCHECK(destination);
 
     // Not relevant to C++ implementation:
-    // 3. Assert: Type(preventClose) is Boolean, Type(preventAbort) is Boolean,
-    //    and Type(preventCancel) is Boolean.
+    // 3. Assert: preventClose, preventAbort, and preventCancel are all
+    // booleans.
 
     // TODO(ricea): Implement |signal|.
-    // 4. Assert: signal is undefined or signal is an instance of the
-    //    AbortSignal interface.
+    // 4. If signal was not given, let signal be undefined.
+    // 5. Assert: either signal is undefined, or signal implements AbortSignal.
 
-    // 5. Assert: ! IsReadableStreamLocked(source) is false.
+    // 6. Assert: ! IsReadableStreamLocked(source) is false.
     DCHECK(!ReadableStream::IsLocked(readable));
 
-    // 6. Assert: ! IsWritableStreamLocked(dest) is false.
+    // 7. Assert: ! IsWritableStreamLocked(dest) is false.
     DCHECK(!WritableStream::IsLocked(destination));
 
     auto* isolate = script_state_->GetIsolate();
     ExceptionState exception_state(isolate, ExceptionState::kUnknownContext, "",
                                    "");
 
-    // 7. If !
-    //    IsReadableByteStreamController(source.[[readableStreamController]]) is
-    //    true, let reader be either ! AcquireReadableStreamBYOBReader(source)
-    //    or ! AcquireReadableStreamDefaultReader(source), at the user agent’s
+    // 8. If source.[[controller]] implements ReadableByteStreamController, let
+    //    reader be ! AcquireReadableStreamBYOBReader(source) or !
+    //    AcquireReadableStreamDefaultReader(source), at the user agent's
     //    discretion.
-    // 8. Otherwise, let reader be ! AcquireReadableStreamDefaultReader(source).
+    // 9. Otherwise, let reader be ! AcquireReadableStreamDefaultReader(source).
     reader_ = ReadableStream::AcquireDefaultReader(script_state_, readable,
-                                                   false, exception_state);
+                                                   exception_state);
     DCHECK(!exception_state.HadException());
 
-    // 9. Let writer be ! AcquireWritableStreamDefaultWriter(dest).
+    // 10. Let writer be ! AcquireWritableStreamDefaultWriter(dest).
     writer_ = WritableStream::AcquireDefaultWriter(script_state_, destination,
                                                    exception_state);
     DCHECK(!exception_state.HadException());
 
-    // 10. Let shuttingDown be false.
+    // 11. Set source.[[disturbed]] to true.
+
+    // 12. Let shuttingDown be false.
     DCHECK(!is_shutting_down_);
 
-    // 11. Let promise be a new promise.
+    // 13. Let promise be a new promise.
     promise_ = MakeGarbageCollected<StreamPromiseResolver>(script_state_);
 
-    // 12. If signal is not undefined,
+    // 14. If signal is not undefined,
     if (auto* signal = pipe_options_->Signal()) {
       //   b. If signal is aborted, perform abortAlgorithm and
       //      return promise.
@@ -252,7 +256,7 @@ class ReadableStream::PipeToEngine final
           MakeGarbageCollected<PipeToAbortAlgorithm>(this, signal));
     }
 
-    // 13. In parallel ...
+    // 15. In parallel ...
     // The rest of the algorithm is described in terms of a series of
     // constraints rather than as explicit steps.
     if (CheckInitialState()) {
@@ -279,7 +283,7 @@ class ReadableStream::PipeToEngine final
       HandleNextEvent(Undefined());
     }
 
-    // 14. Return promise.
+    // 16. Return promise.
     return promise_->GetScriptPromise(script_state_);
   }
 
@@ -476,42 +480,62 @@ class ReadableStream::PipeToEngine final
     }
 
     is_reading_ = true;
-    ThenPromise(ReadableStreamDefaultReader::Read(script_state_, reader_)
-                    ->V8Promise(script_state_->GetIsolate()),
-                &PipeToEngine::ReadFulfilled, &PipeToEngine::ReadRejected);
+    auto* read_request = MakeGarbageCollected<PipeToReadRequest>(this);
+    ReadableStreamDefaultReader::Read(script_state_, reader_, read_request);
     return Undefined();
   }
 
-  v8::Local<v8::Value> ReadFulfilled(v8::Local<v8::Value> result) {
-    is_reading_ = false;
-    DCHECK(result->IsObject());
-    auto* isolate = script_state_->GetIsolate();
-    v8::Local<v8::Value> value;
-    bool done = false;
-    bool unpack_succeeded = V8UnpackIterationResult(
-        script_state_, result.As<v8::Object>(), &value, &done);
-    DCHECK(unpack_succeeded);
-    if (done) {
-      ReadableClosed();
-      return Undefined();
+  class PipeToReadRequest final : public ReadRequest {
+   public:
+    explicit PipeToReadRequest(PipeToEngine* instance) : instance_(instance) {}
+
+    void ChunkSteps(ScriptState* script_state,
+                    v8::Local<v8::Value> chunk) const override {
+      scoped_refptr<scheduler::EventLoop> event_loop =
+          ExecutionContext::From(script_state)->GetAgent()->event_loop();
+      v8::Global<v8::Value> value(script_state->GetIsolate(), chunk);
+      event_loop->EnqueueMicrotask(
+          WTF::BindOnce(&PipeToEngine::ReadRequestChunkStepsBody,
+                        WrapPersistent(instance_.Get()),
+                        WrapPersistent(script_state), std::move(value)));
     }
-    const auto write =
-        WritableStreamDefaultWriter::Write(script_state_, writer_, value);
-    last_write_.Reset(isolate, write);
+
+    void CloseSteps(ScriptState* script_state) const override {
+      instance_->ReadableClosed();
+    }
+
+    void ErrorSteps(ScriptState* script_state,
+                    v8::Local<v8::Value> e) const override {
+      instance_->is_reading_ = false;
+      if (instance_->is_shutting_down_) {
+        // This function can be called during shutdown when the lock is
+        // released. Exit early in that case.
+        return;
+      }
+      instance_->ReadableError(
+          instance_->Readable()->GetStoredError(script_state->GetIsolate()));
+    }
+
+    void Trace(Visitor* visitor) const override {
+      visitor->Trace(instance_);
+      ReadRequest::Trace(visitor);
+    }
+
+   private:
+    Member<PipeToEngine> instance_;
+  };
+
+  void ReadRequestChunkStepsBody(ScriptState* script_state,
+                                 v8::Global<v8::Value> chunk) {
+    // This is needed because this method runs as an enqueued microtask, so the
+    // isolate needs a current context.
+    ScriptState::Scope scope(script_state);
+    is_reading_ = false;
+    const auto write = WritableStreamDefaultWriter::Write(
+        script_state, writer_, chunk.Get(script_state->GetIsolate()));
+    last_write_.Reset(script_state->GetIsolate(), write);
     ThenPromise(write, nullptr, &PipeToEngine::WritableError);
     HandleNextEvent(Undefined());
-    return Undefined();
-  }
-
-  v8::Local<v8::Value> ReadRejected(v8::Local<v8::Value>) {
-    is_reading_ = false;
-    if (is_shutting_down_) {
-      // This function can be called during shutdown when the lock is released.
-      // Exit early in that case.
-      return Undefined();
-    }
-    ReadableError(Readable()->GetStoredError(script_state_->GetIsolate()));
-    return Undefined();
   }
 
   // If read() is in progress, then wait for it to tell us that the stream is
@@ -877,7 +901,8 @@ class ReadableStream::TeeEngine final : public GarbageCollected<TeeEngine> {
   Member<ReadableStream> stream_;
   Member<ReadableStreamDefaultReader> reader_;
   Member<StreamPromiseResolver> cancel_promise_;
-  bool closed_ = false;
+  bool reading_ = false;
+  bool read_again_ = false;
 
   // The standard contains a number of pairs of variables with one for each
   // stream. These are implemented as arrays here. While they are 1-indexed in
@@ -897,16 +922,23 @@ class ReadableStream::TeeEngine::PullAlgorithm final : public StreamAlgorithm {
                              int,
                              v8::Local<v8::Value>[]) override {
     // https://streams.spec.whatwg.org/#readable-stream-tee
-    // 12. Let pullAlgorithm be the following steps:
-    //   a. Return the result of transforming ! ReadableStreamDefaultReaderRead(
-    //      reader) with a fulfillment handler which takes the argument result
-    //      and performs the following steps:
-    return StreamThenPromise(
-        script_state->GetContext(),
-        ReadableStreamDefaultReader::Read(script_state, engine_->reader_)
-            ->V8Promise(script_state->GetIsolate()),
-        MakeGarbageCollected<ScriptFunction>(
-            script_state, MakeGarbageCollected<ResolveFunction>(engine_)));
+    // 13. Let pullAlgorithm be the following steps:
+    //   a. If reading is true,
+    if (engine_->reading_) {
+      //      i. Set readAgain to true.
+      engine_->read_again_ = true;
+      //      ii. Return a promise resolved with undefined.
+      return PromiseResolveWithUndefined(script_state);
+    }
+    //   b. Set reading to true.
+    engine_->reading_ = true;
+    //   c. Let readRequest be a read request with the following items:
+    auto* read_request = MakeGarbageCollected<TeeReadRequest>(engine_);
+    //   d. Perform ! ReadableStreamDefaultReaderRead(reader, readRequest).
+    ReadableStreamDefaultReader::Read(script_state, engine_->reader_,
+                                      read_request);
+    //   e. Return a promise resolved with undefined.
+    return PromiseResolveWithUndefined(script_state);
   }
 
   void Trace(Visitor* visitor) const override {
@@ -915,90 +947,94 @@ class ReadableStream::TeeEngine::PullAlgorithm final : public StreamAlgorithm {
   }
 
  private:
-  class ResolveFunction final : public PromiseHandler {
+  class TeeReadRequest final : public ReadRequest {
    public:
-    explicit ResolveFunction(TeeEngine* engine) : engine_(engine) {}
+    explicit TeeReadRequest(TeeEngine* engine) : engine_(engine) {}
 
-    void CallWithLocal(ScriptState* script_state,
-                       v8::Local<v8::Value> result) override {
-      //    i. If closed is true, return.
-      if (engine_->closed_) {
-        return;
-      }
+    void ChunkSteps(ScriptState* script_state,
+                    v8::Local<v8::Value> chunk) const override {
+      scoped_refptr<scheduler::EventLoop> event_loop =
+          ExecutionContext::From(script_state)->GetAgent()->event_loop();
+      v8::Global<v8::Value> value(script_state->GetIsolate(), chunk);
+      event_loop->EnqueueMicrotask(
+          WTF::BindOnce(&TeeReadRequest::ChunkStepsBody, WrapPersistent(this),
+                        WrapPersistent(script_state), std::move(value)));
+    }
 
-      //   ii. Assert: Type(result) is Object.
-      DCHECK(result->IsObject());
+    void CloseSteps(ScriptState* script_state) const override {
+      // 1. Set reading to false.
+      engine_->reading_ = false;
 
-      auto* isolate = script_state->GetIsolate();
-
-      //  iii. Let done be ! Get(result, "done").
-      //   vi. Let value be ! Get(result, "value").
-      // The precise order of operations is not important here, because |result|
-      // is guaranteed to have own properties of "value" and "done" and so the
-      // "Get" operations cannot have side-effects.
-      v8::Local<v8::Value> value;
-      bool done = false;
-      bool unpack_succeeded = V8UnpackIterationResult(
-          script_state, result.As<v8::Object>(), &value, &done);
-      CHECK(unpack_succeeded);
-
-      //   vi. Assert: Type(done) is Boolean.
-      //    v. If done is true,
-      if (done) {
-        //    1. If canceled1 is false,
-        //        a. Perform ! ReadableStreamDefaultControllerClose(branch1.
-        //           [[readableStreamController]]).
-        //    2. If canceled2 is false,
-        //        b. Perform ! ReadableStreamDefaultControllerClose(branch2.
-        //           [[readableStreamController]]).
-        for (int branch = 0; branch < 2; ++branch) {
-          if (!engine_->canceled_[branch] &&
-              ReadableStreamDefaultController::CanCloseOrEnqueue(
-                  engine_->controller_[branch])) {
-            ReadableStreamDefaultController::Close(
-                script_state, engine_->controller_[branch]);
-          }
-        }
-
-        // TODO(ricea): Implement https://github.com/whatwg/streams/pull/1045 so
-        // this step can be numbered correctly.
-        // If canceled1 is false or canceled2 is false, resolve |cancelPromise|
-        // with undefined.
-        if (!engine_->canceled_[0] || !engine_->canceled_[1]) {
-          engine_->cancel_promise_->ResolveWithUndefined(script_state);
-        }
-
-        //    3. Set closed to true.
-        engine_->closed_ = true;
-
-        //    4. Return.
-        return;
-      }
-      ExceptionState exception_state(isolate, ExceptionState::kUnknownContext,
-                                     "", "");
-      //  vii. Let value1 and value2 be value.
-      // viii. If canceled2 is false and cloneForBranch2 is true, set value2 to
-      //       ? StructuredDeserialize(? StructuredSerialize(value2), the
-      //       current Realm Record).
-      // TODO(ricea): Support cloneForBranch2
-
-      //   ix. If canceled1 is false, perform ?
-      //       ReadableStreamDefaultControllerEnqueue(branch1.
-      //       [[readableStreamController]], value1).
-      //    x. If canceled2 is false, perform ?
-      //       ReadableStreamDefaultControllerEnqueue(branch2.
-      //       [[readableStreamController]], value2).
+      // 2. If canceled1 is false, perform !
+      // ReadableStreamDefaultControllerClose(branch1.[[controller]]).
+      // 3. If canceled2 is false, perform !
+      // ReadableStreamDefaultControllerClose(branch2.[[controller]]).
       for (int branch = 0; branch < 2; ++branch) {
         if (!engine_->canceled_[branch] &&
             ReadableStreamDefaultController::CanCloseOrEnqueue(
                 engine_->controller_[branch])) {
-          ReadableStreamDefaultController::Enqueue(script_state,
-                                                   engine_->controller_[branch],
-                                                   value, exception_state);
+          ReadableStreamDefaultController::Close(script_state,
+                                                 engine_->controller_[branch]);
+        }
+      }
+
+      // 4. If canceled1 is false or canceled2 is false, resolve
+      // cancelPromise with undefined.
+      if (!engine_->canceled_[0] || !engine_->canceled_[1]) {
+        engine_->cancel_promise_->ResolveWithUndefined(script_state);
+      }
+    }
+
+    void ErrorSteps(ScriptState* script_state,
+                    v8::Local<v8::Value> e) const override {
+      // 1. Set reading to false.
+      engine_->reading_ = false;
+    }
+
+    void Trace(Visitor* visitor) const override {
+      visitor->Trace(engine_);
+      ReadRequest::Trace(visitor);
+    }
+
+   private:
+    void ChunkStepsBody(ScriptState* script_state,
+                        v8::Global<v8::Value> chunk) const {
+      // 1. Set readAgain to false.
+      engine_->read_again_ = false;
+
+      ExceptionState exception_state(script_state->GetIsolate(),
+                                     ExceptionState::kUnknownContext, "", "");
+
+      // 2. Let chunk1 and chunk2 be chunk.
+      // 3. If canceled2 is false and cloneForBranch2 is true,
+      //   a. Let cloneResult be StructuredClone(chunk2).
+      //   b. If cloneResult is an abrupt completion,
+      //     i. Perform !
+      //     ReadableStreamDefaultControllerError(branch1.[[controller]],
+      //     cloneResult.[[Value]]).
+      //     ii. Perform !
+      //     ReadableStreamDefaultControllerError(branch2.[[controller]],
+      //     cloneResult.[[Value]]).
+      //     iii. Resolve cancelPromise with !
+      //     ReadableStreamCancel(stream, cloneResult.[[Value]]). iv. Return.
+      //   c. Otherwise, set chunk2 to cloneResult.[[Value]].
+      // TODO(ricea): Support cloneForBranch2
+
+      // 4. If canceled1 is false, perform !
+      // ReadableStreamDefaultControllerEnqueue(branch1.[[controller]], chunk1).
+      // 5. If canceled2 is false, perform !
+      // ReadableStreamDefaultControllerEnqueue(branch2.[[controller]], chunk2).
+      for (int branch = 0; branch < 2; ++branch) {
+        if (!engine_->canceled_[branch] &&
+            ReadableStreamDefaultController::CanCloseOrEnqueue(
+                engine_->controller_[branch])) {
+          ReadableStreamDefaultController::Enqueue(
+              script_state, engine_->controller_[branch],
+              chunk.Get(script_state->GetIsolate()), exception_state);
           if (exception_state.HadException()) {
             // Instead of returning a rejection, which is inconvenient here,
-            // call ControllerError(). The only difference this makes is that
-            // it happens synchronously, but that should not be observable.
+            // call ControllerError(). The only difference this makes is that it
+            // happens synchronously, but that should not be observable.
             ReadableStreamDefaultController::Error(
                 script_state, engine_->controller_[branch],
                 exception_state.GetException());
@@ -1007,14 +1043,17 @@ class ReadableStream::TeeEngine::PullAlgorithm final : public StreamAlgorithm {
           }
         }
       }
+
+      // 6. Set reading to false.
+      engine_->reading_ = false;
+
+      // 7. If readAgain is true, perform pullAlgorithm.
+      if (engine_->read_again_) {
+        auto* pull_algorithm = MakeGarbageCollected<PullAlgorithm>(engine_);
+        pull_algorithm->Run(script_state, 0, nullptr);
+      }
     }
 
-    void Trace(Visitor* visitor) const override {
-      visitor->Trace(engine_);
-      PromiseHandler::Trace(visitor);
-    }
-
-   private:
     Member<TeeEngine> engine_;
   };
 
@@ -1090,55 +1129,58 @@ void ReadableStream::TeeEngine::Start(ScriptState* script_state,
   stream_ = stream;
 
   // 3. Let reader be ? AcquireReadableStreamDefaultReader(stream).
-  reader_ = ReadableStream::AcquireDefaultReader(script_state, stream, false,
+  reader_ = ReadableStream::AcquireDefaultReader(script_state, stream,
                                                  exception_state);
   if (exception_state.HadException()) {
     return;
   }
 
   // These steps are performed by the constructor:
-  //  4. Let closed be false.
-  DCHECK(!closed_);
+  //  4. Let reading be false.
+  DCHECK(!reading_);
 
-  //  5. Let canceled1 be false.
+  //  5. Let readAgain be false.
+  DCHECK(!read_again_);
+
+  //  6. Let canceled1 be false.
   DCHECK(!canceled_[0]);
 
-  //  6. Let canceled2 be false.
+  //  7. Let canceled2 be false.
   DCHECK(!canceled_[1]);
 
-  //  7. Let reason1 be undefined.
+  //  8. Let reason1 be undefined.
   DCHECK(reason_[0].IsEmpty());
 
-  //  8. Let reason2 be undefined.
+  //  9. Let reason2 be undefined.
   DCHECK(reason_[1].IsEmpty());
 
-  //  9. Let branch1 be undefined.
+  // 10. Let branch1 be undefined.
   DCHECK(!branch_[0]);
 
-  // 10. Let branch2 be undefined.
+  // 11. Let branch2 be undefined.
   DCHECK(!branch_[1]);
 
-  // 11. Let cancelPromise be a new promise.
+  // 12. Let cancelPromise be a new promise.
   cancel_promise_ = MakeGarbageCollected<StreamPromiseResolver>(script_state);
 
-  // 12. Let pullAlgorithm be the following steps:
+  // 13. Let pullAlgorithm be the following steps:
   // (steps are defined in PullAlgorithm::Run()).
   auto* pull_algorithm = MakeGarbageCollected<PullAlgorithm>(this);
 
-  // 13. Let cancel1Algorithm be the following steps, taking a reason argument:
+  // 14. Let cancel1Algorithm be the following steps, taking a reason argument:
   // (see CancelAlgorithm::Run()).
   auto* cancel1_algorithm = MakeGarbageCollected<CancelAlgorithm>(this, 0);
 
-  // 14. Let cancel2Algorithm be the following steps, taking a reason argument:
+  // 15. Let cancel2Algorithm be the following steps, taking a reason argument:
   // (both algorithms share a single implementation).
   auto* cancel2_algorithm = MakeGarbageCollected<CancelAlgorithm>(this, 1);
 
-  // 15. Let startAlgorithm be an algorithm that returns undefined.
+  // 16. Let startAlgorithm be an algorithm that returns undefined.
   auto* start_algorithm = CreateTrivialStartAlgorithm();
 
   auto* size_algorithm = CreateDefaultSizeAlgorithm();
 
-  // 16. Set branch1 to ! CreateReadableStream(startAlgorithm, pullAlgorithm,
+  // 17. Set branch1 to ! CreateReadableStream(startAlgorithm, pullAlgorithm,
   //   cancel1Algorithm).
   branch_[0] = ReadableStream::Create(script_state, start_algorithm,
                                       pull_algorithm, cancel1_algorithm, 1.0,
@@ -1147,7 +1189,7 @@ void ReadableStream::TeeEngine::Start(ScriptState* script_state,
     return;
   }
 
-  // 17. Set branch2 to ! CreateReadableStream(startAlgorithm, pullAlgorithm,
+  // 18. Set branch2 to ! CreateReadableStream(startAlgorithm, pullAlgorithm,
   //   cancel2Algorithm).
   branch_[1] = ReadableStream::Create(script_state, start_algorithm,
                                       pull_algorithm, cancel2_algorithm, 1.0,
@@ -1199,14 +1241,14 @@ void ReadableStream::TeeEngine::Start(ScriptState* script_state,
     Member<TeeEngine> engine_;
   };
 
-  // 18. Upon rejection of reader.[[closedPromise]] with reason r,
+  // 19. Upon rejection of reader.[[closedPromise]] with reason r,
   StreamThenPromise(
       script_state->GetContext(),
       reader_->closed_promise_->V8Promise(script_state->GetIsolate()), nullptr,
       MakeGarbageCollected<ScriptFunction>(
           script_state, MakeGarbageCollected<RejectFunction>(this)));
 
-  // Step "19. Return « branch1, branch2 »."
+  // Step "20. Return « branch1, branch2 »."
   // is performed by the caller.
 }
 
@@ -1323,7 +1365,8 @@ ReadableStream* ReadableStream::Create(ScriptState* script_state,
   Initialize(stream);
 
   // 6. Let controller be a new ReadableStreamDefaultController.
-  auto* controller = MakeGarbageCollected<ReadableStreamDefaultController>();
+  auto* controller =
+      MakeGarbageCollected<ReadableStreamDefaultController>(script_state);
 
   // 7. Perform ? SetUpReadableStreamDefaultController(stream, controller,
   //    startAlgorithm, pullAlgorithm, cancelAlgorithm, highWaterMark,
@@ -1442,7 +1485,7 @@ V8ReadableStreamReader* ReadableStream::getReader(
   // 1. If options["mode"] does not exist, return ?
   // AcquireReadableStreamDefaultReader(this).
   ReadableStreamDefaultReader* reader =
-      AcquireDefaultReader(script_state, this, true, exception_state);
+      AcquireDefaultReader(script_state, this, exception_state);
   if (!reader)
     return nullptr;
   return MakeGarbageCollected<V8ReadableStreamReader>(reader);
@@ -1700,11 +1743,8 @@ void ReadableStream::InitInternal(ScriptState* script_state,
 ReadableStreamDefaultReader* ReadableStream::AcquireDefaultReader(
     ScriptState* script_state,
     ReadableStream* stream,
-    bool for_author_code,
     ExceptionState& exception_state) {
   // https://streams.spec.whatwg.org/#acquire-readable-stream-reader
-  // for_author_code is compulsory in this implementation
-
   // 1. Let reader by a new ReadableStreamDefaultReader.
   // 2. Perform ? SetUpReadableStreamReader(reader, stream).
   auto* reader = MakeGarbageCollected<ReadableStreamDefaultReader>(
@@ -1712,8 +1752,6 @@ ReadableStreamDefaultReader* ReadableStream::AcquireDefaultReader(
   if (exception_state.HadException()) {
     return nullptr;
   }
-
-  reader->for_author_code_ = for_author_code;
 
   // 3. Return reader.
   return reader;
@@ -1884,7 +1922,7 @@ ReadableStreamDefaultReader* ReadableStream::GetReaderNotForAuthorCode(
 
   // Since the stream is not locked, AcquireDefaultReader cannot fail.
   NonThrowableExceptionState exception_state(__FILE__, __LINE__);
-  return AcquireDefaultReader(script_state, this, false, exception_state);
+  return AcquireDefaultReader(script_state, this, exception_state);
 }
 
 ScriptPromise ReadableStream::PipeTo(ScriptState* script_state,
@@ -1931,30 +1969,21 @@ void ReadableStream::AddReadIntoRequest(
   byob_reader->read_into_requests_.push_back(readRequest);
 }
 
-StreamPromiseResolver* ReadableStream::AddReadRequest(ScriptState* script_state,
-                                                      ReadableStream* stream) {
+void ReadableStream::AddReadRequest(ScriptState* script_state,
+                                    ReadableStream* stream,
+                                    ReadRequest* read_request) {
   // https://streams.spec.whatwg.org/#readable-stream-add-read-request
   // 1. Assert: ! IsReadableStreamDefaultReader(stream.[[reader]]) is true.
-  ReadableStreamGenericReader* reader = stream->reader_;
-  ReadableStreamDefaultReader* default_reader =
-      To<ReadableStreamDefaultReader>(reader);
-  DCHECK(default_reader);
+  DCHECK(stream->reader_->IsDefaultReader());
 
   // 2. Assert: stream.[[state]] is "readable".
   CHECK_EQ(stream->state_, kReadable);
 
-  // 3. Let promise be a new promise.
-  auto* promise = MakeGarbageCollected<StreamPromiseResolver>(script_state);
-
-  // This implementation stores promises directly in |read_requests_| rather
-  // than wrapping them in a Record.
-  // 4. Let readRequest be Record {[[promise]]: promise}.
-  // 5. Append readRequest as the last element of stream.[[reader]].
-  //  [[readRequests]].
-  default_reader->read_requests_.push_back(promise);
-
-  // 6. Return promise.
-  return promise;
+  // 3. Append readRequest to stream.[[reader]].[[readRequests]].
+  ReadableStreamGenericReader* reader = stream->reader_;
+  ReadableStreamDefaultReader* default_reader =
+      To<ReadableStreamDefaultReader>(reader);
+  default_reader->read_requests_.push_back(read_request);
 }
 
 v8::Local<v8::Promise> ReadableStream::Cancel(ScriptState* script_state,
@@ -2054,72 +2083,17 @@ void ReadableStream::Close(ScriptState* script_state, ReadableStream* stream) {
   // 6. If reader implements ReadableStreamDefaultReader,
   if (reader->IsDefaultReader()) {
     //   a. Let readRequests be reader.[[readRequests]].
-    HeapDeque<Member<StreamPromiseResolver>> requests;
+    HeapDeque<Member<ReadRequest>> requests;
     requests.Swap(To<ReadableStreamDefaultReader>(reader)->read_requests_);
-    bool for_author_code =
-        To<ReadableStreamDefaultReader>(reader)->for_author_code_;
     //   b. Set reader.[[readRequests]] to an empty list.`
     //      This is not required since we've already called Swap()
 
-    //   c. Repeat for each readRequest that is an element of reader.
-    //      [[readRequests]],
-    for (StreamPromiseResolver* promise : requests) {
-      //      i. Resolve readRequest.[[promise]] with !
-      //      ReadableStreamCreateReadResult(undefined, true, reader.
-      //      [[forAuthorCode]]).
-      promise->Resolve(
-          script_state,
-          CreateReadResult(script_state,
-                           v8::Undefined(script_state->GetIsolate()), true,
-                           for_author_code));
+    //   c. For each readRequest of readRequests,
+    for (ReadRequest* request : requests) {
+      //     i. Perform readRequest’s close steps.
+      request->CloseSteps(script_state);
     }
   }
-}
-
-v8::Local<v8::Value> ReadableStream::CreateReadResult(
-    ScriptState* script_state,
-    v8::Local<v8::Value> value,
-    bool done,
-    bool for_author_code) {
-  // https://streams.spec.whatwg.org/#readable-stream-create-read-result
-  auto* isolate = script_state->GetIsolate();
-  auto context = script_state->GetContext();
-  auto value_string = V8AtomicString(isolate, "value");
-  auto done_string = V8AtomicString(isolate, "done");
-  auto done_value = v8::Boolean::New(isolate, done);
-  // 1. Let prototype be null.
-  // 2. If forAuthorCode is true, set prototype to %ObjectPrototype%.
-  // This implementation doesn't use a |prototype| variable, instead using
-  // different code paths depending on the value of |for_author_code|.
-  if (for_author_code) {
-    // 4. Let obj be ObjectCreate(prototype).
-    auto obj = v8::Object::New(isolate);
-
-    // 5. Perform CreateDataProperty(obj, "value", value).
-    obj->CreateDataProperty(context, value_string, value).Check();
-
-    // 6. Perform CreateDataProperty(obj, "done", done).
-    obj->CreateDataProperty(context, done_string, done_value).Check();
-
-    // 7. Return obj.
-    return obj;
-  }
-
-  // When |for_author_code| is false, we can perform all the steps in a single
-  // call to V8.
-
-  // 4. Let obj be ObjectCreate(prototype).
-  // 5. Perform CreateDataProperty(obj, "value", value).
-  // 6. Perform CreateDataProperty(obj, "done", done).
-  // 7. Return obj.
-  // TODO(ricea): Is it possible to use this optimised API in both cases?
-  v8::Local<v8::Name> names[2] = {value_string, done_string};
-  v8::Local<v8::Value> values[2] = {value, done_value};
-
-  static_assert(std::size(names) == std::size(values),
-                "names and values arrays must be the same size");
-  return v8::Object::New(isolate, v8::Null(isolate), names, values,
-                         std::size(names));
 }
 
 void ReadableStream::Error(ScriptState* script_state,
@@ -2208,19 +2182,22 @@ void ReadableStream::FulfillReadRequest(ScriptState* script_state,
   ReadableStreamDefaultReader* default_reader =
       To<ReadableStreamDefaultReader>(reader);
 
-  // 3. Let readRequest be the first element of reader.[[readRequests]].
-  StreamPromiseResolver* read_request = default_reader->read_requests_.front();
+  // 3. Assert: reader.[[readRequests]] is not empty.
+  DCHECK(!default_reader->read_requests_.empty());
 
-  // 4. Remove readIntoRequest from reader.[[readIntoRequests]], shifting all
-  //    other elements downward (so that the second becomes the first, and so
-  //    on).
+  // 4. Let readRequest be reader.[[readRequests]][0].
+  ReadRequest* read_request = default_reader->read_requests_[0];
+
+  // 5. Remove readRequest from reader.[[readRequests]].
   default_reader->read_requests_.pop_front();
 
-  // 5. Resolve readIntoRequest.[[promise]] with !
-  //    ReadableStreamCreateReadResult(chunk, done, reader.[[forAuthorCode]]).
-  read_request->Resolve(script_state, ReadableStream::CreateReadResult(
-                                          script_state, chunk, done,
-                                          default_reader->for_author_code_));
+  // 6. If done is true, perform readRequest’s close steps.
+  if (done) {
+    read_request->CloseSteps(script_state);
+  } else {
+    // 7. Otherwise, perform readRequest’s chunk steps, given chunk.
+    read_request->ChunkSteps(script_state, chunk);
+  }
 }
 
 int ReadableStream::GetNumReadIntoRequests(const ReadableStream* stream) {

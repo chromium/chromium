@@ -218,6 +218,100 @@ void WritableStreamDefaultController::SetUp(
           script_state, MakeGarbageCollected<ResolvePromiseFunction>(stream)),
       MakeGarbageCollected<ScriptFunction>(
           script_state, MakeGarbageCollected<RejectPromiseFunction>(stream)));
+
+  class ProcessWriteResolveFunction final : public PromiseHandler {
+   public:
+    ProcessWriteResolveFunction(WritableStream* stream,
+                                WritableStreamDefaultController* controller)
+        : stream_(stream), controller_(controller) {}
+
+    void CallWithLocal(ScriptState* script_state,
+                       v8::Local<v8::Value>) override {
+      // https://streams.spec.whatwg.org/#writable-stream-default-controller-process-write
+      //  4. Upon fulfillment of sinkWritePromise,
+      //      a. Perform ! WritableStreamFinishInFlightWrite(stream).
+      WritableStream::FinishInFlightWrite(script_state, stream_);
+
+      //      b. Let state be stream.[[state]].
+      const auto state = stream_->GetState();
+
+      //      c. Assert: state is "writable" or "erroring".
+      CHECK(state == WritableStream::kWritable ||
+            state == WritableStream::kErroring);
+
+      //      d. Perform ! DequeueValue(controller).
+      controller_->queue_->DequeueValue(script_state->GetIsolate());
+
+      //      e. If ! WritableStreamCloseQueuedOrInFlight(stream) is false and
+      //         state is "writable",
+      if (!WritableStream::CloseQueuedOrInFlight(stream_) &&
+          state == WritableStream::kWritable) {
+        //          i. Let backpressure be !
+        //             WritableStreamDefaultControllerGetBackpressure(
+        //             controller).
+        const bool backpressure =
+            WritableStreamDefaultController::GetBackpressure(controller_);
+
+        //         ii. Perform ! WritableStreamUpdateBackpressure(stream,
+        //             backpressure).
+        WritableStream::UpdateBackpressure(script_state, stream_, backpressure);
+      }
+      //      f. Perform ! WritableStreamDefaultControllerAdvanceQueueIfNeeded(
+      //         controller).
+      WritableStreamDefaultController::AdvanceQueueIfNeeded(script_state,
+                                                            controller_);
+    }
+
+    void Trace(Visitor* visitor) const override {
+      visitor->Trace(stream_);
+      visitor->Trace(controller_);
+      PromiseHandler::Trace(visitor);
+    }
+
+   private:
+    Member<WritableStream> stream_;
+    Member<WritableStreamDefaultController> controller_;
+  };
+
+  class ProcessWriteRejectFunction final : public PromiseHandler {
+   public:
+    ProcessWriteRejectFunction(WritableStream* stream,
+                               WritableStreamDefaultController* controller)
+        : stream_(stream), controller_(controller) {}
+
+    void CallWithLocal(ScriptState* script_state,
+                       v8::Local<v8::Value> reason) override {
+      const auto state = stream_->GetState();
+      //  5. Upon rejection of sinkWritePromise with reason,
+      //      a. If stream.[[state]] is "writable", perform !
+      //         WritableStreamDefaultControllerClearAlgorithms(controller).
+      if (state == WritableStream::kWritable) {
+        WritableStreamDefaultController::ClearAlgorithms(controller_);
+      }
+
+      //      b. Perform ! WritableStreamFinishInFlightWriteWithError(stream,
+      //         reason).
+      WritableStream::FinishInFlightWriteWithError(script_state, stream_,
+                                                   reason);
+    }
+
+    void Trace(Visitor* visitor) const override {
+      visitor->Trace(stream_);
+      visitor->Trace(controller_);
+      PromiseHandler::Trace(visitor);
+    }
+
+   private:
+    Member<WritableStream> stream_;
+    Member<WritableStreamDefaultController> controller_;
+  };
+
+  controller->resolve_function_ = MakeGarbageCollected<ScriptFunction>(
+      script_state, MakeGarbageCollected<ProcessWriteResolveFunction>(
+                        controller->controlled_writable_stream_, controller));
+  controller->reject_function_ = MakeGarbageCollected<ScriptFunction>(
+      script_state, MakeGarbageCollected<ProcessWriteRejectFunction>(
+                        controller->controlled_writable_stream_, controller));
 }
 
 // TODO(ricea): Should this be a constructor?
@@ -412,6 +506,8 @@ void WritableStreamDefaultController::Trace(Visitor* visitor) const {
   visitor->Trace(signal_);
   visitor->Trace(strategy_size_algorithm_);
   visitor->Trace(write_algorithm_);
+  visitor->Trace(resolve_function_);
+  visitor->Trace(reject_function_);
   ScriptWrappable::Trace(visitor);
 }
 
@@ -579,99 +675,9 @@ void WritableStreamDefaultController::ProcessWrite(
   const auto sinkWritePromise =
       controller->write_algorithm_->Run(script_state, 1, &chunk);
 
-  class ResolveFunction final : public PromiseHandler {
-   public:
-    ResolveFunction(WritableStream* stream,
-                    WritableStreamDefaultController* controller)
-        : stream_(stream), controller_(controller) {}
-
-    void CallWithLocal(ScriptState* script_state,
-                       v8::Local<v8::Value>) override {
-      //  4. Upon fulfillment of sinkWritePromise,
-      //      a. Perform ! WritableStreamFinishInFlightWrite(stream).
-      WritableStream::FinishInFlightWrite(script_state, stream_);
-
-      //      b. Let state be stream.[[state]].
-      const auto state = stream_->GetState();
-
-      //      c. Assert: state is "writable" or "erroring".
-      CHECK(state == WritableStream::kWritable ||
-            state == WritableStream::kErroring);
-
-      //      d. Perform ! DequeueValue(controller).
-      controller_->queue_->DequeueValue(script_state->GetIsolate());
-
-      //      e. If ! WritableStreamCloseQueuedOrInFlight(stream) is false and
-      //         state is "writable",
-      if (!WritableStream::CloseQueuedOrInFlight(stream_) &&
-          state == WritableStream::kWritable) {
-        //          i. Let backpressure be !
-        //             WritableStreamDefaultControllerGetBackpressure(
-        //             controller).
-        const bool backpressure =
-            WritableStreamDefaultController::GetBackpressure(controller_);
-
-        //         ii. Perform ! WritableStreamUpdateBackpressure(stream,
-        //             backpressure).
-        WritableStream::UpdateBackpressure(script_state, stream_, backpressure);
-      }
-      //      f. Perform ! WritableStreamDefaultControllerAdvanceQueueIfNeeded(
-      //         controller).
-      WritableStreamDefaultController::AdvanceQueueIfNeeded(script_state,
-                                                            controller_);
-    }
-
-    void Trace(Visitor* visitor) const override {
-      visitor->Trace(stream_);
-      visitor->Trace(controller_);
-      PromiseHandler::Trace(visitor);
-    }
-
-   private:
-    Member<WritableStream> stream_;
-    Member<WritableStreamDefaultController> controller_;
-  };
-
-  class RejectFunction final : public PromiseHandler {
-   public:
-    RejectFunction(WritableStream* stream,
-                   WritableStreamDefaultController* controller)
-        : stream_(stream), controller_(controller) {}
-
-    void CallWithLocal(ScriptState* script_state,
-                       v8::Local<v8::Value> reason) override {
-      const auto state = stream_->GetState();
-      //  5. Upon rejection of sinkWritePromise with reason,
-      //      a. If stream.[[state]] is "writable", perform !
-      //         WritableStreamDefaultControllerClearAlgorithms(controller).
-      if (state == WritableStream::kWritable) {
-        WritableStreamDefaultController::ClearAlgorithms(controller_);
-      }
-
-      //      b. Perform ! WritableStreamFinishInFlightWriteWithError(stream,
-      //         reason).
-      WritableStream::FinishInFlightWriteWithError(script_state, stream_,
-                                                   reason);
-    }
-
-    void Trace(Visitor* visitor) const override {
-      visitor->Trace(stream_);
-      visitor->Trace(controller_);
-      PromiseHandler::Trace(visitor);
-    }
-
-   private:
-    Member<WritableStream> stream_;
-    Member<WritableStreamDefaultController> controller_;
-  };
-
   StreamThenPromise(script_state->GetContext(), sinkWritePromise,
-                    MakeGarbageCollected<ScriptFunction>(
-                        script_state, MakeGarbageCollected<ResolveFunction>(
-                                          stream, controller)),
-                    MakeGarbageCollected<ScriptFunction>(
-                        script_state, MakeGarbageCollected<RejectFunction>(
-                                          stream, controller)));
+                    controller->resolve_function_,
+                    controller->reject_function_);
 }
 
 bool WritableStreamDefaultController::GetBackpressure(

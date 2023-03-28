@@ -16,18 +16,19 @@ namespace blink {
 class ExceptionState;
 class QueueWithSizes;
 class ReadableStream;
+class ReadRequest;
+class ScriptFunction;
 class ScriptState;
 class ScriptValue;
 class StrategySizeAlgorithm;
 class StreamAlgorithm;
-class StreamPromiseResolver;
 class StreamStartAlgorithm;
 
 class ReadableStreamDefaultController : public ReadableStreamController {
   DEFINE_WRAPPERTYPEINFO();
 
  public:
-  ReadableStreamDefaultController();
+  explicit ReadableStreamDefaultController(ScriptState*);
 
   // https://streams.spec.whatwg.org/#rs-default-controller-desired-size
   absl::optional<double> desiredSize() const { return GetDesiredSize(); }
@@ -82,7 +83,7 @@ class ReadableStreamDefaultController : public ReadableStreamController {
                                      v8::Local<v8::Value> reason) override;
 
   // https://streams.spec.whatwg.org/#rs-default-controller-private-pull
-  StreamPromiseResolver* PullSteps(ScriptState*) override;
+  void PullSteps(ScriptState*, ReadRequest*) override;
 
   // https://streams.spec.whatwg.org/#abstract-opdef-readablestreamdefaultcontroller-releasesteps
   void ReleaseSteps() override;
@@ -131,6 +132,8 @@ class ReadableStreamDefaultController : public ReadableStreamController {
   Member<QueueWithSizes> queue_;
   double strategy_high_water_mark_ = 0.0;
   Member<StrategySizeAlgorithm> strategy_size_algorithm_;
+  Member<ScriptFunction> resolve_function_;
+  Member<ScriptFunction> reject_function_;
 };
 
 template <>

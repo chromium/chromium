@@ -8,7 +8,7 @@
     ActiveScriptWrappable
 ] interface ReadableStreamDefaultReader {
     [CallWith=ScriptState, RaisesException] constructor(ReadableStream stream);
-    [CallWith=ScriptState, RaisesException] Promise<void> read();
+    [CallWith=ScriptState, RaisesException] Promise<ReadableStreamReadResult> read();
     [CallWith=ScriptState, RaisesException] void releaseLock();
 };
 

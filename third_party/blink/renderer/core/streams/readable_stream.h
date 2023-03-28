@@ -31,12 +31,12 @@ class ReadableStreamDefaultController;
 class ReadableStreamGetReaderOptions;
 class ReadableStreamTransferringOptimizer;
 class ReadableWritablePair;
+class ReadRequest;
 class ScriptPromise;
 class ScriptState;
 class StrategySizeAlgorithm;
 class StreamAlgorithm;
 class StreamPipeOptions;
-class StreamPromiseResolver;
 class StreamStartAlgorithm;
 class UnderlyingByteSourceBase;
 class UnderlyingSourceBase;
@@ -249,7 +249,6 @@ class CORE_EXPORT ReadableStream : public ScriptWrappable {
   // https://streams.spec.whatwg.org/#acquire-readable-stream-reader
   static ReadableStreamDefaultReader* AcquireDefaultReader(ScriptState*,
                                                            ReadableStream*,
-                                                           bool for_author_code,
                                                            ExceptionState&);
 
   // https://streams.spec.whatwg.org/#acquire-readable-stream-byob-reader
@@ -316,7 +315,7 @@ class CORE_EXPORT ReadableStream : public ScriptWrappable {
                                  ReadableStreamBYOBReader::ReadIntoRequest*);
 
   // https://streams.spec.whatwg.org/#readable-stream-add-read-request
-  static StreamPromiseResolver* AddReadRequest(ScriptState*, ReadableStream*);
+  static void AddReadRequest(ScriptState*, ReadableStream*, ReadRequest*);
 
   // https://streams.spec.whatwg.org/#readable-stream-cancel
   static v8::Local<v8::Promise> Cancel(ScriptState*,
@@ -325,12 +324,6 @@ class CORE_EXPORT ReadableStream : public ScriptWrappable {
 
   // https://streams.spec.whatwg.org/#readable-stream-close
   static void Close(ScriptState*, ReadableStream*);
-
-  // https://streams.spec.whatwg.org/#readable-stream-create-read-result
-  static v8::Local<v8::Value> CreateReadResult(ScriptState*,
-                                               v8::Local<v8::Value> value,
-                                               bool done,
-                                               bool for_author_code);
 
   // https://streams.spec.whatwg.org/#readable-stream-error
   static void Error(ScriptState*, ReadableStream*, v8::Local<v8::Value> e);

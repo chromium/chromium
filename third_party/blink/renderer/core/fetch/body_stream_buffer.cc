@@ -509,7 +509,10 @@ void BodyStreamBuffer::ProcessData() {
 }
 
 void BodyStreamBuffer::EndLoading() {
-  DCHECK(loader_);
+  if (!loader_) {
+    DCHECK(!keep_alive_);
+    return;
+  }
   virtual_time_pauser_.UnpauseVirtualTime();
   keep_alive_.Clear();
   loader_ = nullptr;

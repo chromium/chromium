@@ -16,6 +16,7 @@ namespace blink {
 class AbortSignal;
 class ExceptionState;
 class QueueWithSizes;
+class ScriptFunction;
 class ScriptState;
 class ScriptValue;
 class StrategySizeAlgorithm;
@@ -151,6 +152,8 @@ class CORE_EXPORT WritableStreamDefaultController final
   double strategy_high_water_mark_ = 0.0;
   Member<StrategySizeAlgorithm> strategy_size_algorithm_;
   Member<StreamAlgorithm> write_algorithm_;
+  Member<ScriptFunction> resolve_function_;
+  Member<ScriptFunction> reject_function_;
 };
 
 }  // namespace blink

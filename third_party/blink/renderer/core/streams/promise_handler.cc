@@ -57,6 +57,7 @@ v8::Local<v8::Promise> StreamThenPromise(v8::Local<v8::Context> context,
                                          v8::Local<v8::Promise> promise,
                                          ScriptFunction* on_fulfilled,
                                          ScriptFunction* on_rejected) {
+  v8::Context::Scope v8_context_scope(context);
   v8::MaybeLocal<v8::Promise> result_maybe;
   if (!on_fulfilled) {
     DCHECK(on_rejected);

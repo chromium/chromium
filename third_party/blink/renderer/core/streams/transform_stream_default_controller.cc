@@ -15,6 +15,7 @@
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/bindings/script_state.h"
 #include "third_party/blink/renderer/platform/bindings/v8_binding.h"
+#include "third_party/blink/renderer/platform/bindings/v8_throw_exception.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/wtf/casting.h"
 
@@ -90,6 +91,7 @@ void TransformStreamDefaultController::Trace(Visitor* visitor) const {
   visitor->Trace(controlled_transform_stream_);
   visitor->Trace(flush_algorithm_);
   visitor->Trace(transform_algorithm_);
+  visitor->Trace(reject_function_);
   ScriptWrappable::Trace(visitor);
 }
 
@@ -139,6 +141,7 @@ class TransformStreamDefaultController::DefaultTransformAlgorithm final
 };
 
 void TransformStreamDefaultController::SetUp(
+    ScriptState* script_state,
     TransformStream* stream,
     TransformStreamDefaultController* controller,
     StreamAlgorithm* transform_algorithm,
@@ -161,6 +164,37 @@ void TransformStreamDefaultController::SetUp(
 
   // 6. Set controller.[[flushAlgorithm]] to flushAlgorithm.
   controller->flush_algorithm_ = flush_algorithm;
+
+  class PerformTransformRejectFunction final : public PromiseHandlerWithValue {
+   public:
+    explicit PerformTransformRejectFunction(TransformStream* stream)
+        : stream_(stream) {}
+
+    v8::Local<v8::Value> CallWithLocal(ScriptState* script_state,
+                                       v8::Local<v8::Value> r) override {
+      // 2. Return the result of transforming transformPromise with a rejection
+      //    handler that, when called with argument r, performs the following
+      //    steps:
+      //    a. Perform ! TransformStreamError(controller.
+      //       [[controlledTransformStream]], r).
+      TransformStream::Error(script_state, stream_, r);
+
+      //    b. Throw r.
+      return PromiseReject(script_state, r);
+    }
+
+    void Trace(Visitor* visitor) const override {
+      visitor->Trace(stream_);
+      PromiseHandlerWithValue::Trace(visitor);
+    }
+
+   private:
+    Member<TransformStream> stream_;
+  };
+
+  controller->reject_function_ = MakeGarbageCollected<ScriptFunction>(
+      script_state, MakeGarbageCollected<PerformTransformRejectFunction>(
+                        controller->controlled_transform_stream_));
 }
 
 v8::Local<v8::Value> TransformStreamDefaultController::SetUpFromTransformer(
@@ -230,7 +264,7 @@ v8::Local<v8::Value> TransformStreamDefaultController::SetUpFromTransformer(
 
   // 7. Perform ! SetUpTransformStreamDefaultController(stream, controller,
   //    transformAlgorithm, flushAlgorithm).
-  SetUp(stream, controller, transform_algorithm, flush_algorithm);
+  SetUp(script_state, stream, controller, transform_algorithm, flush_algorithm);
 
   // This operation doesn't have a return value in the standard, but it's useful
   // to return the JavaScript wrapper here so that it can be used when calling
@@ -321,44 +355,36 @@ v8::Local<v8::Promise> TransformStreamDefaultController::PerformTransform(
     ScriptState* script_state,
     TransformStreamDefaultController* controller,
     v8::Local<v8::Value> chunk) {
+  if (!script_state->ContextIsValid()) {
+    v8::Local<v8::Value> error = V8ThrowException::CreateTypeError(
+        script_state->GetIsolate(), "invalid realm");
+    v8::MaybeLocal<v8::Value> result_maybe =
+        controller->reject_function_->V8Function()->Call(
+            script_state->GetContext(),
+            v8::Undefined(script_state->GetIsolate()), 1, &error);
+    v8::Local<v8::Value> result;
+    if (!result_maybe.ToLocal(&result)) {
+      result = v8::Local<v8::Promise>();
+    }
+    return result.As<v8::Promise>();
+  }
   // https://streams.spec.whatwg.org/#transform-stream-default-controller-perform-transform
   // 1. Let transformPromise be the result of performing controller.
   //    [[transformAlgorithm]], passing chunk.
+  // This is needed because the result of transforming the transform promise
+  // needs to be returned to the outer scope.
+  ScriptState::EscapableScope scope(script_state);
   auto transform_promise =
       controller->transform_algorithm_->Run(script_state, 1, &chunk);
-
-  class RejectFunction final : public PromiseHandlerWithValue {
-   public:
-    explicit RejectFunction(TransformStream* stream) : stream_(stream) {}
-
-    v8::Local<v8::Value> CallWithLocal(ScriptState* script_state,
-                                       v8::Local<v8::Value> r) override {
-      // 2. Return the result of transforming transformPromise with a rejection
-      //    handler that, when called with argument r, performs the following
-      //    steps:
-      //    a. Perform ! TransformStreamError(controller.
-      //       [[controlledTransformStream]], r).
-      TransformStream::Error(script_state, stream_, r);
-
-      //    b. Throw r.
-      return PromiseReject(script_state, r);
-    }
-
-    void Trace(Visitor* visitor) const override {
-      visitor->Trace(stream_);
-      PromiseHandlerWithValue::Trace(visitor);
-    }
-
-   private:
-    Member<TransformStream> stream_;
-  };
+  DCHECK(!transform_promise.IsEmpty());
 
   // 2. Return the result of transforming transformPromise ...
-  return StreamThenPromise(
-      script_state->GetContext(), transform_promise, nullptr,
-      MakeGarbageCollected<ScriptFunction>(
-          script_state, MakeGarbageCollected<RejectFunction>(
-                            controller->controlled_transform_stream_)));
+  v8::Local<v8::Promise> streamed_promise =
+      StreamThenPromise(script_state->GetContext(), transform_promise, nullptr,
+                        controller->reject_function_);
+  v8::Local<v8::Value> escapable_streamed_promise =
+      scope.Escape(streamed_promise);
+  return escapable_streamed_promise.As<v8::Promise>();
 }
 
 void TransformStreamDefaultController::Terminate(

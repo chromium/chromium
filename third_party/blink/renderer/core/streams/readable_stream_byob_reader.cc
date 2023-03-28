@@ -6,6 +6,7 @@
 
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
 #include "third_party/blink/renderer/bindings/core/v8/to_v8_traits.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_readable_stream_read_result.h"
 #include "third_party/blink/renderer/core/streams/readable_stream.h"
 #include "third_party/blink/renderer/core/streams/readable_stream_controller.h"
 #include "third_party/blink/renderer/core/streams/stream_promise_resolver.h"
@@ -25,26 +26,31 @@ ReadableStreamBYOBReader::ReadIntoRequest::ReadIntoRequest(
 void ReadableStreamBYOBReader::ReadIntoRequest::ChunkSteps(
     ScriptState* script_state,
     DOMArrayBufferView* chunk) const {
-  resolver_->Resolve(script_state, ReadableStream::CreateReadResult(
-                                       script_state,
-                                       ToV8Traits<DOMArrayBufferView>::ToV8(
-                                           script_state, chunk)
-                                           .ToLocalChecked(),
-                                       false, true));
+  auto* read_result = ReadableStreamReadResult::Create();
+  read_result->setValue(
+      ScriptValue(script_state->GetIsolate(),
+                  ToV8Traits<DOMArrayBufferView>::ToV8(script_state, chunk)
+                      .ToLocalChecked()));
+  read_result->setDone(false);
+  resolver_->Resolve(script_state,
+                     ToV8(read_result, script_state->GetContext()->Global(),
+                          script_state->GetIsolate()));
 }
 
 void ReadableStreamBYOBReader::ReadIntoRequest::CloseSteps(
     ScriptState* script_state,
     DOMArrayBufferView* chunk) const {
-  resolver_->Resolve(
-      script_state,
-      ReadableStream::CreateReadResult(
-          script_state,
-          chunk ? ToV8Traits<DOMArrayBufferView>::ToV8(script_state, chunk)
-                      .ToLocalChecked()
-                : static_cast<v8::Local<v8::Value>>(
-                      v8::Undefined(script_state->GetIsolate())),
-          true, true));
+  auto* read_result = ReadableStreamReadResult::Create();
+  read_result->setValue(ScriptValue(
+      script_state->GetIsolate(),
+      chunk ? ToV8Traits<DOMArrayBufferView>::ToV8(script_state, chunk)
+                  .ToLocalChecked()
+            : static_cast<v8::Local<v8::Value>>(
+                  v8::Undefined(script_state->GetIsolate()))));
+  read_result->setDone(true);
+  resolver_->Resolve(script_state,
+                     ToV8(read_result, script_state->GetContext()->Global(),
+                          script_state->GetIsolate()));
 }
 
 void ReadableStreamBYOBReader::ReadIntoRequest::ErrorSteps(
