@@ -16,6 +16,7 @@
 #include "ui/events/base_event_utils.h"
 #include "ui/events/test/event_generator.h"
 #include "ui/strings/grit/ui_strings.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/border.h"
 #include "ui/views/controls/base_control_test_widget.h"
 #include "ui/views/controls/focus_ring.h"
@@ -133,6 +134,50 @@ TEST_F(LinkTest, TestUnderlineAndFocusRingOnFocus) {
   link()->RequestFocus();
   EXPECT_TRUE(link_underlined());
   EXPECT_TRUE(views::FocusRing::Get(link())->ShouldPaintForTesting());
+}
+
+TEST_F(LinkTest, AccessibleProperties) {
+  ui::AXNodeData data;
+  link()->GetAccessibleNodeData(&data);
+  EXPECT_EQ(data.GetString16Attribute(ax::mojom::StringAttribute::kName),
+            u"TestLink");
+  EXPECT_EQ(link()->GetAccessibleName(), u"TestLink");
+  EXPECT_EQ(data.role, ax::mojom::Role::kLink);
+  EXPECT_FALSE(link()->GetViewAccessibility().IsIgnored());
+
+  // Setting the accessible name to a non-empty string should replace the name
+  // from the link text.
+  data = ui::AXNodeData();
+  std::u16string accessible_name = u"Accessible Name";
+  link()->SetAccessibleName(accessible_name);
+  link()->GetAccessibleNodeData(&data);
+  EXPECT_EQ(data.GetString16Attribute(ax::mojom::StringAttribute::kName),
+            accessible_name);
+  EXPECT_EQ(link()->GetAccessibleName(), accessible_name);
+  EXPECT_EQ(data.role, ax::mojom::Role::kLink);
+  EXPECT_FALSE(link()->GetViewAccessibility().IsIgnored());
+
+  // Setting the accessible name to an empty string should cause the link text
+  // to be used as the name.
+  data = ui::AXNodeData();
+  link()->SetAccessibleName(std::u16string());
+  link()->GetAccessibleNodeData(&data);
+  EXPECT_EQ(data.GetString16Attribute(ax::mojom::StringAttribute::kName),
+            u"TestLink");
+  EXPECT_EQ(link()->GetAccessibleName(), u"TestLink");
+  EXPECT_EQ(data.role, ax::mojom::Role::kLink);
+  EXPECT_FALSE(link()->GetViewAccessibility().IsIgnored());
+
+  // Setting the link to an empty string without setting a new accessible
+  // name should cause the view to become "ignored" again.
+  data = ui::AXNodeData();
+  link()->SetText(std::u16string());
+  link()->GetAccessibleNodeData(&data);
+  EXPECT_EQ(data.GetString16Attribute(ax::mojom::StringAttribute::kName),
+            std::u16string());
+  EXPECT_EQ(link()->GetAccessibleName(), std::u16string());
+  EXPECT_EQ(data.role, ax::mojom::Role::kLink);
+  EXPECT_TRUE(link()->GetViewAccessibility().IsIgnored());
 }
 
 }  // namespace views

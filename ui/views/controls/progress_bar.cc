@@ -62,12 +62,13 @@ ProgressBar::ProgressBar(int preferred_height, bool allow_round_corner)
     : preferred_height_(preferred_height),
       allow_round_corner_(allow_round_corner) {
   SetFlipCanvasOnPaintForRTLUI(true);
+  SetAccessibilityProperties(ax::mojom::Role::kProgressIndicator);
 }
 
 ProgressBar::~ProgressBar() = default;
 
 void ProgressBar::GetAccessibleNodeData(ui::AXNodeData* node_data) {
-  node_data->role = ax::mojom::Role::kProgressIndicator;
+  View::GetAccessibleNodeData(node_data);
   if (IsIndeterminate())
     node_data->RemoveStringAttribute(ax::mojom::StringAttribute::kValue);
   else

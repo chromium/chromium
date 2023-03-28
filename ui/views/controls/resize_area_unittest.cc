@@ -206,6 +206,21 @@ TEST_F(ResizeAreaTest, NoDragOnGestureTap) {
 
   EXPECT_EQ(0, resize_amount());
 }
+
+TEST_F(ResizeAreaTest, AccessibleRole) {
+  auto* resize_area = widget()->GetContentsView();
+  ui::AXNodeData data;
+  resize_area->GetAccessibleNodeData(&data);
+  EXPECT_EQ(data.role, ax::mojom::Role::kSplitter);
+  EXPECT_EQ(resize_area->GetAccessibleRole(), ax::mojom::Role::kSplitter);
+
+  data = ui::AXNodeData();
+  resize_area->SetAccessibleRole(ax::mojom::Role::kButton);
+  resize_area->GetAccessibleNodeData(&data);
+  EXPECT_EQ(data.role, ax::mojom::Role::kButton);
+  EXPECT_EQ(resize_area->GetAccessibleRole(), ax::mojom::Role::kButton);
+}
+
 #endif  // !BUILDFLAG(IS_MAC)
 
 }  // namespace views

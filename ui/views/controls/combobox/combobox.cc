@@ -180,6 +180,11 @@ Combobox::Combobox(ui::ComboboxModel* model, int text_context, int text_style)
     views::InstallRoundRectHighlightPathGenerator(this, gfx::Insets(),
                                                   GetCornerRadius());
   }
+
+  // `ax::mojom::Role::kComboBox` is for UI elements with a dropdown and
+  // an editable text field, which `views::Combobox` does not have. Use
+  // `ax::mojom::Role::kPopUpButton` to match an HTML <select> element.
+  SetAccessibilityProperties(ax::mojom::Role::kPopUpButton);
 }
 
 Combobox::~Combobox() {
@@ -482,17 +487,13 @@ void Combobox::OnBlur() {
 }
 
 void Combobox::GetAccessibleNodeData(ui::AXNodeData* node_data) {
-  // ax::mojom::Role::kComboBox is for UI elements with a dropdown and
-  // an editable text field, which views::Combobox does not have. Use
-  // ax::mojom::Role::kPopUpButton to match an HTML <select> element.
-  node_data->role = ax::mojom::Role::kPopUpButton;
+  View::GetAccessibleNodeData(node_data);
   if (menu_runner_) {
     node_data->AddState(ax::mojom::State::kExpanded);
   } else {
     node_data->AddState(ax::mojom::State::kCollapsed);
   }
 
-  node_data->SetName(GetAccessibleName());
   node_data->SetValue(model_->GetItemAt(selected_index_.value()));
   if (GetEnabled()) {
     node_data->SetDefaultActionVerb(ax::mojom::DefaultActionVerb::kOpen);

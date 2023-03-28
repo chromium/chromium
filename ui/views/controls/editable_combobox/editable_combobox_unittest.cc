@@ -887,6 +887,24 @@ TEST_F(EditableComboboxTest, DragToSelectDoesntOpenTheMenu) {
   EXPECT_FALSE(IsMenuOpen());
 }
 
+TEST_F(EditableComboboxTest, AccessibleNameAndRole) {
+  InitEditableCombobox();
+
+  ui::AXNodeData data;
+  combobox_->GetAccessibleNodeData(&data);
+  EXPECT_EQ(data.role, ax::mojom::Role::kComboBoxGrouping);
+  EXPECT_EQ(data.GetString16Attribute(ax::mojom::StringAttribute::kName),
+            u"abc");
+  EXPECT_EQ(combobox_->GetAccessibleName(), u"abc");
+
+  data = ui::AXNodeData();
+  combobox_->SetAccessibleName(u"New name");
+  combobox_->GetAccessibleNodeData(&data);
+  EXPECT_EQ(data.GetString16Attribute(ax::mojom::StringAttribute::kName),
+            u"New name");
+  EXPECT_EQ(combobox_->GetAccessibleName(), u"New name");
+}
+
 using EditableComboboxDefaultTest = ViewsTestBase;
 
 class ConfigurableComboboxModel final : public ui::ComboboxModel {

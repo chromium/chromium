@@ -721,6 +721,13 @@ TEST_F(LabelTest, Accessibility) {
   label()->GetAccessibleNodeData(&node_data);
   EXPECT_EQ(label()->GetText(),
             node_data.GetString16Attribute(ax::mojom::StringAttribute::kName));
+
+  // If the displayed text is the source of the accessible name, and that text
+  // is cleared, the accessible name should also be cleared.
+  label()->SetText(u"");
+  label()->GetAccessibleNodeData(&node_data);
+  EXPECT_EQ(label()->GetText(),
+            node_data.GetString16Attribute(ax::mojom::StringAttribute::kName));
 }
 
 TEST_F(LabelTest, SetTextNotifiesAccessibilityEvent) {

@@ -89,6 +89,7 @@ class Arrow : public Button {
         ButtonController::NotifyAction::kOnPress);
 
     ConfigureComboboxButtonInkDrop(this);
+    SetAccessibilityProperties(ax::mojom::Role::kButton);
   }
   Arrow(const Arrow&) = delete;
   Arrow& operator=(const Arrow&) = delete;
@@ -113,8 +114,7 @@ class Arrow : public Button {
   }
 
   void GetAccessibleNodeData(ui::AXNodeData* node_data) override {
-    node_data->role = ax::mojom::Role::kButton;
-    node_data->SetName(GetAccessibleName());
+    Button::GetAccessibleNodeData(node_data);
     node_data->SetHasPopup(ax::mojom::HasPopup::kMenu);
     if (GetEnabled()) {
       node_data->SetDefaultActionVerb(ax::mojom::DefaultActionVerb::kOpen);
@@ -390,6 +390,7 @@ EditableCombobox::EditableCombobox(
   }
 
   SetLayoutManager(std::make_unique<FillLayout>());
+  SetAccessibilityProperties(ax::mojom::Role::kComboBoxGrouping);
 }
 
 EditableCombobox::~EditableCombobox() {
@@ -455,9 +456,7 @@ void EditableCombobox::Layout() {
 }
 
 void EditableCombobox::GetAccessibleNodeData(ui::AXNodeData* node_data) {
-  node_data->role = ax::mojom::Role::kComboBoxGrouping;
-
-  node_data->SetName(textfield_->GetAccessibleName());
+  View::GetAccessibleNodeData(node_data);
   node_data->SetValue(GetText());
 }
 

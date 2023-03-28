@@ -211,6 +211,19 @@ TEST_F(ScrollBarViewsTest, ThumbFullLengthOfTrack) {
   EXPECT_EQ(0, scrollbar_->GetPosition());
 }
 
+TEST_F(ScrollBarViewsTest, AccessibleRole) {
+  ui::AXNodeData data;
+  scrollbar_->GetAccessibleNodeData(&data);
+  EXPECT_EQ(data.role, ax::mojom::Role::kScrollBar);
+  EXPECT_EQ(scrollbar_->GetAccessibleRole(), ax::mojom::Role::kScrollBar);
+
+  data = ui::AXNodeData();
+  scrollbar_->SetAccessibleRole(ax::mojom::Role::kButton);
+  scrollbar_->GetAccessibleNodeData(&data);
+  EXPECT_EQ(data.role, ax::mojom::Role::kButton);
+  EXPECT_EQ(scrollbar_->GetAccessibleRole(), ax::mojom::Role::kButton);
+}
+
 #if !BUILDFLAG(IS_MAC)
 TEST_F(ScrollBarViewsTest, RightClickOpensMenu) {
   EXPECT_EQ(nullptr, scrollbar_->menu_model_);

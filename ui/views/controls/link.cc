@@ -9,7 +9,6 @@
 #include "base/check.h"
 #include "base/strings/utf_string_conversions.h"
 #include "ui/accessibility/ax_enums.mojom.h"
-#include "ui/accessibility/ax_node_data.h"
 #include "ui/base/cursor/cursor.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/color/color_id.h"
@@ -19,6 +18,7 @@
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/color_utils.h"
 #include "ui/gfx/font_list.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/controls/focus_ring.h"
 #include "ui/views/style/platform_style.h"
 
@@ -30,6 +30,10 @@ Link::Link(const std::u16string& title, int text_context, int text_style)
 
   enabled_changed_subscription_ = AddEnabledChangedCallback(
       base::BindRepeating(&Link::RecalculateFont, base::Unretained(this)));
+
+  SetAccessibilityProperties(ax::mojom::Role::kLink, title);
+  // Prevent invisible links from being announced by screen reader.
+  GetViewAccessibility().OverrideIsIgnored(title.empty());
 
   // Label() indirectly calls SetText(), but at that point our virtual override
   // will not be reached.  Call it explicitly here to configure focus.
@@ -151,13 +155,6 @@ bool Link::SkipDefaultKeyEventProcessing(const ui::KeyEvent& event) {
           PlatformStyle::kReturnClicksFocusedControl);
 }
 
-void Link::GetAccessibleNodeData(ui::AXNodeData* node_data) {
-  Label::GetAccessibleNodeData(node_data);
-  // Prevent invisible links from being announced by screen reader.
-  node_data->role =
-      GetText().empty() ? ax::mojom::Role::kNone : ax::mojom::Role::kLink;
-}
-
 void Link::OnFocus() {
   Label::OnFocus();
   RecalculateFont();
@@ -179,6 +176,8 @@ void Link::SetFontList(const gfx::FontList& font_list) {
 
 void Link::SetText(const std::u16string& text) {
   Label::SetText(text);
+  // Prevent invisible links from being announced by screen reader.
+  GetViewAccessibility().OverrideIsIgnored(text.empty());
   ConfigureFocus();
 }
 

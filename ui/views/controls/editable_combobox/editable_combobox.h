@@ -134,6 +134,8 @@ class VIEWS_EXPORT EditableCombobox
   friend class EditableComboboxTest;
   friend class EditablePasswordComboboxTest;
   friend class test::InteractionTestUtilSimulatorViews;
+  FRIEND_TEST_ALL_PREFIXES(EditableComboboxTest, AccessibleNameAndRole);
+
   class EditableComboboxMenuModel;
   class EditableComboboxPreTargetHandler;
 

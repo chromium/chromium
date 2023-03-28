@@ -12,8 +12,6 @@
 #include "base/memory/ptr_util.h"
 #include "base/notreached.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
-#include "ui/accessibility/ax_enums.mojom.h"
-#include "ui/accessibility/ax_node_data.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/theme_provider.h"
 #include "ui/base/ui_base_features.h"
@@ -25,6 +23,7 @@
 #include "ui/gfx/geometry/rect_conversions.h"
 #include "ui/gfx/geometry/rect_f.h"
 #include "ui/gfx/geometry/skia_conversions.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/cascading_property.h"
 #include "ui/views/controls/focusable_border.h"
 #include "ui/views/controls/highlight_path_generator.h"
@@ -286,17 +285,6 @@ SkRRect FocusRing::GetRingRoundRect() const {
   return RingRectFromPathRect(rbounds);
 }
 
-void FocusRing::GetAccessibleNodeData(ui::AXNodeData* node_data) {
-  // Mark the focus ring in the accessibility tree as ignored.
-  // Marking it as invisible keeps it in the accessibility tree with a "hidden"
-  // attribute where assistive technologies can still find it. Marking it as
-  // ignored causes it to be removed from the accessibility tree. This also
-  // ensures that when a non-used control, such as the minimize button in a
-  // JavaScript alert, is marked as ignored, that control's parent will not
-  // have any "invisible" FocusRing children.
-  node_data->AddState(ax::mojom::State::kIgnored);
-}
-
 void FocusRing::OnThemeChanged() {
   View::OnThemeChanged();
   if (invalid_ || color_id_.has_value())
@@ -314,6 +302,9 @@ void FocusRing::OnViewBlurred(View* view) {
 FocusRing::FocusRing() {
   // Don't allow the view to process events.
   SetCanProcessEventsWithinSubtree(false);
+
+  // This should never be included in the accessibility tree.
+  GetViewAccessibility().OverrideIsIgnored(true);
 }
 
 SkPath FocusRing::GetPath() const {

@@ -107,12 +107,14 @@ void Label::SetText(const std::u16string& new_text) {
   if (new_text == GetText())
     return;
 
-  if (GetAccessibleName().empty() || GetAccessibleName() == GetText()) {
+  std::u16string current_text = GetText();
+  full_text_->SetText(new_text);
+  ClearDisplayText();
+
+  if (GetAccessibleName().empty() || GetAccessibleName() == current_text) {
     SetAccessibleName(new_text);
   }
 
-  full_text_->SetText(new_text);
-  ClearDisplayText();
   OnPropertyChanged(&full_text_ + kLabelText,
                     kPropertyEffectsPreferredSizeChanged);
   stored_selection_range_ = gfx::Range::InvalidRange();

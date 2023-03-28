@@ -1177,6 +1177,7 @@ test("views_unittests") {
     "bubble/bubble_dialog_model_host_unittest.cc",
     "bubble/bubble_frame_view_unittest.cc",
     "bubble/info_bubble_unittest.cc",
+    "bubble/tooltip_icon_unittest.cc",
     "controls/base_control_test_widget.cc",
     "controls/base_control_test_widget.h",
     "controls/button/button_unittest.cc",

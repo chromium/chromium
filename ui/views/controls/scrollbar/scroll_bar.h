@@ -128,7 +128,6 @@ class VIEWS_EXPORT ScrollBar : public View,
   int GetPosition() const;
 
   // View:
-  void GetAccessibleNodeData(ui::AXNodeData* node_data) override;
   bool OnMousePressed(const ui::MouseEvent& event) override;
   void OnMouseReleased(const ui::MouseEvent& event) override;
   void OnMouseCaptureLost() override;

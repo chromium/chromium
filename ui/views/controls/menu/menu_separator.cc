@@ -7,7 +7,6 @@
 #include "build/build_config.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/accessibility/ax_enums.mojom.h"
-#include "ui/accessibility/ax_node_data.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/gfx/canvas.h"
 #include "ui/native_theme/native_theme.h"
@@ -18,6 +17,10 @@
 #endif
 
 namespace views {
+
+MenuSeparator::MenuSeparator(ui::MenuSeparatorType type) : type_(type) {
+  SetAccessibilityProperties(ax::mojom::Role::kSplitter);
+}
 
 void MenuSeparator::OnPaint(gfx::Canvas* canvas) {
   if (type_ == ui::SPACING_SEPARATOR)
@@ -102,10 +105,6 @@ void MenuSeparator::SetType(ui::MenuSeparatorType type) {
 
   type_ = type;
   OnPropertyChanged(&type_, kPropertyEffectsPreferredSizeChanged);
-}
-
-void MenuSeparator::GetAccessibleNodeData(ui::AXNodeData* node_data) {
-  node_data->role = ax::mojom::Role::kSplitter;
 }
 
 BEGIN_METADATA(MenuSeparator, View)

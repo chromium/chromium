@@ -7,6 +7,8 @@
 #include <memory>
 
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/accessibility/ax_enums.mojom.h"
+#include "ui/accessibility/ax_node_data.h"
 #include "ui/base/models/menu_separator_types.h"
 #include "ui/views/controls/menu/menu_config.h"
 #include "ui/views/test/view_metadata_test_utils.h"
@@ -30,6 +32,14 @@ TEST_F(MenuSeparatorTest, TypeChangeEffect) {
   separator->SetType(ui::MenuSeparatorType::DOUBLE_SEPARATOR);
   separator->SizeToPreferredSize();
   EXPECT_EQ(config.double_separator_height, separator->height());
+}
+
+TEST_F(MenuSeparatorTest, AccessibleRole) {
+  auto separator = std::make_unique<MenuSeparator>();
+  ui::AXNodeData data;
+  separator->GetAccessibleNodeData(&data);
+  EXPECT_EQ(data.role, ax::mojom::Role::kSplitter);
+  EXPECT_EQ(separator->GetAccessibleRole(), ax::mojom::Role::kSplitter);
 }
 
 }  // namespace views
