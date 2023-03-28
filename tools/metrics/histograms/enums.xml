@@ -86049,7 +86049,6 @@ https://www.dmtf.org/sites/default/files/standards/documents/DSP0134_2.7.1.pdf
   <int value="29" label="kLacrosMainProfile"/>
   <int value="30" label="kProfileCreationSamlFlow"/>
   <int value="31" label="kDriveFsNativeMessageHostLacros"/>
-  <int value="32" label="kProfileDeletionProcess"/>
 </enum>
 
 <enum name="ProfileMenuActionableItem">

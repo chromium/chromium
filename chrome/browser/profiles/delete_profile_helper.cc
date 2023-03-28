@@ -4,8 +4,6 @@
 
 #include "chrome/browser/profiles/delete_profile_helper.h"
 
-#include <memory>
-
 #include "base/check.h"
 #include "base/feature_list.h"
 #include "base/files/file_path.h"
@@ -20,7 +18,6 @@
 #include "chrome/browser/download/download_core_service.h"
 #include "chrome/browser/download/download_core_service_factory.h"
 #include "chrome/browser/password_manager/password_store_factory.h"
-#include "chrome/browser/profiles/keep_alive/profile_keep_alive_types.h"
 #include "chrome/browser/profiles/nuke_profile_directory_utils.h"
 #include "chrome/browser/profiles/profile_attributes_entry.h"
 #include "chrome/browser/profiles/profile_attributes_storage.h"
@@ -129,8 +126,7 @@ void DeleteProfileHelper::MaybeScheduleProfileForDeletion(
 }
 
 void DeleteProfileHelper::ScheduleEphemeralProfileForDeletion(
-    const base::FilePath& profile_dir,
-    std::unique_ptr<ScopedProfileKeepAlive> keep_alive) {
+    const base::FilePath& profile_dir) {
   DCHECK(IsRegisteredAsEphemeral(
       &profile_manager_->GetProfileAttributesStorage(), profile_dir));
   DCHECK_EQ(0u, chrome::GetBrowserCount(
@@ -147,8 +143,7 @@ void DeleteProfileHelper::ScheduleEphemeralProfileForDeletion(
   DCHECK(!new_active_profile_dir->empty());
   RemoveFromLastActiveProfilesPrefList(profile_dir);
 
-  FinishDeletingProfile(profile_dir, new_active_profile_dir.value(),
-                        std::move(keep_alive));
+  FinishDeletingProfile(profile_dir, new_active_profile_dir.value());
 }
 
 void DeleteProfileHelper::CleanUpEphemeralProfiles() {
@@ -245,12 +240,7 @@ void DeleteProfileHelper::EnsureActiveProfileExistsBeforeDeletion(
       profile_manager_->GetProfileByPath(last_used_profile_path);
   if (last_used_profile_path != profile_dir &&
       last_used_profile_path != guest_profile_path && last_used_profile) {
-    Profile* profile = profile_manager_->GetProfileByPath(profile_dir);
-    FinishDeletingProfile(
-        profile_dir, last_used_profile_path,
-        profile ? std::make_unique<ScopedProfileKeepAlive>(
-                      profile, ProfileKeepAliveOrigin::kProfileDeletionProcess)
-                : nullptr);
+    FinishDeletingProfile(profile_dir, last_used_profile_path);
     return;
   }
 
@@ -302,8 +292,7 @@ void DeleteProfileHelper::EnsureActiveProfileExistsBeforeDeletion(
 
 void DeleteProfileHelper::FinishDeletingProfile(
     const base::FilePath& profile_dir,
-    const base::FilePath& new_active_profile_dir,
-    std::unique_ptr<ScopedProfileKeepAlive> keep_alive) {
+    const base::FilePath& new_active_profile_dir) {
   // Update the last used profile pref before closing browser windows. This
   // way the correct last used profile is set for any notification observers.
   profiles::SetLastUsedProfile(new_active_profile_dir.BaseName());
@@ -313,8 +302,7 @@ void DeleteProfileHelper::FinishDeletingProfile(
   profile_manager_->LoadProfileByPath(
       profile_dir, false,
       base::BindOnce(&DeleteProfileHelper::OnLoadProfileForProfileDeletion,
-                     base::Unretained(this), profile_dir,
-                     std::move(keep_alive)));
+                     base::Unretained(this), profile_dir));
   if (!IsProfileDirectoryMarkedForDeletion(profile_dir)) {
     // Prevents CreateProfileAsync from re-creating the profile.
     MarkProfileDirectoryForDeletion(profile_dir);
@@ -323,7 +311,6 @@ void DeleteProfileHelper::FinishDeletingProfile(
 
 void DeleteProfileHelper::OnLoadProfileForProfileDeletion(
     const base::FilePath& profile_dir,
-    std::unique_ptr<ScopedProfileKeepAlive> keep_alive,
     Profile* profile) {
   ProfileAttributesStorage& storage =
       profile_manager_->GetProfileAttributesStorage();
@@ -405,13 +392,6 @@ void DeleteProfileHelper::OnNewActiveProfileInitialized(
     return;
   }
 
-  Profile* profile_to_delete =
-      profile_manager_->GetProfileByPath(profile_to_delete_path);
-  FinishDeletingProfile(
-      profile_to_delete_path, new_active_profile_path,
-      profile_to_delete ? std::make_unique<ScopedProfileKeepAlive>(
-                              profile_to_delete,
-                              ProfileKeepAliveOrigin::kProfileDeletionProcess)
-                        : nullptr);
+  FinishDeletingProfile(profile_to_delete_path, new_active_profile_path);
   std::move(callback).Run(loaded_profile);
 }
