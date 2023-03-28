@@ -364,43 +364,55 @@ bool SetInputFieldText(content::WebContents* web_content,
   return ExecJs(web_content, script);
 }
 
-mojom::KeyEventPtr CreateKeyPressEvent(ui::DomKey dom_key,
-                                       ui::DomCode dom_code,
-                                       ui::EventFlags flags = ui::EF_NONE) {
+mojom::KeyEventPtr CreateKeyPressEvent(
+    ui::DomKey dom_key,
+    ui::DomCode dom_code,
+    ui::KeyboardCode key_code = ui::KeyboardCode::VKEY_UNKNOWN,
+    ui::EventFlags flags = ui::EF_NONE) {
   return mojom::KeyEvent::New(
       mojom::KeyEventType::kKeyPress, static_cast<int>(dom_key),
-      static_cast<int>(dom_code),
-      static_cast<int>(ui::KeyboardCode::VKEY_UNKNOWN), flags);
+      static_cast<int>(dom_code), static_cast<int>(key_code), flags);
 }
 
-mojom::KeyEventPtr CreateKeyReleaseEvent(ui::DomKey dom_key,
-                                         ui::DomCode dom_code,
-                                         ui::EventFlags flags = ui::EF_NONE) {
+mojom::KeyEventPtr CreateKeyReleaseEvent(
+    ui::DomKey dom_key,
+    ui::DomCode dom_code,
+    ui::KeyboardCode key_code = ui::KeyboardCode::VKEY_UNKNOWN,
+    ui::EventFlags flags = ui::EF_NONE) {
   return mojom::KeyEvent::New(
       mojom::KeyEventType::kKeyRelease, static_cast<int>(dom_key),
-      static_cast<int>(dom_code),
-      static_cast<int>(ui::KeyboardCode::VKEY_UNKNOWN), flags);
+      static_cast<int>(dom_code), static_cast<int>(key_code), flags);
 }
 
 class KeySequenceBuilder {
  public:
-  KeySequenceBuilder Press(ui::DomKey dom_key, ui::DomCode dom_code) && {
+  KeySequenceBuilder Press(
+      ui::DomKey dom_key,
+      ui::DomCode dom_code,
+      ui::KeyboardCode key_code = ui::KeyboardCode::VKEY_UNKNOWN) && {
     UpdateModifiersFromDomKey(dom_key, true);
-    key_events_.push_back(
-        CreateKeyPressEvent(dom_key, dom_code, active_modifiers_.ToFlags()));
+    key_events_.push_back(CreateKeyPressEvent(dom_key, dom_code, key_code,
+                                              active_modifiers_.ToFlags()));
     return std::move(*this);
   }
 
-  KeySequenceBuilder Release(ui::DomKey dom_key, ui::DomCode dom_code) && {
+  KeySequenceBuilder Release(
+      ui::DomKey dom_key,
+      ui::DomCode dom_code,
+      ui::KeyboardCode key_code = ui::KeyboardCode::VKEY_UNKNOWN) && {
     UpdateModifiersFromDomKey(dom_key, false);
-    key_events_.push_back(
-        CreateKeyReleaseEvent(dom_key, dom_code, active_modifiers_.ToFlags()));
+    key_events_.push_back(CreateKeyReleaseEvent(dom_key, dom_code, key_code,
+                                                active_modifiers_.ToFlags()));
     return std::move(*this);
   }
 
-  KeySequenceBuilder PressAndRelease(ui::DomKey dom_key,
-                                     ui::DomCode dom_code) && {
-    return std::move(*this).Press(dom_key, dom_code).Release(dom_key, dom_code);
+  KeySequenceBuilder PressAndRelease(
+      ui::DomKey dom_key,
+      ui::DomCode dom_code,
+      ui::KeyboardCode key_code = ui::KeyboardCode::VKEY_UNKNOWN) && {
+    return std::move(*this)
+        .Press(dom_key, dom_code, key_code)
+        .Release(dom_key, dom_code, key_code);
   }
 
   std::vector<mojom::KeyEventPtr> Build() && { return std::move(key_events_); }
@@ -875,9 +887,12 @@ IN_PROC_BROWSER_TEST_F(InputMethodLacrosBrowserTest,
   SendKeyEventsSync(
       input_method_async_waiter,
       KeySequenceBuilder()
-          .PressAndRelease(ui::DomKey::FromCharacter('a'), ui::DomCode::US_A)
-          .PressAndRelease(ui::DomKey::FromCharacter('b'), ui::DomCode::US_B)
-          .PressAndRelease(ui::DomKey::FromCharacter('c'), ui::DomCode::US_C)
+          .PressAndRelease(ui::DomKey::FromCharacter('a'), ui::DomCode::US_A,
+                           ui::KeyboardCode::VKEY_A)
+          .PressAndRelease(ui::DomKey::FromCharacter('b'), ui::DomCode::US_B,
+                           ui::KeyboardCode::VKEY_B)
+          .PressAndRelease(ui::DomKey::FromCharacter('c'), ui::DomCode::US_C,
+                           ui::KeyboardCode::VKEY_C)
           .Build());
 
   EXPECT_TRUE(WaitUntilInputFieldHasText(GetActiveWebContents(browser()), id,
