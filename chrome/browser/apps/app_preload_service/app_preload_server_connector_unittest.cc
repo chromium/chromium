@@ -54,15 +54,11 @@ class AppPreloadServerConnectorTest : public testing::Test {
 };
 
 TEST_F(AppPreloadServerConnectorTest, GetAppsForFirstLoginRequest) {
+  // We only set enough fields to verify that context protos are attached to the
+  // request.
   DeviceInfo device_info;
   device_info.board = "brya";
-  device_info.model = "taniks";
-  device_info.hardware_id = "FOOBAR D0G-F4N-C1UB";
   device_info.user_type = "unmanaged";
-  device_info.version_info.ash_chrome = "10.10.10";
-  device_info.version_info.platform = "12345.0.0";
-  device_info.version_info.channel = version_info::Channel::STABLE;
-  device_info.locale = "en-US";
 
   std::string method;
   std::string method_override_header;
@@ -90,16 +86,8 @@ TEST_F(AppPreloadServerConnectorTest, GetAppsForFirstLoginRequest) {
   ASSERT_TRUE(request.ParseFromString(body));
 
   EXPECT_EQ(request.device_context().board(), "brya");
-  EXPECT_EQ(request.device_context().model(), "taniks");
-  EXPECT_EQ(request.device_context().channel(),
-            apps::proto::ClientDeviceContext::CHANNEL_STABLE);
-  EXPECT_EQ(request.user_context().language(), "en-US");
   EXPECT_EQ(request.user_context().user_type(),
             apps::proto::ClientUserContext::USERTYPE_UNMANAGED);
-  EXPECT_EQ(request.device_context().versions().chrome_ash(), "10.10.10");
-  EXPECT_EQ(request.device_context().versions().chrome_os_platform(),
-            "12345.0.0");
-  EXPECT_EQ(request.device_context().hardware_id(), "FOOBAR D0G-F4N-C1UB");
 }
 
 TEST_F(AppPreloadServerConnectorTest, GetAppsForFirstLoginSuccessfulResponse) {

@@ -12,6 +12,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/system/sys_info.h"
+#include "chrome/browser/apps/almanac_api_client/proto/client_context.pb.h"
 #include "components/version_info/channel.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
@@ -34,6 +35,14 @@ struct DeviceInfo {
   DeviceInfo(const DeviceInfo& other);
   DeviceInfo& operator=(const DeviceInfo& other);
   ~DeviceInfo();
+
+  // Returns a ClientDeviceContext proto containing the device-specific fields
+  // from this DeviceInfo.
+  proto::ClientDeviceContext ToDeviceContext() const;
+
+  // Returns a ClientUserContext proto containing the user-specific fields from
+  // this DeviceInfo.
+  proto::ClientUserContext ToUserContext() const;
 
   // The board family of the device. e.g. "brya"
   std::string board;

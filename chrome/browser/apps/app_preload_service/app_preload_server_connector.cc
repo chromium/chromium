@@ -14,7 +14,6 @@
 #include "chrome/browser/apps/almanac_api_client/proto/client_context.pb.h"
 #include "chrome/browser/apps/app_preload_service/preload_app_definition.h"
 #include "chrome/browser/apps/app_preload_service/proto/app_preload.pb.h"
-#include "chrome/browser/apps/user_type_filter.h"
 #include "components/version_info/channel.h"
 #include "google_apis/google_api_keys.h"
 #include "net/base/net_errors.h"
@@ -59,57 +58,10 @@ constexpr net::NetworkTrafficAnnotationTag kTrafficAnnotation =
       }
     )");
 
-apps::proto::ClientUserContext::UserType ConvertStringUserTypeToProto(
-    const std::string& user_type) {
-  if (user_type == apps::kUserTypeUnmanaged) {
-    return apps::proto::ClientUserContext::USERTYPE_UNMANAGED;
-  } else if (user_type == apps::kUserTypeManaged) {
-    return apps::proto::ClientUserContext::USERTYPE_MANAGED;
-  } else if (user_type == apps::kUserTypeChild) {
-    return apps::proto::ClientUserContext::USERTYPE_CHILD;
-  } else if (user_type == apps::kUserTypeGuest) {
-    return apps::proto::ClientUserContext::USERTYPE_GUEST;
-  }
-  return apps::proto::ClientUserContext::USERTYPE_UNKNOWN;
-}
-
-apps::proto::ClientDeviceContext::Channel ConvertChannelTypeToProto(
-    const version_info::Channel channel) {
-  switch (channel) {
-    case version_info::Channel::CANARY:
-      return apps::proto::ClientDeviceContext::CHANNEL_CANARY;
-    case version_info::Channel::DEV:
-      return apps::proto::ClientDeviceContext::CHANNEL_DEV;
-    case version_info::Channel::BETA:
-      return apps::proto::ClientDeviceContext::CHANNEL_BETA;
-    case version_info::Channel::STABLE:
-      return apps::proto::ClientDeviceContext::CHANNEL_STABLE;
-    case version_info::Channel::UNKNOWN:
-      return apps::proto::ClientDeviceContext::CHANNEL_INTERNAL;
-  }
-}
-
 std::string BuildGetAppsForFirstLoginRequestBody(const apps::DeviceInfo& info) {
   apps::proto::AppPreloadListRequest request_proto;
-
-  apps::proto::ClientDeviceContext* device_context =
-      request_proto.mutable_device_context();
-
-  device_context->set_board(info.board);
-  device_context->set_model(info.model);
-  device_context->set_channel(
-      ConvertChannelTypeToProto(info.version_info.channel));
-  device_context->mutable_versions()->set_chrome_ash(
-      info.version_info.ash_chrome);
-  device_context->mutable_versions()->set_chrome_os_platform(
-      info.version_info.platform);
-  device_context->set_hardware_id(info.hardware_id);
-
-  apps::proto::ClientUserContext* user_context =
-      request_proto.mutable_user_context();
-
-  user_context->set_language(info.locale);
-  user_context->set_user_type(ConvertStringUserTypeToProto(info.user_type));
+  *request_proto.mutable_device_context() = info.ToDeviceContext();
+  *request_proto.mutable_user_context() = info.ToUserContext();
 
   return request_proto.SerializeAsString();
 }

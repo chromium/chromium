@@ -19,6 +19,7 @@ source_set("almanac_api_client") {
     "//base",
     "//chrome/browser:browser_process",
     "//chrome/browser/apps:user_type_filter",
+    "//chrome/browser/apps/almanac_api_client/proto",
     "//chrome/browser/profiles:profile",
     "//chrome/common:channel_info",
     "//chromeos/ash/components/system",
@@ -37,6 +38,7 @@ source_set("unit_tests") {
   deps = [
     ":almanac_api_client",
     "//base",
+    "//chrome/browser/apps/almanac_api_client/proto",
     "//chrome/common:channel_info",
     "//chrome/test:test_support",
     "//components/language/core/browser",

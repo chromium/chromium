@@ -9,6 +9,7 @@
 #include "base/strings/string_util.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
+#include "chrome/browser/apps/almanac_api_client/proto/client_context.pb.h"
 #include "chrome/browser/apps/user_type_filter.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile.h"
@@ -20,6 +21,43 @@
 #include "components/version_info/version_info.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
+namespace {
+
+apps::proto::ClientDeviceContext::Channel ConvertChannelTypeToProto(
+    const version_info::Channel channel) {
+  switch (channel) {
+    case version_info::Channel::CANARY:
+      return apps::proto::ClientDeviceContext::CHANNEL_CANARY;
+    case version_info::Channel::DEV:
+      return apps::proto::ClientDeviceContext::CHANNEL_DEV;
+    case version_info::Channel::BETA:
+      return apps::proto::ClientDeviceContext::CHANNEL_BETA;
+    case version_info::Channel::STABLE:
+      return apps::proto::ClientDeviceContext::CHANNEL_STABLE;
+    case version_info::Channel::UNKNOWN:
+      // The "unknown" channel is used for builds without a channel (e.g.
+      // local builds). The API refers to this as "internal" to avoid confusion
+      // with the "unknown" default enum value.
+      return apps::proto::ClientDeviceContext::CHANNEL_INTERNAL;
+  }
+}
+
+apps::proto::ClientUserContext::UserType ConvertStringUserTypeToProto(
+    const std::string& user_type) {
+  if (user_type == apps::kUserTypeUnmanaged) {
+    return apps::proto::ClientUserContext::USERTYPE_UNMANAGED;
+  } else if (user_type == apps::kUserTypeManaged) {
+    return apps::proto::ClientUserContext::USERTYPE_MANAGED;
+  } else if (user_type == apps::kUserTypeChild) {
+    return apps::proto::ClientUserContext::USERTYPE_CHILD;
+  } else if (user_type == apps::kUserTypeGuest) {
+    return apps::proto::ClientUserContext::USERTYPE_GUEST;
+  }
+  return apps::proto::ClientUserContext::USERTYPE_UNKNOWN;
+}
+
+}  // namespace
+
 namespace apps {
 
 DeviceInfo::DeviceInfo() = default;
@@ -29,6 +67,29 @@ DeviceInfo::DeviceInfo(const DeviceInfo& other) = default;
 DeviceInfo& DeviceInfo::operator=(const DeviceInfo& other) = default;
 
 DeviceInfo::~DeviceInfo() = default;
+
+proto::ClientDeviceContext DeviceInfo::ToDeviceContext() const {
+  proto::ClientDeviceContext device_context;
+
+  device_context.set_board(board);
+  device_context.set_model(model);
+  device_context.set_channel(ConvertChannelTypeToProto(version_info.channel));
+  device_context.mutable_versions()->set_chrome_ash(version_info.ash_chrome);
+  device_context.mutable_versions()->set_chrome_os_platform(
+      version_info.platform);
+  device_context.set_hardware_id(hardware_id);
+
+  return device_context;
+}
+
+proto::ClientUserContext DeviceInfo::ToUserContext() const {
+  proto::ClientUserContext user_context;
+
+  user_context.set_language(locale);
+  user_context.set_user_type(ConvertStringUserTypeToProto(user_type));
+
+  return user_context;
+}
 
 DeviceInfoManager::DeviceInfoManager(Profile* profile) : profile_(profile) {}
 
