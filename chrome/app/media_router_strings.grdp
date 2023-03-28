@@ -81,8 +81,8 @@
   <message name="IDS_MEDIA_ROUTER_ISSUE_FAILED_TO_CAST" desc="Title of an issue shown when cast intialization failed with no clear reason">
       Failed to cast. Please try again.
   </message>
-  <message name="IDS_MEDIA_ROUTER_ISSUE_CANNOT_TERMINATE" desc="Title of an issue shown when a Cast session cannot be stopped from Chrome side, and needs to be stopped from the Cast device where the Cast session is running.">
-      Cast isn't responding. Stop from <ph name="DEVICE_NAME">$1</ph>.
+  <message name="IDS_MEDIA_ROUTER_ISSUE_CANNOT_TERMINATE" desc="Title of an issue shown when a Cast session cannot be stopped from Chrome side, and needs to be stopped using the remote control for the Cast device where the Cast session is running.">
+      Use remote to stop casting.
   </message>
 
 

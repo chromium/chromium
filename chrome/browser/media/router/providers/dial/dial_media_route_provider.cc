@@ -12,7 +12,6 @@
 #include "base/no_destructor.h"
 #include "base/strings/strcat.h"
 #include "base/strings/stringprintf.h"
-#include "base/strings/utf_string_conversions.h"
 #include "base/task/sequenced_task_runner.h"
 #include "chrome/browser/media/router/data_decoder_util.h"
 #include "chrome/browser/media/router/providers/dial/dial_media_route_provider_metrics.h"
@@ -447,9 +446,9 @@ void DialMediaRouteProvider::DoTerminateRoute(const DialActivity& activity,
         activity.launch_info.client_id, sink));
     message_sender_->SendMessages(route_id, std::move(messages));
     activity_manager_->StopApp(
-        route_id, base::BindOnce(&DialMediaRouteProvider::HandleStopAppResult,
-                                 base::Unretained(this), route_id,
-                                 std::move(callback), sink));
+        route_id,
+        base::BindOnce(&DialMediaRouteProvider::HandleStopAppResult,
+                       base::Unretained(this), route_id, std::move(callback)));
   } else {
     logger_->LogError(
         mojom::LogCategory::kRoute, kLoggerComponent,
@@ -466,7 +465,6 @@ void DialMediaRouteProvider::DoTerminateRoute(const DialActivity& activity,
 void DialMediaRouteProvider::HandleStopAppResult(
     const MediaRoute::Id& route_id,
     TerminateRouteCallback callback,
-    const MediaSinkInternal& sink,
     const absl::optional<std::string>& message,
     mojom::RouteRequestResultCode result_code) {
   switch (result_code) {
@@ -495,9 +493,9 @@ void DialMediaRouteProvider::HandleStopAppResult(
           "", MediaRoute::GetMediaSourceIdFromMediaRouteId(route_id),
           MediaRoute::GetPresentationIdFromMediaRouteId(route_id));
       media_router_->OnIssue(
-          {l10n_util::GetStringFUTF8(IDS_MEDIA_ROUTER_ISSUE_CANNOT_TERMINATE,
-                                     base::UTF8ToUTF16(sink.sink().name())),
-           IssueInfo::Severity::WARNING, sink.id()});
+          {l10n_util::GetStringUTF8(IDS_MEDIA_ROUTER_ISSUE_CANNOT_TERMINATE),
+           IssueInfo::Severity::WARNING,
+           MediaRoute::GetSinkIdFromMediaRouteId(route_id)});
   }
   // We set the PresentationConnection state to "terminated" per the API spec:
   // https://w3c.github.io/presentation-api/#terminating-a-presentation-in-a-controlling-browsing-context
