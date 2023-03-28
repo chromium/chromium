@@ -74354,6 +74354,12 @@ Called by update_net_trust_anchors.py.-->
   <int value="2" label="ShowAll"/>
 </enum>
 
+<enum name="NTPHistoryClustersImageDisplayState">
+  <int value="0" label="No images"/>
+  <int value="1" label="Some images"/>
+  <int value="2" label="All images"/>
+</enum>
+
 <enum name="NTPHistoryClustersIneligibleReason">
   <int value="0" label="None"/>
   <int value="1" label="No available clusters"/>

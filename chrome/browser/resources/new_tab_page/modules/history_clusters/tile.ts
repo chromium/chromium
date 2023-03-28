@@ -57,6 +57,10 @@ export class TileModuleElement extends I18nMixin
   smallFormat: boolean;
   private imageUrl_: Url|null;
 
+  hasImageUrl(): boolean {
+    return !!this.imageUrl_;
+  }
+
   private computeLabel_(): string {
     let domain = (new URL(this.visit.normalizedUrl.url)).hostname;
     domain = domain.replace('www.', '');
@@ -81,10 +85,6 @@ export class TileModuleElement extends I18nMixin
       }
     }
     this.imageUrl_ = null;
-  }
-
-  private hasImageUrl_(): boolean {
-    return !!this.imageUrl_;
   }
 }
 
