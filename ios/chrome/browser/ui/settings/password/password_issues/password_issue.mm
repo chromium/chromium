@@ -41,8 +41,11 @@
 - (NSString*)compromisedDescription {
   if (_compromisedDescriptionEnabled) {
     if (_credential.IsLeaked()) {
-      return l10n_util::GetNSString(
-          IDS_IOS_COMPROMISED_PASSWORD_ISSUES_LEAKED_DESCRIPTION);
+      return _credential.IsPhished()
+                 ? l10n_util::GetNSString(
+                       IDS_IOS_COMPROMISED_PASSWORD_ISSUES_PHISHED_AND_LEAKED_DESCRIPTION)
+                 : l10n_util::GetNSString(
+                       IDS_IOS_COMPROMISED_PASSWORD_ISSUES_LEAKED_DESCRIPTION);
     }
 
     if (_credential.IsPhished()) {

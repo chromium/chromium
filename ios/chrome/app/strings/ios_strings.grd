@@ -2868,6 +2868,9 @@ While in Incognito, sites can't use cookies to see your browsing activity across
       <message name="IDS_IOS_COMPROMISED_PASSWORD_ISSUES_PHISHED_DESCRIPTION" desc="Text explaining the user one of their credentials was phished. Displayed on the password manager screen showing credentials that have been leaked or phished. [iOS only]">
         Entered on deceptive site
       </message>
+      <message name="IDS_IOS_COMPROMISED_PASSWORD_ISSUES_PHISHED_AND_LEAKED_DESCRIPTION" desc="Text explaining the user one of their credentials was phished and leaked. Displayed on the password manager screen showing credentials that have been leaked or phished. [iOS only]">
+        Entered on a deceptive site and found in a data breach
+      </message>
       <message name="IDS_IOS_CHANGE_COMPROMISED_PASSWORD" desc="Button which is shown on Password Details Screen when password is compromised. [iOS only]" meaning="Telling user to change password on a website since it is compromised.">
         Change Password on Website
       </message>
