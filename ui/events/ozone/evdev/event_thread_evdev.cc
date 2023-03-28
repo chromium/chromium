@@ -44,14 +44,13 @@ class EvdevThread : public base::Thread {
 
   void Init() override {
     TRACE_EVENT0("evdev", "EvdevThread::Init");
-    input_device_factory_ = new InputDeviceFactoryEvdev(
+    input_device_factory_ = std::make_unique<InputDeviceFactoryEvdev>(
         std::move(dispatcher_), cursor_,
         std::make_unique<InputDeviceOpenerEvdev>(), input_controller_);
 
-    std::unique_ptr<InputDeviceFactoryEvdevProxy> proxy(
-        new InputDeviceFactoryEvdevProxy(
-            base::SingleThreadTaskRunner::GetCurrentDefault(),
-            input_device_factory_->GetWeakPtr()));
+    auto proxy = std::make_unique<InputDeviceFactoryEvdevProxy>(
+        base::SingleThreadTaskRunner::GetCurrentDefault(),
+        input_device_factory_->GetWeakPtr());
 
     if (cursor_)
       cursor_->InitializeOnEvdev();
@@ -62,7 +61,7 @@ class EvdevThread : public base::Thread {
 
   void CleanUp() override {
     TRACE_EVENT0("evdev", "EvdevThread::CleanUp");
-    delete input_device_factory_;
+    input_device_factory_.reset();
   }
 
  private:
@@ -74,7 +73,7 @@ class EvdevThread : public base::Thread {
   raw_ptr<InputControllerEvdev> input_controller_;
 
   // Thread-internal state.
-  raw_ptr<InputDeviceFactoryEvdev> input_device_factory_ = nullptr;
+  std::unique_ptr<InputDeviceFactoryEvdev> input_device_factory_;
 };
 
 }  // namespace
