@@ -292,6 +292,7 @@ const gfx::Point ImageButton::ComputeImagePaintPosition(
 
 ToggleImageButton::ToggleImageButton(PressedCallback callback)
     : ImageButton(std::move(callback)) {
+  SetAccessibilityProperties(ax::mojom::Role::kToggleButton);
 }
 
 ToggleImageButton::~ToggleImageButton() = default;
@@ -342,6 +343,11 @@ std::u16string ToggleImageButton::GetToggledTooltipText() const {
 void ToggleImageButton::SetToggledTooltipText(const std::u16string& tooltip) {
   if (tooltip == toggled_tooltip_text_)
     return;
+
+  if (toggled_accessible_name_.empty() && !tooltip.empty()) {
+    SetAccessibleName(tooltip);
+  }
+
   toggled_tooltip_text_ = tooltip;
   OnPropertyChanged(&toggled_tooltip_text_, kPropertyEffectsNone);
 }
@@ -353,7 +359,14 @@ std::u16string ToggleImageButton::GetToggledAccessibleName() const {
 void ToggleImageButton::SetToggledAccessibleName(const std::u16string& name) {
   if (name == toggled_accessible_name_)
     return;
+
   toggled_accessible_name_ = name;
+  if (!toggled_accessible_name_.empty()) {
+    SetAccessibleName(toggled_accessible_name_);
+  } else if (!toggled_tooltip_text_.empty()) {
+    SetAccessibleName(toggled_tooltip_text_);
+  }
+
   OnPropertyChanged(&toggled_accessible_name_, kPropertyEffectsNone);
 }
 
@@ -400,11 +413,6 @@ void ToggleImageButton::GetAccessibleNodeData(ui::AXNodeData* node_data) {
   ImageButton::GetAccessibleNodeData(node_data);
   if (!toggled_)
     return;
-
-  if (!toggled_accessible_name_.empty())
-    node_data->SetName(toggled_accessible_name_);
-  else if (!toggled_tooltip_text_.empty())
-    node_data->SetName(toggled_tooltip_text_);
 
   // Use the visual pressed image as a cue for making this control into an
   // accessible toggle button.

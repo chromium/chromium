@@ -197,4 +197,34 @@ TEST_F(ImageButtonTest, PreferredSizeInvalidation) {
   EXPECT_EQ(1, parent.pref_size_changed_calls());
 }
 
+TEST_F(ImageButtonTest, ImageButtonAccessibleProperties) {
+  ImageButton button;
+  ui::AXNodeData data;
+  button.GetAccessibleNodeData(&data);
+  EXPECT_EQ(data.role, ax::mojom::Role::kButton);
+  EXPECT_EQ(button.GetAccessibleRole(), ax::mojom::Role::kButton);
+
+  button.SetAccessibleRole(ax::mojom::Role::kPopUpButton);
+
+  data = ui::AXNodeData();
+  button.GetAccessibleNodeData(&data);
+  EXPECT_EQ(data.role, ax::mojom::Role::kPopUpButton);
+  EXPECT_EQ(button.GetAccessibleRole(), ax::mojom::Role::kPopUpButton);
+}
+
+TEST_F(ImageButtonTest, ToggleImageButtonAccessibleProperties) {
+  ToggleImageButton button;
+  ui::AXNodeData data;
+  button.GetAccessibleNodeData(&data);
+  EXPECT_EQ(data.role, ax::mojom::Role::kToggleButton);
+  EXPECT_EQ(button.GetAccessibleRole(), ax::mojom::Role::kToggleButton);
+
+  button.SetAccessibleRole(ax::mojom::Role::kPopUpButton);
+
+  data = ui::AXNodeData();
+  button.GetAccessibleNodeData(&data);
+  EXPECT_EQ(data.role, ax::mojom::Role::kPopUpButton);
+  EXPECT_EQ(button.GetAccessibleRole(), ax::mojom::Role::kPopUpButton);
+}
+
 }  // namespace views

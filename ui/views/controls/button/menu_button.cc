@@ -7,6 +7,7 @@
 #include <memory>
 #include <utility>
 
+#include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/events/event.h"
 #include "ui/views/controls/button/button_controller_delegate.h"
@@ -28,6 +29,7 @@ MenuButton::MenuButton(PressedCallback callback,
   SetButtonController(std::move(menu_button_controller));
 
   SetFocusBehavior(FocusBehavior::ACCESSIBLE_ONLY);
+  SetAccessibilityProperties(ax::mojom::Role::kPopUpButton);
 }
 
 MenuButton::~MenuButton() = default;
@@ -38,6 +40,14 @@ bool MenuButton::Activate(const ui::Event* event) {
 
 void MenuButton::SetCallback(PressedCallback callback) {
   menu_button_controller_->SetCallback(std::move(callback));
+}
+
+void MenuButton::GetAccessibleNodeData(ui::AXNodeData* node_data) {
+  LabelButton::GetAccessibleNodeData(node_data);
+  node_data->SetHasPopup(ax::mojom::HasPopup::kMenu);
+  if (GetEnabled()) {
+    node_data->SetDefaultActionVerb(ax::mojom::DefaultActionVerb::kOpen);
+  }
 }
 
 void MenuButton::NotifyClick(const ui::Event& event) {

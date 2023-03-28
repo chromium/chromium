@@ -610,4 +610,23 @@ TEST_F(MenuButtonTest, DestroyButtonInGesture) {
   button()->OnGestureEvent(&gesture_event);
 }
 
+TEST_F(MenuButtonTest, AccessibleProperties) {
+  ConfigureMenuButton(std::make_unique<TestMenuButton>());
+  ui::AXNodeData data;
+  button()->GetAccessibleNodeData(&data);
+  EXPECT_EQ(button()->GetAccessibleRole(), ax::mojom::Role::kPopUpButton);
+  EXPECT_EQ(data.role, ax::mojom::Role::kPopUpButton);
+  EXPECT_EQ(data.GetHasPopup(), ax::mojom::HasPopup::kMenu);
+  EXPECT_EQ(data.GetDefaultActionVerb(), ax::mojom::DefaultActionVerb::kOpen);
+
+  button()->SetAccessibleRole(ax::mojom::Role::kButton);
+
+  data = ui::AXNodeData();
+  button()->GetAccessibleNodeData(&data);
+  EXPECT_EQ(button()->GetAccessibleRole(), ax::mojom::Role::kButton);
+  EXPECT_EQ(data.role, ax::mojom::Role::kButton);
+  EXPECT_EQ(data.GetHasPopup(), ax::mojom::HasPopup::kMenu);
+  EXPECT_EQ(data.GetDefaultActionVerb(), ax::mojom::DefaultActionVerb::kOpen);
+}
+
 }  // namespace views

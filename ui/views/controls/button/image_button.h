@@ -176,10 +176,17 @@ class VIEWS_EXPORT ToggleImageButton : public ImageButton {
   Background* GetToggledBackground() const { return toggled_background_.get(); }
 
   // Get/Set the tooltip text displayed when the button is toggled.
+  // TODO(accessibility): This seems like it provides a fallback name.
+  // Should callers who want this to be the name use `SetAccessibleName`?
+  // If it should be a description, then `SetAccessibleDescription`?
+  // Note that if something lacks an accessible description but has a tooltip,
+  // the tooltip text will be used. Does the tooltip text match this text?
   std::u16string GetToggledTooltipText() const;
   void SetToggledTooltipText(const std::u16string& tooltip);
 
   // Get/Set the accessible text used when the button is toggled.
+  // TODO(accessibility): Can we just use the `AccessibleName` getter/setter
+  // from View?
   std::u16string GetToggledAccessibleName() const;
   void SetToggledAccessibleName(const std::u16string& name);
 

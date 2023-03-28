@@ -152,4 +152,28 @@ TEST_F(ToggleButtonTest, AcceptEvents) {
   EXPECT_FALSE(button()->GetIsOn());
 }
 
+TEST_F(ToggleButtonTest, AccessibilityTest) {
+  button()->SetAccessibleName(u"Name");
+  ui::AXNodeData data;
+  button()->GetAccessibleNodeData(&data);
+
+  EXPECT_EQ(data.GetString16Attribute(ax::mojom::StringAttribute::kName),
+            u"Name");
+  EXPECT_EQ(button()->GetAccessibleName(), u"Name");
+  EXPECT_EQ(data.role, ax::mojom::Role::kSwitch);
+  EXPECT_EQ(button()->GetAccessibleRole(), ax::mojom::Role::kSwitch);
+  EXPECT_EQ(data.GetCheckedState(), ax::mojom::CheckedState::kFalse);
+
+  data = ui::AXNodeData();
+  button()->SetIsOn(true);
+  button()->GetAccessibleNodeData(&data);
+  EXPECT_EQ(data.GetCheckedState(), ax::mojom::CheckedState::kTrue);
+
+  data = ui::AXNodeData();
+  button()->SetAccessibleRole(ax::mojom::Role::kCheckBox);
+  button()->GetAccessibleNodeData(&data);
+  EXPECT_EQ(data.role, ax::mojom::Role::kCheckBox);
+  EXPECT_EQ(button()->GetAccessibleRole(), ax::mojom::Role::kCheckBox);
+}
+
 }  // namespace views
