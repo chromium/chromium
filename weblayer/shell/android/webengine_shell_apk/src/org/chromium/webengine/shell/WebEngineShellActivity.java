@@ -44,8 +44,8 @@ import org.chromium.webengine.TabManager;
 import org.chromium.webengine.WebEngine;
 import org.chromium.webengine.WebFragment;
 import org.chromium.webengine.WebSandbox;
+import org.chromium.webengine.shell.topbar.TabEventsDelegate;
 import org.chromium.webengine.shell.topbar.TabEventsObserver;
-import org.chromium.webengine.shell.topbar.TopBarObservers;
 
 import java.util.Arrays;
 
@@ -68,6 +68,7 @@ public class WebEngineShellActivity
 
     private WebSandbox mWebSandbox;
     private TabManager mTabManager;
+    private TabEventsDelegate mTabEventsDelegate;
 
     private ProgressBar mProgressBar;
     private EditText mUrlBar;
@@ -91,7 +92,6 @@ public class WebEngineShellActivity
         mDefaultTabListObserver = new DefaultObservers();
 
         setupActivitySpinner((Spinner) findViewById(R.id.activity_nav), this, 0);
-
         mProgressBar = findViewById(R.id.progress_bar);
         mUrlBar = findViewById(R.id.url_bar);
         mTabCountButton = findViewById(R.id.tab_count);
@@ -191,6 +191,17 @@ public class WebEngineShellActivity
 
             mTabManager = webEngine.getTabManager();
 
+            mTabEventsDelegate = new TabEventsDelegate(mTabManager);
+            mTabEventsDelegate.registerObserver(this);
+
+            mTabCountButton.setText(String.valueOf(getTabsCount()));
+            mTabListAdapter = new ArrayAdapter<TabWrapper>(
+                    this, android.R.layout.simple_spinner_dropdown_item);
+            for (Tab t : mTabManager.getAllTabs()) {
+                mTabListAdapter.add(new TabWrapper(t));
+            }
+            mTabListSpinner.setAdapter(mTabListAdapter);
+
             for (Tab tab : mTabManager.getAllTabs()) {
                 tab.setFullscreenCallback(this);
             }
@@ -216,7 +227,6 @@ public class WebEngineShellActivity
         Tab activeTab = mTabManager.getActiveTab();
 
         mTabCountButton.setText(String.valueOf(getTabsCount()));
-
         mTabListAdapter =
                 new ArrayAdapter<TabWrapper>(this, android.R.layout.simple_spinner_dropdown_item);
         for (Tab t : mTabManager.getAllTabs()) {
@@ -224,7 +234,8 @@ public class WebEngineShellActivity
         }
         mTabListSpinner.setAdapter(mTabListAdapter);
 
-        new TopBarObservers(this, mTabManager);
+        mTabEventsDelegate = new TabEventsDelegate(mTabManager);
+        mTabEventsDelegate.registerObserver(this);
 
         activeTab.setFullscreenCallback(this);
         mTabManager.registerTabListObserver(new TabListObserver() {
@@ -299,6 +310,7 @@ public class WebEngineShellActivity
         for (Tab tab : mTabManager.getAllTabs()) {
             tab.setFullscreenCallback(null);
         }
+        mTabEventsDelegate.unregisterObservers();
     }
 
     @Override
@@ -397,32 +409,38 @@ public class WebEngineShellActivity
         }
     }
 
+    public int getTabsCount() {
+        if (mTabManager == null) {
+            return 0;
+        }
+        return mTabManager.getAllTabs().size();
+    }
+
     @Override
-    public void setUrlBar(String uri) {
+    public void onVisibleUriChanged(String uri) {
         mUrlBar.setText(uri);
     }
 
     @Override
-    public void setProgress(double progress) {
-        int progressValue = (int) Math.rint(progress * 100);
-        if (progressValue != mProgressBar.getMax()) {
-            mReloadButton.setImageDrawable(mStopDrawable);
-            mProgressBar.setVisibility(View.VISIBLE);
-        } else {
-            mReloadButton.setImageDrawable(mRefreshDrawable);
-            mProgressBar.setVisibility(View.INVISIBLE);
+    public void onActiveTabChanged(Tab activeTab) {
+        mUrlBar.setText(activeTab.getDisplayUri().toString());
+        for (int position = 0; position < mTabListAdapter.getCount(); ++position) {
+            TabWrapper tabWrapper = mTabListAdapter.getItem(position);
+            if (tabWrapper.getTab().equals(activeTab)) {
+                mTabListSpinner.setSelection(position);
+                return;
+            }
         }
-        mProgressBar.setProgress(progressValue);
     }
 
     @Override
-    public void addTabToList(Tab tab) {
+    public void onTabAdded(Tab tab) {
         mTabCountButton.setText(String.valueOf(getTabsCount()));
         mTabListAdapter.add(new TabWrapper(tab));
     }
 
     @Override
-    public void removeTabFromList(Tab tab) {
+    public void onTabRemoved(Tab tab) {
         mTabCountButton.setText(String.valueOf(getTabsCount()));
         for (int position = 0; position < mTabListAdapter.getCount(); ++position) {
             TabWrapper tabAdapter = mTabListAdapter.getItem(position);
@@ -434,18 +452,16 @@ public class WebEngineShellActivity
     }
 
     @Override
-    public void setTabListSelection(Tab tab) {
-        for (int position = 0; position < mTabListAdapter.getCount(); ++position) {
-            TabWrapper tabWrapper = mTabListAdapter.getItem(position);
-            if (tabWrapper.getTab().equals(tab)) {
-                mTabListSpinner.setSelection(mTabListAdapter.getPosition(tabWrapper));
-                return;
-            }
+    public void onLoadProgressChanged(double progress) {
+        int progressValue = (int) Math.rint(progress * 100);
+        if (progressValue != mProgressBar.getMax()) {
+            mReloadButton.setImageDrawable(mStopDrawable);
+            mProgressBar.setVisibility(View.VISIBLE);
+        } else {
+            mReloadButton.setImageDrawable(mRefreshDrawable);
+            mProgressBar.setVisibility(View.INVISIBLE);
         }
-    }
-
-    public int getTabsCount() {
-        return mTabManager.getAllTabs().size();
+        mProgressBar.setProgress(progressValue);
     }
 
     static class TabWrapper {

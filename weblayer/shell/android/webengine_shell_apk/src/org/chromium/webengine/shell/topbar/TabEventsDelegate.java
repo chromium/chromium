@@ -16,28 +16,46 @@ import org.chromium.webengine.TabObserver;
 import org.chromium.webengine.WebEngine;
 
 /**
- * Top Bar observers for Test Activities.
+ * Delegate for Tab Events.
  */
-public class TopBarObservers implements TabObserver, NavigationObserver, TabListObserver {
-    final TabEventsObserver mTabEventsObserver;
-    final TabManager mTabManager;
-    public TopBarObservers(TabEventsObserver tabEventObserver, TabManager tabManager) {
-        mTabEventsObserver = tabEventObserver;
-        mTabManager = tabManager;
+public class TabEventsDelegate implements TabObserver, NavigationObserver, TabListObserver {
+    private TabEventsObserver mTabEventsObserver;
+    private final TabManager mTabManager;
 
+    public TabEventsDelegate(TabManager tabManager) {
+        mTabManager = tabManager;
+    }
+
+    // Registers only one TabEventsObserver.
+    public void registerObserver(TabEventsObserver tabEventsObserver) {
+        mTabEventsObserver = tabEventsObserver;
         mTabManager.registerTabListObserver(this);
-        mTabManager.getActiveTab().getNavigationController().registerNavigationObserver(this);
-        mTabManager.getActiveTab().registerTabObserver(this);
+        for (Tab t : mTabManager.getAllTabs()) {
+            t.getNavigationController().registerNavigationObserver(this);
+            t.registerTabObserver(this);
+        }
+    }
+
+    public void unregisterObservers() {
+        mTabEventsObserver = null;
+        mTabManager.unregisterTabListObserver(this);
+        for (Tab t : mTabManager.getAllTabs()) {
+            t.getNavigationController().unregisterNavigationObserver(this);
+            t.unregisterTabObserver(this);
+        }
     }
 
     // TabObserver implementation.
 
     @Override
     public void onVisibleUriChanged(@NonNull Tab tab, @NonNull String uri) {
+        if (mTabEventsObserver == null) {
+            return;
+        }
         if (!isTabActive(tab)) {
             return;
         }
-        mTabEventsObserver.setUrlBar(uri);
+        mTabEventsObserver.onVisibleUriChanged(uri);
     }
 
     @Override
@@ -50,24 +68,32 @@ public class TopBarObservers implements TabObserver, NavigationObserver, TabList
 
     @Override
     public void onActiveTabChanged(@NonNull WebEngine webEngine, @Nullable Tab activeTab) {
+        if (mTabEventsObserver == null) {
+            return;
+        }
         if (activeTab == null) {
             return;
         }
-        mTabEventsObserver.setUrlBar(activeTab.getDisplayUri().toString());
-        mTabEventsObserver.setTabListSelection(activeTab);
+        mTabEventsObserver.onActiveTabChanged(activeTab);
     }
 
     @Override
     public void onTabAdded(@NonNull WebEngine webEngine, @NonNull Tab tab) {
-        mTabEventsObserver.addTabToList(tab);
-        // Recursively add tab and navigation observers to any new tab.
+        if (mTabEventsObserver == null) {
+            return;
+        }
+        mTabEventsObserver.onTabAdded(tab);
+
         tab.registerTabObserver(this);
         tab.getNavigationController().registerNavigationObserver(this);
     }
 
     @Override
     public void onTabRemoved(@NonNull WebEngine webEngine, @NonNull Tab tab) {
-        mTabEventsObserver.removeTabFromList(tab);
+        if (mTabEventsObserver == null) {
+            return;
+        }
+        mTabEventsObserver.onTabRemoved(tab);
     }
 
     @Override
@@ -88,10 +114,13 @@ public class TopBarObservers implements TabObserver, NavigationObserver, TabList
 
     @Override
     public void onLoadProgressChanged(@NonNull Tab tab, double progress) {
+        if (mTabEventsObserver == null) {
+            return;
+        }
         if (!isTabActive(tab)) {
             return;
         }
-        mTabEventsObserver.setProgress(progress);
+        mTabEventsObserver.onLoadProgressChanged(progress);
     }
 
     boolean isTabActive(Tab tab) {

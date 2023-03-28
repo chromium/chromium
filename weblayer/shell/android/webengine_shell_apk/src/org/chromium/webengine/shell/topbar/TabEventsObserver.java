@@ -10,13 +10,13 @@ import org.chromium.webengine.Tab;
  * An interface for setting values in the Top Bar.
  */
 public interface TabEventsObserver {
-    void setUrlBar(String uri);
+    void onVisibleUriChanged(String uri);
 
-    void setProgress(double progress);
+    void onActiveTabChanged(Tab activeTab);
 
-    void addTabToList(Tab tab);
+    void onTabAdded(Tab tab);
 
-    void removeTabFromList(Tab tab);
+    void onTabRemoved(Tab tab);
 
-    void setTabListSelection(Tab tab);
+    void onLoadProgressChanged(double progress);
 }
