@@ -65,6 +65,19 @@ class ComServerApp : public AppServer {
  private:
   ~ComServerApp() override;
 
+  // Called before each invocation of an `UpdateService` or
+  // `UpdateServiceInternal` method. Increments the WRL Module count.
+  void TaskStarted();
+
+  // Calls `AcknowledgeTaskCompletion` after a `ServerKeepAliveTime` delay.The
+  // delay allow for more COM calls to come into the server, reducing the
+  // overhead of the server process shutting down/coming back up.
+  void TaskCompleted();
+
+  // Called after each invocation of an `UpdateService` or
+  // `UpdateServiceInternal` method. Decrements the WRL Module count.
+  void AcknowledgeTaskCompletion();
+
   // Overrides for AppServer
   void ActiveDuty(scoped_refptr<UpdateService> update_service) override;
   void ActiveDutyInternal(
@@ -99,6 +112,8 @@ class ComServerApp : public AppServer {
   // |update_client| component.
   scoped_refptr<UpdateService> update_service_;
   scoped_refptr<UpdateServiceInternal> update_service_internal_;
+
+  SEQUENCE_CHECKER(sequence_checker_);
 };
 
 // Returns a singleton application object bound to this COM server.

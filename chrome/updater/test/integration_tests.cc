@@ -1159,6 +1159,7 @@ TEST_F(IntegrationTestLegacyUpdate3Web, NoUpdate) {
 }
 
 TEST_F(IntegrationTestLegacyUpdate3Web, DisabledPolicyManual) {
+  ASSERT_TRUE(WaitForUpdaterExit());
   base::Value::Dict group_policies;
   group_policies.Set("Updatetest1", kPolicyAutomaticUpdatesOnly);
   ASSERT_NO_FATAL_FAILURE(SetGroupPolicies(group_policies));
@@ -1168,6 +1169,7 @@ TEST_F(IntegrationTestLegacyUpdate3Web, DisabledPolicyManual) {
 }
 
 TEST_F(IntegrationTestLegacyUpdate3Web, DisabledPolicy) {
+  ASSERT_TRUE(WaitForUpdaterExit());
   base::Value::Dict group_policies;
   group_policies.Set("Updatetest1", kPolicyDisabled);
   ASSERT_NO_FATAL_FAILURE(SetGroupPolicies(group_policies));

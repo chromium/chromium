@@ -28,6 +28,8 @@
 #include "base/win/registry.h"
 #include "base/win/windows_types.h"
 #include "chrome/installer/util/work_item_list.h"
+#include "chrome/updater/app/server/win/update_service_internal_stub_win.h"
+#include "chrome/updater/app/server/win/update_service_stub_win.h"
 #include "chrome/updater/constants.h"
 #include "chrome/updater/registration_data.h"
 #include "chrome/updater/update_service.h"
@@ -300,15 +302,43 @@ void ComServerApp::CreateWRLModule() {
       this, &ComServerApp::Stop);
 }
 
+void ComServerApp::TaskStarted() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  const auto count =
+      Microsoft::WRL::Module<Microsoft::WRL::OutOfProc>::GetModule()
+          .IncrementObjectCount();
+  VLOG(2) << "Starting task, Microsoft::WRL::Module count: " << count;
+}
+
+void ComServerApp::TaskCompleted() {
+  main_task_runner_->PostDelayedTask(
+      FROM_HERE, base::BindOnce(&ComServerApp::AcknowledgeTaskCompletion, this),
+      external_constants()->ServerKeepAliveTime());
+}
+
+void ComServerApp::AcknowledgeTaskCompletion() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  const auto count =
+      Microsoft::WRL::Module<Microsoft::WRL::OutOfProc>::GetModule()
+          .DecrementObjectCount();
+  VLOG(2) << "Completed task, Microsoft::WRL::Module count: " << count;
+}
+
 void ComServerApp::ActiveDuty(scoped_refptr<UpdateService> update_service) {
-  update_service_ = update_service;
+  update_service_ = base::MakeRefCounted<UpdateServiceStubWin>(
+      std::move(update_service),
+      base::BindRepeating(&ComServerApp::TaskStarted, this),
+      base::BindRepeating(&ComServerApp::TaskCompleted, this));
   Start(base::BindOnce(&ComServerApp::RegisterClassObjects,
                        base::Unretained(this)));
 }
 
 void ComServerApp::ActiveDutyInternal(
     scoped_refptr<UpdateServiceInternal> update_service_internal) {
-  update_service_internal_ = update_service_internal;
+  update_service_internal_ = base::MakeRefCounted<UpdateServiceInternalStubWin>(
+      std::move(update_service_internal),
+      base::BindRepeating(&ComServerApp::TaskStarted, this),
+      base::BindRepeating(&ComServerApp::TaskCompleted, this));
   Start(base::BindOnce(&ComServerApp::RegisterInternalClassObjects,
                        base::Unretained(this)));
 }
