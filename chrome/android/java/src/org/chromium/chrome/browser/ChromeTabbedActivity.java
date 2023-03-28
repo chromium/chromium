@@ -980,6 +980,9 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
             PostTask.postTask(TaskTraits.UI_DEFAULT,
                     mCallbackController.makeCancelable(
                             this::maybeCreateIncognitoTabSnapshotController));
+            if (BackPressManager.isEnabled()) {
+                PostTask.postTask(TaskTraits.UI_DEFAULT, this::initializeBackPressHandlers);
+            }
             PostTask.postTask(TaskTraits.UI_DEFAULT,
                     mCallbackController.makeCancelable(
                             this::onAccessibilityTabSwitcherModeChanged));
@@ -1008,7 +1011,6 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
 
             ChromeAccessibilityUtil.get().addObserver(mLayoutManager);
             if (isTablet()) ChromeAccessibilityUtil.get().addObserver(mCompositorViewHolder);
-            if (BackPressManager.isEnabled()) initializeBackPressHandlers();
 
             mInactivityTracker.setLastVisibleTimeMsAndRecord(System.currentTimeMillis());
         }

@@ -34,6 +34,7 @@ import java.util.List;
  */
 public class BackPressManager implements Destroyable {
     private static final SparseIntArray sMetricsMap;
+    private static final int sMetricsMaxValue;
     static {
         // Max value is 18 - 1 obsolete value +1 for 0 indexing = 18 elements.
         SparseIntArray map = new SparseIntArray(18);
@@ -56,6 +57,7 @@ public class BackPressManager implements Destroyable {
         map.put(Type.FIND_TOOLBAR, 16);
         map.put(Type.LOCATION_BAR, 17);
         map.put(Type.XR_DELEGATE, 18);
+        sMetricsMaxValue = 19;
         // Add new one here and update array size.
         sMetricsMap = map;
     }
@@ -97,12 +99,13 @@ public class BackPressManager implements Destroyable {
      * @param type The {@link Type} which consumes the back press event.
      */
     public static void record(@Type int type) {
-        RecordHistogram.recordEnumeratedHistogram(HISTOGRAM, sMetricsMap.get(type), Type.NUM_TYPES);
+        RecordHistogram.recordEnumeratedHistogram(
+                HISTOGRAM, sMetricsMap.get(type), sMetricsMaxValue);
     }
 
     private static void recordFailure(@Type int type) {
         RecordHistogram.recordEnumeratedHistogram(
-                FAILURE_HISTOGRAM, sMetricsMap.get(type), Type.NUM_TYPES);
+                FAILURE_HISTOGRAM, sMetricsMap.get(type), sMetricsMaxValue);
     }
 
     public BackPressManager() {
@@ -217,6 +220,9 @@ public class BackPressManager implements Destroyable {
                 removeHandler(i);
             }
         }
+        // All handlers have been removed, so no handler will consume the back event. As a result,
+        // the callback should be disabled so that the OS can handle the back press.
+        assert !mCallback.isEnabled();
     }
 
     private void assertListOfFailedHandlers(List<String> failed, int succeed) {
