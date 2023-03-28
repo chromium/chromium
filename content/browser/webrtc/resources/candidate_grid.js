@@ -134,8 +134,16 @@ function appendRow(peerConnectionElement, active, candidatePair, stats) {
         localRow.children[index].innerText += '\n' + localCandidate.url;
       }
     } else if (stat === 'priority') {
-      localRow.children[index].innerText = '0x' +
-          parseInt(localCandidate[stat], 10).toString(16);
+      const priority = parseInt(localCandidate[stat], 10) & 0xFFFFFFFF;
+      localRow.children[index].innerText = '0x' + priority.toString(16) +
+          // RFC 5245 - 4.1.2.1.
+          // priority = (2^24)*(type preference) +
+          //            (2^8)*(local preference) +
+          //            (2^0)*(256 - component ID)
+          '\n' + (priority >> 24) +
+          ' | ' + ((priority >> 8) & 0xFFFF) +
+          ' | ' + (priority & 0xFF);
+
     } else {
       localRow.children[index].innerText = localCandidate[stat];
     }
