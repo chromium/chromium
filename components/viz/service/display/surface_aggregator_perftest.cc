@@ -113,7 +113,7 @@ class SurfaceAggregatorPerfTest : public VizPerfTest {
       for (int j = 0; j < num_textures; j++) {
         const gfx::Size size(1, 2);
         TransferableResource resource = TransferableResource::MakeSoftware(
-            SharedBitmap::GenerateId(), size, ResourceFormat::RGBA_8888);
+            SharedBitmap::GenerateId(), size, SinglePlaneFormat::kRGBA_8888);
         resource.id = ResourceId(j);
         frame_builder.AddTransferableResource(resource);
 
@@ -231,7 +231,8 @@ class SurfaceAggregatorPerfTest : public VizPerfTest {
           // Create the resource if we haven't yet.
           if (created_resources.find(resource_id) == created_resources.end()) {
             created_resources[resource_id] = TransferableResource::MakeSoftware(
-                SharedBitmap::GenerateId(), quad->rect.size(), RGBA_8888);
+                SharedBitmap::GenerateId(), quad->rect.size(),
+                SinglePlaneFormat::kRGBA_8888);
             created_resources[resource_id].id = resource_id;
           }
           resource_data_map_[frame_sink_id]

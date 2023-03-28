@@ -82,7 +82,7 @@ TransferableResourceTracker::ImportResource(
     shared_bitmap_manager_->LocalAllocatedSharedBitmap(
         std::move(output_copy.bitmap), id);
     resource = TransferableResource::MakeSoftware(
-        id, output_copy.draw_data.size, RGBA_8888);
+        id, output_copy.draw_data.size, SinglePlaneFormat::kRGBA_8888);
 
     // Remove the bitmap from shared bitmap manager when no longer in use.
     release_callback = base::BindOnce(

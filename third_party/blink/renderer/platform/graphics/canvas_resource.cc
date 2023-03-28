@@ -211,8 +211,8 @@ bool CanvasResource::PrepareUnacceleratedTransferableResource(
   // the resource type and completely ignores the format set on the
   // TransferableResource. Clients are expected to render in N32 format but use
   // RGBA as the tagged format on resources.
-  *out_resource =
-      viz::TransferableResource::MakeSoftware(mailbox, Size(), viz::RGBA_8888);
+  *out_resource = viz::TransferableResource::MakeSoftware(
+      mailbox, Size(), viz::SinglePlaneFormat::kRGBA_8888);
 
   out_resource->color_space = GetColorSpace();
 

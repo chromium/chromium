@@ -283,7 +283,7 @@ void CreateTestTwoColoredTextureDrawQuad(
                                               shared_bitmap_manager);
     resource = child_resource_provider->ImportResource(
         TransferableResource::MakeSoftware(shared_bitmap_id, rect.size(),
-                                           RGBA_8888),
+                                           SinglePlaneFormat::kRGBA_8888),
         base::DoNothing());
 
     auto span = mapping.GetMemoryAsSpan<uint32_t>(pixels.size());
@@ -346,7 +346,7 @@ void CreateTestTextureDrawQuad(
                                               shared_bitmap_manager);
     resource = child_resource_provider->ImportResource(
         TransferableResource::MakeSoftware(shared_bitmap_id, rect.size(),
-                                           RGBA_8888),
+                                           SinglePlaneFormat::kRGBA_8888),
         base::DoNothing());
 
     auto span = mapping.GetMemoryAsSpan<uint32_t>(pixels.size());

@@ -55,11 +55,6 @@ struct VIZ_COMMON_EXPORT TransferableResource {
       const std::vector<TransferableResource>& input);
   bool is_null() const { return mailbox_holder.mailbox.IsZero(); }
 
-  static TransferableResource MakeSoftware(const SharedBitmapId& id,
-                                           const gfx::Size& size,
-                                           ResourceFormat format) {
-    return MakeSoftware(id, size, SharedImageFormat::SinglePlane(format));
-  }
   static TransferableResource MakeGpu(const gpu::Mailbox& mailbox,
                                       uint32_t filter,
                                       uint32_t texture_target,

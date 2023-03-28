@@ -5841,7 +5841,8 @@ CompositorFrame BuildCompositorFrameWithResources(
 
   for (ResourceId resource_id : resource_ids) {
     auto resource = TransferableResource::MakeSoftware(
-        SharedBitmap::GenerateId(), gfx::Size(1, 1), RGBA_8888);
+        SharedBitmap::GenerateId(), gfx::Size(1, 1),
+        SinglePlaneFormat::kRGBA_8888);
     resource.id = resource_id;
     if (!valid) {
       // ResourceProvider is software, so only software resources are valid. Do
