@@ -175,11 +175,12 @@ LayoutBlock* LayoutObjectFactory::CreateTable(Node& node,
   return CreateObject<LayoutBlock, LayoutNGTable, LayoutTable>(node, legacy);
 }
 
-LayoutTableCaption* LayoutObjectFactory::CreateTableCaption(
+LayoutBlockFlow* LayoutObjectFactory::CreateTableCaption(
     Node& node,
     const ComputedStyle& style,
     LegacyLayout legacy) {
-  return CreateObject<LayoutTableCaption, LayoutNGTableCaption>(node, legacy);
+  return CreateObject<LayoutBlockFlow, LayoutNGTableCaption,
+                      LayoutTableCaption>(node, legacy);
 }
 
 LayoutBlockFlow* LayoutObjectFactory::CreateTableCell(

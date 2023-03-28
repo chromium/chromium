@@ -23,7 +23,6 @@ class LayoutBox;
 enum class LegacyLayout;
 class LayoutProgress;
 class LayoutRubyAsBlock;
-class LayoutTableCaption;
 class LayoutText;
 class LayoutTextFragment;
 class LayoutView;
@@ -52,9 +51,9 @@ class LayoutObjectFactory {
                                         const ComputedStyle&,
                                         LegacyLayout);
   static LayoutBlock* CreateTable(Node&, const ComputedStyle&, LegacyLayout);
-  static LayoutTableCaption* CreateTableCaption(Node&,
-                                                const ComputedStyle&,
-                                                LegacyLayout);
+  static LayoutBlockFlow* CreateTableCaption(Node&,
+                                             const ComputedStyle&,
+                                             LegacyLayout);
   static LayoutBlockFlow* CreateTableCell(Node&,
                                           const ComputedStyle&,
                                           LegacyLayout);

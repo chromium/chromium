@@ -6,20 +6,13 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_NG_TABLE_LAYOUT_NG_TABLE_CAPTION_H_
 
 #include "third_party/blink/renderer/core/core_export.h"
-#include "third_party/blink/renderer/core/layout/layout_table_caption.h"
-#include "third_party/blink/renderer/core/layout/ng/layout_ng_block_flow_mixin.h"
+#include "third_party/blink/renderer/core/layout/ng/layout_ng_block_flow.h"
 
 namespace blink {
 
 class NGPhysicalFragment;
 
-extern template class CORE_EXTERN_TEMPLATE_EXPORT
-    LayoutNGBlockFlowMixin<LayoutTableCaption>;
-extern template class CORE_EXTERN_TEMPLATE_EXPORT
-    LayoutNGMixin<LayoutTableCaption>;
-
-class CORE_EXPORT LayoutNGTableCaption final
-    : public LayoutNGBlockFlowMixin<LayoutTableCaption> {
+class CORE_EXPORT LayoutNGTableCaption final : public LayoutNGBlockFlow {
  public:
   explicit LayoutNGTableCaption(Element*);
 
@@ -28,6 +21,17 @@ class CORE_EXPORT LayoutNGTableCaption final
   const char* GetName() const override {
     NOT_DESTROYED();
     return "LayoutNGTableCaption";
+  }
+
+  bool CreatesNewFormattingContext() const final {
+    NOT_DESTROYED();
+    return true;
+  }
+
+  bool IsOfType(LayoutObjectType type) const override {
+    NOT_DESTROYED();
+    return type == kLayoutObjectTableCaption ||
+           LayoutNGBlockFlow::IsOfType(type);
   }
 
  private:

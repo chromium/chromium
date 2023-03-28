@@ -18,7 +18,7 @@
 namespace blink {
 
 LayoutNGTableCaption::LayoutNGTableCaption(Element* element)
-    : LayoutNGBlockFlowMixin<LayoutTableCaption>(element) {}
+    : LayoutNGBlockFlow(element) {}
 
 // Legacy method.
 void LayoutNGTableCaption::CalculateAndSetMargins(
