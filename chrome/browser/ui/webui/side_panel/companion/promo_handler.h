@@ -5,32 +5,50 @@
 #ifndef CHROME_BROWSER_UI_WEBUI_SIDE_PANEL_COMPANION_PROMO_HANDLER_H_
 #define CHROME_BROWSER_UI_WEBUI_SIDE_PANEL_COMPANION_PROMO_HANDLER_H_
 
+#include <string>
+
+#include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/ui/webui/side_panel/companion/companion.mojom.h"
 
+class PrefRegistrySimple;
 class PrefService;
 
 namespace companion {
 using side_panel::mojom::PromoAction;
 using side_panel::mojom::PromoType;
 
+class MsbbDelegate;
+
 // Central class to handle user actions on various promos displayed in the
 // search companion.
 class PromoHandler {
  public:
-  explicit PromoHandler(PrefService* pref_service);
+  PromoHandler(PrefService* pref_service, MsbbDelegate* msbb_setter);
+  ~PromoHandler();
+
+  // Disallow copy/assign.
   PromoHandler(const PromoHandler&) = delete;
   PromoHandler& operator=(const PromoHandler&) = delete;
-  ~PromoHandler();
+
+  // Registers preferences used by this class in the provided |registry|.  This
+  // should be called for the Profile registry.
+  static void RegisterProfilePrefs(PrefRegistrySimple* registry);
 
   // Called in response to the mojo call from renderer. Takes necessary action
   // to handle the user action on the promo.
   void OnPromoAction(PromoType promo_type, PromoAction promo_action);
 
  private:
+  void OnSigninPromo(PromoAction promo_action);
+  void OnMsbbPromo(PromoAction promo_action);
+  void OnLabsPromo(PromoAction promo_action);
+  void IncrementPref(const std::string& pref_name);
+
   // Lifetime of the PrefService is bound to profile which outlives the lifetime
   // of the companion page.
   raw_ptr<PrefService> pref_service_;
+  raw_ptr<MsbbDelegate> msbb_delegate_;
 };
 
 }  // namespace companion

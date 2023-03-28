@@ -7,10 +7,9 @@
 #include "base/base64.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/webui/side_panel/companion/constants.h"
+#include "chrome/browser/ui/webui/side_panel/companion/msbb_delegate.h"
 #include "chrome/browser/ui/webui/side_panel/companion/proto/companion_url_params.pb.h"
 #include "components/prefs/pref_service.h"
-#include "components/unified_consent/pref_names.h"
-#include "components/unified_consent/url_keyed_data_collection_consent_helper.h"
 #include "net/base/url_util.h"
 #include "url/gurl.h"
 
@@ -31,36 +30,28 @@ inline constexpr char kOriginQueryParameterValue[] =
     "chrome-untrusted://companion-side-panel.top-chrome";
 }  // namespace
 
-CompanionUrlBuilder::CompanionUrlBuilder(PrefService* pref_service)
-    : pref_service_(pref_service) {}
+CompanionUrlBuilder::CompanionUrlBuilder(PrefService* pref_service,
+                                         MsbbDelegate* msbb_delegate)
+    : pref_service_(pref_service), msbb_delegate_(msbb_delegate) {}
 
 CompanionUrlBuilder::~CompanionUrlBuilder() = default;
-
-bool CompanionUrlBuilder::IsMsbbEnabled() {
-  std::unique_ptr<unified_consent::UrlKeyedDataCollectionConsentHelper>
-      consent_helper = unified_consent::UrlKeyedDataCollectionConsentHelper::
-          NewAnonymizedDataCollectionConsentHelper(pref_service_);
-  return consent_helper->IsEnabled();
-}
 
 GURL CompanionUrlBuilder::BuildCompanionURL(GURL page_url) {
   // Fill the protobuf with the required query params.
   companion::proto::QueryParams url_params;
-  bool is_msbb_enabled = IsMsbbEnabled();
+  bool is_msbb_enabled = msbb_delegate_->IsMsbbEnabled();
   if (is_msbb_enabled) {
     url_params.set_page_url(page_url.spec());
   }
   url_params.set_has_msbb_enabled(is_msbb_enabled);
 
-  // TODO(b/273652233): Uncomment.
-  // companion::proto::PromoState* promo_state =
-  // url_params.mutable_promo_state();
-  // promo_state->set_signin_promo_denial_count(
-  //     pref_service_->GetInteger(kSigninPromoDeclinedPref));
-  // promo_state->set_msbb_promo_denial_count(
-  //     pref_service_->GetInteger(kMsbbPromoDeclinedPref));
-  // promo_state->set_labs_promo_denial_count(
-  //     pref_service_->GetInteger(kLabsPromoDeclinedPref));
+  companion::proto::PromoState* promo_state = url_params.mutable_promo_state();
+  promo_state->set_signin_promo_denial_count(
+      pref_service_->GetInteger(kSigninPromoDeclinedCountPref));
+  promo_state->set_msbb_promo_denial_count(
+      pref_service_->GetInteger(kMsbbPromoDeclinedCountPref));
+  promo_state->set_labs_promo_denial_count(
+      pref_service_->GetInteger(kLabsPromoDeclinedCountPref));
 
   GURL url_with_query_params = GetHomepageURLForCompanion();
   std::string base64_encoded_proto;

@@ -6,7 +6,9 @@
 #define CHROME_BROWSER_UI_WEBUI_SIDE_PANEL_COMPANION_COMPANION_PAGE_HANDLER_H_
 
 #include "base/memory/raw_ptr.h"
+#include "base/memory/weak_ptr.h"
 #include "chrome/browser/ui/webui/side_panel/companion/companion.mojom.h"
+#include "chrome/browser/ui/webui/side_panel/companion/msbb_delegate.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
@@ -21,7 +23,8 @@ class CompanionUrlBuilder;
 class PromoHandler;
 
 class CompanionPageHandler : public side_panel::mojom::CompanionPageHandler,
-                             public content::WebContentsObserver {
+                             public content::WebContentsObserver,
+                             public MsbbDelegate {
  public:
   explicit CompanionPageHandler(
       mojo::PendingReceiver<side_panel::mojom::CompanionPageHandler> receiver,
@@ -42,6 +45,10 @@ class CompanionPageHandler : public side_panel::mojom::CompanionPageHandler,
   void PrimaryPageChanged(content::Page& page) override;
 
  private:
+  // MsbbDelegate overrides.
+  void EnableMsbb(bool enable_msbb) override;
+  bool IsMsbbEnabled() override;
+
   // Notifies the companion page of the visible URL when the active tab has
   // changed or when the primary page has changed on the active tab.
   void NotifyURLChanged();
@@ -51,6 +58,8 @@ class CompanionPageHandler : public side_panel::mojom::CompanionPageHandler,
   raw_ptr<CompanionSidePanelUntrustedUI> companion_untrusted_ui_ = nullptr;
   std::unique_ptr<CompanionUrlBuilder> url_builder_;
   std::unique_ptr<PromoHandler> promo_handler_;
+
+  base::WeakPtrFactory<CompanionPageHandler> weak_ptr_factory_{this};
 };
 }  // namespace companion
 

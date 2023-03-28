@@ -7,10 +7,11 @@
 #include "base/base64.h"
 #include "base/logging.h"
 #include "chrome/browser/ui/webui/side_panel/companion/constants.h"
+#include "chrome/browser/ui/webui/side_panel/companion/msbb_delegate.h"
+#include "chrome/browser/ui/webui/side_panel/companion/promo_handler.h"
 #include "chrome/browser/ui/webui/side_panel/companion/proto/companion_url_params.pb.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/testing_pref_service.h"
-#include "components/unified_consent/pref_names.h"
 #include "net/base/url_util.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -22,6 +23,13 @@ namespace companion {
 namespace {
 constexpr char kUrl[] = "https://foo.com/";
 constexpr char kOrigin[] = "chrome-untrusted://companion-side-panel.top-chrome";
+
+class MockMsbbDelegate : public MsbbDelegate {
+ public:
+  MOCK_METHOD1(EnableMsbb, void(bool));
+  MOCK_METHOD0(IsMsbbEnabled, bool());
+};
+
 }  // namespace
 
 class CompanionUrlBuilderTest : public testing::Test {
@@ -30,32 +38,25 @@ class CompanionUrlBuilderTest : public testing::Test {
   ~CompanionUrlBuilderTest() override = default;
 
   void SetUp() override {
-    pref_service_.registry()->RegisterBooleanPref(
-        unified_consent::prefs::kUrlKeyedAnonymizedDataCollectionEnabled,
-        false);
+    PromoHandler::RegisterProfilePrefs(pref_service_.registry());
+    EXPECT_CALL(msbb_delegate_, IsMsbbEnabled())
+        .WillRepeatedly(testing::Return(true));
 
-    pref_service_.registry()->RegisterIntegerPref(kSigninPromoDeclinedPref, 0);
-    pref_service_.registry()->RegisterIntegerPref(kMsbbPromoDeclinedPref, 0);
-    pref_service_.registry()->RegisterIntegerPref(kLabsPromoDeclinedPref, 0);
-
-    pref_service_.SetUserPref(
-        unified_consent::prefs::kUrlKeyedAnonymizedDataCollectionEnabled,
-        base::Value(true));
-    pref_service_.SetUserPref(kSigninPromoDeclinedPref, base::Value(1));
-    url_builder_ = std::make_unique<CompanionUrlBuilder>(&pref_service_);
+    pref_service_.SetUserPref(kSigninPromoDeclinedCountPref, base::Value(1));
+    url_builder_ =
+        std::make_unique<CompanionUrlBuilder>(&pref_service_, &msbb_delegate_);
   }
 
  protected:
   TestingPrefServiceSimple pref_service_;
+  MockMsbbDelegate msbb_delegate_;
   std::unique_ptr<CompanionUrlBuilder> url_builder_;
 };
 
 TEST_F(CompanionUrlBuilderTest, MsbbOff) {
-  pref_service_.SetUserPref(
-      unified_consent::prefs::kUrlKeyedAnonymizedDataCollectionEnabled,
-      base::Value(false));
-  pref_service_.SetUserPref(kSigninPromoDeclinedPref, base::Value(1));
-  EXPECT_FALSE(url_builder_->IsMsbbEnabled());
+  EXPECT_CALL(msbb_delegate_, IsMsbbEnabled())
+      .WillRepeatedly(testing::Return(false));
+  pref_service_.SetUserPref(kSigninPromoDeclinedCountPref, base::Value(1));
 
   GURL page_url(kUrl);
   GURL companion_url = url_builder_->BuildCompanionURL(page_url);
@@ -82,8 +83,9 @@ TEST_F(CompanionUrlBuilderTest, MsbbOff) {
 
 TEST_F(CompanionUrlBuilderTest, MsbbOn) {
   GURL page_url(kUrl);
+  EXPECT_CALL(msbb_delegate_, IsMsbbEnabled())
+      .WillRepeatedly(testing::Return(true));
   GURL companion_url = url_builder_->BuildCompanionURL(page_url);
-  EXPECT_TRUE(url_builder_->IsMsbbEnabled());
 
   std::string value;
   EXPECT_TRUE(net::GetValueForKeyInQuery(companion_url, "url", &value));
@@ -105,12 +107,11 @@ TEST_F(CompanionUrlBuilderTest, MsbbOn) {
   EXPECT_EQ(proto.page_url(), page_url.spec());
   EXPECT_TRUE(proto.has_msbb_enabled());
 
-  // TODO(b/273652233): Uncomment.
   // Verify promo state.
-  // EXPECT_TRUE(proto.has_promo_state());
-  // EXPECT_EQ(1, proto.promo_state().signin_promo_denial_count());
-  // EXPECT_EQ(0, proto.promo_state().msbb_promo_denial_count());
-  // EXPECT_EQ(0, proto.promo_state().labs_promo_denial_count());
+  EXPECT_TRUE(proto.has_promo_state());
+  EXPECT_EQ(1, proto.promo_state().signin_promo_denial_count());
+  EXPECT_EQ(0, proto.promo_state().msbb_promo_denial_count());
+  EXPECT_EQ(0, proto.promo_state().labs_promo_denial_count());
 }
 
 TEST_F(CompanionUrlBuilderTest, NonProtobufParams) {

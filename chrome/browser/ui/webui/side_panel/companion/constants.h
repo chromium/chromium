@@ -8,12 +8,12 @@
 namespace companion {
 
 // Pref names for storing various promo states.
-const char kMsbbPromoDeclinedPref[] =
-    "Search.Companion.Promo.MSBB.Declined.Count";
-const char kSigninPromoDeclinedPref[] =
-    "Search.Companion.Promo.Signin.Declined.Count";
-const char kLabsPromoDeclinedPref[] =
-    "Search.Companion.Promo.Labs.Declined.Count";
+const char kMsbbPromoDeclinedCountPref[] =
+    "Companion.Promo.MSBB.Declined.Count";
+const char kSigninPromoDeclinedCountPref[] =
+    "Companion.Promo.Signin.Declined.Count";
+const char kLabsPromoDeclinedCountPref[] =
+    "Companion.Promo.Labs.Declined.Count";
 
 }  // namespace companion
 

@@ -10,6 +10,7 @@
 
 class PrefService;
 namespace companion {
+class MsbbDelegate;
 
 // Utility to build URL for the search companion request. The URL contains
 // various query parameters needed at the server side such as main page URL,
@@ -17,7 +18,7 @@ namespace companion {
 // schema consistency.
 class CompanionUrlBuilder {
  public:
-  explicit CompanionUrlBuilder(PrefService* pref_service);
+  CompanionUrlBuilder(PrefService* pref_service, MsbbDelegate* msbb_delegate);
   CompanionUrlBuilder(const CompanionUrlBuilder&) = delete;
   CompanionUrlBuilder& operator=(const CompanionUrlBuilder&) = delete;
   ~CompanionUrlBuilder();
@@ -27,15 +28,12 @@ class CompanionUrlBuilder {
   // associated state.
   GURL BuildCompanionURL(GURL page_url);
 
-  // Util method to check whether make searches and browsing better option is
-  // enabled in the settings.
-  bool IsMsbbEnabled();
-
  private:
   // The base URL for companion.
   GURL GetHomepageURLForCompanion();
 
   raw_ptr<PrefService> pref_service_;
+  raw_ptr<MsbbDelegate> msbb_delegate_;
 };
 
 }  // namespace companion
