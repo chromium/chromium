@@ -32,6 +32,23 @@
 
 namespace extensions {
 
+// DEPRECATED: Building a dictionary can now directly be performed on
+// `base::Value::Dict`, and `ToJSON()` can be replaced by calling `WriteJson()`:
+//
+// std::string result =
+//     base::WriteJson(
+//         base::Value::Dict()
+//             .Set("key-1", "first value")
+//             .Set("key-2", 2)
+//             .Set("key-3", true)
+//             .Set("nested-dictionary", base::Value::Dict()
+//                                           .Set("nested-key-1", "value")
+//                                           .Set("nested-key-2", true))
+//             .Set("nested-list", base::Value::List()
+//                                     .Append("nested-list-value")
+//                                     .Append(5)
+//                                     .Append(true))).value();
+//
 class DictionaryBuilder {
  public:
   DictionaryBuilder();
@@ -62,6 +79,16 @@ class DictionaryBuilder {
   base::Value::Dict dict_;
 };
 
+// DEPRECATED: Building a list can now directly be performed on
+// `base::Value::List`, and `ToJSON()` can be replaced by calling `WriteJson()`:
+//
+// std::string result =
+//     base::WriteJson(
+//       base::Value::List()
+//           .Append("nested-list-value")
+//           .Append(5)
+//           .Append(true)).value();
+//
 class ListBuilder {
  public:
   ListBuilder();
@@ -87,8 +114,9 @@ class ListBuilder {
   // But if it's good enough for the STL, it's good enough for this class.
   template <typename InputIt>
   ListBuilder& Append(InputIt first, InputIt last) {
-    for (; first != last; ++first)
+    for (; first != last; ++first) {
       list_.Append(*first);
+    }
     return *this;
   }
 

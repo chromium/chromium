@@ -20,7 +20,6 @@
 #include "chrome/test/base/in_process_browser_test.h"
 #include "crypto/sha2.h"
 #include "extensions/common/extensions_client.h"
-#include "extensions/common/value_builder.h"
 #include "net/base/url_util.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "net/test/embedded_test_server/http_request.h"
@@ -366,12 +365,12 @@ std::unique_ptr<HttpResponse> FakeCWS::HandleRequest(
     auto it = id_to_details_map_.find(*details_id);
     if (it != id_to_details_map_.end()) {
       std::string details =
-          extensions::DictionaryBuilder()
-              .Set("id", *details_id)
-              .Set("icon_url", it->second.icon_url)
-              .Set("localized_name", it->second.localized_name)
-              .Set("manifest", it->second.manifest_json)
-              .ToJSON();
+          base::WriteJson(base::Value::Dict()
+                              .Set("id", *details_id)
+                              .Set("icon_url", it->second.icon_url)
+                              .Set("localized_name", it->second.localized_name)
+                              .Set("manifest", it->second.manifest_json))
+              .value();
       std::unique_ptr<BasicHttpResponse> http_response(new BasicHttpResponse());
       http_response->set_code(net::HTTP_OK);
       http_response->set_content_type("application/json");

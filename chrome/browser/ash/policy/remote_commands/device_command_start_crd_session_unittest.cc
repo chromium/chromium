@@ -2,7 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "base/time/time.h"
 #include "chrome/browser/ash/policy/remote_commands/device_command_start_crd_session_job.h"
 
 #include <map>
@@ -10,12 +9,14 @@
 #include <utility>
 #include <vector>
 
+#include "base/json/json_writer.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/repeating_test_future.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
 #include "base/test/values_test_util.h"
+#include "base/time/time.h"
 #include "chrome/browser/ash/app_mode/arc/arc_kiosk_app_manager.h"
 #include "chrome/browser/ash/app_mode/kiosk_app_manager.h"
 #include "chrome/browser/ash/app_mode/web_app/web_kiosk_app_manager.h"
@@ -30,7 +31,6 @@
 #include "chromeos/ash/services/network_config/in_process_instance.h"
 #include "chromeos/services/network_config/public/mojom/cros_network_config.mojom.h"
 #include "components/policy/proto/device_management_backend.pb.h"
-#include "extensions/common/value_builder.h"
 #include "remoting/host/chromeos/features.h"
 #include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
 #include "services/network/test/test_url_loader_factory.h"
@@ -41,14 +41,16 @@ namespace policy {
 
 namespace {
 
+using base::test::IsJson;
 using base::test::RepeatingTestFuture;
 using base::test::TestFuture;
-using extensions::DictionaryBuilder;
 using test::TestSessionType;
 using UmaSessionType = DeviceCommandStartCrdSessionJob::UmaSessionType;
 using chromeos::network_config::mojom::NetworkType;
 using chromeos::network_config::mojom::OncSource;
 using remoting::features::kEnableCrdAdminRemoteAccess;
+
+using Payload = base::Value::Dict;
 
 namespace em = ::enterprise_management;
 
@@ -96,12 +98,12 @@ const char* SessionTypeToUmaString(TestSessionType session_type) {
 // Macro expecting success. We are using a macro because a function would
 // report any error against the line in the function, and not against the
 // place where EXPECT_SUCCESS is called.
-#define EXPECT_SUCCESS(statement_)                                          \
-  ({                                                                        \
-    auto result_ = statement_;                                              \
-    EXPECT_EQ(result_.status, RemoteCommandJob::Status::SUCCEEDED);         \
-    EXPECT_THAT(result_.payload,                                            \
-                base::test::IsJson(CreateSuccessPayload(kTestAccessCode))); \
+#define EXPECT_SUCCESS(statement_)                                  \
+  ({                                                                \
+    auto result_ = statement_;                                      \
+    EXPECT_EQ(result_.status, RemoteCommandJob::Status::SUCCEEDED); \
+    EXPECT_THAT(result_.payload,                                    \
+                IsJson(CreateSuccessPayload(kTestAccessCode)));     \
   })
 
 // Macro expecting error. We are using a macro because a function would
@@ -111,13 +113,13 @@ const char* SessionTypeToUmaString(TestSessionType session_type) {
   ({                                                                    \
     auto result_ = statement_;                                          \
     EXPECT_EQ(result_.status, RemoteCommandJob::Status::FAILED);        \
-    EXPECT_THAT(result_.payload, base::test::IsJson(CreateErrorPayload( \
-                                     error_code, ##__VA_ARGS__)));      \
+    EXPECT_THAT(result_.payload,                                        \
+                IsJson(CreateErrorPayload(error_code, ##__VA_ARGS__))); \
   })
 
 em::RemoteCommand GenerateCommandProto(RemoteCommandJob::UniqueIDType unique_id,
                                        base::TimeDelta age_of_command,
-                                       std::string payload) {
+                                       const std::string& payload) {
   em::RemoteCommand command_proto;
   command_proto.set_type(em::RemoteCommand_Type_DEVICE_START_CRD_SESSION);
   command_proto.set_command_id(unique_id);
@@ -293,13 +295,10 @@ class DeviceCommandStartCrdSessionJobTest : public ash::DeviceSettingsTestBase {
     DeviceSettingsTestBase::TearDown();
   }
 
-  // Create an empty payload builder.
-  DictionaryBuilder Payload() const { return DictionaryBuilder(); }
-
-  std::string CreateSuccessPayload(const std::string& access_code);
-  std::string CreateErrorPayload(ResultCode result_code,
-                                 const std::string& error_message);
-  std::string CreateNotIdlePayload(int idle_time_in_sec);
+  Payload CreateSuccessPayload(const std::string& access_code);
+  Payload CreateErrorPayload(ResultCode result_code,
+                             const std::string& error_message);
+  Payload CreateNotIdlePayload(int idle_time_in_sec);
 
   void LogInAsKioskUser() {
     test::StartSessionOfType(TestSessionType::kAutoLaunchedWebKioskSession,
@@ -328,8 +327,7 @@ class DeviceCommandStartCrdSessionJobTest : public ash::DeviceSettingsTestBase {
 
   StubCrdHostDelegate& crd_host_delegate() { return crd_host_delegate_; }
 
-  Result RunJobAndWaitForResult(
-      const DictionaryBuilder& payload = DictionaryBuilder()) {
+  Result RunJobAndWaitForResult(const Payload& payload = Payload()) {
     DeviceCommandStartCrdSessionJob job{&crd_host_delegate_};
 
     bool initialized = InitializeJob(job, payload);
@@ -348,11 +346,12 @@ class DeviceCommandStartCrdSessionJobTest : public ash::DeviceSettingsTestBase {
   }
 
   bool InitializeJob(DeviceCommandStartCrdSessionJob& job,
-                     const DictionaryBuilder& payload = DictionaryBuilder()) {
-    bool success = job.Init(
-        base::TimeTicks::Now(),
-        GenerateCommandProto(kUniqueID, base::TimeDelta(), payload.ToJSON()),
-        em::SignedData());
+                     const Payload& payload = Payload()) {
+    bool success =
+        job.Init(base::TimeTicks::Now(),
+                 GenerateCommandProto(kUniqueID, base::TimeDelta(),
+                                      base::WriteJson(payload).value()),
+                 em::SignedData());
 
     if (oauth_token_) {
       job.SetOAuthTokenForTest(oauth_token_.value());
@@ -403,31 +402,29 @@ class DeviceCommandStartCrdSessionJobTestParameterized
     : public DeviceCommandStartCrdSessionJobTest,
       public ::testing::WithParamInterface<test::TestSessionType> {};
 
-std::string DeviceCommandStartCrdSessionJobTest::CreateSuccessPayload(
+Payload DeviceCommandStartCrdSessionJobTest::CreateSuccessPayload(
     const std::string& access_code) {
-  return DictionaryBuilder()
+  return Payload()
       .Set(kResultCodeFieldName, static_cast<int>(ResultCode::SUCCESS))
-      .Set(kResultAccessCodeFieldName, access_code)
-      .ToJSON();
+      .Set(kResultAccessCodeFieldName, access_code);
 }
 
-std::string DeviceCommandStartCrdSessionJobTest::CreateErrorPayload(
+Payload DeviceCommandStartCrdSessionJobTest::CreateErrorPayload(
     ResultCode result_code,
     const std::string& error_message = "") {
-  DictionaryBuilder builder;
-  builder.Set(kResultCodeFieldName, static_cast<int>(result_code));
+  auto payload = Payload()  //
+                     .Set(kResultCodeFieldName, static_cast<int>(result_code));
   if (!error_message.empty()) {
-    builder.Set(kResultMessageFieldName, error_message);
+    payload.Set(kResultMessageFieldName, error_message);
   }
-  return builder.ToJSON();
+  return payload;
 }
 
-std::string DeviceCommandStartCrdSessionJobTest::CreateNotIdlePayload(
+Payload DeviceCommandStartCrdSessionJobTest::CreateNotIdlePayload(
     int idle_time_in_sec) {
-  return DictionaryBuilder()
+  return Payload()
       .Set(kResultCodeFieldName, static_cast<int>(ResultCode::FAILURE_NOT_IDLE))
-      .Set(kResultLastActivityFieldName, idle_time_in_sec)
-      .ToJSON();
+      .Set(kResultLastActivityFieldName, idle_time_in_sec);
 }
 
 TEST_F(DeviceCommandStartCrdSessionJobTest,
@@ -496,7 +493,8 @@ TEST_F(DeviceCommandStartCrdSessionJobTest,
   Result result = RunJobAndWaitForResult(
       Payload().Set("idlenessCutoffSec", idleness_cutoff_in_sec));
   EXPECT_EQ(result.status, RemoteCommandJob::Status::FAILED);
-  EXPECT_EQ(result.payload, CreateNotIdlePayload(device_idle_time_in_sec));
+  EXPECT_THAT(result.payload,
+              IsJson(CreateNotIdlePayload(device_idle_time_in_sec)));
 }
 
 TEST_F(DeviceCommandStartCrdSessionJobTest,
@@ -837,11 +835,9 @@ class DeviceCommandStartCrdSessionJobRemoteAccessTest
   }
 
   // Return a `RemoteCommand` payload that would start a remote access session.
-  DictionaryBuilder RemoteAccessPayload() {
-    return DictionaryBuilder(
-        Payload()
-            .Set("crdSessionType", CrdSessionType::REMOTE_ACCESS_SESSION)
-            .Build());
+  Payload RemoteAccessPayload() {
+    return Payload().Set("crdSessionType",
+                         CrdSessionType::REMOTE_ACCESS_SESSION);
   }
 
   void AddActiveManagedNetwork() {
@@ -869,7 +865,8 @@ TEST_P(DeviceCommandStartCrdSessionJobRemoteAccessTestParameterized,
 
   auto payload_without_crd_session_type = Payload();
 
-  Result result = RunJobAndWaitForResult(payload_without_crd_session_type);
+  Result result =
+      RunJobAndWaitForResult(std::move(payload_without_crd_session_type));
 
   if (SupportsRemoteSupport(user_session_type)) {
     EXPECT_SUCCESS(result);

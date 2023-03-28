@@ -7,11 +7,11 @@
 #include <algorithm>
 
 #include "base/functional/bind.h"
+#include "base/json/json_writer.h"
 #include "base/time/time.h"
 #include "chrome/browser/ash/policy/remote_commands/crd_logging.h"
 #include "chrome/browser/ash/policy/remote_commands/crd_remote_command_utils.h"
 #include "components/policy/core/common/remote_commands/remote_command_job.h"
-#include "extensions/common/value_builder.h"
 
 namespace policy {
 
@@ -19,7 +19,6 @@ namespace {
 
 using enterprise_management::CrdSessionAvailability;
 using enterprise_management::RemoteCommand;
-using extensions::DictionaryBuilder;
 
 constexpr char kIdleTime[] = "deviceIdleTimeInSeconds";
 constexpr char kUserSessionType[] = "userSessionType";
@@ -86,18 +85,19 @@ void DeviceCommandFetchCrdAvailabilityInfoJob::SendPayload(
     CallbackWithResult callback,
     bool is_in_managed_environment) {
   std::string payload =
-      extensions::DictionaryBuilder()
-          .Set(kIdleTime, static_cast<int>(GetDeviceIdleTime().InSeconds()))
-          .Set(kUserSessionType, GetCurrentUserSessionType())
-          .Set(kIsInManagedEnvironment, is_in_managed_environment)
-          .Set(kSupportedCrdSessionTypes,
-               GetSupportedSessionTypes(is_in_managed_environment))
-          .Set(kRemoteSupportAvailability,
-               GetRemoteSupportAvailability(GetCurrentUserSessionType()))
-          .Set(kRemoteAccessAvailability,
-               GetRemoteAccessAvailability(is_in_managed_environment,
-                                           GetCurrentUserSessionType()))
-          .ToJSON();
+      base::WriteJson(
+          base::Value::Dict()
+              .Set(kIdleTime, static_cast<int>(GetDeviceIdleTime().InSeconds()))
+              .Set(kUserSessionType, GetCurrentUserSessionType())
+              .Set(kIsInManagedEnvironment, is_in_managed_environment)
+              .Set(kSupportedCrdSessionTypes,
+                   GetSupportedSessionTypes(is_in_managed_environment))
+              .Set(kRemoteSupportAvailability,
+                   GetRemoteSupportAvailability(GetCurrentUserSessionType()))
+              .Set(kRemoteAccessAvailability,
+                   GetRemoteAccessAvailability(is_in_managed_environment,
+                                               GetCurrentUserSessionType())))
+          .value();
 
   CRD_DVLOG(1) << "Finished FETCH_CRD_AVAILABILITY_INFO remote command: "
                << payload;
