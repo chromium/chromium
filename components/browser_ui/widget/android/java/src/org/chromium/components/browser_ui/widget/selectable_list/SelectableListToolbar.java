@@ -89,12 +89,13 @@ public class SelectableListToolbar<E>
         int SEARCH_VIEW = 2;
     }
 
-    /** No navigation button is displayed. **/
-    public static final int NAVIGATION_BUTTON_NONE = 0;
-    /** Button to navigate back. This calls {@link #onNavigationBack()}. **/
-    public static final int NAVIGATION_BUTTON_BACK = 1;
-    /** Button to clear the selection. **/
-    public static final int NAVIGATION_BUTTON_SELECTION_BACK = 2;
+    @IntDef({NavigationButton.NONE, NavigationButton.BACK, NavigationButton.SELECTION_BACK})
+    @Retention(RetentionPolicy.SOURCE)
+    public @interface NavigationButton {
+        int NONE = 0;
+        int BACK = 1;
+        int SELECTION_BACK = 2;
+    }
 
     protected boolean mIsSelectionEnabled;
     protected SelectionDelegate<E> mSelectionDelegate;
@@ -113,7 +114,7 @@ public class SelectableListToolbar<E>
     private Drawable mMenuButton;
     private Drawable mNavigationIconDrawable;
 
-    private int mNavigationButton;
+    private @NavigationButton int mNavigationButton;
     private int mTitleResId;
     private int mSearchMenuItemId;
     private int mInfoMenuItemId;
@@ -297,12 +298,12 @@ public class SelectableListToolbar<E>
         if (mIsDestroyed) return;
 
         switch (mNavigationButton) {
-            case NAVIGATION_BUTTON_NONE:
+            case NavigationButton.NONE:
                 break;
-            case NAVIGATION_BUTTON_BACK:
+            case NavigationButton.BACK:
                 onNavigationBack();
                 break;
-            case NAVIGATION_BUTTON_SELECTION_BACK:
+            case NavigationButton.SELECTION_BACK:
                 mSelectionDelegate.clearSelection();
                 break;
             default:
@@ -325,20 +326,20 @@ public class SelectableListToolbar<E>
      * Update the current navigation button (the top-left icon on LTR)
      * @param navigationButton one of NAVIGATION_BUTTON_* constants.
      */
-    protected void setNavigationButton(int navigationButton) {
+    protected void setNavigationButton(@NavigationButton int navigationButton) {
         int contentDescriptionId = 0;
 
         mNavigationButton = navigationButton;
         setNavigationOnClickListener(this);
 
         switch (mNavigationButton) {
-            case NAVIGATION_BUTTON_NONE:
+            case NavigationButton.NONE:
                 break;
-            case NAVIGATION_BUTTON_BACK:
+            case NavigationButton.BACK:
                 DrawableCompat.setTintList(mNavigationIconDrawable, mIconColorList);
                 contentDescriptionId = R.string.accessibility_toolbar_btn_back;
                 break;
-            case NAVIGATION_BUTTON_SELECTION_BACK:
+            case NavigationButton.SELECTION_BACK:
                 DrawableCompat.setTintList(mNavigationIconDrawable, mIconColorList);
                 contentDescriptionId = R.string.accessibility_cancel_selection;
                 break;
@@ -450,7 +451,7 @@ public class SelectableListToolbar<E>
 
         if (newDisplayStyle.horizontal == HorizontalDisplayStyle.WIDE
                 && !(isSearching() || mIsSelectionEnabled
-                        || mNavigationButton != NAVIGATION_BUTTON_NONE)) {
+                        || mNavigationButton != NavigationButton.NONE)) {
             // The title in the wide display should be aligned with the texts of the list elements.
             paddingStartOffset = mWideDisplayStartOffsetPx;
         }
@@ -468,7 +469,7 @@ public class SelectableListToolbar<E>
         // Navigation button should have more start padding in order to keep the navigation icon
         // and the list item icon aligned.
         int navigationButtonStartOffsetPx =
-                mNavigationButton != NAVIGATION_BUTTON_NONE ? mModernNavButtonStartOffsetPx : 0;
+                mNavigationButton != NavigationButton.NONE ? mModernNavButtonStartOffsetPx : 0;
 
         int actionMenuBarEndOffsetPx = mIsSelectionEnabled ? mModernToolbarActionMenuEndOffsetPx
                                                            : mModernToolbarSearchIconOffsetPx;
@@ -508,7 +509,7 @@ public class SelectableListToolbar<E>
             updateSearchMenuItem();
         }
 
-        setNavigationButton(NAVIGATION_BUTTON_NONE);
+        setNavigationButton(NavigationButton.NONE);
         setBackgroundColor(mNormalBackgroundColor);
         if (mTitleResId != 0) setTitle(mTitleResId);
 
@@ -526,7 +527,7 @@ public class SelectableListToolbar<E>
         getMenu().setGroupEnabled(mSelectedGroupResId, !selectedItems.isEmpty());
         if (mHasSearchView) mSearchView.setVisibility(View.GONE);
 
-        setNavigationButton(NAVIGATION_BUTTON_SELECTION_BACK);
+        setNavigationButton(NavigationButton.SELECTION_BACK);
         setBackgroundColor(mNormalBackgroundColor);
 
         switchToNumberRollView(selectedItems, wasSelectionEnabled);
@@ -544,7 +545,7 @@ public class SelectableListToolbar<E>
         mNumberRollView.setVisibility(View.GONE);
         mSearchView.setVisibility(View.VISIBLE);
 
-        setNavigationButton(NAVIGATION_BUTTON_BACK);
+        setNavigationButton(NavigationButton.BACK);
         setBackgroundResource(R.drawable.search_toolbar_modern_bg);
         updateStatusBarColor(mSearchBackgroundColor);
 

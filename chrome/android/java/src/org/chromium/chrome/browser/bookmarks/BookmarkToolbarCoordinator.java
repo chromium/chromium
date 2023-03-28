@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.bookmarks;
 
+import android.content.Context;
+
 import org.chromium.base.supplier.OneshotSupplier;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.bookmarks.BookmarkUiState.BookmarkUiMode;
@@ -20,7 +22,8 @@ class BookmarkToolbarCoordinator {
     private final BookmarkToolbarMediator mMediator;
     private final PropertyModel mModel;
 
-    BookmarkToolbarCoordinator(SelectableListLayout<BookmarkId> selectableListLayout,
+    BookmarkToolbarCoordinator(Context context,
+            SelectableListLayout<BookmarkId> selectableListLayout,
             SelectionDelegate selectionDelegate, SearchDelegate searchDelegate,
             BookmarkItemsAdapter bookmarkItemsAdapter, boolean isDialogUi,
             OneshotSupplier<BookmarkDelegate> bookmarkDelegateSupplier, BookmarkModel bookmarkModel,
@@ -38,8 +41,8 @@ class BookmarkToolbarCoordinator {
         mModel.set(BookmarkToolbarProperties.BOOKMARK_UI_MODE, BookmarkUiMode.LOADING);
         mModel.set(BookmarkToolbarProperties.IS_DIALOG_UI, isDialogUi);
         mModel.set(BookmarkToolbarProperties.DRAG_ENABLED, false);
-        mMediator = new BookmarkToolbarMediator(
-                mModel, bookmarkItemsAdapter, bookmarkDelegateSupplier, selectionDelegate);
+        mMediator = new BookmarkToolbarMediator(context, mModel, bookmarkItemsAdapter,
+                bookmarkDelegateSupplier, selectionDelegate, bookmarkModel);
 
         PropertyModelChangeProcessor.create(mModel, mToolbar, BookmarkToolbarViewBinder::bind);
     }

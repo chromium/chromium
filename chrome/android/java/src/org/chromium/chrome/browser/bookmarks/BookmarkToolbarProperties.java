@@ -22,12 +22,21 @@ class BookmarkToolbarProperties {
             new WritableObjectPropertyKey<>();
 
     /** UI state properties. */
+    // SelectableListToolbar calls #setTitle and we need to override that.
+    static final WritableObjectPropertyKey<String> TITLE =
+            new WritableObjectPropertyKey<>(/*skipEquality=*/true);
     static final WritableObjectPropertyKey<Integer> BOOKMARK_UI_MODE =
             new WritableObjectPropertyKey<>(/*skipEquality=*/true);
     static final WritableObjectPropertyKey<Boolean> SOFT_KEYBOARD_VISIBLE =
             new WritableObjectPropertyKey<>(/*skipEquality=*/true);
     static final WritableBooleanPropertyKey IS_DIALOG_UI = new WritableBooleanPropertyKey();
     static final WritableBooleanPropertyKey DRAG_ENABLED = new WritableBooleanPropertyKey();
+    static final WritableBooleanPropertyKey SEARCH_BUTTON_VISIBLE =
+            new WritableBooleanPropertyKey();
+    static final WritableBooleanPropertyKey EDIT_BUTTON_VISIBLE = new WritableBooleanPropertyKey();
+    // Can change within SelectableListToolbar which makes the model value to become stale.
+    static final WritableObjectPropertyKey<Integer> NAVIGATION_BUTTON_STATE =
+            new WritableObjectPropertyKey<>(/*skipEquality=*/true);
 
     /** Bookmark state properties. */
     static final WritableObjectPropertyKey<BookmarkId> CURRENT_FOLDER =
@@ -40,6 +49,7 @@ class BookmarkToolbarProperties {
             new WritableObjectPropertyKey<>();
 
     static final PropertyKey[] ALL_KEYS = {BOOKMARK_MODEL, BOOKMARK_OPENER, SELECTION_DELEGATE,
-            BOOKMARK_UI_MODE, SOFT_KEYBOARD_VISIBLE, IS_DIALOG_UI, DRAG_ENABLED, CURRENT_FOLDER,
+            TITLE, BOOKMARK_UI_MODE, SOFT_KEYBOARD_VISIBLE, IS_DIALOG_UI, DRAG_ENABLED,
+            SEARCH_BUTTON_VISIBLE, EDIT_BUTTON_VISIBLE, NAVIGATION_BUTTON_STATE, CURRENT_FOLDER,
             OPEN_SEARCH_UI_RUNNABLE, OPEN_FOLDER_CALLBACK};
 }

@@ -5,7 +5,6 @@
 package org.chromium.chrome.browser.bookmarks;
 
 import android.content.Context;
-import android.text.TextUtils;
 import android.util.AttributeSet;
 import android.view.MenuItem;
 import android.view.View.OnClickListener;
@@ -48,6 +47,8 @@ public class BookmarkToolbar extends SelectableListToolbar<BookmarkId>
     // Whether the selection ui is currently showing. This isn't captured by an explicit
     // BookmarkUiMode.
     private boolean mIsSelectionUiShowing;
+    private boolean mSearchButtonVisible;
+    private boolean mEditButtonVisible;
 
     private Runnable mOpenSearchUiRunnable;
     private Callback<BookmarkId> mOpenFolderCallback;
@@ -57,21 +58,6 @@ public class BookmarkToolbar extends SelectableListToolbar<BookmarkId>
         setNavigationOnClickListener(this);
         inflateMenu(R.menu.bookmark_toolbar_menu);
         setOnMenuItemClickListener(this);
-
-        getMenu().findItem(R.id.selection_mode_edit_menu_id).setTitle(R.string.edit_bookmark);
-        getMenu()
-                .findItem(R.id.selection_mode_move_menu_id)
-                .setTitle(R.string.bookmark_toolbar_move);
-        getMenu()
-                .findItem(R.id.selection_mode_delete_menu_id)
-                .setTitle(R.string.bookmark_toolbar_delete);
-
-        getMenu()
-                .findItem(R.id.selection_open_in_incognito_tab_id)
-                .setTitle(R.string.contextmenu_open_in_incognito_tab);
-
-        // Wait to enable the selection mode group until the SelectionDelegate is set.
-        getMenu().setGroupEnabled(R.id.selection_mode_menu_group, false);
     }
 
     void setBookmarkModel(BookmarkModel bookmarkModel) {
@@ -90,9 +76,7 @@ public class BookmarkToolbar extends SelectableListToolbar<BookmarkId>
     void setBookmarkUiMode(@BookmarkUiMode int mode) {
         mBookmarkUiMode = mode;
         mIsSelectionUiShowing = false;
-        if (mBookmarkUiMode == BookmarkUiMode.LOADING) {
-            showLoadingUi();
-        } else {
+        if (mBookmarkUiMode != BookmarkUiMode.LOADING) {
             showNormalView();
         }
 
@@ -100,11 +84,6 @@ public class BookmarkToolbar extends SelectableListToolbar<BookmarkId>
             showSearchView(mSoftKeyboardVisible);
         } else {
             hideSearchView(/*notify=*/false);
-        }
-
-        if (mBookmarkUiMode == BookmarkUiMode.FOLDER && mCurrentFolder != null) {
-            // It's possible that the folder was renamed, so refresh the folder UI just in case.
-            setCurrentFolder(mCurrentFolder);
         }
     }
 
@@ -127,38 +106,22 @@ public class BookmarkToolbar extends SelectableListToolbar<BookmarkId>
         setOnMenuItemClickListener(dragEnabled ? null : this);
     }
 
-    /** Sets the current folder as a BookmarkId. */
-    // TODO(crbug.com/1413463): The individual title/nav state should be set manually instead of
-    // being derived from the BookmarkId.
-    void setCurrentFolder(BookmarkId folder) {
-        setCurrentFolder(mBookmarkModel.getBookmarkById(folder));
+    void setSearchButtonVisible(boolean visible) {
+        mSearchButtonVisible = visible;
+        getMenu().findItem(R.id.search_menu_id).setVisible(visible);
     }
 
-    /** Sets the current folder as a BookmarkItem. */
-    void setCurrentFolder(BookmarkItem folder) {
-        mCurrentFolder = folder;
+    void setEditButtonVisible(boolean visible) {
+        mEditButtonVisible = visible;
+        getMenu().findItem(R.id.edit_menu_id).setVisible(visible);
+    }
 
-        getMenu().findItem(R.id.search_menu_id).setVisible(true);
-        getMenu().findItem(R.id.edit_menu_id).setVisible(mCurrentFolder.isEditable());
+    void setNavigationButtonState(@NavigationButton int navigationButtonState) {
+        setNavigationButton(navigationButtonState);
+    }
 
-        // If this is the root folder, we can't go up anymore.
-        if (folder.getId().equals(mBookmarkModel.getRootFolderId())) {
-            setTitle(R.string.bookmarks);
-            setNavigationButton(NAVIGATION_BUTTON_NONE);
-            return;
-        }
-
-        if (folder.getId().equals(BookmarkId.SHOPPING_FOLDER)) {
-            setTitle(R.string.price_tracking_bookmarks_filter_title);
-        } else if (mBookmarkModel.getTopLevelFolderParentIDs().contains(
-                           mCurrentFolder.getParentId())
-                && TextUtils.isEmpty(mCurrentFolder.getTitle())) {
-            setTitle(R.string.bookmarks);
-        } else {
-            setTitle(mCurrentFolder.getTitle());
-        }
-
-        setNavigationButton(NAVIGATION_BUTTON_BACK);
+    void setCurrentFolder(BookmarkId folder) {
+        mCurrentFolder = mBookmarkModel.getBookmarkById(folder);
     }
 
     void setOpenSearchUiRunnable(Runnable runnable) {
@@ -167,13 +130,6 @@ public class BookmarkToolbar extends SelectableListToolbar<BookmarkId>
 
     void setOpenFolderCallback(Callback<BookmarkId> openFolderCallback) {
         mOpenFolderCallback = openFolderCallback;
-    }
-
-    void showLoadingUi() {
-        setTitle(null);
-        setNavigationButton(NAVIGATION_BUTTON_NONE);
-        getMenu().findItem(R.id.search_menu_id).setVisible(false);
-        getMenu().findItem(R.id.edit_menu_id).setVisible(false);
     }
 
     // OnMenuItemClickListener implementation.
@@ -263,6 +219,7 @@ public class BookmarkToolbar extends SelectableListToolbar<BookmarkId>
             return;
         }
 
+        // The navigation button shouldn't be visible unless the current folder is non-null.
         mOpenFolderCallback.onResult(mCurrentFolder.getParentId());
     }
 
@@ -270,12 +227,9 @@ public class BookmarkToolbar extends SelectableListToolbar<BookmarkId>
     protected void showNormalView() {
         super.showNormalView();
 
-        if (mCurrentFolder == null) {
-            getMenu().findItem(R.id.search_menu_id).setVisible(false);
-            getMenu().findItem(R.id.edit_menu_id).setVisible(false);
-        } else {
-            setCurrentFolder(mCurrentFolder);
-        }
+        // SelectableListToolbar will show/hide the entire group.
+        setSearchButtonVisible(mSearchButtonVisible);
+        setEditButtonVisible(mEditButtonVisible);
     }
 
     @Override

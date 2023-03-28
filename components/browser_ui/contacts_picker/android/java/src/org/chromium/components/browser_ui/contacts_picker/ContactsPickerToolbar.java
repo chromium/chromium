@@ -50,7 +50,7 @@ public class ContactsPickerToolbar extends SelectableListToolbar<ContactDetails>
      * Shows the Back arrow navigation button in the upper left corner.
      */
     public void showBackArrow() {
-        setNavigationButton(NAVIGATION_BUTTON_BACK);
+        setNavigationButton(NavigationButton.BACK);
     }
 
     /**
@@ -104,7 +104,7 @@ public class ContactsPickerToolbar extends SelectableListToolbar<ContactDetails>
             ApiCompatibilityUtils.setTextAppearance(
                     done, R.style.TextAppearance_TextMedium_Disabled);
             if (contactsSelected) {
-                setNavigationButton(NAVIGATION_BUTTON_SELECTION_BACK);
+                setNavigationButton(NavigationButton.SELECTION_BACK);
             } else {
                 showBackArrow();
             }

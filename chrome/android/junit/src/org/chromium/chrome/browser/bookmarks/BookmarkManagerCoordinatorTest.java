@@ -97,10 +97,11 @@ public class BookmarkManagerCoordinatorTest {
 
         mActivityScenarioRule.getScenario().onActivity((activity) -> {
             mActivity = activity;
-            mCoordinator = new BookmarkManagerCoordinator(activity,
+            mCoordinator = new BookmarkManagerCoordinator(mActivity,
                     /*openBookmarkComponentName=*/null,
-                    /*isDialogUi=*/!DeviceFormFactor.isNonMultiDisplayContextOnTablet(activity),
+                    /*isDialogUi=*/!DeviceFormFactor.isNonMultiDisplayContextOnTablet(mActivity),
                     /*isIncognito=*/false, mSnackbarManager, mProfile);
+            mActivity.setContentView(mCoordinator.getView());
         });
     }
 

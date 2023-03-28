@@ -46,7 +46,7 @@ public class PhotoPickerToolbar extends SelectableListToolbar<PickerBitmap> {
      * Shows the Back arrow navigation button in the upper left corner.
      */
     public void showBackArrow() {
-        setNavigationButton(NAVIGATION_BUTTON_BACK);
+        setNavigationButton(NavigationButton.BACK);
     }
 
     @Override

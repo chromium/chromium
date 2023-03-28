@@ -36,19 +36,19 @@ found in the LICENSE file.
         <item
             android:id="@+id/selection_mode_edit_menu_id"
             android:icon="@drawable/bookmark_edit_active"
-            android:title="@null"
+            android:title="@string/edit_bookmark"
             app:showAsAction="ifRoom"
             app:iconTint="@color/default_icon_color_secondary_tint_list" />
         <item
             android:id="@+id/selection_mode_move_menu_id"
             android:icon="@drawable/bookmark_move_active"
-            android:title="@null"
+            android:title="@string/bookmark_toolbar_move"
             app:showAsAction="ifRoom"
             app:iconTint="@color/default_icon_color_secondary_tint_list" />
         <item
             android:id="@+id/selection_mode_delete_menu_id"
             android:icon="@drawable/ic_delete_white_24dp"
-            android:title="@null"
+            android:title="@string/bookmark_toolbar_delete"
             app:showAsAction="ifRoom"
             app:iconTint="@color/default_icon_color_secondary_tint_list" />
         <item

@@ -115,7 +115,7 @@ public class BookmarkManagerCoordinator implements SearchDelegate, BackPressHand
         // Using OneshotSupplier as an alternative to a 2-step initialization process.
         OneshotSupplierImpl<BookmarkDelegate> bookmarkDelegateSupplier =
                 new OneshotSupplierImpl<>();
-        mBookmarkToolbarCoordinator = new BookmarkToolbarCoordinator(mSelectableListLayout,
+        mBookmarkToolbarCoordinator = new BookmarkToolbarCoordinator(context, mSelectableListLayout,
                 selectionDelegate, /*searchDelegate=*/this, bookmarkItemsAdapter, isDialogUi,
                 bookmarkDelegateSupplier, mBookmarkModel, mBookmarkOpener);
         mSelectableListLayout.configureWideDisplayStyle();
