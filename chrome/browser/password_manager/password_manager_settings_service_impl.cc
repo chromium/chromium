@@ -14,7 +14,7 @@ PasswordManagerSettingsServiceImpl::PasswordManagerSettingsServiceImpl(
     : pref_service_(pref_service) {}
 
 bool PasswordManagerSettingsServiceImpl::IsSettingEnabled(
-    PasswordManagerSetting setting) {
+    PasswordManagerSetting setting) const {
   switch (setting) {
     case PasswordManagerSetting::kOfferToSavePasswords:
       return pref_service_->GetBoolean(

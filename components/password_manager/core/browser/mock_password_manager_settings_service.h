@@ -18,7 +18,7 @@ class MockPasswordManagerSettingsService
   MOCK_METHOD(bool,
               IsSettingEnabled,
               (password_manager::PasswordManagerSetting),
-              (override));
+              (const override));
   MOCK_METHOD(void, RequestSettingsFromBackend, (), (override));
 
   MOCK_METHOD(void, TurnOffAutoSignIn, (), (override));

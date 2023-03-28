@@ -27,7 +27,7 @@ class PasswordManagerSettingsServiceImpl
   ~PasswordManagerSettingsServiceImpl() override = default;
 
   bool IsSettingEnabled(
-      password_manager::PasswordManagerSetting setting) override;
+      password_manager::PasswordManagerSetting setting) const override;
   void TurnOffAutoSignIn() override;
 
   void RequestSettingsFromBackend() override;

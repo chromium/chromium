@@ -138,7 +138,7 @@ PasswordManagerSettingsServiceAndroidImpl::
 }
 
 bool PasswordManagerSettingsServiceAndroidImpl::IsSettingEnabled(
-    PasswordManagerSetting setting) {
+    PasswordManagerSetting setting) const {
   if (setting == PasswordManagerSetting::kOfferToSavePasswords &&
       ShouldSuspendPasswordSavingDueToError(pref_service_)) {
     return false;

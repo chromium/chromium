@@ -13,7 +13,7 @@ class PasswordManagerSettingsService : public KeyedService {
   // Checks if `setting` is enabled. It ensures that the correct pref is checked
   // on Android, which depends on the unified password manager status.
   virtual bool IsSettingEnabled(
-      password_manager::PasswordManagerSetting setting) = 0;
+      password_manager::PasswordManagerSetting setting) const = 0;
 
   // Asynchronously fetch password settings from backend.
   virtual void RequestSettingsFromBackend() = 0;
