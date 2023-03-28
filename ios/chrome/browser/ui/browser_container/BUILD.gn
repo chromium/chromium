@@ -63,6 +63,7 @@ source_set("ui") {
     "//ios/chrome/app/strings",
     "//ios/chrome/browser/shared/public/features",
     "//ios/chrome/browser/shared/ui/util",
+    "//ios/chrome/browser/ui/icons:symbols",
     "//ios/chrome/browser/ui/link_to_text",
     "//ios/chrome/browser/ui/partial_translate",
     "//ios/chrome/common/ui/util",

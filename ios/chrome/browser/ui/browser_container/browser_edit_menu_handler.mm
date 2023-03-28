@@ -8,6 +8,7 @@
 #import "base/mac/foundation_util.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
+#import "ios/chrome/browser/ui/icons/symbols.h"
 #import "ios/chrome/browser/ui/link_to_text/link_to_text_delegate.h"
 #import "ios/chrome/browser/ui/partial_translate/partial_translate_delegate.h"
 #import "ios/chrome/grit/ios_strings.h"
@@ -41,10 +42,12 @@
   }
   NSString* title = l10n_util::GetNSString(IDS_IOS_SHARE_LINK_TO_TEXT);
   NSString* linkToTextId = @"chromecommand.linktotext";
-  UICommand* menuCommand = [UICommand commandWithTitle:title
-                                                 image:nil
-                                                action:@selector(linkToText:)
-                                          propertyList:linkToTextId];
+  UICommand* menuCommand = [UICommand
+      commandWithTitle:title
+                 image:DefaultSymbolWithPointSize(kHighlighterSymbol,
+                                                  kSymbolActionPointSize)
+                action:@selector(linkToText:)
+          propertyList:linkToTextId];
 
   UIMenu* linkToTextMenu = [UIMenu menuWithTitle:title
                                            image:nil
@@ -63,7 +66,8 @@
   NSString* partialTranslateId = @"chromecommand.partialTranslate";
   UICommand* partialTranslateCommand =
       [UICommand commandWithTitle:title
-                            image:nil
+                            image:CustomSymbolWithPointSize(
+                                      kTranslateSymbol, kSymbolActionPointSize)
                            action:@selector(chromePartialTranslate:)
                      propertyList:partialTranslateId];
 
