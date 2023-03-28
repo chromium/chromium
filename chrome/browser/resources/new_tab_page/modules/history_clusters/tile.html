@@ -2,7 +2,7 @@
   :host {
     background:
         var(--color-new-tab-page-history-clusters-module-item-background);
-    border-radius: 12px;
+    border-radius: var(--ntp-module-item-border-radius);
     color: var(--color-new-tab-page-primary-foreground);
     display: inline-block;
     width: 100%;
@@ -17,7 +17,7 @@
 
   :host-context(.focus-outline-visible) :focus,
   :focus-visible {
-    border-radius: 12px;
+    border-radius: var(--ntp-module-item-border-radius);
     box-shadow: var(--ntp-focus-shadow);
     outline: none;
   }

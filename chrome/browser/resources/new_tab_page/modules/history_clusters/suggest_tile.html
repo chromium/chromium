@@ -30,11 +30,13 @@
   }
 
   .related-search:first-child {
-    border-radius: 12px 12px 0 0;
+    border-radius: var(--ntp-module-item-border-radius)
+        var(--ntp-module-item-border-radius) 0 0;
   }
 
   .related-search:last-of-type {
-    border-radius: 0 0 12px 12px;
+    border-radius: 0 0 var(--ntp-module-item-border-radius)
+        var(--ntp-module-item-border-radius);
     margin-bottom: 0;
   }
 
