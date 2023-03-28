@@ -50,7 +50,8 @@ config("ruy_cpuinfo_config") {
 
 # Analogous to cmake's |ruy_8_mavx2_mfma_arch_AVX2|.
 config("ruy_avx2_flags") {
-  if (current_cpu == "x86_64" || current_cpu == "amd64") {
+  if (current_cpu == "x86_64" || current_cpu == "x64" ||
+      current_cpu == "amd64") {
     if (is_win) {
       cflags = [ "/arch:AVX2" ]
     } else {
@@ -64,7 +65,8 @@ config("ruy_avx2_flags") {
 
 # Analogous to cmake's |ruy_9_mavx_arch_AVX|.
 config("ruy_avx_flags") {
-  if (current_cpu == "x86_64" || current_cpu == "amd64") {
+  if (current_cpu == "x86_64" || current_cpu == "x64" ||
+      current_cpu == "amd64") {
     if (is_win) {
       cflags = [ "/arch:AVX" ]
     } else {
