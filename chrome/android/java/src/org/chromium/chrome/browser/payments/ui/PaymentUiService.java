@@ -51,7 +51,6 @@ import org.chromium.components.payments.ErrorStrings;
 import org.chromium.components.payments.JourneyLogger;
 import org.chromium.components.payments.PaymentApp;
 import org.chromium.components.payments.PaymentAppType;
-import org.chromium.components.payments.PaymentFeatureList;
 import org.chromium.components.payments.PaymentOptionsUtils;
 import org.chromium.components.payments.PaymentRequestParams;
 import org.chromium.components.payments.PaymentUiServiceTestInterface;
@@ -574,7 +573,6 @@ public class PaymentUiService
 
     /** Sets the modifier for the order summary based on the given app, if any. */
     private void updateOrderSummary(@Nullable PaymentApp app) {
-        if (!PaymentFeatureList.isEnabled(PaymentFeatureList.WEB_PAYMENTS_MODIFIERS)) return;
         if (mParams.hasClosed()) return;
         PaymentDetailsModifier modifier = getModifier(app);
         PaymentItem total = modifier == null ? null : modifier.total;
@@ -614,7 +612,6 @@ public class PaymentUiService
 
     /** Updates the modifiers for payment apps and order summary. */
     private void updateAppModifiedTotals() {
-        if (!PaymentFeatureList.isEnabled(PaymentFeatureList.WEB_PAYMENTS_MODIFIERS)) return;
         if (mParams.hasClosed() || mParams.getMethodData().isEmpty()) return;
         if (mPaymentMethodsSection == null) return;
 

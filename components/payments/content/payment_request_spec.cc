@@ -352,9 +352,9 @@ base::WeakPtr<PaymentRequestSpec> PaymentRequestSpec::AsWeakPtr() {
 
 const mojom::PaymentDetailsModifierPtr*
 PaymentRequestSpec::GetApplicableModifier(PaymentApp* selected_app) const {
-  if (!selected_app ||
-      !base::FeatureList::IsEnabled(features::kWebPaymentsModifiers))
+  if (!selected_app) {
     return nullptr;
+  }
 
   DCHECK(details_->modifiers);
   for (const auto& modifier : *details_->modifiers) {

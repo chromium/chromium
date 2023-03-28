@@ -15,11 +15,6 @@ BASE_FEATURE(kWebPaymentsExperimentalFeatures,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 // TODO(rouslan): Remove this.
-BASE_FEATURE(kWebPaymentsModifiers,
-             "WebPaymentsModifiers",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
-// TODO(rouslan): Remove this.
 BASE_FEATURE(kWebPaymentsSingleAppUiSkip,
              "WebPaymentsSingleAppUiSkip",
              base::FEATURE_ENABLED_BY_DEFAULT);

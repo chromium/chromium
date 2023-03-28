@@ -14,9 +14,6 @@ namespace features {
 // release.
 BASE_DECLARE_FEATURE(kWebPaymentsExperimentalFeatures);
 
-// Used to control the support for Payment Details modifiers.
-BASE_DECLARE_FEATURE(kWebPaymentsModifiers);
-
 // Used to control whether the Payment Sheet can be skipped for Payment Requests
 // with a single URL based payment app and no other info requested.
 BASE_DECLARE_FEATURE(kWebPaymentsSingleAppUiSkip);

@@ -45,7 +45,6 @@ import org.chromium.components.payments.PaymentApp;
 import org.chromium.components.payments.PaymentAppFactoryDelegate;
 import org.chromium.components.payments.PaymentAppFactoryInterface;
 import org.chromium.components.payments.PaymentAppService;
-import org.chromium.components.payments.PaymentFeatureList;
 import org.chromium.components.payments.PaymentRequestService;
 import org.chromium.components.payments.PaymentRequestService.PaymentRequestServiceObserverForTest;
 import org.chromium.content_public.browser.WebContents;
@@ -118,10 +117,6 @@ import java.util.concurrent.atomic.AtomicReference;
      * "Select" hint.
      */
     /* package */ static final int FIRST_BILLING_ADDRESS = 1;
-
-    /** Command line flag to enable payment details modifiers in tests. */
-    /* package */ static final String ENABLE_WEB_PAYMENTS_MODIFIERS =
-            "enable-features=" + PaymentFeatureList.WEB_PAYMENTS_MODIFIERS;
 
     /** Command line flag to enable experimental web platform features in tests. */
     /* package */ static final String ENABLE_EXPERIMENTAL_WEB_PLATFORM_FEATURES =
