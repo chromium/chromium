@@ -18,7 +18,6 @@
  * Boston, MA 02110-1301, USA.
  */
 
-#include "base/hash/sha1.h"
 #include "third_party/blink/renderer/core/css/style_element.h"
 
 #include "third_party/blink/renderer/bindings/core/v8/script_controller.h"
@@ -112,10 +111,7 @@ StyleElement::ProcessingResult StyleElement::FinishParsingChildren(
 StyleElement::ProcessingResult StyleElement::Process(Element& element) {
   if (!element.isConnected())
     return kProcessingSuccessful;
-
-  WTF::String text = element.TextFromChildren();
-
-  return CreateSheet(element, text);
+  return CreateSheet(element, element.TextFromChildren());
 }
 
 void StyleElement::ClearSheet(Element& owner_element) {

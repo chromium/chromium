@@ -1104,16 +1104,18 @@ ProtocolObjectPreview.prototype = {
     // Add data for blink objects
     this.extra = previewBlinkObject(this.cdpObj) || {};
 
-    // Add class-specific data.
-    const previewers = CustomPreviewers[this.cdpObj.className];
-    if (previewers) {
-      for (const entry of previewers) {
-        if (entry instanceof Function) {
-          entry.call(this, cdpProperties);
-        }
-        else {
-          // entry should be string
-          this.addGetterValue(entry, this.cdpObj, /* force */ true);
+    if (!isPrototype(this.raw)) { // Ignore prototype itself.
+      // Add class-specific data.
+      const previewers = CustomPreviewers[this.cdpObj.className];
+      if (previewers) {
+        for (const entry of previewers) {
+          if (entry instanceof Function) {
+            entry.call(this, cdpProperties);
+          }
+          else {
+            // entry should be string
+            this.addGetterValue(entry, this.cdpObj, /* force */ true);
+          }
         }
       }
     }
@@ -1326,7 +1328,8 @@ function previewSetMap(cdpProperties) {
   // get size for Set and Map (Weak{Set,Map} don't have an observable size)
   if (["Set", "Map"].includes(this.cdpObj.className)) {
     // simply invoke the native getter
-    this.extra.containerEntryCount = this.addEvalMethodValue('size');
+    this.addGetterValue('size', this.cdpObj, /* force */ true);
+    this.extra.containerEntryCount = this.raw.size;
   }
 
   const entries = sendMessage("Runtime.getProperties", {
@@ -1338,7 +1341,7 @@ function previewSetMap(cdpProperties) {
   }).result;
 
   for (const entry of entries) {
-    if (entry.value.subtype == "internal#entry") {
+    if (entry?.value?.subtype == "internal#entry") {
       const entryProperties = sendMessage("Runtime.getProperties", {
         objectId: entry.value.objectId,
         ownProperties: true,
@@ -3097,6 +3100,16 @@ struct InspectorChannel final : public v8_inspector::V8Inspector::Channel {
 static v8_inspector::V8Inspector* gInspector;
 static v8_inspector::V8InspectorSession* gInspectorSession;
 
+/**
+ * This function makes sure that the session exists and
+ * we are on main thread when accessing it.
+ */
+v8_inspector::V8InspectorSession* getInspectorSession() {
+  CHECK(gInspectorSession);
+  CHECK(v8::IsMainThread());
+  return gInspectorSession;
+}
+
 void
 RecordReplayRegisterV8Inspector(v8_inspector::V8Inspector* inspector,
                                 v8::Isolate* isolate) {
@@ -3126,15 +3139,13 @@ RecordReplayRegisterV8Inspector(v8_inspector::V8Inspector* inspector,
  * do not provide too much value if they are not hooked up to a `DevToolsSession` and the `UberDispatcher`.
  */
 static void SendCDPMessage(const v8::FunctionCallbackInfo<v8::Value>& args) {
-  CHECK(v8::IsMainThread());
-  CHECK(gInspectorSession);
   CHECK(args.Length() == 1 && args[0]->IsString() &&
         "must be called with a single string");
   v8::String::Utf8Value message(args.GetIsolate(), args[0]);
 
   std::string nmessage(*message);
   v8_inspector::StringView messageView((const uint8_t*)nmessage.c_str(), nmessage.length());
-  gInspectorSession->dispatchProtocolMessage(messageView);
+  getInspectorSession()->dispatchProtocolMessage(messageView);
 }
 
 static std::string GetRecordingDirectory() {
@@ -3408,7 +3419,7 @@ InspectorDOMAgent* getOrCreateInspectorDOMAgent(v8::Isolate* isolate) {
 
     InspectedFrames* inspectedFrames = getOrCreateInspectedFrames();
     gInspectorDomAgent = MakeGarbageCollected<InspectorDOMAgent>(
-        isolate, inspectedFrames, gInspectorSession);
+        isolate, inspectedFrames, getInspectorSession());
 
     gInspectorDomAgent->FrameDocumentUpdated(gLocalFrame);
   }
@@ -3420,7 +3431,7 @@ InspectorDOMDebuggerAgent* getOrCreateInspectorDOMDebuggerAgent(
   if (!gInspectorDomDebuggerAgent) {
     gInspectorDomDebuggerAgent =
         MakeGarbageCollected<InspectorDOMDebuggerAgent>(
-            isolate, getOrCreateInspectorDOMAgent(isolate), gInspectorSession);
+            isolate, getOrCreateInspectorDOMAgent(isolate), getInspectorSession());
 
     // NOTE: registering the agent here allows it to receive `UserCallback` events
     //   see https://linear.app/replay/issue/RUN-1061#comment-d059a1ce
@@ -3433,7 +3444,7 @@ InspectorNetworkAgent* getOrCreateInspectorNetworkAgent() {
   if (!gInspectorNetworkAgent) {
     InspectedFrames* inspectedFrames = getOrCreateInspectedFrames();
     gInspectorNetworkAgent = MakeGarbageCollected<InspectorNetworkAgent>(
-        inspectedFrames, nullptr, gInspectorSession);
+        inspectedFrames, nullptr, getInspectorSession());
   }
   return gInspectorNetworkAgent;
 }
@@ -3472,7 +3483,7 @@ getObjectByCdpId(v8::Isolate* isolate,
   auto context = isolate->GetCurrentContext();
   std::unique_ptr<v8_inspector::StringBuffer> error;
   v8::Local<v8::Value> unwrapped;
-  if (!gInspectorSession->unwrapObject(&error, cdpIdV8, &unwrapped, &context,
+  if (!getInspectorSession()->unwrapObject(&error, cdpIdV8, &unwrapped, &context,
                                        nullptr)) {
     recordreplay::Print("[RuntimError] could not lookup cdpId: %s",
                         ToCoreString(error->string()).Ascii().c_str());
@@ -3523,7 +3534,7 @@ static void fromJsMakeDebuggeeValue(
 
   // NOTE: `wrapObject` always creates a new `RemoteObject` and binds it
   // to a new id.
-  auto remoteObjSerialized = gInspectorSession->wrapObject(
+  auto remoteObjSerialized = getInspectorSession()->wrapObject(
       context, value, ToV8InspectorStringView(object_group), generatePreview);
 
   if (remoteObjSerialized) {
@@ -3550,7 +3561,7 @@ static void fromJsGetArgumentsInFrame(
   v8_inspector::StringView frameIdV8(frameIdPtr, frameId.length());
 
   // v8::Isolate* isolate = args.GetIsolate();
-  auto result = gInspectorSession->getArgumentsOfCallFrame(frameIdV8);
+  auto result = getInspectorSession()->getArgumentsOfCallFrame(frameIdV8);
 
   if (result.IsEmpty()) {
     args.GetReturnValue().SetNull();
