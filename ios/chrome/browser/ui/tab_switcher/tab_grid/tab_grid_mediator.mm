@@ -338,16 +338,8 @@ void RecordTabGridCloseTabsCount(int count) {
     return;
   }
 
-  if (IsPinnedTabsEnabled() && webStateList->IsWebStatePinnedAt(index)) {
-    [self.consumer
-        selectItemWithID:GetActiveWebStateIdentifier(
-                             webStateList,
-                             WebStateSearchCriteria{
-                                 .pinned_state = PinnedState::kNonPinned,
-                             })];
-    return;
-  }
-
+  // If the WebState is pinned and it is not in the consumer's items list,
+  // consumer will filter it out in the method's implementation.
   [self.consumer
       removeItemWithID:webState->GetStableIdentifier()
         selectedItemID:GetActiveWebStateIdentifier(
@@ -356,7 +348,15 @@ void RecordTabGridCloseTabsCount(int count) {
                                .pinned_state = PinnedState::kNonPinned,
                            })];
 
-  _scopedWebStateObservation->RemoveObservation(webState);
+  const bool isPinnedWebState =
+      IsPinnedTabsEnabled() && webStateList->IsWebStatePinnedAt(index);
+
+  // The pinned WebState could be detached only in case it was displayed in the
+  // Tab Search and was closed from the context menu. In such a case there were
+  // no observation added for it. Therefore, there is no need to remove one.
+  if (!isPinnedWebState) {
+    _scopedWebStateObservation->RemoveObservation(webState);
+  }
 }
 
 - (void)webStateList:(WebStateList*)webStateList
