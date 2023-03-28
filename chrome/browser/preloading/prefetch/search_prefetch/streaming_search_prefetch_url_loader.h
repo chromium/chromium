@@ -42,9 +42,10 @@ class StreamingSearchPrefetchURLLoader : public network::mojom::URLLoader,
     ResponseReader(
         mojo::PendingReceiver<network::mojom::URLLoader> forward_receiver,
         mojo::PendingRemote<network::mojom::URLLoaderClient> forwarding_client,
-        base::OnceClosure forwarding_disconnection_callback,
+        base::OnceCallback<void(ResponseReader*)>
+            forwarding_disconnection_callback,
         absl::optional<network::URLLoaderCompletionStatus>,
-        int complete_size_bytes_to_transfer);
+        StreamingSearchPrefetchURLLoader* loader);
     ~ResponseReader() override;
 
     // Not copyable nor movable.
@@ -64,19 +65,32 @@ class StreamingSearchPrefetchURLLoader : public network::mojom::URLLoader,
     void PauseReadingBodyFromNet() override;
     void ResumeReadingBodyFromNet() override;
 
+    // Sets date pipe up between this instance and its client.
     void StartReadingResponseFromData(
         network::mojom::URLResponseHeadPtr& resource_response);
-    void PushData(int bytes_of_raw_data_to_transfer,
-                  const std::string& response_body);
 
-    void OnResponseDataComplete(int bytes_of_raw_data_to_transfer,
-                                const std::string& response_body);
+    // TODO(https://crbug.com/1400881): These methods will replace the
+    // `StreamingSearchPrefetchURLLoader`'s.
+    // Pushes the received data into the producer end of the data pipe.
+    void PushData();
+    // `PushData` may find itself having to wait until the data pipe to
+    // be ready. At that time, this method would be invoked.
+    void OnDataHandleReady(MojoResult result,
+                           const mojo::HandleSignalsState& state);
+
+    // Called by `StreamingSearchPrefetchURLLoader` to inform it of the
+    // received response.
     void OnStatusCodeReady(const network::URLLoaderCompletionStatus& status);
 
    private:
     // Checks if all data have be pushed to its consumer and the corresponding
     // loader has completed fetching. If so, inform the forwarding client.
     void MaybeSendCompletionSignal();
+
+    void OnForwardingDisconnection();
+
+    // Set to true once it writes all bytes into the data pipe.
+    bool complete_writing_ = false;
 
     // Records the position where to read the next body from.
     // content-----------------------------
@@ -85,10 +99,6 @@ class StreamingSearchPrefetchURLLoader : public network::mojom::URLLoader,
     //            write_position_         end of response body.
     int write_position_ = 0;
 
-    // Sets upon the corresponding URLLoader has read all data from network.
-    // Set to -1 when the URLLoader has not drained all data.
-    int complete_size_bytes_to_transfer_ = -1;
-
     // Data pipe for pushing the received response to the client.
     mojo::ScopedDataPipeProducerHandle producer_handle_;
     std::unique_ptr<mojo::SimpleWatcher> handle_watcher_;
@@ -96,6 +106,16 @@ class StreamingSearchPrefetchURLLoader : public network::mojom::URLLoader,
     // Forwarding prefetched response to another loader.
     mojo::Receiver<network::mojom::URLLoader> forwarding_receiver_{this};
     mojo::Remote<network::mojom::URLLoaderClient> forwarding_client_;
+
+    // Invoked when `this` does not need more data from the loader and asks the
+    // loader to delete itself.
+    base::OnceCallback<void(ResponseReader*)> disconnection_callback_;
+
+    // 'loader_' owns this, and guarantees that `loader_` won't be deleted
+    // before deleting `this`, so it is safe to keep a ref.
+    // TODO(crbug.com/1400881): This breaks the hierarchy. Will be replaced soon
+    // after refactoring.
+    raw_ptr<StreamingSearchPrefetchURLLoader> loader_;
 
     // Records the completion status for the corresponding network loader.
     absl::optional<network::URLLoaderCompletionStatus>
@@ -185,10 +205,9 @@ class StreamingSearchPrefetchURLLoader : public network::mojom::URLLoader,
   // closed.
   void OnURLLoaderClientMojoDisconnect();
 
-  // When a disconnection occurs in the the Mojo pipe connecting to prerendering
-  // navigation. If the prerendering navigation is the only one that needs this
-  // loader, delete the loader.
-  void OnPrerenderForwardingDisconnect();
+  // When the given `reader` asks `this` to delete itself. If the prerendering
+  // navigation is the only one that needs this loader, delete the loader.
+  void OnPrerenderForwardingDisconnect(ResponseReader* reader);
 
   // Start serving the response from |producer_handle_|, which serves
   // |body_content_|.
@@ -196,6 +215,14 @@ class StreamingSearchPrefetchURLLoader : public network::mojom::URLLoader,
 
   // Called when more data can be sent into |producer_handle_|.
   void OnHandleReady(MojoResult result, const mojo::HandleSignalsState& state);
+
+  // Returns the view of `body_content_`, starting from the `writing_position`
+  // and ending at the end of the string.
+  // Returns an invalid StringPiece (note, not an empty StringPiece) if there is
+  // no more valid data. Returns an empty StringPiece if writing_position
+  // reaches the end of the current response body but `this` is waiting for the
+  // network to produce more data.
+  base::StringPiece GetMoreDataFromCache(int writing_position) const;
 
   // Push data into |producer_handle_|.
   void PushData();

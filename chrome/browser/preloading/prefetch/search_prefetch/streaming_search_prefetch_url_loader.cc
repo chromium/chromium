@@ -69,16 +69,22 @@ MojoResult CreateDataPipeForServingData(
 StreamingSearchPrefetchURLLoader::ResponseReader::ResponseReader(
     mojo::PendingReceiver<network::mojom::URLLoader> forward_receiver,
     mojo::PendingRemote<network::mojom::URLLoaderClient> forwarding_client,
-    base::OnceClosure forwarding_disconnection_callback,
+    base::OnceCallback<void(ResponseReader*)> forwarding_disconnection_callback,
     absl::optional<network::URLLoaderCompletionStatus> status,
-    int complete_size_bytes_to_transfer)
-    : complete_size_bytes_to_transfer_(complete_size_bytes_to_transfer),
+    StreamingSearchPrefetchURLLoader* loader)
+    : disconnection_callback_(std::move(forwarding_disconnection_callback)),
+      loader_(loader),
       url_loader_completion_status_(status) {
   forwarding_receiver_.Bind(std::move(forward_receiver));
   forwarding_client_.Bind(std::move(forwarding_client));
+  // Safe to use Unretained, because `this` owns the receiver.
   forwarding_receiver_.set_disconnect_handler(
-      std::move(forwarding_disconnection_callback));
+      base::BindOnce(&StreamingSearchPrefetchURLLoader::ResponseReader::
+                         OnForwardingDisconnection,
+                     base::Unretained(this)));
 }
+
+StreamingSearchPrefetchURLLoader::ResponseReader::~ResponseReader() = default;
 
 void StreamingSearchPrefetchURLLoader::ResponseReader::OnStatusCodeReady(
     const network::URLLoaderCompletionStatus& status) {
@@ -94,33 +100,47 @@ void StreamingSearchPrefetchURLLoader::ResponseReader::
   MojoResult rv =
       CreateDataPipeForServingData(producer_handle_, consumer_handle);
   if (rv != MOJO_RESULT_OK) {
-    // TODO(https://crbug.com/1400881): Discard prerender.
+    OnForwardingDisconnection();
     return;
   }
+  handle_watcher_ = std::make_unique<mojo::SimpleWatcher>(
+      FROM_HERE, mojo::SimpleWatcher::ArmingPolicy::MANUAL,
+      base::SequencedTaskRunner::GetCurrentDefault());
+
+  // It is safe to use `base::Unretained(this)` as `this` owns the watcher.
+  handle_watcher_->Watch(
+      producer_handle_.get(), MOJO_HANDLE_SIGNAL_WRITABLE,
+      MOJO_WATCH_CONDITION_SATISFIED,
+      base::BindRepeating(
+          &StreamingSearchPrefetchURLLoader::ResponseReader::OnDataHandleReady,
+          base::Unretained(this)));
   forwarding_client_->OnReceiveResponse(resource_response->Clone(),
                                         std::move(consumer_handle),
                                         /*cached_metadata=*/absl::nullopt);
 }
 
-void StreamingSearchPrefetchURLLoader::ResponseReader::PushData(
-    int bytes_of_raw_data_to_transfer,
-    const std::string& response_body) {
-  DCHECK_LE(bytes_of_raw_data_to_transfer, int(response_body.size()));
+void StreamingSearchPrefetchURLLoader::ResponseReader::PushData() {
+  while (true) {
+    base::StringPiece response_data =
+        loader_->GetMoreDataFromCache(write_position_);
+    if (response_data.empty()) {
+      if (!response_data.data()) {
+        complete_writing_ = true;
+        MaybeSendCompletionSignal();
+      }
+      break;
+    }
+    uint32_t write_size = response_data.size();
+    MojoResult result = producer_handle_->WriteData(
+        response_data.data(), &write_size, MOJO_WRITE_DATA_FLAG_NONE);
 
-  while (bytes_of_raw_data_to_transfer > write_position_) {
-    uint32_t write_size =
-        static_cast<uint32_t>(bytes_of_raw_data_to_transfer - write_position_);
-
-    MojoResult result =
-        producer_handle_->WriteData(response_body.data() + write_position_,
-                                    &write_size, MOJO_WRITE_DATA_FLAG_NONE);
     if (result == MOJO_RESULT_SHOULD_WAIT) {
       handle_watcher_->ArmOrNotify();
       return;
     }
 
     if (result != MOJO_RESULT_OK) {
-      // Failed it;
+      OnForwardingDisconnection();
       return;
     }
 
@@ -128,23 +148,26 @@ void StreamingSearchPrefetchURLLoader::ResponseReader::PushData(
     // successfully been written to.
     write_position_ += write_size;
   }
-  MaybeSendCompletionSignal();
 }
 
-void StreamingSearchPrefetchURLLoader::ResponseReader::OnResponseDataComplete(
-    int bytes_of_raw_data_to_transfer,
-    const std::string& response_body) {
-  DCHECK_EQ(complete_size_bytes_to_transfer_, -1);
-  complete_size_bytes_to_transfer_ = bytes_of_raw_data_to_transfer;
-  PushData(complete_size_bytes_to_transfer_, response_body);
-  MaybeSendCompletionSignal();
+void StreamingSearchPrefetchURLLoader::ResponseReader::OnDataHandleReady(
+    MojoResult result,
+    const mojo::HandleSignalsState& state) {
+  if (complete_writing_) {
+    // This method might be called after this finishes serving with an error
+    // result, in which case we do not want to do anything.
+    return;
+  }
+  if (result != MOJO_RESULT_OK) {
+    OnForwardingDisconnection();
+    return;
+  }
+  PushData();
 }
 
 void StreamingSearchPrefetchURLLoader::ResponseReader::
     MaybeSendCompletionSignal() {
-  if (complete_size_bytes_to_transfer_ < 0 || !url_loader_completion_status_ ||
-      write_position_ < complete_size_bytes_to_transfer_) {
-    // Not completed yet.
+  if (!complete_writing_ || !url_loader_completion_status_) {
     return;
   }
   if (producer_handle_) {
@@ -153,7 +176,13 @@ void StreamingSearchPrefetchURLLoader::ResponseReader::
   producer_handle_.reset();
 }
 
-StreamingSearchPrefetchURLLoader::ResponseReader::~ResponseReader() = default;
+void StreamingSearchPrefetchURLLoader::ResponseReader::
+    OnForwardingDisconnection() {
+  if (disconnection_callback_) {
+    std::move(disconnection_callback_).Run(this);
+  }
+}
+
 void StreamingSearchPrefetchURLLoader::ResponseReader::FollowRedirect(
     const std::vector<std::string>& removed_headers,
     const net::HttpRequestHeaders& modified_headers,
@@ -339,17 +368,20 @@ void StreamingSearchPrefetchURLLoader::CreateResponseReaderForPrerender(
       base::BindOnce(
           &StreamingSearchPrefetchURLLoader::OnPrerenderForwardingDisconnect,
           weak_factory_.GetWeakPtr()),
-      status_, drain_complete_ ? bytes_of_raw_data_to_transfer_ : -1);
-
+      status_, this);
   response_reader_for_prerender_->StartReadingResponseFromData(
       resource_response_);
-  response_reader_for_prerender_->PushData(bytes_of_raw_data_to_transfer_,
-                                           body_content_);
+  response_reader_for_prerender_->PushData();
 }
 
-void StreamingSearchPrefetchURLLoader::OnPrerenderForwardingDisconnect() {
+void StreamingSearchPrefetchURLLoader::OnPrerenderForwardingDisconnect(
+    ResponseReader* reader) {
   DCHECK(prerender_utils::SearchPreloadShareableCacheIsEnabled());
-  response_reader_for_prerender_.reset();
+  if (reader != response_reader_for_prerender_.get()) {
+    return;
+  }
+  base::SequencedTaskRunner::GetCurrentDefault()->DeleteSoon(
+      FROM_HERE, std::move(response_reader_for_prerender_));
   if (self_pointer_) {
     MaybeDeleteItself();
   }
@@ -499,8 +531,7 @@ void StreamingSearchPrefetchURLLoader::OnDataAvailable(const void* data,
   }
 
   if (response_reader_for_prerender_) {
-    response_reader_for_prerender_->PushData(bytes_of_raw_data_to_transfer_,
-                                             body_content_);
+    response_reader_for_prerender_->PushData();
   }
 }
 
@@ -513,8 +544,7 @@ void StreamingSearchPrefetchURLLoader::OnDataComplete() {
     Finish();
   }
   if (response_reader_for_prerender_) {
-    response_reader_for_prerender_->OnResponseDataComplete(
-        bytes_of_raw_data_to_transfer_, body_content_);
+    response_reader_for_prerender_->PushData();
   }
 }
 
@@ -557,6 +587,16 @@ void StreamingSearchPrefetchURLLoader::OnHandleReady(
   PushData();
 }
 
+base::StringPiece StreamingSearchPrefetchURLLoader::GetMoreDataFromCache(
+    int writing_position) const {
+  DCHECK_GE(bytes_of_raw_data_to_transfer_, writing_position);
+  if (drain_complete_ && writing_position == bytes_of_raw_data_to_transfer_) {
+    return base::StringPiece();
+  }
+  return base::StringPiece(body_content_.data() + writing_position,
+                           bytes_of_raw_data_to_transfer_ - writing_position);
+}
+
 void StreamingSearchPrefetchURLLoader::PushData() {
   // TODO(https://crbug.com/1400881): This method should be migrated into
   // `ResponseReader::PushData`. Now `ResponseReader` is sort of a copy of this,
@@ -565,18 +605,21 @@ void StreamingSearchPrefetchURLLoader::PushData() {
   DCHECK(!streaming_prefetch_request_);
   while (true) {
     DCHECK_GE(bytes_of_raw_data_to_transfer_, write_position_);
-    uint32_t write_size =
-        static_cast<uint32_t>(bytes_of_raw_data_to_transfer_ - write_position_);
-    if (write_size == 0) {
-      if (drain_complete_) {
+    base::StringPiece response_data = GetMoreDataFromCache(write_position_);
+
+    if (response_data.empty()) {
+      // If no data is provided, the cache has served every byte to loader.
+      // In this case we can stop.
+      if (!response_data.data()) {
         Finish();
       }
+      // No data can be fed into the producer.
       return;
     }
+    uint32_t write_size = response_data.size();
+    MojoResult result = producer_handle_->WriteData(
+        response_data.data(), &write_size, MOJO_WRITE_DATA_FLAG_NONE);
 
-    MojoResult result =
-        producer_handle_->WriteData(body_content_.data() + write_position_,
-                                    &write_size, MOJO_WRITE_DATA_FLAG_NONE);
     if (result == MOJO_RESULT_SHOULD_WAIT) {
       handle_watcher_->ArmOrNotify();
       return;
