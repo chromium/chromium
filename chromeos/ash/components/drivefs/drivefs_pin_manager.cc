@@ -1046,25 +1046,7 @@ void PinManager::OnFileDeleted(const mojom::FileChange& event) {
   DCHECK_EQ(event.type, mojom::FileChange::Type::kDelete);
 
   VLOG(1) << "Got " << Quote(event);
-  const Path& path = event.path;
-  const Id id = static_cast<Id>(event.stable_id);
-
-  // TODO(b/271203956) Remove this code once DriveFS automatically unpins
-  // deleted files and folders.
-  drivefs_->SetPinnedByStableId(
-      event.stable_id, /*pinned=*/false,
-      base::BindOnce(
-          [](const Id id, const Path& path, const drive::FileError status) {
-            if (status != drive::FILE_ERROR_OK) {
-              LOG(ERROR) << "Cannot unpin " << id << " " << Quote(path) << ": "
-                         << status;
-            } else {
-              VLOG(1) << "Unpinned " << id << " " << Quote(path);
-            }
-          },
-          id, path));
-
-  NotifyDelete(id, path);
+  NotifyDelete(Id(event.stable_id), event.path);
 }
 
 void PinManager::OnFileModified(const mojom::FileChange& event) {

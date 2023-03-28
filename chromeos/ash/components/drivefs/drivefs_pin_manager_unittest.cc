@@ -906,7 +906,7 @@ TEST_F(DriveFsPinManagerTest, OnFileDeleted) {
   PinManager manager(temp_dir_.GetPath(), &drivefs_);
 
   DCHECK_CALLED_ON_VALID_SEQUENCE(manager.sequence_checker_);
-  EXPECT_EQ(manager.progress_.stage, Stage::kStopped);
+  manager.progress_.stage = Stage::kSyncing;
 
   const DriveItem item{.size = 2487};
   const Path path("/root/Path 1");
@@ -916,15 +916,28 @@ TEST_F(DriveFsPinManagerTest, OnFileDeleted) {
   event.stable_id = item.stable_id;
   event.path = path;
 
-  EXPECT_CALL(drivefs_, SetPinnedByStableId(item.stable_id, false, _))
-      .WillOnce(RunOnceCallback<2>(kFileOk));
+  // Add a tracked file.
+  ASSERT_TRUE(manager.Add(*MakeMetadata(item), path));
+  EXPECT_THAT(manager.files_to_pin_, SizeIs(1));
+  EXPECT_THAT(manager.files_to_track_, SizeIs(1));
+  EXPECT_EQ(manager.progress_.failed_files, 0);
 
+  // Notify that the file has been deleted.
   manager.OnFileDeleted(std::as_const(event));
 
-  EXPECT_CALL(drivefs_, SetPinnedByStableId(item.stable_id, false, _))
-      .WillOnce(RunOnceCallback<2>(FileError::FILE_ERROR_ACCESS_DENIED));
+  // The file should have been removed from the tracked files.
+  EXPECT_THAT(manager.files_to_pin_, IsEmpty());
+  EXPECT_THAT(manager.files_to_track_, IsEmpty());
+  EXPECT_EQ(manager.progress_.failed_files, 1);
 
+  // Receiving a delete notification for an untracked file shouldn't do
+  // anything.
   manager.OnFileDeleted(std::as_const(event));
+  EXPECT_THAT(manager.files_to_pin_, IsEmpty());
+  EXPECT_THAT(manager.files_to_track_, IsEmpty());
+  EXPECT_EQ(manager.progress_.failed_files, 1);
+
+  manager.Stop();
 }
 
 // Tests PinManager::OnFilesChanged().
@@ -964,7 +977,6 @@ TEST_F(DriveFsPinManagerTest, OnFilesChanged) {
   }
 
   EXPECT_CALL(drivefs_, GetMetadataByStableId(id, _));
-  EXPECT_CALL(drivefs_, SetPinnedByStableId(id, false, _));
   manager.OnFilesChanged(std::as_const(events));
 
   manager.Stop();
