@@ -116,14 +116,19 @@ class AutofillSuggestionGeneratorTest : public testing::Test {
   gfx::Image CreateFakeImage() { return gfx::test::CreateImage(32, 32); }
 
   void SetUpIbanImageResources() {
-    if (ui::ResourceBundle::HasSharedInstance()) {
-      ui::ResourceBundle::CleanupSharedInstance();
-    }
+    original_resource_bundle_ =
+        ui::ResourceBundle::SwapSharedInstanceForTesting(nullptr);
     ui::ResourceBundle::InitSharedInstanceWithLocale(
         "en-US", &mock_resource_delegate_,
         ui::ResourceBundle::DO_NOT_LOAD_COMMON_RESOURCES);
     ON_CALL(mock_resource_delegate_, GetImageNamed(IDR_AUTOFILL_IBAN))
         .WillByDefault(testing::Return(CreateFakeImage()));
+  }
+
+  void CleanUpIbanImageResources() {
+    ui::ResourceBundle::CleanupSharedInstance();
+    ui::ResourceBundle::SwapSharedInstanceForTesting(
+        original_resource_bundle_.ExtractAsDangling());
   }
 
   bool VerifyCardArtImageExpectation(Suggestion& suggestion,
@@ -155,6 +160,7 @@ class AutofillSuggestionGeneratorTest : public testing::Test {
   std::unique_ptr<TestAutofillSuggestionGenerator> suggestion_generator_;
   scoped_refptr<AutofillWebDataService> database_;
   testing::NiceMock<ui::MockResourceBundleDelegate> mock_resource_delegate_;
+  raw_ptr<ui::ResourceBundle> original_resource_bundle_;
 };
 
 TEST_F(AutofillSuggestionGeneratorTest,
@@ -676,6 +682,8 @@ TEST_F(AutofillSuggestionGeneratorTest, GetIBANSuggestions) {
   EXPECT_EQ(iban_suggestions[5].main_text.value,
             l10n_util::GetStringUTF16(IDS_AUTOFILL_MANAGE_PAYMENT_METHODS));
   EXPECT_EQ(iban_suggestions[5].frontend_id, POPUP_ITEM_ID_AUTOFILL_OPTIONS);
+
+  CleanUpIbanImageResources();
 }
 
 TEST_F(AutofillSuggestionGeneratorTest,
