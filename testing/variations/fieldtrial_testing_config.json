@@ -7081,31 +7081,6 @@
             ]
         }
     ],
-    "JourneysContentVisibilityFiltered": [
-        {
-            "platforms": [
-                "android",
-                "chromeos",
-                "chromeos_lacros",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled_20230303",
-                    "params": {
-                        "content_visibility_threshold": "0.5",
-                        "supported_locales": "en-US,en,en-AU,en-CA,en-GB"
-                    },
-                    "enable_features": [
-                        "HistoryClustersOnDeviceClustering",
-                        "PageVisibilityPageContentAnnotations"
-                    ]
-                }
-            ]
-        }
-    ],
     "JourneysHide": [
         {
             "platforms": [

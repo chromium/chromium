@@ -245,7 +245,7 @@ Config::Config() {
     DCHECK_LE(entity_relevance_threshold, 100);
 
     content_visibility_threshold = GetFieldTrialParamByFeatureAsDouble(
-        features::kOnDeviceClustering, "content_visibility_threshold", 0.7);
+        features::kOnDeviceClustering, "content_visibility_threshold", 0.5);
     // Ensure that the value is [0.0 and 1.0].
     DCHECK_GE(content_visibility_threshold, 0.0f);
     DCHECK_LE(content_visibility_threshold, 1.0f);

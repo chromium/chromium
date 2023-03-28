@@ -123,7 +123,17 @@ TEST(OptimizationGuideFeaturesTest,
   scoped_feature_list.InitAndEnableFeature(
       features::kPageVisibilityPageContentAnnotations);
 
+  // These are the default enabled values.
+  EXPECT_TRUE(features::ShouldExecutePageVisibilityModelOnPageContent("en"));
+  EXPECT_TRUE(features::ShouldExecutePageVisibilityModelOnPageContent("en-AU"));
+  EXPECT_TRUE(features::ShouldExecutePageVisibilityModelOnPageContent("en-CA"));
+  EXPECT_TRUE(features::ShouldExecutePageVisibilityModelOnPageContent("en-GB"));
   EXPECT_TRUE(features::ShouldExecutePageVisibilityModelOnPageContent("en-US"));
+
+  EXPECT_FALSE(
+      features::ShouldExecutePageVisibilityModelOnPageContent("zh-CN"));
+  EXPECT_FALSE(features::ShouldExecutePageVisibilityModelOnPageContent("fr"));
+  EXPECT_FALSE(features::ShouldExecutePageVisibilityModelOnPageContent(""));
 }
 
 TEST(OptimizationGuideFeaturesTest,
