@@ -201,18 +201,48 @@ void BuildLongAnimationFrameUKM(ukm::UkmRecorder* recorder,
   base::TimeDelta total_compilation_duration;
   base::TimeDelta total_execution_duration;
   base::TimeDelta total_forced_style_and_layout_duration;
+  base::TimeDelta script_type_duration_user_callback;
+  base::TimeDelta script_type_duration_event_listener;
+  base::TimeDelta script_type_duration_promise_handler;
+  base::TimeDelta script_type_duration_script_block;
   for (const Member<ScriptTimingInfo>& script : info.Scripts()) {
     total_compilation_duration +=
         (script->ExecutionStartTime() - script->StartTime());
-    total_execution_duration +=
+    base::TimeDelta execution_duration =
         (script->EndTime() - script->ExecutionStartTime());
+    total_execution_duration += execution_duration;
     total_forced_style_and_layout_duration += script->StyleDuration();
     total_forced_style_and_layout_duration += script->LayoutDuration();
+    switch (script->GetType()) {
+      case ScriptTimingInfo::Type::kClassicScript:
+      case ScriptTimingInfo::Type::kModuleScript:
+      case ScriptTimingInfo::Type::kExecuteScript:
+        script_type_duration_script_block += execution_duration;
+        break;
+      case ScriptTimingInfo::Type::kEventHandler:
+        script_type_duration_event_listener += execution_duration;
+        break;
+      case ScriptTimingInfo::Type::kPromiseResolve:
+      case ScriptTimingInfo::Type::kPromiseReject:
+        script_type_duration_promise_handler += execution_duration;
+        break;
+      case ScriptTimingInfo::Type::kUserCallback:
+        script_type_duration_user_callback += execution_duration;
+        break;
+    }
   }
   builder.SetDuration_LongScript_JSCompilation(
       total_compilation_duration.InMilliseconds());
   builder.SetDuration_LongScript_JSExecution(
       total_execution_duration.InMilliseconds());
+  builder.SetDuration_LongScript_JSExecution_ScriptBlocks(
+      script_type_duration_script_block.InMilliseconds());
+  builder.SetDuration_LongScript_JSExecution_EventListeners(
+      script_type_duration_event_listener.InMilliseconds());
+  builder.SetDuration_LongScript_JSExecution_PromiseHandlers(
+      script_type_duration_promise_handler.InMilliseconds());
+  builder.SetDuration_LongScript_JSExecution_UserCallbacks(
+      script_type_duration_user_callback.InMilliseconds());
   builder.SetDuration_StyleAndLayout_Forced(
       total_forced_style_and_layout_duration.InMilliseconds());
   builder.SetDidPause(info.DidPause());

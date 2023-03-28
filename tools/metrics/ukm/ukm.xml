@@ -17464,6 +17464,54 @@ be describing additional metrics about the same event.
       </history>
     </aggregation>
   </metric>
+  <metric name="Duration.LongScript.JSExecution.EventListeners">
+    <summary>
+      The total duration spent in event listeners (e.g. onclick).
+    </summary>
+    <aggregation>
+      <history>
+        <statistics>
+          <quantiles type="std-percentiles"/>
+        </statistics>
+      </history>
+    </aggregation>
+  </metric>
+  <metric name="Duration.LongScript.JSExecution.PromiseHandlers">
+    <summary>
+      The total duration spent in promise resolve/reject tasks.
+    </summary>
+    <aggregation>
+      <history>
+        <statistics>
+          <quantiles type="std-percentiles"/>
+        </statistics>
+      </history>
+    </aggregation>
+  </metric>
+  <metric name="Duration.LongScript.JSExecution.ScriptBlocks">
+    <summary>
+      The total duration spent in script blocks (script element, import)
+    </summary>
+    <aggregation>
+      <history>
+        <statistics>
+          <quantiles type="std-percentiles"/>
+        </statistics>
+      </history>
+    </aggregation>
+  </metric>
+  <metric name="Duration.LongScript.JSExecution.UserCallbacks">
+    <summary>
+      The total duration spent in user callbacks (e.g. requestAnimationFrame).
+    </summary>
+    <aggregation>
+      <history>
+        <statistics>
+          <quantiles type="std-percentiles"/>
+        </statistics>
+      </history>
+    </aggregation>
+  </metric>
   <metric name="Duration.StyleAndLayout.Forced">
     <summary>
       The total duration of forced style and layout in long scripts.
@@ -17559,6 +17607,54 @@ be describing additional metrics about the same event.
     <summary>
       The total duration of long-script JS execution, not including compilation,
       in milliseconds.
+    </summary>
+    <aggregation>
+      <history>
+        <statistics>
+          <quantiles type="std-percentiles"/>
+        </statistics>
+      </history>
+    </aggregation>
+  </metric>
+  <metric name="Duration.LongScript.JSExecution.EventListeners">
+    <summary>
+      The total duration spent in event listeners (e.g. onclick).
+    </summary>
+    <aggregation>
+      <history>
+        <statistics>
+          <quantiles type="std-percentiles"/>
+        </statistics>
+      </history>
+    </aggregation>
+  </metric>
+  <metric name="Duration.LongScript.JSExecution.PromiseHandlers">
+    <summary>
+      The total duration spent in promise resolve/reject tasks.
+    </summary>
+    <aggregation>
+      <history>
+        <statistics>
+          <quantiles type="std-percentiles"/>
+        </statistics>
+      </history>
+    </aggregation>
+  </metric>
+  <metric name="Duration.LongScript.JSExecution.ScriptBlocks">
+    <summary>
+      The total duration spent in script blocks (script element, import)
+    </summary>
+    <aggregation>
+      <history>
+        <statistics>
+          <quantiles type="std-percentiles"/>
+        </statistics>
+      </history>
+    </aggregation>
+  </metric>
+  <metric name="Duration.LongScript.JSExecution.UserCallbacks">
+    <summary>
+      The total duration spent in user callbacks (e.g. requestAnimationFrame).
     </summary>
     <aggregation>
       <history>
@@ -17672,6 +17768,54 @@ be describing additional metrics about the same event.
       </history>
     </aggregation>
   </metric>
+  <metric name="Duration.LongScript.JSExecution.EventListeners">
+    <summary>
+      The total duration spent in event listeners (e.g. onclick).
+    </summary>
+    <aggregation>
+      <history>
+        <statistics>
+          <quantiles type="std-percentiles"/>
+        </statistics>
+      </history>
+    </aggregation>
+  </metric>
+  <metric name="Duration.LongScript.JSExecution.PromiseHandlers">
+    <summary>
+      The total duration spent in promise resolve/reject tasks.
+    </summary>
+    <aggregation>
+      <history>
+        <statistics>
+          <quantiles type="std-percentiles"/>
+        </statistics>
+      </history>
+    </aggregation>
+  </metric>
+  <metric name="Duration.LongScript.JSExecution.ScriptBlocks">
+    <summary>
+      The total duration spent in script blocks (script element, import)
+    </summary>
+    <aggregation>
+      <history>
+        <statistics>
+          <quantiles type="std-percentiles"/>
+        </statistics>
+      </history>
+    </aggregation>
+  </metric>
+  <metric name="Duration.LongScript.JSExecution.UserCallbacks">
+    <summary>
+      The total duration spent in user callbacks (e.g. requestAnimationFrame).
+    </summary>
+    <aggregation>
+      <history>
+        <statistics>
+          <quantiles type="std-percentiles"/>
+        </statistics>
+      </history>
+    </aggregation>
+  </metric>
   <metric name="Duration.StyleAndLayout.Forced">
     <summary>
       The total duration of forced style and layout in long scripts.
@@ -17767,6 +17911,54 @@ be describing additional metrics about the same event.
     <summary>
       The total duration of long-script JS execution, not including compilation,
       in milliseconds.
+    </summary>
+    <aggregation>
+      <history>
+        <statistics>
+          <quantiles type="std-percentiles"/>
+        </statistics>
+      </history>
+    </aggregation>
+  </metric>
+  <metric name="Duration.LongScript.JSExecution.EventListeners">
+    <summary>
+      The total duration spent in event listeners (e.g. onclick).
+    </summary>
+    <aggregation>
+      <history>
+        <statistics>
+          <quantiles type="std-percentiles"/>
+        </statistics>
+      </history>
+    </aggregation>
+  </metric>
+  <metric name="Duration.LongScript.JSExecution.PromiseHandlers">
+    <summary>
+      The total duration spent in promise resolve/reject tasks.
+    </summary>
+    <aggregation>
+      <history>
+        <statistics>
+          <quantiles type="std-percentiles"/>
+        </statistics>
+      </history>
+    </aggregation>
+  </metric>
+  <metric name="Duration.LongScript.JSExecution.ScriptBlocks">
+    <summary>
+      The total duration spent in script blocks (script element, import)
+    </summary>
+    <aggregation>
+      <history>
+        <statistics>
+          <quantiles type="std-percentiles"/>
+        </statistics>
+      </history>
+    </aggregation>
+  </metric>
+  <metric name="Duration.LongScript.JSExecution.UserCallbacks">
+    <summary>
+      The total duration spent in user callbacks (e.g. requestAnimationFrame).
     </summary>
     <aggregation>
       <history>
@@ -17880,6 +18072,54 @@ be describing additional metrics about the same event.
       </history>
     </aggregation>
   </metric>
+  <metric name="Duration.LongScript.JSExecution.EventListeners">
+    <summary>
+      The total duration spent in event listeners (e.g. onclick).
+    </summary>
+    <aggregation>
+      <history>
+        <statistics>
+          <quantiles type="std-percentiles"/>
+        </statistics>
+      </history>
+    </aggregation>
+  </metric>
+  <metric name="Duration.LongScript.JSExecution.PromiseHandlers">
+    <summary>
+      The total duration spent in promise resolve/reject tasks.
+    </summary>
+    <aggregation>
+      <history>
+        <statistics>
+          <quantiles type="std-percentiles"/>
+        </statistics>
+      </history>
+    </aggregation>
+  </metric>
+  <metric name="Duration.LongScript.JSExecution.ScriptBlocks">
+    <summary>
+      The total duration spent in script blocks (script element, import)
+    </summary>
+    <aggregation>
+      <history>
+        <statistics>
+          <quantiles type="std-percentiles"/>
+        </statistics>
+      </history>
+    </aggregation>
+  </metric>
+  <metric name="Duration.LongScript.JSExecution.UserCallbacks">
+    <summary>
+      The total duration spent in user callbacks (e.g. requestAnimationFrame).
+    </summary>
+    <aggregation>
+      <history>
+        <statistics>
+          <quantiles type="std-percentiles"/>
+        </statistics>
+      </history>
+    </aggregation>
+  </metric>
   <metric name="Duration.StyleAndLayout.Forced">
     <summary>
       The total duration of forced style and layout in long scripts.
@@ -17975,6 +18215,54 @@ be describing additional metrics about the same event.
     <summary>
       The total duration of long-script JS execution, not including compilation,
       in milliseconds.
+    </summary>
+    <aggregation>
+      <history>
+        <statistics>
+          <quantiles type="std-percentiles"/>
+        </statistics>
+      </history>
+    </aggregation>
+  </metric>
+  <metric name="Duration.LongScript.JSExecution.EventListeners">
+    <summary>
+      The total duration spent in event listeners (e.g. onclick).
+    </summary>
+    <aggregation>
+      <history>
+        <statistics>
+          <quantiles type="std-percentiles"/>
+        </statistics>
+      </history>
+    </aggregation>
+  </metric>
+  <metric name="Duration.LongScript.JSExecution.PromiseHandlers">
+    <summary>
+      The total duration spent in promise resolve/reject tasks.
+    </summary>
+    <aggregation>
+      <history>
+        <statistics>
+          <quantiles type="std-percentiles"/>
+        </statistics>
+      </history>
+    </aggregation>
+  </metric>
+  <metric name="Duration.LongScript.JSExecution.ScriptBlocks">
+    <summary>
+      The total duration spent in script blocks (script element, import)
+    </summary>
+    <aggregation>
+      <history>
+        <statistics>
+          <quantiles type="std-percentiles"/>
+        </statistics>
+      </history>
+    </aggregation>
+  </metric>
+  <metric name="Duration.LongScript.JSExecution.UserCallbacks">
+    <summary>
+      The total duration spent in user callbacks (e.g. requestAnimationFrame).
     </summary>
     <aggregation>
       <history>
