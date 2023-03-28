@@ -151,12 +151,8 @@ static NetworkServiceClient* g_client = nullptr;
 
 void CreateInProcessNetworkServiceOnThread(
     mojo::PendingReceiver<network::mojom::NetworkService> receiver) {
-  // The test interface doesn't need to be implemented in the in-process case.
-  auto registry = std::make_unique<service_manager::BinderRegistry>();
-  registry->AddInterface(base::BindRepeating(
-      [](mojo::PendingReceiver<network::mojom::NetworkServiceTest>) {}));
   g_in_process_instance = new network::NetworkService(
-      std::move(registry), std::move(receiver),
+      nullptr /* registry */, std::move(receiver),
       true /* delay_initialization_until_set_client */);
 }
 
@@ -408,8 +404,7 @@ network::mojom::NetworkServiceParamsPtr CreateNetworkServiceParams() {
   if (GetContentClient()
           ->browser()
           ->ShouldRunOutOfProcessSystemDnsResolution() &&
-      IsOutOfProcessNetworkService() &&
-      !g_force_create_network_service_directly) {
+      IsOutOfProcessNetworkService()) {
     mojo::PendingRemote<network::mojom::SystemDnsResolver> dns_remote;
     mojo::MakeSelfOwnedReceiver(
         std::make_unique<content::SystemDnsResolverMojoImpl>(),
@@ -545,6 +540,9 @@ network::mojom::NetworkService* GetNetworkService() {
                                          .Pass());
         }
       } else {
+        DCHECK(IsInProcessNetworkService())
+            << "If the network service is created directly, the test must not "
+               "request an out of process network service.";
         // This should only be reached in unit tests.
         if (BrowserThread::CurrentlyOn(BrowserThread::IO)) {
           CreateNetworkServiceOnIOForTesting(
@@ -565,8 +563,6 @@ network::mojom::NetworkService* GetNetworkService() {
       delete g_client;  // In case we're recreating the network service.
       g_client = new NetworkServiceClient();
 
-      // Call SetClient before creating NetworkServiceClient, as the latter
-      // might make requests to NetworkService that depend on initialization.
       (*g_network_service_remote)->SetParams(CreateNetworkServiceParams());
       g_client->OnNetworkServiceInitialized(g_network_service_remote->get());
 
@@ -715,6 +711,7 @@ const scoped_refptr<base::SequencedTaskRunner>& GetNetworkTaskRunner() {
 }
 
 void ForceCreateNetworkServiceDirectlyForTesting() {
+  ForceInProcessNetworkService(true);
   g_force_create_network_service_directly = true;
 }
 

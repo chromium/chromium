@@ -17,6 +17,7 @@ namespace content {
 
 // Creates the network::NetworkService object on the IO thread directly instead
 // of trying to go through the ServiceManager.
+// This also calls ForceInProcessNetworkService().
 CONTENT_EXPORT void ForceCreateNetworkServiceDirectlyForTesting();
 
 // Resets the interface ptr to the network service.
