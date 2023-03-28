@@ -679,10 +679,7 @@ void CanvasPath::Trace(Visitor* visitor) const {
 
 ALWAYS_INLINE gfx::RectF CanvasPath::LineBuilder::BoundingRect() const {
   DCHECK_EQ(state_, State::kLine);
-  const float left = std::min(line_.start.x(), line_.end.x());
-  const float top = std::min(line_.start.y(), line_.end.y());
-  return gfx::RectF(left, top, std::abs(line_.start.x() - line_.end.x()),
-                    std::abs(line_.start.y() - line_.end.y()));
+  return gfx::BoundingRect(line_.start, line_.end);
 }
 
 bool CanvasPath::UpdatePathFromLineIfNecessary() const {
