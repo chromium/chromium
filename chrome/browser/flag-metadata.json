@@ -1237,7 +1237,7 @@
   {
     "name": "cormorant",
     "owners": [ "jeffreycohen", "markeh", "wissemgamra", "chrome-with-friends-robots@google.com" ],
-    "expiry_milestone": 114
+    "expiry_milestone": 119
   },
   {
     "name": "cpu-affinity-restrict-to-little-cores",
