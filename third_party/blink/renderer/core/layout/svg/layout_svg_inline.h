@@ -64,8 +64,6 @@ class LayoutSVGInline : public LayoutInline {
                        NGOutlineType) const final;
 
  private:
-  InlineFlowBox* CreateInlineFlowBox() final;
-
   void WillBeDestroyed() final;
   void StyleDidChange(StyleDifference, const ComputedStyle* old_style) final;
 

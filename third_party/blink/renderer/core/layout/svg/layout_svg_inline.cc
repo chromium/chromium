@@ -26,8 +26,6 @@
 #include "third_party/blink/renderer/core/layout/ng/svg/layout_ng_svg_text.h"
 #include "third_party/blink/renderer/core/layout/svg/layout_svg_inline_text.h"
 #include "third_party/blink/renderer/core/layout/svg/layout_svg_resource_container.h"
-#include "third_party/blink/renderer/core/layout/svg/layout_svg_text.h"
-#include "third_party/blink/renderer/core/layout/svg/line/svg_inline_flow_box.h"
 #include "third_party/blink/renderer/core/layout/svg/svg_layout_support.h"
 #include "third_party/blink/renderer/core/layout/svg/svg_resources.h"
 #include "third_party/blink/renderer/core/paint/compositing/compositing_reason_finder.h"
@@ -62,14 +60,6 @@ bool LayoutSVGInline::IsChildAllowed(LayoutObject* child,
 
 LayoutSVGInline::LayoutSVGInline(Element* element) : LayoutInline(element) {
   SetAlwaysCreateLineBoxes();
-}
-
-InlineFlowBox* LayoutSVGInline::CreateInlineFlowBox() {
-  NOT_DESTROYED();
-  InlineFlowBox* box =
-      MakeGarbageCollected<SVGInlineFlowBox>(LineLayoutItem(this));
-  box->SetHasVirtualLogicalHeight();
-  return box;
 }
 
 bool LayoutSVGInline::IsObjectBoundingBoxValid() const {
@@ -191,8 +181,7 @@ void LayoutSVGInline::StyleDidChange(StyleDifference diff,
                                      const ComputedStyle* old_style) {
   NOT_DESTROYED();
   if (diff.HasDifference()) {
-    if (auto* svg_text = DynamicTo<LayoutNGSVGText>(
-            LayoutSVGText::LocateLayoutSVGTextAncestor(this))) {
+    if (auto* svg_text = LayoutNGSVGText::LocateLayoutSVGTextAncestor(this)) {
       if (svg_text->NeedsTextMetricsUpdate())
         diff.SetNeedsFullLayout();
     }
@@ -215,13 +204,13 @@ void LayoutSVGInline::AddChild(LayoutObject* child,
                                LayoutObject* before_child) {
   NOT_DESTROYED();
   LayoutInline::AddChild(child, before_child);
-  LayoutSVGText::NotifySubtreeStructureChanged(
+  LayoutNGSVGText::NotifySubtreeStructureChanged(
       this, layout_invalidation_reason::kChildChanged);
 }
 
 void LayoutSVGInline::RemoveChild(LayoutObject* child) {
   NOT_DESTROYED();
-  LayoutSVGText::NotifySubtreeStructureChanged(
+  LayoutNGSVGText::NotifySubtreeStructureChanged(
       this, layout_invalidation_reason::kChildChanged);
   LayoutInline::RemoveChild(child);
 }

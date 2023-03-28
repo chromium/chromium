@@ -29,6 +29,14 @@ class LayoutNGSVGText final : public LayoutNGBlockFlowMixin<LayoutSVGBlock> {
 
   bool IsObjectBoundingBoxValid() const;
 
+  // These two functions return a LayoutNGSVGText or nullptr.
+  static LayoutNGSVGText* LocateLayoutSVGTextAncestor(LayoutObject*);
+  static const LayoutNGSVGText* LocateLayoutSVGTextAncestor(
+      const LayoutObject*);
+
+  static void NotifySubtreeStructureChanged(LayoutObject*,
+                                            LayoutInvalidationReasonForTracing);
+
  private:
   // LayoutObject override:
   const char* GetName() const override;

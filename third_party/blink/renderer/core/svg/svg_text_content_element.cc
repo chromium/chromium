@@ -28,8 +28,6 @@
 #include "third_party/blink/renderer/core/layout/api/line_layout_item.h"
 #include "third_party/blink/renderer/core/layout/ng/svg/layout_ng_svg_text.h"
 #include "third_party/blink/renderer/core/layout/ng/svg/ng_svg_text_query.h"
-#include "third_party/blink/renderer/core/layout/svg/layout_svg_text.h"
-#include "third_party/blink/renderer/core/layout/svg/svg_text_query.h"
 #include "third_party/blink/renderer/core/svg/svg_animated_length.h"
 #include "third_party/blink/renderer/core/svg/svg_enumeration_map.h"
 #include "third_party/blink/renderer/core/svg/svg_point_tear_off.h"
@@ -110,7 +108,7 @@ unsigned SVGTextContentElement::getNumberOfChars() {
   auto* layout_object = GetLayoutObject();
   if (IsNGTextOrInline(layout_object))
     return NGSvgTextQuery(*layout_object).NumberOfCharacters();
-  return SVGTextQuery(layout_object).NumberOfCharacters();
+  return 0;
 }
 
 float SVGTextContentElement::getComputedTextLength() {
@@ -121,7 +119,7 @@ float SVGTextContentElement::getComputedTextLength() {
     NGSvgTextQuery query(*layout_object);
     return query.SubStringLength(0, query.NumberOfCharacters());
   }
-  return SVGTextQuery(layout_object).TextLength();
+  return 0;
 }
 
 float SVGTextContentElement::getSubStringLength(
@@ -146,7 +144,7 @@ float SVGTextContentElement::getSubStringLength(
   auto* layout_object = GetLayoutObject();
   if (IsNGTextOrInline(layout_object))
     return NGSvgTextQuery(*layout_object).SubStringLength(charnum, nchars);
-  return SVGTextQuery(layout_object).SubStringLength(charnum, nchars);
+  return 0;
 }
 
 SVGPointTearOff* SVGTextContentElement::getStartPositionOfChar(
@@ -167,8 +165,6 @@ SVGPointTearOff* SVGTextContentElement::getStartPositionOfChar(
   auto* layout_object = GetLayoutObject();
   if (IsNGTextOrInline(layout_object)) {
     point = NGSvgTextQuery(*layout_object).StartPositionOfCharacter(charnum);
-  } else {
-    point = SVGTextQuery(layout_object).StartPositionOfCharacter(charnum);
   }
   return SVGPointTearOff::CreateDetached(point);
 }
@@ -191,8 +187,6 @@ SVGPointTearOff* SVGTextContentElement::getEndPositionOfChar(
   auto* layout_object = GetLayoutObject();
   if (IsNGTextOrInline(layout_object)) {
     point = NGSvgTextQuery(*layout_object).EndPositionOfCharacter(charnum);
-  } else {
-    point = SVGTextQuery(layout_object).EndPositionOfCharacter(charnum);
   }
   return SVGPointTearOff::CreateDetached(point);
 }
@@ -215,8 +209,6 @@ SVGRectTearOff* SVGTextContentElement::getExtentOfChar(
   auto* layout_object = GetLayoutObject();
   if (IsNGTextOrInline(layout_object)) {
     rect = NGSvgTextQuery(*layout_object).ExtentOfCharacter(charnum);
-  } else {
-    rect = SVGTextQuery(layout_object).ExtentOfCharacter(charnum);
   }
   return SVGRectTearOff::CreateDetached(rect);
 }
@@ -238,7 +230,7 @@ float SVGTextContentElement::getRotationOfChar(
   auto* layout_object = GetLayoutObject();
   if (IsNGTextOrInline(layout_object))
     return NGSvgTextQuery(*layout_object).RotationOfCharacter(charnum);
-  return SVGTextQuery(layout_object).RotationOfCharacter(charnum);
+  return 0.0f;
 }
 
 int SVGTextContentElement::getCharNumAtPosition(
@@ -251,8 +243,7 @@ int SVGTextContentElement::getCharNumAtPosition(
     return NGSvgTextQuery(*layout_object)
         .CharacterNumberAtPosition(point->Target()->Value());
   }
-  return SVGTextQuery(layout_object)
-      .CharacterNumberAtPosition(point->Target()->Value());
+  return -1;
 }
 
 void SVGTextContentElement::selectSubString(unsigned charnum,
@@ -316,9 +307,10 @@ void SVGTextContentElement::SvgAttributeChanged(
     SVGElement::InvalidationGuard invalidation_guard(this);
 
     if (LayoutObject* layout_object = GetLayoutObject()) {
-      if (auto* ng_text = DynamicTo<LayoutNGSVGText>(
-              LayoutSVGText::LocateLayoutSVGTextAncestor(layout_object)))
+      if (auto* ng_text =
+              LayoutNGSVGText::LocateLayoutSVGTextAncestor(layout_object)) {
         ng_text->SetNeedsPositioningValuesUpdate();
+      }
       MarkForLayoutAndParentResourceInvalidation(*layout_object);
     }
 
@@ -337,12 +329,7 @@ bool SVGTextContentElement::SelfHasRelativeLengths() const {
 
 SVGTextContentElement* SVGTextContentElement::ElementFromLineLayoutItem(
     const LineLayoutItem& line_layout_item) {
-  if (!line_layout_item ||
-      (!line_layout_item.IsSVGText() && !line_layout_item.IsSVGInline()))
-    return nullptr;
-
-  DCHECK(line_layout_item.GetNode());
-  return DynamicTo<SVGTextContentElement>(line_layout_item.GetNode());
+  return nullptr;
 }
 
 }  // namespace blink

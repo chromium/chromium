@@ -109,9 +109,6 @@ class LayoutObjectFactory {
   static LayoutObject* CreateSVGForeignObject(Node& node,
                                               const ComputedStyle& style,
                                               LegacyLayout legacy);
-  static LayoutObject* CreateSVGText(Node& node,
-                                     const ComputedStyle& style,
-                                     LegacyLayout legacy);
 
   static LayoutObject* CreateBR(Node*, LegacyLayout);
   static LayoutObject* CreateWordBreak(HTMLElement*, LegacyLayout);

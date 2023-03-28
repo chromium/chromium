@@ -80,8 +80,9 @@ void ObjectPaintInvalidatorWithContext::InvalidatePaintWithComputedReason(
       return;
     // See layout_selection.cc SetShouldInvalidateIfNeeded() for the reason
     // for the IsSVGText() condition here.
-    if (!object_.CanBeSelectionLeaf() && !object_.IsSVGText())
+    if (!object_.CanBeSelectionLeaf()) {
       return;
+    }
 
     reason = PaintInvalidationReason::kSelection;
     if (const auto* selection_client =

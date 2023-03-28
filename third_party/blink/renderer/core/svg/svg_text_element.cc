@@ -20,7 +20,7 @@
 
 #include "third_party/blink/renderer/core/svg/svg_text_element.h"
 
-#include "third_party/blink/renderer/core/layout/layout_object_factory.h"
+#include "third_party/blink/renderer/core/layout/ng/svg/layout_ng_svg_text.h"
 
 namespace blink {
 
@@ -29,7 +29,7 @@ SVGTextElement::SVGTextElement(Document& doc)
 
 LayoutObject* SVGTextElement::CreateLayoutObject(const ComputedStyle& style,
                                                  LegacyLayout legacy) {
-  return LayoutObjectFactory::CreateSVGText(*this, style, legacy);
+  return MakeGarbageCollected<LayoutNGSVGText>(this);
 }
 
 }  // namespace blink

@@ -11,7 +11,6 @@
 #include "third_party/blink/renderer/core/layout/svg/layout_svg_image.h"
 #include "third_party/blink/renderer/core/layout/svg/layout_svg_resource_marker.h"
 #include "third_party/blink/renderer/core/layout/svg/layout_svg_shape.h"
-#include "third_party/blink/renderer/core/layout/svg/layout_svg_text.h"
 #include "third_party/blink/renderer/core/layout/svg/svg_layout_support.h"
 #include "third_party/blink/renderer/core/layout/svg/svg_resources.h"
 
@@ -56,10 +55,9 @@ void SVGContentContainer::Layout(const SVGContainerLayoutInfo& layout_info) {
     if (layout_info.scale_factor_changed) {
       // If the screen scaling factor changed we need to update the text
       // metrics (note: this also happens for layoutSizeChanged=true).
-      if (auto* text = DynamicTo<LayoutSVGText>(child))
-        text->SetNeedsTextMetricsUpdate();
-      else if (auto* ng_text = DynamicTo<LayoutNGSVGText>(child))
+      if (auto* ng_text = DynamicTo<LayoutNGSVGText>(child)) {
         ng_text->SetNeedsTextMetricsUpdate();
+      }
       force_child_layout = true;
     }
 
@@ -73,9 +71,6 @@ void SVGContentContainer::Layout(const SVGContainerLayoutInfo& layout_info) {
           // the LayoutSVGShape to update its shape object
           if (auto* shape = DynamicTo<LayoutSVGShape>(child)) {
             shape->SetNeedsShapeUpdate();
-          } else if (auto* text = DynamicTo<LayoutSVGText>(child)) {
-            text->SetNeedsTextMetricsUpdate();
-            text->SetNeedsPositioningValuesUpdate();
           } else if (auto* ng_text = DynamicTo<LayoutNGSVGText>(child)) {
             ng_text->SetNeedsTextMetricsUpdate();
           }
@@ -153,8 +148,6 @@ static bool HasValidBoundingBoxForContainer(const LayoutObject& object) {
   if (object.IsSVGShape())
     return !To<LayoutSVGShape>(object).IsShapeEmpty();
 
-  if (object.IsSVGText())
-    return To<LayoutSVGText>(object).IsObjectBoundingBoxValid();
   if (const auto* ng_text = DynamicTo<LayoutNGSVGText>(object))
     return ng_text->IsObjectBoundingBoxValid();
 

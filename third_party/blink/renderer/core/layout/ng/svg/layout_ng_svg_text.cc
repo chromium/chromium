@@ -22,6 +22,20 @@
 
 namespace blink {
 
+namespace {
+
+const LayoutNGSVGText* FindTextRoot(const LayoutObject* start) {
+  DCHECK(start);
+  for (; start; start = start->Parent()) {
+    if (const auto* ng_text = DynamicTo<LayoutNGSVGText>(start)) {
+      return ng_text;
+    }
+  }
+  return nullptr;
+}
+
+}  // namespace
+
 LayoutNGSVGText::LayoutNGSVGText(Element* element)
     : LayoutNGBlockFlowMixin<LayoutSVGBlock>(element),
       needs_update_bounding_box_(true),
@@ -349,6 +363,25 @@ void LayoutNGSVGText::SetNeedsTextMetricsUpdate() {
 bool LayoutNGSVGText::NeedsTextMetricsUpdate() const {
   NOT_DESTROYED();
   return needs_text_metrics_update_;
+}
+
+LayoutNGSVGText* LayoutNGSVGText::LocateLayoutSVGTextAncestor(
+    LayoutObject* start) {
+  return const_cast<LayoutNGSVGText*>(FindTextRoot(start));
+}
+
+const LayoutNGSVGText* LayoutNGSVGText::LocateLayoutSVGTextAncestor(
+    const LayoutObject* start) {
+  return FindTextRoot(start);
+}
+
+// static
+void LayoutNGSVGText::NotifySubtreeStructureChanged(
+    LayoutObject* object,
+    LayoutInvalidationReasonForTracing reason) {
+  if (auto* ng_text = LocateLayoutSVGTextAncestor(object)) {
+    ng_text->SubtreeStructureChanged(reason);
+  }
 }
 
 }  // namespace blink

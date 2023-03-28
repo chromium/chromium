@@ -41,7 +41,6 @@
 #include "third_party/blink/renderer/core/layout/ng/inline/ng_fragment_item.h"
 #include "third_party/blink/renderer/core/layout/ng/inline/ng_inline_cursor.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_physical_box_fragment.h"
-#include "third_party/blink/renderer/core/layout/svg/line/svg_root_inline_box.h"
 #include "third_party/blink/renderer/core/layout/vertical_position_cache.h"
 #include "third_party/blink/renderer/core/paint/outline_painter.h"
 #include "third_party/blink/renderer/platform/text/bidi_resolver.h"
@@ -943,31 +942,18 @@ RootInlineBox* LayoutBlockFlow::CreateLineBoxesFromBidiRuns(
   line_box->SetBidiLevel(bidi_level);
   line_box->SetEndsWithBreak(line_info.PreviousLineBrokeCleanly());
 
-  bool is_svg_root_inline_box = line_box->IsSVGRootInlineBox();
-
   GlyphOverflowAndFallbackFontsMap text_box_data_map;
 
   // Now we position all of our text runs horizontally.
-  if (!is_svg_root_inline_box)
-    ComputeInlineDirectionPositionsForLine(
-        line_box, line_info, bidi_runs.FirstRun(), trailing_space_run,
-        end.AtEnd(), text_box_data_map, vertical_position_cache,
-        word_measurements);
+  ComputeInlineDirectionPositionsForLine(
+      line_box, line_info, bidi_runs.FirstRun(), trailing_space_run,
+      end.AtEnd(), text_box_data_map, vertical_position_cache,
+      word_measurements);
 
   // Now position our text runs vertically.
   ComputeBlockDirectionPositionsForLine(line_box, bidi_runs.FirstRun(),
                                         text_box_data_map,
                                         vertical_position_cache);
-
-  // SVG text layout code computes vertical & horizontal positions on its own.
-  // Note that we still need to execute computeVerticalPositionsForLine() as
-  // it calls InlineTextBox::positionLineBox(), which tracks whether the box
-  // contains reversed text or not. If we wouldn't do that editing and thus
-  // text selection in RTL boxes would not work as expected.
-  if (is_svg_root_inline_box) {
-    DCHECK(IsSVGText());
-    To<SVGRootInlineBox>(line_box)->ComputePerCharacterLayoutInformation();
-  }
 
   // Compute our overflow now.
   line_box->ComputeOverflow(line_box->LineTop(), line_box->LineBottom(),

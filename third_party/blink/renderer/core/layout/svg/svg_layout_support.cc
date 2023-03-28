@@ -217,8 +217,7 @@ void SVGLayoutSupport::MapAncestorToLocal(const LayoutObject& object,
   // computing the transform to the SVG root is always what we want to do here.
   DCHECK_NE(ancestor, &object);
   DCHECK(object.IsSVGContainer() || object.IsSVGShape() ||
-         object.IsSVGImage() || object.IsSVGText() ||
-         object.IsSVGForeignObjectIncludingNG());
+         object.IsSVGImage() || object.IsSVGForeignObjectIncludingNG());
   AffineTransform local_to_svg_root;
   const LayoutSVGRoot& svg_root =
       ComputeTransformToSVGRoot(object, local_to_svg_root, nullptr);
@@ -288,8 +287,7 @@ void SVGLayoutSupport::AdjustWithClipPathAndMask(
 gfx::RectF SVGLayoutSupport::ExtendTextBBoxWithStroke(
     const LayoutObject& layout_object,
     const gfx::RectF& text_bounds) {
-  DCHECK(layout_object.IsSVGText() || layout_object.IsNGSVGText() ||
-         layout_object.IsSVGInline());
+  DCHECK(layout_object.IsNGSVGText() || layout_object.IsSVGInline());
   gfx::RectF bounds = text_bounds;
   const ComputedStyle& style = layout_object.StyleRef();
   if (style.HasStroke()) {
@@ -305,8 +303,7 @@ gfx::RectF SVGLayoutSupport::ExtendTextBBoxWithStroke(
 gfx::RectF SVGLayoutSupport::ComputeVisualRectForText(
     const LayoutObject& layout_object,
     const gfx::RectF& text_bounds) {
-  DCHECK(layout_object.IsSVGText() || layout_object.IsNGSVGText() ||
-         layout_object.IsSVGInline());
+  DCHECK(layout_object.IsNGSVGText() || layout_object.IsSVGInline());
   gfx::RectF visual_rect = ExtendTextBBoxWithStroke(layout_object, text_bounds);
   if (const ShadowList* text_shadow = layout_object.StyleRef().TextShadow())
     text_shadow->AdjustRectForShadow(visual_rect);
@@ -456,7 +453,7 @@ static SearchCandidate SearchTreeForFindClosestLayoutSVGText(
   // containers that could contain LayoutSVGTexts that are closer.
   for (LayoutObject* child = layout_object->SlowLastChild(); child;
        child = child->PreviousSibling()) {
-    if (child->IsSVGText() || child->IsNGSVGText()) {
+    if (child->IsNGSVGText()) {
       double distance = DistanceToChildLayoutObject(child, point);
       if (distance >= closest_text.distance)
         continue;

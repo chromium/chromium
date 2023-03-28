@@ -1338,10 +1338,6 @@ class CORE_EXPORT LayoutObject : public GarbageCollected<LayoutObject>,
     NOT_DESTROYED();
     return IsOfType(kLayoutObjectSVGShape);
   }
-  bool IsSVGText() const {
-    NOT_DESTROYED();
-    return IsOfType(kLayoutObjectSVGText);
-  }
   bool IsSVGTextPath() const {
     NOT_DESTROYED();
     return IsOfType(kLayoutObjectSVGTextPath);
@@ -1401,9 +1397,8 @@ class CORE_EXPORT LayoutObject : public GarbageCollected<LayoutObject>,
   // https://www.w3.org/TR/compositing-1/#propdef-mix-blend-mode
   bool IsBlendingAllowed() const {
     NOT_DESTROYED();
-    return !IsSVG() || IsSVGShape() || IsSVGImage() || IsSVGText() ||
-           IsSVGInline() || IsSVGRoot() || IsSVGForeignObjectIncludingNG() ||
-           IsNGSVGText() ||
+    return !IsSVG() || IsSVGShape() || IsSVGImage() || IsSVGInline() ||
+           IsSVGRoot() || IsSVGForeignObjectIncludingNG() || IsNGSVGText() ||
            // Blending does not apply to non-renderable elements such as
            // patterns (see: https://github.com/w3c/fxtf-drafts/issues/309).
            (IsSVGContainer() && !IsSVGHiddenContainer());
@@ -3792,7 +3787,6 @@ class CORE_EXPORT LayoutObject : public GarbageCollected<LayoutObject>,
     kLayoutObjectSVGResourceContainer,
     kLayoutObjectSVGRoot,
     kLayoutObjectSVGShape,
-    kLayoutObjectSVGText,
     kLayoutObjectSVGTextPath,
     kLayoutObjectSVGTransformableContainer,
     kLayoutObjectSVGTSpan,

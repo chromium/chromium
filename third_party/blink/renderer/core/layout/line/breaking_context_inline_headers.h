@@ -29,7 +29,6 @@
 #include "third_party/blink/renderer/core/layout/api/line_layout_box.h"
 #include "third_party/blink/renderer/core/layout/api/line_layout_list_marker.h"
 #include "third_party/blink/renderer/core/layout/api/line_layout_ruby_run.h"
-#include "third_party/blink/renderer/core/layout/api/line_layout_svg_inline_text.h"
 #include "third_party/blink/renderer/core/layout/api/line_layout_text.h"
 #include "third_party/blink/renderer/core/layout/api/line_layout_text_combine.h"
 #include "third_party/blink/renderer/core/layout/line/inline_iterator.h"
@@ -1389,13 +1388,6 @@ inline void BreakingContext::PrepareForNextCharacter(
     const LineLayoutText& layout_text,
     bool& prohibit_break_inside,
     bool previous_is_space_or_other_space_separator) {
-  if (layout_text.IsSVGInlineText() && current_.Offset()) {
-    // Force creation of new InlineBoxes for each absolute positioned character
-    // (those that start new text chunks).
-    if (LineLayoutSVGInlineText(layout_text)
-            .CharacterStartsNewTextChunk(current_.Offset()))
-      line_midpoint_state_.EnsureCharacterGetsLineBox(current_);
-  }
   if (prohibit_break_inside) {
     current_.SetNextBreakablePosition(layout_text.TextLength());
     prohibit_break_inside = false;

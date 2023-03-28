@@ -36,7 +36,6 @@ class LayoutSVGInline;
 class LayoutSVGInlineText;
 class LayoutSVGShape;
 class LayoutSVGRoot;
-class LayoutSVGText;
 
 // functions used by the main LayoutTreeAsText code
 void Write(WTF::TextStream&, const LayoutSVGShape&, int indent);
@@ -49,7 +48,6 @@ void WriteSVGImage(WTF::TextStream&, const LayoutSVGImage&, int indent);
 void WriteSVGInlineText(WTF::TextStream&,
                         const LayoutSVGInlineText&,
                         int indent);
-void WriteSVGText(WTF::TextStream&, const LayoutSVGText&, int indent);
 void WriteSVGInline(WTF::TextStream&, const LayoutSVGInline&, int indent);
 void WriteResources(WTF::TextStream&, const LayoutObject&, int indent);
 

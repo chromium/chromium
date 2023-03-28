@@ -65,7 +65,7 @@ ClipStrategy DetermineClipStrategy(const SVGGraphicsElement& element) {
   // Only shapes, paths and texts are allowed for clipping.
   if (layout_object->IsSVGShape()) {
     strategy = ClipStrategy::kPath;
-  } else if (layout_object->IsSVGText() || layout_object->IsNGSVGText()) {
+  } else if (layout_object->IsNGSVGText()) {
     // Text requires masking.
     strategy = ClipStrategy::kMask;
   }

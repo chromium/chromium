@@ -189,8 +189,9 @@ SVGRectTearOff* SVGGraphicsElement::getBBoxFromJavascript() {
   if (const auto* layout_object = GetLayoutObject()) {
     bounding_box = GetBBox();
 
-    if (layout_object->IsSVGText() || layout_object->IsSVGInline())
+    if (layout_object->IsSVGInline()) {
       UseCounter::Count(GetDocument(), WebFeature::kGetBBoxForText);
+    }
   }
   return SVGRectTearOff::CreateDetached(bounding_box);
 }

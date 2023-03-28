@@ -56,7 +56,6 @@
 #include "third_party/blink/renderer/core/layout/svg/layout_svg_inline_text.h"
 #include "third_party/blink/renderer/core/layout/svg/layout_svg_root.h"
 #include "third_party/blink/renderer/core/layout/svg/layout_svg_shape.h"
-#include "third_party/blink/renderer/core/layout/svg/layout_svg_text.h"
 #include "third_party/blink/renderer/core/layout/svg/svg_layout_tree_as_text.h"
 #include "third_party/blink/renderer/core/page/print_context.h"
 #include "third_party/blink/renderer/core/paint/paint_layer.h"
@@ -520,10 +519,6 @@ void Write(WTF::TextStream& ts,
   }
   if (o.IsSVGRoot()) {
     Write(ts, To<LayoutSVGRoot>(o), indent);
-    return;
-  }
-  if (o.IsSVGText()) {
-    WriteSVGText(ts, To<LayoutSVGText>(o), indent);
     return;
   }
   if (o.IsSVGInline()) {

@@ -186,8 +186,6 @@ class LineLayoutItem {
 
   bool IsSVGInlineText() const { return layout_object_->IsSVGInlineText(); }
 
-  bool IsSVGText() const { return layout_object_->IsSVGText(); }
-
   bool IsSVGTextPath() const { return layout_object_->IsSVGTextPath(); }
 
   bool IsTableCell() const { return layout_object_->IsTableCell(); }

@@ -310,8 +310,8 @@ static bool IntersectsAllowingEmpty(const gfx::RectF& r1,
 // canvas.  Specifically: circle, ellipse, image, line, path, polygon, polyline,
 // rect, text and use.
 static bool IsIntersectionOrEnclosureTarget(LayoutObject* layout_object) {
-  return layout_object->IsSVGShape() || layout_object->IsSVGText() ||
-         layout_object->IsNGSVGText() || layout_object->IsSVGImage() ||
+  return layout_object->IsSVGShape() || layout_object->IsNGSVGText() ||
+         layout_object->IsSVGImage() ||
          IsA<SVGUseElement>(*layout_object->GetNode());
 }
 
