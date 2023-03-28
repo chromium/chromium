@@ -1,7 +1,7 @@
 caption: Enable the default search provider
 default: null
 desc: |-
-  Setting the policy to Enabled means a default search is performed when a user enters non-URL text in the address bar. To specify the default search provider, set the rest of the default search policies. If you leave those policies empty, the user can choose the default provider. Setting the policy to Disabled means there's no search when the user enters non-URL text in the address bar.
+  Setting the policy to Enabled means a default search is performed when a user enters non-URL text in the address bar. To specify the default search provider, set the rest of the default search policies. If you leave those policies empty, the user can choose the default provider. Setting the policy to Disabled means there's no search when the user enters non-URL text in the address bar. The Disabled value is not supported by the <ph name="GOOGLE_ADMIN_CONSOLE_PRODUCT_NAME">Google Admin console</ph>.
 
         If you set the policy, users can't change it in <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph>. If not set, the default search provider is on, and users can set the search provider list.
 
