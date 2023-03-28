@@ -67,8 +67,8 @@ void BrowserDesktopWindowTreeHostLacros::UpdateFrameHints() {
   const bool showing_frame =
       browser_view_->frame()->UseCustomFrame() && !view->IsFrameCondensed();
   const float scale = device_scale_factor();
-  const gfx::Size widget_size =
-      view->GetWidget()->GetWindowBoundsInScreen().size();
+  const gfx::Size widget_size_px =
+      platform_window()->GetBoundsInPixels().size();
 
   std::vector<gfx::Rect> opaque_region;
   if (showing_frame &&
@@ -124,8 +124,10 @@ void BrowserDesktopWindowTreeHostLacros::UpdateFrameHints() {
   } else {
     GetContentWindow()->layer()->SetRoundedCornerRadius({});
     GetContentWindow()->layer()->SetIsFastRoundedCorner(false);
-    opaque_region.push_back({{}, widget_size});
+    opaque_region.push_back({{}, widget_size_px});
   }
+  // TODO(crbug.com/1306688): Instead of setting OpaqueRegion, set the rounded
+  // corners in dp.
   platform_window()->SetOpaqueRegion(&opaque_region);
 }
 
