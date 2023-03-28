@@ -39,6 +39,12 @@ const char kContentShellDevToolsTabTarget[] =
 // comma-separated list of origins.
 const char kIsolatedContextOrigins[] = "isolated-context-origins";
 
+// Use the given address instead of the default loopback for accepting remote
+// debugging connections. Note that the remote debugging protocol does not
+// perform any authentication, so exposing it too widely can be a security
+// risk.
+const char kRemoteDebuggingAddress[] = "remote-debugging-address";
+
 // Runs Content Shell in web test mode, injecting test-only behaviour for
 // blink web tests.
 const char kRunWebTests[] = "run-web-tests";

@@ -143,8 +143,18 @@ std::unique_ptr<content::DevToolsSocketFactory> CreateSocketFactory() {
       DLOG(WARNING) << "Invalid http debugger port number " << temp_port;
     }
   }
+  // By default listen to incoming DevTools connections on localhost.
+  std::string address_str = net::IPAddress::IPv4Localhost().ToString();
+  if (command_line.HasSwitch(switches::kRemoteDebuggingAddress)) {
+    net::IPAddress address;
+    address_str =
+        command_line.GetSwitchValueASCII(switches::kRemoteDebuggingAddress);
+    if (!address.AssignFromIPLiteral(address_str)) {
+      DLOG(WARNING) << "Invalid devtools server address: " << address_str;
+    }
+  }
   return std::unique_ptr<content::DevToolsSocketFactory>(
-      new TCPServerSocketFactory("127.0.0.1", port));
+      new TCPServerSocketFactory(address_str, port));
 #endif
 }
 
