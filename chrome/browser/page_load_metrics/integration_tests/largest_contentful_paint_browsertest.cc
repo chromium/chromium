@@ -110,10 +110,11 @@ IN_PROC_BROWSER_TEST_F(MetricIntegrationTest, DISABLED_LargestContentfulPaint) {
     EXPECT_EQ("", result.error);
     const auto& list = result.value.GetList();
     EXPECT_EQ(1u, list.size());
-    const std::string* url = list[0].FindStringPath("url");
+    ASSERT_TRUE(list[0].is_dict());
+    const std::string* url = list[0].GetDict().FindString("url");
     EXPECT_TRUE(url);
     EXPECT_EQ(*url, expected_url[i]);
-    lcp_timestamps[i] = list[0].FindDoublePath("time");
+    lcp_timestamps[i] = list[0].GetDict().FindDouble("time");
     EXPECT_TRUE(lcp_timestamps[i].has_value());
 
     waiter->Wait();

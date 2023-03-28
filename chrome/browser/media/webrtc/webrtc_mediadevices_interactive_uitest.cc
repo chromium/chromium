@@ -99,20 +99,21 @@ class WebRtcMediaDevicesInteractiveUITest
     bool found_audio_input = false;
     bool found_video_input = false;
 
-    for (const auto& dict : values.GetList()) {
-      ASSERT_TRUE(dict.is_dict());
+    for (const auto& value : values.GetList()) {
+      const base::Value::Dict* dict = value.GetIfDict();
+      ASSERT_TRUE(dict);
       MediaDeviceInfo device;
-      ASSERT_TRUE(dict.FindStringPath("deviceId"));
-      device.device_id = *dict.FindStringPath("deviceId");
+      ASSERT_TRUE(dict->FindString("deviceId"));
+      device.device_id = *dict->FindString("deviceId");
 
-      ASSERT_TRUE(dict.FindStringPath("kind"));
-      device.kind = *dict.FindStringPath("kind");
+      ASSERT_TRUE(dict->FindString("kind"));
+      device.kind = *dict->FindString("kind");
 
-      ASSERT_TRUE(dict.FindStringPath("label"));
-      device.label = *dict.FindStringPath("label");
+      ASSERT_TRUE(dict->FindString("label"));
+      device.label = *dict->FindString("label");
 
-      ASSERT_TRUE(dict.FindStringPath("groupId"));
-      device.group_id = *dict.FindStringPath("groupId");
+      ASSERT_TRUE(dict->FindString("groupId"));
+      device.group_id = *dict->FindString("groupId");
 
       // Should be HMAC SHA256.
       if (!media::AudioDeviceDescription::IsDefaultDevice(device.device_id) &&
