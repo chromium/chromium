@@ -5,11 +5,43 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_DOM_ELEMENT_RARE_DATA_VECTOR_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_DOM_ELEMENT_RARE_DATA_VECTOR_H_
 
-#include "third_party/blink/renderer/core/dom/element_rare_data_base.h"
+#include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/dom/element_rare_data_field.h"
+#include "third_party/blink/renderer/core/dom/focusgroup_flags.h"
+#include "third_party/blink/renderer/core/dom/node_rare_data.h"
+#include "third_party/blink/renderer/core/dom/pseudo_element.h"
+#include "third_party/blink/renderer/core/dom/pseudo_element_data.h"
 #include "third_party/blink/renderer/platform/heap/trace_traits.h"
+#include "third_party/blink/renderer/platform/region_capture_crop_id.h"
+#include "third_party/blink/renderer/platform/wtf/text/atomic_string.h"
 
 namespace blink {
+
+class CSSStyleDeclaration;
+class ShadowRoot;
+class NamedNodeMap;
+class DOMTokenList;
+class DatasetDOMStringMap;
+class ElementAnimations;
+class Attr;
+typedef HeapVector<Member<Attr>> AttrNodeList;
+class ElementIntersectionObserverData;
+class ContainerQueryEvaluator;
+class EditContext;
+class AnchorElementObserver;
+class InlineStylePropertyMap;
+class ElementInternals;
+class AccessibleNode;
+class DisplayLockContext;
+class ContainerQueryData;
+class ResizeObserver;
+class ResizeObservation;
+class CustomElementDefinition;
+class PopoverData;
+class CSSToggleMap;
+class HTMLElement;
+
+enum class ElementFlags;
 
 // This class stores lazily-initialized state associated with Elements, each of
 // which is identified in the FieldId enum. Since storing pointers to all of
@@ -28,7 +60,7 @@ namespace blink {
 //   0: Member<ShadowRoot>
 //   1: Member<EditContext>
 // Bitfield: 0b00000000000000000000001000000010
-class CORE_EXPORT ElementRareDataVector final : public ElementRareDataBase {
+class CORE_EXPORT ElementRareDataVector final : public NodeRareData {
  private:
   friend class ElementRareDataVectorTest;
   enum class FieldId : unsigned {
@@ -146,141 +178,254 @@ class CORE_EXPORT ElementRareDataVector final : public ElementRareDataBase {
   void SetPseudoElement(
       PseudoId,
       PseudoElement*,
-      const AtomicString& document_transition_tag = g_null_atom) override;
+      const AtomicString& document_transition_tag = g_null_atom);
   PseudoElement* GetPseudoElement(
       PseudoId,
-      const AtomicString& document_transition_tag = g_null_atom) const override;
-  PseudoElementData::PseudoElementVector GetPseudoElements() const override;
+      const AtomicString& document_transition_tag = g_null_atom) const;
+  PseudoElementData::PseudoElementVector GetPseudoElements() const;
 
-  CSSStyleDeclaration& EnsureInlineCSSStyleDeclaration(
-      Element* owner_element) override;
+  CSSStyleDeclaration& EnsureInlineCSSStyleDeclaration(Element* owner_element);
 
-  ShadowRoot* GetShadowRoot() const override;
-  void SetShadowRoot(ShadowRoot& shadow_root) override;
+  ShadowRoot* GetShadowRoot() const;
+  void SetShadowRoot(ShadowRoot& shadow_root);
 
-  NamedNodeMap* AttributeMap() const override;
-  void SetAttributeMap(NamedNodeMap* attribute_map) override;
+  NamedNodeMap* AttributeMap() const;
+  void SetAttributeMap(NamedNodeMap* attribute_map);
 
-  DOMTokenList* GetClassList() const override;
-  void SetClassList(DOMTokenList* class_list) override;
+  DOMTokenList* GetClassList() const;
+  void SetClassList(DOMTokenList* class_list);
 
-  DatasetDOMStringMap* Dataset() const override;
-  void SetDataset(DatasetDOMStringMap* dataset) override;
+  DatasetDOMStringMap* Dataset() const;
+  void SetDataset(DatasetDOMStringMap* dataset);
 
-  ScrollOffset SavedLayerScrollOffset() const override;
-  void SetSavedLayerScrollOffset(ScrollOffset offset) override;
+  ScrollOffset SavedLayerScrollOffset() const;
+  void SetSavedLayerScrollOffset(ScrollOffset offset);
 
-  ElementAnimations* GetElementAnimations() override;
-  void SetElementAnimations(ElementAnimations* element_animations) override;
+  ElementAnimations* GetElementAnimations();
+  void SetElementAnimations(ElementAnimations* element_animations);
 
-  bool HasPseudoElements() const override;
-  void ClearPseudoElements() override;
+  bool HasPseudoElements() const;
+  void ClearPseudoElements();
 
-  AttrNodeList& EnsureAttrNodeList() override;
-  AttrNodeList* GetAttrNodeList() override;
-  void RemoveAttrNodeList() override;
-  void AddAttr(Attr* attr) override;
+  AttrNodeList& EnsureAttrNodeList();
+  AttrNodeList* GetAttrNodeList();
+  void RemoveAttrNodeList();
+  void AddAttr(Attr* attr);
 
-  ElementIntersectionObserverData* IntersectionObserverData() const override;
-  ElementIntersectionObserverData& EnsureIntersectionObserverData() override;
+  ElementIntersectionObserverData* IntersectionObserverData() const;
+  ElementIntersectionObserverData& EnsureIntersectionObserverData();
 
-  ContainerQueryEvaluator* GetContainerQueryEvaluator() const override;
-  void SetContainerQueryEvaluator(ContainerQueryEvaluator* evaluator) override;
+  ContainerQueryEvaluator* GetContainerQueryEvaluator() const;
+  void SetContainerQueryEvaluator(ContainerQueryEvaluator* evaluator);
 
-  const AtomicString& GetNonce() const override;
-  void SetNonce(const AtomicString& nonce) override;
+  const AtomicString& GetNonce() const;
+  void SetNonce(const AtomicString& nonce);
 
-  const AtomicString& IsValue() const override;
-  void SetIsValue(const AtomicString& is_value) override;
+  const AtomicString& IsValue() const;
+  void SetIsValue(const AtomicString& is_value);
 
-  EditContext* GetEditContext() const override;
-  void SetEditContext(EditContext* edit_context) override;
+  EditContext* GetEditContext() const;
+  void SetEditContext(EditContext* edit_context);
 
-  void SetPart(DOMTokenList* part) override;
-  DOMTokenList* GetPart() const override;
+  void SetPart(DOMTokenList* part);
+  DOMTokenList* GetPart() const;
 
-  void SetPartNamesMap(const AtomicString part_names) override;
-  const NamesMap* PartNamesMap() const override;
+  void SetPartNamesMap(const AtomicString part_names);
+  const NamesMap* PartNamesMap() const;
 
-  InlineStylePropertyMap& EnsureInlineStylePropertyMap(
-      Element* owner_element) override;
-  InlineStylePropertyMap* GetInlineStylePropertyMap() override;
+  InlineStylePropertyMap& EnsureInlineStylePropertyMap(Element* owner_element);
+  InlineStylePropertyMap* GetInlineStylePropertyMap();
 
-  const ElementInternals* GetElementInternals() const override;
-  ElementInternals& EnsureElementInternals(HTMLElement& target) override;
+  const ElementInternals* GetElementInternals() const;
+  ElementInternals& EnsureElementInternals(HTMLElement& target);
 
-  AccessibleNode* GetAccessibleNode() const override;
-  AccessibleNode* EnsureAccessibleNode(Element* owner_element) override;
-  void ClearAccessibleNode() override;
+  AccessibleNode* GetAccessibleNode() const;
+  AccessibleNode* EnsureAccessibleNode(Element* owner_element);
+  void ClearAccessibleNode();
 
-  DisplayLockContext* EnsureDisplayLockContext(Element* element) override;
-  DisplayLockContext* GetDisplayLockContext() const override;
+  DisplayLockContext* EnsureDisplayLockContext(Element* element);
+  DisplayLockContext* GetDisplayLockContext() const;
 
-  ContainerQueryData& EnsureContainerQueryData() override;
-  ContainerQueryData* GetContainerQueryData() const override;
-  void ClearContainerQueryData() override;
+  ContainerQueryData& EnsureContainerQueryData();
+  ContainerQueryData* GetContainerQueryData() const;
+  void ClearContainerQueryData();
 
   // Returns the crop-ID if one was set, or nullptr otherwise.
-  const RegionCaptureCropId* GetRegionCaptureCropId() const override;
+  const RegionCaptureCropId* GetRegionCaptureCropId() const;
   // Sets a crop-ID on the item. Must be called at most once. Cannot be used
   // to unset a previously set crop-ID.
-  void SetRegionCaptureCropId(
-      std::unique_ptr<RegionCaptureCropId> crop_id) override;
+  void SetRegionCaptureCropId(std::unique_ptr<RegionCaptureCropId> crop_id);
 
-  ResizeObserverDataMap* ResizeObserverData() const override;
-  ResizeObserverDataMap& EnsureResizeObserverData() override;
+  using ResizeObserverDataMap =
+      HeapHashMap<Member<ResizeObserver>, Member<ResizeObservation>>;
+  ResizeObserverDataMap* ResizeObserverData() const;
+  ResizeObserverDataMap& EnsureResizeObserverData();
 
-  void SetCustomElementDefinition(CustomElementDefinition* definition) override;
-  CustomElementDefinition* GetCustomElementDefinition() const override;
+  void SetCustomElementDefinition(CustomElementDefinition* definition);
+  CustomElementDefinition* GetCustomElementDefinition() const;
 
-  void SetLastRememberedBlockSize(absl::optional<LayoutUnit> size) override;
-  void SetLastRememberedInlineSize(absl::optional<LayoutUnit> size) override;
-  absl::optional<LayoutUnit> LastRememberedBlockSize() const override;
-  absl::optional<LayoutUnit> LastRememberedInlineSize() const override;
+  void SetLastRememberedBlockSize(absl::optional<LayoutUnit> size);
+  void SetLastRememberedInlineSize(absl::optional<LayoutUnit> size);
+  absl::optional<LayoutUnit> LastRememberedBlockSize() const;
+  absl::optional<LayoutUnit> LastRememberedInlineSize() const;
 
-  PopoverData* GetPopoverData() const override;
-  PopoverData& EnsurePopoverData() override;
-  void RemovePopoverData() override;
+  PopoverData* GetPopoverData() const;
+  PopoverData& EnsurePopoverData();
+  void RemovePopoverData();
 
-  CSSToggleMap* GetToggleMap() const override;
-  CSSToggleMap& EnsureToggleMap(Element* owner_element) override;
+  CSSToggleMap* GetToggleMap() const;
+  CSSToggleMap& EnsureToggleMap(Element* owner_element);
 
-  bool HasElementFlag(ElementFlags mask) const override {
+  bool HasElementFlag(ElementFlags mask) const {
     return element_flags_ & static_cast<uint16_t>(mask);
   }
-  void SetElementFlag(ElementFlags mask, bool value) override {
+  void SetElementFlag(ElementFlags mask, bool value) {
     element_flags_ =
         (element_flags_ & ~static_cast<uint16_t>(mask)) |
         (-static_cast<uint16_t>(value) & static_cast<uint16_t>(mask));
   }
-  void ClearElementFlag(ElementFlags mask) override {
+  void ClearElementFlag(ElementFlags mask) {
     element_flags_ &= ~static_cast<uint16_t>(mask);
   }
 
-  bool HasRestyleFlags() const override {
-    return bit_field_.get<RestyleFlags>();
-  }
-  void ClearRestyleFlags() override { bit_field_.set<RestyleFlags>(0); }
+  bool HasRestyleFlags() const { return bit_field_.get<RestyleFlags>(); }
+  void ClearRestyleFlags() { bit_field_.set<RestyleFlags>(0); }
 
-  void SetTabIndexExplicitly() override {
+  void SetTabIndexExplicitly() {
     SetElementFlag(ElementFlags::kTabIndexWasSetExplicitly, true);
   }
-  void ClearTabIndexExplicitly() override {
+  void ClearTabIndexExplicitly() {
     ClearElementFlag(ElementFlags::kTabIndexWasSetExplicitly);
   }
 
-  AnchorScrollData* GetAnchorScrollData() const override;
-  void RemoveAnchorScrollData() override;
-  AnchorScrollData& EnsureAnchorScrollData(Element*) override;
+  AnchorScrollData* GetAnchorScrollData() const;
+  void RemoveAnchorScrollData();
+  AnchorScrollData& EnsureAnchorScrollData(Element*);
 
-  AnchorElementObserver& EnsureAnchorElementObserver(HTMLElement*) override;
-  AnchorElementObserver* GetAnchorElementObserver() const override;
+  AnchorElementObserver& EnsureAnchorElementObserver(HTMLElement*);
+  AnchorElementObserver* GetAnchorElementObserver() const;
 
-  void IncrementImplicitlyAnchoredElementCount() override;
-  void DecrementImplicitlyAnchoredElementCount() override;
-  bool HasImplicitlyAnchoredElement() const override;
+  void IncrementImplicitlyAnchoredElementCount();
+  void DecrementImplicitlyAnchoredElementCount();
+  bool HasImplicitlyAnchoredElement() const;
+
+  void SetDidAttachInternals() { did_attach_internals_ = true; }
+  bool DidAttachInternals() const { return did_attach_internals_; }
+  void SetStyleShouldForceLegacyLayout(bool force) {
+    style_should_force_legacy_layout_ = force;
+  }
+  bool StyleShouldForceLegacyLayout() const {
+    return style_should_force_legacy_layout_;
+  }
+  void SetShouldForceLegacyLayoutForChild(bool force) {
+    should_force_legacy_layout_for_child_ = force;
+  }
+  bool ShouldForceLegacyLayoutForChild() const {
+    return should_force_legacy_layout_for_child_;
+  }
+  bool HasUndoStack() const { return has_undo_stack_; }
+  void SetHasUndoStack(bool value) { has_undo_stack_ = value; }
+  bool ScrollbarPseudoElementStylesDependOnFontMetrics() const {
+    return scrollbar_pseudo_element_styles_depend_on_font_metrics_;
+  }
+  void SetScrollbarPseudoElementStylesDependOnFontMetrics(bool value) {
+    scrollbar_pseudo_element_styles_depend_on_font_metrics_ = value;
+  }
+
+  FocusgroupFlags GetFocusgroupFlags() const { return focusgroup_flags_; }
+  void SetFocusgroupFlags(FocusgroupFlags flags) { focusgroup_flags_ = flags; }
+  void ClearFocusgroupFlags() { focusgroup_flags_ = FocusgroupFlags::kNone; }
+
+  bool AffectedBySubjectHas() const {
+    return has_invalidation_flags_.affected_by_subject_has;
+  }
+  void SetAffectedBySubjectHas() {
+    has_invalidation_flags_.affected_by_subject_has = true;
+  }
+  bool AffectedByNonSubjectHas() const {
+    return has_invalidation_flags_.affected_by_non_subject_has;
+  }
+  void SetAffectedByNonSubjectHas() {
+    has_invalidation_flags_.affected_by_non_subject_has = true;
+  }
+  bool AncestorsOrAncestorSiblingsAffectedByHas() const {
+    return has_invalidation_flags_
+        .ancestors_or_ancestor_siblings_affected_by_has;
+  }
+  void SetAncestorsOrAncestorSiblingsAffectedByHas() {
+    has_invalidation_flags_.ancestors_or_ancestor_siblings_affected_by_has =
+        true;
+  }
+  unsigned GetSiblingsAffectedByHasFlags() const {
+    return has_invalidation_flags_.siblings_affected_by_has;
+  }
+  bool HasSiblingsAffectedByHasFlags(unsigned flags) const {
+    return has_invalidation_flags_.siblings_affected_by_has & flags;
+  }
+  void SetSiblingsAffectedByHasFlags(unsigned flags) {
+    has_invalidation_flags_.siblings_affected_by_has |= flags;
+  }
+  bool AffectedByPseudoInHas() const {
+    return has_invalidation_flags_.affected_by_pseudos_in_has;
+  }
+  void SetAffectedByPseudoInHas() {
+    has_invalidation_flags_.affected_by_pseudos_in_has = true;
+  }
+  bool AncestorsOrSiblingsAffectedByHoverInHas() const {
+    return has_invalidation_flags_
+        .ancestors_or_siblings_affected_by_hover_in_has;
+  }
+  void SetAncestorsOrSiblingsAffectedByHoverInHas() {
+    has_invalidation_flags_.ancestors_or_siblings_affected_by_hover_in_has =
+        true;
+  }
+  bool AncestorsOrSiblingsAffectedByActiveInHas() const {
+    return has_invalidation_flags_
+        .ancestors_or_siblings_affected_by_active_in_has;
+  }
+  void SetAncestorsOrSiblingsAffectedByActiveInHas() {
+    has_invalidation_flags_.ancestors_or_siblings_affected_by_active_in_has =
+        true;
+  }
+  bool AncestorsOrSiblingsAffectedByFocusInHas() const {
+    return has_invalidation_flags_
+        .ancestors_or_siblings_affected_by_focus_in_has;
+  }
+  void SetAncestorsOrSiblingsAffectedByFocusInHas() {
+    has_invalidation_flags_.ancestors_or_siblings_affected_by_focus_in_has =
+        true;
+  }
+  bool AncestorsOrSiblingsAffectedByFocusVisibleInHas() const {
+    return has_invalidation_flags_
+        .ancestors_or_siblings_affected_by_focus_visible_in_has;
+  }
+  void SetAncestorsOrSiblingsAffectedByFocusVisibleInHas() {
+    has_invalidation_flags_
+        .ancestors_or_siblings_affected_by_focus_visible_in_has = true;
+  }
+  bool AffectedByLogicalCombinationsInHas() const {
+    return has_invalidation_flags_.affected_by_logical_combinations_in_has;
+  }
+  void SetAffectedByLogicalCombinationsInHas() {
+    has_invalidation_flags_.affected_by_logical_combinations_in_has = true;
+  }
+  bool AffectedByMultipleHas() const {
+    return has_invalidation_flags_.affected_by_multiple_has;
+  }
+  void SetAffectedByMultipleHas() {
+    has_invalidation_flags_.affected_by_multiple_has = true;
+  }
 
   void Trace(blink::Visitor*) const override;
+
+ private:
+  unsigned did_attach_internals_ : 1;
+  unsigned should_force_legacy_layout_for_child_ : 1;
+  unsigned style_should_force_legacy_layout_ : 1;
+  unsigned has_undo_stack_ : 1;
+  unsigned scrollbar_pseudo_element_styles_depend_on_font_metrics_ : 1;
+  HasInvalidationFlags has_invalidation_flags_;
+  FocusgroupFlags focusgroup_flags_ = FocusgroupFlags::kNone;
 };
 
 }  // namespace blink

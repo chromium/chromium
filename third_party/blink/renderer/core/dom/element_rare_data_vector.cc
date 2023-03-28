@@ -14,7 +14,6 @@
 #include "third_party/blink/renderer/core/dom/css_toggle_map.h"
 #include "third_party/blink/renderer/core/dom/dataset_dom_string_map.h"
 #include "third_party/blink/renderer/core/dom/dom_token_list.h"
-#include "third_party/blink/renderer/core/dom/element_rare_data_base.h"
 #include "third_party/blink/renderer/core/dom/has_invalidation_flags.h"
 #include "third_party/blink/renderer/core/dom/named_node_map.h"
 #include "third_party/blink/renderer/core/dom/names_map.h"
@@ -37,7 +36,7 @@
 namespace blink {
 
 ElementRareDataVector::ElementRareDataVector(NodeData* node_layout_data)
-    : ElementRareDataBase(node_layout_data) {}
+    : NodeRareData(ClassType::kElementRareData, std::move(*node_layout_data)) {}
 
 ElementRareDataVector::~ElementRareDataVector() {
   DCHECK(!GetField(FieldId::kPseudoElementData));
@@ -421,7 +420,6 @@ bool ElementRareDataVector::HasImplicitlyAnchoredElement() const {
 void ElementRareDataVector::Trace(blink::Visitor* visitor) const {
   visitor->Trace(fields_);
   NodeRareData::Trace(visitor);
-  ElementRareDataBase::Trace(visitor);
 }
 
 }  // namespace blink

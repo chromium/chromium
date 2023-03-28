@@ -49,7 +49,6 @@
 #include "third_party/blink/renderer/core/dom/document_type.h"
 #include "third_party/blink/renderer/core/dom/dom_node_ids.h"
 #include "third_party/blink/renderer/core/dom/element.h"
-#include "third_party/blink/renderer/core/dom/element_rare_data.h"
 #include "third_party/blink/renderer/core/dom/element_rare_data_vector.h"
 #include "third_party/blink/renderer/core/dom/element_traversal.h"
 #include "third_party/blink/renderer/core/dom/events/add_event_listener_options_resolved.h"
@@ -339,11 +338,7 @@ Node::~Node() {
 
 NodeRareData& Node::CreateRareData() {
   if (IsElementNode()) {
-    if (RuntimeEnabledFeatures::ElementSuperRareDataEnabled()) {
-      data_ = MakeGarbageCollected<ElementRareDataVector>(data_);
-    } else {
-      data_ = MakeGarbageCollected<ElementRareData>(data_);
-    }
+    data_ = MakeGarbageCollected<ElementRareDataVector>(data_);
   } else {
     data_ = MakeGarbageCollected<NodeRareData>(std::move(*data_));
   }

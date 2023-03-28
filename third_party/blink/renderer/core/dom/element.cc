@@ -52,6 +52,8 @@
 #include "third_party/blink/renderer/core/accessibility/ax_context.h"
 #include "third_party/blink/renderer/core/accessibility/ax_object_cache.h"
 #include "third_party/blink/renderer/core/animation/css/css_animations.h"
+#include "third_party/blink/renderer/core/animation/element_animations.h"
+#include "third_party/blink/renderer/core/aom/accessible_node.h"
 #include "third_party/blink/renderer/core/aom/computed_accessible_node.h"
 #include "third_party/blink/renderer/core/css/container_query_data.h"
 #include "third_party/blink/renderer/core/css/container_query_evaluator.h"
@@ -63,6 +65,7 @@
 #include "third_party/blink/renderer/core/css/css_selector_watch.h"
 #include "third_party/blink/renderer/core/css/css_style_sheet.h"
 #include "third_party/blink/renderer/core/css/css_value.h"
+#include "third_party/blink/renderer/core/css/cssom/inline_style_property_map.h"
 #include "third_party/blink/renderer/core/css/parser/css_parser.h"
 #include "third_party/blink/renderer/core/css/parser/css_selector_parser.h"
 #include "third_party/blink/renderer/core/css/post_style_update_scope.h"
@@ -80,11 +83,12 @@
 #include "third_party/blink/renderer/core/display_lock/display_lock_utilities.h"
 #include "third_party/blink/renderer/core/dom/attr.h"
 #include "third_party/blink/renderer/core/dom/container_node.h"
+#include "third_party/blink/renderer/core/dom/css_toggle.h"
+#include "third_party/blink/renderer/core/dom/css_toggle_map.h"
 #include "third_party/blink/renderer/core/dom/dataset_dom_string_map.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/dom_token_list.h"
 #include "third_party/blink/renderer/core/dom/element_data_cache.h"
-#include "third_party/blink/renderer/core/dom/element_rare_data.h"
 #include "third_party/blink/renderer/core/dom/element_rare_data_vector.h"
 #include "third_party/blink/renderer/core/dom/element_traversal.h"
 #include "third_party/blink/renderer/core/dom/events/event_dispatch_forbidden_scope.h"
@@ -971,7 +975,7 @@ HeapVector<Member<Element>>* Element::GetElementArrayAttribute(
 }
 
 NamedNodeMap* Element::attributesForBindings() const {
-  ElementRareDataBase& rare_data =
+  ElementRareDataVector& rare_data =
       const_cast<Element*>(this)->EnsureElementRareData();
   if (NamedNodeMap* attribute_map = rare_data.AttributeMap()) {
     return attribute_map;
@@ -996,13 +1000,13 @@ Vector<AtomicString> Element::getAttributeNames() const {
   return attributesVector;
 }
 
-inline ElementRareDataBase* Element::GetElementRareData() const {
+inline ElementRareDataVector* Element::GetElementRareData() const {
   DCHECK(HasRareData());
-  return static_cast<ElementRareDataBase*>(RareData());
+  return static_cast<ElementRareDataVector*>(RareData());
 }
 
-inline ElementRareDataBase& Element::EnsureElementRareData() {
-  return static_cast<ElementRareDataBase&>(EnsureRareData());
+inline ElementRareDataVector& Element::EnsureElementRareData() {
+  return static_cast<ElementRareDataVector&>(EnsureRareData());
 }
 
 void Element::RemovePopoverData() {
@@ -1042,7 +1046,7 @@ ElementAnimations* Element::GetElementAnimations() const {
 }
 
 ElementAnimations& Element::EnsureElementAnimations() {
-  ElementRareDataBase& rare_data = EnsureElementRareData();
+  ElementRareDataVector& rare_data = EnsureElementRareData();
   if (!rare_data.GetElementAnimations()) {
     rare_data.SetElementAnimations(MakeGarbageCollected<ElementAnimations>());
   }
@@ -2231,7 +2235,7 @@ AccessibleNode* Element::accessibleNode() {
     return nullptr;
   }
 
-  ElementRareDataBase& rare_data = EnsureElementRareData();
+  ElementRareDataVector& rare_data = EnsureElementRareData();
   return rare_data.EnsureAccessibleNode(this);
 }
 
@@ -2687,7 +2691,7 @@ Node::InsertionNotificationRequest Element::InsertedInto(
   }
 
   if (isConnected() && HasRareData()) {
-    ElementRareDataBase* rare_data = GetElementRareData();
+    ElementRareDataVector* rare_data = GetElementRareData();
     if (ElementIntersectionObserverData* observer_data =
             rare_data->IntersectionObserverData()) {
       observer_data->TrackWithController(
@@ -2819,7 +2823,7 @@ void Element::RemovedFrom(ContainerNode& insertion_point) {
   ClearElementFlag(ElementFlags::kIsInCanvasSubtree);
 
   if (HasRareData()) {
-    ElementRareDataBase* data = GetElementRareData();
+    ElementRareDataVector* data = GetElementRareData();
 
     data->ClearFocusgroupFlags();
     data->ClearRestyleFlags();
@@ -2978,7 +2982,7 @@ void Element::AttachLayoutTree(AttachContext& context) {
 void Element::DetachLayoutTree(bool performing_reattach) {
   HTMLFrameOwnerElement::PluginDisposeSuspendScope suspend_plugin_dispose;
   if (HasRareData()) {
-    ElementRareDataBase* data = GetElementRareData();
+    ElementRareDataVector* data = GetElementRareData();
     if (!performing_reattach) {
       data->ClearPseudoElements();
       data->ClearContainerQueryData();
@@ -3744,7 +3748,7 @@ StyleRecalcChange Element::RecalcOwnStyle(
   }
 
   if (!new_style && HasRareData()) {
-    ElementRareDataBase* rare_data = GetElementRareData();
+    ElementRareDataVector* rare_data = GetElementRareData();
     if (ElementAnimations* element_animations =
             rare_data->GetElementAnimations()) {
       element_animations->CssAnimations().Cancel();
@@ -4382,7 +4386,7 @@ void Element::SetNeedsCompositingUpdate() {
 
 void Element::SetRegionCaptureCropId(
     std::unique_ptr<RegionCaptureCropId> crop_id) {
-  ElementRareDataBase& rare_data = EnsureElementRareData();
+  ElementRareDataVector& rare_data = EnsureElementRareData();
 
   CHECK(!rare_data.GetRegionCaptureCropId());
 
@@ -7124,7 +7128,7 @@ Element* Element::closest(const AtomicString& selectors) {
 }
 
 DOMTokenList& Element::classList() {
-  ElementRareDataBase& rare_data = EnsureElementRareData();
+  ElementRareDataVector& rare_data = EnsureElementRareData();
   if (!rare_data.GetClassList()) {
     auto* class_list =
         MakeGarbageCollected<DOMTokenList>(*this, html_names::kClassAttr);
@@ -7136,7 +7140,7 @@ DOMTokenList& Element::classList() {
 }
 
 DOMStringMap& Element::dataset() {
-  ElementRareDataBase& rare_data = EnsureElementRareData();
+  ElementRareDataVector& rare_data = EnsureElementRareData();
   if (!rare_data.Dataset()) {
     rare_data.SetDataset(MakeGarbageCollected<DatasetDOMStringMap>(this));
   }
@@ -8319,7 +8323,7 @@ DOMTokenList* Element::GetPart() const {
 }
 
 DOMTokenList& Element::part() {
-  ElementRareDataBase& rare_data = EnsureElementRareData();
+  ElementRareDataVector& rare_data = EnsureElementRareData();
   DOMTokenList* part = rare_data.GetPart();
   if (!part) {
     part = MakeGarbageCollected<DOMTokenList>(*this, html_names::kPartAttr);
