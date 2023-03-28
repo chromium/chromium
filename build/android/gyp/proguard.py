@@ -608,15 +608,8 @@ def _Run(options):
   dynamic_config_data = _CreateDynamicConfig(options)
 
   logging.debug('Looking for embedded configs')
-  libraries = []
-  for p in options.classpath:
-    # TODO(bjoyce): Remove filter once old android support libraries are gone.
-    # Fix for having Library class extend program class dependency problem.
-    if 'com_android_support' in p or 'android_support_test' in p:
-      continue
-    # If a jar is part of input no need to include it as library jar.
-    if p not in libraries and p not in options.input_paths:
-      libraries.append(p)
+  # If a jar is part of input no need to include it as library jar.
+  libraries = [p for p in options.classpath if p not in options.input_paths]
 
   embedded_configs = {}
   for jar_path in options.input_paths + libraries:
