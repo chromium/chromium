@@ -64,6 +64,10 @@ template("nacl_toolchain") {
           rbe_cc_cfg_file = "${rbe_cfg_dir}/nacl/rewrapper_linux.cfg"
         }
       }
+
+      if (use_remoteexec_links) {
+        rbe_link_cfg_file = "${rbe_cfg_dir}/nacl/rewrapper_linux_link.cfg"
+      }
     }
   }
 }
