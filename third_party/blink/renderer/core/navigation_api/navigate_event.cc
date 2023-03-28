@@ -5,9 +5,11 @@
 #include "third_party/blink/renderer/core/navigation_api/navigate_event.h"
 
 #include "third_party/blink/public/mojom/devtools/console_message.mojom-shared.h"
+#include "third_party/blink/renderer/bindings/core/v8/script_function.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_navigate_event_init.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_navigation_intercept_handler.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_navigation_intercept_options.h"
+#include "third_party/blink/renderer/core/accessibility/ax_object_cache.h"
 #include "third_party/blink/renderer/core/dom/abort_signal.h"
 #include "third_party/blink/renderer/core/dom/dom_exception.h"
 #include "third_party/blink/renderer/core/dom/element.h"
@@ -23,6 +25,25 @@
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 
 namespace blink {
+
+enum class ResolveType { kFulfill, kReject };
+class NavigateEvent::Reaction final : public ScriptFunction::Callable {
+ public:
+  Reaction(NavigateEvent* navigate_event, ResolveType resolve_type)
+      : navigate_event_(navigate_event), resolve_type_(resolve_type) {}
+  void Trace(Visitor* visitor) const final {
+    ScriptFunction::Callable::Trace(visitor);
+    visitor->Trace(navigate_event_);
+  }
+  ScriptValue Call(ScriptState*, ScriptValue value) final {
+    navigate_event_->ReactDone(value, resolve_type_ == ResolveType::kFulfill);
+    return ScriptValue();
+  }
+
+ private:
+  Member<NavigateEvent> navigate_event_;
+  ResolveType resolve_type_;
+};
 
 NavigateEvent::NavigateEvent(ExecutionContext* context,
                              const AtomicString& type,
@@ -165,22 +186,78 @@ void NavigateEvent::DoCommit() {
   }
 }
 
-ScriptPromise NavigateEvent::GetReactionPromiseAll(ScriptState* script_state) {
+void NavigateEvent::React(ScriptState* script_state) {
   CHECK(navigation_action_handlers_list_.empty());
+
+  ScriptPromise promise;
   if (!navigation_action_promises_list_.empty()) {
-    return ScriptPromise::All(script_state, navigation_action_promises_list_);
+    promise =
+        ScriptPromise::All(script_state, navigation_action_promises_list_);
+  } else {
+    // There is a subtle timing difference between the fast-path for zero
+    // promises and the path for 1+ promises, in both spec and implementation.
+    // In most uses of ScriptPromise::All / the Web IDL spec's "wait for all",
+    // this does not matter. However for us there are so many events and promise
+    // handlers firing around the same time (navigatesuccess, committed promise,
+    // finished promise, ...) that the difference is pretty easily observable by
+    // web developers and web platform tests. So, let's make sure we always go
+    // down the 1+ promises path.
+    promise = ScriptPromise::All(
+        script_state, HeapVector<ScriptPromise>(
+                          {ScriptPromise::CastUndefined(script_state)}));
   }
-  // There is a subtle timing difference between the fast-path for zero
-  // promises and the path for 1+ promises, in both spec and implementation.
-  // In most uses of ScriptPromise::All / the Web IDL spec's "wait for all",
-  // this does not matter. However for us there are so many events and promise
-  // handlers firing around the same time (navigatesuccess, committed promise,
-  // finished promise, ...) that the difference is pretty easily observable by
-  // web developers and web platform tests. So, let's make sure we always go
-  // down the 1+ promises path.
-  return ScriptPromise::All(
-      script_state,
-      HeapVector<ScriptPromise>({ScriptPromise::CastUndefined(script_state)}));
+
+  promise.Then(MakeGarbageCollected<ScriptFunction>(
+                   script_state,
+                   MakeGarbageCollected<Reaction>(this, ResolveType::kFulfill)),
+               MakeGarbageCollected<ScriptFunction>(
+                   script_state,
+                   MakeGarbageCollected<Reaction>(this, ResolveType::kReject)));
+
+  if (HasNavigationActions() && DomWindow()) {
+    if (AXObjectCache* cache =
+            DomWindow()->document()->ExistingAXObjectCache()) {
+      cache->HandleLoadStart(DomWindow()->document());
+    }
+  }
+}
+
+void NavigateEvent::ReactDone(ScriptValue value, bool did_fulfill) {
+  CHECK_NE(intercept_state_, InterceptState::kIntercepted);
+  CHECK_NE(intercept_state_, InterceptState::kFinished);
+
+  LocalDOMWindow* window = DomWindow();
+  if (signal_->aborted() || !window) {
+    return;
+  }
+
+  CHECK_EQ(this, window->navigation()->ongoing_navigate_event_);
+  window->navigation()->ongoing_navigate_event_ = nullptr;
+
+  if (intercept_state_ != InterceptState::kNone) {
+    PotentiallyResetTheFocus();
+    if (did_fulfill) {
+      PotentiallyProcessScrollBehavior();
+    }
+    intercept_state_ = InterceptState::kFinished;
+  }
+
+  if (did_fulfill) {
+    window->navigation()->DidFinishOngoingNavigation();
+  } else {
+    window->navigation()->DidFailOngoingNavigation(value);
+  }
+
+  if (HasNavigationActions()) {
+    if (LocalFrame* frame = window->GetFrame()) {
+      frame->Loader().DidFinishNavigation(
+          did_fulfill ? FrameLoader::NavigationFinishState::kSuccess
+                      : FrameLoader::NavigationFinishState::kFailure);
+    }
+    if (AXObjectCache* cache = window->document()->ExistingAXObjectCache()) {
+      cache->HandleLoadComplete(window->document());
+    }
+  }
 }
 
 void NavigateEvent::FinalizeNavigationActionPromisesList() {
@@ -255,19 +332,6 @@ void NavigateEvent::scroll(ExceptionState& exception_state) {
   }
 
   ProcessScrollBehavior();
-}
-
-void NavigateEvent::Finish(bool did_fulfill) {
-  CHECK_NE(intercept_state_, InterceptState::kIntercepted);
-  CHECK_NE(intercept_state_, InterceptState::kFinished);
-  if (intercept_state_ == InterceptState::kNone) {
-    return;
-  }
-  PotentiallyResetTheFocus();
-  if (did_fulfill) {
-    PotentiallyProcessScrollBehavior();
-  }
-  intercept_state_ = InterceptState::kFinished;
 }
 
 void NavigateEvent::PotentiallyProcessScrollBehavior() {

@@ -132,7 +132,7 @@ class CORE_EXPORT NavigationApi final : public EventTargetWithInlineData {
   void Trace(Visitor*) const final;
 
  private:
-  friend class NavigateReaction;
+  friend class NavigateEvent;
   NavigationHistoryEntry* GetEntryForRestore(
       const mojom::blink::NavigationApiHistoryEntryPtr&);
   void PopulateKeySet();
