@@ -552,6 +552,17 @@ TEST_F(AcceleratorConfigurationProviderTest, FilterOutHiddenAccelerators) {
       {/*trigger_on_press=*/false, ui::VKEY_LWIN, ui::EF_NONE, TOGGLE_APP_LIST},
       {/*trigger_on_press=*/false, ui::VKEY_LWIN, ui::EF_SHIFT_DOWN,
        TOGGLE_APP_LIST},
+      {/*trigger_on_press=*/true, ui::VKEY_F14, ui::EF_NONE,
+       SHOW_SHORTCUT_VIEWER},
+      {/*trigger_on_press=*/true, ui::VKEY_OEM_2,
+       ui::EF_SHIFT_DOWN | ui::EF_CONTROL_DOWN | ui::EF_ALT_DOWN,
+       SHOW_SHORTCUT_VIEWER},
+      {/*trigger_on_press=*/true, ui::VKEY_OEM_2,
+       ui::EF_SHIFT_DOWN | ui::EF_CONTROL_DOWN, OPEN_GET_HELP},
+      {/*trigger_on_press=*/false, ui::VKEY_SPACE, ui::EF_CONTROL_DOWN,
+       SWITCH_TO_LAST_USED_IME},
+      {/*trigger_on_press=*/true, ui::VKEY_ZOOM, ui::EF_SHIFT_DOWN,
+       TOGGLE_FULLSCREEN},
   };
 
   // Initialize with a set of accelerators that include hidden accelerators.

@@ -58,6 +58,23 @@ const HiddenAcceleratorMap& GetHiddenAcceleratorMap() {
          ui::Accelerator(ui::VKEY_LWIN, ui::EF_NONE,
                          ui::Accelerator::KeyState::RELEASED),
          ui::Accelerator(ui::VKEY_LWIN, ui::EF_SHIFT_DOWN,
+                         ui::Accelerator::KeyState::RELEASED)}},
+       {SHOW_SHORTCUT_VIEWER,
+        {ui::Accelerator(ui::VKEY_F14, ui::EF_NONE,
+                         ui::Accelerator::KeyState::PRESSED),
+         ui::Accelerator(
+             ui::VKEY_OEM_2,
+             ui::EF_SHIFT_DOWN | ui::EF_CONTROL_DOWN | ui::EF_ALT_DOWN,
+             ui::Accelerator::KeyState::PRESSED)}},
+       {OPEN_GET_HELP,
+        {ui::Accelerator(ui::VKEY_OEM_2,
+                         ui::EF_SHIFT_DOWN | ui::EF_CONTROL_DOWN,
+                         ui::Accelerator::KeyState::PRESSED)}},
+       {TOGGLE_FULLSCREEN,
+        {ui::Accelerator(ui::VKEY_ZOOM, ui::EF_SHIFT_DOWN,
+                         ui::Accelerator::KeyState::PRESSED)}},
+       {SWITCH_TO_LAST_USED_IME,
+        {ui::Accelerator(ui::VKEY_SPACE, ui::EF_CONTROL_DOWN,
                          ui::Accelerator::KeyState::RELEASED)}}});
   return *hiddenAcceleratorMap;
 }
