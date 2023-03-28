@@ -3099,8 +3099,12 @@ void RenderFrameImpl::CommitSameDocumentNavigation(
     // WeakPtr as an easy way to detect whether this has occured. If so, this
     // method should return immediately and not touch any part of the object,
     // otherwise it will result in a use-after-free bug.
-    if (!weak_this)
+    // Similarly, check whether `navigation_state` is still the state associated
+    // with the WebDocumentLoader. It may have been preempted by a navigation
+    // started by an event handler.
+    if (!weak_this || document_state->navigation_state() != navigation_state) {
       return;
+    }
   }
 
   DCHECK_NE(commit_status, blink::mojom::CommitResult::Ok);
