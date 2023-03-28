@@ -156,9 +156,6 @@ void DarkLightModeControllerImpl::RemoveObserver(ColorModeObserver* observer) {
 }
 
 bool DarkLightModeControllerImpl::IsDarkModeEnabled() const {
-  if (!features::IsDarkLightModeEnabled() && override_light_mode_as_default_)
-    return false;
-
   // Dark mode is off during OOBE when the OobeDialogState is still unknown.
   // When the SessionState is OOBE, the OobeDialogState is HIDDEN until the
   // first screen is shown. This fixes a bug that caused dark colors to be
@@ -170,51 +167,54 @@ bool DarkLightModeControllerImpl::IsDarkModeEnabled() const {
     return false;
   }
 
-  if (features::IsDarkLightModeEnabled()) {
-    if (is_dark_mode_enabled_in_oobe_for_testing_.has_value())
-      return is_dark_mode_enabled_in_oobe_for_testing_.value();
+  if (is_dark_mode_enabled_in_oobe_for_testing_.has_value()) {
+    return is_dark_mode_enabled_in_oobe_for_testing_.value();
+  }
 
-    if (oobe_state_ != OobeDialogState::HIDDEN) {
-      if (active_user_pref_service_) {
-        const PrefService::Preference* pref =
-            active_user_pref_service_->FindPreference(
-                prefs::kDarkModeScheduleType);
-        // Managed users do not see the theme selection screen, so to avoid
-        // confusion they should always see light colors during OOBE
-        if (pref->IsManaged() || pref->IsRecommended())
-          return false;
-
-        if (!active_user_pref_service_->GetBoolean(prefs::kDarkModeEnabled))
-          return false;
+  if (oobe_state_ != OobeDialogState::HIDDEN) {
+    if (active_user_pref_service_) {
+      const PrefService::Preference* pref =
+          active_user_pref_service_->FindPreference(
+              prefs::kDarkModeScheduleType);
+      // Managed users do not see the theme selection screen, so to avoid
+      // confusion they should always see light colors during OOBE
+      if (pref->IsManaged() || pref->IsRecommended()) {
+        return false;
       }
-      return base::Contains(kStatesSupportingDarkTheme, oobe_state_);
-    }
 
-    // On the login screen use the preference of the focused pod's user if they
-    // had the preference stored in the known_user and the pod is focused.
-    if (!active_user_pref_service_ &&
-        is_dark_mode_enabled_for_focused_pod_.has_value()) {
-      return is_dark_mode_enabled_for_focused_pod_.value();
+      if (!active_user_pref_service_->GetBoolean(prefs::kDarkModeEnabled)) {
+        return false;
+      }
     }
+    return base::Contains(kStatesSupportingDarkTheme, oobe_state_);
+  }
+
+  // On the login screen use the preference of the focused pod's user if they
+  // had the preference stored in the known_user and the pod is focused.
+  if (!active_user_pref_service_ &&
+      is_dark_mode_enabled_for_focused_pod_.has_value()) {
+    return is_dark_mode_enabled_for_focused_pod_.value();
   }
 
   // Keep the color mode as DARK in login screen or when dark/light mode feature
   // is not enabled.
-  if (!active_user_pref_service_ || !features::IsDarkLightModeEnabled())
+  if (!active_user_pref_service_) {
     return true;
+  }
 
   return active_user_pref_service_->GetBoolean(prefs::kDarkModeEnabled);
 }
 
 void DarkLightModeControllerImpl::SetDarkModeEnabledForTest(bool enabled) {
-  DCHECK(features::IsDarkLightModeEnabled());
   if (oobe_state_ != OobeDialogState::HIDDEN) {
     auto closure = GetNotifyOnDarkModeChangeClosure();
     is_dark_mode_enabled_in_oobe_for_testing_ = enabled;
     return;
   }
-  if (IsDarkModeEnabled() != enabled)
+
+  if (IsDarkModeEnabled() != enabled) {
     ToggleColorMode();
+  }
 }
 
 void DarkLightModeControllerImpl::OnOobeDialogStateChanged(
@@ -236,17 +236,11 @@ void DarkLightModeControllerImpl::OnFocusPod(const AccountId& account_id) {
 }
 
 void DarkLightModeControllerImpl::OnWallpaperColorsChanged() {
-  if (!features::IsDarkLightModeEnabled())
-    return;
-
   RefreshColorsOnColorMode(IsDarkModeEnabled());
 }
 
 void DarkLightModeControllerImpl::OnActiveUserPrefServiceChanged(
     PrefService* prefs) {
-  if (!features::IsDarkLightModeEnabled())
-    return;
-
   active_user_pref_service_ = prefs;
   pref_change_registrar_ = std::make_unique<PrefChangeRegistrar>();
   pref_change_registrar_->Init(prefs);
@@ -264,8 +258,6 @@ void DarkLightModeControllerImpl::OnActiveUserPrefServiceChanged(
 
 void DarkLightModeControllerImpl::OnSessionStateChanged(
     session_manager::SessionState state) {
-  if (!features::IsDarkLightModeEnabled())
-    return;
   if (state != session_manager::SessionState::OOBE &&
       state != session_manager::SessionState::LOGIN_PRIMARY) {
     oobe_state_ = OobeDialogState::HIDDEN;

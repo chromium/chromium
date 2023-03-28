@@ -4,7 +4,6 @@
 
 #include "ash/style/dark_light_mode_controller_impl.h"
 
-#include "ash/constants/ash_features.h"
 #include "ash/login/login_screen_controller.h"
 #include "ash/login/ui/login_test_base.h"
 #include "ash/public/cpp/login_types.h"
@@ -24,8 +23,6 @@ TEST_F(DarkLightModeControllerTest, ColorModeInNonActiveUserSessions) {
   auto* client = GetSessionControllerClient();
   auto* dark_light_mode_controller = DarkLightModeControllerImpl::Get();
 
-  base::test::ScopedFeatureList enable_dark_light;
-  enable_dark_light.InitAndEnableFeature(chromeos::features::kDarkLightMode);
   client->SetSessionState(session_manager::SessionState::UNKNOWN);
   // When dark/light mode is enabled. Color mode in non-active user sessions
   // (e.g, login page) should be DARK.
@@ -46,18 +43,6 @@ TEST_F(DarkLightModeControllerTest, ColorModeInNonActiveUserSessions) {
 
   dispatcher->NotifyOobeDialogState(OobeDialogState::GAIA_SIGNIN);
   EXPECT_FALSE(dark_light_mode_controller->IsDarkModeEnabled());
-
-  // When dark/light mode is disabled. Color mode in non-active user sessions
-  // (e.g, login page) should still be DARK.
-  base::test::ScopedFeatureList disable_dark_light;
-  disable_dark_light.InitWithFeatures(
-      /*enabled_features=*/{}, /*disabled_features=*/{
-          chromeos::features::kDarkLightMode, features::kNotificationsRefresh});
-  client->SetSessionState(session_manager::SessionState::UNKNOWN);
-  EXPECT_TRUE(dark_light_mode_controller->IsDarkModeEnabled());
-  client->SetSessionState(session_manager::SessionState::OOBE);
-  dispatcher->NotifyOobeDialogState(OobeDialogState::USER_CREATION);
-  EXPECT_TRUE(dark_light_mode_controller->IsDarkModeEnabled());
 }
 
 }  // namespace ash
