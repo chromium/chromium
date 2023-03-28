@@ -4,5 +4,6 @@
 # can read more about chromium-metrics-reviews@google.com at go/gwsq-gerrit.
 per-file histograms.xml=file://tools/metrics/histograms/metadata/METRIC_REVIEWER_OWNERS
 
+perrier@chromium.org
 curranmax@chromium.org
 mcrouse@chromium.org
