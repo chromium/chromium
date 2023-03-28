@@ -5732,6 +5732,11 @@
     "expiry_milestone": 115
   },
   {
+    "name": "page-content-annotations-remote-page-metadata",
+    "owners": [ "sophiechang", "chrome-intelligence-core@google.com"],
+    "expiry_milestone": 115
+  },
+  {
     "name": "page-entities-page-content-annotations",
     "owners": [ "sophiechang", "mcrouse", "chrome-intelligence-core@google.com"],
     "expiry_milestone": 115

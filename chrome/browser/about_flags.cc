@@ -5880,6 +5880,12 @@ const FeatureEntry kFeatureEntries[] = {
          optimization_guide::features::
              kPageContentAnnotationsPersistSalientImageMetadata)},
 
+    {"page-content-annotations-remote-page-metadata",
+     flag_descriptions::kPageContentAnnotationsRemotePageMetadataName,
+     flag_descriptions::kPageContentAnnotationsRemotePageMetadataDescription,
+     kOsDesktop,
+     FEATURE_VALUE_TYPE(optimization_guide::features::kRemotePageMetadata)},
+
     {"page-entities-page-content-annotations",
      flag_descriptions::kPageEntitiesPageContentAnnotationsName,
      flag_descriptions::kPageEntitiesPageContentAnnotationsDescription,

@@ -62830,6 +62830,7 @@ from previous Chrome versions.
   <int value="638865852" label="UsePreferredIntervalForVideo:disabled"/>
   <int value="639765450" label="AccessCodeCastTabSwitchingUI:enabled"/>
   <int value="640174751" label="AndroidMultipleDisplay:enabled"/>
+  <int value="640256251" label="RemotePageMetadata:enabled"/>
   <int value="642037198" label="SoleIntegration:disabled"/>
   <int value="642601306" label="ForceInitialSyncWhenDecryptionFails:enabled"/>
   <int value="642678255" label="ExoGamepadVibration:disabled"/>
@@ -65321,6 +65322,7 @@ from previous Chrome versions.
   <int value="1996125159" label="AutoplayMutedVideos:enabled"/>
   <int value="1997047666" label="NTPSnippetsIncreasedVisibility:disabled"/>
   <int value="1997347809" label="FedCmIdPregistration:enabled"/>
+  <int value="1997457877" label="RemotePageMetadata:disabled"/>
   <int value="1997931863" label="OmniboxContextMenuShowFullUrls:enabled"/>
   <int value="1998568354" label="DocumentPictureInPictureAPI:enabled"/>
   <int value="1998917160" label="AppServiceAdaptiveIcon:enabled"/>

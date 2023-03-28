@@ -1367,6 +1367,9 @@ extern const char kPageContentAnnotationsPersistSalientImageMetadataName[];
 extern const char
     kPageContentAnnotationsPersistSalientImageMetadataDescription[];
 
+extern const char kPageContentAnnotationsRemotePageMetadataName[];
+extern const char kPageContentAnnotationsRemotePageMetadataDescription[];
+
 extern const char kPageEntitiesPageContentAnnotationsName[];
 extern const char kPageEntitiesPageContentAnnotationsDescription[];
 
