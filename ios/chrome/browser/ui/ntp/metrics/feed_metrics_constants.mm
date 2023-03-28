@@ -189,3 +189,7 @@ const char kFeedSignInPromoUIContinueTapped[] =
     "ContentSuggestions.Feed.SignIn.FeedSignInPromoUIContinueTapped";
 const char kFeedSignInPromoUICancelTapped[] =
     "ContentSuggestions.Feed.SignIn.FeedSignInPromoUICancelTapped";
+const char kShowFeedSignInOnlyUIWithUserId[] =
+    "ContentSuggestions.Feed.SignIn.ShowFeedSignInOnlyUIWithUserId";
+const char kShowFeedSignInOnlyUIWithoutUserId[] =
+    "ContentSuggestions.Feed.SignIn.ShowFeedSignInOnlyUIWithoutUserId";

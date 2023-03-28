@@ -278,6 +278,11 @@ class Time;
 // Record metrics for when a user tapped on "Cancel" of the Sign-in promo UI.
 - (void)recordSignInPromoUICancelTapped;
 
+// Record metrics for when a user triggered a sign-in only flow from Discover
+// feed. `hasUserId` is YES when the user has one or more device-level
+// identities.
+- (void)recordShowSignInOnlyUIWithUserId:(BOOL)hasUserId;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_UI_NTP_METRICS_FEED_METRICS_RECORDER_H_
