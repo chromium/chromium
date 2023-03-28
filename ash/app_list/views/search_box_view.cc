@@ -494,6 +494,14 @@ void SearchBoxView::AddedToWidget() {
   }
 }
 
+void SearchBoxView::RunLauncherSearchQuery(const std::u16string& query) {
+  UpdateQuery(query);
+}
+
+void SearchBoxView::OpenAssistantPage() {
+  delegate_->AssistantButtonPressed();
+}
+
 // static
 int SearchBoxView::GetFocusRingSpacing() {
   return kSearchBoxFocusRingWidth + kSearchBoxFocusRingPadding;
@@ -1236,8 +1244,8 @@ void SearchBoxView::UpdateIphViewVisibility() {
       return;
     }
 
-    SetIphView(
-        std::make_unique<LauncherSearchIphView>(std::move(scoped_iph_session)));
+    SetIphView(std::make_unique<LauncherSearchIphView>(
+        std::move(scoped_iph_session), /*delegate=*/this));
   } else {
     DeleteIphView();
   }

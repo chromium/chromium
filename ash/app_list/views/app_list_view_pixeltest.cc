@@ -17,6 +17,8 @@
 #include "ash/test/pixel/ash_pixel_differ.h"
 #include "ash/test/pixel/ash_pixel_test_init_params.h"
 #include "ash/wm/tablet_mode/tablet_mode_controller.h"
+#include "base/run_loop.h"
+#include "testing/gtest/include/gtest/gtest.h"
 #include "ui/events/types/event_type.h"
 #include "ui/views/controls/scroll_view.h"
 #include "ui/views/controls/textfield/textfield_test_api.h"
@@ -182,6 +184,41 @@ TEST_P(AppListViewPixelRTLTest, GradientZone) {
       "bubble_launcher_gradient_zone",
       /*revision_number=*/0, GetAppListTestHelper()->GetBubbleView(),
       GetPrimaryShelf()->navigation_widget()));
+}
+
+class AppListViewLauncherSearchIphTest
+    : public AshTestBase,
+      public testing::WithParamInterface</*rtl=*/bool> {
+ public:
+  absl::optional<pixel_test::InitParams> CreatePixelTestInitParams()
+      const override {
+    pixel_test::InitParams init_params;
+    init_params.under_rtl = GetParam();
+    return init_params;
+  }
+
+  void SetUp() override {
+    AshTestBase::SetUp();
+
+    AppListTestHelper* test_helper = GetAppListTestHelper();
+    test_helper->ShowAppList();
+    GetAppListTestHelper()->search_model()->SetWouldTriggerLauncherSearchIph(
+        true);
+    GetAppListTestHelper()->GetSearchBoxView()->SetIsIphAllowed(true);
+  }
+};
+
+INSTANTIATE_TEST_SUITE_P(RTL,
+                         AppListViewLauncherSearchIphTest,
+                         testing::Bool());
+
+TEST_P(AppListViewLauncherSearchIphTest, Basic) {
+  // Wait re-layout for adding IPH view.
+  base::RunLoop().RunUntilIdle();
+
+  EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
+      "launcher_search_iph", /*revision_number=*/0,
+      GetAppListTestHelper()->GetSearchBoxView()));
 }
 
 class AppListViewTabletPixelTest

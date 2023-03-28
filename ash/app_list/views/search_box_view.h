@@ -14,6 +14,7 @@
 #include "ash/app_list/app_list_view_delegate.h"
 #include "ash/app_list/model/search/search_box_model.h"
 #include "ash/app_list/model/search/search_box_model_observer.h"
+#include "ash/app_list/views/launcher_search_iph_view.h"
 #include "ash/ash_export.h"
 #include "ash/public/cpp/app_list/app_list_types.h"
 #include "ash/search_box/search_box_view_base.h"
@@ -39,7 +40,8 @@ class SearchResultBaseView;
 // contents and selection model of the Textfield.
 class ASH_EXPORT SearchBoxView : public SearchBoxViewBase,
                                  public AppListModelProvider::Observer,
-                                 public SearchBoxModelObserver {
+                                 public SearchBoxModelObserver,
+                                 public LauncherSearchIphView::Delegate {
  public:
   enum class PlaceholderTextType {
     kShortcuts = 0,
@@ -101,6 +103,10 @@ class ASH_EXPORT SearchBoxView : public SearchBoxViewBase,
   void OnThemeChanged() override;
   void OnBoundsChanged(const gfx::Rect& previous_bounds) override;
   void AddedToWidget() override;
+
+  // LauncherSearchIphView::Delegate:
+  void RunLauncherSearchQuery(const std::u16string& query) override;
+  void OpenAssistantPage() override;
 
   // Updates the search box's background corner radius and color based on the
   // state of AppListModel.
