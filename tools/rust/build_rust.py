@@ -501,6 +501,18 @@ def GetLatestRustCommit():
     return main['commit']
 
 
+def RustTargetTriple(build_mac_arm):
+    if sys.platform == 'darwin':
+        if platform.machine() == 'arm64' or build_mac_arm:
+            return 'aarch64-apple-darwin'
+        else:
+            return 'x86_64-apple-darwin'
+    elif sys.platform == 'win32':
+        return 'x86_64-pc-windows-msvc'
+    else:
+        return 'x86_64-unknown-linux-gnu'
+
+
 # Fetch or build the LLVM libraries, for the host machine and when
 # cross-compiling for the target machine.
 #
@@ -634,15 +646,8 @@ def main():
     else:
         checkout_revision = RUST_REVISION
 
-    if sys.platform == 'darwin':
-        if platform.machine() == 'arm64' or args.build_mac_arm:
-            host_triple = 'aarch64-apple-darwin'
-        else:
-            host_triple = 'x86_64-apple-darwin'
-    elif sys.platform == 'win32':
-        host_triple = 'x86_64-pc-windows-msvc'
-    else:
-        host_triple = 'x86_64-unknown-linux-gnu'
+    building_on_host_triple = RustTargetTriple(False)
+    building_for_host_triple = RustTargetTriple(args.build_mac_arm)
 
     args.gcc_toolchain = None
     if sys.platform.startswith('linux'):
@@ -705,9 +710,12 @@ def main():
     else:
         assert not rest
 
-    xpy_args = ['--build', host_triple]
+    xpy_args = ['--build', building_on_host_triple]
     if args.build_mac_arm:
-        xpy_args.extend(['--host', host_triple, '--target', host_triple])
+        xpy_args.extend([
+            '--host', building_for_host_triple, '--target',
+            building_for_host_triple
+        ])
 
     if not args.skip_clean:
         print('Cleaning build artifacts...')
