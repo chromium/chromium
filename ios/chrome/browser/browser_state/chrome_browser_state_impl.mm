@@ -26,6 +26,7 @@
 #import "components/sync_preferences/pref_service_syncable.h"
 #import "components/user_prefs/user_prefs.h"
 #import "ios/chrome/browser/application_context/application_context.h"
+#import "ios/chrome/browser/bookmarks/account_bookmark_model_factory.h"
 #import "ios/chrome/browser/bookmarks/local_or_syncable_bookmark_model_factory.h"
 #import "ios/chrome/browser/browser_state/bookmark_model_loaded_observer.h"
 #import "ios/chrome/browser/browser_state/constants.h"
@@ -149,9 +150,15 @@ ChromeBrowserStateImpl::ChromeBrowserStateImpl(
   io_data_->Init(cookie_path, cache_path, cache_max_size, state_path_);
 
   // Listen for bookmark model load, to bootstrap the sync service.
-  bookmarks::BookmarkModel* model =
+  // TODO(crbug.com/1427452): See if BookmarkModelLoadedObserver can be removed.
+  bookmarks::BookmarkModel* local_or_syncable_model =
       ios::LocalOrSyncableBookmarkModelFactory::GetForBrowserState(this);
-  model->AddObserver(new BookmarkModelLoadedObserver(this));
+  local_or_syncable_model->AddObserver(new BookmarkModelLoadedObserver(this));
+  bookmarks::BookmarkModel* account_model =
+      ios::AccountBookmarkModelFactory::GetForBrowserState(this);
+  if (account_model) {
+    account_model->AddObserver(new BookmarkModelLoadedObserver(this));
+  }
 }
 
 ChromeBrowserStateImpl::~ChromeBrowserStateImpl() {

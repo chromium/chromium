@@ -120,8 +120,6 @@ base::FilePath GetStorageFilePath(const base::FilePath& profile_path,
     case StorageType::kLocalOrSyncable:
       return profile_path.Append(kLocalOrSyncableBookmarksFileName);
     case StorageType::kAccount:
-      // TODO(1404250): Remove NOTREACHED when account bookmarks are supported.
-      NOTREACHED();
       return profile_path.Append(kAccountBookmarksFileName);
   }
 }
