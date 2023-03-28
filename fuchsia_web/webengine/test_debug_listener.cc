@@ -19,26 +19,30 @@ void TestDebugListener::DestroyListener(TestPerContextListener* listener) {
 void TestDebugListener::AddPort(uint16_t port) {
   EXPECT_EQ(debug_ports_.find(port), debug_ports_.end());
   debug_ports_.insert(port);
-  if (on_debug_ports_changed_)
+  if (on_debug_ports_changed_) {
     on_debug_ports_changed_.Run();
+  }
 }
 
 void TestDebugListener::RemovePort(uint16_t port) {
   EXPECT_EQ(debug_ports_.erase(port), 1u);
-  if (on_debug_ports_changed_)
+  if (on_debug_ports_changed_) {
     on_debug_ports_changed_.Run();
+  }
 }
 
 void TestDebugListener::RunUntilNumberOfPortsIs(size_t size) {
-  if (debug_ports_.size() == size)
+  if (debug_ports_.size() == size) {
     return;
+  }
 
   base::RunLoop run_loop;
   base::AutoReset<base::RepeatingClosure> set_on_debug_ports_changed(
       &on_debug_ports_changed_,
       base::BindLambdaForTesting([this, &run_loop, size]() {
-        if (debug_ports_.size() == size)
+        if (debug_ports_.size() == size) {
           run_loop.Quit();
+        }
       }));
   run_loop.Run();
   ASSERT_EQ(debug_ports_.size(), size);
@@ -50,8 +54,9 @@ TestDebugListener::TestPerContextListener::TestPerContextListener(
     : test_debug_listener_(test_debug_listener),
       binding_(this, std::move(listener)) {
   binding_.set_error_handler([this](zx_status_t) {
-    if (port_ != 0)
+    if (port_ != 0) {
       test_debug_listener_->RemovePort(port_);
+    }
     test_debug_listener_->DestroyListener(this);
   });
 }
@@ -59,8 +64,19 @@ TestDebugListener::TestPerContextListener::TestPerContextListener(
 TestDebugListener::TestPerContextListener::~TestPerContextListener() = default;
 
 void TestDebugListener::TestPerContextListener::OnHttpPortOpen(uint16_t port) {
+  // If `port` is non-zero then the PerContextListener has created, or replaced,
+  // its DevTools port. If `port` is zero then the PerContextListener is
+  // reporting that it is not listening on DevTools.
+  // Remove the previously-reported `port_`, if any, from the TestDebugListener,
+  // before adding the new `port`, if set, to maintain the list of available
+  // DevTools ports.
+  if (port_ != 0) {
+    test_debug_listener_->RemovePort(port_);
+  }
   port_ = port;
-  test_debug_listener_->AddPort(port);
+  if (port != 0) {
+    test_debug_listener_->AddPort(port);
+  }
 }
 
 void TestDebugListener::OnContextDevToolsAvailable(
