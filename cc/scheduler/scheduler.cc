@@ -777,9 +777,7 @@ void Scheduler::ScheduleBeginImplFrameDeadline() {
         FROM_HERE, deadline_,
         base::BindOnce(&Scheduler::OnBeginImplFrameDeadline,
                        base::Unretained(this)),
-        deadline_mode_ == DeadlineMode::LATE
-            ? base::subtle::DelayPolicy::kFlexibleNoSooner
-            : base::subtle::DelayPolicy::kPrecise);
+        base::subtle::DelayPolicy::kPrecise);
   }
 }
 
