@@ -860,7 +860,9 @@ bool AVIFImageDecoder::UpdateDemuxer() {
   static_assert(AVIF_PIXEL_FORMAT_YUV422 == AVIF_PIXEL_FORMAT_YUV444 + 1);
   static_assert(AVIF_PIXEL_FORMAT_YUV420 == AVIF_PIXEL_FORMAT_YUV422 + 1);
   static_assert(AVIF_PIXEL_FORMAT_YUV400 == AVIF_PIXEL_FORMAT_YUV420 + 1);
-  // Assert that container->yuvFormat is one of the four YUV formats in AV1.
+  // Assert that after avifDecoderParse() returns AVIF_RESULT_OK,
+  // decoder_->image->yuvFormat (the same as container->yuvFormat) is one of the
+  // four YUV formats in AV1.
   CHECK(container->yuvFormat >= AVIF_PIXEL_FORMAT_YUV444 &&
         container->yuvFormat <= AVIF_PIXEL_FORMAT_YUV400)
       << "Invalid YUV format: " << container->yuvFormat;
