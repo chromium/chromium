@@ -11,11 +11,11 @@ import android.database.ContentObserver;
 import android.database.Cursor;
 import android.net.Uri;
 import android.provider.MediaStore;
-import android.support.test.InstrumentationRegistry;
 import android.test.mock.MockContentProvider;
 import android.test.mock.MockContentResolver;
 
 import androidx.core.content.ContextCompat;
+import androidx.test.InstrumentationRegistry;
 import androidx.test.filters.SmallTest;
 
 import org.junit.Assert;

@@ -5,11 +5,11 @@
 package org.chromium.chrome.browser.search_engines;
 
 import android.content.Context;
-import android.support.test.InstrumentationRegistry;
 import android.text.TextUtils;
 import android.widget.Button;
 import android.widget.RadioButton;
 
+import androidx.test.InstrumentationRegistry;
 import androidx.test.filters.SmallTest;
 
 import org.junit.Assert;

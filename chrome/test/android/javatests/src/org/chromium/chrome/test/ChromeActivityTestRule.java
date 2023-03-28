@@ -9,8 +9,9 @@ import android.content.ComponentName;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
-import android.support.test.InstrumentationRegistry;
-import android.support.test.internal.runner.listener.InstrumentationResultPrinter;
+
+import androidx.test.InstrumentationRegistry;
+import androidx.test.internal.runner.listener.InstrumentationResultPrinter;
 
 import org.hamcrest.Matchers;
 import org.junit.Assert;

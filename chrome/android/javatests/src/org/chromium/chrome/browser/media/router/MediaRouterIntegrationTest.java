@@ -7,9 +7,9 @@ package org.chromium.chrome.browser.media.router;
 import static org.chromium.base.test.util.Restriction.RESTRICTION_TYPE_NON_LOW_END_DEVICE;
 
 import android.app.Dialog;
-import android.support.test.InstrumentationRegistry;
 import android.view.View;
 
+import androidx.test.InstrumentationRegistry;
 import androidx.test.filters.LargeTest;
 
 import org.hamcrest.Matchers;

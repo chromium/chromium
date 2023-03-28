@@ -10,10 +10,10 @@ import static org.mockito.Mockito.mock;
 import android.graphics.Bitmap;
 import android.graphics.Rect;
 import android.os.Build.VERSION_CODES;
-import android.support.test.InstrumentationRegistry;
 import android.view.DragEvent;
 import android.view.View;
 
+import androidx.test.InstrumentationRegistry;
 import androidx.test.filters.SmallTest;
 
 import org.junit.After;

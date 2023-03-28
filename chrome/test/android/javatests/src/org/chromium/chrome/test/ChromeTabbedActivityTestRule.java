@@ -9,9 +9,10 @@ import android.app.Instrumentation;
 import android.content.Intent;
 import android.os.Bundle;
 import android.provider.Browser;
-import android.support.test.InstrumentationRegistry;
-import android.support.test.runner.lifecycle.Stage;
 import android.text.TextUtils;
+
+import androidx.test.InstrumentationRegistry;
+import androidx.test.runner.lifecycle.Stage;
 
 import org.junit.Assert;
 

@@ -13,9 +13,9 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.Build;
 import android.service.notification.StatusBarNotification;
-import android.support.test.InstrumentationRegistry;
 
 import androidx.annotation.Nullable;
+import androidx.test.InstrumentationRegistry;
 import androidx.test.filters.SmallTest;
 
 import org.junit.Assert;

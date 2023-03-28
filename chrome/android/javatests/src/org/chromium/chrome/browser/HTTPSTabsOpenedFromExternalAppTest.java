@@ -6,8 +6,7 @@ package org.chromium.chrome.browser;
 
 import static org.chromium.chrome.browser.TabsOpenedFromExternalAppTest.HTTP_REFERRER;
 
-import android.support.test.InstrumentationRegistry;
-
+import androidx.test.InstrumentationRegistry;
 import androidx.test.filters.LargeTest;
 
 import org.junit.Before;

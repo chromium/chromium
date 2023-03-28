@@ -9,10 +9,10 @@ import static org.junit.Assert.assertEquals;
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.os.Build;
-import android.support.test.InstrumentationRegistry;
 import android.view.Window;
 
 import androidx.annotation.RequiresApi;
+import androidx.test.InstrumentationRegistry;
 import androidx.test.filters.MediumTest;
 import androidx.test.filters.SmallTest;
 

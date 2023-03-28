@@ -11,8 +11,7 @@ import static org.junit.Assert.assertTrue;
 import static org.chromium.base.test.util.Batch.PER_CLASS;
 import static org.chromium.content_public.browser.test.util.TestThreadUtils.runOnUiThreadBlocking;
 
-import android.support.test.InstrumentationRegistry;
-
+import androidx.test.InstrumentationRegistry;
 import androidx.test.filters.MediumTest;
 import androidx.test.filters.SmallTest;
 

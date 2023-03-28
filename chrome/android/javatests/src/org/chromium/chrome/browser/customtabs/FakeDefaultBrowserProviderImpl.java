@@ -4,7 +4,7 @@
 
 package org.chromium.chrome.browser.customtabs;
 
-import android.support.test.InstrumentationRegistry;
+import androidx.test.InstrumentationRegistry;
 
 import org.chromium.chrome.browser.customtabs.content.CustomTabActivityNavigationController;
 

@@ -21,7 +21,6 @@ import static org.chromium.content_public.browser.test.util.TestThreadUtils.runO
 
 import android.annotation.SuppressLint;
 import android.graphics.Color;
-import android.support.test.runner.lifecycle.Stage;
 import android.text.Spanned;
 import android.text.style.ClickableSpan;
 import android.view.View;
@@ -31,6 +30,7 @@ import androidx.annotation.Nullable;
 import androidx.test.espresso.Espresso;
 import androidx.test.espresso.NoMatchingViewException;
 import androidx.test.filters.MediumTest;
+import androidx.test.runner.lifecycle.Stage;
 
 import org.junit.Before;
 import org.junit.Rule;

@@ -6,8 +6,9 @@ package org.chromium.chrome.browser.paint_preview;
 
 import android.content.Context;
 import android.provider.Settings;
-import android.support.test.InstrumentationRegistry;
 import android.text.TextUtils;
+
+import androidx.test.InstrumentationRegistry;
 
 import org.junit.runners.model.InitializationError;
 

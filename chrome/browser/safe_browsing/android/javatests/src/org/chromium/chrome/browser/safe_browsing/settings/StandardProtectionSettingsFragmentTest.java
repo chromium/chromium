@@ -4,8 +4,7 @@
 
 package org.chromium.chrome.browser.safe_browsing.settings;
 
-import android.support.test.InstrumentationRegistry;
-
+import androidx.test.InstrumentationRegistry;
 import androidx.test.filters.SmallTest;
 
 import org.junit.Assert;

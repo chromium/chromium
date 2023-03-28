@@ -5,8 +5,8 @@
 package org.chromium.chrome.browser.video;
 
 import android.graphics.Rect;
-import android.support.test.InstrumentationRegistry;
 
+import androidx.test.InstrumentationRegistry;
 import androidx.test.espresso.Espresso;
 import androidx.test.filters.MediumTest;
 

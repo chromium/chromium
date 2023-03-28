@@ -28,9 +28,9 @@ import static org.chromium.chrome.browser.dom_distiller.ReaderModeManager.DOM_DI
 import android.app.Activity;
 import android.app.PendingIntent;
 import android.os.Build.VERSION_CODES;
-import android.support.test.InstrumentationRegistry;
 
 import androidx.annotation.NonNull;
+import androidx.test.InstrumentationRegistry;
 import androidx.test.espresso.Espresso;
 import androidx.test.espresso.action.GeneralClickAction;
 import androidx.test.espresso.action.GeneralLocation;

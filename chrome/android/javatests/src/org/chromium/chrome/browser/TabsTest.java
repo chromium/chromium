@@ -17,10 +17,10 @@ import static org.chromium.ui.test.util.ViewUtils.onViewWaiting;
 import android.content.pm.ActivityInfo;
 import android.graphics.Point;
 import android.os.SystemClock;
-import android.support.test.InstrumentationRegistry;
 import android.util.DisplayMetrics;
 import android.view.View;
 
+import androidx.test.InstrumentationRegistry;
 import androidx.test.espresso.Espresso;
 import androidx.test.filters.LargeTest;
 import androidx.test.filters.MediumTest;

@@ -4,9 +4,8 @@
 
 package org.chromium.chrome.test.util;
 
-import android.support.test.InstrumentationRegistry;
-
 import androidx.annotation.Nullable;
+import androidx.test.InstrumentationRegistry;
 
 import org.junit.rules.TestRule;
 import org.junit.runner.Description;

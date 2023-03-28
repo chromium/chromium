@@ -9,11 +9,11 @@ import static org.junit.Assert.assertTrue;
 
 import android.content.Intent;
 import android.net.Uri;
-import android.support.test.InstrumentationRegistry;
 import android.view.View;
 import android.view.ViewGroup;
 
 import androidx.browser.customtabs.TrustedWebUtils;
+import androidx.test.InstrumentationRegistry;
 
 import org.hamcrest.Matchers;
 import org.junit.runner.Description;

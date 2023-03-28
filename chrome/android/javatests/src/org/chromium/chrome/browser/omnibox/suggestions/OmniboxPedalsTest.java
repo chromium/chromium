@@ -8,10 +8,10 @@ import static org.chromium.base.test.util.CriteriaHelper.DEFAULT_MAX_TIME_TO_POL
 import static org.chromium.base.test.util.CriteriaHelper.DEFAULT_POLLING_INTERVAL;
 
 import android.app.Activity;
-import android.support.test.InstrumentationRegistry;
 import android.view.KeyEvent;
 
 import androidx.fragment.app.Fragment;
+import androidx.test.InstrumentationRegistry;
 import androidx.test.filters.MediumTest;
 
 import org.hamcrest.Matchers;

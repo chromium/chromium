@@ -33,10 +33,10 @@ import static org.chromium.ui.test.util.ViewUtils.onViewWaiting;
 import android.content.Context;
 import android.content.res.Resources;
 import android.os.Build;
-import android.support.test.InstrumentationRegistry;
 import android.text.format.DateUtils;
 import android.view.View;
 
+import androidx.test.InstrumentationRegistry;
 import androidx.test.filters.MediumTest;
 
 import org.junit.After;

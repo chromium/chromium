@@ -4,7 +4,7 @@
 
 package org.chromium.chrome.test.pagecontroller.rules;
 
-import android.support.test.InstrumentationRegistry;
+import androidx.test.InstrumentationRegistry;
 
 import org.junit.rules.ExternalResource;
 

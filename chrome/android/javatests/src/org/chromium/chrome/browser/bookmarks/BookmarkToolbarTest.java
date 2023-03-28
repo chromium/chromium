@@ -10,12 +10,12 @@ import static org.mockito.Mockito.when;
 import android.app.Activity;
 import android.app.Instrumentation.ActivityMonitor;
 import android.graphics.Color;
-import android.support.test.InstrumentationRegistry;
 import android.view.MenuItem;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
 import android.widget.LinearLayout;
 
+import androidx.test.InstrumentationRegistry;
 import androidx.test.espresso.core.deps.guava.primitives.Ints;
 import androidx.test.filters.SmallTest;
 

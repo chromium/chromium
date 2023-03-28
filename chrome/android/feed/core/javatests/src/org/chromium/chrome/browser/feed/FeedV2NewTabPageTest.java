@@ -27,12 +27,12 @@ import static org.chromium.ui.test.util.ViewUtils.waitForView;
 
 import android.accounts.Account;
 import android.content.pm.ActivityInfo;
-import android.support.test.InstrumentationRegistry;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
 import androidx.recyclerview.widget.RecyclerView;
+import androidx.test.InstrumentationRegistry;
 import androidx.test.espresso.ViewAction;
 import androidx.test.espresso.action.GeneralLocation;
 import androidx.test.espresso.action.GeneralSwipeAction;

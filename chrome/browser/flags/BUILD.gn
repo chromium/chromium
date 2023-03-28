@@ -114,7 +114,7 @@ android_library("javatests") {
     "//base/test:test_support_java",
     "//chrome/test/android:chrome_java_integration_test_support",
     "//third_party/android_sdk:android_test_mock_java",
-    "//third_party/android_support_test_runner:runner_java",
+    "//third_party/androidx:androidx_test_monitor_java",
     "//third_party/androidx:androidx_test_runner_java",
     "//third_party/junit",
     "//third_party/mockito:mockito_java",

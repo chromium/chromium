@@ -5,11 +5,11 @@
 package org.chromium.chrome.browser.browserservices;
 
 import android.content.Intent;
-import android.support.test.InstrumentationRegistry;
 
 import androidx.browser.customtabs.CustomTabsService;
 import androidx.browser.customtabs.CustomTabsSessionToken;
 import androidx.browser.customtabs.TrustedWebUtils;
+import androidx.test.InstrumentationRegistry;
 
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.cc.input.BrowserControlsState;

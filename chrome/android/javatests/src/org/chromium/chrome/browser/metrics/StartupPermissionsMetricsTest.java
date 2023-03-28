@@ -9,8 +9,8 @@ import static org.mockito.Mockito.doReturn;
 
 import android.Manifest;
 import android.content.Context;
-import android.support.test.InstrumentationRegistry;
 
+import androidx.test.InstrumentationRegistry;
 import androidx.test.filters.MediumTest;
 
 import org.junit.Before;

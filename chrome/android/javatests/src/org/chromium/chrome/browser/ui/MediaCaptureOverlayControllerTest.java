@@ -4,9 +4,9 @@
 
 package org.chromium.chrome.browser.ui;
 
-import android.support.test.InstrumentationRegistry;
 import android.view.View;
 
+import androidx.test.InstrumentationRegistry;
 import androidx.test.filters.SmallTest;
 
 import org.junit.Assert;

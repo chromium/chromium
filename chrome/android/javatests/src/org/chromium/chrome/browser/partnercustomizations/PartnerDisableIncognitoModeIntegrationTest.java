@@ -7,11 +7,11 @@ package org.chromium.chrome.browser.partnercustomizations;
 import android.content.Context;
 import android.net.Uri;
 import android.os.Bundle;
-import android.support.test.InstrumentationRegistry;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.PopupMenu;
 
+import androidx.test.InstrumentationRegistry;
 import androidx.test.filters.MediumTest;
 
 import org.hamcrest.Matchers;

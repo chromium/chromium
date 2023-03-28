@@ -10,8 +10,8 @@ import static org.junit.Assert.assertNotEquals;
 
 import android.graphics.Bitmap;
 import android.os.Handler;
-import android.support.test.InstrumentationRegistry;
 
+import androidx.test.InstrumentationRegistry;
 import androidx.test.filters.SmallTest;
 
 import org.junit.After;

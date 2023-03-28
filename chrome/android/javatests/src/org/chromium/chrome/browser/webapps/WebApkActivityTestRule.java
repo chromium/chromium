@@ -5,7 +5,8 @@
 package org.chromium.chrome.browser.webapps;
 
 import android.content.Intent;
-import android.support.test.InstrumentationRegistry;
+
+import androidx.test.InstrumentationRegistry;
 
 import org.hamcrest.Matchers;
 import org.junit.runner.Description;

@@ -6,11 +6,11 @@ package org.chromium.chrome.browser.autofill;
 
 import android.app.Activity;
 import android.content.pm.ActivityInfo;
-import android.support.test.InstrumentationRegistry;
 import android.view.View;
 
 import androidx.annotation.IntDef;
 import androidx.annotation.Nullable;
+import androidx.test.InstrumentationRegistry;
 import androidx.test.filters.MediumTest;
 
 import org.hamcrest.Matchers;

@@ -6,8 +6,9 @@ package org.chromium.chrome.browser;
 
 import static org.chromium.base.test.util.CriteriaHelper.DEFAULT_POLLING_INTERVAL;
 
-import android.support.test.InstrumentationRegistry;
 import android.view.KeyEvent;
+
+import androidx.test.InstrumentationRegistry;
 
 import org.hamcrest.Matchers;
 import org.junit.After;

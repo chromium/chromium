@@ -15,10 +15,10 @@ import android.content.ClipData;
 import android.content.ClipboardManager;
 import android.content.Context;
 import android.os.Looper;
-import android.support.test.InstrumentationRegistry;
 import android.text.TextUtils;
 import android.view.KeyEvent;
 
+import androidx.test.InstrumentationRegistry;
 import androidx.test.filters.LargeTest;
 import androidx.test.filters.MediumTest;
 import androidx.test.filters.SmallTest;

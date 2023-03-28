@@ -5,8 +5,8 @@
 package org.chromium.webapk.shell_apk.h2o;
 
 import android.graphics.Bitmap;
-import android.support.test.InstrumentationRegistry;
 
+import androidx.test.InstrumentationRegistry;
 import androidx.test.filters.SmallTest;
 
 import org.junit.Assert;

@@ -16,13 +16,13 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.graphics.Point;
 import android.os.SystemClock;
-import android.support.test.InstrumentationRegistry;
 import android.text.TextUtils;
 import android.view.View;
 import android.view.ViewConfiguration;
 import android.widget.LinearLayout;
 
 import androidx.annotation.IntDef;
+import androidx.test.InstrumentationRegistry;
 
 import com.google.common.collect.ImmutableMap;
 

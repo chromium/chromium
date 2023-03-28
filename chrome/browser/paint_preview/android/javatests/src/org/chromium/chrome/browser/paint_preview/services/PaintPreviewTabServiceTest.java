@@ -5,8 +5,8 @@
 package org.chromium.chrome.browser.paint_preview.services;
 
 import android.app.Activity;
-import android.support.test.InstrumentationRegistry;
 
+import androidx.test.InstrumentationRegistry;
 import androidx.test.filters.MediumTest;
 
 import org.junit.Assert;

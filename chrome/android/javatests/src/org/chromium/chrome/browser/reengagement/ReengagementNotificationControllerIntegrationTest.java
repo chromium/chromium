@@ -15,10 +15,10 @@ import android.app.NotificationManager;
 import android.content.Context;
 import android.content.Intent;
 import android.service.notification.StatusBarNotification;
-import android.support.test.InstrumentationRegistry;
 import android.text.TextUtils;
 
 import androidx.annotation.StringRes;
+import androidx.test.InstrumentationRegistry;
 import androidx.test.filters.MediumTest;
 import androidx.test.filters.SmallTest;
 

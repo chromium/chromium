@@ -15,11 +15,11 @@ import static org.chromium.chrome.browser.touch_to_fill.payments.R.id.descriptio
 import static org.chromium.chrome.browser.touch_to_fill.payments.R.id.sheet_item_list;
 import static org.chromium.content_public.browser.test.util.TestThreadUtils.runOnUiThreadBlocking;
 
-import android.support.test.InstrumentationRegistry;
 import android.view.View;
 import android.widget.TextView;
 
 import androidx.recyclerview.widget.RecyclerView;
+import androidx.test.InstrumentationRegistry;
 import androidx.test.filters.MediumTest;
 
 import org.junit.Assert;

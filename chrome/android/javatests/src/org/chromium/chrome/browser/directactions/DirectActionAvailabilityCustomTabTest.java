@@ -6,8 +6,8 @@ package org.chromium.chrome.browser.directactions;
 import static org.junit.Assert.assertThat;
 
 import android.content.Intent;
-import android.support.test.InstrumentationRegistry;
 
+import androidx.test.InstrumentationRegistry;
 import androidx.test.filters.MediumTest;
 
 import org.hamcrest.Matchers;

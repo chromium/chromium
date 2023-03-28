@@ -5,10 +5,10 @@
 package org.chromium.chrome.browser.omnibox;
 
 import android.annotation.SuppressLint;
-import android.support.test.InstrumentationRegistry;
 import android.view.KeyEvent;
 import android.widget.ImageView;
 
+import androidx.test.InstrumentationRegistry;
 import androidx.test.filters.MediumTest;
 import androidx.test.filters.SmallTest;
 

@@ -5,9 +5,9 @@
 package org.chromium.chrome.browser.offlinepages;
 
 import android.net.Uri;
-import android.support.test.InstrumentationRegistry;
 import android.util.Base64;
 
+import androidx.test.InstrumentationRegistry;
 import androidx.test.filters.MediumTest;
 
 import org.junit.After;

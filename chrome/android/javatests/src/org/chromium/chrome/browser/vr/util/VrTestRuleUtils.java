@@ -5,8 +5,8 @@
 package org.chromium.chrome.browser.vr.util;
 
 import android.os.SystemClock;
-import android.support.test.InstrumentationRegistry;
 
+import androidx.test.InstrumentationRegistry;
 import androidx.test.uiautomator.UiDevice;
 
 import org.junit.Assert;

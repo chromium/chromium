@@ -5,7 +5,8 @@
 package org.chromium.chrome.test;
 
 import android.content.Context;
-import android.support.test.InstrumentationRegistry;
+
+import androidx.test.InstrumentationRegistry;
 
 import org.hamcrest.Matchers;
 import org.junit.rules.TestRule;

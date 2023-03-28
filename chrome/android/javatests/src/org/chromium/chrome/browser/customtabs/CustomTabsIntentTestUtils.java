@@ -11,10 +11,10 @@ import android.content.Intent;
 import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Bundle;
-import android.support.test.InstrumentationRegistry;
 
 import androidx.browser.customtabs.CustomTabsIntent;
 import androidx.browser.customtabs.CustomTabsSession;
+import androidx.test.InstrumentationRegistry;
 
 import org.chromium.base.Callback;
 import org.chromium.base.IntentUtils;

@@ -6,8 +6,7 @@ package org.chromium.chrome.browser.contextualsearch;
 
 import static org.mockito.Mockito.when;
 
-import android.support.test.InstrumentationRegistry;
-
+import androidx.test.InstrumentationRegistry;
 import androidx.test.filters.SmallTest;
 
 import org.junit.After;

@@ -44,7 +44,6 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.graphics.ColorFilter;
 import android.graphics.drawable.Drawable;
-import android.support.test.InstrumentationRegistry;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.LinearLayout;
@@ -53,6 +52,7 @@ import androidx.annotation.IdRes;
 import androidx.annotation.StringRes;
 import androidx.appcompat.view.menu.ActionMenuItemView;
 import androidx.core.graphics.drawable.DrawableCompat;
+import androidx.test.InstrumentationRegistry;
 import androidx.test.espresso.Espresso;
 import androidx.test.filters.SmallTest;
 

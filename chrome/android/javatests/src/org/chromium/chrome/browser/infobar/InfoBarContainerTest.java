@@ -6,11 +6,11 @@ package org.chromium.chrome.browser.infobar;
 
 import android.graphics.Rect;
 import android.graphics.Region;
-import android.support.test.InstrumentationRegistry;
 import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
 import android.widget.TextView;
 
+import androidx.test.InstrumentationRegistry;
 import androidx.test.filters.MediumTest;
 
 import org.hamcrest.Matchers;

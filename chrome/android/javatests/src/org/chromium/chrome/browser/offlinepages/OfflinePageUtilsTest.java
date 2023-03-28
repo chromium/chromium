@@ -8,8 +8,8 @@ import android.app.Activity;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Environment;
-import android.support.test.InstrumentationRegistry;
 
+import androidx.test.InstrumentationRegistry;
 import androidx.test.filters.MediumTest;
 import androidx.test.filters.SmallTest;
 

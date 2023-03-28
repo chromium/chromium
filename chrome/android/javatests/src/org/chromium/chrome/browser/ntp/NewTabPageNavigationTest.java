@@ -4,8 +4,7 @@
 
 package org.chromium.chrome.browser.ntp;
 
-import android.support.test.InstrumentationRegistry;
-
+import androidx.test.InstrumentationRegistry;
 import androidx.test.filters.LargeTest;
 import androidx.test.filters.MediumTest;
 

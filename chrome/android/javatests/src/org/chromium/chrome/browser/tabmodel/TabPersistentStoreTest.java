@@ -5,9 +5,9 @@
 package org.chromium.chrome.browser.tabmodel;
 
 import android.app.Activity;
-import android.support.test.InstrumentationRegistry;
 import android.util.Pair;
 
+import androidx.test.InstrumentationRegistry;
 import androidx.test.filters.SmallTest;
 
 import org.junit.After;

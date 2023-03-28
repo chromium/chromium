@@ -33,9 +33,9 @@ import android.app.NotificationManager;
 import android.content.res.Configuration;
 import android.os.Build;
 import android.provider.Settings;
-import android.support.test.InstrumentationRegistry;
 
 import androidx.recyclerview.widget.RecyclerView;
+import androidx.test.InstrumentationRegistry;
 import androidx.test.espresso.contrib.RecyclerViewActions;
 import androidx.test.espresso.intent.Intents;
 import androidx.test.filters.MediumTest;

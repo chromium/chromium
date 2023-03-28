@@ -5,10 +5,10 @@
 package org.chromium.chrome.browser.omnibox;
 
 import android.content.Context;
-import android.support.test.InstrumentationRegistry;
 import android.text.Spannable;
 import android.text.SpannableStringBuilder;
 
+import androidx.test.InstrumentationRegistry;
 import androidx.test.filters.MediumTest;
 
 import org.junit.After;

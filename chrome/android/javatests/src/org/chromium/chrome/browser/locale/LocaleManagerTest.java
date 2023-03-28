@@ -5,8 +5,8 @@
 package org.chromium.chrome.browser.locale;
 
 import android.os.Build;
-import android.support.test.InstrumentationRegistry;
 
+import androidx.test.InstrumentationRegistry;
 import androidx.test.filters.SmallTest;
 
 import org.junit.Assert;

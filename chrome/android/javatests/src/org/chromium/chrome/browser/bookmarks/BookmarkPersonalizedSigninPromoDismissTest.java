@@ -17,9 +17,8 @@ import static org.junit.Assert.assertTrue;
 
 import static org.chromium.components.browser_ui.widget.RecyclerViewTestUtils.activeInRecyclerView;
 
-import android.support.test.InstrumentationRegistry;
-
 import androidx.annotation.IdRes;
+import androidx.test.InstrumentationRegistry;
 import androidx.test.espresso.ViewInteraction;
 import androidx.test.filters.MediumTest;
 

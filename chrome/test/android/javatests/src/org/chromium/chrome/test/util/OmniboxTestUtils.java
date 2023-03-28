@@ -7,7 +7,6 @@ package org.chromium.chrome.test.util;
 import android.app.Activity;
 import android.app.Instrumentation;
 import android.content.Context;
-import android.support.test.InstrumentationRegistry;
 import android.text.Editable;
 import android.view.KeyEvent;
 import android.view.View;
@@ -17,6 +16,7 @@ import android.view.inputmethod.InputMethodManager;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.test.InstrumentationRegistry;
 
 import org.hamcrest.Matcher;
 import org.hamcrest.Matchers;

@@ -12,7 +12,8 @@ import static org.chromium.chrome.browser.customtabs.CustomTabsIntentTestUtils.c
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
-import android.support.test.InstrumentationRegistry;
+
+import androidx.test.InstrumentationRegistry;
 
 import org.hamcrest.Matchers;
 

@@ -18,13 +18,13 @@ import static org.chromium.chrome.browser.tab.TabCreationState.LIVE_IN_BACKGROUN
 import static org.chromium.ui.test.util.ViewUtils.createMotionEvent;
 
 import android.content.Context;
-import android.support.test.InstrumentationRegistry;
 import android.view.ContextThemeWrapper;
 import android.view.MotionEvent;
 import android.view.MotionEvent.PointerCoords;
 import android.view.MotionEvent.PointerProperties;
 import android.widget.FrameLayout;
 
+import androidx.test.InstrumentationRegistry;
 import androidx.test.filters.MediumTest;
 import androidx.test.filters.SmallTest;
 

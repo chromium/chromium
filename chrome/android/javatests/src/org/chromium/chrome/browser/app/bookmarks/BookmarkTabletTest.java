@@ -6,10 +6,9 @@ package org.chromium.chrome.browser.app.bookmarks;
 
 import static org.mockito.Mockito.when;
 
-import android.support.test.InstrumentationRegistry;
-
 import androidx.annotation.Nullable;
 import androidx.recyclerview.widget.RecyclerView;
+import androidx.test.InstrumentationRegistry;
 import androidx.test.filters.MediumTest;
 import androidx.test.filters.SmallTest;
 

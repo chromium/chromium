@@ -5,8 +5,8 @@
 package org.chromium.chrome.browser.firstrun;
 
 import android.accounts.AuthenticatorDescription;
-import android.support.test.InstrumentationRegistry;
 
+import androidx.test.InstrumentationRegistry;
 import androidx.test.filters.SmallTest;
 
 import org.junit.After;

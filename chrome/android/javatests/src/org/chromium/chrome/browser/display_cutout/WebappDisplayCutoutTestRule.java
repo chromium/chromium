@@ -7,9 +7,9 @@ package org.chromium.chrome.browser.display_cutout;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Build;
-import android.support.test.InstrumentationRegistry;
 
 import androidx.annotation.RequiresApi;
+import androidx.test.InstrumentationRegistry;
 
 import org.hamcrest.Matchers;
 import org.junit.runner.Description;

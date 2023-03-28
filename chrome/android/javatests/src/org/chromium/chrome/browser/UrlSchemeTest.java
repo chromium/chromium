@@ -7,8 +7,8 @@ package org.chromium.chrome.browser;
 import android.content.Context;
 import android.net.Uri;
 import android.os.Environment;
-import android.support.test.InstrumentationRegistry;
 
+import androidx.test.InstrumentationRegistry;
 import androidx.test.filters.MediumTest;
 
 import org.hamcrest.Matchers;

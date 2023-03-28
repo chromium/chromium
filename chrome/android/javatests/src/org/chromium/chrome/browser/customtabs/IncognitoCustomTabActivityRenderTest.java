@@ -8,9 +8,9 @@ import static org.junit.Assert.assertTrue;
 
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
-import android.support.test.InstrumentationRegistry;
 import android.view.View;
 
+import androidx.test.InstrumentationRegistry;
 import androidx.test.filters.MediumTest;
 
 import org.junit.Before;

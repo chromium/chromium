@@ -7,10 +7,10 @@ package org.chromium.chrome.browser;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Build.VERSION_CODES;
-import android.support.test.runner.lifecycle.Stage;
 
 import androidx.annotation.RequiresApi;
 import androidx.test.filters.LargeTest;
+import androidx.test.runner.lifecycle.Stage;
 
 import org.junit.After;
 import org.junit.Assert;

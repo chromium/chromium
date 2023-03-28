@@ -5,9 +5,9 @@
 package org.chromium.chrome.browser.download;
 
 import android.content.Context;
-import android.support.test.InstrumentationRegistry;
 
 import androidx.annotation.Nullable;
+import androidx.test.InstrumentationRegistry;
 import androidx.test.filters.SmallTest;
 
 import org.hamcrest.Matchers;

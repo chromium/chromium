@@ -4,10 +4,9 @@
 
 package org.chromium.chrome.browser.contextualsearch;
 
-import android.support.test.InstrumentationRegistry;
-
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
+import androidx.test.InstrumentationRegistry;
 
 import org.json.JSONArray;
 import org.json.JSONException;

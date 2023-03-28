@@ -6,10 +6,9 @@ package org.chromium.chrome.browser.privacy.settings;
 
 import static org.chromium.base.test.util.Batch.PER_CLASS;
 
-import android.support.test.InstrumentationRegistry;
-
 import androidx.preference.Preference;
 import androidx.preference.PreferenceFragmentCompat;
+import androidx.test.InstrumentationRegistry;
 import androidx.test.filters.LargeTest;
 
 import org.hamcrest.Matchers;

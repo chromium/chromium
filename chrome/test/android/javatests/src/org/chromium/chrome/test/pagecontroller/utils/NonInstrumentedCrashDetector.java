@@ -14,7 +14,7 @@ import java.util.regex.Pattern;
 
 /**
  * Most test suites detect crashes (ex DCHECK failures) of the apk-under-test via
- * android.support.test.runner.MonitoringInstrumentation. This utility class should be used by test
+ * androidx.test.runner.MonitoringInstrumentation. This utility class should be used by test
  * suites for which the MonitoringInstrumentation crash detection does not work. The
  * MonitoringInstrumentation crash detection does not work for test suites which set the
  * <instrumentation android:targetPackage> in the AndroidManifest to a package other than the

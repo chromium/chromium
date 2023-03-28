@@ -5,9 +5,10 @@
 package org.chromium.chrome.browser;
 
 import android.os.Environment;
-import android.support.test.InstrumentationRegistry;
 import android.text.TextUtils;
 import android.util.Log;
+
+import androidx.test.InstrumentationRegistry;
 
 import org.junit.After;
 import org.junit.Assert;

@@ -12,10 +12,10 @@ import static org.hamcrest.Matchers.not;
 import static org.mockito.Mockito.when;
 
 import android.content.res.Configuration;
-import android.support.test.runner.lifecycle.Stage;
 
 import androidx.appcompat.app.AppCompatDelegate;
 import androidx.test.filters.MediumTest;
+import androidx.test.runner.lifecycle.Stage;
 
 import org.junit.Before;
 import org.junit.Rule;

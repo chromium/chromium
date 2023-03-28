@@ -5,7 +5,8 @@
 package org.chromium.chrome.browser.customtabs;
 
 import android.content.Intent;
-import android.support.test.InstrumentationRegistry;
+
+import androidx.test.InstrumentationRegistry;
 
 import org.chromium.chrome.browser.browserservices.TrustedWebActivityTestUtil;
 import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider;

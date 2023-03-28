@@ -4,8 +4,7 @@
 
 package org.chromium.chrome.browser.paint_preview;
 
-import android.support.test.InstrumentationRegistry;
-
+import androidx.test.InstrumentationRegistry;
 import androidx.test.filters.MediumTest;
 import androidx.test.uiautomator.UiDevice;
 

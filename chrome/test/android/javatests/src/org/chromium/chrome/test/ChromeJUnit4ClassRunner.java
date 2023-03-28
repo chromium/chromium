@@ -5,8 +5,9 @@
 package org.chromium.chrome.test;
 
 import android.content.Context;
-import android.support.test.InstrumentationRegistry;
 import android.text.TextUtils;
+
+import androidx.test.InstrumentationRegistry;
 
 import org.junit.rules.TestRule;
 import org.junit.runners.model.InitializationError;

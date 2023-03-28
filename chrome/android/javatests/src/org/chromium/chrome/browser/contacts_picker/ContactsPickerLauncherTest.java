@@ -3,8 +3,7 @@
 // found in the LICENSE file.
 package org.chromium.chrome.browser.contacts_picker;
 
-import android.support.test.InstrumentationRegistry;
-
+import androidx.test.InstrumentationRegistry;
 import androidx.test.filters.LargeTest;
 
 import org.junit.After;

@@ -5,9 +5,9 @@
 package org.chromium.chrome.browser.gesturenav;
 
 import android.os.SystemClock;
-import android.support.test.InstrumentationRegistry;
 import android.view.MotionEvent;
 
+import androidx.test.InstrumentationRegistry;
 import androidx.test.filters.SmallTest;
 
 import org.hamcrest.Matchers;

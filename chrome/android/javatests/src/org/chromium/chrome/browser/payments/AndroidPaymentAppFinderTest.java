@@ -4,9 +4,8 @@
 
 package org.chromium.chrome.browser.payments;
 
-import android.support.test.InstrumentationRegistry;
-
 import androidx.annotation.Nullable;
+import androidx.test.InstrumentationRegistry;
 import androidx.test.filters.MediumTest;
 
 import org.junit.After;

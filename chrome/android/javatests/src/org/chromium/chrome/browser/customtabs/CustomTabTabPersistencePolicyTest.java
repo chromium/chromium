@@ -5,9 +5,9 @@
 package org.chromium.chrome.browser.customtabs;
 
 import android.app.Activity;
-import android.support.test.InstrumentationRegistry;
 
 import androidx.annotation.Nullable;
+import androidx.test.InstrumentationRegistry;
 import androidx.test.filters.MediumTest;
 import androidx.test.filters.SmallTest;
 
