@@ -9,7 +9,6 @@
 
 #include <type_traits>
 
-#include "base/allocator/partition_allocator/address_pool_manager_bitmap.h"
 #include "base/allocator/partition_allocator/partition_address_space.h"
 #include "base/allocator/partition_allocator/partition_alloc_base/compiler_specific.h"
 #include "base/allocator/partition_allocator/partition_alloc_base/component_export.h"
@@ -19,6 +18,10 @@
 #include "base/allocator/partition_allocator/partition_alloc_constants.h"
 #include "base/allocator/partition_allocator/partition_alloc_forward.h"
 #include "build/build_config.h"
+
+#if !BUILDFLAG(HAS_64_BIT_POINTERS)
+#include "base/allocator/partition_allocator/address_pool_manager_bitmap.h"
+#endif
 
 #if !BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT)
 #error "Included under wrong build option"

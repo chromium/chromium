@@ -8,7 +8,6 @@
 #include <bitset>
 #include <limits>
 
-#include "base/allocator/partition_allocator/address_pool_manager_bitmap.h"
 #include "base/allocator/partition_allocator/address_pool_manager_types.h"
 #include "base/allocator/partition_allocator/partition_address_space.h"
 #include "base/allocator/partition_allocator/partition_alloc_base/compiler_specific.h"
@@ -20,6 +19,10 @@
 #include "base/allocator/partition_allocator/partition_alloc_constants.h"
 #include "base/allocator/partition_allocator/partition_lock.h"
 #include "build/build_config.h"
+
+#if !BUILDFLAG(HAS_64_BIT_POINTERS)
+#include "base/allocator/partition_allocator/address_pool_manager_bitmap.h"
+#endif
 
 namespace partition_alloc {
 

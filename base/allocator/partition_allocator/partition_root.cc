@@ -6,7 +6,6 @@
 
 #include <cstdint>
 
-#include "base/allocator/partition_allocator/address_pool_manager_bitmap.h"
 #include "base/allocator/partition_allocator/freeslot_bitmap.h"
 #include "base/allocator/partition_allocator/oom.h"
 #include "base/allocator/partition_allocator/page_allocator.h"
@@ -36,6 +35,10 @@
 
 #if BUILDFLAG(USE_STARSCAN)
 #include "base/allocator/partition_allocator/starscan/pcscan.h"
+#endif
+
+#if !BUILDFLAG(HAS_64_BIT_POINTERS)
+#include "base/allocator/partition_allocator/address_pool_manager_bitmap.h"
 #endif
 
 #if BUILDFLAG(IS_WIN)

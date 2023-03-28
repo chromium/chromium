@@ -18,7 +18,6 @@
 #include <vector>
 
 #include "base/allocator/partition_allocator/address_pool_manager.h"
-#include "base/allocator/partition_allocator/address_pool_manager_bitmap.h"
 #include "base/allocator/partition_allocator/allocation_guard.h"
 #include "base/allocator/partition_allocator/page_allocator.h"
 #include "base/allocator/partition_allocator/page_allocator_constants.h"
@@ -51,6 +50,10 @@
 #include "base/allocator/partition_allocator/tagging.h"
 #include "base/allocator/partition_allocator/thread_cache.h"
 #include "build/build_config.h"
+
+#if !BUILDFLAG(HAS_64_BIT_POINTERS)
+#include "base/allocator/partition_allocator/address_pool_manager_bitmap.h"
+#endif
 
 #if PA_CONFIG(STARSCAN_NOINLINE_SCAN_FUNCTIONS)
 #define PA_SCAN_INLINE PA_NOINLINE
