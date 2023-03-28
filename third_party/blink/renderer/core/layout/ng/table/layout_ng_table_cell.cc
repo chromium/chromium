@@ -4,9 +4,9 @@
 
 #include "third_party/blink/renderer/core/layout/ng/table/layout_ng_table_cell.h"
 
+#include "third_party/blink/renderer/core/css/resolver/style_resolver.h"
 #include "third_party/blink/renderer/core/html/html_table_cell_element.h"
 #include "third_party/blink/renderer/core/html/table_constants.h"
-#include "third_party/blink/renderer/core/layout/layout_object_factory.h"
 #include "third_party/blink/renderer/core/layout/layout_view.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_block_node.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_constraint_space.h"
@@ -21,6 +21,17 @@ namespace blink {
 LayoutNGTableCell::LayoutNGTableCell(Element* element)
     : LayoutNGBlockFlowMixin<LayoutBlockFlow>(element) {
   UpdateColAndRowSpanFlags();
+}
+
+LayoutNGTableCell* LayoutNGTableCell::CreateAnonymousWithParent(
+    const LayoutObject& parent) {
+  scoped_refptr<const ComputedStyle> new_style =
+      parent.GetDocument().GetStyleResolver().CreateAnonymousStyleWithDisplay(
+          parent.StyleRef(), EDisplay::kTableCell);
+  auto* new_cell = MakeGarbageCollected<LayoutNGTableCell>(nullptr);
+  new_cell->SetDocumentForAnonymous(&parent.GetDocument());
+  new_cell->SetStyle(std::move(new_style));
+  return new_cell;
 }
 
 void LayoutNGTableCell::InvalidateLayoutResultCacheAfterMeasure() const {
@@ -139,7 +150,7 @@ void LayoutNGTableCell::ColSpanOrRowSpanChanged() {
 LayoutBox* LayoutNGTableCell::CreateAnonymousBoxWithSameTypeAs(
     const LayoutObject* parent) const {
   NOT_DESTROYED();
-  return LayoutObjectFactory::CreateAnonymousTableCellWithParent(*parent);
+  return CreateAnonymousWithParent(*parent);
 }
 
 LayoutBlock* LayoutNGTableCell::StickyContainer() const {

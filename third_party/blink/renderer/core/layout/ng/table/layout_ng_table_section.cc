@@ -4,7 +4,7 @@
 
 #include "third_party/blink/renderer/core/layout/ng/table/layout_ng_table_section.h"
 
-#include "third_party/blink/renderer/core/layout/layout_object_factory.h"
+#include "third_party/blink/renderer/core/css/resolver/style_resolver.h"
 #include "third_party/blink/renderer/core/layout/ng/table/layout_ng_table.h"
 #include "third_party/blink/renderer/core/layout/ng/table/layout_ng_table_row.h"
 #include "third_party/blink/renderer/core/layout/ng/table/ng_table_borders.h"
@@ -13,6 +13,17 @@ namespace blink {
 
 LayoutNGTableSection::LayoutNGTableSection(Element* element)
     : LayoutNGMixin<LayoutBlock>(element) {}
+
+LayoutNGTableSection* LayoutNGTableSection::CreateAnonymousWithParent(
+    const LayoutObject& parent) {
+  scoped_refptr<const ComputedStyle> new_style =
+      parent.GetDocument().GetStyleResolver().CreateAnonymousStyleWithDisplay(
+          parent.StyleRef(), EDisplay::kTableRowGroup);
+  auto* new_section = MakeGarbageCollected<LayoutNGTableSection>(nullptr);
+  new_section->SetDocumentForAnonymous(&parent.GetDocument());
+  new_section->SetStyle(std::move(new_style));
+  return new_section;
+}
 
 bool LayoutNGTableSection::IsEmpty() const {
   NOT_DESTROYED();
@@ -63,8 +74,7 @@ void LayoutNGTableSection::AddChild(LayoutObject* child,
       return;
     }
 
-    LayoutObject* row =
-        LayoutObjectFactory::CreateAnonymousTableRowWithParent(*this);
+    auto* row = LayoutNGTableRow::CreateAnonymousWithParent(*this);
     AddChild(row, before_child);
     row->AddChild(child);
     return;
@@ -105,7 +115,7 @@ void LayoutNGTableSection::StyleDidChange(StyleDifference diff,
 LayoutBox* LayoutNGTableSection::CreateAnonymousBoxWithSameTypeAs(
     const LayoutObject* parent) const {
   NOT_DESTROYED();
-  return LayoutObjectFactory::CreateAnonymousTableSectionWithParent(*parent);
+  return CreateAnonymousWithParent(*parent);
 }
 
 LayoutNGTableInterface* LayoutNGTableSection::TableInterface() const {

@@ -48,10 +48,12 @@
 #include "third_party/blink/renderer/core/layout/layout_list_item.h"
 #include "third_party/blink/renderer/core/layout/layout_multi_column_flow_thread.h"
 #include "third_party/blink/renderer/core/layout/layout_ruby_run.h"
-#include "third_party/blink/renderer/core/layout/layout_table.h"
-#include "third_party/blink/renderer/core/layout/layout_table_cell.h"
 #include "third_party/blink/renderer/core/layout/layout_view.h"
 #include "third_party/blink/renderer/core/layout/ng/list/layout_ng_list_item.h"
+#include "third_party/blink/renderer/core/layout/ng/table/layout_ng_table.h"
+#include "third_party/blink/renderer/core/layout/ng/table/layout_ng_table_cell.h"
+#include "third_party/blink/renderer/core/layout/ng/table/layout_ng_table_row.h"
+#include "third_party/blink/renderer/core/layout/ng/table/layout_ng_table_section.h"
 #include "third_party/blink/renderer/core/layout/style_retain_scope.h"
 #include "third_party/blink/renderer/core/page/chrome_client.h"
 #include "third_party/blink/renderer/core/page/page.h"
@@ -1049,10 +1051,7 @@ float TextAutosizer::WidthFromBlock(const LayoutBlock* block) const {
   // methods to obtain a width, and fall back on a containing block's width.
   for (; block; block = block->ContainingBlock()) {
     float width;
-    Length specified_width =
-        block->IsTableCellLegacy()
-            ? To<LayoutTableCell>(block)->StyleOrColLogicalWidth()
-            : block->StyleRef().LogicalWidth();
+    Length specified_width = block->StyleRef().LogicalWidth();
     if (specified_width.IsFixed()) {
       if ((width = specified_width.Value()) > 0)
         return width;

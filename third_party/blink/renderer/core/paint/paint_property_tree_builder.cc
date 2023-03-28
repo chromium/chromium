@@ -29,14 +29,15 @@
 #include "third_party/blink/renderer/core/layout/layout_inline.h"
 #include "third_party/blink/renderer/core/layout/layout_object.h"
 #include "third_party/blink/renderer/core/layout/layout_replaced.h"
-#include "third_party/blink/renderer/core/layout/layout_table_row.h"
-#include "third_party/blink/renderer/core/layout/layout_table_section.h"
 #include "third_party/blink/renderer/core/layout/layout_video.h"
 #include "third_party/blink/renderer/core/layout/layout_view.h"
 #include "third_party/blink/renderer/core/layout/ng/inline/ng_fragment_item.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_block_break_token.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_fragmentation_utils.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_physical_box_fragment.h"
+#include "third_party/blink/renderer/core/layout/ng/table/layout_ng_table.h"
+#include "third_party/blink/renderer/core/layout/ng/table/layout_ng_table_row.h"
+#include "third_party/blink/renderer/core/layout/ng/table/layout_ng_table_section.h"
 #include "third_party/blink/renderer/core/layout/svg/layout_svg_resource_masker.h"
 #include "third_party/blink/renderer/core/layout/svg/layout_svg_root.h"
 #include "third_party/blink/renderer/core/layout/svg/layout_svg_viewport_container.h"
@@ -2941,16 +2942,6 @@ void FragmentPaintPropertyTreeBuilder::UpdatePaintOffset() {
       // can be stored on PaintPropertyTreeBuilderFragmentContext instead of
       // recomputing them.
       context_.current.paint_offset += box->PhysicalLocation();
-
-      // This is a weird quirk that table cells paint as children of table rows,
-      // but their location have the row's location baked-in.
-      // Similar adjustment is done in LayoutTableCell::offsetFromContainer().
-      if (object_.IsTableCellLegacy()) {
-        LayoutObject* parent_row = object_.Parent();
-        DCHECK(parent_row && parent_row->IsTableRow());
-        context_.current.paint_offset -=
-            To<LayoutBox>(parent_row)->PhysicalLocation();
-      }
     }
   }
 

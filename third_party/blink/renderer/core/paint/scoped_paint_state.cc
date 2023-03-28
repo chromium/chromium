@@ -12,11 +12,9 @@
 
 namespace blink {
 
-ScopedPaintState::ScopedPaintState(
-    const LayoutObject& object,
-    const PaintInfo& paint_info,
-    const FragmentData* fragment_data,
-    bool painting_legacy_table_part_in_ancestor_layer)
+ScopedPaintState::ScopedPaintState(const LayoutObject& object,
+                                   const PaintInfo& paint_info,
+                                   const FragmentData* fragment_data)
     : fragment_to_paint_(fragment_data), input_paint_info_(paint_info) {
   if (!fragment_to_paint_) {
     // The object has nothing to paint in the current fragment.
@@ -28,12 +26,9 @@ ScopedPaintState::ScopedPaintState(
   }
 
   paint_offset_ = fragment_to_paint_->PaintOffset();
-  if (painting_legacy_table_part_in_ancestor_layer) {
-    DCHECK(object.IsTableCellLegacy() || object.IsLegacyTableRow() ||
-           object.IsLegacyTableSection());
-  } else if (paint_info.phase == PaintPhase::kOverlayOverflowControls ||
-             (object.HasLayer() &&
-              To<LayoutBoxModelObject>(object).HasSelfPaintingLayer())) {
+  if (paint_info.phase == PaintPhase::kOverlayOverflowControls ||
+      (object.HasLayer() &&
+       To<LayoutBoxModelObject>(object).HasSelfPaintingLayer())) {
     // PaintLayerPainter already adjusted for PaintOffsetTranslation for
     // PaintContainer.
     return;

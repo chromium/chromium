@@ -4,7 +4,7 @@
 
 #include "third_party/blink/renderer/core/layout/ng/table/layout_ng_table.h"
 
-#include "third_party/blink/renderer/core/layout/layout_object_factory.h"
+#include "third_party/blink/renderer/core/css/resolver/style_resolver.h"
 #include "third_party/blink/renderer/core/layout/layout_view.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_block_node.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_constraint_space.h"
@@ -40,6 +40,18 @@ LayoutNGTable::LayoutNGTable(Element* element)
     : LayoutNGMixin<LayoutBlock>(element) {}
 
 LayoutNGTable::~LayoutNGTable() = default;
+
+LayoutNGTable* LayoutNGTable::CreateAnonymousWithParent(
+    const LayoutObject& parent) {
+  scoped_refptr<const ComputedStyle> new_style =
+      parent.GetDocument().GetStyleResolver().CreateAnonymousStyleWithDisplay(
+          parent.StyleRef(),
+          parent.IsLayoutInline() ? EDisplay::kInlineTable : EDisplay::kTable);
+  auto* new_table = MakeGarbageCollected<LayoutNGTable>(nullptr);
+  new_table->SetDocumentForAnonymous(&parent.GetDocument());
+  new_table->SetStyle(std::move(new_style));
+  return new_table;
+}
 
 wtf_size_t LayoutNGTable::ColumnCount() const {
   NOT_DESTROYED();
@@ -133,6 +145,7 @@ void LayoutNGTable::AddChild(LayoutObject* child, LayoutObject* before_child) {
   NOT_DESTROYED();
   TableGridStructureChanged();
   // Only TablesNG table parts are allowed.
+  // TODO(1229581): Change this DCHECK to caption || column || section.
   DCHECK(child->IsLayoutNGObject() ||
          (!child->IsTableCaption() && !child->IsLayoutTableCol() &&
           !child->IsTableSection()));
@@ -179,8 +192,7 @@ void LayoutNGTable::AddChild(LayoutObject* child, LayoutObject* before_child) {
       NeedsTableSection(*before_child))
     before_child = nullptr;
 
-  LayoutBox* section =
-      LayoutObjectFactory::CreateAnonymousTableSectionWithParent(*this);
+  auto* section = LayoutNGTableSection::CreateAnonymousWithParent(*this);
   AddChild(section, before_child);
   section->AddChild(child);
 }
@@ -212,7 +224,7 @@ void LayoutNGTable::StyleDidChange(StyleDifference diff,
 LayoutBox* LayoutNGTable::CreateAnonymousBoxWithSameTypeAs(
     const LayoutObject* parent) const {
   NOT_DESTROYED();
-  return LayoutObjectFactory::CreateAnonymousTableWithParent(*parent);
+  return CreateAnonymousWithParent(*parent);
 }
 
 PhysicalRect LayoutNGTable::OverflowClipRect(

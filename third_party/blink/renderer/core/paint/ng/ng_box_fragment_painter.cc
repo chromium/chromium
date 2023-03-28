@@ -14,7 +14,6 @@
 #include "third_party/blink/renderer/core/layout/hit_test_location.h"
 #include "third_party/blink/renderer/core/layout/hit_test_result.h"
 #include "third_party/blink/renderer/core/layout/layout_inline.h"
-#include "third_party/blink/renderer/core/layout/layout_table_cell.h"
 #include "third_party/blink/renderer/core/layout/layout_view.h"
 #include "third_party/blink/renderer/core/layout/ng/geometry/ng_box_strut.h"
 #include "third_party/blink/renderer/core/layout/ng/inline/layout_ng_text_combine.h"
@@ -26,6 +25,8 @@
 #include "third_party/blink/renderer/core/layout/ng/ng_fragmentation_utils.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_outline_utils.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_physical_box_fragment.h"
+#include "third_party/blink/renderer/core/layout/ng/table/layout_ng_table.h"
+#include "third_party/blink/renderer/core/layout/ng/table/layout_ng_table_cell.h"
 #include "third_party/blink/renderer/core/layout/pointer_events_hit_rules.h"
 #include "third_party/blink/renderer/core/page/page.h"
 #include "third_party/blink/renderer/core/paint/background_image_geometry.h"
@@ -1823,8 +1824,6 @@ PhysicalRect NGBoxFragmentPainter::AdjustRectForScrolledContent(
 }
 
 LayoutRectOutsets NGBoxFragmentPainter::ComputeBorders() const {
-  if (box_fragment_.GetLayoutObject()->IsTableCellLegacy())
-    return To<LayoutBox>(box_fragment_.GetLayoutObject())->BorderBoxOutsets();
   return PhysicalFragment().Borders().ToLayoutRectOutsets();
 }
 

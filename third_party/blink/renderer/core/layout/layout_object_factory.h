@@ -50,22 +50,6 @@ class LayoutObjectFactory {
   static LayoutObject* CreateListMarker(Node&,
                                         const ComputedStyle&,
                                         LegacyLayout);
-  static LayoutBlock* CreateTable(Node&, const ComputedStyle&, LegacyLayout);
-  static LayoutBlockFlow* CreateTableCaption(Node&,
-                                             const ComputedStyle&,
-                                             LegacyLayout);
-  static LayoutBlockFlow* CreateTableCell(Node&,
-                                          const ComputedStyle&,
-                                          LegacyLayout);
-  static LayoutBox* CreateTableColumn(Node&,
-                                      const ComputedStyle&,
-                                      LegacyLayout);
-
-  static LayoutBox* CreateTableRow(Node&, const ComputedStyle&, LegacyLayout);
-  static LayoutBox* CreateTableSection(Node&,
-                                       const ComputedStyle&,
-                                       LegacyLayout);
-
   static LayoutObject* CreateCounter(PseudoElement& pseduo,
                                      const CounterContentData& counter,
                                      LegacyLayout legacy);
@@ -92,23 +76,6 @@ class LayoutObjectFactory {
 
   static LayoutObject* CreateBR(Node*, LegacyLayout);
   static LayoutObject* CreateWordBreak(HTMLElement*, LegacyLayout);
-
-  // Anonymous creation methods
-
-  // |child_forces_legacy| true if creating parents boxes for legacy child.
-  // Table must match child's type.
-  static LayoutBox* CreateAnonymousTableWithParent(
-      const LayoutObject& parent,
-      bool child_forces_legacy = false);
-
-  static LayoutBox* CreateAnonymousTableSectionWithParent(
-      const LayoutObject& parent);
-
-  static LayoutBox* CreateAnonymousTableRowWithParent(
-      const LayoutObject& parent);
-
-  static LayoutBlockFlow* CreateAnonymousTableCellWithParent(
-      const LayoutObject& parent);
 };
 
 }  // namespace blink

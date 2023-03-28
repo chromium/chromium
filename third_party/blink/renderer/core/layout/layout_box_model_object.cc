@@ -1053,8 +1053,9 @@ PhysicalOffset LayoutBoxModelObject::AdjustedPositionRelativeTo(
         // FIXME: What are we supposed to do inside SVG content?
         reference_point += PhysicalOffsetToBeNoop(
             current->ColumnOffset(reference_point.ToLayoutPoint()));
-        if (current->IsBox() && !current->IsLegacyTableRow())
+        if (current->IsBox()) {
           reference_point += To<LayoutBox>(current)->PhysicalLocation();
+        }
       }
 
       if (offset_parent_object->IsBox() && offset_parent_object->IsBody() &&
@@ -1317,7 +1318,7 @@ LayoutObject* LayoutBoxModelObject::SplitAnonymousBoxesAroundChild(
       auto* parent_box = To<LayoutBoxModelObject>(box_to_split->Parent());
       // We need to invalidate the |parentBox| before inserting the new node
       // so that the table paint invalidation logic knows the structure is
-      // dirty. See for example LayoutTableCell:localVisualRect().
+      // dirty.
       MarkBoxForRelayoutAfterSplit(parent_box);
       parent_box->VirtualChildren()->InsertChildNode(
           parent_box, post_box, box_to_split->NextSibling());

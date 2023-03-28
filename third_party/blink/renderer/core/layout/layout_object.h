@@ -194,7 +194,7 @@ struct RecalcLayoutOverflowResult {
 // Some LayoutObjects don't have an associated Node and are called "anonymous"
 // (see the constructor below). Anonymous LayoutObjects exist for several
 // purposes but are usually required by CSS. A good example is anonymous table
-// parts (see LayoutTable for the expected structure). Anonymous LayoutObjects
+// parts (see LayoutNGTable for the expected structure). Anonymous LayoutObjects
 // are generated when a new child is added to the tree in addChild(). See the
 // function for some important information on this.
 //
@@ -583,7 +583,7 @@ class CORE_EXPORT LayoutObject : public GarbageCollected<LayoutObject>,
   // from a structure of a flat tree if Shadow DOM is used.
   // See LayoutTreeBuilderTraversal and FlatTreeTraversal.
   //
-  // See LayoutTable::addChild and LayoutBlock::addChild.
+  // See LayoutNGTable::AddChild and LayoutBlockFlow::AddChild.
   // TODO(jchaffraix): |newChild| cannot be nullptr and should be a reference.
   virtual void AddChild(LayoutObject* new_child,
                         LayoutObject* before_child = nullptr);
@@ -843,7 +843,7 @@ class CORE_EXPORT LayoutObject : public GarbageCollected<LayoutObject>,
   // For renderer creation, the inline-* values create the same renderer
   // as the non-inline version. The difference is that inline-* sets
   // is_inline_ during initialization. This means that
-  // "display: inline-table" creates a LayoutTable, like "display: table".
+  // "display: inline-table" creates a LayoutNGTable, like "display: table".
   //
   // Ideally every Element::createLayoutObject would call this function to
   // respond to 'display' but there are deep rooted assumptions about
@@ -1048,25 +1048,13 @@ class CORE_EXPORT LayoutObject : public GarbageCollected<LayoutObject>,
     NOT_DESTROYED();
     return IsOfType(kLayoutObjectTableCell);
   }
-  bool IsTableCellLegacy() const {
-    NOT_DESTROYED();
-    return IsOfType(kLayoutObjectTableCellLegacy);
-  }
   bool IsTableRow() const {
     NOT_DESTROYED();
     return IsOfType(kLayoutObjectTableRow);
   }
-  bool IsLegacyTableRow() const {
-    NOT_DESTROYED();
-    return IsTableRow() && !IsLayoutNGObject();
-  }
   bool IsTableSection() const {
     NOT_DESTROYED();
     return IsOfType(kLayoutObjectTableSection);
-  }
-  bool IsLegacyTableSection() const {
-    NOT_DESTROYED();
-    return IsTableSection() && !IsLayoutNGObject();
   }
   bool IsTextArea() const {
     NOT_DESTROYED();
@@ -2478,7 +2466,7 @@ class CORE_EXPORT LayoutObject : public GarbageCollected<LayoutObject>,
   // - if the CSS containing block is a relatively positioned inline,
   //   the function returns the inline's enclosing non-anonymous LayoutBlock.
   //   This means that a LayoutInline would be skipped (expected as it's not a
-  //   LayoutBlock) but so would be an inline LayoutTable or LayoutBlockFlow.
+  //   LayoutBlock) but so would be an inline LayoutNGTable or LayoutBlockFlow.
   //   TODO(jchaffraix): Is that REALLY what we want here?
   // - if the CSS containing block is anonymous, we find its enclosing
   //   non-anonymous LayoutBlock.
@@ -3742,7 +3730,6 @@ class CORE_EXPORT LayoutObject : public GarbageCollected<LayoutObject>,
     kLayoutObjectTable,
     kLayoutObjectTableCaption,
     kLayoutObjectTableCell,
-    kLayoutObjectTableCellLegacy,
     kLayoutObjectTableCol,
     kLayoutObjectTableRow,
     kLayoutObjectTableSection,

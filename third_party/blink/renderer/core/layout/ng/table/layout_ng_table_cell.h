@@ -21,6 +21,8 @@ class CORE_EXPORT LayoutNGTableCell
  public:
   explicit LayoutNGTableCell(Element*);
 
+  static LayoutNGTableCell* CreateAnonymousWithParent(const LayoutObject&);
+
   // NOTE: Rowspan might overflow section boundaries.
   unsigned ComputedRowSpan() const {
     NOT_DESTROYED();
@@ -164,7 +166,7 @@ class CORE_EXPORT LayoutNGTableCell
 template <>
 struct DowncastTraits<LayoutNGTableCell> {
   static bool AllowFrom(const LayoutObject& object) {
-    return object.IsTableCell() && !object.IsTableCellLegacy();
+    return object.IsTableCell();
   }
 };
 

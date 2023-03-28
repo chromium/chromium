@@ -28,24 +28,12 @@ class ScopedPaintState {
   STACK_ALLOCATED();
 
  public:
-  // If |paint_legacy_table_part_in_ancestor_layer| is true, we'll
-  // unconditionally apply PaintOffsetTranslation adjustment. For self-painting
-  // layers, this adjustment is typically applied by PaintLayerPainter rather
-  // than ScopedPaintState, but legacy tables table parts sometimes paint into
-  // ancestor's self-painting layer instead of their own.
-  // TODO(layout-dev): Remove this parameter when removing legacy table classes.
-  ScopedPaintState(const LayoutObject&,
-                   const PaintInfo&,
-                   const FragmentData*,
-                   bool painting_legacy_table_part_in_ancestor_layer = false);
+  ScopedPaintState(const LayoutObject&, const PaintInfo&, const FragmentData*);
 
-  ScopedPaintState(const LayoutObject& object,
-                   const PaintInfo& paint_info,
-                   bool painting_legacy_table_part_in_ancestor_layer = false)
+  ScopedPaintState(const LayoutObject& object, const PaintInfo& paint_info)
       : ScopedPaintState(object,
                          paint_info,
-                         paint_info.FragmentToPaint(object),
-                         painting_legacy_table_part_in_ancestor_layer) {}
+                         paint_info.FragmentToPaint(object)) {}
 
   ScopedPaintState(const NGPhysicalFragment& fragment,
                    const PaintInfo& paint_info)

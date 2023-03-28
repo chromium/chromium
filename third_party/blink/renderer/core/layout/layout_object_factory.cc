@@ -16,12 +16,6 @@
 #include "third_party/blink/renderer/core/layout/layout_list_item.h"
 #include "third_party/blink/renderer/core/layout/layout_list_marker.h"
 #include "third_party/blink/renderer/core/layout/layout_outside_list_marker.h"
-#include "third_party/blink/renderer/core/layout/layout_table.h"
-#include "third_party/blink/renderer/core/layout/layout_table_caption.h"
-#include "third_party/blink/renderer/core/layout/layout_table_cell.h"
-#include "third_party/blink/renderer/core/layout/layout_table_col.h"
-#include "third_party/blink/renderer/core/layout/layout_table_row.h"
-#include "third_party/blink/renderer/core/layout/layout_table_section.h"
 #include "third_party/blink/renderer/core/layout/layout_text.h"
 #include "third_party/blink/renderer/core/layout/layout_text_combine.h"
 #include "third_party/blink/renderer/core/layout/layout_text_fragment.h"
@@ -45,12 +39,6 @@
 #include "third_party/blink/renderer/core/layout/ng/list/layout_ng_outside_list_marker.h"
 #include "third_party/blink/renderer/core/layout/ng/mathml/layout_ng_mathml_block.h"
 #include "third_party/blink/renderer/core/layout/ng/mathml/layout_ng_mathml_block_flow.h"
-#include "third_party/blink/renderer/core/layout/ng/table/layout_ng_table.h"
-#include "third_party/blink/renderer/core/layout/ng/table/layout_ng_table_caption.h"
-#include "third_party/blink/renderer/core/layout/ng/table/layout_ng_table_cell.h"
-#include "third_party/blink/renderer/core/layout/ng/table/layout_ng_table_column.h"
-#include "third_party/blink/renderer/core/layout/ng/table/layout_ng_table_row.h"
-#include "third_party/blink/renderer/core/layout/ng/table/layout_ng_table_section.h"
 #include "third_party/blink/renderer/core/mathml/mathml_element.h"
 #include "third_party/blink/renderer/core/mathml/mathml_token_element.h"
 #include "third_party/blink/renderer/core/style/computed_style.h"
@@ -169,49 +157,6 @@ LayoutObject* LayoutObjectFactory::CreateListMarker(Node& node,
                       LayoutOutsideListMarker>(node, legacy);
 }
 
-LayoutBlock* LayoutObjectFactory::CreateTable(Node& node,
-                                              const ComputedStyle& style,
-                                              LegacyLayout legacy) {
-  return CreateObject<LayoutBlock, LayoutNGTable, LayoutTable>(node, legacy);
-}
-
-LayoutBlockFlow* LayoutObjectFactory::CreateTableCaption(
-    Node& node,
-    const ComputedStyle& style,
-    LegacyLayout legacy) {
-  return CreateObject<LayoutBlockFlow, LayoutNGTableCaption,
-                      LayoutTableCaption>(node, legacy);
-}
-
-LayoutBlockFlow* LayoutObjectFactory::CreateTableCell(
-    Node& node,
-    const ComputedStyle& style,
-    LegacyLayout legacy) {
-  return CreateObject<LayoutBlockFlow, LayoutNGTableCell, LayoutTableCell>(
-      node, legacy);
-}
-
-LayoutBox* LayoutObjectFactory::CreateTableColumn(Node& node,
-                                                  const ComputedStyle& style,
-                                                  LegacyLayout legacy) {
-  return CreateObject<LayoutBox, LayoutNGTableColumn, LayoutTableCol>(node,
-                                                                      legacy);
-}
-
-LayoutBox* LayoutObjectFactory::CreateTableRow(Node& node,
-                                               const ComputedStyle& style,
-                                               LegacyLayout legacy) {
-  return CreateObject<LayoutBox, LayoutNGTableRow, LayoutTableRow>(node,
-                                                                   legacy);
-}
-
-LayoutBox* LayoutObjectFactory::CreateTableSection(Node& node,
-                                                   const ComputedStyle& style,
-                                                   LegacyLayout legacy) {
-  return CreateObject<LayoutBox, LayoutNGTableSection, LayoutTableSection>(
-      node, legacy);
-}
-
 LayoutObject* LayoutObjectFactory::CreateCounter(
     PseudoElement& pseduo,
     const CounterContentData& counter,
@@ -306,70 +251,6 @@ LayoutObject* LayoutObjectFactory::CreateWordBreak(HTMLElement* element,
                                                    LegacyLayout legacy) {
   return CreateObject<LayoutObject, LayoutNGWordBreak, LayoutWordBreak>(
       *element, legacy);
-}
-
-LayoutBox* LayoutObjectFactory::CreateAnonymousTableWithParent(
-    const LayoutObject& parent,
-    bool child_forces_legacy) {
-  scoped_refptr<const ComputedStyle> new_style =
-      parent.GetDocument().GetStyleResolver().CreateAnonymousStyleWithDisplay(
-          parent.StyleRef(),
-          parent.IsLayoutInline() ? EDisplay::kInlineTable : EDisplay::kTable);
-  LegacyLayout legacy =
-      parent.ForceLegacyLayoutForChildren() || child_forces_legacy
-          ? LegacyLayout::kForce
-          : LegacyLayout::kAuto;
-
-  LayoutBlock* new_table =
-      CreateTable(parent.GetDocument(), *new_style, legacy);
-  new_table->SetDocumentForAnonymous(&parent.GetDocument());
-  new_table->SetStyle(std::move(new_style));
-  return new_table;
-}
-
-LayoutBox* LayoutObjectFactory::CreateAnonymousTableSectionWithParent(
-    const LayoutObject& parent) {
-  scoped_refptr<const ComputedStyle> new_style =
-      parent.GetDocument().GetStyleResolver().CreateAnonymousStyleWithDisplay(
-          parent.StyleRef(), EDisplay::kTableRowGroup);
-  LegacyLayout legacy = parent.ForceLegacyLayoutForChildren()
-                            ? LegacyLayout::kForce
-                            : LegacyLayout::kAuto;
-
-  LayoutBox* new_section =
-      CreateTableSection(parent.GetDocument(), *new_style, legacy);
-  new_section->SetDocumentForAnonymous(&parent.GetDocument());
-  new_section->SetStyle(std::move(new_style));
-  return new_section;
-}
-
-LayoutBox* LayoutObjectFactory::CreateAnonymousTableRowWithParent(
-    const LayoutObject& parent) {
-  scoped_refptr<const ComputedStyle> new_style =
-      parent.GetDocument().GetStyleResolver().CreateAnonymousStyleWithDisplay(
-          parent.StyleRef(), EDisplay::kTableRow);
-  LegacyLayout legacy = parent.ForceLegacyLayoutForChildren()
-                            ? LegacyLayout::kForce
-                            : LegacyLayout::kAuto;
-  LayoutBox* new_row = CreateTableRow(parent.GetDocument(), *new_style, legacy);
-  new_row->SetDocumentForAnonymous(&parent.GetDocument());
-  new_row->SetStyle(std::move(new_style));
-  return new_row;
-}
-
-LayoutBlockFlow* LayoutObjectFactory::CreateAnonymousTableCellWithParent(
-    const LayoutObject& parent) {
-  scoped_refptr<const ComputedStyle> new_style =
-      parent.GetDocument().GetStyleResolver().CreateAnonymousStyleWithDisplay(
-          parent.StyleRef(), EDisplay::kTableCell);
-  LegacyLayout legacy = parent.ForceLegacyLayoutForChildren()
-                            ? LegacyLayout::kForce
-                            : LegacyLayout::kAuto;
-  LayoutBlockFlow* new_cell =
-      CreateTableCell(parent.GetDocument(), *new_style, legacy);
-  new_cell->SetDocumentForAnonymous(&parent.GetDocument());
-  new_cell->SetStyle(std::move(new_style));
-  return new_cell;
 }
 
 }  // namespace blink

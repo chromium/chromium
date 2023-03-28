@@ -19,8 +19,6 @@
 #include "third_party/blink/renderer/core/layout/layout_multi_column_flow_thread.h"
 #include "third_party/blink/renderer/core/layout/layout_multi_column_set.h"
 #include "third_party/blink/renderer/core/layout/layout_multi_column_spanner_placeholder.h"
-#include "third_party/blink/renderer/core/layout/layout_table.h"
-#include "third_party/blink/renderer/core/layout/layout_table_cell.h"
 #include "third_party/blink/renderer/core/layout/layout_video.h"
 #include "third_party/blink/renderer/core/layout/min_max_sizes.h"
 #include "third_party/blink/renderer/core/layout/ng/custom/layout_ng_custom.h"

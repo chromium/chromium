@@ -70,7 +70,6 @@
 #include "third_party/blink/renderer/core/layout/layout_multi_column_flow_thread.h"
 #include "third_party/blink/renderer/core/layout/layout_multi_column_spanner_placeholder.h"
 #include "third_party/blink/renderer/core/layout/layout_object.h"
-#include "third_party/blink/renderer/core/layout/layout_table_cell.h"
 #include "third_party/blink/renderer/core/layout/layout_text_control.h"
 #include "third_party/blink/renderer/core/layout/layout_view.h"
 #include "third_party/blink/renderer/core/layout/ng/custom/custom_layout_child.h"
@@ -89,6 +88,7 @@
 #include "third_party/blink/renderer/core/layout/ng/ng_layout_result.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_layout_utils.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_length_utils.h"
+#include "third_party/blink/renderer/core/layout/ng/table/layout_ng_table.h"
 #include "third_party/blink/renderer/core/layout/ng/table/layout_ng_table_cell.h"
 #include "third_party/blink/renderer/core/layout/shapes/shape_outside_info.h"
 #include "third_party/blink/renderer/core/loader/resource/image_resource_content.h"
@@ -1002,7 +1002,6 @@ void LayoutBox::UpdateFromStyle() {
       IsSVGChild() ? style_to_use.HasTransformRelatedPropertyForSVG()
                    : style_to_use.HasTransformRelatedProperty());
   SetHasReflection(style_to_use.BoxReflect());
-  // LayoutTable and LayoutTableCell will overwrite this flag if needed.
   SetHasNonCollapsedBorderDecoration(style_to_use.HasBorderDecoration());
 
   bool should_clip_overflow = (!StyleRef().IsOverflowVisibleAlongBothAxes() ||
@@ -3292,8 +3291,9 @@ void LayoutBox::SetCachedLayoutResult(const NGLayoutResult* result,
     // set the "layout" result.
     if (measure_result_)
       InvalidateItems(*measure_result_);
-    if (IsTableCell() && !IsTableCellLegacy())
+    if (IsTableCell()) {
       To<LayoutNGTableCell>(this)->InvalidateLayoutResultCacheAfterMeasure();
+    }
     measure_result_ = result;
   } else {
     // We have a "layout" result, and we may need to clear the old "measure"
@@ -3839,29 +3839,12 @@ bool LayoutBox::MapToVisualRectInAncestorSpaceInternal(
 
   AncestorSkipInfo skip_info(ancestor, true);
   LayoutObject* container = Container(&skip_info);
-  LayoutBox* table_row_container = nullptr;
-  // Skip table row because cells and rows are in the same coordinate space (see
-  // below, however for more comments about when |ancestor| is the table row).
-  if ((IsTableCell() && !IsLayoutNGObject()) || IsTableCellLegacy()) {
-    DCHECK(container->IsTableRow());
-    DCHECK_EQ(ParentBox(), container);
-    if (container != ancestor)
-      container = container->Parent();
-    else
-      table_row_container = To<LayoutBox>(container);
-  }
   if (!container)
     return true;
 
   PhysicalOffset container_offset;
   if (auto* box = DynamicTo<LayoutBox>(container)) {
     container_offset += PhysicalLocation(box);
-
-    // If the row is the ancestor, however, add its offset back in. In effect,
-    // this passes from the joint <td> / <tr> coordinate space to the parent
-    // space, then back to <tr> / <td>.
-    if (table_row_container)
-      container_offset -= table_row_container->PhysicalLocation(box);
   } else {
     container_offset += PhysicalLocation();
   }
@@ -5516,8 +5499,6 @@ static LayoutUnit AccumulateStaticOffsetForFlowThread(
     LayoutBox& layout_box,
     LayoutUnit inline_position,
     LayoutUnit& block_position) {
-  if (layout_box.IsLegacyTableRow())
-    return LayoutUnit();
   block_position += layout_box.LogicalTop();
   if (!layout_box.IsLayoutFlowThread())
     return LayoutUnit();
@@ -6055,8 +6036,9 @@ void LayoutBox::ComputeBlockStaticDistance(
   LayoutUnit static_logical_top = child->Layer()->StaticBlockPosition();
   for (LayoutObject* curr = child->Parent(); curr && curr != container_block;
        curr = curr->Container()) {
-    if (!curr->IsBox() || curr->IsLegacyTableRow())
+    if (!curr->IsBox()) {
       continue;
+    }
     const auto& box = *To<LayoutBox>(curr);
     static_logical_top +=
         (fragment_builder &&

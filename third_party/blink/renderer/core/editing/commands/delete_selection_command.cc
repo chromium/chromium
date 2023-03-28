@@ -47,7 +47,8 @@
 #include "third_party/blink/renderer/core/html/html_style_element.h"
 #include "third_party/blink/renderer/core/html/html_table_row_element.h"
 #include "third_party/blink/renderer/core/html_names.h"
-#include "third_party/blink/renderer/core/layout/layout_table_cell.h"
+#include "third_party/blink/renderer/core/layout/layout_box.h"
+#include "third_party/blink/renderer/core/layout/layout_text.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 
 namespace blink {

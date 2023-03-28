@@ -13,8 +13,6 @@
 #include "third_party/blink/renderer/core/frame/settings.h"
 #include "third_party/blink/renderer/core/layout/layout_block_flow.h"
 #include "third_party/blink/renderer/core/layout/layout_shift_tracker.h"
-#include "third_party/blink/renderer/core/layout/layout_table.h"
-#include "third_party/blink/renderer/core/layout/layout_table_section.h"
 #include "third_party/blink/renderer/core/layout/layout_view.h"
 #include "third_party/blink/renderer/core/layout/ng/inline/ng_fragment_item.h"
 #include "third_party/blink/renderer/core/layout/ng/legacy_layout_tree_walking.h"

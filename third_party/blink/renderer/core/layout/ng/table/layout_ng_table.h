@@ -93,12 +93,13 @@ class NGTableBorders;
 // The validation state is a IsTableColumnsConstraintsDirty flag
 // on LayoutObject. They are invalidated inside
 // LayoutObject::SetNeeds*Layout.
-
 class CORE_EXPORT LayoutNGTable : public LayoutNGBlock,
                                   public LayoutNGTableInterface {
  public:
   explicit LayoutNGTable(Element*);
   ~LayoutNGTable() override;
+
+  static LayoutNGTable* CreateAnonymousWithParent(const LayoutObject&);
 
   wtf_size_t ColumnCount() const;
 
@@ -184,7 +185,6 @@ class CORE_EXPORT LayoutNGTable : public LayoutNGBlock,
   // Whether a table has opaque foreground depends on many factors, e.g. border
   // spacing, missing cells, etc. For simplicity, just conservatively assume
   // foreground of all tables are not opaque.
-  // Copied from LayoutTable.
   bool ForegroundIsKnownToBeOpaqueInRect(
       const PhysicalRect& local_rect,
       unsigned max_depth_to_test) const override {
@@ -290,9 +290,7 @@ class CORE_EXPORT LayoutNGTable : public LayoutNGBlock,
 // wtf/casting.h helper.
 template <>
 struct DowncastTraits<LayoutNGTable> {
-  static bool AllowFrom(const LayoutObject& object) {
-    return object.IsTable() && object.IsLayoutNGObject();
-  }
+  static bool AllowFrom(const LayoutObject& object) { return object.IsTable(); }
 };
 
 }  // namespace blink

@@ -106,16 +106,11 @@ void ColumnBalancer::TraverseChildren(const LayoutObject& object) {
     if (child_box.IsOutOfFlowPositioned() || child_box.IsColumnSpanAll())
       continue;
 
-    // Tables are wicked. Both table rows and table cells are relative to their
-    // table section.
-    LayoutUnit offset_for_this_child =
-        child_box.IsLegacyTableRow() ? LayoutUnit() : logical_top;
-
     // Include this child's offset in the flow thread offset. Note that rather
     // than subtracting the offset again when done, we set it back to the old
     // value. This matters in saturated arithmetic situations.
     auto old_flow_thread_offset = flow_thread_offset_;
-    flow_thread_offset_ += offset_for_this_child;
+    flow_thread_offset_ += logical_top;
 
     ExamineBoxAfterEntering(child_box, logical_height,
                             previous_break_after_value);

@@ -124,7 +124,7 @@ class CORE_EXPORT LayoutNGTableColumn : public LayoutBox {
 template <>
 struct DowncastTraits<LayoutNGTableColumn> {
   static bool AllowFrom(const LayoutObject& object) {
-    return object.IsLayoutTableCol() && object.IsLayoutNGObject();
+    return object.IsLayoutTableCol();
   }
 };
 

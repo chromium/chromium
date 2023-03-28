@@ -43,7 +43,6 @@
 #include "third_party/blink/renderer/core/layout/layout_inline.h"
 #include "third_party/blink/renderer/core/layout/layout_list_item.h"
 #include "third_party/blink/renderer/core/layout/layout_list_marker.h"
-#include "third_party/blink/renderer/core/layout/layout_table_cell.h"
 #include "third_party/blink/renderer/core/layout/layout_view.h"
 #include "third_party/blink/renderer/core/layout/line/inline_text_box.h"
 #include "third_party/blink/renderer/core/layout/list_marker.h"
@@ -51,6 +50,7 @@
 #include "third_party/blink/renderer/core/layout/ng/inline/ng_inline_cursor.h"
 #include "third_party/blink/renderer/core/layout/ng/list/layout_ng_list_item.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_physical_box_fragment.h"
+#include "third_party/blink/renderer/core/layout/ng/table/layout_ng_table_cell.h"
 #include "third_party/blink/renderer/core/layout/svg/layout_svg_image.h"
 #include "third_party/blink/renderer/core/layout/svg/layout_svg_inline.h"
 #include "third_party/blink/renderer/core/layout/svg/layout_svg_inline_text.h"
@@ -412,10 +412,6 @@ static void WriteTextRun(WTF::TextStream& ts,
   int x = run.X().ToInt();
   int y = run.Y().ToInt();
   int logical_width = (run.X() + run.LogicalWidth()).Ceil() - x;
-
-  // FIXME: Table cell adjustment is temporary until results can be updated.
-  if (o.ContainingBlock()->IsTableCellLegacy())
-    y -= To<LayoutTableCell>(o.ContainingBlock())->IntrinsicPaddingBefore();
 
   ts << "text run at (" << x << "," << y << ") width " << logical_width;
   if (!run.IsLeftToRightDirection() || run.DirOverride()) {

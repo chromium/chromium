@@ -7,8 +7,6 @@
 #include "third_party/blink/renderer/core/frame/local_frame_view.h"
 #include "third_party/blink/renderer/core/layout/layout_box.h"
 #include "third_party/blink/renderer/core/layout/layout_box_model_object.h"
-#include "third_party/blink/renderer/core/layout/layout_table_cell.h"
-#include "third_party/blink/renderer/core/layout/layout_table_col.h"
 #include "third_party/blink/renderer/core/layout/layout_view.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_fragmentation_utils.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_physical_box_fragment.h"
@@ -215,98 +213,6 @@ void BackgroundImageGeometry::UseFixedAttachment(
   phase_ += fixed_adjustment;
 }
 
-enum ColumnGroupDirection { kColumnGroupStart, kColumnGroupEnd };
-
-static void ExpandToTableColumnGroup(const LayoutTableCell& cell,
-                                     const LayoutTableCol& column_group,
-                                     LayoutUnit& value,
-                                     ColumnGroupDirection column_direction) {
-  auto sibling_cell = column_direction == kColumnGroupStart
-                          ? &LayoutTableCell::PreviousCell
-                          : &LayoutTableCell::NextCell;
-  for (const auto* sibling = (cell.*sibling_cell)(); sibling;
-       sibling = (sibling->*sibling_cell)()) {
-    LayoutTableCol* innermost_col =
-        cell.Table()
-            ->ColElementAtAbsoluteColumn(sibling->AbsoluteColumnIndex())
-            .InnermostColOrColGroup();
-    if (!innermost_col || innermost_col->EnclosingColumnGroup() != column_group)
-      break;
-    value += sibling->Size().Width();
-  }
-}
-
-PhysicalOffset BackgroundImageGeometry::GetPositioningOffsetForCell(
-    const LayoutTableCell& cell,
-    const LayoutBox& positioning_box) {
-  LayoutUnit h_border_spacing(cell.Table()->HBorderSpacing());
-  LayoutUnit v_border_spacing(cell.Table()->VBorderSpacing());
-  // TODO(layout-ng): It looks incorrect to use Location() in this function.
-  if (positioning_box.IsTableSection()) {
-    return PhysicalOffset(cell.Location().X() - h_border_spacing,
-                          cell.Location().Y() - v_border_spacing);
-  }
-  if (positioning_box.IsLegacyTableRow()) {
-    return PhysicalOffset(cell.Location().X() - h_border_spacing, LayoutUnit());
-  }
-
-  PhysicalRect sections_rect(PhysicalOffset(), cell.Table()->Size());
-  cell.Table()->SubtractCaptionRect(sections_rect);
-  LayoutUnit height_of_captions =
-      cell.Table()->Size().Height() - sections_rect.Height();
-  PhysicalOffset offset_in_background = PhysicalOffset(
-      LayoutUnit(), (cell.Section()->Location().Y() -
-                     cell.Table()->BorderBefore() - height_of_captions) +
-                        cell.Location().Y());
-
-  const auto& table_col = To<LayoutTableCol>(positioning_box);
-  if (table_col.IsTableColumn()) {
-    offset_in_background.top -= v_border_spacing;
-    return offset_in_background;
-  }
-
-  DCHECK(table_col.IsTableColumnGroup());
-  LayoutUnit offset = offset_in_background.left;
-  ExpandToTableColumnGroup(cell, table_col, offset, kColumnGroupStart);
-  offset_in_background.left += offset;
-  offset_in_background.top -= v_border_spacing;
-  return offset_in_background;
-}
-
-PhysicalSize BackgroundImageGeometry::GetBackgroundObjectDimensions(
-    const LayoutTableCell& cell,
-    const LayoutBox& positioning_box) {
-  PhysicalSize border_spacing(LayoutUnit(cell.Table()->HBorderSpacing()),
-                              LayoutUnit(cell.Table()->VBorderSpacing()));
-  if (positioning_box.IsTableSection()) {
-    return PhysicalSizeToBeNoop(positioning_box.Size()) - border_spacing -
-           border_spacing;
-  }
-
-  if (positioning_box.IsTableRow()) {
-    return PhysicalSizeToBeNoop(positioning_box.Size()) -
-           PhysicalSize(border_spacing.width, LayoutUnit()) -
-           PhysicalSize(border_spacing.width, LayoutUnit());
-  }
-
-  DCHECK(positioning_box.IsLayoutTableCol());
-  PhysicalRect sections_rect(PhysicalOffset(), cell.Table()->Size());
-  cell.Table()->SubtractCaptionRect(sections_rect);
-  LayoutUnit column_height = sections_rect.Height() -
-                             cell.Table()->BorderBefore() -
-                             border_spacing.height - border_spacing.height;
-  const auto& table_col = To<LayoutTableCol>(positioning_box);
-  if (table_col.IsTableColumn())
-    return PhysicalSize(cell.Size().Width(), column_height);
-
-  DCHECK(table_col.IsTableColumnGroup());
-  LayoutUnit width = cell.Size().Width();
-  ExpandToTableColumnGroup(cell, table_col, width, kColumnGroupStart);
-  ExpandToTableColumnGroup(cell, table_col, width, kColumnGroupEnd);
-
-  return PhysicalSize(width, column_height);
-}
-
 bool BackgroundImageGeometry::ShouldUseFixedAttachment(
     const FillLayer& fill_layer) const {
   // Only backgrounds fixed to viewport should be treated as fixed attachment.
@@ -390,25 +296,6 @@ BackgroundImageGeometry::BackgroundImageGeometry(
 BackgroundImageGeometry::BackgroundImageGeometry(
     const LayoutBoxModelObject& obj)
     : BackgroundImageGeometry(&obj, &obj) {}
-
-BackgroundImageGeometry::BackgroundImageGeometry(
-    const LayoutTableCell& cell,
-    const LayoutObject* background_object)
-    : BackgroundImageGeometry(
-          &cell,
-          background_object && !background_object->IsTableCell()
-              ? &To<LayoutBoxModelObject>(*background_object)
-              : &cell) {
-  painting_table_cell_ = true;
-  cell_using_container_background_ =
-      background_object && !background_object->IsTableCell();
-  if (cell_using_container_background_) {
-    element_positioning_area_offset_ =
-        GetPositioningOffsetForCell(cell, To<LayoutBox>(*background_object));
-    positioning_size_override_ =
-        GetBackgroundObjectDimensions(cell, To<LayoutBox>(*background_object));
-  }
-}
 
 // TablesNG background painting.
 BackgroundImageGeometry::BackgroundImageGeometry(const LayoutNGTableCell& cell,

@@ -4,7 +4,6 @@
 
 #include "third_party/blink/renderer/core/layout/ng/table/layout_ng_table_caption.h"
 
-#include "third_party/blink/renderer/core/layout/layout_table.h"
 #include "third_party/blink/renderer/core/layout/layout_view.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_block_node.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_box_fragment.h"
@@ -21,6 +20,7 @@ LayoutNGTableCaption::LayoutNGTableCaption(Element* element)
     : LayoutNGBlockFlow(element) {}
 
 // Legacy method.
+// TODO(1229581): Remove.
 void LayoutNGTableCaption::CalculateAndSetMargins(
     const NGConstraintSpace& constraint_space,
     const NGPhysicalFragment& physical_fragment) {
@@ -52,18 +52,7 @@ void LayoutNGTableCaption::CalculateAndSetMargins(
       containing_block_style.GetWritingDirection()));
 }
 
-void LayoutNGTableCaption::InsertedIntoTree() {
-  NOT_DESTROYED();
-  DCHECK(Parent()->IsLayoutNGObject());
-  LayoutBlockFlow::InsertedIntoTree();
-}
-
-void LayoutNGTableCaption::WillBeRemovedFromTree() {
-  NOT_DESTROYED();
-  DCHECK(Parent()->IsLayoutNGObject());
-  LayoutBlockFlow::WillBeRemovedFromTree();
-}
-
+// TODO(1229581): Remove.
 void LayoutNGTableCaption::UpdateBlockLayout(bool relayout_children) {
   NOT_DESTROYED();
 

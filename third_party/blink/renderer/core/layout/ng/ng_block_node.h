@@ -134,9 +134,7 @@ class CORE_EXPORT NGBlockNode : public NGLayoutInputNode {
   NGBlockNode GetRenderedLegend() const;
   NGBlockNode GetFieldsetContent() const;
 
-  bool IsNGTableCell() const {
-    return box_->IsTableCell() && !box_->IsTableCellLegacy();
-  }
+  bool IsNGTableCell() const { return box_->IsTableCell(); }
 
   bool IsContainingBlockNGGrid() const {
     return box_->ContainingBlock()->IsLayoutNGGrid();

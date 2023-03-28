@@ -55,7 +55,6 @@
 #include "third_party/blink/renderer/core/layout/layout_multi_column_spanner_placeholder.h"
 #include "third_party/blink/renderer/core/layout/layout_object_factory.h"
 #include "third_party/blink/renderer/core/layout/layout_object_inlines.h"
-#include "third_party/blink/renderer/core/layout/layout_table_cell.h"
 #include "third_party/blink/renderer/core/layout/layout_theme.h"
 #include "third_party/blink/renderer/core/layout/layout_view.h"
 #include "third_party/blink/renderer/core/layout/line/inline_text_box.h"
@@ -1552,16 +1551,6 @@ MinMaxSizes LayoutBlock::ComputeIntrinsicLogicalWidths() const {
     child_sizes.min_size = LayoutUnit();
   if (UNLIKELY(IsListBox(this) && StyleRef().LogicalWidth().IsPercentOrCalc()))
     child_sizes.min_size = LayoutUnit();
-
-  if (IsTableCellLegacy()) {
-    Length table_cell_width =
-        To<LayoutTableCell>(this)->StyleOrColLogicalWidth();
-    if (table_cell_width.IsFixed() && table_cell_width.Value() > 0) {
-      child_sizes.max_size = std::max(
-          child_sizes.min_size, AdjustContentBoxLogicalWidthForBoxSizing(
-                                    LayoutUnit(table_cell_width.Value())));
-    }
-  }
 
   sizes += child_sizes;
   return sizes;

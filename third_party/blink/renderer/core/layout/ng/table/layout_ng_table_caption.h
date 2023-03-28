@@ -36,10 +36,6 @@ class CORE_EXPORT LayoutNGTableCaption final : public LayoutNGBlockFlow {
 
  private:
   // Legacy-only API.
-  void InsertedIntoTree() override;
-  // Legacy-only API.
-  void WillBeRemovedFromTree() override;
-  // Legacy-only API.
   void CalculateAndSetMargins(const NGConstraintSpace&,
                               const NGPhysicalFragment&);
 };
@@ -48,7 +44,7 @@ class CORE_EXPORT LayoutNGTableCaption final : public LayoutNGBlockFlow {
 template <>
 struct DowncastTraits<LayoutNGTableCaption> {
   static bool AllowFrom(const LayoutObject& object) {
-    return object.IsTableCaption() && object.IsLayoutNGObject();
+    return object.IsTableCaption();
   }
 };
 

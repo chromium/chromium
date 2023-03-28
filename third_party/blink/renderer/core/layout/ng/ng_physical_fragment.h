@@ -218,8 +218,7 @@ class CORE_EXPORT NGPhysicalFragment
   }
 
   bool IsTableNGCell() const {
-    return IsTableNGPart() && layout_object_->IsTableCell() &&
-           !layout_object_->IsTableCellLegacy();
+    return IsTableNGPart() && layout_object_->IsTableCell();
   }
 
   bool IsGridNG() const { return layout_object_->IsLayoutNGGrid(); }

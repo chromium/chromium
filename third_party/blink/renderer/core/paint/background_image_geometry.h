@@ -19,8 +19,6 @@ class ImageResourceObserver;
 class LayoutBox;
 class LayoutBoxModelObject;
 class LayoutNGTableCell;
-class LayoutObject;
-class LayoutTableCell;
 class LayoutView;
 class NGPhysicalBoxFragment;
 struct PaintInfo;
@@ -33,11 +31,6 @@ class BackgroundImageGeometry {
   BackgroundImageGeometry(
       const LayoutView&,
       const PhysicalOffset& element_positioning_area_offset);
-
-  // Constructor for table cells where background_object may be the row or
-  // column the background image is attached to.
-  BackgroundImageGeometry(const LayoutTableCell&,
-                          const LayoutObject* background_object);
 
   // Generic constructor for all other elements.
   explicit BackgroundImageGeometry(const LayoutBoxModelObject&);
@@ -128,10 +121,6 @@ class BackgroundImageGeometry {
   void SetSpaceY(LayoutUnit space, LayoutUnit extra_offset);
 
   void UseFixedAttachment(const PhysicalOffset& attachment_point);
-  PhysicalOffset GetPositioningOffsetForCell(const LayoutTableCell&,
-                                             const LayoutBox&);
-  PhysicalSize GetBackgroundObjectDimensions(const LayoutTableCell&,
-                                             const LayoutBox&);
 
   // Compute adjustments for the destination rects. Adjustments
   // both optimize painting when the background is obscured by a

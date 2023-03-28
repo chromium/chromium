@@ -17,14 +17,14 @@
 #include "third_party/blink/renderer/core/html/forms/html_select_element.h"
 #include "third_party/blink/renderer/core/html/html_br_element.h"
 #include "third_party/blink/renderer/core/html/html_paragraph_element.h"
-#include "third_party/blink/renderer/core/layout/layout_table_cell.h"
-#include "third_party/blink/renderer/core/layout/layout_table_row.h"
-#include "third_party/blink/renderer/core/layout/layout_table_section.h"
 #include "third_party/blink/renderer/core/layout/layout_text_fragment.h"
 #include "third_party/blink/renderer/core/layout/line/inline_text_box.h"
 #include "third_party/blink/renderer/core/layout/ng/inline/ng_inline_node.h"
 #include "third_party/blink/renderer/core/layout/ng/inline/ng_inline_node_data.h"
 #include "third_party/blink/renderer/core/layout/ng/inline/ng_offset_mapping.h"
+#include "third_party/blink/renderer/core/layout/ng/table/layout_ng_table_cell.h"
+#include "third_party/blink/renderer/core/layout/ng/table/layout_ng_table_row.h"
+#include "third_party/blink/renderer/core/layout/ng/table/layout_ng_table_section.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/text/character_names.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
@@ -152,7 +152,7 @@ bool ElementInnerTextCollector::IsDisplayBlockLevel(const Node& node) {
   if (!layout_object)
     return false;
   if (layout_object->IsTableSection()) {
-    // Note: |LayoutTableSection::IsInline()| returns false, but it is not
+    // Note: |LayoutNGTableSection::IsInline()| returns false, but it is not
     // block-level.
     return false;
   }
@@ -190,8 +190,8 @@ bool ElementInnerTextCollector::ShouldEmitNewlineForTableRow(
       table_row.SectionInterface();
   if (!table_section)
     return false;
-  // See |LayoutTable::SectionAbove()| and |SectionBelow()| for traversing
-  // |LayoutTableSection|.
+  // See |LayoutNGTable::NextSectionInterface()| and
+  // |PreviousSectionInterface()| for traversing |LayoutNGTableSection|.
   for (const LayoutObject* runner =
            table_section->ToLayoutObject()->NextSibling();
        runner; runner = runner->NextSibling()) {

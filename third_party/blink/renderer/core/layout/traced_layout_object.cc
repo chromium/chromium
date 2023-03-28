@@ -7,9 +7,9 @@
 #include <inttypes.h>
 #include <memory>
 #include "third_party/blink/renderer/core/layout/layout_inline.h"
-#include "third_party/blink/renderer/core/layout/layout_table_cell.h"
 #include "third_party/blink/renderer/core/layout/layout_text.h"
 #include "third_party/blink/renderer/core/layout/layout_view.h"
+#include "third_party/blink/renderer/core/layout/ng/table/layout_ng_table_cell.h"
 
 namespace blink {
 

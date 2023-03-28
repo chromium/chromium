@@ -2,9 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "third_party/blink/renderer/core/layout/layout_table.h"
-#include "third_party/blink/renderer/core/layout/layout_table_section.h"
+#include "third_party/blink/renderer/core/layout/ng/table/layout_ng_table.h"
 
+#include "third_party/blink/renderer/core/layout/ng/table/layout_ng_table_section.h"
 #include "third_party/blink/renderer/core/testing/core_unit_test_helper.h"
 
 namespace blink {

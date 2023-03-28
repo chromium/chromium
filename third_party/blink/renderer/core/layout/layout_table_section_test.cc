@@ -2,9 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "third_party/blink/renderer/core/layout/layout_table_section.h"
-
-#include "third_party/blink/renderer/core/layout/layout_table_cell.h"
 #include "third_party/blink/renderer/core/testing/core_unit_test_helper.h"
 
 namespace blink {
@@ -15,23 +12,6 @@ class LayoutTableSectionTest : public RenderingTest {
  protected:
   LayoutBox* GetSectionByElementIdAsBox(const char* id) {
     return To<LayoutBox>(GetLayoutObjectByElementId(id));
-  }
-
-  LayoutTableSection* CreateSection(unsigned rows, unsigned columns) {
-    auto* table = GetDocument().CreateRawElement(html_names::kTableTag);
-    GetDocument().body()->appendChild(table);
-    auto* section = GetDocument().CreateRawElement(html_names::kTbodyTag);
-    table->appendChild(section);
-    for (unsigned i = 0; i < rows; ++i) {
-      auto* row = GetDocument().CreateRawElement(html_names::kTrTag);
-      section->appendChild(row);
-      for (unsigned column = 0; column < columns; ++column)
-        row->appendChild(GetDocument().CreateRawElement(html_names::kTdTag));
-    }
-    UpdateAllLifecyclePhasesForTest();
-    // TODO(958381) Needs to TableNG compatible with
-    // LayoutNGTableSectionInterface.
-    return To<LayoutTableSection>(section->GetLayoutObject());
   }
 };
 

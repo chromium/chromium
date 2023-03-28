@@ -86,7 +86,6 @@
 #include "third_party/blink/renderer/core/layout/layout_object_inl.h"
 #include "third_party/blink/renderer/core/layout/layout_object_inlines.h"
 #include "third_party/blink/renderer/core/layout/layout_ruby_run.h"
-#include "third_party/blink/renderer/core/layout/layout_table_caption.h"
 #include "third_party/blink/renderer/core/layout/layout_text_fragment.h"
 #include "third_party/blink/renderer/core/layout/layout_theme.h"
 #include "third_party/blink/renderer/core/layout/layout_view.h"
@@ -101,7 +100,11 @@
 #include "third_party/blink/renderer/core/layout/ng/ng_physical_box_fragment.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_unpositioned_float.h"
 #include "third_party/blink/renderer/core/layout/ng/table/layout_ng_table.h"
+#include "third_party/blink/renderer/core/layout/ng/table/layout_ng_table_caption.h"
 #include "third_party/blink/renderer/core/layout/ng/table/layout_ng_table_cell.h"
+#include "third_party/blink/renderer/core/layout/ng/table/layout_ng_table_column.h"
+#include "third_party/blink/renderer/core/layout/ng/table/layout_ng_table_row.h"
+#include "third_party/blink/renderer/core/layout/ng/table/layout_ng_table_section.h"
 #include "third_party/blink/renderer/core/page/autoscroll_controller.h"
 #include "third_party/blink/renderer/core/page/page.h"
 #include "third_party/blink/renderer/core/paint/fragment_data_iterator.h"
@@ -174,9 +177,6 @@ inline bool MightTraversePhysicalFragments(const LayoutObject& obj) {
   }
   // The NG paint system currently doesn't support replaced content.
   if (obj.IsLayoutReplaced())
-    return false;
-  // The NG paint system currently doesn't support table-cells.
-  if (obj.IsTableCellLegacy())
     return false;
   // Text controls have some logic in the layout objects that will be missed if
   // we traverse the fragment tree when hit-testing.
@@ -373,20 +373,20 @@ LayoutObject* LayoutObject::CreateObject(Element* element,
       return LayoutObjectFactory::CreateBlockFlow(*element, style, legacy);
     case EDisplay::kTable:
     case EDisplay::kInlineTable:
-      return LayoutObjectFactory::CreateTable(*element, style, legacy);
+      return MakeGarbageCollected<LayoutNGTable>(element);
     case EDisplay::kTableRowGroup:
     case EDisplay::kTableHeaderGroup:
     case EDisplay::kTableFooterGroup:
-      return LayoutObjectFactory::CreateTableSection(*element, style, legacy);
+      return MakeGarbageCollected<LayoutNGTableSection>(element);
     case EDisplay::kTableRow:
-      return LayoutObjectFactory::CreateTableRow(*element, style, legacy);
+      return MakeGarbageCollected<LayoutNGTableRow>(element);
     case EDisplay::kTableColumnGroup:
     case EDisplay::kTableColumn:
-      return LayoutObjectFactory::CreateTableColumn(*element, style, legacy);
+      return MakeGarbageCollected<LayoutNGTableColumn>(element);
     case EDisplay::kTableCell:
-      return LayoutObjectFactory::CreateTableCell(*element, style, legacy);
+      return MakeGarbageCollected<LayoutNGTableCell>(element);
     case EDisplay::kTableCaption:
-      return LayoutObjectFactory::CreateTableCaption(*element, style, legacy);
+      return MakeGarbageCollected<LayoutNGTableCaption>(element);
     case EDisplay::kWebkitBox:
     case EDisplay::kWebkitInlineBox:
       if (style.IsDeprecatedWebkitBoxWithVerticalLineClamp()) {
@@ -625,8 +625,7 @@ void LayoutObject::AddChild(LayoutObject* new_child,
         !after_child->IsBeforeContent()) {
       table = after_child;
     } else {
-      table = LayoutObjectFactory::CreateAnonymousTableWithParent(
-          *this, !new_child->IsLayoutNGObject());
+      table = LayoutNGTable::CreateAnonymousWithParent(*this);
       children->InsertChildNode(this, table, before_child);
     }
     table->AddChild(new_child);
@@ -1641,10 +1640,7 @@ inline void LayoutObject::InvalidateContainerIntrinsicLogicalWidths() {
     // rather than from their parents (sections or rows). Skip these when
     // invalidating.
     if (current->IsTableCell()) {
-      if (current->IsTableCellLegacy())
-        return current->ContainingBlock();
-      else
-        return To<LayoutNGTableCell>(current)->Table();
+      return To<LayoutNGTableCell>(current)->Table();
     }
     return current->Container();
   };

@@ -246,8 +246,6 @@ class CORE_EXPORT LayoutBoxModelObject : public LayoutObject {
   }
 
   // These functions are used during layout.
-  // - Table cells override them to include the intrinsic padding (see
-  //   explanations in LayoutTableCell).
   // - Table override them to exclude padding with collapsing borders.
   virtual LayoutUnit PaddingTop() const {
     NOT_DESTROYED();
