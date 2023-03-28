@@ -79,7 +79,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="LanguageSettings.AppLanguagePrompt.Action"
-    enum="LanguageSettingsAppLanguagePromptAction" expires_after="2023-08-08">
+    enum="LanguageSettingsAppLanguagePromptAction" expires_after="2023-09-22">
   <owner>perrier@chromium.org</owner>
   <owner>chrome-language@google.com</owner>
   <summary>
@@ -90,24 +90,8 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="LanguageSettings.AppLanguagePrompt.HasTopULPMatch"
-    enum="BooleanYesNo" expires_after="2023-01-15">
-  <obsolete>
-    Replaced by LanguageSettings.AppLanguagePrompt.HasTopULPMatchOrEmpty
-  </obsolete>
-  <owner>perrier@chromium.org</owner>
-  <owner>chrome-language@google.com</owner>
-  <summary>
-    Whether or not the Chrome UI language matches the top ULP language when the
-    AppLanguagePrompt should be shown. Logged when checking if the prompt should
-    be shown and it has not already been shown.
-
-    Only the base languages are compared so pt-PT is considered equal to pt-BR.
-  </summary>
-</histogram>
-
 <histogram name="LanguageSettings.AppLanguagePrompt.IsOnline"
-    enum="BooleanYesNo" expires_after="2023-08-20">
+    enum="BooleanYesNo" expires_after="2023-09-22">
   <owner>perrier@chromium.org</owner>
   <owner>chrome-language@google.com</owner>
   <summary>
@@ -121,7 +105,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="LanguageSettings.AppLanguagePrompt.IsTopLanguageSelected"
-    enum="BooleanYesNo" expires_after="2023-08-08">
+    enum="BooleanYesNo" expires_after="2023-09-22">
   <owner>perrier@chromium.org</owner>
   <owner>chrome-language@google.com</owner>
   <summary>
@@ -135,7 +119,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="LanguageSettings.AppLanguagePrompt.Language"
-    enum="LocaleCodeISO639" expires_after="2023-08-31">
+    enum="LocaleCodeISO639" expires_after="2023-09-22">
   <owner>perrier@chromium.org</owner>
   <owner>chrome-language@google.com</owner>
   <summary>
@@ -149,30 +133,8 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="LanguageSettings.AppLanguagePrompt.OpenDuration.{ActionType}"
-    units="ms" expires_after="2022-06-30">
-  <obsolete>
-    Deleted May 2022
-  </obsolete>
-  <owner>perrier@chromium.org</owner>
-  <owner>chrome-language@google.com</owner>
-  <summary>
-    The length of time between showing the app lanugage prompt and the user
-    pressing {ActionType}.
-
-    An action must be taken if the prompt is shown, unless the application is
-    closed while the prompt is displayed. Reported when the prompt is dismissed.
-  </summary>
-  <token key="ActionType">
-    <variant name="Back" summary="system back"/>
-    <variant name="Cancel" summary="the cancel button"/>
-    <variant name="Change" summary="OK changing the app language"/>
-    <variant name="Same" summary="OK for the current app language"/>
-  </token>
-</histogram>
-
 <histogram name="LanguageSettings.AppLanguagePrompt.OtherLanguagesShown"
-    enum="BooleanYesNo" expires_after="2023-08-31">
+    enum="BooleanYesNo" expires_after="2023-09-22">
   <owner>perrier@chromium.org</owner>
   <owner>chrome-language@google.com</owner>
   <summary>
@@ -184,7 +146,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="LanguageSettings.AppLanguagePrompt.TopLanguageCount"
-    units="count" expires_after="2023-03-19">
+    units="count" expires_after="2023-09-22">
   <owner>perrier@chromium.org</owner>
   <owner>chrome-language@google.com</owner>
   <summary>
@@ -196,7 +158,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="LanguageSettings.AppLanguagePrompt.TopULPMatchStatus"
-    enum="ULPTopLanguageMatch" expires_after="2023-08-06">
+    enum="ULPTopLanguageMatch" expires_after="2023-09-22">
   <owner>perrier@chromium.org</owner>
   <owner>chrome-language@google.com</owner>
   <summary>
@@ -270,20 +232,6 @@ chromium-metrics-reviews@google.com.
     Metrics that record matches between the xml:lang, html lang and
     Accept-Language request header values. This is recorded every time the
     translate agent captures the page.
-  </summary>
-</histogram>
-
-<histogram name="LanguageUsage.ApplicationLanguage" enum="LanguageName"
-    expires_after="2023-03-19">
-  <obsolete>
-    Removed in M109. Use UMA.SystemProfile.ApplicationLocale which is a
-    synthetic histogram that supports country codes.
-  </obsolete>
-  <owner>perrier@chromium.org</owner>
-  <owner>chrome-language@google.com</owner>
-  <summary>
-    Application languages used for UI recorded once per profile initialization.
-    Incognito profiles are ignored.
   </summary>
 </histogram>
 
