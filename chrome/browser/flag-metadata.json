@@ -209,7 +209,7 @@
   {
     "name": "app-store-rating",
     "owners": [ "hiramahmood@google.com", "bling-flags@google.com" ],
-    "expiry_milestone": 114
+    "expiry_milestone": 115
   },
   {
     "name": "arc-custom-tabs-experiment",
