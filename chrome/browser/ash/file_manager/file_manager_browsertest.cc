@@ -2011,6 +2011,7 @@ WRAPPED_INSTANTIATE_TEST_SUITE_P(
             .FeatureIds({"screenplay-09c32d6b-36d3-494b-bb83-e19655880471"}),
         TestCase("hideCurrentDirectoryByTogglingHiddenAndroidFolders"),
         TestCase("newFolderInDownloads"),
+        TestCase("showFilesSettingsButton"),
         TestCase("showSendFeedbackAction")
             .FeatureIds({"screenplay-3bd7bbba-a25a-4386-93cf-933266df22a7"}),
         TestCase("showSendFeedbackAction")

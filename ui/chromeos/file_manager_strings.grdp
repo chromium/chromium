@@ -367,6 +367,9 @@
   <message name="IDS_FILE_BROWSER_CLOSE_VOLUME_BUTTON_LABEL" desc="Title of the action for closing either an archive volume or a volume provided by an extension.">
     Close
   </message>
+  <message name="IDS_FILE_BROWSER_FILES_SETTINGS_LABEL" desc="Label for menu that will take users to the Files section of the Settings page.">
+    Files settings
+  </message>
   <message name="IDS_FILE_BROWSER_SEND_FEEDBACK_BUTTON_LABEL" desc="Title for the action of sending user feedback.">
     Send feedback
   </message>

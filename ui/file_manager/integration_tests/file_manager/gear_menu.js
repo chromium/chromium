@@ -410,6 +410,40 @@ testcase.newFolderInDownloads = async () => {
 };
 
 /**
+ * Tests that the "Files settings" button appears in the gear menu and properly
+ * opens the Files section of the Settings page.
+ */
+testcase.showFilesSettingsButton = async () => {
+  const settingsWindowOrigin = 'chrome://os-settings';
+  const filesSettingsWindowURL = 'chrome://os-settings/files';
+
+  // Open Files.App on Downloads and wait for the gear menu button to appear.
+  const appId = await openNewWindow(RootPath.DOWNLOADS);
+  await remoteCall.waitForElement(appId, '#gear-button');
+
+  // Click the gear menu button.
+  chrome.test.assertTrue(await remoteCall.callRemoteTestUtil(
+      'fakeMouseClick', appId, ['#gear-button']));
+
+  // Wait for the gear menu to appear.
+  await remoteCall.waitForElement(appId, '#gear-menu:not([hidden])');
+
+  // Check that there is no Settings window opened.
+  chrome.test.assertFalse(
+      await remoteCall.windowOriginExists(settingsWindowOrigin));
+
+  // Click #files-settings, which should be shown and enabled.
+  await remoteCall.waitAndClickElement(
+      appId,
+      '#gear-menu:not([hidden]) cr-menu-item' +
+          '[command=\'#files-settings\']' +
+          ':not([disabled]):not([hidden])');
+
+  // Check that the settings window is opened on the Files subpage.
+  await remoteCall.waitForLastOpenedBrowserTabUrl(filesSettingsWindowURL);
+};
+
+/**
  * Tests that the "Send feedback" button appears in the gear menu and properly
  * opens the feedback window.
  */

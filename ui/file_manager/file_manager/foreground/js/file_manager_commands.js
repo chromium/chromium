@@ -20,13 +20,11 @@ import {CommandHandlerDeps} from '../../externs/command_handler_deps.js';
 import {FakeEntry, FilesAppDirEntry, FilesAppEntry} from '../../externs/files_app_entry_interfaces.js';
 import {VolumeInfo} from '../../externs/volume_info.js';
 import {VolumeManager} from '../../externs/volume_manager.js';
-import {XfDlpRestrictionDetailsDialog} from '../../widgets/xf_dlp_restriction_details_dialog.js';
 
 import {ActionsModel} from './actions_model.js';
 import {constants} from './constants.js';
 import {DirectoryModel} from './directory_model.js';
 import {FileSelection, FileSelectionHandler} from './file_selection.js';
-import {TaskPickerType} from './file_tasks.js';
 import {HoldingSpaceUtil} from './holding_space_util.js';
 import {PathComponent} from './path_component.js';
 import {Command} from './ui/command.js';
@@ -1777,6 +1775,20 @@ CommandHandler.COMMANDS_['rename'] = new (class extends FilesCommand {
         !isRecentArcEntry &&
         CommandUtil.hasCapability(fileManager, entries, 'canRename');
     event.command.setHidden(false);
+  }
+})();
+
+/**
+ * Opens settings/files sub page.
+ */
+CommandHandler.COMMANDS_['files-settings'] = new (class extends FilesCommand {
+  execute(event, fileManager) {
+    chrome.fileManagerPrivate.openSettingsSubpage('files');
+  }
+
+  /** @override */
+  canExecute(event, fileManager) {
+    event.canExecute = true;
   }
 })();
 
