@@ -54,7 +54,7 @@ constexpr net::NetworkTrafficAnnotationTag
     semantics {
       sender: "Chrome k-Anonymity Service Client"
       description:
-        "Request to the Chrome k-Anonymity JoinSet server to notify it of use "
+        "Request to the Chrome k-Anonymity Join server to notify it of use "
         "of a k-anonymity protected element."
       trigger:
         "Use of a k-anonymity protected element."
@@ -83,7 +83,7 @@ constexpr net::NetworkTrafficAnnotationTag
     semantics {
       sender: "Chrome k-Anonymity Service Client"
       description:
-        "Request to the Chrome k-Anonymity JoinSet server to query if "
+        "Request to the Chrome k-Anonymity Query server to query if "
         "k-anonymity protected element is k-anonymous. These results are "
         "typically cached."
       trigger:
