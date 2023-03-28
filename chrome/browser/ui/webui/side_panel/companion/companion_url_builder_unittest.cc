@@ -21,7 +21,8 @@ using ::testing::MatchesRegex;
 
 namespace companion {
 namespace {
-constexpr char kUrl[] = "https://foo.com/";
+
+constexpr char kValidUrl[] = "https://foo.com/";
 constexpr char kOrigin[] = "chrome-untrusted://companion-side-panel.top-chrome";
 
 class MockMsbbDelegate : public MsbbDelegate {
@@ -48,6 +49,33 @@ class CompanionUrlBuilderTest : public testing::Test {
   }
 
  protected:
+  void VerifyPageUrlSent(GURL page_url, bool expect_was_sent) {
+    GURL companion_url = url_builder_->BuildCompanionURL(page_url);
+
+    // Deserialize the query param into protobuf.
+    companion::proto::QueryParams proto =
+        DeserializeCompanionRequest(companion_url);
+
+    if (expect_was_sent) {
+      EXPECT_EQ(proto.page_url(), page_url.spec());
+    } else {
+      EXPECT_EQ(proto.page_url(), std::string());
+    }
+
+    EXPECT_TRUE(proto.has_msbb_enabled());
+  }
+  // Deserialize the query param into proto::QueryParams.
+  proto::QueryParams DeserializeCompanionRequest(GURL companion_url) {
+    companion::proto::QueryParams proto;
+    std::string url_param;
+    EXPECT_TRUE(net::GetValueForKeyInQuery(companion_url, "query", &url_param));
+    auto base64_decoded = base::Base64Decode(url_param);
+    auto serialized_proto = std::string(base64_decoded.value().begin(),
+                                        base64_decoded.value().end());
+    EXPECT_TRUE(proto.ParseFromString(serialized_proto));
+    return proto;
+  }
+
   TestingPrefServiceSimple pref_service_;
   MockMsbbDelegate msbb_delegate_;
   std::unique_ptr<CompanionUrlBuilder> url_builder_;
@@ -58,7 +86,7 @@ TEST_F(CompanionUrlBuilderTest, MsbbOff) {
       .WillRepeatedly(testing::Return(false));
   pref_service_.SetUserPref(kSigninPromoDeclinedCountPref, base::Value(1));
 
-  GURL page_url(kUrl);
+  GURL page_url(kValidUrl);
   GURL companion_url = url_builder_->BuildCompanionURL(page_url);
 
   std::string value;
@@ -68,13 +96,8 @@ TEST_F(CompanionUrlBuilderTest, MsbbOff) {
   EXPECT_EQ(value, kOrigin);
 
   // Deserialize the query param into protobuf.
-  companion::proto::QueryParams proto;
-  std::string url_param;
-  EXPECT_TRUE(net::GetValueForKeyInQuery(companion_url, "query", &url_param));
-  auto base64_decoded = base::Base64Decode(url_param);
-  auto serialized_proto =
-      std::string(base64_decoded.value().begin(), base64_decoded.value().end());
-  EXPECT_TRUE(proto.ParseFromString(serialized_proto));
+  companion::proto::QueryParams proto =
+      DeserializeCompanionRequest(companion_url);
 
   // URL shouldn't be sent when MSBB is off.
   EXPECT_EQ(proto.page_url(), std::string());
@@ -82,7 +105,7 @@ TEST_F(CompanionUrlBuilderTest, MsbbOff) {
 }
 
 TEST_F(CompanionUrlBuilderTest, MsbbOn) {
-  GURL page_url(kUrl);
+  GURL page_url(kValidUrl);
   EXPECT_CALL(msbb_delegate_, IsMsbbEnabled())
       .WillRepeatedly(testing::Return(true));
   GURL companion_url = url_builder_->BuildCompanionURL(page_url);
@@ -95,13 +118,8 @@ TEST_F(CompanionUrlBuilderTest, MsbbOn) {
   EXPECT_EQ(value, kOrigin);
 
   // Deserialize the query param into protobuf.
-  companion::proto::QueryParams proto;
-  std::string url_param;
-  EXPECT_TRUE(net::GetValueForKeyInQuery(companion_url, "query", &url_param));
-  auto base64_decoded = base::Base64Decode(url_param);
-  auto serialized_proto =
-      std::string(base64_decoded.value().begin(), base64_decoded.value().end());
-  EXPECT_TRUE(proto.ParseFromString(serialized_proto));
+  companion::proto::QueryParams proto =
+      DeserializeCompanionRequest(companion_url);
 
   // Verify fields inside protobuf.
   EXPECT_EQ(proto.page_url(), page_url.spec());
@@ -115,7 +133,7 @@ TEST_F(CompanionUrlBuilderTest, MsbbOn) {
 }
 
 TEST_F(CompanionUrlBuilderTest, NonProtobufParams) {
-  GURL page_url(kUrl);
+  GURL page_url(kValidUrl);
   GURL companion_url = url_builder_->BuildCompanionURL(page_url);
 
   std::string value;
@@ -126,4 +144,13 @@ TEST_F(CompanionUrlBuilderTest, NonProtobufParams) {
   EXPECT_EQ(value, kOrigin);
 }
 
+TEST_F(CompanionUrlBuilderTest, ValidPageUrls) {
+  EXPECT_CALL(msbb_delegate_, IsMsbbEnabled())
+      .WillRepeatedly(testing::Return(true));
+
+  VerifyPageUrlSent(GURL(kValidUrl), true);
+  VerifyPageUrlSent(GURL("chrome://new-tab"), false);
+  VerifyPageUrlSent(GURL("https://192.168.0.1"), false);
+  VerifyPageUrlSent(GURL("https://localhost:8888"), false);
+}
 }  // namespace companion

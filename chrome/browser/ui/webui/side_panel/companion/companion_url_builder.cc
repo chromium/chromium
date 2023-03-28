@@ -28,6 +28,31 @@ inline constexpr char kOriginQueryParameterKey[] = "origin";
 // from the WebUI URL constant because it does not include the last '/'.
 inline constexpr char kOriginQueryParameterValue[] =
     "chrome-untrusted://companion-side-panel.top-chrome";
+
+// Checks to see if the page url is a valid one to be sent to companion.
+bool IsValidPageURLForCompanion(const GURL& url) {
+  if (!url.is_valid()) {
+    return false;
+  }
+
+  if (!url.has_host()) {
+    return false;
+  }
+  if (net::IsLocalhost(url)) {
+    return false;
+  }
+  if (url.HostIsIPAddress()) {
+    return false;
+  }
+  if (!url.SchemeIsHTTPOrHTTPS()) {
+    return false;
+  }
+  if (url.has_username() || url.has_password()) {
+    return false;
+  }
+  return true;
+}
+
 }  // namespace
 
 CompanionUrlBuilder::CompanionUrlBuilder(PrefService* pref_service,
@@ -40,10 +65,11 @@ GURL CompanionUrlBuilder::BuildCompanionURL(GURL page_url) {
   // Fill the protobuf with the required query params.
   companion::proto::QueryParams url_params;
   bool is_msbb_enabled = msbb_delegate_->IsMsbbEnabled();
-  if (is_msbb_enabled) {
+  url_params.set_has_msbb_enabled(is_msbb_enabled);
+
+  if (is_msbb_enabled && IsValidPageURLForCompanion(page_url)) {
     url_params.set_page_url(page_url.spec());
   }
-  url_params.set_has_msbb_enabled(is_msbb_enabled);
 
   companion::proto::PromoState* promo_state = url_params.mutable_promo_state();
   promo_state->set_signin_promo_denial_count(
@@ -65,7 +91,7 @@ GURL CompanionUrlBuilder::BuildCompanionURL(GURL page_url) {
       kOriginQueryParameterValue);
 
   // TODO(b/274714162): Remove URL param.
-  if (is_msbb_enabled) {
+  if (is_msbb_enabled && IsValidPageURLForCompanion(page_url)) {
     url_with_query_params = net::AppendOrReplaceQueryParameter(
         url_with_query_params, kUrlQueryParameterKey, page_url.spec());
   }
