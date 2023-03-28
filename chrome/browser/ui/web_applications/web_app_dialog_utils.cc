@@ -128,8 +128,7 @@ void CreateWebAppFromCurrentWebContents(Browser* browser,
   auto* provider = WebAppProvider::GetForWebContents(web_contents);
   DCHECK(provider);
 
-  if (provider->install_manager().IsInstallingForWebContents(web_contents) ||
-      provider->command_manager().IsInstallingForWebContents(web_contents)) {
+  if (provider->command_manager().IsInstallingForWebContents(web_contents)) {
     return;
   }
 
@@ -159,8 +158,7 @@ bool CreateWebAppFromManifest(content::WebContents* web_contents,
   if (!provider)
     return false;
 
-  if (provider->install_manager().IsInstallingForWebContents(web_contents) ||
-      provider->command_manager().IsInstallingForWebContents(web_contents)) {
+  if (provider->command_manager().IsInstallingForWebContents(web_contents)) {
     return false;
   }
 

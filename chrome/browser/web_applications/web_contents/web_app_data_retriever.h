@@ -37,7 +37,7 @@ namespace web_app {
 
 enum class IconsDownloadedResult;
 
-// Class used by WebAppInstallTask to retrieve the necessary information to
+// Class used by the WebApp system to retrieve the necessary information to
 // install an app. Should only be called from the UI thread.
 class WebAppDataRetriever : content::WebContentsObserver {
  public:

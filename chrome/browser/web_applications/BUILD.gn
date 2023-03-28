@@ -645,7 +645,6 @@ source_set("web_applications_unit_tests") {
     "web_app_icon_generator_unittest.cc",
     "web_app_icon_manager_unittest.cc",
     "web_app_install_finalizer_unittest.cc",
-    "web_app_install_task_unittest.cc",
     "web_app_install_utils_unittest.cc",
     "web_app_prefs_utils_unittest.cc",
     "web_app_proto_utils_unittest.cc",

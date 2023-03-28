@@ -13,14 +13,16 @@
 #include "chrome/browser/ash/app_mode/kiosk_app_launcher.h"
 #include "chrome/browser/ash/crosapi/browser_manager.h"
 #include "chrome/browser/profiles/profile_observer.h"
-#include "chrome/browser/web_applications/web_app_install_task.h"
 #include "chrome/browser/web_applications/web_contents/web_app_url_loader.h"
 #include "components/account_id/account_id.h"
 #include "components/exo/wm_helper.h"
+#include "components/webapps/browser/install_result_code.h"
+#include "third_party/abseil-cpp/absl/types/variant.h"
 
 class Browser;
 class BrowserWindow;
 class Profile;
+struct WebAppInstallInfo;
 
 namespace web_app {
 class WebAppUrlLoader;
@@ -75,10 +77,12 @@ class WebKioskAppLauncher : public KioskAppLauncher,
   // ProfileObserver:
   void OnProfileWillBeDestroyed(Profile* profile) override;
 
-  // Callback method triggered after web application and its icon are obtained
-  // from `WebKioskAppManager`.
+  void OnUrlLoaded(web_app::WebAppUrlLoader::Result result);
+
+  // Callback method triggered after web application and its icon are
+  // obtained from `WebKioskAppManager`.
   void OnAppDataObtained(
-      web_app::WebAppInstallTask::WebAppInstallInfoOrErrorCode);
+      absl::variant<WebAppInstallInfo, webapps::InstallResultCode> result);
 
   // Callback method triggered after the lacros-chrome window is created.
   void OnLacrosWindowCreated(crosapi::mojom::CreationResult result);
@@ -101,10 +105,12 @@ class WebKioskAppLauncher : public KioskAppLauncher,
   KioskAppLauncher::ObserverList observers_;
   Browser* browser_ = nullptr;  // Browser instance that runs the web kiosk app.
 
-  std::unique_ptr<web_app::WebAppInstallTask>
-      install_task_;  // task that is used to install the app.
-  std::unique_ptr<web_app::WebAppUrlLoader>
-      url_loader_;  // Loads the app to be installed.
+  // Web contents used for loading app info.
+  std::unique_ptr<content::WebContents> web_contents_for_app_info_;
+  // URL loader that loads the app site in the web contents.
+  std::unique_ptr<web_app::WebAppUrlLoader> url_loader_;
+  // Retrieves the app info from the page's metadata.
+  std::unique_ptr<web_app::WebAppDataRetriever> data_retriever_;
 
   // Produces retrievers used to obtain app data during installation.
   base::RepeatingCallback<std::unique_ptr<web_app::WebAppDataRetriever>()>

@@ -21,7 +21,6 @@
 #include "base/scoped_observation.h"
 #include "chrome/browser/web_applications/web_app_id.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"
-#include "chrome/browser/web_applications/web_app_install_manager.h"
 #include "chrome/browser/web_applications/web_app_install_manager_observer.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/skia/include/core/SkBitmap.h"
@@ -38,6 +37,7 @@ class Time;
 namespace web_app {
 
 class FileUtilsWrapper;
+class WebAppInstallManager;
 class WebAppRegistrar;
 
 using HomeTabIconBitmaps = std::vector<SkBitmap>;

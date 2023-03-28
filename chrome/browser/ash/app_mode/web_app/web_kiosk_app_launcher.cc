@@ -5,6 +5,7 @@
 #include "chrome/browser/ash/app_mode/web_app/web_kiosk_app_launcher.h"
 
 #include <memory>
+#include <mutex>
 
 #include "ash/public/cpp/window_properties.h"
 #include "base/functional/bind.h"
@@ -18,6 +19,7 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_navigator.h"
 #include "chrome/browser/ui/browser_window.h"
+#include "chrome/browser/web_applications/web_app_install_info.h"
 #include "chrome/browser/web_applications/web_app_install_task.h"
 #include "chrome/browser/web_applications/web_contents/web_app_data_retriever.h"
 #include "chrome/browser/web_applications/web_contents/web_app_url_loader.h"
@@ -26,6 +28,8 @@
 #include "components/account_id/account_id.h"
 #include "components/webapps/browser/install_result_code.h"
 #include "components/webapps/browser/installable/installable_metrics.h"
+#include "content/public/browser/web_contents.h"
+#include "third_party/abseil-cpp/absl/types/variant.h"
 #include "ui/aura/window.h"
 #include "ui/base/page_transition_types.h"
 #include "url/origin.h"
@@ -90,14 +94,14 @@ void WebKioskAppLauncher::ContinueWithNetworkReady() {
 
   observers_.NotifyAppInstalling();
   DCHECK(!is_installed_);
-  install_task_ = std::make_unique<web_app::WebAppInstallTask>(
-      profile_,
-      /*install_finalizer=*/nullptr, data_retriever_factory_.Run(),
-      /*registrar=*/nullptr, webapps::WebappInstallSource::MANAGEMENT_API);
-  install_task_->LoadAndRetrieveWebAppInstallInfoWithIcons(
+
+  web_contents_for_app_info_ =
+      web_app::WebAppInstallTask::CreateWebContents(profile_);
+  url_loader_->LoadUrl(
       WebKioskAppManager::Get()->GetAppByAccountId(account_id_)->install_url(),
-      url_loader_.get(),
-      base::BindOnce(&WebKioskAppLauncher::OnAppDataObtained,
+      web_contents_for_app_info_.get(),
+      web_app::WebAppUrlLoader::UrlComparison::kIgnoreQueryParamsAndRef,
+      base::BindOnce(&WebKioskAppLauncher::OnUrlLoaded,
                      weak_ptr_factory_.GetWeakPtr()));
 }
 
@@ -108,8 +112,49 @@ const WebKioskAppData* WebKioskAppLauncher::GetCurrentApp() const {
   return app;
 }
 
+void WebKioskAppLauncher::OnUrlLoaded(web_app::WebAppUrlLoader::Result result) {
+  if (web_contents_for_app_info_->IsBeingDestroyed() ||
+      profile_->ShutdownStarted()) {
+    OnAppDataObtained(webapps::InstallResultCode::kWebContentsDestroyed);
+    return;
+  }
+
+  if (result == web_app::WebAppUrlLoader::Result::kRedirectedUrlLoaded) {
+    OnAppDataObtained(webapps::InstallResultCode::kInstallURLRedirected);
+    return;
+  }
+
+  if (result == web_app::WebAppUrlLoader::Result::kFailedPageTookTooLong) {
+    OnAppDataObtained(webapps::InstallResultCode::kInstallURLLoadTimeOut);
+    return;
+  }
+
+  if (result != web_app::WebAppUrlLoader::Result::kUrlLoaded) {
+    OnAppDataObtained(webapps::InstallResultCode::kInstallURLLoadFailed);
+    return;
+  }
+
+  data_retriever_ = data_retriever_factory_.Run();
+
+  data_retriever_->GetWebAppInstallInfo(
+      web_contents_for_app_info_.get(),
+      base::BindOnce([](std::unique_ptr<WebAppInstallInfo> install_info) {
+        absl::variant<WebAppInstallInfo, webapps::InstallResultCode> result;
+        if (install_info) {
+          result = std::move(*install_info);
+        } else {
+          result = webapps::InstallResultCode::kGetWebAppInstallInfoFailed;
+        }
+        return result;
+      })
+          .Then(base::BindOnce(&WebKioskAppLauncher::OnAppDataObtained,
+                               weak_ptr_factory_.GetWeakPtr())));
+}
+
 void WebKioskAppLauncher::OnAppDataObtained(
-    web_app::WebAppInstallTask::WebAppInstallInfoOrErrorCode info) {
+    absl::variant<WebAppInstallInfo, webapps::InstallResultCode> info) {
+  web_contents_for_app_info_.reset();
+  data_retriever_.reset();
   if (absl::holds_alternative<webapps::InstallResultCode>(info)) {
     RecordKioskWebAppInstallError(absl::get<webapps::InstallResultCode>(info));
     // Notify about failed installation, let the controller decide what to do.

@@ -24,6 +24,7 @@
 #include "chrome/browser/web_applications/test/web_app_test_observers.h"
 #include "chrome/browser/web_applications/test/web_app_test_utils.h"
 #include "chrome/browser/web_applications/web_app.h"
+#include "chrome/browser/web_applications/web_app_command_manager.h"
 #include "chrome/browser/web_applications/web_app_command_scheduler.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"
 #include "chrome/browser/web_applications/web_app_install_params.h"
@@ -592,6 +593,13 @@ IN_PROC_BROWSER_TEST_F(TwoClientWebAppsBMOSyncTest, UninstallDoesNotReinstall) {
   // Propagate any possible re-installs back to profile 0.
   AwaitQuiescence();
 
+  WebAppProvider::GetForTest(GetProfile(0))
+      ->command_manager()
+      .AwaitAllCommandsCompleteForTesting();
+  WebAppProvider::GetForTest(GetProfile(1))
+      ->command_manager()
+      .AwaitAllCommandsCompleteForTesting();
+
   // No apps pending install.
   EXPECT_TRUE(GetRegistrar(GetProfile(0))
                   .GetAppsFromSyncAndPendingInstallation()
@@ -614,14 +622,14 @@ IN_PROC_BROWSER_TEST_F(TwoClientWebAppsBMOSyncTest, UninstallDoesNotReinstall) {
             0);
 
   // No pending installs tasks.
-  EXPECT_TRUE(WebAppProvider::GetForTest(GetProfile(1))
-                  ->install_manager()
-                  .GetEnqueuedInstallAppIdsForTesting()
-                  .empty());
-  EXPECT_TRUE(WebAppProvider::GetForTest(GetProfile(0))
-                  ->install_manager()
-                  .GetEnqueuedInstallAppIdsForTesting()
-                  .empty());
+  EXPECT_EQ(WebAppProvider::GetForTest(GetProfile(1))
+                ->command_manager()
+                .GetCommandCountForTesting(),
+            0ul);
+  EXPECT_EQ(WebAppProvider::GetForTest(GetProfile(0))
+                ->command_manager()
+                .GetCommandCountForTesting(),
+            0ul);
 }
 
 IN_PROC_BROWSER_TEST_F(TwoClientWebAppsBMOSyncTest, NoShortcutsCreatedOnSync) {

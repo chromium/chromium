@@ -49,17 +49,10 @@ void FlushPendingOperations(std::vector<Profile*> profiles) {
 
     // First, wait for all installations to complete.
 
-    std::set<web_app::AppId> apps_to_be_installed =
-        web_app::WebAppProvider::GetForTest(profile)
-            ->install_manager()
-            .GetEnqueuedInstallAppIdsForTesting();
-
-    std::vector<web_app::AppId> apps_to_be_sync_installed =
+    base::flat_set<web_app::AppId> apps_to_be_installed =
         web_app::WebAppProvider::GetForTest(profile)
             ->registrar_unsafe()
             .GetAppsFromSyncAndPendingInstallation();
-    apps_to_be_installed.insert(apps_to_be_sync_installed.begin(),
-                                apps_to_be_sync_installed.end());
 
     if (!apps_to_be_installed.empty()) {
       // Because we don't know whether these have been installed yet or if we
