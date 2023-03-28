@@ -1281,64 +1281,6 @@ Value* Value::FindListPath(StringPiece path) {
   return const_cast<Value*>(std::as_const(*this).FindListPath(path));
 }
 
-Value* Value::SetPath(StringPiece path, Value&& value) {
-  return GetDict().SetByDottedPath(path, std::move(value));
-}
-
-Value* Value::SetStringPath(StringPiece path, StringPiece value) {
-  return GetDict().SetByDottedPath(path, value);
-}
-
-Value* Value::SetStringPath(StringPiece path, std::string&& value) {
-  return GetDict().SetByDottedPath(path, std::move(value));
-}
-
-Value* Value::SetStringPath(StringPiece path, const char* value) {
-  return GetDict().SetByDottedPath(path, value);
-}
-
-Value* Value::SetStringPath(StringPiece path, StringPiece16 value) {
-  return GetDict().SetByDottedPath(path, value);
-}
-
-Value* Value::SetPath(std::initializer_list<StringPiece> path, Value&& value) {
-  DCHECK_GE(path.size(), 2u) << "Use SetKey() for a path of length 1.";
-  return SetPath(make_span(path.begin(), path.size()), std::move(value));
-}
-
-Value* Value::SetPath(span<const StringPiece> path, Value&& value) {
-  DCHECK(path.begin() != path.end());  // Can't be empty path.
-
-  // Walk/construct intermediate dictionaries. The last element requires
-  // special handling so skip it in this loop.
-  Value* cur = this;
-  auto cur_path = path.begin();
-  for (; (cur_path + 1) < path.end(); ++cur_path) {
-    if (!cur->is_dict()) {
-      return nullptr;
-    }
-
-    // Use lower_bound to avoid doing the search twice for missing keys.
-    const StringPiece path_component = *cur_path;
-    auto found = cur->GetDict().storage_.lower_bound(path_component);
-    if (found == cur->GetDict().storage_.end() ||
-        found->first != path_component) {
-      // No key found, insert one.
-      auto inserted = cur->GetDict().storage_.try_emplace(
-          found, path_component, std::make_unique<Value>(Type::DICT));
-      cur = inserted->second.get();
-    } else {
-      cur = found->second.get();
-    }
-  }
-
-  // "cur" will now contain the last dictionary to insert or replace into.
-  if (!cur->is_dict()) {
-    return nullptr;
-  }
-  return cur->SetKey(*cur_path, std::move(value));
-}
-
 Value::dict_iterator_proxy Value::DictItems() {
   return dict_iterator_proxy(&GetDict().storage_);
 }

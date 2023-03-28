@@ -1126,7 +1126,7 @@ TEST(ValuesTest, FindPath) {
   EXPECT_EQ(123, found->GetInt());
 }
 
-TEST(ValuesTest, SetPath) {
+TEST(ValuesTest, SetByDottedPath) {
   Value::Dict root;
 
   Value* inserted = root.SetByDottedPath("one.two", Value(123));

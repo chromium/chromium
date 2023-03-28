@@ -855,37 +855,6 @@ class BASE_EXPORT GSL_OWNER Value {
   Value* FindListPath(StringPiece path);
   const Value* FindListPath(StringPiece path) const;
 
-  // Sets the given path, expanding and creating dictionary keys as necessary.
-  //
-  // If the current value is not a dictionary, the function returns nullptr. If
-  // path components do not exist, they will be created. If any but the last
-  // components matches a value that is not a dictionary, the function will fail
-  // (it will not overwrite the value) and return nullptr. The last path
-  // component will be unconditionally overwritten if it exists, and created if
-  // it doesn't.
-  //
-  // Note: If there is only one component in the path, use `SetKey()` instead.
-  // Note: Using `Set<Type>Path()` might be more convenient and efficient.
-  //
-  // DEPRECATED: Use `Value::Dict::SetByDottedPath()`.
-  Value* SetPath(StringPiece path, Value&& value);
-
-  // These setters are more convenient and efficient than the corresponding
-  // SetPath(...) call.
-  //
-  // DEPRECATED: Use `Value::Dict::SetByDottedPath()`.
-  Value* SetStringPath(StringPiece path, StringPiece value);
-  // DEPRECATED: Use `Value::Dict::SetByDottedPath()`.
-  Value* SetStringPath(StringPiece path, const char* value);
-  // DEPRECATED: Use `Value::Dict::SetByDottedPath()`.
-  Value* SetStringPath(StringPiece path, std::string&& value);
-  // DEPRECATED: Use `Value::Dict::SetByDottedPath()`.
-  Value* SetStringPath(StringPiece path, StringPiece16 value);
-
-  // DEPRECATED: Use `Value::Dict::SetByDottedPath()`.
-  Value* SetPath(std::initializer_list<StringPiece> path, Value&& value);
-  Value* SetPath(span<const StringPiece> path, Value&& value);
-
   using dict_iterator_proxy = detail::dict_iterator_proxy;
   using const_dict_iterator_proxy = detail::const_dict_iterator_proxy;
 
