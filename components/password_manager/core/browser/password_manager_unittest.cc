@@ -490,7 +490,7 @@ class PasswordManagerTest : public testing::TestWithParam<bool> {
   }
 
   PasswordForm MakeSimpleForm() {
-    auto form = MakeSavedForm();
+    PasswordForm form = MakeSavedForm();
     form.form_data = MakeSimpleFormData();
     return form;
   }
@@ -3460,6 +3460,122 @@ TEST_P(PasswordManagerTest,
 
   // Check that no automatic save prompt is shown.
   OnPasswordFormSubmitted(credit_card_form.form_data);
+  EXPECT_CALL(client_, PromptUserToSaveOrUpdatePasswordPtr(_)).Times(0);
+  manager()->DidNavigateMainFrame(true);
+  manager()->OnPasswordFormsRendered(&driver_, {});
+  task_environment_.RunUntilIdle();
+}
+
+// Check that on a single field OTP form, update bubble is not shown
+// automatically, but is available on manual trigger.
+TEST_P(PasswordManagerTest, FillingAndSavingFallbacksOnOtpFormWithoutUsername) {
+  PasswordFormManager::set_wait_for_server_predictions_for_filling(false);
+  EXPECT_CALL(client_, IsSavingAndFillingEnabled(_))
+      .WillRepeatedly(Return(true));
+
+  PasswordForm saved_match(MakeSimpleForm());
+  store_->AddLogin(saved_match);
+
+  // Create form with an OTP field only.
+  PasswordForm one_time_code_form;
+  one_time_code_form.url = test_form_url_;
+  one_time_code_form.only_for_fallback = true;
+  one_time_code_form.password_value = u"123456";
+  one_time_code_form.password_element = u"one-time-code";
+  one_time_code_form.form_data.url = one_time_code_form.url;
+  FormFieldData field;
+  field.name_attribute = one_time_code_form.password_element;
+  field.value = one_time_code_form.password_value;
+  field.form_control_type = "password";
+  one_time_code_form.form_data.fields.push_back(field);
+
+  PasswordFormFillData form_data;
+  EXPECT_CALL(driver_, SetPasswordFillData)
+      .WillRepeatedly(SaveArg<0>(&form_data));
+
+  manager()->OnPasswordFormsParsed(&driver_, {one_time_code_form.form_data});
+  task_environment_.RunUntilIdle();
+
+  // Check that manual filling fallback available.
+  EXPECT_EQ(saved_match.username_value,
+            form_data.preferred_login.username_value);
+  EXPECT_EQ(saved_match.password_value,
+            form_data.preferred_login.password_value);
+  // Check that no automatic filling available.
+  EXPECT_TRUE(form_data.username_element_renderer_id.is_null());
+  EXPECT_TRUE(form_data.password_element_renderer_id.is_null());
+
+  // Check that saving fallback is available.
+  std::unique_ptr<PasswordFormManagerForUI> form_manager_to_save;
+  EXPECT_CALL(client_, ShowManualFallbackForSavingPtr(_, false, true))
+      .WillOnce(WithArg<0>(SaveToScopedPtr(&form_manager_to_save)));
+  manager()->OnInformAboutUserInput(&driver_, one_time_code_form.form_data);
+  ASSERT_TRUE(form_manager_to_save);
+  PasswordForm expected_pending_form = saved_match;
+  // Only password value change is expected.
+  expected_pending_form.password_value = one_time_code_form.password_value;
+  EXPECT_THAT(form_manager_to_save->GetPendingCredentials(),
+              FormMatches(expected_pending_form));
+
+  // Check that no automatic save prompt is shown.
+  OnPasswordFormSubmitted(one_time_code_form.form_data);
+  EXPECT_CALL(client_, PromptUserToSaveOrUpdatePasswordPtr(_)).Times(0);
+  manager()->DidNavigateMainFrame(true);
+  manager()->OnPasswordFormsRendered(&driver_, {});
+  task_environment_.RunUntilIdle();
+}
+
+// Check that on non-password form, update bubble is not shown automatically,
+// but is available on manual trigger.
+TEST_P(PasswordManagerTest, FillingAndSavingFallbacksOnOtpFormWithUsername) {
+  PasswordFormManager::set_wait_for_server_predictions_for_filling(false);
+  EXPECT_CALL(client_, IsSavingAndFillingEnabled(_))
+      .WillRepeatedly(Return(true));
+
+  PasswordForm saved_match(MakeSimpleForm());
+  store_->AddLogin(saved_match);
+
+  PasswordForm one_time_code_form(MakeSimpleForm());
+  // Note that the username value was initialized in |MakeSimpleForm| and
+  // coincides with the username of the saved match.
+  one_time_code_form.only_for_fallback = true;
+  one_time_code_form.password_value = u"379 390";
+  one_time_code_form.password_element = u"one-time-code";
+  one_time_code_form.form_data.fields[1].value =
+      one_time_code_form.password_value;
+  one_time_code_form.form_data.fields[1].name_attribute =
+      one_time_code_form.password_element;
+
+  PasswordFormFillData form_data;
+  EXPECT_CALL(driver_, SetPasswordFillData)
+      .WillRepeatedly(SaveArg<0>(&form_data));
+
+  manager()->OnPasswordFormsParsed(&driver_, {one_time_code_form.form_data});
+  task_environment_.RunUntilIdle();
+
+  // Check that manual filling fallback available.
+  EXPECT_EQ(saved_match.username_value,
+            form_data.preferred_login.username_value);
+  EXPECT_EQ(saved_match.password_value,
+            form_data.preferred_login.password_value);
+  // Check that no automatic filling available.
+  EXPECT_TRUE(form_data.username_element_renderer_id.is_null());
+  EXPECT_TRUE(form_data.password_element_renderer_id.is_null());
+
+  // Check that saving fallback is available.
+  std::unique_ptr<PasswordFormManagerForUI> form_manager_to_save;
+  EXPECT_CALL(client_, ShowManualFallbackForSavingPtr(_, false, true))
+      .WillOnce(WithArg<0>(SaveToScopedPtr(&form_manager_to_save)));
+  manager()->OnInformAboutUserInput(&driver_, one_time_code_form.form_data);
+  ASSERT_TRUE(form_manager_to_save);
+  PasswordForm expected_pending_form = saved_match;
+  // Only password value change is expected.
+  expected_pending_form.password_value = one_time_code_form.password_value;
+  EXPECT_THAT(form_manager_to_save->GetPendingCredentials(),
+              FormMatches(expected_pending_form));
+
+  // Check that no automatic save prompt is shown.
+  OnPasswordFormSubmitted(one_time_code_form.form_data);
   EXPECT_CALL(client_, PromptUserToSaveOrUpdatePasswordPtr(_)).Times(0);
   manager()->DidNavigateMainFrame(true);
   manager()->OnPasswordFormsRendered(&driver_, {});

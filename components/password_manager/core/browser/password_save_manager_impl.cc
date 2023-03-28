@@ -136,8 +136,9 @@ PendingCredentialsState ResolvePendingCredentialsStates(
   // "canonical" one according to the following hierarchy:
   // AUTOMATIC_SAVE > EQUAL_TO_SAVED_MATCH > UPDATE > NEW_LOGIN
   // Note that UPDATE or NEW_LOGIN will result in an Update or Save bubble to
-  // be shown, while AUTOMATIC_SAVE and EQUAL_TO_SAVED_MATCH will result in a
-  // silent save/update.
+  // be shown (unless heuristics determined that we see non-password fields),
+  // while AUTOMATIC_SAVE and EQUAL_TO_SAVED_MATCH will result in a silent
+  // save/update.
   // Some interesting cases:
   // NEW_LOGIN means that store doesn't know about the credential yet. If the
   // other store knows anything at all, then that always wins.
@@ -544,8 +545,13 @@ PasswordForm PasswordSaveManagerImpl::BuildPendingCredentials(
           parsed_submitted_form, observed_form, password_to_save.second,
           is_http_auth, is_credential_api_save);
       break;
-    case PendingCredentialsState::EQUAL_TO_SAVED_MATCH:
     case PendingCredentialsState::UPDATE:
+      pending_credentials = *similar_saved_form;
+      // Propagate heuristics decision on whether to show update bubble.
+      pending_credentials.only_for_fallback =
+          parsed_submitted_form.only_for_fallback;
+      break;
+    case PendingCredentialsState::EQUAL_TO_SAVED_MATCH:
       pending_credentials = *similar_saved_form;
       break;
     case PendingCredentialsState::AUTOMATIC_SAVE:
