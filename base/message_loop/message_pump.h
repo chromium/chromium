@@ -99,10 +99,21 @@ class BASE_EXPORT MessagePump {
           : outer_(std::exchange(rhs.outer_, nullptr)),
             work_item_depth_(rhs.work_item_depth_) {}
       ScopedDoWorkItem& operator=(ScopedDoWorkItem&& rhs) {
+        // We should only ever go from an empty ScopedDoWorkItem to an
+        // initialized one, or from an initialized one to an empty one.
+        CHECK_NE(IsNull(), rhs.IsNull());
+        // Since we're overwriting this ScopedDoWorkItem, we need to record its
+        // destruction.
+        if (outer_) {
+          outer_->OnEndWorkItem(work_item_depth_);
+        }
+
         work_item_depth_ = rhs.work_item_depth_;
         outer_ = std::exchange(rhs.outer_, nullptr);
         return *this;
       }
+
+      bool IsNull() { return !outer_; }
 
      private:
       friend Delegate;
