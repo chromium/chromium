@@ -150,7 +150,7 @@ void TrackBeforeInstallEventPrompt(AppBannerManager::State state) {
       TrackBeforeInstallEvent(BEFORE_INSTALL_EVENT_PROMPT_CALLED_NOT_CANCELED);
       break;
     default:
-      NOTREACHED();
+      break;
   }
 }
 }  // anonymous namespace
