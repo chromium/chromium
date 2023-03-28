@@ -494,7 +494,7 @@ void UserNoteDatabase::DatabaseErrorCallback(int error, sql::Statement* stmt) {
 
   // After this call, the `db_` handle is poisoned so that future calls will
   // return errors until the handle is re-opened.
-  db_.RazeAndClose();
+  db_.RazeAndPoison();
 }
 
 bool UserNoteDatabase::InitSchema() {
