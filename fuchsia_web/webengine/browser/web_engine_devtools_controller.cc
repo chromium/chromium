@@ -216,8 +216,10 @@ class DebugModeController : public WebEngineDevToolsController,
     return !user_debugging;
   }
   void OnFrameLoaded(content::WebContents* contents) override {
-    frame_loaded_ = true;
-    MaybeSendRemoteDebuggingCallbacks();
+    if (!frame_loaded_) {
+      frame_loaded_ = true;
+      MaybeSendRemoteDebuggingCallbacks();
+    }
   }
   void OnFrameDestroyed(content::WebContents* contents) override {}
   content::DevToolsAgentHost::List RemoteDebuggingTargets() override {
