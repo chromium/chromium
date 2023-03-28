@@ -1670,7 +1670,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Bluetooth.ChromeOS.PoweredState" enum="BooleanEnabled"
-    expires_after="2023-09-17">
+    expires_after="2023-09-24">
   <owner>khorimoto@chromium.org</owner>
   <owner>cros-connectivity@google.com</owner>
   <summary>

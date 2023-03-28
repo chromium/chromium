@@ -1117,7 +1117,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="ContentSuggestions.Feed.Network.ResponseSizeKB" units="KB"
-    expires_after="2023-07-23">
+    expires_after="2023-09-24">
   <owner>carlosk@chromium.org</owner>
   <owner>harringtond@chromium.org</owner>
   <owner>feed@chromium.org</owner>
@@ -1490,7 +1490,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="ContentSuggestions.Feed.UploadActionsStatus"
-    enum="FeedUploadActionsStatus" expires_after="2023-07-23">
+    enum="FeedUploadActionsStatus" expires_after="2023-09-24">
   <owner>iwells@chromium.org</owner>
   <owner>harringtond@chromium.org</owner>
   <owner>feed@chromium.org</owner>
@@ -1524,7 +1524,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="ContentSuggestions.Feed.UserActions" enum="FeedUserActionType"
-    expires_after="2023-07-23">
+    expires_after="2023-09-24">
   <owner>harringtond@chromium.org</owner>
   <owner>carlosk@chromium.org</owner>
   <owner>feed@chromium.org</owner>
