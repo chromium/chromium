@@ -160,6 +160,7 @@ source_set("unit_tests") {
     "//ios/chrome/browser/passwords:store_factory",
     "//ios/chrome/browser/policy:test_support",
     "//ios/chrome/browser/prefs:pref_names",
+    "//ios/chrome/browser/promos_manager:test_support",
     "//ios/chrome/browser/shared/public/features",
     "//ios/chrome/browser/shared/ui/util",
     "//ios/chrome/browser/ui/popup_menu:constants",

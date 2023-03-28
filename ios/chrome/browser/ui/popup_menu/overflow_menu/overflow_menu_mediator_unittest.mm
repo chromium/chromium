@@ -38,6 +38,7 @@
 #import "ios/chrome/browser/passwords/ios_chrome_password_store_factory.h"
 #import "ios/chrome/browser/policy/enterprise_policy_test_helper.h"
 #import "ios/chrome/browser/prefs/pref_names.h"
+#import "ios/chrome/browser/promos_manager/mock_promos_manager.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/chrome/browser/ui/popup_menu/overflow_menu/destination_usage_history/constants.h"
@@ -635,6 +636,39 @@ TEST_F(OverflowMenuMediatorTest, TestWhatsNewDisabled) {
   [mediator_ overflowMenuModel];
 
   EXPECT_FALSE(HasItem(kToolsMenuWhatsNewId, /*enabled=*/NO));
+}
+
+// This tests that crbug.com/1404673 does not regress. It isn't perfect, as
+// that bug was never reproduced, but it tests part of the issue.
+TEST_F(OverflowMenuMediatorTest, TestOpenWhatsNewDoesntCrashWithNoTracker) {
+  base::test::ScopedFeatureList feature_on;
+  feature_on.InitAndEnableFeature(kWhatsNewIOS);
+
+  // Create Mediator and DO NOT set the Tracker on it.
+  CreateMediator(/*is_incognito=*/NO);
+
+  std::unique_ptr<MockPromosManager> promos_manager =
+      std::make_unique<MockPromosManager>();
+  EXPECT_CALL(*promos_manager, DeregisterPromo(testing::_));
+  mediator_.promosManager = promos_manager.get();
+
+  // Force creation of the model.
+  [mediator_ overflowMenuModel];
+
+  // Find the What's New destination.
+  OverflowMenuDestination* whatsNewDestination;
+  for (OverflowMenuDestination* destination in mediator_.overflowMenuModel
+           .destinations) {
+    if (destination.accessibilityIdentifier == kToolsMenuWhatsNewId) {
+      whatsNewDestination = destination;
+      break;
+    }
+  }
+
+  EXPECT_NSNE(nil, whatsNewDestination);
+
+  // Call What's New Destination's handler, which should not crash.
+  whatsNewDestination.handler();
 }
 
 // Tests that the Settings destination is badged with an error dot and
