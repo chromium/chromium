@@ -5988,7 +5988,6 @@ def CheckStrings(input_api, output_api):
     unnecessary_screenshots = []
     missing_sha1 = []
     missing_sha1_modified = []
-    invalid_sha1 = []
     unnecessary_sha1_files = []
 
     # This checks verifies that the ICU syntax of messages this CL touched is
@@ -5998,24 +5997,18 @@ def CheckStrings(input_api, output_api):
     # break message extraction for translation, hence would block Chromium
     # translations until they are fixed.
     icu_syntax_errors = []
-    sha1_pattern = input_api.re.compile(r'^[a-fA-F0-9]{40}$',
-                                        input_api.re.MULTILINE)
 
     def _CheckScreenshotAdded(screenshots_dir, message_id):
         sha1_path = input_api.os_path.join(screenshots_dir,
                                            message_id + '.png.sha1')
         if sha1_path not in new_or_added_paths:
             missing_sha1.append(sha1_path)
-        elif not sha1_pattern.search(input_api.ReadFile(sha1_path)):
-            invalid_sha1.append(sha1_path)
 
     def _CheckScreenshotModified(screenshots_dir, message_id):
         sha1_path = input_api.os_path.join(screenshots_dir,
                                            message_id + '.png.sha1')
         if sha1_path not in new_or_added_paths:
             missing_sha1_modified.append(sha1_path)
-        elif not sha1_pattern.search(input_api.ReadFile(sha1_path)):
-            invalid_sha1.append(sha1_path)
 
     def _CheckScreenshotRemoved(screenshots_dir, message_id):
         sha1_path = input_api.os_path.join(screenshots_dir,
@@ -6213,8 +6206,14 @@ def CheckStrings(input_api, output_api):
                 modified_ids.add(key)
             elif old_id_to_msg_map[key].attrs['meaning'] != \
                 new_id_to_msg_map[key].attrs['meaning']:
-                # The message meaning changed. We later check for a screenshot.
-                modified_ids.add(key)
+                # The message meaning changed. Ensure there is a screenshot for it.
+                sha1_path = input_api.os_path.join(screenshots_dir,
+                                                   key + '.png.sha1')
+                if sha1_path not in new_or_added_paths and not \
+                    input_api.os_path.exists(sha1_path):
+                    # There is neither a previous screenshot nor is a new one added now.
+                    # Require a screenshot.
+                    modified_ids.add(key)
 
         if run_screenshot_check:
             # Check the screenshot directory for .png files. Warn if there is any.
@@ -6254,13 +6253,6 @@ def CheckStrings(input_api, output_api):
                     'To ensure the best translations, take screenshots of the relevant UI '
                     '(https://g.co/chrome/translation) and add these files to your '
                     'changelist:', sorted(missing_sha1)))
-
-        if invalid_sha1:
-            results.append(
-                output_api.PresubmitError(
-                    'The following files do not seem to contain valid sha1 hashes. '
-                    'Make sure they contain hashes created by '
-                    'tools/translate/upload_screenshots.py:', sorted(invalid_sha1)))
 
         if missing_sha1_modified:
             results.append(

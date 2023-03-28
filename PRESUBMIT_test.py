@@ -3467,7 +3467,6 @@ class StringTest(unittest.TestCase):
         '</message>',
     '</grit-part>')
 
-  VALID_SHA1 = ('0000000000000000000000000000000000000000',)
   DO_NOT_UPLOAD_PNG_MESSAGE = ('Do not include actual screenshots in the '
                                'changelist. Run '
                                'tools/translate/upload_screenshots.py to '
@@ -3482,9 +3481,6 @@ class StringTest(unittest.TestCase):
   ICU_SYNTAX_ERROR_MESSAGE = ('ICU syntax errors were found in the following '
                               'strings (problems or feedback? Contact '
                               'rainhard@chromium.org):')
-  SHA1_FORMAT_MESSAGE = ('The following files do not seem to contain valid sha1 '
-                         'hashes. Make sure they contain hashes created by '
-                         'tools/translate/upload_screenshots.py:')
 
   def makeInputApi(self, files):
     input_api = MockInputApi()
@@ -3553,7 +3549,7 @@ class StringTest(unittest.TestCase):
       MockAffectedFile('part.grdp', self.NEW_GRDP_CONTENTS3,
                        self.NEW_GRDP_CONTENTS4, action='M'),
       MockFile(os.path.join('part_grdp', 'IDS_PART_TEST1.png.sha1'),
-               self.VALID_SHA1, action='A')])
+               'binary', action='A')])
     warnings = PRESUBMIT.CheckStrings(input_api, MockOutputApi())
     self.assertEqual(0, len(warnings))
 
@@ -3572,19 +3568,9 @@ class StringTest(unittest.TestCase):
       MockAffectedFile('part.grdp', self.NEW_GRDP_CONTENTS5,
                        self.NEW_GRDP_CONTENTS6, action='M'),
       MockFile(os.path.join('part_grdp', 'IDS_PART_TEST1.png.sha1'),
-               self.VALID_SHA1, action='A')])
+               'binary', action='A')])
     warnings = PRESUBMIT.CheckStrings(input_api, MockOutputApi())
     self.assertEqual(0, len(warnings))
-
-  def testModifiedIntroducedInvalidSha1(self):
-    # CL modified a message and the sha1 file changed to invalid
-    input_api = self.makeInputApi([
-        MockAffectedFile('part.grdp', self.NEW_GRDP_CONTENTS5,
-                         self.NEW_GRDP_CONTENTS6, action='M'),
-        MockAffectedFile(os.path.join('part_grdp', 'IDS_PART_TEST1.png.sha1'),
-                         ('some invalid sha1',), self.VALID_SHA1, action='M')])
-    warnings = PRESUBMIT.CheckStrings(input_api, MockOutputApi())
-    self.assertEqual(1, len(warnings))
 
   def testPngAddedSha1NotAdded(self):
     # CL added one new message in a grd file and added the png file associated
@@ -3651,7 +3637,6 @@ class StringTest(unittest.TestCase):
                       os.path.join('test_grd', 'IDS_TEST1.png.sha1')],
                       warnings[1].items)
 
-
   def testScreenshotsWithSha1(self):
     # CL added four messages (two each in a grd and grdp) and their
     # corresponding .sha1 files. No warnings.
@@ -3670,63 +3655,23 @@ class StringTest(unittest.TestCase):
         # Added files:
         MockFile(
             os.path.join('test_grd', 'IDS_TEST1.png.sha1'),
-            self.VALID_SHA1,
+            'binary',
             action='A'),
         MockFile(
             os.path.join('test_grd', 'IDS_TEST2.png.sha1'),
-            ('0000000000000000000000000000000000000000', ''),
+            'binary',
             action='A'),
         MockFile(
             os.path.join('part_grdp', 'IDS_PART_TEST1.png.sha1'),
-            self.VALID_SHA1,
+            'binary',
             action='A'),
         MockFile(
             os.path.join('part_grdp', 'IDS_PART_TEST2.png.sha1'),
-            self.VALID_SHA1,
+            'binary',
             action='A'),
     ])
     warnings = PRESUBMIT.CheckStrings(input_api, MockOutputApi())
     self.assertEqual([], warnings)
-
-
-  def testScreenshotsWithInvalidSha1(self):
-    input_api = self.makeInputApi([
-        # Modified files:
-        MockAffectedFile(
-            'test.grd',
-            self.NEW_GRD_CONTENTS2,
-            self.OLD_GRD_CONTENTS,
-            action='M'),
-        MockAffectedFile(
-            'part.grdp',
-            self.NEW_GRDP_CONTENTS2,
-            self.OLD_GRDP_CONTENTS,
-            action='M'),
-        # Added files:
-        MockFile(
-            os.path.join('test_grd', 'IDS_TEST1.png.sha1'),
-            self.VALID_SHA1,
-            action='A'),
-        MockFile(
-            os.path.join('test_grd', 'IDS_TEST2.png.sha1'),
-            ('‰PNG', 'test'),
-            action='A'),
-        MockFile(
-            os.path.join('part_grdp', 'IDS_PART_TEST1.png.sha1'),
-            self.VALID_SHA1,
-            action='A'),
-        MockFile(
-            os.path.join('part_grdp', 'IDS_PART_TEST2.png.sha1'),
-            self.VALID_SHA1,
-            action='A'),
-    ])
-    warnings = PRESUBMIT.CheckStrings(input_api, MockOutputApi())
-    self.assertEqual(1, len(warnings))
-    self.assertEqual('error', warnings[0].type)
-    self.assertEqual(self.SHA1_FORMAT_MESSAGE, warnings[0].message)
-    self.assertEqual([os.path.join('test_grd', 'IDS_TEST2.png.sha1')],
-                     warnings[0].items)
-
 
   def testScreenshotsRemovedWithSha1(self):
     # Replace new contents with old contents in grd and grp files, removing
@@ -3745,14 +3690,12 @@ class StringTest(unittest.TestCase):
             self.NEW_GRDP_CONTENTS2, # old_contents
             action='M'),
         # Unmodified files:
-        MockFile(os.path.join('test_grd', 'IDS_TEST1.png.sha1'),
-                 self.VALID_SHA1, ''),
-        MockFile(os.path.join('test_grd', 'IDS_TEST2.png.sha1'),
-                 self.VALID_SHA1, ''),
+        MockFile(os.path.join('test_grd', 'IDS_TEST1.png.sha1'), 'binary', ''),
+        MockFile(os.path.join('test_grd', 'IDS_TEST2.png.sha1'), 'binary', ''),
         MockFile(os.path.join('part_grdp', 'IDS_PART_TEST1.png.sha1'),
-                 self.VALID_SHA1, ''),
+                 'binary', ''),
         MockFile(os.path.join('part_grdp', 'IDS_PART_TEST2.png.sha1'),
-                 self.VALID_SHA1, '')
+                 'binary', '')
     ])
     warnings = PRESUBMIT.CheckStrings(input_api, MockOutputApi())
     self.assertEqual(1, len(warnings))
@@ -3779,10 +3722,9 @@ class StringTest(unittest.TestCase):
             self.NEW_GRDP_CONTENTS2, # old_contents
             action='M'),
         # Unmodified files:
-        MockFile(os.path.join('test_grd', 'IDS_TEST1.png.sha1'),
-                 self.VALID_SHA1, ''),
+        MockFile(os.path.join('test_grd', 'IDS_TEST1.png.sha1'), 'binary', ''),
         MockFile(os.path.join('part_grdp', 'IDS_PART_TEST1.png.sha1'),
-                 self.VALID_SHA1, ''),
+                 'binary', ''),
         # Deleted files:
         MockAffectedFile(
             os.path.join('test_grd', 'IDS_TEST2.png.sha1'),
@@ -3819,19 +3761,19 @@ class StringTest(unittest.TestCase):
         # Deleted files:
         MockFile(
             os.path.join('test_grd', 'IDS_TEST1.png.sha1'),
-            self.VALID_SHA1,
+            'binary',
             action='D'),
         MockFile(
             os.path.join('test_grd', 'IDS_TEST2.png.sha1'),
-            self.VALID_SHA1,
+            'binary',
             action='D'),
         MockFile(
             os.path.join('part_grdp', 'IDS_PART_TEST1.png.sha1'),
-            self.VALID_SHA1,
+            'binary',
             action='D'),
         MockFile(
             os.path.join('part_grdp', 'IDS_PART_TEST2.png.sha1'),
-            self.VALID_SHA1,
+            'binary',
             action='D')
     ])
     warnings = PRESUBMIT.CheckStrings(input_api, MockOutputApi())
