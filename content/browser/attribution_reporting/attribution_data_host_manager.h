@@ -53,7 +53,7 @@ class AttributionDataHostManager
 
   // Registers a new data host which is associated with a navigation. The
   // context origin will be provided at a later time in
-  // `NotifyNavigationForDataHost()` called with the same
+  // `NotifyNavigationStartedForDataHost()` called with the same
   // `attribution_src_token`. Returns `false` if `attribution_src_token` was
   // already registered.
   virtual bool RegisterNavigationDataHost(
@@ -75,20 +75,21 @@ class AttributionDataHostManager
       bool is_within_fenced_frame,
       GlobalRenderFrameHostId render_frame_id) = 0;
 
-  // Notifies the manager that we have received a navigation for a given data
-  // host. This may arrive before or after the attribution configuration is
-  // available for a given data host. Passes the topmost ancestor of the
-  // initiator render frame for obtaining the page access report.
-  virtual void NotifyNavigationForDataHost(
+  // Notifies the manager that we have received a navigation has started for a
+  // given data host. This may arrive before or after the attribution
+  // configuration is available for a given data host. Passes the topmost
+  // ancestor of the initiator render frame for obtaining the page access
+  // report.
+  virtual void NotifyNavigationStartedForDataHost(
       const blink::AttributionSrcToken& attribution_src_token,
       const attribution_reporting::SuitableOrigin& source_origin,
       blink::mojom::AttributionNavigationType nav_type,
       bool is_within_fenced_frame,
       GlobalRenderFrameHostId render_frame_id) = 0;
 
-  // Notifies the manager that a navigation associated with a data host failed
-  // and should no longer be tracked.
-  virtual void NotifyNavigationFailure(
+  // Notifies the manager that a navigation associated with
+  // `attribution_src_token` finished and should no longer be tracked.
+  virtual void NotifyNavigationFinished(
       const blink::AttributionSrcToken& attribution_src_token) = 0;
 
   // Notifies the manager that a fenced frame reporting beacon was initiated

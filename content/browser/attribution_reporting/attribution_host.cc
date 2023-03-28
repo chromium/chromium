@@ -118,11 +118,25 @@ AttributionInputEvent AttributionHost::GetMostRecentNavigationInputEvent()
 }
 
 void AttributionHost::DidStartNavigation(NavigationHandle* navigation_handle) {
-  DCHECK(AttributionManager::FromWebContents(web_contents()));
+  auto* attribution_manager =
+      AttributionManager::FromWebContents(web_contents());
+  DCHECK(attribution_manager);
+
+  auto* data_host_manager = attribution_manager->GetDataHostManager();
+  if (!data_host_manager) {
+    return;
+  }
+
+  const auto& impression = navigation_handle->GetImpression();
+
+  // TODO(crbug.com/1428315): Consider checking for navigations taking place in
+  // a prerendered main frame.
 
   // Impression navigations need to navigate the primary main frame to be valid.
-  if (!navigation_handle->GetImpression() ||
-      !navigation_handle->IsInPrimaryMainFrame()) {
+  // Impressions should never be attached to same-document navigations but can
+  // be the result of a bad renderer.
+  if (!impression || !navigation_handle->IsInPrimaryMainFrame() ||
+      navigation_handle->IsSameDocument()) {
     return;
   }
   RenderFrameHostImpl* initiator_frame_host =
@@ -165,7 +179,7 @@ void AttributionHost::DidStartNavigation(NavigationHandle* navigation_handle) {
     return;
   }
 
-  navigation_info_map_.emplace(
+  auto [it, inserted] = navigation_info_map_.try_emplace(
       navigation_handle->GetNavigationId(),
       NavigationInfo{
           .source_origin = std::move(*initiator_root_frame_origin),
@@ -176,6 +190,13 @@ void AttributionHost::DidStartNavigation(NavigationHandle* navigation_handle) {
           .is_within_fenced_frame =
               initiator_frame_host->IsNestedWithinFencedFrame(),
           .initiator_root_frame_id = initiator_root_frame->GetGlobalId()});
+  DCHECK(inserted);
+
+  const NavigationInfo& navigation_info = it->second;
+  data_host_manager->NotifyNavigationStartedForDataHost(
+      impression->attribution_src_token, navigation_info.source_origin,
+      impression->nav_type, navigation_info.is_within_fenced_frame,
+      navigation_info.initiator_root_frame_id);
 }
 
 void AttributionHost::DidRedirectNavigation(
@@ -221,63 +242,17 @@ void AttributionHost::DidRedirectNavigation(
 }
 
 void AttributionHost::DidFinishNavigation(NavigationHandle* navigation_handle) {
+  ScopedMapDeleter<NavigationInfoMap> navigation_source_origin_it(
+      &navigation_info_map_, navigation_handle->GetNavigationId());
+
   // Observe only navigation toward a new document in the primary main frame.
   // Impressions should never be attached to same-document navigations but can
   // be the result of a bad renderer.
   if (!navigation_handle->IsInPrimaryMainFrame() ||
       navigation_handle->IsSameDocument()) {
-    MaybeNotifyFailedSourceNavigation(navigation_handle);
-    return;
+    DCHECK(!navigation_source_origin_it);
   }
 
-  ScopedMapDeleter<NavigationInfoMap> navigation_source_origin_it(
-      &navigation_info_map_, navigation_handle->GetNavigationId());
-
-  // Separate from above because we need to clear the navigation related state
-  if (!navigation_handle->HasCommitted()) {
-    MaybeNotifyFailedSourceNavigation(navigation_handle);
-    return;
-  }
-
-  // Don't observe error page navs, and don't let impressions be registered for
-  // error pages.
-  if (navigation_handle->IsErrorPage()) {
-    MaybeNotifyFailedSourceNavigation(navigation_handle);
-    return;
-  }
-
-  // If we were not able to access the impression origin, ignore the
-  // navigation.
-  if (!navigation_source_origin_it) {
-    MaybeNotifyFailedSourceNavigation(navigation_handle);
-    return;
-  }
-
-  AttributionManager* attribution_manager =
-      AttributionManager::FromWebContents(web_contents());
-  DCHECK(attribution_manager);
-
-  auto* data_host_manager = attribution_manager->GetDataHostManager();
-  if (!data_host_manager) {
-    return;
-  }
-
-  const NavigationInfo& navigation_info =
-      (*navigation_source_origin_it.get())->second;
-  const SuitableOrigin& source_origin = navigation_info.source_origin;
-
-  const absl::optional<blink::Impression>& impression =
-      navigation_handle->GetImpression();
-  DCHECK(impression);
-
-  data_host_manager->NotifyNavigationForDataHost(
-      impression->attribution_src_token, source_origin, impression->nav_type,
-      navigation_info.is_within_fenced_frame,
-      navigation_info.initiator_root_frame_id);
-}
-
-void AttributionHost::MaybeNotifyFailedSourceNavigation(
-    NavigationHandle* navigation_handle) {
   auto* attribution_manager =
       AttributionManager::FromWebContents(web_contents());
   DCHECK(attribution_manager);
@@ -293,7 +268,8 @@ void AttributionHost::MaybeNotifyFailedSourceNavigation(
     return;
   }
 
-  data_host_manager->NotifyNavigationFailure(impression->attribution_src_token);
+  data_host_manager->NotifyNavigationFinished(
+      impression->attribution_src_token);
 }
 
 absl::optional<SuitableOrigin>

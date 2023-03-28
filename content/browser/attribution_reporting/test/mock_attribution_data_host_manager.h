@@ -62,7 +62,7 @@ class MockAttributionDataHostManager : public AttributionDataHostManager {
               (override));
 
   MOCK_METHOD(void,
-              NotifyNavigationForDataHost,
+              NotifyNavigationStartedForDataHost,
               (const blink::AttributionSrcToken& attribution_src_token,
                const attribution_reporting::SuitableOrigin& source_origin,
                blink::mojom::AttributionNavigationType,
@@ -71,7 +71,7 @@ class MockAttributionDataHostManager : public AttributionDataHostManager {
               (override));
 
   MOCK_METHOD(void,
-              NotifyNavigationFailure,
+              NotifyNavigationFinished,
               (const blink::AttributionSrcToken& attribution_src_token),
               (override));
 

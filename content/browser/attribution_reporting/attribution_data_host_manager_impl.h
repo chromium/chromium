@@ -94,13 +94,13 @@ class CONTENT_EXPORT AttributionDataHostManagerImpl
       blink::mojom::AttributionNavigationType nav_type,
       bool is_within_fenced_frame,
       GlobalRenderFrameHostId render_frame_id) override;
-  void NotifyNavigationForDataHost(
+  void NotifyNavigationStartedForDataHost(
       const blink::AttributionSrcToken& attribution_src_token,
       const attribution_reporting::SuitableOrigin& source_origin,
       blink::mojom::AttributionNavigationType nav_type,
       bool is_within_fenced_frame,
       GlobalRenderFrameHostId render_frame_id) override;
-  void NotifyNavigationFailure(
+  void NotifyNavigationFinished(
       const blink::AttributionSrcToken& attribution_src_token) override;
   void NotifyFencedFrameReportingBeaconStarted(
       BeaconId beacon_id,

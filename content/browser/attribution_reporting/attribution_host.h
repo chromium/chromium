@@ -101,10 +101,6 @@ class CONTENT_EXPORT AttributionHost
   absl::optional<attribution_reporting::SuitableOrigin>
   TopFrameOriginForSecureContext();
 
-  // Notifies the `AttributionDataHostManager` that a navigation with an
-  // associated `AttributionDataHost` failed, if necessary.
-  void MaybeNotifyFailedSourceNavigation(NavigationHandle* navigation_handle);
-
   AttributionInputEvent GetMostRecentNavigationInputEvent() const;
 
   // Map which stores the top-frame origin an impression occurred on for all

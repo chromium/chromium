@@ -97,14 +97,16 @@ void RecordTriggerQueueEvent(TriggerQueueEvent event) {
 enum class NavigationDataHostStatus {
   kRegistered = 0,
   kNotFound = 1,
-  kNavigationFailed = 2,
+  // Ineligible navigation data hosts (non top-level navigations, same document
+  // navigations, etc) are dropped.
+  kIneligible = 2,
   kProcessed = 3,
 
   kMaxValue = kProcessed,
 };
 
 void RecordNavigationDataHostStatus(NavigationDataHostStatus event) {
-  base::UmaHistogramEnumeration("Conversions.NavigationDataHostStatus2", event);
+  base::UmaHistogramEnumeration("Conversions.NavigationDataHostStatus3", event);
 }
 
 enum class Registrar {
@@ -500,12 +502,17 @@ void AttributionDataHostManagerImpl::ParseSource(
   }
 }
 
-void AttributionDataHostManagerImpl::NotifyNavigationForDataHost(
+void AttributionDataHostManagerImpl::NotifyNavigationStartedForDataHost(
     const blink::AttributionSrcToken& attribution_src_token,
     const SuitableOrigin& source_origin,
     AttributionNavigationType nav_type,
     bool is_within_fenced_frame,
     GlobalRenderFrameHostId render_frame_id) {
+  // A navigation-associated interface is used for
+  // `blink::mojom::ConversionHost` and an `AssociatedReceiver` is used on the
+  // browser side, therefore it's guaranteed that
+  // `AttributionHost::RegisterNavigationHost()` is called before
+  // `AttributionHost::DidStartNavigation()`.
   if (auto it = navigation_data_host_map_.find(attribution_src_token);
       it != navigation_data_host_map_.end()) {
     receivers_.Add(
@@ -520,22 +527,22 @@ void AttributionDataHostManagerImpl::NotifyNavigationForDataHost(
   } else {
     RecordNavigationDataHostStatus(NavigationDataHostStatus::kNotFound);
   }
-
-  if (auto it = registrations_.find(attribution_src_token);
-      it != registrations_.end()) {
-    it->CompleteRegistrations();
-    MaybeOnRegistrationsFinished(it);
-  }
 }
 
-void AttributionDataHostManagerImpl::NotifyNavigationFailure(
+void AttributionDataHostManagerImpl::NotifyNavigationFinished(
     const blink::AttributionSrcToken& attribution_src_token) {
+  // The eligible data host should have been bound in
+  // `NotifyNavigationStartedForDataHost()`.
+  // For non-top level navigation and same document navigation,
+  // `AttributionHost::RegisterNavigationDataHost()` will be called but not
+  // `NotifyNavigationStartedForDataHost()`, therefore these navigations would
+  // still be tracked.
   if (auto it = navigation_data_host_map_.find(attribution_src_token);
       it != navigation_data_host_map_.end()) {
     base::TimeTicks register_time = it->second.register_time;
     navigation_data_host_map_.erase(it);
     OnSourceEligibleDataHostFinished(register_time);
-    RecordNavigationDataHostStatus(NavigationDataHostStatus::kNavigationFailed);
+    RecordNavigationDataHostStatus(NavigationDataHostStatus::kIneligible);
   }
 
   // We are not guaranteed to be processing redirect registrations for a given
