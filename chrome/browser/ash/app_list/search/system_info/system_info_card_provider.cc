@@ -17,6 +17,7 @@
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/ash/app_list/search/common/icon_constants.h"
 #include "chrome/browser/ash/app_list/search/system_info/battery_answer_result.h"
+#include "chrome/browser/ash/app_list/search/system_info/cpu_answer_result.h"
 #include "chrome/browser/ash/app_list/search/system_info/cpu_data.h"
 #include "chrome/browser/ash/app_list/search/system_info/cpu_usage_data.h"
 #include "chrome/browser/ash/app_list/search/system_info/system_info_answer_result.h"
@@ -79,6 +80,7 @@ SystemInfoCardProvider::SystemInfoCardProvider(Profile* profile)
       base::BindOnce(&SystemInfoCardProvider::OnProbeServiceDisconnect,
                      weak_factory_.GetWeakPtr()));
   StartObservingCalculators();
+  cpu_usage_timer_ = std::make_unique<base::RepeatingTimer>();
 
   // TODO(b/261867385): We manually load the icon from the local codebase as
   // the icon load from proxy is flaky. When the flakiness if solved, we can
@@ -111,7 +113,7 @@ void SystemInfoCardProvider::Start(const std::u16string& query) {
         UpdateMemoryUsage();
         break;
       case SystemInfoInputType::kCPU:
-        UpdateCpuUsage();
+        UpdateCpuUsage(/*create_result=*/true);
         break;
       case SystemInfoInputType::kVersion:
         UpdateChromeOsVersion();
@@ -220,7 +222,8 @@ void SystemInfoCardProvider::UpdateMemoryUsage() {
                      weak_factory_.GetWeakPtr()));
 }
 
-void SystemInfoCardProvider::OnCpuUsageUpdated(TelemetryInfoPtr info_ptr) {
+void SystemInfoCardProvider::OnCpuUsageUpdated(bool create_result,
+                                               TelemetryInfoPtr info_ptr) {
   if (info_ptr.is_null()) {
     LOG(ERROR) << "Null response from croshealthd::ProbeTelemetryInfo.";
     return;
@@ -260,36 +263,47 @@ void SystemInfoCardProvider::OnCpuUsageUpdated(TelemetryInfoPtr info_ptr) {
   PopulateAverageScaledClockSpeed(*cpu_info, *new_cpu_usage.get());
 
   previous_cpu_usage_data_ = new_cpu_usage_data;
-  cpu_usage_ = std::move(new_cpu_usage);
-  std::u16string title = l10n_util::GetStringFUTF16(
-      IDS_ASH_CPU_IN_LAUNCHER_TITLE, cpu_usage_->GetPercentUsageTotalString());
+  std::u16string title =
+      l10n_util::GetStringFUTF16(IDS_ASH_CPU_IN_LAUNCHER_TITLE,
+                                 new_cpu_usage->GetPercentUsageTotalString());
   std::u16string description = l10n_util::GetStringFUTF16(
       IDS_ASH_CPU_IN_LAUNCHER_DESCRIPTION,
-      base::NumberToString16(cpu_usage_->GetAverageCpuTempCelsius()),
+      base::NumberToString16(new_cpu_usage->GetAverageCpuTempCelsius()),
       // Provide the frequency in GHz and round the value to 2 decimal places.
       base::NumberToString16(
           static_cast<double>(
-              cpu_usage_->GetScalingAverageCurrentFrequencyKhz() / 10000) /
+              new_cpu_usage->GetScalingAverageCurrentFrequencyKhz() / 10000) /
           100));
 
-  AnswerCardInfo answer_card_info(
-      ash::SystemInfoAnswerCardDisplayType::kTextCard);
-  SearchProvider::Results new_results;
-  new_results.emplace_back(std::make_unique<SystemInfoAnswerResult>(
-      profile_, last_query_, /*url_path=*/"", diagnostics_icon_, relevance_,
-      title, description,
-      SystemInfoAnswerResult::SystemInfoCategory::kDiagnostics,
-      answer_card_info));
-  SwapResults(&new_results);
+  if (create_result) {
+    AnswerCardInfo answer_card_info(
+        ash::SystemInfoAnswerCardDisplayType::kTextCard);
+    SearchProvider::Results new_results;
+    DCHECK(cpu_usage_timer_);
+    new_results.emplace_back(std::make_unique<CpuAnswerResult>(
+        profile_, last_query_, /*url_path=*/"", diagnostics_icon_, relevance_,
+        title, description,
+        SystemInfoAnswerResult::SystemInfoCategory::kDiagnostics,
+        answer_card_info,
+        base::BindRepeating(&SystemInfoCardProvider::UpdateCpuUsage,
+                            weak_factory_.GetWeakPtr()),
+        std::move(cpu_usage_timer_), this));
+    SwapResults(&new_results);
+    cpu_usage_timer_ = std::make_unique<base::RepeatingTimer>();
+  } else {
+    for (auto& observer : cpu_observers_) {
+      observer.OnCpuDataUpdated(title, description);
+    }
+  }
 }
 
-void SystemInfoCardProvider::UpdateCpuUsage() {
+void SystemInfoCardProvider::UpdateCpuUsage(bool create_result) {
   BindCrosHealthdProbeServiceIfNecessary();
 
   probe_service_->ProbeTelemetryInfo(
       {ProbeCategories::kCpu},
       base::BindOnce(&SystemInfoCardProvider::OnCpuUsageUpdated,
-                     weak_factory_.GetWeakPtr()));
+                     weak_factory_.GetWeakPtr(), create_result));
 }
 
 void SystemInfoCardProvider::UpdateBatteryInfo() {
@@ -515,6 +529,19 @@ void SystemInfoCardProvider::CreateStorageAnswerCard() {
       /*description=*/u"",
       SystemInfoAnswerResult::SystemInfoCategory::kSettings, answer_card_info));
   SwapResults(&new_results);
+}
+
+void SystemInfoCardProvider::AddCpuDataObserver(CpuDataObserver* observer) {
+  cpu_observers_.AddObserver(observer);
+}
+
+void SystemInfoCardProvider::RemoveCpuDataObserver(CpuDataObserver* observer) {
+  cpu_observers_.RemoveObserver(observer);
+}
+
+void SystemInfoCardProvider::SetCpuUsageTimerForTesting(
+    std::unique_ptr<base::RepeatingTimer> timer) {
+  cpu_usage_timer_ = std::move(timer);
 }
 
 }  // namespace app_list

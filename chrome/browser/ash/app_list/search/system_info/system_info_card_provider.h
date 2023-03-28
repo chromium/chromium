@@ -10,6 +10,7 @@
 #include <vector>
 
 #include "base/memory/weak_ptr.h"
+#include "base/timer/timer.h"
 #include "chrome/browser/ash/app_list/search/search_provider.h"
 #include "chrome/browser/ash/app_list/search/system_info/battery_health.h"
 #include "chrome/browser/ash/app_list/search/system_info/cpu_data.h"
@@ -34,6 +35,15 @@ relevant pages within the Settings and Diagnostics apps.*/
 class SystemInfoCardProvider : public SearchProvider,
                                public ash::settings::SizeCalculator::Observer {
  public:
+  using UpdateCpuResultCallback = base::RepeatingCallback<void(bool)>;
+  // Implemented by clients that wish to be updated periodically about the
+  // cpu usage of the device.
+  class CpuDataObserver : public base::CheckedObserver {
+   public:
+    virtual void OnCpuDataUpdated(const std::u16string& title,
+                                  const std::u16string& description) = 0;
+  };
+
   explicit SystemInfoCardProvider(Profile* profile);
   ~SystemInfoCardProvider() override;
 
@@ -50,6 +60,12 @@ class SystemInfoCardProvider : public SearchProvider,
       const ash::settings::SizeCalculator::CalculationType& calculation_type,
       int64_t total_bytes) override;
 
+  // Adds and removes the Cpu Data observer.
+  virtual void AddCpuDataObserver(CpuDataObserver* observer);
+  virtual void RemoveCpuDataObserver(CpuDataObserver* observer);
+
+  void SetCpuUsageTimerForTesting(std::unique_ptr<base::RepeatingTimer> timer);
+
  private:
   void BindCrosHealthdProbeServiceIfNecessary();
   void OnProbeServiceDisconnect();
@@ -60,8 +76,9 @@ class SystemInfoCardProvider : public SearchProvider,
   void OnMemoryUsageUpdated(
       ash::cros_healthd::mojom::TelemetryInfoPtr info_ptr);
 
-  void UpdateCpuUsage();
-  void OnCpuUsageUpdated(ash::cros_healthd::mojom::TelemetryInfoPtr info_ptr);
+  void UpdateCpuUsage(bool create_result);
+  void OnCpuUsageUpdated(bool create_result,
+                         ash::cros_healthd::mojom::TelemetryInfoPtr info_ptr);
 
   void UpdateBatteryInfo();
   void OnBatteryInfoUpdated(
@@ -104,11 +121,13 @@ class SystemInfoCardProvider : public SearchProvider,
   std::string chromeOS_version_{""};
   CpuUsageData previous_cpu_usage_data_{CpuUsageData()};
   ash::cros_healthd::mojom::MemoryInfo* memory_info_{nullptr};
-  std::unique_ptr<CpuData> cpu_usage_{nullptr};
   std::unique_ptr<BatteryHealth> battery_health_{nullptr};
   gfx::ImageSkia os_settings_icon_;
   gfx::ImageSkia diagnostics_icon_;
   std::vector<SystemInfoKeywordInput> keywords_;
+  std::unique_ptr<base::RepeatingTimer> cpu_usage_timer_;
+
+  base::ObserverList<SystemInfoCardProvider::CpuDataObserver> cpu_observers_;
 
   base::WeakPtrFactory<SystemInfoCardProvider> weak_factory_{this};
 };

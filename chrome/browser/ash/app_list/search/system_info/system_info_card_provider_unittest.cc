@@ -18,6 +18,7 @@
 #include "base/system/sys_info.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_running_on_chromeos.h"
+#include "base/timer/mock_timer.h"
 #include "chrome/browser/ash/app_list/search/system_info/system_info_util.h"
 #include "chrome/browser/ash/app_list/search/test/test_search_controller.h"
 #include "chrome/browser/ash/file_manager/fake_disk_mount_manager.h"
@@ -111,29 +112,6 @@ void SetCrosHealthdCpuResponse(
   SetProbeTelemetryInfoResponse(/*battery_info=*/nullptr,
                                 std::move(cpu_info_ptr),
                                 /*memory_info=*/nullptr);
-}
-
-// Sets the CpuUsage response on cros_healthd. `usage_data` should contain one
-// entry for each logical cpu.
-void SetCrosHealthdCpuUsageResponse(
-    const std::vector<CpuUsageData>& usage_data) {
-  // Use fake temp and scaled clock speed data since none was supplied.
-  const std::vector<uint32_t> scaled_clock_speeds(usage_data.size(), 10000);
-  SetCrosHealthdCpuResponse(usage_data, {50}, scaled_clock_speeds);
-}
-
-void SetCrosHealthdCpuTemperatureResponse(
-    const std::vector<int32_t>& cpu_temps) {
-  // Use fake usage_data and scaled clock speed data since none was supplied.
-  SetCrosHealthdCpuResponse({CpuUsageData(1000, 1000, 1000)}, cpu_temps,
-                            {10000});
-}
-
-void SetCrosHealthdCpuScalingResponse(const std::vector<uint32_t>& cpu_speeds) {
-  // Use fake temp and usage_data data since none was supplied.
-  const std::vector<CpuUsageData> usage_data(cpu_speeds.size(),
-                                             CpuUsageData(1000, 1000, 1000));
-  SetCrosHealthdCpuResponse(usage_data, {50}, cpu_speeds);
 }
 
 void SetCrosHealthdMemoryUsageResponse(uint32_t total_memory_kib,
@@ -418,17 +396,21 @@ TEST_F(SystemInfoCardProviderTest, Version) {
 }
 
 TEST_F(SystemInfoCardProviderTest, Cpu) {
+  // Setup Timer
+  auto timer = std::make_unique<base::MockRepeatingTimer>();
+  auto* timer_ptr = timer.get();
+  provider_->SetCpuUsageTimerForTesting(std::move(timer));
+
   int temp_1 = 40;
   int temp_2 = 50;
   int temp_3 = 15;
-  uint32_t core_1_speed = 4000;
-  uint32_t core_2_speed = 5000;
+  uint32_t core_1_speed = 4000000;
+  uint32_t core_2_speed = 2000000;
   CpuUsageData core_1(1000, 1000, 1000);
   CpuUsageData core_2(2000, 2000, 2000);
 
-  SetCrosHealthdCpuUsageResponse({core_1, core_2});
-  SetCrosHealthdCpuScalingResponse({core_1_speed, core_2_speed});
-  SetCrosHealthdCpuTemperatureResponse({temp_1, temp_2, temp_3});
+  SetCrosHealthdCpuResponse({core_1, core_2}, {temp_1, temp_2, temp_3},
+                            {core_1_speed, core_2_speed});
 
   StartSearch(u"cpu");
   Wait();
@@ -452,8 +434,42 @@ TEST_F(SystemInfoCardProviderTest, Cpu) {
   ASSERT_EQ(results()[0]->details_text_vector().size(), 1u);
   const auto& details = results()[0]->details_text_vector()[0];
   ASSERT_EQ(details.GetType(), ash::SearchResultTextItemType::kString);
-  EXPECT_EQ(details.GetText(), u"Temperature: 35°C - Current speed: 0.01GHz");
+  EXPECT_EQ(details.GetText(), u"Temperature: 35°C - Current speed: 3GHz");
   EXPECT_TRUE(details.GetTextTags().empty());
+
+  int new_temp_1 = 20;
+  int new_temp_2 = 30;
+  int new_temp_3 = 10;
+  core_1_speed = 5000000;
+  core_2_speed = 6000000;
+
+  CpuUsageData core_1_delta(3000, 2500, 4500);
+  CpuUsageData core_2_delta(1000, 5500, 3500);
+
+  SetCrosHealthdCpuResponse({core_1 + core_1_delta, core_2 + core_2_delta},
+                            {new_temp_1, new_temp_2, new_temp_3},
+                            {core_1_speed, core_2_speed});
+
+  timer_ptr->Fire();
+  Wait();
+
+  EXPECT_EQ(title.GetText(), u"CPU current usage: 60%");
+  EXPECT_EQ(details.GetText(), u"Temperature: 20°C - Current speed: 5.5GHz");
+
+  SetCrosHealthdCpuResponse({core_1 + core_1_delta + core_1_delta,
+                             core_2 + core_2_delta + core_2_delta},
+                            {new_temp_1, new_temp_2, new_temp_3},
+                            {core_1_speed, core_2_speed});
+
+  StartSearch(u"cpu usage");
+  Wait();
+
+  ASSERT_FALSE(results().empty());
+  EXPECT_EQ(results().size(), 1u);
+  const auto& title2 = results()[0]->title_text_vector()[0];
+  EXPECT_EQ(title2.GetText(), u"CPU current usage: 60%");
+  const auto& details2 = results()[0]->details_text_vector()[0];
+  EXPECT_EQ(details2.GetText(), u"Temperature: 20°C - Current speed: 5.5GHz");
 }
 
 TEST_F(SystemInfoCardProviderTest, CpuProbeError) {
