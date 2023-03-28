@@ -516,9 +516,9 @@ TEST_P(ClientResourceProviderTest, ReturnedSyncTokensArePassedToClient) {
   gpu::SyncToken sync_token = sii->GenUnverifiedSyncToken();
 
   constexpr gfx::Size size(64, 64);
-  auto tran = TransferableResource::MakeGpu(mailbox, GL_LINEAR, GL_TEXTURE_2D,
-                                            sync_token, size, RGBA_8888,
-                                            false /* is_overlay_candidate */);
+  auto tran = TransferableResource::MakeGpu(
+      mailbox, GL_LINEAR, GL_TEXTURE_2D, sync_token, size,
+      SinglePlaneFormat::kRGBA_8888, false /* is_overlay_candidate */);
   ResourceId resource = provider().ImportResource(
       tran, base::BindOnce(&MockReleaseCallback::Released,
                            base::Unretained(&release)));

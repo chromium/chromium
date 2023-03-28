@@ -409,10 +409,10 @@ static ResourceId CreateResourceInLayerTree(
     ClientResourceProvider* child_resource_provider,
     const gfx::Size& size,
     bool is_overlay_candidate,
-    ResourceFormat resource_format) {
+    SharedImageFormat format) {
   auto resource = TransferableResource::MakeGpu(
       gpu::Mailbox::GenerateForSharedImage(), GL_LINEAR, GL_TEXTURE_2D,
-      gpu::SyncToken(), size, resource_format, is_overlay_candidate);
+      gpu::SyncToken(), size, format, is_overlay_candidate);
 
   ResourceId resource_id =
       child_resource_provider->ImportResource(resource, base::DoNothing());
@@ -425,10 +425,10 @@ ResourceId CreateResource(DisplayResourceProvider* parent_resource_provider,
                           ContextProvider* child_context_provider,
                           const gfx::Size& size,
                           bool is_overlay_candidate,
-                          ResourceFormat resource_format,
+                          SharedImageFormat format,
                           SurfaceId test_surface_id = SurfaceId()) {
   ResourceId resource_id = CreateResourceInLayerTree(
-      child_resource_provider, size, is_overlay_candidate, resource_format);
+      child_resource_provider, size, is_overlay_candidate, format);
 
   int child_id =
       parent_resource_provider->CreateChild(base::DoNothing(), test_surface_id);
@@ -458,7 +458,7 @@ ResourceId CreateResource(DisplayResourceProvider* parent_resource_provider,
                           bool is_overlay_candidate) {
   return CreateResource(parent_resource_provider, child_resource_provider,
                         child_context_provider, size, is_overlay_candidate,
-                        RGBA_8888);
+                        SinglePlaneFormat::kRGBA_8888);
 }
 
 SolidColorDrawQuad* CreateSolidColorQuadAt(
@@ -480,7 +480,7 @@ TextureDrawQuad* CreateCandidateQuadAt(
     AggregatedRenderPass* render_pass,
     const gfx::Rect& rect,
     gfx::ProtectedVideoType protected_video_type,
-    ResourceFormat resource_format,
+    SharedImageFormat format,
     const gfx::Size& resource_size_in_pixels,
     SurfaceId test_surface_id = SurfaceId()) {
   bool needs_blending = false;
@@ -489,10 +489,9 @@ TextureDrawQuad* CreateCandidateQuadAt(
   bool nearest_neighbor = false;
   float vertex_opacity[4] = {1.0f, 1.0f, 1.0f, 1.0f};
   bool is_overlay_candidate = true;
-  ResourceId resource_id =
-      CreateResource(parent_resource_provider, child_resource_provider,
-                     child_context_provider, resource_size_in_pixels,
-                     is_overlay_candidate, resource_format, test_surface_id);
+  ResourceId resource_id = CreateResource(
+      parent_resource_provider, child_resource_provider, child_context_provider,
+      resource_size_in_pixels, is_overlay_candidate, format, test_surface_id);
 
   auto* overlay_quad = render_pass->CreateAndAppendDrawQuad<TextureDrawQuad>();
   overlay_quad->SetNew(shared_quad_state, rect, rect, needs_blending,
@@ -513,12 +512,12 @@ TextureDrawQuad* CreateCandidateQuadAt(
     AggregatedRenderPass* render_pass,
     const gfx::Rect& rect,
     gfx::ProtectedVideoType protected_video_type,
-    ResourceFormat resource_format,
+    SharedImageFormat format,
     SurfaceId test_surface_id = SurfaceId()) {
   return CreateCandidateQuadAt(
       parent_resource_provider, child_resource_provider, child_context_provider,
-      shared_quad_state, render_pass, rect, protected_video_type,
-      resource_format, rect.size(), test_surface_id);
+      shared_quad_state, render_pass, rect, protected_video_type, format,
+      rect.size(), test_surface_id);
 }
 
 TextureDrawQuad* CreateCandidateQuadAt(
@@ -532,7 +531,7 @@ TextureDrawQuad* CreateCandidateQuadAt(
   return CreateCandidateQuadAt(
       parent_resource_provider, child_resource_provider, child_context_provider,
       shared_quad_state, render_pass, rect, gfx::ProtectedVideoType::kClear,
-      RGBA_8888, test_surface_id);
+      SinglePlaneFormat::kRGBA_8888, test_surface_id);
 }
 
 #if BUILDFLAG(ENABLE_CAST_OVERLAY_STRATEGY)
@@ -2188,7 +2187,7 @@ TEST_F(UnderlayTest, AllowFilteredQuadOnTopForProtectedVideo) {
       resource_provider_.get(), child_resource_provider_.get(),
       child_provider_.get(), pass->shared_quad_state_list.back(), pass.get(),
       pass->output_rect, gfx::ProtectedVideoType::kHardwareProtected,
-      YUV_420_BIPLANAR)
+      MultiPlaneFormat::kYUV_420_BIPLANAR)
       ->needs_blending = false;
   pass->shared_quad_state_list.front()->opacity = 1.0;
 
@@ -4232,7 +4231,7 @@ TEST_F(SingleOverlayOnTopTest, IsOverlayRequiredHwProtectedVideo) {
       resource_provider_.get(), child_resource_provider_.get(),
       child_provider_.get(), pass->shared_quad_state_list.back(), pass.get(),
       kSmallCandidateRect, gfx::ProtectedVideoType::kHardwareProtected,
-      YUV_420_BIPLANAR);
+      MultiPlaneFormat::kYUV_420_BIPLANAR);
   SurfaceDamageRectList surface_damage_rect_list;
   OverlayCandidate candidate;
   auto color_mat = GetIdentityColorMatrix();
@@ -4255,7 +4254,7 @@ TEST_F(SingleOverlayOnTopTest, RequiredOverlayClippingAndSubsampling) {
       resource_provider_.get(), child_resource_provider_.get(),
       child_provider_.get(), pass->shared_quad_state_list.back(), pass.get(),
       kVideoCandidateRect, gfx::ProtectedVideoType::kHardwareProtected,
-      YUV_420_BIPLANAR);
+      MultiPlaneFormat::kYUV_420_BIPLANAR);
   pass->shared_quad_state_list.back()->clip_rect = kOverlayClipRect;
   SurfaceDamageRectList surface_damage_rect_list;
   OverlayCandidate candidate;
@@ -4289,7 +4288,7 @@ TEST_F(SingleOverlayOnTopTest,
       resource_provider_.get(), child_resource_provider_.get(),
       child_provider_.get(), pass->shared_quad_state_list.back(), pass.get(),
       kVideoCandidateRect, gfx::ProtectedVideoType::kHardwareProtected,
-      YUV_420_BIPLANAR);
+      MultiPlaneFormat::kYUV_420_BIPLANAR);
   pass->shared_quad_state_list.back()->clip_rect = kOverlayClipRect;
   SurfaceDamageRectList surface_damage_rect_list;
   gfx::RectF primary_rect(0, 0, 100, 120);
@@ -4476,7 +4475,8 @@ TEST_F(UnderlayTest, ProtectedVideoOverlayScaling) {
         resource_provider_.get(), child_resource_provider_.get(),
         child_provider_.get(), pass->shared_quad_state_list.back(), pass.get(),
         pass->output_rect, gfx::ProtectedVideoType::kHardwareProtected,
-        YUV_420_BIPLANAR, gfx::ScaleToRoundedSize(kDisplaySize, res_scale))
+        MultiPlaneFormat::kYUV_420_BIPLANAR,
+        gfx::ScaleToRoundedSize(kDisplaySize, res_scale))
         ->needs_blending = false;
     pass->shared_quad_state_list.front()->opacity = 1.0;
 
@@ -4505,17 +4505,16 @@ TileDrawQuad* CreateTileCandidateQuadAt(
     ContextProvider* child_context_provider,
     const SharedQuadState* shared_quad_state,
     AggregatedRenderPass* render_pass,
-    const gfx::Rect& rect,
-    ResourceFormat resource_format = RGBA_8888,
-    SurfaceId test_surface_id = SurfaceId()) {
+    const gfx::Rect& rect) {
   bool needs_blending = false;
   bool premultiplied_alpha = false;
   bool force_anti_aliasing_off = false;
   bool nearest_neighbor = false;
   bool is_overlay_candidate = true;
-  ResourceId resource_id = CreateResource(
-      parent_resource_provider, child_resource_provider, child_context_provider,
-      rect.size(), is_overlay_candidate, resource_format, test_surface_id);
+  ResourceId resource_id =
+      CreateResource(parent_resource_provider, child_resource_provider,
+                     child_context_provider, rect.size(), is_overlay_candidate,
+                     SinglePlaneFormat::kRGBA_8888, SurfaceId());
 
   auto* overlay_quad = render_pass->CreateAndAppendDrawQuad<TileDrawQuad>();
   overlay_quad->SetNew(shared_quad_state, rect, rect, needs_blending,
@@ -4865,7 +4864,7 @@ TEST_F(DelegatedTest, ScaledBufferDamage) {
                         child_resource_provider_.get(), child_provider_.get(),
                         pass->shared_quad_state_list.back(), pass.get(),
                         kSmallCandidateRect, gfx::ProtectedVideoType::kClear,
-                        RGBA_8888, kResourceSize);
+                        SinglePlaneFormat::kRGBA_8888, kResourceSize);
 
   // Here resource size and rect size on screen will match 1:1.
   CreateCandidateQuadAt(resource_provider_.get(),
@@ -5546,10 +5545,11 @@ TEST_F(MultiOverlayTest, RequiredOverlayOnly) {
     auto* sqs = pass->CreateAndAppendSharedQuadState();
     sqs->overlay_damage_index = surface_damage_rect_list.size();
     surface_damage_rect_list.emplace_back(kBottomLeft);
-    CreateCandidateQuadAt(
-        resource_provider_.get(), child_resource_provider_.get(),
-        child_provider_.get(), sqs, pass.get(), kBottomLeft,
-        gfx::ProtectedVideoType::kHardwareProtected, YUV_420_BIPLANAR);
+    CreateCandidateQuadAt(resource_provider_.get(),
+                          child_resource_provider_.get(), child_provider_.get(),
+                          sqs, pass.get(), kBottomLeft,
+                          gfx::ProtectedVideoType::kHardwareProtected,
+                          MultiPlaneFormat::kYUV_420_BIPLANAR);
     overlay_processor_->AddExpectedRect(kBottomLeft, true);
   }
   {

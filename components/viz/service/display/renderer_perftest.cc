@@ -179,8 +179,8 @@ TransferableResource CreateTestTexture(
   gpu::SyncToken sync_token = sii->GenVerifiedSyncToken();
 
   TransferableResource gl_resource = TransferableResource::MakeGpu(
-      mailbox, GL_LINEAR, GL_TEXTURE_2D, sync_token, size, RGBA_8888,
-      false /* is_overlay_candidate */);
+      mailbox, GL_LINEAR, GL_TEXTURE_2D, sync_token, size,
+      SinglePlaneFormat::kRGBA_8888, false /* is_overlay_candidate */);
   gl_resource.color_space = gfx::ColorSpace();
   auto release_callback = base::BindOnce(
       &DeleteSharedImage, std::move(child_context_provider), mailbox);
