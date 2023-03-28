@@ -200,7 +200,8 @@
             --theme-shape-color:[[profileThemeInfo.themeShapeColor]]">
   <iron-icon class="banner" icon="profiles:customize-banner"></iron-icon>
   <cr-icon-button id="backButton" iron-icon="cr:arrow-back"
-      on-click="onBackClick_" aria-label$="[[getBackButtonAriaLabel_()]]">
+      on-click="onBackClick_" aria-label$="[[getBackButtonAriaLabel_()]]"
+      title$="[[getBackButtonAriaLabel_()]]">
   </cr-icon-button>
   <h1 class="title" id="title">$i18n{localProfileCreationTitle}</h1>
   <div id="avatarContainer">
@@ -208,7 +209,8 @@
     <div id="customizeAvatarEllipse"></div>
     <cr-icon-button id="customizeAvatarIcon"
         iron-icon="cr:create" on-click="onCustomizeAvatarClick_"
-        aria-label="$i18n{localProfileCreationCustomizeAvatarLabel}">
+        aria-label="$i18n{localProfileCreationCustomizeAvatarLabel}"
+        title="$i18n{localProfileCreationCustomizeAvatarLabel}">
     </cr-icon-button>
   </div>
 </div>
