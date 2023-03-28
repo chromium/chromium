@@ -281,6 +281,7 @@ const NGLayoutResult* NGGridLayoutAlgorithm::LayoutInternal() {
           : NGGridLayoutSubtree(grid_sizing_tree.FinalizeTree());
 
   Vector<EBreakBetween> row_break_between;
+  LayoutUnit previously_consumed_grid_block_size;
   LayoutUnit consumed_grid_block_size;
   Vector<GridItemPlacementData> grid_items_placement_data;
   Vector<LayoutUnit> row_offset_adjustments;
@@ -291,7 +292,8 @@ const NGLayoutResult* NGGridLayoutAlgorithm::LayoutInternal() {
       const auto* grid_data =
           To<NGGridBreakTokenData>(BreakToken()->TokenData());
 
-      consumed_grid_block_size = grid_data->consumed_grid_block_size;
+      previously_consumed_grid_block_size = consumed_grid_block_size =
+          grid_data->consumed_grid_block_size;
       grid_items_placement_data = grid_data->grid_items_placement_data;
       row_offset_adjustments = grid_data->row_offset_adjustments;
       row_break_between = grid_data->row_break_between;
@@ -340,10 +342,10 @@ const NGLayoutResult* NGGridLayoutAlgorithm::LayoutInternal() {
 
   if (constraint_space.HasKnownFragmentainerBlockSize()) {
     // |FinishFragmentation| uses |NGBoxFragmentBuilder::IntrinsicBlockSize| to
-    // determine the final size of this fragment. We don't have an accurate
-    // "per-fragment" intrinsic block-size so just set it to the trailing
-    // border-padding.
-    container_builder_.SetIntrinsicBlockSize(border_padding.block_end);
+    // determine the final size of this fragment.
+    container_builder_.SetIntrinsicBlockSize(
+        consumed_grid_block_size - previously_consumed_grid_block_size +
+        border_padding.block_end);
   } else {
     container_builder_.SetIntrinsicBlockSize(intrinsic_block_size);
   }
@@ -2932,6 +2934,7 @@ NGConstraintSpace NGGridLayoutAlgorithm::CreateConstraintSpaceForLayout(
     const NGGridLayoutData& layout_data,
     LogicalRect* containing_grid_area,
     NGGridLayoutSubtree&& layout_subtree,
+    LayoutUnit unavailable_block_size,
     bool min_block_size_should_encompass_intrinsic_size,
     absl::optional<LayoutUnit> opt_fragment_relative_block_offset) const {
   DCHECK(containing_grid_area);
@@ -2944,8 +2947,14 @@ NGConstraintSpace NGGridLayoutAlgorithm::CreateConstraintSpaceForLayout(
       ComputeGridItemAvailableSize(grid_item, layout_data.Rows(),
                                    &containing_grid_area->offset.block_offset);
 
+  LogicalSize available_size = containing_grid_area->size;
+  if (available_size.block_size != kIndefiniteSize) {
+    available_size.block_size -= unavailable_block_size;
+    DCHECK_GE(available_size.block_size, LayoutUnit());
+  }
+
   return CreateConstraintSpace(
-      NGCacheSlot::kLayout, grid_item, layout_data, containing_grid_area->size,
+      NGCacheSlot::kLayout, grid_item, layout_data, available_size,
       /* opt_fixed_block_size */ absl::nullopt, std::move(layout_subtree),
       min_block_size_should_encompass_intrinsic_size,
       opt_fragment_relative_block_offset);
@@ -3356,6 +3365,7 @@ void NGGridLayoutAlgorithm::PlaceGridItemsForFragmentation(
   HeapVector<GridItemPlacementData*> out_of_fragmentainer_space_item_placement;
   BaselineAccumulator baseline_accumulator(Style().GetFontBaseline());
   LayoutUnit max_row_expansion;
+  LayoutUnit max_item_block_end;
   wtf_size_t expansion_row_set_index;
   wtf_size_t breakpoint_row_set_index;
   bool has_subsequent_children;
@@ -3382,6 +3392,7 @@ void NGGridLayoutAlgorithm::PlaceGridItemsForFragmentation(
     out_of_fragmentainer_space_item_placement.clear();
     baseline_accumulator = BaselineAccumulator(Style().GetFontBaseline());
     max_row_expansion = LayoutUnit();
+    max_item_block_end = LayoutUnit();
     expansion_row_set_index = kNotFound;
     breakpoint_row_set_index = kNotFound;
     has_subsequent_children = false;
@@ -3407,9 +3418,27 @@ void NGGridLayoutAlgorithm::PlaceGridItemsForFragmentation(
               grid_item,
               item_placement_data
                   .has_descendant_that_depends_on_percentage_block_size);
+
+      LayoutUnit unavailable_block_size;
+      if (IsBreakInside(BreakToken()) && IsBreakInside(break_token)) {
+        // If a sibling grid item has overflowed the fragmentainer (in a
+        // previous fragment) due to monolithic content, the grid container has
+        // been stretched to encompass it, but the other grid items (like this
+        // one) have not (we still want the non-overflowed items to fragment
+        // properly). The available space left in the row needs to be shrunk, in
+        // order to compensate for this, or this item might overflow the grid
+        // row.
+        const auto* grid_data =
+            To<NGGridBreakTokenData>(BreakToken()->TokenData());
+        unavailable_block_size = grid_data->consumed_grid_block_size -
+                                 (item_placement_data.offset.block_offset +
+                                  break_token->ConsumedBlockSize());
+      }
+
       LogicalRect grid_area;
       const auto space = CreateConstraintSpaceForLayout(
           grid_item, *layout_data, &grid_area, NGGridLayoutSubtree(),
+          unavailable_block_size,
           min_block_size_should_encompass_intrinsic_size,
           fragment_relative_block_offset);
 
@@ -3551,6 +3580,11 @@ void NGGridLayoutAlgorithm::PlaceGridItemsForFragmentation(
 
         max_row_expansion = std::max(max_row_expansion, item_expansion);
       }
+      // Keep track of the tallest item, in case it overflows the fragmentainer
+      // with monolithic content.
+      max_item_block_end =
+          std::max(max_item_block_end,
+                   fragment_relative_block_offset + fragment.BlockSize());
     }
   };
 
@@ -3658,8 +3692,12 @@ void NGGridLayoutAlgorithm::PlaceGridItemsForFragmentation(
   if (auto last_baseline = baseline_accumulator.LastBaseline())
     container_builder_.SetLastBaseline(*last_baseline);
 
-  if (fragmentainer_space != kIndefiniteSize)
-    *consumed_grid_block_size += fragmentainer_space;
+  if (fragmentainer_space != kIndefiniteSize) {
+    // If there are items overflowing the fragmentainer (due to monolithic
+    // content), also include that in the consumed grid block-size.
+    *consumed_grid_block_size +=
+        std::max(fragmentainer_space, max_item_block_end);
+  }
 }
 
 void NGGridLayoutAlgorithm::PlaceOutOfFlowItems(

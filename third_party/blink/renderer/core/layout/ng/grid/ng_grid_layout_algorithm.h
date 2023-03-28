@@ -213,6 +213,7 @@ class CORE_EXPORT NGGridLayoutAlgorithm
       const NGGridLayoutData& layout_data,
       LogicalRect* containing_grid_area,
       NGGridLayoutSubtree&& layout_subtree = NGGridLayoutSubtree(),
+      LayoutUnit unavailable_block_size = LayoutUnit(),
       bool min_block_size_should_encompass_intrinsic_size = false,
       absl::optional<LayoutUnit> opt_fragment_relative_block_offset =
           absl::nullopt) const;

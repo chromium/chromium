@@ -41,6 +41,7 @@ const NGLayoutResult* NGTableSectionLayoutAlgorithm::Layout() {
   absl::optional<LayoutUnit> first_baseline;
   absl::optional<LayoutUnit> last_baseline;
   LogicalOffset offset;
+  LayoutUnit intrinsic_block_size;
   bool is_first_non_collapsed_row = true;
 
   Vector<LayoutUnit> row_offsets = {LayoutUnit()};
@@ -126,6 +127,7 @@ const NGLayoutResult* NGTableSectionLayoutAlgorithm::Layout() {
         actual_start_row_index = row_index;
       row_offsets.emplace_back(offset.block_offset);
     }
+    intrinsic_block_size = offset.block_offset;
   }
 
   if (!child_iterator.NextChild().node)
@@ -142,6 +144,7 @@ const NGLayoutResult* NGTableSectionLayoutAlgorithm::Layout() {
       block_size += BreakToken()->ConsumedBlockSize();
   }
   container_builder_.SetFragmentsTotalBlockSize(block_size);
+  container_builder_.SetIntrinsicBlockSize(intrinsic_block_size);
 
   if (first_baseline)
     container_builder_.SetFirstBaseline(*first_baseline);

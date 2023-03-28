@@ -2390,9 +2390,12 @@ void NGBlockLayoutAlgorithm::ConsumeRemainingFragmentainerSpace(
     NGPreviousInflowPosition* previous_inflow_position) {
   if (ConstraintSpace().HasKnownFragmentainerBlockSize()) {
     // The remaining part of the fragmentainer (the unusable space for child
-    // content, due to the break) should still be occupied by this container.
+    // content, due to the break) should still be occupied by this
+    // container. Also encompass fragmentainer overflow (may be caused by
+    // monolithic content).
     previous_inflow_position->logical_block_offset =
-        FragmentainerSpaceLeft(ConstraintSpace());
+        std::max(previous_inflow_position->logical_block_offset,
+                 FragmentainerSpaceLeft(ConstraintSpace()));
   }
 }
 
