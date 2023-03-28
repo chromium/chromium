@@ -303,7 +303,14 @@ IN_PROC_BROWSER_TEST_P(KeepAliveURLBrowserTest, OneRequest) {
 // Note: Chromium allows at most 6 concurrent connections to the same host under
 // HTTP 1.1 protocol, which `embedded_test_server()` uses by default.
 // Exceeding this limit will hang the browser.
-IN_PROC_BROWSER_TEST_P(KeepAliveURLBrowserTest, TwoConcurrentRequestsPerHost) {
+// TODO(crbug.com/1428502): Flaky on Fuchsia and Android.
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_FUCHSIA)
+#define MAYBE_TwoConcurrentRequestsPerHost DISABLED_TwoConcurrentRequestsPerHost
+#else
+#define MAYBE_TwoConcurrentRequestsPerHost TwoConcurrentRequestsPerHost
+#endif
+IN_PROC_BROWSER_TEST_P(KeepAliveURLBrowserTest,
+                       MAYBE_TwoConcurrentRequestsPerHost) {
   const std::string method = GetParam();
   const size_t num_requests = 2;
   RegisterRequestsHandler(num_requests);
