@@ -17,7 +17,6 @@ source_set("feed_promos") {
     "//ios/chrome/browser/shared/coordinator/chrome_coordinator",
     "//ios/chrome/browser/shared/public/commands",
     "//ios/chrome/browser/shared/public/features",
-    "//ios/chrome/browser/signin",
     "//ios/chrome/browser/ui/ntp/metrics",
     "//ios/chrome/common/ui/confirmation_alert",
   ]

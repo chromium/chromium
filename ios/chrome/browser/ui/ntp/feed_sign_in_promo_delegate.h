@@ -8,10 +8,15 @@
 // Protocol for actions relating to the feed sign-in promo.
 @protocol FeedSignInPromoDelegate
 
-// Shows a sign in promote UI.
+// Shows a sign in promote UI for feed back of card sign-in promo.
+// TODO(crbug.com/1382615): rename it as "showHalfSheetForFeedBoCSignInPromo"
+// since it's not a promo UI but a message to let the user to continue to sign
+// in.
 - (void)showSignInPromoUI;
 
-// Shows a sign in flow.
+// Shows a sign in UI for feed bottom sign-in promo.
+// TODO(crbug.com/1382615): rename it as "showSyncPromoUI" since it shows a sync
+// flow.
 - (void)showSignInUI;
 
 @end
