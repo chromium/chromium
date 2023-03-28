@@ -33,6 +33,7 @@ import org.chromium.base.ContextUtils;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.PackageManagerWrapper;
+import org.chromium.base.test.util.Restriction;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -43,6 +44,7 @@ import org.chromium.chrome.test.util.MenuUtils;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetTestSupport;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
+import org.chromium.ui.test.util.DeviceRestriction;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -286,6 +288,8 @@ public class ShareSheetTest {
 
     @Test
     @SmallTest
+    // 3P share sheet is not supported on auto.
+    @Restriction(DeviceRestriction.RESTRICTION_TYPE_NON_AUTO)
     public void nothingFromDefaultRankingAvailable() {
         replaceRecentShareHistory(defaultTestHistory());
         replaceSystemApps(defaultTestSystemApps());
