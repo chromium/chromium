@@ -144,7 +144,6 @@ void HttpServer::Close(int connection_id) {
   std::unique_ptr<HttpConnection> connection = std::move(it->second);
   id_to_connection_.erase(it);
   delegate_->OnClose(connection_id);
-  connection->SetWebSocket(nullptr);
 
   // The call stack might have callbacks which still have the pointer of
   // connection. Instead of referencing connection with ID all the time,
