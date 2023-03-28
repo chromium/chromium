@@ -27,6 +27,7 @@
 #include "storage/browser/quota/quota_manager_proxy.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "third_party/blink/public/mojom/cache_storage/cache_storage.mojom-forward.h"
+#include "url/origin.h"
 
 namespace base {
 class FilePath;
@@ -104,7 +105,7 @@ class CONTENT_EXPORT CacheStorageContextImpl
       storage::QuotaErrorOr<storage::BucketInfo> result);
 
   // The set of storage keys whose storage should be cleared on shutdown.
-  std::set<blink::StorageKey> storage_keys_to_purge_on_shutdown_;
+  std::set<url::Origin> origins_to_purge_on_shutdown_;
 
   // Initialized in Init(); true if the user data directory is empty.
   bool is_incognito_ = false;
