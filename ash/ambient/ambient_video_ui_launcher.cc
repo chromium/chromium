@@ -5,6 +5,7 @@
 #include "ash/ambient/ambient_video_ui_launcher.h"
 
 #include "ash/ambient/ambient_ui_settings.h"
+#include "ash/ambient/ui/ambient_video_utils.h"
 #include "ash/ambient/ui/ambient_video_view.h"
 #include "ash/public/cpp/personalization_app/time_of_day_paths.h"
 #include "base/check.h"
@@ -22,27 +23,13 @@
 namespace ash {
 namespace {
 
-base::FilePath GetVideoFilePath(AmbientVideo video) {
-  base::StringPiece ambient_video_name;
-  switch (video) {
-    case AmbientVideo::kNewMexico:
-      ambient_video_name = personalization_app::kTimeOfDayNewMexicoVideo;
-      break;
-    case AmbientVideo::kClouds:
-      ambient_video_name = personalization_app::kTimeOfDayCloudsVideo;
-      break;
-  }
-  return personalization_app::GetTimeOfDayVideosDir().Append(
-      ambient_video_name);
-}
-
 base::FilePath GetVideoHtmlPath() {
   return personalization_app::GetTimeOfDaySrcDir().Append(
       personalization_app::kAmbientVideoHtml);
 }
 
 void VerifyVideoExistsOnDisc(AmbientVideo video) {
-  bool all_resources_exists = base::PathExists(GetVideoFilePath(video)) &&
+  bool all_resources_exists = base::PathExists(GetAmbientVideoPath(video)) &&
                               base::PathExists(GetVideoHtmlPath());
   // Currently, all resources are shipped with the OTA and reside on rootfs, so
   // this should never be true unless there is a major bug.
@@ -56,7 +43,7 @@ void VerifyVideoExistsOnDisc(AmbientVideo video) {
   // getting downloaded at run-time.
   if (!all_resources_exists) {
     LOG(ERROR) << "Ambient video resources do not exist on disc. video="
-               << GetVideoFilePath(video) << " src=" << GetVideoHtmlPath();
+               << GetAmbientVideoPath(video) << " src=" << GetVideoHtmlPath();
   }
 }
 
@@ -88,7 +75,7 @@ void AmbientVideoUiLauncher::Initialize(base::OnceClosure on_done) {
 
 std::unique_ptr<views::View> AmbientVideoUiLauncher::CreateView() {
   CHECK(is_active_);
-  return std::make_unique<AmbientVideoView>(GetVideoFilePath(current_video_),
+  return std::make_unique<AmbientVideoView>(GetAmbientVideoPath(current_video_),
                                             GetVideoHtmlPath());
 }
 
