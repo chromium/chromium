@@ -28,14 +28,6 @@ enum class DarkModeStatus {
   kMaxValue = kDark,
 };
 
-bool AnyBrowserWindowHasName() {
-  for (auto* browser : *BrowserList::GetInstance()) {
-    if (!browser->user_title().empty())
-      return true;
-  }
-  return false;
-}
-
 }  // namespace
 
 DesktopPlatformFeaturesMetricsProvider::
@@ -66,6 +58,4 @@ void DesktopPlatformFeaturesMetricsProvider::ProvideCurrentSessionData(
                                 model->size() - model->unread_size());
     }
   }
-
-  UMA_HISTOGRAM_BOOLEAN("Browser.AnyWindowHasName", AnyBrowserWindowHasName());
 }

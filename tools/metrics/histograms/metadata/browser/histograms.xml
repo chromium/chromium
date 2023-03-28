@@ -48,16 +48,6 @@ chromium-metrics-reviews@google.com.
       summary="Tab has a saved frame in the cache."/>
 </variants>
 
-<histogram name="Browser.AnyWindowHasName" enum="Boolean"
-    expires_after="2023-04-30">
-  <owner>ellyjones@chromium.org</owner>
-  <owner>lgrey@chromium.org</owner>
-  <summary>
-    Whether any browser window in the current session has a user-set name.
-    Logged once every histogram recording.
-  </summary>
-</histogram>
-
 <histogram name="Browser.BitmapFetcher.Decode" units="ms"
     expires_after="2022-09-18">
   <obsolete>
