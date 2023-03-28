@@ -45,6 +45,7 @@ export const EntryType = {
  *   icon: (!string|!chrome.fileManagerPrivate.IconSet),
  *   label: string,
  *   volumeType: (VolumeManagerCommon.VolumeType|null),
+ *   rootType: (VolumeManagerCommon.RootType|null),
  *   metadata: !MetadataItem,
  *   isDirectory: boolean,
  *   type: !EntryType,

@@ -248,6 +248,7 @@ export function convertEntryToFileData(entry: Entry|FilesAppEntry): FileData {
     isDirectory: entry.isDirectory,
     label,
     volumeType,
+    rootType: locationInfo?.rootType ?? null,
     metadata,
     expanded: false,
     disabled: 'disabled' in entry ? entry.disabled as boolean : false,

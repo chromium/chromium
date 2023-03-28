@@ -946,67 +946,6 @@ export async function testRemoveLastComputer(done: () => void) {
 }
 
 /**
- * Test private methods: isEntryInsideDrive_() and isEntryInsideMyDrive_(),
- * which should return true when inside My Drive and any of its sub-directories;
- * Should return false for everything else, including within Team Drive.
- */
-export async function testInsideMyDriveAndInsideDrive(done: () => void) {
-  const initialState = getEmptyState();
-  const directoryTree = directoryTreeContainer.tree;
-
-  // Add MyFiles and Drive to the store.
-  const {myFilesFs, driveFs} = await addMyFilesAndDriveToStore(initialState);
-  // Add sub folders for them.
-  myFilesFs.populate(['/folder1/']);
-  driveFs.populate(['/root/folder1']);
-  // Store initialization will notify DirectoryTree.
-  const store = setupStore(initialState);
-
-  // At top level, MyFiles and Drive should be listed.
-  await waitUntil(() => directoryTree.items.length === 2);
-  const myFilesItem = directoryTree.items[0]!;
-  const driveItem = directoryTree.items[1]!;
-
-  await waitUntil(() => {
-    // Under the drive item, there exist 3 entries. In MyFiles should
-    // exist 1 entry folder1.
-    return driveItem.items.length === 3 && myFilesItem.items.length === 1;
-  });
-
-  // Use [] to access private methods to bypass Typescript check.
-  const isEntryInsideDrive = directoryTreeContainer['isEntryInsideDrive_'].bind(
-      directoryTreeContainer);
-  const isEntryInsideMyDrive =
-      directoryTreeContainer['isEntryInsideMyDrive_'].bind(
-          directoryTreeContainer);
-
-  const driveRootEntryList =
-      getEntry(store.getState(), driveRootEntryListKey) as EntryList;
-  // insideMyDrive
-  assertFalse(isEntryInsideMyDrive(driveRootEntryList), 'Drive root');
-  assertTrue(isEntryInsideMyDrive(driveFs.entries['/root']), 'My Drive root');
-  assertFalse(
-      isEntryInsideMyDrive(driveFs.entries['/team_drives']),
-      'Team Drives root');
-  assertFalse(
-      isEntryInsideMyDrive(driveFs.entries['/Computers']), 'Offline root');
-  assertFalse(isEntryInsideMyDrive(myFilesFs.entries['/']), 'MyFiles root');
-  assertFalse(
-      isEntryInsideMyDrive(myFilesFs.entries['/folder1']), 'MyFiles folder1');
-  // insideDrive
-  assertTrue(isEntryInsideDrive(driveRootEntryList), 'Drive root');
-  assertTrue(isEntryInsideDrive(driveFs.entries['/root']), 'My Drive root');
-  assertTrue(
-      isEntryInsideDrive(driveFs.entries['/team_drives']), 'Team Drives root');
-  assertTrue(isEntryInsideDrive(driveFs.entries['/Computers']), 'Offline root');
-  assertFalse(isEntryInsideDrive(myFilesFs.entries['/']), 'MyFiles root');
-  assertFalse(
-      isEntryInsideDrive(myFilesFs.entries['/folder1']), 'MyFiles folder1');
-
-  done();
-}
-
-/**
  * Test adding FSPs.
  * Sub directories should be fetched for FSPs, but not for the Smb FSP.
  */

@@ -322,6 +322,9 @@ ts_templates = [
 ]
 
 ts_test_files = [
+  # Common.
+  "file_manager/common/js/entry_utils_unittest.ts",
+
   # Containers
   "file_manager/containers/breadcrumb_container_unittest.ts",
   "file_manager/containers/directory_tree_container_unittest.ts",

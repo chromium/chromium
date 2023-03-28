@@ -6,12 +6,11 @@ import {isRTL} from 'chrome://resources/ash/common/util.js';
 import {CrButtonElement} from 'chrome://resources/cr_elements/cr_button/cr_button.js';
 
 import {maybeShowTooltip} from '../common/js/dom_utils.js';
-import {isGrandRootEntryInDrives, isMyFilesEntry, isVolumeEntry} from '../common/js/entry_utils.js';
+import {isEntryInsideComputers, isEntryInsideDrive, isEntryInsideMyDrive, isGrandRootEntryInDrives, isMyFilesEntry, isVolumeEntry} from '../common/js/entry_utils.js';
 import {EntryList, VolumeEntry} from '../common/js/files_app_entry_types.js';
 import {metrics} from '../common/js/metrics.js';
 import {strf} from '../common/js/util.js';
 import {VolumeManagerCommon} from '../common/js/volume_manager_types.js';
-import {FilesAppEntry} from '../externs/files_app_entry_interfaces.js';
 import {FileData, NavigationKey, NavigationRoot, NavigationType, PropStatus, State} from '../externs/ts/state.js';
 import {VolumeManager} from '../externs/volume_manager.js';
 import {constants} from '../foreground/js/constants.js';
@@ -21,6 +20,7 @@ import {Command} from '../foreground/js/ui/command.js';
 import {changeDirectory} from '../state/actions/current_directory.js';
 import {refreshNavigationRoots, updateNavigationEntry} from '../state/actions/navigation.js';
 import {readSubDirectories} from '../state/actions_producers/all_entries.js';
+import {convertEntryToFileData} from '../state/reducers/all_entries.js';
 import {driveRootEntryListKey} from '../state/reducers/volumes.js';
 import {getEntry, getFileData, getStore, Store} from '../state/store.js';
 import {TreeSelectedChangedEvent, XfTree} from '../widgets/xf_tree.js';
@@ -289,9 +289,9 @@ export class DirectoryTreeContainer {
     }
 
     // Fetch metadata if the entry supports Drive specific share icon.
-    if (this.shouldSupportDriveSpecificIcons_(fileData.entry)) {
+    if (this.shouldSupportDriveSpecificIcons_(fileData)) {
       this.metadataModel_.get(
-          [fileData.entry], DRIVE_ENTRY_METADATA_PROPERTY_NAMES);
+          [fileData.entry as Entry], DRIVE_ENTRY_METADATA_PROPERTY_NAMES);
     }
 
     if (!navigationRoot?.type ||
@@ -358,8 +358,7 @@ export class DirectoryTreeContainer {
       element.icon = fileData.icon;
     }
     // For drive item, update icon based on the metadata.
-    if (this.shouldSupportDriveSpecificIcons_(fileData.entry) &&
-        fileData.metadata) {
+    if (this.shouldSupportDriveSpecificIcons_(fileData) && fileData.metadata) {
       const {shared, isMachineRoot, isExternalMedia} = fileData.metadata;
       if (shared) {
         element.icon = constants.ICON_TYPES.SHARED_FOLDER;
@@ -522,19 +521,18 @@ export class DirectoryTreeContainer {
   }
 
   /**
-   * Returns true if the entry supports the "shared" feature, as in, displays
-   * a shared icon. It's only supported inside "My Drive" or "Computers", even
-   * Shared Drive does not support it, the "My Drive" and "Computers" itself
-   * don't support it either, only their children.
+   * Returns true if fileData's entry supports the "shared" feature, as in,
+   * displays a shared icon. It's only supported inside "My Drive" or
+   * "Computers", even Shared Drive does not support it, the "My Drive" and
+   * "Computers" itself don't support it either, only their children.
    *
-   * Note: if the return value is true, the input entry is guaranteed to be
+   * Note: if the return value is true, fileData's entry is guaranteed to be
    * native Entry type.
    */
-  private shouldSupportDriveSpecificIcons_(entry: Entry|
-                                           FilesAppEntry): entry is Entry {
-    return (this.isEntryInsideMyDrive_(entry) && !isVolumeEntry(entry)) ||
-        (this.isEntryInsideComputers_(entry) &&
-         !isGrandRootEntryInDrives(entry));
+  private shouldSupportDriveSpecificIcons_(fileData: FileData): boolean {
+    return (isEntryInsideMyDrive(fileData) && !isVolumeEntry(fileData.entry)) ||
+        (isEntryInsideComputers(fileData) &&
+         !isGrandRootEntryInDrives(fileData.entry));
   }
 
   /**
@@ -580,7 +578,7 @@ export class DirectoryTreeContainer {
     }));
 
     // UMA: expand time.
-    const rootType = this.getRootType_(fileData.entry) ?? 'unknown';
+    const rootType = fileData.rootType ?? 'unknown';
     const metricName = `DirectoryTree.Expand.${rootType}`;
     this.recordUmaForItemExpandedOrCollapsed_(fileData);
 
@@ -723,7 +721,7 @@ export class DirectoryTreeContainer {
 
   /** Record UMA for item expanded or collapsed. */
   private recordUmaForItemExpandedOrCollapsed_(fileData: FileData) {
-    const rootType = this.getRootType_(fileData.entry) ?? 'unknown';
+    const rootType = fileData.rootType ?? 'unknown';
     const level = fileData.isRootEntry ? 'TopLevel' : 'NonTopLevel';
     const metricName = `Location.OnEntryExpandedOrCollapsed.${level}`;
     metrics.recordEnum(
@@ -732,7 +730,7 @@ export class DirectoryTreeContainer {
 
   /** Record UMA for tree item selected. */
   private recordUmaForItemSelected_(fileData: FileData) {
-    const rootType = this.getRootType_(fileData.entry) ?? 'unknown';
+    const rootType = fileData.rootType ?? 'unknown';
     const level = fileData.isRootEntry ? 'TopLevel' : 'NonTopLevel';
     const metricName = `Location.OnEntrySelected.${level}`;
     metrics.recordEnum(
@@ -839,13 +837,18 @@ export class DirectoryTreeContainer {
    * is deleted.
    */
   private updateTreeByEntry_(entry: DirectoryEntry) {
+    // TODO(b/271485133): Remove `getDirectory` call here and prevent
+    // convertEntryToFileData() below.
     entry.getDirectory(
         entry.fullPath, {create: false},
         () => {
+          // Can't rely on store data to get entry's rootType, if the entry is
+          // grand root entry's first sub folder, the grand root entry might not
+          // be the in the store yet.
+          const fileData = convertEntryToFileData(entry);
           // If entry exists.
           // e.g. /a/b is deleted while watching /a.
-          if (this.isEntryInsideDrive_(entry) &&
-              isGrandRootEntryInDrives(entry)) {
+          if (isEntryInsideDrive(fileData) && isGrandRootEntryInDrives(entry)) {
             // For grand root related changes, we need to re-read child
             // entries from the fake drive root level, because the grand root
             // might be show/hide based on if they have children or not.
@@ -909,54 +912,5 @@ export class DirectoryTreeContainer {
     }
 
     return false;
-  }
-
-  /**
-   * Gets the RootType of the Volume this entry belongs to.
-   */
-  private getRootType_(entry: Entry|FilesAppEntry|
-                       null): VolumeManagerCommon.RootType|null {
-    let rootType = null;
-
-    if (entry) {
-      const locationInfo = this.volumeManager_.getLocationInfo(entry);
-      rootType = locationInfo ? locationInfo.rootType : null;
-    }
-
-    return rootType;
-  }
-
-  /**
-   * Returns true if the entry is inside any part of Drive 'My Drive'.
-   */
-  private isEntryInsideMyDrive_(entry: Entry|FilesAppEntry|null): boolean {
-    const rootType = this.getRootType_(entry);
-    return !!rootType && rootType === VolumeManagerCommon.RootType.DRIVE;
-  }
-
-  /**
-   * Returns true if the entry is inside any part of Drive 'Computers'.
-   */
-  private isEntryInsideComputers_(entry: Entry|FilesAppEntry|null): boolean {
-    const rootType = this.getRootType_(entry);
-    return !!rootType &&
-        (rootType === VolumeManagerCommon.RootType.COMPUTERS_GRAND_ROOT ||
-         rootType === VolumeManagerCommon.RootType.COMPUTER);
-  }
-
-  /**
-   * Returns true if the entry is inside any part of Drive.
-   */
-  private isEntryInsideDrive_(entry: Entry|FilesAppEntry|null): boolean {
-    const rootType = this.getRootType_(entry);
-    return !!rootType &&
-        (rootType === VolumeManagerCommon.RootType.DRIVE ||
-         rootType === VolumeManagerCommon.RootType.SHARED_DRIVES_GRAND_ROOT ||
-         rootType === VolumeManagerCommon.RootType.SHARED_DRIVE ||
-         rootType === VolumeManagerCommon.RootType.COMPUTERS_GRAND_ROOT ||
-         rootType === VolumeManagerCommon.RootType.COMPUTER ||
-         rootType === VolumeManagerCommon.RootType.DRIVE_OFFLINE ||
-         rootType === VolumeManagerCommon.RootType.DRIVE_SHARED_WITH_ME ||
-         rootType === VolumeManagerCommon.RootType.DRIVE_FAKE_ROOT);
   }
 }
