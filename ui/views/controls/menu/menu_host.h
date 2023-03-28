@@ -22,10 +22,10 @@ class View;
 class Widget;
 
 namespace internal {
-
+#if defined(USE_AURA)
 // This class is internal to views.
 class PreMenuEventDispatchHandler;
-
+#endif  // defined(USE_AURA)
 }  // namespace internal
 
 namespace test {
@@ -119,10 +119,10 @@ class MenuHost : public Widget, public WidgetObserver {
   // If true and capture is lost we don't notify the delegate.
   bool ignore_capture_lost_ = false;
 
-#if !BUILDFLAG(IS_MAC)
+#if defined(USE_AURA)
   // Handles raw touch events at the moment.
   std::unique_ptr<internal::PreMenuEventDispatchHandler> pre_dispatch_handler_;
-#endif
+#endif  // defined(USE_AURA)
 };
 
 }  // namespace views
