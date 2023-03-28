@@ -49,6 +49,11 @@ class CONTENT_EXPORT PrefetchService {
   static std::unique_ptr<PrefetchService> CreateIfPossible(
       BrowserContext* browser_context);
 
+  static PrefetchService* GetFromFrameTreeNodeId(int frame_tree_node_id);
+  static void SetFromFrameTreeNodeIdForTesting(
+      int frame_tree_node_id,
+      std::unique_ptr<PrefetchService> prefetch_service);
+
   explicit PrefetchService(BrowserContext* browser_context);
   virtual ~PrefetchService();
 
@@ -65,10 +70,7 @@ class CONTENT_EXPORT PrefetchService {
     return prefetch_proxy_configurator_.get();
   }
 
-  PrefetchOriginProber* GetPrefetchOriginProber() const {
-    return origin_prober_.get();
-  }
-
+  virtual PrefetchOriginProber* GetPrefetchOriginProber() const;
   virtual void PrefetchUrl(base::WeakPtr<PrefetchContainer> prefetch_container);
 
   // Called when a navigation to `url` that will be served by
@@ -88,7 +90,8 @@ class CONTENT_EXPORT PrefetchService {
 
   // Copies any cookies in the isolated network context associated with
   // |prefetch_container| to the default network context.
-  void CopyIsolatedCookies(base::WeakPtr<PrefetchContainer> prefetch_container);
+  virtual void CopyIsolatedCookies(
+      base::WeakPtr<PrefetchContainer> prefetch_container);
 
   // Removes the prefetch with the given |prefetch_container_key| from
   // |all_prefetches_|.

@@ -299,6 +299,11 @@ PrefetchService* BrowserContextImpl::GetPrefetchService() {
   return prefetch_service_.get();
 }
 
+void BrowserContextImpl::SetPrefetchServiceForTesting(
+    std::unique_ptr<PrefetchService> prefetch_service) {
+  prefetch_service_ = std::move(prefetch_service);
+}
+
 void BrowserContextImpl::WriteIntoTrace(
     perfetto::TracedProto<TraceProto> proto) const {
   proto->set_id(UniqueId());

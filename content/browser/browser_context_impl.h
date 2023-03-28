@@ -96,6 +96,8 @@ class BrowserContextImpl {
   }
 
   PrefetchService* GetPrefetchService();
+  void SetPrefetchServiceForTesting(
+      std::unique_ptr<PrefetchService> prefetch_service);
 
   using TraceProto = perfetto::protos::pbzero::ChromeBrowserContext;
   // Write a representation of this object into a trace.

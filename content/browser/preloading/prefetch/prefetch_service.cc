@@ -15,6 +15,7 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/ranges/algorithm.h"
 #include "base/timer/timer.h"
+#include "content/browser/browser_context_impl.h"
 #include "content/browser/preloading/prefetch/prefetch_document_manager.h"
 #include "content/browser/preloading/prefetch/prefetch_features.h"
 #include "content/browser/preloading/prefetch/prefetch_network_context.h"
@@ -222,6 +223,15 @@ bool CheckAndSetPrefetchHoldbackStatus(
   return false;
 }
 
+BrowserContext* BrowserContextFromFrameTreeNodeId(int frame_tree_node_id) {
+  WebContents* web_content =
+      WebContents::FromFrameTreeNodeId(frame_tree_node_id);
+  if (!web_content) {
+    return nullptr;
+  }
+  return web_content->GetBrowserContext();
+}
+
 }  // namespace
 
 // static
@@ -231,6 +241,27 @@ std::unique_ptr<PrefetchService> PrefetchService::CreateIfPossible(
     return nullptr;
 
   return std::make_unique<PrefetchService>(browser_context);
+}
+
+// static
+PrefetchService* PrefetchService::GetFromFrameTreeNodeId(
+    int frame_tree_node_id) {
+  BrowserContext* browser_context =
+      BrowserContextFromFrameTreeNodeId(frame_tree_node_id);
+  if (!browser_context) {
+    return nullptr;
+  }
+  return BrowserContextImpl::From(browser_context)->GetPrefetchService();
+}
+
+void PrefetchService::SetFromFrameTreeNodeIdForTesting(
+    int frame_tree_node_id,
+    std::unique_ptr<PrefetchService> prefetch_service) {
+  BrowserContext* browser_context =
+      BrowserContextFromFrameTreeNodeId(frame_tree_node_id);
+  CHECK(browser_context);
+  return BrowserContextImpl::From(browser_context)
+      ->SetPrefetchServiceForTesting(std::move(prefetch_service));  // IN-TEST
 }
 
 PrefetchService::PrefetchService(BrowserContext* browser_context)
@@ -252,6 +283,10 @@ PrefetchService::PrefetchService(BrowserContext* browser_context)
                         : GURL("")))) {}
 
 PrefetchService::~PrefetchService() = default;
+
+PrefetchOriginProber* PrefetchService::GetPrefetchOriginProber() const {
+  return origin_prober_.get();
+}
 
 void PrefetchService::PrefetchUrl(
     base::WeakPtr<PrefetchContainer> prefetch_container) {
