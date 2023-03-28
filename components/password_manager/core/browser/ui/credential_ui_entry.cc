@@ -203,7 +203,7 @@ GURL CredentialUIEntry::GetURL() const {
 std::vector<CredentialUIEntry::DomainInfo>
 CredentialUIEntry::GetAffiliatedDomains() const {
   std::vector<CredentialUIEntry::DomainInfo> domains;
-  std::set<std::string> unique_domain;
+  std::set<std::string> unique_urls;
   for (const auto& facet : facets) {
     CredentialUIEntry::DomainInfo domain;
     domain.signon_realm = facet.signon_realm;
@@ -223,7 +223,7 @@ CredentialUIEntry::GetAffiliatedDomains() const {
       domain.name = GetOrigin(url::Origin::Create(facet.url));
       domain.url = facet.url;
     }
-    if (unique_domain.insert(domain.name).second) {
+    if (unique_urls.insert(domain.url.spec()).second) {
       domains.push_back(std::move(domain));
     }
   }
