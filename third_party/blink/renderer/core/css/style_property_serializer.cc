@@ -51,6 +51,29 @@
 
 namespace blink {
 
+namespace {
+
+template <typename T>
+T ConvertIdentifierTo(const CSSValue* value, T initial_value) {
+  if (const auto* ident = DynamicTo<CSSIdentifierValue>(value)) {
+    return ident->ConvertTo<T>();
+  }
+  DCHECK(value->IsInitialValue());
+  return initial_value;
+}
+
+inline WhiteSpaceCollapse ToWhiteSpaceCollapse(const CSSValue* value) {
+  return ConvertIdentifierTo<WhiteSpaceCollapse>(
+      value, ComputedStyleInitialValues::InitialWhiteSpaceCollapse());
+}
+
+inline TextWrap ToTextWrap(const CSSValue* value) {
+  return ConvertIdentifierTo<TextWrap>(
+      value, ComputedStyleInitialValues::InitialTextWrap());
+}
+
+}  // namespace
+
 StylePropertySerializer::CSSPropertyValueSetForSerializer::
     CSSPropertyValueSetForSerializer(const CSSPropertyValueSet& properties)
     : property_set_(&properties),
@@ -379,6 +402,7 @@ static bool AllowInitialInShorthand(CSSPropertyID property_id) {
     case CSSPropertyID::kTextEmphasis:
     case CSSPropertyID::kWebkitMask:
     case CSSPropertyID::kWebkitTextStroke:
+    case CSSPropertyID::kAlternativeWhiteSpace:
       return true;
     default:
       return false;
@@ -660,6 +684,8 @@ String StylePropertySerializer::SerializeShorthand(
     }
     case CSSPropertyID::kViewTimeline:
       return ViewTimelineValue();
+    case CSSPropertyID::kAlternativeWhiteSpace:
+      return WhiteSpaceValue();
     case CSSPropertyID::kGridColumnGap:
     case CSSPropertyID::kGridGap:
     case CSSPropertyID::kGridRowGap:
@@ -2124,6 +2150,43 @@ bool StylePropertySerializer::IsValidToggleShorthand(
     }
   }
   return true;
+}
+
+String StylePropertySerializer::WhiteSpaceValue() const {
+  DCHECK(RuntimeEnabledFeatures::CSSWhiteSpaceShorthandEnabled());
+
+  const CSSValue* collapse_value =
+      property_set_.GetPropertyCSSValue(GetCSSPropertyWhiteSpaceCollapse());
+  const CSSValue* wrap_value =
+      property_set_.GetPropertyCSSValue(GetCSSPropertyTextWrap());
+  if (!collapse_value || !wrap_value) {
+    // If any longhands are missing, don't serialize as a shorthand.
+    return g_empty_string;
+  }
+
+  // Check if longhands are one of pre-defined keywords of `white-space`.
+  const WhiteSpaceCollapse collapse = ToWhiteSpaceCollapse(collapse_value);
+  const TextWrap wrap = ToTextWrap(wrap_value);
+  const EWhiteSpace whitespace = ToWhiteSpace(collapse, wrap);
+  if (IsValidWhiteSpace(whitespace)) {
+    return getValueName(PlatformEnumToCSSValueID(whitespace));
+  }
+
+  // Otherwise build a multi-value list.
+  StringBuilder result;
+  if (collapse != ComputedStyleInitialValues::InitialWhiteSpaceCollapse()) {
+    result.Append(getValueName(PlatformEnumToCSSValueID(collapse)));
+  }
+  if (wrap != ComputedStyleInitialValues::InitialTextWrap()) {
+    if (!result.empty()) {
+      result.Append(kSpaceCharacter);
+    }
+    result.Append(getValueName(PlatformEnumToCSSValueID(wrap)));
+  }
+  // When all longhands are initial values, it should be `normal`, covered by
+  // `IsValidWhiteSpace()` above.
+  DCHECK(!result.empty());
+  return result.ToString();
 }
 
 }  // namespace blink

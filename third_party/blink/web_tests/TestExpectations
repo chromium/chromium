@@ -1382,6 +1382,11 @@ crbug.com/1219041 external/wpt/css/css-text/white-space/text-space-collapse-pres
 crbug.com/1219041 external/wpt/css/css-text/white-space/text-space-collapse-discard-001.xht [ Failure ]
 crbug.com/1219041 external/wpt/css/css-text/white-space/text-space-trim-trim-inner-001.xht [ Failure ]
 
+# Turning `white-space` to a shorthand, can be enabled by `CSSWhiteSpaceShorthand`.
+crbug.com/1417543 external/wpt/css/css-text/parsing/white-space-collapse-computed.html [ Failure ]
+crbug.com/1417543 external/wpt/css/css-text/parsing/white-space-collapse-valid.html [ Failure ]
+crbug.com/1417543 external/wpt/css/css-text/parsing/white-space-shorthand.html [ Failure ]
+
 # LayoutNG ref-tests that need to be updated (cannot be rebaselined).
 crbug.com/591099 [ Win ] virtual/text-antialias/ellipsis-with-self-painting-layer.html [ Failure ]
 crbug.com/1098801 virtual/text-antialias/whitespace/whitespace-in-pre.html [ Failure ]

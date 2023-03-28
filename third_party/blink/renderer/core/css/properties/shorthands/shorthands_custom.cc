@@ -3764,5 +3764,73 @@ const CSSValue* Toggle::CSSValueFromComputedStyleInternal(
   return toggle_root;
 }
 
+bool AlternativeWhiteSpace::ParseShorthand(
+    bool important,
+    CSSParserTokenRange& range,
+    const CSSParserContext& context,
+    const CSSParserLocalContext&,
+    HeapVector<CSSPropertyValue, 64>& properties) const {
+  const CSSParserTokenRange original_range = range;
+
+  // Try to parse as a pre-defined keyword. The `white-space` has pre-defined
+  // keywords in addition to the multi-values shorthand, for the backward
+  // compatibility with when it was a longhand.
+  if (const CSSIdentifierValue* value = css_parsing_utils::ConsumeIdent<
+          CSSValueID::kBreakSpaces, CSSValueID::kNormal, CSSValueID::kNowrap,
+          CSSValueID::kPre, CSSValueID::kPreLine, CSSValueID::kPreWrap>(
+          range)) {
+    // Parse as a pre-defined keyword only if it is at the end. Some keywords
+    // can be both a pre-defined keyword or a longhand value.
+    if (range.AtEnd()) {
+      const EWhiteSpace whitespace =
+          CssValueIDToPlatformEnum<EWhiteSpace>(value->GetValueID());
+      DCHECK(IsValidWhiteSpace(whitespace));
+      AddProperty(
+          CSSPropertyID::kWhiteSpaceCollapse, CSSPropertyID::kWhiteSpace,
+          *CSSIdentifierValue::Create(ToWhiteSpaceCollapse(whitespace)),
+          important, css_parsing_utils::IsImplicitProperty::kNotImplicit,
+          properties);
+      AddProperty(
+          CSSPropertyID::kTextWrap, CSSPropertyID::kWhiteSpace,
+          *CSSIdentifierValue::Create(ToTextWrap(whitespace)), important,
+          css_parsing_utils::IsImplicitProperty::kNotImplicit, properties);
+      return true;
+    }
+
+    // If `range` is not at end, the keyword is for longhands. Restore `range`.
+    range = original_range;
+  }
+
+  // Consume multi-value syntax if the first identifier is not pre-defined.
+  return css_parsing_utils::ConsumeShorthandGreedilyViaLonghands(
+      alternativeWhiteSpaceShorthand(), important, context, range, properties);
+}
+
+const CSSValue* AlternativeWhiteSpace::CSSValueFromComputedStyleInternal(
+    const ComputedStyle& style,
+    const LayoutObject* layout_object,
+    bool allow_visited_style) const {
+  const EWhiteSpace whitespace = style.WhiteSpace();
+  if (IsValidWhiteSpace(whitespace)) {
+    const CSSValueID value = PlatformEnumToCSSValueID(whitespace);
+    DCHECK_NE(value, CSSValueID::kNone);
+    return CSSIdentifierValue::Create(value);
+  }
+
+  CSSValueList* list = CSSValueList::CreateSpaceSeparated();
+  const WhiteSpaceCollapse collapse = style.GetWhiteSpaceCollapse();
+  if (collapse != ComputedStyleInitialValues::InitialWhiteSpaceCollapse()) {
+    list->Append(*CSSIdentifierValue::Create(collapse));
+  }
+  const TextWrap wrap = style.GetTextWrap();
+  if (wrap != ComputedStyleInitialValues::InitialTextWrap()) {
+    list->Append(*CSSIdentifierValue::Create(wrap));
+  }
+  // When all longhands are initial values, it should be `normal`, covered by
+  // `IsValidWhiteSpace()` above.
+  DCHECK(list->length());
+  return list;
+}
+
 }  // namespace css_shorthand
 }  // namespace blink

@@ -837,4 +837,5 @@ blink_core_tests_css = [
   "threaded/filter_operation_resolver_threaded_test.cc",
   "threaded/font_object_threaded_test.cc",
   "threaded/text_renderer_threaded_test.cc",
+  "white_space_test.cc",
 ]

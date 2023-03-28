@@ -1161,7 +1161,6 @@
     {
       name: "CSSWhiteSpaceShorthand",
       depends_on: ["CSSTextWrap"],
-      status: "test",
     },
     {
       name: "Database",

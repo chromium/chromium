@@ -409,10 +409,46 @@ inline CSSValueID PlatformEnumToCSSValueID(EWhiteSpace v) {
 }
 
 template <>
+inline WhiteSpaceCollapse CssValueIDToPlatformEnum(CSSValueID v) {
+  switch (v) {
+    case CSSValueID::kCollapse:
+      return WhiteSpaceCollapse::kCollapse;
+    case CSSValueID::kPreserve:
+      return WhiteSpaceCollapse::kPreserve;
+    case CSSValueID::kPreserveBreaks:
+      return WhiteSpaceCollapse::kPreserveBreaks;
+    case CSSValueID::kBreakSpaces:
+      return WhiteSpaceCollapse::kBreakSpaces;
+    default:
+      NOTREACHED();
+      return WhiteSpaceCollapse::kCollapse;
+  }
+}
+
+template <>
+inline CSSValueID PlatformEnumToCSSValueID(WhiteSpaceCollapse v) {
+  switch (v) {
+    case WhiteSpaceCollapse::kCollapse:
+      return CSSValueID::kCollapse;
+    case WhiteSpaceCollapse::kPreserveBreaks:
+      return CSSValueID::kPreserveBreaks;
+    case WhiteSpaceCollapse::kPreserve:
+      return CSSValueID::kPreserve;
+    case WhiteSpaceCollapse::kBreakSpaces:
+      return CSSValueID::kBreakSpaces;
+  }
+  NOTREACHED();
+  return CSSValueID::kNone;
+}
+
+template <>
 inline TextWrap CssValueIDToPlatformEnum(CSSValueID v) {
   switch (v) {
     case CSSValueID::kWrap:
       return TextWrap::kWrap;
+    case CSSValueID::kNowrap:
+      DCHECK(RuntimeEnabledFeatures::CSSWhiteSpaceShorthandEnabled());
+      return TextWrap::kNoWrap;
     case CSSValueID::kBalance:
       return TextWrap::kBalance;
     default:
@@ -426,12 +462,20 @@ inline CSSValueID PlatformEnumToCSSValueID(TextWrap v) {
   switch (v) {
     case TextWrap::kWrap:
       return CSSValueID::kWrap;
+    case TextWrap::kNoWrap:
+      if (!RuntimeEnabledFeatures::CSSWhiteSpaceShorthandEnabled()) {
+        // Note this is not right, but a compromise until `white-space` becomes
+        // a shorthand. Simulate the behavior when it's off.
+        return CSSValueID::kWrap;
+      }
+      return CSSValueID::kNowrap;
     case TextWrap::kBalance:
       return CSSValueID::kBalance;
   }
   NOTREACHED();
   return CSSValueID::kNone;
 }
+
 }  // namespace blink
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_CORE_CSS_CSS_VALUE_ID_MAPPINGS_H_

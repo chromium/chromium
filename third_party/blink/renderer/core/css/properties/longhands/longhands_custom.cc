@@ -9727,42 +9727,20 @@ const CSSValue* WebkitWritingMode::CSSValueFromComputedStyleInternal(
   return CSSIdentifierValue::Create(style.GetWritingMode());
 }
 
-void WhiteSpace::ApplyInitial(StyleResolverState& state) const {
-  ComputedStyleBuilder& builder = state.StyleBuilder();
-  builder.SetWhiteSpace(ComputedStyleInitialValues::InitialWhiteSpace());
-  // TODO(crbug.com/1417543): `white-space` will become a shorthand in the
-  // future - in order to mitigate the forward compat risk, apply to the
-  // `text-wrap` longhand as well.
-  DCHECK(GetCSSPropertyWhiteSpace().IsLonghand());
-  builder.SetTextWrap(ComputedStyleInitialValues::InitialTextWrap());
-}
-
-void WhiteSpace::ApplyInherit(StyleResolverState& state) const {
-  ComputedStyleBuilder& builder = state.StyleBuilder();
-  builder.SetWhiteSpace(state.ParentStyle()->WhiteSpace());
-  // TODO(crbug.com/1417543): See `WhiteSpace::ApplyInitial`.
-  // For now, any `white-space` values should set `text-wrap: wrap`.
-  DCHECK(GetCSSPropertyWhiteSpace().IsLonghand());
-  builder.SetTextWrap(ComputedStyleInitialValues::InitialTextWrap());
-}
-
-void WhiteSpace::ApplyValue(StyleResolverState& state,
-                            const CSSValue& value,
-                            ValueMode) const {
-  ComputedStyleBuilder& builder = state.StyleBuilder();
-  builder.SetWhiteSpace(
-      To<CSSIdentifierValue>(value).ConvertTo<blink::EWhiteSpace>());
-  // TODO(crbug.com/1417543): See `WhiteSpace::ApplyInitial`.
-  // For now, any `white-space` values should set `text-wrap: wrap`.
-  DCHECK(GetCSSPropertyWhiteSpace().IsLonghand());
-  builder.SetTextWrap(ComputedStyleInitialValues::InitialTextWrap());
-}
-
 const CSSValue* WhiteSpace::CSSValueFromComputedStyleInternal(
     const ComputedStyle& style,
     const LayoutObject*,
     bool allow_visited_style) const {
+  DCHECK(!RuntimeEnabledFeatures::CSSWhiteSpaceShorthandEnabled());
   return CSSIdentifierValue::Create(style.WhiteSpace());
+}
+
+// Longhands for `white-space`: `white-space-collapse` and `text-wrap`.
+const CSSValue* WhiteSpaceCollapse::CSSValueFromComputedStyleInternal(
+    const ComputedStyle& style,
+    const LayoutObject*,
+    bool allow_visited_style) const {
+  return CSSIdentifierValue::Create(style.GetWhiteSpaceCollapse());
 }
 
 const CSSValue* TextWrap::CSSValueFromComputedStyleInternal(

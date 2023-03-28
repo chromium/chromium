@@ -45,15 +45,18 @@
     },
     {
         name: "DiffNeedsReshapeAndFullLayoutAndPaintInvalidation",
-        fields_to_diff: ["font"],
+        fields_to_diff: [
+            "font",
+            "white-space-collapse",
+        ],
         methods_to_diff: [
           {
             method: "TextTransform()",
             field_dependencies: ["text-transform"]
           },
           {
-            method: "WhiteSpace()",
-            field_dependencies: ["white-space"]
+            method: "ShouldWrapLine()",
+            field_dependencies: ["text-wrap"]
           },
           {
             method: "Direction()",

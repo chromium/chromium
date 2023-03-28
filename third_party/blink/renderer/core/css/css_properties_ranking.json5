@@ -46,6 +46,8 @@
         "padding-right",
         "transform",
         "white-space",
+        "white-space-collapse",
+        "text-wrap",
         "padding-bottom",
         "min-height",
         "background-image",

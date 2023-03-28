@@ -2233,23 +2233,30 @@ class ComputedStyle : public ComputedStyleBase,
   // `white-space` property may become a shorthand in future.
   // https://drafts.csswg.org/css-text-4/#white-space-property
   static bool DeprecatedAutoWrap(EWhiteSpace ws) {
-    return blink::ShouldWrapLine(ws);
+    return blink::ShouldWrapLine(ToTextWrap(ws));
   }
   static bool DeprecatedPreserveNewline(EWhiteSpace ws) {
-    return ShouldPreserveBreaks(ws);
+    return ShouldPreserveBreaks(ToWhiteSpaceCollapse(ws));
   }
   static bool DeprecatedCollapseWhiteSpace(EWhiteSpace ws) {
-    return blink::ShouldCollapseSpacesAndTabs(ws);
+    return blink::ShouldCollapseSpacesAndTabs(ToWhiteSpaceCollapse(ws));
   }
 
+  // This function may return values not defined as the enum values. See
+  // `EWhiteSpace`. Prefer using semantic functions below.
+  EWhiteSpace WhiteSpace() const {
+    return ToWhiteSpace(GetWhiteSpaceCollapse(), GetTextWrap());
+  }
+
+  // Semantic functions for the `white-space` property and its longhands.
   bool ShouldPreserveSpacesAndTabs() const {
-    return blink::ShouldPreserveSpacesAndTabs(WhiteSpace());
+    return blink::ShouldPreserveSpacesAndTabs(GetWhiteSpaceCollapse());
   }
   bool PreserveNewline() const {
-    return DeprecatedPreserveNewline(WhiteSpace());
+    return blink::ShouldPreserveBreaks(GetWhiteSpaceCollapse());
   }
   bool CollapseWhiteSpace() const {
-    return DeprecatedCollapseWhiteSpace(WhiteSpace());
+    return blink::ShouldCollapseSpacesAndTabs(GetWhiteSpaceCollapse());
   }
   bool IsCollapsibleWhiteSpace(UChar c) const {
     switch (c) {
@@ -2262,9 +2269,9 @@ class ComputedStyle : public ComputedStyleBase,
     return false;
   }
 
-  bool ShouldWrapLine() const { return DeprecatedAutoWrap(WhiteSpace()); }
+  bool ShouldWrapLine() const { return blink::ShouldWrapLine(GetTextWrap()); }
   bool ShouldBreakSpaces() const {
-    return blink::ShouldBreakSpaces(WhiteSpace());
+    return blink::ShouldBreakSpaces(GetWhiteSpaceCollapse());
   }
   bool BreakOnlyAfterWhiteSpace() const {
     return (ShouldPreserveSpacesAndTabs() && ShouldWrapLine()) ||
@@ -3433,6 +3440,12 @@ class ComputedStyleBuilder final : public ComputedStyleBuilderBase {
   }
   CORE_EXPORT void SetInitialData(scoped_refptr<StyleInitialData> data) {
     MutableInitialDataInternal() = std::move(data);
+  }
+
+  EWhiteSpace WhiteSpace() const { return style_->WhiteSpace(); }
+  void SetWhiteSpace(EWhiteSpace whitespace) {
+    SetWhiteSpaceCollapse(ToWhiteSpaceCollapse(whitespace));
+    SetTextWrap(ToTextWrap(whitespace));
   }
 
   // WritingMode

@@ -5894,24 +5894,51 @@
       inherited: true,
       // This property is "keyword" but use "primitive" to use `EWhiteSpace` defined manually.
       field_template: "primitive",
-      field_size: 4,  // Ensure this is in sync with `kEWhiteSpaceBits`.
+      // The values are stored in `white-space-collapse` and `text-wrap` by
+      // `computed_style_custom_functions` even when `CSSWhiteSpaceShorthand`
+      // is off, but give 1 bit to it because `field_size` can't be zero.
+      field_size: 1,
       include_paths: ["third_party/blink/renderer/core/css/white_space.h"],
       keywords: [
         "normal", "pre", "pre-wrap", "pre-line", "nowrap", "break-spaces"
       ],
-      style_builder_custom_functions: ["initial", "inherit", "value"],
+      computed_style_custom_functions: ["getter", "setter", "resetter"],
       typedom_types: ["Keyword"],
       default_value: "EWhiteSpace::kNormal",
       valid_for_cue: true,
       valid_for_marker: true,
     },
     {
+      name: "-alternative-white-space",
+      alternative_of: "white-space",
+      longhands: [
+        "white-space-collapse", "text-wrap"
+      ],
+      property_methods: ["ParseShorthand", "CSSValueFromComputedStyleInternal"],
+      runtime_flag: "CSSWhiteSpaceShorthand",
+    },
+    {
+      name: "white-space-collapse",
+      property_methods: ["CSSValueFromComputedStyleInternal"],
+      inherited: true,
+      field_template: "primitive",
+      field_size: 2,  // Ensure this is in sync with `kWhiteSpaceCollapseBits`.
+      type_name: "WhiteSpaceCollapse",
+      keywords: ["collapse", "preserve", "preserve-breaks", "break-spaces"],
+      default_value: "WhiteSpaceCollapse::kCollapse",
+      include_paths: ["third_party/blink/renderer/core/css/white_space.h"],
+      typedom_types: ["Keyword"],
+      valid_for_cue: true,
+      valid_for_marker: true,
+      runtime_flag: "CSSWhiteSpaceShorthand",
+    },
+    {
       name: "text-wrap",
       property_methods: ["CSSValueFromComputedStyleInternal"],
       inherited: true,
       field_template: "primitive",
-      field_size: 1,  // Ensure this is in sync with `kTextWrapBits`.
-      keywords: ["wrap", "balance"],
+      field_size: 2,  // Ensure this is in sync with `kTextWrapBits`.
+      keywords: ["wrap", "nowrap", "balance"],
       type_name: "TextWrap",
       default_value: "TextWrap::kWrap",
       include_paths: ["third_party/blink/renderer/core/css/white_space.h"],

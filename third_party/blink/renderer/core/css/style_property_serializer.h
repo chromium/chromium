@@ -78,6 +78,7 @@ class CORE_EXPORT StylePropertySerializer {
   String TextDecorationValue() const;
   String BackgroundRepeatPropertyValue() const;
   String ContainIntrinsicSizeValue() const;
+  String WhiteSpaceValue() const;
   String GetPropertyText(const CSSPropertyName&,
                          const String& value,
                          bool is_important,
