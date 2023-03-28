@@ -5,8 +5,8 @@
 #ifndef UI_OZONE_PLATFORM_FLATLAND_FLATLAND_WINDOW_H_
 #define UI_OZONE_PLATFORM_FLATLAND_FLATLAND_WINDOW_H_
 
+#include <fidl/fuchsia.ui.input3/cpp/fidl.h>
 #include <fuchsia/ui/composition/cpp/fidl.h>
-#include <fuchsia/ui/input3/cpp/fidl.h>
 #include <fuchsia/ui/views/cpp/fidl.h>
 #include <lib/ui/scenic/cpp/view_ref_pair.h>
 
@@ -15,6 +15,7 @@
 #include <vector>
 
 #include "base/component_export.h"
+#include "base/fuchsia/fidl_event_handler.h"
 #include "base/functional/callback.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/ime/fuchsia/keyboard_client.h"
@@ -121,7 +122,9 @@ class COMPONENT_EXPORT(OZONE) FlatlandWindow : public PlatformWindow,
   ScenicWindowDelegate* const scenic_window_delegate_;
   gfx::AcceleratedWidget const window_id_;
 
-  fuchsia::ui::input3::KeyboardPtr keyboard_service_;
+  fidl::Client<fuchsia_ui_input3::Keyboard> keyboard_fidl_client_;
+  base::FidlErrorEventLogger<fuchsia_ui_input3::Keyboard>
+      fidl_error_event_logger_;
   std::unique_ptr<KeyboardClient> keyboard_client_;
   std::unique_ptr<PointerEventsHandler> pointer_handler_;
 

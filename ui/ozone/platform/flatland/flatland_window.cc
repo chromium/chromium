@@ -5,7 +5,9 @@
 #include "ui/ozone/platform/flatland/flatland_window.h"
 
 #include <fidl/fuchsia.ui.pointer/cpp/hlcpp_conversion.h>
+#include <fidl/fuchsia.ui.views/cpp/hlcpp_conversion.h>
 #include <fuchsia/sys/cpp/fidl.h>
+#include <lib/async/default.h>
 #include <lib/sys/cpp/component_context.h>
 #include <lib/ui/scenic/cpp/view_identity.h>
 
@@ -17,8 +19,8 @@
 #include <vector>
 
 #include "base/check_op.h"
+#include "base/fuchsia/fuchsia_component_connect.h"
 #include "base/fuchsia/fuchsia_logging.h"
-#include "base/fuchsia/process_context.h"
 #include "base/functional/bind.h"
 #include "base/memory/scoped_refptr.h"
 #include "ui/base/cursor/platform_cursor.h"
@@ -121,14 +123,15 @@ FlatlandWindow::FlatlandWindow(FlatlandWindowManager* window_manager,
 
   if (properties.enable_keyboard) {
     is_virtual_keyboard_enabled_ = properties.enable_virtual_keyboard;
-    keyboard_service_ = base::ComponentContextForProcess()
-                            ->svc()
-                            ->Connect<fuchsia::ui::input3::Keyboard>();
-    keyboard_service_.set_error_handler([](zx_status_t status) {
-      ZX_LOG(ERROR, status) << "input3.Keyboard service disconnected.";
-    });
-    keyboard_client_ = std::make_unique<KeyboardClient>(keyboard_service_.get(),
-                                                        CloneViewRef(), this);
+    auto keyboard_client_end =
+        base::fuchsia_component::Connect<fuchsia_ui_input3::Keyboard>();
+    CHECK(keyboard_client_end.is_ok())
+        << base::FidlConnectionErrorMessage(keyboard_client_end);
+    keyboard_fidl_client_.Bind(std::move(keyboard_client_end.value()),
+                               async_get_default_dispatcher(),
+                               &fidl_error_event_logger_);
+    keyboard_client_ = std::make_unique<KeyboardClient>(
+        keyboard_fidl_client_, fidl::HLCPPToNatural(CloneViewRef()), this);
   } else {
     DCHECK(!properties.enable_virtual_keyboard);
   }

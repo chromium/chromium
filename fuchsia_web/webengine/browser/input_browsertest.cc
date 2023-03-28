@@ -2,9 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include <fuchsia/input/virtualkeyboard/cpp/fidl.h>
-#include <fuchsia/ui/input3/cpp/fidl.h>
-#include <fuchsia/ui/input3/cpp/fidl_test_base.h>
+#include <fidl/fuchsia.input.virtualkeyboard/cpp/wire_messaging.h>
+#include <fidl/fuchsia.ui.input3/cpp/fidl.h>
+#include <lib/async/default.h>
+
 #include <memory>
 
 #include "base/fuchsia/scoped_service_binding.h"
@@ -23,11 +24,9 @@
 #include "fuchsia_web/webengine/test/web_engine_browser_test.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-using fuchsia::input::Key;
-using fuchsia::ui::input3::KeyEvent;
-using fuchsia::ui::input3::KeyEventType;
-using fuchsia::ui::input3::KeyMeaning;
-using fuchsia::ui::input3::NonPrintableKey;
+using fuchsia_input::Key;
+using fuchsia_ui_input3::KeyEvent;
+using fuchsia_ui_input3::KeyEventType;
 
 namespace {
 
@@ -39,42 +38,41 @@ const char kKeyDicts[] = "keyDicts";
 // Returns a KeyEvent with |key_meaning| set based on the supplied codepoint,
 // the |key| field left not set.
 KeyEvent CreateCharacterKeyEvent(uint32_t codepoint, KeyEventType event_type) {
-  KeyEvent key_event;
-
-  fuchsia::ui::input3::KeyMeaning meaning;
-  meaning.set_codepoint(codepoint);
-  key_event.set_key_meaning(std::move(meaning));
-  key_event.set_type(event_type);
-  key_event.set_timestamp(base::TimeTicks::Now().ToZxTime());
-  return key_event;
+  return {{
+      .timestamp = base::TimeTicks::Now().ToZxTime(),
+      .type = event_type,
+      .key_meaning = fuchsia_ui_input3::KeyMeaning::WithCodepoint(codepoint),
+  }};
 }
 
 struct KeyEventOptions {
   bool repeat;
-  std::vector<fuchsia::ui::input3::Modifiers> modifiers;
+  std::vector<fuchsia_ui_input3::Modifiers> modifiers;
 };
 
 // Returns a KeyEvent with both |key| and |key_meaning| set.
 KeyEvent CreateKeyEvent(Key key,
-                        KeyMeaning key_meaning,
+                        fuchsia_ui_input3::KeyMeaning key_meaning,
                         KeyEventType event_type,
                         KeyEventOptions options = {}) {
-  KeyEvent key_event;
-  key_event.set_timestamp(base::TimeTicks::Now().ToZxTime());
-  key_event.set_type(event_type);
-  key_event.set_key(key);
-  key_event.set_key_meaning(std::move(key_meaning));
+  KeyEvent key_event{{
+      .timestamp = base::TimeTicks::Now().ToZxTime(),
+      .type = event_type,
+      .key = key,
+      .key_meaning = std::move(key_meaning),
+  }};
+
   if (options.repeat) {
     // Chromium doesn't look at the value of this, it just check if the field is
     // present.
-    key_event.set_repeat_sequence(1);
+    key_event.repeat_sequence(1);
   }
   if (!options.modifiers.empty()) {
-    fuchsia::ui::input3::Modifiers modifiers;
+    fuchsia_ui_input3::Modifiers modifiers;
     for (const auto modifier : options.modifiers) {
       modifiers |= modifier;
     }
-    key_event.set_modifiers(modifiers);
+    key_event.modifiers(modifiers);
   }
   return key_event;
 }
@@ -82,37 +80,39 @@ KeyEvent CreateKeyEvent(Key key,
                         uint32_t codepoint,
                         KeyEventType event_type,
                         KeyEventOptions options = {}) {
-  return CreateKeyEvent(key, KeyMeaning::WithCodepoint(std::move(codepoint)),
-                        event_type, options);
+  return CreateKeyEvent(
+      key, fuchsia_ui_input3::KeyMeaning::WithCodepoint(std::move(codepoint)),
+      event_type, options);
 }
 KeyEvent CreateKeyEvent(Key key,
-                        NonPrintableKey non_printable_key,
+                        fuchsia_ui_input3::NonPrintableKey non_printable_key,
                         KeyEventType event_type,
                         KeyEventOptions options = {}) {
-  return CreateKeyEvent(
-      key, KeyMeaning::WithNonPrintableKey(std::move(non_printable_key)),
-      event_type, options);
+  return CreateKeyEvent(key,
+                        fuchsia_ui_input3::KeyMeaning::WithNonPrintableKey(
+                            std::move(non_printable_key)),
+                        event_type, options);
 }
 
 base::Value::List FuchsiaModifiersToWebModifiers(
-    const std::vector<fuchsia::ui::input3::Modifiers> fuchsia_modifiers) {
+    const std::vector<fuchsia_ui_input3::Modifiers> fuchsia_modifiers) {
   base::Value::List web_modifiers;
   for (const auto modifier : fuchsia_modifiers) {
-    if (modifier == fuchsia::ui::input3::Modifiers::ALT) {
+    if (modifier == fuchsia_ui_input3::Modifiers::kAlt) {
       web_modifiers.Append("Alt");
-    } else if (modifier == fuchsia::ui::input3::Modifiers::ALT_GRAPH) {
+    } else if (modifier == fuchsia_ui_input3::Modifiers::kAltGraph) {
       web_modifiers.Append("AltGraph");
-    } else if (modifier == fuchsia::ui::input3::Modifiers::CAPS_LOCK) {
+    } else if (modifier == fuchsia_ui_input3::Modifiers::kCapsLock) {
       web_modifiers.Append("CapsLock");
-    } else if (modifier == fuchsia::ui::input3::Modifiers::CTRL) {
+    } else if (modifier == fuchsia_ui_input3::Modifiers::kCtrl) {
       web_modifiers.Append("Control");
-    } else if (modifier == fuchsia::ui::input3::Modifiers::META) {
+    } else if (modifier == fuchsia_ui_input3::Modifiers::kMeta) {
       web_modifiers.Append("Meta");
-    } else if (modifier == fuchsia::ui::input3::Modifiers::NUM_LOCK) {
+    } else if (modifier == fuchsia_ui_input3::Modifiers::kNumLock) {
       web_modifiers.Append("NumLock");
-    } else if (modifier == fuchsia::ui::input3::Modifiers::SCROLL_LOCK) {
+    } else if (modifier == fuchsia_ui_input3::Modifiers::kScrollLock) {
       web_modifiers.Append("ScrollLock");
-    } else if (modifier == fuchsia::ui::input3::Modifiers::SHIFT) {
+    } else if (modifier == fuchsia_ui_input3::Modifiers::kShift) {
       web_modifiers.Append("Shift");
     } else {
       NOTREACHED() << static_cast<uint64_t>(modifier) << " has no web mapping";
@@ -134,7 +134,7 @@ base::Value ExpectedKeyValue(base::StringPiece code,
   return base::Value(std::move(expected));
 }
 
-class FakeKeyboard : public fuchsia::ui::input3::testing::Keyboard_TestBase {
+class FakeKeyboard : public fidl::Server<fuchsia_ui_input3::Keyboard> {
  public:
   explicit FakeKeyboard(sys::OutgoingDirectory* additional_services)
       : binding_(additional_services, this) {}
@@ -143,40 +143,37 @@ class FakeKeyboard : public fuchsia::ui::input3::testing::Keyboard_TestBase {
   FakeKeyboard(const FakeKeyboard&) = delete;
   FakeKeyboard& operator=(const FakeKeyboard&) = delete;
 
-  base::ScopedServiceBinding<fuchsia::ui::input3::Keyboard>* binding() {
+  base::ScopedNaturalServiceBinding<fuchsia_ui_input3::Keyboard>* binding() {
     return &binding_;
   }
 
   // Sends |key_event| to |listener_|;
   void SendKeyEvent(KeyEvent key_event) {
-    listener_->OnKeyEvent(std::move(key_event),
-                          [num_sent_events = num_sent_events_,
-                           this](fuchsia::ui::input3::KeyEventStatus status) {
-                            ASSERT_EQ(num_acked_events_, num_sent_events)
-                                << "Key events are acked out of order";
-                            num_acked_events_++;
-                          });
+    listener_->OnKeyEvent(std::move(key_event))
+        .ThenExactlyOnce(
+            [num_sent_events = num_sent_events_,
+             this](const fidl::Result<
+                   fuchsia_ui_input3::KeyboardListener::OnKeyEvent>& result) {
+              ASSERT_EQ(num_acked_events_, num_sent_events)
+                  << "Key events are acked out of order";
+              num_acked_events_++;
+            });
     num_sent_events_++;
   }
 
-  // fuchsia::ui::input3::Keyboard implementation.
-  void AddListener(
-      fuchsia::ui::views::ViewRef view_ref,
-      fidl::InterfaceHandle<::fuchsia::ui::input3::KeyboardListener> listener,
-      AddListenerCallback callback) final {
+  // fuchsia_ui_input3::Keyboard implementation.
+  void AddListener(AddListenerRequest& request,
+                   AddListenerCompleter::Sync& completer) final {
     // This implementation is only set up to have up to one listener.
     EXPECT_FALSE(listener_);
-    listener_ = listener.Bind();
-    callback();
-  }
-
-  void NotImplemented_(const std::string& name) final {
-    NOTIMPLEMENTED() << name;
+    listener_.Bind(std::move(request.listener()),
+                   async_get_default_dispatcher());
+    completer.Reply();
   }
 
  private:
-  fuchsia::ui::input3::KeyboardListenerPtr listener_;
-  base::ScopedServiceBinding<fuchsia::ui::input3::Keyboard> binding_;
+  fidl::Client<fuchsia_ui_input3::KeyboardListener> listener_;
+  base::ScopedNaturalServiceBinding<fuchsia_ui_input3::Keyboard> binding_;
 
   // Counters to make sure key events are acked in order.
   int num_sent_events_ = 0;
@@ -214,7 +211,8 @@ class KeyboardInputTest : public WebEngineBrowserTest {
     component_context_.emplace(
         base::TestComponentContextForProcess::InitialState::kCloneAll);
     component_context_->additional_services()
-        ->RemovePublicService<fuchsia::ui::input3::Keyboard>();
+        ->RemovePublicService<fuchsia_ui_input3::Keyboard>(
+            fidl::DiscoverableProtocolName<fuchsia_ui_input3::Keyboard>);
     SetUpService();
     virtual_keyboard_checker_.emplace(
         component_context_->additional_services());
@@ -269,7 +267,7 @@ class KeyboardInputTest : public WebEngineBrowserTest {
   absl::optional<FakeKeyboard> keyboard_service_;
   base::test::ScopedFeatureList scoped_feature_list_;
   absl::optional<
-      NeverConnectedChecker<fuchsia::input::virtualkeyboard::ControllerCreator>>
+      NeverConnectedChecker<fuchsia_input_virtualkeyboard::ControllerCreator>>
       virtual_keyboard_checker_;
 };
 
@@ -279,13 +277,13 @@ IN_PROC_BROWSER_TEST_F(KeyboardInputTest, PrintableKeys) {
   // Pressing character keys will generate a JavaScript keydown event followed
   // by a keypress event. Releasing any key generates a keyup event.
   keyboard_service_->SendKeyEvent(
-      CreateKeyEvent(Key::A, 'a', KeyEventType::PRESSED));
+      CreateKeyEvent(Key::kA, 'a', KeyEventType::kPressed));
   keyboard_service_->SendKeyEvent(
-      CreateKeyEvent(Key::KEY_8, '8', KeyEventType::PRESSED));
+      CreateKeyEvent(Key::kKey8, '8', KeyEventType::kPressed));
   keyboard_service_->SendKeyEvent(
-      CreateKeyEvent(Key::KEY_8, '8', KeyEventType::RELEASED));
+      CreateKeyEvent(Key::kKey8, '8', KeyEventType::kReleased));
   keyboard_service_->SendKeyEvent(
-      CreateKeyEvent(Key::A, 'a', KeyEventType::RELEASED));
+      CreateKeyEvent(Key::kA, 'a', KeyEventType::kReleased));
 
   ExpectKeyEventsEqual(ExpectedKeyValue("KeyA", "a", kKeyDown),
                        ExpectedKeyValue("KeyA", "a", kKeyPress),
@@ -301,11 +299,11 @@ IN_PROC_BROWSER_TEST_F(KeyboardInputTest, Characters) {
   // Pressing character keys will generate a JavaScript keydown event followed
   // by a keypress event. Releasing any key generates a keyup event.
   keyboard_service_->SendKeyEvent(
-      CreateCharacterKeyEvent('A', KeyEventType::PRESSED));
+      CreateCharacterKeyEvent('A', KeyEventType::kPressed));
   keyboard_service_->SendKeyEvent(
-      CreateCharacterKeyEvent('A', KeyEventType::RELEASED));
+      CreateCharacterKeyEvent('A', KeyEventType::kReleased));
   keyboard_service_->SendKeyEvent(
-      CreateCharacterKeyEvent('b', KeyEventType::PRESSED));
+      CreateCharacterKeyEvent('b', KeyEventType::kPressed));
 
   ExpectKeyEventsEqual(
       ExpectedKeyValue("", "A", kKeyDown), ExpectedKeyValue("", "A", kKeyPress),
@@ -318,13 +316,13 @@ IN_PROC_BROWSER_TEST_F(KeyboardInputTest, ShiftCharacter) {
   // TODO(fxbug.dev/106600): Update the WithCodepoint(0)s when the platform is
   // fixed to provide valid KeyMeanings for these keys.
   keyboard_service_->SendKeyEvent(
-      CreateKeyEvent(Key::LEFT_SHIFT, 0, KeyEventType::PRESSED));
+      CreateKeyEvent(Key::kLeftShift, 0, KeyEventType::kPressed));
   keyboard_service_->SendKeyEvent(
-      CreateCharacterKeyEvent('a', KeyEventType::PRESSED));
+      CreateCharacterKeyEvent('a', KeyEventType::kPressed));
   keyboard_service_->SendKeyEvent(
-      CreateCharacterKeyEvent('a', KeyEventType::RELEASED));
+      CreateCharacterKeyEvent('a', KeyEventType::kReleased));
   keyboard_service_->SendKeyEvent(
-      CreateKeyEvent(Key::LEFT_SHIFT, 0, KeyEventType::RELEASED));
+      CreateKeyEvent(Key::kLeftShift, 0, KeyEventType::kReleased));
 
   ExpectKeyEventsEqual(
       ExpectedKeyValue("ShiftLeft", "Shift", kKeyDown),
@@ -338,9 +336,9 @@ IN_PROC_BROWSER_TEST_F(KeyboardInputTest, ShiftCharacter) {
 IN_PROC_BROWSER_TEST_F(KeyboardInputTest, CharacterInBmp) {
   const wchar_t kSigma = 0x03C3;
   keyboard_service_->SendKeyEvent(
-      CreateCharacterKeyEvent(kSigma, KeyEventType::PRESSED));
+      CreateCharacterKeyEvent(kSigma, KeyEventType::kPressed));
   keyboard_service_->SendKeyEvent(
-      CreateCharacterKeyEvent(kSigma, KeyEventType::RELEASED));
+      CreateCharacterKeyEvent(kSigma, KeyEventType::kReleased));
 
   std::string expected_utf8;
   ASSERT_TRUE(base::WideToUTF8(&kSigma, 1, &expected_utf8));
@@ -355,13 +353,13 @@ IN_PROC_BROWSER_TEST_F(KeyboardInputTest, CharacterBeyondBmp) {
   const uint32_t kRamenEmoji = 0x1F35C;
 
   keyboard_service_->SendKeyEvent(
-      CreateCharacterKeyEvent(kRamenEmoji, KeyEventType::PRESSED));
+      CreateCharacterKeyEvent(kRamenEmoji, KeyEventType::kPressed));
   keyboard_service_->SendKeyEvent(
-      CreateCharacterKeyEvent(kRamenEmoji, KeyEventType::RELEASED));
+      CreateCharacterKeyEvent(kRamenEmoji, KeyEventType::kReleased));
   keyboard_service_->SendKeyEvent(
-      CreateCharacterKeyEvent('a', KeyEventType::PRESSED));
+      CreateCharacterKeyEvent('a', KeyEventType::kPressed));
   keyboard_service_->SendKeyEvent(
-      CreateCharacterKeyEvent('a', KeyEventType::RELEASED));
+      CreateCharacterKeyEvent('a', KeyEventType::kReleased));
 
   ExpectKeyEventsEqual(ExpectedKeyValue("", "a", kKeyDown),
                        ExpectedKeyValue("", "a", kKeyPress),
@@ -370,17 +368,17 @@ IN_PROC_BROWSER_TEST_F(KeyboardInputTest, CharacterBeyondBmp) {
 
 IN_PROC_BROWSER_TEST_F(KeyboardInputTest, ShiftPrintableKeys) {
   keyboard_service_->SendKeyEvent(
-      CreateKeyEvent(Key::LEFT_SHIFT, 0, KeyEventType::PRESSED));
+      CreateKeyEvent(Key::kLeftShift, 0, KeyEventType::kPressed));
   keyboard_service_->SendKeyEvent(
-      CreateKeyEvent(Key::B, 'B', KeyEventType::PRESSED));
+      CreateKeyEvent(Key::kB, 'B', KeyEventType::kPressed));
   keyboard_service_->SendKeyEvent(
-      CreateKeyEvent(Key::KEY_1, '!', KeyEventType::PRESSED));
+      CreateKeyEvent(Key::kKey1, '!', KeyEventType::kPressed));
   keyboard_service_->SendKeyEvent(
-      CreateKeyEvent(Key::SPACE, ' ', KeyEventType::PRESSED));
+      CreateKeyEvent(Key::kSpace, ' ', KeyEventType::kPressed));
   keyboard_service_->SendKeyEvent(
-      CreateKeyEvent(Key::LEFT_SHIFT, 0, KeyEventType::RELEASED));
+      CreateKeyEvent(Key::kLeftShift, 0, KeyEventType::kReleased));
   keyboard_service_->SendKeyEvent(
-      CreateKeyEvent(Key::DOT, '.', KeyEventType::PRESSED));
+      CreateKeyEvent(Key::kDot, '.', KeyEventType::kPressed));
 
   // Note that non-character keys (e.g. shift, control) only generate key down
   // and key up web events. They do not generate key pressed events.
@@ -398,13 +396,14 @@ IN_PROC_BROWSER_TEST_F(KeyboardInputTest, ShiftPrintableKeys) {
 
 IN_PROC_BROWSER_TEST_F(KeyboardInputTest, ShiftNonPrintableKeys) {
   keyboard_service_->SendKeyEvent(
-      CreateKeyEvent(Key::RIGHT_SHIFT, 0, KeyEventType::PRESSED));
-  keyboard_service_->SendKeyEvent(CreateKeyEvent(
-      Key::ENTER, NonPrintableKey::ENTER, KeyEventType::PRESSED));
+      CreateKeyEvent(Key::kRightShift, 0, KeyEventType::kPressed));
   keyboard_service_->SendKeyEvent(
-      CreateKeyEvent(Key::LEFT_CTRL, 0, KeyEventType::PRESSED));
+      CreateKeyEvent(Key::kEnter, fuchsia_ui_input3::NonPrintableKey::kEnter,
+                     KeyEventType::kPressed));
   keyboard_service_->SendKeyEvent(
-      CreateKeyEvent(Key::RIGHT_SHIFT, 0, KeyEventType::RELEASED));
+      CreateKeyEvent(Key::kLeftCtrl, 0, KeyEventType::kPressed));
+  keyboard_service_->SendKeyEvent(
+      CreateKeyEvent(Key::kRightShift, 0, KeyEventType::kReleased));
 
   // Note that non-character keys (e.g. shift, control) only generate key down
   // and key up web events. They do not generate key pressed events.
@@ -417,9 +416,9 @@ IN_PROC_BROWSER_TEST_F(KeyboardInputTest, ShiftNonPrintableKeys) {
 
 IN_PROC_BROWSER_TEST_F(KeyboardInputTest, RepeatedKeys) {
   keyboard_service_->SendKeyEvent(
-      CreateKeyEvent(Key::A, 'a', KeyEventType::PRESSED, {.repeat = true}));
-  keyboard_service_->SendKeyEvent(
-      CreateKeyEvent(Key::KEY_8, '8', KeyEventType::PRESSED, {.repeat = true}));
+      CreateKeyEvent(Key::kA, 'a', KeyEventType::kPressed, {.repeat = true}));
+  keyboard_service_->SendKeyEvent(CreateKeyEvent(
+      Key::kKey8, '8', KeyEventType::kPressed, {.repeat = true}));
 
   // Note that non-character keys (e.g. shift, control) only generate key down
   // and key up web events. They do not generate key pressed events.
@@ -437,17 +436,17 @@ IN_PROC_BROWSER_TEST_F(KeyboardInputTest, AllSupportedWebModifierKeys) {
   // * LEFT_*/RIGHT_* are not valid by themselves.
   // * FUNCTION and SYMBOL. See AllUnsupportedWebModifierKeys test.
   const std::vector kAllSupportedModifiers = {
-      fuchsia::ui::input3::Modifiers::CAPS_LOCK,
-      fuchsia::ui::input3::Modifiers::NUM_LOCK,
-      fuchsia::ui::input3::Modifiers::SCROLL_LOCK,
-      fuchsia::ui::input3::Modifiers::SHIFT,
-      fuchsia::ui::input3::Modifiers::ALT,
-      fuchsia::ui::input3::Modifiers::ALT_GRAPH,
-      fuchsia::ui::input3::Modifiers::META,
-      fuchsia::ui::input3::Modifiers::CTRL};
+      fuchsia_ui_input3::Modifiers::kCapsLock,
+      fuchsia_ui_input3::Modifiers::kNumLock,
+      fuchsia_ui_input3::Modifiers::kScrollLock,
+      fuchsia_ui_input3::Modifiers::kShift,
+      fuchsia_ui_input3::Modifiers::kAlt,
+      fuchsia_ui_input3::Modifiers::kAltGraph,
+      fuchsia_ui_input3::Modifiers::kMeta,
+      fuchsia_ui_input3::Modifiers::kCtrl};
   for (const auto& modifier : kAllSupportedModifiers) {
     keyboard_service_->SendKeyEvent(CreateKeyEvent(
-        Key::M, 'm', KeyEventType::PRESSED, {.modifiers = {modifier}}));
+        Key::kM, 'm', KeyEventType::kPressed, {.modifiers = {modifier}}));
   }
 
   base::Value::List expected_events;
@@ -456,8 +455,8 @@ IN_PROC_BROWSER_TEST_F(KeyboardInputTest, AllSupportedWebModifierKeys) {
         ExpectedKeyValue("KeyM", "m", kKeyDown, {.modifiers = {modifier}}));
     // Chrome doesn't emit keypress events when an ALT or CTRL modifier is
     // present.
-    if (modifier != fuchsia::ui::input3::Modifiers::ALT &&
-        modifier != fuchsia::ui::input3::Modifiers::CTRL) {
+    if (modifier != fuchsia_ui_input3::Modifiers::kAlt &&
+        modifier != fuchsia_ui_input3::Modifiers::kCtrl) {
       expected_events.Append(
           ExpectedKeyValue("KeyM", "m", kKeyPress, {.modifiers = {modifier}}));
     }
@@ -471,11 +470,11 @@ IN_PROC_BROWSER_TEST_F(KeyboardInputTest, AllUnsupportedWebModifierKeys) {
   // because they aren't included in
   // https://crsrc.org/c/ui/events/blink/blink_event_util.cc;l=268?q=EventFlagsToWebEventModifiers
   const std::vector kAllUnsupportedModifiers = {
-      fuchsia::ui::input3::Modifiers::FUNCTION,
-      fuchsia::ui::input3::Modifiers::SYMBOL};
+      fuchsia_ui_input3::Modifiers::kFunction,
+      fuchsia_ui_input3::Modifiers::kSymbol};
   for (const auto& modifier : kAllUnsupportedModifiers) {
     keyboard_service_->SendKeyEvent(CreateKeyEvent(
-        Key::M, 'm', KeyEventType::PRESSED, {.modifiers = {modifier}}));
+        Key::kM, 'm', KeyEventType::kPressed, {.modifiers = {modifier}}));
   }
 
   base::Value::List expected_events;
@@ -492,76 +491,75 @@ IN_PROC_BROWSER_TEST_F(KeyboardInputTest, AllUnsupportedWebModifierKeys) {
 IN_PROC_BROWSER_TEST_F(KeyboardInputTest, AssortedModifierKeyCombos) {
   // Test that sending LEFT/RIGHT SHIFT with agnostic SHIFT passes DCHECK.
   keyboard_service_->SendKeyEvent(CreateKeyEvent(
-      Key::A, 'a', KeyEventType::PRESSED,
-      {.modifiers = {fuchsia::ui::input3::Modifiers::SHIFT,
-                     fuchsia::ui::input3::Modifiers::LEFT_SHIFT,
-                     fuchsia::ui::input3::Modifiers::RIGHT_SHIFT}}));
+      Key::kA, 'a', KeyEventType::kPressed,
+      {.modifiers = {fuchsia_ui_input3::Modifiers::kShift,
+                     fuchsia_ui_input3::Modifiers::kLeftShift,
+                     fuchsia_ui_input3::Modifiers::kRightShift}}));
   // Test that sending LEFT/RIGHT ALT with agnostic ALT passes DCHECK.
-  keyboard_service_->SendKeyEvent(CreateKeyEvent(
-      Key::KEY_8, '8', KeyEventType::PRESSED,
-      {.modifiers = {fuchsia::ui::input3::Modifiers::ALT,
-                     fuchsia::ui::input3::Modifiers::LEFT_ALT,
-                     fuchsia::ui::input3::Modifiers::RIGHT_ALT}}));
+  keyboard_service_->SendKeyEvent(
+      CreateKeyEvent(Key::kKey8, '8', KeyEventType::kPressed,
+                     {.modifiers = {fuchsia_ui_input3::Modifiers::kAlt,
+                                    fuchsia_ui_input3::Modifiers::kLeftAlt,
+                                    fuchsia_ui_input3::Modifiers::kRightAlt}}));
   // Test that sending LEFT/RIGHT META with agnostic META passes DCHECK.
   keyboard_service_->SendKeyEvent(CreateKeyEvent(
-      Key::B, 'b', KeyEventType::PRESSED,
-      {.modifiers = {fuchsia::ui::input3::Modifiers::META,
-                     fuchsia::ui::input3::Modifiers::LEFT_META,
-                     fuchsia::ui::input3::Modifiers::RIGHT_META}}));
+      Key::kB, 'b', KeyEventType::kPressed,
+      {.modifiers = {fuchsia_ui_input3::Modifiers::kMeta,
+                     fuchsia_ui_input3::Modifiers::kLeftMeta,
+                     fuchsia_ui_input3::Modifiers::kRightMeta}}));
   // Test that sending LEFT/RIGHT CTRL with agnostic CTRL passes DCHECK.
   keyboard_service_->SendKeyEvent(CreateKeyEvent(
-      Key::LEFT, 0, KeyEventType::PRESSED,
-      {.modifiers = {fuchsia::ui::input3::Modifiers::CTRL,
-                     fuchsia::ui::input3::Modifiers::LEFT_CTRL,
-                     fuchsia::ui::input3::Modifiers::RIGHT_CTRL}}));
+      Key::kLeft, 0, KeyEventType::kPressed,
+      {.modifiers = {fuchsia_ui_input3::Modifiers::kCtrl,
+                     fuchsia_ui_input3::Modifiers::kLeftCtrl,
+                     fuchsia_ui_input3::Modifiers::kRightCtrl}}));
   keyboard_service_->SendKeyEvent(
-      CreateKeyEvent(Key::P, 'p', KeyEventType::PRESSED,
-                     {.modifiers = {fuchsia::ui::input3::Modifiers::CTRL,
-                                    fuchsia::ui::input3::Modifiers::SHIFT}}));
+      CreateKeyEvent(Key::kP, 'p', KeyEventType::kPressed,
+                     {.modifiers = {fuchsia_ui_input3::Modifiers::kCtrl,
+                                    fuchsia_ui_input3::Modifiers::kShift}}));
+  keyboard_service_->SendKeyEvent(
+      CreateKeyEvent(Key::kRight, 0, KeyEventType::kPressed,
+                     {.modifiers = {fuchsia_ui_input3::Modifiers::kAltGraph}}));
+  keyboard_service_->SendKeyEvent(
+      CreateKeyEvent(Key::kUp, 0, KeyEventType::kPressed,
+                     {.modifiers = {fuchsia_ui_input3::Modifiers::kCapsLock}}));
+  keyboard_service_->SendKeyEvent(
+      CreateKeyEvent(Key::kDown, 0, KeyEventType::kPressed,
+                     {.modifiers = {fuchsia_ui_input3::Modifiers::kNumLock}}));
   keyboard_service_->SendKeyEvent(CreateKeyEvent(
-      Key::RIGHT, 0, KeyEventType::PRESSED,
-      {.modifiers = {fuchsia::ui::input3::Modifiers::ALT_GRAPH}}));
-  keyboard_service_->SendKeyEvent(CreateKeyEvent(
-      Key::UP, 0, KeyEventType::PRESSED,
-      {.modifiers = {fuchsia::ui::input3::Modifiers::CAPS_LOCK}}));
-  keyboard_service_->SendKeyEvent(CreateKeyEvent(
-      Key::DOWN, 0, KeyEventType::PRESSED,
-      {.modifiers = {fuchsia::ui::input3::Modifiers::NUM_LOCK}}));
-  keyboard_service_->SendKeyEvent(CreateKeyEvent(
-      Key::LEFT, 0, KeyEventType::PRESSED,
-      {.modifiers = {fuchsia::ui::input3::Modifiers::SCROLL_LOCK}}));
+      Key::kLeft, 0, KeyEventType::kPressed,
+      {.modifiers = {fuchsia_ui_input3::Modifiers::kScrollLock}}));
 
   ExpectKeyEventsEqual(
       ExpectedKeyValue("KeyA", "a", kKeyDown,
-                       {.modifiers = {fuchsia::ui::input3::Modifiers::SHIFT}}),
+                       {.modifiers = {fuchsia_ui_input3::Modifiers::kShift}}),
       ExpectedKeyValue("KeyA", "a", kKeyPress,
-                       {.modifiers = {fuchsia::ui::input3::Modifiers::SHIFT}}),
+                       {.modifiers = {fuchsia_ui_input3::Modifiers::kShift}}),
       ExpectedKeyValue("Digit8", "8", kKeyDown,
-                       {.modifiers = {fuchsia::ui::input3::Modifiers::ALT}}),
+                       {.modifiers = {fuchsia_ui_input3::Modifiers::kAlt}}),
       ExpectedKeyValue("KeyB", "b", kKeyDown,
-                       {.modifiers = {fuchsia::ui::input3::Modifiers::META}}),
+                       {.modifiers = {fuchsia_ui_input3::Modifiers::kMeta}}),
       ExpectedKeyValue("KeyB", "b", kKeyPress,
-                       {.modifiers = {fuchsia::ui::input3::Modifiers::META}}),
+                       {.modifiers = {fuchsia_ui_input3::Modifiers::kMeta}}),
       ExpectedKeyValue("ArrowLeft", "ArrowLeft", kKeyDown,
-                       {.modifiers = {fuchsia::ui::input3::Modifiers::CTRL}}),
+                       {.modifiers = {fuchsia_ui_input3::Modifiers::kCtrl}}),
       ExpectedKeyValue("KeyP", "p", kKeyDown,
-                       {.modifiers = {fuchsia::ui::input3::Modifiers::CTRL,
-                                      fuchsia::ui::input3::Modifiers::SHIFT}}),
+                       {.modifiers = {fuchsia_ui_input3::Modifiers::kCtrl,
+                                      fuchsia_ui_input3::Modifiers::kShift}}),
       ExpectedKeyValue("KeyP", "p", kKeyPress,
-                       {.modifiers = {fuchsia::ui::input3::Modifiers::CTRL,
-                                      fuchsia::ui::input3::Modifiers::SHIFT}}),
+                       {.modifiers = {fuchsia_ui_input3::Modifiers::kCtrl,
+                                      fuchsia_ui_input3::Modifiers::kShift}}),
       ExpectedKeyValue(
           "ArrowRight", "ArrowRight", kKeyDown,
-          {.modifiers = {fuchsia::ui::input3::Modifiers::ALT_GRAPH}}),
+          {.modifiers = {fuchsia_ui_input3::Modifiers::kAltGraph}}),
       ExpectedKeyValue(
           "ArrowUp", "ArrowUp", kKeyDown,
-          {.modifiers = {fuchsia::ui::input3::Modifiers::CAPS_LOCK}}),
-      ExpectedKeyValue(
-          "ArrowDown", "ArrowDown", kKeyDown,
-          {.modifiers = {fuchsia::ui::input3::Modifiers::NUM_LOCK}}),
+          {.modifiers = {fuchsia_ui_input3::Modifiers::kCapsLock}}),
+      ExpectedKeyValue("ArrowDown", "ArrowDown", kKeyDown,
+                       {.modifiers = {fuchsia_ui_input3::Modifiers::kNumLock}}),
       ExpectedKeyValue(
           "ArrowLeft", "ArrowLeft", kKeyDown,
-          {.modifiers = {fuchsia::ui::input3::Modifiers::SCROLL_LOCK}}));
+          {.modifiers = {fuchsia_ui_input3::Modifiers::kScrollLock}}));
 }
 
 IN_PROC_BROWSER_TEST_F(KeyboardInputTest, Disconnect) {
@@ -590,7 +588,7 @@ class KeyboardInputTestWithoutKeyboardFeature : public KeyboardInputTest {
     keyboard_input_checker_.emplace(component_context_->additional_services());
   }
 
-  absl::optional<NeverConnectedChecker<fuchsia::ui::input3::Keyboard>>
+  absl::optional<NeverConnectedChecker<fuchsia_ui_input3::Keyboard>>
       keyboard_input_checker_;
 };
 
