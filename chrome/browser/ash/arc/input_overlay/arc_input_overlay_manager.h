@@ -56,6 +56,8 @@ class ArcInputOverlayManager : public KeyedService,
   ArcInputOverlayManager& operator=(const ArcInputOverlayManager&) = delete;
   ~ArcInputOverlayManager() override;
 
+  static void EnsureFactoryBuilt();
+
   // aura::EnvObserver:
   void OnWindowInitialized(aura::Window* new_window) override;
 
@@ -83,14 +85,14 @@ class ArcInputOverlayManager : public KeyedService,
   void OnDisplayMetricsChanged(const display::Display& display,
                                uint32_t metrics) override;
 
-  static void EnsureFactoryBuilt();
-
  private:
   friend class ArcInputOverlayManagerTest;
   friend class TestArcInputOverlayManager;
 
   class InputMethodObserver;
 
+  // Remove |window| from observation list.
+  void RemoveWindowObservation(aura::Window* window);
   // Read default data.
   static std::unique_ptr<TouchInjector> ReadDefaultData(
       std::unique_ptr<TouchInjector> touch_injector);

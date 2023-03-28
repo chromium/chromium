@@ -20,13 +20,16 @@ std::unique_ptr<views::Widget> CreateArcWindow(
   params.bounds = bounds;
   params.context = root_window;
   params.ownership = views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET;
+  // |aura::client::kAppType| property should be assigned before widget init.
+  // It simulates the situation that
+  // |AppServiceAppWindowShelfController::OnWindowInitialized()| is called
+  // before |ArcInputOverlayManager::OnWindowInitialized()|;
+  params.init_properties_container.SetProperty(
+      aura::client::kAppType, static_cast<int>(ash::AppType::ARC_APP));
   auto widget = std::make_unique<views::Widget>();
   widget->Init(std::move(params));
   widget->widget_delegate()->SetCanResize(true);
-  widget->SetBounds(bounds);
   widget->GetNativeWindow()->SetProperty(ash::kAppIDKey, std::string("app_id"));
-  widget->GetNativeWindow()->SetProperty(
-      aura::client::kAppType, static_cast<int>(ash::AppType::ARC_APP));
   widget->GetNativeWindow()->SetProperty(ash::kArcPackageNameKey, package_name);
   widget->Show();
   widget->Activate();

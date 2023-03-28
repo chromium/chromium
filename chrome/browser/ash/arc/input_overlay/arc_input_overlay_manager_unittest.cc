@@ -129,6 +129,11 @@ class ArcInputOverlayManagerTest : public ash::AshTestBase {
         ->TriggerWidgetBoundsChangedForTesting();
   }
 
+  bool IsObserving(aura::Window* window) const {
+    return arc_test_input_overlay_manager_->window_observations_
+        .IsObservingSource(window);
+  }
+
  protected:
   std::unique_ptr<ArcInputOverlayManager> arc_test_input_overlay_manager_;
 
@@ -155,22 +160,25 @@ TEST_F(ArcInputOverlayManagerTest, TestPropertyChangeAndWindowDestroy) {
   auto arc_window = CreateArcWindowSyncAndWait(
       task_environment(), ash::Shell::GetPrimaryRootWindow(),
       gfx::Rect(10, 10, 100, 100), kEnabledPackageName);
-  EXPECT_TRUE(IsInputOverlayEnabled(arc_window->GetNativeWindow()));
+  auto* arc_window_ptr = arc_window->GetNativeWindow();
+  EXPECT_TRUE(IsObserving(arc_window_ptr));
+  EXPECT_TRUE(IsInputOverlayEnabled(arc_window_ptr));
   // Input overlay registers the window after reading the data when the window
   // is still focused. In the test, the arc_window is considered as focused now.
   EXPECT_TRUE(GetRegisteredWindow());
-  focus_client->FocusWindow(arc_window->GetNativeWindow());
+  focus_client->FocusWindow(arc_window_ptr);
   EXPECT_TRUE(GetRegisteredWindow());
 
   // Test app with input overlay data when window is destroyed.
-  auto* arc_window_ptr = arc_window->GetNativeWindow();
   arc_window.reset();
+  EXPECT_FALSE(IsObserving(arc_window_ptr));
   EXPECT_FALSE(IsInputOverlayEnabled(arc_window_ptr));
 
   // Test app without input overlay data.
   auto arc_window_no_data = CreateArcWindowSyncAndWait(
       task_environment(), ash::Shell::GetPrimaryRootWindow(),
       gfx::Rect(10, 10, 100, 100), kRandomPackageName);
+  EXPECT_FALSE(IsObserving(arc_window_ptr));
   EXPECT_FALSE(IsInputOverlayEnabled(arc_window_no_data->GetNativeWindow()));
 }
 
