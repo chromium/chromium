@@ -563,15 +563,16 @@ void PropertyTreeManager::EnsureCompositorScrollNode(
     return;
   }
 
-  const ScrollPaintPropertyNode* parent_scroll_node = scroll_node.Parent();
-  // Look for the ScrollTranslation node corresponding to its parent scroll
-  // node.
-  const auto* parent_scroll_translation =
-      GetScrollTranslationNodeForParent(scroll_node, scroll_translation_node);
+  if (const auto* parent_scroll_translation = GetScrollTranslationNodeForParent(
+          scroll_node, scroll_translation_node)) {
+    // TODO(awogbemila): Figure out in exactly which cases
+    // GetScrollTranslationNodeForParent returns NULL.
+    const ScrollPaintPropertyNode* parent_scroll_node =
+        scroll_node.Parent();
 
-  DCHECK(parent_scroll_translation);
-  DCHECK_EQ(parent_scroll_node, parent_scroll_translation->ScrollNode());
-  EnsureCompositorScrollNode(*parent_scroll_node, *parent_scroll_translation);
+    DCHECK_EQ(parent_scroll_node, parent_scroll_translation->ScrollNode());
+    EnsureCompositorScrollNode(*parent_scroll_node, *parent_scroll_translation);
+  }
 
   int parent_id = scroll_node.Parent()->CcNodeId(new_sequence_number_);
   // Compositor transform nodes up to scroll_offset_translation must exist.
