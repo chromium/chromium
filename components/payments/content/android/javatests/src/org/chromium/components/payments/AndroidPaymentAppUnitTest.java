@@ -118,9 +118,6 @@ public class AndroidPaymentAppUnitTest {
                 /*displayItems=*/new ArrayList<PaymentItem>(), modifiers, new PaymentOptions(),
                 new ArrayList<PaymentShippingOption>(), new PaymentApp.InstrumentDetailsCallback() {
                     @Override
-                    public void onInstrumentDetailsLoadingWithoutUI() {}
-
-                    @Override
                     public void onInstrumentDetailsReady(
                             String methodName, String stringifiedDetails, PayerData payerData) {
                         mPaymentMethodName = methodName;

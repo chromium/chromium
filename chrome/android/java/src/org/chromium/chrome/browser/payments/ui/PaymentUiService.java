@@ -1010,15 +1010,6 @@ public class PaymentUiService
     }
 
     /**
-     * Shows the processing message. Precondition: isPaymentRequestUiAlive() needs to be true for
-     * the method to take effect.
-     */
-    public void showProcessingMessage() {
-        if (mPaymentRequestUI == null) return;
-        mPaymentRequestUI.showProcessingMessage();
-    }
-
-    /**
      *  Shows the processing message after payment details have been loaded in the case the
      *  app selector UI has been skipped. Precondition: isPaymentRequestUiAlive() needs to be
      *  true for the method to take effect.

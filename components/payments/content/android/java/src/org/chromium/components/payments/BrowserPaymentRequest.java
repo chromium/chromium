@@ -147,13 +147,6 @@ public interface BrowserPaymentRequest {
     }
 
     /**
-     * Called by the payment app to let Chrome know that the payment app's UI is now hidden, but
-     * the payment details have not been returned yet. This is a good time to show a "loading"
-     * progress indicator UI.
-     */
-    default void onInstrumentDetailsLoading() {}
-
-    /**
      * Called after retrieving payment details.
      */
     default void onInstrumentDetailsReady() {}

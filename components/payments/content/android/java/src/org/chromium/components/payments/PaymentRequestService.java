@@ -1821,13 +1821,6 @@ public class PaymentRequestService
 
     // Implements PaymentApp.InstrumentDetailsCallback:
     @Override
-    public void onInstrumentDetailsLoadingWithoutUI() {
-        if (mPaymentResponseHelper == null || mBrowserPaymentRequest == null) return;
-        mBrowserPaymentRequest.onInstrumentDetailsLoading();
-    }
-
-    // Implements PaymentApp.InstrumentDetailsCallback:
-    @Override
     public void onInstrumentDetailsReady(
             String methodName, String stringifiedDetails, PayerData payerData) {
         assert methodName != null;

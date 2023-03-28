@@ -28,20 +28,8 @@
     <message name="IDS_PAYMENTS_ADD_CARD_LABEL" desc="The title of the dialog for user to add new payment card. Sentence-cased.">
       Add card
     </message>
-    <message name="IDS_PAYMENTS_ADD_BILLING_ADDRESS" desc="The title of the dialog for user to add billing address to payment card. Sentence-cased." formatter_data="android_java">
-      Add billing address
-    </message>
-    <message name="IDS_PAYMENTS_ADD_NAME_ON_CARD" desc="The title of the dialog for user to add name on card to payment card. Sentence-cased." formatter_data="android_java">
-      Add name on card
-    </message>
-    <message name="IDS_PAYMENTS_ADD_VALID_CARD_NUMBER" desc="The title of the dialog for user to add valid payment card number. Sentence-cased." formatter_data="android_java">
-      Add valid card number
-    </message>
     <message name="IDS_PAYMENTS_ADD_MORE_INFORMATION" desc="The title in the Android app title bar for user to add more information to payment card or shipping address or contact info. Sentence-cased." formatter_data="android_java">
       Add more information
-    </message>
-    <message name="IDS_PAYMENTS_EDIT_CARD" desc="The title of the dialog for user to edit payment card. Sentence-cased." formatter_data="android_java">
-      Edit card
     </message>
     <message name="IDS_PAYMENTS_ADD_PHONE_NUMBER" desc="The title of the dialog for user to add phone number to the shipping address or contact info. This phone number can be used, for example, if there's a problem with shipping a package to its destination. Sentence-cased." formatter_data="android_java">
       Add phone number
@@ -94,20 +82,8 @@
     <message name="IDS_PAYMENTS_ADD_CARD_LABEL" desc="The title of the dialog for user to add new payment card. Title-Cased.">
       Add Card
     </message>
-    <message name="IDS_PAYMENTS_ADD_BILLING_ADDRESS" desc="The title of the dialog for user to add billing address to payment card. Title-Cased.">
-      Add Billing Address
-    </message>
-    <message name="IDS_PAYMENTS_ADD_NAME_ON_CARD" desc="The title of the dialog for user to add name on card to payment card. Title-Cased.">
-      Add Name on Card
-    </message>
-    <message name="IDS_PAYMENTS_ADD_VALID_CARD_NUMBER" desc="The title of the dialog for user to add valid payment card number. Title-Cased.">
-      Add Valid Card Number
-    </message>
     <message name="IDS_PAYMENTS_ADD_MORE_INFORMATION" desc="The title in the Android app title bar for user to add more information to payment card or shipping address or contact info. Title-Cased.">
       Add More Information
-    </message>
-    <message name="IDS_PAYMENTS_EDIT_CARD" desc="The title of the dialog for user to edit payment card. Title-Cased.">
-      Edit Card
     </message>
     <message name="IDS_PAYMENTS_ADD_PHONE_NUMBER" desc="The title of the dialog for user to add phone number to the shipping address or contact info. This phone number can be used, for example, if there's a problem with shipping a package to its destination. Title-Cased.">
       Add Phone Number
@@ -421,11 +397,8 @@
   <message name="IDS_PAYMENTS_INVALID_ADDRESS" desc="The label to indicate the shipping address is invalid. For example, missing state or city name." formatter_data="android_java">
     Enter a valid address
   </message>
-  <message name="IDS_PAYMENTS_BILLING_ADDRESS_REQUIRED" desc="The label to indicate billing address is required for payment card." formatter_data="android_java">
+  <message name="IDS_PAYMENTS_BILLING_ADDRESS_REQUIRED" desc="The label to indicate billing address is required for payment card.">
     Billing address required
-  </message>
-  <message name="IDS_PAYMENTS_NAME_ON_CARD_REQUIRED" desc="The label to indicate the cardholder name (the name of the owner or 'holder' of the credit card)  must be entered." formatter_data="android_java">
-    Cardholder name required
   </message>
   <message name="IDS_PAYMENTS_CARD_BILLING_ADDRESS_REQUIRED" desc="The label to indicate the billing address of the credit card  must be entered.">
     Card billing address required

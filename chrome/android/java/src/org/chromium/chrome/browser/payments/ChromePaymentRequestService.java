@@ -354,13 +354,6 @@ public class ChromePaymentRequestService
         mPaymentUiService.enableAndUpdatePaymentRequestUIWithPaymentInfo();
     }
 
-    // Implements BrowserPaymentRequest:
-    @Override
-    public void onInstrumentDetailsLoading() {
-        assert mPaymentUiService.getSelectedPaymentApp() == null;
-        mPaymentUiService.showProcessingMessage();
-    }
-
     // Implements PaymentUiService.Delegate:
     @Override
     public boolean invokePaymentApp(EditableOption selectedShippingAddress,
