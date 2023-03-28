@@ -43,6 +43,10 @@ const char kExpectedFeedbackDataJSON[] = R"({
          "labelAttribute": "First Name on Card",
          "parseableNameAttribute": "",
          "placeholderAttribute": "",
+         "rank": "0",
+         "rankInHostForm": "0",
+         "rankInHostFormSignatureGroup": "0",
+         "rankInSignatureGroup": "0",
          "section": "firstnameoncard_0_11",
          "serverType": "NO_SERVER_DATA",
          "serverTypeIsOverride": false
@@ -60,6 +64,10 @@ const char kExpectedFeedbackDataJSON[] = R"({
          "labelAttribute": "Last Name on Card",
          "parseableNameAttribute": "",
          "placeholderAttribute": "",
+         "rank": "1",
+         "rankInHostForm": "1",
+         "rankInHostFormSignatureGroup": "0",
+         "rankInSignatureGroup": "0",
          "section": "firstnameoncard_0_11",
          "serverType": "NO_SERVER_DATA",
          "serverTypeIsOverride": false
@@ -77,6 +85,10 @@ const char kExpectedFeedbackDataJSON[] = R"({
          "labelAttribute": "Email",
          "parseableNameAttribute": "",
          "placeholderAttribute": "",
+         "rank": "2",
+         "rankInHostForm": "2",
+         "rankInHostFormSignatureGroup": "0",
+         "rankInSignatureGroup": "0",
          "section": "firstnameoncard_0_11",
          "serverType": "NO_SERVER_DATA",
          "serverTypeIsOverride": false
