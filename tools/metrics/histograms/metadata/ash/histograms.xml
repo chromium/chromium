@@ -2879,7 +2879,7 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Ash.EventLatency.Core.TotalLatency" units="microseconds"
+<histogram name="Ash.EventLatency.Core.TotalLatency" units="ms"
     expires_after="2023-10-27">
   <owner>xiyuan@chromium.org</owner>
   <owner>yichenz@chromium.org</owner>
@@ -2896,7 +2896,7 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Ash.EventLatency.TotalLatency" units="microseconds"
+<histogram name="Ash.EventLatency.TotalLatency" units="ms"
     expires_after="2023-10-27">
   <owner>xiyuan@chromium.org</owner>
   <owner>yichenz@chromium.org</owner>
