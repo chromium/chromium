@@ -567,7 +567,6 @@ class InterestGroupBrowserTest : public ContentBrowserTest {
             ->GetBrowserContext()
             ->GetDefaultStoragePartition()
             ->GetInterestGroupManager());
-    observer_ = std::make_unique<InterestGroupTestObserver>();
     content_browser_client_ =
         std::make_unique<AllowlistedOriginContentBrowserClient>();
     content_browser_client_->SetAllowList(
@@ -1289,6 +1288,8 @@ class InterestGroupBrowserTest : public ContentBrowserTest {
   }
 
   void AttachInterestGroupObserver() {
+    DCHECK(!observer_);
+    observer_ = std::make_unique<InterestGroupTestObserver>();
     manager_->AddInterestGroupObserver(observer_.get());
   }
 
@@ -2535,6 +2536,7 @@ navigator.joinAdInterestGroup(
 IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
                        JoinInterestGroupInvalidOwner) {
   ASSERT_TRUE(NavigateToURL(shell(), https_server_->GetURL("a.test", "/echo")));
+  AttachInterestGroupObserver();
 
   EXPECT_EQ(
       "TypeError: Failed to execute 'joinAdInterestGroup' on 'Navigator': "
@@ -2562,6 +2564,7 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
   GURL url = https_server_->GetURL("a.test", "/echo");
   std::string origin_string = url::Origin::Create(url).Serialize();
   ASSERT_TRUE(NavigateToURL(shell(), url));
+  AttachInterestGroupObserver();
 
   EXPECT_EQ(
       "TypeError: Failed to execute 'joinAdInterestGroup' on 'Navigator': "
@@ -2591,6 +2594,7 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
   GURL url = https_server_->GetURL("a.test", "/echo");
   std::string origin_string = url::Origin::Create(url).Serialize();
   ASSERT_TRUE(NavigateToURL(shell(), url));
+  AttachInterestGroupObserver();
 
   EXPECT_EQ(
       "TypeError: Failed to execute 'joinAdInterestGroup' on 'Navigator': "
@@ -2669,7 +2673,6 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
   return 'done';
 })())",
                                               origin_string.c_str())));
-  WaitForAccessObserved({});
   EXPECT_TRUE(console_observer.Wait());
 
   WaitForInterestGroupsSatisfying(
@@ -2712,7 +2715,6 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
   return 'done';
 })())",
                                               origin_string.c_str())));
-  WaitForAccessObserved({});
 }
 
 IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
@@ -2733,8 +2735,6 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
                     .SetAllSellerCapabilities(
                         blink::SellerCapabilities::kLatencyStats)
                     .Build()));
-
-  WaitForAccessObserved({});
 
   std::vector<StorageInterestGroup> groups = GetInterestGroupsForOwner(origin);
   ASSERT_EQ(groups.size(), 1u);
@@ -2777,8 +2777,6 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
               .SetSizeGroups({{{"group_1", {"size_1"}}}})
               .Build()));
 
-  WaitForAccessObserved({});
-
   std::vector<StorageInterestGroup> groups = GetInterestGroupsForOwner(origin);
   ASSERT_EQ(groups.size(), 1u);
   const blink::InterestGroup& group = groups[0].interest_group;
@@ -2807,6 +2805,7 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
   GURL url = https_server_->GetURL("a.test", "/echo");
   std::string origin_string = url::Origin::Create(url).Serialize();
   ASSERT_TRUE(NavigateToURL(shell(), url));
+  AttachInterestGroupObserver();
 
   EXPECT_EQ(
       base::StringPrintf(
@@ -2869,6 +2868,7 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
   GURL url = https_server_->GetURL("a.test", "/echo");
   std::string origin_string = url::Origin::Create(url).Serialize();
   ASSERT_TRUE(NavigateToURL(shell(), url));
+  AttachInterestGroupObserver();
 
   EXPECT_EQ(
       base::StringPrintf(
@@ -2902,6 +2902,7 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
   GURL url = https_server_->GetURL("a.test", "/echo");
   std::string origin_string = url::Origin::Create(url).Serialize();
   ASSERT_TRUE(NavigateToURL(shell(), url));
+  AttachInterestGroupObserver();
 
   EXPECT_EQ(
       base::StringPrintf(
@@ -2935,6 +2936,7 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
   GURL url = https_server_->GetURL("a.test", "/echo");
   std::string origin_string = url::Origin::Create(url).Serialize();
   ASSERT_TRUE(NavigateToURL(shell(), url));
+  AttachInterestGroupObserver();
 
   EXPECT_EQ(
       base::StringPrintf(
@@ -2967,6 +2969,7 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
   GURL url = https_server_->GetURL("a.test", "/echo");
   std::string origin_string = url::Origin::Create(url).Serialize();
   ASSERT_TRUE(NavigateToURL(shell(), url));
+  AttachInterestGroupObserver();
 
   EXPECT_EQ(base::StringPrintf(
                 "TypeError: Failed to execute 'joinAdInterestGroup' on "
@@ -2998,6 +3001,7 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
   GURL url = https_server_->GetURL("a.test", "/echo");
   std::string origin_string = url::Origin::Create(url).Serialize();
   ASSERT_TRUE(NavigateToURL(shell(), url));
+  AttachInterestGroupObserver();
 
   EXPECT_EQ(
       base::StringPrintf(
@@ -3029,6 +3033,7 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
   GURL url = https_server_->GetURL("a.test", "/echo");
   std::string origin_string = url::Origin::Create(url).Serialize();
   ASSERT_TRUE(NavigateToURL(shell(), url));
+  AttachInterestGroupObserver();
 
   EXPECT_EQ(
       base::StringPrintf(
@@ -3060,6 +3065,7 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
   GURL url = https_server_->GetURL("a.test", "/echo");
   std::string origin_string = url::Origin::Create(url).Serialize();
   ASSERT_TRUE(NavigateToURL(shell(), url));
+  AttachInterestGroupObserver();
 
   EXPECT_EQ(
       base::StringPrintf(
@@ -3093,6 +3099,7 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
 IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
                        LeaveInterestGroupInvalidOwner) {
   ASSERT_TRUE(NavigateToURL(shell(), https_server_->GetURL("a.test", "/echo")));
+  AttachInterestGroupObserver();
 
   EXPECT_EQ(
       "TypeError: Failed to execute 'leaveAdInterestGroup' on 'Navigator': "
@@ -3120,6 +3127,7 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
   GURL url = https_server_->GetURL("a.test", "/echo");
   std::string origin_string = url::Origin::Create(url).Serialize();
   ASSERT_TRUE(NavigateToURL(shell(), url));
+  AttachInterestGroupObserver();
 
   EXPECT_EQ(
       base::StringPrintf(
@@ -3151,6 +3159,7 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
   GURL url = https_server_->GetURL("a.test", "/echo");
   std::string origin_string = url::Origin::Create(url).Serialize();
   ASSERT_TRUE(NavigateToURL(shell(), url));
+  AttachInterestGroupObserver();
 
   EXPECT_EQ(
       base::StringPrintf(
@@ -3184,6 +3193,7 @@ IN_PROC_BROWSER_TEST_F(
   GURL url = https_server_->GetURL("a.test", "/echo");
   std::string origin_string = url::Origin::Create(url).Serialize();
   ASSERT_TRUE(NavigateToURL(shell(), url));
+  AttachInterestGroupObserver();
 
   EXPECT_EQ(
       base::StringPrintf(
@@ -3218,6 +3228,7 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
   GURL url = https_server_->GetURL("a.test", "/echo");
   std::string origin_string = url::Origin::Create(url).Serialize();
   ASSERT_TRUE(NavigateToURL(shell(), url));
+  AttachInterestGroupObserver();
 
   EXPECT_EQ(
       base::StringPrintf(
@@ -3250,6 +3261,7 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
   GURL url = https_server_->GetURL("a.test", "/echo");
   std::string origin_string = url::Origin::Create(url).Serialize();
   ASSERT_TRUE(NavigateToURL(shell(), url));
+  AttachInterestGroupObserver();
 
   EXPECT_EQ(
       base::StringPrintf(
@@ -3282,6 +3294,7 @@ IN_PROC_BROWSER_TEST_F(
   GURL url = https_server_->GetURL("a.test", "/echo");
   std::string origin_string = url::Origin::Create(url).Serialize();
   ASSERT_TRUE(NavigateToURL(shell(), url));
+  AttachInterestGroupObserver();
 
   EXPECT_EQ(
       base::StringPrintf(
@@ -3315,6 +3328,7 @@ IN_PROC_BROWSER_TEST_F(
   GURL url = https_server_->GetURL("a.test", "/echo");
   std::string origin_string = url::Origin::Create(url).Serialize();
   ASSERT_TRUE(NavigateToURL(shell(), url));
+  AttachInterestGroupObserver();
 
   EXPECT_EQ(
       base::StringPrintf(
@@ -3349,6 +3363,7 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
   GURL url = https_server_->GetURL("a.test", "/echo");
   std::string origin_string = url::Origin::Create(url).Serialize();
   ASSERT_TRUE(NavigateToURL(shell(), url));
+  AttachInterestGroupObserver();
 
   EXPECT_EQ(
       base::StringPrintf(
@@ -3381,6 +3396,7 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
   GURL url = https_server_->GetURL("a.test", "/echo");
   std::string origin_string = url::Origin::Create(url).Serialize();
   ASSERT_TRUE(NavigateToURL(shell(), url));
+  AttachInterestGroupObserver();
 
   EXPECT_EQ(
       base::StringPrintf(
@@ -3413,6 +3429,7 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
   GURL url = https_server_->GetURL("a.test", "/echo");
   std::string origin_string = url::Origin::Create(url).Serialize();
   ASSERT_TRUE(NavigateToURL(shell(), url));
+  AttachInterestGroupObserver();
 
   EXPECT_EQ(
       base::StringPrintf(
@@ -3445,6 +3462,7 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
   GURL url = https_server_->GetURL("a.test", "/echo");
   std::string origin_string = url::Origin::Create(url).Serialize();
   ASSERT_TRUE(NavigateToURL(shell(), url));
+  AttachInterestGroupObserver();
 
   EXPECT_EQ(
       base::StringPrintf(
@@ -3477,6 +3495,7 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
   GURL url = https_server_->GetURL("a.test", "/echo");
   std::string origin_string = url::Origin::Create(url).Serialize();
   ASSERT_TRUE(NavigateToURL(shell(), url));
+  AttachInterestGroupObserver();
 
   EXPECT_EQ(
       base::StringPrintf(
@@ -3509,6 +3528,7 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
   GURL url = https_server_->GetURL("a.test", "/echo");
   std::string origin_string = url::Origin::Create(url).Serialize();
   ASSERT_TRUE(NavigateToURL(shell(), url));
+  AttachInterestGroupObserver();
 
   EXPECT_EQ(
       base::StringPrintf(
@@ -3538,6 +3558,7 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest, RunAdAuctionInvalidSeller) {
   ASSERT_TRUE(NavigateToURL(shell(), https_server_->GetURL("a.test", "/echo")));
+  AttachInterestGroupObserver();
 
   EXPECT_EQ(
       "TypeError: Failed to execute 'runAdAuction' on 'Navigator': seller "
@@ -3551,6 +3572,7 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest, RunAdAuctionInvalidSeller) {
 
 IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest, RunAdAuctionHttpSeller) {
   ASSERT_TRUE(NavigateToURL(shell(), https_server_->GetURL("a.test", "/echo")));
+  AttachInterestGroupObserver();
 
   EXPECT_EQ(
       "TypeError: Failed to execute 'runAdAuction' on 'Navigator': seller "
@@ -3565,6 +3587,7 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest, RunAdAuctionHttpSeller) {
 IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
                        RunAdAuctionInvalidDecisionLogicUrl) {
   ASSERT_TRUE(NavigateToURL(shell(), https_server_->GetURL("a.test", "/echo")));
+  AttachInterestGroupObserver();
 
   EXPECT_EQ(
       "TypeError: Failed to execute 'runAdAuction' on 'Navigator': "
@@ -3582,6 +3605,7 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
   GURL url = https_server_->GetURL("a.test", "/echo");
   url::Origin origin = url::Origin::Create(url);
   ASSERT_TRUE(NavigateToURL(shell(), url));
+  AttachInterestGroupObserver();
 
   EXPECT_EQ(
       base::StringPrintf(
@@ -3641,6 +3665,7 @@ IN_PROC_BROWSER_TEST_F(
 IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
                        RunAdAuctionInvalidInterestGroupBuyers) {
   ASSERT_TRUE(NavigateToURL(shell(), https_server_->GetURL("a.test", "/echo")));
+  AttachInterestGroupObserver();
 
   EXPECT_EQ(
       "TypeError: Failed to execute 'runAdAuction' on 'Navigator': "
@@ -3657,6 +3682,7 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
 IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
                        RunAdAuctionInvalidInterestGroupBuyersStr) {
   ASSERT_TRUE(NavigateToURL(shell(), https_server_->GetURL("a.test", "/echo")));
+  AttachInterestGroupObserver();
 
   EXPECT_EQ(
       "TypeError: Failed to execute 'runAdAuction' on 'Navigator': Failed to "
@@ -3673,6 +3699,7 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
 IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
                        RunAdAuctionNoInterestGroupBuyers) {
   ASSERT_TRUE(NavigateToURL(shell(), https_server_->GetURL("a.test", "/echo")));
+  AttachInterestGroupObserver();
 
   EXPECT_EQ(nullptr, RunAuctionAndWait(R"({
       seller: 'https://test.com',
@@ -3684,6 +3711,7 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
 IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
                        RunAdAuctionEmptyInterestGroupBuyers) {
   ASSERT_TRUE(NavigateToURL(shell(), https_server_->GetURL("a.test", "/echo")));
+  AttachInterestGroupObserver();
 
   EXPECT_EQ(nullptr, RunAuctionAndWait(R"({
       seller: 'https://test.com',
@@ -3696,6 +3724,7 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
 IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
                        RunAdAuctionInvalidAuctionSignals) {
   ASSERT_TRUE(NavigateToURL(shell(), https_server_->GetURL("a.test", "/echo")));
+  AttachInterestGroupObserver();
 
   EXPECT_EQ(
       "TypeError: Failed to execute 'runAdAuction' on 'Navigator': "
@@ -3745,7 +3774,6 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
   EXPECT_EQ("Promise argument rejected or resolved to invalid value.",
             RunAuctionAndWait(
                 JsReplace(kAuctionConfigTemplate, test_origin, decision_url)));
-  WaitForAccessObserved({});
 }
 
 // Exercise error-handling path in the renderer for promise-delivered auction
@@ -3790,12 +3818,12 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
             RunAuctionAndWait(
                 JsReplace(kAuctionConfigTemplate, test_origin, decision_url)));
   EXPECT_TRUE(console_observer.Wait());
-  WaitForAccessObserved({});
 }
 
 IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
                        RunAdAuctionInvalidSellerSignals) {
   ASSERT_TRUE(NavigateToURL(shell(), https_server_->GetURL("a.test", "/echo")));
+  AttachInterestGroupObserver();
 
   EXPECT_EQ(
       "TypeError: Failed to execute 'runAdAuction' on 'Navigator': "
@@ -3844,7 +3872,6 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
   EXPECT_EQ("Promise argument rejected or resolved to invalid value.",
             RunAuctionAndWait(
                 JsReplace(kAuctionConfigTemplate, test_origin, decision_url)));
-  WaitForAccessObserved({});
 }
 
 // Exercise error-handling path in the renderer for promise-delivered seller
@@ -3889,7 +3916,6 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
             RunAuctionAndWait(
                 JsReplace(kAuctionConfigTemplate, test_origin, decision_url)));
   EXPECT_TRUE(console_observer.Wait());
-  WaitForAccessObserved({});
 }
 
 // Test rejection path in the renderer for promise-delivered perBuyerSignals.
@@ -3927,7 +3953,6 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
   EXPECT_EQ("Promise argument rejected or resolved to invalid value.",
             RunAuctionAndWait(
                 JsReplace(kAuctionConfigTemplate, test_origin, decision_url)));
-  WaitForAccessObserved({});
 }
 
 // Exercise error-handling path in the renderer for promise-delivered
@@ -3971,12 +3996,12 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
             RunAuctionAndWait(
                 JsReplace(kAuctionConfigTemplate, test_origin, decision_url)));
   EXPECT_TRUE(console_observer.Wait());
-  WaitForAccessObserved({});
 }
 
 IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
                        RunAdAuctionInvalidPerBuyerSignalsOrigin) {
   ASSERT_TRUE(NavigateToURL(shell(), https_server_->GetURL("a.test", "/echo")));
+  AttachInterestGroupObserver();
 
   EXPECT_EQ(
       "TypeError: Failed to execute 'runAdAuction' on 'Navigator': "
@@ -4025,7 +4050,6 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
   EXPECT_EQ("Promise argument rejected or resolved to invalid value.",
             RunAuctionAndWait(
                 JsReplace(kAuctionConfigTemplate, test_origin, decision_url)));
-  WaitForAccessObserved({});
 }
 
 // Exercise error-handling path in the renderer for promise-delivered
@@ -4071,12 +4095,12 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
             RunAuctionAndWait(
                 JsReplace(kAuctionConfigTemplate, test_origin, decision_url)));
   EXPECT_TRUE(console_observer.Wait());
-  WaitForAccessObserved({});
 }
 
 IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
                        RunAdAuctionInvalidPerBuyerTimeoutsOrigin) {
   ASSERT_TRUE(NavigateToURL(shell(), https_server_->GetURL("a.test", "/echo")));
+  AttachInterestGroupObserver();
 
   EXPECT_EQ(
       "TypeError: Failed to execute 'runAdAuction' on 'Navigator': "
@@ -4127,7 +4151,6 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
   EXPECT_EQ("Promise argument rejected or resolved to invalid value.",
             RunAuctionAndWait(
                 JsReplace(kAuctionConfigTemplate, test_origin, decision_url)));
-  WaitForAccessObserved({});
 }
 
 // Exercise error-handling path in the renderer for promise-delivered
@@ -4174,12 +4197,12 @@ IN_PROC_BROWSER_TEST_F(
             RunAuctionAndWait(
                 JsReplace(kAuctionConfigTemplate, test_origin, decision_url)));
   EXPECT_TRUE(console_observer.Wait());
-  WaitForAccessObserved({});
 }
 
 IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
                        RunAdAuctionInvalidPerBuyerCumulativeTimeoutsOrigin) {
   ASSERT_TRUE(NavigateToURL(shell(), https_server_->GetURL("a.test", "/echo")));
+  AttachInterestGroupObserver();
 
   EXPECT_EQ(
       "TypeError: Failed to execute 'runAdAuction' on 'Navigator': "
@@ -4199,6 +4222,7 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
 IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
                        RunAdAuctionInvalidPerBuyerGroupLimitsValue) {
   ASSERT_TRUE(NavigateToURL(shell(), https_server_->GetURL("a.test", "/echo")));
+  AttachInterestGroupObserver();
 
   EXPECT_EQ(
       "TypeError: Failed to execute 'runAdAuction' on 'Navigator': "
@@ -4215,6 +4239,7 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
 IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
                        RunAdAuctionInvalidPerBuyerGroupLimitsOrigin) {
   ASSERT_TRUE(NavigateToURL(shell(), https_server_->GetURL("a.test", "/echo")));
+  AttachInterestGroupObserver();
 
   EXPECT_EQ(
       "TypeError: Failed to execute 'runAdAuction' on 'Navigator': "
@@ -4232,6 +4257,7 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
 IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
                        RunAdAuctionInvalidPerBuyerPrioritySignals) {
   ASSERT_TRUE(NavigateToURL(shell(), https_server_->GetURL("a.test", "/echo")));
+  AttachInterestGroupObserver();
 
   EXPECT_EQ(
       "TypeError: Failed to execute 'runAdAuction' on 'Navigator': Failed to "
@@ -4353,6 +4379,7 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
 IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
                        RunAdAuctionInvalidPerBuyerSignals) {
   ASSERT_TRUE(NavigateToURL(shell(), https_server_->GetURL("a.test", "/echo")));
+  AttachInterestGroupObserver();
 
   EXPECT_EQ(
       "TypeError: Failed to execute 'runAdAuction' on 'Navigator': "
@@ -4400,7 +4427,6 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
   EXPECT_EQ("Promise argument rejected or resolved to invalid value.",
             RunAuctionAndWait(
                 JsReplace(kAuctionConfigTemplate, test_origin, decision_url)));
-  WaitForAccessObserved({});
 }
 
 IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
@@ -4444,7 +4470,6 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
             RunAuctionAndWait(
                 JsReplace(kAuctionConfigTemplate, test_origin, decision_url)));
   EXPECT_TRUE(console_observer.Wait());
-  WaitForAccessObserved({});
 }
 
 IN_PROC_BROWSER_TEST_F(
@@ -4487,12 +4512,12 @@ IN_PROC_BROWSER_TEST_F(
             RunAuctionAndWait(
                 JsReplace(kAuctionConfigTemplate, test_origin, decision_url)));
   EXPECT_TRUE(console_observer.Wait());
-  WaitForAccessObserved({});
 }
 
 IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
                        RunAdAuctionInvalidDirectFromSellerSignalsInvalidURL) {
   ASSERT_TRUE(NavigateToURL(shell(), https_server_->GetURL("a.test", "/echo")));
+  AttachInterestGroupObserver();
 
   EXPECT_EQ(
       "TypeError: Failed to execute 'runAdAuction' on 'Navigator': "
@@ -4509,6 +4534,7 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
 IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
                        RunAdAuctionInvalidDirectFromSellerSignalsNotHttps) {
   ASSERT_TRUE(NavigateToURL(shell(), https_server_->GetURL("a.test", "/echo")));
+  AttachInterestGroupObserver();
 
   EXPECT_EQ(
       "TypeError: Failed to execute 'runAdAuction' on 'Navigator': "
@@ -4526,6 +4552,7 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
 IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
                        RunAdAuctionInvalidDirectFromSellerSignalsWrongOrigin) {
   ASSERT_TRUE(NavigateToURL(shell(), https_server_->GetURL("a.test", "/echo")));
+  AttachInterestGroupObserver();
 
   EXPECT_EQ(
       "TypeError: Failed to execute 'runAdAuction' on 'Navigator': "
@@ -4544,6 +4571,7 @@ IN_PROC_BROWSER_TEST_F(
     InterestGroupBrowserTest,
     RunAdAuctionInvalidDirectFromSellerSignalsHasQueryString) {
   ASSERT_TRUE(NavigateToURL(shell(), https_server_->GetURL("a.test", "/echo")));
+  AttachInterestGroupObserver();
 
   EXPECT_EQ(
       "TypeError: Failed to execute 'runAdAuction' on 'Navigator': "
@@ -5605,9 +5633,6 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest, RunAdAuctionWithWinner) {
       https_server_->GetURL("a.test", "/interest_group/decision_logic.js"));
   RunAuctionAndWaitForURLAndNavigateIframe(auction_config, ad_url);
 
-  // InterestGroupAccessObserver never was activated, so nothing was observed.
-  WaitForAccessObserved({});
-
   // Check ResourceRequest structs of requests issued by the worklet process.
   const struct ExpectedRequest {
     GURL url;
@@ -6298,9 +6323,6 @@ perBuyerSignals: {$1: {even: 'more', x: 4.5}}
                   test_origin,
                   https_server_->GetURL("a.test",
                                         "/interest_group/decision_logic.js"))));
-
-  // InterestGroupAccessObserver never was activated, so nothing was observed.
-  WaitForAccessObserved({});
 
   // Check ResourceRequest structs of requests issued by the worklet process.
   const struct ExpectedRequest {
