@@ -13,6 +13,8 @@
 #include "chrome/browser/ash/app_mode/web_app/web_kiosk_app_manager.h"
 #include "chrome/browser/ash/login/app_mode/kiosk_launch_controller.h"
 #include "chrome/browser/ash/login/app_mode/test/kiosk_test_helpers.h"
+#include "chrome/browser/ash/login/demo_mode/demo_session.h"
+#include "chrome/browser/ash/login/demo_mode/demo_setup_test_utils.h"
 #include "chrome/browser/ash/login/existing_user_controller.h"
 #include "chrome/browser/ash/login/test/embedded_policy_test_server_mixin.h"
 #include "chrome/browser/ash/login/test/logged_in_user_mixin.h"
@@ -76,6 +78,7 @@ absl::optional<em::PolicyData::MetricsLogSegment> GetMetricsLogSegment(
     case UserSegment::kUnmanaged:
     case UserSegment::kKioskApp:
     case UserSegment::kManagedGuestSession:
+    case UserSegment::kDemoMode:
       return absl::nullopt;
   }
   NOTREACHED();
@@ -130,6 +133,9 @@ class TestCase {
       case UserSegment::kManagedGuestSession:
         test_name += "ManagedGuestSession";
         break;
+      case UserSegment::kDemoMode:
+        test_name += "DemoMode";
+        break;
     }
 
     test_name += "_on_";
@@ -168,6 +174,10 @@ class TestCase {
 
   bool IsKioskApp() const { return GetUserSegment() == UserSegment::kKioskApp; }
 
+  bool IsDemoSession() const {
+    return GetUserSegment() == UserSegment::kDemoMode;
+  }
+
   TestCase& ExpectUmaOutput() {
     uma_expected_ = true;
     return *this;
@@ -202,12 +212,23 @@ TestCase KioskCase(policy::MarketSegment device_segment) {
   return test_case;
 }
 
+TestCase DemoModeCase() {
+  TestCase test_case(UserSegment::kDemoMode, policy::MarketSegment::ENTERPRISE);
+  return test_case;
+}
 }  // namespace
 
 class UserTypeByDeviceTypeMetricsProviderTest
     : public policy::DevicePolicyCrosBrowserTest,
       public testing::WithParamInterface<TestCase> {
  public:
+  UserTypeByDeviceTypeMetricsProviderTest() {
+    if (GetParam().IsDemoSession()) {
+      device_state_.SetState(
+          ash::DeviceStateMixin::State::OOBE_COMPLETED_DEMO_MODE);
+    }
+  }
+
   void SetUpInProcessBrowserTestFixture() override {
     policy::DevicePolicyCrosBrowserTest::SetUpInProcessBrowserTestFixture();
     LOG(INFO) << "UserTypeByDeviceTypeMetricsProviderTest::"
@@ -317,6 +338,17 @@ class UserTypeByDeviceTypeMetricsProviderTest
     controller->Login(user_context, ash::SigninSpecifics());
   }
 
+  void StartDemoSession() {
+    // Set Demo Mode config to online.
+    ash::DemoSession::SetDemoConfigForTesting(
+        ash::DemoSession::DemoModeConfig::kOnline);
+    ash::test::LockDemoDeviceInstallAttributes();
+    ash::DemoSession::StartIfInDemoMode();
+
+    // Start the public session, Demo Mode is a special public session.
+    StartPublicSession();
+  }
+
   void PrepareAppLaunch() {
     std::vector<policy::DeviceLocalAccount> device_local_accounts = {
         policy::DeviceLocalAccount(
@@ -386,7 +418,7 @@ class UserTypeByDeviceTypeMetricsProviderTest
   std::unique_ptr<ScopedDeviceSettings> settings_;
 };
 
-// Flacky on CrOS (http://crbug.com/1248669).
+// Flaky on CrOS (http://crbug.com/1248669).
 #if BUILDFLAG(IS_CHROMEOS)
 #define MAYBE_Uma DISABLED_Uma
 #else
@@ -408,6 +440,8 @@ IN_PROC_BROWSER_TEST_P(UserTypeByDeviceTypeMetricsProviderTest, MAYBE_Uma) {
     StartPublicSession();
   } else if (GetParam().IsKioskApp()) {
     StartKioskApp();
+  } else if (GetParam().IsDemoSession()) {
+    StartDemoSession();
   } else {
     LogInUser();
   }
@@ -450,4 +484,5 @@ INSTANTIATE_TEST_SUITE_P(
         KioskCase(policy::MarketSegment::ENTERPRISE),
         MgsCase(policy::MarketSegment::UNKNOWN).DontExpectUmaOutput(),
         MgsCase(policy::MarketSegment::EDUCATION),
-        MgsCase(policy::MarketSegment::ENTERPRISE)));
+        MgsCase(policy::MarketSegment::ENTERPRISE),
+        DemoModeCase()));

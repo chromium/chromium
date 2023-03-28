@@ -114,6 +114,9 @@ bool IsPublicSession();
 // Returns whether a kiosk session is being run currently.
 bool IsKioskSession();
 
+// Returns true if the current session is a Demo session.
+bool IsDemoSession();
+
 // Returns true if the current session is a Chrome App Kiosk session.
 bool IsChromeAppKioskSession();
 

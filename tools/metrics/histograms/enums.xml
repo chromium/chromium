@@ -104701,6 +104701,7 @@ Full version information for the fingerprint enum values:
   <int value="131074" label="University user on enterprise device"/>
   <int value="131075" label="Nonprofit user on enterprise device"/>
   <int value="131076" label="Enterprise user on enterprise device"/>
+  <int value="196605" label="Demo Mode on an enterprise device"/>
   <int value="196606" label="Kiosk app on an enterprise device"/>
   <int value="196607" label="Managed guest session on an enterprise device"/>
 </enum>

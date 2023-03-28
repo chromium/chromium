@@ -39,6 +39,10 @@ class UserTypeByDeviceTypeMetricsProvider
     kNonProfit = 3,
     // Primary profile is for a user belonging to an enterprise organization.
     kEnterprise = 4,
+    // Primary profile is for a demo session.
+    // This value is not present in MetricsLogSegment and must not collide with
+    // any values found there.
+    kDemoMode = 65533,
     // Primary profile is for a kiosk app.
     // This value is not present in MetricsLogSegment and must not collide with
     // any values found there.

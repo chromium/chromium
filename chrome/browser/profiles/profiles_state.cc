@@ -39,6 +39,7 @@
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "ash/constants/ash_switches.h"
+#include "chrome/browser/ash/login/demo_mode/demo_session.h"
 #include "chromeos/ash/components/login/login_state/login_state.h"
 #else
 #include <algorithm>
@@ -296,6 +297,14 @@ bool IsKioskSession() {
       chromeos::BrowserParamsProxy::Get()->SessionType();
   return session_type == crosapi::mojom::SessionType::kWebKioskSession ||
          session_type == crosapi::mojom::SessionType::kAppKioskSession;
+#else
+  return false;
+#endif
+}
+
+bool IsDemoSession() {
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  return ash::DemoSession::IsDeviceInDemoMode();
 #else
   return false;
 #endif

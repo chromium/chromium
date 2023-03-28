@@ -6,6 +6,7 @@
 
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
+#include "chrome/browser/ash/login/demo_mode/demo_session.h"
 #include "chrome/browser/ash/policy/core/browser_policy_connector_ash.h"
 #include "chrome/browser/ash/policy/core/user_cloud_policy_manager_ash.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
@@ -87,6 +88,11 @@ void UserTypeByDeviceTypeMetricsProvider::OnUserSessionStarted(
 
 UserTypeByDeviceTypeMetricsProvider::UserSegment
 UserTypeByDeviceTypeMetricsProvider::GetUserSegment(Profile* profile) {
+  // Check for Demo Session
+  if (profiles::IsDemoSession()) {
+    return UserSegment::kDemoMode;
+  }
+
   // Check for Managed Guest Session
   if (profiles::IsPublicSession()) {
     return UserSegment::kManagedGuestSession;
