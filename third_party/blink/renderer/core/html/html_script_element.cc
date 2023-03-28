@@ -299,8 +299,7 @@ bool HTMLScriptElement::AllowInlineScriptForCSP(
     const WTF::OrdinalNumber& context_line,
     const String& script_content) {
   // Support 'inline-speculation-rules' source.
-  // https://github.com/WICG/nav-speculation/blob/main/triggers.md#content-security-policy
-  // TODO(http://crbug.com/1382361): Standardize it officially.
+  // https://wicg.github.io/nav-speculation/speculation-rules.html#content-security-policy
   DCHECK(loader_);
   ContentSecurityPolicy::InlineType inline_type =
       loader_->GetScriptType() ==
