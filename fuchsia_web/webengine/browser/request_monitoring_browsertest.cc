@@ -5,12 +5,12 @@
 #include "base/task/sequenced_task_runner.h"
 #include "content/public/test/browser_test.h"
 #include "fuchsia_web/common/string_util.h"
+#include "fuchsia_web/common/test/frame_for_test.h"
 #include "fuchsia_web/common/test/frame_test_util.h"
 #include "fuchsia_web/common/test/test_navigation_listener.h"
 #include "fuchsia_web/common/test/url_request_rewrite_test_util.h"
 #include "fuchsia_web/webengine/browser/frame_impl_browser_test_base.h"
 #include "fuchsia_web/webengine/switches.h"
-#include "fuchsia_web/webengine/test/frame_for_test.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
 namespace {

@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef FUCHSIA_WEB_WEBENGINE_TEST_FRAME_FOR_TEST_H_
-#define FUCHSIA_WEB_WEBENGINE_TEST_FRAME_FOR_TEST_H_
+#ifndef FUCHSIA_WEB_COMMON_TEST_FRAME_FOR_TEST_H_
+#define FUCHSIA_WEB_COMMON_TEST_FRAME_FOR_TEST_H_
 
 #include <fuchsia/web/cpp/fidl.h>
 #include <lib/fidl/cpp/binding.h>
@@ -69,4 +69,4 @@ class FrameForTest {
       navigation_listener_binding_;
 };
 
-#endif  // FUCHSIA_WEB_WEBENGINE_TEST_FRAME_FOR_TEST_H_
+#endif  // FUCHSIA_WEB_COMMON_TEST_FRAME_FOR_TEST_H_

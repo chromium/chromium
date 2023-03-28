@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "fuchsia_web/webengine/test_debug_listener.h"
+#include "fuchsia_web/common/test/test_debug_listener.h"
 
 #include "base/auto_reset.h"
 #include "base/run_loop.h"

@@ -529,8 +529,6 @@ source_set("browsertest_core") {
   ]
   testonly = true
   sources = [
-    "test/frame_for_test.cc",
-    "test/frame_for_test.h",
     "test/scenic_test_helper.cc",
     "test/scenic_test_helper.h",
     "test/scoped_connection_checker.h",
@@ -692,8 +690,6 @@ test("web_engine_unittests") {
 
 test("web_engine_integration_tests") {
   sources = [
-    "test_debug_listener.cc",
-    "test_debug_listener.h",
     "web_engine_debug_integration_test.cc",
     "web_engine_integration_logging_test.cc",
     "web_engine_integration_test.cc",

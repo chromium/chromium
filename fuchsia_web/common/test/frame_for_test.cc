@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "fuchsia_web/webengine/test/frame_for_test.h"
+#include "fuchsia_web/common/test/frame_for_test.h"
 
 #include "base/fuchsia/fuchsia_logging.h"
 #include "fuchsia_web/common/test/test_navigation_listener.h"
