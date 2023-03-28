@@ -16,7 +16,11 @@
 
 // Returns YES if the NTP and feed is visible to the user. Returns NO if the NTP
 // is not visible or if the feed is toggled off in the feed header menu.
+// Deprecated.
 - (BOOL)isNTPAndFeedVisible;
+
+// Returns YES if the NTP is visible to the user.
+- (BOOL)isNTPVisible;
 
 @end
 
