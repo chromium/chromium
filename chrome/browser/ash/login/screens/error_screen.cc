@@ -39,7 +39,6 @@
 #include "chromeos/ash/components/network/network_handler.h"
 #include "chromeos/ash/components/network/network_state_handler.h"
 #include "chromeos/dbus/power/power_manager_client.h"
-#include "components/session_manager/core/session_manager.h"
 #include "components/web_modal/web_contents_modal_dialog_manager.h"
 #include "third_party/cros_system_api/dbus/service_constants.h"
 #include "ui/gfx/native_widget_types.h"
@@ -265,7 +264,6 @@ void ErrorScreen::ShowImpl() {
 
   view_->Show();
   LOG(WARNING) << "Network error screen message is shown";
-  session_manager::SessionManager::Get()->NotifyNetworkErrorScreenShown();
   NetworkHandler::Get()->network_state_handler()->RequestPortalDetection();
 }
 

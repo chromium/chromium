@@ -1010,11 +1010,6 @@ void LoginDisplayHostWebUI::RemoveObserver(
   observers_.RemoveObserver(observer);
 }
 
-void LoginDisplayHostWebUI::OnNetworkErrorScreenShown() {
-  VLOG(1) << "Login WebUI >> WEBUI_VISIBLE(ERROR_SCREEN)";
-  ShowWebUI();
-}
-
 void LoginDisplayHostWebUI::OnLoginOrLockScreenVisible() {
   VLOG(1) << "Login WebUI >> WEBUI_VISIBLE";
   ShowWebUI();

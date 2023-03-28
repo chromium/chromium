@@ -128,7 +128,6 @@ class WebUILoginView : public views::View,
   void GetAccessibleNodeData(ui::AXNodeData* node_data) override;
 
   // session_manager::SessionManagerObserver:
-  void OnNetworkErrorScreenShown() override;
   void OnLoginOrLockScreenVisible() override;
 
  private:

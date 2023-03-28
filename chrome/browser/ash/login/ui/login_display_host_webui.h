@@ -112,7 +112,6 @@ class LoginDisplayHostWebUI : public LoginDisplayHostCommon,
   bool HandleAccelerator(LoginAcceleratorAction action) final;
 
   // session_manager::SessionManagerObserver:
-  void OnNetworkErrorScreenShown() override;
   void OnLoginOrLockScreenVisible() override;
 
   // Trace id for ShowLoginWebUI event (since there exists at most one login

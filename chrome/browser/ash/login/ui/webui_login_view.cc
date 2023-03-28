@@ -300,11 +300,6 @@ void WebUILoginView::OnAppTerminating() {
   }
 }
 
-void WebUILoginView::OnNetworkErrorScreenShown() {
-  OnLoginPromptVisible();
-  session_observation_.Reset();
-}
-
 void WebUILoginView::OnLoginOrLockScreenVisible() {
   OnLoginPromptVisible();
   session_observation_.Reset();

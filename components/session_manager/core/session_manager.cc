@@ -103,11 +103,6 @@ void SessionManager::NotifyUserProfileLoaded(const AccountId& account_id) {
     observer.OnUserProfileLoaded(account_id);
 }
 
-void SessionManager::NotifyNetworkErrorScreenShown() {
-  for (auto& observer : observers_)
-    observer.OnNetworkErrorScreenShown();
-}
-
 void SessionManager::NotifyLoginOrLockScreenVisible() {
   login_or_lock_screen_shown_for_test_ = true;
   for (auto& observer : observers_)
