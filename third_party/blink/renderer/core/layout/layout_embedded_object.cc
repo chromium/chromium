@@ -95,11 +95,6 @@ void LayoutEmbeddedObject::UpdateLayout() {
   NOT_DESTROYED();
   DCHECK(NeedsLayout());
 
-  if (!RuntimeEnabledFeatures::LayoutNGReplacedNoBoxSettersEnabled()) {
-    UpdateLogicalWidth();
-    UpdateLogicalHeight();
-  }
-
   ClearLayoutOverflow();
 
   if (!GetEmbeddedContentView() && GetFrameView())

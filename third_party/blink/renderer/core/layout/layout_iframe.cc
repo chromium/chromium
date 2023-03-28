@@ -46,12 +46,6 @@ void LayoutIFrame::UpdateLayout() {
   NOT_DESTROYED();
   DCHECK(NeedsLayout());
 
-  if (!RuntimeEnabledFeatures::LayoutNGReplacedNoBoxSettersEnabled()) {
-    UpdateLogicalWidth();
-    // No kids to layout as a replaced element.
-    UpdateLogicalHeight();
-  }
-
   ClearLayoutOverflow();
   ClearNeedsLayout();
 }

@@ -204,10 +204,6 @@ void LayoutSVGRoot::UpdateLayout() {
   DCHECK(NeedsLayout());
 
   LayoutSize old_size = Size();
-  if (!RuntimeEnabledFeatures::LayoutNGReplacedNoBoxSettersEnabled()) {
-    UpdateLogicalWidth();
-    UpdateLogicalHeight();
-  }
 
   // Whether we have a self-painting layer depends on whether there are
   // compositing descendants (see: |HasCompositingDescendants()| which is called

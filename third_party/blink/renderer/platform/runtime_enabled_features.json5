@@ -1966,15 +1966,8 @@
     {
       // crbug.com/1353190
       name: "LayoutNGNoCopyBack",
-      depends_on: ["LayoutMediaNGContainer", "LayoutNGReplacedNoBoxSetters"],
+      depends_on: ["LayoutMediaNGContainer"],
       status: "test",
-    },
-    {
-      // Avoid UpdateLogicalWidth() and UpdateLogicalHeight() in LayoutReplaced
-      // subclasses.
-      // It's a part of "stop-copying-back" project. crbug.com/1353190
-      name: "LayoutNGReplacedNoBoxSetters",
-      status: "stable",
     },
     {
       name: "LayoutNGShapeCache",

@@ -53,15 +53,4 @@ void LayoutFrame::ImageChanged(WrappedImagePtr image, CanDeferInvalidation) {
   }
 }
 
-void LayoutFrame::UpdateLayout() {
-  NOT_DESTROYED();
-  // Should respect to BoxLayoutExtraInput.
-  if (Parent()->IsLayoutNGObject() &&
-      !RuntimeEnabledFeatures::LayoutNGReplacedNoBoxSettersEnabled()) {
-    UpdateLogicalWidth();
-    UpdateLogicalHeight();
-  }
-  LayoutEmbeddedContent::UpdateLayout();
-}
-
 }  // namespace blink
