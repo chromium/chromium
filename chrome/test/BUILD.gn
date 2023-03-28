@@ -2394,6 +2394,7 @@ if (!is_android) {
       "../common/time_format_browsertest.cc",
       "../renderer/accessibility/ax_tree_distiller_browsertest.cc",
       "../renderer/accessibility/read_anything_app_controller_browsertest.cc",
+      "../renderer/accessibility/read_anything_app_model_browsertest.cc",
       "../renderer/autofill/autofill_renderer_browsertest.cc",
       "../renderer/autofill/fake_mojo_password_manager_driver.cc",
       "../renderer/autofill/fake_mojo_password_manager_driver.h",

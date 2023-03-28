@@ -239,3 +239,13 @@ double ReadAnythingAppModel::GetLineSpacingValue(
       return 2.0;
   }
 }
+
+std::map<ui::AXTreeID, std::vector<ui::AXTreeUpdate>>&
+ReadAnythingAppModel::GetPendingUpdatesForTesting() {
+  return pending_updates_map_;
+}
+
+std::map<ui::AXTreeID, std::unique_ptr<ui::AXSerializableTree>>*
+ReadAnythingAppModel::GetTreesForTesting() {
+  return &trees_;
+}

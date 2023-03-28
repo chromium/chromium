@@ -17,7 +17,6 @@ class AXSerializableTree;
 class AXTreeObserver;
 }  // namespace ui
 
-class ReadAnythingAppControllerTest;
 // A class that holds state for the ReadAnythingAppController for the Read
 // Anything WebUI app.
 class ReadAnythingAppModel {
@@ -27,6 +26,7 @@ class ReadAnythingAppModel {
   ReadAnythingAppModel(const ReadAnythingAppModel& other) = delete;
   ReadAnythingAppModel& operator=(const ReadAnythingAppModel&) = delete;
 
+  // TODO(b/1266555): Ensure there is proper test coverage for all methods.
   // Theme
   const std::string& font_name() const { return font_name_; }
   float font_size() const { return font_size_; }
@@ -96,8 +96,13 @@ class ReadAnythingAppModel {
                                   const std::vector<ui::AXTreeUpdate>& updates,
                                   ui::AXTreeObserver* tree_observer);
 
+  std::map<ui::AXTreeID, std::vector<ui::AXTreeUpdate>>&
+  GetPendingUpdatesForTesting();
+
+  std::map<ui::AXTreeID, std::unique_ptr<ui::AXSerializableTree>>*
+  GetTreesForTesting();
+
  private:
-  friend ReadAnythingAppControllerTest;
   double GetLetterSpacingValue(
       read_anything::mojom::LetterSpacing letter_spacing) const;
   double GetLineSpacingValue(
