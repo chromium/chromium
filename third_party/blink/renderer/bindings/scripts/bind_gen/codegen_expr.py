@@ -291,7 +291,8 @@ def expr_from_exposure(exposure,
                 # of [TargetOfExposed] exposure. If this is actually a global,
                 # add it to GLOBAL_NAME_TO_EXECUTION_CONTEXT_CHECK.
                 return _Expr(
-                    "(::logging::NotReachedError::NotReached() << "
+                    "(::logging::NotReachedError::NotReached"
+                    "(__FILE__, __LINE__) << "
                     "\"{} exposure test is not supported at runtime\", false)".
                     format(entry.global_name))
 
