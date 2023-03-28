@@ -91,9 +91,9 @@ class AppListIphBrowserTest : public MixinBasedInProcessBrowserTest {
     MixinBasedInProcessBrowserTest::SetUpOnMainThread();
   }
 
-  void TearDownOnMainThread() override {
-    test_api_impl_.SetAssistantEnabled(false);
-  }
+  void TearDownOnMainThread() override { DisableAssistant(); }
+
+  void DisableAssistant() { test_api_impl_.SetAssistantEnabled(false); }
 
  private:
   ash::TestAssistantService test_service_;
@@ -112,7 +112,7 @@ class AppListIphBrowserTestWithDemoMode : public AppListIphBrowserTest {
   }
 
  protected:
-  void OpenAppListWithIph() {
+  void OpenAppList() {
     ASSERT_TRUE(!app_list_client_impl_);
     ASSERT_TRUE(!search_box_view_);
 
@@ -126,6 +126,11 @@ class AppListIphBrowserTestWithDemoMode : public AppListIphBrowserTest {
         /*wait_for_opening_animation=*/true);
     search_box_view_ = ash::GetSearchBoxView();
     ASSERT_TRUE(search_box_view_);
+  }
+
+  void OpenAppListWithIph() {
+    OpenAppList();
+
     // There is an async call for checking IPH trigger condition.
     ViewWaiter(search_box_view_, ash::LauncherSearchIphView::ViewId::kSelf)
         .Run();
@@ -160,6 +165,7 @@ IN_PROC_BROWSER_TEST_F(AppListIphBrowserTest,
 IN_PROC_BROWSER_TEST_F(AppListIphBrowserTestWithDemoMode, LauncherSearchIph) {
   OpenAppListWithIph();
   EXPECT_TRUE(IsLauncherSearchIphViewVisible());
+  EXPECT_TRUE(search_box_view()->assistant_button()->GetBackground());
 
   // Dismiss the app list and show it again. IPH won't be shown this time. Note
   // that this is IPH demo mode behavior.
@@ -171,6 +177,9 @@ IN_PROC_BROWSER_TEST_F(AppListIphBrowserTestWithDemoMode, LauncherSearchIph) {
       /*wait_for_opening_animation=*/false);
 
   EXPECT_FALSE(IsLauncherSearchIphViewVisible());
+  // Launcher search iph installs a background to assistant button. It should be
+  // removed if the iph gets dismissed.
+  EXPECT_FALSE(search_box_view()->assistant_button()->GetBackground());
 }
 
 IN_PROC_BROWSER_TEST_F(AppListIphBrowserTestWithDemoMode,
@@ -223,4 +232,22 @@ IN_PROC_BROWSER_TEST_F(AppListIphBrowserTestWithDemoMode, ClickAssistant) {
   EXPECT_EQ(ash::AppListBubblePage::kAssistant,
             ash::GetAppListBubbleView()->current_page_for_test());
   EXPECT_FALSE(IsLauncherSearchIphViewVisible());
+}
+
+IN_PROC_BROWSER_TEST_F(AppListIphBrowserTestWithDemoMode,
+                       NoIphWithoutAssistant) {
+  // `AssistantTestApiImpl::SetAssistantEnabled` asserts that the value has
+  // taken effect, i.e. we are sure that Assistant gets disabled after this
+  // call.
+  DisableAssistant();
+
+  OpenAppList();
+
+  // There is an async call for IPH to be shown. This test expects that IPH does
+  // NOT get shown. But run `RunUntilIdle` as this test can get failed if we
+  // starts showing an IPH for this case.
+  base::RunLoop().RunUntilIdle();
+
+  EXPECT_FALSE(IsLauncherSearchIphViewVisible());
+  EXPECT_FALSE(search_box_view()->assistant_button()->GetBackground());
 }

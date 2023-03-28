@@ -223,7 +223,7 @@ class SearchBoxViewBase : public views::View,
   void OnEnabledChanged();
 
   // Owned by views hierarchy.
-  raw_ptr<views::BoxLayoutView> iph_container_;
+  raw_ptr<views::View> iph_holder_;
   views::BoxLayoutView* content_container_;
   SearchIconImageView* search_icon_ = nullptr;
   SearchBoxImageButton* assistant_button_ = nullptr;

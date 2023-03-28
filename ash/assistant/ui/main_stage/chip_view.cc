@@ -9,6 +9,7 @@
 #include "ash/assistant/ui/assistant_ui_constants.h"
 #include "ash/assistant/ui/assistant_view_ids.h"
 #include "ash/style/ash_color_id.h"
+#include "ash/style/typography.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/color/color_id.h"
 #include "ui/color/color_provider.h"
@@ -33,10 +34,11 @@ constexpr int kFocusedStrokeWidthDip = 2;
 
 constexpr int kIconMarginDip = 8;
 constexpr int kChipPaddingDip = 16;
-constexpr int kPreferredHeightDip = 32;
+constexpr int kPreferredHeightDipDefault = 32;
+constexpr int kPreferredHeightDipLarge = 36;
 }  // namespace
 
-ChipView::ChipView() {
+ChipView::ChipView(Type type) : type_(type) {
   // Focus.
   // 1. Dark light mode is OFF
   // We change background color of a suggestion chip view. No focus ring is
@@ -77,9 +79,25 @@ ChipView::ChipView() {
   text_view_->SetID(kSuggestionChipViewLabel);
   text_view_->SetAutoColorReadabilityEnabled(false);
   text_view_->SetSubpixelRenderingEnabled(false);
-  const gfx::FontList& font_list = assistant::ui::GetDefaultFontList();
-  text_view_->SetFontList(font_list.Derive(
-      /*size_delta=*/1, font_list.GetFontStyle(), gfx::Font::Weight::MEDIUM));
+
+  switch (type_) {
+    case Type::kDefault: {
+      const gfx::FontList& font_list = assistant::ui::GetDefaultFontList();
+      text_view_->SetFontList(font_list.Derive(
+          /*size_delta=*/1, font_list.GetFontStyle(),
+          gfx::Font::Weight::MEDIUM));
+      break;
+    }
+    case Type::kLarge: {
+      raw_ptr<const TypographyProvider> typography_provider =
+          TypographyProvider::Get();
+      DCHECK(typography_provider) << "TypographyProvider must not be null";
+      if (typography_provider) {
+        typography_provider->StyleLabel(TypographyToken::kCrosButton1,
+                                        *text_view_);
+      }
+    } break;
+  }
 }
 
 ChipView::~ChipView() = default;
@@ -90,7 +108,8 @@ gfx::Size ChipView::CalculatePreferredSize() const {
 }
 
 int ChipView::GetHeightForWidth(int width) const {
-  return kPreferredHeightDip;
+  return type_ == Type::kDefault ? kPreferredHeightDipDefault
+                                 : kPreferredHeightDipLarge;
 }
 
 void ChipView::ChildVisibilityChanged(views::View* child) {

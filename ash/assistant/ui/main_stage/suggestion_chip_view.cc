@@ -20,7 +20,9 @@ namespace ash {
 
 SuggestionChipView::SuggestionChipView(AssistantViewDelegate* delegate,
                                        const AssistantSuggestion& suggestion)
-    : delegate_(delegate), suggestion_id_(suggestion.id) {
+    : ChipView(Type::kDefault),
+      delegate_(delegate),
+      suggestion_id_(suggestion.id) {
   SetText(base::UTF8ToUTF16(suggestion.text));
 
   const GURL& url = suggestion.icon_url;

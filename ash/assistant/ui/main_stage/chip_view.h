@@ -17,9 +17,11 @@ namespace ash {
 
 class COMPONENT_EXPORT(ASSISTANT_UI) ChipView : public views::Button {
  public:
+  enum Type { kDefault, kLarge };
+
   static constexpr int kIconSizeDip = 16;
 
-  ChipView();
+  explicit ChipView(Type type);
   ~ChipView() override;
 
   // views::View:
@@ -42,6 +44,7 @@ class COMPONENT_EXPORT(ASSISTANT_UI) ChipView : public views::Button {
   METADATA_HEADER(ChipView);
 
  private:
+  const Type type_;
   raw_ptr<views::BoxLayout> layout_manager_;
   raw_ptr<views::ImageView> icon_view_;
   raw_ptr<views::Label> text_view_;

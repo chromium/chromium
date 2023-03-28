@@ -30,6 +30,7 @@
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/style/ash_color_id.h"
 #include "ash/style/ash_color_provider.h"
+#include "base/i18n/rtl.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/metrics/user_metrics.h"
@@ -54,6 +55,7 @@
 #include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/geometry/rounded_corners_f.h"
 #include "ui/gfx/paint_vector_icon.h"
+#include "ui/views/background.h"
 #include "ui/views/border.h"
 #include "ui/views/context_menu_controller.h"
 #include "ui/views/controls/button/image_button.h"
@@ -102,6 +104,20 @@ constexpr SearchBoxView::PlaceholderTextType kGamingPlaceholders[4] = {
     SearchBoxView::PlaceholderTextType::kTabs,
     SearchBoxView::PlaceholderTextType::kSettings,
     SearchBoxView::PlaceholderTextType::kGames,
+};
+
+constexpr views::Radii kAssistantButtonBackgroundRadiiLTR = {
+    .top_left = 18.0f,
+    .top_right = 18.0f,
+    .bottom_right = 4.0f,
+    .bottom_left = 18.0f,
+};
+
+constexpr views::Radii kAssistantButtonBackgroundRadiiRTL = {
+    .top_left = 18.0f,
+    .top_right = 18.0f,
+    .bottom_right = 18.0f,
+    .bottom_left = 4.0f,
 };
 
 bool IsTrimmedQueryEmpty(const std::u16string& query) {
@@ -1223,15 +1239,25 @@ void SearchBoxView::ShowAssistantChanged() {
                              ->search_model()
                              ->search_box()
                              ->show_assistant_button());
+
+  // `LauncherSearchIphView` and an Assistant button have synchronized
+  // backgrounds. The IPH UI is integrated with the Assistant button. We don't
+  // show an IPH if Assistant is disabled. Both `LauncherSearchIphView` and the
+  // Assistant button are hosted by `SearchBoxViewBase`.
+  UpdateIphViewVisibility();
 }
 
 void SearchBoxView::UpdateIphViewVisibility() {
+  const bool show_assistant_button = AppListModelProvider::Get()
+                                         ->search_model()
+                                         ->search_box()
+                                         ->show_assistant_button();
   const bool would_trigger_iph =
       AppListModelProvider::Get()->search_model()->would_trigger_iph();
   const bool is_iph_showing = iph_view() != nullptr;
 
-  const bool should_show_iph =
-      is_iph_allowed_ && (would_trigger_iph || is_iph_showing);
+  const bool should_show_iph = show_assistant_button && is_iph_allowed_ &&
+                               (would_trigger_iph || is_iph_showing);
 
   if (should_show_iph == is_iph_showing) {
     return;
@@ -1246,8 +1272,15 @@ void SearchBoxView::UpdateIphViewVisibility() {
 
     SetIphView(std::make_unique<LauncherSearchIphView>(
         std::move(scoped_iph_session), /*delegate=*/this));
+
+    assistant_button()->SetBackground(views::CreateThemedRoundedRectBackground(
+        kColorAshControlBackgroundColorInactive,
+        base::i18n::IsRTL() ? kAssistantButtonBackgroundRadiiRTL
+                            : kAssistantButtonBackgroundRadiiLTR,
+        /*for_border_thickness=*/0));
   } else {
     DeleteIphView();
+    assistant_button()->SetBackground(nullptr);
   }
 }
 

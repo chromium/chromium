@@ -10,6 +10,8 @@
 #include "ash/app_list/views/apps_container_view.h"
 #include "ash/app_list/views/apps_grid_view_test_api.h"
 #include "ash/app_list/views/search_box_view.h"
+#include "ash/assistant/test/assistant_ash_test_base.h"
+#include "ash/public/cpp/style/dark_light_mode_controller.h"
 #include "ash/shelf/shelf.h"
 #include "ash/shelf/shelf_navigation_widget.h"
 #include "ash/shell.h"
@@ -186,19 +188,44 @@ TEST_P(AppListViewPixelRTLTest, GradientZone) {
       GetPrimaryShelf()->navigation_widget()));
 }
 
+class LauncherSearchIphParams {
+ public:
+  LauncherSearchIphParams(bool rtl, bool dark_theme)
+      : rtl_(rtl), dark_theme_(dark_theme) {}
+
+  static std::string ToTestSuffix(
+      const testing::TestParamInfo<LauncherSearchIphParams>& info) {
+    std::string suffix;
+    suffix.append(info.param.rtl() ? "rtl" : "ltr");
+    suffix.append("_");
+    suffix.append(info.param.dark_theme() ? "dark" : "light");
+    return suffix;
+  }
+
+  bool rtl() const { return rtl_; }
+  bool dark_theme() const { return dark_theme_; }
+
+ private:
+  bool rtl_;
+  bool dark_theme_;
+};
+
 class AppListViewLauncherSearchIphTest
-    : public AshTestBase,
-      public testing::WithParamInterface</*rtl=*/bool> {
+    : public AssistantAshTestBase,
+      public testing::WithParamInterface<LauncherSearchIphParams> {
  public:
   absl::optional<pixel_test::InitParams> CreatePixelTestInitParams()
       const override {
     pixel_test::InitParams init_params;
-    init_params.under_rtl = GetParam();
+    init_params.under_rtl = GetParam().rtl();
     return init_params;
   }
 
   void SetUp() override {
-    AshTestBase::SetUp();
+    AssistantAshTestBase::SetUp();
+
+    DarkLightModeController::Get()->SetDarkModeEnabledForTest(
+        GetParam().dark_theme());
 
     AppListTestHelper* test_helper = GetAppListTestHelper();
     test_helper->ShowAppList();
@@ -210,7 +237,11 @@ class AppListViewLauncherSearchIphTest
 
 INSTANTIATE_TEST_SUITE_P(RTL,
                          AppListViewLauncherSearchIphTest,
-                         testing::Bool());
+                         testing::Values(LauncherSearchIphParams(false, false),
+                                         LauncherSearchIphParams(false, true),
+                                         LauncherSearchIphParams(true, false),
+                                         LauncherSearchIphParams(true, true)),
+                         &LauncherSearchIphParams::ToTestSuffix);
 
 TEST_P(AppListViewLauncherSearchIphTest, Basic) {
   // Wait re-layout for adding IPH view.

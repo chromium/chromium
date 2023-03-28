@@ -8,11 +8,17 @@
 #include <string>
 #include <utility>
 
+#include "ash/assistant/ui/main_stage/chip_view.h"
 #include "ash/public/cpp/app_list/app_list_client.h"
+#include "ash/style/ash_color_id.h"
 #include "ash/style/pill_button.h"
+#include "ash/style/typography.h"
 #include "base/functional/bind.h"
+#include "base/i18n/rtl.h"
+#include "ui/color/color_id.h"
 #include "ui/gfx/font_list.h"
 #include "ui/gfx/text_constants.h"
+#include "ui/views/background.h"
 #include "ui/views/controls/button/button.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/layout/box_layout.h"
@@ -22,9 +28,6 @@ namespace ash {
 namespace {
 constexpr int kVerticalInset = 20;
 constexpr int kHorizontalInset = 24;
-
-constexpr int kTitleTextFontSize = 20;
-constexpr int kDescriptionTextFontSize = 16;
 
 constexpr int kMainLayoutBetweenChildSpacing = 16;
 constexpr int kActionContainerBetweenChildSpacing = 8;
@@ -37,6 +40,17 @@ constexpr char16_t kChipTwoQueryPlaceholder[] = u"1+1";
 constexpr char16_t kChipThreeQueryPlaceholder[] = u"5 cm in inches";
 
 constexpr char16_t kAssistantButtonPlaceholder[] = u"Assistant";
+
+constexpr views::Radii kBackgroundRadiiLTR = {.top_left = 16.0f,
+                                              .top_right = 4.0f,
+                                              .bottom_right = 16.0f,
+                                              .bottom_left = 16.0f};
+
+constexpr views::Radii kBackgroundRadiiRTL = {.top_left = 4.0f,
+                                              .top_right = 16.0f,
+                                              .bottom_right = 16.0f,
+                                              .bottom_left = 16.0f};
+
 }  // namespace
 
 LauncherSearchIphView::LauncherSearchIphView(
@@ -64,18 +78,23 @@ LauncherSearchIphView::LauncherSearchIphView(
 
   raw_ptr<views::Label> title_label = text_container->AddChildView(
       std::make_unique<views::Label>(kTitleTextPlaceholder));
-  title_label->SetFontList(gfx::FontList().DeriveWithSizeDelta(
-      kTitleTextFontSize - gfx::FontList().GetFontSize()));
-  title_label->SetLineHeight(kTitleTextFontSize);
   title_label->SetHorizontalAlignment(gfx::HorizontalAlignment::ALIGN_TO_HEAD);
+  title_label->SetEnabledColorId(kColorAshTextColorPrimary);
 
   raw_ptr<views::Label> description_label = text_container->AddChildView(
       std::make_unique<views::Label>(kDescriptionTextPlaceholder));
-  description_label->SetFontList(gfx::FontList().DeriveWithSizeDelta(
-      kDescriptionTextFontSize - gfx::FontList().GetFontSize()));
-  description_label->SetLineHeight(kDescriptionTextFontSize);
   description_label->SetHorizontalAlignment(
       gfx::HorizontalAlignment::ALIGN_TO_HEAD);
+  description_label->SetEnabledColorId(kColorAshTextColorPrimary);
+
+  raw_ptr<const TypographyProvider> typography_provider =
+      TypographyProvider::Get();
+  DCHECK(typography_provider) << "TypographyProvider must not be null";
+  if (typography_provider) {
+    typography_provider->StyleLabel(TypographyToken::kCrosTitle1, *title_label);
+    typography_provider->StyleLabel(TypographyToken::kCrosBody2,
+                                    *description_label);
+  }
 
   raw_ptr<views::BoxLayoutView> actions_container =
       AddChildView(std::make_unique<views::BoxLayoutView>());
@@ -87,11 +106,12 @@ LauncherSearchIphView::LauncherSearchIphView(
   for (const std::u16string& query :
        {kChipOneQueryPlaceholder, kChipTwoQueryPlaceholder,
         kChipThreeQueryPlaceholder}) {
-    raw_ptr<ash::PillButton> chip =
-        actions_container->AddChildView(std::make_unique<ash::PillButton>(
-            base::BindRepeating(&LauncherSearchIphView::RunLauncherSearchQuery,
-                                weak_ptr_factory_.GetWeakPtr(), query),
-            query));
+    raw_ptr<ChipView> chip = actions_container->AddChildView(
+        std::make_unique<ChipView>(ChipView::Type::kLarge));
+    chip->SetText(query);
+    chip->SetCallback(
+        base::BindRepeating(&LauncherSearchIphView::RunLauncherSearchQuery,
+                            weak_ptr_factory_.GetWeakPtr(), query));
     chip->SetID(query_chip_view_id);
     query_chip_view_id++;
   }
@@ -106,6 +126,13 @@ LauncherSearchIphView::LauncherSearchIphView(
                               weak_ptr_factory_.GetWeakPtr()),
           kAssistantButtonPlaceholder));
   assistant_button->SetID(ViewId::kAssistant);
+  assistant_button->SetPillButtonType(
+      PillButton::Type::kDefaultLargeWithoutIcon);
+
+  SetBackground(views::CreateThemedRoundedRectBackground(
+      kColorAshControlBackgroundColorInactive,
+      base::i18n::IsRTL() ? kBackgroundRadiiRTL : kBackgroundRadiiLTR,
+      /*for_border_thickness=*/0));
 }
 
 LauncherSearchIphView::~LauncherSearchIphView() = default;
