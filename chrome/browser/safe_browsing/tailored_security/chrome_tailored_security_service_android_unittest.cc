@@ -53,7 +53,6 @@ class ChromeTailoredSecurityServiceTest : public testing::Test {
     browser_process_ = TestingBrowserProcess::GetGlobal();
     chrome_tailored_security_service_ =
         std::make_unique<TestChromeTailoredSecurityService>(&profile_);
-    // message_dispatcher_bridge_.SetMessagesEnabledForEmbedder(true);
     messages::MessageDispatcherBridge::SetInstanceForTesting(
         &message_dispatcher_bridge_);
   }
@@ -79,7 +78,8 @@ class ChromeTailoredSecurityServiceTest : public testing::Test {
   std::unique_ptr<TestChromeTailoredSecurityService>
       chrome_tailored_security_service_;
   base::HistogramTester histograms_;
-  messages::MockMessageDispatcherBridge message_dispatcher_bridge_;
+  testing::NiceMock<messages::MockMessageDispatcherBridge>
+      message_dispatcher_bridge_;
   base::test::ScopedFeatureList feature_list;
 };
 
@@ -157,7 +157,6 @@ TEST_F(ChromeTailoredSecurityServiceTest, WhenATabIsAvailableShowsTheMessage) {
   tab_model.SetWebContents(raw_contents);
   tab_model.tab_count_ = 1;
 
-  EXPECT_CALL(message_dispatcher_bridge_, EnqueueWindowScopedMessage);
   chrome_tailored_security_service_->OnSyncNotificationMessageRequest(
       kTailoredSecurityEnabled);
   histograms_.ExpectBucketCount(
@@ -201,13 +200,49 @@ TEST_F(ChromeTailoredSecurityServiceTest,
   tab_model.SetWebContents(raw_contents);
   tab_model.tab_count_ = 1;
 
-  EXPECT_CALL(message_dispatcher_bridge_, EnqueueWindowScopedMessage);
   // Simulate observers being notified after a tab is added.
   tab_model.observer_->DidAddTab(nullptr, TabModel::TabLaunchType::FROM_LINK);
 
   histograms_.ExpectBucketCount(
       "SafeBrowsing.TailoredSecurity.SyncPromptEnabledNotificationResult2",
       TailoredSecurityNotificationResult::kShown, 1);
+}
+
+TEST_F(ChromeTailoredSecurityServiceTest,
+       RetryEnabledWithNoWebContentsLogsRetryMechanism) {
+  feature_list.InitAndEnableFeature(
+      safe_browsing::kTailoredSecurityObserverRetries);
+
+  for (TabModel* tab : TabModelList::models()) {
+    TabModelList::RemoveTabModel(tab);
+  }
+
+  EXPECT_EQ(TabModelList::models().size(), 0U);
+
+  chrome_tailored_security_service_->OnSyncNotificationMessageRequest(
+      kTailoredSecurityEnabled);
+  histograms_.ExpectUniqueSample(
+      "SafeBrowsing.TailoredSecurity.IsRecoveryTriggered", true, 1);
+}
+
+TEST_F(ChromeTailoredSecurityServiceTest,
+       RetryEnabledWithWebContentsDoesNotLogRetryMechanism) {
+  feature_list.InitAndEnableFeature(
+      safe_browsing::kTailoredSecurityObserverRetries);
+
+  TestTabModel tab_model(getProfile());
+  TabModelList::AddTabModel(&tab_model);
+
+  std::unique_ptr<content::WebContents> web_contents(
+      content::WebContentsTester::CreateTestWebContents(getProfile(), nullptr));
+  content::WebContents* raw_contents = web_contents.get();
+  tab_model.SetWebContents(raw_contents);
+  tab_model.tab_count_ = 1;
+
+  chrome_tailored_security_service_->OnSyncNotificationMessageRequest(
+      kTailoredSecurityEnabled);
+  histograms_.ExpectUniqueSample(
+      "SafeBrowsing.TailoredSecurity.IsRecoveryTriggered", false, 1);
 }
 
 }  // namespace

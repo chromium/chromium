@@ -1978,6 +1978,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="SafeBrowsing.TailoredSecurity.IsRecoveryTriggered"
+    enum="Boolean" expires_after="2024-03-24">
+  <owner>awado@chromium.org</owner>
+  <owner>chrome-safebrowsing-alerts@google.com</owner>
+  <summary>
+    Records whether the observer-based retry mechanism for the
+    ChromeTailoredSecurityService has been triggered or not which is logged on
+    every update to the synced account ESB timestamp.
+  </summary>
+</histogram>
+
 <histogram
     name="SafeBrowsing.TailoredSecurity.SyncPromptEnabledNotificationResult"
     enum="SafeBrowsingTailoredSecurityNotificationResult"

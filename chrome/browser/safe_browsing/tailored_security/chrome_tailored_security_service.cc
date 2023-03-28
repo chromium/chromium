@@ -32,6 +32,12 @@
 
 namespace safe_browsing {
 
+#if BUILDFLAG(IS_ANDROID)
+// Names for if the observer-based recovery mechanism is triggered.
+const bool kRetryMechanismTriggered = true;
+const bool kRetryMechanismNotTriggered = false;
+#endif
+
 namespace {
 
 #if BUILDFLAG(IS_ANDROID)
@@ -80,6 +86,9 @@ void ChromeTailoredSecurityService::OnSyncNotificationMessageRequest(
     if (base::FeatureList::IsEnabled(
             safe_browsing::kTailoredSecurityObserverRetries)) {
       AddTabModelListObserver();
+      base::UmaHistogramBoolean(
+          "SafeBrowsing.TailoredSecurity.IsRecoveryTriggered",
+          kRetryMechanismTriggered);
       return;
     }
     if (is_enabled) {
@@ -87,6 +96,12 @@ void ChromeTailoredSecurityService::OnSyncNotificationMessageRequest(
           TailoredSecurityNotificationResult::kNoWebContentsAvailable);
     }
     return;
+  }
+  if (base::FeatureList::IsEnabled(
+          safe_browsing::kTailoredSecurityObserverRetries)) {
+    base::UmaHistogramBoolean(
+        "SafeBrowsing.TailoredSecurity.IsRecoveryTriggered",
+        kRetryMechanismNotTriggered);
   }
 
   // Since the Android UX is a notice, we simply set Safe Browsing state.
