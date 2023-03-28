@@ -118,7 +118,7 @@ void WebDatabaseBackend::DatabaseErrorCallback(int error,
     diagnostics_ = db_->GetDiagnosticInfo(error, statement);
     diagnostics_ += sql::GetCorruptFileDiagnosticsInfo(db_path_);
 
-    db_->GetSQLConnection()->RazeAndClose();
+    db_->GetSQLConnection()->RazeAndPoison();
   }
 }
 
