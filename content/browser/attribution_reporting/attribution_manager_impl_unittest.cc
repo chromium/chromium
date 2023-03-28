@@ -69,6 +69,7 @@
 #include "content/public/test/test_utils.h"
 #include "net/base/schemeful_site.h"
 #include "services/network/public/cpp/features.h"
+#include "services/network/public/mojom/network_change_manager.mojom.h"
 #include "services/network/test/test_network_connection_tracker.h"
 #include "storage/browser/test/mock_special_storage_policy.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -661,6 +662,9 @@ TEST_F(AttributionManagerImplTest,
 
   checkpoint.Call(2);
 
+  SetConnectionTypeAndWaitForObserversToBeNotified(
+      network::mojom::ConnectionType::CONNECTION_2G);
+
   // Second report delay.
   task_environment_.FastForwardBy(base::Minutes(15));
 
@@ -669,6 +673,16 @@ TEST_F(AttributionManagerImplTest,
 
   histograms.ExpectTotalCount(
       "Conversions.TimeFromTriggerToReportSentSuccessfully", 0);
+
+  static constexpr char kNetworkConnectionTypeOnFailureHistogram[] =
+      "Conversions.EventLevelReport.NetworkConnectionTypeOnFailure";
+
+  histograms.ExpectBucketCount(
+      kNetworkConnectionTypeOnFailureHistogram,
+      network::mojom::ConnectionType::CONNECTION_UNKNOWN, 2);
+  histograms.ExpectBucketCount(kNetworkConnectionTypeOnFailureHistogram,
+                               network::mojom::ConnectionType::CONNECTION_2G,
+                               1);
 }
 
 TEST_F(AttributionManagerImplTest, RetryLogicOverridesGetReportTimer) {
