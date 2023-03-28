@@ -34,4 +34,8 @@ public interface SurfaceScope {
     default FeedLaunchReliabilityLogger getFeedLaunchReliabilityLogger() {
         return new FeedLaunchReliabilityLogger() {};
     }
+
+    default FeedUserInteractionReliabilityLogger getFeedUserInteractionReliabilityLogger() {
+        return new FeedUserInteractionReliabilityLogger() {};
+    }
 }
