@@ -50,8 +50,6 @@ struct CONTENT_EXPORT RenderWidgetTargetResult {
   bool latched_target = false;
 };
 
-class TracingUmaTracker;
-
 class RenderWidgetTargeter {
  public:
   using RenderWidgetHostAtPointCallback =
@@ -203,7 +201,6 @@ class RenderWidgetTargeter {
   void FoundFrameSinkId(base::WeakPtr<RenderWidgetHostViewBase> target,
                         uint32_t request_id,
                         const gfx::PointF& target_location,
-                        TracingUmaTracker tracker,
                         const viz::FrameSinkId& frame_sink_id,
                         const gfx::PointF& transformed_location);
 

@@ -42,48 +42,9 @@ bool IsMouseMiddleClick(const blink::WebInputEvent& event) {
               blink::WebPointerProperties::Button::kMiddle);
 }
 
-constexpr const char kTracingCategory[] = "input,latency";
-
 constexpr base::TimeDelta kAsyncHitTestTimeout = base::Seconds(5);
 
 }  // namespace
-
-class TracingUmaTracker {
- public:
-  explicit TracingUmaTracker(const char* metric_name)
-      : id_(next_id_++),
-        start_time_(base::TimeTicks::Now()),
-        metric_name_(metric_name) {
-    TRACE_EVENT_NESTABLE_ASYNC_BEGIN0(
-        kTracingCategory, metric_name_,
-        TRACE_ID_WITH_SCOPE("UmaTracker", TRACE_ID_LOCAL(id_)));
-  }
-
-  TracingUmaTracker(const TracingUmaTracker&) = delete;
-  TracingUmaTracker& operator=(const TracingUmaTracker&) = delete;
-
-  ~TracingUmaTracker() = default;
-  TracingUmaTracker(TracingUmaTracker&& tracker) = default;
-
-  void StopAndRecord() {
-    TRACE_EVENT_NESTABLE_ASYNC_END0(
-        kTracingCategory, metric_name_,
-        TRACE_ID_WITH_SCOPE("UmaTracker", TRACE_ID_LOCAL(id_)));
-    UmaHistogramTimes(metric_name_, base::TimeTicks::Now() - start_time_);
-  }
-
- private:
-  const int id_;
-  const base::TimeTicks start_time_;
-
-  // These variables must be string literals and live for the duration
-  // of the program since tracing stores pointers.
-  const char* metric_name_;
-
-  static int next_id_;
-};
-
-int TracingUmaTracker::next_id_ = 1;
 
 RenderWidgetTargetResult::RenderWidgetTargetResult() = default;
 
@@ -305,7 +266,6 @@ void RenderWidgetTargeter::QueryClient(
 
   request_in_flight_ = std::move(request);
 
-  TracingUmaTracker tracker("Event.AsyncTargeting.ResponseTime");
   async_hit_test_timeout_.Start(
       FROM_HERE, async_hit_test_timeout_delay_,
       base::BindOnce(
@@ -327,7 +287,7 @@ void RenderWidgetTargeter::QueryClient(
       target_location, trace_id_,
       base::BindOnce(&RenderWidgetTargeter::FoundFrameSinkId,
                      weak_ptr_factory_.GetWeakPtr(), target->GetWeakPtr(),
-                     ++last_request_id_, target_location, std::move(tracker)));
+                     ++last_request_id_, target_location));
 }
 
 void RenderWidgetTargeter::FlushEventQueue() {
@@ -355,13 +315,11 @@ void RenderWidgetTargeter::FoundFrameSinkId(
     base::WeakPtr<RenderWidgetHostViewBase> target,
     uint32_t request_id,
     const gfx::PointF& target_location,
-    TracingUmaTracker tracker,
     const viz::FrameSinkId& frame_sink_id,
     const gfx::PointF& transformed_location) {
-  if (!target)
+  if (!target) {
     return;
-
-  tracker.StopAndRecord();
+  }
 
   uint32_t last_id = last_request_id_;
   bool in_flight = request_in_flight_.has_value();
@@ -381,8 +339,9 @@ void RenderWidgetTargeter::FoundFrameSinkId(
       base::OnceClosure());
 
   auto* view = delegate_->FindViewFromFrameSinkId(frame_sink_id);
-  if (!view)
+  if (!view) {
     view = target.get();
+  }
 
   // If a client returned an embedded target, then it might be necessary to
   // continue asking the clients until a client claims an event for itself.

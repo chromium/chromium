@@ -70,16 +70,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Event.AsyncTargeting.ResponseTime" units="ms"
-    expires_after="2023-02-12">
-  <owner>jonross@chromium.org</owner>
-  <owner>event-targeting@chromium.org</owner>
-  <summary>
-    Tracks how long it takes for a client to respond to an asynchronous request
-    to find a target for an input event.
-  </summary>
-</histogram>
-
 <histogram name="Event.BrowserVerifiedUserActivation" enum="BooleanSuccess"
     expires_after="2021-10-17">
   <owner>liviutinta@chromium.org</owner>
