@@ -101,8 +101,11 @@ struct HashTraits<blink::CSSPropertyName>
     new (NotNullTag::kNotNull, &slot)
         CSSPropertyName(CSSPropertyName::kDeletedValue);
   }
-  static bool IsDeletedValue(CSSPropertyName value) {
+  static bool IsDeletedValue(const CSSPropertyName& value) {
     return value.IsDeletedValue();
+  }
+  static bool IsEmptyValue(const CSSPropertyName& value) {
+    return value.IsEmptyValue();
   }
   static blink::CSSPropertyName EmptyValue() {
     return blink::CSSPropertyName(CSSPropertyName::kEmptyValue);
