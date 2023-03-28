@@ -488,6 +488,7 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_dialogs.h"
 #include "chrome/browser/ui/browser_finder.h"
+#include "chrome/browser/ui/chrome_pages.h"
 #include "chrome/browser/ui/search/new_tab_page_navigation_throttle.h"
 #include "chrome/browser/ui/web_applications/tabbed_web_app_navigation_throttle.h"
 #include "chrome/browser/ui/web_applications/webui_web_app_navigation_throttle.h"
@@ -500,6 +501,8 @@
 #include "chrome/browser/webauthn/chrome_authenticator_request_delegate.h"
 #include "chrome/grit/chrome_unscaled_resources.h"  // nogncheck crbug.com/1125897
 #include "components/commerce/core/commerce_feature_list.h"
+#include "components/password_manager/content/common/web_ui_constants.h"
+#include "components/password_manager/core/common/password_manager_features.h"
 #include "third_party/blink/public/mojom/permissions_policy/permissions_policy_feature.mojom.h"
 #endif  //  !BUILDFLAG(IS_ANDROID)
 
@@ -6582,6 +6585,21 @@ bool ChromeContentBrowserClient::HandleWebUI(
   }
 #endif
 
+#if !BUILDFLAG(IS_ANDROID)
+  // TODO(crbug.com/1420597): Remove this after feature is launched.
+  // Redirect from old Password Manager UI in settings to new UI.
+  if (base::FeatureList::IsEnabled(
+          password_manager::features::kPasswordManagerRedesign)) {
+    if (url->SchemeIs(content::kChromeUIScheme) &&
+        url->DomainIs(chrome::kChromeUISettingsHost) &&
+        base::StartsWith(
+            url->path(),
+            chrome::GetSettingsUrl(chrome::kPasswordManagerSubPage).path())) {
+      *url = GURL(chrome::kChromeUIPasswordManagerURL);
+    }
+  }
+#endif
+
   return true;
 }
 
@@ -6622,6 +6640,17 @@ bool ChromeContentBrowserClient::HandleWebUIReverse(
     return true;
   }
 #endif  // BUILDFLAG(IS_WIN)
+
+#if !BUILDFLAG(IS_ANDROID)
+  // TODO(crbug.com/1420597): Remove this after feature is launched.
+  // No need to actually reverse-rewrite the URL, but return true to update the
+  // displayed URL when rewriting chrome://settings/passwords to
+  // chrome://password-manager.
+  if (url->SchemeIs(content::kChromeUIScheme) &&
+      url->DomainIs(password_manager::kChromeUIPasswordManagerHost)) {
+    return true;
+  }
+#endif
 
   // No need to actually reverse-rewrite the URL, but return true to update the
   // displayed URL when rewriting chrome://help to chrome://settings/help.

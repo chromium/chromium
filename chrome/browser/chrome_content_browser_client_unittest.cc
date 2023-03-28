@@ -66,10 +66,12 @@
 
 #if !BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/chrome_pages.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/browser_with_test_window_test.h"
 #include "chrome/test/base/search_test_utils.h"
+#include "components/password_manager/core/common/password_manager_features.h"
 #include "ui/base/page_transition_types.h"
 #else
 #include "base/system/sys_info.h"
@@ -549,6 +551,11 @@ TEST_F(ChromeContentBrowserClientTest, HandleWebUIReverse) {
   GURL chrome_settings(chrome::kChromeUISettingsURL);
   EXPECT_TRUE(test_content_browser_client.HandleWebUIReverse(&chrome_settings,
                                                              &profile_));
+#if !BUILDFLAG(IS_ANDROID)
+  GURL chrome_passwords_in_settings(chrome::kChromeUIPasswordManagerURL);
+  EXPECT_TRUE(test_content_browser_client.HandleWebUIReverse(
+      &chrome_passwords_in_settings, &profile_));
+#endif
 }
 
 #if !BUILDFLAG(IS_ANDROID)
@@ -579,6 +586,22 @@ TEST_F(ChromeContentBrowserClientTest, RedirectPrivacySandboxURL) {
   histogram_tester.ExpectBucketCount(histogram_name, false, 1);
   histogram_tester.ExpectTotalCount(histogram_name, 2);
 }
+
+TEST_F(ChromeContentBrowserClientTest, RedirectToPasswordManager) {
+  base::test::ScopedFeatureList feature_list(
+      password_manager::features::kPasswordManagerRedesign);
+
+  TestChromeContentBrowserClient test_content_browser_client;
+
+  GURL settings_url = chrome::GetSettingsUrl(chrome::kPasswordManagerSubPage);
+  settings_url = net::AppendQueryParameter(settings_url, "foo", "bar");
+
+  GURL new_passwords_url = GURL(chrome::kChromeUIPasswordManagerURL);
+
+  test_content_browser_client.HandleWebUI(&settings_url, &profile_);
+  EXPECT_EQ(settings_url, new_passwords_url);
+}
+
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS)
