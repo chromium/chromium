@@ -108,10 +108,17 @@ void RecentAppsInteractionHandlerImpl::NotifyRecentAppAddedOrUpdated(
 
 void RecentAppsInteractionHandlerImpl::SetConnectionStatusHandler(
     eche_app::EcheConnectionStatusHandler* eche_connection_status_handler) {
+  if (!features::IsEcheNetworkConnectionStateEnabled()) {
+    return;
+  }
+
+  if (eche_connection_status_handler_) {
+    eche_connection_status_handler_->RemoveObserver(this);
+  }
+
   eche_connection_status_handler_ = eche_connection_status_handler;
 
-  if (features::IsEcheNetworkConnectionStateEnabled() &&
-      eche_connection_status_handler_) {
+  if (eche_connection_status_handler_) {
     eche_connection_status_handler_->AddObserver(this);
   }
 }
