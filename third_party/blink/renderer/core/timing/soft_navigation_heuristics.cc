@@ -19,22 +19,25 @@ namespace blink {
 
 namespace {
 
-void LogToConsole(LocalFrame* frame,
-                  mojom::blink::ConsoleMessageLevel level,
-                  const String& message) {
-  if (!frame || !frame->IsMainFrame()) {
-    return;
-  }
-  LocalDOMWindow* window = frame->DomWindow();
-  if (!window) {
-    return;
-  }
+void LogAndTraceDetectedSoftNavigation(LocalFrame* frame,
+                                       LocalDOMWindow* window,
+                                       String url,
+                                       base::TimeTicks user_click_timestamp) {
+  CHECK(frame && frame->IsMainFrame());
+  CHECK(window);
   if (!RuntimeEnabledFeatures::SoftNavigationHeuristicsEnabled(window)) {
     return;
   }
   auto* console_message = MakeGarbageCollected<ConsoleMessage>(
-      mojom::blink::ConsoleMessageSource::kJavaScript, level, message);
+      mojom::blink::ConsoleMessageSource::kJavaScript,
+      mojom::blink::ConsoleMessageLevel::kInfo,
+      String("A soft navigation has been detected: ") + url);
   window->AddConsoleMessage(console_message);
+
+  TRACE_EVENT_INSTANT("scheduler,devtools.timeline,loading",
+                      "SoftNavigationHeuristics_SoftNavigationDetected",
+                      user_click_timestamp, "frame", ToTraceValue(frame), "url",
+                      url);
 }
 
 }  // namespace
@@ -200,10 +203,7 @@ void SoftNavigationHeuristics::CheckAndReportSoftNavigation(
   ResetPaintsIfNeeded(frame, window);
 
   ResetHeuristic();
-  LogToConsole(frame, mojom::blink::ConsoleMessageLevel::kInfo,
-               String("A soft navigation has been detected: ") + url_);
-  TRACE_EVENT_INSTANT("scheduler",
-                      "SoftNavigationHeuristics_SoftNavigationDetected");
+  LogAndTraceDetectedSoftNavigation(frame, window, url_, user_click_timestamp_);
   if (LocalFrameClient* frame_client = frame->Client()) {
     // This notifies UKM about this soft navigation.
     frame_client->DidObserveSoftNavigation(soft_navigation_count_);
