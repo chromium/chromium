@@ -389,7 +389,7 @@ void LocalStorageImpl::ShutDown(base::OnceClosure callback) {
     return;  // Keep everything.
   }
 
-  if (!storage_keys_to_purge_on_shutdown_.empty()) {
+  if (!origins_to_purge_on_shutdown_.empty()) {
     RetrieveStorageUsage(
         base::BindOnce(&LocalStorageImpl::OnGotStorageUsageForShutdown,
                        base::Unretained(this)));
@@ -412,14 +412,11 @@ void LocalStorageImpl::PurgeMemory() {
 void LocalStorageImpl::ApplyPolicyUpdates(
     std::vector<mojom::StoragePolicyUpdatePtr> policy_updates) {
   for (const auto& update : policy_updates) {
-    // TODO(https://crbug.com/1199077): Pass the real StorageKey when
-    // StoragePolicyUpdate is converted.
-    const blink::StorageKey storage_key =
-        blink::StorageKey::CreateFirstParty(update->origin);
+    const url::Origin origin = update->origin;
     if (!update->purge_on_shutdown)
-      storage_keys_to_purge_on_shutdown_.erase(storage_key);
+      origins_to_purge_on_shutdown_.erase(origin);
     else
-      storage_keys_to_purge_on_shutdown_.insert(std::move(storage_key));
+      origins_to_purge_on_shutdown_.insert(std::move(origin));
   }
 }
 
@@ -753,8 +750,13 @@ void LocalStorageImpl::OnGotStorageUsageForShutdown(
     std::vector<mojom::StorageUsageInfoPtr> usage) {
   std::vector<blink::StorageKey> storage_keys_to_delete;
   for (const auto& info : usage) {
-    if (base::Contains(storage_keys_to_purge_on_shutdown_, info->storage_key))
-      storage_keys_to_delete.push_back(info->storage_key);
+    const blink::StorageKey& storage_key = info->storage_key;
+    if (storage_key.IsFirstPartyContext()) {
+      const url::Origin& origin = storage_key.origin();
+      if (base::Contains(origins_to_purge_on_shutdown_, origin)) {
+        storage_keys_to_delete.push_back(storage_key);
+      }
+    }
   }
 
   if (!storage_keys_to_delete.empty()) {

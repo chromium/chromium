@@ -169,8 +169,10 @@ class LocalStorageImpl : public base::trace_event::MemoryDumpProvider,
   int commit_error_count_ = 0;
   bool tried_to_recover_from_commit_errors_ = false;
 
-  // The set of StorageKeys whose storage should be cleared on shutdown.
-  std::set<blink::StorageKey> storage_keys_to_purge_on_shutdown_;
+  // The set of Origins which should be cleared on shutdown.
+  // this is used by ApplyPolicyUpdates to store which origin
+  // to clear based on the provided StoragePolicyUpdate.
+  std::set<url::Origin> origins_to_purge_on_shutdown_;
 
   mojo::Receiver<mojom::LocalStorageControl> control_receiver_{this};
 
