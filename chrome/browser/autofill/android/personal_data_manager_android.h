@@ -209,18 +209,6 @@ class PersonalDataManagerAndroid : public PersonalDataManagerObserver {
       const base::android::JavaParamRef<jobject>& unused_obj,
       const base::android::JavaParamRef<jstring>& jguid);
 
-  // Gets the card CVC and expiration date (if it's expired). If the card is
-  // masked, unmasks it. If the user has entered new expiration date, the new
-  // date is saved on disk.
-  //
-  // The full card details are sent to the delegate.
-  void GetFullCardForPaymentRequest(
-      JNIEnv* env,
-      const base::android::JavaParamRef<jobject>& unused_obj,
-      const base::android::JavaParamRef<jobject>& jweb_contents,
-      const base::android::JavaParamRef<jobject>& jcard,
-      const base::android::JavaParamRef<jobject>& jdelegate);
-
   // PersonalDataManagerObserver:
   void OnPersonalDataChanged() override;
 

@@ -28,8 +28,6 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/common/pref_names.h"
-#include "components/autofill/content/browser/content_autofill_driver.h"
-#include "components/autofill/content/browser/content_autofill_driver_factory.h"
 #include "components/autofill/core/browser/address_normalizer.h"
 #include "components/autofill/core/browser/autofill_data_util.h"
 #include "components/autofill/core/browser/autofill_experiments.h"
@@ -39,7 +37,6 @@
 #include "components/autofill/core/browser/geo/address_i18n.h"
 #include "components/autofill/core/browser/geo/autofill_country.h"
 #include "components/autofill/core/browser/geo/country_names.h"
-#include "components/autofill/core/browser/payments/full_card_request.h"
 #include "components/autofill/core/browser/personal_data_manager.h"
 #include "components/autofill/core/browser/sync_utils.h"
 #include "components/autofill/core/browser/validation.h"
@@ -48,7 +45,6 @@
 #include "components/autofill/core/common/autofill_prefs.h"
 #include "components/autofill/core/common/autofill_switches.h"
 #include "components/prefs/pref_service.h"
-#include "content/public/browser/web_contents.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "third_party/libaddressinput/chromium/chrome_metadata_source.h"
 #include "third_party/libaddressinput/chromium/chrome_storage_impl.h"
@@ -65,7 +61,6 @@ using ::base::android::JavaParamRef;
 using ::base::android::JavaRef;
 using ::base::android::ScopedJavaGlobalRef;
 using ::base::android::ScopedJavaLocalRef;
-using payments::FullCardRequest;
 
 Profile* GetProfile() {
   return ProfileManager::GetActiveUserProfile()->GetOriginalProfile();
@@ -97,90 +92,6 @@ void MaybeSetInfoWithVerificationStatus(
         g_browser_process->GetApplicationLocale(),
         static_cast<VerificationStatus>(status));
 }
-
-// Self-deleting requester of full card details, including full PAN and the CVC
-// number.
-class FullCardRequester : public FullCardRequest::ResultDelegate,
-                          public base::SupportsWeakPtr<FullCardRequester> {
- public:
-  FullCardRequester() {}
-
-  FullCardRequester(const FullCardRequester&) = delete;
-  FullCardRequester& operator=(const FullCardRequester&) = delete;
-
-  // Takes ownership of |card|.
-  void GetFullCard(JNIEnv* env,
-                   const base::android::JavaParamRef<jobject>& jweb_contents,
-                   const base::android::JavaParamRef<jobject>& jdelegate,
-                   std::unique_ptr<CreditCard> card) {
-    card_ = std::move(card);
-    jdelegate_.Reset(env, jdelegate);
-
-    if (!card_) {
-      OnFullCardRequestFailed(card_->record_type(),
-                              FullCardRequest::FailureType::GENERIC_FAILURE);
-      return;
-    }
-
-    content::WebContents* contents =
-        content::WebContents::FromJavaWebContents(jweb_contents);
-    if (!contents) {
-      OnFullCardRequestFailed(card_->record_type(),
-                              FullCardRequest::FailureType::GENERIC_FAILURE);
-      return;
-    }
-
-    ContentAutofillDriverFactory* factory =
-        ContentAutofillDriverFactory::FromWebContents(contents);
-    if (!factory) {
-      OnFullCardRequestFailed(card_->record_type(),
-                              FullCardRequest::FailureType::GENERIC_FAILURE);
-      return;
-    }
-
-    ContentAutofillDriver* driver =
-        factory->DriverForFrame(contents->GetPrimaryMainFrame());
-    if (!driver) {
-      OnFullCardRequestFailed(card_->record_type(),
-                              FullCardRequest::FailureType::GENERIC_FAILURE);
-      return;
-    }
-
-    CreditCardCvcAuthenticator* cvc_authenticator =
-        driver->autofill_manager()->client()->GetCvcAuthenticator();
-    cvc_authenticator->GetFullCardRequest()->GetFullCard(
-        *card_, AutofillClient::UnmaskCardReason::kPaymentRequest, AsWeakPtr(),
-        cvc_authenticator->GetAsFullCardRequestUIDelegate());
-  }
-
- private:
-  ~FullCardRequester() override {}
-
-  // payments::FullCardRequest::ResultDelegate:
-  void OnFullCardRequestSucceeded(
-      const payments::FullCardRequest& /* full_card_request */,
-      const CreditCard& card,
-      const std::u16string& cvc) override {
-    JNIEnv* env = base::android::AttachCurrentThread();
-    Java_FullCardRequestDelegate_onFullCardDetails(
-        env, jdelegate_,
-        PersonalDataManagerAndroid::CreateJavaCreditCardFromNative(env, card),
-        base::android::ConvertUTF16ToJavaString(env, cvc));
-    delete this;
-  }
-
-  // payments::FullCardRequest::ResultDelegate:
-  void OnFullCardRequestFailed(
-      CreditCard::RecordType card_type,
-      FullCardRequest::FailureType failure_type) override {
-    JNIEnv* env = base::android::AttachCurrentThread();
-    Java_FullCardRequestDelegate_onFullCardError(env, jdelegate_);
-    delete this;
-  }
-
-  std::unique_ptr<CreditCard> card_;
-  ScopedJavaGlobalRef<jobject> jdelegate_;
-};
 
 void OnSubKeysReceived(ScopedJavaGlobalRef<jobject> jdelegate,
                        const std::vector<std::string>& subkeys_codes,
@@ -697,19 +608,6 @@ void PersonalDataManagerAndroid::ClearUnmaskedCache(
     const JavaParamRef<jstring>& guid) {
   personal_data_manager_->ResetFullServerCard(
       ConvertJavaStringToUTF8(env, guid));
-}
-
-void PersonalDataManagerAndroid::GetFullCardForPaymentRequest(
-    JNIEnv* env,
-    const JavaParamRef<jobject>& unused_obj,
-    const JavaParamRef<jobject>& jweb_contents,
-    const JavaParamRef<jobject>& jcard,
-    const JavaParamRef<jobject>& jdelegate) {
-  std::unique_ptr<CreditCard> card = std::make_unique<CreditCard>();
-  PopulateNativeCreditCardFromJava(jcard, env, card.get());
-  // Self-deleting object.
-  (new FullCardRequester())
-      ->GetFullCard(env, jweb_contents, jdelegate, std::move(card));
 }
 
 void PersonalDataManagerAndroid::OnPersonalDataChanged() {

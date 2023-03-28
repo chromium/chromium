@@ -17,7 +17,6 @@ import org.chromium.chrome.R;
 import org.chromium.chrome.browser.autofill.PersonalDataManager;
 import org.chromium.chrome.browser.autofill.PersonalDataManager.AutofillProfile;
 import org.chromium.chrome.browser.autofill.PersonalDataManager.CreditCard;
-import org.chromium.chrome.browser.autofill.PersonalDataManager.FullCardRequestDelegate;
 import org.chromium.chrome.browser.autofill.PersonalDataManager.NormalizedAddressRequestDelegate;
 import org.chromium.components.autofill.EditableOption;
 import org.chromium.components.payments.ErrorStrings;
@@ -35,8 +34,8 @@ import java.lang.annotation.RetentionPolicy;
  */
 // TODO(crbug.com/1209835): Move this class into autofill now that it no longer interacts with
 // Payments code.
-public class AutofillPaymentInstrument extends EditableOption
-        implements FullCardRequestDelegate, NormalizedAddressRequestDelegate {
+public class AutofillPaymentInstrument
+        extends EditableOption implements NormalizedAddressRequestDelegate {
     // Bit field values are identical to CreditCardCompletionStatus fields in
     // autofill_card_validation.h. Please modify autofill_card_validation.h after changing these.
     @IntDef({CompletionStatus.COMPLETE, CompletionStatus.CREDIT_CARD_EXPIRED,
@@ -63,7 +62,6 @@ public class AutofillPaymentInstrument extends EditableOption
     @Nullable
     private InstrumentDetailsCallback mCallback;
     private boolean mIsWaitingForBillingNormalization;
-    private boolean mIsWaitingForFullCardDetails;
     private boolean mHasValidNumberAndName;
 
     /**
@@ -96,28 +94,6 @@ public class AutofillPaymentInstrument extends EditableOption
     }
 
     @Override
-    public void onFullCardDetails(CreditCard updatedCard, String cvc) {
-        // Keep the cvc for after the normalization.
-        mSecurityCode = cvc;
-
-        // The card number changes for unmasked cards.
-        assert updatedCard.getNumber().length() > 4;
-        mCard.setNumber(updatedCard.getNumber());
-
-        // Update the card's expiration date.
-        mCard.setMonth(updatedCard.getMonth());
-        mCard.setYear(updatedCard.getYear());
-
-        mIsWaitingForFullCardDetails = false;
-
-        // Show the loading UI while the address gets normalized.
-        mCallback.onInstrumentDetailsLoadingWithoutUI();
-
-        // Wait for the billing address normalization before sending the instrument details.
-        if (!mIsWaitingForBillingNormalization) sendInstrumentDetails();
-    }
-
-    @Override
     public void onAddressNormalized(AutofillProfile profile) {
         if (!mIsWaitingForBillingNormalization) return;
         mIsWaitingForBillingNormalization = false;
@@ -125,8 +101,7 @@ public class AutofillPaymentInstrument extends EditableOption
         // If the normalization finished first, use the normalized address.
         if (profile != null) mBillingAddress = profile;
 
-        // Wait for the full card details before sending the instrument details.
-        if (!mIsWaitingForFullCardDetails) sendInstrumentDetails();
+        sendInstrumentDetails();
     }
 
     @Override
@@ -193,8 +168,7 @@ public class AutofillPaymentInstrument extends EditableOption
         return value == null ? "" : value;
     }
 
-    @Override
-    public void onFullCardError() {
+    private void onFullCardError() {
         // There's no need to disambiguate between user cancelling the CVC unmask and other types of
         // failures, because a failure to unmask an Autofill card will show the Payment Request UI
         // again and prompt the user to attempt to complete a transaction using a different card.

@@ -25,7 +25,6 @@ import org.chromium.components.image_fetcher.ImageFetcherConfig;
 import org.chromium.components.image_fetcher.ImageFetcherFactory;
 import org.chromium.components.prefs.PrefService;
 import org.chromium.components.user_prefs.UserPrefs;
-import org.chromium.content_public.browser.WebContents;
 import org.chromium.url.GURL;
 
 import java.util.ArrayList;
@@ -56,26 +55,6 @@ public class PersonalDataManager {
          * Called when the data is changed.
          */
         void onPersonalDataChanged();
-    }
-
-    /**
-     * Callback for full card request.
-     */
-    public interface FullCardRequestDelegate {
-        /**
-         * Called when user provided the full card details, including the CVC and the full PAN.
-         *
-         * @param card The full card.
-         * @param cvc The CVC for the card.
-         */
-        @CalledByNative("FullCardRequestDelegate")
-        void onFullCardDetails(CreditCard card, String cvc);
-
-        /**
-         * Called when user did not provide full card details.
-         */
-        @CalledByNative("FullCardRequestDelegate")
-        void onFullCardError();
     }
 
     /**
@@ -1103,12 +1082,6 @@ public class PersonalDataManager {
                 mPersonalDataManagerAndroid, PersonalDataManager.this, profile);
     }
 
-    public void getFullCard(
-            WebContents webContents, CreditCard card, FullCardRequestDelegate delegate) {
-        PersonalDataManagerJni.get().getFullCardForPaymentRequest(
-                mPersonalDataManagerAndroid, PersonalDataManager.this, webContents, card, delegate);
-    }
-
     /**
      * Records the use of the profile associated with the specified {@code guid}. Effectively
      * increments the use count of the profile and sets its use date to the current time. Also logs
@@ -1507,9 +1480,6 @@ public class PersonalDataManager {
                 long nativePersonalDataManagerAndroid, PersonalDataManager caller);
         void clearUnmaskedCache(
                 long nativePersonalDataManagerAndroid, PersonalDataManager caller, String guid);
-        void getFullCardForPaymentRequest(long nativePersonalDataManagerAndroid,
-                PersonalDataManager caller, WebContents webContents, CreditCard card,
-                FullCardRequestDelegate delegate);
         void loadRulesForAddressNormalization(long nativePersonalDataManagerAndroid,
                 PersonalDataManager caller, String regionCode);
         void loadRulesForSubKeys(long nativePersonalDataManagerAndroid, PersonalDataManager caller,
