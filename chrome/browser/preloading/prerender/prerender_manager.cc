@@ -132,7 +132,7 @@ class PrerenderManager::SearchPrerenderTask {
     // AutocompleteControllerAndroid::OnSuggestionSelected() or
     // ChromeOmniboxClient::OnURLOpenedFromOmnibox() if there is no started
     // prerender.
-    DCHECK_NE(prediction_status_, PrerenderPredictionStatus::kNotStarted);
+    CHECK_NE(prediction_status_, PrerenderPredictionStatus::kNotStarted);
     SetFailureReason(prediction_status_);
     base::UmaHistogramEnumeration(
         internal::kHistogramPrerenderPredictionStatusDefaultSearchEngine,
@@ -258,7 +258,7 @@ class PrerenderManager::SearchPrerenderTask {
     // finalized.
     if (prediction_status_ != PrerenderPredictionStatus::kUnused)
       return;
-    DCHECK_NE(prediction_status, PrerenderPredictionStatus::kUnused);
+    CHECK_NE(prediction_status, PrerenderPredictionStatus::kUnused);
     prediction_status_ = prediction_status;
   }
 
@@ -376,7 +376,7 @@ PrerenderManager::StartPrerenderDirectUrlInput(
 void PrerenderManager::StartPrerenderSearchSuggestion(
     const AutocompleteMatch& match,
     const GURL& canonical_search_url) {
-  DCHECK(AutocompleteMatch::IsSearchType(match.type));
+  CHECK(AutocompleteMatch::IsSearchType(match.type));
   TemplateURLRef::SearchTermsArgs& search_terms_args =
       *(match.search_terms_args);
 
@@ -436,12 +436,12 @@ void PrerenderManager::StartPrerenderSearchSuggestion(
       base::AutoReset<bool> resetter(&search_terms_args.is_prefetch, true);
       const TemplateURL* default_provider =
           template_url_service->GetDefaultSearchProvider();
-      DCHECK(default_provider);
+      CHECK(default_provider);
       prerender_url = GURL(default_provider->url_ref().ReplaceSearchTerms(
           search_terms_args, template_url_service->search_terms_data(),
           /*post_content=*/nullptr));
     }
-    DCHECK(!search_terms_args.is_prefetch);
+    CHECK(!search_terms_args.is_prefetch);
   }
 
   StartPrerenderSearchResultInternal(canonical_search_url, prerender_url,
@@ -452,7 +452,7 @@ void PrerenderManager::StartPrerenderSearchResult(
     const GURL& canonical_search_url,
     const GURL& prerendering_url,
     base::WeakPtr<content::PreloadingAttempt> preloading_attempt) {
-  DCHECK(prerender_utils::SearchPrefetchUpgradeToPrerenderIsEnabled());
+  CHECK(prerender_utils::SearchPrefetchUpgradeToPrerenderIsEnabled());
 
   // If the caller does not want to prerender a new result, this does not need
   // to do anything.
@@ -495,9 +495,9 @@ const GURL PrerenderManager::GetPrerenderCanonicalSearchURLForTesting() const {
 
 void PrerenderManager::ResetPrerenderHandlesOnPrimaryPageChanged(
     content::NavigationHandle* navigation_handle) {
-  DCHECK(navigation_handle->HasCommitted() &&
-         navigation_handle->IsInPrimaryMainFrame() &&
-         !navigation_handle->IsSameDocument());
+  CHECK(navigation_handle->HasCommitted() &&
+        navigation_handle->IsInPrimaryMainFrame() &&
+        !navigation_handle->IsSameDocument());
   const GURL& opened_url = navigation_handle->GetURL();
   if (direct_url_input_prerender_handle_) {
     // Record whether or not the prediction is correct when prerendering for
@@ -591,7 +591,7 @@ void PrerenderManager::StartPrerenderSearchResultInternal(
           /*preloading_attempt=*/attempt.get(), std::move(url_match_predicate));
 
   if (prerender_handle) {
-    DCHECK(!search_prerender_task_)
+    CHECK(!search_prerender_task_)
         << "SearchPrerenderTask should be reset before setting a new one.";
     search_prerender_task_ = std::make_unique<SearchPrerenderTask>(
         canonical_search_url, std::move(prerender_handle));

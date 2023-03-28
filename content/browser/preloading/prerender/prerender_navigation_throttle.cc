@@ -33,16 +33,16 @@ void AnalyzeCrossOriginRedirection(
     const url::Origin& initial_origin,
     PrerenderTriggerType trigger_type,
     const std::string& embedder_histogram_suffix) {
-  DCHECK_NE(initial_origin, current_origin);
-  DCHECK_EQ(trigger_type, PrerenderTriggerType::kEmbedder);
-  DCHECK(current_origin.GetURL().SchemeIsHTTPOrHTTPS());
-  DCHECK(initial_origin.GetURL().SchemeIsHTTPOrHTTPS());
+  CHECK_NE(initial_origin, current_origin);
+  CHECK_EQ(trigger_type, PrerenderTriggerType::kEmbedder);
+  CHECK(current_origin.GetURL().SchemeIsHTTPOrHTTPS());
+  CHECK(initial_origin.GetURL().SchemeIsHTTPOrHTTPS());
 
   std::bitset<3> bits;
   bits[2] = current_origin.scheme() != initial_origin.scheme();
   bits[1] = current_origin.host() != initial_origin.host();
   bits[0] = current_origin.port() != initial_origin.port();
-  DCHECK(bits.any());
+  CHECK(bits.any());
   auto mismatch_type =
       static_cast<PrerenderCrossOriginRedirectionMismatch>(bits.to_ulong());
 
@@ -225,7 +225,7 @@ PrerenderNavigationThrottle::WillStartOrRedirectRequest(bool is_redirection) {
 
       // Skip the same-site check for non-redirected cases as the initiator
       // origin is nullopt for browser-initiated prerendering.
-      DCHECK(!prerender_host_->initiator_origin().has_value());
+      CHECK(!prerender_host_->initiator_origin().has_value());
     } else if (prerender_navigation_utils::IsCrossSite(
                    navigation_url,
                    prerender_host_->initiator_origin().value())) {

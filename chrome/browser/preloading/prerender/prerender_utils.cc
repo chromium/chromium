@@ -31,7 +31,7 @@ bool ShouldUpdateCacheEntryManually() {
 }
 
 bool SearchPrefetchUpgradeToPrerenderIsEnabled() {
-  DCHECK(IsSearchSuggestionPrerenderEnabled());
+  CHECK(IsSearchSuggestionPrerenderEnabled());
   switch (features::kSearchSuggestionPrerenderImplementationTypeParam.Get()) {
     case features::SearchSuggestionPrerenderImplementationType::kUsePrefetch:
       return true;

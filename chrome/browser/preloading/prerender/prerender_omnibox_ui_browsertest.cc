@@ -90,7 +90,7 @@ class AutocompleteActionPredictorObserverImpl
   }
 
   void OnInitialized() override {
-    DCHECK(waiting_);
+    CHECK(waiting_);
     std::move(waiting_).Run();
   }
 

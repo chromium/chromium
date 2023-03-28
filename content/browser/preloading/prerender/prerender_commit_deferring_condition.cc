@@ -51,8 +51,8 @@ PrerenderCommitDeferringCondition::PrerenderCommitDeferringCondition(
       WebContentsObserver(navigation_request.GetWebContents()),
       candidate_prerender_frame_tree_node_id_(
           candidate_prerender_frame_tree_node_id) {
-  DCHECK_NE(candidate_prerender_frame_tree_node_id_,
-            RenderFrameHost::kNoFrameTreeNodeId);
+  CHECK_NE(candidate_prerender_frame_tree_node_id_,
+           RenderFrameHost::kNoFrameTreeNodeId);
 }
 
 CommitDeferringCondition::Result

@@ -259,7 +259,7 @@ TEST_F(PrerenderHostTest, ActivationAfterPageStateUpdate) {
 
   // Perform a navigation in the primary frame tree which activates the
   // prerendered page. The main expectation is that this navigation commits
-  // successfully and doesn't hit any DCHECKs.
+  // successfully and doesn't hit any CHECKs.
   contents()->ActivatePrerenderedPage(kPrerenderingUrl);
   ExpectFinalStatus(PrerenderFinalStatus::kActivated);
 

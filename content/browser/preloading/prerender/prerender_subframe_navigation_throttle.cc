@@ -105,10 +105,10 @@ PrerenderSubframeNavigationThrottle::WillProcessResponse() {
 }
 
 void PrerenderSubframeNavigationThrottle::OnActivated() {
-  DCHECK(!NavigationRequest::From(navigation_handle())
-              ->frame_tree_node()
-              ->frame_tree()
-              .is_prerendering());
+  CHECK(!NavigationRequest::From(navigation_handle())
+             ->frame_tree_node()
+             ->frame_tree()
+             .is_prerendering());
   // OnActivated() is called right before activation navigation commit which is
   // a little early. We want to resume the subframe navigation after the
   // PageBroadcast ActivatePrerenderedPage IPC is sent, to
@@ -154,8 +154,8 @@ void PrerenderSubframeNavigationThrottle::DidFinishNavigation(
 NavigationThrottle::ThrottleCheckResult
 PrerenderSubframeNavigationThrottle::DeferOrCancelCrossOriginSubframeNavigation(
     const FrameTreeNode& frame_tree_node) {
-  DCHECK(frame_tree_node.frame_tree().is_prerendering());
-  DCHECK(!frame_tree_node.IsMainFrame());
+  CHECK(frame_tree_node.frame_tree().is_prerendering());
+  CHECK(!frame_tree_node.IsMainFrame());
 
   // Look up the PrerenderHost.
   PrerenderHostRegistry* registry = frame_tree_node.current_frame_host()
@@ -171,9 +171,9 @@ PrerenderSubframeNavigationThrottle::DeferOrCancelCrossOriginSubframeNavigation(
 
   // Defer cross-origin subframe navigations during prerendering.
   // Will resume the navigation upon activation.
-  DCHECK(!observation_.IsObserving());
+  CHECK(!observation_.IsObserving());
   observation_.Observe(prerender_host);
-  DCHECK(observation_.IsObservingSource(prerender_host));
+  CHECK(observation_.IsObservingSource(prerender_host));
   is_deferred_ = true;
   return NavigationThrottle::DEFER;
 }
@@ -187,7 +187,7 @@ NavigationThrottle::ThrottleCheckResult
 PrerenderSubframeNavigationThrottle::WillStartOrRedirectRequest() {
   auto* navigation_request = NavigationRequest::From(navigation_handle());
   FrameTreeNode* frame_tree_node = navigation_request->frame_tree_node();
-  DCHECK(!frame_tree_node->IsMainFrame());
+  CHECK(!frame_tree_node->IsMainFrame());
 
   // Proceed if the page isn't in the prerendering state.
   if (!frame_tree_node->frame_tree().is_prerendering())

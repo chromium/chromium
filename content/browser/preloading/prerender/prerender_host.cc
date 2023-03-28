@@ -109,7 +109,7 @@ PrerenderHost* PrerenderHost::GetPrerenderHostFromFrameTreeNode(
   WebContentsImpl* web_contents =
       static_cast<WebContentsImpl*>(WebContentsImpl::FromRenderFrameHost(
           frame_tree_node.current_frame_host()));
-  DCHECK(web_contents);
+  CHECK(web_contents);
   PrerenderHostRegistry* prerender_registry =
       web_contents->GetPrerenderHostRegistry();
   int prerender_host_id =
@@ -148,21 +148,21 @@ PrerenderHost::PrerenderHost(const PrerenderAttributes& attributes,
   // the other hand, renderer-initiated prerendering should have valid initiator
   // information.
   if (attributes.IsBrowserInitiated()) {
-    DCHECK(!attributes.initiator_origin.has_value());
-    DCHECK(!attributes.initiator_frame_token.has_value());
-    DCHECK_EQ(attributes.initiator_process_id,
-              ChildProcessHost::kInvalidUniqueID);
-    DCHECK_EQ(attributes.initiator_ukm_id, ukm::kInvalidSourceId);
-    DCHECK_EQ(attributes.initiator_frame_tree_node_id,
-              RenderFrameHost::kNoFrameTreeNodeId);
+    CHECK(!attributes.initiator_origin.has_value());
+    CHECK(!attributes.initiator_frame_token.has_value());
+    CHECK_EQ(attributes.initiator_process_id,
+             ChildProcessHost::kInvalidUniqueID);
+    CHECK_EQ(attributes.initiator_ukm_id, ukm::kInvalidSourceId);
+    CHECK_EQ(attributes.initiator_frame_tree_node_id,
+             RenderFrameHost::kNoFrameTreeNodeId);
   } else {
-    DCHECK(attributes.initiator_origin.has_value());
-    DCHECK(attributes.initiator_frame_token.has_value());
-    DCHECK_NE(attributes.initiator_process_id,
-              ChildProcessHost::kInvalidUniqueID);
-    DCHECK_NE(attributes.initiator_ukm_id, ukm::kInvalidSourceId);
-    DCHECK_NE(attributes.initiator_frame_tree_node_id,
-              RenderFrameHost::kNoFrameTreeNodeId);
+    CHECK(attributes.initiator_origin.has_value());
+    CHECK(attributes.initiator_frame_token.has_value());
+    CHECK_NE(attributes.initiator_process_id,
+             ChildProcessHost::kInvalidUniqueID);
+    CHECK_NE(attributes.initiator_ukm_id, ukm::kInvalidSourceId);
+    CHECK_NE(attributes.initiator_frame_tree_node_id,
+             RenderFrameHost::kNoFrameTreeNodeId);
   }
 
   // When `kPrerender2SequentialPrerendering` feature is enabled, the prerender
@@ -243,7 +243,7 @@ void PrerenderHost::SetFocusedFrame(FrameTreeNode* node,
                                     SiteInstanceGroup* source) {
   // `node` can only become focused when `node`'s current RenderFrameHost is
   // active.
-  NOTREACHED();
+  NOTREACHED_NORETURN();
 }
 
 int PrerenderHost::GetOuterDelegateFrameTreeNodeId() {
@@ -323,10 +323,10 @@ bool PrerenderHost::StartPrerendering() {
   if (initial_navigation_id_.has_value()) {
     // In usual code path, `initial_navigation_id_` should be set by
     // PrerenderNavigationThrottle during `LoadURLWithParams` above.
-    DCHECK_EQ(*initial_navigation_id_,
-              created_navigation_handle->GetNavigationId());
-    DCHECK(begin_params_);
-    DCHECK(common_params_);
+    CHECK_EQ(*initial_navigation_id_,
+             created_navigation_handle->GetNavigationId());
+    CHECK(begin_params_);
+    CHECK(common_params_);
   } else {
     // In some exceptional code path, such as the navigation failed due to CSP
     // violations, PrerenderNavigationThrottle didn't run at this point. So,
@@ -342,17 +342,17 @@ bool PrerenderHost::StartPrerendering() {
   // The initial navigation in the prerender frame tree should not wait for
   // `beforeunload` in the old page, so BeginNavigation stage should be reached
   // synchronously.
-  DCHECK_GE(navigation_request->state(),
-            NavigationRequest::WAITING_FOR_RENDERER_RESPONSE);
+  CHECK_GE(navigation_request->state(),
+           NavigationRequest::WAITING_FOR_RENDERER_RESPONSE);
   return true;
 }
 
 void PrerenderHost::DidStartNavigation(NavigationHandle* navigation_handle) {
-  DCHECK(base::FeatureList::IsEnabled(
+  CHECK(base::FeatureList::IsEnabled(
       blink::features::kPrerender2MainFrameNavigation));
 
   auto* navigation_request = NavigationRequest::From(navigation_handle);
-  DCHECK(navigation_request->IsInPrerenderedMainFrame());
+  CHECK(navigation_request->IsInPrerenderedMainFrame());
 
   // Do nothing for the initial navigation.
   if (GetInitialNavigationId() == navigation_request->GetNavigationId()) {
@@ -360,7 +360,7 @@ void PrerenderHost::DidStartNavigation(NavigationHandle* navigation_handle) {
   }
 
   // Reset `is_ready_for_activation_` since it can be set to true more than once
-  // and DCHECK will fail when the main frame navigation happens in a
+  // and CHECK will fail when the main frame navigation happens in a
   // prerendered page and PrerenderHost::DidFinishNavigation is called multiple
   // times.
   is_ready_for_activation_ = false;
@@ -370,8 +370,8 @@ void PrerenderHost::DidFinishNavigation(NavigationHandle* navigation_handle) {
   auto* navigation_request = NavigationRequest::From(navigation_handle);
 
   // Observe navigation only in the prerendering frame tree.
-  DCHECK_EQ(&(navigation_request->frame_tree_node()->frame_tree()),
-            frame_tree_.get());
+  CHECK_EQ(&(navigation_request->frame_tree_node()->frame_tree()),
+           frame_tree_.get());
 
   const bool is_prerender_main_frame =
       navigation_request->GetFrameTreeNodeId() == frame_tree_node_id_;
@@ -402,7 +402,7 @@ void PrerenderHost::DidFinishNavigation(NavigationHandle* navigation_handle) {
   // main frame navigation reaches DidFinishNavigation and the prerender host
   // has not been canceled yet.
   if (is_prerender_main_frame && !final_status_) {
-    DCHECK(!is_ready_for_activation_);
+    CHECK(!is_ready_for_activation_);
     is_ready_for_activation_ = true;
 
     // Prerender is ready to activate. Set the status to kReady.
@@ -592,16 +592,16 @@ bool PrerenderHost::AreInitialPrerenderNavigationParamsCompatibleWithNavigation(
 
   // As the initial prerender navigation is a) limited to HTTP(s) URLs and b)
   // initiated by the PrerenderHost, we do not expect some navigation parameters
-  // connected to certain navigation types to be set and the DCHECKS below
+  // connected to certain navigation types to be set and the CHECKS below
   // enforce that.
   // The parameters of the potential activation, however, are coming from the
   // renderer and we mostly don't have any guarantees what they are, so we
-  // should not DCHECK them. Instead, by default we compare them with initial
+  // should not CHECK them. Instead, by default we compare them with initial
   // prerender activation parameters and fail to activate when they differ.
   // Note: some of those parameters should be never set (or should be ignored)
   // for main-frame / HTTP(s) navigations, but we still compare them here as a
   // defence-in-depth measure.
-  DCHECK(navigation_request.IsInPrimaryMainFrame());
+  CHECK(navigation_request.IsInPrimaryMainFrame());
 
   // Compare BeginNavigationParams.
   ActivationNavigationParamsMatch result =
@@ -668,7 +668,7 @@ PrerenderHost::AreBeginNavigationParamsCompatibleWithNavigation(
   }
 
   // Initial prerender navigation cannot be a form submission.
-  DCHECK(!begin_params_->is_form_submission);
+  CHECK(!begin_params_->is_form_submission);
   if (potential_activation.is_form_submission !=
       begin_params_->is_form_submission) {
     return ActivationNavigationParamsMatch::kIsFormSubmission;
@@ -686,7 +686,7 @@ PrerenderHost::AreBeginNavigationParamsCompatibleWithNavigation(
 
   // Trust token params can be set only on subframe navigations, so both values
   // should be null here.
-  DCHECK(!begin_params_->trust_token_params);
+  CHECK(!begin_params_->trust_token_params);
   if (potential_activation.trust_token_params !=
       begin_params_->trust_token_params) {
     return ActivationNavigationParamsMatch::kTrustTokenParams;
@@ -694,7 +694,7 @@ PrerenderHost::AreBeginNavigationParamsCompatibleWithNavigation(
 
   // Web bundle token cannot be set due because it is only set for child
   // frame navigations.
-  DCHECK(!begin_params_->web_bundle_token);
+  CHECK(!begin_params_->web_bundle_token);
   if (potential_activation.web_bundle_token) {
     return ActivationNavigationParamsMatch::kWebBundleToken;
   }
@@ -702,8 +702,8 @@ PrerenderHost::AreBeginNavigationParamsCompatibleWithNavigation(
   // Don't require equality for request_context_type because link clicks
   // (HYPERLINK) should be allowed for activation, whereas prerender always has
   // type LOCATION.
-  DCHECK_EQ(begin_params_->request_context_type,
-            blink::mojom::RequestContextType::LOCATION);
+  CHECK_EQ(begin_params_->request_context_type,
+           blink::mojom::RequestContextType::LOCATION);
   switch (potential_activation.request_context_type) {
     case blink::mojom::RequestContextType::HYPERLINK:
     case blink::mojom::RequestContextType::LOCATION:
@@ -713,7 +713,7 @@ PrerenderHost::AreBeginNavigationParamsCompatibleWithNavigation(
   }
 
   // Since impression should not be set, no need to compare contents.
-  DCHECK(!begin_params_->impression);
+  CHECK(!begin_params_->impression);
   if (potential_activation.impression.has_value()) {
     return ActivationNavigationParamsMatch::kImpressionHasValue;
   }
@@ -752,8 +752,8 @@ PrerenderHost::AreCommonNavigationParamsCompatibleWithNavigation(
     return ActivationNavigationParamsMatch::kTransition;
   }
 
-  DCHECK_EQ(common_params_->navigation_type,
-            blink::mojom::NavigationType::DIFFERENT_DOCUMENT);
+  CHECK_EQ(common_params_->navigation_type,
+           blink::mojom::NavigationType::DIFFERENT_DOCUMENT);
   if (potential_activation.navigation_type != common_params_->navigation_type) {
     return ActivationNavigationParamsMatch::kNavigationType;
   }
@@ -766,18 +766,18 @@ PrerenderHost::AreCommonNavigationParamsCompatibleWithNavigation(
   // prerendering navigation isn't a download and as prerendering activation
   // won't reach out to the network, it won't turn into a navigation as well.
 
-  DCHECK(common_params_->base_url_for_data_url.is_empty());
+  CHECK(common_params_->base_url_for_data_url.is_empty());
   if (potential_activation.base_url_for_data_url !=
       common_params_->base_url_for_data_url) {
     return ActivationNavigationParamsMatch::kBaseUrlForDataUrl;
   }
 
-  // The method parameter is compared only by DCHECK_EQ because that change is
+  // The method parameter is compared only by CHECK_EQ because that change is
   // detected earlier by checking the HTTP request headers changes.
-  DCHECK_EQ(potential_activation.method, common_params_->method);
+  CHECK_EQ(potential_activation.method, common_params_->method);
 
   // Initial prerender navigation can't be a form submission.
-  DCHECK(!common_params_->post_data);
+  CHECK(!common_params_->post_data);
   if (potential_activation.post_data != common_params_->post_data) {
     return ActivationNavigationParamsMatch::kPostData;
   }
@@ -786,7 +786,7 @@ PrerenderHost::AreCommonNavigationParamsCompatibleWithNavigation(
   // debugging purposes and does not impact the properties of the document
   // created by this navigation.
 
-  DCHECK(!common_params_->started_from_context_menu);
+  CHECK(!common_params_->started_from_context_menu);
   if (potential_activation.started_from_context_menu !=
       common_params_->started_from_context_menu) {
     return ActivationNavigationParamsMatch::kStartedFromContextMenu;
@@ -818,7 +818,7 @@ PrerenderHost::AreCommonNavigationParamsCompatibleWithNavigation(
   }
 
   // Initial prerender navigation can't be a history navigation.
-  DCHECK(!common_params_->is_history_navigation_in_new_child_frame);
+  CHECK(!common_params_->is_history_navigation_in_new_child_frame);
   if (potential_activation.is_history_navigation_in_new_child_frame !=
       common_params_->is_history_navigation_in_new_child_frame) {
     return ActivationNavigationParamsMatch::kIsHistoryNavigationInNewChildFrame;
@@ -836,13 +836,13 @@ PrerenderHost::AreCommonNavigationParamsCompatibleWithNavigation(
 }
 
 RenderFrameHostImpl* PrerenderHost::GetPrerenderedMainFrameHost() {
-  DCHECK(frame_tree_);
-  DCHECK(frame_tree_->root()->current_frame_host());
+  CHECK(frame_tree_);
+  CHECK(frame_tree_->root()->current_frame_host());
   return frame_tree_->root()->current_frame_host();
 }
 
 FrameTree& PrerenderHost::GetPrerenderFrameTree() {
-  DCHECK(frame_tree_);
+  CHECK(frame_tree_);
   return *frame_tree_;
 }
 
@@ -854,8 +854,8 @@ void PrerenderHost::RecordFailedFinalStatus(
 
 void PrerenderHost::RecordFailedFinalStatusImpl(
     const PrerenderCancellationReason& reason) {
-  DCHECK(!final_status_);
-  DCHECK_NE(reason.final_status(), PrerenderFinalStatus::kActivated);
+  CHECK(!final_status_);
+  CHECK_NE(reason.final_status(), PrerenderFinalStatus::kActivated);
   final_status_ = reason.final_status();
   RecordFailedPrerenderFinalStatus(reason, attributes_);
 
@@ -865,7 +865,7 @@ void PrerenderHost::RecordFailedFinalStatusImpl(
 }
 
 void PrerenderHost::RecordActivation(NavigationRequest& navigation_request) {
-  DCHECK(!final_status_);
+  CHECK(!final_status_);
   final_status_ = PrerenderFinalStatus::kActivated;
 
   // TODO(crbug.com/1299330): Replace
@@ -911,15 +911,15 @@ absl::optional<int64_t> PrerenderHost::GetInitialNavigationId() const {
 }
 
 void PrerenderHost::SetInitialNavigation(NavigationRequest* navigation) {
-  DCHECK(!initial_navigation_id_.has_value());
+  CHECK(!initial_navigation_id_.has_value());
   initial_navigation_id_ = navigation->GetNavigationId();
   begin_params_ = navigation->begin_params().Clone();
   common_params_ = navigation->common_params().Clone();
 
   // The prerendered page should be checked by the main world CSP. See also
   // relevant comments in AreCommonNavigationParamsCompatibleWithNavigation().
-  DCHECK_EQ(common_params_->should_check_main_world_csp,
-            network::mojom::CSPDisposition::CHECK);
+  CHECK_EQ(common_params_->should_check_main_world_csp,
+           network::mojom::CSPDisposition::CHECK);
 }
 
 void PrerenderHost::SetTriggeringOutcome(PreloadingTriggeringOutcome outcome) {
@@ -1033,7 +1033,7 @@ void PrerenderHost::SetFailureReason(PrerenderFinalStatus status) {
     case PrerenderFinalStatus::kActivated:
       // The activation path does not call this method, so it should never reach
       // this case.
-      NOTREACHED();
+      NOTREACHED_NORETURN();
   }
 }
 
@@ -1072,10 +1072,10 @@ void PrerenderHost::Cancel(PrerenderFinalStatus status) {
     return;
 
   RenderFrameHostImpl* host = PrerenderHost::GetPrerenderedMainFrameHost();
-  DCHECK(host);
+  CHECK(host);
   PrerenderHostRegistry* registry =
       host->delegate()->GetPrerenderHostRegistry();
-  DCHECK(registry);
+  CHECK(registry);
   registry->CancelHost(frame_tree_node_id_, status);
 }
 

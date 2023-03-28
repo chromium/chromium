@@ -2133,7 +2133,7 @@ IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest,
 
   RenderFrameHost* same_origin_render_frame_host = FindRenderFrameHost(
       prerender_frame_host->GetPage(), kSameOriginSubframeUrl);
-  DCHECK(same_origin_render_frame_host);
+  CHECK(same_origin_render_frame_host);
   EXPECT_EQ(true, EvalJs(same_origin_render_frame_host,
                          kInitialDocumentPrerenderingScript));
   EXPECT_EQ(false, EvalJs(same_origin_render_frame_host,
@@ -2144,7 +2144,7 @@ IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest,
 
   RenderFrameHost* cross_origin_render_frame_host = FindRenderFrameHost(
       prerender_frame_host->GetPage(), kCrossOriginSubframeUrl);
-  DCHECK(cross_origin_render_frame_host);
+  CHECK(cross_origin_render_frame_host);
   EXPECT_EQ(false, EvalJs(cross_origin_render_frame_host,
                           kInitialDocumentPrerenderingScript));
   EXPECT_EQ(false, EvalJs(cross_origin_render_frame_host,
@@ -2213,7 +2213,7 @@ IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest,
 
   RenderFrameHost* cross_origin_render_frame_host = FindRenderFrameHost(
       prerender_frame_host->GetPage(), kCrossOriginSubframeUrl);
-  DCHECK(cross_origin_render_frame_host);
+  CHECK(cross_origin_render_frame_host);
   EXPECT_EQ(false, EvalJs(cross_origin_render_frame_host,
                           kInitialDocumentPrerenderingScript));
   EXPECT_EQ(false, EvalJs(cross_origin_render_frame_host,
@@ -2914,7 +2914,7 @@ IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest, ActivationDoesntRunThrottles) {
 
             auto throttle_ptr =
                 std::make_unique<TestNavigationThrottle>(handle);
-            DCHECK(!throttle);
+            CHECK(!throttle);
             throttle = throttle_ptr.get();
             throttle_ptr->SetResponse(
                 TestNavigationThrottle::WILL_START_REQUEST,
@@ -8658,7 +8658,7 @@ IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest, MixedContent) {
   // Make a prerendered page.
   int host_id = AddPrerender(kPrerenderingUrl);
   auto* prerendered_rfh = GetPrerenderedMainFrameHost(host_id);
-  DCHECK(prerendered_rfh);
+  CHECK(prerendered_rfh);
   EXPECT_TRUE(AddTestUtilJS(prerendered_rfh));
 
   test::PrerenderHostObserver host_observer(*web_contents(), host_id);
@@ -9086,7 +9086,7 @@ IN_PROC_BROWSER_TEST_F(
   // Start prerendering.
   int host_id = AddPrerender(kPrerenderingUrl);
   RenderFrameHost* prerender_rfh = GetPrerenderedMainFrameHost(host_id);
-  DCHECK(prerender_rfh);
+  CHECK(prerender_rfh);
   AddTestUtilJS(prerender_rfh);
 
   // Add subframe in prerendering page.
@@ -9126,8 +9126,8 @@ IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest, NavigationHandleFrameType) {
         web_contents(),
         base::BindLambdaForTesting([](NavigationHandle* navigation_handle) {
           EXPECT_TRUE(navigation_handle->IsInPrimaryMainFrame());
-          DCHECK_EQ(navigation_handle->GetNavigatingFrameType(),
-                    FrameType::kPrimaryMainFrame);
+          CHECK_EQ(navigation_handle->GetNavigatingFrameType(),
+                   FrameType::kPrimaryMainFrame);
         }));
     // Navigate to an initial page.
     ASSERT_TRUE(NavigateToURL(shell(), kInitialUrl));
@@ -9139,8 +9139,8 @@ IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest, NavigationHandleFrameType) {
         web_contents(),
         base::BindLambdaForTesting([](NavigationHandle* navigation_handle) {
           EXPECT_TRUE(navigation_handle->IsInPrerenderedMainFrame());
-          DCHECK_EQ(navigation_handle->GetNavigatingFrameType(),
-                    FrameType::kPrerenderMainFrame);
+          CHECK_EQ(navigation_handle->GetNavigatingFrameType(),
+                   FrameType::kPrerenderMainFrame);
         }));
     // Start prerendering.
     AddPrerender(kPrerenderingUrl);
@@ -9152,8 +9152,8 @@ IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest, NavigationHandleFrameType) {
         base::BindLambdaForTesting([](NavigationHandle* navigation_handle) {
           EXPECT_TRUE(navigation_handle->IsInPrimaryMainFrame());
           EXPECT_TRUE(navigation_handle->IsPrerenderedPageActivation());
-          DCHECK_EQ(navigation_handle->GetNavigatingFrameType(),
-                    FrameType::kPrimaryMainFrame);
+          CHECK_EQ(navigation_handle->GetNavigatingFrameType(),
+                   FrameType::kPrimaryMainFrame);
         }));
     NavigatePrimaryPage(kPrerenderingUrl);
   }
