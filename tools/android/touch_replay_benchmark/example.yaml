@@ -1,0 +1,27 @@
+#
+# Example configuration.
+#
+named_urls:
+  google: https://www.google.com/search?q=science
+  youtube: https://m.youtube.com
+  amazon: https://www.amazon.com/Google-Pixel-7-5G-Android-Phone/dp/B0BCQVRH38
+  reddit: https://www.reddit.com/r/science
+  yahoo: https://fr.yahoo.com
+  wikipedia: https://en.wikipedia.org/wiki/Science
+  cnn: https://edition.cnn.com/2023/02/02/business/australia-radioactive-capsule-investigation-intl-hnk/index.html
+  theverge: https://theverge.com
+  polygon: https://polygon.com
+  insideevs: https://insideevs.com/news/607736/ariel-hipercar-1180-horsepower-electric-jet-engine
+  sugary: https://incandescent-sugary-emoji.glitch.me/
+args: ''
+url: google
+
+# Chrometto experiment.
+enable_chrometto_tracing:
+  - false
+  - true
+chrometto_config: tools/android/touch_replay_benchmark/example-chrometto-config
+
+# The |cpu_profile| binary can be fetched by:
+#   curl -LO https://raw.githubusercontent.com/google/perfetto/master/tools/cpu_profile
+cpu_profile: ./cpu_profile

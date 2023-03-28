@@ -1,0 +1,59 @@
+buffers {
+  size_kb: 2048
+}
+buffers {
+  size_kb: 40000
+}
+buffers {
+  size_kb: 40000
+}
+data_sources {
+  config {
+    name: "linux.process_stats"
+    target_buffer: 0
+    process_stats_config {
+      proc_stats_poll_ms: 100
+    }
+  }
+}
+data_sources {
+    config {
+        name: "linux.ftrace"
+        target_buffer: 1
+        ftrace_config {
+            ftrace_events: "sched/sched_switch"
+            ftrace_events: "power/suspend_resume"
+            ftrace_events: "sched/sched_wakeup"
+            ftrace_events: "sched/sched_wakeup_new"
+            ftrace_events: "sched/sched_waking"
+            ftrace_events: "sched/sched_process_exit"
+            ftrace_events: "sched/sched_process_free"
+            ftrace_events: "task/task_newtask"
+            ftrace_events: "task/task_rename"
+            buffer_size_kb: 2048
+            drain_period_ms: 250
+        }
+    }
+}
+data_sources {
+    config {
+        target_buffer: 2
+        name: "org.chromium.trace_event"
+        chrome_config {
+            trace_config: "{\"record_mode\":\"record-until-full\",\"included_categories\": [\"toplevel\",\"toplevel.flow\",\"navigation\",\"Java\"\"base\",\"browser\",\"cc\",\"disabled-by-default-cpu_profiler\",\"gpu\",\"input\",\"latencyInfo\",\"mojom\",\"viz\",\"ui\"],\"memory_dump_config\":{}}"
+        }
+    }
+}
+data_sources {
+    config {
+        target_buffer: 2
+        name: "org.chromium.trace_metadata"
+        chrome_config {
+            trace_config: "{\"record_mode\":\"record-until-full\",\"included_categories\": [\"toplevel\",\"toplevel.flow\",\"navigation\",\"Java\"\"base\",\"browser\",\"cc\",\"disabled-by-default-cpu_profiler\",\"gpu\",\"input\",\"latencyInfo\",\"mojom\",\"viz\",\"ui\"],\"memory_dump_config\":{}}"
+        }
+    }
+}
+duration_ms: 0
+write_into_file: true
+flush_period_ms: 604800000
+flush_timeout_ms: 30000
