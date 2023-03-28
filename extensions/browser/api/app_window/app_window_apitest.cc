@@ -174,6 +174,13 @@ IN_PROC_BROWSER_TEST_F(AppWindowApiTest, AlphaEnabledWrongFrameType) {
       << message_;
 }
 
+IN_PROC_BROWSER_TEST_F(AppWindowApiTest, CrossOriginIsolation) {
+  EXPECT_TRUE(
+      RunExtensionTest("platform_apps/window_api_cross_origin_isolation",
+                       {.launch_as_platform_app = true}))
+      << message_;
+}
+
 IN_PROC_BROWSER_TEST_F(AppWindowApiTest, VisibleOnAllWorkspacesInStable) {
   extensions::ScopedCurrentChannel channel(version_info::Channel::STABLE);
   EXPECT_TRUE(RunExtensionTest(

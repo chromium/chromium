@@ -26,7 +26,8 @@ class AppWindowCreateFunction : public ExtensionFunction {
   ResponseAction Run() override;
 
  private:
-  void OnAppWindowFinishedFirstNavigationOrClosed(ResponseValue result_arg,
+  void OnAppWindowFinishedFirstNavigationOrClosed(AppWindow* app_window,
+                                                  bool is_existing_window,
                                                   bool did_finish);
 
   bool GetBoundsSpec(
