@@ -1072,17 +1072,6 @@ if (!limit_android_deps) {
   }
 
   # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
-  android_aar_prebuilt("google_play_services_fido_java") {
-    aar_path = "libs/com_google_android_gms_play_services_fido/play-services-fido-19.0.0-beta.aar"
-    info_path = "libs/com_google_android_gms_play_services_fido/com_google_android_gms_play_services_fido.info"
-    deps = [
-      ":google_play_services_base_java",
-      ":google_play_services_basement_java",
-      ":google_play_services_tasks_java",
-    ]
-  }
-
-  # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
   android_aar_prebuilt("google_play_services_gcm_java") {
     aar_path = "libs/com_google_android_gms_play_services_gcm/play-services-gcm-17.0.0.aar"
     info_path = "libs/com_google_android_gms_play_services_gcm/com_google_android_gms_play_services_gcm.info"

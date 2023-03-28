@@ -54,7 +54,6 @@
     "libs/com_google_android_gms_play_services_cast_framework",
     "libs/com_google_android_gms_play_services_clearcut",
     "libs/com_google_android_gms_play_services_cloud_messaging",
-    "libs/com_google_android_gms_play_services_fido",
     "libs/com_google_android_gms_play_services_flags",
     "libs/com_google_android_gms_play_services_gcm",
     "libs/com_google_android_gms_play_services_iid",
