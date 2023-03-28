@@ -16,7 +16,6 @@ import android.os.Bundle;
 import androidx.test.filters.SmallTest;
 
 import org.junit.After;
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -29,8 +28,8 @@ import org.mockito.MockitoAnnotations;
 
 import org.chromium.base.test.BaseJUnit4ClassRunner;
 import org.chromium.base.test.UiThreadTest;
-import org.chromium.base.test.metrics.HistogramTestRule;
 import org.chromium.base.test.util.Batch;
+import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tabmodel.TabModelSelectorSupplier;
 import org.chromium.chrome.test.ChromeBrowserTestRule;
@@ -73,9 +72,6 @@ public class AndroidPaymentAppFinderUnitTest extends BlankUiTestActivityTestCase
 
     @Rule
     public ChromeBrowserTestRule mTestRule = new ChromeBrowserTestRule();
-
-    @Rule
-    public HistogramTestRule mHistogramTestRule = new HistogramTestRule();
 
     @Mock
     private PaymentManifestWebDataService mPaymentManifestWebDataService;
@@ -171,44 +167,28 @@ public class AndroidPaymentAppFinderUnitTest extends BlankUiTestActivityTestCase
         Mockito.verify(delegate).onDoneCreatingPaymentApps(/*factory=*/null);
     }
 
-    /* Verify no metrics were recorded for the number of supported payment methods. */
-    private void verifyNoSupportedPaymentMethodCountMetric() {
-        verifySupportedPaymentMethodCountMetric(/*histograms=*/0, /*methods=*/-1);
-    }
-
-    /* Verify the supported payment method count. */
-    private void verifySupportedPaymentMethodCountMetric(int histograms, int methods) {
-        Assert.assertEquals(
-                String.format("Expected number of histogram recordings: %d.", histograms),
-                /*expected=*/histograms,
-                mHistogramTestRule.getHistogramTotalCount(
-                        "PaymentRequest.NumberOfSupportedMethods.AndroidApp"));
-
-        if (histograms > 0) {
-            Assert.assertEquals(String.format("Expected number of payment methods: %d.", methods),
-                    /*expected=*/histograms,
-                    mHistogramTestRule.getHistogramValueCount(
-                            "PaymentRequest.NumberOfSupportedMethods.AndroidApp",
-                            /*sample=*/methods));
-        }
-    }
-
     @SmallTest
     @Test
     @UiThreadTest
     public void testNoValidPaymentMethodNames() {
+        var histograms =
+                HistogramWatcher.newBuilder()
+                        .expectNoRecords("PaymentRequest.NumberOfSupportedMethods.AndroidApp")
+                        .build();
         verifyNoAppsFound(findApps(new String[] {"unknown-payment-method-name",
                                            "http://not.secure.payment.method.name.com", "https://"},
                 mPaymentManifestDownloader, mPaymentManifestParser, mPackageManagerDelegate));
-
-        // No apps:
-        verifyNoSupportedPaymentMethodCountMetric();
+        histograms.assertExpected("No apps, so 0 records are expected");
     }
 
     @SmallTest
     @Test
     @UiThreadTest
     public void testQueryWithoutApps() {
+        var histograms =
+                HistogramWatcher.newBuilder()
+                        .expectNoRecords("PaymentRequest.NumberOfSupportedMethods.AndroidApp")
+                        .build();
         Mockito.when(mPackageManagerDelegate.getActivitiesThatCanRespondToIntentWithMetaData(
                              ArgumentMatchers.argThat(sPayIntentArgumentMatcher)))
                 .thenReturn(new ArrayList<ResolveInfo>());
@@ -219,15 +199,16 @@ public class AndroidPaymentAppFinderUnitTest extends BlankUiTestActivityTestCase
         Mockito.verify(mPackageManagerDelegate, Mockito.never())
                 .getStringArrayResourceForApplication(
                         ArgumentMatchers.any(ApplicationInfo.class), ArgumentMatchers.anyInt());
-
-        // No apps:
-        verifyNoSupportedPaymentMethodCountMetric();
+        histograms.assertExpected("No apps, so 0 records are expected");
     }
 
     @SmallTest
     @Test
     @UiThreadTest
     public void testQueryWithoutMetaData() {
+        var histograms = HistogramWatcher.newSingleRecordWatcher(
+                "PaymentRequest.NumberOfSupportedMethods.AndroidApp", /*value=*/0);
+
         List<ResolveInfo> activities = new ArrayList<>();
         ResolveInfo alicePay = new ResolveInfo();
         alicePay.activityInfo = new ActivityInfo();
@@ -248,14 +229,17 @@ public class AndroidPaymentAppFinderUnitTest extends BlankUiTestActivityTestCase
                 .getStringArrayResourceForApplication(
                         ArgumentMatchers.any(ApplicationInfo.class), ArgumentMatchers.anyInt());
 
-        // The installed app declared support for no payment methods:
-        verifySupportedPaymentMethodCountMetric(/*histograms=*/1, /*methods=*/0);
+        histograms.assertExpected(
+                "The installed app should have declared support for 0 payment methods");
     }
 
     @SmallTest
     @Test
     @UiThreadTest
     public void testQueryWithoutLabel() {
+        var histograms = HistogramWatcher.newSingleRecordWatcher(
+                "PaymentRequest.NumberOfSupportedMethods.AndroidApp", /*value=*/1);
+
         List<ResolveInfo> activities = new ArrayList<>();
         ResolveInfo alicePay = new ResolveInfo();
         alicePay.activityInfo = new ActivityInfo();
@@ -279,14 +263,16 @@ public class AndroidPaymentAppFinderUnitTest extends BlankUiTestActivityTestCase
                 .getStringArrayResourceForApplication(
                         ArgumentMatchers.any(ApplicationInfo.class), ArgumentMatchers.anyInt());
 
-        // The installed app supports only "basic-card" method:
-        verifySupportedPaymentMethodCountMetric(/*histograms=*/1, /*methods=*/1);
+        histograms.assertExpected("The installed app should support only \"basic-card\" method");
     }
 
     @SmallTest
     @Test
     @UiThreadTest
     public void testQueryUnsupportedPaymentMethod() {
+        var histograms = HistogramWatcher.newSingleRecordWatcher(
+                "PaymentRequest.NumberOfSupportedMethods.AndroidApp", /*value=*/1);
+
         PackageManagerDelegate packageManagerDelegate = installPaymentApps(
                 new String[] {"com.alicepay.app"}, new String[] {"unsupported-payment-method"});
 
@@ -297,8 +283,8 @@ public class AndroidPaymentAppFinderUnitTest extends BlankUiTestActivityTestCase
                 .getStringArrayResourceForApplication(
                         ArgumentMatchers.any(ApplicationInfo.class), ArgumentMatchers.anyInt());
 
-        // The installed app supports only "unsupported-payment-method" method:
-        verifySupportedPaymentMethodCountMetric(/*histograms=*/1, /*methods=*/1);
+        histograms.assertExpected(
+                "The installed app should support only \"unsupported-payment-method\" method");
     }
 
     private PackageManagerDelegate installPaymentApps(String[] packageNames, String[] methodNames) {
@@ -329,6 +315,8 @@ public class AndroidPaymentAppFinderUnitTest extends BlankUiTestActivityTestCase
     @Test
     @UiThreadTest
     public void testQueryDifferentPaymentMethod() {
+        var histograms = HistogramWatcher.newSingleRecordWatcher(
+                "PaymentRequest.NumberOfSupportedMethods.AndroidApp", /*value=*/1);
         PackageManagerDelegate packageManagerDelegate =
                 installPaymentApps(new String[] {"com.alicepay.app"}, new String[] {"basic-card"});
 
@@ -339,14 +327,15 @@ public class AndroidPaymentAppFinderUnitTest extends BlankUiTestActivityTestCase
                 .getStringArrayResourceForApplication(
                         ArgumentMatchers.any(ApplicationInfo.class), ArgumentMatchers.anyInt());
 
-        // The installed app supports only "basic-card" method:
-        verifySupportedPaymentMethodCountMetric(/*histograms=*/1, /*methods=*/1);
+        histograms.assertExpected("The installed app should support only \"basic-card\" method");
     }
 
     @SmallTest
     @Test
     @UiThreadTest
     public void testQueryNoPaymentMethod() {
+        var histograms = HistogramWatcher.newSingleRecordWatcher(
+                "PaymentRequest.NumberOfSupportedMethods.AndroidApp", /*value=*/1);
         PackageManagerDelegate packageManagerDelegate =
                 installPaymentApps(new String[] {"com.alicepay.app"}, new String[] {"basic-card"});
 
@@ -357,14 +346,18 @@ public class AndroidPaymentAppFinderUnitTest extends BlankUiTestActivityTestCase
                 .getStringArrayResourceForApplication(
                         ArgumentMatchers.any(ApplicationInfo.class), ArgumentMatchers.anyInt());
 
-        // The installed app supports only "basic-card" method:
-        verifySupportedPaymentMethodCountMetric(/*histograms=*/1, /*methods=*/1);
+        histograms.assertExpected("The installed app should support only \"basic-card\" method");
     }
 
     @SmallTest
     @Test
     @UiThreadTest
     public void testHistogramForMutlipleApps() {
+        var histograms =
+                HistogramWatcher.newBuilder()
+                        .expectIntRecordTimes("PaymentRequest.NumberOfSupportedMethods.AndroidApp",
+                                /*value=*/1, /*times=*/2)
+                        .build();
         PackageManagerDelegate packageManagerDelegate =
                 installPaymentApps(new String[] {"com.alicepay.app", "com.bobpay.app"},
                         new String[] {"https://alicepay.test", "https://bobpay.test"});
@@ -373,14 +366,16 @@ public class AndroidPaymentAppFinderUnitTest extends BlankUiTestActivityTestCase
         findApps(new String[] {"https://charliepay.test"}, mPaymentManifestDownloader,
                 mPaymentManifestParser, packageManagerDelegate);
 
-        // Two apps are installed, with one method each.
-        verifySupportedPaymentMethodCountMetric(/*histograms=*/2, /*methods=*/1);
+        histograms.assertExpected(
+                "Two apps are installed with one method each, expected two records with value 1.");
     }
 
     @SmallTest
     @Test
     @UiThreadTest
     public void testHistogramForMutlipleMethods() {
+        var histograms = HistogramWatcher.newSingleRecordWatcher(
+                "PaymentRequest.NumberOfSupportedMethods.AndroidApp", /*value=*/2);
         List<ResolveInfo> activities = new ArrayList<>();
         ResolveInfo bobPay = new ResolveInfo();
         bobPay.activityInfo = new ActivityInfo();
@@ -410,8 +405,8 @@ public class AndroidPaymentAppFinderUnitTest extends BlankUiTestActivityTestCase
         findApps(new String[] {"https://charliepay.test"}, mPaymentManifestDownloader,
                 mPaymentManifestParser, mPackageManagerDelegate);
 
-        // One app is installed. It has two payment methods.
-        verifySupportedPaymentMethodCountMetric(/*histograms=*/1, /*methods=*/2);
+        histograms.assertExpected(
+                "One app is installed with two payment methods, expected one record with value 2.");
     }
 
     @SmallTest
