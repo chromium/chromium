@@ -4,13 +4,10 @@
 
 package org.chromium.webengine.interfaces;
 
-import android.graphics.Bitmap;
-
 import org.chromium.webengine.interfaces.ITabParams;
 
 oneway interface ITabObserverDelegate {
-    void notifyTitleUpdated(in String title) = 1;
-    void notifyVisibleUriChanged(in String uri) = 2;
+    void notifyTitleUpdated(String title) = 1;
+    void notifyVisibleUriChanged(String uri) = 2;
     void notifyRenderProcessGone() = 3;
-    void notifyFaviconChanged(in Bitmap favicon) = 4;
 }

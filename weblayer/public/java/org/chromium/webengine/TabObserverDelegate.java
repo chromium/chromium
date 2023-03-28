@@ -4,7 +4,6 @@
 
 package org.chromium.webengine;
 
-import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Handler;
 import android.os.Looper;
@@ -73,15 +72,6 @@ class TabObserverDelegate extends ITabObserverDelegate.Stub {
         mHandler.post(() -> {
             for (TabObserver observer : mTabObservers) {
                 observer.onRenderProcessGone(mTab);
-            }
-        });
-    }
-
-    @Override
-    public void notifyFaviconChanged(Bitmap favicon) {
-        mHandler.post(() -> {
-            for (TabObserver observer : mTabObservers) {
-                observer.onFaviconChanged(mTab, favicon);
             }
         });
     }
