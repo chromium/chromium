@@ -1409,11 +1409,10 @@ HttpHandler::PrepareStandardResponse(
 
   base::Value::Dict body_params;
   if (status.IsError()){
-    base::Value* inner_params =
-        body_params.Set("value", base::Value(base::Value::Type::DICT));
-    inner_params->SetStringKey("error", StatusCodeToString(status.code()));
-    inner_params->SetStringKey("message", status.message());
-    inner_params->SetStringKey("stacktrace", status.stack_trace());
+    base::Value::Dict* inner_params = body_params.EnsureDict("value");
+    inner_params->Set("error", StatusCodeToString(status.code()));
+    inner_params->Set("message", status.message());
+    inner_params->Set("stacktrace", status.stack_trace());
     // According to
     // https://www.w3.org/TR/2018/REC-webdriver1-20180605/#dfn-annotated-unexpected-alert-open-error
     // error UnexpectedAlertOpen should contain 'data.text' with alert text
@@ -1422,13 +1421,13 @@ HttpHandler::PrepareStandardResponse(
       auto first = message.find("{");
       auto last = message.find_last_of("}");
       if (first == std::string::npos || last == std::string::npos) {
-        inner_params->SetStringPath("data.text", "");
+        inner_params->SetByDottedPath("data.text", "");
       } else {
         std::string alert_text = message.substr(first, last - first);
         auto colon = alert_text.find(":");
         if (colon != std::string::npos && alert_text.size() > (colon + 2))
           alert_text = alert_text.substr(colon + 2);
-        inner_params->SetStringPath("data.text", alert_text);
+        inner_params->SetByDottedPath("data.text", alert_text);
       }
     }
   } else {

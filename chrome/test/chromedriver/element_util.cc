@@ -299,9 +299,9 @@ std::string GetElementKey() {
 
 base::Value CreateElementCommon(const std::string& key,
                                 const std::string& value) {
-  base::Value element(base::Value::Type::DICT);
-  element.SetStringPath(key, value);
-  return element;
+  base::Value::Dict element;
+  element.SetByDottedPath(key, value);
+  return base::Value(std::move(element));
 }
 
 base::Value CreateElement(const std::string& element_id) {
