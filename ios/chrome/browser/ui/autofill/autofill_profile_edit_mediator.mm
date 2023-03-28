@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/ui/settings/autofill/autofill_profile_edit_mediator.h"
+#import "ios/chrome/browser/ui/autofill/autofill_profile_edit_mediator.h"
 
 #import "base/strings/sys_string_conversions.h"
 #import "components/autofill/core/browser/geo/autofill_country.h"
@@ -10,11 +10,11 @@
 #import "components/autofill/core/browser/ui/country_combobox_model.h"
 #import "ios/chrome/browser/application_context/application_context.h"
 #import "ios/chrome/browser/shared/ui/list_model/list_model.h"
+#import "ios/chrome/browser/ui/autofill/autofill_profile_edit_consumer.h"
+#import "ios/chrome/browser/ui/autofill/autofill_profile_edit_mediator_delegate.h"
 #import "ios/chrome/browser/ui/autofill/autofill_ui_type.h"
 #import "ios/chrome/browser/ui/autofill/autofill_ui_type_util.h"
-#import "ios/chrome/browser/ui/settings/autofill/autofill_profile_edit_consumer.h"
-#import "ios/chrome/browser/ui/settings/autofill/autofill_profile_edit_mediator_delegate.h"
-#import "ios/chrome/browser/ui/settings/autofill/cells/country_item.h"
+#import "ios/chrome/browser/ui/autofill/cells/country_item.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."

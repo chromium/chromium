@@ -1,22 +1,26 @@
-// Copyright 2015 The Chromium Authors
+// Copyright 2023 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/ui/settings/autofill/autofill_profile_edit_table_view_controller.h"
+#import "ios/chrome/browser/ui/settings/autofill/autofill_settings_profile_edit_table_view_controller.h"
 
 #import <memory>
-
 #import "base/feature_list.h"
 #import "base/mac/foundation_util.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/strings/utf_string_conversions.h"
 #import "base/test/scoped_feature_list.h"
 #import "components/autofill/core/common/autofill_features.h"
+#import "ios/chrome/browser/shared/ui/table_view/cells/table_view_header_footer_item.h"
+#import "ios/chrome/browser/shared/ui/table_view/cells/table_view_link_header_footer_item.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_text_edit_item.h"
 #import "ios/chrome/browser/shared/ui/table_view/chrome_table_view_controller_test.h"
 #import "ios/chrome/browser/shared/ui/table_view/table_view_model.h"
-#import "ios/chrome/browser/ui/settings/autofill/autofill_profile_edit_consumer.h"
-#import "ios/chrome/browser/ui/settings/autofill/autofill_profile_edit_table_view_controller_delegate.h"
+#import "ios/chrome/browser/shared/ui/table_view/table_view_utils.h"
+#import "ios/chrome/browser/ui/autofill/autofill_profile_edit_consumer.h"
+#import "ios/chrome/browser/ui/autofill/autofill_profile_edit_handler.h"
+#import "ios/chrome/browser/ui/autofill/autofill_profile_edit_table_view_controller.h"
+#import "ios/chrome/browser/ui/autofill/autofill_profile_edit_table_view_controller_delegate.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "testing/gtest_mac.h"
 #import "testing/platform_test.h"
@@ -90,7 +94,7 @@ const char16_t kTestEmail[] = u"test@email.com";
 
 namespace {
 
-class AutofillProfileEditTableViewControllerTest
+class AutofillSettingsProfileEditTableViewControllerTest
     : public ChromeTableViewControllerTest {
  protected:
   void SetUp() override {
@@ -100,26 +104,33 @@ class AutofillProfileEditTableViewControllerTest
     fake_consumer_ = [[AutofillProfileEditFakeConsumer alloc] init];
     CreateController();
     CheckController();
-    fake_consumer_.consumer =
-        base::mac::ObjCCastStrict<AutofillProfileEditTableViewController>(
-            controller());
+    fake_consumer_.consumer = autofill_profile_edit_table_view_controller_;
 
     // Reload the model so that the consumer changes are propogated.
     [controller() loadModel];
   }
 
   ChromeTableViewController* InstantiateController() override {
-    return [[AutofillProfileEditTableViewController alloc]
-        initWithDelegate:delegate_mock_
-               userEmail:nil];
+    AutofillSettingsProfileEditTableViewController* viewController =
+        [[AutofillSettingsProfileEditTableViewController alloc]
+            initWithStyle:ChromeTableViewStyle()];
+    autofill_profile_edit_table_view_controller_ =
+        [[AutofillProfileEditTableViewController alloc]
+            initWithDelegate:delegate_mock_
+                   userEmail:nil
+                  controller:viewController];
+    viewController.handler = autofill_profile_edit_table_view_controller_;
+    return viewController;
   }
 
   AutofillProfileEditFakeConsumer* fake_consumer_;
+  AutofillProfileEditTableViewController*
+      autofill_profile_edit_table_view_controller_;
   id delegate_mock_;
 };
 
 // Default test case of no addresses or credit cards.
-TEST_F(AutofillProfileEditTableViewControllerTest, TestInitialization) {
+TEST_F(AutofillSettingsProfileEditTableViewControllerTest, TestInitialization) {
   TableViewModel* model = [controller() tableViewModel];
   int rowCnt =
       base::FeatureList::IsEnabled(
@@ -132,7 +143,7 @@ TEST_F(AutofillProfileEditTableViewControllerTest, TestInitialization) {
 }
 
 // Adding a single address results in an address section.
-TEST_F(AutofillProfileEditTableViewControllerTest, TestOneProfile) {
+TEST_F(AutofillSettingsProfileEditTableViewControllerTest, TestOneProfile) {
   TableViewModel* model = [controller() tableViewModel];
   //  UITableView* tableView = [autofill_profile_edit_controller_ tableView];
 
@@ -156,27 +167,34 @@ TEST_F(AutofillProfileEditTableViewControllerTest, TestOneProfile) {
   }
 }
 
-class AutofillProfileEditTableViewControllerTestWithUnionViewEnabled
-    : public AutofillProfileEditTableViewControllerTest {
+class AutofillSettingsProfileEditTableViewControllerTestWithUnionViewEnabled
+    : public AutofillSettingsProfileEditTableViewControllerTest {
  protected:
-  AutofillProfileEditTableViewControllerTestWithUnionViewEnabled() {
+  AutofillSettingsProfileEditTableViewControllerTestWithUnionViewEnabled() {
     scoped_feature_list_.InitAndEnableFeature(
         autofill::features::kAutofillAccountProfilesUnionView);
   }
 
   ChromeTableViewController* InstantiateController() override {
-    return [[AutofillProfileEditTableViewController alloc]
-        initWithDelegate:delegate_mock_
-               userEmail:base::SysUTF16ToNSString(kTestEmail)];
+    AutofillSettingsProfileEditTableViewController* viewController =
+        [[AutofillSettingsProfileEditTableViewController alloc]
+            initWithStyle:ChromeTableViewStyle()];
+    autofill_profile_edit_table_view_controller_ =
+        [[AutofillProfileEditTableViewController alloc]
+            initWithDelegate:delegate_mock_
+                   userEmail:base::SysUTF16ToNSString(kTestEmail)
+                  controller:viewController];
+    viewController.handler = autofill_profile_edit_table_view_controller_;
+    return viewController;
   }
 
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 // Tests the footer text of the view controller for the address profiles with
-// source kAccount when `autofill::features::kAutofillAccountProfilesUnionView`
-// is enabled.
-TEST_F(AutofillProfileEditTableViewControllerTestWithUnionViewEnabled,
+// source kAccount when
+//`autofill::features::kAutofillAccountProfilesUnionView` / is enabled.
+TEST_F(AutofillSettingsProfileEditTableViewControllerTestWithUnionViewEnabled,
        TestFooterTextWithEmail) {
   [fake_consumer_ createAccountProfile];
 

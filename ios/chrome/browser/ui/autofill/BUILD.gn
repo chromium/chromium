@@ -102,6 +102,41 @@ source_set("autofill_ui") {
   frameworks = [ "UIKit.framework" ]
 }
 
+source_set("autofill_shared_ui") {
+  configs += [ "//build/config/compiler:enable_arc" ]
+  sources = [
+    "autofill_country_selection_table_view_controller.h",
+    "autofill_country_selection_table_view_controller.mm",
+    "autofill_profile_edit_consumer.h",
+    "autofill_profile_edit_handler.h",
+    "autofill_profile_edit_mediator.h",
+    "autofill_profile_edit_mediator.mm",
+    "autofill_profile_edit_mediator_delegate.h",
+    "autofill_profile_edit_table_view_controller.h",
+    "autofill_profile_edit_table_view_controller.mm",
+    "autofill_profile_edit_table_view_controller_delegate.h",
+  ]
+  deps = [
+    ":autofill_ui_type",
+    "//base:base",
+    "//components/autofill/core/browser",
+    "//components/autofill/core/common:features",
+    "//ios/chrome/app/strings",
+    "//ios/chrome/browser/application_context",
+    "//ios/chrome/browser/shared/public/features",
+    "//ios/chrome/browser/shared/ui/list_model",
+    "//ios/chrome/browser/shared/ui/table_view",
+    "//ios/chrome/browser/shared/ui/table_view:constants",
+    "//ios/chrome/browser/shared/ui/table_view:utils",
+    "//ios/chrome/browser/shared/ui/util",
+    "//ios/chrome/browser/ui/autofill/cells",
+    "//ios/chrome/browser/ui/settings/autofill:constants",
+    "//ios/chrome/common/ui/colors",
+    "//ios/chrome/common/ui/util",
+    "//ui/base",
+  ]
+}
+
 source_set("autofill_ui_type") {
   configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
@@ -225,17 +260,29 @@ source_set("features") {
 
 source_set("unit_tests") {
   testonly = true
-  sources = [ "card_unmask_prompt_view_controller_unittest.mm" ]
+  sources = [
+    "autofill_profile_edit_mediator_unittest.mm",
+    "card_unmask_prompt_view_controller_unittest.mm",
+  ]
   deps = [
+    ":autofill_shared_ui",
     ":bridges",
     "//base/test:test_support",
     "//components/autofill/core/browser",
+    "//components/autofill/core/browser:test_support",
     "//components/prefs:test_support",
+    "//ios/chrome/browser/autofill",
+    "//ios/chrome/browser/browser_state:test_support",
+    "//ios/chrome/browser/shared/ui/list_model",
     "//ios/chrome/browser/shared/ui/table_view:test_support",
     "//ios/chrome/browser/ui/autofill/cells",
+    "//ios/chrome/browser/ui/settings:test_support",
+    "//ios/chrome/browser/webdata_services",
     "//ios/chrome/test:test_support",
+    "//ios/web/public/test",
     "//testing/gmock",
     "//testing/gtest",
+    "//third_party/ocmock",
   ]
   configs += [ "//build/config/compiler:enable_arc" ]
 }

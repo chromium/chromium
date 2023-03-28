@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/ui/settings/autofill/autofill_profile_edit_mediator.h"
+#import "ios/chrome/browser/ui/autofill/autofill_profile_edit_mediator.h"
 
 #import "base/strings/sys_string_conversions.h"
 #import "base/test/scoped_feature_list.h"
@@ -12,9 +12,9 @@
 #import "ios/chrome/browser/autofill/personal_data_manager_factory.h"
 #import "ios/chrome/browser/browser_state/test_chrome_browser_state.h"
 #import "ios/chrome/browser/shared/ui/list_model/list_model.h"
-#import "ios/chrome/browser/ui/settings/autofill/autofill_profile_edit_consumer.h"
-#import "ios/chrome/browser/ui/settings/autofill/autofill_profile_edit_mediator_delegate.h"
-#import "ios/chrome/browser/ui/settings/autofill/cells/country_item.h"
+#import "ios/chrome/browser/ui/autofill/autofill_profile_edit_consumer.h"
+#import "ios/chrome/browser/ui/autofill/autofill_profile_edit_mediator_delegate.h"
+#import "ios/chrome/browser/ui/autofill/cells/country_item.h"
 #import "ios/chrome/browser/ui/settings/personal_data_manager_finished_profile_tasks_waiter.h"
 #import "ios/chrome/browser/webdata_services/web_data_service_factory.h"
 #import "ios/chrome/test/ios_chrome_scoped_testing_local_state.h"

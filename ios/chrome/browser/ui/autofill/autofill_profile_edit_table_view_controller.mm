@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/ui/settings/autofill/autofill_profile_edit_table_view_controller.h"
+#import "ios/chrome/browser/ui/autofill/autofill_profile_edit_table_view_controller.h"
 
 #import "base/mac/foundation_util.h"
 #import "base/strings/sys_string_conversions.h"
@@ -11,17 +11,18 @@
 #import "components/autofill/core/common/autofill_features.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_attributed_string_header_footer_item.h"
+#import "ios/chrome/browser/shared/ui/table_view/cells/table_view_link_header_footer_item.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_multi_detail_text_item.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_text_edit_item_delegate.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_text_item.h"
 #import "ios/chrome/browser/shared/ui/table_view/table_view_model.h"
 #import "ios/chrome/browser/shared/ui/table_view/table_view_utils.h"
+#import "ios/chrome/browser/ui/autofill/autofill_profile_edit_table_view_controller_delegate.h"
 #import "ios/chrome/browser/ui/autofill/autofill_ui_type.h"
 #import "ios/chrome/browser/ui/autofill/autofill_ui_type_util.h"
 #import "ios/chrome/browser/ui/autofill/cells/autofill_edit_item.h"
+#import "ios/chrome/browser/ui/autofill/cells/country_item.h"
 #import "ios/chrome/browser/ui/settings/autofill/autofill_constants.h"
-#import "ios/chrome/browser/ui/settings/autofill/autofill_profile_edit_table_view_controller_delegate.h"
-#import "ios/chrome/browser/ui/settings/autofill/cells/country_item.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ui/base/l10n/l10n_util.h"
@@ -29,7 +30,6 @@
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
 #endif
-
 
 namespace {
 using ::AutofillTypeFromAutofillUIType;
@@ -102,6 +102,9 @@ const CGFloat kLineSpacingBetweenErrorAndFooter = 12.0f;
 // `autofill::features::kAutofillAccountProfilesUnionView` is enabled.
 @property(nonatomic, assign) BOOL autofillAccountProfilesUnionViewEnabled;
 
+// The shown view controller.
+@property(nonatomic, weak) ChromeTableViewController* controller;
+
 @end
 
 @implementation AutofillProfileEditTableViewController {
@@ -112,8 +115,9 @@ const CGFloat kLineSpacingBetweenErrorAndFooter = 12.0f;
 
 - (instancetype)initWithDelegate:
                     (id<AutofillProfileEditTableViewControllerDelegate>)delegate
-                       userEmail:(NSString*)userEmail {
-  self = [super initWithStyle:ChromeTableViewStyle()];
+                       userEmail:(NSString*)userEmail
+                      controller:(ChromeTableViewController*)controller {
+  self = [super init];
   if (self) {
     _delegate = delegate;
     _userEmail = userEmail;
@@ -122,34 +126,21 @@ const CGFloat kLineSpacingBetweenErrorAndFooter = 12.0f;
     _autofillAccountProfilesUnionViewEnabled = base::FeatureList::IsEnabled(
         autofill::features::kAutofillAccountProfilesUnionView);
     _requiredFieldsWithEmptyValue = [[NSMutableSet<NSString*> alloc] init];
-
-    [self setTitle:l10n_util::GetNSString(IDS_IOS_AUTOFILL_EDIT_ADDRESS)];
+    _controller = controller;
   }
 
   return self;
 }
 
-- (void)viewDidLoad {
-  [super viewDidLoad];
+#pragma mark - AutofillProfileEditHandler
 
-  self.tableView.allowsSelectionDuringEditing = YES;
-  self.tableView.accessibilityIdentifier = kAutofillProfileEditTableViewId;
-
-  [self loadModel];
-}
-
-- (void)viewDidDisappear:(BOOL)animated {
+- (void)viewDidDisappear {
   [self.delegate viewDidDisappear];
-  [super viewDidDisappear:animated];
 }
-
-#pragma mark - SettingsRootTableViewController
 
 - (void)editButtonPressed {
-  [super editButtonPressed];
-
-  if (!self.tableView.editing) {
-    TableViewModel* model = self.tableViewModel;
+  if (!self.controller.tableView.editing) {
+    TableViewModel* model = self.controller.tableViewModel;
     NSInteger itemCount =
         [model numberOfItemsInSection:
                    [model sectionForSectionIdentifier:SectionIdentifierFields]];
@@ -161,7 +152,8 @@ const CGFloat kLineSpacingBetweenErrorAndFooter = 12.0f;
     for (NSInteger itemIndex = 0; itemIndex < itemCount; ++itemIndex) {
       NSIndexPath* path = [NSIndexPath indexPathForItem:itemIndex
                                               inSection:section];
-      NSInteger itemType = [self.tableViewModel itemTypeForIndexPath:path];
+      NSInteger itemType =
+          [self.controller.tableViewModel itemTypeForIndexPath:path];
 
       if (itemType == ItemTypeCountry &&
           self.autofillAccountProfilesUnionViewEnabled) {
@@ -182,16 +174,15 @@ const CGFloat kLineSpacingBetweenErrorAndFooter = 12.0f;
   }
 
   // Reload the model.
-  [self loadModel];
+  [self.controller loadModel];
   // Update the cells.
-  [self reconfigureCellsForItems:
-            [self.tableViewModel
-                itemsInSectionWithIdentifier:SectionIdentifierFields]];
+  [self.controller reconfigureCellsForItems:[self.controller.tableViewModel
+                                                itemsInSectionWithIdentifier:
+                                                    SectionIdentifierFields]];
 }
 
 - (void)loadModel {
-  [super loadModel];
-  TableViewModel* model = self.tableViewModel;
+  TableViewModel* model = self.controller.tableViewModel;
 
   [model addSectionWithIdentifier:SectionIdentifierFields];
   for (size_t i = 0; i < std::size(kProfileFieldsToDisplay); ++i) {
@@ -222,14 +213,11 @@ const CGFloat kLineSpacingBetweenErrorAndFooter = 12.0f;
   }
 }
 
-#pragma mark - UITableViewDataSource
-
-- (UITableViewCell*)tableView:(UITableView*)tableView
-        cellForRowAtIndexPath:(NSIndexPath*)indexPath {
-  UITableViewCell* cell = [super tableView:tableView
-                     cellForRowAtIndexPath:indexPath];
+- (UITableViewCell*)cell:(UITableViewCell*)cell
+       forRowAtIndexPath:(NSIndexPath*)indexPath {
   cell.selectionStyle = UITableViewCellSelectionStyleNone;
-  NSInteger itemType = [self.tableViewModel itemTypeForIndexPath:indexPath];
+  NSInteger itemType =
+      [self.controller.tableViewModel itemTypeForIndexPath:indexPath];
   if (itemType == ItemTypeFooter || itemType == ItemTypeError) {
     return cell;
   }
@@ -250,16 +238,17 @@ const CGFloat kLineSpacingBetweenErrorAndFooter = 12.0f;
   return textFieldCell;
 }
 
-- (void)tableView:(UITableView*)tableView
-    didSelectRowAtIndexPath:(NSIndexPath*)indexPath {
-  NSInteger itemType = [self.tableViewModel itemTypeForIndexPath:indexPath];
-  if (self.tableView.editing) {
+- (void)didSelectRowAtIndexPath:(NSIndexPath*)indexPath {
+  NSInteger itemType =
+      [self.controller.tableViewModel itemTypeForIndexPath:indexPath];
+  if (self.controller.tableView.editing) {
     if (self.autofillAccountProfilesUnionViewEnabled &&
         itemType == ItemTypeCountry) {
       [self.delegate willSelectCountryWithCurrentlySelectedCountry:
                          self.homeAddressCountry];
     } else if (itemType != ItemTypeFooter && itemType != ItemTypeError) {
-      UITableViewCell* cell = [self.tableView cellForRowAtIndexPath:indexPath];
+      UITableViewCell* cell =
+          [self.controller.tableView cellForRowAtIndexPath:indexPath];
       TableViewTextEditCell* textFieldCell =
           base::mac::ObjCCastStrict<TableViewTextEditCell>(cell);
       [textFieldCell.textField becomeFirstResponder];
@@ -267,32 +256,40 @@ const CGFloat kLineSpacingBetweenErrorAndFooter = 12.0f;
   }
 }
 
-- (CGFloat)tableView:(UITableView*)tableView
-    heightForHeaderInSection:(NSInteger)section {
+- (BOOL)heightForHeaderShouldBeZeroInSection:(NSInteger)section {
   NSInteger sectionIdentifier =
-      [self.tableViewModel sectionIdentifierForSectionIndex:section];
+      [self.controller.tableViewModel sectionIdentifierForSectionIndex:section];
 
-  if (sectionIdentifier == SectionIdentifierFooter ||
-      sectionIdentifier == SectionIdentifierErrorFooter) {
-    return 0;
-  }
-  return [super tableView:tableView heightForHeaderInSection:section];
+  return sectionIdentifier == SectionIdentifierFooter ||
+         sectionIdentifier == SectionIdentifierErrorFooter;
 }
 
-- (CGFloat)tableView:(UITableView*)tableView
-    heightForFooterInSection:(NSInteger)section {
+- (BOOL)heightForFooterShouldBeZeroInSection:(NSInteger)section {
   NSInteger sectionIdentifier =
-      [self.tableViewModel sectionIdentifierForSectionIndex:section];
-  if (sectionIdentifier == SectionIdentifierFields) {
-    return 0;
-  }
-  return [super tableView:tableView heightForFooterInSection:section];
+      [self.controller.tableViewModel sectionIdentifierForSectionIndex:section];
+
+  return sectionIdentifier == SectionIdentifierFields;
+}
+
+- (BOOL)canEditRowAtIndexPath:(NSIndexPath*)indexPath {
+  // If we don't allow the edit of the cell, the selection of the cell isn't
+  // forwarded.
+  return YES;
+}
+
+- (UITableViewCellEditingStyle)editingStyleForRowAtIndexPath:
+    (NSIndexPath*)indexPath {
+  return UITableViewCellEditingStyleNone;
+}
+
+- (BOOL)shouldIndentWhileEditingRowAtIndexPath:(NSIndexPath*)indexPath {
+  return NO;
 }
 
 #pragma mark - TableViewTextEditItemDelegate
 
 - (void)tableViewItemDidBeginEditing:(TableViewTextEditItem*)tableViewItem {
-  [self reconfigureCellsForItems:@[ tableViewItem ]];
+  [self.controller reconfigureCellsForItems:@[ tableViewItem ]];
 }
 
 - (void)tableViewItemDidChange:(TableViewTextEditItem*)tableViewItem {
@@ -300,30 +297,11 @@ const CGFloat kLineSpacingBetweenErrorAndFooter = 12.0f;
     [self computeErrorIfRequiredTextField:tableViewItem];
     [self updateDoneButtonStatus];
   }
-  [self reconfigureCellsForItems:@[ tableViewItem ]];
+  [self.controller reconfigureCellsForItems:@[ tableViewItem ]];
 }
 
 - (void)tableViewItemDidEndEditing:(TableViewTextEditItem*)tableViewItem {
-  [self reconfigureCellsForItems:@[ tableViewItem ]];
-}
-
-#pragma mark - UITableViewDelegate
-
-- (BOOL)tableView:(UITableView*)tableView
-    canEditRowAtIndexPath:(NSIndexPath*)indexPath {
-  // If we don't allow the edit of the cell, the selection of the cell isn't
-  // forwarded.
-  return YES;
-}
-
-- (UITableViewCellEditingStyle)tableView:(UITableView*)tableView
-           editingStyleForRowAtIndexPath:(NSIndexPath*)indexPath {
-  return UITableViewCellEditingStyleNone;
-}
-
-- (BOOL)tableView:(UITableView*)tableview
-    shouldIndentWhileEditingRowAtIndexPath:(NSIndexPath*)indexPath {
-  return NO;
+  [self.controller reconfigureCellsForItems:@[ tableViewItem ]];
 }
 
 #pragma mark - AutofillProfileEditConsumer
@@ -333,7 +311,7 @@ const CGFloat kLineSpacingBetweenErrorAndFooter = 12.0f;
   self.homeAddressCountry = country;
 
   [self.requiredFieldsWithEmptyValue removeAllObjects];
-  for (TableViewItem* item in [self.tableViewModel
+  for (TableViewItem* item in [self.controller.tableViewModel
            itemsInSectionWithIdentifier:SectionIdentifierFields]) {
     if (item.type == ItemTypeCountry) {
       TableViewMultiDetailTextItem* multiDetailTextItem =
@@ -344,7 +322,7 @@ const CGFloat kLineSpacingBetweenErrorAndFooter = 12.0f;
           base::mac::ObjCCastStrict<TableViewTextEditItem>(item);
       [self computeErrorIfRequiredTextField:tableViewTextEditItem];
     }
-    [self reconfigureCellsForItems:@[ item ]];
+    [self.controller reconfigureCellsForItems:@[ item ]];
   }
 
   [self updateDoneButtonStatus];
@@ -541,20 +519,21 @@ const CGFloat kLineSpacingBetweenErrorAndFooter = 12.0f;
 // Removes the given section if it exists.
 - (void)removeSectionWithIdentifier:(NSInteger)sectionIdentifier
                    withRowAnimation:(UITableViewRowAnimation)animation {
-  TableViewModel* model = self.tableViewModel;
+  TableViewModel* model = self.controller.tableViewModel;
   if ([model hasSectionForSectionIdentifier:sectionIdentifier]) {
     NSInteger section = [model sectionForSectionIdentifier:sectionIdentifier];
     [model removeSectionWithIdentifier:sectionIdentifier];
-    [[self tableView] deleteSections:[NSIndexSet indexSetWithIndex:section]
-                    withRowAnimation:animation];
+    [[self.controller tableView]
+          deleteSections:[NSIndexSet indexSetWithIndex:section]
+        withRowAnimation:animation];
   }
 }
 
 // If the error status has changed, displays the footer accordingly.
 - (void)changeFooterStatusToRemoveSection:(SectionIdentifier)removeSection
                                addSection:(SectionIdentifier)addSection {
-  TableViewModel* model = self.tableViewModel;
-  [self
+  TableViewModel* model = self.controller.tableViewModel;
+  [self.controller
       performBatchTableViewUpdates:^{
         [self removeSectionWithIdentifier:removeSection
                          withRowAnimation:UITableViewRowAnimationTop];
@@ -562,15 +541,16 @@ const CGFloat kLineSpacingBetweenErrorAndFooter = 12.0f;
             [model sectionForSectionIdentifier:SectionIdentifierFields];
         [model insertSectionWithIdentifier:addSection
                                    atIndex:fieldsSectionIndex + 1];
-        [self.tableView
+        [self.controller.tableView
               insertSections:[NSIndexSet
                                  indexSetWithIndex:fieldsSectionIndex + 1]
             withRowAnimation:UITableViewRowAnimationTop];
-        [self.tableViewModel setFooter:(([self.requiredFieldsWithEmptyValue
-                                                 count] > 0)
-                                            ? [self errorMessageItem]
-                                            : [self footerItem])
-              forSectionWithIdentifier:addSection];
+        [self.controller.tableViewModel
+                           setFooter:(([self.requiredFieldsWithEmptyValue
+                                               count] > 0)
+                                          ? [self errorMessageItem]
+                                          : [self footerItem])
+            forSectionWithIdentifier:addSection];
       }
                         completion:nil];
 }
@@ -579,7 +559,7 @@ const CGFloat kLineSpacingBetweenErrorAndFooter = 12.0f;
 // and shows/removes the error footer if required.
 - (void)updateDoneButtonStatus {
   BOOL shouldShowError = ([self.requiredFieldsWithEmptyValue count] > 0);
-  self.navigationItem.rightBarButtonItem.enabled = !shouldShowError;
+  self.controller.navigationItem.rightBarButtonItem.enabled = !shouldShowError;
   if (shouldShowError != self.errorSectionPresented) {
     SectionIdentifier addSection = shouldShowError
                                        ? SectionIdentifierErrorFooter
@@ -599,7 +579,7 @@ const CGFloat kLineSpacingBetweenErrorAndFooter = 12.0f;
 // Returns YES, if the error message needs to be changed. This happens when
 // there are multiple required fields that become empty.
 - (BOOL)shouldChangeErrorMessage {
-  TableViewHeaderFooterItem* currentFooter = [self.tableViewModel
+  TableViewHeaderFooterItem* currentFooter = [self.controller.tableViewModel
       footerForSectionWithIdentifier:SectionIdentifierErrorFooter];
   TableViewAttributedStringHeaderFooterItem* attributedFooterItem =
       base::mac::ObjCCastStrict<TableViewAttributedStringHeaderFooterItem>(
@@ -674,8 +654,8 @@ const CGFloat kLineSpacingBetweenErrorAndFooter = 12.0f;
   item.fieldNameLabelText = l10n_util::GetNSString(field.displayStringID);
   item.textFieldValue = [self valueForAutofillUIType:autofillUIType];
   item.autofillUIType = autofillUIType;
-  item.textFieldEnabled = self.tableView.editing;
-  item.hideIcon = !self.tableView.editing;
+  item.textFieldEnabled = self.controller.tableView.editing;
+  item.hideIcon = !self.controller.tableView.editing;
   item.autoCapitalizationType = field.autoCapitalizationType;
   item.returnKeyType = field.returnKeyType;
   item.keyboardType = field.keyboardType;
@@ -690,7 +670,7 @@ const CGFloat kLineSpacingBetweenErrorAndFooter = 12.0f;
   item.text = l10n_util::GetNSString(IDS_IOS_AUTOFILL_COUNTRY);
   item.trailingDetailText = self.homeAddressCountry;
   item.trailingDetailTextColor = [UIColor colorNamed:kTextPrimaryColor];
-  if (self.tableView.editing) {
+  if (self.controller.tableView.editing) {
     item.editingAccessoryType = UITableViewCellAccessoryDisclosureIndicator;
   }
   return item;

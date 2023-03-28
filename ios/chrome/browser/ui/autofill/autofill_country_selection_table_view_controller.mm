@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/ui/settings/autofill/autofill_country_selection_table_view_controller.h"
+#import "ios/chrome/browser/ui/autofill/autofill_country_selection_table_view_controller.h"
 
 #import "base/mac/foundation_util.h"
 #import "base/strings/sys_string_conversions.h"
@@ -10,8 +10,8 @@
 #import "ios/chrome/browser/shared/ui/table_view/table_view_navigation_controller_constants.h"
 #import "ios/chrome/browser/shared/ui/table_view/table_view_utils.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
+#import "ios/chrome/browser/ui/autofill/cells/country_item.h"
 #import "ios/chrome/browser/ui/settings/autofill/autofill_constants.h"
-#import "ios/chrome/browser/ui/settings/autofill/cells/country_item.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
 #import "ios/chrome/grit/ios_strings.h"
@@ -80,7 +80,6 @@ typedef NS_ENUM(NSInteger, SectionIdentifier) {
   [super viewDidLoad];
 
   self.title = l10n_util::GetNSString(IDS_IOS_AUTOFILL_EDIT_ADDRESS);
-  self.shouldHideDoneButton = YES;
 
   // Search controller.
   self.searchController =

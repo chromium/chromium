@@ -13,15 +13,17 @@
 #import "ios/chrome/browser/autofill/personal_data_manager_factory.h"
 #import "ios/chrome/browser/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/main/browser.h"
+#import "ios/chrome/browser/shared/ui/table_view/table_view_utils.h"
 #import "ios/chrome/browser/signin/authentication_service.h"
 #import "ios/chrome/browser/signin/authentication_service_factory.h"
 #import "ios/chrome/browser/sync/sync_setup_service.h"
 #import "ios/chrome/browser/sync/sync_setup_service_factory.h"
-#import "ios/chrome/browser/ui/settings/autofill/autofill_country_selection_table_view_controller.h"
-#import "ios/chrome/browser/ui/settings/autofill/autofill_profile_edit_mediator.h"
-#import "ios/chrome/browser/ui/settings/autofill/autofill_profile_edit_mediator_delegate.h"
-#import "ios/chrome/browser/ui/settings/autofill/autofill_profile_edit_table_view_controller.h"
-#import "ios/chrome/browser/ui/settings/autofill/cells/country_item.h"
+#import "ios/chrome/browser/ui/autofill/autofill_country_selection_table_view_controller.h"
+#import "ios/chrome/browser/ui/autofill/autofill_profile_edit_mediator.h"
+#import "ios/chrome/browser/ui/autofill/autofill_profile_edit_mediator_delegate.h"
+#import "ios/chrome/browser/ui/autofill/autofill_profile_edit_table_view_controller.h"
+#import "ios/chrome/browser/ui/autofill/cells/country_item.h"
+#import "ios/chrome/browser/ui/settings/autofill/autofill_settings_profile_edit_table_view_controller.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -34,7 +36,10 @@
 
 // The view controller attached to this coordinator.
 @property(nonatomic, strong)
-    AutofillProfileEditTableViewController* viewController;
+    AutofillSettingsProfileEditTableViewController* viewController;
+
+@property(nonatomic, strong)
+    AutofillProfileEditTableViewController* sharedViewController;
 
 // The mediator for the view controller attatched to this coordinator.
 @property(nonatomic, strong) AutofillProfileEditMediator* mediator;
@@ -83,10 +88,14 @@
           autofillProfile:&_autofillProfile
               countryCode:base::SysUTF8ToNSString(countryCode)];
 
-  self.viewController = [[AutofillProfileEditTableViewController alloc]
+  self.viewController = [[AutofillSettingsProfileEditTableViewController alloc]
+      initWithStyle:ChromeTableViewStyle()];
+  self.sharedViewController = [[AutofillProfileEditTableViewController alloc]
       initWithDelegate:self.mediator
-             userEmail:[self syncingUserEmail]];
-  self.mediator.consumer = self.viewController;
+             userEmail:[self syncingUserEmail]
+            controller:self.viewController];
+  self.mediator.consumer = self.sharedViewController;
+  self.viewController.handler = self.sharedViewController;
 
   DCHECK(self.baseNavigationController);
   [self.baseNavigationController pushViewController:self.viewController
@@ -107,6 +116,8 @@
     // mediator and view controller should still live.
     return;
   }
+
+  self.sharedViewController = nil;
   self.viewController = nil;
   self.mediator = nil;
   [self.delegate

@@ -6,6 +6,8 @@ source_set("cells") {
   sources = [
     "autofill_edit_item.h",
     "autofill_edit_item.mm",
+    "country_item.h",
+    "country_item.mm",
     "cvc_header_item.h",
     "cvc_header_item.mm",
     "expiration_date_edit_item+private.h",

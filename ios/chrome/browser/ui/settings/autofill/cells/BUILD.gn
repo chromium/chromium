@@ -9,8 +9,6 @@ source_set("cells") {
     "autofill_card_item.mm",
     "autofill_profile_item.h",
     "autofill_profile_item.mm",
-    "country_item.h",
-    "country_item.mm",
   ]
 
   deps = [
