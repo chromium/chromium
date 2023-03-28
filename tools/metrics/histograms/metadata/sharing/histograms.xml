@@ -118,7 +118,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Sharing.DefaultSharesheetAndroid.Opened" enum="ShareOrigin"
-    expires_after="2023-07-26">
+    expires_after="2023-09-24">
   <owner>sophey@chromium.org</owner>
   <owner>src/chrome/browser/share/OWNERS</owner>
   <summary>
@@ -581,7 +581,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Sharing.SharingHubDesktop.TimeToShow" units="ms"
-    expires_after="2023-07-26">
+    expires_after="2023-09-24">
   <owner>ellyjones@chromium.org</owner>
   <owner>src/chrome/browser/share/OWNERS</owner>
   <summary>
