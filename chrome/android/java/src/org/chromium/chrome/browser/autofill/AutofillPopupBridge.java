@@ -18,6 +18,7 @@ import org.chromium.base.annotations.JNINamespace;
 import org.chromium.base.annotations.NativeMethods;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.chrome.R;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.fullscreen.BrowserControlsManagerSupplier;
 import org.chromium.chrome.browser.keyboard_accessory.ManualFillingComponent;
 import org.chromium.chrome.browser.keyboard_accessory.ManualFillingComponentSupplier;
@@ -186,22 +187,21 @@ public class AutofillPopupBridge implements AutofillDelegate, DialogInterface.On
             String secondaryLabel, String sublabel, String secondarySublabel, String itemTag,
             int iconId, boolean isIconAtStart, int suggestionId, boolean isDeletable,
             boolean isLabelMultiline, boolean isLabelBold, GURL customIconUrl) {
-        array[index] =
-                new AutofillSuggestion.Builder()
-                        .setLabel(label)
-                        .setSecondaryLabel(secondaryLabel)
-                        .setSubLabel(sublabel)
-                        .setSecondarySubLabel(secondarySublabel)
-                        .setItemTag(itemTag)
-                        .setIsIconAtStart(isIconAtStart)
-                        .setSuggestionId(suggestionId)
-                        .setIsDeletable(isDeletable)
-                        .setIsMultiLineLabel(isLabelMultiline)
-                        .setIsBoldLabel(isLabelBold)
-                        .setIconDrawable(AutofillUiUtils.getCardIcon(mContext, customIconUrl,
-                                iconId, R.dimen.autofill_dropdown_icon_width,
-                                R.dimen.autofill_dropdown_icon_height, /* showCustomIcon= */ true))
-                        .build();
+        array[index] = new AutofillSuggestion.Builder()
+                               .setLabel(label)
+                               .setSecondaryLabel(secondaryLabel)
+                               .setSubLabel(sublabel)
+                               .setSecondarySubLabel(secondarySublabel)
+                               .setItemTag(itemTag)
+                               .setIsIconAtStart(isIconAtStart)
+                               .setSuggestionId(suggestionId)
+                               .setIsDeletable(isDeletable)
+                               .setIsMultiLineLabel(isLabelMultiline)
+                               .setIsBoldLabel(isLabelBold)
+                               .setIconDrawable(AutofillUiUtils.getCardIcon(mContext, customIconUrl,
+                                       iconId, getPopupIconWidthId(), getPopupIconHeightId(),
+                                       /* showCustomIcon= */ true))
+                               .build();
     }
 
     private @Nullable WebContentsViewRectProvider tryCreateRectProvider(
@@ -212,6 +212,22 @@ public class AutofillPopupBridge implements AutofillDelegate, DialogInterface.On
         if (viewDelegate == null || viewDelegate.getContainerView() == null) return null;
         return new WebContentsViewRectProvider(webContents,
                 BrowserControlsManagerSupplier.from(windowAndroid), manualFillingComponentSupplier);
+    }
+
+    public static int getPopupIconWidthId() {
+        if (ChromeFeatureList.isEnabled(
+                    ChromeFeatureList.AUTOFILL_ENABLE_NEW_CARD_ART_AND_NETWORK_IMAGES)) {
+            return R.dimen.autofill_dropdown_icon_width_new;
+        }
+        return R.dimen.autofill_dropdown_icon_width;
+    }
+
+    public static int getPopupIconHeightId() {
+        if (ChromeFeatureList.isEnabled(
+                    ChromeFeatureList.AUTOFILL_ENABLE_NEW_CARD_ART_AND_NETWORK_IMAGES)) {
+            return R.dimen.autofill_dropdown_icon_height_new;
+        }
+        return R.dimen.autofill_dropdown_icon_height;
     }
 
     @NativeMethods
