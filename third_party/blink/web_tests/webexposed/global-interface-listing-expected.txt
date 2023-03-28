@@ -6961,6 +6961,7 @@ interface PerformanceScriptTiming : PerformanceEntry
     getter desiredExecutionStart
     getter executionStart
     getter forcedStyleAndLayoutDuration
+    getter pauseDuration
     getter sourceLocation
     getter type
     getter window

@@ -348,6 +348,8 @@ ScriptTimingInfo* AnimationFrameTimingMonitor::MaybeAddScript(
         pending_script_info_->property_like_name);
   }
 
+  script_timing_info->SetPauseDuration(pending_script_info_->pause_duration);
+
   current_scripts_.push_back(script_timing_info);
   pending_script_info_ = absl::nullopt;
   return script_timing_info;
@@ -464,6 +466,30 @@ void AnimationFrameTimingMonitor::Did(
                 probe_data.script->StartPosition().column_.OneBasedInt()),
         });
   }
+}
+void AnimationFrameTimingMonitor::WillRunJavaScriptDialog() {
+  javascript_dialog_start_ = base::TimeTicks::Now();
+  did_pause_ = true;
+}
+void AnimationFrameTimingMonitor::DidRunJavaScriptDialog() {
+  if (!pending_script_info_) {
+    return;
+  }
+
+  pending_script_info_->pause_duration +=
+      (base::TimeTicks::Now() - javascript_dialog_start_);
+  javascript_dialog_start_ = base::TimeTicks();
+}
+
+void AnimationFrameTimingMonitor::DidFinishSyncXHR(
+    base::TimeDelta blocking_time) {
+  if (pending_script_info_) {
+    pending_script_info_->pause_duration += blocking_time;
+  }
+
+  // We record did_pause_ regardless of having long scripts (e.g. short scripts
+  // with a sync XHR.
+  did_pause_ = true;
 }
 
 void AnimationFrameTimingMonitor::Will(const probe::ExecuteScript& probe_data) {

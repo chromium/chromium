@@ -127,6 +127,10 @@ DOMHighResTimeStamp PerformanceScriptTiming::forcedStyleAndLayoutDuration()
   return (info_->StyleDuration() + info_->LayoutDuration()).InMilliseconds();
 }
 
+DOMHighResTimeStamp PerformanceScriptTiming::pauseDuration() const {
+  return info_->PauseDuration().InMilliseconds();
+}
+
 LocalDOMWindow* PerformanceScriptTiming::window() const {
   return info_->Window();
 }
@@ -186,6 +190,7 @@ void PerformanceScriptTiming::BuildJSONValue(V8ObjectBuilder& builder) const {
   builder.AddNumber("desiredExecutionStart", desiredExecutionStart());
   builder.AddNumber("forcedStyleAndLayoutDuration",
                     forcedStyleAndLayoutDuration());
+  builder.AddNumber("pauseDuration", pauseDuration());
   builder.AddString("sourceLocation", sourceLocation());
 }
 

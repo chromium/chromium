@@ -1169,6 +1169,8 @@ void XMLHttpRequest::CreateRequest(scoped_refptr<EncodedFormData> http_body,
                                  blocking_time);
     }
 
+    probe::DidFinishSyncXHR(&execution_context, blocking_time);
+
     ThrowForLoadFailureIfNeeded(exception_state, String());
   }
 }

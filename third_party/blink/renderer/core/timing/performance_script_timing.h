@@ -33,6 +33,7 @@ class PerformanceScriptTiming final : public PerformanceEntry {
 
   DOMHighResTimeStamp executionStart() const;
   DOMHighResTimeStamp forcedStyleAndLayoutDuration() const;
+  DOMHighResTimeStamp pauseDuration() const;
   DOMHighResTimeStamp desiredExecutionStart() const;
   LocalDOMWindow* window() const;
   WTF::String sourceLocation() const;

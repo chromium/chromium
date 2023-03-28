@@ -62,6 +62,10 @@ class ScriptTimingInfo : public GarbageCollected<ScriptTimingInfo> {
   void SetDesiredExecutionStartTime(base::TimeTicks queue_time) {
     desired_execution_start_time_ = queue_time;
   }
+  base::TimeDelta PauseDuration() const { return pause_duration_; }
+  void SetPauseDuration(base::TimeDelta duration) {
+    pause_duration_ = duration;
+  }
   base::TimeDelta StyleDuration() const { return style_duration_; }
   base::TimeDelta LayoutDuration() const { return layout_duration_; }
   const ScriptSourceLocation& GetSourceLocation() const {
@@ -88,6 +92,7 @@ class ScriptTimingInfo : public GarbageCollected<ScriptTimingInfo> {
   base::TimeTicks desired_execution_start_time_;
   base::TimeDelta style_duration_;
   base::TimeDelta layout_duration_;
+  base::TimeDelta pause_duration_;
   ScriptSourceLocation source_location_;
   WeakMember<LocalDOMWindow> window_;
 };
@@ -162,7 +167,6 @@ class AnimationFrameTimingInfo
   HeapVector<Member<ScriptTimingInfo>> scripts_;
 
   // Whether the LoAF included sync XHR or alerts (pause).
-  // TODO: check if we need to be more granular about this.
   bool did_pause_ = false;
 };
 

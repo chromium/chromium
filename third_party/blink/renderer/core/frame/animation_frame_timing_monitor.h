@@ -86,18 +86,9 @@ class CORE_EXPORT AnimationFrameTimingMonitor final
   void Did(const probe::UserCallback&);
   void Will(const probe::CallFunction&);
   void Did(const probe::CallFunction&);
-  void DidRunJavaScriptDialog() { did_pause_ = true; }
-
-  void WillLoadXHR(ExecutionContext*,
-                   const AtomicString& method,
-                   const KURL&,
-                   bool async,
-                   const HTTPHeaderMap& headers,
-                   bool include_crendentials) {
-    if (!async) {
-      did_pause_ = true;
-    }
-  }
+  void WillRunJavaScriptDialog();
+  void DidRunJavaScriptDialog();
+  void DidFinishSyncXHR(base::TimeDelta);
 
   void SetDesiredRenderStartTime(base::TimeTicks time) {
     desired_render_start_time_ = time;
@@ -113,6 +104,7 @@ class CORE_EXPORT AnimationFrameTimingMonitor final
     base::TimeTicks execution_start_time;
     base::TimeDelta style_duration;
     base::TimeDelta layout_duration;
+    base::TimeDelta pause_duration;
     int layout_depth = 0;
     const char* class_like_name = nullptr;
     const char* property_like_name = nullptr;
@@ -154,6 +146,7 @@ class CORE_EXPORT AnimationFrameTimingMonitor final
 
   base::TimeTicks desired_render_start_time_;
   base::TimeTicks first_ui_event_timestamp_;
+  base::TimeTicks javascript_dialog_start_;
   bool did_pause_ = false;
 
   bool enabled_ = false;
