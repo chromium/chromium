@@ -24,6 +24,7 @@ import android.text.TextUtils;
 
 import androidx.core.content.ContextCompat;
 import androidx.test.InstrumentationRegistry;
+import androidx.test.internal.runner.ClassPathScanner;
 import androidx.test.internal.runner.RunnerArgs;
 import androidx.test.internal.runner.TestExecutor;
 import androidx.test.internal.runner.TestRequestBuilder;
@@ -344,14 +345,7 @@ public class BaseChromiumAndroidJUnitRunner extends AndroidJUnitRunner {
         DexFileTestRequestBuilder(Instrumentation instr, Bundle bundle, List<DexFile> dexFiles) {
             super(instr, bundle);
             mDexFiles = dexFiles;
-            try {
-                Field excludedPackagesField =
-                        TestRequestBuilder.class.getDeclaredField("DEFAULT_EXCLUDED_PACKAGES");
-                excludedPackagesField.setAccessible(true);
-                mExcludedPrefixes.addAll(Arrays.asList((String[]) excludedPackagesField.get(null)));
-            } catch (Exception e) {
-                throw new RuntimeException(e);
-            }
+            mExcludedPrefixes.addAll(ClassPathScanner.getDefaultExcludedPackages());
         }
 
         @Override
