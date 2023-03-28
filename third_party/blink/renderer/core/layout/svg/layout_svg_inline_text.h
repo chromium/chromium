@@ -28,7 +28,7 @@ namespace blink {
 
 class LayoutSVGInlineText final : public LayoutText {
  public:
-  LayoutSVGInlineText(Node*, scoped_refptr<StringImpl>);
+  LayoutSVGInlineText(Node*, String);
 
   float ScalingFactor() const {
     NOT_DESTROYED();

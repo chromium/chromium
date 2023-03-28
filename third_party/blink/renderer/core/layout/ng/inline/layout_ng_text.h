@@ -16,8 +16,7 @@ namespace blink {
 //
 class CORE_EXPORT LayoutNGText : public LayoutText {
  public:
-  LayoutNGText(Node* node, scoped_refptr<StringImpl> text)
-      : LayoutText(node, text) {
+  LayoutNGText(Node* node, String text) : LayoutText(node, std::move(text)) {
     NOT_DESTROYED();
   }
 

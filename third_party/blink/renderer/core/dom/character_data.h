@@ -62,8 +62,6 @@ class CORE_EXPORT CharacterData : public Node {
 
   bool ContainsOnlyWhitespaceOrEmpty() const;
 
-  StringImpl* DataImpl() { return data().Impl(); }
-
   void ParserAppendData(const String&);
 
  protected:

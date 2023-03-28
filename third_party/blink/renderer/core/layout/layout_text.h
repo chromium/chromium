@@ -83,7 +83,7 @@ class CORE_EXPORT LayoutText : public LayoutObject {
   // FIXME: If the node argument is not a Text node or the string argument is
   // not the content of the Text node, updating text-transform property
   // doesn't re-transform the string.
-  LayoutText(Node*, scoped_refptr<StringImpl>);
+  LayoutText(Node*, String);
 
   void Trace(Visitor*) const override;
 
@@ -94,7 +94,7 @@ class CORE_EXPORT LayoutText : public LayoutObject {
   static LayoutText* CreateAnonymousForFormattedText(
       Document&,
       scoped_refptr<const ComputedStyle>,
-      scoped_refptr<StringImpl>,
+      String,
       LegacyLayout legacy);
 
   const char* GetName() const override {
@@ -108,7 +108,7 @@ class CORE_EXPORT LayoutText : public LayoutObject {
   }
   virtual bool IsWordBreak() const;
 
-  virtual scoped_refptr<StringImpl> OriginalText() const;
+  virtual String OriginalText() const;
 
   void ExtractTextBox(InlineTextBox*);
   void AttachTextBox(InlineTextBox*);
@@ -158,11 +158,11 @@ class CORE_EXPORT LayoutText : public LayoutObject {
   }
   const LChar* Characters8() const {
     NOT_DESTROYED();
-    return text_.Impl()->Characters8();
+    return text_.Characters8();
   }
   const UChar* Characters16() const {
     NOT_DESTROYED();
-    return text_.Impl()->Characters16();
+    return text_.Characters16();
   }
   bool HasEmptyText() const {
     NOT_DESTROYED();
@@ -233,12 +233,10 @@ class CORE_EXPORT LayoutText : public LayoutObject {
 
   PhysicalOffset FirstLineBoxTopLeft() const;
 
-  void SetTextIfNeeded(scoped_refptr<StringImpl>);
-  void ForceSetText(scoped_refptr<StringImpl>);
-  void SetTextWithOffset(scoped_refptr<StringImpl>,
-                         unsigned offset,
-                         unsigned len);
-  void SetTextInternal(scoped_refptr<StringImpl>);
+  void SetTextIfNeeded(String);
+  void ForceSetText(String);
+  void SetTextWithOffset(String, unsigned offset, unsigned len);
+  void SetTextInternal(String);
 
   virtual void TransformText();
 

@@ -74,12 +74,10 @@ class LayoutObjectFactory {
                                    const ComputedStyle& style,
                                    LegacyLayout legacy);
 
-  static LayoutText* CreateText(Node*, scoped_refptr<StringImpl>, LegacyLayout);
-  static LayoutText* CreateTextCombine(Node*,
-                                       scoped_refptr<StringImpl>,
-                                       LegacyLayout);
+  static LayoutText* CreateText(Node*, String, LegacyLayout);
+  static LayoutText* CreateTextCombine(Node*, String, LegacyLayout);
   static LayoutTextFragment* CreateTextFragment(Node*,
-                                                StringImpl*,
+                                                const String&,
                                                 int start_offset,
                                                 int length,
                                                 LegacyLayout);

@@ -69,7 +69,7 @@ StringAndOffsetRange ComputeTextAndOffsetsForEmission(
     result.string =
         To<LayoutText>(unit.GetLayoutObject())
             .OriginalText()
-            ->Substring(unit.DOMStart(), unit.DOMEnd() - unit.DOMStart());
+            .Substring(unit.DOMStart(), unit.DOMEnd() - unit.DOMStart());
     result.start = 0;
     result.end = result.string.length();
   }

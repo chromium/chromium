@@ -128,7 +128,7 @@ Text* Text::splitText(unsigned offset, ExceptionState& exception_state) {
     return nullptr;
 
   if (GetLayoutObject()) {
-    GetLayoutObject()->SetTextWithOffset(DataImpl(), 0, old_str.length());
+    GetLayoutObject()->SetTextWithOffset(data(), 0, old_str.length());
     if (ContainsOnlyWhitespaceOrEmpty()) {
       // To avoid |LayoutText| has empty text, we rebuild layout tree.
       SetForceReattachLayoutTree();
@@ -332,12 +332,12 @@ static bool IsSVGText(Text* text) {
 LayoutText* Text::CreateTextLayoutObject(const ComputedStyle& style,
                                          LegacyLayout legacy) {
   if (IsSVGText(this))
-    return MakeGarbageCollected<LayoutSVGInlineText>(this, DataImpl());
+    return MakeGarbageCollected<LayoutSVGInlineText>(this, data());
 
   if (style.HasTextCombine())
-    return LayoutObjectFactory::CreateTextCombine(this, DataImpl(), legacy);
+    return LayoutObjectFactory::CreateTextCombine(this, data(), legacy);
 
-  return LayoutObjectFactory::CreateText(this, DataImpl(), legacy);
+  return LayoutObjectFactory::CreateText(this, data(), legacy);
 }
 
 void Text::AttachLayoutTree(AttachContext& context) {
@@ -409,7 +409,7 @@ void Text::RecalcTextStyle(const StyleRecalcChange change) {
     } else {
       layout_text->SetStyle(std::move(new_style));
       if (NeedsStyleRecalc())
-        layout_text->SetTextIfNeeded(DataImpl());
+        layout_text->SetTextIfNeeded(data());
     }
   } else if (new_style && (NeedsStyleRecalc() || change.ReattachLayoutTree() ||
                            GetForceReattachLayoutTree() ||
@@ -486,7 +486,7 @@ void Text::UpdateTextLayoutObject(unsigned offset_of_replaced_data,
     return;
   }
 
-  text_layout_object->SetTextWithOffset(DataImpl(), offset_of_replaced_data,
+  text_layout_object->SetTextWithOffset(data(), offset_of_replaced_data,
                                         length_of_replaced_data);
 }
 

@@ -150,20 +150,21 @@ LayoutText* FirstLetterPseudoElement::FirstLetterTextLayoutObject(
         return nullptr;
       // FIXME: If there is leading punctuation in a different LayoutText than
       // the first letter, we'll not apply the correct style to it.
-      scoped_refptr<StringImpl> str =
-          layout_text->IsTextFragment()
-              ? To<LayoutTextFragment>(first_letter_text_layout_object)
-                    ->CompleteText()
-              : layout_text->OriginalText();
-      if (FirstLetterLength(str.get()) ||
-          IsInvalidFirstLetterLayoutObject(first_letter_text_layout_object))
+      String str = layout_text->IsTextFragment()
+                       ? To<LayoutTextFragment>(first_letter_text_layout_object)
+                             ->CompleteText()
+                       : layout_text->OriginalText();
+      if (FirstLetterLength(str.Impl()) ||
+          IsInvalidFirstLetterLayoutObject(first_letter_text_layout_object)) {
         break;
+      }
 
       // In case of inline level content made of punctuation and there is no
       // sibling, we'll apply style to it.
       if (IsParentInlineLayoutObject(first_letter_text_layout_object) &&
-          str->length() && !first_letter_text_layout_object->NextSibling())
+          str.length() && !first_letter_text_layout_object->NextSibling()) {
         break;
+      }
 
       first_letter_text_layout_object =
           first_letter_text_layout_object->NextSibling();
@@ -325,7 +326,7 @@ void FirstLetterPseudoElement::DetachLayoutTree(bool performing_reattach) {
     if (remaining_text_layout_object_->GetNode() && GetDocument().IsActive()) {
       auto* text_node = To<Text>(remaining_text_layout_object_->GetNode());
       remaining_text_layout_object_->SetTextFragment(
-          text_node->DataImpl(), 0, text_node->DataImpl()->length());
+          text_node->data(), 0, text_node->data().length());
     }
     remaining_text_layout_object_->SetFirstLetterPseudoElement(nullptr);
     remaining_text_layout_object_->SetIsRemainingTextLayoutObject(false);
@@ -359,7 +360,8 @@ FirstLetterPseudoElement::CustomStyleForLayoutObject(
                    first_letter_text->Parent()->FirstLineStyle()));
 }
 
-void FirstLetterPseudoElement::AttachFirstLetterTextLayoutObjects(LayoutText* first_letter_text) {
+void FirstLetterPseudoElement::AttachFirstLetterTextLayoutObjects(
+    LayoutText* first_letter_text) {
   DCHECK(first_letter_text);
 
   // The original string is going to be either a generated content string or a

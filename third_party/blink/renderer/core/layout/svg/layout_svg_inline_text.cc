@@ -42,22 +42,20 @@ namespace blink {
 // Turn tabs, newlines and carriage returns into spaces. In the future this
 // should be removed in favor of letting the generic white-space code handle
 // this.
-static scoped_refptr<StringImpl> NormalizeWhitespace(
-    scoped_refptr<StringImpl> string) {
-  scoped_refptr<StringImpl> new_string = string->Replace('\t', ' ');
-  new_string = new_string->Replace('\n', ' ');
-  new_string = new_string->Replace('\r', ' ');
+static String NormalizeWhitespace(String string) {
+  String new_string = string.Replace('\t', ' ');
+  new_string = new_string.Replace('\n', ' ');
+  new_string = new_string.Replace('\r', ' ');
   return new_string;
 }
 
-LayoutSVGInlineText::LayoutSVGInlineText(Node* n,
-                                         scoped_refptr<StringImpl> string)
+LayoutSVGInlineText::LayoutSVGInlineText(Node* n, String string)
     : LayoutText(n, NormalizeWhitespace(std::move(string))),
       scaling_factor_(1) {}
 
 void LayoutSVGInlineText::TextDidChange() {
   NOT_DESTROYED();
-  SetTextInternal(NormalizeWhitespace(GetText().Impl()));
+  SetTextInternal(NormalizeWhitespace(GetText()));
   LayoutText::TextDidChange();
   LayoutNGSVGText::NotifySubtreeStructureChanged(
       this, layout_invalidation_reason::kTextChanged);
@@ -152,14 +150,14 @@ PositionWithAffinity LayoutSVGInlineText::PositionForPoint(
       last_hit_transformed_point = transformed_point;
     }
   }
-    if (last_hit_cursor) {
-      auto position_with_affinity =
-          last_hit_cursor.PositionForPointInChild(last_hit_transformed_point);
-      // Note: Due by Bidi adjustment, |position_with_affinity| isn't relative
-      // to this.
-      return AdjustForEditingBoundary(position_with_affinity);
-    }
-    return CreatePositionWithAffinity(0);
+  if (last_hit_cursor) {
+    auto position_with_affinity =
+        last_hit_cursor.PositionForPointInChild(last_hit_transformed_point);
+    // Note: Due by Bidi adjustment, |position_with_affinity| isn't relative
+    // to this.
+    return AdjustForEditingBoundary(position_with_affinity);
+  }
+  return CreatePositionWithAffinity(0);
 }
 
 void LayoutSVGInlineText::UpdateScaledFont() {

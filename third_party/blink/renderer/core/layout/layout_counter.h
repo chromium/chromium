@@ -99,7 +99,7 @@ class LayoutCounter : public LayoutText {
     NOT_DESTROYED();
     return type == kLayoutObjectCounter || LayoutText::IsOfType(type);
   }
-  scoped_refptr<StringImpl> OriginalText() const override;
+  String OriginalText() const override;
 
   // Removes the reference to the CounterNode associated with this layoutObject.
   // This is used to cause a counter display update when the CounterNode tree

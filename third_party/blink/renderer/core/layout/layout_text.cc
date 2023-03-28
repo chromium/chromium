@@ -135,7 +135,7 @@ class SecureTextTimer final : public GarbageCollected<SecureTextTimer>,
   void Fired() override {
     DCHECK(GetSecureTextTimers().Contains(layout_text_));
     // Forcing setting text as it may be masked later
-    layout_text_->ForceSetText(layout_text_->GetText().Impl());
+    layout_text_->ForceSetText(layout_text_->GetText());
   }
 
   Member<LayoutText> layout_text_;
@@ -163,7 +163,7 @@ SelectionDisplayItemClientMap& GetSelectionDisplayItemClientMap() {
 
 }  // anonymous namespace
 
-LayoutText::LayoutText(Node* node, scoped_refptr<StringImpl> str)
+LayoutText::LayoutText(Node* node, String str)
     : LayoutObject(node),
       has_tab_(false),
       lines_dirty_(false),
@@ -217,7 +217,7 @@ LayoutText* LayoutText::CreateEmptyAnonymous(
 LayoutText* LayoutText::CreateAnonymousForFormattedText(
     Document& doc,
     scoped_refptr<const ComputedStyle> style,
-    scoped_refptr<StringImpl> text,
+    String text,
     LegacyLayout legacy) {
   LayoutText* layout_text =
       LayoutObjectFactory::CreateText(nullptr, std::move(text), legacy);
@@ -478,10 +478,10 @@ bool LayoutText::HasInlineFragments() const {
   return FirstTextBox();
 }
 
-scoped_refptr<StringImpl> LayoutText::OriginalText() const {
+String LayoutText::OriginalText() const {
   NOT_DESTROYED();
   auto* text_node = DynamicTo<Text>(GetNode());
-  return text_node ? text_node->DataImpl() : nullptr;
+  return text_node ? text_node->data() : String();
 }
 
 String LayoutText::PlainText() const {
@@ -1187,8 +1187,8 @@ void LayoutText::TrimmedPrefWidths(LayoutUnit lead_width_layout_unit,
 
   int len = TextLength();
 
-  if (!len || (strip_front_spaces &&
-               GetText().Impl()->ContainsOnlyWhitespaceOrEmpty())) {
+  if (!len ||
+      (strip_front_spaces && GetText().ContainsOnlyWhitespaceOrEmpty())) {
     first_line_min_width = LayoutUnit();
     last_line_min_width = LayoutUnit();
     first_line_max_width = LayoutUnit();
@@ -1209,10 +1209,9 @@ void LayoutText::TrimmedPrefWidths(LayoutUnit lead_width_layout_unit,
   has_break = has_break_;
 
   DCHECK(text_);
-  StringImpl& text = *text_.Impl();
-  if (text[0] == kSpaceCharacter ||
-      (text[0] == kNewlineCharacter && !StyleRef().PreserveNewline()) ||
-      text[0] == kTabulationCharacter) {
+  if (text_[0] == kSpaceCharacter ||
+      (text_[0] == kNewlineCharacter && !StyleRef().PreserveNewline()) ||
+      text_[0] == kTabulationCharacter) {
     const Font& font = StyleRef().GetFont();  // FIXME: This ignores first-line.
     if (strip_front_spaces) {
       const UChar kSpaceChar = kSpaceCharacter;
@@ -1239,8 +1238,9 @@ void LayoutText::TrimmedPrefWidths(LayoutUnit lead_width_layout_unit,
     last_line_max_width = LayoutUnit(float_max_width);
     for (int i = 0; i < len; i++) {
       int linelen = 0;
-      while (i + linelen < len && text[i + linelen] != kNewlineCharacter)
+      while (i + linelen < len && text_[i + linelen] != kNewlineCharacter) {
         linelen++;
+      }
 
       if (linelen) {
         last_line_max_width = LayoutUnit(WidthFromFont(
@@ -1755,12 +1755,11 @@ bool LayoutText::IsAllCollapsibleWhitespace() const {
 bool LayoutText::ContainsOnlyWhitespace(unsigned from, unsigned len) const {
   NOT_DESTROYED();
   DCHECK(text_);
-  StringImpl& text = *text_.Impl();
   unsigned curr_pos;
   for (curr_pos = from;
-       curr_pos < from + len && (text[curr_pos] == kNewlineCharacter ||
-                                 text[curr_pos] == kSpaceCharacter ||
-                                 text[curr_pos] == kTabulationCharacter);
+       curr_pos < from + len && (text_[curr_pos] == kNewlineCharacter ||
+                                 text_[curr_pos] == kSpaceCharacter ||
+                                 text_[curr_pos] == kTabulationCharacter);
        curr_pos++) {
   }
   return curr_pos >= (from + len);
@@ -1917,12 +1916,11 @@ void LayoutText::SetFirstTextBoxLogicalLeft(float text_width) const {
   FirstTextBox()->SetLogicalLeft(offset_left);
 }
 
-void LayoutText::SetTextWithOffset(scoped_refptr<StringImpl> text,
-                                   unsigned offset,
-                                   unsigned len) {
+void LayoutText::SetTextWithOffset(String text, unsigned offset, unsigned len) {
   NOT_DESTROYED();
-  if (Equal(text_.Impl(), text.get()))
+  if (text_ == text) {
     return;
+  }
 
   // Check that we are replacing the whole text.
   if (offset == 0 && len == TextLength() && CanOptimizeSetText()) {
@@ -1941,7 +1939,7 @@ void LayoutText::SetTextWithOffset(scoped_refptr<StringImpl> text,
     // regression (crbug.com/985723).
     if (text_width <= ContainingBlock()->ContentLogicalWidth()) {
       FirstTextBox()->ManuallySetStartLenAndLogicalWidth(
-          offset, text->length(), LayoutUnit(text_width));
+          offset, text.length(), LayoutUnit(text_width));
       SetFirstTextBoxLogicalLeft(text_width);
       SetTextInternal(std::move(text));
       SetShouldDoFullPaintInvalidation();
@@ -1963,7 +1961,7 @@ void LayoutText::SetTextWithOffset(scoped_refptr<StringImpl> text,
   }
 
   unsigned old_len = TextLength();
-  unsigned new_len = text->length();
+  unsigned new_len = text.length();
   int delta = new_len - old_len;
   unsigned end = len ? offset + len - 1 : offset;
 
@@ -2048,8 +2046,9 @@ void LayoutText::SetTextWithOffset(scoped_refptr<StringImpl> text,
 
 void LayoutText::TransformText() {
   NOT_DESTROYED();
-  if (scoped_refptr<StringImpl> text_to_transform = OriginalText())
+  if (String text_to_transform = OriginalText()) {
     ForceSetText(std::move(text_to_transform));
+  }
 }
 
 static inline bool IsInlineFlowOrEmptyText(const LayoutObject* o) {
@@ -2077,14 +2076,15 @@ UChar LayoutText::PreviousCharacter() const {
   }
   UChar prev = kSpaceCharacter;
   if (previous_text && previous_text->IsText()) {
-    if (StringImpl* previous_string =
-            To<LayoutText>(previous_text)->GetText().Impl())
-      prev = (*previous_string)[previous_string->length() - 1];
+    if (const String& previous_string =
+            To<LayoutText>(previous_text)->GetText()) {
+      prev = previous_string[previous_string.length() - 1];
+    }
   }
   return prev;
 }
 
-void LayoutText::SetTextInternal(scoped_refptr<StringImpl> text) {
+void LayoutText::SetTextInternal(String text) {
   NOT_DESTROYED();
   DCHECK(text);
   text_ = String(std::move(text));
@@ -2141,16 +2141,17 @@ void LayoutText::SecureText(UChar mask) {
   }
 }
 
-void LayoutText::SetTextIfNeeded(scoped_refptr<StringImpl> text) {
+void LayoutText::SetTextIfNeeded(String text) {
   NOT_DESTROYED();
   DCHECK(text);
 
-  if (Equal(text_.Impl(), text.get()))
+  if (text_ == text) {
     return;
+  }
   ForceSetText(std::move(text));
 }
 
-void LayoutText::ForceSetText(scoped_refptr<StringImpl> text) {
+void LayoutText::ForceSetText(String text) {
   NOT_DESTROYED();
   DCHECK(text);
   SetTextInternal(std::move(text));

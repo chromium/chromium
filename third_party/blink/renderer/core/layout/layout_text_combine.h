@@ -33,7 +33,7 @@ class GraphicsContext;
 // for the layout, while its inline box is in horizontal flow.
 class LayoutTextCombine final : public LayoutText {
  public:
-  LayoutTextCombine(Node*, scoped_refptr<StringImpl>);
+  LayoutTextCombine(Node*, String);
 
   bool IsCombined() const {
     NOT_DESTROYED();

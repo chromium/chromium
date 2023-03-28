@@ -148,7 +148,7 @@ void ListMarker::UpdateMarkerText(LayoutObject& marker) {
   StringBuilder marker_text_builder;
   marker_text_type_ =
       MarkerText(marker, &marker_text_builder, kWithPrefixSuffix);
-  text.SetContentString(marker_text_builder.ToString().ReleaseImpl().get());
+  text.SetContentString(marker_text_builder.ToString());
   DCHECK_NE(marker_text_type_, kNotText);
   DCHECK_NE(marker_text_type_, kUnresolved);
 }

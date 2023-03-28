@@ -798,8 +798,8 @@ class NGInlineNodeDataEditor final {
 
   static unsigned Mismatch(const NGInlineItemsData& old_data,
                            const NGInlineItemsData& new_data) {
-    const StringImpl& old_text = *old_data.text_content.Impl();
-    const StringImpl& new_text = *new_data.text_content.Impl();
+    const String& old_text = old_data.text_content;
+    const String& new_text = new_data.text_content;
     if (old_text.Is8Bit()) {
       const auto old_span8 = old_text.Span8();
       if (new_text.Is8Bit())
@@ -822,8 +822,8 @@ class NGInlineNodeDataEditor final {
   static unsigned MismatchFromEnd(const NGInlineItemsData& old_data,
                                   const NGInlineItemsData& new_data,
                                   unsigned max_length) {
-    const StringImpl& old_text = *old_data.text_content.Impl();
-    const StringImpl& new_text = *new_data.text_content.Impl();
+    const String& old_text = old_data.text_content;
+    const String& new_text = new_data.text_content;
     const unsigned old_length = old_text.length();
     const unsigned new_length = new_text.length();
     DCHECK_LE(max_length, old_length);
@@ -886,7 +886,7 @@ class NGInlineNodeDataEditor final {
 
 // static
 bool NGInlineNode::SetTextWithOffset(LayoutText* layout_text,
-                                     scoped_refptr<StringImpl> new_text_in,
+                                     String new_text_in,
                                      unsigned offset,
                                      unsigned length) {
   if (!layout_text->HasValidInlineItems() ||
@@ -911,7 +911,7 @@ bool NGInlineNode::SetTextWithOffset(LayoutText* layout_text,
   String new_text(std::move(new_text_in));
   layout_text->StyleRef().ApplyTextTransform(&new_text,
                                              layout_text->PreviousCharacter());
-  layout_text->SetTextInternal(new_text.Impl());
+  layout_text->SetTextInternal(new_text);
 
   NGInlineNode node(editor.GetLayoutBlockFlow());
   NGInlineNodeData* data = node.MutableData();
@@ -1579,7 +1579,7 @@ const NGLayoutResult* NGInlineNode::Layout(
 namespace {
 
 template <typename CharType>
-scoped_refptr<StringImpl> CreateTextContentForStickyImagesQuirk(
+String CreateTextContentForStickyImagesQuirk(
     const CharType* text,
     unsigned length,
     base::span<const NGInlineItem> items) {

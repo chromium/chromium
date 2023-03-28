@@ -80,7 +80,7 @@ LayoutObject* TextContentData::CreateLayoutObject(
     const ComputedStyle& pseudo_style,
     LegacyLayout legacy) const {
   LayoutObject* layout_object =
-      LayoutTextFragment::CreateAnonymous(pseudo, text_.Impl(), legacy);
+      LayoutTextFragment::CreateAnonymous(pseudo, text_, legacy);
   layout_object->SetPseudoElementStyle(&pseudo_style);
   return layout_object;
 }

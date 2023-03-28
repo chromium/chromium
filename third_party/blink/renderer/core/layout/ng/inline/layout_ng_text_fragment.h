@@ -16,7 +16,7 @@ namespace blink {
 class CORE_EXPORT LayoutNGTextFragment final : public LayoutTextFragment {
  public:
   LayoutNGTextFragment(Node* node,
-                       StringImpl* text,
+                       const String& text,
                        int start_offset,
                        int length)
       : LayoutTextFragment(node, text, start_offset, length) {

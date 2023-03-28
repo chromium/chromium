@@ -36,10 +36,10 @@
 namespace blink {
 
 LayoutTextFragment::LayoutTextFragment(Node* node,
-                                       StringImpl* str,
+                                       const String& str,
                                        int start_offset,
                                        int length)
-    : LayoutText(node, str ? str->Substring(start_offset, length) : nullptr),
+    : LayoutText(node, str ? str.Substring(start_offset, length) : String()),
       start_(start_offset),
       fragment_length_(length),
       is_remaining_text_layout_object_(false),
@@ -53,7 +53,7 @@ LayoutTextFragment::~LayoutTextFragment() {
 }
 
 LayoutTextFragment* LayoutTextFragment::Create(Node* node,
-                                               StringImpl* str,
+                                               const String& str,
                                                int start_offset,
                                                int length,
                                                LegacyLayout legacy) {
@@ -62,7 +62,7 @@ LayoutTextFragment* LayoutTextFragment::Create(Node* node,
 }
 
 LayoutTextFragment* LayoutTextFragment::CreateAnonymous(Document& doc,
-                                                        StringImpl* text,
+                                                        const String& text,
                                                         unsigned start,
                                                         unsigned length,
                                                         LegacyLayout legacy) {
@@ -75,7 +75,7 @@ LayoutTextFragment* LayoutTextFragment::CreateAnonymous(Document& doc,
 }
 
 LayoutTextFragment* LayoutTextFragment::CreateAnonymous(PseudoElement& pseudo,
-                                                        StringImpl* text,
+                                                        const String& text,
                                                         unsigned start,
                                                         unsigned length,
                                                         LegacyLayout legacy) {
@@ -83,9 +83,9 @@ LayoutTextFragment* LayoutTextFragment::CreateAnonymous(PseudoElement& pseudo,
 }
 
 LayoutTextFragment* LayoutTextFragment::CreateAnonymous(PseudoElement& pseudo,
-                                                        StringImpl* text,
+                                                        const String& text,
                                                         LegacyLayout legacy) {
-  return CreateAnonymous(pseudo, text, 0, text ? text->length() : 0, legacy);
+  return CreateAnonymous(pseudo, text, 0, text ? text.length() : 0, legacy);
 }
 
 void LayoutTextFragment::Trace(Visitor* visitor) const {
@@ -101,24 +101,24 @@ void LayoutTextFragment::WillBeDestroyed() {
   LayoutText::WillBeDestroyed();
 }
 
-scoped_refptr<StringImpl> LayoutTextFragment::CompleteText() const {
+String LayoutTextFragment::CompleteText() const {
   NOT_DESTROYED();
   Text* text = AssociatedTextNode();
-  return text ? text->DataImpl() : ContentString();
+  return text ? text->data() : ContentString();
 }
 
-void LayoutTextFragment::SetContentString(StringImpl* str) {
+void LayoutTextFragment::SetContentString(const String& str) {
   NOT_DESTROYED();
   content_string_ = str;
   SetTextIfNeeded(str);
 }
 
-scoped_refptr<StringImpl> LayoutTextFragment::OriginalText() const {
+String LayoutTextFragment::OriginalText() const {
   NOT_DESTROYED();
-  scoped_refptr<StringImpl> result = CompleteText();
+  String result = CompleteText();
   if (!result)
-    return nullptr;
-  return result->Substring(Start(), FragmentLength());
+    return String();
+  return result.Substring(Start(), FragmentLength());
 }
 
 void LayoutTextFragment::TextDidChange() {
@@ -139,14 +139,14 @@ void LayoutTextFragment::TextDidChange() {
 
 // Unlike |ForceSetText()|, this function is used for updating first-letter part
 // or remaining part.
-void LayoutTextFragment::SetTextFragment(scoped_refptr<StringImpl> text,
+void LayoutTextFragment::SetTextFragment(String text,
                                          unsigned start,
                                          unsigned length) {
   NOT_DESTROYED();
   // Note, we have to call |LayoutText::TextDidChange()| here because, if we
   // use our version we will, potentially, screw up the first-letter settings
   // where we only use portions of the string.
-  if (!Equal(GetText().Impl(), text.get())) {
+  if (GetText() != text) {
     SetTextInternal(std::move(text));
     LayoutText::TextDidChange();
   }
@@ -160,7 +160,7 @@ void LayoutTextFragment::TransformText() {
   // Note, we have to call LayoutText::TextDidChange()| here because, if we use
   // our version we will, potentially, screw up the first-letter settings where
   // we only use portions of the string.
-  if (scoped_refptr<StringImpl> text_to_transform = OriginalText()) {
+  if (String text_to_transform = OriginalText()) {
     SetTextInternal(std::move(text_to_transform));
     LayoutText::TextDidChange();
   }
@@ -169,9 +169,10 @@ void LayoutTextFragment::TransformText() {
 UChar LayoutTextFragment::PreviousCharacter() const {
   NOT_DESTROYED();
   if (Start()) {
-    StringImpl* original = CompleteText().get();
-    if (original && Start() <= original->length())
-      return (*original)[Start() - 1];
+    String original = CompleteText();
+    if (original && Start() <= original.length()) {
+      return original[Start() - 1];
+    }
   }
 
   return LayoutText::PreviousCharacter();

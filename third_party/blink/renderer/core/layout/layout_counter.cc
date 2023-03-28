@@ -488,8 +488,7 @@ CounterNode* MakeCounterNodeIfNeeded(LayoutObject& object,
   return new_node;
 }
 
-String GenerateCounterText(const CounterStyle* counter_style,
-                           int value) {
+String GenerateCounterText(const CounterStyle* counter_style, int value) {
   if (!counter_style)
     return g_empty_string;
   return counter_style->GenerateRepresentation(value);
@@ -527,7 +526,7 @@ void LayoutCounter::WillBeDestroyed() {
   LayoutText::WillBeDestroyed();
 }
 
-scoped_refptr<StringImpl> LayoutCounter::OriginalText() const {
+String LayoutCounter::OriginalText() const {
   NOT_DESTROYED();
   // Child will be the base of our text that we report. First, we need to find
   // an appropriate child.
@@ -543,10 +542,10 @@ scoped_refptr<StringImpl> LayoutCounter::OriginalText() const {
   if (!should_create_counter || !counter_node_) {
     while (true) {
       if (!container)
-        return nullptr;
+        return String();
       if (!container->IsAnonymous() && !container->IsPseudoElement())
-        return nullptr;  // LayoutCounters are restricted to before, after and
-                         // marker pseudo elements
+        return String();  // LayoutCounters are restricted to before, after and
+                          // marker pseudo elements
       PseudoId container_style = container->StyleRef().StyleType();
       if ((container_style == kPseudoIdBefore) ||
           (container_style == kPseudoIdAfter) ||
@@ -608,8 +607,8 @@ scoped_refptr<StringImpl> LayoutCounter::OriginalText() const {
   int value = ValueForText(child);
   const CounterStyle* counter_style = NullableCounterStyle();
   String text = GenerateCounterText(counter_style, value);
-  // If the separator exists, we need to append all of the parent values as well,
-  // including the ones that cross the style containment boundary.
+  // If the separator exists, we need to append all of the parent values as
+  // well, including the ones that cross the style containment boundary.
   if (!counter_->Separator().IsNull()) {
     if (!child->ActsAsReset())
       child = child->ParentCrossingStyleContainment(counter_->Identifier());
@@ -625,7 +624,7 @@ scoped_refptr<StringImpl> LayoutCounter::OriginalText() const {
     }
   }
 
-  return text.ReleaseImpl();
+  return text;
 }
 
 void LayoutCounter::UpdateCounter() {

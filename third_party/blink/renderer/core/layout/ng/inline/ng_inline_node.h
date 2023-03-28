@@ -79,7 +79,7 @@ class CORE_EXPORT NGInlineNode : public NGLayoutInputNode {
   // |new_text| is new text of |layout_text|.
   // This is optimized version of |PrepareLayout()|.
   static bool SetTextWithOffset(LayoutText* layout_text,
-                                scoped_refptr<StringImpl> new_text,
+                                String new_text,
                                 unsigned offset,
                                 unsigned length);
 

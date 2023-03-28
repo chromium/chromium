@@ -28,9 +28,9 @@
 
 namespace blink {
 
-static scoped_refptr<StringImpl> NewlineString() {
+static String NewlineString() {
   DEFINE_STATIC_LOCAL(const String, string, ("\n"));
-  return string.Impl();
+  return string;
 }
 
 LayoutBR::LayoutBR(Node* node) : LayoutText(node, NewlineString()) {}
