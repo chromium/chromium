@@ -196,9 +196,9 @@ void GeolocationHandler::AddAccessPointFromDict(
 
   const std::string* age_str = entry.FindString(shill::kGeoAgeProperty);
   if (age_str) {
-    int64_t age_ms;
-    if (base::StringToInt64(*age_str, &age_ms)) {
-      wap.timestamp = base::Time::Now() - base::Milliseconds(age_ms);
+    int64_t age_seconds;
+    if (base::StringToInt64(*age_str, &age_seconds)) {
+      wap.timestamp = base::Time::Now() - base::Seconds(age_seconds);
     }
   }
 
@@ -233,9 +233,9 @@ void GeolocationHandler::AddCellTowerFromDict(const base::Value::Dict& entry) {
   // Read time fields into object.
   const std::string* age_str = entry.FindString(shill::kGeoAgeProperty);
   if (age_str) {
-    int64_t age_ms;
-    if (base::StringToInt64(*age_str, &age_ms)) {
-      ct.timestamp = base::Time::Now() - base::Milliseconds(age_ms);
+    int64_t age_seconds;
+    if (base::StringToInt64(*age_str, &age_seconds)) {
+      ct.timestamp = base::Time::Now() - base::Seconds(age_seconds);
     }
   }
 
