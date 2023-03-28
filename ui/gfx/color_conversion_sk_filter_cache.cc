@@ -15,9 +15,45 @@
 #include "third_party/skia/include/core/SkSurface.h"
 #include "third_party/skia/include/gpu/GpuTypes.h"
 #include "third_party/skia/include/gpu/GrDirectContext.h"
+#include "third_party/skia/include/private/SkGainmapInfo.h"
+#include "third_party/skia/include/private/SkGainmapShader.h"
 #include "ui/gfx/color_transform.h"
 
 namespace gfx {
+
+namespace {
+
+// Allocate an SkSurface to be used to create the tonemapped result.
+static sk_sp<SkSurface> MakeSurfaceForResult(SkImageInfo image_info,
+                                             GrDirectContext* context) {
+  sk_sp<SkSurface> surface;
+  if (context) {
+    // TODO(https://crbug.com/1286088): Consider adding mipmap support here.
+    surface =
+        SkSurface::MakeRenderTarget(context, skgpu::Budgeted::kNo, image_info,
+                                    /*sampleCount=*/0, kTopLeft_GrSurfaceOrigin,
+                                    /*surfaceProps=*/nullptr,
+                                    /*shouldCreateWithMips=*/false);
+    // It is not guaranteed that kRGBA_F16_SkColorType is renderable. If we fail
+    // to create an SkSurface with that color type, fall back to
+    // kN32_SkColorType.
+    if (!surface) {
+      DLOG(ERROR) << "Falling back to tone mapped 8-bit surface.";
+      image_info = image_info.makeColorType(kN32_SkColorType);
+      surface = SkSurface::MakeRenderTarget(
+          context, skgpu::Budgeted::kNo, image_info,
+          /*sampleCount=*/0, kTopLeft_GrSurfaceOrigin,
+          /*surfaceProps=*/nullptr,
+          /*shouldCreateWithMips=*/false);
+    }
+  } else {
+    surface = SkSurface::MakeRaster(image_info, image_info.minRowBytes(),
+                                    /*surfaceProps=*/nullptr);
+  }
+  return surface;
+}
+
+}  // namespace
 
 ColorConversionSkFilterCache::ColorConversionSkFilterCache() = default;
 ColorConversionSkFilterCache::~ColorConversionSkFilterCache() = default;
@@ -93,6 +129,68 @@ sk_sp<SkColorFilter> ColorConversionSkFilterCache::Get(
       src, dst, resource_offset, resource_multiplier, options));
 }
 
+sk_sp<SkImage> ColorConversionSkFilterCache::ApplyGainmap(
+    sk_sp<SkImage> base_image,
+    sk_sp<SkImage> gainmap_image,
+    const SkGainmapInfo& gainmap_info,
+    float dst_max_luminance_relative,
+    GrDirectContext* context) {
+  DCHECK_EQ(base_image->isTextureBacked(), gainmap_image->isTextureBacked());
+  DCHECK_EQ(!!context, base_image->isTextureBacked());
+
+  // If `gainmap_image` will not be applied, then return `base_image` directly.
+  switch (gainmap_info.fBaseImageType) {
+    case SkGainmapInfo::BaseImageType::kSDR:
+      if (dst_max_luminance_relative <= gainmap_info.fDisplayRatioSdr) {
+        return base_image;
+      }
+      break;
+    case SkGainmapInfo::BaseImageType::kHDR:
+      if (dst_max_luminance_relative >= gainmap_info.fDisplayRatioHdr) {
+        return base_image;
+      }
+      break;
+  }
+
+  // The output surface will be in a linearized version of the input
+  // base_image's color space.
+  sk_sp<SkColorSpace> surface_color_space = base_image->refColorSpace();
+  if (surface_color_space) {
+    surface_color_space = surface_color_space->makeLinearGamma();
+  } else {
+    surface_color_space = SkColorSpace::MakeSRGBLinear();
+  }
+  SkImageInfo surface_info =
+      SkImageInfo::Make(base_image->dimensions(),
+                        SkColorInfo(kRGBA_F16_SkColorType, kPremul_SkAlphaType,
+                                    surface_color_space));
+
+  // Create the surface to render the gainmap shader to.
+  sk_sp<SkSurface> surface = MakeSurfaceForResult(surface_info, context);
+  if (!surface) {
+    LOG(ERROR) << "Failed to create SkSurface for applying gainmap.";
+    return base_image;
+  }
+
+  // Render the gainmap shader to the surface
+  SkRect image_rect = SkRect::MakeSize(SkSize::Make(base_image->dimensions()));
+  SkRect gainmap_rect =
+      SkRect::MakeSize(SkSize::Make(gainmap_image->dimensions()));
+  SkRect surface_rect =
+      SkRect::MakeSize(SkSize::Make(surface_info.dimensions()));
+  sk_sp<SkShader> shader = SkGainmapShader::Make(
+      base_image, image_rect, SkSamplingOptions(), gainmap_image, gainmap_rect,
+      SkSamplingOptions(), gainmap_info, surface_rect,
+      dst_max_luminance_relative, surface_color_space);
+  DCHECK(shader);
+  SkPaint paint;
+  paint.setShader(shader);
+  surface->getCanvas()->drawRect(surface_rect, paint);
+
+  // Return the surface's contents as an SkImage.
+  return surface->makeImageSnapshot();
+}
+
 sk_sp<SkImage> ColorConversionSkFilterCache::ConvertImage(
     sk_sp<SkImage> image,
     sk_sp<SkColorSpace> target_color_space,
@@ -123,30 +221,7 @@ sk_sp<SkImage> ColorConversionSkFilterCache::ConvertImage(
       SkImageInfo::Make(image->dimensions(),
                         SkColorInfo(kRGBA_F16_SkColorType, kPremul_SkAlphaType,
                                     image_sk_color_space));
-  sk_sp<SkSurface> surface;
-  if (context) {
-    // TODO(https://crbug.com/1286088): Consider adding mipmap support here.
-    surface =
-        SkSurface::MakeRenderTarget(context, skgpu::Budgeted::kNo, image_info,
-                                    /*sampleCount=*/0, kTopLeft_GrSurfaceOrigin,
-                                    /*surfaceProps=*/nullptr,
-                                    /*shouldCreateWithMips=*/false);
-    // It is not guaranteed that kRGBA_F16_SkColorType is renderable. If we fail
-    // to create an SkSurface with that color type, fall back to
-    // kN32_SkColorType.
-    if (!surface) {
-      DLOG(ERROR) << "Falling back to tone mapped 8-bit surface.";
-      image_info = image_info.makeColorType(kN32_SkColorType);
-      surface = SkSurface::MakeRenderTarget(
-          context, skgpu::Budgeted::kNo, image_info,
-          /*sampleCount=*/0, kTopLeft_GrSurfaceOrigin,
-          /*surfaceProps=*/nullptr,
-          /*shouldCreateWithMips=*/false);
-    }
-  } else {
-    surface = SkSurface::MakeRaster(image_info, image_info.minRowBytes(),
-                                    /*surfaceProps=*/nullptr);
-  }
+  sk_sp<SkSurface> surface = MakeSurfaceForResult(image_info, context);
   if (!surface) {
     DLOG(ERROR) << "Failed to create SkSurface color conversion.";
     return nullptr;
@@ -163,8 +238,7 @@ sk_sp<SkImage> ColorConversionSkFilterCache::ConvertImage(
   SkSamplingOptions sampling_options(SkFilterMode::kNearest);
   surface->getCanvas()->drawImage(image,
                                   /*x=*/0, /*y=*/0, sampling_options, &paint);
-  return surface->makeImageSnapshot()->reinterpretColorSpace(
-      target_color_space);
+  return surface->makeImageSnapshot();
 }
 
 }  // namespace gfx

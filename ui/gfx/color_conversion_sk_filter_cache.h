@@ -17,6 +17,7 @@ class GrDirectContext;
 class SkImage;
 class SkColorFilter;
 class SkRuntimeEffect;
+struct SkGainmapInfo;
 
 namespace gfx {
 
@@ -57,6 +58,20 @@ class COLOR_SPACE_EXPORT ColorConversionSkFilterCache {
                               float sdr_max_luminance_nits,
                               float dst_max_luminance_relative,
                               bool enable_tone_mapping,
+                              GrDirectContext* context);
+
+  // Apply the gainmap in `gainmap_image` to `base_image`, using the parameters
+  // in `gainmap_info` and `dst_max_luminance_relative`, and return the
+  // resulting image.
+  // * If `context` is non-nullptr, then `base_image` and `gainmap_image` must
+  //   be texture-backed and on `context`, and the result will be texture backed
+  //   and on `context`.
+  // * If `context` is nullptr, then the arguments should be bitmaps, and the
+  //   result will be a bitmap.
+  sk_sp<SkImage> ApplyGainmap(sk_sp<SkImage> base_image,
+                              sk_sp<SkImage> gainmap_image,
+                              const SkGainmapInfo& gainmap_info,
+                              float dst_max_luminance_relative,
                               GrDirectContext* context);
 
  public:
