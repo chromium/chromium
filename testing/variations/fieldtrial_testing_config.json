@@ -10950,6 +10950,9 @@
             "experiments": [
                 {
                     "name": "Enabledv2",
+                    "params": {
+                        "kMaxReportsPerIntervalESB": "3"
+                    },
                     "enable_features": [
                         "SafeBrowsingDailyPhishingReportsLimit"
                     ]
