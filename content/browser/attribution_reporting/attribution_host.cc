@@ -173,7 +173,6 @@ void AttributionHost::DidStartNavigation(NavigationHandle* navigation_handle) {
               AttributionHost::FromWebContents(
                   WebContents::FromRenderFrameHost(initiator_frame_host))
                   ->GetMostRecentNavigationInputEvent(),
-
           .is_within_fenced_frame =
               initiator_frame_host->IsNestedWithinFencedFrame(),
           .initiator_root_frame_id = initiator_root_frame->GetGlobalId()});
@@ -186,7 +185,7 @@ void AttributionHost::DidRedirectNavigation(
     return;
   }
 
-  const auto impression = navigation_handle->GetImpression();
+  const auto& impression = navigation_handle->GetImpression();
   DCHECK(impression.has_value());
 
   auto* attribution_manager =
@@ -288,7 +287,7 @@ void AttributionHost::MaybeNotifyFailedSourceNavigation(
     return;
   }
 
-  absl::optional<blink::Impression> impression =
+  const absl::optional<blink::Impression>& impression =
       navigation_handle->GetImpression();
   if (!impression) {
     return;
@@ -346,11 +345,12 @@ AttributionHost::TopFrameOriginForSecureContext() {
 void AttributionHost::RegisterDataHost(
     mojo::PendingReceiver<blink::mojom::AttributionDataHost> data_host,
     attribution_reporting::mojom::RegistrationType registration_type) {
-  // If there is no attribution manager available, ignore any registrations.
   AttributionManager* attribution_manager =
       AttributionManager::FromWebContents(web_contents());
   DCHECK(attribution_manager);
 
+  // If there is no attribution data host manager available, ignore any
+  // registrations.
   AttributionDataHostManager* data_host_manager =
       attribution_manager->GetDataHostManager();
   if (!data_host_manager) {
@@ -412,11 +412,11 @@ void AttributionHost::BindReceiver(
   if (!web_contents) {
     return;
   }
-  auto* conversion_host = AttributionHost::FromWebContents(web_contents);
-  if (!conversion_host) {
+  auto* attribution_host = AttributionHost::FromWebContents(web_contents);
+  if (!attribution_host) {
     return;
   }
-  conversion_host->receivers_.Bind(rfh, std::move(receiver));
+  attribution_host->receivers_.Bind(rfh, std::move(receiver));
 }
 
 void AttributionHost::NotifyFencedFrameReportingBeaconStarted(
