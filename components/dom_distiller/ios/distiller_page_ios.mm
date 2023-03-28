@@ -73,17 +73,17 @@ base::Value ConvertedResultFromScriptResult(const base::Value* value,
     result = base::Value(value->GetBool());
     DCHECK_EQ(result.type(), base::Value::Type::BOOLEAN);
   } else if (value->is_dict()) {
-    base::Value dictionary(base::Value::Type::DICT);
-    for (const auto kv : value->DictItems()) {
+    base::Value::Dict dictionary;
+    for (const auto kv : value->GetDict()) {
       base::Value item_value =
           ConvertedResultFromScriptResult(&kv.second, max_depth - 1);
 
       if (item_value.type() == base::Value::Type::NONE) {
         return result;
       }
-      dictionary.SetPath(kv.first, std::move(item_value));
+      dictionary.SetByDottedPath(kv.first, std::move(item_value));
     }
-    result = std::move(dictionary);
+    result = base::Value(std::move(dictionary));
     DCHECK_EQ(result.type(), base::Value::Type::DICT);
 
   } else if (value->is_list()) {
