@@ -143,7 +143,7 @@
 <translation id="1750259112639922169">ٹیب گروپ - <ph name="TAB_COUNT" /> ٹیبز</translation>
 <translation id="17513872634828108">کھلے ٹیبز</translation>
 <translation id="1754404134430936718">ٹیکسٹ کاپی ہو گیا</translation>
-<translation id="1778457539567749232">بغیر پڑھا ہوا کے بطور نشان زد کریں</translation>
+<translation id="1778457539567749232">نہ پڑھا ہوا کے بطور نشان زد کریں</translation>
 <translation id="1779766957982586368">ونڈو بند کریں</translation>
 <translation id="1791662854739702043">انسٹال ہو گیا</translation>
 <translation id="1792959175193046959">ڈاؤن لوڈ کا ڈیفالٹ مقام کسی بھی وقت تبدیل کریں</translation>
@@ -343,7 +343,7 @@
 <translation id="2900528713135656174">ایونٹ تخلیق کریں</translation>
 <translation id="2901411048554510387"><ph name="WEBSITE_TITLE" /> کیلئے تجاویز دکھائی جا رہی ہیں</translation>
 <translation id="2904414404539560095">ان آلات کی فہرست جن کے ساتھ ٹیب کا اشتراک کرنا ہے مکمل اونچائی پر کھلی ہوئی ہے۔</translation>
-<translation id="2908243544703713905">بغیر پڑھی ہوئی کہانیاں تیار ہیں</translation>
+<translation id="2908243544703713905">نہ پڑھی ہوئی کہانیاں تیار ہیں</translation>
 <translation id="2909615210195135082">‏Google اطلاعات پلیٹ فارم</translation>
 <translation id="2912296070571964914">ان موضوعات کا نظم کریں جن میں آپ کو دلچسپی ہے</translation>
 <translation id="2912345083818861431">کھلے ہوئے پوشیدگی ٹیبز دیکھنے کے لیے اسکرین لاک کا استعمال کریں</translation>
@@ -851,7 +851,7 @@
 <translation id="5620928963363755975">مزید اختیارات بٹن سے اپنی فائلیں اور صفحات ڈاؤن لوڈز میں تلاش کریں</translation>
 <translation id="562289928968387744">ردعمل کا نظم کریں</translation>
 <translation id="5626134646977739690">نام:</translation>
-<translation id="5628604359369369630">بغیر پڑھا ہوا - آف لائن دستیاب ہے</translation>
+<translation id="5628604359369369630">نہ پڑھا ہوا - آف لائن دستیاب ہے</translation>
 <translation id="5639724618331995626">سبھی سائٹس کو اجازت دیں</translation>
 <translation id="5648166631817621825">آخری 7 دن</translation>
 <translation id="5655963694829536461">اپنے ڈاؤن لوڈز تلاش کریں</translation>
@@ -1280,7 +1280,7 @@
 <translation id="78707286264420418"><ph name="PRODUCT_NAME" /> کو آپ کے آلے سے منسلک ہونے کے لیے قریبی آلات کی اجازت درکار ہے</translation>
 <translation id="7875915731392087153">ای میل تخلیق کریں</translation>
 <translation id="7876243839304621966">سبھی ہٹائیں</translation>
-<translation id="7879130110979560610">{READING_LIST_REMINDER_NOTIFICATION_SUBTITLE,plural, =1{آپ کے پاس <ph name="READING_LIST_REMINDER_NOTIFICATION_SUBTITLE_ONE" /> بغیر پڑھا ہوا صفحہ ہے}other{آپ کے پاس <ph name="READING_LIST_REMINDER_NOTIFICATION_SUBTITLE_MANY" /> بغیر پڑھے ہوئے صفحات ہیں}}</translation>
+<translation id="7879130110979560610">{READING_LIST_REMINDER_NOTIFICATION_SUBTITLE,plural, =1{آپ کے پاس <ph name="READING_LIST_REMINDER_NOTIFICATION_SUBTITLE_ONE" /> نہ پڑھا ہوا صفحہ ہے}other{آپ کے پاس <ph name="READING_LIST_REMINDER_NOTIFICATION_SUBTITLE_MANY" /> نہ پڑھے ہوئے صفحات ہیں}}</translation>
 <translation id="7886917304091689118">‏Chrome میں چل رہا ہے</translation>
 <translation id="7887174313503389866">کلیدی رازداری اور سیکیورٹی کنٹرولز کا ایک زیر رہنمائی ٹور کریں۔ مزید اختیارات کے لیے، انفرادی ترتیبات پر جائیں۔</translation>
 <translation id="789763218334337857">‏Chrome استعمال کرنے کا طریقہ</translation>
@@ -1511,7 +1511,7 @@
 <translation id="9065203028668620118">تبدیل کریں</translation>
 <translation id="9065383040763568503">‏اسٹور شدہ وہ ڈیٹا جسے Chrome اہم نہیں سمجھتا ہے (جیسے، بغیر محفوظ کردہ ترتیبات والی سائٹس یا وہ جنہیں آپ اکثر ملاحظہ نہیں کرتے ہیں)</translation>
 <translation id="906781307897697745"><ph name="PRODUCT_NAME" /> میں</translation>
-<translation id="9069999660519089861">کوئی بغیر پڑھا ہوا صفحہ نہیں ہے</translation>
+<translation id="9069999660519089861">کوئی نہ پڑھا ہوا صفحہ نہیں ہے</translation>
 <translation id="9070377983101773829">صوتی تلاش شروع کریں</translation>
 <translation id="9074739597929991885">بلوٹوتھ</translation>
 <translation id="9081543426177426948">جو سائٹس آپ ملاحظہ کرتے ہیں وہ پوشیدگی وضع میں محفوظ نہیں ہوتی ہیں</translation>

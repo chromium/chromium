@@ -1331,7 +1331,7 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="4274173425554582601">Computer ed elettronica</translation>
 <translation id="4275830172053184480">Riavvia il dispositivo</translation>
 <translation id="4277028893293644418">Reimposta password</translation>
-<translation id="4278390842282768270">Consentita</translation>
+<translation id="4278390842282768270">Autorizzazione consentita</translation>
 <translation id="4281998142035485137">{0,plural, =1{Aprire il file riservato?}other{Aprire i file riservati?}}</translation>
 <translation id="4282346679996504092">Gli avvisi per questo prodotto sono stati disattivati e il preferito è stato rimosso</translation>
 <translation id="4285498937028063278">Sblocca</translation>
@@ -2485,7 +2485,7 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="7179323680825933600">Salva e compila i metodi di pagamento</translation>
 <translation id="7180611975245234373">Aggiorna</translation>
 <translation id="7181261019481237103">Apri finestra di navigazione in incognito</translation>
-<translation id="7182878459783632708">Nessuna norma impostata</translation>
+<translation id="7182878459783632708">Nessun criterio impostato</translation>
 <translation id="7186367841673660872">Questa pagina è stata tradotta da<ph name="ORIGINAL_LANGUAGE" />a<ph name="LANGUAGE_LANGUAGE" /></translation>
 <translation id="7186840261985974511">Busta #12</translation>
 <translation id="718872491229180389">Cheerleading</translation>

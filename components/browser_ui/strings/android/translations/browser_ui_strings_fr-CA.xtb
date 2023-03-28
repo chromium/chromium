@@ -363,7 +363,7 @@
 <translation id="7846076177841592234">Annuler la sélection</translation>
 <translation id="7882806643839505685">Autorisez le son sur un site précis.</translation>
 <translation id="789180354981963912">Bloquer les témoins tiers en navigation privée :</translation>
-<translation id="7940722705963108451">Me rappeler</translation>
+<translation id="7940722705963108451">Me le rappeler</translation>
 <translation id="7974024493641668069">{COUNT,plural, =1{<ph name="FPS_MEMBERS_COUNT" /> site du groupe de sites de <ph name="FPS_OWNER" /> peut voir votre activité dans le groupe}one{<ph name="FPS_MEMBERS_COUNT" /> site du groupe de sites de <ph name="FPS_OWNER" /> peut voir votre activité dans le groupe}other{<ph name="FPS_MEMBERS_COUNT" /> sites du groupe de sites de <ph name="FPS_OWNER" /> peut voir votre activité dans le groupe}}</translation>
 <translation id="7986741934819883144">Sélectionner un contact</translation>
 <translation id="7999064672810608036">Voulez-vous vraiment effacer toutes les données locales de ce site Web, y compris les témoins, et réinitialiser toutes les autorisations pour ce site Web?</translation>

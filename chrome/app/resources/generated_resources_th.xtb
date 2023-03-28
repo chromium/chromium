@@ -3927,7 +3927,7 @@
 <translation id="4530494379350999373">ต้นทาง</translation>
 <translation id="4531924570968473143">คุณต้องการเพิ่มใครใน <ph name="DEVICE_TYPE" /> เครื่องนี้</translation>
 <translation id="4532625150642446981">กำลังใช้ "<ph name="USB_DEVICE_NAME" />" อยู่ การกำหนดอุปกรณ์ซ้ำอีกครั้งขณะใช้งานอยู่อาจทำให้เกิดข้อผิดพลาด แน่ใจไหมว่าจะดำเนินการต่อ</translation>
-<translation id="4532646538815530781">เว็บไซต์นี้ใช้เซ็นเซอร์ตรวจจับความเคลื่อนไหวอยู่</translation>
+<translation id="4532646538815530781">เว็บไซต์นี้ใช้เซ็นเซอร์ตรวจจับการเคลื่อนไหวอยู่</translation>
 <translation id="4533846798469727141">ตอนนี้ให้พูดว่า "Hey Google"</translation>
 <translation id="4533985347672295764">เวลา CPU</translation>
 <translation id="4534661889221639075">ลองอีกครั้ง</translation>
@@ -4088,7 +4088,7 @@
 <translation id="4666472247053585787">ดูการแจ้งเตือนจากโทรศัพท์ใน <ph name="DEVICE_TYPE" /></translation>
 <translation id="4666911709726371538">แสดงแอปเพิ่มเติม</translation>
 <translation id="4667027203988048332">ข้อมูลที่ใช้</translation>
-<translation id="4668279686271488041">ข้อมูลการวัดผลโฆษณาจะได้รับการลบออกจากอุปกรณ์เป็นระยะ</translation>
+<translation id="4668279686271488041">ระบบจะลบข้อมูลการวัดผลโฆษณาออกจากอุปกรณ์ของคุณเป็นประจำ</translation>
 <translation id="4672759829555593783">เปิด <ph name="FILE_NAME" /> เลย</translation>
 <translation id="46733273239502219">ระบบจะล้างข้อมูลออฟไลน์ในแอปที่ติดตั้งไว้ด้วย</translation>
 <translation id="4673442866648850031">เปิดเครื่องมือสไตลัสเมื่อมีการถอดสไตลัสออก</translation>
@@ -5091,7 +5091,7 @@
 <translation id="5620568081365989559">DevTools ขอเข้าถึง <ph name="FOLDER_PATH" /> แบบเต็มรูปแบบ โปรดตรวจสอบว่าคุณไม่ได้เปิดเผยข้อมูลที่ละเอียดอ่อนใดๆ</translation>
 <translation id="5620612546311710611">สถิติการใช้งาน</translation>
 <translation id="562250930904332809">&amp;ปิดใช้คำบรรยายสด</translation>
-<translation id="5623282979409330487">เว็บไซต์นี้เข้าถึงเซ็นเซอร์ตรวจจับความเคลื่อนไหวอยู่</translation>
+<translation id="5623282979409330487">เว็บไซต์นี้เข้าถึงเซ็นเซอร์ตรวจจับการเคลื่อนไหวอยู่</translation>
 <translation id="5623842676595125836">บันทึก</translation>
 <translation id="5624120631404540903">จัดการรหัสผ่าน</translation>
 <translation id="5625225435499354052">แก้ไขใน Google Pay</translation>
@@ -6077,7 +6077,7 @@
 <translation id="653920215766444089">กำลังค้นหาอุปกรณ์ชี้ตำแหน่ง</translation>
 <translation id="653983593749614101">ดาวน์โหลดต่อ...</translation>
 <translation id="654039047105555694"><ph name="BEGIN_BOLD" />หมายเหตุ:<ph name="END_BOLD" /> เปิดใช้งานเฉพาะเมื่อคุณทราบว่าคุณกำลังทำอะไรอยู่ หรือเมื่อคุณถูกร้องขอให้ทำเช่นนั้นเท่านั้น เนื่องจากคอลเล็กชันข้อมูลอาจลดประสิทธิภาพในการปฏิบัติงาน</translation>
-<translation id="6541638731489116978">เว็บไซต์นี้ถูกบล็อกไม่ให้เข้าถึงเซ็นเซอร์ตรวจจับความเคลื่อนไหว</translation>
+<translation id="6541638731489116978">เว็บไซต์นี้ถูกบล็อกไม่ให้เข้าถึงเซ็นเซอร์ตรวจจับการเคลื่อนไหว</translation>
 <translation id="6545665334409411530">อัตราการพิมพ์ซ้ำ</translation>
 <translation id="6545867563032584178">ไมโครโฟนปิดอยู่ในค่ากำหนดของระบบ Mac</translation>
 <translation id="6546856949879953071">หากต้องการข้อมูลการอัปเกรดโดยละเอียด ระบบได้บันทึกข้อมูลดังกล่าวไว้ใน Files &gt; ไฟล์ของฉัน &gt; <ph name="LOG_FILE" /></translation>
@@ -7353,7 +7353,7 @@
 <translation id="7705276765467986571">ไม่สามารถโหลดรูปแบบบุ๊กมาร์ก</translation>
 <translation id="7705334495398865155">สุ่มรหัสของฮาร์ดแวร์ (BSSID) เพื่อป้องกันไม่ให้ผู้อื่นติดตามอุปกรณ์นี้</translation>
 <translation id="7705524343798198388">VPN</translation>
-<translation id="7707108266051544351">เว็บไซต์นี้ถูกบล็อกไม่ให้ใช้เซ็นเซอร์ตรวจจับความเคลื่อนไหว</translation>
+<translation id="7707108266051544351">เว็บไซต์นี้ถูกบล็อกไม่ให้ใช้เซ็นเซอร์ตรวจจับการเคลื่อนไหว</translation>
 <translation id="7707922173985738739">ใช้เน็ตมือถือ</translation>
 <translation id="7709152031285164251">ล้มเหลว - <ph name="INTERRUPT_REASON" /></translation>
 <translation id="7710568461918838723">แ&amp;คสต์...</translation>
