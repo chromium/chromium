@@ -780,6 +780,7 @@ data/gpu/vc/teddy3_vp8_320x180_30fps.webm
 data/gpu/vc/teddy3_vp9_320x180_30fps.webm
 data/gpu/vc/video_utils.js
 data/gpu/vc/videos_mxn.html
+data/gpu/vc/webgl2_videos_mxn.html
 data/gpu/vc/webgl_video.js
 data/gpu/vc/webgl_videos_mxn.html
 data/gpu/vc/webgpu_video.js

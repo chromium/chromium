@@ -6,7 +6,7 @@ found in the LICENSE file.
 <html>
 
 <head>
-  <title>WebGL MxN Video playbacks</title>
+  <title>WebGL2 MxN Video playbacks</title>
   <style>
     #message {
       position: absolute;
@@ -30,6 +30,7 @@ found in the LICENSE file.
     let useLargeSizeVideo = false;
     let codec = 'vp9';
     let useLocalCamera = false;
+    let fixedTextureSize = false;
 
     async function startMxNVideos() {
       const container = document.getElementById('container');
@@ -37,10 +38,17 @@ found in the LICENSE file.
 
       // Initialize WebGL
 
-      const gl = await webglInit(_totalVideoWidth, _totalVideoHeight);
+      const gl = await webglInit(_totalVideoWidth, _totalVideoHeight, 'webgl2');
       if (!gl) {
-        p.innerHTML = "WebGL not supported!";
+        p.innerHTML = "WebGL2 not supported!";
         return;
+      }
+
+      const fixedTextureSizeOption = parsedString['fixed_texture_size'];
+      if (fixedTextureSizeOption === '0') {
+        fixedTextureSize = false;
+      } else if (fixedTextureSizeOption === '1') {
+        fixedTextureSize = true;
       }
 
       // Get the UI rendering options from the string.
@@ -87,8 +95,7 @@ found in the LICENSE file.
       let videoColumns = parsedString['columns'];
       if (videoRows === undefined) {
         videoRows = _defaultRows;
-      }
-      if (videoColumns === undefined) {
+      } if (videoColumns === undefined) {
         videoColumns = _defaultColumns;
       }
 
@@ -126,7 +133,6 @@ found in the LICENSE file.
       // For the small video at the upper right corner.
       videos[videoRows * videoColumns].width = videoWidth / 3;
       videos[videoRows * videoColumns].height = videoHeight / 3;
-
       if (useLocalCamera) {
         const video = videos[videoRows * videoColumns];
         video.src = "";
@@ -154,7 +160,7 @@ found in the LICENSE file.
 
       // Simulate video playback by WebGL rendering.
       webglDrawVideoFrames(gl, videos, videoRows, videoColumns,
-        hasUIOnTop, hasFPSOnTop, capUIFPS);
+        hasUIOnTop, hasFPSOnTop, capUIFPS, fixedTextureSize);
     }
 
   </script>

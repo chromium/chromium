@@ -20,12 +20,13 @@ function GetVideoSource(videoCount, index, codec, useLargeSizeVideo = false) {
       if (videoCount <= 4 || useLargeSizeVideo) {
         return './teddy1_vp8_640x360_30fps.webm';
       } else {
-        if (index < 4)
+        if (index < 4) {
           return './teddy3_vp8_320x180_30fps.webm';
-        else if (index < 16)
+        } else if (index < 16) {
           return './teddy2_vp8_320x180_15fps.webm';
-        else
+        } else {
           return './teddy1_vp8_320x180_7fps.webm';
+        }
       }
       break;
 
@@ -34,19 +35,20 @@ function GetVideoSource(videoCount, index, codec, useLargeSizeVideo = false) {
       if (videoCount <= 4 || useLargeSizeVideo) {
         return './teddy1_vp9_640x360_30fps.webm';
       } else {
-        if (index < 4)
+        if (index < 4) {
           return './teddy3_vp9_320x180_30fps.webm';
-        else if (index < 16)
+        } else if (index < 16) {
           return './teddy2_vp9_320x180_15fps.webm';
-        else
+        } else {
           return './teddy1_vp9_320x180_7fps.webm';
+        }
       }
       break;
   }
 }
 
 function getArrayForVideoVertexBuffer(videos, videoRows, videoColumns) {
-  // Each video takes 6 vertices (2 triangles). Each vertice has 4 floats.
+  // Each video takes 6 vertices (2 triangles). Each vertex has 4 floats.
   // Therefore, each video needs 24 floats.
   // The small video at the corner is included in the vertex buffer.
   const rectVerts = new Float32Array(videos.length * 24);
@@ -93,7 +95,7 @@ function getArrayForVideoVertexBuffer(videos, videoRows, videoColumns) {
 }
 
 function getArrayForIconVertexBuffer(videos, videoRows, videoColumns) {
-  // Each icon takes 6 vertices (2 triangles). Each vertice has 2 floats.
+  // Each icon takes 6 vertices (2 triangles). Each vertex has 2 floats.
   // Therefore, each video needs 12 floats.
   const rectVerts = new Float32Array(videos.length * 12);
 
@@ -159,7 +161,7 @@ function getArrayForAnimationVertexBuffer(videos, videoRows, videoColumns) {
   // (1) Generate 10 different lengths of voice bar. Each bar takes 2 triangles,
   // which are 6 vertices.
   // (2) Generate borders, consisting of 4 lines. Each line takes 2 vertices.
-  // Each vertice has 2 floats.
+  // Each vertex has 2 floats.
   // Total are 10*6*2 + 4*2*2  = 120 + 16 = 136 floats.
   const rectVerts = new Float32Array(136);
 
@@ -211,7 +213,7 @@ function getArrayForAnimationVertexBuffer(videos, videoRows, videoColumns) {
 }
 
 function getArrayForFPSVertexBuffer(fpsCount) {
-  // Each FPS takes 6 vertices (2 triangles). Each vertice has 4 floats.
+  // Each FPS takes 6 vertices (2 triangles). Each vertex has 4 floats.
   // Therefore, each FPS needs 24 floats.
   const rectVerts = new Float32Array(fpsCount * 24);
 

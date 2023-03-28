@@ -2,13 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-function webglInit(canvasWidth, canvasHeight) {
+function webglInit(canvasWidth, canvasHeight, mode = 'webgl') {
   const container = document.getElementById('container');
   const canvas = container.appendChild(document.createElement('canvas'));
   canvas.width = canvasWidth;
   canvas.height = canvasHeight;
 
-  const gl = canvas.getContext('webgl');
+  const gl = canvas.getContext(mode);
   if (!gl) {
     console.warn('WebGL not supported. canvas.getContext("webgl") fails!');
     return null;
@@ -37,25 +37,25 @@ void main(void) {
 }
 `,
 
-  vertex_icons: `
+  vertexIcons: `
 attribute vec2 aVertPos;
 void main(void) {
   gl_Position = vec4(aVertPos, 0.0, 1.0);
 }
 `,
 
-  fragment_output_blue: `
+  fragmentOutputBlue: `
 void main(void) {
   gl_FragColor = vec4(0.11328125, 0.4296875, 0.84375, 1.0);
 }
 `,
-  fragment_output_light_blue: `
+  fragmentOutputLightBlue: `
 void main(void) {
   gl_FragColor = vec4(0.3515625, 0.50390625, 0.75390625, 1.0);
 }
 `,
 
-  fragment_output_white: `
+  fragmentOutputWhite: `
 void main(void) {
   gl_FragColor = vec4(1.0, 1.0, 1.0, 1.0);
 }
@@ -102,18 +102,18 @@ const webglPrograms = {
   video: null,
   icon: null,
   animation: null,
-  border: null
+  border: null,
 };
 
 function initializePrograms(gl) {
   webglPrograms.video = setupProgramForVideo(gl, webglShaders.vertex,
     webglShaders.fragment);
-  webglPrograms.icon = setupProgram(gl, webglShaders.vertex_icons,
-    webglShaders.fragment_output_blue);
-  webglPrograms.animation = setupProgram(gl, webglShaders.vertex_icons,
-    webglShaders.fragment_output_white);
-  webglPrograms.border = setupProgram(gl, webglShaders.vertex_icons,
-    webglShaders.fragment_output_light_blue);
+  webglPrograms.icon = setupProgram(gl, webglShaders.vertexIcons,
+    webglShaders.fragmentOutputBlue);
+  webglPrograms.animation = setupProgram(gl, webglShaders.vertexIcons,
+    webglShaders.fragmentOutputWhite);
+  webglPrograms.border = setupProgram(gl, webglShaders.vertexIcons,
+    webglShaders.fragmentOutputLightBlue);
 }
 
 function createVertexBufferForVideos(gl, videos, videoRows, videoColumns) {
@@ -210,45 +210,78 @@ function initializeVertexBuffers(gl, videos, videoRows, videoColumns, addFPS) {
   }
 }
 
+function initTexture(gl) {
+  const texture = gl.createTexture();
+  gl.activeTexture(gl.TEXTURE0);
+  gl.bindTexture(gl.TEXTURE_2D, texture);
+  gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
+  gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
+  gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
+  return texture;
+}
+
 const webglVideoTextures = [];
 function initializeVideoTextures(gl, count) {
   for (let i = 0; i < count; ++i) {
-    const texture = gl.createTexture();
-    gl.activeTexture(gl.TEXTURE0);
-    gl.bindTexture(gl.TEXTURE_2D, texture);
-    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
-    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
-    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
-    webglVideoTextures.push(texture);
+    const texture = initTexture(gl);
+    webglVideoTextures.push({texture});
   }
 }
 
-function updateTexture(gl, texture, source) {
+function updateTextureViaTexStorage2D(
+    gl, textureInfo, source, texWidth, texHeight) {
+  if (textureInfo.texWidth !== texWidth ||
+      textureInfo.texHeight !== texHeight) {
+    gl.deleteTexture(textureInfo.texture);
+    textureInfo.texture = initTexture(gl);
+    textureInfo.texWidth = texWidth;
+    textureInfo.texHeight = texHeight;
+    gl.texStorage2D(gl.TEXTURE_2D, 1, gl.RGBA8, texWidth, texHeight);
+    console.log(`Reinitializing texture (${texWidth}x${texHeight})`);
+  } else {
+    gl.activeTexture(gl.TEXTURE0);
+  }
+
+  texture = textureInfo.texture;
+  gl.bindTexture(gl.TEXTURE_2D, texture);
+
+  gl.texSubImage2D(
+      gl.TEXTURE_2D, 0, 0, 0, texWidth, texHeight, gl.RGBA, gl.UNSIGNED_BYTE,
+      source);
+}
+
+function updateTextureViaTexImage2D(gl, textureInfo, source) {
+  if (textureInfo.texWidth || textureInfo.texHeight) {
+    gl.deleteTexture(textureInfo.texture);
+    textureInfo.texture = initTexture(gl);
+    textureInfo.texWidth = 0;
+    textureInfo.texHeight = 0;
+    console.log('Reinitializing texture');
+  } else {
+    gl.activeTexture(gl.TEXTURE0);
+  }
+
+  texture = textureInfo.texture;
+  gl.bindTexture(gl.TEXTURE_2D, texture);
   const level = 0;
   const internalFormat = gl.RGBA;
   const srcFormat = gl.RGBA;
   const srcType = gl.UNSIGNED_BYTE;
-  gl.activeTexture(gl.TEXTURE0);
-  gl.bindTexture(gl.TEXTURE_2D, texture);
-  gl.texImage2D(gl.TEXTURE_2D, level, internalFormat, srcFormat, srcType,
-    source);
+  gl.texImage2D(
+      gl.TEXTURE_2D, level, internalFormat, srcFormat, srcType, source);
 }
 
 const webglFPSTextures = [];
 function initializeFPSTextures(gl, count) {
   for (let i = 0; i < count; ++i) {
-    const texture = gl.createTexture();
-    gl.activeTexture(gl.TEXTURE0);
-    gl.bindTexture(gl.TEXTURE_2D, texture);
-    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
-    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
-    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
-    webglFPSTextures.push(texture);
+    const texture = initTexture(gl);
+    webglFPSTextures.push({texture});
   }
 }
 
 function webglDrawVideoFrames(
-    gl, videos, videoRows, videoColumns, addUI, addFPS, capUIFPS) {
+    gl, videos, videoRows, videoColumns, addUI, addFPS, capUIFPS,
+    fixedTextureSize) {
   initializePrograms(gl);
   initializeVideoTextures(gl, videos.length);
   if (addFPS) {
@@ -264,16 +297,16 @@ function webglDrawVideoFrames(
   // are ready.
   var videoIsReady = new Array(videos.length);
 
-  function UpdateIsVideoReady(video) {
+  function updateIsVideoReady(video) {
     videoIsReady[video.id] = true;
     video.requestVideoFrameCallback(function () {
-      UpdateIsVideoReady(video);
+      updateIsVideoReady(video);
     });
   }
 
   for (const video of videos) {
     video.requestVideoFrameCallback(function () {
-      UpdateIsVideoReady(video);
+      updateIsVideoReady(video);
     });
   }
 
@@ -301,12 +334,21 @@ function webglDrawVideoFrames(
     bindVertexBufferForVideos(gl);
     for (let i = 0; i < videos.length; ++i) {
       if (videoIsReady[videos[i].id]) {
-        updateTexture(gl, webglVideoTextures[i], videos[i]);
-        videoIsReady[i] = false;
+        if (fixedTextureSize) {
+          updateTextureViaTexStorage2D(
+              gl, webglVideoTextures[i], videos[i], videos[i].videoWidth,
+              videos[i].videoHeight);
+        } else {
+          updateTextureViaTexImage2D(gl, webglVideoTextures[i], videos[i]);
+        }
+        videoIsReady[videos[i].id] = false;
         totalVideoFrames++;
       }
+    }
+
+    for (let i = 0; i < videos.length; ++i) {
       gl.activeTexture(gl.TEXTURE0);
-      gl.bindTexture(gl.TEXTURE_2D, webglVideoTextures[i]);
+      gl.bindTexture(gl.TEXTURE_2D, webglVideoTextures[i].texture);
       gl.drawArrays(gl.TRIANGLES, 6 * i, 6);
     }
     // Add UI on Top of all videos.
@@ -317,8 +359,9 @@ function webglDrawVideoFrames(
 
       // Animated voice bar on the last video.
       index_voice_bar++;
-      if (index_voice_bar >= 10)
+      if (index_voice_bar >= 10) {
         index_voice_bar = 0;
+      }
       gl.useProgram(webglPrograms.animation);
       bindVertexBufferForAnimation(gl);
       gl.drawArrays(gl.TRIANGLES, index_voice_bar * 6, 6);
@@ -335,7 +378,7 @@ function webglDrawVideoFrames(
 
       bindVertexBufferForFPS(gl);
       for (let i = 0; i < fpsPanels.length; ++i) {
-        updateTexture(gl, webglFPSTextures[i], fpsPanels[i].dom);
+        updateTextureViaTexImage2D(gl, webglFPSTextures[i], fpsPanels[i].dom);
         gl.drawArrays(gl.TRIANGLES, 6 * i, 6);
       }
     }

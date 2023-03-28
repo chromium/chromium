@@ -4,23 +4,25 @@ Use of this source code is governed by a BSD-style license that can be
 found in the LICENSE file.
 -->
 <html>
+
 <head>
   <title>MxN Video playbacks</title>
   <script>
-    const _default_rows = 7;
-    const _default_columns = 7;
-    const _total_video_width = 1600;
-    const _total_video_height = 900;
-    var codec = 'vp9';
+    const _defaultRows = 7;
+    const _defaultColumns = 7;
+    const _totalVideoWidth = 1600;
+    const _totalVideoHeight = 900;
+    let codec = 'vp9';
 
     const parsedString = (function (names) {
       const pairs = {};
       for (let i = 0; i < names.length; ++i) {
-        var keyValue = names[i].split('=', 2);
-        if (keyValue.length == 1)
+        const keyValue = names[i].split('=', 2);
+        if (keyValue.length === 1) {
           pairs[keyValue[0]] = '';
-        else
+        } else {
           pairs[keyValue[0]] = decodeURIComponent(keyValue[1].replace(/\+/g, ' '));
+        }
       }
       return pairs;
     })(window.location.search.substr(1).split('&'));
@@ -31,12 +33,13 @@ found in the LICENSE file.
           if (videoCount <= 4) {
             return './teddy1_vp8_640x360_30fps.webm';
           } else {
-            if (index < 4)
+            if (index < 4) {
               return './teddy3_vp8_320x180_30fps.webm';
-            else if (index < 16)
+            } else if (index < 16) {
               return './teddy2_vp8_320x180_15fps.webm';
-            else
+            } else {
               return './teddy1_vp8_320x180_7fps.webm';
+            }
           }
           break;
 
@@ -45,12 +48,13 @@ found in the LICENSE file.
           if (videoCount <= 4) {
             return './teddy1_vp9_640x360_30fps.webm';
           } else {
-            if (index < 4)
+            if (index < 4) {
               return './teddy3_vp9_320x180_30fps.webm';
-            else if (index < 16)
+            } else if (index < 16) {
               return './teddy2_vp9_320x180_15fps.webm';
-            else
+            } else {
               return './teddy1_vp9_320x180_7fps.webm';
+            }
           }
           break;
       }
@@ -61,70 +65,75 @@ found in the LICENSE file.
 
       // Get the video row count and the column count from the string.
       // Example: videos_mxn.html?rows=9&columns=9
-      var video_rows = parsedString['rows'];
-      var video_columns = parsedString['columns'];
-      if (video_rows == undefined)
-        video_rows = _default_rows;
-      if (video_columns == undefined)
-        video_columns = _default_columns;
+      let videoRows = parsedString['rows'];
+      let videoColumns = parsedString['columns'];
+      if (videoRows === undefined) {
+        videoRows = _defaultRows;
+      }
+      if (videoColumns === undefined) {
+        videoColumns = _defaultColumns;
+      }
 
       // Get the video source option from the string.
-      codecString = parsedString['codec']
-      if (codecString == 'vp8')
+      codecString = parsedString['codec'];
+      if (codecString === 'vp8') {
         codec = 'vp8';
-      else if (codecString != 'vp9' && codecString != undefined)
+      } else if (codecString !== 'vp9' && codecString !== undefined) {
         console.warn('Unsupported video codec format! Switch to default VP9.');
+      }
 
       // Limite the number of videos to 20x20.
       // These videos will not load when the number is too big.
-      const max_col_row = Math.max(video_rows, video_columns);
-      if (max_col_row > 20) {
+      const maxColRow = Math.max(videoRows, videoColumns);
+      if (maxColRow > 20) {
         const p = container.appendChild(document.createElement('p'));
         p.style.position = "absolute";
         p.style.top = 0;
         p.style.left = 0;
-        p.style.width = _total_video_width;
-        p.style.height = _total_video_height;
+        p.style.width = _totalVideoWidth;
+        p.style.height = _totalVideoHeight;
         p.innerHTML = "Cannot support videos more than 20 x 20!" + "<br />" +
           "Please change the number of rows/columns.";
         return;
       }
 
       // Calculate the video onscreen size
-      const video_width = _total_video_width / max_col_row;
-      const video_height = _total_video_height / max_col_row;
-      const icon_height = video_height / 8;
+      const videoWidth = _totalVideoWidth / maxColRow;
+      const videoHeight = _totalVideoHeight / maxColRow;
+      const iconHeight = videoHeight / 8;
 
       // Create MxN videos.
-      const video_count = video_rows * video_columns;
-      for (let row = 0; row < video_rows; row++) {
-        for (let column = 0; column < video_columns; column++) {
+      let animatedBar;
+      let iconBottom;
+      const videoCount = videoRows * videoColumns;
+      for (let row = 0; row < videoRows; row++) {
+        for (let column = 0; column < videoColumns; column++) {
           // Onscreen position.
-          const video_top = row * video_height;
-          const video_left = column * video_width;
+          const videoTop = row * videoHeight;
+          const videoLeft = column * videoWidth;
 
           // Video source.
-          const i = row * video_columns + column;
-          const video_src = GetVideoSource(video_count, i, codec);
+          const i = row * videoColumns + column;
+          const videoSrc = GetVideoSource(videoCount, i, codec);
 
-          createOneVideo(video_top, video_left, video_width, video_height,
-            video_src, /*has_border=*/i == 0);
+          createOneVideo(videoTop, videoLeft, videoWidth, videoHeight,
+            videoSrc, /*hasBorder=*/ i === 0);
           // Create an icon on top of each video.
-          createOneIcon(video_top, video_left, video_width, video_height, icon_height);
+          createOneIcon(videoTop, videoLeft, videoWidth, videoHeight, iconHeight);
 
           // For the voice animation on the last video.
-          if (i == 0) {
-            var animatedBar = document.createElement('icon');
-            var icon_bottom = video_top + icon_height * 2;
-            createVoiceAnimationBar(animatedBar, video_top, video_left,
-              video_width, video_height, icon_height);
+          if (i === 0) {
+            animatedBar = document.createElement('icon');
+            iconBottom = videoTop + iconHeight * 2;
+            createVoiceAnimationBar(animatedBar, videoTop, videoLeft,
+              videoWidth, videoHeight, iconHeight);
           }
         }
       }
 
       // Create one small video at the upper right corner to similate the one
       // from the local camera (640x360).
-      createLocalVideoAndIcon(video_width, video_height, codec);
+      createLocalVideoAndIcon(videoWidth, videoHeight, codec);
 
       // Start the voice icon animation.
       const frameTime30Fps = 32;  // ms
@@ -140,12 +149,12 @@ found in the LICENSE file.
         }
         lastTimestamp = timestamp;
 
-        const maxBarHeight = icon_height - 4;
+        const maxBarHeight = iconHeight - 4;
         barHeight = barHeight + (maxBarHeight / 10);
         if (barHeight > maxBarHeight)
           barHeight = maxBarHeight / 10;
 
-        animatedBar.style.top = icon_bottom - barHeight;
+        animatedBar.style.top = iconBottom - barHeight;
         animatedBar.style.height = barHeight;
 
         window.requestAnimationFrame(voiceBarAnimation);
@@ -154,18 +163,18 @@ found in the LICENSE file.
       window.requestAnimationFrame(voiceBarAnimation);
     }
 
-    function createOneVideo(top, left, width, height, video_src, has_border) {
+    function createOneVideo(top, left, width, height, videoSrc, hasBorder) {
       const video = document.createElement('video');
       video.loop = true;
       video.autoplay = true;
       video.muted = true;
-      video.src = video_src;
+      video.src = videoSrc;
       video.width = width;
       video.height = height;
       video.style.position = "absolute";
       video.style.top = top;
       video.style.left = left;
-      if (has_border) {
+      if (hasBorder) {
         const borderWidth = 3;
         video.style.borderWidth = borderWidth;
         video.width = width - borderWidth * 2;
@@ -178,42 +187,42 @@ found in the LICENSE file.
       container.appendChild(video);
     }
 
-    function createOneIcon(video_top, video_left, video_width, video_height, icon_height) {
-      const icon = document.createElement('icon');  
+    function createOneIcon(videoTop, videoLeft, videoWidth, videoHeight, iconHeight) {
+      const icon = document.createElement('icon');
 
       icon.style.backgroundColor = "rgba(29, 110, 216, 255)";
       icon.style.position = "absolute";
-      icon.style.width = icon_height;
-      icon.style.height = icon_height;
-      icon.style.top = video_top + icon_height;
-      icon.style.left = video_left + video_width - icon_height * 2;
+      icon.style.width = iconHeight;
+      icon.style.height = iconHeight;
+      icon.style.top = videoTop + iconHeight;
+      icon.style.left = videoLeft + videoWidth - iconHeight * 2;
 
       container.appendChild(icon);
     }
 
-    function createLocalVideoAndIcon(video_width, video_height, codec) {
-      const small_video_width = video_width / 3;
-      const small_video_height = video_height / 3;
-      const icon_height = small_video_height / 8;
-      const video_src = GetVideoSource(1, 1, codec);
+    function createLocalVideoAndIcon(videoWidth, videoHeight, codec) {
+      const smallVideoWidth = videoWidth / 3;
+      const smallVideoHeight = videoHeight / 3;
+      const iconHeight = smallVideoHeight / 8;
+      const videoSrc = GetVideoSource(1, 1, codec);
 
-      createOneVideo(video_height - small_video_height,
-        _total_video_width - small_video_width, small_video_width,
-        small_video_height, video_src, false);
+      createOneVideo(videoHeight - smallVideoHeight,
+        _totalVideoWidth - smallVideoWidth, smallVideoWidth,
+        smallVideoHeight, videoSrc, false);
 
-      createOneIcon(video_height - small_video_height, _total_video_width -
-        small_video_width, small_video_width, small_video_height, icon_height);
+      createOneIcon(videoHeight - smallVideoHeight, _totalVideoWidth -
+        smallVideoWidth, smallVideoWidth, smallVideoHeight, iconHeight);
     }
 
 
-    function createVoiceAnimationBar(bar, video_top, video_left, video_width,
-                                     video_height, icon_height) {
+    function createVoiceAnimationBar(bar, videoTop, videoLeft, videoWidth,
+      videoHeight, iconHeight) {
       bar.style.backgroundColor = "white";
       bar.style.position = "absolute";
       bar.style.width = 5;
-      bar.style.height = icon_height - 4;
-      bar.style.top = video_top + icon_height + 4;
-      bar.style.left = video_left + video_width - icon_height * 1.5 - 2;
+      bar.style.height = iconHeight - 4;
+      bar.style.top = videoTop + iconHeight + 4;
+      bar.style.left = videoLeft + videoWidth - iconHeight * 1.5 - 2;
 
       container.appendChild(bar);
     }
@@ -221,8 +230,11 @@ found in the LICENSE file.
 
   </script>
 </head>
-<body onload="startMxNVideos()">
+
+<body>
   <div id="container" style="position:absolute; top:0px; left:0px">
   </div>
+  <script>startMxNVideos();</script>
 </body>
+
 </html>
