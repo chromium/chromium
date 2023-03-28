@@ -6,6 +6,7 @@
 #define DEVICE_VR_ANDROID_XR_JAVA_COORDINATOR_H_
 
 #include "base/android/scoped_java_ref.h"
+#include "base/functional/callback.h"
 #include "base/memory/weak_ptr.h"
 #include "gpu/ipc/common/surface_handle.h"
 #include "ui/display/display.h"
@@ -63,6 +64,12 @@ class XrJavaCoordinator {
       SurfaceReadyCallback ready_callback,
       SurfaceTouchCallback touch_callback,
       SurfaceDestroyedCallback destroyed_callback) = 0;
+  virtual void RequestVrSession(
+      int render_process_id,
+      int render_frame_id,
+      device::SurfaceReadyCallback ready_callback,
+      device::SurfaceTouchCallback touch_callback,
+      device::SurfaceDestroyedCallback destroyed_callback) = 0;
   virtual void EndSession() = 0;
 };
 

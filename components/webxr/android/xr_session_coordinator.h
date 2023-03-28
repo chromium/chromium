@@ -28,6 +28,12 @@ class XrSessionCoordinator : public device::XrJavaCoordinator {
       device::SurfaceReadyCallback ready_callback,
       device::SurfaceTouchCallback touch_callback,
       device::SurfaceDestroyedCallback destroyed_callback) override;
+  void RequestVrSession(
+      int render_process_id,
+      int render_frame_id,
+      device::SurfaceReadyCallback ready_callback,
+      device::SurfaceTouchCallback touch_callback,
+      device::SurfaceDestroyedCallback destroyed_callback) override;
   void EndSession() override;
   bool EnsureARCoreLoaded() override;
   base::android::ScopedJavaLocalRef<jobject> GetApplicationContext() override;

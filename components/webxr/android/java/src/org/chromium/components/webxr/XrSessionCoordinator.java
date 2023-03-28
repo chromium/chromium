@@ -10,7 +10,6 @@ import android.view.Surface;
 
 import androidx.annotation.IntDef;
 
-import org.chromium.base.ContextUtils;
 import org.chromium.base.Log;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.annotations.CalledByNative;
@@ -60,6 +59,8 @@ public class XrSessionCoordinator {
 
     private @SessionType int mActiveSessionType = SessionType.NONE;
 
+    private static WebContents sWebContents;
+
     /** Whether there is a non-null valid {@link #sActiveSessionInstance}. */
     private static XrSessionTypeSupplier sActiveSessionAvailableSupplier =
             new XrSessionTypeSupplier(SessionType.NONE);
@@ -81,13 +82,18 @@ public class XrSessionCoordinator {
     }
 
     /**
-     * Gets the current application context.
+     * Gets the current application context. Should not be called until after a start*Session call
+     * has succeeded, but if called after an endSession call may return null.
      *
      * @return Context The application context.
      */
     @CalledByNative
     private static Context getApplicationContext() {
-        return ContextUtils.getApplicationContext();
+        if (sWebContents == null) {
+            return null;
+        }
+
+        return getActivity(sWebContents);
     }
 
     private XrSessionCoordinator(long nativeXrSessionCoordinator) {
@@ -105,6 +111,7 @@ public class XrSessionCoordinator {
         mImmersiveOverlay = new XrImmersiveOverlay();
         mImmersiveOverlay.show(overlayDelegate, webContents, this);
 
+        sWebContents = webContents;
         sActiveSessionInstance = this;
         mActiveSessionType = sessionType;
         sActiveSessionAvailableSupplier.set(sessionType);
@@ -124,6 +131,18 @@ public class XrSessionCoordinator {
     }
 
     @CalledByNative
+    private void startVrSession(final WebContents webContents) {
+        if (DEBUG_LOGS) Log.i(TAG, "startVrSession");
+        // The higher levels should have guaranteed that we're only called if there isn't any other
+        // active session going on.
+        assert (sActiveSessionInstance == null);
+
+        XrImmersiveOverlay.Delegate overlayDelegate =
+                CardboardClassProvider.getOverlayDelegate(getActivity(webContents));
+        startSession(SessionType.VR, overlayDelegate, webContents);
+    }
+
+    @CalledByNative
     private void endSession() {
         if (DEBUG_LOGS) Log.i(TAG, "endSession");
         if (mImmersiveOverlay == null) return;
@@ -131,8 +150,9 @@ public class XrSessionCoordinator {
 
         mImmersiveOverlay.cleanupAndExit();
         mImmersiveOverlay = null;
-        sActiveSessionInstance = null;
         mActiveSessionType = SessionType.NONE;
+        sActiveSessionInstance = null;
+        sWebContents = null;
         sActiveSessionAvailableSupplier.set(SessionType.NONE);
     }
 

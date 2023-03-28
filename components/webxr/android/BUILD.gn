@@ -150,7 +150,17 @@ android_library("xr_java") {
   # Also includes any cardboard-specific java runtime dependencies that the
   # native files in this folder may depend upon.
   if (enable_cardboard) {
+    sources += [
+      "//components/webxr/android/java/src/org/chromium/components/webxr/CardboardClassProvider.java",
+      "//components/webxr/android/java/src/org/chromium/components/webxr/CardboardOverlayDelegate.java",
+    ]
     deps += [ "//third_party/cardboard:cardboard_java" ]
+  } else if (enable_arcore) {
+    # These stub classes are needed for the general Xr infrastructure code, but
+    # are not needed for the more broad always-available code. So we check that
+    # the non-cardboard parts of the "general xr" sources are still true before
+    # we attempt to compile these bits in.
+    sources += [ "//components/webxr/android/stubs/java/src/org/chromium/components/webxr/CardboardClassProvider.java" ]
   }
 
   annotation_processor_deps = [ "//base/android/jni_generator:jni_processor" ]

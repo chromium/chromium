@@ -68,6 +68,24 @@ void XrSessionCoordinator::RequestArSession(
       use_overlay, can_render_dom_content);
 }
 
+void XrSessionCoordinator::RequestVrSession(
+    int render_process_id,
+    int render_frame_id,
+    device::SurfaceReadyCallback ready_callback,
+    device::SurfaceTouchCallback touch_callback,
+    device::SurfaceDestroyedCallback destroyed_callback) {
+  DVLOG(1) << __func__;
+  JNIEnv* env = AttachCurrentThread();
+
+  surface_ready_callback_ = std::move(ready_callback);
+  surface_touch_callback_ = std::move(touch_callback);
+  surface_destroyed_callback_ = std::move(destroyed_callback);
+
+  Java_XrSessionCoordinator_startVrSession(
+      env, j_xr_session_coordinator_,
+      webxr::GetJavaWebContents(render_process_id, render_frame_id));
+}
+
 void XrSessionCoordinator::EndSession() {
   DVLOG(1) << __func__;
   JNIEnv* env = AttachCurrentThread();
