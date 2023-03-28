@@ -6,6 +6,7 @@
 
 #include <fidl/fuchsia.logger/cpp/fidl.h>
 #include <fidl/fuchsia.logger/cpp/hlcpp_conversion.h>
+#include <fidl/fuchsia.media.sessions2/cpp/hlcpp_conversion.h>
 #include <fuchsia/ui/gfx/cpp/fidl.h>
 #include <lib/fpromise/result.h>
 #include <lib/sys/cpp/component_context.h>
@@ -883,7 +884,8 @@ void FrameImpl::GetMediaPlayer(
               perfetto::Flow::FromPointer(this));
 
   media_player_ = std::make_unique<MediaPlayerImpl>(
-      content::MediaSession::Get(web_contents_.get()), std::move(player),
+      content::MediaSession::Get(web_contents_.get()),
+      fidl::HLCPPToNatural(player),
       base::BindOnce(&FrameImpl::OnMediaPlayerDisconnect,
                      base::Unretained(this)));
 }

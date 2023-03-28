@@ -4,7 +4,7 @@
 
 #include "fuchsia_web/webengine/browser/media_player_impl.h"
 
-#include <fuchsia/media/cpp/fidl.h>
+#include <lib/async/default.h>
 
 #include "base/fuchsia/fuchsia_logging.h"
 #include "base/logging.h"
@@ -16,29 +16,28 @@
 
 namespace {
 
-fuchsia::media::sessions2::PlayerCapabilityFlags ActionToCapabilityFlag(
+fuchsia_media_sessions2::PlayerCapabilityFlags ActionToCapabilityFlag(
     media_session::mojom::MediaSessionAction action) {
   using MediaSessionAction = media_session::mojom::MediaSessionAction;
-  using PlayerCapabilityFlags =
-      fuchsia::media::sessions2::PlayerCapabilityFlags;
+  using PlayerCapabilityFlags = fuchsia_media_sessions2::PlayerCapabilityFlags;
   switch (action) {
     case MediaSessionAction::kEnterPictureInPicture:
     case MediaSessionAction::kExitPictureInPicture:
       return {};  // PlayerControl does not support picture-in-picture.
     case MediaSessionAction::kPlay:
-      return PlayerCapabilityFlags::PLAY;
+      return PlayerCapabilityFlags::kPlay;
     case MediaSessionAction::kPause:
-      return PlayerCapabilityFlags::PAUSE;
+      return PlayerCapabilityFlags::kPause;
     case MediaSessionAction::kPreviousTrack:
-      return PlayerCapabilityFlags::CHANGE_TO_PREV_ITEM;
+      return PlayerCapabilityFlags::kChangeToPrevItem;
     case MediaSessionAction::kNextTrack:
-      return PlayerCapabilityFlags::CHANGE_TO_NEXT_ITEM;
+      return PlayerCapabilityFlags::kChangeToNextItem;
     case MediaSessionAction::kSeekBackward:
-      return PlayerCapabilityFlags::SKIP_REVERSE;
+      return PlayerCapabilityFlags::kSkipReverse;
     case MediaSessionAction::kSeekForward:
-      return PlayerCapabilityFlags::SKIP_FORWARD;
+      return PlayerCapabilityFlags::kSkipForward;
     case MediaSessionAction::kSeekTo:
-      return PlayerCapabilityFlags::SEEK;
+      return PlayerCapabilityFlags::kSeek;
     case MediaSessionAction::kScrubTo:
       return {};  // PlayerControl does not support scrub-to.
     case MediaSessionAction::kSkipAd:
@@ -67,22 +66,22 @@ fuchsia::media::sessions2::PlayerCapabilityFlags ActionToCapabilityFlag(
 
 void AddMetadata(base::StringPiece label,
                  base::StringPiece16 value,
-                 fuchsia::media::Metadata* metadata) {
-  fuchsia::media::Property property = {.label{label},
-                                       .value{base::UTF16ToUTF8(value)}};
-  metadata->properties.emplace_back(std::move(property));
+                 fuchsia_media::Metadata* metadata) {
+  fuchsia_media::Property property{
+      {.label{label}, .value{base::UTF16ToUTF8(value)}}};
+  metadata->properties().emplace_back(std::move(property));
 }
 
-fuchsia::media::sessions2::PlayerState SessionStateToPlayerState(
+fuchsia_media_sessions2::PlayerState SessionStateToPlayerState(
     media_session::mojom::MediaSessionInfo::SessionState state) {
   switch (state) {
     case media_session::mojom::MediaSessionInfo::SessionState::kActive:
     case media_session::mojom::MediaSessionInfo::SessionState::kDucking:
-      return fuchsia::media::sessions2::PlayerState::PLAYING;
+      return fuchsia_media_sessions2::PlayerState::kPlaying;
     case media_session::mojom::MediaSessionInfo::SessionState::kInactive:
-      return fuchsia::media::sessions2::PlayerState::IDLE;
+      return fuchsia_media_sessions2::PlayerState::kIdle;
     case media_session::mojom::MediaSessionInfo::SessionState::kSuspended:
-      return fuchsia::media::sessions2::PlayerState::PAUSED;
+      return fuchsia_media_sessions2::PlayerState::kPaused;
   };
 }
 
@@ -90,34 +89,30 @@ fuchsia::media::sessions2::PlayerState SessionStateToPlayerState(
 
 MediaPlayerImpl::MediaPlayerImpl(
     content::MediaSession* media_session,
-    fidl::InterfaceRequest<fuchsia::media::sessions2::Player> request,
+    fidl::ServerEnd<fuchsia_media_sessions2::Player> server_end,
     base::OnceClosure on_disconnect)
     : media_session_(media_session),
       on_disconnect_(std::move(on_disconnect)),
-      binding_(this, std::move(request)),
+      binding_(async_get_default_dispatcher(),
+               std::move(server_end),
+               this,
+               fit::bind_member(this, &MediaPlayerImpl::OnBindingClosure)),
       observer_receiver_(this) {
-  binding_.set_error_handler([this](zx_status_t status) mutable {
-    ZX_LOG_IF(ERROR, status != ZX_ERR_PEER_CLOSED, status)
-        << "Player disconnected.";
-    std::move(on_disconnect_).Run();
-  });
-
   // Set default values for some fields in |pending_info_delta_|, which some
   // clients may otherwise use incorrect defaults for.
-  pending_info_delta_.set_local(true);
+  pending_info_delta_.local(true);
 }
 
 MediaPlayerImpl::~MediaPlayerImpl() = default;
 
 void MediaPlayerImpl::WatchInfoChange(
-    WatchInfoChangeCallback info_change_callback) {
+    MediaPlayerImpl::WatchInfoChangeCompleter::Sync& completer) {
   if (pending_info_change_callback_) {
-    DLOG(ERROR) << "Unexpected WatchInfoChange().";
     ReportErrorAndDisconnect(ZX_ERR_BAD_STATE);
     return;
   }
 
-  pending_info_change_callback_ = std::move(info_change_callback);
+  pending_info_change_callback_ = completer.ToAsync();
 
   if (!observer_receiver_.is_bound()) {
     // |media_session| will notify us via our MediaSessionObserver interface
@@ -129,93 +124,112 @@ void MediaPlayerImpl::WatchInfoChange(
   MaybeSendPlayerInfoDelta();
 }
 
-void MediaPlayerImpl::Play() {
+void MediaPlayerImpl::Play(
+    MediaPlayerImpl::PlayCompleter::Sync& ignored_completer) {
   media_session_->Resume(content::MediaSession::SuspendType::kUI);
 }
 
-void MediaPlayerImpl::Pause() {
+void MediaPlayerImpl::Pause(
+    MediaPlayerImpl::PauseCompleter::Sync& ignored_completer) {
   media_session_->Suspend(content::MediaSession::SuspendType::kUI);
 }
 
-void MediaPlayerImpl::Stop() {
+void MediaPlayerImpl::Stop(
+    MediaPlayerImpl::StopCompleter::Sync& ignored_completer) {
   media_session_->Suspend(content::MediaSession::SuspendType::kUI);
 }
 
-void MediaPlayerImpl::Seek(zx_duration_t position) {
-  media_session_->SeekTo(base::TimeDelta::FromZxDuration(position));
+void MediaPlayerImpl::Seek(
+    MediaPlayerImpl::SeekRequest& request,
+    MediaPlayerImpl::SeekCompleter::Sync& ignored_completer) {
+  media_session_->SeekTo(base::TimeDelta::FromZxDuration(request.position()));
 }
 
-void MediaPlayerImpl::SkipForward() {
+void MediaPlayerImpl::SkipForward(
+    MediaPlayerImpl::SkipForwardCompleter::Sync& ignored_completer) {
   media_session_->Seek(
       base::Seconds(media_session::mojom::kDefaultSeekTimeSeconds));
 }
 
-void MediaPlayerImpl::SkipReverse() {
+void MediaPlayerImpl::SkipReverse(
+    MediaPlayerImpl::SkipReverseCompleter::Sync& ignored_completer) {
   media_session_->Seek(
       -base::Seconds(media_session::mojom::kDefaultSeekTimeSeconds));
 }
 
-void MediaPlayerImpl::NextItem() {
+void MediaPlayerImpl::NextItem(
+    MediaPlayerImpl::NextItemCompleter::Sync& ignored_completer) {
   media_session_->NextTrack();
 }
 
-void MediaPlayerImpl::PrevItem() {
+void MediaPlayerImpl::PrevItem(
+    MediaPlayerImpl::PrevItemCompleter::Sync& ignored_completer) {
   media_session_->PreviousTrack();
 }
 
-void MediaPlayerImpl::SetPlaybackRate(float playback_rate) {
+void MediaPlayerImpl::SetPlaybackRate(
+    MediaPlayerImpl::SetPlaybackRateRequest& request,
+    MediaPlayerImpl::SetPlaybackRateCompleter::Sync& ignored_completer) {
   // content::MediaSession does not support changes to playback rate.
+  NOTIMPLEMENTED_LOG_ONCE();
 }
 
 void MediaPlayerImpl::SetRepeatMode(
-    fuchsia::media::sessions2::RepeatMode repeat_mode) {
+    MediaPlayerImpl::SetRepeatModeRequest& request,
+    MediaPlayerImpl::SetRepeatModeCompleter::Sync& ignored_completer) {
   // content::MediaSession does not provide control over repeat playback.
+  NOTIMPLEMENTED_LOG_ONCE();
 }
 
-void MediaPlayerImpl::SetShuffleMode(bool shuffle_on) {
+void MediaPlayerImpl::SetShuffleMode(
+    MediaPlayerImpl::SetShuffleModeRequest& request,
+    MediaPlayerImpl::SetShuffleModeCompleter::Sync& ignored_completer) {
   // content::MediaSession does not provide control over item playback order.
+  NOTIMPLEMENTED_LOG_ONCE();
 }
 
 void MediaPlayerImpl::BindVolumeControl(
-    fidl::InterfaceRequest<fuchsia::media::audio::VolumeControl>
-        volume_control_request) {
+    MediaPlayerImpl::BindVolumeControlRequest& request,
+    MediaPlayerImpl::BindVolumeControlCompleter::Sync& ignored_completer) {
   // content::MediaSession does not provide control over audio gain.
-  volume_control_request.Close(ZX_ERR_NOT_SUPPORTED);
+  request.volume_control_request().Close(ZX_ERR_NOT_SUPPORTED);
 }
 
 void MediaPlayerImpl::MediaSessionInfoChanged(
     media_session::mojom::MediaSessionInfoPtr info) {
-  fuchsia::media::sessions2::PlayerStatus status;
-  status.set_player_state(SessionStateToPlayerState(info->state));
-  pending_info_delta_.set_player_status(std::move(status));
+  fuchsia_media_sessions2::PlayerStatus status{{
+      .player_state = SessionStateToPlayerState(info->state),
+  }};
+  pending_info_delta_.player_status(std::move(status));
   MaybeSendPlayerInfoDelta();
 }
 
 void MediaPlayerImpl::MediaSessionMetadataChanged(
     const absl::optional<media_session::MediaMetadata>& metadata_mojo) {
-  fuchsia::media::Metadata metadata;
+  fuchsia_media::Metadata metadata;
   if (metadata_mojo) {
-    AddMetadata(fuchsia::media::METADATA_LABEL_TITLE, metadata_mojo->title,
+    AddMetadata(fuchsia_media::kMetadataLabelTitle, metadata_mojo->title,
                 &metadata);
-    AddMetadata(fuchsia::media::METADATA_LABEL_ARTIST, metadata_mojo->artist,
+    AddMetadata(fuchsia_media::kMetadataLabelArtist, metadata_mojo->artist,
                 &metadata);
-    AddMetadata(fuchsia::media::METADATA_LABEL_ALBUM, metadata_mojo->album,
+    AddMetadata(fuchsia_media::kMetadataLabelAlbum, metadata_mojo->album,
                 &metadata);
-    AddMetadata(fuchsia::media::METADATA_SOURCE_TITLE,
+    AddMetadata(fuchsia_media::kMetadataSourceTitle,
                 metadata_mojo->source_title, &metadata);
   }
-  pending_info_delta_.set_metadata(std::move(metadata));
+  pending_info_delta_.metadata(std::move(metadata));
   MaybeSendPlayerInfoDelta();
 }
 
 void MediaPlayerImpl::MediaSessionActionsChanged(
     const std::vector<media_session::mojom::MediaSessionAction>& actions) {
   // TODO(https://crbug.com/879317): Implement PROVIDE_BITMAPS.
-  fuchsia::media::sessions2::PlayerCapabilityFlags capability_flags{};
+  fuchsia_media_sessions2::PlayerCapabilityFlags capability_flags{};
   for (auto action : actions)
     capability_flags |= ActionToCapabilityFlag(action);
-  pending_info_delta_.mutable_player_capabilities()->set_flags(
-      std::move(capability_flags));
+  pending_info_delta_.player_capabilities(
+      fuchsia_media_sessions2::PlayerCapabilities{
+          {.flags = std::move(capability_flags)}});
   MaybeSendPlayerInfoDelta();
 }
 
@@ -239,11 +253,18 @@ void MediaPlayerImpl::MaybeSendPlayerInfoDelta() {
     return;
   // std::exchange(foo, {}) returns the contents of |foo|, while ensuring that
   // |foo| is reset to the initial/empty state.
-  std::exchange(pending_info_change_callback_,
-                {})(std::exchange(pending_info_delta_, {}));
+  std::exchange(pending_info_change_callback_, absl::nullopt)
+      ->Reply(std::exchange(pending_info_delta_, {}));
+}
+
+void MediaPlayerImpl::OnBindingClosure(fidl::UnbindInfo info) {
+  ZX_LOG_IF(ERROR, info.status() != ZX_ERR_PEER_CLOSED, info.status())
+      << "Player disconnected.";
+  if (on_disconnect_) {
+    std::move(on_disconnect_).Run();
+  }
 }
 
 void MediaPlayerImpl::ReportErrorAndDisconnect(zx_status_t status) {
   binding_.Close(status);
-  std::move(on_disconnect_).Run();
 }
