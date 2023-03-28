@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/ui/alert_coordinator/repost_form_coordinator.h"
+#import "ios/chrome/browser/shared/coordinator/alert/repost_form_coordinator.h"
 
 #import <UIKit/UIKit.h>
 
@@ -27,7 +27,7 @@ namespace {
 // Test location passed to RepostFormCoordinator.
 const CGFloat kDialogHorizontalLocation = 10;
 const CGFloat kDialogVerticalLocation = 20;
-}
+}  // namespace
 
 // Test fixture to test RepostFormCoordinator class.
 class RepostFormCoordinatorTest : public PlatformTest {

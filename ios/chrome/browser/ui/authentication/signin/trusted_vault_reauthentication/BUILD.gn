@@ -15,10 +15,10 @@ source_set("trusted_vault_reauthentication") {
     "//components/sync",
     "//ios/chrome/app/strings",
     "//ios/chrome/browser/main:public",
+    "//ios/chrome/browser/shared/coordinator/alert",
     "//ios/chrome/browser/signin",
     "//ios/chrome/browser/signin:trusted_vault",
     "//ios/chrome/browser/signin:trusted_vault_factory",
-    "//ios/chrome/browser/ui/alert_coordinator",
     "//ios/chrome/browser/ui/authentication/signin:signin_protected",
     "//ui/base",
   ]

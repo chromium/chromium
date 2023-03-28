@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/ui/alert_coordinator/repost_form_coordinator.h"
+#import "ios/chrome/browser/shared/coordinator/alert/repost_form_coordinator.h"
 
 #import "base/check.h"
 #import "base/memory/weak_ptr.h"
@@ -75,8 +75,9 @@ using completion_block_util::GetSafeDecidePolicyCompletion;
   // created, in that case, there is nothing to do (as the tab would have been
   // closed).
   web::WebState* webState = _webState.get();
-  if (!webState || !webState->IsWebUsageEnabled())
+  if (!webState || !webState->IsWebUsageEnabled()) {
     return;
+  }
 
   // Check to see if an action sheet can be shown.
   if (self.baseViewController.view.window &&

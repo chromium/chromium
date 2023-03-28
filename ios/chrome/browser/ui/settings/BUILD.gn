@@ -146,7 +146,6 @@ source_set("settings") {
     "//ios/chrome/browser/signin:system_identity",
     "//ios/chrome/browser/sync",
     "//ios/chrome/browser/translate",
-    "//ios/chrome/browser/ui/alert_coordinator",
     "//ios/chrome/browser/ui/authentication",
     "//ios/chrome/browser/ui/authentication:signin_presenter",
     "//ios/chrome/browser/ui/authentication/cells",

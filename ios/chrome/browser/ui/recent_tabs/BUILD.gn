@@ -92,7 +92,6 @@ source_set("recent_tabs_ui") {
     "//ios/chrome/browser/synced_sessions",
     "//ios/chrome/browser/tabs_search",
     "//ios/chrome/browser/tabs_search:tabs_search_factory",
-    "//ios/chrome/browser/ui/alert_coordinator",
     "//ios/chrome/browser/ui/authentication",
     "//ios/chrome/browser/ui/authentication:signin_presenter",
     "//ios/chrome/browser/ui/authentication/cells",

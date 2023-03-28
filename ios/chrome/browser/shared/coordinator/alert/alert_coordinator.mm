@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/ui/alert_coordinator/alert_coordinator.h"
+#import "ios/chrome/browser/shared/coordinator/alert/alert_coordinator.h"
 
 #import "ios/chrome/browser/main/browser.h"
 #import "ui/base/l10n/l10n_util.h"
@@ -86,8 +86,9 @@
     return;
   }
 
-  if (style == UIAlertActionStyleCancel)
+  if (style == UIAlertActionStyleCancel) {
     _cancelButtonAdded = YES;
+  }
 
   __weak AlertCoordinator* weakSelf = self;
 
@@ -96,8 +97,9 @@
                                style:style
                              handler:^(UIAlertAction*) {
                                [weakSelf alertDismissed];
-                               if (actionBlock)
+                               if (actionBlock) {
                                  actionBlock();
+                               }
                              }];
 
   alertAction.accessibilityIdentifier =
@@ -113,8 +115,9 @@
 
 - (void)executeCancelHandler {
   self.noInteractionAction = nil;
-  if (self.cancelAction)
+  if (self.cancelAction) {
     self.cancelAction();
+  }
 }
 
 - (void)start {
@@ -133,8 +136,9 @@
   }
 
   // Call the start action before presenting the alert.
-  if (self.startAction)
+  if (self.startAction) {
     self.startAction();
+  }
 
   [self.baseViewController presentViewController:self.alertController
                                         animated:YES
@@ -157,11 +161,12 @@
 
 - (UIAlertController*)alertController {
   if (!_alertController) {
-    UIAlertController* alert =
-        [self alertControllerWithTitle:_title message:_message];
+    UIAlertController* alert = [self alertControllerWithTitle:_title
+                                                      message:_message];
 
-    if (alert)
+    if (alert) {
       _alertController = alert;
+    }
   }
   return _alertController;
 }

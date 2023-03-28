@@ -296,7 +296,6 @@ source_set("main") {
     "//ios/chrome/browser/tabs:tabs_internal",
     "//ios/chrome/browser/tabs/inactive_tabs",
     "//ios/chrome/browser/tabs/inactive_tabs:features",
-    "//ios/chrome/browser/ui/alert_coordinator",
     "//ios/chrome/browser/ui/autofill",
     "//ios/chrome/browser/ui/browser_container",
     "//ios/chrome/browser/ui/browser_view",

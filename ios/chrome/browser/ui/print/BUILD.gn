@@ -12,7 +12,6 @@ source_set("print") {
     "//base",
     "//components/strings",
     "//ios/chrome/browser/tabs",
-    "//ios/chrome/browser/ui/alert_coordinator",
     "//ios/chrome/browser/web/print",
     "//ios/web",
     "//net",

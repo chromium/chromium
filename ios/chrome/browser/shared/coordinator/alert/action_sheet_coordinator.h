@@ -2,10 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef IOS_CHROME_BROWSER_UI_ALERT_COORDINATOR_ACTION_SHEET_COORDINATOR_H_
-#define IOS_CHROME_BROWSER_UI_ALERT_COORDINATOR_ACTION_SHEET_COORDINATOR_H_
+#ifndef IOS_CHROME_BROWSER_SHARED_COORDINATOR_ALERT_ACTION_SHEET_COORDINATOR_H_
+#define IOS_CHROME_BROWSER_SHARED_COORDINATOR_ALERT_ACTION_SHEET_COORDINATOR_H_
 
-#import "ios/chrome/browser/ui/alert_coordinator/alert_coordinator.h"
+#import "ios/chrome/browser/shared/coordinator/alert/alert_coordinator.h"
 
 // Coordinator for displaying Action Sheets.
 @interface ActionSheetCoordinator : AlertCoordinator
@@ -52,4 +52,4 @@
 
 @end
 
-#endif  // IOS_CHROME_BROWSER_UI_ALERT_COORDINATOR_ACTION_SHEET_COORDINATOR_H_
+#endif  // IOS_CHROME_BROWSER_SHARED_COORDINATOR_ALERT_ACTION_SHEET_COORDINATOR_H_

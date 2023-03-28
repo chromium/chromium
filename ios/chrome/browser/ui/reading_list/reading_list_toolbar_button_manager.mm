@@ -6,7 +6,7 @@
 
 #import "base/check.h"
 #import "ios/chrome/browser/main/browser.h"
-#import "ios/chrome/browser/ui/alert_coordinator/action_sheet_coordinator.h"
+#import "ios/chrome/browser/shared/coordinator/alert/action_sheet_coordinator.h"
 #import "ios/chrome/browser/ui/reading_list/reading_list_constants.h"
 #import "ios/chrome/browser/ui/reading_list/reading_list_toolbar_button_commands.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
