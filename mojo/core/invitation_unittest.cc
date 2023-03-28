@@ -45,6 +45,11 @@ namespace mojo {
 namespace core {
 namespace {
 
+enum class TransportType {
+  kChannel,
+  kChannelServer,
+};
+
 const char kSecondaryChannelHandleSwitch[] = "test-secondary-channel-handle";
 
 class InvitationTest : public test::MojoTestBase {
@@ -61,6 +66,7 @@ class InvitationTest : public test::MojoTestBase {
       const std::string& test_client_name,
       MojoHandle* primordial_pipes,
       size_t num_primordial_pipes,
+      TransportType transport_type,
       MojoSendInvitationFlags send_flags,
       MojoProcessErrorHandler error_handler = nullptr,
       uintptr_t error_handler_context = 0,
@@ -72,6 +78,7 @@ class InvitationTest : public test::MojoTestBase {
       base::ProcessHandle process,
       MojoHandle* primordial_pipes,
       size_t num_primordial_pipes,
+      TransportType transport_type,
       MojoSendInvitationFlags flags,
       MojoProcessErrorHandler error_handler,
       uintptr_t error_handler_context,
@@ -99,9 +106,8 @@ void PrepareToPassRemoteEndpoint(PlatformChannel* channel,
 #error "Platform not yet supported."
 #endif
 
-  if (switch_name.empty()) {
+  if (switch_name.empty())
     switch_name = PlatformChannel::kHandleSwitch;
-  }
   command_line->AppendSwitchASCII(std::string(switch_name), value);
 }
 
@@ -299,6 +305,7 @@ base::Process InvitationTest::LaunchChildTestClient(
     const std::string& test_client_name,
     MojoHandle* primordial_pipes,
     size_t num_primordial_pipes,
+    TransportType transport_type,
     MojoSendInvitationFlags send_flags,
     MojoProcessErrorHandler error_handler,
     uintptr_t error_handler_context,
@@ -316,10 +323,31 @@ base::Process InvitationTest::LaunchChildTestClient(
   launch_options.start_hidden = true;
 #endif
 
-  PlatformChannel channel;
+#if !BUILDFLAG(IS_FUCHSIA)
+  absl::optional<NamedPlatformChannel> named_channel;
+#endif
+  absl::optional<PlatformChannel> channel;
   PlatformHandle local_endpoint_handle;
-  PrepareToPassRemoteEndpoint(&channel, &launch_options, &command_line);
-  local_endpoint_handle = channel.TakeLocalEndpoint().TakePlatformHandle();
+  if (transport_type == TransportType::kChannel) {
+    channel.emplace();
+    PrepareToPassRemoteEndpoint(&channel.value(), &launch_options,
+                                &command_line);
+    local_endpoint_handle = channel->TakeLocalEndpoint().TakePlatformHandle();
+  } else {
+#if !BUILDFLAG(IS_FUCHSIA)
+    NamedPlatformChannel::Options named_channel_options;
+#if !BUILDFLAG(IS_WIN)
+    CHECK(base::PathService::Get(base::DIR_TEMP,
+                                 &named_channel_options.socket_dir));
+#endif
+    named_channel.emplace(named_channel_options);
+    named_channel->PassServerNameOnCommandLine(&command_line);
+    local_endpoint_handle =
+        named_channel->TakeServerEndpoint().TakePlatformHandle();
+#else   //  !BUILDFLAG(IS_FUCHSIA)
+    NOTREACHED() << "Named pipe support does not exist for Mojo on Fuchsia.";
+#endif  //  !BUILDFLAG(IS_FUCHSIA)
+  }
 
   std::string enable_features;
   std::string disable_features;
@@ -334,12 +362,13 @@ base::Process InvitationTest::LaunchChildTestClient(
 
   base::Process child_process = base::SpawnMultiProcessTestChild(
       test_client_name, command_line, launch_options);
-  channel.RemoteProcessLaunchAttempted();
+  if (channel)
+    channel->RemoteProcessLaunchAttempted();
 
   SendInvitationToClient(std::move(local_endpoint_handle),
                          child_process.Handle(), primordial_pipes,
-                         num_primordial_pipes, send_flags, error_handler,
-                         error_handler_context, "");
+                         num_primordial_pipes, transport_type, send_flags,
+                         error_handler, error_handler_context, "");
 
   return child_process;
 }
@@ -350,6 +379,7 @@ void InvitationTest::SendInvitationToClient(
     base::ProcessHandle process,
     MojoHandle* primordial_pipes,
     size_t num_primordial_pipes,
+    TransportType transport_type,
     MojoSendInvitationFlags flags,
     MojoProcessErrorHandler error_handler,
     uintptr_t error_handler_context,
@@ -377,7 +407,10 @@ void InvitationTest::SendInvitationToClient(
 
   MojoInvitationTransportEndpoint transport_endpoint;
   transport_endpoint.struct_size = sizeof(transport_endpoint);
-  transport_endpoint.type = MOJO_INVITATION_TRANSPORT_TYPE_CHANNEL;
+  if (transport_type == TransportType::kChannel)
+    transport_endpoint.type = MOJO_INVITATION_TRANSPORT_TYPE_CHANNEL;
+  else
+    transport_endpoint.type = MOJO_INVITATION_TRANSPORT_TYPE_CHANNEL_SERVER;
   transport_endpoint.num_platform_handles = 1;
   transport_endpoint.platform_handles = &handle;
 
@@ -403,12 +436,17 @@ class TestClientBase : public InvitationTest {
                                      base::StringPiece switch_name = {}) {
     const auto& command_line = *base::CommandLine::ForCurrentProcess();
     PlatformChannelEndpoint channel_endpoint;
-    if (switch_name.empty()) {
-      channel_endpoint =
-          PlatformChannel::RecoverPassedEndpointFromCommandLine(command_line);
-    } else {
-      channel_endpoint = PlatformChannel::RecoverPassedEndpointFromString(
-          command_line.GetSwitchValueASCII(switch_name));
+#if !BUILDFLAG(IS_FUCHSIA)
+    channel_endpoint = NamedPlatformChannel::ConnectToServer(command_line);
+#endif
+    if (!channel_endpoint.is_valid()) {
+      if (switch_name.empty()) {
+        channel_endpoint =
+            PlatformChannel::RecoverPassedEndpointFromCommandLine(command_line);
+      } else {
+        channel_endpoint = PlatformChannel::RecoverPassedEndpointFromString(
+            command_line.GetSwitchValueASCII(switch_name));
+      }
     }
     MojoPlatformHandle endpoint_handle;
     PlatformHandle::ToMojoPlatformHandle(channel_endpoint.TakePlatformHandle(),
@@ -449,9 +487,9 @@ const std::string kTestMessage4 = "i shove the messages down the pipe";
 
 TEST_F(InvitationTest, SendInvitation) {
   MojoHandle primordial_pipe;
-  base::Process child_process =
-      LaunchChildTestClient("SendInvitationClient", &primordial_pipe, 1,
-                            MOJO_SEND_INVITATION_FLAG_NONE);
+  base::Process child_process = LaunchChildTestClient(
+      "SendInvitationClient", &primordial_pipe, 1, TransportType::kChannel,
+      MOJO_SEND_INVITATION_FLAG_NONE);
 
   WriteMessage(primordial_pipe, kTestMessage1);
   EXPECT_EQ(MOJO_RESULT_OK,
@@ -485,9 +523,9 @@ DEFINE_TEST_CLIENT(SendInvitationClient) {
 
 TEST_F(InvitationTest, SendInvitationMultiplePipes) {
   MojoHandle pipes[2];
-  base::Process child_process =
-      LaunchChildTestClient("SendInvitationMultiplePipesClient", pipes, 2,
-                            MOJO_SEND_INVITATION_FLAG_NONE);
+  base::Process child_process = LaunchChildTestClient(
+      "SendInvitationMultiplePipesClient", pipes, 2, TransportType::kChannel,
+      MOJO_SEND_INVITATION_FLAG_NONE);
 
   WriteMessage(pipes[0], kTestMessage1);
   WriteMessage(pipes[1], kTestMessage2);
@@ -531,6 +569,51 @@ DEFINE_TEST_CLIENT(SendInvitationMultiplePipesClient) {
   EXPECT_EQ(MOJO_RESULT_OK, MojoClose(pipes[0]));
   EXPECT_EQ(MOJO_RESULT_OK, MojoClose(pipes[1]));
 }
+
+// Fuchsia has no named pipe support.
+#if !BUILDFLAG(IS_FUCHSIA)
+// TODO(crbug.com/1426421): Flaky on Linux TSAN.
+#if BUILDFLAG(IS_LINUX) && defined(THREAD_SANITIZER)
+#define MAYBE_SendInvitationWithServer DISABLED_SendInvitationWithServer
+#else
+#define MAYBE_SendInvitationWithServer SendInvitationWithServer
+#endif
+TEST_F(InvitationTest, MAYBE_SendInvitationWithServer) {
+  MojoHandle primordial_pipe;
+  base::Process child_process = LaunchChildTestClient(
+      "SendInvitationWithServerClient", &primordial_pipe, 1,
+      TransportType::kChannelServer, MOJO_SEND_INVITATION_FLAG_NONE);
+
+  WriteMessage(primordial_pipe, kTestMessage1);
+  EXPECT_EQ(MOJO_RESULT_OK,
+            WaitForSignals(primordial_pipe, MOJO_HANDLE_SIGNAL_READABLE));
+  EXPECT_EQ(kTestMessage3, ReadMessage(primordial_pipe));
+  EXPECT_EQ(MOJO_RESULT_OK, MojoClose(primordial_pipe));
+
+  int wait_result = -1;
+  base::WaitForMultiprocessTestChildExit(
+      child_process, TestTimeouts::action_timeout(), &wait_result);
+  child_process.Close();
+  EXPECT_EQ(0, wait_result);
+}
+
+DEFINE_TEST_CLIENT(SendInvitationWithServerClient) {
+  MojoHandle primordial_pipe;
+  MojoHandle invitation = AcceptInvitation(MOJO_ACCEPT_INVITATION_FLAG_NONE);
+  const uint32_t pipe_name = 0;
+  ASSERT_EQ(MOJO_RESULT_OK,
+            MojoExtractMessagePipeFromInvitation(invitation, &pipe_name, 4,
+                                                 nullptr, &primordial_pipe));
+  ASSERT_EQ(MOJO_RESULT_OK, MojoClose(invitation));
+
+  WaitForSignals(primordial_pipe, MOJO_HANDLE_SIGNAL_READABLE);
+  ASSERT_EQ(kTestMessage1, ReadMessage(primordial_pipe));
+  WriteMessage(primordial_pipe, kTestMessage3);
+  WaitForSignals(primordial_pipe, MOJO_HANDLE_SIGNAL_PEER_CLOSED);
+
+  ASSERT_EQ(MOJO_RESULT_OK, MojoClose(primordial_pipe));
+}
+#endif  // !BUILDFLAG(IS_FUCHSIA)
 
 const char kErrorMessage[] = "ur bad :(";
 const char kDisconnectMessage[] = "go away plz";
@@ -594,8 +677,9 @@ TEST_F(InvitationTest, ProcessErrors) {
   RemoteProcessState process_state;
   MojoHandle pipe;
   base::Process child_process = LaunchChildTestClient(
-      "ProcessErrorsClient", &pipe, 1, MOJO_SEND_INVITATION_FLAG_NONE,
-      &TestProcessErrorHandler, reinterpret_cast<uintptr_t>(&process_state));
+      "ProcessErrorsClient", &pipe, 1, TransportType::kChannel,
+      MOJO_SEND_INVITATION_FLAG_NONE, &TestProcessErrorHandler,
+      reinterpret_cast<uintptr_t>(&process_state));
 
   MojoMessageHandle message;
   WaitForSignals(pipe, MOJO_HANDLE_SIGNAL_READABLE);
@@ -666,8 +750,9 @@ TEST_F(InvitationTest, DISABLED_Reinvitation) {
 
   MojoHandle pipe;
   base::Process child_process = LaunchChildTestClient(
-      "ReinvitationClient", &pipe, 1, MOJO_SEND_INVITATION_FLAG_NONE, nullptr,
-      0, &command_line, &launch_options);
+      "ReinvitationClient", &pipe, 1, TransportType::kChannel,
+      MOJO_SEND_INVITATION_FLAG_NONE, nullptr, 0, &command_line,
+      &launch_options);
   secondary_channel.RemoteProcessLaunchAttempted();
 
   // Synchronize end-to-end communication first to ensure the process connection
@@ -734,9 +819,9 @@ DEFINE_TEST_CLIENT(ReinvitationClient) {
 
 TEST_F(InvitationTest, SendIsolatedInvitation) {
   MojoHandle primordial_pipe;
-  base::Process child_process =
-      LaunchChildTestClient("SendIsolatedInvitationClient", &primordial_pipe, 1,
-                            MOJO_SEND_INVITATION_FLAG_ISOLATED);
+  base::Process child_process = LaunchChildTestClient(
+      "SendIsolatedInvitationClient", &primordial_pipe, 1,
+      TransportType::kChannel, MOJO_SEND_INVITATION_FLAG_ISOLATED);
 
   WriteMessage(primordial_pipe, kTestMessage1);
   EXPECT_EQ(MOJO_RESULT_OK,
@@ -789,7 +874,8 @@ TEST_F(InvitationTest, SendMultipleIsolatedInvitations) {
   MojoHandle primordial_pipe;
   base::Process child_process = LaunchChildTestClient(
       "SendMultipleIsolatedInvitationsClient", &primordial_pipe, 1,
-      MOJO_SEND_INVITATION_FLAG_ISOLATED, nullptr, 0, &command_line, &options);
+      TransportType::kChannel, MOJO_SEND_INVITATION_FLAG_ISOLATED, nullptr, 0,
+      &command_line, &options);
   secondary_transport.RemoteProcessLaunchAttempted();
 
   WriteMessage(primordial_pipe, kTestMessage1);
@@ -802,8 +888,8 @@ TEST_F(InvitationTest, SendMultipleIsolatedInvitations) {
   MojoHandle new_pipe;
   SendInvitationToClient(
       secondary_transport.TakeLocalEndpoint().TakePlatformHandle(),
-      child_process.Handle(), &new_pipe, 1, MOJO_SEND_INVITATION_FLAG_ISOLATED,
-      nullptr, 0, "");
+      child_process.Handle(), &new_pipe, 1, TransportType::kChannel,
+      MOJO_SEND_INVITATION_FLAG_ISOLATED, nullptr, 0, "");
   WaitForSignals(primordial_pipe, MOJO_HANDLE_SIGNAL_PEER_CLOSED);
   EXPECT_EQ(MOJO_RESULT_OK, MojoClose(primordial_pipe));
 
@@ -866,17 +952,17 @@ TEST_F(InvitationTest, SendIsolatedInvitationWithDuplicateName) {
   PlatformChannel channel2;
   MojoHandle pipe0, pipe1;
   const char kConnectionName[] = "there can be only one!";
-  SendInvitationToClient(channel1.TakeLocalEndpoint().TakePlatformHandle(),
-                         base::kNullProcessHandle, &pipe0, 1,
-                         MOJO_SEND_INVITATION_FLAG_ISOLATED, nullptr, 0,
-                         kConnectionName);
+  SendInvitationToClient(
+      channel1.TakeLocalEndpoint().TakePlatformHandle(),
+      base::kNullProcessHandle, &pipe0, 1, TransportType::kChannel,
+      MOJO_SEND_INVITATION_FLAG_ISOLATED, nullptr, 0, kConnectionName);
 
   // Send another invitation with the same connection name. |pipe0| should be
   // disconnected as the first invitation's connection is torn down.
-  SendInvitationToClient(channel2.TakeLocalEndpoint().TakePlatformHandle(),
-                         base::kNullProcessHandle, &pipe1, 1,
-                         MOJO_SEND_INVITATION_FLAG_ISOLATED, nullptr, 0,
-                         kConnectionName);
+  SendInvitationToClient(
+      channel2.TakeLocalEndpoint().TakePlatformHandle(),
+      base::kNullProcessHandle, &pipe1, 1, TransportType::kChannel,
+      MOJO_SEND_INVITATION_FLAG_ISOLATED, nullptr, 0, kConnectionName);
 
   WaitForSignals(pipe0, MOJO_HANDLE_SIGNAL_PEER_CLOSED);
   EXPECT_EQ(MOJO_RESULT_OK, MojoClose(pipe0));
@@ -893,9 +979,11 @@ TEST_F(InvitationTest, SendIsolatedInvitationToSelf) {
   MojoHandle pipe0, pipe1;
   SendInvitationToClient(channel.TakeLocalEndpoint().TakePlatformHandle(),
                          base::kNullProcessHandle, &pipe0, 1,
+                         TransportType::kChannel,
                          MOJO_SEND_INVITATION_FLAG_ISOLATED, nullptr, 0, "");
   SendInvitationToClient(channel.TakeRemoteEndpoint().TakePlatformHandle(),
                          base::kNullProcessHandle, &pipe1, 1,
+                         TransportType::kChannel,
                          MOJO_SEND_INVITATION_FLAG_ISOLATED, nullptr, 0, "");
 
   WriteMessage(pipe0, kTestMessage1);
@@ -906,9 +994,9 @@ TEST_F(InvitationTest, SendIsolatedInvitationToSelf) {
 
 TEST_F(InvitationTest, BrokenInvitationTransportBreaksAttachedPipe) {
   MojoHandle primordial_pipe;
-  base::Process child_process =
-      LaunchChildTestClient("BrokenTransportClient", &primordial_pipe, 1,
-                            MOJO_SEND_INVITATION_FLAG_NONE);
+  base::Process child_process = LaunchChildTestClient(
+      "BrokenTransportClient", &primordial_pipe, 1, TransportType::kChannel,
+      MOJO_SEND_INVITATION_FLAG_NONE);
 
   EXPECT_EQ(MOJO_RESULT_OK,
             WaitForSignals(primordial_pipe, MOJO_HANDLE_SIGNAL_PEER_CLOSED));
@@ -923,9 +1011,9 @@ TEST_F(InvitationTest, BrokenInvitationTransportBreaksAttachedPipe) {
 
 TEST_F(InvitationTest, BrokenIsolatedInvitationTransportBreaksAttachedPipe) {
   MojoHandle primordial_pipe;
-  base::Process child_process =
-      LaunchChildTestClient("BrokenTransportClient", &primordial_pipe, 1,
-                            MOJO_SEND_INVITATION_FLAG_ISOLATED);
+  base::Process child_process = LaunchChildTestClient(
+      "BrokenTransportClient", &primordial_pipe, 1, TransportType::kChannel,
+      MOJO_SEND_INVITATION_FLAG_ISOLATED);
 
   EXPECT_EQ(MOJO_RESULT_OK,
             WaitForSignals(primordial_pipe, MOJO_HANDLE_SIGNAL_PEER_CLOSED));

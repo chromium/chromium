@@ -25,6 +25,7 @@
 #include "mojo/public/cpp/platform/platform_channel.h"
 #include "mojo/public/cpp/platform/platform_channel_endpoint.h"
 #include "mojo/public/cpp/platform/platform_handle.h"
+#include "third_party/abseil-cpp/absl/types/variant.h"
 #include "third_party/ipcz/include/ipcz/ipcz.h"
 
 #if BUILDFLAG(IS_WIN)
@@ -200,7 +201,7 @@ scoped_refptr<base::SingleThreadTaskRunner>& GetIOTaskRunnerStorage() {
 }  // namespace
 
 Transport::Transport(EndpointTypes endpoint_types,
-                     PlatformChannelEndpoint endpoint,
+                     Channel::Endpoint endpoint,
                      base::Process remote_process,
                      bool is_remote_process_untrusted)
     : endpoint_types_(endpoint_types),
@@ -213,7 +214,7 @@ Transport::Transport(EndpointTypes endpoint_types,
 
 // static
 scoped_refptr<Transport> Transport::Create(EndpointTypes endpoint_types,
-                                           PlatformChannelEndpoint endpoint,
+                                           Channel::Endpoint endpoint,
                                            base::Process remote_process,
                                            bool is_remote_process_untrusted) {
   return base::MakeRefCounted<Transport>(endpoint_types, std::move(endpoint),
@@ -278,7 +279,7 @@ bool Transport::Activate(IpczHandle transport,
   std::vector<PendingTransmission> pending_transmissions;
   {
     base::AutoLock lock(lock_);
-    if (channel_ || !inactive_endpoint_.is_valid()) {
+    if (channel_ || !IsEndpointValid()) {
       return false;
     }
 
@@ -350,7 +351,7 @@ bool Transport::Transmit(base::span<const uint8_t> data,
   scoped_refptr<Channel> channel;
   {
     base::AutoLock lock(lock_);
-    if (inactive_endpoint_.is_valid()) {
+    if (IsEndpointValid()) {
       PendingTransmission transmission;
       transmission.bytes = std::vector<uint8_t>(data.begin(), data.end());
       transmission.handles = std::move(platform_handles);
@@ -588,8 +589,10 @@ bool Transport::Serialize(Transport& transmitter,
   DCHECK_EQ(handles.size(), 1u);
 #endif
 
-  CHECK(inactive_endpoint_.is_valid());
-  handles[0] = inactive_endpoint_.TakePlatformHandle();
+  DCHECK(IsEndpointValid());
+  DCHECK(absl::holds_alternative<PlatformChannelEndpoint>(inactive_endpoint_));
+  handles[0] = absl::get<PlatformChannelEndpoint>(inactive_endpoint_)
+                   .TakePlatformHandle();
   return true;
 }
 
@@ -665,6 +668,18 @@ void Transport::OnChannelDestroyed() {
   scoped_refptr<Transport> self;
   base::AutoLock lock(lock_);
   self = std::move(self_reference_for_channel_);
+}
+
+bool Transport::IsEndpointValid() const {
+  return absl::visit(base::Overloaded{
+                         [](const PlatformChannelEndpoint& endpoint) {
+                           return endpoint.is_valid();
+                         },
+                         [](const PlatformChannelServerEndpoint& endpoint) {
+                           return endpoint.is_valid();
+                         },
+                     },
+                     inactive_endpoint_);
 }
 
 bool Transport::CanTransmitHandles() const {
