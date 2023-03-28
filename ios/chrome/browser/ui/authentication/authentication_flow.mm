@@ -222,9 +222,16 @@ enum AuthenticationState {
       return CHECK_MERGE_CASE;
     case CHECK_MERGE_CASE:
       // If the user enabled Sync, expect the data clearing strategy to be set.
-      DCHECK(self.postSignInAction == PostSignInAction::kNone ||
-             (self.postSignInAction == PostSignInAction::kCommitSync &&
-              self.localDataClearingStrategy != SHOULD_CLEAR_DATA_USER_CHOICE));
+      switch (self.postSignInAction) {
+        case PostSignInAction::kNone:
+        case PostSignInAction::kEnableBookmarkReadingListAccountStorage:
+          // `localDataClearingStrategy` is not required.
+          break;
+        case PostSignInAction::kCommitSync:
+          DCHECK_NE(SHOULD_CLEAR_DATA_USER_CHOICE,
+                    self.localDataClearingStrategy);
+          break;
+      }
       if (_shouldShowManagedConfirmation)
         return SHOW_MANAGED_CONFIRMATION;
       else if (_shouldSignOut)
