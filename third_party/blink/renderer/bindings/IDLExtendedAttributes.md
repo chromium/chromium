@@ -554,7 +554,7 @@ Implementation: Given `[TreatNullAs=EmptyString]`, a JavaScript null is converte
 
 ### [StringContext=TrustedHTML|TrustedScript|TrustedScriptURL] _(t)_
 
-Standard: [TrustedType](https://w3c.github.io/webappsec-trusted-types/dist/spec/#!trustedtypes-extended-attribute)
+Standard: [TrustedType](https://w3c.github.io/trusted-types/dist/spec/#!trustedtypes-extended-attribute)
 
 Summary: Indicate that a DOMString for HTMLs and scripts or USVString for script URLs is to be supplemented with additional Trusted Types enforcement logic.
 

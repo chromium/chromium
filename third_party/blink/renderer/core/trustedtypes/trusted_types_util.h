@@ -106,7 +106,7 @@ bool IsTrustedTypesEventHandlerAttribute(const QualifiedName&);
 // If an error occurs, this will return a null-String.
 //
 // Spec:
-// https://w3c.github.io/webappsec-trusted-types/dist/spec/#check-templatedness-algorithm
+// https://w3c.github.io/trusted-types/dist/spec/#check-templatedness-algorithm
 String GetTrustedTypesLiteral(const ScriptValue&, ScriptState*);
 
 }  // namespace blink

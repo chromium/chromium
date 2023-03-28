@@ -21,7 +21,7 @@
 // https://html.spec.whatwg.org/multipage/iframe-embed-object.html#htmliframeelement
 
 // The `HTMLString` references below are from Trusted Types:
-// https://github.com/WICG/trusted-types/, which is still WIP.
+// https://github.com/w3c/trusted-types/, which is still WIP.
 // https://crbug.com/739170.
 [
     Exposed=Window,

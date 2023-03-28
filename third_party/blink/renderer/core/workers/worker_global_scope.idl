@@ -71,7 +71,7 @@
     // TODO(fserb): temporarly until we can enable the interface below.
     readonly attribute FontFaceSet fonts;
 
-    // TrustedTypes API: http://github.com/wicg/trusted-types
+    // TrustedTypes API: http://github.com/w3c/trusted-types
     readonly attribute TrustedTypePolicyFactory trustedTypes;
 };
 

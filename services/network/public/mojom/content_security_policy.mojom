@@ -131,7 +131,7 @@ enum CSPRequireTrustedTypesFor {
 };
 
 // The parsed value of the CSP directive 'trusted-types'.
-// https://w3c.github.io/webappsec-trusted-types/dist/spec/#trusted-types-csp-directive
+// https://w3c.github.io/trusted-types/dist/spec/#trusted-types-csp-directive
 struct CSPTrustedTypes {
   // The list of policies allowed by the 'trusted-types' directive.
   array<string> list;
@@ -184,12 +184,12 @@ struct ContentSecurityPolicy {
   array<string> report_endpoints;
 
   // The parsed value of the directive 'require-trusted-types-for'.
-  // https://w3c.github.io/webappsec-trusted-types/dist/spec/#require-trusted-types-for-csp-directive
+  // https://w3c.github.io/trusted-types/dist/spec/#require-trusted-types-for-csp-directive
   CSPRequireTrustedTypesFor require_trusted_types_for =
       CSPRequireTrustedTypesFor.None;
 
   // The parsed value of the directive 'trusted-types'.
-  // https://w3c.github.io/webappsec-trusted-types/dist/spec/#trusted-types-csp-directive
+  // https://w3c.github.io/trusted-types/dist/spec/#trusted-types-csp-directive
   // Note: If this is null, the directive was not present. On the other side, if
   // this is a default CSPTrustedTypes struct with empty list, it means that the
   // directive was present with empty value, so policies may not be created and

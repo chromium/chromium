@@ -37,7 +37,7 @@ TrustedHTML* TrustedHTML::fromLiteral(ScriptState* script_state,
   // TrustedHTML::fromLiteral requires additional normalization that the other
   // trusted types do not. We want to parse the literal as if it were a
   // HTMLTemplateElement content. Ref: Step 4 of
-  // https://w3c.github.io/webappsec-trusted-types/dist/spec/#create-a-trusted-type-from-literal-algorithm
+  // https://w3c.github.io/trusted-types/dist/spec/#create-a-trusted-type-from-literal-algorithm
   HTMLTemplateElement* template_element =
       MakeGarbageCollected<HTMLTemplateElement>(*window->document());
   DCHECK(template_element->content());

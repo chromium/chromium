@@ -490,7 +490,7 @@ String LocalDOMWindow::CheckAndGetJavascriptUrl(
   if (ContentSecurityPolicy::ShouldBypassMainWorldDeprecated(world))
     return script_source;
 
-  // https://w3c.github.io/webappsec-trusted-types/dist/spec/#require-trusted-types-for-pre-navigation-check
+  // https://w3c.github.io/trusted-types/dist/spec/#require-trusted-types-for-pre-navigation-check
   // 4.9.1.1. require-trusted-types-for Pre-Navigation check
   script_source =
       TrustedTypesCheckForJavascriptURLinNavigation(script_source, this);

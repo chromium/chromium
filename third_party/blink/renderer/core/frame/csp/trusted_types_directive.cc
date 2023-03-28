@@ -12,7 +12,7 @@ namespace {
 
 bool IsNotPolicyNameChar(UChar c) {
   // This implements the negation of one char of tt-policy-name from
-  // https://w3c.github.io/webappsec-trusted-types/dist/spec/#trusted-types-csp-directive/
+  // https://w3c.github.io/trusted-types/dist/spec/#trusted-types-csp-directive
   bool is_name_char = (c >= '0' && c <= '9') || (c >= 'a' && c <= 'z') ||
                       (c >= 'A' && c <= 'Z') || c == '-' || c == '#' ||
                       c == '=' || c == '_' || c == '/' || c == '@' ||
@@ -22,7 +22,7 @@ bool IsNotPolicyNameChar(UChar c) {
 
 bool IsPolicyName(const String& name) {
   // This implements tt-policy-name from
-  // https://w3c.github.io/webappsec-trusted-types/dist/spec/#trusted-types-csp-directive/
+  // https://w3c.github.io/trusted-types/dist/spec/#trusted-types-csp-directive
   return name.Find(&IsNotPolicyNameChar) == kNotFound;
 }
 

@@ -127,7 +127,7 @@ class CORE_EXPORT HTMLScriptElement final : public HTMLElement,
 
   Element& CloneWithoutAttributesAndChildren(Document&) const override;
 
-  // https://w3c.github.io/webappsec-trusted-types/dist/spec/#script-scripttext
+  // https://w3c.github.io/trusted-types/dist/spec/#script-scripttext
   ParkableString script_text_internal_slot_;
   bool children_changed_by_api_;
 

@@ -20,7 +20,7 @@ void SVGAnimatedString::setBaseVal(const V8UnionStringOrTrustedScriptURL* value,
                                    ExceptionState& exception_state) {
   DCHECK(value);
 
-  // https://w3c.github.io/webappsec-trusted-types/dist/spec/#integration-with-svg
+  // https://w3c.github.io/trusted-types/dist/spec/#integration-with-svg
   String string;
   switch (value->GetContentType()) {
     case V8UnionStringOrTrustedScriptURL::ContentType::kString:

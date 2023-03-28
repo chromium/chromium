@@ -531,7 +531,7 @@ PendingScript* ScriptLoader::PrepareScript(
   // <spec step="5">Let source text be el's child text content.</spec>
   //
   // Trusted Types additionally requires:
-  // https://w3c.github.io/webappsec-trusted-types/dist/spec/#slot-value-verification
+  // https://w3c.github.io/trusted-types/dist/spec/#slot-value-verification
   // - Step 4: Execute the Prepare the script URL and text algorithm upon the
   //     script element. If that algorithm threw an error, then return. The
   //     script is not executed.
@@ -1424,9 +1424,9 @@ bool ScriptLoader::IsScriptForEventSupported() const {
 
 String ScriptLoader::GetScriptText() const {
   // Step 3 of
-  // https://w3c.github.io/webappsec-trusted-types/dist/spec/#abstract-opdef-prepare-the-script-url-and-text
+  // https://w3c.github.io/trusted-types/dist/spec/#abstract-opdef-prepare-the-script-url-and-text
   // called from § 4.1.3.3, step 4 of
-  // https://w3c.github.io/webappsec-trusted-types/dist/spec/#slot-value-verification
+  // https://w3c.github.io/trusted-types/dist/spec/#slot-value-verification
   // This will return the [[ScriptText]] internal slot value after that step,
   // or a null string if the the Trusted Type algorithm threw an error.
   String child_text_content = element_->ChildTextContent();

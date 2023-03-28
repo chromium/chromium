@@ -199,7 +199,7 @@
     // https://w3c.github.io/webappsec-secure-contexts/#monkey-patching-global-object
     readonly attribute boolean isSecureContext;
 
-    // TrustedTypes API: http://github.com/wicg/trusted-types
+    // TrustedTypes API: http://github.com/w3c/trusted-types
     [CallWith=ScriptState] readonly attribute TrustedTypePolicyFactory trustedTypes;
 
     // Anonymous iframe:

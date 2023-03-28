@@ -608,7 +608,7 @@ String GetTrustedTypesLiteral(const ScriptValue& script_value,
   DCHECK(script_state);
   // TrustedTypes fromLiteral requires several checks, which are steps 1-3
   // in the "create a trusted type from literal algorithm". Ref:
-  // https://w3c.github.io/webappsec-trusted-types/dist/spec/#create-a-trusted-type-from-literal-algorithm
+  // https://w3c.github.io/trusted-types/dist/spec/#create-a-trusted-type-from-literal-algorithm
 
   // The core functionality here are the checks that we, indeed, have a
   // literal object. The key work is done by
