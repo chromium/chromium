@@ -237,6 +237,18 @@ bool UninstallGoogleUpdate(UpdaterScope scope,
   return list->Do();
 }
 
+absl::optional<int> DaynumFromDWORD(DWORD value) {
+  const int daynum = static_cast<int>(value);
+
+  // When daynum is positive, it is the number of days since January 1, 2007.
+  // It's reasonable to only accept value between 3000 (maps to Mar 20, 2015)
+  // and 50000 (maps to Nov 24, 2143).
+  // -1 is special value for first install.
+  return daynum == -1 || (daynum >= 3000 && daynum <= 50000)
+             ? absl::make_optional(daynum)
+             : absl::nullopt;
+}
+
 }  // namespace
 
 HRESULT IsCOMCallerAllowed() {
@@ -451,6 +463,18 @@ bool ComServerApp::MigrateLegacyUpdaters(
       std::wstring ap;
       if (client_state_key.ReadValue(kRegValueAP, &ap) == ERROR_SUCCESS) {
         registration.ap = base::SysWideToUTF8(ap);
+      }
+
+      DWORD date_last_activity = 0;
+      if (client_state_key.ReadValueDW(kRegValueDateOfLastActivity,
+                                       &date_last_activity) == ERROR_SUCCESS) {
+        registration.dla = DaynumFromDWORD(date_last_activity);
+      }
+
+      DWORD date_last_rollcall = 0;
+      if (client_state_key.ReadValueDW(kRegValueDateOfLastRollcall,
+                                       &date_last_rollcall) == ERROR_SUCCESS) {
+        registration.dlrc = DaynumFromDWORD(date_last_rollcall);
       }
     }
 
