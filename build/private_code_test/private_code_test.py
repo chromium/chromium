@@ -63,6 +63,28 @@ def _find_private_paths(linker_inputs, private_paths, root_out_dir):
   return found
 
 
+def _read_private_paths(path):
+  text = pathlib.Path(path).read_text()
+
+  # Check if .gclient_entries was not valid.  https://crbug.com/1427829
+  if text.startswith('# ERROR: '):
+    sys.stderr.write(text)
+    sys.exit(1)
+
+  # Remove src/ prefix from paths.
+  # We care only about paths within src/ since GN cannot reference files
+  # outside of // (and what would the obj/ path for them look like?).
+  ret = [p[4:] for p in text.splitlines() if p.startswith('src/')]
+  if not ret:
+    sys.stderr.write(f'No src/ paths found in {args.private_paths_file}\n')
+    sys.stderr.write(f'This test should not be run on public bots.\n')
+    sys.stderr.write(f'File contents:\n')
+    sys.stderr.write(text)
+    sys.exit(1)
+
+  return ret
+
+
 def main():
   parser = argparse.ArgumentParser()
   parser.add_argument('--linker-inputs',
@@ -84,15 +106,8 @@ def main():
                       help='Invert exit code.')
   args = parser.parse_args()
 
-  private_paths = pathlib.Path(args.private_paths_file).read_text().splitlines()
+  private_paths = _read_private_paths(args.private_paths_file)
   linker_inputs = pathlib.Path(args.linker_inputs).read_text().splitlines()
-
-  # Remove src/ prefix from paths.
-  # We care only about paths within src/ since GN cannot reference files
-  # outside of // (and what would the obj/ path for them look like?).
-  private_paths = [p[4:] for p in private_paths if p.startswith('src/')]
-  if not private_paths:
-    raise ('No paths src/ paths found in ' + args.private_paths_file)
 
   root_out_dir = args.root_out_dir
   if root_out_dir == '.':

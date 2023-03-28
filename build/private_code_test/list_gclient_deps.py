@@ -12,12 +12,6 @@ _REPO_ROOT = pathlib.Path(__file__).resolve().parents[3]
 _ENTRIES_FILE = _REPO_ROOT / '.gclient_entries'
 
 
-def _parse_gclient_entries():
-  result = {}
-  exec(_ENTRIES_FILE.read_text(), result)
-  return result['entries']
-
-
 def main():
   parser = argparse.ArgumentParser()
   parser.add_argument('--source-filter', required=True)
@@ -25,8 +19,17 @@ def main():
   args = parser.parse_args()
 
   source_filter = args.source_filter
-  entries = _parse_gclient_entries()
-  private_dirs = sorted(d for d, s in entries.items() if source_filter in s)
+
+  # Ninja validates that the file exists since it's marked as an input.
+  text = _ENTRIES_FILE.read_text()
+  result = {}
+  exec(text, result)
+  entries = result.get('entries')
+  # https://crbug.com/1427829
+  if entries is None:
+    private_dirs = ['# ERROR: .gclient_entries was None', 'File was:', text]
+  else:
+    private_dirs = sorted(d for d, s in entries.items() if source_filter in s)
   pathlib.Path(args.output).write_text('\n'.join(private_dirs) + '\n')
 
 
