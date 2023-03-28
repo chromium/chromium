@@ -359,61 +359,6 @@ DISABLED_HEADLESS_DEVTOOLED_TEST_F(HeadlessCrashObserverTest);
 HEADLESS_DEVTOOLED_TEST_F(HeadlessCrashObserverTest);
 #endif
 
-class HeadlessDevToolsClientAttachTest : public HeadlessDevTooledBrowserTest {
- public:
-  void RunDevTooledTest() override {
-    HeadlessDevToolsTarget* devtools_target =
-        web_contents_->GetDevToolsTarget();
-    EXPECT_TRUE(devtools_target->IsAttached());
-
-    // Detach the existing client, attach the other client.
-    devtools_client_.DetachClient();
-    EXPECT_FALSE(devtools_target->IsAttached());
-
-    other_devtools_client_.AttachToWebContents(
-        HeadlessWebContentsImpl::From(web_contents_)->web_contents());
-    EXPECT_TRUE(devtools_target->IsAttached());
-
-    // Now, let's make sure this devtools client works.
-    other_devtools_client_.SendCommand(
-        "Runtime.evaluate", Param("expression", "24 * 7"),
-        base::BindOnce(&HeadlessDevToolsClientAttachTest::OnFirstResult,
-                       base::Unretained(this)));
-  }
-
-  void OnFirstResult(base::Value::Dict result) {
-    EXPECT_THAT(result, DictHasValue("result.result.value", 24 * 7));
-
-    HeadlessDevToolsTarget* devtools_target =
-        web_contents_->GetDevToolsTarget();
-    EXPECT_TRUE(devtools_target->IsAttached());
-    other_devtools_client_.DetachClient();
-    EXPECT_FALSE(devtools_target->IsAttached());
-    devtools_client_.AttachToWebContents(
-        HeadlessWebContentsImpl::From(web_contents_)->web_contents());
-    EXPECT_TRUE(devtools_target->IsAttached());
-
-    // Verify that the original client still works.
-    devtools_client_.SendCommand(
-        "Runtime.evaluate", Param("expression", "27 * 4"),
-        base::BindOnce(&HeadlessDevToolsClientAttachTest::OnSecondResult,
-                       base::Unretained(this)));
-  }
-
-  void OnSecondResult(base::Value::Dict result) {
-    EXPECT_THAT(result, DictHasValue("result.result.value", 27 * 4));
-
-    // If everything worked, this call will not crash, since it
-    // detaches devtools_client_.
-    FinishAsynchronousTest();
-  }
-
- protected:
-  SimpleDevToolsProtocolClient other_devtools_client_;
-};
-
-HEADLESS_DEVTOOLED_TEST_F(HeadlessDevToolsClientAttachTest);
-
 class HeadlessDevToolsNetworkBlockedUrlTest
     : public HeadlessDevTooledBrowserTest {
  public:

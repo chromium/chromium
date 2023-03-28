@@ -14,7 +14,6 @@
 namespace headless {
 class HeadlessBrowserContextImpl;
 class HeadlessBrowserImpl;
-class HeadlessDevToolsTarget;
 
 // Class representing contents of a browser tab. Should be accessed from browser
 // main thread.
@@ -35,8 +34,7 @@ class HEADLESS_EXPORT HeadlessWebContents {
     // All the following notifications will be called on browser main thread.
 
     // Indicates that this HeadlessWebContents instance is now ready to be
-    // inspected using a HeadlessDevToolsClient.
-    //
+    // inspected.
     // TODO(altimin): Support this event for pages that aren't created by us.
     virtual void DevToolsTargetReady() {}
     // This method is invoked when the process of the observed RenderProcessHost
@@ -58,11 +56,6 @@ class HEADLESS_EXPORT HeadlessWebContents {
   // |observer| must outlive this class or be removed prior to being destroyed.
   virtual void AddObserver(Observer* observer) = 0;
   virtual void RemoveObserver(Observer* observer) = 0;
-
-  // Return a DevTools target corresponding to this tab. Note that this method
-  // won't return a valid value until Observer::DevToolsTargetReady has been
-  // signaled.
-  virtual HeadlessDevToolsTarget* GetDevToolsTarget() = 0;
 
   // Close this page. |HeadlessWebContents| object will be destroyed.
   virtual void Close() = 0;

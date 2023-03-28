@@ -41,7 +41,6 @@
 #include "headless/lib/browser/headless_browser_context_impl.h"
 #include "headless/lib/browser/headless_browser_impl.h"
 #include "headless/lib/browser/headless_browser_main_parts.h"
-#include "headless/lib/browser/headless_devtools_agent_host_client.h"
 #include "headless/lib/browser/protocol/headless_handler.h"
 #include "printing/buildflags/buildflags.h"
 #include "third_party/blink/public/common/renderer_preferences/renderer_preferences.h"
@@ -413,30 +412,6 @@ void HeadlessWebContentsImpl::RenderProcessHostDestroyed(
   DCHECK_EQ(render_process_host_, host);
   render_process_host_->RemoveObserver(this);
   render_process_host_ = nullptr;
-}
-
-HeadlessDevToolsTarget* HeadlessWebContentsImpl::GetDevToolsTarget() {
-  return web_contents()->GetPrimaryMainFrame()->IsRenderFrameLive() ? this
-                                                                    : nullptr;
-}
-
-std::unique_ptr<HeadlessDevToolsChannel>
-HeadlessWebContentsImpl::CreateDevToolsChannel() {
-  DCHECK(agent_host_);
-  return std::make_unique<HeadlessDevToolsAgentHostClient>(agent_host_);
-}
-
-void HeadlessWebContentsImpl::AttachClient(HeadlessDevToolsClient* client) {
-  client->AttachToChannel(CreateDevToolsChannel());
-}
-
-void HeadlessWebContentsImpl::DetachClient(HeadlessDevToolsClient* client) {
-  client->DetachFromChannel();
-}
-
-bool HeadlessWebContentsImpl::IsAttached() {
-  DCHECK(agent_host_);
-  return agent_host_->IsAttached();
 }
 
 content::WebContents* HeadlessWebContentsImpl::web_contents() const {

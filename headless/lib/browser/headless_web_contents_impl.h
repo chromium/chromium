@@ -16,7 +16,6 @@
 #include "content/public/browser/render_process_host_observer.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "headless/lib/browser/headless_window_tree_host.h"
-#include "headless/public/headless_devtools_target.h"
 #include "headless/public/headless_export.h"
 #include "headless/public/headless_web_contents.h"
 
@@ -38,7 +37,6 @@ class HeadlessBrowserImpl;
 // Exported for tests.
 class HEADLESS_EXPORT HeadlessWebContentsImpl
     : public HeadlessWebContents,
-      public HeadlessDevToolsTarget,
       public content::DevToolsAgentHostObserver,
       public content::RenderProcessHostObserver,
       public content::WebContentsObserver {
@@ -63,12 +61,6 @@ class HEADLESS_EXPORT HeadlessWebContentsImpl
   // HeadlessWebContents implementation:
   void AddObserver(Observer* observer) override;
   void RemoveObserver(Observer* observer) override;
-  HeadlessDevToolsTarget* GetDevToolsTarget() override;
-
-  // HeadlessDevToolsTarget implementation:
-  void AttachClient(HeadlessDevToolsClient* client) override;
-  void DetachClient(HeadlessDevToolsClient* client) override;
-  bool IsAttached() override;
 
   // content::RenderProcessHostObserver implementation:
   void RenderProcessExited(
@@ -79,7 +71,6 @@ class HEADLESS_EXPORT HeadlessWebContentsImpl
   // content::WebContentsObserver implementation:
   void RenderViewReady() override;
 
-  std::unique_ptr<HeadlessDevToolsChannel> CreateDevToolsChannel();
   content::WebContents* web_contents() const;
   bool OpenURL(const GURL& url);
 

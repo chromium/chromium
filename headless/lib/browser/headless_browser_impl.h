@@ -16,7 +16,6 @@
 #include "base/task/single_thread_task_runner.h"
 #include "build/build_config.h"
 #include "headless/lib/browser/headless_devtools_manager_delegate.h"
-#include "headless/public/headless_devtools_target.h"
 #include "headless/public/headless_export.h"
 
 #if defined(HEADLESS_USE_PREFS)
@@ -51,8 +50,7 @@ class HeadlessWebContentsImpl;
 extern const base::FilePath::CharType kDefaultProfileName[];
 
 // Exported for tests.
-class HEADLESS_EXPORT HeadlessBrowserImpl : public HeadlessBrowser,
-                                            public HeadlessDevToolsTarget {
+class HEADLESS_EXPORT HeadlessBrowserImpl : public HeadlessBrowser {
  public:
   explicit HeadlessBrowserImpl(
       base::OnceCallback<void(HeadlessBrowser*)> on_start_callback);
@@ -75,13 +73,6 @@ class HEADLESS_EXPORT HeadlessBrowserImpl : public HeadlessBrowser,
   void SetDefaultBrowserContext(
       HeadlessBrowserContext* browser_context) override;
   HeadlessBrowserContext* GetDefaultBrowserContext() override;
-  HeadlessDevToolsTarget* GetDevToolsTarget() override;
-  std::unique_ptr<HeadlessDevToolsChannel> CreateDevToolsChannel() override;
-
-  // HeadlessDevToolsTarget implementation:
-  void AttachClient(HeadlessDevToolsClient* client) override;
-  void DetachClient(HeadlessDevToolsClient* client) override;
-  bool IsAttached() override;
 
   void set_browser_main_parts(HeadlessBrowserMainParts* browser_main_parts);
   HeadlessBrowserMainParts* browser_main_parts() const;

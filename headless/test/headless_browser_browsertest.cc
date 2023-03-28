@@ -455,9 +455,6 @@ IN_PROC_BROWSER_TEST_F(CrashReporterTest, GenerateMinidump) {
   web_contents_->AddObserver(this);
   RunAsynchronousTest();
 
-  // The target has crashed and should no longer be there.
-  EXPECT_FALSE(web_contents_->GetDevToolsTarget());
-
   // Check that one minidump got created.
   {
     base::ScopedAllowBlockingForTesting allow_blocking;
