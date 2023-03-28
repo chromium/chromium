@@ -155,77 +155,6 @@ class RebaselineCLTest(BaseTestCase, LoggingTestCase):
                 },
             },
         }
-        # TODO(crbug.com/1213998): Fix the example web test result format.
-        raw_test_results = [{
-            "name":
-            "invocations/task-chromium-swarm.appspot.com-2/tests/ninja:%2F%2F:blink_web_tests%2Ftwo%2Fimage-fail.html",
-            "testId": "ninja://:blink_web_tests/two/image-fail.html",
-            "resultId": "2",
-            "variant": {
-                "def": {
-                    "builder": "",
-                    "os": "",
-                    "test_suite": "blink_web_tests"
-                }
-            },
-            "status": "FAIL"
-        }, {
-            "name":
-            "invocations/task-chromium-swarm.appspot.com-1/tests/ninja:%2F%2F:blink_wpt_tests%2Fone%2Fmissing.html",
-            "testId": "ninja://:blink_wpt_tests/one/missing.html",
-            "resultId": "1",
-            "variant": {
-                "def": {
-                    "builder": "",
-                    "os": "",
-                    "test_suite": "blink_web_tests"
-                }
-            },
-            "status": "FAIL"
-        }, {
-            "name":
-            "invocations/task-chromium-swarm.appspot.com-2/tests/ninja:%2F%2F:blink_web_tests%2Fone%2Fcrash.html",
-            "testId": "ninja://:blink_web_tests/one/crash.html",
-            "resultId": "3",
-            "variant": {
-                "def": {
-                    "builder": "",
-                    "os": "",
-                    "test_suite": "blink_web_tests"
-                }
-            },
-            "status": "CRASH"
-        }]
-        raw_artifacts = [{
-            "name":
-            "invocations/task-chromium-swarm.appspot.com-1/tests/ninja:%2F%2F:blink_wpt_tests%2Fone%2Fmissing.html/results/1",
-            "artifactId": "actual_image",
-            "fetchUrl":
-            "https://results.usercontent.cr.dev/invocations/task-chromium-swarm.appspot.com-1/tests/ninja:%2F%2F:blink_wpt_tests%2Fone%2Fmissing.html/results/artifacts/actual_image?token=1",
-            "contentType": "image/png",
-        }, {
-            "name":
-            "invocations/task-chromium-swarm.appspot.com-2/tests/ninja:%2F%2F:blink_web_tests%2Ftwo%2Fimage-fail.html/results/2",
-            "artifactId": "actual_image",
-            "fetchUrl":
-            "https://results.usercontent.cr.dev/invocations/task-chromium-swarm.appspot.com-2/tests/ninja:%2F%2F:blink_web_tests%2Ftwo%2Fimage-fail.html/results/artifacts/actual_image?token=2",
-            "contentType": "image/png",
-        }, {
-            "name":
-            "invocations/task-chromium-swarm.appspot.com-2/tests/ninja:%2F%2F:blink_web_tests%2Fone%2Fcrash.html/results/3",
-            "artifactId": "actual_text",
-            "fetchUrl":
-            "https://results.usercontent.cr.dev/invocations/task-chromium-swarm.appspot.com-2/tests/ninja:%2F%2F:blink_web_tests%2Fone%2Fcrash.html/results/artifacts/actual_text?token=3",
-            "contentType": "text",
-        }]
-        # TODO(crbug.com/1376646): Need to test the ResultDB flag-specific path.
-        # Ideally, we would run all the same tests on both the ResultDB-enabled
-        # and ResultDB-disabled paths, only changing what `WebTestResults` are
-        # returned.
-        self.web_test_resultdb = self.tool.results_fetcher.make_results_from_raw_rdb(
-            raw_test_results,
-            raw_artifacts,
-            step_name='blink_web_tests (with patch)')
 
         for build in self.builds:
             self.tool.results_fetcher.set_results(
@@ -327,21 +256,6 @@ class RebaselineCLTest(BaseTestCase, LoggingTestCase):
         self.assertEqual(self.tool.filesystem.files, files_before)
         self.assertEqual(self.tool.git().added_paths, set())
 
-    def test_execute_basic_resultDB(self):
-        # By default, with no arguments or options, rebaseline-cl rebaselines
-        # all of the tests that unexpectedly failed.
-        for build in self.builds:
-            self.tool.results_fetcher.set_results(build,
-                                                  self.web_test_resultdb)
-        exit_code = self.command.execute(self.command_options(resultDB=True),
-                                         [], self.tool)
-        self.assertEqual(exit_code, 0)
-        self.assertLog([
-            'INFO: All builds finished.\n',
-            'INFO: Rebaselining one/missing.html\n',
-            'INFO: Rebaselining two/image-fail.html\n',
-        ])
-
     def test_execute_with_test_name_file(self):
         fs = self.mac_port.host.filesystem
         test_name_file = fs.mktemp()
@@ -366,34 +280,6 @@ class RebaselineCLTest(BaseTestCase, LoggingTestCase):
             'INFO: Rebaselining one/flaky-fail.html\n',
             'INFO: Rebaselining one/missing.html\n',
             'INFO: Rebaselining one/text-fail.html\n',
-            'INFO: Rebaselining two/image-fail.html\n',
-        ])
-
-    def test_execute_with_test_name_file_resultDB(self):
-        fs = self.mac_port.host.filesystem
-        test_name_file = fs.mktemp()
-        fs.write_text_file(
-            test_name_file,
-            textwrap.dedent('''
-            one/missing.html
-              two/missing.html
-            # one/slow-fail.html
-            #
-
-            ones/does-not-exist.html
-                two/image-fail.html   '''))
-        for build in self.builds:
-            self.tool.results_fetcher.set_results(build,
-                                                  self.web_test_resultdb)
-        exit_code = self.command.execute(
-            self.command_options(test_name_file=test_name_file, resultDB=True),
-            [], self.tool)
-        self.assertEqual(exit_code, 0)
-        self.assertLog([
-            'INFO: All builds finished.\n',
-            'INFO: Reading list of tests to rebaseline from %s\n' %
-            test_name_file,
-            'INFO: Rebaselining one/missing.html\n',
             'INFO: Rebaselining two/image-fail.html\n',
         ])
 

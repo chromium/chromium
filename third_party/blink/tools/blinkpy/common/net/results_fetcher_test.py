@@ -176,6 +176,70 @@ class BuilderTest(LoggingTestCase):
                                               'foo(bar)'),
             'https://storage.googleapis.com/foo_bar_')
 
+    def test_gather_results(self):
+        self.fetcher.web.append_prpc_response({
+            'testResults': [{
+                'name':
+                ('invocations/task-chromium-swarm.appspot.com-6139bb/'
+                 'tests/ninja:%2F%2F:blink_web_tests%2Fshould-pass.html/'
+                 'results/033e-aaaa'),
+                'testId':
+                'ninja://:blink_web_tests/should-pass.html',
+                'status':
+                'FAIL',
+            }, {
+                'name':
+                ('invocations/task-chromium-swarm.appspot.com-6139bb/'
+                 'tests/ninja:%2F%2F:blink_web_tests%2Fshould-pass.html/'
+                 'results/033e-bbbb'),
+                'testId':
+                'ninja://:blink_web_tests/should-pass.html',
+                'status':
+                'PASS',
+                'expected':
+                True,
+            }, {
+                'name': ('invocations/task-chromium-swarm.appspot.com-6139bb/'
+                         'tests/ninja:%2F%2F:blink_wpt_tests%2F'
+                         'external%2Fwpt%2Ftimeout.html/'
+                         'results/033e-cccc'),
+                'testId':
+                'ninja://:blink_wpt_tests/external/wpt/timeout.html',
+                'status':
+                'ABORT',
+                'expected':
+                True,
+            }],
+        })
+        self.fetcher.web.append_prpc_response({
+            'artifacts': [{
+                'name':
+                ('invocations/task-chromium-swarm.appspot.com-6139bb/'
+                 'tests/ninja:%2F%2F:blink_web_tests%2Fshould-pass.html/'
+                 'results/033e-aaaa/'
+                 'artifacts/actual_text'),
+                'artifactId':
+                'actual_text',
+                'fetchUrl':
+                'https://results.usercontent.cr.dev/actual_text',
+            }],
+        })
+        results = self.fetcher.gather_results(Build('linux-rel', 9000, '1234'),
+                                              'blink_web_tests (with patch)')
+
+        result = results.result_for_test('should-pass.html')
+        self.assertEqual(result.actual_results(), ['FAIL', 'PASS'])
+        self.assertFalse(result.did_run_as_expected())
+        self.assertEqual(result.result_dict()['artifacts'], {
+            'actual_text': [
+                'https://results.usercontent.cr.dev/actual_text',
+            ],
+        })
+
+        result = results.result_for_test('external/wpt/timeout.html')
+        self.assertEqual(result.actual_results(), ['TIMEOUT'])
+        self.assertTrue(result.did_run_as_expected())
+
     def test_fetch_wpt_report_urls(self):
         self.fetcher.web.append_prpc_response({
             'artifacts': [{
