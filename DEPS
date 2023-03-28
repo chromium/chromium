@@ -1917,6 +1917,19 @@ deps = {
   'src/tools/page_cycler/acid3':
     Var('chromium_git') + '/chromium/deps/acid3.git' + '@' + '6be0a66a1ebd7ebc5abc1b2f405a945f6d871521',
 
+  'src/third_party/libei': {
+
+    'packages': [
+      {
+        'package': 'chromium/third_party/libei/linux-amd64',
+        'version': 'PQz4zG5Q3SXoAaCYq3RK99W3wg_v0NoOu1OzTSvA_oIC',
+      },
+    ],
+
+    'condition': 'checkout_linux',
+    'dep_type': 'cipd',
+  },
+
   'src/tools/skia_goldctl/linux': {
       'packages': [
         {
