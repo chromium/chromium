@@ -84,11 +84,12 @@ export class OpenPdfParamsParser {
   /**
    * Parse view parameter of open PDF parameters. The PDF should be opened at
    * the specified fitting type mode and position.
+   * @param paramValue Params to parse.
    * @return Map with view parameters (view and viewPosition).
    */
-  private parseViewParam_(paramValue: string): OpenPdfParams {
+  private async parseViewParam_(paramValue: string): Promise<OpenPdfParams> {
     const viewModeComponents = paramValue.toLowerCase().split(',');
-    if (viewModeComponents.length < 1) {
+    if (viewModeComponents.length === 0) {
       return {};
     }
 
@@ -106,7 +107,7 @@ export class OpenPdfParamsParser {
       acceptsPositionParam = true;
     }
 
-    if (!acceptsPositionParam || viewModeComponents.length < 2) {
+    if (!acceptsPositionParam || viewModeComponents.length === 1) {
       return params;
     }
 
@@ -120,9 +121,11 @@ export class OpenPdfParamsParser {
 
   /**
    * Parse view parameters which come from nameddest.
+   * @param paramValue Params to parse.
    * @return Map with view parameters.
    */
-  private parseNameddestViewParam_(paramValue: string): OpenPdfParams {
+  private async parseNameddestViewParam_(paramValue: string):
+      Promise<OpenPdfParams> {
     const viewModeComponents = paramValue.toLowerCase().split(',');
     const viewMode = viewModeComponents[0];
     const params: OpenPdfParams = {};
@@ -250,7 +253,7 @@ export class OpenPdfParamsParser {
     }
 
     if (urlParams.has('view')) {
-      Object.assign(params, this.parseViewParam_(urlParams.get('view')!));
+      Object.assign(params, await this.parseViewParam_(urlParams.get('view')!));
     }
 
     if (urlParams.has('zoom')) {
@@ -267,12 +270,11 @@ export class OpenPdfParamsParser {
 
       if (data.namedDestinationView) {
         Object.assign(
-            params, this.parseNameddestViewParam_(data.namedDestinationView));
+            params,
+            await this.parseNameddestViewParam_(data.namedDestinationView));
       }
-
       return params;
     }
-
-    return Promise.resolve(params);
+    return params;
   }
 }
