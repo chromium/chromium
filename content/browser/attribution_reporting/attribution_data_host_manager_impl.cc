@@ -37,7 +37,6 @@
 #include "components/attribution_reporting/trigger_registration.h"
 #include "content/browser/attribution_reporting/attribution_beacon_id.h"
 #include "content/browser/attribution_reporting/attribution_constants.h"
-#include "content/browser/attribution_reporting/attribution_features.h"
 #include "content/browser/attribution_reporting/attribution_input_event.h"
 #include "content/browser/attribution_reporting/attribution_manager.h"
 #include "content/browser/attribution_reporting/attribution_trigger.h"
@@ -829,11 +828,9 @@ void AttributionDataHostManagerImpl::NotifyFencedFrameReportingBeaconData(
     const net::HttpResponseHeaders* headers,
     bool is_final_response) {
   auto it = registrations_.find(beacon_id);
-
-  if (base::FeatureList::IsEnabled(kAttributionFencedFrameReportingBeacon)) {
-    DCHECK(it != registrations_.end());
-  }
-
+  // This may happen if validation failed in
+  // `AttributionHost::NotifyFencedFrameReportingBeaconStarted()` and therefore
+  // not being tracked.
   if (it == registrations_.end()) {
     return;
   }
