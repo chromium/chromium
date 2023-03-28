@@ -215,6 +215,12 @@ export class OobeWelcomeDialog extends OobeWelcomeDialogBase {
     this.setVideoPlay_(visible);
   }
 
+  getProjectSimonProductName() {
+    return loadTimeData.valueExists('kProjectSimonProductName') ?
+        loadTimeData.getString('kProjectSimonProductName') :
+        '';
+  }
+
   /**
    * Play or pause welcome video.
    * @param {boolean} play - whether play or pause welcome video.

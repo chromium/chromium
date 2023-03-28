@@ -41,6 +41,10 @@
             <include name="IDR_PRODUCT_LOGO_24PX_2X" file="google_chrome/chrome_24px_2x.svg" type="BINDATA" />
             <!-- Used by lacros. -->
             <include name="IDR_PRODUCT_LOGO_256_CANARY" file="google_chrome/product_logo_256_canary.png" type="BINDATA" />
+            <!-- Used by ChromeOS OOBE -->
+            <include name="IDR_CROS_OOBE_FIRST_ANIMATION" file="google_chrome/chromeos/oobe/project_simon/first_animation.json" type="BINDATA" />
+            <include name="IDR_CROS_OOBE_PRODUCT_NAME" file="google_chrome/chromeos/oobe/project_simon/product_name.txt" type="BINDATA" />
+            <include name="IDR_CROS_OOBE_WELCOME_BACKDROP" file="google_chrome/chromeos/oobe/project_simon/welcome_backdrop.svg" type="BINDATA" />
           </if>
           <if expr="is_win">
             <!-- External company logo, displayed in the Chrome Cleanup WebUI if

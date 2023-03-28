@@ -24,6 +24,9 @@
   <!-- OOBE Start Script -->
   <script type="module" src="./oobe.js"></script>
 </head>
+<if expr="_google_chrome">
+  <img id="welcome-backdrop" src="internal_assets/welcome_backdrop.svg" aria-hidden="true">
+</if>
 
 <custom-style>
   <style include="oobe-flex-layout-styles"></style>

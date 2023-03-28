@@ -181,6 +181,9 @@ constexpr char kLogo24PX1XSvgPath[] = "logo_24px-1x.svg";
 constexpr char kLogo24PX2XSvgPath[] = "logo_24px-2x.svg";
 constexpr char kSyncConsentIcons[] = "sync-consent-icons.html";
 constexpr char kSyncConsentIconsJs[] = "sync-consent-icons.m.js";
+// Project Simon TODO(b/269117729) - Rename with final names.
+constexpr char kFirstAnimation[] = "internal_assets/first_animation.json";
+constexpr char kWelcomeBackdrop[] = "internal_assets/welcome_backdrop.svg";
 #endif
 
 // Adds various product logo resources.
@@ -192,6 +195,17 @@ void AddProductLogoResources(content::WebUIDataSource* source) {
 
   // Required in encryption migration screen.
   source->AddResourcePath(kProductLogoPath, IDR_PRODUCT_LOGO_64);
+}
+
+void AddProjectSimonResources(content::WebUIDataSource* source) {
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+  source->AddResourcePath(kFirstAnimation, IDR_CROS_OOBE_FIRST_ANIMATION);
+  source->AddResourcePath(kWelcomeBackdrop, IDR_CROS_OOBE_WELCOME_BACKDROP);
+  auto product_name =
+      ui::ResourceBundle::GetSharedInstance().GetRawDataResource(
+          IDR_CROS_OOBE_PRODUCT_NAME);
+  source->AddString("kProjectSimonProductName", std::string{product_name});
+#endif
 }
 
 void AddSyncConsentResources(content::WebUIDataSource* source) {
@@ -286,6 +300,7 @@ void CreateAndAddOobeUIDataSource(Profile* profile,
 
   // Configure shared resources
   AddProductLogoResources(source);
+  AddProjectSimonResources(source);
 
   quick_unlock::AddFingerprintResources(source);
   AddSyncConsentResources(source);

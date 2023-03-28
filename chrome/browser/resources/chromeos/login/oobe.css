@@ -98,6 +98,13 @@ html[screen=gaia-signin] {
   }
 }
 
+#welcome-backdrop {
+  visibility: hidden;
+}
+
+html.simon-enabled #welcome-backdrop {
+  visibility: visible;
+}
 button {
   font-family: inherit;
   outline: none;
