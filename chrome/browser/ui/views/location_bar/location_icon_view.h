@@ -75,7 +75,6 @@ class LocationIconView : public IconLabelBubbleView {
   bool ShowBubble(const ui::Event& event) override;
   bool IsBubbleShowing() const override;
   bool OnMousePressed(const ui::MouseEvent& event) override;
-  void GetAccessibleNodeData(ui::AXNodeData* node_data) override;
   void AddedToWidget() override;
   void OnThemeChanged() override;
 
@@ -119,6 +118,9 @@ class LocationIconView : public IconLabelBubbleView {
   // (if any) should be animated.
   // If |suppress_animations| is true, the text change will not be animated.
   void UpdateTextVisibility(bool suppress_animations);
+
+  // Updates the accessible properties based on if we are editing or empty.
+  void SetAccessibleProperties(bool is_initialization);
 
   // Updates Icon based on the current state and theme.
   void UpdateIcon();

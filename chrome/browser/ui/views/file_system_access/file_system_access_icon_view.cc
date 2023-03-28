@@ -27,6 +27,10 @@ FileSystemAccessIconView::FileSystemAccessIconView(
                          page_action_icon_delegate,
                          "FileSystemAccess") {
   SetVisible(false);
+  SetAccessibilityProperties(
+      /*role*/ absl::nullopt,
+      l10n_util::GetStringUTF16(
+          IDS_FILE_SYSTEM_ACCESS_DIRECTORY_USAGE_TOOLTIP));
 }
 
 views::BubbleDialogDelegate* FileSystemAccessIconView::GetBubble() const {
@@ -54,19 +58,16 @@ void FileSystemAccessIconView::UpdateImpl() {
   if (has_write_access_ != had_write_access)
     UpdateIconImage();
 
+  SetAccessibleName(has_write_access_
+                        ? l10n_util::GetStringUTF16(
+                              IDS_FILE_SYSTEM_ACCESS_WRITE_USAGE_TOOLTIP)
+                        : l10n_util::GetStringUTF16(
+                              IDS_FILE_SYSTEM_ACCESS_DIRECTORY_USAGE_TOOLTIP));
+
   // If icon isn't visible, a bubble shouldn't be shown either. Close it if
   // it was still open.
   if (!GetVisible())
     FileSystemAccessUsageBubbleView::CloseCurrentBubble();
-}
-
-std::u16string FileSystemAccessIconView::GetTextForTooltipAndAccessibleName()
-    const {
-  return has_write_access_
-             ? l10n_util::GetStringUTF16(
-                   IDS_FILE_SYSTEM_ACCESS_WRITE_USAGE_TOOLTIP)
-             : l10n_util::GetStringUTF16(
-                   IDS_FILE_SYSTEM_ACCESS_DIRECTORY_USAGE_TOOLTIP);
 }
 
 void FileSystemAccessIconView::OnExecuting(ExecuteSource execute_source) {

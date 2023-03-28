@@ -30,6 +30,9 @@ CookieControlsIconView::CookieControlsIconView(
                          page_action_icon_delegate,
                          "CookieControls") {
   SetVisible(false);
+  SetAccessibilityProperties(
+      /*role*/ absl::nullopt,
+      l10n_util::GetStringUTF16(IDS_COOKIE_CONTROLS_TOOLTIP));
 }
 
 CookieControlsIconView::~CookieControlsIconView() = default;
@@ -119,11 +122,6 @@ const gfx::VectorIcon& CookieControlsIconView::GetVectorIcon() const {
   return status_ == CookieControlsStatus::kDisabledForSite
              ? views::kEyeIcon
              : views::kEyeCrossedIcon;
-}
-
-std::u16string CookieControlsIconView::GetTextForTooltipAndAccessibleName()
-    const {
-  return l10n_util::GetStringUTF16(IDS_COOKIE_CONTROLS_TOOLTIP);
 }
 
 BEGIN_METADATA(CookieControlsIconView, PageActionIconView)

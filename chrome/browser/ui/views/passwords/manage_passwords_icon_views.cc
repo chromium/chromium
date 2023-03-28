@@ -29,6 +29,8 @@ ManagePasswordsIconViews::ManagePasswordsIconViews(
   // Password icon should not be mirrored in RTL.
   image()->SetFlipCanvasOnPaintForRTLUI(false);
   SetProperty(views::kElementIdentifierKey, kPasswordsOmniboxKeyIconElementId);
+  SetAccessibilityProperties(/*role*/ absl::nullopt,
+                             GetTextForTooltipAndAccessibleName());
 }
 
 ManagePasswordsIconViews::~ManagePasswordsIconViews() = default;
@@ -40,6 +42,7 @@ void ManagePasswordsIconViews::SetState(password_manager::ui::State state) {
   PasswordBubbleViewBase::CloseCurrentBubble();
   state_ = state;
   UpdateUiForState();
+  SetAccessibleName(GetTextForTooltipAndAccessibleName());
 }
 
 void ManagePasswordsIconViews::UpdateUiForState() {

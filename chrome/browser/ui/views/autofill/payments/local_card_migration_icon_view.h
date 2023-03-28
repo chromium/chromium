@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_UI_VIEWS_AUTOFILL_PAYMENTS_LOCAL_CARD_MIGRATION_ICON_VIEW_H_
 
 #include "chrome/browser/ui/views/page_action/page_action_icon_view.h"
+#include "ui/base/metadata/metadata_header_macros.h"
 
 class CommandUpdater;
 
@@ -17,6 +18,7 @@ class ManageMigrationUiController;
 // bubble.
 class LocalCardMigrationIconView : public PageActionIconView {
  public:
+  METADATA_HEADER(LocalCardMigrationIconView);
   LocalCardMigrationIconView(
       CommandUpdater* command_updater,
       IconLabelBubbleView::Delegate* icon_label_bubble_delegate,
@@ -31,14 +33,12 @@ class LocalCardMigrationIconView : public PageActionIconView {
   // PageActionIconView:
   views::BubbleDialogDelegate* GetBubble() const override;
   void UpdateImpl() override;
-  std::u16string GetTextForTooltipAndAccessibleName() const override;
 
  protected:
   // PageActionIconView:
   void OnExecuting(PageActionIconView::ExecuteSource execute_source) override;
   const gfx::VectorIcon& GetVectorIcon() const override;
   const gfx::VectorIcon& GetVectorIconBadge() const override;
-  const char* GetClassName() const override;
 
  private:
   ManageMigrationUiController* GetController() const;

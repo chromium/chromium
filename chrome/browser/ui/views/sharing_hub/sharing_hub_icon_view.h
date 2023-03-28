@@ -30,7 +30,6 @@ class SharingHubIconView : public PageActionIconView {
   // PageActionIconView:
   views::BubbleDialogDelegate* GetBubble() const override;
   void UpdateImpl() override;
-  std::u16string GetTextForTooltipAndAccessibleName() const override;
 
  protected:
   // PageActionIconView:

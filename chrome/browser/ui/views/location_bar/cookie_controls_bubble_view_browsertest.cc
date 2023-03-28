@@ -15,6 +15,7 @@
 #include "chrome/browser/ui/views/location_bar/cookie_controls_bubble_view.h"
 #include "chrome/browser/ui/views/page_action/page_action_icon_view.h"
 #include "chrome/common/chrome_features.h"
+#include "chrome/grit/generated_resources.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/content_settings/core/browser/cookie_settings.h"
@@ -22,6 +23,7 @@
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "net/dns/mock_host_resolver.h"
+#include "ui/base/l10n/l10n_util.h"
 #include "ui/views/controls/link.h"
 #include "ui/views/view.h"
 #include "url/gurl.h"
@@ -181,4 +183,12 @@ IN_PROC_BROWSER_TEST_F(CookieControlsBubbleViewTest,
 
   // Show bubble.
   ShowAndVerifyUi();
+}
+
+IN_PROC_BROWSER_TEST_F(CookieControlsBubbleViewTest, IconViewAccessibleName) {
+  EXPECT_FALSE(cookie_controls_icon()->GetVisible());
+  EXPECT_EQ(cookie_controls_icon()->GetAccessibleName(),
+            l10n_util::GetStringUTF16(IDS_COOKIE_CONTROLS_TOOLTIP));
+  EXPECT_EQ(cookie_controls_icon()->GetTextForTooltipAndAccessibleName(),
+            l10n_util::GetStringUTF16(IDS_COOKIE_CONTROLS_TOOLTIP));
 }

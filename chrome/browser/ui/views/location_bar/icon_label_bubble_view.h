@@ -28,10 +28,6 @@ namespace gfx {
 class FontList;
 }  // namespace gfx
 
-namespace ui {
-struct AXNodeData;
-}
-
 namespace views {
 class AXVirtualView;
 class ImageView;
@@ -169,7 +165,6 @@ class IconLabelBubbleView : public views::InkDropObserver,
   void AnimationEnded(const gfx::Animation* animation) override;
   void AnimationProgressed(const gfx::Animation* animation) override;
   void AnimationCanceled(const gfx::Animation* animation) override;
-  void GetAccessibleNodeData(ui::AXNodeData* node_data) override;
 
   const gfx::FontList& font_list() const { return label()->font_list(); }
 

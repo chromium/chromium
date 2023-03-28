@@ -31,7 +31,6 @@ class TranslateIconView : public PageActionIconView {
   // PageActionIconView:
   void OnExecuting(PageActionIconView::ExecuteSource execute_source) override;
   const gfx::VectorIcon& GetVectorIcon() const override;
-  std::u16string GetTextForTooltipAndAccessibleName() const override;
 
  private:
   // Returns the Partial Translate bubble instance for the Translate icon.

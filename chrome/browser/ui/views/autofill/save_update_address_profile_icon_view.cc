@@ -12,6 +12,7 @@
 #include "components/strings/grit/components_strings.h"
 #include "components/vector_icons/vector_icons.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
 
 namespace autofill {
 
@@ -23,7 +24,10 @@ SaveUpdateAddressProfileIconView::SaveUpdateAddressProfileIconView(
                          IDC_SAVE_AUTOFILL_ADDRESS,
                          icon_label_bubble_delegate,
                          page_action_icon_delegate,
-                         "SaveAutofillAddress") {}
+                         "SaveAutofillAddress") {
+  SetAccessibilityProperties(/*role*/ absl::nullopt,
+                             GetTextForTooltipAndAccessibleName());
+}
 
 SaveUpdateAddressProfileIconView::~SaveUpdateAddressProfileIconView() = default;
 
@@ -46,6 +50,7 @@ void SaveUpdateAddressProfileIconView::UpdateImpl() {
   bool command_enabled =
       SetCommandEnabled(controller && controller->IsBubbleActive());
   SetVisible(command_enabled);
+  SetAccessibleName(GetTextForTooltipAndAccessibleName());
 }
 
 std::u16string
@@ -72,5 +77,8 @@ SaveUpdateAddressProfileIconController*
 SaveUpdateAddressProfileIconView::GetController() const {
   return SaveUpdateAddressProfileIconController::Get(GetWebContents());
 }
+
+BEGIN_METADATA(SaveUpdateAddressProfileIconView, PageActionIconView)
+END_METADATA
 
 }  // namespace autofill

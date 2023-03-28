@@ -69,6 +69,8 @@ void SharingIconView::UpdateImpl() {
   if (!controller)
     return;
 
+  SetAccessibleName(controller->GetTextForTooltipAndAccessibleName());
+
   // To ensure that we reset error icon badge.
   if (!GetVisible()) {
     should_show_error_ = controller->HasSendFailed();
@@ -163,12 +165,6 @@ views::BubbleDialogDelegate* SharingIconView::GetBubble() const {
 const gfx::VectorIcon& SharingIconView::GetVectorIcon() const {
   auto* controller = GetController();
   return controller ? controller->GetVectorIcon() : gfx::kNoneIcon;
-}
-
-std::u16string SharingIconView::GetTextForTooltipAndAccessibleName() const {
-  auto* controller = GetController();
-  return controller ? controller->GetTextForTooltipAndAccessibleName()
-                    : std::u16string();
 }
 
 void SharingIconView::GetAccessibleNodeData(ui::AXNodeData* node_data) {

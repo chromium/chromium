@@ -72,12 +72,10 @@ class TestPageActionIconView : public PageActionIconView {
                            true,
                            font_list) {
     SetUpForInOutAnimation();
+    SetAccessibilityProperties(/*role*/ absl::nullopt, u"TestTooltip");
   }
 
   views::BubbleDialogDelegate* GetBubble() const override { return nullptr; }
-  std::u16string GetTextForTooltipAndAccessibleName() const override {
-    return u"TestTooltip";
-  }
 
   bool IsLabelVisible() const { return label()->GetVisible(); }
 
@@ -193,4 +191,9 @@ TEST_F(PageActionIconViewTest, UsesIconImageIfAvailable) {
   icon_view->UpdateIconImageForTesting();
   EXPECT_FALSE(image_previous.BackedBySameObjectAs(
       icon_view->GetImage(views::Button::STATE_NORMAL)));
+}
+
+TEST_F(PageActionIconViewTest, IconViewAccessibleName) {
+  EXPECT_EQ(view()->GetAccessibleName(),
+            view()->GetTextForTooltipAndAccessibleName());
 }

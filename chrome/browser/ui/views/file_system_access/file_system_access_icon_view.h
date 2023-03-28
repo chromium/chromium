@@ -23,7 +23,6 @@ class FileSystemAccessIconView : public PageActionIconView {
   // PageActionIconView:
   views::BubbleDialogDelegate* GetBubble() const override;
   void UpdateImpl() override;
-  std::u16string GetTextForTooltipAndAccessibleName() const override;
   void OnExecuting(ExecuteSource execute_source) override;
   const gfx::VectorIcon& GetVectorIcon() const override;
 

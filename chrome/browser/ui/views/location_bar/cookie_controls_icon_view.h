@@ -36,7 +36,6 @@ class CookieControlsIconView : public PageActionIconView,
   // PageActionIconView:
   views::BubbleDialogDelegate* GetBubble() const override;
   void UpdateImpl() override;
-  std::u16string GetTextForTooltipAndAccessibleName() const override;
 
  protected:
   void OnExecuting(PageActionIconView::ExecuteSource source) override;

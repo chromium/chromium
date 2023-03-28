@@ -32,6 +32,8 @@ TranslateIconView::TranslateIconView(
                          page_action_icon_delegate,
                          "Translate") {
   SetID(VIEW_ID_TRANSLATE_BUTTON);
+  SetAccessibilityProperties(/*role*/ absl::nullopt,
+                             l10n_util::GetStringUTF16(IDS_TOOLTIP_TRANSLATE));
 }
 
 TranslateIconView::~TranslateIconView() = default;
@@ -96,10 +98,6 @@ void TranslateIconView::OnExecuting(
 
 const gfx::VectorIcon& TranslateIconView::GetVectorIcon() const {
   return kTranslateIcon;
-}
-
-std::u16string TranslateIconView::GetTextForTooltipAndAccessibleName() const {
-  return l10n_util::GetStringUTF16(IDS_TOOLTIP_TRANSLATE);
 }
 
 BEGIN_METADATA(TranslateIconView, PageActionIconView)

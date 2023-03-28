@@ -21,6 +21,7 @@
 #include "chrome/browser/ui/views/side_panel/side_panel_registry.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_view.h"
 #include "chrome/common/pref_names.h"
+#include "chrome/grit/generated_resources.h"
 #include "chrome/test/base/browser_with_test_window_test.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/interactive_test_utils.h"
@@ -362,6 +363,14 @@ IN_PROC_BROWSER_TEST_F(PriceTrackingIconViewInteractiveTest,
   EXPECT_STREQ(GetChip()->GetVectorIcon().name,
                omnibox::kPriceTrackingEnabledFilledIcon.name);
   EXPECT_FALSE(GetBookmarkStar()->GetActive());
+}
+
+IN_PROC_BROWSER_TEST_F(PriceTrackingIconViewInteractiveTest,
+                       IconViewAccessibleName) {
+  EXPECT_EQ(GetChip()->GetAccessibleName(),
+            l10n_util::GetStringUTF16(IDS_OMNIBOX_TRACK_PRICE));
+  EXPECT_EQ(GetChip()->GetTextForTooltipAndAccessibleName(),
+            l10n_util::GetStringUTF16(IDS_OMNIBOX_TRACK_PRICE));
 }
 
 class PriceTrackingIconViewErrorHandelingTest

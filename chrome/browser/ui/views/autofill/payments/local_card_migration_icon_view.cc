@@ -17,6 +17,7 @@
 #include "components/strings/grit/components_strings.h"
 #include "components/vector_icons/vector_icons.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/gfx/paint_vector_icon.h"
 #include "ui/views/animation/ink_drop.h"
 
@@ -33,6 +34,9 @@ LocalCardMigrationIconView::LocalCardMigrationIconView(
                          "LocalCardMigration") {
   SetID(VIEW_ID_MIGRATE_LOCAL_CREDIT_CARD_BUTTON);
   SetUpForInOutAnimation();
+  SetAccessibilityProperties(
+      /*role*/ absl::nullopt,
+      l10n_util::GetStringUTF16(IDS_TOOLTIP_MIGRATE_LOCAL_CARD));
 }
 
 LocalCardMigrationIconView::~LocalCardMigrationIconView() {}
@@ -128,15 +132,6 @@ const gfx::VectorIcon& LocalCardMigrationIconView::GetVectorIconBadge() const {
   return gfx::kNoneIcon;
 }
 
-const char* LocalCardMigrationIconView::GetClassName() const {
-  return "LocalCardMigrationIconView";
-}
-
-std::u16string LocalCardMigrationIconView::GetTextForTooltipAndAccessibleName()
-    const {
-  return l10n_util::GetStringUTF16(IDS_TOOLTIP_MIGRATE_LOCAL_CARD);
-}
-
 ManageMigrationUiController* LocalCardMigrationIconView::GetController() const {
   content::WebContents* web_contents = GetWebContents();
   if (!web_contents)
@@ -166,5 +161,8 @@ void LocalCardMigrationIconView::AnimationEnded(
   IconLabelBubbleView::AnimationEnded(animation);
   UpdateIconImage();
 }
+
+BEGIN_METADATA(LocalCardMigrationIconView, PageActionIconView)
+END_METADATA
 
 }  // namespace autofill

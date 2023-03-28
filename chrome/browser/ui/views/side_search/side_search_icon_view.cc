@@ -51,6 +51,10 @@ SideSearchIconView::SideSearchIconView(
   SetUpForInOutAnimation();
   SetPaintLabelOverSolidBackground(true);
   browser_->tab_strip_model()->AddObserver(this);
+  SetAccessibilityProperties(
+      /*role*/ absl::nullopt,
+      l10n_util::GetStringUTF16(
+          IDS_TOOLTIP_SIDE_SEARCH_TOOLBAR_BUTTON_NOT_ACTIVATED));
 }
 
 SideSearchIconView::~SideSearchIconView() {
@@ -157,11 +161,6 @@ const gfx::VectorIcon& SideSearchIconView::GetVectorIcon() const {
 ui::ImageModel SideSearchIconView::GetSizedIconImage(int size) const {
   return DefaultSearchIconSource::GetOrCreateForBrowser(browser_)
       ->GetSizedIconImage(size);
-}
-
-std::u16string SideSearchIconView::GetTextForTooltipAndAccessibleName() const {
-  return l10n_util::GetStringUTF16(
-      IDS_TOOLTIP_SIDE_SEARCH_TOOLBAR_BUTTON_NOT_ACTIVATED);
 }
 
 void SideSearchIconView::AnimationProgressed(const gfx::Animation* animation) {

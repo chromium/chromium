@@ -24,6 +24,8 @@ FindBarIcon::FindBarIcon(
                          "Find"),
       browser_(browser) {
   DCHECK(browser_);
+  SetAccessibilityProperties(/*role*/ absl::nullopt,
+                             l10n_util::GetStringUTF16(IDS_TOOLTIP_FIND));
 }
 
 FindBarIcon::~FindBarIcon() {}
@@ -44,10 +46,6 @@ void FindBarIcon::SetActive(bool activate, bool should_animate) {
     views::InkDrop::Get(this)->AnimateToState(views::InkDropState::HIDDEN,
                                               nullptr);
   }
-}
-
-std::u16string FindBarIcon::GetTextForTooltipAndAccessibleName() const {
-  return l10n_util::GetStringUTF16(IDS_TOOLTIP_FIND);
 }
 
 void FindBarIcon::OnExecuting(ExecuteSource execute_source) {}

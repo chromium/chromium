@@ -28,7 +28,6 @@ class QRCodeGeneratorIconView : public PageActionIconView {
   // PageActionIconView:
   views::BubbleDialogDelegate* GetBubble() const override;
   void UpdateImpl() override;
-  std::u16string GetTextForTooltipAndAccessibleName() const override;
   bool ShouldShowLabel() const override;
 
  protected:

@@ -20,7 +20,9 @@
 #include "components/autofill/core/browser/payments/payments_service_url.h"
 #include "components/autofill/core/browser/payments/test_legal_message_line.h"
 #include "components/autofill/core/browser/payments/virtual_card_enrollment_manager.h"
+#include "components/strings/grit/components_strings.h"
 #include "content/public/test/browser_test.h"
+#include "ui/base/l10n/l10n_util.h"
 #include "ui/gfx/image/image_unittest_util.h"
 #include "ui/views/test/widget_test.h"
 #include "ui/views/view_observer.h"
@@ -568,6 +570,17 @@ IN_PROC_BROWSER_TEST_P(
                                      VirtualCardEnrollmentSourceToMetricSuffix(
                                          virtual_card_enrollment_source)),
       BucketsAre(base::Bucket(false, 1), base::Bucket(true, 0)));
+}
+
+IN_PROC_BROWSER_TEST_P(
+    VirtualCardEnrollBubbleViewsInteractiveUiTestParameterized,
+    IconViewAccessibleName) {
+  EXPECT_EQ(GetIconView()->GetAccessibleName(),
+            l10n_util::GetStringUTF16(
+                IDS_AUTOFILL_VIRTUAL_CARD_ENROLLMENT_FALLBACK_ICON_TOOLTIP));
+  EXPECT_EQ(GetIconView()->GetTextForTooltipAndAccessibleName(),
+            l10n_util::GetStringUTF16(
+                IDS_AUTOFILL_VIRTUAL_CARD_ENROLLMENT_FALLBACK_ICON_TOOLTIP));
 }
 
 }  // namespace autofill

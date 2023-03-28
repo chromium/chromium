@@ -14,6 +14,7 @@
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/views/autofill/payments/promo_code_label_button.h"
 #include "chrome/common/webui_url_constants.h"
+#include "chrome/grit/generated_resources.h"
 #include "chrome/test/base/interactive_test_utils.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/autofill/core/browser/data_model/autofill_offer_data.h"
@@ -624,6 +625,17 @@ IN_PROC_BROWSER_TEST_P(
   EXPECT_FALSE(IsIconVisible());
   histogram_tester.ExpectBucketCount(
       "Autofill.PageLoadsWithOfferIconShowing.FreeListingCouponOffer", true, 2);
+}
+
+IN_PROC_BROWSER_TEST_P(OfferNotificationBubbleViewsInteractiveUiTest,
+                       IconViewAccessibleName) {
+  EXPECT_EQ(GetOfferNotificationIconView()->GetAccessibleName(),
+            l10n_util::GetStringUTF16(
+                IDS_AUTOFILL_OFFERS_REMINDER_ICON_TOOLTIP_TEXT));
+  EXPECT_EQ(
+      GetOfferNotificationIconView()->GetTextForTooltipAndAccessibleName(),
+      l10n_util::GetStringUTF16(
+          IDS_AUTOFILL_OFFERS_REMINDER_ICON_TOOLTIP_TEXT));
 }
 
 }  // namespace autofill

@@ -5,8 +5,6 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_LOCATION_BAR_STAR_VIEW_H_
 #define CHROME_BROWSER_UI_VIEWS_LOCATION_BAR_STAR_VIEW_H_
 
-#include <memory>
-
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/ui/views/page_action/page_action_icon_view.h"
 #include "components/prefs/pref_member.h"
@@ -38,7 +36,6 @@ class StarView : public PageActionIconView {
   void ExecuteCommand(ExecuteSource source) override;
   views::BubbleDialogDelegate* GetBubble() const override;
   const gfx::VectorIcon& GetVectorIcon() const override;
-  std::u16string GetTextForTooltipAndAccessibleName() const override;
 
  private:
   void EditBookmarksPrefUpdated();

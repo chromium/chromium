@@ -30,7 +30,6 @@ class IntentPickerView : public PageActionIconView {
   void OnExecuting(PageActionIconView::ExecuteSource execute_source) override;
   views::BubbleDialogDelegate* GetBubble() const override;
   const gfx::VectorIcon& GetVectorIcon() const override;
-  std::u16string GetTextForTooltipAndAccessibleName() const override;
 
  private:
   bool GetShowIcon() const;

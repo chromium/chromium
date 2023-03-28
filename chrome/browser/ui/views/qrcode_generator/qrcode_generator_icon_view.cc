@@ -31,6 +31,9 @@ QRCodeGeneratorIconView::QRCodeGeneratorIconView(
       bubble_requested_(false) {
   SetVisible(false);
   SetLabel(l10n_util::GetStringUTF16(IDS_OMNIBOX_QRCODE_GENERATOR_ICON_LABEL));
+  SetAccessibilityProperties(
+      /*role*/ absl::nullopt,
+      l10n_util::GetStringUTF16(IDS_OMNIBOX_QRCODE_GENERATOR_ICON_TOOLTIP));
 }
 
 QRCodeGeneratorIconView::~QRCodeGeneratorIconView() = default;
@@ -96,11 +99,6 @@ void QRCodeGeneratorIconView::OnExecuting(
 
 const gfx::VectorIcon& QRCodeGeneratorIconView::GetVectorIcon() const {
   return kQrcodeGeneratorIcon;
-}
-
-std::u16string QRCodeGeneratorIconView::GetTextForTooltipAndAccessibleName()
-    const {
-  return l10n_util::GetStringUTF16(IDS_OMNIBOX_QRCODE_GENERATOR_ICON_TOOLTIP);
 }
 
 bool QRCodeGeneratorIconView::ShouldShowLabel() const {

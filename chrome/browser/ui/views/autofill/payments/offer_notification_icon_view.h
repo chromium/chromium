@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_UI_VIEWS_AUTOFILL_PAYMENTS_OFFER_NOTIFICATION_ICON_VIEW_H_
 
 #include "chrome/browser/ui/views/page_action/page_action_icon_view.h"
+#include "ui/base/metadata/metadata_header_macros.h"
 
 class CommandUpdater;
 
@@ -17,6 +18,7 @@ class OfferNotificationBubbleController;
 // related offers that are eligible on the current page domain.
 class OfferNotificationIconView : public PageActionIconView {
  public:
+  METADATA_HEADER(OfferNotificationIconView);
   OfferNotificationIconView(
       CommandUpdater* command_updater,
       IconLabelBubbleView::Delegate* icon_label_bubble_delegate,
@@ -29,13 +31,11 @@ class OfferNotificationIconView : public PageActionIconView {
   // PageActionIconView:
   views::BubbleDialogDelegate* GetBubble() const override;
   void UpdateImpl() override;
-  std::u16string GetTextForTooltipAndAccessibleName() const override;
 
  protected:
   // PageActionIconView:
   void OnExecuting(PageActionIconView::ExecuteSource execute_source) override;
   const gfx::VectorIcon& GetVectorIcon() const override;
-  const char* GetClassName() const override;
 
  private:
   OfferNotificationBubbleController* GetController() const;

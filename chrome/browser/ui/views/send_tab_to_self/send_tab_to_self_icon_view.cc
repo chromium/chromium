@@ -34,6 +34,9 @@ SendTabToSelfIconView::SendTabToSelfIconView(
   SetVisible(false);
   SetLabel(l10n_util::GetStringUTF16(IDS_OMNIBOX_ICON_SEND_TAB_TO_SELF));
   SetUpForInOutAnimation();
+  SetAccessibilityProperties(
+      /*role*/ absl::nullopt,
+      l10n_util::GetStringUTF16(IDS_OMNIBOX_TOOLTIP_SEND_TAB_TO_SELF));
 }
 
 SendTabToSelfIconView::~SendTabToSelfIconView() {}
@@ -108,11 +111,6 @@ void SendTabToSelfIconView::OnExecuting(
 
 const gfx::VectorIcon& SendTabToSelfIconView::GetVectorIcon() const {
   return kLaptopAndSmartphoneIcon;
-}
-
-std::u16string SendTabToSelfIconView::GetTextForTooltipAndAccessibleName()
-    const {
-  return l10n_util::GetStringUTF16(IDS_OMNIBOX_TOOLTIP_SEND_TAB_TO_SELF);
 }
 
 SendTabToSelfBubbleController* SendTabToSelfIconView::GetController() const {

@@ -27,6 +27,10 @@ ZoomView::ZoomView(IconLabelBubbleView::Delegate* icon_label_bubble_delegate,
                          "Zoom"),
       icon_(&kZoomMinusIcon) {
   SetVisible(false);
+  SetAccessibilityProperties(
+      /*role*/ absl::nullopt,
+      l10n_util::GetStringFUTF16(IDS_TOOLTIP_ZOOM,
+                                 base::FormatPercent(current_zoom_percent_)));
 }
 
 ZoomView::~ZoomView() {}
@@ -73,6 +77,9 @@ void ZoomView::ZoomChangedForActiveTab(bool can_show_bubble) {
         zoom::ZoomController::FromWebContents(web_contents);
     current_zoom_percent_ = zoom_controller->GetZoomPercent();
 
+    SetAccessibleName(l10n_util::GetStringFUTF16(
+        IDS_TOOLTIP_ZOOM, base::FormatPercent(current_zoom_percent_)));
+
     // The icon is hidden when the zoom level is default.
 
     if (features::IsChromeRefresh2023()) {
@@ -118,11 +125,6 @@ views::BubbleDialogDelegate* ZoomView::GetBubble() const {
 
 const gfx::VectorIcon& ZoomView::GetVectorIcon() const {
   return *icon_;
-}
-
-std::u16string ZoomView::GetTextForTooltipAndAccessibleName() const {
-  return l10n_util::GetStringFUTF16(IDS_TOOLTIP_ZOOM,
-                                    base::FormatPercent(current_zoom_percent_));
 }
 
 BEGIN_METADATA(ZoomView, PageActionIconView)

@@ -30,7 +30,6 @@ class FindBarIcon : public PageActionIconView {
   void OnExecuting(ExecuteSource execute_source) override;
   views::BubbleDialogDelegate* GetBubble() const override;
   const gfx::VectorIcon& GetVectorIcon() const override;
-  std::u16string GetTextForTooltipAndAccessibleName() const override;
 
  private:
   raw_ptr<Browser> browser_ = nullptr;

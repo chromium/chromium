@@ -42,7 +42,6 @@ class PwaInstallView : public PageActionIconView, public TabStripModelObserver {
   void OnExecuting(PageActionIconView::ExecuteSource source) override;
   views::BubbleDialogDelegate* GetBubble() const override;
   const gfx::VectorIcon& GetVectorIcon() const override;
-  std::u16string GetTextForTooltipAndAccessibleName() const override;
 
  private:
   raw_ptr<Browser> browser_ = nullptr;

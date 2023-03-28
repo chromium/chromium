@@ -34,6 +34,7 @@
 #include "components/strings/grit/components_strings.h"
 #include "content/public/browser/web_contents.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/models/image_model.h"
 #include "ui/gfx/vector_icon_types.h"
 #include "ui/views/view_class_properties.h"
@@ -72,17 +73,15 @@ PriceTrackingIconView::PriceTrackingIconView(
       icon_(&omnibox::kPriceTrackingDisabledIcon) {
   SetUpForInOutAnimation();
   SetProperty(views::kElementIdentifierKey, kPriceTrackingChipElementId);
+  SetAccessibilityProperties(
+      /*role*/ absl::nullopt,
+      l10n_util::GetStringUTF16(IDS_OMNIBOX_TRACK_PRICE));
 }
 
 PriceTrackingIconView::~PriceTrackingIconView() = default;
 
 views::BubbleDialogDelegate* PriceTrackingIconView::GetBubble() const {
   return bubble_coordinator_.GetBubble();
-}
-
-std::u16string PriceTrackingIconView::GetTextForTooltipAndAccessibleName()
-    const {
-  return tooltip_text_and_accessibleName_;
 }
 
 void PriceTrackingIconView::OnExecuting(
@@ -253,8 +252,8 @@ void PriceTrackingIconView::SetVisualState(bool enable) {
                  : &omnibox::kPriceTrackingDisabledIcon;
   // TODO(meiliang@): Confirm with UXW on the tooltip string. If this expected,
   // we can return label()->GetText() instead.
-  tooltip_text_and_accessibleName_ = l10n_util::GetStringUTF16(
-      enable ? IDS_OMNIBOX_TRACKING_PRICE : IDS_OMNIBOX_TRACK_PRICE);
+  SetAccessibleName(l10n_util::GetStringUTF16(
+      enable ? IDS_OMNIBOX_TRACKING_PRICE : IDS_OMNIBOX_TRACK_PRICE));
 
   SetLabel(l10n_util::GetStringUTF16(enable ? IDS_OMNIBOX_TRACKING_PRICE
                                             : IDS_OMNIBOX_TRACK_PRICE));
@@ -315,3 +314,6 @@ base::OneShotTimer& PriceTrackingIconView::AnimateOutTimer() {
   return animate_out_timer_for_testing_ ? *animate_out_timer_for_testing_
                                         : animate_out_timer_;
 }
+
+BEGIN_METADATA(PriceTrackingIconView, PageActionIconView)
+END_METADATA

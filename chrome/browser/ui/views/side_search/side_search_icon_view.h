@@ -46,7 +46,6 @@ class SideSearchIconView : public PageActionIconView,
   views::BubbleDialogDelegate* GetBubble() const override;
   const gfx::VectorIcon& GetVectorIcon() const override;
   ui::ImageModel GetSizedIconImage(int size) const override;
-  std::u16string GetTextForTooltipAndAccessibleName() const override;
   void AnimationProgressed(const gfx::Animation* animation) override;
 
  private:

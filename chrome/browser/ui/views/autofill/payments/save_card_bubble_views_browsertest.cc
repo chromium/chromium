@@ -39,6 +39,7 @@
 #include "chrome/browser/ui/views/page_action/page_action_icon_controller.h"
 #include "chrome/browser/ui/views/page_action/page_action_icon_loading_indicator_view.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_view.h"
+#include "chrome/grit/generated_resources.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/autofill/content/browser/content_autofill_driver.h"
@@ -78,6 +79,7 @@
 #include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
 #include "services/network/test/test_url_loader_factory.h"
 #include "testing/gmock/include/gmock/gmock.h"
+#include "ui/base/l10n/l10n_util.h"
 #include "ui/events/base_event_utils.h"
 #include "ui/views/bubble/bubble_frame_view.h"
 #include "ui/views/controls/button/button.h"
@@ -2093,6 +2095,14 @@ IN_PROC_BROWSER_TEST_F(SaveCardBubbleViewsFullFormBrowserTest,
       histogram_tester.GetAllSamples("Autofill.ManageCardsPrompt.Local"),
       ElementsAre(Bucket(ManageCardsPromptMetric::kManageCardsShown, 1),
                   Bucket(ManageCardsPromptMetric::kManageCardsDone, 1)));
+}
+
+IN_PROC_BROWSER_TEST_F(SaveCardBubbleViewsFullFormBrowserTest,
+                       IconViewAccessibleName) {
+  EXPECT_EQ(GetSaveCardIconView()->GetAccessibleName(),
+            l10n_util::GetStringUTF16(IDS_TOOLTIP_SAVE_CREDIT_CARD));
+  EXPECT_EQ(GetSaveCardIconView()->GetTextForTooltipAndAccessibleName(),
+            l10n_util::GetStringUTF16(IDS_TOOLTIP_SAVE_CREDIT_CARD));
 }
 
 // TODO(crbug.com/1346433): Add new browser tests for save card bubble view

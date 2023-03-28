@@ -18,6 +18,7 @@
 #include "chrome/browser/ui/views/autofill/payments/virtual_card_manual_fallback_icon_view.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/toolbar_button_provider.h"
+#include "chrome/grit/generated_resources.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/interactive_test_utils.h"
 #include "chrome/test/base/ui_test_utils.h"
@@ -404,6 +405,16 @@ IN_PROC_BROWSER_TEST_F(VirtualCardManualFallbackBubbleViewsInteractiveUiTest,
   EXPECT_EQ(clicked_button_tooltip, cardholder_name_button->GetTooltipText());
   EXPECT_EQ(u"Full Carter " + clicked_button_tooltip,
             cardholder_name_button->GetAccessibleName());
+}
+
+IN_PROC_BROWSER_TEST_F(VirtualCardManualFallbackBubbleViewsInteractiveUiTest,
+                       IconViewAccessibleName) {
+  EXPECT_EQ(GetIconView()->GetAccessibleName(),
+            l10n_util::GetStringUTF16(
+                IDS_AUTOFILL_VIRTUAL_CARD_MANUAL_FALLBACK_ICON_TOOLTIP));
+  EXPECT_EQ(GetIconView()->GetTextForTooltipAndAccessibleName(),
+            l10n_util::GetStringUTF16(
+                IDS_AUTOFILL_VIRTUAL_CARD_MANUAL_FALLBACK_ICON_TOOLTIP));
 }
 
 class VirtualCardManualFallbackBubbleViewsPrerenderTest

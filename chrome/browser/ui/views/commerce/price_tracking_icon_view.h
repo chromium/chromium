@@ -9,6 +9,7 @@
 #include "base/timer/timer.h"
 #include "chrome/browser/ui/views/commerce/price_tracking_bubble_dialog_view.h"
 #include "chrome/browser/ui/views/page_action/page_action_icon_view.h"
+#include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/gfx/vector_icon_types.h"
 
 class Browser;
@@ -19,6 +20,7 @@ class Profile;
 // track or untrack the current page.
 class PriceTrackingIconView : public PageActionIconView {
  public:
+  METADATA_HEADER(PriceTrackingIconView);
   PriceTrackingIconView(IconLabelBubbleView::Delegate* parent_delegate,
                         Delegate* delegate,
                         Browser* browser);
@@ -26,7 +28,6 @@ class PriceTrackingIconView : public PageActionIconView {
 
   // PageActionIconView:
   views::BubbleDialogDelegate* GetBubble() const override;
-  std::u16string GetTextForTooltipAndAccessibleName() const override;
   void OnExecuting(PageActionIconView::ExecuteSource execute_source) override;
   const gfx::VectorIcon& GetVectorIcon() const override;
 
@@ -57,7 +58,6 @@ class PriceTrackingIconView : public PageActionIconView {
   PriceTrackingBubbleCoordinator bubble_coordinator_;
 
   raw_ptr<const gfx::VectorIcon> icon_;
-  std::u16string tooltip_text_and_accessibleName_;
 
   // Animates out the price tracking icon label after a fixed period of time.
   // This keeps the label visible for long enough to give users an opportunity

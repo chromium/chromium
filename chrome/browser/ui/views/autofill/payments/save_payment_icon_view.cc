@@ -18,6 +18,7 @@
 #include "components/strings/grit/components_strings.h"
 #include "components/vector_icons/vector_icons.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/gfx/paint_vector_icon.h"
 
 namespace autofill {
@@ -42,6 +43,8 @@ SavePaymentIconView::SavePaymentIconView(
   }
   command_id_ = command_id;
   SetUpForInOutAnimation();
+  SetAccessibilityProperties(/*role*/ absl::nullopt,
+                             GetTextForTooltipAndAccessibleName());
 }
 
 SavePaymentIconView::~SavePaymentIconView() = default;
@@ -77,6 +80,8 @@ void SavePaymentIconView::UpdateImpl() {
       SetCommandEnabled(controller && controller->IsIconVisible());
   SetVisible(command_enabled);
 
+  SetAccessibleName(GetTextForTooltipAndAccessibleName());
+
   if (command_enabled && controller->ShouldShowSavingPaymentAnimation()) {
     SetEnabled(false);
     SetIsLoading(/*is_loading=*/true);
@@ -110,10 +115,6 @@ const gfx::VectorIcon& SavePaymentIconView::GetVectorIconBadge() const {
   return gfx::kNoneIcon;
 }
 
-const char* SavePaymentIconView::GetClassName() const {
-  return "SavePaymentIconView";
-}
-
 std::u16string SavePaymentIconView::GetTextForTooltipAndAccessibleName() const {
   std::u16string text;
 
@@ -141,5 +142,8 @@ void SavePaymentIconView::AnimationEnded(const gfx::Animation* animation) {
   if (controller)
     controller->OnAnimationEnded();
 }
+
+BEGIN_METADATA(SavePaymentIconView, PageActionIconView)
+END_METADATA
 
 }  // namespace autofill

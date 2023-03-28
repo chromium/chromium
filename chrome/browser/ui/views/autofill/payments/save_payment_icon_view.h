@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_UI_VIEWS_AUTOFILL_PAYMENTS_SAVE_PAYMENT_ICON_VIEW_H_
 
 #include "chrome/browser/ui/views/page_action/page_action_icon_view.h"
+#include "ui/base/metadata/metadata_header_macros.h"
 
 class CommandUpdater;
 
@@ -18,6 +19,7 @@ class SavePaymentIconController;
 // it.
 class SavePaymentIconView : public PageActionIconView {
  public:
+  METADATA_HEADER(SavePaymentIconView);
   SavePaymentIconView(CommandUpdater* command_updater,
                       IconLabelBubbleView::Delegate* icon_label_bubble_delegate,
                       PageActionIconView::Delegate* page_action_icon_delegate,
@@ -38,7 +40,6 @@ class SavePaymentIconView : public PageActionIconView {
   void OnExecuting(PageActionIconView::ExecuteSource execute_source) override;
   const gfx::VectorIcon& GetVectorIcon() const override;
   const gfx::VectorIcon& GetVectorIconBadge() const override;
-  const char* GetClassName() const override;
 
  private:
   SavePaymentIconController* GetController() const;

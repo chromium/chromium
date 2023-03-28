@@ -46,6 +46,22 @@ SelectedKeywordView::SelectedKeywordView(
   partial_label_.SetFontList(font_list);
   partial_label_.SetVisible(false);
   label()->SetElideBehavior(gfx::FADE_TAIL);
+
+  // TODO(crbug.com/1411342): `IconLabelBubbleView::GetAccessibleNodeData`
+  // would set the name to explicitly empty when the name was missing.
+  // That function no longer exists. As a result we need to handle that here.
+  // Regarding this view's namelessness: Until this view has a keyword and
+  // labels with text, there will be no accessible name. But this view claims to
+  // be focusable, so paint checks will fail due to a lack of name. It might
+  // make more sense to only set `FocusBehavior` when this view will be shown.
+  // For now, Eliminate the paint check failure.
+  if (GetAccessibleName().empty()) {
+    SetAccessibilityProperties(/*role*/ absl::nullopt,
+                               /*name*/ std::u16string(),
+                               /*description*/ absl::nullopt,
+                               /*role_description*/ absl::nullopt,
+                               ax::mojom::NameFrom::kAttributeExplicitlyEmpty);
+  }
 }
 
 SelectedKeywordView::~SelectedKeywordView() {}

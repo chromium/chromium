@@ -98,7 +98,9 @@ class PageActionIconView : public IconLabelBubbleView {
   virtual views::BubbleDialogDelegate* GetBubble() const = 0;
 
   // Retrieve the text to be used for a tooltip or accessible name.
-  virtual std::u16string GetTextForTooltipAndAccessibleName() const = 0;
+  // If this string never changes, subclasses should use `SetAccessibleName`
+  // in the constructor instead of overriding this function.
+  virtual std::u16string GetTextForTooltipAndAccessibleName() const;
 
   SkColor GetLabelColorForTesting() const;
 
@@ -159,7 +161,6 @@ class PageActionIconView : public IconLabelBubbleView {
   virtual void OnPressed(bool activated) {}
 
   // views::IconLabelBubbleView:
-  void GetAccessibleNodeData(ui::AXNodeData* node_data) override;
   std::u16string GetTooltipText(const gfx::Point& p) const override;
   void ViewHierarchyChanged(
       const views::ViewHierarchyChangedDetails& details) override;

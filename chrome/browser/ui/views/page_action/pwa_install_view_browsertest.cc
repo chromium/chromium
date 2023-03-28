@@ -33,6 +33,7 @@
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_sync_bridge.h"
 #include "chrome/common/chrome_switches.h"
+#include "chrome/grit/generated_resources.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/feature_engagement/public/feature_constants.h"
@@ -49,6 +50,7 @@
 #include "net/test/embedded_test_server/http_request.h"
 #include "net/test/embedded_test_server/http_response.h"
 #include "services/network/public/cpp/network_switches.h"
+#include "ui/base/l10n/l10n_util.h"
 #include "ui/gfx/color_utils.h"
 #include "ui/views/view_observer.h"
 #include "ui/views/widget/any_widget_observer.h"
@@ -790,6 +792,17 @@ IN_PROC_BROWSER_TEST_F(PwaInstallViewBrowserTest, PwaIntallIphIgnored) {
   // IPH is not shown when the IPH is ignored recently.
   EXPECT_FALSE(controller->IsPromoActive(
       feature_engagement::kIPHDesktopPwaInstallFeature));
+}
+
+IN_PROC_BROWSER_TEST_F(PwaInstallViewBrowserTest, IconViewAccessibleName) {
+  const std::u16string& web_app_name =
+      webapps::AppBannerManager::GetInstallableWebAppName(web_contents_);
+  EXPECT_EQ(pwa_install_view_->GetAccessibleName(),
+            l10n_util::GetStringFUTF16(IDS_OMNIBOX_PWA_INSTALL_ICON_TOOLTIP,
+                                       web_app_name));
+  EXPECT_EQ(pwa_install_view_->GetTextForTooltipAndAccessibleName(),
+            l10n_util::GetStringFUTF16(IDS_OMNIBOX_PWA_INSTALL_ICON_TOOLTIP,
+                                       web_app_name));
 }
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)

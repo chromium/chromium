@@ -23,7 +23,6 @@
 #include "content/public/common/url_constants.h"
 #include "extensions/common/constants.h"
 #include "ui/accessibility/ax_enums.mojom.h"
-#include "ui/accessibility/ax_node_data.h"
 #include "ui/base/clipboard/clipboard.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
@@ -48,6 +47,8 @@ LocationIconView::LocationIconView(
 
   // Readability is guaranteed by the omnibox theme.
   label()->SetAutoColorReadabilityEnabled(false);
+
+  SetAccessibleProperties(/*is_initialization*/ true);
 }
 
 LocationIconView::~LocationIconView() {}
@@ -87,25 +88,6 @@ bool LocationIconView::OnMousePressed(const ui::MouseEvent& event) {
 
   IconLabelBubbleView::OnMousePressed(event);
   return true;
-}
-
-void LocationIconView::GetAccessibleNodeData(ui::AXNodeData* node_data) {
-  if (delegate_->IsEditingOrEmpty()) {
-    node_data->role = ax::mojom::Role::kImage;
-    node_data->SetNameChecked(l10n_util::GetStringUTF8(IDS_ACC_SEARCH_ICON));
-    return;
-  }
-
-  // If no display text exists, ensure that the accessibility label is added.
-  auto accessibility_label = base::UTF16ToUTF8(
-      delegate_->GetLocationBarModel()->GetSecureAccessibilityText());
-  if (label()->GetText().empty() && !accessibility_label.empty()) {
-    node_data->AddStringAttribute(ax::mojom::StringAttribute::kDescription,
-                                  accessibility_label);
-  }
-
-  IconLabelBubbleView::GetAccessibleNodeData(node_data);
-  node_data->role = ax::mojom::Role::kPopUpButton;
 }
 
 void LocationIconView::AddedToWidget() {
@@ -211,6 +193,32 @@ void LocationIconView::UpdateTextVisibility(bool suppress_animations) {
     AnimateOut();
 }
 
+void LocationIconView::SetAccessibleProperties(bool is_initialization) {
+  ax::mojom::Role role = delegate_->IsEditingOrEmpty()
+                             ? ax::mojom::Role::kImage
+                             : ax::mojom::Role::kPopUpButton;
+
+  const std::u16string name =
+      delegate_->IsEditingOrEmpty()
+          ? l10n_util::GetStringUTF16(IDS_ACC_SEARCH_ICON)
+          : GetAccessibleName();
+
+  // If no display text exists, ensure that the accessibility label is added.
+  const std::u16string description =
+      delegate_->IsEditingOrEmpty() ? GetAccessibleDescription()
+      : label()->GetText().empty()
+          ? delegate_->GetLocationBarModel()->GetSecureAccessibilityText()
+          : std::u16string();
+
+  if (is_initialization) {
+    SetAccessibilityProperties(role, name, description);
+  } else {
+    SetAccessibleRole(role);
+    SetAccessibleName(name);
+    SetAccessibleDescription(description);
+  }
+}
+
 void LocationIconView::UpdateIcon() {
   // Cancel any previous outstanding icon requests, as they are now outdated.
   icon_fetch_weak_ptr_factory_.InvalidateWeakPtrs();
@@ -230,6 +238,7 @@ void LocationIconView::OnIconFetched(const gfx::Image& image) {
 void LocationIconView::Update(bool suppress_animations) {
   UpdateTextVisibility(suppress_animations);
   UpdateIcon();
+  SetAccessibleProperties(/*is_initialization*/ false);
 
   // The label text color may have changed in response to changes in security
   // level.

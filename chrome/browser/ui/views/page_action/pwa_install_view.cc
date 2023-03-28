@@ -91,6 +91,10 @@ void PwaInstallView::UpdateImpl() {
     return;
   }
 
+  SetAccessibleName(l10n_util::GetStringFUTF16(
+      IDS_OMNIBOX_PWA_INSTALL_ICON_TOOLTIP,
+      webapps::AppBannerManager::GetInstallableWebAppName(web_contents)));
+
   auto* manager = webapps::AppBannerManager::FromWebContents(web_contents);
   // May not be present e.g. in incognito mode.
   if (!manager)
@@ -175,15 +179,6 @@ views::BubbleDialogDelegate* PwaInstallView::GetBubble() const {
 
 const gfx::VectorIcon& PwaInstallView::GetVectorIcon() const {
   return omnibox::kInstallDesktopIcon;
-}
-
-std::u16string PwaInstallView::GetTextForTooltipAndAccessibleName() const {
-  content::WebContents* web_contents = GetWebContents();
-  if (!web_contents)
-    return std::u16string();
-  return l10n_util::GetStringFUTF16(
-      IDS_OMNIBOX_PWA_INSTALL_ICON_TOOLTIP,
-      webapps::AppBannerManager::GetInstallableWebAppName(web_contents));
 }
 
 bool PwaInstallView::ShouldShowIph(content::WebContents* web_contents,

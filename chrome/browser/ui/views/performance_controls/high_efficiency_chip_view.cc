@@ -55,6 +55,9 @@ HighEfficiencyChipView::HighEfficiencyChipView(
                          "HighEfficiency"),
       browser_(browser) {
   DCHECK(browser_);
+  SetAccessibilityProperties(
+      /*role*/ absl::nullopt,
+      l10n_util::GetStringUTF16(IDS_HIGH_EFFICIENCY_CHIP_ACCNAME));
 
   auto* manager = performance_manager::user_tuning::
       UserPerformanceTuningManager::GetInstance();
@@ -166,11 +169,6 @@ const gfx::VectorIcon& HighEfficiencyChipView::GetVectorIcon() const {
 
 views::BubbleDialogDelegate* HighEfficiencyChipView::GetBubble() const {
   return bubble_;
-}
-
-std::u16string HighEfficiencyChipView::GetTextForTooltipAndAccessibleName()
-    const {
-  return l10n_util::GetStringUTF16(IDS_HIGH_EFFICIENCY_CHIP_ACCNAME);
 }
 
 void HighEfficiencyChipView::MaybeShowIPH() {

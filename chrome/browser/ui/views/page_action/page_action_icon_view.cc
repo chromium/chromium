@@ -12,7 +12,6 @@
 #include "chrome/browser/ui/views/page_action/page_action_icon_loading_indicator_view.h"
 #include "chrome/browser/ui/views/page_action/page_action_icon_view_observer.h"
 #include "ui/accessibility/ax_enums.mojom.h"
-#include "ui/accessibility/ax_node_data.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/models/image_model.h"
@@ -116,10 +115,8 @@ void PageActionIconView::InstallLoadingIndicatorForTesting() {
   InstallLoadingIndicator();
 }
 
-void PageActionIconView::GetAccessibleNodeData(ui::AXNodeData* node_data) {
-  node_data->role = ax::mojom::Role::kButton;
-  const std::u16string name_text = GetTextForTooltipAndAccessibleName();
-  node_data->SetName(name_text);
+std::u16string PageActionIconView::GetTextForTooltipAndAccessibleName() const {
+  return GetAccessibleName();
 }
 
 std::u16string PageActionIconView::GetTooltipText(const gfx::Point& p) const {

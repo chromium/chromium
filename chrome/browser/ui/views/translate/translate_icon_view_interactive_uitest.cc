@@ -10,10 +10,12 @@
 #include "chrome/browser/ui/views/page_action/page_action_icon_view.h"
 #include "chrome/browser/ui/views/translate/partial_translate_bubble_view.h"
 #include "chrome/browser/ui/views/translate/translate_bubble_controller.h"
+#include "chrome/grit/generated_resources.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/interactive_test_utils.h"
 #include "components/translate/core/browser/translate_manager.h"
 #include "content/public/test/browser_test.h"
+#include "ui/base/l10n/l10n_util.h"
 #include "ui/base/test/ui_controls.h"
 
 namespace translate {
@@ -83,6 +85,13 @@ IN_PROC_BROWSER_TEST_F(TranslateIconViewTest, ClosePartialTranslateBubble) {
 
   EXPECT_THAT(GetPartialTranslateBubble(), ::testing::IsNull());
   EXPECT_THAT(translate_icon->GetBubble(), ::testing::IsNull());
+}
+
+IN_PROC_BROWSER_TEST_F(TranslateIconViewTest, IconViewAccessibleName) {
+  EXPECT_EQ(GetTranslateIcon()->GetAccessibleName(),
+            l10n_util::GetStringUTF16(IDS_TOOLTIP_TRANSLATE));
+  EXPECT_EQ(GetTranslateIcon()->GetTextForTooltipAndAccessibleName(),
+            l10n_util::GetStringUTF16(IDS_TOOLTIP_TRANSLATE));
 }
 
 }  // namespace translate

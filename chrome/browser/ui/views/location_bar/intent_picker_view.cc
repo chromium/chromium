@@ -30,7 +30,11 @@ IntentPickerView::IntentPickerView(
                          icon_label_bubble_delegate,
                          page_action_icon_delegate,
                          "IntentPicker"),
-      browser_(browser) {}
+      browser_(browser) {
+  SetAccessibilityProperties(
+      /*role*/ absl::nullopt,
+      l10n_util::GetStringUTF16(IDS_TOOLTIP_INTENT_PICKER_ICON));
+}
 
 IntentPickerView::~IntentPickerView() = default;
 
@@ -70,10 +74,6 @@ bool IntentPickerView::GetShowIcon() const {
 
 const gfx::VectorIcon& IntentPickerView::GetVectorIcon() const {
   return vector_icons::kOpenInNewIcon;
-}
-
-std::u16string IntentPickerView::GetTextForTooltipAndAccessibleName() const {
-  return l10n_util::GetStringUTF16(IDS_TOOLTIP_INTENT_PICKER_ICON);
 }
 
 BEGIN_METADATA(IntentPickerView, PageActionIconView)
