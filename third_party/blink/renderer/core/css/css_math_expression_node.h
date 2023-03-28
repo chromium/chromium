@@ -39,7 +39,6 @@
 #include "third_party/blink/renderer/core/css/css_math_operator.h"
 #include "third_party/blink/renderer/core/css/css_primitive_value.h"
 #include "third_party/blink/renderer/core/css/css_value.h"
-#include "third_party/blink/renderer/core/css/parser/css_parser_context.h"
 #include "third_party/blink/renderer/core/css/parser/css_parser_token_range.h"
 #include "third_party/blink/renderer/platform/geometry/calculation_value.h"
 #include "third_party/blink/renderer/platform/wtf/forward.h"
@@ -50,6 +49,7 @@ static const int kMaxExpressionDepth = 100;
 
 class CalculationExpressionNode;
 class CSSNumericLiteralValue;
+class CSSParserContext;
 
 // The order of this enum should not change since its elements are used as
 // indices in the addSubtractResult matrix.
