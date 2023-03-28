@@ -15,18 +15,28 @@
 
 namespace autofill {
 
+namespace {
+
+constexpr char16_t kTestEmail[] = u"test@email.com";
+
+}  // namespace
+
 class AutofillSaveUpdateAddressProfileDelegateIOSTest : public testing::Test {
  protected:
   AutofillSaveUpdateAddressProfileDelegateIOSTest() = default;
   ~AutofillSaveUpdateAddressProfileDelegateIOSTest() override {}
 
-  void SetUp() override { profile_ = test::GetFullProfile(); }
-
   std::unique_ptr<AutofillSaveUpdateAddressProfileDelegateIOS>
   CreateAutofillSaveUpdateAddressProfileDelegate(
       AutofillProfile* original_profile = nullptr,
       absl::optional<std::u16string> email = absl::nullopt,
-      bool is_migration_to_account = false) {
+      bool is_migration_to_account = false,
+      bool is_account_profile = false) {
+    profile_ = test::GetFullProfile();
+    if (is_account_profile) {
+      profile_.set_source_for_testing(
+          autofill::AutofillProfile::Source::kAccount);
+    }
     return std::make_unique<AutofillSaveUpdateAddressProfileDelegateIOS>(
         profile_, original_profile, email,
         /*locale=*/"en-US",
@@ -50,56 +60,6 @@ TEST_F(AutofillSaveUpdateAddressProfileDelegateIOSTest,
       Run(AutofillClient::SaveAddressProfileOfferUserDecision::kAccepted,
           profile_));
   delegate->Accept();
-}
-
-// Tests that the delegate returns Save Address profile strings when the
-// original_profile is supplied as nullptr to the delegate.
-TEST_F(AutofillSaveUpdateAddressProfileDelegateIOSTest,
-       TestSaveAddressStrings) {
-  std::unique_ptr<AutofillSaveUpdateAddressProfileDelegateIOS> delegate =
-      CreateAutofillSaveUpdateAddressProfileDelegate();
-  EXPECT_EQ(delegate->GetMessageActionText(),
-            l10n_util::GetStringUTF16(
-                IDS_IOS_AUTOFILL_SAVE_ADDRESS_MESSAGE_PRIMARY_ACTION));
-  EXPECT_EQ(
-      delegate->GetMessageText(),
-      l10n_util::GetStringUTF16(IDS_IOS_AUTOFILL_SAVE_ADDRESS_MESSAGE_TITLE));
-  EXPECT_EQ(delegate->GetDescription(),
-            std::u16string(u"John H. Doe, 666 Erebus St."));
-}
-
-// Tests the message UI strings when the profile is saved in the Google Account.
-TEST_F(AutofillSaveUpdateAddressProfileDelegateIOSTest,
-       TestSaveAddressInAccountStrings) {
-  std::unique_ptr<AutofillSaveUpdateAddressProfileDelegateIOS> delegate =
-      CreateAutofillSaveUpdateAddressProfileDelegate(nullptr, u"test@gmail.com",
-                                                     true);
-  EXPECT_EQ(delegate->GetDescription(),
-            l10n_util::GetStringFUTF16(
-                IDS_IOS_AUTOFILL_SAVE_ADDRESS_IN_ACCOUNT_MESSAGE_SUBTITLE,
-                u"test@gmail.com"));
-  EXPECT_EQ(delegate->GetMessageText(),
-            l10n_util::GetStringUTF16(
-                IDS_IOS_AUTOFILL_SAVE_ADDRESS_IN_ACCOUNT_MESSAGE_TITLE));
-}
-
-// Tests that the delegate returns Update Address profile strings when the
-// original_profile is supplied to the delegate.
-TEST_F(AutofillSaveUpdateAddressProfileDelegateIOSTest,
-       TestUpdateAddressStrings) {
-  AutofillProfile original_profile = test::GetFullProfile();
-  original_profile.SetInfo(NAME_FULL, u"John Doe", "en-US");
-  std::unique_ptr<AutofillSaveUpdateAddressProfileDelegateIOS> delegate =
-      CreateAutofillSaveUpdateAddressProfileDelegate(&original_profile);
-
-  EXPECT_EQ(delegate->GetMessageActionText(),
-            l10n_util::GetStringUTF16(
-                IDS_IOS_AUTOFILL_UPDATE_ADDRESS_MESSAGE_PRIMARY_ACTION));
-  EXPECT_EQ(
-      delegate->GetMessageText(),
-      l10n_util::GetStringUTF16(IDS_IOS_AUTOFILL_UPDATE_ADDRESS_MESSAGE_TITLE));
-  EXPECT_EQ(delegate->GetDescription(),
-            std::u16string(u"John Doe, 666 Erebus St."));
 }
 
 // Tests that the callback is run with kDeclined on destruction.
@@ -139,5 +99,85 @@ TEST_F(AutofillSaveUpdateAddressProfileDelegateIOSTest,
           testing::_));
   delegate->EditAccepted();
 }
+
+struct DelegateStringsTestCase {
+  bool is_migration;
+  bool is_update;
+  bool is_account_profile;
+  int expected_message_action_text_id;
+  int expected_message_text_id;
+  absl::variant<int, std::u16string> expected_description_or_id;
+};
+
+class DelegateStringsTest
+    : public AutofillSaveUpdateAddressProfileDelegateIOSTest,
+      public ::testing::WithParamInterface<DelegateStringsTestCase> {
+ protected:
+  bool is_migration() const { return GetParam().is_migration; }
+  bool is_update() const { return GetParam().is_update; }
+  bool is_account_profile() const { return GetParam().is_account_profile; }
+};
+
+// Tests the message title, subtitle and action text strings.
+TEST_P(DelegateStringsTest, TestStrings) {
+  AutofillProfile original_profile = test::GetFullProfile();
+  original_profile.SetInfo(NAME_FULL, u"John Doe", "en-US");
+
+  std::unique_ptr<AutofillSaveUpdateAddressProfileDelegateIOS> delegate =
+      CreateAutofillSaveUpdateAddressProfileDelegate(
+          is_update() ? &original_profile : nullptr, kTestEmail, is_migration(),
+          is_account_profile());
+
+  const DelegateStringsTestCase& test_case = GetParam();
+  EXPECT_EQ(
+      delegate->GetMessageActionText(),
+      l10n_util::GetStringUTF16(test_case.expected_message_action_text_id));
+  EXPECT_EQ(delegate->GetMessageText(),
+            l10n_util::GetStringUTF16(test_case.expected_message_text_id));
+  if (absl::holds_alternative<int>(test_case.expected_description_or_id)) {
+    EXPECT_EQ(
+        delegate->GetDescription(),
+        l10n_util::GetStringFUTF16(
+            absl::get<int>(test_case.expected_description_or_id), kTestEmail));
+  } else {
+    EXPECT_EQ(delegate->GetDescription(),
+              absl::get<std::u16string>(test_case.expected_description_or_id));
+  }
+}
+
+INSTANTIATE_TEST_SUITE_P(
+    AutofillSaveUpdateAddressProfileDelegateIOSTest,
+    DelegateStringsTest,
+    testing::Values(
+        // Tests strings for the save profile views.
+        DelegateStringsTestCase{
+            false, false, false,
+            IDS_IOS_AUTOFILL_SAVE_ADDRESS_MESSAGE_PRIMARY_ACTION,
+            IDS_IOS_AUTOFILL_SAVE_ADDRESS_MESSAGE_TITLE,
+            u"John H. Doe, 666 Erebus St."},
+        // Tests strings for the save profile in Google Account views.
+        DelegateStringsTestCase{
+            false, false, true,
+            IDS_IOS_AUTOFILL_SAVE_ADDRESS_MESSAGE_PRIMARY_ACTION,
+            IDS_IOS_AUTOFILL_SAVE_ADDRESS_MESSAGE_TITLE,
+            IDS_IOS_AUTOFILL_SAVE_ADDRESS_IN_ACCOUNT_MESSAGE_SUBTITLE},
+        // Test strings for the migration view.
+        DelegateStringsTestCase{
+            true, false, false,
+            IDS_IOS_AUTOFILL_SAVE_ADDRESS_MESSAGE_PRIMARY_ACTION,
+            IDS_IOS_AUTOFILL_SAVE_ADDRESS_IN_ACCOUNT_MESSAGE_TITLE,
+            IDS_IOS_AUTOFILL_SAVE_ADDRESS_IN_ACCOUNT_MESSAGE_SUBTITLE},
+        // Test strings for the update views.
+        DelegateStringsTestCase{
+            false, true, false,
+            IDS_IOS_AUTOFILL_UPDATE_ADDRESS_MESSAGE_PRIMARY_ACTION,
+            IDS_IOS_AUTOFILL_UPDATE_ADDRESS_MESSAGE_TITLE,
+            u"John Doe, 666 Erebus St."},
+        // Test strings for the update in Google Account views.
+        DelegateStringsTestCase{
+            false, true, true,
+            IDS_IOS_AUTOFILL_UPDATE_ADDRESS_MESSAGE_PRIMARY_ACTION,
+            IDS_IOS_AUTOFILL_UPDATE_ADDRESS_MESSAGE_TITLE,
+            u"John Doe, 666 Erebus St."}));
 
 }  // namespace autofill
