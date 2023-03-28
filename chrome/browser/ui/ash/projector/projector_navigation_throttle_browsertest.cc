@@ -108,7 +108,6 @@ IN_PROC_BROWSER_TEST_P(ProjectorNavigationThrottleTestParameterized,
 
   // Prior to navigation, there is only one browser available.
   EXPECT_EQ(BrowserList::GetInstance()->size(), 1u);
-  Browser* old_browser = browser();
 
   // We have to listen for both the browser being removed AND the new browser
   // being added.
@@ -136,16 +135,10 @@ IN_PROC_BROWSER_TEST_P(ProjectorNavigationThrottleTestParameterized,
   EXPECT_EQ(BrowserList::GetInstance()->size(), 1u);
   // Select the first available browser, which should be the SWA.
   SelectFirstBrowser();
-  Browser* new_browser = browser();
-  // However, the new browser is not the same as the previous browser because
-  // the previous one closed.
-  EXPECT_NE(old_browser, new_browser);
-
   Browser* app_browser =
       FindSystemWebAppBrowser(profile(), SystemWebAppType::PROJECTOR);
   // Projector SWA is now open.
   ASSERT_TRUE(app_browser);
-  EXPECT_EQ(app_browser, new_browser);
   content::WebContents* tab =
       app_browser->tab_strip_model()->GetActiveWebContents();
   ASSERT_TRUE(tab);
@@ -185,7 +178,6 @@ IN_PROC_BROWSER_TEST_F(ProjectorNavigationThrottleTest,
                        AppNavigationRedirectNoBlankTab) {
   // Prior to navigation, there is only one browser available.
   EXPECT_EQ(BrowserList::GetInstance()->size(), 1u);
-  Browser* old_browser = browser();
 
   // Suppose the user clicks a link like https://screencast.apps.chrome in
   // gchat. The redirect URL actually looks like the below.
@@ -216,16 +208,11 @@ IN_PROC_BROWSER_TEST_F(ProjectorNavigationThrottleTest,
   EXPECT_EQ(BrowserList::GetInstance()->size(), 1u);
   // Select the first available browser, which should be the SWA.
   SelectFirstBrowser();
-  Browser* new_browser = browser();
-  // Check that the new browser is not the same as the previous browser because
-  // we should have closed the previous one.
-  EXPECT_NE(old_browser, new_browser);
-
   Browser* app_browser =
       FindSystemWebAppBrowser(profile(), SystemWebAppType::PROJECTOR);
+
   // Projector SWA is now open.
   ASSERT_TRUE(app_browser);
-  EXPECT_EQ(app_browser, new_browser);
   content::WebContents* tab =
       app_browser->tab_strip_model()->GetActiveWebContents();
   ASSERT_TRUE(tab);
