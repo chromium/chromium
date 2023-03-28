@@ -24,6 +24,6 @@ dictionary TimelineRangeOffset {
 dictionary KeyframeAnimationOptions : KeyframeEffectOptions {
     DOMString id = "";
     AnimationTimeline? timeline;
-    (DOMString or TimelineRangeOffset) rangeStart = "auto";
-    (DOMString or TimelineRangeOffset) rangeEnd =  "auto";
+    (DOMString or TimelineRangeOffset) rangeStart = "normal";
+    (DOMString or TimelineRangeOffset) rangeEnd =  "normal";
 };

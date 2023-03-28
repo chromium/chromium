@@ -59,7 +59,7 @@ String TimelineOffset::TimelineRangeNameToString(
 
 String TimelineOffset::ToString() const {
   if (name == NamedRange::kNone) {
-    return "auto";
+    return "normal";
   }
 
   CSSValueList* list = CSSValueList::CreateSpaceSeparated();
@@ -89,21 +89,17 @@ absl::optional<TimelineOffset> TimelineOffset::Create(
   CSSParserTokenRange range(tokens);
   range.ConsumeWhitespace();
 
-  // Note that we use "auto" to represent nullopt here, unlike CSS which
-  // uses "normal".
-  if (css_parsing_utils::ConsumeIdent<CSSValueID::kAuto>(range)) {
-    if (!range.AtEnd()) {
-      ThrowExcpetionForInvalidTimelineOffset(exception_state);
-    }
-    return absl::nullopt;
-  }
-
   const CSSValue* value = css_parsing_utils::ConsumeAnimationRange(
       range, *document.ElementSheet().Contents()->ParserContext(),
       /* default_offset_percent */ default_percent);
 
-  if (!value || !value->IsValueList() || !range.AtEnd()) {
+  if (!value || !range.AtEnd()) {
     ThrowExcpetionForInvalidTimelineOffset(exception_state);
+    return absl::nullopt;
+  }
+
+  if (IsA<CSSIdentifierValue>(value)) {
+    DCHECK_EQ(CSSValueID::kNormal, To<CSSIdentifierValue>(*value).GetValueID());
     return absl::nullopt;
   }
 
