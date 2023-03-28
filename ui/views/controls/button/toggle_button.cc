@@ -292,8 +292,6 @@ ToggleButton::ToggleButton(PressedCallback callback, bool has_thumb_shadow)
   SetInstallFocusRingOnFocus(true);
   FocusRing::Get(this)->SetPathGenerator(
       std::make_unique<FocusRingHighlightPathGenerator>());
-
-  SetAccessibilityProperties(ax::mojom::Role::kSwitch);
 }
 
 ToggleButton::~ToggleButton() {
@@ -524,6 +522,8 @@ SkPath ToggleButton::GetFocusRingPath() const {
 
 void ToggleButton::GetAccessibleNodeData(ui::AXNodeData* node_data) {
   Button::GetAccessibleNodeData(node_data);
+
+  node_data->role = ax::mojom::Role::kSwitch;
   node_data->SetCheckedState(GetIsOn() ? ax::mojom::CheckedState::kTrue
                                        : ax::mojom::CheckedState::kFalse);
 }

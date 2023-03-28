@@ -81,7 +81,6 @@ class VIEWS_EXPORT ToggleButton : public Button {
   friend class TestToggleButton;
   class FocusRingHighlightPathGenerator;
   class ThumbView;
-  FRIEND_TEST_ALL_PREFIXES(ToggleButtonTest, AccessibilityTest);
 
   // Updates position of the thumb.
   void UpdateThumb();

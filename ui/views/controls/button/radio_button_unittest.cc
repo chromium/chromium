@@ -131,28 +131,4 @@ TEST_F(RadioButtonTest, FocusOnClick) {
   EXPECT_EQ(button1, focus_manager->GetFocusedView());
 }
 
-TEST_F(RadioButtonTest, AccessibilityTest) {
-  RadioButton* button = new RadioButton(u"Item 1", kGroup);
-  ui::AXNodeData data;
-  button->GetAccessibleNodeData(&data);
-
-  EXPECT_EQ(data.GetString16Attribute(ax::mojom::StringAttribute::kName),
-            u"Item 1");
-  EXPECT_EQ(button->GetAccessibleName(), u"Item 1");
-  EXPECT_EQ(data.role, ax::mojom::Role::kRadioButton);
-  EXPECT_EQ(button->GetAccessibleRole(), ax::mojom::Role::kRadioButton);
-  EXPECT_EQ(data.GetCheckedState(), ax::mojom::CheckedState::kFalse);
-
-  data = ui::AXNodeData();
-  button->SetChecked(true);
-  button->GetAccessibleNodeData(&data);
-  EXPECT_EQ(data.GetCheckedState(), ax::mojom::CheckedState::kTrue);
-
-  data = ui::AXNodeData();
-  button->SetAccessibleRole(ax::mojom::Role::kMenuItemRadio);
-  button->GetAccessibleNodeData(&data);
-  EXPECT_EQ(data.role, ax::mojom::Role::kMenuItemRadio);
-  EXPECT_EQ(button->GetAccessibleRole(), ax::mojom::Role::kMenuItemRadio);
-}
-
 }  // namespace views

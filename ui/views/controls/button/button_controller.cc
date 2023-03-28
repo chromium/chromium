@@ -137,6 +137,8 @@ void ButtonController::OnGestureEvent(ui::GestureEvent* event) {
   }
 }
 
+void ButtonController::UpdateAccessibleNodeData(ui::AXNodeData* node_data) {}
+
 bool ButtonController::IsTriggerableEvent(const ui::Event& event) {
   return event.type() == ui::ET_GESTURE_TAP_DOWN ||
          event.type() == ui::ET_GESTURE_TAP ||

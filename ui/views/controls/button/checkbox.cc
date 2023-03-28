@@ -91,8 +91,6 @@ Checkbox::Checkbox(const std::u16string& label,
   // Avoid the default ink-drop mask to allow the ripple effect to extend beyond
   // the checkbox view (otherwise it gets clipped which looks weird).
   views::InstallEmptyHighlightPathGenerator(this);
-
-  SetAccessibilityProperties(ax::mojom::Role::kCheckBox);
 }
 
 Checkbox::~Checkbox() = default;
@@ -148,6 +146,7 @@ void Checkbox::SetCheckedIconImageColor(SkColor color) {
 
 void Checkbox::GetAccessibleNodeData(ui::AXNodeData* node_data) {
   LabelButton::GetAccessibleNodeData(node_data);
+  node_data->role = ax::mojom::Role::kCheckBox;
   const ax::mojom::CheckedState checked_state =
       GetChecked() ? ax::mojom::CheckedState::kTrue
                    : ax::mojom::CheckedState::kFalse;
