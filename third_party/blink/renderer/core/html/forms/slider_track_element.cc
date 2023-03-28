@@ -4,7 +4,7 @@
 
 #include "third_party/blink/renderer/core/html/forms/slider_track_element.h"
 
-#include "third_party/blink/renderer/core/layout/layout_object_factory.h"
+#include "third_party/blink/renderer/core/layout/ng/layout_ng_block_flow.h"
 
 namespace blink {
 
@@ -13,7 +13,7 @@ SliderTrackElement::SliderTrackElement(Document& document)
 
 LayoutObject* SliderTrackElement::CreateLayoutObject(const ComputedStyle& style,
                                                      LegacyLayout legacy) {
-  return LayoutObjectFactory::CreateSliderTrack(*this, style, legacy);
+  return MakeGarbageCollected<LayoutNGBlockFlow>(this);
 }
 
 }  // namespace blink

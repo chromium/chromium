@@ -73,9 +73,6 @@ class LayoutObjectFactory {
   static LayoutBox* CreateFrameSet(HTMLFrameSetElement& element,
                                    const ComputedStyle& style,
                                    LegacyLayout legacy);
-  static LayoutObject* CreateSliderTrack(Node& node,
-                                         const ComputedStyle& style,
-                                         LegacyLayout legacy);
 
   static LayoutText* CreateText(Node*, scoped_refptr<StringImpl>, LegacyLayout);
   static LayoutText* CreateTextCombine(Node*,
