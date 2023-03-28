@@ -30,6 +30,7 @@
 #include "content/public/test/browser_test_base.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/prerender_test_util.h"
+#include "ui/gl/gl_switches.h"
 
 using content::WebContents;
 
@@ -221,6 +222,7 @@ class CaptureHandleBrowserTest : public WebRtcTestBase {
         switches::kEnableExperimentalWebPlatformFeatures);
     command_line->AppendSwitchASCII(
         switches::kAutoSelectTabCaptureSourceByTitle, kCapturedTabTitle);
+    command_line->AppendSwitch(switches::kUseGpuInTests);
   }
 
   void TearDownOnMainThread() override {

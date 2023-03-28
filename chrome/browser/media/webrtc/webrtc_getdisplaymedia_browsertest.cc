@@ -44,6 +44,7 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/features.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/gl/gl_switches.h"
 
 #if BUILDFLAG(IS_MAC)
 #include "base/mac/mac_util.h"
@@ -411,6 +412,7 @@ class WebRtcScreenCaptureBrowserTestWithFakeUI
         switches::kUseFakeDeviceForMediaStream,
         base::StringPrintf("display-media-type=%s",
                            test_config_.display_surface));
+    command_line->AppendSwitch(switches::kUseGpuInTests);
   }
 
   bool PreferCurrentTab() const override {
@@ -584,6 +586,7 @@ class WebRtcAppWindowCaptureBrowserTestWithPicker
         switches::kEnableExperimentalWebPlatformFeatures);
     command_line->AppendSwitchASCII(
         switches::kAutoSelectTabCaptureSourceByTitle, kAppWindowTitle);
+    command_line->AppendSwitch(switches::kUseGpuInTests);
   }
 
   void SetUpOnMainThread() override {
@@ -649,6 +652,7 @@ class WebRtcSameOriginPolicyBrowserTest
         switches::kEnableExperimentalWebPlatformFeatures);
     command_line->AppendSwitchASCII(
         switches::kAutoSelectTabCaptureSourceByTitle, kSameOriginRenamedTitle);
+    command_line->AppendSwitch(switches::kUseGpuInTests);
   }
 
   void SetUpOnMainThread() override {
@@ -818,6 +822,7 @@ class GetDisplayMediaVideoTrackBrowserTest
         switches::kUseFakeDeviceForMediaStream,
         base::StrCat({"display-media-type=",
                       DisplaySurfaceTypeAsString(display_surface_type_)}));
+    command_line->AppendSwitch(switches::kUseGpuInTests);
   }
 
   std::string GetVideoTrackType() {
@@ -1114,6 +1119,8 @@ class GetDisplayMediaChangeSourceBrowserTest
         switches::kEnableExperimentalWebPlatformFeatures);
     command_line->AppendSwitchASCII(
         switches::kAutoSelectTabCaptureSourceByTitle, kCapturedTabTitle);
+    command_line->AppendSwitch(switches::kUseGpuInTests);
+
     if (!user_shared_audio_) {
       command_line->AppendSwitch(switches::kScreenCaptureAudioDefaultUnchecked);
     }
@@ -1327,6 +1334,7 @@ class GetDisplayMediaSelfBrowserSurfaceBrowserTest
 
     command_line->AppendSwitchASCII(
         switches::kAutoSelectTabCaptureSourceByTitle, kMainHtmlTitle);
+    command_line->AppendSwitch(switches::kUseGpuInTests);
   }
 
   std::string GetConstraints(bool prefer_current_tab = false) {

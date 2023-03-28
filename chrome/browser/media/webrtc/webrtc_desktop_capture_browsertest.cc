@@ -39,6 +39,7 @@
 #include "content/public/test/browser_test_utils.h"
 #include "media/base/media_switches.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
+#include "ui/gl/gl_switches.h"
 
 namespace {
 static const char kMainWebrtcTestHtmlPage[] = "/webrtc/webrtc_jsep01_test.html";
@@ -231,6 +232,7 @@ class WebRtcDesktopCaptureBrowserTest : public WebRtcTestBase {
     command_line->AppendSwitchASCII(switches::kAutoSelectDesktopCaptureSource,
                                     "Entire screen");
     command_line->AppendSwitch(switches::kEnableUserMediaScreenCapturing);
+    command_line->AppendSwitch(switches::kUseGpuInTests);
   }
 
  protected:
