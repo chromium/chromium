@@ -1532,6 +1532,26 @@
             ]
         }
     ],
+    "BFCachePerformanceManagerPolicy": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "EnabledPolicy_CacheSize3_20230328",
+                    "params": {
+                        "cache_size": "3",
+                        "foreground_cache_size": "0"
+                    },
+                    "enable_features": [
+                        "BFCachePerformanceManagerPolicy",
+                        "BackForwardCacheSize"
+                    ]
+                }
+            ]
+        }
+    ],
     "BackForwardCache": [
         {
             "platforms": [
