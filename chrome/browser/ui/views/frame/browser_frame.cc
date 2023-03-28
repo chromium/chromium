@@ -95,6 +95,9 @@ void BrowserFrame::InitBrowserFrame() {
   Browser* browser = browser_view_->browser();
   if (browser->is_type_picture_in_picture()) {
     params.z_order = ui::ZOrderLevel::kFloatingWindow;
+    // This doesn't change anything visually, but has the side-effect of keeping
+    // the pip window in the tab order.
+    params.remove_standard_frame = true;
   }
 
 #if BUILDFLAG(IS_OZONE)
