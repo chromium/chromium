@@ -21,14 +21,33 @@ namespace password_manager {
 
 namespace {
 
-// Returns signon_realm for regular forms and formatted url for federated forms.
+// Converts signon_realm (url for federated forms) into GURL and strips path. If
+// form is valid Android credential or conversion fails signon_realm is returned
+// as it is.
 std::string GetFacetRepresentation(const PasswordForm& form) {
-  std::string result = form.signon_realm;
-  if (form.IsFederatedCredential()) {
-    result = base::UTF16ToUTF8(url_formatter::FormatUrlForSecurityDisplay(
-        form.url, url_formatter::SchemeDisplay::SHOW));
+  FacetURI facet = FacetURI::FromPotentiallyInvalidSpec(form.signon_realm);
+  // Return result for android credentials immediately.
+  if (facet.IsValidAndroidFacetURI()) {
+    return facet.potentially_invalid_spec();
   }
-  return FacetURI::FromPotentiallyInvalidSpec(result)
+  GURL url;
+  // For federated credentials use url. For everything else try to parse signon
+  // realm as GURL.
+  if (form.IsFederatedCredential()) {
+    url = form.url;
+  } else {
+    url = GURL(form.signon_realm);
+  }
+
+  // Strip path and everything after that.
+  std::string scheme_and_authority = url.GetWithEmptyPath().spec();
+
+  // If something went wrong (signon_realm is not a valid GURL), use signon
+  // realm as it is.
+  if (scheme_and_authority.empty()) {
+    scheme_and_authority = form.signon_realm;
+  }
+  return FacetURI::FromPotentiallyInvalidSpec(scheme_and_authority)
       .potentially_invalid_spec();
 }
 
