@@ -4,6 +4,10 @@
 
 package org.chromium.chrome.browser.autofill.settings;
 
+import static org.chromium.chrome.browser.autofill.AutofillUiUtils.getCardIcon;
+import static org.chromium.chrome.browser.autofill.AutofillUiUtils.getSettingsPageIconHeightId;
+import static org.chromium.chrome.browser.autofill.AutofillUiUtils.getSettingsPageIconWidthId;
+
 import android.content.Context;
 import android.graphics.PorterDuff;
 import android.graphics.drawable.Drawable;
@@ -22,7 +26,6 @@ import androidx.preference.PreferenceScreen;
 import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.autofill.AutofillEditorBase;
-import org.chromium.chrome.browser.autofill.AutofillUiUtils;
 import org.chromium.chrome.browser.autofill.PersonalDataManager;
 import org.chromium.chrome.browser.autofill.PersonalDataManager.CreditCard;
 import org.chromium.chrome.browser.feedback.FragmentHelpAndFeedbackLauncher;
@@ -150,8 +153,8 @@ public class AutofillPaymentMethodsFragment
             }
 
             // Set card icon. It can be either a custom card art or a network icon.
-            card_pref.setIcon(AutofillUiUtils.getCardIcon(getStyledContext(), card,
-                    R.dimen.settings_page_card_icon_width, R.dimen.settings_page_card_icon_height));
+            card_pref.setIcon(getCardIcon(getStyledContext(), card, getSettingsPageIconWidthId(),
+                    getSettingsPageIconHeightId()));
 
             if (card.getIsLocal()) {
                 card_pref.setFragment(AutofillLocalCardEditor.class.getName());

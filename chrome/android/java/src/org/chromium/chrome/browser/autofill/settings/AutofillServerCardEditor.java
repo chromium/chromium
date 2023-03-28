@@ -4,6 +4,10 @@
 
 package org.chromium.chrome.browser.autofill.settings;
 
+import static org.chromium.chrome.browser.autofill.AutofillUiUtils.getCardIcon;
+import static org.chromium.chrome.browser.autofill.AutofillUiUtils.getSettingsPageIconHeightId;
+import static org.chromium.chrome.browser.autofill.AutofillUiUtils.getSettingsPageIconWidthId;
+
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -22,7 +26,6 @@ import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.build.annotations.UsedByReflection;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.ChromeStringConstants;
-import org.chromium.chrome.browser.autofill.AutofillUiUtils;
 import org.chromium.chrome.browser.autofill.PersonalDataManager;
 import org.chromium.chrome.browser.autofill.PersonalDataManager.AutofillProfile;
 import org.chromium.chrome.browser.customtabs.CustomTabActivity;
@@ -148,8 +151,8 @@ public class AutofillServerCardEditor extends AutofillCreditCardEditor {
 
         // Set card icon. It can be either a custom card art or the network icon.
         ImageView cardIconContainer = v.findViewById(R.id.card_icon);
-        cardIconContainer.setImageDrawable(AutofillUiUtils.getCardIcon(getContext(), mCard,
-                R.dimen.settings_page_card_icon_width, R.dimen.settings_page_card_icon_height));
+        cardIconContainer.setImageDrawable(getCardIcon(
+                getContext(), mCard, getSettingsPageIconWidthId(), getSettingsPageIconHeightId()));
 
         ((TextView) v.findViewById(R.id.card_name)).setText(mCard.getCardNameForAutofillDisplay());
         ((TextView) v.findViewById(R.id.card_last_four))

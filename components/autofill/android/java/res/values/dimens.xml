@@ -44,4 +44,12 @@ found in the LICENSE file.
     <dimen name="editable_option_section_logo_width">48dp</dimen>
     <dimen name="editable_option_section_logo_horizontal_padding">5dp</dimen>
     <dimen name="editable_option_section_logo_vertical_padding">13dp</dimen>
+
+    <!-- Settings page -->
+    <dimen name="settings_page_card_icon_width">32dp</dimen>
+    <dimen name="settings_page_card_icon_height">20dp</dimen>
+    <dimen name="settings_page_card_icon_width_new">40dp</dimen>
+    <dimen name="settings_page_card_icon_height_new">24dp</dimen>
+    <dimen name="settings_page_card_icon_end_margin">20dp</dimen>
+    <dimen name="settings_page_margin_between_card_name_and_last_four_digits">4dp</dimen>
 </resources>

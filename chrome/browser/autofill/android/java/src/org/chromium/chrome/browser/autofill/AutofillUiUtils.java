@@ -525,4 +525,20 @@ public class AutofillUiUtils {
                 true);
         return new BitmapDrawable(resources, scaledBitmap);
     }
+
+    public static int getSettingsPageIconWidthId() {
+        if (ChromeFeatureList.isEnabled(
+                    ChromeFeatureList.AUTOFILL_ENABLE_NEW_CARD_ART_AND_NETWORK_IMAGES)) {
+            return R.dimen.settings_page_card_icon_width_new;
+        }
+        return R.dimen.settings_page_card_icon_width;
+    }
+
+    public static int getSettingsPageIconHeightId() {
+        if (ChromeFeatureList.isEnabled(
+                    ChromeFeatureList.AUTOFILL_ENABLE_NEW_CARD_ART_AND_NETWORK_IMAGES)) {
+            return R.dimen.settings_page_card_icon_height_new;
+        }
+        return R.dimen.settings_page_card_icon_height;
+    }
 }
