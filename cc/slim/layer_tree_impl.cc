@@ -433,11 +433,13 @@ void LayerTreeImpl::GenerateCompositorFrame(
        /*opacity=*/1.0f);
   render_pass->filters = root_->GetFilters();
 
-  if (background_color_.fA &&
-      !frame_data.occlusion_in_target.Contains(device_viewport_rect_)) {
+  bool background_opaque = background_color_.isOpaque();
+  bool viewport_fully_occluded =
+      frame_data.occlusion_in_target.Contains(device_viewport_rect_);
+  render_pass->has_transparent_background =
+      !background_opaque && !viewport_fully_occluded;
+  if (background_color_.fA && !viewport_fully_occluded) {
     // Quads does not cover entire viewport. Fill in the gutters.
-    bool background_opaque = background_color_.isOpaque();
-    render_pass->has_transparent_background = !background_opaque;
     Region unoccluded_region(device_viewport_rect_);
     for (size_t i = 0; i < frame_data.occlusion_in_target.GetRegionComplexity();
          ++i) {

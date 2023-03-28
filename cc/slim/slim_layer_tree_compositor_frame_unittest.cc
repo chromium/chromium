@@ -1616,6 +1616,20 @@ TEST_F(SlimLayerTreeCompositorFrameTest, OcclusionWithRenderPass) {
   }
 }
 
+TEST_F(SlimLayerTreeCompositorFrameTest, OccludedNonOpaqueBackgroundColor) {
+  // Check that even if background color is not opaque, the frame should still
+  // be opaque if the viewport is entirely occluded by opaque layers.
+  auto root_layer = CreateSolidColorLayer(viewport_.size(), SkColors::kGray);
+  layer_tree_->set_background_color(SkColors::kTransparent);
+  layer_tree_->SetRoot(root_layer);
+  viz::CompositorFrame frame = ProduceFrame();
+  ASSERT_EQ(frame.render_pass_list.size(), 1u);
+  auto& pass = frame.render_pass_list.back();
+  ASSERT_THAT(pass->quad_list,
+              ElementsAre(viz::IsSolidColorQuad(SkColors::kGray)));
+  EXPECT_FALSE(pass->has_transparent_background);
+}
+
 TEST_F(SlimLayerTreeCompositorFrameTest, Guttering) {
   auto root_layer = CreateSolidColorLayer(gfx::Size(50, 50), SkColors::kRed);
   root_layer->SetPosition(gfx::PointF(25.0f, 25.0f));
