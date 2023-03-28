@@ -34,7 +34,7 @@ AndroidOutcomeToLocalApprovalResult(
 
 WebContentHandlerImpl::WebContentHandlerImpl(content::WebContents* web_contents)
     : supervised_user::WebContentHandler(), web_contents_(web_contents) {
-  // TODO(b/4370063): Add Check on web_contents
+  CHECK(web_contents_);
 }
 
 WebContentHandlerImpl::~WebContentHandlerImpl() = default;

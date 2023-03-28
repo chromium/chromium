@@ -70,7 +70,7 @@ WebContentHandlerImpl::WebContentHandlerImpl(
       favicon_handler_(std::make_unique<SupervisedUserFaviconRequestHandler>(
           url.GetWithEmptyPath(),
           &large_icon_service)) {
-  // TODO(b/4370063): Add Check on web_contents
+  CHECK(web_contents_);
   if (supervised_user::IsLocalWebApprovalsEnabled()) {
     // Prefetch the favicon which will be rendered as part of the web approvals
     // ParentAccessDialog. Pass in DoNothing() for the favicon fetched callback

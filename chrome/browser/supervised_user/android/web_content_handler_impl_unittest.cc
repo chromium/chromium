@@ -9,8 +9,11 @@
 
 #include "base/test/metrics/histogram_tester.h"
 #include "base/time/time.h"
+#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/supervised_user/android/website_parent_approval.h"
+#include "chrome/test/base/testing_profile.h"
 #include "components/supervised_user/core/browser/supervised_user_settings_service.h"
+#include "content/public/browser/web_contents_user_data.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/test_utils.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -41,10 +44,12 @@ class WebContentHandlerImplTest : public ::testing::Test {
   content::BrowserTaskEnvironment& task_environment() {
     return task_environment_;
   }
+  TestingProfile* GetProfilePtr() { return &profile_; }
 
  private:
   content::BrowserTaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
+  TestingProfile profile_;
 };
 
 TEST_F(WebContentHandlerImplTest,
@@ -60,7 +65,12 @@ TEST_F(WebContentHandlerImplTest,
   // Check that duration metric is recorded.
   base::TimeDelta elapsed_time = base::Minutes(1);
   task_environment().FastForwardBy(elapsed_time);
-  WebContentHandlerImpl web_content_handler(/*web_contents=*/nullptr);
+
+  std::unique_ptr<content::WebContents> web_contents =
+      content::WebContents::Create(
+          content::WebContents::CreateParams(GetProfilePtr()));
+  WebContentHandlerImpl web_content_handler =
+      WebContentHandlerImpl(web_contents.get());
 
   web_content_handler.OnLocalApprovalRequestCompleted(
       supervisedUserSettingsServiceMock, url, start_time,
@@ -90,7 +100,11 @@ TEST_F(WebContentHandlerImplTest,
 
   base::TimeDelta elapsed_time = base::Minutes(5);
   task_environment().FastForwardBy(elapsed_time);
-  WebContentHandlerImpl web_content_handler(/*web_contents=*/nullptr);
+  std::unique_ptr<content::WebContents> web_contents =
+      content::WebContents::Create(
+          content::WebContents::CreateParams(GetProfilePtr()));
+  WebContentHandlerImpl web_content_handler =
+      WebContentHandlerImpl(web_contents.get());
 
   // Receive a request canceled by the parent.
   // Check that no duration metric is recorded for incomplete requests.
@@ -118,7 +132,11 @@ TEST_F(WebContentHandlerImplTest,
 
   base::TimeDelta elapsed_time = base::Minutes(5);
   task_environment().FastForwardBy(elapsed_time);
-  WebContentHandlerImpl web_content_handler(/*web_contents=*/nullptr);
+  std::unique_ptr<content::WebContents> web_contents =
+      content::WebContents::Create(
+          content::WebContents::CreateParams(GetProfilePtr()));
+  WebContentHandlerImpl web_content_handler =
+      WebContentHandlerImpl(web_contents.get());
 
   // Receive a request accepted by the parent with a total duration of 5
   // minutes. Check that duration metric is recorded.
