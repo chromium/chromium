@@ -6586,7 +6586,6 @@ crbug.com/1396185 accessibility/reach-and-scroll-overflow-div-without-mouse.html
 
 # Flaky (sheriff 2022-12-15)
 crbug.com/1186788 [ Mac ] external/wpt/pointerevents/pointerevent_pointercapture_in_frame.html?pen [ Failure Pass Timeout ]
-crbug.com/1401318 [ Mac ] external/wpt/dom/events/scrolling/scrollend-event-for-user-scroll.html [ Failure Pass Timeout ]
 
 # TODO(crbug.com/1401396): Re-enable this test
 external/wpt/webrtc/simulcast/setParameters-active.https.html [ Pass Timeout ]
