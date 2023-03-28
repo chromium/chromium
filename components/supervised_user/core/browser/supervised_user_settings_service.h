@@ -145,7 +145,7 @@ class SupervisedUserSettingsService : public KeyedService,
   // This may be called regardless of whether the sync server has completed
   // initialization; in either case the local changes will be handled
   // immediately.
-  void SaveItem(const std::string& key, std::unique_ptr<base::Value> value);
+  void SaveItem(const std::string& key, base::Value value);
 
   // Sets the setting with the given `key` to `value`.
   void SetLocalSetting(base::StringPiece key, base::Value value);

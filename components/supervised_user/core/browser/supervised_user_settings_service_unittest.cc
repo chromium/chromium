@@ -53,13 +53,13 @@ class SupervisedUserSettingsServiceTest : public ::testing::Test {
     split_items_.Set(key, value);
     settings_service_.SaveItem(
         SupervisedUserSettingsService::MakeSplitSettingKey(kSplitItemName, key),
-        std::make_unique<base::Value>(value));
+        base::Value(value));
   }
 
   void UploadAtomicItem(const std::string& value) {
-    atomic_setting_value_ = std::make_unique<base::Value>(value);
+    atomic_setting_value_ = base::Value(value);
     settings_service_.SaveItem(kAtomicItemName,
-                               std::make_unique<base::Value>(value));
+                               base::Value(value));
   }
 
   void VerifySyncDataItem(syncer::SyncData sync_data) {
@@ -67,7 +67,7 @@ class SupervisedUserSettingsServiceTest : public ::testing::Test {
         sync_data.GetSpecifics().managed_user_setting();
     base::Value* expected_value = nullptr;
     if (supervised_user_setting.name() == kAtomicItemName) {
-      expected_value = atomic_setting_value_.get();
+      expected_value = &atomic_setting_value_.value();
     } else {
       EXPECT_TRUE(base::StartsWith(supervised_user_setting.name(),
                                    std::string(kSplitItemName) + ':',
@@ -77,7 +77,7 @@ class SupervisedUserSettingsServiceTest : public ::testing::Test {
       expected_value = split_items_.Find(key);
       EXPECT_TRUE(expected_value);
     }
-
+    ASSERT_TRUE(expected_value);
     EXPECT_EQ(*expected_value,
               base::JSONReader::Read(supervised_user_setting.value()));
   }
@@ -141,7 +141,7 @@ class SupervisedUserSettingsServiceTest : public ::testing::Test {
 
   base::test::TaskEnvironment task_environment_;
   base::Value::Dict split_items_;
-  std::unique_ptr<base::Value> atomic_setting_value_;
+  absl::optional<base::Value> atomic_setting_value_;
   SupervisedUserSettingsService settings_service_;
   absl::optional<base::Value::Dict> settings_;
   base::CallbackListSubscription user_settings_subscription_;

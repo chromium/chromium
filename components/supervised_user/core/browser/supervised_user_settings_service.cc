@@ -138,7 +138,7 @@ void SupervisedUserSettingsService::RecordLocalWebsiteApproval(
   // Write the sync setting.
   std::string setting_key = MakeSplitSettingKey(
       supervised_user::kContentPackManualBehaviorHosts, host);
-  SaveItem(setting_key, std::make_unique<base::Value>(true));
+  SaveItem(setting_key, base::Value(true));
 
   // Now notify subscribers of the updates.
   website_approval_callback_list_.Notify(setting_key);
@@ -198,7 +198,7 @@ std::string SupervisedUserSettingsService::MakeSplitSettingKey(
 
 void SupervisedUserSettingsService::SaveItem(
     const std::string& key,
-    std::unique_ptr<base::Value> value) {
+    base::Value value) {
   // Update the value in our local dict, and push the changes to sync.
   std::string key_suffix = key;
   base::Value::Dict* dict = nullptr;
@@ -207,7 +207,7 @@ void SupervisedUserSettingsService::SaveItem(
     dict = GetDictionaryAndSplitKey(&key_suffix);
     DCHECK(GetQueuedItems()->empty());
     SyncChangeList change_list;
-    SyncData data = CreateSyncDataForSetting(key, *value);
+    SyncData data = CreateSyncDataForSetting(key, value);
     SyncChange::SyncChangeType change_type = dict->Find(key_suffix)
                                                  ? SyncChange::ACTION_UPDATE
                                                  : SyncChange::ACTION_ADD;
@@ -221,7 +221,7 @@ void SupervisedUserSettingsService::SaveItem(
     base::RecordAction(UserMetricsAction("ManagedUsers_UploadItem_Queued"));
     dict = GetQueuedItems();
   }
-  dict->Set(key_suffix, base::Value::FromUniquePtrValue(std::move(value)));
+  dict->Set(key_suffix,std::move(value));
 
   // Now notify subscribers of the updates.
   // For simplicity and consistency with ProcessSyncChanges() we notify both
