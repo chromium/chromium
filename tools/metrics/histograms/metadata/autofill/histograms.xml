@@ -4840,7 +4840,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Autofill.VirtualCardEnroll.CardArtImageAvailable.{EnrollmentSource}"
-    enum="BooleanAvailable" expires_after="2023-04-01">
+    enum="BooleanAvailable" expires_after="2024-04-01">
   <owner>alexandertekle@google.com</owner>
   <owner>payments-autofill-team@google.com</owner>
   <summary>
@@ -4854,7 +4854,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Autofill.VirtualCardEnroll.LinkClicked.{EnrollmentSource}.{LinkType}"
-    enum="BooleanClicked" expires_after="2023-04-01">
+    enum="BooleanClicked" expires_after="2024-04-01">
   <owner>alexandertekle@google.com</owner>
   <owner>payments-autofill-team@google.com</owner>
   <summary>
