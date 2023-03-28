@@ -10,7 +10,6 @@
 namespace site_isolation {
 namespace features {
 
-BASE_DECLARE_FEATURE(kCacheSiteIsolationMemoryThreshold);
 BASE_DECLARE_FEATURE(kSiteIsolationForPasswordSites);
 BASE_DECLARE_FEATURE(kSiteIsolationForOAuthSites);
 BASE_DECLARE_FEATURE(kSiteIsolationMemoryThresholds);

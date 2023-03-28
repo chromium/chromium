@@ -90,8 +90,8 @@ class SiteIsolationPolicy {
   static bool ShouldPdfCompositorBeEnabledForOopifs();
 
   // When set to true bypasses the caching of the results of
-  // ShouldDisableSiteIsolationDueToMemoryThreshold(). Setting to false reverts
-  // to the default behavior (caching is controlled by a base::Feature).
+  // ShouldDisableSiteIsolationDueToMemoryThreshold(). Setting to false allows
+  // caching.
   static void SetDisallowMemoryThresholdCachingForTesting(
       bool disallow_caching);
 
