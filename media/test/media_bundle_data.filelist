@@ -353,6 +353,7 @@ data/negative-audio-timestamps.avi
 data/negative_ts.flac
 data/no_audio_video.webm
 data/no_streams.webm
+data/noise-xhe-aac-44kHz.mp4
 data/noise-xhe-aac-mono.mp4
 data/noise-xhe-aac.mp4
 data/nonzero-start-time.webm
