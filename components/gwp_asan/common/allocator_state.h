@@ -56,6 +56,8 @@ class AllocatorState {
   static constexpr size_t kMaxMetadata = 2048;
   // Invalid metadata index.
   static constexpr MetadataIdx kInvalidMetadataIdx = kMaxMetadata;
+  // Maximum number of metadata slots used by the Lightweight UAF Detector.
+  static constexpr size_t kMaxLightweightMetadata = 32768;
 
   // Maximum number of stack trace frames to collect for an allocation or
   // deallocation.

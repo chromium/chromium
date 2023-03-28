@@ -18,6 +18,8 @@ using GetMetadataReturnType = AllocatorState::GetMetadataReturnType;
 static constexpr size_t kMaxMetadata = AllocatorState::kMaxMetadata;
 static constexpr size_t kMaxRequestedSlots = AllocatorState::kMaxRequestedSlots;
 static constexpr size_t kMaxReservedSlots = AllocatorState::kMaxReservedSlots;
+static constexpr size_t kMaxLightweightMetadata =
+    AllocatorState::kMaxLightweightMetadata;
 
 class AllocatorStateTest : public testing::Test {
  protected:
@@ -230,10 +232,12 @@ TEST_F(AllocatorStateTest, LightweightDetector) {
   InitializeState(base::GetPageSize(), 1, 1, 1, 0, 0, 0, 1);
   EXPECT_TRUE(state_.IsValid());
 
-  InitializeState(base::GetPageSize(), 1, 1, 1, 0, 0, 0, kMaxMetadata);
+  InitializeState(base::GetPageSize(), 1, 1, 1, 0, 0, 0,
+                  kMaxLightweightMetadata);
   EXPECT_TRUE(state_.IsValid());
 
-  InitializeState(base::GetPageSize(), 1, 1, 1, 0, 0, 0, kMaxMetadata + 1);
+  InitializeState(base::GetPageSize(), 1, 1, 1, 0, 0, 0,
+                  kMaxLightweightMetadata + 1);
   EXPECT_FALSE(state_.IsValid());
 }
 

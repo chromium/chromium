@@ -185,7 +185,8 @@ void GuardedPageAllocator::Init(
   CHECK_LE(num_metadata, AllocatorState::kMaxMetadata);
   CHECK_LE(num_metadata, total_pages);
   CHECK_LE(total_pages, AllocatorState::kMaxRequestedSlots);
-  CHECK_LE(num_lightweight_detector_metadata, AllocatorState::kMaxMetadata);
+  CHECK_LE(num_lightweight_detector_metadata,
+           AllocatorState::kMaxLightweightMetadata);
   max_alloced_pages_ = max_alloced_pages;
   state_.num_metadata = num_metadata;
   state_.total_requested_pages = total_pages;

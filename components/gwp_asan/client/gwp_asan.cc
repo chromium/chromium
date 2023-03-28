@@ -155,6 +155,12 @@ GWP_ASAN_EXPORT absl::optional<AllocatorSettings> GetAllocatorSettings(
                 "kMaxMetadata out of range");
   constexpr int kMaxMetadata = static_cast<int>(AllocatorState::kMaxMetadata);
 
+  static_assert(AllocatorState::kMaxLightweightMetadata <=
+                    std::numeric_limits<int>::max(),
+                "kMaxMetadata out of range");
+  constexpr int kMaxLightweightMetadata =
+      static_cast<int>(AllocatorState::kMaxLightweightMetadata);
+
   int total_pages = GetFieldTrialParamByFeatureAsInt(feature, "TotalPages",
                                                      kDefaultTotalPages);
   if (total_pages < 1 || total_pages > kMaxRequestedSlots) {
@@ -198,7 +204,7 @@ GWP_ASAN_EXPORT absl::optional<AllocatorSettings> GetAllocatorSettings(
     max_lightweight_metadata = GetFieldTrialParamByFeatureAsInt(
         feature, "MaxLightweightMetadata", kDefaultMaxLightweightMetadata);
     if (max_lightweight_metadata < 1 ||
-        max_lightweight_metadata > kMaxMetadata) {
+        max_lightweight_metadata > kMaxLightweightMetadata) {
       DLOG(ERROR) << "GWP-ASan MaxLightweightMetadata is out-of-range: "
                   << max_lightweight_metadata;
       return absl::nullopt;
