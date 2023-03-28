@@ -54562,12 +54562,6 @@ Unsupported non-ascii characters will cause issues with xml presubmits.
   <int value="0" label="Normal navigation"/>
 </enum>
 
-<enum name="KAnonymityBidMode">
-  <int value="0" label="None"/>
-  <int value="1" label="Simulate"/>
-  <int value="2" label="Enforce"/>
-</enum>
-
 <enum name="KAnonymityServiceJoinSetAction">
   <int value="0" label="JoinSet"/>
   <int value="1" label="JoinSetSuccess"/>

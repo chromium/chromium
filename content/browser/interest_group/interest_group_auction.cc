@@ -35,9 +35,7 @@
 #include "base/time/time.h"
 #include "base/trace_event/trace_event.h"
 #include "base/trace_event/trace_id_helper.h"
-#include "content/browser/interest_group/auction_metrics_recorder.h"
 #include "content/browser/interest_group/auction_process_manager.h"
-#include "content/browser/interest_group/auction_result.h"
 #include "content/browser/interest_group/auction_url_loader_factory_proxy.h"
 #include "content/browser/interest_group/auction_worklet_manager.h"
 #include "content/browser/interest_group/debuggable_auction_worklet.h"
@@ -549,10 +547,8 @@ class InterestGroupAuction::BuyerHelper
 
     // Request processes for all bidder worklets.
     for (auto& bid_state : bid_states_) {
-      auto worklet_key = auction_->BidderWorkletKey(*bid_state);
-      auction_->auction_metrics_recorder_->ReportBidderWorkletKey(worklet_key);
       auction_->auction_worklet_manager_->RequestWorkletByKey(
-          worklet_key,
+          auction_->BidderWorkletKey(*bid_state),
           base::BindOnce(&BuyerHelper::OnBidderWorkletReceived,
                          base::Unretained(this), bid_state.get()),
           base::BindOnce(&BuyerHelper::OnBidderWorkletGenerateBidFatalError,
@@ -1484,7 +1480,6 @@ InterestGroupAuction::InterestGroupAuction(
     const InterestGroupAuction* parent,
     AuctionWorkletManager* auction_worklet_manager,
     InterestGroupManagerImpl* interest_group_manager,
-    AuctionMetricsRecorder* auction_metrics_recorder,
     base::Time auction_start_time,
     base::RepeatingCallback<
         void(const PrivateAggregationRequests& private_aggregation_requests)>
@@ -1493,7 +1488,6 @@ InterestGroupAuction::InterestGroupAuction(
       kanon_mode_(kanon_mode),
       auction_worklet_manager_(auction_worklet_manager),
       interest_group_manager_(interest_group_manager),
-      auction_metrics_recorder_(auction_metrics_recorder),
       config_(config),
       config_promises_resolved_(config_->NumPromises() == 0),
       parent_(parent),
@@ -1511,16 +1505,12 @@ InterestGroupAuction::InterestGroupAuction(
     // Nested component auctions are not supported.
     DCHECK(!parent_);
     component_auctions_.emplace(
-        child_pos, std::make_unique<InterestGroupAuction>(
-                       kanon_mode_, &component_auction_config, /*parent=*/this,
-                       auction_worklet_manager, interest_group_manager,
-                       auction_metrics_recorder_, auction_start_time,
-                       maybe_log_private_aggregation_web_features_callback_));
+        child_pos,
+        std::make_unique<InterestGroupAuction>(
+            kanon_mode_, &component_auction_config, /*parent=*/this,
+            auction_worklet_manager, interest_group_manager, auction_start_time,
+            maybe_log_private_aggregation_web_features_callback_));
     ++child_pos;
-  }
-
-  if (!parent_) {
-    auction_metrics_recorder_->SetKAnonymityBidMode(kanon_mode);
   }
 }
 
@@ -1562,11 +1552,6 @@ InterestGroupAuction::~InterestGroupAuction() {
       default:
         break;
     }
-
-    // Last UKM we record for this auction. This finalizes and records the
-    // AdsInterestGroup_AuctionLatency entry. Any further interactions with
-    // auction_metrics_recorder_ will likely cause a CHECK-fail.
-    auction_metrics_recorder_->OnAuctionEnd(*final_auction_result_);
   }
 }
 
@@ -2429,8 +2414,6 @@ void InterestGroupAuction::OnInterestGroupRead(
   }
 
   ++num_owners_with_interest_groups_;
-  auction_metrics_recorder_->ReportBuyer(
-      interest_groups[0].interest_group.owner);
 
   auto buyer_helper =
       std::make_unique<BuyerHelper>(this, std::move(interest_groups));
@@ -2488,18 +2471,12 @@ void InterestGroupAuction::OnOneLoadCompleted() {
 
       UMA_HISTOGRAM_COUNTS_1000("Ads.InterestGroup.Auction.NumInterestGroups",
                                 num_interest_groups);
-      auction_metrics_recorder_->SetNumInterestGroups(num_interest_groups);
-
       UMA_HISTOGRAM_COUNTS_100(
           "Ads.InterestGroup.Auction.NumOwnersWithInterestGroups",
-          num_owners_with_interest_groups_);
-      auction_metrics_recorder_->SetNumOwnersWithInterestGroups(
           num_owners_with_interest_groups_);
 
       UMA_HISTOGRAM_COUNTS_100(
           "Ads.InterestGroup.Auction.NumSellersWithBidders",
-          num_sellers_with_bidders);
-      auction_metrics_recorder_->SetNumSellersWithBidders(
           num_sellers_with_bidders);
     }
   }
@@ -2522,9 +2499,6 @@ void InterestGroupAuction::OnStartLoadInterestGroupsPhaseComplete(
   DCHECK(load_interest_groups_phase_callback_);
   DCHECK(!final_auction_result_);
 
-  if (!parent_) {
-    auction_metrics_recorder_->OnLoadInterestGroupPhaseComplete();
-  }
   TRACE_EVENT_NESTABLE_ASYNC_END0("fledge", "load_groups_phase", *trace_id_);
   if (auction_result == AuctionResult::kNoInterestGroups) {
     UMA_HISTOGRAM_TIMES("Ads.InterestGroup.Auction.LoadNoGroupsTime",

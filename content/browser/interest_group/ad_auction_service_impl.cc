@@ -252,8 +252,7 @@ void AdAuctionServiceImpl::RunAdAuction(
       base::BindRepeating(
           &AdAuctionServiceImpl::MaybeLogPrivateAggregationFeatures,
           weak_ptr_factory_.GetWeakPtr()),
-      config, main_frame_origin_, origin(),
-      render_frame_host().GetPageUkmSourceId(), GetClientSecurityState(),
+      config, main_frame_origin_, origin(), GetClientSecurityState(),
       GetRefCountedTrustedURLLoaderFactory(),
       base::BindRepeating(&AdAuctionServiceImpl::IsInterestGroupAPIAllowed,
                           base::Unretained(this)),
