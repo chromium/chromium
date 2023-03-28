@@ -54,6 +54,7 @@ import org.chromium.content_public.browser.overlay_window.PlaybackState;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.content_public.browser.test.util.WebContentsUtils;
 import org.chromium.media_session.mojom.MediaSessionAction;
+import org.chromium.ui.test.util.DeviceRestriction;
 
 import java.util.ArrayList;
 import java.util.concurrent.Callable;
@@ -65,6 +66,7 @@ import java.util.concurrent.TimeoutException;
 @RunWith(ChromeJUnit4ClassRunner.class)
 @Batch(Batch.PER_CLASS)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
+@Restriction(DeviceRestriction.RESTRICTION_TYPE_NON_AUTO)
 @RequiresApi(Build.VERSION_CODES.O)
 public class PictureInPictureActivityTest {
     @Rule
