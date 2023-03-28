@@ -110,6 +110,7 @@ build_webui("build") {
   }
 
   html_to_wrapper_template = "detect"
+  html_to_wrapper_scheme = "relative"
 
   ts_out_dir = "$root_gen_dir/ui/webui/resources/tsc/cr_elements"
   ts_composite = true

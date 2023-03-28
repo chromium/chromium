@@ -515,6 +515,7 @@ grd_prefix: See |grd_prefix| in generate_grd(). Required parameter.
 grd_resource_path_prefix: See |resource_path_prefix| in generate_grd(). Optional
                           parameter.
 html_to_wrapper_template: See |template| in html_to_wrapper().
+html_to_wrapper_scheme: See |scheme| in html_to_wrapper().
 extra_grdp_deps: List of external generate_grd() targets that generate .grdp
                  files. These will be included in the final generated
                  resources.grd file. Optional parameter.
