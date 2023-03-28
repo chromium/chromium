@@ -319,10 +319,10 @@ BASE_FEATURE(kChromeAppsDeprecation,
 // deprecation.
 BASE_FEATURE(kKeepForceInstalledPreinstalledApps,
              "KeepForceInstalledPreinstalledApps",
-             base::FEATURE_ENABLED_BY_DEFAULT);
+             base::FEATURE_DISABLED_BY_DEFAULT);
 // Controls if the 'launch anyways' button is shown.
 const base::FeatureParam<bool> kChromeAppsDeprecationHideLaunchAnyways{
-    &kChromeAppsDeprecation, "HideLaunchAnyways", false};
+    &kChromeAppsDeprecation, "HideLaunchAnyways", true};
 #endif
 
 // Enables notification permission revocation for origins that may send
