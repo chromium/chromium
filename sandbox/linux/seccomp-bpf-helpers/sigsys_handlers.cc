@@ -37,6 +37,8 @@
 #define SECCOMP_MESSAGE_KILL_CONTENT "(tg)kill() failure"
 #define SECCOMP_MESSAGE_FUTEX_CONTENT "futex() failure"
 #define SECCOMP_MESSAGE_PTRACE_CONTENT "ptrace() failure"
+#define SECCOMP_MESSAGE_SOCKET_CONTENT "socket() failure"
+#define SECCOMP_MESSAGE_SOCKOPT_CONTENT "*sockopt() failure"
 
 namespace {
 
@@ -103,13 +105,13 @@ void PrintSyscallError(uint32_t sysno) {
   }
 
 #if defined(ARCH_CPU_MIPS_FAMILY) && defined(ARCH_CPU_32_BITS)
-  static const char kSeccompErrorPrefix[] = __FILE__
+  static constexpr char kSeccompErrorPrefix[] = __FILE__
       ":**CRASHING**:" SECCOMP_MESSAGE_COMMON_CONTENT " in syscall 4000 + ";
 #else
-  static const char kSeccompErrorPrefix[] =
-      __FILE__":**CRASHING**:" SECCOMP_MESSAGE_COMMON_CONTENT " in syscall ";
+  static constexpr char kSeccompErrorPrefix[] =
+      __FILE__ ":**CRASHING**:" SECCOMP_MESSAGE_COMMON_CONTENT " in syscall ";
 #endif
-  static const char kSeccompErrorPostfix[] = "\n";
+  static constexpr char kSeccompErrorPostfix[] = "\n";
   WriteToStdErr(kSeccompErrorPrefix, sizeof(kSeccompErrorPrefix) - 1);
   WriteToStdErr(sysno_base10, sizeof(sysno_base10));
   WriteToStdErr(kSeccompErrorPostfix, sizeof(kSeccompErrorPostfix) - 1);
@@ -121,7 +123,7 @@ template <typename T>
 class NumberToHex {
  public:
   explicit NumberToHex(T value) {
-    static const char kHexChars[] = "0123456789abcdef";
+    static constexpr char kHexChars[] = "0123456789abcdef";
 
     memset(str_, '0', sizeof(str_));
     str_[1] = 'x';
@@ -227,8 +229,8 @@ intptr_t CrashSIGSYS_Handler(const struct arch_seccomp_data& args, void* aux) {
 // TODO(jln): refactor the reporting functions.
 
 intptr_t SIGSYSCloneFailure(const struct arch_seccomp_data& args, void* aux) {
-  static const char kSeccompCloneError[] =
-      __FILE__":**CRASHING**:" SECCOMP_MESSAGE_CLONE_CONTENT "\n";
+  static constexpr char kSeccompCloneError[] =
+      __FILE__ ":**CRASHING**:" SECCOMP_MESSAGE_CLONE_CONTENT "\n";
   WriteToStdErr(kSeccompCloneError, sizeof(kSeccompCloneError) - 1);
   SetSeccompCrashKey(args);
   // "flags" is the first argument in the kernel's clone().
@@ -248,8 +250,8 @@ intptr_t SIGSYSCloneFailure(const struct arch_seccomp_data& args, void* aux) {
 
 intptr_t SIGSYSPrctlFailure(const struct arch_seccomp_data& args,
                             void* /* aux */) {
-  static const char kSeccompPrctlError[] =
-      __FILE__":**CRASHING**:" SECCOMP_MESSAGE_PRCTL_CONTENT "\n";
+  static constexpr char kSeccompPrctlError[] =
+      __FILE__ ":**CRASHING**:" SECCOMP_MESSAGE_PRCTL_CONTENT "\n";
   WriteToStdErr(kSeccompPrctlError, sizeof(kSeccompPrctlError) - 1);
   SetSeccompCrashKey(args);
   // Mark as volatile to be able to find the value on the stack in a minidump.
@@ -263,8 +265,8 @@ intptr_t SIGSYSPrctlFailure(const struct arch_seccomp_data& args,
 
 intptr_t SIGSYSIoctlFailure(const struct arch_seccomp_data& args,
                             void* /* aux */) {
-  static const char kSeccompIoctlError[] =
-      __FILE__":**CRASHING**:" SECCOMP_MESSAGE_IOCTL_CONTENT "\n";
+  static constexpr char kSeccompIoctlError[] =
+      __FILE__ ":**CRASHING**:" SECCOMP_MESSAGE_IOCTL_CONTENT "\n";
   WriteToStdErr(kSeccompIoctlError, sizeof(kSeccompIoctlError) - 1);
   SetSeccompCrashKey(args);
   // Make "request" volatile so that we can see it on the stack in a minidump.
@@ -280,8 +282,8 @@ intptr_t SIGSYSIoctlFailure(const struct arch_seccomp_data& args,
 
 intptr_t SIGSYSKillFailure(const struct arch_seccomp_data& args,
                            void* /* aux */) {
-   static const char kSeccompKillError[] =
-      __FILE__":**CRASHING**:" SECCOMP_MESSAGE_KILL_CONTENT "\n";
+  static constexpr char kSeccompKillError[] =
+      __FILE__ ":**CRASHING**:" SECCOMP_MESSAGE_KILL_CONTENT "\n";
   WriteToStdErr(kSeccompKillError, sizeof(kSeccompKillError) - 1);
   SetSeccompCrashKey(args);
   // Make "pid" volatile so that we can see it on the stack in a minidump.
@@ -294,7 +296,7 @@ intptr_t SIGSYSKillFailure(const struct arch_seccomp_data& args,
 
 intptr_t SIGSYSFutexFailure(const struct arch_seccomp_data& args,
                             void* /* aux */) {
-  static const char kSeccompFutexError[] =
+  static constexpr char kSeccompFutexError[] =
       __FILE__ ":**CRASHING**:" SECCOMP_MESSAGE_FUTEX_CONTENT "\n";
   WriteToStdErr(kSeccompFutexError, sizeof(kSeccompFutexError) - 1);
   SetSeccompCrashKey(args);
@@ -307,7 +309,7 @@ intptr_t SIGSYSFutexFailure(const struct arch_seccomp_data& args,
 
 intptr_t SIGSYSPtraceFailure(const struct arch_seccomp_data& args,
                              void* /* aux */) {
-  static const char kSeccompPtraceError[] =
+  static constexpr char kSeccompPtraceError[] =
       __FILE__ ":**CRASHING**:" SECCOMP_MESSAGE_PTRACE_CONTENT "\n";
   WriteToStdErr(kSeccompPtraceError, sizeof(kSeccompPtraceError) - 1);
   SetSeccompCrashKey(args);
@@ -316,6 +318,81 @@ intptr_t SIGSYSPtraceFailure(const struct arch_seccomp_data& args,
   *addr = '\0';
   for (;;)
     _exit(1);
+}
+
+intptr_t SIGSYSSocketFailure(const struct arch_seccomp_data& args, void* aux) {
+  static constexpr char kSeccompSocketError[] =
+      __FILE__ ":**CRASHING**:" SECCOMP_MESSAGE_SOCKET_CONTENT "\n";
+  WriteToStdErr(kSeccompSocketError, sizeof(kSeccompSocketError) - 1);
+
+  NumberToHex<uint64_t> domain_hex(args.args[0]);
+  NumberToHex<uint64_t> type_hex(args.args[1]);
+  NumberToHex<uint64_t> protocol_hex(args.args[2]);
+  static constexpr char kDomainString[] = "domain=";
+  static constexpr char kTypeString[] = " type=";
+  static constexpr char kProtocolString[] = " protocol=";
+  WriteToStdErr(kDomainString, strlen(kDomainString));
+  WriteToStdErr(domain_hex.str(), domain_hex.length());
+  WriteToStdErr(kTypeString, strlen(kTypeString));
+  WriteToStdErr(type_hex.str(), type_hex.length());
+  WriteToStdErr(kProtocolString, strlen(kProtocolString));
+  WriteToStdErr(protocol_hex.str(), protocol_hex.length());
+  WriteToStdErr("\n", 1);
+
+  SetSeccompCrashKey(args);
+  // Make args volatile so that we can see it on the stack in a minidump.
+  volatile int domain = static_cast<int>(args.args[0]);
+  volatile int type = static_cast<int>(args.args[1]);
+  volatile int protocol = static_cast<int>(args.args[2]);
+
+  // Encode argument bits into an address and dereference it, hoping to avoid
+  // hitting mapped pages.
+  uintptr_t addr = (domain & 0x3ful);   // 6 bits for domain
+  addr |= ((type & 0xful) << 6);        // 4 bits for type
+  addr |= ((protocol & 0x1ful) << 10);  // 5 bits for protocol
+  *reinterpret_cast<volatile char*>(addr) = '\0';
+
+  // Hit the NULL page with just the domain and type if this fails.
+  *reinterpret_cast<volatile char*>((domain & 0x3ful) | ((type & 0xful) << 6)) =
+      '\0';
+  for (;;) {
+    _exit(1);
+  }
+}
+
+intptr_t SIGSYSSockoptFailure(const struct arch_seccomp_data& args, void* aux) {
+  static constexpr char kSeccompSockoptError[] =
+      __FILE__ ":**CRASHING**:" SECCOMP_MESSAGE_SOCKOPT_CONTENT "\n";
+  WriteToStdErr(kSeccompSockoptError, sizeof(kSeccompSockoptError) - 1);
+
+  NumberToHex<uint64_t> level_hex(args.args[1]);
+  NumberToHex<uint64_t> optname_hex(args.args[2]);
+  static constexpr char kLevelString[] = "level=";
+  static constexpr char kOptnameString[] = " optname=";
+  WriteToStdErr(kLevelString, strlen(kLevelString));
+  WriteToStdErr(level_hex.str(), level_hex.length());
+  WriteToStdErr(kOptnameString, strlen(kOptnameString));
+  WriteToStdErr(optname_hex.str(), optname_hex.length());
+  WriteToStdErr("\n", 1);
+
+  SetSeccompCrashKey(args);
+  // Make args volatile so that we can see it on the stack in a minidump.
+  volatile int level = static_cast<int>(args.args[1]);
+  volatile int optname = static_cast<int>(args.args[2]);
+
+  // Encode argument bits into an address and dereference it, hoping to avoid
+  // hitting mapped pages.
+  // 9 bits for level. The levels are listed in /etc/protocols and most are
+  // below 256, except one.
+  uintptr_t addr = (level & 0x1fful);
+  addr |= ((optname & 0x7ful) << 9);  // 7 bits for optname.
+  *reinterpret_cast<volatile char*>(addr) = '\0';
+
+  // Hit the NULL page with just the level.
+  *reinterpret_cast<volatile char*>((level & 0x1fful)) = '\0';
+  for (;;) {
+    _exit(1);
+  }
 }
 
 intptr_t SIGSYSSchedHandler(const struct arch_seccomp_data& args,
@@ -371,35 +448,43 @@ intptr_t SIGSYSFstatatHandler(const struct arch_seccomp_data& args,
 }
 
 bpf_dsl::ResultExpr CrashSIGSYS() {
-  return bpf_dsl::Trap(CrashSIGSYS_Handler, NULL);
+  return bpf_dsl::Trap(CrashSIGSYS_Handler, nullptr);
 }
 
 bpf_dsl::ResultExpr CrashSIGSYSClone() {
-  return bpf_dsl::Trap(SIGSYSCloneFailure, NULL);
+  return bpf_dsl::Trap(SIGSYSCloneFailure, nullptr);
 }
 
 bpf_dsl::ResultExpr CrashSIGSYSPrctl() {
-  return bpf_dsl::Trap(SIGSYSPrctlFailure, NULL);
+  return bpf_dsl::Trap(SIGSYSPrctlFailure, nullptr);
 }
 
 bpf_dsl::ResultExpr CrashSIGSYSIoctl() {
-  return bpf_dsl::Trap(SIGSYSIoctlFailure, NULL);
+  return bpf_dsl::Trap(SIGSYSIoctlFailure, nullptr);
 }
 
 bpf_dsl::ResultExpr CrashSIGSYSKill() {
-  return bpf_dsl::Trap(SIGSYSKillFailure, NULL);
+  return bpf_dsl::Trap(SIGSYSKillFailure, nullptr);
 }
 
 bpf_dsl::ResultExpr CrashSIGSYSFutex() {
-  return bpf_dsl::Trap(SIGSYSFutexFailure, NULL);
+  return bpf_dsl::Trap(SIGSYSFutexFailure, nullptr);
 }
 
 bpf_dsl::ResultExpr CrashSIGSYSPtrace() {
-  return bpf_dsl::Trap(SIGSYSPtraceFailure, NULL);
+  return bpf_dsl::Trap(SIGSYSPtraceFailure, nullptr);
+}
+
+bpf_dsl::ResultExpr CrashSIGSYSSocket() {
+  return bpf_dsl::Trap(SIGSYSSocketFailure, nullptr);
+}
+
+bpf_dsl::ResultExpr CrashSIGSYSSockopt() {
+  return bpf_dsl::Trap(SIGSYSSockoptFailure, nullptr);
 }
 
 bpf_dsl::ResultExpr RewriteSchedSIGSYS() {
-  return bpf_dsl::Trap(SIGSYSSchedHandler, NULL);
+  return bpf_dsl::Trap(SIGSYSSchedHandler, nullptr);
 }
 
 bpf_dsl::ResultExpr RewriteFstatatSIGSYS(int fs_denied_errno) {
@@ -441,6 +526,14 @@ const char* GetFutexErrorMessageContentForTests() {
 
 const char* GetPtraceErrorMessageContentForTests() {
   return SECCOMP_MESSAGE_PTRACE_CONTENT;
+}
+
+const char* GetSocketErrorMessageContentForTests() {
+  return SECCOMP_MESSAGE_SOCKET_CONTENT;
+}
+
+const char* GetSockoptErrorMessageContentForTests() {
+  return SECCOMP_MESSAGE_SOCKOPT_CONTENT;
 }
 
 }  // namespace sandbox.

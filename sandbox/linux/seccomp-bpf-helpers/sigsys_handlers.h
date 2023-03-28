@@ -52,6 +52,18 @@ SANDBOX_EXPORT intptr_t SIGSYSFutexFailure(const arch_seccomp_data& args,
 // argument.
 SANDBOX_EXPORT intptr_t SIGSYSPtraceFailure(const arch_seccomp_data& args,
                                             void* aux);
+// The crashing address will be ((protocol & 0x1f) << 10) | ((type & 0xf) << 6)
+// | (domain & 0x3f). This is 5 bits for protocol (from /etc/protocols), 4 bits
+// for type (e.g. SOCK_STREAM, SOCK_RAW, SOCK_PACKET), and 6 bits for domain
+// (e.g. AF_UNIX, AF_INET).
+SANDBOX_EXPORT intptr_t
+SIGSYSSocketFailure(const struct arch_seccomp_data& args, void* aux);
+// The crashing address will be ((optname & 0xfful) << 9) | (level & 0x1ff).
+// This is 7 bits for optname (e.g. SO_REUSEADDR) and 9 bits for level (from
+// /etc/protocols).
+SANDBOX_EXPORT intptr_t
+SIGSYSSockoptFailure(const struct arch_seccomp_data& args, void* aux);
+
 // If the syscall is not being called on the current tid, crashes in the same
 // way as CrashSIGSYS_Handler.  Otherwise, returns the result of calling the
 // syscall with the pid argument set to 0 (which for these calls means the
@@ -84,6 +96,8 @@ SANDBOX_EXPORT bpf_dsl::ResultExpr CrashSIGSYSIoctl();
 SANDBOX_EXPORT bpf_dsl::ResultExpr CrashSIGSYSKill();
 SANDBOX_EXPORT bpf_dsl::ResultExpr CrashSIGSYSFutex();
 SANDBOX_EXPORT bpf_dsl::ResultExpr CrashSIGSYSPtrace();
+SANDBOX_EXPORT bpf_dsl::ResultExpr CrashSIGSYSSocket();
+SANDBOX_EXPORT bpf_dsl::ResultExpr CrashSIGSYSSockopt();
 SANDBOX_EXPORT bpf_dsl::ResultExpr RewriteSchedSIGSYS();
 SANDBOX_EXPORT bpf_dsl::ResultExpr RewriteFstatatSIGSYS(int fs_denied_errno);
 
@@ -99,6 +113,8 @@ SANDBOX_EXPORT const char* GetIoctlErrorMessageContentForTests();
 SANDBOX_EXPORT const char* GetKillErrorMessageContentForTests();
 SANDBOX_EXPORT const char* GetFutexErrorMessageContentForTests();
 SANDBOX_EXPORT const char* GetPtraceErrorMessageContentForTests();
+SANDBOX_EXPORT const char* GetSocketErrorMessageContentForTests();
+SANDBOX_EXPORT const char* GetSockoptErrorMessageContentForTests();
 
 }  // namespace sandbox.
 
