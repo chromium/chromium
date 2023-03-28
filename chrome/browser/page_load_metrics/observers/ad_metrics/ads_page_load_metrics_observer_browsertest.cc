@@ -1393,11 +1393,11 @@ IN_PROC_BROWSER_TEST_F(AdsPageLoadMetricsObserverBrowserTest,
       ChildFrameAt(web_contents->GetPrimaryMainFrame(), 0);
   const std::string play_script =
       "var video = document.getElementsByTagName('video')[0];"
-      "video.onplaying = () => { "
-      "window.domAutomationController.send('true'); };"
-      "video.play();";
-  EXPECT_EQ("true", content::EvalJs(ad_frame, play_script,
-                                    content::EXECUTE_SCRIPT_USE_MANUAL_REPLY));
+      "new Promise(resolve => {"
+      "  video.onplaying = () => { resolve('true'); };"
+      "  video.play();"
+      "});";
+  EXPECT_EQ("true", content::EvalJs(ad_frame, play_script));
 
   ASSERT_TRUE(
       ui_test_utils::NavigateToURL(browser(), GURL(url::kAboutBlankURL)));

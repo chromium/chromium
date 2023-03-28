@@ -14,6 +14,7 @@ function openWindow(e) {
   if (e) {
     e.source.postMessage('', e.origin);
   }
+  return true;
 }
 window.addEventListener('message', openWindow);
 </script>

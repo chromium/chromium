@@ -74,25 +74,26 @@ void PasswordManagerInteractiveTestBase::WaitForElementValue(
   const std::string script =
       value_check_function +
       base::StringPrintf(
-          "if (valueCheck()) {"
-          "  window.domAutomationController.send(%d);"
-          "} else {"
-          "  var element = document.getElementById('%s');"
-          "  if (!element)"
-          "    window.domAutomationController.send(%d);"
-          "  element.oninput = function() {"
-          "    if (valueCheck()) {"
-          "      window.domAutomationController.send(%d);"
-          "      element.oninput = undefined;"
-          "    }"
-          "  };"
-          "}",
+          "new Promise(resolve => {"
+          "  if (valueCheck()) {"
+          "    resolve(%d);"
+          "  } else {"
+          "    var element = document.getElementById('%s');"
+          "    if (!element)"
+          "      resolve(%d);"
+          "    element.oninput = function() {"
+          "      if (valueCheck()) {"
+          "        resolve(%d);"
+          "        element.oninput = undefined;"
+          "      }"
+          "    };"
+          "  }"
+          "});",
           RETURN_CODE_OK, element_id.c_str(), RETURN_CODE_NO_ELEMENT,
           RETURN_CODE_OK);
   EXPECT_EQ(RETURN_CODE_OK,
             content::EvalJs(RenderFrameHost(), script,
-                            content::EXECUTE_SCRIPT_NO_USER_GESTURE |
-                                content::EXECUTE_SCRIPT_USE_MANUAL_REPLY))
+                            content::EXECUTE_SCRIPT_NO_USER_GESTURE))
       << "element_id = " << element_id
       << ", expected_value = " << expected_value;
 }

@@ -987,9 +987,11 @@ IN_PROC_BROWSER_TEST_F(
     PermissionRequestManagerOneTimeGeolocationPermissionBrowserTest,
     RequestForPermission) {
   const char kQueryCurrentPosition[] = R"(
-        navigator.geolocation.getCurrentPosition(
-          _ => domAutomationController.send('success'),
-          _ => domAutomationController.send('failure'));
+        new Promise(resolve => {
+          navigator.geolocation.getCurrentPosition(
+            _ => resolve('success'),
+            _ => resolve('failure'));
+        });
       )";
   ASSERT_TRUE(embedded_test_server()->Start());
   ui_test_utils::NavigateToURLBlockUntilNavigationsComplete(
@@ -999,15 +1001,13 @@ IN_PROC_BROWSER_TEST_F(
 
   // Request 'geolocation' permission.
   std::string result =
-      content::EvalJs(GetActiveMainFrame(), kQueryCurrentPosition,
-                      content::EXECUTE_SCRIPT_USE_MANUAL_REPLY)
+      content::EvalJs(GetActiveMainFrame(), kQueryCurrentPosition)
           .ExtractString();
   EXPECT_EQ("success", result);
   EXPECT_EQ(1, bubble_factory()->TotalRequestCount());
 
   // Request 'geolocation' permission. There should not be a 2nd prompt.
-  result = content::EvalJs(GetActiveMainFrame(), kQueryCurrentPosition,
-                           content::EXECUTE_SCRIPT_USE_MANUAL_REPLY)
+  result = content::EvalJs(GetActiveMainFrame(), kQueryCurrentPosition)
                .ExtractString();
   EXPECT_EQ("success", result);
   EXPECT_EQ(1, bubble_factory()->TotalRequestCount());
@@ -1025,8 +1025,7 @@ IN_PROC_BROWSER_TEST_F(
               GetPermissionRequestManager()));
 
   // Request 'geolocation' permission.
-  result = content::EvalJs(GetActiveMainFrame(), kQueryCurrentPosition,
-                           content::EXECUTE_SCRIPT_USE_MANUAL_REPLY)
+  result = content::EvalJs(GetActiveMainFrame(), kQueryCurrentPosition)
                .ExtractString();
   EXPECT_EQ("success", result);
   // There should be no permission prompt.
@@ -1062,8 +1061,7 @@ IN_PROC_BROWSER_TEST_F(
       permissions::PermissionRequestManager::AutoResponseType::ACCEPT_ONCE);
 
   // Request 'geolocation' permission. We should get a prompt.
-  result = content::EvalJs(GetActiveMainFrame(), kQueryCurrentPosition,
-                           content::EXECUTE_SCRIPT_USE_MANUAL_REPLY)
+  result = content::EvalJs(GetActiveMainFrame(), kQueryCurrentPosition)
                .ExtractString();
   EXPECT_EQ("success", result);
 

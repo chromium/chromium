@@ -18,6 +18,7 @@ function print(msg) {
  * @param {String} src - Human-readable description of where the message is
  *                       coming from.
  * @param {String} txt - The text to print.
+ * @return {String} The text that was printed.
  */
 function output(src, txt) {
   // Handle DOMException:
@@ -27,7 +28,5 @@ function output(src, txt) {
   txt = src + ': ' + txt;
   print(txt);
   console.warn(txt);
-  if (window.domAutomationController) {
-    window.domAutomationController.send(txt);
-  }
+  return txt;
 }

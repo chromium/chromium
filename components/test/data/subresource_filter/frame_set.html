@@ -13,9 +13,11 @@
          var frame = document.createElement("iframe");
          frame.name = "dynamic";
          frame.src = "frame_with_included_script.html";
-         frame.onload = () => window.domAutomationController.send(true)
-         frame.onerror = () => window.domAutomationController.send(false)
-         document.body.appendChild(frame);
+         return new Promise(resolve => {
+          frame.onload = () => resolve(true)
+          frame.onerror = () => resolve(false)
+          document.body.appendChild(frame);
+         });
        }
     </script>
   </head>

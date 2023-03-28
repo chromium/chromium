@@ -195,15 +195,16 @@ IN_PROC_BROWSER_TEST_F(CreateShortcutBrowserTest, WorksAfterDelayedIFrameLoad) {
   // Append an iframe and wait for it to finish loading.
   const char script[] = R"(
     const iframe = document.createElement('iframe');
-    iframe.onload = _ => domAutomationController.send('success');
-    iframe.srcdoc = 'inner page';
-    document.body.appendChild(iframe);
+    new Promise(resolve => {
+      iframe.onload = _ => resolve('success');
+      iframe.srcdoc = 'inner page';
+      document.body.appendChild(iframe);
+    });
   )";
-  EXPECT_EQ(
-      content::EvalJs(browser()->tab_strip_model()->GetActiveWebContents(),
-                      script, content::EXECUTE_SCRIPT_USE_MANUAL_REPLY)
-          .ExtractString(),
-      "success");
+  EXPECT_EQ(content::EvalJs(
+                browser()->tab_strip_model()->GetActiveWebContents(), script)
+                .ExtractString(),
+            "success");
 
   InstallShortcutAppForCurrentUrl();
 }

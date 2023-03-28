@@ -12,12 +12,13 @@ let request = undefined;
  * PaymentRequestEvent.changePaymentMethod().
  * @param {PaymentRequest} request - The PaymentRequest object for showing the
  *                                   payment sheet.
+ * @return {String} The output.
  */
 function outputChangePaymentMethodReturnValue(request) {
-  request.show()
+  return request.show()
       .then((response) => {
-        response.complete('success').then(() => {
-          output(
+        return response.complete('success').then(() => {
+          return output(
               'PaymentRequest.show()',
               'changePaymentMethod() returned: ' +
                   JSON.stringify(response.details.changePaymentMethodReturned),
@@ -25,7 +26,7 @@ function outputChangePaymentMethodReturnValue(request) {
         });
       })
       .catch((error) => {
-        output('PaymentRequest.show() rejected with', error);
+        return output('PaymentRequest.show() rejected with', error);
       });
 }
 

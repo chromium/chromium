@@ -5,9 +5,11 @@
        var s = document.createElement("script");
        s.type = "text/javascript"
        s.src = "included_script.js";
-       s.onload = () => { window.domAutomationController.send(true); }
-       s.onerror = () => { window.domAutomationController.send(false); }
-       document.head.appendChild(s);
+       return new Promise(resolve => {
+        s.onload = () => { resolve(true); }
+        s.onerror = () => { resolve(false); }
+        document.head.appendChild(s);
+       });
      }
   </script>
   </head>

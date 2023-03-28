@@ -8,6 +8,6 @@ var textinput_helper = {
         Math.floor(ele.offsetTop) + ',' +
         Math.ceil(ele.offsetWidth) + ',' +
         Math.ceil(ele.offsetHeight);
-    window.domAutomationController.send(coordinate);
+    return coordinate;
   }
 };

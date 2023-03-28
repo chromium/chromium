@@ -86,9 +86,7 @@ const char kGetFontSize[] =
 
 const unsigned kDarkToolbarThemeColor = 0xFF1A1A1A;
 
-const char kTestDistillerObject[] =
-    "window.domAutomationController.send("
-    "typeof distiller == 'object')";
+const char kTestDistillerObject[] = "typeof distiller == 'object'";
 
 void ExpectBodyHasThemeAndFont(content::WebContents* contents,
                                const std::string& expected_theme,
@@ -372,7 +370,7 @@ IN_PROC_BROWSER_TEST_F(DomDistillerViewerSourceBrowserTest,
 
   // Execute in isolated world; where all distiller scripts are run.
   EXPECT_EQ(true, content::EvalJs(contents, kTestDistillerObject,
-                                  content::EXECUTE_SCRIPT_USE_MANUAL_REPLY,
+                                  content::EXECUTE_SCRIPT_DEFAULT_OPTIONS,
                                   ISOLATED_WORLD_ID_CHROME_INTERNAL));
 }
 
@@ -389,11 +387,8 @@ IN_PROC_BROWSER_TEST_F(DomDistillerViewerSourceBrowserTest,
   // Wait for the page load to complete (this will be a distiller error page).
   EXPECT_TRUE(content::WaitForLoadStop(contents));
 
-  bool result;
   // Execute in main world, the distiller object should not be here.
-  EXPECT_TRUE(content::ExecuteScriptAndExtractBool(
-      contents, kTestDistillerObject, &result));
-  EXPECT_FALSE(result);
+  EXPECT_EQ(false, content::EvalJs(contents, kTestDistillerObject));
 }
 
 IN_PROC_BROWSER_TEST_F(DomDistillerViewerSourceBrowserTest,
@@ -409,10 +404,7 @@ IN_PROC_BROWSER_TEST_F(DomDistillerViewerSourceBrowserTest,
   // Wait for the page load to complete.
   EXPECT_FALSE(content::WaitForLoadStop(contents));
 
-  bool result;
-  EXPECT_TRUE(content::ExecuteScriptAndExtractBool(
-      contents, kTestDistillerObject, &result));
-  EXPECT_FALSE(result);
+  EXPECT_EQ(false, content::EvalJs(contents, kTestDistillerObject));
 }
 
 IN_PROC_BROWSER_TEST_F(DomDistillerViewerSourceBrowserTest, MultiPageArticle) {

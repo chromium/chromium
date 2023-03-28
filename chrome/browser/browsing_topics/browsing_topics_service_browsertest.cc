@@ -1729,16 +1729,17 @@ IN_PROC_BROWSER_TEST_F(BrowsingTopicsBrowserTest, XhrWithoutTopicsFlagSet) {
                                 content::JsReplace(R"(
       const xhr = new XMLHttpRequest();
 
-      xhr.onreadystatechange = function() {
-        if (xhr.readyState == XMLHttpRequest.DONE) {
-          domAutomationController.send('success');
+      new Promise(resolve => {
+        xhr.onreadystatechange = function() {
+          if (xhr.readyState == XMLHttpRequest.DONE) {
+            resolve('success');
+          }
         }
-      }
 
-      xhr.open('GET', $1);
-      xhr.send();)",
-                                                   xhr_url),
-                                content::EXECUTE_SCRIPT_USE_MANUAL_REPLY));
+        xhr.open('GET', $1);
+        xhr.send();
+      });)",
+                                                   xhr_url)));
 
     absl::optional<std::string> topics_header_value =
         GetTopicsHeaderForRequestPath(
@@ -1756,17 +1757,18 @@ IN_PROC_BROWSER_TEST_F(BrowsingTopicsBrowserTest, XhrWithoutTopicsFlagSet) {
                                 content::JsReplace(R"(
       const xhr = new XMLHttpRequest();
 
-      xhr.onreadystatechange = function() {
-        if (xhr.readyState == XMLHttpRequest.DONE) {
-          domAutomationController.send('success');
+      new Promise(resolve => {
+        xhr.onreadystatechange = function() {
+          if (xhr.readyState == XMLHttpRequest.DONE) {
+            resolve('success');
+          }
         }
-      }
 
-      xhr.open('GET', $1);
-      xhr.deprecatedBrowsingTopics = false;
-      xhr.send();)",
-                                                   xhr_url),
-                                content::EXECUTE_SCRIPT_USE_MANUAL_REPLY));
+        xhr.open('GET', $1);
+        xhr.deprecatedBrowsingTopics = false;
+        xhr.send();
+      });)",
+                                                   xhr_url)));
 
     absl::optional<std::string> topics_header_value =
         GetTopicsHeaderForRequestPath(
@@ -1794,20 +1796,21 @@ IN_PROC_BROWSER_TEST_F(
                               content::JsReplace(R"(
     const xhr = new XMLHttpRequest();
 
-    xhr.onreadystatechange = function() {
-      if (xhr.readyState == XMLHttpRequest.DONE) {
-        domAutomationController.send('success');
+    new Promise(resolve => {
+      xhr.onreadystatechange = function() {
+        if (xhr.readyState == XMLHttpRequest.DONE) {
+          resolve('success');
+        }
       }
-    }
 
-    xhr.open('GET', $1);
+      xhr.open('GET', $1);
 
-    // This will no-op.
-    xhr.deprecatedBrowsingTopics = true;
+      // This will no-op.
+      xhr.deprecatedBrowsingTopics = true;
 
-    xhr.send();)",
-                                                 xhr_url),
-                              content::EXECUTE_SCRIPT_USE_MANUAL_REPLY));
+      xhr.send();
+    });)",
+                                                 xhr_url)));
 
   absl::optional<std::string> topics_header_value =
       GetTopicsHeaderForRequestPath(
@@ -1841,17 +1844,18 @@ IN_PROC_BROWSER_TEST_F(
                               content::JsReplace(R"(
     const xhr = new XMLHttpRequest();
 
-    xhr.onreadystatechange = function() {
-      if (xhr.readyState == XMLHttpRequest.DONE) {
-        domAutomationController.send('success');
+    new Promise(resolve => {
+      xhr.onreadystatechange = function() {
+        if (xhr.readyState == XMLHttpRequest.DONE) {
+          resolve('success');
+        }
       }
-    }
 
-    xhr.open('GET', $1);
-    xhr.deprecatedBrowsingTopics = true;
-    xhr.send();)",
-                                                 xhr_url),
-                              content::EXECUTE_SCRIPT_USE_MANUAL_REPLY));
+      xhr.open('GET', $1);
+      xhr.deprecatedBrowsingTopics = true;
+      xhr.send();
+    });)",
+                                                 xhr_url)));
 
   absl::optional<std::string> topics_header_value =
       GetTopicsHeaderForRequestPath(
@@ -1957,17 +1961,18 @@ IN_PROC_BROWSER_TEST_F(BrowsingTopicsBrowserTest, UseCounter_Xhr) {
                                 content::JsReplace(R"(
       const xhr = new XMLHttpRequest();
 
-      xhr.onreadystatechange = function() {
-        if (xhr.readyState == XMLHttpRequest.DONE) {
-          domAutomationController.send('success');
+      new Promise(resolve => {
+        xhr.onreadystatechange = function() {
+          if (xhr.readyState == XMLHttpRequest.DONE) {
+            resolve('success');
+          }
         }
-      }
 
-      xhr.open('GET', $1);
-      xhr.deprecatedBrowsingTopics = false;
-      xhr.send();)",
-                                                   xhr_url),
-                                content::EXECUTE_SCRIPT_USE_MANUAL_REPLY));
+        xhr.open('GET', $1);
+        xhr.deprecatedBrowsingTopics = false;
+        xhr.send();
+      });)",
+                                                   xhr_url)));
 
     // Navigate away to flush use counters.
     ASSERT_TRUE(
@@ -1987,17 +1992,18 @@ IN_PROC_BROWSER_TEST_F(BrowsingTopicsBrowserTest, UseCounter_Xhr) {
                                 content::JsReplace(R"(
     const xhr = new XMLHttpRequest();
 
-    xhr.onreadystatechange = function() {
-      if (xhr.readyState == XMLHttpRequest.DONE) {
-        domAutomationController.send('success');
+    new Promise(resolve => {
+      xhr.onreadystatechange = function() {
+        if (xhr.readyState == XMLHttpRequest.DONE) {
+          resolve('success');
+        }
       }
-    }
 
-    xhr.open('GET', $1);
-    xhr.deprecatedBrowsingTopics = true;
-    xhr.send();)",
-                                                   xhr_url),
-                                content::EXECUTE_SCRIPT_USE_MANUAL_REPLY));
+      xhr.open('GET', $1);
+      xhr.deprecatedBrowsingTopics = true;
+      xhr.send();
+    });)",
+                                                   xhr_url)));
 
     // Navigate away to flush use counters.
     ASSERT_TRUE(

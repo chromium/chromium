@@ -208,8 +208,7 @@ bool TextInputTestHelper::ClickElement(const std::string& id,
                                        content::WebContents* tab) {
   std::string coordinate =
       content::EvalJs(
-          tab, "textinput_helper.retrieveElementCoordinate('" + id + "')",
-          content::EXECUTE_SCRIPT_USE_MANUAL_REPLY)
+          tab, "textinput_helper.retrieveElementCoordinate('" + id + "')")
           .ExtractString();
 
   gfx::Rect rect;

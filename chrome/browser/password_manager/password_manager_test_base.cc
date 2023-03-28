@@ -554,39 +554,42 @@ void PasswordManagerBrowserTestBase::WaitForElementValue(
   const std::string script =
       value_check_function +
       base::StringPrintf(
-          "if (valueCheck()) {"
-          "  /* Spin the event loop with setTimeout. */"
-          "  setTimeout(window.domAutomationController.send(%d), 0);"
-          "} else {"
-          "  if (%s)"
-          "    var element = document.getElementById("
-          "        '%s').contentDocument.getElementById('%s');"
-          "  else "
-          "    var element = document.getElementById('%s');"
-          "  if (!element)"
-          "    window.domAutomationController.send(%d);"
-          "  element.onchange = function() {"
-          "    if (valueCheck()) {"
-          "      /* Spin the event loop with setTimeout. */"
-          "      setTimeout(window.domAutomationController.send(%d), 0);"
-          "    } else {"
-          "      window.domAutomationController.send(%d);"
-          "    }"
-          // This script should never send more than one message because only 1
-          // message is expected. Any further messages might be processed in
-          // subsequent script executions, that could lead to failures or
-          // flakiness. Leaving onchange handler would cause sending messages
-          // on any further onchange events.
-          "    element.onchange = undefined;"
-          "  };"
-          "}",
+          "new Promise(resolve => {"
+          "  if (valueCheck()) {"
+          "    /* Spin the event loop with setTimeout. */"
+          "    setTimeout(() => resolve(%d), 0);"
+          "  } else {"
+          "    if (%s)"
+          "      var element = document.getElementById("
+          "          '%s').contentDocument.getElementById('%s');"
+          "    else "
+          "      var element = document.getElementById('%s');"
+          "    if (!element)"
+          "      resolve(%d);"
+          "    element.onchange = function() {"
+          "      if (valueCheck()) {"
+          "        /* Spin the event loop with setTimeout. */"
+          "        setTimeout(() => resolve(%d), 0);"
+          "      } else {"
+          "        resolve(%d);"
+          "      }"
+          // Since this test uses promises, rather than
+          // domAutomationController.send, it is not possible for future
+          // 'change' events to cause flakiness or wrong script results, since
+          // each promise can only settle (i.e.  fulfill or reject) at most
+          // once. However, to ensure that the first onchange event is the only
+          // one that can be the result of this script, we still clear out the
+          // onchange listener.
+          "      element.onchange = undefined;"
+          "    };"
+          "  }"
+          "});",
           RETURN_CODE_OK, iframe_id.c_str(), iframe_id.c_str(),
           element_id.c_str(), element_id.c_str(), RETURN_CODE_NO_ELEMENT,
           RETURN_CODE_OK, RETURN_CODE_WRONG_VALUE);
   EXPECT_EQ(RETURN_CODE_OK,
             content::EvalJs(RenderFrameHost(), script,
-                            content::EXECUTE_SCRIPT_NO_USER_GESTURE |
-                                content::EXECUTE_SCRIPT_USE_MANUAL_REPLY))
+                            content::EXECUTE_SCRIPT_NO_USER_GESTURE))
       << "element_id = " << element_id
       << ", expected_value = " << expected_value;
 }
@@ -615,34 +618,37 @@ void PasswordManagerBrowserTestBase::WaitForJsElementValue(
   const std::string script =
       value_check_function +
       base::StringPrintf(
-          "if (valueCheck()) {"
-          "  /* Spin the event loop with setTimeout. */"
-          "  setTimeout(window.domAutomationController.send(%d), 0);"
-          "} else {"
-          "  var element = %s;"
-          "  if (!element)"
-          "    window.domAutomationController.send(%d);"
-          "  element.onchange = function() {"
-          "    if (valueCheck()) {"
-          "      /* Spin the event loop with setTimeout. */"
-          "      setTimeout(window.domAutomationController.send(%d), 0);"
-          "    } else {"
-          "      window.domAutomationController.send(%d);"
-          "    }"
-          // This script should never send more than one message because only 1
-          // message is expected. Any further messages might be processed in
-          // subsequent script executions, that could lead to failures or
-          // flakiness. Leaving onchange handler would cause sending messages
-          // on any further onchange events.
-          "    element.onchange = undefined;"
-          "  };"
-          "}",
+          "new Promise(resolve => {"
+          "  if (valueCheck()) {"
+          "    /* Spin the event loop with setTimeout. */"
+          "    setTimeout(() => resolve(%d), 0);"
+          "  } else {"
+          "    var element = %s;"
+          "    if (!element)"
+          "      resolve(%d);"
+          "    element.onchange = function() {"
+          "      if (valueCheck()) {"
+          "        /* Spin the event loop with setTimeout. */"
+          "        setTimeout(() => resolve(%d), 0);"
+          "      } else {"
+          "        resolve(%d);"
+          "      }"
+          // Since this test uses promises, rather than
+          // domAutomationController.send, it is not possible for future
+          // 'change' events to cause flakiness or wrong script results, since
+          // each promise can only settle (i.e.  fulfill or reject) at most
+          // once. However, to ensure that the first onchange event is the only
+          // one that can be the result of this script, we still clear out the
+          // onchange listener.
+          "      element.onchange = undefined;"
+          "    };"
+          "  }"
+          "});",
           RETURN_CODE_OK, element_selector.c_str(), RETURN_CODE_NO_ELEMENT,
           RETURN_CODE_OK, RETURN_CODE_WRONG_VALUE);
   EXPECT_EQ(RETURN_CODE_OK,
             content::EvalJs(RenderFrameHost(), script,
-                            content::EXECUTE_SCRIPT_NO_USER_GESTURE |
-                                content::EXECUTE_SCRIPT_USE_MANUAL_REPLY))
+                            content::EXECUTE_SCRIPT_NO_USER_GESTURE))
       << "element_selector = " << element_selector
       << ", expected_value = " << expected_value;
 }

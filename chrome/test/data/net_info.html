@@ -3,35 +3,31 @@
 <script>
 
 function getType() {
-  sendValueToTest(navigator.connection.type);
+  return navigator.connection.type;
 }
 
 function getDownlinkMax() {
-  sendValueToTest(navigator.connection.downlinkMax);
+  return navigator.connection.downlinkMax;
 }
 
 function getOnLine() {
-  sendValueToTest(navigator.onLine);
+  return navigator.onLine;
 }
 
 function getEffectiveType() {
-  sendValueToTest(navigator.connection.effectiveType);
+  return navigator.connection.effectiveType;
 }
 
 function getRtt() {
-  sendValueToTest(navigator.connection.rtt);
+  return navigator.connection.rtt;
 }
 
 function getDownlink() {
-  sendValueToTest(navigator.connection.downlink);
+  return navigator.connection.downlink;
 }
 
 function getSaveData() {
-  sendValueToTest(navigator.connection.saveData);
-}
-
-function sendValueToTest(value) {
-  window.domAutomationController.send(value);
+  return navigator.connection.saveData;
 }
 
 </script>

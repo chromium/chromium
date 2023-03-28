@@ -36,10 +36,10 @@ IN_PROC_BROWSER_TEST_P(PaymentHandlerChangePaymentMethodTest, Test) {
   ASSERT_TRUE(content::ExecuteScript(GetActiveWebContents(),
                                      GetParam().init_test_code));
 
-  std::string actual_output;
-  ASSERT_TRUE(content::ExecuteScriptAndExtractString(
-      GetActiveWebContents(), "outputChangePaymentMethodReturnValue(request);",
-      &actual_output));
+  std::string actual_output =
+      content::EvalJs(GetActiveWebContents(),
+                      "outputChangePaymentMethodReturnValue(request);")
+          .ExtractString();
 
   // The test expectations are hard-coded, but the embedded test server changes
   // its port number in every test, e.g., https://a.com:34548.

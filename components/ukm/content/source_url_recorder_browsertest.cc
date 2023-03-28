@@ -271,13 +271,14 @@ IN_PROC_BROWSER_TEST_F(SourceUrlRecorderWebContentsObserverBrowserTest,
                      "document.querySelector('portal').activate()"));
 
   std::string activated_poll = R"(
-    setInterval(() => {
-      if (activated)
-        window.domAutomationController.send(true);
-    }, 10);
+    new Promise(resolve => {
+      setInterval(() => {
+        if (activated)
+          resolve(true);
+      }, 10);
+    });
   )";
-  EXPECT_EQ(true, EvalJs(portal_contents, activated_poll,
-                         content::EXECUTE_SCRIPT_USE_MANUAL_REPLY));
+  EXPECT_EQ(true, EvalJs(portal_contents, activated_poll));
 
   // The activated portal contents should be the currently active contents.
   EXPECT_EQ(portal_contents, shell()->web_contents());

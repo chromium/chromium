@@ -79,24 +79,25 @@ class PasswordGenerationInteractiveTest
   void WaitForNonEmptyFieldValue(const std::string& field_id) {
     const std::string script = base::StringPrintf(
         "element = document.getElementById('%s');"
-        "if (!element) {"
-        "  setTimeout(window.domAutomationController.send(%d), 0);"
-        "}"
-        "if (element.value) {"
-        "  setTimeout(window.domAutomationController.send(%d), 0); "
-        "} else {"
-        "  element.onchange = function() {"
-        "    if (element.value) {"
-        "      window.domAutomationController.send(%d);"
+        "new Promise(resolve => {"
+        "  if (!element) {"
+        "    setTimeout(() => resolve(%d), 0);"
+        "  }"
+        "  if (element.value) {"
+        "    setTimeout(() => resolve(%d), 0); "
+        "  } else {"
+        "    element.onchange = function() {"
+        "      if (element.value) {"
+        "        resove(%d);"
+        "      }"
         "    }"
         "  }"
-        "}",
+        "});",
         field_id.c_str(), RETURN_CODE_NO_ELEMENT, RETURN_CODE_OK,
         RETURN_CODE_OK);
     EXPECT_EQ(RETURN_CODE_OK,
               content::EvalJs(RenderFrameHost(), script,
-                              content::EXECUTE_SCRIPT_NO_USER_GESTURE |
-                                  content::EXECUTE_SCRIPT_USE_MANUAL_REPLY));
+                              content::EXECUTE_SCRIPT_NO_USER_GESTURE));
   }
 
   std::string GetFocusedElement() {

@@ -838,24 +838,21 @@ IN_PROC_BROWSER_TEST_F(SearchPreloadUnifiedBrowserTest,
 
   // Check the response time is non-negative.
   std::string script =
-      "window.domAutomationController.send(window.performance.timing."
-      "responseEnd - window.performance.timing.responseStart)";
-  EXPECT_LE(0, content::EvalJs(GetActiveWebContents(), script,
-                               content::EXECUTE_SCRIPT_USE_MANUAL_REPLY));
+      "window.performance.timing."
+      "responseEnd - window.performance.timing.responseStart";
+  EXPECT_LE(0, content::EvalJs(GetActiveWebContents(), script));
 
   // Check the response start is after (or the same as) request start.
   script =
-      "window.domAutomationController.send(window.performance.timing."
-      "responseStart - window.performance.timing.requestStart)";
-  EXPECT_LE(0, content::EvalJs(GetActiveWebContents(), script,
-                               content::EXECUTE_SCRIPT_USE_MANUAL_REPLY));
+      "window.performance.timing."
+      "responseStart - window.performance.timing.requestStart";
+  EXPECT_LE(0, content::EvalJs(GetActiveWebContents(), script));
 
   // Check request start is after (or the same as) navigation start.
   script =
-      "window.domAutomationController.send(window.performance.timing."
-      "requestStart - window.performance.timing.navigationStart)";
-  EXPECT_LE(0, content::EvalJs(GetActiveWebContents(), script,
-                               content::EXECUTE_SCRIPT_USE_MANUAL_REPLY));
+      "window.performance.timing."
+      "requestStart - window.performance.timing.navigationStart";
+  EXPECT_LE(0, content::EvalJs(GetActiveWebContents(), script));
 }
 
 // Tests that prerender fails as well if the prefetch response that prerender

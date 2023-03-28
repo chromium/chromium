@@ -2,11 +2,13 @@
 <script>
 function openWindow() {
   var iframe = document.getElementsByTagName('iframe')[0];
-  iframe.contentWindow.postMessage('', self.origin);
+  return new Promise(resolve => {
+    window.addEventListener('message', function() {
+      resolve(true);
+    });
+    iframe.contentWindow.postMessage('', self.origin);
+  });
 }
 
-window.addEventListener('message', function() {
-  window.domAutomationController.send(true);
-});
 </script>
 

@@ -238,20 +238,22 @@ gfx::Point GetCenter(const ElementExpr& e,
     const std::string& event_name,
     content::ToRenderFrameHost execution_target) {
   std::string script = base::StringPrintf(
-      R"( if (document.readyState === 'complete') {
-            function handler(e) {
-              e.target.removeEventListener(e.type, arguments.callee);
-              domAutomationController.send(true);
+      R"( new Promise(resolve => {
+            if (document.readyState === 'complete') {
+              function handler(e) {
+                e.target.removeEventListener(e.type, arguments.callee);
+                resolve(true);
+              }
+              const target = %s;
+              target.addEventListener('%s', handler);
+              target.%s();
+            } else {
+              resolve(false);
             }
-            const target = %s;
-            target.addEventListener('%s', handler);
-            target.%s();
-          } else {
-            domAutomationController.send(false);
-          })",
+          });
+          )",
       e->c_str(), event_name.c_str(), event_name.c_str());
-  content::EvalJsResult result = content::EvalJs(
-      execution_target, script, content::EXECUTE_SCRIPT_USE_MANUAL_REPLY);
+  content::EvalJsResult result = content::EvalJs(execution_target, script);
   if (!result.error.empty()) {
     return AssertionFailure() << __func__ << "(): " << result.error;
   } else if (false == result) {
@@ -754,37 +756,38 @@ class ValueWaiter {
         let interval = undefined;
         let timeout = undefined;
 
-        function reply(r) {
-          console.log(`pollValue('${waiterId}', ${timeoutMillis}): `+
-                      `replying '${r}'`);
-          window.domAutomationController.send(r);
-          clearTimeout(timeout);
-          clearInterval(interval);
-        }
+        return new Promise(resolve => {
+          function reply(r) {
+            console.log(`pollValue('${waiterId}', ${timeoutMillis}): `+
+                        `replying '${r}'`);
+            resolve(r);
+            clearTimeout(timeout);
+            clearInterval(interval);
+          }
 
-        function replyIfSet(r) {
-          if (r !== undefined)
-            reply(r);
-        }
+          function replyIfSet(r) {
+            if (r !== undefined)
+              reply(r);
+          }
 
-        timeout = setTimeout(function() {
-          console.log(`pollValue('${waiterId}', ${timeoutMillis}): timeout`);
-          reply(null);
-        }, timeoutMillis);
+          timeout = setTimeout(function() {
+            console.log(`pollValue('${waiterId}', ${timeoutMillis}): timeout`);
+            reply(null);
+          }, timeoutMillis);
 
-        const kPollingIntervalMillis = 100;
-        interval = setInterval(function() {
+          const kPollingIntervalMillis = 100;
+          interval = setInterval(function() {
+            replyIfSet(window.observedValueSlots[waiterId]);
+          }, kPollingIntervalMillis);
+
           replyIfSet(window.observedValueSlots[waiterId]);
-        }, kPollingIntervalMillis);
-
-        replyIfSet(window.observedValueSlots[waiterId]);
+        });
       }
     )";
     std::string call = base::StringPrintf("pollValue(`%d`, %" PRId64 ")",
                                           waiterId_, timeout.InMilliseconds());
     content::EvalJsResult r =
-        content::EvalJs(execution_target_, kFunction + call,
-                        content::EXECUTE_SCRIPT_USE_MANUAL_REPLY);
+        content::EvalJs(execution_target_, kFunction + call);
     return !r.value.is_none() ? absl::make_optional(r.ExtractString())
                               : absl::nullopt;
   }

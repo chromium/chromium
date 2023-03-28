@@ -83,8 +83,7 @@ IN_PROC_BROWSER_TEST_P(PaymentHandlerChangeShippingAddressOptionTest, Test) {
 
   std::string actual_output =
       content::EvalJs(GetActiveWebContents(),
-                      "outputChangeShippingAddressOptionReturnValue(request);",
-                      content::EXECUTE_SCRIPT_USE_MANUAL_REPLY)
+                      "outputChangeShippingAddressOptionReturnValue(request);")
           .ExtractString();
 
   // The test expectations are hard-coded, but the embedded test server changes
