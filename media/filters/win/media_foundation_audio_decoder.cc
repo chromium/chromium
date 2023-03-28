@@ -282,6 +282,9 @@ bool MediaFoundationAudioDecoder::CreateDecoder() {
 }
 
 bool MediaFoundationAudioDecoder::ConfigureOutput() {
+  // Reset sample staging buffer before configure output, in case stream
+  // configuration changed.
+  output_sample_.Reset();
   // Configure audio output.
   Microsoft::WRL::ComPtr<IMFMediaType> output_type;
   for (uint32_t i = 0;
@@ -389,7 +392,9 @@ bool MediaFoundationAudioDecoder::ConfigureOutput() {
                           sample_rate_ <= limits::kMaxSampleRate,
                       "Sample rate is not supported", false);
 
-    timestamp_helper_ = std::make_unique<AudioTimestampHelper>(sample_rate_);
+    if (!timestamp_helper_) {
+      timestamp_helper_ = std::make_unique<AudioTimestampHelper>(sample_rate_);
+    }
     decoder_->ProcessMessage(MFT_MESSAGE_NOTIFY_BEGIN_STREAMING, 0);
     return true;
   }
