@@ -107,16 +107,14 @@ class AutofillJavaScriptFeatureTest : public PlatformTest {
 
     // Wait for `SetUpForUniqueIDsWithInitialState` to complete.
     ASSERT_TRUE(WaitUntilConditionOrTimeout(kWaitForJSCompletionTimeout, ^bool {
-      return [web::test::ExecuteJavaScript(@"document[__gCrWeb.fill.ID_SYMBOL]",
-                                           web_state()) intValue] ==
-             static_cast<int>(next_available_id);
+      return [ExecuteJavaScript(@"document[__gCrWeb.fill.ID_SYMBOL]")
+                 intValue] == static_cast<int>(next_available_id);
     }));
   }
 
   web::WebFrame* main_web_frame() {
     web::WebFramesManager* frames_manager =
-        autofill::AutofillJavaScriptFeature::GetInstance()->GetWebFramesManager(
-            web_state());
+        feature()->GetWebFramesManager(web_state());
 
     return frames_manager->GetMainWebFrame();
   }
@@ -139,6 +137,11 @@ class AutofillJavaScriptFeatureTest : public PlatformTest {
     });
   }
 
+  id ExecuteJavaScript(NSString* java_script) {
+    return web::test::ExecuteJavaScriptForFeature(web_state(), java_script,
+                                                  feature());
+  }
+
   autofill::AutofillJavaScriptFeature* feature() {
     return autofill::AutofillJavaScriptFeature::GetInstance();
   }
@@ -154,8 +157,7 @@ class AutofillJavaScriptFeatureTest : public PlatformTest {
 // Tests that `hasBeenInjected` returns YES after `inject` call.
 TEST_F(AutofillJavaScriptFeatureTest, InitAndInject) {
   LoadHtml(@"<html></html>");
-  EXPECT_NSEQ(@"object", web::test::ExecuteJavaScript(
-                             @"typeof __gCrWeb.autofill", web_state()));
+  EXPECT_NSEQ(@"object", ExecuteJavaScript(@"typeof __gCrWeb.autofill"));
 }
 
 // Tests forms extraction method
@@ -384,7 +386,7 @@ TEST_F(AutofillJavaScriptFeatureTest, FillActiveFormField) {
   NSString* get_element_javascript = @"document.getElementsByName('email')[0]";
   NSString* focus_element_javascript =
       [NSString stringWithFormat:@"%@.focus()", get_element_javascript];
-  web::test::ExecuteJavaScript(focus_element_javascript, web_state());
+  ExecuteJavaScript(focus_element_javascript);
   base::Value::Dict data;
   data.Set("name", "email");
   data.Set("identifier", "email");
@@ -402,8 +404,7 @@ TEST_F(AutofillJavaScriptFeatureTest, FillActiveFormField) {
       }));
   NSString* element_value_javascript =
       [NSString stringWithFormat:@"%@.value", get_element_javascript];
-  EXPECT_NSEQ(@"newemail@com", web::test::ExecuteJavaScript(
-                                   element_value_javascript, web_state()));
+  EXPECT_NSEQ(@"newemail@com", ExecuteJavaScript(element_value_javascript));
 }
 
 // Tests the generation of the name of the fields.
@@ -521,11 +522,9 @@ TEST_F(AutofillJavaScriptFeatureTest, FillFormUsingRendererIDs) {
   RunFormsSearch();
 
   // Simulate interacting with the field that should be force filled.
-  web::test::ExecuteJavaScript(
-      @"var field = document.getElementById('firstname');"
-       "field.focus();"
-       "field.value = 'to_be_erased';",
-      web_state());
+  ExecuteJavaScript(@"var field = document.getElementById('firstname');"
+                     "field.focus();"
+                     "field.value = 'to_be_erased';");
 
   base::Value::Dict autofillData;
   autofillData.Set("formName", "testform");
@@ -579,7 +578,7 @@ TEST_F(AutofillJavaScriptFeatureTest, ClearForm) {
                                    field_data.first];
     NSString* focusScript =
         [NSString stringWithFormat:@"%@.focus()", getFieldScript];
-    web::test::ExecuteJavaScript(focusScript, web_state());
+    ExecuteJavaScript(focusScript);
     base::Value::Dict data;
     data.Set("unique_renderer_id", field_data.second);
     data.Set("value", "testvalue");
