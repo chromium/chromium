@@ -106,13 +106,14 @@ ScriptPromise ShapeDetector::detect(ScriptState* script_state,
   }
 
   // GetSwSkImage() will make a raster copy of PaintImageForCurrentFrame()
-  // if needed, otherwise returning the original SkImage.
+  // if needed, otherwise returning the original SkImage. May return nullptr
+  // if resource allocation failed.
   const sk_sp<SkImage> sk_image =
       image->PaintImageForCurrentFrame().GetSwSkImage();
 
   SkBitmap sk_bitmap;
   SkBitmap n32_bitmap;
-  if (!sk_image->asLegacyBitmap(&sk_bitmap) ||
+  if (!sk_image || !sk_image->asLegacyBitmap(&sk_bitmap) ||
       !skia::SkBitmapToN32OpaqueOrPremul(sk_bitmap, &n32_bitmap)) {
     // TODO(mcasas): retrieve the pixels from elsewhere.
     NOTREACHED();
