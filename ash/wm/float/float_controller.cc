@@ -632,6 +632,10 @@ void FloatController::OnMovingFloatedWindowToDesk(aura::Window* floated_window,
   target_desk->NotifyContentChanged();
 }
 
+void FloatController::ClearWorkspaceEventHandler(aura::Window* root) {
+  workspace_event_handlers_.erase(root);
+}
+
 void FloatController::OnTabletModeStarted() {
   DCHECK(!floated_window_info_map_.empty());
   // If a window can still remain floated, update its bounds, otherwise unfloat
@@ -722,14 +726,6 @@ void FloatController::OnRootWindowAdded(aura::Window* root_window) {
           root_window->GetChildById(kShellWindowId_FloatContainer));
   root_window->GetChildById(kShellWindowId_FloatContainer)
       ->SetLayoutManager(std::make_unique<FloatLayoutManager>());
-}
-
-void FloatController::OnRootWindowWillShutdown(aura::Window* root_window) {
-  workspace_event_handlers_.erase(root_window);
-}
-
-void FloatController::OnShellDestroying() {
-  workspace_event_handlers_.clear();
 }
 
 void FloatController::ToggleFloat(aura::Window* window) {

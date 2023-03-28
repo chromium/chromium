@@ -57,6 +57,7 @@
 #include "ash/wm/container_finder.h"
 #include "ash/wm/desks/desks_controller.h"
 #include "ash/wm/desks/desks_util.h"
+#include "ash/wm/float/float_controller.h"
 #include "ash/wm/fullscreen_window_finder.h"
 #include "ash/wm/lock_action_handler_layout_manager.h"
 #include "ash/wm/lock_layout_manager.h"
@@ -337,6 +338,9 @@ bool ShouldDestroyWindowInCloseChildWindows(aura::Window* window) {
 void ClearWorkspaceControllers(aura::Window* root) {
   for (auto* desk_container : desks_util::GetDesksContainers(root)) {
     SetWorkspaceController(desk_container, nullptr);
+  }
+  if (auto* float_controller = Shell::Get()->float_controller()) {
+    float_controller->ClearWorkspaceEventHandler(root);
   }
 }
 

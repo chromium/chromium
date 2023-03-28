@@ -114,6 +114,8 @@ class ASH_EXPORT FloatController : public TabletModeObserver,
                                    Desk* target_desk,
                                    aura::Window* target_root);
 
+  void ClearWorkspaceEventHandler(aura::Window* root);
+
   // TabletModeObserver:
   void OnTabletModeStarted() override;
   void OnTabletModeEnding() override;
@@ -129,8 +131,6 @@ class ASH_EXPORT FloatController : public TabletModeObserver,
 
   // ShellObserver:
   void OnRootWindowAdded(aura::Window* root_window) override;
-  void OnRootWindowWillShutdown(aura::Window* root_window) override;
-  void OnShellDestroying() override;
 
   // chromeos::FloatControllerBase:
   void ToggleFloat(aura::Window* window) override;
