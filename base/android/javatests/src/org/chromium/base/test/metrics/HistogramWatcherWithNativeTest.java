@@ -114,6 +114,18 @@ public class HistogramWatcherWithNativeTest extends HistogramWatcherTestBase {
 
     @Test
     @MediumTest
+    public void testExpectIntRecords_success() {
+        doTestExpectIntRecords_success(TestScenario.WITH_NATIVE);
+    }
+
+    @Test
+    @MediumTest
+    public void testExpectIntRecords_failure() {
+        doTestExpectIntRecords_failure(TestScenario.WITH_NATIVE);
+    }
+
+    @Test
+    @MediumTest
     public void testMissingFirstRecord_failure() {
         doTestMissingFirstRecord_failure(TestScenario.WITH_NATIVE);
     }

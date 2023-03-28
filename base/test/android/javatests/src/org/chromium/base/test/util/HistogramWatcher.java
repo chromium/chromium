@@ -129,6 +129,17 @@ public class HistogramWatcher {
         }
 
         /**
+         * Add expectations that {@code histogram} will be recorded with each of the int {@code
+         * values} provided.
+         */
+        public Builder expectIntRecords(String histogram, int... values) {
+            for (int value : values) {
+                expectIntRecord(histogram, value);
+            }
+            return this;
+        }
+
+        /**
          * Add an expectation that {@code histogram} will be recorded a number of {@code times} with
          * an int {@code value}.
          */

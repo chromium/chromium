@@ -376,6 +376,50 @@ public class HistogramWatcherTestBase {
         Assert.fail("Expected AssertionError");
     }
 
+    protected void doTestExpectIntRecords_success(@TestScenario int scenario) {
+        // Arrange
+        maybeLoadNativeFirst(scenario);
+        mWatcher = HistogramWatcher.newBuilder()
+                           .expectIntRecords(EXACT_LINEAR_HISTOGRAM_1, 5, 7, 6, 5)
+                           .build();
+
+        // Act
+        RecordHistogram.recordExactLinearHistogram(EXACT_LINEAR_HISTOGRAM_1, 6, 10);
+        RecordHistogram.recordExactLinearHistogram(EXACT_LINEAR_HISTOGRAM_1, 5, 10);
+        RecordHistogram.recordExactLinearHistogram(EXACT_LINEAR_HISTOGRAM_1, 7, 10);
+        RecordHistogram.recordExactLinearHistogram(EXACT_LINEAR_HISTOGRAM_1, 5, 10);
+        maybeLoadNativeAfterRecord(scenario);
+
+        // Assert
+        mWatcher.assertExpected();
+    }
+
+    protected void doTestExpectIntRecords_failure(@TestScenario int scenario) {
+        // Arrange
+        maybeLoadNativeFirst(scenario);
+        mWatcher = HistogramWatcher.newBuilder()
+                           .expectIntRecords(EXACT_LINEAR_HISTOGRAM_1, 5, 7, 6, 5)
+                           .build();
+
+        // Act
+        RecordHistogram.recordExactLinearHistogram(EXACT_LINEAR_HISTOGRAM_1, 6, 10);
+        RecordHistogram.recordExactLinearHistogram(EXACT_LINEAR_HISTOGRAM_1, 5, 10);
+        RecordHistogram.recordExactLinearHistogram(EXACT_LINEAR_HISTOGRAM_1, 7, 10);
+        // Miss recording EXACT_LINEAR_HISTOGRAM_1 with value 5.
+        maybeLoadNativeAfterRecord(scenario);
+
+        // Assert
+        try {
+            mWatcher.assertExpected();
+        } catch (AssertionError e) {
+            assertContains(EXACT_LINEAR_HISTOGRAM_1, e.getMessage());
+            assertContains("4 record(s) expected: [5 (2 times), 6, 7]", e.getMessage());
+            assertContains("3 record(s) seen: [5, 6, 7]", e.getMessage());
+            return;
+        }
+        Assert.fail("Expected AssertionError");
+    }
+
     protected void doTestIgnoreOtherHistograms_success(@TestScenario int scenario) {
         // Arrange
         maybeLoadNativeFirst(scenario);

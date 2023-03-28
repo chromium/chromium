@@ -112,6 +112,18 @@ public class HistogramWatcherWithoutNativeTest extends HistogramWatcherTestBase 
 
     @Test
     @MediumTest
+    public void testExpectIntRecords_success() {
+        doTestExpectIntRecords_success(TestScenario.WITHOUT_NATIVE);
+    }
+
+    @Test
+    @MediumTest
+    public void testExpectIntRecords_failure() {
+        doTestExpectIntRecords_failure(TestScenario.WITHOUT_NATIVE);
+    }
+
+    @Test
+    @MediumTest
     public void testIgnoreOtherHistograms_success() {
         doTestIgnoreOtherHistograms_success(TestScenario.WITHOUT_NATIVE);
     }
