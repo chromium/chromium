@@ -952,7 +952,8 @@ PrefetchStreamingURLLoaderStatus PrefetchService::OnPrefetchRedirect(
     const network::mojom::URLResponseHead& response_head) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  if (!prefetch_container) {
+  if (!prefetch_container ||
+      !base::FeatureList::IsEnabled(features::kPrefetchRedirects)) {
     return PrefetchStreamingURLLoaderStatus::kFailedInvalidRedirect;
   }
 
@@ -1310,6 +1311,12 @@ void PrefetchService::GetPrefetchToServe(
   if (!prefetch_container) {
     DVLOG(1) << "PrefetchService::GetPrefetchToServe(" << url
              << "): PrefetchContainer is null";
+    std::move(on_prefetch_to_serve_ready).Run(nullptr);
+    return;
+  }
+
+  if (prefetch_container->GetRedirectChainSize() > 1 &&
+      !base::FeatureList::IsEnabled(features::kPrefetchRedirects)) {
     std::move(on_prefetch_to_serve_ready).Run(nullptr);
     return;
   }

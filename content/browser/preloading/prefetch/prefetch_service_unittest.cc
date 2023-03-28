@@ -2631,7 +2631,8 @@ class PrefetchServiceAlwaysMakeDecoyRequestTest : public PrefetchServiceTest {
     scoped_feature_list_.InitWithFeaturesAndParameters(
         {{features::kPrefetchUseContentRefactor,
           {{"ineligible_decoy_request_probability", "1"},
-           {"prefetch_container_lifetime_s", "-1"}}}},
+           {"prefetch_container_lifetime_s", "-1"}}},
+         {features::kPrefetchRedirects, {}}},
         {network::features::kPrefetchNoVarySearch});
   }
 };
@@ -3262,13 +3263,25 @@ TEST_F(PrefetchServiceNoVarySearchTest, MAYBE_NoVarySearchSuccessCase) {
                        PreloadingFailureReason::kUnspecified);
 }
 
+class PrefetchServiceAllowRedirectTest : public PrefetchServiceTest {
+ public:
+  void InitScopedFeatureList() override {
+    scoped_feature_list_.InitWithFeaturesAndParameters(
+        {{features::kPrefetchUseContentRefactor,
+          {{"ineligible_decoy_request_probability", "0"},
+           {"prefetch_container_lifetime_s", "-1"}}},
+         {features::kPrefetchRedirects, {}}},
+        {network::features::kPrefetchNoVarySearch});
+  }
+};
+
 // TODO(crbug.com/1396460): Test flaky on lacros trybots.
 #if BUILDFLAG(IS_CHROMEOS)
 #define MAYBE_PrefetchEligibleRedirect DISABLED_PrefetchEligibleRedirect
 #else
 #define MAYBE_PrefetchEligibleRedirect PrefetchEligibleRedirect
 #endif
-TEST_F(PrefetchServiceTest, MAYBE_PrefetchEligibleRedirect) {
+TEST_F(PrefetchServiceAllowRedirectTest, MAYBE_PrefetchEligibleRedirect) {
   base::HistogramTester histogram_tester;
 
   MakePrefetchService(
@@ -3354,7 +3367,7 @@ TEST_F(PrefetchServiceTest, MAYBE_PrefetchEligibleRedirect) {
 #else
 #define MAYBE_IneligibleRedirectCookies IneligibleRedirectCookies
 #endif
-TEST_F(PrefetchServiceTest, MAYBE_IneligibleRedirectCookies) {
+TEST_F(PrefetchServiceAllowRedirectTest, MAYBE_IneligibleRedirectCookies) {
   base::HistogramTester histogram_tester;
 
   MakePrefetchService(
@@ -3435,7 +3448,8 @@ TEST_F(PrefetchServiceTest, MAYBE_IneligibleRedirectCookies) {
 #else
 #define MAYBE_IneligibleRedirectServiceWorker IneligibleRedirectServiceWorker
 #endif
-TEST_F(PrefetchServiceTest, MAYBE_IneligibleRedirectServiceWorker) {
+TEST_F(PrefetchServiceAllowRedirectTest,
+       MAYBE_IneligibleRedirectServiceWorker) {
   base::HistogramTester histogram_tester;
 
   MakePrefetchService(
@@ -3516,7 +3530,7 @@ TEST_F(PrefetchServiceTest, MAYBE_IneligibleRedirectServiceWorker) {
 #else
 #define MAYBE_InvalidRedirect InvalidRedirect
 #endif
-TEST_F(PrefetchServiceTest, MAYBE_InvalidRedirect) {
+TEST_F(PrefetchServiceAllowRedirectTest, MAYBE_InvalidRedirect) {
   base::HistogramTester histogram_tester;
 
   MakePrefetchService(
