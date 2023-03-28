@@ -21,6 +21,14 @@
     margin: 0 auto 16px auto;
     width: fit-content;
   }
+  ::selection {
+    background: var(--selection-color);
+  }
+  @media (prefers-color-scheme: dark) {
+    ::selection {
+      color: var(--google-grey-900);
+    }
+  }
 </style>
 <div id="container" hidden="[[!hasContent_]]"></div>
 <div id="empty-state-container" hidden="[[hasContent_]]">
