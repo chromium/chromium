@@ -1301,8 +1301,6 @@ MojoResult Core::SendInvitation(
     return MOJO_RESULT_INVALID_ARGUMENT;
   if (transport_endpoint->type != MOJO_INVITATION_TRANSPORT_TYPE_CHANNEL &&
       transport_endpoint->type !=
-          MOJO_INVITATION_TRANSPORT_TYPE_CHANNEL_SERVER &&
-      transport_endpoint->type !=
           MOJO_INVITATION_TRANSPORT_TYPE_CHANNEL_ASYNC) {
     return MOJO_RESULT_UNIMPLEMENTED;
   }
@@ -1318,18 +1316,8 @@ MojoResult Core::SendInvitation(
   if (!endpoint.is_valid())
     return MOJO_RESULT_INVALID_ARGUMENT;
 
-  ConnectionParams connection_params;
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_POSIX)
-  if (transport_endpoint->type ==
-      MOJO_INVITATION_TRANSPORT_TYPE_CHANNEL_SERVER) {
-    connection_params =
-        ConnectionParams(PlatformChannelServerEndpoint(std::move(endpoint)));
-  }
-#endif
-  if (!connection_params.server_endpoint().is_valid()) {
-    connection_params =
-        ConnectionParams(PlatformChannelEndpoint(std::move(endpoint)));
-  }
+  ConnectionParams connection_params(
+      PlatformChannelEndpoint(std::move(endpoint)));
 
   // At this point everything else has been validated, so we can take ownership
   // of the dispatcher.
@@ -1342,7 +1330,6 @@ MojoResult Core::SendInvitation(
       // Release ownership of the endpoint platform handle, per the API
       // contract. The caller retains ownership on failure.
       connection_params.TakeEndpoint().TakePlatformHandle().release();
-      connection_params.TakeServerEndpoint().TakePlatformHandle().release();
       return result;
     }
     DCHECK_EQ(removed_dispatcher.get(), invitation_dispatcher);
@@ -1400,8 +1387,6 @@ MojoResult Core::AcceptInvitation(
     return MOJO_RESULT_INVALID_ARGUMENT;
   if (transport_endpoint->type != MOJO_INVITATION_TRANSPORT_TYPE_CHANNEL &&
       transport_endpoint->type !=
-          MOJO_INVITATION_TRANSPORT_TYPE_CHANNEL_SERVER &&
-      transport_endpoint->type !=
           MOJO_INVITATION_TRANSPORT_TYPE_CHANNEL_ASYNC) {
     return MOJO_RESULT_UNIMPLEMENTED;
   }
@@ -1421,18 +1406,8 @@ MojoResult Core::AcceptInvitation(
     return MOJO_RESULT_INVALID_ARGUMENT;
   }
 
-  ConnectionParams connection_params;
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_POSIX)
-  if (transport_endpoint->type ==
-      MOJO_INVITATION_TRANSPORT_TYPE_CHANNEL_SERVER) {
-    connection_params =
-        ConnectionParams(PlatformChannelServerEndpoint(std::move(endpoint)));
-  }
-#endif
-  if (!connection_params.server_endpoint().is_valid()) {
-    connection_params =
-        ConnectionParams(PlatformChannelEndpoint(std::move(endpoint)));
-  }
+  ConnectionParams connection_params(
+      PlatformChannelEndpoint(std::move(endpoint)));
   if (options &&
       options->flags & MOJO_ACCEPT_INVITATION_FLAG_LEAK_TRANSPORT_ENDPOINT) {
     connection_params.set_leak_endpoint(true);

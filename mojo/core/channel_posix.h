@@ -98,12 +98,7 @@ class ChannelPosix : public Channel,
   bool CloseHandles(const int* fds, size_t num_fds);
 #endif  // BUILDFLAG(IS_IOS)
 
-  // We may be initialized with a server socket, in which case this will be
-  // valid until it accepts an incoming connection.
-  PlatformChannelServerEndpoint server_;
-
-  // The socket over which to communicate. May be passed in at construction time
-  // or accepted over |server_|.
+  // The socket over which to communicate.
   base::ScopedFD socket_;
 
   // These watchers must only be accessed on the IO thread.
