@@ -829,7 +829,11 @@ scoped_refptr<webrtc::VideoTrackInterface>
 PeerConnectionDependencyFactory::CreateLocalVideoTrack(
     const String& id,
     webrtc::VideoTrackSourceInterface* source) {
-  return GetPcFactory()->CreateVideoTrack(id.Utf8(), source).get();
+  return GetPcFactory()
+      ->CreateVideoTrack(
+          rtc::scoped_refptr<webrtc::VideoTrackSourceInterface>(source),
+          id.Utf8())
+      .get();
 }
 
 webrtc::IceCandidateInterface*
