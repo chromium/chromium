@@ -91077,7 +91077,7 @@ https://www.dmtf.org/sites/default/files/standards/documents/DSP0134_2.7.1.pdf
   <int value="31" label="SENSITIVE_CONTENT_WARNING"/>
   <int value="32" label="SENSITIVE_CONTENT_BLOCK"/>
   <int value="33" label="DEEP_SCANNED_SAFE"/>
-  <int value="34" label="ADVANCED_PROTECTION_PROMPT"/>
+  <int value="34" label="DEEP_SCAN_PROMPT"/>
   <int value="35" label="BLOCKED_UNSUPPORTED_FILETYPE"/>
   <int value="36" label="ACCOUNT_COMPROMISE"/>
 </enum>
@@ -91577,6 +91577,14 @@ https://www.dmtf.org/sites/default/files/standards/documents/DSP0134_2.7.1.pdf
   <int value="1" label="(Deprecated) Skipped: HTTPS"/>
   <int value="2" label="Skipped: Not a GET request"/>
   <int value="3" label="Skipped: Unsupported scheme"/>
+</enum>
+
+<enum name="SBDeepScanEvent">
+  <int value="0" label="Prompt shown"/>
+  <int value="1" label="Prompt bypassed"/>
+  <int value="2" label="Prompt accepted"/>
+  <int value="3" label="Scan canceled"/>
+  <int value="4" label="Scan completed"/>
 </enum>
 
 <enum name="SBDeepScanTriggers">

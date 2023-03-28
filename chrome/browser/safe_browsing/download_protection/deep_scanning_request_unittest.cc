@@ -543,11 +543,11 @@ TEST_F(DeepScanningRequestAllFeaturesEnabledTest,
 
 class DeepScanningAPPRequestTest : public DeepScanningRequestTest {};
 
-TEST_F(DeepScanningAPPRequestTest, GeneratesCorrectRequestForAPP) {
+TEST_F(DeepScanningAPPRequestTest, GeneratesCorrectRequestForConsumer) {
   enterprise_connectors::AnalysisSettings settings;
   settings.tags = {{"malware", enterprise_connectors::TagSettings()}};
   DeepScanningRequest request(
-      &item_, DeepScanningRequest::DeepScanTrigger::TRIGGER_APP_PROMPT,
+      &item_, DeepScanningRequest::DeepScanTrigger::TRIGGER_CONSUMER_PROMPT,
       DownloadCheckResult::SAFE, base::DoNothing(),
       &download_protection_service_, std::move(settings));
   request.Start();

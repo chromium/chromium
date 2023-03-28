@@ -243,8 +243,8 @@ std::string GetTriggerName(DeepScanningRequest::DeepScanTrigger trigger) {
   switch (trigger) {
     case DeepScanningRequest::DeepScanTrigger::TRIGGER_UNKNOWN:
       return "Unknown";
-    case DeepScanningRequest::DeepScanTrigger::TRIGGER_APP_PROMPT:
-      return "AdvancedProtectionPrompt";
+    case DeepScanningRequest::DeepScanTrigger::TRIGGER_CONSUMER_PROMPT:
+      return "ConsumerPrompt";
     case DeepScanningRequest::DeepScanTrigger::TRIGGER_POLICY:
       return "Policy";
   }
@@ -566,7 +566,9 @@ void DeepScanningRequest::OnScanComplete(
     base::UmaHistogramEnumeration(
         "SBClientDownload.MalwareDeepScanResult." + GetTriggerName(trigger_),
         download_result);
-  } else if (trigger_ == DeepScanTrigger::TRIGGER_APP_PROMPT &&
+    base::UmaHistogramEnumeration("SBClientDownload.DeepScanEvent",
+                                  DeepScanEvent::kScanCompleted);
+  } else if (trigger_ == DeepScanTrigger::TRIGGER_CONSUMER_PROMPT &&
              ResultIsRetriable(result) &&
              MaybeShowDeepScanFailureModalDialog(
                  base::BindOnce(&DeepScanningRequest::Start,
@@ -731,8 +733,9 @@ void DeepScanningRequest::OpenDownload() {
 }
 
 bool DeepScanningRequest::ReportOnlyScan() {
-  if (trigger_ == DeepScanTrigger::TRIGGER_APP_PROMPT)
+  if (trigger_ == DeepScanTrigger::TRIGGER_CONSUMER_PROMPT) {
     return false;
+  }
 
   return analysis_settings_.block_until_verdict ==
          enterprise_connectors::BlockUntilVerdict::kNoBlock;

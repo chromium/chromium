@@ -62,6 +62,19 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="SBClientDownload.DeepScanEvent" enum="SBDeepScanEvent"
+    expires_after="2024-03-28">
+  <owner>drubery@chromium.org</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
+  <summary>
+    Records events related to user interaction with deep scanning prompts. This
+    is recorded a few times during the process of each prompt for deep scanning:
+    - Once when the prompt is shown. - Once when the prompt is
+    accepted/bypassed. - Once when the scan is completed, either through
+    cancelation or completion.
+  </summary>
+</histogram>
+
 <histogram name="SBClientDownload.DeepScanTrigger" enum="SBDeepScanTriggers"
     expires_after="2023-08-08">
   <owner>drubery@chromium.org</owner>
@@ -371,8 +384,9 @@ chromium-metrics-reviews@google.com.
     be missing.
   </summary>
   <token key="trigger">
-    <variant name="AdvancedProtectionPrompt"
-        summary="Advanced Protection user selected 'Scan'"/>
+    <variant name="ConsumerPrompt"
+        summary="Advanced Protection or Enhanced Protection user selected
+                 'Scan'"/>
     <variant name="Policy" summary="Triggered by enterprise policy"/>
     <variant name="Unknown" summary="Unknown trigger"/>
   </token>

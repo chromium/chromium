@@ -43,8 +43,8 @@ class DeepScanningRequest : public download::DownloadItem::Observer {
     TRIGGER_UNKNOWN = 0,
 
     // The trigger is the prompt in the download shelf, shown for Advanced
-    // Protection users.
-    TRIGGER_APP_PROMPT = 1,
+    // Protection or Enhanced Protection users.
+    TRIGGER_CONSUMER_PROMPT = 1,
 
     // The trigger is the enterprise policy.
     TRIGGER_POLICY = 2,
