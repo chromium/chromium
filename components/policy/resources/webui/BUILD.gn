@@ -1,116 +1,50 @@
-# Copyright 2022 The Chromium Authors
+# Copyright 2023 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//tools/grit/grit_rule.gni")
-import("//tools/grit/preprocess_if_expr.gni")
-import("//tools/polymer/html_to_wrapper.gni")
-import("//tools/typescript/ts_library.gni")
-import("//ui/webui/resources/tools/generate_grd.gni")
+import("//ui/webui/resources/tools/build_webui.gni")
 
-preprocess_dir = "${target_gen_dir}/preprocessed"
-tsc_dir = "${target_gen_dir}/tsc"
-
-static_files = [
-  "policy.css",
-  "policy.html",
-]
-
-if (is_android || is_ios) {
-  static_files += [ "logs/policy_logs.html" ]
-}
-
-# TODO(b/265198461): Migrate to TypeScript and then simplify the build setup by
-# leveraging build_webui().
-web_component_files = [
-  "policy_conflict.js",
-  "policy_row.js",
-  "policy_precedence_row.js",
-  "policy_table.js",
-  "status_box.js",
-]
-
-html_files = []
-foreach(f, web_component_files) {
-  html_files += [ string_replace(f, ".js", ".html") ]
-}
-
-html_wrapper_files = []
-foreach(f, html_files) {
-  html_wrapper_files += [ f + ".js" ]
-}
-
-non_web_component_files = [
-  "policy_base.js",
-  "policy.js",
-]
-
-if (is_android || is_ios) {
-  non_web_component_files += [
-    "logs/types.ts",
-    "logs/policy_logs.ts",
-  ]
-}
-
-preprocess_if_expr("preprocess_static_files") {
-  in_folder = "."
-  out_folder = preprocess_dir
-  in_files = static_files
-  out_manifest = "${target_gen_dir}/preprocess_static_files_manifest.json"
-}
-
-preprocess_if_expr("preprocess") {
-  in_folder = "."
-  out_folder = preprocess_dir
-  in_files = html_files + web_component_files + non_web_component_files
-}
-
-html_to_wrapper("html_wrapper_files") {
-  in_folder = preprocess_dir
-  out_folder = preprocess_dir
-  in_files = html_files
-  template = "native"
-  use_js = true
-  deps = [ ":preprocess" ]
-}
-
-ts_library("build_ts") {
-  root_dir = preprocess_dir
-  out_dir = tsc_dir
-  tsconfig_base = "tsconfig_base.json"
-
-  in_files = html_wrapper_files + web_component_files + non_web_component_files
-
-  deps = [ "//ui/webui/resources/js:build_ts" ]
-
-  extra_deps = [
-    ":html_wrapper_files",
-    ":preprocess",
-  ]
-}
-
-generate_grd("build_grd") {
+build_webui("build") {
   grd_prefix = "policy"
-  out_grd = "$target_gen_dir/resources.grd"
 
-  deps = [ ":preprocess_static_files" ]
-  manifest_files = [ "${target_gen_dir}/preprocess_static_files_manifest.json" ]
-
-  deps += [ ":build_ts" ]
-  manifest_files +=
-      filter_include(get_target_outputs(":build_ts"), [ "*.manifest" ])
-}
-
-grit("resources") {
-  # These arguments are needed since the grd is generated at build time.
-  enable_input_discovery_for_gn_analyze = false
-  source = "$target_gen_dir/resources.grd"
-  deps = [ ":build_grd" ]
-  outputs = [
-    "grit/policy_resources.h",
-    "grit/policy_resources_map.cc",
-    "grit/policy_resources_map.h",
-    "policy_resources.pak",
+  static_files = [
+    "policy.html",
+    "policy.css",
   ]
-  output_dir = "$root_gen_dir/components"
+
+  if (is_android || is_ios) {
+    static_files += [ "logs/policy_logs.html" ]
+  }
+
+  # Files holding a Custom element definition AND have an equivalent .html file.
+  web_component_files = [
+    "policy_conflict.ts",
+    "policy_row.ts",
+    "policy_precedence_row.ts",
+    "policy_table.ts",
+    "status_box.ts",
+  ]
+
+  non_web_component_files = [
+    "policy_base.ts",
+    "policy.ts",
+  ]
+  if (is_android || is_ios) {
+    non_web_component_files += [
+      "logs/types.ts",
+      "logs/policy_logs.ts",
+    ]
+  }
+
+  ts_composite = true
+  ts_definitions = [ "//tools/typescript/definitions/chrome_send.d.ts" ]
+  html_to_wrapper_template = "native"
+  ts_tsconfig_base = "tsconfig_base.json"
+
+  ts_deps = [
+    "//ui/webui/resources/cr_elements:build_ts",
+    "//ui/webui/resources/js:build_ts",
+  ]
+
+  grit_output_dir = "$root_gen_dir/components"
 }
