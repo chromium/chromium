@@ -56,6 +56,23 @@ class CORE_EXPORT CSSTokenizer {
   // all you can do is destroy it.
   void PersistStrings(CSSTokenizer& destination);
 
+  // See documentation near CSSParserTokenStream.
+  CSSParserToken Restore(const CSSParserToken& next, wtf_size_t offset) {
+    // Undo block stack mutation.
+    if (next.GetBlockType() == CSSParserToken::BlockType::kBlockStart) {
+      block_stack_.pop_back();
+    } else if (next.GetBlockType() == CSSParserToken::BlockType::kBlockEnd) {
+      static_assert(kLeftParenthesisToken == (kRightParenthesisToken - 1));
+      static_assert(kLeftBracketToken == (kRightBracketToken - 1));
+      static_assert(kLeftBraceToken == (kRightBraceToken - 1));
+      block_stack_.push_back(
+          static_cast<CSSParserTokenType>(next.GetType() - 1));
+    }
+    input_.Restore(offset);
+    // Produce the post-restore lookahead token.
+    return TokenizeSingle();
+  }
+
  private:
   template <bool SkipComments, bool StoreOffset>
   ALWAYS_INLINE CSSParserToken NextToken();

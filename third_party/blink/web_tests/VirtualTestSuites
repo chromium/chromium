@@ -797,7 +797,16 @@
     "args": ["--disable-blink-features=CSSSignRelatedFunctions"],
     "expires": "Jul 1, 2023"
   },
-
+  {
+    "prefix": "css-nesting-ident",
+    "platforms": ["Linux"],
+    "bases": [
+      "wpt_internal/css/css-nesting/ident"
+    ],
+    "exclusive_tests": "ALL",
+    "args": ["--enable-blink-features=CSSNestingIdent"],
+    "expires": "Dec 1, 2023"
+  },
   {
     "prefix": "import-maps-disabled",
     "platforms": ["Linux", "Mac", "Win"],

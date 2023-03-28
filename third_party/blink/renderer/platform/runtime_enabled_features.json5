@@ -933,6 +933,10 @@
       status: "stable",
     },
     {
+      // Support nested selectors that start with idents.
+      name: "CSSNestingIdent",
+    },
+    {
       name: "CSSNewRootFontUnits",
       status: "stable",
       base_feature: "none",

@@ -833,6 +833,7 @@ base::span<CSSSelector> CSSSelectorParser::ConsumeComplexSelector(
   // (This only covers the first rule in the complex selector list;
   // see https://github.com/w3c/csswg-drafts/issues/7980.)
   const bool disallow_tag_start =
+      !RuntimeEnabledFeatures::CSSNestingIdentEnabled() &&
       in_nested_style_rule && (nesting_type_ == CSSNestingType::kNesting);
   if (disallow_tag_start && first_in_complex_selector_list &&
       compound_selector[0].Match() == CSSSelector::MatchType::kTag) {

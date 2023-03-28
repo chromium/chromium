@@ -250,7 +250,9 @@ class CORE_EXPORT CSSParserImpl {
                                    CSSParserTokenStream& stream,
                                    CSSNestingType,
                                    StyleRule* parent_rule_for_nesting);
-  void ConsumeDeclaration(CSSParserTokenStream&, StyleRule::RuleType);
+  // Returns true if a declaration was parsed and added to parsed_properties_,
+  // and false otherwise.
+  bool ConsumeDeclaration(CSSParserTokenStream&, StyleRule::RuleType);
   void ConsumeDeclarationValue(const CSSTokenizedValue&,
                                CSSPropertyID,
                                bool important,

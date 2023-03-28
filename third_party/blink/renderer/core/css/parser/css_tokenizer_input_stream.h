@@ -86,6 +86,8 @@ class CSSTokenizerInputStream {
     return StringView(string_, start, length);
   }
 
+  void Restore(wtf_size_t offset) { offset_ = offset; }
+
  private:
   wtf_size_t offset_ = 0;
   const wtf_size_t string_length_;

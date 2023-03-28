@@ -2046,21 +2046,6 @@ void CSSParserImpl::ConsumeDeclarationList(
       case kSemicolonToken:
         stream.UncheckedConsume();
         break;
-      case kIdentToken: {
-        {
-          CSSParserTokenStream::Boundary boundary(stream, kSemicolonToken);
-          ConsumeDeclaration(stream, rule_type);
-          // Consume the remainder of the declaration (if any) for error
-          // recovery.
-          stream.ConsumeUntilPeekedTypeIs<>();
-        }
-
-        if (!stream.AtEnd()) {
-          stream.UncheckedConsume();  // kSemicolonToken
-        }
-
-        break;
-      }
       case kAtKeywordToken:
         if (RuntimeEnabledFeatures::CSSNestingEnabled()) {
           CSSParserToken name_token = stream.ConsumeIncludingWhitespace();
@@ -2079,6 +2064,33 @@ void CSSParserImpl::ConsumeDeclarationList(
         // for error recovery, once the syntax has settled.
         ConsumeErroneousAtRule(stream);
         break;
+      case kIdentToken: {
+        wtf_size_t state = stream.Save();
+        bool consumed_declaration = false;
+        {
+          CSSParserTokenStream::Boundary boundary(stream, kSemicolonToken);
+          consumed_declaration = ConsumeDeclaration(stream, rule_type);
+        }
+        if (consumed_declaration) {
+          if (!stream.AtEnd()) {
+            DCHECK_EQ(stream.UncheckedPeek().GetType(), kSemicolonToken);
+            stream.UncheckedConsume();  // kSemicolonToken
+          }
+          break;
+        } else if (!RuntimeEnabledFeatures::CSSNestingIdentEnabled() ||
+                   use_observer) {
+          // TODO(crbug.com/1427259): Support restart with inspector attached.
+          // Error recovery.
+          stream.ConsumeUntilPeekedTypeIs<kSemicolonToken>();
+          if (!stream.AtEnd()) {
+            stream.UncheckedConsume();  // kSemicolonToken
+          }
+          break;
+        }
+        // Retry as nested rule.
+        stream.Restore(state);
+        [[fallthrough]];
+      }
       default:
         if (RuntimeEnabledFeatures::CSSNestingEnabled() &&
             parent_rule_for_nesting != nullptr) {  // [1] (see function comment)
@@ -2144,14 +2156,14 @@ StyleRuleBase* CSSParserImpl::ConsumeNestedRule(
   return child;
 }
 
-void CSSParserImpl::ConsumeDeclaration(CSSParserTokenStream& stream,
+bool CSSParserImpl::ConsumeDeclaration(CSSParserTokenStream& stream,
                                        StyleRule::RuleType rule_type) {
   const wtf_size_t decl_offset_start = stream.Offset();
 
   DCHECK_EQ(stream.Peek().GetType(), kIdentToken);
   const CSSParserToken& lhs = stream.ConsumeIncludingWhitespace();
   if (stream.Peek().GetType() != kColonToken) {
-    return;  // Parse error.
+    return false;  // Parse error.
   }
 
   stream.UncheckedConsume();  // kColonToken
@@ -2169,7 +2181,7 @@ void CSSParserImpl::ConsumeDeclaration(CSSParserTokenStream& stream,
       rule_type == StyleRule::kProperty ||
       rule_type == StyleRule::kCounterStyle) {
     if (important) {  // Invalid
-      return;
+      return false;
     }
     atrule_id = lhs.ParseAsAtRuleDescriptorID();
     AtRuleDescriptorParser::ParseAtRule(rule_type, atrule_id, tokenized_value,
@@ -2182,12 +2194,12 @@ void CSSParserImpl::ConsumeDeclaration(CSSParserTokenStream& stream,
   // @rules other than FontFace still handled with legacy code.
   if (important &&
       (rule_type == StyleRule::kKeyframe || rule_type == StyleRule::kTry)) {
-    return;
+    return false;
   }
 
   if (unresolved_property == CSSPropertyID::kVariable) {
     if (rule_type != StyleRule::kStyle && rule_type != StyleRule::kKeyframe) {
-      return;
+      return false;
     }
     AtomicString variable_name = lhs.Value().ToAtomicString();
     bool is_animation_tainted = rule_type == StyleRule::kKeyframe;
@@ -2207,6 +2219,8 @@ void CSSParserImpl::ConsumeDeclaration(CSSParserTokenStream& stream,
                                important,
                                parsed_properties_.size() != properties_count);
   }
+
+  return parsed_properties_.size() != properties_count;
 }
 
 void CSSParserImpl::ConsumeVariableValue(

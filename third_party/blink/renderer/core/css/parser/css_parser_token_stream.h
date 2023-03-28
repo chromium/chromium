@@ -248,6 +248,122 @@ class CORE_EXPORT CSSParserTokenStream {
     return CSSParserTokenRange(buffer_);
   }
 
+  // Restarts
+  // ========
+  //
+  // CSSParserTokenStream has limited restart capabilities through the
+  // Save and Restore functions.
+  //
+  // Saving the stream is allowed under the following conditions:
+  //
+  //  1. There are no boundaries, except for the regular EOF boundary.
+  //     (See inner class Boundary). This avoids having to store the boundaries
+  //     in the stream snapshot.
+  //  2. The lookahead token is present. (See HasLookAhead). This avoids having
+  //     to store whether or not we have a lookahead token.
+  //
+  // Restoring the stream is allowed under the following conditions:
+  //
+  //  1. The lookahead token is present (at the time of Restore). This is
+  //     important for undoing mutations to the tokenizer's block stack (see
+  //     CSSTokenizer::Restore).
+  //  2. The Save/Restore pair does not cross a BlockGuard.
+  //
+  //
+  // Restoring
+  // =========
+  //
+  // Suppose that we had a short string to tokenize.
+  //
+  //  - The '^' indicates the position of the tokenizer (CSSTokenizer).
+  //  - The 'offset' indicates the value of CSSParserTokenStream::offset_.
+  //
+  // These values temporarily go out of sync when producing lookahead values,
+  // because doing so moves the position of the tokenizer only. The stream
+  // offset does not catch up until the lookahead is Consumed.
+  //
+  // The initial state looks like this:
+  //
+  //   span:hover { X }  [offset=0]
+  //   ^
+  // Ensuring lookahead moves the tokenizer position (but not the stream
+  // offset):
+  //
+  //   span:hover { X }  [offset=0, lookahead=span]
+  //       ^
+  // Consuming that lookahead token makes the offset catch up:
+  //
+  //   span:hover { X }  [offset=4]
+  //       ^
+  // Ensure lookahead again:
+  //
+  //   span:hover { X }  [offset=4, lookahead=:]
+  //        ^
+  // Consuming again:
+  //
+  //   span:hover { X }  [offset=5]
+  //        ^
+  // Now suppose that we had saved the stream state earlier,
+  // at [offset=0, lookahead=span] (keeping in mind that having lookahead is
+  // a prerequisite for saving the stream). We can restore to that position,
+  // provided that we first ensure lookahead:
+  //
+  //   span:hover { X }  [offset=5, lookahead=hover]
+  //             ^
+  // The restore process will then do two things. First, rewind the tokenizer's
+  // position to that of the saved stream offset (0):
+  //
+  //   span:hover { X }  [offset=5, lookahead=hover]
+  //   ^
+  // Then, set the stream offset to that rewound tokenizer position (0),
+  // and recreate the lookahead from that point:
+  //
+  //   span:hover { X }  [offset=0, lookahead=span]
+  //       ^
+  // Now that the restore is finished, we have exactly the same state as when
+  // it was saved: [offset=0, lookahead=span].
+  //
+  //
+  // Blocks
+  // ======
+  //
+  // Suppose instead that we want to restore to offset=0 in this state:
+  //
+  //   span:hover { X }  [offset=11, lookahead={]
+  //               ^
+  // Now we have a problem, because producing the lookahead token for '{'
+  // modified the block stack of the CSSTokenizer. This is why the restore
+  // process requires a lookahead token: we inspect the block type of that
+  // lookahead token to *undo* the mutation before the rest of the restore
+  // process.
+  //
+  //  - If the lookahead token has BlockType::kBlockStart,
+  //    then we simply pop the recently pushed token type from the stack.
+  //  - If the lookahead token has BlockType::kBlockEnd,
+  //    then we push the matching token type to the stack to restore the
+  //    recently popped token type.
+  //
+  // Note that it's not possible to Consume past a block-start or block-end:
+  // a BlockGuard is required to enter blocks, which also ensures that we always
+  // consume the entire block. Note also that block-end tokens are treated as
+  // EOF (see UncheckedAtEnd): it is therefore not possible to escape the
+  // current block during a BlockGuard. For these reasons, we only ever need to
+  // undo at most one mutation to the block stack: the block stack mutation
+  // caused by the "final" lookahead before the restore process.
+
+  wtf_size_t Save() const {
+    DCHECK_EQ(boundaries_, FlagForTokenType(kEOFToken));
+    DCHECK(has_look_ahead_);
+    return offset_;
+  }
+
+  void Restore(wtf_size_t offset) {
+    DCHECK(has_look_ahead_);
+    offset_ = offset;
+    boundaries_ = FlagForTokenType(kEOFToken);
+    next_ = tokenizer_.Restore(next_, offset_);
+  }
+
  private:
   template <CSSParserTokenType... EndTypes>
   ALWAYS_INLINE bool TokenMarksEnd(const CSSParserToken& token) {
