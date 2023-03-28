@@ -5,7 +5,6 @@
 #include "chrome/browser/metrics/family_user_metrics_provider.h"
 
 #include "base/test/metrics/histogram_tester.h"
-#include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
 #include "chrome/browser/ash/login/test/device_state_mixin.h"
 #include "chrome/browser/ash/login/test/guest_session_mixin.h"
@@ -22,7 +21,6 @@
 #include "chrome/test/base/mixin_based_in_process_browser_test.h"
 #include "chromeos/ash/components/settings/cros_settings_names.h"
 #include "components/account_id/account_id.h"
-#include "components/metrics/metrics_features.h"
 #include "components/metrics/metrics_service.h"
 #include "components/signin/public/identity_manager/account_info.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
@@ -69,7 +67,7 @@ absl::optional<AccountId> GetPrimaryAccountId(
   return absl::nullopt;
 }
 
-void ProvideHistograms(bool should_emit_histograms_earlier) {
+void ProvideHistograms() {
   // The purpose of the below call is to avoid a DCHECK failure in an unrelated
   // metrics provider, in |FieldTrialsProvider::ProvideCurrentSessionData()|.
   metrics::SystemProfileProto system_profile_proto;
@@ -77,41 +75,19 @@ void ProvideHistograms(bool should_emit_histograms_earlier) {
       ->GetDelegatingProviderForTesting()
       ->ProvideSystemProfileMetricsWithLogCreationTime(base::TimeTicks::Now(),
                                                        &system_profile_proto);
-  metrics::ChromeUserMetricsExtension uma_proto;
-  if (!should_emit_histograms_earlier) {
-    g_browser_process->metrics_service()
-        ->GetDelegatingProviderForTesting()
-        ->ProvideCurrentSessionData(&uma_proto);
-  } else {
-    g_browser_process->metrics_service()
-        ->GetDelegatingProviderForTesting()
-        ->OnDidCreateMetricsLog();
-  }
+
+  g_browser_process->metrics_service()
+      ->GetDelegatingProviderForTesting()
+      ->OnDidCreateMetricsLog();
 }
 
 }  // namespace
 
-struct FamilyUserMetricsProviderTestParams {
-  FamilyUserMetricsProvider::FamilyUserLogSegment family_user_log_segment;
-  bool emit_histograms_earlier;
-};
-
 class FamilyUserMetricsProviderTest
     : public MixinBasedInProcessBrowserTest,
-      public testing::WithParamInterface<FamilyUserMetricsProviderTestParams> {
+      public testing::WithParamInterface<
+          FamilyUserMetricsProvider::FamilyUserLogSegment> {
  public:
-  void SetUp() override {
-    if (ShouldEmitHistogramsEarlier()) {
-      feature_list_.InitWithFeatures(
-          {metrics::features::kEmitHistogramsEarlier}, {});
-    } else {
-      feature_list_.InitWithFeatures(
-          {}, {metrics::features::kEmitHistogramsEarlier});
-    }
-
-    MixinBasedInProcessBrowserTest::SetUp();
-  }
-
   void SetUpInProcessBrowserTestFixture() override {
     MixinBasedInProcessBrowserTest::SetUpInProcessBrowserTestFixture();
 
@@ -127,11 +103,7 @@ class FamilyUserMetricsProviderTest
  protected:
   FamilyUserMetricsProvider::FamilyUserLogSegment GetFamilyUserLogSegment()
       const {
-    return GetParam().family_user_log_segment;
-  }
-
-  bool ShouldEmitHistogramsEarlier() const {
-    return GetParam().emit_histograms_earlier;
+    return GetParam();
   }
 
   ash::LoggedInUserMixin logged_in_user_mixin_{
@@ -144,16 +116,13 @@ class FamilyUserMetricsProviderTest
       // customizing PolicyData.
       // TODO(crbug/1112885): Use EmbeddedPolicyTestServer when this is fixed.
       /*use_embedded_policy_server=*/false};
-
- private:
-  base::test::ScopedFeatureList feature_list_;
 };
 
 IN_PROC_BROWSER_TEST_P(FamilyUserMetricsProviderTest, UserCategory) {
   base::HistogramTester histogram_tester;
   // Simulate calling ProvideHistograms() prior to logging in. This call should
   // return prematurely.
-  ProvideHistograms(ShouldEmitHistogramsEarlier());
+  ProvideHistograms();
 
   // No metrics were recorded.
   histogram_tester.ExpectTotalCount(
@@ -183,7 +152,7 @@ IN_PROC_BROWSER_TEST_P(FamilyUserMetricsProviderTest, UserCategory) {
   }
 
   // Simulate calling ProvideHistograms() after logging in.
-  ProvideHistograms(ShouldEmitHistogramsEarlier());
+  ProvideHistograms();
 
   histogram_tester.ExpectUniqueSample(
       FamilyUserMetricsProvider::
@@ -205,78 +174,24 @@ INSTANTIATE_TEST_SUITE_P(
     ,
     FamilyUserMetricsProviderTest,
     testing::Values(
-        FamilyUserMetricsProviderTestParams{
-            .family_user_log_segment = FamilyUserMetricsProvider::
-                FamilyUserLogSegment::kSupervisedUser,
-            .emit_histograms_earlier = true},
-        FamilyUserMetricsProviderTestParams{
-            .family_user_log_segment = FamilyUserMetricsProvider::
-                FamilyUserLogSegment::kSupervisedStudent,
-            .emit_histograms_earlier = true},
-        FamilyUserMetricsProviderTestParams{
-            .family_user_log_segment =
-                FamilyUserMetricsProvider::FamilyUserLogSegment::kStudentAtHome,
-            .emit_histograms_earlier = true},
-        FamilyUserMetricsProviderTestParams{
-            .family_user_log_segment =
-                FamilyUserMetricsProvider::FamilyUserLogSegment::kRegularUser,
-            .emit_histograms_earlier = true},
-        FamilyUserMetricsProviderTestParams{
-            .family_user_log_segment = FamilyUserMetricsProvider::
-                FamilyUserLogSegment::kSupervisedUser,
-            .emit_histograms_earlier = false},
-        FamilyUserMetricsProviderTestParams{
-            .family_user_log_segment = FamilyUserMetricsProvider::
-                FamilyUserLogSegment::kSupervisedStudent,
-            .emit_histograms_earlier = false},
-        FamilyUserMetricsProviderTestParams{
-            .family_user_log_segment =
-                FamilyUserMetricsProvider::FamilyUserLogSegment::kStudentAtHome,
-            .emit_histograms_earlier = false},
-        FamilyUserMetricsProviderTestParams{
-            .family_user_log_segment =
-                FamilyUserMetricsProvider::FamilyUserLogSegment::kRegularUser,
-            .emit_histograms_earlier = false}));
-
-class FamilyUserMetricsProviderBaseTest
-    : public MixinBasedInProcessBrowserTest,
-      public testing::WithParamInterface<bool> {
- public:
-  void SetUp() override {
-    if (ShouldEmitHistogramsEarlier()) {
-      feature_list_.InitWithFeatures(
-          {metrics::features::kEmitHistogramsEarlier}, {});
-    } else {
-      feature_list_.InitWithFeatures(
-          {}, {metrics::features::kEmitHistogramsEarlier});
-    }
-
-    MixinBasedInProcessBrowserTest::SetUp();
-  }
-
-  bool ShouldEmitHistogramsEarlier() const { return GetParam(); }
-
- protected:
-  base::test::ScopedFeatureList feature_list_;
-};
+        FamilyUserMetricsProvider::FamilyUserLogSegment::kSupervisedUser,
+        FamilyUserMetricsProvider::FamilyUserLogSegment::kSupervisedStudent,
+        FamilyUserMetricsProvider::FamilyUserLogSegment::kStudentAtHome,
+        FamilyUserMetricsProvider::FamilyUserLogSegment::kRegularUser));
 
 class FamilyUserMetricsProviderGuestModeTest
-    : public FamilyUserMetricsProviderBaseTest {
+    : public MixinBasedInProcessBrowserTest {
  private:
   ash::GuestSessionMixin guest_session_mixin_{&mixin_host_};
 };
 
-INSTANTIATE_TEST_SUITE_P(All,
-                         FamilyUserMetricsProviderGuestModeTest,
-                         testing::Bool());
-
 // Prevents a regression to crbug/1137352. Also tests secondary account metrics
 // not reported in guest mode.
-IN_PROC_BROWSER_TEST_P(FamilyUserMetricsProviderGuestModeTest,
+IN_PROC_BROWSER_TEST_F(FamilyUserMetricsProviderGuestModeTest,
                        NoCrashInGuestMode) {
   base::HistogramTester histogram_tester;
 
-  ProvideHistograms(ShouldEmitHistogramsEarlier());
+  ProvideHistograms();
 
   histogram_tester.ExpectUniqueSample(
       FamilyUserMetricsProvider::
@@ -290,7 +205,7 @@ IN_PROC_BROWSER_TEST_P(FamilyUserMetricsProviderGuestModeTest,
 }
 
 class FamilyUserMetricsProviderEphemeralUserTest
-    : public FamilyUserMetricsProviderBaseTest {
+    : public MixinBasedInProcessBrowserTest {
  protected:
   // MixinBasedInProcessBrowserTest:
   void SetUpInProcessBrowserTestFixture() override {
@@ -326,16 +241,12 @@ class FamilyUserMetricsProviderEphemeralUserTest
   ash::ScopedTestingCrosSettings scoped_testing_cros_settings_;
 };
 
-INSTANTIATE_TEST_SUITE_P(All,
-                         FamilyUserMetricsProviderEphemeralUserTest,
-                         testing::Bool());
-
 // Tests that regular ephemeral users report 0 for number of secondary accounts.
-IN_PROC_BROWSER_TEST_P(FamilyUserMetricsProviderEphemeralUserTest,
+IN_PROC_BROWSER_TEST_F(FamilyUserMetricsProviderEphemeralUserTest,
                        EphemeralUserZeroSecondaryAccounts) {
   base::HistogramTester histogram_tester;
 
-  ProvideHistograms(ShouldEmitHistogramsEarlier());
+  ProvideHistograms();
 
   histogram_tester.ExpectUniqueSample(
       FamilyUserMetricsProvider::

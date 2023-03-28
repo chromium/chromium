@@ -5,13 +5,11 @@
 #include "chrome/browser/metrics/family_link_user_metrics_provider.h"
 
 #include "base/test/metrics/histogram_tester.h"
-#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "chrome/browser/signin/identity_test_environment_profile_adaptor.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/base/testing_profile_manager.h"
-#include "components/metrics/metrics_features.h"
 #include "components/prefs/pref_service.h"
 #include "components/signin/public/identity_manager/account_capabilities_test_mutator.h"
 #include "components/signin/public/identity_manager/account_info.h"
@@ -20,7 +18,6 @@
 #include "components/supervised_user/core/common/features.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/metrics_proto/chrome_user_metrics_extension.pb.h"
 
 namespace {
 constexpr char kTestEmail[] = "test@gmail.com";
@@ -32,9 +29,7 @@ constexpr char kTestProfile2[] = "profile2";
 
 }  // namespace
 
-class FamilyLinkUserMetricsProviderTest
-    : public testing::Test,
-      public testing::WithParamInterface<bool> {
+class FamilyLinkUserMetricsProviderTest : public testing::Test {
  protected:
   FamilyLinkUserMetricsProviderTest()
       : test_profile_manager_(TestingBrowserProcess::GetGlobal()) {}
@@ -43,14 +38,6 @@ class FamilyLinkUserMetricsProviderTest
     ASSERT_TRUE(test_profile_manager_.SetUp());
     EnableAccountCapabilitiesFetches(identity_manager());
     metrics_provider()->skip_active_browser_count_for_unittesting_ = true;
-
-    if (ShouldEmitHistogramsEarlier()) {
-      feature_list_.InitWithFeatures(
-          {metrics::features::kEmitHistogramsEarlier}, {});
-    } else {
-      feature_list_.InitWithFeatures(
-          {}, {metrics::features::kEmitHistogramsEarlier});
-    }
   }
 
   void TearDown() override { test_profile_manager_.DeleteAllTestingProfiles(); }
@@ -67,16 +54,6 @@ class FamilyLinkUserMetricsProviderTest
     return &metrics_provider_;
   }
 
-  void ProvideHistograms() {
-    if (!ShouldEmitHistogramsEarlier()) {
-      metrics::ChromeUserMetricsExtension uma_proto;
-      metrics_provider()->ProvideCurrentSessionData(&uma_proto);
-    } else {
-      metrics_provider()->OnDidCreateMetricsLog();
-    }
-  }
-
-  bool ShouldEmitHistogramsEarlier() const { return GetParam(); }
   TestingProfileManager* test_profile_manager() {
     return &test_profile_manager_;
   }
@@ -106,22 +83,17 @@ class FamilyLinkUserMetricsProviderTest
 
   signin::IdentityTestEnvironment identity_test_env_;
   FamilyLinkUserMetricsProvider metrics_provider_;
-  base::test::ScopedFeatureList feature_list_;
   TestingProfileManager test_profile_manager_;
 };
 
-INSTANTIATE_TEST_SUITE_P(All,
-                         FamilyLinkUserMetricsProviderTest,
-                         testing::Bool());
-
-TEST_P(FamilyLinkUserMetricsProviderTest, UserWithUnknownCapabilities) {
+TEST_F(FamilyLinkUserMetricsProviderTest, UserWithUnknownCapabilities) {
   metrics_provider()->IdentityManagerCreated(identity_manager());
   AccountInfo account = identity_test_env()->MakePrimaryAccountAvailable(
       kTestEmail, signin::ConsentLevel::kSignin);
 
   // Does not set account capabilities, default is unknown.
   base::HistogramTester histogram_tester;
-  ProvideHistograms();
+  metrics_provider()->OnDidCreateMetricsLog();
 
   histogram_tester.ExpectTotalCount(
       FamilyLinkUserMetricsProvider::GetHistogramNameForTesting(),
@@ -129,7 +101,7 @@ TEST_P(FamilyLinkUserMetricsProviderTest, UserWithUnknownCapabilities) {
   metrics_provider()->OnIdentityManagerShutdown(identity_manager());
 }
 
-TEST_P(FamilyLinkUserMetricsProviderTest, AdultUser) {
+TEST_F(FamilyLinkUserMetricsProviderTest, AdultUser) {
   metrics_provider()->IdentityManagerCreated(identity_manager());
   AccountInfo account = identity_test_env()->MakePrimaryAccountAvailable(
       kTestEmail, signin::ConsentLevel::kSignin);
@@ -145,7 +117,7 @@ TEST_P(FamilyLinkUserMetricsProviderTest, AdultUser) {
             updated_account.capabilities.is_subject_to_parental_controls());
 
   base::HistogramTester histogram_tester;
-  ProvideHistograms();
+  metrics_provider()->OnDidCreateMetricsLog();
 
   histogram_tester.ExpectUniqueSample(
       FamilyLinkUserMetricsProvider::GetHistogramNameForTesting(),
@@ -154,7 +126,7 @@ TEST_P(FamilyLinkUserMetricsProviderTest, AdultUser) {
   metrics_provider()->OnIdentityManagerShutdown(identity_manager());
 }
 
-TEST_P(FamilyLinkUserMetricsProviderTest, UserWithOptionalSupervision) {
+TEST_F(FamilyLinkUserMetricsProviderTest, UserWithOptionalSupervision) {
   metrics_provider()->IdentityManagerCreated(identity_manager());
   AccountInfo account = identity_test_env()->MakePrimaryAccountAvailable(
       kTestEmail, signin::ConsentLevel::kSignin);
@@ -172,7 +144,7 @@ TEST_P(FamilyLinkUserMetricsProviderTest, UserWithOptionalSupervision) {
             updated_account.capabilities.can_stop_parental_supervision());
 
   base::HistogramTester histogram_tester;
-  ProvideHistograms();
+  metrics_provider()->OnDidCreateMetricsLog();
 
   histogram_tester.ExpectUniqueSample(
       FamilyLinkUserMetricsProvider::GetHistogramNameForTesting(),
@@ -181,7 +153,7 @@ TEST_P(FamilyLinkUserMetricsProviderTest, UserWithOptionalSupervision) {
   metrics_provider()->OnIdentityManagerShutdown(identity_manager());
 }
 
-TEST_P(FamilyLinkUserMetricsProviderTest, UserWithRequiredSupervision) {
+TEST_F(FamilyLinkUserMetricsProviderTest, UserWithRequiredSupervision) {
   metrics_provider()->IdentityManagerCreated(identity_manager());
   AccountInfo account = identity_test_env()->MakePrimaryAccountAvailable(
       kTestEmail, signin::ConsentLevel::kSignin);
@@ -199,7 +171,7 @@ TEST_P(FamilyLinkUserMetricsProviderTest, UserWithRequiredSupervision) {
             updated_account.capabilities.can_stop_parental_supervision());
 
   base::HistogramTester histogram_tester;
-  ProvideHistograms();
+  metrics_provider()->OnDidCreateMetricsLog();
 
   histogram_tester.ExpectUniqueSample(
       FamilyLinkUserMetricsProvider::GetHistogramNameForTesting(),
@@ -208,7 +180,7 @@ TEST_P(FamilyLinkUserMetricsProviderTest, UserWithRequiredSupervision) {
   metrics_provider()->OnIdentityManagerShutdown(identity_manager());
 }
 
-TEST_P(FamilyLinkUserMetricsProviderTest,
+TEST_F(FamilyLinkUserMetricsProviderTest,
        MetricsProviderInitAfterPrimaryAccountAdded) {
   AccountInfo account = identity_test_env()->MakePrimaryAccountAvailable(
       kTestEmail, signin::ConsentLevel::kSignin);
@@ -217,7 +189,7 @@ TEST_P(FamilyLinkUserMetricsProviderTest,
   metrics_provider()->IdentityManagerCreated(identity_manager());
 
   base::HistogramTester histogram_tester;
-  ProvideHistograms();
+  metrics_provider()->OnDidCreateMetricsLog();
 
   histogram_tester.ExpectTotalCount(
       FamilyLinkUserMetricsProvider::GetHistogramNameForTesting(),
@@ -225,7 +197,7 @@ TEST_P(FamilyLinkUserMetricsProviderTest,
   metrics_provider()->OnIdentityManagerShutdown(identity_manager());
 }
 
-TEST_P(FamilyLinkUserMetricsProviderTest,
+TEST_F(FamilyLinkUserMetricsProviderTest,
        MetricsProviderInitAfterPrimaryAccountWithCapabilitiesAdded) {
   AccountInfo account = identity_test_env()->MakePrimaryAccountAvailable(
       kTestEmail, signin::ConsentLevel::kSignin);
@@ -239,7 +211,7 @@ TEST_P(FamilyLinkUserMetricsProviderTest,
   metrics_provider()->IdentityManagerCreated(identity_manager());
 
   base::HistogramTester histogram_tester;
-  ProvideHistograms();
+  metrics_provider()->OnDidCreateMetricsLog();
 
   histogram_tester.ExpectUniqueSample(
       FamilyLinkUserMetricsProvider::GetHistogramNameForTesting(),
@@ -248,7 +220,7 @@ TEST_P(FamilyLinkUserMetricsProviderTest,
   metrics_provider()->OnIdentityManagerShutdown(identity_manager());
 }
 
-TEST_P(FamilyLinkUserMetricsProviderTest, SetChildAsPrimaryAccount) {
+TEST_F(FamilyLinkUserMetricsProviderTest, SetChildAsPrimaryAccount) {
   // Add child account to the device as a secondary account. This allows us to
   // simulate a cached account state once we set the account as primary.
   AccountInfo account = identity_test_env()->MakeAccountAvailable(kTestEmail);
@@ -265,14 +237,14 @@ TEST_P(FamilyLinkUserMetricsProviderTest, SetChildAsPrimaryAccount) {
   // This simulates a signed-out client who signs back in to a previously loaded
   // child account.
   base::HistogramTester histogram_tester;
-  ProvideHistograms();
+  metrics_provider()->OnDidCreateMetricsLog();
   histogram_tester.ExpectTotalCount(
       FamilyLinkUserMetricsProvider::GetHistogramNameForTesting(), 0);
 
   identity_test_env()->SetPrimaryAccount(kTestEmail,
                                          signin::ConsentLevel::kSignin);
 
-  ProvideHistograms();
+  metrics_provider()->OnDidCreateMetricsLog();
 
   histogram_tester.ExpectUniqueSample(
       FamilyLinkUserMetricsProvider::GetHistogramNameForTesting(),
@@ -281,7 +253,7 @@ TEST_P(FamilyLinkUserMetricsProviderTest, SetChildAsPrimaryAccount) {
   metrics_provider()->OnIdentityManagerShutdown(identity_manager());
 }
 
-TEST_P(FamilyLinkUserMetricsProviderTest, ClearLogOnUserSignout) {
+TEST_F(FamilyLinkUserMetricsProviderTest, ClearLogOnUserSignout) {
   metrics_provider()->IdentityManagerCreated(identity_manager());
   AccountInfo account = identity_test_env()->MakePrimaryAccountAvailable(
       kTestEmail, signin::ConsentLevel::kSignin);
@@ -292,7 +264,7 @@ TEST_P(FamilyLinkUserMetricsProviderTest, ClearLogOnUserSignout) {
   signin::UpdateAccountInfoForAccount(identity_manager(), account);
 
   base::HistogramTester histogram_tester;
-  ProvideHistograms();
+  metrics_provider()->OnDidCreateMetricsLog();
 
   histogram_tester.ExpectUniqueSample(
       FamilyLinkUserMetricsProvider::GetHistogramNameForTesting(),
@@ -300,7 +272,7 @@ TEST_P(FamilyLinkUserMetricsProviderTest, ClearLogOnUserSignout) {
       /*expected_bucket_count=*/1);
 
   identity_test_env()->ClearPrimaryAccount();
-  ProvideHistograms();
+  metrics_provider()->OnDidCreateMetricsLog();
 
   // The histogram should stay the same since the user has signed out.
   histogram_tester.ExpectUniqueSample(
@@ -310,7 +282,7 @@ TEST_P(FamilyLinkUserMetricsProviderTest, ClearLogOnUserSignout) {
   metrics_provider()->OnIdentityManagerShutdown(identity_manager());
 }
 
-TEST_P(FamilyLinkUserMetricsProviderTest,
+TEST_F(FamilyLinkUserMetricsProviderTest,
        ProfileWithUnknownCapabilitiesDoesNotOutputHistogram) {
   base::test::ScopedFeatureList feature{
       kExtendFamilyLinkUserLogSegmentToAllPlatforms};
@@ -326,13 +298,13 @@ TEST_P(FamilyLinkUserMetricsProviderTest,
   // Does not set account capabilities, default is unknown.
 
   base::HistogramTester histogram_tester;
-  ProvideHistograms();
+  metrics_provider()->OnDidCreateMetricsLog();
   histogram_tester.ExpectTotalCount(
       FamilyLinkUserMetricsProvider::GetHistogramNameForTesting(),
       /*expected_count=*/0);
 }
 
-TEST_P(FamilyLinkUserMetricsProviderTest,
+TEST_F(FamilyLinkUserMetricsProviderTest,
        ProfileWithRequiredSupervisionLoggedAsSupervisionEnabledByPolicy) {
   base::test::ScopedFeatureList feature{
       kExtendFamilyLinkUserLogSegmentToAllPlatforms};
@@ -343,7 +315,7 @@ TEST_P(FamilyLinkUserMetricsProviderTest,
                        /*can_stop_parental_supervision=*/false);
 
   base::HistogramTester histogram_tester;
-  ProvideHistograms();
+  metrics_provider()->OnDidCreateMetricsLog();
 
   histogram_tester.ExpectUniqueSample(
       FamilyLinkUserMetricsProvider::GetHistogramNameForTesting(),
@@ -351,7 +323,7 @@ TEST_P(FamilyLinkUserMetricsProviderTest,
       /*expected_bucket_count=*/1);
 }
 
-TEST_P(FamilyLinkUserMetricsProviderTest,
+TEST_F(FamilyLinkUserMetricsProviderTest,
        ProfileWithOptionalSupervisionLoggedSupervisionEnabledByUser) {
   base::test::ScopedFeatureList feature{
       kExtendFamilyLinkUserLogSegmentToAllPlatforms};
@@ -362,7 +334,7 @@ TEST_P(FamilyLinkUserMetricsProviderTest,
                        /*can_stop_parental_supervision=*/true);
 
   base::HistogramTester histogram_tester;
-  ProvideHistograms();
+  metrics_provider()->OnDidCreateMetricsLog();
 
   histogram_tester.ExpectUniqueSample(
       FamilyLinkUserMetricsProvider::GetHistogramNameForTesting(),
@@ -370,7 +342,7 @@ TEST_P(FamilyLinkUserMetricsProviderTest,
       /*expected_bucket_count=*/1);
 }
 
-TEST_P(FamilyLinkUserMetricsProviderTest,
+TEST_F(FamilyLinkUserMetricsProviderTest,
        ProfileWithAdultUserLoggedAsUnsupervised) {
   base::test::ScopedFeatureList feature{
       kExtendFamilyLinkUserLogSegmentToAllPlatforms};
@@ -381,7 +353,7 @@ TEST_P(FamilyLinkUserMetricsProviderTest,
                        /*can_stop_parental_supervision=*/false);
 
   base::HistogramTester histogram_tester;
-  ProvideHistograms();
+  metrics_provider()->OnDidCreateMetricsLog();
 
   histogram_tester.ExpectUniqueSample(
       FamilyLinkUserMetricsProvider::GetHistogramNameForTesting(),
@@ -389,7 +361,7 @@ TEST_P(FamilyLinkUserMetricsProviderTest,
       /*expected_bucket_count=*/1);
 }
 
-TEST_P(FamilyLinkUserMetricsProviderTest,
+TEST_F(FamilyLinkUserMetricsProviderTest,
        ProfilesWithMixedSupervisedUsersLoggedAsMixedProfile) {
   base::test::ScopedFeatureList feature{
       kExtendFamilyLinkUserLogSegmentToAllPlatforms};
@@ -404,14 +376,14 @@ TEST_P(FamilyLinkUserMetricsProviderTest,
                        /*can_stop_parental_supervision=*/true);
 
   base::HistogramTester histogram_tester;
-  ProvideHistograms();
+  metrics_provider()->OnDidCreateMetricsLog();
   histogram_tester.ExpectBucketCount(
       FamilyLinkUserMetricsProvider::GetHistogramNameForTesting(),
       FamilyLinkUserMetricsProvider::LogSegment::kMixedProfile,
       /*expected_count=*/1);
 }
 
-TEST_P(FamilyLinkUserMetricsProviderTest,
+TEST_F(FamilyLinkUserMetricsProviderTest,
        ProfilesWithMixedSupervisedAndAdultUsersLoggedAsMixedProfile) {
   base::test::ScopedFeatureList feature{
       kExtendFamilyLinkUserLogSegmentToAllPlatforms};
@@ -433,21 +405,21 @@ TEST_P(FamilyLinkUserMetricsProviderTest,
                        /*can_stop_parental_supervision=*/true);
 
   base::HistogramTester histogram_tester;
-  ProvideHistograms();
+  metrics_provider()->OnDidCreateMetricsLog();
   histogram_tester.ExpectBucketCount(
       FamilyLinkUserMetricsProvider::GetHistogramNameForTesting(),
       FamilyLinkUserMetricsProvider::LogSegment::kMixedProfile,
       /*expected_count=*/1);
 }
 
-TEST_P(FamilyLinkUserMetricsProviderTest,
+TEST_F(FamilyLinkUserMetricsProviderTest,
        NoProfilesAddedShouldNotLogHistogram) {
   base::test::ScopedFeatureList feature{
       kExtendFamilyLinkUserLogSegmentToAllPlatforms};
 
   // Add no profiles
   base::HistogramTester histogram_tester;
-  ProvideHistograms();
+  metrics_provider()->OnDidCreateMetricsLog();
   histogram_tester.ExpectBucketCount(
       FamilyLinkUserMetricsProvider::GetHistogramNameForTesting(),
       FamilyLinkUserMetricsProvider::LogSegment::kMixedProfile,

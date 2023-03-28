@@ -9,15 +9,6 @@
 #include "base/metrics/field_trial_params.h"
 
 namespace metrics::features {
-// Determines whether histograms that that are expected to be set on every log
-// should be emitted in OnDidCreateMetricsLog() instead of
-// ProvideCurrentSessionData().
-BASE_DECLARE_FEATURE(kEmitHistogramsEarlier);
-
-// If set, histograms that are expected to be set on every log will be emitted
-// in DisableRecording().
-extern const base::FeatureParam<bool> kEmitHistogramsForIndependentLogs;
-
 // Determines at what point the metrics service is allowed to close a log when
 // Chrome is closed (and backgrounded/foregrounded for mobile platforms). When
 // this feature is disabled, the metrics service can only close a log if it has

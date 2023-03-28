@@ -343,32 +343,17 @@ class MetricsServiceTest : public testing::Test {
 
 class MetricsServiceTestWithFeatures
     : public MetricsServiceTest,
-      public ::testing::WithParamInterface<std::tuple<bool, bool, bool>> {
+      public ::testing::WithParamInterface<bool> {
  public:
   MetricsServiceTestWithFeatures() = default;
   ~MetricsServiceTestWithFeatures() override = default;
 
-  bool ShouldEmitHistogramsEarlier() { return std::get<0>(GetParam()); }
-
-  bool ShouldEmitHistogramsForIndependentLogs() {
-    return std::get<1>(GetParam());
-  }
-
-  bool ShouldClearLogsOnClonedInstall() { return std::get<2>(GetParam()); }
+  bool ShouldClearLogsOnClonedInstall() { return GetParam(); }
 
   void SetUp() override {
     MetricsServiceTest::SetUp();
     std::vector<base::test::FeatureRefAndParams> enabled_features;
     std::vector<base::test::FeatureRef> disabled_features;
-
-    if (ShouldEmitHistogramsEarlier()) {
-      const std::map<std::string, std::string> params = {
-          {"emit_for_independent_logs",
-           ShouldEmitHistogramsForIndependentLogs() ? "true" : "false"}};
-      enabled_features.emplace_back(features::kEmitHistogramsEarlier, params);
-    } else {
-      disabled_features.emplace_back(features::kEmitHistogramsEarlier);
-    }
 
     if (ShouldClearLogsOnClonedInstall()) {
       enabled_features.emplace_back(
@@ -395,37 +380,17 @@ struct StartupVisibilityTestParams {
 class MetricsServiceTestWithStartupVisibility
     : public MetricsServiceTest,
       public ::testing::WithParamInterface<
-          std::tuple<StartupVisibilityTestParams,
-                     std::tuple<bool, bool, bool>>> {
+          std::tuple<StartupVisibilityTestParams, bool>> {
  public:
   MetricsServiceTestWithStartupVisibility() = default;
   ~MetricsServiceTestWithStartupVisibility() override = default;
 
-  bool ShouldEmitHistogramsEarlier() {
-    return std::get<0>(std::get<1>(GetParam()));
-  }
-
-  bool ShouldEmitHistogramsForIndependentLogs() {
-    return std::get<1>(std::get<1>(GetParam()));
-  }
-
-  bool ShouldClearLogsOnClonedInstall() {
-    return std::get<2>(std::get<1>(GetParam()));
-  }
+  bool ShouldClearLogsOnClonedInstall() { return std::get<1>(GetParam()); }
 
   void SetUp() override {
     MetricsServiceTest::SetUp();
     std::vector<base::test::FeatureRefAndParams> enabled_features;
     std::vector<base::test::FeatureRef> disabled_features;
-
-    if (ShouldEmitHistogramsEarlier()) {
-      const std::map<std::string, std::string> params = {
-          {"emit_for_independent_logs",
-           ShouldEmitHistogramsForIndependentLogs() ? "true" : "false"}};
-      enabled_features.emplace_back(features::kEmitHistogramsEarlier, params);
-    } else {
-      disabled_features.emplace_back(features::kEmitHistogramsEarlier);
-    }
 
     if (ShouldClearLogsOnClonedInstall()) {
       enabled_features.emplace_back(
@@ -483,11 +448,7 @@ base::HistogramBase::Count GetHistogramDeltaTotalCount(base::StringPiece name) {
 
 }  // namespace
 
-INSTANTIATE_TEST_SUITE_P(All,
-                         MetricsServiceTestWithFeatures,
-                         testing::Combine(testing::Bool(),
-                                          testing::Bool(),
-                                          testing::Bool()));
+INSTANTIATE_TEST_SUITE_P(All, MetricsServiceTestWithFeatures, testing::Bool());
 
 TEST_P(MetricsServiceTestWithFeatures, RecordId) {
   EnableMetricsReporting();
@@ -712,14 +673,9 @@ TEST_P(MetricsServiceTestWithFeatures, OnDidCreateMetricsLogAtShutdown) {
                                      1);
   service.Stop();
 
-  // If the feature kEmitHistogramsEarlier is enabled and parameter
-  // kEmitHistogramsForIndependentLogs is set to true, OnDidCreateMetricsLog()
-  // will be called during shutdown to emit histograms.
-  histogram_tester.ExpectBucketCount(
-      kOnDidCreateMetricsLogHistogramName, true,
-      ShouldEmitHistogramsEarlier() && ShouldEmitHistogramsForIndependentLogs()
-          ? 2
-          : 1);
+  // OnDidCreateMetricsLog() will be called during shutdown to emit histograms.
+  histogram_tester.ExpectBucketCount(kOnDidCreateMetricsLogHistogramName, true,
+                                     2);
 
   // Clean up histograms.
   base::StatisticsRecorder::ForgetHistogramForTesting(
@@ -744,16 +700,12 @@ TEST_P(MetricsServiceTestWithFeatures, ProvideHistograms) {
   // Start() will create the first ongoing log.
   service.Start();
 
-  // If the feature kEmitHistogramsEarlier is enabled, ProvideHistograms() is
-  // called in OnDidCreateMetricsLog().
-  histogram_tester.ExpectBucketCount(kProvideHistogramsHistogramName, true,
-                                     ShouldEmitHistogramsEarlier() ? 1 : 0);
+  // ProvideHistograms() is called in OnDidCreateMetricsLog().
+  histogram_tester.ExpectBucketCount(kProvideHistogramsHistogramName, true, 1);
 
   service.StageCurrentLogForTest();
-  // Make sure if kEmitHistogramsEarlier is not set, ProvideHistograms() is
-  // called in ProvideCurrentSessionData().
-  histogram_tester.ExpectBucketCount(kProvideHistogramsHistogramName, true,
-                                     ShouldEmitHistogramsEarlier() ? 2 : 1);
+
+  histogram_tester.ExpectBucketCount(kProvideHistogramsHistogramName, true, 2);
 
   service.Stop();
 
@@ -815,9 +767,7 @@ INSTANTIATE_TEST_SUITE_P(
             StartupVisibilityTestParams{
                 .startup_visibility = StartupVisibility::kForeground,
                 .expected_beacon_value = false}),
-        ::testing::Combine(::testing::Bool(),
-                           ::testing::Bool(),
-                           ::testing::Bool())));
+        ::testing::Bool()));
 
 TEST_P(MetricsServiceTestWithStartupVisibility, InitialStabilityLogAfterCrash) {
   base::HistogramTester histogram_tester;

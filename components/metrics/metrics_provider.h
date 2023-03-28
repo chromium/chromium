@@ -37,13 +37,16 @@ class MetricsProvider {
   // |done_callback| must be run on the same thread that calls |AsyncInit|.
   virtual void AsyncInit(base::OnceClosure done_callback);
 
-  // Called by OnDidCreateMetricsLog() when feature kEmitHistogramsEarlier
-  // is enabled to provide histograms. If histograms are not emitted
-  // successfully or the feature is disabled, it will be called in
+  // Called by OnDidCreateMetricsLog() to provide histograms. If histograms
+  // are not emitted successfully, it will be called in
   // ProvideCurrentSessionData().
   // Returns whether or not histograms are emitted successfully.
-  // This function is temporary for crbug.com/1367008 and should not be used
-  // otherwise.
+  // Only override this function if:
+  // 1. You want your histograms to be included in every record uploaded to the
+  // server.
+  // 2. You will not override ProvideCurrentSessionData(),
+  // OnDidCreateMetricsLog(), or ProvideStabilityMetrics().
+  // TODO(crbug/1427219): Refactor the code to remove requirement 2.
   virtual bool ProvideHistograms();
 
   // Called when a new MetricsLog is created.

@@ -9,7 +9,6 @@
 #include "base/logging.h"
 #include "base/run_loop.h"
 #include "base/test/metrics/histogram_tester.h"
-#include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
 #include "chrome/browser/ash/app_mode/web_app/web_kiosk_app_manager.h"
 #include "chrome/browser/ash/login/app_mode/kiosk_launch_controller.h"
@@ -24,10 +23,8 @@
 #include "chrome/browser/ash/policy/core/device_policy_cros_browser_test.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/browser_process_platform_part_ash.h"
-#include "chrome/common/chrome_features.h"
 #include "chrome/test/base/fake_gaia_mixin.h"
 #include "chromeos/ash/components/dbus/session_manager/fake_session_manager_client.h"
-#include "components/metrics/metrics_features.h"
 #include "components/metrics/metrics_service.h"
 #include "components/policy/core/common/cloud/cloud_policy_constants.h"
 #include "components/policy/core/common/cloud/mock_cloud_policy_store.h"
@@ -90,7 +87,7 @@ absl::optional<AccountId> GetPrimaryAccountId() {
                                         FakeGaiaMixin::kEnterpriseUser1GaiaId);
 }
 
-void ProvideHistograms(bool should_emit_histograms_earlier) {
+void ProvideHistograms() {
   // The purpose of the below call is to avoid a DCHECK failure in an unrelated
   // metrics provider, in |FieldTrialsProvider::ProvideCurrentSessionData()|.
   metrics::SystemProfileProto system_profile_proto;
@@ -98,26 +95,15 @@ void ProvideHistograms(bool should_emit_histograms_earlier) {
       ->GetDelegatingProviderForTesting()
       ->ProvideSystemProfileMetricsWithLogCreationTime(base::TimeTicks::Now(),
                                                        &system_profile_proto);
-  if (!should_emit_histograms_earlier) {
-    metrics::ChromeUserMetricsExtension uma_proto;
-    g_browser_process->metrics_service()
-        ->GetDelegatingProviderForTesting()
-        ->ProvideCurrentSessionData(&uma_proto);
-  } else {
-    g_browser_process->metrics_service()
-        ->GetDelegatingProviderForTesting()
-        ->OnDidCreateMetricsLog();
-  }
+  g_browser_process->metrics_service()
+      ->GetDelegatingProviderForTesting()
+      ->OnDidCreateMetricsLog();
 }
 
 class TestCase {
  public:
-  TestCase(UserSegment user_segment,
-           policy::MarketSegment device_segment,
-           bool emit_histograms_earlier)
-      : user_segment_(user_segment),
-        device_segment_(device_segment),
-        emit_histograms_earlier_(emit_histograms_earlier) {}
+  TestCase(UserSegment user_segment, policy::MarketSegment device_segment)
+      : user_segment_(user_segment), device_segment_(device_segment) {}
 
   std::string GetTestName() const {
     std::string test_name = "";
@@ -176,8 +162,6 @@ class TestCase {
     return ::GetMarketSegment(device_segment_);
   }
 
-  bool GetShouldEmitEarlier() const { return emit_histograms_earlier_; }
-
   bool IsPublicSession() const {
     return GetUserSegment() == UserSegment::kManagedGuestSession;
   }
@@ -199,28 +183,22 @@ class TestCase {
  private:
   UserSegment user_segment_;
   policy::MarketSegment device_segment_;
-  bool emit_histograms_earlier_;
   bool uma_expected_{true};
 };
 
 TestCase UserCase(UserSegment user_segment,
-                  policy::MarketSegment device_segment,
-                  bool emit_histograms_earlier) {
-  TestCase test_case(user_segment, device_segment, emit_histograms_earlier);
+                  policy::MarketSegment device_segment) {
+  TestCase test_case(user_segment, device_segment);
   return test_case;
 }
 
-TestCase MgsCase(policy::MarketSegment device_segment,
-                 bool emit_histograms_earlier) {
-  TestCase test_case(UserSegment::kManagedGuestSession, device_segment,
-                     emit_histograms_earlier);
+TestCase MgsCase(policy::MarketSegment device_segment) {
+  TestCase test_case(UserSegment::kManagedGuestSession, device_segment);
   return test_case;
 }
 
-TestCase KioskCase(policy::MarketSegment device_segment,
-                   bool emit_histograms_earlier) {
-  TestCase test_case(UserSegment::kKioskApp, device_segment,
-                     emit_histograms_earlier);
+TestCase KioskCase(policy::MarketSegment device_segment) {
+  TestCase test_case(UserSegment::kKioskApp, device_segment);
   return test_case;
 }
 
@@ -230,21 +208,6 @@ class UserTypeByDeviceTypeMetricsProviderTest
     : public policy::DevicePolicyCrosBrowserTest,
       public testing::WithParamInterface<TestCase> {
  public:
-  UserTypeByDeviceTypeMetricsProviderTest() {
-    scoped_feature_list_.InitAndEnableFeature(
-        features::kUserTypeByDeviceTypeMetricsProvider);
-  }
-
-  void SetUp() override {
-    if (GetParam().GetShouldEmitEarlier()) {
-      feature_list_.InitWithFeatures(
-          {metrics::features::kEmitHistogramsEarlier}, {});
-    } else {
-      feature_list_.InitWithFeatures(
-          {}, {metrics::features::kEmitHistogramsEarlier});
-    }
-  }
-
   void SetUpInProcessBrowserTestFixture() override {
     policy::DevicePolicyCrosBrowserTest::SetUpInProcessBrowserTestFixture();
     LOG(INFO) << "UserTypeByDeviceTypeMetricsProviderTest::"
@@ -397,7 +360,6 @@ class UserTypeByDeviceTypeMetricsProviderTest
   }
 
  private:
-  base::test::ScopedFeatureList scoped_feature_list_;
   ash::LoggedInUserMixin logged_in_user_mixin_{
       &mixin_host_, ash::LoggedInUserMixin::LogInType::kRegular,
       embedded_test_server(), this,
@@ -422,7 +384,6 @@ class UserTypeByDeviceTypeMetricsProviderTest
   std::unique_ptr<base::AutoReset<bool>> skip_splash_wait_override_ =
       KioskLaunchController::SkipSplashScreenWaitForTesting();
   std::unique_ptr<ScopedDeviceSettings> settings_;
-  base::test::ScopedFeatureList feature_list_;
 };
 
 // Flacky on CrOS (http://crbug.com/1248669).
@@ -437,7 +398,7 @@ IN_PROC_BROWSER_TEST_P(UserTypeByDeviceTypeMetricsProviderTest, MAYBE_Uma) {
   SetDevicePolicy();
 
   // Simulate calling ProvideHistograms() prior to logging in.
-  ProvideHistograms(GetParam().GetShouldEmitEarlier());
+  ProvideHistograms();
 
   // No metrics were recorded.
   histogram_tester.ExpectTotalCount(
@@ -452,7 +413,7 @@ IN_PROC_BROWSER_TEST_P(UserTypeByDeviceTypeMetricsProviderTest, MAYBE_Uma) {
   }
 
   // Simulate calling ProvideHistograms() after logging in.
-  ProvideHistograms(GetParam().GetShouldEmitEarlier());
+  ProvideHistograms();
 
   if (GetParam().UmaOutputExpected()) {
     histogram_tester.ExpectUniqueSample(
@@ -469,89 +430,24 @@ INSTANTIATE_TEST_SUITE_P(
     ,
     UserTypeByDeviceTypeMetricsProviderTest,
     testing::Values(
-        UserCase(UserSegment::kUnmanaged, policy::MarketSegment::UNKNOWN, true),
-        UserCase(UserSegment::kK12, policy::MarketSegment::UNKNOWN, true),
-        UserCase(UserSegment::kUniversity,
-                 policy::MarketSegment::UNKNOWN,
-                 true),
-        UserCase(UserSegment::kNonProfit, policy::MarketSegment::UNKNOWN, true),
-        UserCase(UserSegment::kEnterprise,
-                 policy::MarketSegment::UNKNOWN,
-                 true),
-        UserCase(UserSegment::kUnmanaged,
-                 policy::MarketSegment::EDUCATION,
-                 true),
-        UserCase(UserSegment::kK12, policy::MarketSegment::EDUCATION, true),
-        UserCase(UserSegment::kUniversity,
-                 policy::MarketSegment::EDUCATION,
-                 true),
-        UserCase(UserSegment::kNonProfit,
-                 policy::MarketSegment::EDUCATION,
-                 true),
-        UserCase(UserSegment::kEnterprise,
-                 policy::MarketSegment::EDUCATION,
-                 true),
-        UserCase(UserSegment::kUnmanaged,
-                 policy::MarketSegment::ENTERPRISE,
-                 true),
-        UserCase(UserSegment::kK12, policy::MarketSegment::ENTERPRISE, true),
-        UserCase(UserSegment::kUniversity,
-                 policy::MarketSegment::ENTERPRISE,
-                 true),
-        UserCase(UserSegment::kNonProfit,
-                 policy::MarketSegment::ENTERPRISE,
-                 true),
-        UserCase(UserSegment::kEnterprise,
-                 policy::MarketSegment::ENTERPRISE,
-                 true),
-        KioskCase(policy::MarketSegment::UNKNOWN, true),
-        KioskCase(policy::MarketSegment::EDUCATION, true),
-        KioskCase(policy::MarketSegment::ENTERPRISE, true),
-        MgsCase(policy::MarketSegment::UNKNOWN, true).DontExpectUmaOutput(),
-        MgsCase(policy::MarketSegment::EDUCATION, true),
-        MgsCase(policy::MarketSegment::ENTERPRISE, true),
-        UserCase(UserSegment::kUnmanaged,
-                 policy::MarketSegment::UNKNOWN,
-                 false),
-        UserCase(UserSegment::kK12, policy::MarketSegment::UNKNOWN, false),
-        UserCase(UserSegment::kUniversity,
-                 policy::MarketSegment::UNKNOWN,
-                 false),
-        UserCase(UserSegment::kNonProfit,
-                 policy::MarketSegment::UNKNOWN,
-                 false),
-        UserCase(UserSegment::kEnterprise,
-                 policy::MarketSegment::UNKNOWN,
-                 false),
-        UserCase(UserSegment::kUnmanaged,
-                 policy::MarketSegment::EDUCATION,
-                 false),
-        UserCase(UserSegment::kK12, policy::MarketSegment::EDUCATION, false),
-        UserCase(UserSegment::kUniversity,
-                 policy::MarketSegment::EDUCATION,
-                 false),
-        UserCase(UserSegment::kNonProfit,
-                 policy::MarketSegment::EDUCATION,
-                 false),
-        UserCase(UserSegment::kEnterprise,
-                 policy::MarketSegment::EDUCATION,
-                 false),
-        UserCase(UserSegment::kUnmanaged,
-                 policy::MarketSegment::ENTERPRISE,
-                 false),
-        UserCase(UserSegment::kK12, policy::MarketSegment::ENTERPRISE, false),
-        UserCase(UserSegment::kUniversity,
-                 policy::MarketSegment::ENTERPRISE,
-                 false),
-        UserCase(UserSegment::kNonProfit,
-                 policy::MarketSegment::ENTERPRISE,
-                 false),
-        UserCase(UserSegment::kEnterprise,
-                 policy::MarketSegment::ENTERPRISE,
-                 false),
-        KioskCase(policy::MarketSegment::UNKNOWN, false),
-        KioskCase(policy::MarketSegment::EDUCATION, false),
-        KioskCase(policy::MarketSegment::ENTERPRISE, false),
-        MgsCase(policy::MarketSegment::UNKNOWN, false).DontExpectUmaOutput(),
-        MgsCase(policy::MarketSegment::EDUCATION, false),
-        MgsCase(policy::MarketSegment::ENTERPRISE, false)));
+        UserCase(UserSegment::kUnmanaged, policy::MarketSegment::UNKNOWN),
+        UserCase(UserSegment::kK12, policy::MarketSegment::UNKNOWN),
+        UserCase(UserSegment::kUniversity, policy::MarketSegment::UNKNOWN),
+        UserCase(UserSegment::kNonProfit, policy::MarketSegment::UNKNOWN),
+        UserCase(UserSegment::kEnterprise, policy::MarketSegment::UNKNOWN),
+        UserCase(UserSegment::kUnmanaged, policy::MarketSegment::EDUCATION),
+        UserCase(UserSegment::kK12, policy::MarketSegment::EDUCATION),
+        UserCase(UserSegment::kUniversity, policy::MarketSegment::EDUCATION),
+        UserCase(UserSegment::kNonProfit, policy::MarketSegment::EDUCATION),
+        UserCase(UserSegment::kEnterprise, policy::MarketSegment::EDUCATION),
+        UserCase(UserSegment::kUnmanaged, policy::MarketSegment::ENTERPRISE),
+        UserCase(UserSegment::kK12, policy::MarketSegment::ENTERPRISE),
+        UserCase(UserSegment::kUniversity, policy::MarketSegment::ENTERPRISE),
+        UserCase(UserSegment::kNonProfit, policy::MarketSegment::ENTERPRISE),
+        UserCase(UserSegment::kEnterprise, policy::MarketSegment::ENTERPRISE),
+        KioskCase(policy::MarketSegment::UNKNOWN),
+        KioskCase(policy::MarketSegment::EDUCATION),
+        KioskCase(policy::MarketSegment::ENTERPRISE),
+        MgsCase(policy::MarketSegment::UNKNOWN).DontExpectUmaOutput(),
+        MgsCase(policy::MarketSegment::EDUCATION),
+        MgsCase(policy::MarketSegment::ENTERPRISE)));

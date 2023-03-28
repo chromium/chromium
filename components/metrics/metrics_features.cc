@@ -5,13 +5,6 @@
 #include "components/metrics/metrics_features.h"
 
 namespace metrics::features {
-BASE_FEATURE(kEmitHistogramsEarlier,
-             "EmitHistogramsEarlier",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
-const base::FeatureParam<bool> kEmitHistogramsForIndependentLogs{
-    &kEmitHistogramsEarlier, "emit_for_independent_logs", true};
-
 BASE_FEATURE(kMetricsServiceAllowEarlyLogClose,
              "MetricsServiceAllowEarlyLogClose",
              base::FEATURE_DISABLED_BY_DEFAULT);

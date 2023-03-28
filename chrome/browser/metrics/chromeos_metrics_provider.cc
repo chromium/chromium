@@ -44,7 +44,6 @@
 #include "chromeos/ash/services/multidevice_setup/public/cpp/multidevice_setup_client.h"
 #include "chromeos/constants/chromeos_features.h"
 #include "chromeos/dbus/tpm_manager/tpm_manager_client.h"
-#include "components/metrics/metrics_features.h"
 #include "components/metrics/metrics_service.h"
 #include "components/metrics/structured/recorder.h"
 #include "components/prefs/pref_registry_simple.h"
@@ -126,15 +125,13 @@ void ChromeOSMetricsProvider::Init() {
 
 void ChromeOSMetricsProvider::OnDidCreateMetricsLog() {
   cros_system_profile_provider_->OnDidCreateMetricsLog();
-  if (base::FeatureList::IsEnabled(metrics::features::kEmitHistogramsEarlier)) {
-    if (!arc::StabilityMetricsManager::Get()) {
-      return;
-    }
-    // Not guaranteed to result in emitting hisotograms when called early on
-    // browser startup.
-    arc::StabilityMetricsManager::Get()->RecordMetricsToUMA();
-    emitted_ = UpdateUserTypeUMA();
+  if (!arc::StabilityMetricsManager::Get()) {
+    return;
   }
+  // Not guaranteed to result in emitting hisotograms when called early on
+  // browser startup.
+  arc::StabilityMetricsManager::Get()->RecordMetricsToUMA();
+  emitted_ = UpdateUserTypeUMA();
 }
 
 void ChromeOSMetricsProvider::OnRecordingEnabled() {
@@ -212,15 +209,10 @@ void ChromeOSMetricsProvider::ProvideStabilityMetrics(
 
 void ChromeOSMetricsProvider::ProvideCurrentSessionData(
     metrics::ChromeUserMetricsExtension* uma_proto) {
-  bool should_provide_histograms =
-      !base::FeatureList::IsEnabled(
-          metrics::features::kEmitHistogramsEarlier) ||
-      !emitted_;
-
   ProvideAccessibilityMetrics();
   ProvideSuggestedContentMetrics();
   ProvideMetrics(uma_proto->mutable_system_profile(),
-                 /*should_include_arc_metrics=*/should_provide_histograms);
+                 /*should_include_arc_metrics=*/!emitted_);
   std::vector<SampledProfile> sampled_profiles;
   if (profile_provider_->GetSampledProfiles(&sampled_profiles)) {
     for (auto& profile : sampled_profiles) {
@@ -228,7 +220,7 @@ void ChromeOSMetricsProvider::ProvideCurrentSessionData(
     }
   }
   arc::UpdateEnabledStateByUserTypeUMA();
-  if (should_provide_histograms) {
+  if (!emitted_) {
     UpdateUserTypeUMA();
   }
 }

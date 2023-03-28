@@ -453,12 +453,11 @@ void MetricsService::DisableRecording() {
   PushPendingLogsToPersistentStorage(
       MetricsLogsEventManager::CreateReason::kServiceShutdown);
 
-  // If kEmitHistogramsForIndependentLogs is set, call OnDidCreateMetricsLog()
-  // to provide histograms.
-  if (base::FeatureList::IsEnabled(features::kEmitHistogramsEarlier) &&
-      features::kEmitHistogramsForIndependentLogs.Get()) {
-    delegating_provider_.OnDidCreateMetricsLog();
-  }
+  // Because histograms may still be emitted after the last log was closed, an
+  // independent log may be created in a future session in order to report
+  // those histograms. To ensure that this independent log contains histograms
+  // that we wish to appear in every log, call OnDidCreateMetricsLog().
+  delegating_provider_.OnDidCreateMetricsLog();
 
   enablement_observers_.Notify(/*enabled=*/false);
 }

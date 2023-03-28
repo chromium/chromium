@@ -330,8 +330,6 @@ public final class ProductionSupportedFlagList {
                     "This changes event propagation for disabled form controls."),
             Flag.baseFeature(ContentFeatures.SURFACE_SYNC_FULLSCREEN_KILLSWITCH,
                     "Disable to turn off the new SurfaceSync Fullscreen path."),
-            Flag.baseFeature(MetricsFeatures.EMIT_HISTOGRAMS_EARLIER,
-                    "Controls whether histograms are emitted earlier."),
             Flag.baseFeature(ContentFeatures.PERSISTENT_ORIGIN_TRIALS,
                     "If enabled, servers will be able to use persistent origin trials "
                             + "on this device."),
