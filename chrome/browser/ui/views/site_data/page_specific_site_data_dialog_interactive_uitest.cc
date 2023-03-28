@@ -37,7 +37,6 @@
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/common/content_features.h"
 #include "content/public/test/browser_test.h"
-#include "content/public/test/browser_test_utils.h"
 #include "net/dns/mock_host_resolver.h"
 #include "third_party/blink/public/common/features.h"
 #include "ui/base/interaction/element_identifier.h"
@@ -57,11 +56,45 @@
 
 namespace {
 DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kWebContentsElementId);
+DEFINE_LOCAL_CUSTOM_ELEMENT_EVENT_TYPE(kCookieAccessedEvent);
 const char kFirstPartyAllowedRow[] = "FirstPartyAllowedRow";
 const char kThirdPartyBlockedRow[] = "ThirdPartyBlockedRow";
 const char kOnlyPartitionedRow[] = "OnlyPartitionedRow";
 const char kMixedPartitionedRow[] = "MixedPartitionedRow";
 const char kCookiesDialogHistogramName[] = "Privacy.CookiesInUseDialog.Action";
+
+class CookieChangeObserver : public content::WebContentsObserver {
+ public:
+  CookieChangeObserver(content::WebContents* web_contents,
+                       int num_expected_calls)
+      : content::WebContentsObserver(web_contents),
+        num_expected_calls_(num_expected_calls) {}
+  ~CookieChangeObserver() override = default;
+
+ private:
+  void OnCookiesAccessed(content::RenderFrameHost* render_frame_host,
+                         const content::CookieAccessDetails& details) override {
+    OnCookieAccessed();
+  }
+  void OnCookiesAccessed(content::NavigationHandle* navigation,
+                         const content::CookieAccessDetails& details) override {
+    OnCookieAccessed();
+  }
+
+  void OnCookieAccessed() {
+    if (++num_seen_ == num_expected_calls_) {
+      auto* const el =
+          ui::ElementTracker::GetElementTracker()->GetElementInAnyContext(
+              kBrowserViewElementId);
+      ui::ElementTracker::GetFrameworkDelegate()->NotifyCustomEvent(
+          el, kCookieAccessedEvent);
+    }
+  }
+
+  int num_seen_ = 0;
+  const int num_expected_calls_;
+};
+
 }  // namespace
 
 class PageSpecificSiteDataDialogInteractiveUiTest
@@ -117,21 +150,15 @@ class PageSpecificSiteDataDialogInteractiveUiTest
   // Returns a common sequence of setup steps for all tests.
   MultiStep NavigateAndOpenDialog(
       ui::ElementIdentifier section_id,
-      content::CookieChangeObserver* cookie_observer = nullptr) {
+      CookieChangeObserver* cookie_observer = nullptr) {
     const GURL third_party_cookie_page_url =
         https_server()->GetURL("a.test", GetTestPageRelativeURL());
     return Steps(
         InstrumentTab(kWebContentsElementId),
         NavigateWebContents(kWebContentsElementId, third_party_cookie_page_url),
-        Do(base::BindOnce(
-            [](content::CookieChangeObserver* cookie_observer) {
-              /* TODO(jam): enable this after fixing.
-              if (cookie_observer) {
-                cookie_observer->Wait();
-              }
-              */
-            },
-            cookie_observer)),
+        cookie_observer
+            ? Steps(WaitForEvent(kBrowserViewElementId, kCookieAccessedEvent))
+            : MultiStep(),
         PressButton(kLocationIconElementId),
         PressButton(PageInfoMainView::kCookieButtonElementId),
         PressButton(PageInfoCookiesContentView::kCookieDialogButton),
@@ -201,7 +228,7 @@ class PageSpecificSiteDataDialogInteractiveUiTest
 
 IN_PROC_BROWSER_TEST_F(PageSpecificSiteDataDialogInteractiveUiTest,
                        FirstPartyAllowed) {
-  content::CookieChangeObserver observer(
+  CookieChangeObserver observer(
       browser()->tab_strip_model()->GetActiveWebContents(), 6);
   RunTestSequenceInContext(
       context(),
@@ -240,7 +267,7 @@ IN_PROC_BROWSER_TEST_F(PageSpecificSiteDataDialogInteractiveUiTest,
 
 IN_PROC_BROWSER_TEST_F(PageSpecificSiteDataDialogInteractiveUiTest,
                        ThirdPartyBlocked) {
-  content::CookieChangeObserver observer(
+  CookieChangeObserver observer(
       browser()->tab_strip_model()->GetActiveWebContents(), 6);
   RunTestSequenceInContext(
       context(),
@@ -278,7 +305,7 @@ IN_PROC_BROWSER_TEST_F(PageSpecificSiteDataDialogInteractiveUiTest,
 
 IN_PROC_BROWSER_TEST_F(PageSpecificSiteDataDialogInteractiveUiTest,
                        OnlyPartitionedBlockedThirdPartyCookies) {
-  content::CookieChangeObserver observer(
+  CookieChangeObserver observer(
       browser()->tab_strip_model()->GetActiveWebContents(), 6);
   RunTestSequenceInContext(
       context(),
@@ -311,7 +338,7 @@ IN_PROC_BROWSER_TEST_F(PageSpecificSiteDataDialogInteractiveUiTest,
 
 IN_PROC_BROWSER_TEST_F(PageSpecificSiteDataDialogInteractiveUiTest,
                        MixedPartitionedBlockedThirdPartyCookies) {
-  content::CookieChangeObserver observer(
+  CookieChangeObserver observer(
       browser()->tab_strip_model()->GetActiveWebContents(), 6);
   RunTestSequenceInContext(
       context(),
