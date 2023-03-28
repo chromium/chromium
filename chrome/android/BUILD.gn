@@ -414,6 +414,8 @@ android_resources("chrome_app_java_resources") {
 
     "//chrome/android/java/res_app/menu/password_entry_editor_action_bar_menu.xml",
 
+    "//chrome/android/java/res_app/raw/default_nav_sites.json",
+
     "//chrome/android/java/res_app/values/attrs.xml",
     "//chrome/android/java/res_app/values/colors.xml",
     "//chrome/android/java/res_app/values/strings.xml",
@@ -772,6 +774,7 @@ android_library("chrome_java") {
     "//third_party/android_deps_zpj:com_zpj_fragmentation_dialog_java",
     "//third_party/android_deps_zpj:com_zpj_fragmentation_dialog_imageviewer_java",
     "//third_party/android_deps_zpj:com_zpj_http_java",
+    "//third_party/android_deps_zpj:com_zpj_launcher_java",
     "//third_party/android_deps_zpj:glide_java",
     "//third_party/android_deps_zpj:glide_gifdecoder_java",
     "//third_party/android_deps_zpj:glide_annotations_java",

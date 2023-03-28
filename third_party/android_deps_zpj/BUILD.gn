@@ -149,6 +149,18 @@ android_aar_prebuilt("com_zpj_http_java") {
   deps = []
 }
 
+android_aar_prebuilt("com_zpj_launcher_java") {
+  aar_path = "libs/ZLauncher.aar"
+  info_path = "libs/ZLauncher.info"
+  deps = [
+    ":com_zpj_utils_java",
+    ":com_zpj_fragmentation_java",
+    ":com_zpj_fragmentation_dialog_java",
+    "//third_party/androidx:androidx_appcompat_appcompat_java",
+    "//third_party/androidx:androidx_cardview_cardview_java",
+  ]
+}
+
 android_aar_prebuilt("glide_java") {
   aar_path = "libs/Glide-4.10.0.aar"
   info_path = "libs/Glide.info"

@@ -12,11 +12,16 @@
     android:layout_height="match_parent"
     android:layout_weight="1" >
 
-    <FrameLayout
+<!--    <FrameLayout-->
+<!--        android:id="@+id/launcher_layout"-->
+<!--        android:layout_width="match_parent"-->
+<!--        android:layout_height="match_parent"-->
+<!--        />-->
+
+    <com.ark.browser.ui.widget.homepage.ArkLauncherLayout
         android:id="@+id/launcher_layout"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        />
+        android:layout_height="match_parent"/>
 
     <include layout="@layout/layout_browser"
         android:id="@+id/browser_layout"

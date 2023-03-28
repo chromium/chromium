@@ -1,0 +1,85 @@
+{
+  "sites":[
+    {
+      "position": 0,
+      "title": "Neets",
+      "url": "https://neets.cc/",
+      "icon": "file:///assets/neets.png",
+      "cellX": 0,
+      "cellY": 0,
+      "type": 0
+    },
+    {
+      "position": 1,
+      "title": "磁力猫",
+      "url": "https://www.cilimao.cc/",
+      "icon": "file:///assets/cilimao.png",
+      "cellX": 0,
+      "cellY": 0,
+      "type": 0
+    },
+    {
+      "position": 2,
+      "title": "手机乐园",
+      "url": "https://wap.shouji.com.cn/",
+      "icon": "file:///assets/sjly.png",
+      "cellX": 0,
+      "cellY": 0,
+      "type": 0
+    },
+    {
+      "position": 3,
+      "title": "盘优搜",
+      "url": "http://m.panuso.com/",
+      "icon": "file:///assets/panuso.png",
+      "cellX": 0,
+      "cellY": 0,
+      "type": 0
+    },
+    {
+      "position": 4,
+      "title": "狗狗bt",
+      "url": "http://gougoubt.net/",
+      "icon": "file:///assets/gougoubt.png",
+      "cellX": 0,
+      "cellY": 0,
+      "type": 0
+    },
+    {
+      "position": 5,
+      "title": "淘宝",
+      "url": "https://h5.m.taobao.com/",
+      "icon": "file:///assets/taobao.png",
+      "cellX": 0,
+      "cellY": 0,
+      "type": 0
+    },{
+      "position": 6,
+      "title": "微博",
+      "url": "https://m.weibo.cn/",
+      "icon": "file:///assets/weibo.png",
+      "cellX": 0,
+      "cellY": 0,
+      "type": 0
+    },
+    {
+
+      "position": 7,
+      "title": "饿了么",
+      "url": "https://h5.ele.me/msite/",
+      "icon": "file:///assets/eleme.png" ,
+      "cellX": 0,
+      "cellY": 0,
+      "type": 0
+    },
+    {
+      "position": 8,
+      "title": "网易",
+      "url": "https://3g.163.com/touch/#/",
+      "icon": "file:///assets/wangyi.png",
+      "cellX": 0,
+      "cellY": 0,
+      "type": 0
+    }
+  ]
+}

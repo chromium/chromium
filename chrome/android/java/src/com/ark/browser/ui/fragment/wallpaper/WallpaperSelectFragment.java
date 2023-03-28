@@ -1,11 +1,16 @@
 package com.ark.browser.ui.fragment.wallpaper;
 
+import android.app.Activity;
+import android.content.Context;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.ImageView;
 
 import androidx.annotation.Nullable;
+import androidx.fragment.app.FragmentActivity;
+import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.FragmentTransaction;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -14,7 +19,9 @@ import com.ark.browser.utils.HttpUtils;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.RequestOptions;
 import com.bumptech.glide.request.target.Target;
+import com.zpj.fragmentation.SupportActivity;
 import com.zpj.recyclerview.EasyRecycler;
+import com.zpj.utils.ContextUtils;
 
 import org.chromium.base.Log;
 import org.chromium.chrome.R;
@@ -35,6 +42,23 @@ public class WallpaperSelectFragment extends BaseSwipeBackFragment {
             .override(Target.SIZE_ORIGINAL);
 
     private int currentPage;
+
+    public static void start(Context context) {
+        WallpaperSelectFragment fragment = new WallpaperSelectFragment();
+        Activity activity = ContextUtils.getActivity(context);
+        if (activity instanceof SupportActivity) {
+            ((SupportActivity)activity).start(fragment);
+        } else {
+            if (!(activity instanceof FragmentActivity)) {
+                throw new RuntimeException("the context is not a FragmentActivity object!");
+            }
+
+            FragmentManager manager = ((FragmentActivity)activity).getSupportFragmentManager();
+            FragmentTransaction ft = manager.beginTransaction();
+            ft.add(fragment, "tag");
+            ft.commit();
+        }
+    }
 
     @Override
     protected int getLayoutId() {

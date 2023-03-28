@@ -6,9 +6,11 @@ import android.animation.ValueAnimator;
 import android.graphics.Color;
 import android.graphics.Rect;
 import android.os.Build;
+import android.os.Bundle;
 import android.view.View;
 import android.view.animation.DecelerateInterpolator;
 
+import com.android.launcher3.LauncherLayout;
 import com.ark.browser.core.ArkCompositorViewHolder;
 import com.ark.browser.settings.AppConfig;
 import com.ark.browser.tab.TabGroupManager;
@@ -31,12 +33,12 @@ public class TabSwitcherManager implements SwitcherRecyclerLayout.Callback {
 
     private final ArkCompositorViewHolder mViewHolder;
     private final View mBrowserLayout;
-    private final View mLauncherLayout;
+    private final ArkLauncherLayout mLauncherLayout;
     private final TabSwitcherLayout mTabSwitcherLayout;
     private final SwitcherRecyclerLayout mSwitcher;
     private final BottomController mBottomController;
 
-    public TabSwitcherManager(View view) {
+    public TabSwitcherManager(View view, Bundle savedInstanceState) {
         mViewHolder = view.findViewById(R.id.compositor_view_holder);
         mViewHolder.setRootView(view);
         mLauncherLayout = view.findViewById(R.id.launcher_layout);
@@ -50,30 +52,62 @@ public class TabSwitcherManager implements SwitcherRecyclerLayout.Callback {
         bottomControlBar.setSwitcherManager(this);
         mBottomController = new BottomController(view);
 
-        // TODO
-        ClickHelper.with(mLauncherLayout)
-                .setOnClickListener((view1, x, y) -> {
-                    if (isInLauncher()) {
-                        mSwitcher.open();
-                    }
-                })
-                .setOnLongClickListener(new ClickHelper.OnLongClickListener() {
-                    @Override
-                    public boolean onLongClick(View view, float x, float y) {
-                        ZDialog.attach()
-                                .addItem("壁纸")
-                                .setOnSelectListener((fragment, i, s) -> {
-                                    if (i == 0) {
-                                        fragment.start(new WallpaperSelectFragment());
-                                    }
-                                    fragment.dismiss();
-                                })
-                                .setTouchPoint(x, y)
-                                .show(view);
-                        return true;
-                    }
-                });
+//        // TODO
+//        ClickHelper.with(mLauncherLayout)
+//                .setOnClickListener((view1, x, y) -> {
+//                    if (isInLauncher()) {
+//                        mSwitcher.open();
+//                    }
+//                })
+//                .setOnLongClickListener(new ClickHelper.OnLongClickListener() {
+//                    @Override
+//                    public boolean onLongClick(View view, float x, float y) {
+//                        ZDialog.attach()
+//                                .addItem("壁纸")
+//                                .setOnSelectListener((fragment, i, s) -> {
+//                                    if (i == 0) {
+//                                        fragment.start(new WallpaperSelectFragment());
+//                                    }
+//                                    fragment.dismiss();
+//                                })
+//                                .setTouchPoint(x, y)
+//                                .show(view);
+//                        return true;
+//                    }
+//                });
 
+        mLauncherLayout.init(savedInstanceState);
+        mLauncherLayout.setSlideListener(new LauncherLayout.SlideListener() {
+            @Override
+            public void onSlideStart(int i) {
+//                if (!isInTabSwitcher()) {
+//                    goToTabSwitcher();
+//                }
+                if (isInLauncher()) {
+                    mSwitcher.open();
+                }
+            }
+
+            @Override
+            public void onSlideVertical(float v, int i) {
+
+            }
+
+            @Override
+            public void onSlideEnd() {
+
+            }
+
+            @Override
+            public boolean canHandleLongPress() {
+                return isInLauncher();
+            }
+
+            @Override
+            public boolean canStartDrag() {
+                return isInLauncher();
+            }
+        });
 
     }
 
@@ -308,6 +342,30 @@ public class TabSwitcherManager implements SwitcherRecyclerLayout.Callback {
         });
         animator.setDuration(360);
         animator.start();
+    }
+
+    public void onStart() {
+        if (mViewHolder != null) {
+            mViewHolder.onStart();
+        }
+    }
+
+    public void onStop() {
+        if (mViewHolder != null) {
+            mViewHolder.onStop();
+        }
+    }
+
+    public void onPause() {
+        mLauncherLayout.onPause();
+    }
+
+    public void onDestroy() {
+        mLauncherLayout.onDestroy();
+    }
+
+    public void onSaveInstanceState(Bundle outState) {
+        mLauncherLayout.onSaveInstanceState(outState);
     }
 
 

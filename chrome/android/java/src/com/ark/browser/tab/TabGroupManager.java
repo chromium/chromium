@@ -209,7 +209,6 @@ public class TabGroupManager {
 
         @Override
         public void restore(Callback<Void> callback) {
-            List<ITabGroup> tabGroups = createTabGroups();
             CountDownLatch latch = new CountDownLatch(tabGroups.size());
             for (ITabGroup group : tabGroups) {
                 TAB_GROUP_MAP.put(group.getId(), group);
@@ -228,8 +227,6 @@ public class TabGroupManager {
                 });
             }
         }
-
-        protected abstract List<ITabGroup> createTabGroups();
 
         @Override
         public void notifyChanged() {
@@ -294,14 +291,6 @@ public class TabGroupManager {
         @Override
         public ITabGroup getCurrentTabGroup() {
             return getTabGroup(isIncognitoSelected());
-        }
-
-        @Override
-        protected List<ITabGroup> createTabGroups() {
-            List<ITabGroup> list = new ArrayList<>();
-            list.add(new TabGroupImpl(GROUP_DEFAULT, false));
-            list.add(new TabGroupImpl(GROUP_INCOGNITO, true));
-            return list;
         }
 
         @Override

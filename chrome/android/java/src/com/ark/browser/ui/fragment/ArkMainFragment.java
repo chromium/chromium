@@ -209,12 +209,10 @@ public class ArkMainFragment extends BaseFragment implements
 
         //    private ProgressBar mProgressBar;
         //    private EditText mUrlBar;
-        mSwitcherManager = new TabSwitcherManager(view);
+        mSwitcherManager = new TabSwitcherManager(view, savedInstanceState);
         mViewHolder = mSwitcherManager.getCompositorViewHolder();
 
         getWindowAndroid().setAnimationPlaceholderView(mViewHolder.getCompositorView());
-
-
     }
 
     @Override
@@ -250,17 +248,51 @@ public class ArkMainFragment extends BaseFragment implements
     @Override
     public void onStart() {
         super.onStart();
-        if (mViewHolder != null) {
-            mViewHolder.onStart();
+        if (mSwitcherManager != null) {
+            mSwitcherManager.onStart();
         }
     }
 
     @Override
     public void onStop() {
         super.onStop();
-        if (mViewHolder != null) {
-            mViewHolder.onStop();
+        if (mSwitcherManager != null) {
+            mSwitcherManager.onStop();
         }
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        if (mSwitcherManager != null) {
+            mSwitcherManager.onPause();
+        }
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+    }
+
+    @Override
+    public void onDestroyView() {
+        if (mSwitcherManager != null) {
+            mSwitcherManager.onDestroy();
+        }
+        super.onDestroyView();
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+    }
+
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        if (mSwitcherManager != null) {
+            mSwitcherManager.onSaveInstanceState(outState);
+        }
+        super.onSaveInstanceState(outState);
     }
 
     @Override
