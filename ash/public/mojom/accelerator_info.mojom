@@ -52,6 +52,8 @@ enum AcceleratorState {
   kDisabledByConflict,
   // Accelerator disabled due to user manually disabling it.
   kDisabledByUser,
+  // Accelerator disabled due to certain keys are not available.
+  kDisabledByUnavailableKeys,
 };
 
 // Represents the style of layout for an accelerator.

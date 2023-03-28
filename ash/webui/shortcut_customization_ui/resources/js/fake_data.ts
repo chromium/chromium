@@ -66,7 +66,7 @@ const cycleTabsAcceleratorInfo: MojoAcceleratorInfo = {
 
 export const fakeAcceleratorConfig: MojoAcceleratorConfig = {
   [AcceleratorSource.kAsh]: {
-    // Snap Window Left
+    // Snap Window Left: alt + [.
     [0]: [{
       type: AcceleratorType.kDefault,
       state: AcceleratorState.kEnabled,
@@ -84,7 +84,7 @@ export const fakeAcceleratorConfig: MojoAcceleratorConfig = {
         textAccelerator: undefined,
       },
     }],
-    // Snap Window Right
+    // Snap Window Right: alt + ].
     [1]: [{
       type: AcceleratorType.kDefault,
       state: AcceleratorState.kEnabled,
@@ -101,9 +101,8 @@ export const fakeAcceleratorConfig: MojoAcceleratorConfig = {
         },
         textAccelerator: undefined,
       },
-
     }],
-    // New Desk
+    // New Desk: search + shift + '+'.
     [2]: [{
       type: AcceleratorType.kDefault,
       state: AcceleratorState.kEnabled,
@@ -119,10 +118,9 @@ export const fakeAcceleratorConfig: MojoAcceleratorConfig = {
           },
         },
         textAccelerator: undefined,
-
       },
     }],
-    // Remove Desk
+    // Remove Desk: search + shift + '-'.
     [3]: [{
       type: AcceleratorType.kDefault,
       state: AcceleratorState.kEnabled,
@@ -138,9 +136,81 @@ export const fakeAcceleratorConfig: MojoAcceleratorConfig = {
           },
         },
         textAccelerator: undefined,
-
       },
     }],
+    // Open Calculator app: 'LaunchApplication2' key.
+    [4]: [{
+      type: AcceleratorType.kDefault,
+      state: AcceleratorState.kDisabledByUnavailableKeys,
+      locked: false,
+      layoutProperties: {
+        standardAccelerator: {
+          keyDisplay: stringToMojoString16('LaunchApplication2'),
+          accelerator: {
+            modifiers: Modifier.NONE,
+            keyCode: 183,
+            keyState: 0,
+            timeStamp: fakeTimestamp,
+          },
+        },
+        textAccelerator: undefined,
+      },
+    }],
+    // Open Diagnostics app: search + ctrl + esc.
+    [5]: [{
+      type: AcceleratorType.kDefault,
+      state: AcceleratorState.kEnabled,
+      locked: false,
+      layoutProperties: {
+        standardAccelerator: {
+          keyDisplay: stringToMojoString16('esc'),
+          accelerator: {
+            modifiers: Modifier.COMMAND | Modifier.CONTROL,
+            keyCode: 27,
+            keyState: 0,
+            timeStamp: fakeTimestamp,
+          },
+        },
+        textAccelerator: undefined,
+      },
+    }],
+    // Open/close Google assistant: search + a or 'LaunchAssistant' key.
+    [6]: [
+      {
+        type: AcceleratorType.kDefault,
+        state: AcceleratorState.kEnabled,
+        locked: false,
+        layoutProperties: {
+          standardAccelerator: {
+            keyDisplay: stringToMojoString16('a'),
+            accelerator: {
+              modifiers: Modifier.COMMAND,
+              keyCode: 65,
+              keyState: 0,
+              timeStamp: fakeTimestamp,
+            },
+          },
+          textAccelerator: undefined,
+        },
+      },
+      {
+        type: AcceleratorType.kDefault,
+        state: AcceleratorState.kDisabledByUnavailableKeys,
+        locked: false,
+        layoutProperties: {
+          standardAccelerator: {
+            keyDisplay: stringToMojoString16('LaunchAssistant'),
+            accelerator: {
+              modifiers: Modifier.NONE,
+              keyCode: 153,
+              keyState: 0,
+              timeStamp: fakeTimestamp,
+            },
+          },
+          textAccelerator: undefined,
+        },
+      },
+    ],
   },
   // TODO(michaelcheco): Separate Browser and Ambient accelerators.
   [AcceleratorSource.kAmbient]: {
@@ -205,6 +275,30 @@ export const fakeLayoutInfo: MojoLayoutInfo[] = [
     style: LayoutStyle.kText,
     source: AcceleratorSource.kAmbient,
     action: 1,
+  },
+  {
+    category: AcceleratorCategory.kGeneral,
+    subCategory: AcceleratorSubcategory.kApps,
+    description: stringToMojoString16('Open Calculator app'),
+    style: LayoutStyle.kDefault,
+    source: AcceleratorSource.kAsh,
+    action: 4,
+  },
+  {
+    category: AcceleratorCategory.kGeneral,
+    subCategory: AcceleratorSubcategory.kApps,
+    description: stringToMojoString16('Open Diagnostic app'),
+    style: LayoutStyle.kDefault,
+    source: AcceleratorSource.kAsh,
+    action: 5,
+  },
+  {
+    category: AcceleratorCategory.kGeneral,
+    subCategory: AcceleratorSubcategory.kGeneralControls,
+    description: stringToMojoString16('Open/close Google assistant'),
+    style: LayoutStyle.kDefault,
+    source: AcceleratorSource.kAsh,
+    action: 6,
   },
 ];
 

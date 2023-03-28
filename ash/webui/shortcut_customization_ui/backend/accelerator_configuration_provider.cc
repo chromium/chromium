@@ -475,6 +475,16 @@ void AcceleratorConfigurationProvider::CreateAndAppendAliasedAccelerators(
       accelerator_alias_converter_.CreateAcceleratorAlias(accelerator);
   output.reserve(output.size() + accelerator_aliases.size());
 
+  // Return early if there are no alias accelerators (Because certain keys are
+  // unavailable), accelerator will be suppressed/disabled and its state will be
+  // kDisabledByUnavailableKeys.
+  if (accelerator_aliases.empty()) {
+    output.push_back(CreateStandardAcceleratorInfo(
+        accelerator, locked, GetAcceleratorType(accelerator),
+        mojom::AcceleratorState::kDisabledByUnavailableKeys));
+    return;
+  }
+
   for (const auto& accelerator_alias : accelerator_aliases) {
     output.push_back(CreateStandardAcceleratorInfo(
         accelerator_alias, locked, GetAcceleratorType(accelerator), state));

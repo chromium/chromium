@@ -24,6 +24,7 @@ import {AcceleratorConfigurationProviderInterface, AcceleratorResultData, Accele
  * ui::Accelerator and ui::KeyEvent.
  */
 export enum Modifier {
+  NONE = 0,
   SHIFT = 1 << 1,
   CONTROL = 1 << 2,
   ALT = 1 << 3,

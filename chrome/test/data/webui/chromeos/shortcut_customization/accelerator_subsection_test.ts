@@ -95,4 +95,55 @@ suite('acceleratorSubsectionTest', function() {
         manager!.getAcceleratorName(/*source=*/ 0, /*action=*/ 1)!,
         rowListElement[1]!.description);
   });
+
+  test('SkipAddingRowWhenCertainKeysAreUnavailable', async () => {
+    const expectedTitle = 'test title';
+    sectionElement!.title = expectedTitle;
+    sectionElement!.category = AcceleratorCategory.kGeneral;
+    sectionElement!.subcategory = AcceleratorSubcategory.kApps;
+
+    await flushTasks();
+
+    const rowListElement =
+        sectionElement!.shadowRoot!.querySelectorAll('accelerator-row');
+
+    // There are two accelerators in General -> Apps category: 'Open
+    // Calculator app' and 'Open Diagnostic app', However, 'Open Calculator app'
+    // is disabled due to unavailable keys. As a result, we will only
+    // display one row for 'Open Diagnostic app'.
+    assertEquals(1, rowListElement.length);
+
+    // First and the only accelerator row in General -> Apps category
+    // corresponds to 'Open Diagnostic app'.
+    assertEquals(
+        manager!.getAcceleratorName(/*source=*/ 0, /*action=*/ 5)!,
+        rowListElement[0]!.description);
+  });
+
+  test('RemoveAcceleratorWhenCertainKeysAreUnavailable', async () => {
+    const expectedTitle = 'test title';
+    sectionElement!.title = expectedTitle;
+    sectionElement!.category = AcceleratorCategory.kGeneral;
+    sectionElement!.subcategory = AcceleratorSubcategory.kGeneralControls;
+
+    await flushTasks();
+
+    const rowListElement =
+        sectionElement!.shadowRoot!.querySelectorAll('accelerator-row');
+
+    // 'Open/close Google assistant' has two accelerators:
+    // 1. [Search] + [A].
+    // 2. [LauncheAssistant] key.
+    // In fakeData, [LauncheAssistant] key is set to be unavailable and the
+    // accelerator state is kDisabledByUnavailableKey. Therefore, only one
+    // accelerator will be shown.
+    assertEquals(1, rowListElement[0]!.acceleratorInfos.length);
+
+    // First and the only accelerator row in General -> GeneralControls category
+    // corresponds to 'Open/close Google assistant'.
+    assertEquals(
+        manager!.getAcceleratorName(/*source=*/ 0, /*action=*/ 6)!,
+        rowListElement[0]!.description);
+  });
+
 });

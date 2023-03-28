@@ -105,18 +105,25 @@ export class AcceleratorSubsectionElement extends
     // subsection's accelerators are kept distinct from each other.
     const tempAccelRowData: AcceleratorRowData[] = [];
     layoutInfos!.forEach((layoutInfo) => {
-      if (this.lookupManager.isStandardAccelerator(
-              layoutInfo.source, layoutInfo.action)) {
-        const acceleratorInfos = this.lookupManager.getStandardAcceleratorInfos(
-            layoutInfo.source, layoutInfo.action);
-        acceleratorInfos.filter((accel) => {
-          // Hide accelerators that are default and disabled.
-          // TODO(michaelcheco): Confirm that this is the intended
-          // behavior for accelerators that are default and disabled.
-          return !(
-              accel.type === AcceleratorType.kDefault &&
-              accel.state === AcceleratorState.kDisabledByUser);
-        });
+      if (this.lookupManager.isStandardAccelerator(layoutInfo.style)) {
+        const acceleratorInfos =
+            this.lookupManager
+                .getStandardAcceleratorInfos(
+                    layoutInfo.source, layoutInfo.action)
+                .filter((accel) => {
+                  // Hide accelerators that are default and disabled.
+                  // TODO(michaelcheco): Confirm that this is the intended
+                  // behavior for accelerators that are default and disabled.
+                  return !(
+                      accel.type === AcceleratorType.kDefault &&
+                      (accel.state === AcceleratorState.kDisabledByUser ||
+                       accel.state ===
+                           AcceleratorState.kDisabledByUnavailableKeys));
+                });
+        // If there are no acceleratorInfos, skip adding the row to the display.
+        if (acceleratorInfos.length === 0) {
+          return;
+        }
         const accelRowData: AcceleratorRowData = {
           layoutInfo,
           acceleratorInfos,
