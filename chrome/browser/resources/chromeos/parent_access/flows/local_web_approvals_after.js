@@ -5,11 +5,11 @@
 import 'chrome://resources/cr_elements/cr_shared_vars.css.js';
 
 import {I18nBehavior, I18nBehaviorInterface} from 'chrome://resources/ash/common/i18n_behavior.js';
-import {String16} from 'chrome://resources/mojo/mojo/public/mojom/base/string16.mojom-webui.js';
 import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {WebApprovalsParams} from '../parent_access_ui.mojom-webui.js';
 import {getParentAccessParams} from '../parent_access_ui_handler.js';
+import {decodeMojoString16, getBase64EncodedSrcForPng} from '../utils.js';
 
 /**
  * @constructor
@@ -79,19 +79,9 @@ export class LocalWebApprovalsAfterElement extends LocalWebApprovalsAfterBase {
    * @private
    */
   renderDetails_(params) {
-    this.childName = this.decodeMojoString16_(params.childDisplayName);
+    this.childName = decodeMojoString16(params.childDisplayName);
     this.url = params.url.url;
-    // Convert the PNG bytes to a Base64 encoded string.
-    const favicon = btoa(String.fromCharCode(...params.faviconPngBytes));
-    this.favicon = 'data:image/png;base64,' + favicon;
-  }
-
-  /**
-   * @param {!String16} str
-   * @private
-   */
-  decodeMojoString16_(str) {
-    return str.data.map((ch) => String.fromCodePoint(ch)).join('');
+    this.favicon = getBase64EncodedSrcForPng(params.faviconPngBytes);
   }
 }
 

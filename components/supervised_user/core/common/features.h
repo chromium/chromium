@@ -23,6 +23,8 @@ BASE_DECLARE_FEATURE(kEnableSupervisionOnDesktopAndIOS);
 BASE_DECLARE_FEATURE(kFilterWebsitesForSupervisedUsersOnDesktopAndIOS);
 BASE_DECLARE_FEATURE(kEnableExtensionsPermissionsForSupervisedUsersOnDesktop);
 
+BASE_DECLARE_FEATURE(kLocalExtensionApprovalsV2);
+
 // Returns whether refreshed version of the website filter interstitial is
 // enabled.
 bool IsWebFilterInterstitialRefreshEnabled();

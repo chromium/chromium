@@ -6,7 +6,10 @@ import 'chrome://resources/cr_elements/cr_button/cr_button.js';
 
 import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
+import {ExtensionApprovalsBefore} from './flows/extension_approvals_before.js';
 import {ParentAccessScreenInterface} from './parent_access_screen.js';
+import {ParentAccessParams_FlowType} from './parent_access_ui.mojom-webui.js';
+import {getParentAccessParams} from './parent_access_ui_handler.js';
 
 /** @implements {ParentAccessScreenInterface} */
 class ParentAccessBefore extends PolymerElement {
@@ -30,7 +33,15 @@ class ParentAccessBefore extends PolymerElement {
 
   /** @override */
   async renderFlowSpecificContent() {
-    // TODO(b/262448127): Implement flow specific content.
+    const response = await getParentAccessParams();
+    switch (response.params.flowType) {
+      case ParentAccessParams_FlowType.kExtensionAccess:
+        this.shadowRoot.querySelector('#before-screen-body')
+            .appendChild(new ExtensionApprovalsBefore());
+        return;
+      default:
+        return;
+    }
   }
 
   /** @private */

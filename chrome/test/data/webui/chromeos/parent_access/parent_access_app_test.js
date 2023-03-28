@@ -83,10 +83,20 @@ suite(parent_access_app_tests.suiteName, function() {
         document.body.appendChild(parentAccessApp);
         await flushTasks();
 
-        // Verify online flow is showing and switch to the after screen.
+        // Verify before flow is showing and switch to the authentication
+        // screen.
         assertEquals(parentAccessApp.currentScreen_, Screens.BEFORE_FLOW);
-        parentAccessApp.dispatchEvent(
-            new CustomEvent('show-authentication-flow'));
+        // Verify the extension approvals before screen is showing.
+        const parentAccessBefore =
+            parentAccessApp.shadowRoot.querySelector('parent-access-before');
+        const extensionApprovalsBefore =
+            parentAccessBefore.shadowRoot.querySelector(
+                'extension-approvals-before');
+        assertNotEquals(null, extensionApprovalsBefore);
+
+        const askParentButton =
+            parentAccessBefore.shadowRoot.querySelector('.action-button');
+        askParentButton.click();
         await flushTasks();
 
         // Verify online flow is showing and switch to the after screen.

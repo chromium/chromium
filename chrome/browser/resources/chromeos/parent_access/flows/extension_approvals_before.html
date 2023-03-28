@@ -1,0 +1,50 @@
+<style>
+  #before-screen-content {
+    color: var(--cros-color-primary);
+    display: flex;
+    flex-direction: column;
+  }
+
+  #title {
+    font-family: var(--cros-font-family-google-sans);
+    font-size: 24px;
+    font-weight: 500;
+    margin-bottom: 0;
+    margin-top: 16px;
+  }
+
+  #subtitle {
+    align-items: center;
+    color: var(--cros-color-secondary);
+    display: flex;
+    font: var(--cros-body-1-font);
+    margin-top: 16px;
+  }
+
+  #extension-title {
+    align-items: center;
+    display: flex;
+    margin-top: 24px;
+  }
+
+  #icon {
+    height: 32px;
+    margin-inline-end: 16px;
+    width: 32px;
+  }
+
+  #extension-name {
+    font-family: var(--cros-font-family-google-sans);
+    font-size: 16px;
+    font-weight: 500;
+  }
+</style>
+
+<div id="before-screen-content">
+  <h2 id="title">[[title]]</h2>
+  <div id="subtitle">[[subtitle]]</div>
+  <div id="extension-title">
+    <img id="icon" src="[[extensionIconSrc]]" alt=""></img>
+    <div id="extension-name">[[extensionName]]</div>
+  </div>
+</div>

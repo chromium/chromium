@@ -6236,6 +6236,18 @@ You can manage this account’s settings by installing the Family Link app on yo
   <message name="IDS_PARENT_ACCESS_EXTENSION_APPROVALS_DISABLED_SUBTITLE" desc="Text telling the user that an extension cannot be installed because a parent has disallowed it.">
     Your parent has turned off "Permissions for sites, apps, and extensions" for Chrome. Adding this extension is not allowed.
   </message>
+  <message name="IDS_PARENT_ACCESS_EXTENSION_APPROVALS_ADD_EXTENSION_BEFORE_TITLE" desc="Title for the dialog asking a supervised user if they would like to ask for approval to install a new extension.">
+    Ask your parent to add this extension?
+  </message>
+  <message name="IDS_PARENT_ACCESS_EXTENSION_APPROVALS_ADD_EXTENSION_BEFORE_SUBTITLE" desc="Text indicating that a parent must approve the extension for the supervised user to gain access.">
+    A parent or guardian has to say that it's OK for you to add this extension
+  </message>
+  <message name="IDS_PARENT_ACCESS_EXTENSION_APPROVALS_ENABLE_EXTENSION_BEFORE_TITLE" desc="Title for the dialog asking a supervised user if they would like to ask for approval to enable an installed extension.">
+    Ask your parent to enable this extension?
+  </message>
+  <message name="IDS_PARENT_ACCESS_EXTENSION_APPROVALS_ENABLE_EXTENSION_BEFORE_SUBTITLE" desc="Text indicating that a parent must approve the extension for the supervised user to gain access.">
+    A parent or guardian has to say that it's OK for you to enable this extension
+  </message>
 
   <!-- Strings shared among supervised user experiences -->
   <message name="IDS_SUPERVISED_USER_ERROR_TITLE" desc="Title for the UI shown to supervised users when an error has occurred.">

@@ -65,8 +65,29 @@ struct WebApprovalsParams {
   array<uint8> favicon_png_bytes;
 };
 
+// Parameters for the local extension approvals V2 feature.
+struct ExtensionApprovalsParams {
+  enum ExtensionApprovalType {
+    kAdd, // Adding a new extension
+    kEnable, // Enabling an existing extension
+  };
+
+  // The type of approval being requested.
+  ExtensionApprovalType approval_type;
+
+  // Display name for the extension.
+  mojo_base.mojom.String16 extension_name;
+
+  // Extension icon, stored as an array of bytes.
+  array<uint8> icon_png_bytes;
+
+  // The child's name to be displayed to the parent.
+  mojo_base.mojom.String16 child_display_name;
+};
+
 union FlowTypeParams {
   WebApprovalsParams web_approvals_params;
+  ExtensionApprovalsParams extension_approvals_params;
 };
 
 // The result of the parent access request.

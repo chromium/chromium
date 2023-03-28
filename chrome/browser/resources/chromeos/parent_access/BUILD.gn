@@ -26,7 +26,9 @@ js_type_check("closure_compile_local") {
     ":parent_access_screen",
     ":parent_access_ui",
     ":parent_access_ui_handler",
+    ":utils",
     ":webview_manager",
+    "flows:extension_approvals_before",
     "flows:extension_approvals_disabled",
     "flows:local_web_approvals_after",
   ]
@@ -106,6 +108,9 @@ js_library("webview_manager") {
 }
 
 js_library("parent_access_screen") {
+}
+
+js_library("utils") {
 }
 
 html_to_js("web_components") {

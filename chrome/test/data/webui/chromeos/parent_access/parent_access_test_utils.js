@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {ParentAccessParams, ParentAccessParams_FlowType, WebApprovalsParams} from 'chrome://parent-access/parent_access_ui.mojom-webui.js';
+import {ExtensionApprovalsParams, ExtensionApprovalsParams_ExtensionApprovalType, ParentAccessParams, ParentAccessParams_FlowType, WebApprovalsParams} from 'chrome://parent-access/parent_access_ui.mojom-webui.js';
 
 function strToMojoString16(str) {
   return {data: str.split('').map(ch => ch.charCodeAt(0))};
@@ -30,5 +30,12 @@ export function buildExtensionApprovalsParams(isDisabled) {
   const parentAccessParams = new ParentAccessParams();
   parentAccessParams.flowType = ParentAccessParams_FlowType.kExtensionAccess;
   parentAccessParams.isDisabled = isDisabled;
+  const extensionApprovalsParams = new ExtensionApprovalsParams();
+  extensionApprovalsParams.approvalType =
+      ExtensionApprovalsParams_ExtensionApprovalType.kAdd;
+  extensionApprovalsParams.extensionName = strToMojoString16('Extension name');
+  extensionApprovalsParams.iconPngBytes = [];
+  extensionApprovalsParams.childDisplayName = strToMojoString16('Child Name');
+  parentAccessParams.flowTypeParams = {extensionApprovalsParams};
   return parentAccessParams;
 }
