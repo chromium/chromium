@@ -222,16 +222,19 @@ export function convertEntryToFileData(entry: Entry|FilesAppEntry): FileData {
   // getEntryLabel() can accept locationInfo=null, but TS doesn't recognize the
   // type definition in closure, hence the ! here.
   const label = util.getEntryLabel(locationInfo!, entry);
-  const volumeType = volumeInfo?.volumeType || null;
+  // For FakeEntry, we need to read from entry.volumeType because it doesn't
+  // have volumeInfo in the volume manager.
+  const volumeType = 'volumeType' in entry && entry.volumeType ?
+      entry.volumeType as VolumeManagerCommon.VolumeType :
+      (volumeInfo?.volumeType || null);
   const icon = getEntryIcon(entry, locationInfo, volumeType);
 
   /**
    * Update disabled attribute if entry supports disabled attribute and has a
    * non-null volumeType.
    */
-  if ('disabled' in entry && 'volumeType' in entry && entry.volumeType) {
-    entry.disabled = volumeManager.isDisabled(
-        entry.volumeType as VolumeManagerCommon.VolumeType);
+  if ('disabled' in entry && volumeType) {
+    entry.disabled = volumeManager.isDisabled(volumeType);
   }
 
   const metadata = metadataModel ?
@@ -247,6 +250,7 @@ export function convertEntryToFileData(entry: Entry|FilesAppEntry): FileData {
     volumeType,
     metadata,
     expanded: false,
+    disabled: 'disabled' in entry ? entry.disabled as boolean : false,
     isRootEntry: !!locationInfo?.isRootEntry,
     // `isEjectable/shouldDelayLoadingChildren` is determined by its
     // corresponding volume, will be updated when volume is added.

@@ -275,16 +275,13 @@ export class DirectoryTreeContainer {
 
     // Handle navigation items backed up by a file entry.
     const fileData = newData as FileData;
-    const entry = fileData.entry;
 
     element.label = fileData.label;
     if (navigationRoot) {
       element.separator = navigationRoot.separator;
     }
     this.setItemIcon_(element, fileData, navigationRoot);
-    element.disabled = ('disabled' in entry && entry.disabled) ?
-        entry.disabled as boolean :
-        false;
+    element.disabled = fileData.disabled;
 
     // Add eject button for ejectable item.
     if (fileData.isEjectable) {

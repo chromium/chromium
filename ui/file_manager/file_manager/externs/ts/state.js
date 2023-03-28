@@ -53,6 +53,7 @@ export const EntryType = {
  *   shouldDelayLoadingChildren: !boolean,
  *   children: (!Array<!FileKey>),
  *   expanded: !boolean,
+ *   disabled: !boolean,
  * }}
  */
 export let FileData;

@@ -21,7 +21,7 @@ import {addVolume, removeVolume} from '../state/actions/volumes.js';
 import {createFakeVolumeMetadata, setUpFileManagerOnWindow, setupStore} from '../state/for_tests.js';
 import {convertEntryToFileData} from '../state/reducers/all_entries.js';
 import {convertVolumeInfoAndMetadataToVolume, driveRootEntryListKey} from '../state/reducers/volumes.js';
-import {getEmptyState, getEntry, getStore} from '../state/store.js';
+import {getEmptyState, getEntry, getFileData, getStore} from '../state/store.js';
 import {XfTree} from '../widgets/xf_tree.js';
 
 import {DirectoryTreeContainer} from './directory_tree_container.js';
@@ -716,14 +716,11 @@ export async function testDirectoryTreeWithDriveDisabled(done: () => void) {
   // Add sub folders for them.
   myFilesFs.populate(['/folder1/']);
   driveFs.populate(['/root/folder1/']);
-  const driveRootEntryList =
-      getEntry(initialState, driveRootEntryListKey) as EntryList;
+  const driveRootEntryFileData =
+      getFileData(initialState, driveRootEntryListKey)!;
   // Disable the drive root entry.
-  driveRootEntryList.disabled = true;
-  const {volumeManager} = window.fileManager;
-  volumeManager.isDisabled = (volumeType) => {
-    return volumeType === VolumeManagerCommon.VolumeType.DRIVE;
-  };
+  driveRootEntryFileData.disabled = true;
+  (driveRootEntryFileData.entry as EntryList).disabled = true;
   // Store initialization will notify DirectoryTree.
   setupStore(initialState);
 

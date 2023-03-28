@@ -2,15 +2,16 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {assertEquals, assertFalse, assertNotEquals, assertTrue} from 'chrome://webui-test/chromeos/chai_assert.js';
+import {assertDeepEquals, assertEquals, assertFalse, assertNotEquals, assertTrue} from 'chrome://webui-test/chromeos/chai_assert.js';
 
 import {MockVolumeManager} from '../../background/js/mock_volume_manager.js';
-import {EntryList, FakeEntryImpl, VolumeEntry} from '../../common/js/files_app_entry_types.js';
+import {EntryList, FakeEntryImpl, GuestOsPlaceholder, VolumeEntry} from '../../common/js/files_app_entry_types.js';
 import {MockFileSystem} from '../../common/js/mock_entry.js';
 import {waitUntil} from '../../common/js/test_error_reporting.js';
 import {VolumeManagerCommon} from '../../common/js/volume_manager_types.js';
 import {EntryType, FileData, State} from '../../externs/ts/state.js';
 import {VolumeInfo} from '../../externs/volume_info.js';
+import {constants} from '../../foreground/js/constants.js';
 import {MetadataItem} from '../../foreground/js/metadata/metadata_item.js';
 import {MockMetadataModel} from '../../foreground/js/metadata/mock_metadata.js';
 import {ActionType} from '../actions.js';
@@ -339,6 +340,138 @@ export async function testAddChildEntries(done: () => void) {
 
   // Expect nothing changes in the store.
   await waitDeepEquals(store, want2, (state) => state.allEntries);
+
+  done();
+}
+
+/** Tests converting VolumeEntry into FileData. */
+export async function testConvertVolumeEntryToFileData(done: () => void) {
+  const {volumeManager} = window.fileManager;
+  const downloadsVolumeInfo = volumeManager.getCurrentProfileVolumeInfo(
+      VolumeManagerCommon.VolumeType.DOWNLOADS)!;
+  const downloadsEntry = new VolumeEntry(downloadsVolumeInfo);
+  const got = convertEntryToFileData(downloadsEntry);
+  const want: FileData = {
+    entry: downloadsEntry,
+    icon: constants.ICON_TYPES.MY_FILES,
+    type: EntryType.VOLUME_ROOT,
+    isDirectory: true,
+    label: 'Downloads',
+    volumeType: VolumeManagerCommon.VolumeType.DOWNLOADS,
+    metadata: {} as MetadataItem,
+    expanded: false,
+    disabled: false,
+    isRootEntry: true,
+    isEjectable: false,
+    shouldDelayLoadingChildren: false,
+    children: [],
+  };
+  assertDeepEquals(want, got);
+
+  // Now disabled the volume in the volume manager.
+  volumeManager.isDisabled = (volumeType) =>
+      volumeType === VolumeManagerCommon.VolumeType.DOWNLOADS;
+  const fileData = convertEntryToFileData(downloadsEntry);
+  assertEquals(true, fileData.disabled);
+
+  done();
+}
+
+/** Tests converting EntryList into FileData. */
+export async function testConvertEntryListToFileData(done: () => void) {
+  const myFilesEntryList =
+      new EntryList('My files', VolumeManagerCommon.RootType.MY_FILES);
+  const got = convertEntryToFileData(myFilesEntryList);
+  const want: FileData = {
+    entry: myFilesEntryList,
+    icon: constants.ICON_TYPES.MY_FILES,
+    type: EntryType.ENTRY_LIST,
+    isDirectory: true,
+    label: 'My files',
+    volumeType: VolumeManagerCommon.VolumeType.DOWNLOADS,
+    metadata: {} as MetadataItem,
+    expanded: false,
+    disabled: false,
+    isRootEntry: true,
+    isEjectable: false,
+    shouldDelayLoadingChildren: false,
+    children: [],
+  };
+  assertDeepEquals(want, got);
+
+  done();
+}
+
+/** Tests converting FakeEntry into FileData. */
+export async function testConvertFakeEntryToFileData(done: () => void) {
+  const androidFakeEntry = new GuestOsPlaceholder(
+      'Android files', 0, chrome.fileManagerPrivate.VmType.ARCVM);
+  const got = convertEntryToFileData(androidFakeEntry);
+  const want: FileData = {
+    entry: androidFakeEntry,
+    icon: constants.ICON_TYPES.ANDROID_FILES,
+    type: EntryType.PLACEHOLDER,
+    isDirectory: true,
+    label: 'Android files',
+    volumeType: VolumeManagerCommon.VolumeType.ANDROID_FILES,
+    metadata: {} as MetadataItem,
+    expanded: false,
+    disabled: false,
+    isRootEntry: true,
+    isEjectable: false,
+    shouldDelayLoadingChildren: false,
+    children: [],
+  };
+  assertDeepEquals(want, got);
+
+  done();
+}
+
+/** Tests converting native file entry into FileData. */
+export async function testConvertNativeFileEntryToFileData(done: () => void) {
+  const fileEntry = fileSystem.entries['/dir-2/file-1.txt'];
+  const got = convertEntryToFileData(fileEntry);
+  const want: FileData = {
+    entry: fileEntry,
+    icon: 'text',
+    type: EntryType.FS_API,
+    isDirectory: false,
+    label: 'file-1.txt',
+    volumeType: VolumeManagerCommon.VolumeType.DOWNLOADS,
+    metadata: {} as MetadataItem,
+    expanded: false,
+    disabled: false,
+    isRootEntry: false,
+    isEjectable: false,
+    shouldDelayLoadingChildren: false,
+    children: [],
+  };
+  assertDeepEquals(want, got);
+
+  done();
+}
+
+/** Tests converting native directory entry into FileData. */
+export async function testConvertNativeDirectoryEntryToFileData(
+    done: () => void) {
+  const directoryEntry = fileSystem.entries['/dir-1'];
+  const got = convertEntryToFileData(directoryEntry);
+  const want: FileData = {
+    entry: directoryEntry,
+    icon: constants.ICON_TYPES.FOLDER,
+    type: EntryType.FS_API,
+    isDirectory: true,
+    label: 'dir-1',
+    volumeType: VolumeManagerCommon.VolumeType.DOWNLOADS,
+    metadata: {} as MetadataItem,
+    expanded: false,
+    disabled: false,
+    isRootEntry: false,
+    isEjectable: false,
+    shouldDelayLoadingChildren: false,
+    children: [],
+  };
+  assertDeepEquals(want, got);
 
   done();
 }
