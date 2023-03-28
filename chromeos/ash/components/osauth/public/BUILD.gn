@@ -9,8 +9,12 @@ assert(is_chromeos_ash,
        "Non-ChromeOS builds cannot depend on //chromeos/ash/components/osauth")
 
 source_set("public") {
-  deps = [ "//base" ]
+  deps = [
+    "//base",
+    "//components/account_id",
+  ]
   sources = [
+    "auth_factor_engine.h",
     "auth_parts.h",
     "auth_session_storage.h",
     "common_types.h",
