@@ -1110,8 +1110,8 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
     GridTransitionLayout* pinnedTabsTransitionLayout =
         [self.pinnedTabsViewController transitionLayout];
 
-    return [self combineTransitionLayout:pinnedTabsTransitionLayout
-                    withTransitionLayout:regularTabsTransitionLayout];
+    return [self combineTransitionLayout:regularTabsTransitionLayout
+                    withTransitionLayout:pinnedTabsTransitionLayout];
   }
 
   return regularTabsTransitionLayout;

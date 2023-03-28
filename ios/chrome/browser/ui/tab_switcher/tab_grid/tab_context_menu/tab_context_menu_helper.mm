@@ -27,6 +27,8 @@
 #error "This file requires ARC support."
 #endif
 
+using PinnedState = WebStateSearchCriteria::PinnedState;
+
 @interface TabContextMenuHelper ()
 
 @property(nonatomic, weak) id<TabContextMenuDelegate> contextMenuDelegate;
@@ -82,7 +84,10 @@
 
   ActionFactory* actionFactory =
       [[ActionFactory alloc] initWithScenario:scenario];
-  const BOOL pinned = scenario == MenuScenarioHistogram::kPinnedTabsEntry;
+  const BOOL pinned = IsPinnedTabsEnabled() &&
+                      [self isTabPinnedForIdentifier:cell.itemIdentifier];
+  const BOOL tabSearchScenario =
+      scenario == MenuScenarioHistogram::kTabGridSearchResult;
   const BOOL inactive = scenario == MenuScenarioHistogram::kInactiveTabsEntry;
 
   TabItem* item = [self tabItemForIdentifier:cell.itemIdentifier];
@@ -93,7 +98,9 @@
 
   NSMutableArray<UIMenuElement*>* menuElements = [[NSMutableArray alloc] init];
 
-  if (IsPinnedTabsEnabled() && !self.incognito && !inactive) {
+  const BOOL isPinActionEnabled = IsPinnedTabsEnabled() && !self.incognito &&
+                                  !inactive && !tabSearchScenario;
+  if (isPinActionEnabled) {
     if (pinned) {
       [menuElements addObject:[actionFactory actionToUnpinTabWithBlock:^{
                       [self.contextMenuDelegate
@@ -180,6 +187,25 @@
           _browserState);
   return item && bookmarkModel &&
          bookmarkModel->GetMostRecentlyAddedUserNodeForURL(item.URL);
+}
+
+// Returns `YES` if the tab for the given `identifier` is pinned.
+- (BOOL)isTabPinnedForIdentifier:(NSString*)identifier {
+  BrowserList* browserList =
+      BrowserListFactory::GetForBrowserState(_browserState);
+
+  for (Browser* browser : browserList->AllRegularBrowsers()) {
+    WebStateList* webStateList = browser->GetWebStateList();
+    web::WebState* webState =
+        GetWebState(webStateList, WebStateSearchCriteria{
+                                      .identifier = identifier,
+                                      .pinned_state = PinnedState::kPinned,
+                                  });
+    if (webState) {
+      return YES;
+    }
+  }
+  return NO;
 }
 
 // Returns the TabItem object representing the tab with `identifier.

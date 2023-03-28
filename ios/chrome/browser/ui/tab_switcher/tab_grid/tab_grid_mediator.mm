@@ -376,11 +376,6 @@ void RecordTabGridCloseTabsCount(int count) {
     return;
   }
 
-  if (IsPinnedTabsEnabled() && webStateList->IsWebStatePinnedAt(atIndex)) {
-    [self.consumer selectItemWithID:nil];
-    return;
-  }
-
   [self.consumer selectItemWithID:newWebState->GetStableIdentifier()];
 }
 
@@ -493,11 +488,9 @@ void RecordTabGridCloseTabsCount(int count) {
 }
 
 - (void)selectItemWithID:(NSString*)itemID {
-  int index = GetTabIndex(self.webStateList,
-                          WebStateSearchCriteria{
-                              .identifier = itemID,
-                              .pinned_state = PinnedState::kNonPinned,
-                          });
+  int index = GetTabIndex(self.webStateList, WebStateSearchCriteria{
+                                                 .identifier = itemID,
+                                             });
   WebStateList* itemWebStateList = self.webStateList;
   if (index == WebStateList::kInvalidIndex) {
     // If this is a search result, it may contain items from other windows or
@@ -580,10 +573,7 @@ void RecordTabGridCloseTabsCount(int count) {
 
 - (BOOL)isItemWithIDSelected:(NSString*)itemID {
   int index = GetTabIndex(self.webStateList,
-                          WebStateSearchCriteria{
-                              .identifier = itemID,
-                              .pinned_state = PinnedState::kNonPinned,
-                          });
+                          WebStateSearchCriteria{.identifier = itemID});
   if (index == WebStateList::kInvalidIndex) {
     return NO;
   }
@@ -1039,11 +1029,10 @@ void RecordTabGridCloseTabsCount(int count) {
     completion(self.appearanceCache[identifier]);
     return;
   }
-  web::WebState* webState = GetWebState(
-      self.webStateList, WebStateSearchCriteria{
-                             .identifier = identifier,
-                             .pinned_state = PinnedState::kNonPinned,
-                         });
+  web::WebState* webState =
+      GetWebState(self.webStateList, WebStateSearchCriteria{
+                                         .identifier = identifier,
+                                     });
   if (webState) {
     SnapshotTabHelper::FromWebState(webState)->RetrieveColorSnapshot(
         ^(UIImage* image) {
@@ -1054,11 +1043,10 @@ void RecordTabGridCloseTabsCount(int count) {
 
 - (void)faviconForIdentifier:(NSString*)identifier
                   completion:(void (^)(UIImage*))completion {
-  web::WebState* webState = GetWebState(
-      self.webStateList, WebStateSearchCriteria{
-                             .identifier = identifier,
-                             .pinned_state = PinnedState::kNonPinned,
-                         });
+  web::WebState* webState =
+      GetWebState(self.webStateList, WebStateSearchCriteria{
+                                         .identifier = identifier,
+                                     });
   if (!webState) {
     return;
   }
