@@ -54,6 +54,10 @@ interface BookmarksPageHandler {
   ExecuteOpenInIncognitoWindowCommand(array<int64> node_ids,
                                       ActionSource source);
 
+  // Opens the bookmarks specified by node_ids in a new tab group, using
+  // the same logic as the native bookmarks context menu.
+  ExecuteOpenInNewTabGroupCommand(array<int64> node_ids, ActionSource source);
+
   // Moves bookmark specified by node_id to be a direct descendant of the
   // Bookmarks Bar folder, using the same logic as the native bookmarks context
   // menu.

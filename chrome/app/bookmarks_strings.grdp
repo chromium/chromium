@@ -418,6 +418,9 @@
   <message name="IDS_BOOKMARK_MANAGER_MENU_OPEN_ALL_INCOGNITO_WITH_COUNT" desc="Menu description for opening all urls in a bookmark folder in an Incognito window, which includes a count of urls">
     Open all (<ph name="URL_COUNT">$1<ex>5</ex></ph>) in Incognito window
   </message>
+  <message name="IDS_BOOKMARK_MANAGER_MENU_OPEN_ALL_NEW_TAB_GROUP_WITH_COUNT" desc="Menu description for opening all urls in a bookmark folder in a new tab group, which includes a count of urls">
+    Open all (<ph name="URL_COUNT">$1<ex>5</ex></ph>) in new tab group
+  </message>
   <message name="IDS_BOOKMARK_MANAGER_MENU_OPEN_IN_NEW_TAB" desc="Menu description for opening a bookmark in a new tab">
     Open in new tab
   </message>
@@ -426,6 +429,9 @@
   </message>
   <message name="IDS_BOOKMARK_MANAGER_MENU_OPEN_INCOGNITO" desc="Menu description for opening a bookmark in Incognito window">
     Open in Incognito window
+  </message>
+  <message name="IDS_BOOKMARK_MANAGER_MENU_OPEN_IN_NEW_TAB_GROUP" desc="Menu description for opening a bookmark in a new tab group">
+    Open in new tab group
   </message>
   <message name="IDS_BOOKMARK_MANAGER_MENU_RENAME" desc="Title of the bookmark list dropdown menu item that renames folders.">
     Rename

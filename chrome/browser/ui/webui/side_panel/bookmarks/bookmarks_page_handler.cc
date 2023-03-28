@@ -207,6 +207,13 @@ void BookmarksPageHandler::ExecuteOpenInIncognitoWindowCommand(
                             IDC_BOOKMARK_BAR_OPEN_ALL_INCOGNITO);
 }
 
+void BookmarksPageHandler::ExecuteOpenInNewTabGroupCommand(
+    const std::vector<int64_t>& node_ids,
+    side_panel::mojom::ActionSource source) {
+  ExecuteContextMenuCommand(node_ids, source,
+                            IDC_BOOKMARK_BAR_OPEN_ALL_NEW_TAB_GROUP);
+}
+
 void BookmarksPageHandler::ExecuteAddToBookmarksBarCommand(
     const int64_t node_id,
     side_panel::mojom::ActionSource source) {

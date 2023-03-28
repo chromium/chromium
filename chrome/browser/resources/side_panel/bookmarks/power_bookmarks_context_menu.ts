@@ -28,18 +28,20 @@ export enum MenuItemId {
   OPEN_NEW_TAB = 0,
   OPEN_NEW_WINDOW = 1,
   OPEN_INCOGNITO = 2,
-  EDIT = 3,
-  ADD_TO_BOOKMARKS_BAR = 4,
-  REMOVE_FROM_BOOKMARKS_BAR = 5,
-  TRACK_PRICE = 6,
-  RENAME = 7,
-  DELETE = 8,
-  DIVIDER = 9,
+  OPEN_NEW_TAB_GROUP = 3,
+  EDIT = 4,
+  ADD_TO_BOOKMARKS_BAR = 5,
+  REMOVE_FROM_BOOKMARKS_BAR = 6,
+  TRACK_PRICE = 7,
+  RENAME = 8,
+  DELETE = 9,
+  DIVIDER = 10,
 }
 
 export interface MenuItem {
   id: MenuItemId;
   label?: string;
+  disabled?: boolean;
 }
 
 export class PowerBookmarksContextMenuElement extends PolymerElement {
@@ -84,36 +86,69 @@ export class PowerBookmarksContextMenuElement extends PolymerElement {
   }
 
   private getMenuItemsForBookmarks_(): MenuItem[] {
+    // TODO(crbug.com/1428654): Factor in URLs not available in incognito.
+    let bookmarkCount = 0;
+    this.bookmarks_.forEach((bookmark) => {
+      if (bookmark.url) {
+        bookmarkCount += 1;
+      } else if (bookmark.children) {
+        bookmarkCount +=
+            bookmark.children.filter((child) => !!child.url).length;
+      }
+    });
     const menuItems: MenuItem[] = [
       {
         id: MenuItemId.OPEN_NEW_TAB,
-        label: this.bookmarks_.length === 1 ?
+        label: bookmarkCount < 2 ?
             loadTimeData.getString('menuOpenNewTab') :
-            loadTimeData.getStringF(
-                'menuOpenNewTabWithCount', this.bookmarks_.length),
+            loadTimeData.getStringF('menuOpenNewTabWithCount', bookmarkCount),
+        disabled: bookmarkCount === 0,
       },
       {
         id: MenuItemId.OPEN_NEW_WINDOW,
-        label: this.bookmarks_.length === 1 ?
+        label: bookmarkCount < 2 ?
             loadTimeData.getString('menuOpenNewWindow') :
             loadTimeData.getStringF(
-                'menuOpenNewWindowWithCount', this.bookmarks_.length),
+                'menuOpenNewWindowWithCount', bookmarkCount),
+        disabled: bookmarkCount === 0,
       },
     ];
 
     if (!loadTimeData.getBoolean('incognitoMode')) {
       menuItems.push({
         id: MenuItemId.OPEN_INCOGNITO,
-        label: this.bookmarks_.length === 1 ?
+        label: bookmarkCount < 2 ?
             loadTimeData.getString('menuOpenIncognito') :
             loadTimeData.getStringF(
-                'menuOpenIncognitoWithCount', this.bookmarks_.length),
+                'menuOpenIncognitoWithCount', bookmarkCount),
+        disabled: bookmarkCount === 0,
+      });
+    }
+
+    if (this.bookmarks_.length !== 1 || !this.bookmarks_[0]!.url) {
+      menuItems.push({
+        id: MenuItemId.OPEN_NEW_TAB_GROUP,
+        label: bookmarkCount < 2 ?
+            loadTimeData.getString('menuOpenNewTabGroup') :
+            loadTimeData.getStringF(
+                'menuOpenNewTabGroupWithCount', bookmarkCount),
+        disabled: bookmarkCount === 0,
       });
     }
 
     if (this.bookmarks_.length !== 1 ||
         this.bookmarks_[0]!.id === loadTimeData.getString('bookmarksBarId')) {
       return menuItems;
+    }
+
+    if (this.bookmarks_[0]!.url ||
+        this.bookmarks_[0]!.parentId ===
+            loadTimeData.getString('bookmarksBarId') ||
+        this.bookmarks_[0]!.parentId ===
+            loadTimeData.getString('otherBookmarksId') ||
+        this.bookmarks_[0]!.parentId ===
+            loadTimeData.getString('mobileBookmarksId')) {
+      menuItems.push({id: MenuItemId.DIVIDER});
     }
 
     if (this.bookmarks_[0]!.url) {
@@ -125,7 +160,7 @@ export class PowerBookmarksContextMenuElement extends PolymerElement {
 
     if (this.bookmarks_[0]!.parentId ===
         loadTimeData.getString('bookmarksBarId')) {
-      menuItems.push({id: MenuItemId.DIVIDER}, {
+      menuItems.push({
         id: MenuItemId.REMOVE_FROM_BOOKMARKS_BAR,
         label: loadTimeData.getString('menuMoveToAllBookmarks'),
       });
@@ -134,7 +169,7 @@ export class PowerBookmarksContextMenuElement extends PolymerElement {
             loadTimeData.getString('otherBookmarksId') ||
         this.bookmarks_[0]!.parentId ===
             loadTimeData.getString('mobileBookmarksId')) {
-      menuItems.push({id: MenuItemId.DIVIDER}, {
+      menuItems.push({
         id: MenuItemId.ADD_TO_BOOKMARKS_BAR,
         label: loadTimeData.getString('menuMoveToBookmarksBar'),
       });
@@ -197,6 +232,11 @@ export class PowerBookmarksContextMenuElement extends PolymerElement {
         break;
       case MenuItemId.OPEN_INCOGNITO:
         this.bookmarksApi_.contextMenuOpenBookmarkInIncognitoWindow(
+            this.bookmarks_.map(bookmark => bookmark.id),
+            ActionSource.kBookmark);
+        break;
+      case MenuItemId.OPEN_NEW_TAB_GROUP:
+        this.bookmarksApi_.contextMenuOpenBookmarkInNewTabGroup(
             this.bookmarks_.map(bookmark => bookmark.id),
             ActionSource.kBookmark);
         break;
