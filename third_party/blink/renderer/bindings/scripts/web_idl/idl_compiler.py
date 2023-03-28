@@ -576,8 +576,8 @@ class IdlCompiler(object):
     def _propagate_extattrs_to_overload_group(self):
         ANY_OF = ('CrossOrigin', 'CrossOriginIsolated', 'Custom',
                   'IsolatedContext', 'LegacyLenientThis', 'LegacyUnforgeable',
-                  'NoAllocDirectCall', 'NotEnumerable', 'PerWorldBindings',
-                  'SecureContext', 'Unscopable')
+                  'NotEnumerable', 'PerWorldBindings', 'SecureContext',
+                  'Unscopable')
 
         old_irs = self._ir_map.irs_of_kinds(IRMap.IR.Kind.INTERFACE,
                                             IRMap.IR.Kind.NAMESPACE)
@@ -595,17 +595,33 @@ class IdlCompiler(object):
                         group.extended_attributes.append(
                             ExtendedAttribute(key=key))
 
+                # [Affects=] must be consistent among overloaded operations.
                 affects_values = set()
                 for overload in group:
                     affects_values.add(
                         overload.extended_attributes.value_of('Affects'))
                 assert len(affects_values) == 1, (
                     "Overloaded operations have inconsistent extended "
-                    "attributes of [Affects].")
+                    "attributes of [Affects]. {}.{}".format(
+                        new_ir.identifier, group.identifier))
                 affects_value = affects_values.pop()
                 if affects_value:
                     group.extended_attributes.append(
                         ExtendedAttribute(key='Affects', values=affects_value))
+
+                # [NoAllocDirectCall] must be consistent among overloaded
+                # operations.
+                nadc_values = set()
+                for overload in group:
+                    nadc_values.add(
+                        'NoAllocDirectCall' in overload.extended_attributes)
+                assert len(nadc_values) == 1, (
+                    "Overloaded operations have inconsistent extended "
+                    "attributes of [NoAllocDirectCall]. {}.{}".format(
+                        new_ir.identifier, group.identifier))
+                if True in nadc_values:
+                    group.extended_attributes.append(
+                        ExtendedAttribute(key='NoAllocDirectCall'))
 
     def _calculate_group_exposure(self):
         old_irs = self._ir_map.irs_of_kinds(IRMap.IR.Kind.CALLBACK_INTERFACE,
