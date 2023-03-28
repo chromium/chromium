@@ -13,7 +13,6 @@
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
 #include "ash/style/color_util.h"
-#include "ash/style/dark_light_mode_nudge_controller.h"
 #include "ash/wallpaper/wallpaper_controller_impl.h"
 #include "components/account_id/account_id.h"
 #include "components/prefs/pref_change_registrar.h"
@@ -70,8 +69,7 @@ DarkLightModeControllerImpl::DarkLightModeControllerImpl()
     : ScheduledFeature(prefs::kDarkModeEnabled,
                        prefs::kDarkModeScheduleType,
                        std::string(),
-                       std::string()),
-      nudge_controller_(std::make_unique<DarkLightModeNudgeController>()) {
+                       std::string()) {
   DCHECK(!g_instance);
   g_instance = this;
 
@@ -118,8 +116,6 @@ void DarkLightModeControllerImpl::RegisterProfilePrefs(
 
   registry->RegisterBooleanPref(prefs::kDarkModeEnabled,
                                 kDefaultDarkModeEnabled);
-  registry->RegisterIntegerPref(prefs::kDarkLightModeNudgeLeftToShowCount,
-                                kDarkLightModeNudgeMaxShownCount);
 }
 
 void DarkLightModeControllerImpl::SetAutoScheduleEnabled(bool enabled) {
@@ -140,11 +136,6 @@ void DarkLightModeControllerImpl::ToggleColorMode() {
                                         !IsDarkModeEnabled());
   active_user_pref_service_->CommitPendingWrite();
   NotifyColorModeChanges();
-  SystemNudgeController::RecordNudgeAction(NudgeCatalogName::kDarkLightMode);
-
-  // Updates showing logic of educational nudge on toggling the entry points of
-  // dark/light mode.
-  nudge_controller_->ToggledByUser();
 }
 
 void DarkLightModeControllerImpl::AddObserver(ColorModeObserver* observer) {
@@ -271,14 +262,6 @@ void DarkLightModeControllerImpl::OnSessionStateChanged(
   }
 
   RefreshColorsOnColorMode(IsDarkModeEnabled());
-
-  if (state == session_manager::SessionState::ACTIVE) {
-    nudge_controller_->MaybeShowNudge();
-  }
-}
-
-void DarkLightModeControllerImpl::SetShowNudgeForTesting(bool value) {
-  nudge_controller_->set_show_nudge_for_testing(value);  // IN-TEST
 }
 
 void DarkLightModeControllerImpl::RefreshFeatureState() {}

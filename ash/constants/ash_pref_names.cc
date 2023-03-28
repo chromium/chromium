@@ -760,15 +760,6 @@ const char kDynamicColorColorScheme[] = "ash.dynamic_color.color_scheme";
 // color palette. It is an ARGB 32-bit unsigned integer stored as a uint64.
 const char kDynamicColorSeedColor[] = "ash.dynamic_color.seed_color";
 
-// An integer pref storing the number of times that dark/light mode educational
-// can still be shown. It will be initialized to the maximum number of times
-// that the nudge can be shown. And will be set to 0 if the user toggled the
-// entry points of dark/light mode ("Dark theme" inside quick settings or
-// personalization hub), which means the user already knows how to change the
-// color mode of the system.
-const char kDarkLightModeNudgeLeftToShowCount[] =
-    "ash.dark_light_mode.educational_nudge";
-
 // An integer pref storing the type of automatic scheduling of turning on and
 // off the dark mode feature similar to `kNightLightScheduleType`, but
 // custom scheduling (2) is the same as sunset to sunrise scheduling (1)

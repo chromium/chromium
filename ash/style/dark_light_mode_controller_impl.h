@@ -21,12 +21,10 @@ class PrefService;
 namespace ash {
 
 class ColorModeObserver;
-class DarkLightModeNudgeController;
 
 // Controls the behavior of dark/light mode. Turns on the dark mode at sunset
 // and off at sunrise if auto schedule is set (custom start and end for
-// scheduling is not supported). And determine whether to show the educational
-// nudge for users on login.
+// scheduling is not supported).
 class ASH_EXPORT DarkLightModeControllerImpl
     : public DarkLightModeController,
       public LoginDataDispatcher::Observer,
@@ -72,8 +70,6 @@ class ASH_EXPORT DarkLightModeControllerImpl
   void OnActiveUserPrefServiceChanged(PrefService* prefs) override;
   void OnSessionStateChanged(session_manager::SessionState state) override;
 
-  void SetShowNudgeForTesting(bool value);
-
  protected:
   // ScheduledFeature:
   void RefreshFeatureState() override;
@@ -93,8 +89,6 @@ class ASH_EXPORT DarkLightModeControllerImpl
   // changed between creation and getting out of scope.
   base::ScopedClosureRunner GetNotifyOnDarkModeChangeClosure();
   void NotifyIfDarkModeChanged(bool old_is_dark_mode_enabled);
-
-  std::unique_ptr<DarkLightModeNudgeController> nudge_controller_;
 
   // The default color is DARK when the DarkLightMode feature is disabled. But
   // we can also override it to LIGHT through ScopedLightModeAsDefault. This is

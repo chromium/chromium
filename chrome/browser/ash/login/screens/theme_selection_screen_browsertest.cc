@@ -124,12 +124,7 @@ class ThemeSelectionScreenTest
 
 IN_PROC_BROWSER_TEST_F(ThemeSelectionScreenTest, ProceedWithDefaultTheme) {
   ShowThemeSelectionScreen();
-  Profile* profile = ProfileManager::GetActiveUserProfile();
   test::OobeJS().ClickOnPath(kNextButtonPath);
-  // Verify that remaining nudge shown count is 0 after proceeding with the
-  // default theme.
-  EXPECT_EQ(0, profile->GetPrefs()->GetInteger(
-                   prefs::kDarkLightModeNudgeLeftToShowCount));
   WaitForScreenExit();
 
   EXPECT_THAT(
@@ -170,10 +165,6 @@ IN_PROC_BROWSER_TEST_P(ThemeSelectionScreenTest, SelectTheme) {
   test::OobeJS().ClickOnPath(kNextButtonPath);
   EXPECT_THAT(histogram_tester_.GetAllSamples(kSelectedThemeHistogram),
               ElementsAre(base::Bucket(static_cast<int>(theme), 1)));
-
-  // Verify that remaining nudge shown count is 0 after user selects the theme.
-  EXPECT_EQ(0, profile->GetPrefs()->GetInteger(
-                   prefs::kDarkLightModeNudgeLeftToShowCount));
   WaitForScreenExit();
 }
 

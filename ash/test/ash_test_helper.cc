@@ -319,15 +319,6 @@ void AshTestHelper::SetUp(InitParams init_params) {
   Shell::CreateInstance(std::move(shell_init_params));
   Shell* shell = Shell::Get();
 
-  // The dark/light mode educational nudge is expected to be shown when session
-  // state changed to ACTIVE. This means it might be shown above the shelf in
-  // all the tests with an active user session. This setting here make it will
-  // not be shown by default in tests. As keep it shown will change the
-  // operations needed in many of the tests, e.g, when productive launcher is
-  // shown as well, we need one more click outside of the launcher to dismiss
-  // the nudge first before dismissing the launcher.
-  shell->dark_light_mode_controller()->SetShowNudgeForTesting(false);
-
   chromeos::MultitaskMenuNudgeController::SetSuppressNudgeForTesting(true);
 
   // Set up a test wallpaper controller client before signing in any users. At
