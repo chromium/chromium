@@ -6,6 +6,7 @@
 
 #include <stddef.h>
 #include <algorithm>
+#include <cstring>
 #include <memory>
 #include <queue>
 #include <utility>
