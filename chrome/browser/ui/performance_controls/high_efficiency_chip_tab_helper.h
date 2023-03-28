@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_UI_PERFORMANCE_CONTROLS_TAB_DISCARD_TAB_HELPER_H_
-#define CHROME_BROWSER_UI_PERFORMANCE_CONTROLS_TAB_DISCARD_TAB_HELPER_H_
+#ifndef CHROME_BROWSER_UI_PERFORMANCE_CONTROLS_HIGH_EFFICIENCY_CHIP_TAB_HELPER_H_
+#define CHROME_BROWSER_UI_PERFORMANCE_CONTROLS_HIGH_EFFICIENCY_CHIP_TAB_HELPER_H_
 
 #include "chrome/browser/resource_coordinator/lifecycle_unit_state.mojom-shared.h"
 #include "content/public/browser/navigation_handle.h"
@@ -11,18 +11,20 @@
 #include "content/public/browser/web_contents_observer.h"
 #include "content/public/browser/web_contents_user_data.h"
 
-// Per-tab class to manage discard state. When pages are in the background, they
-// can be discarded to save memory. When the user returns to that tab, we need
-// information about whether the page had previously been discarded in order to
-// convey this information to the user.
-class TabDiscardTabHelper
+// When a page in the background has been discarded due to high efficiency mode,
+// and the user returns to that tab, a page action chip should be shown to the
+// user which conveys information about the discarded tab to the user.
+// The HighEfficiencyChipTabHelper is a per-tab class which manages the state of
+// the high efficiency chip.
+class HighEfficiencyChipTabHelper
     : public content::WebContentsObserver,
-      public content::WebContentsUserData<TabDiscardTabHelper> {
+      public content::WebContentsUserData<HighEfficiencyChipTabHelper> {
  public:
-  TabDiscardTabHelper(const TabDiscardTabHelper&) = delete;
-  TabDiscardTabHelper& operator=(const TabDiscardTabHelper&) = delete;
+  HighEfficiencyChipTabHelper(const HighEfficiencyChipTabHelper&) = delete;
+  HighEfficiencyChipTabHelper& operator=(const HighEfficiencyChipTabHelper&) =
+      delete;
 
-  ~TabDiscardTabHelper() override;
+  ~HighEfficiencyChipTabHelper() override;
 
   // Returns whether the chip associated with a discarded tab should be shown.
   bool ShouldChipBeVisible() const;
@@ -52,8 +54,8 @@ class TabDiscardTabHelper
       content::NavigationHandle* navigation_handle) override;
 
  private:
-  friend class content::WebContentsUserData<TabDiscardTabHelper>;
-  explicit TabDiscardTabHelper(content::WebContents* contents);
+  friend class content::WebContentsUserData<HighEfficiencyChipTabHelper>;
+  explicit HighEfficiencyChipTabHelper(content::WebContents* contents);
 
   // Returns whether the high efficiency chip should be supported for the
   // given URL
@@ -70,4 +72,4 @@ class TabDiscardTabHelper
   WEB_CONTENTS_USER_DATA_KEY_DECL();
 };
 
-#endif  // CHROME_BROWSER_UI_PERFORMANCE_CONTROLS_TAB_DISCARD_TAB_HELPER_H_
+#endif  // CHROME_BROWSER_UI_PERFORMANCE_CONTROLS_HIGH_EFFICIENCY_CHIP_TAB_HELPER_H_

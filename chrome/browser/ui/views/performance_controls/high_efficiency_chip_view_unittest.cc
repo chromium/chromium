@@ -10,8 +10,8 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/resource_coordinator/lifecycle_unit_state.mojom-shared.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
+#include "chrome/browser/ui/performance_controls/high_efficiency_chip_tab_helper.h"
 #include "chrome/browser/ui/performance_controls/performance_controls_metrics.h"
-#include "chrome/browser/ui/performance_controls/tab_discard_tab_helper.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/test_with_browser_view.h"
 #include "chrome/browser/ui/views/location_bar/location_bar_view.h"
@@ -72,23 +72,23 @@ class HighEfficiencyChipViewTest : public TestWithBrowserView {
   void AddNewTab(int memory_savings,
                  mojom::LifecycleUnitDiscardReason discard_reason) {
     AddTab(browser(), GURL("http://foo"));
-    content::WebContents* contents =
+    content::WebContents* const contents =
         browser()->tab_strip_model()->GetActiveWebContents();
-    TabDiscardTabHelper::CreateForWebContents(contents);
+    HighEfficiencyChipTabHelper::CreateForWebContents(contents);
     performance_manager::user_tuning::UserPerformanceTuningManager::
         PreDiscardResourceUsage::CreateForWebContents(contents, memory_savings,
                                                       discard_reason);
   }
 
   void SetTabDiscardState(int tab_index, bool is_discarded) {
-    TabDiscardTabHelper* tab_helper = TabDiscardTabHelper::FromWebContents(
-        browser()->tab_strip_model()->GetWebContentsAt(tab_index));
+    content::WebContents* const web_contents =
+        browser()->tab_strip_model()->GetWebContentsAt(tab_index);
     std::unique_ptr<DiscardMockNavigationHandle> navigation_handle =
         std::make_unique<DiscardMockNavigationHandle>();
     navigation_handle.get()->SetWasDiscarded(is_discarded);
-    navigation_handle.get()->SetWebContents(
-        browser()->tab_strip_model()->GetWebContentsAt(tab_index));
-    tab_helper->DidStartNavigation(navigation_handle.get());
+    navigation_handle.get()->SetWebContents(web_contents);
+    HighEfficiencyChipTabHelper::FromWebContents(web_contents)
+        ->DidStartNavigation(navigation_handle.get());
 
     browser_view()
         ->GetLocationBarView()
