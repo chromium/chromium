@@ -1825,228 +1825,6 @@
       },
     },
 
-    'dangling_pointer_detection_chromium_web_tests_and_wpt_webdriver_isolated_scripts': {
-      'blink_web_tests': {
-        # layout test failures are retried 3 times when '--test-list' is not
-        # passed, but 0 times when '--test-list' is passed. We want to always
-        # retry 3 times, so we explicitly specify it.
-        'args': [
-          '--num-retries=3',
-        ],
-        'isolate_name': 'blink_web_tests',
-        'merge': {
-          'args': [
-            '--verbose',
-          ],
-          'script': '//third_party/blink/tools/merge_web_test_results.py',
-        },
-        'mixins': [
-          'blink_tests_write_run_histories',
-           # TODO(crbug.com/1327314): Enable for blink web tests.
-          'disable_check_flakiness_web_tests',
-          'skia_gold_test',
-        ],
-        'resultdb': {
-          'enable': True,
-        },
-        'results_handler': 'layout tests',
-        'swarming': {
-          'shards': 5,
-        },
-      },
-      'blink_wpt_tests': {
-        # layout test failures are retried 3 times when '--test-list' is not
-        # passed, but 0 times when '--test-list' is passed. We want to always
-        # retry 3 times, so we explicitly specify it.
-        'args': [
-          '--num-retries=3',
-          '--step-name=blink-wpt-tests',
-        ],
-        'isolate_name': 'blink_wpt_tests',
-        'merge': {
-          'args': [
-            '--verbose',
-          ],
-          'script': '//third_party/blink/tools/merge_web_test_results.py',
-        },
-        'mixins': [
-          'blink_tests_write_run_histories',
-          # TODO(crbug.com/1327314): Enable for blink web tests.
-          'disable_check_flakiness_web_tests',
-          'skia_gold_test',
-        ],
-        'resultdb': {
-          'enable': True,
-        },
-        'results_handler': 'layout tests',
-        'swarming': {
-          'shards': 7,
-        },
-      },
-      'dangling_pointer_detection_blink_web_tests': {
-        # layout test failures are retried 3 times when '--test-list' is not
-        # passed, but 0 times when '--test-list' is passed. We want to always
-        # retry 3 times, so we explicitly specify it.
-        'args': [
-          '--additional-driver-flag=--enable-features=PartitionAllocDanglingPtr:mode/crash',
-          '--num-retries=3',
-        ],
-        'isolate_name': 'blink_web_tests',
-        'merge': {
-          'args': [
-            '--verbose',
-          ],
-          'script': '//third_party/blink/tools/merge_web_test_results.py',
-        },
-        'mixins': [
-          'blink_tests_write_run_histories',
-           # TODO(crbug.com/1327314): Enable for blink web tests.
-          'disable_check_flakiness_web_tests',
-          'skia_gold_test',
-        ],
-        'resultdb': {
-          'enable': True,
-        },
-        'results_handler': 'layout tests',
-        'swarming': {
-          'shards': 5,
-        },
-      },
-      'dangling_pointer_detection_blink_wpt_tests': {
-        # layout test failures are retried 3 times when '--test-list' is not
-        # passed, but 0 times when '--test-list' is passed. We want to always
-        # retry 3 times, so we explicitly specify it.
-        'args': [
-          '--additional-driver-flag=--enable-features=PartitionAllocDanglingPtr:mode/crash',
-          '--num-retries=3',
-          '--step-name=blink-wpt-tests',
-        ],
-        'isolate_name': 'blink_wpt_tests',
-        'merge': {
-          'args': [
-            '--verbose',
-          ],
-          'script': '//third_party/blink/tools/merge_web_test_results.py',
-        },
-        'mixins': [
-          'blink_tests_write_run_histories',
-          # TODO(crbug.com/1327314): Enable for blink web tests.
-          'disable_check_flakiness_web_tests',
-          'skia_gold_test',
-        ],
-        'resultdb': {
-          'enable': True,
-        },
-        'results_handler': 'layout tests',
-        'swarming': {
-          'shards': 7,
-        },
-      },
-    },
-
-    'dangling_pointer_detection_tests': {
-      'dangling_pointer_detection_base_unittests': {
-        'args': [
-          '--enable-features=PartitionAllocDanglingPtr:mode/crash',
-        ],
-        'test': 'base_unittests',
-        'swarming': {
-          'shards': 8,
-        },
-      },
-      'dangling_pointer_detection_blink_common_unittests': {
-        'args': [
-          '--enable-features=PartitionAllocDanglingPtr:mode/crash',
-        ],
-        'test': 'blink_common_unittests',
-      },
-      'dangling_pointer_detection_blink_platform_unittests': {
-        'args': [
-          '--enable-features=PartitionAllocDanglingPtr:mode/crash',
-        ],
-        'test': 'blink_platform_unittests',
-      },
-      'dangling_pointer_detection_cast_unittests': {
-        'args': [
-          '--enable-features=PartitionAllocDanglingPtr:mode/crash',
-        ],
-        'test': 'cast_unittests',
-      },
-      'dangling_pointer_detection_cc_unittests': {
-        'args': [
-          '--enable-features=PartitionAllocDanglingPtr:mode/crash',
-        ],
-        'test': 'cc_unittests',
-      },
-      'dangling_pointer_detection_components_browsertests': {
-        'args': [
-          '--enable-features=PartitionAllocDanglingPtr:mode/crash',
-        ],
-        'test': 'components_browsertests',
-      },
-      'dangling_pointer_detection_components_unittests': {
-        'android_swarming': {
-          'shards': 6,
-        },
-        'args': [
-          '--enable-features=PartitionAllocDanglingPtr:mode/crash',
-        ],
-        'test': 'components_unittests',
-      },
-      'dangling_pointer_detection_content_browsertests': {
-        'args': [
-          '--enable-features=PartitionAllocDanglingPtr:mode/crash',
-          # On non-Android platforms, this suite is dominated by crashes
-          # caught by DPD. This typically ups the per-shard number of
-          # tests from 1.3k to well over 2k and chokes all shards into
-          # timeout. Unlike regular flakes, dangling pointers should not
-          # be retried away; so, at the expense of regular flakes, we
-          # zero the number of retries.
-          '--num-retries=0',
-        ],
-        'test': 'content_browsertests',
-        'android_swarming': {
-          'shards': 15,
-        },
-        'swarming': {
-          'shards': 8,
-        },
-      },
-      'dangling_pointer_detection_content_unittests': {
-        'android_swarming': {
-          'shards': 3,
-        },
-        'args': [
-          '--enable-features=PartitionAllocDanglingPtr:mode/crash',
-        ],
-        'test': 'content_unittests',
-      },
-      'dangling_pointer_detection_unit_tests': {
-        'android_swarming': {
-          'shards': 2,
-        },
-        'args': [
-          '--enable-features=PartitionAllocDanglingPtr:mode/crash',
-        ],
-        'test': 'unit_tests',
-      },
-      'dangling_pointer_detection_webkit_unit_tests': {
-        'android_swarming': {
-          'shards': 6,
-        },
-        'args': [
-          '--enable-features=PartitionAllocDanglingPtr:mode/crash',
-        ],
-        'test': 'blink_unittests',
-      },
-      'dangling_pointer_detection_wtf_unittests': {
-        'args': [
-          '--enable-features=PartitionAllocDanglingPtr:mode/crash',
-        ],
-        'test': 'wtf_unittests',
-      },
-    },
-
     'desktop_chromium_isolated_scripts': {
       'blink_python_tests': {
         'resultdb': {
@@ -6002,7 +5780,6 @@
 
     'backuprefptr_gtests': [
       'backuprefptr_generic_gtests',
-      'dangling_pointer_detection_tests',
     ],
 
     'bfcache_android_gtests': [
@@ -6047,22 +5824,6 @@
       'desktop_chromium_isolated_scripts',
       'performance_smoke_test_isolated_scripts',
       'telemetry_perf_unittests_isolated_scripts',
-    ],
-
-    'chromium_linux_and_dangling_pointer_detection_gtests': [
-      'dangling_pointer_detection_tests',
-      'aura_gtests',
-      'chromium_gtests',
-      'chromium_gtests_for_devices_with_graphical_output',
-      'chromium_gtests_for_linux_and_chromeos_only',
-      'chromium_gtests_for_linux_and_mac_only',
-      'chromium_gtests_for_linux_only',
-      'chromium_gtests_for_win_and_linux_only',
-      'linux_flavor_specific_chromium_gtests',
-      'linux_specific_xr_gtests',
-      'non_android_and_cast_and_chromeos_chromium_gtests',
-      'non_android_chromium_gtests',
-      'vr_platform_specific_chromium_gtests',
     ],
 
     # This is meant to be a superset of 'chromium_linux_and_gl_gtests'. Any
@@ -6169,17 +5930,6 @@
       'gpu_dawn_webgpu_blink_web_tests',
     ],
 
-    'chromium_mac_and_dangling_pointer_detection_gtests': [
-      'dangling_pointer_detection_tests',
-      'chromium_gtests',
-      'chromium_gtests_for_devices_with_graphical_output',
-      'chromium_gtests_for_linux_and_mac_only',
-      'mac_specific_chromium_gtests',
-      'nocompile_tests',
-      'non_android_and_cast_and_chromeos_chromium_gtests',
-      'non_android_chromium_gtests',
-    ],
-
     'chromium_mac_gtests': [
       'chromium_gtests',
       'chromium_gtests_for_devices_with_graphical_output',
@@ -6235,20 +5985,6 @@
     # 'chromium_win_gtests' + 'pixel_browser_tests_gtests' +
     # 'non_android_chromium_gtests_skia_gold'.
     'chromium_win10_gtests': [
-      'aura_gtests',
-      'chromium_gtests',
-      'chromium_gtests_for_devices_with_graphical_output',
-      'chromium_gtests_for_win_and_linux_only',
-      'non_android_and_cast_and_chromeos_chromium_gtests',
-      'non_android_chromium_gtests',
-      'non_android_chromium_gtests_skia_gold',
-      'pixel_browser_tests_gtests',
-      'vr_platform_specific_chromium_gtests',
-      'win_specific_chromium_gtests',
-    ],
-
-    'chromium_win_and_dangling_pointer_detection_gtests': [
-      'dangling_pointer_detection_tests',
       'aura_gtests',
       'chromium_gtests',
       'chromium_gtests_for_devices_with_graphical_output',
