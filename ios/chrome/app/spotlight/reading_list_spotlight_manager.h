@@ -33,6 +33,7 @@ class ReadingListModel;
 - (instancetype)initWithLargeIconService:
                     (favicon::LargeIconService*)largeIconService
                                   domain:(spotlight::Domain)domain
+                      spotlightInterface:(SpotlightInterface*)spotlightInterface
     NS_UNAVAILABLE;
 
 /// Immediately clears and reindexes the reading list items in Spotlight. Calls

@@ -34,9 +34,6 @@
   std::map<GURL, bool> _batch_update_log;
 }
 
-/// Facade interface for the spotlight API.
-@property(nonatomic, readonly) SpotlightInterface* spotlightInterface;
-
 /// Tracks reentrant batch updates of the model. A value of 0 indicates that the
 /// model is not in batch updates mode and vice versa.
 @property(nonatomic, assign) NSInteger modelUpdateDepth;
@@ -60,11 +57,11 @@
             readingListModel:(ReadingListModel*)model
           spotlightInterface:(SpotlightInterface*)spotlightInterface {
   self = [super initWithLargeIconService:largeIconService
-                                  domain:spotlight::DOMAIN_READING_LIST];
+                                  domain:spotlight::DOMAIN_READING_LIST
+                      spotlightInterface:spotlightInterface];
   if (self) {
     _model = model;
     _modelBridge.reset(new ReadingListModelBridge(self, model));
-    _spotlightInterface = spotlightInterface;
   }
   return self;
 }

@@ -116,10 +116,6 @@ BOOL SetStartupParametersForSpotlightAction(
 }  // namespace spotlight
 
 @interface ActionsSpotlightManager ()
-
-/// Facade interface for the spotlight API.
-@property(nonatomic, readonly) SpotlightInterface* spotlightInterface;
-
 // Creates a new Spotlight entry with title `title` for the given `action`.
 - (CSSearchableItem*)itemForAction:(NSString*)action title:(NSString*)title;
 
@@ -138,19 +134,6 @@ BOOL SetStartupParametersForSpotlightAction(
 }
 
 #pragma mark public methods
-
-- (instancetype)
-    initWithLargeIconService:(favicon::LargeIconService*)largeIconService
-                      domain:(spotlight::Domain)domain
-          spotlightInterface:(SpotlightInterface*)spotlightInterface {
-  self = [super initWithLargeIconService:largeIconService domain:domain];
-
-  if (self) {
-    _spotlightInterface = spotlightInterface;
-  }
-
-  return self;
-}
 
 - (void)indexActions {
   __weak ActionsSpotlightManager* weakSelf = self;

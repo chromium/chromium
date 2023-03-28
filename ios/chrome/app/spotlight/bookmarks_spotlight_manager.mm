@@ -54,9 +54,6 @@ class SpotlightBookmarkModelBridge;
   BOOL _initialIndexDone;
 }
 
-/// Facade interface for the spotlight API.
-@property(nonatomic, readonly) SpotlightInterface* spotlightInterface;
-
 // Detaches the `SpotlightBookmarkModelBridge` from the bookmark model. The
 // manager must not be used after calling this method.
 - (void)detachBookmarkModel;
@@ -168,12 +165,12 @@ class SpotlightBookmarkModelBridge : public bookmarks::BookmarkModelObserver {
                bookmarkModel:(bookmarks::BookmarkModel*)bookmarkModel
           spotlightInterface:(SpotlightInterface*)spotlightInterface {
   self = [super initWithLargeIconService:largeIconService
-                                  domain:spotlight::DOMAIN_BOOKMARKS];
+                                  domain:spotlight::DOMAIN_BOOKMARKS
+                      spotlightInterface:spotlightInterface];
   if (self) {
     _bookmarkModelBridge.reset(new SpotlightBookmarkModelBridge(self));
     _bookmarkModel = bookmarkModel;
     bookmarkModel->AddObserver(_bookmarkModelBridge.get());
-    _spotlightInterface = spotlightInterface;
   }
   return self;
 }

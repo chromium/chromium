@@ -20,6 +20,7 @@
 #import "components/favicon/core/large_icon_service.h"
 #import "components/favicon_base/fallback_icon_style.h"
 #import "components/favicon_base/favicon_types.h"
+#import "ios/chrome/app/spotlight/spotlight_interface.h"
 #import "ios/chrome/app/spotlight/spotlight_logger.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "net/base/mac/url_conversions.h"
@@ -106,13 +107,15 @@ UIImage* GetFallbackImageWithStringAndColor(NSString* string,
 
 @implementation BaseSpotlightManager
 
-- (instancetype)initWithLargeIconService:
-                    (favicon::LargeIconService*)largeIconService
-                                  domain:(spotlight::Domain)domain {
+- (instancetype)
+    initWithLargeIconService:(favicon::LargeIconService*)largeIconService
+                      domain:(spotlight::Domain)domain
+          spotlightInterface:(SpotlightInterface*)spotlightInterface {
   self = [super init];
   if (self) {
     _spotlightDomain = domain;
     _largeIconService = largeIconService;
+    _spotlightInterface = spotlightInterface;
     _largeIconTaskTracker = std::make_unique<base::CancelableTaskTracker>();
   }
   return self;
@@ -150,7 +153,10 @@ UIImage* GetFallbackImageWithStringAndColor(NSString* string,
 
 - (void)clearAllSpotlightItems:(BlockWithError)callback {
   [self cancelAllLargeIconPendingTasks];
-  spotlight::DeleteSearchableDomainItems(_spotlightDomain, callback);
+  [self.spotlightInterface deleteSearchableItemsWithDomainIdentifiers:@[
+    spotlight::StringFromSpotlightDomain(_spotlightDomain)
+  ]
+                                                    completionHandler:callback];
 }
 
 - (CSSearchableItem*)spotlightItemWithItemID:(NSString*)itemID
@@ -279,10 +285,8 @@ UIImage* GetFallbackImageWithStringAndColor(NSString* string,
                                            defaultTitle:title];
 
   if ([spotlightItems count]) {
-    [[CSSearchableIndex defaultSearchableIndex]
-        indexSearchableItems:spotlightItems
-           completionHandler:nil];
-    [[SpotlightLogger sharedLogger] logIndexedItems:spotlightItems];
+    [self.spotlightInterface indexSearchableItems:spotlightItems
+                                completionHandler:nil];
   }
 }
 

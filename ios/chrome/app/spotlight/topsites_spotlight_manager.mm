@@ -14,6 +14,7 @@
 #import "components/history/core/browser/top_sites.h"
 #import "components/history/core/browser/top_sites_observer.h"
 #import "components/sync/driver/sync_service.h"
+#import "ios/chrome/app/spotlight/spotlight_interface.h"
 #import "ios/chrome/browser/bookmarks/local_or_syncable_bookmark_model_factory.h"
 #import "ios/chrome/browser/favicon/ios_chrome_large_icon_service_factory.h"
 #import "ios/chrome/browser/history/top_sites_factory.h"
@@ -49,7 +50,8 @@ class SpotlightTopSitesCallbackBridge;
 - (instancetype)
     initWithLargeIconService:(favicon::LargeIconService*)largeIconService
                     topSites:(scoped_refptr<history::TopSites>)topSites
-               bookmarkModel:(bookmarks::BookmarkModel*)bookmarkModel;
+               bookmarkModel:(bookmarks::BookmarkModel*)bookmarkModel
+          spotlightInterface:(SpotlightInterface*)spotlightInterface;
 
 // Updates all indexed top sites from appropriate source, within limit of number
 // of sites shown on NTP.
@@ -119,15 +121,18 @@ class SpotlightTopSitesBridge : public history::TopSitesObserver {
                       topSites:ios::TopSitesFactory::GetForBrowserState(
                                    browserState)
                  bookmarkModel:ios::LocalOrSyncableBookmarkModelFactory::
-                                   GetForBrowserState(browserState)];
+                                   GetForBrowserState(browserState)
+            spotlightInterface:[SpotlightInterface defaultInterface]];
 }
 
 - (instancetype)
     initWithLargeIconService:(favicon::LargeIconService*)largeIconService
                     topSites:(scoped_refptr<history::TopSites>)topSites
-               bookmarkModel:(bookmarks::BookmarkModel*)bookmarkModel {
+               bookmarkModel:(bookmarks::BookmarkModel*)bookmarkModel
+          spotlightInterface:(SpotlightInterface*)spotlightInterface {
   self = [super initWithLargeIconService:largeIconService
-                                  domain:spotlight::DOMAIN_TOPSITES];
+                                  domain:spotlight::DOMAIN_TOPSITES
+                      spotlightInterface:spotlightInterface];
   if (self) {
     DCHECK(topSites);
     DCHECK(bookmarkModel);

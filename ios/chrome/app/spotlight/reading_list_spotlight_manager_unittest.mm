@@ -80,10 +80,7 @@ class ReadingListSpotlightManagerTest : public PlatformTest {
         browser_state_.get());
 
     CreateMockLargeIconService();
-    readingListSpotlightManager_ = [[ReadingListSpotlightManager alloc]
-        initWithLargeIconService:large_icon_service_.get()
-                readingListModel:model_
-              spotlightInterface:[SpotlightInterface defaultInterface]];
+    spotlightInterface_ = [SpotlightInterface defaultInterface];
   }
 
  protected:
@@ -106,24 +103,17 @@ class ReadingListSpotlightManagerTest : public PlatformTest {
         });
   }
 
-  ~ReadingListSpotlightManagerTest() override {
-    [readingListSpotlightManager_ shutdown];
-  }
-
   base::test::TaskEnvironment task_environment_;
   std::unique_ptr<TestChromeBrowserState> browser_state_;
   testing::StrictMock<favicon::MockFaviconService> mock_favicon_service_;
   std::unique_ptr<favicon::LargeIconServiceImpl> large_icon_service_;
   base::CancelableTaskTracker cancelable_task_tracker_;
   ReadingListModel* model_;
-  ReadingListSpotlightManager* readingListSpotlightManager_;
+  SpotlightInterface* spotlightInterface_;
 };
 
 /// Tests that init propagates the `model` and -shutdown removes it.
 TEST_F(ReadingListSpotlightManagerTest, testInitAndShutdown) {
-  // For this test, don't use readingListSpotlightManager_, and init a new copy
-  // instead.
-
   ReadingListSpotlightManager* manager = [[ReadingListSpotlightManager alloc]
       initWithLargeIconService:large_icon_service_.get()
               readingListModel:model_
@@ -135,32 +125,38 @@ TEST_F(ReadingListSpotlightManagerTest, testInitAndShutdown) {
 }
 
 /// Tests that clearAndReindexReadingList actually clears all items (by calling
-/// super) and adds the items (again, by calling super
-/// -refreshItemsWithURL:title:)
+/// spotlight api) and adds the items ( by calling base class method
+/// refreshItemsWithURL)
 TEST_F(ReadingListSpotlightManagerTest, testClearsAndIndexesItems) {
-  id partialMgrMock =
-      [OCMockObject partialMockForObject:readingListSpotlightManager_];
-  [[[partialMgrMock expect] andForwardToRealObject]
-      clearAllSpotlightItems:[OCMArg any]];
+  void (^proxyBlock)(NSInvocation*) = ^(NSInvocation* invocation) {
+    void (^passedBlock)(NSError* error);
+    [invocation getArgument:&passedBlock atIndex:3];
+    passedBlock(nil);
+  };
 
   GURL ignoredURL = GURL("http://chromium.org");
-  __block BOOL invocationFired = false;
-  [[[[partialMgrMock expect] ignoringNonObjectArgs] andDo:^(NSInvocation* inv) {
-    GURL* url;
-    [inv getArgument:&url atIndex:2];
-    EXPECT_EQ(kTestURL, url->spec());
-    __unsafe_unretained NSString* title;
-    [inv getArgument:&title atIndex:3];
-    EXPECT_NSEQ(title, base::SysUTF8ToNSString(kTestTitle));
-    invocationFired = true;
-  }] refreshItemsWithURL:ignoredURL title:[OCMArg any]];
 
-  EXPECT_TRUE(
-      base::test::ios::WaitUntilConditionOrTimeout(base::Seconds(3), ^bool {
-        return invocationFired;
-      }));
+  id mockSpotlightInterface =
+      [OCMockObject partialMockForObject:spotlightInterface_];
 
-  [partialMgrMock clearAndReindexReadingListWithCompletionBlock:nil];
+  ReadingListSpotlightManager* manager = [[ReadingListSpotlightManager alloc]
+      initWithLargeIconService:large_icon_service_.get()
+              readingListModel:model_
+            spotlightInterface:mockSpotlightInterface];
 
-  EXPECT_OCMOCK_VERIFY(partialMgrMock);
+  id mockManager = [OCMockObject partialMockForObject:manager];
+
+  [[[mockSpotlightInterface expect] andDo:proxyBlock]
+      deleteSearchableItemsWithDomainIdentifiers:[OCMArg any]
+                               completionHandler:[OCMArg any]];
+  [[[mockManager expect] ignoringNonObjectArgs]
+      refreshItemsWithURL:ignoredURL
+                    title:[OCMArg any]];
+
+  [mockManager clearAndReindexReadingListWithCompletionBlock:nil];
+
+  EXPECT_OCMOCK_VERIFY(mockSpotlightInterface);
+  EXPECT_OCMOCK_VERIFY(mockManager);
+
+  [manager shutdown];
 }
