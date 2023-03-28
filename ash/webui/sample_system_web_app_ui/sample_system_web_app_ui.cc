@@ -24,43 +24,6 @@
 
 namespace ash {
 
-namespace {
-// TODO(clamclamyan): Refactor into a better way e.g. generating the import map.
-static constexpr const char kAshImportMapScript[] = R"(
-<script type="importmap" nonce="%s">
-{
-  "imports": {
-    "lit": "chrome://resources/mwc/lit/index.js",
-    "@material/": "chrome://resources/mwc/@material/",
-    "chrome://resources/mwc/lit/index.js": "chrome://resources/mwc/lit/index.js",
-    "chrome://resources/mwc/lit/directive.js": "chrome://resources/mwc/lit/index.js",
-    "chrome://resources/mwc/lit/decorators.js": "chrome://resources/mwc/lit/index.js",
-    "chrome://resources/mwc/lit/directives/async-append.js": "chrome://resources/mwc/lit/index.js",
-    "chrome://resources/mwc/lit/directives/async-replace.js": "chrome://resources/mwc/lit/index.js",
-    "chrome://resources/mwc/lit/directives/cache.js": "chrome://resources/mwc/lit/index.js",
-    "chrome://resources/mwc/lit/directives/choose.js": "chrome://resources/mwc/lit/index.js",
-    "chrome://resources/mwc/lit/directives/class-map.js": "chrome://resources/mwc/lit/index.js",
-    "chrome://resources/mwc/lit/directives/guard.js": "chrome://resources/mwc/lit/index.js",
-    "chrome://resources/mwc/lit/directives/if-defined.js": "chrome://resources/mwc/lit/index.js",
-    "chrome://resources/mwc/lit/directives/join.js": "chrome://resources/mwc/lit/index.js",
-    "chrome://resources/mwc/lit/directives/keyed.js": "chrome://resources/mwc/lit/index.js",
-    "chrome://resources/mwc/lit/directives/live.js": "chrome://resources/mwc/lit/index.js",
-    "chrome://resources/mwc/lit/directives/map.js": "chrome://resources/mwc/lit/index.js",
-    "chrome://resources/mwc/lit/directives/range.js": "chrome://resources/mwc/lit/index.js",
-    "chrome://resources/mwc/lit/directives/ref.js": "chrome://resources/mwc/lit/index.js",
-    "chrome://resources/mwc/lit/directives/repeat.js": "chrome://resources/mwc/lit/index.js",
-    "chrome://resources/mwc/lit/directives/style-map.js": "chrome://resources/mwc/lit/index.js",
-    "chrome://resources/mwc/lit/directives/template-content.js": "chrome://resources/mwc/lit/index.js",
-    "chrome://resources/mwc/lit/directives/unsafe-html.js": "chrome://resources/mwc/lit/index.js",
-    "chrome://resources/mwc/lit/directives/unsafe-svg.js": "chrome://resources/mwc/lit/index.js",
-    "chrome://resources/mwc/lit/directives/until.js": "chrome://resources/mwc/lit/index.js",
-    "chrome://resources/mwc/lit/directives/when.js": "chrome://resources/mwc/lit/index.js"
-  }
-}
-</script>
-)";
-}  // namespace
-
 SampleSystemWebAppUI::SampleSystemWebAppUI(content::WebUI* web_ui)
     : ui::MojoWebUIController(web_ui) {
   auto* browser_context = web_ui->GetWebContents()->GetBrowserContext();
@@ -91,24 +54,6 @@ SampleSystemWebAppUI::SampleSystemWebAppUI(content::WebUI* web_ui)
   trusted_source->OverrideContentSecurityPolicy(
       network::mojom::CSPDirectiveName::TrustedTypes,
       "trusted-types lit-html worker-js-static;");
-
-  // We use a 128-bit nonce.
-  std::vector<uint8_t> bytes(16);
-  crypto::RandBytes(bytes);
-  std::string nonce = base::Base64Encode(bytes);
-
-  // Use the internationalization API to inject an import map <script> into
-  // the page. TODO(clamclamyan): Refactor into a better way.
-  trusted_source->AddString(
-      "ash_import_map_script",
-      base::StringPrintf(kAshImportMapScript, nonce.c_str()));
-
-  static constexpr char script_src_csp[] =
-      "script-src chrome://resources 'self' 'nonce-%s';";
-
-  trusted_source->OverrideContentSecurityPolicy(
-      network::mojom::CSPDirectiveName::ScriptSrc,
-      base::StringPrintf(script_src_csp, nonce.c_str()));
 
   // Add ability to request chrome-untrusted: URLs
   web_ui->AddRequestableScheme(content::kChromeUIUntrustedScheme);

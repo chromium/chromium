@@ -22,6 +22,8 @@ const inputFiles = args.files;
 
 for (const inputFile of inputFiles) {
   const inputDir = path.dirname(inputFile);
+  if (inputDir.startsWith("components-chromium/node_modules/@material")) continue;
+
   const data = fs.readFileSync(inputFile, {encoding: 'utf8'})
   const ast = acorn.parse(data, {sourceType: 'module'});
 

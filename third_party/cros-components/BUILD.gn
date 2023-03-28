@@ -4,12 +4,14 @@
 
 import("//ash/webui/tools/mwc_path_mappings.gni")
 import("//build/config/chromeos/ui_mode.gni")
+import("//third_party/material_web_components/rewrite_imports.gni")
 import("//tools/typescript/ts_library.gni")
 import("//ui/webui/resources/tools/generate_grd.gni")
 
 ts_library("cros_components_ts") {
   root_dir = "src/"
-  out_dir = "$root_gen_dir/ui/webui/resources/tsc/cros_components"
+  out_dir =
+      "$root_gen_dir/ui/webui/resources/tsc/cros_components/to_be_rewritten"
 
   in_files = [ "button/button.ts" ]
 
@@ -23,15 +25,30 @@ ts_library("cros_components_ts") {
   deps = [ "//third_party/material_web_components:library" ]
 }
 
+rewrite_imports("cros_components_rewrite") {
+  base_dir =
+      "$root_gen_dir/ui/webui/resources/tsc/cros_components/to_be_rewritten"
+  out_dir = "$root_gen_dir/ui/webui/resources/tsc/cros_components/rewritten"
+
+  in_files = [ "button/button.js" ]
+
+  import_mappings = [
+    "lit|//resources/mwc/lit/index.js",
+    "@material/|chrome://resources/mwc/@material/",
+  ]
+
+  deps = [ ":cros_components_ts" ]
+}
+
 generate_grd("cros_components_grdp") {
   grd_prefix = "cros_components"
   out_grd = "${target_gen_dir}/resources.grdp"
 
-  deps = []
   manifest_files = []
 
-  deps += [ ":cros_components_ts" ]
-  manifest_files += filter_include(get_target_outputs(":cros_components_ts"),
-                                   [ "*.manifest" ])
+  deps = [ ":cros_components_rewrite" ]
+  manifest_files +=
+      filter_include(get_target_outputs(":cros_components_rewrite"),
+                     [ "*.manifest" ])
   resource_path_prefix = "cros_components"
 }

@@ -22,41 +22,6 @@ namespace {
 static constexpr const char kTestHost[] = "test-host";
 static constexpr const char kTestUrl[] = "chrome://test-host";
 
-// TODO(clamclamyan): Replace import map once @material imports are rewritten.
-static constexpr const char kCrosComponentsHtml[] = R"(
-<script type="importmap">
-{
-  "imports": {
-    "lit": "chrome://resources/mwc/lit/index.js",
-    "@material/": "chrome://resources/mwc/@material/",
-    "chrome://resources/mwc/lit/index.js": "chrome://resources/mwc/lit/index.js",
-    "chrome://resources/mwc/lit/decorators.js": "chrome://resources/mwc/lit/index.js",
-    "chrome://resources/mwc/lit/directive.js": "chrome://resources/mwc/lit/index.js",
-    "chrome://resources/mwc/lit/directives/async-append.js": "chrome://resources/mwc/lit/index.js",
-    "chrome://resources/mwc/lit/directives/async-replace.js": "chrome://resources/mwc/lit/index.js",
-    "chrome://resources/mwc/lit/directives/cache.js": "chrome://resources/mwc/lit/index.js",
-    "chrome://resources/mwc/lit/directives/choose.js": "chrome://resources/mwc/lit/index.js",
-    "chrome://resources/mwc/lit/directives/class-map.js": "chrome://resources/mwc/lit/index.js",
-    "chrome://resources/mwc/lit/directives/guard.js": "chrome://resources/mwc/lit/index.js",
-    "chrome://resources/mwc/lit/directives/if-defined.js": "chrome://resources/mwc/lit/index.js",
-    "chrome://resources/mwc/lit/directives/join.js": "chrome://resources/mwc/lit/index.js",
-    "chrome://resources/mwc/lit/directives/keyed.js": "chrome://resources/mwc/lit/index.js",
-    "chrome://resources/mwc/lit/directives/live.js": "chrome://resources/mwc/lit/index.js",
-    "chrome://resources/mwc/lit/directives/map.js": "chrome://resources/mwc/lit/index.js",
-    "chrome://resources/mwc/lit/directives/range.js": "chrome://resources/mwc/lit/index.js",
-    "chrome://resources/mwc/lit/directives/ref.js": "chrome://resources/mwc/lit/index.js",
-    "chrome://resources/mwc/lit/directives/repeat.js": "chrome://resources/mwc/lit/index.js",
-    "chrome://resources/mwc/lit/directives/style-map.js": "chrome://resources/mwc/lit/index.js",
-    "chrome://resources/mwc/lit/directives/template-content.js": "chrome://resources/mwc/lit/index.js",
-    "chrome://resources/mwc/lit/directives/unsafe-html.js": "chrome://resources/mwc/lit/index.js",
-    "chrome://resources/mwc/lit/directives/unsafe-svg.js": "chrome://resources/mwc/lit/index.js",
-    "chrome://resources/mwc/lit/directives/until.js": "chrome://resources/mwc/lit/index.js",
-    "chrome://resources/mwc/lit/directives/when.js": "chrome://resources/mwc/lit/index.js"
-  }
-}
-</script>
-)";
-
 // WebUIController that registers a URLDataSource which serves an html page with
 // our import map and a Trusted Types CSP that allows us to inject script tags.
 class CrosComponentsUI : public content::WebUIController {
@@ -70,9 +35,7 @@ class CrosComponentsUI : public content::WebUIController {
         base::BindRepeating(
             [](const std::string& path,
                content::WebUIDataSource::GotDataCallback callback) {
-              base::RefCountedString* ref_contents =
-                  new base::RefCountedString(kCrosComponentsHtml);
-              std::move(callback).Run(ref_contents);
+              std::move(callback).Run(new base::RefCountedString(""));
             }));
 
     source->OverrideContentSecurityPolicy(
