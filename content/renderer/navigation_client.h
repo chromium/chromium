@@ -38,6 +38,8 @@ class NavigationClient : mojom::NavigationClient {
           prefetch_loader_factory,
       mojo::PendingRemote<network::mojom::URLLoaderFactory>
           topics_loader_factory,
+      mojo::PendingRemote<network::mojom::URLLoaderFactory>
+          keep_alive_loader_factory,
       const blink::DocumentToken& document_token,
       const base::UnguessableToken& devtools_navigation_token,
       const absl::optional<blink::ParsedPermissionsPolicy>& permissions_policy,

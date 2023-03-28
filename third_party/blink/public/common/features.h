@@ -1083,6 +1083,12 @@ BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(
 // See https://crbug.com/1414262
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kRemoteResourceCache);
 
+// Kill-switch for the fetch keepalive request infra migration.
+// If enabled, all keepalive requests will be proxied via the browser process.
+// Design Doc: https://bit.ly/chromium-keepalive-migration
+// Tracker: https://crbug.com/1356128
+BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kKeepAliveInBrowserMigration);
+
 }  // namespace features
 }  // namespace blink
 

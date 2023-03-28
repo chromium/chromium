@@ -45,6 +45,8 @@ class BLINK_PLATFORM_EXPORT TrackedChildPendingURLLoaderFactoryBundle
           pending_prefetch_loader_factory,
       mojo::PendingRemote<network::mojom::URLLoaderFactory>
           pending_topics_loader_factory,
+      mojo::PendingRemote<network::mojom::URLLoaderFactory>
+          pending_keep_alive_loader_factory,
       std::unique_ptr<HostPtrAndTaskRunner> main_thread_host_bundle,
       bool bypass_redirect_checks);
   TrackedChildPendingURLLoaderFactoryBundle(

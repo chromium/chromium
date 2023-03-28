@@ -275,6 +275,8 @@ class TestRenderFrameHost : public RenderFrameHostImpl,
           prefetch_loader_factory,
       mojo::PendingRemote<network::mojom::URLLoaderFactory>
           topics_loader_factory,
+      mojo::PendingRemote<network::mojom::URLLoaderFactory>
+          keep_alive_loader_factory,
       const absl::optional<blink::ParsedPermissionsPolicy>& permissions_policy,
       blink::mojom::PolicyContainerPtr policy_container,
       const blink::DocumentToken& document_token,

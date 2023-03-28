@@ -270,8 +270,10 @@ void TestRenderFrame::Navigate(
       blink::mojom::ControllerServiceWorkerInfoPtr(),
       blink::mojom::ServiceWorkerContainerInfoForClientPtr(),
       mojo::NullRemote() /* prefetch_loader_factory */,
-      mojo::NullRemote() /* topics_loader_factory */, blink::DocumentToken(),
-      base::UnguessableToken::Create(), blink::ParsedPermissionsPolicy(),
+      mojo::NullRemote() /* topics_loader_factory */,
+      mojo::NullRemote() /* keep_alive_loader_factory */,
+      blink::DocumentToken(), base::UnguessableToken::Create(),
+      blink::ParsedPermissionsPolicy(),
       blink::mojom::PolicyContainer::New(
           blink::mojom::PolicyContainerPolicies::New(),
           mock_policy_container_host.BindNewEndpointAndPassDedicatedRemote()),

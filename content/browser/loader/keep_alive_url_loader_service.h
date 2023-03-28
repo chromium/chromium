@@ -8,6 +8,8 @@
 #include <map>
 #include <memory>
 
+#include "base/memory/scoped_refptr.h"
+#include "content/browser/loader/keep_alive_url_loader.h"
 #include "content/common/content_export.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
@@ -52,6 +54,8 @@ class CONTENT_EXPORT KeepAliveURLLoaderService {
   // For testing only:
   size_t NumLoadersForTesting() const;
   size_t NumDisconnectedLoadersForTesting() const;
+  void SetLoaderObserverForTesting(
+      scoped_refptr<KeepAliveURLLoader::TestObserver> observer);
 
  private:
   class KeepAliveURLLoaderFactory;
@@ -79,6 +83,11 @@ class CONTENT_EXPORT KeepAliveURLLoaderService {
   // The key is the mojo::ReceiverId assigned by `loader_receivers_`.
   std::map<mojo::ReceiverId, std::unique_ptr<network::mojom::URLLoader>>
       disconnected_loaders_;
+
+  // For testing only:
+  // Not owned.
+  scoped_refptr<KeepAliveURLLoader::TestObserver> loader_test_observer_ =
+      nullptr;
 };
 
 }  // namespace content

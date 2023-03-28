@@ -34,6 +34,14 @@ namespace blink {
 // |pending_topics_loader_factory| is used only by the frames who may send
 // fetch requests with {browsingTopics: true} flag. The loader factory allows
 // topics handling to be proxied via the browser process.
+//
+// |pending_keep_alive_loader_factory| is used only by the frames who may send
+// fetch requests with {keepalive: true} flag. The loader factory allows
+// keepalive request handling to be proxied via the browser process. The browser
+// may forward the response back if the request initiator frame is still alive.
+// It is only set if `blink::features::kKeepAliveInBrowserMigration` is true.
+// See also crbug.com/1356128 and
+// https://docs.google.com/document/d/1ZzxMMBvpqn8VZBZKnb7Go8TWjnrGcXuLS_USwVVRUvY
 class BLINK_PLATFORM_EXPORT ChildPendingURLLoaderFactoryBundle
     : public blink::PendingURLLoaderFactoryBundle {
  public:
@@ -49,6 +57,8 @@ class BLINK_PLATFORM_EXPORT ChildPendingURLLoaderFactoryBundle
           pending_prefetch_loader_factory,
       mojo::PendingRemote<network::mojom::URLLoaderFactory>
           pending_topics_loader_factory,
+      mojo::PendingRemote<network::mojom::URLLoaderFactory>
+          pending_keep_alive_loader_factory,
       bool bypass_redirect_checks);
   ChildPendingURLLoaderFactoryBundle(
       const ChildPendingURLLoaderFactoryBundle&) = delete;
@@ -67,6 +77,7 @@ class BLINK_PLATFORM_EXPORT ChildPendingURLLoaderFactoryBundle
             {},       // pending_isolated_world_factories
             {},       // pending_prefetch_loader_factory
             {},       // pending_topics_loader_factory
+            {},       // pending_keep_alive_loader_factory
             false));  // bypass_redirect_checks
     return pending_bundle;
   }
@@ -81,6 +92,11 @@ class BLINK_PLATFORM_EXPORT ChildPendingURLLoaderFactoryBundle
     return pending_topics_loader_factory_;
   }
 
+  mojo::PendingRemote<network::mojom::URLLoaderFactory>&
+  pending_keep_alive_loader_factory() {
+    return pending_keep_alive_loader_factory_;
+  }
+
  protected:
   // PendingURLLoaderFactoryBundle overrides.
   scoped_refptr<network::SharedURLLoaderFactory> CreateFactory() override;
@@ -90,6 +106,9 @@ class BLINK_PLATFORM_EXPORT ChildPendingURLLoaderFactoryBundle
 
   mojo::PendingRemote<network::mojom::URLLoaderFactory>
       pending_topics_loader_factory_;
+
+  mojo::PendingRemote<network::mojom::URLLoaderFactory>
+      pending_keep_alive_loader_factory_;
 };
 
 // This class extends URLLoaderFactoryBundle to support prefetch loader factory
@@ -126,6 +145,9 @@ class BLINK_PLATFORM_EXPORT ChildURLLoaderFactoryBundle
   void SetTopicsLoaderFactory(
       mojo::PendingRemote<network::mojom::URLLoaderFactory>
           topics_loader_factory);
+  void SetKeepAliveLoaderFactory(
+      mojo::PendingRemote<network::mojom::URLLoaderFactory>
+          keep_alive_loader_factory);
 
   virtual bool IsHostChildURLLoaderFactoryBundle() const;
 
@@ -135,6 +157,7 @@ class BLINK_PLATFORM_EXPORT ChildURLLoaderFactoryBundle
  private:
   mojo::Remote<network::mojom::URLLoaderFactory> prefetch_loader_factory_;
   mojo::Remote<network::mojom::URLLoaderFactory> topics_loader_factory_;
+  mojo::Remote<network::mojom::URLLoaderFactory> keep_alive_loader_factory_;
 
   std::map<GURL, mojom::TransferrableURLLoaderPtr> subresource_overrides_;
 };

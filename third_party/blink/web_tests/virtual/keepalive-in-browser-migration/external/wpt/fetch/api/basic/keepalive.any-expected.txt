@@ -1,0 +1,9 @@
+This is a testharness.js-based test.
+PASS simple GET request: no payload; setting up
+PASS simple POST request: no payload; setting up
+PASS keepalive in onunload in nested frame in another window; setting up
+PASS simple GET request: no payload
+PASS simple POST request: no payload
+FAIL keepalive in onunload in nested frame in another window assert_unreached: Error: assert_equals: expected (string) "on" but got (object) null Reached unreachable code
+Harness: the test ran to completion.
+

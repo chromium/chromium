@@ -1424,7 +1424,9 @@ std::unique_ptr<URLLoader> ResourceFetcher::CreateURLLoader(
 
   scoped_refptr<base::SingleThreadTaskRunner> task_runner =
       unfreezable_task_runner_;
-  if (request.GetKeepalive()) {
+  if (!base::FeatureList::IsEnabled(
+          blink::features::kKeepAliveInBrowserMigration) &&
+      request.GetKeepalive()) {
     // Set the `task_runner` to the `AgentGroupScheduler`'s task-runner for
     // keepalive fetches because we want it to keep running even after the
     // frame is detached. It's pretty fragile to do that with the
@@ -1964,7 +1966,9 @@ void ResourceFetcher::ClearContext() {
   // first choice font failed to load).
   StopFetching();
 
-  if (!loaders_.empty() || !non_blocking_loaders_.empty()) {
+  if ((!loaders_.empty() || !non_blocking_loaders_.empty()) &&
+      !base::FeatureList::IsEnabled(
+          blink::features::kKeepAliveInBrowserMigration)) {
     // There are some keepalive requests.
     // The use of WrapPersistent creates a reference cycle intentionally,
     // to keep the ResourceFetcher and ResourceLoaders alive until the requests
@@ -2346,7 +2350,12 @@ void ResourceFetcher::RemoveResourceLoader(ResourceLoader* loader) {
 }
 
 void ResourceFetcher::StopFetching() {
-  StopFetchingInternal(StopFetchingTarget::kExcludingKeepaliveLoaders);
+  if (base::FeatureList::IsEnabled(
+          blink::features::kKeepAliveInBrowserMigration)) {
+    StopFetchingInternal(StopFetchingTarget::kIncludingKeepaliveLoaders);
+  } else {
+    StopFetchingInternal(StopFetchingTarget::kExcludingKeepaliveLoaders);
+  }
 }
 
 void ResourceFetcher::SetDefersLoading(LoaderFreezeMode mode) {

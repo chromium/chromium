@@ -10,6 +10,7 @@
 #include "services/network/public/cpp/wrapper_shared_url_loader_factory.h"
 #include "services/network/public/mojom/url_loader_factory.mojom-blink.h"
 #include "third_party/blink/public/common/blob/blob_utils.h"
+#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/mojom/fetch/fetch_api_request.mojom-blink.h"
 #include "third_party/blink/public/platform/modules/service_worker/web_service_worker_network_provider.h"
 #include "third_party/blink/public/platform/platform.h"
@@ -183,7 +184,8 @@ void LoaderFactoryForFrame::IssueKeepAliveHandleIfRequested(
     mojom::blink::LocalFrameHost& local_frame_host,
     mojo::PendingReceiver<mojom::blink::KeepAliveHandle> pending_receiver) {
   DCHECK(pending_receiver);
-  if (request.GetKeepalive() && keep_alive_handle_factory_.is_bound()) {
+  if (!base::FeatureList::IsEnabled(features::kKeepAliveInBrowserMigration) &&
+      request.GetKeepalive() && keep_alive_handle_factory_.is_bound()) {
     keep_alive_handle_factory_->IssueKeepAliveHandle(
         std::move(pending_receiver));
   }

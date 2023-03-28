@@ -254,6 +254,10 @@ interface NavigationClient {
   // (https://github.com/patcg-individual-drafts/topics) via the browser
   // process.
   //
+  // |keep_alive_loader_factory| is used to handle fetch keepalive requests via
+  // the browser process.
+  // See https://docs.google.com/document/d/1ZzxMMBvpqn8VZBZKnb7Go8TWjnrGcXuLS_USwVVRUvY
+  //
   // For automation driver-initiated navigations over the devtools protocol,
   // |devtools_navigation_token_| is used to tag the navigation. This navigation
   // token is then sent into the renderer and lands on the DocumentLoader. That
@@ -282,6 +286,7 @@ interface NavigationClient {
       blink.mojom.ServiceWorkerContainerInfoForClient? container_info,
       pending_remote<network.mojom.URLLoaderFactory>? prefetch_loader_factory,
       pending_remote<network.mojom.URLLoaderFactory>? topics_loader_factory,
+      pending_remote<network.mojom.URLLoaderFactory>? keep_alive_loader_factory,
       blink.mojom.DocumentToken document_token,
       mojo_base.mojom.UnguessableToken devtools_navigation_token,
       array<blink.mojom.ParsedPermissionsPolicyDeclaration>? permissions_policy,

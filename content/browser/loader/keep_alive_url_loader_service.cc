@@ -8,7 +8,6 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/trace_event/trace_event.h"
-#include "content/browser/loader/keep_alive_url_loader.h"
 #include "content/browser/url_loader_factory_getter.h"
 #include "content/public/browser/browser_thread.h"
 #include "mojo/public/cpp/bindings/message.h"
@@ -156,6 +155,10 @@ void KeepAliveURLLoaderService::KeepAliveURLLoaderFactory::CreateLoaderAndStart(
   raw_loader->set_on_delete_callback(
       base::BindOnce(&KeepAliveURLLoaderService::RemoveLoader,
                      base::Unretained(service_), receiver_id));
+  if (service_->loader_test_observer_) {
+    raw_loader->SetObserverForTesting(     // IN-TEST
+        service_->loader_test_observer_);  // IN-TEST
+  }
 }
 
 void KeepAliveURLLoaderService::KeepAliveURLLoaderFactory::Clone(
@@ -219,6 +222,11 @@ size_t KeepAliveURLLoaderService::NumLoadersForTesting() const {
 
 size_t KeepAliveURLLoaderService::NumDisconnectedLoadersForTesting() const {
   return disconnected_loaders_.size();
+}
+
+void KeepAliveURLLoaderService::SetLoaderObserverForTesting(
+    scoped_refptr<KeepAliveURLLoader::TestObserver> observer) {
+  loader_test_observer_ = observer;
 }
 
 }  // namespace content

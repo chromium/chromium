@@ -1904,5 +1904,20 @@
     ],
     "args": ["--disable-blink-features=AbortSignalComposition"],
     "expires": "Dec 21, 2023"
+  },
+  {
+    "prefix": "keepalive-in-browser-migration",
+    "platforms": ["Linux", "Mac", "Win"],
+    "bases": [
+      "external/wpt/background-fetch/",
+      "external/wpt/beacon/beacon-basic.https.window.js",
+      "external/wpt/beacon/beacon-navigate.https.window.js",
+      "external/wpt/fetch/",
+      "external/wpt/xhr/"
+    ],
+    "args": [
+      "--enable-features=KeepAliveInBrowserMigration"
+    ],
+    "expires": "Dec 1, 2023"
   }
 ]

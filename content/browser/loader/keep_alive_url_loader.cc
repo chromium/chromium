@@ -133,6 +133,10 @@ void KeepAliveURLLoader::OnReceiveResponse(
   // invalidate `forwarding_client_`.
   if (forwarding_client_) {
     // The renderer is alive, forwards the action.
+    if (observer_for_testing_) {
+      observer_for_testing_->OnReceiveResponseForwarded(this);
+    }
+
     // The receiver may fail to finish reading `response`, so response caching
     // is not guaranteed.
     forwarding_client_->OnReceiveResponse(std::move(response), std::move(body),
@@ -140,6 +144,10 @@ void KeepAliveURLLoader::OnReceiveResponse(
     // TODO(crbug.com/1422645): Ensure that attributionsrc response handling is
     // migrated to browser process.
     return;
+  }
+
+  if (observer_for_testing_) {
+    observer_for_testing_->OnReceiveResponseProcessed(this);
   }
 
   // No need to wait for `OnComplete()`.
@@ -215,7 +223,19 @@ void KeepAliveURLLoader::OnComplete(
 
   if (forwarding_client_) {
     // The renderer is alive, forwards the action.
+    if (observer_for_testing_) {
+      observer_for_testing_->OnCompleteForwarded(this);
+    }
+
     forwarding_client_->OnComplete(completion_status);
+    DeleteSelf();
+    // DO NOT touch any members after this line. `this` is already deleted.
+    return;
+  }
+
+  // TODO(crbug.com/1356128): Handle in the browser process.
+  if (observer_for_testing_) {
+    observer_for_testing_->OnCompleteProcessed(this);
   }
 
   DeleteSelf();
@@ -253,6 +273,11 @@ void KeepAliveURLLoader::OnRendererConnectionError() {
 void KeepAliveURLLoader::DeleteSelf() {
   CHECK(on_delete_callback_);
   std::move(on_delete_callback_).Run();
+}
+
+void KeepAliveURLLoader::SetObserverForTesting(
+    scoped_refptr<TestObserver> observer) {
+  observer_for_testing_ = observer;
 }
 
 }  // namespace content

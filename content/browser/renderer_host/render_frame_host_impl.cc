@@ -76,6 +76,7 @@
 #include "content/browser/installedapp/installed_app_provider_impl.h"
 #include "content/browser/interest_group/ad_auction_document_data.h"
 #include "content/browser/loader/file_url_loader_factory.h"
+#include "content/browser/loader/keep_alive_url_loader_service.h"
 #include "content/browser/loader/navigation_early_hints_manager.h"
 #include "content/browser/loader/prefetch_url_loader_service.h"
 #include "content/browser/log_console_message.h"
@@ -9683,6 +9684,7 @@ void RenderFrameHostImpl::CommitNavigation(
       }
     }
 
+    // Set up prefetch loader factory.
     std::unique_ptr<blink::PendingURLLoaderFactoryBundle>
         factory_bundle_for_prefetch;
     mojo::PendingRemote<network::mojom::URLLoaderFactory>
@@ -9751,6 +9753,37 @@ void RenderFrameHostImpl::CommitNavigation(
       }
     }
 
+    // Set up keepalive loader factory. It is used to proxy the keepalive
+    // requests, i.e. fetch(..., {keepalive: true}), via the browser process.
+    // See
+    // https://docs.google.com/document/d/1ZzxMMBvpqn8VZBZKnb7Go8TWjnrGcXuLS_USwVVRUvY/edit
+    // Note that this loader does not depend on `prefetch_loader_factory` nor
+    // `topics_loader_factory`.
+    mojo::PendingRemote<network::mojom::URLLoaderFactory>
+        keep_alive_loader_factory;
+    if (base::FeatureList::IsEnabled(
+            blink::features::kKeepAliveInBrowserMigration)) {
+      std::unique_ptr<blink::PendingURLLoaderFactoryBundle>
+          factory_bundle_for_keep_alive;
+
+      if (subresource_loader_factories) {
+        // Clone the factory bundle for keepalive.
+        auto bundle = base::MakeRefCounted<blink::URLLoaderFactoryBundle>(
+            std::move(subresource_loader_factories));
+        subresource_loader_factories = CloneFactoryBundle(bundle);
+        factory_bundle_for_keep_alive = CloneFactoryBundle(bundle);
+      }
+
+      if (factory_bundle_for_keep_alive) {
+        // Also setting up URLLoaderFactory for keepalive using the same loader
+        // factories.
+        auto* storage_partition = GetStoragePartition();
+        storage_partition->GetKeepAliveURLLoaderService()->BindFactory(
+            keep_alive_loader_factory.InitWithNewPipeAndPassReceiver(),
+            std::move(factory_bundle_for_keep_alive));
+      }
+    }
+
     mojom::NavigationClient* navigation_client =
         navigation_request->GetCommitNavigationClient();
 
@@ -9813,8 +9846,8 @@ void RenderFrameHostImpl::CommitNavigation(
         std::move(subresource_loader_factories),
         std::move(subresource_overrides), std::move(controller),
         std::move(container_info), std::move(prefetch_loader_factory),
-        std::move(topics_loader_factory), manifest_policy,
-        std::move(policy_container), *document_token,
+        std::move(topics_loader_factory), std::move(keep_alive_loader_factory),
+        manifest_policy, std::move(policy_container), *document_token,
         devtools_navigation_token);
     navigation_request->frame_tree_node()
         ->navigator()
@@ -12815,6 +12848,8 @@ void RenderFrameHostImpl::SendCommitNavigation(
     mojo::PendingRemote<network::mojom::URLLoaderFactory>
         prefetch_loader_factory,
     mojo::PendingRemote<network::mojom::URLLoaderFactory> topics_loader_factory,
+    mojo::PendingRemote<network::mojom::URLLoaderFactory>
+        keep_alive_loader_factory,
     const absl::optional<blink::ParsedPermissionsPolicy>& permissions_policy,
     blink::mojom::PolicyContainerPtr policy_container,
     const blink::DocumentToken& document_token,
@@ -12909,7 +12944,8 @@ void RenderFrameHostImpl::SendCommitNavigation(
       std::move(subresource_loader_factories), std::move(subresource_overrides),
       std::move(controller), std::move(container_info),
       std::move(prefetch_loader_factory), std::move(topics_loader_factory),
-      document_token, devtools_navigation_token, permissions_policy,
+      std::move(keep_alive_loader_factory), document_token,
+      devtools_navigation_token, permissions_policy,
       std::move(policy_container), std::move(code_cache_host),
       std::move(cookie_manager_info), std::move(storage_info),
       BuildCommitNavigationCallback(navigation_request));

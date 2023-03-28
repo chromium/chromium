@@ -1499,7 +1499,8 @@ RenderFrameImpl* RenderFrameImpl::CreateMainFrame(
         std::move(params->subresource_loader_factories),
         /*subresource_overrides=*/absl::nullopt,
         /*prefetch_loader_factory=*/mojo::NullRemote(),
-        /*topics_loader_factory=*/mojo::NullRemote());
+        /*topics_loader_factory=*/mojo::NullRemote(),
+        /*keep_alive_loader_factory=*/mojo::NullRemote());
   }
 
   return render_frame;
@@ -2529,6 +2530,8 @@ void RenderFrameImpl::CommitNavigation(
     mojo::PendingRemote<network::mojom::URLLoaderFactory>
         prefetch_loader_factory,
     mojo::PendingRemote<network::mojom::URLLoaderFactory> topics_loader_factory,
+    mojo::PendingRemote<network::mojom::URLLoaderFactory>
+        keep_alive_loader_factory,
     const blink::DocumentToken& document_token,
     const base::UnguessableToken& devtools_navigation_token,
     const absl::optional<blink::ParsedPermissionsPolicy>& permissions_policy,
@@ -2590,8 +2593,9 @@ void RenderFrameImpl::CommitNavigation(
       std::move(subresource_loader_factories), std::move(subresource_overrides),
       std::move(controller_service_worker_info), std::move(container_info),
       std::move(prefetch_loader_factory), std::move(topics_loader_factory),
-      std::move(code_cache_host), std::move(cookie_manager_info),
-      std::move(storage_info), std::move(document_state));
+      std::move(keep_alive_loader_factory), std::move(code_cache_host),
+      std::move(cookie_manager_info), std::move(storage_info),
+      std::move(document_state));
 
   // Handle a navigation that has a non-empty `data_url_as_string`, or perform
   // a "loadDataWithBaseURL" navigation, which is different from a normal data:
@@ -2709,6 +2713,8 @@ void RenderFrameImpl::CommitNavigationWithParams(
     mojo::PendingRemote<network::mojom::URLLoaderFactory>
         prefetch_loader_factory,
     mojo::PendingRemote<network::mojom::URLLoaderFactory> topics_loader_factory,
+    mojo::PendingRemote<network::mojom::URLLoaderFactory>
+        keep_alive_loader_factory,
     mojo::PendingRemote<blink::mojom::CodeCacheHost> code_cache_host,
     mojom::CookieManagerInfoPtr cookie_manager_info,
     mojom::StorageInfoPtr storage_info,
@@ -2724,7 +2730,8 @@ void RenderFrameImpl::CommitNavigationWithParams(
       CreateLoaderFactoryBundle(std::move(subresource_loader_factories),
                                 std::move(subresource_overrides),
                                 std::move(prefetch_loader_factory),
-                                std::move(topics_loader_factory));
+                                std::move(topics_loader_factory),
+                                std::move(keep_alive_loader_factory));
 
   DCHECK(new_loader_factories);
   DCHECK(new_loader_factories->HasBoundDefaultFactory());
@@ -2861,7 +2868,8 @@ void RenderFrameImpl::CommitFailedNavigation(
           std::move(subresource_loader_factories),
           absl::nullopt /* subresource_overrides */,
           mojo::NullRemote() /* prefetch_loader_factory */,
-          mojo::NullRemote() /* topics_loader_factory */);
+          mojo::NullRemote() /* topics_loader_factory */,
+          mojo::NullRemote() /* keep_alive_loader_factory */);
   DCHECK(new_loader_factories->HasBoundDefaultFactory());
 
   // Send the provisional load failure.
@@ -5516,8 +5524,9 @@ RenderFrameImpl::CreateLoaderFactoryBundle(
         subresource_overrides,
     mojo::PendingRemote<network::mojom::URLLoaderFactory>
         prefetch_loader_factory,
+    mojo::PendingRemote<network::mojom::URLLoaderFactory> topics_loader_factory,
     mojo::PendingRemote<network::mojom::URLLoaderFactory>
-        topics_loader_factory) {
+        keep_alive_loader_factory) {
   DCHECK(info);
   // We don't check `DCHECK(info->pending_default_factory())`, because it will
   // be missing for speculative frames (and in other cases where no subresource
@@ -5541,6 +5550,10 @@ RenderFrameImpl::CreateLoaderFactoryBundle(
   }
   if (topics_loader_factory) {
     loader_factories->SetTopicsLoaderFactory(std::move(topics_loader_factory));
+  }
+  if (keep_alive_loader_factory) {
+    loader_factories->SetKeepAliveLoaderFactory(
+        std::move(keep_alive_loader_factory));
   }
 
   return loader_factories;
@@ -6010,7 +6023,8 @@ void RenderFrameImpl::LoadHTMLStringForTesting(const std::string& html,
           network::NotImplementedURLLoaderFactory::Create()),
       /*subresource_overrides=*/absl::nullopt,
       /*prefetch_loader_factory=*/{},
-      /*topics_loader_factory=*/{});
+      /*topics_loader_factory=*/{},
+      /*keep_alive_loader_factory=*/{});
 
   auto navigation_params = std::make_unique<WebNavigationParams>();
   navigation_params->url = base_url;

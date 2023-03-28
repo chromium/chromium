@@ -87,6 +87,21 @@ class CONTENT_EXPORT KeepAliveURLLoader
   // Must be called immediately after creating a KeepAliveLoader.
   void set_on_delete_callback(OnDeleteCallback on_delete_callback);
 
+  // For testing only:
+  // TODO(crbug.com/1427366): Figure out alt to not rely on this in test.
+  class TestObserver : public base::RefCountedThreadSafe<TestObserver> {
+   public:
+    virtual void OnReceiveResponseForwarded(KeepAliveURLLoader* loader) = 0;
+    virtual void OnReceiveResponseProcessed(KeepAliveURLLoader* loader) = 0;
+    virtual void OnCompleteForwarded(KeepAliveURLLoader* loader) = 0;
+    virtual void OnCompleteProcessed(KeepAliveURLLoader* loader) = 0;
+
+   protected:
+    virtual ~TestObserver() = default;
+    friend class base::RefCountedThreadSafe<TestObserver>;
+  };
+  void SetObserverForTesting(scoped_refptr<TestObserver> observer);
+
  private:
   // Receives actions from renderer.
   // `network::mojom::URLLoader` overrides:
@@ -144,6 +159,10 @@ class CONTENT_EXPORT KeepAliveURLLoader
 
   // Whether `OnReceiveResponse()` has been called.
   bool has_received_response_ = false;
+
+  // For testing only:
+  // Not owned.
+  scoped_refptr<TestObserver> observer_for_testing_ = nullptr;
 };
 
 }  // namespace content

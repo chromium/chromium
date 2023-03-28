@@ -38,6 +38,8 @@ void NavigationClient::CommitNavigation(
     mojo::PendingRemote<network::mojom::URLLoaderFactory>
         prefetch_loader_factory,
     mojo::PendingRemote<network::mojom::URLLoaderFactory> topics_loader_factory,
+    mojo::PendingRemote<network::mojom::URLLoaderFactory>
+        keep_alive_loader_factory,
     const blink::DocumentToken& document_token,
     const base::UnguessableToken& devtools_navigation_token,
     const absl::optional<blink::ParsedPermissionsPolicy>& permissions_policy,
@@ -60,7 +62,8 @@ void NavigationClient::CommitNavigation(
       std::move(subresource_overrides),
       std::move(controller_service_worker_info), std::move(container_info),
       std::move(prefetch_loader_factory), std::move(topics_loader_factory),
-      document_token, devtools_navigation_token, permissions_policy,
+      std::move(keep_alive_loader_factory), document_token,
+      devtools_navigation_token, permissions_policy,
       std::move(policy_container), std::move(code_cache_host),
       std::move(cookie_manager_info), std::move(storage_info),
       std::move(callback));
