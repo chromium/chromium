@@ -4,6 +4,8 @@
 
 #include "ash/webui/personalization_app/personalization_app_ui.h"
 
+#include <string>
+
 #include "ash/constants/ash_features.h"
 #include "ash/public/cpp/ambient/ambient_client.h"
 #include "ash/public/cpp/wallpaper/wallpaper_controller.h"
@@ -38,10 +40,8 @@ namespace ash::personalization_app {
 
 namespace {
 
-inline constexpr char kGooglePhotosURL[] = "https://photos.google.com";
-
-GURL GetGooglePhotosURL() {
-  return GURL(kGooglePhotosURL);
+std::u16string GetGooglePhotosURL() {
+  return u"https://photos.google.com";
 }
 
 bool IsAmbientModeAllowed() {
@@ -297,16 +297,18 @@ void AddStrings(content::WebUIDataSource* source) {
 
   source->AddLocalizedStrings(kLocalizedStrings);
 
+  source->AddString("googlePhotosURL", GetGooglePhotosURL());
+
   source->AddString(
       "ambientModeAlbumsSubpageGooglePhotosTitle",
       l10n_util::GetStringFUTF16(
           IDS_PERSONALIZATION_APP_AMBIENT_MODE_ALBUMS_SUBPAGE_GOOGLE_PHOTOS_TITLE,
-          base::UTF8ToUTF16(GetGooglePhotosURL().spec())));
+          GetGooglePhotosURL()));
   source->AddString(
       "ambientModeAlbumsSubpageGooglePhotosNoAlbum",
       l10n_util::GetStringFUTF16(
           IDS_PERSONALIZATION_APP_AMBIENT_MODE_ALBUMS_SUBPAGE_GOOGLE_PHOTOS_NO_ALBUM,
-          base::UTF8ToUTF16(GetGooglePhotosURL().spec())));
+          GetGooglePhotosURL()));
 
   source->UseStringsJs();
   source->EnableReplaceI18nInJS();

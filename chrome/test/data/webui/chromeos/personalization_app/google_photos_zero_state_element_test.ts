@@ -34,11 +34,24 @@ suite('GooglePhotosZeroState', function() {
       googlePhotosZeroStateElement.tab = tab;
       await waitAfterNextRender(googlePhotosZeroStateElement);
 
+      const localizedLink =
+          googlePhotosZeroStateElement.shadowRoot!.querySelector(
+              'localized-link');
+
+      assertTrue(!!localizedLink, 'localized link exists');
+
+      // `localizedLink.localizedString` typescript type is string but is
+      // actually TrustedHTML.
+      assertTrue(
+          (localizedLink.localizedString as unknown) instanceof TrustedHTML,
+          'localizedLink has message set as TrustedHTML');
       assertEquals(
-          'No image available. To add photos, go to photos.google.com',
-          googlePhotosZeroStateElement.shadowRoot!.getElementById(
-                                                      'message')!.innerText,
-          'inner text matches');
+          'No image available. To add photos, go to ' +
+              '<a target="_blank" href="https://photos.google.com">' +
+              'photos.google.com</a>',
+          localizedLink.localizedString.toString(),
+          'localized link message matches');
+
       assertTrue(
           !!googlePhotosZeroStateElement.shadowRoot!.querySelector('img'),
           'img is shown');
@@ -50,10 +63,24 @@ suite('GooglePhotosZeroState', function() {
     googlePhotosZeroStateElement.tab = GooglePhotosTab.PHOTOS_BY_ALBUM_ID;
     await waitAfterNextRender(googlePhotosZeroStateElement);
 
+    const localizedLink =
+        googlePhotosZeroStateElement.shadowRoot!.querySelector(
+            'localized-link');
+
+    assertTrue(!!localizedLink, 'localized link exists');
+
+    // `localizedLink.localizedString` typescript type is string but is
+    // actually TrustedHTML.
+    assertTrue(
+        (localizedLink.localizedString as unknown) instanceof TrustedHTML,
+        'localizedLink has message set as TrustedHTML');
+
     assertEquals(
-        `This album doesn't have any photos. To add photos, go to photos.google.com`,
-        googlePhotosZeroStateElement.shadowRoot!.getElementById(
-                                                    'message')!.innerText,
+        `This album doesn't have any photos. ` +
+            'To add photos, go to ' +
+            '<a target="_blank" href="https://photos.google.com">' +
+            'photos.google.com</a>',
+        localizedLink.localizedString.toString(),
         'inner text matches on photos_by_album_id tab');
 
     assertTrue(
