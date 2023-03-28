@@ -73,26 +73,25 @@ class MockBrowserManager : public crosapi::BrowserManager {
 void ReturnEmptyGetBrowserInformation(
     const std::string& window_unique_id,
     crosapi::BrowserManager::GetBrowserInformationCallback callback) {
-  // Returns empty Lacros browser information.
+  // Returns empty lacros browser information.
   std::move(callback).Run({});
 }
 }  // namespace
 
-class ChromeDesksTemplatesDelegateTest : public testing::Test {
+class ChromeSavedDeskDelegateTest : public testing::Test {
  public:
-  ChromeDesksTemplatesDelegateTest()
+  ChromeSavedDeskDelegateTest()
       : user_manager_enabler_(std::make_unique<ash::FakeChromeUserManager>()) {}
 
-  ChromeDesksTemplatesDelegateTest(const ChromeDesksTemplatesDelegateTest&) =
+  ChromeSavedDeskDelegateTest(const ChromeSavedDeskDelegateTest&) = delete;
+  ChromeSavedDeskDelegateTest& operator=(const ChromeSavedDeskDelegateTest&) =
       delete;
-  ChromeDesksTemplatesDelegateTest& operator=(
-      const ChromeDesksTemplatesDelegateTest&) = delete;
 
-  ~ChromeDesksTemplatesDelegateTest() override = default;
+  ~ChromeSavedDeskDelegateTest() override = default;
 
   void SetUp() override {
-    // Create a test user and profile so the ChromeSavedDeskDelegate does
-    // not return empty result simply because of missing user profile.
+    // Create a test user and profile so the `ChromeSavedDeskDelegate` does not
+    // return empty result simply because of missing user profile.
     auto account_id = AccountId::FromUserEmail(kTestProfileEmail);
     const auto* user = GetFakeUserManager()->AddUser(account_id);
 
@@ -105,8 +104,8 @@ class ChromeDesksTemplatesDelegateTest : public testing::Test {
     ash::ProfileHelper::Get()->SetUserToProfileMappingForTesting(
         user, profile_.get());
 
-    // Set up Full Restore Save Handler so that ChromeSavedDeskDelegate can
-    // get launch info for a Lacros window.
+    // Set up `FullRestoreSaveHandler` so that `ChromeSavedDeskDelegate` can get
+    // launch info for a lacros window.
     full_restore::FullRestoreSaveHandler* save_handler = GetSaveHandler();
     save_handler->SetPrimaryProfilePath(profile_dir_.GetPath());
 
@@ -162,10 +161,10 @@ class ChromeDesksTemplatesDelegateTest : public testing::Test {
   user_manager::ScopedUserManager user_manager_enabler_;
 };
 
-TEST_F(ChromeDesksTemplatesDelegateTest, NullWindowReturnsEmptyAppLaunchData) {
+TEST_F(ChromeSavedDeskDelegateTest, NullWindowReturnsEmptyAppLaunchData) {
   base::RunLoop loop;
   chrome_saved_desk_delegate()->GetAppLaunchDataForSavedDesk(
-      /*window*/ nullptr,
+      /*window=*/nullptr,
       base::BindLambdaForTesting(
           [&](std::unique_ptr<app_restore::AppLaunchInfo> app_launch_info) {
             EXPECT_FALSE(app_launch_info);
@@ -174,15 +173,15 @@ TEST_F(ChromeDesksTemplatesDelegateTest, NullWindowReturnsEmptyAppLaunchData) {
   loop.Run();
 }
 
-TEST_F(ChromeDesksTemplatesDelegateTest,
+TEST_F(ChromeSavedDeskDelegateTest,
        EmptyLacrosWindowInfoReturnsEmptyAppLaunchData) {
   ASSERT_EQ(&mock_desks_client(), DesksClient::Get());
 
   std::unique_ptr<aura::Window> window =
       CreateLacrosWindow(base::NumberToString(kLacrosWindowId));
 
-  // Saves window info so that GetAppLaunchDataForDeskTemplate will attempt to
-  // get Lacros window information.
+  // Saves window info so that `GetAppLaunchDataForSavedDesk` will attempt to
+  // get lacros window information.
   SaveWindowInfo(window.get(), kActivationIndex1);
 
   EXPECT_CALL(mock_browser_manager(), IsRunning()).WillOnce(Return(true));
