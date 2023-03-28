@@ -116,15 +116,25 @@ bool IsWebChannelsEnabled();
 // Whether the Discover service is created early, alongside the app creation.
 bool IsDiscoverFeedServiceCreatedEarly();
 
-// Whether feed background refresh is enabled. Returns the value in
-// NSUserDefaults set by `SaveFeedBackgroundRefreshEnabledForNextColdStart()`.
-// This function always returns false if the `IOS_BACKGROUND_MODE_ENABLED`
-// buildflag is not defined.
+// Whether feed background refresh is enabled and the capability was enabled at
+// startup.
 bool IsFeedBackgroundRefreshEnabled();
 
-// Saves the current value for feature `kEnableFeedBackgroundRefresh`. This call
+// Whether feed background refresh capability is enabled. Returns the value in
+// NSUserDefaults set by
+// `SaveFeedBackgroundRefreshCapabilityEnabledForNextColdStart()`. This is used
+// because registering for background refreshes must happen early in app
+// initialization and FeatureList is not yet available. Enabling or disabling
+// background refresh features will always take effect after two cold starts
+// after the feature has been changed on the server (once for the Finch
+// configuration, and another for reading the stored value from NSUserDefaults).
+// This function always returns false if the `IOS_BACKGROUND_MODE_ENABLED`
+// buildflag is not defined.
+bool IsFeedBackgroundRefreshCapabilityEnabled();
+
+// Saves whether any background refresh experiment is enabled. This call
 // DCHECKs on the availability of `base::FeatureList`.
-void SaveFeedBackgroundRefreshEnabledForNextColdStart();
+void SaveFeedBackgroundRefreshCapabilityEnabledForNextColdStart();
 
 // Sets `timestamp` for key `NSUserDefaultsKey` to be displayed in Experimental
 // Settings in the Settings App. This is not available in stable.
@@ -174,7 +184,7 @@ bool IsFeedSessionCloseForegroundRefreshEnabled();
 bool IsFeedAppCloseForegroundRefreshEnabled();
 
 // Whether feed is refreshed in the background soon after the app is
-// backgrounded.
+// backgrounded, and the capability was enabled at startup.
 bool IsFeedAppCloseBackgroundRefreshEnabled();
 
 // Returns the engagement criteria type for a feed refresh.
