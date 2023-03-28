@@ -11,7 +11,6 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace content {
-class BackgroundTracingConfig;
 
 // This can be implemented by the embedder to provide functionality for the
 // about://tracing WebUI.
@@ -21,11 +20,12 @@ class CONTENT_EXPORT TracingDelegate {
 
   // This can be used to veto a particular background tracing scenario.
   virtual bool IsAllowedToBeginBackgroundScenario(
-      const BackgroundTracingConfig& config,
-      bool requires_anonymized_data);
+      const std::string& scenario_name,
+      bool requires_anonymized_data,
+      bool is_crash_scenario);
 
   virtual bool IsAllowedToEndBackgroundScenario(
-      const content::BackgroundTracingConfig& config,
+      const std::string& scenario_name,
       bool requires_anonymized_data,
       bool is_crash_scenario);
 

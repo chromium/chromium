@@ -162,7 +162,8 @@ bool BackgroundTracingManagerImpl::SetActiveScenarioWithReceiveCallback(
   // TODO(oysteine): Retry when time_until_allowed has elapsed.
   if (config_impl && delegate_ &&
       !delegate_->IsAllowedToBeginBackgroundScenario(
-          *config_impl.get(), requires_anonymized_data)) {
+          config_impl->scenario_name(), requires_anonymized_data,
+          config_impl->has_crash_scenario())) {
     return false;
   }
 
@@ -364,7 +365,7 @@ bool BackgroundTracingManagerImpl::IsAllowedFinalization(
   return !delegate_ ||
          (active_scenario_ &&
           delegate_->IsAllowedToEndBackgroundScenario(
-              *active_scenario_->GetConfig(),
+              active_scenario_->GetConfig()->scenario_name(),
               active_scenario_->GetConfig()->requires_anonymized_data(),
               is_crash_scenario));
 }

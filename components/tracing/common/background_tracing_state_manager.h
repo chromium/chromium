@@ -16,10 +16,6 @@ namespace android_webview {
 class AwTracingDelegateTest;
 }
 
-namespace content {
-class BackgroundTracingConfig;
-}
-
 namespace tracing {
 
 class BackgroundTracingStateManagerTest;
@@ -60,8 +56,7 @@ class COMPONENT_EXPORT(BACKGROUND_TRACING_UTILS) BackgroundTracingStateManager {
 
   // True if the embedder uploaded a trace for the given |config| recently, and
   // uploads should be throttled for the |config|.
-  bool DidRecentlyUploadForScenario(
-      const content::BackgroundTracingConfig& config) const;
+  bool DidRecentlyUploadForScenario(const std::string& scenario_name) const;
 
   // The embedder should call this method every time background tracing starts
   // so that the state in prefs is updated. Posts a timer task to the current

@@ -152,11 +152,10 @@ bool BackgroundTracingStateManager::DidLastSessionEndUnexpectedly() const {
 }
 
 bool BackgroundTracingStateManager::DidRecentlyUploadForScenario(
-    const content::BackgroundTracingConfig& config) const {
+    const std::string& scenario_name) const {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   DCHECK(initialized_);
-  std::string stripped_scenario_name =
-      StripScenarioName(config.scenario_name());
+  std::string stripped_scenario_name = StripScenarioName(scenario_name);
   auto it = scenario_last_upload_timestamp_.find(stripped_scenario_name);
   if (it != scenario_last_upload_timestamp_.end()) {
     return (base::Time::Now() - it->second) <=

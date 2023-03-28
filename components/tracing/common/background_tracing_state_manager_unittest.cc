@@ -147,7 +147,7 @@ TEST_F(BackgroundTracingStateManagerTest, NotUploadedRecently) {
       content::BackgroundTracingConfig::FromDict(std::move(dict)));
 
   EXPECT_FALSE(tracing::BackgroundTracingStateManager::GetInstance()
-                   .DidRecentlyUploadForScenario(*config));
+                   .DidRecentlyUploadForScenario(config->scenario_name()));
 }
 
 TEST_F(BackgroundTracingStateManagerTest, UploadedRecently) {
@@ -174,7 +174,7 @@ TEST_F(BackgroundTracingStateManagerTest, UploadedRecently) {
       content::BackgroundTracingConfig::FromDict(std::move(dict)));
 
   EXPECT_TRUE(tracing::BackgroundTracingStateManager::GetInstance()
-                  .DidRecentlyUploadForScenario(*config));
+                  .DidRecentlyUploadForScenario(config->scenario_name()));
 }
 
 TEST_F(BackgroundTracingStateManagerTest, NotifyTracingStarted) {

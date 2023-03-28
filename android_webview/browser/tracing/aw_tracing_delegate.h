@@ -24,13 +24,12 @@ class AwTracingDelegate : public content::TracingDelegate {
   static void RegisterPrefs(PrefRegistrySimple* registry);
 
   // content::TracingDelegate implementation:
-  bool IsAllowedToBeginBackgroundScenario(
-      const content::BackgroundTracingConfig& config,
-      bool requires_anonymized_data) override;
-  bool IsAllowedToEndBackgroundScenario(
-      const content::BackgroundTracingConfig& config,
-      bool requires_anonymized_data,
-      bool is_crash_scenario) override;
+  bool IsAllowedToBeginBackgroundScenario(const std::string& scenario_name,
+                                          bool requires_anonymized_data,
+                                          bool is_crash_scenario) override;
+  bool IsAllowedToEndBackgroundScenario(const std::string& scenario_name,
+                                        bool requires_anonymized_data,
+                                        bool is_crash_scenario) override;
   absl::optional<base::Value::Dict> GenerateMetadataDict() override;
 };
 

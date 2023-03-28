@@ -37,8 +37,9 @@ void AwTracingDelegate::RegisterPrefs(PrefRegistrySimple* registry) {
 }
 
 bool AwTracingDelegate::IsAllowedToBeginBackgroundScenario(
-    const content::BackgroundTracingConfig& config,
-    bool requires_anonymized_data) {
+    const std::string& scenario_name,
+    bool requires_anonymized_data,
+    bool is_crash_scenario) {
   // If the background tracing is specified on the command-line, we allow
   // any scenario to be traced and uploaded.
   if (IsBackgroundTracingCommandLine())
@@ -67,7 +68,7 @@ bool AwTracingDelegate::IsAllowedToBeginBackgroundScenario(
 
   // Check the trace limit both when starting and ending a scenario
   // because there is no point starting a trace that can't be uploaded.
-  if (state.DidRecentlyUploadForScenario(config)) {
+  if (state.DidRecentlyUploadForScenario(scenario_name)) {
     tracing::RecordDisallowedMetric(
         tracing::TracingFinalizationDisallowedReason::kTraceUploadedRecently);
     return false;
@@ -78,7 +79,7 @@ bool AwTracingDelegate::IsAllowedToBeginBackgroundScenario(
 }
 
 bool AwTracingDelegate::IsAllowedToEndBackgroundScenario(
-    const content::BackgroundTracingConfig& config,
+    const std::string& scenario_name,
     bool requires_anonymized_data,
     bool is_crash_scenario) {
   // If the background tracing is specified on the command-line, we allow
@@ -92,13 +93,13 @@ bool AwTracingDelegate::IsAllowedToEndBackgroundScenario(
 
   // Check the trace limit both when starting and ending a scenario
   // because there is no point starting a trace that can't be uploaded.
-  if (state.DidRecentlyUploadForScenario(config)) {
+  if (state.DidRecentlyUploadForScenario(scenario_name)) {
     tracing::RecordDisallowedMetric(
         tracing::TracingFinalizationDisallowedReason::kTraceUploadedRecently);
     return false;
   }
 
-  state.OnScenarioUploaded(config.scenario_name());
+  state.OnScenarioUploaded(scenario_name);
   return true;
 }
 

@@ -70,9 +70,10 @@ TEST_F(AwTracingDelegateTest, IsAllowedToBegin) {
   auto config = CreateValidConfig();
 
   EXPECT_TRUE(delegate_.IsAllowedToBeginBackgroundScenario(
-      *config, /*requires_anonymized_data=*/false));
+      config->scenario_name(), /*requires_anonymized_data=*/false,
+      /*is_crash_scenario=*/false));
   EXPECT_TRUE(delegate_.IsAllowedToEndBackgroundScenario(
-      *config, /*requires_anonymized_data=*/false,
+      config->scenario_name(), /*requires_anonymized_data=*/false,
       /*is_crash_scenario=*/false));
 }
 
@@ -86,7 +87,8 @@ TEST_F(AwTracingDelegateTest, IsAllowedToBeginSessionEndedUnexpectedly) {
   auto config = CreateValidConfig();
 
   EXPECT_FALSE(delegate_.IsAllowedToBeginBackgroundScenario(
-      *config, /*requires_anonymized_data=*/false));
+      config->scenario_name(), /*requires_anonymized_data=*/false,
+      /*is_crash_scenario=*/false));
 }
 
 TEST_F(AwTracingDelegateTest, IsAllowedToBeginRecentlyUploaded) {
@@ -96,7 +98,8 @@ TEST_F(AwTracingDelegateTest, IsAllowedToBeginRecentlyUploaded) {
 
   auto config = CreateValidConfig();
   EXPECT_FALSE(delegate_.IsAllowedToBeginBackgroundScenario(
-      *config, /*requires_anonymized_data=*/false));
+      config->scenario_name(), /*requires_anonymized_data=*/false,
+      /*is_crash_scenario=*/false));
 }
 
 TEST_F(AwTracingDelegateTest, IsAllowedToEndRecentlyUploaded) {
@@ -106,8 +109,8 @@ TEST_F(AwTracingDelegateTest, IsAllowedToEndRecentlyUploaded) {
 
   auto config = CreateValidConfig();
   EXPECT_FALSE(delegate_.IsAllowedToEndBackgroundScenario(
-      *config, /*requires_anonymized_data=*/false,
-      /*is_crash_scenario*/ false));
+      config->scenario_name(), /*requires_anonymized_data=*/false,
+      /*is_crash_scenario=*/false));
 }
 
 }  // namespace android_webview

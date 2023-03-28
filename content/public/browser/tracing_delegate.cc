@@ -10,13 +10,14 @@
 namespace content {
 
 bool TracingDelegate::IsAllowedToBeginBackgroundScenario(
-    const BackgroundTracingConfig& config,
-    bool requires_anonymized_data) {
+    const std::string& scenario_name,
+    bool requires_anonymized_data,
+    bool is_crash_scenario) {
   return false;
 }
 
 bool TracingDelegate::IsAllowedToEndBackgroundScenario(
-    const content::BackgroundTracingConfig& config,
+    const std::string& scenario_name,
     bool requires_anonymized_data,
     bool is_crash_scenario) {
   return false;
