@@ -661,6 +661,24 @@ TEST_F(WindowFloatTest, FloatWindowWorkAreaConsiderations) {
             docked_magnifier_controller->GetMagnifierHeightForTesting());
 }
 
+// Tests that if we unminimize a window that was floated and another window has
+// since been floated, unminimizing the window would not float it.
+TEST_F(WindowFloatTest, UnminimzeWithFloatedWindow) {
+  // Create two windows and float the second one and then minimize it.
+  auto window1 = CreateAppWindow();
+  auto window2 = CreateFloatedWindow();
+  WindowState::Get(window2.get())->Minimize();
+
+  ASSERT_EQ(window1.get(), window_util::GetActiveWindow());
+  PressAndReleaseKey(ui::VKEY_F, ui::EF_ALT_DOWN | ui::EF_COMMAND_DOWN);
+  ASSERT_TRUE(WindowState::Get(window1.get())->IsFloated());
+
+  // On unminimizing `window2`, we do not float it even if its pre-minimized
+  // state is floated, as doing so would unfloat `window1`.
+  WindowState::Get(window2.get())->Unminimize();
+  EXPECT_TRUE(WindowState::Get(window1.get())->IsFloated());
+}
+
 // Test that floated window are not blocking keyboard events when it's on an
 // inactive desk.
 TEST_F(WindowFloatTest, FloatWindowShouldNotBlockKeyboardEvents) {

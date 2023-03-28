@@ -814,6 +814,17 @@ WindowStateType WindowState::GetRestoreWindowState() const {
                         : state->window_state_type;
   }
 
+  // Floated state has a limitation of one floated window per desk. So if we try
+  // to restore a window to floated state, and there is a existing floated
+  // window on the desk, we do not float the window as doing so would unfloat
+  // the existing floated window.
+  if (IsMinimized() && restore_state == WindowStateType::kFloated) {
+    if (window_util::GetFloatedWindowForActiveDesk()) {
+      return IsTabletModeEnabled() ? GetMaximizedOrCenteredWindowType()
+                                   : WindowStateType::kNormal;
+    }
+  }
+
   // Different with the restore behaviors in clamshell mode, a window can not be
   // restored to kNormal window state if it's a maximize-able window.
   // We should still be able to restore a fullscreen/minimized/snapped window to
