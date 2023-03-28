@@ -225,6 +225,7 @@ template("build_webui") {
       in_files = html_files
       minify = optimize
 
+      scheme = "relative"
       if (defined(invoker.html_to_wrapper_scheme)) {
         scheme = invoker.html_to_wrapper_scheme
       }

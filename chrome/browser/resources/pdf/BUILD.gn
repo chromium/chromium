@@ -99,6 +99,8 @@ build_webui("build") {
 
   icons_html_files = [ "elements/icons.html" ]
 
+  html_to_wrapper_scheme = "chrome"
+
   # TypeScript Compiler parameters
   ts_composite = true
   ts_definitions = [
