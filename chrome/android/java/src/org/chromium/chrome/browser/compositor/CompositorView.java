@@ -375,6 +375,18 @@ public class CompositorView
         createCompositorSurfaceManager();
     }
 
+    /**
+     * Enables/disables immersive VR overlay mode, a variant of overlay video mode.
+     * @param enabled Whether to enter or leave overlay immersive vr mode.
+     */
+    public void setOverlayVrMode(boolean enabled) {
+        mIsInXr = enabled;
+
+        // We're essentially entering OverlayVideo mode because we're going to be rendering to an
+        // overlay, but we don't actually need a new composite or to adjust the alpha blend.
+        mCompositorSurfaceManager.requestSurface(getSurfacePixelFormat());
+    }
+
     private int getSurfacePixelFormat() {
         if (mOverlayVideoEnabled || mAlwaysTranslucent) {
             return PixelFormat.TRANSLUCENT;

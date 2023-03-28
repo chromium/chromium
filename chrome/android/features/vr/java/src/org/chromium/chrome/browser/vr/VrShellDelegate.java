@@ -33,8 +33,10 @@ import org.chromium.base.library_loader.LibraryLoader;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplierImpl;
+import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.app.ChromeActivity;
+import org.chromium.chrome.browser.compositor.CompositorViewHolder;
 import org.chromium.chrome.browser.customtabs.CustomTabActivity;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.webapps.WebappActivity;
@@ -383,6 +385,12 @@ public class VrShellDelegate implements View.OnSystemUiVisibilityChangeListener 
         // Hide system UI.
         VrModuleProvider.getDelegate().setSystemUiVisibilityForVr(mActivity);
 
+        Supplier<CompositorViewHolder> compositorViewHolderSupplier =
+                mActivity.getCompositorViewHolderSupplier();
+        if (compositorViewHolderSupplier.hasValue()) {
+            compositorViewHolderSupplier.get().getCompositorView().setOverlayVrMode(true);
+        }
+
         // Set correct orientation.
         if (mRestoreOrientation == null) {
             mRestoreOrientation = mActivity.getRequestedOrientation();
@@ -409,7 +417,11 @@ public class VrShellDelegate implements View.OnSystemUiVisibilityChangeListener 
                     flags & ~VrDelegate.VR_SYSTEM_UI_FLAGS);
         }
         mRestoreSystemUiVisibility = false;
-
+        Supplier<CompositorViewHolder> compositorViewHolderSupplier =
+                mActivity.getCompositorViewHolderSupplier();
+        if (compositorViewHolderSupplier.hasValue()) {
+            compositorViewHolderSupplier.get().getCompositorView().setOverlayVrMode(false);
+        }
         mActivity.getWindow().getAttributes().rotationAnimation =
                 WindowManager.LayoutParams.ROTATION_ANIMATION_ROTATE;
     }
