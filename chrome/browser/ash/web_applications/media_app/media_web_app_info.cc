@@ -226,13 +226,10 @@ const char* PhotosExperienceSurveyTrigger::google_photos_app_id =
 }  // namespace
 
 MediaSystemAppDelegate::MediaSystemAppDelegate(Profile* profile)
-    : ash::SystemWebAppDelegate(
-          ash::SystemWebAppType::MEDIA,
-          "Media",
-          GURL("chrome://media-app/pwa.html"),
-          profile,
-          ash::OriginTrialsMap(
-              {{ash::GetOrigin("chrome://media-app"), {"FileHandling"}}})) {
+    : ash::SystemWebAppDelegate(ash::SystemWebAppType::MEDIA,
+                                "Media",
+                                GURL("chrome://media-app/pwa.html"),
+                                profile) {
   // Tie survey registration to SWA registration. That is, the delegate map
   // owned by SystemWebAppManager, which is created at startup.
   PhotosExperienceSurveyTrigger::Register(profile);

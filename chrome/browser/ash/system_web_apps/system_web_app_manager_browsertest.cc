@@ -278,9 +278,6 @@ class SystemWebAppManagerFileHandlingBrowserTestBase
 
   explicit SystemWebAppManagerFileHandlingBrowserTestBase(
       IncludeLaunchDirectory include_launch_directory) {
-    scoped_feature_blink_api_.InitWithFeatures(
-        {blink::features::kFileHandlingAPI}, {});
-
     maybe_installation_ =
         TestSystemWebAppInstallation::SetUpAppThatReceivesLaunchFiles(
             include_launch_directory);
@@ -350,7 +347,6 @@ class SystemWebAppManagerFileHandlingBrowserTestBase
 
  private:
   base::test::ScopedFeatureList scoped_feature_web_app_provider_type_;
-  base::test::ScopedFeatureList scoped_feature_blink_api_;
 };
 
 class SystemWebAppManagerLaunchFilesBrowserTest
@@ -834,71 +830,6 @@ IN_PROC_BROWSER_TEST_P(
   // crashed, the following call will fail.
   EXPECT_TRUE(content::ExecuteScript(web_contents, "(function() {})();"));
 }
-
-class SystemWebAppManagerFileHandlingOriginTrialsBrowserTest
-    : public SystemWebAppManagerBrowserTest {
- public:
-  SystemWebAppManagerFileHandlingOriginTrialsBrowserTest()
-      : SystemWebAppManagerBrowserTest(/*install_mock=*/false) {
-    maybe_installation_ =
-        TestSystemWebAppInstallation::SetUpAppWithEnabledOriginTrials(
-            OriginTrialsMap({{GetOrigin(GURL("chrome://test-system-app/")),
-                              {"FileHandling"}}}));
-  }
-
-  ~SystemWebAppManagerFileHandlingOriginTrialsBrowserTest() override = default;
-
-  content::WebContents* LaunchWithTestFiles() {
-    // Create temporary directory and files.
-    base::ScopedAllowBlockingForTesting allow_blocking;
-    base::ScopedTempDir temp_directory;
-    CHECK(temp_directory.CreateUniqueTempDir());
-    base::FilePath temp_file_path;
-    CHECK(base::CreateTemporaryFileInDir(temp_directory.GetPath(),
-                                         &temp_file_path));
-
-    // Launch the App.
-    apps::AppLaunchParams params = LaunchParamsForApp(GetMockAppType());
-    params.launch_source = apps::LaunchSource::kFromChromeInternal;
-    params.launch_files = {temp_file_path};
-    params.override_url = GetStartUrl();
-
-    return SystemWebAppBrowserTestBase::LaunchApp(std::move(params));
-  }
-
-  bool WaitForLaunchParam(content::WebContents* web_contents) {
-    bool promise_resolved = false;
-    EXPECT_TRUE(content::ExecuteScriptAndExtractBool(
-        web_contents,
-        "launchQueue.setConsumer(launchParams => {"
-        "  domAutomationController.send(true);"
-        "});",
-        &promise_resolved));
-    return promise_resolved;
-  }
-
- private:
-  url::Origin GetOrigin(const GURL& url) { return url::Origin::Create(url); }
-};
-
-// Test that file handling works when the App is first installed.
-IN_PROC_BROWSER_TEST_P(SystemWebAppManagerFileHandlingOriginTrialsBrowserTest,
-                       PRE_FileHandlingWorks) {
-  WaitForTestSystemAppInstall();
-
-  content::WebContents* web_contents = LaunchWithTestFiles();
-  EXPECT_TRUE(WaitForLaunchParam(web_contents));
-}
-
-// Test that file handling works when after a version upgrade.
-IN_PROC_BROWSER_TEST_P(SystemWebAppManagerFileHandlingOriginTrialsBrowserTest,
-                       FileHandlingWorks) {
-  WaitForTestSystemAppInstall();
-
-  content::WebContents* web_contents = LaunchWithTestFiles();
-  EXPECT_TRUE(WaitForLaunchParam(web_contents));
-}
-
 class SystemWebAppManagerNotShownInLauncherTest
     : public SystemWebAppManagerBrowserTest {
  public:
@@ -1072,10 +1003,8 @@ class SystemWebAppManagerUninstallBrowserTest
       // Use an app with FileHandling enabled since it will perform extra setup
       // steps.
       maybe_installation_ =
-          TestSystemWebAppInstallation::SetUpAppWithEnabledOriginTrials(
-              OriginTrialsMap(
-                  {{url::Origin::Create(GURL("chrome://test-system-app/")),
-                    {"FileHandling"}}}));
+          TestSystemWebAppInstallation::SetUpAppThatReceivesLaunchFiles(
+              TestSystemWebAppInstallation::IncludeLaunchDirectory::kNo);
     } else {
       maybe_installation_ = TestSystemWebAppInstallation::SetUpWithoutApps();
     }
@@ -2020,9 +1949,6 @@ INSTANTIATE_SYSTEM_WEB_APP_TEST_SUITE_REGULAR_PREF_MIGRATION_P(
 
 INSTANTIATE_SYSTEM_WEB_APP_MANAGER_TEST_SUITE_REGULAR_PROFILE_P(
     SystemWebAppManagerOriginTrialsBrowserTest);
-
-INSTANTIATE_SYSTEM_WEB_APP_MANAGER_TEST_SUITE_REGULAR_PROFILE_P(
-    SystemWebAppManagerFileHandlingOriginTrialsBrowserTest);
 
 INSTANTIATE_SYSTEM_WEB_APP_MANAGER_TEST_SUITE_REGULAR_PROFILE_P(
     SystemWebAppManagerUninstallBrowserTest);

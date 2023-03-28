@@ -41,16 +41,18 @@ struct SystemAppLaunchParams {
   ~SystemAppLaunchParams();
 
   // If provided launches System Apps into |url|, instead of its start_url (as
-  // specified its WebAppInstallInfo). Mutually exclusive with non-empty
-  // |launch_paths|.
+  // specified its WebAppInstallInfo).
+  //
+  // This is mutually exclusive with non-empty |launch_paths|.
   absl::optional<GURL> url;
 
   // Where the app is launched from.
   apps::LaunchSource launch_source = apps::LaunchSource::kFromChromeInternal;
 
-  // If non-empty, specifies files passed to Web File Handling. Apps need to
-  // have "FileHandling" origin trial in its SystemAppInfo, and file handlers
-  // in its WebAppInstallInfo. Mutually exclusive with |url|.
+  // If non-empty, specifies files passed to Web File Handling. The app needs to
+  // specify file handlers in its WebAppInstallInfo.
+  //
+  // This is mutually exclusive with |url|.
   std::vector<base::FilePath> launch_paths;
 };
 

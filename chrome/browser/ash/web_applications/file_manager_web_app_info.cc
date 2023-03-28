@@ -149,13 +149,10 @@ std::unique_ptr<WebAppInstallInfo> CreateWebAppInfoForFileManager() {
 }
 
 FileManagerSystemAppDelegate::FileManagerSystemAppDelegate(Profile* profile)
-    : ash::SystemWebAppDelegate(
-          ash::SystemWebAppType::FILE_MANAGER,
-          "File Manager",
-          GURL(kChromeUIFileManagerURL),
-          profile,
-          ash::OriginTrialsMap(
-              {{ash::GetOrigin(kChromeUIFileManagerURL), {"FileHandling"}}})) {}
+    : ash::SystemWebAppDelegate(ash::SystemWebAppType::FILE_MANAGER,
+                                "File Manager",
+                                GURL(kChromeUIFileManagerURL),
+                                profile) {}
 
 std::unique_ptr<WebAppInstallInfo> FileManagerSystemAppDelegate::GetWebAppInfo()
     const {

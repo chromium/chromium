@@ -59,13 +59,10 @@ gfx::Rect GetDefaultBoundsForCameraApp(Browser*) {
 }
 
 CameraSystemAppDelegate::CameraSystemAppDelegate(Profile* profile)
-    : ash::SystemWebAppDelegate(
-          ash::SystemWebAppType::CAMERA,
-          "Camera",
-          GURL("chrome://camera-app/views/main.html"),
-          profile,
-          ash::OriginTrialsMap(
-              {{ash::GetOrigin("chrome://camera-app"), {"FileHandling"}}})) {}
+    : ash::SystemWebAppDelegate(ash::SystemWebAppType::CAMERA,
+                                "Camera",
+                                GURL("chrome://camera-app/views/main.html"),
+                                profile) {}
 
 std::unique_ptr<WebAppInstallInfo> CameraSystemAppDelegate::GetWebAppInfo()
     const {
