@@ -112,13 +112,6 @@ std::string BuildClientDataJson(ClientDataJsonParams params) {
     ret.append(R"("rpId":)");
     ret.append(ToJSONString(params.payment_rp));
 
-    // TODO(crbug.com/1356224): Remove legacy 'rp' parameter.
-    if (!base::FeatureList::IsEnabled(
-            features::kSecurePaymentConfirmationRemoveRpField)) {
-      ret.append(R"(,"rp":)");
-      ret.append(ToJSONString(params.payment_rp));
-    }
-
     ret.append(R"(,"topOrigin":)");
     ret.append(ToJSONString(params.payment_top_origin));
 
