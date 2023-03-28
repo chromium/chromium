@@ -8,6 +8,11 @@ const NON_TEXT_NODE_NAMES = new Set([
   'INPUT'
 ]);
 
+// Tags that should not be decorated.
+const NO_DECORATION_NODE_NAMES = new Set([
+  'A', 'LABEL'
+]);
+
 export {
-  NON_TEXT_NODE_NAMES,
+  NON_TEXT_NODE_NAMES, NO_DECORATION_NODE_NAMES,
 }

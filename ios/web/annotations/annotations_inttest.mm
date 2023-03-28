@@ -286,6 +286,32 @@ TEST_F(AnnotationTextManagerTest, DecorateText) {
             "</body></html>");
 }
 
+// Tests page decoration on no-decoration tags.
+// Covers: DecorateAnnotations, ConvertMatchToAnnotation.
+TEST_F(AnnotationTextManagerTest, NoDecorateText) {
+  LoadHtmlAndExtractText("<html><body>"
+                         "<p>text</p>"
+                         "<a>annotation1</a>"
+                         "<input type=\"radio\">"
+                         "<label>annotation2</label>"
+                         "<p>text</p>"
+                         "</body></html>");
+
+  std::string text = "\ntext"
+                     "annotation1"
+                     "annotation2"
+                     "\ntext";
+  EXPECT_EQ(text, observer()->extracted_text());
+
+  // Create annotation.
+  NSString* source = base::SysUTF8ToNSString(text);
+  CreateAndApplyAnnotations(source, @[ @"annotation1", @"annotation2" ],
+                            observer() -> seq_id());
+
+  EXPECT_EQ(observer()->successes(), 0);
+  EXPECT_EQ(observer()->annotations(), 2);
+}
+
 // Tests different annotation cases, including tags boundaries.
 // Covers: RemoveDecorations
 TEST_F(AnnotationTextManagerTest, DecorateTextCrossingElements) {
