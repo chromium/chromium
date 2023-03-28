@@ -10,6 +10,7 @@
 #import "ios/chrome/browser/main/test_browser.h"
 #import "ios/chrome/browser/ntp/new_tab_page_tab_helper.h"
 #import "ios/chrome/browser/ntp/new_tab_page_tab_helper_delegate.h"
+#import "ios/chrome/browser/prefs/pref_names.h"
 #import "ios/chrome/browser/snapshots/snapshot_browser_agent.h"
 #import "ios/chrome/browser/snapshots/snapshot_tab_helper.h"
 #import "ios/chrome/browser/tabs/features.h"
@@ -453,4 +454,58 @@ TEST_F(InactiveTabsUtilsTest, DoNotMoveNTPInInactive) {
 
   EXPECT_EQ(active_web_state_list->count(), 1);
   EXPECT_EQ(inactive_web_state_list->count(), 0);
+}
+
+TEST_F(InactiveTabsUtilsTest, EnsurePreferencePriority) {
+  // No inactive tabs on iPad.
+  if (ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_TABLET) {
+    return;
+  }
+  base::test::ScopedFeatureList feature_list;
+  std::map<std::string, std::string> parameters;
+  parameters[kTabInactivityThresholdParameterName] =
+      kTabInactivityThresholdOneWeekParam;
+  feature_list.InitAndEnableFeatureWithParameters(kTabInactivityThreshold,
+                                                  parameters);
+
+  // Test that flags are taken into account instead of pref as we set the
+  // preference default value.
+  local_state_.Get()->SetInteger(prefs::kInactiveTabsTimeThreshold, 0);
+
+  WebStateList* active_web_state_list = browser_active_->GetWebStateList();
+  WebStateList* inactive_web_state_list = browser_inactive_->GetWebStateList();
+
+  EXPECT_EQ(active_web_state_list->count(), 0);
+  EXPECT_EQ(inactive_web_state_list->count(), 0);
+
+  // Add tabs in the active browser.
+  active_web_state_list->InsertWebState(
+      0, CreateInactiveTab(3), WebStateList::INSERT_ACTIVATE, WebStateOpener());
+  active_web_state_list->InsertWebState(0, CreateInactiveTab(10),
+                                        WebStateList::INSERT_ACTIVATE,
+                                        WebStateOpener());
+  active_web_state_list->InsertWebState(0, CreateInactiveTab(30),
+                                        WebStateList::INSERT_ACTIVATE,
+                                        WebStateOpener());
+
+  EXPECT_EQ(active_web_state_list->count(), 3);
+  EXPECT_EQ(inactive_web_state_list->count(), 0);
+
+  MoveTabsFromActiveToInactive(browser_active_.get(), browser_inactive_.get());
+
+  EXPECT_EQ(active_web_state_list->count(), 1);
+  EXPECT_EQ(inactive_web_state_list->count(), 2);
+
+  std::vector<int> expected_inactive_order = {10, 30};
+  CheckOrder(inactive_web_state_list, expected_inactive_order);
+
+  // Set the preference to 14.
+  local_state_.Get()->SetInteger(prefs::kInactiveTabsTimeThreshold, 14);
+  MoveTabsFromInactiveToActive(browser_inactive_.get(), browser_active_.get());
+
+  EXPECT_EQ(active_web_state_list->count(), 2);
+  EXPECT_EQ(inactive_web_state_list->count(), 1);
+
+  std::vector<int> expected_active_order = {10, 3};
+  CheckOrder(active_web_state_list, expected_active_order);
 }

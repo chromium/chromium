@@ -45,6 +45,7 @@ source_set("unit_tests") {
     "//ios/chrome/browser/browser_state:test_support",
     "//ios/chrome/browser/main:test_support",
     "//ios/chrome/browser/ntp",
+    "//ios/chrome/browser/prefs:pref_names",
     "//ios/chrome/browser/snapshots",
     "//ios/chrome/browser/tabs:features",
     "//ios/chrome/browser/url:constants",
