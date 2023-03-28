@@ -75,7 +75,6 @@ class ProxyImplBase {
       constexpr int kNumTries = 2;
       HRESULT hr = E_FAIL;
       for (int i = 0; i != kNumTries; ++i) {
-        base::PlatformThread::Sleep(kCreateUpdaterInstanceDelay);
         Microsoft::WRL::ComPtr<IUnknown> server;
         hr = ::CoCreateInstance(clsid, nullptr, CLSCTX_LOCAL_SERVER,
                                 IID_PPV_ARGS(&server));
@@ -92,6 +91,9 @@ class ProxyImplBase {
         if (hr == REGDB_E_CLASSNOTREG) {
           return base::unexpected(hr);
         }
+
+        // Sleep before trying again.
+        base::PlatformThread::Sleep(kCreateUpdaterInstanceDelay);
       }
       return base::unexpected(hr);
     }(Derived::GetClassGuid(scope_));

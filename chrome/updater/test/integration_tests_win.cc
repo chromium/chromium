@@ -97,9 +97,6 @@ enum class CheckInstallationVersions {
 template <typename ComInterface>
 HRESULT CreateLocalServer(GUID clsid,
                           Microsoft::WRL::ComPtr<ComInterface>& server) {
-  // crbug.com/1259178 - there is known race condition between the COM server
-  // shutdown and server start up.
-  base::PlatformThread::Sleep(kCreateUpdaterInstanceDelay);
   return ::CoCreateInstance(clsid, nullptr, CLSCTX_LOCAL_SERVER,
                             IID_PPV_ARGS(&server));
 }
