@@ -559,6 +559,19 @@ inline const NGLayoutResult* NGBlockLayoutAlgorithm::Layout(
 
   LayoutUnit content_edge = BorderScrollbarPadding().block_start;
 
+  if (BreakToken() && BreakToken()->MonolithicOverflow()) {
+    // If we have been pushed by monolithic overflow that started on a previous
+    // page, we'll behave as if there's a valid breakpoint before the first
+    // child here, and that it has perfect break appeal. This isn't always
+    // strictly correct (the monolithic content in question may have
+    // break-after:avoid, for instance), but should be a reasonable approach,
+    // unless we want to make a bigger effort.
+    //
+    // So just pretend that we have processed the first child already.
+    // TODO(layout-dev): Consider renaming has_processed_first_child_.
+    has_processed_first_child_ = true;
+  }
+
   NGPreviousInflowPosition previous_inflow_position = {
       LayoutUnit(), ConstraintSpace().MarginStrut(),
       is_resuming_ ? LayoutUnit() : container_builder_.Padding().block_start,
@@ -1241,6 +1254,14 @@ void NGBlockLayoutAlgorithm::HandleFloat(
       container_builder_.BfcBlockOffset()
           ? NextBorderEdge(previous_inflow_position)
           : ConstraintSpace().ExpectedBfcBlockOffset()};
+
+  if (child_break_token) {
+    // If there's monolithic content inside the float from a previous page
+    // overflowing into this one, move past it. And subtract any such overflow
+    // from the parent flow, as floats establish a parallel flow.
+    origin_bfc_offset.block_offset += child_break_token->MonolithicOverflow() -
+                                      BreakToken()->MonolithicOverflow();
+  }
 
   if (ConstraintSpace().HasBlockFragmentation()) {
     // Forced breaks cannot be specified directly on floats, but if the
@@ -2193,6 +2214,9 @@ NGInflowChildData NGBlockLayoutAlgorithm::ComputeChildData(
   // inside of the child's layout
   NGMarginStrut margin_strut = previous_inflow_position.margin_strut;
 
+  LayoutUnit logical_block_offset =
+      previous_inflow_position.logical_block_offset;
+
   const auto* child_block_break_token =
       DynamicTo<NGBlockBreakToken>(child_break_token);
   if (UNLIKELY(child_block_break_token)) {
@@ -2203,10 +2227,16 @@ NGInflowChildData NGBlockLayoutAlgorithm::ComputeChildData(
       // breaks). Margins after a forced break should be retained.
       margin_strut = NGMarginStrut();
     }
-  }
 
-  LayoutUnit logical_block_offset =
-      previous_inflow_position.logical_block_offset;
+    if (child_block_break_token->MonolithicOverflow() &&
+        !BreakToken()->MonolithicOverflow()) {
+      // Every container that needs to be pushed to steer clear of monolithic
+      // overflow on a previous page will have this stored in its break token.
+      // So we'll only add the additional offset here if the child is the
+      // outermost container with monolithic overflow recorded.
+      logical_block_offset += child_block_break_token->MonolithicOverflow();
+    }
+  }
 
   margin_strut.Append(margins.block_start,
                       child.Style().HasMarginBeforeQuirk());

@@ -107,6 +107,21 @@ class CORE_EXPORT NGBlockBreakToken final : public NGBreakToken {
     return data_->sequence_number;
   }
 
+  // The amount of monolithic fragmentainer overflow.
+  //
+  // Fragmentainer overflow occurs when there is monolithic content, and when
+  // printing, we record it here, in order to steer clear of it on subsequent
+  // pages.
+  //
+  // This value is only used (and set) when printing.
+  LayoutUnit MonolithicOverflow() const {
+#if DCHECK_IS_ON()
+    DCHECK(!is_repeated_actual_break_);
+#endif
+    DCHECK(data_);
+    return data_->monolithic_overflow;
+  }
+
   const NGBlockBreakTokenData* TokenData() const {
 #if DCHECK_IS_ON()
     DCHECK(!is_repeated_actual_break_);

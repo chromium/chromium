@@ -2243,7 +2243,12 @@ void NGOutOfFlowLayoutPart::AddOOFToFragmentainer(
     NodeToLayout fragmented_descendant = descendant;
     fragmented_descendant.break_token = break_token;
     if (!break_token->IsRepeated()) {
-      fragmented_descendant.offset_info.offset.block_offset = LayoutUnit();
+      // Fragmented nodes usually resume at the block-start of the next
+      // fragmentainer. One exception is if there's fragmentainer overflow
+      // caused by monolithic content in paged media. Then we need to move past
+      // that.
+      fragmented_descendant.offset_info.offset.block_offset =
+          break_token->MonolithicOverflow();
       *has_actual_break_inside = true;
     }
     fragmented_descendants->emplace_back(fragmented_descendant);

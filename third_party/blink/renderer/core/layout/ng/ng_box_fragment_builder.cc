@@ -387,22 +387,48 @@ void NGBoxFragmentBuilder::PropagateBreakInfo(
       is_block_size_for_fragmentation_clamped_ = true;
   }
 
+  const NGPhysicalFragment& child_fragment =
+      child_layout_result.PhysicalFragment();
   const auto* child_box_fragment =
-      DynamicTo<NGPhysicalBoxFragment>(&child_layout_result.PhysicalFragment());
+      DynamicTo<NGPhysicalBoxFragment>(child_fragment);
+  const NGBlockBreakToken* token =
+      child_box_fragment ? child_box_fragment->BreakToken() : nullptr;
+
+  // Figure out if this child break is in the same flow as this parent. If it's
+  // an out-of-flow positioned box, it's not. If it's in a parallel flow, it's
+  // also not.
+  bool child_is_in_same_flow =
+      ((!token || !token->IsAtBlockEnd()) &&
+       !child_fragment.IsFloatingOrOutOfFlowPositioned()) ||
+      child_layout_result.ShouldForceSameFragmentationFlow();
+
+  if (ConstraintSpace().IsPaginated() && child_is_in_same_flow &&
+      !IsFragmentainerBoxType()) {
+    DCHECK(ConstraintSpace().HasKnownFragmentainerBlockSize());
+    NGFragment logical_fragment(child_fragment.Style().GetWritingDirection(),
+                                child_fragment);
+    LayoutUnit fragment_block_end =
+        offset.block_offset + logical_fragment.BlockSize();
+    LayoutUnit fragmentainer_overflow =
+        fragment_block_end - FragmentainerSpaceLeft(ConstraintSpace());
+    if (fragmentainer_overflow > LayoutUnit()) {
+      // This child overflows the page, because there's something monolithic
+      // inside. We need to be aware of this when laying out subsequent pages,
+      // so that we can move past it, rather than overlapping with it. This
+      // approach works (kind of) because in our implementation, pages are
+      // stacked in the block direction, so that the block-start offset of the
+      // next page is the same as the block-end offset of the preceding page.
+      ReserveSpaceForMonolithicOverflow(fragmentainer_overflow);
+    }
+  }
+
   if (!child_box_fragment)
     return;
 
-  const NGBlockBreakToken* token = child_box_fragment->BreakToken();
   if (IsBreakInside(token)) {
-    // Figure out if this child break is in the same flow as this parent. If
-    // it's an out-of-flow positioned box, it's not. If it's in a parallel flow,
-    // it's also not.
-    if (!token->IsAtBlockEnd() &&
-        !child_box_fragment->IsFloatingOrOutOfFlowPositioned())
+    if (child_is_in_same_flow) {
       has_inflow_child_break_inside_ = true;
-
-    if (child_layout_result.ShouldForceSameFragmentationFlow())
-      has_inflow_child_break_inside_ = true;
+    }
 
     // Downgrade the appeal of breaking inside this container, if the break
     // inside the child is less appealing than what we've found so far.

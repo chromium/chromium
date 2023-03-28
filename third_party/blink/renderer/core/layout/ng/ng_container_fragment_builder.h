@@ -32,6 +32,7 @@
 namespace blink {
 
 class NGColumnSpannerPath;
+class NGConstraintSpace;
 class NGExclusionSpace;
 class NGInlineBreakToken;
 class NGPhysicalFragment;

@@ -19,6 +19,7 @@
 #include "third_party/blink/renderer/core/layout/ng/mathml/ng_mathml_paint_info.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_block_break_token.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_break_token.h"
+#include "third_party/blink/renderer/core/layout/ng/ng_constraint_space.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_container_fragment_builder.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_layout_overflow_calculator.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_layout_result.h"
@@ -294,6 +295,13 @@ class CORE_EXPORT NGBoxFragmentBuilder final
   // NGBlockBreakToken::ConsumedBlockSizeForLegacy() for more details.
   void SetConsumedBlockSizeLegacyAdjustment(LayoutUnit adjustment) {
     EnsureBreakTokenData()->consumed_block_size_legacy_adjustment = adjustment;
+  }
+
+  void ReserveSpaceForMonolithicOverflow(LayoutUnit monolithic_overflow) {
+    DCHECK(ConstraintSpace().IsPaginated());
+    auto* data = EnsureBreakTokenData();
+    data->monolithic_overflow =
+        std::max(data->monolithic_overflow, monolithic_overflow);
   }
 
   // Set how much of the column block-size we've used so far. This will be used

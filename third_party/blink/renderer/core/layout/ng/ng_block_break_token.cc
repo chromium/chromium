@@ -128,6 +128,12 @@ String NGBlockBreakToken::ToString() const {
     string_builder.Append("px");
   }
 
+  if (MonolithicOverflow()) {
+    string_builder.Append(" monolithic overflow:");
+    string_builder.Append(MonolithicOverflow().ToString());
+    string_builder.Append("px");
+  }
+
   return string_builder.ToString();
 }
 

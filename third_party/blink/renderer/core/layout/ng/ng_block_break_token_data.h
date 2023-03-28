@@ -34,6 +34,7 @@ struct NGBlockBreakTokenData : public GarbageCollected<NGBlockBreakTokenData> {
       consumed_block_size_legacy_adjustment =
           other_data->consumed_block_size_legacy_adjustment;
       sequence_number = other_data->sequence_number;
+      monolithic_overflow = other_data->monolithic_overflow;
     }
   }
 
@@ -53,6 +54,7 @@ struct NGBlockBreakTokenData : public GarbageCollected<NGBlockBreakTokenData> {
 
   LayoutUnit consumed_block_size;
   LayoutUnit consumed_block_size_legacy_adjustment;
+  LayoutUnit monolithic_overflow;
 
   unsigned sequence_number = 0;
   unsigned type : 3;
