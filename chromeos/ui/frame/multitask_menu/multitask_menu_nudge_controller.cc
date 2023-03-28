@@ -5,6 +5,7 @@
 #include "chromeos/ui/frame/multitask_menu/multitask_menu_nudge_controller.h"
 
 #include "base/metrics/user_metrics.h"
+#include "chromeos/constants/chromeos_features.h"
 #include "chromeos/strings/grit/chromeos_strings.h"
 #include "chromeos/ui/base/tablet_state.h"
 #include "chromeos/ui/wm/features.h"
@@ -96,7 +97,10 @@ std::unique_ptr<views::Widget> CreateWidget(aura::Window* window) {
   contents_view->SetBackground(views::CreateThemedRoundedRectBackground(
       ui::kColorSysSurface3, corner_radius));
   contents_view->SetBorder(std::make_unique<views::HighlightBorder>(
-      corner_radius, views::HighlightBorder::Type::kHighlightBorder1,
+      corner_radius,
+      chromeos::features::IsJellyrollEnabled()
+          ? views::HighlightBorder::Type::kHighlightBorderOnShadow
+          : views::HighlightBorder::Type::kHighlightBorder1,
       /*use_light_colors=*/false));
 
   widget->SetContentsView(std::move(contents_view));

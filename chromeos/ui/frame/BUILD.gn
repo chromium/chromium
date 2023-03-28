@@ -70,6 +70,7 @@ source_set("frame") {
 
   deps = [
     "//base",
+    "//chromeos/constants/",
     "//chromeos/strings:strings_grit",
     "//chromeos/ui/base",
     "//chromeos/ui/vector_icons",
