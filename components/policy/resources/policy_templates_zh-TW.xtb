@@ -1079,7 +1079,6 @@
 <translation id="2006954055163088863">在影片播放時將使用者狀態視為閒置</translation>
 <translation id="2008514891623783266">WebRTC 的 IP 處理政策</translation>
 <translation id="2012296492055302633">一律啟用隱私保護功能</translation>
-<translation id="2013285471046373727">指定應用程式的安裝方式。OPTIONAL：應用程式不會自動安裝，但使用者可自行安裝。如未指定這項政策，系統會預設採用這個值。PRELOAD：應用程式會自動安裝，但使用者可以解除安裝。FORCE_INSTALLED：應用程式會自動安裝，且使用者無法解除安裝。BLOCKED：應用程式遭到封鎖且無法安裝。如果應用程式是依據先前的政策而安裝，則會解除安裝。</translation>
 <translation id="2014757022750736514">控管登入畫面的行為，使用者會從該畫面登入帳戶。可調整的設定包含可登入的人員、系統允許的帳戶類型、應使用何種驗證方法，以及一般無障礙、輸入法和語言代碼設定。</translation>
 <translation id="201557587962247231">裝置狀態報告上傳頻率</translation>
 <translation id="2016031354108680330">啟用 Linux 虛擬機器的 Root 權限</translation>

@@ -97,6 +97,7 @@
 <translation id="1773212559869067373">Certificat d'authentification rejeté localement.</translation>
 <translation id="1775381402323441512">Renseignements sur le fichier vidéo</translation>
 <translation id="180035236176489073">Pour accéder à ces fichiers, vous devez être connecté à Internet.</translation>
+<translation id="1805030087840125683">{COUNT,plural, =1{Une extension portant l'identifiant}one{Une extension portant les identifiants}other{Les extensions portant les identifiants}}</translation>
 <translation id="1807938677607439181">Tous les fichiers</translation>
 <translation id="1810764548349082891">Aucun aperçu disponible</translation>
 <translation id="1812302367230252929">Amharique (translittération)</translation>
@@ -130,6 +131,7 @@
 <translation id="2084108471225856927">Paramètres de l'appareil</translation>
 <translation id="2084809735218147718">Personne chantant des remerciements</translation>
 <translation id="2088690981887365033">Réseau privé virtuel</translation>
+<translation id="2111134541987263231">Activez <ph name="BEGIN_BOLD" />Autoriser en mode navigation privée<ph name="END_BOLD" /></translation>
 <translation id="2114191879048183086"><ph name="NUMBER_OF_ITEMS" /> éléments seront supprimés et vous ne pourrez pas les restaurer.</translation>
 <translation id="2122305276694332719">La connexion automatique à un réseau masqué permet aux autres personnes de voir votre appareil et certains paramètres réseau, et n'est pas recommandée.</translation>
 <translation id="2125607626296734455">Khmer</translation>
@@ -228,6 +230,7 @@
 <translation id="290843123675549676">Marathi</translation>
 <translation id="2923240520113693977">Estonien</translation>
 <translation id="2938685643439809023">Mongol</translation>
+<translation id="293972288692056847">{COUNT,plural, =1{Impossible de trouver l'extension}one{Impossible de trouver l'extension}other{Impossible de trouver les extensions}}</translation>
 <translation id="2943503720238418293">Utilisez un nom plus court</translation>
 <translation id="2949781154072577687">Formatage de <ph name="DRIVE_NAME" /> en cours…</translation>
 <translation id="2951236788251446349">Méduse</translation>
@@ -282,6 +285,7 @@
 <translation id="3356580349448036450">Terminé</translation>
 <translation id="3358452157379365236">Guitare</translation>
 <translation id="3368922792935385530">Connecté</translation>
+<translation id="3372635229069101468">Cliquez sur <ph name="BEGIN_BOLD" />Détails<ph name="END_BOLD" /></translation>
 <translation id="3382143449143186018">Népalais avec clavier InScript</translation>
 <translation id="338691029516748599">Réseau <ph name="NETWORK_INDEX" /> sur <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, force du signal : <ph name="SIGNAL_STRENGTH" /> %, géré par votre administrateur, connexion</translation>
 <translation id="3408072735282270043">Activer <ph name="NETWORK_NAME" /></translation>
@@ -366,6 +370,7 @@
 <translation id="4124935795427217608">Licorne</translation>
 <translation id="4131235941541910880">Mettre les éléments inutiles dans la corbeille.</translation>
 <translation id="4134804435730168042">Réseau <ph name="NETWORK_INDEX" /> sur <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" />, activez après la configuration de l'appareil</translation>
+<translation id="41501027364808384">{COUNT,plural, =1{Activez l'extension suivante en mode navigation privée :}one{Activez l'extension suivante en mode navigation privée :}other{Activez les extensions suivantes en navigation privée :}}</translation>
 <translation id="4153015322587141338">Faites un clic droit sur un fichier et sélectionnez « <ph name="PIN_COMMAND" /> » afin d'accéder rapidement à vos fichiers sur l'étagère.</translation>
 <translation id="4157569377477607576">La politique de l'administrateur ne recommande pas :</translation>
 <translation id="4159731583141908892"><ph name="FILE_NAME" /> déplacé.</translation>
@@ -462,8 +467,10 @@
 <translation id="4801956050125744859">Garder les deux</translation>
 <translation id="4804827417948292437">Avocat</translation>
 <translation id="4805966553127040832">Restauration de <ph name="COUNT" /> éléments en cours…</translation>
+<translation id="4816695657735045067">{COUNT,plural, =1{Pour passer au mode navigation privée, vous devez utiliser une extension requise par votre organisation}one{Pour passer au mode navigation privée, vous devez utiliser une extension requise par votre organisation}other{Pour passer au mode navigation privée, vous devez utiliser certaines extensions requises par votre organisation}}</translation>
 <translation id="4823651846660089135">L'appareil est en lecture seule</translation>
 <translation id="4826849268470072925">Tamoul (ITRANS)</translation>
+<translation id="482932175346970750">Saisissez <ph name="BEGIN_BOLD" />chrome://extensions<ph name="END_BOLD" /> dans votre navigateur</translation>
 <translation id="4839847978919684242"><ph name="SELCTED_FILES_COUNT" /> éléments sélectionnés</translation>
 <translation id="4843566743023903107">Chromebase</translation>
 <translation id="4850886885716139402">Affichage</translation>
@@ -535,6 +542,7 @@
     sur les mêmes fichiers pour tout le monde, à un seul endroit.<ph name="MARKUP_9" /></translation>
 <translation id="5275973617553375938">Fichiers récupérés de Google Disque</translation>
 <translation id="5278111733643988471">Pour restaurer cet élément, faites-le glisser vers un nouveau dossier en dehors de la corbeille. Le dossier d'origine « <ph name="PARENT_FOLDER_NAME" /> » de cet élément a été supprimé.</translation>
+<translation id="5283101102242354279">Activer une extension en mode navigation privée :</translation>
 <translation id="5286194356314741248">Recherche en cours…</translation>
 <translation id="5288441970121584418">Hamburger</translation>
 <translation id="5293615890992542006">La politique de l'administrateur bloque le transfert de ce fichier</translation>
@@ -780,6 +788,7 @@
 <translation id="7238643356913091553"><ph name="NETWORK_NAME" />, détails</translation>
 <translation id="7246947237293279874">Mandataire FTP</translation>
 <translation id="7248671827512403053">Application</translation>
+<translation id="7252604552361840748">Trouvez l'extension ci-dessus</translation>
 <translation id="7256405249507348194">Erreur non reconnue : <ph name="DESC" /></translation>
 <translation id="7268659760406822741">Services disponibles</translation>
 <translation id="7292816689782057017">La politique de l'administrateur limite l'enregistrement vers certains emplacements.</translation>
@@ -793,6 +802,7 @@
 <translation id="7359359531237882347">Copie de <ph name="NUMBER_OF_ITEMS" /> éléments en cours…</translation>
 <translation id="7375951387215729722">Liste de fichiers triée par <ph name="COLUMN_NAME" /> en ordre décroissant.</translation>
 <translation id="7377161162143020057">La politique de l'administrateur bloque la copie de ce fichier</translation>
+<translation id="7392500733467492920">est introuvable. Communiquez avec votre administrateur.</translation>
 <translation id="7402503521691663770">Appareils Chrome OS Flex</translation>
 <translation id="7408870451288633753">Tchèque</translation>
 <translation id="7417453074306512035">Clavier éthiopien</translation>

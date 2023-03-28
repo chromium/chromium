@@ -8,10 +8,6 @@
 <translation id="1044891598689252897">사이트가 정상적으로 작동합니다.</translation>
 <translation id="1049743911850919806">시크릿 모드</translation>
 <translation id="105093091697134113">다음 계정에서 타사의 정보 유출로 인해 노출되었거나 사기성 웹사이트에 입력된 비밀번호를 사용하고 있습니다. 비밀번호를 즉시 변경하여 계정을 안전하게 보호하세요.</translation>
-<translation id="105214722824962652">Google 계정에서 로그아웃되지 않습니다. 로그인할 경우 <ph name="BEGIN_LINK" />다른 활동 형식<ph name="END_LINK" />이 Google 계정에 저장될 수 있습니다. 이러한 데이터는 언제든지 삭제할 수 있습니다.
-
-        
-현재 사용 중인 검색엔진은 <ph name="DSE_NAME" />입니다. 해당 검색엔진에서 검색 기록을 삭제할 수 있는 경우 검색 기록 삭제 안내를 확인하세요.</translation>
 <translation id="1054045277222934172">설정 &gt; 콘텐츠 설정에서 기본 사이트 보기를 데스크톱으로 변경할 수 있습니다.</translation>
 <translation id="1054745118061919935">계속하면 <ph name="BEGIN_LINK" />서비스 약관<ph name="END_LINK" />에 동의하는 것으로 간주됩니다.</translation>
 <translation id="1063454504051558093">다른 비밀번호를 사용하세요...</translation>
@@ -33,6 +29,7 @@
 <translation id="1154984953698510061">다른 탭 보기</translation>
 <translation id="1161340988127985692">시크릿 모드에서 다른 앱의 링크를 열도록 요청</translation>
 <translation id="1164064664035028907">아래와 같이 안전한 비밀번호를 사용하세요</translation>
+<translation id="1164891049599601209">사기성 사이트에서 입력됨</translation>
 <translation id="1165039591588034296">오류</translation>
 <translation id="1172898394251786223">다음 필드</translation>
 <translation id="1176932207622159128">이미지를 저장할 수 없음</translation>
@@ -401,7 +398,6 @@ Google이 아닌 다른 검색엔진을 사용 중이라면 해당 검색엔진�
 <translation id="3789841737615482174">설치</translation>
 <translation id="380329542618494757">이름</translation>
 <translation id="3803696231112616155">이 사이트 번역 옵션 제공</translation>
-<translation id="3803967590068704619">Google 계정(<ph name="USER_EMAIL" />)에 저장된 주소입니다. 어느 기기에서나 모든 Google 제품에서 이 주소를 사용할 수 있습니다.</translation>
 <translation id="3810973564298564668">관리</translation>
 <translation id="3818293389945649617">다음 찾기</translation>
 <translation id="3819183753496523827">오프라인 상태입니다. 인터넷 연결을 확인한 후 다시 시도해 보세요.</translation>
@@ -755,6 +751,7 @@ Google이 아닌 다른 검색엔진을 사용 중이라면 해당 검색엔진�
 <translation id="6219550825416862075">다시 방문해 주셔서 감사합니다</translation>
 <translation id="6219688215832490856">번역 안함</translation>
 <translation id="6223816392543092032">모든 기기에서 북마크, 방문 기록, 비밀번호, 기타 설정을 동기화합니다</translation>
+<translation id="6224759905509595045">본인 인증…</translation>
 <translation id="6229318421047648685">데스크톱 사이트로 보기</translation>
 <translation id="6231782223312638214">추천</translation>
 <translation id="6232329973559504466">시크릿 검색</translation>
@@ -915,6 +912,7 @@ Google이 아닌 다른 검색엔진을 사용 중이라면 해당 검색엔진�
 <translation id="7108762695052995889">사이트 방문</translation>
 <translation id="7133798577887235672">이름</translation>
 <translation id="7136892417564438900">카메라를 사용할 수 없음</translation>
+<translation id="7161230316646448869">모든 기기에서 북마크, 방문 기록 등을 동기화하기</translation>
 <translation id="7162168282402939716"><ph name="BIOMETRIC_AUTHENITCATION_TYPE" /> 인증으로 시크릿 탭 잠금 해제</translation>
 <translation id="7172852049901402487">보안 문제로부터 비밀번호를 안전하게 보호합니다.</translation>
 <translation id="7173114856073700355">설정 열기</translation>
@@ -985,6 +983,7 @@ Google이 아닌 다른 검색엔진을 사용 중이라면 해당 검색엔진�
 <translation id="7733646263819020771"><ph name="BOOKMRK_NAME" />. 이 기기에서만 표시.</translation>
 <translation id="7738120385185846461">문제 신고…</translation>
 <translation id="7741325291586284254">새 시크릿 탭 페이지</translation>
+<translation id="7744192722284567281">정보 유출에 포함됨</translation>
 <translation id="7744394900930577716">다른 앱의 비밀번호</translation>
 <translation id="7749790401023484470">선택한 텍스트가 없습니다.</translation>
 <translation id="7756478488453921771">메뉴 → 설정 → 결제 수단</translation>

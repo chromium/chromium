@@ -40,6 +40,7 @@ Tu je nekaj stvari, ki jih lahko poskusite za začetek.</translation>
 <translation id="1181037720776840403">Odstrani</translation>
 <translation id="1182225749592316782">To omogoča dostop za vse aplikacije in spletna mesta, ki imajo dovoljenje za kamero in mikrofon.</translation>
 <translation id="1183863904939664422">Ta predlog me ne zanima</translation>
+<translation id="1184126796192815024">To omrežje ne podpira pretočnega predvajanja aplikacij iz telefona. Poskusite uporabiti dostopno točko v telefonu. <ph name="LEARN_MORE" /></translation>
 <translation id="118437560755358292">Vnesite geslo ali kodo PIN zaradi večje varnosti</translation>
 <translation id="118532027333893379">Dotaknite se kjer koli za posnetek celotnega zaslona.</translation>
 <translation id="1190609913194133056">Središče za obvestila</translation>
@@ -621,7 +622,6 @@ Priklopite napravo v vir napajanja.</translation>
 <translation id="3925540965556789199"><ph name="DATE" />, dogodki se nalagajo.</translation>
 <translation id="3932043219784172185">Nobena naprava ni povezana</translation>
 <translation id="3934456833412894880">Prilagodljivo polnjenje je vklopljeno. Polnjenje baterije se bo zaradi podaljšanja časa delovanja baterije ustavilo pri 80 %, v celoti pa se bo napolnila, ko jo boste potrebovali.</translation>
-<translation id="3936620957945677513">Pritisnite Enter, če se želite pridružiti dogodku <ph name="EVENT_SUMMARY" /></translation>
 <translation id="3943857333388298514">Prilepi</translation>
 <translation id="394485226368336402">Nastavitve zvoka</translation>
 <translation id="3945319193631853098">Dotaknite se, da dokončate nastavitev</translation>

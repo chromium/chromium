@@ -1089,7 +1089,6 @@ Politika <ph name="DISABLE_UNPUBLISHED" /> (1) değerine ayarlanırsa Chrome Web
 <translation id="2006954055163088863">Video oynatılırken kullanıcıyı işlem yapmıyor olarak değerlendir</translation>
 <translation id="2008514891623783266">WebRTC'nin IP işleme politikası</translation>
 <translation id="2012296492055302633">Gizlilik ekranını her zaman etkinleştir</translation>
-<translation id="2013285471046373727">Bir uygulamanın nasıl yükleneceğini belirtir. OPTIONAL: Uygulama otomatik olarak yüklenmez, ancak kullanıcı tarafından yüklenebilir. Bu politika belirtilmezse varsayılan olarak bu ayar uygulanır. PRELOAD: Uygulama otomatik olarak yüklenir, ancak kullanıcı tarafından kaldırılabilir. FORCE_INSTALLED: Uygulama otomatik olarak yüklenir ve kullanıcı tarafından kaldırılamaz. BLOCKED: Uygulama engellenir ve yüklenemez. Uygulama önceki politikalardan biri kapsamında yüklenmişse kaldırılır.</translation>
 <translation id="2014757022750736514">Kullanıcıların hesaplarına giriş yaptıkları oturum açma ekranının davranışını kontrol eder. Ayarlar arasında kimin giriş yapabileceği, ne tür hesaplara izin verildiği, hangi kimlik doğrulama yöntemlerinin kullanılması gerektiği, genel erişilebilirlik, giriş yöntemi ve yerel ayarlar yer alır.</translation>
 <translation id="201557587962247231">Cihaz durumu raporlarının yüklenme sıklığı</translation>
 <translation id="2016031354108680330">Linux sanal makinelerine kök erişimi etkinleştir</translation>

@@ -10,7 +10,7 @@
 <translation id="1025074108959230262">स्टिकी मोड बंद केला</translation>
 <translation id="1031961866430398710">नंतर</translation>
 <translation id="1038643060055067718">रेखा:</translation>
-<translation id="1038795173450935438">पेजवरील आयटम मधून पुढे जाण्याकरिता, Search + Right किंवा परत मागे जाण्यासाठी Search + Left ॲरो दाबा. पुढील ओळीवर जाण्यासाठी, Search + Down ॲरो दाबा. मागील ओळीवर जाण्यासाठी Search + Up ॲरो वापरा. तुम्ही क्लिक करू इच्छित आयटमवर पोहचल्यास, Search + Space दाबा.</translation>
+<translation id="1038795173450935438">पेजवरील आयटम मधून पुढे जाण्याकरिता, Search + Right किंवा परत मागे जाण्यासाठी Search + Left ॲरो प्रेस करा. पुढील ओळीवर जाण्यासाठी, Search + Down ॲरो प्रेस करा. मागील ओळीवर जाण्यासाठी Search + Up ॲरो वापरा. तुम्ही क्लिक करू इच्छित आयटमवर पोहचल्यास, Search + Space प्रेस करा.</translation>
 <translation id="106222400312645156">rwhdr</translation>
 <translation id="1065552602950927991">चुकीचे इनपुट</translation>
 <translation id="1066085461259044485">भडक हिरवा</translation>
@@ -72,7 +72,7 @@
 <translation id="1354356357730355833">कॉपी करा</translation>
 <translation id="1360699455582016846"><ph name="ROUTING_KEY_NUMBER" /> राउटिंग की मधील आयटम क्लिक करा</translation>
 <translation id="1376703628032300005">पुढील वर्णावर हलवा</translation>
-<translation id="1377925789329510816">हे अंतिम शीर्षक आहे. पहिल्या शीर्षकावर वेष्टन घालण्‍यासाठी Search+H दाबा किंवा या पेजवरील दुसर्‍या शीर्षकावर जाण्यासाठी Search+Shift+H दाबा.</translation>
+<translation id="1377925789329510816">हे अंतिम शीर्षक आहे. पहिल्या शीर्षकावर वेष्टन घालण्‍यासाठी Search+H प्रेस करा किंवा या पेजवरील दुसर्‍या शीर्षकावर जाण्यासाठी Search+Shift+H प्रेस करा.</translation>
 <translation id="138218114945450791">फिकट न‍िळा</translation>
 <translation id="1383876407941801731">शोधा</translation>
 <translation id="1396114365388024581">tablst</translation>
@@ -200,7 +200,7 @@
 <translation id="2347456970887948350">एक लिंक</translation>
 <translation id="2365384324219615024">आयटम अ‍ॅक्टिव्हेट करण्यासाठी तुम्ही एंटरदेखील प्रेस करू शकता. उदाहरणार्थ, फॉर्ममध्ये मजकूर सबमिट करण्यासाठी एंटरचा वापर केला जाऊ शकतो. पुढे सुरू ठेवण्यासाठी एंटर प्रेस करा.</translation>
 <translation id="2381733276052567791">भाषण सुरू किंवा बंद करा</translation>
-<translation id="2390264819538553347">पुढे जाण्यासाठी, एंटर दाबा; मागे जाण्यासाठी, बॅकस्पेस दाबा.</translation>
+<translation id="2390264819538553347">पुढे जाण्यासाठी, एंटर प्रेस करा; मागे जाण्यासाठी, बॅकस्पेस प्रेस करा.</translation>
 <translation id="2398579267367951220">पेज शोधण्यासाठी टाइप करा. परिणामांवर जाण्यासाठी एंटर, परिणाम ब्राउझ करण्यासाठी अप किंवा डाउन अ‍ॅरो प्रेस करा, तुमचा शोध बदलण्यासाठी टाइप करणे सुरू ठेवा किंवा रद्द करण्यासाठी एस्केप प्रेस करा.</translation>
 <translation id="240709722712693803">निळसर जांभळा</translation>
 <translation id="2410298923485357543">डिव्हाइस ऑनलाइन असते तेव्हा नैसर्गिक आवाज वापरा</translation>
@@ -269,7 +269,7 @@
 <translation id="2783001728278437613">{COUNT,plural, =1{आणखी #}other{आणखी #}}</translation>
 <translation id="2792200646155001340">मागील आयटमवर जाण्यासाठी तुम्ही एका बोटाने उजवीकडून डावीकडेदेखील स्वाइप करू शकता. आता करून पहा.</translation>
 <translation id="280499067616661124">पृष्ठामध्ये ChromeVox शोधा</translation>
-<translation id="2811019999044652585">टूलबार किंवा सिस्टम ट्रे सारख्या स्क्रीनच्या अन्य भागांवर जाण्यासाठी, Control+पुढे जा की, दाबा. Chromebook वर, पुढे जा की, अंक 2 की, च्या वर असते.</translation>
+<translation id="2811019999044652585">टूलबार किंवा सिस्टम ट्रे सारख्या स्क्रीनच्या अन्य भागांवर जाण्यासाठी, Control+पुढे जा की, प्रेस करा. Chromebook वर, पुढे जा की, अंक 2 की, च्या वर असते.</translation>
 <translation id="2811204574343810641">पंक्ती</translation>
 <translation id="2816868829355607410">सराव क्षेत्र: जंप कमांड</translation>
 <translation id="2841013758207633010">वेळ</translation>
@@ -282,7 +282,7 @@
 <translation id="2873259058405069099">सारणीच्या सुरूवातीस जा</translation>
 <translation id="287383510823843610">गडद नारिंगी</translation>
 <translation id="2879867157561757640">तीन बोटांनी खालच्या दिशेला स्वाइप करा</translation>
-<translation id="288178314850623291">विशिष्ट प्रकारच्या घटकांवर जाण्यासाठी यावर जा आदेशांचा वापर करा. शीर्षलेखांमध्ये पुढे जाण्यासाठी, Search + H किंवा मागे जाण्यासाठी Search + Shift + H दाबा.</translation>
+<translation id="288178314850623291">विशिष्ट प्रकारच्या घटकांवर जाण्यासाठी यावर जा आदेशांचा वापर करा. शीर्षलेखांमध्ये पुढे जाण्यासाठी, Search + H किंवा मागे जाण्यासाठी Search + Shift + H प्रेस करा.</translation>
 <translation id="2885764457467528513">{COUNT,plural, =1{मिनिट}other{मिनिटे}}</translation>
 <translation id="2894654529758326923">माहिती</translation>
 <translation id="2899328121302785497">{COUNT,plural, =1{डावा महिरपी कंस}other{# डावे महिरपी कंस}}</translation>
@@ -473,7 +473,7 @@
 <translation id="4053520724192563562">लिंबू</translation>
 <translation id="4054936709456751127">sts</translation>
 <translation id="4058278702844053247">पृष्‍ठ लोड होणे प्रगतीपथावर आहे</translation>
-<translation id="4065205963140826639">पुढील बटण शोधण्यासाठी आता शोध + उजबा बाण वापरून पहा, नंतर ते क्लिक करण्यासाठी शोध + Space दाबा.</translation>
+<translation id="4065205963140826639">पुढील बटण शोधण्यासाठी आता शोध + उजबा बाण वापरून पहा, नंतर ते क्लिक करण्यासाठी शोध + Space प्रेस करा.</translation>
 <translation id="4081085052247739398">{COUNT,plural, =1{टिल्डि}other{# टिल्डि}}</translation>
 <translation id="409334809956508737">मागील ऑब्जेक्ट</translation>
 <translation id="4099274309791143834">उपमेनू सह</translation>
@@ -573,7 +573,7 @@
 <translation id="4838490795649708173">चार बोटांनी टॅप करा</translation>
 <translation id="4839925464551908214">मागील ओळीवर जा</translation>
 <translation id="4841614409681890122">गडद गुलाबी</translation>
-<translation id="4844625982113518938">हे नाव जाणून घेण्‍यासाठी कोणतीही की दाबा. Ctrl+W जाणून घ्या मोड बंद करेल.</translation>
+<translation id="4844625982113518938">हे नाव जाणून घेण्‍यासाठी कोणतीही की प्रेस करा. Ctrl+W जाणून घ्या मोड बंद करेल.</translation>
 <translation id="4846428657345567687">ChromeVox वर स्वागत आहे!</translation>
 <translation id="4848993367330139335">tmr</translation>
 <translation id="4854380505292502090">मागील मीडिया विजेट नाही</translation>
@@ -709,7 +709,7 @@
 <translation id="5712244464475377681">popbtn</translation>
 <translation id="5712889723513495267">पुढील किंवा मागील विभागावर जा</translation>
 <translation id="5725079927589231571">फिकट मळकट निळा</translation>
-<translation id="5732189279857692565">हे दुसरे शीर्षक आहे. सुरू ठेवा; Search+H किंंवा Search+Shift+H दाबा</translation>
+<translation id="5732189279857692565">हे दुसरे शीर्षक आहे. सुरू ठेवा; Search+H किंंवा Search+Shift+H प्रेस करा</translation>
 <translation id="5748623122140342504">मागील स्तर 5 शीर्षक</translation>
 <translation id="5760594853119905566">परिशिष्ट</translation>
 <translation id="5761219715606611783">छान! तुम्ही ChromeVox स्पर्शाविषयीच्या मूलभूत गोष्टी जाणून घेतल्या आहेत. तुम्ही ट्यूटोरियल पुन्हा पाहू शकता किंवा खालील बटणे वापरून ट्यूटोरियलमधून बाहेर पडू शकता.</translation>
@@ -726,7 +726,7 @@
 <translation id="5851548754964597211">टॅब सूची</translation>
 <translation id="5866042630553435010">अंशत: चेक केलेले</translation>
 <translation id="5866210856231860256">या विषयासाठी धडे ब्राउझ करण्याकरिता Search + Right Arrow किंवा Search + Left Arrow प्रेस करा</translation>
-<translation id="5867591286054666064">या ट्यूटोरियल दरम्यान, तिचे नाव ऐकण्यासाठी कोणतीही की दाबा.</translation>
+<translation id="5867591286054666064">या ट्यूटोरियल दरम्यान, तिचे नाव ऐकण्यासाठी कोणतीही की प्रेस करा.</translation>
 <translation id="5869546221129391014">ग्रिड</translation>
 <translation id="5876817486144482042">आवाज कमी करा</translation>
 <translation id="5878206664863390311">विषय ब्राउझ करण्यासाठी Search + Right Arrow किंवा Search + Left Arrow प्रेस करा</translation>
@@ -1092,7 +1092,7 @@
 <translation id="8503360654911991865">नॅव्हिगेशन ग्रॅन्युलॅरिटी कमी करा</translation>
 <translation id="8520472399088452386">स्पिन बटण</translation>
 <translation id="8534394844575788431">फॉरमॅटिंग</translation>
-<translation id="8542271685829952264">सर्व ChromeVox कमांड आणि शॉर्टकट एक्सप्लोर करण्यासाठी, शोध + पूर्णविराम दाबा, नंतर मेनू मधून नेव्हिगेट करण्यासाठी बाण की चा आणि कमांड सक्रिय करण्यासाठी Enter चा वापर करा. Search+o नंतर t प्रेस करून येथे परत या.</translation>
+<translation id="8542271685829952264">सर्व ChromeVox कमांड आणि शॉर्टकट एक्सप्लोर करण्यासाठी, शोध + पूर्णविराम प्रेस करा, नंतर मेनू मधून नेव्हिगेट करण्यासाठी बाण की चा आणि कमांड सक्रिय करण्यासाठी Enter चा वापर करा. Search+o नंतर t प्रेस करून येथे परत या.</translation>
 <translation id="8548973727659841685">वर्ण</translation>
 <translation id="8561322612995434619">यास पॉप अप आहे</translation>
 <translation id="8571096049907249734">एकाधिक निवड</translation>

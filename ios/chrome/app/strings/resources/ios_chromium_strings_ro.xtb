@@ -47,6 +47,7 @@
 <translation id="3567399274263440288">Pentru a profita din plin de Chromium, conectează-te la Chromium folosind Contul Google.</translation>
 <translation id="3639997914391704523">Chromium poate să îți verifice parolele atunci când te conectezi folosind Contul Google.</translation>
 <translation id="3650632991272923014"><ph name="USER_EMAIL1" /> folosea Chromium și marcajele, parolele și alte setări ale sale au rămas pe acest dispozitiv.</translation>
+<translation id="372658070733623520">Pentru a folosi și a salva datele Chromium în Contul Google, confirmă-ți identitatea.</translation>
 <translation id="3805899903892079518">Chromium nu are acces la fotografii și videoclipuri. Activează accesul din Setări iOS &gt; Confidențialitate &gt; Fotografii.</translation>
 <translation id="4043291146360695975">Parolele sunt salvate în Managerul de parole numai pe acest dispozitiv.</translation>
 <translation id="4099085513035183040">Nu se acceptă în Chromium Beta</translation>
@@ -76,6 +77,7 @@
 <translation id="5945387852661427312">Te conectezi cu un cont gestionat de <ph name="DOMAIN" /> și acorzi administratorului acestuia controlul asupra datelor Chromium. Datele vor fi asociate definitiv acestui cont. Dacă te deconectezi de la Chromium, datele vor fi șterse de pe acest dispozitiv, dar vor rămâne stocate în Contul Google.</translation>
 <translation id="5983312940147103417">Contribuie la îmbunătățirea Chromium</translation>
 <translation id="6062449165341879460">Organizația ta <ph name="DOMAIN" /> va avea acces la datele Chromium, marcajele, istoricul, parolele și alte setări pe care le stochezi în acest cont. Când te deconectezi, datele vor fi șterse de pe acest dispozitiv.  Însă vor rămâne stocate în Contul Google administrat și vor fi disponibile pentru organizația ta. În plus, organizația ta poate să seteze politici privind utilizatorii specifice contului, care pot să modifice comportamentul browserului Chromium.</translation>
+<translation id="61109258320235597">Pentru a folosi și a salva datele Chromium în Contul Google, introdu expresia de acces.</translation>
 <translation id="6119647025869519954">Pentru a seta Chromium ca browser prestabilit:
 1. deschide Setările;
 2. atinge Aplicația browser prestabilită;

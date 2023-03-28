@@ -40,6 +40,7 @@ Dyma rai pethau y gallwch eu gwneud i roi cychwyn arni.</translation>
 <translation id="1181037720776840403">Dileu</translation>
 <translation id="1182225749592316782">Mae hyn yn caniatáu mynediad ar gyfer pob ap a gwefan gyda chaniatadau camera a meicroffon.</translation>
 <translation id="1183863904939664422">Dim diddordeb yn yr awgrym hwn</translation>
+<translation id="1184126796192815024">Nid yw'r rhwydwaith hwn yn cefnogi ffrydio apiau o'ch ffôn. Rhowch gynnig ar ddefnyddio poethfan eich ffôn. <ph name="LEARN_MORE" /></translation>
 <translation id="118437560755358292">Rhowch gyfrinair neu PIN i gael rhagor o ddiogelwch</translation>
 <translation id="118532027333893379">Tapiwch unrhyw le i dynnu sgrinlun o'r sgrîn lawn</translation>
 <translation id="1190609913194133056">Canolfan Hysbysiadau</translation>
@@ -621,7 +622,6 @@ Cysylltwch eich dyfais â phŵer.</translation>
 <translation id="3925540965556789199"><ph name="DATE" />, Wrthi'n llwytho digwyddiadau.</translation>
 <translation id="3932043219784172185">Ni chysylltwyd dyfais</translation>
 <translation id="3934456833412894880">Mae gwefru addasedig wedi'i droi ymlaen. Bydd eich batri yn aros ar 80% i ymestyn oes y batri ac yn gwefru'n llawn pan fydd ei angen arnoch.</translation>
-<translation id="3936620957945677513">Pwyswch Enter i ymuno â'r digwyddiad <ph name="EVENT_SUMMARY" /></translation>
 <translation id="3943857333388298514">Gludo</translation>
 <translation id="394485226368336402">Gosodiadau sain</translation>
 <translation id="3945319193631853098">Tapiwch i orffen gosod</translation>

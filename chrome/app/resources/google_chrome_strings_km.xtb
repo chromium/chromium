@@ -24,10 +24,10 @@
 <translation id="1399397803214730675">កុំព្យូទ័រនេះមានកំណែ  Google Chrome ថ្មីជាងនេះរួចហើយ ប្រសិនបើកម្មវិធីនេះមិនដំណើរការ សូមលុបការតំឡើង Google Chrome ហើយព្យាយាមម្តងទៀត។</translation>
 <translation id="139993653570221430">អ្នកអាចប្ដូរចិត្តរបស់អ្នកបានគ្រប់ពេលនៅក្នុងការកំណត់ Chrome។ ការ​សាក​ល្បងដំណើរការជាមួយវិធីបច្ចុប្បន្ន ដែលការផ្សាយពាណិជ្ជកម្មបង្ហាញ ដូច្នេះអ្នកនឹងមើលមិនឃើញការផ្លាស់ប្ដូរភ្លាមៗទេ។</translation>
 <translation id="1434626383986940139">Chrome Canary Apps</translation>
+<translation id="1496905273983707119">{NUM_DEVICES,plural, =0{Google Chrome ត្រូ​វ​បាន​​ភ្ជាប់​ជាមួយ​ឧបករណ៍ HID}=1{Google Chrome ត្រូ​វ​បាន​​ភ្ជាប់​ជាមួយ​ឧបករណ៍ HID}other{Google Chrome ត្រូ​វ​បាន​​ភ្ជាប់​ជាមួយ​ឧបករណ៍ HID}}</translation>
 <translation id="1507198376417198979">ប្ដូរកម្រងព័ត៌មាន Chrome ថ្មីរបស់អ្នកតាមបំណង</translation>
 <translation id="1516530951338665275">Google Chrome ត្រូវការសិទ្ធិ​ចូលប្រើប៊្លូធូស ដើម្បីបន្ត
 ផ្គូផ្គង។ <ph name="IDS_BLUETOOTH_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
-<translation id="1535597783576881392">ការ​ណែនាំ​នេះ​ជួយ​អ្នក​ឱ្យ​យល់​ដឹង​អំពី​ជម្រើស​របស់​អ្នក ដូច្នេះ​ Chrome ដំណើរការ​តាម​របៀប​ដែល​អ្នក​ចង់​បាន</translation>
 <translation id="1547295885616600893">ChromeOS អាចបង្កើតឡើងបានដោយ<ph name="BEGIN_LINK_CROS_OSS" />កម្មវិធីកូដ​ចំហ<ph name="END_LINK_CROS_OSS" />បន្ថែម។</translation>
 <translation id="1553358976309200471">ធ្វើបច្ចុប្បន្នភាព Chrome</translation>
 <translation id="1583073672411044740"><ph name="EXISTING_USER" /> បានចូលកម្រងព័ត៌មាន Chrome នេះរួចហើយ។ សកម្មភាពនេះនឹងបង្កើតកម្រងព័ត៌មាន Chrome ថ្មីសម្រាប់ <ph name="USER_EMAIL_ADDRESS" /></translation>
@@ -70,7 +70,6 @@
 <translation id="2131230230468101642">ដើម្បីការពារ​ឯកជនភាព​របស់អ្នក យើងលុប​ចំណាប់អារម្មណ៍​របស់អ្នក​ដែលចាស់ជាង 4 សប្ដាហ៍​ដោយស្វ័យប្រវត្តិ។ នៅពេលដែលអ្នក​បន្តរុករក ចំណាប់អារម្មណ៍​ប្រហែលជាបង្ហាញ​នៅលើ​បញ្ជីម្ដងទៀត។ ឬអ្នកអាច​ដកចំណាប់អារម្មណ៍ដែលអ្នក​មិនចង់ឱ្យ Chrome ពិចារណាចេញបាន។</translation>
 <translation id="2139300032719313227">ចាប់ផ្តើម ChromeOS ឡើងវិញ</translation>
 <translation id="2151406531797534936">សូមចាប់ផ្ដើម Chrome ឡើងវិញ​ឥឡូវនេះ</translation>
-<translation id="2163996651553460171">ទាញយកប្រយោជន៍​ច្រើនបំផុត​ពី Chrome</translation>
 <translation id="2174917724755363426">ការដំឡើងមិនទាន់បញ្ចប់ទេ។ តើ​អ្នកពិតជាចង់​បោះបង់មែនឬ​?</translation>
 <translation id="223889379102603431">ព័ត៌មាន​អំពី​របៀប​ដែល Chrome គ្រប់គ្រង​វិញ្ញាបនបត្រ​គោល​របស់ខ្លួន</translation>
 <translation id="2258103955319320201">ដើម្បីចូលប្រើទិន្នន័យនៃកម្មវិធីរុករកតាមអ៊ីនធឺណិត Chrome នៅលើឧបករណ៍ទាំងអស់របស់អ្នក សូមចូលគណនី រួចបើកសមកាលកម្ម</translation>

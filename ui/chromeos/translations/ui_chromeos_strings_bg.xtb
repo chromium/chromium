@@ -97,6 +97,7 @@
 <translation id="1773212559869067373">Сертификатът за удостоверяване бе отхвърлен локално</translation>
 <translation id="1775381402323441512">Информация за видеофайла</translation>
 <translation id="180035236176489073">Трябва да сте онлайн, за да осъществите достъп до тези файлове.</translation>
+<translation id="1805030087840125683">{COUNT,plural, =1{Неуспешно намиране на разширението с ID}other{Неуспешно намиране на разширенията с ID}}</translation>
 <translation id="1807938677607439181">Всички файлове</translation>
 <translation id="1810764548349082891">Няма налична визуализация</translation>
 <translation id="1812302367230252929">Амхарски (транслитерация)</translation>
@@ -130,6 +131,7 @@
 <translation id="2084108471225856927">Настройки на устройството</translation>
 <translation id="2084809735218147718">Благодарност</translation>
 <translation id="2088690981887365033">VPN мрежа</translation>
+<translation id="2111134541987263231">Включете опцията <ph name="BEGIN_BOLD" />Да се разреши в режим „инкогнито“<ph name="END_BOLD" />.</translation>
 <translation id="2114191879048183086"><ph name="NUMBER_OF_ITEMS" /> елемента ще бъдат изтрити и няма да можете да ги възстановите.</translation>
 <translation id="2122305276694332719">Автоматичното свързване със скрита мрежа дава възможност на другите хора да виждат устройството ви и някои мрежови настройки и не се препоръчва.</translation>
 <translation id="2125607626296734455">Кхмерски</translation>
@@ -228,6 +230,7 @@
 <translation id="290843123675549676">Маратхи</translation>
 <translation id="2923240520113693977">естонски</translation>
 <translation id="2938685643439809023">монголски</translation>
+<translation id="293972288692056847">{COUNT,plural, =1{Разширението не е намерено}other{Разширенията не са намерени}}</translation>
 <translation id="2943503720238418293">Използвайте по-кратко име</translation>
 <translation id="2949781154072577687">Устройството „<ph name="DRIVE_NAME" />“ се форматира...</translation>
 <translation id="2951236788251446349">Медуза</translation>
@@ -282,6 +285,7 @@
 <translation id="3356580349448036450">Завършено</translation>
 <translation id="3358452157379365236">Китара</translation>
 <translation id="3368922792935385530">Има връзка</translation>
+<translation id="3372635229069101468">Кликнете върху <ph name="BEGIN_BOLD" />Подробности<ph name="END_BOLD" />.</translation>
 <translation id="3382143449143186018">Непалски с клавиатура InScript</translation>
 <translation id="338691029516748599">Мрежа <ph name="NETWORK_INDEX" /> от <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, сила на сигнала <ph name="SIGNAL_STRENGTH" />%, управлява се от администратора ви, свързване</translation>
 <translation id="3408072735282270043">Активиране – <ph name="NETWORK_NAME" /></translation>
@@ -366,6 +370,7 @@
 <translation id="4124935795427217608">Еднорог</translation>
 <translation id="4131235941541910880">Преместете в кошчето елементите, от които нямате нужда</translation>
 <translation id="4134804435730168042">Мрежа <ph name="NETWORK_INDEX" /> от <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" />, активиране след настройването на устройството</translation>
+<translation id="41501027364808384">{COUNT,plural, =1{Включете следното разширение в режим „инкогнито“:}other{Включете следните разширения в режим „инкогнито“:}}</translation>
 <translation id="4153015322587141338">Кликнете с десния бутон върху даден файл и изберете „<ph name="PIN_COMMAND" />“, за да имате бърз достъп до него в лентата.</translation>
 <translation id="4157569377477607576">Според администраторско правило не се препоръчва:</translation>
 <translation id="4159731583141908892">Преместихте „<ph name="FILE_NAME" />“.</translation>
@@ -462,8 +467,10 @@
 <translation id="4801956050125744859">Запазванe на двете версии</translation>
 <translation id="4804827417948292437">Авокадо</translation>
 <translation id="4805966553127040832"><ph name="COUNT" /> елемента се възстановяват</translation>
+<translation id="4816695657735045067">{COUNT,plural, =1{За да използвате режим „инкогнито“, организацията ви изисква разширение}other{За да използвате режим „инкогнито“, организацията ви изисква някои разширения}}</translation>
 <translation id="4823651846660089135">Устройството е само за четене</translation>
 <translation id="4826849268470072925">Тамилски (ITRANS)</translation>
+<translation id="482932175346970750">Въведете <ph name="BEGIN_BOLD" />chrome://extensions<ph name="END_BOLD" /> в браузъра си.</translation>
 <translation id="4839847978919684242">Избрани са <ph name="SELCTED_FILES_COUNT" /> елемента</translation>
 <translation id="4843566743023903107">Устройствата Chromebase</translation>
 <translation id="4850886885716139402">Изглед</translation>
@@ -533,6 +540,7 @@
 по файлове с други хора – всичко от едно място.<ph name="MARKUP_9" /></translation>
 <translation id="5275973617553375938">Възстановени от Google Диск файлове</translation>
 <translation id="5278111733643988471">За да възстановите този елемент, преместете го с плъзгане в нова папка извън кошчето. Първоначалната му папка „<ph name="PARENT_FOLDER_NAME" />“ е изтрита.</translation>
+<translation id="5283101102242354279">Включване на разширение в режим „инкогнито“:</translation>
 <translation id="5286194356314741248">Сканира се</translation>
 <translation id="5288441970121584418">Хамбургер</translation>
 <translation id="5288481194217812690"><ph name="FILENAME" /></translation>
@@ -779,6 +787,7 @@
 <translation id="7238643356913091553"><ph name="NETWORK_NAME" />, подробности</translation>
 <translation id="7246947237293279874">FTP прокси сървър</translation>
 <translation id="7248671827512403053">Приложение</translation>
+<translation id="7252604552361840748">Намерете разширението по-горе.</translation>
 <translation id="7256405249507348194">Неразпозната грешка: <ph name="DESC" /></translation>
 <translation id="7268659760406822741">Налични услуги</translation>
 <translation id="7292816689782057017">Запазването в някои местоположения е ограничено чрез администраторско правило.</translation>
@@ -792,6 +801,7 @@
 <translation id="7359359531237882347"><ph name="NUMBER_OF_ITEMS" /> елемента се копират...</translation>
 <translation id="7375951387215729722">Списъкът с файлове е сортиран в низходящ ред по <ph name="COLUMN_NAME" />.</translation>
 <translation id="7377161162143020057">Копирането на този файл е блокирано чрез администраторско правило</translation>
+<translation id="7392500733467492920">Обърнете се към администратора си.</translation>
 <translation id="7402503521691663770">Устройства с ChromeOS Flex</translation>
 <translation id="7408870451288633753">Чешки</translation>
 <translation id="7417453074306512035">Етиопска клавиатура</translation>

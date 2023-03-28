@@ -698,6 +698,7 @@
 <translation id="7103252855940681301">기기 <ph name="COUNT" />대 중 <ph name="INDEX" />번째, 기기 이름은 <ph name="NAME" />입니다.</translation>
 <translation id="7108668606237948702">입력</translation>
 <translation id="7130438335435247835">액세스포인트 네임(APN)</translation>
+<translation id="7131634559772719176">미리 설정 확인</translation>
 <translation id="7134436342991564651">{0,plural, =1{네임서버}other{네임서버}}</translation>
 <translation id="7143207342074048698">연결 중</translation>
 <translation id="7144878232160441200">다시 시도</translation>
@@ -801,6 +802,7 @@
 <translation id="80398733265834479">색상 자동조절 사용</translation>
 <translation id="8041089156583427627">의견 보내기</translation>
 <translation id="8045012663542226664">마이크 음소거</translation>
+<translation id="8050091914317269817">이 배경화면을 선택하면 자동 어두운 모드 및 배경화면 색상 일치가 사용 설정됩니다.</translation>
 <translation id="8075838845814659848">배터리 잔량</translation>
 <translation id="8076492880354921740">탭</translation>
 <translation id="8082366717211101304">Android 앱에서 DNS를 변환할 수 없습니다.</translation>

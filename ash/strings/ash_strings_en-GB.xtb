@@ -621,7 +621,6 @@ Connect your device to power.</translation>
 <translation id="3925540965556789199"><ph name="DATE" />, Loading events.</translation>
 <translation id="3932043219784172185">No device connected</translation>
 <translation id="3934456833412894880">Adaptive charging is on. Your battery will stay at 80% to extend battery life, and fully charge when you need it.</translation>
-<translation id="3936620957945677513">Hit enter to join event <ph name="EVENT_SUMMARY" /></translation>
 <translation id="3943857333388298514">Paste</translation>
 <translation id="394485226368336402">Audio settings</translation>
 <translation id="3945319193631853098">Tap to complete setup</translation>
@@ -1252,6 +1251,7 @@ New install</translation>
 <translation id="685782768769951078">{NUM_DIGITS,plural, =1{One digit remaining}other{# digits remaining}}</translation>
 <translation id="6867938213751067702">Download paused <ph name="FILENAME" /></translation>
 <translation id="6878400149835617132">Shortcut turned off</translation>
+<translation id="6878701771800702153">{NUM_APPS,plural, =1{1 app}other{# apps}}</translation>
 <translation id="6884665277231944629">Go back to today</translation>
 <translation id="6886172995547742638">Your <ph name="DEVICE_TYPE" /> may experience lower performance. Use a certified <ph name="PREFERRED_MINIMUM_POWER" />W or higher USB-C power adaptor.</translation>
 <translation id="688631446150864480">Press the Down arrow key to switch windows</translation>

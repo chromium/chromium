@@ -97,6 +97,7 @@
 <translation id="1773212559869067373">Godkendelsescertifikatet blev afvist lokalt</translation>
 <translation id="1775381402323441512">Videooplysninger</translation>
 <translation id="180035236176489073">Du skal være online for at få adgang til disse filer.</translation>
+<translation id="1805030087840125683">{COUNT,plural, =1{Udvidelsen med id'et}one{Udvidelsen med id'et}other{Udvidelserne med id'erne}}</translation>
 <translation id="1807938677607439181">Alle filer</translation>
 <translation id="1810764548349082891">Ingen tilgængelig forhåndsvisning</translation>
 <translation id="1812302367230252929">Amharisk translitteration</translation>
@@ -130,6 +131,7 @@
 <translation id="2084108471225856927">Enhedsindstillinger</translation>
 <translation id="2084809735218147718">Siger tak på tegnsprog</translation>
 <translation id="2088690981887365033">VPN-netværk</translation>
+<translation id="2111134541987263231">Aktivér <ph name="BEGIN_BOLD" />Tillad i inkognito<ph name="END_BOLD" />.</translation>
 <translation id="2114191879048183086"><ph name="NUMBER_OF_ITEMS" /> elementer slettes, og du kan ikke gendanne dem.</translation>
 <translation id="2122305276694332719">Vi anbefaler, at du ikke tillader automatisk forbindelse til skjulte netværk, da det gør det muligt for andre at se din enhed og visse netværksindstillinger.</translation>
 <translation id="2125607626296734455">Khmer</translation>
@@ -228,6 +230,7 @@
 <translation id="290843123675549676">Marathi</translation>
 <translation id="2923240520113693977">Estisk</translation>
 <translation id="2938685643439809023">Mongolsk</translation>
+<translation id="293972288692056847">{COUNT,plural, =1{Udvidelsen blev ikke fundet}one{Udvidelsen blev ikke fundet}other{Udvidelserne blev ikke fundet}}</translation>
 <translation id="2943503720238418293">Brug et kortere navn</translation>
 <translation id="2949781154072577687">Formaterer <ph name="DRIVE_NAME" />…</translation>
 <translation id="2951236788251446349">Vandmand</translation>
@@ -282,6 +285,7 @@
 <translation id="3356580349448036450">Fuldført</translation>
 <translation id="3358452157379365236">Guitar</translation>
 <translation id="3368922792935385530">Tilsluttet</translation>
+<translation id="3372635229069101468">Klik på <ph name="BEGIN_BOLD" />Detaljer<ph name="END_BOLD" /></translation>
 <translation id="3382143449143186018">Nepalesisk InScript-tastatur</translation>
 <translation id="338691029516748599">Netværk <ph name="NETWORK_INDEX" /> af <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, signalstyrke <ph name="SIGNAL_STRENGTH" /> %, administreret af din administrator, opret forbindelse</translation>
 <translation id="3408072735282270043">Aktivér <ph name="NETWORK_NAME" /></translation>
@@ -366,6 +370,7 @@
 <translation id="4124935795427217608">Enhjørning</translation>
 <translation id="4131235941541910880">Flyt overflødige elementer til papirkurven</translation>
 <translation id="4134804435730168042">Netværk <ph name="NETWORK_INDEX" /> af <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" />, aktivér efter konfiguration af enhed</translation>
+<translation id="41501027364808384">{COUNT,plural, =1{Aktivér følgende udvidelse i inkognito:}one{Aktivér følgende udvidelse i inkognito:}other{Aktivér følgende udvidelser i inkognito:}}</translation>
 <translation id="4153015322587141338">Højreklik på en fil, og vælg "<ph name="PIN_COMMAND" />" for at få hurtig adgang til dine filer på hylden.</translation>
 <translation id="4157569377477607576">Administratorpolitikken fraråder:</translation>
 <translation id="4159731583141908892"><ph name="FILE_NAME" /> blev flyttet.</translation>
@@ -462,8 +467,10 @@
 <translation id="4801956050125744859">Behold begge</translation>
 <translation id="4804827417948292437">Avocado</translation>
 <translation id="4805966553127040832"><ph name="COUNT" /> elementer gendannes</translation>
+<translation id="4816695657735045067">{COUNT,plural, =1{Din organisation kræver en udvidelse, før du kan bruge inkognito}one{Din organisation kræver en udvidelse, før du kan bruge inkognito}other{Din organisation kræver nogle udvidelser, før du kan bruge inkognito}}</translation>
 <translation id="4823651846660089135">Enheden er skrivebeskyttet</translation>
 <translation id="4826849268470072925">Tamil ITRANS</translation>
+<translation id="482932175346970750">Indtast <ph name="BEGIN_BOLD" />chrome://extensions<ph name="END_BOLD" /> i din browser</translation>
 <translation id="4839847978919684242"><ph name="SELCTED_FILES_COUNT" /> elementer valgt</translation>
 <translation id="4843566743023903107">Chromebases</translation>
 <translation id="4850886885716139402">Vis</translation>
@@ -533,6 +540,7 @@
         om filer med andre på ét sted.<ph name="MARKUP_9" /></translation>
 <translation id="5275973617553375938">Gendannede filer fra Google Drev</translation>
 <translation id="5278111733643988471">Hvis du vil gendanne elementet, skal du trække det til en ny mappe uden for papirkurven. Den oprindelige mappe "<ph name="PARENT_FOLDER_NAME" />" for dette element er blevet slettet.</translation>
+<translation id="5283101102242354279">Aktivér en udvidelse i inkognito:</translation>
 <translation id="5286194356314741248">Søger</translation>
 <translation id="5288441970121584418">Burger</translation>
 <translation id="5288481194217812690"><ph name="FILENAME" /></translation>
@@ -779,6 +787,7 @@
 <translation id="7238643356913091553"><ph name="NETWORK_NAME" />, oplysninger</translation>
 <translation id="7246947237293279874">FTP-proxy</translation>
 <translation id="7248671827512403053">Applikation</translation>
+<translation id="7252604552361840748">Find udvidelsen ovenfor</translation>
 <translation id="7256405249507348194">Ukendt fejl: <ph name="DESC" /></translation>
 <translation id="7268659760406822741">Tilgængelige tjenester</translation>
 <translation id="7292816689782057017">Administratorpolitikken begrænser lagring til visse placeringer.</translation>
@@ -792,6 +801,7 @@
 <translation id="7359359531237882347">Kopierer <ph name="NUMBER_OF_ITEMS" /> elementer...</translation>
 <translation id="7375951387215729722">Listen med filer er sorteret efter <ph name="COLUMN_NAME" /> i faldende rækkefølge.</translation>
 <translation id="7377161162143020057">Administratorpolitikken tillader ikke, at du kopierer denne fil</translation>
+<translation id="7392500733467492920">blev ikke fundet. Kontakt din administrator.</translation>
 <translation id="7402503521691663770">ChromeOS Flex-enheder</translation>
 <translation id="7408870451288633753">Tjekkisk</translation>
 <translation id="7417453074306512035">Etiopisk tastatur</translation>

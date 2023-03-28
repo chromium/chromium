@@ -108,6 +108,7 @@
 <translation id="4565377596337484307">Ocultar senha</translation>
 <translation id="4588090240171750605">Percorrer à direita</translation>
 <translation id="4724120544754982507">Central de Notificações: <ph name="UNREAD_NOTIFICATION_COUNT" /> notificações não lidas</translation>
+<translation id="4729257764711776855">o número</translation>
 <translation id="4746179598275229723">A extensão foi liberada</translation>
 <translation id="4788285488841504513">{MONTHS,plural, =1{1 mês restante}one{# mês restante}other{# meses restantes}}</translation>
 <translation id="4888938634149558681">Ligar</translation>
@@ -119,6 +120,7 @@
 <translation id="5278860589123563674">Falha ao enviar</translation>
 <translation id="528468243742722775">Fim</translation>
 <translation id="5329858601952122676">&amp;Excluir</translation>
+<translation id="5361107212971249203">o texto</translation>
 <translation id="5463830097259460683">Emojis e símbolos</translation>
 <translation id="5528053674512161860">Falha ao carregar a página. O módulo de IU do desenvolvedor (dev_ui) não está instalado</translation>
 <translation id="5574202486608032840">Sistema <ph name="IDS_SHORT_PRODUCT_OS_NAME" /></translation>

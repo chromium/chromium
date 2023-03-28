@@ -108,6 +108,7 @@
 <translation id="4565377596337484307">លាក់​ពាក្យ​សម្ងាត់</translation>
 <translation id="4588090240171750605">ទាញចុះទៅខាងស្តាំ</translation>
 <translation id="4724120544754982507">ការជូន​ដំណឹងដែល​មិនទាន់​អាន​ចំនួន <ph name="UNREAD_NOTIFICATION_COUNT" /> នៅក្នុង​មជ្ឈមណ្ឌល​ជូនដំណឹង</translation>
+<translation id="4729257764711776855">លេខ</translation>
 <translation id="4746179598275229723">បានដកខ្ទាស់​កម្មវិធីបន្ថែម</translation>
 <translation id="4788285488841504513">{MONTHS,plural, =1{នៅសល់ 1 ខែទៀត}other{នៅសល់ # ខែទៀត}}</translation>
 <translation id="4888938634149558681">ហៅទូរសព្ទ</translation>
@@ -119,6 +120,7 @@
 <translation id="5278860589123563674">មិន​អាច​ផ្ញើ​បាន​ទេ</translation>
 <translation id="528468243742722775">បញ្ចប់</translation>
 <translation id="5329858601952122676">លុប</translation>
+<translation id="5361107212971249203">អក្សរ</translation>
 <translation id="5463830097259460683">រូប​អារម្មណ៍ និង​និមិត្តសញ្ញា</translation>
 <translation id="5528053674512161860">ការផ្ទុក​ទំព័រ​មិនបានសម្រេច​ទេ ដោយសារ​មិនបានដំឡើង​ម៉ូឌុល UI អ្នកអភិវឌ្ឍន៍ (dev_ui)</translation>
 <translation id="5574202486608032840">ប្រព័ន្ធ <ph name="IDS_SHORT_PRODUCT_OS_NAME" /></translation>

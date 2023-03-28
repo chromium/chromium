@@ -97,6 +97,7 @@
 <translation id="1773212559869067373">அடையாளச் சான்றிதழ் பயனரின் கம்ப்யூட்டரில் நிராகரிக்கப்பட்டது</translation>
 <translation id="1775381402323441512">வீடியோ தகவல்</translation>
 <translation id="180035236176489073">இந்த ஃபைல்களை அணுக ஆன்லைனில் இருக்க வேண்டும்.</translation>
+<translation id="1805030087840125683">{COUNT,plural, =1{ஐடியைக் கொண்ட நீட்டிப்பு}other{ஐடிகளைக் கொண்ட நீட்டிப்புகள்}}</translation>
 <translation id="1807938677607439181">எல்லா கோப்புகளும்</translation>
 <translation id="1810764548349082891">மாதிரிக்காட்சி இல்லை</translation>
 <translation id="1812302367230252929">அம்ஹரிக் ஒலிபெயர்ப்பு</translation>
@@ -130,6 +131,7 @@
 <translation id="2084108471225856927">சாதன அமைப்புகள்</translation>
 <translation id="2084809735218147718">நன்றி சொல்லும் நபர்</translation>
 <translation id="2088690981887365033">VPN நெட்வொர்க்</translation>
+<translation id="2111134541987263231"><ph name="BEGIN_BOLD" />மறைநிலையில் அனுமதி<ph name="END_BOLD" /> என்பதை இயக்கவும்</translation>
 <translation id="2114191879048183086"><ph name="NUMBER_OF_ITEMS" /> ஃபைல்கள்/டைரக்டரிகள் நீக்கப்படும். உங்களால் அவற்றை மீட்டெடுக்க முடியாது.</translation>
 <translation id="2122305276694332719">மறைக்கப்பட்டுள்ள நெட்வொர்க்குடன் தானாக இணைந்தால் உங்கள் சாதனத்தையும் சில நெட்வொர்க் அமைப்புகளையும் பிறரால் பார்க்க முடியும் என்பதால் இது பரிந்துரைக்கப்படுவதில்லை.</translation>
 <translation id="2125607626296734455">கெமர்</translation>
@@ -228,6 +230,7 @@
 <translation id="290843123675549676">மராத்தி</translation>
 <translation id="2923240520113693977">எஸ்தோனியன்</translation>
 <translation id="2938685643439809023">மங்கோலியன்</translation>
+<translation id="293972288692056847">{COUNT,plural, =1{நீட்டிப்பைக் கண்டறிய முடியவில்லை}other{நீட்டிப்புகளைக் கண்டறிய முடியவில்லை}}</translation>
 <translation id="2943503720238418293">சிறிய பெயரைப் பயன்படுத்தவும்</translation>
 <translation id="2949781154072577687"><ph name="DRIVE_NAME" /> ஐ ஃபார்மேட் செய்கிறது...</translation>
 <translation id="2951236788251446349">ஜெல்லிஃபிஷ்</translation>
@@ -282,6 +285,7 @@
 <translation id="3356580349448036450">முடிந்தது</translation>
 <translation id="3358452157379365236">கிட்டார்</translation>
 <translation id="3368922792935385530">இணைக்கப்பட்டது</translation>
+<translation id="3372635229069101468"><ph name="BEGIN_BOLD" />விவரங்கள்<ph name="END_BOLD" /> என்பதைக் கிளிக் செய்யவும்</translation>
 <translation id="3382143449143186018">நேபாளி இன்ஸ்கிரிப்ட் கீபோர்டு</translation>
 <translation id="338691029516748599">நெட்வொர்க்: <ph name="NETWORK_INDEX" />/<ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, சிக்னல் வலிமை: <ph name="SIGNAL_STRENGTH" />%, உங்கள் நிர்வாகி நிர்வகிக்கிறார், இணை</translation>
 <translation id="3408072735282270043"><ph name="NETWORK_NAME" /> நெட்வொர்க்கைச் செயல்படுத்தும்</translation>
@@ -366,6 +370,7 @@
 <translation id="4124935795427217608">கொம்புக் குதிரை</translation>
 <translation id="4131235941541910880">தேவைப்படாதவற்றை நீக்கவும்</translation>
 <translation id="4134804435730168042"><ph name="NETWORK_COUNT" />ல் <ph name="NETWORK_INDEX" />வது நெட்வொர்க், <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" />, சாதன அமைவிற்குப் பிறகு செயல்படுத்தவும்</translation>
+<translation id="41501027364808384">{COUNT,plural, =1{பின்வரும் நீட்டிப்பை மறைநிலையில் இயக்கவும்:}other{பின்வரும் நீட்டிப்புகளை மறைநிலையில் இயக்கவும்:}}</translation>
 <translation id="4153015322587141338">ஃபைலை வலது கிளிக் செய்து "<ph name="PIN_COMMAND" />" என்பதைத் தேர்ந்தெடுக்கவும், இதன் மூலம் ஷெல்ஃபிலுள்ள ஃபைல்களுக்கான விரைவு அணுகலைப் பெறலாம்.</translation>
 <translation id="4157569377477607576">இவற்றை நிர்வாகக் கொள்கை பரிந்துரைக்கவில்லை:</translation>
 <translation id="4159731583141908892"><ph name="FILE_NAME" /> நகர்த்தப்பட்டது.</translation>
@@ -462,8 +467,10 @@
 <translation id="4801956050125744859">இரண்டையும் வைத்திரு</translation>
 <translation id="4804827417948292437">அவகாடோ</translation>
 <translation id="4805966553127040832"><ph name="COUNT" /> ஃபைல்கள்/ஃபோல்டர்களை மீட்டெடுக்கிறது</translation>
+<translation id="4816695657735045067">{COUNT,plural, =1{மறைநிலையைப் பயன்படுத்த உங்கள் நிறுவனத்திற்கு நீட்டிப்பு தேவை}other{மறைநிலையைப் பயன்படுத்த உங்கள் நிறுவனத்திற்குச் சில நீட்டிப்புகள் தேவை}}</translation>
 <translation id="4823651846660089135">படிப்பதற்கு மட்டுமேயான சாதனம்</translation>
 <translation id="4826849268470072925">தமிழ் (ITRANS)</translation>
+<translation id="482932175346970750">உலாவியில் <ph name="BEGIN_BOLD" />chrome://extensions<ph name="END_BOLD" /> என டைப் செய்யவும்</translation>
 <translation id="4839847978919684242"><ph name="SELCTED_FILES_COUNT" /> உருப்படிகள் தேர்ந்தெடுக்கப்பட்டன</translation>
 <translation id="4843566743023903107">Chromebases</translation>
 <translation id="4850886885716139402">காட்சி</translation>
@@ -533,6 +540,7 @@
      மேலும் பிறருடன் இணைந்து திருத்தலாம்.<ph name="MARKUP_9" /></translation>
 <translation id="5275973617553375938">Google இயக்கத்திலிருந்து மீட்கப்பட்ட ஃபைல்கள் </translation>
 <translation id="5278111733643988471">இதை மீட்டெடுக்க நீக்கியவை ஃபோல்டரில் இருந்து புதிய ஃபோல்டருக்கு இழுத்து விடவும். இதற்கான "<ph name="PARENT_FOLDER_NAME" />" எனும் அசல் ஃபோல்டர் நீக்கப்பட்டுள்ளது.</translation>
+<translation id="5283101102242354279">நீட்டிப்பை மறைநிலையில் இயக்க:</translation>
 <translation id="5286194356314741248">ஸ்கேன் செய்கிறது</translation>
 <translation id="5288441970121584418">பர்கர்</translation>
 <translation id="5288481194217812690"><ph name="FILENAME" /></translation>
@@ -779,6 +787,7 @@
 <translation id="7238643356913091553"><ph name="NETWORK_NAME" />, விவரங்கள்</translation>
 <translation id="7246947237293279874">FTP ப்ராக்ஸி</translation>
 <translation id="7248671827512403053">ஆப்ஸ்</translation>
+<translation id="7252604552361840748">மேலே உள்ள நீட்டிப்பைக் கண்டறியவும்</translation>
 <translation id="7256405249507348194">அறியப்படாத பிழை: <ph name="DESC" /></translation>
 <translation id="7268659760406822741">கிடைக்கும் சேவைகள்</translation>
 <translation id="7292816689782057017">சில இடங்களில் சேமிப்பதை நிர்வாகக் கொள்கை கட்டுப்படுத்துகிறது.</translation>
@@ -792,6 +801,7 @@
 <translation id="7359359531237882347"><ph name="NUMBER_OF_ITEMS" /> உள்ளடக்கங்களை நகலெடுக்கிறது...</translation>
 <translation id="7375951387215729722"><ph name="COLUMN_NAME" /> அடிப்படையில் ஃபைல் பட்டியல் இறங்கு வரிசையில் காட்டப்பட்டுள்ளது.</translation>
 <translation id="7377161162143020057">இந்த ஃபைலை நகலெடுப்பது நிர்வாகக் கொள்கையின்படி தடுக்கப்பட்டுள்ளது</translation>
+<translation id="7392500733467492920">கண்டறிய முடியவில்லை. உங்கள் நிர்வாகியைத் தொடர்புகொள்ளவும்.</translation>
 <translation id="7402503521691663770">ChromeOS Flex சாதனங்கள்</translation>
 <translation id="7408870451288633753">செக்</translation>
 <translation id="7417453074306512035">எத்தியோபிக் கீபோர்டு</translation>

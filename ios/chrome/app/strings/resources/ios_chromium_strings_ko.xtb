@@ -47,6 +47,7 @@
 <translation id="3567399274263440288">Chromium을 최대한 활용하려면 Google 계정으로 Chromium에 로그인하세요</translation>
 <translation id="3639997914391704523">Google 계정으로 로그인하면 Chromium에서 비밀번호를 확인할 수 있습니다.</translation>
 <translation id="3650632991272923014"><ph name="USER_EMAIL1" /> 계정이 Chromium을 사용했으며 이 기기에 북마크, 비밀번호, 기타 설정을 남겼습니다</translation>
+<translation id="372658070733623520">Google 계정에서 Chromium 데이터를 사용하고 저장하려면 본인 확인 절차를 거치세요.</translation>
 <translation id="3805899903892079518">Chromium에서 사진 또는 동영상에 액세스할 수 없습니다. 'iOS 설정 &gt; 개인 정보 보호 &gt; 사진'에서 액세스를 허용하세요.</translation>
 <translation id="4043291146360695975">비밀번호가 이 기기의 비밀번호 관리자에만 저장됩니다</translation>
 <translation id="4099085513035183040">Chromium 베타에서는 지원되지 않습니다.</translation>
@@ -76,6 +77,7 @@
 <translation id="5945387852661427312"><ph name="DOMAIN" />에서 관리하는 계정으로 로그인합니다. 계정 관리자가 내 Chromium 데이터를 관리하게 되며 데이터는 이 계정에 영구적으로 연결됩니다. Chromium에서 로그아웃하면 데이터가 기기에서 삭제되지만 Google 계정에는 그대로 유지됩니다.</translation>
 <translation id="5983312940147103417">Chromium 개선에 참여</translation>
 <translation id="6062449165341879460"><ph name="DOMAIN" /> 조직에서 이 계정에 저장하는 Chromium 데이터, 북마크, 방문 기록, 비밀번호, 기타 설정에 액세스할 수 있습니다. 로그아웃하면 데이터가 기기에서 삭제됩니다.  하지만 데이터는 관리 Google 계정에 계속 저장되어 조직에서 사용할 수 있습니다. 조직에서 관련 계정에 적용되는 사용자 정책을 설정하여 Chromium의 동작을 변경할 수도 있습니다.</translation>
+<translation id="61109258320235597">Google 계정에서 Chromium 데이터를 사용하고 저장하려면 비밀번호를 입력하세요.</translation>
 <translation id="6119647025869519954">Chromium을 기본 브라우저로 설정하려면 다음 단계를 따르세요.
 1. 설정을 엽니다.
 2. 기본 브라우저 앱을 탭합니다.

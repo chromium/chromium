@@ -40,6 +40,7 @@ Hér eru nokkrir hlutir sem þú getur prófað til að byrja með.</translation
 <translation id="1181037720776840403">Fjarlægja</translation>
 <translation id="1182225749592316782">Þetta veitir öllum forritum og vefsvæðum með myndavélar- og hljóðnemaheimildir aðgang</translation>
 <translation id="1183863904939664422">Ég hef ekki áhuga á þessari tillögu</translation>
+<translation id="1184126796192815024">Þetta net styður ekki streymi forrita úr símanum þínum. Prófaðu að nota heitan reit símans. <ph name="LEARN_MORE" /></translation>
 <translation id="118437560755358292">Sláðu inn PIN-númer eða aðgangsorð til að auka öryggið</translation>
 <translation id="118532027333893379">Ýttu hvar sem er til að mynda allan skjáinn</translation>
 <translation id="1190609913194133056">Tilkynningamiðstöð</translation>
@@ -621,7 +622,6 @@ Tengdu tækið við rafmagn.</translation>
 <translation id="3925540965556789199"><ph name="DATE" />, hleður viðburðum.</translation>
 <translation id="3932043219784172185">Ekkert tæki tengt</translation>
 <translation id="3934456833412894880">Kveikt er á aðlagaðri hleðslu. Rafhlaðan helst í 80% til að lengja rafhlöðuendingu og fullhleðst þegar þú þarft á að halda.</translation>
-<translation id="3936620957945677513">Ýttu á Enter til að tengjast viðburðinum <ph name="EVENT_SUMMARY" /></translation>
 <translation id="3943857333388298514">Líma</translation>
 <translation id="394485226368336402">Hljóðstillingar</translation>
 <translation id="3945319193631853098">Ýttu til að ljúka uppsetningu</translation>

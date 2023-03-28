@@ -26,7 +26,6 @@
 <translation id="1434626383986940139">Chrome Canary პროგრამები</translation>
 <translation id="1507198376417198979">მოირგეთ თქვენი ახალი Chrome პროფილი</translation>
 <translation id="1516530951338665275">დაწყვილების გასაგრძელებლად Google Chrome საჭიროებს Bluetooth-ზე წვდომას. <ph name="IDS_BLUETOOTH_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
-<translation id="1535597783576881392">ეს სახელმძღვანელო დაგეხმარებათ, გაერკვეთ, რა არჩევანი გაქვთ, Chrome თქვენს საჭიროებებს რომ მოარგოთ</translation>
 <translation id="1547295885616600893">ChromeOS მუშაობს <ph name="BEGIN_LINK_CROS_OSS" />ღია კოდის პროგრამული უზრუნველყოფის<ph name="END_LINK_CROS_OSS" /> დამსახურებით.</translation>
 <translation id="1553358976309200471">Chrome-ის განახლება</translation>
 <translation id="1583073672411044740"><ph name="EXISTING_USER" /> უკვე შესულია ამ Chrome პროფილში. ეს მოქმედება შექმნის ახალ Chrome პროფილს <ph name="USER_EMAIL_ADDRESS" />-ისთვის</translation>
@@ -69,7 +68,6 @@
 <translation id="2131230230468101642">თქვენი კონფიდენციალურობის დაცვის მიზნით, ჩვენ ავტომატურად ვშლით თქვენს ინტერესებს, რომლებიც 4 კვირაზე ძველია. თქვენ მიერ ვების დათვალიერების პარალელურად, ესა თუ ეს ინტერესი შეიძლება ხელახლა გამოჩნდეს სიაში. სურვილისამებრ, შეგიძლიათ წაშალოთ ინტერესები, რომლებიც არ გსურთ, Chrome-მა რომ გაითვალისწინოს.</translation>
 <translation id="2139300032719313227">გადატვირთეთ ChromeOS</translation>
 <translation id="2151406531797534936">გთხოვთ, ახლავე გადატვირთოთ Chrome</translation>
-<translation id="2163996651553460171">მაქსიმალურად გამოიყენეთ Chrome-ის შესაძლებლობები</translation>
 <translation id="2174917724755363426">ინსტალაცია არ დასრულებულა. ნამდვილად გსურთ გაუქმება?</translation>
 <translation id="223889379102603431">ინფორმაცია Chrome-ის მიერ თავისი ძირეული სერტიფიკატების მართვის შესახებ</translation>
 <translation id="2258103955319320201">Chrome ბრაუზერში თქვენს კონტენტზე თქვენი ნებისმიერი მოწყობილობიდან წვდომისთვის შედით სისტემაში, შემდეგ კი ჩართეთ სინქრონიზაცია</translation>

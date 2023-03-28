@@ -40,6 +40,7 @@
 <translation id="1181037720776840403">삭제</translation>
 <translation id="1182225749592316782">카메라 및 마이크 권한이 있는 모든 앱과 웹사이트에 액세스 권한이 부여됩니다.</translation>
 <translation id="1183863904939664422">제안 무시</translation>
+<translation id="1184126796192815024">이 네트워크는 휴대전화에 있는 스트리밍 앱을 지원하지 않습니다. 휴대전화의 핫스팟을 사용해 보세요. <ph name="LEARN_MORE" /></translation>
 <translation id="118437560755358292">보안 강화를 위해 비밀번호 또는 PIN 입력</translation>
 <translation id="118532027333893379">전체 화면을 캡처하려면 아무 곳이나 탭하세요.</translation>
 <translation id="1190609913194133056">알림 센터</translation>
@@ -621,7 +622,6 @@
 <translation id="3925540965556789199"><ph name="DATE" />, 일정을 로드하는 중입니다.</translation>
 <translation id="3932043219784172185">연결된 기기 없음</translation>
 <translation id="3934456833412894880">자동 조절 충전이 사용 설정되었습니다. 배터리 수명 연장을 위해 80%까지 정상 속도로 충전 후 필요한 시점에 완충됩니다.</translation>
-<translation id="3936620957945677513"><ph name="EVENT_SUMMARY" /> 이벤트에 참가하려면 Enter를 누르세요</translation>
 <translation id="3943857333388298514">붙여넣기</translation>
 <translation id="394485226368336402">오디오 설정</translation>
 <translation id="3945319193631853098">설정을 완료하려면 탭하세요.</translation>

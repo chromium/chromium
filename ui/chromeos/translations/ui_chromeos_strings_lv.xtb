@@ -97,6 +97,7 @@
 <translation id="1773212559869067373">Autentifikācijas sertifikāts tika lokāli noraidīts.</translation>
 <translation id="1775381402323441512">Video informācija</translation>
 <translation id="180035236176489073">Lai piekļūtu šiem failiem, jums ir jābūt tiešsaistē.</translation>
+<translation id="1805030087840125683">{COUNT,plural, =1{Nevar atrast paplašinājumu ar šādu ID:}zero{Nevar atrast paplašinājumus ar šādiem ID:}one{Nevar atrast paplašinājumus ar šādiem ID:}other{Nevar atrast paplašinājumus ar šādiem ID:}}</translation>
 <translation id="1807938677607439181">Visi faili</translation>
 <translation id="1810764548349082891">Priekšskatījums nav pieejams</translation>
 <translation id="1812302367230252929">Amharu, transliterācija</translation>
@@ -130,6 +131,7 @@
 <translation id="2084108471225856927">Ierīces iestatījumi</translation>
 <translation id="2084809735218147718">Persona zīmju valodā rāda: “Paldies!”</translation>
 <translation id="2088690981887365033">VPN tīkls</translation>
+<translation id="2111134541987263231">Ieslēdziet iestatījumu <ph name="BEGIN_BOLD" />Atļaut inkognito režīmā<ph name="END_BOLD" />.</translation>
 <translation id="2114191879048183086">Tiks dzēsti <ph name="NUMBER_OF_ITEMS" /> faili, un jūs vairs nevarēsiet tos atjaunot.</translation>
 <translation id="2122305276694332719">Automātiska pieslēgšanās paslēptam tīklam ļauj citiem redzēt jūsu ierīci un dažus tīkla iestatījumus, taču tas nav ieteicams.</translation>
 <translation id="2125607626296734455">Khmeru</translation>
@@ -228,6 +230,7 @@
 <translation id="290843123675549676">Marathu</translation>
 <translation id="2923240520113693977">Igauņu valoda</translation>
 <translation id="2938685643439809023">Mongoļu valoda</translation>
+<translation id="293972288692056847">{COUNT,plural, =1{Nevar atrast paplašinājumu}zero{Nevar atrast paplašinājumus}one{Nevar atrast paplašinājumus}other{Nevar atrast paplašinājumus}}</translation>
 <translation id="2943503720238418293">Izmantojiet īsāku nosaukumu.</translation>
 <translation id="2949781154072577687">Notiek diska “<ph name="DRIVE_NAME" />” formatēšana...</translation>
 <translation id="2951236788251446349">Medūza</translation>
@@ -282,6 +285,7 @@
 <translation id="3356580349448036450">Pabeigts</translation>
 <translation id="3358452157379365236">Ģitāra</translation>
 <translation id="3368922792935385530">pievienots</translation>
+<translation id="3372635229069101468">Noklikšķiniet uz pogas <ph name="BEGIN_BOLD" />Dati<ph name="END_BOLD" />.</translation>
 <translation id="3382143449143186018">Nepāliešu, ar InScript tastatūru</translation>
 <translation id="338691029516748599"><ph name="NETWORK_INDEX" />. tīkls no <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, signāla stiprums: <ph name="SIGNAL_STRENGTH" />%, pārvalda jūsu administrators, savienojums</translation>
 <translation id="3408072735282270043">Aktivizēt tīklu <ph name="NETWORK_NAME" /></translation>
@@ -366,6 +370,7 @@
 <translation id="4124935795427217608">Vienradzis</translation>
 <translation id="4131235941541910880">Varat pārvietot nevajadzīgus vienumus uz atkritni</translation>
 <translation id="4134804435730168042"><ph name="NETWORK_INDEX" />. no <ph name="NETWORK_COUNT" /> tīkliem, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" />, jāaktivizē pēc ierīces iestatīšanas</translation>
+<translation id="41501027364808384">{COUNT,plural, =1{Ieslēdziet šī paplašinājuma izmantošanu inkognito režīmā:}zero{Ieslēdziet šo paplašinājumu izmantošanu inkognito režīmā:}one{Ieslēdziet šo paplašinājumu izmantošanu inkognito režīmā:}other{Ieslēdziet šo paplašinājumu izmantošanu inkognito režīmā:}}</translation>
 <translation id="4153015322587141338">Noklikšķiniet ar peles labo pogu uz faila un atlasiet opciju “<ph name="PIN_COMMAND" />”, lai varētu ātri piekļūt šim failam plauktā.</translation>
 <translation id="4157569377477607576">Administratora politika nosaka, ka nav ieteicams:</translation>
 <translation id="4159731583141908892">Pārvietots vienums: <ph name="FILE_NAME" />.</translation>
@@ -462,8 +467,10 @@
 <translation id="4801956050125744859">Saglabāt abus</translation>
 <translation id="4804827417948292437">Avokado</translation>
 <translation id="4805966553127040832">Notiek vienumu (<ph name="COUNT" />) atjaunošana…</translation>
+<translation id="4816695657735045067">{COUNT,plural, =1{Lai varētu izmantot inkognito režīmu, saskaņā ar jūsu organizācijas prasībām ir nepieciešams noteikts paplašinājums.}zero{Lai varētu izmantot inkognito režīmu, saskaņā ar jūsu organizācijas prasībām ir nepieciešami noteikti paplašinājumi.}one{Lai varētu izmantot inkognito režīmu, saskaņā ar jūsu organizācijas prasībām ir nepieciešami noteikti paplašinājumi.}other{Lai varētu izmantot inkognito režīmu, saskaņā ar jūsu organizācijas prasībām ir nepieciešami noteikti paplašinājumi.}}</translation>
 <translation id="4823651846660089135">Ierīce ir tikai lasāma.</translation>
 <translation id="4826849268470072925">Tamilu, ITRANS</translation>
+<translation id="482932175346970750">Pārlūkprogrammā ierakstiet <ph name="BEGIN_BOLD" />chrome://extensions<ph name="END_BOLD" />.</translation>
 <translation id="4839847978919684242">Atlasīti <ph name="SELCTED_FILES_COUNT" /> vienumi.</translation>
 <translation id="4843566743023903107">Chromebase</translation>
 <translation id="4850886885716139402">Skatīt</translation>
@@ -533,6 +540,7 @@
     izmantojot failus kopā ar citiem lietotājiem.<ph name="MARKUP_9" /></translation>
 <translation id="5275973617553375938">No Google diska atkoptie faili</translation>
 <translation id="5278111733643988471">Lai atjaunotu šo vienumu, velciet to uz jaunu mapi ārpus atkritnes. Šī vienuma sākotnējā mape “<ph name="PARENT_FOLDER_NAME" />” ir izdzēsta.</translation>
+<translation id="5283101102242354279">Lai ieslēgtu paplašinājuma izmantošanu inkognito režīmā, veiciet tālāk norādītās darbības.</translation>
 <translation id="5286194356314741248">Notiek skenēšana</translation>
 <translation id="5288441970121584418">Burgers</translation>
 <translation id="5288481194217812690"><ph name="FILENAME" /></translation>
@@ -779,6 +787,7 @@
 <translation id="7238643356913091553"><ph name="NETWORK_NAME" />, informācija</translation>
 <translation id="7246947237293279874">FTP starpniekserveris</translation>
 <translation id="7248671827512403053">Lietojumprogramma</translation>
+<translation id="7252604552361840748">Atrodiet iepriekš norādīto paplašinājumu.</translation>
 <translation id="7256405249507348194">Neatpazīta kļūda: <ph name="DESC" /></translation>
 <translation id="7268659760406822741">Pieejamie pakalpojumi</translation>
 <translation id="7292816689782057017">Saskaņā ar administratora politiku ir ierobežota saglabāšana dažās vietās.</translation>
@@ -792,6 +801,7 @@
 <translation id="7359359531237882347">Notiek <ph name="NUMBER_OF_ITEMS" /> vienumu kopēšana...</translation>
 <translation id="7375951387215729722">Failu saraksts ir sakārtots pēc slejas “<ph name="COLUMN_NAME" />” dilstošā secībā.</translation>
 <translation id="7377161162143020057">Administratora politika bloķē šī faila kopēšanu</translation>
+<translation id="7392500733467492920">Sazinieties ar administratoru.</translation>
 <translation id="7402503521691663770">Chrome OS Flex ierīces</translation>
 <translation id="7408870451288633753">Čehu</translation>
 <translation id="7417453074306512035">Gēzu rakstības tastatūra</translation>
