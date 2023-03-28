@@ -1288,6 +1288,7 @@ void ProfileManager::AddKeepAlive(const Profile* profile,
           << "). keep_alives=" << info->keep_alives;
 
   if (origin == ProfileKeepAliveOrigin::kBrowserWindow ||
+      origin == ProfileKeepAliveOrigin::kProfileCreationFlow ||
       (origin == ProfileKeepAliveOrigin::kProfilePickerView &&
        base::FeatureList::IsEnabled(features::kDestroySystemProfiles))) {
     ClearFirstBrowserWindowKeepAlive(profile);
@@ -1301,7 +1302,8 @@ void ProfileManager::RemoveKeepAlive(const Profile* profile,
   CHECK(profile);
   CHECK(!profile->IsOffTheRecord());
 
-  ProfileInfo* info = GetProfileInfoByPath(profile->GetPath());
+  const base::FilePath profile_path = profile->GetPath();
+  ProfileInfo* info = GetProfileInfoByPath(profile_path);
   if (!info) {
     // Can be null in unit tests, when the Profile was not created via
     // ProfileManager.
@@ -1314,6 +1316,22 @@ void ProfileManager::RemoveKeepAlive(const Profile* profile,
   }
 
   DCHECK(base::Contains(info->keep_alives, origin));
+
+#if !BUILDFLAG(IS_ANDROID)
+  // When removing the last keep alive of an ephemeral profile, schedule the
+  // profile for deletion if it is not yet marked.
+  bool ephemeral =
+      IsRegisteredAsEphemeral(&GetProfileAttributesStorage(), profile_path);
+  bool marked_for_deletion = IsProfileDirectoryMarkedForDeletion(profile_path);
+  if (ephemeral && !marked_for_deletion &&
+      GetTotalRefCount(info->keep_alives) == 1) {
+    delete_profile_helper_->ScheduleEphemeralProfileForDeletion(
+        profile_path,
+        std::make_unique<ScopedProfileKeepAlive>(
+            profile, ProfileKeepAliveOrigin::kProfileDeletionProcess));
+  }
+#endif
+
   info->keep_alives[origin]--;
   DCHECK_LE(0, info->keep_alives[origin]);
 
@@ -2071,16 +2089,8 @@ void ProfileManager::OnBrowserClosed(Browser* browser) {
   }
 
   base::FilePath path = profile->GetPath();
-  ProfileInfo* info = GetProfileInfoByPath(path);
   if (IsProfileDirectoryMarkedForDeletion(path)) {
     // Do nothing if the profile is already being deleted.
-  } else if (IsRegisteredAsEphemeral(&GetProfileAttributesStorage(), path) &&
-             info->keep_alives[ProfileKeepAliveOrigin::kProfileCreationFlow] ==
-                 0) {
-    // Delete if the profile is an ephemeral profile and it is not in the
-    // profile creation flow.
-    // TODO(crbug.com/1369535): Delete the profile when there is no keep alive.
-    delete_profile_helper_->ScheduleEphemeralProfileForDeletion(path);
   } else if (!profile->IsOffTheRecord()) {
     auto* browsing_data_lifetime_manager =
         ChromeBrowsingDataLifetimeManagerFactory::GetForProfile(

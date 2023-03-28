@@ -7,12 +7,17 @@
 #include "base/functional/callback_helpers.h"
 #include "base/test/mock_callback.h"
 #include "base/test/scoped_feature_list.h"
+#include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/nuke_profile_directory_utils.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/profiles/profile_attributes_entry.h"
+#include "chrome/browser/profiles/profile_attributes_storage.h"
+#include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/signin/signin_features.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/views/profiles/profile_picker_web_contents_host.h"
 #include "chrome/test/base/in_process_browser_test.h"
+#include "chrome/test/base/profile_deletion_observer.h"
 #include "components/signin/public/base/signin_metrics.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_delegate.h"
@@ -79,6 +84,7 @@ class ProfilePickerDiceSignInProviderBrowserTest
 
 IN_PROC_BROWSER_TEST_P(ProfilePickerDiceSignInProviderBrowserTest,
                        SwitchToSignInThenExit) {
+  ProfileDeletionObserver observer;
   base::FilePath provider_profile_path;
   base::RunLoop switch_finished_loop;
   base::MockCallback<ProfilePickerDiceSignInProvider::SignedInCallback>
@@ -115,8 +121,14 @@ IN_PROC_BROWSER_TEST_P(ProfilePickerDiceSignInProviderBrowserTest,
     switch_finished_loop.Run();
   }
 
-  // On exit, the provider should schedule the profile it created for deletion.
-  EXPECT_TRUE(IsProfileDirectoryMarkedForDeletion(provider_profile_path));
+  // On exit, the profile it created should be scheduled for deletion since it
+  // has no more keep alives.
+  observer.Wait();
+  ProfileAttributesEntry* entry =
+      g_browser_process->profile_manager()
+          ->GetProfileAttributesStorage()
+          .GetProfileAttributesWithPath(provider_profile_path);
+  EXPECT_EQ(entry, nullptr);
 }
 
 IN_PROC_BROWSER_TEST_P(ProfilePickerDiceSignInProviderBrowserTest,

@@ -151,11 +151,6 @@ class FinishSamlSignInStepController : public ProfileManagementStepController {
   ~FinishSamlSignInStepController() override {
     if (finish_flow_callback_.value()) {
       finish_flow_callback_->Reset();
-
-      // The profile setup did not continue. Schedule it for deletion.
-      g_browser_process->profile_manager()
-          ->GetDeleteProfileHelper()
-          .ScheduleEphemeralProfileForDeletion(profile_->GetPath());
     }
   }
 

@@ -7,6 +7,7 @@
 
 #include "base/functional/callback_forward.h"
 #include "base/memory/raw_ref.h"
+#include "chrome/browser/profiles/keep_alive/scoped_profile_keep_alive.h"
 #include "chrome/browser/profiles/profile_metrics.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
@@ -51,7 +52,9 @@ class DeleteProfileHelper {
   // Schedules the ephemeral profile at the given path to be deleted. New
   // profiles will not be created. If the profile is not loaded, this may
   // trigger a reload of the profile so that user data is cleaned up.
-  void ScheduleEphemeralProfileForDeletion(const base::FilePath& profile_dir);
+  void ScheduleEphemeralProfileForDeletion(
+      const base::FilePath& profile_dir,
+      std::unique_ptr<ScopedProfileKeepAlive> keep_alive);
 
   // Checks if any profiles are left behind (e.g. because of a browser
   // crash) and schedule them for deletion. Unlike the "Schedule" methods above,
@@ -73,10 +76,14 @@ class DeleteProfileHelper {
 
   // Schedules the profile at the given path to be deleted on shutdown,
   // and marks the new profile as active.
-  void FinishDeletingProfile(const base::FilePath& profile_dir,
-                             const base::FilePath& new_active_profile_dir);
-  void OnLoadProfileForProfileDeletion(const base::FilePath& profile_dir,
-                                       Profile* profile);
+  void FinishDeletingProfile(
+      const base::FilePath& profile_dir,
+      const base::FilePath& new_active_profile_dir,
+      std::unique_ptr<ScopedProfileKeepAlive> keep_alive);
+  void OnLoadProfileForProfileDeletion(
+      const base::FilePath& profile_dir,
+      std::unique_ptr<ScopedProfileKeepAlive> keep_alive,
+      Profile* profile);
 
   // If the `loaded_profile` has been loaded successfully and isn't already
   // scheduled for deletion, then finishes adding `profile_to_delete_dir` to the
