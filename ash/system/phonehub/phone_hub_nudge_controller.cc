@@ -8,12 +8,15 @@
 
 namespace ash {
 
-PhoneHubNudgeController::PhoneHubNudgeController(std::u16string nudge_content)
-    : nudge_content_(nudge_content) {}
+PhoneHubNudgeController::PhoneHubNudgeController() = default;
 PhoneHubNudgeController::~PhoneHubNudgeController() = default;
 
 std::unique_ptr<SystemNudge> PhoneHubNudgeController::CreateSystemNudge() {
+  SetNudgeContent();
   return std::make_unique<PhoneHubNudge>(nudge_content_);
 }
 
+void PhoneHubNudgeController::SetNudgeContent() {
+  nudge_content_ = u"";
+}
 }  // namespace ash

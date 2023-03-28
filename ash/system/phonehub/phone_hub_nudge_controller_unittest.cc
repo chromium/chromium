@@ -17,14 +17,13 @@ class PhoneHubNudgeControllerTest : public AshTestBase {
   // AshTestBase:
   void SetUp() override {
     AshTestBase::SetUp();
-    controller_ = std::make_unique<PhoneHubNudgeController>(nudge_content_);
+    controller_ = std::make_unique<PhoneHubNudgeController>();
   }
 
   PhoneHubNudgeController* GetController() { return controller_.get(); }
 
  private:
   std::unique_ptr<PhoneHubNudgeController> controller_;
-  std::u16string nudge_content_;
 };
 
 TEST_F(PhoneHubNudgeControllerTest, PhoneHubNudgeControllerExists) {
