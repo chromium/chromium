@@ -5,6 +5,8 @@
 #include "ash/system/input_device_settings/input_device_settings_metrics_manager.h"
 
 #include "ash/public/mojom/input_device_settings.mojom-forward.h"
+#include "ash/session/session_controller_impl.h"
+#include "ash/shell.h"
 #include "base/metrics/histogram_functions.h"
 
 namespace ash {
@@ -37,7 +39,17 @@ InputDeviceSettingsMetricsManager::~InputDeviceSettingsMetricsManager() =
 
 void InputDeviceSettingsMetricsManager::RecordKeyboardInitialMetrics(
     const mojom::Keyboard& keyboard) {
-  // TODO(yyhyyh@): Only record the metrics once for each keyboard.
+  // Only record the metrics once for each keyboard.
+  const auto account_id =
+      Shell::Get()->session_controller()->GetActiveAccountId();
+  auto iter = recorded_keyboards_.find(account_id);
+
+  if (iter != recorded_keyboards_.end() &&
+      base::Contains(iter->second, keyboard.id)) {
+    return;
+  }
+  recorded_keyboards_[account_id].insert(keyboard.id);
+
   const KeyboardType keyboard_type = GetKeyboardType(keyboard);
   switch (keyboard_type) {
     case KeyboardType::kExternal:

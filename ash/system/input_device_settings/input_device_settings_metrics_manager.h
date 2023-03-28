@@ -7,6 +7,9 @@
 
 #include "ash/ash_export.h"
 #include "ash/public/mojom/input_device_settings.mojom.h"
+#include "base/containers/flat_map.h"
+#include "base/containers/flat_set.h"
+#include "components/account_id/account_id.h"
 
 namespace ash {
 
@@ -20,6 +23,9 @@ class ASH_EXPORT InputDeviceSettingsMetricsManager {
   ~InputDeviceSettingsMetricsManager();
 
   void RecordKeyboardInitialMetrics(const mojom::Keyboard& keyboard);
+
+ private:
+  base::flat_map<AccountId, base::flat_set<uint32_t>> recorded_keyboards_;
 };
 
 }  // namespace ash

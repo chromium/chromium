@@ -15,6 +15,9 @@ namespace {
 constexpr int kExternalKeyboardId = 1;
 constexpr int kExternalChromeOSKeyboardId = 2;
 constexpr int kInternalKeyboardId = 3;
+
+constexpr char kUser1[] = "user1@gmail.com";
+constexpr char kUser2[] = "user2@gmail.com";
 }  // namespace
 
 class InputDeviceSettingsMetricsManagerTest : public AshTestBase {
@@ -105,6 +108,50 @@ TEST_F(InputDeviceSettingsMetricsManagerTest, RecordsKeyboardSettings) {
   histogram_tester.ExpectTotalCount(
       "ChromeOS.Settings.Device.Keyboard.Internal.TopRowAreFKeys.Initial",
       /*expected_count=*/1u);
+}
+
+TEST_F(InputDeviceSettingsMetricsManagerTest, RecordMetricOncePerKeyboard) {
+  mojom::Keyboard keyboard_external;
+  keyboard_external.id = kExternalKeyboardId;
+  keyboard_external.is_external = true;
+  keyboard_external.meta_key = mojom::MetaKey::kCommand;
+  keyboard_external.settings = mojom::KeyboardSettings::New();
+  auto& settings_external = *keyboard_external.settings;
+  settings_external.top_row_are_fkeys = true;
+
+  mojom::Keyboard keyboard_internal;
+  keyboard_internal.id = kInternalKeyboardId;
+  keyboard_internal.is_external = false;
+  keyboard_internal.settings = mojom::KeyboardSettings::New();
+  auto& settings_internal = *keyboard_internal.settings;
+  settings_internal.top_row_are_fkeys = true;
+
+  base::HistogramTester histogram_tester;
+  SimulateUserLogin(kUser1);
+  manager_.get()->RecordKeyboardInitialMetrics(keyboard_external);
+  histogram_tester.ExpectTotalCount(
+      "ChromeOS.Settings.Device.Keyboard.External.TopRowAreFKeys.Initial",
+      /*expected_count=*/1u);
+
+  manager_.get()->RecordKeyboardInitialMetrics(keyboard_internal);
+  histogram_tester.ExpectTotalCount(
+      "ChromeOS.Settings.Device.Keyboard.Internal.TopRowAreFKeys.Initial",
+      /*expected_count=*/1u);
+
+  // Call RecordKeyboardInitialMetrics with the same user and same keyboard,
+  // ExpectTotalCount for Internal metric won't increase.
+  manager_.get()->RecordKeyboardInitialMetrics(keyboard_internal);
+  histogram_tester.ExpectTotalCount(
+      "ChromeOS.Settings.Device.Keyboard.Internal.TopRowAreFKeys.Initial",
+      /*expected_count=*/1u);
+
+  // Call RecordKeyboardInitialMetrics with the different user but same
+  // keyboard, ExpectTotalCount for Internal metric will increase.
+  SimulateUserLogin(kUser2);
+  manager_.get()->RecordKeyboardInitialMetrics(keyboard_internal);
+  histogram_tester.ExpectTotalCount(
+      "ChromeOS.Settings.Device.Keyboard.Internal.TopRowAreFKeys.Initial",
+      /*expected_count=*/2u);
 }
 
 }  // namespace ash
