@@ -122,19 +122,19 @@ class MacNotificationServiceUNTest : public testing::Test {
             notification_id,
             mojom::ProfileIdentifier::New(profile_id, incognito))));
 
-    UNMutableNotificationContent* content =
-        [[UNMutableNotificationContent alloc] init];
-    content.userInfo = @{
+    base::scoped_nsobject<UNMutableNotificationContent> content(
+        [[UNMutableNotificationContent alloc] init]);
+    content.get().userInfo = @{
       kNotificationId : base::SysUTF8ToNSString(notification_id),
       kNotificationProfileId : base::SysUTF8ToNSString(profile_id),
       kNotificationIncognito : [NSNumber numberWithBool:incognito],
     };
     if (!category_id.empty())
-      content.categoryIdentifier = base::SysUTF8ToNSString(category_id);
+      content.get().categoryIdentifier = base::SysUTF8ToNSString(category_id);
 
     UNNotificationRequest* request =
         [UNNotificationRequest requestWithIdentifier:identifier
-                                             content:content
+                                             content:content.get()
                                              trigger:nil];
 
     base::scoped_nsobject<FakeUNNotification> notification(
