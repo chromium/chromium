@@ -81,7 +81,6 @@ class CommerceHintAgent
   int extraction_count_{0};
   bool is_extraction_pending_{false};
   bool is_extraction_running_{false};
-  bool extraction_script_initialized_{false};
   absl::optional<bool> should_skip_;
   absl::optional<bool> should_use_dom_heuristics_;
   std::unique_ptr<ukm::MojoUkmRecorder> ukm_recorder_;

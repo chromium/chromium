@@ -111,17 +111,6 @@ extern const char kRevertIconOnFailureParam[];
 extern const base::FeatureParam<bool> kRevertIconOnFailure;
 
 // Feature parameters for ChromeCart on Desktop.
-
-// Whether to use OptimizationGuide to optimize renderer signal collection.
-constexpr base::FeatureParam<bool> kOptimizeRendererSignal(
-#if !BUILDFLAG(IS_ANDROID)
-    &ntp_features::kNtpChromeCartModule,
-#else
-    &kCommerceHintAndroid,
-#endif
-    "optimize-renderer-signal",
-    true);
-
 constexpr base::FeatureParam<base::TimeDelta> kDiscountFetchDelayParam(
     &ntp_features::kNtpChromeCartModule,
     "discount-fetch-delay",
