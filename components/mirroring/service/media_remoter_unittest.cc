@@ -233,8 +233,11 @@ class MediaRemoterTest : public mojom::CastMessageChannel,
   }
 
   // Signals that mirroring is resumed successfully.
-  void MirroringResumed() {
-    EXPECT_CALL(remoting_source_, OnSinkAvailable(_));
+  void MirroringResumed(bool is_remoting_disabled) {
+    // When MediaRemoter is in the REMOTING_DISABLED state, it should not notify
+    // its remoting_source_ about available sinks.
+    EXPECT_CALL(remoting_source_, OnSinkAvailable(_))
+        .Times(is_remoting_disabled ? 0 : 1);
     media_remoter_->OnMirroringResumed();
     task_environment_.RunUntilIdle();
     Mock::VerifyAndClear(&remoting_source_);
@@ -361,7 +364,7 @@ TEST_P(MediaRemoterTest, StopRemotingWhileStarting) {
   StopRemoting();
 
   // Signals that successfully switch to mirroring.
-  MirroringResumed();
+  MirroringResumed(/* is_remoting_disabled */ false);
   // Now remoting can be started again.
   StartRemoting();
 }
@@ -370,6 +373,8 @@ TEST_P(MediaRemoterTest, RemotingStartFailed) {
   CreateRemoter();
   StartRemoting();
   RemotingStartFailed();
+  StopRemoting();
+  MirroringResumed(/* is_remoting_disabled */ true);
 }
 
 TEST_P(MediaRemoterTest, SwitchBetweenMultipleSessions) {
@@ -386,7 +391,7 @@ TEST_P(MediaRemoterTest, SwitchBetweenMultipleSessions) {
 
   // Stop the remoting session and switch to mirroring.
   StopRemoting();
-  MirroringResumed();
+  MirroringResumed(/* is_remoting_disabled */ false);
 
   // Switch to remoting again.
   StartRemoting();
@@ -396,7 +401,7 @@ TEST_P(MediaRemoterTest, SwitchBetweenMultipleSessions) {
 
   // Switch to mirroring again.
   StopRemoting();
-  MirroringResumed();
+  MirroringResumed(/* is_remoting_disabled */ false);
 }
 
 INSTANTIATE_TEST_SUITE_P(MediaRemoter,
