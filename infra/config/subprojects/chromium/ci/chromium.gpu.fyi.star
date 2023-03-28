@@ -374,6 +374,7 @@ ci.gpu.linux_builder(
             target_bits = 64,
             target_platform = builder_config.target_platform.CHROMEOS,
             target_cros_boards = [
+                "amd64-generic",
                 "octopus",
             ],
         ),

@@ -5771,7 +5771,7 @@
             {
               "device_type": "octopus",
               "os": "ChromeOS",
-              "pool": "chrome.tests"
+              "pool": "chromium.tests"
             }
           ],
           "expiration": 21600,
@@ -5814,7 +5814,7 @@
             {
               "device_type": "octopus",
               "os": "ChromeOS",
-              "pool": "chrome.tests"
+              "pool": "chromium.tests"
             }
           ],
           "expiration": 21600,
@@ -5857,7 +5857,7 @@
             {
               "device_type": "octopus",
               "os": "ChromeOS",
-              "pool": "chrome.tests"
+              "pool": "chromium.tests"
             }
           ],
           "expiration": 21600,
@@ -5904,7 +5904,7 @@
             {
               "device_type": "octopus",
               "os": "ChromeOS",
-              "pool": "chrome.tests"
+              "pool": "chromium.tests"
             }
           ],
           "expiration": 21600,
@@ -5956,7 +5956,7 @@
             {
               "device_type": "octopus",
               "os": "ChromeOS",
-              "pool": "chrome.tests"
+              "pool": "chromium.tests"
             }
           ],
           "expiration": 21600,
@@ -6008,7 +6008,7 @@
             {
               "device_type": "octopus",
               "os": "ChromeOS",
-              "pool": "chrome.tests"
+              "pool": "chromium.tests"
             }
           ],
           "expiration": 21600,
@@ -6052,7 +6052,7 @@
             {
               "device_type": "octopus",
               "os": "ChromeOS",
-              "pool": "chrome.tests"
+              "pool": "chromium.tests"
             }
           ],
           "expiration": 21600,
@@ -6095,7 +6095,7 @@
             {
               "device_type": "octopus",
               "os": "ChromeOS",
-              "pool": "chrome.tests"
+              "pool": "chromium.tests"
             }
           ],
           "expiration": 21600,

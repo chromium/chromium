@@ -4479,7 +4479,7 @@
             {
               'os': 'ChromeOS',
               'device_type': 'octopus',
-              'pool': 'chrome.tests',
+              'pool': 'chromium.tests',
             },
           ],
         },
