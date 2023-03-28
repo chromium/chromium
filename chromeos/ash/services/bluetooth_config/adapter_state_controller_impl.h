@@ -43,7 +43,6 @@ class AdapterStateControllerImpl : public AdapterStateController,
   void AttemptQueuedStateChange();
   void AttemptSetEnabled(bool enabled);
 
-  void OnSetPoweredSuccess(bool enabled);
   void OnSetPoweredError(bool enabled);
 
   scoped_refptr<device::BluetoothAdapter> bluetooth_adapter_;
