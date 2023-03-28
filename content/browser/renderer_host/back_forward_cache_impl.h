@@ -489,24 +489,24 @@ class CONTENT_EXPORT BackForwardCacheImpl
   // the field trial parameter "allowed_websites". This is represented here by a
   // set of host and path prefix. When |allowed_urls_| is empty, it means there
   // are no restrictions on URLs.
-  const std::map<std::string,              // URL's host,
-                 std::vector<std::string>  // URL's path prefix
-                 >
+  const base::flat_map<std::string,              // URL's host,
+                       std::vector<std::string>  // URL's path prefix
+                       >
       allowed_urls_;
 
   // This is an emergency kill switch per url to stop BFCache. The data will be
   // provided via the field trial parameter "blocked_websites".
   // "blocked_websites" have priority over "allowed_websites". This is
   // represented here by a set of host and path prefix.
-  const std::map<std::string,              // URL's host,
-                 std::vector<std::string>  // URL's path prefix
-                 >
+  const base::flat_map<std::string,              // URL's host,
+                       std::vector<std::string>  // URL's path prefix
+                       >
       blocked_urls_;
 
   // Data provided from the "blocked_cgi_params" feature param. If any of these
   // occur in the query of the URL then the page is not eligible for caching.
   // See |IsQueryAllowed|.
-  const std::unordered_set<std::string> blocked_cgi_params_;
+  const base::flat_set<std::string> blocked_cgi_params_;
 
   // Helper class to iterate through the frame tree in the page and populate the
   // NotRestoredReasons.

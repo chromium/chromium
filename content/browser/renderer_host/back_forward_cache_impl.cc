@@ -275,9 +275,9 @@ std::string GetBlockedCgiParams() {
 
 // Parses the “allowed_websites” and "blocked_websites" field trial parameters
 // and creates a map to represent hosts and corresponding path prefixes.
-std::map<std::string, std::vector<std::string>> ParseCommaSeparatedURLs(
+base::flat_map<std::string, std::vector<std::string>> ParseCommaSeparatedURLs(
     base::StringPiece comma_separated_urls) {
-  std::map<std::string, std::vector<std::string>> urls;
+  base::flat_map<std::string, std::vector<std::string>> urls;
   for (auto& it :
        base::SplitString(comma_separated_urls, ",", base::TRIM_WHITESPACE,
                          base::SPLIT_WANT_ALL)) {
@@ -288,14 +288,10 @@ std::map<std::string, std::vector<std::string>> ParseCommaSeparatedURLs(
 }
 
 // Parses the "cgi_params" field trial parameter into a set by splitting on "|".
-std::unordered_set<std::string> ParseBlockedCgiParams(
+base::flat_set<std::string> ParseBlockedCgiParams(
     base::StringPiece cgi_params_string) {
-  std::vector<std::string> split =
-      base::SplitString(cgi_params_string, "|", base::TRIM_WHITESPACE,
-                        base::SplitResult::SPLIT_WANT_NONEMPTY);
-  std::unordered_set<std::string> cgi_params;
-  cgi_params.insert(split.begin(), split.end());
-  return cgi_params;
+  return base::SplitString(cgi_params_string, "|", base::TRIM_WHITESPACE,
+                           base::SplitResult::SPLIT_WANT_NONEMPTY);
 }
 
 BackForwardCacheTestDelegate* g_bfcache_disabled_test_observer = nullptr;
