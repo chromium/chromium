@@ -244,7 +244,8 @@ void FormCache::ClearElement(WebFormControlElement& control_element,
     return;
 
   if (!form_util::IsAutofillableElement(control_element)) {
-    NOTREACHED();
+    // TODO(crbug.com/1336051): Handle selectmenu case and make this NOTREACHED.
+    CHECK(form_util::IsSelectMenuElement(control_element));
     return;
   }
 
@@ -287,7 +288,8 @@ void FormCache::ClearElement(WebFormControlElement& control_element,
                                WebAutofillState::kNotFilled);
     }
   } else {
-    NOTREACHED();
+    // TODO(crbug.com/1336051): Handle selectmenu case and make this NOTREACHED.
+    CHECK(form_util::IsSelectMenuElement(control_element));
   }
 }
 
@@ -479,11 +481,12 @@ size_t FormCache::ScanFormControlElements(
     if (form_util::IsSelectElement(element) ||
         form_util::IsTextAreaElement(element)) {
       ++num_editable_elements;
-    } else {
+    } else if (!form_util::IsSelectMenuElement(element)) {
       const WebInputElement input_element = element.To<WebInputElement>();
       if (!form_util::IsCheckableElement(input_element))
         ++num_editable_elements;
     }
+    // TODO(crbug.com/1336051): Handle selectmenu case.
   }
   return num_editable_elements;
 }
@@ -496,7 +499,7 @@ void FormCache::SaveInitialValues(
       initial_select_values_.insert(
           {FieldRendererId(select_element.UniqueRendererFormControlId()),
            select_element.Value().Utf16()});
-    } else {
+    } else if (!form_util::IsSelectMenuElement(element)) {
       const WebInputElement input_element =
           element.DynamicTo<WebInputElement>();
       if (form_util::IsCheckableElement(input_element)) {
@@ -505,6 +508,7 @@ void FormCache::SaveInitialValues(
              input_element.IsChecked()});
       }
     }
+    // TODO(crbug.com/1336051): Handle selectmenu case.
   }
 }
 

@@ -365,6 +365,18 @@ bool HTMLSelectMenuElement::open() const {
   return listbox_part_->HasPopoverAttribute() && listbox_part_->popoverOpen();
 }
 
+void HTMLSelectMenuElement::SetAutofillValue(const String& value) {
+  // TODO(crbug.com/1424116) Update `HTMLFormControlElement::autofill_state_`.
+  // TODO(crbug.com/1427161) Call setValue() from SetAutofillValue().
+  for (auto& option : option_parts_) {
+    if (option->value() == value) {
+      SetSelectedOption(option);
+      DispatchInputAndChangeEventsIfNeeded();
+      break;
+    }
+  }
+}
+
 void HTMLSelectMenuElement::OpenListbox() {
   if (listbox_part_ && !open()) {
     listbox_part_->showPopover(ASSERT_NO_EXCEPTION);

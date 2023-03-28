@@ -2568,7 +2568,7 @@ bool BrowserAutofillManager::ShouldPreventAutofillFromOverridingPrefilledField(
   std::u16string sanitized_field_value =
       RemoveWhiteSpaceAndConjugatingCharacters(to_be_filled_field.value);
 
-  if (to_be_filled_field.form_control_type != "select-one" &&
+  if (!to_be_filled_field.IsSelectOrSelectMenuElement() &&
       !sanitized_field_value.empty() &&
       !FormFieldData::DeepEqual(to_be_filled_field, initiating_field)) {
     std::string unused_failure_to_fill;

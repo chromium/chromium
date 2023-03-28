@@ -1164,7 +1164,8 @@ std::vector<WebFormControlElement> ForEachMatchingFormFieldCommon(
     }
 
     // Check if we should autofill/preview/clear a select element or leave it.
-    if (IsSelectElement(element) && element.UserHasEditedTheField() &&
+    if (IsSelectOrSelectMenuElement(element) &&
+        element.UserHasEditedTheField() &&
         !SanitizedFieldIsEmpty(current_element_value) &&
         !data.fields[i].force_override) {
       continue;
@@ -1305,6 +1306,7 @@ void PreviewFormField(const FormFieldData& data,
   } else if (IsTextAreaElement(*field) || IsSelectElement(*field)) {
     field->SetSuggestedValue(blink::WebString::FromUTF16(data.value));
   }
+  // TODO(crbug.com/1336051): Support preview for selectmenu.
 
   if (is_initiating_node &&
       (IsTextInput(input_element) || IsTextAreaElement(*field))) {
@@ -2116,7 +2118,9 @@ bool IsAutofillableInputElement(const WebInputElement& element) {
 bool IsAutofillableElement(const WebFormControlElement& element) {
   const WebInputElement input_element = element.DynamicTo<WebInputElement>();
   return IsAutofillableInputElement(input_element) ||
-         IsSelectElement(element) || IsTextAreaElement(element);
+         IsSelectElement(element) || IsTextAreaElement(element) ||
+         (IsSelectMenuElement(element) &&
+          base::FeatureList::IsEnabled(features::kAutofillEnableSelectMenu));
 }
 
 bool IsElementEditable(const WebInputElement& element) {
@@ -2283,7 +2287,7 @@ void WebFormControlElementToFormField(
     return;
 
   if (IsAutofillableInputElement(input_element) || IsTextAreaElement(element) ||
-      IsSelectElement(element)) {
+      IsSelectOrSelectMenuElement(element)) {
     // The browser doesn't need to differentiate between preview and autofill.
     field->is_autofilled = element.IsAutofilled();
     field->is_focusable = IsWebElementFocusable(element);

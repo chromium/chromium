@@ -41,6 +41,8 @@ class CORE_EXPORT HTMLSelectMenuElement final
   void setValueForBinding(const String&);
   bool open() const;
 
+  void SetAutofillValue(const String& value);
+
   // For ValidityState
   String validationMessage() const override;
   bool ValueMissing() const override;

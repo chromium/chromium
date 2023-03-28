@@ -91,6 +91,7 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/switches.h"
+#include "third_party/re2/src/re2/re2.h"
 #include "ui/events/base_event_utils.h"
 #include "ui/events/keycodes/dom/keycode_converter.h"
 #include "ui/events/keycodes/dom_us_layout_data.h"
@@ -154,6 +155,56 @@ static const char kTestShippingFormString[] = R"(
      <input type="text" id="phone"><br>
     </form>
     )";
+
+// Version of `kTestShippingFormString` which uses <selectmenu> instead of
+// <select>.
+std::string GenerateTestShippingFormWithSelectMenu() {
+  std::string out = kTestShippingFormString;
+
+  // Remove everything inside <select></select> tags including the tags.
+  std::string kSelectOpenTag("<select");
+  std::string kSelectCloseTag("</select>");
+  size_t open_tag_index = out.find(kSelectOpenTag);
+  while (open_tag_index != std::string::npos) {
+    size_t end_tag_index = out.find(kSelectCloseTag, open_tag_index);
+    if (end_tag_index == std::string::npos) {
+      return "";
+    }
+    out = out.substr(0u, open_tag_index) +
+          out.substr(end_tag_index + kSelectCloseTag.length());
+    open_tag_index = out.find(kSelectOpenTag, open_tag_index);
+  }
+
+  std::string kFormCloseTag("</form>");
+  size_t form_end_tag_index = out.find(kFormCloseTag);
+
+  // TODO(crbug.com/1422650): Remove "autocomplete" attributes once they are no
+  // longer necessary.
+  // TODO(crbug.com/1422370): Remove <button> inside <selectmenu> once button
+  // slot is focused by default.
+  std::string form_suffix = R"(
+   <selectmenu id="state" tabindex="0" autocomplete="address-level1">
+     <button type="button" slot="button" behavior="button"
+             id="selectmenu-button-state">
+       Button
+     </button>
+     <option value="" selected="yes">--</option>
+     <option value="CA">California</option>
+     <option value="TX">Texas</option>
+   </selectmenu><br>
+   <selectmenu id="country" tabindex="1" autocomplete="country">
+     <button type="button" slot="button" behavior="button"
+             id="selectmenu-button-country">
+       Button
+     </button>
+     <option value="" selected="yes">--</option>
+     <option value="CA">Canada</option>
+     <option value="US">United States</option>
+   </selectmenu><br>
+  )";
+
+  return out.insert(form_end_tag_index, form_suffix);
+}
 
 // Searches all frames of the primary page in |web_contents| and returns one
 // called |name|. If there are none, returns null, if there are more, returns
@@ -297,6 +348,21 @@ bool IsFocusedField(const ElementExpr& e,
       return r;
   }
   return TriggerAndWaitForEvent(e, "focus", execution_target);
+}
+
+[[nodiscard]] AssertionResult FocusSelectOrSelectMenu(
+    const std::string& id,
+    bool is_selectmenu,
+    content::ToRenderFrameHost execution_target) {
+  // TODO(crbug.com/1422370): Focus <selectmenu> instead of button slot in
+  // <selectmenu> once button slot is focused by default when <selectmenu> is
+  // focused.
+  std::string dom_id_to_focus = id;
+  if (is_selectmenu) {
+    dom_id_to_focus = "selectmenu-button-" + id;
+  }
+
+  return FocusField(GetElementById(dom_id_to_focus), execution_target);
 }
 
 // Types the characters of `value` after focusing field `e`.
@@ -947,6 +1013,18 @@ class AutofillInteractiveTestBase : public AutofillUiTest {
     return GetFieldValues(ElementExpr(*form + ".elements"), GetWebContents());
   }
 
+  std::vector<FieldValue> GetFormValuesIgnoringSelectMenuButtonSlot(
+      const ElementExpr& form = GetElementById("shipping")) {
+    std::vector<FieldValue> values = GetFormValues(form);
+    std::vector<FieldValue> out;
+    for (const FieldValue& value : values) {
+      if (!base::StartsWith(value.id, "selectmenu-button")) {
+        out.push_back(value);
+      }
+    }
+    return out;
+  }
+
   base::RepeatingClosure ExpectValues(
       const std::vector<FieldValue>& expected_values,
       const ElementExpr& form = GetElementById("shipping")) {
@@ -1173,28 +1251,39 @@ class AutofillInteractiveTestBase : public AutofillUiTest {
         GetWebContents(), "domAutomationController.send(42)", &unused));
   }
 
-  void FillElementWithValue(const std::string& element_id,
-                            const std::string& value) {
-    // Sends "|element_id|:|value|" to |msg_queue| if the |element_id|'s
-    // value has changed to |value|.
+  void SimulateKeyPress(const ui::DomKey& dom_key,
+                        ui::DomCode dom_code,
+                        bool shift) {
+    content::SimulateKeyPress(GetWebContents(), dom_key, dom_code,
+                              ui::DomCodeToUsLayoutKeyboardCode(dom_code),
+                              false, shift, false, false);
+  }
+
+  // Returns a ValueWaiter which waits till `element_id`'s value changes to the
+  // passed-in `value`.
+  ValueWaiter ListenForChangeToSpecificValue(const std::string& element_id,
+                                             const std::string& value) {
     std::string script = base::StringPrintf(
         R"( (function() {
-              const element_id = '%s';
-              const value = '%s';
-              const field = document.getElementById(element_id);
-              const listener = function() {
-                if (field.value === value) {
-                  field.removeEventListener('input', listener);
-                  domAutomationController.send(element_id +':'+ field.value);
-                }
-              };
-              field.addEventListener('input', listener, false);
-              return 'done';
-            })(); )",
+          const field = document.getElementById('%s');
+          const listener = function(e) {
+            window.unblock = field.value === '%s';
+            if (window.unblock) {
+              field.removeEventListener('change', listener);
+            }
+          };
+          window.unblock = false;
+          field.addEventListener('change', listener);
+        })(); )",
         element_id.c_str(), value.c_str());
-    ASSERT_TRUE(content::ExecJs(GetWebContents(), script));
+    ExecuteScript(script);
+    return ListenForValueChange(element_id, "unblock", GetWebContents());
+  }
 
-    content::DOMMessageQueue msg_queue(GetWebContents());
+  void FillElementWithValueAndBlur(const std::string& element_id,
+                                   const std::string& value) {
+    ValueWaiter value_waiter =
+        ListenForChangeToSpecificValue(element_id, value);
     for (char16_t character : value) {
       ui::DomKey dom_key = ui::DomKey::FromCharacter(character);
       const ui::PrintableCodeEntry* code_entry = base::ranges::find_if(
@@ -1206,19 +1295,44 @@ class AutofillInteractiveTestBase : public AutofillUiTest {
       ASSERT_TRUE(code_entry != std::end(ui::kPrintableCodeMap));
       bool shift = code_entry->character[1] == character;
       ui::DomCode dom_code = code_entry->dom_code;
-      content::SimulateKeyPress(GetWebContents(), dom_key, dom_code,
-                                ui::DomCodeToUsLayoutKeyboardCode(dom_code),
-                                false, shift, false, false);
+      SimulateKeyPress(dom_key, dom_code, shift);
     }
-    std::string reply;
-    ASSERT_TRUE(msg_queue.WaitForMessage(&reply));
-    ASSERT_EQ("\"" + element_id + ":" + value + "\"", reply);
+    // Blur the focused field to force the change event for text fields.
+    ASSERT_TRUE(BlurFocusedField(GetWebContents()));
+
+    ASSERT_EQ(value, std::move(value_waiter).Wait());
+  }
+
+  // TODO(crbug.com/1422117): Merge with FillElementWithValueAndBlur() once
+  // typeahead support is implemented for <selectmenu>. `option_index` is the
+  // index of the option to select. Assumes that the option at index 0 is
+  // initially selected.
+  void FillSelectMenuElementWithValue(const std::string& element_id,
+                                      const std::string& value,
+                                      size_t option_index) {
+    ValueWaiter value_waiter =
+        ListenForChangeToSpecificValue(element_id, value);
+
+    SimulateKeyPress(ui::DomKey::ENTER, ui::DomCode::ENTER, /*shift=*/false);
+
+    for (size_t i = 0; i < option_index; ++i) {
+      SimulateKeyPress(ui::DomKey::ARROW_DOWN, ui::DomCode::ARROW_DOWN,
+                       /*shift=*/false);
+    }
+
+    SimulateKeyPress(ui::DomKey::ENTER, ui::DomCode::ENTER,
+                     /*shift=*/false);
+    ASSERT_EQ(value, std::move(value_waiter).Wait());
   }
 
   void DeleteElementValue(const ElementExpr& field) {
     std::string script = base::StringPrintf("%s.value = '';", field->c_str());
     ASSERT_TRUE(content::ExecJs(GetWebContents(), script));
     ASSERT_EQ("", GetFieldValue(field));
+  }
+
+  void ExecuteScript(const std::string& script) {
+    ASSERT_TRUE(content::ExecJs(GetWebContents(), script));
   }
 
   GURL GetTestUrl() const { return https_server_.GetURL(kTestUrlPath); }
@@ -1270,7 +1384,8 @@ const char AutofillInteractiveTestBase::kTestUrlPath[] =
 
 class AutofillInteractiveTest : public AutofillInteractiveTestBase {
  protected:
-  AutofillInteractiveTest() = default;
+  AutofillInteractiveTest()
+      : feature_list_(features::kAutofillEnableSelectMenu) {}
   ~AutofillInteractiveTest() override = default;
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
@@ -1279,7 +1394,12 @@ class AutofillInteractiveTest : public AutofillInteractiveTestBase {
     command_line->AppendSwitchASCII(
         translate::switches::kTranslateScriptURL,
         embedded_test_server()->GetURL("/mock_translate_script.js").spec());
+    command_line->AppendSwitchASCII("enable-blink-features",
+                                    "HTMLSelectMenuElement");
   }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
 };
 
 class AutofillInteractiveTestWithHistogramTester
@@ -1335,6 +1455,56 @@ IN_PROC_BROWSER_TEST_F(AutofillInteractiveTest, BasicFormFill) {
                             .after_select = ExpectValues(MergeValue(
                                 kEmptyAddress, {"firstname", "M"}))}));
   EXPECT_THAT(GetFormValues(), ValuesAre(kDefaultAddress));
+}
+
+// AutofillInteractiveTest subclass which disables autofilling <selectmenu>.
+class AutofillInteractiveDisableAutofillSelectMenuTest
+    : public AutofillInteractiveTest {
+ protected:
+  AutofillInteractiveDisableAutofillSelectMenuTest() {
+    feature_list_.InitAndDisableFeature(features::kAutofillEnableSelectMenu);
+  }
+  ~AutofillInteractiveDisableAutofillSelectMenuTest() override = default;
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+// Test that the <selectmenu> is not filled if the <selectmenu> autofilling
+// feature is disabled.
+IN_PROC_BROWSER_TEST_F(AutofillInteractiveDisableAutofillSelectMenuTest,
+                       DisableSelectMenuAutofilling) {
+  // TODO(crbug.com/1422650): Remove "autocomplete" attribute once it is no
+  // longer necessary.
+  // TODO(crbug.com/1422370): Remove <button> inside <selectmenu> once button
+  // slot is focused by default.
+  const char kFormWithSelectMenuString[] = R"(
+    <!-- Disable extra network request for /favicon.ico -->
+    <link rel="icon" href="data:,">
+    <form action="https://www.example.com/" method="POST" id="shipping">
+      <label for="firstname">First name:</label>
+      <input type="text" id="firstname" autocomplete="given-name"><br>
+      <label for="state">State:</label>
+      <selectmenu id="state" tabindex="0" autocomplete="address-level1">
+        <button type="button" slot="button" behavior="button"
+                id="selectmenu-button-state">
+          Button
+        </button>
+        <option value="" selected="yes">--</option>
+        <option value="CA">California</option>
+        <option value="TX">Texas</option>
+      </selectmenu>
+    </form>
+    )";
+
+  CreateTestProfile();
+  SetTestUrlResponse(kFormWithSelectMenuString);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GetTestUrl()));
+
+  ASSERT_TRUE(AutofillFlow(GetElementById("firstname"), this));
+  EXPECT_THAT(GetFormValuesIgnoringSelectMenuButtonSlot(),
+              ValuesAre({{"firstname", kDefaultAddressValues.first_name},
+                         {"state", ""}}));
 }
 
 IN_PROC_BROWSER_TEST_F(AutofillInteractiveTest, BasicClear) {
@@ -1422,28 +1592,47 @@ IN_PROC_BROWSER_TEST_F(AutofillInteractiveTest, ModifyTextFieldAndFill) {
 
   // Modify a field.
   ASSERT_TRUE(FocusField(GetElementById("city"), GetWebContents()));
-  FillElementWithValue("city", "Montreal");
+  FillElementWithValueAndBlur("city", "Montreal");
 
   ASSERT_TRUE(AutofillFlow(GetElementById("firstname"), this));
   EXPECT_THAT(GetFormValues(),
               ValuesAre(MergeValue(kDefaultAddress, {"city", "Montreal"})));
 }
 
-// Test that autofill doesn't refill a select field initially modified by the
-// user.
-IN_PROC_BROWSER_TEST_F(AutofillInteractiveTest, ModifySelectFieldAndFill) {
-  CreateTestProfile();
-  SetTestUrlResponse(kTestShippingFormString);
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GetTestUrl()));
+void DoModifySelectFieldAndFill(AutofillInteractiveTest* test,
+                                bool should_test_selectmenu) {
+  test->CreateTestProfile();
+  test->SetTestUrlResponse(should_test_selectmenu
+                               ? GenerateTestShippingFormWithSelectMenu()
+                               : kTestShippingFormString);
+  ASSERT_TRUE(
+      ui_test_utils::NavigateToURL(test->browser(), test->GetTestUrl()));
 
   // Modify a field.
-  ASSERT_TRUE(FocusField(GetElementById("state"), GetWebContents()));
-  ASSERT_NE(strcmp(kDefaultAddressValues.state_short, "CA"), 0);
-  FillElementWithValue("state", "CA");
+  ASSERT_TRUE(FocusSelectOrSelectMenu("state", should_test_selectmenu,
+                                      test->GetWebContents()));
+  ASSERT_NE(kDefaultAddressValues.state_short, base::StringPiece("CA"));
+  if (should_test_selectmenu) {
+    test->FillSelectMenuElementWithValue("state", "CA", 1u);
+  } else {
+    test->FillElementWithValueAndBlur("state", "CA");
+  }
 
-  ASSERT_TRUE(AutofillFlow(GetElementById("firstname"), this));
-  EXPECT_THAT(GetFormValues(),
+  ASSERT_TRUE(AutofillFlow(GetElementById("firstname"), test));
+  EXPECT_THAT(test->GetFormValuesIgnoringSelectMenuButtonSlot(),
               ValuesAre(MergeValue(kDefaultAddress, {"state", "CA"})));
+}
+
+// Test that autofill doesn't refill a <select> field initially modified by the
+// user.
+IN_PROC_BROWSER_TEST_F(AutofillInteractiveTest, ModifySelectFieldAndFill) {
+  DoModifySelectFieldAndFill(this, /*should_test_selectmenu=*/false);
+}
+
+// Test that autofill doesn't refill a <selectmenu> field initially modified by
+// the user.
+IN_PROC_BROWSER_TEST_F(AutofillInteractiveTest, ModifySelectMenuFieldAndFill) {
+  DoModifySelectFieldAndFill(this, /*should_test_selectmenu=*/true);
 }
 
 // Test that autofill works when the website prefills the form when

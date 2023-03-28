@@ -180,6 +180,12 @@ const base::FeatureParam<int> kAutofillRankingFormulaVirtualCardBoostHalfLife{
     &kAutofillEnableRankingFormulaCreditCards,
     "autofill_ranking_formula_virtual_card_boost_half_life", 15};
 
+// When enabled, autofill will fill <selectmenu> elements.
+// TODO(crbug.com/1427153) Remove once autofilling <selectmenu> is launched.
+BASE_FEATURE(kAutofillEnableSelectMenu,
+             "AutofillEnableSelectMenu",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Controls if the heuristic field parsing utilizes shared labels.
 // TODO(crbug.com/1165780): Remove once shared labels are launched.
 BASE_FEATURE(kAutofillEnableSupportForParsingWithSharedLabels,

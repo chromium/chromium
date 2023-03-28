@@ -225,6 +225,15 @@ void WebFormControlElement::SetAutofillValue(const WebString& value,
     select->SetAutofillValue(value, autofill_state);
     if (!Focused())
       DispatchBlurEvent();
+  } else if (auto* selectmenu =
+                 ::blink::DynamicTo<HTMLSelectMenuElement>(*private_)) {
+    if (!Focused()) {
+      DispatchFocusEvent();
+    }
+    selectmenu->SetAutofillValue(value);
+    if (!Focused()) {
+      DispatchBlurEvent();
+    }
   }
 }
 
