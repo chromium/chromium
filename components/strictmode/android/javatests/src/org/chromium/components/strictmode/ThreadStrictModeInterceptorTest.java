@@ -9,9 +9,9 @@ import static org.junit.Assert.assertTrue;
 
 import android.os.StrictMode;
 import android.os.StrictMode.ThreadPolicy;
-import android.support.test.InstrumentationRegistry;
 
 import androidx.core.content.ContextCompat;
+import androidx.test.InstrumentationRegistry;
 import androidx.test.filters.SmallTest;
 
 import org.junit.Test;

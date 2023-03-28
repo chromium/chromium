@@ -5,7 +5,6 @@
 package org.chromium.components.browser_ui.widget;
 
 import android.content.Context;
-import android.support.test.InstrumentationRegistry;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.MeasureSpec;
@@ -14,6 +13,7 @@ import android.widget.Button;
 import android.widget.FrameLayout;
 import android.widget.Space;
 
+import androidx.test.InstrumentationRegistry;
 import androidx.test.filters.SmallTest;
 
 import org.junit.Assert;

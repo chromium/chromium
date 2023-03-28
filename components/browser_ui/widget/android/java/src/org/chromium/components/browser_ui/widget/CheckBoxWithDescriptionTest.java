@@ -7,11 +7,11 @@ package org.chromium.components.browser_ui.widget;
 import static org.mockito.Mockito.mock;
 
 import android.content.Context;
-import android.support.test.InstrumentationRegistry;
 import android.view.ContextThemeWrapper;
 import android.view.View;
 
 import androidx.annotation.Nullable;
+import androidx.test.InstrumentationRegistry;
 import androidx.test.filters.SmallTest;
 
 import org.junit.Assert;

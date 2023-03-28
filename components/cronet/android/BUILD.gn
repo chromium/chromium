@@ -847,8 +847,8 @@ if (!is_component_build) {
       ":cronet_sample_apk_java",
       ":package_impl_common_java",
       "//third_party/android_deps:espresso_java",
-      "//third_party/android_support_test_runner:rules_java",
-      "//third_party/android_support_test_runner:runner_java",
+      "//third_party/androidx:androidx_test_monitor_java",
+      "//third_party/androidx:androidx_test_rules_java",
       "//third_party/androidx:androidx_test_runner_java",
       "//third_party/junit",
     ]
