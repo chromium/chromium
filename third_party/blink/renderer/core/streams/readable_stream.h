@@ -11,7 +11,6 @@
 #include "third_party/blink/renderer/bindings/core/v8/script_value.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_typedefs.h"
 #include "third_party/blink/renderer/core/core_export.h"
-#include "third_party/blink/renderer/core/streams/readable_stream_byob_reader.h"
 #include "third_party/blink/renderer/core/streams/readable_stream_default_reader.h"
 #include "third_party/blink/renderer/core/streams/transferable_streams.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
@@ -26,11 +25,13 @@ class AbortSignal;
 class ExceptionState;
 class MessagePort;
 class ReadableByteStreamController;
+class ReadableStreamBYOBReader;
 class ReadableStreamController;
 class ReadableStreamDefaultController;
 class ReadableStreamGetReaderOptions;
 class ReadableStreamTransferringOptimizer;
 class ReadableWritablePair;
+class ReadIntoRequest;
 class ReadRequest;
 class ScriptPromise;
 class ScriptState;
@@ -312,7 +313,7 @@ class CORE_EXPORT ReadableStream : public ScriptWrappable {
 
   static void AddReadIntoRequest(ScriptState*,
                                  ReadableStream*,
-                                 ReadableStreamBYOBReader::ReadIntoRequest*);
+                                 ReadIntoRequest*);
 
   // https://streams.spec.whatwg.org/#readable-stream-add-read-request
   static void AddReadRequest(ScriptState*, ReadableStream*, ReadRequest*);

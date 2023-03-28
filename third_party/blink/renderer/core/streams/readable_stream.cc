@@ -22,8 +22,10 @@
 #include "third_party/blink/renderer/core/frame/web_feature.h"
 #include "third_party/blink/renderer/core/streams/miscellaneous_operations.h"
 #include "third_party/blink/renderer/core/streams/promise_handler.h"
+#include "third_party/blink/renderer/core/streams/read_into_request.h"
 #include "third_party/blink/renderer/core/streams/read_request.h"
 #include "third_party/blink/renderer/core/streams/readable_byte_stream_controller.h"
+#include "third_party/blink/renderer/core/streams/readable_stream_byob_reader.h"
 #include "third_party/blink/renderer/core/streams/readable_stream_controller.h"
 #include "third_party/blink/renderer/core/streams/readable_stream_default_controller.h"
 #include "third_party/blink/renderer/core/streams/readable_stream_generic_reader.h"
@@ -1954,10 +1956,9 @@ void ReadableStream::Trace(Visitor* visitor) const {
 // Abstract Operations Used By Controllers
 //
 
-void ReadableStream::AddReadIntoRequest(
-    ScriptState* script_state,
-    ReadableStream* stream,
-    ReadableStreamBYOBReader::ReadIntoRequest* readRequest) {
+void ReadableStream::AddReadIntoRequest(ScriptState* script_state,
+                                        ReadableStream* stream,
+                                        ReadIntoRequest* readRequest) {
   // https://streams.spec.whatwg.org/#readable-stream-add-read-into-request
   // 1. Assert: stream.[[reader]] implements ReadableStreamBYOBReader.
   DCHECK(stream->reader_->IsBYOBReader());
@@ -2019,16 +2020,14 @@ v8::Local<v8::Promise> ReadableStream::Cancel(ScriptState* script_state,
     //   a. Let readIntoRequests be reader.[[readIntoRequests]].
     ReadableStreamBYOBReader* byob_reader =
         To<ReadableStreamBYOBReader>(reader);
-    HeapDeque<Member<ReadableStreamBYOBReader::ReadIntoRequest>>
-        read_into_requests;
+    HeapDeque<Member<ReadIntoRequest>> read_into_requests;
     read_into_requests.Swap(byob_reader->read_into_requests_);
 
     //   b. Set reader.[[readIntoRequests]] to an empty list.
     //      This is not required since we've already called Swap().
 
     //   c. For each readIntoRequest of readIntoRequests,
-    for (ReadableStreamBYOBReader::ReadIntoRequest* request :
-         read_into_requests) {
+    for (ReadIntoRequest* request : read_into_requests) {
       //     i. Perform readIntoRequest's close steps, given undefined.
       request->CloseSteps(script_state, nullptr);
     }
@@ -2156,8 +2155,7 @@ void ReadableStream::FulfillReadIntoRequest(ScriptState* script_state,
   // 3. Assert: reader.[[readIntoRequests]] is not empty.
   DCHECK(!byob_reader->read_into_requests_.empty());
   // 4. Let readIntoRequest be reader.[[readIntoRequests]][0].
-  ReadableStreamBYOBReader::ReadIntoRequest* read_into_request =
-      byob_reader->read_into_requests_[0];
+  ReadIntoRequest* read_into_request = byob_reader->read_into_requests_[0];
   // 5. Remove readIntoRequest from reader.[[readIntoRequests]].
   byob_reader->read_into_requests_.pop_front();
   // 6. If done is true, perform readIntoRequest’s close steps, given chunk.

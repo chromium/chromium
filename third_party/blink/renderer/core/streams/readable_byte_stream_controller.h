@@ -8,7 +8,6 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_value.h"
 #include "third_party/blink/renderer/core/core_export.h"
-#include "third_party/blink/renderer/core/streams/readable_stream_byob_reader.h"
 #include "third_party/blink/renderer/core/streams/readable_stream_controller.h"
 #include "third_party/blink/renderer/core/typed_arrays/array_buffer_view_helpers.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
@@ -23,6 +22,7 @@ class DOMArrayBufferView;
 class ExceptionState;
 class ReadableStream;
 class ReadableStreamBYOBRequest;
+class ReadIntoRequest;
 class ReadRequest;
 class ScriptState;
 class StreamAlgorithm;
@@ -221,7 +221,7 @@ class CORE_EXPORT ReadableByteStreamController
   static void PullInto(ScriptState*,
                        ReadableByteStreamController*,
                        NotShared<DOMArrayBufferView> view,
-                       ReadableStreamBYOBReader::ReadIntoRequest*,
+                       ReadIntoRequest*,
                        ExceptionState&);
 
   // https://streams.spec.whatwg.org/#readable-byte-stream-controller-handle-queue-drain

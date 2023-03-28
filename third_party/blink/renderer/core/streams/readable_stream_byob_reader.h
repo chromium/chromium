@@ -19,8 +19,8 @@ namespace blink {
 class ExceptionState;
 class ScriptPromise;
 class ScriptState;
-class StreamPromiseResolver;
 class ReadableStream;
+class ReadIntoRequest;
 class DOMArrayBufferView;
 
 class CORE_EXPORT ReadableStreamBYOBReader
@@ -61,21 +61,7 @@ class CORE_EXPORT ReadableStreamBYOBReader
   friend class ReadableByteStreamController;
   friend class ReadableStream;
 
-  class ReadIntoRequest : public GarbageCollected<ReadIntoRequest> {
-   public:
-    explicit ReadIntoRequest(StreamPromiseResolver* resolver);
-
-    void ChunkSteps(ScriptState*, DOMArrayBufferView* chunk) const;
-    void CloseSteps(ScriptState*, DOMArrayBufferView* chunk) const;
-    void ErrorSteps(ScriptState*, v8::Local<v8::Value> e) const;
-
-    void Trace(Visitor*) const;
-
-   private:
-    friend class ReadableStream;
-
-    Member<StreamPromiseResolver> resolver_;
-  };
+  class BYOBReaderReadIntoRequest;
 
   //
   // Readable stream reader abstract operations
