@@ -27,8 +27,6 @@ import {
 } from '../../../protocol/protocol.js';
 import {BrowsingContextStorage} from '../context/browsingContextStorage.js';
 
-import InvalidArgumentException = Message.InvalidArgumentException;
-
 /**
  * Returns the cartesian product of the given arrays.
  *
@@ -268,7 +266,7 @@ export class SubscriptionManager {
     contextId = this.#findTopLevelContextId(contextId);
 
     if (!this.#channelToContextToEventMap.has(channel)) {
-      throw new InvalidArgumentException(
+      throw new Message.InvalidArgumentException(
         `Cannot unsubscribe from ${event}, ${
           contextId === null ? 'null' : contextId
         }. No subscription found.`
@@ -277,7 +275,7 @@ export class SubscriptionManager {
     const contextToEventMap = this.#channelToContextToEventMap.get(channel)!;
 
     if (!contextToEventMap.has(contextId)) {
-      throw new InvalidArgumentException(
+      throw new Message.InvalidArgumentException(
         `Cannot unsubscribe from ${event}, ${
           contextId === null ? 'null' : contextId
         }. No subscription found.`
@@ -286,7 +284,7 @@ export class SubscriptionManager {
     const eventMap = contextToEventMap.get(contextId)!;
 
     if (!eventMap.has(event)) {
-      throw new InvalidArgumentException(
+      throw new Message.InvalidArgumentException(
         `Cannot unsubscribe from ${event}, ${
           contextId === null ? 'null' : contextId
         }. No subscription found.`

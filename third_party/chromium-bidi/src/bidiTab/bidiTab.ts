@@ -18,7 +18,7 @@
  */
 
 import * as Parser from '../protocol-parser/protocol-parser.js';
-import type {
+import {
   BrowsingContext,
   CDP,
   Message,
@@ -126,7 +126,7 @@ async function createBidiServer(selfTargetId: string) {
           // Transport-level error does not provide channel.
           this.#respondWithError(
             messageStr,
-            'invalid argument',
+            Message.ErrorCode.InvalidArgument,
             e.message,
             null
           );

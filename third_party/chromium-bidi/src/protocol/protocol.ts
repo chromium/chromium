@@ -90,19 +90,6 @@ export namespace Message {
     | Script.Event;
   // keep-sorted end;
 
-  export type ErrorCode =
-    | 'unknown error'
-    | 'unknown command'
-    | 'invalid argument'
-    | 'no such frame'
-    | 'no such node';
-
-  export type ErrorResult = {
-    readonly error: ErrorCode;
-    readonly message: string;
-    readonly stacktrace?: string;
-  };
-
   export type EventNames =
     // keep-sorted start
     | BrowsingContext.EventNames
@@ -112,20 +99,33 @@ export namespace Message {
     | Script.EventNames;
   // keep-sorted end;
 
-  export class ErrorResponseClass implements Message.ErrorResult {
-    protected constructor(
-      error: Message.ErrorCode,
-      message: string,
-      stacktrace?: string
-    ) {
-      this.error = error;
-      this.message = message;
-      this.stacktrace = stacktrace;
-    }
+  export enum ErrorCode {
+    // keep-sorted start
+    InvalidArgument = 'invalid argument',
+    InvalidSessionId = 'invalid session id',
+    NoSuchAlert = 'no such alert',
+    NoSuchFrame = 'no such frame',
+    NoSuchNode = 'no such node',
+    NoSuchScript = 'no such script',
+    SessionNotCreated = 'session not created',
+    UnknownCommand = 'unknown command',
+    UnknownError = 'unknown error',
+    UnsupportedOperation = 'unsupported operation',
+    // keep-sorted end
+  }
 
-    readonly error: Message.ErrorCode;
+  export type ErrorResult = {
+    readonly error: ErrorCode;
     readonly message: string;
     readonly stacktrace?: string;
+  };
+
+  export class ErrorResponse implements Message.ErrorResult {
+    constructor(
+      public error: Message.ErrorCode,
+      public message: string,
+      public stacktrace?: string
+    ) {}
 
     toErrorResponse(commandId: number): Message.CommandResponse {
       return {
@@ -137,33 +137,63 @@ export namespace Message {
     }
   }
 
-  export class UnknownException extends ErrorResponseClass {
+  export class InvalidArgumentException extends ErrorResponse {
     constructor(message: string, stacktrace?: string) {
-      super('unknown error', message, stacktrace);
+      super(ErrorCode.InvalidArgument, message, stacktrace);
     }
   }
 
-  export class UnknownCommandException extends ErrorResponseClass {
+  export class InvalidSessionIdException extends ErrorResponse {
     constructor(message: string, stacktrace?: string) {
-      super('unknown command', message, stacktrace);
+      super(ErrorCode.InvalidSessionId, message, stacktrace);
     }
   }
 
-  export class InvalidArgumentException extends ErrorResponseClass {
+  export class NoSuchAlertException extends ErrorResponse {
     constructor(message: string, stacktrace?: string) {
-      super('invalid argument', message, stacktrace);
+      super(ErrorCode.NoSuchAlert, message, stacktrace);
     }
   }
 
-  export class NoSuchNodeException extends ErrorResponseClass {
-    constructor(message: string, stacktrace?: string) {
-      super('no such node', message, stacktrace);
-    }
-  }
-
-  export class NoSuchFrameException extends ErrorResponseClass {
+  export class NoSuchFrameException extends ErrorResponse {
     constructor(message: string) {
-      super('no such frame', message);
+      super(ErrorCode.NoSuchFrame, message);
+    }
+  }
+
+  export class NoSuchNodeException extends ErrorResponse {
+    constructor(message: string, stacktrace?: string) {
+      super(ErrorCode.NoSuchNode, message, stacktrace);
+    }
+  }
+
+  export class NoSuchScriptException extends ErrorResponse {
+    constructor(message: string, stacktrace?: string) {
+      super(ErrorCode.NoSuchScript, message, stacktrace);
+    }
+  }
+
+  export class SessionNotCreatedException extends ErrorResponse {
+    constructor(message: string, stacktrace?: string) {
+      super(ErrorCode.SessionNotCreated, message, stacktrace);
+    }
+  }
+
+  export class UnknownCommandException extends ErrorResponse {
+    constructor(message: string, stacktrace?: string) {
+      super(ErrorCode.UnknownCommand, message, stacktrace);
+    }
+  }
+
+  export class UnknownErrorException extends ErrorResponse {
+    constructor(message: string, stacktrace?: string) {
+      super(ErrorCode.UnknownError, message, stacktrace);
+    }
+  }
+
+  export class UnsupportedOperationException extends ErrorResponse {
+    constructor(message: string, stacktrace?: string) {
+      super(ErrorCode.UnsupportedOperation, message, stacktrace);
     }
   }
 }

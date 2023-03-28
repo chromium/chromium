@@ -409,7 +409,7 @@ export class BrowsingContextImpl {
       });
 
     if (cdpNavigateResult.errorText) {
-      throw new Message.UnknownException(cdpNavigateResult.errorText);
+      throw new Message.UnknownErrorException(cdpNavigateResult.errorText);
     }
 
     this.#documentChanged(cdpNavigateResult.loaderId);

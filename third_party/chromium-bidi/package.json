@@ -20,7 +20,7 @@
     "server": "npm run build && npm run server-no-build --",
     "server-no-build": "node lib/cjs/bidiServer/index.js",
     "test": "npm run build && mocha",
-    "watch": "tsc -b src/tsconfig.json --watch & rollup -c --watch",
+    "watch": "tsc -b src/tsconfig.json --watch && rollup -c --watch",
     "yapf": "yapf --in-place --parallel --recursive --exclude=wpt examples/ tests/"
   },
   "files": [

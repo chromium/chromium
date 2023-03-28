@@ -257,7 +257,7 @@ export class CommandProcessor extends EventEmitter<CommandProcessorEvents> {
         OutgoingBidiMessage.createResolved(response, command.channel ?? null)
       );
     } catch (e) {
-      if (e instanceof Message.ErrorResponseClass) {
+      if (e instanceof Message.ErrorResponse) {
         const errorResponse = e;
         this.emit(
           'response',
@@ -272,9 +272,10 @@ export class CommandProcessor extends EventEmitter<CommandProcessorEvents> {
         this.emit(
           'response',
           OutgoingBidiMessage.createResolved(
-            new Message.UnknownException(error.message).toErrorResponse(
-              command.id
-            ),
+            new Message.ErrorResponse(
+              Message.ErrorCode.UnknownError,
+              error.message
+            ).toErrorResponse(command.id),
             command.channel ?? null
           )
         );
