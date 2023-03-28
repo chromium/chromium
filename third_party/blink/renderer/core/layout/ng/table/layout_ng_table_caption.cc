@@ -13,6 +13,7 @@
 #include "third_party/blink/renderer/core/layout/ng/ng_length_utils.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_out_of_flow_positioned_node.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_physical_box_fragment.h"
+#include "third_party/blink/renderer/core/layout/ng/table/layout_ng_table.h"
 
 namespace blink {
 
@@ -53,22 +54,14 @@ void LayoutNGTableCaption::CalculateAndSetMargins(
 
 void LayoutNGTableCaption::InsertedIntoTree() {
   NOT_DESTROYED();
+  DCHECK(Parent()->IsLayoutNGObject());
   LayoutBlockFlow::InsertedIntoTree();
-
-  LayoutNGTableInterface* table_interface = TableInterface();
-  if (!table_interface->ToLayoutObject()->IsLayoutNGObject())
-    To<LayoutTable>(table_interface->ToMutableLayoutObject())->AddCaption(this);
 }
 
 void LayoutNGTableCaption::WillBeRemovedFromTree() {
   NOT_DESTROYED();
+  DCHECK(Parent()->IsLayoutNGObject());
   LayoutBlockFlow::WillBeRemovedFromTree();
-
-  LayoutNGTableInterface* table_interface = TableInterface();
-  if (!table_interface->ToLayoutObject()->IsLayoutNGObject()) {
-    To<LayoutTable>(table_interface->ToMutableLayoutObject())
-        ->RemoveCaption(this);
-  }
 }
 
 void LayoutNGTableCaption::UpdateBlockLayout(bool relayout_children) {
@@ -79,11 +72,6 @@ void LayoutNGTableCaption::UpdateBlockLayout(bool relayout_children) {
   const NGLayoutResult* result = UpdateInFlowBlockLayout();
   CalculateAndSetMargins(result->GetConstraintSpaceForCaching(),
                          result->PhysicalFragment());
-}
-
-LayoutNGTableInterface* LayoutNGTableCaption::TableInterface() const {
-  NOT_DESTROYED();
-  return ToInterface<LayoutNGTableInterface>(Parent());
 }
 
 }  // namespace blink

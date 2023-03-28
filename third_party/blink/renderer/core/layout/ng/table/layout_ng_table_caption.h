@@ -11,7 +11,6 @@
 
 namespace blink {
 
-class LayoutNGTableInterface;
 class NGPhysicalFragment;
 
 extern template class CORE_EXTERN_TEMPLATE_EXPORT
@@ -39,8 +38,6 @@ class CORE_EXPORT LayoutNGTableCaption final
   // Legacy-only API.
   void CalculateAndSetMargins(const NGConstraintSpace&,
                               const NGPhysicalFragment&);
-
-  LayoutNGTableInterface* TableInterface() const;
 };
 
 // wtf/casting.h helper.
