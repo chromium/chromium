@@ -297,6 +297,10 @@ void CreateAndAddOobeUIDataSource(Profile* profile,
   source->AddBoolean("isTouchpadScrollEnabled",
                      (features::IsOobeChoobeEnabled() &&
                       features::IsOobeTouchpadScrollEnabled()));
+  // Whether the timings in oobe_trace.js will be output to the console.
+  source->AddBoolean(
+      "printFrontendTimings",
+      command_line->HasSwitch(switches::kOobePrintFrontendLoadTimings));
 
   // Configure shared resources
   AddProductLogoResources(source);

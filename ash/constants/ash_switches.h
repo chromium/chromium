@@ -257,6 +257,8 @@ COMPONENT_EXPORT(ASH_CONSTANTS) extern const char kOobeEulaUrlForTests[];
 COMPONENT_EXPORT(ASH_CONSTANTS) extern const char kOobeForceTabletFirstRun[];
 COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const char kOobeLargeScreenSpecialScaling[];
+COMPONENT_EXPORT(ASH_CONSTANTS)
+extern const char kOobePrintFrontendLoadTimings[];
 COMPONENT_EXPORT(ASH_CONSTANTS) extern const char kOobeScreenshotDirectory[];
 COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const char kOobeShowAccessibilityButtonOnMarketingOptInForTesting[];
