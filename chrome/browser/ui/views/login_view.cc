@@ -77,14 +77,14 @@ LoginView::LoginView(const std::u16string& authority,
           views::style::CONTEXT_LABEL, views::style::STYLE_PRIMARY));
   username_field_ =
       fields_container->AddChildView(std::make_unique<views::Textfield>());
-  username_field_->SetAssociatedLabel(username_label);
+  username_field_->SetAccessibleName(username_label);
   auto* password_label =
       fields_container->AddChildView(std::make_unique<views::Label>(
           l10n_util::GetStringUTF16(IDS_LOGIN_DIALOG_PASSWORD_FIELD),
           views::style::CONTEXT_LABEL, views::style::STYLE_PRIMARY));
   password_field_ =
       fields_container->AddChildView(std::make_unique<views::Textfield>());
-  password_field_->SetAssociatedLabel(password_label);
+  password_field_->SetAccessibleName(password_label);
   password_field_->SetTextInputType(ui::TEXT_INPUT_TYPE_PASSWORD);
 
   if (http_auth_manager_) {

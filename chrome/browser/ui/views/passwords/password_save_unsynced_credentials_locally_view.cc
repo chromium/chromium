@@ -100,7 +100,7 @@ void PasswordSaveUnsyncedCredentialsLocallyView::CreateLayout() {
     checkbox->SetChecked(true);
     num_selected_checkboxes_++;
     auto* username_label = row_view->AddChildView(CreateUsernameLabel(form));
-    checkbox->SetAssociatedLabel(username_label);
+    checkbox->SetAccessibleName(username_label);
     auto* password_label = row_view->AddChildView(CreatePasswordLabel(form));
     auto* row_layout =
         row_view->SetLayoutManager(std::make_unique<views::BoxLayout>(

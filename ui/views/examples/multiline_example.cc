@@ -205,7 +205,7 @@ void MultilineExample::CreateExampleView(View* container) {
   textfield_ = container->AddChildView(std::make_unique<Textfield>());
   textfield_->set_controller(this);
   textfield_->SetText(kTestString);
-  textfield_->SetAssociatedLabel(label);
+  textfield_->SetAccessibleName(label);
 }
 
 void MultilineExample::ContentsChanged(Textfield* sender,

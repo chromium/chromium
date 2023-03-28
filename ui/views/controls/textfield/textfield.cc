@@ -273,11 +273,6 @@ Textfield::~Textfield() {
   }
 }
 
-void Textfield::SetAssociatedLabel(View* labelling_view) {
-  DCHECK(labelling_view);
-  GetViewAccessibility().OverrideLabelledBy(labelling_view);
-}
-
 void Textfield::SetController(TextfieldController* controller) {
   controller_ = controller;
 }

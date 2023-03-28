@@ -151,7 +151,7 @@ TEST_F(ViewAXPlatformNodeDelegateWinTest, TextfieldAssociatedLabel) {
   Label* label = new Label(u"Label");
   content->AddChildView(label);
   Textfield* textfield = new Textfield;
-  textfield->SetAssociatedLabel(label);
+  textfield->SetAccessibleName(label);
   content->AddChildView(textfield);
 
   ComPtr<IAccessible> content_accessible(content->GetNativeViewAccessible());

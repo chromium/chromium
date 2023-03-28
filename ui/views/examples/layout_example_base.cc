@@ -215,7 +215,7 @@ Textfield* LayoutExampleBase::CreateAndAddTextfield(
       kLayoutExampleVerticalSpacing));
   auto* label = row->AddChildView(std::make_unique<Label>(label_text));
   auto* text_field = row->AddChildView(CreateCommonTextfield(this));
-  text_field->SetAssociatedLabel(label);
+  text_field->SetAccessibleName(label);
   return text_field;
 }
 

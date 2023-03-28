@@ -88,7 +88,7 @@ class UninstallCheckboxView : public views::View,
         .AddRows(1, views::TableLayout::kFixedSize);
 
     auto checkbox = std::make_unique<views::Checkbox>();
-    checkbox->SetAssociatedLabel(label.get());
+    checkbox->SetAccessibleName(label.get());
     checkbox_targeter_ = std::make_unique<CheckboxTargeter>();
     checkbox->SetEventTargeter(
         std::make_unique<views::ViewTargeter>(checkbox_targeter_.get()));

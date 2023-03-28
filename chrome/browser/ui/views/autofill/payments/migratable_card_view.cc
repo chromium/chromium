@@ -121,7 +121,7 @@ MigratableCardView::GetMigratableCardDescriptionView(
         // format.
         views::InkDrop::Get(checkbox_)->SetMode(
             views::InkDropHost::InkDropMode::OFF);
-        checkbox_->SetAssociatedLabel(card_description.get());
+        checkbox_->SetAccessibleName(card_description.get());
       }
       break;
     }

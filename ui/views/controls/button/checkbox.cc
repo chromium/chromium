@@ -128,20 +128,6 @@ bool Checkbox::GetMultiLine() const {
   return label()->GetMultiLine();
 }
 
-void Checkbox::SetAssociatedLabel(View* labelling_view) {
-  DCHECK(labelling_view);
-  GetViewAccessibility().OverrideLabelledBy(labelling_view);
-  ui::AXNodeData node_data;
-  labelling_view->GetAccessibleNodeData(&node_data);
-  // Labelled-by relations are not common practice in native UI, so we also
-  // set the checkbox accessible name for ATs which don't support that.
-  // TODO(aleventhal) automatically handle setting the name from the related
-  // label in ViewAccessibility and have it update the name if the text of the
-  // associated label changes.
-  SetAccessibleName(
-      node_data.GetString16Attribute(ax::mojom::StringAttribute::kName));
-}
-
 void Checkbox::SetCheckedIconImageColor(SkColor color) {
   checked_icon_image_color_ = color;
 }

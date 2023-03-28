@@ -25,8 +25,10 @@
 #include "components/enterprise/common/proto/connectors.pb.h"
 #include "components/prefs/scoped_user_pref_update.h"
 #include "content/public/test/browser_test.h"
+#include "ui/accessibility/ax_node_data.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/resource/resource_bundle.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/controls/image_view.h"
 #include "ui/views/controls/textarea/textarea.h"
 #include "ui/views/controls/throbber.h"
@@ -1047,6 +1049,43 @@ IN_PROC_BROWSER_TEST_F(ContentAnalysisDialogPlainTests,
   dialog->CancelDialog();
   EXPECT_EQ(0, times_open_called_);
   EXPECT_EQ(1, times_discard_called_);
+}
+
+IN_PROC_BROWSER_TEST_F(ContentAnalysisDialogPlainTests,
+                       BypassJustificationLabelAndTextareaAccessibility) {
+  enterprise_connectors::ContentAnalysisDialog::
+      SetMinimumPendingDialogTimeForTesting(base::Milliseconds(0));
+  std::unique_ptr<MockDelegate> delegate = std::make_unique<MockDelegate>();
+  delegate->SetBypassRequiresJustification(true);
+  ContentAnalysisDialog* dialog = CreateContentAnalysisDialog(
+      std::move(delegate), FinalContentAnalysisResult::SUCCESS);
+  dialog->ShowResult(FinalContentAnalysisResult::WARNING);
+
+  // We need the label and its `AXNodeData` to verify that the textarea's name
+  // matches the name of the label, and that the textarea's labelledby id is
+  // the accessible id of the label.
+  auto* label = dialog->GetBypassJustificationLabelForTesting();
+  EXPECT_TRUE(label);
+  ui::AXNodeData label_data;
+  label->GetViewAccessibility().GetAccessibleNodeData(&label_data);
+
+  auto* textarea = dialog->GetBypassJustificationTextareaForTesting();
+  EXPECT_TRUE(textarea);
+  ui::AXNodeData textarea_data;
+  textarea->GetViewAccessibility().GetAccessibleNodeData(&textarea_data);
+  EXPECT_EQ(textarea_data.role, ax::mojom::Role::kTextField);
+  EXPECT_EQ(textarea->GetAccessibleRole(), ax::mojom::Role::kTextField);
+  EXPECT_EQ(
+      textarea_data.GetString16Attribute(ax::mojom::StringAttribute::kName),
+      label->GetAccessibleName());
+  EXPECT_EQ(textarea_data.GetNameFrom(), ax::mojom::NameFrom::kRelatedElement);
+  EXPECT_EQ(textarea_data.GetIntListAttribute(
+                ax::mojom::IntListAttribute::kLabelledbyIds)[0],
+            label_data.id);
+  EXPECT_TRUE(textarea_data.HasState(ax::mojom::State::kEditable));
+  EXPECT_FALSE(textarea_data.HasState(ax::mojom::State::kProtected));
+  EXPECT_EQ(textarea_data.GetDefaultActionVerb(),
+            ax::mojom::DefaultActionVerb::kActivate);
 }
 
 class ContentAnalysysDialogUiTest

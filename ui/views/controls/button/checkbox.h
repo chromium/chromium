@@ -45,12 +45,6 @@ class VIEWS_EXPORT Checkbox : public LabelButton {
   void SetMultiLine(bool multi_line);
   bool GetMultiLine() const;
 
-  // If the accessible name should be the same as the labelling view's text,
-  // use this. It will set the accessible label relationship and copy the
-  // accessible name from the labelling views's accessible name. Any view with
-  // an accessible name can be used, e.g. a Label, StyledLabel or Link.
-  void SetAssociatedLabel(View* labelling_view);
-
   void SetCheckedIconImageColor(SkColor color);
 
   // LabelButton:

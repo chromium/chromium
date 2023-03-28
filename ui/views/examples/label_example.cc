@@ -186,7 +186,7 @@ void LabelExample::AddCustomLabel(View* container) {
       u"this custom label.");
   textfield_->SetEditableSelectionRange(gfx::Range());
   textfield_->set_controller(this);
-  textfield_->SetAssociatedLabel(content_label);
+  textfield_->SetAccessibleName(content_label);
 
   alignment_ =
       AddCombobox(table, u"Alignment: ", kAlignments, std::size(kAlignments),

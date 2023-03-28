@@ -169,7 +169,9 @@ class CheckboxControl : public Checkbox {
         DISTANCE_RELATED_LABEL_HORIZONTAL));
     layout->set_cross_axis_alignment(BoxLayout::CrossAxisAlignment::kStart);
 
-    SetAssociatedLabel(label.get());
+    // TODO(accessibility): There is no `SetAccessibilityProperties` which takes
+    // a labelling view to set the accessible name.
+    SetAccessibleName(label.get());
 
     AddChildView(std::move(label));
   }

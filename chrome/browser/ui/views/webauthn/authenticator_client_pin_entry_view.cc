@@ -34,7 +34,7 @@ class PinTextfield : public views::Textfield {
     SetDefaultWidthInChars(20);
 
     set_controller(controller);
-    SetAssociatedLabel(label);
+    SetAccessibleName(label);
   }
   PinTextfield(const PinTextfield&) = delete;
   PinTextfield& operator=(const PinTextfield&) = delete;

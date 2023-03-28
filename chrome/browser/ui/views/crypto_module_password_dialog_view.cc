@@ -125,7 +125,7 @@ void CryptoModulePasswordDialogView::Init(const std::string& hostname,
       password_container->AddChildView(std::make_unique<views::Textfield>());
   password_entry_->SetTextInputType(ui::TEXT_INPUT_TYPE_PASSWORD);
   password_entry_->set_controller(this);
-  password_entry_->SetAssociatedLabel(password_label_);
+  password_entry_->SetAccessibleName(password_label_);
   password_container->SetFlexForView(password_entry_, 1);
 }
 

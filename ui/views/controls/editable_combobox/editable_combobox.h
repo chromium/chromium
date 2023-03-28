@@ -107,10 +107,6 @@ class VIEWS_EXPORT EditableCombobox
   // Selects the specified logical text range for the textfield.
   void SelectRange(const gfx::Range& range);
 
-  // Sets the associated label; use this instead of SetAccessibleName if there
-  // is a label associated with this combobox.
-  void SetAssociatedLabel(View* labelling_view);
-
  protected:
   // Sets the menu decoration strategy. Setting it triggers an update to the
   // menu.

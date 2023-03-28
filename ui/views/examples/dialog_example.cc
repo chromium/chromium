@@ -210,7 +210,7 @@ void DialogExample::StartTextfieldRow(View* parent,
   auto textfield = std::make_unique<Textfield>();
   textfield->set_controller(this);
   textfield->SetText(value);
-  textfield->SetAssociatedLabel(row_label);
+  textfield->SetAccessibleName(row_label);
   *member = parent->AddChildView(std::move(textfield));
   if (pad_last_col)
     parent->AddChildView(std::make_unique<View>());
@@ -223,7 +223,7 @@ void DialogExample::AddCheckbox(View* parent, Checkbox** member, Label* label) {
       std::u16string(), base::BindRepeating(callback, base::Unretained(this)));
   checkbox->SetChecked(true);
   if (label)
-    checkbox->SetAssociatedLabel(label);
+    checkbox->SetAccessibleName(label);
   *member = parent->AddChildView(std::move(checkbox));
 }
 

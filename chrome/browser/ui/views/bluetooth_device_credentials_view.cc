@@ -145,7 +145,7 @@ void BluetoothDeviceCredentialsView::InitControls(
     passkey_text_->SetDefaultWidthInChars(kDefaultTextfieldNumChars);
     passkey_text_->SetMinimumWidthInChars(kMinimumTextfieldNumChars);
     passkey_text_->SetTextInputType(ui::TEXT_INPUT_TYPE_TEXT);
-    passkey_text_->SetAssociatedLabel(passkey_prompt_label_ptr);
+    passkey_text_->SetAccessibleName(passkey_prompt_label_ptr);
     // TODO(cmumford): Windows Narrator says "no item in view".
   }
 

@@ -437,10 +437,6 @@ void EditableCombobox::OnAccessibleNameChanged(const std::u16string& new_name) {
   }
 }
 
-void EditableCombobox::SetAssociatedLabel(View* labelling_view) {
-  textfield_->SetAssociatedLabel(labelling_view);
-}
-
 void EditableCombobox::SetMenuDecorationStrategy(
     std::unique_ptr<MenuDecorationStrategy> strategy) {
   DCHECK(menu_model_);

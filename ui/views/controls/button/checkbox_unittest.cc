@@ -11,6 +11,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/accessibility/ax_node_data.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/controls/styled_label.h"
 #include "ui/views/test/views_test_base.h"
 
@@ -57,13 +58,22 @@ TEST_F(CheckboxTest, AccessibilityTest) {
   const std::u16string label_text = u"Some label";
   StyledLabel label;
   label.SetText(label_text);
-  checkbox()->SetAssociatedLabel(&label);
+  checkbox()->SetAccessibleName(&label);
+
+  // Use `ViewAccessibility::GetAccessibleNodeData` so that we can get the
+  // label's accessible id to compare with the checkbox's labelled-by id.
+  ui::AXNodeData label_data;
+  label.GetViewAccessibility().GetAccessibleNodeData(&label_data);
 
   ui::AXNodeData ax_data;
   checkbox()->GetAccessibleNodeData(&ax_data);
   EXPECT_EQ(ax_data.GetString16Attribute(ax::mojom::StringAttribute::kName),
             label_text);
   EXPECT_EQ(checkbox()->GetAccessibleName(), label_text);
+  EXPECT_EQ(ax_data.GetNameFrom(), ax::mojom::NameFrom::kRelatedElement);
+  EXPECT_EQ(ax_data.GetIntListAttribute(
+                ax::mojom::IntListAttribute::kLabelledbyIds)[0],
+            label_data.id);
   EXPECT_EQ(ax_data.role, ax::mojom::Role::kCheckBox);
   EXPECT_EQ(checkbox()->GetAccessibleRole(), ax::mojom::Role::kCheckBox);
   EXPECT_EQ(ax_data.GetCheckedState(), ax::mojom::CheckedState::kFalse);

@@ -47,6 +47,7 @@
 #include "ui/gfx/render_text.h"
 #include "ui/gfx/render_text_test_api.h"
 #include "ui/strings/grit/ui_strings.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/border.h"
 #include "ui/views/controls/textfield/textfield_model.h"
 #include "ui/views/controls/textfield/textfield_test_api.h"
@@ -4181,6 +4182,31 @@ TEST_F(TextfieldTest, SetAccessibleNameNotifiesAccessibilityEvent) {
   // for which there are other `NameFrom` values). `NameFrom::kContents` is
   // typically not an appropriate value.
   EXPECT_EQ(data.GetNameFrom(), ax::mojom::NameFrom::kAttribute);
+}
+
+TEST_F(TextfieldTest, AccessibleNameFromLabel) {
+  InitTextfield();
+
+  const std::u16string label_text = u"Some label";
+  View label;
+  label.SetAccessibleName(label_text);
+  textfield_->SetAccessibleName(&label);
+
+  // Use `ViewAccessibility::GetAccessibleNodeData` so that we can get the
+  // label's accessible id to compare with the textfield's labelled-by id.
+  ui::AXNodeData label_data;
+  label.GetViewAccessibility().GetAccessibleNodeData(&label_data);
+
+  ui::AXNodeData textfield_data;
+  textfield_->GetAccessibleNodeData(&textfield_data);
+  EXPECT_EQ(
+      textfield_data.GetString16Attribute(ax::mojom::StringAttribute::kName),
+      label_text);
+  EXPECT_EQ(textfield_->GetAccessibleName(), label_text);
+  EXPECT_EQ(textfield_data.GetNameFrom(), ax::mojom::NameFrom::kRelatedElement);
+  EXPECT_EQ(textfield_data.GetIntListAttribute(
+                ax::mojom::IntListAttribute::kLabelledbyIds)[0],
+            label_data.id);
 }
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
