@@ -357,33 +357,27 @@ void MockTabletEventConverterEvdev::ConfigureReadMock(struct input_event* queue,
 // Test fixture.
 class TabletEventConverterEvdevTest : public testing::Test {
  public:
-  TabletEventConverterEvdevTest() = default;
+  TabletEventConverterEvdevTest()
+      : cursor_(std::make_unique<ui::MockTabletCursorEvdev>()),
+        device_manager_(ui::CreateDeviceManagerForTest()),
+        keyboard_layout_engine_(
+            std::make_unique<ui::StubKeyboardLayoutEngine>()),
+        event_factory_(ui::CreateEventFactoryEvdevForTest(
+            cursor_.get(),
+            device_manager_.get(),
+            keyboard_layout_engine_.get(),
+            base::BindRepeating(
+                &TabletEventConverterEvdevTest::DispatchEventForTest,
+                base::Unretained(this)))),
+        dispatcher_(
+            ui::CreateDeviceEventDispatcherEvdevForTest(event_factory_.get())),
+        test_clock_(std::make_unique<ui::test::ScopedEventTestTickClock>()) {}
 
   TabletEventConverterEvdevTest(const TabletEventConverterEvdevTest&) = delete;
   TabletEventConverterEvdevTest& operator=(
       const TabletEventConverterEvdevTest&) = delete;
 
-  // Overridden from testing::Test:
-  void SetUp() override {
-    cursor_ = std::make_unique<ui::MockTabletCursorEvdev>();
-    device_manager_ = ui::CreateDeviceManagerForTest();
-    keyboard_layout_engine_ = std::make_unique<ui::StubKeyboardLayoutEngine>();
-    event_factory_ = ui::CreateEventFactoryEvdevForTest(
-        cursor_.get(), device_manager_.get(), keyboard_layout_engine_.get(),
-        base::BindRepeating(
-            &TabletEventConverterEvdevTest::DispatchEventForTest,
-            base::Unretained(this)));
-    dispatcher_ =
-        ui::CreateDeviceEventDispatcherEvdevForTest(event_factory_.get());
-
-    test_clock_ = std::make_unique<ui::test::ScopedEventTestTickClock>();
-  }
-
-  void TearDown() override {
-    cursor_.reset();
-  }
-
-  ui::MockTabletEventConverterEvdev* CreateDevice(
+  std::unique_ptr<ui::MockTabletEventConverterEvdev> CreateDevice(
       const ui::DeviceCapabilities& caps) {
     // Set up pipe to satisfy message pump (unused).
     int evdev_io[2];
@@ -394,7 +388,7 @@ class TabletEventConverterEvdevTest : public testing::Test {
 
     ui::EventDeviceInfo devinfo;
     CapabilitiesToDeviceInfo(caps, &devinfo);
-    return new ui::MockTabletEventConverterEvdev(
+    return std::make_unique<ui::MockTabletEventConverterEvdev>(
         std::move(events_in), base::FilePath(kTestDevicePath), cursor_.get(),
         devinfo, dispatcher_.get());
   }
@@ -430,12 +424,12 @@ class TabletEventConverterEvdevTest : public testing::Test {
   }
 
  private:
-  std::unique_ptr<ui::MockTabletCursorEvdev> cursor_;
-  std::unique_ptr<ui::DeviceManager> device_manager_;
-  std::unique_ptr<ui::KeyboardLayoutEngine> keyboard_layout_engine_;
-  std::unique_ptr<ui::EventFactoryEvdev> event_factory_;
-  std::unique_ptr<ui::DeviceEventDispatcherEvdev> dispatcher_;
-  std::unique_ptr<ui::test::ScopedEventTestTickClock> test_clock_;
+  const std::unique_ptr<ui::MockTabletCursorEvdev> cursor_;
+  const std::unique_ptr<ui::DeviceManager> device_manager_;
+  const std::unique_ptr<ui::KeyboardLayoutEngine> keyboard_layout_engine_;
+  const std::unique_ptr<ui::EventFactoryEvdev> event_factory_;
+  const std::unique_ptr<ui::DeviceEventDispatcherEvdev> dispatcher_;
+  const std::unique_ptr<ui::test::ScopedEventTestTickClock> test_clock_;
 
   std::vector<std::unique_ptr<ui::Event>> dispatched_events_;
 
@@ -447,7 +441,7 @@ class TabletEventConverterEvdevTest : public testing::Test {
 // Uses real data captured from Wacom Intuos 5 Pen
 TEST_F(TabletEventConverterEvdevTest, MoveTopLeft) {
   std::unique_ptr<ui::MockTabletEventConverterEvdev> dev =
-      base::WrapUnique(CreateDevice(kWacomIntuos5SPen));
+      CreateDevice(kWacomIntuos5SPen);
 
   struct input_event mock_kernel_queue[] = {
       {{0, 0}, EV_ABS, ABS_DISTANCE, 63},
@@ -479,7 +473,7 @@ TEST_F(TabletEventConverterEvdevTest, MoveTopLeft) {
 
 TEST_F(TabletEventConverterEvdevTest, MoveTopRight) {
   std::unique_ptr<ui::MockTabletEventConverterEvdev> dev =
-      base::WrapUnique(CreateDevice(kWacomIntuos5SPen));
+      CreateDevice(kWacomIntuos5SPen);
 
   struct input_event mock_kernel_queue[] = {
       {{0, 0}, EV_ABS, ABS_DISTANCE, 63},
@@ -514,7 +508,7 @@ TEST_F(TabletEventConverterEvdevTest, MoveTopRight) {
 
 TEST_F(TabletEventConverterEvdevTest, MoveBottomLeft) {
   std::unique_ptr<ui::MockTabletEventConverterEvdev> dev =
-      base::WrapUnique(CreateDevice(kWacomIntuos5SPen));
+      CreateDevice(kWacomIntuos5SPen);
 
   struct input_event mock_kernel_queue[] = {
       {{0, 0}, EV_ABS, ABS_DISTANCE, 63},
@@ -549,7 +543,7 @@ TEST_F(TabletEventConverterEvdevTest, MoveBottomLeft) {
 
 TEST_F(TabletEventConverterEvdevTest, MoveBottomRight) {
   std::unique_ptr<ui::MockTabletEventConverterEvdev> dev =
-      base::WrapUnique(CreateDevice(kWacomIntuos5SPen));
+      CreateDevice(kWacomIntuos5SPen);
 
   struct input_event mock_kernel_queue[] = {
       {{0, 0}, EV_ABS, ABS_DISTANCE, 63},
@@ -587,7 +581,7 @@ TEST_F(TabletEventConverterEvdevTest, MoveBottomRight) {
 TEST_F(TabletEventConverterEvdevTest,
        ShouldDisableMouseWarpingToOtherDisplays) {
   std::unique_ptr<ui::MockTabletEventConverterEvdev> dev =
-      base::WrapUnique(CreateDevice(kWacomIntuos5SPen));
+      CreateDevice(kWacomIntuos5SPen);
 
   // Move to bottom right, even though the end position doesn't matter for this
   // test, as long as it is a move.
@@ -623,7 +617,7 @@ TEST_F(TabletEventConverterEvdevTest,
 
 TEST_F(TabletEventConverterEvdevTest, Tap) {
   std::unique_ptr<ui::MockTabletEventConverterEvdev> dev =
-      base::WrapUnique(CreateDevice(kWacomIntuos5SPen));
+      CreateDevice(kWacomIntuos5SPen);
 
   struct input_event mock_kernel_queue[] = {
       {{0, 0}, EV_ABS, ABS_X, 15456},
@@ -682,7 +676,7 @@ TEST_F(TabletEventConverterEvdevTest, Tap) {
 
 TEST_F(TabletEventConverterEvdevTest, StylusButtonPress) {
   std::unique_ptr<ui::MockTabletEventConverterEvdev> dev =
-      base::WrapUnique(CreateDevice(kWacomIntuos5SPen));
+      CreateDevice(kWacomIntuos5SPen);
 
   struct input_event mock_kernel_queue[] = {
       {{0, 0}, EV_ABS, ABS_DISTANCE, 63},
@@ -735,7 +729,7 @@ TEST_F(TabletEventConverterEvdevTest, StylusButtonPress) {
 // Should only get an event if BTN_TOOL received
 TEST_F(TabletEventConverterEvdevTest, CheckStylusFiltering) {
   std::unique_ptr<ui::MockTabletEventConverterEvdev> dev =
-      base::WrapUnique(CreateDevice(kWacomIntuos5SPen));
+      CreateDevice(kWacomIntuos5SPen);
 
   struct input_event mock_kernel_queue[] = {
       {{0, 0}, EV_ABS, ABS_X, 0},
@@ -750,7 +744,7 @@ TEST_F(TabletEventConverterEvdevTest, CheckStylusFiltering) {
 // for digitizer pen with only one side button
 TEST_F(TabletEventConverterEvdevTest, DigitizerPenOneSideButtonPress) {
   std::unique_ptr<ui::MockTabletEventConverterEvdev> dev =
-      base::WrapUnique(CreateDevice(EpsonBrightLink1430));
+      CreateDevice(EpsonBrightLink1430);
 
   struct input_event mock_kernel_queue[] = {
       {{0, 0}, EV_ABS, ABS_DISTANCE, 63},
@@ -807,7 +801,7 @@ TEST_F(TabletEventConverterEvdevTest, DigitizerPenOneSideButtonPress) {
 
 TEST_F(TabletEventConverterEvdevTest, NoButtonPressedKernel5And6) {
   std::unique_ptr<ui::MockTabletEventConverterEvdev> dev =
-      base::WrapUnique(CreateDevice(WacomOnePenTabletMediumCTC6110WL));
+      CreateDevice(WacomOnePenTabletMediumCTC6110WL);
 
   struct input_event mock_kernel_queue[] = {
       {{0, 0}, EV_KEY, BTN_TOOL_PEN, 1},
@@ -848,7 +842,7 @@ TEST_F(TabletEventConverterEvdevTest, NoButtonPressedKernel5And6) {
 
 TEST_F(TabletEventConverterEvdevTest, SideEraserAlwaysPressedKernel5) {
   std::unique_ptr<ui::MockTabletEventConverterEvdev> dev =
-      base::WrapUnique(CreateDevice(WacomOnePenTabletMediumCTC6110WL));
+      CreateDevice(WacomOnePenTabletMediumCTC6110WL);
 
   struct input_event mock_kernel_queue[] = {
       {{0, 0}, EV_KEY, BTN_TOOL_RUBBER, 1},
@@ -891,7 +885,7 @@ TEST_F(TabletEventConverterEvdevTest, SideEraserAlwaysPressedKernel5) {
 
 TEST_F(TabletEventConverterEvdevTest, SideEraserAlwaysPressedKernel6) {
   std::unique_ptr<ui::MockTabletEventConverterEvdev> dev =
-      base::WrapUnique(CreateDevice(WacomOnePenTabletMediumCTC6110WL));
+      CreateDevice(WacomOnePenTabletMediumCTC6110WL);
 
   struct input_event mock_kernel_queue[] = {
       {{0, 0}, EV_KEY, BTN_TOOL_RUBBER, 1},
@@ -930,7 +924,7 @@ TEST_F(TabletEventConverterEvdevTest, SideEraserAlwaysPressedKernel6) {
 
 TEST_F(TabletEventConverterEvdevTest, SideEraserReleasedWhileTouchingKernel5) {
   std::unique_ptr<ui::MockTabletEventConverterEvdev> dev =
-      base::WrapUnique(CreateDevice(WacomOnePenTabletMediumCTC6110WL));
+      CreateDevice(WacomOnePenTabletMediumCTC6110WL);
 
   struct input_event mock_kernel_queue[] = {
       {{0, 0}, EV_KEY, BTN_TOOL_RUBBER, 1},
@@ -982,7 +976,7 @@ TEST_F(TabletEventConverterEvdevTest, SideEraserReleasedWhileTouchingKernel5) {
 
 TEST_F(TabletEventConverterEvdevTest, SideEraserReleasedWhileTouchingKernel6) {
   std::unique_ptr<ui::MockTabletEventConverterEvdev> dev =
-      base::WrapUnique(CreateDevice(WacomOnePenTabletMediumCTC6110WL));
+      CreateDevice(WacomOnePenTabletMediumCTC6110WL);
 
   struct input_event mock_kernel_queue[] = {
       {{0, 0}, EV_KEY, BTN_TOOL_RUBBER, 1},
@@ -1030,7 +1024,7 @@ TEST_F(TabletEventConverterEvdevTest, SideEraserReleasedWhileTouchingKernel6) {
 TEST_F(TabletEventConverterEvdevTest,
        SideEraserPressedWhileTouchingKernel5And6) {
   std::unique_ptr<ui::MockTabletEventConverterEvdev> dev =
-      base::WrapUnique(CreateDevice(WacomOnePenTabletMediumCTC6110WL));
+      CreateDevice(WacomOnePenTabletMediumCTC6110WL);
 
   struct input_event mock_kernel_queue[] = {
       {{0, 0}, EV_KEY, BTN_TOOL_PEN, 1},
@@ -1085,7 +1079,7 @@ TEST_F(TabletEventConverterEvdevTest,
 
 TEST_F(TabletEventConverterEvdevTest, TailEraserKernel5And6) {
   std::unique_ptr<ui::MockTabletEventConverterEvdev> dev =
-      base::WrapUnique(CreateDevice(WacomIntuousProMPenPTH660));
+      CreateDevice(WacomIntuousProMPenPTH660);
 
   struct input_event mock_kernel_queue[] = {
       {{0, 0}, EV_ABS, ABS_X, 21040},
@@ -1133,7 +1127,7 @@ TEST_F(TabletEventConverterEvdevTest, TailEraserKernel5And6) {
 
 TEST_F(TabletEventConverterEvdevTest, Button1AlwaysPressedKernel5) {
   std::unique_ptr<ui::MockTabletEventConverterEvdev> dev =
-      base::WrapUnique(CreateDevice(XPPenStarG640));
+      CreateDevice(XPPenStarG640);
 
   struct input_event mock_kernel_queue[] = {
       {{0, 0}, EV_MSC, MSC_SCAN, 0xd0044},
@@ -1180,7 +1174,7 @@ TEST_F(TabletEventConverterEvdevTest, Button1AlwaysPressedKernel5) {
 
 TEST_F(TabletEventConverterEvdevTest, Button1AlwaysPressedKernel6) {
   std::unique_ptr<ui::MockTabletEventConverterEvdev> dev =
-      base::WrapUnique(CreateDevice(XPPenStarG640));
+      CreateDevice(XPPenStarG640);
 
   struct input_event mock_kernel_queue[] = {
       {{0, 0}, EV_KEY, BTN_TOOL_PEN, 1},
@@ -1229,7 +1223,7 @@ TEST_F(TabletEventConverterEvdevTest, Button1AlwaysPressedKernel6) {
 
 TEST_F(TabletEventConverterEvdevTest, Button1ReleasedWhileTouchingKernel5) {
   std::unique_ptr<ui::MockTabletEventConverterEvdev> dev =
-      base::WrapUnique(CreateDevice(XPPenStarG640));
+      CreateDevice(XPPenStarG640);
 
   struct input_event mock_kernel_queue[] = {
       {{0, 0}, EV_KEY, BTN_STYLUS, 1},  // Event 0
@@ -1294,7 +1288,7 @@ TEST_F(TabletEventConverterEvdevTest, Button1ReleasedWhileTouchingKernel5) {
 
 TEST_F(TabletEventConverterEvdevTest, Button1ReleasedWhileTouchingKernel6) {
   std::unique_ptr<ui::MockTabletEventConverterEvdev> dev =
-      base::WrapUnique(CreateDevice(XPPenStarG640));
+      CreateDevice(XPPenStarG640);
 
   struct input_event mock_kernel_queue[] = {
       {{0, 0}, EV_KEY, BTN_TOOL_PEN, 1},
@@ -1363,7 +1357,7 @@ TEST_F(TabletEventConverterEvdevTest, Button1ReleasedWhileTouchingKernel6) {
 
 TEST_F(TabletEventConverterEvdevTest, Button1PressedWhileTouchingKernel5) {
   std::unique_ptr<ui::MockTabletEventConverterEvdev> dev =
-      base::WrapUnique(CreateDevice(XPPenStarG640));
+      CreateDevice(XPPenStarG640);
 
   struct input_event mock_kernel_queue[] = {
       {{0, 0}, EV_KEY, BTN_TOOL_PEN, 1},
@@ -1416,7 +1410,7 @@ TEST_F(TabletEventConverterEvdevTest, Button1PressedWhileTouchingKernel5) {
 
 TEST_F(TabletEventConverterEvdevTest, Button1PressedWhileTouchingKernel6) {
   std::unique_ptr<ui::MockTabletEventConverterEvdev> dev =
-      base::WrapUnique(CreateDevice(XPPenStarG640));
+      CreateDevice(XPPenStarG640);
 
   struct input_event mock_kernel_queue[] = {
       {{0, 0}, EV_KEY, BTN_TOOL_PEN, 1},
@@ -1485,7 +1479,7 @@ TEST_F(TabletEventConverterEvdevTest, Button1PressedWhileTouchingKernel6) {
 
 TEST_F(TabletEventConverterEvdevTest, Button2AlwaysPressedKernel5And6) {
   std::unique_ptr<ui::MockTabletEventConverterEvdev> dev =
-      base::WrapUnique(CreateDevice(WacomOneByWacomSPenCTC472));
+      CreateDevice(WacomOneByWacomSPenCTC472);
 
   struct input_event mock_kernel_queue[] = {
       {{0, 0}, EV_ABS, ABS_X, 8430},
@@ -1542,7 +1536,7 @@ TEST_F(TabletEventConverterEvdevTest, Button2AlwaysPressedKernel5And6) {
 
 TEST_F(TabletEventConverterEvdevTest, Button2ReleasedWhileTouchingKernel5And6) {
   std::unique_ptr<ui::MockTabletEventConverterEvdev> dev =
-      base::WrapUnique(CreateDevice(WacomOneByWacomSPenCTC472));
+      CreateDevice(WacomOneByWacomSPenCTC472);
 
   struct input_event mock_kernel_queue[] = {
       {{0, 0}, EV_ABS, ABS_X, 9826},
@@ -1600,7 +1594,7 @@ TEST_F(TabletEventConverterEvdevTest, Button2ReleasedWhileTouchingKernel5And6) {
 
 TEST_F(TabletEventConverterEvdevTest, Button2PressedWhileTouchingKernel5And6) {
   std::unique_ptr<ui::MockTabletEventConverterEvdev> dev =
-      base::WrapUnique(CreateDevice(WacomOneByWacomSPenCTC472));
+      CreateDevice(WacomOneByWacomSPenCTC472);
 
   struct input_event mock_kernel_queue[] = {
       {{0, 0}, EV_ABS, ABS_X, 9886},
@@ -1654,7 +1648,7 @@ TEST_F(TabletEventConverterEvdevTest, Button2PressedWhileTouchingKernel5And6) {
 TEST_F(TabletEventConverterEvdevTest,
        Button1AlwaysPressedWithTailEraserKernel5And6) {
   std::unique_ptr<ui::MockTabletEventConverterEvdev> dev =
-      base::WrapUnique(CreateDevice(WacomIntuousProMPenPTH660));
+      CreateDevice(WacomIntuousProMPenPTH660);
 
   struct input_event mock_kernel_queue[] = {
       {{0, 0}, EV_ABS, ABS_X, 38777},
@@ -1717,7 +1711,7 @@ TEST_F(TabletEventConverterEvdevTest,
 TEST_F(TabletEventConverterEvdevTest,
        Button1ReleasedWhileTouchingWithTailEraserKernel5And6) {
   std::unique_ptr<ui::MockTabletEventConverterEvdev> dev =
-      base::WrapUnique(CreateDevice(WacomIntuousProMPenPTH660));
+      CreateDevice(WacomIntuousProMPenPTH660);
 
   struct input_event mock_kernel_queue[] = {
       {{0, 0}, EV_ABS, ABS_X, 34762},
@@ -1782,7 +1776,7 @@ TEST_F(TabletEventConverterEvdevTest,
 TEST_F(TabletEventConverterEvdevTest,
        Button1PressedWhileTouchingWithTailEraserKernel5And6) {
   std::unique_ptr<ui::MockTabletEventConverterEvdev> dev =
-      base::WrapUnique(CreateDevice(WacomIntuousProMPenPTH660));
+      CreateDevice(WacomIntuousProMPenPTH660);
 
   struct input_event mock_kernel_queue[] = {
       {{0, 0}, EV_ABS, ABS_X, 35858},
@@ -1843,7 +1837,7 @@ TEST_F(TabletEventConverterEvdevTest,
 TEST_F(TabletEventConverterEvdevTest,
        Button2AlwaysPressedWithTailEraserKernel5And6) {
   std::unique_ptr<ui::MockTabletEventConverterEvdev> dev =
-      base::WrapUnique(CreateDevice(WacomIntuousProMPenPTH660));
+      CreateDevice(WacomIntuousProMPenPTH660);
 
   struct input_event mock_kernel_queue[] = {
       {{0, 0}, EV_ABS, ABS_X, 37215},
@@ -1908,7 +1902,7 @@ TEST_F(TabletEventConverterEvdevTest,
 TEST_F(TabletEventConverterEvdevTest,
        Button2ReleasedWhileTouchingWithTailEraserKernel5And6) {
   std::unique_ptr<ui::MockTabletEventConverterEvdev> dev =
-      base::WrapUnique(CreateDevice(WacomIntuousProMPenPTH660));
+      CreateDevice(WacomIntuousProMPenPTH660);
 
   struct input_event mock_kernel_queue[] = {
       {{0, 0}, EV_ABS, ABS_X, 37450},
@@ -1974,7 +1968,7 @@ TEST_F(TabletEventConverterEvdevTest,
 TEST_F(TabletEventConverterEvdevTest,
        Button2PressedWhileTouchingWithTailEraserKernel5And6) {
   std::unique_ptr<ui::MockTabletEventConverterEvdev> dev =
-      base::WrapUnique(CreateDevice(WacomIntuousProMPenPTH660));
+      CreateDevice(WacomIntuousProMPenPTH660);
 
   struct input_event mock_kernel_queue[] = {
       {{0, 0}, EV_ABS, ABS_X, 38408},
