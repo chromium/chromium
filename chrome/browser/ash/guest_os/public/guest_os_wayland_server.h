@@ -9,10 +9,13 @@
 
 #include "base/containers/flat_map.h"
 #include "base/files/file_path.h"
+#include "base/files/scoped_file.h"
 #include "base/functional/callback_forward.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ash/borealis/infra/expected.h"
 #include "chromeos/ash/components/dbus/vm_launch/launch.pb.h"
+#include "chromeos/ash/components/dbus/vm_wl/wl.pb.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 class Profile;
 
@@ -70,11 +73,28 @@ class GuestOsWaylandServer {
   // Creates a wayland server as per the |request|, and responds with the
   // relevant details in the |response_callback|. This API is used by e.g.
   // dbus.
+  //
+  // TODO(b/270254359): deprecate this method.
   static void StartServer(
       const vm_tools::launch::StartWaylandServerRequest& request,
       base::OnceCallback<
           void(borealis::Expected<vm_tools::launch::StartWaylandServerResponse,
                                   std::string>)> response_callback);
+
+  // Use the given |socket_fd| as a wayland socket for the VM given by
+  // |request|. Invokes the |response_callback| with nullopt on success, or a
+  // string description of an error on failure.
+  static void ListenOnSocket(
+      const vm_tools::wl::ListenOnSocketRequest& request,
+      base::ScopedFD socket_fd,
+      base::OnceCallback<void(absl::optional<std::string>)> response_callback);
+
+  // Advise that the wayland server for the VM given in |request| is no-longer
+  // needed. Invokes the |response_callback| with nullopt on success, or a
+  // string description of an error on failure.
+  static void CloseSocket(
+      const vm_tools::wl::CloseSocketRequest& request,
+      base::OnceCallback<void(absl::optional<std::string>)> response_callback);
 
   explicit GuestOsWaylandServer(Profile* profile);
 

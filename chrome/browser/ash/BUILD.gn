@@ -983,6 +983,8 @@ source_set("ash") {
     "dbus/vm/vm_permission_service_provider.h",
     "dbus/vm/vm_sk_forwarding_service_provider.cc",
     "dbus/vm/vm_sk_forwarding_service_provider.h",
+    "dbus/vm/vm_wl_service_provider.cc",
+    "dbus/vm/vm_wl_service_provider.h",
     "device_name/device_name_applier.h",
     "device_name/device_name_applier_impl.cc",
     "device_name/device_name_applier_impl.h",
@@ -3421,6 +3423,7 @@ source_set("ash") {
     "//chromeos/ash/components/dbus:metrics_event_proto",
     "//chromeos/ash/components/dbus:vm_applications_apps_proto",
     "//chromeos/ash/components/dbus:vm_launch_proto",
+    "//chromeos/ash/components/dbus:vm_wl_proto",
     "//chromeos/ash/components/dbus/anomaly_detector",
     "//chromeos/ash/components/dbus/anomaly_detector:proto",
     "//chromeos/ash/components/dbus/attestation",
@@ -4169,6 +4172,7 @@ action("dbus_service_files") {
     "dbus/vm/org.chromium.VmLaunchService.conf",
     "dbus/vm/org.chromium.VmPermissionService.conf",
     "dbus/vm/org.chromium.VmSKForwardingService.conf",
+    "dbus/vm/org.chromium.VmWlService.conf",
   ]
   output_conf_file = "$root_out_dir/dbus/chrome_dbus_services.conf"
   outputs = [ output_conf_file ]

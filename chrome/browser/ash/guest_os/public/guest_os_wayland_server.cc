@@ -114,8 +114,9 @@ GuestOsWaylandServer::ServerDetails::ServerDetails(
 
 GuestOsWaylandServer::ServerDetails::~ServerDetails() {
   // In tests, this is used to avoid dealing with the real server controller.
-  if (server_path_.empty())
+  if (server_path_.empty()) {
     return;
+  }
   GuestOsSecurityDelegate::MaybeRemoveServer(security_delegate_, server_path_);
 }
 
@@ -134,6 +135,21 @@ void GuestOsWaylandServer::StartServer(
   GuestOsService::GetForProfile(profile)->WaylandServer()->Get(
       request.vm_type(),
       base::BindOnce(&OnWaylandServerStarted, std::move(response_callback)));
+}
+
+// static
+void GuestOsWaylandServer::ListenOnSocket(
+    const vm_tools::wl::ListenOnSocketRequest& request,
+    base::ScopedFD socket_fd,
+    base::OnceCallback<void(absl::optional<std::string>)> response_callback) {
+  std::move(response_callback).Run({"ListenOnSocket not implemented."});
+}
+
+// static
+void GuestOsWaylandServer::CloseSocket(
+    const vm_tools::wl::CloseSocketRequest& request,
+    base::OnceCallback<void(absl::optional<std::string>)> response_callback) {
+  std::move(response_callback).Run({"CloseSocket not implemented."});
 }
 
 GuestOsWaylandServer::GuestOsWaylandServer(Profile* profile)
