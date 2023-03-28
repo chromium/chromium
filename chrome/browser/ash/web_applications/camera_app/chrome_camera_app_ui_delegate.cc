@@ -37,6 +37,7 @@
 #include "chrome/browser/web_applications/web_app_launch_queue.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_tab_helper.h"
+#include "chromeos/constants/chromeos_features.h"
 #include "chromeos/constants/devicetype.h"
 #include "chromeos/ui/base/window_properties.h"
 #include "components/services/app_service/public/cpp/app_launch_util.h"
@@ -310,6 +311,8 @@ void ChromeCameraAppUIDelegate::PopulateLoadTimeData(
                     DeviceTypeToString(chromeos::GetDeviceType()));
   source->AddBoolean("timeLapse", base::FeatureList::IsEnabled(
                                       ash::features::kCameraAppTimeLapse));
+  source->AddBoolean("jelly",
+                     base::FeatureList::IsEnabled(chromeos::features::kJelly));
 }
 
 bool ChromeCameraAppUIDelegate::IsMetricsAndCrashReportingEnabled() {
