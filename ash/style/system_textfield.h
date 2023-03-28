@@ -6,6 +6,7 @@
 #define ASH_STYLE_SYSTEM_TEXTFIELD_H_
 
 #include "ash/ash_export.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/color/color_id.h"
 #include "ui/views/controls/textfield/textfield.h"
@@ -41,6 +42,13 @@ class ASH_EXPORT SystemTextfield : public views::Textfield {
 
   void set_delegate(Delegate* delegate) { delegate_ = delegate; }
 
+  // Set custom colors of text, selected text, selection background, and
+  // textfield background color.
+  void SetTextColorId(ui::ColorId color_id);
+  void SetSelectedTextColorId(ui::ColorId color_id);
+  void SetSelectionBackgroundColorId(ui::ColorId color_id);
+  void SetBackgroundColorId(ui::ColorId color_id);
+
   // Activates or deactivates the textfield. The textfield can only be edited if
   // it is active.
   void SetActive(bool active);
@@ -62,6 +70,10 @@ class ASH_EXPORT SystemTextfield : public views::Textfield {
  private:
   // Called when the enabled state is changed.
   void OnEnabledStateChanged();
+  // Update custom color ID.
+  void UpdateColorId(absl::optional<ui::ColorId>& src,
+                     ui::ColorId dst,
+                     bool is_background_color);
   // Updates text and selection text colors.
   void UpdateTextColor();
   // Creates themed or transparent background according to the textfield states.
@@ -73,6 +85,14 @@ class ASH_EXPORT SystemTextfield : public views::Textfield {
   Delegate* delegate_ = nullptr;
   // Indicates if the textfield should show focus ring.
   bool show_focus_ring_ = false;
+
+  // custom color IDs for text, selected text, selection background, and
+  // textfield background.
+  absl::optional<ui::ColorId> text_color_id_;
+  absl::optional<ui::ColorId> selected_text_color_id_;
+  absl::optional<ui::ColorId> selection_background_color_id_;
+  absl::optional<ui::ColorId> background_color_id_;
+
   // Enabled state changed callback.
   base::CallbackListSubscription enabled_changed_subscription_;
 };

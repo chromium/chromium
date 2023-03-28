@@ -94,6 +94,24 @@ SystemTextfield::SystemTextfield(Type type) : type_(type) {
 
 SystemTextfield::~SystemTextfield() = default;
 
+void SystemTextfield::SetTextColorId(ui::ColorId color_id) {
+  UpdateColorId(text_color_id_, color_id, /*is_background_color=*/false);
+}
+
+void SystemTextfield::SetSelectedTextColorId(ui::ColorId color_id) {
+  UpdateColorId(selected_text_color_id_, color_id,
+                /*is_background_color=*/false);
+}
+
+void SystemTextfield::SetSelectionBackgroundColorId(ui::ColorId color_id) {
+  UpdateColorId(selection_background_color_id_, color_id,
+                /*is_background_color=*/false);
+}
+
+void SystemTextfield::SetBackgroundColorId(ui::ColorId color_id) {
+  UpdateColorId(background_color_id_, color_id, /*is_background_color=*/true);
+}
+
 void SystemTextfield::SetActive(bool active) {
   if (IsActive() == active) {
     return;
@@ -193,6 +211,21 @@ void SystemTextfield::OnEnabledStateChanged() {
   SchedulePaint();
 }
 
+void SystemTextfield::UpdateColorId(absl::optional<ui::ColorId>& src,
+                                    ui::ColorId dst,
+                                    bool is_background_color) {
+  if (src && *src == dst) {
+    return;
+  }
+
+  src = dst;
+  if (is_background_color) {
+    UpdateBackground();
+  } else {
+    UpdateTextColor();
+  }
+}
+
 void SystemTextfield::UpdateTextColor() {
   if (!GetWidget()) {
     return;
@@ -207,11 +240,13 @@ void SystemTextfield::UpdateTextColor() {
   }
 
   // Set text color and selection text and background (highlight part) colors.
-  SetColor(color_provider->GetColor(cros_tokens::kCrosSysOnSurface));
-  render_text->set_selection_color(
-      color_provider->GetColor(cros_tokens::kCrosSysOnSurface));
+  SetColor(color_provider->GetColor(
+      text_color_id_.value_or(cros_tokens::kCrosSysOnSurface)));
+  render_text->set_selection_color(color_provider->GetColor(
+      selected_text_color_id_.value_or(cros_tokens::kCrosSysOnSurface)));
   render_text->set_selection_background_focused_color(
-      color_provider->GetColor(cros_tokens::kCrosSysHighlightText));
+      color_provider->GetColor(selection_background_color_id_.value_or(
+          cros_tokens::kCrosSysHighlightText)));
 }
 
 void SystemTextfield::UpdateBackground() {
@@ -219,7 +254,8 @@ void SystemTextfield::UpdateBackground() {
   // textfield or the textfield is focused.
   if (IsMouseHovered() || HasFocus()) {
     SetBackground(views::CreateThemedRoundedRectBackground(
-        cros_tokens::kCrosSysHoverOnSubtle, kCornerRadius));
+        background_color_id_.value_or(cros_tokens::kCrosSysHoverOnSubtle),
+        kCornerRadius));
     return;
   }
 
