@@ -26,7 +26,6 @@ enum class WKNavigationState;
 
 @class CRWContextMenuItem;
 @protocol CRWScrollableContent;
-@protocol CRWSwipeRecognizerProvider;
 @class CRWWebViewContentView;
 @protocol CRWFindInteraction;
 @protocol CRWWebViewDownload;
@@ -53,9 +52,6 @@ class WebStateImpl;
 // Whether or not a UIWebView is allowed to exist in this CRWWebController.
 // Defaults to NO; this should be enabled before attempting to access the view.
 @property(nonatomic, assign) BOOL webUsageEnabled;
-
-@property(nonatomic, weak) id<CRWSwipeRecognizerProvider>
-    swipeRecognizerProvider;
 
 // The container view used to display content.  If the view has been purged due
 // to low memory, this will recreate it.

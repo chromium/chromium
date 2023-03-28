@@ -18,7 +18,6 @@ class PrerenderService;
 @class PrintController;
 @protocol RepostFormTabHelperDelegate;
 @class SadTabCoordinator;
-@class SideSwipeController;
 @protocol SnapshotGeneratorDelegate;
 class TabInsertionBrowserAgent;
 class WebStateList;
@@ -34,7 +33,6 @@ class WebStateList;
 // lifetime. The mediator keeps only weak references to injected dependencies.
 @interface TabLifecycleMediator : NSObject
 
-@property(nonatomic, weak) SideSwipeController* sideSwipeController;
 @property(nonatomic, weak)
     DownloadManagerCoordinator* downloadManagerCoordinator;
 @property(nonatomic, assign) PrerenderService* prerenderService;

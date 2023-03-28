@@ -255,10 +255,6 @@ class SideSwipeControllerBrowserRemover : public BrowserObserver {
   return _browser->GetWebStateList();
 }
 
-- (NSSet*)swipeRecognizers {
-  return [NSSet setWithObjects:_swipeGestureRecognizer, nil];
-}
-
 - (void)setEnabled:(BOOL)enabled {
   [_swipeGestureRecognizer setEnabled:enabled];
 }

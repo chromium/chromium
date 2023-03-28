@@ -8,7 +8,6 @@
 #import <UIKit/UIKit.h>
 
 #import "ios/chrome/browser/snapshots/snapshot_generator_delegate.h"
-#import "ios/web/web_state/ui/crw_swipe_recognizer_provider.h"
 
 namespace web {
 class WebState;
@@ -55,8 +54,7 @@ extern NSString* const kSideSwipeDidStopNotification;
 // across the screen. For page changes the SideSwipeControllerDelegate
 // `contentView` is moved across the screen and a SideSwipeNavigationView is
 // shown in the remaining space.
-@interface SideSwipeController
-    : NSObject<CRWSwipeRecognizerProvider, UIGestureRecognizerDelegate>
+@interface SideSwipeController : NSObject <UIGestureRecognizerDelegate>
 
 @property(nonatomic, assign) BOOL inSwipe;
 @property(nonatomic, weak) id<SideSwipeControllerDelegate> swipeDelegate;
@@ -80,9 +78,6 @@ extern NSString* const kSideSwipeDidStopNotification;
 
 // Set up swipe gesture recognizers.
 - (void)addHorizontalGesturesToView:(UIView*)view;
-
-// Returns set of UIGestureRecognizer objects.
-- (NSSet*)swipeRecognizers;
 
 // Enable or disable the side swipe gesture recognizer.
 - (void)setEnabled:(BOOL)enabled;

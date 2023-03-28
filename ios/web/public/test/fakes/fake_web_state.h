@@ -97,9 +97,6 @@ class FakeWebState : public WebState {
   bool SetSessionStateData(NSData* data) override;
   NSData* SessionStateData() override;
 
-  void SetSwipeRecognizerProvider(
-      id<CRWSwipeRecognizerProvider> delegate) override;
-
   PermissionState GetStateForPermission(Permission permission) const override
       API_AVAILABLE(ios(15.0));
   void SetStateForPermission(PermissionState state,

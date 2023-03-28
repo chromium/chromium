@@ -95,9 +95,6 @@
   DCHECK(_delegate);
   OverscrollActionsTabHelper::FromWebState(webState)->SetDelegate(_delegate);
 
-  DCHECK(_sideSwipeController);
-  webState->SetSwipeRecognizerProvider(_sideSwipeController);
-
   // DownloadManagerTabHelper cannot function without its delegate.
   DCHECK(_downloadManagerCoordinator);
   DownloadManagerTabHelper::FromWebState(webState)->SetDelegate(
@@ -170,8 +167,6 @@
   bottomSheetTabHelper->SetPasswordBottomSheetHandler(nil);
 
   OverscrollActionsTabHelper::FromWebState(webState)->SetDelegate(nil);
-
-  webState->SetSwipeRecognizerProvider(nil);
 
   DownloadManagerTabHelper::FromWebState(webState)->SetDelegate(nil);
 

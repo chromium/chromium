@@ -516,9 +516,6 @@ NSData* FakeWebState::SessionStateData() {
   return nil;
 }
 
-void FakeWebState::SetSwipeRecognizerProvider(
-    id<CRWSwipeRecognizerProvider> delegate) {}
-
 PermissionState FakeWebState::GetStateForPermission(
     Permission permission) const {
   switch (permission) {

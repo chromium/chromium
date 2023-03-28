@@ -56,7 +56,6 @@
 #import "ios/web/web_state/crw_web_view.h"
 #import "ios/web/web_state/page_viewport_state.h"
 #import "ios/web/web_state/ui/crw_context_menu_controller.h"
-#import "ios/web/web_state/ui/crw_swipe_recognizer_provider.h"
 #import "ios/web/web_state/ui/crw_web_controller_container_view.h"
 #import "ios/web/web_state/ui/crw_web_request_controller.h"
 #import "ios/web/web_state/ui/crw_web_view_proxy_impl.h"
@@ -548,7 +547,6 @@ typedef void (^ViewportStateCompletion)(const web::PageViewportState*);
   [self.UIHandler close];
   [self.jsNavigationHandler close];
   [self.requestController close];
-  self.swipeRecognizerProvider = nil;
   [self.requestController close];
   [self.webViewNavigationObserver close];
 
@@ -1700,16 +1698,6 @@ CrFullscreenState CrFullscreenStateFromWKFullscreenState(
 
     [self.webView setAutoresizingMask:UIViewAutoresizingFlexibleWidth |
                                       UIViewAutoresizingFlexibleHeight];
-
-    // Create a dependency between the `webView` pan gesture and BVC side swipe
-    // gestures. Note: This needs to be added before the longPress recognizers
-    // below, or the longPress appears to deadlock the remaining recognizers,
-    // thereby breaking scroll.
-    NSSet* recognizers = [_swipeRecognizerProvider swipeRecognizers];
-    for (UISwipeGestureRecognizer* swipeRecognizer in recognizers) {
-      [self.webScrollView.panGestureRecognizer
-          requireGestureRecognizerToFail:swipeRecognizer];
-    }
 
     if (web::GetWebClient()->EnableLongPressUIContextMenu()) {
       self.contextMenuController =

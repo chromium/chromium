@@ -87,16 +87,6 @@ TEST_F(SideSwipeControllerTest, TestConstructor) {
   EXPECT_TRUE(side_swipe_controller_);
 }
 
-TEST_F(SideSwipeControllerTest, TestSwipeRecognizers) {
-  NSSet* recognizers = [side_swipe_controller_ swipeRecognizers];
-  BOOL hasRecognizer = NO;
-  for (UISwipeGestureRecognizer* swipeRecognizer in recognizers) {
-    hasRecognizer = YES;
-    EXPECT_TRUE(swipeRecognizer);
-  }
-  EXPECT_TRUE(hasRecognizer);
-}
-
 // Tests that pages that need to use Chromium native swipe
 TEST_F(SideSwipeControllerTest, TestEdgeNavigationEnabled) {
   auto fake_web_state = std::make_unique<web::FakeWebState>();
