@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html>
+<head>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+</head>
+<body>
+<script>
+function optimizedMethodCall(commandEncoder, querySet, queryIndex) {
+  commandEncoder.writeTimestamp(querySet, queryIndex);
+}
+
+function test(t, hotLoop, commandEncoder, querySet, queryIndex) {
+  try {
+    hotLoop(1, commandEncoder, querySet, queryIndex);
+  } catch(e) {
+    assert_true(e instanceof TypeError);
+    return;
+  }
+  assert_unreached("A TypeError should be thrown.");
+}
+
+promise_test(async t => {
+  const adapter1 = await navigator.gpu.requestAdapter();
+  assert_true(adapter1 instanceof GPUAdapter, 'Failed to request WebGPU adapter');
+
+  if (adapter1.features.has("timestamp-query")) {
+    return;
+  }
+  const deviceWithExtension = await adapter1.requestDevice({
+    requiredFeatures: ["timestamp-query"],
+  });
+  assert_true(
+    deviceWithExtension instanceof GPUDevice,
+    'Failed to request WebGPU device with timestamp-query extension');
+
+  const timestampQuerySet = deviceWithExtension.createQuerySet({
+    type: "timestamp",
+    count: 4,
+  });
+  const encoder1 = deviceWithExtension.createCommandEncoder();
+  function hotLoop(count, commandEncoder, querySet, queryIndex) {
+    for (let i = 0; i < count; ++i) {
+      optimizedMethodCall(commandEncoder, querySet, queryIndex);
+    }
+  }
+  hotLoop(100, encoder1, timestampQuerySet, 2);
+
+  // Wait a bit for V8 to optimize. Then call again with an out-of-bounds value.
+  // An exception should be thrown.
+  await new Promise(resolve => t.step_timeout(resolve, 50));
+  test(t, hotLoop, encoder1, timestampQuerySet, 0xFFFFFFFF + 1);
+
+  const adapter2 = await navigator.gpu.requestAdapter();
+  assert_true(adapter2 instanceof GPUAdapter, 'Failed to request WebGPU adapter');
+
+  const deviceWithoutExtension = await adapter2.requestDevice();
+  assert_true(deviceWithoutExtension instanceof GPUDevice, 'Failed to request WebGPU device');
+
+  // We cannot create a timestamp query set without the extension "timestamp-query" enabled. As we
+  // only test the Blink-side validation and won't submit the command buffer to the server side, we
+  // can use an occlusion query set instead.
+  const occlusionQuerySet = deviceWithoutExtension.createQuerySet({
+    type: "occlusion",
+    count: 4,
+  });
+  const encoder2 = deviceWithoutExtension.createCommandEncoder();
+
+  // The TypeError caused by calling writeTimestamp() without enabling "timestamp-query" should
+  // still be thrown.
+  test(t, hotLoop, encoder2, occlusionQuerySet, 2);
+  test(t, hotLoop, encoder2, occlusionQuerySet, 0xFFFFFFFF + 1);
+});
+</script>
+</body>
+</html>
