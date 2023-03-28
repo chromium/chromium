@@ -176,7 +176,7 @@ void ActivityDatabase::HardFailureClose() {
   valid_db_ = false;
   timer_.Stop();
   db_.reset_error_callback();
-  db_.RazeAndClose();
+  db_.RazeAndPoison();
   delegate_->OnDatabaseFailure();
   already_closed_ = true;
 }
