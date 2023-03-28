@@ -215,6 +215,9 @@ public final class WebLayerImpl extends IWebLayer.Stub {
         if (mOnNativeLoadedCalled) return;
         mOnNativeLoadedCalled = true;
 
+        // TODO(swestphal): Move this earlier when it is not depending on native code being loaded.
+        ChildProcessLauncherHelper.warmUp(appContext, true);
+
         CrashReporterControllerImpl.getInstance().notifyNativeInitialized();
         NetworkChangeNotifier.init();
         NetworkChangeNotifier.registerToReceiveNotificationsAlways();
@@ -308,7 +311,6 @@ public final class WebLayerImpl extends IWebLayer.Stub {
         BundleUtils.setIsBundle(ProductConfig.IS_BUNDLE);
 
         setChildProcessCreationParams(wrappedAppContext, packageInfo.packageName);
-        ChildProcessLauncherHelper.warmUp(wrappedAppContext, true);
 
         // Creating the Android shared preferences object causes I/O.
         try (StrictModeContext ignored = StrictModeContext.allowDiskWrites()) {
