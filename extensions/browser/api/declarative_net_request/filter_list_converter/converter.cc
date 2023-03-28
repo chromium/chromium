@@ -54,7 +54,7 @@ class ProtoToJSONRuleConverter {
 
  private:
   ProtoToJSONRuleConverter(const proto::UrlRule& rule, int rule_id)
-      : input_rule_(rule), rule_id_(rule_id), json_rule_(base::Value::Dict()) {}
+      : input_rule_(rule), rule_id_(rule_id) {}
 
   base::Value Convert(std::string* error) {
     CHECK(error);
@@ -77,8 +77,9 @@ class ProtoToJSONRuleConverter {
     // Sanity check that we can parse this rule.
     std::u16string err;
     dnr_api::Rule rule;
-    CHECK(dnr_api::Rule::Populate(json_rule_, rule, err) && err.empty())
-        << "Converted rule can't be parsed " << json_rule_;
+    base::Value json_rule(std::move(json_rule_));
+    CHECK(dnr_api::Rule::Populate(json_rule, rule, err) && err.empty())
+        << "Converted rule can't be parsed " << json_rule;
 
     IndexedRule indexed_rule;
     ParseResult result =
@@ -107,9 +108,9 @@ class ProtoToJSONRuleConverter {
 
     CHECK_EQ(ParseResult::SUCCESS, result)
         << "Unexpected parse error << " << static_cast<int>(result)
-        << " for rule " << json_rule_;
+        << " for rule " << json_rule;
 
-    return std::move(json_rule_);
+    return json_rule;
   }
 
   bool CheckActivationType() {
@@ -160,12 +161,12 @@ class ProtoToJSONRuleConverter {
 
   bool PopulateID() {
     CHECK_GE(rule_id_, kMinValidID);
-    CHECK(json_rule_.SetKey(kIDKey, base::Value(rule_id_)));
+    CHECK(json_rule_.Set(kIDKey, rule_id_));
     return true;
   }
 
   bool PopulatePriorirty() {
-    CHECK(json_rule_.SetKey(kPriorityKey, base::Value(kMinValidPriority)));
+    CHECK(json_rule_.Set(kPriorityKey, kMinValidPriority));
     return true;
   }
 
@@ -215,8 +216,8 @@ class ProtoToJSONRuleConverter {
     // If |result| is empty, omit persisting the url pattern. In that case, it
     // will match all urls.
     if (!result.empty()) {
-      CHECK(json_rule_.SetPath({kRuleConditionKey, kUrlFilterKey},
-                               base::Value(result)));
+      CHECK(
+          json_rule_.EnsureDict(kRuleConditionKey)->Set(kUrlFilterKey, result));
     }
 
     return true;
@@ -228,8 +229,8 @@ class ProtoToJSONRuleConverter {
     if (case_sensitive)
       return true;
 
-    CHECK(json_rule_.SetPath({kRuleConditionKey, kIsUrlFilterCaseSensitiveKey},
-                             base::Value(false)));
+    CHECK(json_rule_.EnsureDict(kRuleConditionKey)
+              ->Set(kIsUrlFilterCaseSensitiveKey, false));
     return true;
   }
 
@@ -254,8 +255,8 @@ class ProtoToJSONRuleConverter {
 
     // Omit empty domain list.
     if (!domains.empty()) {
-      CHECK(json_rule_.SetPath({kRuleConditionKey, sub_key},
-                               base::Value(std::move(domains))));
+      CHECK(json_rule_.EnsureDict(kRuleConditionKey)
+                ->Set(sub_key, std::move(domains)));
     }
 
     return true;
@@ -380,8 +381,8 @@ class ProtoToJSONRuleConverter {
           dnr_api::ToString(dnr_api::RESOURCE_TYPE_MAIN_FRAME));
     }
 
-    CHECK(json_rule_.SetPath({kRuleConditionKey, kResourceTypesKey},
-                             base::Value(std::move(resource_types))));
+    CHECK(json_rule_.EnsureDict(kRuleConditionKey)
+              ->Set(kResourceTypesKey, std::move(resource_types)));
     return true;
   }
 
@@ -410,8 +411,8 @@ class ProtoToJSONRuleConverter {
     }
 
     CHECK_NE(dnr_api::DOMAIN_TYPE_NONE, domain_type);
-    CHECK(json_rule_.SetPath({kRuleConditionKey, kDomainTypeKey},
-                             base::Value(dnr_api::ToString(domain_type))));
+    CHECK(json_rule_.EnsureDict(kRuleConditionKey)
+              ->Set(kDomainTypeKey, dnr_api::ToString(domain_type)));
     return true;
   }
 
@@ -437,8 +438,8 @@ class ProtoToJSONRuleConverter {
     }
 
     CHECK_NE(dnr_api::RULE_ACTION_TYPE_NONE, action_type);
-    CHECK(json_rule_.SetPath({kRuleActionKey, kRuleActionTypeKey},
-                             base::Value(dnr_api::ToString(action_type))));
+    CHECK(json_rule_.EnsureDict(kRuleActionKey)
+              ->Set(kRuleActionTypeKey, dnr_api::ToString(action_type)));
     return true;
   }
 
@@ -456,7 +457,7 @@ class ProtoToJSONRuleConverter {
   proto::UrlRule input_rule_;
   int rule_id_;
   std::string error_;
-  base::Value json_rule_;
+  base::Value::Dict json_rule_;
 };
 
 // Writes rules/extension to |output_path| in the format supported by
