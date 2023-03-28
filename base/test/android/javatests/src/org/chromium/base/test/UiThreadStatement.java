@@ -4,7 +4,7 @@
 
 package org.chromium.base.test;
 
-import android.support.test.InstrumentationRegistry;
+import androidx.test.InstrumentationRegistry;
 
 import org.junit.runners.model.FrameworkMethod;
 import org.junit.runners.model.Statement;

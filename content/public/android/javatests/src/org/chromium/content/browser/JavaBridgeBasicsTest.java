@@ -6,9 +6,9 @@ package org.chromium.content.browser;
 
 import static org.chromium.base.test.util.ScalableTimeout.scaleTimeout;
 
-import android.support.test.InstrumentationRegistry;
 import android.webkit.JavascriptInterface;
 
+import androidx.test.InstrumentationRegistry;
 import androidx.test.filters.SmallTest;
 
 import org.junit.Assert;

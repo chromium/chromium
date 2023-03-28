@@ -4,7 +4,7 @@
 
 package org.chromium.ui.test.util;
 
-import android.support.test.runner.lifecycle.Stage;
+import androidx.test.runner.lifecycle.Stage;
 
 import org.junit.ClassRule;
 import org.junit.Rule;

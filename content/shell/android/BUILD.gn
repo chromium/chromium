@@ -226,7 +226,8 @@ content_shell_apk_tmpl("content_shell_test_apk") {
     "//base:base_javatests",
     "//content/public/android:content_javatests",
     "//net/android:net_javatests",
-    "//third_party/android_support_test_runner:runner_java",
+    "//third_party/androidx:androidx_test_monitor_java",
+    "//third_party/androidx:androidx_test_runner_java",
   ]
   data_deps = [ "//testing/buildbot/filters:content_shell_test_apk_filters" ]
   if (enable_chrome_android_internal) {
@@ -250,8 +251,8 @@ android_library("content_shell_test_java") {
     "//content/public/test/android:content_java_test_support",
     "//content/shell/android:content_shell_java",
     "//mojo/public/java/system:test_support_java",
-    "//third_party/android_support_test_runner:rules_java",
-    "//third_party/android_support_test_runner:runner_java",
+    "//third_party/androidx:androidx_test_monitor_java",
+    "//third_party/androidx:androidx_test_rules_java",
     "//third_party/androidx:androidx_test_runner_java",
     "//third_party/hamcrest:hamcrest_java",
     "//third_party/junit:junit",

@@ -4,7 +4,7 @@
 
 package org.chromium.base.test;
 
-import android.support.test.internal.runner.listener.InstrumentationRunListener;
+import androidx.test.internal.runner.listener.InstrumentationRunListener;
 
 import org.json.JSONArray;
 import org.json.JSONException;

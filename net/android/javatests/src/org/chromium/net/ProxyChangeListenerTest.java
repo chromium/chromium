@@ -12,8 +12,8 @@ import android.net.Proxy;
 import android.os.Build;
 import android.os.Handler;
 import android.os.Looper;
-import android.support.test.InstrumentationRegistry;
 
+import androidx.test.InstrumentationRegistry;
 import androidx.test.filters.SmallTest;
 
 import org.junit.After;

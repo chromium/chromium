@@ -10,8 +10,8 @@ import static org.junit.Assert.fail;
 import android.app.Instrumentation;
 import android.content.Context;
 import android.os.Bundle;
-import android.support.test.InstrumentationRegistry;
 
+import androidx.test.InstrumentationRegistry;
 import androidx.test.core.app.ApplicationProvider;
 
 import org.junit.Assert;

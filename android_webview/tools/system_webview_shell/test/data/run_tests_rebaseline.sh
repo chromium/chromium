@@ -42,7 +42,7 @@ $RUNNER
 
 adb shell am instrument -w -e mode rebaseline -e class \
     $PACKAGE_NAME.WebViewLayoutTest \
-    $PACKAGE_NAME/android.support.test.runner.AndroidJUnitRunner
+    $PACKAGE_NAME/androidx.test.runner.AndroidJUnitRunner
 adb pull $DEVICE_WEBVIEW_TEST_PATH ../test_rebaseline/
 
 exit 0

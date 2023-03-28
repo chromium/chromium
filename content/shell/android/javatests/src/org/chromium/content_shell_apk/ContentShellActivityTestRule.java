@@ -9,8 +9,9 @@ import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.PowerManager;
-import android.support.test.InstrumentationRegistry;
 import android.view.View;
+
+import androidx.test.InstrumentationRegistry;
 
 import org.hamcrest.Matchers;
 import org.junit.Assert;

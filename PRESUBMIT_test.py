@@ -1279,9 +1279,9 @@ class AndroidDeprecatedTestAnnotationTest(unittest.TestCase):
           'random stuff'
         ]),
         MockAffectedFile('CorrectUsage.java', [
-          'import android.support.test.filters.LargeTest;',
-          'import android.support.test.filters.MediumTest;',
-          'import android.support.test.filters.SmallTest;',
+          'import androidx.test.filters.LargeTest;',
+          'import androidx.test.filters.MediumTest;',
+          'import androidx.test.filters.SmallTest;',
         ]),
         MockAffectedFile('UsedDeprecatedLargeTestAnnotation.java', [
           'import android.test.suitebuilder.annotation.LargeTest;',
@@ -1324,9 +1324,9 @@ class AndroidBannedImportTest(unittest.TestCase):
         'random stuff'
       ]),
       MockAffectedFile('NoBannedImports.java', [
-        'import android.support.test.filters.LargeTest;',
-        'import android.support.test.filters.MediumTest;',
-        'import android.support.test.filters.SmallTest;',
+        'import androidx.test.filters.LargeTest;',
+        'import androidx.test.filters.MediumTest;',
+        'import androidx.test.filters.SmallTest;',
       ]),
       MockAffectedFile('BannedUri.java', [
         'import java.net.URI;',
@@ -1335,13 +1335,13 @@ class AndroidBannedImportTest(unittest.TestCase):
         'import android.annotation.TargetApi;',
       ]),
       MockAffectedFile('BannedUiThreadTestRule.java', [
-        'import android.support.test.rule.UiThreadTestRule;',
+        'import androidx.test.rule.UiThreadTestRule;',
       ]),
       MockAffectedFile('BannedUiThreadTest.java', [
-        'import android.support.test.annotation.UiThreadTest;',
+        'import androidx.test.annotation.UiThreadTest;',
       ]),
       MockAffectedFile('BannedActivityTestRule.java', [
-        'import android.support.test.rule.ActivityTestRule;',
+        'import androidx.test.rule.ActivityTestRule;',
       ]),
       MockAffectedFile('BannedVectorDrawableCompat.java', [
         'import androidx.vectordrawable.graphics.drawable.VectorDrawableCompat;',

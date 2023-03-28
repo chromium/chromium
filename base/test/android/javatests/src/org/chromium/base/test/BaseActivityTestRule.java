@@ -11,12 +11,12 @@ import static org.hamcrest.Matchers.is;
 
 import android.app.Activity;
 import android.content.Intent;
-import android.support.test.runner.lifecycle.Stage;
 import android.text.TextUtils;
 
 import androidx.annotation.CallSuper;
 import androidx.annotation.Nullable;
 import androidx.test.espresso.contrib.AccessibilityChecks;
+import androidx.test.runner.lifecycle.Stage;
 
 import com.google.android.apps.common.testing.accessibility.framework.ClickableSpanViewCheck;
 import com.google.android.apps.common.testing.accessibility.framework.DuplicateClickableBoundsViewCheck;

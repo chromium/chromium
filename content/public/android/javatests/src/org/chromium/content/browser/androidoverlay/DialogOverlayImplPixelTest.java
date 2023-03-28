@@ -7,9 +7,9 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Rect;
 import android.os.Build;
-import android.support.test.InstrumentationRegistry;
 import android.view.Surface;
 
+import androidx.test.InstrumentationRegistry;
 import androidx.test.filters.MediumTest;
 
 import org.junit.Assert;

@@ -4,7 +4,7 @@
 
 package org.chromium.base.test.util;
 
-import android.support.test.InstrumentationRegistry;
+import androidx.test.InstrumentationRegistry;
 
 import org.chromium.base.StrictModeContext;
 

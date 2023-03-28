@@ -10,8 +10,8 @@ import android.net.ConnectivityManager;
 import android.net.ConnectivityManager.NetworkCallback;
 import android.os.Build;
 import android.os.Looper;
-import android.support.test.InstrumentationRegistry;
 
+import androidx.test.InstrumentationRegistry;
 import androidx.test.filters.MediumTest;
 
 import org.junit.After;

@@ -92,12 +92,12 @@ of time to wait before considering a test hung (i.e., its timeout duration).
 Several of the annotations are Android APIs from
 [android.test.suitebuilder.annotation](https://developer.android.com/reference/android/test/suitebuilder/annotation/package-summary.html)
 (prior to [Android N](https://en.wikipedia.org/wiki/Android_Nougat)) or
-[android.support.test.filters](https://developer.android.com/reference/android/support/test/filters/package-summary.html)
+[androidx.test.filters](https://developer.android.com/reference/androidx/test/filters/package-summary.html)
 (starting in Android N). These are all fairly self-explanatory:
 
- - [`@SmallTest`](https://developer.android.com/reference/android/support/test/filters/SmallTest.html) (timeout: **10 seconds**)
- - [`@MediumTest`](https://developer.android.com/reference/android/support/test/filters/MediumTest.html) (timeout: **30 seconds**)
- - [`@LargeTest`](https://developer.android.com/reference/android/support/test/filters/LargeTest.html) (timeout: **2 minutes**)
+ - [`@SmallTest`](https://developer.android.com/reference/androidx/test/filters/SmallTest.html) (timeout: **10 seconds**)
+ - [`@MediumTest`](https://developer.android.com/reference/androidx/test/filters/MediumTest.html) (timeout: **30 seconds**)
+ - [`@LargeTest`](https://developer.android.com/reference/androidx/test/filters/LargeTest.html) (timeout: **2 minutes**)
 
 A few additional size annotations are provided in
 [//base](https://chromium.googlesource.com/chromium/src/+/main/base):

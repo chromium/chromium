@@ -25,9 +25,9 @@ import android.os.Build;
 import android.os.Handler;
 import android.os.Looper;
 import android.os.StrictMode;
-import android.support.test.InstrumentationRegistry;
 import android.telephony.TelephonyManager;
 
+import androidx.test.InstrumentationRegistry;
 import androidx.test.filters.MediumTest;
 
 import org.junit.After;

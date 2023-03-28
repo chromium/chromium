@@ -7,8 +7,8 @@ package org.chromium.build.resource_overlay;
 import static org.junit.Assert.assertEquals;
 
 import android.content.res.Resources;
-import android.support.test.InstrumentationRegistry;
 
+import androidx.test.InstrumentationRegistry;
 import androidx.test.filters.SmallTest;
 
 import org.junit.Test;

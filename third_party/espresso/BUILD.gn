@@ -51,7 +51,8 @@ android_java_prebuilt("espresso_core_java") {
     "//third_party/android_deps:guava_android_java",
     "//third_party/android_deps:javax_inject_javax_inject_java",
     "//third_party/android_deps:org_codehaus_mojo_animal_sniffer_annotations_java",
-    "//third_party/android_support_test_runner:runner_java",
+    "//third_party/androidx:androidx_test_monitor_java",
+    "//third_party/androidx:androidx_test_runner_java",
     "//third_party/hamcrest:hamcrest_core_java",
     "//third_party/hamcrest:hamcrest_library_java",
   ]
@@ -72,8 +73,9 @@ android_java_prebuilt("espresso_intents_java") {
   deps = [
     ":espresso_core_java",
     "//third_party/android_deps:guava_android_java",
-    "//third_party/android_support_test_runner:rules_java",
-    "//third_party/android_support_test_runner:runner_java",
+    "//third_party/androidx:androidx_test_monitor_java",
+    "//third_party/androidx:androidx_test_rules_java",
+    "//third_party/androidx:androidx_test_runner_java",
     "//third_party/hamcrest:hamcrest_core_java",
   ]
 }

@@ -161,7 +161,7 @@ _BANNED_JAVA_IMPORTS : Sequence[BanRule] = (
       ),
     ),
     BanRule(
-      'import android.support.test.rule.UiThreadTestRule;',
+      'import androidx.test.rule.UiThreadTestRule;',
       (
        'Do not use UiThreadTestRule, just use '
        '@org.chromium.base.test.UiThreadTest on test methods that should run '
@@ -169,14 +169,14 @@ _BANNED_JAVA_IMPORTS : Sequence[BanRule] = (
       ),
     ),
     BanRule(
-      'import android.support.test.annotation.UiThreadTest;',
-      ('Do not use android.support.test.annotation.UiThreadTest, use '
+      'import androidx.test.annotation.UiThreadTest;',
+      ('Do not use androidx.test.annotation.UiThreadTest, use '
        'org.chromium.base.test.UiThreadTest instead. See '
        'https://crbug.com/1111893.',
       ),
     ),
     BanRule(
-      'import android.support.test.rule.ActivityTestRule;',
+      'import androidx.test.rule.ActivityTestRule;',
       (
        'Do not use ActivityTestRule, use '
        'org.chromium.base.test.BaseActivityTestRule instead.',
@@ -4180,8 +4180,8 @@ def _CheckAndroidTestAnnotationUsage(input_api, output_api):
         results.append(
             output_api.PresubmitError(
                 'Annotations in android.test.suitebuilder.annotation have been'
-                ' deprecated since API level 24. Please use android.support.test.filters'
-                ' from //third_party/android_support_test_runner:runner_java instead.'
+                ' deprecated since API level 24. Please use androidx.test.filters'
+                ' from //third_party/androidx:androidx_test_runner_java instead.'
                 ' Contact yolandyan@chromium.org if you have any questions.',
                 errors))
     return results

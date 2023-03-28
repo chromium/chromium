@@ -53,7 +53,7 @@ android_library("unit_device_javatests") {
     ":dependency_tagged_root_resources",
     ":root_tagged_root_resources",
     "//base:base_java_test_support",
-    "//third_party/android_support_test_runner:runner_java",
+    "//third_party/androidx:androidx_test_monitor_java",
     "//third_party/androidx:androidx_test_runner_java",
     "//third_party/junit",
   ]

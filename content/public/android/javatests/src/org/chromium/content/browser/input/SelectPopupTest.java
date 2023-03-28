@@ -4,8 +4,7 @@
 
 package org.chromium.content.browser.input;
 
-import android.support.test.InstrumentationRegistry;
-
+import androidx.test.InstrumentationRegistry;
 import androidx.test.filters.LargeTest;
 
 import org.hamcrest.Matchers;

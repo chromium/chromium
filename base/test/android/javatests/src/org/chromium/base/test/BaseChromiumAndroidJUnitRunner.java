@@ -170,7 +170,7 @@ public class BaseChromiumAndroidJUnitRunner extends AndroidJUnitRunner {
      * Add TestListInstrumentationRunListener when argument ask the runner to list tests info.
      *
      * The running mechanism when argument has "listAllTests" is equivalent to that of
-     * {@link android.support.test.runner.AndroidJUnitRunner#onStart()} except it adds
+     * {@link androidx.test.runner.AndroidJUnitRunner#onStart()} except it adds
      * only TestListInstrumentationRunListener to monitor the tests.
      */
     @Override
@@ -199,10 +199,10 @@ public class BaseChromiumAndroidJUnitRunner extends AndroidJUnitRunner {
             checkOrDeleteOnDiskSharedPreferences(false);
             clearDataDirectory(sInMemorySharedPreferencesContext);
             InstrumentationRegistry.getInstrumentation().setInTouchMode(true);
-            // Mockito sometimes gets confused about where to put mocks. Just tell it
-            // explicitly. Hopefully only temporary while we are migrating our test
-            // infra to use the latest androidx.test:runner. See
-            // https://crbug.com/1223832
+            // //third_party/mockito is looking for
+            // android.support.test.InstrumentationRegistry. Manually set target
+            // to override. We can remove this once we roll mockito to support
+            // androidx.test.
             System.setProperty("org.mockito.android.target",
                     InstrumentationRegistry.getTargetContext().getCacheDir().getPath());
             super.onStart();

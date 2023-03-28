@@ -5,7 +5,8 @@
 package org.chromium.net.test;
 
 import android.content.Context;
-import android.support.test.InstrumentationRegistry;
+
+import androidx.test.InstrumentationRegistry;
 
 import org.junit.rules.TestRule;
 import org.junit.runner.Description;

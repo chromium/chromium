@@ -4,9 +4,9 @@
 
 package org.chromium.content.browser.picker;
 
-import android.support.test.InstrumentationRegistry;
 import android.widget.TimePicker;
 
+import androidx.test.InstrumentationRegistry;
 import androidx.test.filters.SmallTest;
 
 import org.junit.Assert;
