@@ -26,11 +26,22 @@ source_set("bring_android_tabs") {
 }
 
 source_set("bring_android_tabs_ui") {
+  configs += [ "//build/config/compiler:enable_arc" ]
   sources = [ "bring_android_tabs_prompt_view_controller_delegate.h" ]
   deps = [
+    ":constants",
     "//base",
     "//ios/chrome/browser/shared/public/commands",
   ]
+}
+
+source_set("constants") {
+  configs += [ "//build/config/compiler:enable_arc" ]
+  sources = [
+    "constants.h",
+    "constants.mm",
+  ]
+  frameworks = [ "Foundation.framework" ]
 }
 
 source_set("unit_tests") {
