@@ -62,14 +62,20 @@ ArcVmmManager::ArcVmmManager(content::BrowserContext* context,
     accelerator_ = std::make_unique<AcceleratorTarget>(this);
   }
   if (base::FeatureList::IsEnabled(kVmmSwapPolicy)) {
+    arc_system_state_observation_ =
+        std::make_unique<ArcSystemStateObservation>(context);
     swap_out_delay_ = base::Seconds(kVmmSwapOutDelaySecond.Get());
     scheduler_ = std::make_unique<ArcVmmSwapScheduler>(
         base::Seconds(kVmmSwapOutTimeIntervalSecond.Get()),
         base::Seconds(kVmmSwapArcSilenceIntervalSecond.Get()),
-        base::BindRepeating([]() {
-          // TODO(sstan): Placeholder for ARC side implementation.
-          return false;
-        }),
+        base::BindRepeating(
+            [](base::WeakPtr<ArcSystemStateObservation> observation) {
+              return observation &&
+                     observation->GetPeaceDuration() >
+                         base::Seconds(kVmmSwapArcSilenceIntervalSecond.Get() /
+                                       2);
+            },
+            arc_system_state_observation_->GetWeakPtr()),
         base::BindRepeating(&ArcVmmManager::SetSwapState,
                             weak_ptr_factory_.GetWeakPtr()));
     scheduler_->Start();

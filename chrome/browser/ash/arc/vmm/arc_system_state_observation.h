@@ -26,11 +26,15 @@ class ArcSystemStateObservation : public ash::ThrottleService {
 
   absl::optional<base::TimeDelta> GetPeaceDuration();
 
+  base::WeakPtr<ArcSystemStateObservation> GetWeakPtr();
+
   // ash::ThrottleService override:
   void ThrottleInstance(bool should_throttle) override;
 
  private:
   absl::optional<base::Time> last_peace_timestamp_;
+
+  base::WeakPtrFactory<ArcSystemStateObservation> weak_ptr_factory_{this};
 };
 
 }  // namespace arc

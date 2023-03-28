@@ -33,10 +33,15 @@ void ArcSystemStateObservation::ThrottleInstance(bool should_throttle) {
 }
 
 absl::optional<base::TimeDelta> ArcSystemStateObservation::GetPeaceDuration() {
-  if (last_peace_timestamp_->is_null()) {
+  if (!last_peace_timestamp_.has_value()) {
     return absl::nullopt;
   }
   return base::Time::Now() - *last_peace_timestamp_;
+}
+
+base::WeakPtr<ArcSystemStateObservation>
+ArcSystemStateObservation::GetWeakPtr() {
+  return weak_ptr_factory_.GetWeakPtr();
 }
 
 }  // namespace arc

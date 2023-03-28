@@ -4,11 +4,15 @@
 
 #include "chrome/browser/ash/arc/vmm/arc_vmm_manager.h"
 
+#include "ash/components/arc/arc_features.h"
 #include "ash/components/arc/session/arc_service_manager.h"
 #include "base/test/bind.h"
+#include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
+#include "chrome/test/base/testing_profile_manager.h"
 #include "chromeos/ash/components/dbus/cicerone/fake_cicerone_client.h"
 #include "chromeos/ash/components/dbus/concierge/fake_concierge_client.h"
+#include "components/prefs/testing_pref_service.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -76,13 +80,18 @@ class ArcVmmManagerTest : public testing::Test {
     // This is needed for setting up ArcBridge.
     arc_service_manager_ = std::make_unique<ArcServiceManager>();
 
-    testing_profile_ = std::make_unique<TestingProfile>();
-    manager_ =
-        ArcVmmManager::GetForBrowserContextForTesting(testing_profile_.get());
-    manager_->set_user_id_hash("test_user_hash_id");
+    profile_manager_ = std::make_unique<TestingProfileManager>(
+        TestingBrowserProcess::GetGlobal());
+    ASSERT_TRUE(profile_manager_->SetUp());
+    testing_profile_ = profile_manager_->CreateTestingProfile("test_name");
 
     concierge_client_ =
         std::make_unique<TestConciergeClient>(ash::FakeCiceroneClient::Get());
+  }
+
+  void InitVmmManager() {
+    manager_ = ArcVmmManager::GetForBrowserContextForTesting(testing_profile_);
+    manager_->set_user_id_hash("test_user_hash_id");
   }
 
   ArcVmmManager* manager() { return manager_; }
@@ -93,7 +102,11 @@ class ArcVmmManagerTest : public testing::Test {
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
 
  private:
-  std::unique_ptr<TestingProfile> testing_profile_;
+  base::test::ScopedFeatureList scoped_features_;
+  TestingPrefServiceSimple local_state_;
+
+  std::unique_ptr<TestingProfileManager> profile_manager_;
+  TestingProfile* testing_profile_ = nullptr;
   std::unique_ptr<TestConciergeClient> concierge_client_;
   ArcVmmManager* manager_ = nullptr;
 
@@ -101,6 +114,7 @@ class ArcVmmManagerTest : public testing::Test {
 };
 
 TEST_F(ArcVmmManagerTest, SwapSuccess) {
+  InitVmmManager();
   manager()->SetSwapState(true);
   base::RunLoop().RunUntilIdle();
   // Send "ENABLE" first.
@@ -114,4 +128,32 @@ TEST_F(ArcVmmManagerTest, SwapSuccess) {
   EXPECT_EQ(1, client()->swap_out_count());
   EXPECT_EQ(0, client()->disable_count());
 }
+
+TEST_F(ArcVmmManagerTest, ObservationAndScheduler) {
+  base::test::ScopedFeatureList features_;
+  // The feature companion with some paremeter. Although the test will use
+  // the default value, keep the empty parameter here for better readability.
+  features_.InitAndEnableFeatureWithParameters(kVmmSwapPolicy, {{}});
+  InitVmmManager();
+
+  // Should enabled observation.
+  EXPECT_NE(manager()->system_state_observation_for_testing(), nullptr);
+
+  base::RunLoop().RunUntilIdle();
+  // Mark ARC is inactive.
+  manager()->system_state_observation_for_testing()->ThrottleInstance(true);
+
+  // Haven't start swap out.
+  task_environment_.FastForwardBy(base::Minutes(1));
+  EXPECT_EQ(0, client()->enable_count());
+  EXPECT_EQ(0, client()->swap_out_count());
+  EXPECT_EQ(0, client()->disable_count());
+
+  // Should trigger the swap out state after 1 hour.
+  task_environment_.FastForwardBy(base::Hours(1));
+  EXPECT_EQ(1, client()->enable_count());
+  EXPECT_EQ(1, client()->swap_out_count());
+  EXPECT_EQ(0, client()->disable_count());
+}
+
 }  // namespace arc
