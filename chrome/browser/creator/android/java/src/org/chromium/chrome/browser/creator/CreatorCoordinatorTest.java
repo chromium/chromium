@@ -316,4 +316,16 @@ public class CreatorCoordinatorTest {
                 mFeedActionDelegate, mHelpAndFeedbackLauncher, mShareDelegateSupplier);
         verify(mWebFeedBridgeJniMock).queryWebFeed(anyString(), any());
     }
+
+    @Test
+    public void testCreatorCoordinator_InitializeBottomSheetView() {
+        CreatorCoordinator creatorCoordinator = newCreatorCoordinator(
+                mUrlDefault, mWebFeedIdDefault, mEntryPointDefault, mFollowingDefault);
+        ViewGroup creatorViewGroup = creatorCoordinator.getView();
+        assertEquals(creatorViewGroup.getChildCount(), 2);
+        View contentPreviewsBottomSheet =
+                creatorViewGroup.findViewById(R.id.creator_content_preview_bottom_sheet);
+        assertNotNull(
+                "Content Previews Bottom Sheet is not initialized", contentPreviewsBottomSheet);
+    }
 }

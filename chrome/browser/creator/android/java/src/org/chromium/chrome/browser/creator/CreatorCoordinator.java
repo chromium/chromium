@@ -374,6 +374,7 @@ public class CreatorCoordinator implements FeedAutoplaySettingsDelegate,
         }, mCreatorViewGroup, mActivity.getResources().getColor(R.color.default_scrim_color));
 
         mBottomSheetContainer = new FrameLayout(mActivity);
+        mBottomSheetContainer.setId(R.id.creator_content_preview_bottom_sheet);
         mBottomSheetContainer.setLayoutParams(
                 new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT));
         mCreatorViewGroup.addView(mBottomSheetContainer);
