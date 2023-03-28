@@ -680,6 +680,120 @@ be describing additional metrics about the same event.
   </metric>
 </event>
 
+<event name="AdsInterestGroup.AuctionLatency">
+  <owner>orrb@google.com</owner>
+  <owner>chrome-ads-core@google.com</owner>
+  <summary>
+    Captures latency-relevant metrics associated with a single FLEDGE auction.
+    Many of these metrics are latency measurements, aggregated (mean/max) for
+    parts of the auction flow that happen multiple times in an auction, e.g.
+    calls to GenerateBid. Others are potentially latency-impacting measures of
+    the auction, e.g. the number of InterestGroups, buyers, component auctions,
+    bids that were scored either together or separately for the enforced and
+    non-enforced KAnon modes. Finally, some of these metrics look at points in
+    the auction flow where multiple inputs come together to assess which of
+    these inputs most frequently appears on the latency critical path.
+  </summary>
+  <metric name="EndToEndLatencyInMillis">
+    <summary>
+      Time in ms between AdAuctionServiceImpl::RunAdAuction and
+      AdAuctionServiceImpl::OnAuctionComplete. Roughly equivalent to UMA metric,
+      Ads.InterestGroup.Auction.AuctionWithWinnerTime.
+    </summary>
+  </metric>
+  <metric name="KAnonymityBidMode" enum="KAnonymityBidMode">
+    <summary>
+      Indicates the KAnonymityBidMode used for this auction.
+    </summary>
+  </metric>
+  <metric name="LoadInterestGroupPhaseLatencyInMillis">
+    <summary>
+      The latency in milliseconds between the initial call to
+      InterestGroupAuction::StartLoadInterestGroupsPhase (not the recursive
+      calls issued for component auctions in a multi-seller auction), and the
+      call to AuctionRunner::OnLoadInterestGroupsComplete. This is related to
+      UMA metric, Ads.InterestGroup.Auction.LoadGroupsTime, except that, in a
+      multi-seller auction, the UMA metric is recorded once per component
+      auction and then again for the top-level auction, whereas this metric is
+      recorded only once, for the top-level auction. This metric also isn't
+      limited to those cases where there were InterestGroups to load, Since we
+      can independently filter this based on the value of NumInterestGroups.
+    </summary>
+  </metric>
+  <metric name="NumBidderWorklets">
+    <summary>
+      The number of distinct BidderWorklets. Interest groups with the same owner
+      can only share worklets if they have the same bidding script URL and KV
+      server URL. As such, we might observe a non-standard setup in which, for
+      example, a buyer has used a different bidding script URL for each
+      InterestGroup, causing performance issues because of the fragmentation of
+      BidderWorklets. BidderWorklets are shared across component auctions, and
+      this measure counts the number of distinct BidderWorklets used within the
+      scope of the scope of an entire auction, either single- or multi-seller.
+      This may imply that the number of BidderWorklets created in the context of
+      this auction is actually less than this number, because of reuse. However,
+      it also means that this metric can be compared against the
+      NumDistinctOwnersWithInterestGroups metric, which (unlike
+      NumOwnersWithInterestGroups) counts each buyer involved in a multi-seller
+      auction once, even if that buyer participates in multiple components.
+    </summary>
+  </metric>
+  <metric name="NumDistinctOwnersWithInterestGroups">
+    <summary>
+      The number of buyers with InterestGroups participating in an auction,
+      aggregated across all component auctions. This number excludes buyers with
+      no ads or no script URL, and also those filtered because the priority for
+      all InterestGroups calculated in the BuyerHelper constructor was negative.
+      Unlike NumOwnersWithInterestGroups, it only counts each buyer once, even
+      if it appears in multiple component auctions of a multi-seller auction.
+      Also unlike NumOwnersWithInterestGroups, this metric has a value even if
+      there are no bidders eligible to participate in this auction, though, in
+      this case, that value is likely to be zero.
+    </summary>
+  </metric>
+  <metric name="NumInterestGroups">
+    <summary>
+      Total number of InterestGroups aggregated across all owners and component
+      auctions, equivalent to UMA metric,
+      Ads.InterestGroup.Auction.NumInterestGroups. This is the number of
+      InterestGroups loaded, before per-buyer limits are applied. Excluded from
+      this (and all other metrics counting InterestGroups) are InterestGroups
+      that are incapable of participating in an auction, e.g. those with no
+      bidding logic URLs, or with no ads. No value is defined for this metric if
+      there are no bidders eligible to participate in this auction.
+    </summary>
+  </metric>
+  <metric name="NumOwnersWithInterestGroups">
+    <summary>
+      The number of buyers with InterestGroups participating in an auction,
+      aggregated across all component auctions. Equivalent to UMA metric,
+      Ads.InterestGroup.Auction.NumInterestGroups. This number excludes buyers
+      with no ads or no script URL, and also those filtered because the priority
+      for all InterestGroups calculated in the BuyerHelper constructor was
+      negative. However, it counts a buyer repeatedly for each component auction
+      that buyer participates in. No value is defined for this metric if there
+      are no bidders eligible to participate in this auction.
+    </summary>
+  </metric>
+  <metric name="NumSellersWithBidders">
+    <summary>
+      This is either the number of component auctions in a multi-seller auction
+      (under the assumption that the top-level auction may not itself have any
+      InterestGroups), or 1 for a single-seller auction. Equivalent to UMA
+      metric, Ads.InterestGroup.Auction.NumSellersWithBidders. No value is
+      defined for this metric if there are no bidders eligible to participate in
+      this auction.
+    </summary>
+  </metric>
+  <metric name="Result" enum="AuctionResult">
+    <summary>
+      How the auction concluded, whether that's successfully selecting an ad to
+      be shown, or finding no InterestGroups to load, or getting no bids that
+      outbid the contextual bid, or any other outcome.
+    </summary>
+  </metric>
+</event>
+
 <event name="AdsIntervention.LastIntervention" singular="True">
   <owner>yaoxia@google.com</owner>
   <owner>chrome-ads-core@google.com</owner>
