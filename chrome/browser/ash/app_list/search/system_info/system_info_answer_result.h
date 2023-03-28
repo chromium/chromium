@@ -24,7 +24,7 @@ class SystemInfoAnswerResult : public ChromeSearchResult {
                          const std::u16string& title,
                          const std::u16string& description,
                          SystemInfoCategory system_info_category,
-                         ash::SystemInfoAnswerCardData answer_card_info);
+                         const ash::SystemInfoAnswerCardData& answer_card_info);
   SystemInfoAnswerResult(const SystemInfoAnswerResult&) = delete;
   SystemInfoAnswerResult& operator=(const SystemInfoAnswerResult&) = delete;
 
@@ -36,6 +36,8 @@ class SystemInfoAnswerResult : public ChromeSearchResult {
 
   void UpdateTitleAndDetails(const std::u16string& title,
                              const std::u16string& description);
+
+  void UpdateBarChartPercentage(const double bar_chart_percentage);
 
  private:
   SystemInfoCategory const system_info_category_;

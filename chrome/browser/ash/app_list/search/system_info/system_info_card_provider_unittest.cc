@@ -495,6 +495,11 @@ TEST_F(SystemInfoCardProviderTest, CpuProbeError) {
 }
 
 TEST_F(SystemInfoCardProviderTest, Memory) {
+  // Setup Timer
+  auto timer = std::make_unique<base::MockRepeatingTimer>();
+  auto* timer_ptr = timer.get();
+  provider_->SetMemoryTimerForTesting(std::move(timer));
+
   const uint32_t total_memory_kib = 8000000;
   const uint32_t free_memory_kib = 2000000;
   const uint32_t available_memory_kib = 4000000;
@@ -528,6 +533,31 @@ TEST_F(SystemInfoCardProviderTest, Memory) {
   EXPECT_EQ(details.GetType(), ash::SearchResultTextItemType::kString);
   EXPECT_EQ(details.GetText(), u"3.8 GB of 7.6 GB available");
   EXPECT_TRUE(details.GetTextTags().empty());
+
+  const uint32_t total_memory_kib_2 = 8000000;
+  const uint32_t free_memory_kib_2 = 2000000;
+  const uint32_t available_memory_kib_2 = 2000000;
+
+  SetCrosHealthdMemoryUsageResponse(total_memory_kib_2, free_memory_kib_2,
+                                    available_memory_kib_2);
+
+  timer_ptr->Fire();
+  Wait();
+
+  EXPECT_EQ(title.GetText(), u"");
+  EXPECT_EQ(details.GetText(), u"1.9 GB of 7.6 GB available");
+  EXPECT_EQ(results()[0]->system_info_answer_card_data()->bar_chart_percentage,
+            75);
+
+  StartSearch(u"memory usage");
+  Wait();
+
+  ASSERT_FALSE(results().empty());
+  EXPECT_EQ(results().size(), 1u);
+  const auto& details2 = results()[0]->details_text_vector()[0];
+  EXPECT_EQ(details2.GetText(), u"1.9 GB of 7.6 GB available");
+  EXPECT_EQ(results()[0]->system_info_answer_card_data()->bar_chart_percentage,
+            75);
 }
 
 TEST_F(SystemInfoCardProviderTest, MemoryProbeError) {

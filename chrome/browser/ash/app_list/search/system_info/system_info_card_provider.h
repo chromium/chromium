@@ -36,12 +36,22 @@ class SystemInfoCardProvider : public SearchProvider,
                                public ash::settings::SizeCalculator::Observer {
  public:
   using UpdateCpuResultCallback = base::RepeatingCallback<void(bool)>;
+  using UpdateMemoryResultCallback = base::RepeatingCallback<void(bool)>;
+
   // Implemented by clients that wish to be updated periodically about the
   // cpu usage of the device.
   class CpuDataObserver : public base::CheckedObserver {
    public:
     virtual void OnCpuDataUpdated(const std::u16string& title,
                                   const std::u16string& description) = 0;
+  };
+
+  // Implemented by clients that wish to be updated periodically about the
+  // cpu usage of the device.
+  class MemoryObserver : public base::CheckedObserver {
+   public:
+    virtual void OnMemoryUpdated(const double memory_usage_percentage,
+                                 const std::u16string& description) = 0;
   };
 
   explicit SystemInfoCardProvider(Profile* profile);
@@ -64,7 +74,12 @@ class SystemInfoCardProvider : public SearchProvider,
   virtual void AddCpuDataObserver(CpuDataObserver* observer);
   virtual void RemoveCpuDataObserver(CpuDataObserver* observer);
 
+  // Adds and removes the Memory observer.
+  virtual void AddMemoryObserver(MemoryObserver* observer);
+  virtual void RemoveMemoryObserver(MemoryObserver* observer);
+
   void SetCpuUsageTimerForTesting(std::unique_ptr<base::RepeatingTimer> timer);
+  void SetMemoryTimerForTesting(std::unique_ptr<base::RepeatingTimer> timer);
 
  private:
   void BindCrosHealthdProbeServiceIfNecessary();
@@ -72,8 +87,9 @@ class SystemInfoCardProvider : public SearchProvider,
   double CalculateRelevance(const std::u16string& query,
                             const std::u16string& title);
 
-  void UpdateMemoryUsage();
+  void UpdateMemoryUsage(bool create_result);
   void OnMemoryUsageUpdated(
+      bool create_result,
       ash::cros_healthd::mojom::TelemetryInfoPtr info_ptr);
 
   void UpdateCpuUsage(bool create_result);
@@ -126,8 +142,9 @@ class SystemInfoCardProvider : public SearchProvider,
   gfx::ImageSkia diagnostics_icon_;
   std::vector<SystemInfoKeywordInput> keywords_;
   std::unique_ptr<base::RepeatingTimer> cpu_usage_timer_;
-
+  std::unique_ptr<base::RepeatingTimer> memory_timer_;
   base::ObserverList<SystemInfoCardProvider::CpuDataObserver> cpu_observers_;
+  base::ObserverList<SystemInfoCardProvider::MemoryObserver> memory_observers_;
 
   base::WeakPtrFactory<SystemInfoCardProvider> weak_factory_{this};
 };

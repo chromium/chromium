@@ -25,7 +25,7 @@ BatteryAnswerResult::BatteryAnswerResult(
     const std::u16string& title,
     const std::u16string& description,
     SystemInfoCategory system_info_category,
-    AnswerCardInfo answer_card_info)
+    const AnswerCardInfo& answer_card_info)
     : SystemInfoAnswerResult(profile,
                              query,
                              url_path,

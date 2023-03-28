@@ -22,7 +22,7 @@ class BatteryAnswerResult : public SystemInfoAnswerResult,
                       const std::u16string& title,
                       const std::u16string& description,
                       SystemInfoCategory system_info_category,
-                      ash::SystemInfoAnswerCardData answer_card_info);
+                      const ash::SystemInfoAnswerCardData& answer_card_info);
 
   ~BatteryAnswerResult() override;
 

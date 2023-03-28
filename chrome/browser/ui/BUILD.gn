@@ -2229,6 +2229,8 @@ static_library("ui") {
       "../ash/app_list/search/system_info/cpu_data.h",
       "../ash/app_list/search/system_info/cpu_usage_data.cc",
       "../ash/app_list/search/system_info/cpu_usage_data.h",
+      "../ash/app_list/search/system_info/memory_answer_result.cc",
+      "../ash/app_list/search/system_info/memory_answer_result.h",
       "../ash/app_list/search/system_info/system_info_answer_result.cc",
       "../ash/app_list/search/system_info/system_info_answer_result.h",
       "../ash/app_list/search/system_info/system_info_card_provider.cc",

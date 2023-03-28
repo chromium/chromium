@@ -20,6 +20,7 @@
 #include "chrome/browser/ash/app_list/search/system_info/cpu_answer_result.h"
 #include "chrome/browser/ash/app_list/search/system_info/cpu_data.h"
 #include "chrome/browser/ash/app_list/search/system_info/cpu_usage_data.h"
+#include "chrome/browser/ash/app_list/search/system_info/memory_answer_result.h"
 #include "chrome/browser/ash/app_list/search/system_info/system_info_answer_result.h"
 #include "chrome/browser/ash/app_list/search/system_info/system_info_util.h"
 #include "chrome/browser/ash/app_list/vector_icons/vector_icons.h"
@@ -81,6 +82,7 @@ SystemInfoCardProvider::SystemInfoCardProvider(Profile* profile)
                      weak_factory_.GetWeakPtr()));
   StartObservingCalculators();
   cpu_usage_timer_ = std::make_unique<base::RepeatingTimer>();
+  memory_timer_ = std::make_unique<base::RepeatingTimer>();
 
   // TODO(b/261867385): We manually load the icon from the local codebase as
   // the icon load from proxy is flaky. When the flakiness if solved, we can
@@ -110,7 +112,7 @@ void SystemInfoCardProvider::Start(const std::u16string& query) {
     relevance_ = max_relevance;
     switch (most_relevant_keyword_input->GetInputType()) {
       case SystemInfoInputType::kMemory:
-        UpdateMemoryUsage();
+        UpdateMemoryUsage(/*create_result=*/true);
         break;
       case SystemInfoInputType::kCPU:
         UpdateCpuUsage(/*create_result=*/true);
@@ -176,7 +178,8 @@ void SystemInfoCardProvider::OnProbeServiceDisconnect() {
   probe_service_.reset();
 }
 
-void SystemInfoCardProvider::OnMemoryUsageUpdated(TelemetryInfoPtr info_ptr) {
+void SystemInfoCardProvider::OnMemoryUsageUpdated(bool create_result,
+                                                  TelemetryInfoPtr info_ptr) {
   if (info_ptr.is_null()) {
     LOG(ERROR) << "Null response from croshealthd::ProbeTelemetryInfo.";
     return;
@@ -203,23 +206,34 @@ void SystemInfoCardProvider::OnMemoryUsageUpdated(TelemetryInfoPtr info_ptr) {
       l10n_util::GetStringFUTF16(IDS_ASH_MEMORY_USAGE_IN_LAUNCHER_DESCRIPTION,
                                  available_memory_gb, total_memory_gb);
 
-  AnswerCardInfo answer_card_info(memory_usage_percentage);
-  SearchProvider::Results new_results;
-  new_results.emplace_back(std::make_unique<SystemInfoAnswerResult>(
-      profile_, last_query_, /*url_path=*/"", diagnostics_icon_, relevance_,
-      /*title=*/u"", description,
-      SystemInfoAnswerResult::SystemInfoCategory::kDiagnostics,
-      answer_card_info));
-  SwapResults(&new_results);
+  if (create_result) {
+    AnswerCardInfo answer_card_info(memory_usage_percentage);
+    SearchProvider::Results new_results;
+    DCHECK(memory_timer_);
+    new_results.emplace_back(std::make_unique<MemoryAnswerResult>(
+        profile_, last_query_, /*url_path=*/"", diagnostics_icon_, relevance_,
+        /*title=*/u"", description,
+        SystemInfoAnswerResult::SystemInfoCategory::kDiagnostics,
+        answer_card_info,
+        base::BindRepeating(&SystemInfoCardProvider::UpdateMemoryUsage,
+                            weak_factory_.GetWeakPtr()),
+        std::move(memory_timer_), this));
+    SwapResults(&new_results);
+    memory_timer_ = std::make_unique<base::RepeatingTimer>();
+  } else {
+    for (auto& observer : memory_observers_) {
+      observer.OnMemoryUpdated(memory_usage_percentage, description);
+    }
+  }
 }
 
-void SystemInfoCardProvider::UpdateMemoryUsage() {
+void SystemInfoCardProvider::UpdateMemoryUsage(bool create_result) {
   BindCrosHealthdProbeServiceIfNecessary();
 
   probe_service_->ProbeTelemetryInfo(
       {ProbeCategories::kMemory},
       base::BindOnce(&SystemInfoCardProvider::OnMemoryUsageUpdated,
-                     weak_factory_.GetWeakPtr()));
+                     weak_factory_.GetWeakPtr(), create_result));
 }
 
 void SystemInfoCardProvider::OnCpuUsageUpdated(bool create_result,
@@ -542,6 +556,19 @@ void SystemInfoCardProvider::RemoveCpuDataObserver(CpuDataObserver* observer) {
 void SystemInfoCardProvider::SetCpuUsageTimerForTesting(
     std::unique_ptr<base::RepeatingTimer> timer) {
   cpu_usage_timer_ = std::move(timer);
+}
+
+void SystemInfoCardProvider::AddMemoryObserver(MemoryObserver* observer) {
+  memory_observers_.AddObserver(observer);
+}
+
+void SystemInfoCardProvider::RemoveMemoryObserver(MemoryObserver* observer) {
+  memory_observers_.RemoveObserver(observer);
+}
+
+void SystemInfoCardProvider::SetMemoryTimerForTesting(
+    std::unique_ptr<base::RepeatingTimer> timer) {
+  memory_timer_ = std::move(timer);
 }
 
 }  // namespace app_list
