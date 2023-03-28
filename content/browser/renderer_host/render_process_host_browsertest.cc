@@ -283,6 +283,26 @@ class NonSpareRendererContentBrowserClient
   }
 };
 
+// A ContentBrowserClient that can wait for calls to
+// `blink::mojom::KeepAliveHandle`.
+class KeepAliveHandleContentBrowserClient
+    : public ContentBrowserTestContentBrowserClient {
+ public:
+  explicit KeepAliveHandleContentBrowserClient(base::OnceClosure callback) {
+    started_callback_ = std::move(callback);
+  }
+  void OnKeepaliveRequestStarted(BrowserContext* browser_context) override {
+    ContentBrowserTestContentBrowserClient::OnKeepaliveRequestStarted(
+        browser_context);
+    CHECK(started_callback_);
+    GetUIThreadTaskRunner({})->PostTask(FROM_HERE,
+                                        std::move(started_callback_));
+  }
+
+ private:
+  base::OnceClosure started_callback_;
+};
+
 class RenderProcessHostTest : public RenderProcessHostTestBase,
                               public ::testing::WithParamInterface<bool> {
  public:
@@ -1452,9 +1472,11 @@ IN_PROC_BROWSER_TEST_P(RenderProcessHostTest, FastShutdownForStartingProcess) {
 // Verifies that a fast shutdown is possible with pending keepalive request.
 IN_PROC_BROWSER_TEST_P(RenderProcessHostTest,
                        FastShutdownWithKeepAliveRequest) {
-  base::RunLoop run_loop;
+  base::RunLoop request_sent_loop, request_handled_loop;
+  KeepAliveHandleContentBrowserClient browser_client(
+      request_handled_loop.QuitClosure());
   embedded_test_server()->RegisterRequestHandler(
-      base::BindRepeating(HandleHungBeacon, run_loop.QuitClosure()));
+      base::BindRepeating(HandleHungBeacon, request_sent_loop.QuitClosure()));
   ASSERT_TRUE(embedded_test_server()->Start());
 
   const auto kTestUrl = embedded_test_server()->GetURL("/send-beacon.html");
@@ -1464,7 +1486,7 @@ IN_PROC_BROWSER_TEST_P(RenderProcessHostTest,
   RenderProcessHostImpl* rph =
       static_cast<RenderProcessHostImpl*>(rfh->GetProcess());
   // Ensure keepalive request is sent.
-  run_loop.Run();
+  request_sent_loop.Run();
 
   if (IsKeepAliveInBrowserMigrationEnabled()) {
     // When fetch keepalive in browser migration is enabled, the process will be
@@ -1473,6 +1495,7 @@ IN_PROC_BROWSER_TEST_P(RenderProcessHostTest,
     EXPECT_EQ(rph->keep_alive_ref_count(), 0);
     EXPECT_TRUE(rph->FastShutdownIfPossible());
   } else {
+    request_handled_loop.Run();
     EXPECT_EQ(rph->keep_alive_ref_count(), 1);
     EXPECT_FALSE(rph->FastShutdownIfPossible());
   }
