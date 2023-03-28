@@ -27,14 +27,26 @@ class CastRunnerLauncher {
   // managed by this launcher.
   static constexpr char kTestCollectionName[] = "cast-test-collection";
 
+  // Name of the CastRunner's Realm protocol, as exposed via the returned
+  // service directory.
+  static constexpr char kCastRunnerRealmProtocol[] =
+      "fuchsia.component.Realm-runner";
+
   explicit CastRunnerLauncher(CastRunnerFeatures runner_features);
   CastRunnerLauncher(const CastRunnerLauncher&) = delete;
   CastRunnerLauncher& operator=(const CastRunnerLauncher&) = delete;
   ~CastRunnerLauncher();
 
-  std::unique_ptr<sys::ServiceDirectory> StartCastRunner();
+  // Creates a test Realm configured to use the `cast_runner.cm` component,
+  // and returns a service-directory containing:
+  // - Services published by the `cast_runner.cm`.
+  // - A Realm containing `kTestCollectionName` into which Cast activities
+  //   may be launched.
+  // - A Realm named `kCastRunnerRealmProtocol` to allow tests to manipulate
+  //   the `cast_runner.cm` child components.
+  std::unique_ptr<sys::ServiceDirectory> Create();
 
-  // May only be called after StartCastRunner().
+  // May only be called after Create().
   FakeCastAgent& fake_cast_agent() { return *fake_cast_agent_; }
 
  private:

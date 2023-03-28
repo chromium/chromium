@@ -5,7 +5,6 @@
 #include "fuchsia_web/runners/cast/cast_runner_integration_test_base.h"
 
 #include <fuchsia/io/cpp/fidl.h>
-#include <fuchsia/sys/cpp/fidl.h>
 #include <lib/fdio/fd.h>
 #include <lib/sys/cpp/component_context.h>
 #include <unistd.h>
@@ -33,24 +32,11 @@ CastRunnerIntegrationTest::CastRunnerIntegrationTest(
 CastRunnerIntegrationTest::~CastRunnerIntegrationTest() = default;
 
 void CastRunnerIntegrationTest::SetUp() {
-  cast_runner_services_ = cast_runner_launcher_.StartCastRunner();
-
-  // Connect to the CastRunner's fuchsia.sys.Runner interface.
-  cast_runner_ = cast_runner_services().Connect<fuchsia::sys::Runner>();
-  cast_runner_.set_error_handler([](zx_status_t status) {
-    ZX_LOG(ERROR, status) << "CastRunner closed channel.";
-    ADD_FAILURE();
-  });
+  test_realm_services_ = cast_runner_launcher_.Create();
 
   static constexpr base::StringPiece kTestServerRoot(
       "fuchsia_web/runners/cast/testdata");
   test_server_.ServeFilesFromSourceDirectory(kTestServerRoot);
   net::test_server::RegisterDefaultHandlers(&test_server_);
   ASSERT_TRUE(test_server_.Start());
-}
-
-void CastRunnerIntegrationTest::TearDown() {
-  // Unbind the Runner channel, to prevent it from triggering an error when
-  // the CastRunner and WebEngine are torn down.
-  cast_runner_.Unbind();
 }

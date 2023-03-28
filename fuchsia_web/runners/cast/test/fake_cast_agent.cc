@@ -30,12 +30,10 @@ void FakeCastAgent::RegisterOnConnectClosure(base::StringPiece service,
 }
 
 void FakeCastAgent::OnStart() {
-  ASSERT_EQ(outgoing()->AddPublicService(
-                cors_exempt_header_provider_bindings_.GetHandler(this)),
-            ZX_OK);
-  ASSERT_EQ(outgoing()->AddPublicService(
-                app_config_manager_bindings_.GetHandler(&app_config_manager_)),
-            ZX_OK);
+  MaybeAddDefaultService(
+      cors_exempt_header_provider_bindings_.GetHandler(this));
+  MaybeAddDefaultService(
+      app_config_manager_bindings_.GetHandler(&app_config_manager_));
 
   for (const auto& [name, on_connect_closure] : on_connect_) {
     ASSERT_EQ(outgoing()->AddPublicService(
@@ -52,6 +50,14 @@ void FakeCastAgent::OnStart() {
 void FakeCastAgent::GetCorsExemptHeaderNames(
     GetCorsExemptHeaderNamesCallback callback) {
   callback({StringToBytes("Test")});
+}
+
+template <class T>
+void FakeCastAgent::MaybeAddDefaultService(
+    fidl::InterfaceRequestHandler<T> request_handler) {
+  if (on_connect_.find(T::Name_) == on_connect_.end()) {
+    ASSERT_EQ(outgoing()->AddPublicService(std::move(request_handler)), ZX_OK);
+  }
 }
 
 }  // namespace test

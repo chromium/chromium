@@ -99,7 +99,7 @@ CastRunnerLauncher::~CastRunnerLauncher() {
   }
 }
 
-std::unique_ptr<sys::ServiceDirectory> CastRunnerLauncher::StartCastRunner() {
+std::unique_ptr<sys::ServiceDirectory> CastRunnerLauncher::Create() {
   auto realm_builder = RealmBuilder::Create();
 
   static constexpr char kCastRunnerComponentName[] = "cast_runner";
@@ -269,6 +269,21 @@ std::unique_ptr<sys::ServiceDirectory> CastRunnerLauncher::StartCastRunner() {
                                        std::move(test_proxy_decl));
   }
 
+  // Expose the CastRunner's Realm to the test Realm root, for it to expose
+  // for use by integration tests (see below).
+  {
+    auto runner_decl = realm_builder.GetComponentDecl(kCastRunnerComponentName);
+    runner_decl.mutable_exposes()->emplace_back(
+        fuchsia::component::decl::Expose::WithProtocol(std::move(
+            fuchsia::component::decl::ExposeProtocol()
+                .set_source(fuchsia::component::decl::Ref::WithFramework({}))
+                .set_source_name(fuchsia::component::Realm::Name_)
+                .set_target(fuchsia::component::decl::Ref::WithParent({}))
+                .set_target_name(fuchsia::component::Realm::Name_))));
+    realm_builder.ReplaceComponentDecl(kCastRunnerComponentName,
+                                       std::move(runner_decl));
+  }
+
   // Offer the test-proxy the Cast Resolver and Runner capabilities, and
   // expose its framework-provided Realm protocol out to the test.
   {
@@ -303,6 +318,19 @@ std::unique_ptr<sys::ServiceDirectory> CastRunnerLauncher::StartCastRunner() {
                 .set_target(fuchsia::component::decl::Ref::WithChild(
                     fuchsia::component::decl::ChildRef{.name = kTestProxyName}))
                 .set_target_name(kCastRunnerName))));
+
+    // Expose the CastRunner's Realm via the root component, as
+    // "fuchsia.component.Realm:runner", to allow tests to e.g.
+    // manipulate the child components in the `web_instances` collection.
+    realm_decl.mutable_exposes()->emplace_back(
+        fuchsia::component::decl::Expose::WithProtocol(std::move(
+            fuchsia::component::decl::ExposeProtocol()
+                .set_source(fuchsia::component::decl::Ref::WithChild(
+                    fuchsia::component::decl::ChildRef{
+                        .name = kCastRunnerComponentName}))
+                .set_source_name(fuchsia::component::Realm::Name_)
+                .set_target(fuchsia::component::decl::Ref::WithParent({}))
+                .set_target_name(kCastRunnerRealmProtocol))));
 
     realm_builder.ReplaceRealmDecl(std::move(realm_decl));
   }

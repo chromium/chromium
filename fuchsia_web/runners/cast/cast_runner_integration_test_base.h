@@ -5,7 +5,6 @@
 #ifndef FUCHSIA_WEB_RUNNERS_CAST_CAST_RUNNER_INTEGRATION_TEST_BASE_H_
 #define FUCHSIA_WEB_RUNNERS_CAST_CAST_RUNNER_INTEGRATION_TEST_BASE_H_
 
-#include <fuchsia/sys/cpp/fidl.h>
 #include <lib/fidl/cpp/interface_request.h>
 #include <lib/sys/cpp/outgoing_directory.h>
 #include <lib/sys/cpp/service_directory.h>
@@ -41,15 +40,14 @@ class CastRunnerIntegrationTest : public testing::Test {
 
   // testing::Test:
   void SetUp() override;
-  void TearDown() override;
 
   test::CastRunnerLauncher& cast_runner_launcher() {
     return cast_runner_launcher_;
   }
   net::EmbeddedTestServer& test_server() { return test_server_; }
-  fuchsia::sys::RunnerPtr& cast_runner() { return cast_runner_; }
-  const sys::ServiceDirectory& cast_runner_services() const {
-    return *cast_runner_services_;
+
+  const sys::ServiceDirectory& test_realm_services() const {
+    return *test_realm_services_;
   }
 
   FakeApplicationConfigManager& app_config_manager() {
@@ -69,9 +67,7 @@ class CastRunnerIntegrationTest : public testing::Test {
 
   test::CastRunnerLauncher cast_runner_launcher_;
 
-  fuchsia::sys::RunnerPtr cast_runner_;
-
-  std::unique_ptr<sys::ServiceDirectory> cast_runner_services_;
+  std::unique_ptr<sys::ServiceDirectory> test_realm_services_;
 };
 
 #endif  // FUCHSIA_WEB_RUNNERS_CAST_CAST_RUNNER_INTEGRATION_TEST_BASE_H_
