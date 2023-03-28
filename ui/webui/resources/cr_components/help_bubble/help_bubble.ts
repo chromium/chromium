@@ -260,6 +260,25 @@ export class HelpBubbleElement extends PolymerElement {
     }));
   }
 
+  /**
+   * Handles ESC keypress (dismiss bubble) and prevents it from propagating up
+   * to parent elements.
+   */
+  private onKeyDown_(e: KeyboardEvent) {
+    if (e.key === 'Escape') {
+      e.stopPropagation();
+      this.dismiss_();
+    }
+  }
+
+  /**
+   * Prevent event propagation. Attach to any event that should not bubble up
+   * out of the help bubble.
+   */
+  private blockPropagation_(e: Event) {
+    e.stopPropagation();
+  }
+
   private getProgressClass_(index: number): string {
     return index < this.progress!.current ? 'current-progress' :
                                             'total-progress';
