@@ -42,6 +42,7 @@
 #include "ui/base/accelerators/accelerator.h"
 #include "ui/base/default_style.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/chromeos/events/keyboard_layout_util.h"
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
@@ -155,8 +156,8 @@ std::unique_ptr<views::View> CreateNoSearchResultView() {
 class ShortcutsListScrollView : public views::ScrollView {
  public:
   ShortcutsListScrollView() {
-    GetViewAccessibility().OverrideRole(ax::mojom::Role::kScrollView);
-    GetViewAccessibility().OverrideName(
+    SetAccessibilityProperties(
+        ax::mojom::Role::kScrollView,
         l10n_util::GetStringUTF16(IDS_KSV_SCROLL_VIEW_ACCESSIBILITY_NAME));
   }
 
@@ -287,10 +288,6 @@ views::Widget* KeyboardShortcutView::Toggle(aura::Window* context) {
     g_ksv_view->search_box_view_->search_box()->RequestFocus();
   }
   return g_ksv_view->GetWidget();
-}
-
-const char* KeyboardShortcutView::GetClassName() const {
-  return "KeyboardShortcutView";
 }
 
 std::u16string KeyboardShortcutView::GetAccessibleWindowTitle() const {
@@ -680,6 +677,9 @@ void KeyboardShortcutView::UpdateActiveAndInactiveFrameColor() {
   window->SetProperty(chromeos::kFrameActiveColorKey, background_color);
   window->SetProperty(chromeos::kFrameInactiveColorKey, background_color);
 }
+
+BEGIN_METADATA(KeyboardShortcutView, views::WidgetDelegateView)
+END_METADATA
 
 }  // namespace keyboard_shortcut_viewer
 

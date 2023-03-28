@@ -79,7 +79,7 @@ KeyboardShortcutItemListView::KeyboardShortcutItemListView() {
   SetLayoutManager(std::move(layout));
   SetBorder(views::CreateEmptyBorder(
       gfx::Insets::TLBR(0, kLeftPadding, 0, kRightPadding)));
-  GetViewAccessibility().OverrideRole(ax::mojom::Role::kList);
+  SetAccessibilityProperties(ax::mojom::Role::kList);
 }
 
 void KeyboardShortcutItemListView::AddCategoryLabel(

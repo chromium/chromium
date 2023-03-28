@@ -21,9 +21,10 @@
 #include "base/notreached.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/trace_event/trace_event.h"
-#include "ui/accessibility/ax_node_data.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/gfx/paint_vector_icon.h"
+#include "ui/strings/grit/ui_strings.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/border.h"
 #include "ui/views/controls/image_view.h"
@@ -234,19 +235,15 @@ KeyboardShortcutItemView::KeyboardShortcutItemView(
   SetBorder(views::CreateEmptyBorder(
       gfx::Insets::TLBR(kVerticalPadding, 0, kVerticalPadding, 0)));
 
-  // Use leaf list item role so that name is spoken by screen reader, but
-  // redundant child label text is not also spoken. (The role is set in
-  // GetAccessibleNodeData.)
-  GetViewAccessibility().OverrideIsLeaf(true);
-  accessible_name_ =
-      description_label_view_->GetText() + u", " + accessible_string;
-}
+  SetAccessibilityProperties(
+      ax::mojom::Role::kListItem,
+      l10n_util::GetStringFUTF16(IDS_CONCAT_TWO_STRINGS_WITH_COMMA,
+                                 description_label_view_->GetText(),
+                                 accessible_string));
 
-void KeyboardShortcutItemView::GetAccessibleNodeData(
-    ui::AXNodeData* node_data) {
-  // A valid role must be set prior to setting the name.
-  node_data->role = ax::mojom::Role::kListItem;
-  node_data->SetName(accessible_name_);
+  // Use leaf list item role so that name is spoken by screen reader, but
+  // redundant child label text is not also spoken.
+  GetViewAccessibility().OverrideIsLeaf(true);
 }
 
 int KeyboardShortcutItemView::GetHeightForWidth(int w) const {
@@ -342,5 +339,8 @@ void KeyboardShortcutItemView::CalculateLayout(int width) const {
       std::max(shortcut_height, description_height + 2 * description_delta_y);
   calculated_size_ = gfx::Size(width, content_height + insets.height());
 }
+
+BEGIN_METADATA(KeyboardShortcutItemView, views::View)
+END_METADATA
 
 }  // namespace keyboard_shortcut_viewer

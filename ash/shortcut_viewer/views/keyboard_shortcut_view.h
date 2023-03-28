@@ -11,6 +11,7 @@
 
 #include "base/timer/timer.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/widget/widget_delegate.h"
 
 namespace aura {
@@ -34,6 +35,7 @@ class KSVSearchBoxView;
 // The UI container for Ash and Chrome keyboard shortcuts.
 class KeyboardShortcutView : public views::WidgetDelegateView {
  public:
+  METADATA_HEADER(KeyboardShortcutView);
   KeyboardShortcutView(const KeyboardShortcutView&) = delete;
   KeyboardShortcutView& operator=(const KeyboardShortcutView&) = delete;
 
@@ -47,7 +49,6 @@ class KeyboardShortcutView : public views::WidgetDelegateView {
   static views::Widget* Toggle(aura::Window* context);
 
   // views::View:
-  const char* GetClassName() const override;
   std::u16string GetAccessibleWindowTitle() const override;
   bool AcceleratorPressed(const ui::Accelerator& accelerator) override;
   void Layout() override;

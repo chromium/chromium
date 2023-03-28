@@ -25,6 +25,7 @@
 #include "ui/events/devices/device_data_manager_test_api.h"
 #include "ui/events/test/event_generator.h"
 #include "ui/gfx/color_palette.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/controls/textfield/textfield.h"
 #include "ui/views/test/button_test_api.h"
 #include "ui/views/widget/widget.h"
@@ -319,6 +320,74 @@ TEST_F(KeyboardShortcutViewTest, FrameAndBackgroundColorUpdates) {
   EXPECT_EQ(kTitleAndFrameColorDark,
             window->GetProperty(chromeos::kFrameInactiveColorKey));
   EXPECT_EQ(kTitleAndFrameColorDark, GetView()->GetBackground()->get_color());
+}
+
+TEST_F(KeyboardShortcutViewTest, AccessibilityProperties) {
+  // Show the widget.
+  Toggle();
+
+  EXPECT_TRUE(GetFoundShortcutItems().empty());
+  // Type a letter and show the search results.
+  KeyPress(ui::VKEY_A, /*should_insert=*/true);
+  auto time_out = base::Milliseconds(300);
+  task_environment()->FastForwardBy(time_out);
+  base::RunLoop().RunUntilIdle();
+
+  const std::vector<KeyboardShortcutItemView*>& items = GetFoundShortcutItems();
+  EXPECT_FALSE(items.empty());
+
+  auto* first_item = items.front();
+  ui::AXNodeData first_item_data;
+  first_item->GetViewAccessibility().GetAccessibleNodeData(&first_item_data);
+  EXPECT_EQ(first_item_data.role, ax::mojom::Role::kListItem);
+  EXPECT_EQ(first_item->GetAccessibleRole(), first_item_data.role);
+  EXPECT_FALSE(first_item->GetAccessibleName().empty());
+  EXPECT_EQ(
+      first_item_data.GetString16Attribute(ax::mojom::StringAttribute::kName),
+      first_item->GetAccessibleName());
+  EXPECT_EQ(first_item_data.GetIntAttribute(ax::mojom::IntAttribute::kPosInSet),
+            1);
+  EXPECT_EQ(first_item_data.GetIntAttribute(ax::mojom::IntAttribute::kSetSize),
+            static_cast<int>(items.size()));
+
+  auto* last_item = items.back();
+  ui::AXNodeData last_item_data;
+  last_item->GetViewAccessibility().GetAccessibleNodeData(&last_item_data);
+  EXPECT_EQ(last_item_data.role, ax::mojom::Role::kListItem);
+  EXPECT_EQ(last_item->GetAccessibleRole(), last_item_data.role);
+  EXPECT_EQ(
+      last_item_data.GetString16Attribute(ax::mojom::StringAttribute::kName),
+      last_item->GetAccessibleName());
+  EXPECT_FALSE(last_item->GetAccessibleName().empty());
+  EXPECT_EQ(last_item_data.GetIntAttribute(ax::mojom::IntAttribute::kPosInSet),
+            static_cast<int>(items.size()));
+  EXPECT_EQ(last_item_data.GetIntAttribute(ax::mojom::IntAttribute::kSetSize),
+            static_cast<int>(items.size()));
+
+  auto* list = last_item->parent();
+  while (list && list->GetAccessibleRole() != ax::mojom::Role::kList) {
+    list = list->parent();
+  }
+
+  EXPECT_TRUE(list);
+  ui::AXNodeData list_data;
+  list->GetViewAccessibility().GetAccessibleNodeData(&list_data);
+  EXPECT_EQ(list_data.role, ax::mojom::Role::kList);
+
+  auto* scroll_view = list->parent();
+  while (scroll_view &&
+         scroll_view->GetAccessibleRole() != ax::mojom::Role::kScrollView) {
+    scroll_view = scroll_view->parent();
+  }
+
+  EXPECT_TRUE(scroll_view);
+  ui::AXNodeData scroll_view_data;
+  scroll_view->GetViewAccessibility().GetAccessibleNodeData(&scroll_view_data);
+  EXPECT_EQ(scroll_view_data.role, ax::mojom::Role::kScrollView);
+  EXPECT_FALSE(scroll_view->GetAccessibleName().empty());
+  EXPECT_EQ(
+      scroll_view_data.GetString16Attribute(ax::mojom::StringAttribute::kName),
+      scroll_view->GetAccessibleName());
 }
 
 }  // namespace keyboard_shortcut_viewer

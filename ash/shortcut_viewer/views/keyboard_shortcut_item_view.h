@@ -6,6 +6,8 @@
 #define ASH_SHORTCUT_VIEWER_VIEWS_KEYBOARD_SHORTCUT_ITEM_VIEW_H_
 
 #include "ash/public/cpp/keyboard_shortcut_item.h"
+#include "ui/base/metadata/metadata_header_macros.h"
+
 #include "ui/views/view.h"
 
 namespace views {
@@ -17,6 +19,7 @@ namespace keyboard_shortcut_viewer {
 // A view that displays a shortcut metadata.
 class KeyboardShortcutItemView : public views::View {
  public:
+  METADATA_HEADER(KeyboardShortcutItemView);
   KeyboardShortcutItemView(const ash::KeyboardShortcutItem& item,
                            ash::ShortcutCategory category);
 
@@ -26,7 +29,6 @@ class KeyboardShortcutItemView : public views::View {
   ~KeyboardShortcutItemView() override = default;
 
   // views::View:
-  void GetAccessibleNodeData(ui::AXNodeData* node_data) override;
   int GetHeightForWidth(int w) const override;
   void Layout() override;
 
@@ -74,9 +76,6 @@ class KeyboardShortcutItemView : public views::View {
   mutable gfx::Rect description_bounds_;
   mutable gfx::Rect shortcut_bounds_;
   mutable gfx::Size calculated_size_;
-
-  // Accessibility data.
-  std::u16string accessible_name_;
 };
 
 }  // namespace keyboard_shortcut_viewer
