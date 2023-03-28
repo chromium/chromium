@@ -783,9 +783,18 @@ IN_PROC_BROWSER_TEST_P(HelpAppAllProfilesIntegrationTest,
   base::HistogramTester histogram_tester;
 
   // The /? key is OEM_2 on a US standard keyboard.
+  GURL expected_url;
+#if BUILDFLAG(ENABLE_CROS_HELP_APP)
+  expected_url = GURL("chrome://help-app");
+#else
+  expected_url = GURL(chrome::kChromeHelpViaKeyboardURL);
+#endif
+  content::TestNavigationObserver navigation_observer(expected_url);
+  navigation_observer.StartWatchingNewWebContents();
   ASSERT_TRUE(ui_test_utils::SendKeyPressSync(
       browser(), ui::VKEY_OEM_2, /*control=*/true,
       /*shift=*/false, /*alt=*/false, /*command=*/false));
+  navigation_observer.Wait();
 
 #if BUILDFLAG(ENABLE_CROS_HELP_APP)
   // Default browser tab and Help app are open.
