@@ -2452,7 +2452,7 @@
     ],
 
     'codesearch_gen_chromium_ios_bot': [
-      'codesearch_ios', 'ios',
+      'codesearch_ios', 'ios', 'ios_disable_code_signing'
     ],
 
     # Lacros uses different gn args to build for chromeOS device vs. Linux. For
