@@ -40,6 +40,14 @@ export class XfTree extends XfBase {
     this.selectItem_(item);
   }
 
+  /** Return the focused tree item, could be null. */
+  get focusedItem(): XfTreeItem|null {
+    return this.focusedItem_;
+  }
+  set focusedItem(item: XfTreeItem|null) {
+    this.focusItem_(item);
+  }
+
   /** The child tree items. */
   get items(): XfTreeItem[] {
     return this.items_;
@@ -308,10 +316,10 @@ export class XfTree extends XfBase {
    * one tree item is selected in the tree.
    */
   private selectItem_(itemToSelect: XfTreeItem|null) {
-    if (itemToSelect === this.selectedItem_) {
+    const previousSelectedItem = this.selectedItem_;
+    if (itemToSelect === previousSelectedItem) {
       return;
     }
-    const previousSelectedItem = this.selectedItem_;
     if (previousSelectedItem) {
       previousSelectedItem.selected = false;
     }
@@ -334,17 +342,21 @@ export class XfTree extends XfBase {
   }
 
   /**
-   * Make `itemToSelect` become the focused item in the tree, this will
-   * also unfocus the previously focused tree item to make sure at most
-   * one tree item is selected in the tree.
+   * Make `itemToFocus` become the focused item in the tree, this will
+   * also unfocus the previously focused tree item.
    */
-  private focusItem_(itemToFocus: XfTreeItem) {
+  private focusItem_(itemToFocus: XfTreeItem|null) {
     const previousFocusedItem = this.focusedItem_;
+    if (previousFocusedItem === itemToFocus) {
+      return;
+    }
     if (previousFocusedItem) {
       previousFocusedItem.blur();
     }
     this.focusedItem_ = itemToFocus;
-    this.focusedItem_.focus();
+    if (this.focusedItem_) {
+      this.focusedItem_.focus();
+    }
   }
 }
 
