@@ -30,7 +30,6 @@
 #include "fuchsia_web/runners/cast/cast_resolver.h"
 #include "fuchsia_web/runners/cast/cast_runner.h"
 #include "fuchsia_web/runners/cast/cast_runner_switches.h"
-#include "fuchsia_web/runners/cast/cast_runner_v1.h"
 #include "fuchsia_web/webinstance_host/web_instance_host.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
@@ -51,61 +50,20 @@ bool GetConfigBool(base::StringPiece config_key) {
   return false;
 }
 
-// Name of the service capability implemented by the CFv2-based Runner.
-constexpr char kCfv2RunnerService[] = "fuchsia.sys.Runner-cast";
-
-// Publish a fuchsia.sys.Runner protocol that simply delegates to a specially-
-// named protocol available in the incoming service directory.
-int Cfv1ToCfv2RunnerProxyMain() {
-  sys::OutgoingDirectory* const outgoing_directory =
-      base::ComponentContextForProcess()->outgoing().get();
-
-  const base::ScopedServicePublisher proxy_sys_runner(
-      outgoing_directory,
-      fidl::InterfaceRequestHandler<fuchsia::sys::Runner>(
-          [](fidl::InterfaceRequest<fuchsia::sys::Runner> request) {
-            zx_status_t status =
-                base::ComponentContextForProcess()->svc()->Connect(
-                    std::move(request), kCfv2RunnerService);
-            ZX_CHECK(status == ZX_OK, status) << "Connect(Runner-cast)";
-          }));
-
-  // If the CFv2-based Runner implementation fails then terminate the proxy
-  // so that the framework will observe this Runner-component failing.
-  auto cfv2_runner =
-      base::ComponentContextForProcess()->svc()->Connect<fuchsia::sys::Runner>(
-          kCfv2RunnerService);
-  CHECK(cfv2_runner) << "Connect(Runner-cast)";
-  cfv2_runner.set_error_handler(
-      base::LogFidlErrorAndExitProcess(FROM_HERE, kCfv2RunnerService));
-
-  // Start serving the outgoing service directory to clients.
-  outgoing_directory->ServeFromStartupInfo();
-
-  // ELF runner will kill the component when the framework requests it to.
-  base::RunLoop().Run();
-
-  NOTREACHED();
-  return 0;
-}
-
 }  // namespace
 
 int main(int argc, char** argv) {
   base::SingleThreadTaskExecutor io_task_executor(base::MessagePumpType::IO);
 
   base::CommandLine::Init(argc, argv);
-  base::CommandLine* const command_line =
-      base::CommandLine::ForCurrentProcess();
-  const bool enable_cfv2 = command_line->HasSwitch(kEnableCfv2);
 
   static constexpr base::StringPiece kComponentUrl(
       "fuchsia-pkg://fuchsia.com/cast_runner#meta/cast_runner.cm");
-  static constexpr base::StringPiece kComponentUrlCfv1(
-      "fuchsia-pkg://fuchsia.com/cast_runner#meta/cast_runner.cmx");
   fuchsia_component_support::RegisterProductDataForCrashReporting(
-      enable_cfv2 ? kComponentUrl : kComponentUrlCfv1, "FuchsiaCastRunner");
+      kComponentUrl, "FuchsiaCastRunner");
 
+  base::CommandLine* const command_line =
+      base::CommandLine::ForCurrentProcess();
   CHECK(InitLoggingFromCommandLine(*command_line))
       << "Failed to initialize logging.";
 
@@ -119,10 +77,6 @@ int main(int argc, char** argv) {
   LOG(WARNING) << "This binary is from a build without Cast Receiver support "
                   "and does not support all necessary functionality.";
 #endif
-
-  if (!enable_cfv2) {
-    return Cfv1ToCfv2RunnerProxyMain();
-  }
 
   RegisterFuchsiaDirScheme();
 
@@ -143,11 +97,6 @@ int main(int argc, char** argv) {
        .disable_codegen = GetConfigBool(kDisableCodeGenConfigKey)});
   const base::ScopedServiceBinding<fuchsia::component::runner::ComponentRunner>
       runner_binding(outgoing_directory, &runner);
-
-  // Publish the legacy fuchsia.sys.Runner implementation for Cast applications.
-  CastRunnerV1 runner_v1;
-  const base::ScopedServiceBinding<fuchsia::sys::Runner> runner_v1_binding(
-      outgoing_directory, &runner_v1);
 
   // Publish the associated DataReset service for the instance.
   const base::ScopedServiceBinding<chromium::cast::DataReset>

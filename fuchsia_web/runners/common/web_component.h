@@ -5,7 +5,6 @@
 #ifndef FUCHSIA_WEB_RUNNERS_COMMON_WEB_COMPONENT_H_
 #define FUCHSIA_WEB_RUNNERS_COMMON_WEB_COMPONENT_H_
 
-#include <fuchsia/modular/cpp/fidl.h>
 #include <fuchsia/sys/cpp/fidl.h>
 #include <fuchsia/ui/app/cpp/fidl.h>
 #include <fuchsia/web/cpp/fidl.h>
@@ -18,7 +17,6 @@
 #include "base/fuchsia/scoped_service_binding.h"
 #include "base/fuchsia/startup_context.h"
 #include "base/time/time.h"
-#include "fuchsia_web/runners/common/modular/lifecycle_impl.h"
 #include "url/gurl.h"
 
 class WebContentRunner;
@@ -38,7 +36,7 @@ class WebComponent : public fuchsia::sys::ComponentController,
   // |runner| must out-live |this|.
   // [context| will be retained to provide component-specific services.
   //   If |context| includes an outgoing-directory request then the component
-  //   will publish ViewProvider and Lifecycle services.
+  //   will publish a ViewProvider implementation.
   // |controller_request| may optionally be supplied and used to control the
   //   lifetime of this component instance.
   WebComponent(base::StringPiece debug_name,
@@ -120,10 +118,6 @@ class WebComponent : public fuchsia::sys::ComponentController,
 
   // Bindings used to manage the lifetime of this component instance.
   fidl::Binding<fuchsia::sys::ComponentController> controller_binding_;
-  std::unique_ptr<cr_fuchsia::LifecycleImpl> lifecycle_;
-
-  // If running as a Mod then these are used to e.g. RemoveSelfFromStory().
-  fuchsia::modular::ModuleContextPtr module_context_;
 
   // Objects used for binding and exporting the ViewProvider service.
   std::unique_ptr<base::ScopedServiceBinding<fuchsia::ui::app::ViewProvider>>

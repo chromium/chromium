@@ -82,7 +82,6 @@ void CastResolver::Resolve(std::string component_url,
 
   // Declare and expose capabilities implemented by the component.
   DeclareAndExposeProtocol(decl, "fuchsia.ui.app.ViewProvider");
-  DeclareAndExposeProtocol(decl, "fuchsia.modular.Lifecycle");
 
   // Expose the Binder, from the framework, to allow CastRunnerV1 to start the
   // component.

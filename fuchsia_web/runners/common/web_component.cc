@@ -26,8 +26,6 @@ WebComponent::WebComponent(
       runner_(runner),
       startup_context_(std::move(context)),
       controller_binding_(this),
-      module_context_(
-          startup_context()->svc()->Connect<fuchsia::modular::ModuleContext>()),
       navigation_listener_binding_(this) {
   DCHECK(!debug_name_.empty());
   DCHECK(runner);
@@ -49,10 +47,6 @@ WebComponent::WebComponent(
 }
 
 WebComponent::~WebComponent() {
-  // If Modular is available, request to be removed from the Story.
-  if (module_context_)
-    module_context_->RemoveSelfFromStory();
-
   if (controller_binding_.is_bound()) {
     // Send process termination details to the client.
     controller_binding_.events().OnTerminated(termination_exit_code_,
@@ -106,9 +100,6 @@ void WebComponent::StartComponent() {
     view_provider_binding_ = std::make_unique<
         base::ScopedServiceBinding<fuchsia::ui::app::ViewProvider>>(
         startup_context()->component_context()->outgoing().get(), this);
-    lifecycle_ = std::make_unique<cr_fuchsia::LifecycleImpl>(
-        startup_context()->component_context()->outgoing().get(),
-        base::BindOnce(&WebComponent::Kill, base::Unretained(this)));
     startup_context()->ServeOutgoingDirectory();
   }
 
