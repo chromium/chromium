@@ -83,15 +83,25 @@ export class AddPasswordDialogElement extends AddPasswordDialogElementBase {
 
   static get properties() {
     return {
-      website_: String,
-      username_: String,
+      website_: {
+        type: String,
+        value: '',
+      },
+
+      username_: {
+        type: String,
+        value: '',
+      },
 
       password_: {
         type: String,
         value: '',
       },
 
-      note_: String,
+      note_: {
+        type: String,
+        value: '',
+      },
 
       urlCollection_: Object,
 
@@ -109,6 +119,11 @@ export class AddPasswordDialogElement extends AddPasswordDialogElementBase {
         type: String,
         computed: 'computeUsernameErrorMessage_(urlCollection_, username_, ' +
             'usernamesBySignonRealm_)',
+      },
+
+      isPasswordInvalid_: {
+        type: Boolean,
+        value: false,
       },
 
       canAddPassword_: {
@@ -144,6 +159,7 @@ export class AddPasswordDialogElement extends AddPasswordDialogElementBase {
   private usernamesBySignonRealm_: Map<string, Set<string>>;
   private websiteErrorMessage_: string|null;
   private usernameErrorMessage_: string|null;
+  private isPasswordInvalid_: boolean;
   private urlCollection_: chrome.passwordsPrivate.UrlCollection|null;
   private readonly storeOptionAccountValue_: string;
   private readonly storeOptionDeviceValue_: string;
@@ -201,7 +217,9 @@ export class AddPasswordDialogElement extends AddPasswordDialogElementBase {
   }
 
   private onWebsiteInputBlur_() {
-    if (!this.websiteErrorMessage_ && !this.website_.includes('.')) {
+    if (this.website_.length === 0) {
+      this.websiteErrorMessage_ = this.i18n('notValidWebsite');
+    } else if (!this.websiteErrorMessage_ && !this.website_.includes('.')) {
       this.websiteErrorMessage_ =
           this.i18n('missingTLD', `${this.website_}.com`);
     }
@@ -227,6 +245,10 @@ export class AddPasswordDialogElement extends AddPasswordDialogElementBase {
     return !!this.usernameErrorMessage_;
   }
 
+  private onPasswordInput_() {
+    this.isPasswordInvalid_ = this.password_.length === 0;
+  }
+
   private isNoteInputInvalid_(): boolean {
     return this.note_.length >= PASSWORD_NOTE_MAX_CHARACTER_COUNT;
   }
@@ -248,7 +270,7 @@ export class AddPasswordDialogElement extends AddPasswordDialogElementBase {
   }
 
   private computeCanAddPassword_(): boolean {
-    if (this.isWebsiteInputInvalid_()) {
+    if (this.isWebsiteInputInvalid_() || this.website_.length === 0) {
       return false;
     }
     if (this.doesUsernameExistAlready_()) {

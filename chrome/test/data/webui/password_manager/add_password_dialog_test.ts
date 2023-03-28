@@ -330,4 +330,32 @@ suite('AddPasswordDialogTest', function() {
     assertEquals(dialog.$.noteInput.value, params.note);
     assertEquals(false, params.useAccountStore);
   });
+
+  test('error when leaving website blank', async function() {
+    const dialog = document.createElement('add-password-dialog');
+    document.body.appendChild(dialog);
+    await flushTasks();
+
+    assertFalse(dialog.$.websiteInput.invalid);
+
+    dialog.$.websiteInput.dispatchEvent(new CustomEvent('blur'));
+    await flushTasks();
+
+    assertTrue(dialog.$.websiteInput.invalid);
+    assertEquals(
+        dialog.i18n('notValidWebsite'), dialog.$.websiteInput.errorMessage);
+  });
+
+  test('error when leaving password blank', async function() {
+    const dialog = document.createElement('add-password-dialog');
+    document.body.appendChild(dialog);
+    await flushTasks();
+
+    assertFalse(dialog.$.passwordInput.invalid);
+
+    dialog.$.passwordInput.dispatchEvent(new CustomEvent('blur'));
+    await flushTasks();
+
+    assertTrue(dialog.$.passwordInput.invalid);
+  });
 });
