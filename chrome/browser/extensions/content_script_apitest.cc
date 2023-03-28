@@ -62,7 +62,6 @@
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "net/test/embedded_test_server/http_request.h"
 #include "net/test/embedded_test_server/http_response.h"
-#include "services/network/public/cpp/features.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/privacy_budget/identifiable_surface.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -2246,19 +2245,8 @@ IN_PROC_BROWSER_TEST_F(SubresourceWebBundlesContentScriptApiTest,
 }
 
 class ContentScriptApiPrerenderingTest : public ContentScriptApiTest {
- public:
-  ContentScriptApiPrerenderingTest() {
-    feature_list_.InitWithFeatures(
-        {
-            network::features::kPrerender2ContentSecurityPolicyExtensions,
-            extensions_features::kMinimumMV3CSPWithInlineSpeculationRules,
-        },
-        {});
-  }
-
  private:
   content::test::ScopedPrerenderFeatureList prerender_feature_list_;
-  base::test::ScopedFeatureList feature_list_;
 };
 
 IN_PROC_BROWSER_TEST_F(ContentScriptApiPrerenderingTest, Prerendering) {

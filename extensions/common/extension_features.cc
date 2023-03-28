@@ -109,13 +109,6 @@ BASE_FEATURE(kForceWebRequestProxyForTest,
              "ForceWebRequestProxyForTest",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// If enabled, the minimum MV3 Content-Security-Policy will include
-// 'inline-speculation-rules' source in the script-src.
-// See https://crbug.com/1382361 to track the launch status.
-BASE_FEATURE(kMinimumMV3CSPWithInlineSpeculationRules,
-             "MinimumMV3CSPWithInlineSpeculationRules",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Controls whether extensions can use the new favicon fetching in Manifest V3.
 BASE_FEATURE(kNewExtensionFaviconHandling,
              "ExtensionsNewFaviconHandling",

@@ -43,18 +43,11 @@ static const char kDefaultMV3CSP[] = "script-src 'self';";
 
 // The minimum CSP to be used in order to prevent remote scripts.
 static const char kMinimumMV3CSP[] =
-    "script-src 'self' 'wasm-unsafe-eval'; object-src 'self';";
+    "script-src 'self' 'wasm-unsafe-eval' 'inline-speculation-rules'; "
+    "object-src 'self';";
 // For unpacked extensions, we additionally allow the use of localhost files to
 // aid in rapid local development.
 static const char kMinimumUnpackedMV3CSP[] =
-    "script-src 'self' 'wasm-unsafe-eval' http://localhost:* "
-    "http://127.0.0.1:*; object-src 'self';";
-
-// Variants to support inline-specluation-rules. See https://crbug.com/1382361.
-static const char kMinimumMV3CSPWithInlineSpeculationRules[] =
-    "script-src 'self' 'wasm-unsafe-eval' 'inline-speculation-rules'; "
-    "object-src 'self';";
-static const char kMinimumUnpackedMV3CSPWithInlineSpeculationRules[] =
     "script-src 'self' 'wasm-unsafe-eval' 'inline-speculation-rules' "
     "http://localhost:* http://127.0.0.1:*; object-src 'self';";
 
@@ -129,16 +122,9 @@ const char* GetDefaultExtensionPagesCSP(Extension* extension) {
 const std::string* GetMinimumMV3CSPForExtension(const Extension& extension) {
   DCHECK_GE(extension.manifest_version(), 3);
 
-  static const base::NoDestructor<std::string> default_csp(
-      base::FeatureList::IsEnabled(
-          extensions_features::kMinimumMV3CSPWithInlineSpeculationRules)
-          ? kMinimumMV3CSPWithInlineSpeculationRules
-          : kMinimumMV3CSP);
+  static const base::NoDestructor<std::string> default_csp(kMinimumMV3CSP);
   static const base::NoDestructor<std::string> default_unpacked_csp(
-      base::FeatureList::IsEnabled(
-          extensions_features::kMinimumMV3CSPWithInlineSpeculationRules)
-          ? kMinimumUnpackedMV3CSPWithInlineSpeculationRules
-          : kMinimumUnpackedMV3CSP);
+      kMinimumUnpackedMV3CSP);
 
   return Manifest::IsUnpackedLocation(extension.location())
              ? default_unpacked_csp.get()
@@ -228,18 +214,12 @@ CSPHandler::~CSPHandler() = default;
 
 // static
 const char* CSPHandler::GetMinimumMV3CSPForTesting() {
-  return base::FeatureList::IsEnabled(
-             extensions_features::kMinimumMV3CSPWithInlineSpeculationRules)
-             ? kMinimumMV3CSPWithInlineSpeculationRules
-             : kMinimumMV3CSP;
+  return kMinimumMV3CSP;
 }
 
 // static
 const char* CSPHandler::GetMinimumUnpackedMV3CSPForTesting() {
-  return base::FeatureList::IsEnabled(
-             extensions_features::kMinimumMV3CSPWithInlineSpeculationRules)
-             ? kMinimumUnpackedMV3CSPWithInlineSpeculationRules
-             : kMinimumUnpackedMV3CSP;
+  return kMinimumUnpackedMV3CSP;
 }
 
 bool CSPHandler::Parse(Extension* extension, std::u16string* error) {

@@ -70,8 +70,6 @@ BASE_DECLARE_FEATURE(kExtensionsOffscreenDocuments);
 
 BASE_DECLARE_FEATURE(kForceWebRequestProxyForTest);
 
-BASE_DECLARE_FEATURE(kMinimumMV3CSPWithInlineSpeculationRules);
-
 BASE_DECLARE_FEATURE(kNewExtensionFaviconHandling);
 
 BASE_DECLARE_FEATURE(kNewWebstoreDomain);

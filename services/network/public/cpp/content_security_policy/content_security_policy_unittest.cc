@@ -1586,8 +1586,6 @@ TEST(ContentSecurityPolicy, ParseHash) {
 }
 
 TEST(ContentSecurityPolicy, ParseInlineSpeculationRules) {
-  base::test::ScopedFeatureList scoped_feature_list(
-      features::kPrerender2ContentSecurityPolicyExtensions);
   std::vector<mojom::ContentSecurityPolicyPtr> script_src_policies =
       ParseCSP("script-src 'inline-speculation-rules'");
   ASSERT_EQ(1u, script_src_policies.size());

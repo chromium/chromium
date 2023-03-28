@@ -733,14 +733,8 @@ mojom::CSPSourceListPtr ParseSourceList(
       continue;
     }
 
-    // Discussed at https://github.com/WICG/nav-speculation/pull/209, and merged
-    // to the speculationrules explainer,
-    // https://github.com/WICG/nav-speculation/blob/main/triggers.md#content-security-policy.
-    // TODO(https://crbug.com/1382361): Have a patch spec and merge it to the
-    // upstream CSP spec.
-    if (base::FeatureList::IsEnabled(
-            features::kPrerender2ContentSecurityPolicyExtensions) &&
-        base::EqualsCaseInsensitiveASCII(expression,
+    // https://wicg.github.io/nav-speculation/speculation-rules.html#content-security-policy
+    if (base::EqualsCaseInsensitiveASCII(expression,
                                          "'inline-speculation-rules'")) {
       if (directive_name == CSPDirectiveName::ScriptSrc ||
           directive_name == CSPDirectiveName::ScriptSrcElem) {

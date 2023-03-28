@@ -127,12 +127,6 @@ BASE_DECLARE_FEATURE(kAccessControlAllowMethodsInCORSPreflightSpecConformant);
 COMPONENT_EXPORT(NETWORK_CPP)
 BASE_DECLARE_FEATURE(kPrefetchNoVarySearch);
 
-// Enables the `inline-speculation-rules` source support in the
-// Content-Security-Policy for Prerender2.
-// https://crbug.com/1382361
-COMPONENT_EXPORT(NETWORK_CPP)
-BASE_DECLARE_FEATURE(kPrerender2ContentSecurityPolicyExtensions);
-
 // Enables UMA to track received GetCookiesString IPCs. This feature is enabled
 // by default, it is just here to allow some tests to disable it. These tests
 // make use of TaskEnvironment::FastForward with very long delays (days) which
