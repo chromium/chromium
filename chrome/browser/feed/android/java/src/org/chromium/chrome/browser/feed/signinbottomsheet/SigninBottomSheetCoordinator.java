@@ -24,6 +24,7 @@ import org.chromium.components.signin.AccountUtils;
 import org.chromium.components.signin.base.GoogleServiceAuthError;
 import org.chromium.components.signin.identitymanager.AccountInfoServiceProvider;
 import org.chromium.ui.base.WindowAndroid;
+import org.chromium.ui.widget.Toast;
 
 /** Coordinator for displaying the signin flow in the bottom sheet. */
 public class SigninBottomSheetCoordinator implements AccountPickerDelegate {
@@ -31,6 +32,7 @@ public class SigninBottomSheetCoordinator implements AccountPickerDelegate {
     private final WindowAndroid mWindowAndroid;
     private final BottomSheetController mController;
     private final SigninManager mSigninManager;
+    private boolean mSetTestToast;
     private AccountPickerBottomSheetCoordinator mAccountPickerBottomSheetCoordinator;
 
     public SigninBottomSheetCoordinator(
@@ -39,6 +41,7 @@ public class SigninBottomSheetCoordinator implements AccountPickerDelegate {
         mController = controller;
         mProfile = profile;
         mSigninManager = IdentityServicesProvider.get().getSigninManager(mProfile);
+        mSetTestToast = false;
     }
 
     @Override
@@ -49,26 +52,33 @@ public class SigninBottomSheetCoordinator implements AccountPickerDelegate {
             String accountEmail, Callback<GoogleServiceAuthError> onSignInErrorCallback) {
         Account account = AccountUtils.createAccountFromName(accountEmail);
         AccountInfoServiceProvider.get().getAccountInfoByEmail(accountEmail).then(accountInfo -> {
-            mSigninManager.signin(account, new SigninManager.SignInCallback() {
-                @Override
-                public void onSignInComplete() {
-                    RecordHistogram.recordBooleanHistogram(
-                            "ContentSuggestions.Feed.SignInFromFeedAction.SignInSuccessful", true);
-                    mController.hideContent(mController.getCurrentSheetContent(), true);
-                }
+            if (mSigninManager.isSigninAllowed()) {
+                mSigninManager.signin(account, new SigninManager.SignInCallback() {
+                    @Override
+                    public void onSignInComplete() {
+                        RecordHistogram.recordBooleanHistogram(
+                                "ContentSuggestions.Feed.SignInFromFeedAction.SignInSuccessful",
+                                true);
+                        mController.hideContent(mController.getCurrentSheetContent(), true);
+                    }
 
-                @Override
-                public void onSignInAborted() {
-                    RecordHistogram.recordBooleanHistogram(
-                            "ContentSuggestions.Feed.SignInFromFeedAction.SignInSuccessful", false);
-                    // onSignInErrorCallback is called by the WebSigninBridge which is not
-                    // implemented in this signin flow as we do not need to wait for cookies to
-                    // propagate before proceeding with the Feed refresh. Instead of calling
-                    // AccountPickerBottomSheetMediator.onSigninFailed() from the signin bridge we
-                    // directly perform the creation of the "try again" bottom sheet view:
-                    mAccountPickerBottomSheetCoordinator.setTryAgainBottomSheetView();
-                }
-            });
+                    @Override
+                    public void onSignInAborted() {
+                        RecordHistogram.recordBooleanHistogram(
+                                "ContentSuggestions.Feed.SignInFromFeedAction.SignInSuccessful",
+                                false);
+                        // onSignInErrorCallback is called by the WebSigninBridge which is not
+                        // implemented in this signin flow as we do not need to wait for cookies to
+                        // propagate before proceeding with the Feed refresh. Instead of calling
+                        // AccountPickerBottomSheetMediator.onSigninFailed() from the signin bridge
+                        // we directly perform the creation of the "try again" bottom sheet view:
+                        mAccountPickerBottomSheetCoordinator.setTryAgainBottomSheetView();
+                    }
+                });
+            } else {
+                makeSigninNotAllowedToast();
+                mController.hideContent(mController.getCurrentSheetContent(), true);
+            }
         });
     }
 
@@ -82,6 +92,13 @@ public class SigninBottomSheetCoordinator implements AccountPickerDelegate {
                 mWindowAndroid, mController, this, new BottomSheetStrings());
     }
 
+    private void makeSigninNotAllowedToast() {
+        if (mSetTestToast) return;
+        Toast.makeText(mWindowAndroid.getActivity().get(),
+                     R.string.sign_in_to_chrome_disabled_by_user_summary, Toast.LENGTH_SHORT)
+                .show();
+    }
+
     @VisibleForTesting
     public View getBottomSheetViewForTesting() {
         return mAccountPickerBottomSheetCoordinator.getBottomSheetViewForTesting();
@@ -91,6 +108,11 @@ public class SigninBottomSheetCoordinator implements AccountPickerDelegate {
     public void setAccountPickerBottomSheetCoordinator(
             AccountPickerBottomSheetCoordinator accountPickerBottomSheetCoordinator) {
         this.mAccountPickerBottomSheetCoordinator = accountPickerBottomSheetCoordinator;
+    }
+
+    @VisibleForTesting
+    public void setToastOverrideForTesting() {
+        this.mSetTestToast = true;
     }
 
     /** Stores bottom sheet strings for signin from back of card entry point */
