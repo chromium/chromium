@@ -89,6 +89,9 @@ bool ReadMessage(int fd, std::string* message) {
 
 }  // namespace
 
+// This value is used as a max value in a histogram,
+// Platform.ExternalMetrics.SamplesRead. If it changes, the histogram will need
+// to be renamed.
 const int SerializationUtils::kMaxMessagesPerRead = 100000;
 
 std::unique_ptr<MetricSample> SerializationUtils::ParseSample(
@@ -170,6 +173,10 @@ void SerializationUtils::ReadAndTruncateMetricsFromFile(
     if (sample)
       metrics->push_back(std::move(sample));
   }
+
+  base::UmaHistogramCustomCounts("Platform.ExternalMetrics.SamplesRead",
+                                 metrics->size(), 1, kMaxMessagesPerRead - 1,
+                                 50);
 
   result = ftruncate(fd.get(), 0);
   if (result < 0)

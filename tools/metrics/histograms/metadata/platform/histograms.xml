@@ -504,6 +504,19 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Platform.ExternalMetrics.SamplesRead" units="count"
+    expires_after="2023-09-27">
+  <owner>iby@google.com</owner>
+  <owner>mutexlox@google.com</owner>
+  <owner>cros-telemetry@google.com</owner>
+  <summary>
+    On ChromeOS, number of external metrics samples read in from the platform.
+    Emitted once every 30 seconds. If this is too large (over 100,000), we will
+    silently lose metrics. Additionally, 100,000 is the largest number we'll
+    ever record here: we stop counting when we hit 100,000.
+  </summary>
+</histogram>
+
 <histogram name="Platform.FileSystem.ErrorCount" units="errors"
     expires_after="2023-09-01">
   <owner>gwendal@google.com</owner>
