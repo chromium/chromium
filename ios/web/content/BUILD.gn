@@ -23,6 +23,8 @@ source_set("content") {
     "navigation/content_navigation_manager.mm",
     "web_state/content_web_state.h",
     "web_state/content_web_state.mm",
+    "web_state/content_web_state_builder.h",
+    "web_state/content_web_state_builder.mm",
     "web_state/crc_web_view_proxy_impl.h",
     "web_state/crc_web_view_proxy_impl.mm",
   ]

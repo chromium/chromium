@@ -38,6 +38,11 @@ namespace web {
 class ContentWebState : public WebState, public content::WebContentsObserver {
  public:
   explicit ContentWebState(const CreateParams& params);
+
+  // Constructor for ContentWebState created for deserialized sessions
+  ContentWebState(const CreateParams& params,
+                  CRWSessionStorage* session_storage);
+
   ~ContentWebState() override;
 
   // WebState implementation.

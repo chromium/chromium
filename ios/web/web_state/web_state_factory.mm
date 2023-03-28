@@ -34,7 +34,7 @@ std::unique_ptr<WebState> WebState::CreateWithStorageSession(
     CRWSessionStorage* session_storage) {
   DCHECK(session_storage);
 #if BUILDFLAG(USE_BLINK)
-  return std::make_unique<ContentWebState>(params);
+  return std::make_unique<ContentWebState>(params, session_storage);
 #else
   return std::make_unique<WebStateImpl>(params, session_storage);
 #endif  // USE_BLINK

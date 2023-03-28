@@ -9,6 +9,7 @@
 #import "content/public/browser/web_contents.h"
 #import "ios/web/content/content_browser_context.h"
 #import "ios/web/content/navigation/content_navigation_context.h"
+#import "ios/web/content/web_state/content_web_state_builder.h"
 #import "ios/web/content/web_state/crc_web_view_proxy_impl.h"
 #import "ios/web/find_in_page/java_script_find_in_page_manager_impl.h"
 #import "ios/web/public/favicon/favicon_url.h"
@@ -65,7 +66,11 @@ FaviconURL::IconType IconTypeFromContentIconType(
 
 }  // namespace
 
-ContentWebState::ContentWebState(const CreateParams& params) {
+ContentWebState::ContentWebState(const CreateParams& params)
+    : ContentWebState(params, nil) {}
+
+ContentWebState::ContentWebState(const CreateParams& params,
+                                 CRWSessionStorage* session_storage) {
   content::BrowserContext* browser_context =
       ContentBrowserContext::FromBrowserState(params.browser_state);
   scoped_refptr<content::SiteInstance> site_instance;
@@ -100,7 +105,13 @@ ContentWebState::ContentWebState(const CreateParams& params) {
   web::JavaScriptFindInPageManagerImpl::CreateForWebState(this);
   web::TextFragmentsManagerImpl::CreateForWebState(this);
 
-  UUID_ = [[NSUUID UUID] UUIDString];
+  if (session_storage) {
+    ExtractContentSessionStorage(this, controller, params.browser_state,
+                                 session_storage);
+    UUID_ = [session_storage.stableIdentifier copy];
+  } else {
+    UUID_ = [[[NSUUID UUID] UUIDString] copy];
+  }
 }
 
 ContentWebState::~ContentWebState() {
@@ -200,7 +211,7 @@ ContentWebState::GetSessionCertificatePolicyCache() {
 }
 
 CRWSessionStorage* ContentWebState::BuildSessionStorage() {
-  return [[CRWSessionStorage alloc] init];
+  return BuildContentSessionStorage(this, navigation_manager_.get());
 }
 
 void ContentWebState::LoadData(NSData* data,
