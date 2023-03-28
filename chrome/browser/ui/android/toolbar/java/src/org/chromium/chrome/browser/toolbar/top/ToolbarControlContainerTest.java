@@ -23,12 +23,15 @@ import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.metrics.UmaRecorderHolder;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplierImpl;
+import org.chromium.base.supplier.OneshotSupplierImpl;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.JniMocker;
 import org.chromium.cc.input.BrowserControlsState;
 import org.chromium.chrome.browser.browser_controls.BrowserStateBrowserControlsVisibilityDelegate;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.chrome.browser.layouts.LayoutStateProvider;
+import org.chromium.chrome.browser.layouts.LayoutType;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.toolbar.ToolbarFeatures;
 import org.chromium.chrome.browser.toolbar.top.CaptureReadinessResult.TopToolbarAllowCaptureReason;
@@ -61,6 +64,8 @@ public class ToolbarControlContainerTest {
     private Toolbar mToolbar;
     @Mock
     private Tab mTab;
+    @Mock
+    private LayoutStateProvider mLayoutStateProvider;
 
     private final Supplier<Tab> mTabSupplier = () -> mTab;
     private final ObservableSupplierImpl<Boolean> mCompositorInMotionSupplier =
@@ -76,6 +81,8 @@ public class ToolbarControlContainerTest {
     private boolean mHasTestConstraintsOverride;
     private final ObservableSupplierImpl<Integer> mConstraintsSupplier =
             new ObservableSupplierImpl<>();
+    private final OneshotSupplierImpl<LayoutStateProvider> mLayoutStateProviderSupplier =
+            new OneshotSupplierImpl<>();
 
     /**
      * Returns an initialized ObservableSupplier<Boolean>, otherwise not possible to init inline.
@@ -99,7 +106,7 @@ public class ToolbarControlContainerTest {
     private void initAdapter(ToolbarViewResourceAdapter adapter) {
         adapter.setPostInitializationDependencies(mToolbar, mConstraintsSupplier, mTabSupplier,
                 mCompositorInMotionSupplier, mBrowserStateBrowserControlsVisibilityDelegate,
-                mIsVisibleSupplier);
+                mIsVisibleSupplier, mLayoutStateProviderSupplier);
         // The adapter may observe some of these already, which will post events.
         ShadowLooper.idleMainLooper();
         // The initial addObserver triggers an event that we don't care about. Reset count.
@@ -383,9 +390,7 @@ public class ToolbarControlContainerTest {
 
     @Test
     public void testIsDirty_ConstraintsIgnoredOnNativePage() {
-        ToolbarViewResourceAdapter adapter =
-                new ToolbarViewResourceAdapter(mToolbarContainer, false);
-        initAdapter(adapter);
+        ToolbarViewResourceAdapter adapter = makeAndInitAdapter();
         Mockito.when(mToolbar.isReadyForTextureCapture())
                 .thenReturn(CaptureReadinessResult.readyWithSnapshotDifference(
                         ToolbarSnapshotDifference.URL_TEXT));
@@ -397,9 +402,7 @@ public class ToolbarControlContainerTest {
 
     @Test
     public void testInMotion_viewNotVisible() {
-        ToolbarViewResourceAdapter adapter =
-                new ToolbarViewResourceAdapter(mToolbarContainer, false);
-        initAdapter(adapter);
+        ToolbarViewResourceAdapter adapter = makeAndInitAdapter();
         Mockito.doReturn(CaptureReadinessResult.readyWithSnapshotDifference(
                                  ToolbarSnapshotDifference.URL_TEXT))
                 .when(mToolbar)
@@ -407,5 +410,27 @@ public class ToolbarControlContainerTest {
         mIsVisible = false;
 
         changeInMotion(true, false);
+    }
+
+    @Test
+    public void testIsDirty_InMotionAndToolbarSwipe() {
+        ToolbarViewResourceAdapter adapter = makeAndInitAdapter();
+        changeInMotion(true, false);
+        Mockito.doReturn(CaptureReadinessResult.readyWithSnapshotDifference(
+                                 ToolbarSnapshotDifference.URL_TEXT))
+                .when(mToolbar)
+                .isReadyForTextureCapture();
+        adapter.forceInvalidate();
+        Mockito.doReturn(LayoutType.BROWSING).when(mLayoutStateProvider).getActiveLayoutType();
+        mLayoutStateProviderSupplier.set(mLayoutStateProvider);
+        // The supplier posts the notification so idle to let it through.
+        ShadowLooper.idleMainLooper();
+
+        Assert.assertFalse(adapter.isDirty());
+
+        // TOOLBAR_SWIPE should bypass the in motion check and return dirty.
+        Mockito.doReturn(LayoutType.TOOLBAR_SWIPE).when(mLayoutStateProvider).getActiveLayoutType();
+
+        Assert.assertTrue(adapter.isDirty());
     }
 }

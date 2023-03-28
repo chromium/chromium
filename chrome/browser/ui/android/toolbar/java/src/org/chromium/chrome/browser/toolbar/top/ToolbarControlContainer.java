@@ -30,9 +30,12 @@ import org.chromium.base.Callback;
 import org.chromium.base.TraceEvent;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.supplier.ObservableSupplier;
+import org.chromium.base.supplier.OneshotSupplier;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.browser.browser_controls.BrowserStateBrowserControlsVisibilityDelegate;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.chrome.browser.layouts.LayoutStateProvider;
+import org.chromium.chrome.browser.layouts.LayoutType;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tasks.tab_management.TabUiThemeUtil;
 import org.chromium.chrome.browser.toolbar.ConstraintsChecker;
@@ -135,18 +138,21 @@ public class ToolbarControlContainer extends OptimizedFrameLayout implements Con
      * @param compositorInMotionSupplier Whether there is an ongoing touch or gesture.
      * @param browserStateBrowserControlsVisibilityDelegate Used to keep controls locked when
      *        captures are stale and not able to be taken.
+     * @param layoutStateProvider Used to check the current layout type.
      */
     public void setPostInitializationDependencies(Toolbar toolbar, boolean isIncognito,
             ObservableSupplier<Integer> constraintsSupplier, Supplier<Tab> tabSupplier,
             ObservableSupplier<Boolean> compositorInMotionSupplier,
             BrowserStateBrowserControlsVisibilityDelegate
-                    browserStateBrowserControlsVisibilityDelegate) {
+                    browserStateBrowserControlsVisibilityDelegate,
+            OneshotSupplier<LayoutStateProvider> layoutStateProviderSupplier) {
         mToolbar = toolbar;
 
         BooleanSupplier isVisible = () -> this.getVisibility() == View.VISIBLE;
         mToolbarContainer.setPostInitializationDependencies(mToolbar, constraintsSupplier,
                 tabSupplier, compositorInMotionSupplier,
-                browserStateBrowserControlsVisibilityDelegate, isVisible);
+                browserStateBrowserControlsVisibilityDelegate, isVisible,
+                layoutStateProviderSupplier);
 
         View toolbarView = findViewById(R.id.toolbar);
         assert toolbarView != null;
@@ -242,12 +248,13 @@ public class ToolbarControlContainer extends OptimizedFrameLayout implements Con
                 ObservableSupplier<Boolean> compositorInMotionSupplier,
                 BrowserStateBrowserControlsVisibilityDelegate
                         browserStateBrowserControlsVisibilityDelegate,
-                BooleanSupplier isVisible) {
+                BooleanSupplier isVisible,
+                OneshotSupplier<LayoutStateProvider> layoutStateProviderSupplier) {
             ToolbarViewResourceAdapter adapter =
                     ((ToolbarViewResourceAdapter) getResourceAdapter());
             adapter.setPostInitializationDependencies(toolbar, constraintsSupplier, tabSupplier,
                     compositorInMotionSupplier, browserStateBrowserControlsVisibilityDelegate,
-                    isVisible);
+                    isVisible, layoutStateProviderSupplier);
         }
 
         @Override
@@ -294,6 +301,8 @@ public class ToolbarControlContainer extends OptimizedFrameLayout implements Con
                 mBrowserStateBrowserControlsVisibilityDelegate;
         @Nullable
         private BooleanSupplier mControlContainerIsVisibleSupplier;
+        @Nullable
+        private LayoutStateProvider mLayoutStateProvider;
 
         private int mControlsToken = TokenHolder.INVALID_TOKEN;
 
@@ -312,13 +321,15 @@ public class ToolbarControlContainer extends OptimizedFrameLayout implements Con
          * @param browserStateBrowserControlsVisibilityDelegate Used to keep controls locked when
          *        captures are stale and not able to be taken.
          * @param controlContainerIsVisibleSupplier Whether the toolbar is visible.
+         * @param layoutStateProvider Used to check the current layout type.
          */
         public void setPostInitializationDependencies(Toolbar toolbar,
                 ObservableSupplier<Integer> constraintsSupplier, Supplier<Tab> tabSupplier,
                 ObservableSupplier<Boolean> compositorInMotionSupplier,
                 BrowserStateBrowserControlsVisibilityDelegate
                         browserStateBrowserControlsVisibilityDelegate,
-                BooleanSupplier controlContainerIsVisibleSupplier) {
+                BooleanSupplier controlContainerIsVisibleSupplier,
+                OneshotSupplier<LayoutStateProvider> layoutStateProviderSupplier) {
             assert mToolbar == null;
             mToolbar = toolbar;
             mTabStripHeightPx = mToolbar.getTabStripHeight();
@@ -335,6 +346,8 @@ public class ToolbarControlContainer extends OptimizedFrameLayout implements Con
             mBrowserStateBrowserControlsVisibilityDelegate =
                     browserStateBrowserControlsVisibilityDelegate;
             mControlContainerIsVisibleSupplier = controlContainerIsVisibleSupplier;
+            layoutStateProviderSupplier.onAvailable(
+                    (layoutStateProvider) -> mLayoutStateProvider = layoutStateProvider);
         }
 
         /**
@@ -353,7 +366,9 @@ public class ToolbarControlContainer extends OptimizedFrameLayout implements Con
                 return false;
             }
 
-            if (ToolbarFeatures.shouldSuppressCaptures()) {
+            final @LayoutType int layoutType = getCurrentLayoutType();
+            if (ToolbarFeatures.shouldSuppressCaptures()
+                    && layoutType != LayoutType.TOOLBAR_SWIPE) {
                 if (mConstraintsObserver != null && mTabSupplier != null) {
                     Tab tab = mTabSupplier.get();
 
@@ -497,6 +512,11 @@ public class ToolbarControlContainer extends OptimizedFrameLayout implements Con
                                     TopToolbarBlockCaptureReason.COMPOSITOR_IN_MOTION));
                 }
             }
+        }
+
+        private @LayoutType int getCurrentLayoutType() {
+            return mLayoutStateProvider == null ? LayoutType.NONE
+                                                : mLayoutStateProvider.getActiveLayoutType();
         }
     }
 
