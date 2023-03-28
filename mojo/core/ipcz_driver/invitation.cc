@@ -89,15 +89,9 @@ IpczDriverHandle CreateTransportForMojoEndpoint(
     return IPCZ_INVALID_DRIVER_HANDLE;
   }
 
-  Channel::Endpoint channel_endpoint;
-  if (endpoint.type == MOJO_INVITATION_TRANSPORT_TYPE_CHANNEL_SERVER) {
-    channel_endpoint = PlatformChannelServerEndpoint(std::move(handle));
-  } else {
-    channel_endpoint = PlatformChannelEndpoint(std::move(handle));
-  }
   auto transport = base::MakeRefCounted<Transport>(
-      endpoint_types, std::move(channel_endpoint), std::move(remote_process),
-      is_remote_process_untrusted);
+      endpoint_types, PlatformChannelEndpoint(std::move(handle)),
+      std::move(remote_process), is_remote_process_untrusted);
   transport->SetErrorHandler(error_handler, error_handler_context);
   transport->set_leak_channel_on_shutdown(options.leak_channel_on_shutdown);
   transport->set_is_peer_trusted(options.is_peer_trusted);

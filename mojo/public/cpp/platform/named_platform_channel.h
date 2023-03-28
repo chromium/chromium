@@ -87,8 +87,8 @@ class COMPONENT_EXPORT(MOJO_CPP_PLATFORM) NamedPlatformChannel {
   // named pipe server; on POSIX it's a bound, listening domain socket. In each
   // case it should accept a single new connection.
   //
-  // Use the handle to send or receive an invitation, with the endpoint type as
-  // |MOJO_INVITATION_TRANSPORT_TYPE_CHANNEL_SERVER|.
+  // Use with PlatformChannelServer to wait for a new connection, yielding a
+  // PlatformChannelEndpoint that is usable with the Mojo invitations API.
   [[nodiscard]] PlatformChannelServerEndpoint TakeServerEndpoint() {
     return std::move(server_endpoint_);
   }
