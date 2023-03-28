@@ -31290,6 +31290,15 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="Signin_Signin_FromAccountConsistencyService">
+  <owner>jlebel@google.com</owner>
+  <owner>chrome-signin-team@chromium.org</owner>
+  <description>
+    Recorded on sign in start from access point
+    signin_metrics::AccessPoint::ACCESS_POINT_ACCOUNT_CONSISTENCY_SERVICE.
+  </description>
+</action>
+
 <action name="Signin_Signin_FromAppsPageLink">
   <obsolete>
     Deprecated as the apps page no longer has a sign-in link/promo.
@@ -31516,6 +31525,15 @@ should be able to be added at any place in this file.
   <description>
     Recorded on sign in start from access point
     signin_metrics::AccessPoint::ACCESS_POINT_READING_LIST.
+  </description>
+</action>
+
+<action name="Signin_Signin_FromReauthInfoBar">
+  <owner>jlebel@google.com</owner>
+  <owner>chrome-signin-team@chromium.org</owner>
+  <description>
+    Recorded on sign in start from access point
+    signin_metrics::AccessPoint::ACCESS_POINT_REAUTH_INFO_BAR.
   </description>
 </action>
 

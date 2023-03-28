@@ -94608,6 +94608,8 @@ https://www.dmtf.org/sites/default/files/standards/documents/DSP0134_2.7.1.pdf
   <int value="45" label="'For You' First Run Experience on Desktop"/>
   <int value="46" label="Creator Feed Follow Button on Android only"/>
   <int value="47" label="Reading list"/>
+  <int value="48" label="Reauth info bar"/>
+  <int value="49" label="Account consistency service"/>
 </enum>
 
 <enum name="SigninAccountReconcilorState">

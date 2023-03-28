@@ -164,6 +164,10 @@ class SigninMetricsTest : public ::testing::Test {
         return "CreatorFeedFollow";
       case AccessPoint::ACCESS_POINT_READING_LIST:
         return "ReadingList";
+      case AccessPoint::ACCESS_POINT_REAUTH_INFO_BAR:
+        return "ReauthInfoBar";
+      case AccessPoint::ACCESS_POINT_ACCOUNT_CONSISTENCY_SERVICE:
+        return "AccountConsistencyService";
       case AccessPoint::ACCESS_POINT_MAX:
         NOTREACHED();
         return "";
