@@ -80,6 +80,10 @@
 #endif  // BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) ||
         // BUILDFLAG(IS_WIN)
 
+#if !BUILDFLAG(IS_ANDROID)
+#include "chrome/browser/webauthn/passkey_model_factory.h"
+#endif  // !BUILDFLAG(IS_ANDROID)
+
 namespace {
 
 std::unique_ptr<KeyedService> BuildSyncService(
@@ -235,6 +239,9 @@ SyncServiceFactory::SyncServiceFactory()
   DependsOn(HistoryServiceFactory::GetInstance());
   DependsOn(IdentityManagerFactory::GetInstance());
   DependsOn(ModelTypeStoreServiceFactory::GetInstance());
+#if !BUILDFLAG(IS_ANDROID)
+  DependsOn(PasskeyModelFactory::GetInstance());
+#endif  // !BUILDFLAG(IS_ANDROID)
   DependsOn(PasswordStoreFactory::GetInstance());
   DependsOn(PowerBookmarkServiceFactory::GetInstance());
   DependsOn(SecurityEventRecorderFactory::GetInstance());

@@ -4332,6 +4332,8 @@ static_library("browser") {
       "webauthn/local_credential_management.h",
       "webauthn/observable_authenticator_list.cc",
       "webauthn/observable_authenticator_list.h",
+      "webauthn/passkey_model_factory.cc",
+      "webauthn/passkey_model_factory.h",
       "webauthn/webauthn_switches.cc",
       "webauthn/webauthn_switches.h",
     ]
@@ -4425,6 +4427,7 @@ static_library("browser") {
       "//components/user_notes/interfaces",
       "//components/user_notes/storage",
       "//components/web_modal",
+      "//components/webauthn/core/browser",
       "//courgette:courgette_lib",
       "//services/device/public/cpp/hid",
       "//third_party/sqlite",

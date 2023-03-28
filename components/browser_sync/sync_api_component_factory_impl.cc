@@ -483,6 +483,18 @@ SyncApiComponentFactoryImpl::CreateCommonDataTypeControllers(
         CreateForwardingControllerDelegate(syncer::USER_CONSENTS)));
   }
 
+#if !BUILDFLAG(IS_ANDROID) || !BUILDFLAG(IS_IOS)
+  if (base::FeatureList::IsEnabled(syncer::kSyncWebauthnCredentials) &&
+      !disabled_types.Has(syncer::WEBAUTHN_CREDENTIAL)) {
+    controllers.push_back(std::make_unique<ModelTypeController>(
+        syncer::WEBAUTHN_CREDENTIAL,
+        /*delegate_for_full_sync_mode=*/
+        CreateForwardingControllerDelegate(syncer::WEBAUTHN_CREDENTIAL),
+        /*delegate_for_transport_mode=*/
+        CreateForwardingControllerDelegate(syncer::WEBAUTHN_CREDENTIAL)));
+  }
+#endif
+
   return controllers;
 }
 

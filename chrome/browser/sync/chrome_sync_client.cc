@@ -133,6 +133,11 @@
 #endif  // BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) ||
         // BUILDFLAG(IS_WIN)
 
+#if !BUILDFLAG(IS_ANDROID)
+#include "chrome/browser/webauthn/passkey_model_factory.h"
+#include "components/webauthn/core/browser/passkey_model.h"
+#endif  // !BUILDFLAG(IS_ANDROID)
+
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "ash/components/arc/arc_util.h"
 #include "ash/constants/ash_features.h"
@@ -707,6 +712,13 @@ ChromeSyncClient::GetControllerDelegateForModelType(syncer::ModelType type) {
           ->GetControllerDelegate();
     }
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS)
+#if !BUILDFLAG(IS_ANDROID)
+    case syncer::WEBAUTHN_CREDENTIAL: {
+      DCHECK(base::FeatureList::IsEnabled(syncer::kSyncWebauthnCredentials));
+      return PasskeyModelFactory::GetForProfile(profile_)
+          ->GetModelTypeControllerDelegate();
+    }
+#endif  //  !BUILDFLAG(IS_ANDROID)
     // We don't exercise this function for certain datatypes, because their
     // controllers get the delegate elsewhere.
     case syncer::AUTOFILL:

@@ -188,6 +188,11 @@ BASE_DECLARE_FEATURE(kSyncPollImmediatelyOnEveryStartup);
 BASE_DECLARE_FEATURE(kIndicateAccountStorageErrorInAccountCell);
 #endif  // BUILDFLAG(IS_IOS)
 
+#if !BUILDFLAG(IS_ANDROID) || !BUILDFLAG(IS_IOS)
+// Enables syncing the WEBAUTHN_CREDENTIAL data type.
+BASE_DECLARE_FEATURE(kSyncWebauthnCredentials);
+#endif  // !BUILDFLAG(IS_ANDROID) || !BUILDFLAG(IS_IOS)
+
 }  // namespace syncer
 
 #endif  // COMPONENTS_SYNC_BASE_FEATURES_H_
