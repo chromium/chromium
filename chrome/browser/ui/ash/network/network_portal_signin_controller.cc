@@ -144,19 +144,19 @@ NetworkPortalSigninController::GetSigninMode() const {
     return SigninMode::kNormalTab;
   }
 
-  IncognitoModePrefs::Availability availability;
+  policy::IncognitoModeAvailability availability;
   IncognitoModePrefs::IntToAvailability(
       profile->GetPrefs()->GetInteger(
           policy::policy_prefs::kIncognitoModeAvailability),
       &availability);
-  if (availability == IncognitoModePrefs::Availability::kDisabled) {
+  if (availability == policy::IncognitoModeAvailability::kDisabled) {
     // Use a dialog to prevent navigation and use an OTR profile due to
     // Incognito browsing disabled by policy preference.
     return SigninMode::kIncognitoDialogDisabled;
   }
 
   if (IncognitoModePrefs::GetAvailability(profile->GetPrefs()) ==
-      IncognitoModePrefs::Availability::kDisabled) {
+      policy::IncognitoModeAvailability::kDisabled) {
     // Use a dialog to prevent navigation and use an OTR profile due to
     // Incognito browsing disabled by parental controls.
     return SigninMode::kIncognitoDialogParental;

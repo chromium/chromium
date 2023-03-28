@@ -152,7 +152,7 @@ void SupervisedUserPrefStore::OnNewSettingsAvailable(
       // restrictions are applied for Unicorn accounts.
       prefs_->SetInteger(
           policy::policy_prefs::kIncognitoModeAvailability,
-          static_cast<int>(IncognitoModePrefs::Availability::kDisabled));
+          static_cast<int>(policy::IncognitoModeAvailability::kDisabled));
     }
 
     {

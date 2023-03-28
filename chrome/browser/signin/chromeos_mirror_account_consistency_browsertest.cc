@@ -140,7 +140,7 @@ IN_PROC_BROWSER_TEST_F(ChromeOsMirrorAccountConsistencyTest,
   PrefService* prefs = profile->GetPrefs();
   prefs->SetInteger(
       policy::policy_prefs::kIncognitoModeAvailability,
-      static_cast<int>(IncognitoModePrefs::Availability::kDisabled));
+      static_cast<int>(policy::IncognitoModeAvailability::kDisabled));
   ASSERT_EQ(1, signin::PROFILE_MODE_INCOGNITO_DISABLED);
 
   // TODO(http://crbug.com/1134144): This test seems to test supervised profiles

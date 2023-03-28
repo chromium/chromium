@@ -59,6 +59,7 @@
 #include "components/feedback/system_logs/system_logs_fetcher.h"
 #include "components/keep_alive_registry/keep_alive_types.h"
 #include "components/keep_alive_registry/scoped_keep_alive.h"
+#include "components/policy/core/common/policy_pref_names.h"
 #include "components/sessions/content/session_tab_helper.h"
 #include "content/public/browser/browser_thread.h"
 #include "google_apis/gaia/gaia_auth_util.h"
@@ -551,16 +552,16 @@ void BrowserServiceLacros::NewWindowWithProfile(
   }
 
   switch (IncognitoModePrefs::GetAvailability(profile->GetPrefs())) {
-    case IncognitoModePrefs::Availability::kEnabled:
+    case policy::IncognitoModeAvailability::kEnabled:
       // Default behavior: both incognito and regular mode are allowed.
       break;
-    case IncognitoModePrefs::Availability::kDisabled:
+    case policy::IncognitoModeAvailability::kDisabled:
       incognito = false;
       break;
-    case IncognitoModePrefs::Availability::kForced:
+    case policy::IncognitoModeAvailability::kForced:
       incognito = true;
       break;
-    case IncognitoModePrefs::Availability::kNumTypes:
+    case policy::IncognitoModeAvailability::kNumTypes:
       NOTREACHED();
       break;
   }

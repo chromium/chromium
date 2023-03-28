@@ -14,6 +14,7 @@
 #include "chrome/test/base/testing_profile.h"
 #include "components/bookmarks/browser/bookmark_model.h"
 #include "components/bookmarks/test/bookmark_test_helpers.h"
+#include "components/policy/core/common/policy_pref_names.h"
 #include "extensions/browser/api_test_utils.h"
 
 namespace windows_util {
@@ -29,7 +30,7 @@ class WindowsUtilUnitTest : public extensions::ExtensionServiceTestBase {
 TEST_F(WindowsUtilUnitTest, ShouldOpenIncognitoWindowIncognitoDisabled) {
   // Incognito disabled.
   IncognitoModePrefs::SetAvailability(
-      profile()->GetPrefs(), IncognitoModePrefs::Availability::kDisabled);
+      profile()->GetPrefs(), policy::IncognitoModeAvailability::kDisabled);
 
   std::string error;
   std::vector<GURL> urls;
@@ -43,7 +44,7 @@ TEST_F(WindowsUtilUnitTest, ShouldOpenIncognitoWindowIncognitoDisabled) {
 TEST_F(WindowsUtilUnitTest, ShouldOpenIncognitoWindowIncognitoForced) {
   // Incognito forced.
   IncognitoModePrefs::SetAvailability(
-      profile()->GetPrefs(), IncognitoModePrefs::Availability::kForced);
+      profile()->GetPrefs(), policy::IncognitoModeAvailability::kForced);
 
   std::string error;
   std::vector<GURL> urls;

@@ -100,7 +100,7 @@ void HeaderModificationDelegateImpl::ProcessRequest(
   incognito_mode_availability =
       incognito_enabled_
           ? incognito_mode_availability
-          : static_cast<int>(IncognitoModePrefs::Availability::kDisabled);
+          : static_cast<int>(policy::IncognitoModeAvailability::kDisabled);
 #endif
 
   FixAccountConsistencyRequestHeader(

@@ -19,6 +19,7 @@
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "components/account_id/account_id.h"
+#include "components/policy/core/common/policy_pref_names.h"
 #include "components/session_manager/core/session_manager.h"
 #include "components/user_manager/fake_user_manager.h"
 #include "components/user_manager/known_user.h"
@@ -122,14 +123,14 @@ IN_PROC_BROWSER_TEST_F(ChromeNewWindowClientBrowserTest, IncognitoDisabled) {
 
   // Disabling incognito mode disables creation of new incognito windows.
   IncognitoModePrefs::SetAvailability(
-      profile->GetPrefs(), IncognitoModePrefs::Availability::kDisabled);
+      profile->GetPrefs(), policy::IncognitoModeAvailability::kDisabled);
   ChromeNewWindowClient::Get()->NewWindow(
       /*incognito=*/true, /*should_trigger_session_restore=*/true);
   EXPECT_EQ(1u, chrome::GetTotalBrowserCount());
 
   // Enabling incognito mode enables creation of new incognito windows.
   IncognitoModePrefs::SetAvailability(
-      profile->GetPrefs(), IncognitoModePrefs::Availability::kEnabled);
+      profile->GetPrefs(), policy::IncognitoModeAvailability::kEnabled);
   ChromeNewWindowClient::Get()->NewWindow(
       /*incognito=*/true, /*should_trigger_session_restore=*/true);
   EXPECT_EQ(2u, chrome::GetTotalBrowserCount());

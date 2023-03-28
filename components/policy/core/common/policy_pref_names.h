@@ -9,6 +9,23 @@
 #include "components/policy/policy_export.h"
 
 namespace policy {
+
+// Possible values for Incognito mode availability. Please, do not change
+// the order of entries since numeric values are exposed to users.
+enum class IncognitoModeAvailability {
+  // Incognito mode enabled. Users may open pages in both Incognito mode and
+  // normal mode (usually the default behaviour).
+  kEnabled = 0,
+  // Incognito mode disabled. Users may not open pages in Incognito mode.
+  // Only normal mode is available for browsing.
+  kDisabled,
+  // Incognito mode forced. Users may open pages *ONLY* in Incognito mode.
+  // Normal mode is not available for browsing.
+  kForced,
+
+  kNumTypes
+};
+
 namespace policy_prefs {
 
 #if BUILDFLAG(IS_WIN)

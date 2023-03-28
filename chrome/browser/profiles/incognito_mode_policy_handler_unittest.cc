@@ -48,7 +48,7 @@ class IncognitoModePolicyHandlerTest
     UpdateProviderPolicy(policy);
   }
 
-  void VerifyValues(IncognitoModePrefs::Availability availability) {
+  void VerifyValues(policy::IncognitoModeAvailability availability) {
     const base::Value* value = nullptr;
     EXPECT_TRUE(store_->GetValue(
         policy::policy_prefs::kIncognitoModeAvailability, &value));
@@ -62,22 +62,22 @@ class IncognitoModePolicyHandlerTest
 TEST_F(IncognitoModePolicyHandlerTest,
        NoObsoletePolicyAndIncognitoEnabled) {
   SetPolicies(INCOGNITO_ENABLED_UNKNOWN,
-              static_cast<int>(IncognitoModePrefs::Availability::kEnabled));
-  VerifyValues(IncognitoModePrefs::Availability::kEnabled);
+              static_cast<int>(policy::IncognitoModeAvailability::kEnabled));
+  VerifyValues(policy::IncognitoModeAvailability::kEnabled);
 }
 
 TEST_F(IncognitoModePolicyHandlerTest,
        NoObsoletePolicyAndIncognitoDisabled) {
   SetPolicies(INCOGNITO_ENABLED_UNKNOWN,
-              static_cast<int>(IncognitoModePrefs::Availability::kDisabled));
-  VerifyValues(IncognitoModePrefs::Availability::kDisabled);
+              static_cast<int>(policy::IncognitoModeAvailability::kDisabled));
+  VerifyValues(policy::IncognitoModeAvailability::kDisabled);
 }
 
 TEST_F(IncognitoModePolicyHandlerTest,
        NoObsoletePolicyAndIncognitoForced) {
   SetPolicies(INCOGNITO_ENABLED_UNKNOWN,
-              static_cast<int>(IncognitoModePrefs::Availability::kForced));
-  VerifyValues(IncognitoModePrefs::Availability::kForced);
+              static_cast<int>(policy::IncognitoModeAvailability::kForced));
+  VerifyValues(policy::IncognitoModeAvailability::kForced);
 }
 
 TEST_F(IncognitoModePolicyHandlerTest,
@@ -94,27 +94,27 @@ TEST_F(IncognitoModePolicyHandlerTest,
 TEST_F(IncognitoModePolicyHandlerTest,
        ObsoletePolicyDoesNotAffectAvailabilityEnabled) {
   SetPolicies(INCOGNITO_ENABLED_FALSE,
-              static_cast<int>(IncognitoModePrefs::Availability::kEnabled));
-  VerifyValues(IncognitoModePrefs::Availability::kEnabled);
+              static_cast<int>(policy::IncognitoModeAvailability::kEnabled));
+  VerifyValues(policy::IncognitoModeAvailability::kEnabled);
 }
 
 TEST_F(IncognitoModePolicyHandlerTest,
        ObsoletePolicyDoesNotAffectAvailabilityForced) {
   SetPolicies(INCOGNITO_ENABLED_TRUE,
-              static_cast<int>(IncognitoModePrefs::Availability::kForced));
-  VerifyValues(IncognitoModePrefs::Availability::kForced);
+              static_cast<int>(policy::IncognitoModeAvailability::kForced));
+  VerifyValues(policy::IncognitoModeAvailability::kForced);
 }
 
 TEST_F(IncognitoModePolicyHandlerTest,
        ObsoletePolicySetsPreferenceToEnabled) {
   SetPolicies(INCOGNITO_ENABLED_TRUE, kIncognitoModeAvailabilityNotSet);
-  VerifyValues(IncognitoModePrefs::Availability::kEnabled);
+  VerifyValues(policy::IncognitoModeAvailability::kEnabled);
 }
 
 TEST_F(IncognitoModePolicyHandlerTest,
        ObsoletePolicySetsPreferenceToDisabled) {
   SetPolicies(INCOGNITO_ENABLED_FALSE, kIncognitoModeAvailabilityNotSet);
-  VerifyValues(IncognitoModePrefs::Availability::kDisabled);
+  VerifyValues(policy::IncognitoModeAvailability::kDisabled);
 }
 
 }  // namespace policy

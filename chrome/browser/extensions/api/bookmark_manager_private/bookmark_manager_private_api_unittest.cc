@@ -15,6 +15,7 @@
 #include "chrome/test/base/testing_profile.h"
 #include "components/bookmarks/browser/bookmark_model.h"
 #include "components/bookmarks/test/bookmark_test_helpers.h"
+#include "components/policy/core/common/policy_pref_names.h"
 #include "extensions/browser/api_test_utils.h"
 
 namespace extensions {
@@ -141,7 +142,7 @@ TEST_F(BookmarkManagerPrivateApiUnitTest,
        RunOpenInNewWindowFunctionIncognitoDisabled) {
   // Incognito disabled.
   IncognitoModePrefs::SetAvailability(
-      profile()->GetPrefs(), IncognitoModePrefs::Availability::kDisabled);
+      profile()->GetPrefs(), policy::IncognitoModeAvailability::kDisabled);
 
   auto new_window_function =
       base::MakeRefCounted<BookmarkManagerPrivateOpenInNewWindowFunction>();
@@ -155,7 +156,7 @@ TEST_F(BookmarkManagerPrivateApiUnitTest,
        RunOpenInNewWindowFunctionIncognitoForced) {
   // Incognito forced.
   IncognitoModePrefs::SetAvailability(
-      profile()->GetPrefs(), IncognitoModePrefs::Availability::kForced);
+      profile()->GetPrefs(), policy::IncognitoModeAvailability::kForced);
 
   auto new_window_function =
       base::MakeRefCounted<BookmarkManagerPrivateOpenInNewWindowFunction>();

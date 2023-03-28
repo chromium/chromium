@@ -76,6 +76,7 @@
 #include "components/account_id/account_id.h"
 #include "components/bookmarks/browser/bookmark_model.h"
 #include "components/bookmarks/test/bookmark_test_helpers.h"
+#include "components/policy/core/common/policy_pref_names.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/web_contents.h"
@@ -1033,7 +1034,7 @@ IN_PROC_BROWSER_TEST_F(AppControllerMainMenuBrowserTest,
   EXPECT_TRUE(BrowserList::GetInstance()->empty());
   // Force incognito mode.
   IncognitoModePrefs::SetAvailability(
-      profile->GetPrefs(), IncognitoModePrefs::Availability::kForced);
+      profile->GetPrefs(), policy::IncognitoModeAvailability::kForced);
   // Simulate click on "New window".
   ui_test_utils::BrowserChangeObserver browser_added_observer(
       nullptr, ui_test_utils::BrowserChangeObserver::ChangeType::kAdded);

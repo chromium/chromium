@@ -28,6 +28,7 @@
 #include "chrome/grit/generated_resources.h"
 #include "chrome/grit/inline_login_resources.h"
 #include "chrome/grit/inline_login_resources_map.h"
+#include "components/policy/core/common/policy_pref_names.h"
 #include "content/public/browser/web_ui.h"
 #include "content/public/browser/web_ui_data_source.h"
 #include "content/public/common/content_switches.h"
@@ -292,7 +293,7 @@ void CreateAndAddWebUIDataSource(Profile* profile) {
   } else {
     bool is_incognito_enabled =
         (IncognitoModePrefs::GetAvailability(profile->GetPrefs()) !=
-         IncognitoModePrefs::Availability::kDisabled);
+         policy::IncognitoModeAvailability::kDisabled);
     int message_id =
         is_incognito_enabled
             ? IDS_ACCOUNT_MANAGER_DIALOG_WELCOME_BODY

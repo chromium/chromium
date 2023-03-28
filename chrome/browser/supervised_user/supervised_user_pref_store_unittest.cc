@@ -147,7 +147,7 @@ TEST_F(SupervisedUserPrefStoreTest, ConfigureSettings) {
   EXPECT_THAT(
       fixture.changed_prefs()->FindIntByDottedPath(
           policy::policy_prefs::kIncognitoModeAvailability),
-      Optional(static_cast<int>(IncognitoModePrefs::Availability::kDisabled)));
+      Optional(static_cast<int>(policy::IncognitoModeAvailability::kDisabled)));
 
   // kSupervisedModeManualHosts does not have a hardcoded value.
   EXPECT_FALSE(fixture.changed_prefs()->FindDictByDottedPath(

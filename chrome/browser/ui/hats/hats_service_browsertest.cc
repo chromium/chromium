@@ -261,8 +261,8 @@ IN_PROC_BROWSER_TEST_F(HatsServiceProbabilityOne, IncognitoModeDisabledNoShow) {
   PrefService* pref_service = browser()->profile()->GetPrefs();
   pref_service->SetInteger(
       policy::policy_prefs::kIncognitoModeAvailability,
-      static_cast<int>(IncognitoModePrefs::Availability::kDisabled));
-  EXPECT_EQ(IncognitoModePrefs::Availability::kDisabled,
+      static_cast<int>(policy::IncognitoModeAvailability::kDisabled));
+  EXPECT_EQ(policy::IncognitoModeAvailability::kDisabled,
             IncognitoModePrefs::GetAvailability(pref_service));
 
   GetHatsService()->LaunchSurvey(kHatsSurveyTriggerSettings);

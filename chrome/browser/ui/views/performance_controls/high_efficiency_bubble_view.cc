@@ -18,6 +18,7 @@
 #include "chrome/grit/chromium_strings.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/grit/google_chrome_strings.h"
+#include "components/policy/core/common/policy_pref_names.h"
 #include "components/signin/public/base/signin_buildflags.h"
 #include "components/strings/grit/components_strings.h"
 #include "ui/base/interaction/element_identifier.h"
@@ -86,7 +87,7 @@ views::BubbleDialogModelHost* HighEfficiencyBubbleView::ShowBubble(
   const bool is_guest = profile->IsGuestSession();
   const bool is_forced_incognito =
       IncognitoModePrefs::GetAvailability(profile->GetPrefs()) ==
-      IncognitoModePrefs::Availability::kForced;
+      policy::IncognitoModeAvailability::kForced;
 
   // Show bubble without Performance Settings Page Link since guest users or
   // forced incognito users are not allowed to navigate to the performance

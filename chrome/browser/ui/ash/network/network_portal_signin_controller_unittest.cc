@@ -22,6 +22,7 @@
 #include "chromeos/ash/components/network/network_state_handler.h"
 #include "chromeos/ash/components/network/proxy/proxy_config_handler.h"
 #include "components/captive_portal/core/captive_portal_detector.h"
+#include "components/policy/core/common/policy_pref_names.h"
 #include "components/prefs/pref_service.h"
 #include "components/proxy_config/proxy_config_dictionary.h"
 #include "components/proxy_config/proxy_config_pref_names.h"
@@ -264,7 +265,7 @@ TEST_F(NetworkPortalSigninControllerTest,
   std::string expected_url = SetProbeUrl(kTestPortalUrl);
   SetNetworkProxy();
   IncognitoModePrefs::SetAvailability(
-      GetPrefs(), IncognitoModePrefs::Availability::kDisabled);
+      GetPrefs(), policy::IncognitoModeAvailability::kDisabled);
   ShowSignin();
   EXPECT_EQ(controller_->dialog_url(), expected_url);
 }

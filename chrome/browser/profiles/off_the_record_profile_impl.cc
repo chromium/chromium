@@ -71,6 +71,7 @@
 #include "components/keyed_service/core/simple_key_map.h"
 #include "components/keyed_service/core/simple_keyed_service_factory.h"
 #include "components/permissions/permission_manager.h"
+#include "components/policy/core/common/policy_pref_names.h"
 #include "components/prefs/json_pref_store.h"
 #include "components/profile_metrics/browser_profile_type.h"
 #include "components/security_interstitials/content/stateful_ssl_host_state_delegate.h"
@@ -199,7 +200,7 @@ void OffTheRecordProfileImpl::Init() {
   // Always crash when incognito is not available.
   CHECK(!IsIncognitoProfile() ||
         IncognitoModePrefs::GetAvailability(profile_->GetPrefs()) !=
-            IncognitoModePrefs::Availability::kDisabled);
+            policy::IncognitoModeAvailability::kDisabled);
 
   TrackZoomLevelsFromParent();
 

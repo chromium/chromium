@@ -21,6 +21,7 @@
 #include "chrome/grit/chromium_strings.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/app_constants/constants.h"
+#include "components/policy/core/common/policy_pref_names.h"
 #include "content/public/browser/context_menu_params.h"
 #include "extensions/browser/extension_prefs.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -153,12 +154,12 @@ bool ExtensionShelfContextMenu::IsCommandIdEnabled(int command_id) const {
       // "Normal" windows are not allowed when incognito is enforced.
       return IncognitoModePrefs::GetAvailability(
                  controller()->profile()->GetPrefs()) !=
-             IncognitoModePrefs::Availability::kForced;
+             policy::IncognitoModeAvailability::kForced;
     case ash::APP_CONTEXT_MENU_NEW_INCOGNITO_WINDOW:
       // Incognito windows are not allowed when incognito is disabled.
       return IncognitoModePrefs::GetAvailability(
                  controller()->profile()->GetPrefs()) !=
-             IncognitoModePrefs::Availability::kDisabled;
+             policy::IncognitoModeAvailability::kDisabled;
     default:
       if (command_id < ash::COMMAND_ID_COUNT)
         return ShelfContextMenu::IsCommandIdEnabled(command_id);

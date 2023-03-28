@@ -16,6 +16,7 @@
 #include "chrome/browser/prefs/incognito_mode_prefs.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser_navigator.h"
+#include "components/policy/core/common/policy_pref_names.h"
 #include "extensions/browser/extension_function.h"
 #include "extensions/browser/extension_function_dispatcher.h"
 #include "extensions/common/constants.h"
@@ -100,23 +101,23 @@ IncognitoResult ShouldOpenIncognitoWindow(Profile* profile,
                                           absl::optional<bool> incognito,
                                           std::vector<GURL>* urls,
                                           std::string* error) {
-  const IncognitoModePrefs::Availability incognito_availability =
+  const policy::IncognitoModeAvailability incognito_availability =
       IncognitoModePrefs::GetAvailability(profile->GetPrefs());
   bool incognito_result = false;
   if (incognito.has_value()) {
     incognito_result = incognito.value();
-    if (incognito_result &&
-        incognito_availability == IncognitoModePrefs::Availability::kDisabled) {
+    if (incognito_result && incognito_availability ==
+                                policy::IncognitoModeAvailability::kDisabled) {
       *error = extensions::tabs_constants::kIncognitoModeIsDisabled;
       return IncognitoResult::kError;
     }
     if (!incognito_result &&
-        incognito_availability == IncognitoModePrefs::Availability::kForced) {
+        incognito_availability == policy::IncognitoModeAvailability::kForced) {
       *error = extensions::tabs_constants::kIncognitoModeIsForced;
       return IncognitoResult::kError;
     }
   } else if (incognito_availability ==
-             IncognitoModePrefs::Availability::kForced) {
+             policy::IncognitoModeAvailability::kForced) {
     // If incognito argument is not specified explicitly, we default to
     // incognito when forced so by policy.
     incognito_result = true;

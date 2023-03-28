@@ -38,6 +38,7 @@
 #include "chromeos/startup/browser_params_proxy.h"
 #include "components/keep_alive_registry/keep_alive_types.h"
 #include "components/keep_alive_registry/scoped_keep_alive.h"
+#include "components/policy/core/common/policy_pref_names.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -436,7 +437,7 @@ IN_PROC_BROWSER_TEST_F(BrowserServiceLacrosBrowserTest,
       ProfileManager::GetPrimaryUserProfilePath());
   // Disallow incognito.
   IncognitoModePrefs::SetAvailability(
-      main_profile->GetPrefs(), IncognitoModePrefs::Availability::kDisabled);
+      main_profile->GetPrefs(), policy::IncognitoModeAvailability::kDisabled);
   // Request a new incognito window.
   NewWindowSync(/*incognito=*/true, /*should_trigger_session_restore=*/false);
   // A regular window opens instead.
