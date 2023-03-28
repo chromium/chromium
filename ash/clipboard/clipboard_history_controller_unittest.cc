@@ -36,6 +36,7 @@
 #include "ui/views/controls/button/label_button.h"
 
 namespace ash {
+using crosapi::mojom::ClipboardHistoryControllerShowSource;
 
 namespace {
 
@@ -84,6 +85,18 @@ void ExpectHistoryItemImageMatchesBitmap(const ClipboardHistoryItem& item,
   ASSERT_FALSE(image.value().IsEmpty());
   EXPECT_TRUE(gfx::BitmapsAreEqual(*image.value().GetImage().ToSkBitmap(),
                                    expected_bitmap));
+}
+
+std::vector<ClipboardHistoryControllerShowSource>
+GetClipboardHistoryShowSources() {
+  std::vector<ClipboardHistoryControllerShowSource> sources;
+  for (int i =
+           static_cast<int>(ClipboardHistoryControllerShowSource::kMinValue);
+       i <= static_cast<int>(ClipboardHistoryControllerShowSource::kMaxValue);
+       ++i) {
+    sources.push_back(static_cast<ClipboardHistoryControllerShowSource>(i));
+  }
+  return sources;
 }
 
 }  // namespace
@@ -233,84 +246,6 @@ TEST_F(ClipboardHistoryControllerTest, ShowMenu) {
   EXPECT_FALSE(GetClipboardHistoryController()->IsMenuShowing());
   histogram_tester.ExpectTotalCount(
       "Ash.ClipboardHistory.ContextMenu.UserJourneyTime", 2);
-}
-
-// Tests that `ShowMenu()` returns whether the menu was shown successfully.
-TEST_F(ClipboardHistoryControllerTest, ShowMenuReturnsSuccess) {
-  // Try to show the menu without populating the clipboard. The menu should not
-  // show.
-  EXPECT_FALSE(GetClipboardHistoryController()->ShowMenu(
-      gfx::Rect(), ui::MenuSourceType::MENU_SOURCE_NONE,
-      crosapi::mojom::ClipboardHistoryControllerShowSource::kUnknown));
-  EXPECT_FALSE(GetClipboardHistoryController()->IsMenuShowing());
-
-  // Copy something to enable the clipboard history menu.
-  WriteTextToClipboardAndConfirm(u"test");
-
-  // Try to show the menu with the screen locked. The menu should not show.
-  auto* session_controller = Shell::Get()->session_controller();
-  session_controller->LockScreen();
-  GetSessionControllerClient()->FlushForTest();
-  EXPECT_TRUE(session_controller->IsScreenLocked());
-
-  EXPECT_FALSE(GetClipboardHistoryController()->ShowMenu(
-      gfx::Rect(), ui::MenuSourceType::MENU_SOURCE_NONE,
-      crosapi::mojom::ClipboardHistoryControllerShowSource::kUnknown));
-  EXPECT_FALSE(GetClipboardHistoryController()->IsMenuShowing());
-
-  session_controller->HideLockScreen();
-  GetSessionControllerClient()->FlushForTest();
-  EXPECT_FALSE(session_controller->IsScreenLocked());
-
-  // Show the menu.
-  EXPECT_TRUE(GetClipboardHistoryController()->ShowMenu(
-      gfx::Rect(), ui::MenuSourceType::MENU_SOURCE_NONE,
-      crosapi::mojom::ClipboardHistoryControllerShowSource::kUnknown));
-  EXPECT_TRUE(GetClipboardHistoryController()->IsMenuShowing());
-
-  // Try to show the menu again without closing the active menu. The menu should
-  // still be showing, but this attempt should fail.
-  EXPECT_FALSE(GetClipboardHistoryController()->ShowMenu(
-      gfx::Rect(), ui::MenuSourceType::MENU_SOURCE_NONE,
-      crosapi::mojom::ClipboardHistoryControllerShowSource::kUnknown));
-  EXPECT_TRUE(GetClipboardHistoryController()->IsMenuShowing());
-}
-
-// Tests that the client-provided `OnMenuClosingCallback` runs before the menu
-// closes.
-TEST_F(ClipboardHistoryControllerTest, OnMenuClosingCallback) {
-  base::test::RepeatingTestFuture<bool> on_menu_closing_future;
-  // Copy something to enable the clipboard history menu.
-  WriteTextToClipboardAndConfirm(u"test");
-
-  gfx::Rect test_window_rect(100, 100, 100, 100);
-  std::unique_ptr<aura::Window> window(CreateTestWindow(test_window_rect));
-
-  // Show the menu with an `OnMenuClosingCallback`.
-  GetClipboardHistoryController()->ShowMenu(
-      test_window_rect, ui::MenuSourceType::MENU_SOURCE_NONE,
-      crosapi::mojom::ClipboardHistoryControllerShowSource::kUnknown,
-      on_menu_closing_future.GetCallback());
-  EXPECT_TRUE(GetClipboardHistoryController()->IsMenuShowing());
-  EXPECT_TRUE(on_menu_closing_future.IsEmpty());
-
-  // Hide the menu. The callback should indicate that nothing will be pasted.
-  PressAndReleaseKey(ui::VKEY_ESCAPE);
-  EXPECT_FALSE(GetClipboardHistoryController()->IsMenuShowing());
-  EXPECT_FALSE(on_menu_closing_future.Take());
-
-  // Show the menu again.
-  GetClipboardHistoryController()->ShowMenu(
-      test_window_rect, ui::MenuSourceType::MENU_SOURCE_NONE,
-      crosapi::mojom::ClipboardHistoryControllerShowSource::kUnknown,
-      on_menu_closing_future.GetCallback());
-  EXPECT_TRUE(GetClipboardHistoryController()->IsMenuShowing());
-  EXPECT_TRUE(on_menu_closing_future.IsEmpty());
-
-  // Toggle the menu closed. The callback should indicate a pending paste.
-  PressAndReleaseKey(ui::VKEY_V, ui::EF_COMMAND_DOWN);
-  EXPECT_FALSE(GetClipboardHistoryController()->IsMenuShowing());
-  EXPECT_TRUE(on_menu_closing_future.Take());
 }
 
 // Verifies that the clipboard history is disabled in some user modes, which
@@ -553,6 +488,112 @@ TEST_F(ClipboardHistoryControllerTest, LockedScreenImage) {
   ExpectHistoryItemImageMatchesBitmap(result[0], test_bitmap);
 
   TestEnteringLockScreen();
+}
+
+class ClipboardHistoryControllerShowSourceTest
+    : public ClipboardHistoryControllerTest,
+      public testing::WithParamInterface<ClipboardHistoryControllerShowSource> {
+ public:
+  ClipboardHistoryControllerShowSource GetSource() const { return GetParam(); }
+};
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         ClipboardHistoryControllerShowSourceTest,
+                         testing::ValuesIn(GetClipboardHistoryShowSources()));
+
+// Tests that `ShowMenu()` returns whether the menu was shown successfully.
+TEST_P(ClipboardHistoryControllerShowSourceTest, ShowMenuReturnsSuccess) {
+  base::HistogramTester histogram_tester;
+
+  // Try to show the menu without populating the clipboard. The menu should not
+  // show.
+  EXPECT_FALSE(GetClipboardHistoryController()->ShowMenu(
+      gfx::Rect(), ui::MenuSourceType::MENU_SOURCE_NONE, GetSource()));
+  EXPECT_FALSE(GetClipboardHistoryController()->IsMenuShowing());
+  histogram_tester.ExpectTotalCount("Ash.ClipboardHistory.ContextMenu.ShowMenu",
+                                    /*expected_count=*/0);
+
+  // Copy something to enable the clipboard history menu.
+  WriteTextToClipboardAndConfirm(u"test");
+
+  // Try to show the menu with the screen locked. The menu should not show.
+  auto* session_controller = Shell::Get()->session_controller();
+  session_controller->LockScreen();
+  GetSessionControllerClient()->FlushForTest();
+  EXPECT_TRUE(session_controller->IsScreenLocked());
+
+  EXPECT_FALSE(GetClipboardHistoryController()->ShowMenu(
+      gfx::Rect(), ui::MenuSourceType::MENU_SOURCE_NONE, GetSource()));
+  EXPECT_FALSE(GetClipboardHistoryController()->IsMenuShowing());
+  histogram_tester.ExpectTotalCount("Ash.ClipboardHistory.ContextMenu.ShowMenu",
+                                    /*expected_count=*/0);
+
+  session_controller->HideLockScreen();
+  GetSessionControllerClient()->FlushForTest();
+  EXPECT_FALSE(session_controller->IsScreenLocked());
+
+  // Show the menu.
+  EXPECT_TRUE(GetClipboardHistoryController()->ShowMenu(
+      gfx::Rect(), ui::MenuSourceType::MENU_SOURCE_NONE, GetSource()));
+  EXPECT_TRUE(GetClipboardHistoryController()->IsMenuShowing());
+  histogram_tester.ExpectUniqueSample(
+      "Ash.ClipboardHistory.ContextMenu.ShowMenu", GetSource(),
+      /*expected_bucket_count=*/1);
+
+  // Try to show the menu again without closing the active menu. The menu should
+  // still be showing, but this attempt should fail.
+  EXPECT_FALSE(GetClipboardHistoryController()->ShowMenu(
+      gfx::Rect(), ui::MenuSourceType::MENU_SOURCE_NONE, GetSource()));
+  EXPECT_TRUE(GetClipboardHistoryController()->IsMenuShowing());
+  histogram_tester.ExpectUniqueSample(
+      "Ash.ClipboardHistory.ContextMenu.ShowMenu", GetSource(),
+      /*expected_bucket_count=*/1);
+}
+
+// Tests that the client-provided `OnMenuClosingCallback` runs before the menu
+// closes.
+TEST_P(ClipboardHistoryControllerShowSourceTest, OnMenuClosingCallback) {
+  base::test::RepeatingTestFuture<bool> on_menu_closing_future;
+  base::HistogramTester histogram_tester;
+
+  // Copy something to enable the clipboard history menu.
+  WriteTextToClipboardAndConfirm(u"test");
+
+  gfx::Rect test_window_rect(100, 100, 100, 100);
+  std::unique_ptr<aura::Window> window(CreateTestWindow(test_window_rect));
+
+  // Show the menu with an `OnMenuClosingCallback`.
+  GetClipboardHistoryController()->ShowMenu(
+      test_window_rect, ui::MenuSourceType::MENU_SOURCE_NONE, GetSource(),
+      on_menu_closing_future.GetCallback());
+  EXPECT_TRUE(GetClipboardHistoryController()->IsMenuShowing());
+  EXPECT_TRUE(on_menu_closing_future.IsEmpty());
+
+  // Hide the menu. The callback should indicate that nothing will be pasted.
+  PressAndReleaseKey(ui::VKEY_ESCAPE);
+  EXPECT_FALSE(GetClipboardHistoryController()->IsMenuShowing());
+  EXPECT_FALSE(on_menu_closing_future.Take());
+
+  FlushMessageLoop();
+  histogram_tester.ExpectTotalCount("Ash.ClipboardHistory.PasteSource",
+                                    /*expected_count=*/0);
+
+  // Show the menu again.
+  GetClipboardHistoryController()->ShowMenu(
+      test_window_rect, ui::MenuSourceType::MENU_SOURCE_NONE, GetSource(),
+      on_menu_closing_future.GetCallback());
+  EXPECT_TRUE(GetClipboardHistoryController()->IsMenuShowing());
+  EXPECT_TRUE(on_menu_closing_future.IsEmpty());
+
+  // Toggle the menu closed. The callback should indicate a pending paste.
+  PressAndReleaseKey(ui::VKEY_V, ui::EF_COMMAND_DOWN);
+  EXPECT_FALSE(GetClipboardHistoryController()->IsMenuShowing());
+  EXPECT_TRUE(on_menu_closing_future.Take());
+
+  FlushMessageLoop();
+  histogram_tester.ExpectUniqueSample("Ash.ClipboardHistory.PasteSource",
+                                      GetSource(),
+                                      /*expected_bucket_count=*/1);
 }
 
 // Base class for tests of Clipboard History parameterized by whether the

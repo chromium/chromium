@@ -190,13 +190,16 @@ class ASH_EXPORT ClipboardHistoryControllerImpl
   // Paste the clipboard data of the menu item specified by `command_id`.
   void PasteMenuItemData(int command_id, ClipboardHistoryPasteType paste_type);
 
-  // Pastes the specified clipboard history item, if |intended_window| matches
-  // the active window. `paste_type` indicates the source of the paste for
+  // Pastes the specified clipboard history item, if `intended_window` matches
+  // the active window. `paste_type` indicates the mode of paste execution for
   // metrics tracking as well as whether plain text should be pasted instead of
-  // the full, rich-text clipboard data.
-  void PasteClipboardHistoryItem(aura::Window* intended_window,
-                                 ClipboardHistoryItem item,
-                                 ClipboardHistoryPasteType paste_type);
+  // the full, rich-text clipboard data. `paste_source` indicates how the user
+  // triggered the menu from which `item` was selected.
+  void PasteClipboardHistoryItem(
+      aura::Window* intended_window,
+      ClipboardHistoryItem item,
+      ClipboardHistoryPasteType paste_type,
+      crosapi::mojom::ClipboardHistoryControllerShowSource paste_source);
 
   // Delete the menu item being selected and its corresponding data. If no item
   // is selected, do nothing.
@@ -235,6 +238,9 @@ class ASH_EXPORT ClipboardHistoryControllerImpl
   std::unique_ptr<MenuDelegate> menu_delegate_;
   // Controller that shows contextual nudges for multipaste.
   std::unique_ptr<ClipboardNudgeController> nudge_controller_;
+
+  // How the user last caused `context_menu_` to show.
+  crosapi::mojom::ClipboardHistoryControllerShowSource last_menu_source_;
 
   // Whether a paste is currently being performed.
   bool currently_pasting_ = false;

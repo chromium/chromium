@@ -309,6 +309,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Ash.ClipboardHistory.PasteSource"
+    enum="ClipboardHistoryTriggerType" expires_after="2023-08-27">
+  <owner>ckincaid@chromium.org</owner>
+  <owner>multipaste@google.com</owner>
+  <summary>
+    The way a user made the clipboard history menu show before selecting an item
+    from that menu to paste. Recorded when an item is pasted from clipboard
+    history.
+  </summary>
+</histogram>
+
 <histogram name="Ash.ClipboardHistory.PasteType"
     enum="ClipboardHistoryPasteType" expires_after="2023-08-27">
   <owner>ckincaid@chromium.org</owner>

@@ -344,6 +344,8 @@ bool ClipboardHistoryControllerImpl::ShowMenu(
   if (active_menu_instance)
     active_menu_instance->Cancel(views::MenuController::ExitType::kAll);
 
+  last_menu_source_ = show_source;
+
   // `Unretained()` is safe because `this` owns `context_menu_`.
   context_menu_ = ClipboardHistoryMenuModelAdapter::Create(
       menu_delegate_.get(), std::move(callback),
@@ -544,7 +546,8 @@ bool ClipboardHistoryControllerImpl::PasteClipboardItemById(
           base::BindOnce(
               &ClipboardHistoryControllerImpl::PasteClipboardHistoryItem,
               weak_ptr_factory_.GetWeakPtr(), active_window, item,
-              ClipboardHistoryPasteType::kRichTextVirtualKeyboard));
+              ClipboardHistoryPasteType::kRichTextVirtualKeyboard,
+              last_menu_source_));
       return true;
     }
   }
@@ -756,13 +759,14 @@ void ClipboardHistoryControllerImpl::PasteMenuItemData(
       FROM_HERE,
       base::BindOnce(&ClipboardHistoryControllerImpl::PasteClipboardHistoryItem,
                      weak_ptr_factory_.GetWeakPtr(), active_window,
-                     selected_item, paste_type));
+                     selected_item, paste_type, last_menu_source_));
 }
 
 void ClipboardHistoryControllerImpl::PasteClipboardHistoryItem(
     aura::Window* intended_window,
     ClipboardHistoryItem item,
-    ClipboardHistoryPasteType paste_type) {
+    ClipboardHistoryPasteType paste_type,
+    crosapi::mojom::ClipboardHistoryControllerShowSource paste_source) {
   // It's possible that the window could change or we could enter a disabled
   // mode after posting the `PasteClipboardHistoryItem()` task.
   if (!intended_window || intended_window != window_util::GetActiveWindow() ||
@@ -839,6 +843,8 @@ void ClipboardHistoryControllerImpl::PasteClipboardHistoryItem(
 
   clipboard_history_util::RecordClipboardHistoryItemPasted(item);
   base::UmaHistogramEnumeration("Ash.ClipboardHistory.PasteType", paste_type);
+  base::UmaHistogramEnumeration("Ash.ClipboardHistory.PasteSource",
+                                paste_source);
 
   for (auto& observer : observers_)
     observer.OnClipboardHistoryPasted();
