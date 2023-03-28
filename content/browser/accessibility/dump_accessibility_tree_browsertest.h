@@ -8,6 +8,7 @@
 #include "content/browser/accessibility/dump_accessibility_browsertest_base.h"
 
 #include "base/command_line.h"
+#include "content/public/common/content_switches.h"
 #include "ui/accessibility/accessibility_features.h"
 #include "ui/accessibility/accessibility_switches.h"
 
@@ -72,6 +73,14 @@ class DumpAccessibilityTreeTest : public DumpAccessibilityTestBase {
   }
 
   void RunHtmlTest(const base::FilePath::CharType* file_path) {
+    RunTypedTest<kHTML>(file_path);
+  }
+
+  // TODO(accessibility): Replace all tests using RunPopoverHintTest to just
+  // RunHtmlTest when Popover hints are enabled by default.
+  void RunPopoverHintTest(const base::FilePath::CharType* file_path) {
+    base::CommandLine::ForCurrentProcess()->AppendSwitchASCII(
+        switches::kEnableBlinkFeatures, "HTMLPopoverHint");
     RunTypedTest<kHTML>(file_path);
   }
 

@@ -457,6 +457,7 @@ chrome.automation.NameFromType = {
   RELATED_ELEMENT: 'relatedElement',
   TITLE: 'title',
   VALUE: 'value',
+  POPOVER_ATTRIBUTE: 'popoverAttribute',
 };
 
 /**

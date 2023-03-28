@@ -2316,6 +2316,8 @@ const char* ToString(ax::mojom::NameFrom name_from) {
       return "relatedElement";
     case ax::mojom::NameFrom::kTitle:
       return "title";
+    case ax::mojom::NameFrom::kPopoverAttribute:
+      return "popoverAttribute";
     case ax::mojom::NameFrom::kValue:
       return "value";
   }

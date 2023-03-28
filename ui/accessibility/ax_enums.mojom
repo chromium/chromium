@@ -1252,6 +1252,10 @@ enum NameFrom {
 
   // The name comes from the value attribute, such as in a button element.
   kValue,
+
+  // The name comes from a tooltip-style popover (aka hint popover), where the
+  // contents could be distilled to a plain text string.
+  kPopoverAttribute,
 };
 
 // The source of the accessible description. Used by some screen readers

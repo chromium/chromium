@@ -470,6 +470,7 @@
     caption,
     contents,
     placeholder,
+    popoverAttribute,
     relatedElement,
     title,
     value

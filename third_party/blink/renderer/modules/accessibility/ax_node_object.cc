@@ -3547,15 +3547,14 @@ String AXNodeObject::TextAlternative(
   }
 
   // Step 2I from: http://www.w3.org/TR/accname-aam-1.1
-  name_from = ax::mojom::blink::NameFrom::kTitle;
-  const AtomicString& title = GetAttribute(kTitleAttr);
-  String titleText = text_alternative = TextAlternativeFromTitleAttribute(
-      title, name_from, name_sources, &found_text_alternative);
-  if (!title.empty()) {
+  String resulting_text = TextAlternativeFromTooltip(
+      name_from, name_sources, &found_text_alternative, &text_alternative,
+      related_objects);
+  if (!resulting_text.empty()) {
     if (name_sources) {
-      text_alternative = titleText;
+      text_alternative = resulting_text;
     } else {
-      return titleText;
+      return resulting_text;
     }
   }
 
@@ -3604,6 +3603,7 @@ static bool ShouldInsertSpaceBetweenObjectsIfNeeded(
     case ax::mojom::blink::NameFrom::kRelatedElement:
     case ax::mojom::blink::NameFrom::kTitle:
     case ax::mojom::blink::NameFrom::kValue:
+    case ax::mojom::blink::NameFrom::kPopoverAttribute:
       return true;
   }
   switch (name_from) {
@@ -3617,6 +3617,7 @@ static bool ShouldInsertSpaceBetweenObjectsIfNeeded(
     case ax::mojom::blink::NameFrom::kRelatedElement:
     case ax::mojom::blink::NameFrom::kTitle:
     case ax::mojom::blink::NameFrom::kValue:
+    case ax::mojom::blink::NameFrom::kPopoverAttribute:
       return true;
   }
 
@@ -4917,6 +4918,72 @@ AXObject* AXNodeObject::ErrorMessage() const {
   return AXObjectCache().ValidationMessageObjectIfInvalid(true);
 }
 
+String AXNodeObject::TextAlternativeFromTooltip(
+    ax::mojom::blink::NameFrom& name_from,
+    NameSources* name_sources,
+    bool* found_text_alternative,
+    String* text_alternative,
+    AXRelatedObjectVector* related_objects) const {
+  name_from = ax::mojom::blink::NameFrom::kTitle;
+  const AtomicString& title = GetAttribute(kTitleAttr);
+  String title_text = *text_alternative = TextAlternativeFromTitleAttribute(
+      title, name_from, name_sources, found_text_alternative);
+  if (!title_text.empty()) {
+    return title_text;
+  }
+
+  auto* form_control = DynamicTo<HTMLFormControlElement>(GetElement());
+  if (!form_control) {
+    return String();
+  }
+
+  auto popover_target = form_control->popoverTargetElement();
+  if (!popover_target.popover ||
+      popover_target.popover->PopoverType() != PopoverValueType::kHint) {
+    return String();
+  }
+
+  DCHECK(RuntimeEnabledFeatures::HTMLPopoverHintEnabled());
+
+  name_from = ax::mojom::blink::NameFrom::kPopoverAttribute;
+  if (name_sources) {
+    name_sources->push_back(
+        NameSource(*found_text_alternative, html_names::kPopovertargetAttr));
+    name_sources->back().type = name_from;
+  }
+  AXObject* popover_ax_object =
+      AXObjectCache().GetOrCreate(popover_target.popover);
+
+  // Hint popovers are used for text if and only if all of the contents are
+  // plain, e.g. have no interesting semantic or interactive elements.
+  // Otherwise, the hint will be exposed via the kDetails relationship. The
+  // motivation for this is that by reusing the simple mechanism of titles,
+  // screen reader users can easily access the information of plain hints
+  // without having to navigate to it, making the content more accessible.
+  // However, in the case of rich hints, a kDetails relationship is required to
+  // ensure that users are able to access and interact with the hint as they can
+  // navigate to it using commands.
+  if (!popover_ax_object || !popover_ax_object->IsPlainContent()) {
+    return String();
+  }
+  AXObjectSet visited;
+  String popover_text =
+      RecursiveTextAlternative(*popover_ax_object, popover_ax_object, visited);
+  *text_alternative = popover_text;
+  if (related_objects) {
+    related_objects->push_back(MakeGarbageCollected<NameSourceRelatedObject>(
+        popover_ax_object, popover_text));
+  }
+
+  if (name_sources) {
+    NameSource& source = name_sources->back();
+    source.text = *text_alternative;
+    *found_text_alternative = true;
+  }
+
+  return popover_text;
+}
+
 String AXNodeObject::TextAlternativeFromTitleAttribute(
     const AtomicString& title,
     ax::mojom::blink::NameFrom& name_from,
@@ -5096,15 +5163,15 @@ String AXNodeObject::NativeTextAlternative(
       }
     }
 
-    // title attr
-    const AtomicString& title = input_element->getAttribute(kTitleAttr);
-    String titleText = text_alternative = TextAlternativeFromTitleAttribute(
-        title, name_from, name_sources, found_text_alternative);
-    if (!titleText.IsNull()) {
+    // title attr or popover
+    String resulting_text = TextAlternativeFromTooltip(
+        name_from, name_sources, found_text_alternative, &text_alternative,
+        related_objects);
+    if (!resulting_text.empty()) {
       if (name_sources) {
-        text_alternative = titleText;
+        text_alternative = resulting_text;
       } else {
-        return titleText;
+        return resulting_text;
       }
     }
 
@@ -5128,15 +5195,14 @@ String AXNodeObject::NativeTextAlternative(
   // 5.1 Text inputs - step 3 (placeholder attribute)
   if (html_element && html_element->IsTextControl()) {
     // title attr
-    name_from = ax::mojom::blink::NameFrom::kAttribute;
-    const AtomicString& title = html_element->getAttribute(kTitleAttr);
-    String titleText = text_alternative = TextAlternativeFromTitleAttribute(
-        title, name_from, name_sources, found_text_alternative);
-    if (!titleText.IsNull()) {
+    String resulting_text = TextAlternativeFromTooltip(
+        name_from, name_sources, found_text_alternative, &text_alternative,
+        related_objects);
+    if (!resulting_text.empty()) {
       if (name_sources) {
-        text_alternative = titleText;
+        text_alternative = resulting_text;
       } else {
-        return titleText;
+        return resulting_text;
       }
     }
 
@@ -5716,35 +5782,37 @@ String AXNodeObject::Description(
 
   // For form controls that act as triggering elements for popovers of type
   // kHint, then set aria-describedby to the popover.
-  if (auto* form_control = DynamicTo<HTMLFormControlElement>(element)) {
-    auto popover_target = form_control->popoverTargetElement();
-    if (popover_target.popover &&
-        popover_target.popover->PopoverType() == PopoverValueType::kHint) {
-      DCHECK(RuntimeEnabledFeatures::HTMLPopoverHintEnabled());
-      description_from = ax::mojom::blink::DescriptionFrom::kPopoverAttribute;
-      if (description_sources) {
-        description_sources->push_back(DescriptionSource(
-            found_description, html_names::kPopovertargetAttr));
-        description_sources->back().type = description_from;
-      }
-      AXObject* popover_ax_object =
-          AXObjectCache().GetOrCreate(popover_target.popover);
-      if (popover_ax_object) {
-        AXObjectSet visited;
-        description = RecursiveTextAlternative(*popover_ax_object,
-                                               popover_ax_object, visited);
-        if (related_objects) {
-          related_objects->push_back(
-              MakeGarbageCollected<NameSourceRelatedObject>(popover_ax_object,
-                                                            description));
-        }
+  if (name_from != ax::mojom::blink::NameFrom::kPopoverAttribute) {
+    if (auto* form_control = DynamicTo<HTMLFormControlElement>(element)) {
+      auto popover_target = form_control->popoverTargetElement();
+      if (popover_target.popover &&
+          popover_target.popover->PopoverType() == PopoverValueType::kHint) {
+        DCHECK(RuntimeEnabledFeatures::HTMLPopoverHintEnabled());
+        description_from = ax::mojom::blink::DescriptionFrom::kPopoverAttribute;
         if (description_sources) {
-          DescriptionSource& source = description_sources->back();
-          source.related_objects = *related_objects;
-          source.text = description;
-          found_description = true;
-        } else {
-          return description;
+          description_sources->push_back(DescriptionSource(
+              found_description, html_names::kPopovertargetAttr));
+          description_sources->back().type = description_from;
+        }
+        AXObject* popover_ax_object =
+            AXObjectCache().GetOrCreate(popover_target.popover);
+        if (popover_ax_object) {
+          AXObjectSet visited;
+          description = RecursiveTextAlternative(*popover_ax_object,
+                                                 popover_ax_object, visited);
+          if (related_objects) {
+            related_objects->push_back(
+                MakeGarbageCollected<NameSourceRelatedObject>(popover_ax_object,
+                                                              description));
+          }
+          if (description_sources) {
+            DescriptionSource& source = description_sources->back();
+            source.related_objects = *related_objects;
+            source.text = description;
+            found_description = true;
+          } else {
+            return description;
+          }
         }
       }
     }

@@ -2315,6 +2315,18 @@ void AXObject::SerializeComputedDetailsRelation(
   }
 }
 
+bool AXObject::IsPlainContent() const {
+  if (!ui::IsPlainContentElement(role_)) {
+    return false;
+  }
+  for (const auto& child : ChildrenIncludingIgnored()) {
+    if (!child->IsPlainContent()) {
+      return false;
+    }
+  }
+  return true;
+}
+
 // Popover invoking elements should have details relationships with their
 // target popover, when that popover is a) open, and b) not the next element
 // in the DOM (depth first search order).

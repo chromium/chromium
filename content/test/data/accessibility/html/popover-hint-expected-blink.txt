@@ -1,0 +1,37 @@
+rootWebArea
+++genericContainer ignored
+++++genericContainer
+++++++genericContainer ignored invisible
+++++++++staticText ignored invisible name='<newline>  Test popover!<newline>'
+++++++button name=' Test popover! '
+++++++genericContainer ignored invisible
+++++++++genericContainer ignored invisible
+++++++++++staticText ignored invisible name='<newline>    Test popover with image!<newline>    '
+++++++++++image ignored invisible
+++++++button name=' Test popover with image! test 123'
+++++++genericContainer ignored invisible
+++++++++staticText ignored invisible name='<newline>  Test popover with rich content like a datatable.<newline>  '
+++++++++layoutTable ignored invisible
+++++++++++genericContainer ignored invisible
+++++++++++++layoutTableRow ignored invisible
+++++++++++++++layoutTableCell ignored invisible
+++++++++++++++++staticText ignored invisible name='1'
+++++++++++++++layoutTableCell ignored invisible
+++++++++++++++++staticText ignored invisible name='2'
+++++++++++++layoutTableRow ignored invisible
+++++++++++++++layoutTableCell ignored invisible
+++++++++++++++++staticText ignored invisible name='3'
+++++++++++++++layoutTableCell ignored invisible
+++++++++++++++++staticText ignored invisible name='4'
+++++++button description='Test popover with rich content like a datatable. 1 2 3 4' descriptionFrom=popoverAttribute
+++++++genericContainer ignored invisible
+++++++++staticText ignored invisible name='<newline>  Test popover with a textinput!<newline>  '
+++++++++genericContainer ignored invisible
+++++++++++genericContainer ignored invisible
+++++++++++++textField ignored invisible
+++++++++++++++genericContainer ignored invisible
+++++++++++++++++staticText ignored invisible name='test'
+++++++button description='Test popover with a textinput! test' descriptionFrom=popoverAttribute
+++++++genericContainer ignored invisible
+++++++++staticText ignored invisible name='<newline>  Test popover with title in button to test description.<newline>'
+++++++button description='Test popover with title in button to test description.' name='the title' descriptionFrom=popoverAttribute

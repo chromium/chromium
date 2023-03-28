@@ -704,6 +704,7 @@ _CONFIG = [
             'ui::IsContainerWithSelectableChildren',
             'ui::IsDialog',
             'ui::IsHeading',
+            'ui::IsPlainContentElement',
             'ui::IsLandmark',
             'ui::IsPlatformDocument',
             'ui::IsPresentational',
