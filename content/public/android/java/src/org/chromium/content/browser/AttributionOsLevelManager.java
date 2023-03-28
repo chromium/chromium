@@ -97,6 +97,12 @@ public class AttributionOsLevelManager {
                 Uri.parse(topLevelOrigin.getSpec())));
     }
 
+    private void onDataDeletionCompleted(int requestId) {
+        if (mNativePtr != 0) {
+            AttributionOsLevelManagerJni.get().onDataDeletionCompleted(mNativePtr, requestId);
+        }
+    }
+
     /**
      * Deletes attribution data with native, see `deleteRegistrationsAsync()`:
      * https://developer.android.com/reference/androidx/privacysandbox/ads/adservices/java/measurement/MeasurementManagerFutures.
@@ -105,16 +111,12 @@ public class AttributionOsLevelManager {
     private void deleteRegistrations(int requestId, long startMs, long endMs, GURL[] origins,
             String[] domains, int deletionMode, int matchBehavior) {
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU) {
-            if (mNativePtr != 0) {
-                AttributionOsLevelManagerJni.get().onDataDeletionCompleted(mNativePtr, requestId);
-            }
+            onDataDeletionCompleted(requestId);
             return;
         }
         MeasurementManagerFutures mm = getManager();
         if (mm == null) {
-            if (mNativePtr != 0) {
-                AttributionOsLevelManagerJni.get().onDataDeletionCompleted(mNativePtr, requestId);
-            }
+            onDataDeletionCompleted(requestId);
             return;
         }
         ArrayList<Uri> originUris = new ArrayList<Uri>(origins.length);
@@ -127,15 +129,21 @@ public class AttributionOsLevelManager {
             domainUris.add(Uri.parse(domain));
         }
 
-        // TODO(johnidel): Wait for the returned ListenableFuture to finish before
-        // indicating deletion is complete.
-        mm.deleteRegistrationsAsync(
+        ListenableFuture<?> future = mm.deleteRegistrationsAsync(
                 new DeletionRequest(deletionMode, matchBehavior, Instant.ofEpochMilli(startMs),
                         Instant.ofEpochMilli(endMs), originUris, domainUris));
 
-        if (mNativePtr != 0) {
-            AttributionOsLevelManagerJni.get().onDataDeletionCompleted(mNativePtr, requestId);
-        }
+        Futures.addCallback(future, new FutureCallback<Object>() {
+            @Override
+            public void onSuccess(Object result) {
+                onDataDeletionCompleted(requestId);
+            }
+            @Override
+            public void onFailure(Throwable thrown) {
+                Log.w(TAG, "Failed to delete measurement API data", thrown);
+                onDataDeletionCompleted(requestId);
+            }
+        }, ContextUtils.getApplicationContext().getMainExecutor());
     }
 
     /**
