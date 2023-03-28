@@ -11,7 +11,7 @@ const DEFAULT_INTEREST_GROUP_NAME = 'default name';
 // exercise it use a fixed URL string. Special keys and interest group names
 // control the response.
 const TRUSTED_BIDDING_SIGNALS_URL =
-    `${BASE_URL}resources/trusted_bidding_signals.py`;
+    `${BASE_URL}resources/trusted-bidding-signals.py`;
 
 // Creates a URL that will be sent to the URL request tracker script.
 // `uuid` is used to identify the stash shard to use.
@@ -19,7 +19,7 @@ const TRUSTED_BIDDING_SIGNALS_URL =
 // `id` can be used to uniquely identify tracked requests. It has no effect
 //     on behavior of the script; it only serves to make the URL unique.
 function createTrackerUrl(origin, uuid, dispatch, id = null) {
-  let url = new URL(`${origin}${BASE_PATH}resources/request_tracker.py`);
+  let url = new URL(`${origin}${BASE_PATH}resources/request-tracker.py`);
   url.searchParams.append('uuid', uuid);
   url.searchParams.append('dispatch', dispatch);
   if (id)
@@ -91,7 +91,7 @@ async function waitForObservedRequests(uuid, expectedRequests) {
 
     // Fail on errors reported by the tracker script.
     if (trackerData.errors.length > 0) {
-      throw 'Errors reported by request_tracker.py:' +
+      throw 'Errors reported by request-tracker.py:' +
           JSON.stringify(trackerData.errors);
     }
 
