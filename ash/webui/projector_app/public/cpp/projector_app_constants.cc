@@ -15,6 +15,7 @@ const char kChromeUIUntrustedProjectorPwaUrl[] =
     "https://screencast.apps.chrome";
 
 const char kChromeUITrustedProjectorUrl[] = "chrome://projector/";
+const char kChromeUITrustedAnnotatorUrl[] = "chrome://projector-annotator/";
 const char kChromeUIUntrustedAnnotatorUrl[] =
     "chrome-untrusted://projector-annotator/";
 

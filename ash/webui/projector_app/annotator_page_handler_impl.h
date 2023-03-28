@@ -2,11 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef ASH_WEBUI_PROJECTOR_APP_UNTRUSTED_ANNOTATOR_PAGE_HANDLER_IMPL_H_
-#define ASH_WEBUI_PROJECTOR_APP_UNTRUSTED_ANNOTATOR_PAGE_HANDLER_IMPL_H_
+#ifndef ASH_WEBUI_PROJECTOR_APP_ANNOTATOR_PAGE_HANDLER_IMPL_H_
+#define ASH_WEBUI_PROJECTOR_APP_ANNOTATOR_PAGE_HANDLER_IMPL_H_
 
 #include "ash/public/cpp/projector/projector_annotator_controller.h"
-#include "ash/webui/projector_app/mojom/untrusted_annotator.mojom.h"
+#include "ash/webui/projector_app/mojom/annotator.mojom.h"
 #include "base/functional/callback.h"
 #include "base/values.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
@@ -23,20 +23,17 @@ namespace ash {
 struct AnnotatorTool;
 
 // Handles communication with the Annotator WebUI (i.e.
-// chrome-untrusted://projector/annotator/annotator_embedder.html)
-class UntrustedAnnotatorPageHandlerImpl
-    : public annotator::mojom::UntrustedAnnotatorPageHandler {
+// chrome://projector/annotator/annotator_embedder.html).
+class AnnotatorPageHandlerImpl : public annotator::mojom::AnnotatorPageHandler {
  public:
-  UntrustedAnnotatorPageHandlerImpl(
-      mojo::PendingReceiver<annotator::mojom::UntrustedAnnotatorPageHandler>
+  AnnotatorPageHandlerImpl(
+      mojo::PendingReceiver<annotator::mojom::AnnotatorPageHandler>
           annotator_handler,
-      mojo::PendingRemote<annotator::mojom::UntrustedAnnotatorPage> annotator,
+      mojo::PendingRemote<annotator::mojom::AnnotatorPage> annotator,
       content::WebUI* web_ui);
-  UntrustedAnnotatorPageHandlerImpl(const UntrustedAnnotatorPageHandlerImpl&) =
-      delete;
-  UntrustedAnnotatorPageHandlerImpl& operator=(
-      const UntrustedAnnotatorPageHandlerImpl&) = delete;
-  ~UntrustedAnnotatorPageHandlerImpl() override;
+  AnnotatorPageHandlerImpl(const AnnotatorPageHandlerImpl&) = delete;
+  AnnotatorPageHandlerImpl& operator=(const AnnotatorPageHandlerImpl&) = delete;
+  ~AnnotatorPageHandlerImpl() override;
 
   // Called by ProjectorAppClient.
   void SetTool(const AnnotatorTool& tool);
@@ -48,12 +45,13 @@ class UntrustedAnnotatorPageHandlerImpl
   void OnUndoRedoAvailabilityChanged(bool undo_available,
                                      bool redo_available) override;
   void OnCanvasInitialized(bool success) override;
+  void OnError(const std::vector<std::string>& messages) override;
 
   content::WebUI* get_web_ui_for_test() { return web_ui_; }
 
  private:
-  mojo::Remote<annotator::mojom::UntrustedAnnotatorPage> annotator_remote_;
-  mojo::Receiver<annotator::mojom::UntrustedAnnotatorPageHandler>
+  mojo::Remote<annotator::mojom::AnnotatorPage> annotator_remote_;
+  mojo::Receiver<annotator::mojom::AnnotatorPageHandler>
       annotator_handler_receiver_;
 
   // The WebUI that owns the TrustedProjectorAnnotatorUI that owns this
@@ -63,4 +61,4 @@ class UntrustedAnnotatorPageHandlerImpl
 
 }  // namespace ash
 
-#endif  // ASH_WEBUI_PROJECTOR_APP_UNTRUSTED_ANNOTATOR_PAGE_HANDLER_IMPL_H_
+#endif  // ASH_WEBUI_PROJECTOR_APP_ANNOTATOR_PAGE_HANDLER_IMPL_H_

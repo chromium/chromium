@@ -16,6 +16,7 @@ extern const char kChromeUIUntrustedProjectorUrl[];
 extern const char kChromeUIUntrustedProjectorPwaUrl[];
 
 extern const char kChromeUITrustedProjectorUrl[];
+extern const char kChromeUITrustedAnnotatorUrl[];
 extern const char kChromeUIUntrustedAnnotatorUrl[];
 
 extern const char kChromeUITrustedProjectorSwaAppId[];
