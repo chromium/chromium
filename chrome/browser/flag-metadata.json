@@ -2526,7 +2526,7 @@
     // A temporary flag to control hardware mirroring until it is decided
     // whether to permanently remove hardware mirroring. See crbug.com/1161556
     // for more details.
-    "expiry_milestone": 114
+    "expiry_milestone": 134
   },
   {
     "name": "enable-hardware-secure-decryption",
