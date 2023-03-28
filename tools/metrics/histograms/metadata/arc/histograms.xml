@@ -1521,8 +1521,8 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Arc.NearbyShare.ArcBridgeFailure"
-    enum="NearbyShareArcBridgeFailResult" expires_after="2023-03-24">
-  <owner>ttefera@google.com</owner>
+    enum="NearbyShareArcBridgeFailResult" expires_after="2023-09-27">
+  <owner>alanding@google.com</owner>
   <owner>arc-app-dev@google.com</owner>
   <summary>
     Records any ARC Bridge connection / communication failures using
@@ -1531,8 +1531,8 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Arc.NearbyShare.DataHandlingFailure"
-    enum="ArcNearbyShareDataHandlingResult" expires_after="2023-08-27">
-  <owner>ttefera@google.com</owner>
+    enum="ArcNearbyShareDataHandlingResult" expires_after="2023-09-27">
+  <owner>alanding@google.com</owner>
   <owner>arc-app-dev@google.com</owner>
   <summary>
     Records any data handling errors with sharing text or files using
@@ -1541,7 +1541,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Arc.NearbyShare.FileStreamComplete.TimeDelta" units="ms"
-    expires_after="2023-08-08">
+    expires_after="2023-09-27">
   <owner>alanding@google.com</owner>
   <owner>arc-app-dev@google.com</owner>
   <summary>
@@ -1552,8 +1552,8 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Arc.NearbyShare.FileStreamFailure" enum="PlatformFileError"
-    expires_after="2023-08-27">
-  <owner>ttefera@google.com</owner>
+    expires_after="2023-09-27">
+  <owner>alanding@google.com</owner>
   <owner>arc-app-dev@google.com</owner>
   <summary>
     Records the reason for failing to stream a file using NearbyShare. ARC
@@ -1563,15 +1563,15 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Arc.NearbyShare.IOFailure" enum="ArcNearbyShareIOErrorResult"
-    expires_after="2023-08-27">
-  <owner>ttefera@google.com</owner>
+    expires_after="2023-09-27">
+  <owner>alanding@google.com</owner>
   <owner>arc-app-dev@google.com</owner>
   <summary>Records any IO errors while using NearbyShare.</summary>
 </histogram>
 
 <histogram name="Arc.NearbyShare.WindowFound" units="units"
-    expires_after="2023-03-24">
-  <owner>ttefera@google.com</owner>
+    expires_after="2023-09-27">
+  <owner>alanding@google.com</owner>
   <owner>arc-app-dev@google.com</owner>
   <summary>
     Records the success or failure of attempts to find NearbyShare window. ARC
