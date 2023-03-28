@@ -77,39 +77,24 @@ gfx::ImageSkia CreateResizedImageToIconSize(const gfx::ImageSkia& icon,
 
 // -----------------------------------------------------------------------------
 // SavedDeskIconView:
-SavedDeskIconView::SavedDeskIconView(const std::string& icon_identifier,
-                                     int count,
-                                     size_t sorting_key)
-    : icon_identifier_(icon_identifier),
-      count_(count),
-      sorting_key_(sorting_key) {}
+SavedDeskIconView::SavedDeskIconView(int count, size_t sorting_key)
+    : count_(count), sorting_key_(sorting_key) {}
 
 SavedDeskIconView::~SavedDeskIconView() = default;
 
 gfx::Size SavedDeskIconView::CalculatePreferredSize() const {
-  int width = (icon_view_ ? kIconViewSize : 0);
-  if (count_label_) {
-    if (GetCountToShow()) {
-      width += std::max(kIconViewSize,
-                        count_label_->CalculatePreferredSize().width());
-    }
-  }
-  return gfx::Size(width, kIconViewSize);
-}
+  // The width for the icon. The overflow icon doesn't have an icon so it's
+  // zero.
+  int width = (IsOverflowIcon() ? 0 : kIconViewSize);
 
-void SavedDeskIconView::Layout() {
-  if (icon_view_) {
-    gfx::Size icon_preferred_size = icon_view_->CalculatePreferredSize();
-    icon_view_->SetBoundsRect(gfx::Rect(
-        base::ClampFloor((kIconViewSize - icon_preferred_size.width()) / 2.0),
-        base::ClampFloor((kIconViewSize - icon_preferred_size.height()) / 2.0),
-        icon_preferred_size.width(), icon_preferred_size.height()));
-  }
-  if (count_label_) {
-    count_label_->SetBoundsRect(
-        gfx::Rect(icon_view_ ? kIconViewSize : 0, 0,
-                  width() - (icon_view_ ? kIconViewSize : 0), kIconViewSize));
-  }
+  // Add the label width if the label view exists. The reason for having the max
+  // is to have a minimum width.
+  width += count_label_
+               ? std::max(kIconViewSize,
+                          count_label_->CalculatePreferredSize().width())
+               : 0;
+
+  return gfx::Size(width, kIconViewSize);
 }
 
 void SavedDeskIconView::UpdateCount(int count) {
@@ -145,7 +130,8 @@ SavedDeskRegularIconView::SavedDeskRegularIconView(
     int count,
     size_t sorting_key,
     base::OnceCallback<void(views::View*)> on_icon_loaded)
-    : SavedDeskIconView(icon_identifier, count, sorting_key),
+    : SavedDeskIconView(count, sorting_key),
+      icon_identifier_(icon_identifier),
       on_icon_loaded_(std::move(on_icon_loaded)) {
   if (GetCountToShow()) {
     SetBackground(views::CreateThemedRoundedRectBackground(
@@ -157,6 +143,20 @@ SavedDeskRegularIconView::SavedDeskRegularIconView(
 }
 
 SavedDeskRegularIconView::~SavedDeskRegularIconView() = default;
+
+void SavedDeskRegularIconView::Layout() {
+  DCHECK(icon_view_);
+  gfx::Size icon_preferred_size = icon_view_->CalculatePreferredSize();
+  icon_view_->SetBoundsRect(gfx::Rect(
+      base::ClampFloor((kIconViewSize - icon_preferred_size.width()) / 2.0),
+      base::ClampFloor((kIconViewSize - icon_preferred_size.height()) / 2.0),
+      icon_preferred_size.width(), icon_preferred_size.height()));
+
+  if (count_label_) {
+    count_label_->SetBoundsRect(
+        gfx::Rect(kIconViewSize, 0, width() - kIconViewSize, kIconViewSize));
+  }
+}
 
 void SavedDeskRegularIconView::OnThemeChanged() {
   SavedDeskIconView::OnThemeChanged();
@@ -178,6 +178,10 @@ int SavedDeskRegularIconView::GetCount() const {
 int SavedDeskRegularIconView::GetCountToShow() const {
   DCHECK(count_ >= 1);
   return count_ - 1;
+}
+
+bool SavedDeskRegularIconView::IsOverflowIcon() const {
+  return false;
 }
 
 void SavedDeskRegularIconView::CreateChildViews(
@@ -276,7 +280,7 @@ END_METADATA
 // -----------------------------------------------------------------------------
 // SavedDeskOverflowIconView:
 SavedDeskOverflowIconView::SavedDeskOverflowIconView(int count, bool show_plus)
-    : SavedDeskIconView("", count, kOverflowIconSortingKey) {
+    : SavedDeskIconView(count, kOverflowIconSortingKey) {
   SetBackground(views::CreateThemedRoundedRectBackground(
       cros_tokens::kCrosSysSystemOnBase,
       /*radius=*/kIconViewSize / 2.0f));
@@ -285,6 +289,11 @@ SavedDeskOverflowIconView::SavedDeskOverflowIconView(int count, bool show_plus)
 }
 
 SavedDeskOverflowIconView::~SavedDeskOverflowIconView() = default;
+
+void SavedDeskOverflowIconView::Layout() {
+  DCHECK(count_label_);
+  count_label_->SetBoundsRect(gfx::Rect(0, 0, width(), kIconViewSize));
+}
 
 void SavedDeskOverflowIconView::UpdateCount(int count) {
   DCHECK(count_label_);
@@ -304,6 +313,10 @@ int SavedDeskOverflowIconView::GetCount() const {
 int SavedDeskOverflowIconView::GetCountToShow() const {
   DCHECK(count_ >= 0);
   return count_;
+}
+
+bool SavedDeskOverflowIconView::IsOverflowIcon() const {
+  return true;
 }
 
 BEGIN_METADATA(SavedDeskOverflowIconView, views::View)

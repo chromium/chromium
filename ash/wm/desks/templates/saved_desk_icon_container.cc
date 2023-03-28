@@ -278,8 +278,9 @@ void SavedDeskIconContainer::UpdateOverflowIcon() {
   int used_width = -kIconSpacingDp;
   base::ranges::for_each(
       icon_views, [&used_width](SavedDeskIconView* icon_view) {
-        if (!icon_view->is_overflow_icon())
+        if (!icon_view->IsOverflowIcon()) {
           used_width += icon_view->GetPreferredSize().width() + kIconSpacingDp;
+        }
       });
 
   // Go through all non-overflow icons from back to front, and hide if:

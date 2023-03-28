@@ -228,6 +228,12 @@ class SavedDeskTest : public OverviewTestBase {
     return overview_grid->GetSaveDeskButtonContainer();
   }
 
+  SavedDeskRegularIconView* GetSavedDeskRegularIconView(
+      SavedDeskIconView* icon_view) {
+    DCHECK(!icon_view->IsOverflowIcon());
+    return static_cast<SavedDeskRegularIconView*>(icon_view);
+  }
+
   // Shows the saved desk library by emulating a click on the library button. It
   // is required to have at least one entry in the desk model for the button to
   // be visible and clickable.
@@ -1335,8 +1341,9 @@ TEST_F(SavedDeskTest, IconsOrder) {
   int previous_id;
   for (size_t i = 0; i < icon_views.size() - 1; ++i) {
     int current_id;
-    ASSERT_TRUE(
-        base::StringToInt(icon_views[i]->icon_identifier(), &current_id));
+    ASSERT_TRUE(base::StringToInt(
+        GetSavedDeskRegularIconView(icon_views[i])->icon_identifier(),
+        &current_id));
 
     if (i)
       EXPECT_TRUE(current_id > previous_id);
@@ -1449,10 +1456,14 @@ TEST_F(SavedDeskTest, IconsOrderWithInactiveTabs) {
   // with the lowest activation indices, i.e. the rest of the tabs from the
   // first browser instance.
   ASSERT_EQ(7u, icon_views.size());
-  EXPECT_EQ(kTabs1[kActiveTabIndex1].spec(), icon_views[0]->icon_identifier());
-  EXPECT_EQ(kTabs2[kActiveTabIndex2].spec(), icon_views[1]->icon_identifier());
-  EXPECT_EQ(kTabs1[0].spec(), icon_views[2]->icon_identifier());
-  EXPECT_EQ(kTabs1[2].spec(), icon_views[3]->icon_identifier());
+  EXPECT_EQ(kTabs1[kActiveTabIndex1].spec(),
+            GetSavedDeskRegularIconView(icon_views[0])->icon_identifier());
+  EXPECT_EQ(kTabs2[kActiveTabIndex2].spec(),
+            GetSavedDeskRegularIconView(icon_views[1])->icon_identifier());
+  EXPECT_EQ(kTabs1[0].spec(),
+            GetSavedDeskRegularIconView(icon_views[2])->icon_identifier());
+  EXPECT_EQ(kTabs1[2].spec(),
+            GetSavedDeskRegularIconView(icon_views[3])->icon_identifier());
 }
 
 // Tests that when two tabs are put into a desk template that have the same
@@ -1496,7 +1507,8 @@ TEST_F(SavedDeskTest, IdenticalURL) {
   // The first icon view should have the first url including the query parameter
   // as its identifier, and have a count of 2 because its representing both
   // urls.
-  EXPECT_EQ(kTabs[0].spec(), icon_views[0]->icon_identifier());
+  EXPECT_EQ(kTabs[0].spec(),
+            GetSavedDeskRegularIconView(icon_views[0])->icon_identifier());
   EXPECT_EQ(2, icon_views[0]->GetCount());
   // The second icon view should have a count of 0, because there are no
   // overflow windows.
@@ -1535,7 +1547,7 @@ TEST_F(SavedDeskTest, OverflowIconView) {
   // non-zero. It should also be visible and within the bounds of the host
   // SavedDeskItemView.
   SavedDeskIconViewTestApi overflow_icon_view{icon_views.back()};
-  EXPECT_FALSE(overflow_icon_view.icon_view());
+  EXPECT_TRUE(overflow_icon_view.saved_desk_icon_view()->IsOverflowIcon());
   EXPECT_TRUE(overflow_icon_view.count_label());
   EXPECT_EQ(u"+1", overflow_icon_view.count_label()->GetText());
   EXPECT_TRUE(overflow_icon_view.saved_desk_icon_view()->GetVisible());
@@ -1601,7 +1613,7 @@ TEST_F(SavedDeskTest, OverflowIconViewIncrementsForHiddenIcons) {
   // app icons. It should also be visible and within the bounds of the host
   // SavedDeskItemView.
   SavedDeskIconViewTestApi overflow_icon_view{icon_views.back()};
-  EXPECT_FALSE(overflow_icon_view.icon_view());
+  EXPECT_TRUE(overflow_icon_view.saved_desk_icon_view()->IsOverflowIcon());
   EXPECT_TRUE(overflow_icon_view.count_label());
 
   // (3 + 4) * 2 = 14 windows were added to the desk template, from 7 apps with
@@ -1645,36 +1657,36 @@ TEST_F(SavedDeskTest, IconViewMultipleWindows) {
   // Verify each of the apps' count labels are correct.
   SavedDeskIconViewTestApi icon_view_1(icon_views[0]);
   EXPECT_TRUE(icon_view_1.saved_desk_icon_view()->GetVisible());
-  EXPECT_TRUE(icon_view_1.icon_view());
+  EXPECT_FALSE(icon_view_1.saved_desk_icon_view()->IsOverflowIcon());
   EXPECT_FALSE(icon_view_1.count_label());
 
   SavedDeskIconViewTestApi icon_view_2(icon_views[1]);
   EXPECT_TRUE(icon_view_2.saved_desk_icon_view()->GetVisible());
-  EXPECT_TRUE(icon_view_2.icon_view());
+  EXPECT_FALSE(icon_view_2.saved_desk_icon_view()->IsOverflowIcon());
   EXPECT_FALSE(icon_view_2.count_label());
 
   SavedDeskIconViewTestApi icon_view_3(icon_views[2]);
   EXPECT_TRUE(icon_view_3.saved_desk_icon_view()->GetVisible());
-  EXPECT_TRUE(icon_view_3.icon_view());
+  EXPECT_FALSE(icon_view_3.saved_desk_icon_view()->IsOverflowIcon());
   EXPECT_TRUE(icon_view_3.count_label());
   EXPECT_EQ(u"+1", icon_view_3.count_label()->GetText());
 
   SavedDeskIconViewTestApi icon_view_4(icon_views[3]);
   EXPECT_FALSE(icon_view_4.saved_desk_icon_view()->GetVisible());
-  EXPECT_TRUE(icon_view_4.icon_view());
+  EXPECT_FALSE(icon_view_4.saved_desk_icon_view()->IsOverflowIcon());
   EXPECT_TRUE(icon_view_4.count_label());
   EXPECT_EQ(u"+1", icon_view_4.count_label()->GetText());
 
   SavedDeskIconViewTestApi icon_view_5(icon_views[4]);
   EXPECT_FALSE(icon_view_5.saved_desk_icon_view()->GetVisible());
-  EXPECT_TRUE(icon_view_5.icon_view());
+  EXPECT_FALSE(icon_view_5.saved_desk_icon_view()->IsOverflowIcon());
   EXPECT_TRUE(icon_view_5.count_label());
   EXPECT_EQ(u"+2", icon_view_5.count_label()->GetText());
 
   // The overflow counter should display the number of excess windows.
   SavedDeskIconViewTestApi overflow_icon_view{icon_views.back()};
   EXPECT_TRUE(overflow_icon_view.saved_desk_icon_view()->GetVisible());
-  EXPECT_FALSE(overflow_icon_view.icon_view());
+  EXPECT_TRUE(overflow_icon_view.saved_desk_icon_view()->IsOverflowIcon());
   EXPECT_TRUE(overflow_icon_view.count_label());
   EXPECT_EQ(u"+5", overflow_icon_view.count_label()->GetText());
 }
@@ -1702,7 +1714,7 @@ TEST_F(SavedDeskTest, IconViewMoreThan99Windows) {
 
   // The app's icon view should have a "+99" label.
   SavedDeskIconViewTestApi icon_view(icon_views[0]);
-  EXPECT_TRUE(icon_view.icon_view());
+  EXPECT_FALSE(icon_view.saved_desk_icon_view()->IsOverflowIcon());
   EXPECT_TRUE(icon_view.count_label());
   EXPECT_EQ(u"+99", icon_view.count_label()->GetText());
 
@@ -1762,7 +1774,7 @@ TEST_F(SavedDeskTest, OverflowUnavailableLessThan5Icons) {
   EXPECT_EQ(3u, icon_views.size());
 
   SavedDeskIconViewTestApi overflow_icon_view{icon_views.back()};
-  EXPECT_FALSE(overflow_icon_view.icon_view());
+  EXPECT_TRUE(overflow_icon_view.saved_desk_icon_view()->IsOverflowIcon());
   EXPECT_TRUE(overflow_icon_view.count_label());
   EXPECT_EQ(u"+2", overflow_icon_view.count_label()->GetText());
 }
@@ -1799,7 +1811,7 @@ TEST_F(SavedDeskTest, OverflowUnavailableMoreThan5Icons) {
   EXPECT_EQ(SavedDeskIconContainer::kMaxIcons + 1, num_of_visibile_icon_views);
 
   SavedDeskIconViewTestApi overflow_icon_view{icon_views.back()};
-  EXPECT_FALSE(overflow_icon_view.icon_view());
+  EXPECT_TRUE(overflow_icon_view.saved_desk_icon_view()->IsOverflowIcon());
   EXPECT_TRUE(overflow_icon_view.count_label());
   EXPECT_EQ(u"+4", overflow_icon_view.count_label()->GetText());
 }
@@ -1830,7 +1842,7 @@ TEST_F(SavedDeskTest, OverflowUnavailableAllUnavailableIcons) {
   EXPECT_EQ(1u, icon_views.size());
 
   SavedDeskIconViewTestApi overflow_icon_view{icon_views.back()};
-  EXPECT_FALSE(overflow_icon_view.icon_view());
+  EXPECT_TRUE(overflow_icon_view.saved_desk_icon_view()->IsOverflowIcon());
   EXPECT_TRUE(overflow_icon_view.count_label());
   EXPECT_EQ(u"10", overflow_icon_view.count_label()->GetText());
 }

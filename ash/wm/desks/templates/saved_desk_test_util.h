@@ -25,7 +25,6 @@ namespace ash {
 class IconButton;
 class OverviewGrid;
 class PillButton;
-class RoundedImageView;
 class SavedDeskPresenter;
 
 // Wrapper for `SavedDeskPresenter` that exposes internal state to test
@@ -133,10 +132,6 @@ class SavedDeskIconViewTestApi {
 
   const views::Label* count_label() const {
     return saved_desk_icon_view_->count_label_;
-  }
-
-  const RoundedImageView* icon_view() const {
-    return saved_desk_icon_view_->icon_view_;
   }
 
   const SavedDeskIconView* saved_desk_icon_view() const {
