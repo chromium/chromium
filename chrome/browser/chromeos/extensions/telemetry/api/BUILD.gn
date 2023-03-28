@@ -13,6 +13,7 @@ source_set("browser_tests") {
   deps = [
     "common:browser_tests",
     "diagnostics:browser_tests",
+    "events:browser_tests",
     "telemetry:browser_tests",
   ]
 }

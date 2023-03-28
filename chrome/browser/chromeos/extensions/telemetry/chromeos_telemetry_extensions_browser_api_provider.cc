@@ -5,6 +5,7 @@
 #include "chrome/browser/chromeos/extensions/telemetry/chromeos_telemetry_extensions_browser_api_provider.h"
 
 #include "chrome/browser/chromeos/extensions/telemetry/api/diagnostics/generated_api_registration.h"
+#include "chrome/browser/chromeos/extensions/telemetry/api/events/generated_api_registration.h"
 #include "chrome/browser/chromeos/extensions/telemetry/api/telemetry/generated_api_registration.h"
 #include "extensions/browser/extension_function_registry.h"
 

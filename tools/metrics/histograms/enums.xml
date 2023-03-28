@@ -33784,6 +33784,7 @@ Called by update_extension_histograms.py.-->
   <int value="505" label="SMART_CARD_PROVIDER_PRIVATE_ON_CONNECT_REQUESTED"/>
   <int value="506" label="SMART_CARD_PROVIDER_PRIVATE_ON_DISCONNECT_REQUESTED"/>
   <int value="507" label="SMART_CARD_PROVIDER_PRIVATE_ON_CANCEL_REQUESTED"/>
+  <int value="508" label="OS_EVENTS_ON_AUDIO_JACK_EVENT"/>
 </enum>
 
 <enum name="ExtensionFileWriteResult">
@@ -35652,6 +35653,9 @@ Called by update_extension_histograms.py.-->
   <int value="1775" label="PASSWORDSPRIVATE_RESETIMPORTER"/>
   <int value="1776" label="SMARTCARDPROVIDERPRIVATE_REPORTCANCELRESULT"/>
   <int value="1777" label="RUNTIME_GETCONTEXTS"/>
+  <int value="1778" label="OS_EVENTS_ISEVENTSUPPORTED"/>
+  <int value="1779" label="OS_EVENTS_STARTCAPTURINGEVENTS"/>
+  <int value="1780" label="OS_EVENTS_STOPCAPTURINGEVENTS"/>
 </enum>
 
 <enum name="ExtensionIconState">
