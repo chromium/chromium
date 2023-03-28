@@ -13,6 +13,7 @@
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
+#include "components/autofill/core/browser/autofill_trigger_source.h"
 #include "components/autofill/core/browser/ui/autofill_popup_delegate.h"
 #include "components/autofill/core/browser/ui/suggestion.h"
 #include "components/autofill/core/common/aliases.h"
@@ -120,13 +121,16 @@ class AutofillExternalDelegate : public AutofillPopupDelegate {
                            FillCreditCardFormImpl);
 
   // Called when a credit card is scanned using device camera.
-  void OnCreditCardScanned(const CreditCard& card);
+  void OnCreditCardScanned(const AutofillTriggerSource trigger_source,
+                           const CreditCard& card);
 
   // Fills the form with the Autofill data corresponding to |unique_id|.
   // If |is_preview| is true then this is just a preview to show the user what
   // would be selected and if |is_preview| is false then the user has selected
   // this data.
-  void FillAutofillFormData(int unique_id, bool is_preview);
+  void FillAutofillFormData(int unique_id,
+                            bool is_preview,
+                            const AutofillTriggerSource trigger_source);
 
   // Will remove Autofill warnings from |suggestions| if there are also
   // autocomplete entries in the vector. Note: at this point, it is assumed that

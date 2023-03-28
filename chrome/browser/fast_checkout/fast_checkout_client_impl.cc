@@ -368,8 +368,9 @@ void FastCheckoutClientImpl::TryToFillForms() {
         static_cast<autofill::BrowserAutofillManager*>(autofill_manager_.get())
             ->SetFastCheckoutRunId(autofill::FieldTypeGroup::kAddressHome,
                                    run_id_);
-        autofill_manager_->FillProfileForm(*autofill_profile,
-                                           form->ToFormData(), *field);
+        autofill_manager_->FillProfileForm(
+            *autofill_profile, form->ToFormData(), *field,
+            autofill::AutofillTriggerSource::kFastCheckout);
       }
     }
 
@@ -406,8 +407,9 @@ void FastCheckoutClientImpl::FillCreditCardForm(
       FillingState::kFilling;
   static_cast<autofill::BrowserAutofillManager*>(autofill_manager_.get())
       ->SetFastCheckoutRunId(autofill::FieldTypeGroup::kCreditCard, run_id_);
-  autofill_manager_->FillCreditCardForm(form.ToFormData(), field, credit_card,
-                                        cvc);
+  autofill_manager_->FillCreditCardForm(
+      form.ToFormData(), field, credit_card, cvc,
+      autofill::AutofillTriggerSource::kFastCheckout);
 }
 
 autofill::AutofillProfile*

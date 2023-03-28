@@ -254,28 +254,32 @@ LanguageCode AutofillManager::GetCurrentPageLanguage() {
   return LanguageCode(language_state->current_language());
 }
 
-void AutofillManager::FillCreditCardForm(const FormData& form,
-                                         const FormFieldData& field,
-                                         const CreditCard& credit_card,
-                                         const std::u16string& cvc) {
+void AutofillManager::FillCreditCardForm(
+    const FormData& form,
+    const FormFieldData& field,
+    const CreditCard& credit_card,
+    const std::u16string& cvc,
+    const AutofillTriggerSource trigger_source) {
   if (!base::FeatureList::IsEnabled(features::kAutofillParseAsync)) {
-    FillCreditCardFormImpl(form, field, credit_card, cvc);
+    FillCreditCardFormImpl(form, field, credit_card, cvc, trigger_source);
     return;
   }
   ParseFormAsync(form, ParsingCallback(&AutofillManager::FillCreditCardFormImpl,
-                                       field, credit_card, cvc)
+                                       field, credit_card, cvc, trigger_source)
                            .Then(NotifyNoObserversCallback()));
 }
 
-void AutofillManager::FillProfileForm(const AutofillProfile& profile,
-                                      const FormData& form,
-                                      const FormFieldData& field) {
+void AutofillManager::FillProfileForm(
+    const AutofillProfile& profile,
+    const FormData& form,
+    const FormFieldData& field,
+    const AutofillTriggerSource trigger_source) {
   if (!base::FeatureList::IsEnabled(features::kAutofillParseAsync)) {
-    FillProfileFormImpl(form, field, profile);
+    FillProfileFormImpl(form, field, profile, trigger_source);
     return;
   }
   ParseFormAsync(form, ParsingCallback(&AutofillManager::FillProfileFormImpl,
-                                       field, profile)
+                                       field, profile, trigger_source)
                            .Then(NotifyNoObserversCallback()));
 }
 

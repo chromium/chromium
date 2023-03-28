@@ -109,6 +109,7 @@ static_library("browser") {
     "autofill_subject.h",
     "autofill_suggestion_generator.cc",
     "autofill_suggestion_generator.h",
+    "autofill_trigger_source.h",
     "autofill_type.cc",
     "autofill_type.h",
     "browser_autofill_manager.cc",

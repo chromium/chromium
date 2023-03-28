@@ -21,6 +21,7 @@
 #include "build/build_config.h"
 #include "components/autofill/core/browser/autocomplete_history_manager.h"
 #include "components/autofill/core/browser/autofill_driver.h"
+#include "components/autofill/core/browser/autofill_trigger_source.h"
 #include "components/autofill/core/browser/browser_autofill_manager.h"
 #include "components/autofill/core/browser/metrics/autofill_metrics.h"
 #include "components/autofill/core/browser/metrics/suggestions_list_metrics.h"
@@ -214,7 +215,8 @@ void AutofillExternalDelegate::DidSelectSuggestion(
 
   // Only preview the data if it is a profile or a virtual card.
   if (frontend_id > 0) {
-    FillAutofillFormData(frontend_id, true);
+    FillAutofillFormData(frontend_id, true,
+                         AutofillTriggerSource::kKeyboardAccessory);
   } else if (frontend_id == POPUP_ITEM_ID_AUTOCOMPLETE_ENTRY ||
              frontend_id == POPUP_ITEM_ID_IBAN_ENTRY ||
              frontend_id == POPUP_ITEM_ID_MERCHANT_PROMO_CODE_ENTRY) {
@@ -223,7 +225,7 @@ void AutofillExternalDelegate::DidSelectSuggestion(
   } else if (frontend_id == POPUP_ITEM_ID_VIRTUAL_CREDIT_CARD_ENTRY) {
     manager_->FillOrPreviewVirtualCardInformation(
         mojom::RendererFormDataAction::kPreview, backend_id.value(),
-        query_form_, query_field_);
+        query_form_, query_field_, AutofillTriggerSource::kKeyboardAccessory);
   }
 }
 
@@ -273,8 +275,9 @@ void AutofillExternalDelegate::DidAcceptSuggestion(const Suggestion& suggestion,
                                                 query_form_, query_field_);
       break;
     case POPUP_ITEM_ID_SCAN_CREDIT_CARD:
-      manager_->client()->ScanCreditCard(base::BindOnce(
-          &AutofillExternalDelegate::OnCreditCardScanned, GetWeakPtr()));
+      manager_->client()->ScanCreditCard(
+          base::BindOnce(&AutofillExternalDelegate::OnCreditCardScanned,
+                         GetWeakPtr(), AutofillTriggerSource::kPopup));
       break;
     case POPUP_ITEM_ID_CREDIT_CARD_SIGNIN_PROMO:
       manager_->client()->ExecuteCommand(suggestion.frontend_id);
@@ -297,7 +300,7 @@ void AutofillExternalDelegate::DidAcceptSuggestion(const Suggestion& suggestion,
       manager_->FillOrPreviewVirtualCardInformation(
           mojom::RendererFormDataAction::kFill,
           suggestion.GetPayload<Suggestion::BackendId>().value(), query_form_,
-          query_field_);
+          query_field_, AutofillTriggerSource::kPopup);
       break;
     case POPUP_ITEM_ID_SEE_PROMO_CODE_DETAILS:
       manager_->OnSeePromoCodeOfferDetailsSelected(
@@ -309,7 +312,8 @@ void AutofillExternalDelegate::DidAcceptSuggestion(const Suggestion& suggestion,
         autofill_metrics::LogAutofillSuggestionAcceptedIndex(
             position, popup_type_, manager_->client()->IsOffTheRecord());
       }
-      FillAutofillFormData(suggestion.frontend_id, false);
+      FillAutofillFormData(suggestion.frontend_id, false,
+                           AutofillTriggerSource::kPopup);
       break;
   }
 
@@ -386,13 +390,17 @@ base::WeakPtr<AutofillExternalDelegate> AutofillExternalDelegate::GetWeakPtr() {
   return weak_ptr_factory_.GetWeakPtr();
 }
 
-void AutofillExternalDelegate::OnCreditCardScanned(const CreditCard& card) {
+void AutofillExternalDelegate::OnCreditCardScanned(
+    const AutofillTriggerSource trigger_source,
+    const CreditCard& card) {
   manager_->FillCreditCardFormImpl(query_form_, query_field_, card,
-                                   std::u16string());
+                                   std::u16string(), trigger_source);
 }
 
-void AutofillExternalDelegate::FillAutofillFormData(int unique_id,
-                                                    bool is_preview) {
+void AutofillExternalDelegate::FillAutofillFormData(
+    int unique_id,
+    bool is_preview,
+    const AutofillTriggerSource trigger_source) {
   // If the selected element is a warning we don't want to do anything.
   if (IsAutofillWarningEntry(unique_id))
     return;
@@ -404,7 +412,7 @@ void AutofillExternalDelegate::FillAutofillFormData(int unique_id,
   DCHECK(driver_->RendererIsAvailable());
   // Fill the values for the whole form.
   manager_->FillOrPreviewForm(renderer_action, query_form_, query_field_,
-                              unique_id);
+                              unique_id, trigger_source);
 }
 
 void AutofillExternalDelegate::PossiblyRemoveAutofillWarnings(
