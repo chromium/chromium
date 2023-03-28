@@ -41,6 +41,10 @@ void FakePersonalizationAppUserProvider::GetUserInfo(
 void FakePersonalizationAppUserProvider::GetDefaultUserImages(
     GetDefaultUserImagesCallback callback) {}
 
+bool FakePersonalizationAppUserProvider::IsCustomizationSelectorsPrefEnabled() {
+  return true;
+}
+
 void FakePersonalizationAppUserProvider::SelectDefaultImage(int index) {}
 
 void FakePersonalizationAppUserProvider::SelectProfileImage() {}

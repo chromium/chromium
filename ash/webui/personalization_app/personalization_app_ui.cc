@@ -420,6 +420,9 @@ void PersonalizationAppUI::AddBooleans(content::WebUIDataSource* source) {
 
   source->AddBoolean("isPersonalizationJellyEnabled",
                      features::IsPersonalizationJellyEnabled());
+
+  source->AddBoolean("isUserAvatarCustomizationSelectorsEnabled",
+                     user_provider_->IsCustomizationSelectorsPrefEnabled());
 }
 
 void PersonalizationAppUI::AddIntegers(content::WebUIDataSource* source) {

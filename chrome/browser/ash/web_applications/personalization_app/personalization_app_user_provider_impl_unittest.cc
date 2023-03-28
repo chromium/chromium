@@ -19,6 +19,7 @@
 #include "chrome/browser/ash/login/users/avatar/mock_user_image_manager.h"
 #include "chrome/browser/ash/login/users/avatar/user_image_manager.h"
 #include "chrome/browser/ash/login/users/avatar/user_image_manager_impl.h"
+#include "chrome/browser/ash/login/users/avatar/user_image_prefs.h"
 #include "chrome/browser/ash/login/users/default_user_image/default_user_images.h"
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
 #include "chrome/browser/ash/login/users/scoped_test_user_manager.h"
@@ -38,6 +39,7 @@
 #include "mojo/public/cpp/base/big_buffer.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
+#include "mojo/public/cpp/test_support/test_utils.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/skia/include/core/SkColor.h"
@@ -239,6 +241,11 @@ class PersonalizationAppUserProviderImplTest : public testing::Test {
       user_provider_remote_.FlushForTesting();
     }
     return test_user_image_observer_.is_enterprise_managed();
+  }
+
+  void disable_customization_selectors() {
+    profile()->GetPrefs()->SetBoolean(
+        user_image::prefs::kUserAvatarCustomizationSelectorsEnabled, false);
   }
 
   const base::HistogramTester& histogram_tester() { return histogram_tester_; }
@@ -515,6 +522,46 @@ TEST_F(PersonalizationAppUserProviderImplTest,
             current_user_image()->get_default_image().source_info->author);
   EXPECT_EQ(expected_source_info->website,
             current_user_image()->get_default_image().source_info->website);
+}
+
+TEST_F(PersonalizationAppUserProviderImplTest, SelectProfileImageDisabled) {
+  mojo::test::BadMessageObserver bad_message_observer;
+  disable_customization_selectors();
+
+  user_provider_remote()->get()->SelectProfileImage();
+  EXPECT_EQ(bad_message_observer.WaitForBadMessage(),
+            "Not allowed to select profile image");
+}
+
+TEST_F(PersonalizationAppUserProviderImplTest, SelectCameraImageDisabled) {
+  mojo::test::BadMessageObserver bad_message_observer;
+  disable_customization_selectors();
+
+  user_provider_remote()->get()->SelectCameraImage(FakeEncodedPngBuffer());
+
+  EXPECT_EQ(bad_message_observer.WaitForBadMessage(),
+            "Not allowed to select camera image");
+}
+
+TEST_F(PersonalizationAppUserProviderImplTest,
+       SelectLastExternalUserImageDisabled) {
+  mojo::test::BadMessageObserver bad_message_observer;
+  disable_customization_selectors();
+
+  user_provider_remote()->get()->SelectLastExternalUserImage();
+
+  EXPECT_EQ(bad_message_observer.WaitForBadMessage(),
+            "Not allowed to select last external image");
+}
+
+TEST_F(PersonalizationAppUserProviderImplTest, SelectImageFromDiskDisabled) {
+  mojo::test::BadMessageObserver bad_message_observer;
+  disable_customization_selectors();
+
+  user_provider_remote()->get()->SelectImageFromDisk();
+
+  EXPECT_EQ(bad_message_observer.WaitForBadMessage(),
+            "Not allowed to select image file");
 }
 
 class PersonalizationAppUserProviderImplWithMockTest

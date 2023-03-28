@@ -19,6 +19,7 @@
 #include "chrome/browser/ash/camera_presence_notifier.h"
 #include "chrome/browser/ash/login/users/avatar/user_image_file_selector.h"
 #include "chrome/browser/ash/login/users/avatar/user_image_manager.h"
+#include "chrome/browser/ash/login/users/avatar/user_image_prefs.h"
 #include "chrome/browser/ash/login/users/chrome_user_manager.h"
 #include "chrome/browser/ash/login/users/default_user_image/default_user_images.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
@@ -26,6 +27,7 @@
 #include "chrome/browser/ash/web_applications/personalization_app/personalization_app_manager_factory.h"
 #include "chrome/browser/ash/web_applications/personalization_app/personalization_app_utils.h"
 #include "chrome/browser/profiles/profile.h"
+#include "components/prefs/pref_service.h"
 #include "components/user_manager/user_image/user_image.h"
 #include "components/user_manager/user_info.h"
 #include "components/user_manager/user_manager.h"
@@ -162,6 +164,10 @@ void PersonalizationAppUserProviderImpl::GetDefaultUserImages(
 }
 
 void PersonalizationAppUserProviderImpl::SelectImageFromDisk() {
+  if (!IsCustomizationSelectorsPrefEnabled()) {
+    user_receiver_.ReportBadMessage("Not allowed to select image file");
+    return;
+  }
   user_image_file_selector_->SelectFile(
       base::BindOnce(&PersonalizationAppUserProviderImpl::OnFileSelected,
                      weak_ptr_factory_.GetWeakPtr()),
@@ -186,6 +192,11 @@ void PersonalizationAppUserProviderImpl::SelectDefaultImage(int index) {
 }
 
 void PersonalizationAppUserProviderImpl::SelectProfileImage() {
+  if (!IsCustomizationSelectorsPrefEnabled()) {
+    user_receiver_.ReportBadMessage("Not allowed to select profile image");
+    return;
+  }
+
   if (GetUser(profile_)->image_index() !=
       user_manager::User::USER_IMAGE_PROFILE) {
     ash::UserImageManager::RecordUserImageChanged(
@@ -201,6 +212,10 @@ void PersonalizationAppUserProviderImpl::SelectProfileImage() {
 
 void PersonalizationAppUserProviderImpl::SelectCameraImage(
     ::mojo_base::BigBuffer data) {
+  if (!IsCustomizationSelectorsPrefEnabled()) {
+    user_receiver_.ReportBadMessage("Not allowed to select camera image");
+    return;
+  }
   // Make a copy of the data.
   auto ref_counted =
       base::MakeRefCounted<base::RefCountedBytes>(data.data(), data.size());
@@ -215,6 +230,12 @@ void PersonalizationAppUserProviderImpl::SelectCameraImage(
 }
 
 void PersonalizationAppUserProviderImpl::SelectLastExternalUserImage() {
+  if (!IsCustomizationSelectorsPrefEnabled()) {
+    user_receiver_.ReportBadMessage(
+        "Not allowed to select last external image");
+    return;
+  }
+
   if (!last_external_user_image_) {
     LOG(WARNING) << "No last external user image present";
     return;
@@ -383,6 +404,10 @@ void PersonalizationAppUserProviderImpl::OnExternalUserImageEncoded(
   UpdateUserImageObserver(
       ash::personalization_app::mojom::UserImage::NewExternalImage(
           mojo_base::BigBuffer(std::move(encoded_png))));
+}
+
+bool PersonalizationAppUserProviderImpl::IsCustomizationSelectorsPrefEnabled() {
+  return user_image::prefs::IsCustomizationSelectorsPrefEnabled(profile_);
 }
 
 void PersonalizationAppUserProviderImpl::UpdateUserImageObserver(

@@ -14,6 +14,11 @@ class PersonalizationAppUserProvider : public mojom::UserProvider {
  public:
   virtual void BindInterface(
       mojo::PendingReceiver<mojom::UserProvider> receiver) = 0;
+
+  // Returns value of `kUserAvatarCustomizationSelectorsEnabled` pref. Avatar
+  // customization options that send data to google are only allowed if this
+  // pref is true.
+  virtual bool IsCustomizationSelectorsPrefEnabled() = 0;
 };
 
 }  // namespace ash::personalization_app

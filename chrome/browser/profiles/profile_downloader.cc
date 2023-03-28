@@ -192,10 +192,13 @@ void ProfileDownloader::FetchImageData() {
         policy {
           cookies_allowed: NO
           setting: "This feature cannot be disabled by settings."
-          policy_exception_justification:
-            "Not implemented, considered not useful as no content is being "
-            "uploaded or saved; this request merely downloads the user's "
-            "Google account image."
+          chrome_policy {
+            subProto1 {
+              UserAvatarCustomizationSelectorsEnabled {
+                UserAvatarCustomizationSelectorsEnabled: false
+              }
+            }
+          }
         })");
 
   VLOG(1) << "Loading profile image from " << image_url_to_fetch;

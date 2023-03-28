@@ -19,7 +19,7 @@ owners:
 - cowmoo@google.com
 schema:
   type: boolean
-future_on:
-- chrome_os
+supported_on:
+- chrome_os:114-
 tags: []
 type: main

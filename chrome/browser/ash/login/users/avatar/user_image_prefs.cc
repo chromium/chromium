@@ -18,8 +18,7 @@ void RegisterProfilePrefs(PrefRegistrySimple* registry) {
   registry->RegisterBooleanPref(kUserAvatarCustomizationSelectorsEnabled, true);
 }
 
-bool IsCustomizationSelectorsPrefEnabled() {
-  Profile* profile = ProfileManager::GetPrimaryUserProfile();
+bool IsCustomizationSelectorsPrefEnabled(Profile* profile) {
   PrefService* pref_service = profile->GetPrefs();
   return pref_service->GetBoolean(
       user_image::prefs::kUserAvatarCustomizationSelectorsEnabled);

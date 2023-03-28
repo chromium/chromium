@@ -66,6 +66,8 @@ class PersonalizationAppUserProviderImpl
   // avatar page for Personalization HaTS.
   void GetDefaultUserImages(GetDefaultUserImagesCallback callback) override;
 
+  bool IsCustomizationSelectorsPrefEnabled() override;
+
   void SelectImageFromDisk() override;
 
   void SelectDefaultImage(int index) override;

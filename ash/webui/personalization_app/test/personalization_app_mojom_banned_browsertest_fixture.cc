@@ -278,6 +278,8 @@ class MockPersonalizationAppUserProvider
               (::mojo_base::BigBuffer data),
               (override));
   MOCK_METHOD(void, SelectLastExternalUserImage, (), (override));
+
+  bool IsCustomizationSelectorsPrefEnabled() override { return true; }
 };
 
 }  // namespace

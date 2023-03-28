@@ -11,6 +11,7 @@ import {assert} from 'chrome://resources/js/assert_ts.js';
 import {Url} from 'chrome://resources/mojo/url/mojom/url.mojom-webui.js';
 
 import {DefaultUserImage, UserImage} from '../../personalization_app.mojom-webui.js';
+import {isUserAvatarCustomizationSelectorsEnabled} from '../load_time_booleans.js';
 import {setErrorAction} from '../personalization_actions.js';
 import {WithPersonalizationStore} from '../personalization_store.js';
 import {decodeString16, getCheckmarkIcon, isNonEmptyArray, isSelectionEvent} from '../utils.js';
@@ -97,6 +98,14 @@ export class AvatarList extends WithPersonalizationStore {
         value: null,
       },
 
+      /** Whether custom avatar selectors are enabled. */
+      isCustomizationSelectorsEnabled_: {
+        type: Boolean,
+        value() {
+          return isUserAvatarCustomizationSelectorsEnabled();
+        },
+      },
+
       /**
        * List of options to be displayed to the user.
        */
@@ -116,6 +125,7 @@ export class AvatarList extends WithPersonalizationStore {
   private defaultUserImages_: DefaultUserImage[]|null;
   private profileImage_: Url|null;
   private isCameraPresent_: boolean;
+  private isCustomizationSelectorsEnabled_: boolean;
   private cameraMode_: AvatarCameraMode|null;
   private image_: UserImage|null;
   private lastExternalUserImageUrl_: Url|null;
@@ -149,46 +159,48 @@ export class AvatarList extends WithPersonalizationStore {
       lastExternalUserImageUrl: AvatarList['lastExternalUserImageUrl_'],
       defaultUserImages: AvatarList['defaultUserImages_']) {
     const options: Option[] = [];
-    if (isCameraPresent) {
-      // Add camera and video options.
+    if (this.isCustomizationSelectorsEnabled_) {
+      if (isCameraPresent) {
+        // Add camera and video options.
+        options.push({
+          id: OptionId.OPEN_CAMERA,
+          class: 'avatar-button-container',
+          imgSrc: '',
+          icon: 'personalization:camera',
+          title: this.i18n('takeWebcamPhoto'),
+        });
+        options.push({
+          id: OptionId.OPEN_VIDEO,
+          class: 'avatar-button-container',
+          icon: 'personalization:loop',
+          title: this.i18n('takeWebcamVideo'),
+        });
+      }
+      // Add open folder option.
       options.push({
-        id: OptionId.OPEN_CAMERA,
+        id: OptionId.OPEN_FOLDER,
         class: 'avatar-button-container',
-        imgSrc: '',
-        icon: 'personalization:camera',
-        title: this.i18n('takeWebcamPhoto'),
+        icon: 'personalization:folder',
+        title: this.i18n('chooseAFile'),
       });
-      options.push({
-        id: OptionId.OPEN_VIDEO,
-        class: 'avatar-button-container',
-        icon: 'personalization:loop',
-        title: this.i18n('takeWebcamVideo'),
-      });
-    }
-    // Add open folder option.
-    options.push({
-      id: OptionId.OPEN_FOLDER,
-      class: 'avatar-button-container',
-      icon: 'personalization:folder',
-      title: this.i18n('chooseAFile'),
-    });
-    if (profileImage && profileImage.url) {
-      options.push({
-        id: OptionId.PROFILE_IMAGE,
-        class: 'image-container',
-        imgSrc: profileImage.url,
-        icon: getCheckmarkIcon(),
-        title: this.i18n('googleProfilePhoto'),
-      });
-    }
-    if (lastExternalUserImageUrl) {
-      options.push({
-        id: OptionId.LAST_EXTERNAL_IMAGE,
-        class: 'image-container',
-        imgSrc: lastExternalUserImageUrl.url,
-        icon: getCheckmarkIcon(),
-        title: this.i18n('lastExternalImageTitle'),
-      });
+      if (profileImage && profileImage.url) {
+        options.push({
+          id: OptionId.PROFILE_IMAGE,
+          class: 'image-container',
+          imgSrc: profileImage.url,
+          icon: getCheckmarkIcon(),
+          title: this.i18n('googleProfilePhoto'),
+        });
+      }
+      if (lastExternalUserImageUrl) {
+        options.push({
+          id: OptionId.LAST_EXTERNAL_IMAGE,
+          class: 'image-container',
+          imgSrc: lastExternalUserImageUrl.url,
+          icon: getCheckmarkIcon(),
+          title: this.i18n('lastExternalImageTitle'),
+        });
+      }
     }
     if (isNonEmptyArray(defaultUserImages)) {
       defaultUserImages.forEach(defaultImage => {

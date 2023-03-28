@@ -6,6 +6,7 @@ import 'chrome://personalization/strings.m.js';
 import 'chrome://webui-test/mojo_webui_test_support.js';
 
 import {AvatarCameraMode, AvatarList, UserActionName, UserImageObserver} from 'chrome://personalization/js/personalization_app.js';
+import {loadTimeData} from 'chrome://resources/ash/common/load_time_data.m.js';
 import {assertDeepEquals, assertEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {waitAfterNextRender} from 'chrome://webui-test/polymer_test_util.js';
 
@@ -166,5 +167,51 @@ suite('AvatarListTest', function() {
     assertTrue(
         !avatarListElement.shadowRoot!.querySelector('avatar-camera'),
         'avatar-camera should be gone because camera no longer available');
+  });
+
+  test('custom avatar selectors are shown with pref enabled', async () => {
+    testPersonalizationStore.data.user.isCameraPresent = true;
+    testPersonalizationStore.data.user.profileImage =
+        testUserProvider.profileImage;
+    avatarListElement = initElement(AvatarList);
+
+    await waitAfterNextRender(avatarListElement);
+
+    assertTrue(
+        !!avatarListElement!.shadowRoot!.getElementById('openCamera'),
+        'open camera button exists');
+    assertTrue(
+        !!avatarListElement!.shadowRoot!.getElementById('openVideo'),
+        'open video button exists');
+    assertTrue(
+        !!avatarListElement!.shadowRoot!.getElementById('openFolder'),
+        'open folder button exists');
+    assertTrue(
+        !!avatarListElement!.shadowRoot!.getElementById('profileImage'),
+        'select profile image button exists');
+  });
+
+  test('custom avatar selectors are not shown with pref disabled', async () => {
+    loadTimeData.overrideValues(
+        {isUserAvatarCustomizationSelectorsEnabled: false});
+    testPersonalizationStore.data.user.isCameraPresent = true;
+    testPersonalizationStore.data.user.profileImage =
+        testUserProvider.profileImage;
+    avatarListElement = initElement(AvatarList);
+
+    await waitAfterNextRender(avatarListElement);
+
+    assertTrue(
+        !avatarListElement!.shadowRoot!.getElementById('openCamera'),
+        'open camera button does not exist');
+    assertTrue(
+        !avatarListElement!.shadowRoot!.getElementById('openVideo'),
+        'open video button does not exist');
+    assertTrue(
+        !avatarListElement!.shadowRoot!.getElementById('openFolder'),
+        'open folder button does not exist');
+    assertTrue(
+        !avatarListElement!.shadowRoot!.getElementById('profileImage'),
+        'select profile button does not exist');
   });
 });

@@ -45,6 +45,7 @@ class FakePersonalizationAppUserProvider
           observer) override;
   void GetUserInfo(GetUserInfoCallback callback) override;
   void GetDefaultUserImages(GetDefaultUserImagesCallback callback) override;
+  bool IsCustomizationSelectorsPrefEnabled() override;
   void SelectDefaultImage(int index) override;
   void SelectProfileImage() override;
   void SelectCameraImage(::mojo_base::BigBuffer data) override;

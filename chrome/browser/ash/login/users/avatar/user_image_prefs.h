@@ -5,6 +5,8 @@
 #ifndef CHROME_BROWSER_ASH_LOGIN_USERS_AVATAR_USER_IMAGE_PREFS_H_
 #define CHROME_BROWSER_ASH_LOGIN_USERS_AVATAR_USER_IMAGE_PREFS_H_
 
+#include "chrome/browser/profiles/profile.h"
+
 class PrefRegistrySimple;
 
 namespace ash::user_image::prefs {
@@ -17,7 +19,7 @@ extern const char kUserAvatarCustomizationSelectorsEnabled[];
 void RegisterProfilePrefs(PrefRegistrySimple* registry);
 
 // Returns boolean value of the kUserAvatarCustomizationSelectorsEnabled pref.
-bool IsCustomizationSelectorsPrefEnabled();
+bool IsCustomizationSelectorsPrefEnabled(Profile* profile);
 
 }  // namespace ash::user_image::prefs
 

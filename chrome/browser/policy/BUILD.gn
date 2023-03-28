@@ -357,6 +357,7 @@ source_set("browser_tests") {
       "test/suggested_content_policy_browsertest.cc",
       "test/system_features_policy_browsertest.cc",
       "test/unified_desktop_enabled_browsertest.cc",
+      "test/user_avatar_customization_selectors_enabled_policy_browsertest.cc",
     ]
 
     deps += [

@@ -161,6 +161,10 @@ class UserImageManagerImpl : public UserImageManager,
   // Returns true if user with `user_id_` is logged in and has gaia account.
   bool IsUserLoggedInAndHasGaiaAccount() const;
 
+  // Returns true if user avatar customization selectors are enabled. Profile
+  // image download will only occur if this returns true
+  bool IsCustomizationSelectorsPrefEnabled() const;
+
   // The user manager.
   user_manager::UserManager* user_manager_;
 

@@ -27,6 +27,7 @@
 #include "base/values.h"
 #include "chrome/browser/ash/login/helper.h"
 #include "chrome/browser/ash/login/users/avatar/user_image_loader.h"
+#include "chrome/browser/ash/login/users/avatar/user_image_prefs.h"
 #include "chrome/browser/ash/login/users/avatar/user_image_sync_observer.h"
 #include "chrome/browser/ash/login/users/default_user_image/default_user_images.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
@@ -35,12 +36,14 @@
 #include "chrome/browser/profiles/profile_downloader.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/common/chrome_paths.h"
+#include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
 #include "components/policy/policy_constants.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
 #include "components/prefs/scoped_user_pref_update.h"
 #include "components/user_manager/user_image/user_image.h"
 #include "components/user_manager/user_manager.h"
+#include "content/public/browser/browser_context.h"
 #include "content/public/browser/storage_partition.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/chromeos/resources/grit/ui_chromeos_resources.h"
@@ -658,23 +661,26 @@ void UserImageManagerImpl::SaveUserDefaultImageIndex(int default_image_index) {
 
 void UserImageManagerImpl::SaveUserImage(
     std::unique_ptr<user_manager::UserImage> user_image) {
-  if (IsUserImageManaged())
+  if (IsUserImageManaged() || !IsCustomizationSelectorsPrefEnabled()) {
     return;
+  }
   job_ = std::make_unique<Job>(this);
   job_->SetToImage(user_manager::User::USER_IMAGE_EXTERNAL,
                    std::move(user_image));
 }
 
 void UserImageManagerImpl::SaveUserImageFromFile(const base::FilePath& path) {
-  if (IsUserImageManaged())
+  if (IsUserImageManaged() || !IsCustomizationSelectorsPrefEnabled()) {
     return;
+  }
   job_ = std::make_unique<Job>(this);
   job_->SetToPath(path, user_manager::User::USER_IMAGE_EXTERNAL, GURL(), true);
 }
 
 void UserImageManagerImpl::SaveUserImageFromProfileImage() {
-  if (IsUserImageManaged())
+  if (IsUserImageManaged() || !IsCustomizationSelectorsPrefEnabled()) {
     return;
+  }
   // Use the profile image if it has been downloaded already. Otherwise, use a
   // stub image (gray avatar).
   std::unique_ptr<user_manager::UserImage> user_image;
@@ -904,11 +910,10 @@ void UserImageManagerImpl::TryToInitDownloadedProfileImage() {
   }
 }
 
-// TODO(b/271606439): Check IsCustomizationSelectorsPrefEnabled() to disable
-// image download by policy.
 bool UserImageManagerImpl::NeedProfileImage() const {
   const user_manager::User* user = GetUser();
   return IsUserLoggedInAndHasGaiaAccount() &&
+         IsCustomizationSelectorsPrefEnabled() &&
          (user->image_index() == user_manager::User::USER_IMAGE_PROFILE ||
           profile_image_requested_);
 }
@@ -998,6 +1003,14 @@ bool UserImageManagerImpl::IsUserLoggedInAndHasGaiaAccount() const {
   if (!user)
     return false;
   return user->is_logged_in() && user->HasGaiaAccount();
+}
+
+bool UserImageManagerImpl::IsCustomizationSelectorsPrefEnabled() const {
+  const user_manager::User* user = GetUser();
+  content::BrowserContext* browser_context =
+      BrowserContextHelper::Get()->GetBrowserContextByUser(user);
+  Profile* profile = Profile::FromBrowserContext(browser_context);
+  return user_image::prefs::IsCustomizationSelectorsPrefEnabled(profile);
 }
 
 }  // namespace ash
