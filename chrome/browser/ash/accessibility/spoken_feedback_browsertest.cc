@@ -1671,10 +1671,8 @@ IN_PROC_BROWSER_TEST_P(SpokenFeedbackTest,
   sm_.Replay();
 }
 
-// TODO(https://crbug.com/1064947): Flaky on ASAN. (Note MAYBE_ doesn't work
-// well with parameterized tests).
-#if !defined(ADDRESS_SANITIZER)
-IN_PROC_BROWSER_TEST_P(SpokenFeedbackTest, ResetTtsSettings) {
+// TODO(https://crbug.com/1064947): Flaky on ASAN and linux-chromeos-dbg.
+IN_PROC_BROWSER_TEST_P(SpokenFeedbackTest, DISABLED_ResetTtsSettings) {
   EnableChromeVox();
   sm_.Call([this]() {
     ASSERT_TRUE(ui_test_utils::NavigateToURL(
@@ -1706,7 +1704,6 @@ IN_PROC_BROWSER_TEST_P(SpokenFeedbackTest, ResetTtsSettings) {
   sm_.ExpectSpeech("Pitch 50 percent");
   sm_.Replay();
 }
-#endif  // !defined(ADDRESS_SANITIZER)
 
 // Tests the keyboard shortcut to cycle the punctuation echo setting,
 // Search+A then P.
