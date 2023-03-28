@@ -1453,7 +1453,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Network.DnsProxy.DnsOverHttpsQuery.HttpErrors"
-    enum="DnsProxy.HttpError" expires_after="2023-05-07">
+    enum="DnsProxy.HttpError" expires_after="2023-12-31">
   <owner>garrick@chromium.org</owner>
   <owner>cros-network-metrics@google.com</owner>
   <summary>
@@ -1473,7 +1473,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Network.DnsProxy.PlainTextProbe.{Family}.Errors"
-    enum="DnsProxy.QueryResult" expires_after="2023-05-07">
+    enum="DnsProxy.QueryResult" expires_after="2023-12-31">
   <owner>jasongustaman@chromium.org</owner>
   <owner>cros-network-metrics@google.com</owner>
   <summary>
@@ -1488,7 +1488,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Network.DnsProxy.PlainTextProbe.{Family}.FailedRetries"
-    units="count" expires_after="2023-05-07">
+    units="count" expires_after="2023-12-31">
   <owner>jasongustaman@chromium.org</owner>
   <owner>cros-network-metrics@google.com</owner>
   <summary>
@@ -1503,7 +1503,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Network.DnsProxy.PlainTextProbe.{Family}.Results"
-    enum="DnsProxy.QueryResult" expires_after="2023-05-07">
+    enum="DnsProxy.QueryResult" expires_after="2023-12-31">
   <owner>jasongustaman@chromium.org</owner>
   <owner>cros-network-metrics@google.com</owner>
   <summary>
@@ -1518,7 +1518,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Network.DnsProxy.PlainTextProbe.{Family}.ResultsWithRetries"
-    enum="DnsProxy.QueryResult" expires_after="2023-05-07">
+    enum="DnsProxy.QueryResult" expires_after="2023-12-31">
   <owner>jasongustaman@chromium.org</owner>
   <owner>cros-network-metrics@google.com</owner>
   <summary>
@@ -1534,7 +1534,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Network.DnsProxy.PlainTextProbe.{Family}.RetriesUntilSuccess"
-    units="count" expires_after="2023-05-07">
+    units="count" expires_after="2023-12-31">
   <owner>jasongustaman@chromium.org</owner>
   <owner>cros-network-metrics@google.com</owner>
   <summary>
@@ -1549,7 +1549,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Network.DnsProxy.Query.Failed{Stage}Duration" units="ms"
-    expires_after="2023-05-07">
+    expires_after="2023-12-31">
   <owner>garrick@chromium.org</owner>
   <owner>cros-network-metrics@google.com</owner>
   <summary>
@@ -1585,7 +1585,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Network.DnsProxy.Query.{Stage}Duration" units="ms"
-    expires_after="2023-05-07">
+    expires_after="2023-12-31">
   <owner>garrick@chromium.org</owner>
   <owner>cros-network-metrics@google.com</owner>
   <summary>
@@ -1621,7 +1621,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Network.DnsProxy.{Family}Nameservers" units="units"
-    expires_after="2023-05-07">
+    expires_after="2023-12-31">
   <owner>garrick@chromium.org</owner>
   <owner>cros-network-metrics@google.com</owner>
   <summary>
@@ -1636,7 +1636,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Network.DnsProxy.{ProcessType}.Event"
-    enum="DnsProxy.ProcessEvent" expires_after="2023-05-07">
+    enum="DnsProxy.ProcessEvent" expires_after="2023-12-31">
   <owner>garrick@chromium.org</owner>
   <owner>cros-network-metrics@google.com</owner>
   <summary>
@@ -1654,7 +1654,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Network.DnsProxy.{Type}Query.Errors"
-    enum="DnsProxy.QueryError" expires_after="2023-05-07">
+    enum="DnsProxy.QueryError" expires_after="2023-12-31">
   <owner>garrick@chromium.org</owner>
   <owner>cros-network-metrics@google.com</owner>
   <summary>
@@ -1669,7 +1669,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Network.DnsProxy.{Type}Query.FailedResolveDuration" units="ms"
-    expires_after="2023-05-07">
+    expires_after="2023-12-31">
   <owner>garrick@chromium.org</owner>
   <owner>cros-network-metrics@google.com</owner>
   <summary>
@@ -1690,7 +1690,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Network.DnsProxy.{Type}Query.ResolveDuration" units="ms"
-    expires_after="2023-05-07">
+    expires_after="2023-12-31">
   <owner>garrick@chromium.org</owner>
   <owner>cros-network-metrics@google.com</owner>
   <summary>
@@ -1711,7 +1711,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Network.DnsProxy.{Type}Query.Results"
-    enum="DnsProxy.QueryResult" expires_after="2023-05-07">
+    enum="DnsProxy.QueryResult" expires_after="2023-12-31">
   <owner>garrick@chromium.org</owner>
   <owner>cros-network-metrics@google.com</owner>
   <summary>
@@ -1726,7 +1726,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Network.DnsProxy.{Type}Query.ResultsWithRetries"
-    enum="DnsProxy.QueryResult" expires_after="2023-05-07">
+    enum="DnsProxy.QueryResult" expires_after="2023-12-31">
   <owner>garrick@chromium.org</owner>
   <owner>cros-network-metrics@google.com</owner>
   <summary>
@@ -2509,7 +2509,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Network.Shill.PPPMTUValue" units="bytes"
-    expires_after="2023-05-07">
+    expires_after="2023-12-31">
   <owner>jiejiang@chromium.org</owner>
   <owner>cros-network-metrics@google.com</owner>
   <summary>
@@ -2692,7 +2692,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Network.Shill.Vpn.WireGuardKeyPairSource"
-    enum="VPNWireGuardKeyPairSource" expires_after="2023-05-07">
+    enum="VPNWireGuardKeyPairSource" expires_after="2023-12-31">
   <owner>jiejiang@chromium.org</owner>
   <owner>cros-network-metrics@google.com</owner>
   <summary>
