@@ -6282,6 +6282,48 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
   }
 }
 
+// Test that the FLEDGE properly handles detached documents.
+IN_PROC_BROWSER_TEST_P(InterestGroupFencedFrameBrowserTest,
+                       DetachedDocumentDoesNotCrash) {
+  const char* kTestCases[] = {
+      R"(runAdAuction({
+        seller: "foo", // required
+        decisionLogicUrl: "foo", // required
+      }, 0.0)
+    )",
+      R"(joinAdInterestGroup({
+        owner: "foo", // required
+        name: "foo", // required
+      })
+    )",
+      "leaveAdInterestGroup()",
+      "updateAdInterestGroups()",
+      "adAuctionComponents(1)",
+      R"(deprecatedURNToURL("foo")
+    )",
+      R"(deprecatedReplaceInURN("foo", {}))",
+      "canLoadAdAuctionFencedFrame()"};
+
+  GURL main_url = https_server_->GetURL("b.test", "/page_with_iframe.html");
+
+  for (const auto* test_case : kTestCases) {
+    ASSERT_TRUE(NavigateToURL(shell(), main_url));
+
+    EvalJsResult result = EvalJs(shell(), base::StringPrintf(R"(
+        try {
+          let child = document.getElementById("test_iframe");
+          const detachedNavigator = child.contentWindow.navigator;
+          child.remove();
+          detachedNavigator.%s;
+        } catch(e) {
+        }
+        "Did not crash"
+      )",
+                                                             test_case));
+    EXPECT_EQ("Did not crash", result) << test_case;
+  }
+}
+
 // Runs auction just like test InterestGroupBrowserTest.RunAdAuctionWithWinner,
 // but runs with fenced frames enabled and expects to receive a URN URL to be
 // used. After the auction, loads the URL in a fenced frame, and expects the
