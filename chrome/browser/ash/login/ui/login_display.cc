@@ -6,8 +6,6 @@
 
 namespace ash {
 
-LoginDisplay::Delegate::~Delegate() = default;
-
 LoginDisplay::LoginDisplay() = default;
 
 LoginDisplay::~LoginDisplay() = default;

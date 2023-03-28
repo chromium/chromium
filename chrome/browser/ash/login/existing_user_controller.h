@@ -55,8 +55,7 @@ class PinSaltStorage;
 // ExistingUserController is used to handle login when someone has already
 // logged into the machine. ExistingUserController is created and owned by
 // LoginDisplayHost.
-class ExistingUserController : public LoginDisplay::Delegate,
-                               public content::NotificationObserver,
+class ExistingUserController : public content::NotificationObserver,
                                public LoginPerformer::Delegate,
                                public UserSessionManagerDelegate,
                                public user_manager::UserManager::Observer,
@@ -97,10 +96,10 @@ class ExistingUserController : public LoginDisplay::Delegate,
   // Returns name of the currently connected network, for error message,
   std::u16string GetConnectedNetworkName() const;
 
-  // LoginDisplay::Delegate: implementation
-  void Login(const UserContext& user_context,
-             const SigninSpecifics& specifics) override;
-  void OnStartKioskEnableScreen() override;
+  // This is virtual for mocking in the unit tests.
+  virtual void Login(const UserContext& user_context,
+                     const SigninSpecifics& specifics);
+  void OnStartKioskEnableScreen();
 
   // ui::UserActivityObserver:
   void OnUserActivity(const ui::Event* event) override;

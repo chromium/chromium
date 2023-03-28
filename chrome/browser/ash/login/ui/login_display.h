@@ -10,26 +10,9 @@
 
 namespace ash {
 
-class UserContext;
-
-// TODO(nkostylev): Extract interface, create a BaseLoginDisplay class.
 // An abstract class that defines login UI implementation.
 class LoginDisplay {
  public:
-  class Delegate {
-   public:
-    // Sign in using `username` and `password` specified.
-    // Used for known users only.
-    virtual void Login(const UserContext& user_context,
-                       const SigninSpecifics& specifics) = 0;
-
-    // Called when the user requests kiosk enable screen.
-    virtual void OnStartKioskEnableScreen() = 0;
-
-   protected:
-    virtual ~Delegate();
-  };
-
   LoginDisplay();
 
   LoginDisplay(const LoginDisplay&) = delete;
@@ -43,13 +26,6 @@ class LoginDisplay {
 
   // Changes enabled state of the UI.
   virtual void SetUIEnabled(bool is_enabled) = 0;
-
-  Delegate* delegate() { return delegate_; }
-  void set_delegate(Delegate* delegate) { delegate_ = delegate; }
-
- protected:
-  // Login UI delegate (controller).
-  Delegate* delegate_ = nullptr;
 };
 
 }  // namespace ash

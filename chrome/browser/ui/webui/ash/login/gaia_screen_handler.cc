@@ -12,6 +12,7 @@
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_switches.h"
 #include "ash/public/cpp/login_screen.h"
+#include "base/check_deref.h"
 #include "base/check_op.h"
 #include "base/containers/contains.h"
 #include "base/containers/flat_set.h"
@@ -895,9 +896,10 @@ void GaiaScreenHandler::HandleLaunchSAMLPublicSession(
 
   UserContext context(user_manager::USER_TYPE_PUBLIC_ACCOUNT, account_id);
 
-  // TODO(https://crbug.com/1298392): Refactor this.
-  LoginDisplayHost::default_host()->GetLoginDisplay()->delegate()->Login(
-      context, SigninSpecifics());
+  auto& existing_user_controller =
+      CHECK_DEREF(ExistingUserController::current_controller());
+
+  existing_user_controller.Login(context, SigninSpecifics());
 }
 
 void GaiaScreenHandler::HandleUsingSAMLAPI(bool is_third_party_idp) {

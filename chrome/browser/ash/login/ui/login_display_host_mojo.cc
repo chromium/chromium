@@ -805,7 +805,6 @@ void LoginDisplayHostMojo::StopObservingOobeUI() {
 
 void LoginDisplayHostMojo::CreateExistingUserController() {
   existing_user_controller_ = std::make_unique<ExistingUserController>();
-  login_display_->set_delegate(existing_user_controller_.get());
 
   // We need auth attempt results to notify views-based login screen.
   existing_user_controller_->AddLoginStatusConsumer(this);
