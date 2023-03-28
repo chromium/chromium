@@ -56,4 +56,19 @@ TEST(EnterpriseConnectorsProtoTest, TriggeredRuleActionEnum) {
   EXPECT_EQ((int)ChromiumRule::BLOCK, (int)SdkRule::BLOCK);
 }
 
+using ChromiumPrintMetadata =
+    enterprise_connectors::ContentMetaData::PrintMetadata;
+using SdkPrintMetadata = content_analysis::sdk::ContentMetaData::PrintMetadata;
+
+TEST(EnterpriseConnectorsProtoTest, PrintTypeEnum) {
+  EXPECT_EQ(ChromiumPrintMetadata::PrinterType_ARRAYSIZE, 3);
+  EXPECT_EQ(ChromiumPrintMetadata::PrinterType_ARRAYSIZE,
+            SdkPrintMetadata::PrinterType_ARRAYSIZE);
+
+  EXPECT_EQ((int)ChromiumPrintMetadata::UNKNOWN,
+            (int)SdkPrintMetadata::UNKNOWN);
+  EXPECT_EQ((int)ChromiumPrintMetadata::CLOUD, (int)SdkPrintMetadata::CLOUD);
+  EXPECT_EQ((int)ChromiumPrintMetadata::LOCAL, (int)SdkPrintMetadata::LOCAL);
+}
+
 }  // namespace enterprise_connectors

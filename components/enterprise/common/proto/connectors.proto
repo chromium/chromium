@@ -58,6 +58,19 @@ message ContentMetaData {
 
   // URL of the tab. Only different from `url` for downloads.
   optional string tab_url = 10;
+
+  // Empty for non-print actions.
+  message PrintMetadata {
+    optional string printer_name = 1;
+
+    enum PrinterType {
+      UNKNOWN = 0;
+      CLOUD = 1;
+      LOCAL = 2;
+    }
+    optional PrinterType printer_type = 2;
+  }
+  optional PrintMetadata print_metadata = 11;
 }
 
 message ClientMetadata {
