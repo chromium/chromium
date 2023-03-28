@@ -10,6 +10,7 @@
 
 #include "components/attribution_reporting/registration_type.mojom-blink-forward.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "third_party/blink/public/common/tokens/tokens.h"
 #include "third_party/blink/public/mojom/conversions/attribution_reporting.mojom-blink-forward.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/platform/heap/forward.h"
@@ -95,7 +96,7 @@ class CORE_EXPORT AttributionSrcLoader
   ResourceClient* DoRegistration(
       const KURL& src_url,
       attribution_reporting::mojom::blink::RegistrationType,
-      bool associated_with_navigation);
+      absl::optional<AttributionSrcToken>);
 
   // Returns the reporting origin corresponding to `url` if its protocol is in
   // the HTTP family, its origin is potentially trustworthy, and attribution is
@@ -111,7 +112,7 @@ class CORE_EXPORT AttributionSrcLoader
       const KURL& src_url,
       HTMLElement* element,
       attribution_reporting::mojom::blink::RegistrationType,
-      bool associated_with_navigation);
+      absl::optional<AttributionSrcToken>);
 
   // Returns whether OS-level attribution is supported.
   bool HasOsSupport() const;
