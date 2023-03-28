@@ -47,7 +47,7 @@
 <translation id="1919950603503897840">اختيار جهات الاتصال</translation>
 <translation id="1923695749281512248"><ph name="BYTES_DOWNLOADED_WITH_UNITS" /> / <ph name="FILE_SIZE_WITH_UNITS" /></translation>
 <translation id="1979673356880165407">يمكنك تكبير أو تصغير النص والصور لجميع المواقع الإلكترونية التي تزورها.</translation>
-<translation id="1984937141057606926">مسموح باستثناء الجهات الخارجية</translation>
+<translation id="1984937141057606926">مسموح بها، باستثناء التابعة لجهات خارجية</translation>
 <translation id="1989112275319619282">تصفّح</translation>
 <translation id="1994173015038366702">‏عنوان URL للموقع</translation>
 <translation id="2004697686368036666">قد لا تعمل الميزات على بعض المواقع الإلكترونية.</translation>
@@ -117,7 +117,7 @@
 <translation id="3109724472072898302">مصغّر</translation>
 <translation id="3114012059975132928">مشغّل الفيديو</translation>
 <translation id="3115898365077584848">عرض المعلومات</translation>
-<translation id="3123473560110926937">حظر الإعلانات في بعض المواقع</translation>
+<translation id="3123473560110926937">محظورة في بعض المواقع</translation>
 <translation id="3143754809889689516">التشغيل من البداية</translation>
 <translation id="3162899666601560689">يسمح هذا الإجراء للمواقع الإلكترونية باستخدام ملفات تعريف الارتباط لتحسين تجربة التصفُّح، مثل إبقائك مُسجِّلاً الدخول أو تذكُّر عناصر في سلة التسوق.</translation>
 <translation id="3165022941318558018">يمكنك السماح لأحد المواقع الإلكترونية باستخدام ملفات تعريف الارتباط التابعة لجهات خارجية.</translation>
@@ -161,7 +161,7 @@
 <translation id="3859306556332390985">الانتقال للأمام</translation>
 <translation id="3895926599014793903">فرض تفعيل التكبير أو التصغير</translation>
 <translation id="3908288065506437185">حظر ملفات تعريف الارتباط التابعة لجهات خارجية في وضع التصفُّح المتخفي</translation>
-<translation id="3918378745482005425">قد لا تعمل بعض الميزات. لا يزال بإمكان المواقع الإلكترونية ذات الصلة استخدام ملفات تعريف الارتباط التابعة لجهات خارجية.</translation>
+<translation id="3918378745482005425">قد لا تعمل بعض الميزات، ولكن لا يزال بإمكان المواقع الإلكترونية ذات الصلة استخدام ملفات تعريف الارتباط التابعة لجهات خارجية.</translation>
 <translation id="3955193568934677022">السماح للمواقع الإلكترونية بتشغيل المحتوى المحمي (مُستحسَن)</translation>
 <translation id="3967822245660637423">اكتمل التنزيل</translation>
 <translation id="3987993985790029246">نسخ الرابط</translation>
@@ -178,13 +178,13 @@
 <translation id="4200726100658658164">فتح إعدادات الموقع الجغرافي</translation>
 <translation id="4226663524361240545">يمكن أن تؤدي الإشعارات إلى اهتزاز الجهاز</translation>
 <translation id="4259722352634471385">التنقل محظور: <ph name="URL" /></translation>
-<translation id="4278390842282768270">منح الإذن</translation>
+<translation id="4278390842282768270">مسموح به</translation>
 <translation id="429312253194641664">تفعيل موقع إلكتروني للوسائط</translation>
 <translation id="42981349822642051">توسيع</translation>
 <translation id="4336434711095810371">محو جميع البيانات</translation>
 <translation id="4338831206024587507">جميع المواقع الإلكترونية ضمن <ph name="DOMAIN" /></translation>
 <translation id="4402755511846832236">منع المواقع الإلكترونية من رصد استخدامك النشط لهذا الجهاز</translation>
-<translation id="4412992751769744546">السماح لملفات تعريف ارتباط الجهات الخارجية</translation>
+<translation id="4412992751769744546">السماح بملفات تعريف الارتباط التابعة لجهات خارجية</translation>
 <translation id="4428065317363009941">تخصيص الإعلانات</translation>
 <translation id="4434045419905280838">النوافذ المنبثقة وإعادة التوجيه</translation>
 <translation id="4440642537584213025">توسيع <ph name="TARGET_DESCRIPTION" /></translation>
@@ -225,7 +225,7 @@
 <translation id="5134599672855298214">طلب العرض المخصّص للجهاز الجوّال (يُنصح به)</translation>
 <translation id="5186036860380548585">يمكنك العثور على خيار حفظ كلمة المرور بالقرب من أعلى الشاشة.</translation>
 <translation id="5197729504361054390">ستتم مشاركة جهات الاتصال التي تختارها مع الموقع الإلكتروني <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" />.</translation>
-<translation id="5216942107514965959">تمّت زيارة الموقع الإلكتروني آخر مرّة اليوم.</translation>
+<translation id="5216942107514965959">تمّت زيارة الموقع الإلكتروني آخر مرّة اليوم</translation>
 <translation id="5225463052809312700">تفعيل الكاميرا</translation>
 <translation id="5234764350956374838">تجاهل</translation>
 <translation id="5264323282659631142">إزالة شريحة "<ph name="CHIP_LABEL" />"</translation>
@@ -253,7 +253,7 @@
 <translation id="5596627076506792578">خيارات إضافية</translation>
 <translation id="5649053991847567735">عمليات التنزيل التلقائية</translation>
 <translation id="5668404140385795438">تجاوز طلب الموقع الإلكتروني لمنع التكبير</translation>
-<translation id="5677928146339483299">الحظر</translation>
+<translation id="5677928146339483299">محظور</translation>
 <translation id="5689516760719285838">الموقع الجغرافي</translation>
 <translation id="5690795753582697420">‏تم إيقاف الكاميرا في إعدادات Android.</translation>
 <translation id="5706552988683188916">يؤدي هذا الإجراء إلى حذف ملفات تعريف الارتباط وبيانات الموقع الإلكتروني الأخرى لـ "<ph name="WEBSITE" />".</translation>
@@ -284,7 +284,7 @@
 <translation id="6177128806592000436">إن اتصالك بهذا الموقع غير آمن</translation>
 <translation id="6181444274883918285">إضافة موقع إلكتروني إلى قائمة الاستثناءات</translation>
 <translation id="6192792657125177640">الاستثناءات</translation>
-<translation id="6196640612572343990">حظر ملفات تعريف الارتباط للجهات الخارجية</translation>
+<translation id="6196640612572343990">حظر ملفات تعريف الارتباط التابعة لجهات خارجية</translation>
 <translation id="6205314730813004066">الخصوصية في عرض الإعلانات</translation>
 <translation id="6216432067784365534">خيارات <ph name="NAME_OF_LIST_ITEM" /></translation>
 <translation id="6231752747840485235">هل تريد إلغاء تثبيت "<ph name="APP_NAME" />"؟</translation>
@@ -336,7 +336,7 @@
 <translation id="7141896414559753902">منع المواقع الإلكترونية من عرض النوافذ المنبثقة وعمليات إعادة التوجيه (مُوصى به)</translation>
 <translation id="7176368934862295254"><ph name="KILOBYTES" /> كيلوبايت</translation>
 <translation id="7180611975245234373">إعادة التحميل</translation>
-<translation id="7188508872042490670">بيانات الموقع الإلكتروني على الجهاز فقط</translation>
+<translation id="7188508872042490670">بيانات المواقع الإلكترونية على الجهاز فقط</translation>
 <translation id="7203150201908454328">موسع</translation>
 <translation id="723171743924126238">اختيار الصور</translation>
 <translation id="7243308994586599757">الخيارات المتاحة بالقرب من الجزء السفلي من الشاشة</translation>

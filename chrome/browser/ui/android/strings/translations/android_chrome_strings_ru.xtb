@@ -72,7 +72,7 @@
 <translation id="1331212799747679585">Не удалось обновить Chrome. Другие настройки</translation>
 <translation id="1332100670807501334">Сайты, которые вы посещаете, смогут проводить оценку эффективности рекламы, запрашивая информацию у Chrome. Оценка эффективности рекламы ограничивает межсайтовое отслеживание, сокращая объем информации, передаваемой между сайтами, до минимума.
 
-Если вы удалите историю браузера целиком или для конкретного сайта, то связанные данные об оценке будут также удалены. <ph name="BEGIN_LINK" />Посмотреть историю браузера<ph name="END_LINK" />.</translation>
+Если вы удалите историю браузера целиком или для конкретного сайта, то связанные данные для оценки будут также удалены. <ph name="BEGIN_LINK" />Посмотреть историю браузера<ph name="END_LINK" />.</translation>
 <translation id="1332501820983677155">Функции Google Chrome</translation>
 <translation id="1344653310988386453">Добавьте ссылку на выделенный текст.</translation>
 <translation id="1347468774581902829">Управление историей</translation>
@@ -293,7 +293,7 @@
 <translation id="2612676031748830579">Номер карты</translation>
 <translation id="2625189173221582860">Пароль скопирован</translation>
 <translation id="2642087927315268160">Нижний экран входа в аккаунт закрыт.</translation>
-<translation id="2643064289437760082">Вы всегда можете стереть сведения об оценке эффективности рекламы, удалив данные о работе в браузере.</translation>
+<translation id="2643064289437760082">Вы всегда можете стереть сведения для оценки эффективности рекламы, удалив данные о работе в браузере.</translation>
 <translation id="2647434099613338025">Добавить язык</translation>
 <translation id="2649068648233607930">Вашим браузером управляет <ph name="DOMAIN" /></translation>
 <translation id="2650348088770008516">Пояснение для руководства по конфиденциальности закрыто</translation>
@@ -333,7 +333,7 @@
 <translation id="2870560284913253234">Сайт</translation>
 <translation id="2871733351037274014">Предзагрузка страниц</translation>
 <translation id="2876136027428473467"><ph name="CHILD_NAME" /> просит разрешить доступ к сайту:</translation>
-<translation id="2886836735871983413">Когда вы начнете просматривать страницы в интернете, здесь появится список сайтов</translation>
+<translation id="2886836735871983413">Когда вы начнете просматривать страницы в интернете, здесь появится список сайтов.</translation>
 <translation id="2888126860611144412">О браузере Chrome</translation>
 <translation id="2891154217021530873">Остановить загрузку страницы</translation>
 <translation id="2893180576842394309">Google может использовать вашу историю, чтобы персонализировать Поиск и другие сервисы.</translation>
@@ -480,7 +480,7 @@
 <translation id="3566639033325271639">Обновить настройки</translation>
 <translation id="357465026686164600">Телефон как электронный ключ</translation>
 <translation id="3577473026931028326">Произошла ошибка. Повторите попытку.</translation>
-<translation id="3578874072190212775">Вы можете помогать сайтам бороться с мошенничеством и отличать ботов от людей</translation>
+<translation id="3578874072190212775">Помогает сайтам бороться с мошенничеством и отличать ботов от людей</translation>
 <translation id="3587482841069643663">Все</translation>
 <translation id="3587596251841506391">Помогать Google делать Интернет безопаснее</translation>
 <translation id="3597179440835065298">Более подходящие подсказки</translation>
@@ -664,12 +664,12 @@
 <translation id="4662373422909645029">Название не должно содержать цифры.</translation>
 <translation id="4663499661119906179">Интересные сайты и новости для вас</translation>
 <translation id="4663756553811254707">Удалено закладок: <ph name="NUMBER_OF_BOOKMARKS" /></translation>
-<translation id="4668279686271488041">Данные об оценке эффективности рекламы регулярно удаляются с вашего устройства.</translation>
+<translation id="4668279686271488041">Данные для оценки эффективности рекламы регулярно удаляются с вашего устройства.</translation>
 <translation id="4668347365065281350">Все данные, хранимые на устройстве сайтами, включая файлы cookie.</translation>
 <translation id="4678082183394354975">Тёмная тема для сайтов включена в Chrome.</translation>
 <translation id="4684427112815847243">Синхронизировать все</translation>
 <translation id="4685741273709472646">Выберите из списка</translation>
-<translation id="4687718960473379118">Реклама, предлагаемая приложениями</translation>
+<translation id="4687718960473379118">Реклама, предлагаемая сайтами</translation>
 <translation id="4689792375321623175">Искать через Объектив <ph name="BEGIN_NEW" />Новинка<ph name="END_NEW" /></translation>
 <translation id="4695891336199304370">{SHIPPING_OPTIONS,plural, =1{<ph name="SHIPPING_OPTION_PREVIEW" /> и ещё <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> способ доставки}one{<ph name="SHIPPING_OPTION_PREVIEW" /> и ещё <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> способ доставки}few{<ph name="SHIPPING_OPTION_PREVIEW" /> и ещё <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> способа доставки}many{<ph name="SHIPPING_OPTION_PREVIEW" /> и ещё <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> способов доставки}other{<ph name="SHIPPING_OPTION_PREVIEW" /> и ещё <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> способа доставки}}</translation>
 <translation id="4699172675775169585">Изображения и другие файлы, сохраненные в кеше</translation>
@@ -1454,7 +1454,7 @@
 <translation id="8683039184091909753">Изображение</translation>
 <translation id="869891660844655955">Срок действия</translation>
 <translation id="8699120352855309748">Не предлагать переводить страницы на этих языках</translation>
-<translation id="8712637175834984815">Готово</translation>
+<translation id="8712637175834984815">OK</translation>
 <translation id="8725066075913043281">Повторить попытку</translation>
 <translation id="8746155870861185046">Поделиться выделенным</translation>
 <translation id="874726034427945498">Чтобы получать более точные подсказки в адресной строке, включите синхронизацию вкладок и истории.</translation>
@@ -1564,7 +1564,7 @@
 <translation id="96681097142096641">Посмотреть страницу в упрощенном виде?</translation>
 <translation id="968900484120156207">Здесь будут страницы, которые вы посещали.</translation>
 <translation id="970715775301869095">Осталось <ph name="MINUTES" /> мин.</translation>
-<translation id="978317418833355355">Вы можете блокировать ненужные сайты. Chrome также автоматически удаляет их из списка через 4 недели с момента добавления. <ph name="BEGIN_LINK" />Подробнее…<ph name="END_LINK" /></translation>
+<translation id="978317418833355355">Вы можете заблокировать ненужные сайты. Chrome также автоматически удаляет из списка сайты, добавленные более 4 недель назад. <ph name="BEGIN_LINK" />Подробнее…<ph name="END_LINK" /></translation>
 <translation id="981121421437150478">Офлайн</translation>
 <translation id="983192555821071799">Закрыть все вкладки</translation>
 <translation id="987264212798334818">Общие</translation>
