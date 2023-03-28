@@ -50,6 +50,12 @@ enum class AshAuthFactor {
   kLegacyFingerprint,
 };
 
+enum AuthHubMode {
+  kNone,         // State before initialization
+  kLoginScreen,  // Login screen, no profile data available.
+  kInSession     // In-session mode, user is fixed, but purposes might change.
+};
+
 }  // namespace ash
 
 #endif  // CHROMEOS_ASH_COMPONENTS_OSAUTH_PUBLIC_COMMON_TYPES_H_

@@ -6,9 +6,12 @@
 #define CHROMEOS_ASH_COMPONENTS_OSAUTH_IMPL_AUTH_PARTS_IMPL_H_
 
 #include <memory>
+#include <vector>
 
 #include "base/component_export.h"
+#include "base/containers/flat_map.h"
 #include "chromeos/ash/components/osauth/public/auth_parts.h"
+#include "chromeos/ash/components/osauth/public/common_types.h"
 
 namespace ash {
 
@@ -23,12 +26,18 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_OSAUTH) AuthPartsImpl
 
   // AuthParts implementation:
   AuthSessionStorage* GetAuthSessionStorage() override;
+  void RegisterEngineFactory(
+      std::unique_ptr<AuthFactorEngineFactory> factory) override;
+  const std::vector<std::unique_ptr<AuthFactorEngineFactory>>&
+  GetEngineFactories() override;
 
  private:
   friend class AuthParts;
   void CreateDefaultComponents();
 
   std::unique_ptr<AuthSessionStorage> session_storage_;
+
+  std::vector<std::unique_ptr<AuthFactorEngineFactory>> engine_factories_;
 };
 
 }  // namespace ash

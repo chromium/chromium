@@ -15,6 +15,7 @@ source_set("public") {
   ]
   sources = [
     "auth_factor_engine.h",
+    "auth_factor_engine_factory.h",
     "auth_parts.h",
     "auth_session_storage.h",
     "common_types.h",

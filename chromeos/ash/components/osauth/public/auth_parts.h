@@ -6,12 +6,14 @@
 #define CHROMEOS_ASH_COMPONENTS_OSAUTH_PUBLIC_AUTH_PARTS_H_
 
 #include <memory>
+#include <vector>
 
 #include "base/component_export.h"
 
 namespace ash {
 
 class AuthSessionStorage;
+class AuthFactorEngineFactory;
 
 // Central repository for accessing various OS authentication-related
 // objects.
@@ -31,6 +33,12 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_OSAUTH) AuthParts {
   virtual ~AuthParts() = default;
 
   virtual AuthSessionStorage* GetAuthSessionStorage() = 0;
+
+  virtual void RegisterEngineFactory(
+      std::unique_ptr<AuthFactorEngineFactory> factory) = 0;
+
+  virtual const std::vector<std::unique_ptr<AuthFactorEngineFactory>>&
+  GetEngineFactories() = 0;
 };
 
 }  // namespace ash
