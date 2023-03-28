@@ -14,6 +14,7 @@
 #include "third_party/blink/renderer/core/layout/ng/ng_physical_box_fragment.h"
 #include "third_party/blink/renderer/core/layout/ng/table/layout_ng_table.h"
 #include "third_party/blink/renderer/core/layout/ng/table/layout_ng_table_row.h"
+#include "third_party/blink/renderer/core/layout/ng/table/layout_ng_table_section.h"
 #include "third_party/blink/renderer/core/paint/ng/ng_table_cell_paint_invalidator.h"
 
 namespace blink {
@@ -95,6 +96,26 @@ LayoutUnit LayoutNGTableCell::BorderRight() const {
     return GetPhysicalFragment(0)->Borders().right;
   }
   return LayoutNGBlockFlowMixin<LayoutBlockFlow>::BorderRight();
+}
+
+LayoutNGTableCell* LayoutNGTableCell::NextCell() const {
+  NOT_DESTROYED();
+  return To<LayoutNGTableCell>(NextSibling());
+}
+
+LayoutNGTableCell* LayoutNGTableCell::PreviousCell() const {
+  NOT_DESTROYED();
+  return To<LayoutNGTableCell>(PreviousSibling());
+}
+
+LayoutNGTableRow* LayoutNGTableCell::Row() const {
+  NOT_DESTROYED();
+  return To<LayoutNGTableRow>(Parent());
+}
+
+LayoutNGTableSection* LayoutNGTableCell::Section() const {
+  NOT_DESTROYED();
+  return To<LayoutNGTableSection>(Parent()->Parent());
 }
 
 LayoutNGTable* LayoutNGTableCell::Table() const {
@@ -237,28 +258,27 @@ void LayoutNGTableCell::UpdateColAndRowSpanFlags() {
 
 LayoutNGTableInterface* LayoutNGTableCell::TableInterface() const {
   NOT_DESTROYED();
-  return ToInterface<LayoutNGTableInterface>(Parent()->Parent()->Parent());
+  return ToInterface<LayoutNGTableInterface>(Table());
 }
 
 LayoutNGTableCellInterface* LayoutNGTableCell::NextCellInterface() const {
   NOT_DESTROYED();
-  return ToInterface<LayoutNGTableCellInterface>(LayoutObject::NextSibling());
+  return ToInterface<LayoutNGTableCellInterface>(NextCell());
 }
 
 LayoutNGTableCellInterface* LayoutNGTableCell::PreviousCellInterface() const {
   NOT_DESTROYED();
-  return ToInterface<LayoutNGTableCellInterface>(
-      LayoutObject::PreviousSibling());
+  return ToInterface<LayoutNGTableCellInterface>(PreviousCell());
 }
 
 LayoutNGTableRowInterface* LayoutNGTableCell::RowInterface() const {
   NOT_DESTROYED();
-  return ToInterface<LayoutNGTableRowInterface>(Parent());
+  return ToInterface<LayoutNGTableRowInterface>(Row());
 }
 
 LayoutNGTableSectionInterface* LayoutNGTableCell::SectionInterface() const {
   NOT_DESTROYED();
-  return ToInterface<LayoutNGTableSectionInterface>(Parent()->Parent());
+  return ToInterface<LayoutNGTableSectionInterface>(Section());
 }
 
 }  // namespace blink

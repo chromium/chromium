@@ -13,6 +13,7 @@
 namespace blink {
 
 class LayoutNGTable;
+class LayoutNGTableRow;
 
 // NOTE:
 // Every child of LayoutNGTableSection must be LayoutNGTableRow.
@@ -25,6 +26,8 @@ class CORE_EXPORT LayoutNGTableSection : public LayoutNGBlock,
 
   bool IsEmpty() const;
 
+  LayoutNGTableRow* FirstRow() const;
+  LayoutNGTableRow* LastRow() const;
   LayoutNGTable* Table() const;
 
   // LayoutBlock methods start.

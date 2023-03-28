@@ -30,6 +30,16 @@ bool LayoutNGTableSection::IsEmpty() const {
   return !FirstChild();
 }
 
+LayoutNGTableRow* LayoutNGTableSection::FirstRow() const {
+  NOT_DESTROYED();
+  return To<LayoutNGTableRow>(FirstChild());
+}
+
+LayoutNGTableRow* LayoutNGTableSection::LastRow() const {
+  NOT_DESTROYED();
+  return To<LayoutNGTableRow>(LastChild());
+}
+
 LayoutNGTable* LayoutNGTableSection::Table() const {
   NOT_DESTROYED();
   return To<LayoutNGTable>(Parent());
@@ -130,12 +140,12 @@ void LayoutNGTableSection::SetNeedsCellRecalc() {
 
 LayoutNGTableRowInterface* LayoutNGTableSection::FirstRowInterface() const {
   NOT_DESTROYED();
-  return ToInterface<LayoutNGTableRowInterface>(FirstChild());
+  return ToInterface<LayoutNGTableRowInterface>(FirstRow());
 }
 
 LayoutNGTableRowInterface* LayoutNGTableSection::LastRowInterface() const {
   NOT_DESTROYED();
-  return ToInterface<LayoutNGTableRowInterface>(LastChild());
+  return ToInterface<LayoutNGTableRowInterface>(LastRow());
 }
 
 // TODO(crbug.com/1079133): Used by AXLayoutObject::IsDataTable, verify

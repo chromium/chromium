@@ -32,6 +32,31 @@ bool LayoutNGTableRow::IsEmpty() const {
   return !FirstChild();
 }
 
+LayoutNGTableCell* LayoutNGTableRow::FirstCell() const {
+  NOT_DESTROYED();
+  return To<LayoutNGTableCell>(FirstChild());
+}
+
+LayoutNGTableCell* LayoutNGTableRow::LastCell() const {
+  NOT_DESTROYED();
+  return To<LayoutNGTableCell>(LastChild());
+}
+
+LayoutNGTableRow* LayoutNGTableRow::NextRow() const {
+  NOT_DESTROYED();
+  return To<LayoutNGTableRow>(NextSibling());
+}
+
+LayoutNGTableRow* LayoutNGTableRow::PreviousRow() const {
+  NOT_DESTROYED();
+  return To<LayoutNGTableRow>(PreviousSibling());
+}
+
+LayoutNGTableSection* LayoutNGTableRow::Section() const {
+  NOT_DESTROYED();
+  return To<LayoutNGTableSection>(Parent());
+}
+
 LayoutNGTable* LayoutNGTableRow::Table() const {
   NOT_DESTROYED();
   if (LayoutObject* section = Parent()) {
@@ -159,34 +184,29 @@ unsigned LayoutNGTableRow::RowIndex() const {
   return 0;
 }
 
-LayoutNGTableCell* LayoutNGTableRow::LastCell() const {
-  NOT_DESTROYED();
-  return To<LayoutNGTableCell>(LastChild());
-}
-
 LayoutNGTableSectionInterface* LayoutNGTableRow::SectionInterface() const {
   NOT_DESTROYED();
-  return To<LayoutNGTableSection>(Parent());
+  return Section();
 }
 
 LayoutNGTableRowInterface* LayoutNGTableRow::PreviousRowInterface() const {
   NOT_DESTROYED();
-  return ToInterface<LayoutNGTableRowInterface>(PreviousSibling());
+  return ToInterface<LayoutNGTableRowInterface>(PreviousRow());
 }
 
 LayoutNGTableRowInterface* LayoutNGTableRow::NextRowInterface() const {
   NOT_DESTROYED();
-  return ToInterface<LayoutNGTableRowInterface>(NextSibling());
+  return ToInterface<LayoutNGTableRowInterface>(NextRow());
 }
 
 LayoutNGTableCellInterface* LayoutNGTableRow::FirstCellInterface() const {
   NOT_DESTROYED();
-  return ToInterface<LayoutNGTableCellInterface>(FirstChild());
+  return ToInterface<LayoutNGTableCellInterface>(FirstCell());
 }
 
 LayoutNGTableCellInterface* LayoutNGTableRow::LastCellInterface() const {
   NOT_DESTROYED();
-  return ToInterface<LayoutNGTableCellInterface>(LastChild());
+  return ToInterface<LayoutNGTableCellInterface>(LastCell());
 }
 
 }  // namespace blink

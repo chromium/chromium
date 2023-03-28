@@ -14,6 +14,8 @@
 
 namespace blink {
 
+class LayoutNGTableSection;
+class LayoutNGTableCell;
 class NGTableBorders;
 
 // LayoutNGTable is the LayoutObject associated with
@@ -100,6 +102,17 @@ class CORE_EXPORT LayoutNGTable : public LayoutNGBlock,
   ~LayoutNGTable() override;
 
   static LayoutNGTable* CreateAnonymousWithParent(const LayoutObject&);
+
+  bool IsFirstCell(const LayoutNGTableCell&) const;
+  LayoutNGTableSection* FirstSection() const;
+  LayoutNGTableSection* LastSection() const;
+  LayoutNGTableSection* FirstNonEmptySection() const;
+  LayoutNGTableSection* LastNonEmptySection() const;
+  LayoutNGTableSection* NextSection(const LayoutNGTableSection*,
+                                    SkipEmptySectionsValue) const;
+  LayoutNGTableSection* PreviousSection(const LayoutNGTableSection*,
+                                        SkipEmptySectionsValue) const;
+  LayoutNGTableSection* FirstBody() const;
 
   wtf_size_t ColumnCount() const;
 

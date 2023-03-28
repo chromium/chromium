@@ -14,6 +14,8 @@
 namespace blink {
 
 class LayoutNGTable;
+class LayoutNGTableRow;
+class LayoutNGTableSection;
 
 class CORE_EXPORT LayoutNGTableCell
     : public LayoutNGBlockFlowMixin<LayoutBlockFlow>,
@@ -62,6 +64,10 @@ class CORE_EXPORT LayoutNGTableCell
 
   LayoutRectOutsets BorderBoxOutsets() const override;
 
+  LayoutNGTableCell* NextCell() const;
+  LayoutNGTableCell* PreviousCell() const;
+  LayoutNGTableRow* Row() const;
+  LayoutNGTableSection* Section() const;
   LayoutNGTable* Table() const;
 
   // LayoutBlockFlow methods start.

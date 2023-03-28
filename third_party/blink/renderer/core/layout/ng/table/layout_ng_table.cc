@@ -11,8 +11,10 @@
 #include "third_party/blink/renderer/core/layout/ng/ng_layout_result.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_physical_box_fragment.h"
 #include "third_party/blink/renderer/core/layout/ng/table/layout_ng_table_caption.h"
+#include "third_party/blink/renderer/core/layout/ng/table/layout_ng_table_cell.h"
 #include "third_party/blink/renderer/core/layout/ng/table/layout_ng_table_cell_interface.h"
 #include "third_party/blink/renderer/core/layout/ng/table/layout_ng_table_column.h"
+#include "third_party/blink/renderer/core/layout/ng/table/layout_ng_table_row.h"
 #include "third_party/blink/renderer/core/layout/ng/table/layout_ng_table_row_interface.h"
 #include "third_party/blink/renderer/core/layout/ng/table/layout_ng_table_section.h"
 #include "third_party/blink/renderer/core/layout/ng/table/ng_table_borders.h"
@@ -51,6 +53,128 @@ LayoutNGTable* LayoutNGTable::CreateAnonymousWithParent(
   new_table->SetDocumentForAnonymous(&parent.GetDocument());
   new_table->SetStyle(std::move(new_style));
   return new_table;
+}
+
+bool LayoutNGTable::IsFirstCell(const LayoutNGTableCell& cell) const {
+  NOT_DESTROYED();
+  const LayoutNGTableRow* row = cell.Row();
+  if (row->FirstCell() != &cell) {
+    return false;
+  }
+  const LayoutNGTableSection* section = row->Section();
+  if (section->FirstRow() != row) {
+    return false;
+  }
+  NGTableGroupedChildren grouped_children(
+      NGBlockNode(const_cast<LayoutNGTable*>(this)));
+  auto first_section = grouped_children.begin();
+  return first_section != grouped_children.end() &&
+         (*first_section).GetLayoutBox() == section;
+}
+
+LayoutNGTableSection* LayoutNGTable::FirstSection() const {
+  NOT_DESTROYED();
+  NGTableGroupedChildren grouped_children(
+      NGBlockNode(const_cast<LayoutNGTable*>(this)));
+  auto first_section = grouped_children.begin();
+  if (first_section != grouped_children.end()) {
+    return To<LayoutNGTableSection>((*first_section).GetLayoutBox());
+  }
+  return nullptr;
+}
+
+LayoutNGTableSection* LayoutNGTable::LastSection() const {
+  NOT_DESTROYED();
+  NGTableGroupedChildren grouped_children(
+      NGBlockNode(const_cast<LayoutNGTable*>(this)));
+  auto last_section = --grouped_children.end();
+  if (last_section != grouped_children.end()) {
+    return To<LayoutNGTableSection>((*last_section).GetLayoutBox());
+  }
+  return nullptr;
+}
+
+LayoutNGTableSection* LayoutNGTable::FirstNonEmptySection() const {
+  NOT_DESTROYED();
+  NGTableGroupedChildren grouped_children(
+      NGBlockNode(const_cast<LayoutNGTable*>(this)));
+  auto first_section = grouped_children.begin();
+  if (first_section != grouped_children.end()) {
+    auto* section_object =
+        To<LayoutNGTableSection>((*first_section).GetLayoutBox());
+    if ((*first_section).IsEmptyTableSection()) {
+      return NextSection(section_object, kSkipEmptySections);
+    }
+    return section_object;
+  }
+  return nullptr;
+}
+
+LayoutNGTableSection* LayoutNGTable::LastNonEmptySection() const {
+  NOT_DESTROYED();
+  NGTableGroupedChildren grouped_children(
+      NGBlockNode(const_cast<LayoutNGTable*>(this)));
+  auto last_section = --grouped_children.end();
+  if (last_section != grouped_children.end()) {
+    auto* section_object =
+        To<LayoutNGTableSection>((*last_section).GetLayoutBox());
+    if ((*last_section).IsEmptyTableSection()) {
+      return PreviousSection(section_object, kSkipEmptySections);
+    }
+    return section_object;
+  }
+  return nullptr;
+}
+
+LayoutNGTableSection* LayoutNGTable::NextSection(
+    const LayoutNGTableSection* current,
+    SkipEmptySectionsValue skip) const {
+  NOT_DESTROYED();
+  NGTableGroupedChildren grouped_children(
+      NGBlockNode(const_cast<LayoutNGTable*>(this)));
+  bool found = false;
+  for (NGBlockNode section : grouped_children) {
+    if (found &&
+        (skip == kDoNotSkipEmptySections || !section.IsEmptyTableSection())) {
+      return To<LayoutNGTableSection>(section.GetLayoutBox());
+    }
+    if (current == To<LayoutNGTableSection>(section.GetLayoutBox())) {
+      found = true;
+    }
+  }
+  return nullptr;
+}
+
+LayoutNGTableSection* LayoutNGTable::PreviousSection(
+    const LayoutNGTableSection* current,
+    SkipEmptySectionsValue skip) const {
+  NOT_DESTROYED();
+  NGTableGroupedChildren grouped_children(
+      NGBlockNode(const_cast<LayoutNGTable*>(this)));
+  auto stop = --grouped_children.begin();
+  bool found = false;
+  for (auto it = --grouped_children.end(); it != stop; --it) {
+    NGBlockNode section = *it;
+    if (found &&
+        (skip == kDoNotSkipEmptySections || !section.IsEmptyTableSection())) {
+      return To<LayoutNGTableSection>(section.GetLayoutBox());
+    }
+    if (current == To<LayoutNGTableSection>(section.GetLayoutBox())) {
+      found = true;
+    }
+  }
+  return nullptr;
+}
+
+LayoutNGTableSection* LayoutNGTable::FirstBody() const {
+  NOT_DESTROYED();
+  for (LayoutObject* child = FirstChild(); child;
+       child = child->NextSibling()) {
+    if (child->StyleRef().Display() == EDisplay::kTableRowGroup) {
+      return To<LayoutNGTableSection>(child);
+    }
+  }
+  return nullptr;
 }
 
 wtf_size_t LayoutNGTable::ColumnCount() const {
@@ -388,128 +512,51 @@ unsigned LayoutNGTable::AbsoluteColumnToEffectiveColumn(
 
 bool LayoutNGTable::IsFirstCell(const LayoutNGTableCellInterface& cell) const {
   NOT_DESTROYED();
-  const LayoutNGTableRowInterface* row = cell.RowInterface();
-  if (row->FirstCellInterface() != &cell)
-    return false;
-  const LayoutNGTableSectionInterface* section = row->SectionInterface();
-  if (section->FirstRowInterface() != row)
-    return false;
-  NGTableGroupedChildren grouped_children(
-      NGBlockNode(const_cast<LayoutNGTable*>(this)));
-  auto first_section = grouped_children.begin();
-  return first_section != grouped_children.end() &&
-         ToInterface<LayoutNGTableSectionInterface>(
-             (*first_section).GetLayoutBox()) == section;
+  return IsFirstCell(*To<LayoutNGTableCell>(cell.ToLayoutObject()));
 }
 
 // Only called from AXLayoutObject::IsDataTable()
 LayoutNGTableSectionInterface* LayoutNGTable::FirstBodyInterface() const {
   NOT_DESTROYED();
-  for (LayoutObject* child = FirstChild(); child;
-       child = child->NextSibling()) {
-    if (child->StyleRef().Display() == EDisplay::kTableRowGroup)
-      return ToInterface<LayoutNGTableSectionInterface>(child);
-  }
-  return nullptr;
+  return FirstBody();
 }
 
 // Called from many AXLayoutObject methods.
 LayoutNGTableSectionInterface* LayoutNGTable::FirstSectionInterface() const {
   NOT_DESTROYED();
-  NGTableGroupedChildren grouped_children(
-      NGBlockNode(const_cast<LayoutNGTable*>(this)));
-  auto first_section = grouped_children.begin();
-  if (first_section != grouped_children.end()) {
-    return ToInterface<LayoutNGTableSectionInterface>(
-        (*first_section).GetLayoutBox());
-  }
-  return nullptr;
+  return FirstSection();
 }
 
 LayoutNGTableSectionInterface* LayoutNGTable::FirstNonEmptySectionInterface()
     const {
   NOT_DESTROYED();
-  NGTableGroupedChildren grouped_children(
-      NGBlockNode(const_cast<LayoutNGTable*>(this)));
-  auto first_section = grouped_children.begin();
-  if (first_section == grouped_children.end())
-    return nullptr;
-
-  auto* first_section_interface = ToInterface<LayoutNGTableSectionInterface>(
-      (*first_section).GetLayoutBox());
-  if ((*first_section).IsEmptyTableSection()) {
-    return NextSectionInterface(first_section_interface, kSkipEmptySections);
-  }
-
-  return first_section_interface;
+  return FirstNonEmptySection();
 }
 
 LayoutNGTableSectionInterface* LayoutNGTable::LastSectionInterface() const {
   NOT_DESTROYED();
-  NGTableGroupedChildren grouped_children(
-      NGBlockNode(const_cast<LayoutNGTable*>(this)));
-  auto last_section = --grouped_children.end();
-  if (last_section != grouped_children.end()) {
-    return ToInterface<LayoutNGTableSectionInterface>(
-        (*last_section).GetLayoutBox());
-  }
-  return nullptr;
+  return LastSection();
 }
 
 LayoutNGTableSectionInterface* LayoutNGTable::LastNonEmptySectionInterface()
     const {
   NOT_DESTROYED();
-  NGTableGroupedChildren grouped_children(
-      NGBlockNode(const_cast<LayoutNGTable*>(this)));
-  auto last_section = --grouped_children.end();
-  if (last_section == grouped_children.end())
-    return nullptr;
-
-  auto* last_section_interface = ToInterface<LayoutNGTableSectionInterface>(
-      (*last_section).GetLayoutBox());
-  if ((*last_section).IsEmptyTableSection()) {
-    return PreviousSectionInterface(last_section_interface, kSkipEmptySections);
-  }
-
-  return last_section_interface;
+  return LastNonEmptySection();
 }
 
 LayoutNGTableSectionInterface* LayoutNGTable::NextSectionInterface(
     const LayoutNGTableSectionInterface* target,
     SkipEmptySectionsValue skip) const {
   NOT_DESTROYED();
-  NGTableGroupedChildren grouped_children(
-      NGBlockNode(const_cast<LayoutNGTable*>(this)));
-  bool found = false;
-  for (NGBlockNode section : grouped_children) {
-    if (found &&
-        ((skip == kDoNotSkipEmptySections) || (!section.IsEmptyTableSection())))
-      return To<LayoutNGTableSection>(section.GetLayoutBox());
-    if (target == To<LayoutNGTableSection>(section.GetLayoutBox())
-                      ->ToLayoutNGTableSectionInterface())
-      found = true;
-  }
-  return nullptr;
+  return NextSection(To<LayoutNGTableSection>(target->ToLayoutObject()), skip);
 }
 
 LayoutNGTableSectionInterface* LayoutNGTable::PreviousSectionInterface(
     const LayoutNGTableSectionInterface* target,
     SkipEmptySectionsValue skip) const {
   NOT_DESTROYED();
-  NGTableGroupedChildren grouped_children(
-      NGBlockNode(const_cast<LayoutNGTable*>(this)));
-  auto stop = --grouped_children.begin();
-  bool found = false;
-  for (auto it = --grouped_children.end(); it != stop; --it) {
-    NGBlockNode section = *it;
-    if (found &&
-        ((skip == kDoNotSkipEmptySections) || (!section.IsEmptyTableSection())))
-      return To<LayoutNGTableSection>(section.GetLayoutBox());
-    if (target == To<LayoutNGTableSection>(section.GetLayoutBox())
-                      ->ToLayoutNGTableSectionInterface())
-      found = true;
-  }
-  return nullptr;
+  return PreviousSection(To<LayoutNGTableSection>(target->ToLayoutObject()),
+                         skip);
 }
 
 }  // namespace blink

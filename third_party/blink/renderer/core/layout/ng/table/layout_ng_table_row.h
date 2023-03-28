@@ -15,6 +15,7 @@
 namespace blink {
 
 class LayoutNGTableCell;
+class LayoutNGTableSection;
 class LayoutNGTable;
 
 // Every child of LayoutNGTableRow must be LayoutNGTableCell.
@@ -27,6 +28,11 @@ class CORE_EXPORT LayoutNGTableRow : public LayoutNGBlock,
 
   bool IsEmpty() const;
 
+  LayoutNGTableCell* FirstCell() const;
+  LayoutNGTableCell* LastCell() const;
+  LayoutNGTableRow* NextRow() const;
+  LayoutNGTableRow* PreviousRow() const;
+  LayoutNGTableSection* Section() const;
   LayoutNGTable* Table() const;
 
   // LayoutBlock methods start.
@@ -120,8 +126,6 @@ class CORE_EXPORT LayoutNGTableRow : public LayoutNGBlock,
   // LayoutNGTableRowInterface methods end.
 
  protected:
-  LayoutNGTableCell* LastCell() const;
-
   bool IsOfType(LayoutObjectType type) const override {
     NOT_DESTROYED();
     return type == kLayoutObjectTableRow ||
