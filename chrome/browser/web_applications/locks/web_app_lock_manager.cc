@@ -151,8 +151,8 @@ void WebAppLockManager::AcquireLock(
     const base::Location& location) {
   CHECK(lock_description.type() == LockDescription::Type::kNoOp);
 
-  auto lock = std::make_unique<NoopLock>(
-      std::make_unique<content::PartitionedLockHolder>());
+  auto lock = base::WrapUnique(
+      new NoopLock(std::make_unique<content::PartitionedLockHolder>()));
   base::WeakPtr<content::PartitionedLockHolder> holder =
       lock->holder_->AsWeakPtr();
   AcquireLock(holder, lock_description,
@@ -169,9 +169,10 @@ void WebAppLockManager::AcquireLock(
   CHECK(lock_description.type() ==
         LockDescription::Type::kBackgroundWebContents);
 
-  auto lock = std::make_unique<SharedWebContentsLock>(
+  auto lock = base::WrapUnique(new SharedWebContentsLock(
+      weak_factory_.GetWeakPtr(),
       std::make_unique<content::PartitionedLockHolder>(),
-      *provider_->command_manager().EnsureWebContentsCreated(PassKey()));
+      *provider_->command_manager().EnsureWebContentsCreated(PassKey())));
 
   base::WeakPtr<content::PartitionedLockHolder> holder =
       lock->holder_->AsWeakPtr();
@@ -187,12 +188,13 @@ void WebAppLockManager::AcquireLock(
     const base::Location& location) {
   CHECK(lock_description.type() == LockDescription::Type::kApp);
 
-  auto lock = std::make_unique<AppLock>(
+  auto lock = base::WrapUnique(new AppLock(
+      weak_factory_.GetWeakPtr(),
       std::make_unique<content::PartitionedLockHolder>(),
       provider_->registrar_unsafe(), provider_->sync_bridge_unsafe(),
       provider_->install_finalizer(), provider_->os_integration_manager(),
       provider_->install_manager(), provider_->icon_manager(),
-      provider_->translation_manager(), provider_->ui_manager());
+      provider_->translation_manager(), provider_->ui_manager()));
 
   base::WeakPtr<content::PartitionedLockHolder> holder =
       lock->holder_->AsWeakPtr();
@@ -209,13 +211,14 @@ void WebAppLockManager::AcquireLock(
     const base::Location& location) {
   CHECK(lock_description.type() == LockDescription::Type::kAppAndWebContents);
 
-  auto lock = std::make_unique<SharedWebContentsWithAppLock>(
+  auto lock = base::WrapUnique(new SharedWebContentsWithAppLock(
+      weak_factory_.GetWeakPtr(),
       std::make_unique<content::PartitionedLockHolder>(),
       *provider_->command_manager().EnsureWebContentsCreated(PassKey()),
       provider_->registrar_unsafe(), provider_->sync_bridge_unsafe(),
       provider_->install_finalizer(), provider_->os_integration_manager(),
       provider_->install_manager(), provider_->icon_manager(),
-      provider_->translation_manager(), provider_->ui_manager());
+      provider_->translation_manager(), provider_->ui_manager()));
 
   base::WeakPtr<content::PartitionedLockHolder> holder =
       lock->holder_->AsWeakPtr();
@@ -231,12 +234,13 @@ void WebAppLockManager::AcquireLock(
     const base::Location& location) {
   CHECK(lock_description.type() == LockDescription::Type::kFullSystem);
 
-  auto lock = std::make_unique<FullSystemLock>(
+  auto lock = base::WrapUnique(new FullSystemLock(
+      weak_factory_.GetWeakPtr(),
       std::make_unique<content::PartitionedLockHolder>(),
       provider_->registrar_unsafe(), provider_->sync_bridge_unsafe(),
       provider_->install_finalizer(), provider_->os_integration_manager(),
       provider_->install_manager(), provider_->icon_manager(),
-      provider_->translation_manager(), provider_->ui_manager());
+      provider_->translation_manager(), provider_->ui_manager()));
   base::WeakPtr<content::PartitionedLockHolder> holder =
       lock->holder_->AsWeakPtr();
   AcquireLock(holder, lock_description,
@@ -254,13 +258,13 @@ WebAppLockManager::UpgradeAndAcquireLock(
   std::unique_ptr<SharedWebContentsWithAppLockDescription>
       result_lock_description =
           std::make_unique<SharedWebContentsWithAppLockDescription>(app_ids);
-  auto result_lock = std::make_unique<SharedWebContentsWithAppLock>(
-      std::move(lock->holder_),
+  auto result_lock = base::WrapUnique(new SharedWebContentsWithAppLock(
+      weak_factory_.GetWeakPtr(), std::move(lock->holder_),
       *provider_->command_manager().EnsureWebContentsCreated(PassKey()),
       provider_->registrar_unsafe(), provider_->sync_bridge_unsafe(),
       provider_->install_finalizer(), provider_->os_integration_manager(),
       provider_->install_manager(), provider_->icon_manager(),
-      provider_->translation_manager(), provider_->ui_manager());
+      provider_->translation_manager(), provider_->ui_manager()));
   base::WeakPtr<content::PartitionedLockHolder> holder =
       result_lock->holder_->AsWeakPtr();
 
@@ -286,12 +290,12 @@ std::unique_ptr<AppLockDescription> WebAppLockManager::UpgradeAndAcquireLock(
   std::unique_ptr<AppLockDescription> result_lock_description =
       std::make_unique<AppLockDescription>(app_ids);
 
-  auto result_lock = std::make_unique<AppLock>(
-      std::move(lock->holder_), provider_->registrar_unsafe(),
-      provider_->sync_bridge_unsafe(), provider_->install_finalizer(),
-      provider_->os_integration_manager(), provider_->install_manager(),
-      provider_->icon_manager(), provider_->translation_manager(),
-      provider_->ui_manager());
+  auto result_lock = base::WrapUnique(new AppLock(
+      weak_factory_.GetWeakPtr(), std::move(lock->holder_),
+      provider_->registrar_unsafe(), provider_->sync_bridge_unsafe(),
+      provider_->install_finalizer(), provider_->os_integration_manager(),
+      provider_->install_manager(), provider_->icon_manager(),
+      provider_->translation_manager(), provider_->ui_manager()));
   base::WeakPtr<content::PartitionedLockHolder> holder =
       result_lock->holder_->AsWeakPtr();
 

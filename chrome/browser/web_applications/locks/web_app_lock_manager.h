@@ -11,6 +11,7 @@
 #include "base/functional/callback_forward.h"
 #include "base/location.h"
 #include "base/memory/raw_ref.h"
+#include "base/memory/weak_ptr.h"
 #include "base/types/pass_key.h"
 #include "chrome/browser/web_applications/web_app_id.h"
 #include "components/services/storage/indexed_db/locks/partitioned_lock_manager.h"
@@ -30,8 +31,46 @@ class SharedWebContentsWithAppLock;
 class SharedWebContentsWithAppLockDescription;
 class WebAppProvider;
 
-// This class handles acquiring and upgrading locks in the WebAppProvider
-// system.
+// Locks allow types of exclusive access to resources in the WebAppProvider
+// system, depending on the lock. These are not for multi-sequence access, but
+// instead required due to the async nature of operations in the system. Locks
+// do NOT protect against common problems like handling profile shutdown. In
+// fact, locks will CHECK-fail if they are called accessed during profile
+// shutdown. Thus using a WebAppCommand is a better option, as commands are
+// destroyed automatically during shutdown.
+//
+// Locks can be a great way to make synchronous operations composable. For
+// example, the following method call guarantees that it is done in an isolated
+// context:
+//
+// void UpdateWidget(WithAppResources& lock_with_app_exclusivity, AppId id) {
+//    widget_.SetTitle(lock_with_app_exclusivity.registrar().GetShortName(id));
+//    ...
+// }
+//
+// To access data across an async call chain, then
+// 1) The brokering of the lock needs to be done through a command to make sure
+//    shutdown is handled.
+// 2) a WeakPtr of the lock can be used so the async logic can correctly handle
+//    this shutdown.
+//
+// Example of using a lock across an async boundary:
+//
+// void UpdateWidget(base::WeakPtr<WithAppResources> lock_with_app_exclusivity,
+//                   AppId id) {
+//    widget_.SetTitle(lock_with_app_exclusivity.registrar().GetShortName(id));
+//    TalkToAsyncSystem(..., base::BindOnce(&OnAsyncSystemUpdated,
+//                                          lock_with_app_exclusivity));
+// }
+//
+// void OnAsyncSystemUpdated(base::WeakPtr<WithAppResources>
+//                           lock_with_app_exclusivity) {
+//   if (!lock_with_app_exclusivity) {
+//     // Do cleanup?
+//     return;
+//   }
+//   ... do things with the lock.
+// }
 class WebAppLockManager {
  public:
   using PassKey = base::PassKey<WebAppLockManager>;
@@ -82,6 +121,7 @@ class WebAppLockManager {
 
   content::PartitionedLockManager lock_manager_;
   raw_ref<WebAppProvider> provider_;
+  base::WeakPtrFactory<WebAppLockManager> weak_factory_{this};
 };
 
 }  // namespace web_app

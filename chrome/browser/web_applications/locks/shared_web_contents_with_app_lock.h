@@ -9,6 +9,7 @@
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/web_applications/locks/app_lock.h"
 #include "chrome/browser/web_applications/locks/shared_web_contents_lock.h"
+#include "chrome/browser/web_applications/locks/web_app_lock_manager.h"
 #include "chrome/browser/web_applications/web_app_id.h"
 
 namespace content {
@@ -32,10 +33,7 @@ class WebAppUiManager;
 // in the background that require a web contents, like install web apps and
 // fetch data.
 //
-// Locks can be acquired by using the `WebAppLockManager`. The lock is acquired
-// when the callback given to the WebAppLockManager is called. Destruction of
-// this class will release the lock or cancel the lock request if it is not
-// acquired yet.
+// Locks can be acquired by using the `WebAppLockManager`.
 class SharedWebContentsWithAppLockDescription : public LockDescription {
  public:
   explicit SharedWebContentsWithAppLockDescription(
@@ -43,13 +41,32 @@ class SharedWebContentsWithAppLockDescription : public LockDescription {
   ~SharedWebContentsWithAppLockDescription();
 };
 
+// Holding this lock means that the user has exclusive access to the app id/s
+// and the background web contents in use by the WebAppProvider system. This
+// does not ensure that the app/s are installed when the lock is granted. Checks
+// for that will need to be handled by the user of the lock.
+//
+// See `WebAppLockManager` for how to use locks. Destruction of this class will
+// release the lock or cancel the lock request if it is not acquired yet.
+//
+// Note: Accessing a lock will CHECK-fail if the WebAppProvider system has
+// shutdown (or the profile has shut down).
 class SharedWebContentsWithAppLock : public Lock,
                                      public WithSharedWebContentsResources,
                                      public WithAppResources {
  public:
   using LockDescription = SharedWebContentsWithAppLockDescription;
 
+  ~SharedWebContentsWithAppLock();
+
+  base::WeakPtr<SharedWebContentsWithAppLock> AsWeakPtr() {
+    return weak_factory_.GetWeakPtr();
+  }
+
+ private:
+  friend class WebAppLockManager;
   SharedWebContentsWithAppLock(
+      base::WeakPtr<WebAppLockManager> lock_manager,
       std::unique_ptr<content::PartitionedLockHolder> holder,
       content::WebContents& shared_web_contents,
       WebAppRegistrar& registrar,
@@ -60,13 +77,7 @@ class SharedWebContentsWithAppLock : public Lock,
       WebAppIconManager& icon_manager,
       WebAppTranslationManager& translation_manager,
       WebAppUiManager& ui_manager);
-  ~SharedWebContentsWithAppLock();
 
-  base::WeakPtr<SharedWebContentsWithAppLock> AsWeakPtr() {
-    return weak_factory_.GetWeakPtr();
-  }
-
- private:
   base::WeakPtrFactory<SharedWebContentsWithAppLock> weak_factory_{this};
 };
 

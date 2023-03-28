@@ -14,6 +14,7 @@ FullSystemLockDescription::FullSystemLockDescription()
 FullSystemLockDescription::~FullSystemLockDescription() = default;
 
 FullSystemLock::FullSystemLock(
+    base::WeakPtr<WebAppLockManager> lock_manager,
     std::unique_ptr<content::PartitionedLockHolder> holder,
     WebAppRegistrar& registrar,
     WebAppSyncBridge& sync_bridge,
@@ -24,7 +25,8 @@ FullSystemLock::FullSystemLock(
     WebAppTranslationManager& translation_manager,
     WebAppUiManager& ui_manager)
     : Lock(std::move(holder)),
-      WithAppResources(registrar,
+      WithAppResources(std::move(lock_manager),
+                       registrar,
                        sync_bridge,
                        install_finalizer,
                        os_integration_manager,

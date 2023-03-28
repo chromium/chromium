@@ -13,14 +13,24 @@ SharedWebContentsLockDescription::SharedWebContentsLockDescription()
 SharedWebContentsLockDescription::~SharedWebContentsLockDescription() = default;
 
 WithSharedWebContentsResources::WithSharedWebContentsResources(
+    base::WeakPtr<WebAppLockManager> lock_manager,
     content::WebContents& shared_web_contents)
-    : shared_web_contents_(shared_web_contents) {}
+    : lock_manager_(std::move(lock_manager)),
+      shared_web_contents_(shared_web_contents) {}
 WithSharedWebContentsResources::~WithSharedWebContentsResources() = default;
 
+content::WebContents& WithSharedWebContentsResources::shared_web_contents()
+    const {
+  CHECK(lock_manager_);
+  return *shared_web_contents_;
+}
+
 SharedWebContentsLock::SharedWebContentsLock(
+    base::WeakPtr<WebAppLockManager> lock_manager,
     std::unique_ptr<content::PartitionedLockHolder> holder,
     content::WebContents& shared_web_contents)
     : Lock(std::move(holder)),
-      WithSharedWebContentsResources(shared_web_contents) {}
+      WithSharedWebContentsResources(std::move(lock_manager),
+                                     shared_web_contents) {}
 SharedWebContentsLock::~SharedWebContentsLock() = default;
 }  // namespace web_app

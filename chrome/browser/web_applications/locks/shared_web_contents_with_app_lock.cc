@@ -18,6 +18,7 @@ SharedWebContentsWithAppLockDescription::
     ~SharedWebContentsWithAppLockDescription() = default;
 
 SharedWebContentsWithAppLock::SharedWebContentsWithAppLock(
+    base::WeakPtr<WebAppLockManager> lock_manager,
     std::unique_ptr<content::PartitionedLockHolder> holder,
     content::WebContents& shared_web_contents,
     WebAppRegistrar& registrar,
@@ -29,8 +30,9 @@ SharedWebContentsWithAppLock::SharedWebContentsWithAppLock(
     WebAppTranslationManager& translation_manager,
     WebAppUiManager& ui_manager)
     : Lock(std::move(holder)),
-      WithSharedWebContentsResources(shared_web_contents),
-      WithAppResources(registrar,
+      WithSharedWebContentsResources(lock_manager, shared_web_contents),
+      WithAppResources(lock_manager,
+                       registrar,
                        sync_bridge,
                        install_finalizer,
                        os_integration_manager,
