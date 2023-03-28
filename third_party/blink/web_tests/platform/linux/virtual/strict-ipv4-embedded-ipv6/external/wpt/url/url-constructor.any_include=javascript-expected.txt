@@ -2,21 +2,21 @@ This is a testharness.js-based test.
 PASS Loading data…
 PASS Parsing: <javascript:/example.com/> against <http://example.org/foo/bar>
 PASS Parsing: <javascript:example.com/> against <http://example.org/foo/bar>
-PASS Parsing: <javascript:/example.com/> against <about:blank>
-PASS Parsing: <javascript:example.com/> against <about:blank>
-FAIL Parsing: <javascript:/../> against <about:blank> assert_equals: href expected "javascript:/" but got "javascript:/../"
-PASS Parsing: <> against <about:blank>
-FAIL Parsing: <javascript://example.com:8080/pathname?search#hash> against <about:blank> assert_equals: host expected "example.com:8080" but got ""
-FAIL Parsing: <javascript:///test> against <about:blank> assert_equals: pathname expected "/test" but got "///test"
-FAIL Parsing: <javascript://test/a/../b> against <about:blank> assert_equals: href expected "javascript://test/b" but got "javascript://test/a/../b"
-FAIL Parsing: <javascript://:443> against <about:blank> assert_throws_js: function "function() {
-          bURL(expected.input, expected.base)
+PASS Parsing: <javascript:/example.com/> without base
+PASS Parsing: <javascript:example.com/> without base
+FAIL Parsing: <javascript:/../> without base assert_equals: href expected "javascript:/" but got "javascript:/../"
+PASS Parsing: <> without base
+FAIL Parsing: <javascript://example.com:8080/pathname?search#hash> without base assert_equals: host expected "example.com:8080" but got ""
+FAIL Parsing: <javascript:///test> without base assert_equals: pathname expected "/test" but got "///test"
+FAIL Parsing: <javascript://test/a/../b> without base assert_equals: href expected "javascript://test/b" but got "javascript://test/a/../b"
+FAIL Parsing: <javascript://:443> without base assert_throws_js: function "function() {
+          new URL(expected.input, base);
         }" did not throw
-FAIL Parsing: <javascript://test:test> against <about:blank> assert_throws_js: function "function() {
-          bURL(expected.input, expected.base)
+FAIL Parsing: <javascript://test:test> without base assert_throws_js: function "function() {
+          new URL(expected.input, base);
         }" did not throw
-FAIL Parsing: <javascript://[:1]> against <about:blank> assert_throws_js: function "function() {
-          bURL(expected.input, expected.base)
+FAIL Parsing: <javascript://[:1]> without base assert_throws_js: function "function() {
+          new URL(expected.input, base);
         }" did not throw
 Harness: the test ran to completion.
 

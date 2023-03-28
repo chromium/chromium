@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-Found 1205 tests; 882 PASS, 323 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 1205 tests; 886 PASS, 319 FAIL, 0 TIMEOUT, 0 NOTRUN.
 PASS Loading data…
 PASS URL's constructor's base argument: file://example:1/ should throw
 PASS URL's href: file://example:1/ should throw
@@ -893,6 +893,10 @@ FAIL XHR: file://xn--/p should throw assert_throws_dom: function "() => client.o
 PASS sendBeacon(): file://xn--/p should throw
 FAIL Location's href: file://xn--/p should throw assert_throws_dom: function "() => frame.contentWindow.location = test.input" did not throw
 FAIL window.open(): file://xn--/p should throw assert_throws_dom: function "() => self.open(test.input).close()" threw object "TypeError: Cannot read properties of null (reading 'close')" that is not a DOMException SyntaxError: property "code" is equal to undefined, expected 12
+PASS URL's constructor's base argument: # should throw
+PASS URL's href: # should throw
+PASS URL's constructor's base argument: ? should throw
+PASS URL's href: ? should throw
 PASS URL's constructor's base argument: http://0..0x300/ should throw
 PASS URL's href: http://0..0x300/ should throw
 PASS XHR: http://0..0x300/ should throw
@@ -1057,10 +1061,6 @@ PASS Location's href: https://￿y should throw
 PASS window.open(): https://￿y should throw
 PASS URL's constructor's base argument:  should throw
 PASS URL's href:  should throw
-FAIL XHR:  should throw assert_throws_dom: function "() => client.open("GET", test.input)" did not throw
-FAIL sendBeacon():  should throw assert_throws_js: function "() => self.navigator.sendBeacon(test.input)" did not throw
-FAIL Location's href:  should throw assert_throws_dom: function "() => frame.contentWindow.location = test.input" did not throw
-FAIL window.open():  should throw assert_throws_dom: function "() => self.open(test.input).close()" did not throw
 PASS URL's constructor's base argument: https://­/ should throw
 PASS URL's href: https://­/ should throw
 PASS XHR: https://­/ should throw
