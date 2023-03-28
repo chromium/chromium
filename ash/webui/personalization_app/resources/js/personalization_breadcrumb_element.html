@@ -25,6 +25,15 @@
     width: 100%;
   }
 
+  /**
+   * TODO: After Jelly is launched, remove the cr-icon-button-fill-color
+   * references from #homeButton. The color will be inherited from
+   * cros_color_overrides.
+   */
+  :host-context(body.jelly-enabled) #homeButton {
+    --cr-icon-button-fill-color: var(--cros-sys-secondary);
+  }
+
   #homeButton {
     --cr-icon-button-fill-color: var(--cros-text-color-primary);
     --cr-icon-button-size: 36px;
@@ -57,6 +66,11 @@
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
+  }
+
+  :host-context(body.jelly-enabled) cr-button {
+    --text-color: var(--cros-sys-on_surface);
+    background-color: transparent;
   }
 </style>
 <nav id="container">

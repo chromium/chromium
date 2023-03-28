@@ -133,13 +133,13 @@
     <div slot="footer">
       <template is="dom-if"
           if="[[showTakePhotoButton_(cameraStream_, previewBlobUrl_, captureInProgress_)]]">
-        <cr-button id="takePhoto" on-click="takePhoto_" class="primary">
+        <cr-button id="takePhoto" on-click="takePhoto_" class="primary action-button">
           <iron-icon icon="[[getTakePhotoIcon_(mode)]]"></iron-icon>
           <span>[[getTakePhotoText_(mode)]]</span>
         </cr-button>
       </template>
       <template is="dom-if" if="[[showLoadingSpinnerButton_(mode, cameraStream_, previewBlobUrl_, captureInProgress_)]]">
-        <cr-button id="loadingButton" class="primary" disabled>
+        <cr-button id="loadingButton" class="primary action-button" disabled>
           <paper-spinner-lite id="loadingButtonSpinner" active></paper-spinner-lite>
           <span>$i18n{webcamCaptureInProgress}</span>
         </cr-button>
@@ -149,7 +149,7 @@
           <iron-icon icon="personalization:refresh"></iron-icon>
           <span>$i18n{rejectWebcamPhoto}</span>
         </cr-button>
-        <cr-button id="confirmPhoto" on-click="confirmPhoto_" class="primary">
+        <cr-button id="confirmPhoto" on-click="confirmPhoto_" class="primary action-button">
           <iron-icon icon="personalization:circle_checkmark"></iron-icon>
           <span>[[getConfirmText_(mode)]]</span>
         </cr-button>
