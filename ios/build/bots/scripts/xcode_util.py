@@ -9,6 +9,7 @@ import os
 import shutil
 import subprocess
 
+import mac_util
 import test_runner_errors
 
 LOGGER = logging.getLogger(__name__)
@@ -62,6 +63,7 @@ def _is_legacy_xcode_package(xcode_app_path):
   runtimes_in_xcode = glob.glob(
       os.path.join(xcode_app_path, XcodeIOSSimulatorRuntimeRelPath,
                    '*.simruntime'))
+
   is_legacy = len(runtimes_in_xcode) >= 2
   if not is_legacy:
     for runtime in runtimes_in_xcode:
@@ -258,6 +260,8 @@ def install(mac_toolchain, xcode_build_version, xcode_app_path, **runtime_args):
 
   If using legacy mac_toolchain, install the whole legacy Xcode package. (Will
   raise if the Xcode package isn't legacy.)
+  UPDATE: all MacOS13+ bots will also install the whole legacy Xcode package due
+  to the new codesign restrictions in crbug/1406204
 
   If using new mac_toolchain, first install the Xcode package:
   * If installed Xcode is legacy one (with runtimes bundled), return.
@@ -286,9 +290,29 @@ def install(mac_toolchain, xcode_build_version, xcode_app_path, **runtime_args):
   """
   using_new_mac_toolchain = _using_new_mac_toolchain(mac_toolchain)
 
+  # (crbug/1406204): for MacOS13+, codesign check is automatically run prior
+  # to Xcode.app runFirstLaunch. To avoid codesign check failure on corrupted
+  # Xcode cache later, we will trigger a codesign check ourself first
+  # to ensure the cached Xcode is good.
+  # Otherwise, we will remove the corrupted Xcode.app and re-install Xcode.
+  if mac_util.is_macos_13_or_higher():
+    LOGGER.debug("checking Xcode's code signature")
+    codesign_success, codesign_error = mac_util.run_codesign_check(
+        xcode_app_path)
+    if not codesign_success:
+      LOGGER.debug(
+          "Xcode signature is invalid %s, going to re-create Xcode.app" %
+          codesign_error)
+      shutil.rmtree(xcode_app_path)
+      os.mkdir(xcode_app_path)
+
   _install_xcode(mac_toolchain, xcode_build_version, xcode_app_path,
                  using_new_mac_toolchain)
-  is_legacy_xcode_package = _is_legacy_xcode_package(xcode_app_path)
+
+  # (crbug/1406204): for MacOS13+, we are using Xcode fat upload/download again,
+  # so runtime should not be installed separately.
+  is_legacy_xcode_package = mac_util.is_macos_13_or_higher(
+  ) or _is_legacy_xcode_package(xcode_app_path)
 
   if not using_new_mac_toolchain and not is_legacy_xcode_package:
     # Legacy mac_toolchain can't handle the situation when no runtime is in
