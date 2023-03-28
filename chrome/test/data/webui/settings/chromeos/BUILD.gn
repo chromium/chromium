@@ -33,7 +33,6 @@ build_webui_tests("build") {
     "cups_printer_test_utils.js",
     "cursor_and_touchpad_page_tests.js",
     "date_time_page_tests.js",
-    "device_page_tests.js",
     "display_and_magnification_page_tests.js",
     "esim_install_error_dialog_test.js",
     "esim_remove_profile_dialog_test.js",
@@ -122,7 +121,6 @@ build_webui_tests("build") {
     "people_page_account_manager_subpage_test.js",
     "per_device_keyboard_subsection_test.js",
     "per_device_keyboard_remap_keys_test.js",
-    "per_device_keyboard_test.js",
     "per_device_pointing_stick_subsection_test.js",
     "personalization_page_with_personalization_hub_test.js",
     "privacy_hub_subpage_tests.js",
@@ -144,7 +142,6 @@ build_webui_tests("build") {
     "test_crostini_browser_proxy.js",
     "test_cups_printers_browser_proxy.js",
     "test_device_name_browser_proxy.js",
-    "test_device_page_browser_proxy.js",
     "test_guest_os_browser_proxy.js",
     "test_internet_page_browser_proxy.js",
     "test_kerberos_accounts_browser_proxy.js",
@@ -202,11 +199,14 @@ build_webui_tests("build") {
     "date_time_page/timezone_selector_test.ts",
     "date_time_page/timezone_subpage_test.ts",
 
+    "device_page/device_page_tests.js",
+    "device_page/per_device_keyboard_test.js",
     "device_page/per_device_mouse_subsection_test.ts",
     "device_page/per_device_mouse_test.ts",
     "device_page/per_device_pointing_stick_test.ts",
     "device_page/per_device_touchpad_subsection_test.ts",
     "device_page/per_device_touchpad_test.ts",
+    "device_page/test_device_page_browser_proxy.ts",
 
     "internet_page/tether_connection_dialog_test.ts",
 

@@ -39,7 +39,7 @@ var OSSettingsV3BrowserTest = class extends PolymerTest {
 var OSSettingsDevicePageV3Test = class extends OSSettingsV3BrowserTest {
   /** @override */
   get browsePreload() {
-    return 'chrome://os-settings/test_loader.html?module=settings/chromeos/device_page_tests.js';
+    return 'chrome://os-settings/test_loader.html?module=settings/chromeos/device_page/device_page_tests.js';
   }
 
   /** @override */
@@ -204,7 +204,7 @@ TEST_F('OSSettingsCrostiniExtraContainerPageV3Test', 'AllJsTests', () => {
   'AccessibilityPage',
   'os_a11y_page_tests.js',
   {enabled: ['features::kPdfOcr']},
- ],
+],
  ['AboutPage', 'os_about_page_tests.js'],
  ['ApnDetailDialog', 'apn_detail_dialog_tests.js'],
  [
@@ -265,6 +265,10 @@ TEST_F('OSSettingsCrostiniExtraContainerPageV3Test', 'AllJsTests', () => {
  ['DateTimePage', 'date_time_page_tests.js'],
  ['DateTimePageTimezoneSelector', 'date_time_page/timezone_selector_test.js'],
  ['DateTimePageTimezoneSubpage', 'date_time_page/timezone_subpage_test.js'],
+ [
+   'DevicePagePerDeviceKeyboard', 'device_page/per_device_keyboard_test.js',
+   {enabled: ['ash::features::kInputDeviceSettingsSplit']}
+ ],
  [
    'DevicePagePerDeviceMouse', 'device_page/per_device_mouse_test.js',
    {enabled: ['ash::features::kInputDeviceSettingsSplit']}
@@ -475,10 +479,6 @@ TEST_F('OSSettingsCrostiniExtraContainerPageV3Test', 'AllJsTests', () => {
    {enabled: ['ash::features::kLacrosSupport']},
  ],
  ['PeoplePageQuickUnlock', 'quick_unlock_authenticate_browsertest_chromeos.js'],
- [
-   'PerDeviceKeyboard', 'per_device_keyboard_test.js',
-   {enabled: ['ash::features::kInputDeviceSettingsSplit']}
- ],
  [
    'PerDeviceKeyboardRemapKeys', 'per_device_keyboard_remap_keys_test.js',
    {enabled: ['ash::features::kInputDeviceSettingsSplit']}

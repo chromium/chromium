@@ -172,7 +172,8 @@ suite('PerDeviceKeyboard', function() {
         .click();
     assertEquals(
         1,
-        DevicePageBrowserProxyImpl.getInstance().keyboardShortcutViewerShown_);
+        DevicePageBrowserProxyImpl.getInstance().getCallCount(
+            'showKeyboardShortcutViewer'));
   });
 
   test('Navigate to input tab', async () => {

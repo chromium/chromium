@@ -12,7 +12,7 @@ import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_as
 import {waitAfterNextRender, waitBeforeNextRender} from 'chrome://webui-test/polymer_test_util.js';
 import {eventToPromise, isVisible} from 'chrome://webui-test/test_util.js';
 
-import {TestDevicePageBrowserProxy} from './test_device_page_browser_proxy.js';
+import {TestDevicePageBrowserProxy} from './device_page/test_device_page_browser_proxy.js';
 
 suite('ManageAccessibilityPageTests', function() {
   let page = null;

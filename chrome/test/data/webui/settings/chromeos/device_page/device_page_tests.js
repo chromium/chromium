@@ -16,7 +16,8 @@ import {MockController} from 'chrome://webui-test/mock_controller.js';
 import {flushTasks, waitAfterNextRender} from 'chrome://webui-test/polymer_test_util.js';
 import {isVisible} from 'chrome://webui-test/test_util.js';
 
-import {FakeSystemDisplay} from './fake_system_display.js';
+import {FakeSystemDisplay} from '../fake_system_display.js';
+
 import {TestDevicePageBrowserProxy} from './test_device_page_browser_proxy.js';
 
 /** @enum {string} */
@@ -2019,8 +2020,8 @@ suite('SettingsDevicePage', function() {
       keyboardPage.shadowRoot.querySelector('#keyboardShortcutViewer').click();
       assertEquals(
           1,
-          DevicePageBrowserProxyImpl.getInstance()
-              .keyboardShortcutViewerShown_);
+          DevicePageBrowserProxyImpl.getInstance().getCallCount(
+              'showKeyboardShortcutViewer'));
     });
 
     test('Deep link to keyboard shortcuts', async () => {
@@ -2055,8 +2056,7 @@ suite('SettingsDevicePage', function() {
       assertFalse(
           displayPage.showUnifiedDesktop_(false, false, displayPage.displays));
       assertEquals(
-          displayPage.invalidDisplayId_,
-          browserProxy.lastHighlightedDisplayId_);
+          displayPage.invalidDisplayId_, browserProxy.lastHighlightedDisplayId);
 
       // Add a display.
       addDisplay(1);
@@ -2270,7 +2270,7 @@ suite('SettingsDevicePage', function() {
             // invalid.
             assertEquals(
                 displayPage.invalidDisplayId_,
-                browserProxy.lastHighlightedDisplayId_);
+                browserProxy.lastHighlightedDisplayId);
 
             // Navigate back to the display page.
             return showAndGetDeviceSubpage('display', routes.DISPLAY);
@@ -2446,8 +2446,8 @@ suite('SettingsDevicePage', function() {
                   assert(powerPage.shadowRoot.querySelector('#powerSource'));
               assertEquals(
                   1,
-                  DevicePageBrowserProxyImpl.getInstance()
-                      .updatePowerStatusCalled_);
+                  DevicePageBrowserProxyImpl.getInstance().getCallCount(
+                      'updatePowerStatus'));
 
               lidClosedToggle = assert(
                   powerPage.shadowRoot.querySelector('#lidClosedToggle'));
@@ -2457,8 +2457,8 @@ suite('SettingsDevicePage', function() {
 
               assertEquals(
                   1,
-                  DevicePageBrowserProxyImpl.getInstance()
-                      .requestPowerManagementSettingsCalled_);
+                  DevicePageBrowserProxyImpl.getInstance().getCallCount(
+                      'requestPowerManagementSettings'));
               sendPowerManagementSettings(
                   [
                     IdleBehavior.DISPLAY_OFF_SLEEP,
@@ -2510,7 +2510,7 @@ suite('SettingsDevicePage', function() {
         selectValue(acIdleSelect, IdleBehavior.DISPLAY_ON);
         assertEquals(
             IdleBehavior.DISPLAY_ON,
-            DevicePageBrowserProxyImpl.getInstance().acIdleBehavior_);
+            DevicePageBrowserProxyImpl.getInstance().acIdleBehavior);
       });
 
       test('power sources', function() {
@@ -2582,7 +2582,7 @@ suite('SettingsDevicePage', function() {
         selectValue(powerSourceSelect, powerSourceSelect.children[1].value);
         assertEquals(
             powerSource.id,
-            DevicePageBrowserProxyImpl.getInstance().powerSourceId_);
+            DevicePageBrowserProxyImpl.getInstance().powerSourceId);
       });
 
       test('set AC idle behavior', function() {
@@ -2603,7 +2603,7 @@ suite('SettingsDevicePage', function() {
         selectValue(acIdleSelect, IdleBehavior.DISPLAY_ON);
         assertEquals(
             IdleBehavior.DISPLAY_ON,
-            DevicePageBrowserProxyImpl.getInstance().acIdleBehavior_);
+            DevicePageBrowserProxyImpl.getInstance().acIdleBehavior);
       });
 
       test('set battery idle behavior', function() {
@@ -2628,8 +2628,7 @@ suite('SettingsDevicePage', function() {
               selectValue(batteryIdleSelect, IdleBehavior.DISPLAY_ON);
               assertEquals(
                   IdleBehavior.DISPLAY_ON,
-                  DevicePageBrowserProxyImpl.getInstance()
-                      .batteryIdleBehavior_);
+                  DevicePageBrowserProxyImpl.getInstance().batteryIdleBehavior);
             });
       });
 
@@ -2659,14 +2658,14 @@ suite('SettingsDevicePage', function() {
         lidClosedToggle.shadowRoot.querySelector('#control').click();
         assertEquals(
             LidClosedBehavior.DO_NOTHING,
-            DevicePageBrowserProxyImpl.getInstance().lidClosedBehavior_);
+            DevicePageBrowserProxyImpl.getInstance().lidClosedBehavior);
         sendLid(LidClosedBehavior.DO_NOTHING);
         assertFalse(lidClosedToggle.checked);
 
         lidClosedToggle.shadowRoot.querySelector('#control').click();
         assertEquals(
             LidClosedBehavior.SUSPEND,
-            DevicePageBrowserProxyImpl.getInstance().lidClosedBehavior_);
+            DevicePageBrowserProxyImpl.getInstance().lidClosedBehavior);
         sendLid(LidClosedBehavior.SUSPEND);
         assertTrue(lidClosedToggle.checked);
       });
@@ -3098,7 +3097,7 @@ suite('SettingsDevicePage', function() {
             waitingDiv = assert(page.shadowRoot.querySelector('#waiting'));
             LockScreenSupport = NoteAppLockScreenSupport;
 
-            assertEquals(1, browserProxy.requestNoteTakingApps_);
+            assertEquals(1, browserProxy.getCallCount('requestNoteTakingApps'));
             assert(browserProxy.onNoteTakingAppsUpdated_);
           });
     });
@@ -3201,13 +3200,13 @@ suite('SettingsDevicePage', function() {
         entry('n2', 'v2', true, LockScreenSupport.NOT_SUPPORTED),
       ]);
       flush();
-      assertEquals(0, browserProxy.setPreferredAppCount_);
+      assertEquals(0, browserProxy.getCallCount('setPreferredNoteTakingApp'));
       assertEquals('v2', browserProxy.getPreferredNoteTakingAppId());
 
       // Update select element to new value, verify browser proxy is called.
       appSelector.value = 'v1';
       stylusPage.onSelectedAppChanged_();
-      assertEquals(1, browserProxy.setPreferredAppCount_);
+      assertEquals(1, browserProxy.getCallCount('setPreferredNoteTakingApp'));
       assertEquals('v1', browserProxy.getPreferredNoteTakingAppId());
     });
 
@@ -3232,7 +3231,7 @@ suite('SettingsDevicePage', function() {
         entry('n2', 'v2', true, LockScreenSupport.NOT_SUPPORTED),
       ]);
       flush();
-      assertEquals(0, browserProxy.setPreferredAppCount_);
+      assertEquals(0, browserProxy.getCallCount('setPreferredNoteTakingApp'));
       assertEquals('v2', browserProxy.getPreferredNoteTakingAppId());
     });
 
@@ -3326,7 +3325,8 @@ suite('SettingsDevicePage', function() {
             // Select the app with lock screen app support.
             appSelector.value = 'v2';
             stylusPage.onSelectedAppChanged_();
-            assertEquals(1, browserProxy.setPreferredAppCount_);
+            assertEquals(
+                1, browserProxy.getCallCount('setPreferredNoteTakingApp'));
             assertEquals('v2', browserProxy.getPreferredNoteTakingAppId());
 
             return new Promise(function(resolve) {
@@ -3359,7 +3359,8 @@ suite('SettingsDevicePage', function() {
             // Select the app that does not support lock screen again.
             appSelector.value = 'v1';
             stylusPage.onSelectedAppChanged_();
-            assertEquals(2, browserProxy.setPreferredAppCount_);
+            assertEquals(
+                2, browserProxy.getCallCount('setPreferredNoteTakingApp'));
             assertEquals('v1', browserProxy.getPreferredNoteTakingAppId());
 
             return new Promise(function(resolve) {
@@ -3441,7 +3442,10 @@ suite('SettingsDevicePage', function() {
             assertFalse(isVisible(enableAppOnLockScreenPolicyIndicator()));
 
             enableAppOnLockScreenToggle().click();
-            assertEquals(1, browserProxy.setAppOnLockScreenCount_);
+            assertEquals(
+                1,
+                browserProxy.getCallCount(
+                    'setPreferredNoteTakingAppEnabledOnLockScreen'));
 
             return new Promise(function(resolve) {
               microTask.run(resolve);
@@ -3457,7 +3461,10 @@ suite('SettingsDevicePage', function() {
                 browserProxy.getPreferredAppLockScreenState());
 
             enableAppOnLockScreenToggle().click();
-            assertEquals(2, browserProxy.setAppOnLockScreenCount_);
+            assertEquals(
+                2,
+                browserProxy.getCallCount(
+                    'setPreferredNoteTakingAppEnabledOnLockScreen'));
 
             return new Promise(function(resolve) {
               microTask.run(resolve);
@@ -3486,7 +3493,10 @@ suite('SettingsDevicePage', function() {
             assertFalse(enableAppOnLockScreenToggle().checked);
 
             enableAppOnLockScreenToggleLabel().click();
-            assertEquals(1, browserProxy.setAppOnLockScreenCount_);
+            assertEquals(
+                1,
+                browserProxy.getCallCount(
+                    'setPreferredNoteTakingAppEnabledOnLockScreen'));
 
             return new Promise(function(resolve) {
               microTask.run(resolve);
@@ -3502,7 +3512,10 @@ suite('SettingsDevicePage', function() {
                 browserProxy.getPreferredAppLockScreenState());
 
             enableAppOnLockScreenToggleLabel().click();
-            assertEquals(2, browserProxy.setAppOnLockScreenCount_);
+            assertEquals(
+                2,
+                browserProxy.getCallCount(
+                    'setPreferredNoteTakingAppEnabledOnLockScreen'));
 
             return new Promise(function(resolve) {
               microTask.run(resolve);
@@ -3537,7 +3550,10 @@ suite('SettingsDevicePage', function() {
             // The toggle should be disabled, so enabling app on lock screen
             // should not be attempted.
             enableAppOnLockScreenToggle().click();
-            assertEquals(0, browserProxy.setAppOnLockScreenCount_);
+            assertEquals(
+                0,
+                browserProxy.getCallCount(
+                    'setPreferredNoteTakingAppEnabledOnLockScreen'));
 
             return new Promise(function(resolve) {
               microTask.run(resolve);
@@ -3548,7 +3564,10 @@ suite('SettingsDevicePage', function() {
 
             // Tap on label should not work either.
             enableAppOnLockScreenToggleLabel().click();
-            assertEquals(0, browserProxy.setAppOnLockScreenCount_);
+            assertEquals(
+                0,
+                browserProxy.getCallCount(
+                    'setPreferredNoteTakingAppEnabledOnLockScreen'));
 
             return new Promise(function(resolve) {
               microTask.run(resolve);
