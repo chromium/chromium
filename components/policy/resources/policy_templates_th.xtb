@@ -574,6 +574,7 @@
 <translation id="1530812829012954197">แสดงรูปแบบ URL ต่อไปนี้เสมอในเบราว์เซอร์โฮสต์</translation>
 <translation id="1542491165152947087">อนุญาตให้ผู้ใช้เปิดหรือปิดการตั้งค่าหัวข้อโฆษณาโดย <ph name="PRIVACY_SANDBOX_NAME" /> ในอุปกรณ์ได้</translation>
 <translation id="1547424904796464052">แฮช SHA-256 ที่เข้ารหัสเลขฐานสิบหกของอิมเมจเฟิร์มแวร์</translation>
+<translation id="1550295162561011575">การตั้งค่านโยบายนี้ช่วยให้ผู้ดูแลระบบกําหนดค่าการทํางานอัตโนมัติสําหรับการเปิดใช้แอปในอุปกรณ์ <ph name="PRODUCT_NAME" /> ได้ โดยแอปเหล่านี้สามารถเปิดขึ้นเมื่อผู้ใช้เข้าสู่ระบบ หรือผู้ใช้จะเปิดแอปพร้อมกันจาก Launcher ก็ได้</translation>
 <translation id="1552418937045050762">หากเปิดใช้การตั้งค่านี้ ผู้ใช้จะเลือกใช้การแชร์ใกล้เคียงเพื่อส่งและรับไฟล์จากผู้ที่อยู่ใกล้กันได้
 
       หากปิดใช้การตั้งค่านี้ ผู้ใช้จะเลือกใช้การแชร์ใกล้เคียงไม่ได้
@@ -1032,6 +1033,7 @@
 <translation id="1980777339173013601">การตั้งค่านโยบายเป็น "จริง" หรือไม่ได้ตั้งค่าจะทำให้ผู้ใช้ใช้ ARC ได้ เว้นแต่จะมีการปิด ARC ไว้ด้วยวิธีการอื่นๆ การตั้งค่านโยบายเป็น "เท็จ" หมายความว่าผู้ใช้ที่ไม่ได้เชื่อมโยงจะใช้ ARC ไม่ได้
 
       การเปลี่ยนแปลงนโยบายจะมีผลขณะที่ ARC ไม่ได้ทำงานอยู่เท่านั้น เช่น ขณะเริ่มต้น Chrome OS</translation>
+<translation id="1984934843478301531">การทํางานอัตโนมัติของการเปิดแอป</translation>
 <translation id="1985598967415986700">การลด User Agent จะควบคุมได้ผ่านช่วงทดลองใช้งานภาคสนามและช่วงทดลองใช้จากต้นทาง</translation>
 <translation id="1987789058026551147">เปิดใช้การรายงานเซสชันคีออสก์ของอุปกรณ์</translation>
 <translation id="1988345404999458987">ระบุการกำหนดค่าเซิร์ฟเวอร์การพิมพ์ที่พร้อมใช้งาน
@@ -2097,6 +2099,7 @@
       การตั้งค่านโยบายเป็น "ปิดใช้" หรือไม่ได้ตั้งค่าหมายความว่า ระบบจะไม่สนใจคีย์ไฟล์ Manifest ของ <ph name="REQUIRED_PLATFORM_VERSION" /> และการอัปเดตอัตโนมัติจะดำเนินการไปตามปกติ
 
       คำเตือน: อย่ามอบสิทธิ์ควบคุมเวอร์ชันของ <ph name="PRODUCT_OS_NAME" /> กับแอปคีออสก์ เพราะอาจขัดขวางไม่ให้อุปกรณ์ได้รับการอัปเดตซอฟต์แวร์และการแก้ไขด้านความปลอดภัยที่สำคัญ การมอบสิทธิ์ควบคุมเวอร์ชันของ <ph name="PRODUCT_OS_NAME" /> อาจทำให้ผู้ใช้ตกอยู่ในความเสี่ยง</translation>
+<translation id="2989404644164421834">โหลดหน้าเว็บซ้ำ</translation>
 <translation id="299446489108785864">รายการ URL ซึ่งระบุ URL ที่จะใช้กับ <ph name="AUTO_OPEN_FILE_TYPES_POLICY_NAME" /> นโยบายนี้ไม่มีผลต่อค่าที่เปิดโดยอัตโนมัติที่ผู้ใช้กำหนดไว้
 
       หากตั้งค่านโยบายนี้ไว้ ไฟล์จะเปิดโดยอัตโนมัติด้วยนโยบายเฉพาะเมื่อ URL นั้นอยู่ในชุดนี้ และมีประเภทไฟล์อยู่ใน <ph name="AUTO_OPEN_FILE_TYPES_POLICY_NAME" /> หากเงื่อนไขข้อใดข้อหนึ่งเป็น "เท็จ" ไฟล์ที่ดาวน์โหลดจะไม่เปิดโดยอัตโนมัติด้วยนโยบาย
@@ -4091,6 +4094,23 @@ https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns *
 <translation id="4860900625632464759">อนุญาตให้ผู้ใช้ซิงค์ข้อความ SMS ระหว่างโทรศัพท์กับ Chromebook</translation>
 <translation id="486146220825734683">ไม่อนุญาตให้ผู้ใช้จดจำรหัสผ่าน Kerberos</translation>
 <translation id="4861767323695239729">กำหนดค่าวิธีการป้อนข้อมูลที่อนุญาตในเซสชันผู้ใช้</translation>
+<translation id="4870120523614402392">รายการการดำเนินการที่จะเรียกใช้เมื่อหมดเวลาตามนโยบาย <ph name="IDLE_TIMEOUT_POLICY_NAME" />
+
+      หากไม่ได้ตั้งค่านโยบาย <ph name="IDLE_TIMEOUT_POLICY_NAME" /> ไว้ นโยบายนี้จะไม่มีผล
+
+      เมื่อหมดเวลาตามนโยบาย <ph name="IDLE_TIMEOUT_POLICY_NAME" /> <ph name="PRODUCT_NAME" /> จะเรียกใช้การดำเนินการที่กำหนดค่าไว้ในนโยบายนี้
+
+      หากนโยบายนี้ว่างเปล่าหรือไม่ได้ตั้งค่า นโยบาย <ph name="IDLE_TIMEOUT_POLICY_NAME" /> จะไม่มีผล
+
+      การดำเนินการที่รองรับ ได้แก่ "<ph name="CLOSE_BROWSERS_ACTION" />": ปิดหน้าต่างเบราว์เซอร์และ PWA ทั้งหมดสำหรับโปรไฟล์นี้ ไม่รองรับใน Android
+
+      "<ph name="SHOW_PROFILE_PICKER_ACTION" />": แสดงหน้าต่างเครื่องมือเลือกโปรไฟล์ ไม่รองรับใน Android
+
+      "<ph name="CLEAR_BROWSING_HISTORY_ACTION" />", "<ph name="CLEAR_DOWNLOAD_HISTORY_ACTION" />", "<ph name="CLEAR_COOKIES_AND_OTHER_SITE_DATA_ACTION" />", "<ph name="CLEAR_CACHED_IMAGES_AND_FILES_ACTION" />", "<ph name="CLEAR_PASSWORD_SIGNIN_ACTION" />", "<ph name="CLEAR_AUTOFILL_ACTION" />", "<ph name="CLEAR_SITE_SETTINGS_ACTION" />", "<ph name="CLEAR_HOSTED_APP_DATA_ACTION" />": ล้างข้อมูลการท่องเว็บที่เกี่ยวข้อง ดูรายละเอียดเพิ่มเติมจากนโยบาย <ph name="CLEAR_BROWSING_DATA_ON_EXIT_LIST_POLICY_NAME" />
+
+      "<ph name="RELOAD_PAGES_ACTION" />": โหลดหน้าเว็บทั้งหมดซ้ำ ในบางหน้า ผู้ใช้อาจได้รับแจ้งให้ยืนยันก่อน
+
+      "<ph name="CLEAR_BROWSING_HISTORY_ACTION" />", "<ph name="CLEAR_PASSWORD_SIGNIN_ACTION" />", "<ph name="CLEAR_AUTOFILL_ACTION" />" และ "<ph name="CLEAR_HOSTED_APP_DATA_ACTION" />" กำหนดให้ตั้งค่านโยบาย <ph name="SYNC_DISABLED_POLICY_NAME" /> เป็น "จริง"</translation>
 <translation id="4873380469296842901">หากเปิดใช้การตั้งค่านี้ ผู้ใช้ที่เลือกใช้ฮับโทรศัพท์อยู่แล้วจะส่ง/รับการแจ้งเตือนของโทรศัพท์ใน Chrome OS ได้
 
       หากปิดใช้การตั้งค่านี้ ผู้ใช้จะใช้ฟีเจอร์นี้ไม่ได้ หากปิดใช้นโยบาย PhoneHubAllowed ผู้ใช้ก็จะใช้ฟีเจอร์นี้ไม่ได้เช่นกัน

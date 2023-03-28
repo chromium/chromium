@@ -27,7 +27,7 @@ Neke funkcije možda neće biti dostupne i promjene postavki se neće sačuvati.
 <translation id="1507198376417198979">Prilagodite novi Chrome profil</translation>
 <translation id="1516530951338665275">Google Chromeu je potreban pristup Bluetoothu da nastavi s
 uparivanjem. <ph name="IDS_BLUETOOTH_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
-<translation id="1535597783576881392">Ovaj vodič pruža vam uvid u vaše odabire kako bi Chrome funkcionirao kako želite</translation>
+<translation id="1535597783576881392">Ovaj vodič vam pojašnjava vaše izbore kako bi Chrome funkcionirao onako kako želite</translation>
 <translation id="1547295885616600893">ChromeOS je moguć zahvaljujući dodatnom <ph name="BEGIN_LINK_CROS_OSS" />softveru otvorenog koda<ph name="END_LINK_CROS_OSS" />.</translation>
 <translation id="1553358976309200471">Ažuriraj Chrome</translation>
 <translation id="1583073672411044740"><ph name="EXISTING_USER" /> je već prijavljen/a na ovom Chrome profilu. Ovim će se kreirati novi Chrome profil za korisnika <ph name="USER_EMAIL_ADDRESS" /></translation>

@@ -698,6 +698,7 @@
 <translation id="7103252855940681301">Naprava <ph name="INDEX" /> od <ph name="COUNT" /> z imenom <ph name="NAME" />.</translation>
 <translation id="7108668606237948702">vnos</translation>
 <translation id="7130438335435247835">Ime dostopne točke (APN)</translation>
+<translation id="7131634559772719176">Potrditev prednastavitev</translation>
 <translation id="7134436342991564651">{0,plural, =1{Imenski strežnik}one{Imenski strežniki}two{Imenski strežniki}few{Imenski strežniki}other{Imenski strežniki}}</translation>
 <translation id="7143207342074048698">Povezovanje</translation>
 <translation id="7144878232160441200">Poskusi ponovno</translation>
@@ -801,6 +802,7 @@
 <translation id="80398733265834479">Omogoči način samodejne barve</translation>
 <translation id="8041089156583427627">Pošlji povratne informacije</translation>
 <translation id="8045012663542226664">Izklop zvok mikrofona</translation>
+<translation id="8050091914317269817">Če izberete to zaslonsko ozadje, se vklopita samodejni temni način in ujemanje barv zaslonskega ozadja.</translation>
 <translation id="8075838845814659848">Preostanek polnjenja</translation>
 <translation id="8076492880354921740">Zavihki</translation>
 <translation id="8082366717211101304">Iz aplikacij za Android ni mogoče razrešiti DNS-ja.</translation>

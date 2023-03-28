@@ -698,6 +698,7 @@
 <translation id="7103252855940681301">อุปกรณ์ <ph name="INDEX" /> จาก <ph name="COUNT" /> มีชื่อว่า <ph name="NAME" /></translation>
 <translation id="7108668606237948702">Enter</translation>
 <translation id="7130438335435247835">จุดเข้าใช้งาน (APN)</translation>
+<translation id="7131634559772719176">ยืนยันค่าที่กำหนดล่วงหน้า</translation>
 <translation id="7134436342991564651">{0,plural, =1{เนมเซิร์ฟเวอร์}other{เนมเซิร์ฟเวอร์}}</translation>
 <translation id="7143207342074048698">กำลังเชื่อมต่อ</translation>
 <translation id="7144878232160441200">ลองอีกครั้ง</translation>
@@ -801,6 +802,7 @@
 <translation id="80398733265834479">เปิดใช้โหมดปรับสีอัตโนมัติ</translation>
 <translation id="8041089156583427627">ส่งความคิดเห็น</translation>
 <translation id="8045012663542226664">ปุ่มปิดเสียงไมโครโฟน</translation>
+<translation id="8050091914317269817">การเลือกวอลเปเปอร์นี้จะเปิดโหมดมืดอัตโนมัติและการจับคู่สีวอลเปเปอร์</translation>
 <translation id="8075838845814659848">การชาร์จที่เหลือ</translation>
 <translation id="8076492880354921740">แท็บ</translation>
 <translation id="8082366717211101304">ไม่สามารถแปลง DNS จากแอป Android</translation>

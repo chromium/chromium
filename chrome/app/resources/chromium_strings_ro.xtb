@@ -94,6 +94,7 @@ Permisiunile pe care le-ai acordat deja site-urilor și aplicațiilor se pot apl
 <translation id="3258596308407688501">Chromium nu poate citi și scrie în directorul propriu de date:
 
 <ph name="USER_DATA_DIRECTORY" /></translation>
+<translation id="3259037713047794342">Acest ghid te ajută să înțelegi opțiunile, astfel încât Chromium să funcționeze așa cum vrei</translation>
 <translation id="3283186697780795848">Versiunea Chromium <ph name="PRODUCT_VERSION" /> este instalată</translation>
 <translation id="3286538390144397061">Repornește acum</translation>
 <translation id="328888136576916638">Lipsesc chei pentru API-ul Google. Unele funcționalități Chromium vor fi dezactivate.</translation>
@@ -381,6 +382,7 @@ Chromium nu poate recupera setările.</translation>
 <translation id="924957577793602335">Personalizează Chromium</translation>
 <translation id="93478295209880648">Este posibil ca Chromium să nu funcționeze corespunzător, deoarece nu mai este acceptat pe Windows XP sau Windows Vista</translation>
 <translation id="942598560705308788">Certificate gestionate de Chromium</translation>
+<translation id="959579472876010517">Profită la maximum de Chromium</translation>
 <translation id="965162752251293939">Cine folosește Chromium?</translation>
 <translation id="967427899662692980">Beneficiază de cel mai înalt nivel de securitate de la Chromium</translation>
 <translation id="9792300276217204">Șterge întotdeauna datele privind site-urile de pe dispozitiv când închizi Chromium</translation>

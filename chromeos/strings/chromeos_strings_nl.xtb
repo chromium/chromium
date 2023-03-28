@@ -698,6 +698,7 @@
 <translation id="7103252855940681301">Apparaat <ph name="INDEX" /> van <ph name="COUNT" /> met de naam <ph name="NAME" />.</translation>
 <translation id="7108668606237948702">Enter</translation>
 <translation id="7130438335435247835">Toegangspuntnaam (APN)</translation>
+<translation id="7131634559772719176">Voorinstelling bevestigen</translation>
 <translation id="7134436342991564651">{0,plural, =1{Naamserver}other{Naamservers}}</translation>
 <translation id="7143207342074048698">Verbinden</translation>
 <translation id="7144878232160441200">Opnieuw proberen</translation>
@@ -769,6 +770,7 @@
 <translation id="7762130827864645708">Je wachtwoord is gewijzigd. Gebruik vanaf nu je nieuwe wachtwoord.</translation>
 <translation id="7763470514545477072">Overeenkomst voor domeinextensie</translation>
 <translation id="7769672763586021400">Model-ID</translation>
+<translation id="7770834998503326261">Aanvullende informatie met betrekking tot je selectie</translation>
 <translation id="7778717409420828014">Met jouw feedback kunnen we de functionaliteit van de Chromebook verbeteren. Je feedback wordt beoordeeld door ons team. Vanwege het grote aantal rapporten kunnen we je geen antwoord sturen.</translation>
 <translation id="7784116172884276937">Er zijn geen DNS-servers ingesteld</translation>
 <translation id="7791543448312431591">Toevoegen</translation>
@@ -801,6 +803,7 @@
 <translation id="80398733265834479">Modus voor automatische kleuren aanzetten</translation>
 <translation id="8041089156583427627">Feedback sturen</translation>
 <translation id="8045012663542226664">Microfoon dempen</translation>
+<translation id="8050091914317269817">Als je deze achtergrond selecteert, worden automatische donkere modus en overeenkomende achtergrondkleuren aangezet.</translation>
 <translation id="8075838845814659848">Resterende batterijlading</translation>
 <translation id="8076492880354921740">Tabbladen</translation>
 <translation id="8082366717211101304">Kan DNS niet omzetten vanuit Android-apps</translation>

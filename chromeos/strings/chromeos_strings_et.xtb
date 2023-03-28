@@ -698,6 +698,7 @@
 <translation id="7103252855940681301">Seade <ph name="INDEX" />/<ph name="COUNT" /> nimega <ph name="NAME" />.</translation>
 <translation id="7108668606237948702">sisestusklahv</translation>
 <translation id="7130438335435247835">Pääsupunkti nimi (APN)</translation>
+<translation id="7131634559772719176">Kinnita eelseadistus</translation>
 <translation id="7134436342991564651">{0,plural, =1{Nimeserver}other{Nimeserverid}}</translation>
 <translation id="7143207342074048698">Ühendamine</translation>
 <translation id="7144878232160441200">Proovi uuesti</translation>
@@ -801,6 +802,7 @@
 <translation id="80398733265834479">Luba automaatne värvirežiim</translation>
 <translation id="8041089156583427627">Saada tagasiside</translation>
 <translation id="8045012663542226664">Mikrofoni vaigistamise klahv</translation>
+<translation id="8050091914317269817">Selle taustapildi valimine lülitab sisse automaatse tumeda režiimi ja taustapildi värvi sobitamise.</translation>
 <translation id="8075838845814659848">Aku laetuse tase</translation>
 <translation id="8076492880354921740">Vahelehed</translation>
 <translation id="8082366717211101304">Ei saa Androidi rakendustest DNS-i lahendada</translation>

@@ -40,6 +40,7 @@ Ecco alcune cose che puoi provare per iniziare.</translation>
 <translation id="1181037720776840403">Rimuovi</translation>
 <translation id="1182225749592316782">Consente l'accesso per tutti i siti web e tutte le app che dispongono delle autorizzazioni di accesso al microfono e alla fotocamera</translation>
 <translation id="1183863904939664422">Non mi interessa questo suggerimento</translation>
+<translation id="1184126796192815024">Questa rete non supporta le app di streaming dal tuo telefono. Prova a usare l'hotspot del telefono. <ph name="LEARN_MORE" /></translation>
 <translation id="118437560755358292">Inserisci la password o il PIN per una maggior sicurezza</translation>
 <translation id="118532027333893379">Tocca un punto qualsiasi per acquisire l'intera schermata</translation>
 <translation id="1190609913194133056">Centro notifiche</translation>
@@ -991,7 +992,7 @@ Collega il dispositivo all'alimentazione.</translation>
 <translation id="5669267381087807207">Attivazione</translation>
 <translation id="5673434351075758678">Da "<ph name="FROM_LOCALE" />" a "<ph name="TO_LOCALE" />" dopo la sincronizzazione delle impostazioni.</translation>
 <translation id="5675363643668471212">Elemento barra delle app</translation>
-<translation id="5677928146339483299">Blocca</translation>
+<translation id="5677928146339483299">Autorizzazione bloccata</translation>
 <translation id="5678564054339031017">Mostra la settimana successiva</translation>
 <translation id="5679050765726761783">Alimentatore a basso consumo energetico collegato</translation>
 <translation id="5682642926269496722">L'Assistente Google non è disponibile per l'attuale account utente.</translation>

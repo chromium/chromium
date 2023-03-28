@@ -40,6 +40,7 @@ Hier zijn wat voorbeelden van wat je kunt proberen om aan de slag te gaan.</tran
 <translation id="1181037720776840403">Verwijderen</translation>
 <translation id="1182225749592316782">Hiermee geef je toegang aan alle apps en websites met camera- en microfoonrechten</translation>
 <translation id="1183863904939664422">Niet geïnteresseerd in deze suggestie</translation>
+<translation id="1184126796192815024">Dit netwerk ondersteunt apps streamen vanaf je telefoon niet. Probeer de hotspot van je telefoon te gebruiken. <ph name="LEARN_MORE" /></translation>
 <translation id="118437560755358292">Geef je wachtwoord of pincode op voor extra beveiliging</translation>
 <translation id="118532027333893379">Tik ergens om het hele scherm vast te leggen</translation>
 <translation id="1190609913194133056">Meldingscentrum</translation>
@@ -1252,6 +1253,7 @@ Nieuwe installatie</translation>
 <translation id="685782768769951078">{NUM_DIGITS,plural, =1{Nog 1 cijfer nodig}other{Nog # cijfers nodig}}</translation>
 <translation id="6867938213751067702">Download van <ph name="FILENAME" /> is onderbroken</translation>
 <translation id="6878400149835617132">Snelkoppeling staat uit</translation>
+<translation id="6878701771800702153">{NUM_APPS,plural, =1{1 app}other{# apps}}</translation>
 <translation id="6884665277231944629">Terug naar vandaag</translation>
 <translation id="6886172995547742638">Je <ph name="DEVICE_TYPE" /> kan slechtere prestaties leveren. Gebruik een gecertificeerde USB-C-voedingsadapter van <ph name="PREFERRED_MINIMUM_POWER" /> W of hoger.</translation>
 <translation id="688631446150864480">Druk op de pijl-omlaag om tussen vensters te schakelen</translation>
@@ -1429,6 +1431,7 @@ Als je het apparaat wilt uitzetten, houd je de aan/uit-knop op het apparaat weer
 <translation id="7749443890790263709">Maximum aantal bureaus bereikt.</translation>
 <translation id="776344839111254542">Klik om updategegevens te bekijken</translation>
 <translation id="7768784765476638775">Selecteer om uitgesproken te worden</translation>
+<translation id="7769299611924763557">Je gif is bijna klaar</translation>
 <translation id="7780094051999721182">snelkoppelingen</translation>
 <translation id="7780159184141939021">Scherm draaien</translation>
 <translation id="7796735576426975947">Nieuwe melding verborgen</translation>

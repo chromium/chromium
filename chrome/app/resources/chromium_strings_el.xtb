@@ -94,6 +94,7 @@
 <translation id="3258596308407688501">Το Chromium δεν έχει δυνατότητα ανάγνωσης και εγγραφής στον κατάλογο δεδομένων του:
 
 <ph name="USER_DATA_DIRECTORY" /></translation>
+<translation id="3259037713047794342">Αυτός ο οδηγός σάς βοηθά να κατανοήσετε τις επιλογές σας, έτσι ώστε το Chromium να λειτουργεί με τον τρόπο που θέλετε</translation>
 <translation id="3283186697780795848">Έχει εγκατασταθεί η έκδοση Chromium <ph name="PRODUCT_VERSION" />.</translation>
 <translation id="3286538390144397061">Άμεση επανεκκίνηση</translation>
 <translation id="328888136576916638">Λείπουν κλειδιά του Google API. Ορισμένες λειτουργίες του Google Chromium θα απενεργοποιηθούν.</translation>
@@ -382,6 +383,7 @@
 <translation id="924957577793602335">Εξατομίκευση του Chromium</translation>
 <translation id="93478295209880648">Το Chromium μπορεί να μην λειτουργεί σωστά, επειδή δεν υποστηρίζεται πια σε Windows XP και Windows Vista</translation>
 <translation id="942598560705308788">Πιστοποιητικά που διαχειρίζεται το Chromium</translation>
+<translation id="959579472876010517">Αξιοποιήστε στο έπακρο το Chromium</translation>
 <translation id="965162752251293939">Ποιος χρησιμοποιεί το Chromium;</translation>
 <translation id="967427899662692980">Λάβετε την ισχυρότερη προστασία του Chromium</translation>
 <translation id="9792300276217204">Να γίνεται πάντα διαγραφή των δεδομένων ιστοτόπων από τη συσκευή σας όταν κλείνετε το Chromium</translation>

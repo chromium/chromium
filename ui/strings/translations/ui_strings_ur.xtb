@@ -101,7 +101,7 @@
 <translation id="3990502903496589789">دایاں سرا</translation>
 <translation id="3994749195054421561"><ph name="COLUMN_NAME" /> کالم صعودی ترتیب میں ترتیب دیا گیا۔</translation>
 <translation id="4031910098617850788">F5</translation>
-<translation id="40579289237549812">{UNREAD_NOTIFICATIONS,plural, =1{1 بغیر پڑھی ہوئی اطلاع}other{# بغیر پڑھی ہوئی اطلاعات}}</translation>
+<translation id="40579289237549812">{UNREAD_NOTIFICATIONS,plural, =1{1 نہ پڑھی ہوئی اطلاع}other{# نہ پڑھی ہوئی اطلاعات}}</translation>
 <translation id="4266252015790371705">{MONTHS,plural, =1{1 مہینہ پہلے}other{# مہینے پہلے}}</translation>
 <translation id="4289300219472526559">بولنا شروع کریں</translation>
 <translation id="4289540628985791613">عمومی جائزہ</translation>
@@ -109,7 +109,7 @@
 <translation id="4491109536499578614">تصویر</translation>
 <translation id="4565377596337484307">پاس ورڈ چھپائیں</translation>
 <translation id="4588090240171750605">دائیں سکرول کریں</translation>
-<translation id="4724120544754982507">اطلاعاتی مرکز، <ph name="UNREAD_NOTIFICATION_COUNT" /> بغیر پڑھی ہوئی اطلاعات</translation>
+<translation id="4724120544754982507">اطلاعاتی مرکز، <ph name="UNREAD_NOTIFICATION_COUNT" /> نہ پڑھی ہوئی اطلاعات</translation>
 <translation id="4746179598275229723">ایکسٹینشن کا پن ہٹایا گیا</translation>
 <translation id="4788285488841504513">{MONTHS,plural, =1{1 مہینہ باقی}other{# مہینے باقی}}</translation>
 <translation id="4888938634149558681">کال کریں</translation>
@@ -183,7 +183,7 @@
 <translation id="7879499977785298635">مسدود نہ کریں</translation>
 <translation id="7907591526440419938">فائل کھولیں</translation>
 <translation id="7969046989155602842">کمانڈ</translation>
-<translation id="8074552109918343525">{MAX_UNREAD_NOTIFICATIONS,plural, =1{1 سے زیادہ بغیر پڑھی ہوئی اطلاع}other{# سے زیادہ بغیر پڑھی ہوئی اطلاعات}}</translation>
+<translation id="8074552109918343525">{MAX_UNREAD_NOTIFICATIONS,plural, =1{1 سے زیادہ نہ پڑھی ہوئی اطلاع}other{# سے زیادہ نہ پڑھی ہوئی اطلاعات}}</translation>
 <translation id="8086866675552927481">{MINUTES,plural, =1{1 منٹ میں}other{# منٹ میں}}</translation>
 <translation id="8087772101393322318"><ph name="KEY_COMBO_NAME" />+<ph name="KEY_MODIFIER_NAME" /></translation>
 <translation id="8090736967111090568"><ph name="ORIGIN" /> سے نمبر</translation>
@@ -217,5 +217,5 @@
 <translation id="9059834730836941392">اطلاع سُکیڑیں</translation>
 <translation id="9170848237812810038">&amp;کالعدم کریں</translation>
 <translation id="932327136139879170">ھوم</translation>
-<translation id="944069440740578670">بغیر پڑھی ہوئی اطلاعات</translation>
+<translation id="944069440740578670">نہ پڑھی ہوئی اطلاعات</translation>
 </translationbundle>

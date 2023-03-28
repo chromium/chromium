@@ -27,6 +27,7 @@ Maaaring hindi available ang ilang tampok at hindi mase-save ang mga pagbabago s
 <translation id="1507198376417198979">I-customize ang iyong bagong profile sa Chrome</translation>
 <translation id="1516530951338665275">Nangangailangan ang Google Chrome ng access sa Bluetooth para magpatuloy sa 
  pagpapares. <ph name="IDS_BLUETOOTH_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
+<translation id="1535597783576881392">Tinutulungan ka ng gabay na ito na maunawaan ang iyong mga pinili, para gumana ang Chrome sa paraang gusto mo</translation>
 <translation id="1547295885616600893">Pinapagana ng karagdagang <ph name="BEGIN_LINK_CROS_OSS" />open source na software<ph name="END_LINK_CROS_OSS" /> ang ChromeOS.</translation>
 <translation id="1553358976309200471">I-update ang Chrome</translation>
 <translation id="1583073672411044740">Naka-sign in na si <ph name="EXISTING_USER" /> sa profile sa Chrome na ito. Gagawa ito ng bagong profile sa Chrome para sa <ph name="USER_EMAIL_ADDRESS" /></translation>
@@ -69,6 +70,7 @@ Maaaring hindi available ang ilang tampok at hindi mase-save ang mga pagbabago s
 <translation id="2131230230468101642">Para protektahan ang iyong privacy, awtomatiko naming dine-delete ang mga interes mo na mas matagal sa 4 na linggo. Habang patuloy kang nagba-browse, posibleng lumabas ulit sa listahan ang isang interes. O puwede kang mag-alis ng mga interes na ayaw mong isaalang-alang ng Chrome.</translation>
 <translation id="2139300032719313227">I-restart ang ChromeOS</translation>
 <translation id="2151406531797534936">Paki-restart ang Chrome ngayon</translation>
+<translation id="2163996651553460171">Sulitin ang Chrome</translation>
 <translation id="2174917724755363426">Hindi nakumpleto ang pag-install. Sigurado ka bang gusto mong kanselahin?</translation>
 <translation id="223889379102603431">Impormasyon tungkol sa kung paano pinapamahalaan ng Chrome ang mga root certificate nito</translation>
 <translation id="2258103955319320201">Para ma-access ang iyong mga bagay sa Chrome browser sa lahat ng device mo, mag-sign in, pagkatapos ay i-on ang pag-sync</translation>

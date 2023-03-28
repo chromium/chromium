@@ -40,6 +40,7 @@
 <translation id="3167189358072330585">계정이 Chrome에서 작동하지 않습니다. 도메인 관리자에게 문의하거나 일반 Google 계정으로 로그인하세요.</translation>
 <translation id="3173834708294760622">Chrome 페이지</translation>
 <translation id="3196546062792660320">Chrome에서는 계정 로그인 정보가 자동으로 채워지기 때문에 시간을 절약할 수 있습니다. 설정에서 계정을 추가하거나 삭제할 수 있습니다.</translation>
+<translation id="322254490661677575">Google 계정에서 Chrome 데이터를 사용하고 저장하려면 비밀번호를 입력하세요.</translation>
 <translation id="3282568296779691940">Chrome에 로그인</translation>
 <translation id="3345341804167540816">어디서나 Chrome 사용</translation>
 <translation id="3503014945441706099">이 Chrome 프로필에 향상된 세이프 브라우징도 사용해 보세요.</translation>
@@ -52,6 +53,7 @@
 <translation id="3980220367029651214">동기화 계정을 <ph name="USER_EMAIL1" />에서 <ph name="USER_EMAIL2" />(으)로 전환합니다. 기존 Chrome 데이터는 <ph name="DOMAIN" />에서 관리합니다. 이렇게 하면 데이터가 이 기기에서 삭제되지만 <ph name="USER_EMAIL1" />에는 그대로 유지됩니다.</translation>
 <translation id="3984746313391923992">조직에서 Chrome 로그아웃 상태를 유지할 것을 요청합니다.</translation>
 <translation id="3988789688219830639">Chrome이 사진 또는 동영상에 액세스할 수 없습니다. 'iOS 설정 &gt; 개인 정보 보호 &gt; 사진'에서 액세스를 허용하세요.</translation>
+<translation id="4064699917955374540">Google 계정에서 Chrome 데이터를 사용하고 저장하려면 본인 확인 절차를 거치세요.</translation>
 <translation id="417201473131094001">Chrome Canary에서 지원되지 않습니다.</translation>
 <translation id="4233521129555661685"><ph name="USER_EMAIL1" /> 계정이 Chrome을 사용했으며 이 기기에 북마크, 비밀번호, 기타 설정을 남겼습니다</translation>
 <translation id="424864128008805179">Chrome에서 로그아웃하시겠습니까?</translation>

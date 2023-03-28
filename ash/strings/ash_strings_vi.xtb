@@ -40,6 +40,7 @@ Dưới đây là một số việc bạn có thể thử để bắt đầu.</t
 <translation id="1181037720776840403">Xóa</translation>
 <translation id="1182225749592316782">Điều này cho phép truy cập máy ảnh và micrô đối với tất cả ứng dụng và trang web có quyền truy cập máy ảnh và micrô</translation>
 <translation id="1183863904939664422">Không quan tâm đến nội dung đề xuất này</translation>
+<translation id="1184126796192815024">Mạng này không hỗ trợ truyền trực tuyến các ứng dụng từ điện thoại của bạn. Hãy thử dùng điểm phát sóng trên điện thoại. <ph name="LEARN_MORE" /></translation>
 <translation id="118437560755358292">Hãy nhập mật khẩu hoặc mã PIN để tăng cường bảo mật</translation>
 <translation id="118532027333893379">Nhấn vào vị trí bất kỳ để chụp toàn màn hình</translation>
 <translation id="1190609913194133056">Trung tâm thông báo</translation>
@@ -1252,6 +1253,7 @@ Mới cài đặt</translation>
 <translation id="685782768769951078">{NUM_DIGITS,plural, =1{Còn lại một số}other{Còn lại # số}}</translation>
 <translation id="6867938213751067702">Đã tạm dừng tải <ph name="FILENAME" /> xuống</translation>
 <translation id="6878400149835617132">Đã tắt phím tắt</translation>
+<translation id="6878701771800702153">{NUM_APPS,plural, =1{1 ứng dụng}other{# ứng dụng}}</translation>
 <translation id="6884665277231944629">Quay lại hôm nay</translation>
 <translation id="6886172995547742638">Hiệu suất của <ph name="DEVICE_TYPE" /> của bạn có thể bị giảm. Hãy dùng bộ sạc USB-C được chứng nhận có công suất <ph name="PREFERRED_MINIMUM_POWER" />W trở lên.</translation>
 <translation id="688631446150864480">Nhấn phím Mũi tên xuống để chuyển đổi giữa các cửa sổ</translation>
@@ -1432,6 +1434,7 @@ Mới cài đặt</translation>
 <translation id="7749443890790263709">Đã đạt đến số lượng không gian làm việc tối đa.</translation>
 <translation id="776344839111254542">Nhấp để xem chi tiết cập nhật</translation>
 <translation id="7768784765476638775">Chọn để nói</translation>
+<translation id="7769299611924763557">Ảnh GIF của bạn sẽ sớm sẵn sàng</translation>
 <translation id="7780094051999721182">lối tắt</translation>
 <translation id="7780159184141939021">Xoay màn hình</translation>
 <translation id="7796735576426975947">Đã ẩn thông báo mới</translation>

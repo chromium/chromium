@@ -40,6 +40,7 @@ Oto kilka rzeczy, które możesz wypróbować na początek.</translation>
 <translation id="1181037720776840403">Usuń</translation>
 <translation id="1182225749592316782">Zezwala na dostęp wszystkim aplikacjom i stronom internetowym, które mają uprawnienia do korzystania z kamery i mikrofonu.</translation>
 <translation id="1183863904939664422">Ta sugestia mnie nie interesuje</translation>
+<translation id="1184126796192815024">Ta sieć nie obsługuje strumieniowego przesyłania aplikacji z telefonu. Spróbuj użyć hotspota w telefonie. <ph name="LEARN_MORE" /></translation>
 <translation id="118437560755358292">Dla większego bezpieczeństwa podaj kod PIN lub hasło</translation>
 <translation id="118532027333893379">Aby zrobić zrzut całego ekranu, kliknij w dowolnym miejscu</translation>
 <translation id="1190609913194133056">Centrum powiadomień</translation>
@@ -1251,6 +1252,7 @@ Podłącz urządzenie do zasilania.</translation>
 <translation id="685782768769951078">{NUM_DIGITS,plural, =1{Pozostała 1 cyfra}few{Pozostały # cyfry}many{Pozostało # cyfr}other{Pozostało # cyfry}}</translation>
 <translation id="6867938213751067702">Pobieranie wstrzymane: <ph name="FILENAME" /></translation>
 <translation id="6878400149835617132">Skrót wyłączony</translation>
+<translation id="6878701771800702153">{NUM_APPS,plural, =1{1 aplikacja}few{# aplikacje}many{# aplikacji}other{# aplikacji}}</translation>
 <translation id="6884665277231944629">Wróć do dzisiaj</translation>
 <translation id="6886172995547742638">Twoje urządzenie <ph name="DEVICE_TYPE" /> może mieć gorszą wydajność. Używaj certyfikowanego zasilacza USB-C o mocy co najmniej <ph name="PREFERRED_MINIMUM_POWER" /> W.</translation>
 <translation id="688631446150864480">Aby przełączać okna, naciskaj klawisz strzałki w dół</translation>
@@ -1431,6 +1433,7 @@ Aby wyłączyć urządzenie, ponownie naciśnij i przytrzymaj na nim przycisk z
 <translation id="7749443890790263709">Osiągnięto maksymalną liczbę biurek.</translation>
 <translation id="776344839111254542">Kliknij, by wyświetlić szczegóły aktualizacji</translation>
 <translation id="7768784765476638775">Przeczytaj na głos</translation>
+<translation id="7769299611924763557">Twój GIF będzie wkrótce gotowy</translation>
 <translation id="7780094051999721182">skróty</translation>
 <translation id="7780159184141939021">Obróć ekran</translation>
 <translation id="7796735576426975947">Nowe powiadomienie zostało ukryte</translation>

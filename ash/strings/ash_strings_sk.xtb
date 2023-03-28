@@ -1253,6 +1253,7 @@ Nová inštalácia</translation>
 <translation id="685782768769951078">{NUM_DIGITS,plural, =1{Zostáva jedna číslica}few{Zostávajú # číslice}many{# digits remaining}other{Zostáva # číslic}}</translation>
 <translation id="6867938213751067702">Sťahovanie súboru <ph name="FILENAME" /> bolo pozastavené</translation>
 <translation id="6878400149835617132">Skratka je vypnutá</translation>
+<translation id="6878701771800702153">{NUM_APPS,plural, =1{1 aplikácia}few{# aplikácie}many{# apps}other{# aplikácií}}</translation>
 <translation id="6884665277231944629">Prejsť späť na dnešok</translation>
 <translation id="6886172995547742638">Vaše zariadenie <ph name="DEVICE_TYPE" /> môže mať nižší výkon. Používajte nabíjačku s portom USB-C, ktorá má certifikovaný výkon minimálne <ph name="PREFERRED_MINIMUM_POWER" /> W</translation>
 <translation id="688631446150864480">Ak chcete prepnúť okná, stlačte kláves so šípkou nadol</translation>
@@ -1433,6 +1434,7 @@ Ak chcete zariadenie vypnúť, znova pridržte jeho vypínač.</translation>
 <translation id="7749443890790263709">Dosiahli ste maximálny počet pracovných prostredí.</translation>
 <translation id="776344839111254542">Kliknutím zobrazíte podrobnosti o aktualizácii</translation>
 <translation id="7768784765476638775">Vyslovenie položky po vybratí</translation>
+<translation id="7769299611924763557">Váš gif bude čoskoro pripravený</translation>
 <translation id="7780094051999721182">skratky</translation>
 <translation id="7780159184141939021">Otáčanie obrazovky</translation>
 <translation id="7796735576426975947">Nové upozornenie bolo skryté</translation>

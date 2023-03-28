@@ -628,6 +628,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="2469153820345007638">Orde de 1 a N</translation>
 <translation id="2470767536994572628">Ao editar as anotacións, este documento volverá á vista dunha soa páxina e á orientación orixinal</translation>
 <translation id="2479410451996844060">URL de busca non válido.</translation>
+<translation id="2480300195898055381">Na túa Conta de Google (<ph name="USER_EMAIL" />)</translation>
 <translation id="2482878487686419369">Notificacións</translation>
 <translation id="248348093745724435">Políticas do equipo</translation>
 <translation id="2491120439723279231">O certificado do servidor contén erros.</translation>
@@ -841,6 +842,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="3029752078111257850">Actualidade mundial</translation>
 <translation id="3037177537145227281">Estase facendo un seguimento do prezo</translation>
 <translation id="3037605927509011580">Vaia!</translation>
+<translation id="3041450980936463495">Podes usar os enderezos gardados nos produtos de Google. Este enderezo está gardado na túa Conta de Google (<ph name="ACCOUNT" />).</translation>
 <translation id="3041612393474885105">Información do certificado</translation>
 <translation id="305162504811187366">O historial de Escritorio remoto de Chrome, incluso as marcas de tempo, os hosts e os códigos de identificación da sesión do cliente</translation>
 <translation id="3052964831964880138">Baixada de prezo de <ph name="PRICE_DROP" /> no seguinte produto: <ph name="PRODUCT_NAME" /></translation>
@@ -1932,6 +1934,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="5695542892312572833">Queres utilizar Windows Hello para verificar e completar a compra?</translation>
 <translation id="5701381305118179107">Centrar</translation>
 <translation id="570530837424789914">Xestiona o contido...</translation>
+<translation id="5706906618852913030">Queres gardalo na conta?</translation>
 <translation id="5707154300732650394">Retomar percorrido</translation>
 <translation id="57094364128775171">Suxerir contrasinal seguro…</translation>
 <translation id="571403275720188526">(arm64)</translation>

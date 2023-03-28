@@ -274,6 +274,7 @@
 <translation id="3456078764689556234"><ph name="PRINTED_PAGES" /> oldal kinyomtatva (összesen ennyiből: <ph name="TOTAL_PAGES" />).</translation>
 <translation id="345898999683440380"><ph name="PAGE_NUM" />. oldal beolvasása… <ph name="PERCENTAGE_VALUE" />% kész.</translation>
 <translation id="3459509316159669723">Nyomtatás</translation>
+<translation id="346423161771747987">Áram</translation>
 <translation id="346539236881580388">Új kép készítése</translation>
 <translation id="3484914941826596830">A firmware frissítése közben ne húzza ki a külső eszközt, és ne kapcsolja ki számítógépét. Ezt az ablakot kis méretre állíthatja. A frissítés eltarthat néhány percig, és előfordulhat, hogy közben nem működik a külső eszköz.</translation>
 <translation id="3486220673238053218">definíció</translation>
@@ -697,6 +698,7 @@
 <translation id="7103252855940681301"><ph name="COUNT" />/<ph name="INDEX" />. eszköz, <ph name="NAME" /> néven.</translation>
 <translation id="7108668606237948702">enter</translation>
 <translation id="7130438335435247835">Hozzáférési pont neve (APN)</translation>
+<translation id="7131634559772719176">Beállításkészlet megerősítése</translation>
 <translation id="7134436342991564651">{0,plural, =1{Névszerver}other{Névszerverek}}</translation>
 <translation id="7143207342074048698">Csatlakozás</translation>
 <translation id="7144878232160441200">Újra</translation>
@@ -800,6 +802,7 @@
 <translation id="80398733265834479">Automatikus szín mód engedélyezése</translation>
 <translation id="8041089156583427627">Visszajelzés küldése</translation>
 <translation id="8045012663542226664">Mikrofon némítása</translation>
+<translation id="8050091914317269817">A háttérkép kiválasztásával bekapcsolja az automatikus sötét módot és a háttérkép színegyeztetését.</translation>
 <translation id="8075838845814659848">Töltöttségi szint</translation>
 <translation id="8076492880354921740">Lapok</translation>
 <translation id="8082366717211101304">Nem sikerült feloldani a DNS-t androidos alkalmazásokról</translation>

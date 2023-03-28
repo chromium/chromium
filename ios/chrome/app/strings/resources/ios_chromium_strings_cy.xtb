@@ -47,10 +47,12 @@
 <translation id="3567399274263440288">I gael y gorau o Chromium, mewngofnodwch i Chromium â'ch Cyfrif Google.</translation>
 <translation id="3639997914391704523">Gall Chromium wirio'ch cyfrineiriau pan fyddwch yn mewngofnodi gyda'ch Cyfrif Google.</translation>
 <translation id="3650632991272923014">Roedd <ph name="USER_EMAIL1" /> yn defnyddio Chromium a gadawodd nodau tudalen, cyfrineiriau, a gosodiadau eraill ar y ddyfais hon.</translation>
+<translation id="372658070733623520">I ddefnyddio a chadw data Chromium yn eich Cyfrif Google, cadarnhewch mai chi sydd yno.</translation>
 <translation id="3805899903892079518">Nid oes gan Chromium fynediad at eich lluniau na'ch fideos. Galluogi mynediad yn Gosodiadau iOS &gt; Preifatrwydd &gt; Lluniau.</translation>
 <translation id="4043291146360695975">Mae cyfrineiriau'n cael eu cadw i'r Rheolwr Cyfrineiriau ar y ddyfais hon yn unig.</translation>
 <translation id="4099085513035183040">Ni chefnogir ar Feta Chromium</translation>
 <translation id="4432744876818348753">Mewngofnodwch i gael y gorau o Chromium.</translation>
+<translation id="452436063477828504">Gwnewch yn siŵr y gallwch chi bob amser ddefnyddio'r data Chromium yn eich Cyfrif Google</translation>
 <translation id="4555020257205549924">Pan fydd y nodwedd hon yn cael ei droi ymlaen, bydd Chromium yn cynnig cyfieithu tudalennau sydd wedi'u hysgrifennu mewn ieithoedd eraill gan ddefnyddio Google Translate. <ph name="BEGIN_LINK" />Dysgu rhagor<ph name="END_LINK" /></translation>
 <translation id="4585809515399340748">Gallwch bellach ddefnyddio Chromium unrhyw bryd y byddwch yn tapio dolenni mewn negeseuon, dogfennau ac apiau eraill.</translation>
 <translation id="4633738821577273991">Cael Gwell Pori'n Ddiogel ar gyfer y proffil Chromium hwn hefyd</translation>
@@ -75,6 +77,7 @@
 <translation id="5945387852661427312">Rydych yn mewngofnodi gyda chyfrif a reolir gan <ph name="DOMAIN" /> ac yn rhoi rheolaeth dros eich data Chromium i'w weinyddwr. Bydd eich data yn cael eu cysylltu'n barhaol i'r cyfrif hwn. Bydd allgofnodi o Chromium yn dileu eich data o'r ddyfais hon, ond bydd yn parhau i gael ei storio yn eich Cyfrif Google.</translation>
 <translation id="5983312940147103417">Gwella Chromium</translation>
 <translation id="6062449165341879460">Bydd gan <ph name="DOMAIN" /> eich sefydliad fynediad at eich data Chromium, nodau tudalen, hanes, cyfrineiriau a gosodiadau eraill rydych yn eu storio yn y cyfrif hwn. Pan fyddwch yn allgofnodi, bydd eich data yn cael eu clirio o'r ddyfais hon.  Fodd bynnag, bydd eich data yn parhau i gael ei storio yn eich Cyfrif Google a reolir a bydd ar gael i'ch sefydliad. Gall eich sefydliad hefyd osod polisïau defnyddwyr sy'n benodol i'r cyfrif hwnnw a all newid ymddygiad Chromium.</translation>
+<translation id="61109258320235597">I ddefnyddio a chadw data Chromium yn eich Cyfrif Google, rhowch eich cyfrinymadrodd.</translation>
 <translation id="6119647025869519954">I osod Chromium fel eich porwr diofyn:
 1. Agorwch y gosodiadau
 2. Tapiwch Ap Pori Diofyn
@@ -86,6 +89,7 @@
 <translation id="6625409903340039086">Mae Chromium bellach yn cefnogi polisïau defnyddwyr ar gyfer eich cyfrif a reolir</translation>
 <translation id="6752854822223394465">Mae'ch sefydliad wrthi'n gosod Chromium…</translation>
 <translation id="6820823224820483452">Nid oedd modd i Chromium wirio'r holl gyfrineiriau. Rhowch gynnig arall arni yfory.</translation>
+<translation id="6911341667534646387">Parhewch i ddefnyddio'r data Chromium yn eich Cyfrif Google</translation>
 <translation id="7006920032187763988">Gallwch ddefnyddio'r cyfrineiriau a gadwyd gennych i'r Rheolwr Cyfrineiriau mewn apiau eraill ar eich iPad.</translation>
 <translation id="7018284295775193585">Ni all Chromium ddiweddaru</translation>
 <translation id="7045244423563602563">Personoleiddiwch Chromium</translation>

@@ -68,6 +68,7 @@
 <translation id="5119391094379141756">Selecciona Chrome</translation>
 <translation id="5162467219239570114">Chrome no está actualizado. Si no hay ninguna actualización disponible en el <ph name="BEGIN_LINK" />App Store<ph name="END_LINK" />, es posible que el dispositivo ya no sea compatible con las nuevas versiones de Chrome.</translation>
 <translation id="5389212809648216794">Google Chrome no puede utilizar la cámara porque la está usando otra aplicación</translation>
+<translation id="5395376160638294582">Asegúrate de que siempre puedas usar los datos de Chrome en tu cuenta de Google</translation>
 <translation id="5460571915754665838">4. Selecciona Chrome</translation>
 <translation id="5492504007368565877">El Gestor de contraseñas de Google no puede comprobar tus contraseñas.</translation>
 <translation id="5552137475244467770">Chrome comprueba de forma periódica si tus contraseñas se encuentran en alguna lista publicada en Internet. Cuando lo hace, se cifran tus contraseñas y nombres de usuario para que nadie pueda leerlos, ni siquiera Google.</translation>
@@ -122,6 +123,7 @@
 <translation id="8370517070665726704">Copyright <ph name="YEAR" /> Google LLC. Todos los derechos reservados.</translation>
 <translation id="840168496893712993">Algunos complementos hacen que Chrome falle. Prueba a desinstalarlos.</translation>
 <translation id="8414886616817913619">Tu organización requiere que inicies sesión para usar Chrome. <ph name="BEGIN_LINK" />Más información<ph name="END_LINK" /></translation>
+<translation id="84594714173170813">Sigue usando los datos de Chrome en tu cuenta de Google</translation>
 <translation id="8459495907675268833">Los datos seleccionados se han eliminado de Chrome y de los dispositivos sincronizados. Es posible que tu cuenta de Google tenga otras formas del historial de navegación, como las búsquedas o la actividad de otros servicios de Google en la página history.google.com.</translation>
 <translation id="850555388806794946">Para establecer Chrome como navegador predeterminado, haz lo siguiente:
   1. Abre Configuración

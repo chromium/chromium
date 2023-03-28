@@ -96,7 +96,7 @@ Odobrenja koja ste već dali web lokacijama i aplikacijama se mogu primjenjivati
 <translation id="3258596308407688501">Chromium ne može čitati iz svog direktorija podataka niti u njega pisati:
 
 <ph name="USER_DATA_DIRECTORY" /></translation>
-<translation id="3259037713047794342">Ovaj vodič pruža vam uvid u vaše odabire kako bi Chromium funkcionirao kako želite</translation>
+<translation id="3259037713047794342">Ovaj vodič vam pojašnjava vaše izbore kako bi Chromium funkcionirao onako kako želite</translation>
 <translation id="3283186697780795848">Verzija Chromiuma <ph name="PRODUCT_VERSION" /> je instalirana</translation>
 <translation id="3286538390144397061">Ponovo pokreni sada</translation>
 <translation id="328888136576916638">Nedostaju ključevi za Google API. Neke funkcionalnosti Google Chromea će se onemogućiti.</translation>

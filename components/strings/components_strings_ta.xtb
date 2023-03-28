@@ -628,6 +628,7 @@
 <translation id="2469153820345007638">முன்னோக்கிய வரிசை</translation>
 <translation id="2470767536994572628">விரிவுரைகளைத் திருத்தினால் இந்த ஆவணம் ஒற்றைப் பக்கக்காட்சிக்கும் தனது அசல் நிலைக்கும் மாறும்</translation>
 <translation id="2479410451996844060">தவறான தேடல் URL.</translation>
+<translation id="2480300195898055381">உங்கள் Google கணக்கில் (<ph name="USER_EMAIL" />)</translation>
 <translation id="2482878487686419369">அறிவிப்புகள்</translation>
 <translation id="248348093745724435">சாதனக் கொள்கைகள்</translation>
 <translation id="2491120439723279231">சேவையகச் சான்றிதழில் பிழைகள் உள்ளன.</translation>
@@ -841,6 +842,7 @@
 <translation id="3029752078111257850">உலகச் செய்திகள்</translation>
 <translation id="3037177537145227281">விலையைக் கண்காணிக்கிறது</translation>
 <translation id="3037605927509011580">அச்சச்சோ!</translation>
+<translation id="3041450980936463495">சேமிக்கப்படும் முகவரிகளை Google தயாரிப்புகள் முழுவதிலும் பயன்படுத்தலாம். இந்த முகவரி உங்கள் Google கணக்கில் (<ph name="ACCOUNT" />) சேமிக்கப்பட்டது.</translation>
 <translation id="3041612393474885105">சான்றிதழ் தகவல்</translation>
 <translation id="305162504811187366">நேர முத்திரைகள், ஹோஸ்ட்டுகள், கிளையண்ட் அமர்வு ஐடிகள் உட்பட இதுவரையிலான Chrome தொலைநிலை டெஸ்க்டாப் நிகழ்வுகள்</translation>
 <translation id="3052964831964880138"><ph name="PRODUCT_NAME" /> விலை <ph name="PRICE_DROP" /> குறைந்துள்ளது</translation>
@@ -1928,6 +1930,7 @@
 <translation id="5695542892312572833">உங்கள் பர்ச்சேஸைச் சரிபார்த்து நிறைவுசெய்ய Windows Helloவைப் பயன்படுத்த விரும்புகிறீர்களா?</translation>
 <translation id="5701381305118179107">மையம்</translation>
 <translation id="570530837424789914">நிர்வகி...</translation>
+<translation id="5706906618852913030">கணக்கில் சேமிக்கவா?</translation>
 <translation id="5707154300732650394">உலாவலைத் தொடர்க</translation>
 <translation id="57094364128775171">வலுவான கடவுச்சொல்லைப் பரிந்துரைசெய்…</translation>
 <translation id="571403275720188526">(arm64)</translation>

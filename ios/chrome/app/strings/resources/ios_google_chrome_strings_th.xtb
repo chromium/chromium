@@ -40,6 +40,7 @@
 <translation id="3167189358072330585">บัญชีของคุณใช้งานไม่ได้บน Google Chrome โปรดติดต่อผู้ดูแลระบบโดเมนหรือใช้บัญชี Google ปกติเพื่อลงชื่อเข้าใช้</translation>
 <translation id="3173834708294760622">หน้า Google Chrome</translation>
 <translation id="3196546062792660320">Chrome ช่วยคุณประหยัดเวลาโดยนำบัญชีของคุณไปไว้บนเว็บ คุณสามารถเพิ่มหรือนำบัญชีออกได้ในการตั้งค่า</translation>
+<translation id="322254490661677575">โปรดป้อนรหัสผ่านเพื่อใช้และบันทึกข้อมูล Chrome ในบัญชี Google</translation>
 <translation id="3282568296779691940">ลงชื่อเข้าใช้ Chrome</translation>
 <translation id="3345341804167540816">ใช้ Chrome ในทุกที่</translation>
 <translation id="3503014945441706099">รับ Safe Browsing พร้อมการปกป้องที่ดียิ่งขึ้นสำหรับโปรไฟล์ Chrome นี้ด้วย</translation>
@@ -52,6 +53,7 @@
 <translation id="3980220367029651214">คุณกำลังเปลี่ยนบัญชีในการซิงค์จาก <ph name="USER_EMAIL1" /> เป็น <ph name="USER_EMAIL2" /> ข้อมูล Chrome ที่มีอยู่ของคุณจัดการโดย <ph name="DOMAIN" /> การเปลี่ยนบัญชีจะลบข้อมูลจากอุปกรณ์นี้ แต่ข้อมูลจะยังคงอยู่ใน <ph name="USER_EMAIL1" /></translation>
 <translation id="3984746313391923992">องค์กรกำหนดให้คุณออกจากระบบ Chrome ต่อไป</translation>
 <translation id="3988789688219830639">Google Chrome ไม่มีสิทธิ์เข้าถึงรูปภาพหรือวิดีโอของคุณ เปิดการเข้าถึงได้ในการตั้งค่า iOS &gt; ความเป็นส่วนตัว &gt; รูปภาพ</translation>
+<translation id="4064699917955374540">โปรดยืนยันว่าเป็นคุณเพื่อใช้และบันทึกข้อมูล Chrome ในบัญชี Google</translation>
 <translation id="417201473131094001">ไม่รองรับใน Chrome Canary</translation>
 <translation id="4233521129555661685"><ph name="USER_EMAIL1" /> ได้ใช้ Chrome และเก็บบุ๊กมาร์ก รหัสผ่าน รวมถึงการตั้งค่าอื่นๆ ไว้ในอุปกรณ์นี้</translation>
 <translation id="424864128008805179">ต้องการออกจากระบบ Chrome ไหม</translation>

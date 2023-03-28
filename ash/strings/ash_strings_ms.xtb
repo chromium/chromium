@@ -1254,6 +1254,7 @@ Pemasangan baharu</translation>
 <translation id="685782768769951078">{NUM_DIGITS,plural, =1{Tinggal satu angka}other{Tinggal # angka}}</translation>
 <translation id="6867938213751067702">Muat turun dijeda <ph name="FILENAME" /></translation>
 <translation id="6878400149835617132">Pintasan dimatikan</translation>
+<translation id="6878701771800702153">{NUM_APPS,plural, =1{1 apl}other{# apl}}</translation>
 <translation id="6884665277231944629">Kembali ke hari ini</translation>
 <translation id="6886172995547742638"><ph name="DEVICE_TYPE" /> anda mungkin menunjukkan prestasi yang lebih rendah. Gunakan penyesuai kuasa USB-C <ph name="PREFERRED_MINIMUM_POWER" />W ke atas yang diperakui.</translation>
 <translation id="688631446150864480">Tekan kekunci Anak panah ke bawah untuk menukar tetingkap</translation>
@@ -1434,6 +1435,7 @@ Untuk mematikan peranti, tekan dan tahan butang kuasa pada peranti sekali lagi.<
 <translation id="7749443890790263709">Bilangan maksimum meja dicapai.</translation>
 <translation id="776344839111254542">Klik untuk melihat butiran kemas kini</translation>
 <translation id="7768784765476638775">Pilih untuk bercakap</translation>
+<translation id="7769299611924763557">GIF anda akan tersedia tidak lama lagi</translation>
 <translation id="7780094051999721182">pintasan</translation>
 <translation id="7780159184141939021">Putarkan Skrin</translation>
 <translation id="7796735576426975947">Pemberitahuan baharu disembunyikan</translation>

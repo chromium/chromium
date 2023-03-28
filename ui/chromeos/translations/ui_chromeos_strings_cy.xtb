@@ -97,6 +97,7 @@
 <translation id="1773212559869067373">Gwrthodwyd y dystysgrif ddilysu yn lleol</translation>
 <translation id="1775381402323441512">Gwybodaeth am y fideo</translation>
 <translation id="180035236176489073">Rhaid i chi fod ar-lein i gael mynediad at y ffeiliau hyn.</translation>
+<translation id="1805030087840125683">{COUNT,plural, =1{Estyniad gyda'r rhif adnabod}zero{Estyniadau gyda'r rhifau adnabod}two{Estyniadau gyda'r rhifau adnabod}few{Estyniadau gyda'r rhifau adnabod}many{Estyniadau gyda'r rhifau adnabod}other{Estyniadau gyda'r rhifau adnabod}}</translation>
 <translation id="1807938677607439181">Pob ffeil</translation>
 <translation id="1810764548349082891">Nid oes rhagolwg ar gael</translation>
 <translation id="1812302367230252929">Trawslythreniad Amhareg</translation>
@@ -130,6 +131,7 @@
 <translation id="2084108471225856927">Gosodiadau'r ddyfais</translation>
 <translation id="2084809735218147718">Yn arwyddo diolch</translation>
 <translation id="2088690981887365033">Rhwydwaith VPN</translation>
+<translation id="2111134541987263231">Trowch <ph name="BEGIN_BOLD" />Caniatáu yn y modd Anhysbys<ph name="END_BOLD" /> ymlaen</translation>
 <translation id="2114191879048183086">Bydd <ph name="NUMBER_OF_ITEMS" /> eitem yn cael eu dileu ac ni fyddwch yn gallu eu hadfer.</translation>
 <translation id="2122305276694332719">Mae cysylltu'n awtomatig â rhwydwaith cudd yn caniatáu i eraill weld eich dyfais a rhai gosodiadau rhwydwaith, ac ni chaiff ei argymell.</translation>
 <translation id="2125607626296734455">Chmereg</translation>
@@ -228,6 +230,7 @@
 <translation id="290843123675549676">Marati</translation>
 <translation id="2923240520113693977">Estoneg</translation>
 <translation id="2938685643439809023">Mongoleg</translation>
+<translation id="293972288692056847">{COUNT,plural, =1{Methu â dod o hyd i'r estyniad}zero{Methu â dod o hyd i'r estyniadau}two{Methu â dod o hyd i'r estyniadau}few{Methu â dod o hyd i'r estyniadau}many{Methu â dod o hyd i'r estyniadau}other{Methu â dod o hyd i'r estyniadau}}</translation>
 <translation id="2943503720238418293">Defnyddiwch enw byrrach</translation>
 <translation id="2949781154072577687">Wrthi'n fformatio <ph name="DRIVE_NAME" />...</translation>
 <translation id="2951236788251446349">Sglefren fôr</translation>
@@ -282,6 +285,7 @@
 <translation id="3356580349448036450">Wedi'i gwblhau</translation>
 <translation id="3358452157379365236">Gitâr</translation>
 <translation id="3368922792935385530">Wedi cysylltu</translation>
+<translation id="3372635229069101468">Cliciwch <ph name="BEGIN_BOLD" />Manylion<ph name="END_BOLD" /></translation>
 <translation id="3382143449143186018">Nepaleg gyda bysellfwrdd InScript</translation>
 <translation id="338691029516748599">Rhwydwaith <ph name="NETWORK_INDEX" /> o <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, Cryfder Signal <ph name="SIGNAL_STRENGTH" />%, Rheolir gan eich Gweinyddwr, Cysylltu</translation>
 <translation id="3408072735282270043">Gweithredu, <ph name="NETWORK_NAME" /></translation>
@@ -366,6 +370,7 @@
 <translation id="4124935795427217608">Uncorn</translation>
 <translation id="4131235941541910880">Symud eitemau nad oes eu hangen arnoch i'r bin sbwriel.</translation>
 <translation id="4134804435730168042">Rhwydwaith <ph name="NETWORK_INDEX" /> o <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" />, Gweithredu ar ôl gosod dyfais</translation>
+<translation id="41501027364808384">{COUNT,plural, =1{Trowch yr estyniad canlynol ymlaen yn y modd Anhysbys:}zero{Trowch yr estyniadau canlynol ymlaen yn y modd Anhysbys:}two{Trowch yr estyniadau canlynol ymlaen yn y modd Anhysbys:}few{Trowch yr estyniadau canlynol ymlaen yn y modd Anhysbys:}many{Trowch yr estyniadau canlynol ymlaen yn y modd Anhysbys:}other{Trowch yr estyniadau canlynol ymlaen yn y modd Anhysbys:}}</translation>
 <translation id="4153015322587141338">De-gliciwch ffeil, a dewiswch "<ph name="PIN_COMMAND" />" i gael mynediad cyflym at eich ffeiliau yn y silff.</translation>
 <translation id="4157569377477607576">Nid yw polisi gweinyddwr yn argymell:</translation>
 <translation id="4159731583141908892">Symudwyd <ph name="FILE_NAME" />.</translation>
@@ -462,8 +467,10 @@
 <translation id="4801956050125744859">Cadw'r ddau</translation>
 <translation id="4804827417948292437">Afocado</translation>
 <translation id="4805966553127040832">Adfer <ph name="COUNT" /> eitem</translation>
+<translation id="4816695657735045067">{COUNT,plural, =1{Er mwyn defnyddio'r modd Anhysbys, mae angen estyniad ar eich sefydliad}zero{Er mwyn defnyddio'r modd Anhysbys, mae angen rhai estyniadau ar eich sefydliad}two{Er mwyn defnyddio'r modd Anhysbys, mae angen rhai estyniadau ar eich sefydliad}few{Er mwyn defnyddio'r modd Anhysbys, mae angen rhai estyniadau ar eich sefydliad}many{Er mwyn defnyddio'r modd Anhysbys, mae angen rhai estyniadau ar eich sefydliad}other{Er mwyn defnyddio'r modd Anhysbys, mae angen rhai estyniadau ar eich sefydliad}}</translation>
 <translation id="4823651846660089135">Darllen yn unig yw'r ddyfais</translation>
 <translation id="4826849268470072925">Tamil ITRANS</translation>
+<translation id="482932175346970750">Teipiwch <ph name="BEGIN_BOLD" />chrome://extensions<ph name="END_BOLD" /> yn eich porwr</translation>
 <translation id="4839847978919684242">Mae <ph name="SELCTED_FILES_COUNT" /> eitem wedi'u dewis</translation>
 <translation id="4843566743023903107">Chromebases</translation>
 <translation id="4850886885716139402">Gweld</translation>
@@ -533,6 +540,7 @@
     ar ffeiliau gydag eraill mewn un lle.<ph name="MARKUP_9" /></translation>
 <translation id="5275973617553375938">Ffeiliau sydd wedi'u hadfer o Google Drive</translation>
 <translation id="5278111733643988471">I adfer yr eitem hon, llusgwch hi i ffolder newydd y tu allan i'r bin sbwriel. Mae'r ffolder gwreiddiol "<ph name="PARENT_FOLDER_NAME" />" ar gyfer yr eitem hon wedi'i ddileu.</translation>
+<translation id="5283101102242354279">Trowch estyniad ymlaen yn y modd Anhysbys ymlaen:</translation>
 <translation id="5286194356314741248">Wrthi'n sganio</translation>
 <translation id="5288441970121584418">Byrgyr</translation>
 <translation id="5293615890992542006">Mae symud y ffeil hon wedi'i rwystro gan bolisi gweinyddwr</translation>
@@ -778,6 +786,7 @@
 <translation id="7238643356913091553"><ph name="NETWORK_NAME" />, Manylion</translation>
 <translation id="7246947237293279874">Dirprwy Weinydd FTP</translation>
 <translation id="7248671827512403053">Ap</translation>
+<translation id="7252604552361840748">Dewch o hyd i'r estyniad uchod</translation>
 <translation id="7256405249507348194">Gwall anhysbys: <ph name="DESC" /></translation>
 <translation id="7268659760406822741">Gwasanaethau sydd ar gael</translation>
 <translation id="7292816689782057017">Mae polisi gweinyddwr yn cyfyngu ar gadw i rai lleoliadau.</translation>
@@ -791,6 +800,7 @@
 <translation id="7359359531237882347">Wrthi'n copïo <ph name="NUMBER_OF_ITEMS" /> eitem...</translation>
 <translation id="7375951387215729722">Mae rhestr ffeiliau wedi'i threfnu yn ôl <ph name="COLUMN_NAME" /> mewn trefn ddisgynnol.</translation>
 <translation id="7377161162143020057">Mae copïo'r ffeil hon wedi'i rwystro gan bolisi gweinyddwr</translation>
+<translation id="7392500733467492920">heb eu canfod. Cysylltwch â'ch gweinyddwr.</translation>
 <translation id="7402503521691663770">Dyfeisiau ChromeOS Flex</translation>
 <translation id="7408870451288633753">Tsieceg</translation>
 <translation id="7417453074306512035">Bysellfwrdd Ethiopeg</translation>

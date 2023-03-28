@@ -24,6 +24,7 @@
 <translation id="1434626383986940139">Aplicații Chrome Canary</translation>
 <translation id="1507198376417198979">Personalizează noul profil Chrome</translation>
 <translation id="1516530951338665275">Google Chrome are nevoie de acces la Bluetooth pentru a continua conectarea. <ph name="IDS_BLUETOOTH_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
+<translation id="1535597783576881392">Acest ghid te ajută să înțelegi opțiunile, astfel încât Chrome să funcționeze așa cum vrei</translation>
 <translation id="1547295885616600893">Sistemul de operare Chrome este posibil datorită unui <ph name="BEGIN_LINK_CROS_OSS" />software open source<ph name="END_LINK_CROS_OSS" /> suplimentar.</translation>
 <translation id="1553358976309200471">Actualizează Chrome</translation>
 <translation id="1583073672411044740"><ph name="EXISTING_USER" /> s-a conectat deja la acest profil Chrome. Astfel, se va crea un nou profil Chrome pentru <ph name="USER_EMAIL_ADDRESS" /></translation>
@@ -64,6 +65,7 @@
 <translation id="2131230230468101642">Pentru a-ți proteja confidențialitatea, ștergem automat categoriile de interese mai vechi de patru săptămâni. Pe măsură ce navighezi, o categorie de interese poate să reapară în listă. Sau poți elimina categoriile de interese pe care nu dorești ca Chrome să le ia în considerare.</translation>
 <translation id="2139300032719313227">Repornește sistemul de operare Chrome</translation>
 <translation id="2151406531797534936">Repornește Chrome acum</translation>
+<translation id="2163996651553460171">Profită la maximum de Chrome</translation>
 <translation id="2174917724755363426">Instalarea nu este finalizată. Sigur anulezi?</translation>
 <translation id="223889379102603431">Informații despre modul în care Chrome gestionează certificatele rădăcină</translation>
 <translation id="2258103955319320201">Pentru a accesa informațiile din Chrome pe toate dispozitivele, conectează-te, apoi activează sincronizarea</translation>

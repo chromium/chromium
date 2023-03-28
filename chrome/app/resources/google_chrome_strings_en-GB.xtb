@@ -26,6 +26,7 @@ Some features may be unavailable and changes to preferences won't be saved.</tra
 <translation id="1434626383986940139">Chrome Canary Apps</translation>
 <translation id="1507198376417198979">Customise your new Chrome profile</translation>
 <translation id="1516530951338665275">Google Chrome needs Bluetooth access to continue pairing. <ph name="IDS_BLUETOOTH_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
+<translation id="1535597783576881392">This guide helps you to understand your choices, so that Chrome works the way you want it to</translation>
 <translation id="1547295885616600893">Chrome OS is made possible by additional <ph name="BEGIN_LINK_CROS_OSS" />open-source software<ph name="END_LINK_CROS_OSS" />.</translation>
 <translation id="1553358976309200471">Update Chrome</translation>
 <translation id="1583073672411044740"><ph name="EXISTING_USER" /> is already signed in to this Chrome profile. This will create a new Chrome profile for <ph name="USER_EMAIL_ADDRESS" /></translation>
@@ -68,6 +69,7 @@ Some features may be unavailable and changes to preferences won't be saved.</tra
 <translation id="2131230230468101642">To protect your privacy, we auto-delete your interests that are older than four weeks. As you keep browsing, an interest might appear on the list again. Or you can remove interests that you don't want Chrome to consider.</translation>
 <translation id="2139300032719313227">Restart Chrome OS</translation>
 <translation id="2151406531797534936">Please restart Chrome now</translation>
+<translation id="2163996651553460171">Get the most out of Chrome</translation>
 <translation id="2174917724755363426">Installation is not complete. Are you sure that you want to cancel?</translation>
 <translation id="223889379102603431">Information about how Chrome manages its root certificates</translation>
 <translation id="2258103955319320201">To access your Chrome browser across all your devices, sign in, then turn on sync</translation>

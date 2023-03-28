@@ -498,7 +498,7 @@
 <translation id="2119867082804433120">打孔 (右下方)</translation>
 <translation id="2122719317867821810">此政策運作正常，但與其他地方設定的值有衝突，並已覆寫該值。</translation>
 <translation id="2126374524350484896">PDF 製作工具：</translation>
-<translation id="2128262927290305126">儲存到 Google 帳戶 (<ph name="ACCOUNT" />) 中</translation>
+<translation id="2128262927290305126">儲存在 Google 帳戶 (<ph name="ACCOUNT" />) 中</translation>
 <translation id="2130448033692577677">您並未設定 DnsOverHttpsMode 政策，因此系統無法套用您指定的範本。</translation>
 <translation id="2130699163006053678">A3x7</translation>
 <translation id="2135799067377889518">男裝</translation>
@@ -544,7 +544,7 @@
 <translation id="2219735899272417925">必須重設裝置</translation>
 <translation id="2224337661447660594">沒有互聯網</translation>
 <translation id="2225927550500503913">虛擬卡已啟用</translation>
-<translation id="2226636330183131181"><ph name="BEGIN_LINK" />登入<ph name="END_LINK" /> Wi-Fi 網路</translation>
+<translation id="2226636330183131181"><ph name="BEGIN_LINK" />登入<ph name="END_LINK" /> Wi-Fi 網絡</translation>
 <translation id="2239100178324503013">立即傳送</translation>
 <translation id="2241693394036365668">已下載檔案</translation>
 <translation id="2246264294482514010">10 x 12 吋</translation>
@@ -1085,7 +1085,7 @@
 <translation id="3631244953324577188">生物識別</translation>
 <translation id="3632503704576938756">已繼續分享螢幕畫面</translation>
 <translation id="3632892046558972264">已暫停分享螢幕畫面</translation>
-<translation id="3633035844150606508">將地址儲存到 Google 帳戶 (<ph name="ACCOUNT" />) 中</translation>
+<translation id="3633035844150606508">將地址儲存在 Google 帳戶 (<ph name="ACCOUNT" />) 中</translation>
 <translation id="3633738897356909127">更新 Chrome 按鈕，㩒一下 Enter 鍵就可以透過 Chrome 設定更新 Chrome</translation>
 <translation id="3634530185120165534">紙匣 5</translation>
 <translation id="3634567936866541746">您剛才在欺詐網站上輸入了密碼。為確保帳戶安全，Chrome 建議您檢查已儲存的密碼。</translation>
@@ -1989,7 +1989,7 @@
 <translation id="5830698870816298009">使用及調整攝錄機</translation>
 <translation id="583281660410589416">不明</translation>
 <translation id="5838278095973806738">您不應在此網站上輸入任何敏感資料 (例如密碼或信用卡資料)，因為攻擊者可能會竊取這些資料。</translation>
-<translation id="5841338463993781099">要儲存到帳戶中嗎？</translation>
+<translation id="5841338463993781099">要儲存在帳戶中嗎？</translation>
 <translation id="5851548754964597211">分頁清單</translation>
 <translation id="5852909432155870672">RA4</translation>
 <translation id="5860033963881614850">關閉</translation>

@@ -40,7 +40,7 @@
 <translation id="3167189358072330585">您的帳戶不適用於 Google Chrome。請聯絡網域管理員，或使用一般的 Google 帳戶登入。</translation>
 <translation id="3173834708294760622">Google Chrome 頁面</translation>
 <translation id="3196546062792660320">Chrome 允許您將帳戶同步至網路上，以節省時間。您可以在設定中新增或移除帳戶。</translation>
-<translation id="322254490661677575">如要將 Chrome 的資料儲存到 Google 帳戶及使用這類資料，請輸入通關密語。</translation>
+<translation id="322254490661677575">如要將 Chrome 的資料儲存至 Google 帳戶及使用這類資料，請輸入密碼短語。</translation>
 <translation id="3282568296779691940">登入 Chrome</translation>
 <translation id="3345341804167540816">隨時隨地使用 Chrome</translation>
 <translation id="3503014945441706099">同時為此 Chrome 個人檔案取得「強化安全瀏覽」功能</translation>
@@ -53,7 +53,7 @@
 <translation id="3980220367029651214">您正在將同步處理帳戶從 <ph name="USER_EMAIL1" /> 切換為 <ph name="USER_EMAIL2" />。您現有的 Chrome 資料由 <ph name="DOMAIN" /> 管理。這會刪除此裝置上的資料，但這些資料仍會保留在 <ph name="USER_EMAIL1" /> 中。</translation>
 <translation id="3984746313391923992">您的機構要求您保持登出 Chrome。</translation>
 <translation id="3988789688219830639">Google Chrome 沒有存取相片或影片的權限。請前往「iOS 設定」&gt;「私隱」&gt;「相片」開放權限。</translation>
-<translation id="4064699917955374540">如要將 Chrome 的資料儲存到 Google 帳戶及使用這類資料，請驗證身分。</translation>
+<translation id="4064699917955374540">如要將 Chrome 的資料儲存至 Google 帳戶及使用這類資料，請驗證身分。</translation>
 <translation id="417201473131094001">Chrome Canary 上不支援此功能</translation>
 <translation id="4233521129555661685"><ph name="USER_EMAIL1" /> 之前曾在此裝置上使用 Chrome，並儲存書籤、密碼和其他設定。</translation>
 <translation id="424864128008805179">要登出 Chrome 嗎？</translation>

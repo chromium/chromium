@@ -698,6 +698,7 @@
 <translation id="7103252855940681301">Urządzenie <ph name="INDEX" /> z <ph name="COUNT" /> o nazwie <ph name="NAME" />.</translation>
 <translation id="7108668606237948702">wpisz</translation>
 <translation id="7130438335435247835">Nazwa punktu dostępu (APN)</translation>
+<translation id="7131634559772719176">Potwierdź gotowe ustawienia</translation>
 <translation id="7134436342991564651">{0,plural, =1{Serwer nazw}few{Serwery nazw}many{Serwery nazw}other{Serwery nazw}}</translation>
 <translation id="7143207342074048698">Łączenie</translation>
 <translation id="7144878232160441200">Spróbuj jeszcze raz</translation>
@@ -769,6 +770,7 @@
 <translation id="7762130827864645708">Hasło zostało zmienione. Od teraz używaj nowego hasła.</translation>
 <translation id="7763470514545477072">Dopasowanie sufiksu domeny</translation>
 <translation id="7769672763586021400">Identyfikator modelu</translation>
+<translation id="7770834998503326261">Dodatkowe informacje związane z Twoim wyborem</translation>
 <translation id="7778717409420828014">Twoją opinię sprawdzi nasz zespół, bo opinie pomagają nami ulepszać Chromebooka. Ze względu na dużą liczbę zgłoszeń nie będziemy mogli wysłać odpowiedzi.</translation>
 <translation id="7784116172884276937">Nie skonfigurowano serwerów DNS</translation>
 <translation id="7791543448312431591">Dodaj</translation>
@@ -801,6 +803,7 @@
 <translation id="80398733265834479">Włącz automatyczny tryb kolorów</translation>
 <translation id="8041089156583427627">Prześlij opinię</translation>
 <translation id="8045012663542226664">Wyciszenie mikrofonu</translation>
+<translation id="8050091914317269817">Wybranie tej tapety spowoduje włączenie automatycznego trybu ciemnego i dopasowywania kolorów tapety.</translation>
 <translation id="8075838845814659848">Stan naładowania</translation>
 <translation id="8076492880354921740">Karty</translation>
 <translation id="8082366717211101304">Nie udało się znaleźć DNS w aplikacjach na Androida</translation>

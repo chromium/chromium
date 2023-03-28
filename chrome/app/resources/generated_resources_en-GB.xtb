@@ -30,6 +30,7 @@
 <translation id="1022669824195822609">Your device is managed by <ph name="DOMAIN" />. Administrators can access the data in any profile on this device.</translation>
 <translation id="1026655690966755180">Add port</translation>
 <translation id="1026822031284433028">Load Image</translation>
+<translation id="1026959648338730078">Windows Hello or external security key</translation>
 <translation id="1028604629594230522">Chrome preloads pages that you're likely to visit, so that they load more quickly when you visit them.</translation>
 <translation id="1028700151766901954">Reason: LBS stays in <ph name="DEFAULT_OPEN_BROWSER" /> by default.</translation>
 <translation id="1029317248976101138">Zoom</translation>
@@ -941,6 +942,7 @@ Permissions that you've already given to apps may apply to this account. You can
 <translation id="1797117170091578105">Play using your Chromebook keyboard. You can customise keys to specific actions.</translation>
 <translation id="1800502858278951817">No extensions have requested to read and change <ph name="SITE_NAME" /></translation>
 <translation id="180203835522132923">Search + O, then W</translation>
+<translation id="1802457294427928325">Change the behaviour of F keys to ChromeOS top-row actions</translation>
 <translation id="1802624026913571222">Sleep when cover is closed</translation>
 <translation id="1802687198411089702">The page isn't responding. You can wait for it or exit.</translation>
 <translation id="1803531841600994172">Language to translate into</translation>
@@ -1270,6 +1272,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="208634871997892083">Always-on VPN</translation>
 <translation id="2087822576218954668">Print: <ph name="PRINT_NAME" /></translation>
 <translation id="2088092308059522196">Enrolment is only supported after you install <ph name="DEVICE_OS" />.</translation>
+<translation id="2088564884469682888">Built-in TrackPoint</translation>
 <translation id="2089090684895656482">Less</translation>
 <translation id="208928984520943006">To get to the home screen at any time, swipe up from the bottom.</translation>
 <translation id="2089566709556890888">Browse safely with Google Chrome</translation>
@@ -1463,6 +1466,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="2235344399760031203">Third-party cookies are blocked</translation>
 <translation id="2238379619048995541">Frequency State Data</translation>
 <translation id="2241053333139545397">Read and change your data on a number of websites</translation>
+<translation id="2241242047787527912">For each key listed below, choose the action that you want it to perform</translation>
 <translation id="2241634353105152135">Just once</translation>
 <translation id="2242687258748107519">File Info</translation>
 <translation id="2245603955208828424">Use the arrow keys to move through items letter by letter</translation>
@@ -1504,12 +1508,14 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="2271986192355138465">Learn how to install web apps</translation>
 <translation id="2272430695183451567">0 switches assigned</translation>
 <translation id="2272570998639520080">Martini glass</translation>
+<translation id="2272830751703114341">Enable System/Launcher key to switch the behaviour of the top-row keys</translation>
 <translation id="2273119997271134996">Dock video-port issue</translation>
 <translation id="2274840746523584236">Charge your Chromebook</translation>
 <translation id="2276503375879033601">Add more apps</translation>
 <translation id="2276910256003242519">Clearing data…</translation>
 <translation id="2278562042389100163">Open browser window</translation>
 <translation id="2278668501808246459">Starting the container manager</translation>
+<translation id="2279051792571591988">Restore defaults</translation>
 <translation id="2280486287150724112">Right margin</translation>
 <translation id="2281863813036651454">Left mouse click</translation>
 <translation id="2282146716419988068">GPU Process</translation>
@@ -2819,6 +2825,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="3441663102605358937">Sign in to <ph name="ACCOUNT" /> again to verify this account</translation>
 <translation id="3442674350323953953">Let Google use your hardware data to help improve <ph name="DEVICE_OS" />. If you decline, this data is still sent to Google to determine proper updates but is not stored or used otherwise.</translation>
 <translation id="3443744348829035122"><ph name="BRAND" /> timed out</translation>
+<translation id="3443754338602062261">You already have passwords for these accounts in your <ph name="BRAND" />. If you choose to import one of the passwords below, it will replace the existing one.</translation>
 <translation id="3444726579402183581"><ph name="ORIGIN" /> will be able to view <ph name="FILENAME" /></translation>
 <translation id="3445047461171030979">Google Assistant quick answers</translation>
 <translation id="3445288400492335833"><ph name="MINUTES" /> min</translation>
@@ -3065,6 +3072,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="3659550105763988702">Use your passkey for <ph name="APP_NAME" /></translation>
 <translation id="3659929705630080526">You have entered an incorrect access code too many times. Try again later</translation>
 <translation id="3660234220361471169">Untrusted</translation>
+<translation id="3661297433172569100">{NUM_PASSWORDS,plural, =1{1 existing password found}other{{NUM_PASSWORDS} existing passwords found}}</translation>
 <translation id="3664511988987167893">Extension Icon</translation>
 <translation id="3665589677786828986">Chrome detected that some of your settings were corrupted by another program and reset them to their original defaults.</translation>
 <translation id="3665919494326051362">Current version is <ph name="CURRENT_VERSION" /></translation>
@@ -3080,6 +3088,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="3677959414150797585">Includes apps, web pages and more. Sends statistics to improve suggestions only if you’ve chosen to share usage data.</translation>
 <translation id="3678156199662914018">Extension: <ph name="EXTENSION_NAME" /></translation>
 <translation id="3678188444105291936">Pages that you view in this window won't appear in the browser history and they won't leave other traces, like cookies, on the computer after you sign out. Files that you download and bookmarks that you create won't be preserved.</translation>
+<translation id="3679126865530709868">Built-in touchpad</translation>
 <translation id="368019053277764111">Open search in side panel</translation>
 <translation id="3680683624079082902">Text-to-speech voice</translation>
 <translation id="3681311097828166361">Thank you for your feedback. You are offline now, and your report will be sent later.</translation>
@@ -4258,6 +4267,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="47158868804223727">Click the group name to expand or collapse it</translation>
 <translation id="4716483597559580346">Powerwash for added security</translation>
 <translation id="471759229191973607">Change theme</translation>
+<translation id="4718564115458102525">No keyboard detected</translation>
 <translation id="4722735765955348426">Password for <ph name="USERNAME" /></translation>
 <translation id="4722920479021006856"><ph name="APP_NAME" /> is sharing your screen.</translation>
 <translation id="4722989931633062466">Not allowed to show third-party sign-in prompts</translation>
@@ -5468,6 +5478,7 @@ Permissions that you've already given to websites and apps may apply to this acc
 <translation id="5841270259333717135">Configure Ethernet</translation>
 <translation id="5842497610951477805">Bluetooth enable</translation>
 <translation id="5844574845205796324">Suggest new content to explore</translation>
+<translation id="5845424750482472447">{COUNT,plural, =1{1 remapped key}other{{COUNT} remapped keys}}</translation>
 <translation id="5846200638699387931">Relation syntax error: <ph name="ERROR_LINE" /></translation>
 <translation id="5846455742152785308">No shadow</translation>
 <translation id="5846504156837627898">Manage site permissions</translation>
@@ -5592,6 +5603,7 @@ Permissions that you've already given to websites and apps may apply to this acc
 <translation id="5945002094477276055"><ph name="FILE_NAME" /> may be dangerous. Send to Google Safe Browsing for scanning?</translation>
 <translation id="5945363896952315544">Your security key can't store any more fingerprints. To add a new one, first delete an existing fingerprint.</translation>
 <translation id="5946591249682680882">Report ID <ph name="WEBRTC_LOG_REPORT_ID" /></translation>
+<translation id="5948476936444935795">Cancel import</translation>
 <translation id="5948536763493709626">Connect a keyboard or mouse, or continue setup using your touchscreen. If you are using Bluetooth devices, make sure that your devices are ready to pair.</translation>
 <translation id="5949544233750246342">Unable to parse file</translation>
 <translation id="5951303645598168883"><ph name="ORIGIN" /> wants to use local fonts</translation>
@@ -5848,6 +5860,7 @@ Permissions that you've already given to websites and apps may apply to this acc
 <translation id="6177412385419165772">Removing…</translation>
 <translation id="6178664161104547336">Select a certificate</translation>
 <translation id="6178682841350631965">Your sign-in data was updated</translation>
+<translation id="6179893151569852357">Convert F keys to ChromeOS top-row keys</translation>
 <translation id="6180510783007738939">Line tool</translation>
 <translation id="6180550893222597997">Which passkey do you want to use for <ph name="APP_NAME" />?</translation>
 <translation id="6181431612547969857">Download blocked</translation>
@@ -6048,6 +6061,7 @@ Permissions that you've already given to websites and apps may apply to this acc
 <translation id="636850387210749493">Enterprise enrolment</translation>
 <translation id="6370021412472292592">Could not load manifest.</translation>
 <translation id="637135143619858508">Loose</translation>
+<translation id="6372856076511744743">Remap keyboard keys</translation>
 <translation id="6374077068638737855">Iceweasel</translation>
 <translation id="6374469231428023295">Try Again</translation>
 <translation id="6374635887697228982">Get discounts?</translation>
@@ -6490,6 +6504,7 @@ You have # more compromised passwords. Google Password Manager recommends checki
 <translation id="677646486571529447">Add a note</translation>
 <translation id="6776589734354015877">Get additional features</translation>
 <translation id="6776729248872343918">Enable Fast Pair</translation>
+<translation id="677778081766640955">Hold the key to switch between F keys and ChromeOS actions</translation>
 <translation id="6777817260680419853">Redirect blocked</translation>
 <translation id="6779092717724412415">To create a highlight like this one, select any text and right-click.</translation>
 <translation id="6779447100905857289">your baskets</translation>
@@ -7658,6 +7673,7 @@ Press an assigned switch or key to remove assignment.</translation>
 <translation id="780301667611848630">No, thanks</translation>
 <translation id="7804072833593604762">Tab closed</translation>
 <translation id="7805768142964895445">Status</translation>
+<translation id="7805906048382884326">Close tip</translation>
 <translation id="7807067443225230855">Search and Assistant</translation>
 <translation id="7807117920154132308">It looks like <ph name="SUPERVISED_USER_NAME" /> has already set up Google Assistant on another device. <ph name="SUPERVISED_USER_NAME" /> can get even more out of Assistant by turning on screen context on this device.</translation>
 <translation id="7807711621188256451">Always allow <ph name="HOST" /> to access your camera</translation>

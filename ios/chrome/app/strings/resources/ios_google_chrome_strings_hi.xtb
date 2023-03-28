@@ -68,6 +68,7 @@
 <translation id="5119391094379141756">Chrome चुनें</translation>
 <translation id="5162467219239570114">Chrome का यह वर्शन पुराना हो गया है. अगर <ph name="BEGIN_LINK" />App Store<ph name="END_LINK" /> में कोई अपडेट उपलब्ध नहीं है, तो हो सकता है कि आपका डिवाइस अब Chrome के नए वर्शन के साथ काम नहीं करता.</translation>
 <translation id="5389212809648216794">Google Chrome आपके कैमरे का उपयोग नहीं कर सकता क्योंकि दूसरा ऐप्लिकेशन उसका उपयोग कर रहा है</translation>
+<translation id="5395376160638294582">यह पक्का करें कि आप जब चाहें, अपने Google खाते में Chrome के डेटा का इस्तेमाल कर सकें</translation>
 <translation id="5460571915754665838">4. Chrome चुनें</translation>
 <translation id="5492504007368565877">Google Password Manager आपके पासवर्ड की जांच नहीं कर सका.</translation>
 <translation id="5552137475244467770">Chrome उन सूचियों में शामिल आपके पासवर्ड की समय-समय पर जांच करता है जिन्हें ऑनलाइन प्रकाशित किया गया है. ऐसा करते समय, आपके पासवर्ड और उपयोगकर्ता नाम सुरक्षित रहते हैं, इसलिए उन्हें कोई नहीं देख सकता, यहां तक कि Google भी नहीं.</translation>
@@ -122,6 +123,7 @@
 <translation id="8370517070665726704">कॉपीराइट <ph name="YEAR" /> Google LLC. सर्वाधिकार सुरक्षित.</translation>
 <translation id="840168496893712993">कुछ ऐड-ऑन के कारण Chrome क्रैश हो जाता है. कृपया उन्हें अनइंस्टॉल करके देखें.</translation>
 <translation id="8414886616817913619">आपके संगठन के मुताबिक, यह ज़रूरी है कि Chrome का इस्तेमाल करने के लिए आप साइन इन करें. <ph name="BEGIN_LINK" />ज़्यादा जानें<ph name="END_LINK" /></translation>
+<translation id="84594714173170813">अपने Google खाते में, Chrome के डेटा का इस्तेमाल जारी रखें</translation>
 <translation id="8459495907675268833">चयनित डेटा Chrome और समन्वयित डिवाइस से निकाल दिया गया है. हो सकता है कि आपके Google खाते में अन्य प्रकार के ब्राउज़िंग इतिहास जैसे खोज और history.google.com पर अन्य Google सेवाओं की गतिविधि हो.</translation>
 <translation id="850555388806794946">Chrome को डिफ़ॉल्ट ब्राउज़र के तौर पर सेट करने के लिए:
   1. Settings खोलें

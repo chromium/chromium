@@ -498,6 +498,7 @@
 <translation id="2119867082804433120">打孔（右下角）</translation>
 <translation id="2122719317867821810">此政策正在正常运作，但与别处设置的值冲突且已覆盖该值。</translation>
 <translation id="2126374524350484896">PDF 制作工具：</translation>
+<translation id="2128262927290305126">保存到您的 Google 帐号 <ph name="ACCOUNT" /></translation>
 <translation id="2130448033692577677">您指定的模板未必会被应用，因为 DnsOverHttpsMode 政策未设置。</translation>
 <translation id="2130699163006053678">A3x7</translation>
 <translation id="2135799067377889518">男装</translation>
@@ -543,6 +544,7 @@
 <translation id="2219735899272417925">需要重置设备</translation>
 <translation id="2224337661447660594">未连接到互联网</translation>
 <translation id="2225927550500503913">虚拟卡已开启</translation>
+<translation id="2226636330183131181"><ph name="BEGIN_LINK" />登录<ph name="END_LINK" /> Wi-Fi 网络</translation>
 <translation id="2239100178324503013">立即发送</translation>
 <translation id="2241693394036365668">下载文件</translation>
 <translation id="2246264294482514010">10 x 12 英寸</translation>
@@ -1080,6 +1082,7 @@
 <translation id="3631244953324577188">生物识别</translation>
 <translation id="3632503704576938756">屏幕共享已恢复</translation>
 <translation id="3632892046558972264">屏幕共享已暂停</translation>
+<translation id="3633035844150606508">将地址保存到您的 Google 帐号 <ph name="ACCOUNT" /></translation>
 <translation id="3633738897356909127">“更新 Chrome”按钮，按 Enter 键即可前往 Chrome 设置以更新 Chrome</translation>
 <translation id="3634530185120165534">纸匣 5</translation>
 <translation id="3634567936866541746">您刚刚在一个诈骗网站中输入了密码。为保护您的帐号安全，Chrome 建议检查您已保存的密码。</translation>
@@ -1983,6 +1986,7 @@
 <translation id="5830698870816298009">使用和移动摄像头</translation>
 <translation id="583281660410589416">未知</translation>
 <translation id="5838278095973806738">请勿在此网站上输入任何敏感信息（例如密码或信用卡信息），因为攻击者可能会盗取这些信息。</translation>
+<translation id="5841338463993781099">要保存到帐号吗？</translation>
 <translation id="5851548754964597211">标签列表</translation>
 <translation id="5852909432155870672">RA4</translation>
 <translation id="5860033963881614850">关闭</translation>

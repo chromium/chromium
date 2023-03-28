@@ -498,6 +498,7 @@ Jeśli się nie zgodzisz, zostaną one zablokowane ze względu na Twoje ustawien
 <translation id="2119867082804433120">Otwór w prawym dolnym rogu</translation>
 <translation id="2122719317867821810">Ta zasada działa w oczekiwany sposób, ale zastąpiła pewną sprzeczną wartość, którą ustawiono w innym miejscu.</translation>
 <translation id="2126374524350484896">Źródło pliku PDF:</translation>
+<translation id="2128262927290305126">Na koncie Google <ph name="ACCOUNT" /></translation>
 <translation id="2130448033692577677">Nie można zastosować wybranych szablonów, bo nie została skonfigurowana zasada DnsOverHttpsMode.</translation>
 <translation id="2130699163006053678">A3x7</translation>
 <translation id="2135799067377889518">Odzież męska</translation>
@@ -543,6 +544,7 @@ Jeśli się nie zgodzisz, zostaną one zablokowane ze względu na Twoje ustawien
 <translation id="2219735899272417925">Wymagane zresetowanie urządzenia</translation>
 <translation id="2224337661447660594">Brak internetu</translation>
 <translation id="2225927550500503913">Karta wirtualna została włączona</translation>
+<translation id="2226636330183131181"><ph name="BEGIN_LINK" />Logowanie się<ph name="END_LINK" /> do sieci Wi-Fi</translation>
 <translation id="2239100178324503013">Wyślij teraz</translation>
 <translation id="2241693394036365668">Pobrano plik</translation>
 <translation id="2246264294482514010">10 x 12 cali</translation>
@@ -1084,6 +1086,7 @@ Uruchamianie aplikacji może potrwać dłużej niż zwykle.</translation>
 <translation id="3631244953324577188">Biometria</translation>
 <translation id="3632503704576938756">Wznowiono udostępnianie ekranu</translation>
 <translation id="3632892046558972264">Wstrzymano udostępnianie ekranu</translation>
+<translation id="3633035844150606508">Zapisz adres na koncie Google <ph name="ACCOUNT" /></translation>
 <translation id="3633738897356909127">Przycisk aktualizacji Chrome. Naciśnij Enter, by zaktualizować przeglądarkę Chrome z poziomu jej ustawień.</translation>
 <translation id="3634530185120165534">Taca 5</translation>
 <translation id="3634567936866541746">Przed chwilą wpisano hasło na stronie wprowadzającej w błąd. Dla bezpieczeństwa Twoich kont Chrome zaleca sprawdzenie zapisanych haseł.</translation>
@@ -1794,6 +1797,7 @@ Uruchamianie aplikacji może potrwać dłużej niż zwykle.</translation>
 <translation id="5324080437450482387">Wybierz dane kontaktowe</translation>
 <translation id="5329858041417644019">Twoja przeglądarka nie jest zarządzana</translation>
 <translation id="5332219387342487447">Metoda wysyłki</translation>
+<translation id="5332769172018416402">Poproś w wiadomości</translation>
 <translation id="5333022057423422993">Przeglądarka Chrome znalazła użyte właśnie hasło w naruszeniu bezpieczeństwa danych. W trosce o bezpieczeństwo Twoich kont zalecamy jak najszybsze sprawdzenie zapisanych haseł.</translation>
 <translation id="5334013548165032829">Szczegółowe dzienniki systemowe</translation>
 <translation id="5334145288572353250">Zapisać adres?</translation>
@@ -1987,6 +1991,7 @@ Uruchamianie aplikacji może potrwać dłużej niż zwykle.</translation>
 <translation id="5830698870816298009">używanie kamery i poruszanie nią</translation>
 <translation id="583281660410589416">Nieznany</translation>
 <translation id="5838278095973806738">Nie podawaj żadnych informacji poufnych (takich jak hasła czy dane kart kredytowych) w tej witrynie, bo osoby atakujące będą mogły je wykraść.</translation>
+<translation id="5841338463993781099">Zapisać na koncie?</translation>
 <translation id="5851548754964597211">Lista kart</translation>
 <translation id="5852909432155870672">RA4</translation>
 <translation id="5860033963881614850">Wyłączone</translation>

@@ -96,6 +96,7 @@ Posibleng malapat sa account na ito ang mga pahintulot na naibigay mo na sa mga 
 <translation id="3258596308407688501">Hindi makakapag-read at makakapag-write ang Chromium sa direktoryo ng data nito:
 
 <ph name="USER_DATA_DIRECTORY" /></translation>
+<translation id="3259037713047794342">Tinutulungan ka ng gabay na ito na maunawaan ang iyong mga pinili, para gumana ang Chromium sa paraang gusto mo</translation>
 <translation id="3283186697780795848">Na-install na ang bersyong <ph name="PRODUCT_VERSION" /> ng Chrome</translation>
 <translation id="3286538390144397061">I-restart Ngayon</translation>
 <translation id="328888136576916638">Nawawala ang mga Google API key. Madi-disable ang ilang pagpapagana ng Chromium.</translation>
@@ -384,6 +385,7 @@ Hindi mabawi ng Chromium ang iyong mga setting.</translation>
 <translation id="924957577793602335">Gawing iyo ang Chromium</translation>
 <translation id="93478295209880648">Maaaring hindi gumana nang maayos ang Chromium dahil hindi na ito sinusuportahan sa Windows XP o Windows Vista</translation>
 <translation id="942598560705308788">Mga certificate na pinapamahalaan ng Chromium</translation>
+<translation id="959579472876010517">Sulitin ang Chromium</translation>
 <translation id="965162752251293939">Sino ang gumagamit ng Chromium?</translation>
 <translation id="967427899662692980">Kunin ang pinakamahusay na seguridad ng Chromium</translation>
 <translation id="9792300276217204">Palaging i-clear ang data ng site mula sa iyong device kapag isinara mo ang Chromium</translation>

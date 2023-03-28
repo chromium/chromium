@@ -40,6 +40,7 @@
 <translation id="3167189358072330585">Din konto fungerer ikke sammen med Google Chrome. Kontakt din domæneadministrator, eller brug en almindelig Google-konto til at logge ind.</translation>
 <translation id="3173834708294760622">Google Chrome-side</translation>
 <translation id="3196546062792660320">Med Chrome sparer du tid ved at gøre alle dine konti tilgængelige online. Du kan tilføje eller fjerne konti under Indstillinger.</translation>
+<translation id="322254490661677575">Angiv din adgangssætning for at bruge og gemme Chrome-data på din Google-konto.</translation>
 <translation id="3282568296779691940">Log ind i Chrome</translation>
 <translation id="3345341804167540816">Brug Chrome overalt</translation>
 <translation id="3503014945441706099">Få også Udvidet beskyttet browsing til denne Chrome-profil</translation>
@@ -52,6 +53,7 @@
 <translation id="3980220367029651214">Du er ved at skifte synkroniseringskonto fra <ph name="USER_EMAIL1" /> til <ph name="USER_EMAIL2" />. Dine eksisterende Chrome-data administreres af <ph name="DOMAIN" />. Denne handling sletter dine data fra denne enhed, men dine data forbliver på <ph name="USER_EMAIL1" />.</translation>
 <translation id="3984746313391923992">Din organisation kræver, at du forbliver logget ud af Chrome.</translation>
 <translation id="3988789688219830639">Google Chrome har ikke adgang til dine billeder eller videoer. Gå til iOS Indstillinger &gt; Privatliv &gt; Billeder for at få adgang.</translation>
+<translation id="4064699917955374540">Verificer din identitet for at bruge og gemme Chrome-data på din Google-konto.</translation>
 <translation id="417201473131094001">Understøttes ikke i Chrome Canary</translation>
 <translation id="4233521129555661685"><ph name="USER_EMAIL1" /> brugte Chrome og gemte bogmærker, adgangskoder og andre indstillinger på denne enhed.</translation>
 <translation id="424864128008805179">Vil du logge ud af Chrome?</translation>
@@ -68,6 +70,7 @@
 <translation id="5119391094379141756">Vælg Chrome</translation>
 <translation id="5162467219239570114">Chrome er forældet. Hvis der ikke er en tilgængelig opdatering i <ph name="BEGIN_LINK" />App Store<ph name="END_LINK" />, kan det skyldes, at din enhed ikke længere understøtter nye Chrome-versioner.</translation>
 <translation id="5389212809648216794">Google Chrome kan ikke bruge dit kamera, da det bruges af en anden app</translation>
+<translation id="5395376160638294582">Sørg for, at du altid kan bruge Chrome-dataene på din Google-konto</translation>
 <translation id="5460571915754665838">4. Vælg Chrome</translation>
 <translation id="5492504007368565877">Google Adgangskodeadministrator kan ikke tjekke dine adgangskoder.</translation>
 <translation id="5552137475244467770">Chrome tjekker regelmæssigt, om dine adgangskoder er på nogen lister over adgangskoder, der er blevet afsløret online. Dine adgangskoder og brugernavne krypteres under disse tjek, så de kan ikke læses af nogen, heller ikke Google.</translation>
@@ -122,6 +125,7 @@
 <translation id="8370517070665726704">Copyright <ph name="YEAR" /> Google LLC. Alle rettigheder forbeholdes.</translation>
 <translation id="840168496893712993">Nogle tilføjelser får Chrome til at gå ned. Prøv at afinstallere dem.</translation>
 <translation id="8414886616817913619">Din organisation kræver, at du logger ind for at bruge Chrome. <ph name="BEGIN_LINK" />Få flere oplysninger<ph name="END_LINK" /></translation>
+<translation id="84594714173170813">Fortsæt med at bruge Chrome-dataene på din Google-konto</translation>
 <translation id="8459495907675268833">De valgte data er fjernet fra Chrome og synkroniserede enheder. Din Google-konto kan have andre former for browserhistorik, f.eks. søgninger og aktivitet fra andre Google-tjenester, på history.google.com.</translation>
 <translation id="850555388806794946">Sådan gør du Chrome til din standardbrowser:
   1. Åbn Indstillinger

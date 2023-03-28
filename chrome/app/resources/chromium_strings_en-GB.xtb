@@ -96,6 +96,7 @@ Permissions that you've already given to websites and apps may apply to this acc
 <translation id="3258596308407688501">Chromium cannot read and write to its data directory:
 
 <ph name="USER_DATA_DIRECTORY" /></translation>
+<translation id="3259037713047794342">This guide helps you to understand your choices, so that Chromium works the way you want it to</translation>
 <translation id="3283186697780795848">Chromium version <ph name="PRODUCT_VERSION" /> is installed</translation>
 <translation id="3286538390144397061">Restart Now</translation>
 <translation id="328888136576916638">Google API keys are missing. Some functionality of Chromium will be disabled.</translation>
@@ -383,6 +384,7 @@ Google Chrome is unable to recover your settings.</translation>
 <translation id="924957577793602335">Make Chromium your own</translation>
 <translation id="93478295209880648">Chromium may not function correctly because it is no longer supported on Windows XP or Windows Vista</translation>
 <translation id="942598560705308788">Certificates managed by Chromium</translation>
+<translation id="959579472876010517">Get the most out of Chromium</translation>
 <translation id="965162752251293939">Who's using Chromium?</translation>
 <translation id="967427899662692980">Get Chromium's strongest security</translation>
 <translation id="9792300276217204">Always clear site data from your device when you close Chromium</translation>

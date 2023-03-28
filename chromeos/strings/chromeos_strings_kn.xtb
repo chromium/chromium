@@ -698,6 +698,7 @@
 <translation id="7103252855940681301"><ph name="COUNT" /> ರಲ್ಲಿ <ph name="INDEX" />ನೇ ಸಾಧನವನ್ನು <ph name="NAME" /> ಎಂದು ಹೆಸರಿಸಲಾಗಿದೆ.</translation>
 <translation id="7108668606237948702">ನಮೂದಿಸಿ</translation>
 <translation id="7130438335435247835">ಆ್ಯಕ್ಸೆಸ್ ಪಾಯಿಂಟ್ ಹೆಸರು (APN)</translation>
+<translation id="7131634559772719176">ಪ್ರಿಸೆಟ್‌ ದೃಢೀಕರಿಸಿ</translation>
 <translation id="7134436342991564651">{0,plural, =1{ಸರ್ವರ್ ಹೆಸರು}one{ಸರ್ವರ್‌ಗಳ ಹೆಸರು}other{ಸರ್ವರ್‌ಗಳ ಹೆಸರು}}</translation>
 <translation id="7143207342074048698">ಕನೆಕ್ಟ್...</translation>
 <translation id="7144878232160441200">ಮರುಪ್ರಯತ್ನಿಸಿ</translation>
@@ -801,6 +802,7 @@
 <translation id="80398733265834479">ಸ್ವಯಂಚಾಲಿತ ಬಣ್ಣದ ಮೋಡ್ ಸಕ್ರಿಯಗೊಳಿಸಿ</translation>
 <translation id="8041089156583427627">ಪ್ರತಿಕ್ರಿಯೆ ಕಳುಹಿಸಿ</translation>
 <translation id="8045012663542226664">ಮೈಕ್ರೊಫೋನ್‌ ಮ್ಯೂಟ್ ಕೀ</translation>
+<translation id="8050091914317269817">ಈ ವಾಲ್‌ಪೇಪರ್ ಅನ್ನು ಆಯ್ಕೆಮಾಡುವುದರಿಂದ ಸ್ವಯಂ ಕತ್ತಲೆ ಮೋಡ್ ಮತ್ತು ವಾಲ್‌ಪೇಪರ್ ಬಣ್ಣ ಹೊಂದಾಣಿಕೆ ಆನ್ ಆಗುತ್ತದೆ.</translation>
 <translation id="8075838845814659848">ಉಳಿದಿರುವ ಚಾರ್ಜ್</translation>
 <translation id="8076492880354921740">ಟ್ಯಾಬ್‌ಗಳು</translation>
 <translation id="8082366717211101304">Android ಆ್ಯಪ್‌ಗಳ ಮೂಲಕ DNS ಅನ್ನು ಬಗೆಹರಿಸಲು ಸಾಧ್ಯವಾಗಿಲ್ಲ</translation>

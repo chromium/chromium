@@ -498,6 +498,7 @@
 <translation id="2119867082804433120">Անցք ներքևի աջ կողմում</translation>
 <translation id="2122719317867821810">Այս կանոնը պատշաճ կերպով աշխատում է, սակայն անտեսում է հակասական արժեքը, որը սահմանված է մեկ այլ տեղ։</translation>
 <translation id="2126374524350484896">PDF-ի թողարկիչ՝</translation>
+<translation id="2128262927290305126">Ձեր <ph name="ACCOUNT" /> Google հաշվում</translation>
 <translation id="2130448033692577677">Ձեր նշած ձևանմուշները չեն կարող կիրառվել, քանի որ DnsOverHttpsMode կանոնը կարգավորված չէ:</translation>
 <translation id="2130699163006053678">A3x7</translation>
 <translation id="2135799067377889518">Տղամարդկանց հագուստ</translation>
@@ -543,6 +544,7 @@
 <translation id="2219735899272417925">Պահանջվում է վերակայել սարքը</translation>
 <translation id="2224337661447660594">Ինտերնետ կապ չկա</translation>
 <translation id="2225927550500503913">Վիրտուալ քարտը միացված է</translation>
+<translation id="2226636330183131181"><ph name="BEGIN_LINK" />Մուտք<ph name="END_LINK" /> Wi-Fi ցանց</translation>
 <translation id="2239100178324503013">Ուղարկել</translation>
 <translation id="2241693394036365668">Ֆայլի ներբեռնում</translation>
 <translation id="2246264294482514010">10 x 12 դյույմ</translation>
@@ -628,6 +630,7 @@
 <translation id="2469153820345007638">1-ից N հերթականությամբ</translation>
 <translation id="2470767536994572628">Երբ դուք խմբագրեք ծանոթագրությունները, փաստաթուղթը կցուցադրվի մեկ էջով և իր սկզբնական դիրքով</translation>
 <translation id="2479410451996844060">Որոնման սխալ URL:</translation>
+<translation id="2480300195898055381">Ձեր Google հաշվում, <ph name="USER_EMAIL" /></translation>
 <translation id="2482878487686419369">Ծանուցումներ</translation>
 <translation id="248348093745724435">Սարքի քաղաքականություններ</translation>
 <translation id="2491120439723279231">Սերվերի վկայագիրը սխալներ է պարունակում:</translation>
@@ -841,6 +844,7 @@
 <translation id="3029752078111257850">Միջազգային լուրեր</translation>
 <translation id="3037177537145227281">Դուք հետևում եք այս ապրանքի գնին</translation>
 <translation id="3037605927509011580">Վա՛յ</translation>
+<translation id="3041450980936463495">Դուք կարող եք օգտագործել պահված հասցեները Google-ի արտադրանքներում։ Այս հասցեն պահվում է ձեր Google հաշվում (<ph name="ACCOUNT" />)։</translation>
 <translation id="3041612393474885105">Վկայագրի տեղեկությունները</translation>
 <translation id="305162504811187366">Chrome հեռակա աշխատասեղանի պատմությունը, այդ թվում՝ ժամադրոշմները, խնամորդները և սպասառուների աշխատաշրջանների նույնացուցիչները</translation>
 <translation id="3052964831964880138"><ph name="PRICE_DROP" /> գնիջեցում <ph name="PRODUCT_NAME" />-ի համար</translation>
@@ -1082,6 +1086,7 @@
 <translation id="3631244953324577188">Կենսաչափական համակարգեր</translation>
 <translation id="3632503704576938756">էկրանի ցուցադրումը նորից միացված է</translation>
 <translation id="3632892046558972264">էկրանի ցուցադրումը դադարեցված է</translation>
+<translation id="3633035844150606508">Հասցեի պահում ձեր <ph name="ACCOUNT" /> Google հաշվում</translation>
 <translation id="3633738897356909127">«Թարմացնել Chrome-ը» կոճակ։ Սեղմեք Enter՝ Chrome-ը թարմացելու համար։</translation>
 <translation id="3634530185120165534">Դարակ 5</translation>
 <translation id="3634567936866541746">Դուք հենց նոր մուտքագրեցիք ձեր գաղտնաբառը կասկածելի կայքում։ Ձեր հաշիվների պաշտպանության նկատառումներով՝ Chrome-ը խորհուրդ է տալիս անհապաղ ստուգել պահված գաղտնաբառերի անվտանգությունը։</translation>
@@ -1933,6 +1938,7 @@
 <translation id="5695542892312572833">Հաստատե՞լ և ավարտել ձեր գնումը Windows Hello-ի միջոցով</translation>
 <translation id="5701381305118179107">Կենտրոնաբերել</translation>
 <translation id="570530837424789914">Կառավարել...</translation>
+<translation id="5706906618852913030">Պահե՞լ հաշվում</translation>
 <translation id="5707154300732650394">Շարունակել որոնումը</translation>
 <translation id="57094364128775171">Ստեղծել հուսալի գաղտնաբառ…</translation>
 <translation id="571403275720188526">(arm64)</translation>
@@ -1985,6 +1991,7 @@
 <translation id="5830698870816298009">տեսախցիկի օգտագործում և տեղաշարժում</translation>
 <translation id="583281660410589416">Անհայտ</translation>
 <translation id="5838278095973806738">Մի մուտքագրեք գաղտնի տվյալներ այս կայքում (օր.` գաղտնաբառերը կամ վարկային քարտի տվյալները), քանի որ դրանք կարող են հայտնի դառնալ հարձակվողներին։</translation>
+<translation id="5841338463993781099">Պահե՞լ հաշվում</translation>
 <translation id="5851548754964597211">Ներդիրների ցանկ</translation>
 <translation id="5852909432155870672">RA4</translation>
 <translation id="5860033963881614850">Անջատ.</translation>

@@ -1253,6 +1253,7 @@ Nova instalação</translation>
 <translation id="685782768769951078">{NUM_DIGITS,plural, =1{1 dígito restante}one{# dígito restante}other{# dígitos restantes}}</translation>
 <translation id="6867938213751067702">Download de <ph name="FILENAME" /> pausado</translation>
 <translation id="6878400149835617132">Atalho desativado</translation>
+<translation id="6878701771800702153">{NUM_APPS,plural, =1{1 app}one{# app}other{# apps}}</translation>
 <translation id="6884665277231944629">Voltar para hoje</translation>
 <translation id="6886172995547742638">Seu <ph name="DEVICE_TYPE" /> pode ter baixo desempenho. Use um adaptador de energia USB-C certificado de <ph name="PREFERRED_MINIMUM_POWER" /> W ou mais.</translation>
 <translation id="688631446150864480">Pressione a seta para baixo para mudar de janela</translation>
@@ -1433,6 +1434,7 @@ Para desligar o dispositivo, toque no botão liga/desliga novamente e pressione.
 <translation id="7749443890790263709">O número máximo de áreas de trabalho foi atingido.</translation>
 <translation id="776344839111254542">Clique para ver detalhes da atualização</translation>
 <translation id="7768784765476638775">Selecionar para ouvir</translation>
+<translation id="7769299611924763557">Seu GIF estará pronto em breve</translation>
 <translation id="7780094051999721182">atalhos</translation>
 <translation id="7780159184141939021">Girar tela</translation>
 <translation id="7796735576426975947">Nova notificação oculta</translation>

@@ -1252,6 +1252,7 @@ New install</translation>
 <translation id="685782768769951078">{NUM_DIGITS,plural, =1{One digit remaining}other{# digits remaining}}</translation>
 <translation id="6867938213751067702">Download paused <ph name="FILENAME" /></translation>
 <translation id="6878400149835617132">Shortcut turned off</translation>
+<translation id="6878701771800702153">{NUM_APPS,plural, =1{1 app}other{# apps}}</translation>
 <translation id="6884665277231944629">Go back to today</translation>
 <translation id="6886172995547742638">Your <ph name="DEVICE_TYPE" /> may experience lower performance. Use a certified <ph name="PREFERRED_MINIMUM_POWER" />W or higher USB-C power adaptor.</translation>
 <translation id="688631446150864480">Press the Down arrow key to switch windows</translation>
@@ -1432,6 +1433,7 @@ To shut down the device, press and hold the power button on the device again.</t
 <translation id="7749443890790263709">Maximum number of desks reached.</translation>
 <translation id="776344839111254542">Click to view update details</translation>
 <translation id="7768784765476638775">Select to Speak</translation>
+<translation id="7769299611924763557">Your GIF will be ready shortly</translation>
 <translation id="7780094051999721182">shortcuts</translation>
 <translation id="7780159184141939021">Rotate screen</translation>
 <translation id="7796735576426975947">New notification hidden</translation>

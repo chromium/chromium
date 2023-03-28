@@ -755,6 +755,7 @@ Handoff must also be enabled in the General section of Settings, and your device
 <translation id="6219550825416862075">Dobrodošli nazaj</translation>
 <translation id="6219688215832490856">Nikoli ne prevedi</translation>
 <translation id="6223816392543092032">Dostopajte do zaznamkov, zgodovine, gesel in drugih nastavitev v vseh napravah.</translation>
+<translation id="6224759905509595045">Potrditev identitete …</translation>
 <translation id="6229318421047648685">Zahtevaj spletno mesto za namizni računalnik</translation>
 <translation id="6231782223312638214">Predlagano</translation>
 <translation id="6232329973559504466">Anonimno iskanje</translation>
@@ -915,6 +916,7 @@ Ko uporabljate anonimni način, spletna mesta ne smejo uporabljati piškotkov za
 <translation id="7108762695052995889">Na spletno mesto</translation>
 <translation id="7133798577887235672">Polno ime</translation>
 <translation id="7136892417564438900">Fotoaparat ni na voljo</translation>
+<translation id="7161230316646448869">Sinhronizirajte zaznamke, zgodovino in drugo v vseh napravah</translation>
 <translation id="7162168282402939716">Odkleni anonimne zavihke s tem: <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /></translation>
 <translation id="7172852049901402487">Zavarujte gesla pred varnostnimi težavami</translation>
 <translation id="7173114856073700355">Odpri nastavitve</translation>

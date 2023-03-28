@@ -164,7 +164,7 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="1337692097987160377">Tab teilen</translation>
 <translation id="1339601241726513588">Registrierungsdomain:</translation>
 <translation id="1340482604681802745">Abholadresse</translation>
-<translation id="1343356790768851700">Diese Website erhebt Informationen zu deinen Vorlieben und schlägt dann anderen Websites Werbung vor</translation>
+<translation id="1343356790768851700">Diese Website erhebt Informationen zu deinen Interessen und schlägt dann anderen Websites Werbung vor</translation>
 <translation id="1346748346194534595">Rechts</translation>
 <translation id="1348198688976932919">Die Website, die du aufrufen möchtest, enthält gefährliche Apps</translation>
 <translation id="1348779747280417563">Namen bestätigen</translation>
@@ -277,7 +277,7 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="1572765991610098222"><ph name="WIDTH" />" × <ph name="HEIGHT" />"</translation>
 <translation id="1581080074034554886">CVC</translation>
 <translation id="1583429793053364125">Fehler beim Anzeigen dieser Webseite.</translation>
-<translation id="1584492003828271317">Ob du beim Surfen personalisierte Werbung siehst, hängt von dieser Einstellung, der von Websites vorgeschlagenen Werbung, deinen Cookie-Einstellungen und davon ab, ob die besuchte Website Werbung personalisiert</translation>
+<translation id="1584492003828271317">Ob du beim Surfen personalisierte Werbung siehst, hängt von dieser Einstellung, der von Websites vorgeschlagenen Werbung, deinen Cookie-Einstellungen und davon ab, ob die besuchte Website Werbung personalisiert.</translation>
 <translation id="1586541204584340881">Welche Erweiterungen du installiert hast</translation>
 <translation id="1588438908519853928">Normal</translation>
 <translation id="1592005682883173041">Zugriff auf lokale Daten</translation>
@@ -2814,7 +2814,7 @@ Weitere Details:
 <translation id="7840103971441592723">Bildschirmaufnahme wurde gestartet</translation>
 <translation id="7844689747373518809">{COUNT,plural, =0{Keine}=1{1 App (<ph name="EXAMPLE_APP_1" />)}=2{2 Apps (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />)}other{# Apps (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />, <ph name="AND_MORE" />)}}</translation>
 <translation id="7855695075675558090"><ph name="TOTAL_LABEL" /> <ph name="FORMATTED_TOTAL_AMOUNT" /> <ph name="CURRENCY_CODE" /></translation>
-<translation id="7857116075376571629">Wenn du dann eine Website besuchst, kann deine Themen von Chrome anfordern, um die dir gezeigte Werbung zu personalisieren. Chrome teilt bis zu drei Themen und trägt gleichzeitig zum Schutz deines Browserverlauf und deiner Identität bei.</translation>
+<translation id="7857116075376571629">Wenn du dann eine Website besuchst, kann diese deine Themen von Chrome anfordern, um die dir gezeigte Werbung zu personalisieren. Chrome teilt bis zu drei Themen und trägt gleichzeitig zum Schutz deines Browserverlauf und deiner Identität bei.</translation>
 <translation id="7860345425589240791">Gib das neue Ablaufdatum und den CVC auf der <ph name="SIDE_OF_CARD" /> ein</translation>
 <translation id="7862185352068345852">Website verlassen?</translation>
 <translation id="7865448901209910068">Beste Geschwindigkeit</translation>

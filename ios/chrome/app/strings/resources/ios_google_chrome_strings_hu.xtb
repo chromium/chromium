@@ -40,6 +40,7 @@
 <translation id="3167189358072330585">Fiókja nem működik a Google Chrome-on. Lépjen kapcsolatba domainrendszergazdájával, vagy használjon normál Google-fiókot a bejelentkezéshez.</translation>
 <translation id="3173834708294760622">A Google Chrome oldala</translation>
 <translation id="3196546062792660320">A Chrome időt takarít meg Önnek azzal, hogy a fiókjait az internetre viszi. A beállításokban tud fiókokat hozzáadni vagy eltávolítani.</translation>
+<translation id="322254490661677575">Ha Chrome-adatokat szeretne használni és tárolni Google-fiókjában, adja meg az összetett jelszavát.</translation>
 <translation id="3282568296779691940">Bejelentkezés a Chrome-ba</translation>
 <translation id="3345341804167540816">A Chrome használata mindenhol</translation>
 <translation id="3503014945441706099">A Biztonságos Böngészés fokozott védelemmel funkciót kapja e Chrome-profilhoz is</translation>
@@ -52,6 +53,7 @@
 <translation id="3980220367029651214">A(z) <ph name="USER_EMAIL1" /> szinkronizált fiókról a következőre vált át: <ph name="USER_EMAIL2" />. A meglévő Chrome-adatokat a(z) <ph name="DOMAIN" /> kezeli. Ezzel törli az adatait erről az eszközről, viszont azok továbbra is megmaradnak a(z) <ph name="USER_EMAIL1" /> fiókban.</translation>
 <translation id="3984746313391923992">Szervezete nem engedélyezi, hogy bejelentkezzen a Chrome-ba.</translation>
 <translation id="3988789688219830639">A Google Chrome nem fér hozzá az Ön képeihez és videóihoz. Engedélyezés iOS-en: Beállítások &gt; Adatvédelem &gt; Fényképek.</translation>
+<translation id="4064699917955374540">Ha Chrome-adatokat szeretne használni és tárolni Google-fiókjában, igazolja személyazonosságát.</translation>
 <translation id="417201473131094001">A Chrome Canary nem támogatja</translation>
 <translation id="4233521129555661685"><ph name="USER_EMAIL1" /> felhasználó használta Chrome-ot, és könyvjelzőket, jelszavakat, valamint egyéb beállításokat hagyott az eszközön.</translation>
 <translation id="424864128008805179">Kijelentkezés a Chrome-ból</translation>
@@ -68,6 +70,7 @@
 <translation id="5119391094379141756">Válassza ki a Chrome böngészőt.</translation>
 <translation id="5162467219239570114">A Chrome elavult. Ha nem áll rendelkezésre frissítés az <ph name="BEGIN_LINK" />App Store-ban<ph name="END_LINK" />, akkor lehet, hogy az eszköz már nem támogatja a Chrome újabb verzióit.</translation>
 <translation id="5389212809648216794">A Google Chrome nem tudja használni a kamerát, mivel egy másik alkalmazás használja</translation>
+<translation id="5395376160638294582">Biztosítsa, hogy mindig használhassa a Google-fiókjában lévő Chrome-adatokat</translation>
 <translation id="5460571915754665838">4. Válassza ki a Chrome böngészőt.</translation>
 <translation id="5492504007368565877">A Google Jelszókezelő nem tudja ellenőrizni az Ön jelszavait.</translation>
 <translation id="5552137475244467770">A Chrome rendszeres időközönként online közzétett listák alapján ellenőrzi az Ön jelszavait. Az eljárás során jelszavai és felhasználónevei titkosítva vannak, így senki nem láthatja őket, még a Google sem.</translation>
@@ -122,6 +125,7 @@
 <translation id="8370517070665726704">Copyright <ph name="YEAR" /> Google LLC. Minden jog fenntartva.</translation>
 <translation id="840168496893712993">Bizonyos bővítmények a Chrome összeomlását eredményezik. Próbálja meg eltávolítani őket.</translation>
 <translation id="8414886616817913619">Szervezete megköveteli a bejelentkezést a Chrome használatához. <ph name="BEGIN_LINK" />További információ<ph name="END_LINK" /></translation>
+<translation id="84594714173170813">Továbbra is használhatja a Google-fiókjában lévő Chrome-adatokat</translation>
 <translation id="8459495907675268833">A kiválasztott adatokat eltávolítottuk a Chrome-ból és a szinkronizált eszközökről. Előfordulhat, hogy Google-fiókjában (a history.google.com címen) még szerepelnek a böngészési előzmények egyéb formái, így például a keresések és egyéb tevékenységek más Google-szolgáltatásokból.</translation>
 <translation id="850555388806794946">A Chrome beállítása alapértelmezett böngészőként:
   1. Nyissa meg a Beállításokat.

@@ -40,6 +40,7 @@
 <translation id="3167189358072330585">Nid yw'ch cyfrif yn gweithio ar Google Chrome. Cysylltwch â'ch gweinyddwr parth neu defnyddiwch Gyfrif Google rheolaidd i fewngofnodi.</translation>
 <translation id="3173834708294760622">Tudalen Google Chrome</translation>
 <translation id="3196546062792660320">Mae Chrome yn arbed amser i chi drwy ddod â'ch cyfrifon i'r we. Gallwch ychwanegu neu dynnu cyfrifon yn y Gosodiadau.</translation>
+<translation id="322254490661677575">I ddefnyddio a chadw data Chrome yn eich Cyfrif Google, rhowch eich cyfrinymadrodd.</translation>
 <translation id="3282568296779691940">Mewngofnodi i Chrome</translation>
 <translation id="3345341804167540816">Gallwch Ddefnyddio Chrome Ymhobman</translation>
 <translation id="3503014945441706099">Cael Gwell Pori'n Ddiogel ar gyfer y proffil Chrome hwn hefyd</translation>
@@ -52,6 +53,7 @@
 <translation id="3980220367029651214">Rydych yn newid cyfrifon cysoni o <ph name="USER_EMAIL1" /> i <ph name="USER_EMAIL2" />. Mae eich data Chrome presennol yn cael eu rheoli gan <ph name="DOMAIN" />. Bydd hyn yn dileu eich data o'r ddyfais hon, ond bydd eich data yn aros yn <ph name="USER_EMAIL1" />.</translation>
 <translation id="3984746313391923992">Mae eich sefydliad yn gofyn i chi barhau i fod wedi'ch allgofnodi o Chrome.</translation>
 <translation id="3988789688219830639">Nid oes gan Google Chrome fynediad at eich lluniau na fideos. Galluogwch fynediad yn Gosodiadau iOS &gt; Preifatrwydd &gt; Lluniau.</translation>
+<translation id="4064699917955374540">I ddefnyddio a chadw data Chrome yn eich Cyfrif Google, cadarnhewch mai chi sydd yno.</translation>
 <translation id="417201473131094001">Ni chefnogir ar Chrome Canary</translation>
 <translation id="4233521129555661685">Roedd <ph name="USER_EMAIL1" /> yn defnyddio Chrome a gadawodd nodau tudalen, cyfrineiriau, a gosodiadau eraill ar y ddyfais hon.</translation>
 <translation id="424864128008805179">Allgofnodi o Chrome?</translation>
@@ -68,6 +70,7 @@
 <translation id="5119391094379141756">Dewiswch Chrome</translation>
 <translation id="5162467219239570114">Mae Chrome yn hen. Os nad oes diweddariad ar gael yn <ph name="BEGIN_LINK" />App Store<ph name="END_LINK" />, mae'n bosib nad yw'ch dyfais yn cefnogi fersiynau newydd o Chrome mwyach.</translation>
 <translation id="5389212809648216794">Ni all Google Chrome ddefnyddio'ch camera oherwydd ei fod yn cael ei ddefnyddio gan ap arall</translation>
+<translation id="5395376160638294582">Gwnewch yn siŵr y gallwch bob amser ddefnyddio'r data Chrome yn eich Cyfrif Google</translation>
 <translation id="5460571915754665838">4. Dewiswch Chrome</translation>
 <translation id="5492504007368565877">Ni all Rheolwr Cyfrineiriau Google wirio'ch cyfrineiriau.</translation>
 <translation id="5552137475244467770">Mae Chrome o bryd i'w gilydd yn gwirio'ch cyfrineiriau yn erbyn rhestrau sydd wedi'u cyhoeddi ar-lein. Wrth wneud hyn, mae eich cyfrineiriau a'ch enwau defnyddwyr wedi'u hamgryptio, felly ni all unrhyw un, gan gynnwys Google, eu darllen.</translation>
@@ -122,6 +125,7 @@
 <translation id="8370517070665726704">Hawlfraint <ph name="YEAR" /> Google LLC. Cedwir pob hawl.</translation>
 <translation id="840168496893712993">Mae rhai ychwanegion yn achosi i Chrome dorri. Rhowch gynnig ar ddadosod nhw.</translation>
 <translation id="8414886616817913619">Mae eich sefydliad yn gofyn i chi fewngofnodi i ddefnyddio Chrome. <ph name="BEGIN_LINK" />Dysgu Rhagor<ph name="END_LINK" /></translation>
+<translation id="84594714173170813">Parhewch i ddefnyddio'r data Chrome yn eich Cyfrif Google</translation>
 <translation id="8459495907675268833">Mae'r data a ddewiswyd wedi'u tynnu o Chrome a dyfeisiau sydd wedi'u cysoni. Mae'n bosib y bydd gan eich Cyfrif Google fathau eraill o hanes pori megis chwiliadau a gweithgarwch gan wasanaethau Google eraill yn history.google.com.</translation>
 <translation id="850555388806794946">I osod Chrome fel eich porwr diofyn:
   1. Agorwch y Gosodiadau

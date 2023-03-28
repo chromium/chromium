@@ -479,6 +479,7 @@ Các trang web không thể dùng cookie để giám sát hoạt động duyệt
 <translation id="4342946437867096381">Bạn đã lưu mật khẩu cho trang web này trong Tài khoản Google của mình. Google có thể chọn mật khẩu gần đây nhất cho bạn.</translation>
 <translation id="4343046787186034850">Đã cho phép truy cập máy ảnh và micrô</translation>
 <translation id="4359125752503270327">Trang này sẽ mở trong ứng dụng khác.</translation>
+<translation id="4371526908359194219">Thông báo qua email</translation>
 <translation id="4375040482473363939">Tìm kiếm mã QR</translation>
 <translation id="4378154925671717803">Điện thoại</translation>
 <translation id="4389019817280890563">Nhấn để thay đổi ngôn ngữ.</translation>
@@ -558,7 +559,7 @@ Dữ liệu của bạn đã được mã hóa bằng cụm mật khẩu đồng
 <translation id="4834499902900503484">Khi bạn đăng nhập vào Chrome, mật khẩu mà bạn lưu sẽ có trong Tài khoản Google của bạn. Để tắt tính năng này, hãy <ph name="BEGIN_LINK" />vào phần cài đặt<ph name="END_LINK" />.</translation>
 <translation id="4840495572919996524">Dấu trang, lịch sử, mật khẩu và các dữ liệu khác sẽ không còn đồng bộ hóa với Tài khoản Google của bạn nữa.</translation>
 <translation id="4844899002472726590">Xem và chỉnh sửa những chủ đề bạn quan tâm</translation>
-<translation id="4848999860252535517">Xoá mật khẩu của <ph name="WEBSITE" />?</translation>
+<translation id="4848999860252535517">Xoá mật khẩu dùng cho <ph name="WEBSITE" />?</translation>
 <translation id="4854345657858711387">Đặt mật mã</translation>
 <translation id="4858786880085262208">Nâng cấp lên HTTPS (khi có thể). Các trang web an toàn có thể nhúng nội dung không an toàn.</translation>
 <translation id="4860895144060829044">Gọi</translation>
@@ -580,6 +581,7 @@ Dữ liệu của bạn đã được mã hóa bằng cụm mật khẩu đồng
 <translation id="4986678885919050584">Xoá khỏi thiết bị này</translation>
 <translation id="498985224078955265">Để gửi thẻ này tới một thiết bị khác, hãy đăng nhập vào Chrome trên cả hai thiết bị.</translation>
 <translation id="5005498671520578047">Sao chép mật khẩu</translation>
+<translation id="5016420433031926653">Gửi tới <ph name="USER_EMAIL" /></translation>
 <translation id="5017828934289857214">Nhắc tôi sau</translation>
 <translation id="5037676449506322593">Chọn Tất cả</translation>
 <translation id="5039804452771397117">Cho phép</translation>
@@ -755,6 +757,7 @@ Dữ liệu của bạn đã được mã hóa bằng cụm mật khẩu đồng
 <translation id="6219550825416862075">Chào mừng bạn quay lại</translation>
 <translation id="6219688215832490856">Không bao giờ dịch</translation>
 <translation id="6223816392543092032">Sử dụng dấu trang, danh sách trang web đã truy cập, mật khẩu và các chế độ cài đặt khác trên mọi thiết bị của bạn.</translation>
+<translation id="6224759905509595045">Xác minh danh tính của bạn…</translation>
 <translation id="6229318421047648685">Yêu cầu trang web dành cho máy tính</translation>
 <translation id="6231782223312638214">Ðược đề xuất</translation>
 <translation id="6232329973559504466">Tìm kiếm ẩn danh</translation>
@@ -915,6 +918,7 @@ Hãy cố gắng sử dụng một mật khẩu riêng cho mỗi trang web.</tra
 <translation id="7108762695052995889">Truy cập trang web</translation>
 <translation id="7133798577887235672">Tên đầy đủ</translation>
 <translation id="7136892417564438900">Máy ảnh không khả dụng</translation>
+<translation id="7161230316646448869">Đồng bộ hoá dấu trang, nhật ký hoạt động và nhiều nội dung khác của bạn trên mọi thiết bị</translation>
 <translation id="7162168282402939716">Mở khóa các thẻ Ẩn danh bằng <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /></translation>
 <translation id="7172852049901402487">Bảo vệ mật khẩu của bạn trước các vấn đề bảo mật</translation>
 <translation id="7173114856073700355">Mở phần Cài đặt</translation>

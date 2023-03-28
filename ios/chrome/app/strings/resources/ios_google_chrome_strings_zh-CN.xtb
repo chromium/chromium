@@ -40,6 +40,7 @@
 <translation id="3167189358072330585">无法在 Google Chrome 上登录您的帐号。请与您的网域管理员联系，或使用普通的 Google 帐号登录。</translation>
 <translation id="3173834708294760622">Google Chrome 网页</translation>
 <translation id="3196546062792660320">为节省您的时间，Chrome 已将您的 Google 帐号同步到网络上。您可在“设置”中添加或移除帐号。</translation>
+<translation id="322254490661677575">如要将 Chrome 数据保存在您的 Google 帐号中并使用这些数据，请输入您的口令。</translation>
 <translation id="3282568296779691940">登录 Chrome</translation>
 <translation id="3345341804167540816">随时随地使用 Chrome</translation>
 <translation id="3503014945441706099">同时也为这份 Chrome 个人资料启用“增强型安全浏览”功能</translation>
@@ -52,6 +53,7 @@
 <translation id="3980220367029651214">您正要将同步帐号从 <ph name="USER_EMAIL1" /> 切换到 <ph name="USER_EMAIL2" />。您现有的 Chrome 数据由 <ph name="DOMAIN" /> 管理。切换同步帐号后，您的数据将从这台设备上删除，但仍会保留在 <ph name="USER_EMAIL1" /> 中。</translation>
 <translation id="3984746313391923992">贵组织要求您保持已退出 Chrome 的状态。</translation>
 <translation id="3988789688219830639">Google Chrome 无权访问您的照片或视频。请依次点按 iOS 中的“设置”&gt;“隐私”&gt;“照片”，授予其访问权限。</translation>
+<translation id="4064699917955374540">如要将 Chrome 数据保存在您的 Google 帐号中并使用这些数据，请确认是您本人在操作。</translation>
 <translation id="417201473131094001">在 Chrome Canary 版中不受支持</translation>
 <translation id="4233521129555661685"><ph name="USER_EMAIL1" /> 原本使用 Chrome，并在此设备上保存了书签、密码及其他设置。</translation>
 <translation id="424864128008805179">退出 Chrome？</translation>

@@ -97,6 +97,7 @@
 <translation id="1773212559869067373">Certificado de autenticación rechazado de forma local</translation>
 <translation id="1775381402323441512">Información del vídeo</translation>
 <translation id="180035236176489073">Tienes que conectarte a Internet para acceder a estos archivos.</translation>
+<translation id="1805030087840125683">{COUNT,plural, =1{No se ha encontrado ninguna extensión con este ID:}other{No se han encontrado extensiones con estos IDs:}}</translation>
 <translation id="1807938677607439181">Todos los archivos</translation>
 <translation id="1810764548349082891">No hay vistas previas disponibles</translation>
 <translation id="1812302367230252929">Amárico (transliteración)</translation>
@@ -130,6 +131,7 @@
 <translation id="2084108471225856927">Configuración del dispositivo</translation>
 <translation id="2084809735218147718">"Gracias" en lengua de signos</translation>
 <translation id="2088690981887365033">Red VPN</translation>
+<translation id="2111134541987263231">Activa la opción <ph name="BEGIN_BOLD" />Permitir en incógnito<ph name="END_BOLD" /></translation>
 <translation id="2114191879048183086"><ph name="NUMBER_OF_ITEMS" /> elementos se eliminarán y no podrás restaurarlos.</translation>
 <translation id="2122305276694332719">Conectarse automáticamente a una red oculta permite que otros usuarios vean tu dispositivo y parte de tu configuración de red, por lo que no es recomendable.</translation>
 <translation id="2125607626296734455">Jemer</translation>
@@ -228,6 +230,7 @@
 <translation id="290843123675549676">Maratí</translation>
 <translation id="2923240520113693977">Estonio</translation>
 <translation id="2938685643439809023">Mongol</translation>
+<translation id="293972288692056847">{COUNT,plural, =1{No se puede encontrar una extensión}other{No se pueden encontrar algunas extensiones}}</translation>
 <translation id="2943503720238418293">Utiliza un nombre más corto</translation>
 <translation id="2949781154072577687">Formateando <ph name="DRIVE_NAME" />...</translation>
 <translation id="2951236788251446349">Medusa</translation>
@@ -282,6 +285,7 @@
 <translation id="3356580349448036450">Completo</translation>
 <translation id="3358452157379365236">Guitarra</translation>
 <translation id="3368922792935385530">Conectado</translation>
+<translation id="3372635229069101468">Haz clic en <ph name="BEGIN_BOLD" />Detalles<ph name="END_BOLD" /></translation>
 <translation id="3382143449143186018">Nepalí con teclado InScript</translation>
 <translation id="338691029516748599">Red <ph name="NETWORK_INDEX" /> de <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, intensidad de la señal: <ph name="SIGNAL_STRENGTH" /> %, gestionada por el administrador, conectar</translation>
 <translation id="3408072735282270043">Activar <ph name="NETWORK_NAME" /></translation>
@@ -366,6 +370,7 @@
 <translation id="4124935795427217608">Unicornio</translation>
 <translation id="4131235941541910880">Mueve los elementos que no necesites a la papelera</translation>
 <translation id="4134804435730168042">Red <ph name="NETWORK_INDEX" /> de <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" />, Activar tras la configuración del dispositivo</translation>
+<translation id="41501027364808384">{COUNT,plural, =1{Activa la siguiente extensión en modo Incógnito:}other{Activa las siguientes extensiones en modo Incógnito:}}</translation>
 <translation id="4153015322587141338">Haz clic con el botón derecho en un archivo y selecciona "<ph name="PIN_COMMAND" />" para acceder rápidamente a tus archivos desde la estantería.</translation>
 <translation id="4157569377477607576">La política del administrador no recomienda:</translation>
 <translation id="4159731583141908892">Se ha movido <ph name="FILE_NAME" />.</translation>
@@ -462,8 +467,10 @@
 <translation id="4801956050125744859">Conservar las dos versiones</translation>
 <translation id="4804827417948292437">Aguacate</translation>
 <translation id="4805966553127040832">Restaurando <ph name="COUNT" /> elementos</translation>
+<translation id="4816695657735045067">{COUNT,plural, =1{Para usar el modo Incógnito, tu organización requiere una extensión}other{Para usar el modo Incógnito, tu organización requiere algunas extensiones}}</translation>
 <translation id="4823651846660089135">El dispositivo es de solo lectura</translation>
 <translation id="4826849268470072925">Tamil (ITRANS)</translation>
+<translation id="482932175346970750">Escribe <ph name="BEGIN_BOLD" />chrome://extensions<ph name="END_BOLD" /> en el navegador</translation>
 <translation id="4839847978919684242"><ph name="SELCTED_FILES_COUNT" /> elementos seleccionados</translation>
 <translation id="4843566743023903107">Chromebases</translation>
 <translation id="4850886885716139402">Ver</translation>
@@ -533,6 +540,7 @@
     y colabora en archivos con otros usuarios desde un único lugar.<ph name="MARKUP_9" /></translation>
 <translation id="5275973617553375938">Archivos recuperados de Google Drive</translation>
 <translation id="5278111733643988471">Para restaurar este elemento, arrástralo a una nueva carpeta fuera de la papelera. Se ha eliminado la carpeta original "<ph name="PARENT_FOLDER_NAME" />" de este elemento.</translation>
+<translation id="5283101102242354279">Para activar una extensión en modo Incógnito:</translation>
 <translation id="5286194356314741248">Buscando</translation>
 <translation id="5288441970121584418">Hamburguesa</translation>
 <translation id="5288481194217812690"><ph name="FILENAME" /></translation>
@@ -779,6 +787,7 @@
 <translation id="7238643356913091553"><ph name="NETWORK_NAME" />, detalles</translation>
 <translation id="7246947237293279874">Proxy de FTP</translation>
 <translation id="7248671827512403053">Aplicación</translation>
+<translation id="7252604552361840748">Busca la extensión indicada arriba</translation>
 <translation id="7256405249507348194">Error no reconocido: <ph name="DESC" /></translation>
 <translation id="7268659760406822741">Servicios disponibles</translation>
 <translation id="7292816689782057017">La política del administrador restringe la capacidad de guardar en algunas ubicaciones.</translation>
@@ -792,6 +801,7 @@
 <translation id="7359359531237882347">Se están copiando <ph name="NUMBER_OF_ITEMS" /> elementos...</translation>
 <translation id="7375951387215729722">Lista de archivos ordenados por <ph name="COLUMN_NAME" /> en orden descendente.</translation>
 <translation id="7377161162143020057">La política del administrador ha bloqueado la opción de copiar este archivo</translation>
+<translation id="7392500733467492920">Ponte en contacto con tu administrador.</translation>
 <translation id="7402503521691663770">Dispositivos ChromeOS Flex</translation>
 <translation id="7408870451288633753">Checo</translation>
 <translation id="7417453074306512035">Teclado etíope</translation>

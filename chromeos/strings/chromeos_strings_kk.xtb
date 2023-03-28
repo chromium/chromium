@@ -698,6 +698,7 @@
 <translation id="7103252855940681301"><ph name="NAME" /> атты құрылғы, <ph name="INDEX" />/<ph name="COUNT" /></translation>
 <translation id="7108668606237948702">enter</translation>
 <translation id="7130438335435247835">Кіру нүктесінің атауы (APN)</translation>
+<translation id="7131634559772719176">Параметрлер жинағын растау</translation>
 <translation id="7134436342991564651">{0,plural, =1{Сервер атауы}other{Сервер атаулары}}</translation>
 <translation id="7143207342074048698">Қосылып жатыр</translation>
 <translation id="7144878232160441200">Қайталау</translation>
@@ -801,6 +802,7 @@
 <translation id="80398733265834479">Автобаланс режимін қосу</translation>
 <translation id="8041089156583427627">Пікір жіберу</translation>
 <translation id="8045012663542226664">Микрофон дыбысын өшіру</translation>
+<translation id="8050091914317269817">Бұл тұсқағазды таңдау автоматты қараңғы режим мен тұсқағаз түсін сәйкестендіруді қосады.</translation>
 <translation id="8075838845814659848">Қалған заряд</translation>
 <translation id="8076492880354921740">Қойындылар</translation>
 <translation id="8082366717211101304">Android қолданбаларынан DNS-ті анықтау мүмкін емес.</translation>

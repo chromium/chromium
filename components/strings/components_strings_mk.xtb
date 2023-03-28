@@ -628,6 +628,7 @@
 <translation id="2469153820345007638">Редослед 1-до-N</translation>
 <translation id="2470767536994572628">Кога ќе ги изменувате прибелешките, документов ќе се врати на приказ на една страница и на својата оригинална ротација</translation>
 <translation id="2479410451996844060">Невалидна URL-адреса за пребарување.</translation>
+<translation id="2480300195898055381">Во вашата сметка на Google, <ph name="USER_EMAIL" /></translation>
 <translation id="2482878487686419369">Известувања</translation>
 <translation id="248348093745724435">Правила на уредот</translation>
 <translation id="2491120439723279231">Сертификатот на серверот содржи грешки.</translation>
@@ -841,6 +842,7 @@
 <translation id="3029752078111257850">Вести од светот</translation>
 <translation id="3037177537145227281">Цената се следи</translation>
 <translation id="3037605927509011580">По ѓаволите!</translation>
+<translation id="3041450980936463495">Може да ги користите зачуваните адреси на производите на Google. Адресава ќе се зачува во вашата сметка на Google (<ph name="ACCOUNT" />).</translation>
 <translation id="3041612393474885105">Информации за сертификат</translation>
 <translation id="305162504811187366">Историја на „Пристап оддалеку за Chrome“, вклучително временски печати, хостови и ID на сесии на клиент</translation>
 <translation id="3052964831964880138"><ph name="PRICE_DROP" /> попуст на <ph name="PRODUCT_NAME" /></translation>
@@ -1932,6 +1934,7 @@
 <translation id="5695542892312572833">Дали сакате да користите Windows Hello за да го потврдите и завршите купувањето?</translation>
 <translation id="5701381305118179107">Центар</translation>
 <translation id="570530837424789914">Управувајте…</translation>
+<translation id="5706906618852913030">Дали да се зачува во сметката?</translation>
 <translation id="5707154300732650394">Продолжете со патувањето</translation>
 <translation id="57094364128775171">Предложи силна лозинка…</translation>
 <translation id="571403275720188526">(arm64)</translation>

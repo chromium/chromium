@@ -698,6 +698,7 @@
 <translation id="7103252855940681301">Il nome del dispositivo <ph name="INDEX" /> di <ph name="COUNT" /> è: <ph name="NAME" />.</translation>
 <translation id="7108668606237948702">invio</translation>
 <translation id="7130438335435247835">Nome punto di accesso (APN)</translation>
+<translation id="7131634559772719176">Conferma preimpostazione</translation>
 <translation id="7134436342991564651">{0,plural, =1{Server dei nomi}other{Server dei nomi}}</translation>
 <translation id="7143207342074048698">Connessione</translation>
 <translation id="7144878232160441200">Riprova</translation>
@@ -801,6 +802,7 @@
 <translation id="80398733265834479">Attiva la modalità Colore automatico</translation>
 <translation id="8041089156583427627">Invia feedback</translation>
 <translation id="8045012663542226664">Disattivazione dell'audio del microfono</translation>
+<translation id="8050091914317269817">La selezione di questo sfondo attiverà la modalità Buio automatica e la corrispondenza del colore dello sfondo.</translation>
 <translation id="8075838845814659848">Carica rimanente</translation>
 <translation id="8076492880354921740">Schede</translation>
 <translation id="8082366717211101304">Impossibile risolvere la richiesta DNS da app Android</translation>
