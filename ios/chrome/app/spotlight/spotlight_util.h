@@ -46,12 +46,6 @@ extern const char kSpotlightLastIndexingVersionKey[];
 // Maximum retry attempts to delete/index a set of items.
 const NSUInteger kMaxAttempts = 5;
 
-// Utility methods deleting nodes in Spotlight index. Will be retried in case of
-// failure as required by Apple documentation.
-void DeleteSearchableDomainItems(Domain domain, BlockWithError callback);
-void DeleteItemsWithIdentifiers(NSArray* items, BlockWithError callback);
-void ClearAllSpotlightEntries(BlockWithError callback);
-
 // Converts the spotlight::Domain enum to Spotlight domain string
 NSString* StringFromSpotlightDomain(Domain domain);
 
@@ -61,13 +55,6 @@ Domain SpotlightDomainFromString(NSString* domain);
 // Returns whether Spotlight is available on the device. Must be tested before
 // calling other methods of this class.
 bool IsSpotlightAvailable();
-
-// Clears the current Spotlight index of the device. Method is static to allow
-// clearing the index without instantiating SpotlightManager.
-// This method must not be called if `isSpotlightAvailable` returns NO.
-// This method is asynchronous and can fail. Completion is called with a
-// parameter indicating if the deletion was a success.
-void ClearSpotlightIndexWithCompletion(BlockWithError completion);
 
 // Finds the Spoglight itemID and calls `completion` with the corresponding URL.
 // Calls `completion` with nil if none was found.
