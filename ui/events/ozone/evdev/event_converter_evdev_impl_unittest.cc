@@ -60,21 +60,13 @@ class MockEventConverterEvdevImpl : public EventConverterEvdevImpl {
 // Test fixture.
 class EventConverterEvdevImplTest : public testing::Test {
  public:
-  EventConverterEvdevImplTest() {}
+  EventConverterEvdevImplTest() = default;
 
   EventConverterEvdevImplTest(const EventConverterEvdevImplTest&) = delete;
   EventConverterEvdevImplTest& operator=(const EventConverterEvdevImplTest&) =
       delete;
 
-  // Overridden from testing::Test:
   void SetUp() override { SetUpDevice(ui::EventDeviceInfo()); }
-
-  void TearDown() override {
-    device_.reset();
-    cursor_.reset();
-    events_out_.reset();
-    test_clock_.reset();
-  }
 
   void SetUpDevice(const ui::EventDeviceInfo& info) {
     // Set up pipe to satisfy message pump (unused).
