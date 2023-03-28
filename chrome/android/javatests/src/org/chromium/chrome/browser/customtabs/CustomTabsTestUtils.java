@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.customtabs;
 
+import static org.junit.Assert.assertEquals;
+
 import static org.chromium.chrome.browser.customtabs.CustomTabActivityTestRule.LONG_TIMEOUT_MS;
 
 import android.content.ComponentName;
@@ -29,8 +31,10 @@ import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.chrome.R;
+import org.chromium.chrome.browser.ui.appmenu.AppMenuItemProperties;
 import org.chromium.chrome.test.util.ChromeTabUtils;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
+import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
 
 import java.util.concurrent.TimeoutException;
 import java.util.concurrent.atomic.AtomicReference;
@@ -143,6 +147,27 @@ public class CustomTabsTestUtils {
                     Matchers.notNullValue());
         }, LONG_TIMEOUT_MS, CriteriaHelper.DEFAULT_POLLING_INTERVAL);
         ChromeTabUtils.waitForTabPageLoaded(connection.getSpeculationParamsForTesting().tab, url);
+    }
+
+    /**
+     * Asserts that the number of items in {@code list} matches the {@code expectedSize}.
+     * @param list The list of items in the menu.
+     * @param expectedSize The number of expected menu items.
+     */
+    public static void assertMenuSize(ModelList list, int expectedSize) {
+        assertEquals("Populated menu items were:" + getMenuTitles(list), expectedSize, list.size());
+    }
+
+    /**
+     * @param list The list of items in the menu.
+     * @return A string containing the titles of all items in the {@code list}.
+     */
+    public static String getMenuTitles(ModelList list) {
+        StringBuilder items = new StringBuilder();
+        for (int i = 0; i < list.size(); i++) {
+            items.append("\n").append(list.get(i).model.get(AppMenuItemProperties.TITLE));
+        }
+        return items.toString();
     }
 
     @NativeMethods
