@@ -683,7 +683,7 @@
 <translation id="1618102204889321535"><ph name="CURRENT_CHARACTER_COUNT" />/<ph name="MAX_CHARACTER_COUNT" /></translation>
 <translation id="1618268899808219593">說明中心(&amp;E)</translation>
 <translation id="1619879934359211038">無法連線至 Google Play。請檢查網路連線，然後再試一次。錯誤代碼：<ph name="ERROR_CODE" />。</translation>
-<translation id="1620307519959413822">密碼錯誤。請再試一次，或按一下 [忘記密碼] 來重設密碼。</translation>
+<translation id="1620307519959413822">密碼錯誤。請再試一次，或按一下「忘記密碼」來重設密碼。</translation>
 <translation id="1620510694547887537">攝影機</translation>
 <translation id="1621382140075772850">文字工具</translation>
 <translation id="1621485112342885423">你的購物車</translation>
@@ -3272,7 +3272,7 @@
 <translation id="3955321697524543127">禁止網站連線至 USB 裝置</translation>
 <translation id="3955896417885489542">在設定完成後顯示 Google Play 選項</translation>
 <translation id="3957079323242030166">備份資料不會計入你的雲端硬碟儲存空間配額。</translation>
-<translation id="3957844511978444971">輕觸 [接受] 即表示您確認所選的這些 Google 服務設定。</translation>
+<translation id="3957844511978444971">輕觸「接受」即表示您確認所選的這些 Google 服務設定。</translation>
 <translation id="3958088479270651626">匯入書籤和設定</translation>
 <translation id="3960566196862329469">ONC</translation>
 <translation id="3962119236270174787">針對已知不安全的網站、下載內容和擴充功能提供標準防護機制</translation>

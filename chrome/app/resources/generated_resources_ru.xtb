@@ -2845,7 +2845,7 @@
 <translation id="3575121482199441727">Показывать уведомления с этого сайта</translation>
 <translation id="3577745545227000795">Сбор данных об аппаратном обеспечении устройства с <ph name="DEVICE_OS" /></translation>
 <translation id="3578594933904494462">К контенту на этой вкладке открыт общий доступ</translation>
-<translation id="3578874072190212775">Вы можете помогать сайтам бороться с мошенничеством и отличать ботов от людей</translation>
+<translation id="3578874072190212775">Помогает сайтам бороться с мошенничеством и отличать ботов от людей</translation>
 <translation id="3581605050355435601">Настраивать IP-адрес автоматически</translation>
 <translation id="3582057310199111521">Введен на поддельном сайте и раскрыт при утечке данных</translation>
 <translation id="3582299299336701326">Сделать светлые цвета темными, а темные светлыми. Чтобы включить или отключить инверсию цветов, нажмите Поиск + Ctrl + H.</translation>
@@ -5133,7 +5133,7 @@
 <translation id="5722086096420375088">Зеленый с белым</translation>
 <translation id="572328651809341494">Недавние вкладки</translation>
 <translation id="5723508132121499792">Нет приложений, работающих в фоновом режиме</translation>
-<translation id="5723967018671998714">Сторонние файлы cookie заблокированы в режиме инкогнито.</translation>
+<translation id="5723967018671998714">Сторонние файлы cookie заблокированы в режиме инкогнито</translation>
 <translation id="5727728807527375859">Расширения и темы могут причинить вред вашему компьютеру. Продолжить?</translation>
 <translation id="5728450728039149624">Настроить блокировку экрана с помощью Smart Lock</translation>
 <translation id="5729712731028706266">&amp;Вид</translation>
@@ -8360,7 +8360,7 @@
 <translation id="870805141700401153">Подпись отдельного кода Microsoft</translation>
 <translation id="8708671767545720562">&amp;Дополнительная информация</translation>
 <translation id="8711402221661888347">Гамбургер</translation>
-<translation id="8712637175834984815">Готово</translation>
+<translation id="8712637175834984815">OK</translation>
 <translation id="8713110120305151436">Показывать параметры специальных возможностей в быстрых настройках</translation>
 <translation id="8713570323158206935">Отправлять <ph name="BEGIN_LINK1" />сведения о системе<ph name="END_LINK1" /></translation>
 <translation id="8714838604780058252">Фон</translation>

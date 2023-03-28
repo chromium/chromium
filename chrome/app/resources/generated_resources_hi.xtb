@@ -3685,7 +3685,7 @@
 <translation id="4348766275249686434">त्रुटियां एकत्रित करें</translation>
 <translation id="4349828822184870497">मददगार</translation>
 <translation id="4350230709416545141"><ph name="HOST" /> को कभी भी अपनी जगह की जानकारी ऐक्सेस न करने दें</translation>
-<translation id="4350782034419308508">Hey Google</translation>
+<translation id="4350782034419308508">Ok Google</translation>
 <translation id="4351770750390404505"><ph name="BEGIN_PARAGRAPH1" />सबसे बेहतर अनुभव देने के लिए, <ph name="DEVICE_OS" /> डिवाइसों के हार्डवेयर का डेटा इकट्ठा करता है और उसे Google के साथ शेयर करता है. इससे, यह तय करने में मदद मिलती है कि डिवाइसों के हिसाब से कौनसा अपडेट डिलीवर करना चाहिए और कौनसा नहीं. इसके अलावा, Google को यह डेटा इस्तेमाल करने की अनुमति, <ph name="DEVICE_OS" /> को बेहतर बनाने और उसमें सुधार करने जैसे दूसरे कामों के लिए भी दी जा सकती है.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />इस डिवाइस पर लॉग इन करके और chrome://system के CHROMEOSFLEX_HARDWARE_INFO सेक्शन में जाकर, वह डेटा देखा जा सकता है जो डिवाइसों के हिसाब से अपडेट डिलीवर करने के लिए Google को भेजा जाता है. इसके अलावा, उन सभी कामों के बारे में भी जाना जा सकता है जिनके लिए आपने Google के साथ डेटा शेयर किया है.<ph name="END_PARAGRAPH2" />
     <ph name="BEGIN_PARAGRAPH3" /><ph name="DEVICE_OS" />, Google के साथ कौनसा डेटा शेयर कर सकता है और उस डेटा का इस्तेमाल कैसे किया जाता है, इस बारे में ज़्यादा जानने के लिए g.co/flex/HWDataCollection पर जाएं.<ph name="END_PARAGRAPH3" /></translation>
