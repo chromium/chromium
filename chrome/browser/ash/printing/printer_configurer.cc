@@ -25,6 +25,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chromeos/ash/components/dbus/debug_daemon/debug_daemon_client.h"
+#include "chromeos/dbus/common/dbus_library_error.h"
 #include "chromeos/printing/ppd_provider.h"
 #include "chromeos/printing/printer_configuration.h"
 #include "components/device_event_log/device_event_log.h"
@@ -88,14 +89,14 @@ PrinterSetupResult PrinterSetupResultFromDbusResultCode(const Printer& printer,
 // in PrinterSetupResult.
 PrinterSetupResult PrinterSetupResultFromDbusErrorCode(
     const Printer& printer,
-    DbusLibraryError dbus_error) {
+    chromeos::DBusLibraryError dbus_error) {
   DCHECK_LT(dbus_error, 0);
   const std::string prefix = printer.make_and_model() + " setup result: ";
   switch (dbus_error) {
-    case DbusLibraryError::kNoReply:
+    case chromeos::DBusLibraryError::kNoReply:
       PRINTER_LOG(ERROR) << prefix << "D-Bus error - no reply";
       return PrinterSetupResult::kDbusNoReply;
-    case DbusLibraryError::kTimeout:
+    case chromeos::DBusLibraryError::kTimeout:
       PRINTER_LOG(ERROR) << prefix << "D-Bus error - timeout";
       return PrinterSetupResult::kDbusTimeout;
     default:
@@ -154,7 +155,7 @@ class PrinterConfigurerImpl : public PrinterConfigurer {
     PrinterSetupResult setup_result =
         result_code < 0
             ? PrinterSetupResultFromDbusErrorCode(
-                  printer, static_cast<DbusLibraryError>(result_code))
+                  printer, static_cast<chromeos::DBusLibraryError>(result_code))
             : PrinterSetupResultFromDbusResultCode(printer, result_code);
     std::move(cb).Run(setup_result);
   }

@@ -46,7 +46,7 @@ enum PrinterSetupResult {
   kManualSetupRequired = 17,    // Printer requires manual setup
   // Space left for additional errors
 
-  // Specific DBus errors. This must stay in sync with the DbusLibraryError
+  // Specific DBus errors. This must stay in sync with the DBusLibraryError
   // enum and PrinterSetupResultFromDbusErrorCode().
   kDbusNoReply = 64,  // Expected remote response but got nothing
   kDbusTimeout = 65,  // Generic timeout error (c.f. dbus-protocol.h)

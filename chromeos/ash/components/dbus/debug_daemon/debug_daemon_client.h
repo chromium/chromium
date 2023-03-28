@@ -31,13 +31,6 @@ class AccountIdentifier;
 
 namespace ash {
 
-// A DbusLibraryError represents an error response received from D-Bus.
-enum DbusLibraryError {
-  kGenericError = -1,  // Catch-all generic error
-  kNoReply = -2,       // debugd did not respond before timeout
-  kTimeout = -3        // Unspecified D-Bus timeout (e.g. socket error)
-};
-
 // DebugDaemonClient is used to communicate with the debug daemon.
 class COMPONENT_EXPORT(DEBUG_DAEMON) DebugDaemonClient
     : public chromeos::DBusClient,

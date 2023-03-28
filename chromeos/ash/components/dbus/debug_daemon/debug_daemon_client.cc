@@ -4,7 +4,6 @@
 
 #include "chromeos/ash/components/dbus/debug_daemon/debug_daemon_client.h"
 
-#include <dbus/dbus-protocol.h>
 #include <fcntl.h>
 #include <stddef.h>
 #include <stdint.h>
@@ -22,7 +21,6 @@
 #include "base/json/json_string_value_serializer.h"
 #include "base/location.h"
 #include "base/logging.h"
-#include "base/no_destructor.h"
 #include "base/observer_list.h"
 #include "base/posix/eintr_wrapper.h"
 #include "base/strings/string_split.h"
@@ -33,6 +31,7 @@
 #include "chromeos/ash/components/dbus/cryptohome/rpc.pb.h"
 #include "chromeos/ash/components/dbus/debug_daemon/fake_debug_daemon_client.h"
 #include "chromeos/ash/components/dbus/debug_daemon/metrics.h"
+#include "chromeos/dbus/common/dbus_library_error.h"
 #include "chromeos/dbus/common/pipe_reader.h"
 #include "dbus/bus.h"
 #include "dbus/message.h"
@@ -125,21 +124,6 @@ class PipeReaderWrapper : public base::SupportsWeakPtr<PipeReaderWrapper> {
   chromeos::PipeReader pipe_reader_;
   DebugDaemonClient::GetLogsCallback callback_;
 };
-
-// Convert the string representation of a D-Bus error into a
-// DbusLibraryError value.
-DbusLibraryError DbusLibraryErrorFromString(
-    const std::string& dbus_error_string) {
-  static const base::NoDestructor<std::map<std::string, DbusLibraryError>>
-      error_string_map({
-          {DBUS_ERROR_NO_REPLY, DbusLibraryError::kNoReply},
-          {DBUS_ERROR_TIMEOUT, DbusLibraryError::kTimeout},
-      });
-
-  auto it = error_string_map->find(dbus_error_string);
-  return it != error_string_map->end() ? it->second
-                                       : DbusLibraryError::kGenericError;
-}
 
 // The DebugDaemonClient implementation used in production.
 class DebugDaemonClientImpl : public DebugDaemonClient {
@@ -1028,7 +1012,8 @@ class DebugDaemonClientImpl : public DebugDaemonClient {
       dbus::MessageReader err_reader(err_response);
       err_str = err_response->GetErrorName();
     }
-    DbusLibraryError dbus_error = DbusLibraryErrorFromString(err_str);
+    chromeos::DBusLibraryError dbus_error =
+        chromeos::DBusLibraryErrorFromString(err_str);
     std::move(callback).Run(dbus_error);
   }
 

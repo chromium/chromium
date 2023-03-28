@@ -3829,6 +3829,7 @@ source_set("ash") {
     "//chromeos/ash/components/dbus/oobe_config",
     "//chromeos/ash/components/dbus/patchpanel",
     "//chromeos/ash/components/dbus/pciguard",
+    "//chromeos/ash/components/dbus/printscanmgr",
     "//chromeos/ash/components/dbus/private_computing",
     "//chromeos/ash/components/dbus/rgbkbd",
     "//chromeos/ash/components/dbus/rmad",
