@@ -42,8 +42,7 @@ class OSSyncHandler : public content::WebUIMessageHandler,
   void HandleDidNavigateAwayFromOsSyncPage(const base::Value::List& args);
   void HandleOsSyncPrefsDispatch(const base::Value::List& args);
   void HandleSetOsSyncDatatypes(const base::Value::List& args);
-
-  void SetWebUIForTest(content::WebUI* web_ui);
+  void HandleOpenBrowserSyncSettings(const base::Value::List& args);
 
  private:
   // Pushes the updated sync prefs to JavaScript.

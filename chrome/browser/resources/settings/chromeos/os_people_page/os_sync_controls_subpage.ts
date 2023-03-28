@@ -191,6 +191,17 @@ class OsSyncControlsSubpageElement extends OsSyncControlsSubpageElementBase {
   }
 
   /**
+   * Called when the link to the browser's sync settings is clicked.
+   */
+  private onBrowserSyncSettingsClicked_(event: CustomEvent<{event: Event}>) {
+    // Prevent the default link click behavior.
+    event.detail.event.preventDefault();
+
+    // Programmatically open browser's sync settings.
+    chrome.send('OpenBrowserSyncSettings');
+  }
+
+  /**
    * Handler for when any sync data type checkbox is changed.
    */
   private onSingleSyncDataTypeChanged_(): void {

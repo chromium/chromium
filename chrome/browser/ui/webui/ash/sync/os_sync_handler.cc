@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/webui/ash/sync/os_sync_handler.h"
 
+#include "ash/public/cpp/new_window_delegate.h"
 #include "base/auto_reset.h"
 #include "base/check_op.h"
 #include "base/functional/bind.h"
@@ -11,12 +12,14 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/sync/sync_service_factory.h"
 #include "chrome/browser/ui/webui/settings/ash/pref_names.h"
+#include "chrome/common/webui_url_constants.h"
 #include "components/prefs/pref_service.h"
 #include "components/sync/base/pref_names.h"
 #include "components/sync/base/user_selectable_type.h"
 #include "components/sync/driver/sync_service.h"
 #include "components/sync/driver/sync_user_settings.h"
 #include "content/public/browser/web_ui.h"
+#include "url/gurl.h"
 
 using syncer::SyncService;
 using syncer::SyncUserSettings;
@@ -54,6 +57,10 @@ void OSSyncHandler::RegisterMessages() {
       "SetOsSyncDatatypes",
       base::BindRepeating(&OSSyncHandler::HandleSetOsSyncDatatypes,
                           base::Unretained(this)));
+  web_ui()->RegisterMessageCallback(
+      "OpenBrowserSyncSettings",
+      base::BindRepeating(&OSSyncHandler::HandleOpenBrowserSyncSettings,
+                          base::Unretained(this)));
 }
 
 void OSSyncHandler::OnJavascriptAllowed() {
@@ -82,6 +89,14 @@ void OSSyncHandler::HandleOsSyncPrefsDispatch(const base::Value::List& args) {
 void OSSyncHandler::HandleDidNavigateAwayFromOsSyncPage(
     const base::Value::List& args) {
   // TODO(https://crbug.com/1278325): Remove this.
+}
+
+void OSSyncHandler::HandleOpenBrowserSyncSettings(
+    const base::Value::List& args) {
+  ash::NewWindowDelegate::GetPrimary()->OpenUrl(
+      GURL(chrome::kChromeUISettingsURL).Resolve(chrome::kSyncSetupSubPage),
+      ash::NewWindowDelegate::OpenUrlFrom::kUserInteraction,
+      ash::NewWindowDelegate::Disposition::kSwitchToTab);
 }
 
 void OSSyncHandler::HandleSetOsSyncDatatypes(const base::Value::List& args) {
@@ -123,10 +138,6 @@ void OSSyncHandler::HandleSetOsSyncDatatypes(const base::Value::List& args) {
   settings->SetSelectedOsTypes(sync_all_os_types, selected_types);
 
   // TODO(jamescook): Add metrics for selected types.
-}
-
-void OSSyncHandler::SetWebUIForTest(content::WebUI* web_ui) {
-  set_web_ui(web_ui);
 }
 
 void OSSyncHandler::PushSyncPrefs() {

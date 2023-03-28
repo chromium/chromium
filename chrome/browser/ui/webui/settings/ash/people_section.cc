@@ -413,9 +413,6 @@ void AddSyncControlsStrings(content::WebUIDataSource* html_source) {
       "appsToggleSharingEnabled",
       base::FeatureList::IsEnabled(syncer::kSyncChromeOSAppsToggleSharing) &&
           crosapi::browser_util::IsLacrosEnabled());
-  html_source->AddString(
-      "browserSettingsSyncSetupUrl",
-      base::StrCat({chrome::kChromeUISettingsURL, chrome::kSyncSetupSubPage}));
 
   // This handler is for chrome://os-settings.
   html_source->AddBoolean("isOSSettings", true);
