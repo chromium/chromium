@@ -2129,8 +2129,7 @@ bool AttributionStorageSql::InitializeSchema(bool db_empty) {
       meta_table.GetCompatibleVersionNumber() > kCurrentVersionNumber) {
     // Note that this also razes the meta table, so it will need to be
     // initialized again.
-    db_.Raze();
-    return CreateSchema();
+    return db_.Raze() && CreateSchema();
   }
 
   return UpgradeAttributionStorageSqlSchema(db_, meta_table);
