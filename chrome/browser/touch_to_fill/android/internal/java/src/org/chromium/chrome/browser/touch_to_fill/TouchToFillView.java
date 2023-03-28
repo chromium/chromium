@@ -25,9 +25,6 @@ import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
  * Android Views.
  */
 class TouchToFillView extends TouchToFillViewBase {
-    private final BottomSheetController mBottomSheetController;
-    private final RecyclerView mSheetItemListView;
-
     private static class HorizontalDividerItemDecoration extends ItemDividerBase {
         HorizontalDividerItemDecoration(Context context) {
             super(context);
@@ -76,17 +73,15 @@ class TouchToFillView extends TouchToFillViewBase {
         super(bottomSheetController,
                 (RelativeLayout) LayoutInflater.from(context).inflate(
                         R.layout.touch_to_fill_sheet, null));
-        mBottomSheetController = bottomSheetController;
-        mSheetItemListView = getItemList();
 
         if (usesUnifiedPasswordManagerBranding()) {
-            mSheetItemListView.addItemDecoration(new HorizontalDividerItemDecoration(context));
+            getSheetItemListView().addItemDecoration(new HorizontalDividerItemDecoration(context));
         }
     }
 
     @Override
     public int getVerticalScrollOffset() {
-        return mSheetItemListView.computeVerticalScrollOffset();
+        return getSheetItemListView().computeVerticalScrollOffset();
     }
 
     @Override
@@ -112,11 +107,6 @@ class TouchToFillView extends TouchToFillViewBase {
     @Override
     protected View getHandlebar() {
         return getContentView().findViewById(R.id.drag_handlebar);
-    }
-
-    @Override
-    protected RecyclerView getItemList() {
-        return getContentView().findViewById(R.id.sheet_item_list);
     }
 
     @Override

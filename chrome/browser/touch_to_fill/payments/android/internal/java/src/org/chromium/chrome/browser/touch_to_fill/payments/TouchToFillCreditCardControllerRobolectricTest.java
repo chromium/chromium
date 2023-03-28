@@ -27,6 +27,7 @@ import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillCred
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillCreditCardProperties.FooterProperties.SHOW_CREDIT_CARD_SETTINGS_CALLBACK;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillCreditCardProperties.ItemType.CREDIT_CARD;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillCreditCardProperties.ItemType.FILL_BUTTON;
+import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillCreditCardProperties.ItemType.FOOTER;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillCreditCardProperties.ItemType.HEADER;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillCreditCardProperties.SHEET_ITEMS;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillCreditCardProperties.VISIBLE;
@@ -265,6 +266,32 @@ public class TouchToFillCreditCardControllerRobolectricTest {
         assertEquals(1,
                 RecordHistogram.getHistogramValueCountForTesting(
                         TOUCH_TO_FILL_OUTCOME_HISTOGRAM, TouchToFillCreditCardOutcome.DISMISS));
+    }
+
+    @Test
+    public void testScanNewCardClick() {
+        mCoordinator.showSheet(new CreditCard[] {VISA, MASTER_CARD}, true);
+        ModelList itemList = mTouchToFillCreditCardModel.get(SHEET_ITEMS);
+        getModelsOfType(itemList, FOOTER).get(0).get(SCAN_CREDIT_CARD_CALLBACK).run();
+
+        verify(mDelegateMock).scanCreditCard();
+    }
+
+    @Test
+    public void testManagePaymentMethodsClick() {
+        mCoordinator.showSheet(new CreditCard[] {VISA, MASTER_CARD}, false);
+        ModelList itemList = mTouchToFillCreditCardModel.get(SHEET_ITEMS);
+        getModelsOfType(itemList, FOOTER).get(0).get(SHOW_CREDIT_CARD_SETTINGS_CALLBACK).run();
+
+        verify(mDelegateMock).showCreditCardSettings();
+    }
+
+    @Test
+    public void testContinueButtonClick() {
+        mCoordinator.showSheet(new CreditCard[] {VISA}, false);
+        ModelList itemList = mTouchToFillCreditCardModel.get(SHEET_ITEMS);
+        getModelsOfType(itemList, FILL_BUTTON).get(0).get(ON_CLICK_ACTION).run();
+        verify(mDelegateMock).suggestionSelected(VISA.getGUID(), VISA.getIsVirtual());
     }
 
     private static List<PropertyModel> getModelsOfType(ModelList items, int type) {

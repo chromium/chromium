@@ -263,4 +263,16 @@ public class TouchToFillCreditCardRenderTest {
         mRenderTestRule.render(bottomSheetView,
                 "touch_to_fill_credit_card_sheet_shows_local_and_server_and_virtual_cards");
     }
+
+    @Test
+    @MediumTest
+    @Feature({"RenderTest"})
+    public void testScanNewCardButtonIsHidden() throws IOException {
+        runOnUiThreadBlocking(() -> { mCoordinator.showSheet(new CreditCard[] {VISA}, false); });
+        BottomSheetTestSupport.waitForOpen(mBottomSheetController);
+
+        View bottomSheetView = mActivityTestRule.getActivity().findViewById(R.id.bottom_sheet);
+        mRenderTestRule.render(
+                bottomSheetView, "touch_to_fill_credit_card_sheet_scan_credit_card_hidden");
+    }
 }
