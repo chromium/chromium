@@ -103,9 +103,6 @@ bool IsLoadSimulatedRequestAPIEnabled();
 // When true, the fullscreen API should be used to enable fullscreen mode.
 bool IsFullscreenAPIEnabled();
 
-// Return true when the smooth scrolling feature is enabled.
-bool IsFullscreenSmoothScrollingEnabled();
-
 // When true, the new session serialization code should be used.
 bool UseNewSessionSerialization();
 
