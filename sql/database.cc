@@ -415,7 +415,7 @@ void Database::CloseInternal(bool forced) {
 
 void Database::Close() {
   TRACE_EVENT0("sql", "Database::Close");
-  // If the database was already closed by RazeAndClose(), then no
+  // If the database was already closed by RazeAndPoison(), then no
   // need to close again.  Clear the |poisoned_| bit so that incorrect
   // API calls are caught.
   if (poisoned_) {
@@ -1093,11 +1093,7 @@ bool Database::Raze() {
 }
 
 bool Database::RazeAndPoison() {
-  return RazeAndClose();
-}
-
-bool Database::RazeAndClose() {
-  TRACE_EVENT0("sql", "Database::RazeAndClose");
+  TRACE_EVENT0("sql", "Database::RazeAndPoison");
 
   if (!db_) {
     DCHECK(poisoned_) << "Cannot raze null db";
@@ -1801,7 +1797,7 @@ bool Database::OpenInternal(const std::string& db_file_path,
   EnsureSqliteInitialized();
 
   // If |poisoned_| is set, it means an error handler called
-  // RazeAndClose().  Until regular Close() is called, the caller
+  // RazeAndPoison().  Until regular Close() is called, the caller
   // should be treating the database as open, but is_open() currently
   // only considers the sqlite3 handle's state.
   // TODO(shess): Revise is_open() to consider poisoned_, and review

@@ -61,7 +61,7 @@ namespace sql {
 //   }
 // }
 //
-// If Recovered() is not called, then RazeAndClose() is called on
+// If Recovered() is not called, then RazeAndPoison() is called on
 // orig_db.
 
 class COMPONENT_EXPORT(SQL) Recovery {
@@ -95,7 +95,7 @@ class COMPONENT_EXPORT(SQL) Recovery {
   //
   // TODO(shess): At this time, this function can fail while leaving
   // the original database intact.  Figure out which failure cases
-  // should go to RazeAndClose() instead.
+  // should go to RazeAndPoison() instead.
   [[nodiscard]] static bool Recovered(std::unique_ptr<Recovery> r);
 
   // Indicate that the database is unrecoverable.  The original

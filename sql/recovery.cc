@@ -245,7 +245,7 @@ void Recovery::Shutdown(Recovery::Disposition raze) {
 
   recover_db_.Close();
   if (raze == RAZE_AND_POISON) {
-    db_->RazeAndClose();
+    db_->RazeAndPoison();
   } else if (raze == POISON) {
     db_->Poison();
   }

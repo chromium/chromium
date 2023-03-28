@@ -447,10 +447,6 @@ class COMPONENT_EXPORT(SQL) Database {
   // Close() should still be called at some point.
   void Poison();
 
-  // Deprecated: Renamed to `RazeAndPoison()`.
-  // TODO(apaseltiner): Remove this once all callers have been migrated.
-  bool RazeAndClose();
-
   // `Raze()` the database and `Poison()` the handle. Returns the return
   // value from `Raze()`.
   bool RazeAndPoison();
@@ -724,7 +720,7 @@ class COMPONENT_EXPORT(SQL) Database {
     kNone = 0,
 
     // Retry if the database error handler is invoked and closes the database.
-    // Database error handlers that call RazeAndClose() take advantage of this.
+    // Database error handlers that call RazeAndPoison() take advantage of this.
     kRetryOnPoision = 1,
 
     // Open an in-memory database. Used by OpenInMemory().
@@ -749,7 +745,7 @@ class COMPONENT_EXPORT(SQL) Database {
   // called on the object.
   void ConfigureSqliteDatabaseObject();
 
-  // Internal close function used by Close() and RazeAndClose().
+  // Internal close function used by Close() and RazeAndPoison().
   // |forced| indicates that orderly-shutdown checks should not apply.
   void CloseInternal(bool forced);
 
@@ -817,7 +813,7 @@ class COMPONENT_EXPORT(SQL) Database {
 
     // Destroys the compiled statement and sets it to nullptr. The statement
     // will no longer be active. |forced| is used to indicate if
-    // orderly-shutdown checks should apply (see Database::RazeAndClose()).
+    // orderly-shutdown checks should apply (see Database::RazeAndPoison()).
     void Close(bool forced);
 
     // Construct a ScopedBlockingCall to annotate IO calls, but only if
@@ -982,7 +978,7 @@ class COMPONENT_EXPORT(SQL) Database {
   // with Open().
   bool in_memory_ = false;
 
-  // |true| if the Database was closed using RazeAndClose().  Used
+  // |true| if the Database was closed using RazeAndPoison().  Used
   // to enable diagnostics to distinguish calls to never-opened
   // databases (incorrect use of the API) from calls to once-valid
   // databases.

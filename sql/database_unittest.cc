@@ -56,7 +56,7 @@ void RazeErrorCallback(Database* db,
   // Nothing here needs extended errors at this time.
   EXPECT_EQ(expected_error, expected_error & 0xff);
   EXPECT_EQ(expected_error, error & 0xff);
-  db->RazeAndClose();
+  db->RazeAndPoison();
 }
 
 #if BUILDFLAG(IS_POSIX)
@@ -1029,7 +1029,7 @@ TEST_P(SQLDatabaseTest, RazeCallbackReopen) {
       base::BindRepeating(&RazeErrorCallback, db_.get(), SQLITE_CORRUPT));
 
   // When the PRAGMA calls in Open() raise SQLITE_CORRUPT, the error
-  // callback will call RazeAndClose().  Open() will then fail and be
+  // callback will call RazeAndPoison().  Open() will then fail and be
   // retried.  The second Open() on the empty database will succeed
   // cleanly.
   ASSERT_TRUE(db_->Open(db_path_));
@@ -1037,174 +1037,171 @@ TEST_P(SQLDatabaseTest, RazeCallbackReopen) {
   EXPECT_EQ(0, SqliteSchemaCount(db_.get()));
 }
 
-TEST_P(SQLDatabaseTest, RazeAndClose_DeletesData) {
+TEST_P(SQLDatabaseTest, RazeAndPoison_DeletesData) {
   ASSERT_TRUE(
       db_->Execute("CREATE TABLE rows(id INTEGER PRIMARY KEY NOT NULL)"));
   ASSERT_TRUE(db_->Execute("INSERT INTO rows(id) VALUES(12)"));
-  ASSERT_TRUE(db_->RazeAndClose());
+  ASSERT_TRUE(db_->RazeAndPoison());
 
-  // RazeAndClose() actually Poison()s. We need to call Close() in order to
-  // re-Open(). crbug.com/1311771 tracks renaming RazeAndClose().
+  // We need to call Close() in order to re-Open().
   db_->Close();
   ASSERT_TRUE(db_->Open(db_path_))
-      << "RazeAndClose() did not produce a healthy database";
+      << "RazeAndPoison() did not produce a healthy database";
   EXPECT_TRUE(
       db_->Execute("CREATE TABLE rows(id INTEGER PRIMARY KEY NOT NULL)"))
-      << "RazeAndClose() did not produce a healthy empty database";
+      << "RazeAndPoison() did not produce a healthy empty database";
 }
 
-TEST_P(SQLDatabaseTest, RazeAndClose_IsOpen) {
+TEST_P(SQLDatabaseTest, RazeAndPoison_IsOpen) {
   ASSERT_TRUE(
       db_->Execute("CREATE TABLE rows(id INTEGER PRIMARY KEY NOT NULL)"));
   ASSERT_TRUE(db_->Execute("INSERT INTO rows(id) VALUES(12)"));
-  ASSERT_TRUE(db_->RazeAndClose());
+  ASSERT_TRUE(db_->RazeAndPoison());
 
   EXPECT_FALSE(db_->is_open())
-      << "RazeAndClose() did not mark the database as closed";
+      << "RazeAndPoison() did not mark the database as closed";
 }
 
-TEST_P(SQLDatabaseTest, RazeAndClose_Reopen_NoChanges) {
-  ASSERT_TRUE(db_->RazeAndClose());
+TEST_P(SQLDatabaseTest, RazeAndPoison_Reopen_NoChanges) {
+  ASSERT_TRUE(db_->RazeAndPoison());
   EXPECT_FALSE(
       db_->Execute("CREATE TABLE rows(id INTEGER PRIMARY KEY NOT NULL)"))
-      << "Execute() should return false after RazeAndClose()";
+      << "Execute() should return false after RazeAndPoison()";
 
-  // RazeAndClose() actually Poison()s. We need to call Close() in order to
-  // re-Open(). crbug.com/1311771 tracks renaming RazeAndClose().
+  // We need to call Close() in order to re-Open().
   db_->Close();
   ASSERT_TRUE(db_->Open(db_path_))
-      << "RazeAndClose() did not produce a healthy database";
+      << "RazeAndPoison() did not produce a healthy database";
   EXPECT_TRUE(
       db_->Execute("CREATE TABLE rows(id INTEGER PRIMARY KEY NOT NULL)"))
-      << "Execute() returned false but went through after RazeAndClose()";
+      << "Execute() returned false but went through after RazeAndPoison()";
 }
 
-TEST_P(SQLDatabaseTest, RazeAndClose_OpenTransaction) {
+TEST_P(SQLDatabaseTest, RazeAndPoison_OpenTransaction) {
   ASSERT_TRUE(
       db_->Execute("CREATE TABLE rows(id INTEGER PRIMARY KEY NOT NULL)"));
   ASSERT_TRUE(db_->Execute("INSERT INTO rows(id) VALUES(12)"));
 
   Transaction transaction(db_.get());
   ASSERT_TRUE(transaction.Begin());
-  ASSERT_TRUE(db_->RazeAndClose());
+  ASSERT_TRUE(db_->RazeAndPoison());
 
   EXPECT_FALSE(db_->is_open())
-      << "RazeAndClose() did not mark the database as closed";
+      << "RazeAndPoison() did not mark the database as closed";
   EXPECT_FALSE(transaction.Commit())
-      << "RazeAndClose() did not cancel the transaction";
+      << "RazeAndPoison() did not cancel the transaction";
 
-  // RazeAndClose() actually Poison()s. We need to call Close() in order to
-  // re-Open(). crbug.com/1311771 tracks renaming RazeAndClose().
+  // We need to call Close() in order to re-Open().
   db_->Close();
 
   ASSERT_TRUE(db_->Open(db_path_));
   EXPECT_TRUE(
       db_->Execute("CREATE TABLE rows(id INTEGER PRIMARY KEY NOT NULL)"))
-      << "RazeAndClose() did not produce a healthy empty database";
+      << "RazeAndPoison() did not produce a healthy empty database";
 }
 
-TEST_P(SQLDatabaseTest, RazeAndClose_Preload_NoCrash) {
+TEST_P(SQLDatabaseTest, RazeAndPoison_Preload_NoCrash) {
   db_->Preload();
-  db_->RazeAndClose();
+  db_->RazeAndPoison();
   db_->Preload();
 }
 
-TEST_P(SQLDatabaseTest, RazeAndClose_DoesTableExist) {
+TEST_P(SQLDatabaseTest, RazeAndPoison_DoesTableExist) {
   ASSERT_TRUE(
       db_->Execute("CREATE TABLE rows(id INTEGER PRIMARY KEY NOT NULL)"));
   ASSERT_TRUE(db_->DoesTableExist("rows")) << "Incorrect test setup";
 
-  ASSERT_TRUE(db_->RazeAndClose());
+  ASSERT_TRUE(db_->RazeAndPoison());
   EXPECT_FALSE(db_->DoesTableExist("rows"))
-      << "DoesTableExist() should return false after RazeAndClose()";
+      << "DoesTableExist() should return false after RazeAndPoison()";
 }
 
-TEST_P(SQLDatabaseTest, RazeAndClose_IsSQLValid) {
+TEST_P(SQLDatabaseTest, RazeAndPoison_IsSQLValid) {
   ASSERT_TRUE(db_->IsSQLValid("SELECT 1")) << "Incorrect test setup";
 
-  ASSERT_TRUE(db_->RazeAndClose());
+  ASSERT_TRUE(db_->RazeAndPoison());
   EXPECT_FALSE(db_->IsSQLValid("SELECT 1"))
-      << "IsSQLValid() should return false after RazeAndClose()";
+      << "IsSQLValid() should return false after RazeAndPoison()";
 }
 
-TEST_P(SQLDatabaseTest, RazeAndClose_Execute) {
+TEST_P(SQLDatabaseTest, RazeAndPoison_Execute) {
   ASSERT_TRUE(db_->Execute("SELECT 1")) << "Incorrect test setup";
 
-  ASSERT_TRUE(db_->RazeAndClose());
+  ASSERT_TRUE(db_->RazeAndPoison());
   EXPECT_FALSE(db_->Execute("SELECT 1"))
-      << "Execute() should return false after RazeAndClose()";
+      << "Execute() should return false after RazeAndPoison()";
 }
 
-TEST_P(SQLDatabaseTest, RazeAndClose_GetUniqueStatement) {
+TEST_P(SQLDatabaseTest, RazeAndPoison_GetUniqueStatement) {
   {
     Statement select(db_->GetUniqueStatement("SELECT 1"));
     ASSERT_TRUE(select.Step()) << "Incorrect test setup";
   }
 
-  ASSERT_TRUE(db_->RazeAndClose());
+  ASSERT_TRUE(db_->RazeAndPoison());
   {
     Statement select(db_->GetUniqueStatement("SELECT 1"));
     EXPECT_FALSE(select.Step())
         << "GetUniqueStatement() should return an invalid Statement after "
-        << "RazeAndClose()";
+        << "RazeAndPoison()";
   }
 }
 
-TEST_P(SQLDatabaseTest, RazeAndClose_GetCachedStatement) {
+TEST_P(SQLDatabaseTest, RazeAndPoison_GetCachedStatement) {
   {
     Statement select(db_->GetCachedStatement(SQL_FROM_HERE, "SELECT 1"));
     ASSERT_TRUE(select.Step()) << "Incorrect test setup";
   }
 
-  ASSERT_TRUE(db_->RazeAndClose());
+  ASSERT_TRUE(db_->RazeAndPoison());
   {
     Statement select(db_->GetCachedStatement(SQL_FROM_HERE, "SELECT 1"));
     EXPECT_FALSE(select.Step())
         << "GetCachedStatement() should return an invalid Statement after "
-        << "RazeAndClose()";
+        << "RazeAndPoison()";
   }
 }
 
-TEST_P(SQLDatabaseTest, RazeAndClose_InvalidatesUniqueStatement) {
+TEST_P(SQLDatabaseTest, RazeAndPoison_InvalidatesUniqueStatement) {
   Statement select(db_->GetUniqueStatement("SELECT 1"));
   ASSERT_TRUE(select.is_valid()) << "Incorrect test setup";
   ASSERT_TRUE(select.Step()) << "Incorrect test setup";
   select.Reset(/*clear_bound_vars=*/true);
 
-  ASSERT_TRUE(db_->RazeAndClose());
+  ASSERT_TRUE(db_->RazeAndPoison());
   EXPECT_FALSE(select.is_valid())
-      << "RazeAndClose() should invalidate live Statements";
+      << "RazeAndPoison() should invalidate live Statements";
   EXPECT_FALSE(select.Step())
-      << "RazeAndClose() should invalidate live Statements";
+      << "RazeAndPoison() should invalidate live Statements";
 }
 
-TEST_P(SQLDatabaseTest, RazeAndClose_InvalidatesCachedStatement) {
+TEST_P(SQLDatabaseTest, RazeAndPoison_InvalidatesCachedStatement) {
   Statement select(db_->GetCachedStatement(SQL_FROM_HERE, "SELECT 1"));
   ASSERT_TRUE(select.is_valid()) << "Incorrect test setup";
   ASSERT_TRUE(select.Step()) << "Incorrect test setup";
   select.Reset(/*clear_bound_vars=*/true);
 
-  ASSERT_TRUE(db_->RazeAndClose());
+  ASSERT_TRUE(db_->RazeAndPoison());
   EXPECT_FALSE(select.is_valid())
-      << "RazeAndClose() should invalidate live Statements";
+      << "RazeAndPoison() should invalidate live Statements";
   EXPECT_FALSE(select.Step())
-      << "RazeAndClose() should invalidate live Statements";
+      << "RazeAndPoison() should invalidate live Statements";
 }
 
-TEST_P(SQLDatabaseTest, RazeAndClose_TransactionBegin) {
+TEST_P(SQLDatabaseTest, RazeAndPoison_TransactionBegin) {
   {
     Transaction transaction(db_.get());
     ASSERT_TRUE(transaction.Begin()) << "Incorrect test setup";
     ASSERT_TRUE(transaction.Commit()) << "Incorrect test setup";
   }
 
-  ASSERT_TRUE(db_->RazeAndClose());
+  ASSERT_TRUE(db_->RazeAndPoison());
   {
     Transaction transaction(db_.get());
     EXPECT_FALSE(transaction.Begin())
-        << "Transaction::Begin() should return false after RazeAndClose()";
+        << "Transaction::Begin() should return false after RazeAndPoison()";
     EXPECT_FALSE(transaction.IsActiveForTesting())
-        << "RazeAndClose() should block transactions from starting";
+        << "RazeAndPoison() should block transactions from starting";
   }
 }
 
