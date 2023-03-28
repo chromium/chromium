@@ -262,6 +262,7 @@ class GooglePhotosAlbumsFetcher
  private:
   // Allow delegate to see the constructor.
   friend class WallpaperFetcherDelegateImpl;
+  friend class GooglePhotosAlbumsFetcherTest;
 
   int albums_api_refresh_counter_ = 0;
 };
@@ -327,6 +328,7 @@ class GooglePhotosEnabledFetcher
 
  private:
   friend class WallpaperFetcherDelegateImpl;
+  friend class GooglePhotosEnabledFetcherTest;
 };
 
 using GooglePhotosPhotosCbkArgs =
@@ -362,6 +364,7 @@ class GooglePhotosPhotosFetcher
 
  private:
   friend class WallpaperFetcherDelegateImpl;
+  friend class GooglePhotosPhotosFetcherTest;
 
   int photos_api_refresh_counter_ = 0;
 };

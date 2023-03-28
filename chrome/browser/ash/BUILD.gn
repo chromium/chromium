@@ -5660,6 +5660,7 @@ source_set("unit_tests") {
     "tpm_firmware_update_unittest.cc",
     "usb/cros_usb_detector_unittest.cc",
     "video_conference/video_conference_manager_ash_unittest.cc",
+    "wallpaper_handlers/wallpaper_handlers_unittest.cc",
     "web_applications/face_ml/chrome_face_ml_user_provider_unittest.cc",
     "web_applications/help_app/help_app_discover_tab_notification_unittest.cc",
     "web_applications/help_app/help_app_notification_controller_unittest.cc",
