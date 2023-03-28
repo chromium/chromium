@@ -30,7 +30,7 @@ namespace cc {
 // fails to send its new state to the output, SwapPromise::DidNotSwap() will
 // be called. Note that it is possible to activate, and subsequently not swap.
 //
-// Promises complete afer either DidSwap() or DidNotSwap() is called, thus
+// Promises complete after either DidSwap() or DidNotSwap() is called, thus
 // there are three possible call sequences:
 //   DidNotSwap()
 //   DidActivate() ; WillSwap(); DidSwap()
