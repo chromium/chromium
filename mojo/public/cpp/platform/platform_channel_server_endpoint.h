@@ -11,10 +11,9 @@
 namespace mojo {
 
 // A PlatformHandle with a little extra type information to convey that it's
-// a channel server endpoint, i.e. a handle that should be used with
-// PlatformChannelServer to wait for a new connection and ultimately provide
-// a connected PlatformChannelEndpoint suitable for use with the Mojo
-// invitations API.
+// a channel server endpoint, i.e. a handle that can be used to send invitations
+// as |MOJO_INVITATION_TRANSPORT_TYPE_CHANNEL_SERVER| to a remote
+// PlatformChannelEndpoint.
 class COMPONENT_EXPORT(MOJO_CPP_PLATFORM) PlatformChannelServerEndpoint {
  public:
   PlatformChannelServerEndpoint();

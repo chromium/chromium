@@ -4,25 +4,13 @@
 
 #include "mojo/public/cpp/system/invitation.h"
 
-#include <memory>
 #include <tuple>
-#include <utility>
 
-#include "base/notreached.h"
 #include "base/numerics/safe_conversions.h"
 #include "build/build_config.h"
-#include "mojo/core/embedder/embedder.h"
 #include "mojo/public/c/system/invitation.h"
 #include "mojo/public/c/system/platform_handle.h"
 #include "mojo/public/cpp/system/platform_handle.h"
-
-#if BUILDFLAG(IS_WIN)
-#include <windows.h>
-#endif
-
-#if !BUILDFLAG(IS_FUCHSIA)
-#include "mojo/public/cpp/platform/platform_channel_server.h"
-#endif
 
 namespace mojo {
 
@@ -114,40 +102,6 @@ void SendInvitation(ScopedInvitationHandle invitation,
     std::ignore = invitation.release();
 }
 
-#if !BUILDFLAG(IS_FUCHSIA)
-void WaitForServerConnection(
-    PlatformChannelServerEndpoint server_endpoint,
-    PlatformChannelServer::ConnectionCallback callback) {
-  core::GetIOTaskRunner()->PostTask(
-      FROM_HERE,
-      base::BindOnce(&PlatformChannelServer::WaitForConnection,
-                     std::move(server_endpoint), std::move(callback)));
-}
-
-base::Process CloneProcessFromHandle(base::ProcessHandle handle) {
-  if (handle == base::kNullProcessHandle) {
-    return base::Process{};
-  }
-
-#if BUILDFLAG(IS_WIN)
-  // We can't use the hack below on Windows, because handle verification will
-  // explode when a new Process instance tries to own the already-owned
-  // `handle`.
-  HANDLE new_handle;
-  BOOL ok =
-      ::DuplicateHandle(::GetCurrentProcess(), handle, ::GetCurrentProcess(),
-                        &new_handle, 0, FALSE, DUPLICATE_SAME_ACCESS);
-  CHECK(ok);
-  return base::Process(new_handle);
-#else   // BUILDFLAG(IS_WIN)
-  base::Process temporary_owner(handle);
-  base::Process clone = temporary_owner.Duplicate();
-  std::ignore = temporary_owner.Release();
-  return clone;
-#endif  // BUILDFLAG(IS_WIN)
-}
-#endif  // !BUILDFLAG(IS_FUCHSIA)
-
 }  // namespace
 
 OutgoingInvitation::OutgoingInvitation() {
@@ -215,24 +169,10 @@ void OutgoingInvitation::Send(OutgoingInvitation invitation,
                               base::ProcessHandle target_process,
                               PlatformChannelServerEndpoint server_endpoint,
                               const ProcessErrorCallback& error_callback) {
-#if !BUILDFLAG(IS_FUCHSIA)
-  WaitForServerConnection(
-      std::move(server_endpoint),
-      base::BindOnce(
-          [](OutgoingInvitation invitation, base::Process target_process,
-             const ProcessErrorCallback& error_callback,
-             PlatformChannelEndpoint endpoint) {
-            SendInvitation(std::move(invitation.handle_),
-                           target_process.Handle(),
-                           endpoint.TakePlatformHandle(),
-                           MOJO_INVITATION_TRANSPORT_TYPE_CHANNEL,
-                           invitation.extra_flags_, error_callback, "");
-          },
-          std::move(invitation), CloneProcessFromHandle(target_process),
-          error_callback));
-#else
-  NOTREACHED_NORETURN();
-#endif
+  SendInvitation(std::move(invitation.handle_), target_process,
+                 server_endpoint.TakePlatformHandle(),
+                 MOJO_INVITATION_TRANSPORT_TYPE_CHANNEL_SERVER,
+                 invitation.extra_flags_, error_callback, "");
 }
 
 // static
@@ -251,7 +191,7 @@ ScopedMessagePipeHandle OutgoingInvitation::SendIsolated(
     PlatformChannelEndpoint channel_endpoint,
     base::StringPiece connection_name,
     base::ProcessHandle target_process) {
-  OutgoingInvitation invitation;
+  mojo::OutgoingInvitation invitation;
   ScopedMessagePipeHandle pipe =
       invitation.AttachMessagePipe(kIsolatedPipeName);
   SendInvitation(std::move(invitation.handle_), target_process,
@@ -267,29 +207,15 @@ ScopedMessagePipeHandle OutgoingInvitation::SendIsolated(
     PlatformChannelServerEndpoint server_endpoint,
     base::StringPiece connection_name,
     base::ProcessHandle target_process) {
-#if !BUILDFLAG(IS_FUCHSIA)
-  OutgoingInvitation invitation;
+  mojo::OutgoingInvitation invitation;
   ScopedMessagePipeHandle pipe =
       invitation.AttachMessagePipe(kIsolatedPipeName);
-  WaitForServerConnection(
-      std::move(server_endpoint),
-      base::BindOnce(
-          [](OutgoingInvitation invitation, base::Process target_process,
-             const std::string& connection_name,
-             PlatformChannelEndpoint endpoint) {
-            SendInvitation(
-                std::move(invitation.handle_), target_process.Handle(),
-                endpoint.TakePlatformHandle(),
-                MOJO_INVITATION_TRANSPORT_TYPE_CHANNEL,
-                MOJO_SEND_INVITATION_FLAG_ISOLATED | invitation.extra_flags_,
-                ProcessErrorCallback(), connection_name);
-          },
-          std::move(invitation), CloneProcessFromHandle(target_process),
-          std::string(connection_name)));
+  SendInvitation(std::move(invitation.handle_), target_process,
+                 server_endpoint.TakePlatformHandle(),
+                 MOJO_INVITATION_TRANSPORT_TYPE_CHANNEL_SERVER,
+                 MOJO_SEND_INVITATION_FLAG_ISOLATED | invitation.extra_flags_,
+                 ProcessErrorCallback(), connection_name);
   return pipe;
-#else
-  NOTREACHED_NORETURN();
-#endif
 }
 
 IncomingInvitation::IncomingInvitation() = default;
