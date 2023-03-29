@@ -251,6 +251,13 @@ void ThemeSource::SendColorsCss(
 
   std::string sets_param;
   std::vector<base::StringPiece> color_id_sets;
+  bool generate_rgb_vars = false;
+  std::string generate_rgb_vars_query_value;
+  if (net::GetValueForKeyInQuery(url, "generate_rgb_vars",
+                                 &generate_rgb_vars_query_value)) {
+    generate_rgb_vars =
+        base::ToLowerASCII(generate_rgb_vars_query_value) == "true";
+  }
   if (!net::GetValueForKeyInQuery(url, "sets", &sets_param)) {
     LOG(ERROR)
         << "colors.css requires a 'sets' query parameter to specify the color "
@@ -262,7 +269,8 @@ void ThemeSource::SendColorsCss(
                                          base::SPLIT_WANT_ALL);
 
   using ColorIdCSSCallback = base::RepeatingCallback<std::string(ui::ColorId)>;
-  auto generate_color_mapping = [&color_id_sets, &color_provider](
+  auto generate_color_mapping = [&color_id_sets, &color_provider,
+                                 &generate_rgb_vars](
                                     std::string set_name, ui::ColorId start,
                                     ui::ColorId end,
                                     ColorIdCSSCallback color_css_name) {
@@ -279,6 +287,16 @@ void ThemeSource::SendColorsCss(
           base::StringPrintf("%s:%s;", color_css_name.Run(id).c_str(),
                              ui::ConvertSkColorToCSSColor(color).c_str());
       base::StrAppend(&css_string, {css_id_to_color_mapping});
+      if (generate_rgb_vars) {
+        // Also generate a r,g,b string for each color so apps can construct
+        // colors with their own opacities in css.
+        const std::string css_rgb_color_str =
+            color_utils::SkColorToRgbaString(color);
+        const std::string css_id_to_rgb_color_mapping =
+            base::StringPrintf("%s-rgb:%s;", color_css_name.Run(id).c_str(),
+                               css_rgb_color_str.c_str());
+        base::StrAppend(&css_string, {css_id_to_rgb_color_mapping});
+      }
     }
     return css_string;
   };

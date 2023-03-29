@@ -29,6 +29,8 @@ suite('ColorProviderCSSColorsTest', function() {
               '',
               style.getPropertyValue(
                   '--color-app-menu-highlight-severity-low'));
+          // Check that rgb vars are not generated.
+          assertEquals('', style.getPropertyValue('--color-accent-rgb'));
           done();
         };
         link.onerror = function(e) {
@@ -46,10 +48,52 @@ suite('ColorProviderCSSColorsTest', function() {
       assertEquals(
           '',
           style.getPropertyValue('--color-app-menu-highlight-severity-low'));
+      // Check that rgb vars are not generated.
+      assertEquals('', style.getPropertyValue('--color-accent-rgb'));
       done();
     };
     link.onerror = function(e) {
       done(new Error('Error loading colors.css' + e));
     };
   });
+
+  test('test fetching color set with generate_rgb_vars=true', function(done) {
+    link.href = 'chrome://theme/colors.css?sets=ui&generate_rgb_vars=true';
+    link.onload = function() {
+      const style = getComputedStyle(document.body);
+      assertNotEquals('', style.getPropertyValue('--color-accent-rgb'));
+      done();
+    };
+    link.onerror = function(e) {
+      done(new Error('Error loading colors.css' + e));
+    };
+  });
+
+  test('test fetching color set with generate_rgb_vars=false', function(done) {
+    link.href = 'chrome://theme/colors.css?sets=ui&generate_rgb_vars=false';
+    link.onload = function() {
+      const style = getComputedStyle(document.body);
+      assertEquals('', style.getPropertyValue('--color-accent-rgb'));
+      done();
+    };
+    link.onerror = function(e) {
+      done(new Error('Error loading colors.css' + e));
+    };
+  });
+
+  test(
+      'test fetching color set with invalid generate_rgb_vars value',
+      function(done) {
+        link.href = 'chrome://theme/colors.css?sets=ui&generate_rgb_vars=asdf';
+        link.onload = function() {
+          const style = getComputedStyle(document.body);
+          // generate_rgb_vars when not provided with a explicitly truthy value
+          // should default to false.
+          assertEquals('', style.getPropertyValue('--color-accent-rgb'));
+          done();
+        };
+        link.onerror = function(e) {
+          done(new Error('Error loading colors.css' + e));
+        };
+      });
 });
