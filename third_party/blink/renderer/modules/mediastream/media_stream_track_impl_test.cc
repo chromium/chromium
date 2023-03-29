@@ -348,6 +348,7 @@ TEST_F(MediaStreamTrackImplTest, ApplyConstraintsUpdatesSourceFormat) {
       MakeMockDisplayVideoCaptureComponent();
   MediaStreamTrack* track = MakeGarbageCollected<MediaStreamTrackImpl>(
       v8_scope.GetExecutionContext(), component);
+  MediaStreamVideoTrack* video_track = MediaStreamVideoTrack::From(component);
 
   // Start the source.
   platform_source_ptr->StartMockedSource();
@@ -355,6 +356,7 @@ TEST_F(MediaStreamTrackImplTest, ApplyConstraintsUpdatesSourceFormat) {
   EXPECT_NE(platform_source_ptr->max_requested_width(), kReducedWidth);
   EXPECT_NE(platform_source_ptr->max_requested_height(), kReducedHeight);
   EXPECT_NE(platform_source_ptr->max_requested_frame_rate(), kMaxFrameRate);
+  EXPECT_FALSE(video_track->min_frame_rate());
   // Apply new frame rate constraints.
   MediaTrackConstraints* track_constraints = MakeMediaTrackConstraints(
       kReducedWidth, kReducedHeight, kMinFrameRate, kMaxFrameRate);
@@ -370,6 +372,8 @@ TEST_F(MediaStreamTrackImplTest, ApplyConstraintsUpdatesSourceFormat) {
   EXPECT_EQ(platform_source_ptr->max_requested_width(), kReducedWidth);
   EXPECT_EQ(platform_source_ptr->max_requested_height(), kReducedHeight);
   EXPECT_EQ(platform_source_ptr->max_requested_frame_rate(), kMaxFrameRate);
+  // Verify that min frame rate is updated.
+  EXPECT_EQ(video_track->min_frame_rate(), kMinFrameRate);
 }
 
 TEST_F(MediaStreamTrackImplTest,
@@ -680,6 +684,45 @@ TEST_F(MediaStreamTrackImplTest, ApplyConstraintsCannotRestartSource) {
   EXPECT_EQ(platform_source_ptr->max_requested_width(), initialWidth);
   EXPECT_EQ(platform_source_ptr->max_requested_height(), initialHeight);
   EXPECT_EQ(platform_source_ptr->max_requested_frame_rate(), initialFrameRate);
+}
+
+TEST_F(MediaStreamTrackImplTest, ApplyConstraintsUpdatesMinFps) {
+  V8TestingScope v8_scope;
+  MediaStreamComponent* component;
+  MockMediaStreamVideoSource* platform_source_ptr;
+  std::tie(component, platform_source_ptr) =
+      MakeMockDisplayVideoCaptureComponent();
+  MediaStreamTrack* track = MakeGarbageCollected<MediaStreamTrackImpl>(
+      v8_scope.GetExecutionContext(), component);
+  MediaStreamVideoTrack* video_track = MediaStreamVideoTrack::From(component);
+
+  // Start the source.
+  platform_source_ptr->StartMockedSource();
+  // Get initial settings and verify that resolution and frame rate are
+  // different than the new constraints.
+  int initialWidth = platform_source_ptr->max_requested_width();
+  int initialHeight = platform_source_ptr->max_requested_height();
+  float initialFrameRate = platform_source_ptr->max_requested_frame_rate();
+  // Min frame rate not set.
+  EXPECT_FALSE(video_track->min_frame_rate());
+
+  // Apply new constraints.
+  MediaTrackConstraints* track_constraints = MakeMediaTrackConstraints(
+      absl::nullopt, absl::nullopt, kMinFrameRate, initialFrameRate);
+  ScriptPromise apply_constraints_promise =
+      track->applyConstraints(v8_scope.GetScriptState(), track_constraints);
+  ScriptPromiseTester tester(v8_scope.GetScriptState(),
+                             apply_constraints_promise);
+  tester.WaitUntilSettled();
+  EXPECT_TRUE(tester.IsFulfilled());
+
+  // Verify that min frame rate is updated even though max frame rate was not
+  // changed. The source does not need to restart.
+  EXPECT_EQ(platform_source_ptr->restart_count(), 0);
+  EXPECT_EQ(platform_source_ptr->max_requested_width(), initialWidth);
+  EXPECT_EQ(platform_source_ptr->max_requested_height(), initialHeight);
+  EXPECT_EQ(platform_source_ptr->max_requested_frame_rate(), initialFrameRate);
+  EXPECT_EQ(video_track->min_frame_rate(), kMinFrameRate);
 }
 
 }  // namespace blink
