@@ -474,7 +474,7 @@ void GPUCanvasContext::unconfigure() {
 GPUTexture* GPUCanvasContext::getCurrentTexture(
     ExceptionState& exception_state) {
   if (!configured_) {
-    exception_state.ThrowDOMException(DOMExceptionCode::kOperationError,
+    exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
                                       "context is not configured");
     return nullptr;
   }
