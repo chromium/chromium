@@ -680,7 +680,7 @@ public class PartialCustomTabBottomSheetStrategy extends PartialCustomTabBaseStr
         }
         // Spinner view is added to CoordinatorLayoutForPointer (not R.id.content) to obscure
         // the flickering at the beginning of dragging action.
-        if (mSpinnerView.getParent() == null) mCoordinatorLayout.addView(mSpinnerView);
+        if (mSpinnerView.getParent() == null) getCoordinatorLayout().addView(mSpinnerView);
         mSpinnerView.clearAnimation();
         mSpinnerView.setAlpha(0.f);
         mSpinnerView.setVisibility(View.VISIBLE);
