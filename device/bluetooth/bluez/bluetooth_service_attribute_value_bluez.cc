@@ -9,16 +9,17 @@
 #include "base/check_op.h"
 #include "base/memory/ptr_util.h"
 #include "base/values.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace bluez {
 
 BluetoothServiceAttributeValueBlueZ::BluetoothServiceAttributeValueBlueZ()
-    : type_(NULLTYPE), size_(0), value_(std::make_unique<base::Value>()) {}
+    : type_(NULLTYPE), size_(0), value_(absl::in_place) {}
 
 BluetoothServiceAttributeValueBlueZ::BluetoothServiceAttributeValueBlueZ(
     Type type,
     size_t size,
-    std::unique_ptr<base::Value> value)
+    absl::optional<base::Value> value)
     : type_(type), size_(size), value_(std::move(value)) {
   CHECK_NE(type, SEQUENCE);
 }
@@ -40,10 +41,10 @@ operator=(const BluetoothServiceAttributeValueBlueZ& attribute) {
     type_ = attribute.type_;
     size_ = attribute.size_;
     if (attribute.type_ == SEQUENCE) {
-      value_ = nullptr;
+      value_ = absl::nullopt;
       sequence_ = std::make_unique<Sequence>(*attribute.sequence_);
     } else {
-      value_ = base::Value::ToUniquePtrValue(attribute.value_->Clone());
+      value_ = attribute.value_->Clone();
       sequence_ = nullptr;
     }
   }

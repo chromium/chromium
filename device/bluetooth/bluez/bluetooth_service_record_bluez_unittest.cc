@@ -135,10 +135,10 @@ class BluetoothServiceRecordBlueZTest : public device::BluetoothTestBlueZ {
  protected:
   BluetoothServiceRecordBlueZ CreateaServiceRecord(const std::string uuid) {
     BluetoothServiceRecordBlueZ record;
-    record.AddRecordEntry(kServiceUuidAttributeId,
-                          BluetoothServiceAttributeValueBlueZ(
-                              BluetoothServiceAttributeValueBlueZ::UUID, 16,
-                              std::make_unique<base::Value>(uuid)));
+    record.AddRecordEntry(
+        kServiceUuidAttributeId,
+        BluetoothServiceAttributeValueBlueZ(
+            BluetoothServiceAttributeValueBlueZ::UUID, 16, base::Value(uuid)));
     return record;
   }
 

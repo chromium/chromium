@@ -144,19 +144,12 @@ TypeConverter<bluez::BluetoothServiceAttributeValueBlueZ,
       return bluez::BluetoothServiceAttributeValueBlueZ();
     case bluez::BluetoothServiceAttributeValueBlueZ::UINT:
     case bluez::BluetoothServiceAttributeValueBlueZ::INT:
-      return bluez::BluetoothServiceAttributeValueBlueZ(
-          type, attr->type_size,
-          std::make_unique<base::Value>(attr->value->GetInt()));
     case bluez::BluetoothServiceAttributeValueBlueZ::URL:
     case bluez::BluetoothServiceAttributeValueBlueZ::UUID:
     case bluez::BluetoothServiceAttributeValueBlueZ::STRING:
-      return bluez::BluetoothServiceAttributeValueBlueZ(
-          type, attr->type_size,
-          std::make_unique<base::Value>(attr->value->GetString()));
     case bluez::BluetoothServiceAttributeValueBlueZ::BOOL:
-      return bluez::BluetoothServiceAttributeValueBlueZ(
-          type, attr->type_size,
-          std::make_unique<base::Value>(attr->value->GetBool()));
+      return bluez::BluetoothServiceAttributeValueBlueZ(type, attr->type_size,
+                                                        attr->value->Clone());
     case bluez::BluetoothServiceAttributeValueBlueZ::SEQUENCE: {
       if (depth + 1 >= arc::kBluetoothSDPMaxDepth || attr->sequence.empty())
         return bluez::BluetoothServiceAttributeValueBlueZ();

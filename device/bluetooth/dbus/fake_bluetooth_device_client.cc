@@ -107,15 +107,14 @@ BluetoothDeviceClient::ServiceRecordList CreateFakeServiceRecords() {
   std::unique_ptr<BluetoothServiceRecordBlueZ> record1 =
       std::make_unique<BluetoothServiceRecordBlueZ>();
   // ID 0 = handle.
-  record1->AddRecordEntry(
-      0x0, BluetoothServiceAttributeValueBlueZ(
-               BluetoothServiceAttributeValueBlueZ::UINT, 4,
-               std::make_unique<base::Value>(static_cast<int32_t>(0x1337))));
+  record1->AddRecordEntry(0x0, BluetoothServiceAttributeValueBlueZ(
+                                   BluetoothServiceAttributeValueBlueZ::UINT, 4,
+                                   base::Value(static_cast<int32_t>(0x1337))));
   // ID 1 = service class id list.
   std::unique_ptr<BluetoothServiceAttributeValueBlueZ::Sequence> class_id_list =
       std::make_unique<BluetoothServiceAttributeValueBlueZ::Sequence>();
   class_id_list->emplace_back(BluetoothServiceAttributeValueBlueZ::UUID, 4,
-                              std::make_unique<base::Value>("1802"));
+                              base::Value("1802"));
   record1->AddRecordEntry(
       0x1, BluetoothServiceAttributeValueBlueZ(std::move(class_id_list)));
   records.emplace_back(*record1);
@@ -123,11 +122,10 @@ BluetoothDeviceClient::ServiceRecordList CreateFakeServiceRecords() {
   std::unique_ptr<BluetoothServiceRecordBlueZ> record2 =
       std::make_unique<BluetoothServiceRecordBlueZ>();
   // ID 0 = handle.
-  record2->AddRecordEntry(
-      0x0,
-      BluetoothServiceAttributeValueBlueZ(
-          BluetoothServiceAttributeValueBlueZ::UINT, 4,
-          std::make_unique<base::Value>(static_cast<int32_t>(0xffffffff))));
+  record2->AddRecordEntry(0x0,
+                          BluetoothServiceAttributeValueBlueZ(
+                              BluetoothServiceAttributeValueBlueZ::UINT, 4,
+                              base::Value(static_cast<int32_t>(0xffffffff))));
   records.emplace_back(*record2);
 
   return records;

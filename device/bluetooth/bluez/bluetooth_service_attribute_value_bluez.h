@@ -11,6 +11,7 @@
 
 #include "base/values.h"
 #include "device/bluetooth/bluetooth_export.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace bluez {
 
@@ -33,7 +34,7 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothServiceAttributeValueBlueZ {
   BluetoothServiceAttributeValueBlueZ();
   BluetoothServiceAttributeValueBlueZ(Type type,
                                       size_t size,
-                                      std::unique_ptr<base::Value> value);
+                                      absl::optional<base::Value> value);
   explicit BluetoothServiceAttributeValueBlueZ(
       std::unique_ptr<Sequence> sequence);
   BluetoothServiceAttributeValueBlueZ(
@@ -45,12 +46,12 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothServiceAttributeValueBlueZ {
   Type type() const { return type_; }
   size_t size() const { return size_; }
   const Sequence& sequence() const { return *sequence_.get(); }
-  const base::Value& value() const { return *value_.get(); }
+  const base::Value& value() const { return *value_; }
 
  private:
   Type type_;
   size_t size_;
-  std::unique_ptr<base::Value> value_;
+  absl::optional<base::Value> value_;
   std::unique_ptr<Sequence> sequence_;
 };
 
