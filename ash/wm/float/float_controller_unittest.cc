@@ -730,6 +730,33 @@ TEST_F(WindowFloatTest, FloatWindowActivationActivatesBelongingDesk) {
   EXPECT_TRUE(desk_1->is_active());
 }
 
+// Tests that if a float window was activated before changing desks, it will be
+// activated when returning to that desk.
+TEST_F(WindowFloatTest, FloatWindowActivatesWhenChangingDesks) {
+  auto* desks_controller = DesksController::Get();
+
+  // Create a floated window on desk 1. We expect this window to be active later
+  // when we return to desk 1.
+  std::unique_ptr<aura::Window> floated_window1 = CreateFloatedWindow();
+  ASSERT_TRUE(WindowState::Get(floated_window1.get())->IsActive());
+
+  // Create a new desk with a floated window and a normal window. The normal
+  // window should be activated.
+  NewDesk();
+  ActivateDesk(desks_controller->desks()[1].get());
+  std::unique_ptr<aura::Window> floated_window2 = CreateFloatedWindow();
+  std::unique_ptr<aura::Window> normal_window = CreateAppWindow();
+  ASSERT_TRUE(WindowState::Get(normal_window.get())->IsActive());
+
+  // Switch to desk 1, the first floated window should be active.
+  ActivateDesk(desks_controller->desks()[0].get());
+  EXPECT_TRUE(WindowState::Get(floated_window1.get())->IsActive());
+
+  // Switch to desk 2, the normal window should be active.
+  ActivateDesk(desks_controller->desks()[1].get());
+  EXPECT_TRUE(WindowState::Get(normal_window.get())->IsActive());
+}
+
 // Test when we combine desks, floated window is updated on overview.
 TEST_F(WindowFloatTest, FloatWindowUpdatedOnOverview) {
   auto* desks_controller = DesksController::Get();

@@ -685,6 +685,15 @@ void FloatController::OnDeskActivationChanged(const Desk* activated,
   if (auto* activated_desk_floated_window =
           FindFloatedWindowOfDesk(activated)) {
     ShowFloatedWindow(activated_desk_floated_window);
+
+    // Activate the floated window if it is the top window. This is normally
+    // done in `Desk::Activate`, but floated windows are technically not owned
+    // by the desk, and the window is still hidden at that point so it isn't in
+    // the MRU list.
+    if (auto* top_window = window_util::GetTopWindow();
+        top_window == activated_desk_floated_window) {
+      wm::ActivateWindow(top_window);
+    }
   }
 }
 
