@@ -60,11 +60,13 @@ class WebRtcMediaRecorderTest
 };
 
 IN_PROC_BROWSER_TEST_F(WebRtcMediaRecorderTest, Start) {
-  MakeTypicalCall("testStartAndRecorderState();", kMediaRecorderHtmlFile);
+  MakeTypicalCall("testStartAndRecorderState();", kMediaRecorderHtmlFile,
+                  /*use_manual_reply=*/false);
 }
 
 IN_PROC_BROWSER_TEST_F(WebRtcMediaRecorderTest, StartAndStop) {
-  MakeTypicalCall("testStartStopAndRecorderState();", kMediaRecorderHtmlFile);
+  MakeTypicalCall("testStartStopAndRecorderState();", kMediaRecorderHtmlFile,
+                  /*use_manual_reply=*/false);
 }
 
 #if BUILDFLAG(IS_MAC) && defined(ARCH_CPU_ARM64)
@@ -77,7 +79,7 @@ IN_PROC_BROWSER_TEST_P(WebRtcMediaRecorderTest, MAYBE_StartAndDataAvailable) {
   MaybeForceDisableEncodeAccelerator(GetParam().disable_accelerator);
   MakeTypicalCall(base::StringPrintf("testStartAndDataAvailable(\"%s\");",
                                      GetParam().mime_type.c_str()),
-                  kMediaRecorderHtmlFile);
+                  kMediaRecorderHtmlFile, /*use_manual_reply=*/false);
 }
 
 // TODO(crbug.com/805341): It seems to be flaky on Android. More details in
@@ -91,15 +93,17 @@ IN_PROC_BROWSER_TEST_P(WebRtcMediaRecorderTest, MAYBE_StartWithTimeSlice) {
   MaybeForceDisableEncodeAccelerator(GetParam().disable_accelerator);
   MakeTypicalCall(base::StringPrintf("testStartWithTimeSlice(\"%s\");",
                                      GetParam().mime_type.c_str()),
-                  kMediaRecorderHtmlFile);
+                  kMediaRecorderHtmlFile, /*use_manual_reply=*/false);
 }
 
 IN_PROC_BROWSER_TEST_F(WebRtcMediaRecorderTest, Resume) {
-  MakeTypicalCall("testResumeAndRecorderState();", kMediaRecorderHtmlFile);
+  MakeTypicalCall("testResumeAndRecorderState();", kMediaRecorderHtmlFile,
+                  /*use_manual_reply=*/false);
 }
 
 IN_PROC_BROWSER_TEST_F(WebRtcMediaRecorderTest, NoResumeWhenRecorderInactive) {
-  MakeTypicalCall("testIllegalResumeThrowsDOMError();", kMediaRecorderHtmlFile);
+  MakeTypicalCall("testIllegalResumeThrowsDOMError();", kMediaRecorderHtmlFile,
+                  /*use_manual_reply=*/false);
 }
 
 #if BUILDFLAG(IS_MAC) && defined(ARCH_CPU_ARM64)
@@ -112,11 +116,12 @@ IN_PROC_BROWSER_TEST_P(WebRtcMediaRecorderTest, MAYBE_ResumeAndDataAvailable) {
   MaybeForceDisableEncodeAccelerator(GetParam().disable_accelerator);
   MakeTypicalCall(base::StringPrintf("testResumeAndDataAvailable(\"%s\");",
                                      GetParam().mime_type.c_str()),
-                  kMediaRecorderHtmlFile);
+                  kMediaRecorderHtmlFile, /*use_manual_reply=*/false);
 }
 
 IN_PROC_BROWSER_TEST_F(WebRtcMediaRecorderTest, Pause) {
-  MakeTypicalCall("testPauseAndRecorderState();", kMediaRecorderHtmlFile);
+  MakeTypicalCall("testPauseAndRecorderState();", kMediaRecorderHtmlFile,
+                  /*use_manual_reply=*/false);
 }
 
 // TODO(crbug.com/571389): Flaky on TSAN bots.
@@ -126,13 +131,14 @@ IN_PROC_BROWSER_TEST_F(WebRtcMediaRecorderTest, Pause) {
 #define MAYBE_PauseStop PauseStop
 #endif
 IN_PROC_BROWSER_TEST_F(WebRtcMediaRecorderTest, MAYBE_PauseStop) {
-  MakeTypicalCall("testPauseStopAndRecorderState();", kMediaRecorderHtmlFile);
+  MakeTypicalCall("testPauseStopAndRecorderState();", kMediaRecorderHtmlFile,
+                  /*use_manual_reply=*/false);
 }
 
 IN_PROC_BROWSER_TEST_F(WebRtcMediaRecorderTest,
                        PausePreventsDataavailableFromBeingFired) {
   MakeTypicalCall("testPausePreventsDataavailableFromBeingFired();",
-                  kMediaRecorderHtmlFile);
+                  kMediaRecorderHtmlFile, /*use_manual_reply=*/false);
 }
 
 // TODO (crbug.com/736268): Flaky on Linux TSan bots.
@@ -143,7 +149,8 @@ IN_PROC_BROWSER_TEST_F(WebRtcMediaRecorderTest,
 #endif
 IN_PROC_BROWSER_TEST_F(WebRtcMediaRecorderTest,
                        MAYBE_IllegalPauseThrowsDOMError) {
-  MakeTypicalCall("testIllegalPauseThrowsDOMError();", kMediaRecorderHtmlFile);
+  MakeTypicalCall("testIllegalPauseThrowsDOMError();", kMediaRecorderHtmlFile,
+                  /*use_manual_reply=*/false);
 }
 
 #if BUILDFLAG(IS_MAC) && defined(ARCH_CPU_ARM64)
@@ -154,26 +161,27 @@ IN_PROC_BROWSER_TEST_F(WebRtcMediaRecorderTest,
 #endif
 IN_PROC_BROWSER_TEST_F(WebRtcMediaRecorderTest,
                        MAYBE_TwoChannelAudioRecording) {
-  MakeTypicalCall("testTwoChannelAudio();", kMediaRecorderHtmlFile);
+  MakeTypicalCall("testTwoChannelAudio();", kMediaRecorderHtmlFile,
+                  /*use_manual_reply=*/false);
 }
 
 IN_PROC_BROWSER_TEST_P(WebRtcMediaRecorderTest, RecordWithTransparency) {
   MaybeForceDisableEncodeAccelerator(GetParam().disable_accelerator);
   MakeTypicalCall(base::StringPrintf("testRecordWithTransparency(\"%s\");",
                                      GetParam().mime_type.c_str()),
-                  kMediaRecorderHtmlFile);
+                  kMediaRecorderHtmlFile, /*use_manual_reply=*/false);
 }
 
 IN_PROC_BROWSER_TEST_F(WebRtcMediaRecorderTest,
                        IllegalStartWhileRecordingThrowsDOMError) {
   MakeTypicalCall("testIllegalStartInRecordingStateThrowsDOMError();",
-                  kMediaRecorderHtmlFile);
+                  kMediaRecorderHtmlFile, /*use_manual_reply=*/false);
 }
 
 IN_PROC_BROWSER_TEST_F(WebRtcMediaRecorderTest,
                        IllegalStartWhilePausedThrowsDOMError) {
   MakeTypicalCall("testIllegalStartInPausedStateThrowsDOMError();",
-                  kMediaRecorderHtmlFile);
+                  kMediaRecorderHtmlFile, /*use_manual_reply=*/false);
 }
 
 // Flaky on Linux Tsan (crbug.com/736268)
@@ -186,7 +194,7 @@ IN_PROC_BROWSER_TEST_F(WebRtcMediaRecorderTest,
 IN_PROC_BROWSER_TEST_F(WebRtcMediaRecorderTest,
                        MAYBE_IllegalRequestDataThrowsDOMError) {
   MakeTypicalCall("testIllegalRequestDataThrowsDOMError();",
-                  kMediaRecorderHtmlFile);
+                  kMediaRecorderHtmlFile, /*use_manual_reply=*/false);
 }
 
 #if BUILDFLAG(IS_ANDROID)
@@ -214,7 +222,7 @@ IN_PROC_BROWSER_TEST_P(WebRtcMediaRecorderTest, MAYBE_PeerConnection) {
   MaybeForceDisableEncodeAccelerator(GetParam().disable_accelerator);
   MakeTypicalCall(base::StringPrintf("testRecordRemotePeerConnection(\"%s\");",
                                      GetParam().mime_type.c_str()),
-                  kMediaRecorderHtmlFile);
+                  kMediaRecorderHtmlFile, /*use_manual_reply=*/false);
 }
 
 // Flaky on Linux Tsan (crbug.com/736268)
@@ -232,13 +240,13 @@ IN_PROC_BROWSER_TEST_P(WebRtcMediaRecorderTest, MAYBE_PeerConnection) {
 IN_PROC_BROWSER_TEST_F(WebRtcMediaRecorderTest,
                        MAYBE_AddingTrackToMediaStreamFiresErrorEvent) {
   MakeTypicalCall("testAddingTrackToMediaStreamFiresErrorEvent();",
-                  kMediaRecorderHtmlFile);
+                  kMediaRecorderHtmlFile, /*use_manual_reply=*/false);
 }
 
 IN_PROC_BROWSER_TEST_F(WebRtcMediaRecorderTest,
                        RemovingTrackFromMediaStreamFiresErrorEvent) {
   MakeTypicalCall("testRemovingTrackFromMediaStreamFiresErrorEvent();",
-                  kMediaRecorderHtmlFile);
+                  kMediaRecorderHtmlFile, /*use_manual_reply=*/false);
 }
 
 INSTANTIATE_TEST_SUITE_P(OpenCodec,
