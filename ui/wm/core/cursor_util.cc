@@ -26,9 +26,6 @@ namespace {
 
 using ::ui::mojom::CursorType;
 
-constexpr CursorType kAnimatedCursorTypes[] = {CursorType::kWait,
-                                               CursorType::kProgress};
-
 // Converts the SkBitmap to use a different alpha type. Returns true if bitmap
 // was modified, otherwise returns false.
 bool ConvertSkBitmapAlphaType(SkBitmap* bitmap, SkAlphaType alpha_type) {
@@ -49,57 +46,6 @@ bool ConvertSkBitmapAlphaType(SkBitmap* bitmap, SkAlphaType alpha_type) {
   memcpy(bitmap->getPixels(), &buffer[0], buffer.size());
 
   return true;
-}
-
-void GetImageCursorBitmap(int resource_id,
-                          float scale,
-                          display::Display::Rotation rotation,
-                          gfx::Point* hotspot,
-                          SkBitmap* bitmap) {
-  const gfx::ImageSkia* image =
-      ui::ResourceBundle::GetSharedInstance().GetImageSkiaNamed(resource_id);
-  const gfx::ImageSkiaRep& image_rep = image->GetRepresentation(scale);
-  // TODO(oshima): The cursor should use resource scale factor when
-  // fractional scale factor is enabled. crbug.com/372212
-  (*bitmap) = image_rep.GetBitmap();
-  ScaleAndRotateCursorBitmapAndHotpoint(scale / image_rep.scale(), rotation,
-                                        bitmap, hotspot);
-  // |image_rep| is owned by the resource bundle. So we do not need to free it.
-}
-
-void GetAnimatedCursorBitmaps(int resource_id,
-                              float scale,
-                              display::Display::Rotation rotation,
-                              gfx::Point* hotspot,
-                              std::vector<SkBitmap>* bitmaps) {
-  // TODO(oshima|tdanderson): Support rotation and fractional scale factor.
-  const gfx::ImageSkia* image =
-      ui::ResourceBundle::GetSharedInstance().GetImageSkiaNamed(resource_id);
-  const gfx::ImageSkiaRep& image_rep = image->GetRepresentation(scale);
-  SkBitmap bitmap = image_rep.GetBitmap();
-
-  // The image is assumed to be a concatenation of animation frames from left to
-  // right. Also, each frame is assumed to be square (width == height).
-  int frame_width = bitmap.height();
-  int frame_height = frame_width;
-  int total_width = bitmap.width();
-  DCHECK_EQ(total_width % frame_width, 0);
-  int frame_count = total_width / frame_width;
-  DCHECK_GT(frame_count, 0);
-
-  bitmaps->resize(frame_count);
-
-  for (int frame = 0; frame < frame_count; ++frame) {
-    int x_offset = frame_width * frame;
-    DCHECK_LE(x_offset + frame_width, total_width);
-
-    SkBitmap cropped = SkBitmapOperations::CreateTiledBitmap(
-        bitmap, x_offset, 0, frame_width, frame_height);
-    DCHECK_EQ(frame_width, cropped.width());
-    DCHECK_EQ(frame_height, cropped.height());
-
-    (*bitmaps)[frame] = cropped;
-  }
 }
 
 struct CursorResourceData {
@@ -373,12 +319,38 @@ absl::optional<ui::CursorData> GetCursorData(
   }
 
   std::vector<SkBitmap> bitmaps;
-  if (base::ranges::count(kAnimatedCursorTypes, type) == 0) {
-    SkBitmap bitmap;
-    GetImageCursorBitmap(resource_id, scale, rotation, &hotspot, &bitmap);
+  const gfx::ImageSkia* image =
+      ui::ResourceBundle::GetSharedInstance().GetImageSkiaNamed(resource_id);
+  const float resource_scale = gfx::ImageSkia::MapToResourceScale(scale);
+  const gfx::ImageSkiaRep& image_rep = image->GetRepresentation(resource_scale);
+  CHECK_EQ(image_rep.scale(), resource_scale);
+  SkBitmap bitmap = image_rep.GetBitmap();
+
+  // The image is assumed to be a concatenation of animation frames from left
+  // to right. Also, each frame is assumed to be square (width == height).
+  const int frame_width = bitmap.height();
+  const int frame_height = frame_width;
+  const int total_width = bitmap.width();
+  CHECK_EQ(total_width % frame_width, 0);
+  const int frame_count = total_width / frame_width;
+  CHECK_GT(frame_count, 0);
+
+  if (frame_count == 1) {
+    ScaleAndRotateCursorBitmapAndHotpoint(scale / image_rep.scale(), rotation,
+                                          &bitmap, &hotspot);
     bitmaps.push_back(std::move(bitmap));
   } else {
-    GetAnimatedCursorBitmaps(resource_id, scale, rotation, &hotspot, &bitmaps);
+    // Animated cursor.
+    bitmaps.resize(frame_count);
+    for (int frame = 0; frame < frame_count; ++frame) {
+      const int x_offset = frame_width * frame;
+      SkBitmap cropped = SkBitmapOperations::CreateTiledBitmap(
+          bitmap, x_offset, 0, frame_width, frame_height);
+      ScaleAndRotateCursorBitmapAndHotpoint(scale / image_rep.scale(), rotation,
+                                            &cropped,
+                                            frame == 0 ? &hotspot : nullptr);
+      bitmaps[frame] = std::move(cropped);
+    }
   }
   return ui::CursorData(std::move(bitmaps), std::move(hotspot));
 }
@@ -400,18 +372,24 @@ void ScaleAndRotateCursorBitmapAndHotpoint(float scale,
     case display::Display::ROTATE_0:
       break;
     case display::Display::ROTATE_90:
-      hotpoint->SetPoint(bitmap->height() - hotpoint->y(), hotpoint->x());
+      if (hotpoint) {
+        hotpoint->SetPoint(bitmap->height() - hotpoint->y(), hotpoint->x());
+      }
       *bitmap = SkBitmapOperations::Rotate(
           *bitmap, SkBitmapOperations::ROTATION_90_CW);
       break;
     case display::Display::ROTATE_180:
-      hotpoint->SetPoint(
-          bitmap->width() - hotpoint->x(), bitmap->height() - hotpoint->y());
+      if (hotpoint) {
+        hotpoint->SetPoint(bitmap->width() - hotpoint->x(),
+                           bitmap->height() - hotpoint->y());
+      }
       *bitmap = SkBitmapOperations::Rotate(
           *bitmap, SkBitmapOperations::ROTATION_180_CW);
       break;
     case display::Display::ROTATE_270:
-      hotpoint->SetPoint(hotpoint->y(), bitmap->width() - hotpoint->x());
+      if (hotpoint) {
+        hotpoint->SetPoint(hotpoint->y(), bitmap->width() - hotpoint->x());
+      }
       *bitmap = SkBitmapOperations::Rotate(
           *bitmap, SkBitmapOperations::ROTATION_270_CW);
       break;
@@ -444,7 +422,9 @@ void ScaleAndRotateCursorBitmapAndHotpoint(float scale,
   }
 
   *bitmap = scaled_bitmap;
-  *hotpoint = gfx::ScaleToFlooredPoint(*hotpoint, scale);
+  if (hotpoint) {
+    *hotpoint = gfx::ScaleToFlooredPoint(*hotpoint, scale);
+  }
 }
 
 bool GetCursorDataFor(ui::CursorSize cursor_size,
@@ -473,10 +453,7 @@ bool GetCursorDataFor(ui::CursorSize cursor_size,
   DCHECK_EQ(resource->type, t);
   *resource_id = resource->id;
   *point = resource->hotspot_1x;
-  bool resource_2x_available =
-      ui::ResourceBundle::GetSharedInstance().GetMaxResourceScaleFactor() ==
-      ui::k200Percent;
-  if (scale_factor != 1.0f && resource_2x_available) {
+  if (gfx::ImageSkia::MapToResourceScale(scale_factor) == 2.0f) {
     *point = resource->hotspot_2x;
   }
   return true;

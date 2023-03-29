@@ -23,6 +23,9 @@ struct CursorData;
 
 namespace wm {
 
+// Returns the cursor data corresponding to `type` and the rest of the
+// parameters. It will load the cursor resource and then scale the bitmap and
+// hotspot to match `scale`.
 COMPONENT_EXPORT(UI_WM)
 absl::optional<ui::CursorData> GetCursorData(
     ui::mojom::CursorType type,

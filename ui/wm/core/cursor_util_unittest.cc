@@ -4,6 +4,7 @@
 
 #include "ui/wm/core/cursor_util.h"
 
+#include "base/numerics/safe_conversions.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/skia/include/core/SkBitmap.h"
@@ -14,7 +15,9 @@
 #include "ui/base/resource/resource_scale_factor.h"
 #include "ui/display/display.h"
 #include "ui/gfx/geometry/point.h"
+#include "ui/gfx/geometry/size.h"
 #include "ui/gfx/geometry/skia_conversions.h"
+#include "ui/gfx/image/image_skia.h"
 
 namespace wm {
 namespace {
@@ -77,46 +80,45 @@ TEST_P(CursorUtilTest, ScaleAndRotate) {
 INSTANTIATE_TEST_SUITE_P(All, CursorUtilTest, testing::Bool());
 
 TEST(CursorUtil, GetCursorData) {
-  const auto kDefaultSize = ui::CursorSize::kNormal;
-  const float kDefaultScale = 1.0f;
-  const auto kDefaultRotation = display::Display::ROTATE_0;
+  // Data from `kNormalCursorResourceData` and `kLargeCursorResourceData`.
+  constexpr struct {
+    CursorType cursor;
+    gfx::Size size[2];         // indexed by cursor size.
+    gfx::Point hotspot[2][2];  // indexed by cursor size and scale.
+  } kTestCases[] = {
+      {CursorType::kPointer,
+       {gfx::Size(25, 25), gfx::Size(64, 64)},
+       {{gfx::Point(4, 4), gfx::Point(7, 7)},
+        {gfx::Point(10, 10), gfx::Point(20, 20)}}},
+      {CursorType::kWait,
+       {gfx::Size(16, 16), gfx::Size(16, 16)},
+       {{gfx::Point(7, 7), gfx::Point(14, 14)},
+        {gfx::Point(7, 7), gfx::Point(14, 14)}}},
+  };
 
-  const auto pointer_cursor_data = GetCursorData(
-      CursorType::kPointer, kDefaultSize, kDefaultScale, kDefaultRotation);
-  ASSERT_TRUE(pointer_cursor_data);
-  EXPECT_EQ(pointer_cursor_data->bitmaps.size(), 1u);
-  EXPECT_FALSE(pointer_cursor_data->hotspot.IsOrigin());
-
-  const auto wait_cursor_data = GetCursorData(CursorType::kWait, kDefaultSize,
-                                              kDefaultScale, kDefaultRotation);
-  ASSERT_TRUE(wait_cursor_data);
-  EXPECT_GT(wait_cursor_data->bitmaps.size(), 1u);
-  EXPECT_FALSE(wait_cursor_data->hotspot.IsOrigin());
-
-  // Test for different scale factors.
-
-  // Data from CursorType::kPointer resources:
-  const auto kSize = gfx::Size(25, 25);
-  const auto kHotspot1x = gfx::Point(4, 4);
-  const auto kHotspot2x = gfx::Point(7, 7);
-
-  bool resource_2x_available =
-      ui::ResourceBundle::GetSharedInstance().GetMaxResourceScaleFactor() ==
-      ui::k200Percent;
-
-  const float kScales[] = {0.8f, 1.0f, 1.3f, 1.5f, 2.0f, 2.5f};
-  for (const auto scale : kScales) {
-    const auto pointer_data = GetCursorData(CursorType::kPointer, kDefaultSize,
-                                            scale, kDefaultRotation);
-    ASSERT_TRUE(pointer_data);
-    ASSERT_EQ(pointer_data->bitmaps.size(), 1u);
-    // TODO(https://crbug.com/1193775): fractional scales are not supported, and
-    // only the bitmap is scaled.
-    EXPECT_EQ(gfx::SkISizeToSize(pointer_data->bitmaps[0].dimensions()),
-              gfx::ScaleToCeiledSize(kSize, scale));  // ImageSkia uses ceil.
-    EXPECT_EQ(pointer_data->hotspot, scale == 1.0f || !resource_2x_available
-                                         ? kHotspot1x
-                                         : kHotspot2x);
+  for (const float scale : {0.8f, 1.0f, 1.3f, 1.5f, 2.0f, 2.5f}) {
+    SCOPED_TRACE(testing::Message() << "scale " << scale);
+    for (const auto size : {ui::CursorSize::kNormal, ui::CursorSize::kLarge}) {
+      SCOPED_TRACE(testing::Message()
+                   << "size " << base::checked_cast<int>(scale));
+      for (const auto& test : kTestCases) {
+        SCOPED_TRACE(test.cursor);
+        constexpr auto kDefaultRotation = display::Display::ROTATE_0;
+        const auto pointer_data =
+            GetCursorData(test.cursor, size, scale, kDefaultRotation);
+        ASSERT_TRUE(pointer_data);
+        ASSERT_GT(pointer_data->bitmaps.size(), 0u);
+        EXPECT_EQ(gfx::SkISizeToSize(pointer_data->bitmaps[0].dimensions()),
+                  gfx::ScaleToFlooredSize(
+                      test.size[base::checked_cast<int>(size)], scale));
+        const float resource_scale = gfx::ImageSkia::MapToResourceScale(scale);
+        EXPECT_EQ(pointer_data->hotspot,
+                  gfx::ScaleToFlooredPoint(
+                      test.hotspot[base::checked_cast<int>(size)]
+                                  [base::checked_cast<int>(resource_scale) - 1],
+                      scale / resource_scale));
+      }
+    }
   }
 }
 

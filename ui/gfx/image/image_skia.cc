@@ -42,7 +42,7 @@ std::vector<float>* g_supported_scales = NULL;
 // The difference to fall back to the smaller scale factor rather than the
 // larger one. For example, assume 1.20 is requested but only 1.0 and 2.0 are
 // supported. In that case, not fall back to 2.0 but 1.0, and then expand
-// the image to 1.25.
+// the image to 1.20.
 const float kFallbackToSmallerScaleDiff = 0.20f;
 
 }  // namespace
