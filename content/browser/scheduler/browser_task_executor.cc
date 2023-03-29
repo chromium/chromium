@@ -25,6 +25,7 @@
 #if BUILDFLAG(IS_ANDROID)
 #include "base/android/task_scheduler/post_task_android.h"
 #include "base/android/task_scheduler/task_runner_android.h"
+#include "base/android/task_scheduler/task_traits_android.h"
 #endif
 
 using QueueType = content::BrowserTaskQueues::QueueType;
@@ -64,6 +65,27 @@ BrowserThread::ID ExtractBrowserThreadId(const base::TaskTraits& traits) {
 // |g_browser_task_executor| is intentionally leaked on shutdown.
 BrowserTaskExecutor* g_browser_task_executor = nullptr;
 
+#if BUILDFLAG(IS_ANDROID)
+scoped_refptr<base::SingleThreadTaskRunner> GetTaskRunnerForAndroidMainThread(
+    ::TaskTraits android_traits) {
+  BrowserTaskTraits traits;
+  switch (android_traits) {
+    case ::TaskTraits::UI_BEST_EFFORT:
+      traits = {base::TaskPriority::BEST_EFFORT};
+      break;
+    case ::TaskTraits::UI_USER_VISIBLE:
+      traits = {base::TaskPriority::USER_VISIBLE};
+      break;
+    case ::TaskTraits::UI_USER_BLOCKING:
+      traits = {base::TaskPriority::USER_BLOCKING};
+      break;
+    default:
+      NOTREACHED();
+  }
+  return g_browser_task_executor->GetUIThreadTaskRunner(traits);
+}
+#endif
+
 }  // namespace
 
 BaseBrowserTaskExecutor::BaseBrowserTaskExecutor() = default;
@@ -76,24 +98,6 @@ bool BaseBrowserTaskExecutor::PostDelayedTask(const base::Location& from_here,
                                               base::TimeDelta delay) {
   return GetTaskRunner(ExtractBrowserThreadId(traits), traits)
       ->PostDelayedTask(from_here, std::move(task), delay);
-}
-
-scoped_refptr<base::TaskRunner> BaseBrowserTaskExecutor::CreateTaskRunner(
-    const base::TaskTraits& traits) {
-  return GetTaskRunner(ExtractBrowserThreadId(traits), traits);
-}
-
-scoped_refptr<base::SequencedTaskRunner>
-BaseBrowserTaskExecutor::CreateSequencedTaskRunner(
-    const base::TaskTraits& traits) {
-  return GetTaskRunner(ExtractBrowserThreadId(traits), traits);
-}
-
-scoped_refptr<base::SingleThreadTaskRunner>
-BaseBrowserTaskExecutor::CreateSingleThreadTaskRunner(
-    const base::TaskTraits& traits,
-    base::SingleThreadTaskRunnerThreadMode thread_mode) {
-  return GetTaskRunner(ExtractBrowserThreadId(traits), traits);
 }
 
 #if BUILDFLAG(IS_WIN)
@@ -226,8 +230,8 @@ void BrowserTaskExecutor::CreateInternal(
 #if BUILDFLAG(IS_ANDROID)
   // In Android Java, UI thread is a base/ concept, but needs to know how that
   // maps onto the BrowserThread::UI in C++.
-  base::TaskRunnerAndroid::SetUiThreadExtension(
-      {BrowserTaskTraitsExtension::kExtensionId, {}});
+  base::TaskRunnerAndroid::SetUiThreadTaskRunnerCallback(
+      base::BindRepeating(&GetTaskRunnerForAndroidMainThread));
   base::PostTaskAndroid::SignalNativeSchedulerReady();
 #endif
 }

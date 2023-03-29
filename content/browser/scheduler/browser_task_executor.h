@@ -44,16 +44,6 @@ class CONTENT_EXPORT BaseBrowserTaskExecutor : public base::TaskExecutor {
                        base::OnceClosure task,
                        base::TimeDelta delay) override;
 
-  scoped_refptr<base::TaskRunner> CreateTaskRunner(
-      const base::TaskTraits& traits) override;
-
-  scoped_refptr<base::SequencedTaskRunner> CreateSequencedTaskRunner(
-      const base::TaskTraits& traits) override;
-
-  scoped_refptr<base::SingleThreadTaskRunner> CreateSingleThreadTaskRunner(
-      const base::TaskTraits& traits,
-      base::SingleThreadTaskRunnerThreadMode thread_mode) override;
-
 #if BUILDFLAG(IS_WIN)
   scoped_refptr<base::SingleThreadTaskRunner> CreateCOMSTATaskRunner(
       const base::TaskTraits& traits,

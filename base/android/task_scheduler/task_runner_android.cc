@@ -9,7 +9,6 @@
 #include <utility>
 
 #include "base/android/jni_string.h"
-#include "base/android/task_scheduler/task_traits_android.h"
 #include "base/android_runtime_jni_headers/Runnable_jni.h"
 #include "base/base_jni_headers/TaskRunnerImpl_jni.h"
 #include "base/check.h"
@@ -17,6 +16,7 @@
 #include "base/strings/strcat.h"
 #include "base/task/task_executor.h"
 #include "base/task/task_traits.h"
+#include "base/task/thread_pool.h"
 #include "base/task/thread_pool/thread_pool_impl.h"
 #include "base/task/thread_pool/thread_pool_instance.h"
 #include "base/time/time.h"
@@ -26,32 +26,10 @@ namespace base {
 
 namespace {
 
-static TaskTraitsExtensionStorage g_ui_thread_extension;
-
-// TODO(1026641): Make destination explicit (separate APIs) on Java side too and
-// get rid of the need for TaskTraitsExtension/etc to reach the UI thread.
-TaskExecutor* GetTaskExecutor(bool use_thread_pool, const TaskTraits& traits) {
-  const bool has_extension =
-      traits.extension_id() != TaskTraitsExtensionStorage::kInvalidExtensionId;
-  DCHECK(has_extension ^ use_thread_pool)
-      << "A destination (e.g. ThreadPool or UiThreadTaskTraits) is required.";
-
-  if (use_thread_pool) {
-    DCHECK(ThreadPoolInstance::Get())
-        << "Hint: if this is in a unit test, you're likely merely missing a "
-           "base::test::TaskEnvironment member in your fixture (or your "
-           "fixture is using a base::test::SingleThreadTaskEnvironment and now "
-           "needs a full base::test::TaskEnvironment).\n";
-    return static_cast<internal::ThreadPoolImpl*>(ThreadPoolInstance::Get());
-  }
-
-  // Assume |has_extension| per above invariant.
-  TaskExecutor* executor = GetRegisteredTaskExecutorForTraits(traits);
-  DCHECK(executor)
-      << "A TaskExecutor wasn't yet registered for this extension.\n"
-         "Hint: if this is in a unit test, you're likely missing a "
-         "content::BrowserTaskEnvironment member in your fixture.";
-  return executor;
+TaskRunnerAndroid::UiThreadTaskRunnerCallback& GetUiThreadTaskRunnerCallback() {
+  static base::NoDestructor<TaskRunnerAndroid::UiThreadTaskRunnerCallback>
+      callback;
+  return *callback;
 }
 
 void RunJavaTask(base::android::ScopedJavaGlobalRef<jobject> task,
@@ -66,16 +44,6 @@ void RunJavaTask(base::android::ScopedJavaGlobalRef<jobject> task,
 }
 
 }  // namespace
-
-// As a class so it can be friend'ed.
-class AndroidTaskTraits {
- public:
-  AndroidTaskTraits() = delete;
-
-  static TaskTraits CreateForUi(base::TaskPriority priority) {
-    return TaskTraits(priority, false, g_ui_thread_extension);
-  }
-};
 
 jlong JNI_TaskRunnerImpl_Init(JNIEnv* env,
                               jint task_runner_type,
@@ -146,41 +114,42 @@ std::unique_ptr<TaskRunnerAndroid> TaskRunnerAndroid::Create(
       task_traits = {base::MayBlock(), TaskPriority::USER_BLOCKING};
       break;
     case ::TaskTraits::UI_BEST_EFFORT:
-      use_thread_pool = false;
-      task_traits = AndroidTaskTraits::CreateForUi(TaskPriority::BEST_EFFORT);
-      break;
+      [[fallthrough]];
     case ::TaskTraits::UI_USER_VISIBLE:
-      use_thread_pool = false;
-      task_traits = AndroidTaskTraits::CreateForUi(TaskPriority::USER_VISIBLE);
-      break;
+      [[fallthrough]];
     case ::TaskTraits::UI_USER_BLOCKING:
       use_thread_pool = false;
-      task_traits = AndroidTaskTraits::CreateForUi(TaskPriority::USER_BLOCKING);
       break;
   }
-  TaskExecutor* const task_executor =
-      GetTaskExecutor(use_thread_pool, task_traits);
   scoped_refptr<TaskRunner> task_runner;
-  switch (static_cast<TaskRunnerType>(task_runner_type)) {
-    case TaskRunnerType::BASE:
-      task_runner = task_executor->CreateTaskRunner(task_traits);
-      break;
-    case TaskRunnerType::SEQUENCED:
-      task_runner = task_executor->CreateSequencedTaskRunner(task_traits);
-      break;
-    case TaskRunnerType::SINGLE_THREAD:
-      task_runner = task_executor->CreateSingleThreadTaskRunner(
-          task_traits, SingleThreadTaskRunnerThreadMode::SHARED);
-      break;
+  if (use_thread_pool) {
+    switch (static_cast<TaskRunnerType>(task_runner_type)) {
+      case TaskRunnerType::BASE:
+        task_runner = base::ThreadPool::CreateTaskRunner(task_traits);
+        break;
+      case TaskRunnerType::SEQUENCED:
+        task_runner = base::ThreadPool::CreateSequencedTaskRunner(task_traits);
+        break;
+      case TaskRunnerType::SINGLE_THREAD:
+        task_runner = base::ThreadPool::CreateSingleThreadTaskRunner(
+            task_traits, SingleThreadTaskRunnerThreadMode::SHARED);
+        break;
+    }
+  } else {
+    CHECK(static_cast<TaskRunnerType>(task_runner_type) ==
+          TaskRunnerType::SINGLE_THREAD);
+    CHECK(GetUiThreadTaskRunnerCallback());
+    task_runner = GetUiThreadTaskRunnerCallback().Run(
+        static_cast<::TaskTraits>(j_task_traits));
   }
   return std::make_unique<TaskRunnerAndroid>(
       task_runner, static_cast<TaskRunnerType>(task_runner_type));
 }
 
 // static
-void TaskRunnerAndroid::SetUiThreadExtension(
-    TaskTraitsExtensionStorage extension) {
-  g_ui_thread_extension = extension;
+void TaskRunnerAndroid::SetUiThreadTaskRunnerCallback(
+    UiThreadTaskRunnerCallback callback) {
+  GetUiThreadTaskRunnerCallback() = std::move(callback);
 }
 
 }  // namespace base

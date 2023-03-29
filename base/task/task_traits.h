@@ -21,8 +21,6 @@
 
 namespace base {
 
-class AndroidTaskTraits;
-
 // Valid priorities supported by the task scheduling infrastructure.
 //
 // Note: internal algorithms depend on priorities being expressed as a
@@ -325,22 +323,6 @@ class BASE_EXPORT TaskTraits {
   }
 
  private:
-  friend AndroidTaskTraits;
-
-  // For use by TaskRunnerAndroid.
-  TaskTraits(TaskPriority priority,
-             bool may_block,
-             TaskTraitsExtensionStorage extension)
-      : extension_(extension),
-        priority_(priority),
-        shutdown_behavior_(
-            static_cast<uint8_t>(TaskShutdownBehavior::SKIP_ON_SHUTDOWN)),
-        thread_policy_(static_cast<uint8_t>(ThreadPolicy::PREFER_BACKGROUND)),
-        may_block_(may_block),
-        with_base_sync_primitives_(false) {
-    static_assert(sizeof(TaskTraits) == 14, "Keep this constructor up to date");
-  }
-
   // This bit is set in |priority_|, |shutdown_behavior_| and |thread_policy_|
   // when the value was set explicitly.
   static constexpr uint8_t kIsExplicitFlag = 0x80;

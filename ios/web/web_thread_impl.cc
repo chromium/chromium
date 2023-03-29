@@ -145,21 +145,6 @@ class WebThreadTaskExecutor : public base::TaskExecutor {
         GetWebThreadIdentifier(traits), from_here, std::move(task), delay,
         traits.GetExtension<WebTaskTraitsExtension>().nestable());
   }
-  scoped_refptr<base::TaskRunner> CreateTaskRunner(
-      const base::TaskTraits& traits) override {
-    return GetTaskRunner(GetWebThreadIdentifier(traits), traits);
-  }
-  scoped_refptr<base::SequencedTaskRunner> CreateSequencedTaskRunner(
-      const base::TaskTraits& traits) override {
-    return GetTaskRunner(GetWebThreadIdentifier(traits), traits);
-  }
-  scoped_refptr<base::SingleThreadTaskRunner> CreateSingleThreadTaskRunner(
-      const base::TaskTraits& traits,
-      base::SingleThreadTaskRunnerThreadMode thread_mode) override {
-    // It's not possible to request DEDICATED access to a WebThread.
-    DCHECK_EQ(thread_mode, base::SingleThreadTaskRunnerThreadMode::SHARED);
-    return GetTaskRunner(GetWebThreadIdentifier(traits), traits);
-  }
 
   scoped_refptr<base::SingleThreadTaskRunner> GetTaskRunner(
       WebThread::ID identifier,

@@ -8,7 +8,9 @@
 #include <memory>
 
 #include "base/android/jni_weak_ref.h"
+#include "base/android/task_scheduler/task_traits_android.h"
 #include "base/base_export.h"
+#include "base/functional/callback_forward.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/task/task_traits_extension.h"
 
@@ -41,7 +43,12 @@ class BASE_EXPORT TaskRunnerAndroid {
   static std::unique_ptr<TaskRunnerAndroid> Create(jint task_runner_type,
                                                    jint j_task_traits);
 
-  static void SetUiThreadExtension(TaskTraitsExtensionStorage extension);
+  using UiThreadTaskRunnerCallback =
+      RepeatingCallback<scoped_refptr<base::SingleThreadTaskRunner>(
+          ::TaskTraits)>;
+
+  static void SetUiThreadTaskRunnerCallback(
+      UiThreadTaskRunnerCallback callback);
 
  private:
   const scoped_refptr<TaskRunner> task_runner_;

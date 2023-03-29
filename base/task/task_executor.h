@@ -35,24 +35,6 @@ class BASE_EXPORT TaskExecutor {
                                OnceClosure task,
                                TimeDelta delay) = 0;
 
-  // Returns a TaskRunner whose PostTask invocations result in scheduling tasks
-  // using |traits|. Tasks may run in any order and in parallel.
-  virtual scoped_refptr<TaskRunner> CreateTaskRunner(
-      const TaskTraits& traits) = 0;
-
-  // Returns a SequencedTaskRunner whose PostTask invocations result in
-  // scheduling tasks using |traits|. Tasks run one at a time in posting order.
-  virtual scoped_refptr<SequencedTaskRunner> CreateSequencedTaskRunner(
-      const TaskTraits& traits) = 0;
-
-  // Returns a SingleThreadTaskRunner whose PostTask invocations result in
-  // scheduling tasks using |traits|. Tasks run on a single thread in posting
-  // order. If |traits| identifies an existing thread,
-  // SingleThreadTaskRunnerThreadMode::SHARED must be used.
-  virtual scoped_refptr<SingleThreadTaskRunner> CreateSingleThreadTaskRunner(
-      const TaskTraits& traits,
-      SingleThreadTaskRunnerThreadMode thread_mode) = 0;
-
 #if BUILDFLAG(IS_WIN)
   // Returns a SingleThreadTaskRunner whose PostTask invocations result in
   // scheduling tasks using |traits| in a COM Single-Threaded Apartment. Tasks

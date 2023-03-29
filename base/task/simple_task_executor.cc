@@ -35,23 +35,6 @@ bool SimpleTaskExecutor::PostDelayedTask(const Location& from_here,
   return task_queue_->PostDelayedTask(from_here, std::move(task), delay);
 }
 
-scoped_refptr<TaskRunner> SimpleTaskExecutor::CreateTaskRunner(
-    const TaskTraits& traits) {
-  return task_queue_;
-}
-
-scoped_refptr<SequencedTaskRunner>
-SimpleTaskExecutor::CreateSequencedTaskRunner(const TaskTraits& traits) {
-  return task_queue_;
-}
-
-scoped_refptr<SingleThreadTaskRunner>
-SimpleTaskExecutor::CreateSingleThreadTaskRunner(
-    const TaskTraits& traits,
-    SingleThreadTaskRunnerThreadMode thread_mode) {
-  return task_queue_;
-}
-
 #if BUILDFLAG(IS_WIN)
 scoped_refptr<SingleThreadTaskRunner>
 SimpleTaskExecutor::CreateCOMSTATaskRunner(

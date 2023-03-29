@@ -87,12 +87,7 @@ class BASE_EXPORT ThreadPoolImpl : public ThreadPoolInstance,
                        const TaskTraits& traits,
                        OnceClosure task,
                        TimeDelta delay) override;
-  scoped_refptr<TaskRunner> CreateTaskRunner(const TaskTraits& traits) override;
-  scoped_refptr<SequencedTaskRunner> CreateSequencedTaskRunner(
-      const TaskTraits& traits) override;
-  scoped_refptr<SingleThreadTaskRunner> CreateSingleThreadTaskRunner(
-      const TaskTraits& traits,
-      SingleThreadTaskRunnerThreadMode thread_mode) override;
+
 #if BUILDFLAG(IS_WIN)
   scoped_refptr<SingleThreadTaskRunner> CreateCOMSTATaskRunner(
       const TaskTraits& traits,
@@ -125,6 +120,13 @@ class BASE_EXPORT ThreadPoolImpl : public ThreadPoolInstance,
   // exposed here on this internal API rather than as a ThreadPoolInstance
   // configuration param because only one internal test truly needs this.
   static void SetSynchronousThreadStartForTesting(bool enabled);
+
+  scoped_refptr<TaskRunner> CreateTaskRunner(const TaskTraits& traits);
+  scoped_refptr<SequencedTaskRunner> CreateSequencedTaskRunner(
+      const TaskTraits& traits);
+  scoped_refptr<SingleThreadTaskRunner> CreateSingleThreadTaskRunner(
+      const TaskTraits& traits,
+      SingleThreadTaskRunnerThreadMode thread_mode);
 
  private:
   // Invoked after |num_fences_| or |num_best_effort_fences_| is updated. Sets

@@ -26,15 +26,6 @@ class BASE_EXPORT SimpleTaskExecutor : public TaskExecutor {
                        OnceClosure task,
                        TimeDelta delay) override;
 
-  scoped_refptr<TaskRunner> CreateTaskRunner(const TaskTraits& traits) override;
-
-  scoped_refptr<SequencedTaskRunner> CreateSequencedTaskRunner(
-      const TaskTraits& traits) override;
-
-  scoped_refptr<SingleThreadTaskRunner> CreateSingleThreadTaskRunner(
-      const TaskTraits& traits,
-      SingleThreadTaskRunnerThreadMode thread_mode) override;
-
 #if BUILDFLAG(IS_WIN)
   scoped_refptr<SingleThreadTaskRunner> CreateCOMSTATaskRunner(
       const TaskTraits& traits,
