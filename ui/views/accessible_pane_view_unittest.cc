@@ -4,6 +4,7 @@
 
 #include "ui/views/accessible_pane_view.h"
 
+#include <memory>
 #include <utility>
 
 #include "base/memory/raw_ptr.h"
@@ -270,7 +271,7 @@ TEST_F(AccessiblePaneViewTest, MAYBE_DoesntCrashOnEscapeWithRemovedView) {
 }
 
 TEST_F(AccessiblePaneViewTest, AccessibleProperties) {
-  TestBarView* test_view = new TestBarView();
+  std::unique_ptr<TestBarView> test_view = std::make_unique<TestBarView>();
   test_view->SetAccessibleName(u"Name");
   test_view->SetAccessibleDescription(u"Description");
   EXPECT_EQ(test_view->GetAccessibleName(), u"Name");
