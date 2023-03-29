@@ -230,9 +230,10 @@ class CreditCard : public AutofillDataModel {
   [[nodiscard]] bool IsLocalDuplicateOfServerCard(
       const CreditCard& other) const;
 
-  // Determines if |this| has the same number as |other|. If either is a masked
-  // server card, compares their last four digits and expiration dates.
-  [[nodiscard]] bool HasSameNumberAs(const CreditCard& other) const;
+  // Determines if `this` is the matching card as `other` (same card number and
+  // expiration date). If either is a masked server card, compares their last
+  // four digits and expiration dates.
+  [[nodiscard]] bool MatchingCardDetails(const CreditCard& other) const;
 
   // Equality operators compare GUIDs, origins, and the contents.
   // Usage metadata (use count, use date, modification date) are NOT compared.

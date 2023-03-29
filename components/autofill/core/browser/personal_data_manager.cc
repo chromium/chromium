@@ -1162,8 +1162,9 @@ CreditCard* PersonalDataManager::GetCreditCardByNumber(
   numbered_card.SetNumber(base::ASCIIToUTF16(number));
   for (CreditCard* credit_card : GetCreditCards()) {
     DCHECK(credit_card);
-    if (credit_card->HasSameNumberAs(numbered_card))
+    if (credit_card->MatchingCardDetails(numbered_card)) {
       return credit_card;
+    }
   }
   return nullptr;
 }
@@ -2270,8 +2271,9 @@ bool PersonalDataManager::IsServerCard(const CreditCard* credit_card) const {
   std::vector<CreditCard*> server_credit_cards = GetServerCreditCards();
   // Check whether the current card is already uploaded.
   for (const CreditCard* server_card : server_credit_cards) {
-    if (credit_card->HasSameNumberAs(*server_card))
+    if (credit_card->MatchingCardDetails(*server_card)) {
       return true;
+    }
   }
   return false;
 }

@@ -292,18 +292,6 @@ void TestPersonalDataManager::ClearAllLocalData() {
   local_credit_cards_.clear();
 }
 
-CreditCard* TestPersonalDataManager::GetCreditCardByNumber(
-    const std::string& number) {
-  CreditCard numbered_card;
-  numbered_card.SetNumber(base::UTF8ToUTF16(number));
-  for (CreditCard* credit_card : GetCreditCards()) {
-    DCHECK(credit_card);
-    if (credit_card->HasSameNumberAs(numbered_card))
-      return credit_card;
-  }
-  return nullptr;
-}
-
 bool TestPersonalDataManager::IsDataLoaded() const {
   return true;
 }

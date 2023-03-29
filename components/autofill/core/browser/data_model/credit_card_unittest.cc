@@ -727,21 +727,21 @@ INSTANTIATE_TEST_SUITE_P(
             FULL_SERVER_CARD, "John Dillinger", "423456789012", "01", "2010",
             "2", nullptr, false}));
 
-TEST(CreditCardTest, HasSameNumberAs) {
+TEST(CreditCardTest, MatchingCardDetails) {
   CreditCard a(base::GenerateGUID(), std::string());
   CreditCard b(base::GenerateGUID(), std::string());
 
   // Empty cards have the same empty number.
-  EXPECT_TRUE(a.HasSameNumberAs(b));
-  EXPECT_TRUE(b.HasSameNumberAs(a));
+  EXPECT_TRUE(a.MatchingCardDetails(b));
+  EXPECT_TRUE(b.MatchingCardDetails(a));
 
   // Cards with the same number are the same.
   a.set_record_type(CreditCard::LOCAL_CARD);
   a.SetRawInfo(CREDIT_CARD_NUMBER, u"4111111111111111");
   b.set_record_type(CreditCard::LOCAL_CARD);
   b.SetRawInfo(CREDIT_CARD_NUMBER, u"4111111111111111");
-  EXPECT_TRUE(a.HasSameNumberAs(b));
-  EXPECT_TRUE(b.HasSameNumberAs(a));
+  EXPECT_TRUE(a.MatchingCardDetails(b));
+  EXPECT_TRUE(b.MatchingCardDetails(a));
 
   // Local cards with different overall numbers shouldn't match even if the last
   // four digits are the same.
@@ -749,8 +749,8 @@ TEST(CreditCardTest, HasSameNumberAs) {
   a.SetRawInfo(CREDIT_CARD_NUMBER, u"4111111111111111");
   b.set_record_type(CreditCard::LOCAL_CARD);
   b.SetRawInfo(CREDIT_CARD_NUMBER, u"4111222222221111");
-  EXPECT_FALSE(a.HasSameNumberAs(b));
-  EXPECT_FALSE(b.HasSameNumberAs(a));
+  EXPECT_FALSE(a.MatchingCardDetails(b));
+  EXPECT_FALSE(b.MatchingCardDetails(a));
 
   // When one card is a full server card, the other is a local card, and the
   // cards have different overall numbers but the same last four digits, they
@@ -759,8 +759,8 @@ TEST(CreditCardTest, HasSameNumberAs) {
   a.SetRawInfo(CREDIT_CARD_NUMBER, u"4111111111111111");
   b.set_record_type(CreditCard::LOCAL_CARD);
   b.SetRawInfo(CREDIT_CARD_NUMBER, u"4111222222221111");
-  EXPECT_FALSE(a.HasSameNumberAs(b));
-  EXPECT_FALSE(b.HasSameNumberAs(a));
+  EXPECT_FALSE(a.MatchingCardDetails(b));
+  EXPECT_FALSE(b.MatchingCardDetails(a));
 
   // When one card is a masked server card, the other is a local card, and the
   // cards have the same last four digits, they should match.
@@ -768,8 +768,8 @@ TEST(CreditCardTest, HasSameNumberAs) {
   a.SetRawInfo(CREDIT_CARD_NUMBER, u"4111111111111111");
   b.set_record_type(CreditCard::LOCAL_CARD);
   b.SetRawInfo(CREDIT_CARD_NUMBER, u"4331111111111111");
-  EXPECT_TRUE(a.HasSameNumberAs(b));
-  EXPECT_TRUE(b.HasSameNumberAs(a));
+  EXPECT_TRUE(a.MatchingCardDetails(b));
+  EXPECT_TRUE(b.MatchingCardDetails(a));
 
   // When one card is a masked server card, the other is a full server card, and
   // the cards have the same last four digits, they should match.
@@ -777,8 +777,8 @@ TEST(CreditCardTest, HasSameNumberAs) {
   a.SetRawInfo(CREDIT_CARD_NUMBER, u"4111111111111111");
   b.set_record_type(CreditCard::FULL_SERVER_CARD);
   b.SetRawInfo(CREDIT_CARD_NUMBER, u"4331111111111111");
-  EXPECT_TRUE(a.HasSameNumberAs(b));
-  EXPECT_TRUE(b.HasSameNumberAs(a));
+  EXPECT_TRUE(a.MatchingCardDetails(b));
+  EXPECT_TRUE(b.MatchingCardDetails(a));
 
   // If one card is masked, then partial or missing expiration date information
   // should not prevent the function from returning true.
@@ -790,8 +790,8 @@ TEST(CreditCardTest, HasSameNumberAs) {
   b.SetRawInfo(CREDIT_CARD_NUMBER, u"4111111111111111");
   b.SetRawInfo(CREDIT_CARD_EXP_MONTH, u"");
   b.SetRawInfo(CREDIT_CARD_EXP_4_DIGIT_YEAR, u"");
-  EXPECT_TRUE(a.HasSameNumberAs(b));
-  EXPECT_TRUE(b.HasSameNumberAs(a));
+  EXPECT_TRUE(a.MatchingCardDetails(b));
+  EXPECT_TRUE(b.MatchingCardDetails(a));
 
   // If one card is masked, then non-matching expiration months should cause the
   // function to return false.
@@ -803,8 +803,8 @@ TEST(CreditCardTest, HasSameNumberAs) {
   b.SetRawInfo(CREDIT_CARD_NUMBER, u"4111111111111111");
   b.SetRawInfo(CREDIT_CARD_EXP_MONTH, u"03");
   b.SetRawInfo(CREDIT_CARD_EXP_4_DIGIT_YEAR, u"");
-  EXPECT_FALSE(a.HasSameNumberAs(b));
-  EXPECT_FALSE(b.HasSameNumberAs(a));
+  EXPECT_FALSE(a.MatchingCardDetails(b));
+  EXPECT_FALSE(b.MatchingCardDetails(a));
 
   // If one card is masked, then non-matching expiration years should cause the
   // function to return false.
@@ -816,8 +816,8 @@ TEST(CreditCardTest, HasSameNumberAs) {
   b.SetRawInfo(CREDIT_CARD_NUMBER, u"4111111111111111");
   b.SetRawInfo(CREDIT_CARD_EXP_MONTH, u"");
   b.SetRawInfo(CREDIT_CARD_EXP_4_DIGIT_YEAR, u"2026");
-  EXPECT_FALSE(a.HasSameNumberAs(b));
-  EXPECT_FALSE(b.HasSameNumberAs(a));
+  EXPECT_FALSE(a.MatchingCardDetails(b));
+  EXPECT_FALSE(b.MatchingCardDetails(a));
 }
 
 TEST(CreditCardTest, Compare) {

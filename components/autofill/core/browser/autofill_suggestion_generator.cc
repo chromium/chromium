@@ -384,7 +384,8 @@ std::u16string AutofillSuggestionGenerator::GetDisplayNicknameForCreditCard(
   // prefer to use the nickname of a local card.
   std::vector<CreditCard*> candidates = personal_data_->GetCreditCards();
   for (CreditCard* candidate : candidates) {
-    if (candidate->guid() != card.guid() && candidate->HasSameNumberAs(card) &&
+    if (candidate->guid() != card.guid() &&
+        candidate->MatchingCardDetails(card) &&
         candidate->HasNonEmptyValidNickname()) {
       return candidate->nickname();
     }

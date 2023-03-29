@@ -73,7 +73,6 @@ class TestPersonalDataManager : public PersonalDataManager {
   bool ShouldSuggestServerCards() const override;
   std::string CountryCodeForCurrentTimezone() const override;
   void ClearAllLocalData() override;
-  CreditCard* GetCreditCardByNumber(const std::string& number) override;
   bool IsDataLoaded() const override;
   bool IsSyncFeatureEnabled() const override;
   CoreAccountInfo GetAccountInfoForPaymentsServer() const override;

@@ -834,7 +834,7 @@ absl::optional<CreditCard> FormDataImporter::ExtractCreditCard(
     return (card->record_type() == CreditCard::MASKED_SERVER_CARD &&
             card->LastFourDigits() == cand.LastFourDigits()) ||
            (card->record_type() == CreditCard::FULL_SERVER_CARD &&
-            cand.HasSameNumberAs(*card));
+            cand.MatchingCardDetails(*card));
   };
   auto find_matching_server_card = [&]() {
     const auto& server_cards = personal_data_manager_->GetServerCreditCards();
