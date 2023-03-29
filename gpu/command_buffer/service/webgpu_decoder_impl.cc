@@ -1213,7 +1213,7 @@ bool WebGPUDecoderImpl::IsFeatureExposed(WGPUAdapter adapter,
           return false;
         }
       }
-      return true;
+      return allow_unsafe_apis_;
     }
     default:
       return false;
