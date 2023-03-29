@@ -1598,7 +1598,12 @@ bool content::IsNSRange(id value) {
     // CHECK() but caused too many crashes, with unknown cause.
     return nil;
   }
-  CHECK(root_manager->GetParentView());
+  if (!root_manager->GetParentView()) {
+    // TODO(crbug.com/1425682) Find out why this happens, there should always be
+    // a parent view. This used to be a CHECK() but caused too many crashes.
+    // Repro steps are available in the bug.
+    return nil;
+  }
   return root_manager->GetWindow();  // Can be null for inactive tabs.
 }
 
