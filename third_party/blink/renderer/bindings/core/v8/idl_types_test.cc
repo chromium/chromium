@@ -25,6 +25,11 @@ static_assert(std::is_base_of<IDLBase, IDLBoolean>::value,
 static_assert(std::is_same<IDLBoolean::ImplType, bool>::value,
               "IDLBoolean's ImplType is bool");
 
+static_assert(std::is_base_of<IDLBase, IDLBigint>::value,
+              "IDLBigint inherits from IDLBase");
+static_assert(std::is_same<IDLBigint::ImplType, BigInt>::value,
+              "IDLBigint's ImplType is BigInt");
+
 static_assert(std::is_base_of<IDLBase, IDLByte>::value,
               "IDLByte inherits from IDLBase");
 static_assert(std::is_same<IDLByte::ImplType, int8_t>::value,

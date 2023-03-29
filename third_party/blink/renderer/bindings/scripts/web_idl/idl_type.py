@@ -336,6 +336,11 @@ class IdlType(WithExtendedAttributes, WithDebugInfo):
         return False
 
     @property
+    def is_bigint(self):
+        """Returns True if this is a bigint."""
+        return False
+
+    @property
     def is_boolean(self):
         """Returns True if this is boolean."""
         return False
@@ -644,7 +649,8 @@ class SimpleType(IdlType):
     # https://webidl.spec.whatwg.org/#BufferSource
     _BUFFER_SOURCE_TYPES = (
         ('ArrayBuffer', 'ArrayBufferView', 'DataView') + _TYPED_ARRAY_TYPES)
-    _MISC_TYPES = ('any', 'boolean', 'object', 'symbol', 'undefined', 'void')
+    _MISC_TYPES = ('any', 'bigint', 'boolean', 'object', 'symbol', 'undefined',
+                   'void')
     _VALID_TYPES = set(_NUMERIC_TYPES + _STRING_TYPES + _BUFFER_SOURCE_TYPES +
                        _MISC_TYPES)
 
@@ -695,6 +701,10 @@ class SimpleType(IdlType):
     @property
     def is_floating_point_numeric(self):
         return self._name in SimpleType._FLOATING_POINT_NUMERIC_TYPES
+
+    @property
+    def is_bigint(self):
+        return self._name == 'bigint'
 
     @property
     def is_boolean(self):

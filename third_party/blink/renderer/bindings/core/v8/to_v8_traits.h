@@ -71,6 +71,15 @@ struct ToV8Traits<IDLBoolean> {
   }
 };
 
+// Bigint
+template <>
+struct ToV8Traits<IDLBigint> {
+  [[nodiscard]] static v8::MaybeLocal<v8::Value> ToV8(ScriptState* script_state,
+                                                      const BigInt& bigint) {
+    return bigint.ToV8(script_state->GetContext());
+  }
+};
+
 // Integer
 // int8_t
 template <bindings::IDLIntegerConvMode mode>

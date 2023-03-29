@@ -221,6 +221,12 @@ def blink_type_info(idl_type):
                         const_ref_fmt="{}",
                         clear_member_var_fmt="{} = 0")
 
+    if real_type.is_bigint:
+        return TypeInfo("BigInt",
+                        ref_fmt="{}&",
+                        const_ref_fmt="const {}&",
+                        clear_member_var_fmt="{} = BigInt()")
+
     if real_type.is_string:
         return TypeInfo("String",
                         ref_fmt="{}&",
@@ -420,7 +426,7 @@ def _native_value_tag_impl(idl_type):
     real_type = idl_type.unwrap(typedef=True)
 
     if (real_type.is_boolean or real_type.is_numeric or real_type.is_string
-            or real_type.is_any or real_type.is_object):
+            or real_type.is_any or real_type.is_object or real_type.is_bigint):
         return "IDL{}".format(
             idl_type.type_name_with_extended_attribute_key_values)
 

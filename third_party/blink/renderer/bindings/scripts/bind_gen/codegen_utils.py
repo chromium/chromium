@@ -92,6 +92,9 @@ def collect_forward_decls_and_include_headers(idl_types):
                 "third_party/blink/renderer/bindings/core/v8/script_value.h")
         elif idl_type.is_boolean or idl_type.is_numeric:
             pass
+        elif idl_type.is_bigint:
+            header_include_headers.add(
+                "third_party/blink/renderer/platform/bindings/bigint.h")
         elif idl_type.is_data_view:
             header_include_headers.update([
                 "third_party/blink/renderer/core/typed_arrays/array_buffer_view_helpers.h",

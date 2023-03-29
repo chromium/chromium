@@ -375,31 +375,14 @@ bool Jsonify(const ScriptState& script_state,
 }
 
 base::expected<absl::uint128, String> CopyBigIntToUint128(
-    const ScriptValue& script_value) {
-  v8::Local<v8::Value> value = script_value.V8Value();
-  DCHECK(!value.IsEmpty());
-  if (!value->IsBigInt()) {
-    return base::unexpected("Not a BigInt");
+    const BigInt& bigint) {
+  if (!bigint.FitsIn128Bits()) {
+    return base::unexpected("Too large BigInt; Must fit in 128 bits");
   }
-  v8::Local<v8::BigInt> bigint = value.As<v8::BigInt>();
-  if (bigint->WordCount() > 2) {
-    return base::unexpected(String::Format(
-        "Too large BigInt; 64-bit words: %d, expected 2 or fewer",
-        bigint->WordCount()));
-  }
-
-  // Signals the size of the `words` array to `ToWordsArray()`. The number of
-  // elements actually used is then written here by the function.
-  int word_count = 2;
-  int sign_bit = 0;
-
-  uint64_t words[2] = {0, 0};  // Least significant to most significant.
-  bigint->ToWordsArray(&sign_bit, &word_count, words);
-  if (sign_bit) {
+  if (bigint.IsNegative()) {
     return base::unexpected("Negative BigInt cannot be converted to uint128");
   }
-
-  return absl::MakeUint128(words[1], words[0]);
+  return *bigint.ToUInt128();
 }
 
 // Returns nullptr if |origin_string| couldn't be parsed into an acceptable
@@ -1609,7 +1592,7 @@ bool CopyAuctionReportBuyerKeysFromIdlToMojo(
 
   output.auction_ad_config_non_shared_params->auction_report_buyer_keys
       .emplace();
-  for (const ScriptValue& value : input.auctionReportBuyerKeys()) {
+  for (const BigInt& value : input.auctionReportBuyerKeys()) {
     base::expected<absl::uint128, String> maybe_bucket =
         CopyBigIntToUint128(value);
     if (!maybe_bucket.has_value()) {

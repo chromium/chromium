@@ -22,6 +22,7 @@
 #include "third_party/blink/renderer/core/trustedtypes/trusted_types_util.h"
 #include "third_party/blink/renderer/core/typed_arrays/dom_data_view.h"
 #include "third_party/blink/renderer/core/typed_arrays/dom_typed_array.h"
+#include "third_party/blink/renderer/platform/bindings/bigint.h"
 #include "third_party/blink/renderer/platform/bindings/exception_messages.h"
 #include "third_party/blink/renderer/platform/heap/heap_traits.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
@@ -133,6 +134,21 @@ struct CORE_EXPORT NativeValueTraits<IDLOptional<IDLBoolean>>
                           v8::Local<v8::Value> value,
                           ExceptionState& exception_state) {
     return ToBoolean(isolate, value, exception_state);
+  }
+};
+
+// bigint
+template <>
+struct CORE_EXPORT NativeValueTraits<IDLBigint>
+    : public NativeValueTraitsBase<IDLBigint> {
+  static BigInt NativeValue(v8::Isolate* isolate,
+                            v8::Local<v8::Value> value,
+                            ExceptionState& exception_state) {
+    if (!value->IsBigInt()) {
+      exception_state.ThrowTypeError("The provided value is not a BigInt.");
+      return BigInt();
+    }
+    return BigInt(value.As<v8::BigInt>());
   }
 };
 

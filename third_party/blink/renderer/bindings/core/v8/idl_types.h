@@ -19,6 +19,7 @@
 
 namespace blink {
 
+class BigInt;
 class EventListener;
 class ScriptPromise;
 class ScriptValue;
@@ -31,6 +32,9 @@ struct IDLAny final : public IDLBaseHelper<ScriptValue> {};
 
 // boolean
 struct IDLBoolean final : public IDLBaseHelper<bool> {};
+
+// bigint
+struct IDLBigint final : public IDLBaseHelper<BigInt> {};
 
 // Integer types
 
