@@ -186,17 +186,17 @@ struct FieldMatches {
 // list of objects containing a string field of interest. Note that pointers may
 // be `nullptr` if the value at `field_path` is not found or is not a string.
 std::vector<const std::string*> ExtractResultList(
-    const base::Value* result,
+    const base::Value::Dict& result,
     const base::StringPiece& list_path,
     const base::StringPiece& field_path) {
-  const base::Value* values = result->FindListPath(list_path);
-  if (!values)
+  const base::Value::List* list = result.FindListByDottedPath(list_path);
+  if (!list) {
     return {};
+  }
 
-  const auto& list = values->GetList();
   std::vector<const std::string*> extracted;
-  for (const auto& value : list) {
-    auto* string = value.FindStringKey(field_path);
+  for (const auto& value : *list) {
+    auto* string = value.GetDict().FindString(field_path);
     if (string)
       extracted.push_back(string);
   }
@@ -209,7 +209,8 @@ double FieldWeight(const std::string& param_name, double default_weight) {
                                                    param_name, default_weight);
 }
 
-int CalculateScore(const std::u16string& input, const base::Value* result) {
+int CalculateScore(const std::u16string& input,
+                   const base::Value::Dict& result) {
   // Suggestions scored lower than |raw_score_cutoff| will be discarded.
   double raw_score_cutoff = base::GetFieldTrialParamByFeatureAsDouble(
       omnibox::kDocumentProvider, "RawDocScoreCutoff", .25);
@@ -221,17 +222,17 @@ int CalculateScore(const std::u16string& input, const base::Value* result) {
       omnibox::kDocumentProvider, "MaxDocScore", 1400);
 
   std::vector<FieldMatches> field_matches_vec = {
-      {FieldWeight("TitleWeight", .15), result->FindStringKey("title")},
+      {FieldWeight("TitleWeight", .15), result.FindString("title")},
       {FieldWeight("OwnerNamesWeight", .15),
        ExtractResultList(result, "metadata.owner.personNames", "displayName")},
       {FieldWeight("OwnerEmailsWeight", .15),
        ExtractResultList(result, "metadata.owner.emailAddresses",
                          "emailAddress")},
       {FieldWeight("SnippetWeight", .06),
-       result->FindStringPath("snippet.snippet")},
-      {FieldWeight("UrlWeight", 0), result->FindStringKey("url")},
+       result.FindStringByDottedPath("snippet.snippet")},
+      {FieldWeight("UrlWeight", 0), result.FindString("url")},
       {FieldWeight("MimeWeight", 0),
-       result->FindStringPath("metadata.mimeType")},
+       result.FindStringByDottedPath("metadata.mimeType")},
   };
   std::stable_sort(field_matches_vec.begin(), field_matches_vec.end(),
                    [](const FieldMatches& a, const FieldMatches& b) {
@@ -273,7 +274,7 @@ int CalculateScore(const std::u16string& input, const base::Value* result) {
 }
 
 // Return whether `user` owns the doc `result`.
-bool IsOwnedByUser(const std::string& user, const base::Value* result) {
+bool IsOwnedByUser(const std::string& user, const base::Value::Dict& result) {
   std::vector<const std::string*> owner_emails = ExtractResultList(
       result, "metadata.owner.emailAddresses", "emailAddress");
   const auto lower_user = base::i18n::ToLower(base::UTF8ToUTF16(user));
@@ -287,7 +288,7 @@ bool IsOwnedByUser(const std::string& user, const base::Value* result) {
 
 int BoostOwned(const int score,
                const std::string& user,
-               const base::Value* result) {
+               const base::Value::Dict& result) {
   int promotion = base::GetFieldTrialParamByFeatureAsInt(
       omnibox::kDocumentProvider, "OwnedDocPromotion", 0);
   int demotion = base::GetFieldTrialParamByFeatureAsInt(
@@ -301,13 +302,13 @@ int BoostOwned(const int score,
 // Return whether all words in `input` are contained in either the `result`
 // title or owners.
 bool IsCompletelyMatchedInTitleOrOwner(const std::u16string& input,
-                                       const base::Value* result) {
+                                       const base::Value::Dict& result) {
   // Accumulate a vector of the title and all owners.
   auto search_strings = ExtractResultList(
       result, "metadata.owner.emailAddresses", "emailAddress");
   Concat(search_strings, ExtractResultList(result, "metadata.owner.personNames",
                                            "displayName"));
-  search_strings.push_back(result->FindStringKey("title"));
+  search_strings.push_back(result.FindString("title"));
 
   // Extract a flat vector of words from the title and owners.
   const auto title_and_owner_words = std::accumulate(
@@ -420,8 +421,9 @@ bool ValidHostPrefix(const std::string& host) {
   return false;
 }
 
-std::string FindStringKeyOrEmpty(const base::Value& value, std::string key) {
-  auto* ptr = value.FindStringKey(key);
+std::string FindStringKeyOrEmpty(const base::Value::Dict& value,
+                                 base::StringPiece key) {
+  auto* ptr = value.FindString(key);
   return ptr ? *ptr : "";
 }
 
@@ -781,11 +783,11 @@ ACMatches DocumentProvider::ParseDocumentSearchResults(
   ACMatches matches;
 
   // Parse the results.
-  const base::Value* results = root_val.FindListKey("results");
+  const base::Value::List* results = root_val.GetDict().FindList("results");
   if (!results) {
     return matches;
   }
-  size_t num_results = results->GetList().size();
+  size_t num_results = results->size();
   UMA_HISTOGRAM_COUNTS_1M("Omnibox.DocumentSuggest.ResultCount", num_results);
 
   // During development/quality iteration we may wish to defeat server scores.
@@ -821,10 +823,12 @@ ACMatches DocumentProvider::ParseDocumentSearchResults(
   int low_quality_match_count = 0;
 
   for (size_t i = 0; i < num_results; i++) {
-    const base::Value& result = results->GetList()[i];
-    if (!result.is_dict()) {
+    const base::Value& result_value = (*results)[i];
+    if (!result_value.is_dict()) {
       return matches;
     }
+
+    const base::Value::Dict& result = result_value.GetDict();
     const std::string title = FindStringKeyOrEmpty(result, "title");
     const std::string url = FindStringKeyOrEmpty(result, "url");
     if (title.empty() || url.empty()) {
@@ -833,8 +837,8 @@ ACMatches DocumentProvider::ParseDocumentSearchResults(
 
     // Both client and server scores are calculated regardless of usage in order
     // to log them with |AutocompleteMatch::RecordAdditionalInfo| below.
-    int client_score = CalculateScore(input_.text(), &result);
-    int server_score = result.FindIntKey("score").value_or(0);
+    int client_score = CalculateScore(input_.text(), result);
+    int server_score = result.FindInt("score").value_or(0);
     int score = 0;
 
     if (use_client_score && use_server_score)
@@ -848,7 +852,7 @@ ACMatches DocumentProvider::ParseDocumentSearchResults(
     }
 
     if (boost_owned)
-      score = BoostOwned(score, client_->ProfileUserName(), &result);
+      score = BoostOwned(score, client_->ProfileUserName(), result);
 
     // Decrement scores if necessary to ensure suggestion order is preserved.
     // Don't decrement client scores which don't necessarily rank suggestions
@@ -859,9 +863,9 @@ ACMatches DocumentProvider::ParseDocumentSearchResults(
 
     // Only allow up to `kDocumentProviderMaxLowQualitySuggestions`  docs that
     // are neither owned nor a complete title or owner match.
-    bool is_owned = IsOwnedByUser(client_->ProfileUserName(), &result);
+    bool is_owned = IsOwnedByUser(client_->ProfileUserName(), result);
     bool is_completely_matched_in_title_and_owner =
-        IsCompletelyMatchedInTitleOrOwner(input_.text(), &result);
+        IsCompletelyMatchedInTitleOrOwner(input_.text(), result);
     if (!is_owned && !is_completely_matched_in_title_and_owner &&
         ++low_quality_match_count >
             OmniboxFieldTrial::kDocumentProviderMaxLowQualitySuggestions
@@ -875,7 +879,7 @@ ACMatches DocumentProvider::ParseDocumentSearchResults(
     // deduping if present.
     match.fill_into_edit = base::UTF8ToUTF16(url);
     match.destination_url = GURL(url);
-    const std::string* original_url = result.FindStringKey("originalUrl");
+    const std::string* original_url = result.FindString("originalUrl");
     if (original_url) {
       // |AutocompleteMatch::GURLToStrippedGURL()| will try to use
       // |GetURLForDeduping()| to extract a doc ID and generate a canonical doc
@@ -892,18 +896,18 @@ ACMatches DocumentProvider::ParseDocumentSearchResults(
     match.contents =
         AutocompleteMatch::SanitizeString(base::UTF8ToUTF16(title));
     match.contents_class = Classify(match.contents, input_.text());
-    const base::Value* metadata = result.FindDictKey("metadata");
+    const base::Value::Dict* metadata = result.FindDict("metadata");
     if (metadata) {
       const std::string update_time =
           FindStringKeyOrEmpty(*metadata, "updateTime");
       const std::string mimetype = FindStringKeyOrEmpty(*metadata, "mimeType");
-      if (metadata->FindStringKey("mimeType")) {
+      if (metadata->FindString("mimeType")) {
         match.document_type = GetIconForMIMEType(mimetype);
         match.RecordAdditionalInfo(
             "document type",
             AutocompleteMatch::DocumentTypeString(match.document_type));
       }
-      auto owners = ExtractResultList(&result, "metadata.owner.personNames",
+      auto owners = ExtractResultList(result, "metadata.owner.personNames",
                                       "displayName");
       const std::string owner = !owners.empty() ? *owners[0] : "";
       if (!owner.empty())
@@ -931,7 +935,8 @@ ACMatches DocumentProvider::ParseDocumentSearchResults(
                                is_completely_matched_in_title_and_owner);
     if (matches.size() >= provider_max_matches_)
       match.RecordAdditionalInfo("for deduping only", "true");
-    const std::string* snippet = result.FindStringPath("snippet.snippet");
+    const std::string* snippet =
+        result.FindStringByDottedPath("snippet.snippet");
     if (snippet)
       match.RecordAdditionalInfo("snippet", *snippet);
     matches.push_back(match);
