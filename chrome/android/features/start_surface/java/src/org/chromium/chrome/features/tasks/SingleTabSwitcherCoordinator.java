@@ -8,6 +8,7 @@ import android.app.Activity;
 import android.graphics.Bitmap;
 import android.graphics.Rect;
 import android.view.LayoutInflater;
+import android.view.View;
 import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
@@ -18,6 +19,7 @@ import org.chromium.base.Callback;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tasks.pseudotab.TabAttributeCache;
 import org.chromium.chrome.browser.tasks.tab_management.TabListFaviconProvider;
@@ -30,22 +32,34 @@ import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 public class SingleTabSwitcherCoordinator implements TabSwitcher {
     private final PropertyModelChangeProcessor mPropertyModelChangeProcessor;
     private final SingleTabSwitcherMediator mMediator;
+    private final SingleTabSwitcherOnTabletMediator mMediatorOnTablet;
     private final TabListFaviconProvider mTabListFaviconProvider;
     private final TabSwitcher.TabListDelegate mTabListDelegate;
     private final TabModelSelector mTabModelSelector;
+    private ViewGroup mContainer;
+    private boolean mIsTablet;
 
     public SingleTabSwitcherCoordinator(@NonNull Activity activity, @NonNull ViewGroup container,
-            @NonNull TabModelSelector tabModelSelector) {
+            @NonNull TabModelSelector tabModelSelector, boolean isTablet, Tab mostRecentTab) {
         mTabModelSelector = tabModelSelector;
+        mIsTablet = isTablet;
         PropertyModel propertyModel = new PropertyModel(SingleTabViewProperties.ALL_KEYS);
         SingleTabView singleTabView = (SingleTabView) LayoutInflater.from(activity).inflate(
                 R.layout.single_tab_view_layout, container, false);
-        container.addView(singleTabView);
+        mContainer = container;
+        mContainer.addView(singleTabView);
         mPropertyModelChangeProcessor = PropertyModelChangeProcessor.create(
                 propertyModel, singleTabView, SingleTabViewBinder::bind);
         mTabListFaviconProvider = new TabListFaviconProvider(activity, false);
-        mMediator = new SingleTabSwitcherMediator(
-                activity, propertyModel, tabModelSelector, mTabListFaviconProvider);
+        if (!mIsTablet) {
+            mMediator = new SingleTabSwitcherMediator(
+                    activity, propertyModel, tabModelSelector, mTabListFaviconProvider);
+            mMediatorOnTablet = null;
+        } else {
+            mMediatorOnTablet = new SingleTabSwitcherOnTabletMediator(
+                    propertyModel, tabModelSelector, mTabListFaviconProvider, mostRecentTab);
+            mMediator = null;
+        }
         if (ChromeFeatureList.sInstantStart.isEnabled()) {
             new TabAttributeCache(tabModelSelector);
         }
@@ -127,6 +141,7 @@ public class SingleTabSwitcherCoordinator implements TabSwitcher {
     // TabSwitcher implementation.
     @Override
     public void setOnTabSelectingListener(OnTabSelectingListener listener) {
+        assert mMediator != null;
         mMediator.setOnTabSelectingListener(listener);
     }
 
@@ -134,7 +149,9 @@ public class SingleTabSwitcherCoordinator implements TabSwitcher {
     public void initWithNative() {
         mTabListFaviconProvider.initWithNative(
                 mTabModelSelector.getModel(/*isIncognito=*/false).getProfile());
-        mMediator.initWithNative();
+        if (mMediator != null) {
+            mMediator.initWithNative();
+        }
     }
 
     @Override
@@ -160,5 +177,13 @@ public class SingleTabSwitcherCoordinator implements TabSwitcher {
     @Override
     public boolean onBackPressed() {
         return false;
+    }
+
+    /** @see SingleTabSwitcherOnTabletMediator#setVisibility. */
+    public void setVisibility(boolean isVisible) {
+        if (!mIsTablet) return;
+
+        mContainer.setVisibility(isVisible ? View.VISIBLE : View.GONE);
+        mMediatorOnTablet.setVisibility(isVisible);
     }
 }

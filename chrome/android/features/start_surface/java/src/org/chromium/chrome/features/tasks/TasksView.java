@@ -82,7 +82,7 @@ public class TasksView extends CoordinatorLayoutForPointer {
         super.onFinishInflate();
 
         mCarouselTabSwitcherContainer =
-                (FrameLayout) findViewById(R.id.carousel_tab_switcher_container);
+                (FrameLayout) findViewById(R.id.tab_switcher_module_container);
         mMvTilesContainerLayout = findViewById(R.id.mv_tiles_container);
         mSearchBoxCoordinator = new SearchBoxCoordinator(getContext(), this);
 

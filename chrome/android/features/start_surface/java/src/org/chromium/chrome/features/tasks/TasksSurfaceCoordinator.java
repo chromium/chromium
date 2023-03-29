@@ -138,8 +138,9 @@ public class TasksSurfaceCoordinator implements TasksSurface {
                     rootView, dynamicResourceLoaderSupplier, snackbarManager, modalDialogManager,
                     incognitoReauthControllerSupplier, null /*BackPressManager*/);
         } else if (tabSwitcherType == TabSwitcherType.SINGLE) {
-            mTabSwitcher = new SingleTabSwitcherCoordinator(
-                    activity, mView.getCarouselTabSwitcherContainer(), tabModelSelector);
+            mTabSwitcher = new SingleTabSwitcherCoordinator(activity,
+                    mView.getCarouselTabSwitcherContainer(), tabModelSelector,
+                    /* isTablet= */ false, /* mostRecentTab= */ null);
         } else if (tabSwitcherType == TabSwitcherType.NONE) {
             mTabSwitcher = null;
         } else {

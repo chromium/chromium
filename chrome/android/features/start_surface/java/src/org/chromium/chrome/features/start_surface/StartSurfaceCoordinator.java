@@ -884,8 +884,11 @@ public class StartSurfaceCoordinator implements StartSurface {
                             mMultiWindowModeStateDispatcher, mScrimCoordinator, mView,
                             mDynamicResourceLoaderSupplier, mSnackbarManager, mModalDialogManager);
         } else {
-            mTabSwitcherModule = new SingleTabSwitcherCoordinator(
-                    mActivity, mView.getCarouselTabSwitcherContainer(), mTabModelSelector);
+            // We always pass the parameter isTablet to be false here since StartSurfaceCoordinator
+            // is only created on phones.
+            mTabSwitcherModule = new SingleTabSwitcherCoordinator(mActivity,
+                    mView.getCarouselTabSwitcherContainer(), mTabModelSelector,
+                    /* isTablet= */ false, /* mostRecentTab= */ null);
         }
         boolean isScrollableMVTEnabled =
                 !ReturnToChromeUtil.shouldImproveStartWhenFeedIsDisabled(mActivity);

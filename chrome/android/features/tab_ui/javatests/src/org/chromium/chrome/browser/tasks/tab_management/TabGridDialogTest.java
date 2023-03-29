@@ -1571,7 +1571,7 @@ public class TabGridDialogTest {
         // Test undo closure in dialog from StartSurface home page.
         clickScrimToExitDialog(cta);
         onView(withId(R.id.new_tab_button)).perform(click());
-        onView(allOf(withParent(withId(org.chromium.chrome.R.id.carousel_tab_switcher_container)),
+        onView(allOf(withParent(withId(org.chromium.chrome.R.id.tab_switcher_module_container)),
                        withId(R.id.tab_list_view)))
                 .perform(RecyclerViewActions.actionOnItemAtPosition(0, click()));
         CriteriaHelper.pollUiThread(() -> isDialogShowing(cta));

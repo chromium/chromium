@@ -453,7 +453,7 @@ public class StartSurfaceTestUtils {
      * @param position The position of the tab which is clicked.
      */
     public static void clickTabInCarousel(int position) {
-        onViewWaiting(allOf(withParent(withId(R.id.carousel_tab_switcher_container)),
+        onViewWaiting(allOf(withParent(withId(R.id.tab_switcher_module_container)),
                               withId(R.id.tab_list_view)))
                 .perform(RecyclerViewActions.actionOnItemAtPosition(position, click()));
     }
@@ -553,7 +553,7 @@ public class StartSurfaceTestUtils {
      * Gets the "tab_list_view" from the carousel tab switcher module on Start surface.
      */
     static View getCarouselTabSwitcherTabListView(ChromeTabbedActivity cta) {
-        return cta.findViewById(R.id.carousel_tab_switcher_container)
+        return cta.findViewById(R.id.tab_switcher_module_container)
                 .findViewById(org.chromium.chrome.test.R.id.tab_list_view);
     }
 

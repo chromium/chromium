@@ -343,7 +343,7 @@ public class InstantStartTabSwitcherTest {
         StartSurfaceTestUtils.waitForTabModel(cta);
         TabUiTestHelper.verifyTabModelTabCount(cta, 1, 0);
         onView(allOf(withParent(
-                             withId(org.chromium.chrome.test.R.id.carousel_tab_switcher_container)),
+                             withId(org.chromium.chrome.test.R.id.tab_switcher_module_container)),
                        withId(org.chromium.chrome.test.R.id.tab_list_view)))
                 .check(matches(isDisplayed()));
         RecyclerView tabListView =

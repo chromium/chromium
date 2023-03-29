@@ -112,7 +112,7 @@ public class StartSurfaceNoTabsTest {
         onView(withId(R.id.search_box_text)).check(matches(isDisplayed()));
         onView(withId(R.id.mv_tiles_container)).check(matches(isDisplayed()));
         onView(withId(R.id.tab_switcher_title)).check(matches(withEffectiveVisibility(GONE)));
-        onView(withId(R.id.carousel_tab_switcher_container))
+        onView(withId(R.id.tab_switcher_module_container))
                 .check(matches(withEffectiveVisibility(GONE)));
         onView(withId(R.id.single_tab_view)).check(matches(withEffectiveVisibility(GONE)));
         onView(withId(R.id.more_tabs)).check(matches(withEffectiveVisibility(GONE)));

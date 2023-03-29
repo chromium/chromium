@@ -86,14 +86,7 @@ found in the LICENSE file.
                 android:text="@string/tab_switcher_carousel_view_all"/>
         </LinearLayout>
         <!-- TODO(crbug.com/982018): Make view stub to inflate only when needed. -->
-        <FrameLayout
-            android:id="@+id/carousel_tab_switcher_container"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:paddingStart="2dp"
-            android:paddingEnd="2dp"
-            android:visibility="gone"
-            app:layout_scrollFlags="scroll"/>
+        <include layout="@layout/tab_switcher_module_container" />
     </com.google.android.material.appbar.AppBarLayout>
 
     <!-- This incognito_description_container_layout_stub and the below tasks_surface_body

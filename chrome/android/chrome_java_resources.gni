@@ -591,6 +591,7 @@ chrome_java_resources = [
   "java/res/layout/sync_enter_passphrase.xml",
   "java/res/layout/sync_passphrase_types.xml",
   "java/res/layout/tab_switcher_action_menu_layout.xml",
+  "java/res/layout/tab_switcher_module_container.xml",
   "java/res/layout/top_sites_tile_view.xml",
   "java/res/layout/top_sites_tile_view_condensed.xml",
   "java/res/layout/update_menu_item.xml",

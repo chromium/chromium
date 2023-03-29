@@ -288,7 +288,7 @@ public class StartSurfaceTabSwitcherTest {
         // Returns to the Start surface.
         StartSurfaceTestUtils.pressHomePageButton(cta);
         StartSurfaceTestUtils.waitForStartSurfaceVisible(cta);
-        waitForView(allOf(withParent(withId(R.id.carousel_tab_switcher_container)),
+        waitForView(allOf(withParent(withId(R.id.tab_switcher_module_container)),
                 withId(R.id.tab_list_view)));
 
         RecyclerView recyclerView = cta.findViewById(R.id.tab_list_view);

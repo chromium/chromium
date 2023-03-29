@@ -101,10 +101,10 @@ public class TasksViewBinderUnitTest {
     @SmallTest
     public void testSetTabCarouselMode() {
         mTasksViewPropertyModel.set(IS_TAB_CAROUSEL_VISIBLE, true);
-        assertTrue(isViewVisible(R.id.carousel_tab_switcher_container));
+        assertTrue(isViewVisible(R.id.tab_switcher_module_container));
 
         mTasksViewPropertyModel.set(IS_TAB_CAROUSEL_VISIBLE, false);
-        assertFalse(isViewVisible(R.id.carousel_tab_switcher_container));
+        assertFalse(isViewVisible(R.id.tab_switcher_module_container));
     }
 
     @Test

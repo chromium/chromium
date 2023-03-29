@@ -24,6 +24,7 @@ start_surface_java_sources = [
   "//chrome/android/features/start_surface/java/src/org/chromium/chrome/features/tasks/MostVisitedTileNavigationDelegate.java",
   "//chrome/android/features/start_surface/java/src/org/chromium/chrome/features/tasks/SingleTabSwitcherCoordinator.java",
   "//chrome/android/features/start_surface/java/src/org/chromium/chrome/features/tasks/SingleTabSwitcherMediator.java",
+  "//chrome/android/features/start_surface/java/src/org/chromium/chrome/features/tasks/SingleTabSwitcherOnTabletMediator.java",
   "//chrome/android/features/start_surface/java/src/org/chromium/chrome/features/tasks/TasksSurface.java",
   "//chrome/android/features/start_surface/java/src/org/chromium/chrome/features/tasks/TasksSurfaceCoordinator.java",
   "//chrome/android/features/start_surface/java/src/org/chromium/chrome/features/tasks/TasksSurfaceMediator.java",

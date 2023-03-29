@@ -10,6 +10,7 @@ start_surface_junit_java_sources = [
   "//chrome/android/features/start_surface/junit/src/org/chromium/chrome/features/start_surface/StartSurfaceMediatorUnitTest.java",
   "//chrome/android/features/start_surface/junit/src/org/chromium/chrome/features/start_surface/StartSurfaceWithParentViewBinderUnitTest.java",
   "//chrome/android/features/start_surface/junit/src/org/chromium/chrome/features/tasks/SingleTabSwitcherMediatorUnitTest.java",
+  "//chrome/android/features/start_surface/junit/src/org/chromium/chrome/features/tasks/SingleTabSwitcherOnTabletMediatorUnitTest.java",
   "//chrome/android/features/start_surface/junit/src/org/chromium/chrome/features/tasks/SingleTabViewBinderUnitTest.java",
   "//chrome/android/features/start_surface/junit/src/org/chromium/chrome/features/tasks/TasksSurfaceMediatorUnitTest.java",
   "//chrome/android/features/start_surface/junit/src/org/chromium/chrome/features/tasks/TasksViewBinderUnitTest.java",
