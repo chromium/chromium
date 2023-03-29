@@ -45,6 +45,7 @@
 #import "ios/chrome/browser/tabs/inactive_tabs/features.h"
 #import "ios/chrome/browser/ui/bookmarks/bookmarks_coordinator.h"
 #import "ios/chrome/browser/ui/bring_android_tabs/bring_android_tabs_prompt_coordinator.h"
+#import "ios/chrome/browser/ui/bring_android_tabs/tab_list_from_android_coordinator.h"
 #import "ios/chrome/browser/ui/commerce/price_card/price_card_mediator.h"
 #import "ios/chrome/browser/ui/default_promo/default_browser_promo_non_modal_scheduler.h"
 #import "ios/chrome/browser/ui/gestures/view_controller_trait_collection_observer.h"
@@ -117,6 +118,9 @@
   // The coordinator that manages the "Bring Android Tabs" prompt for Android
   // switchers.
   BringAndroidTabsPromptCoordinator* _bringAndroidTabsPromptCoordinator;
+
+  // Coordinator for the "Tab List From Android Prompt" for Android switchers.
+  TabListFromAndroidCoordinator* _tabListFromAndroidCoordinator;
 }
 
 // Browser that contain tabs from the main pane (i.e. non-incognito).
@@ -872,6 +876,8 @@
   self.baseViewController.bringAndroidTabsPromptViewController = nil;
   [_bringAndroidTabsPromptCoordinator stop];
   _bringAndroidTabsPromptCoordinator = nil;
+  [_tabListFromAndroidCoordinator stop];
+  _tabListFromAndroidCoordinator = nil;
 }
 
 #pragma mark - TabPresentationDelegate
@@ -1322,7 +1328,10 @@
             _bringAndroidTabsPromptCoordinator.viewController);
   self.baseViewController.bringAndroidTabsPromptViewController = nil;
   if (reviewTabs) {
-    // TODO(crbug.com/1418120): Open the review Android tabs table.
+    _tabListFromAndroidCoordinator = [[TabListFromAndroidCoordinator alloc]
+        initWithBaseViewController:self.baseViewController
+                           browser:self.regularBrowser];
+    [_tabListFromAndroidCoordinator start];
   } else {
     // The user journey to bring recent tabs on Android to iOS has finished.
     // Reload the service to update/clear the tabs.

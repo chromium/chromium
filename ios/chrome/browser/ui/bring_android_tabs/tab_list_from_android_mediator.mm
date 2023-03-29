@@ -1,0 +1,89 @@
+// Copyright 2023 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#import "ios/chrome/browser/ui/bring_android_tabs/tab_list_from_android_mediator.h"
+
+#import "base/metrics/histogram_functions.h"
+#import "ios/chrome/browser/bring_android_tabs/bring_android_tabs_to_ios_service.h"
+#import "ios/chrome/browser/bring_android_tabs/metrics.h"
+#import "ios/chrome/browser/favicon/favicon_loader.h"
+#import "ios/chrome/browser/net/crurl.h"
+#import "ios/chrome/browser/synced_sessions/synced_sessions_util.h"
+#import "ios/chrome/browser/url_loading/url_loading_browser_agent.h"
+#import "ios/chrome/browser/url_loading/url_loading_params.h"
+#import "ios/chrome/common/ui/favicon/favicon_constants.h"
+
+#if !defined(__has_feature) || !__has_feature(objc_arc)
+#error "This file requires ARC support."
+#endif
+
+@implementation TabListFromAndroidMediator {
+  // Keyed service to retrieve active tabs from Android.
+  BringAndroidTabsToIOSService* _bringAndroidTabsService;
+  // URL loader to open tabs when needed.
+  UrlLoadingBrowserAgent* _URLLoader;
+  // Favicon loader.
+  FaviconLoader* _faviconLoader;
+}
+
+- (instancetype)
+    initWithBringAndroidTabsService:(BringAndroidTabsToIOSService*)service
+                          URLLoader:(UrlLoadingBrowserAgent*)URLLoader
+                      faviconLoader:(FaviconLoader*)faviconLoader {
+  DCHECK(service != nil);
+  if (self = [super init]) {
+    _bringAndroidTabsService = service;
+    _URLLoader = URLLoader;
+    _faviconLoader = faviconLoader;
+  }
+  return self;
+}
+
+#pragma mark - TableViewFaviconDataSource
+
+- (void)faviconForPageURL:(CrURL*)URL
+               completion:(void (^)(FaviconAttributes*))completion {
+  _faviconLoader->FaviconForPageUrl(
+      URL.gurl, kDesiredMediumFaviconSizePt, kMinFaviconSizePt,
+      /*fallback_to_google_server=*/false, ^(FaviconAttributes* attributes) {
+        completion(attributes);
+      });
+}
+
+#pragma mark - TabListFromAndroidViewControllerDelegate
+
+- (void)tabListFromAndroidViewControllerDidDismissWithSwipe:(BOOL)swiped
+                                     numberOfDeselectedTabs:(int)count {
+  bring_android_tabs::TabsListActionType action =
+      swiped ? bring_android_tabs::TabsListActionType::kSwipeDown
+             : bring_android_tabs::TabsListActionType::kCancel;
+  base::UmaHistogramEnumeration(bring_android_tabs::kTabListActionHistogramName,
+                                action);
+  base::UmaHistogramCounts1000(
+      bring_android_tabs::kDeselectedTabCountHistogramName, count);
+  // The user journey to bring recent tabs on Android to iOS has finished.
+  // Reload the service to update/clear the tabs.
+  _bringAndroidTabsService->LoadTabs();
+}
+
+- (void)tabListFromAndroidViewControllerDidTapOpenButtonWithTabIndices:
+    (NSArray*)tabIndices {
+  base::UmaHistogramEnumeration(
+      bring_android_tabs::kTabListActionHistogramName,
+      bring_android_tabs::TabsListActionType::kOpenTabs);
+
+  size_t numTabs = static_cast<size_t>([tabIndices count]);
+  int deselected = static_cast<int>(
+      _bringAndroidTabsService->GetNumberOfAndroidTabs() - numTabs);
+  base::UmaHistogramCounts1000(
+      bring_android_tabs::kDeselectedTabCountHistogramName, deselected);
+
+  for (size_t i = 0; i < numTabs; i++) {
+    int index = [[tabIndices objectAtIndex:i] intValue];
+    OpenDistantTabInBackground(_bringAndroidTabsService->GetTabAtIndex(index),
+                               NO, _URLLoader, UrlLoadStrategy::NORMAL);
+  }
+}
+
+@end

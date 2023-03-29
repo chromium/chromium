@@ -7,6 +7,7 @@
 #import "base/test/metrics/histogram_tester.h"
 #import "components/segmentation_platform/embedder/default_model/device_switcher_result_dispatcher.h"
 #import "ios/chrome/browser/bring_android_tabs/bring_android_tabs_to_ios_service.h"
+#import "ios/chrome/browser/bring_android_tabs/fake_bring_android_tabs_to_ios_service.h"
 #import "ios/chrome/browser/bring_android_tabs/metrics.h"
 #import "ios/chrome/browser/browser_state/test_chrome_browser_state.h"
 #import "ios/chrome/browser/main/test_browser.h"
@@ -22,39 +23,6 @@
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
 #endif
-
-// A fake BringAndroidTabsToIOSService for testing purpose, with permanently one
-// tab.
-class FakeServiceWithOneTab : public BringAndroidTabsToIOSService {
- public:
-  FakeServiceWithOneTab(
-      std::unique_ptr<synced_sessions::DistantTab> tab,
-      segmentation_platform::DeviceSwitcherResultDispatcher* dispatcher,
-      syncer::SyncService* sync_service,
-      sync_sessions::SessionSyncService* session_sync_service,
-      PrefService* browser_state_prefs)
-      : BringAndroidTabsToIOSService(dispatcher,
-                                     sync_service,
-                                     session_sync_service,
-                                     browser_state_prefs),
-        tab_(std::move(tab)) {}
-  size_t GetNumberOfAndroidTabs() const override { return 1; }
-  synced_sessions::DistantTab* GetTabAtIndex(size_t index) const override {
-    return tab_.get();
-  }
-  void OnBringAndroidTabsPromptDisplayed() override { displayed_ = true; }
-  void OnUserInteractWithBringAndroidTabsPrompt() override {
-    interacted_ = true;
-  }
-
-  bool displayed() { return displayed_; }
-  bool interacted() { return interacted_; }
-
- private:
-  std::unique_ptr<synced_sessions::DistantTab> tab_;
-  bool displayed_ = false;
-  bool interacted_ = false;
-};
 
 // Test fixture for BringAndroidTabsPromptMediator.
 class BringAndroidTabsPromptMediatorTest : public PlatformTest {
@@ -75,9 +43,12 @@ class BringAndroidTabsPromptMediatorTest : public PlatformTest {
         UrlLoadingBrowserAgent::FromBrowser(browser_.get()));
 
     // Create a tab in the mock BringAndroidTabsToIOS service.
+    std::vector<std::unique_ptr<synced_sessions::DistantTab>> tabs;
     std::unique_ptr<synced_sessions::DistantTab> tab =
         std::make_unique<synced_sessions::DistantTab>();
     tab->virtual_url = kTestUrl;
+    tabs.push_back(std::move(tab));
+
     // Create the BringAndroidTabsToIOSService.
     segmentation_platform::DeviceSwitcherResultDispatcher* dispatcher =
         segmentation_platform::SegmentationPlatformServiceFactory::
@@ -87,8 +58,8 @@ class BringAndroidTabsPromptMediatorTest : public PlatformTest {
     sync_sessions::SessionSyncService* session_sync_service =
         SessionSyncServiceFactory::GetForBrowserState(browser_state_.get());
     PrefService* prefs = browser_state_->GetPrefs();
-    fake_bring_android_tabs_service_ = new FakeServiceWithOneTab(
-        std::move(tab), dispatcher, sync_service, session_sync_service, prefs);
+    fake_bring_android_tabs_service_ = new FakeBringAndroidTabsToIOSService(
+        std::move(tabs), dispatcher, sync_service, session_sync_service, prefs);
 
     // Create the mediator.
     mediator_ = [[BringAndroidTabsPromptMediator alloc]
@@ -99,7 +70,7 @@ class BringAndroidTabsPromptMediatorTest : public PlatformTest {
   id<BringAndroidTabsPromptViewControllerDelegate> delegate() {
     return mediator_;
   }
-  FakeServiceWithOneTab* bring_android_tabs_service() {
+  FakeBringAndroidTabsToIOSService* bring_android_tabs_service() {
     return fake_bring_android_tabs_service_;
   }
   web::NavigationManager::WebLoadParams last_loaded_url_params() {
@@ -112,7 +83,7 @@ class BringAndroidTabsPromptMediatorTest : public PlatformTest {
   // Environment mocks.
   web::WebTaskEnvironment task_environment_;
   FakeUrlLoadingBrowserAgent* url_loader_;
-  FakeServiceWithOneTab* fake_bring_android_tabs_service_;
+  FakeBringAndroidTabsToIOSService* fake_bring_android_tabs_service_;
   // Mediator dependencies.
   std::unique_ptr<TestChromeBrowserState> browser_state_;
   std::unique_ptr<Browser> browser_;

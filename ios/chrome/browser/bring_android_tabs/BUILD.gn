@@ -49,3 +49,19 @@ source_set("metrics") {
   ]
   deps = [ "//base" ]
 }
+
+source_set("test_support") {
+  configs += [ "//build/config/compiler:enable_arc" ]
+  testonly = true
+  sources = [
+    "fake_bring_android_tabs_to_ios_service.h",
+    "fake_bring_android_tabs_to_ios_service.mm",
+  ]
+  deps = [
+    ":bring_android_tabs",
+    "//components/prefs",
+    "//components/segmentation_platform/embedder/default_model",
+    "//ios/chrome/browser/sync",
+    "//ios/chrome/browser/synced_sessions",
+  ]
+}
