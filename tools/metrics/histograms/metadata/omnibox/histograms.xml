@@ -1538,18 +1538,6 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
-<histogram name="Omnibox.SearchPreload.ResponseDataReaderFinalStatus.Prerender"
-    enum="SearchPrefetchResponseDataReaderStatus" expires_after="2023-08-02">
-  <owner>lingqi@chromium.org</owner>
-  <owner>ryansturm@chromium.org</owner>
-  <owner>chrome-prerendering@google.com</owner>
-  <summary>
-    Tracks whether the StreamingSearchPrefetchURLLoader::ResponseReader can
-    successfully serving to prerender clients. Recorded when a
-    `StreamingSearchPrefetchURLLoader::ResponseReader` is destroyed.
-  </summary>
-</histogram>
-
 <histogram name="Omnibox.SearchProviderMatches" units="units"
     expires_after="2022-09-11">
   <obsolete>
