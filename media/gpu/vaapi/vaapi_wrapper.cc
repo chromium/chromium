@@ -1586,7 +1586,9 @@ bool IsLowPowerEncSupported(VAProfile va_profile) {
       VAProfileH264Main,
       VAProfileH264High,
       VAProfileVP9Profile0,
-      VAProfileVP9Profile2};
+      VAProfileVP9Profile2,
+      VAProfileAV1Profile0,
+  };
   if (!base::Contains(kSupportedLowPowerEncodeProfiles, va_profile))
     return false;
 
