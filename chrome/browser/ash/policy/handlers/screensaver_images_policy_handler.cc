@@ -6,31 +6,13 @@
 
 #include "ash/public/cpp/ambient/ambient_prefs.h"
 #include "ash/shell.h"
+#include "base/check.h"
+#include "base/files/file_path.h"
+#include "base/functional/callback.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
 
 namespace policy {
-
-namespace {
-ScreensaverImagesPolicyHandler* g_screensaver_images_policy_handler_instance =
-    nullptr;
-}
-
-// static
-ScreensaverImagesPolicyHandler*
-ScreensaverImagesPolicyHandler::GetScreensaverImagesPolicyHandlerInstance() {
-  return g_screensaver_images_policy_handler_instance;
-}
-
-ScreensaverImagesPolicyHandler::ScreensaverImagesPolicyHandler() {
-  DCHECK(!g_screensaver_images_policy_handler_instance);
-  g_screensaver_images_policy_handler_instance = this;
-}
-
-ScreensaverImagesPolicyHandler::~ScreensaverImagesPolicyHandler() {
-  DCHECK(g_screensaver_images_policy_handler_instance);
-  g_screensaver_images_policy_handler_instance = nullptr;
-}
 
 // static
 void ScreensaverImagesPolicyHandler::RegisterPrefs(
@@ -38,6 +20,10 @@ void ScreensaverImagesPolicyHandler::RegisterPrefs(
   registry->RegisterListPref(
       ash::ambient::prefs::kAmbientModeManagedScreensaverImages);
 }
+
+ScreensaverImagesPolicyHandler::ScreensaverImagesPolicyHandler() = default;
+
+ScreensaverImagesPolicyHandler::~ScreensaverImagesPolicyHandler() = default;
 
 void ScreensaverImagesPolicyHandler::
     OnAmbientModeManagedScreensaverImagesPrefChanged() {
@@ -48,6 +34,27 @@ void ScreensaverImagesPolicyHandler::
   }
 
   // TODO(b/271093572): Read the value from the pref and try to download
+}
+
+// TODO(b/271093572): Call this function when images have been downloaded
+void ScreensaverImagesPolicyHandler::OnScreensaverImagesDownloaded() {
+  // TODO(b/271093572): Run with all downloaded file paths.
+  if (on_images_updated_callback_) {
+    on_images_updated_callback_.Run({});
+  }
+}
+
+void ScreensaverImagesPolicyHandler::SetScreensaverImagesUpdatedCallback(
+    ScreensaverImagesRepeatingCallback callback) {
+  CHECK(callback);
+  on_images_updated_callback_ = std::move(callback);
+}
+
+std::vector<base::FilePath>
+ScreensaverImagesPolicyHandler::GetScreensaverImages() {
+  // TODO(b/271093572): return the file paths to the images that have been
+  // already downloaded.
+  return {};
 }
 
 void ScreensaverImagesPolicyHandler::OnActiveUserPrefServiceChanged(

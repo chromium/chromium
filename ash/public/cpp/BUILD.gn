@@ -31,6 +31,8 @@ component("cpp") {
     "ambient/ambient_backend_controller.h",
     "ambient/ambient_client.cc",
     "ambient/ambient_client.h",
+    "ambient/ambient_managed_photo_source.cc",
+    "ambient/ambient_managed_photo_source.h",
     "ambient/ambient_metrics.cc",
     "ambient/ambient_metrics.h",
     "ambient/ambient_prefs.cc",
