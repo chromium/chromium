@@ -63,8 +63,8 @@ const CGFloat kEndButtonFakeboxTrailingSpace = 12.0;
 const CGFloat kEndButtonOmniboxTrailingSpace = 7.0;
 
 // The constants for the constraints the leading-edge aligned UI elements.
-const CGFloat kHintLabelFakeboxLeadingSpace = 12.0;
-const CGFloat kHintLabelOmniboxLeadingSpace = 7.0;
+const CGFloat kHintLabelFakeboxLeadingSpace = 18.0;
+const CGFloat kHintLabelOmniboxLeadingSpace = 13.0;
 
 // The constants for the constraints affecting the separation between the Lens
 // and Voice Search buttons.
