@@ -22,6 +22,7 @@
 #include "components/viz/common/frame_sinks/copy_output_request.h"
 #include "components/viz/common/quads/compositor_frame.h"
 #include "components/viz/common/resources/release_callback.h"
+#include "components/viz/common/resources/shared_image_format.h"
 #include "content/browser/compositor/surface_utils.h"
 #include "content/browser/gpu/compositor_util.h"
 #include "content/public/common/content_switches.h"
@@ -449,7 +450,7 @@ void DelegatedFrameHost::DidCopyStaleContent(
   auto transfer_resource = viz::TransferableResource::MakeGpu(
       result->GetTextureResult()->planes[0].mailbox, GL_LINEAR, GL_TEXTURE_2D,
       result->GetTextureResult()->planes[0].sync_token, result->size(),
-      viz::RGBA_8888, false /* is_overlay_candidate */);
+      viz::SinglePlaneFormat::kRGBA_8888, false /* is_overlay_candidate */);
   viz::CopyOutputResult::ReleaseCallbacks release_callbacks =
       result->TakeTextureOwnership();
   DCHECK_EQ(1u, release_callbacks.size());

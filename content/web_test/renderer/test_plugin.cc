@@ -19,6 +19,7 @@
 #include "cc/layers/texture_layer.h"
 #include "cc/resources/cross_thread_shared_bitmap.h"
 #include "components/viz/common/resources/bitmap_allocation.h"
+#include "components/viz/common/resources/shared_image_format.h"
 #include "content/web_test/renderer/test_runner.h"
 #include "gpu/GLES2/gl2extchromium.h"
 #include "gpu/command_buffer/client/gles2_interface.h"
@@ -323,8 +324,8 @@ bool TestPlugin::PrepareTransferableResource(
   gfx::Size size(rect_.size());
   if (!mailbox_.IsZero()) {
     *resource = viz::TransferableResource::MakeGpu(
-        mailbox_, GL_LINEAR, GL_TEXTURE_2D, sync_token_, size, viz::RGBA_8888,
-        false /* is_overlay_candidate */);
+        mailbox_, GL_LINEAR, GL_TEXTURE_2D, sync_token_, size,
+        viz::SinglePlaneFormat::kRGBA_8888, false /* is_overlay_candidate */);
     // We pass ownership of the shared image to the callback.
     *release_callback =
         base::BindOnce(&ReleaseSharedImage, context_provider_, mailbox_);
