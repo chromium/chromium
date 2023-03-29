@@ -41,8 +41,8 @@ chromium-metrics-reviews@google.com.
     list. If the user has multiple languages in this list, then a separate entry
     is recorded for each language.
 
-    This histogram is recorded when Chrome starts up using the preferences of
-    whatever profile is logged in at the time.
+    This histogram is recorded once per profile initiation. Incognito profiles
+    are ignored.
   </summary>
 </histogram>
 
@@ -53,8 +53,8 @@ chromium-metrics-reviews@google.com.
   <summary>
     The number of languages in the user's always translate language list.
 
-    This histogram is recorded when Chrome starts up using the preferences of
-    whatever profile is logged in at the time.
+    This histogram is recorded once per profile initiation. Incognito profiles
+    are ignored.
   </summary>
 </histogram>
 
@@ -67,8 +67,8 @@ chromium-metrics-reviews@google.com.
     list. If the user has multiple languages in this list, then a separate entry
     is recorded for each language.
 
-    This histogram is recorded when Chrome starts up using the preferences of
-    whatever profile is logged in at the time.
+    This histogram is recorded once per profile initiation. Incognito profiles
+    are ignored.
   </summary>
 </histogram>
 
@@ -79,8 +79,8 @@ chromium-metrics-reviews@google.com.
   <summary>
     The number of languages in the user's never translate language list.
 
-    This histogram is recorded when Chrome starts up using the preferences of
-    whatever profile is logged in at the time.
+    This histogram is recorded once per profile initiation. Incognito profiles
+    are ignored.
   </summary>
 </histogram>
 
@@ -91,8 +91,8 @@ chromium-metrics-reviews@google.com.
   <summary>
     The number of sites in the user's never translate site list.
 
-    This histogram is recorded when Chrome starts up using the preferences of
-    whatever profile is logged in at the time.
+    This histogram is recorded once per profile initiation. Incognito profiles
+    are ignored.
   </summary>
 </histogram>
 
