@@ -22,53 +22,39 @@ class SampleMapIterator : public SampleCountIterator {
   typedef std::map<HistogramBase::Sample, HistogramBase::Count>
       SampleToCountMap;
 
-  explicit SampleMapIterator(const SampleToCountMap& sample_counts);
-  ~SampleMapIterator() override;
+  explicit SampleMapIterator(const SampleToCountMap& sample_counts)
+      : iter_(sample_counts.begin()), end_(sample_counts.end()) {
+    SkipEmptyBuckets();
+  }
+
+  ~SampleMapIterator() override = default;
 
   // SampleCountIterator:
-  bool Done() const override;
-  void Next() override;
+  bool Done() const override { return iter_ == end_; }
+  void Next() override {
+    DCHECK(!Done());
+    ++iter_;
+    SkipEmptyBuckets();
+  }
   void Get(HistogramBase::Sample* min,
            int64_t* max,
-           HistogramBase::Count* count) override;
+           HistogramBase::Count* count) override {
+    DCHECK(!Done());
+    *min = iter_->first;
+    *max = strict_cast<int64_t>(iter_->first) + 1;
+    *count = iter_->second;
+  }
 
  private:
-  void SkipEmptyBuckets();
+  void SkipEmptyBuckets() {
+    while (!Done() && iter_->second == 0) {
+      ++iter_;
+    }
+  }
 
   SampleToCountMap::const_iterator iter_;
   const SampleToCountMap::const_iterator end_;
 };
-
-SampleMapIterator::SampleMapIterator(const SampleToCountMap& sample_counts)
-    : iter_(sample_counts.begin()),
-      end_(sample_counts.end()) {
-  SkipEmptyBuckets();
-}
-
-SampleMapIterator::~SampleMapIterator() = default;
-
-bool SampleMapIterator::Done() const {
-  return iter_ == end_;
-}
-
-void SampleMapIterator::Next() {
-  DCHECK(!Done());
-  ++iter_;
-  SkipEmptyBuckets();
-}
-
-void SampleMapIterator::Get(Sample* min, int64_t* max, Count* count) {
-  DCHECK(!Done());
-  *min = iter_->first;
-  *max = strict_cast<int64_t>(iter_->first) + 1;
-  *count = iter_->second;
-}
-
-void SampleMapIterator::SkipEmptyBuckets() {
-  while (!Done() && iter_->second == 0) {
-    ++iter_;
-  }
-}
 
 }  // namespace
 

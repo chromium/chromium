@@ -173,37 +173,6 @@ class BASE_EXPORT PersistentSampleVector : public SampleVectorBase {
   DelayedPersistentAllocation persistent_counts_;
 };
 
-// An iterator for sample vectors. This could be defined privately in the .cc
-// file but is here for easy testing.
-class BASE_EXPORT SampleVectorIterator : public SampleCountIterator {
- public:
-  SampleVectorIterator(const std::vector<HistogramBase::AtomicCount>* counts,
-                       const BucketRanges* bucket_ranges);
-  SampleVectorIterator(const HistogramBase::AtomicCount* counts,
-                       size_t counts_size,
-                       const BucketRanges* bucket_ranges);
-  ~SampleVectorIterator() override;
-
-  // SampleCountIterator implementation:
-  bool Done() const override;
-  void Next() override;
-  void Get(HistogramBase::Sample* min,
-           int64_t* max,
-           HistogramBase::Count* count) override;
-
-  // SampleVector uses predefined buckets, so iterator can return bucket index.
-  bool GetBucketIndex(size_t* index) const override;
-
- private:
-  void SkipEmptyBuckets();
-
-  raw_ptr<const HistogramBase::AtomicCount> counts_;
-  size_t counts_size_;
-  raw_ptr<const BucketRanges> bucket_ranges_;
-
-  size_t index_;
-};
-
 }  // namespace base
 
 #endif  // BASE_METRICS_SAMPLE_VECTOR_H_

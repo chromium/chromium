@@ -27,6 +27,71 @@ namespace base {
 typedef HistogramBase::Count Count;
 typedef HistogramBase::Sample Sample;
 
+namespace {
+
+// An iterator for sample vectors.
+class SampleVectorIterator : public SampleCountIterator {
+ public:
+  SampleVectorIterator(const HistogramBase::AtomicCount* counts,
+                       size_t counts_size,
+                       const BucketRanges* bucket_ranges)
+      : counts_(counts),
+        counts_size_(counts_size),
+        bucket_ranges_(bucket_ranges) {
+    DCHECK_GE(bucket_ranges_->bucket_count(), counts_size_);
+    SkipEmptyBuckets();
+  }
+
+  ~SampleVectorIterator() override = default;
+
+  // SampleCountIterator:
+  bool Done() const override { return index_ >= counts_size_; }
+  void Next() override {
+    DCHECK(!Done());
+    index_++;
+    SkipEmptyBuckets();
+  }
+  void Get(HistogramBase::Sample* min,
+           int64_t* max,
+           HistogramBase::Count* count) override {
+    DCHECK(!Done());
+    *min = bucket_ranges_->range(index_);
+    *max = strict_cast<int64_t>(bucket_ranges_->range(index_ + 1));
+    *count = subtle::NoBarrier_Load(&counts_[index_]);
+  }
+
+  // SampleVector uses predefined buckets, so iterator can return bucket index.
+  bool GetBucketIndex(size_t* index) const override {
+    DCHECK(!Done());
+    if (index != nullptr) {
+      *index = index_;
+    }
+    return true;
+  }
+
+ private:
+  void SkipEmptyBuckets() {
+    if (Done()) {
+      return;
+    }
+
+    while (index_ < counts_size_) {
+      if (subtle::NoBarrier_Load(&counts_[index_]) != 0) {
+        return;
+      }
+      index_++;
+    }
+  }
+
+  raw_ptr<const HistogramBase::AtomicCount> counts_;
+  size_t counts_size_;
+  raw_ptr<const BucketRanges> bucket_ranges_;
+
+  size_t index_ = 0;
+};
+
+}  // namespace
+
 SampleVectorBase::SampleVectorBase(uint64_t id,
                                    Metadata* meta,
                                    const BucketRanges* bucket_ranges)
@@ -482,68 +547,6 @@ PersistentSampleVector::CreateCountsStorageWhileLocked() {
   }
 
   return static_cast<HistogramBase::AtomicCount*>(mem);
-}
-
-SampleVectorIterator::SampleVectorIterator(
-    const std::vector<HistogramBase::AtomicCount>* counts,
-    const BucketRanges* bucket_ranges)
-    : counts_(&(*counts)[0]),
-      counts_size_(counts->size()),
-      bucket_ranges_(bucket_ranges),
-      index_(0) {
-  DCHECK_GE(bucket_ranges_->bucket_count(), counts_size_);
-  SkipEmptyBuckets();
-}
-
-SampleVectorIterator::SampleVectorIterator(
-    const HistogramBase::AtomicCount* counts,
-    size_t counts_size,
-    const BucketRanges* bucket_ranges)
-    : counts_(counts),
-      counts_size_(counts_size),
-      bucket_ranges_(bucket_ranges),
-      index_(0) {
-  DCHECK_GE(bucket_ranges_->bucket_count(), counts_size_);
-  SkipEmptyBuckets();
-}
-
-SampleVectorIterator::~SampleVectorIterator() = default;
-
-bool SampleVectorIterator::Done() const {
-  return index_ >= counts_size_;
-}
-
-void SampleVectorIterator::Next() {
-  DCHECK(!Done());
-  index_++;
-  SkipEmptyBuckets();
-}
-
-void SampleVectorIterator::Get(HistogramBase::Sample* min,
-                               int64_t* max,
-                               HistogramBase::Count* count) {
-  DCHECK(!Done());
-  *min = bucket_ranges_->range(index_);
-  *max = strict_cast<int64_t>(bucket_ranges_->range(index_ + 1));
-  *count = subtle::NoBarrier_Load(&counts_[index_]);
-}
-
-bool SampleVectorIterator::GetBucketIndex(size_t* index) const {
-  DCHECK(!Done());
-  if (index != nullptr)
-    *index = index_;
-  return true;
-}
-
-void SampleVectorIterator::SkipEmptyBuckets() {
-  if (Done())
-    return;
-
-  while (index_ < counts_size_) {
-    if (subtle::NoBarrier_Load(&counts_[index_]) != 0)
-      return;
-    index_++;
-  }
 }
 
 }  // namespace base

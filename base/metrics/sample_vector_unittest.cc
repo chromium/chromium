@@ -218,52 +218,26 @@ TEST_F(SampleVectorTest, Iterate) {
   ranges.set_range(3, 3);
   ranges.set_range(4, 4);
 
-  std::vector<HistogramBase::Count> counts(3);
-  counts[0] = 1;
-  counts[1] = 0;  // Iterator will bypass this empty bucket.
-  counts[2] = 2;
-
-  // BucketRanges can have larger size than counts.
-  SampleVectorIterator it(&counts, &ranges);
-  size_t index;
-
-  HistogramBase::Sample min;
-  int64_t max;
-  HistogramBase::Count count;
-  it.Get(&min, &max, &count);
-  EXPECT_EQ(0, min);
-  EXPECT_EQ(1, max);
-  EXPECT_EQ(1, count);
-  EXPECT_TRUE(it.GetBucketIndex(&index));
-  EXPECT_EQ(0u, index);
-
-  it.Next();
-  it.Get(&min, &max, &count);
-  EXPECT_EQ(2, min);
-  EXPECT_EQ(3, max);
-  EXPECT_EQ(2, count);
-  EXPECT_TRUE(it.GetBucketIndex(&index));
-  EXPECT_EQ(2u, index);
-
-  it.Next();
-  EXPECT_TRUE(it.Done());
-
   // Create iterator from SampleVector.
   SampleVector samples(1, &ranges);
-  samples.Accumulate(0, 0);
+  samples.Accumulate(0, 0);  // Iterator will bypass this empty bucket.
   samples.Accumulate(1, 1);
   samples.Accumulate(2, 2);
   samples.Accumulate(3, 3);
-  std::unique_ptr<SampleCountIterator> it2 = samples.Iterator();
+  std::unique_ptr<SampleCountIterator> it = samples.Iterator();
 
   int i;
-  for (i = 1; !it2->Done(); i++, it2->Next()) {
-    it2->Get(&min, &max, &count);
+  size_t index;
+  HistogramBase::Sample min;
+  int64_t max;
+  HistogramBase::Count count;
+  for (i = 1; !it->Done(); i++, it->Next()) {
+    it->Get(&min, &max, &count);
     EXPECT_EQ(i, min);
     EXPECT_EQ(i + 1, max);
     EXPECT_EQ(i, count);
 
-    EXPECT_TRUE(it2->GetBucketIndex(&index));
+    EXPECT_TRUE(it->GetBucketIndex(&index));
     EXPECT_EQ(static_cast<size_t>(i), index);
   }
   EXPECT_EQ(4, i);

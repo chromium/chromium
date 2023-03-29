@@ -26,54 +26,39 @@ class PersistentSampleMapIterator : public SampleCountIterator {
   typedef std::map<HistogramBase::Sample, HistogramBase::Count*>
       SampleToCountMap;
 
-  explicit PersistentSampleMapIterator(const SampleToCountMap& sample_counts);
-  ~PersistentSampleMapIterator() override;
+  explicit PersistentSampleMapIterator(const SampleToCountMap& sample_counts)
+      : iter_(sample_counts.begin()), end_(sample_counts.end()) {
+    SkipEmptyBuckets();
+  }
+
+  ~PersistentSampleMapIterator() override = default;
 
   // SampleCountIterator:
-  bool Done() const override;
-  void Next() override;
+  bool Done() const override { return iter_ == end_; }
+  void Next() override {
+    DCHECK(!Done());
+    ++iter_;
+    SkipEmptyBuckets();
+  }
   void Get(HistogramBase::Sample* min,
            int64_t* max,
-           HistogramBase::Count* count) override;
+           HistogramBase::Count* count) override {
+    DCHECK(!Done());
+    *min = iter_->first;
+    *max = strict_cast<int64_t>(iter_->first) + 1;
+    *count = *iter_->second;
+  }
 
  private:
-  void SkipEmptyBuckets();
+  void SkipEmptyBuckets() {
+    while (!Done() && *iter_->second == 0) {
+      ++iter_;
+    }
+  }
 
   SampleToCountMap::const_iterator iter_;
   const SampleToCountMap::const_iterator end_;
 };
-
-PersistentSampleMapIterator::PersistentSampleMapIterator(
-    const SampleToCountMap& sample_counts)
-    : iter_(sample_counts.begin()),
-      end_(sample_counts.end()) {
-  SkipEmptyBuckets();
-}
-
-PersistentSampleMapIterator::~PersistentSampleMapIterator() = default;
-
-bool PersistentSampleMapIterator::Done() const {
-  return iter_ == end_;
-}
-
-void PersistentSampleMapIterator::Next() {
-  DCHECK(!Done());
-  ++iter_;
-  SkipEmptyBuckets();
-}
-
-void PersistentSampleMapIterator::Get(Sample* min, int64_t* max, Count* count) {
-  DCHECK(!Done());
-  *min = iter_->first;
-  *max = strict_cast<int64_t>(iter_->first) + 1;
-  *count = *iter_->second;
-}
-
-void PersistentSampleMapIterator::SkipEmptyBuckets() {
-  while (!Done() && *iter_->second == 0) {
-    ++iter_;
-  }
-}
 
 // This structure holds an entry for a PersistentSampleMap within a persistent
 // memory allocator. The "id" must be unique across all maps held by an
