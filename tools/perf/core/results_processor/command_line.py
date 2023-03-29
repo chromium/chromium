@@ -99,22 +99,31 @@ def ArgumentParser(standalone=False):
       '--is-unittest',
       action='store_true',
       help='Is running inside a unittest.')
-  group.add_argument(
+
+  # Separate group for fetching device data
+  device_group = parser.add_argument_group(title='Device fetching options')
+  device_group.add_argument(
       '--fetch-device-data',
       action='store_true',
-      help='Android-specific argument to enable fetching data from a device.')
-  group.add_argument(
+      help=('Argument to enable fetching data from a device.'))
+  device_group.add_argument(
+      '--fetch-device-data-platform',
+      dest='fetch_data_platform',
+      choices=['android', 'chromeos'],
+      help='Platform associated with device type to pull data from. Only '
+      'supports --fetch-device-data.')
+  device_group.add_argument(
       '--fetch-data-path-device',
       dest='device_data_path',
-      help=('Android-specific argument for --fetch-data-device. Use this to '
-            'specify the path on device to pull data from using adb.'))
-  group.add_argument(
+      help=('Use this to specify the path on device to pull data from. Should '
+            'be used with --fetch-device-data.'))
+  device_group.add_argument(
       '--fetch-data-path-local',
       dest='local_data_path',
       default=os.environ.get('ISOLATED_OUTDIR'),
-      help=('Android-specific argument for --fetch-data-device. Use this to '
-            'override the local copy path. Defaults to ISOLATED_OUTDIR '
-            'environment variable.'))
+      help=('Use this to override the local copy path. Defaults to '
+            'ISOLATED_OUTDIR environment variable. To be used in conjuction '
+            'with --fetch-device-data.'))
   return parser
 
 
@@ -173,6 +182,16 @@ def ProcessOptions(options):
     options.output_formats = sorted(set(options.output_formats))
   if 'none' in options.output_formats:
     options.output_formats.remove('none')
+
+  if options.fetch_device_data:
+    if not options.fetch_data_platform:
+      raise argparse.ArgumentError(options.fetch_data_platform,
+                                   ('--fetch-device-data-platform must be set '
+                                    'with --fetch-device-data'))
+    if not options.device_data_path:
+      raise argparse.ArgumentError(options.device_data_path,
+                                   ('--fetch-data-path-device must be set '
+                                    'with --fetch-device-data'))
 
 
 def _CreateTopLevelParser(standalone):

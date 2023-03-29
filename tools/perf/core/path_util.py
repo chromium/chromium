@@ -27,7 +27,7 @@ def GetChromiumSrcDir():
       os.path.dirname(__file__), '..', '..', '..'))
 
 
-def GetDeviceInteractionDir():
+def GetAndroidDeviceInteractionToPath():
   return os.path.join(GetChromiumSrcDir(), 'third_party', 'catapult', 'devil')
 
 
@@ -74,8 +74,8 @@ def GetVariationsDir():
   return os.path.join(GetChromiumSrcDir(), 'tools', 'variations')
 
 
-def AddDeviceInteractionToPath():
-  device_interaction_path = GetDeviceInteractionDir()
+def AddAndroidDeviceInteractionToPath():
+  device_interaction_path = GetAndroidDeviceInteractionToPath()
   if device_interaction_path not in sys.path:
     sys.path.insert(1, device_interaction_path)
 
