@@ -109,6 +109,7 @@ AndroidNTPZpsSection::AndroidNTPZpsSection(
     : ZpsSection(
           15 + max_related_queries + max_trending_queries,
           {
+              {1, omnibox::GROUP_MOBILE_CLIPBOARD},
               {15, omnibox::GROUP_PERSONALIZED_ZERO_SUGGEST},
               {max_related_queries, omnibox::GROUP_PREVIOUS_SEARCH_RELATED},
               {max_trending_queries, omnibox::GROUP_TRENDS},
