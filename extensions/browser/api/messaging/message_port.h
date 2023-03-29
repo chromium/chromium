@@ -96,7 +96,9 @@ class MessagePort {
   // later.
   virtual void NotifyResponsePending();
 
-  bool should_have_strong_keepalive() { return should_have_strong_keepalive_; }
+  bool should_have_strong_keepalive() const {
+    return should_have_strong_keepalive_;
+  }
   void set_should_have_strong_keepalive(bool should_have_strong_keepalive) {
     should_have_strong_keepalive_ = should_have_strong_keepalive;
   }
