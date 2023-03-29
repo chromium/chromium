@@ -2097,11 +2097,13 @@
     },
     {
       name: "MediaCaptureBackgroundBlur",
+      origin_trial_feature_name: "MediaCaptureBackgroundBlur",
       status: "experimental",
       base_feature: "none",
     },
     {
       name: "MediaCaptureConfigurationChange",
+      origin_trial_feature_name: "MediaCaptureBackgroundBlur",
       status: "experimental",
       implied_by: ["MediaCaptureBackgroundBlur"],
       base_feature: "none",
