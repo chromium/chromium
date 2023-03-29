@@ -4,8 +4,18 @@
 
 #include "gpu/command_buffer/service/shared_image/shared_image_test_base.h"
 
+#include <vector>
+
 #include "base/command_line.h"
+#include "cc/test/pixel_comparator.h"
+#include "cc/test/pixel_test_utils.h"
+#include "components/viz/common/resources/resource_format_utils.h"
 #include "gpu/command_buffer/service/service_utils.h"
+#include "gpu/command_buffer/service/shared_image/shared_image_representation.h"
+#include "third_party/skia/include/core/SkImage.h"
+#include "third_party/skia/include/core/SkPromiseImageTexture.h"
+#include "third_party/skia/include/gpu/GrBackendSemaphore.h"
+#include "third_party/skia/include/gpu/ganesh/SkImageGanesh.h"
 #include "ui/gl/gl_context.h"
 #include "ui/gl/gl_surface.h"
 #include "ui/gl/gl_utils.h"
@@ -21,13 +31,33 @@ namespace gpu {
 
 // static
 SkBitmap SharedImageTestBase::MakeRedBitmap(SkColorType color_type,
-                                            const gfx::Size& size) {
-  SkBitmap bitmap;
-  bitmap.allocPixels(SkImageInfo::Make(size.width(), size.height(), color_type,
-                                       kOpaque_SkAlphaType));
+                                            const gfx::Size& size,
+                                            size_t added_stride) {
+  SkImageInfo info = SkImageInfo::Make(size.width(), size.height(), color_type,
+                                       kOpaque_SkAlphaType);
+  const size_t stride =
+      info.minRowBytes() + added_stride * info.bytesPerPixel();
 
+  SkBitmap bitmap;
+  bitmap.allocPixels(info, stride);
   bitmap.eraseColor(SK_ColorRED);
   return bitmap;
+}
+
+// static
+std::vector<SkBitmap> SharedImageTestBase::AllocateRedBitmaps(
+    viz::SharedImageFormat format,
+    const gfx::Size& size,
+    size_t added_stride) {
+  int num_planes = format.NumberOfPlanes();
+  std::vector<SkBitmap> bitmaps(num_planes);
+
+  for (int plane = 0; plane < num_planes; ++plane) {
+    SkColorType color_type = ToClosestSkColorType(true, format, plane);
+    gfx::Size plane_size = format.GetPlaneSize(plane, size);
+    bitmaps[plane] = MakeRedBitmap(color_type, plane_size, added_stride);
+  }
+  return bitmaps;
 }
 
 // static
@@ -102,6 +132,60 @@ void SharedImageTestBase::InitializeContext(GrContextType context_type) {
   bool initialize_gr = context_state_->InitializeGrContext(
       gpu_preferences_, gpu_workarounds_, nullptr);
   ASSERT_TRUE(initialize_gr);
+}
+
+void SharedImageTestBase::VerifyPixelsWithReadback(
+    const Mailbox& mailbox,
+    const std::vector<SkBitmap>& expected_bitmaps) {
+  // Create Skia representation to readback from.
+  auto skia_representation =
+      shared_image_representation_factory_.ProduceSkia(mailbox, context_state_);
+  ASSERT_TRUE(skia_representation);
+
+  std::vector<GrBackendSemaphore> begin_semaphores;
+  std::vector<GrBackendSemaphore> end_semaphores;
+  auto scoped_read_access = skia_representation->BeginScopedReadAccess(
+      &begin_semaphores, &end_semaphores);
+  ASSERT_TRUE(scoped_read_access);
+
+  // If this function is used with a backing that produces semaphores or end
+  // state then code here needs to be updated to handle them.
+  EXPECT_TRUE(begin_semaphores.empty());
+  EXPECT_TRUE(end_semaphores.empty());
+  EXPECT_FALSE(scoped_read_access->TakeEndState());
+
+  viz::SharedImageFormat format = skia_representation->format();
+  gfx::Size size = skia_representation->size();
+
+  int num_planes = format.NumberOfPlanes();
+  for (int plane = 0; plane < num_planes; ++plane) {
+    SkColorType plane_color_type =
+        viz::ToClosestSkColorType(true, format, plane);
+    gfx::Size plane_size = format.GetPlaneSize(plane, size);
+    SkImageInfo dst_info =
+        SkImageInfo::Make(plane_size.width(), plane_size.height(),
+                          plane_color_type, kOpaque_SkAlphaType);
+    SkBitmap dst_bitmap;
+    dst_bitmap.allocPixels(dst_info);
+
+    auto* promise_texture = scoped_read_access->promise_image_texture(plane);
+    ASSERT_TRUE(promise_texture) << "plane_index=" << plane;
+
+    auto sk_image = SkImages::BorrowTextureFrom(
+        gr_context(), promise_texture->backendTexture(),
+        skia_representation->surface_origin(), plane_color_type,
+        skia_representation->alpha_type(), nullptr);
+    ASSERT_TRUE(sk_image) << "plane_index=" << plane;
+
+    ASSERT_TRUE(sk_image->readPixels(dst_info, dst_bitmap.getPixels(),
+                                     dst_bitmap.rowBytes(), /*srcX=*/0,
+                                     /*srcY=*/0))
+        << "plane_index=" << plane;
+
+    EXPECT_TRUE(cc::MatchesBitmap(dst_bitmap, expected_bitmaps[plane],
+                                  cc::ExactPixelComparator()))
+        << "plane_index=" << plane;
+  }
 }
 
 }  // namespace gpu

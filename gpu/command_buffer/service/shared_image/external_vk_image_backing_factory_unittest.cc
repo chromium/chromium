@@ -487,6 +487,36 @@ TEST_P(ExternalVkImageBackingFactoryWithFormatTest, Basic) {
   }
 }
 
+// Verify that pixel upload works as expected.
+TEST_P(ExternalVkImageBackingFactoryWithFormatTest, Upload) {
+  viz::SharedImageFormat format = get_format();
+  auto mailbox = Mailbox::GenerateForSharedImage();
+  gfx::Size size(30, 30);
+  auto color_space = gfx::ColorSpace::CreateSRGB();
+  GrSurfaceOrigin surface_origin = kTopLeft_GrSurfaceOrigin;
+  SkAlphaType alpha_type = kPremul_SkAlphaType;
+  uint32_t usage = SHARED_IMAGE_USAGE_DISPLAY_READ | SHARED_IMAGE_USAGE_RASTER |
+                   SHARED_IMAGE_USAGE_CPU_UPLOAD;
+
+  // Verify backing can be created.
+  auto backing = backing_factory_->CreateSharedImage(
+      mailbox, format, gpu::kNullSurfaceHandle, size, color_space,
+      surface_origin, alpha_type, usage, /*is_thread_safe=*/false);
+  ASSERT_TRUE(backing);
+
+  std::vector<SkBitmap> bitmaps = AllocateRedBitmaps(format, size);
+
+  // Upload pixels and set cleared.
+  ASSERT_TRUE(backing->UploadFromMemory(GetSkPixmaps(bitmaps)));
+  backing->SetCleared();
+
+  std::unique_ptr<SharedImageRepresentationFactoryRef> shared_image_ref =
+      shared_image_manager_.Register(std::move(backing), &memory_type_tracker_);
+  ASSERT_TRUE(shared_image_ref);
+
+  VerifyPixelsWithReadback(mailbox, bitmaps);
+}
+
 std::string TestParamToString(
     const testing::TestParamInfo<viz::SharedImageFormat>& param_info) {
   return param_info.param.ToTestParamString();

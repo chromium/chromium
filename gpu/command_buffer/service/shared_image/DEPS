@@ -10,6 +10,7 @@ specific_include_rules = {
     "+components/viz/common/gpu/vulkan_in_process_context_provider.h",
   ],
   "shared_image_test_base\.cc": [
+    "+cc/test",
     "+components/viz/common/gpu/vulkan_in_process_context_provider.h",
   ],
   ".*_unittest\.cc": [

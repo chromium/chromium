@@ -44,33 +44,6 @@ using testing::AtLeast;
 namespace gpu {
 namespace {
 
-// Allocate a bitmap for each plane filled with red pixels. RED_8 format will be
-// filled with FF repeating and RG_88 format will be filled with FF00 repeating.
-// `added_stride` is a multiplier that allocates bytePerPixel * added_stride
-// extra bytes per row.
-std::vector<SkBitmap> AllocateRedBitmaps(viz::SharedImageFormat format,
-                                         const gfx::Size& size,
-                                         SkAlphaType alpha_type,
-                                         size_t added_stride) {
-  int num_planes = format.NumberOfPlanes();
-  std::vector<SkBitmap> bitmaps(num_planes);
-
-  for (int plane = 0; plane < num_planes; ++plane) {
-    SkColorType color_type = ToClosestSkColorType(true, format, plane);
-    gfx::Size plane_size = format.GetPlaneSize(plane, size);
-
-    SkImageInfo info = SkImageInfo::Make(
-        plane_size.width(), plane_size.height(), color_type, alpha_type);
-    const size_t stride =
-        info.minRowBytes() + added_stride * info.bytesPerPixel();
-
-    auto& bitmap = bitmaps[plane];
-    bitmap.allocPixels(info, stride);
-    bitmap.eraseColor(SK_ColorRED);
-  }
-  return bitmaps;
-}
-
 bool IsGLSupported(viz::SharedImageFormat format) {
   return format.is_single_plane() && !format.IsLegacyMultiplanar() &&
          format != viz::SinglePlaneFormat::kBGR_565;
@@ -542,7 +515,7 @@ TEST_P(GLTextureImageBackingFactoryWithUploadTest, UploadFromMemory) {
   // Upload from bitmap with expected stride.
   {
     std::vector<SkBitmap> bitmaps =
-        AllocateRedBitmaps(format, size, alpha_type, /*added_stride=*/0);
+        AllocateRedBitmaps(format, size, /*added_stride=*/0);
     EXPECT_TRUE(backing->UploadFromMemory(GetSkPixmaps(bitmaps)));
     EXPECT_EQ(glGetError(), static_cast<GLenum>(GL_NO_ERROR));
   }
@@ -550,7 +523,7 @@ TEST_P(GLTextureImageBackingFactoryWithUploadTest, UploadFromMemory) {
   // Upload from bitmap with larger than expected stride.
   {
     std::vector<SkBitmap> bitmaps =
-        AllocateRedBitmaps(format, size, alpha_type, /*added_stride=*/25);
+        AllocateRedBitmaps(format, size, /*added_stride=*/25);
     EXPECT_TRUE(backing->UploadFromMemory(GetSkPixmaps(bitmaps)));
     EXPECT_EQ(glGetError(), static_cast<GLenum>(GL_NO_ERROR));
   }
@@ -582,7 +555,7 @@ TEST_P(GLTextureImageBackingFactoryWithReadbackTest, ReadbackToMemory) {
   ASSERT_TRUE(backing);
 
   std::vector<SkBitmap> src_bitmaps =
-      AllocateRedBitmaps(format, size, alpha_type, /*added_stride=*/0);
+      AllocateRedBitmaps(format, size, /*added_stride=*/0);
 
   // Upload from bitmap with expected stride.
   ASSERT_TRUE(backing->UploadFromMemory(GetSkPixmaps(src_bitmaps)));

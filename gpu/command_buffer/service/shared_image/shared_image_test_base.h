@@ -5,6 +5,8 @@
 #ifndef GPU_COMMAND_BUFFER_SERVICE_SHARED_IMAGE_SHARED_IMAGE_TEST_BASE_H_
 #define GPU_COMMAND_BUFFER_SERVICE_SHARED_IMAGE_SHARED_IMAGE_TEST_BASE_H_
 
+#include <vector>
+
 #include "gpu/command_buffer/service/shared_context_state.h"
 #include "gpu/command_buffer/service/shared_image/shared_image_backing_factory.h"
 #include "gpu/command_buffer/service/shared_image/shared_image_factory.h"
@@ -28,8 +30,16 @@ class VulkanImplementation;
 class SharedImageTestBase : public testing::Test {
  protected:
   // Allocate a bitmap with red pixels. RED_8 will be filled with 0xFF repeating
-  // and RG_88 will be filled with OxFF00 repeating.
-  static SkBitmap MakeRedBitmap(SkColorType color_type, const gfx::Size& size);
+  // and RG_88 will be filled with OxFF00 repeating. `added_stride` is a
+  // multiplier that allocates bytePerPixel * added_stride extra bytes per row.
+  static SkBitmap MakeRedBitmap(SkColorType color_type,
+                                const gfx::Size& size,
+                                size_t added_stride = 0);
+
+  // Allocate a bitmap for each plane by calling MakeRedBitmap().
+  static std::vector<SkBitmap> AllocateRedBitmaps(viz::SharedImageFormat format,
+                                                  const gfx::Size& size,
+                                                  size_t added_stride = 0);
 
   // Returns SkPixmap from each SkBitmap.
   static std::vector<SkPixmap> GetSkPixmaps(
@@ -46,6 +56,11 @@ class SharedImageTestBase : public testing::Test {
   // so caller should wrap call in ASSERT_NO_FATAL_FAILURE() to ensure SetUp()
   // exits on error.
   void InitializeContext(GrContextType context_type);
+
+  // Reads back pixels for each plane using skia and verifies that pixels
+  // match corresponding bitmap from `expected_bitmaps`.
+  void VerifyPixelsWithReadback(const Mailbox& mailbox,
+                                const std::vector<SkBitmap>& expect_bitmaps);
 
   GpuPreferences gpu_preferences_;
   GpuDriverBugWorkarounds gpu_workarounds_;

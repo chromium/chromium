@@ -93,14 +93,19 @@ TEST_P(WrappedSkImageBackingFactoryTest, Basic) {
   auto scoped_write_access = skia_representation->BeginScopedWriteAccess(
       &begin_semaphores, &end_semaphores,
       SharedImageRepresentation::AllowUnclearedAccess::kYes);
-
   ASSERT_TRUE(scoped_write_access);
-  auto* surface = scoped_write_access->surface(/*plane_index=*/0);
-  ASSERT_TRUE(surface);
-  EXPECT_EQ(size.width(), surface->width());
-  EXPECT_EQ(size.height(), surface->height());
   EXPECT_TRUE(begin_semaphores.empty());
   EXPECT_TRUE(end_semaphores.empty());
+
+  for (int plane = 0; plane < format.NumberOfPlanes(); ++plane) {
+    auto* surface = scoped_write_access->surface(plane);
+    ASSERT_TRUE(surface);
+
+    auto plane_size = format.GetPlaneSize(plane, size);
+    EXPECT_EQ(plane_size.width(), surface->width());
+    EXPECT_EQ(plane_size.height(), surface->height());
+  }
+
   scoped_write_access.reset();
 
   // Must be cleared before read access.
@@ -110,15 +115,19 @@ TEST_P(WrappedSkImageBackingFactoryTest, Basic) {
   std::unique_ptr<SkiaImageRepresentation::ScopedReadAccess> scoped_read_access;
   scoped_read_access = skia_representation->BeginScopedReadAccess(
       &begin_semaphores, &end_semaphores);
-  auto* promise_texture =
-      scoped_read_access->promise_image_texture(/*plane_index=*/0);
-  EXPECT_TRUE(promise_texture);
   EXPECT_TRUE(begin_semaphores.empty());
   EXPECT_TRUE(end_semaphores.empty());
-  GrBackendTexture backend_texture = promise_texture->backendTexture();
-  EXPECT_TRUE(backend_texture.isValid());
-  EXPECT_EQ(size.width(), backend_texture.width());
-  EXPECT_EQ(size.height(), backend_texture.height());
+
+  for (int plane = 0; plane < format.NumberOfPlanes(); ++plane) {
+    auto* promise_texture = scoped_read_access->promise_image_texture(plane);
+    ASSERT_TRUE(promise_texture);
+    GrBackendTexture backend_texture = promise_texture->backendTexture();
+    EXPECT_TRUE(backend_texture.isValid());
+
+    auto plane_size = format.GetPlaneSize(plane, size);
+    EXPECT_EQ(plane_size.width(), backend_texture.width());
+    EXPECT_EQ(plane_size.height(), backend_texture.height());
+  }
 
   scoped_read_access.reset();
   skia_representation.reset();
@@ -135,13 +144,7 @@ TEST_P(WrappedSkImageBackingFactoryTest, Upload) {
       kSurfaceOrigin, kAlphaType, kUsage, /*is_thread_safe=*/false);
   ASSERT_TRUE(backing);
 
-  int num_planes = format.NumberOfPlanes();
-  std::vector<SkBitmap> bitmaps(num_planes);
-  for (int plane = 0; plane < num_planes; ++plane) {
-    SkColorType color_type = ToClosestSkColorType(true, format, plane);
-    gfx::Size plane_size = format.GetPlaneSize(plane, size);
-    bitmaps[plane] = MakeRedBitmap(color_type, plane_size);
-  }
+  std::vector<SkBitmap> bitmaps = AllocateRedBitmaps(format, size);
 
   // Upload pixels and set cleared.
   ASSERT_TRUE(backing->UploadFromMemory(GetSkPixmaps(bitmaps)));
@@ -150,39 +153,7 @@ TEST_P(WrappedSkImageBackingFactoryTest, Upload) {
   std::unique_ptr<SharedImageRepresentationFactoryRef> shared_image =
       shared_image_manager_.Register(std::move(backing), &memory_type_tracker_);
 
-  // Validate SkiaImageRepresentation works.
-  auto skia_representation = shared_image_representation_factory_.ProduceSkia(
-      mailbox, context_state_.get());
-  EXPECT_TRUE(skia_representation);
-  std::vector<GrBackendSemaphore> begin_semaphores;
-  std::vector<GrBackendSemaphore> end_semaphores;
-  std::unique_ptr<SkiaImageRepresentation::ScopedReadAccess> scoped_read_access;
-  scoped_read_access = skia_representation->BeginScopedReadAccess(
-      &begin_semaphores, &end_semaphores);
-
-  for (int plane = 0; plane < num_planes; ++plane) {
-    auto* promise_texture = scoped_read_access->promise_image_texture(plane);
-    ASSERT_TRUE(promise_texture);
-
-    // Readback via Skia API and verify it's the same pixels that were uploaded.
-    SkColorType color_type = ToClosestSkColorType(true, format, plane);
-    auto sk_image = SkImages::BorrowTextureFrom(
-        context_state_->gr_context(), promise_texture->backendTexture(),
-        kSurfaceOrigin, color_type, kAlphaType, nullptr);
-    ASSERT_TRUE(sk_image);
-
-    SkImageInfo dst_info = bitmaps[plane].info();
-    SkBitmap dst_bitmap;
-    dst_bitmap.allocPixels(dst_info);
-    EXPECT_TRUE(sk_image->readPixels(dst_info, dst_bitmap.getPixels(),
-                                     dst_info.minRowBytes(), 0, 0));
-
-    EXPECT_TRUE(cc::MatchesBitmap(dst_bitmap, bitmaps[plane],
-                                  cc::ExactPixelComparator()));
-  }
-
-  scoped_read_access.reset();
-  skia_representation.reset();
+  VerifyPixelsWithReadback(mailbox, bitmaps);
 }
 
 std::string TestParamToString(
