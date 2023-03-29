@@ -1488,7 +1488,7 @@ are declared in tools/grit/grit_rule.gni.
           &amp;Downloads
         </message>
         <message name="IDS_VIEW_PASSWORDS" desc="The show Password Manager menu in the app menu">
-          &amp;Password Manager
+          Password Manager
         </message>
         <message name="IDS_SHOW_EXTENSIONS" desc="The show extensions menu in the app menu">
           &amp;Extensions
