@@ -396,6 +396,9 @@ public final class ProductionSupportedFlagList {
                             + "Note: this is under active development and may result in unexpected "
                             + "behavior. Please file bugs at https://bugs.chromium.org/p/chromium/issues/"
                             + "entry?labels=StoragePartitioning-trial-bugs&components=Blink%3EStorage."),
+            Flag.baseFeature(BaseFeatures.CRASH_BROWSER_ON_CHILD_MISMATCH_IF_BROWSER_CHANGED,
+                    "Causes the browser process to crash if child processes are failing to launch"
+                            + " due to a browser version change."),
             // Add new commandline switches and features above. The final entry should have a
             // trailing comma for cleaner diffs.
     };
