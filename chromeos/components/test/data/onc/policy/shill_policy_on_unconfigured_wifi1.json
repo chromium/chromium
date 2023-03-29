@@ -9,6 +9,6 @@
   "SecurityClass": "psk",
   "Type": "wifi",
   "UIData": "{\"onc_source\":\"user_policy\"}",
-  "Visible": true,
+  "Visible": false,
   "WiFi.HexSSID": "7769666931"  // "wifi1"
 }

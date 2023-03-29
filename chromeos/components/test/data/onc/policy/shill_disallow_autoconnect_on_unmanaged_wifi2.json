@@ -9,6 +9,6 @@
   "SecurityClass": "psk",
   "State": "idle",
   "Type": "wifi",
-  "Visible": true,
+  "Visible": false,
   "WiFi.HexSSID": "7769666932"  // "wifi2"
 }

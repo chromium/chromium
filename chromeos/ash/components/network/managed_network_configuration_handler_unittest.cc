@@ -17,6 +17,7 @@
 #include "chromeos/ash/components/dbus/hermes/hermes_clients.h"
 #include "chromeos/ash/components/dbus/hermes/hermes_manager_client.h"
 #include "chromeos/ash/components/dbus/shill/shill_clients.h"
+#include "chromeos/ash/components/dbus/shill/shill_manager_client.h"
 #include "chromeos/ash/components/dbus/shill/shill_profile_client.h"
 #include "chromeos/ash/components/dbus/shill/shill_service_client.h"
 #include "chromeos/ash/components/login/login_state/login_state.h"
@@ -150,6 +151,10 @@ class ManagedNetworkConfigurationHandlerTest : public testing::Test {
 
     shill_clients::InitializeFakes();
     hermes_clients::InitializeFakes();
+
+    ShillManagerClient::Get()
+        ->GetTestInterface()
+        ->SetWifiServicesVisibleByDefault(false);
 
     network_state_handler_ = MockNetworkStateHandler::InitializeForTest();
     network_device_handler_ = NetworkDeviceHandler::InitializeForTesting(

@@ -251,8 +251,7 @@ const char kRoamingRequired[] = "required";
 const char FakeShillManagerClient::kFakeEthernetNetworkGuid[] = "eth1_guid";
 
 FakeShillManagerClient::FakeShillManagerClient()
-    : cellular_technology_(shill::kNetworkTechnologyGsm),
-      return_null_properties_(false) {
+    : cellular_technology_(shill::kNetworkTechnologyGsm) {
   ParseCommandLineSwitch();
 }
 
@@ -430,6 +429,10 @@ void FakeShillManagerClient::ConfigureService(
   if (service_path.empty())
     service_path = service_client->FindSimilarService(properties);
   if (service_path.empty()) {
+    // shill specifies that non-wifi services are always visible.
+    // For wifi services, let the test case decide.
+    bool initial_visible =
+        type != shill::kTypeWifi || wifi_services_visible_by_default_;
     // In the stub, service paths don't have to be DBus paths, so build
     // something out of the GUID as service path.
     // Don't use the GUID itself, so tests are forced to distinguish between
@@ -437,7 +440,7 @@ void FakeShillManagerClient::ConfigureService(
     service_path = "service_path_for_" + guid;
     service_client->AddServiceWithIPConfig(
         service_path, guid /* guid */, name /* name */, type, shill::kStateIdle,
-        ipconfig_path, true /* visible */);
+        ipconfig_path, initial_visible);
   }
 
   // Set all the properties.
@@ -1265,6 +1268,11 @@ void FakeShillManagerClient::ClearProfiles() {
 
 void FakeShillManagerClient::SetShouldReturnNullProperties(bool value) {
   return_null_properties_ = value;
+}
+
+void FakeShillManagerClient::SetWifiServicesVisibleByDefault(
+    bool wifi_services_visible_by_default) {
+  wifi_services_visible_by_default_ = wifi_services_visible_by_default;
 }
 
 void FakeShillManagerClient::ScanCompleted(const std::string& device_path) {

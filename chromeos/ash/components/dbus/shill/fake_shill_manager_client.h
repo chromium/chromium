@@ -130,6 +130,8 @@ class COMPONENT_EXPORT(SHILL_CLIENT) FakeShillManagerClient
   base::Value::List GetEnabledServiceList() const override;
   void ClearProfiles() override;
   void SetShouldReturnNullProperties(bool value) override;
+  void SetWifiServicesVisibleByDefault(
+      bool wifi_services_visible_by_default) override;
 
   // Constants used for testing.
   static const char kFakeEthernetNetworkGuid[];
@@ -203,7 +205,8 @@ class COMPONENT_EXPORT(SHILL_CLIENT) FakeShillManagerClient
       FakeShillSimulatedResult::kSuccess;
   std::string simulate_tethering_readiness_status_;
 
-  bool return_null_properties_;
+  bool return_null_properties_ = false;
+  bool wifi_services_visible_by_default_ = true;
 
   // For testing multiple wifi networks.
   int extra_wifi_networks_ = 0;

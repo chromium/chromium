@@ -10,6 +10,6 @@
   "Type": "wifi",
   "StaticIPConfig": {},
   "UIData": "{\"onc_source\":\"user_policy\",\"user_settings\":{\"WiFi\":{\"Passphrase\":\"FAKE_CREDENTIAL_VPaJDV9x\"}}}",
-  "Visible":true,
+  "Visible":false,
   "WiFi.HexSSID": "7769666931" // "wifi1"
 }
