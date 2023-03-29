@@ -43,7 +43,7 @@ class PolicyDiagnostic final : public PolicyInfo {
   std::unique_ptr<std::string> json_string_;
   uint32_t process_id_;
   TokenLevel lockdown_level_ = USER_LAST;
-  JobLevel job_level_ = JobLevel::kNone;
+  JobLevel job_level_ = JobLevel::kUnprotected;
   IntegrityLevel desired_integrity_level_ = INTEGRITY_LEVEL_LAST;
   MitigationFlags desired_mitigations_ = 0;
   absl::optional<base::win::Sid> app_container_sid_;

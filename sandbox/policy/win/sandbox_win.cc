@@ -440,8 +440,6 @@ bool IsAppContainerEnabled() {
 }
 
 void SetJobMemoryLimit(Sandbox sandbox_type, TargetConfig* config) {
-  DCHECK_NE(config->GetJobLevel(), JobLevel::kNone);
-
 #ifdef _WIN64
   size_t memory_limit = static_cast<size_t>(kDataSizeLimit);
 

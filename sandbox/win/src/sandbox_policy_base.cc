@@ -381,9 +381,6 @@ TokenLevel ConfigBase::GetLockdownTokenLevel() const {
 }
 
 ResultCode ConfigBase::SetJobLevel(JobLevel job_level, uint32_t ui_exceptions) {
-  if (memory_limit_ && job_level == JobLevel::kNone) {
-    return SBOX_ERROR_BAD_PARAMS;
-  }
   job_level_ = job_level;
   ui_exceptions_ = ui_exceptions;
   return SBOX_ALL_OK;
@@ -505,9 +502,6 @@ const base::HandlesToInheritVector& PolicyBase::GetHandlesBeingShared() {
 ResultCode PolicyBase::InitJob() {
   if (job_.IsValid())
     return SBOX_ERROR_BAD_PARAMS;
-
-  if (config()->GetJobLevel() == JobLevel::kNone)
-    return SBOX_ALL_OK;
 
   // Create the Windows job object.
   DWORD result = job_.Init(config()->GetJobLevel(), config()->ui_exceptions(),

@@ -116,7 +116,7 @@ TEST(ProcessPolicyTest, OpenToken) {
 // This tests that the CreateThread works with CSRSS not locked down.
 // In other words, that the interception passes through OK.
 TEST(ProcessPolicyTest, TestCreateThreadWithCsrss) {
-  TestRunner runner(JobLevel::kNone, USER_INTERACTIVE, USER_INTERACTIVE);
+  TestRunner runner(JobLevel::kUnprotected, USER_INTERACTIVE, USER_INTERACTIVE);
   runner.SetDisableCsrss(false);
   EXPECT_EQ(SBOX_TEST_SUCCEEDED, runner.RunTest(L"Process_CreateThread"));
 }
@@ -124,7 +124,7 @@ TEST(ProcessPolicyTest, TestCreateThreadWithCsrss) {
 // This tests that the CreateThread works with CSRSS locked down.
 // In other words, that the interception correctly works.
 TEST(ProcessPolicyTest, TestCreateThreadWithoutCsrss) {
-  TestRunner runner(JobLevel::kNone, USER_INTERACTIVE, USER_INTERACTIVE);
+  TestRunner runner(JobLevel::kUnprotected, USER_INTERACTIVE, USER_INTERACTIVE);
   EXPECT_EQ(SBOX_TEST_SUCCEEDED, runner.RunTest(L"Process_CreateThread"));
 }
 

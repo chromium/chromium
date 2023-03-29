@@ -538,6 +538,9 @@ ResultCode BrokerServicesBase::SpawnTarget(const wchar_t* exe_path,
   if (container)
     startup_info->SetAppContainer(container);
 
+  // TODO(crbug.com/1428756) remove all calls to HasJob in follow-up CLs.
+  DCHECK(policy_base->HasJob());
+
   if (policy_base->HasJob())
     startup_info->AddJobToAssociate(policy_base->GetJobHandle());
 

@@ -24,7 +24,7 @@ namespace {
 int RunOpenProcessTest(bool unsandboxed,
                        bool lockdown_dacl,
                        DWORD access_mask) {
-  TestRunner runner(JobLevel::kNone, USER_RESTRICTED_SAME_ACCESS,
+  TestRunner runner(JobLevel::kUnprotected, USER_RESTRICTED_SAME_ACCESS,
                     USER_LOCKDOWN);
   auto* config = runner.GetPolicy()->GetConfig();
   config->SetDelayedIntegrityLevel(INTEGRITY_LEVEL_UNTRUSTED);
@@ -37,7 +37,7 @@ int RunOpenProcessTest(bool unsandboxed,
   // This spins up a renderer level process, we don't care about the result.
   runner.RunTest(L"IntegrationTestsTest_args 1");
 
-  TestRunner runner2(JobLevel::kNone, USER_RESTRICTED_SAME_ACCESS,
+  TestRunner runner2(JobLevel::kUnprotected, USER_RESTRICTED_SAME_ACCESS,
                      USER_LIMITED);
   auto* config2 = runner2.GetPolicy()->GetConfig();
   config2->SetDelayedIntegrityLevel(INTEGRITY_LEVEL_LOW);
@@ -54,7 +54,8 @@ int RunOpenProcessTest(bool unsandboxed,
 int RunRestrictedOpenProcessTest(bool unsandboxed,
                                  bool lockdown_dacl,
                                  DWORD access_mask) {
-  TestRunner runner(JobLevel::kNone, USER_RESTRICTED_SAME_ACCESS, USER_LIMITED);
+  TestRunner runner(JobLevel::kUnprotected, USER_RESTRICTED_SAME_ACCESS,
+                    USER_LIMITED);
   auto* config = runner.GetPolicy()->GetConfig();
   config->SetDelayedIntegrityLevel(INTEGRITY_LEVEL_LOW);
   ResultCode result = config->SetIntegrityLevel(INTEGRITY_LEVEL_LOW);
@@ -69,7 +70,7 @@ int RunRestrictedOpenProcessTest(bool unsandboxed,
   // This spins up a GPU level process, we don't care about the result.
   runner.RunTest(L"IntegrationTestsTest_args 1");
 
-  TestRunner runner2(JobLevel::kNone, USER_RESTRICTED_SAME_ACCESS,
+  TestRunner runner2(JobLevel::kUnprotected, USER_RESTRICTED_SAME_ACCESS,
                      USER_LIMITED);
   auto* config2 = runner2.GetPolicy()->GetConfig();
   config2->SetDelayedIntegrityLevel(INTEGRITY_LEVEL_LOW);
@@ -84,7 +85,8 @@ int RunRestrictedOpenProcessTest(bool unsandboxed,
 }
 
 int RunRestrictedSelfOpenProcessTest(bool add_random_sid, DWORD access_mask) {
-  TestRunner runner(JobLevel::kNone, USER_RESTRICTED_SAME_ACCESS, USER_LIMITED);
+  TestRunner runner(JobLevel::kUnprotected, USER_RESTRICTED_SAME_ACCESS,
+                    USER_LIMITED);
   auto* config = runner.GetPolicy()->GetConfig();
   config->SetDelayedIntegrityLevel(INTEGRITY_LEVEL_LOW);
   ResultCode result = config->SetIntegrityLevel(INTEGRITY_LEVEL_LOW);
@@ -173,7 +175,7 @@ TEST(RestrictedTokenTest, OpenLowPrivilegedProcess) {
 }
 
 TEST(RestrictedTokenTest, CheckNonAdminRestricted) {
-  TestRunner runner(JobLevel::kNone, USER_RESTRICTED_SAME_ACCESS,
+  TestRunner runner(JobLevel::kUnprotected, USER_RESTRICTED_SAME_ACCESS,
                     USER_RESTRICTED_NON_ADMIN);
   EXPECT_EQ(SBOX_TEST_SUCCEEDED,
             runner.RunTest(L"RestrictedTokenTest_IsRestricted"));

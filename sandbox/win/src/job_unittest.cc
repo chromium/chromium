@@ -93,11 +93,6 @@ TEST(JobTest, SecurityLevel) {
   Job job_unprotected;
   ASSERT_EQ(static_cast<DWORD>(ERROR_SUCCESS),
             job_unprotected.Init(JobLevel::kUnprotected, 0, 0));
-
-  // JobLevel::kNone means we run without a job object so Init should fail.
-  Job job_none;
-  ASSERT_EQ(static_cast<DWORD>(ERROR_BAD_ARGUMENTS),
-            job_none.Init(JobLevel::kNone, 0, 0));
 }
 
 }  // namespace sandbox

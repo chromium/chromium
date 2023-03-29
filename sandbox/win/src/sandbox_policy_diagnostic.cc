@@ -82,8 +82,6 @@ std::string GetJobLevelInEnglish(JobLevel job) {
       return "Interactive";
     case JobLevel::kUnprotected:
       return "Unprotected";
-    case JobLevel::kNone:
-      return "None";
   }
 }
 

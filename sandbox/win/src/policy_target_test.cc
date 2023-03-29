@@ -223,15 +223,6 @@ TEST(PolicyTargetTest, OpenProcess) {
       << "Opens a process";
 }
 
-TEST(PolicyTargetTest, PolicyBaseNoJobLifetime) {
-  TestRunner runner(JobLevel::kNone, USER_RESTRICTED_SAME_ACCESS,
-                    USER_LOCKDOWN);
-  // TargetPolicy and its SharedMemIPCServer should continue to exist until
-  // the child process dies.
-  EXPECT_EQ(SBOX_TEST_SUCCEEDED, runner.RunTest(L"PolicyTargetTest_thread"))
-      << "Opens the current thread";
-}
-
 // Sets the desktop for the current thread to be one with a null DACL, then
 // launches a sandboxed app. Validates that the sandboxed app has access to the
 // desktop.
