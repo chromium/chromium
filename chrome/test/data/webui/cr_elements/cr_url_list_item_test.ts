@@ -106,4 +106,33 @@ suite('CrUrlListItemTest', () => {
     // No more than two images may be displayed for a folder.
     assertEquals(2, imageElements.length);
   });
+
+  test('DisplaysImageAfterLoad', () => {
+    element.url = 'http://google.com';
+    element.imageUrls = [
+      'http://www.image.png',
+    ];
+    flush();
+    const imageContainer =
+        element.shadowRoot!.querySelector<HTMLElement>('.image-container');
+    assertTrue(!!imageContainer);
+    assertFalse(isVisible(imageContainer));
+
+    const firstImage = element.shadowRoot!.querySelector('img');
+    assertTrue(!!firstImage);
+    firstImage.dispatchEvent(new Event('load'));
+    flush();
+    assertTrue(isVisible(imageContainer));
+
+    // Changing imageUrls should reset the load logic
+    element.imageUrls = [
+      'http://www.image2.png',
+    ];
+    flush();
+    assertFalse(isVisible(imageContainer));
+
+    firstImage.dispatchEvent(new Event('load'));
+    flush();
+    assertTrue(isVisible(imageContainer));
+  });
 });

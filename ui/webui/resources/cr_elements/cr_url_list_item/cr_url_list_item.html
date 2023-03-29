@@ -382,7 +382,8 @@
       style$="background-image: [[getFavicon_(url)]];">
   </div>
   <div class="image-container"
-      hidden$="[[!shouldShowUrlImage_(url, size, imageUrls)]]">
+      hidden$="[[!shouldShowUrlImage_(
+          url, size, imageUrls, firstImageLoaded_)]]">
     <img class="url-image" is="cr-auto-img" auto-src="[[imageUrls.0]]">
   </div>
   <div class="folder-and-count"
@@ -390,7 +391,7 @@
     <template is="dom-if" if="[[shouldShowFolderImages_(size)]]" restamp>
       <template is="dom-repeat" items="[[imageUrls]]"
           filter="shouldShowImageUrl_">
-        <div class="image-container">
+        <div class="image-container" hidden$="[[!firstImageLoaded_]]">
           <img class="folder-image" is="cr-auto-img" auto-src="[[item]]">
         </div>
       </template>
