@@ -37,7 +37,6 @@
 namespace blink {
 
 class FloatingObject;
-class LineLayoutRubyRun;
 
 enum WhitespaceTreatment { kExcludeWhitespace, kIncludeWhitespace };
 
@@ -80,9 +79,6 @@ class LineWidth {
   void ShrinkAvailableWidthForNewFloatIfNeeded(const FloatingObject&);
   void AddUncommittedWidth(float delta) { uncommitted_width_ += delta; }
   void Commit();
-  void ApplyOverhang(LineLayoutRubyRun,
-                     LineLayoutItem start_layout_item,
-                     LineLayoutItem end_layout_item);
   void FitBelowFloats(bool is_first_line = false);
   void SetTrailingWhitespaceWidth(float width) {
     trailing_whitespace_width_ = width;

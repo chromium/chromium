@@ -12,11 +12,11 @@
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/layout/geometry/logical_rect.h"
 #include "third_party/blink/renderer/core/layout/layout_counter.h"
-#include "third_party/blink/renderer/core/layout/layout_ruby_run.h"
 #include "third_party/blink/renderer/core/layout/list_marker.h"
 #include "third_party/blink/renderer/core/layout/ng/inline/layout_ng_text_combine.h"
 #include "third_party/blink/renderer/core/layout/ng/inline/ng_inline_cursor.h"
 #include "third_party/blink/renderer/core/layout/ng/inline/ng_offset_mapping.h"
+#include "third_party/blink/renderer/core/layout/ng/layout_ng_ruby_run.h"
 #include "third_party/blink/renderer/core/layout/ng/layout_ng_ruby_text.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_physical_box_fragment.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_text_decoration_offset.h"
@@ -127,7 +127,7 @@ bool ShouldPaintEmphasisMark(const ComputedStyle& style,
   const LayoutObject* parent = containing_block->Parent();
   if (!parent || !parent->IsRubyRun())
     return true;
-  const auto* ruby_text = To<LayoutRubyRun>(parent)->RubyText();
+  const auto* ruby_text = To<LayoutNGRubyRun>(parent)->RubyText();
   if (!ruby_text)
     return true;
   if (!NGInlineCursor(*ruby_text))

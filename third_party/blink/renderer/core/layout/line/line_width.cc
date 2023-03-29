@@ -29,7 +29,6 @@
 
 #include "third_party/blink/renderer/core/layout/line/line_width.h"
 
-#include "third_party/blink/renderer/core/layout/api/line_layout_ruby_run.h"
 #include "third_party/blink/renderer/core/layout/shapes/shape_outside_info.h"
 
 namespace blink {
@@ -114,23 +113,6 @@ void LineWidth::ShrinkAvailableWidthForNewFloatIfNeeded(
 void LineWidth::Commit() {
   committed_width_ += uncommitted_width_;
   uncommitted_width_ = 0;
-}
-
-void LineWidth::ApplyOverhang(LineLayoutRubyRun ruby_run,
-                              LineLayoutItem start_layout_item,
-                              LineLayoutItem end_layout_item) {
-  int start_overhang;
-  int end_overhang;
-  ruby_run.GetOverhang(is_first_line_, start_layout_item, end_layout_item,
-                       start_overhang, end_overhang);
-
-  start_overhang = std::min<int>(start_overhang, committed_width_);
-  available_width_ += start_overhang;
-
-  end_overhang = std::max(
-      std::min<int>(end_overhang, available_width_ - CurrentWidth()), 0);
-  available_width_ += end_overhang;
-  overhang_width_ += start_overhang + end_overhang;
 }
 
 inline static LayoutUnit AvailableWidthAtOffset(

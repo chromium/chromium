@@ -85,7 +85,6 @@
 #include "third_party/blink/renderer/core/layout/layout_object_factory.h"
 #include "third_party/blink/renderer/core/layout/layout_object_inl.h"
 #include "third_party/blink/renderer/core/layout/layout_object_inlines.h"
-#include "third_party/blink/renderer/core/layout/layout_ruby_run.h"
 #include "third_party/blink/renderer/core/layout/layout_text_fragment.h"
 #include "third_party/blink/renderer/core/layout/layout_theme.h"
 #include "third_party/blink/renderer/core/layout/layout_view.h"
@@ -94,6 +93,7 @@
 #include "third_party/blink/renderer/core/layout/ng/inline/layout_ng_text_combine.h"
 #include "third_party/blink/renderer/core/layout/ng/layout_ng_block_flow.h"
 #include "third_party/blink/renderer/core/layout/ng/layout_ng_fieldset.h"
+#include "third_party/blink/renderer/core/layout/ng/layout_ng_ruby_run.h"
 #include "third_party/blink/renderer/core/layout/ng/list/layout_ng_list_item.h"
 #include "third_party/blink/renderer/core/layout/ng/mathml/layout_ng_mathml_block.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_block_node.h"
@@ -3955,7 +3955,8 @@ void LayoutObject::DestroyAndCleanupAnonymousWrappers(
     }
     // RubyBase should be kept if RubyText exists
     if (destroy_root_parent->IsRubyBase()) {
-      auto* ruby_run = DynamicTo<LayoutRubyRun>(destroy_root_parent->Parent());
+      auto* ruby_run =
+          DynamicTo<LayoutNGRubyRun>(destroy_root_parent->Parent());
       if (ruby_run && ruby_run->HasRubyText())
         break;
     }

@@ -39,7 +39,7 @@ void LayoutNGRubyAsBlock::AddChild(LayoutObject* child,
     }
     if (run) {
       if (before_child == run) {
-        before_child = To<LayoutRubyRun>(before_child)->FirstChild();
+        before_child = To<LayoutNGRubyRun>(before_child)->FirstChild();
       }
       DCHECK(!before_child || before_child->IsDescendantOf(run));
       run->AddChild(child, before_child);
@@ -51,10 +51,10 @@ void LayoutNGRubyAsBlock::AddChild(LayoutObject* child,
 
   // If the new child would be appended, try to add the child to the previous
   // run if possible, or create a new run otherwise.
-  // (The LayoutRubyRun object will handle the details)
-  LayoutRubyRun* last_run = LayoutRubyAsInline::LastRubyRun(*this);
+  // (The LayoutNGRubyRun object will handle the details)
+  auto* last_run = LayoutRubyAsInline::LastRubyRun(*this);
   if (!last_run || last_run->HasRubyText()) {
-    last_run = &LayoutRubyRun::Create(this, *this);
+    last_run = &LayoutNGRubyRun::Create(this, *this);
     LayoutNGBlockFlow::AddChild(last_run, before_child);
     last_run->EnsureRubyBase();
   }
@@ -72,7 +72,7 @@ void LayoutNGRubyAsBlock::RemoveChild(LayoutObject* child) {
   }
 
   // Otherwise find the containing run and remove it from there.
-  LayoutRubyRun* run = LayoutRubyAsInline::FindRubyRunParent(child);
+  auto* run = LayoutRubyAsInline::FindRubyRunParent(child);
   DCHECK(run);
   run->RemoveChild(child);
 }

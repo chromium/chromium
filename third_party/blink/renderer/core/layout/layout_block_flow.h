@@ -56,7 +56,6 @@ class LineLayoutState;
 class LineWidth;
 class LayoutMultiColumnFlowThread;
 class LayoutMultiColumnSpannerPlaceholder;
-class LayoutRubyRun;
 class MarginInfo;
 class NGOffsetMapping;
 class NGPhysicalFragment;
@@ -1036,10 +1035,6 @@ class CORE_EXPORT LayoutBlockFlow : public LayoutBlock {
   InlineFlowBox* CreateLineBoxes(LineLayoutItem,
                                  const LineInfo&,
                                  InlineBox* child_box);
-  void SetMarginsForRubyRun(BidiRun*,
-                            LayoutRubyRun*,
-                            LayoutObject*,
-                            const LineInfo&);
   void ComputeInlineDirectionPositionsForLine(RootInlineBox*,
                                               const LineInfo&,
                                               BidiRun* first_run,

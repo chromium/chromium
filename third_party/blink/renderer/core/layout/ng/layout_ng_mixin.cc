@@ -13,7 +13,6 @@
 #include "third_party/blink/renderer/core/layout/ng/layout_ng_block.h"
 #include "third_party/blink/renderer/core/layout/ng/layout_ng_block_flow.h"
 #include "third_party/blink/renderer/core/layout/ng/layout_ng_progress.h"
-#include "third_party/blink/renderer/core/layout/ng/layout_ng_ruby_run.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_box_fragment_builder.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_constraint_space.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_constraint_space_builder.h"
@@ -385,7 +384,6 @@ void LayoutNGMixin<Base>::UpdateMargins() {
 template class CORE_TEMPLATE_EXPORT LayoutNGMixin<LayoutBlock>;
 template class CORE_TEMPLATE_EXPORT LayoutNGMixin<LayoutBlockFlow>;
 template class CORE_TEMPLATE_EXPORT LayoutNGMixin<LayoutProgress>;
-template class CORE_TEMPLATE_EXPORT LayoutNGMixin<LayoutRubyRun>;
 template class CORE_TEMPLATE_EXPORT LayoutNGMixin<LayoutSVGBlock>;
 template class CORE_TEMPLATE_EXPORT LayoutNGMixin<LayoutView>;
 

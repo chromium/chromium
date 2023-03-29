@@ -28,7 +28,6 @@
 #include "base/check_op.h"
 #include "third_party/blink/renderer/core/layout/api/line_layout_box.h"
 #include "third_party/blink/renderer/core/layout/api/line_layout_list_marker.h"
-#include "third_party/blink/renderer/core/layout/api/line_layout_ruby_run.h"
 #include "third_party/blink/renderer/core/layout/api/line_layout_text.h"
 #include "third_party/blink/renderer/core/layout/api/line_layout_text_combine.h"
 #include "third_party/blink/renderer/core/layout/line/inline_iterator.h"
@@ -662,12 +661,8 @@ inline void BreakingContext::HandleReplaced() {
   if (at_start_)
     width_.UpdateAvailableWidth(replaced_box.LogicalHeight());
 
-  // Break on replaced elements if either has normal white-space,
-  // or if the replaced element is ruby that can break before.
-  if ((auto_wrap_ || ComputedStyle::DeprecatedAutoWrap(last_ws_)) &&
-      (!current_.GetLineLayoutItem().IsRubyRun() ||
-       LineLayoutRubyRun(current_.GetLineLayoutItem())
-           .CanBreakBefore(layout_text_info_.line_break_iterator_))) {
+  // Break on replaced elements if either has normal white-space.
+  if (auto_wrap_ || ComputedStyle::DeprecatedAutoWrap(last_ws_)) {
     width_.Commit();
     line_break_.MoveToStartOf(current_.GetLineLayoutItem());
   }
@@ -704,9 +699,6 @@ inline void BreakingContext::HandleReplaced() {
   } else {
     width_.AddUncommittedWidth(replaced_logical_width.ToFloat());
   }
-  if (current_.GetLineLayoutItem().IsRubyRun())
-    width_.ApplyOverhang(LineLayoutRubyRun(current_.GetLineLayoutItem()),
-                         last_object_, next_object_);
   // Update prior line break context characters, using U+FFFD (OBJECT
   // REPLACEMENT CHARACTER) for replaced element.
   layout_text_info_.line_break_iterator_.UpdatePriorContext(

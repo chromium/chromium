@@ -31,7 +31,7 @@
 #include "third_party/blink/renderer/core/layout/layout_ruby.h"
 
 #include "third_party/blink/renderer/core/frame/web_feature.h"
-#include "third_party/blink/renderer/core/layout/layout_ruby_run.h"
+#include "third_party/blink/renderer/core/layout/ng/layout_ng_ruby_run.h"
 #include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
 
 namespace blink {
@@ -39,15 +39,15 @@ namespace blink {
 // === generic helper functions to avoid excessive code duplication ===
 
 // static
-LayoutRubyRun* LayoutRubyAsInline::LastRubyRun(const LayoutObject& ruby) {
-  return To<LayoutRubyRun>(ruby.SlowLastChild());
+LayoutNGRubyRun* LayoutRubyAsInline::LastRubyRun(const LayoutObject& ruby) {
+  return To<LayoutNGRubyRun>(ruby.SlowLastChild());
 }
 
 // static
-LayoutRubyRun* LayoutRubyAsInline::FindRubyRunParent(LayoutObject* child) {
+LayoutNGRubyRun* LayoutRubyAsInline::FindRubyRunParent(LayoutObject* child) {
   while (child && !child->IsRubyRun())
     child = child->Parent();
-  return To<LayoutRubyRun>(child);
+  return To<LayoutNGRubyRun>(child);
 }
 
 // === ruby as inline object ===
@@ -82,7 +82,7 @@ void LayoutRubyAsInline::AddChild(LayoutObject* child,
       run = run->Parent();
     if (run) {
       if (before_child == run)
-        before_child = To<LayoutRubyRun>(before_child)->FirstChild();
+        before_child = To<LayoutNGRubyRun>(before_child)->FirstChild();
       DCHECK(!before_child || before_child->IsDescendantOf(run));
       run->AddChild(child, before_child);
       return;
@@ -94,9 +94,9 @@ void LayoutRubyAsInline::AddChild(LayoutObject* child,
   // If the new child would be appended, try to add the child to the previous
   // run if possible, or create a new run otherwise.
   // (The LayoutRubyRun object will handle the details)
-  LayoutRubyRun* last_run = LastRubyRun(*this);
+  auto* last_run = LastRubyRun(*this);
   if (!last_run || last_run->HasRubyText()) {
-    last_run = &LayoutRubyRun::Create(this, *ContainingBlock());
+    last_run = &LayoutNGRubyRun::Create(this, *ContainingBlock());
     LayoutInline::AddChild(last_run, before_child);
     last_run->EnsureRubyBase();
   }
@@ -114,7 +114,7 @@ void LayoutRubyAsInline::RemoveChild(LayoutObject* child) {
   }
 
   // Otherwise find the containing run and remove it from there.
-  LayoutRubyRun* run = FindRubyRunParent(child);
+  auto* run = FindRubyRunParent(child);
   DCHECK(run);
   run->RemoveChild(child);
 }

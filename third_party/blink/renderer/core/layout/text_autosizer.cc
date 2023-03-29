@@ -47,8 +47,8 @@
 #include "third_party/blink/renderer/core/layout/layout_inline.h"
 #include "third_party/blink/renderer/core/layout/layout_list_item.h"
 #include "third_party/blink/renderer/core/layout/layout_multi_column_flow_thread.h"
-#include "third_party/blink/renderer/core/layout/layout_ruby_run.h"
 #include "third_party/blink/renderer/core/layout/layout_view.h"
+#include "third_party/blink/renderer/core/layout/ng/layout_ng_ruby_run.h"
 #include "third_party/blink/renderer/core/layout/ng/list/layout_ng_list_item.h"
 #include "third_party/blink/renderer/core/layout/ng/table/layout_ng_table.h"
 #include "third_party/blink/renderer/core/layout/ng/table/layout_ng_table_cell.h"
@@ -452,11 +452,10 @@ float TextAutosizer::Inflate(LayoutObject* parent,
 
   LayoutObject* child = nullptr;
   if (parent->IsRuby()) {
-    // Skip layoutRubyRun which is inline-block.
+    // Skip LayoutNGRubyRun which is inline-block.
     // Inflate rubyRun's inner blocks.
-    LayoutObject* run = parent->SlowFirstChild();
-    if (run && run->IsRubyRun()) {
-      child = To<LayoutRubyRun>(run)->FirstChild();
+    if (auto* run = DynamicTo<LayoutNGRubyRun>(parent->SlowFirstChild())) {
+      child = run->FirstChild();
       behavior = kDescendToInnerBlocks;
     }
   } else if (parent->IsListMarker()) {

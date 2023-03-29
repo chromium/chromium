@@ -30,7 +30,6 @@
 #include "third_party/blink/renderer/core/layout/layout_list_item.h"
 #include "third_party/blink/renderer/core/layout/layout_object.h"
 #include "third_party/blink/renderer/core/layout/layout_object_inlines.h"
-#include "third_party/blink/renderer/core/layout/layout_ruby_run.h"
 #include "third_party/blink/renderer/core/layout/layout_view.h"
 #include "third_party/blink/renderer/core/layout/line/breaking_context_inline_headers.h"
 #include "third_party/blink/renderer/core/layout/line/glyph_overflow.h"
@@ -470,33 +469,6 @@ static void UpdateLogicalWidthForCenterAlignedBlock(
                               trailing_space_width;
 }
 
-void LayoutBlockFlow::SetMarginsForRubyRun(BidiRun* run,
-                                           LayoutRubyRun* layout_ruby_run,
-                                           LayoutObject* previous_object,
-                                           const LineInfo& line_info) {
-  NOT_DESTROYED();
-  int start_overhang;
-  int end_overhang;
-  LayoutObject* next_object = nullptr;
-  for (BidiRun* run_with_next_object = run->Next(); run_with_next_object;
-       run_with_next_object = run_with_next_object->Next()) {
-    if (!run_with_next_object->line_layout_item_.IsOutOfFlowPositioned() &&
-        !run_with_next_object->box_->IsLineBreak()) {
-      next_object = run_with_next_object->line_layout_item_.GetLayoutObject();
-      break;
-    }
-  }
-  layout_ruby_run->GetOverhang(
-      line_info.IsFirstLine(),
-      layout_ruby_run->StyleRef().IsLeftToRightDirection() ? previous_object
-                                                           : next_object,
-      layout_ruby_run->StyleRef().IsLeftToRightDirection() ? next_object
-                                                           : previous_object,
-      start_overhang, end_overhang);
-  SetMarginStartForChild(*layout_ruby_run, LayoutUnit(-start_overhang));
-  SetMarginEndForChild(*layout_ruby_run, LayoutUnit(-end_overhang));
-}
-
 static inline wtf_size_t FindWordMeasurement(
     LineLayoutText layout_text,
     int offset,
@@ -810,7 +782,6 @@ BidiRun* LayoutBlockFlow::ComputeInlineDirectionPositionsForSegment(
   LayoutUnit total_logical_width = line_box->GetFlowSpacingLogicalWidth();
   bool is_after_expansion = true;
   ExpansionOpportunities expansions;
-  LayoutObject* previous_object = nullptr;
   ETextAlign text_align = line_info.GetTextAlign();
 
   BidiRun* r = first_run;
@@ -849,10 +820,6 @@ BidiRun* LayoutBlockFlow::ComputeInlineDirectionPositionsForSegment(
       if (!r->line_layout_item_.IsLayoutInline()) {
         auto* layout_box =
             To<LayoutBox>(r->line_layout_item_.GetLayoutObject());
-        if (layout_box->IsRubyRun()) {
-          SetMarginsForRubyRun(r, To<LayoutRubyRun>(layout_box),
-                               previous_object, line_info);
-        }
         r->box_->SetLogicalWidth(LogicalWidthForChild(*layout_box));
         total_logical_width +=
             MarginStartForChild(*layout_box) + MarginEndForChild(*layout_box);
@@ -861,7 +828,6 @@ BidiRun* LayoutBlockFlow::ComputeInlineDirectionPositionsForSegment(
     }
 
     total_logical_width += r->box_->LogicalWidth();
-    previous_object = r->line_layout_item_.GetLayoutObject();
   }
 
   if (is_after_expansion)
