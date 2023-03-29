@@ -183,8 +183,8 @@ TEST_F(ProjectorMessageHandlerUnitTest, GetAccounts) {
   EXPECT_EQ(list.size(), 1u);
 
   // Ensure that the entry is an account with a the valid email.
-  const auto& account = list[0];
-  const std::string* email = account.FindStringPath("email");
+  const auto& account = list[0].GetDict();
+  const std::string* email = account.FindString("email");
   ASSERT_NE(email, nullptr);
   EXPECT_EQ(*email, kTestUserEmail);
 }
@@ -277,16 +277,15 @@ TEST_F(ProjectorMessageHandlerUnitTest, SendXhr) {
   ASSERT_TRUE(call_data.arg3()->is_dict());
 
   // Verify that it is success.
-  EXPECT_TRUE(*call_data.arg3()->FindBoolPath(kXhrResponseSuccessPath));
+  const base::Value::Dict& arg3_dict = call_data.arg3()->GetDict();
+  EXPECT_TRUE(*arg3_dict.FindBool(kXhrResponseSuccessPath));
 
   // Verify the response.
-  const std::string* response =
-      call_data.arg3()->FindStringPath(kXhrResponseStringPath);
+  const std::string* response = arg3_dict.FindString(kXhrResponseStringPath);
   EXPECT_EQ(test_response_body, *response);
 
   // Verify error is empty.
-  const std::string* error =
-      call_data.arg3()->FindStringPath(kXhrResponseErrorPath);
+  const std::string* error = arg3_dict.FindString(kXhrResponseErrorPath);
   EXPECT_TRUE(error->empty());
 }
 
@@ -330,16 +329,15 @@ TEST_F(ProjectorMessageHandlerUnitTest, SendXhrWithEmail) {
   ASSERT_TRUE(call_data.arg3()->is_dict());
 
   // Verify that it is success.
-  EXPECT_TRUE(*call_data.arg3()->FindBoolPath(kXhrResponseSuccessPath));
+  const base::Value::Dict& arg3_dict = call_data.arg3()->GetDict();
+  EXPECT_TRUE(*arg3_dict.FindBool(kXhrResponseSuccessPath));
 
   // Verify the response.
-  const std::string* response =
-      call_data.arg3()->FindStringPath(kXhrResponseStringPath);
+  const std::string* response = arg3_dict.FindString(kXhrResponseStringPath);
   EXPECT_EQ(test_response_body, *response);
 
   // Verify error is empty.
-  const std::string* error =
-      call_data.arg3()->FindStringPath(kXhrResponseErrorPath);
+  const std::string* error = arg3_dict.FindString(kXhrResponseErrorPath);
   EXPECT_TRUE(error->empty());
 }
 
@@ -386,16 +384,15 @@ TEST_F(ProjectorMessageHandlerUnitTest, SendXhrFailed) {
   ASSERT_TRUE(call_data.arg3()->is_dict());
 
   // Verify that request failed.
-  EXPECT_FALSE(*call_data.arg3()->FindBoolPath(kXhrResponseSuccessPath));
+  const base::Value::Dict& arg3_dict = call_data.arg3()->GetDict();
+  EXPECT_FALSE(*arg3_dict.FindBool(kXhrResponseSuccessPath));
 
   // Verify the response.
-  const std::string* response =
-      call_data.arg3()->FindStringPath(kXhrResponseStringPath);
+  const std::string* response = arg3_dict.FindString(kXhrResponseStringPath);
   EXPECT_EQ(test_error_response_body, *response);
 
   // Verify error is empty.
-  const std::string* error =
-      call_data.arg3()->FindStringPath(kXhrResponseErrorPath);
+  const std::string* error = arg3_dict.FindString(kXhrResponseErrorPath);
   EXPECT_EQ("XHR_FETCH_FAILURE", *error);
 }
 
@@ -433,16 +430,15 @@ TEST_F(ProjectorMessageHandlerUnitTest, SendXhrWithUnSupportedUrl) {
   ASSERT_TRUE(call_data.arg3()->is_dict());
 
   // Verify that it is success.
-  EXPECT_TRUE(call_data.arg3()->FindBoolPath(kXhrResponseSuccessPath));
+  const base::Value::Dict& arg3_dict = call_data.arg3()->GetDict();
+  EXPECT_TRUE(arg3_dict.FindBool(kXhrResponseSuccessPath));
 
   // Verify the response.
-  const std::string* response =
-      call_data.arg3()->FindStringPath(kXhrResponseStringPath);
+  const std::string* response = arg3_dict.FindString(kXhrResponseStringPath);
   EXPECT_TRUE(response->empty());
 
   // Verify error is UNSUPPORTED_URL.
-  const std::string* error =
-      call_data.arg3()->FindStringPath(kXhrResponseErrorPath);
+  const std::string* error = arg3_dict.FindString(kXhrResponseErrorPath);
   EXPECT_EQ("UNSUPPORTED_URL", *error);
 }
 
@@ -543,10 +539,10 @@ TEST_F(ProjectorMessageHandlerUnitTest, GetPendingScreencasts) {
   // There is only one screencast.
   EXPECT_EQ(list.size(), 1u);
 
-  const auto& screencast = list[0];
-  EXPECT_EQ(*screencast.FindStringPath("name"), name);
-  EXPECT_EQ(*screencast.FindDoublePath("createdTime"), 0);
-  EXPECT_EQ(*screencast.FindBoolPath("uploadFailed"), false);
+  const auto& screencast = list[0].GetDict();
+  EXPECT_EQ(*screencast.FindString("name"), name);
+  EXPECT_EQ(*screencast.FindDouble("createdTime"), 0);
+  EXPECT_EQ(*screencast.FindBool("uploadFailed"), false);
 }
 
 TEST_F(ProjectorMessageHandlerUnitTest, OnScreencastsStateChange) {
@@ -647,10 +643,10 @@ TEST_F(ProjectorMessageHandlerUnitTest, SetCreationFlowEnabledInvalidValue) {
   EXPECT_EQ(call_data.arg2()->GetBool(), false);
 
   // Validate the rejected message.
-  const base::Value* rejected_args = call_data.arg3();
-  EXPECT_EQ(*(rejected_args->FindStringPath(kRejectedRequestMessageKey)),
+  const base::Value::Dict& rejected_args = call_data.arg3()->GetDict();
+  EXPECT_EQ(*(rejected_args.FindString(kRejectedRequestMessageKey)),
             kRejectedRequestMessage);
-  EXPECT_EQ(*(rejected_args->FindPath(kRejectedRequestArgsKey)), func_args);
+  EXPECT_EQ(*(rejected_args.Find(kRejectedRequestArgsKey)), func_args);
 }
 
 TEST_F(ProjectorMessageHandlerUnitTest, OpenFeedbackDialog) {
@@ -683,10 +679,10 @@ TEST_F(ProjectorMessageHandlerUnitTest, SetCreationFlowEnabledUnsupportedPref) {
   EXPECT_EQ(call_data.arg2()->GetBool(), false);
 
   // Validate the rejected message.
-  const base::Value* rejected_args = call_data.arg3();
-  EXPECT_EQ(*(rejected_args->FindStringPath(kRejectedRequestMessageKey)),
+  const base::Value::Dict& rejected_args = call_data.arg3()->GetDict();
+  EXPECT_EQ(*(rejected_args.FindString(kRejectedRequestMessageKey)),
             kRejectedRequestMessage);
-  EXPECT_EQ(*(rejected_args->FindPath(kRejectedRequestArgsKey)), func_args);
+  EXPECT_EQ(*(rejected_args.Find(kRejectedRequestArgsKey)), func_args);
 }
 
 TEST_F(ProjectorMessageHandlerUnitTest, GetVideo) {

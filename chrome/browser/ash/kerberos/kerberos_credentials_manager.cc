@@ -844,10 +844,11 @@ void KerberosCredentialsManager::UpdateAccountsFromPref(bool is_retry) {
   bool requires_login_password = false;
   std::vector<std::string> managed_accounts_added;
   for (const auto& account : accounts) {
+    const base::Value::Dict& account_dict = account.GetDict();
     // Get the principal. Should always be set.
-    const base::Value* principal_value = account.FindPath(kPrincipal);
-    DCHECK(principal_value);
-    std::string principal = principal_value->GetString();
+    const std::string* principal_string = account_dict.FindString(kPrincipal);
+    DCHECK(principal_string);
+    std::string principal = *principal_string;
     if (!principal_expander_->ExpandString(&principal)) {
       VLOG(1) << "Failed to expand principal '" << principal << "'";
       continue;
@@ -858,7 +859,7 @@ void KerberosCredentialsManager::UpdateAccountsFromPref(bool is_retry) {
     }
 
     // Get the password, default to not set.
-    const std::string* password_str = account.FindStringKey(kPassword);
+    const std::string* password_str = account_dict.FindString(kPassword);
     absl::optional<std::string> password;
     if (password_str)
       password = std::move(*password_str);
@@ -874,7 +875,7 @@ void KerberosCredentialsManager::UpdateAccountsFromPref(bool is_retry) {
     // Get Kerberos configuration if given. Otherwise, use default to make sure
     // it overwrites an existing unmanaged account.
     std::string krb5_conf;
-    const base::Value* krb5_conf_value = account.FindPath(kKrb5Conf);
+    const base::Value* krb5_conf_value = account_dict.Find(kKrb5Conf);
     if (krb5_conf_value) {
       // Note: The config is encoded as a list of lines.
       for (const auto& config_line : krb5_conf_value->GetList()) {

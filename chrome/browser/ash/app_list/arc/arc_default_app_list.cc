@@ -86,14 +86,13 @@ std::unique_ptr<ArcDefaultAppList::AppInfoMap> ReadAppsFromFileThread(
               << file.value() << ".";
       continue;
     }
-    base::Value app_info =
-        base::Value::FromUniquePtrValue(std::move(app_info_ptr));
+    base::Value::Dict app_info = std::move(app_info_ptr->GetDict());
 
-    auto* name = app_info.GetDict().FindString(kName);
-    auto* package_name = app_info.GetDict().FindString(kPackageName);
-    auto* activity = app_info.GetDict().FindString(kActivity);
-    auto* app_path = app_info.GetDict().FindString(kAppPath);
-    bool oem = app_info.FindBoolPath(kOem).value_or(false);
+    auto* name = app_info.FindString(kName);
+    auto* package_name = app_info.FindString(kPackageName);
+    auto* activity = app_info.FindString(kActivity);
+    auto* app_path = app_info.FindString(kAppPath);
+    bool oem = app_info.FindBool(kOem).value_or(false);
 
     if (!name || !package_name || !activity || !app_path || name->empty() ||
         package_name->empty() || activity->empty() || app_path->empty()) {

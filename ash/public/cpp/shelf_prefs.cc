@@ -72,7 +72,8 @@ std::string GetPerDisplayPref(PrefService* prefs,
     // and check if the prefs for other display is already specified.
     std::string unused_value;
     for (const auto iter : shelf_prefs) {
-      if (iter.second.is_dict() && iter.second.FindStringPath(path)) {
+      if (iter.second.is_dict() &&
+          iter.second.GetDict().FindStringByDottedPath(path)) {
         has_per_display_prefs = true;
         break;
       }

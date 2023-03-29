@@ -189,11 +189,11 @@ void RestorePrimaryUserDesks() {
     if (index >= desks_metrics_list_size)
       continue;
 
-    const auto& desks_metrics_dict = desks_metrics_list[index];
+    const auto& desks_metrics_dict = desks_metrics_list[index].GetDict();
 
     // Restore creation time.
     const auto& creation_time_entry =
-        desks_metrics_dict.FindIntPath(kCreationTimeKey);
+        desks_metrics_dict.FindInt(kCreationTimeKey);
     if (creation_time_entry.has_value()) {
       const auto creation_time = base::Time::FromDeltaSinceWindowsEpoch(
           base::Minutes(*creation_time_entry));
@@ -204,11 +204,11 @@ void RestorePrimaryUserDesks() {
 
     // Restore consecutive daily metrics.
     const auto& first_day_visited_entry =
-        desks_metrics_dict.FindIntPath(kFirstDayVisitedKey);
+        desks_metrics_dict.FindInt(kFirstDayVisitedKey);
     const int first_day_visited = first_day_visited_entry.value_or(-1);
 
     const auto& last_day_visited_entry =
-        desks_metrics_dict.FindIntPath(kLastDayVisitedKey);
+        desks_metrics_dict.FindInt(kLastDayVisitedKey);
     const int last_day_visited = last_day_visited_entry.value_or(-1);
 
     if (first_day_visited <= last_day_visited && first_day_visited != -1 &&
@@ -220,7 +220,7 @@ void RestorePrimaryUserDesks() {
 
     // Restore weekly active desks metrics.
     const auto& interacted_with_this_week_entry =
-        desks_metrics_dict.FindBoolPath(kInteractedWithThisWeekKey);
+        desks_metrics_dict.FindBool(kInteractedWithThisWeekKey);
     const bool interacted_with_this_week =
         interacted_with_this_week_entry.value_or(false);
     if (interacted_with_this_week) {
@@ -244,10 +244,9 @@ void RestorePrimaryUserDesks() {
   auto& weekly_active_desks_dict =
       primary_user_prefs->GetDict(prefs::kDesksWeeklyActiveDesksMetrics);
   const int report_time =
-      weekly_active_desks_dict.FindIntByDottedPath(kReportTimeKey).value_or(-1);
+      weekly_active_desks_dict.FindInt(kReportTimeKey).value_or(-1);
   const int num_weekly_active_desks =
-      weekly_active_desks_dict.FindIntByDottedPath(kWeeklyActiveDesksKey)
-          .value_or(-1);
+      weekly_active_desks_dict.FindInt(kWeeklyActiveDesksKey).value_or(-1);
 
   // Discard stored metrics if either are corrupted.
   if (report_time != -1 && num_weekly_active_desks != -1) {

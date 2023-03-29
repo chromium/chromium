@@ -557,7 +557,8 @@ TEST_F(ItemSuggestCacheTest, RequestIncludesLocale) {
                                .As<network::DataElementBytes>()
                                .AsStringPiece());
   auto body_value = Parse(request_body);
-  EXPECT_EQ("en-AU", *body_value.FindStringPath("client_info.language_code"));
+  EXPECT_EQ("en-AU", *body_value.GetDict().FindStringByDottedPath(
+                         "client_info.language_code"));
 }
 
 }  // namespace ash::test
