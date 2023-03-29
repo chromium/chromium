@@ -191,7 +191,7 @@ MessagePumpGlib::MessagePumpGlib()
 
   // Create our wakeup pipe, which is used to flag when work was scheduled.
   int fds[2];
-  [[maybe_unused]] int ret = pipe(fds);
+  [[maybe_unused]] int ret = pipe2(fds, O_CLOEXEC);
   DCHECK_EQ(ret, 0);
 
   wakeup_pipe_read_ = fds[0];
