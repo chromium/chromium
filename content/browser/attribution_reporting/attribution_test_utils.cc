@@ -18,6 +18,7 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/test/bind.h"
 #include "base/time/time.h"
+#include "components/aggregation_service/aggregation_service.mojom-forward.h"
 #include "components/attribution_reporting/aggregatable_dedup_key.h"
 #include "components/attribution_reporting/aggregatable_trigger_data.h"
 #include "components/attribution_reporting/destination_set.h"
@@ -569,7 +570,8 @@ bool operator==(const AttributionReport::EventLevelData& a,
                 const AttributionReport::EventLevelData& b) {
   const auto tie = [](const AttributionReport::EventLevelData& data) {
     return std::make_tuple(data.trigger_data, data.priority,
-                           data.randomized_trigger_rate);
+                           data.randomized_trigger_rate,
+                           data.initial_report_time);
   };
   return tie(a) == tie(b);
 }
@@ -583,7 +585,8 @@ bool operator==(const AttributionReport::AggregatableAttributionData& a,
   const auto tie =
       [](const AttributionReport::AggregatableAttributionData& data) {
         return std::make_tuple(data.contributions, data.initial_report_time,
-                               data.attestation_token);
+                               data.attestation_token,
+                               data.aggregation_coordinator);
       };
   return tie(a) == tie(b);
 }
@@ -810,7 +813,8 @@ std::ostream& operator<<(std::ostream& out,
   return out << "{trigger_data=" << data.trigger_data
              << ",priority=" << data.priority
              << ",randomized_trigger_rate=" << data.randomized_trigger_rate
-             << ",id=" << *data.id << "}";
+             << ",id=" << *data.id
+             << ",initial_report_time=" << data.initial_report_time << "}";
 }
 
 std::ostream& operator<<(
@@ -831,7 +835,9 @@ std::ostream& operator<<(
   } else {
     out << ",attestation_token=(null)";
   }
-  return out << "}";
+
+  return out << ",aggregation_coordinator=" << data.aggregation_coordinator
+             << "}";
 }
 
 namespace {
