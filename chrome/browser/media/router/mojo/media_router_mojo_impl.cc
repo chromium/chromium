@@ -17,7 +17,6 @@
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/media/cast_mirroring_service_host.h"
 #include "chrome/browser/media/cast_remoting_connector.h"
-#include "chrome/browser/media/router/mojo/media_router_debugger_impl.h"
 #include "chrome/browser/media/router/mojo/media_router_mojo_metrics.h"
 #include "chrome/browser/media/router/mojo/media_sink_service_status.h"
 #include "chrome/grit/chromium_strings.h"
@@ -57,8 +56,9 @@ DesktopMediaPickerController::Params MakeDesktopPickerParams(
   // Value of |web_contents| comes from the UI, and typically corresponds to
   // the active tab.
   params.web_contents = web_contents;
-  if (web_contents)
+  if (web_contents) {
     params.context = web_contents->GetTopLevelNativeWindow();
+  }
   params.app_name = l10n_util::GetStringUTF16(IDS_SHORT_PRODUCT_NAME);
   params.target_name = params.app_name;
   params.select_only_screen = true;
@@ -133,7 +133,6 @@ void MediaRouterMojoImpl::Initialize() {
   // outside of the constructor.
   internal_routes_observer_ =
       std::make_unique<InternalMediaRoutesObserver>(this);
-  media_router_debugger_ = std::make_unique<MediaRouterDebuggerImpl>(*this);
 }
 
 void MediaRouterMojoImpl::RegisterMediaRouteProvider(
@@ -173,8 +172,9 @@ void MediaRouterMojoImpl::OnSinksReceived(
 
   std::vector<MediaSink> sinks;
   sinks.reserve(internal_sinks.size());
-  for (const auto& internal_sink : internal_sinks)
+  for (const auto& internal_sink : internal_sinks) {
     sinks.push_back(internal_sink.sink());
+  }
 
   auto* sinks_query = it->second.get();
   sinks_query->SetSinksForProvider(provider_id, sinks);
@@ -491,8 +491,9 @@ void MediaRouterMojoImpl::MediaSinksQuery::RemoveObserver(
 }
 
 void MediaRouterMojoImpl::MediaSinksQuery::NotifyObservers() {
-  for (auto& observer : observers_)
+  for (auto& observer : observers_) {
     observer.OnSinksUpdated(cached_sink_list_, origins_);
+  }
 }
 
 bool MediaRouterMojoImpl::MediaSinksQuery::HasObserver(
@@ -595,8 +596,9 @@ void MediaRouterMojoImpl::UnregisterMediaSinksObserver(
 
   const MediaSource source = MediaSinksQuery::GetKey(*observer);
   auto it = sinks_queries_.find(source.id());
-  if (it == sinks_queries_.end() || !it->second->HasObserver(observer))
+  if (it == sinks_queries_.end() || !it->second->HasObserver(observer)) {
     return;
+  }
 
   // If we are removing the final observer for the source, then stop
   // observing sinks for it.
@@ -619,8 +621,9 @@ void MediaRouterMojoImpl::RegisterMediaRoutesObserver(
     MediaRoutesObserver* observer) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   const bool is_first_observer = !routes_query_.HasObservers();
-  if (!is_first_observer)
+  if (!is_first_observer) {
     DCHECK(!routes_query_.HasObserver(observer));
+  }
 
   routes_query_.AddObserver(observer);
   if (is_first_observer) {
@@ -686,8 +689,9 @@ void MediaRouterMojoImpl::UnregisterPresentationConnectionMessageObserver(
 
   const MediaRoute::Id& route_id = observer->route_id();
   auto it = message_observers_.find(route_id);
-  if (it == message_observers_.end() || !it->second->HasObserver(observer))
+  if (it == message_observers_.end() || !it->second->HasObserver(observer)) {
     return;
+  }
 
   it->second->RemoveObserver(observer);
   if (it->second->empty()) {
@@ -704,20 +708,23 @@ void MediaRouterMojoImpl::UnregisterPresentationConnectionMessageObserver(
 void MediaRouterMojoImpl::OnRouteMessagesReceived(
     const std::string& route_id,
     std::vector<mojom::RouteMessagePtr> messages) {
-  if (messages.empty())
+  if (messages.empty()) {
     return;
+  }
 
   auto it = message_observers_.find(route_id);
-  if (it == message_observers_.end())
+  if (it == message_observers_.end()) {
     return;
+  }
 
   for (auto& observer : *it->second) {
     // TODO(mfoltz): We have to clone the messages here in case there are
     // multiple observers.  This can be removed once we stop passing messages
     // through the MR and use the PresentationConnectionPtr directly.
     std::vector<mojom::RouteMessagePtr> messages_copy;
-    for (auto& message : messages)
+    for (auto& message : messages) {
       messages_copy.emplace_back(message->Clone());
+    }
 
     observer.OnMessagesReceived(std::move(messages_copy));
   }
@@ -764,17 +771,20 @@ void MediaRouterMojoImpl::SyncStateToMediaRouteProvider(
   }
 
   // Route updates.
-  if (routes_query_.HasObservers())
+  if (routes_query_.HasObservers()) {
     provider->StartObservingMediaRoutes();
+  }
 
   // Route messages.
-  for (const auto& it : message_observers_)
+  for (const auto& it : message_observers_) {
     provider->StartListeningForRouteMessages(it.first);
+  }
 }
 
 void MediaRouterMojoImpl::DiscoverSinksNow() {
-  for (const auto& provider : media_route_providers_)
+  for (const auto& provider : media_route_providers_) {
     provider.second->DiscoverSinksNow();
+  }
 }
 
 void MediaRouterMojoImpl::OnMediaControllerCreated(
@@ -810,8 +820,13 @@ LoggerImpl* MediaRouterMojoImpl::GetLogger() {
   return &logger_;
 }
 
+void MediaRouterMojoImpl::GetDebugger(
+    mojo::PendingReceiver<mojom::Debugger> receiver) {
+  media_router_debugger_.BindReceiver(std::move(receiver));
+}
+
 MediaRouterDebugger& MediaRouterMojoImpl::GetDebugger() {
-  return *media_router_debugger_.get();
+  return media_router_debugger_;
 }
 
 void MediaRouterMojoImpl::GetLogsAsString(GetLogsAsStringCallback callback) {
@@ -876,8 +891,9 @@ const MediaSink* MediaRouterMojoImpl::GetSinkById(
         sinks_query.second->cached_sink_list();
     DCHECK_LE(base::ranges::count(sinks, sink_id, &MediaSink::id), 1);
     auto sink_it = base::ranges::find(sinks, sink_id, &MediaSink::id);
-    if (sink_it != sinks.end())
+    if (sink_it != sinks.end()) {
       return &(*sink_it);
+    }
   }
   return nullptr;
 }
@@ -935,7 +951,6 @@ const MediaRoute* MediaRouterMojoImpl::GetRoute(
 void MediaRouterMojoImpl::Shutdown() {
   // The observer calls virtual methods on MediaRouter; it must be destroyed
   // outside of the dtor
-  media_router_debugger_.reset();
   internal_routes_observer_.reset();
 }
 
@@ -978,21 +993,6 @@ void MediaRouterMojoImpl::CreateRouteWithSelectedDesktop(
                 .Run(route, std::move(connection), error_text, result_code);
           },
           std::move(mr_callback)));
-}
-
-void MediaRouterMojoImpl::GetMirroringStats(
-    const MediaRoute::Id& route_id,
-    base::OnceCallback<void(const base::Value)> json_stats_cb) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  absl::optional<mojom::MediaRouteProviderId> provider_id =
-      GetProviderIdForRoute(route_id);
-  if (!provider_id) {
-    std::move(json_stats_cb).Run(base::Value());
-    return;
-  }
-
-  media_route_providers_[*provider_id]->GetMirroringStats(
-      route_id, std::move(json_stats_cb));
 }
 
 }  // namespace media_router

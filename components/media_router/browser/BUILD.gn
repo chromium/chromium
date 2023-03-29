@@ -88,7 +88,6 @@ source_set("browser") {
       "log_util.h",
       "logger_impl.cc",
       "logger_impl.h",
-      "media_router_debugger.cc",
       "media_router_debugger.h",
       "mirroring_to_flinging_switcher.cc",
       "mirroring_to_flinging_switcher.h",
@@ -149,7 +148,6 @@ source_set("unit_tests") {
     sources += [
       "issue_manager_unittest.cc",
       "logger_impl_unittest.cc",
-      "media_router_debugger_unittest.cc",
       "mirroring_to_flinging_switcher_unittest.cc",
     ]
   }

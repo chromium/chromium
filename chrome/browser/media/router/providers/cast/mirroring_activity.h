@@ -10,11 +10,14 @@
 #include "base/functional/callback.h"
 #include "base/gtest_prod_util.h"
 #include "base/memory/weak_ptr.h"
+#include "base/task/sequenced_task_runner.h"
+#include "base/thread_annotations.h"
 #include "base/time/time.h"
 #include "chrome/browser/media/mirroring_service_host.h"
 #include "chrome/browser/media/router/providers/cast/cast_activity.h"
 #include "chrome/browser/media/router/providers/cast/cast_session_tracker.h"
 #include "components/media_router/common/media_route.h"
+#include "components/media_router/common/mojom/debugger.mojom.h"
 #include "components/media_router/common/mojom/logger.mojom.h"
 #include "components/media_router/common/mojom/media_router.mojom-forward.h"
 #include "components/media_router/common/providers/cast/channel/cast_message_handler.h"
@@ -77,14 +80,20 @@ class MirroringActivity : public CastActivity,
   void OnAppMessage(const cast::channel::CastMessage& message) override;
   void OnInternalMessage(const cast_channel::InternalMessage& message) override;
 
-  mirroring::MirroringServiceHost* GetHost() { return host_.get(); }
+  mirroring::MirroringServiceHost* GetHost() {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(ui_sequence_checker_);
+    return host_.get();
+  }
   void SetMirroringServiceHostForTest(
       std::unique_ptr<mirroring::MirroringServiceHost> host) {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(ui_sequence_checker_);
     host_ = std::move(host);
   }
 
  protected:
   void OnSessionSet(const CastSession& session) override;
+  void StartSession(const std::string& destination_id,
+                    bool enable_rtcp_reporting = false);
   void CreateMediaController(
       mojo::PendingReceiver<mojom::MediaController> media_controller,
       mojo::PendingRemote<mojom::MediaStatusObserver> observer) override;
@@ -93,6 +102,8 @@ class MirroringActivity : public CastActivity,
  private:
   FRIEND_TEST_ALL_PREFIXES(MirroringActivityTest, GetScrubbedLogMessage);
   FRIEND_TEST_ALL_PREFIXES(MirroringActivityTest, OnSourceChanged);
+  FRIEND_TEST_ALL_PREFIXES(MirroringActivityTest, ReportsNotEnabledByDefault);
+  FRIEND_TEST_ALL_PREFIXES(MirroringActivityTest, EnableRtcpReports);
 
   void HandleParseJsonResult(const std::string& route_id,
                              data_decoder::DataDecoder::ValueOrError result);
@@ -100,6 +111,7 @@ class MirroringActivity : public CastActivity,
   void StopMirroring();
 
   void set_host(std::unique_ptr<mirroring::MirroringServiceHost> host) {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(ui_sequence_checker_);
     host_ = std::move(host);
   }
 
@@ -116,8 +128,11 @@ class MirroringActivity : public CastActivity,
           outbound_channel,
       mojo::PendingReceiver<mirroring::mojom::CastMessageChannel>
           inbound_channel,
-      const std::string& sink_name,
-      int frame_tree_node_id);
+      const std::string& sink_name);
+
+  void ScheduleFetchMirroringStats();
+  void FetchMirroringStats();
+  void OnMirroringStats(base::Value json_stats);
 
   std::unique_ptr<mirroring::MirroringServiceHost> host_;
 
@@ -134,6 +149,11 @@ class MirroringActivity : public CastActivity,
   // |logger_| should be bound before the CastMessageChannel message pipe is
   // created.
   mojo::Remote<mojom::Logger> logger_;
+
+  // Remote to the debugger owned by the Media Router. Used to check if
+  // mirroring stats are enabled on the mirroring session and to receive
+  // mirroring stats from the session.
+  mojo::Remote<mojom::Debugger> debugger_;
 
   mojo::Receiver<mirroring::mojom::SessionObserver> observer_receiver_{this};
 
@@ -152,6 +172,11 @@ class MirroringActivity : public CastActivity,
   const CastSinkExtraData cast_data_;
   OnStopCallback on_stop_;
   OnSourceChangedCallback source_changed_callback_;
+
+  bool should_fetch_stats_on_start_ = false;
+
+  SEQUENCE_CHECKER(io_sequence_checker_);
+  SEQUENCE_CHECKER(ui_sequence_checker_);
   base::WeakPtrFactory<MirroringActivity> weak_ptr_factory_{this};
 };
 

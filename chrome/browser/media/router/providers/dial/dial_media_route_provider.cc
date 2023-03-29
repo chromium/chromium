@@ -619,13 +619,6 @@ void DialMediaRouteProvider::GetState(GetStateCallback callback) {
   std::move(callback).Run(mojom::ProviderStatePtr());
 }
 
-void DialMediaRouteProvider::GetMirroringStats(
-    const std::string& route_id,
-    GetMirroringStatsCallback callback) {
-  NOTIMPLEMENTED();
-  std::move(callback).Run(base::Value());
-}
-
 void DialMediaRouteProvider::SetActivityManagerForTest(
     std::unique_ptr<DialActivityManager> activity_manager) {
   DCHECK(!activity_manager_);

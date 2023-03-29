@@ -111,7 +111,10 @@ static_library("router") {
       "//third_party/openscreen/src/cast/common/channel/proto:channel_proto",
     ]
 
-    public_deps += [ "//components/media_router/common/mojom:logger" ]
+    public_deps += [
+      "//components/media_router/common/mojom:debugger",
+      "//components/media_router/common/mojom:logger",
+    ]
 
     sources += [
       "mojo/media_router_debugger_impl.cc",

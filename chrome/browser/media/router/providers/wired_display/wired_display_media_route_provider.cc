@@ -239,13 +239,6 @@ void WiredDisplayMediaRouteProvider::GetState(GetStateCallback callback) {
   std::move(callback).Run(mojom::ProviderStatePtr());
 }
 
-void WiredDisplayMediaRouteProvider::GetMirroringStats(
-    const std::string& route_id,
-    GetMirroringStatsCallback callback) {
-  NOTIMPLEMENTED();
-  std::move(callback).Run(base::Value());
-}
-
 void WiredDisplayMediaRouteProvider::OnDidProcessDisplayChanges() {
   NotifySinkObservers();
 }

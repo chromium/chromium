@@ -231,12 +231,6 @@ void TestMediaRouteProvider::GetState(GetStateCallback callback) {
   std::move(callback).Run(nullptr);
 }
 
-void TestMediaRouteProvider::GetMirroringStats(
-    const std::string& route_id,
-    GetMirroringStatsCallback callback) {
-  std::move(callback).Run(base::Value());
-}
-
 std::vector<MediaRoute> TestMediaRouteProvider::GetMediaRoutes() {
   std::vector<MediaRoute> route_list;
   for (const auto& route : routes_) {

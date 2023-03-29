@@ -106,7 +106,8 @@ class CastActivityTestBase : public testing::Test,
 
   // TODO(crbug.com/954797): Factor out members also present in
   // CastActivityManagerTest.
-  content::BrowserTaskEnvironment task_environment_;
+  content::BrowserTaskEnvironment task_environment_{
+      base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   data_decoder::test::InProcessDataDecoder in_process_data_decoder_;
   TestMediaSinkService media_sink_service_;
   cast_channel::MockCastSocketService socket_service_{

@@ -1,0 +1,25 @@
+// Copyright 2023 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module media_router.mojom;
+
+import "mojo/public/mojom/base/values.mojom";
+
+// An interface for Media Router debugging and feedback.
+interface Debugger {
+  // If enabled, a mirroring session will use RTCP receiver reports for stat
+  // fetching and analysis.
+  ShouldFetchMirroringStats() => (bool should_fetch);
+
+  // Sends the current mirroring stats of the current mirroring session.
+  // The stats should be sent as a base::Value::Dict.
+  // TODO(b/275409476): Handle multiple mirroring sessions at once. If there are
+  // multiple mojom pipes all sending stats at once, the most recently sent stat
+  // push will be used.
+  OnMirroringStats(mojo_base.mojom.Value json_stats);
+
+  // Binds this debugger to a new pending receiver, allowing any code with
+  // access to a Debugger to create a new receiver for it.
+  BindReceiver(pending_receiver<Debugger> receiver);
+};

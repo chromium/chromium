@@ -8,53 +8,54 @@
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "base/values.h"
-#include "chrome/browser/media/router/mojo/media_router_mojo_impl.h"
 #include "components/media_router/browser/media_router_debugger.h"
-#include "components/media_router/browser/media_routes_observer.h"
+#include "components/media_router/common/mojom/debugger.mojom.h"
+#include "mojo/public/cpp/bindings/pending_receiver.h"
+#include "mojo/public/cpp/bindings/receiver_set.h"
 
 namespace media_router {
 
 // An implementation for media router debugging and feedback.
 class MediaRouterDebuggerImpl : public MediaRouterDebugger,
-                                public MediaRoutesObserver {
+                                public mojom::Debugger {
  public:
-  explicit MediaRouterDebuggerImpl(MediaRouterMojoImpl& router);
+  // Fetches the MediaRouterDebugger from the media router fetched from the
+  // |frame_tree_node_id|. Must be called on the UI Thread. May return a
+  // nullptr.
+  static MediaRouterDebugger* GetForFrameTreeNode(int frame_tree_node_id);
+
+  MediaRouterDebuggerImpl();
 
   MediaRouterDebuggerImpl(const MediaRouterDebuggerImpl&) = delete;
   MediaRouterDebuggerImpl& operator=(const MediaRouterDebuggerImpl&) = delete;
 
   ~MediaRouterDebuggerImpl() override;
 
+  // MediaRouterDebugger implementation:
+  void AddObserver(MirroringStatsObserver& obs) final;
+  void RemoveObserver(MirroringStatsObserver& obs) final;
+  void EnableRtcpReports() final;
+  void DisableRtcpReports() final;
+  bool ShouldFetchMirroringStats() const final;
+
+  // mojom::Debugger overrides:
+  void ShouldFetchMirroringStats(
+      ShouldFetchMirroringStatsCallback callback) override;
+  void OnMirroringStats(const base::Value json_stats) override;
+  void BindReceiver(mojo::PendingReceiver<mojom::Debugger> receiver) override;
+
  protected:
   friend class MediaRouterDebuggerImplTest;
-  FRIEND_TEST_ALL_PREFIXES(MediaRouterDebuggerImplTest, ReportsNotEnabled);
-  FRIEND_TEST_ALL_PREFIXES(MediaRouterDebuggerImplTest, NonMirroringRoutes);
-  FRIEND_TEST_ALL_PREFIXES(MediaRouterDebuggerImplTest, FetchMirroringStats);
+  FRIEND_TEST_ALL_PREFIXES(MediaRouterDebuggerImplTest,
+                           OnMirroringStatsRtcpReportsDisabled);
 
   void NotifyGetMirroringStats(const base::Value::Dict& json_logs);
 
-  // media_router::MediaRoutesObserver:
-  void OnRoutesUpdated(
-      const std::vector<media_router::MediaRoute>& routes) override;
+  base::ObserverList<MirroringStatsObserver> observers_;
+  bool is_rtcp_reports_enabled_ = false;
+  mojo::ReceiverSet<mojom::Debugger> receivers_;
 
-  void OnMirroringRouteAdded(const MediaRoute::Id& route_id);
-  void OnMirroringRouteRemoved();
-
-  void ScheduleFetchMirroringStats(
-      const base::TimeDelta& init_delay = base::Seconds(0));
-  void FetchMirroringStats();
-
-  void OnStatsFetched(const base::Value json_stats_cb);
-
-  // Set of route ids that is updated whenever OnRoutesUpdated is called. We
-  // store this value to check whether a route was removed or not.
-  std::vector<MediaRoute::Id> previous_routes_;
-
-  // The last route mirroring route was added via the MediaRoutesObserver. If
-  // more than one mirroring route is added, the last added route is chosen.
-  absl::optional<MediaRoute::Id> current_mirroring_route_id_;
-
-  media_router::MediaRouterMojoImpl& router_;
+  SEQUENCE_CHECKER(sequence_checker_);
 
   base::WeakPtrFactory<MediaRouterDebuggerImpl> weak_ptr_factory_{this};
 };

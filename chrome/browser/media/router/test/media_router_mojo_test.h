@@ -125,10 +125,6 @@ class MockMediaRouteProvider : public mojom::MediaRouteProvider {
     GetStateInternal(callback);
   }
   MOCK_METHOD1(GetStateInternal, void(const GetStateCallback& callback));
-  MOCK_METHOD(void,
-              GetMirroringStats,
-              (const std::string& route_id,
-               GetMirroringStatsCallback callback));
 
   // These methods execute the callbacks with the success or timeout result
   // code. If the callback takes a route, the route set in SetRouteToReturn() is

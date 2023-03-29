@@ -141,11 +141,12 @@ void MediaRouterInternalsWebUIMessageHandler::HandleIsMirroringStatsEnabled(
   AllowJavascript();
   const base::Value& callback_id = args[0];
 
-  ResolveJavascriptCallback(callback_id, debugger_.IsRtcpReportsEnabled());
+  ResolveJavascriptCallback(callback_id, debugger_.ShouldFetchMirroringStats());
 }
 
 void MediaRouterInternalsWebUIMessageHandler::OnMirroringStatsUpdated(
     const base::Value::Dict& json_logs) {
+  AllowJavascript();
   FireWebUIListener("on-mirroring-stats-update", std::move(json_logs));
 }
 

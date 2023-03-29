@@ -9,6 +9,11 @@ mojom("logger") {
   public_deps = [ "//mojo/public/mojom/base" ]
 }
 
+mojom("debugger") {
+  sources = [ "debugger.mojom" ]
+  public_deps = [ "//mojo/public/mojom/base" ]
+}
+
 mojom("media_controller") {
   sources = [
     "media_controller.mojom",
@@ -30,6 +35,7 @@ mojom("media_router") {
   sources = [ "media_router.mojom" ]
 
   public_deps = [
+    ":debugger",
     ":logger",
     ":media_controller",
     ":media_route_provider_id",

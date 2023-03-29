@@ -15,16 +15,7 @@ namespace media_router {
 // An interface for media router debugging and feedback.
 class MediaRouterDebugger {
  public:
-  // Fetches the MediaRouterDebugger from the media router fetched from the
-  // |frame_tree_node_id|. Must be called on the UiThread. May return a nullptr.
-  static MediaRouterDebugger* GetForFrameTreeNode(int frame_tree_node_id);
-
-  MediaRouterDebugger();
-
-  MediaRouterDebugger(const MediaRouterDebugger&) = delete;
-  MediaRouterDebugger& operator=(const MediaRouterDebugger&) = delete;
-
-  virtual ~MediaRouterDebugger();
+  virtual ~MediaRouterDebugger() = default;
 
   class MirroringStatsObserver : public base::CheckedObserver {
    public:
@@ -32,20 +23,17 @@ class MediaRouterDebugger {
         const base::Value::Dict& json_logs) = 0;
   };
 
-  void AddObserver(MirroringStatsObserver& obs);
-  void RemoveObserver(MirroringStatsObserver& obs);
+  virtual void AddObserver(MirroringStatsObserver& obs) = 0;
+  virtual void RemoveObserver(MirroringStatsObserver& obs) = 0;
 
-  void EnableRtcpReports();
-  void DisableRtcpReports();
+  // Enables Rtcp fetching and analysis for future mirroring sessions.
+  virtual void EnableRtcpReports() = 0;
 
-  bool IsRtcpReportsEnabled() const;
+  // Disables Rtcp fetching and analysis for future mirroring sessions.
+  virtual void DisableRtcpReports() = 0;
 
- protected:
-  base::ObserverList<MirroringStatsObserver> observers_;
-
-  bool is_rtcp_reports_enabled_ = false;
-
-  SEQUENCE_CHECKER(sequence_checker_);
+  // Returns whether Rtcp reports are enabled.
+  virtual bool ShouldFetchMirroringStats() const = 0;
 };
 
 }  // namespace media_router

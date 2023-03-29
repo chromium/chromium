@@ -355,36 +355,6 @@ void CastMediaRouteProvider::GetState(GetStateCallback callback) {
       mojom::ProviderState::NewCastProviderState(std::move(cast_state)));
 }
 
-void CastMediaRouteProvider::GetMirroringStats(
-    const std::string& route_id,
-    GetMirroringStatsCallback callback) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-
-  if (!activity_manager_) {
-    std::move(callback).Run(base::Value());
-    return;
-  }
-
-  auto* mirroring_activity =
-      activity_manager_->FindMirroringActivityByRouteId(route_id);
-  if (!mirroring_activity) {
-    std::move(callback).Run(base::Value());
-    return;
-  }
-
-  auto* mirroring_host = mirroring_activity->GetHost();
-  if (!mirroring_host) {
-    std::move(callback).Run(base::Value());
-    return;
-  }
-
-  content::GetUIThreadTaskRunner({})->PostTask(
-      FROM_HERE,
-      base::BindOnce(&mirroring::MirroringServiceHost::GetMirroringStats,
-                     mirroring_host->GetWeakPtr(),
-                     base::BindPostTask(task_runner_, std::move(callback))));
-}
-
 void CastMediaRouteProvider::OnSinkQueryUpdated(
     const MediaSource::Id& source_id,
     const std::vector<MediaSinkInternal>& sinks) {

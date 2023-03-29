@@ -18,6 +18,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
+#include "chrome/browser/media/router/mojo/media_router_debugger_impl.h"
 #include "chrome/browser/media/webrtc/desktop_media_picker_controller.h"
 #include "components/media_router/browser/issue_manager.h"
 #include "components/media_router/browser/logger_impl.h"
@@ -48,7 +49,6 @@ class FlingingController;
 namespace media_router {
 
 enum class MediaRouteProviderWakeReason;
-class MediaRouterDebuggerImpl;
 
 // MediaRouter implementation that delegates calls to a MediaRouteProvider.
 class MediaRouterMojoImpl : public MediaRouterBase,
@@ -101,10 +101,6 @@ class MediaRouterMojoImpl : public MediaRouterBase,
   // is in sync with MediaRouter on a best-effort basis.
   virtual void SyncStateToMediaRouteProvider(
       mojom::MediaRouteProviderId provider_id);
-
-  void GetMirroringStats(
-      const MediaRoute::Id& route_id,
-      base::OnceCallback<void(const base::Value)> json_stats_cb);
 
  protected:
   // Standard constructor, used by
@@ -331,6 +327,7 @@ class MediaRouterMojoImpl : public MediaRouterBase,
       const std::string& route_id,
       std::vector<mojom::RouteMessagePtr> messages) override;
   void GetLogger(mojo::PendingReceiver<mojom::Logger> receiver) override;
+  void GetDebugger(mojo::PendingReceiver<mojom::Debugger> receiver) override;
   void GetLogsAsString(GetLogsAsStringCallback callback) override;
   void GetMediaSinkServiceStatus(
       mojom::MediaRouter::GetMediaSinkServiceStatusCallback callback) override;
@@ -441,7 +438,7 @@ class MediaRouterMojoImpl : public MediaRouterBase,
   // TODO(crbug.com/1077138): Limit logging before Media Router usage.
   LoggerImpl logger_;
 
-  std::unique_ptr<MediaRouterDebuggerImpl> media_router_debugger_;
+  MediaRouterDebuggerImpl media_router_debugger_;
 };
 
 }  // namespace media_router
