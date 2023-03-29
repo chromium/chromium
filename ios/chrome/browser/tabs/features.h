@@ -9,9 +9,8 @@
 
 #import "base/feature_list.h"
 
-// Feature flags that enables Pinned Tabs.
+// Feature flag that enables Pinned Tabs.
 BASE_DECLARE_FEATURE(kEnablePinnedTabs);
-BASE_DECLARE_FEATURE(kEnablePinnedTabsIpad);
 
 // User default key used to determine if Pinned Tabs was used in the overflow
 // menu.

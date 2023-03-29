@@ -335,10 +335,6 @@ extern const char kEnablePreferencesAccountStorageDescription[];
 extern const char kEnablePinnedTabsName[];
 extern const char kEnablePinnedTabsDescription[];
 
-// Title and description for the flag to enable pinned tabs on iPad.
-extern const char kEnablePinnedTabsIpadName[];
-extern const char kEnablePinnedTabsIpadDescription[];
-
 // Title and description for the flag to enable the account storage.
 extern const char kEnableReadingListAccountStorageName[];
 extern const char kEnableReadingListAccountStorageDescription[];

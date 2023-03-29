@@ -49,7 +49,6 @@ const CGFloat kTabStripLineHeight = 0.5;
 const CGFloat kCloseButtonHorizontalShift = 22;
 const CGFloat kTitleLeftMargin = 8.0;
 const CGFloat kTitleRightMargin = 0.0;
-const CGFloat kPinnedFaviconHorizontalMargin = 31.0;
 
 const CGFloat kCloseButtonSize = 24.0;
 const CGFloat kFaviconSize = 16.0;
@@ -75,11 +74,7 @@ UIImage* DefaultFaviconImage() {
 
   // Background image for this tab.
   UIImageView* _backgroundImageView;
-
   BOOL _incognitoStyle;
-
-  // Whether the Tab is pinned or not.
-  BOOL _pinned;
 
   // Set to YES when the layout constraints have been initialized.
   BOOL _layoutConstraintsInitialized;
@@ -95,13 +90,6 @@ UIImage* DefaultFaviconImage() {
   // Adds hover interaction to background tabs.
   UIPointerInteraction* _pointerInteraction;
 }
-
-// Default constraints, used when the tab view is unpinned.
-@property(nonatomic, strong) NSArray<NSLayoutConstraint*>* defaultConstraints;
-
-// Constraints when the tab view is pinned.
-@property(nonatomic, strong)
-    NSArray<NSLayoutConstraint*>* faviconPinnedConstraints;
 
 @end
 
@@ -125,8 +113,6 @@ UIImage* DefaultFaviconImage() {
 
 - (id)initWithEmptyView:(BOOL)emptyView selected:(BOOL)selected {
   if ((self = [super initWithFrame:CGRectZero])) {
-    _pinned = NO;
-    self.isAccessibilityElement = NO;
     [self setOpaque:NO];
     [self createCommonViews];
     if (!emptyView)
@@ -156,8 +142,7 @@ UIImage* DefaultFaviconImage() {
 }
 
 - (void)setCollapsed:(BOOL)collapsed {
-  // If the item is pinned the `_closeButton` should remain hidden.
-  if (_collapsed != collapsed && !_pinned) {
+  if (_collapsed != collapsed) {
     [_closeButton setHidden:collapsed];
   }
 
@@ -199,16 +184,6 @@ UIImage* DefaultFaviconImage() {
   return;
 }
 
-- (void)setPinned:(BOOL)pinned {
-  if (_pinned == pinned) {
-    return;
-  }
-
-  _pinned = pinned;
-  _titleLabel.hidden = pinned;
-  _closeButton.hidden = pinned;
-}
-
 - (void)startProgressSpinner {
   [_activityIndicator startAnimating];
   [_activityIndicator setHidden:NO];
@@ -235,8 +210,6 @@ UIImage* DefaultFaviconImage() {
   if (CGRectEqualToRect(CGRectZero, previousFrame) &&
       !_layoutConstraintsInitialized) {
     [self setNeedsUpdateConstraints];
-  } else {
-    [self updatePinnedConstraints];
   }
 }
 
@@ -364,31 +337,31 @@ UIImage* DefaultFaviconImage() {
     @"title" : _titleLabel,
     @"favicon" : _faviconView,
   };
-
   NSArray* constraints = @[
-    @"H:[favicon(faviconSize)]",
+    @"H:|-faviconLeftInset-[favicon(faviconSize)]",
     @"V:|-faviconVerticalOffset-[favicon]-0-|",
     @"H:[close(==closeButtonSize)]-closeButtonHorizontalShift-|",
     @"V:|-0-[close]-0-|",
-    @"H:[title]-titleRightMargin-[close]",
+    @"H:[favicon]-titleLeftMargin-[title]-titleRightMargin-[close]",
     @"V:[title(==titleHeight)]",
   ];
 
   NSDictionary* metrics = @{
     @"closeButtonSize" : @(kCloseButtonSize),
     @"closeButtonHorizontalShift" : @(kCloseButtonHorizontalShift),
+    @"titleLeftMargin" : @(kTitleLeftMargin),
     @"titleRightMargin" : @(kTitleRightMargin),
     @"titleHeight" : @(kFaviconSize),
+    @"faviconLeftInset" : @(kFaviconLeftInset),
     @"faviconVerticalOffset" : @(kFaviconVerticalOffset),
     @"faviconSize" : @(kFaviconSize),
   };
-
   ApplyVisualConstraintsWithMetrics(constraints, viewsDictionary, metrics);
   AddSameCenterXConstraint(self, _faviconView, _activityIndicator);
   AddSameCenterYConstraint(self, _faviconView, _activityIndicator);
   AddSameCenterYConstraint(self, _faviconView, _titleLabel);
-  [self updatePinnedConstraints];
 }
+
 // Updates this tab's style based on the value of `selected` and the current
 // incognito style.
 - (void)updateStyleForSelected:(BOOL)selected {
@@ -473,46 +446,6 @@ UIImage* DefaultFaviconImage() {
                clockwise:NO];
   [path closePath];
   return path;
-}
-
-// Updates constraints that depend on the pinned state.
-- (void)updatePinnedConstraints {
-  if (_pinned) {
-    [NSLayoutConstraint deactivateConstraints:self.defaultConstraints];
-    [NSLayoutConstraint activateConstraints:self.faviconPinnedConstraints];
-  } else {
-    [NSLayoutConstraint deactivateConstraints:self.faviconPinnedConstraints];
-    [NSLayoutConstraint activateConstraints:self.defaultConstraints];
-  }
-}
-
-#pragma mark - Getters
-
-- (NSArray<NSLayoutConstraint*>*)faviconPinnedConstraints {
-  if (!_faviconPinnedConstraints) {
-    _faviconPinnedConstraints = @[
-      [_faviconView.leadingAnchor
-          constraintGreaterThanOrEqualToAnchor:self.leadingAnchor
-                                      constant:kPinnedFaviconHorizontalMargin],
-      [_faviconView.trailingAnchor
-          constraintLessThanOrEqualToAnchor:self.trailingAnchor
-                                   constant:-kPinnedFaviconHorizontalMargin],
-    ];
-  }
-  return _faviconPinnedConstraints;
-}
-
-- (NSArray<NSLayoutConstraint*>*)defaultConstraints {
-  if (!_defaultConstraints) {
-    _defaultConstraints = @[
-      [_faviconView.leadingAnchor constraintEqualToAnchor:self.leadingAnchor
-                                                 constant:kFaviconLeftInset],
-      [_faviconView.trailingAnchor
-          constraintEqualToAnchor:_titleLabel.leadingAnchor
-                         constant:-kTitleLeftMargin],
-    ];
-  }
-  return _defaultConstraints;
 }
 
 #pragma mark UIPointerInteractionDelegate

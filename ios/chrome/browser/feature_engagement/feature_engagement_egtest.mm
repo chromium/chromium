@@ -160,7 +160,7 @@ std::unique_ptr<net::test_server::HttpResponse> LoadFrenchPage(
     AppLaunchConfiguration config;
     config.additional_args.push_back(
         "--enable-features=" + std::string(kEnablePinnedTabs.name) + ":" +
-        kEnablePinnedTabsOverflowParam + "/true," + kEnablePinnedTabsIpad.name);
+        kEnablePinnedTabsOverflowParam + "/true");
     return config;
   }
   return [super appConfigurationForTestCase];
@@ -567,6 +567,10 @@ std::unique_ptr<net::test_server::HttpResponse> LoadFrenchPage(
 // Verifies that the IPH for Pinned tab is displayed after pinning a tab from
 // the overflow menu.
 - (void)testPinTabFromOverflowMenu {
+  if ([ChromeEarlGrey isIPadIdiom]) {
+    // The Pinned Tabs feature is iPhone only.
+    return;
+  }
   if (@available(iOS 15, *)) {
   } else {
     // Only available for iOS 15+.

@@ -27,7 +27,9 @@ enum class MenuScenarioHistogram {
   kThumbStrip = 15,
   kOmniboxMostVisitedEntry = 16,
   kPinnedTabsEntry = 17,
-  kTabStripEntry = 18,
+  kTabStripEntry =
+      18,  // TODO(crbug.com/1428071): Currently not recorded. With the current
+           // tabStrip implementation we can't display context menus.
   kInactiveTabsEntry = 19,
   kMaxValue = kInactiveTabsEntry,
 };

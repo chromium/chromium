@@ -380,11 +380,6 @@ const char kEnablePreferencesAccountStorageDescription[] =
 const char kEnablePinnedTabsName[] = "Enable Pinned Tabs";
 const char kEnablePinnedTabsDescription[] = "Allows users to pin tabs.";
 
-const char kEnablePinnedTabsIpadName[] = "Enable Pinned Tabs on iPad";
-const char kEnablePinnedTabsIpadDescription[] =
-    "Allows users to pin tabs."
-    "#enable-pinned-tabs should also be enabled.";
-
 const char kEnableReadingListAccountStorageName[] =
     "Enable Reading List Account Storage";
 const char kEnableReadingListAccountStorageDescription[] =
