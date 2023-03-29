@@ -9,6 +9,15 @@ enum class TailoredSecurityNotificationResult;
 
 namespace safe_browsing {
 
+extern const char kTailoredSecurityDisabledDialogShown[];
+extern const char kTailoredSecurityDisabledDialogOkButtonClicked[];
+extern const char kTailoredSecurityDisabledDialogSettingsButtonClicked[];
+extern const char kTailoredSecurityDisabledDialogDismissed[];
+extern const char kTailoredSecurityEnabledDialogShown[];
+extern const char kTailoredSecurityEnabledDialogOkButtonClicked[];
+extern const char kTailoredSecurityEnabledDialogSettingsButtonClicked[];
+extern const char kTailoredSecurityEnabledDialogDismissed[];
+
 // Records an UMA Histogram value to count the result of trying to notify a sync
 // user about enhanced protection for the enable case.
 void RecordEnabledNotificationResult(TailoredSecurityNotificationResult result);
