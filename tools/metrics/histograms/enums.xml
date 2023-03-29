@@ -84250,7 +84250,7 @@ chromeos/ash/components/peripheral_notification/peripheral_notification_manager.
   <int value="-2012727489" label="device.mojom.ScreenOrientation"/>
   <int value="-1354302262" label="blink.mojom.BackForwardCacheControllerHost"/>
   <int value="-71187962" label="supervised_user.mojom.SupervisedUserCommands"/>
-  <int value="-4973921" label="blink.mojom.ConversionHost"/>
+  <int value="-4973921" label="blink.mojom.AttributionHost"/>
   <int value="191605727" label="content.mojom.PepperHost"/>
   <int value="828689080" label="blink.mojom.BlobURLStore"/>
   <int value="1984681860"

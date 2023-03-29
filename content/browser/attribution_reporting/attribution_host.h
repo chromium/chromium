@@ -43,7 +43,7 @@ class AttributionInputEventTrackerAndroid;
 class CONTENT_EXPORT AttributionHost
     : public WebContentsObserver,
       public WebContentsUserData<AttributionHost>,
-      public blink::mojom::ConversionHost {
+      public blink::mojom::AttributionHost {
  public:
   explicit AttributionHost(WebContents* web_contents);
   AttributionHost(const AttributionHost&) = delete;
@@ -53,7 +53,7 @@ class CONTENT_EXPORT AttributionHost
   ~AttributionHost() override;
 
   static void BindReceiver(
-      mojo::PendingAssociatedReceiver<blink::mojom::ConversionHost> receiver,
+      mojo::PendingAssociatedReceiver<blink::mojom::AttributionHost> receiver,
       RenderFrameHost* rfh);
 
 #if BUILDFLAG(IS_ANDROID)
@@ -81,7 +81,7 @@ class CONTENT_EXPORT AttributionHost
   friend class AttributionHostTestPeer;
   friend class WebContentsUserData<AttributionHost>;
 
-  // blink::mojom::ConversionHost:
+  // blink::mojom::AttributionHost:
   void RegisterDataHost(
       mojo::PendingReceiver<blink::mojom::AttributionDataHost>,
       attribution_reporting::mojom::RegistrationType) override;
@@ -119,7 +119,7 @@ class CONTENT_EXPORT AttributionHost
   using NavigationInfoMap = base::flat_map<int64_t, NavigationInfo>;
   NavigationInfoMap navigation_info_map_;
 
-  RenderFrameHostReceiverSet<blink::mojom::ConversionHost> receivers_;
+  RenderFrameHostReceiverSet<blink::mojom::AttributionHost> receivers_;
 
 #if BUILDFLAG(IS_ANDROID)
   std::unique_ptr<AttributionInputEventTrackerAndroid>

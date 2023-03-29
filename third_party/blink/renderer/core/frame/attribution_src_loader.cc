@@ -192,17 +192,17 @@ class AttributionSrcLoader::ResourceClient
     DCHECK(loader_->local_frame_);
     DCHECK(loader_->local_frame_->IsAttached());
 
-    mojo::AssociatedRemote<mojom::blink::ConversionHost> conversion_host;
+    mojo::AssociatedRemote<mojom::blink::AttributionHost> attribution_host;
     loader_->local_frame_->GetRemoteNavigationAssociatedInterfaces()
-        ->GetInterface(&conversion_host);
+        ->GetInterface(&attribution_host);
 
     if (attribution_src_token.has_value()) {
-      conversion_host->RegisterNavigationDataHost(
+      attribution_host->RegisterNavigationDataHost(
           data_host_.BindNewPipeAndPassReceiver(), *attribution_src_token);
     } else {
       // Send the data host normally.
-      conversion_host->RegisterDataHost(data_host_.BindNewPipeAndPassReceiver(),
-                                        type);
+      attribution_host->RegisterDataHost(
+          data_host_.BindNewPipeAndPassReceiver(), type);
     }
   }
 

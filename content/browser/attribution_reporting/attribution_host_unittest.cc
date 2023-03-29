@@ -52,9 +52,9 @@ namespace content {
 class AttributionHostTestPeer {
  public:
   static void SetCurrentTargetFrameForTesting(
-      AttributionHost* conversion_host,
+      AttributionHost* attribution_host,
       RenderFrameHost* render_frame_host) {
-    conversion_host->receivers_.SetCurrentTargetFrameForTesting(
+    attribution_host->receivers_.SetCurrentTargetFrameForTesting(
         render_frame_host);
   }
 };
@@ -105,16 +105,16 @@ class AttributionHostTest : public RenderViewHostTestHarness {
     return static_cast<TestWebContents*>(web_contents());
   }
 
-  blink::mojom::ConversionHost* conversion_host_mojom() {
-    return conversion_host();
+  blink::mojom::AttributionHost* attribution_host_mojom() {
+    return attribution_host();
   }
 
-  AttributionHost* conversion_host() {
+  AttributionHost* attribution_host() {
     return AttributionHost::FromWebContents(web_contents());
   }
 
   void SetCurrentTargetFrameForTesting(RenderFrameHost* render_frame_host) {
-    AttributionHostTestPeer::SetCurrentTargetFrameForTesting(conversion_host(),
+    AttributionHostTestPeer::SetCurrentTargetFrameForTesting(attribution_host(),
                                                              render_frame_host);
   }
 
@@ -321,7 +321,7 @@ TEST_F(AttributionHostTest, DataHost_RegisteredWithContext) {
   mojo::test::BadMessageObserver bad_message_observer;
 
   mojo::Remote<blink::mojom::AttributionDataHost> data_host_remote;
-  conversion_host_mojom()->RegisterDataHost(
+  attribution_host_mojom()->RegisterDataHost(
       data_host_remote.BindNewPipeAndPassReceiver(), RegistrationType::kSource);
 
   // Run loop to allow the bad message code to run if a bad message was
@@ -340,11 +340,11 @@ TEST_F(AttributionHostTest, DISABLED_DataHostOnInsecurePage_BadMessage) {
   mojo::test::BadMessageObserver bad_message_observer;
 
   mojo::Remote<blink::mojom::AttributionDataHost> data_host_remote;
-  conversion_host_mojom()->RegisterDataHost(
+  attribution_host_mojom()->RegisterDataHost(
       data_host_remote.BindNewPipeAndPassReceiver(), RegistrationType::kSource);
 
   EXPECT_EQ(
-      "blink.mojom.ConversionHost can only be used with a secure top-level "
+      "blink.mojom.AttributionHost can only be used with a secure top-level "
       "frame.",
       bad_message_observer.WaitForBadMessage());
 }
@@ -360,12 +360,12 @@ TEST_F(AttributionHostTest,
   mojo::test::BadMessageObserver bad_message_observer;
 
   mojo::Remote<blink::mojom::AttributionDataHost> data_host_remote;
-  conversion_host_mojom()->RegisterNavigationDataHost(
+  attribution_host_mojom()->RegisterNavigationDataHost(
       data_host_remote.BindNewPipeAndPassReceiver(),
       blink::AttributionSrcToken());
 
   EXPECT_EQ(
-      "blink.mojom.ConversionHost can only be used with a secure top-level "
+      "blink.mojom.AttributionHost can only be used with a secure top-level "
       "frame.",
       bad_message_observer.WaitForBadMessage());
 }
@@ -382,7 +382,7 @@ TEST_F(AttributionHostTest, DuplicateAttributionSrcToken_BadMessage) {
   mojo::test::BadMessageObserver bad_message_observer;
 
   mojo::Remote<blink::mojom::AttributionDataHost> data_host_remote;
-  conversion_host_mojom()->RegisterNavigationDataHost(
+  attribution_host_mojom()->RegisterNavigationDataHost(
       data_host_remote.BindNewPipeAndPassReceiver(),
       blink::AttributionSrcToken());
 
@@ -413,7 +413,7 @@ TEST_F(AttributionHostTest, DataHostInSubframe_ContextIsOutermostFrame) {
   mojo::test::BadMessageObserver bad_message_observer;
 
   mojo::Remote<blink::mojom::AttributionDataHost> data_host_remote;
-  conversion_host_mojom()->RegisterDataHost(
+  attribution_host_mojom()->RegisterDataHost(
       data_host_remote.BindNewPipeAndPassReceiver(), RegistrationType::kSource);
 
   // Run loop to allow the bad message code to run if a bad message was
@@ -439,11 +439,11 @@ TEST_F(AttributionHostTest,
   mojo::test::BadMessageObserver bad_message_observer;
 
   mojo::Remote<blink::mojom::AttributionDataHost> data_host_remote;
-  conversion_host_mojom()->RegisterDataHost(
+  attribution_host_mojom()->RegisterDataHost(
       data_host_remote.BindNewPipeAndPassReceiver(), RegistrationType::kSource);
 
   EXPECT_EQ(
-      "blink.mojom.ConversionHost can only be used with a secure top-level "
+      "blink.mojom.AttributionHost can only be used with a secure top-level "
       "frame.",
       bad_message_observer.WaitForBadMessage());
 }
@@ -470,7 +470,7 @@ TEST_F(AttributionHostTest, DataHost_RegisteredWithFencedFrame) {
   mojo::test::BadMessageObserver bad_message_observer;
 
   mojo::Remote<blink::mojom::AttributionDataHost> data_host_remote;
-  conversion_host_mojom()->RegisterDataHost(
+  attribution_host_mojom()->RegisterDataHost(
       data_host_remote.BindNewPipeAndPassReceiver(), RegistrationType::kSource);
 
   // Run loop to allow the bad message code to run if a bad message was
@@ -494,7 +494,7 @@ TEST_F(AttributionHostTest, FeatureDisabled_FencedFrameReportingBeaconDropped) {
   fenced_frame = NavigationSimulatorImpl::NavigateAndCommitFromDocument(
       GURL("https://fencedframe.example"), fenced_frame);
 
-  conversion_host()->NotifyFencedFrameReportingBeaconStarted(
+  attribution_host()->NotifyFencedFrameReportingBeaconStarted(
       kBeaconId, kNavigationId,
       static_cast<RenderFrameHostImpl*>(fenced_frame));
 }
@@ -537,7 +537,7 @@ TEST_F(AttributionHostTest, NotifyFencedFrameReportingBeaconStarted) {
     fenced_frame = NavigationSimulatorImpl::NavigateAndCommitFromDocument(
         GURL("https://fencedframe.example"), fenced_frame);
 
-    conversion_host()->NotifyFencedFrameReportingBeaconStarted(
+    attribution_host()->NotifyFencedFrameReportingBeaconStarted(
         kBeaconId, kNavigationId,
         static_cast<RenderFrameHostImpl*>(fenced_frame));
   }
@@ -585,7 +585,7 @@ TEST_F(AttributionHostTest, FencedFrameReportingBeacon_FeaturePolicyChecked) {
     simulator->Commit();
     fenced_frame = simulator->GetFinalRenderFrameHost();
 
-    conversion_host()->NotifyFencedFrameReportingBeaconStarted(
+    attribution_host()->NotifyFencedFrameReportingBeaconStarted(
         kBeaconId, /*navigation_id=*/absl::nullopt,
         static_cast<RenderFrameHostImpl*>(fenced_frame));
   }

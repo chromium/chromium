@@ -382,7 +382,7 @@ void AttributionHost::RegisterNavigationDataHost(
 
 // static
 void AttributionHost::BindReceiver(
-    mojo::PendingAssociatedReceiver<blink::mojom::ConversionHost> receiver,
+    mojo::PendingAssociatedReceiver<blink::mojom::AttributionHost> receiver,
     RenderFrameHost* rfh) {
   auto* web_contents = WebContents::FromRenderFrameHost(rfh);
   if (!web_contents) {

@@ -156,11 +156,11 @@ class MockDataHost : public mojom::blink::AttributionDataHost {
   mojo::Receiver<mojom::blink::AttributionDataHost> receiver_{this};
 };
 
-class MockAttributionHost : public mojom::blink::ConversionHost {
+class MockAttributionHost : public mojom::blink::AttributionHost {
  public:
   explicit MockAttributionHost(blink::AssociatedInterfaceProvider* provider) {
     provider->OverrideBinderForTesting(
-        mojom::blink::ConversionHost::Name_,
+        mojom::blink::AttributionHost::Name_,
         WTF::BindRepeating(&MockAttributionHost::BindReceiver,
                            WTF::Unretained(this)));
   }
@@ -181,7 +181,7 @@ class MockAttributionHost : public mojom::blink::ConversionHost {
  private:
   void BindReceiver(mojo::ScopedInterfaceEndpointHandle handle) {
     receiver_.Bind(
-        mojo::PendingAssociatedReceiver<mojom::blink::ConversionHost>(
+        mojo::PendingAssociatedReceiver<mojom::blink::AttributionHost>(
             std::move(handle)));
     if (quit_)
       std::move(quit_).Run();
@@ -197,7 +197,7 @@ class MockAttributionHost : public mojom::blink::ConversionHost {
       mojo::PendingReceiver<mojom::blink::AttributionDataHost> data_host,
       const blink::AttributionSrcToken& attribution_src_token) override {}
 
-  mojo::AssociatedReceiver<mojom::blink::ConversionHost> receiver_{this};
+  mojo::AssociatedReceiver<mojom::blink::AttributionHost> receiver_{this};
   base::OnceClosure quit_;
 
   std::unique_ptr<MockDataHost> mock_data_host_;
@@ -227,7 +227,7 @@ class AttributionSrcLoaderTest : public PageTestBase {
     GetFrame()
         .GetRemoteNavigationAssociatedInterfaces()
         ->OverrideBinderForTesting(
-            mojom::blink::ConversionHost::Name_,
+            mojom::blink::AttributionHost::Name_,
             WTF::BindRepeating([](mojo::ScopedInterfaceEndpointHandle) {}));
     url_test_helpers::UnregisterAllURLsAndClearMemoryCache();
     PageTestBase::TearDown();

@@ -319,10 +319,10 @@ void RenderFrameHostImpl::SetUpMojoConnection() {
           },
           base::Unretained(this)));
 
-  associated_registry_->AddInterface<blink::mojom::ConversionHost>(
+  associated_registry_->AddInterface<blink::mojom::AttributionHost>(
       base::BindRepeating(
           [](RenderFrameHostImpl* impl,
-             mojo::PendingAssociatedReceiver<blink::mojom::ConversionHost>
+             mojo::PendingAssociatedReceiver<blink::mojom::AttributionHost>
                  receiver) {
             AttributionHost::BindReceiver(std::move(receiver), impl);
           },
