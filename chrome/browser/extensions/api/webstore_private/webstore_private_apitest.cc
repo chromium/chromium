@@ -16,7 +16,6 @@
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/chrome_notification_types.h"
 #include "chrome/browser/extensions/api/webstore_private/webstore_private_api.h"
-#include "chrome/browser/extensions/extension_function_test_utils.h"
 #include "chrome/browser/extensions/extension_install_prompt.h"
 #include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/extensions/mixin_based_extension_apitest.h"
@@ -36,6 +35,7 @@
 #include "content/public/test/browser_test.h"
 #include "extensions/browser/allowlist_state.h"
 #include "extensions/browser/api/management/management_api.h"
+#include "extensions/browser/api_test_utils.h"
 #include "extensions/browser/extension_dialog_auto_confirm.h"
 #include "extensions/browser/extension_system.h"
 #include "extensions/browser/install/extension_install_ui.h"
@@ -43,6 +43,7 @@
 #include "gpu/config/gpu_feature_type.h"
 #include "net/dns/mock_host_resolver.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gl/gl_switches.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -63,9 +64,9 @@
 #include "extensions/common/extension_builder.h"
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
-namespace utils = extension_function_test_utils;
-
 namespace extensions {
+
+namespace utils = api_test_utils;
 
 namespace {
 
@@ -520,8 +521,9 @@ class ExtensionWebstoreGetWebGLStatusTest : public InProcessBrowserTest {
     static const char kWebGLStatusBlocked[] = "webgl_blocked";
     scoped_refptr<WebstorePrivateGetWebGLStatusFunction> function =
         new WebstorePrivateGetWebGLStatusFunction();
-    std::unique_ptr<base::Value> result(utils::RunFunctionAndReturnSingleResult(
-        function.get(), kEmptyArgs, browser()));
+    absl::optional<base::Value> result =
+        utils::RunFunctionAndReturnSingleResult(function.get(), kEmptyArgs,
+                                                browser()->profile());
     ASSERT_TRUE(result);
     EXPECT_EQ(base::Value::Type::STRING, result->type());
     EXPECT_TRUE(result->is_string());
