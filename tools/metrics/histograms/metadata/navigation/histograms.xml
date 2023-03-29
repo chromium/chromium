@@ -1553,7 +1553,7 @@ Also used in tools/metrics/histograms/metadata/page/histograms.xml.
 
 <histogram
     name="Prerender.CanceledForInactivePageRestriction.DisallowActivationReason{PrerenderTriggerType}"
-    enum="InactiveFrameDisallowActivationReason" expires_after="2023-03-01">
+    enum="InactiveFrameDisallowActivationReason" expires_after="2023-09-03">
   <owner>lingqi@chromium.org</owner>
   <owner>chrome-prerendering@chromium.org</owner>
   <summary>
@@ -1569,13 +1569,16 @@ Also used in tools/metrics/histograms/metadata/page/histograms.xml.
 
     Note: This histogram does not track prerender activation behavior, but to
     analyze PrerenderHostFinalStatus::kInactivePageRestriction.
+
+    Warning: this histogram was expired from 2023-03-01 to 2023-03-29; data may
+    be missing.
   </summary>
   <token key="PrerenderTriggerType" variants="PrerenderTriggerType"/>
 </histogram>
 
 <histogram
     name="Prerender.Experimental.ActivationHeadersMismatch{PrerenderTriggerType}"
-    enum="PrerenderActivationHeaderMismatchType" expires_after="2023-01-31">
+    enum="PrerenderActivationHeaderMismatchType" expires_after="2023-09-03">
   <owner>lingqi@chromium.org</owner>
   <owner>chrome-prerendering@google.com</owner>
   <summary>
@@ -1593,13 +1596,16 @@ Also used in tools/metrics/histograms/metadata/page/histograms.xml.
     records the hashed number of a mismatching header, together with the
     mismatching reason: Missing in prerendering navigation, missing in
     activation navigation, or the values mismatch.
+
+    Warning: this histogram was expired from 2023-01-31 to 2023-03-29; data may
+    be missing.
   </summary>
   <token key="PrerenderTriggerType" variants="PrerenderTriggerType"/>
 </histogram>
 
 <histogram
     name="Prerender.Experimental.ActivationNavigationParamsMatch{PrerenderTriggerType}"
-    enum="PrerenderActivationNavigationParamsMatch" expires_after="2023-06-05">
+    enum="PrerenderActivationNavigationParamsMatch" expires_after="2023-09-03">
   <owner>nhiroki@chromium.org</owner>
   <owner>chrome-prerendering@google.com</owner>
   <summary>
@@ -1637,7 +1643,7 @@ Also used in tools/metrics/histograms/metadata/page/histograms.xml.
 <histogram
     name="Prerender.Experimental.CrossOriginRedirectionProtocolChange{PrerenderTriggerType}"
     enum="PrerenderCrossOriginRedirectionProtocolChange"
-    expires_after="2023-04-30">
+    expires_after="2023-09-03">
   <owner>lingqi@chromium.org</owner>
   <owner>nhiroki@chromium.org</owner>
   <owner>src/content/browser/preloading/prerender/OWNERS</owner>
@@ -1732,7 +1738,7 @@ Also used in tools/metrics/histograms/metadata/page/histograms.xml.
 
 <histogram
     name="Prerender.Experimental.PrerenderCrossOriginRedirectionMismatch{PrerenderTriggerType}"
-    enum="PrerenderCrossOriginRedirectionMismatch" expires_after="2023-04-30">
+    enum="PrerenderCrossOriginRedirectionMismatch" expires_after="2023-09-03">
   <owner>lingqi@chromium.org</owner>
   <owner>nhiroki@chromium.org</owner>
   <owner>src/content/browser/preloading/prerender/OWNERS</owner>

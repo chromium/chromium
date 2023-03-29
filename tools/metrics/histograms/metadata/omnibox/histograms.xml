@@ -1944,7 +1944,7 @@ chromium-metrics-reviews@google.com.
 <histogram
     name="Omnibox.SuggestionUsed.Search.NavigationToLargestContentfulPaint2"
     units="ms" expires_after="2023-09-03">
-  <owner>asamidoi@chromium.org</owner>
+  <owner>lingqi@chromium.org</owner>
   <owner>chrome-prerendering@google.com</owner>
   <owner>chrome-omnibox-team@google.com</owner>
   <summary>
@@ -2037,8 +2037,8 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Omnibox.SuggestionUsed.URL.NavigationToLargestContentfulPaint2"
-    units="ms" expires_after="2023-04-27">
-  <owner>asamidoi@chromium.org</owner>
+    units="ms" expires_after="2023-09-03">
+  <owner>robertlin@chromium.org</owner>
   <owner>chrome-prerendering@google.com</owner>
   <owner>chrome-omnibox-team@google.com</owner>
   <summary>

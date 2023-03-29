@@ -944,9 +944,8 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="PageLoad.Clients.Prerender.InteractiveTiming.FirstInputDelay4{PrerenderTriggerType}"
-    units="ms" expires_after="2023-04-27">
+    units="ms" expires_after="2023-09-03">
   <owner>ksakamoto@chromium.org</owner>
-  <owner>asamidoi@chromium.org</owner>
   <owner>src/content/browser/preloading/prerender/OWNERS</owner>
   <summary>
     PageLoad.InteractiveTiming.FirstInputDelay4, but for page loads that were
@@ -962,9 +961,8 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="PageLoad.Clients.Prerender.LayoutInstability.CumulativeShiftScore.MainFrame{PrerenderTriggerType}"
-    units="ms" expires_after="2023-04-27">
+    units="ms" expires_after="2023-09-03">
   <owner>ksakamoto@chromium.org</owner>
-  <owner>asamidoi@chromium.org</owner>
   <owner>src/content/browser/preloading/prerender/OWNERS</owner>
   <summary>
     PageLoad.LayoutInstability.CumulativeShiftScore.MainFrame, but for page
@@ -981,9 +979,8 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="PageLoad.Clients.Prerender.LayoutInstability.CumulativeShiftScore{PrerenderTriggerType}"
-    units="ms" expires_after="2023-04-27">
+    units="ms" expires_after="2023-09-03">
   <owner>ksakamoto@chromium.org</owner>
-  <owner>asamidoi@chromium.org</owner>
   <owner>src/content/browser/preloading/prerender/OWNERS</owner>
   <summary>
     PageLoad.LayoutInstability.CumulativeShiftScore, but for page loads that
@@ -999,8 +996,8 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="PageLoad.Clients.Prerender.LayoutInstability.MaxCumulativeShiftScore.SessionWindow.Gap1000ms.Max5000ms2{PrerenderTriggerType}"
-    units="ms" expires_after="2023-04-27">
-  <owner>asamidoi@chromium.org</owner>
+    units="ms" expires_after="2023-09-03">
+  <owner>kenoss@chromium.org</owner>
   <owner>src/content/browser/preloading/prerender/OWNERS</owner>
   <summary>
     PageLoad.LayoutInstability.MaxCumulativeShiftScore.SessionWindow.Gap1000ms.Max5000ms2,
@@ -1017,9 +1014,8 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="PageLoad.Clients.Prerender.NavigationToActivation{PrerenderTriggerType}"
-    units="ms" expires_after="2023-04-27">
+    units="ms" expires_after="2023-09-03">
   <owner>ksakamoto@chromium.org</owner>
-  <owner>asamidoi@chromium.org</owner>
   <owner>src/content/browser/preloading/prerender/OWNERS</owner>
   <summary>
     Measures the time from the start of initial prerendering navigation to the
@@ -1051,9 +1047,8 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="PageLoad.Clients.Prerender.PaintTiming.ActivationToFirstContentfulPaint{PrerenderTriggerType}"
-    units="ms" expires_after="2023-04-27">
+    units="ms" expires_after="2023-09-03">
   <owner>ksakamoto@chromium.org</owner>
-  <owner>asamidoi@chromium.org</owner>
   <owner>src/content/browser/preloading/prerender/OWNERS</owner>
   <summary>
     PageLoad.PaintTiming.NavigationToFirstContentfulPaint, but for page loads
@@ -1071,9 +1066,8 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="PageLoad.Clients.Prerender.PaintTiming.ActivationToFirstPaint{PrerenderTriggerType}"
-    units="ms" expires_after="2023-04-27">
+    units="ms" expires_after="2023-09-03">
   <owner>ksakamoto@chromium.org</owner>
-  <owner>asamidoi@chromium.org</owner>
   <owner>src/content/browser/preloading/prerender/OWNERS</owner>
   <summary>
     PageLoad.PaintTiming.NavigationToFirstPaint, but for page loads that were
@@ -1090,9 +1084,8 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="PageLoad.Clients.Prerender.PaintTiming.ActivationToLargestContentfulPaint2{PrerenderTriggerType}"
-    units="ms" expires_after="2023-04-27">
+    units="ms" expires_after="2023-09-03">
   <owner>ksakamoto@chromium.org</owner>
-  <owner>asamidoi@chromium.org</owner>
   <owner>src/content/browser/preloading/prerender/OWNERS</owner>
   <summary>
     PageLoad.PaintTiming.NavigationToLargestContentfulPaint2, but for page loads
@@ -1386,7 +1379,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="PageLoad.Clients.UseCounter.Experimental.MetricsReplayAtActivationDuration"
-    units="ms" expires_after="2023-03-16">
+    units="ms" expires_after="2023-09-03">
   <owner>kenoss@chromium.org</owner>
   <owner>toyoshim@chromium.org</owner>
   <summary>
@@ -1398,6 +1391,9 @@ chromium-metrics-reviews@google.com.
     memory. When a page is activated then, buffered metrics are flushed and
     recorded. This metric records the duration of this flush, in case of this
     cause a performance degradation.
+
+    Warning: this histogram was expired from 2023-03-16 to 2023-03-29; data may
+    be missing.
   </summary>
 </histogram>
 
@@ -2524,7 +2520,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="PageLoad.Internal.Prerender2.Event"
     enum="PageLoadPrerenderEvent" expires_after="2023-09-17">
-  <owner>asamidoi@chromium.org</owner>
+  <owner>kenoss@chromium.org</owner>
   <owner>src/content/browser/preloading/prerender/OWNERS</owner>
   <summary>
     Counts page load events related to Prerender2, like navigation in
