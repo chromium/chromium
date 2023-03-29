@@ -26,8 +26,10 @@ html {
   --google-blue-600: rgb(var(--google-blue-600-rgb));
   --google-blue-700-rgb: 25, 103, 210;  /* #1967d2 */
   --google-blue-700: rgb(var(--google-blue-700-rgb));
-  --google-blue-800-rgb: 24, 90, 188;  /* ##185abc */
+  --google-blue-800-rgb: 24, 90, 188;  /* #185abc */
   --google-blue-800: rgb(var(--google-blue-800-rgb));
+  --google-blue-900-rgb: 23, 78, 166;  /* #174ea6 */
+  --google-blue-900: rgb(var(--google-blue-900-rgb));
 
   --google-green-50-rgb: 230, 244, 234;  /* #e6f4ea */
   --google-green-50: rgb(var(--google-green-50-rgb));

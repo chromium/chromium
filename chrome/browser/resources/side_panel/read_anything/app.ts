@@ -29,7 +29,7 @@ const lightThemeBackgroundSkColor =
 const darkThemeEmptyStateBodyColor = 'var(--google-grey-500)';
 const defaultThemeEmptyStateBodyColor = 'var(--google-grey-700)';
 const defaultLinkColors: LinkColor = {
-  default: 'var(--google-blue-800)',
+  default: 'var(--google-blue-900)',
   visited: 'var(--google-purple-900)',
 };
 const darkThemeLinkColors: LinkColor = {
