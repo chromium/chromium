@@ -337,7 +337,8 @@ void ReadAnythingAppController::OnActiveAXTreeIDChanged(
   model_.SetActiveTreeId(tree_id);
   model_.SetActiveUkmSourceId(ukm_source_id);
   // Delete all pending updates on the formerly active AXTree.
-  distiller_->CancelPendingTasks();
+  // TODO(crbug.com/1266555): If distillation is in progress, cancel the
+  // distillation request.
   model_.ClearPendingUpdates();
 
   // TODO(b/1266555): Use v8::Function rather than javascript. If possible,
@@ -363,7 +364,8 @@ void ReadAnythingAppController::OnAXTreeDestroyed(const ui::AXTreeID& tree_id) {
     return;
   }
   if (model_.active_tree_id() == tree_id) {
-    distiller_->CancelPendingTasks();
+    // TODO(crbug.com/1266555): If distillation is in progress, cancel the
+    // distillation request.
     model_.SetActiveTreeId(ui::AXTreeIDUnknown());
     model_.SetActiveUkmSourceId(ukm::kInvalidSourceId);
   }

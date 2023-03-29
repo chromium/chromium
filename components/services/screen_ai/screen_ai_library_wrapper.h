@@ -16,8 +16,6 @@
 
 namespace screen_ai {
 
-class ScreenAIServiceImplTest;
-
 // Wrapper class for Chrome Screen AI library.
 class ScreenAILibraryWrapper {
  public:
@@ -44,7 +42,6 @@ class ScreenAILibraryWrapper {
                           std::vector<int32_t>& node_ids);
 
  private:
-  friend class ScreenAIServiceImplTest;
   template <typename T>
   bool LoadFunction(T& function_variable, const char* function_name);
 
@@ -133,14 +130,14 @@ class ScreenAILibraryWrapper {
   // reading.
   typedef bool (*ReadBufferedInt32ArrayFn)(int32_t* results,
                                            uint32_t max_count);
-  ReadBufferedInt32ArrayFn read_buffered_int32_array_ = nullptr;
+  ReadBufferedInt32ArrayFn read_buffered_int32_array_;
 
   // Reads buffered char array. This function is used to read the char*
   // results that are computed by other functions and kept in library's memory.
   // The read operation can be done only once and the results are cleared after
   // reading.
   typedef bool (*ReadBufferedCharArrayFn)(char* results, uint32_t max_count);
-  ReadBufferedCharArrayFn read_buffered_char_array_ = nullptr;
+  ReadBufferedCharArrayFn read_buffered_char_array_;
 
   base::ScopedNativeLibrary library_;
 };

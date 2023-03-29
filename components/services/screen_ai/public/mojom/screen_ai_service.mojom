@@ -47,22 +47,11 @@ interface ScreenAIAnnotatorClient {
 // an Screen2xMainContentExtractor.
 // All interfaces of one browser profile use one ScreenAIService.
 interface Screen2xMainContentExtractor {
-  // The result of main content extraction request.
-  enum Status {
-    kOK,
-    kCanceled,
-    kFailed
-  };
-
   // Receives the accessibility tree, schedules processing, and returns the main
-  // content of the given tree and the success of the process.
-  // `ukm_source_id` is a ukm::SourceId which is used to tie the UKM event to
-  // the main frame URL for metrics collection.
+  // content of the given tree. ukm_source_id is a ukm::SourceId which is used
+  // to tie the UKM event to the main frame URL for metrics collection.
   ExtractMainContent(ax.mojom.AXTreeUpdate snapshot, int64 ukm_source_id) =>
-    (Status status, array<int32> content_node_ids);
-
-  // Cancels queued tasks that are not sent to the library yet.
-  CancelPendingMainContentExtractionTasks();
+    (array<int32> content_node_ids);
 };
 
 

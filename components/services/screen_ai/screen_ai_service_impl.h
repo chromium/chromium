@@ -10,13 +10,11 @@
 #include "base/functional/callback.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
-#include "base/sequence_checker.h"
-#include "base/task/sequenced_task_runner.h"
+#include "base/task/deferred_sequenced_task_runner.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "components/services/screen_ai/public/mojom/screen_ai_service.mojom.h"
 #include "components/services/screen_ai/screen_ai_library_wrapper.h"
-#include "components/services/screen_ai/tasks_queue.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
@@ -28,8 +26,6 @@ class UkmRecorder;
 }
 
 namespace screen_ai {
-
-class ScreenAIServiceImplTest;
 
 // Uses a local machine intelligence library to augment the accessibility
 // tree. Functionalities include extracting layout and running OCR on passed
@@ -47,9 +43,9 @@ class ScreenAIService : public mojom::ScreenAIService,
   ~ScreenAIService() override;
 
   // Calls `success_callback` function and tells it if `library` has value.
-  // If `library` has value, sets the library and starts processing queued
-  // tasks, otherwise kills the current process.
-  void SetLibraryAndStartProcessingQueuedTasks(
+  // If `library` has value, sets the library and starts task runner, otherwise
+  // kills the current process.
+  void SetLibraryAndStartTaskRunner(
       LoadAndInitializeLibraryCallback success_callback,
       std::unique_ptr<ScreenAILibraryWrapper> library);
 
@@ -59,15 +55,6 @@ class ScreenAIService : public mojom::ScreenAIService,
                             bool success);
 
  private:
-  friend class ScreenAIServiceImplTest;
-
-  // Posts a `ProcessNextTaskInQueue` if `library_` is loaded.
-  void TriggerProcessingNextTaskInQueue();
-
-  // If there are tasks in `tasks_queue_`, picks the first one, executes
-  // it, and posts another `ProcessNextTaskInQueue` is there are more.
-  void ProcessNextTaskInQueue();
-
   std::unique_ptr<ScreenAILibraryWrapper> library_;
 
   // mojom::ScreenAIAnnotator:
@@ -84,9 +71,6 @@ class ScreenAIService : public mojom::ScreenAIService,
   void ExtractMainContent(const ui::AXTreeUpdate& snapshot,
                           ukm::SourceId ukm_source_id,
                           ExtractMainContentCallback callback) override;
-
-  // mojom::Screen2xMainContentExtractor:
-  void CancelPendingMainContentExtractionTasks() override;
 
   // mojom::ScreenAIService:
   void LoadAndInitializeLibrary(
@@ -108,32 +92,25 @@ class ScreenAIService : public mojom::ScreenAIService,
       mojo::PendingReceiver<mojom::Screen2xMainContentExtractor>
           main_content_extractor) override;
 
-  // Wrapper functions for queued tasks.
-  void VisualAnnotationHelper(
-      std::unique_ptr<TasksQueue::Task::VisualAnnotation> request);
-  void VisualAnnotationReplier(PerformOcrCallback callback,
-                               ui::AXTreeUpdate update);
-  void ExtractMainContentHelper(
-      std::unique_ptr<TasksQueue::Task::MainContentExtraction> request);
-  void ExtractMainContentReplier(
-      ExtractMainContentCallback callback,
-      mojom::Screen2xMainContentExtractor::Status status,
-      std::vector<int32_t> content_node_ids);
+  // Common section of PerformOcr and ExtractSemanticLayout functions.
+  void PerformVisualAnnotation(const SkBitmap& image,
+                               const ui::AXTreeID& parent_tree_id,
+                               PerformOcrCallback callback,
+                               bool run_ocr,
+                               bool run_layout_extraction);
 
-  // Returns the receiver id of the last main content extractor client.
-  virtual mojo::ReceiverId GetMainContentExtractorReceiverId();
+  // Wrapper functions for task scheduler.
+  void VisualAnnotationInternal(const SkBitmap& image,
+                                const ui::AXTreeID& parent_tree_id,
+                                bool run_ocr,
+                                bool run_layout_extraction,
+                                ui::AXTreeUpdate* annotation);
+  void ExtractMainContentInternal(const ui::AXTreeUpdate& snapshot,
+                                  const ukm::SourceId& ukm_source_id,
+                                  std::vector<int32_t>* content_node_ids);
 
-  // After library is loaded, this internal task scheduler picks queued
-  // tasks from  `tasks_queue_` and processes them in the same order.
-  // Owned by this class.
-  const scoped_refptr<base::SequencedTaskRunner> helper_task_runner_;
-
-  // Main service task runner that runs mojo messages.
-  const scoped_refptr<base::SequencedTaskRunner> main_task_runner_;
-
-  // Internal queue of received tasks. The tasks are in the same sequence as the
-  // mojo remotes, except cancelling tasks which are immediately applied.
-  TasksQueue tasks_queue_;
+  // Internal task scheduler that starts after library load is completed.
+  scoped_refptr<base::DeferredSequencedTaskRunner> task_runner_;
 
   mojo::Receiver<mojom::ScreenAIService> receiver_;
 
@@ -147,8 +124,6 @@ class ScreenAIService : public mojom::ScreenAIService,
   // extractors.
   mojo::ReceiverSet<mojom::Screen2xMainContentExtractor>
       screen_2x_main_content_extractors_;
-
-  SEQUENCE_CHECKER(sequence_checker_);
 
   base::WeakPtrFactory<ScreenAIService> weak_ptr_factory_{this};
 };

@@ -62,9 +62,6 @@ class AXTreeDistiller {
                        const ui::AXTreeUpdate& snapshot,
                        const ukm::SourceId& ukm_source_id);
 
-  // Cancels the pending distillation tasks.
-  void CancelPendingTasks();
-
 #if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
   void ScreenAIServiceReady();
 #endif
@@ -93,10 +90,8 @@ class AXTreeDistiller {
   // Called by the Screen2x service from the utility process. Runs the callback
   // if Screen2x identified content nodes. If not, distills via the rules-based
   // algorithm.
-  void ProcessScreen2xResult(
-      const ui::AXTree& tree,
-      const screen_ai::mojom::Screen2xMainContentExtractor::Status status,
-      const std::vector<ui::AXNodeID>& content_node_ids);
+  void ProcessScreen2xResult(const ui::AXTree& tree,
+                             const std::vector<ui::AXNodeID>& content_node_ids);
 
   // Called when the main content extractor is disconnected. Runs the callback
   // with an empty list of content node IDs.

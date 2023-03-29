@@ -12,8 +12,6 @@ source_set("screen_ai") {
     "screen_ai_library_wrapper.h",
     "screen_ai_service_impl.cc",
     "screen_ai_service_impl.h",
-    "tasks_queue.cc",
-    "tasks_queue.h",
   ]
 
   public_deps = [ "//components/services/screen_ai/proto:proto_convertors" ]
