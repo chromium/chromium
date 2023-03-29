@@ -7,11 +7,11 @@
 #include "base/time/time.h"
 #include "chrome/browser/chromeos/extensions/wm/wm_desks_private_api.h"
 #include "chrome/browser/extensions/extension_apitest.h"
-#include "chrome/browser/extensions/extension_function_test_utils.h"
 #include "chromeos/crosapi/mojom/desk.mojom.h"
 #include "chromeos/crosapi/mojom/test_controller.mojom.h"
 #include "chromeos/lacros/lacros_service.h"
 #include "content/public/test/browser_test.h"
+#include "extensions/browser/api_test_utils.h"
 
 namespace extensions {
 
@@ -69,9 +69,8 @@ IN_PROC_BROWSER_TEST_F(DesksExtensionApiLacrosTest, ListDesksTest) {
 
   auto list_desks_function =
       base::MakeRefCounted<WmDesksPrivateGetAllDesksFunction>();
-  auto all_desks =
-      extension_function_test_utils::RunFunctionAndReturnSingleResult(
-          list_desks_function.get(), "[]", browser());
+  auto all_desks = api_test_utils::RunFunctionAndReturnSingleResult(
+      list_desks_function.get(), "[]", profile());
   EXPECT_TRUE(all_desks->is_list());
 }
 
@@ -87,9 +86,8 @@ IN_PROC_BROWSER_TEST_F(DesksExtensionApiLacrosTest, LaunchAndCloseDeskTest) {
       base::MakeRefCounted<WmDesksPrivateLaunchDeskFunction>();
   base::HistogramTester histogram_tester;
   // The RunFunctionAndReturnSingleResult already asserts no error
-  auto desk_id =
-      extension_function_test_utils::RunFunctionAndReturnSingleResult(
-          launch_desk_function.get(), R"([{"deskName":"test"}])", browser());
+  auto desk_id = api_test_utils::RunFunctionAndReturnSingleResult(
+      launch_desk_function.get(), R"([{"deskName":"test"}])", profile());
   EXPECT_TRUE(desk_id->is_string());
   EXPECT_TRUE(
       base::GUID::ParseCaseInsensitive(desk_id->GetString()).is_valid());
@@ -101,10 +99,10 @@ IN_PROC_BROWSER_TEST_F(DesksExtensionApiLacrosTest, LaunchAndCloseDeskTest) {
   // Remove a desk.
   auto remove_desk_function =
       base::MakeRefCounted<WmDesksPrivateRemoveDeskFunction>();
-  extension_function_test_utils::RunFunctionAndReturnSingleResult(
+  api_test_utils::RunFunctionAndReturnSingleResult(
       remove_desk_function.get(),
       R"([")" + desk_id->GetString() + R"(", { "combineDesks": false }])",
-      browser());
+      profile());
 
   // Wait for remove desk animation to settle.
   WaitForDeskAnimation(lacros_service, kWaitForAnimationTimeout);
@@ -122,8 +120,8 @@ IN_PROC_BROWSER_TEST_F(DesksExtensionApiLacrosTest,
   base::HistogramTester histogram_tester;
   auto remove_desk_function =
       base::MakeRefCounted<WmDesksPrivateRemoveDeskFunction>();
-  auto error = extension_function_test_utils::RunFunctionAndReturnError(
-      remove_desk_function.get(), R"(["invalid-id"])", browser());
+  auto error = api_test_utils::RunFunctionAndReturnError(
+      remove_desk_function.get(), R"(["invalid-id"])", profile());
 
   EXPECT_EQ(error, "InvalidIdError");
   histogram_tester.ExpectBucketCount("Ash.DeskApi.RemoveDesk.Result", 0, 1);
@@ -144,9 +142,8 @@ IN_PROC_BROWSER_TEST_F(DesksExtensionApiLacrosTest, SwitchToDifferentDeskTest) {
   auto get_active_desk_function =
       base::MakeRefCounted<WmDesksPrivateGetActiveDeskFunction>();
   // Asserts no error.
-  auto desk_id =
-      extension_function_test_utils::RunFunctionAndReturnSingleResult(
-          get_active_desk_function.get(), "[]", browser());
+  auto desk_id = api_test_utils::RunFunctionAndReturnSingleResult(
+      get_active_desk_function.get(), "[]", profile());
   ASSERT_TRUE(desk_id->is_string());
   EXPECT_TRUE(
       base::GUID::ParseCaseInsensitive(desk_id->GetString()).is_valid());
@@ -156,9 +153,8 @@ IN_PROC_BROWSER_TEST_F(DesksExtensionApiLacrosTest, SwitchToDifferentDeskTest) {
       base::MakeRefCounted<WmDesksPrivateLaunchDeskFunction>();
 
   // Asserts no error.
-  auto desk_id_1 =
-      extension_function_test_utils::RunFunctionAndReturnSingleResult(
-          launch_desk_function.get(), R"([{"deskName":"test"}])", browser());
+  auto desk_id_1 = api_test_utils::RunFunctionAndReturnSingleResult(
+      launch_desk_function.get(), R"([{"deskName":"test"}])", profile());
   ASSERT_TRUE(desk_id_1->is_string());
   EXPECT_TRUE(
       base::GUID::ParseCaseInsensitive(desk_id_1->GetString()).is_valid());
@@ -169,28 +165,27 @@ IN_PROC_BROWSER_TEST_F(DesksExtensionApiLacrosTest, SwitchToDifferentDeskTest) {
   auto switch_desk_function =
       base::MakeRefCounted<WmDesksPrivateSwitchDeskFunction>();
 
-  extension_function_test_utils::RunFunctionAndReturnSingleResult(
+  api_test_utils::RunFunctionAndReturnSingleResult(
       switch_desk_function.get(), R"([")" + desk_id->GetString() + R"("])",
-      browser());
+      profile());
 
   WaitForDeskAnimation(lacros_service, kWaitForAnimationTimeout);
 
   auto get_active_desk_function_ =
       base::MakeRefCounted<WmDesksPrivateGetActiveDeskFunction>();
   // Asserts no error.
-  auto desk_id_2 =
-      extension_function_test_utils::RunFunctionAndReturnSingleResult(
-          get_active_desk_function_.get(), "[]", browser());
+  auto desk_id_2 = api_test_utils::RunFunctionAndReturnSingleResult(
+      get_active_desk_function_.get(), "[]", profile());
   ASSERT_TRUE(desk_id_2->is_string());
   EXPECT_EQ(desk_id->GetString(), desk_id_2->GetString());
 
   // Clean up desks.
   auto remove_desk_function =
       base::MakeRefCounted<WmDesksPrivateRemoveDeskFunction>();
-  extension_function_test_utils::RunFunctionAndReturnSingleResult(
+  api_test_utils::RunFunctionAndReturnSingleResult(
       remove_desk_function.get(),
       R"([")" + desk_id_1->GetString() + R"(", { "combineDesks": false }])",
-      browser());
+      profile());
 
   // Wait for remove desk animation to settle.
   WaitForDeskAnimation(lacros_service, kWaitForAnimationTimeout);
@@ -211,9 +206,8 @@ IN_PROC_BROWSER_TEST_F(DesksExtensionApiLacrosTest, SwitchToCurrentDeskTest) {
   auto get_active_desk_function =
       base::MakeRefCounted<WmDesksPrivateGetActiveDeskFunction>();
   // Asserts no error.
-  auto desk_id =
-      extension_function_test_utils::RunFunctionAndReturnSingleResult(
-          get_active_desk_function.get(), "[]", browser());
+  auto desk_id = api_test_utils::RunFunctionAndReturnSingleResult(
+      get_active_desk_function.get(), "[]", profile());
   ASSERT_TRUE(desk_id->is_string());
   ASSERT_TRUE(
       base::GUID::ParseCaseInsensitive(desk_id->GetString()).is_valid());
@@ -221,16 +215,15 @@ IN_PROC_BROWSER_TEST_F(DesksExtensionApiLacrosTest, SwitchToCurrentDeskTest) {
   // Switches to the current desk.
   auto switch_desk_function =
       base::MakeRefCounted<WmDesksPrivateSwitchDeskFunction>();
-  extension_function_test_utils::RunFunctionAndReturnSingleResult(
+  api_test_utils::RunFunctionAndReturnSingleResult(
       switch_desk_function.get(), R"([")" + desk_id->GetString() + R"("])",
-      browser());
+      profile());
 
   // Get the current desk.
   auto get_active_desk_function_ =
       base::MakeRefCounted<WmDesksPrivateGetActiveDeskFunction>();
-  auto desk_id_1 =
-      extension_function_test_utils::RunFunctionAndReturnSingleResult(
-          get_active_desk_function_.get(), "[]", browser());
+  auto desk_id_1 = api_test_utils::RunFunctionAndReturnSingleResult(
+      get_active_desk_function_.get(), "[]", profile());
   ASSERT_TRUE(desk_id_1->is_string());
   EXPECT_EQ(desk_id->GetString(), desk_id_1->GetString());
 }
@@ -247,17 +240,16 @@ IN_PROC_BROWSER_TEST_F(DesksExtensionApiLacrosTest, GetDeskByIDTest) {
   }
 
   // Get desk Id of active desk.
-  auto desk_id =
-      extension_function_test_utils::RunFunctionAndReturnSingleResult(
-          base::MakeRefCounted<WmDesksPrivateGetActiveDeskFunction>().get(),
-          "[]", browser());
+  auto desk_id = api_test_utils::RunFunctionAndReturnSingleResult(
+      base::MakeRefCounted<WmDesksPrivateGetActiveDeskFunction>().get(), "[]",
+      profile());
 
   // Retrieve desk by Id.
   auto get_desk_by_id_function =
       base::MakeRefCounted<WmDesksPrivateGetDeskByIDFunction>();
-  auto result = extension_function_test_utils::RunFunctionAndReturnSingleResult(
+  auto result = api_test_utils::RunFunctionAndReturnSingleResult(
       get_desk_by_id_function.get(), R"([")" + desk_id->GetString() + R"("])",
-      browser());
+      profile());
   EXPECT_TRUE(result->is_dict());
   auto* desk_id_1 = result->GetDict().Find("deskUuid");
   auto* desk_name = result->GetDict().Find("deskName");
@@ -279,8 +271,8 @@ IN_PROC_BROWSER_TEST_F(DesksExtensionApiLacrosTest, GetDeskByInvalidIDTest) {
 
   auto get_desk_by_id_function =
       base::MakeRefCounted<WmDesksPrivateGetDeskByIDFunction>();
-  auto error = extension_function_test_utils::RunFunctionAndReturnError(
-      get_desk_by_id_function.get(), R"(["invalid-id"])", browser());
+  auto error = api_test_utils::RunFunctionAndReturnError(
+      get_desk_by_id_function.get(), R"(["invalid-id"])", profile());
   EXPECT_EQ(error, "InvalidIdError");
 }
 
