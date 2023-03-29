@@ -56,12 +56,12 @@ device::BluetoothTransport GetBluetoothTransport(bt::Transport transport) {
 }
 
 bool IsActualConnectionFailure(bt_private::ConnectResultType result) {
-  DCHECK(result != bt_private::CONNECT_RESULT_TYPE_SUCCESS);
+  DCHECK(result != bt_private::ConnectResultType::kSuccess);
 
   switch (result) {
-    case bt_private::CONNECT_RESULT_TYPE_INPROGRESS:
-    case bt_private::CONNECT_RESULT_TYPE_AUTHCANCELED:
-    case bt_private::CONNECT_RESULT_TYPE_AUTHREJECTED:
+    case bt_private::ConnectResultType::kInProgress:
+    case bt_private::ConnectResultType::kAuthCanceled:
+    case bt_private::ConnectResultType::kAuthRejected:
       // The connection is not a failure if it's still in progress, the user
       // canceled auth, or the user entered incorrect auth details.
       return false;
@@ -75,17 +75,17 @@ absl::optional<device::ConnectionFailureReason> GetConnectionFailureReason(
   DCHECK(IsActualConnectionFailure(result));
 
   switch (result) {
-    case bt_private::CONNECT_RESULT_TYPE_NONE:
+    case bt_private::ConnectResultType::kNone:
       return device::ConnectionFailureReason::kSystemError;
-    case bt_private::CONNECT_RESULT_TYPE_AUTHFAILED:
+    case bt_private::ConnectResultType::kAuthFailed:
       return device::ConnectionFailureReason::kAuthFailed;
-    case bt_private::CONNECT_RESULT_TYPE_AUTHTIMEOUT:
+    case bt_private::ConnectResultType::kAuthTimeout:
       return device::ConnectionFailureReason::kAuthTimeout;
-    case bt_private::CONNECT_RESULT_TYPE_FAILED:
+    case bt_private::ConnectResultType::kFailed:
       return device::ConnectionFailureReason::kFailed;
-    case bt_private::CONNECT_RESULT_TYPE_UNKNOWNERROR:
+    case bt_private::ConnectResultType::kUnknownError:
       return device::ConnectionFailureReason::kUnknownConnectionError;
-    case bt_private::CONNECT_RESULT_TYPE_UNSUPPORTEDDEVICE:
+    case bt_private::ConnectResultType::kUnsupportedDevice:
       return device::ConnectionFailureReason::kUnsupportedDevice;
     default:
       return device::ConnectionFailureReason::kUnknownError;
@@ -102,38 +102,38 @@ bt_private::ConnectResultType DeviceConnectErrorToConnectResult(
     device::BluetoothDevice::ConnectErrorCode error_code) {
   switch (error_code) {
     case device::BluetoothDevice::ERROR_AUTH_CANCELED:
-      return bt_private::CONNECT_RESULT_TYPE_AUTHCANCELED;
+      return bt_private::ConnectResultType::kAuthCanceled;
     case device::BluetoothDevice::ERROR_AUTH_FAILED:
-      return bt_private::CONNECT_RESULT_TYPE_AUTHFAILED;
+      return bt_private::ConnectResultType::kAuthFailed;
     case device::BluetoothDevice::ERROR_AUTH_REJECTED:
-      return bt_private::CONNECT_RESULT_TYPE_AUTHREJECTED;
+      return bt_private::ConnectResultType::kAuthRejected;
     case device::BluetoothDevice::ERROR_AUTH_TIMEOUT:
-      return bt_private::CONNECT_RESULT_TYPE_AUTHTIMEOUT;
+      return bt_private::ConnectResultType::kAuthTimeout;
     case device::BluetoothDevice::ERROR_FAILED:
-      return bt_private::CONNECT_RESULT_TYPE_FAILED;
+      return bt_private::ConnectResultType::kFailed;
     case device::BluetoothDevice::ERROR_INPROGRESS:
-      return bt_private::CONNECT_RESULT_TYPE_INPROGRESS;
+      return bt_private::ConnectResultType::kInProgress;
     case device::BluetoothDevice::ERROR_UNKNOWN:
-      return bt_private::CONNECT_RESULT_TYPE_UNKNOWNERROR;
+      return bt_private::ConnectResultType::kUnknownError;
     case device::BluetoothDevice::ERROR_UNSUPPORTED_DEVICE:
-      return bt_private::CONNECT_RESULT_TYPE_UNSUPPORTEDDEVICE;
+      return bt_private::ConnectResultType::kUnsupportedDevice;
     case device::BluetoothDevice::ERROR_DEVICE_NOT_READY:
-      return bt_private::CONNECT_RESULT_TYPE_NOTREADY;
+      return bt_private::ConnectResultType::kNotReady;
     case device::BluetoothDevice::ERROR_ALREADY_CONNECTED:
-      return bt_private::CONNECT_RESULT_TYPE_ALREADYCONNECTED;
+      return bt_private::ConnectResultType::kAlreadyConnected;
     case device::BluetoothDevice::ERROR_DEVICE_ALREADY_EXISTS:
-      return bt_private::CONNECT_RESULT_TYPE_ALREADYEXISTS;
+      return bt_private::ConnectResultType::kAlreadyExists;
     case device::BluetoothDevice::ERROR_DEVICE_UNCONNECTED:
-      return bt_private::CONNECT_RESULT_TYPE_NOTCONNECTED;
+      return bt_private::ConnectResultType::kNotConnected;
     case device::BluetoothDevice::ERROR_DOES_NOT_EXIST:
-      return bt_private::CONNECT_RESULT_TYPE_DOESNOTEXIST;
+      return bt_private::ConnectResultType::kDoesNotExist;
     case device::BluetoothDevice::ERROR_INVALID_ARGS:
-      return bt_private::CONNECT_RESULT_TYPE_INVALIDARGS;
+      return bt_private::ConnectResultType::kInvalidArgs;
     case device::BluetoothDevice::NUM_CONNECT_ERROR_CODES:
       NOTREACHED();
       break;
   }
-  return bt_private::CONNECT_RESULT_TYPE_NONE;
+  return bt_private::ConnectResultType::kNone;
 }
 
 }  // namespace
@@ -202,7 +202,7 @@ const char kPairingFailed[] = "Pairing failed";
 bool ValidatePairingResponseOptions(
     const device::BluetoothDevice* device,
     const bt_private::SetPairingResponseOptions& options) {
-  bool response = options.response != bt_private::PAIRING_RESPONSE_NONE;
+  bool response = options.response != bt_private::PairingResponse::kNone;
   bool pincode = options.pincode.has_value();
   bool passkey = options.passkey.has_value();
 
@@ -210,12 +210,14 @@ bool ValidatePairingResponseOptions(
     return false;
   if (pincode && passkey)
     return false;
-  if (options.response != bt_private::PAIRING_RESPONSE_CONFIRM &&
-      (pincode || passkey))
+  if (options.response != bt_private::PairingResponse::kConfirm &&
+      (pincode || passkey)) {
     return false;
+  }
 
-  if (options.response == bt_private::PAIRING_RESPONSE_CANCEL)
+  if (options.response == bt_private::PairingResponse::kCancel) {
     return true;
+  }
 
   // Check the BluetoothDevice is in expecting the correct response.
   if (!device->ExpectingConfirmation() && !device->ExpectingPinCode() &&
@@ -225,9 +227,10 @@ bool ValidatePairingResponseOptions(
     return false;
   if (passkey && !device->ExpectingPasskey())
     return false;
-  if (options.response == bt_private::PAIRING_RESPONSE_CONFIRM && !pincode &&
-      !passkey && !device->ExpectingConfirmation())
+  if (options.response == bt_private::PairingResponse::kConfirm && !pincode &&
+      !passkey && !device->ExpectingConfirmation()) {
     return false;
+  }
 
   return true;
 }
@@ -387,13 +390,13 @@ void BluetoothPrivateSetPairingResponseFunction::DoWork(
     device->SetPasskey(*options.passkey);
   } else {
     switch (options.response) {
-      case bt_private::PAIRING_RESPONSE_CONFIRM:
+      case bt_private::PairingResponse::kConfirm:
         device->ConfirmPairing();
         break;
-      case bt_private::PAIRING_RESPONSE_REJECT:
+      case bt_private::PairingResponse::kReject:
         device->RejectPairing();
         break;
-      case bt_private::PAIRING_RESPONSE_CANCEL:
+      case bt_private::PairingResponse::kCancel:
         device->CancelPairing();
         break;
       default:
@@ -513,14 +516,14 @@ void BluetoothPrivateSetDiscoveryFilterFunction::DoWork(
   // If all filter fields are empty, we are clearing filter. If any field is
   // set, then create proper filter.
   if (df_param.uuids || df_param.rssi || df_param.pathloss ||
-      df_param.transport != bt_private::TransportType::TRANSPORT_TYPE_NONE) {
+      df_param.transport != bt_private::TransportType::kNone) {
     device::BluetoothTransport transport;
 
     switch (df_param.transport) {
-      case bt_private::TransportType::TRANSPORT_TYPE_LE:
+      case bt_private::TransportType::kLe:
         transport = device::BLUETOOTH_TRANSPORT_LE;
         break;
-      case bt_private::TransportType::TRANSPORT_TYPE_BREDR:
+      case bt_private::TransportType::kBredr:
         transport = device::BLUETOOTH_TRANSPORT_CLASSIC;
         break;
       default:  // TRANSPORT_TYPE_NONE is included here
@@ -594,7 +597,7 @@ void BluetoothPrivateConnectFunction::DoWork(
 
   if (device->IsConnected()) {
     Respond(ArgumentList(bt_private::Connect::Results::Create(
-        bt_private::CONNECT_RESULT_TYPE_ALREADYCONNECTED)));
+        bt_private::ConnectResultType::kAlreadyConnected)));
     return;
   }
 
@@ -617,7 +620,7 @@ void BluetoothPrivateConnectFunction::OnConnect(
     return;
   }
   Respond(ArgumentList(bt_private::Connect::Results::Create(
-      bt_private::CONNECT_RESULT_TYPE_SUCCESS)));
+      bt_private::ConnectResultType::kSuccess)));
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -680,7 +683,7 @@ void BluetoothPrivateRecordPairingFunction::DoWork(
     scoped_refptr<device::BluetoothAdapter> adapter) {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   bt_private::ConnectResultType result = params_->result;
-  bool success = (result == bt_private::CONNECT_RESULT_TYPE_SUCCESS);
+  bool success = (result == bt_private::ConnectResultType::kSuccess);
 
   // Only emit metrics if this is a success or a true connection failure.
   if (success || IsActualConnectionFailure(result)) {
@@ -711,7 +714,7 @@ void BluetoothPrivateRecordReconnectionFunction::DoWork(
     scoped_refptr<device::BluetoothAdapter> adapter) {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   bt_private::ConnectResultType result = params_->result;
-  bool success = (result == bt_private::CONNECT_RESULT_TYPE_SUCCESS);
+  bool success = (result == bt_private::ConnectResultType::kSuccess);
 
   // Only emit metrics if this is a success or a true connection failure.
   if (success || IsActualConnectionFailure(result)) {

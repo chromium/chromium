@@ -118,19 +118,19 @@ class BluetoothPrivateApiTest : public ExtensionApiTest {
   }
 
   void DispatchAuthorizePairingEvent() {
-    DispatchPairingEvent(bt_private::PAIRING_EVENT_TYPE_REQUESTAUTHORIZATION);
+    DispatchPairingEvent(bt_private::PairingEventType::kRequestAuthorization);
   }
 
   void DispatchPincodePairingEvent() {
-    DispatchPairingEvent(bt_private::PAIRING_EVENT_TYPE_REQUESTPINCODE);
+    DispatchPairingEvent(bt_private::PairingEventType::kRequestPincode);
   }
 
   void DispatchPasskeyPairingEvent() {
-    DispatchPairingEvent(bt_private::PAIRING_EVENT_TYPE_REQUESTPASSKEY);
+    DispatchPairingEvent(bt_private::PairingEventType::kRequestPasskey);
   }
 
   void DispatchConfirmPasskeyPairingEvent() {
-    DispatchPairingEvent(bt_private::PAIRING_EVENT_TYPE_CONFIRMPASSKEY);
+    DispatchPairingEvent(bt_private::PairingEventType::kConfirmPasskey);
   }
 
   void StartScanOverride(
