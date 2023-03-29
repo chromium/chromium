@@ -352,11 +352,14 @@ IN_PROC_BROWSER_TEST_F(SecurePaymentConfirmationAuthenticatorGetTest,
   ASSERT_TRUE(value.has_value());
   ASSERT_TRUE(value->is_dict());
 
-  std::string* payee_name = value->FindStringPath("payment.payeeName");
+  const base::Value::Dict& dict = value->GetDict();
+  const std::string* payee_name =
+      dict.FindStringByDottedPath("payment.payeeName");
   ASSERT_NE(nullptr, payee_name) << response;
   EXPECT_EQ("Example Payee", *payee_name);
 
-  std::string* payee_origin = value->FindStringPath("payment.payeeOrigin");
+  const std::string* payee_origin =
+      dict.FindStringByDottedPath("payment.payeeOrigin");
   ASSERT_EQ(nullptr, payee_origin) << response;
 
   ExpectEnrollSystemPromptResult(
@@ -403,11 +406,14 @@ IN_PROC_BROWSER_TEST_F(
   ASSERT_TRUE(value.has_value());
   ASSERT_TRUE(value->is_dict());
 
-  std::string* payee_name = value->FindStringPath("payment.payeeName");
+  const base::Value::Dict& dict = value->GetDict();
+  const std::string* payee_name =
+      dict.FindStringByDottedPath("payment.payeeName");
   ASSERT_NE(nullptr, payee_name) << response;
   EXPECT_EQ("Example Payee", *payee_name);
 
-  std::string* payee_origin = value->FindStringPath("payment.payeeOrigin");
+  const std::string* payee_origin =
+      dict.FindStringByDottedPath("payment.payeeOrigin");
   ASSERT_NE(nullptr, payee_origin) << response;
   EXPECT_EQ(GURL("https://example-payee-origin.test"), GURL(*payee_origin));
 
