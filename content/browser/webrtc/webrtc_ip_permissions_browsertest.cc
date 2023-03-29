@@ -65,7 +65,8 @@ class MAYBE_WebRtcIPPermissionGrantedTest
 // device permission is granted, we should have loopback candidates.
 IN_PROC_BROWSER_TEST_F(MAYBE_WebRtcIPPermissionGrantedTest,
                        GatherLocalCandidates) {
-  MakeTypicalCall("callWithDevicePermissionGranted();", kPeerConnectionHtml);
+  MakeTypicalCall("callWithDevicePermissionGranted();", kPeerConnectionHtml,
+                  /*use_manual_reply=*/false);
 }
 
 // This class tests the scenario when permission to access mic or camera is
@@ -86,7 +87,8 @@ class MAYBE_WebRtcIPPermissionDeniedTest : public WebRtcContentBrowserTestBase {
 // gathered even if the policy is "default".
 IN_PROC_BROWSER_TEST_F(MAYBE_WebRtcIPPermissionDeniedTest,
                        GatherLocalCandidates) {
-  MakeTypicalCall("callAndExpectNonLoopbackCandidates();", kPeerConnectionHtml);
+  MakeTypicalCall("callAndExpectNonLoopbackCandidates();", kPeerConnectionHtml,
+                  /*use_manual_reply=*/false);
 }
 
 // This class tests the scenario when ip handling policy is set to "public and
@@ -108,7 +110,8 @@ class MAYBE_WebRtcIPPolicyPublicAndPrivateInterfacesTest
 
 IN_PROC_BROWSER_TEST_F(MAYBE_WebRtcIPPolicyPublicAndPrivateInterfacesTest,
                        GatherLocalCandidates) {
-  MakeTypicalCall("callAndExpectNonLoopbackCandidates();", kPeerConnectionHtml);
+  MakeTypicalCall("callAndExpectNonLoopbackCandidates();", kPeerConnectionHtml,
+                  /*use_manual_reply=*/false);
 }
 
 // This class tests the scenario when ip handling policy is set to "public
@@ -131,7 +134,8 @@ class MAYBE_WebRtcIPPolicyPublicInterfaceOnlyTest
 
 IN_PROC_BROWSER_TEST_F(MAYBE_WebRtcIPPolicyPublicInterfaceOnlyTest,
                        GatherLocalCandidates) {
-  MakeTypicalCall("callWithNoCandidateExpected();", kPeerConnectionHtml);
+  MakeTypicalCall("callWithNoCandidateExpected();", kPeerConnectionHtml,
+                  /*use_manual_reply=*/false);
 }
 
 // This class tests the scenario when ip handling policy is set to "disable
@@ -153,7 +157,8 @@ class MAYBE_WebRtcIPPolicyDisableUdpTest : public WebRtcContentBrowserTestBase {
 
 IN_PROC_BROWSER_TEST_F(MAYBE_WebRtcIPPolicyDisableUdpTest,
                        GatherLocalCandidates) {
-  MakeTypicalCall("callWithNoCandidateExpected();", kPeerConnectionHtml);
+  MakeTypicalCall("callWithNoCandidateExpected();", kPeerConnectionHtml,
+                  /*use_manual_reply=*/false);
 }
 
 }  // namespace content

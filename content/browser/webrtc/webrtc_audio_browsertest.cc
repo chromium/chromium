@@ -56,7 +56,8 @@ class WebRtcAudioBrowserTest : public WebRtcContentBrowserTestBase {
         << "Must run with fake devices since the test will explicitly look "
         << "for the fake device signal.";
 
-    MakeTypicalCall(javascript, "/media/peerconnection-call-audio.html");
+    MakeTypicalCall(javascript, "/media/peerconnection-call-audio.html",
+                    /*use_manual_reply=*/false);
   }
 
   std::string BuildConstraints(const char* audio, const char* video) {

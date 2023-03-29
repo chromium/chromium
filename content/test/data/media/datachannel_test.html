@@ -5,7 +5,7 @@
 
 // Tests that an RTCDataChannel with event handlers is not garbage-collected
 // prematurely.
-function testDataChannelGC() {
+async function testDataChannelGC() {
   var pc1 = new RTCPeerConnection();
   var pc2 = new RTCPeerConnection();
 
@@ -22,23 +22,25 @@ function testDataChannelGC() {
 
   var messagesReceived = 0;
   var dc1 = pc1.createDataChannel(null);
-  dc1.addEventListener("open", function(e) {
-    console.log("dc1/open event");
-    var messagesToSend = 6;
-    var messagesSent = 0;
-    var id = setInterval(function() {
-      if (messagesReceived < messagesToSend) {
-        messagesSent++;
-        dc1.send("message #" + messagesSent);
-      } else if (messagesReceived == messagesToSend) {
-        clearInterval(id);
-        reportTestSuccess();
-        return;
-      }
-      if (messagesSent == 3) {
-        gc();  // Force garbage collection (requires: --js-flags="--expose-gc").
-      }
-    }, 10);
+  const resultPromise = new Promise(resolve => {
+    dc1.addEventListener("open", function(e) {
+      console.log("dc1/open event");
+      var messagesToSend = 6;
+      var messagesSent = 0;
+      var id = setInterval(function() {
+        if (messagesReceived < messagesToSend) {
+          messagesSent++;
+          dc1.send("message #" + messagesSent);
+        } else if (messagesReceived == messagesToSend) {
+          clearInterval(id);
+          resolve();
+          return;
+        }
+        if (messagesSent == 3) {
+          gc();  // Force garbage collection (requires: --js-flags="--expose-gc").
+        }
+      }, 10);
+    });
   });
 
   pc2.addEventListener("datachannel", function(e) {
@@ -51,15 +53,21 @@ function testDataChannelGC() {
   });
 
   console.log("creating offer");
-  pc1.createOffer(function(sdp1) {
-    pc1.setLocalDescription(sdp1);
-    pc2.setRemoteDescription(sdp1, function() {
-      console.log("creating answer");
-      pc2.createAnswer(function(sdp2) {
-        pc1.setRemoteDescription(sdp2);
-        pc2.setLocalDescription(sdp2);
-      }, error => failTest(error.toString()));
-    }, error => failTest(error.toString()));
-  }, error => failTest(error.toString()));
+  const sdp1 = await new Promise((resolve, reject) => {
+    pc1.createOffer(resolve, reject);
+  });
+  pc1.setLocalDescription(sdp1);
+  await new Promise((resolve, reject) => {
+    pc2.setRemoteDescription(sdp1, resolve, reject);
+  });
+  console.log("creating answer");
+  const sdp2 = await new Promise((resolve, reject) => {
+    pc2.createAnswer(resolve, reject);
+  });
+  pc1.setRemoteDescription(sdp2);
+  pc2.setLocalDescription(sdp2);
+
+  await resultPromise;
+  return logSuccess();
 }
 </script>

@@ -288,6 +288,12 @@ function assertTrue(booleanExpression, description) {
   }
 }
 
+function assertTrueSync(booleanExpression, description) {
+  if (!booleanExpression) {
+    throw new Error(description);
+  }
+}
+
 function assertFalse(booleanExpression, description) {
   if (!!booleanExpression) {
     failTest(description);

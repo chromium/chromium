@@ -8,12 +8,6 @@
     return document.getElementById(id);
   };
 
-  window.onerror = function(errorMsg, url, lineNumber, column, errorObj) {
-    failTest('Error: ' + errorMsg + '\nScript: ' + url +
-             '\nLine: ' + lineNumber + '\nColumn: ' + column +
-             '\nStackTrace: ' + errorObj);
-  }
-
   var gFirstConnection = null;
   var gSecondConnection = null;
   var gLocalStream = null;
@@ -71,14 +65,14 @@
       navigator.mediaDevices.getUserMedia(constraints)
         .then(addStreamToBothConnectionsAndNegotiate),
       detectVideoPlaying('remote-view-1').then(() => {
-        assertEquals(gLocalStream.getVideoTracks().length, 1);
+        assertEqualsSync(gLocalStream.getVideoTracks().length, 1);
         gLocalStream.getVideoTracks()[0].enabled = false;
 
         return detectBlackVideo('remote-view-1');
       }),
     ])
     .then(logSuccess)
-    .catch(failTest);
+    .catch(toStackTrace);
   }
 
   // Test that we can setup call with an audio and video track and check that
@@ -499,54 +493,60 @@
            candidate.candidate.indexOf(" ::1 ") > -1;
   }
 
-  // Helper function to invoke |callback| when gathering is completed.
-  function gatherIceCandidates(pc, callback) {
+  function gatherIceCandidates(pc) {
     var candidates = [];
     pc.createDataChannel("");
-    pc.onicecandidate = function(event) {
-      // null candidate indicates the gathering has completed.
-      if (event.candidate == null) {
-        callback(candidates);
-      } else {
-        candidates.push(event.candidate);
+    return new Promise((resolve, reject) => {
+      pc.onicecandidate = function(event) {
+        // null candidate indicates the gathering has completed.
+        if (event.candidate == null) {
+          resolve(candidates);
+        } else {
+          candidates.push(event.candidate);
+        }
       }
-    }
-    pc.createOffer(
-      function(offer) {
-        pc.setLocalDescription(offer);
-      },
-      function(error) { failTest(error); }
-    );
+      pc.createOffer(
+        function(offer) {
+          pc.setLocalDescription(offer);
+        },
+        function(error) { reject(error); }
+      );
+    });
   }
 
   function callWithDevicePermissionGranted() {
     var pc = new RTCPeerConnection();
-    gatherIceCandidates(pc, function(candidates) {
+    return gatherIceCandidates(pc)
+    .then(function(candidates) {
       var hasLoopbackCandidate = false;
       assertEquals(candidates.length > 0, true);
       for (i = 0; i < candidates.length; i++) {
         hasLoopbackCandidate |= iceCandidateIsLoopback(candidates[i]);
       }
       if (hasLoopbackCandidate) {
-        reportTestSuccess();
+        return logSuccess();
       } else {
-        failTest('expect to see non-default host interface');
+        return toStackTrace('expect to see non-default host interface');
       }
-    });
+    })
+    .catch(toStackTrace);
   }
 
   function callWithNoCandidateExpected() {
     var pc = new RTCPeerConnection();
-    gatherIceCandidates(pc, function(candidates) {
+    return gatherIceCandidates(pc)
+    .then(function(candidates) {
       assertEquals(candidates.length, 0);
-      reportTestSuccess();
-    });
+      return logSuccess();
+    })
+    .catch(toStackTrace);
   }
 
   function callAndExpectNonLoopbackCandidates() {
     // This one fails if the executing machine has no Internet.
     var pc = new RTCPeerConnection();
-    gatherIceCandidates(pc, function(candidates) {
+    return gatherIceCandidates(pc)
+    .then(function(candidates) {
       var hasCandidate = false;
       assertEquals(candidates.length > 0, true);
       for (i = 0; i < candidates.length; i++) {
@@ -554,8 +554,9 @@
         assertEquals(iceCandidateIsLoopback(candidates[i]), false);
       }
       assertTrue(hasCandidate, 'expect to see at least one candidate');
-      reportTestSuccess();
-    });
+      return logSuccess();
+    })
+    .catch(toStackTrace);
   }
 
   function removeMsid(offerSdp) {

@@ -8,12 +8,6 @@
     return document.getElementById(id);
   };
 
-  window.onerror = function(errorMsg, url, lineNumber, column, errorObj) {
-    failTest('Error: ' + errorMsg + '\nScript: ' + url +
-             '\nLine: ' + lineNumber + '\nColumn: ' + column +
-             '\nStackTrace: ' + errorObj);
-  }
-
   var gFirstConnection = null;
   var gSecondConnection = null;
   var gLocalStream = null;
@@ -24,40 +18,41 @@
   // we expect audio to be playing after the second renegotiation.
   function callAndRenegotiateToAudio(constraints, renegotiationConstraints) {
     createConnections(null);
-    navigator.mediaDevices.getUserMedia(constraints)
-        .then(addStreamToBothConnectionsAndNegotiate)
-        .catch(failTest);
+    return Promise.all([
+      navigator.mediaDevices.getUserMedia(constraints)
+          .then(addStreamToBothConnectionsAndNegotiate),
 
-    waitForConnectionToStabilize(gFirstConnection).then(() => {
-      gFirstConnection.removeStream(gLocalStream);
-      gSecondConnection.removeStream(gLocalStream);
-      return navigator.mediaDevices.getUserMedia(renegotiationConstraints)
-          .then(addStreamToTheFirstConnectionAndNegotiate);
-      }).then(() => {
-        return waitForConnectionToStabilize(gFirstConnection)
-      }).then(() => {
-        return ensureAudioPlaying(gSecondConnection);
-      })
-      .then(reportTestSuccess)
-      .catch(failTest);
+      waitForConnectionToStabilize(gFirstConnection).then(() => {
+        gFirstConnection.removeStream(gLocalStream);
+        gSecondConnection.removeStream(gLocalStream);
+        return navigator.mediaDevices.getUserMedia(renegotiationConstraints)
+            .then(addStreamToTheFirstConnectionAndNegotiate);
+        }).then(() => {
+          return waitForConnectionToStabilize(gFirstConnection)
+        }).then(() => {
+          return ensureAudioPlaying(gSecondConnection);
+        }),
+    ])
+    .then(logSuccess)
+    .catch(toStackTrace);
   }
 
   function setupCallAndPromiseAudioPlaying(constraints) {
     createConnections(null);
 
     // Add the local stream to gFirstConnection to play one-way audio.
-    navigator.mediaDevices.getUserMedia(constraints)
-        .then(addStreamToTheFirstConnectionAndNegotiate)
-        .catch(failTest);
-
-    return waitForConnectionToStabilize(gFirstConnection)
-        .then(() => { return ensureAudioPlaying(gSecondConnection); });
+    return Promise.all([
+      navigator.mediaDevices.getUserMedia(constraints)
+          .then(addStreamToTheFirstConnectionAndNegotiate),
+      waitForConnectionToStabilize(gFirstConnection)
+          .then(() => { return ensureAudioPlaying(gSecondConnection); }),
+    ]);
   }
 
   function callAndEnsureAudioIsPlaying(constraints) {
-    setupCallAndPromiseAudioPlaying(constraints)
-        .then(reportTestSuccess)
-        .catch(failTest);
+    return setupCallAndPromiseAudioPlaying(constraints)
+        .then(logSuccess)
+        .catch(toStackTrace);
   }
 
   function enableRemoteVideo(peerConnection, enabled) {
@@ -81,35 +76,37 @@
   }
 
   function callAndEnsureRemoteAudioTrackMutingWorks(constraints) {
-    setupCallAndPromiseAudioPlaying(constraints).then(() => {
+    return setupCallAndPromiseAudioPlaying(constraints).then(() => {
       // Call is up, now mute the remote track and check we stop playing out
       // audio (after a small delay, we don't expect it to happen instantly).
       enableRemoteAudio(gSecondConnection, false);
 
-      setTimeout( function() {
-       ensureSilence(gSecondConnection)
-          .then(reportTestSuccess)
-          .catch(failTest);
-      }, 250 );
-    }).catch(failTest);
+      return new Promise(resolve => {
+        setTimeout(resolve, 250);
+      })
+      .then(() => ensureSilence(gSecondConnection));
+    })
+    .then(logSuccess)
+    .catch(toStackTrace);
   }
 
   function callAndEnsureLocalAudioTrackMutingWorks(constraints) {
-    setupCallAndPromiseAudioPlaying(constraints).then(() => {
+    return setupCallAndPromiseAudioPlaying(constraints).then(() => {
       // Call is up, now mute the local track of the sending side and ensure
       // the receiving side stops receiving audio.
       enableLocalAudio(gFirstConnection, false);
 
-      setTimeout( function() {
-       ensureSilence(gSecondConnection)
-          .then(reportTestSuccess)
-          .catch(failTest);
-      }, 250 );
-    }).catch(failTest);
+      return new Promise(resolve => {
+        setTimeout(resolve, 250);
+      })
+      .then(() => ensureSilence(gSecondConnection));
+    })
+    .then(logSuccess)
+    .catch(toStackTrace);
   }
 
   function callAndEnsureAudioTrackUnmutingWorks(constraints) {
-    setupCallAndPromiseAudioPlaying(constraints).then(() => {
+    return setupCallAndPromiseAudioPlaying(constraints).then(() => {
       // Mute, wait a while, unmute, verify audio gets back up.
       // (Also, ensure video muting doesn't affect audio).
       enableRemoteAudio(gSecondConnection, false);
@@ -119,27 +116,30 @@
         enableRemoteAudio(gSecondConnection, true);
       }, 500);
 
-      setTimeout(function() {
-        ensureAudioPlaying(gSecondConnection)
-            .then(reportTestSuccess)
-            .catch(failTest);
-      }, 1500);
-    }).catch(failTest);
+      return new Promise(resolve => {
+        setTimeout(resolve, 1500);
+      })
+      .then(() => ensureAudioPlaying(gSecondConnection));
+    })
+    .then(logSuccess)
+    .catch(toStackTrace);
   }
 
   function callAndEnsureLocalVideoMutingDoesntMuteAudio(constraints) {
-    setupCallAndPromiseAudioPlaying(constraints).then(() => {
+    return setupCallAndPromiseAudioPlaying(constraints).then(() => {
       enableLocalVideo(gFirstConnection, false);
       return ensureAudioPlaying(gSecondConnection)
-          .then(reportTestSuccess);
+          .then(logSuccess)
+          .catch(toStackTrace);
     });
   }
 
   function callAndEnsureRemoteVideoMutingDoesntMuteAudio(constraints) {
-    setupCallAndPromiseAudioPlaying(constraints).then(() => {
+    return setupCallAndPromiseAudioPlaying(constraints).then(() => {
       enableRemoteVideo(gSecondConnection, false);
       return ensureAudioPlaying(gSecondConnection)
-          .then(reportTestSuccess);
+          .then(logSuccess)
+          .catch(toStackTrace);
     });
   }
 
@@ -153,12 +153,12 @@
     const peerConnection = gSecondConnection;
 
     const receivers = peerConnection.getReceivers();
-    assertEquals(receivers.length, 1);
+    assertEqualsSync(receivers.length, 1);
     const receiver = receivers[0];
-    assertEquals(receiver.track.kind, 'audio');
+    assertEqualsSync(receiver.track.kind, 'audio');
 
     const results = receiver.getSynchronizationSources();
-    assertEquals(results.length, 1);
+    assertEqualsSync(results.length, 1);
     const result = results[0];
 
     const endTime = performance.timeOrigin + performance.now();
@@ -166,39 +166,39 @@
     console.log('getSynchronizationSources() = ' + JSON.stringify(result));
 
     // timestamp
-    assertEquals(typeof result.timestamp, 'number');
-    assertTrue(result.timestamp >= startTime);
-    assertTrue(result.timestamp <= endTime);
+    assertEqualsSync(typeof result.timestamp, 'number');
+    assertTrueSync(result.timestamp >= startTime);
+    assertTrueSync(result.timestamp <= endTime);
 
     // source
-    assertEquals(typeof result.source, 'number');
-    assertTrue(result.source >= 0);
-    assertTrue(result.source <= 0xffffffff);
+    assertEqualsSync(typeof result.source, 'number');
+    assertTrueSync(result.source >= 0);
+    assertTrueSync(result.source <= 0xffffffff);
 
     // rtpTimestamp
-    assertEquals(typeof result.rtpTimestamp, 'number');
-    assertTrue(result.rtpTimestamp >= 0);
-    assertTrue(result.rtpTimestamp <= 0xffffffff);
+    assertEqualsSync(typeof result.rtpTimestamp, 'number');
+    assertTrueSync(result.rtpTimestamp >= 0);
+    assertTrueSync(result.rtpTimestamp <= 0xffffffff);
 
     // audioLevel
-    assertEquals(typeof result.audioLevel, 'number');
-    assertTrue(result.audioLevel >= 0);
-    assertTrue(result.audioLevel <= 1);
+    assertEqualsSync(typeof result.audioLevel, 'number');
+    assertTrueSync(result.audioLevel >= 0);
+    assertTrueSync(result.audioLevel <= 1);
 
     // voiceActivityFlag
     if (result.voiceActivityFlag != undefined) {
-      assertEquals(typeof result.voiceActivityFlag, 'boolean');
+      assertEqualsSync(typeof result.voiceActivityFlag, 'boolean');
     }
 
-    reportTestSuccess();
+    return logSuccess();
   }
 
   function createConnections(constraints) {
     gFirstConnection = createConnection(constraints, 'remote-view-1');
-    assertEquals('stable', gFirstConnection.signalingState);
+    assertEqualsSync('stable', gFirstConnection.signalingState);
 
     gSecondConnection = createConnection(constraints, 'remote-view-2');
-    assertEquals('stable', gSecondConnection.signalingState);
+    assertEqualsSync('stable', gSecondConnection.signalingState);
   }
 
   function createConnection(constraints, remoteView) {
