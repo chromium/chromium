@@ -14,24 +14,14 @@ bool StructTraits<network::mojom::CSPSourceDataView,
                   blink::OriginWithPossibleWildcards>::
     Read(network::mojom::CSPSourceDataView in,
          blink::OriginWithPossibleWildcards* out) {
-  // We do not support any wildcard types besides host
-  // based ones for now.
-  out->has_subdomain_wildcard = in.is_host_wildcard();
-  std::string scheme;
-  std::string host;
-  if (!in.ReadScheme(&scheme) || !in.ReadHost(&host)) {
+  out->csp_source.is_host_wildcard = in.is_host_wildcard();
+  out->csp_source.port = in.port();
+  if (!in.ReadScheme(&out->csp_source.scheme) ||
+      !in.ReadHost(&out->csp_source.host)) {
     return false;
   }
-  absl::optional<url::Origin> maybe_origin =
-      url::Origin::UnsafelyCreateTupleOriginWithoutNormalization(scheme, host,
-                                                                 in.port());
-  if (!maybe_origin) {
-    return false;
-  }
-  out->origin = *maybe_origin;
-
-  // Origins cannot be opaque.
-  return !out->origin.opaque();
+  return (out->csp_source.scheme.length() != 0) &&
+         (out->csp_source.host.length() != 0);
 }
 
 bool StructTraits<blink::mojom::ParsedPermissionsPolicyDeclarationDataView,

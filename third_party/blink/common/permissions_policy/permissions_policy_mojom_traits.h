@@ -24,26 +24,28 @@ class BLINK_COMMON_EXPORT StructTraits<network::mojom::CSPSourceDataView,
  public:
   static const std::string& scheme(const blink::OriginWithPossibleWildcards&
                                        origin_with_possible_wildcards) {
-    return origin_with_possible_wildcards.origin.scheme();
+    return origin_with_possible_wildcards.csp_source.scheme;
   }
   static const std::string& host(const blink::OriginWithPossibleWildcards&
                                      origin_with_possible_wildcards) {
-    return origin_with_possible_wildcards.origin.host();
+    return origin_with_possible_wildcards.csp_source.host;
   }
   static int port(const blink::OriginWithPossibleWildcards&
                       origin_with_possible_wildcards) {
-    return origin_with_possible_wildcards.origin.port();
+    return origin_with_possible_wildcards.csp_source.port;
   }
-  static const std::string path(const blink::OriginWithPossibleWildcards&
-                                    origin_with_possible_wildcards) {
-    return std::string();
+  static const base::StringPiece path(const blink::OriginWithPossibleWildcards&
+                                          origin_with_possible_wildcards) {
+    // We do not allow path based matches.
+    return "";
   }
   static bool is_host_wildcard(const blink::OriginWithPossibleWildcards&
                                    origin_with_possible_wildcards) {
-    return origin_with_possible_wildcards.has_subdomain_wildcard;
+    return origin_with_possible_wildcards.csp_source.is_host_wildcard;
   }
   static bool is_port_wildcard(const blink::OriginWithPossibleWildcards&
                                    origin_with_possible_wildcards) {
+    // We do not allow port wildcards.
     return false;
   }
 

@@ -199,12 +199,16 @@ class PermissionsPolicyParserParsingTest
       ASSERT_EQ(actual_declaration.allowed_origins.size(),
                 expected_declaration.allowed_origins.size());
       for (size_t j = 0; j < actual_declaration.allowed_origins.size(); ++j) {
-        EXPECT_TRUE(
-            actual_declaration.allowed_origins[j].origin.IsSameOriginWith(
-                url::Origin::Create(
-                    GURL(expected_declaration.allowed_origins[j].origin))));
+        const url::Origin origin = url::Origin::Create(
+            GURL(expected_declaration.allowed_origins[j].origin));
+        EXPECT_EQ(actual_declaration.allowed_origins[j].csp_source.scheme,
+                  origin.scheme());
+        EXPECT_EQ(actual_declaration.allowed_origins[j].csp_source.host,
+                  origin.host());
+        EXPECT_EQ(actual_declaration.allowed_origins[j].csp_source.port,
+                  origin.port());
         EXPECT_EQ(
-            actual_declaration.allowed_origins[j].has_subdomain_wildcard,
+            actual_declaration.allowed_origins[j].csp_source.is_host_wildcard,
             expected_declaration.allowed_origins[j].has_subdomain_wildcard);
       }
     }

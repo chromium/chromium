@@ -282,7 +282,7 @@ TEST(WebAppInstallUtils, UpdateWebAppInfoFromManifest) {
             blink::mojom::PermissionsPolicyFeature::kFullscreen);
   EXPECT_EQ(1u, declaration.allowed_origins.size());
   EXPECT_EQ("https://www.example.com",
-            declaration.allowed_origins[0].origin.Serialize());
+            declaration.allowed_origins[0].Serialize());
   EXPECT_FALSE(declaration.matches_all_origins);
   EXPECT_FALSE(declaration.matches_opaque_src);
 }

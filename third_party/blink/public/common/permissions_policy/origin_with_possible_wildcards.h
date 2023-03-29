@@ -5,6 +5,7 @@
 #ifndef THIRD_PARTY_BLINK_PUBLIC_COMMON_PERMISSIONS_POLICY_ORIGIN_WITH_POSSIBLE_WILDCARDS_H_
 #define THIRD_PARTY_BLINK_PUBLIC_COMMON_PERMISSIONS_POLICY_ORIGIN_WITH_POSSIBLE_WILDCARDS_H_
 
+#include "services/network/public/mojom/content_security_policy.mojom.h"
 #include "third_party/blink/public/common/common_export.h"
 #include "url/origin.h"
 
@@ -57,8 +58,7 @@ struct BLINK_COMMON_EXPORT OriginWithPossibleWildcards {
   // https://github.com/w3c/webappsec-permissions-policy/pull/482
   bool DoesMatchOrigin(const url::Origin& match_origin) const;
 
-  url::Origin origin;
-  bool has_subdomain_wildcard{false};
+  network::mojom::CSPSource csp_source;
 };
 
 bool BLINK_COMMON_EXPORT operator==(const OriginWithPossibleWildcards& lhs,
