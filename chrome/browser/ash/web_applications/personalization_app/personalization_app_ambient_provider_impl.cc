@@ -10,6 +10,7 @@
 
 #include "ash/ambient/ambient_controller.h"
 #include "ash/constants/ambient_theme.h"
+#include "ash/constants/ambient_video.h"
 #include "ash/constants/ash_features.h"
 #include "ash/public/cpp/ambient/ambient_backend_controller.h"
 #include "ash/public/cpp/ambient/ambient_client.h"
@@ -146,7 +147,12 @@ void PersonalizationAppAmbientProviderImpl::SetAnimationTheme(
   PrefService* pref_service = profile_->GetPrefs();
   DCHECK(pref_service);
   LogAmbientModeTheme(animation_theme);
-  AmbientUiSettings(animation_theme).WriteToPrefService(*pref_service);
+  // Attempt to retrieve the previously selected video. If not, fallback to the
+  // default video. Only applicable when |animation_theme| is
+  // |AmbientTheme::kVideo|.
+  AmbientUiSettings(animation_theme, GetCurrentUiSettings().video().value_or(
+                                         AmbientVideo::kNewMexico))
+      .WriteToPrefService(*pref_service);
 }
 
 void PersonalizationAppAmbientProviderImpl::SetTopicSource(

@@ -2506,6 +2506,9 @@
         <message name="IDS_PERSONALIZATION_APP_AMBIENT_MODE_ANIMATION_FLOAT_ON_BY_LABEL" desc="Label for the ambient mode float on by animation.">
           Float on by
         </message>
+        <message name="IDS_PERSONALIZATION_APP_AMBIENT_MODE_ANIMATION_VIDEO_LABEL" desc="Label for the ambient mode float on by animation.">
+          Aurora (Plus exclusive)
+        </message>
         <message name="IDS_PERSONALIZATION_APP_AMBIENT_MODE_ZERO_STATE_MESSAGE" desc="Message shown in the Ambient subpage in the personalization hub when ambient mode is disabled.">
           Turn on the toggle to select the screen saver options
         </message>

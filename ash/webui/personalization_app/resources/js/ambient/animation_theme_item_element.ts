@@ -69,6 +69,8 @@ export class AnimationThemeItem extends WithPersonalizationStore {
         return this.i18n('ambientModeAnimationFeelTheBreezeLabel');
       case AnimationTheme.kFloatOnBy:
         return this.i18n('ambientModeAnimationFloatOnByLabel');
+      case AnimationTheme.kVideo:
+        return this.i18n('ambientModeAnimationVideoLabel');
       default:
         assertNotReached(
             'Invalid AnimationTheme value: ${this.animationTheme}');
@@ -85,6 +87,8 @@ export class AnimationThemeItem extends WithPersonalizationStore {
         return 'chrome://personalization/images/feel_the_breeze.png';
       case AnimationTheme.kFloatOnBy:
         return 'chrome://personalization/images/float_on_by.png';
+      case AnimationTheme.kVideo:
+        return 'chrome://personalization/time_of_day/thumbnails/new_mexico.jpg';
       default:
         assertNotReached('invalid animation theme value.');
     }

@@ -791,4 +791,38 @@ suite('AmbientSubpageTest', function() {
         ambientPreview.shadowRoot!.querySelector('.preview-button-disabled');
     assertTrue(!!downloadingButton, 'downloading button should be present');
   });
+
+  test('shows video animation theme on supported devices', async () => {
+    // Enabled `isTimeOfDayScreensaverEnabled` to show the updated UI.
+    loadTimeData.overrideValues({'isTimeOfDayScreenSaverEnabled': true});
+
+    ambientSubpageElement = await displayMainSettings(
+        TopicSource.kArtGallery, TemperatureUnit.kFahrenheit,
+        /*ambientModeEnabled=*/ true);
+
+    const animationThemeList =
+        ambientSubpageElement.shadowRoot!.querySelector('animation-theme-list');
+    assertTrue(!!animationThemeList);
+
+    // The grid may not have templated all the items yet since it was just
+    // instantiated. See crbug/1334962.
+    const grid = animationThemeList.shadowRoot!.getElementById('grid');
+    assertTrue(!!grid, 'animation theme list has a grid');
+    await waitAfterNextRender(grid);
+
+    const animationThemeItems =
+        animationThemeList!.shadowRoot!.querySelectorAll<AnimationThemeItem>(
+            'animation-theme-item:not([hidden])');
+    assertEquals(4, animationThemeItems.length);
+    const videoTheme = animationThemeItems[3] as AnimationThemeItem;
+    assertEquals(AnimationTheme.kVideo, videoTheme.animationTheme);
+    assertEquals('false', videoTheme.ariaChecked);
+
+    personalizationStore.expectAction(AmbientActionName.SET_ANIMATION_THEME);
+    videoTheme.click();
+    const action =
+        await personalizationStore.waitForAction(
+            AmbientActionName.SET_ANIMATION_THEME) as SetAnimationThemeAction;
+    assertEquals(AnimationTheme.kVideo, action.animationTheme);
+  });
 });

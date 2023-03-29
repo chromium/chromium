@@ -429,6 +429,11 @@ TEST_F(PersonalizationAppAmbientProviderImplTest,
   EXPECT_EQ(ash::AmbientTheme::kFeelTheBreeze, ObservedAnimationTheme());
   histogram_tester().ExpectBucketCount(kAmbientModeAnimationThemeHistogramName,
                                        ash::AmbientTheme::kFeelTheBreeze, 1);
+
+  SetAnimationTheme(ash::AmbientTheme::kVideo);
+  EXPECT_EQ(ash::AmbientTheme::kVideo, ObservedAnimationTheme());
+  histogram_tester().ExpectBucketCount(kAmbientModeAnimationThemeHistogramName,
+                                       ash::AmbientTheme::kVideo, 1);
 }
 
 TEST_F(PersonalizationAppAmbientProviderImplTest, FetchPreviewImages) {

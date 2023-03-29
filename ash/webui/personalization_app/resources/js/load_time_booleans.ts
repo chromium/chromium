@@ -50,3 +50,7 @@ export function isMultiZoneRgbKeyboardSupported() {
 export function isUserAvatarCustomizationSelectorsEnabled() {
   return loadTimeData.getBoolean('isUserAvatarCustomizationSelectorsEnabled');
 }
+
+export function isTimeOfDayScreenSaverEnabled() {
+  return loadTimeData.getBoolean('isTimeOfDayScreenSaverEnabled');
+}
