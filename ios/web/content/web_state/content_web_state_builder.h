@@ -20,7 +20,7 @@ namespace web {
 // Populates `web_state` and its `controller` with `session_storage`'s
 // session information.
 void ExtractContentSessionStorage(ContentWebState* web_state,
-                                  content::NavigationController* controller,
+                                  content::NavigationController& controller,
                                   web::BrowserState* browser_state,
                                   CRWSessionStorage* session_storage);
 

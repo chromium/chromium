@@ -79,10 +79,7 @@ ContentWebState::ContentWebState(const CreateParams& params,
                                                   site_instance);
   web_contents_ = content::WebContents::Create(createParams);
   WebContentsObserver::Observe(web_contents_.get());
-  content::NavigationController* controller = nullptr;
-  if (web_contents_) {
-    controller = &web_contents_->GetController();
-  }
+  content::NavigationController& controller = web_contents_->GetController();
   certificate_policy_cache_ =
       std::make_unique<DummySessionCertificatePolicyCache>(
           params.browser_state);
@@ -139,7 +136,7 @@ bool ContentWebState::IsRealized() const {
 
 WebState* ContentWebState::ForceRealized() {
   if (session_storage_) {
-    ExtractContentSessionStorage(this, &web_contents_->GetController(),
+    ExtractContentSessionStorage(this, web_contents_->GetController(),
                                  GetBrowserState(), session_storage_);
     session_storage_ = nil;
     for (auto& observer : observers_) {

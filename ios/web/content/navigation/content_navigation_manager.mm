@@ -70,7 +70,7 @@ content::ReloadType ToContentReloadType(ReloadType reload_type) {
 ContentNavigationManager::ContentNavigationManager(
     ContentWebState* web_state,
     BrowserState* browser_state,
-    content::NavigationController* controller)
+    content::NavigationController& controller)
     : web_state_(web_state),
       browser_state_(browser_state),
       controller_(controller) {}
@@ -86,44 +86,24 @@ WebState* ContentNavigationManager::GetWebState() const {
 }
 
 NavigationItem* ContentNavigationManager::GetVisibleItem() const {
-  // TODO(crbug.com/1419001): controller_ should not be null.
-  if (!controller_) {
-    return nullptr;
-  }
-  return ContentNavigationItem::GetOrCreate(controller_->GetVisibleEntry());
+  return ContentNavigationItem::GetOrCreate(controller_.GetVisibleEntry());
 }
 
 NavigationItem* ContentNavigationManager::GetLastCommittedItem() const {
-  // TODO(crbug.com/1419001): controller_ should not be null.
-  if (!controller_) {
-    return nullptr;
-  }
   return ContentNavigationItem::GetOrCreate(
-      controller_->GetLastCommittedEntry());
+      controller_.GetLastCommittedEntry());
 }
 
 NavigationItem* ContentNavigationManager::GetPendingItem() const {
-  // TODO(crbug.com/1419001): controller_ should not be null.
-  if (!controller_) {
-    return nullptr;
-  }
-  return ContentNavigationItem::GetOrCreate(controller_->GetPendingEntry());
+  return ContentNavigationItem::GetOrCreate(controller_.GetPendingEntry());
 }
 
 void ContentNavigationManager::DiscardNonCommittedItems() {
-  // TODO(crbug.com/1419001): controller_ should not be null.
-  if (!controller_) {
-    return;
-  }
-  controller_->DiscardNonCommittedEntries();
+  controller_.DiscardNonCommittedEntries();
 }
 
 void ContentNavigationManager::LoadURLWithParams(
     const NavigationManager::WebLoadParams& web_params) {
-  // TODO(crbug.com/1419001): controller_ should not be null.
-  if (!controller_) {
-    return;
-  }
   content::NavigationController::LoadURLParams params(web_params.url);
   params.referrer =
       content::Referrer(web_params.referrer.url,
@@ -153,14 +133,11 @@ void ContentNavigationManager::LoadURLWithParams(
   }
 
   // We are not setting the virtual URL for data URL here.
-  controller_->LoadURLWithParams(params);
+  controller_.LoadURLWithParams(params);
 }
 
 void ContentNavigationManager::LoadIfNecessary() {
-  // TODO(crbug.com/1419001): controller_ should not be null.
-  if (controller_) {
-    controller_->LoadIfNecessary();
-  }
+  controller_.LoadIfNecessary();
 }
 
 void ContentNavigationManager::AddTransientURLRewriter(
@@ -170,20 +147,11 @@ void ContentNavigationManager::AddTransientURLRewriter(
 }
 
 int ContentNavigationManager::GetItemCount() const {
-  // TODO(crbug.com/1419001): controller_ should not be null.
-  if (!controller_) {
-    return 0;
-  }
-  return controller_->GetEntryCount();
+  return controller_.GetEntryCount();
 }
 
 NavigationItem* ContentNavigationManager::GetItemAtIndex(size_t index) const {
-  // TODO(crbug.com/1419001): controller_ should not be null.
-  if (!controller_) {
-    return nullptr;
-  }
-  return ContentNavigationItem::GetOrCreate(
-      controller_->GetEntryAtIndex(index));
+  return ContentNavigationItem::GetOrCreate(controller_.GetEntryAtIndex(index));
 }
 
 int ContentNavigationManager::GetIndexOfItem(const NavigationItem* item) const {
@@ -196,76 +164,40 @@ int ContentNavigationManager::GetIndexOfItem(const NavigationItem* item) const {
 }
 
 int ContentNavigationManager::GetPendingItemIndex() const {
-  // TODO(crbug.com/1419001): controller_ should not be null.
-  if (!controller_) {
-    return 0;
-  }
-  return controller_->GetPendingEntryIndex();
+  return controller_.GetPendingEntryIndex();
 }
 
 int ContentNavigationManager::GetLastCommittedItemIndex() const {
-  // TODO(crbug.com/1419001): controller_ should not be null.
-  if (!controller_) {
-    return 0;
-  }
-  return controller_->GetLastCommittedEntryIndex();
+  return controller_.GetLastCommittedEntryIndex();
 }
 
 bool ContentNavigationManager::CanGoBack() const {
-  // TODO(crbug.com/1419001): controller_ should not be null.
-  if (!controller_) {
-    return false;
-  }
-  return controller_->CanGoBack();
+  return controller_.CanGoBack();
 }
 
 bool ContentNavigationManager::CanGoForward() const {
-  // TODO(crbug.com/1419001): controller_ should not be null.
-  if (!controller_) {
-    return false;
-  }
-  return controller_->CanGoForward();
+  return controller_.CanGoForward();
 }
 
 bool ContentNavigationManager::CanGoToOffset(int offset) const {
-  // TODO(crbug.com/1419001): controller_ should not be null.
-  if (!controller_) {
-    return false;
-  }
-  return controller_->CanGoToOffset(offset);
+  return controller_.CanGoToOffset(offset);
 }
 
 void ContentNavigationManager::GoBack() {
-  // TODO(crbug.com/1419001): controller_ should not be null.
-  if (!controller_) {
-    return;
-  }
-  controller_->GoBack();
+  controller_.GoBack();
 }
 
 void ContentNavigationManager::GoForward() {
-  // TODO(crbug.com/1419001): controller_ should not be null.
-  if (!controller_) {
-    return;
-  }
-  controller_->GoForward();
+  controller_.GoForward();
 }
 
 void ContentNavigationManager::GoToIndex(int index) {
-  // TODO(crbug.com/1419001): controller_ should not be null.
-  if (!controller_) {
-    return;
-  }
-  controller_->GoToIndex(index);
+  controller_.GoToIndex(index);
 }
 
 void ContentNavigationManager::Reload(ReloadType reload_type,
                                       bool check_for_reposts) {
-  // TODO(crbug.com/1419001): controller_ should not be null.
-  if (!controller_) {
-    return;
-  }
-  controller_->Reload(ToContentReloadType(reload_type), check_for_reposts);
+  controller_.Reload(ToContentReloadType(reload_type), check_for_reposts);
 }
 
 void ContentNavigationManager::ReloadWithUserAgentType(
@@ -277,10 +209,6 @@ void ContentNavigationManager::ReloadWithUserAgentType(
 std::vector<NavigationItem*> ContentNavigationManager::GetBackwardItems()
     const {
   std::vector<NavigationItem*> items;
-  // TODO(crbug.com/1419001): controller_ should not be null.
-  if (!controller_) {
-    return items;
-  }
   int last_committed_index = GetLastCommittedItemIndex();
   for (int i = last_committed_index - 1; i >= 0; --i) {
     items.push_back(GetItemAtIndex(i));
@@ -290,10 +218,6 @@ std::vector<NavigationItem*> ContentNavigationManager::GetBackwardItems()
 
 std::vector<NavigationItem*> ContentNavigationManager::GetForwardItems() const {
   std::vector<NavigationItem*> items;
-  // TODO(crbug.com/1419001): controller_ should not be null.
-  if (!controller_) {
-    return items;
-  }
   int last_committed_index = GetLastCommittedItemIndex();
   int item_count = GetItemCount();
   for (int i = last_committed_index + 1; i < item_count; ++i) {

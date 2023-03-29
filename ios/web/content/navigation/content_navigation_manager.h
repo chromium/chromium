@@ -27,7 +27,7 @@ class ContentNavigationManager : public NavigationManager {
  public:
   ContentNavigationManager(ContentWebState* web_state,
                            BrowserState* browser_state,
-                           content::NavigationController* controller);
+                           content::NavigationController& controller);
   ~ContentNavigationManager() override;
   BrowserState* GetBrowserState() const override;
   WebState* GetWebState() const override;
@@ -62,7 +62,7 @@ class ContentNavigationManager : public NavigationManager {
  private:
   raw_ptr<ContentWebState> web_state_;
   raw_ptr<BrowserState> browser_state_;
-  raw_ptr<content::NavigationController> controller_;
+  content::NavigationController& controller_;
 };
 
 }  // namespace web

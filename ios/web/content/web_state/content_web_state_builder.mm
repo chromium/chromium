@@ -25,7 +25,7 @@
 namespace web {
 
 void ExtractContentSessionStorage(ContentWebState* web_state,
-                                  content::NavigationController* controller,
+                                  content::NavigationController& controller,
                                   web::BrowserState* browser_state,
                                   CRWSessionStorage* session_storage) {
   web_state->SetHasOpener(session_storage.hasOpener);
@@ -86,8 +86,8 @@ void ExtractContentSessionStorage(ContentWebState* web_state,
 
     items[index] = std::move(new_entry);
   }
-  controller->Restore(session_storage.lastCommittedItemIndex,
-                      content::RestoreType::kRestored, &items);
+  controller.Restore(session_storage.lastCommittedItemIndex,
+                     content::RestoreType::kRestored, &items);
 
   SerializableUserDataManager::FromWebState(web_state)->SetUserDataFromSession(
       session_storage.userData);
