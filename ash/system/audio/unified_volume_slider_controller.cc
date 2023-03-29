@@ -61,8 +61,9 @@ void UnifiedVolumeSliderController::SetMapDeviceSliderCallbackForTest(
   g_map_slider_device_callback = map_slider_device_callback;
 }
 
-views::View* UnifiedVolumeSliderController::CreateView() {
-  return new UnifiedVolumeView(this, delegate_, /*is_active_output_node=*/true);
+std::unique_ptr<UnifiedSliderView> UnifiedVolumeSliderController::CreateView() {
+  return std::make_unique<UnifiedVolumeView>(this, delegate_,
+                                             /*is_active_output_node=*/true);
 }
 
 QsSliderCatalogName UnifiedVolumeSliderController::GetCatalogName() {
@@ -74,8 +75,9 @@ void UnifiedVolumeSliderController::SliderValueChanged(
     float value,
     float old_value,
     views::SliderChangeReason reason) {
-  if (reason != views::SliderChangeReason::kByUser)
+  if (reason != views::SliderChangeReason::kByUser) {
     return;
+  }
 
   const int level = value * 100;
 

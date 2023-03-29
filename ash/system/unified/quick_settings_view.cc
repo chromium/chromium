@@ -192,8 +192,9 @@ void QuickSettingsView::AddTiles(
   feature_tiles_container_->AddTiles(std::move(tiles));
 }
 
-void QuickSettingsView::AddSliderView(views::View* slider_view) {
-  sliders_container_->AddChildView(slider_view);
+views::View* QuickSettingsView::AddSliderView(
+    std::unique_ptr<views::View> slider_view) {
+  return sliders_container_->AddChildView(std::move(slider_view));
 }
 
 void QuickSettingsView::AddMediaControlsView(views::View* media_controls) {

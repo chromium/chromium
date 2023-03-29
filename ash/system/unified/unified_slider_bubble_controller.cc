@@ -248,11 +248,9 @@ void UnifiedSliderBubbleController::ShowBubble(SliderType slider_type) {
 
       slider_type_ = slider_type;
       CreateSliderController();
-
-      UnifiedSliderView* slider_view =
-          static_cast<UnifiedSliderView*>(slider_controller_->CreateView());
+      UnifiedSliderView* slider_view = static_cast<UnifiedSliderView*>(
+          bubble_view_->AddChildView(slider_controller_->CreateView()));
       ConfigureSliderViewStyle(slider_view);
-      bubble_view_->AddChildView(slider_view);
       bubble_view_->Layout();
     }
 
@@ -286,10 +284,9 @@ void UnifiedSliderBubbleController::ShowBubble(SliderType slider_type) {
 
   bubble_view_ = new TrayBubbleView(init_params);
   bubble_view_->SetCanActivate(false);
-  UnifiedSliderView* slider_view =
-      static_cast<UnifiedSliderView*>(slider_controller_->CreateView());
+  UnifiedSliderView* slider_view = static_cast<UnifiedSliderView*>(
+      bubble_view_->AddChildView(slider_controller_->CreateView()));
   ConfigureSliderViewStyle(slider_view);
-  bubble_view_->AddChildView(slider_view);
 
   bubble_widget_ = views::BubbleDialogDelegateView::CreateBubble(bubble_view_);
 

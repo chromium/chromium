@@ -25,7 +25,7 @@ class KeyboardBacklightToggleController : public UnifiedSliderListener {
   ~KeyboardBacklightToggleController() override;
 
   // UnifiedSliderListener:
-  views::View* CreateView() override;
+  std::unique_ptr<UnifiedSliderView> CreateView() override;
   QsSliderCatalogName GetCatalogName() override;
   void SliderValueChanged(views::Slider* sender,
                           float value,

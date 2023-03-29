@@ -50,7 +50,7 @@ class ASH_EXPORT QuickSettingsView : public views::View,
   void AddTiles(std::vector<std::unique_ptr<FeatureTile>> tiles);
 
   // Adds slider view.
-  void AddSliderView(views::View* slider_view);
+  views::View* AddSliderView(std::unique_ptr<views::View> slider_view);
 
   // Adds media controls view to `media_controls_container_`. Only called if
   // media::kGlobalMediaControlsForChromeOS is enabled and

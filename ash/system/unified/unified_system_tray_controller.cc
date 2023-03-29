@@ -213,16 +213,16 @@ UnifiedSystemTrayController::CreateQuickSettingsView(int max_height) {
 
   volume_slider_controller_ =
       std::make_unique<UnifiedVolumeSliderController>(this);
-  unified_volume_view_ = volume_slider_controller_->CreateView();
-  qs_view->AddSliderView(unified_volume_view_);
+  unified_volume_view_ =
+      qs_view->AddSliderView(volume_slider_controller_->CreateView());
 
   brightness_slider_controller_ =
       std::make_unique<UnifiedBrightnessSliderController>(
           model_, views::Button::PressedCallback(base::BindRepeating(
                       &UnifiedSystemTrayController::ShowDisplayDetailedView,
                       base::Unretained(this))));
-  unified_brightness_view_ = brightness_slider_controller_->CreateView();
-  qs_view->AddSliderView(unified_brightness_view_);
+  unified_brightness_view_ =
+      qs_view->AddSliderView(brightness_slider_controller_->CreateView());
 
   qs_view->SetMaxHeight(max_height);
 

@@ -42,19 +42,19 @@ class MicGainSliderControllerTest : public AshTestBase,
     AshTestBase::SetUp();
     widget_ = CreateFramelessTestWidget();
     widget_->SetFullscreen(true);
-    slider_view_ = static_cast<MicGainSliderView*>(
-        mic_gain_slider_controller_.CreateView());
-    widget_->SetContentsView(slider_view_);
+    slider_view_ = mic_gain_slider_controller_.CreateView();
+    widget_->SetContentsView(slider_view_.get());
   }
 
   void TearDown() override {
+    slider_view_.reset();
     widget_.reset();
     AshTestBase::TearDown();
   }
 
   bool IsQsRevampEnabled() const { return GetParam(); }
 
-  views::View* GetMuteToastView() {
+  std::unique_ptr<views::View> GetMuteToastView() {
     return mic_gain_slider_controller_.CreateView();
   }
 
@@ -65,14 +65,16 @@ class MicGainSliderControllerTest : public AshTestBase,
         /*old_value=*/0, views::SliderChangeReason::kByUser);
   }
 
-  void PressSliderButton() { LeftClickOn(slider_view_->button()); }
+  void PressSliderButton() {
+    LeftClickOn(static_cast<MicGainSliderView*>(slider_view_.get())->button());
+  }
 
   base::HistogramTester histogram_tester_;
 
  private:
   base::test::ScopedFeatureList feature_list_;
   MicGainSliderController mic_gain_slider_controller_;
-  MicGainSliderView* slider_view_ = nullptr;
+  std::unique_ptr<views::View> slider_view_;
   std::unique_ptr<views::Widget> widget_;
 };
 
@@ -119,8 +121,7 @@ TEST_P(MicGainSliderControllerTest, RecordInputGainChangedSource) {
 }
 
 TEST_P(MicGainSliderControllerTest, CreateMuteToastView) {
-  MicGainSliderView* toast_view =
-      static_cast<MicGainSliderView*>(GetMuteToastView());
+  auto toast_view = GetMuteToastView();
   if (IsQsRevampEnabled()) {
     // Hide the slider icon and show the mic button in the mute toast view.
     EXPECT_FALSE(toast_view->children()[0]->GetVisible());
@@ -132,10 +133,6 @@ TEST_P(MicGainSliderControllerTest, CreateMuteToastView) {
         u"Toggle Mic. Mic is on, toggling will mute input.",
         static_cast<IconButton*>(toast_view->children()[0])->GetTooltipText());
   }
-
-  // TODO(b/274820054) don't need to manually destroy the pointer after
-  // switching to use unique pointer.
-  delete toast_view;
 }
 
 // Verify pressing the mute button is recorded to metrics.

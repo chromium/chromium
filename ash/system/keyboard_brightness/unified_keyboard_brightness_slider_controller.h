@@ -26,7 +26,7 @@ class UnifiedKeyboardBrightnessSliderController : public UnifiedSliderListener {
   ~UnifiedKeyboardBrightnessSliderController() override;
 
   // UnifiedSliderListener:
-  views::View* CreateView() override;
+  std::unique_ptr<UnifiedSliderView> CreateView() override;
   QsSliderCatalogName GetCatalogName() override;
   void SliderValueChanged(views::Slider* sender,
                           float value,

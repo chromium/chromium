@@ -14,6 +14,7 @@
 #include "base/time/time.h"
 #include "chromeos/ash/components/audio/cras_audio_handler.h"
 #include "ui/views/controls/slider.h"
+#include "ui/views/view.h"
 #include "ui/views/widget/widget.h"
 
 namespace ash {
@@ -45,12 +46,12 @@ class UnifiedVolumeSliderControllerTest : public AshTestBase {
         std::make_unique<UnifiedVolumeSliderController>(delegate_.get());
     widget_ = CreateFramelessTestWidget();
     widget_->SetFullscreen(true);
-    slider_view_ = static_cast<UnifiedVolumeView*>(
-        unified_volume_slider_controller_->CreateView());
-    widget_->SetContentsView(slider_view_);
+    slider_view_ = unified_volume_slider_controller_->CreateView();
+    widget_->SetContentsView(slider_view_.get());
   }
 
   void TearDown() override {
+    slider_view_.reset();
     widget_.reset();
     AshTestBase::TearDown();
   }
@@ -62,7 +63,9 @@ class UnifiedVolumeSliderControllerTest : public AshTestBase {
         /*old_value=*/0, views::SliderChangeReason::kByUser);
   }
 
-  void PressSliderButton() { LeftClickOn(slider_view_->button()); }
+  void PressSliderButton() {
+    LeftClickOn(static_cast<UnifiedVolumeView*>(slider_view_.get())->button());
+  }
 
   base::HistogramTester histogram_tester_;
 
@@ -70,7 +73,7 @@ class UnifiedVolumeSliderControllerTest : public AshTestBase {
   std::unique_ptr<UnifiedVolumeSliderController>
       unified_volume_slider_controller_;
   std::unique_ptr<FakeDelegate> delegate_;
-  UnifiedVolumeView* slider_view_ = nullptr;
+  std::unique_ptr<views::View> slider_view_;
   std::unique_ptr<views::Widget> widget_;
 };
 

@@ -23,15 +23,14 @@ class View;
 }  // namespace views
 
 namespace ash {
+class UnifiedSliderView;
 
 class UnifiedSliderListener : public views::SliderListener {
  public:
   ~UnifiedSliderListener() override = default;
 
-  // Instantiates `UnifiedSliderView`. The view will be owned by views
-  // hierarchy. The view should be always deleted after the controller is
-  // destructed.
-  virtual views::View* CreateView() = 0;
+  // Instantiates `UnifiedSliderView`.
+  virtual std::unique_ptr<UnifiedSliderView> CreateView() = 0;
 
   // Returns the slider catalog name which is used for UMA tracking. Please
   // remember to call the corresponding tracking method (`TrackToggleUMA` and

@@ -35,7 +35,7 @@ class ASH_EXPORT UnifiedBrightnessSliderController
   std::unique_ptr<UnifiedBrightnessView> CreateBrightnessSlider();
 
   // UnifiedSliderListener:
-  views::View* CreateView() override;
+  std::unique_ptr<UnifiedSliderView> CreateView() override;
   QsSliderCatalogName GetCatalogName() override;
   void SliderValueChanged(views::Slider* sender,
                           float value,

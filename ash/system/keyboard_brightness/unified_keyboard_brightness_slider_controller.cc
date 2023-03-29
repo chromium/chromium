@@ -131,10 +131,12 @@ UnifiedKeyboardBrightnessSliderController::
 UnifiedKeyboardBrightnessSliderController::
     ~UnifiedKeyboardBrightnessSliderController() = default;
 
-views::View* UnifiedKeyboardBrightnessSliderController::CreateView() {
+std::unique_ptr<UnifiedSliderView>
+UnifiedKeyboardBrightnessSliderController::CreateView() {
   DCHECK(!slider_);
-  slider_ = new UnifiedKeyboardBrightnessView(this, model_);
-  return slider_;
+  auto slider = std::make_unique<UnifiedKeyboardBrightnessView>(this, model_);
+  slider_ = slider.get();
+  return slider;
 }
 
 QsSliderCatalogName

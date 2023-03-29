@@ -38,10 +38,13 @@ UnifiedBrightnessSliderController::CreateBrightnessSlider() {
   return std::make_unique<UnifiedBrightnessView>(this, model_);
 }
 
-views::View* UnifiedBrightnessSliderController::CreateView() {
+std::unique_ptr<UnifiedSliderView>
+UnifiedBrightnessSliderController::CreateView() {
   DCHECK(!slider_);
-  slider_ = new UnifiedBrightnessView(this, model_, callback_);
-  return slider_;
+  auto slider =
+      std::make_unique<UnifiedBrightnessView>(this, model_, callback_);
+  slider_ = slider.get();
+  return slider;
 }
 
 QsSliderCatalogName UnifiedBrightnessSliderController::GetCatalogName() {
@@ -53,13 +56,15 @@ void UnifiedBrightnessSliderController::SliderValueChanged(
     float value,
     float old_value,
     views::SliderChangeReason reason) {
-  if (reason != views::SliderChangeReason::kByUser)
+  if (reason != views::SliderChangeReason::kByUser) {
     return;
+  }
 
   BrightnessControlDelegate* brightness_control_delegate =
       Shell::Get()->brightness_control_delegate();
-  if (!brightness_control_delegate)
+  if (!brightness_control_delegate) {
     return;
+  }
 
   double percent = value * 100.;
   // If previous percentage and current percentage are both below the minimum,

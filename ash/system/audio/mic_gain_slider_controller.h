@@ -31,7 +31,7 @@ class ASH_EXPORT MicGainSliderController : public UnifiedSliderListener {
       MapDeviceSliderCallback* test_slider_device_callback);
 
   // UnifiedSliderListener:
-  views::View* CreateView() override;
+  std::unique_ptr<UnifiedSliderView> CreateView() override;
   QsSliderCatalogName GetCatalogName() override;
   void SliderValueChanged(views::Slider* sender,
                           float value,

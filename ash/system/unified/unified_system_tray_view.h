@@ -80,7 +80,7 @@ class ASH_EXPORT UnifiedSystemTrayView : public views::View,
   void AddFeaturePodButton(FeaturePodButton* button);
 
   // Add slider view.
-  void AddSliderView(views::View* slider_view);
+  void AddSliderView(std::unique_ptr<views::View> slider_view);
 
   // Add media controls view to |media_controls_container_|;
   void AddMediaControlsView(views::View* media_controls);

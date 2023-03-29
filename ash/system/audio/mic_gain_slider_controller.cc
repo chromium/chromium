@@ -37,8 +37,9 @@ std::unique_ptr<MicGainSliderView> MicGainSliderController::CreateMicGainSlider(
     bool internal) {
   std::unique_ptr<MicGainSliderView> slider =
       std::make_unique<MicGainSliderView>(this, device_id, internal);
-  if (g_map_slider_device_callback)
+  if (g_map_slider_device_callback) {
     g_map_slider_device_callback->Run(device_id, slider.get());
+  }
   return slider;
 }
 
@@ -48,8 +49,8 @@ void MicGainSliderController::SetMapDeviceSliderCallbackForTest(
   g_map_slider_device_callback = map_slider_device_callback;
 }
 
-views::View* MicGainSliderController::CreateView() {
-  return new MicGainSliderView(this);
+std::unique_ptr<UnifiedSliderView> MicGainSliderController::CreateView() {
+  return std::make_unique<MicGainSliderView>(this);
 }
 
 QsSliderCatalogName MicGainSliderController::GetCatalogName() {
@@ -61,8 +62,9 @@ void MicGainSliderController::SliderValueChanged(
     float value,
     float old_value,
     views::SliderChangeReason reason) {
-  if (reason != views::SliderChangeReason::kByUser)
+  if (reason != views::SliderChangeReason::kByUser) {
     return;
+  }
 
   // Unmute if muted.
   if (CrasAudioHandler::Get()->IsInputMuted()) {
