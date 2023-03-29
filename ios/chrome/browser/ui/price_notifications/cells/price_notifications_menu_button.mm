@@ -14,7 +14,7 @@
 
 namespace {
 // The length of the button's tappable area.
-const CGFloat kTappableButtonLength = 46;
+const CGFloat kTappableButtonLength = 48;
 // The length of the menu button.
 const CGFloat kMenuButtonLength = 24;
 // The size of the menu button's symbol image.
