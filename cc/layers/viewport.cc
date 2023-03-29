@@ -59,13 +59,16 @@ Viewport::ScrollResult Viewport::ScrollBy(const gfx::Vector2dF& physical_delta,
       is_direct_manipulation);
 
   // Now attempt to scroll the outer viewport.
+  gfx::Vector2dF outer_delta;
   if (scroll_outer_viewport) {
-    pending_scroll_node_delta -= host_impl_->GetInputHandler().ScrollSingleNode(
+    outer_delta = host_impl_->GetInputHandler().ScrollSingleNode(
         *OuterScrollNode(), pending_scroll_node_delta, viewport_point,
         is_direct_manipulation);
+    pending_scroll_node_delta -= outer_delta;
   }
 
   ScrollResult result;
+  result.outer_viewport_scrolled_delta = outer_delta;
   result.consumed_delta =
       physical_delta - AdjustOverscroll(pending_scroll_node_delta);
   result.content_scrolled_delta = scroll_node_delta - pending_scroll_node_delta;
@@ -158,11 +161,11 @@ bool Viewport::ShouldAnimateViewport(const gfx::Vector2dF& viewport_delta,
   return max_dim_viewport_delta > max_dim_pending_delta;
 }
 
-gfx::Vector2dF Viewport::ScrollAnimated(const gfx::Vector2dF& delta,
-                                        base::TimeDelta delayed_by) {
+Viewport::ScrollResult Viewport::ScrollAnimated(const gfx::Vector2dF& delta,
+                                                base::TimeDelta delayed_by) {
   auto* outer_node = OuterScrollNode();
   if (!outer_node)
-    return gfx::Vector2dF(0, 0);
+    return Viewport::ScrollResult();
 
   float scale_factor = host_impl_->active_tree()->current_page_scale_factor();
   gfx::Vector2dF scaled_delta = delta;
@@ -179,7 +182,7 @@ gfx::Vector2dF Viewport::ScrollAnimated(const gfx::Vector2dF& delta,
       *outer_node, pending_delta);
 
   if (inner_delta.IsZero() && outer_delta.IsZero())
-    return gfx::Vector2dF(0, 0);
+    return Viewport::ScrollResult();
 
   // Animate the viewport to which the majority of scroll delta will be applied.
   // The animation system only supports running one scroll offset animation.
@@ -193,9 +196,12 @@ gfx::Vector2dF Viewport::ScrollAnimated(const gfx::Vector2dF& delta,
     host_impl_->ScrollAnimationCreate(*outer_node, outer_delta, delayed_by);
   }
 
+  ScrollResult result;
   pending_delta = scaled_delta - inner_delta - outer_delta;
   pending_delta.Scale(scale_factor);
-  return delta - pending_delta;
+  result.consumed_delta = delta - pending_delta;
+  result.outer_viewport_scrolled_delta = outer_delta;
+  return result;
 }
 
 void Viewport::SnapPinchAnchorIfWithinMargin(const gfx::Point& anchor) {

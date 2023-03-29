@@ -1273,14 +1273,28 @@ void WebFrameWidgetImpl::SendOverscrollEventFromImplSide(
 }
 
 void WebFrameWidgetImpl::SendScrollEndEventFromImplSide(
+    bool affects_outer_viewport,
     cc::ElementId scroll_latched_element_id) {
   if (!RuntimeEnabledFeatures::ScrollEndEventsEnabled())
     return;
 
   Node* target_node = View()->FindNodeFromScrollableCompositorElementId(
       scroll_latched_element_id);
-  if (target_node)
-    target_node->GetDocument().EnqueueScrollEndEventForNode(target_node);
+  if (target_node) {
+    // Scrolls consumed entirely by the VisualViewport and not the
+    // LayoutViewport should not trigger scrollends on the document. The
+    // VisualViewport currently handles scroll but not scrollends. If that
+    // changes, we should consider firing scrollend at the visualviewport
+    // instead of simply bailing.
+    Node* document_node = nullptr;
+    if (View()->MainFrameImpl() &&
+        View()->MainFrameImpl()->GetFrame()->GetDocument()) {
+      document_node = View()->MainFrameImpl()->GetFrame()->GetDocument();
+    }
+    if (affects_outer_viewport || target_node != document_node) {
+      target_node->GetDocument().EnqueueScrollEndEventForNode(target_node);
+    }
+  }
 }
 
 void WebFrameWidgetImpl::UpdateCompositorScrollState(
@@ -1302,8 +1316,11 @@ void WebFrameWidgetImpl::UpdateCompositorScrollState(
   // (e.g. during a long running main thread task), this will erroneously
   // dispatch the scroll end to the latter (still-scrolling) element.
   // https://crbug.com/1116780.
-  if (commit_data.scroll_gesture_did_end)
-    SendScrollEndEventFromImplSide(commit_data.scroll_latched_element_id);
+  if (commit_data.scroll_end_data.scroll_gesture_did_end) {
+    SendScrollEndEventFromImplSide(
+        commit_data.scroll_end_data.gesture_affects_outer_viewport_scroll,
+        commit_data.scroll_latched_element_id);
+  }
 }
 
 WebInputMethodController*

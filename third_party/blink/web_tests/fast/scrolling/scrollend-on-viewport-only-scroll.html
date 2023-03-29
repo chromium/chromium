@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+
+<body onload="runTest()">
+  <script src="../../resources/gesture-util.js"></script>
+  <script src="../../resources/testharness.js"></script>
+  <script src="../../resources/testharnessreport.js"></script>
+  <style>
+    body, html {
+    width: 100%;
+    height: 100%;
+    margin: 0;
+    background-color: red;
+  }
+    #box {
+      top: 25vh;
+      left: 25vh;
+      width: 50vh;
+      height: 50vh;
+      background-color: green;
+      border: 5px solid black;
+      box-sizing: border-box;
+    }
+
+  </style>
+  <div id="box">
+
+  </div>
+  <script>
+
+    function runTest() {
+      if (!internals)
+        return;
+
+      let scroll_amount = 50;
+      let scale = 2;
+      internals.setPageScaleFactor(scale);
+
+      promise_test(async () => {
+        await waitForCompositorCommit();
+
+        let y = box.getBoundingClientRect().top + box.clientHeight / 2;
+        let x = box.getBoundingClientRect().left + box.clientWidth / 2;
+        let scrollend_count = 0;
+
+        document.addEventListener("scrollend", () => {
+          scrollend_count += 1;
+        });
+
+        let top_before = visualViewport.offsetTop;
+        await smoothScroll(scroll_amount, x, y,
+                          GestureSourceType.TOUCHPAD_INPUT,
+                          "down", SPEED_INSTANT);
+
+        let scaled_offset = scroll_amount / scale;
+
+        await waitFor(() => {
+          let delta = visualViewport.offsetTop - (top_before + scaled_offset);
+          return Math.abs(delta) < 1;
+        });
+
+        assert_equals(scrollend_count, 0);
+      }, "viewport pan should not trigger scrollend");
+    }
+  </script>
+</body>

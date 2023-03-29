@@ -296,14 +296,16 @@ InputHandler::ScrollStatus InputHandler::ScrollBegin(ScrollState* scroll_state,
   // If the viewport is scrolling and it cannot consume any delta hints, the
   // scroll event will need to get bubbled if the viewport is for a guest or
   // oopif.
-  if (GetViewport().ShouldScroll(*CurrentlyScrollingNode()) &&
-      !GetViewport().CanScroll(*CurrentlyScrollingNode(), *scroll_state)) {
-    // TODO(crbug.com/1155758): This is a temporary workaround for GuestViews
-    // as they create viewport nodes and want to bubble scroll if the
-    // viewport cannot scroll in the given delta directions. There should be
-    // a parameter to ThreadInputHandler to specify whether unused delta is
-    // consumed by the viewport or bubbles to the parent.
-    scroll_status.viewport_cannot_scroll = true;
+  if (GetViewport().ShouldScroll(*CurrentlyScrollingNode())) {
+    outer_viewport_consumed_delta_ = false;
+    if (!GetViewport().CanScroll(*CurrentlyScrollingNode(), *scroll_state)) {
+      // TODO(crbug.com/1155758): This is a temporary workaround for GuestViews
+      // as they create viewport nodes and want to bubble scroll if the
+      // viewport cannot scroll in the given delta directions. There should be
+      // a parameter to ThreadInputHandler to specify whether unused delta is
+      // consumed by the viewport or bubbles to the parent.
+      scroll_status.viewport_cannot_scroll = true;
+    }
   }
 
   return scroll_status;
@@ -1009,7 +1011,7 @@ void InputHandler::ProcessCommitDeltas(
   has_pinch_zoomed_ = false;
   has_scrolled_by_scrollbar_ = false;
 
-  commit_data->scroll_gesture_did_end = scroll_gesture_did_end_;
+  commit_data->scroll_end_data.scroll_gesture_did_end = scroll_gesture_did_end_;
   scroll_gesture_did_end_ = false;
 
   commit_data->overscroll_delta = overscroll_delta_for_main_thread_;
@@ -1021,8 +1023,12 @@ void InputHandler::ProcessCommitDeltas(
   // TODO(bokan): This is wrong - if we also started a scroll this frame then
   // this will clear this value for that scroll. https://crbug.com/1116780.
   commit_data->scroll_latched_element_id = last_latched_scroller_;
-  if (commit_data->scroll_gesture_did_end)
+  if (commit_data->scroll_end_data.scroll_gesture_did_end) {
     last_latched_scroller_ = ElementId();
+    commit_data->scroll_end_data.gesture_affects_outer_viewport_scroll =
+        outer_viewport_consumed_delta_;
+    outer_viewport_consumed_delta_ = false;
+  }
 }
 
 void InputHandler::TickAnimations(base::TimeTicks monotonic_time) {
@@ -1815,7 +1821,12 @@ void InputHandler::ScrollLatchedScroller(ScrollState* scroll_state,
       TRACE_EVENT_INSTANT0("cc", "CreateNewAnimation",
                            TRACE_EVENT_SCOPE_THREAD);
       if (scroll_node.scrolls_outer_viewport) {
-        applied_delta = GetViewport().ScrollAnimated(delta, delayed_by);
+        auto result = GetViewport().ScrollAnimated(delta, delayed_by);
+        applied_delta = result.consumed_delta;
+        if (std::abs(result.outer_viewport_scrolled_delta.x()) > kEpsilon ||
+            std::abs(result.outer_viewport_scrolled_delta.y()) > kEpsilon) {
+          outer_viewport_consumed_delta_ = true;
+        }
       } else {
         applied_delta = ComputeScrollDelta(scroll_node, delta);
         compositor_delegate_->GetImplDeprecated().ScrollAnimationCreate(
@@ -1845,6 +1856,10 @@ void InputHandler::ScrollLatchedScroller(ScrollState* scroll_state,
 
       applied_delta = result.consumed_delta;
       delta_applied_to_content = result.content_scrolled_delta;
+      if (std::abs(result.outer_viewport_scrolled_delta.x()) > kEpsilon ||
+          std::abs(result.outer_viewport_scrolled_delta.y()) > kEpsilon) {
+        outer_viewport_consumed_delta_ = true;
+      }
     } else {
       applied_delta = ScrollSingleNode(scroll_node, delta, viewport_point,
                                        scroll_state->is_direct_manipulation());
@@ -2081,7 +2096,9 @@ bool InputHandler::SnapAtScrollEnd(SnapReason reason) {
     gfx::Vector2dF scaled_delta(delta);
     scaled_delta.Scale(compositor_delegate_->PageScaleFactor());
     gfx::Vector2dF consumed_delta =
-        GetViewport().ScrollAnimated(scaled_delta, base::TimeDelta());
+        GetViewport()
+            .ScrollAnimated(scaled_delta, base::TimeDelta())
+            .consumed_delta;
     did_animate = !consumed_delta.IsZero();
   } else {
     did_animate =

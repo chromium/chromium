@@ -745,6 +745,10 @@ class CC_EXPORT InputHandler : public InputDelegateForCompositor {
   // controls consume all the delta.
   bool delta_consumed_for_scroll_gesture_ = false;
 
+  // True if any of the non-zero deltas in a begin/update/end sequence was
+  // applied to the layout viewport.
+  bool outer_viewport_consumed_delta_ = false;
+
   // TODO(bokan): Mac doesn't yet have smooth scrolling for wheel; however, to
   // allow consistency in tests we use this bit to override that decision.
   // https://crbug.com/574283.
