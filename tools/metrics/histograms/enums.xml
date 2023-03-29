@@ -42471,6 +42471,12 @@ Called by update_permissions_policy_enum.py.-->
     The app is backgrounding from the foreground and the refresh is running on
     an app extended execution time.
   </int>
+  <int value="11" label="Background cold start app close">
+    Refresh is triggered in a background cold start with app close enabled.
+  </int>
+  <int value="12" label="Background warm start app close">
+    Refresh is triggered in a background warm start with app close enabled.
+  </int>
 </enum>
 
 <enum name="FeedRequestReason">
