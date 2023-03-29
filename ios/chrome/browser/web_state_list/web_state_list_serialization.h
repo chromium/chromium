@@ -19,6 +19,15 @@ namespace web {
 class WebState;
 }
 
+enum class SessionRestorationScope {
+  // The pinned sessions only.
+  kPinnedOnly,
+  // The regular sessions only.
+  kRegularOnly,
+  // All the sessions available.
+  kAll,
+};
+
 // Factory for creating WebStates.
 using WebStateFactory =
     base::RepeatingCallback<std::unique_ptr<web::WebState>(CRWSessionStorage*)>;
@@ -30,6 +39,7 @@ SessionWindowIOS* SerializeWebStateList(WebStateList* web_state_list);
 // to create the restored WebStates.
 void DeserializeWebStateList(WebStateList* web_state_list,
                              SessionWindowIOS* session_window,
+                             SessionRestorationScope session_restoration_scope,
                              const WebStateFactory& web_state_factory);
 
 #endif  // IOS_CHROME_BROWSER_WEB_STATE_LIST_WEB_STATE_LIST_SERIALIZATION_H_

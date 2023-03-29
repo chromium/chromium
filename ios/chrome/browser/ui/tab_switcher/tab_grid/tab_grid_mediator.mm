@@ -668,32 +668,6 @@ void RecordTabGridCloseTabsCount(int count) {
   SnapshotBrowserAgent::FromBrowser(self.browser)->RemoveAllSnapshots();
 }
 
-- (void)saveAndCloseNonPinnedItems {
-  DCHECK(IsPinnedTabsEnabled());
-
-  base::RecordAction(
-      base::UserMetricsAction("MobileTabGridCloseAllNonPinnedTabs"));
-  BOOL hasPinnedWebStatesOnly =
-      self.webStateList->GetIndexOfFirstNonPinnedWebState() ==
-      self.webStateList->count();
-
-  if (hasPinnedWebStatesOnly) {
-    return;
-  }
-
-  self.closedSessionWindow = SerializeWebStateList(self.webStateList);
-  int oldSize =
-      self.tabRestoreService ? self.tabRestoreService->entries().size() : 0;
-
-  self.webStateList->CloseAllNonPinnedWebStates(
-      WebStateList::CLOSE_USER_ACTION);
-
-  self.syncedClosedTabsCount =
-      self.tabRestoreService
-          ? self.tabRestoreService->entries().size() - oldSize
-          : 0;
-}
-
 - (void)saveAndCloseAllItems {
   RecordTabGridCloseTabsCount(self.webStateList->count());
   base::RecordAction(
@@ -701,10 +675,27 @@ void RecordTabGridCloseTabsCount(int count) {
 
   if (self.webStateList->empty())
     return;
-  self.closedSessionWindow = SerializeWebStateList(self.webStateList);
+
   int old_size =
       self.tabRestoreService ? self.tabRestoreService->entries().size() : 0;
-  self.webStateList->CloseAllWebStates(WebStateList::CLOSE_USER_ACTION);
+
+  if (IsPinnedTabsEnabled()) {
+    BOOL hasPinnedWebStatesOnly =
+        self.webStateList->GetIndexOfFirstNonPinnedWebState() ==
+        self.webStateList->count();
+
+    if (hasPinnedWebStatesOnly) {
+      return;
+    }
+
+    self.closedSessionWindow = SerializeWebStateList(self.webStateList);
+    self.webStateList->CloseAllNonPinnedWebStates(
+        WebStateList::CLOSE_USER_ACTION);
+  } else {
+    self.closedSessionWindow = SerializeWebStateList(self.webStateList);
+    self.webStateList->CloseAllWebStates(WebStateList::CLOSE_USER_ACTION);
+  }
+
   self.syncedClosedTabsCount =
       self.tabRestoreService
           ? self.tabRestoreService->entries().size() - old_size
@@ -717,7 +708,8 @@ void RecordTabGridCloseTabsCount(int count) {
   if (!self.closedSessionWindow)
     return;
   SessionRestorationBrowserAgent::FromBrowser(self.browser)
-      ->RestoreSessionWindow(self.closedSessionWindow);
+      ->RestoreSessionWindow(self.closedSessionWindow,
+                             SessionRestorationScope::kRegularOnly);
   self.closedSessionWindow = nil;
   [self removeEntriesFromTabRestoreService];
   self.syncedClosedTabsCount = 0;
@@ -741,22 +733,6 @@ void RecordTabGridCloseTabsCount(int count) {
       showCloseItemsConfirmationActionSheetWithTabGridMediator:self
                                                          items:items
                                                         anchor:buttonAnchor];
-}
-
-- (void)showCloseAllItemsConfirmationActionSheetWithAnchor:
-    (UIBarButtonItem*)buttonAnchor {
-  BOOL hasRegularWebStatesOnly =
-      self.webStateList->GetIndexOfFirstNonPinnedWebState() == 0;
-
-  if (hasRegularWebStatesOnly) {
-    [self saveAndCloseAllItems];
-    return;
-  }
-
-  [self.delegate dismissPopovers];
-  [self.delegate
-      showCloseAllItemsConfirmationActionSheetWithTabGridMediator:self
-                                                           anchor:buttonAnchor];
 }
 
 - (void)shareItems:(NSArray<NSString*>*)items

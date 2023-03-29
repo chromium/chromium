@@ -1868,9 +1868,7 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
   GridViewController* gridViewController =
       [self gridViewControllerForPage:self.currentPage];
 
-  BOOL enabled = (gridViewController == nil)
-                     ? NO
-                     : [self tabsPresentForPage:self.currentPage];
+  BOOL enabled = gridViewController && ![gridViewController isGridEmpty];
   BOOL incognitoTabsNeedsAuth =
       (self.currentPage == TabGridPageIncognitoTabs &&
        self.incognitoTabsViewController.contentNeedsAuthentication);
@@ -2741,24 +2739,14 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
 }
 
 - (void)handleCloseAllButtonForRegularTabsWithAnchor:(UIBarButtonItem*)anchor {
-  const BOOL hasPinnedTabs =
-      (IsPinnedTabsEnabled() && !self.pinnedTabsViewController.collectionEmpty);
-  const BOOL hasOpenTabs =
-      !self.regularTabsViewController.gridEmpty || hasPinnedTabs;
-  DCHECK_EQ(self.undoCloseAllAvailable, !hasOpenTabs);
+  DCHECK_EQ(self.undoCloseAllAvailable,
+            self.regularTabsViewController.gridEmpty);
 
   if (self.undoCloseAllAvailable) {
     [self undoCloseAllItemsForRegularTabs];
-  } else if (hasPinnedTabs) {
-    [self confirmCloseAllItemsForRegularTabs:anchor];
   } else {
     [self saveAndCloseAllItemsForRegularTabs];
   }
-}
-
-- (void)confirmCloseAllItemsForRegularTabs:(UIBarButtonItem*)anchor {
-  [self.regularTabsDelegate
-      showCloseAllItemsConfirmationActionSheetWithAnchor:anchor];
 }
 
 - (void)undoCloseAllItemsForRegularTabs {

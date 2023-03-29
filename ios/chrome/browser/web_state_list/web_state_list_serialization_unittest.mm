@@ -130,7 +130,7 @@ TEST_F(WebStateListSerializationTest, SerializationRoundTrip) {
   ASSERT_EQ(1, restored_web_state_list.count());
 
   DeserializeWebStateList(
-      &restored_web_state_list, session_window,
+      &restored_web_state_list, session_window, SessionRestorationScope::kAll,
       base::BindRepeating(&CreateWebStateWithSessionStorage));
 
   EXPECT_EQ(5, restored_web_state_list.count());

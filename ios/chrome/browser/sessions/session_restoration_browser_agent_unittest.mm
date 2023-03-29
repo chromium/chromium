@@ -189,7 +189,8 @@ TEST_F(SessionRestorationBrowserAgentTest, RestoreEmptySessions) {
   SessionWindowIOS* window = [[SessionWindowIOS alloc] initWithSessions:sessions
                                                           selectedIndex:2];
 
-  session_restoration_agent_->RestoreSessionWindow(window);
+  session_restoration_agent_->RestoreSessionWindow(
+      window, SessionRestorationScope::kAll);
   ASSERT_EQ(0, browser_->GetWebStateList()->count());
 }
 
@@ -197,7 +198,8 @@ TEST_F(SessionRestorationBrowserAgentTest, RestoreEmptySessions) {
 TEST_F(SessionRestorationBrowserAgentTest, RestoreSessionOnEmptyWebStateList) {
   SessionWindowIOS* window(
       CreateSessionWindow(/*sessions_count=*/5, /*selected_index=*/1));
-  session_restoration_agent_->RestoreSessionWindow(window);
+  session_restoration_agent_->RestoreSessionWindow(
+      window, SessionRestorationScope::kAll);
 
   ASSERT_EQ(5, browser_->GetWebStateList()->count());
   EXPECT_EQ(browser_->GetWebStateList()->GetWebStateAt(1),
@@ -212,7 +214,8 @@ TEST_F(SessionRestorationBrowserAgentTest,
 
   SessionWindowIOS* window(
       CreateSessionWindow(/*sessions_count=*/3, /*selected_index=*/2));
-  session_restoration_agent_->RestoreSessionWindow(window);
+  session_restoration_agent_->RestoreSessionWindow(
+      window, SessionRestorationScope::kAll);
 
   ASSERT_EQ(4, browser_->GetWebStateList()->count());
   EXPECT_EQ(browser_->GetWebStateList()->GetWebStateAt(3),
@@ -238,7 +241,8 @@ TEST_F(SessionRestorationBrowserAgentTest, DISABLED_RestoreSessionOnNTPTest) {
 
   SessionWindowIOS* window(
       CreateSessionWindow(/*sessions_count=*/3, /*selected_index=*/2));
-  session_restoration_agent_->RestoreSessionWindow(window);
+  session_restoration_agent_->RestoreSessionWindow(
+      window, SessionRestorationScope::kAll);
 
   ASSERT_EQ(3, browser_->GetWebStateList()->count());
   EXPECT_EQ(browser_->GetWebStateList()->GetWebStateAt(2),
@@ -271,7 +275,8 @@ TEST_F(SessionRestorationBrowserAgentTest, SaveAndRestoreEmptySession) {
                                             directory:state_path];
   ASSERT_EQ(1u, session.sessionWindows.count);
   SessionWindowIOS* session_window = session.sessionWindows[0];
-  session_restoration_agent_->RestoreSessionWindow(session_window);
+  session_restoration_agent_->RestoreSessionWindow(
+      session_window, SessionRestorationScope::kAll);
 
   EXPECT_EQ(0, browser_->GetWebStateList()->count());
 }
@@ -303,7 +308,8 @@ TEST_F(SessionRestorationBrowserAgentTest, SaveAndRestoreSession) {
   SessionWindowIOS* session_window = session.sessionWindows[0];
 
   // Restore from saved session.
-  session_restoration_agent_->RestoreSessionWindow(session_window);
+  session_restoration_agent_->RestoreSessionWindow(
+      session_window, SessionRestorationScope::kAll);
 
   EXPECT_EQ(3, browser_->GetWebStateList()->count());
 
@@ -318,7 +324,8 @@ TEST_F(SessionRestorationBrowserAgentTest, SaveInProgressAndRestoreSession) {
   SessionWindowIOS* window(
       CreateSessionWindow(/*sessions_count=*/5, /*selected_index=*/1));
   [test_session_service_ setPerformIO:YES];
-  session_restoration_agent_->RestoreSessionWindow(window);
+  session_restoration_agent_->RestoreSessionWindow(
+      window, SessionRestorationScope::kAll);
   [test_session_service_ setPerformIO:NO];
 
   ASSERT_EQ(5, browser_->GetWebStateList()->count());
@@ -334,7 +341,8 @@ TEST_F(SessionRestorationBrowserAgentTest, SaveInProgressAndRestoreSession) {
                                             directory:state_path];
   ASSERT_EQ(1u, session.sessionWindows.count);
   SessionWindowIOS* session_window = session.sessionWindows[0];
-  session_restoration_agent_->RestoreSessionWindow(session_window);
+  session_restoration_agent_->RestoreSessionWindow(
+      session_window, SessionRestorationScope::kAll);
   ASSERT_EQ(5, browser_->GetWebStateList()->count());
   EXPECT_EQ(browser_->GetWebStateList()->GetWebStateAt(1),
             browser_->GetWebStateList()->GetActiveWebState());
@@ -351,7 +359,8 @@ TEST_F(SessionRestorationBrowserAgentTest, ObserverCalledWithRestore) {
 
   SessionWindowIOS* window(
       CreateSessionWindow(/*sessions_count=*/3, /*selected_index=*/2));
-  session_restoration_agent_->RestoreSessionWindow(window);
+  session_restoration_agent_->RestoreSessionWindow(
+      window, SessionRestorationScope::kAll);
   ASSERT_EQ(4, browser_->GetWebStateList()->count());
 
   EXPECT_TRUE(observer.restore_started());

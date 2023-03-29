@@ -15,6 +15,7 @@
 #import "ios/chrome/browser/main/browser_observer.h"
 #import "ios/chrome/browser/main/browser_user_data.h"
 #import "ios/chrome/browser/web_state_list/web_state_list_observer.h"
+#import "ios/chrome/browser/web_state_list/web_state_list_serialization.h"
 #import "ios/web/public/web_state_observer.h"
 
 class AllWebStateObservationForwarder;
@@ -55,11 +56,14 @@ class SessionRestorationBrowserAgent
   void AddObserver(SessionRestorationObserver* observer);
   void RemoveObserver(SessionRestorationObserver* observer);
 
-  // Restores the `window` (for example, after a crash). If there is only one ,
-  // tab showing the NTP, then this tab should be clobbered, otherwise, the tabs
-  // from the restored sessions should be added at the end of the current list
-  // of tabs. Returns YES if the single NTP tab is closed.
-  bool RestoreSessionWindow(SessionWindowIOS* window);
+  // Restores the `window` (for example, after a crash) within the provided
+  // `scope`. Session restoration scope defines which sessions should be
+  // restored: all, regular or pinned. If there is only one tab showing the
+  // NTP, then this tab should be clobbered, otherwise, the tabs from the
+  // restored sessions should be added at the end of the current list of tabs.
+  // Returns YES if the single NTP tab is closed.
+  bool RestoreSessionWindow(SessionWindowIOS* window,
+                            SessionRestorationScope scope);
 
   // Restores the session whose ID matches the session ID set for this agent.
   // Restoration is done via RestoreSessionWindow(), above, and the return
@@ -81,6 +85,15 @@ class SessionRestorationBrowserAgent
 
   SessionRestorationBrowserAgent(Browser* browser,
                                  SessionServiceIOS* session_service);
+
+  // Returns array of CRWSessionStorage for the provided session restoration
+  // `scope`. This method is mainly needed to remove the dropped session
+  // storages, which eases the iteration through the array using the same
+  // order of indexes.
+  static NSArray<CRWSessionStorage*>* GetRestoredSessionStoragesForScope(
+      SessionRestorationScope scope,
+      NSArray<CRWSessionStorage*>* session_storages,
+      int restored_count);
 
   // Returns true if the current session can be saved.
   bool CanSaveSession();
