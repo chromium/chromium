@@ -1420,7 +1420,7 @@ Cihazınızda Family Link uygulamasını yükleyerek bu hesabın ayarlarını y�
 <translation id="223356358902285214">Web ve Uygulama Etkinliği</translation>
 <translation id="2234827758954819389">Gizlilik Kılavuzu</translation>
 <translation id="2234876718134438132">Senkronizasyon ve Google hizmetleri</translation>
-<translation id="2235344399760031203">Üçüncü taraf çerezler engellendi</translation>
+<translation id="2235344399760031203">Üçüncü taraf çerezleri engelleniyor</translation>
 <translation id="2238379619048995541">Frekans Durumu Verileri</translation>
 <translation id="2241053333139545397">Çeşitli web sitelerinde verilerinizi okuma ve değiştirme</translation>
 <translation id="2241634353105152135">Sadece bir defa</translation>
@@ -3840,7 +3840,7 @@ Sunucunun mesajı: <ph name="SERVER_MSG" /></translation>
 <translation id="4411719918614785832">Bu şifre anahtarları bu bilgisayarda Windows Hello'ya kaydedilir. Google Hesabınıza kaydedilmezler.</translation>
 <translation id="4412632005703201014">Chrome uygulamaları, progresif web uygulamalarına (pwa) taşınıyor. Bu Chrome uygulaması, kuruluşunuz tarafından tarayıcınıza yüklenmiş. Uygulamalar listesinden progresif web uygulamasını (pwa) açmak için öncelikle yöneticinizle iletişime geçip Chrome uygulamasını kaldırmasını isteyin. Dilerseniz <ph name="EXTENSION_NAME" /> uzantısını web'de açmak için <ph name="EXTENSION_LAUNCH_URL" /> adresini ziyaret edebilirsiniz.</translation>
 <translation id="4412698727486357573">Yardım merkezi</translation>
-<translation id="4412992751769744546">Üçüncü taraf çerezlere izin ver</translation>
+<translation id="4412992751769744546">Üçüncü taraf çerezlerine izin ver</translation>
 <translation id="44141919652824029">"<ph name="APP_NAME" />" uygulamasının, takılı USB cihazlarınızın listesini almasına izin verilsin mi?</translation>
 <translation id="4414232939543644979">Yeni &amp;Gizli Pencere</translation>
 <translation id="4414648713167199100">Chromebook'unuzdaki mobil veriyi kullanır ve operatörünüz ek ücret alabilir. Pil kullanımını artırabilir. <ph name="BEGIN_LINK_LEARN_MORE" />Daha fazla bilgi<ph name="END_LINK_LEARN_MORE" /></translation>
@@ -4219,7 +4219,7 @@ Uzaklaştırmak için Ctrl + Alt + Parlaklığı Azalt tuşlarını kullanın.</
 <translation id="4750185073185658673">Birkaç izni daha incelemek için telefonunuza gidin. Telefonunuzdaki Bluetooth ve kablosuz bağlantının açık olduğundan emin olun.</translation>
 <translation id="4750394297954878236">Öneriler</translation>
 <translation id="475088594373173692">İlk kullanıcı</translation>
-<translation id="4756302371612574303">Ziyaret ettiğiniz bir site, yaptığınız işlemlerle ilgili bilgileri kaydedebilir. Bu bilgileri, beklediğiniz gibi çalışmak, örneğin bir sitede oturumunuzu açık tutmak veya alışveriş sepetinizdeki öğeleri kaydetmek için kullanabilir. Genellikle siteler bu bilgileri geçici olarak cihazınıza kaydeder.</translation>
+<translation id="4756302371612574303">Ziyaret ettiğiniz bir site, yaptığınız işlemlerle ilgili bilgileri kaydedebilir. Bu bilgileri, beklediğiniz gibi çalışmak, örneğin bir sitede oturumunuzu açık tutmak veya alışveriş sepetinizdeki öğeleri kaydetmek için kullanabilir. Genellikle siteler bu bilgileri cihazınıza geçici olarak kaydeder.</translation>
 <translation id="4756378406049221019">Durdur/Tekrar yükle</translation>
 <translation id="4756388243121344051">&amp;Geçmiş</translation>
 <translation id="4756671452988984333">Ses metni</translation>
@@ -5248,7 +5248,7 @@ Hassas bilgileri vermediğinizden emin olun.</translation>
 <translation id="5722086096420375088">Yeşil ve beyaz</translation>
 <translation id="572328651809341494">Son sekmeler</translation>
 <translation id="5723508132121499792">Çalışan hiç arka plan uygulaması yok</translation>
-<translation id="5723967018671998714">Gizli modda üçüncü taraf çerezler engellenir</translation>
+<translation id="5723967018671998714">Gizli modda üçüncü taraf çerezleri engelleniyor</translation>
 <translation id="5724642200346111167">Site verileri tüm pencereleri kapattığınızda cihazınızdan silinir</translation>
 <translation id="5727728807527375859">Uzantılar, uygulamalar ve temalar bilgisayarınıza zarar verebilir. Devam etmek istediğinizden emin misiniz?</translation>
 <translation id="5728450728039149624">Smart Lock kilit ekranı seçenekleri</translation>
@@ -7892,7 +7892,7 @@ Anahtar dosyanızı güvenli bir yerde saklayın. Uzantınızın yeni sürümler
 <translation id="8105368624971345109">Kapat</translation>
 <translation id="8107015733319732394">Google Play Store <ph name="DEVICE_TYPE" /> cihazınıza yükleniyor. Bu işlem birkaç dakika sürebilir.</translation>
 <translation id="810728361871746125">Ekran çözünürlüğü</translation>
-<translation id="8108526232944491552">{COUNT,plural, =0{Üçüncü taraf çerez yok}=1{1 üçüncü taraf çerez engellendi}other{# üçüncü taraf çerez engellendi}}</translation>
+<translation id="8108526232944491552">{COUNT,plural, =0{Üçüncü taraf çerezi yok}=1{1 tane üçüncü taraf çerezi engellendi}other{# tane üçüncü taraf çerezi engellendi}}</translation>
 <translation id="8109109153262930486">Varsayılan avatar</translation>
 <translation id="8110489095782891123">Kişi listesi indiriliyor...</translation>
 <translation id="8113476325385351118">Bu sitenin MIDI cihazları üzerinde tam denetime sahip olmasını engellemeye devam et</translation>
@@ -8178,7 +8178,7 @@ Anahtar dosyanızı güvenli bir yerde saklayın. Uzantınızın yeni sürümler
 <translation id="8373652277231415614">Crostini paylaşılan dizinler</translation>
 <translation id="8374243500935816406">Sitelerin tüm ekranlarımda pencereleri yönetmesine izin verme</translation>
 <translation id="8376137163494131156">Google Cast ile yaşadığınız deneyim hakkında bize bilgi verin.</translation>
-<translation id="8376384591331888629">Bu sitedeki üçüncü taraf çerezler dahil</translation>
+<translation id="8376384591331888629">Bu sitedeki üçüncü taraf çerezleri dahil</translation>
 <translation id="8376451933628734023">Farklı bir uygulama olduğunu düşünmeniz için sizi kandırmaya çalışıyorsa bu web uygulamasını kaldırın.</translation>
 <translation id="8377625247046155446">Bu şifre anahtarı yalnızca bu cihazda kaydedilir. Bu şifre anahtarı, tüm gizli pencereleri kapatmanızın ardından bu cihazda kalır.</translation>
 <translation id="8378714024927312812">Kuruluşunuz tarafından yönetiliyor</translation>

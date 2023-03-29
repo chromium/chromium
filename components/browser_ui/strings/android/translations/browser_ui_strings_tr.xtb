@@ -47,7 +47,7 @@
 <translation id="1919950603503897840">Kişi seçin</translation>
 <translation id="1923695749281512248"><ph name="BYTES_DOWNLOADED_WITH_UNITS" /> / <ph name="FILE_SIZE_WITH_UNITS" /></translation>
 <translation id="1979673356880165407">Ziyaret ettiğiniz tüm sitelerdeki metin ve resimleri büyütün ya da küçültün</translation>
-<translation id="1984937141057606926">Üçüncü taraf hariç izin verildi</translation>
+<translation id="1984937141057606926">Üçüncü taraf hariç izin veriliyor</translation>
 <translation id="1989112275319619282">Göz at</translation>
 <translation id="1994173015038366702">Site URL'si</translation>
 <translation id="2004697686368036666">Bazı sitelerdeki özellikler çalışmayabilir</translation>
@@ -62,7 +62,7 @@
 <translation id="2194856509914051091">Dikkate alınması gereken noktalar</translation>
 <translation id="2212565012507486665">Çerezlere izin ver</translation>
 <translation id="2228071138934252756"><ph name="APP_NAME" /> uygulamasının kameranıza erişebilmesi için <ph name="BEGIN_LINK" />Android Ayarları<ph name="END_LINK" />'nda da kamerayı açın.</translation>
-<translation id="2235344399760031203">Üçüncü taraf çerezler engellendi</translation>
+<translation id="2235344399760031203">Üçüncü taraf çerezleri engelleniyor</translation>
 <translation id="2238944249568001759">Son sekmenize göre önerilen aramalar</translation>
 <translation id="2241634353105152135">Sadece bir defa</translation>
 <translation id="2253414712144136228"><ph name="NAME_OF_LIST_ITEM" /> öğesini kaldır</translation>
@@ -116,7 +116,7 @@
 <translation id="3109724472072898302">Daraltılmış</translation>
 <translation id="3114012059975132928">Video oynatıcı</translation>
 <translation id="3115898365077584848">Bilgileri Göster</translation>
-<translation id="3123473560110926937">Bazı sitelerde engellendi</translation>
+<translation id="3123473560110926937">Bazı sitelerde engelleniyor</translation>
 <translation id="3143754809889689516">Baştan oynat</translation>
 <translation id="3162899666601560689">Siteler size daha iyi bir göz atma deneyimi sunmak, örneğin, oturumunuzu açık tutmak veya alışveriş sepetinizdeki ürünleri hatırlamak için çerez kullanabilir</translation>
 <translation id="3165022941318558018">Bir sitenin, üçüncü taraf çerezlerini kullanmasına izin verin</translation>
@@ -149,7 +149,7 @@
 <translation id="3649190289964910441">Ziyaret ettiğiniz bir site gerçek bir kullanıcı olduğunuzu doğrulayan bilgileri Chrome'a kaydedebilir. Siz sitelere göz atarken siteler de Chrome'dan kontrol ederek büyük olasılıkla güvenilir bir kullanıcı olduğunuzu doğrular.</translation>
 <translation id="3744111561329211289">Arka plan senkronizasyonu</translation>
 <translation id="3763247130972274048">10 sn. atlamak için videoda sola veya sağa iki kez dokunun</translation>
-<translation id="3794286421982011626">Ziyaret ettiğiniz bir site, yaptığınız işlemlerle ilgili bilgileri kaydedebilir. Bu bilgileri, beklediğiniz gibi çalışmak, örneğin bir sitede oturumunuzu açık tutmak veya alışveriş sepetinizdeki öğeleri kaydetmek için kullanabilir. Genellikle siteler bu bilgileri geçici olarak cihazınıza kaydeder.</translation>
+<translation id="3794286421982011626">Ziyaret ettiğiniz bir site, yaptığınız işlemlerle ilgili bilgileri kaydedebilir. Bu bilgileri, beklediğiniz gibi çalışmak, örneğin bir sitede oturumunuzu açık tutmak veya alışveriş sepetinizdeki öğeleri kaydetmek için kullanabilir. Genellikle siteler bu bilgileri cihazınıza geçici olarak kaydeder.</translation>
 <translation id="3797520601150691162">Belirli bir siteye koyu tema uygulama</translation>
 <translation id="3803367742635802571">Ziyaret ettiğiniz siteler tasarlandığı şekilde çalışmayabilir</translation>
 <translation id="3804247818991980532"><ph name="TYPE_1" />. <ph name="TYPE_2" />.</translation>
@@ -183,7 +183,7 @@
 <translation id="4336434711095810371">Tüm verileri temizle</translation>
 <translation id="4338831206024587507"><ph name="DOMAIN" /> altındaki tüm siteler</translation>
 <translation id="4402755511846832236">Bu cihazı etkin olarak kullandığınızda sitelerin bunu bilmesi engellenir</translation>
-<translation id="4412992751769744546">Üçüncü taraf çerezlere izin ver</translation>
+<translation id="4412992751769744546">Üçüncü taraf çerezlerine izin ver</translation>
 <translation id="4428065317363009941">Reklam kişiselleştirme</translation>
 <translation id="4434045419905280838">Pop-up'lar ve yönlendirmeler</translation>
 <translation id="4440642537584213025"><ph name="TARGET_DESCRIPTION" /> panelini genişlet</translation>
@@ -257,7 +257,7 @@
 <translation id="5690795753582697420">Kamera, Android ayarlarında kapatıldı</translation>
 <translation id="5706552988683188916">Bu işlem, <ph name="WEBSITE" /> için çerezleri ve diğer site verilerini siler</translation>
 <translation id="5719847187258001597">Bu işlem, Ana ekranınızdaki <ph name="ORIGIN" /> sitesi ve sitenin uygulaması tarafından depolanan tüm verileri ve çerezleri temizleyecek.</translation>
-<translation id="5723967018671998714">Gizli modda üçüncü taraf çerezler engellenir</translation>
+<translation id="5723967018671998714">Gizli modda üçüncü taraf çerezleri engelleniyor</translation>
 <translation id="5740126560802162366">Siteler, cihazınıza veri kaydedebilir</translation>
 <translation id="5771720122942595109"><ph name="PERMISSION_1" /> engellendi</translation>
 <translation id="5804241973901381774">İzinler</translation>
@@ -397,7 +397,7 @@
 <translation id="8324158725704657629">Tekrar sorma</translation>
 <translation id="8362795839483915693">Ziyaret ettiğiniz siteleri yakınlaştırabilir veya uzaklaştırabilirsiniz</translation>
 <translation id="8372893542064058268">Belirli bir site için Arka Plan Senkronizasyonuna izin verin.</translation>
-<translation id="8376384591331888629">Bu sitedeki üçüncü taraf çerezler dahil</translation>
+<translation id="8376384591331888629">Bu sitedeki üçüncü taraf çerezleri dahil</translation>
 <translation id="83792324527827022">Bir site kameranızı ve mikrofonunuzu kullanıyor</translation>
 <translation id="8380167699614421159">Bu site, araya giren veya yanıltıcı reklamlar gösteriyor</translation>
 <translation id="8394832520002899662">Siteye dönmek için dokunun</translation>
