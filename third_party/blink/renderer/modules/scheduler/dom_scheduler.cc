@@ -82,7 +82,7 @@ ScriptPromise DOMScheduler::postTask(
     V8SchedulerPostTaskCallback* callback_function,
     SchedulerPostTaskOptions* options,
     ExceptionState& exception_state) {
-  if (!GetExecutionContext()) {
+  if (!GetExecutionContext() || GetExecutionContext()->IsContextDestroyed()) {
     // The bindings layer implicitly converts thrown exceptions in
     // promise-returning functions to promise rejections.
     exception_state.ThrowDOMException(DOMExceptionCode::kNotSupportedError,
@@ -114,7 +114,7 @@ ScriptPromise DOMScheduler::postTask(
 ScriptPromise DOMScheduler::yield(ScriptState* script_state,
                                   SchedulerYieldOptions* options,
                                   ExceptionState& exception_state) {
-  if (!GetExecutionContext()) {
+  if (!GetExecutionContext() || GetExecutionContext()->IsContextDestroyed()) {
     exception_state.ThrowDOMException(DOMExceptionCode::kNotSupportedError,
                                       "Current window is detached");
     return ScriptPromise();
@@ -220,11 +220,12 @@ DOMScheduler::DOMTaskQueue* DOMScheduler::CreateDynamicPriorityTaskQueue(
     DOMTaskSignal* signal,
     WebSchedulingQueueType queue_type) {
   FrameOrWorkerScheduler* scheduler = GetExecutionContext()->GetScheduler();
-  DCHECK(scheduler);
+  CHECK(scheduler);
   WebSchedulingPriority priority =
       WebSchedulingPriorityFromString(signal->priority());
   std::unique_ptr<WebSchedulingTaskQueue> task_queue =
       scheduler->CreateWebSchedulingTaskQueue(queue_type, priority);
+  CHECK(task_queue);
   auto* dom_task_queue =
       MakeGarbageCollected<DOMTaskQueue>(std::move(task_queue), priority);
   auto* handle = signal->AddPriorityChangeAlgorithm(WTF::BindRepeating(
@@ -367,7 +368,7 @@ DOMScheduler::DOMTaskQueue* DOMScheduler::GetTaskQueue(
 
 void DOMScheduler::OnPriorityChange(DOMTaskSignal* signal,
                                     DOMTaskQueue* task_queue) {
-  if (!GetExecutionContext()) {
+  if (!GetExecutionContext() || GetExecutionContext()->IsContextDestroyed()) {
     return;
   }
   DCHECK(signal);
