@@ -206,20 +206,6 @@ NSDictionary* attributeToMethodNameMap = nil;
 // VoiceOver uses -1 to mean "no limit" for AXResultsLimit.
 const int kAXResultsLimitNoLimit = -1;
 
-// The following are private accessibility APIs required for cursor navigation
-// and text selection. VoiceOver started relying on them in Mac OS X 10.11.
-// They are public as of the 12.0 SDK.
-#if !defined(MAC_OS_VERSION_12_0) || \
-    MAC_OS_X_VERSION_MAX_ALLOWED < MAC_OS_VERSION_12_0
-using AXTextMarkerRangeRef = CFTypeRef;
-using AXTextMarkerRef = CFTypeRef;
-extern "C" {
-AXTextMarkerRangeRef AXTextMarkerRangeCreate(CFAllocatorRef,
-                                             AXTextMarkerRef start,
-                                             AXTextMarkerRef end);
-}  // extern "C"
-#endif
-
 AXRange CreateAXRange(const BrowserAccessibility& start_object,
                       int start_offset,
                       ax::mojom::TextAffinity start_affinity,

@@ -219,13 +219,6 @@ base::scoped_nsprotocol<id<MTLRenderPipelineState>> CreateRenderPipelineState(
 
 }  // namespace
 
-#if !defined(MAC_OS_X_VERSION_10_15)
-API_AVAILABLE(macos(10.15))
-@interface CAMetalLayer (Forward)
-@property(readonly) id<MTLDevice> preferredDevice;
-@end
-#endif
-
 API_AVAILABLE(macos(10.15))
 @interface HDRCopierLayer : CAMetalLayer {
   base::scoped_nsprotocol<id<MTLRenderPipelineState>> _render_pipeline_state;
@@ -302,7 +295,7 @@ API_AVAILABLE(macos(10.15))
   if (device) {
     [self setDevice:device];
   } else {
-    if ([self respondsToSelector:@selector(preferredDevice)]) {
+    if (@available(macOS 10.15, *)) {
       id<MTLDevice> preferred_device = [self preferredDevice];
       if (preferred_device)
         [self setDevice:preferred_device];
