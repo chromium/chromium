@@ -94,12 +94,12 @@ class MultiLogCTVerifierTest : public ::testing::Test {
     if (!the_sct.is_dict())
       return false;
 
-    const std::string* origin = the_sct.FindStringPath("origin");
+    const std::string* origin = the_sct.GetDict().FindString("origin");
     if (!origin || *origin != "Embedded in certificate")
       return false;
 
     const std::string* verification_status =
-        the_sct.FindStringPath("verification_status");
+        the_sct.GetDict().FindString("verification_status");
     if (!verification_status || *verification_status != "Verified")
       return false;
 
