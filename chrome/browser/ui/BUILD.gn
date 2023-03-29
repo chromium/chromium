@@ -1700,6 +1700,8 @@ static_library("ui") {
       "webui/side_panel/companion/msbb_delegate.h",
       "webui/side_panel/companion/promo_handler.cc",
       "webui/side_panel/companion/promo_handler.h",
+      "webui/side_panel/companion/signin_delegate.cc",
+      "webui/side_panel/companion/signin_delegate.h",
       "webui/side_panel/customize_chrome/customize_chrome_colors.cc",
       "webui/side_panel/customize_chrome/customize_chrome_colors.h",
       "webui/side_panel/customize_chrome/customize_chrome_page_handler.cc",

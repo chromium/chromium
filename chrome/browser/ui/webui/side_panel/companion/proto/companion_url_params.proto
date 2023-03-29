@@ -25,6 +25,9 @@ message QueryParams {
   // Whether make searches and browsing better has been enabled in the settings.
   bool has_msbb_enabled = 2;
 
+  // Whether user is not already signed in and allowed to sign in.
+  bool signin_allowed_and_required = 4;
+
   // State for driving promo related decisions.
   PromoState promo_state = 3;
 }

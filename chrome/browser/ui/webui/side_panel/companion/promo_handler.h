@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_UI_WEBUI_SIDE_PANEL_COMPANION_PROMO_HANDLER_H_
 #define CHROME_BROWSER_UI_WEBUI_SIDE_PANEL_COMPANION_PROMO_HANDLER_H_
 
+#include <memory>
 #include <string>
 
 #include "base/functional/callback.h"
@@ -19,12 +20,15 @@ using side_panel::mojom::PromoAction;
 using side_panel::mojom::PromoType;
 
 class MsbbDelegate;
+class SigninDelegate;
 
 // Central class to handle user actions on various promos displayed in the
 // search companion.
 class PromoHandler {
  public:
-  PromoHandler(PrefService* pref_service, MsbbDelegate* msbb_setter);
+  PromoHandler(PrefService* pref_service,
+               SigninDelegate* signin_delegate,
+               MsbbDelegate* msbb_delegate);
   ~PromoHandler();
 
   // Disallow copy/assign.
@@ -48,6 +52,11 @@ class PromoHandler {
   // Lifetime of the PrefService is bound to profile which outlives the lifetime
   // of the companion page.
   raw_ptr<PrefService> pref_service_;
+
+  // Delegate to handle sign-in flow.
+  raw_ptr<SigninDelegate> signin_delegate_;
+
+  // Delegate to set MSBB.
   raw_ptr<MsbbDelegate> msbb_delegate_;
 };
 

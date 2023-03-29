@@ -168,6 +168,8 @@ class SigninMetricsTest : public ::testing::Test {
         return "ReauthInfoBar";
       case AccessPoint::ACCESS_POINT_ACCOUNT_CONSISTENCY_SERVICE:
         return "AccountConsistencyService";
+      case AccessPoint::ACCESS_POINT_SEARCH_COMPANION:
+        return "SearchCompanion";
       case AccessPoint::ACCESS_POINT_MAX:
         NOTREACHED();
         return "";

@@ -13,6 +13,7 @@
 #include "chrome/browser/ui/webui/side_panel/companion/companion_url_builder.h"
 #include "chrome/browser/ui/webui/side_panel/companion/msbb_delegate.h"
 #include "chrome/browser/ui/webui/side_panel/companion/promo_handler.h"
+#include "chrome/browser/ui/webui/side_panel/companion/signin_delegate.h"
 #include "chrome/browser/unified_consent/unified_consent_service_factory.h"
 #include "chrome/common/webui_url_constants.h"
 #include "components/lens/buildflags.h"
@@ -37,12 +38,14 @@ CompanionPageHandler::CompanionPageHandler(
       page_(std::move(page)),
       browser_(browser),
       companion_untrusted_ui_(companion_untrusted_ui),
+      signin_delegate_(SigninDelegate::Create(browser->profile())),
       url_builder_(
           std::make_unique<CompanionUrlBuilder>(browser->profile()->GetPrefs(),
+                                                signin_delegate_.get(),
                                                 this)) {
   DCHECK(browser);
-  promo_handler_ =
-      std::make_unique<PromoHandler>(browser->profile()->GetPrefs(), this);
+  promo_handler_ = std::make_unique<PromoHandler>(
+      browser->profile()->GetPrefs(), signin_delegate_.get(), this);
   NotifyURLChanged();
 }
 

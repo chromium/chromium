@@ -10,6 +10,7 @@
 #include "chrome/browser/ui/webui/side_panel/companion/msbb_delegate.h"
 #include "chrome/browser/ui/webui/side_panel/companion/promo_handler.h"
 #include "chrome/browser/ui/webui/side_panel/companion/proto/companion_url_params.pb.h"
+#include "chrome/browser/ui/webui/side_panel/companion/signin_delegate.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/testing_pref_service.h"
 #include "net/base/url_util.h"
@@ -24,6 +25,12 @@ namespace {
 
 constexpr char kValidUrl[] = "https://foo.com/";
 constexpr char kOrigin[] = "chrome-untrusted://companion-side-panel.top-chrome";
+
+class MockSigninDelegate : public SigninDelegate {
+ public:
+  MOCK_METHOD0(AllowedSignin, bool());
+  MOCK_METHOD0(StartSigninFlow, void());
+};
 
 class MockMsbbDelegate : public MsbbDelegate {
  public:
@@ -44,8 +51,10 @@ class CompanionUrlBuilderTest : public testing::Test {
         .WillRepeatedly(testing::Return(true));
 
     pref_service_.SetUserPref(kSigninPromoDeclinedCountPref, base::Value(1));
-    url_builder_ =
-        std::make_unique<CompanionUrlBuilder>(&pref_service_, &msbb_delegate_);
+    EXPECT_CALL(signin_delegate_, AllowedSignin())
+        .WillRepeatedly(testing::Return(false));
+    url_builder_ = std::make_unique<CompanionUrlBuilder>(
+        &pref_service_, &signin_delegate_, &msbb_delegate_);
   }
 
  protected:
@@ -77,6 +86,7 @@ class CompanionUrlBuilderTest : public testing::Test {
   }
 
   TestingPrefServiceSimple pref_service_;
+  MockSigninDelegate signin_delegate_;
   MockMsbbDelegate msbb_delegate_;
   std::unique_ptr<CompanionUrlBuilder> url_builder_;
 };
@@ -101,10 +111,13 @@ TEST_F(CompanionUrlBuilderTest, MsbbOff) {
 
   // URL shouldn't be sent when MSBB is off.
   EXPECT_EQ(proto.page_url(), std::string());
+  EXPECT_FALSE(proto.signin_allowed_and_required());
   EXPECT_FALSE(proto.has_msbb_enabled());
 }
 
 TEST_F(CompanionUrlBuilderTest, MsbbOn) {
+  EXPECT_CALL(signin_delegate_, AllowedSignin())
+      .WillRepeatedly(testing::Return(true));
   GURL page_url(kValidUrl);
   EXPECT_CALL(msbb_delegate_, IsMsbbEnabled())
       .WillRepeatedly(testing::Return(true));
@@ -124,6 +137,7 @@ TEST_F(CompanionUrlBuilderTest, MsbbOn) {
   // Verify fields inside protobuf.
   EXPECT_EQ(proto.page_url(), page_url.spec());
   EXPECT_TRUE(proto.has_msbb_enabled());
+  EXPECT_TRUE(proto.signin_allowed_and_required());
 
   // Verify promo state.
   EXPECT_TRUE(proto.has_promo_state());

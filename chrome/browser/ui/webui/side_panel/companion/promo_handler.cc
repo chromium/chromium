@@ -7,14 +7,18 @@
 #include "chrome/browser/ui/webui/side_panel/companion/companion.mojom.h"
 #include "chrome/browser/ui/webui/side_panel/companion/constants.h"
 #include "chrome/browser/ui/webui/side_panel/companion/msbb_delegate.h"
+#include "chrome/browser/ui/webui/side_panel/companion/signin_delegate.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
 
 namespace companion {
 
 PromoHandler::PromoHandler(PrefService* pref_service,
+                           SigninDelegate* signin_delegate,
                            MsbbDelegate* msbb_delegate)
-    : pref_service_(pref_service), msbb_delegate_(msbb_delegate) {}
+    : pref_service_(pref_service),
+      signin_delegate_(signin_delegate),
+      msbb_delegate_(msbb_delegate) {}
 
 PromoHandler::~PromoHandler() = default;
 
@@ -39,9 +43,13 @@ void PromoHandler::OnPromoAction(PromoType promo_type,
 void PromoHandler::OnSigninPromo(PromoAction promo_action) {
   if (promo_action == PromoAction::kRejected) {
     IncrementPref(kSigninPromoDeclinedCountPref);
-  } else if (promo_action == PromoAction::kAccepted) {
-    // TODO(b/273792326): Start sign-in flow.
   }
+
+  if (promo_action != PromoAction::kAccepted) {
+    return;
+  }
+
+  signin_delegate_->StartSigninFlow();
 }
 
 void PromoHandler::OnMsbbPromo(PromoAction promo_action) {

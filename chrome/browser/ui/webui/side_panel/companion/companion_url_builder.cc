@@ -9,6 +9,7 @@
 #include "chrome/browser/ui/webui/side_panel/companion/constants.h"
 #include "chrome/browser/ui/webui/side_panel/companion/msbb_delegate.h"
 #include "chrome/browser/ui/webui/side_panel/companion/proto/companion_url_params.pb.h"
+#include "chrome/browser/ui/webui/side_panel/companion/signin_delegate.h"
 #include "components/prefs/pref_service.h"
 #include "net/base/url_util.h"
 #include "url/gurl.h"
@@ -56,8 +57,11 @@ bool IsValidPageURLForCompanion(const GURL& url) {
 }  // namespace
 
 CompanionUrlBuilder::CompanionUrlBuilder(PrefService* pref_service,
+                                         SigninDelegate* signin_delegate,
                                          MsbbDelegate* msbb_delegate)
-    : pref_service_(pref_service), msbb_delegate_(msbb_delegate) {}
+    : pref_service_(pref_service),
+      signin_delegate_(signin_delegate),
+      msbb_delegate_(msbb_delegate) {}
 
 CompanionUrlBuilder::~CompanionUrlBuilder() = default;
 
@@ -70,6 +74,9 @@ GURL CompanionUrlBuilder::BuildCompanionURL(GURL page_url) {
   if (is_msbb_enabled && IsValidPageURLForCompanion(page_url)) {
     url_params.set_page_url(page_url.spec());
   }
+
+  url_params.set_has_msbb_enabled(is_msbb_enabled);
+  url_params.set_signin_allowed_and_required(signin_delegate_->AllowedSignin());
 
   companion::proto::PromoState* promo_state = url_params.mutable_promo_state();
   promo_state->set_signin_promo_denial_count(

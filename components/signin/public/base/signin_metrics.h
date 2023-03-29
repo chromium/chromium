@@ -183,6 +183,8 @@ enum class AccessPoint : int {
   ACCESS_POINT_REAUTH_INFO_BAR = 48,
   // Access point for the consistency service.
   ACCESS_POINT_ACCOUNT_CONSISTENCY_SERVICE = 49,
+  // Access point for the search companion sign-in promo.
+  ACCESS_POINT_SEARCH_COMPANION = 50,
 
   // Add values above this line with a corresponding label to the
   // "SigninAccessPoint" enum in tools/metrics/histograms/enums.xml

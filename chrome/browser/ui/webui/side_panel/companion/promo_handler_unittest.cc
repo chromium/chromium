@@ -7,6 +7,7 @@
 #include "chrome/browser/ui/webui/side_panel/companion/companion.mojom.h"
 #include "chrome/browser/ui/webui/side_panel/companion/constants.h"
 #include "chrome/browser/ui/webui/side_panel/companion/msbb_delegate.h"
+#include "chrome/browser/ui/webui/side_panel/companion/signin_delegate.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/testing_pref_service.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -21,6 +22,12 @@ class MockMsbbDelegate : public MsbbDelegate {
   MOCK_METHOD0(IsMsbbEnabled, bool());
 };
 
+class MockSigninDelegate : public SigninDelegate {
+ public:
+  MOCK_METHOD0(AllowedSignin, bool());
+  MOCK_METHOD0(StartSigninFlow, void());
+};
+
 }  // namespace
 
 class PromoHandlerTest : public testing::Test {
@@ -30,12 +37,13 @@ class PromoHandlerTest : public testing::Test {
 
   void SetUp() override {
     PromoHandler::RegisterProfilePrefs(pref_service_.registry());
-    promo_handler_ =
-        std::make_unique<PromoHandler>(&pref_service_, &msbb_delegate_);
+    promo_handler_ = std::make_unique<PromoHandler>(
+        &pref_service_, &signin_delegate_, &msbb_delegate_);
   }
 
  protected:
   TestingPrefServiceSimple pref_service_;
+  MockSigninDelegate signin_delegate_;
   MockMsbbDelegate msbb_delegate_;
   std::unique_ptr<PromoHandler> promo_handler_;
 };
@@ -52,8 +60,8 @@ TEST_F(PromoHandlerTest, SigninPromo) {
   promo_handler_->OnPromoAction(PromoType::kSignin, PromoAction::kRejected);
   EXPECT_EQ(1, pref_service_.GetInteger(kSigninPromoDeclinedCountPref));
 
+  EXPECT_CALL(signin_delegate_, StartSigninFlow()).Times(1);
   promo_handler_->OnPromoAction(PromoType::kSignin, PromoAction::kAccepted);
-  // TODO(b/273792326): Add test.
 }
 
 TEST_F(PromoHandlerTest, LabsPromo) {

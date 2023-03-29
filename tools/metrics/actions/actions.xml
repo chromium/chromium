@@ -30872,6 +30872,14 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="Signin_Impression_FromSearchCompanion">
+  <owner>shaktisahu@google.com</owner>
+  <owner>chrome-signin-team@chromium.org</owner>
+  <description>
+    Recorded when showing sign in promo in the search companion.
+  </description>
+</action>
+
 <action name="Signin_Impression_FromSendTabToSelfPromo">
   <owner>victorvianna@google.com</owner>
   <owner>harrisonsean@chromium.org</owner>
@@ -31572,6 +31580,15 @@ should be able to be added at any place in this file.
   <description>
     Recorded on sign in start from access point
     signin_metrics::AccessPoint::ACCESS_POINT_SAVE_CARD_BUBBLE.
+  </description>
+</action>
+
+<action name="Signin_Signin_FromSearchCompanion">
+  <owner>shaktisahu@google.com</owner>
+  <owner>chrome-signin-team@chromium.org</owner>
+  <description>
+    Recorded on sign in start from access point
+    signin_metrics::AccessPoint::ACCESS_POINT_SEARCH_COMPANION.
   </description>
 </action>
 

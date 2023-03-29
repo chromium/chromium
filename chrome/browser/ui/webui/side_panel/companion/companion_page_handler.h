@@ -26,6 +26,7 @@ class CompanionSidePanelUntrustedUI;
 namespace companion {
 class CompanionUrlBuilder;
 class PromoHandler;
+class SigninDelegate;
 
 class CompanionPageHandler : public side_panel::mojom::CompanionPageHandler,
                              public content::WebContentsObserver,
@@ -62,6 +63,7 @@ class CompanionPageHandler : public side_panel::mojom::CompanionPageHandler,
   mojo::Remote<side_panel::mojom::CompanionPage> page_;
   raw_ptr<Browser> browser_;
   raw_ptr<CompanionSidePanelUntrustedUI> companion_untrusted_ui_ = nullptr;
+  std::unique_ptr<SigninDelegate> signin_delegate_;
   std::unique_ptr<CompanionUrlBuilder> url_builder_;
 #if BUILDFLAG(ENABLE_LENS_DESKTOP_GOOGLE_BRANDED_FEATURES)
   std::unique_ptr<lens::LensRegionSearchController>
