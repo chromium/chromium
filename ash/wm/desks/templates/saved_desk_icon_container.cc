@@ -12,6 +12,7 @@
 #include "ash/public/cpp/shelf_types.h"
 #include "ash/public/cpp/window_properties.h"
 #include "ash/shell.h"
+#include "ash/wm/desks/templates/saved_desk_constants.h"
 #include "ash/wm/desks/templates/saved_desk_icon_view.h"
 #include "base/check.h"
 #include "base/containers/contains.h"
@@ -27,9 +28,6 @@
 namespace ash {
 
 namespace {
-
-// The space between icon views.
-constexpr int kIconSpacingDp = 8;
 
 bool IsBrowserAppId(const std::string& app_id) {
   return app_id == app_constants::kChromeAppId ||
@@ -152,7 +150,7 @@ void InsertIconIdentifierToIconInfoFromLaunchList(
 SavedDeskIconContainer::SavedDeskIconContainer() {
   views::Builder<SavedDeskIconContainer>(this)
       .SetOrientation(views::BoxLayout::Orientation::kHorizontal)
-      .SetBetweenChildSpacing(kIconSpacingDp)
+      .SetBetweenChildSpacing(kSaveDeskSpacingDp)
       .BuildChildren();
 }
 
@@ -275,11 +273,12 @@ void SavedDeskIconContainer::UpdateOverflowIcon() {
   SavedDeskIconView* overflow_icon_view =
       static_cast<SavedDeskIconView*>(overflow_icon_view_);
   const int available_width = bounds().width();
-  int used_width = -kIconSpacingDp;
+  int used_width = -kSaveDeskSpacingDp;
   base::ranges::for_each(
       icon_views, [&used_width](SavedDeskIconView* icon_view) {
         if (!icon_view->IsOverflowIcon()) {
-          used_width += icon_view->GetPreferredSize().width() + kIconSpacingDp;
+          used_width +=
+              icon_view->GetPreferredSize().width() + kSaveDeskSpacingDp;
         }
       });
 
@@ -292,13 +291,14 @@ void SavedDeskIconContainer::UpdateOverflowIcon() {
     int needed_overflow_icon_width = 0;
     if (overflow_icon_view->GetCount()) {
       needed_overflow_icon_width =
-          overflow_icon_view_->GetPreferredSize().width() + kIconSpacingDp;
+          overflow_icon_view_->GetPreferredSize().width() + kSaveDeskSpacingDp;
     }
     if (used_width + needed_overflow_icon_width > available_width ||
         num_shown_icons > kMaxIcons) {
       if (icon_views[i]->GetVisible())
         icon_views[i]->SetVisible(false);
-      used_width -= icon_views[i]->GetPreferredSize().width() + kIconSpacingDp;
+      used_width -=
+          icon_views[i]->GetPreferredSize().width() + kSaveDeskSpacingDp;
       num_hidden_apps += icon_views[i]->GetCount();
       num_shown_icons--;
       overflow_icon_view->UpdateCount(num_hidden_apps);
