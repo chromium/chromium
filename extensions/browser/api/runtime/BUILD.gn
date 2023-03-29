@@ -19,6 +19,7 @@ source_set("runtime") {
 
   deps = [
     "//components/prefs",
+    "//components/sessions",
     "//content/public/browser",
     "//extensions/common",
     "//extensions/common/api",

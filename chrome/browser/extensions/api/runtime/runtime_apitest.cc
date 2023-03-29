@@ -17,6 +17,7 @@
 #include "chrome/browser/extensions/extension_apitest.h"
 #include "chrome/browser/extensions/extension_function_test_utils.h"
 #include "chrome/browser/extensions/extension_service.h"
+#include "chrome/browser/extensions/extension_tab_util.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/version_info/channel.h"
 #include "content/public/test/browser_test.h"
@@ -26,6 +27,7 @@
 #include "extensions/browser/background_script_executor.h"
 #include "extensions/browser/blocklist_extension_prefs.h"
 #include "extensions/browser/blocklist_state.h"
+#include "extensions/browser/extension_api_frame_id_map.h"
 #include "extensions/browser/extension_dialog_auto_confirm.h"
 #include "extensions/browser/extension_function.h"
 #include "extensions/browser/extension_prefs.h"
@@ -631,19 +633,21 @@ class RuntimeGetContextsApiTest : public ExtensionApiTest {
     test_dir_.WriteManifest(kManifest);
     test_dir_.WriteFile(FILE_PATH_LITERAL("background.js"),
                         "// Intentionally blank");
+    test_dir_.WriteFile(FILE_PATH_LITERAL("page.html"),
+                        "<html>Hello, world!</html>");
     extension_ = LoadExtension(test_dir_.UnpackedPath());
     ASSERT_TRUE(extension_);
   }
 
   // Runs `chrome.runtime.getContexts()` and returns the result as a
   // base::Value.
-  base::Value GetContexts(const char* filter) {
+  base::Value GetContexts(base::StringPiece filter) {
     static constexpr char kScriptTemplate[] =
         R"((async () => {
              chrome.test.sendScriptResult(
                  await chrome.runtime.getContexts(%s));
            })();)";
-    std::string script = base::StringPrintf(kScriptTemplate, filter);
+    std::string script = base::StringPrintf(kScriptTemplate, filter.data());
     return BackgroundScriptExecutor::ExecuteScript(
         profile(), extension_->id(), script,
         BackgroundScriptExecutor::ResultCapture::kSendScriptResult);
@@ -653,7 +657,7 @@ class RuntimeGetContextsApiTest : public ExtensionApiTest {
   // of strongly-typed `ExtensionContext`s. Expects the getContexts() call to
   // return a valid value (i.e., not throw an error).
   std::vector<api::runtime::ExtensionContext> GetContextStructs(
-      const char* filter) {
+      base::StringPiece filter) {
     base::Value value = GetContexts(filter);
     if (!value.is_list()) {
       ADD_FAILURE() << "Invalid return value: " << value;
@@ -693,6 +697,19 @@ class RuntimeGetContextsApiTest : public ExtensionApiTest {
                        testing::Eq(-1)));
   }
 
+  // Returns a matcher that expects an ExtensionContext to correspond to a
+  // frame-based context type (without testing the details of the entry).
+  auto GetFrameMatcher(api::runtime::ContextType context_type,
+                       const GURL& url) {
+    return testing::AllOf(
+        testing::Field(&api::runtime::ExtensionContext::context_type,
+                       testing::Eq(context_type)),
+        testing::Field(&api::runtime::ExtensionContext::document_url,
+                       testing::Eq(url.spec())));
+  }
+
+  const Extension& extension() const { return *extension_; }
+
  private:
   raw_ptr<const Extension, DanglingUntriaged> extension_ = nullptr;
   TestExtensionDir test_dir_;
@@ -728,8 +745,26 @@ IN_PROC_BROWSER_TEST_F(RuntimeGetContextsApiTest, GetServiceWorkerContext) {
 
 // Tests the filter matching behavior of `runtime.getContexts()`.
 IN_PROC_BROWSER_TEST_F(RuntimeGetContextsApiTest, FilterMatching) {
-  // Currently, there is only one context: the background service worker.
+  // Currently, there is only one context: the background service worker. Also
+  // open a tab-based context.
+  const GURL extension_page_url = extension().GetResourceURL("page.html");
+  content::RenderFrameHost* new_host =
+      ui_test_utils::NavigateToURL(browser(), extension_page_url);
+  ASSERT_TRUE(new_host);
+  content::WebContents* web_contents =
+      content::WebContents::FromRenderFrameHost(new_host);
+  int tab_id = ExtensionTabUtil::GetTabId(web_contents);
 
+  {
+    // Pass a filter matching everything. Both the tab context and worker
+    // context should be returned.
+    std::vector<api::runtime::ExtensionContext> contexts =
+        GetContextStructs(R"({})");
+    EXPECT_THAT(contexts, testing::UnorderedElementsAre(
+                              GetBackgroundMatcher(),
+                              GetFrameMatcher(api::runtime::CONTEXT_TYPE_TAB,
+                                              extension_page_url)));
+  }
   {
     // Passing a filter to match background contexts should match the worker.
     std::vector<api::runtime::ExtensionContext> contexts =
@@ -737,8 +772,18 @@ IN_PROC_BROWSER_TEST_F(RuntimeGetContextsApiTest, FilterMatching) {
     EXPECT_THAT(contexts, testing::ElementsAre(GetBackgroundMatcher()));
   }
   {
-    // Try passing a filter for a different context type. No contexts should
-    // match.
+    // Passing a filter to match a tab ID should match the corresponding
+    // page context.
+    std::string filter = base::StringPrintf(R"({"tabIds": [%d]})", tab_id);
+    std::vector<api::runtime::ExtensionContext> contexts =
+        GetContextStructs(filter);
+    EXPECT_THAT(contexts,
+                testing::ElementsAre(GetFrameMatcher(
+                    api::runtime::CONTEXT_TYPE_TAB, extension_page_url)));
+  }
+  {
+    // Try passing a filter for a context type with no corresponding matches. No
+    // contexts should be returned.
     std::vector<api::runtime::ExtensionContext> contexts =
         GetContextStructs(R"({"contextTypes": ["POPUP"]})");
     EXPECT_THAT(contexts, testing::IsEmpty());
@@ -766,5 +811,48 @@ IN_PROC_BROWSER_TEST_F(RuntimeGetContextsApiTest, FilterMatching) {
     EXPECT_THAT(contexts, testing::IsEmpty());
   }
 }
+
+// Tests retrieving tab contexts using `chrome.runtime.getContexts()`.
+IN_PROC_BROWSER_TEST_F(RuntimeGetContextsApiTest, GetTabContext) {
+  // Open a new extension tab.
+  const GURL frame_url = extension().GetResourceURL("page.html");
+  content::RenderFrameHost* new_host =
+      ui_test_utils::NavigateToURL(browser(), frame_url);
+  ASSERT_TRUE(new_host);
+  content::WebContents* web_contents =
+      content::WebContents::FromRenderFrameHost(new_host);
+
+  int expected_tab_id = ExtensionTabUtil::GetTabId(web_contents);
+  int expected_window_id = ExtensionTabUtil::GetWindowIdOfTab(web_contents);
+  int expected_frame_id = ExtensionApiFrameIdMap::GetFrameId(new_host);
+  std::string expected_document_id =
+      ExtensionApiFrameIdMap::GetDocumentId(new_host).ToString();
+  std::string expected_frame_url = frame_url.spec();
+  std::string expected_origin = extension().origin().Serialize();
+
+  // Query for tab-based contexts. There should only be one.
+  base::Value background_contexts = GetContexts(R"({"contextTypes": ["TAB"]})");
+
+  // Verify the properties of the returned context.
+  static constexpr char kExpectedTemplate[] =
+      R"([{
+            "contextType": "TAB",
+            "contextId": "",
+            "tabId": %d,
+            "windowId": %d,
+            "frameId": %d,
+            "documentId": "%s",
+            "documentUrl": "%s",
+            "documentOrigin": "%s",
+            "incognito": false
+         }])";
+  std::string expected =
+      base::StringPrintf(kExpectedTemplate, expected_tab_id, expected_window_id,
+                         expected_frame_id, expected_document_id.c_str(),
+                         expected_frame_url.c_str(), expected_origin.c_str());
+  EXPECT_THAT(background_contexts, base::test::IsJson(expected));
+}
+
+// TODO(crbug/1426192): Add tests for offscreen documents, popups, etc.
 
 }  // namespace extensions

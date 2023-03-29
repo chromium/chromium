@@ -334,7 +334,13 @@ class RuntimeGetContextsFunction : public ExtensionFunction {
   ~RuntimeGetContextsFunction() override;
   ResponseAction Run() override;
 
+  // Returns the context for the extension background service worker, if the
+  // worker is active. Otherwise, returns nullopt.
   absl::optional<api::runtime::ExtensionContext> GetWorkerContext();
+
+  // Returns a collection of all frame-based extension contexts for the
+  // extension.
+  std::vector<api::runtime::ExtensionContext> GetFrameContexts();
 };
 
 }  // namespace extensions

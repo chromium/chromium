@@ -19,12 +19,14 @@
 #include "base/version.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
+#include "components/sessions/content/session_tab_helper.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/child_process_security_policy.h"
 #include "extensions/browser/api/runtime/runtime_api_delegate.h"
 #include "extensions/browser/blocklist_extension_prefs.h"
 #include "extensions/browser/event_router.h"
 #include "extensions/browser/events/lazy_event_dispatch_util.h"
+#include "extensions/browser/extension_api_frame_id_map.h"
 #include "extensions/browser/extension_host.h"
 #include "extensions/browser/extension_prefs.h"
 #include "extensions/browser/extension_system.h"
@@ -32,6 +34,7 @@
 #include "extensions/browser/lazy_context_id.h"
 #include "extensions/browser/lazy_context_task_queue.h"
 #include "extensions/browser/process_manager_factory.h"
+#include "extensions/browser/view_type_utils.h"
 #include "extensions/common/api/runtime.h"
 #include "extensions/common/constants.h"
 #include "extensions/common/extension.h"
@@ -813,6 +816,11 @@ ExtensionFunction::ResponseAction RuntimeGetContextsFunction::Run() {
     }
   }
 
+  std::vector<api::runtime::ExtensionContext> frame_contexts =
+      GetFrameContexts();
+  result.insert(result.end(), std::make_move_iterator(frame_contexts.begin()),
+                std::make_move_iterator(frame_contexts.end()));
+
   // Erase any contexts that don't match the specified filter.
   base::EraseIf(result,
                 [&filter](const api::runtime::ExtensionContext& context) {
@@ -847,6 +855,77 @@ RuntimeGetContextsFunction::GetWorkerContext() {
   context.frame_id = -1;
   context.incognito = browser_context()->IsOffTheRecord();
   return context;
+}
+
+std::vector<api::runtime::ExtensionContext>
+RuntimeGetContextsFunction::GetFrameContexts() {
+  ProcessManager* const process_manager =
+      ProcessManager::Get(browser_context());
+  CHECK(process_manager);
+
+  auto get_context_type = [](content::WebContents* web_contents) {
+    mojom::ViewType view_type = GetViewType(web_contents);
+    switch (view_type) {
+      // These should never be reached for extensions capable of calling this
+      // method.
+      case mojom::ViewType::kInvalid:
+      case mojom::ViewType::kAppWindow:
+      case mojom::ViewType::kBackgroundContents:
+      case mojom::ViewType::kComponent:
+      case mojom::ViewType::kExtensionBackgroundPage:
+      case mojom::ViewType::kExtensionDialog:
+        NOTREACHED();
+        break;
+
+      case mojom::ViewType::kExtensionPopup:
+        return api::runtime::CONTEXT_TYPE_POPUP;
+      case mojom::ViewType::kTabContents:
+        return api::runtime::CONTEXT_TYPE_TAB;
+      case mojom::ViewType::kOffscreenDocument:
+        return api::runtime::CONTEXT_TYPE_OFFSCREEN_DOCUMENT;
+
+      case mojom::ViewType::kExtensionSidePanel:
+      case mojom::ViewType::kExtensionGuest:
+        // Skip these view types for now.
+        break;
+    }
+
+    return api::runtime::CONTEXT_TYPE_NONE;
+  };
+
+  ProcessManager::FrameSet frames =
+      process_manager->GetRenderFrameHostsForExtension(extension()->id());
+  std::vector<api::runtime::ExtensionContext> results;
+
+  for (content::RenderFrameHost* host : frames) {
+    content::WebContents* web_contents =
+        content::WebContents::FromRenderFrameHost(host);
+    CHECK(web_contents);
+
+    auto context_type = get_context_type(web_contents);
+    if (context_type == api::runtime::CONTEXT_TYPE_NONE) {
+      // Skip unsupported contexts.
+      continue;
+    }
+
+    api::runtime::ExtensionContext context;
+    context.context_type = context_type;
+    // TODO(crbug/1426192): Add a real context id.
+    context.context_id = "";
+    context.tab_id = sessions::SessionTabHelper::IdForTab(web_contents).id();
+    context.window_id =
+        sessions::SessionTabHelper::IdForWindowContainingTab(web_contents).id();
+    context.document_id =
+        ExtensionApiFrameIdMap::GetDocumentId(host).ToString();
+    context.frame_id = ExtensionApiFrameIdMap::GetFrameId(host);
+    context.document_url = host->GetLastCommittedURL().spec();
+    context.document_origin = host->GetLastCommittedOrigin().Serialize();
+    context.incognito = host->GetBrowserContext()->IsOffTheRecord();
+
+    results.push_back(std::move(context));
+  }
+
+  return results;
 }
 
 }  // namespace extensions
