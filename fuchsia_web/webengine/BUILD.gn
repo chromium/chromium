@@ -405,7 +405,6 @@ source_set("switches") {
   visibility += [
     "//fuchsia_web/shell:cast_streaming_shell_exe",
     "//fuchsia_web/webinstance_host:webinstance_host",
-    "//fuchsia_web/webinstance_host:webinstance_host_v1",
   ]
   deps = [ "//base" ]
   public_deps = [ "//build:chromecast_buildflags" ]
@@ -466,11 +465,6 @@ fuchsia_component("web_instance_with_svc_directory_component") {
   include_coverage_shard = false
 }
 
-fuchsia_component("web_instance_component_cfv1") {
-  manifest = "web_instance.cmx"
-  data_deps = [ ":web_engine_exe" ]
-}
-
 # Component definition for the legacy fuchsia.web.ContextProvider service.
 # TODO(crbug.com/1010222): Remove once all callers have migrated to launching
 # instances directly as Components.
@@ -484,7 +478,6 @@ fuchsia_package("web_engine") {
   deps = [
     ":context_provider_component",
     ":web_instance_component",
-    ":web_instance_component_cfv1",
     ":web_instance_with_svc_directory_component",
   ]
   excluded_files = _web_engine_excluded_files
@@ -506,7 +499,6 @@ fuchsia_package("web_engine_with_webui") {
   # TODO(fxbug.dev/100944): Add appropriate visibility when fixed.
   deps = [
     ":web_instance_component",
-    ":web_instance_component_cfv1",
     ":webui_resources",
   ]
   excluded_files = _web_engine_excluded_files
