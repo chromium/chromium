@@ -1,6 +1,7 @@
 <style>
   :host {
     width: 100%;
+    --gap-size: 12px;
   }
 
   :host-context(.focus-outline-visible) #showAllButton:focus,
@@ -14,20 +15,20 @@
     border: none;
     color: var(--color-new-tab-page-link);
     cursor: pointer;
-    font-size: 13px;
+    font-size: var(--ntp-module-text-size);
   }
 
   .small-tiles {
     display: flex;
     flex-direction: row;
-    gap: 16px;
+    gap: var(--gap-size);
     grid-column: 2 / 3;
     grid-row: 1 / 2;
   }
 
   .layout {
     display: grid;
-    grid-gap: 16px 16px;
+    grid-gap: var(--gap-size) var(--gap-size);
     grid-template-columns: repeat(2, 1fr);
     grid-template-rows: repeat(2, 1fr);
     padding: 0 24px 24px;
