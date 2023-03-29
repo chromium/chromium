@@ -4640,6 +4640,8 @@ if (enable_java_templates && is_android) {
       }
     }
 
+    _target_label = get_label_info(":$target_name", "label_no_toolchain")
+
     # Create android_java_prebuilt target for classes.jar.
     if (_scanned_files.has_classes_jar) {
       _java_library_vars = [
@@ -4668,7 +4670,7 @@ if (enable_java_templates && is_android) {
           jar_path = "$_output_path/${_tuple[1]}"
           _base_output_name = get_path_info(jar_path, "name")
           output_name = "${invoker.target_name}-$_base_output_name"
-          public_target_label = invoker.target_name
+          public_target_label = _target_label
         }
       }
 
@@ -4704,7 +4706,7 @@ if (enable_java_templates && is_android) {
             proguard_configs += [ "$_output_path/proguard.txt" ]
           }
         }
-        public_target_label = invoker.target_name
+        public_target_label = _target_label
       }
     }
 
