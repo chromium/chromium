@@ -19,7 +19,7 @@ BlurFilterOperation* ResolveBlur(const Dictionary& blur_dict,
                                  ExceptionState& exception_state) {
   absl::optional<double> std_deviation =
       blur_dict.Get<IDLDouble>("stdDeviation", exception_state);
-  if (!std_deviation) {
+  if (!std_deviation.has_value()) {
     exception_state.ThrowTypeError(
         "Failed to construct blur filter, 'stdDeviation' required and must be "
         "a number.");
@@ -36,7 +36,7 @@ ColorMatrixFilterOperation* ResolveColorMatrix(
   absl::optional<Vector<float>> values =
       dict.Get<IDLSequence<IDLFloat>>("values", exception_state);
 
-  if (!values) {
+  if (!values.has_value()) {
     exception_state.ThrowTypeError(
         "Failed to construct color matrix filter, 'values' array required.");
     return nullptr;
@@ -65,7 +65,7 @@ absl::optional<KernelMatrix> GetKernelMatrix(const Dictionary& dict,
   absl::optional<Vector<Vector<float>>> km_input =
       dict.Get<IDLSequence<IDLSequence<IDLFloat>>>("kernelMatrix",
                                                    exception_state);
-  if (!km_input || km_input->size() == 0) {
+  if (!km_input.has_value() || km_input->size() == 0) {
     exception_state.ThrowTypeError(
         "Failed to construct convolve matrix filter. 'kernelMatrix' must be an "
         "array of arrays of numbers representing an n by m matrix.");
@@ -73,20 +73,20 @@ absl::optional<KernelMatrix> GetKernelMatrix(const Dictionary& dict,
   }
   KernelMatrix result;
   result.height = km_input->size();
-  result.width = km_input.value()[0].size();
+  result.width = km_input->at(0).size();
 
-  for (uint32_t y = 0; y < result.height; ++y) {
-    if (km_input.value()[y].size() != result.width) {
+  for (const Vector<float>& row : *km_input) {
+    if (row.size() != result.width) {
       exception_state.ThrowTypeError(
           "Failed to construct convolve matrix filter. All rows of the "
           "'kernelMatrix' must be the same length.");
       return absl::nullopt;
     }
 
-    result.values.AppendVector(km_input.value()[y]);
+    result.values.AppendVector(row);
   }
 
-  return absl::optional<KernelMatrix>(result);
+  return result;
 }
 
 ConvolveMatrixFilterOperation* ResolveConvolveMatrix(
@@ -95,8 +95,9 @@ ConvolveMatrixFilterOperation* ResolveConvolveMatrix(
   absl::optional<KernelMatrix> kernel_matrix =
       GetKernelMatrix(dict, exception_state);
 
-  if (!kernel_matrix)
+  if (!kernel_matrix.has_value()) {
     return nullptr;
+  }
 
   gfx::Size kernel_size(kernel_matrix->width, kernel_matrix->height);
   double divisor = dict.Get<IDLDouble>("divisor", exception_state).value_or(1);
@@ -159,8 +160,9 @@ ComponentTransferFunction GetComponentTransferFunction(
 
   absl::optional<Vector<float>> table_values =
       transfer_dict.Get<IDLSequence<IDLFloat>>("tableValues", exception_state);
-  if (table_values)
-    result.table_values.AppendVector(table_values.value());
+  if (table_values.has_value()) {
+    result.table_values.AppendVector(*table_values);
+  }
 
   return result;
 }
@@ -198,8 +200,8 @@ TurbulenceFilterOperation* ResolveTurbulence(const Dictionary& dict,
     exception_state.ClearException();
     // An array size of one is parse-able as a float.
     if (base_frequency_array.has_value() && base_frequency_array->size() == 2) {
-      base_frequency_x = base_frequency_array.value()[0];
-      base_frequency_y = base_frequency_array.value()[1];
+      base_frequency_x = base_frequency_array->at(0);
+      base_frequency_y = base_frequency_array->at(1);
     } else {
       // Otherwise, see if it the input can be interpreted as a float.
       absl::optional<float> base_frequency_float =
@@ -210,8 +212,8 @@ TurbulenceFilterOperation* ResolveTurbulence(const Dictionary& dict,
             "a number or list of two numbers.");
         return nullptr;
       }
-      base_frequency_x = base_frequency_float.value();
-      base_frequency_y = base_frequency_float.value();
+      base_frequency_x = *base_frequency_float;
+      base_frequency_y = *base_frequency_float;
     }
     if (base_frequency_x < 0 || base_frequency_y < 0) {
       exception_state.ThrowTypeError(
@@ -229,7 +231,7 @@ TurbulenceFilterOperation* ResolveTurbulence(const Dictionary& dict,
           "Failed to construct turbulence filter, \"seed\" must be a number.");
       return nullptr;
     }
-    seed = seed_input.value();
+    seed = *seed_input;
   }
 
   if (dict.HasProperty("numOctaves", no_throw)) {
@@ -238,13 +240,13 @@ TurbulenceFilterOperation* ResolveTurbulence(const Dictionary& dict,
     absl::optional<float> num_octaves_input =
         dict.Get<IDLFloat>("numOctaves", exception_state);
     if (exception_state.HadException() || !num_octaves_input.has_value() ||
-        num_octaves_input.value() < 0) {
+        *num_octaves_input < 0) {
       exception_state.ThrowTypeError(
           "Failed to construct turbulence filter, \"numOctaves\" must be a "
           "positive number.");
       return nullptr;
     }
-    num_octaves = static_cast<int>(num_octaves_input.value());
+    num_octaves = static_cast<int>(*num_octaves_input);
   }
 
   if (dict.HasProperty("stitchTiles", no_throw)) {
@@ -253,7 +255,7 @@ TurbulenceFilterOperation* ResolveTurbulence(const Dictionary& dict,
     if (exception_state.HadException() || !stitch_tiles_input.has_value() ||
         (stitch_tiles = static_cast<SVGStitchOptions>(
              GetEnumerationMap<SVGStitchOptions>().ValueFromName(
-                 stitch_tiles_input.value()))) == 0) {
+                 *stitch_tiles_input))) == 0) {
       exception_state.ThrowTypeError(
           "Failed to construct turbulence filter, \"stitchTiles\" must be "
           "either \"stitch\" or \"noStitch\".");
@@ -266,8 +268,8 @@ TurbulenceFilterOperation* ResolveTurbulence(const Dictionary& dict,
         dict.Get<IDLString>("type", exception_state);
     if (exception_state.HadException() || !type_input.has_value() ||
         (type = static_cast<TurbulenceType>(
-             GetEnumerationMap<TurbulenceType>().ValueFromName(
-                 type_input.value()))) == 0) {
+             GetEnumerationMap<TurbulenceType>().ValueFromName(*type_input))) ==
+            0) {
       exception_state.ThrowTypeError(
           "Failed to construct turbulence filter, \"type\" must be either "
           "\"turbulence\" or \"fractalNoise\".");
