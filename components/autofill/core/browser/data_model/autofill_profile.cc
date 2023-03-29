@@ -216,7 +216,9 @@ AutofillProfile::AutofillProfile(const std::string& guid,
       phone_number_(this),
       record_type_(LOCAL_PROFILE),
       has_converted_(false),
-      source_(source) {}
+      source_(source),
+      initial_creator_id_(kInitialCreatorOrModifierChrome),
+      last_modifier_id_(kInitialCreatorOrModifierChrome) {}
 
 // TODO(crbug.com/1177366): Remove this constructor.
 AutofillProfile::AutofillProfile(RecordType type, const std::string& server_id)

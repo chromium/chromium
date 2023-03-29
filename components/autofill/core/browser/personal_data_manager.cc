@@ -799,6 +799,11 @@ AutofillProfile* PersonalDataManager::GetProfileByGUID(
 }
 
 bool PersonalDataManager::IsEligibleForAddressAccountStorage() const {
+  if (base::FeatureList::IsEnabled(
+          autofill::features::test::
+              kAutofillCreateAccountProfilesFromSettings)) {
+    return true;
+  }
   // The CONTACT_INFO data type is only running for eligible users. See
   // ContactInfoModelTypeController.
   return sync_service_ &&
