@@ -74,9 +74,14 @@ class PersistedData : public base::RefCountedThreadSafe<PersistedData> {
   std::string GetAP(const std::string& id) const;
   void SetAP(const std::string& id, const std::string& ap);
 
-  // These functions set the client-regulated-counting data for the specified
-  // id. The functions are for app migration only.
+  // These functions get/set the client-regulated-counting data for the
+  // specified id. The functions are for app migration only.
+  // The getters return nullopt when the persisted data does not have the
+  // corresponding value, or any node subtype is not expected along the
+  // path to the target value.
+  absl::optional<int> GetDateLastActive(const std::string& id) const;
   void SetDateLastActive(const std::string& id, int dla);
+  absl::optional<int> GetDateLastRollcall(const std::string& id) const;
   void SetDateLastRollcall(const std::string& id, int dlrc);
 
   // This function sets any non-empty field in the registration request object
@@ -134,6 +139,8 @@ class PersistedData : public base::RefCountedThreadSafe<PersistedData> {
   base::Value::Dict* GetOrCreateAppKey(const std::string& id,
                                        base::Value::Dict& root);
 
+  absl::optional<int> GetInteger(const std::string& id,
+                                 const std::string& key) const;
   void SetInteger(const std::string& id, const std::string& key, int value);
   std::string GetString(const std::string& id, const std::string& key) const;
   void SetString(const std::string& id,

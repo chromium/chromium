@@ -148,9 +148,21 @@ void PersistedData::SetAP(const std::string& id, const std::string& ap) {
 #endif
 }
 
+absl::optional<int> PersistedData::GetDateLastActive(
+    const std::string& id) const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  return GetInteger(id, kDLA);
+}
+
 void PersistedData::SetDateLastActive(const std::string& id, int dla) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   SetInteger(id, kDLA, dla);
+}
+
+absl::optional<int> PersistedData::GetDateLastRollcall(
+    const std::string& id) const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  return GetInteger(id, kDLRC);
 }
 
 void PersistedData::SetDateLastRollcall(const std::string& id, int dlrc) {
@@ -247,6 +259,25 @@ base::Value::Dict* PersistedData::GetOrCreateAppKey(const std::string& id,
   base::Value::Dict* apps = root.EnsureDict("apps");
   base::Value::Dict* app = apps->EnsureDict(base::ToLowerASCII(id));
   return app;
+}
+
+absl::optional<int> PersistedData::GetInteger(const std::string& id,
+                                              const std::string& key) const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (!pref_service_) {
+    return absl::nullopt;
+  }
+  ScopedDictPrefUpdate update(pref_service_,
+                              update_client::kPersistedDataPreference);
+  base::Value::Dict* apps = update->FindDict("apps");
+  if (!apps) {
+    return absl::nullopt;
+  }
+  base::Value::Dict* app = apps->FindDict(base::ToLowerASCII(id));
+  if (!app) {
+    return absl::nullopt;
+  }
+  return app->FindInt(key);
 }
 
 void PersistedData::SetInteger(const std::string& id,
