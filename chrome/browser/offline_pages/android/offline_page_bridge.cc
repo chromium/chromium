@@ -212,9 +212,6 @@ void PublishPageDone(
   if (result != SavePageResult::SUCCESS)
     file_path_or_empty = file_path;
 
-  UMA_HISTOGRAM_ENUMERATION("OfflinePages.Sharing.PublishInternalPageResult",
-                            result);
-
   base::android::RunStringCallbackAndroid(j_published_callback_obj,
                                           file_path.value());
 }

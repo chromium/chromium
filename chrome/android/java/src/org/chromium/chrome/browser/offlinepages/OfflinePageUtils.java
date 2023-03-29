@@ -19,7 +19,6 @@ import org.chromium.base.ApplicationStatus;
 import org.chromium.base.Callback;
 import org.chromium.base.ContentUriUtils;
 import org.chromium.base.Log;
-import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.base.task.AsyncTask;
 import org.chromium.base.task.PostTask;
@@ -44,7 +43,6 @@ import org.chromium.components.browser_ui.share.ShareParams;
 import org.chromium.components.dom_distiller.core.DomDistillerUrlUtils;
 import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.components.offline_items_collection.LaunchLocation;
-import org.chromium.components.offlinepages.SavePageResult;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.net.NetworkChangeNotifier;
@@ -313,20 +311,6 @@ public class OfflinePageUtils {
     }
 
     /**
-     * Records UMA data for publishing internal page during sharing.
-     * Most of the recording are in JNI layer, since it's a point that can be used by both ways of
-     * sharing a page.
-     * TODO(romax): See if we can merge that.
-     * @param result The result for publishing file.
-     */
-    public static void recordPublishPageResult(int result) {
-        // TODO(https://crbug.com/894714): Find a safer way to define the boundary value when
-        // using MAX_VALUE.
-        RecordHistogram.recordEnumeratedHistogram("OfflinePages.Sharing.PublishInternalPageResult",
-                result, SavePageResult.MAX_VALUE + 1);
-    }
-
-    /**
      * Save the page loaded in current tab and share the saved page.
      * @param tab The current tab from which the page is being shared.
      * @param shareCallback The callback to be used to send the ShareParams. This will only be
@@ -397,7 +381,6 @@ public class OfflinePageUtils {
         }
 
         boolean isOfflinePage = OfflinePageUtils.isOfflinePage(tab);
-        RecordHistogram.recordBooleanHistogram("OfflinePages.SharedPageWasOffline", isOfflinePage);
 
         // If the current tab is not showing an offline page, try to see if we should do live page
         // sharing.
@@ -468,7 +451,6 @@ public class OfflinePageUtils {
         // file if it resides in internal directory.
         offlinePageBridge.acquireFileAccessPermission(webContents, (granted) -> {
             if (!granted) {
-                recordPublishPageResult(SavePageResult.STORAGE_PERMISSION_DENIED);
                 return;
             }
 
@@ -920,30 +902,7 @@ public class OfflinePageUtils {
                     assert false;
                     return;
             }
-            recordTabRestoreHistogram(tabRestoreType, tab.getUrl().getSpec());
         }
-
-        /**
-         * If the tab was being restored, reports that it failed reloading its contents.
-         */
-        @Override
-        public void onPageLoadFailed(Tab tab, int errorCode) {
-            if (tab.isBeingRestored()) recordTabRestoreHistogram(TabRestoreType.FAILED, null);
-        }
-
-        /**
-         * If the tab was being restored, reports that it crashed while doing so.
-         */
-        @Override
-        public void onCrash(Tab tab) {
-            if (tab.isBeingRestored()) recordTabRestoreHistogram(TabRestoreType.CRASHED, null);
-        }
-    }
-
-    private static void recordTabRestoreHistogram(int tabRestoreType, String url) {
-        Log.d(TAG, "Concluded tab restore: type=" + tabRestoreType + ", url=" + url);
-        RecordHistogram.recordEnumeratedHistogram(
-                "OfflinePages.TabRestore", tabRestoreType, TabRestoreType.NUM_ENTRIES);
     }
 
     @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)

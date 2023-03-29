@@ -857,24 +857,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="OfflinePages.SharedPageWasOffline"
-    enum="OfflinePagesSharedPageWasOffline" expires_after="2021-06-25">
-  <owner>dewittj@chromium.org</owner>
-  <owner>offline-dev@chromium.org</owner>
-  <summary>Whether a shared page was an offline page or not.</summary>
-</histogram>
-
-<histogram name="OfflinePages.Sharing.PublishInternalPageResult"
-    enum="OfflinePagesSavePageResult" expires_after="2021-06-25">
-  <owner>dimich@chromium.org</owner>
-  <owner>offline-dev@chromium.org</owner>
-  <summary>
-    Result of publishing internal page while sharing. CANCELLED means the page
-    to publish isn't found. ALREADY_EXISTS means the page have already been
-    published before.
-  </summary>
-</histogram>
-
 <histogram name="OfflinePages.SQLStorage.StoreEvent"
     enum="OfflinePagesStoreEvent" expires_after="2021-06-25">
   <owner>sclittle@chromium.org</owner>
@@ -946,20 +928,6 @@ chromium-metrics-reviews@google.com.
   <summary>
     The percentage of storage space on internal volume (that contains the app
     directory) used by offline pages archives.
-  </summary>
-</histogram>
-
-<histogram name="OfflinePages.TabRestore" enum="OfflinePagesTabRestoreType"
-    expires_after="2021-06-25">
-  <owner>carlosk@chromium.org</owner>
-  <owner>offline-dev@chromium.org</owner>
-  <summary>
-    Tracks the reload of contents of an existing tab that is being restored
-    either because that tab is being presented for the first time after Chrome
-    was restarted or because its contents were discarded. All buckets are
-    mutually exclusive (adding up all reported values amounts to the total
-    number of tracked tab restores). This metric is focused on last_n offline
-    pages and is exclusive to Chrome on Android.
   </summary>
 </histogram>
 
