@@ -9,3 +9,5 @@ ownership_rules:
       path: .github/actions/**
     - name: DEPS file
       path: "**/DEPS"
+    - name: Root DEPS file
+      path: "DEPS"
