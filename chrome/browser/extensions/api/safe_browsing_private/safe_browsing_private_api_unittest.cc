@@ -10,8 +10,8 @@
 #include <vector>
 
 #include "base/feature_list.h"
+#include "base/strings/string_number_conversions.h"
 #include "chrome/browser/browser_process.h"
-#include "chrome/browser/extensions/extension_function_test_utils.h"
 #include "chrome/browser/extensions/extension_service_test_base.h"
 #include "chrome/browser/extensions/extension_tab_util.h"
 #include "chrome/browser/net/system_network_context_manager.h"
@@ -30,6 +30,7 @@
 #include "content/public/browser/navigation_entry.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/web_contents_tester.h"
+#include "extensions/browser/api_test_utils.h"
 
 namespace extensions {
 
@@ -37,13 +38,15 @@ namespace {
 
 using testing::NiceMock;
 
-std::unique_ptr<base::Value> RunGetReferrerChainFunction(Browser* browser,
-                                                         int tab_id) {
+absl::optional<base::Value> RunGetReferrerChainFunction(
+    content::BrowserContext* browser_context,
+    int tab_id) {
   scoped_refptr<SafeBrowsingPrivateGetReferrerChainFunction> function(
       base::MakeRefCounted<SafeBrowsingPrivateGetReferrerChainFunction>());
-  std::unique_ptr<base::Value> value(
-      extension_function_test_utils::RunFunctionAndReturnSingleResult(
-          function.get(), "[" + std::to_string(tab_id) + "]", browser));
+  absl::optional<base::Value> value =
+      api_test_utils::RunFunctionAndReturnSingleResult(
+          function.get(), "[" + base::NumberToString(tab_id) + "]",
+          browser_context);
   return value;
 }
 
@@ -157,8 +160,8 @@ TEST_F(SafeBrowsingPrivateApiUnitTest, GetReferrerChain) {
   browser()->tab_strip_model()->AppendWebContents(std::move(web_contents),
                                                   true);
 
-  std::unique_ptr<base::Value> referrer_chain(
-      RunGetReferrerChainFunction(browser(), tab_id));
+  absl::optional<base::Value> referrer_chain =
+      RunGetReferrerChainFunction(profile(), tab_id);
   ASSERT_TRUE(referrer_chain);
 }
 
@@ -179,8 +182,8 @@ TEST_F(SafeBrowsingPrivateApiUnitTest, GetReferrerChainForNonSafeBrowsingUser) {
   browser()->tab_strip_model()->AppendWebContents(std::move(web_contents),
                                                   true);
 
-  std::unique_ptr<base::Value> referrer_chain(
-      RunGetReferrerChainFunction(browser(), tab_id));
+  absl::optional<base::Value> referrer_chain =
+      RunGetReferrerChainFunction(profile(), tab_id);
   ASSERT_FALSE(referrer_chain);
 }
 
