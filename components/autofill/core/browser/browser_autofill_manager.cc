@@ -2485,6 +2485,7 @@ void BrowserAutofillManager::FillOrPreviewDataModelForm(
       });
   std::vector<FieldGlobalId> safe_fields =
       driver()->FillOrPreviewForm(action, result, field.origin, field_types);
+  client()->DidFillOrPreviewForm(action, trigger_source, is_refill);
 
   // Report the fields that were not filled due to the iframe security policy.
   for (FieldGlobalId field_global_id : newly_filled_fields) {

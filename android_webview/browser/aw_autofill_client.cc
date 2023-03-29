@@ -350,6 +350,11 @@ void AwAutofillClient::PropagateAutofillPredictions(
     autofill::AutofillDriver* driver,
     const std::vector<autofill::FormStructure*>& forms) {}
 
+void AwAutofillClient::DidFillOrPreviewForm(
+    autofill::mojom::RendererFormDataAction action,
+    autofill::AutofillTriggerSource trigger_source,
+    bool is_refill) {}
+
 void AwAutofillClient::DidFillOrPreviewField(
     const std::u16string& autofilled_value,
     const std::u16string& profile_full_name) {}

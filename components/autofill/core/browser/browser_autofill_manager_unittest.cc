@@ -157,6 +157,12 @@ class MockAutofillClient : public TestAutofillClient {
   MOCK_METHOD(void, HideAutofillPopup, (PopupHidingReason reason), (override));
   MOCK_METHOD(bool, IsPasswordManagerEnabled, (), (override));
   MOCK_METHOD(void, HideFastCheckout, (bool), (override));
+  MOCK_METHOD(void,
+              DidFillOrPreviewForm,
+              (mojom::RendererFormDataAction action,
+               AutofillTriggerSource trigger_source,
+               bool is_refill),
+              (override));
 };
 
 class MockAutofillDownloadManager : public AutofillDownloadManager {
@@ -2680,6 +2686,22 @@ TEST_F(BrowserAutofillManagerTest, DoNotFillIfFormFieldChanged) {
 
   EXPECT_THAT(filled_fields, Each(Not(HasValue(u""))));
   EXPECT_THAT(skipped_fields, Each(HasValue(u"")));
+}
+
+TEST_F(BrowserAutofillManagerTest,
+       FillOrPreviewDataModelFormCallsDidFillOrPreviewForm) {
+  FormData form =
+      CreateTestCreditCardFormData(/*is_https=*/true, /*use_month_type=*/false);
+  FormsSeen({form});
+  FormStructure* form_structure;
+  AutofillField* autofill_field;
+  ASSERT_TRUE(browser_autofill_manager_->GetCachedFormAndField(
+      form, form.fields.front(), &form_structure, &autofill_field));
+  EXPECT_CALL(autofill_client_, DidFillOrPreviewForm);
+  browser_autofill_manager_->FillOrPreviewDataModelFormForTest(
+      mojom::RendererFormDataAction::kFill, form, form.fields.front(),
+      personal_data().GetCreditCards()[0], /*optional_cvc=*/nullptr,
+      form_structure, autofill_field);
 }
 
 // Test that if the form cache is outdated because a field was removed, filling

@@ -14,6 +14,7 @@
 #include "base/dcheck_is_on.h"
 #include "base/memory/raw_ptr.h"
 #include "components/autofill/content/browser/content_autofill_client.h"
+#include "components/autofill/core/browser/autofill_trigger_source.h"
 #include "components/autofill/core/browser/payments/legal_message_line.h"
 #include "content/public/browser/web_contents_user_data.h"
 #include "ui/android/view_android.h"
@@ -164,6 +165,9 @@ class AwAutofillClient : public autofill::ContentAutofillClient {
   void PropagateAutofillPredictions(
       autofill::AutofillDriver* driver,
       const std::vector<autofill::FormStructure*>& forms) override;
+  void DidFillOrPreviewForm(autofill::mojom::RendererFormDataAction action,
+                            autofill::AutofillTriggerSource trigger_source,
+                            bool is_refill) override;
   void DidFillOrPreviewField(const std::u16string& autofilled_value,
                              const std::u16string& profile_full_name) override;
   bool IsContextSecure() const override;
