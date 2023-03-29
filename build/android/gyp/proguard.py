@@ -637,15 +637,6 @@ def _Run(options):
                      options.keep_rules_output_path)
     return
 
-  # TODO(agrieve): Stop appending to dynamic_config_data once R8 natively
-  #     supports finding configs the "tools" directory.
-  #     https://issuetracker.google.com/227983179
-  tools_configs = {
-      k: v
-      for k, v in embedded_configs.items() if 'com.android.tools' in k
-  }
-  dynamic_config_data += '\n' + _CombineConfigs([], None, tools_configs)
-
   split_contexts_by_name = _OptimizeWithR8(options, options.proguard_configs,
                                            libraries, dynamic_config_data,
                                            print_stdout)

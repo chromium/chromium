@@ -23,6 +23,12 @@ from util import zipalign
 _DEX_XMX = '2G'  # Increase this when __final_dex OOMs.
 
 _IGNORE_WARNINGS = (
+    # Warning: Running R8 version main (build engineering), which cannot be
+    # represented as a semantic version. Using an artificial version newer than
+    # any known version for selecting Proguard configurations embedded under
+    # META-INF/. This means that all rules with a '-upto-' qualifier will be
+    # excluded and all rules with a -from- qualifier will be included.
+    r'Running R8 version main',
     # E.g. Triggers for weblayer_instrumentation_test_apk since both it and its
     # apk_under_test have no shared_libraries.
     # https://crbug.com/1364192 << To fix this in a better way.
