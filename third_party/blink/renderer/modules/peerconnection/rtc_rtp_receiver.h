@@ -130,6 +130,8 @@ class RTCRtpReceiver final : public ScriptWrappable,
   // use Encoded Insertable Streams.
   bool encoded_insertable_streams_;
 
+  THREAD_CHECKER(thread_checker_);
+
   // Insertable Streams support for audio.
   base::Lock audio_underlying_source_lock_;
   CrossThreadPersistent<RTCEncodedAudioUnderlyingSource>
@@ -139,7 +141,7 @@ class RTCRtpReceiver final : public ScriptWrappable,
   CrossThreadPersistent<RTCEncodedAudioUnderlyingSink>
       audio_to_decoder_underlying_sink_ GUARDED_BY(audio_underlying_sink_lock_);
   Member<RTCInsertableStreams> encoded_audio_streams_;
-  scoped_refptr<blink::RTCEncodedAudioStreamTransformer::Broker>
+  const scoped_refptr<blink::RTCEncodedAudioStreamTransformer::Broker>
       encoded_audio_transformer_;
 
   // Insertable Streams support for video.
@@ -151,10 +153,8 @@ class RTCRtpReceiver final : public ScriptWrappable,
   CrossThreadPersistent<RTCEncodedVideoUnderlyingSink>
       video_to_decoder_underlying_sink_ GUARDED_BY(video_underlying_sink_lock_);
   Member<RTCInsertableStreams> encoded_video_streams_;
-  scoped_refptr<blink::RTCEncodedVideoStreamTransformer::Broker>
+  const scoped_refptr<blink::RTCEncodedVideoStreamTransformer::Broker>
       encoded_video_transformer_;
-
-  THREAD_CHECKER(thread_checker_);
 };
 
 }  // namespace blink

@@ -55,18 +55,22 @@ RTCRtpReceiver::RTCRtpReceiver(RTCPeerConnection* pc,
       receiver_(std::move(receiver)),
       track_(track),
       streams_(std::move(streams)),
-      encoded_insertable_streams_(encoded_insertable_streams) {
+      encoded_insertable_streams_(encoded_insertable_streams),
+      encoded_audio_transformer_(
+          encoded_insertable_streams_ && kind() == MediaKind::kAudio
+              ? receiver_->GetEncodedAudioStreamTransformer()->GetBroker()
+              : nullptr),
+      encoded_video_transformer_(
+          encoded_insertable_streams_ && kind() == MediaKind::kVideo
+              ? receiver_->GetEncodedVideoStreamTransformer()->GetBroker()
+              : nullptr) {
   DCHECK(pc_);
   DCHECK(receiver_);
   DCHECK(track_);
-  if (encoded_insertable_streams_ && kind() == MediaKind::kAudio) {
-    encoded_audio_transformer_ =
-        receiver_->GetEncodedAudioStreamTransformer()->GetBroker();
+  if (encoded_audio_transformer_) {
     RegisterEncodedAudioStreamCallback();
   }
-  if (encoded_insertable_streams_ && kind() == MediaKind::kVideo) {
-    encoded_video_transformer_ =
-        receiver_->GetEncodedVideoStreamTransformer()->GetBroker();
+  if (encoded_video_transformer_) {
     RegisterEncodedVideoStreamCallback();
   }
 }
@@ -361,6 +365,8 @@ void RTCRtpReceiver::RegisterEncodedAudioStreamCallback() {
 }
 
 void RTCRtpReceiver::UnregisterEncodedAudioStreamCallback() {
+  // Threadsafe as this might be called from the realm to which a stream has
+  // been transferred.
   encoded_audio_transformer_->ResetTransformerCallback();
 }
 
@@ -477,6 +483,8 @@ void RTCRtpReceiver::RegisterEncodedVideoStreamCallback() {
 }
 
 void RTCRtpReceiver::UnregisterEncodedVideoStreamCallback() {
+  // Threadsafe as this might be called from the realm to which a stream has
+  // been transferred.
   encoded_video_transformer_->ResetTransformerCallback();
 }
 
