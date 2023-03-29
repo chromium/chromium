@@ -5,7 +5,6 @@
 #include "chrome/browser/lacros/lacros_file_system_provider.h"
 
 #include "base/functional/bind.h"
-#include "base/memory/ref_counted.h"
 #include "base/ranges/algorithm.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/chromeos/extensions/file_system_provider/service_worker_lifetime_manager.h"
@@ -25,57 +24,61 @@
 #include "ui/gfx/image/image_skia.h"
 
 namespace {
-
-// TODO(b/266519645): scope object lifetime to the lifetime of
-//                    `LacrosFileSystemProvider`.
-class IconLoadTask : public base::RefCounted<IconLoadTask> {
- public:
-  using Callback =
-      base::OnceCallback<void(const gfx::Image&, const gfx::Image&)>;
-  IconLoadTask(content::BrowserContext* browser_context,
-               const extensions::Extension* extension,
-               Callback callback)
-      : callback_(std::move(callback)) {
-    LoadExtensionIcon(browser_context, extension, icon16x16_, 16);
-    LoadExtensionIcon(browser_context, extension, icon32x32_, 32);
+// Returns the single main profile, or nullptr if none is found.
+Profile* GetMainProfile() {
+  auto profiles = g_browser_process->profile_manager()->GetLoadedProfiles();
+  const auto main_it = base::ranges::find_if(profiles, &Profile::IsMainProfile);
+  if (main_it == profiles.end()) {
+    return nullptr;
   }
-  // Loads an icon of a single size.
-  void LoadExtensionIcon(content::BrowserContext* browser_context,
-                         const extensions::Extension* extension,
-                         absl::optional<gfx::Image>& target,
-                         int size) {
-    extensions::ExtensionResource icon = extensions::IconsInfo::GetIconResource(
-        extension, size, ExtensionIconSet::MatchType::MATCH_BIGGER);
+  return *main_it;
+}
 
-    extensions::ImageLoader::Get(browser_context)
-        ->LoadImageAsync(extension, icon, gfx::Size(size, size),
-                         base::BindOnce(&IconLoadTask::OnIconLoaded, this,
-                                        std::ref(target)));
+const extensions::Extension* GetEnabledExtension(
+    content::BrowserContext* browser_context,
+    const extensions::ExtensionId& extension_id) {
+  extensions::ExtensionRegistry* registry =
+      extensions::ExtensionRegistry::Get(browser_context);
+  return registry->GetExtensionById(extension_id,
+                                    extensions::ExtensionRegistry::ENABLED);
+}
+
+// Loads an icon of a single size.
+void LoadExtensionIcon(content::BrowserContext* browser_context,
+                       const extensions::ExtensionId& extension_id,
+                       int size,
+                       extensions::ImageLoaderImageCallback callback) {
+  const extensions::Extension* extension =
+      GetEnabledExtension(browser_context, extension_id);
+  if (!extension) {
+    return;
+  }
+  extensions::ExtensionResource icon = extensions::IconsInfo::GetIconResource(
+      extension, size, ExtensionIconSet::MatchType::MATCH_BIGGER);
+  extensions::ImageLoader::Get(browser_context)
+      ->LoadImageAsync(extension, icon, gfx::Size(size, size),
+                       std::move(callback));
+}
+
+void OnLoadedIcon32x32(base::WeakPtr<Profile> weak_profile_ptr,
+                       const extensions::ExtensionId& extension_id,
+                       const gfx::Image& icon16x16,
+                       const gfx::Image& icon32x32) {
+  Profile* profile = weak_profile_ptr.get();
+  if (!profile) {
+    return;
+  }
+  const extensions::Extension* extension =
+      GetEnabledExtension(profile, extension_id);
+  if (!extension) {
+    return;
+  }
+  auto* capabilities =
+      extensions::FileSystemProviderCapabilities::Get(extension);
+  if (!capabilities) {
+    return;
   }
 
- private:
-  ~IconLoadTask() = default;
-  friend base::RefCounted<IconLoadTask>;
-
-  void OnIconLoaded(absl::optional<gfx::Image>& target,
-                    const gfx::Image& icon) {
-    target = icon;
-    if (icon16x16_ && icon32x32_) {
-      std::move(callback_).Run(*icon16x16_, *icon32x32_);
-    }
-  }
-
-  Callback callback_;
-  absl::optional<gfx::Image> icon16x16_;
-  absl::optional<gfx::Image> icon32x32_;
-};
-
-void NotifyAshExtensionLoaded(
-    const std::string& id,
-    const std::string& name,
-    const extensions::FileSystemProviderCapabilities& capabilities,
-    const gfx::Image& icon16x16,
-    const gfx::Image& icon32x32) {
   chromeos::LacrosService* service = chromeos::LacrosService::Get();
   int fsp_service_version = service->GetInterfaceVersion(
       crosapi::mojom::FileSystemProviderService::Uuid_);
@@ -86,7 +89,7 @@ void NotifyAshExtensionLoaded(
   }
 
   crosapi::mojom::FileSystemSource source;
-  switch (capabilities.source()) {
+  switch (capabilities->source()) {
     case extensions::FileSystemProviderSource::SOURCE_FILE:
       source = crosapi::mojom::FileSystemSource::kFile;
       break;
@@ -104,25 +107,30 @@ void NotifyAshExtensionLoaded(
       int{crosapi::mojom::FileSystemProviderService::MethodMinVersions::
               kExtensionLoadedMinVersion}) {
     fsp_service->ExtensionLoadedDeprecated(
-        capabilities.configurable(), capabilities.watchable(),
-        capabilities.multiple_mounts(), source, name, id);
+        capabilities->configurable(), capabilities->watchable(),
+        capabilities->multiple_mounts(), source, extension->name(),
+        extension->id());
     return;
   }
 
   fsp_service->ExtensionLoaded(
-      capabilities.configurable(), capabilities.watchable(),
-      capabilities.multiple_mounts(), source, name, id, icon16x16.AsImageSkia(),
-      icon32x32.AsImageSkia());
+      capabilities->configurable(), capabilities->watchable(),
+      capabilities->multiple_mounts(), source, extension->name(),
+      extension->id(), icon16x16.AsImageSkia(), icon32x32.AsImageSkia());
 }
 
-// Returns the single main profile, or nullptr if none is found.
-Profile* GetMainProfile() {
-  auto profiles = g_browser_process->profile_manager()->GetLoadedProfiles();
-  const auto main_it = base::ranges::find_if(profiles, &Profile::IsMainProfile);
-  if (main_it == profiles.end())
-    return nullptr;
-  return *main_it;
+void OnLoadedIcon16x16(base::WeakPtr<Profile> weak_profile_ptr,
+                       const extensions::ExtensionId& extension_id,
+                       const gfx::Image& icon16x16) {
+  Profile* profile = weak_profile_ptr.get();
+  if (!profile) {
+    return;
+  }
+  LoadExtensionIcon(profile, extension_id, 32,
+                    base::BindOnce(&OnLoadedIcon32x32, profile->GetWeakPtr(),
+                                   extension_id, icon16x16));
 }
+
 }  // namespace
 
 LacrosFileSystemProvider::LacrosFileSystemProvider() : receiver_{this} {
@@ -283,16 +291,14 @@ void LacrosFileSystemProvider::OnExtensionLoaded(
           extensions::mojom::APIPermissionID::kFileSystemProvider)) {
     return;
   }
-  const extensions::FileSystemProviderCapabilities* const capabilities =
-      extensions::FileSystemProviderCapabilities::Get(extension);
-  if (!capabilities) {
+  if (!extensions::FileSystemProviderCapabilities::Get(extension)) {
     return;
   }
 
-  base::MakeRefCounted<IconLoadTask>(
-      browser_context, extension,
-      base::BindOnce(&NotifyAshExtensionLoaded, extension->id(),
-                     extension->name(), *capabilities));
+  Profile* profile = Profile::FromBrowserContext(browser_context);
+  LoadExtensionIcon(profile, extension->id(), 16,
+                    base::BindOnce(&OnLoadedIcon16x16, profile->GetWeakPtr(),
+                                   extension->id()));
 }
 
 void LacrosFileSystemProvider::OnExtensionUnloaded(
