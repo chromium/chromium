@@ -299,6 +299,11 @@ TEST_F('OSSettingsCrostiniExtraContainerPageV3Test', 'AllJsTests', () => {
    {enabled: ['ash::features::kInputDeviceSettingsSplit']}
  ],
  [
+   'DevicePagePerDevicePointingStickSubsection',
+   'device_page/per_device_pointing_stick_subsection_test.js',
+   {enabled: ['ash::features::kInputDeviceSettingsSplit']},
+ ],
+ [
    'DisplayAndMagnificationPage',
    'display_and_magnification_page_tests.js',
  ],
@@ -489,11 +494,6 @@ TEST_F('OSSettingsCrostiniExtraContainerPageV3Test', 'AllJsTests', () => {
    'PerDeviceKeyboardSubsection',
    'per_device_keyboard_subsection_test.js',
    {enabled: ['ash::features::kInputDeviceSettingsSplit']},
- ],
- [
-   'PerDevicePointingStickSubsection',
-   'per_device_pointing_stick_subsection_test.js',
-   {enabled: ['ash::features::kInputDeviceSettingsSplit']}
  ],
  [
    'PersonalizationPageWithPersonalizationHub',
