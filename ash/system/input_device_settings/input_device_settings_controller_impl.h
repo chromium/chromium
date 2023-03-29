@@ -43,7 +43,7 @@ class ASH_EXPORT InputDeviceSettingsControllerImpl
       const InputDeviceSettingsControllerImpl&) = delete;
   ~InputDeviceSettingsControllerImpl() override;
 
-  static void RegisterProfilePrefs(PrefRegistrySimple* pref_rCegistry);
+  static void RegisterProfilePrefs(PrefRegistrySimple* pref_registry);
 
   // InputDeviceSettingsController:
   std::vector<mojom::KeyboardPtr> GetConnectedKeyboards() override;
