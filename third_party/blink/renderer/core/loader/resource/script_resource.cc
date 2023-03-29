@@ -182,30 +182,20 @@ const ParkableString& ScriptResource::SourceText() {
 
 String ScriptResource::TextForInspector() const {
   // If the resource buffer exists, we can safely return the decoded text.
-  if (ResourceBuffer())
+  if (ResourceBuffer()) {
     return DecodedText();
-
-  // If there is no resource buffer, then we have three cases.
-  // TODO(crbug.com/865098): Simplify the below code and remove the CHECKs once
-  // the assumptions are confirmed.
-
-  if (IsLoaded()) {
-    if (!source_text_.IsNull()) {
-      // 1. We have finished loading, and have already decoded the buffer into
-      //    the source text and cleared the resource buffer to save space.
-      return source_text_.ToString();
-    }
-
-    // 2. We have finished loading with no data received, so no streaming ever
-    //    happened or streaming was suppressed.
-    DCHECK(!streamer_ ||
-           streamer_->StreamingSuppressedReason() ==
-               ScriptStreamer::NotStreamingReason::kScriptTooSmall);
-    return "";
   }
 
-  // 3. We haven't started loading, and actually haven't received any data yet
-  //    at all to initialise the resource buffer, so the resource is empty.
+  // If there is no resource buffer, then we've finished loading and have
+  // already decoded the buffer into the source text, clearing the resource
+  // buffer to save space...
+  if (IsLoaded() && !source_text_.IsNull()) {
+    return source_text_.ToString();
+  }
+
+  // ... or we either haven't started loading and haven't received data yet, or
+  // we finished loading with an error/cancellation, and thus don't have data.
+  // In both cases, we can treat the resource as empty.
   return "";
 }
 
@@ -292,12 +282,14 @@ bool ScriptResource::CanUseCacheValidator() const {
   // Do not revalidate until ClassicPendingScript is removed, i.e. the script
   // content is retrieved in ScriptLoader::ExecuteScriptBlock().
   // crbug.com/692856
-  if (HasClientsOrObservers())
+  if (HasClientsOrObservers()) {
     return false;
+  }
 
   // Do not revalidate until streaming is complete.
-  if (!IsLoaded())
+  if (!IsLoaded()) {
     return false;
+  }
 
   return Resource::CanUseCacheValidator();
 }
@@ -346,8 +338,9 @@ void ScriptResource::ResponseReceived(const ResourceResponse& response) {
 void ScriptResource::ResponseBodyReceived(
     ResponseBodyLoaderDrainableInterface& body_loader,
     scoped_refptr<base::SingleThreadTaskRunner> loader_task_runner) {
-  if (streaming_state_ == StreamingState::kStreamingDisabled)
+  if (streaming_state_ == StreamingState::kStreamingDisabled) {
     return;
+  }
 
   CHECK_EQ(streaming_state_, StreamingState::kWaitingForDataPipe);
 
@@ -434,8 +427,9 @@ void ScriptResource::SetEncoding(const String& chs) {
 
 ResourceScriptStreamer* ScriptResource::TakeStreamer() {
   CHECK(IsLoaded());
-  if (!streamer_)
+  if (!streamer_) {
     return nullptr;
+  }
 
   ResourceScriptStreamer* streamer = streamer_;
   // A second use of the streamer is not possible, so we null it out and disable
@@ -501,8 +495,9 @@ void ScriptResource::CheckStreamingState() const {
 ScriptCacheConsumer* ScriptResource::TakeCacheConsumer() {
   CHECK(IsLoaded());
   CheckConsumeCacheState();
-  if (!cache_consumer_)
+  if (!cache_consumer_) {
     return nullptr;
+  }
   CHECK_EQ(consume_cache_state_, ConsumeCacheState::kRunningOffThread);
 
   ScriptCacheConsumer* cache_consumer = cache_consumer_;
