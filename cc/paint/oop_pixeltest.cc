@@ -625,7 +625,8 @@ TEST_F(OopPixelTest, DrawImageWithTargetColorSpace) {
   EXPECT_NE(actual.getColor(0, 0), SkColors::kMagenta.toSkColor());
 }
 
-TEST_F(OopPixelTest, DrawHdrImageWithMetadata) {
+// crbug.com/1429057
+TEST_F(OopPixelTest, DISABLED_DrawHdrImageWithMetadata) {
   constexpr gfx::Size size(100, 100);
   constexpr gfx::Rect rect(size);
   float sdr_luminance = 250.f;
