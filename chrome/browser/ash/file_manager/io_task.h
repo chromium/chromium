@@ -134,12 +134,14 @@ class ProgressStatus {
   std::string GetSourceName(Profile* profile) const;
 
   // Setter for the destination folder and the destination volume id.
-  void SetDestinationFolder(const storage::FileSystemURL folder,
+  void SetDestinationFolder(storage::FileSystemURL folder,
                             Profile* profile = nullptr);
-  storage::FileSystemURL GetDestinationFolder() const {
+  const storage::FileSystemURL& GetDestinationFolder() const {
     return destination_folder_;
   }
-  std::string GetDestinationVolumeId() const { return destination_volume_id_; }
+  const std::string& GetDestinationVolumeId() const {
+    return destination_volume_id_;
+  }
 
   // Task state.
   State state;

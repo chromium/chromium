@@ -57,17 +57,15 @@ std::string ProgressStatus::GetSourceName(Profile* profile) const {
 }
 
 void ProgressStatus::SetDestinationFolder(storage::FileSystemURL folder,
-                                          Profile* profile) {
+                                          Profile* const profile) {
   destination_folder_ = std::move(folder);
-  if (!profile) {
-    return;
-  }
-  if (VolumeManager* const volume_manager = VolumeManager::Get(profile);
-      volume_manager) {
-    base::WeakPtr<Volume> volume =
-        volume_manager->FindVolumeFromPath(destination_folder_.path());
-    if (volume) {
-      destination_volume_id_ = volume->volume_id();
+  destination_volume_id_.clear();
+  if (profile) {
+    if (VolumeManager* const volume_manager = VolumeManager::Get(profile)) {
+      if (const base::WeakPtr<const Volume> volume =
+              volume_manager->FindVolumeFromPath(destination_folder_.path())) {
+        destination_volume_id_ = volume->volume_id();
+      }
     }
   }
 }
