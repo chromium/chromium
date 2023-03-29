@@ -378,6 +378,7 @@ class TestRunnerBindings : public gin::Wrappable<TestRunnerBindings> {
                             int min_height,
                             int max_width,
                             int max_height);
+  void DisableAutomaticDragDrop();
   v8::Local<v8::Value> EvaluateScriptInIsolatedWorldAndReturnValue(
       int world_id,
       const std::string& script);
@@ -822,7 +823,9 @@ gin::ObjectTemplateBuilder TestRunnerBindings::GetObjectTemplateBuilder(
       // webHistoryItemCount is used by tests in web_tests\http\tests\history
       .SetProperty("webHistoryItemCount",
                    &TestRunnerBindings::WebHistoryItemCount)
-      .SetMethod("windowCount", &TestRunnerBindings::WindowCount);
+      .SetMethod("windowCount", &TestRunnerBindings::WindowCount)
+      .SetMethod("disableAutomaticDragDrop",
+                 &TestRunnerBindings::DisableAutomaticDragDrop);
 }
 
 BoundV8Callback TestRunnerBindings::WrapV8Callback(
@@ -2183,6 +2186,13 @@ void TestRunnerBindings::ForceNextDrawingBufferCreationToFail() {
   blink::ForceNextDrawingBufferCreationToFailForTest();
 }
 
+void TestRunnerBindings::DisableAutomaticDragDrop() {
+  if (invalid_) {
+    return;
+  }
+  runner_->DisableAutomaticDragDrop();
+}
+
 void TestRunnerBindings::NotImplemented(const gin::Arguments& args) {}
 
 // This class helps track active main windows and when the `blink::WebView` is
@@ -3505,4 +3515,12 @@ void TestRunner::HandleBluetoothFakeAdapterSetterDisconnected() {
   bluetooth_fake_adapter_setter_.reset();
 }
 
+void TestRunner::DisableAutomaticDragDrop() {
+  web_test_runtime_flags_.set_auto_drag_drop_enabled(false);
+  OnWebTestRuntimeFlagsChanged();
+}
+
+bool TestRunner::AutomaticDragDropEnabled() {
+  return web_test_runtime_flags_.auto_drag_drop_enabled();
+}
 }  // namespace content

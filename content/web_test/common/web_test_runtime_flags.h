@@ -175,6 +175,9 @@ class WebTestRuntimeFlags {
   // True for web platform tests.
   DEFINE_BOOL_WEB_TEST_RUNTIME_FLAG(is_web_platform_tests_mode)
 
+  // Whether to enable automatic drag n' drop.
+  DEFINE_BOOL_WEB_TEST_RUNTIME_FLAG(auto_drag_drop_enabled)
+
 #undef DEFINE_BOOL_WEB_TEST_RUNTIME_FLAG
 #undef DEFINE_STRING_WEB_TEST_RUNTIME_FLAG
 

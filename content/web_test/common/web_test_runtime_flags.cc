@@ -62,6 +62,8 @@ void WebTestRuntimeFlags::Reset() {
 
   // No need to report the initial state - only the future delta is important.
   tracked_dictionary().ResetChangeTracking();
+
+  set_auto_drag_drop_enabled(true);
 }
 
 }  // namespace content

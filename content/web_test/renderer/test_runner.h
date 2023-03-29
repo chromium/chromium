@@ -264,6 +264,15 @@ class TestRunner {
   blink::WebString GetAbsoluteWebStringFromUTF8Path(
       const std::string& utf8_path);
 
+  // Disables automatic drag and drop in web tests' web frame widget
+  // (WebTestWebFrameWidgetImpl).
+  //
+  // In general, drag and drop will automatically be performed because web tests
+  // do not have drag and drop enabled. If you need to control the drag and drop
+  // lifecycle yourself, you can disable it here.
+  void DisableAutomaticDragDrop();
+  bool AutomaticDragDropEnabled();
+
  private:
   friend class TestRunnerBindings;
   friend class WorkQueue;
