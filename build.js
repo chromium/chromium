@@ -93,9 +93,10 @@ namespace recordreplay {
 
 console.log(`Preparing...`);
 const useGoma = !process.env.NO_GOMA;
+const goma_ctl = currentPlatform() == "windows" ? "goma_ctl.bat" : "goma_ctl";
 if (useGoma) {
   // ensure goma is started for cloud builds with engflow
-  spawnChecked("goma_ctl", ["ensure_start"]);
+  spawnChecked(goma_ctl, ["ensure_start"]);
 }
 
 // ensure that build configuration is written with correct paths
