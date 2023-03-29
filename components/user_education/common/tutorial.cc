@@ -208,8 +208,9 @@ Tutorial::StepBuilder::BuildMaybeShowBubbleCallback(
       [](TutorialService* tutorial_service, std::u16string title_text_,
          std::u16string body_text_, HelpBubbleArrow arrow_,
          absl::optional<std::pair<int, int>> progress_, bool is_last_step_,
-         bool can_be_restarted_, ui::InteractionSequence* sequence,
-         ui::TrackedElement* element) {
+         bool can_be_restarted_,
+         TutorialDescription::NextButtonCallback next_button_callback,
+         ui::InteractionSequence* sequence, ui::TrackedElement* element) {
         DCHECK(tutorial_service);
 
         tutorial_service->HideCurrentBubbleIfShowing();
@@ -262,7 +263,20 @@ Tutorial::StepBuilder::BuildMaybeShowBubbleCallback(
               },
               base::Unretained(tutorial_service));
           params.buttons.emplace_back(std::move(close_button));
+        } else if (next_button_callback) {
+          HelpBubbleButtonParams next_button;
+          next_button.text =
+              l10n_util::GetStringUTF16(IDS_TUTORIAL_NEXT_BUTTON);
+          next_button.is_default = true;
+          next_button.callback = base::BindOnce(
+              [](TutorialDescription::NextButtonCallback next_button_callback,
+                 ui::TrackedElement* current_anchor) {
+                std::move(next_button_callback).Run(current_anchor);
+              },
+              std::move(next_button_callback), element);
+          params.buttons.emplace_back(std::move(next_button));
         }
+
         params.close_button_alt_text =
             l10n_util::GetStringUTF16(IDS_CLOSE_TUTORIAL);
 
@@ -272,7 +286,7 @@ Tutorial::StepBuilder::BuildMaybeShowBubbleCallback(
         tutorial_service->SetCurrentBubble(std::move(bubble), is_last_step_);
       },
       base::Unretained(tutorial_service), title_text, body_text, step_.arrow,
-      progress, is_last_step, can_be_restarted);
+      progress, is_last_step, can_be_restarted, step_.next_button_callback);
 }
 
 ui::InteractionSequence::StepEndCallback

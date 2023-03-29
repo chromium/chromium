@@ -79,6 +79,14 @@ void ClickCloseButton(HelpBubble* bubble) {
   help_bubble->SimulateButtonPress(button_index);
 }
 
+void ClickNextButton(HelpBubble* bubble) {
+  auto* const help_bubble = static_cast<test::TestHelpBubble*>(bubble);
+  int button_index = help_bubble->GetIndexOfButtonWithText(
+      l10n_util::GetStringUTF16(IDS_TUTORIAL_NEXT_BUTTON));
+  EXPECT_TRUE(button_index != test::TestHelpBubble::kNoButtonWithTextIndex);
+  help_bubble->SimulateButtonPress(button_index);
+}
+
 void ClickRestartButton(HelpBubble* bubble) {
   auto* const help_bubble = static_cast<test::TestHelpBubble*>(bubble);
   int button_index = help_bubble->GetIndexOfButtonWithText(
@@ -86,6 +94,12 @@ void ClickRestartButton(HelpBubble* bubble) {
 
   EXPECT_TRUE(button_index != test::TestHelpBubble::kNoButtonWithTextIndex);
   help_bubble->SimulateButtonPress(button_index);
+}
+
+bool HasButtonWithText(HelpBubble* bubble, int message_id) {
+  return static_cast<test::TestHelpBubble*>(bubble)->GetIndexOfButtonWithText(
+             l10n_util::GetStringUTF16(message_id)) !=
+         test::TestHelpBubble::kNoButtonWithTextIndex;
 }
 
 }  // namespace
@@ -313,6 +327,77 @@ TEST_F(TutorialTest, SingleInteractionTutorialRuns) {
   EXPECT_CALL_IN_SCOPE(
       completed, Run,
       ClickCloseButton(service.currently_displayed_bubble_for_testing()));
+}
+
+TEST_F(TutorialTest, MultipleInteractionTutorialRuns) {
+  UNCALLED_MOCK_CALLBACK(TutorialDescription::NextButtonCallback, next);
+  UNCALLED_MOCK_CALLBACK(TutorialService::CompletedCallback, completed);
+
+  const auto bubble_factory_registry =
+      CreateTestTutorialBubbleFactoryRegistry();
+  TutorialRegistry registry;
+  TestTutorialService service(&registry, bubble_factory_registry.get());
+
+  // Build and show test elements.
+  ui::test::TestElement element_1(kTestIdentifier1, kTestContext1);
+  ui::test::TestElement element_2(kTestIdentifier2, kTestContext1);
+  ui::test::TestElement element_3(kTestIdentifier3, kTestContext1);
+  element_1.Show();
+  element_2.Show();
+  element_3.Show();
+
+  // Configure `next` callback to trigger `kCustomEventType1` on current anchor.
+  ON_CALL(next, Run).WillByDefault(
+      testing::Invoke([](ui::TrackedElement* current_anchor) {
+        ui::ElementTracker::GetFrameworkDelegate()->NotifyCustomEvent(
+            current_anchor, kCustomEventType1);
+      }));
+
+  // Build the tutorial `description`.
+  TutorialDescription description;
+  description.steps.emplace_back(
+      TutorialDescription::BubbleStep(kTestIdentifier1)
+          .SetBubbleBodyText(IDS_OK)
+          .AddDefaultNextButton());
+  description.steps.emplace_back(TutorialDescription::EventStep(
+      kHelpBubbleNextButtonClickedEvent, kTestIdentifier1));
+  description.steps.emplace_back(
+      TutorialDescription::BubbleStep(kTestIdentifier2)
+          .SetBubbleBodyText(IDS_OK)
+          .AddCustomNextButton(next.Get()));
+  description.steps.emplace_back(
+      TutorialDescription::EventStep(kCustomEventType1, kTestIdentifier2));
+  description.steps.emplace_back(
+      TutorialDescription::BubbleStep(kTestIdentifier3)
+          .SetBubbleBodyText(IDS_OK)
+          // Should no-op for last step.
+          .AddCustomNextButton(base::DoNothing())
+          .AddDefaultNextButton());
+
+  // Register and start the tutorial.
+  registry.AddTutorial(kTestTutorial1, std::move(description));
+  service.StartTutorial(kTestTutorial1, element_1.context(), completed.Get());
+
+  // Verify only the default next button is visible and click it.
+  auto* bubble = service.currently_displayed_bubble_for_testing();
+  ASSERT_TRUE(bubble);
+  EXPECT_FALSE(HasButtonWithText(bubble, IDS_TUTORIAL_CLOSE_TUTORIAL));
+  EXPECT_TRUE(HasButtonWithText(bubble, IDS_TUTORIAL_NEXT_BUTTON));
+  ClickNextButton(bubble);
+
+  // Verify only the custom next button is visible and click it.
+  bubble = service.currently_displayed_bubble_for_testing();
+  ASSERT_TRUE(bubble);
+  EXPECT_FALSE(HasButtonWithText(bubble, IDS_TUTORIAL_CLOSE_TUTORIAL));
+  EXPECT_TRUE(HasButtonWithText(bubble, IDS_TUTORIAL_NEXT_BUTTON));
+  EXPECT_CALL_IN_SCOPE(next, Run, ClickNextButton(bubble));
+
+  // Verify only the close button is visible and click it.
+  bubble = service.currently_displayed_bubble_for_testing();
+  ASSERT_TRUE(bubble);
+  EXPECT_TRUE(HasButtonWithText(bubble, IDS_TUTORIAL_CLOSE_TUTORIAL));
+  EXPECT_FALSE(HasButtonWithText(bubble, IDS_TUTORIAL_NEXT_BUTTON));
+  EXPECT_CALL_IN_SCOPE(completed, Run, ClickCloseButton(bubble));
 }
 
 TEST_F(TutorialTest, StartTutorialAbortsExistingTutorial) {

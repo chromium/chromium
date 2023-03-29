@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "base/metrics/histogram_macros.h"
+#include "components/user_education/common/help_bubble.h"
 #include "components/user_education/common/help_bubble_params.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/interaction/element_identifier.h"
@@ -125,6 +126,8 @@ struct TutorialDescription {
   using NameElementsCallback =
       base::RepeatingCallback<bool(ui::InteractionSequence*,
                                    ui::TrackedElement*)>;
+  using NextButtonCallback =
+      base::RepeatingCallback<void(ui::TrackedElement* current_anchor)>;
 
   TutorialDescription();
   ~TutorialDescription();
@@ -210,6 +213,12 @@ struct TutorialDescription {
     // tutorial started in.
     ContextMode context_mode = ContextMode::kInitial;
 
+    // Lambda which is called when the "Next" button is clicked in the help
+    // bubble associated with this step. Note that a "Next" button won't render:
+    // 1. if `next_button_callback` is null
+    // 2. if this step is the last step of a tutorial
+    NextButtonCallback next_button_callback = NextButtonCallback();
+
     // returns true iff all of the required parameters exist to display a
     // bubble.
     bool ShouldShowBubble() const;
@@ -270,6 +279,19 @@ struct TutorialDescription {
 
     BubbleStep& SetBubbleArrow(HelpBubbleArrow arrow_) {
       arrow = arrow_;
+      return *this;
+    }
+
+    BubbleStep& AddDefaultNextButton() {
+      return AddCustomNextButton(
+          base::BindRepeating([](ui::TrackedElement* current_anchor) {
+            ui::ElementTracker::GetFrameworkDelegate()->NotifyCustomEvent(
+                current_anchor, kHelpBubbleNextButtonClickedEvent);
+          }));
+    }
+
+    BubbleStep& AddCustomNextButton(NextButtonCallback next_button_callback_) {
+      next_button_callback = std::move(next_button_callback_);
       return *this;
     }
   };

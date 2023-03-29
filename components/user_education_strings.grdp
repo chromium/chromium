@@ -38,4 +38,7 @@
       <message name="IDS_TUTORIAL_CLOSE_TUTORIAL" desc="The text shown on the button for closing a tutorial">
         Close
       </message>
+      <message name="IDS_TUTORIAL_NEXT_BUTTON" desc="The text shown on the button for advancing a tutorial to the next step">
+        Next
+      </message>
 </grit-part>
