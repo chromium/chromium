@@ -40,7 +40,7 @@ const CGFloat kPriceNotificationsCornerRadius = 13.0;
     [self addSubview:_priceNotificationsImageView];
     _priceNotificationsImageView.translatesAutoresizingMaskIntoConstraints = NO;
     _priceNotificationsImageView.backgroundColor =
-        [UIColor colorNamed:kSolidWhiteColor];
+        [UIColor colorNamed:kGrey100Color];
 
     AddSameConstraints(self, _priceNotificationsImageView);
     [NSLayoutConstraint activateConstraints:@[
