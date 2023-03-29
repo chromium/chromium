@@ -277,7 +277,8 @@ bool ImageFrameGenerator::GetYUVAInfo(
       ImageDecoder::kDefaultBitDepth, decoder_color_behavior_);
   DCHECK(decoder);
 
-  DCHECK(decoder->CanDecodeToYUV());
+  DCHECK(decoder->CanDecodeToYUV())
+      << decoder->FilenameExtension() << " image decoder";
   SkYUVAInfo::Subsampling subsampling;
   size_t width_bytes[SkYUVAInfo::kMaxPlanes];
   if (!UpdateYUVAInfoSubsamplingAndWidthBytes(decoder.get(), &subsampling,
