@@ -445,21 +445,21 @@ ExtensionFunction::ResponseAction ManagementSetEnabledFunction::Run() {
           ->Get(browser_context())
           ->GetSupervisedUserExtensionsDelegate();
   if (supervised_user_extensions_delegate &&
-      supervised_user_extensions_delegate->IsChild(browser_context()) &&
+      supervised_user_extensions_delegate->IsChild() &&
       // Don't prompt the user if the extension has unsupported requirements.
       // TODO(crbug/1071978): If OnRequirementsChecked() passes, the extension
       // will enable, bypassing parent approval.
       !HasUnsupportedRequirements(extension_id_) &&
       // Only ask for parent approval if the extension still requires approval.
       !supervised_user_extensions_delegate->IsExtensionAllowedByParent(
-          *target_extension, browser_context())) {
+          *target_extension)) {
     // Either ask for parent permission or notify the child that their parent
     // has disabled this action.
     auto extension_approval_callback = base::BindOnce(
         &ManagementSetEnabledFunction::OnExtensionApprovalDone, this);
     AddRef();  // Matched in OnExtensionApprovalDone().
     supervised_user_extensions_delegate->RequestToEnableExtensionOrShowError(
-        *target_extension, browser_context(), GetSenderWebContents(),
+        *target_extension, GetSenderWebContents(),
         std::move(extension_approval_callback));
     return RespondLater();
   }
@@ -1110,8 +1110,8 @@ ManagementAPI::ManagementAPI(content::BrowserContext* context)
     : browser_context_(context),
       delegate_(ExtensionsAPIClient::Get()->CreateManagementAPIDelegate()),
       supervised_user_extensions_delegate_(
-          ExtensionsAPIClient::Get()
-              ->CreateSupervisedUserExtensionsDelegate()) {
+          ExtensionsAPIClient::Get()->CreateSupervisedUserExtensionsDelegate(
+              browser_context_)) {
   EventRouter* event_router = EventRouter::Get(browser_context_);
   event_router->RegisterObserver(this, management::OnInstalled::kEventName);
   event_router->RegisterObserver(this, management::OnUninstalled::kEventName);

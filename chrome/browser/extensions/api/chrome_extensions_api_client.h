@@ -78,7 +78,8 @@ class ChromeExtensionsAPIClient : public ExtensionsAPIClient {
       content::BrowserContext* browser_context) const override;
   ManagementAPIDelegate* CreateManagementAPIDelegate() const override;
   std::unique_ptr<SupervisedUserExtensionsDelegate>
-  CreateSupervisedUserExtensionsDelegate() const override;
+  CreateSupervisedUserExtensionsDelegate(
+      content::BrowserContext* browser_context) const override;
 
   std::unique_ptr<DisplayInfoProvider> CreateDisplayInfoProvider()
       const override;

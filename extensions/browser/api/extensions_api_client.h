@@ -185,7 +185,8 @@ class ExtensionsAPIClient {
   // Creates a delegate for calling into the SupervisedUserService from the
   // Management API.
   virtual std::unique_ptr<SupervisedUserExtensionsDelegate>
-  CreateSupervisedUserExtensionsDelegate() const;
+  CreateSupervisedUserExtensionsDelegate(
+      content::BrowserContext* browser_context) const;
 
   // Creates and returns the DisplayInfoProvider used by the
   // chrome.system.display extension API.

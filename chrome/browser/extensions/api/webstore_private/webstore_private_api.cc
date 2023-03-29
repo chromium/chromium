@@ -541,7 +541,7 @@ void WebstorePrivateBeginInstallWithManifest3Function::OnWebstoreParseSuccess(
       // are allowed, the install prompt will be shown before the request
       // permission dialog is shown.
       supervised_user_extensions_delegate->RequestToAddExtensionOrShowError(
-          *dummy_extension_, profile_, web_contents,
+          *dummy_extension_, web_contents,
           gfx::ImageSkia::CreateFrom1xBitmap(icon_),
           std::move(extension_approval_callback));
       return;
@@ -687,7 +687,7 @@ bool WebstorePrivateBeginInstallWithManifest3Function::
   // were disabled, the block dialog would have been shown at the install prompt
   // step.
   supervised_user_extensions_delegate->RequestToAddExtensionOrShowError(
-      *dummy_extension_, profile_, web_contents,
+      *dummy_extension_, web_contents,
       gfx::ImageSkia::CreateFrom1xBitmap(icon_),
       std::move(extension_approval_callback));
 

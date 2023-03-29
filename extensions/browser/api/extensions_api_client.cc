@@ -136,7 +136,8 @@ ManagementAPIDelegate* ExtensionsAPIClient::CreateManagementAPIDelegate()
 }
 
 std::unique_ptr<SupervisedUserExtensionsDelegate>
-ExtensionsAPIClient::CreateSupervisedUserExtensionsDelegate() const {
+ExtensionsAPIClient::CreateSupervisedUserExtensionsDelegate(
+    content::BrowserContext* context) const {
   return nullptr;
 }
 

@@ -7,6 +7,7 @@
 
 #include "base/functional/bind.h"
 #include "base/memory/ptr_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/strings/stringprintf.h"
@@ -21,6 +22,7 @@
 #include "chrome/browser/extensions/test_extension_system.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/test/base/test_browser_window.h"
+#include "content/public/browser/browser_context.h"
 #include "content/public/test/web_contents_tester.h"
 #include "extensions/browser/api/management/management_api.h"
 #include "extensions/browser/api/management/management_api_constants.h"
@@ -942,34 +944,33 @@ class TestManagementAPIDelegate : public ManagementAPIDelegate {
 class TestSupervisedUserExtensionsDelegate
     : public SupervisedUserExtensionsDelegate {
  public:
-  TestSupervisedUserExtensionsDelegate() = default;
+  explicit TestSupervisedUserExtensionsDelegate(
+      content::BrowserContext* context)
+      : context_(context) {}
   ~TestSupervisedUserExtensionsDelegate() override = default;
 
   // SupervisedUserExtensionsDelegate:
-  bool IsChild(content::BrowserContext* context) const override { return true; }
+  bool IsChild() const override { return true; }
 
   bool IsExtensionAllowedByParent(
-      const extensions::Extension& extension,
-      content::BrowserContext* context) const override {
+      const extensions::Extension& extension) const override {
     SupervisedUserService* supervised_user_service =
-        SupervisedUserServiceFactory::GetForBrowserContext(context);
+        SupervisedUserServiceFactory::GetForBrowserContext(context_);
     return supervised_user_service->IsExtensionAllowed(extension);
   }
 
   void RequestToAddExtensionOrShowError(
       const extensions::Extension& extension,
-      content::BrowserContext* context,
       content::WebContents* contents,
       const gfx::ImageSkia& icon,
       ExtensionApprovalDoneCallback extension_approval_callback) override {
     // Preconditions.
-    DCHECK(IsChild(context));
-    DCHECK(!IsExtensionAllowedByParent(extension, context));
+    DCHECK(IsChild());
+    DCHECK(!IsExtensionAllowedByParent(extension));
 
-    if (CanInstallExtensions(context)) {
+    if (CanInstallExtensions()) {
       ShowParentPermissionDialogForExtension(
-          extension, context, contents, std::move(extension_approval_callback),
-          icon);
+          extension, contents, std::move(extension_approval_callback), icon);
     } else {
       ShowInstallBlockedByParentDialogForExtension(
           extension, contents,
@@ -982,16 +983,15 @@ class TestSupervisedUserExtensionsDelegate
 
   void RequestToEnableExtensionOrShowError(
       const extensions::Extension& extension,
-      content::BrowserContext* context,
       content::WebContents* contents,
       ExtensionApprovalDoneCallback extension_approval_callback) override {
     // Preconditions.
-    DCHECK(IsChild(context));
-    DCHECK(!IsExtensionAllowedByParent(extension, context));
+    DCHECK(IsChild());
+    DCHECK(!IsExtensionAllowedByParent(extension));
 
-    if (CanInstallExtensions(context)) {
+    if (CanInstallExtensions()) {
       ShowParentPermissionDialogForExtension(
-          extension, context, contents, std::move(extension_approval_callback),
+          extension, contents, std::move(extension_approval_callback),
           gfx::ImageSkia());
     } else {
       ShowInstallBlockedByParentDialogForExtension(
@@ -1012,11 +1012,11 @@ class TestSupervisedUserExtensionsDelegate
   int show_block_dialog_count() const { return show_block_dialog_count_; }
 
  private:
-  // Returns true if |context| represents a supervised child account who may
+  // Returns true if |context_| represents a supervised child account who may
   // install extensions with parent permission.
-  bool CanInstallExtensions(content::BrowserContext* context) const {
+  bool CanInstallExtensions() const {
     SupervisedUserService* supervised_user_service =
-        SupervisedUserServiceFactory::GetForBrowserContext(context);
+        SupervisedUserServiceFactory::GetForBrowserContext(context_);
     return supervised_user_service->CanInstallExtensions();
   }
 
@@ -1024,7 +1024,6 @@ class TestSupervisedUserExtensionsDelegate
   // when it completes.
   void ShowParentPermissionDialogForExtension(
       const extensions::Extension& extension,
-      content::BrowserContext* context,
       content::WebContents* contents,
       extensions::SupervisedUserExtensionsDelegate::
           ExtensionApprovalDoneCallback done_callback,
@@ -1047,6 +1046,7 @@ class TestSupervisedUserExtensionsDelegate
     std::move(done_callback).Run();
   }
 
+  const raw_ptr<content::BrowserContext> context_;
   ExtensionApprovalResult dialog_result_ = ExtensionApprovalResult::kFailed;
   int show_dialog_count_ = 0;
   int show_block_dialog_count_ = 0;
@@ -1088,7 +1088,8 @@ class ManagementApiSupervisedUserTest : public ManagementApiUnitTest {
     management_api_ = ManagementAPI::GetFactoryInstance()->Get(profile());
 
     // Install a SupervisedUserExtensionsDelegate to sense the dialog state.
-    supervised_user_delegate_ = new TestSupervisedUserExtensionsDelegate;
+    supervised_user_delegate_ =
+        new TestSupervisedUserExtensionsDelegate(profile());
     management_api_->set_supervised_user_extensions_delegate_for_test(
         base::WrapUnique(supervised_user_delegate_));
   }

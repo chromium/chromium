@@ -7,6 +7,7 @@
 
 #include <memory>
 
+#include "base/memory/raw_ptr.h"
 #include "extensions/browser/supervised_user_extensions_delegate.h"
 
 namespace content {
@@ -28,36 +29,33 @@ enum class ExtensionInstalledBlockedByParentDialogAction;
 class SupervisedUserExtensionsDelegateImpl
     : public extensions::SupervisedUserExtensionsDelegate {
  public:
-  SupervisedUserExtensionsDelegateImpl();
+  explicit SupervisedUserExtensionsDelegateImpl(
+      content::BrowserContext* browser_context);
   ~SupervisedUserExtensionsDelegateImpl() override;
 
   // extensions::SupervisedUserExtensionsDelegate overrides
-  bool IsChild(content::BrowserContext* context) const override;
+  bool IsChild() const override;
   bool IsExtensionAllowedByParent(
-      const extensions::Extension& extension,
-      content::BrowserContext* context) const override;
+      const extensions::Extension& extension) const override;
   void RequestToAddExtensionOrShowError(
       const extensions::Extension& extension,
-      content::BrowserContext* browser_context,
       content::WebContents* web_contents,
       const gfx::ImageSkia& icon,
       ExtensionApprovalDoneCallback extension_approval_callback) override;
   void RequestToEnableExtensionOrShowError(
       const extensions::Extension& extension,
-      content::BrowserContext* browser_context,
       content::WebContents* web_contents,
       ExtensionApprovalDoneCallback extension_approval_callback) override;
 
  private:
-  // Returns true if |context| represents a supervised child account who may
+  // Returns true if |context_| represents a supervised child account who may
   // install extensions with parent permission.
-  bool CanInstallExtensions(content::BrowserContext* context) const;
+  bool CanInstallExtensions() const;
 
   // Shows a parent permission dialog for |extension| and call |done_callback|
   // when it completes.
   void ShowParentPermissionDialogForExtension(
       const extensions::Extension& extension,
-      content::BrowserContext* context,
       content::WebContents* contents,
       const gfx::ImageSkia& icon);
   // Shows a dialog indicating that |extension| has been blocked and call
@@ -69,7 +67,6 @@ class SupervisedUserExtensionsDelegateImpl
       ExtensionInstalledBlockedByParentDialogAction blocked_action);
 
   void OnExtensionDataLoaded(const extensions::Extension& extension,
-                             content::BrowserContext* context,
                              content::WebContents* contents,
                              const gfx::ImageSkia& icon);
 
@@ -83,6 +80,7 @@ class SupervisedUserExtensionsDelegateImpl
       done_callback_;
 
   std::unique_ptr<ExtensionIconLoader> icon_loader_;
+  const raw_ptr<content::BrowserContext> context_;
 };
 
 }  // namespace extensions

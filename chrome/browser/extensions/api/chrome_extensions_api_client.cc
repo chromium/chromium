@@ -97,6 +97,7 @@
 // TODO(https://crbug.com/1060801): Here and elsewhere, possibly switch build
 // flag to #if BUILDFLAG(IS_CHROMEOS)
 #include "chrome/browser/supervised_user/supervised_user_extensions_delegate_impl.h"
+#include "chrome/browser/supervised_user/supervised_user_service_factory.h"
 #endif
 
 namespace extensions {
@@ -400,9 +401,11 @@ ManagementAPIDelegate* ChromeExtensionsAPIClient::CreateManagementAPIDelegate()
 }
 
 std::unique_ptr<SupervisedUserExtensionsDelegate>
-ChromeExtensionsAPIClient::CreateSupervisedUserExtensionsDelegate() const {
+ChromeExtensionsAPIClient::CreateSupervisedUserExtensionsDelegate(
+    content::BrowserContext* browser_context) const {
 #if BUILDFLAG(ENABLE_SUPERVISED_USERS)
-  return std::make_unique<SupervisedUserExtensionsDelegateImpl>();
+  return std::make_unique<SupervisedUserExtensionsDelegateImpl>(
+      browser_context);
 #else
   return nullptr;
 #endif
@@ -494,7 +497,14 @@ ChromeExtensionsAPIClient::GetAutomationInternalApiDelegate() {
 
 std::vector<KeyedServiceBaseFactory*>
 ChromeExtensionsAPIClient::GetFactoryDependencies() {
-  return {InstantServiceFactory::GetInstance()};
+  // clang-format off
+  return {
+      InstantServiceFactory::GetInstance(),
+#if BUILDFLAG(ENABLE_SUPERVISED_USERS)
+      SupervisedUserServiceFactory::GetInstance(),
+#endif
+  };
+  // clang-format on
 }
 
 }  // namespace extensions
