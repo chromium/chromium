@@ -199,7 +199,7 @@ build_webui_tests("build") {
 
     "device_page/device_page_tests.js",
     "device_page/per_device_keyboard_remap_keys_test.ts",
-    "device_page/per_device_keyboard_test.js",
+    "device_page/per_device_keyboard_test.ts",
     "device_page/per_device_mouse_subsection_test.ts",
     "device_page/per_device_mouse_test.ts",
     "device_page/per_device_pointing_stick_subsection_test.ts",
