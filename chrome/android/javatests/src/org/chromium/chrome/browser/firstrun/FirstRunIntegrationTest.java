@@ -37,7 +37,6 @@ import org.hamcrest.Matchers;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
-import org.junit.BeforeClass;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TestRule;
@@ -51,15 +50,14 @@ import org.chromium.base.ApplicationStatus;
 import org.chromium.base.Callback;
 import org.chromium.base.CollectionUtil;
 import org.chromium.base.Promise;
-import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
-import org.chromium.base.test.metrics.HistogramTestRule;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.DoNotBatch;
+import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.base.test.util.JniMocker;
 import org.chromium.base.test.util.ScalableTimeout;
 import org.chromium.chrome.R;
@@ -88,12 +86,10 @@ import org.chromium.components.policy.AbstractAppRestrictionsProvider;
 import org.chromium.components.search_engines.TemplateUrl;
 import org.chromium.components.signin.AccountManagerFacade;
 import org.chromium.components.signin.AccountManagerFacadeProvider;
-import org.chromium.content_public.browser.test.NativeLibraryTestUtils;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.content_public.common.ContentUrlConstants;
 import org.chromium.ui.base.DeviceFormFactor;
 
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -112,8 +108,6 @@ public class FirstRunIntegrationTest {
     private static final String FOO_URL = "https://foo.com";
     private static final long ACTIVITY_WAIT_LONG_MS = TimeUnit.SECONDS.toMillis(10);
     private static final String TEST_ENROLLMENT_TOKEN = "enrollment-token";
-    private static final String FRE_PROGRESS_VIEW_INTENT_HISTOGRAM =
-            "MobileFre.Progress.ViewIntent";
 
     @Rule
     public TestRule mProcessor = new Features.JUnitProcessor();
@@ -123,9 +117,6 @@ public class FirstRunIntegrationTest {
 
     @Rule
     public TestRule mCommandLineFlagsRule = CommandLineFlags.getTestRule();
-
-    @Rule
-    public HistogramTestRule mHistogramTestRule = new HistogramTestRule();
 
     @Mock
     private ExternalAuthUtils mExternalAuthUtilsMock;
@@ -146,14 +137,6 @@ public class FirstRunIntegrationTest {
     private FirstRunActivityTestObserver mTestObserver = new FirstRunActivityTestObserver();
     private Activity mLastActivity;
     private Class mFirstRunActivityClass;
-
-    @BeforeClass
-    public static void setUpBeforeActivityLaunched() {
-        // Only needs to be loaded once and needs to be loaded before HistogramTestRule.
-        // TODO(https://crbug.com/1211884): Revise after HistogramTestRule is revised to not require
-        // native loading.
-        NativeLibraryTestUtils.loadNativeLibraryNoBrowserProcess();
-    }
 
     @Before
     public void setUp() {
@@ -526,6 +509,14 @@ public class FirstRunIntegrationTest {
     @Test
     @MediumTest
     public void testFirstRunPages_ProgressHistogramRecordedOnlyOnce() throws Exception {
+        HistogramWatcher histograms =
+                HistogramWatcher.newBuilder()
+                        .expectIntRecords("MobileFre.Progress.ViewIntent",
+                                MobileFreProgress.STARTED, MobileFreProgress.WELCOME_SHOWN,
+                                MobileFreProgress.SYNC_CONSENT_SHOWN,
+                                MobileFreProgress.SYNC_CONSENT_DISMISSED,
+                                MobileFreProgress.DEFAULT_SEARCH_ENGINE_SHOWN)
+                        .build();
         initializePreferences(new FirstRunPagesTestCase().withSearchPromo().withSigninPromo());
 
         FirstRunActivity firstRunActivity = launchFirstRunActivity();
@@ -547,15 +538,18 @@ public class FirstRunIntegrationTest {
 
         waitForActivity(ChromeTabbedActivity.class);
 
-        checkRecordedProgressSteps(Arrays.asList(MobileFreProgress.STARTED,
-                MobileFreProgress.WELCOME_SHOWN, MobileFreProgress.SYNC_CONSENT_SHOWN,
-                MobileFreProgress.SYNC_CONSENT_DISMISSED,
-                MobileFreProgress.DEFAULT_SEARCH_ENGINE_SHOWN));
+        histograms.assertExpected();
     }
 
     @Test
     @MediumTest
     public void testFirstRunPages_ProgressHistogramRecording_NoPromos() throws Exception {
+        HistogramWatcher histograms =
+                HistogramWatcher.newBuilder()
+                        .expectIntRecords("MobileFre.Progress.ViewIntent",
+                                MobileFreProgress.STARTED, MobileFreProgress.WELCOME_SHOWN)
+                        .build();
+
         initializePreferences(new FirstRunPagesTestCase());
 
         FirstRunActivity firstRunActivity = launchFirstRunActivity();
@@ -566,27 +560,7 @@ public class FirstRunIntegrationTest {
 
         waitForActivity(ChromeTabbedActivity.class);
 
-        checkRecordedProgressSteps(
-                Arrays.asList(MobileFreProgress.STARTED, MobileFreProgress.WELCOME_SHOWN));
-    }
-
-    private void checkRecordedProgressSteps(List<Integer> bucketsRecorded) {
-        for (int bucket = MobileFreProgress.STARTED; bucket < MobileFreProgress.MAX; ++bucket) {
-            int recordedValue = RecordHistogram.getHistogramValueCountForTesting(
-                    FRE_PROGRESS_VIEW_INTENT_HISTOGRAM, bucket);
-            if (bucketsRecorded.contains(bucket)) {
-                Assert.assertEquals(
-                        String.format(
-                                "Histogram <%s>, bucket <%d> should be recorded exactly once.",
-                                FRE_PROGRESS_VIEW_INTENT_HISTOGRAM, bucket),
-                        1, recordedValue);
-            } else {
-                Assert.assertEquals(
-                        String.format("Histogram <%s>, bucket <%d> should not be recorded.",
-                                FRE_PROGRESS_VIEW_INTENT_HISTOGRAM, bucket),
-                        0, recordedValue);
-            }
-        }
+        histograms.assertExpected();
     }
 
     @Test
@@ -807,6 +781,10 @@ public class FirstRunIntegrationTest {
     @Test
     @MediumTest
     public void testSigninFirstRunLoadPointHistograms() throws Exception {
+        var histograms = HistogramWatcher.newBuilder()
+                                 .expectAnyRecord("MobileFre.FromLaunch.ChildStatusAvailable")
+                                 .expectAnyRecord("MobileFre.FromLaunch.PoliciesLoaded")
+                                 .build();
         initializePreferences(new FirstRunPagesTestCase());
 
         FirstRunActivity firstRunActivity = launchFirstRunActivity();
@@ -814,11 +792,7 @@ public class FirstRunIntegrationTest {
                 .ensurePagesCreationSucceeded()
                 .ensureTermsOfServiceIsCurrentPage();
 
-        Assert.assertEquals("Child status fetch time not recorded", 1,
-                mHistogramTestRule.getHistogramTotalCount(
-                        "MobileFre.FromLaunch.ChildStatusAvailable"));
-        Assert.assertEquals("Policies fetch time not recorded", 1,
-                mHistogramTestRule.getHistogramTotalCount("MobileFre.FromLaunch.PoliciesLoaded"));
+        histograms.assertExpected("Child status or policies fetch time not recorded");
     }
 
     @Test
