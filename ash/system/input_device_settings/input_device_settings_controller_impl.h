@@ -12,6 +12,7 @@
 #include "ash/public/cpp/session/session_observer.h"
 #include "ash/public/mojom/input_device_settings.mojom.h"
 #include "ash/system/input_device_settings/input_device_notifier.h"
+#include "ash/system/input_device_settings/input_device_settings_metrics_manager.h"
 #include "ash/system/input_device_settings/pref_handlers/keyboard_pref_handler.h"
 #include "ash/system/input_device_settings/pref_handlers/mouse_pref_handler.h"
 #include "ash/system/input_device_settings/pref_handlers/pointing_stick_pref_handler.h"
@@ -106,6 +107,7 @@ class ASH_EXPORT InputDeviceSettingsControllerImpl
   std::unique_ptr<TouchpadPrefHandler> touchpad_pref_handler_;
   std::unique_ptr<MousePrefHandler> mouse_pref_handler_;
   std::unique_ptr<PointingStickPrefHandler> pointing_stick_pref_handler_;
+  std::unique_ptr<InputDeviceSettingsMetricsManager> metrics_manager_;
 
   base::flat_map<DeviceId, mojom::KeyboardPtr> keyboards_;
   base::flat_map<DeviceId, mojom::TouchpadPtr> touchpads_;
