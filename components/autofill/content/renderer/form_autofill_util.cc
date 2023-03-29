@@ -1508,32 +1508,6 @@ void MaybeEmitDuplicateIdForInputIssue(
   }
 }
 
-// Emits a devtools issue if an input tag has no associated label, meaning
-// neither a label tag, nor an aria-label attribute nor an aria-labelledby
-// attribute.
-void MaybeEmitInputWithNoLabelIssue(
-    const WebVector<WebFormControlElement>& control_elements,
-    FormData* form,
-    const std::vector<bool>& fields_extracted) {
-  for (size_t element_index = 0, field_index = 0;
-       element_index < control_elements.size(); ++element_index) {
-    if (!fields_extracted[element_index]) {
-      continue;
-    }
-
-    FormFieldData& field = form->fields[field_index++];
-    if (!field.label.empty() || !field.aria_label.empty()) {
-      continue;
-    }
-
-    const WebFormControlElement& control_element =
-        control_elements[element_index];
-    control_element.GetDocument().GetFrame()->AddGenericIssue(
-        GenericIssueErrorType::kFormInputWithNoLabelError,
-        control_element.GetDevToolsNodeId());
-  }
-}
-
 void MaybeEmitInputWithEmptyIdAndNameIssue(
     const WebFormControlElement& element) {
   static base::NoDestructor<WebString> kName("name");
@@ -1718,10 +1692,6 @@ bool FormOrFieldsetsToFormData(
       for (const WebElement& fieldset : fieldsets)
         MatchLabelsAndFields(fieldset, field_set);
     }
-  }
-
-  if (base::FeatureList::IsEnabled(features::kAutofillEnableDevtoolsIssues)) {
-    MaybeEmitInputWithNoLabelIssue(control_elements, form, fields_extracted);
   }
 
   // Infers field labels from other tags or <labels> without for="...".
