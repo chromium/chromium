@@ -50,6 +50,7 @@ component("ios") {
     "password_manager_java_script_feature.mm",
     "password_manager_tab_helper.h",
     "password_manager_tab_helper.mm",
+    "password_reuse_detection_manager_client_bridge.h",
     "password_suggestion_helper.h",
     "password_suggestion_helper.mm",
     "shared_password_controller+private.h",
