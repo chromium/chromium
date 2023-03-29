@@ -3698,7 +3698,7 @@
       "//ash/quick_pair/OWNERS",
       "jackshira"
     ],
-    "expiry_milestone": 114
+    "expiry_milestone": 116
   },
   {
     "name": "fast-pair-handshake-refactor",
@@ -3706,7 +3706,7 @@
       "//ash/quick_pair/OWNERS",
       "jackshira"
     ],
-    "expiry_milestone": 114
+    "expiry_milestone": 116
   },
   {
     "name": "fast-pair-low-power",
@@ -3714,7 +3714,7 @@
       "//ash/quick_pair/OWNERS",
       "jackshira"
     ],
-    "expiry_milestone": 114
+    "expiry_milestone": 116
   },
   {
     "name": "fast-pair-saved-devices",
@@ -3722,7 +3722,7 @@
       "//ash/quick_pair/OWNERS",
       "jackshira"
     ],
-    "expiry_milestone": 114
+    "expiry_milestone": 116
   },
   {
     "name": "fast-pair-software-scanning",
@@ -3730,7 +3730,7 @@
       "//ash/quick_pair/OWNERS",
       "jackshira"
     ],
-    "expiry_milestone": 114
+    "expiry_milestone": 116
   },
   {
     "name": "feature-notification-guide",
