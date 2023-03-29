@@ -706,7 +706,10 @@ std::vector<char*> ParseCommandLineImpl(int argc, char* argv[],
         (undef_flag_action == OnUndefinedFlag::kAbortIfUndefined));
 
     if (undef_flag_action == OnUndefinedFlag::kAbortIfUndefined) {
-      if (!unrecognized_flags.empty()) { std::exit(1); }
+      if (!unrecognized_flags.empty()) {
+        flags_internal::HandleUsageFlags(std::cerr, ProgramUsageMessage());
+        std::exit(1);
+      }
     }
   }
 
@@ -891,7 +894,7 @@ HelpMode ParseAbseilFlagsOnlyImpl(
     flags_internal::ReportUsageError(
         "NOTE: command line flags are disabled in this build", true);
 #else
-    flags_internal::HandleUsageFlags(std::cout, ProgramUsageMessage());
+    flags_internal::HandleUsageFlags(std::cerr, ProgramUsageMessage());
 #endif
     return HelpMode::kFull;  // We just need to make sure the exit with
                              // code 1.

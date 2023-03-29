@@ -232,6 +232,7 @@ EXPORTS
     ??0SpinLock@base_internal@absl@@QEAA@W4SchedulingMode@12@@Z
     ??0Status@absl@@QEAA@W4StatusCode@1@Vstring_view@1@@Z
     ??0StatusRep@status_internal@absl@@QEAA@W4StatusCode@2@Vstring_view@2@V?$unique_ptr@V?$InlinedVector@UPayload@status_internal@absl@@$00V?$allocator@UPayload@status_internal@absl@@@Cr@std@@@absl@@U?$default_delete@V?$InlinedVector@UPayload@status_internal@absl@@$00V?$allocator@UPayload@status_internal@absl@@@Cr@std@@@absl@@@Cr@std@@@Cr@std@@@Z
+    ??0StdcppWaiter@synchronization_internal@absl@@QEAA@XZ
     ??0Streamable@str_format_internal@absl@@QEAA@AEBVUntypedFormatSpecImpl@12@V?$Span@$$CBVFormatArgImpl@str_format_internal@absl@@@2@@Z
     ??0TimeZoneLibC@cctz@time_internal@absl@@QEAA@AEBV?$basic_string@DU?$char_traits@D@Cr@std@@V?$allocator@D@23@@Cr@std@@@Z
     ??0Win32Waiter@synchronization_internal@absl@@QEAA@XZ
@@ -710,6 +711,7 @@ EXPORTS
     ?InsertEdge@GraphCycles@synchronization_internal@absl@@QEAA_NUGraphId@23@0@Z
     ?InstallFailureSignalHandler@absl@@YAXAEBUFailureSignalHandlerOptions@1@@Z
     ?InternalAttemptToUseMutexInFatalSignalHandler@Mutex@absl@@SAXXZ
+    ?InternalCondVarPoke@StdcppWaiter@synchronization_internal@absl@@AEAAXXZ
     ?InternalCondVarPoke@Win32Waiter@synchronization_internal@absl@@AEAAXXZ
     ?InternalError@absl@@YA?AVStatus@1@Vstring_view@1@@Z
     ?InvalidArgumentError@absl@@YA?AVStatus@1@Vstring_view@1@@Z
@@ -838,7 +840,9 @@ EXPORTS
     ?ParseTime@absl@@YA_NVstring_view@1@0VTimeZone@1@PEAVTime@1@PEAV?$basic_string@DU?$char_traits@D@Cr@std@@V?$allocator@D@23@@Cr@std@@@Z
     ?PermissionDeniedError@absl@@YA?AVStatus@1@Vstring_view@1@@Z
     ?Poison@CrcCordState@crc_internal@absl@@QEAAXXZ
+    ?Poke@StdcppWaiter@synchronization_internal@absl@@QEAAXXZ
     ?Poke@Win32Waiter@synchronization_internal@absl@@QEAAXXZ
+    ?Post@StdcppWaiter@synchronization_internal@absl@@QEAAXXZ
     ?Post@Win32Waiter@synchronization_internal@absl@@QEAAXXZ
     ?PrepareForSampling@HashtablezInfo@container_internal@absl@@QEAAX_J_K@Z
     ?PrepareToDie@LogMessage@log_internal@absl@@AEAAXXZ
@@ -1104,6 +1108,7 @@ EXPORTS
     ?Version@ZoneInfoSource@cctz@time_internal@absl@@UEBA?AV?$basic_string@DU?$char_traits@D@Cr@std@@V?$allocator@D@23@@Cr@std@@XZ
     ?Wait@BlockingCounter@absl@@QEAAXXZ
     ?Wait@CondVar@absl@@QEAAXPEAVMutex@2@@Z
+    ?Wait@StdcppWaiter@synchronization_internal@absl@@QEAA_NVKernelTimeout@23@@Z
     ?Wait@Win32Waiter@synchronization_internal@absl@@QEAA_NVKernelTimeout@23@@Z
     ?WaitCommon@CondVar@absl@@AEAA_NPEAVMutex@2@VKernelTimeout@synchronization_internal@2@@Z
     ?WaitForNotification@Notification@absl@@QEBAXXZ

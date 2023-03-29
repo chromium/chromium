@@ -56,6 +56,10 @@
 #include "absl/types/variant.h"
 #include "absl/utility/utility.h"
 
+#ifdef ABSL_HAVE_STD_STRING_VIEW
+#include <string_view>
+#endif
+
 namespace absl {
 ABSL_NAMESPACE_BEGIN
 
@@ -518,7 +522,8 @@ H AbslHashValue(H hash_state, const std::shared_ptr<T>& ptr) {
 //  - `absl::Cord`
 //  - `std::string` (and std::basic_string<T, std::char_traits<T>, A> for
 //      any allocator A and any T in {char, wchar_t, char16_t, char32_t})
-//  - `absl::string_view` and `std::string_view`
+//  - `absl::string_view`, `std::string_view`, `std::wstring_view`,
+//    `std::u16string_view`, and `std::u32_string_view`.
 //
 // For simplicity, we currently support only strings built on `char`, `wchar_t`,
 // `char16_t`, or `char32_t`. This support may be broadened, if necessary, but
@@ -543,6 +548,21 @@ H AbslHashValue(
       H::combine_contiguous(std::move(hash_state), str.data(), str.size()),
       str.size());
 }
+
+#ifdef ABSL_HAVE_STD_STRING_VIEW
+
+// Support std::wstring_view, std::u16string_view and std::u32string_view.
+template <typename Char, typename H,
+          typename = absl::enable_if_t<std::is_same<Char, wchar_t>::value ||
+                                       std::is_same<Char, char16_t>::value ||
+                                       std::is_same<Char, char32_t>::value>>
+H AbslHashValue(H hash_state, std::basic_string_view<Char> str) {
+  return H::combine(
+      H::combine_contiguous(std::move(hash_state), str.data(), str.size()),
+      str.size());
+}
+
+#endif  // ABSL_HAVE_STD_STRING_VIEW
 
 // -----------------------------------------------------------------------------
 // AbslHashValue for Sequence Containers

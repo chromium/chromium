@@ -77,13 +77,6 @@ using IsAtLeastForwardIterator = std::is_convertible<
     std::forward_iterator_tag>;
 
 template <typename A>
-using IsMemcpyOk =
-    absl::conjunction<std::is_same<A, std::allocator<ValueType<A>>>,
-                      absl::is_trivially_copy_constructible<ValueType<A>>,
-                      absl::is_trivially_copy_assignable<ValueType<A>>,
-                      absl::is_trivially_destructible<ValueType<A>>>;
-
-template <typename A>
 using IsMoveAssignOk = std::is_move_assignable<ValueType<A>>;
 template <typename A>
 using IsSwapOk = absl::type_traits_internal::IsSwappable<ValueType<A>>;
@@ -308,11 +301,51 @@ class Storage {
   struct ElementwiseConstructPolicy {};
 
   using MoveAssignmentPolicy = absl::conditional_t<
-      IsMemcpyOk<A>::value, MemcpyPolicy,
+      // Fast path: if the value type can be trivally move assigned and
+      // destroyed, and we know the allocator doesn't do anything fancy, then
+      // it's safe for us to simply adopt the contents of the storage for
+      // `other` and remove its own reference to them. It's as if we had
+      // individually move-assigned each value and then destroyed the original.
+      //
+      // TODO(b/274984172): we check for copy-assignability here only for
+      // historical reasons. This is too strict: we are simulating move
+      // assignment here.
+      //
+      // TODO(b/274984172): the condition on copy-constructibility is here only
+      // for historical reasons. It doesn't make semantic sense: we don't need
+      // to be able to copy construct here, we are doing an "as-if" move
+      // assignment.
+      absl::conjunction<
+          absl::is_trivially_copy_assignable<ValueType<A>>,
+          absl::is_trivially_destructible<ValueType<A>>,
+          std::is_same<A, std::allocator<ValueType<A>>>,
+          absl::is_trivially_copy_constructible<ValueType<A>>>::value,
+      MemcpyPolicy,
+      // Otherwise we use move assignment if possible. If not, we simulate
+      // move assignment using move construction.
+      //
+      // Note that this is in contrast to e.g. std::vector and std::optional,
+      // which are themselves not move-assignable when their contained type is
+      // not.
       absl::conditional_t<IsMoveAssignOk<A>::value, ElementwiseAssignPolicy,
                           ElementwiseConstructPolicy>>;
-  using SwapPolicy = absl::conditional_t<
-      IsMemcpyOk<A>::value, MemcpyPolicy,
+
+  // The policy to be used specifically when swapping inlined elements.
+  using SwapInlinedElementsPolicy = absl::conditional_t<
+      // Fast path: if the value type can be trivally move constructed/assigned
+      // and destroyed, and we know the allocator doesn't do anything fancy,
+      // then it's safe for us to simply swap the bytes in the inline storage.
+      // It's as if we had move-constructed a temporary vector, move-assigned
+      // one to the other, then move-assigned the first from the temporary.
+      //
+      // TODO(b/274984172): we check for copy-constructability and
+      // -assignability here only for historical reasons. This is too strict: we
+      // are simulating move operations here.
+      absl::conjunction<absl::is_trivially_copy_constructible<ValueType<A>>,
+                        absl::is_trivially_copy_assignable<ValueType<A>>,
+                        absl::is_trivially_destructible<ValueType<A>>,
+                        std::is_same<A, std::allocator<ValueType<A>>>>::value,
+      MemcpyPolicy,
       absl::conditional_t<IsSwapOk<A>::value, ElementwiseSwapPolicy,
                           ElementwiseConstructPolicy>>;
 
@@ -335,14 +368,21 @@ class Storage {
       : metadata_(allocator, /* size and is_allocated */ 0u) {}
 
   ~Storage() {
+    // Fast path: if we are empty and not allocated, there's nothing to do.
     if (GetSizeAndIsAllocated() == 0) {
-      // Empty and not allocated; nothing to do.
-    } else if (IsMemcpyOk<A>::value) {
-      // No destructors need to be run; just deallocate if necessary.
-      DeallocateIfAllocated();
-    } else {
-      DestroyContents();
+      return;
     }
+
+    // Fast path: if no destructors need to be run and we know the allocator
+    // doesn't do anything fancy, then all we need to do is deallocate (and
+    // maybe not even that).
+    if (absl::is_trivially_destructible<ValueType<A>>::value &&
+        std::is_same<A, std::allocator<ValueType<A>>>::value) {
+      DeallocateIfAllocated();
+      return;
+    }
+
+    DestroyContents();
   }
 
   // ---------------------------------------------------------------------------
@@ -461,8 +501,25 @@ class Storage {
   }
 
   void MemcpyFrom(const Storage& other_storage) {
-    ABSL_HARDENING_ASSERT(IsMemcpyOk<A>::value ||
-                          other_storage.GetIsAllocated());
+    // Assumption check: it doesn't make sense to memcpy inlined elements unless
+    // we know the allocator doesn't do anything fancy, and one of the following
+    // holds:
+    //
+    //  *  It's possible to trivially move construct/assign the elements and
+    //     then destroy the source.
+    //
+    //  *  It's possible to trivially copy construct/assign the elements.
+    //
+    // TODO(b/274984172): the conditions here, preserved from historical ones,
+    // don't actually implement this. They are far too conservative (they don't
+    // work for move-only types, and require both copyability and
+    // assignability).
+    ABSL_HARDENING_ASSERT(
+        other_storage.GetIsAllocated() ||
+        (std::is_same<A, std::allocator<ValueType<A>>>::value &&
+         absl::is_trivially_copy_constructible<ValueType<A>>::value &&
+         absl::is_trivially_copy_assignable<ValueType<A>>::value &&
+         absl::is_trivially_destructible<ValueType<A>>::value));
 
     GetSizeAndIsAllocated() = other_storage.GetSizeAndIsAllocated();
     data_ = other_storage.data_;
@@ -542,13 +599,29 @@ void Storage<T, N, A>::InitFrom(const Storage& other) {
     dst = allocation.data;
     src = other.GetAllocatedData();
   }
-  if (IsMemcpyOk<A>::value) {
+
+  // Fast path: if the value type is trivially copy constructible and we know
+  // the allocator doesn't do anything fancy, then we know it is legal for us to
+  // simply memcpy the other vector's elements.
+  //
+  // TODO(b/274984172): the condition on copy-assignability is here only for
+  // historical reasons. It doesn't make semantic sense: we don't need to be
+  // able to copy assign here, we are doing an "as-if" copy construction.
+  //
+  // TODO(b/274984172): the condition on trivial destructibility is here only
+  // for historical reasons. It doesn't make sense: there is no destruction
+  // here.
+  if (absl::is_trivially_copy_constructible<ValueType<A>>::value &&
+      std::is_same<A, std::allocator<ValueType<A>>>::value &&
+      absl::is_trivially_copy_assignable<ValueType<A>>::value &&
+      absl::is_trivially_destructible<ValueType<A>>::value) {
     std::memcpy(reinterpret_cast<char*>(dst),
                 reinterpret_cast<const char*>(src), n * sizeof(ValueType<A>));
   } else {
     auto values = IteratorValueAdapter<A, ConstPointer<A>>(src);
     ConstructElements<A>(GetAllocator(), dst, values, n);
   }
+
   GetSizeAndIsAllocated() = other.GetSizeAndIsAllocated();
 }
 
@@ -921,7 +994,7 @@ auto Storage<T, N, A>::Swap(Storage* other_storage_ptr) -> void {
   if (GetIsAllocated() && other_storage_ptr->GetIsAllocated()) {
     swap(data_.allocated, other_storage_ptr->data_.allocated);
   } else if (!GetIsAllocated() && !other_storage_ptr->GetIsAllocated()) {
-    SwapInlinedElements(SwapPolicy{}, other_storage_ptr);
+    SwapInlinedElements(SwapInlinedElementsPolicy{}, other_storage_ptr);
   } else {
     Storage* allocated_ptr = this;
     Storage* inlined_ptr = other_storage_ptr;

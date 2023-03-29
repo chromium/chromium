@@ -147,7 +147,7 @@ struct ThreadIdentity {
 
   // Private: Reserved for absl::synchronization_internal::Waiter.
   struct WaiterState {
-    alignas(void*) char data[128];
+    alignas(void*) char data[256];
   } waiter_state;
 
   // Used by PerThreadSem::{Get,Set}ThreadBlockedCounter().

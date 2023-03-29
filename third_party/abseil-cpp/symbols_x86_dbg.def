@@ -1559,6 +1559,7 @@ EXPORTS
     ??0Status@absl@@QAE@ABV01@@Z
     ??0Status@absl@@QAE@W4StatusCode@1@Vstring_view@1@@Z
     ??0StatusRep@status_internal@absl@@QAE@W4StatusCode@2@Vstring_view@2@V?$unique_ptr@V?$InlinedVector@UPayload@status_internal@absl@@$00V?$allocator@UPayload@status_internal@absl@@@Cr@std@@@absl@@U?$default_delete@V?$InlinedVector@UPayload@status_internal@absl@@$00V?$allocator@UPayload@status_internal@absl@@@Cr@std@@@absl@@@Cr@std@@@Cr@std@@@Z
+    ??0StdcppWaiter@synchronization_internal@absl@@QAE@XZ
     ??0Streamable@str_format_internal@absl@@QAE@ABVUntypedFormatSpecImpl@12@V?$Span@$$CBVFormatArgImpl@str_format_internal@absl@@@2@@Z
     ??0StringifySink@strings_internal@absl@@QAE@XZ
     ??0SynchWaitParams@absl@@QAE@PBUMuHowS@1@PBVCondition@1@VKernelTimeout@synchronization_internal@1@PAVMutex@1@PAUPerThreadSynch@base_internal@1@PAU?$atomic@H@Cr@std@@@Z
@@ -2726,6 +2727,7 @@ EXPORTS
     ?Int128Max@absl@@YA?AVint128@1@XZ
     ?Int128Min@absl@@YA?AVint128@1@XZ
     ?InternalAttemptToUseMutexInFatalSignalHandler@Mutex@absl@@SAXXZ
+    ?InternalCondVarPoke@StdcppWaiter@synchronization_internal@absl@@AAEXXZ
     ?InternalCondVarPoke@Win32Waiter@synchronization_internal@absl@@AAEXXZ
     ?InternalError@absl@@YA?AVStatus@1@Vstring_view@1@@Z
     ?InternalStream@LogMessage@log_internal@absl@@QAEAAV123@XZ
@@ -2939,8 +2941,10 @@ EXPORTS
     ?PiecewiseChunkSize@hash_internal@absl@@YAIXZ
     ?PointerToRep@Status@absl@@CAIPAUStatusRep@status_internal@2@@Z
     ?Poison@CrcCordState@crc_internal@absl@@QAEXXZ
+    ?Poke@StdcppWaiter@synchronization_internal@absl@@QAEXXZ
     ?Poke@Win32Waiter@synchronization_internal@absl@@QAEXXZ
     ?Post@PerThreadSem@synchronization_internal@absl@@CAXPAUThreadIdentity@base_internal@3@@Z
+    ?Post@StdcppWaiter@synchronization_internal@absl@@QAEXXZ
     ?Post@Win32Waiter@synchronization_internal@absl@@QAEXXZ
     ?PrefetchToLocalCacheNta@absl@@YAXPBX@Z
     ?PrepareForSampling@HashtablezInfo@container_internal@absl@@QAEX_JI@Z
@@ -3359,6 +3363,7 @@ EXPORTS
     ?Wait@BlockingCounter@absl@@QAEXXZ
     ?Wait@CondVar@absl@@QAEXPAVMutex@2@@Z
     ?Wait@PerThreadSem@synchronization_internal@absl@@CA_NVKernelTimeout@23@@Z
+    ?Wait@StdcppWaiter@synchronization_internal@absl@@QAE_NVKernelTimeout@23@@Z
     ?Wait@Win32Waiter@synchronization_internal@absl@@QAE_NVKernelTimeout@23@@Z
     ?WaitCommon@CondVar@absl@@AAE_NPAVMutex@2@VKernelTimeout@synchronization_internal@2@@Z
     ?WaitForNotification@Notification@absl@@QBEXXZ

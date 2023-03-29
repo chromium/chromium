@@ -32,6 +32,8 @@
 #pragma warning(disable:4146)
 #endif
 
+#define MAKE_INT128(HI, LO) absl::MakeInt128(static_cast<int64_t>(HI), LO)
+
 namespace {
 
 template <typename T>
@@ -1245,6 +1247,27 @@ TEST(Int128, BitwiseShiftTest) {
                 absl::MakeInt128(uint64_t{1} << j, 0) >>= (j - i));
     }
   }
+
+  // Manually calculated cases with shift count for positive (val1) and negative
+  // (val2) values
+  absl::int128 val1 = MAKE_INT128(0x123456789abcdef0, 0x123456789abcdef0);
+  absl::int128 val2 = MAKE_INT128(0xfedcba0987654321, 0xfedcba0987654321);
+
+  EXPECT_EQ(val1 << 63, MAKE_INT128(0x91a2b3c4d5e6f78, 0x0));
+  EXPECT_EQ(val1 << 64, MAKE_INT128(0x123456789abcdef0, 0x0));
+  EXPECT_EQ(val2 << 63, MAKE_INT128(0xff6e5d04c3b2a190, 0x8000000000000000));
+  EXPECT_EQ(val2 << 64, MAKE_INT128(0xfedcba0987654321, 0x0));
+
+  EXPECT_EQ(val1 << 126, MAKE_INT128(0x0, 0x0));
+  EXPECT_EQ(val2 << 126, MAKE_INT128(0x4000000000000000, 0x0));
+
+  EXPECT_EQ(val1 >> 63, MAKE_INT128(0x0, 0x2468acf13579bde0));
+  EXPECT_EQ(val1 >> 64, MAKE_INT128(0x0, 0x123456789abcdef0));
+  EXPECT_EQ(val2 >> 63, MAKE_INT128(0xffffffffffffffff, 0xfdb974130eca8643));
+  EXPECT_EQ(val2 >> 64, MAKE_INT128(0xffffffffffffffff, 0xfedcba0987654321));
+
+  EXPECT_EQ(val1 >> 126, MAKE_INT128(0x0, 0x0));
+  EXPECT_EQ(val2 >> 126, MAKE_INT128(0xffffffffffffffff, 0xffffffffffffffff));
 }
 
 TEST(Int128, NumericLimitsTest) {

@@ -743,23 +743,71 @@ TEST(TypeTraitsTest, IsNothrowSwappable) {
   EXPECT_TRUE(IsNothrowSwappable<adl_namespace::SpecialNoexceptSwap>::value);
 }
 
-TEST(TrivallyRelocatable, Sanity) {
-#if !defined(ABSL_HAVE_ATTRIBUTE_TRIVIAL_ABI) || \
-    !ABSL_HAVE_BUILTIN(__is_trivially_relocatable)
-  GTEST_SKIP() << "No trivial ABI support.";
-#endif
-
-  struct Trivial {};
-  struct NonTrivial {
-    NonTrivial(const NonTrivial&) {}  // NOLINT
-  };
-  struct ABSL_ATTRIBUTE_TRIVIAL_ABI TrivialAbi {
-    TrivialAbi(const TrivialAbi&) {}  // NOLINT
-  };
-  EXPECT_TRUE(absl::is_trivially_relocatable<Trivial>::value);
-  EXPECT_FALSE(absl::is_trivially_relocatable<NonTrivial>::value);
-  EXPECT_TRUE(absl::is_trivially_relocatable<TrivialAbi>::value);
+TEST(TriviallyRelocatable, PrimitiveTypes) {
+  static_assert(absl::is_trivially_relocatable<int>::value, "");
+  static_assert(absl::is_trivially_relocatable<char>::value, "");
+  static_assert(absl::is_trivially_relocatable<void*>::value, "");
 }
+
+// User-defined types can be trivially relocatable as long as they don't have a
+// user-provided move constructor or destructor.
+TEST(TriviallyRelocatable, UserDefinedTriviallyReconstructible) {
+  struct S {
+    int x;
+    int y;
+  };
+
+  static_assert(absl::is_trivially_relocatable<S>::value, "");
+}
+
+// A user-provided move constructor disqualifies a type from being trivially
+// relocatable.
+TEST(TriviallyRelocatable, UserProvidedMoveConstructor) {
+  struct S {
+    S(S&&) {}  // NOLINT(modernize-use-equals-default)
+  };
+
+  static_assert(!absl::is_trivially_relocatable<S>::value, "");
+}
+
+// A user-provided copy constructor disqualifies a type from being trivially
+// relocatable.
+TEST(TriviallyRelocatable, UserProvidedCopyConstructor) {
+  struct S {
+    S(const S&) {}  // NOLINT(modernize-use-equals-default)
+  };
+
+  static_assert(!absl::is_trivially_relocatable<S>::value, "");
+}
+
+// A user-provided destructor disqualifies a type from being trivially
+// relocatable.
+TEST(TriviallyRelocatable, UserProvidedDestructor) {
+  struct S {
+    ~S() {}  // NOLINT(modernize-use-equals-default)
+  };
+
+  static_assert(!absl::is_trivially_relocatable<S>::value, "");
+}
+
+// TODO(b/275003464): remove the opt-out for Clang on Windows once
+// __is_trivially_relocatable is used there again.
+#if defined(ABSL_HAVE_ATTRIBUTE_TRIVIAL_ABI) &&      \
+    ABSL_HAVE_BUILTIN(__is_trivially_relocatable) && \
+    !(defined(__clang__) && (defined(_WIN32) || defined(_WIN64)))
+// A type marked with the "trivial ABI" attribute is trivially relocatable even
+// if it has user-provided move/copy constructors and a user-provided
+// destructor.
+TEST(TrivallyRelocatable, TrivialAbi) {
+  struct ABSL_ATTRIBUTE_TRIVIAL_ABI S {
+    S(S&&) {}       // NOLINT(modernize-use-equals-default)
+    S(const S&) {}  // NOLINT(modernize-use-equals-default)
+    ~S() {}         // NOLINT(modernize-use-equals-default)
+  };
+
+  static_assert(absl::is_trivially_relocatable<S>::value, "");
+}
+#endif
 
 #ifdef ABSL_HAVE_CONSTANT_EVALUATED
 

@@ -474,9 +474,14 @@ using swap_internal::StdSwapIsUnconstrained;
 }  // namespace type_traits_internal
 
 // absl::is_trivially_relocatable<T>
-// Detects whether a type is "trivially relocatable" -- meaning it can be
-// relocated without invoking the constructor/destructor, using a form of move
-// elision.
+//
+// Detects whether a type is known to be "trivially relocatable" -- meaning it
+// can be relocated without invoking the constructor/destructor, using a form of
+// move elision.
+//
+// This trait is conservative, for backwards compatibility. If it's true then
+// the type is definitely trivially relocatable, but if it's false then the type
+// may or may not be.
 //
 // Example:
 //
@@ -490,14 +495,29 @@ using swap_internal::StdSwapIsUnconstrained;
 // Upstream documentation:
 //
 // https://clang.llvm.org/docs/LanguageExtensions.html#:~:text=__is_trivially_relocatable
+
+// If the compiler offers a builtin that tells us the answer, we can use that.
+// This covers all of the cases in the fallback below, plus types that opt in
+// using e.g. [[clang::trivial_abi]].
 //
-#if ABSL_HAVE_BUILTIN(__is_trivially_relocatable)
+// Clang on Windows has the builtin, but it falsely claims types with a
+// user-provided destructor are trivial (http://b/275003464). So we opt out
+// there.
+//
+// TODO(b/275003464): remove the opt-out once the bug is fixed.
+#if ABSL_HAVE_BUILTIN(__is_trivially_relocatable) && \
+    !(defined(__clang__) && (defined(_WIN32) || defined(_WIN64)))
 template <class T>
 struct is_trivially_relocatable
     : std::integral_constant<bool, __is_trivially_relocatable(T)> {};
 #else
+// Otherwise we use a fallback that detects only those types we can feasibly
+// detect. Any time that has trivial move-construction and destruction
+// operations is by definition trivally relocatable.
 template <class T>
-struct is_trivially_relocatable : std::integral_constant<bool, false> {};
+struct is_trivially_relocatable
+    : absl::conjunction<absl::is_trivially_move_constructible<T>,
+                        absl::is_trivially_destructible<T>> {};
 #endif
 
 // absl::is_constant_evaluated()

@@ -17,10 +17,8 @@
 
 #include <stdlib.h>
 
-#include <cstddef>
 #include <fstream>
 #include <string>
-#include <utility>
 #include <vector>
 
 #include "gmock/gmock.h"
@@ -1057,6 +1055,19 @@ TEST_F(ParseTest, AllUndefOkFlagsAreIgnored) {
                                 absl::string_view("value"),
                                 absl::string_view("--undef_flag4")}));
   EXPECT_THAT(unrecognized_flags, testing::IsEmpty());
+}
+
+// --------------------------------------------------------------------
+
+TEST_F(ParseDeathTest, ExitOnUnrecognizedFlagPrintsHelp) {
+  const char* in_args[] = {
+      "testbin",
+      "--undef_flag1",
+      "--help=int_flag",
+  };
+
+  EXPECT_DEATH_IF_SUPPORTED(InvokeParse(in_args),
+                            "Try --helpfull to get a list of all flags");
 }
 
 // --------------------------------------------------------------------

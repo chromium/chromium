@@ -372,6 +372,8 @@ set(ABSL_INTERNAL_DLL_FILES
   "synchronization/internal/pthread_waiter.cc"
   "synchronization/internal/sem_waiter.h"
   "synchronization/internal/sem_waiter.cc"
+  "synchronization/internal/stdcpp_waiter.h"
+  "synchronization/internal/stdcpp_waiter.cc"
   "synchronization/internal/thread_pool.h"
   "synchronization/internal/waiter.h"
   "synchronization/internal/waiter_base.h"

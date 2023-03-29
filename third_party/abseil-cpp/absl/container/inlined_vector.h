@@ -77,8 +77,6 @@ class InlinedVector {
   template <typename TheA>
   using MoveIterator = inlined_vector_internal::MoveIterator<TheA>;
   template <typename TheA>
-  using IsMemcpyOk = inlined_vector_internal::IsMemcpyOk<TheA>;
-  template <typename TheA>
   using IsMoveAssignOk = inlined_vector_internal::IsMoveAssignOk<TheA>;
 
   template <typename TheA, typename Iterator>
@@ -182,14 +180,33 @@ class InlinedVector {
   // provided `allocator`.
   InlinedVector(const InlinedVector& other, const allocator_type& allocator)
       : storage_(allocator) {
+    // Fast path: if the other vector is empty, there's nothing for us to do.
     if (other.empty()) {
-      // Empty; nothing to do.
-    } else if (IsMemcpyOk<A>::value && !other.storage_.GetIsAllocated()) {
-      // Memcpy-able and do not need allocation.
-      storage_.MemcpyFrom(other.storage_);
-    } else {
-      storage_.InitFrom(other.storage_);
+      return;
     }
+
+    // Fast path: if the value type is trivially copy constructible, we know the
+    // allocator doesn't do anything fancy, and there is nothing on the heap
+    // then we know it is legal for us to simply memcpy the other vector's
+    // inlined bytes to form our copy of its elements.
+    //
+    // TODO(b/274984172): the condition on copy-assignability is here only for
+    // historical reasons. It doesn't make semantic sense: we don't need to be
+    // able to copy assign here, we are doing an "as-if" copy construction.
+    //
+    // TODO(b/274984172): the condition on trivial destructibility is here only
+    // for historical reasons. It doesn't make sense: there is no destruction
+    // here.
+    if (absl::is_trivially_copy_constructible<value_type>::value &&
+        std::is_same<A, std::allocator<value_type>>::value &&
+        absl::is_trivially_copy_assignable<value_type>::value &&
+        absl::is_trivially_destructible<value_type>::value &&
+        !other.storage_.GetIsAllocated()) {
+      storage_.MemcpyFrom(other.storage_);
+      return;
+    }
+
+    storage_.InitFrom(other.storage_);
   }
 
   // Creates an inlined vector by moving in the contents of `other` without
@@ -210,26 +227,57 @@ class InlinedVector {
       absl::allocator_is_nothrow<allocator_type>::value ||
       std::is_nothrow_move_constructible<value_type>::value)
       : storage_(other.storage_.GetAllocator()) {
-    if (IsMemcpyOk<A>::value) {
+    // Fast path: if the value type can be trivally move constructed and
+    // destroyed, and we know the allocator doesn't do anything fancy, then it's
+    // safe for us to simply adopt the contents of the storage for `other` and
+    // remove its own reference to them. It's as if we had individually
+    // move-constructed each value and then destroyed the original.
+    //
+    // TODO(b/274984172): we check for copy-constructibility here only for
+    // historical reasons. This is too strict: we are simulating move
+    // construction here. In fact this is arguably incorrect, since in theory a
+    // type might be trivially copy-constructible but not trivially
+    // move-constructible.
+    //
+    // TODO(b/274984172): the condition on copy-assignability is here only for
+    // historical reasons. It doesn't make semantic sense: we don't need to be
+    // able to copy assign here, we are doing an "as-if" move construction.
+    //
+    // TODO(b/274984172): a move construction followed by destroying the source
+    // is a "relocation" in the language of P1144R4. So actually the minimum
+    // condition we need here (in addition to the allocator) is "trivially
+    // relocatable". Relaxing this would allow using memcpy with types like
+    // std::unique_ptr that opt in to declaring themselves trivially relocatable
+    // despite not being trivially move-constructible and/oror destructible.
+    if (absl::is_trivially_copy_constructible<value_type>::value &&
+        absl::is_trivially_destructible<value_type>::value &&
+        std::is_same<A, std::allocator<value_type>>::value &&
+        absl::is_trivially_copy_assignable<value_type>::value) {
       storage_.MemcpyFrom(other.storage_);
-
       other.storage_.SetInlinedSize(0);
-    } else if (other.storage_.GetIsAllocated()) {
+      return;
+    }
+
+    // Fast path: if the other vector is on the heap, we can simply take over
+    // its allocation.
+    if (other.storage_.GetIsAllocated()) {
       storage_.SetAllocation({other.storage_.GetAllocatedData(),
                               other.storage_.GetAllocatedCapacity()});
       storage_.SetAllocatedSize(other.storage_.GetSize());
 
       other.storage_.SetInlinedSize(0);
-    } else {
-      IteratorValueAdapter<A, MoveIterator<A>> other_values(
-          MoveIterator<A>(other.storage_.GetInlinedData()));
-
-      inlined_vector_internal::ConstructElements<A>(
-          storage_.GetAllocator(), storage_.GetInlinedData(), other_values,
-          other.storage_.GetSize());
-
-      storage_.SetInlinedSize(other.storage_.GetSize());
+      return;
     }
+
+    // Otherwise we must move each element individually.
+    IteratorValueAdapter<A, MoveIterator<A>> other_values(
+        MoveIterator<A>(other.storage_.GetInlinedData()));
+
+    inlined_vector_internal::ConstructElements<A>(
+        storage_.GetAllocator(), storage_.GetInlinedData(), other_values,
+        other.storage_.GetSize());
+
+    storage_.SetInlinedSize(other.storage_.GetSize());
   }
 
   // Creates an inlined vector by moving in the contents of `other` with a copy
@@ -244,22 +292,53 @@ class InlinedVector {
       const allocator_type&
           allocator) noexcept(absl::allocator_is_nothrow<allocator_type>::value)
       : storage_(allocator) {
-    if (IsMemcpyOk<A>::value) {
+    // Fast path: if the value type can be trivally move constructed and
+    // destroyed and we know the allocator doesn't do anything fancy, then it's
+    // safe for us to simply adopt the contents of the storage for `other` and
+    // remove its own reference to them. It's as if we had individually
+    // move-constructed each value and then destroyed the original.
+    //
+    // TODO(b/274984172): we check for copy-constructibility here only for
+    // historical reasons. This is too strict: we are simulating move
+    // construction here. In fact this is arguably incorrect, since in theory a
+    // type might be trivially copy-constructible but not trivially
+    // move-constructible.
+    //
+    // TODO(b/274984172): the condition on copy-assignability is here only for
+    // historical reasons. It doesn't make semantic sense: we don't need to be
+    // able to copy assign here, we are doing an "as-if" move construction.
+    //
+    // TODO(b/274984172): a move construction followed by destroying the source
+    // is a "relocation" in the language of P1144R4. So actually the minimum
+    // condition we need here (in addition to the allocator) is "trivially
+    // relocatable". Relaxing this would allow using memcpy with types like
+    // std::unique_ptr that opt in to declaring themselves trivially relocatable
+    // despite not being trivially move-constructible and/oror destructible.
+    if (absl::is_trivially_copy_constructible<value_type>::value &&
+        absl::is_trivially_destructible<value_type>::value &&
+        std::is_same<A, std::allocator<value_type>>::value &&
+        absl::is_trivially_copy_assignable<value_type>::value) {
       storage_.MemcpyFrom(other.storage_);
-
       other.storage_.SetInlinedSize(0);
-    } else if ((storage_.GetAllocator() == other.storage_.GetAllocator()) &&
-               other.storage_.GetIsAllocated()) {
+      return;
+    }
+
+    // Fast path: if the other vector is on the heap and shared the same
+    // allocator, we can simply take over its allocation.
+    if ((storage_.GetAllocator() == other.storage_.GetAllocator()) &&
+        other.storage_.GetIsAllocated()) {
       storage_.SetAllocation({other.storage_.GetAllocatedData(),
                               other.storage_.GetAllocatedCapacity()});
       storage_.SetAllocatedSize(other.storage_.GetSize());
 
       other.storage_.SetInlinedSize(0);
-    } else {
-      storage_.Initialize(IteratorValueAdapter<A, MoveIterator<A>>(
-                              MoveIterator<A>(other.data())),
-                          other.size());
+      return;
     }
+
+    // Otherwise we must move each element individually.
+    storage_.Initialize(
+        IteratorValueAdapter<A, MoveIterator<A>>(MoveIterator<A>(other.data())),
+        other.size());
   }
 
   ~InlinedVector() {}
@@ -784,6 +863,10 @@ class InlinedVector {
   friend H AbslHashValue(H h, const absl::InlinedVector<TheT, TheN, TheA>& a);
 
   void MoveAssignment(MemcpyPolicy, InlinedVector&& other) {
+    // TODO(b/274984172): we shouldn't need to do this. We already know the
+    // elements are trivially destructible when our move-assignment policy is
+    // MemcpyPolicy. Except the other overloads of MoveAssignment call this one.
+    // Make them not.
     inlined_vector_internal::DestroyAdapter<A>::DestroyElements(
         storage_.GetAllocator(), data(), size());
     storage_.DeallocateIfAllocated();
@@ -793,30 +876,38 @@ class InlinedVector {
   }
 
   void MoveAssignment(ElementwiseAssignPolicy, InlinedVector&& other) {
+    // Fast path: if the other vector is on the heap then we don't worry about
+    // actually move-assigning each element. Instead we only throw away our own
+    // existing elements and adopt the heap allocation of the other vector.
     if (other.storage_.GetIsAllocated()) {
       MoveAssignment(MemcpyPolicy{}, std::move(other));
-    } else {
-      storage_.Assign(IteratorValueAdapter<A, MoveIterator<A>>(
-                          MoveIterator<A>(other.storage_.GetInlinedData())),
-                      other.size());
+      return;
     }
+
+    storage_.Assign(IteratorValueAdapter<A, MoveIterator<A>>(
+                        MoveIterator<A>(other.storage_.GetInlinedData())),
+                    other.size());
   }
 
   void MoveAssignment(ElementwiseConstructPolicy, InlinedVector&& other) {
+    // Fast path: if the other vector is on the heap then we don't worry about
+    // actually move-assigning each element. Instead we only throw away our own
+    // existing elements and adopt the heap allocation of the other vector.
     if (other.storage_.GetIsAllocated()) {
       MoveAssignment(MemcpyPolicy{}, std::move(other));
-    } else {
-      inlined_vector_internal::DestroyAdapter<A>::DestroyElements(
-          storage_.GetAllocator(), data(), size());
-      storage_.DeallocateIfAllocated();
-
-      IteratorValueAdapter<A, MoveIterator<A>> other_values(
-          MoveIterator<A>(other.storage_.GetInlinedData()));
-      inlined_vector_internal::ConstructElements<A>(
-          storage_.GetAllocator(), storage_.GetInlinedData(), other_values,
-          other.storage_.GetSize());
-      storage_.SetInlinedSize(other.storage_.GetSize());
+      return;
     }
+
+    inlined_vector_internal::DestroyAdapter<A>::DestroyElements(
+        storage_.GetAllocator(), data(), size());
+    storage_.DeallocateIfAllocated();
+
+    IteratorValueAdapter<A, MoveIterator<A>> other_values(
+        MoveIterator<A>(other.storage_.GetInlinedData()));
+    inlined_vector_internal::ConstructElements<A>(
+        storage_.GetAllocator(), storage_.GetInlinedData(), other_values,
+        other.storage_.GetSize());
+    storage_.SetInlinedSize(other.storage_.GetSize());
   }
 
   Storage storage_;

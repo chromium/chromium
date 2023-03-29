@@ -53,6 +53,10 @@
 #include "absl/numeric/int128.h"
 #include "absl/strings/cord_test_helpers.h"
 
+#ifdef ABSL_HAVE_STD_STRING_VIEW
+#include <string_view>
+#endif
+
 namespace {
 
 // Utility wrapper of T for the purposes of testing the `AbslHash` type erasure
@@ -486,6 +490,47 @@ TEST(HashValueTest, U32String) {
       std::u32string(), std::u32string(U"ABC"), std::u32string(U"ABC"),
       std::u32string(U"Some other different string"),
       std::u32string(U"Iñtërnâtiônàlizætiøn"))));
+}
+
+TEST(HashValueTest, WStringView) {
+#ifndef ABSL_HAVE_STD_STRING_VIEW
+  GTEST_SKIP();
+#else
+  EXPECT_TRUE((is_hashable<std::wstring_view>::value));
+
+  EXPECT_TRUE(absl::VerifyTypeImplementsAbslHashCorrectly(std::make_tuple(
+      std::wstring_view(), std::wstring_view(L"ABC"), std::wstring_view(L"ABC"),
+      std::wstring_view(L"Some other different string_view"),
+      std::wstring_view(L"Iñtërnâtiônàlizætiøn"))));
+#endif
+}
+
+TEST(HashValueTest, U16StringView) {
+#ifndef ABSL_HAVE_STD_STRING_VIEW
+  GTEST_SKIP();
+#else
+  EXPECT_TRUE((is_hashable<std::u16string_view>::value));
+
+  EXPECT_TRUE(absl::VerifyTypeImplementsAbslHashCorrectly(
+      std::make_tuple(std::u16string_view(), std::u16string_view(u"ABC"),
+                      std::u16string_view(u"ABC"),
+                      std::u16string_view(u"Some other different string_view"),
+                      std::u16string_view(u"Iñtërnâtiônàlizætiøn"))));
+#endif
+}
+
+TEST(HashValueTest, U32StringView) {
+#ifndef ABSL_HAVE_STD_STRING_VIEW
+  GTEST_SKIP();
+#else
+  EXPECT_TRUE((is_hashable<std::u32string_view>::value));
+
+  EXPECT_TRUE(absl::VerifyTypeImplementsAbslHashCorrectly(
+      std::make_tuple(std::u32string_view(), std::u32string_view(U"ABC"),
+                      std::u32string_view(U"ABC"),
+                      std::u32string_view(U"Some other different string_view"),
+                      std::u32string_view(U"Iñtërnâtiônàlizætiøn"))));
+#endif
 }
 
 TEST(HashValueTest, StdArray) {
