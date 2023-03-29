@@ -158,7 +158,7 @@ class COMPONENT_EXPORT(TRACING_CPP) PerfettoTracedProcess final
 
    private:
     PerfettoTracedProcess::DataSourceBase* const data_source_ = nullptr;
-    PerfettoTracedProcess::DataSourceBase* const* data_source_ptr_ =
+    raw_ptr<PerfettoTracedProcess::DataSourceBase* const> data_source_ptr_ =
         &data_source_;
     perfetto::DataSourceConfig data_source_config_;
   };

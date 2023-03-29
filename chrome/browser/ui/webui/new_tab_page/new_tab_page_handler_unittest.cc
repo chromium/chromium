@@ -340,7 +340,7 @@ class NewTabPageHandlerTest : public testing::Test {
   content::TestWebContentsFactory factory_;
   raw_ptr<content::WebContents> web_contents_;  // Weak. Owned by factory_.
   // Pointer to mock that will eventually be solely owned by the handler.
-  MockCustomizeChromeFeaturePromoHelper*
+  raw_ptr<MockCustomizeChromeFeaturePromoHelper>
       mock_customize_chrome_feature_promo_helper_;
   std::unique_ptr<MockCustomizeChromeFeaturePromoHelper>
       mock_customize_chrome_feature_promo_helper_ptr_;

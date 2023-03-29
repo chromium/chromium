@@ -175,7 +175,7 @@ class MockDownloadBubbleUpdateService : public DownloadBubbleUpdateService {
               (const override));
 
  private:
-  Profile* profile_;
+  raw_ptr<Profile> profile_;
   std::vector<ModelType> model_types_;
   const std::vector<std::unique_ptr<StrictMockDownloadItem>>& download_items_;
   const OfflineItemList& offline_items_;

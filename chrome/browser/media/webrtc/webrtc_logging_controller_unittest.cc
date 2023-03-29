@@ -11,6 +11,7 @@
 
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/prefs/browser_prefs.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/testing_browser_process.h"
@@ -143,7 +144,7 @@ class WebRtcLoggingControllerTest : public ::testing::Test {
   std::unique_ptr<MockRenderProcessHost> rph_;
 
   // Class under test.
-  WebRtcLoggingController* webrtc_logging_controller_ = nullptr;
+  raw_ptr<WebRtcLoggingController> webrtc_logging_controller_ = nullptr;
   std::unique_ptr<WebRtcLogUploader> webrtc_log_uploader_ = nullptr;
 
   // Testing utilities.

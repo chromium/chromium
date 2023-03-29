@@ -5,6 +5,7 @@
 #include <memory>
 
 #include "base/json/json_reader.h"
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/bind.h"
@@ -693,7 +694,7 @@ class RuntimeGetContextsApiTest : public ExtensionApiTest {
   }
 
  private:
-  const Extension* extension_ = nullptr;
+  raw_ptr<const Extension, DanglingUntriaged> extension_ = nullptr;
   TestExtensionDir test_dir_;
   ScopedCurrentChannel channel_override_{version_info::Channel::UNKNOWN};
   base::test::ScopedFeatureList feature_list_;

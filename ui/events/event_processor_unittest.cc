@@ -503,7 +503,7 @@ class DestroyDuringFindTargetEventTargeter : public TestEventTargeter {
 
  private:
   DestroyTarget destroy_target_;
-  TestEventTarget* root_;
+  raw_ptr<TestEventTarget> root_;
   std::unique_ptr<TestEventProcessor> processor_;
 };
 

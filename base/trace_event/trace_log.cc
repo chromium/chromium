@@ -188,7 +188,7 @@ class PerfettoProtoAppender
 
  private:
   std::vector<protozero::ContiguousMemoryRange> ranges_;
-  perfetto::protos::pbzero::DebugAnnotation* annotation_proto_;
+  raw_ptr<perfetto::protos::pbzero::DebugAnnotation> annotation_proto_;
 };
 
 void AddConvertableToTraceFormat(

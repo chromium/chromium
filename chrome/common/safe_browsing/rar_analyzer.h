@@ -23,6 +23,7 @@
 
 #include "base/files/file.h"
 #include "base/functional/callback.h"
+#include "base/memory/raw_ptr.h"
 #include "components/safe_browsing/content/common/proto/download_file_types.pb.h"
 #include "third_party/unrar/google/unrar_wrapper.h"
 
@@ -82,7 +83,7 @@ class RarAnalyzer {
   base::File rar_file_;
   base::File temp_file_;
   third_party_unrar::RarReader reader_;
-  ArchiveAnalyzerResults* results_;
+  raw_ptr<ArchiveAnalyzerResults> results_;
 
   FinishedAnalysisCallback finished_analysis_callback_;
   GetTempFileCallback get_temp_file_callback_;

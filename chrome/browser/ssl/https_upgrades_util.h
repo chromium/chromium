@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_SSL_HTTPS_UPGRADES_UTIL_H_
 #define CHROME_BROWSER_SSL_HTTPS_UPGRADES_UTIL_H_
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/stack_allocated.h"
 #include "base/values.h"
 #include "url/gurl.h"
@@ -45,7 +46,7 @@ class ScopedAllowHttpForHostnamesForTesting {
   ~ScopedAllowHttpForHostnamesForTesting();
 
  private:
-  PrefService* prefs_;
+  raw_ptr<PrefService> prefs_;
 };
 
 #endif  // CHROME_BROWSER_SSL_HTTPS_UPGRADES_UTIL_H_

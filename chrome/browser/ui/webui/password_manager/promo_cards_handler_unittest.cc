@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "base/memory/raw_ptr.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
 #include "chrome/browser/ui/webui/password_manager/promo_card.h"
@@ -106,9 +107,9 @@ class PromoCardsHandlerTest : public ChromeRenderViewHostTestHarness {
  private:
   TestingPrefServiceSimple prefs_;
   content::TestWebUI web_ui_;
-  PromoCardsHandler* handler_;
-  MockPromoCard* card1_;
-  MockPromoCard* card2_;
+  raw_ptr<PromoCardsHandler> handler_;
+  raw_ptr<MockPromoCard> card1_;
+  raw_ptr<MockPromoCard> card2_;
 };
 
 TEST_F(PromoCardsHandlerTest, GetAvailablePromoCard) {

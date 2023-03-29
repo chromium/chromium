@@ -59,7 +59,7 @@ class SidePanelToolbarContainer : public ToolbarIconContainerView {
    private:
     std::unique_ptr<ui::MenuModel> CreateMenuModel();
 
-    BrowserView* browser_view_;
+    raw_ptr<BrowserView> browser_view_;
     SidePanelEntry::Id id_;
   };
 

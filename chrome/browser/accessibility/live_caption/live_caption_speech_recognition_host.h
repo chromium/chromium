@@ -7,6 +7,7 @@
 
 #include <memory>
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "build/build_config.h"
 #include "content/public/browser/document_service.h"
@@ -93,7 +94,7 @@ class LiveCaptionSpeechRecognitionHost
   bool stop_transcriptions_ = false;
 
   // The user preferences containing the target and source language codes.
-  PrefService* prefs_;
+  raw_ptr<PrefService> prefs_;
 
   base::WeakPtrFactory<LiveCaptionSpeechRecognitionHost> weak_factory_{this};
 };

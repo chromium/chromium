@@ -130,7 +130,7 @@ class DualLayerUserPrefStore : public PersistentPrefStore {
 
   base::ObserverList<PrefStore::Observer, true>::Unchecked observers_;
 
-  const PrefModelAssociatorClient* const pref_model_associator_client_ =
+  const raw_ptr<const PrefModelAssociatorClient> pref_model_associator_client_ =
       nullptr;
 };
 
