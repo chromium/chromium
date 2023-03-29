@@ -2559,7 +2559,7 @@
 <translation id="7365849542400970216">デバイスのアクティブ状態を知らせますか？</translation>
 <translation id="7366117520888504990">198x275 mm</translation>
 <translation id="7366362069757178916">支払いハンドラ</translation>
-<translation id="7367985555340314048">興味 / 関心のあるトピックは最近の閲覧履歴に基づいて判断され、サイトでパーソナライズド広告を表示する際に使用されます</translation>
+<translation id="7367985555340314048">興味 / 関心のあるトピックを最近の閲覧履歴に基づいて判断し、サイトでパーソナライズド広告を表示するために使うことを許可します</translation>
 <translation id="7372973238305370288">検索結果</translation>
 <translation id="7374461526650987610">プロトコル ハンドラ</translation>
 <translation id="7374733840632556089">この問題は、あなたまたは他のユーザーがデバイスにインストールした証明書が原因で発生します。該当の証明書は、ネットワークの監視と傍受に使われることが確認されており、Chrome では信頼されていません。学校や会社のネットワークなどで合法的に監視されているケースもありますが、ユーザーが監視を止められないとしても監視の事実を把握できるように、Chrome ではこのメッセージを表示しています。監視の対象は、ブラウザ、またはウェブにアクセスするアプリケーションです。</translation>
@@ -2774,7 +2774,7 @@
 <translation id="7800977246388195491">Chrome では、ユーザーの最近の閲覧履歴に基づいて興味 / 関心のあるトピックが記録されます。また、アクセスしたサイトによりユーザーの好みが特定される場合もあります。その後、パーソナライズド広告を表示するために、このような情報をサイトから求められることがあります。広告を表示するために使用するトピックやサイトは選択できます。</translation>
 <translation id="7802523362929240268">正規のサイトです</translation>
 <translation id="7802989406998618639">カード発行会社による本人確認のため、<ph name="SIDE_OF_CARD" />に記載されている <ph name="NUMBER_OF_DIGITS" /> 桁のセキュリティ コードを入力してください</translation>
-<translation id="780301667611848630">いいえ</translation>
+<translation id="780301667611848630">いいえ、結構です</translation>
 <translation id="7805571567667010077">組織によって管理されています</translation>
 <translation id="7805768142964895445">ステータス</translation>
 <translation id="7812922009395017822">Mir</translation>
@@ -2786,7 +2786,7 @@
 <translation id="7840103971441592723">スクリーン キャプチャを開始しました</translation>
 <translation id="7844689747373518809">{COUNT,plural, =0{なし}=1{1 個のアプリ（<ph name="EXAMPLE_APP_1" />）}=2{2 個のアプリ（<ph name="EXAMPLE_APP_1" />、<ph name="EXAMPLE_APP_2" />）}other{# 個のアプリ（<ph name="EXAMPLE_APP_1" />、<ph name="EXAMPLE_APP_2" />、<ph name="AND_MORE" />）}}</translation>
 <translation id="7855695075675558090"><ph name="TOTAL_LABEL" /> <ph name="FORMATTED_TOTAL_AMOUNT" /> <ph name="CURRENCY_CODE" /></translation>
-<translation id="7857116075376571629">その後、アクセスしたサイトでは、表示する広告をカスタマイズするために、Chrome にトピックを提示するよう要求できます。Chrome では、共有するトピックを 3 つまでにして、閲覧履歴と個人情報を保護します。</translation>
+<translation id="7857116075376571629">その後にアクセスしたサイトは、表示する広告をカスタマイズするためのトピックを Chrome に要求できます。Chrome では、共有するトピックを 3 つまでにして、閲覧履歴と個人情報を保護します。</translation>
 <translation id="7862185352068345852">このサイトを離れますか？</translation>
 <translation id="7865448901209910068">最高速度</translation>
 <translation id="7871445724586827387">Google アカウントのパスワードを変更します</translation>

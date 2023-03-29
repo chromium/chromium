@@ -19,7 +19,7 @@
           <ph name="LIST_ITEM" />Perusahaan atau sekolah dapat melacak aktivitas penjelajahan<ph name="END_LIST_ITEM" />
           <ph name="LIST_ITEM" />Internet service provider dapat memantau traffic web<ph name="END_LIST_ITEM" />
         <ph name="END_LIST" /></translation>
-<translation id="1036348656032585052">Matikan</translation>
+<translation id="1036348656032585052">Nonaktifkan</translation>
 <translation id="1036881361735705143">Envelope C4</translation>
 <translation id="1036982837258183574">Tekan |<ph name="ACCELERATOR" />| untuk keluar dari mode layar penuh</translation>
 <translation id="1038106730571050514">Tampilkan saran</translation>
@@ -347,7 +347,7 @@ Jika tidak, ini akan diblokir oleh setelan privasi Anda. Ini akan memungkinkan k
 <translation id="1736420071277903564">Komputer</translation>
 <translation id="1740951997222943430">Masukkan bulan habis masa berlaku yang valid</translation>
 <translation id="1741613555002899862">Harus ditentukan dan menjadi string yang valid saat DnsOverHttpsMode <ph name="SECURE_DNS_MODE_SECURE" />.</translation>
-<translation id="1745399796851657441"><ph name="BEGIN_BOLD" />Cara kami menggunakan data ini:<ph name="END_BOLD" /> Chrome mencatat topik minat saat Anda melakukan penjelajahan. Label topik sudah ditentukan sebelumnya dan mencakup hal-hal seperti, Seni &amp; Hiburan, Belanja, dan Olahraga. Kemudian, situs yang Anda buka dapat meminta beberapa topik Anda (tetapi bukan histori penjelajahan) kepada Chrome untuk mempersonalisasi iklan yang Anda lihat.</translation>
+<translation id="1745399796851657441"><ph name="BEGIN_BOLD" />Cara kami menggunakan data ini:<ph name="END_BOLD" /> Chrome mencatat topik minat saat Anda melakukan penjelajahan. Label topik sudah ditentukan sebelumnya dan mencakup hal-hal seperti Seni &amp; Hiburan, Belanja, dan Olahraga. Kemudian, situs yang Anda buka dapat meminta beberapa topik Anda (tetapi bukan histori penjelajahan) kepada Chrome untuk mempersonalisasi iklan yang Anda lihat.</translation>
 <translation id="1745880797583122200">Browser Anda dikelola</translation>
 <translation id="1746113442205726301">Perpindahan image Y</translation>
 <translation id="1746531169546376413">0 derajat</translation>

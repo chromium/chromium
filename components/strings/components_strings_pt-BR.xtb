@@ -347,7 +347,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="1736420071277903564">Computador</translation>
 <translation id="1740951997222943430">Informe um mês de validade válido</translation>
 <translation id="1741613555002899862">Precisa ser especificada e ser uma string válida quando DnsOverHttpsMode for <ph name="SECURE_DNS_MODE_SECURE" />.</translation>
-<translation id="1745399796851657441"><ph name="BEGIN_BOLD" />Como usamos esses dados<ph name="END_BOLD" />: o Chrome registra temas de interesse durante a navegação. As etiquetas de temas são predefinidas e incluem Artes e entretenimento, compras e esportes. Sites que você acessa podem pedir ao Chrome alguns dos seus temas (mas não seu histórico de navegação) para personalizar os anúncios que você recebe.</translation>
+<translation id="1745399796851657441"><ph name="BEGIN_BOLD" />Como usamos esses dados<ph name="END_BOLD" />: o Chrome registra temas de interesse durante a navegação. Os marcadores de temas são predefinidos e incluem itens como "Artes e entretenimento", "Compras" e "Esportes". Sites que você acessa podem pedir ao Chrome alguns dos seus temas (mas não seu histórico de navegação) para personalizar os anúncios que você recebe.</translation>
 <translation id="1745880797583122200">Seu navegador é gerenciado</translation>
 <translation id="1746113442205726301">Mudança Y na imagem</translation>
 <translation id="1746531169546376413">0 grau</translation>
@@ -1282,7 +1282,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="4173827307318847180">{MORE_ITEMS,plural, =1{Mais <ph name="ITEM_COUNT" /> item}one{Mais <ph name="ITEM_COUNT" /> item}other{Mais <ph name="ITEM_COUNT" /> itens}}</translation>
 <translation id="4176463684765177261">Desativado</translation>
 <translation id="4176535426287761656">Propriedades compartilhadas e casas para férias</translation>
-<translation id="4177501066905053472">Temas do anúncio</translation>
+<translation id="4177501066905053472">Temas de anúncios</translation>
 <translation id="4179515394835346607"><ph name="ROW_NAME" />: <ph name="ROW_CONTENT" /></translation>
 <translation id="4186035307311647330">Não acompanhar preço</translation>
 <translation id="4194250254487269611">Não é possível salvar seu cartão no momento</translation>
@@ -1882,7 +1882,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="5598944008576757369">Escolher forma de pagamento</translation>
 <translation id="560412284261940334">Gerenciamento não suportado</translation>
 <translation id="5605670050355397069">Tabloide</translation>
-<translation id="5606444889871204172"><ph name="BEGIN_BOLD" />Como gerenciar seus dados<ph name="END_BOLD" />: o Chrome exclui automaticamente sites acessados há mais de quatro semanas. Se site for acessado de novo, ele poderá reaparecer na lista. Você também pode bloquear um site para que ele não sugira anúncios e desativar as sugestões quando quiser nas configurações do Chrome.</translation>
+<translation id="5606444889871204172"><ph name="BEGIN_BOLD" />Como gerenciar seus dados<ph name="END_BOLD" />: o Chrome exclui automaticamente sites acessados há mais de quatro semanas. Se um site for acessado de novo, ele poderá reaparecer na lista. Você também pode bloquear um site para que ele não sugira anúncios e desativar as sugestões quando quiser nas configurações do Chrome.</translation>
 <translation id="5610142619324316209">Verificar a conexão</translation>
 <translation id="5610807607761827392">É possível gerenciar cartões e endereços em <ph name="BEGIN_LINK" />Configurações<ph name="END_LINK" />.</translation>
 <translation id="561165882404867731">Traduza esta página com o Google Tradutor</translation>
@@ -1968,7 +1968,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="5826507051599432481">Nome comum (CN)</translation>
 <translation id="5830698870816298009">uso e movimento da câmera</translation>
 <translation id="583281660410589416">Desconhecido</translation>
-<translation id="5838278095973806738">É recomendado não fornecer informações confidencial a esse site (por exemplo, senhas ou cartões de crédito), porque elas podem ser roubadas por invasores.</translation>
+<translation id="5838278095973806738">É recomendado não fornecer informações confidenciais a esse site (por exemplo, senhas ou cartões de crédito), porque elas podem ser roubadas por invasores.</translation>
 <translation id="5851548754964597211">Lista de guias</translation>
 <translation id="5852909432155870672">RA4</translation>
 <translation id="5860033963881614850">Desativado</translation>
