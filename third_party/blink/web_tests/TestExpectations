@@ -6703,3 +6703,6 @@ crbug.com/1427397 http/tests/devtools/persistence/persistence-navigator-unique-n
 
 # Sheriff 2023-03-27
 crbug.com/1427936 external/wpt/js-self-profiling/function-expression-names.https.html [ Failure Pass ]
+
+# TODO(crbug.com/1428795): Re-enable this test
+crbug.com/1428795 [ Linux ] external/wpt/dom/events/Event-dispatch-on-disabled-elements.html [ Failure Pass ]
