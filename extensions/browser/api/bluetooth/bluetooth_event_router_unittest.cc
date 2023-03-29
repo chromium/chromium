@@ -9,7 +9,6 @@
 #include <utility>
 
 #include "base/functional/callback_helpers.h"
-#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/run_loop.h"
 #include "content/public/test/test_browser_context.h"
@@ -43,24 +42,26 @@ namespace bluetooth = api::bluetooth;
 class BluetoothEventRouterTest : public ExtensionsTest {
  public:
   BluetoothEventRouterTest()
-      : mock_adapter_(new testing::StrictMock<device::MockBluetoothAdapter>()) {
-  }
+      : mock_adapter_(base::MakeRefCounted<
+                      testing::StrictMock<device::MockBluetoothAdapter>>()) {}
 
   void SetUp() override {
     ExtensionsTest::SetUp();
     router_ = std::make_unique<BluetoothEventRouter>(browser_context());
-    router_->SetAdapterForTest(mock_adapter_);
+    router_->SetAdapterForTest(mock_adapter_.get());
   }
 
   void TearDown() override {
     // It's important to destroy the router before the browser context keyed
     // services so it removes itself as an ExtensionRegistry observer.
     router_.reset();
+    mock_adapter_.reset();
     ExtensionsTest::TearDown();
   }
 
  protected:
-  raw_ptr<testing::StrictMock<device::MockBluetoothAdapter>> mock_adapter_;
+  scoped_refptr<testing::StrictMock<device::MockBluetoothAdapter>>
+      mock_adapter_;
   std::unique_ptr<BluetoothEventRouter> router_;
 };
 
@@ -113,7 +114,7 @@ TEST_F(BluetoothEventRouterTest, SetDiscoveryFilter) {
   device::BluetoothDiscoveryFilter df(device::BLUETOOTH_TRANSPORT_LE);
   df.CopyFrom(*discovery_filter);
 
-  router_->SetDiscoveryFilter(std::move(discovery_filter), mock_adapter_,
+  router_->SetDiscoveryFilter(std::move(discovery_filter), mock_adapter_.get(),
                               kTestExtensionId, base::DoNothing(),
                               base::DoNothing());
 
@@ -133,7 +134,7 @@ TEST_F(BluetoothEventRouterTest, SetDiscoveryFilter) {
   // is destroyed
   EXPECT_CALL(*mock_adapter_, StopScan(testing::_)).Times(1);
 
-  router_->StartDiscoverySession(mock_adapter_, kTestExtensionId,
+  router_->StartDiscoverySession(mock_adapter_.get(), kTestExtensionId,
                                  base::DoNothing(), base::DoNothing());
 
   EXPECT_CALL(*mock_adapter_, RemoveObserver(testing::_)).Times(1);
