@@ -1,0 +1,99 @@
+// Copyright 2023 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#ifndef CONTENT_BROWSER_INTEREST_GROUP_AUCTION_METRICS_RECORDER_H_
+#define CONTENT_BROWSER_INTEREST_GROUP_AUCTION_METRICS_RECORDER_H_
+
+#include <stdint.h>
+#include <set>
+
+#include "base/time/time.h"
+#include "content/browser/interest_group/auction_result.h"
+#include "content/browser/interest_group/auction_worklet_manager.h"
+#include "content/common/content_export.h"
+#include "content/services/auction_worklet/public/mojom/bidder_worklet.mojom-shared.h"
+#include "services/metrics/public/cpp/ukm_builders.h"
+#include "services/metrics/public/cpp/ukm_source_id.h"
+#include "url/origin.h"
+
+namespace content {
+
+// The AuctionMetricsRecorder is an auction-scoped collection of data used to
+// record UKMs used to investigate auction latency used to detect regressive
+// trends over time and to drive future optimizations.
+//
+// The convention here is that:
+// - methods prefixed with On are called once, at some milestone in the auction.
+// - methods prefixed with Set are called once, whenever that data is available.
+// - methods prefixed with Record are called many times, whenever some repeated
+//   event happens. The metrics associated with these are set on the builder
+//   OnAuctionEnd, just before the Event is written to the UkmRecorder.
+class CONTENT_EXPORT AuctionMetricsRecorder {
+ public:
+  // This object's construction time is that recorded as the auction's start
+  // time, for measuring latency end-to-end and LoadInterestGroupPhase latency.
+  explicit AuctionMetricsRecorder(ukm::SourceId ukm_source_id);
+  ~AuctionMetricsRecorder();
+
+  AuctionMetricsRecorder(const AuctionMetricsRecorder&) = delete;
+  AuctionMetricsRecorder& operator=(const AuctionMetricsRecorder&) = delete;
+
+  // Records the auction's end time (for EndToEndLatency) and the AuctionResult.
+  // As we're expecting no further data about the auction, this method also
+  // writes the AdsInterestGroup_AuctionLatency UKM entry.
+  // IMPORTANT: Calling OnAuctionEnd invalidates this object. Almost all methods
+  // called after the first all to OnAuctionEnd, including a second call to
+  // OnAuctionEnd, will cause a crash.
+  void OnAuctionEnd(AuctionResult result);
+
+  // Records LoadInterestGroupPhaseLatency
+  void OnLoadInterestGroupPhaseComplete();
+
+  // Records several counts we have after loading all the InterestGroups. These
+  // counts are all aggregated across all component auctions for a multi-seller
+  // auction.
+  void SetNumInterestGroups(int64_t num_interest_groups);
+  void SetNumOwnersWithInterestGroups(int64_t num_interest_groups);
+  void SetNumSellersWithBidders(int64_t num_sellers_with_bidders);
+
+  // Reports an InterestGroup owner, used to determine the number of distinct
+  // Buyers across all component auctions in a multi-seller auction.
+  void ReportBuyer(url::Origin& owner);
+
+  // Reports a Bidder WorkletKey, used to count the number of distinct
+  // BidderWorklets in use by this auction, which might be more than the number
+  // of owners with InterestGroups, because the same owner can only share a
+  // worklet for InterestGroups that have the same bidding script URL and KV
+  // server URL.BidderWorklets are potentially shared across different auctions
+  // on the same page, so that it's possible for a BidderWorklet to be reused
+  // from another auction. Since the NumBidderWorklets metric is looking for the
+  // number of distinct BidderWorklets to compare against the number of distinct
+  // Buyers, we count distinct BidderWorkletKeys instead of simply looking at
+  // the number of BidderWorklets created in the context of a given auction.
+  void ReportBidderWorkletKey(AuctionWorkletManager::WorkletKey& worklet_key);
+
+  void SetKAnonymityBidMode(auction_worklet::mojom::KAnonymityBidMode bid_mode);
+
+ private:
+  // The data structure we'll eventually record via the UkmRecorder.
+  // We incrementally build this in all of the methods of this class.
+  ukm::builders::AdsInterestGroup_AuctionLatency builder_;
+
+  // Time at which AuctionRunner::StartAuction() is called; used as the
+  // starting point for several of the latency metrics.
+  base::TimeTicks auction_start_time_;
+
+  // Set of distinct buyers across all component auctions. Only the size of
+  // this set is recorded in UKM; the buyers are not.
+  std::set<url::Origin> buyers_;
+
+  // Set of distinct bidder worklet keys used to get BidderWorklets for this
+  // auction across all component auctions. For memory efficiency, we record a
+  // hash of the AuctionWorkletManager::WorkletKey instead of the key itself.
+  std::set<size_t> bidder_worklet_keys_;
+};
+
+}  // namespace content
+
+#endif  // CONTENT_BROWSER_INTEREST_GROUP_AUCTION_METRICS_RECORDER_H_

@@ -1967,5 +1967,157 @@ TEST_F(AuctionWorkletManagerTest, SellerWorkletUrlRequestProtection) {
   EXPECT_EQ("Unexpected request", TakeBadMessage());
 }
 
+TEST(WorkletKeyTest, HashConsistentForEqualKeys) {
+  AuctionWorkletManager::WorkletKey key1(
+      AuctionWorkletManager::WorkletType::kBidder,
+      GURL("https://example.test/script_url"),
+      GURL("https://example.test/wasm_url"),
+      GURL("https://example.test/signals_url"), 0x85u);
+
+  AuctionWorkletManager::WorkletKey key2(
+      AuctionWorkletManager::WorkletType::kBidder,
+      GURL("https://example.test/script_url"),
+      GURL("https://example.test/wasm_url"),
+      GURL("https://example.test/signals_url"), 0x85u);
+
+  EXPECT_FALSE(key1 < key2);
+  EXPECT_FALSE(key2 < key1);
+  EXPECT_EQ(key1.GetHash(), key2.GetHash());
+}
+
+TEST(WorkletKeyTest, HashIsDifferentForKeysWithDifferentType) {
+  AuctionWorkletManager::WorkletKey key1(
+      AuctionWorkletManager::WorkletType::kBidder,
+      GURL("https://example.test/script_url"),
+      GURL("https://example.test/wasm_url"),
+      GURL("https://example.test/signals_url"), 0x85u);
+
+  AuctionWorkletManager::WorkletKey key2(
+      AuctionWorkletManager::WorkletType::kSeller,
+      GURL("https://example.test/script_url"),
+      GURL("https://example.test/wasm_url"),
+      GURL("https://example.test/signals_url"), 0x85u);
+
+  EXPECT_TRUE(key1 < key2 || key2 < key1);
+  EXPECT_NE(key1.GetHash(), key2.GetHash());
+}
+
+TEST(WorkletKeyTest, HashIsDifferentForKeysWithDifferentScriptUrl) {
+  AuctionWorkletManager::WorkletKey key1(
+      AuctionWorkletManager::WorkletType::kBidder,
+      GURL("https://example.test/script_url"),
+      GURL("https://example.test/wasm_url"),
+      GURL("https://example.test/signals_url"), 0x85u);
+
+  AuctionWorkletManager::WorkletKey key2(
+      AuctionWorkletManager::WorkletType::kBidder,
+      GURL("https://different.example.test/script_url"),
+      GURL("https://example.test/wasm_url"),
+      GURL("https://example.test/signals_url"), 0x85u);
+
+  EXPECT_TRUE(key1 < key2 || key2 < key1);
+  EXPECT_NE(key1.GetHash(), key2.GetHash());
+}
+
+TEST(WorkletKeyTest, HashIsDifferentForKeysWithDifferentWasmUrl) {
+  AuctionWorkletManager::WorkletKey key1(
+      AuctionWorkletManager::WorkletType::kBidder,
+      GURL("https://example.test/script_url"),
+      GURL("https://example.test/wasm_url"),
+      GURL("https://example.test/signals_url"), 0x85u);
+
+  AuctionWorkletManager::WorkletKey key2(
+      AuctionWorkletManager::WorkletType::kBidder,
+      GURL("https://example.test/script_url"),
+      GURL("https://different.example.test/wasm_url"),
+      GURL("https://example.test/signals_url"), 0x85u);
+
+  EXPECT_TRUE(key1 < key2 || key2 < key1);
+  EXPECT_NE(key1.GetHash(), key2.GetHash());
+}
+
+TEST(WorkletKeyTest, HashIsDifferentWhenGivenNullOptWasmUrl) {
+  AuctionWorkletManager::WorkletKey key1(
+      AuctionWorkletManager::WorkletType::kBidder,
+      GURL("https://example.test/script_url"),
+      GURL("https://example.test/wasm_url"),
+      GURL("https://example.test/signals_url"), 0x85u);
+
+  AuctionWorkletManager::WorkletKey key2(
+      AuctionWorkletManager::WorkletType::kBidder,
+      GURL("https://example.test/script_url"), absl::nullopt,
+      GURL("https://example.test/signals_url"), 0x85u);
+
+  EXPECT_TRUE(key1 < key2 || key2 < key1);
+  EXPECT_NE(key1.GetHash(), key2.GetHash());
+}
+
+TEST(WorkletKeyTest, HashIsDifferentForKeysWithDifferentSignalsUrl) {
+  AuctionWorkletManager::WorkletKey key1(
+      AuctionWorkletManager::WorkletType::kBidder,
+      GURL("https://example.test/script_url"),
+      GURL("https://example.test/wasm_url"),
+      GURL("https://example.test/signals_url"), 0x85u);
+
+  AuctionWorkletManager::WorkletKey key2(
+      AuctionWorkletManager::WorkletType::kBidder,
+      GURL("https://example.test/script_url"),
+      GURL("https://example.test/wasm_url"),
+      GURL("https://different.example.test/signals_url"), 0x85u);
+
+  EXPECT_TRUE(key1 < key2 || key2 < key1);
+  EXPECT_NE(key1.GetHash(), key2.GetHash());
+}
+
+TEST(WorkletKeyTest, HashIsDifferentWhenGivenNullOptSignalsUrl) {
+  AuctionWorkletManager::WorkletKey key1(
+      AuctionWorkletManager::WorkletType::kBidder,
+      GURL("https://example.test/script_url"),
+      GURL("https://example.test/wasm_url"),
+      GURL("https://example.test/signals_url"), 0x85u);
+
+  AuctionWorkletManager::WorkletKey key2(
+      AuctionWorkletManager::WorkletType::kBidder,
+      GURL("https://example.test/script_url"),
+      GURL("https://example.test/wasm_url"), absl::nullopt, 0x85u);
+
+  EXPECT_TRUE(key1 < key2 || key2 < key1);
+  EXPECT_NE(key1.GetHash(), key2.GetHash());
+}
+
+TEST(WorkletKeyTest, HashIsDifferentForKeysWithDifferentExperiment) {
+  AuctionWorkletManager::WorkletKey key1(
+      AuctionWorkletManager::WorkletType::kBidder,
+      GURL("https://example.test/script_url"),
+      GURL("https://example.test/wasm_url"),
+      GURL("https://example.test/signals_url"), 0x85u);
+
+  AuctionWorkletManager::WorkletKey key2(
+      AuctionWorkletManager::WorkletType::kBidder,
+      GURL("https://example.test/script_url"),
+      GURL("https://example.test/wasm_url"),
+      GURL("https://example.test/signals_url"), 0x48u);
+
+  EXPECT_TRUE(key1 < key2 || key2 < key1);
+  EXPECT_NE(key1.GetHash(), key2.GetHash());
+}
+
+TEST(WorkletKeyTest, HashIsDifferentWhenGivenNullOptExperiment) {
+  AuctionWorkletManager::WorkletKey key1(
+      AuctionWorkletManager::WorkletType::kBidder,
+      GURL("https://example.test/script_url"),
+      GURL("https://example.test/wasm_url"),
+      GURL("https://example.test/signals_url"), 0x85u);
+
+  AuctionWorkletManager::WorkletKey key2(
+      AuctionWorkletManager::WorkletType::kBidder,
+      GURL("https://example.test/script_url"),
+      GURL("https://example.test/wasm_url"),
+      GURL("https://example.test/signals_url"), absl::nullopt);
+
+  EXPECT_TRUE(key1 < key2 || key2 < key1);
+  EXPECT_NE(key1.GetHash(), key2.GetHash());
+}
+
 }  // namespace
 }  // namespace content

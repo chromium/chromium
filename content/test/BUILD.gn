@@ -2328,6 +2328,7 @@ test("content_unittests") {
     "../browser/indexed_db/mock_mojo_indexed_db_database_callbacks.cc",
     "../browser/indexed_db/mock_mojo_indexed_db_database_callbacks.h",
     "../browser/interest_group/ad_auction_service_impl_unittest.cc",
+    "../browser/interest_group/auction_metrics_recorder_unittest.cc",
     "../browser/interest_group/auction_process_manager_unittest.cc",
     "../browser/interest_group/auction_runner_unittest.cc",
     "../browser/interest_group/auction_url_loader_factory_proxy_unittest.cc",

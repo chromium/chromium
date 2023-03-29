@@ -14,10 +14,12 @@
 #include "base/strings/stringprintf.h"
 #include "base/time/time.h"
 #include "base/types/optional_ref.h"
+#include "content/browser/interest_group/auction_metrics_recorder.h"
 #include "content/browser/interest_group/interest_group_auction_reporter.h"
 #include "content/browser/interest_group/interest_group_manager_impl.h"
 #include "content/public/browser/content_browser_client.h"
 #include "content/services/auction_worklet/public/mojom/private_aggregation_request.mojom.h"
+#include "services/metrics/public/cpp/ukm_source_id.h"
 #include "services/network/public/mojom/client_security_state.mojom.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/features.h"
@@ -69,6 +71,7 @@ std::unique_ptr<AuctionRunner> AuctionRunner::CreateAndStart(
     const blink::AuctionConfig& auction_config,
     const url::Origin& main_frame_origin,
     const url::Origin& frame_origin,
+    ukm::SourceId ukm_source_id,
     network::mojom::ClientSecurityStatePtr client_security_state,
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
     IsInterestGroupApiAllowedCallback is_interest_group_api_allowed_callback,
@@ -79,7 +82,7 @@ std::unique_ptr<AuctionRunner> AuctionRunner::CreateAndStart(
       private_aggregation_manager,
       std::move(log_private_aggregation_requests_callback),
       DetermineKAnonMode(), std::move(auction_config), main_frame_origin,
-      frame_origin, std::move(client_security_state),
+      frame_origin, ukm_source_id, std::move(client_security_state),
       std::move(url_loader_factory),
       std::move(is_interest_group_api_allowed_callback),
       std::move(abort_receiver), std::move(callback)));
@@ -289,6 +292,7 @@ AuctionRunner::AuctionRunner(
     const blink::AuctionConfig& auction_config,
     const url::Origin& main_frame_origin,
     const url::Origin& frame_origin,
+    ukm::SourceId ukm_source_id,
     network::mojom::ClientSecurityStatePtr client_security_state,
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
     IsInterestGroupApiAllowedCallback is_interest_group_api_allowed_callback,
@@ -309,11 +313,13 @@ AuctionRunner::AuctionRunner(
           std::make_unique<blink::AuctionConfig>(auction_config)),
       callback_(std::move(callback)),
       promise_fields_in_auction_config_(owned_auction_config_->NumPromises()),
+      auction_metrics_recorder_(ukm_source_id),
       auction_(kanon_mode_,
                owned_auction_config_.get(),
                /*parent=*/nullptr,
                auction_worklet_manager,
                interest_group_manager,
+               &auction_metrics_recorder_,
                /*auction_start_time=*/base::Time::Now(),
                std::move(log_private_aggregation_requests_callback)) {}
 

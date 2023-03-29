@@ -132,6 +132,9 @@ class CONTENT_EXPORT AuctionWorkletManager {
     absl::optional<GURL> signals_url;
     absl::optional<uint16_t> experiment_group_id;
 
+    // Fast, non-cryptographic hash to count unique worklets for UKM.
+    size_t GetHash() const;
+
     bool operator<(const WorkletKey& other) const;
   };
 

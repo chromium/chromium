@@ -15,9 +15,11 @@
 
 #include "base/check.h"
 #include "base/compiler_specific.h"
+#include "base/containers/span.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
+#include "base/hash/hash.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
@@ -426,6 +428,27 @@ AuctionWorkletManager::WorkletKey::WorkletKey(
 AuctionWorkletManager::WorkletKey::WorkletKey(const WorkletKey&) = default;
 AuctionWorkletManager::WorkletKey::WorkletKey(WorkletKey&&) = default;
 AuctionWorkletManager::WorkletKey::~WorkletKey() = default;
+
+namespace {
+size_t CombineHash(size_t hash, size_t new_value) {
+  static constexpr size_t kMagic =
+      sizeof(size_t) > 4 ? 0x9e3779b97f4a7c15 : 0x9e3779b9;
+  hash ^= new_value + kMagic + (hash << 6) + (hash >> 2);
+  return hash;
+}
+}  // namespace
+
+size_t AuctionWorkletManager::WorkletKey::GetHash() const {
+  using base::FastHash;
+  size_t hash = (type == WorkletType::kBidder ? 0x1ee4cafc : 0x8dfe2bb7);
+  hash = CombineHash(hash, FastHash(script_url.spec()));
+  hash = CombineHash(hash, wasm_url ? FastHash(wasm_url->spec()) : 0xaf57570a);
+  hash = CombineHash(hash,
+                     signals_url ? FastHash(signals_url->spec()) : 0xbee1271e);
+  hash = CombineHash(hash,
+                     experiment_group_id ? *experiment_group_id : 0xd60fc235);
+  return hash;
+}
 
 bool AuctionWorkletManager::WorkletKey::WorkletKey::operator<(
     const WorkletKey& other) const {
