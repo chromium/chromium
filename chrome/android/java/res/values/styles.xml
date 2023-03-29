@@ -457,4 +457,9 @@ found in the LICENSE file.
     <style name="NotificationBlockedDialogContent" parent="AlertDialogContent">
         <item name="android:paddingBottom">12dp</item>
     </style>
+
+     <!-- Bookmark styles -->
+    <style name="TextAppearance.ShoppingPriceDropText" parent="TextAppearance.TextMedium.Secondary">
+        <item name="android:textColor">@color/price_drop_annotation_text_green</item>
+    </style>
 </resources>

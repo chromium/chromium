@@ -42,9 +42,12 @@ public class PowerBookmarkShoppingItemRow extends BookmarkItemRow {
     // Allows subclasses to add special views below the description (e.g. the price for shopping).
     protected FrameLayout mCustomTextContainer;
     private ImageView mPriceTrackingButton;
+    // Used for when there's no price drop.
     private TextView mNormalPriceText;
-    private TextView mPriceDropPrimaryText;
-    private TextView mPriceDropSecondaryText;
+    // Used for the new price when there's a price drop.
+    private TextView mPriceDropText;
+    // Used for the original price when there's a price drop.
+    private TextView mOriginalPriceText;
 
     // Dependencies.
     private ImageFetcher mImageFetcher;
@@ -93,8 +96,8 @@ public class PowerBookmarkShoppingItemRow extends BookmarkItemRow {
         LayoutInflater.from(getContext())
                 .inflate(R.layout.compact_price_drop_view, mCustomTextContainer);
         mNormalPriceText = findViewById(R.id.normal_price_text);
-        mPriceDropPrimaryText = findViewById(R.id.price_drop_primary_text);
-        mPriceDropSecondaryText = findViewById(R.id.price_drop_secondary_text);
+        mPriceDropText = findViewById(R.id.price_drop_text);
+        mOriginalPriceText = findViewById(R.id.original_price_text);
     }
 
     /**
@@ -178,14 +181,14 @@ public class PowerBookmarkShoppingItemRow extends BookmarkItemRow {
         if (originalPrice <= currentPrice) {
             mNormalPriceText.setText(formattedCurrentPrice);
             mNormalPriceText.setVisibility(View.VISIBLE);
-            mPriceDropPrimaryText.setVisibility(View.GONE);
-            mPriceDropSecondaryText.setVisibility(View.GONE);
+            mPriceDropText.setVisibility(View.GONE);
+            mOriginalPriceText.setVisibility(View.GONE);
         } else {
-            assignPriceDropProperties(mPriceDropPrimaryText, mPriceDropSecondaryText,
+            assignPriceDropProperties(mPriceDropText, mOriginalPriceText,
                     getFormattedCurrencyStringForPrice(originalPrice), formattedCurrentPrice);
             mNormalPriceText.setVisibility(View.GONE);
-            mPriceDropPrimaryText.setVisibility(View.VISIBLE);
-            mPriceDropSecondaryText.setVisibility(View.VISIBLE);
+            mPriceDropText.setVisibility(View.VISIBLE);
+            mOriginalPriceText.setVisibility(View.VISIBLE);
         }
     }
 
@@ -193,7 +196,6 @@ public class PowerBookmarkShoppingItemRow extends BookmarkItemRow {
             String formattedOriginalPrice, String formattedCurrentPrice) {
         // Primary text displays the current price.
         primaryText.setText(formattedCurrentPrice);
-        primaryText.setTextColor(getContext().getColor(R.color.price_drop_annotation_text_green));
 
         // Secondary text displays the original price with a strikethrough.
         secondaryText.setText(formattedOriginalPrice);

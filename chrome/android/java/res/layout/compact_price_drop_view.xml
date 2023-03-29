@@ -16,13 +16,13 @@
         android:layout_height="wrap_content"
         android:textAppearance="@style/TextAppearance.TextMedium.Secondary" />
     <TextView
-        android:id="@+id/price_drop_primary_text"
+        android:id="@+id/price_drop_text"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:textAppearance="@style/TextAppearance.TextMedium.Secondary"
+        android:textAppearance="@style/TextAppearance.ShoppingPriceDropText"
         android:layout_marginEnd="8dp" />
     <TextView
-        android:id="@+id/price_drop_secondary_text"
+        android:id="@+id/original_price_text"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:textAppearance="@style/TextAppearance.TextMedium.Secondary" />
