@@ -81298,6 +81298,11 @@ chromeos/ash/components/peripheral_notification/peripheral_notification_manager.
   <int value="100" label="kRainbow"/>
 </enum>
 
+<enum name="PersonalizationKeyboardBacklightDisplayType">
+  <int value="0" label="kStatic"/>
+  <int value="1" label="kMultizone"/>
+</enum>
+
 <enum name="PersonalizationPath">
   <int value="0" label="Screensaver"/>
   <int value="1" label="Screensaver Albums"/>

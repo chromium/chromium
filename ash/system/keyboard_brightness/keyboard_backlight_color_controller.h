@@ -37,6 +37,7 @@ class ASH_EXPORT KeyboardBacklightColorController
   enum class DisplayType {
     kStatic = 0,
     kMultiZone = 1,
+    kMaxValue = kMultiZone,
   };
 
   // Default brightness to be set by the `KeyboardBacklightColorController` when

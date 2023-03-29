@@ -4414,6 +4414,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Ash.Personalization.KeyboardBacklight.DisplayType.Settled"
+    enum="PersonalizationKeyboardBacklightDisplayType"
+    expires_after="2024-03-28">
+  <owner>thuongphan@chromium.org</owner>
+  <owner>assistive-eng@google.com</owner>
+  <summary>
+    Records the display type of keyboard backlight color that the user has
+    settled on. Emitted once for every UMA upload.
+  </summary>
+</histogram>
+
 <histogram name="Ash.Personalization.KeyboardBacklight.OpenZoneCustomization"
     units="BooleanHit" expires_after="2024-03-20">
   <owner>thuongphan@chromium.org</owner>

@@ -34,12 +34,16 @@ void KeyboardBacklightColorMetricsProvider::ProvideCurrentSessionData(
 
   const auto displayType =
       keyboard_backlight_color_controller->GetDisplayType(account_id);
+
   switch (displayType) {
     case DisplayType::kStatic: {
+      base::UmaHistogramEnumeration(
+          kPersonalizationKeyboardBacklightDisplayTypeSettledHistogramName,
+          DisplayType::kStatic);
       auto backlight_color =
           keyboard_backlight_color_controller->GetBacklightColor(account_id);
       base::UmaHistogramEnumeration(
-          "Ash.Personalization.KeyboardBacklight.Color.Settled",
+          kPersonalizationKeyboardBacklightColorSettledHistogramName,
           backlight_color);
       return;
     }
@@ -48,6 +52,9 @@ void KeyboardBacklightColorMetricsProvider::ProvideCurrentSessionData(
           ash::Shell::Get()->rgb_keyboard_manager()->GetZoneCount() <= 1) {
         return;
       }
+      base::UmaHistogramEnumeration(
+          kPersonalizationKeyboardBacklightDisplayTypeSettledHistogramName,
+          DisplayType::kMultiZone);
       auto zone_colors =
           keyboard_backlight_color_controller->GetBacklightZoneColors(
               account_id);
