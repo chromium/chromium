@@ -70,11 +70,12 @@ std::string GetSerializedSignedChallenge(const std::string& response) {
 
   // If json is malformed or it doesn't include the needed field return
   // an empty string.
-  if (!data || !data.value().FindPath("challenge"))
+  if (!data || !data->GetDict().FindString("challenge")) {
     return std::string();
+  }
 
   std::string serialized_signed_challenge;
-  if (!base::Base64Decode(data.value().FindPath("challenge")->GetString(),
+  if (!base::Base64Decode(*data->GetDict().FindString("challenge"),
                           &serialized_signed_challenge)) {
     return std::string();
   }

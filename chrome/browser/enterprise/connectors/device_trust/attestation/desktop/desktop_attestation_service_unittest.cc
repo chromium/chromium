@@ -88,13 +88,13 @@ absl::optional<SignedData> ParseDataFromResponse(const std::string& response) {
 
   // If json is malformed or it doesn't include the needed field return
   // an empty string.
-  if (!data || !data.value().FindPath("challengeResponse"))
+  if (!data || !data->GetDict().FindString("challengeResponse")) {
     return absl::nullopt;
+  }
 
   std::string serialized_signed_challenge;
-  if (!base::Base64Decode(
-          data.value().FindPath("challengeResponse")->GetString(),
-          &serialized_signed_challenge)) {
+  if (!base::Base64Decode(*data->GetDict().FindString("challengeResponse"),
+                          &serialized_signed_challenge)) {
     return absl::nullopt;
   }
 

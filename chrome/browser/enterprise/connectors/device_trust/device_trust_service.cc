@@ -31,7 +31,7 @@ void OnJsonParsed(DeviceTrustService::ParseJsonChallengeCallback callback,
   }
 
   // Check if json is malformed or it doesn't include the needed field.
-  const std::string* challenge = result->FindStringPath("challenge");
+  const std::string* challenge = result->GetDict().FindString("challenge");
   if (!challenge) {
     std::move(callback).Run(std::string());
     return;

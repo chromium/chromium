@@ -70,13 +70,13 @@ absl::optional<std::string> ParseValueFromResponse(
 
   // If json is malformed or it doesn't include the needed field return
   // an empty string.
-  if (!data || !data.value().FindPath("challengeResponse"))
+  if (!data || !data->GetDict().FindString("challengeResponse")) {
     return absl::nullopt;
+  }
 
   std::string decoded_response_value;
-  if (!base::Base64Decode(
-          data.value().FindPath("challengeResponse")->GetString(),
-          &decoded_response_value)) {
+  if (!base::Base64Decode(*data->GetDict().FindString("challengeResponse"),
+                          &decoded_response_value)) {
     return absl::nullopt;
   }
 
