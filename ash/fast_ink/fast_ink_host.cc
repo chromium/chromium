@@ -384,7 +384,9 @@ void FastInkHost::SubmitCompositorFrame() {
   viz::TransferableResource transferable_resource =
       viz::TransferableResource::MakeGpu(
           resource->mailbox, GL_LINEAR, GL_TEXTURE_2D, resource->sync_token,
-          buffer_size_, SK_B32_SHIFT ? viz::RGBA_8888 : viz::BGRA_8888,
+          buffer_size_,
+          SK_B32_SHIFT ? viz::SinglePlaneFormat::kRGBA_8888
+                       : viz::SinglePlaneFormat::kBGRA_8888,
           auto_refresh_);
   transferable_resource.id = id_generator_.GenerateNextId();
 

@@ -127,7 +127,7 @@ viz::TransferableResource UiResourceManager::PrepareResourceForExport(
           to_be_exported_resource->mailbox, GL_LINEAR, GL_TEXTURE_2D,
           to_be_exported_resource->sync_token,
           to_be_exported_resource->resource_size,
-          to_be_exported_resource->format,
+          viz::SharedImageFormat::SinglePlane(to_be_exported_resource->format),
           to_be_exported_resource->is_overlay_candidate);
 
   transferable_resource.id = resource_id;
