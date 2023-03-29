@@ -763,7 +763,6 @@ ExtensionFunction::ResponseValue ExtensionFunction::CreateErrorResponseValue(
 
 ExtensionFunction::ResponseValue ExtensionFunction::CreateBadMessageResponse() {
   SetBadMessage();
-  NOTREACHED() << name() << ": bad message";
   return ResponseValue(false, PassKey());
 }
 
