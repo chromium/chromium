@@ -658,7 +658,7 @@ crbug.com/1426593 [ android android-sm-a135m no-passthrough ] conformance/unifor
 # TODO(crbug.com/1276153) uncomment after fix for updated part of test applies
 # crbug.com/957807 [ chromeos ] conformance/context/context-attributes-alpha-depth-stencil-antialias.html [ Failure ]
 
-crbug.com/957807 [ angle-opengles chromeos passthrough ] conformance/uniforms/uniform-samplers-test.html [ Failure ]
+crbug.com/957807 [ chromeos ] conformance/uniforms/uniform-samplers-test.html [ Failure ]
 
 # finder:disable-unused Reported by Intel but not currently testable in Chromium
 crbug.com/1237319 [ chromeos chromeos-board-eve passthrough intel ] conformance/textures/misc/texture-size-limit.html [ Failure ]
@@ -672,6 +672,28 @@ crbug.com/angleproject/5038 [ chromeos passthrough ] conformance/extensions/ext-
 crbug.com/angleproject/5038 [ chromeos no-passthrough ] conformance/extensions/ext-color-buffer-half-float.html [ Failure ]
 
 ## Arm-based issues. ##
+crbug.com/957807 [ chromeos chromeos-board-kevin ] conformance/rendering/clipping-wide-points.html [ Failure ]
+crbug.com/957807 [ chromeos chromeos-board-kevin ] deqp/data/gles2/shaders/conversions* [ Failure ]
+crbug.com/957807 [ chromeos chromeos-board-kevin ] deqp/data/gles2/shaders/swizzles* [ Failure ]
+
+# There is a crash, likely in this test, causing the root partition to become
+# read-only.
+crbug.com/1043953 [ chromeos chromeos-board-kevin ] conformance/textures/misc/texture-size-limit.html [ RetryOnFailure ]
+
+crbug.com/1080400 [ chromeos chromeos-board-kevin ] WebglExtension_EXT_color_buffer_half_float [ Failure ]
+crbug.com/1080356 [ chromeos chromeos-board-kevin ] WebglExtension_EXT_frag_depth [ Failure ]
+crbug.com/1080375 [ chromeos chromeos-board-kevin ] WebglExtension_OES_texture_float [ Failure ]
+crbug.com/1080402 [ chromeos chromeos-board-kevin ] WebglExtension_OES_texture_float_linear [ Failure ]
+crbug.com/1080403 [ chromeos chromeos-board-kevin ] WebglExtension_OES_texture_half_float [ Failure ]
+crbug.com/1080404 [ chromeos chromeos-board-kevin ] WebglExtension_OES_texture_half_float_linear [ Failure ]
+crbug.com/1080407 [ chromeos chromeos-board-kevin ] WebglExtension_WEBGL_color_buffer_float [ Failure ]
+crbug.com/1080379 [ chromeos chromeos-board-kevin ] conformance/glsl/bugs/constant-precision-qualifier.html [ Failure ]
+crbug.com/1080380 [ chromeos chromeos-board-kevin ] conformance/offscreencanvas/context-lost-restored-worker.html [ Failure ]
+crbug.com/1080380 [ chromeos chromeos-board-kevin ] conformance/offscreencanvas/context-lost-restored.html [ Failure ]
+crbug.com/1108368 [ chromeos chromeos-board-kevin ] conformance/misc/shader-precision-format.html [ Failure ]
+crbug.com/1357064 [ chromeos chromeos-board-kevin no-passthrough ] conformance/rendering/blending.html [ Failure ]
+crbug.com/1374285 [ chromeos chromeos-board-kevin no-passthrough ] conformance/ogles/GL/default/default_001_to_001.html [ Failure ]
+crbug.com/1374285 [ chromeos chromeos-board-kevin no-passthrough ] conformance/ogles/GL/mix/mix_001_to_006.html [ Failure ]
 
 ## VM Issues ##
 
