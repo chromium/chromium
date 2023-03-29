@@ -13,6 +13,7 @@
 
 #include "base/containers/circular_deque.h"
 #include "base/functional/callback_forward.h"
+#include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
@@ -310,7 +311,7 @@ class GaiaCookieManagerService
   void SetGaiaAccountsInCookieUpdatedCallback(
       GaiaAccountsInCookieUpdatedCallback callback);
 
-  // If set, this callback will be invoked whenever the Gaia cookie has
+  // If set, this callback will be invoked whenever one of the Gaia cookies has
   // been deleted explicitly by a user action, e.g. from the settings or by an
   // extension.
   // This method can only be called once.
@@ -331,6 +332,7 @@ class GaiaCookieManagerService
   static void RegisterPrefs(PrefRegistrySimple* registry);
 
  private:
+  FRIEND_TEST_ALL_PREFIXES(GaiaCookieManagerServiceCookieTest, CookieChange);
   scoped_refptr<network::SharedURLLoaderFactory> GetURLLoaderFactory();
 
   // Calls the AddAccountToCookie completion callback.

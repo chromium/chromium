@@ -286,10 +286,6 @@ void SigninManager::OnAccountsInCookieUpdated(
   UpdateUnconsentedPrimaryAccount();
 }
 
-void SigninManager::OnAccountsCookieDeletedByUserAction() {
-  UpdateUnconsentedPrimaryAccount();
-}
-
 void SigninManager::OnErrorStateOfRefreshTokenUpdatedForAccount(
     const CoreAccountInfo& account_info,
     const GoogleServiceAuthError& error) {

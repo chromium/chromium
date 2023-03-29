@@ -373,6 +373,11 @@ void AccountConsistencyService::TriggerGaiaCookieChangeIfDeleted(
       std::move(cookies_restored_callback));
 
   for (const auto& cookie : cookie_list) {
+    // There may be other cookies besides `kGaiaSigninCookieName` that are
+    // required. However these cookies are not specified by the server, and thus
+    // Chrome cannot monitor them. We assume here that ITP will remove all the
+    // cookies fom the domain at once, and so it is sufficient to monitor only
+    // one cookie.
     if (cookie.cookie.Name() == GaiaConstants::kGaiaSigninCookieName) {
       LogIOSGaiaCookiesState(
           GaiaCookieStateOnSignedInNavigation::kGaiaCookiePresentOnNavigation);

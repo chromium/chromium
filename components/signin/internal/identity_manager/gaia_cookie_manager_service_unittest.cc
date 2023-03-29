@@ -27,9 +27,15 @@
 #include "components/signin/public/base/test_signin_client.h"
 #include "google_apis/gaia/gaia_constants.h"
 #include "google_apis/gaia/gaia_urls.h"
+#include "net/cookies/canonical_cookie.h"
+#include "net/cookies/cookie_access_result.h"
+#include "net/cookies/cookie_change_dispatcher.h"
+#include "net/cookies/cookie_options.h"
+#include "services/network/test/test_cookie_manager.h"
 #include "services/network/test/test_url_loader_factory.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "url/gurl.h"
 
 namespace {
 
@@ -89,6 +95,18 @@ bool AreAccountListsEqual(const std::vector<gaia::ListedAccount>& left,
     }
   }
   return true;
+}
+
+net::CanonicalCookie GetTestCookie(const GURL& url, const std::string& name) {
+  std::unique_ptr<net::CanonicalCookie> cookie =
+      net::CanonicalCookie::CreateSanitizedCookie(
+          url, name, /*value=*/"cookie_value", /*domain=*/"." + url.host(),
+          /*path=*/"/", /*creation_time=*/base::Time(),
+          /*expiration_time=*/base::Time(), /*last_access_time=*/base::Time(),
+          /*secure=*/true, /*http_only=*/false,
+          net::CookieSameSite::NO_RESTRICTION, net::COOKIE_PRIORITY_DEFAULT,
+          /*same_party=*/false, /*partition_key=*/absl::nullopt);
+  return *cookie;
 }
 
 // Custom matcher for ListedAccounts.
@@ -1206,7 +1224,7 @@ TEST_F(GaiaCookieManagerServiceTest, RemoveLoggedOutAccountByGaiaId) {
 
   // Verify that ListAccounts wasn't triggered.
   EXPECT_FALSE(helper.is_running());
-  EXPECT_TRUE(testing::Mock::VerifyAndClearExpectations(&helper));
+  testing::Mock::VerifyAndClearExpectations(&helper);
 
   ASSERT_TRUE(helper.ListAccounts(&signed_in_accounts, &signed_out_accounts));
   EXPECT_THAT(signed_out_accounts,
@@ -1248,7 +1266,7 @@ TEST_F(GaiaCookieManagerServiceTest,
   helper.RemoveLoggedOutAccountByGaiaId(kTestGaiaId1);
 
   // Verify that ListAccounts wasn't triggered again.
-  EXPECT_TRUE(testing::Mock::VerifyAndClearExpectations(&helper));
+  testing::Mock::VerifyAndClearExpectations(&helper);
 
   ASSERT_FALSE(helper.ListAccounts(&signed_in_accounts, &signed_out_accounts));
   EXPECT_THAT(signed_out_accounts,
@@ -1288,9 +1306,62 @@ TEST_F(GaiaCookieManagerServiceTest,
 
   // Verify that ListAccounts wasn't triggered.
   EXPECT_FALSE(helper.is_running());
-  EXPECT_TRUE(testing::Mock::VerifyAndClearExpectations(&helper));
+  testing::Mock::VerifyAndClearExpectations(&helper);
 
   ASSERT_TRUE(helper.ListAccounts(&signed_in_accounts, &signed_out_accounts));
   EXPECT_THAT(signed_out_accounts,
               ElementsAre(ListedAccountMatchesGaiaId(kTestGaiaId1)));
 }
+
+class GaiaCookieManagerServiceCookieTest
+    : public GaiaCookieManagerServiceTest,
+      public testing::WithParamInterface<
+          std::tuple<bool /*is_gaia_signin_cookie*/, net::CookieChangeCause>> {
+};
+
+TEST_P(GaiaCookieManagerServiceCookieTest, CookieChange) {
+  GURL kGoogleUrl = GaiaUrls::GetInstance()->secure_google_url();
+  network::TestCookieManager* test_cookie_manager = nullptr;
+  {
+    auto cookie_manager = std::make_unique<network::TestCookieManager>();
+    test_cookie_manager = cookie_manager.get();
+    signin_client()->set_cookie_manager(std::move(cookie_manager));
+  }
+  ASSERT_EQ(test_cookie_manager, signin_client()->GetCookieManager());
+  base::MockCallback<
+      GaiaCookieManagerService::GaiaCookieDeletedByUserActionCallback>
+      cookie_deleted_callback;
+  InstrumentedGaiaCookieManagerService service(
+      account_tracker_service(), token_service(), signin_client());
+  service.SetGaiaCookieDeletedByUserActionCallback(
+      cookie_deleted_callback.Get());
+  service.InitCookieListener();
+
+  auto [/*bool*/ is_gaia_signin_cookie, cause] = GetParam();
+  std::string cookie_name =
+      is_gaia_signin_cookie ? GaiaConstants::kGaiaSigninCookieName : "Foo";
+  bool list_account_expected =
+      is_gaia_signin_cookie || cause == net::CookieChangeCause::EXPLICIT;
+  bool callback_expected =
+      is_gaia_signin_cookie && cause == net::CookieChangeCause::EXPLICIT;
+
+  if (list_account_expected) {
+    EXPECT_CALL(service, StartFetchingListAccounts()).Times(1);
+  }
+  if (callback_expected) {
+    EXPECT_CALL(cookie_deleted_callback, Run).Times(1);
+  }
+  test_cookie_manager->DispatchCookieChange(
+      net::CookieChangeInfo(GetTestCookie(kGoogleUrl, cookie_name),
+                            net::CookieAccessResult(), cause));
+  service.cookie_listener_receiver_.FlushForTesting();
+  testing::Mock::VerifyAndClearExpectations(&cookie_deleted_callback);
+  testing::Mock::VerifyAndClearExpectations(&service);
+}
+
+INSTANTIATE_TEST_SUITE_P(
+    ,
+    GaiaCookieManagerServiceCookieTest,
+    testing::Combine(/*is_gaia_signin_cookie=*/testing::Bool(),
+                     testing::Values(net::CookieChangeCause::UNKNOWN_DELETION,
+                                     net::CookieChangeCause::EXPLICIT)));

@@ -8,9 +8,11 @@
 
 #include <queue>
 #include <set>
+#include <string>
 
 #include "base/containers/contains.h"
 #include "base/containers/cxx20_erase.h"
+#include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
@@ -44,6 +46,7 @@
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "services/network/public/cpp/simple_url_loader.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/url_util.h"
 
 namespace {
@@ -92,6 +95,10 @@ enum LogoutRequestState {
   kFailed = 2,
   kMaxValue = kFailed
 };
+
+BASE_FEATURE(kGaiaCookieManagerServiceMonitorsAllDeletions,
+             "GaiaCookieManagerServiceMonitorsAllDeletions",
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Records metrics for ListAccounts failures.
 void RecordListAccountsFailure(GoogleServiceAuthError::State error_state) {
@@ -487,15 +494,21 @@ void GaiaCookieManagerService::RegisterPrefs(PrefRegistrySimple* registry) {
 
 void GaiaCookieManagerService::InitCookieListener() {
   DCHECK(!cookie_listener_receiver_.is_bound());
+
   network::mojom::CookieManager* cookie_manager =
       signin_client_->GetCookieManager();
 
   // NOTE: |cookie_manager| can be nullptr when TestSigninClient is used in
   // testing contexts.
   if (cookie_manager) {
+    absl::optional<std::string> cookie_name;
+    if (!base::FeatureList::IsEnabled(
+            kGaiaCookieManagerServiceMonitorsAllDeletions)) {
+      cookie_name = GaiaConstants::kGaiaSigninCookieName;
+    }
     cookie_manager->AddCookieChangeListener(
         GaiaUrls::GetInstance()->secure_google_url(),
-        GaiaConstants::kGaiaSigninCookieName,
+        /*name=*/cookie_name,
         cookie_listener_receiver_.BindNewPipeAndPassRemote());
     cookie_listener_receiver_.set_disconnect_handler(base::BindOnce(
         &GaiaCookieManagerService::OnCookieListenerConnectionError,
@@ -727,13 +740,23 @@ void GaiaCookieManagerService::MarkListAccountsStale() {
 
 void GaiaCookieManagerService::OnCookieChange(
     const net::CookieChangeInfo& change) {
-  DCHECK_EQ(GaiaConstants::kGaiaSigninCookieName, change.cookie.Name());
   DCHECK(change.cookie.IsDomainMatch(
       GaiaUrls::GetInstance()->google_url().host()));
+
+  // This function is called for all changes in google.com cookies. It monitors
+  // deletions for all cookies, and  non-deletion changes for
+  // `kGaiaSigninCookieName`.
+  if (GaiaConstants::kGaiaSigninCookieName != change.cookie.Name() &&
+      change.cause != net::CookieChangeCause::EXPLICIT) {
+    return;
+  }
+
   list_accounts_stale_ = true;
 
-  if (change.cause == net::CookieChangeCause::EXPLICIT) {
-    DCHECK(net::CookieChangeCauseIsDeletion(net::CookieChangeCause::EXPLICIT));
+  // Call `gaia_cookie_deleted_by_user_action_callback_` only for
+  // `kGaiaSigninCookieName`. Other deletions still trigger a /ListAccounts.
+  if (change.cause == net::CookieChangeCause::EXPLICIT &&
+      GaiaConstants::kGaiaSigninCookieName == change.cookie.Name()) {
     if (gaia_cookie_deleted_by_user_action_callback_) {
       gaia_cookie_deleted_by_user_action_callback_.Run();
     }
