@@ -12,7 +12,6 @@
 #include "base/values.h"
 #include "chrome/browser/extensions/api/document_scan/document_scan_api.h"
 #include "chrome/browser/extensions/extension_api_unittest.h"
-#include "chrome/browser/extensions/extension_function_test_utils.h"
 #include "chromeos/crosapi/mojom/document_scan.mojom.h"
 #include "extensions/browser/api_test_utils.h"
 #include "testing/gmock/include/gmock/gmock-matchers.h"
@@ -91,9 +90,9 @@ class DocumentScanScanFunctionTest : public ExtensionApiUnittest {
  protected:
   std::string RunFunctionAndReturnError(const std::string& args) {
     function_->set_extension(extension());
-    std::string error =
-        extension_function_test_utils::RunFunctionAndReturnError(
-            function_.get(), args, browser(), api_test_utils::NONE);
+    std::string error = api_test_utils::RunFunctionAndReturnError(
+        function_.get(), args, browser()->profile(),
+        api_test_utils::FunctionMode::kNone);
     return error;
   }
 

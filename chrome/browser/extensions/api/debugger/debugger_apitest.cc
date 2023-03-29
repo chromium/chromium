@@ -23,8 +23,8 @@
 #include "chrome/browser/extensions/api/debugger/debugger_api.h"
 #include "chrome/browser/extensions/api/debugger/extension_dev_tools_infobar_delegate.h"
 #include "chrome/browser/extensions/extension_apitest.h"
-#include "chrome/browser/extensions/extension_function_test_utils.h"
 #include "chrome/browser/extensions/extension_management_test_util.h"
+#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_destroyer.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/profiles/profile_test_util.h"
@@ -49,6 +49,7 @@
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/mock_navigation_handle.h"
 #include "content/public/test/no_renderer_crashes_assertion.h"
+#include "extensions/browser/api_test_utils.h"
 #include "extensions/browser/extension_function.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/extension_builder.h"
@@ -146,9 +147,9 @@ testing::AssertionResult DebuggerApiTest::RunAttachFunction(
   // Attach by targetId.
   scoped_refptr<DebuggerGetTargetsFunction> get_targets_function =
       new DebuggerGetTargetsFunction();
-  std::unique_ptr<base::Value> value(
-      extension_function_test_utils::RunFunctionAndReturnSingleResult(
-          get_targets_function.get(), "[]", browser()));
+  absl::optional<base::Value> value(
+      api_test_utils::RunFunctionAndReturnSingleResult(
+          get_targets_function.get(), "[]", profile()));
   EXPECT_TRUE(value->is_list());
 
   std::string debugger_target_id;
@@ -176,20 +177,19 @@ testing::AssertionResult DebuggerApiTest::RunAttachFunctionOnTarget(
   attach_function->set_extension(extension_.get());
 
   std::string actual_error;
-  if (!extension_function_test_utils::RunFunction(
+  if (!api_test_utils::RunFunction(
           attach_function.get(),
           base::StringPrintf("[%s, \"1.1\"]", debuggee_target.c_str()),
-          browser(), api_test_utils::NONE)) {
+          profile())) {
     actual_error = attach_function->GetError();
   } else {
     // Clean up and detach.
     scoped_refptr<DebuggerDetachFunction> detach_function =
         new DebuggerDetachFunction();
     detach_function->set_extension(extension_.get());
-    if (!extension_function_test_utils::RunFunction(
+    if (!api_test_utils::RunFunction(
             detach_function.get(),
-            base::StringPrintf("[%s]", debuggee_target.c_str()), browser(),
-            api_test_utils::NONE)) {
+            base::StringPrintf("[%s]", debuggee_target.c_str()), profile())) {
       return testing::AssertionFailure() << "Could not detach from "
           << debuggee_target << " : " << detach_function->GetError();
     }
@@ -326,10 +326,9 @@ IN_PROC_BROWSER_TEST_F(DebuggerApiTest, InfoBar) {
   // Attaching to one tab should create infobars in both browsers.
   attach_function = new DebuggerAttachFunction();
   attach_function->set_extension(extension());
-  ASSERT_TRUE(extension_function_test_utils::RunFunction(
+  ASSERT_TRUE(api_test_utils::RunFunction(
       attach_function.get(),
-      base::StringPrintf("[{\"tabId\": %d}, \"1.1\"]", tab_id), browser(),
-      api_test_utils::NONE));
+      base::StringPrintf("[{\"tabId\": %d}, \"1.1\"]", tab_id), profile()));
   EXPECT_EQ(1u, manager1->infobar_count());
   EXPECT_EQ(1u, manager2->infobar_count());
   EXPECT_EQ(1u, manager3->infobar_count());
@@ -337,10 +336,9 @@ IN_PROC_BROWSER_TEST_F(DebuggerApiTest, InfoBar) {
   // Attaching to another tab should not create more infobars.
   attach_function = new DebuggerAttachFunction();
   attach_function->set_extension(extension());
-  ASSERT_TRUE(extension_function_test_utils::RunFunction(
+  ASSERT_TRUE(api_test_utils::RunFunction(
       attach_function.get(),
-      base::StringPrintf("[{\"tabId\": %d}, \"1.1\"]", tab_id2), browser(),
-      api_test_utils::NONE));
+      base::StringPrintf("[{\"tabId\": %d}, \"1.1\"]", tab_id2), profile()));
   EXPECT_EQ(1u, manager1->infobar_count());
   EXPECT_EQ(1u, manager2->infobar_count());
   EXPECT_EQ(1u, manager3->infobar_count());
@@ -348,9 +346,9 @@ IN_PROC_BROWSER_TEST_F(DebuggerApiTest, InfoBar) {
   // Detaching from one of the tabs should not remove infobars.
   detach_function = new DebuggerDetachFunction();
   detach_function->set_extension(extension());
-  ASSERT_TRUE(extension_function_test_utils::RunFunction(
+  ASSERT_TRUE(api_test_utils::RunFunction(
       detach_function.get(), base::StringPrintf("[{\"tabId\": %d}]", tab_id2),
-      browser(), api_test_utils::NONE));
+      profile()));
   EXPECT_EQ(1u, manager1->infobar_count());
   EXPECT_EQ(1u, manager2->infobar_count());
   EXPECT_EQ(1u, manager3->infobar_count());
@@ -360,9 +358,9 @@ IN_PROC_BROWSER_TEST_F(DebuggerApiTest, InfoBar) {
   // dismissed by explicit user action.
   detach_function = new DebuggerDetachFunction();
   detach_function->set_extension(extension());
-  ASSERT_TRUE(extension_function_test_utils::RunFunction(
+  ASSERT_TRUE(api_test_utils::RunFunction(
       detach_function.get(), base::StringPrintf("[{\"tabId\": %d}]", tab_id),
-      browser(), api_test_utils::NONE));
+      profile()));
   EXPECT_EQ(1u, manager1->infobar_count());
   EXPECT_EQ(1u, manager2->infobar_count());
   EXPECT_EQ(1u, manager3->infobar_count());
@@ -370,10 +368,9 @@ IN_PROC_BROWSER_TEST_F(DebuggerApiTest, InfoBar) {
   // Attach again; should not create infobars.
   attach_function = new DebuggerAttachFunction();
   attach_function->set_extension(extension());
-  ASSERT_TRUE(extension_function_test_utils::RunFunction(
+  ASSERT_TRUE(api_test_utils::RunFunction(
       attach_function.get(),
-      base::StringPrintf("[{\"tabId\": %d}, \"1.1\"]", tab_id), browser(),
-      api_test_utils::NONE));
+      base::StringPrintf("[{\"tabId\": %d}, \"1.1\"]", tab_id), profile()));
   EXPECT_EQ(1u, manager1->infobar_count());
   EXPECT_EQ(1u, manager2->infobar_count());
   EXPECT_EQ(1u, manager3->infobar_count());
@@ -390,17 +387,16 @@ IN_PROC_BROWSER_TEST_F(DebuggerApiTest, InfoBar) {
   detach_function = new DebuggerDetachFunction();
   detach_function->set_extension(extension());
   // Cannot detach again.
-  ASSERT_FALSE(extension_function_test_utils::RunFunction(
+  ASSERT_FALSE(api_test_utils::RunFunction(
       detach_function.get(), base::StringPrintf("[{\"tabId\": %d}]", tab_id),
-      browser(), api_test_utils::NONE));
+      profile()));
 
   // Attaching once again should create a new infobar.
   attach_function = new DebuggerAttachFunction();
   attach_function->set_extension(extension());
-  ASSERT_TRUE(extension_function_test_utils::RunFunction(
+  ASSERT_TRUE(api_test_utils::RunFunction(
       attach_function.get(),
-      base::StringPrintf("[{\"tabId\": %d}, \"1.1\"]", tab_id), browser(),
-      api_test_utils::NONE));
+      base::StringPrintf("[{\"tabId\": %d}, \"1.1\"]", tab_id), profile()));
   EXPECT_EQ(1u, manager1->infobar_count());
   EXPECT_EQ(1u, manager2->infobar_count());
   EXPECT_EQ(1u, manager3->infobar_count());
@@ -420,9 +416,9 @@ IN_PROC_BROWSER_TEST_F(DebuggerApiTest, InfoBar) {
   // Detach should not affect anything.
   detach_function = new DebuggerDetachFunction();
   detach_function->set_extension(extension());
-  ASSERT_TRUE(extension_function_test_utils::RunFunction(
+  ASSERT_TRUE(api_test_utils::RunFunction(
       detach_function.get(), base::StringPrintf("[{\"tabId\": %d}]", tab_id),
-      browser(), api_test_utils::NONE));
+      profile()));
   EXPECT_EQ(1u, manager1->infobar_count());
 }
 
@@ -437,18 +433,17 @@ IN_PROC_BROWSER_TEST_F(DebuggerApiTest, InfoBarIsRemovedAfterFiveSeconds) {
   // Attaching to the tab should create an infobar.
   auto attach_function = base::MakeRefCounted<DebuggerAttachFunction>();
   attach_function->set_extension(extension());
-  ASSERT_TRUE(extension_function_test_utils::RunFunction(
+  ASSERT_TRUE(api_test_utils::RunFunction(
       attach_function.get(),
-      base::StringPrintf("[{\"tabId\": %d}, \"1.1\"]", tab_id), browser(),
-      api_test_utils::NONE));
+      base::StringPrintf("[{\"tabId\": %d}, \"1.1\"]", tab_id), profile()));
   EXPECT_EQ(1u, manager->infobar_count());
 
   // Detaching from the tab should remove the infobar after 5 seconds.
   auto detach_function = base::MakeRefCounted<DebuggerDetachFunction>();
   detach_function->set_extension(extension());
-  ASSERT_TRUE(extension_function_test_utils::RunFunction(
+  ASSERT_TRUE(api_test_utils::RunFunction(
       detach_function.get(), base::StringPrintf("[{\"tabId\": %d}]", tab_id),
-      browser(), api_test_utils::NONE));
+      profile()));
 
   // Even though the extension detached, the infobar should not detach
   // immediately, and should remain visible for 5 seconds to ensure the user
@@ -515,9 +510,9 @@ IN_PROC_BROWSER_TEST_F(CrossProfileDebuggerApiTest, GetTargets) {
   {
     auto get_targets_function =
         base::MakeRefCounted<DebuggerGetTargetsFunction>();
-    base::Value value = std::move(
-        *extension_function_test_utils::RunFunctionAndReturnSingleResult(
-            get_targets_function.get(), "[]", browser()));
+    base::Value value =
+        std::move(*api_test_utils::RunFunctionAndReturnSingleResult(
+            get_targets_function.get(), "[]", profile()));
 
     ASSERT_TRUE(value.is_list());
     const base::Value::List targets = std::move(value).TakeList();
@@ -529,10 +524,10 @@ IN_PROC_BROWSER_TEST_F(CrossProfileDebuggerApiTest, GetTargets) {
   {
     auto get_targets_function =
         base::MakeRefCounted<DebuggerGetTargetsFunction>();
-    base::Value value = std::move(
-        *extension_function_test_utils::RunFunctionAndReturnSingleResult(
-            get_targets_function.get(), "[]", browser(),
-            api_test_utils::RunFunctionFlags::INCLUDE_INCOGNITO));
+    base::Value value =
+        std::move(*api_test_utils::RunFunctionAndReturnSingleResult(
+            get_targets_function.get(), "[]", profile(),
+            api_test_utils::FunctionMode::kIncognito));
 
     ASSERT_TRUE(value.is_list());
     const base::Value::List targets = std::move(value).TakeList();
@@ -563,17 +558,16 @@ IN_PROC_BROWSER_TEST_F(CrossProfileDebuggerApiTest, Attach) {
     auto debugger_attach_function =
         base::MakeRefCounted<DebuggerAttachFunction>();
     debugger_attach_function->set_extension(extension());
-    EXPECT_FALSE(extension_function_test_utils::RunFunction(
-        debugger_attach_function.get(), target_in_other_profile, browser(),
-        api_test_utils::NONE));
+    EXPECT_FALSE(api_test_utils::RunFunction(
+        debugger_attach_function.get(), target_in_other_profile, profile()));
   }
   {
     auto debugger_attach_function =
         base::MakeRefCounted<DebuggerAttachFunction>();
     debugger_attach_function->set_extension(extension());
-    EXPECT_FALSE(extension_function_test_utils::RunFunction(
+    EXPECT_FALSE(api_test_utils::RunFunction(
         debugger_attach_function.get(), target_in_other_profile.c_str(),
-        browser(), api_test_utils::INCLUDE_INCOGNITO));
+        profile(), api_test_utils::FunctionMode::kIncognito));
   }
 
   auto wc2 = CreateTabWithProfileAndNavigate(
@@ -587,17 +581,17 @@ IN_PROC_BROWSER_TEST_F(CrossProfileDebuggerApiTest, Attach) {
     auto debugger_attach_function =
         base::MakeRefCounted<DebuggerAttachFunction>();
     debugger_attach_function->set_extension(extension());
-    EXPECT_FALSE(extension_function_test_utils::RunFunction(
-        debugger_attach_function.get(), target_in_otr_profile.c_str(),
-        browser(), api_test_utils::NONE));
+    EXPECT_FALSE(api_test_utils::RunFunction(debugger_attach_function.get(),
+                                             target_in_otr_profile.c_str(),
+                                             profile()));
   }
   {
     auto debugger_attach_function =
         base::MakeRefCounted<DebuggerAttachFunction>();
     debugger_attach_function->set_extension(extension());
-    EXPECT_TRUE(extension_function_test_utils::RunFunction(
+    EXPECT_TRUE(api_test_utils::RunFunction(
         debugger_attach_function.get(), target_in_otr_profile.c_str(),
-        browser(), api_test_utils::INCLUDE_INCOGNITO));
+        profile(), api_test_utils::FunctionMode::kIncognito));
   }
 }
 
@@ -613,27 +607,25 @@ IN_PROC_BROWSER_TEST_F(DebuggerApiTest,
   // Attaching to the tab should create an infobar.
   auto attach_function = base::MakeRefCounted<DebuggerAttachFunction>();
   attach_function->set_extension(extension());
-  ASSERT_TRUE(extension_function_test_utils::RunFunction(
+  ASSERT_TRUE(api_test_utils::RunFunction(
       attach_function.get(),
-      base::StringPrintf("[{\"tabId\": %d}, \"1.1\"]", tab_id), browser(),
-      api_test_utils::NONE));
+      base::StringPrintf("[{\"tabId\": %d}, \"1.1\"]", tab_id), profile()));
   EXPECT_EQ(1u, manager->infobar_count());
 
   // Detaching from the tab and attaching it again before 5 seconds should not
   // remove the infobar.
   auto detach_function = base::MakeRefCounted<DebuggerDetachFunction>();
   detach_function->set_extension(extension());
-  ASSERT_TRUE(extension_function_test_utils::RunFunction(
+  ASSERT_TRUE(api_test_utils::RunFunction(
       detach_function.get(), base::StringPrintf("[{\"tabId\": %d}]", tab_id),
-      browser(), api_test_utils::NONE));
+      profile()));
   EXPECT_EQ(1u, manager->infobar_count());
 
   attach_function = base::MakeRefCounted<DebuggerAttachFunction>();
   attach_function->set_extension(extension());
-  ASSERT_TRUE(extension_function_test_utils::RunFunction(
+  ASSERT_TRUE(api_test_utils::RunFunction(
       attach_function.get(),
-      base::StringPrintf("[{\"tabId\": %d}, \"1.1\"]", tab_id), browser(),
-      api_test_utils::NONE));
+      base::StringPrintf("[{\"tabId\": %d}, \"1.1\"]", tab_id), profile()));
   // Verify that only one infobar is created.
   EXPECT_EQ(1u, manager->infobar_count());
 
