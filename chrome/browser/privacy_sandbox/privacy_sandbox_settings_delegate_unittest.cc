@@ -72,12 +72,15 @@ TEST_F(PrivacySandboxSettingsDelegateTest,
   // should be interpreted as no restriction.
   EXPECT_FALSE(delegate()->IsPrivacySandboxRestricted());
 
-  // Altering the capability to either enabled or disabled should be reflected
-  // as a restriction on the sandbox.
+  // When the capability is restricted, the delegate should return as such.
   SetPrivacySandboxAccountCapability(kTestEmail, false);
   EXPECT_TRUE(delegate()->IsPrivacySandboxRestricted());
+
+  // Even when the capability is unrestricted, the sandbox should remain
+  // restricted.
+  // TODO (crbug.com/1428546): Adjust when we have a graduation flow.
   SetPrivacySandboxAccountCapability(kTestEmail, true);
-  EXPECT_FALSE(delegate()->IsPrivacySandboxRestricted());
+  EXPECT_TRUE(delegate()->IsPrivacySandboxRestricted());
 }
 
 TEST_F(PrivacySandboxSettingsDelegateTest,

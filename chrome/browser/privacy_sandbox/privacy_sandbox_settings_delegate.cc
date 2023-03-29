@@ -45,7 +45,22 @@ PrivacySandboxSettingsDelegate::PrivacySandboxSettingsDelegate(Profile* profile)
 PrivacySandboxSettingsDelegate::~PrivacySandboxSettingsDelegate() = default;
 
 bool PrivacySandboxSettingsDelegate::IsPrivacySandboxRestricted() const {
-  return PrivacySandboxRestrictedByAcccountCapability(profile_);
+  // If the Sandbox was ever reported as restricted, it is always restricted.
+  // TODO (crbug.com/1428546): Adjust when we have a graduation flow.
+  if (profile_->GetPrefs()->GetBoolean(prefs::kPrivacySandboxM1Restricted)) {
+    return true;
+  }
+
+  bool restricted_by_capability =
+      PrivacySandboxRestrictedByAcccountCapability(profile_);
+
+  // If the capability is restricting the Sandbox, "latch", so the sandbox is
+  // always restricted.
+  if (restricted_by_capability) {
+    profile_->GetPrefs()->SetBoolean(prefs::kPrivacySandboxM1Restricted, true);
+  }
+
+  return restricted_by_capability;
 }
 
 bool PrivacySandboxSettingsDelegate::IsIncognitoProfile() const {
