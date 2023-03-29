@@ -3122,6 +3122,7 @@
       base_feature: "none",
       origin_trial_feature_name: "SpeculationRulesPrefetchFuture",
       origin_trial_allows_third_party: true,
+      status: "experimental",
     },
     {
       name: "SpeculationRulesDocumentRulesSelectorMatches",
@@ -3129,6 +3130,7 @@
       copied_from_base_feature_if: "overridden",
       origin_trial_feature_name: "SpeculationRulesPrefetchFuture",
       origin_trial_allows_third_party: true,
+      status: "experimental",
     },
     {
       name: "SpeculationRulesEagerness",
@@ -3136,12 +3138,14 @@
       copied_from_base_feature_if: "overridden",
       origin_trial_feature_name: "SpeculationRulesPrefetchFuture",
       origin_trial_allows_third_party: true,
+      status: "experimental",
     },
     {
       name: "SpeculationRulesFetchFromHeader",
       base_feature: "none",
       origin_trial_feature_name: "SpeculationRulesPrefetchFuture",
       origin_trial_allows_third_party: true,
+      status: "experimental",
     },
     {
       name: "SpeculationRulesNoVarySearchHint",
@@ -3183,6 +3187,7 @@
       base_feature: "none",
       origin_trial_feature_name: "SpeculationRulesPrefetchFuture",
       origin_trial_allows_third_party: true,
+      status: "experimental",
     },
     {
       name: "SrcsetMaxDensity",
