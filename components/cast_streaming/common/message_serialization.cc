@@ -62,19 +62,19 @@ bool DeserializeCastMessage(base::StringPiece buffer,
   if (!converted_value->is_dict())
     return false;
 
-  const std::string* sender_id_value =
-      converted_value->FindStringPath(kKeySenderId);
+  const base::Value::Dict& converted_dict = converted_value->GetDict();
+  const std::string* sender_id_value = converted_dict.FindString(kKeySenderId);
   if (!sender_id_value)
     return false;
   *sender_id = *sender_id_value;
 
   const std::string* message_namespace_value =
-      converted_value->FindStringPath(kKeyNamespace);
+      converted_dict.FindString(kKeyNamespace);
   if (!message_namespace_value)
     return false;
   *message_namespace = *message_namespace_value;
 
-  const std::string* message_value = converted_value->FindStringPath(kKeyData);
+  const std::string* message_value = converted_dict.FindString(kKeyData);
   if (!message_value)
     return false;
   *message = *message_value;
@@ -85,10 +85,10 @@ bool DeserializeCastMessage(base::StringPiece buffer,
 std::string SerializeCastMessage(const std::string& sender_id,
                                  const std::string& message_namespace,
                                  const std::string& message) {
-  base::Value value(base::Value::Type::DICT);
-  value.SetStringKey(kKeyNamespace, message_namespace);
-  value.SetStringKey(kKeySenderId, sender_id);
-  value.SetStringKey(kKeyData, message);
+  base::Value::Dict value;
+  value.Set(kKeyNamespace, message_namespace);
+  value.Set(kKeySenderId, sender_id);
+  value.Set(kKeyData, message);
 
   std::string json_message;
   CHECK(base::JSONWriter::Write(value, &json_message));
