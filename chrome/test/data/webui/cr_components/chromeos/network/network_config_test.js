@@ -28,6 +28,9 @@ suite('network-config', function() {
   const kTestUsername = 'test-username';
   const kTestPassword = 'test-password';
   const kTestPsk = 'test-psk';
+  const kMissedEapDataErr = 'missingEapDefaultServerCaSubjectVerification';
+  const kServerCaCertsNotProvided = false;
+  const kAddServerCaCerts = true;
 
   suiteSetup(function() {
     mojoApi_ = new FakeNetworkConfig();
@@ -1283,6 +1286,49 @@ suite('network-config', function() {
       networkConfig.shareDefault = false;
     }
 
+    async function saveNetworkConfig() {
+      networkConfig.save();
+      await flushAsync();
+    }
+
+    async function setSerializedSubjectAltNameMatch(value) {
+      networkConfig.serializedSubjectAltNameMatch_ = value;
+      await saveNetworkConfig();
+    }
+
+    async function setSerializedDomainSuffixMatch(value) {
+      networkConfig.serializedDomainSuffixMatch_ = value;
+      await saveNetworkConfig();
+    }
+
+    function isDefaultServerCaSelected() {
+      return 'default' === networkConfig.selectedServerCaHash_;
+    }
+
+    function isConfigErrorsPresent() {
+      return '' !== networkConfig.error;
+    }
+
+    function isMissedEapDataErrorShown() {
+      return kMissedEapDataErr === networkConfig.error;
+    }
+
+    function getErrorMessage(eapType) {
+      return 'Failed test for eapType = ' + eapType;
+    }
+
+    async function initiateWiFiEapConfig(isAddServerCA, eapType) {
+      setNetworkType(NetworkType.kWiFi, SecurityType.kWpaEap);
+      setAuthenticated();
+      initNetworkConfigWithCerts(
+          /* hasServerCa= */ isAddServerCA, /* hasUserCert= */ true);
+      networkConfig.shareNetwork_ = true;
+      networkConfig.set('eapProperties_.outer', eapType);
+      await mojoApi_.whenCalled('getNetworkCertificates');
+      networkConfig.save();
+      await flushAsync();
+    }
+
     test('WiFi EAP-TLS No Certs', function() {
       setNetworkType(NetworkType.kWiFi, SecurityType.kWpaEap);
       setAuthenticated();
@@ -1417,42 +1463,152 @@ suite('network-config', function() {
       assertEquals('no-user-cert', networkConfig.selectedUserCertHash_);
     });
 
-    [true, false].forEach(eapDefaultCasWithoutSubjectVerificationAllowed => {
-      test('WiFi EAP-TLS Default CA Cert Flag', async function() {
+    // Testing eapDefaultCasWithoutSubjectVerificationAllowed = True with
+    // default Server CA cert for different WiFi EAP types.
+    // Expected to see no errors because empty fields still allowed.
+    // 'LEAP' is not covered by feature, in this case behavior suppose to be
+    // the same.
+    ['EAP-TLS', 'EAP-TTLS', 'PEAP', 'LEAP'].forEach(eapType => {
+      test('WiFi EAP Default CA Cert Allowed', async function() {
+        const errorMessage = getErrorMessage(eapType);
+        // Setting a feature flag.
         loadTimeData.overrideValues({
-          'eapDefaultCasWithoutSubjectVerificationAllowed':
-              eapDefaultCasWithoutSubjectVerificationAllowed,
+          'eapDefaultCasWithoutSubjectVerificationAllowed': true,
+        });
+        // No Server CA certificates provided, the default one will be selected.
+        await initiateWiFiEapConfig(kServerCaCertsNotProvided, eapType);
+
+        assertFalse(isConfigErrorsPresent(), errorMessage);
+        assertTrue(isDefaultServerCaSelected(), errorMessage);
+
+        // Set an empty DomainSuffixMatch doesn't trigger errors.
+        await setSerializedDomainSuffixMatch('');
+        assertFalse(isConfigErrorsPresent(), errorMessage);
+
+        // Set an empty SerializedSubjectAltNameMatch doesn't trigger errors.
+        await setSerializedSubjectAltNameMatch('');
+        assertFalse(isConfigErrorsPresent(), errorMessage);
+
+        // Set non empty DomainSuffixMatch doesn't trigger errors.
+        await setSerializedDomainSuffixMatch('test.com');
+        assertFalse(isConfigErrorsPresent(), errorMessage);
+
+        // Set non empty SerializedSubjectAltNameMatch doesn't trigger errors.
+        await setSerializedDomainSuffixMatch('test.com');
+        assertFalse(isConfigErrorsPresent(), errorMessage);
+      });
+    });
+
+    // Testing eapDefaultCasWithoutSubjectVerificationAllowed = False with
+    // default Server CA cert for different WiFi EAP types.
+    // Expected to see errors if both
+    // [SerializedDomainSuffixMatch,  SerializedSubjectAltNameMatch] are empty.
+    ['EAP-TLS', 'EAP-TTLS', 'PEAP'].forEach(eapType => {
+      test('WiFi EAP Default CA Cert Flag', async function() {
+        const errorMessage = getErrorMessage(eapType);
+        // Setting a feature flag.
+        loadTimeData.overrideValues({
+          'eapDefaultCasWithoutSubjectVerificationAllowed': false,
         });
 
-        setNetworkType(NetworkType.kWiFi, SecurityType.kWpaEap);
-        setAuthenticated();
-        initNetworkConfigWithCerts(
-            /* hasServerCa= */ false, /* hasUserCert= */ true);
-        networkConfig.shareNetwork_ = true;
-        networkConfig.set('eapProperties_.outer', 'EAP-TLS');
+        // No Server CA certificates provided, the default one will be selected.
+        await initiateWiFiEapConfig(kServerCaCertsNotProvided, eapType);
 
-        await mojoApi_.whenCalled('getNetworkCertificates');
-        networkConfig.setEapProperties_(networkConfig.eapProperties_);
-        networkConfig.save();
-        await flushAsync();
+        assertTrue(isDefaultServerCaSelected(), errorMessage);
+        // Expected to see error because required fields are empty.
+        assertTrue(isConfigErrorsPresent(), errorMessage);
 
-        // 'default' Server CA should be selected in case of no certificates
-        assertEquals('default', networkConfig.selectedServerCaHash_);
+        // Set an empty DomainSuffixMatch doesn't clear the error.
+        await setSerializedDomainSuffixMatch('');
+        assertTrue(isConfigErrorsPresent(), errorMessage);
 
-        if (eapDefaultCasWithoutSubjectVerificationAllowed) {
-          assertEquals('', networkConfig.error);
-        } else {
+        // Set an empty SerializedSubjectAltNameMatch doesn't clear
+        // the error.
+        await setSerializedSubjectAltNameMatch('');
+        assertTrue(isMissedEapDataErrorShown(), errorMessage);
+
+        // Set a non empty DomainSuffixMatch clears the error.
+        await setSerializedDomainSuffixMatch('test.com');
+        assertFalse(isConfigErrorsPresent(), errorMessage);
+      });
+    });
+
+    // Testing eapDefaultCasWithoutSubjectVerificationAllowed with default
+    // Server CA cert and with EAP=LEAP types for Wifi. Expected to see
+    // no errors because 'LEAP' is not covered by this feature.
+    test('WiFi EAP Default CA Cert Flag LEAP', async function() {
+      // Setting a feature flag.
+      loadTimeData.overrideValues({
+        'eapDefaultCasWithoutSubjectVerificationAllowed': false,
+      });
+      const eapType = 'LEAP';
+
+      // No Server CA certificates, the default one will be selected in UI.
+      await initiateWiFiEapConfig(kServerCaCertsNotProvided, eapType);
+
+      // 'default' Server CA should be selected.
+      assertTrue(isDefaultServerCaSelected());
+      assertFalse(isConfigErrorsPresent());
+
+      // Setting an empty DomainSuffixMatch doesn't trigger errors.
+      await setSerializedDomainSuffixMatch('');
+      assertFalse(isConfigErrorsPresent());
+
+      // Setting an empty SerializedSubjectAltNameMatch doesn't trigger errors.
+      await setSerializedSubjectAltNameMatch('');
+      assertFalse(isConfigErrorsPresent());
+
+      // Setting non empty DomainSuffixMatch doesn't trigger errors.
+      await setSerializedDomainSuffixMatch('test.com');
+      assertFalse(isConfigErrorsPresent());
+
+      // Setting non empty SerializedSubjectAltNameMatch doesn't trigger errors.
+      await setSerializedDomainSuffixMatch('test.com');
+      assertFalse(isConfigErrorsPresent());
+    });
+
+    // Testing eapDefaultCasWithoutSubjectVerificationAllowed =
+    // [True, False] with not default Server CA cert and with different EAP
+    // types for Wifi. Expected to see no errors because empty
+    // [SerializedDomainSuffixMatch,  SerializedSubjectAltNameMatch] are allowed
+    // if not default Server CA is selected.
+    // 'LEAP' is not covered by feature, in this case behavior suppose to be
+    // the same.
+    ['EAP-TLS', 'EAP-TTLS', 'PEAP', 'LEAP'].forEach(eapType => {
+      [true, false].forEach(isFeatureActive => {
+        test('WiFi EAP Not Default CA Cert Flag', async function() {
+          const errorMessage = getErrorMessage(eapType);
+
+          // Setting a feature flag.
+          loadTimeData.overrideValues({
+            'eapDefaultCasWithoutSubjectVerificationAllowed': isFeatureActive,
+          });
+
+          // Adding Server CA certs, the first one will be selected by default.
+          await initiateWiFiEapConfig(kAddServerCaCerts, eapType);
+
+          // 1st Server CA should be selected and no errors.
           assertEquals(
-              'missingEapDefaultServerCaSubjectVerification',
-              networkConfig.error);
-        }
+              kCaHash, networkConfig.selectedServerCaHash_, errorMessage);
+          assertFalse(isDefaultServerCaSelected(), errorMessage);
+          assertFalse(isConfigErrorsPresent(), errorMessage);
 
-        // Setting a domain suffix match clear the error.
-        networkConfig.serializedDomainSuffixMatch_ = 'test.com';
-        networkConfig.save();
-        await flushAsync();
+          // Set an empty DomainSuffixMatch doesn't trigger errors.
+          await setSerializedDomainSuffixMatch('');
+          assertFalse(isConfigErrorsPresent(), errorMessage);
 
-        assertEquals('', networkConfig.error);
+          // Set an empty SerializedSubjectAltNameMatch doesn't trigger errors.
+          await setSerializedSubjectAltNameMatch('');
+          assertFalse(isConfigErrorsPresent(), errorMessage);
+
+          // Set non empty DomainSuffixMatch doesn't trigger errors.
+          await setSerializedDomainSuffixMatch('test.com');
+          assertFalse(isConfigErrorsPresent(), errorMessage);
+
+          // Set non empty SerializedSubjectAltNameMatch doesn't trigger errors.
+          await setSerializedDomainSuffixMatch('test.com');
+          assertFalse(isConfigErrorsPresent(), errorMessage);
+        });
       });
     });
   });

@@ -2521,7 +2521,7 @@ Polymer({
       return true;
     }
 
-    if (!this.eapProperties_.useSystemCas) {
+    if (this.selectedServerCaHash_ !== DEFAULT_HASH) {
       // Does not use default CA server certs.
       return true;
     }
