@@ -110,8 +110,12 @@ Status ApplyZucchiniPatch(UniqueStreamPtr src_stream,
   while (bytes_wrote < src_size) {
     auto write_size =
         std::min(static_cast<uint64_t>(buffer.size()), src_size - bytes_wrote);
-    TEST_AND_RETURN_VALUE(src_stream->Read(buffer.data(), write_size),
-                          Status::P_READ_ERROR);
+    if (!src_stream->Read(buffer.data(), write_size)) {
+      src_stream->Close();
+      dst_stream->Close();
+      return Status::P_READ_ERROR;
+    }
+    src_stream->Close();
     std::copy(buffer.data(), buffer.data() + write_size,
               puffed_src.data() + bytes_wrote);
     bytes_wrote += write_size;
@@ -124,6 +128,7 @@ Status ApplyZucchiniPatch(UniqueStreamPtr src_stream,
       {zucchini_patch.data(), zucchini_patch.size()});
   if (!patch_reader.has_value()) {
     LOG(ERROR) << "Failed to parse the zucchini patch.";
+    dst_stream->Close();
     return Status::P_BAD_ZUCC_CORRUPT;
   }
 
@@ -133,30 +138,39 @@ Status ApplyZucchiniPatch(UniqueStreamPtr src_stream,
   auto status = zucchini::ApplyBuffer(
       {puffed_src.data(), puffed_src.size()}, *patch_reader,
       {patched_data.data(), patched_data.size()});
+  Status result = Status::P_OK;
   switch (status) {
     case zucchini::status::kStatusSuccess:
+      if (!dst_stream->Write(patched_data.data(), patched_data.size())) {
+        result = Status::P_WRITE_ERROR;
+      }
       break;
     case zucchini::status::kStatusInvalidParam:
-      return Status::P_INPUT_NOT_RECOGNIZED;
+      result = Status::P_INPUT_NOT_RECOGNIZED;
+      break;
     case zucchini::status::kStatusFileReadError:
+      ABSL_FALLTHROUGH_INTENDED;
     case zucchini::status::kStatusPatchReadError:
-      return Status::P_READ_ERROR;
+      result = Status::P_READ_ERROR;
+      break;
     case zucchini::status::kStatusFileWriteError:
+      ABSL_FALLTHROUGH_INTENDED;
     case zucchini::status::kStatusPatchWriteError:
-      return Status::P_WRITE_ERROR;
+      result = Status::P_WRITE_ERROR;
+      break;
     case zucchini::status::kStatusInvalidOldImage:
-      return Status::P_BAD_ZUCC_OLD_IMAGE;
+      result = Status::P_BAD_ZUCC_OLD_IMAGE;
+      break;
     case zucchini::status::kStatusInvalidNewImage:
-      return Status::P_BAD_ZUCC_NEW_IMAGE;
+      result = Status::P_BAD_ZUCC_NEW_IMAGE;
+      break;
     case zucchini::status::kStatusFatal:
+      ABSL_FALLTHROUGH_INTENDED;
     default:
-      return Status::P_UNKNOWN_ERROR;
+      result = Status::P_UNKNOWN_ERROR;
   }
-
-  TEST_AND_RETURN_VALUE(
-      dst_stream->Write(patched_data.data(), patched_data.size()),
-      Status::P_WRITE_ERROR);
-  return Status::P_OK;
+  dst_stream->Close();
+  return result;
 }
 
 }  // namespace
@@ -180,6 +194,8 @@ Status PuffPatch(UniqueStreamPtr src,
                   &src_deflates, &dst_deflates, &src_puffs, &dst_puffs,
                   &src_puff_size, &dst_puff_size, &patch_type);
   if (Status::P_OK != decode_status) {
+    src->Close();
+    dst->Close();
     return decode_status;
   }
   auto puffer = std::make_shared<Puffer>();
@@ -188,10 +204,16 @@ Status PuffPatch(UniqueStreamPtr src,
   auto src_stream =
       PuffinStream::CreateForPuff(std::move(src), puffer, src_puff_size,
                                   src_deflates, src_puffs, max_cache_size);
-  TEST_AND_RETURN_VALUE(src_stream, Status::P_READ_ERROR);
+  if (!src_stream) {
+    dst->Close();
+    return Status::P_READ_ERROR;
+  }
   auto dst_stream = PuffinStream::CreateForHuff(
       std::move(dst), huffer, dst_puff_size, dst_deflates, dst_puffs);
-  TEST_AND_RETURN_VALUE(dst_stream, Status::P_WRITE_ERROR);
+  if (!dst_stream) {
+    src_stream->Close();
+    return Status::P_WRITE_ERROR;
+  }
   if (patch_type == metadata::PatchHeader_PatchType_ZUCCHINI) {
     auto zucc_status = ApplyZucchiniPatch(std::move(src_stream), src_puff_size,
                                           patch + patch_offset, raw_patch_size,
@@ -217,21 +239,31 @@ Status ApplyPuffPatch(const base::FilePath& input_path,
   puffin::UniqueStreamPtr output_stream =
       puffin::FileStream::Open(output_path.AsUTF8Unsafe(), false, true);
   if (!output_stream) {
+    input_stream->Close();
     return Status::P_WRITE_OPEN_ERROR;
   }
   puffin::UniqueStreamPtr patch_stream =
       puffin::FileStream::Open(patch_path.AsUTF8Unsafe(), true, false);
   if (!patch_stream) {
+    input_stream->Close();
+    output_stream->Close();
     return Status::P_READ_OPEN_ERROR;
   }
   uint64_t patch_size = 0;
   if (!patch_stream->GetSize(&patch_size)) {
+    input_stream->Close();
+    output_stream->Close();
+    patch_stream->Close();
     return Status::P_STREAM_ERROR;
   }
   puffin::Buffer puffdiff_delta(patch_size);
   if (!patch_stream->Read(puffdiff_delta.data(), puffdiff_delta.size())) {
+    input_stream->Close();
+    output_stream->Close();
+    patch_stream->Close();
     return Status::P_READ_ERROR;
   }
+  patch_stream->Close();
   return puffin::PuffPatch(std::move(input_stream), std::move(output_stream),
                            std::move(puffdiff_delta.data()),
                            puffdiff_delta.size(), kDefaultPuffCacheSize);
@@ -248,21 +280,31 @@ Status ApplyPuffPatch(base::File input_file,
   puffin::UniqueStreamPtr output_stream =
       puffin::FileStream::CreateStreamFromFile(std::move(output_file));
   if (!output_stream) {
+    input_stream->Close();
     return Status::P_WRITE_OPEN_ERROR;
   }
   puffin::UniqueStreamPtr patch_stream =
       puffin::FileStream::CreateStreamFromFile(std::move(patch_file));
   if (!patch_stream) {
+    input_stream->Close();
+    output_stream->Close();
     return Status::P_READ_OPEN_ERROR;
   }
   uint64_t patch_size = 0;
   if (!patch_stream->GetSize(&patch_size)) {
+    input_stream->Close();
+    output_stream->Close();
+    patch_stream->Close();
     return Status::P_STREAM_ERROR;
   }
   puffin::Buffer puffdiff_delta(patch_size);
   if (!patch_stream->Read(puffdiff_delta.data(), puffdiff_delta.size())) {
+    input_stream->Close();
+    output_stream->Close();
+    patch_stream->Close();
     return Status::P_READ_ERROR;
   }
+  patch_stream->Close();
   return puffin::PuffPatch(std::move(input_stream), std::move(output_stream),
                            std::move(puffdiff_delta.data()),
                            puffdiff_delta.size(), kDefaultPuffCacheSize);

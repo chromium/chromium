@@ -48,3 +48,5 @@ and output patch filepaths as arguments.
 pass/fail bool.
 - Removing Requirement to find deflates; in puffin::PuffDiff if a file doesn't
 have deflates, we can still generate a raw patch.
+- Updating puffdiff.cc, puffpatch.cc, and puffin_stream.cc to close streams properly.
+This is an existing bug in the AOSP implementation, will notify the owners.

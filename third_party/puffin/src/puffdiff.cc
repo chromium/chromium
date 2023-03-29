@@ -116,17 +116,23 @@ bool PuffDiff(UniqueStreamPtr src,
   auto puff_deflate_stream =
       [&puffer](UniqueStreamPtr stream, const vector<BitExtent>& deflates,
                 Buffer* puff_buffer, vector<ByteExtent>* puffs) {
-        uint64_t puff_size;
-        TEST_AND_RETURN_FALSE(stream->Seek(0));
-        TEST_AND_RETURN_FALSE(
-            FindPuffLocations(stream, deflates, puffs, &puff_size));
-        TEST_AND_RETURN_FALSE(stream->Seek(0));
+        if (![&stream, &deflates, puff_buffer, puffs]() {
+              uint64_t puff_size = 0;
+              TEST_AND_RETURN_FALSE(stream->Seek(0));
+              TEST_AND_RETURN_FALSE(
+                  FindPuffLocations(stream, deflates, puffs, &puff_size));
+              TEST_AND_RETURN_FALSE(stream->Seek(0));
+              puff_buffer->resize(puff_size);
+              return true;
+            }()) {
+          stream->Close();
+          return false;
+        }
         auto src_puffin_stream = PuffinStream::CreateForPuff(
-            std::move(stream), puffer, puff_size, deflates, *puffs);
-        puff_buffer->resize(puff_size);
-        TEST_AND_RETURN_FALSE(
-            src_puffin_stream->Read(puff_buffer->data(), puff_buffer->size()));
-        return true;
+            std::move(stream), puffer, puff_buffer->size(), deflates, *puffs);
+        bool result =
+            src_puffin_stream->Read(puff_buffer->data(), puff_buffer->size());
+        return result;
       };
 
   Buffer src_puff_buffer;
@@ -219,6 +225,7 @@ Status PuffDiff(const string& src_file_path,
   puffin::UniqueStreamPtr dest_stream =
       FileStream::Open(dest_file_path, true, false);
   if (!dest_stream) {
+    src_stream->Close();
     LOG(ERROR) << "Invalid destination filepath";
     return Status::P_READ_OPEN_ERROR;
   }
@@ -226,11 +233,15 @@ Status PuffDiff(const string& src_file_path,
   // Get Src Deflates.
   uint64_t src_stream_size = 0;
   if (!src_stream->GetSize(&src_stream_size)) {
+    src_stream->Close();
+    dest_stream->Close();
     LOG(ERROR) << "Unable to get streamsize for file: " << src_file_path;
     return Status::P_STREAM_ERROR;
   }
   Buffer src_data(src_stream_size);
   if (!src_stream->Read(src_data.data(), src_data.size())) {
+    src_stream->Close();
+    dest_stream->Close();
     LOG(ERROR) << "Unable to read stream for file: " << src_file_path;
     return Status::P_STREAM_ERROR;
   }
@@ -242,11 +253,15 @@ Status PuffDiff(const string& src_file_path,
   // Get Dest Deflates.
   uint64_t dest_stream_size = 0;
   if (!dest_stream->GetSize(&dest_stream_size)) {
+    src_stream->Close();
+    dest_stream->Close();
     LOG(ERROR) << "Unable to get streamsize for file: " << dest_file_path;
     return Status::P_STREAM_ERROR;
   }
   Buffer dest_data(dest_stream_size);
   if (!dest_stream->Read(dest_data.data(), dest_data.size())) {
+    src_stream->Close();
+    dest_stream->Close();
     LOG(ERROR) << "Unable to read stream for file: " << dest_file_path;
     return Status::P_STREAM_ERROR;
   }
@@ -275,9 +290,11 @@ Status PuffDiff(const string& src_file_path,
     return Status::P_STREAM_ERROR;
   }
   if (!patch_stream->Write(puffdiff_delta.data(), puffdiff_delta.size())) {
+    patch_stream->Close();
     LOG(ERROR) << "Unable to write to patch stream to patch filepath.";
     return Status::P_WRITE_ERROR;
   }
+  patch_stream->Close();
   return Status::P_OK;
 }
 
