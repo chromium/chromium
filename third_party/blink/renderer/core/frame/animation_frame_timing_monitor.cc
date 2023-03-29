@@ -472,7 +472,10 @@ void AnimationFrameTimingMonitor::WillRunJavaScriptDialog() {
   did_pause_ = true;
 }
 void AnimationFrameTimingMonitor::DidRunJavaScriptDialog() {
-  if (!pending_script_info_) {
+  // javascript_dialog_start_ can be null if DidRunJavaScriptDialog was run
+  // without WillRunJavaScriptDialog, which can happen in the case of
+  // WebView/browser-initiated dialogs.
+  if (!pending_script_info_ || javascript_dialog_start_.is_null()) {
     return;
   }
 
