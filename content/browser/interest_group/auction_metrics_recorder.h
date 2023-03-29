@@ -75,6 +75,14 @@ class CONTENT_EXPORT AuctionMetricsRecorder {
 
   void SetKAnonymityBidMode(auction_worklet::mojom::KAnonymityBidMode bid_mode);
 
+  // Counts outcomes on the boundary between GenerateBid and ScoreAd.
+  // Each of these is called once for each InterestGroup for which we called
+  // GenerateBid.
+  void RecordInterestGroupWithNoBids();
+  void RecordInterestGroupWithOnlyNonKAnonBid();
+  void RecordInterestGroupWithSameBidForKAnonAndNonKAnon();
+  void RecordInterestGroupWithSeparateBidsForKAnonAndNonKAnon();
+
  private:
   // The data structure we'll eventually record via the UkmRecorder.
   // We incrementally build this in all of the methods of this class.
@@ -92,6 +100,13 @@ class CONTENT_EXPORT AuctionMetricsRecorder {
   // auction across all component auctions. For memory efficiency, we record a
   // hash of the AuctionWorkletManager::WorkletKey instead of the key itself.
   std::set<size_t> bidder_worklet_keys_;
+
+  // Counts for outcomes on the boundary between GenerateBid and ScoreAd.
+  // Incremented for each InterestGroup, and recorded OnAuctionEnd.
+  int64_t num_interest_groups_with_no_bids_ = 0;
+  int64_t num_interest_groups_with_only_non_k_anon_bid_ = 0;
+  int64_t num_interest_groups_with_separate_bids_for_k_anon_and_non_k_anon_ = 0;
+  int64_t num_interest_groups_with_same_bid_for_k_anon_and_non_k_anon_ = 0;
 };
 
 }  // namespace content

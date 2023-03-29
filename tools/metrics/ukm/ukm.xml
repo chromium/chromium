@@ -763,6 +763,42 @@ be describing additional metrics about the same event.
       there are no bidders eligible to participate in this auction.
     </summary>
   </metric>
+  <metric name="NumInterestGroupsWithNoBids">
+    <summary>
+      Number of instances in which the the BidderWorklet doesn't bid, maybe
+      because it failed to load or crashed. Because there's no bid, ScoreAd
+      won't be called for these.
+    </summary>
+  </metric>
+  <metric name="NumInterestGroupsWithOnlyNonKAnonBid">
+    <summary>
+      Number of instances in which the BidderWorklet only generates one bid. If
+      the KAnonymityBidMode is Simulate or Enforce, this means that the
+      InterestGroup's top generated bid didn't satisfy the kAnonymity threshold,
+      and no separate bid could be generated that did satisfy the kAnonymity
+      threshold. If the KAnonymityBidMode is None, this just means that a bid
+      was successfully generated. For each of these, ScoreAd will be called
+      once.
+    </summary>
+  </metric>
+  <metric name="NumInterestGroupsWithSameBidForKAnonAndNonKAnon">
+    <summary>
+      Number of instances in which an InterestGroup's top generated bid did
+      satisfy the kAnonymity threshold, and so no separate bid was needed. For
+      each of these, ScoreAd will be called once. If the KAnonymityBidMode is
+      None, this metric will be 0, because there won't be a separate kAnon bid.
+    </summary>
+  </metric>
+  <metric name="NumInterestGroupsWithSeparateBidsForKAnonAndNonKAnon">
+    <summary>
+      Number of instances in which an InterestGroup's top generated bid didn't
+      satisfy the kAnonymity threshold, and a separate bid was generated that
+      did satisfy the kAnonymity threshold. For each of these, ScoreAd will be
+      called twice, once for each of these bids, which has latency and
+      performance implications. If the KAnonymityBidMode is None, this metric
+      will be 0, because there won't be a separate kAnon bid.
+    </summary>
+  </metric>
   <metric name="NumOwnersWithInterestGroups">
     <summary>
       The number of buyers with InterestGroups participating in an auction,

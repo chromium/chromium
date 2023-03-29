@@ -37,6 +37,18 @@ void AuctionMetricsRecorder::OnAuctionEnd(AuctionResult auction_result) {
   builder_.SetNumBidderWorklets(
       GetExponentialBucketMinForCounts1000(bidder_worklet_keys_.size()));
 
+  builder_.SetNumInterestGroupsWithNoBids(
+      GetExponentialBucketMinForCounts1000(num_interest_groups_with_no_bids_));
+  builder_.SetNumInterestGroupsWithOnlyNonKAnonBid(
+      GetExponentialBucketMinForCounts1000(
+          num_interest_groups_with_only_non_k_anon_bid_));
+  builder_.SetNumInterestGroupsWithSameBidForKAnonAndNonKAnon(
+      GetExponentialBucketMinForCounts1000(
+          num_interest_groups_with_same_bid_for_k_anon_and_non_k_anon_));
+  builder_.SetNumInterestGroupsWithSeparateBidsForKAnonAndNonKAnon(
+      GetExponentialBucketMinForCounts1000(
+          num_interest_groups_with_separate_bids_for_k_anon_and_non_k_anon_));
+
   auto* ukm_recorder = ukm::UkmRecorder::Get();
   builder_.Record(ukm_recorder->Get());
 }
@@ -78,6 +90,24 @@ void AuctionMetricsRecorder::ReportBidderWorkletKey(
 void AuctionMetricsRecorder::SetKAnonymityBidMode(
     auction_worklet::mojom::KAnonymityBidMode bid_mode) {
   builder_.SetKAnonymityBidMode(static_cast<int64_t>(bid_mode));
+}
+
+void AuctionMetricsRecorder::RecordInterestGroupWithNoBids() {
+  ++num_interest_groups_with_no_bids_;
+}
+
+void AuctionMetricsRecorder::RecordInterestGroupWithOnlyNonKAnonBid() {
+  ++num_interest_groups_with_only_non_k_anon_bid_;
+}
+
+void AuctionMetricsRecorder::
+    RecordInterestGroupWithSeparateBidsForKAnonAndNonKAnon() {
+  ++num_interest_groups_with_separate_bids_for_k_anon_and_non_k_anon_;
+}
+
+void AuctionMetricsRecorder::
+    RecordInterestGroupWithSameBidForKAnonAndNonKAnon() {
+  ++num_interest_groups_with_same_bid_for_k_anon_and_non_k_anon_;
 }
 
 }  // namespace content

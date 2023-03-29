@@ -52,6 +52,7 @@
 #include "content/services/auction_worklet/auction_worklet_service_impl.h"
 #include "content/services/auction_worklet/public/mojom/auction_shared_storage_host.mojom.h"
 #include "content/services/auction_worklet/public/mojom/auction_worklet_service.mojom.h"
+#include "content/services/auction_worklet/public/mojom/bidder_worklet.mojom-shared.h"
 #include "content/services/auction_worklet/public/mojom/bidder_worklet.mojom.h"
 #include "content/services/auction_worklet/public/mojom/private_aggregation_request.mojom.h"
 #include "content/services/auction_worklet/public/mojom/seller_worklet.mojom.h"
@@ -1876,6 +1877,11 @@ class AuctionRunnerTest : public RenderViewHostTestHarness,
                 Entry::kNumSellersWithBiddersName,
                 Entry::kNumBidderWorkletsName,
                 Entry::kKAnonymityBidModeName,
+                Entry::kNumInterestGroupsWithNoBidsName,
+                Entry::kNumInterestGroupsWithOnlyNonKAnonBidName,
+                Entry::kNumInterestGroupsWithSameBidForKAnonAndNonKAnonName,
+                Entry::
+                    kNumInterestGroupsWithSeparateBidsForKAnonAndNonKAnonName,
             });
 
     EXPECT_THAT(ukm_entries, testing::SizeIs(1));
@@ -1923,12 +1929,40 @@ class AuctionRunnerTest : public RenderViewHostTestHarness,
       return *this;
     }
 
+    MetricsExpectations& SetNumInterestGroupsWithNoBids(int64_t value) {
+      num_interest_groups_with_no_bids = value;
+      return *this;
+    }
+
+    MetricsExpectations& SetNumInterestGroupsWithOnlyNonKAnonBid(
+        int64_t value) {
+      num_interest_groups_with_only_non_k_anon_bid = value;
+      return *this;
+    }
+
+    MetricsExpectations& SetNumInterestGroupsWithSameBidForKAnonAndNonKAnon(
+        int64_t value) {
+      num_interest_groups_with_same_bid_for_k_anon_and_non_k_anon = value;
+      return *this;
+    }
+
+    MetricsExpectations&
+    SetNumInterestGroupsWithSeparateBidsForKAnonAndNonKAnon(int64_t value) {
+      num_interest_groups_with_separate_bids_for_k_anon_and_non_k_anon = value;
+      return *this;
+    }
+
     AuctionResult result;
     absl::optional<int64_t> num_interest_groups;
     absl::optional<int64_t> num_owners;
     absl::optional<int64_t> num_sellers;
     int64_t num_distinct_owners = 0;
     int64_t num_bidder_worklets = 0;
+    int64_t num_interest_groups_with_no_bids = 0;
+    int64_t num_interest_groups_with_only_non_k_anon_bid = 0;
+    int64_t num_interest_groups_with_same_bid_for_k_anon_and_non_k_anon = 0;
+    int64_t num_interest_groups_with_separate_bids_for_k_anon_and_non_k_anon =
+        0;
   };
 
   // Check histogram values and UKMs.
@@ -2012,6 +2046,27 @@ class AuctionRunnerTest : public RenderViewHostTestHarness,
         ukm_metrics,
         HasMetric(UkmEntry::kLoadInterestGroupPhaseLatencyInMillisName));
     EXPECT_THAT(ukm_metrics, HasMetric(UkmEntry::kEndToEndLatencyInMillisName));
+
+    EXPECT_THAT(
+        ukm_metrics,
+        HasMetricWithValue(UkmEntry::kNumInterestGroupsWithNoBidsName,
+                           expectations.num_interest_groups_with_no_bids));
+    EXPECT_THAT(ukm_metrics,
+                HasMetricWithValue(
+                    UkmEntry::kNumInterestGroupsWithOnlyNonKAnonBidName,
+                    expectations.num_interest_groups_with_only_non_k_anon_bid));
+    EXPECT_THAT(
+        ukm_metrics,
+        HasMetricWithValue(
+            UkmEntry::kNumInterestGroupsWithSameBidForKAnonAndNonKAnonName,
+            expectations
+                .num_interest_groups_with_same_bid_for_k_anon_and_non_k_anon));
+    EXPECT_THAT(
+        ukm_metrics,
+        HasMetricWithValue(
+            UkmEntry::kNumInterestGroupsWithSeparateBidsForKAnonAndNonKAnonName,
+            expectations
+                .num_interest_groups_with_separate_bids_for_k_anon_and_non_k_anon));
   }
 
   AuctionRunner::IsInterestGroupApiAllowedCallback
@@ -2491,7 +2546,8 @@ TEST_F(AuctionRunnerTest, OneInterestGroup) {
                    .SetNumInterestGroups(1)
                    .SetNumOwnersAndDistinctOwners(1)
                    .SetNumSellers(1)
-                   .SetNumBidderWorklets(1));
+                   .SetNumBidderWorklets(1)
+                   .SetNumInterestGroupsWithOnlyNonKAnonBid(1));
   EXPECT_THAT(observer_log_,
               testing::UnorderedElementsAre(
                   "Create https://adstuff.publisher1.com/auction.js",
@@ -2701,7 +2757,8 @@ TEST_F(AuctionRunnerTest, Basic) {
                    .SetNumInterestGroups(2)
                    .SetNumOwnersAndDistinctOwners(2)
                    .SetNumSellers(1)
-                   .SetNumBidderWorklets(2));
+                   .SetNumBidderWorklets(2)
+                   .SetNumInterestGroupsWithOnlyNonKAnonBid(2));
   EXPECT_THAT(observer_log_,
               testing::UnorderedElementsAre(
                   "Create https://adstuff.publisher1.com/auction.js",
@@ -3138,7 +3195,8 @@ TEST_F(AuctionRunnerTest, ComponentAuction) {
                    .SetNumInterestGroups(2)
                    .SetNumOwnersAndDistinctOwners(2)
                    .SetNumSellers(3)
-                   .SetNumBidderWorklets(2));
+                   .SetNumBidderWorklets(2)
+                   .SetNumInterestGroupsWithOnlyNonKAnonBid(2));
 }
 
 // Test a component auction where the top level seller rejects all bids. This
@@ -3169,7 +3227,8 @@ TEST_F(AuctionRunnerTest, ComponentAuctionTopSellerRejectsBids) {
                    .SetNumInterestGroups(2)
                    .SetNumOwnersAndDistinctOwners(2)
                    .SetNumSellers(2)
-                   .SetNumBidderWorklets(2));
+                   .SetNumBidderWorklets(2)
+                   .SetNumInterestGroupsWithOnlyNonKAnonBid(2));
 }
 
 // Test case where the two components have the same buyer, which makes different
@@ -3324,7 +3383,8 @@ TEST_F(AuctionRunnerTest, ComponentAuctionSharedBuyer) {
                    .SetNumOwners(2)
                    .SetNumDistinctOwners(1)
                    .SetNumSellers(3)
-                   .SetNumBidderWorklets(1));
+                   .SetNumBidderWorklets(1)
+                   .SetNumInterestGroupsWithOnlyNonKAnonBid(2));
 }
 
 // Test case where a single component auction accepts one bid and rejects
@@ -3386,7 +3446,8 @@ TEST_F(AuctionRunnerTest, ComponentAuctionAcceptsBidRejectsBid) {
                    .SetNumInterestGroups(2)
                    .SetNumOwnersAndDistinctOwners(2)
                    .SetNumSellers(2)
-                   .SetNumBidderWorklets(2));
+                   .SetNumBidderWorklets(2)
+                   .SetNumInterestGroupsWithOnlyNonKAnonBid(2));
 }
 
 // A component auction with one component that has two buyers. In this auction,
@@ -3462,7 +3523,8 @@ TEST_F(AuctionRunnerTest, ComponentAuctionOneComponentTwoBidders) {
                    .SetNumInterestGroups(2)
                    .SetNumOwnersAndDistinctOwners(2)
                    .SetNumSellers(2)
-                   .SetNumBidderWorklets(2));
+                   .SetNumBidderWorklets(2)
+                   .SetNumInterestGroupsWithOnlyNonKAnonBid(2));
 }
 
 // Test the case a top-level seller returns no signals in its reportResult
@@ -3585,7 +3647,8 @@ TEST_F(AuctionRunnerTest, ComponentAuctionNoTopLevelReportResultSignals) {
                    .SetNumInterestGroups(1)
                    .SetNumOwnersAndDistinctOwners(1)
                    .SetNumSellers(2)
-                   .SetNumBidderWorklets(1));
+                   .SetNumBidderWorklets(1)
+                   .SetNumInterestGroupsWithOnlyNonKAnonBid(1));
 }
 
 TEST_F(AuctionRunnerTest, ComponentAuctionModifiesBid) {
@@ -3688,7 +3751,8 @@ TEST_F(AuctionRunnerTest, ComponentAuctionModifiesBid) {
                    .SetNumInterestGroups(1)
                    .SetNumOwnersAndDistinctOwners(1)
                    .SetNumSellers(2)
-                   .SetNumBidderWorklets(1));
+                   .SetNumBidderWorklets(1)
+                   .SetNumInterestGroupsWithOnlyNonKAnonBid(1));
 }
 
 // An auction in which the seller origin is not allowed to use the interest
@@ -3814,7 +3878,8 @@ TEST_F(AuctionRunnerTest, DisallowedComponentAuctionOneSeller) {
                    .SetNumInterestGroups(1)
                    .SetNumOwnersAndDistinctOwners(1)
                    .SetNumSellers(2)
-                   .SetNumBidderWorklets(1));
+                   .SetNumBidderWorklets(1)
+                   .SetNumInterestGroupsWithOnlyNonKAnonBid(1));
 }
 
 // An auction in which the buyer origins are not allowed to use the interest
@@ -3913,7 +3978,8 @@ TEST_F(AuctionRunnerTest, DisallowedSingleBuyer) {
                    .SetNumInterestGroups(1)
                    .SetNumOwnersAndDistinctOwners(1)
                    .SetNumSellers(1)
-                   .SetNumBidderWorklets(1));
+                   .SetNumBidderWorklets(1)
+                   .SetNumInterestGroupsWithOnlyNonKAnonBid(1));
 
   // No requests for bidder2's worklet URL should be made.
   task_environment()->RunUntilIdle();
@@ -4017,7 +4083,8 @@ TEST_F(AuctionRunnerTest, DisallowedComponentAuctionSingleBuyer) {
                    .SetNumInterestGroups(1)
                    .SetNumOwnersAndDistinctOwners(1)
                    .SetNumSellers(2)
-                   .SetNumBidderWorklets(1));
+                   .SetNumBidderWorklets(1)
+                   .SetNumInterestGroupsWithOnlyNonKAnonBid(1));
 }
 
 // Disallow bidders as sellers and disallow seller as bidder. Auction should
@@ -4060,7 +4127,8 @@ TEST_F(AuctionRunnerTest, DisallowedAsOtherParticipant) {
                    .SetNumInterestGroups(2)
                    .SetNumOwnersAndDistinctOwners(2)
                    .SetNumSellers(1)
-                   .SetNumBidderWorklets(2));
+                   .SetNumBidderWorklets(2)
+                   .SetNumInterestGroupsWithOnlyNonKAnonBid(2));
 }
 
 // An auction where one bid is successful, another's script 404s.
@@ -4139,7 +4207,9 @@ TEST_F(AuctionRunnerTest, OneBidOne404) {
                    .SetNumInterestGroups(2)
                    .SetNumOwnersAndDistinctOwners(2)
                    .SetNumSellers(1)
-                   .SetNumBidderWorklets(2));
+                   .SetNumBidderWorklets(2)
+                   .SetNumInterestGroupsWithNoBids(1)
+                   .SetNumInterestGroupsWithOnlyNonKAnonBid(1));
 
   // 404 is detected after the worklet is created, so there are still events
   // for it.
@@ -4220,7 +4290,8 @@ TEST_F(AuctionRunnerTest, ComponentAuctionOneSeller404) {
                    .SetNumInterestGroups(2)
                    .SetNumOwnersAndDistinctOwners(2)
                    .SetNumSellers(3)
-                   .SetNumBidderWorklets(2));
+                   .SetNumBidderWorklets(2)
+                   .SetNumInterestGroupsWithOnlyNonKAnonBid(1));
 }
 
 // An auction where one bid is successful, another's script does not provide a
@@ -4302,7 +4373,9 @@ TEST_F(AuctionRunnerTest, OneBidOneNotMade) {
                    .SetNumInterestGroups(2)
                    .SetNumOwnersAndDistinctOwners(2)
                    .SetNumSellers(1)
-                   .SetNumBidderWorklets(2));
+                   .SetNumBidderWorklets(2)
+                   .SetNumInterestGroupsWithNoBids(1)
+                   .SetNumInterestGroupsWithOnlyNonKAnonBid(1));
 }
 
 // An auction where no bidding scripts load successfully.
@@ -4343,7 +4416,8 @@ TEST_F(AuctionRunnerTest, NoBids) {
                    .SetNumInterestGroups(2)
                    .SetNumOwnersAndDistinctOwners(2)
                    .SetNumSellers(1)
-                   .SetNumBidderWorklets(2));
+                   .SetNumBidderWorklets(2)
+                   .SetNumInterestGroupsWithNoBids(2));
 }
 
 // An auction where none of the bidding scripts has a valid bidding function.
@@ -4387,7 +4461,8 @@ TEST_F(AuctionRunnerTest, NoBidMadeByScript) {
                    .SetNumInterestGroups(2)
                    .SetNumOwnersAndDistinctOwners(2)
                    .SetNumSellers(1)
-                   .SetNumBidderWorklets(2));
+                   .SetNumBidderWorklets(2)
+                   .SetNumInterestGroupsWithNoBids(2));
 }
 
 // An auction where the seller script doesn't have a scoring function.
@@ -4445,7 +4520,8 @@ TEST_F(AuctionRunnerTest, SellerRejectsAll) {
                    .SetNumInterestGroups(2)
                    .SetNumOwnersAndDistinctOwners(2)
                    .SetNumSellers(1)
-                   .SetNumBidderWorklets(2));
+                   .SetNumBidderWorklets(2)
+                   .SetNumInterestGroupsWithOnlyNonKAnonBid(2));
 }
 
 // An auction where seller rejects one bid when scoring.
@@ -4529,7 +4605,8 @@ TEST_F(AuctionRunnerTest, SellerRejectsOne) {
                    .SetNumInterestGroups(2)
                    .SetNumOwnersAndDistinctOwners(2)
                    .SetNumSellers(1)
-                   .SetNumBidderWorklets(2));
+                   .SetNumBidderWorklets(2)
+                   .SetNumInterestGroupsWithOnlyNonKAnonBid(2));
 }
 
 // An auction where the seller script fails to load.
@@ -4635,7 +4712,8 @@ TEST_F(AuctionRunnerTest, NoTrustedBiddingSignals) {
                    .SetNumInterestGroups(2)
                    .SetNumOwnersAndDistinctOwners(2)
                    .SetNumSellers(1)
-                   .SetNumBidderWorklets(2));
+                   .SetNumBidderWorklets(2)
+                   .SetNumInterestGroupsWithOnlyNonKAnonBid(2));
 }
 
 // An auction where trusted bidding signals are requested, but the fetch 404s.
@@ -4725,7 +4803,8 @@ TEST_F(AuctionRunnerTest, TrustedBiddingSignals404) {
                    .SetNumInterestGroups(2)
                    .SetNumOwnersAndDistinctOwners(2)
                    .SetNumSellers(1)
-                   .SetNumBidderWorklets(2));
+                   .SetNumBidderWorklets(2)
+                   .SetNumInterestGroupsWithOnlyNonKAnonBid(2));
 }
 
 // A successful auction where seller reporting worklet doesn't set a URL.
@@ -4806,7 +4885,8 @@ TEST_F(AuctionRunnerTest, NoReportResultUrl) {
                    .SetNumInterestGroups(2)
                    .SetNumOwnersAndDistinctOwners(2)
                    .SetNumSellers(1)
-                   .SetNumBidderWorklets(2));
+                   .SetNumBidderWorklets(2)
+                   .SetNumInterestGroupsWithOnlyNonKAnonBid(2));
 }
 
 // A successful auction where bidder reporting worklet doesn't set a URL.
@@ -4885,7 +4965,8 @@ TEST_F(AuctionRunnerTest, NoReportWinUrl) {
                    .SetNumInterestGroups(2)
                    .SetNumOwnersAndDistinctOwners(2)
                    .SetNumSellers(1)
-                   .SetNumBidderWorklets(2));
+                   .SetNumBidderWorklets(2)
+                   .SetNumInterestGroupsWithOnlyNonKAnonBid(2));
 }
 
 // A successful auction where neither reporting worklets sets a URL.
@@ -4955,7 +5036,8 @@ TEST_F(AuctionRunnerTest, NeitherReportUrl) {
                    .SetNumInterestGroups(2)
                    .SetNumOwnersAndDistinctOwners(2)
                    .SetNumSellers(1)
-                   .SetNumBidderWorklets(2));
+                   .SetNumBidderWorklets(2)
+                   .SetNumInterestGroupsWithOnlyNonKAnonBid(2));
 }
 
 // Test the case where the seller worklet provides no signals for the winner,
@@ -5034,7 +5116,8 @@ function scoreAd(adMetadata, bid, auctionConfig, trustedScoringSignals,
                    .SetNumInterestGroups(2)
                    .SetNumOwnersAndDistinctOwners(2)
                    .SetNumSellers(1)
-                   .SetNumBidderWorklets(2));
+                   .SetNumBidderWorklets(2)
+                   .SetNumInterestGroupsWithOnlyNonKAnonBid(2));
 }
 
 TEST_F(AuctionRunnerTest, TrustedScoringSignals) {
@@ -5183,7 +5266,8 @@ function reportResult(auctionConfig, browserSignals) {
                    .SetNumInterestGroups(2)
                    .SetNumOwnersAndDistinctOwners(2)
                    .SetNumSellers(1)
-                   .SetNumBidderWorklets(2));
+                   .SetNumBidderWorklets(2)
+                   .SetNumInterestGroupsWithOnlyNonKAnonBid(2));
 }
 
 // An auction that passes auctionSignals via promises. This makes sure to
@@ -6642,7 +6726,8 @@ TEST_F(AuctionRunnerTest, ProcessManagerBlocksWorkletCreation) {
                        .SetNumInterestGroups(2)
                        .SetNumOwnersAndDistinctOwners(2)
                        .SetNumSellers(1)
-                       .SetNumBidderWorklets(2));
+                       .SetNumBidderWorklets(2)
+                       .SetNumInterestGroupsWithOnlyNonKAnonBid(2));
     }
   }
 }
@@ -6845,7 +6930,8 @@ TEST_F(AuctionRunnerTest, ComponentAuctionProcessManagerBlocksWorkletCreation) {
                        .SetNumInterestGroups(2)
                        .SetNumOwnersAndDistinctOwners(2)
                        .SetNumSellers(3)
-                       .SetNumBidderWorklets(2));
+                       .SetNumBidderWorklets(2)
+                       .SetNumInterestGroupsWithOnlyNonKAnonBid(2));
     }
   }
 }
@@ -7024,7 +7110,8 @@ TEST_F(AuctionRunnerTest,
                    .SetNumInterestGroups(2)
                    .SetNumOwnersAndDistinctOwners(2)
                    .SetNumSellers(3)
-                   .SetNumBidderWorklets(2));
+                   .SetNumBidderWorklets(2)
+                   .SetNumInterestGroupsWithOnlyNonKAnonBid(1));
 }
 
 // Test to make sure SendPendingSignalsRequests is called on a seller worklet
@@ -7281,7 +7368,8 @@ TEST_F(AuctionRunnerTest, AllBiddersCrashBeforeBidding) {
                    .SetNumInterestGroups(2)
                    .SetNumOwnersAndDistinctOwners(2)
                    .SetNumSellers(1)
-                   .SetNumBidderWorklets(2));
+                   .SetNumBidderWorklets(2)
+                   .SetNumInterestGroupsWithNoBids(2));
 }
 
 // Test the case a single bidder worklet crashes before bidding. The auction
@@ -7391,7 +7479,9 @@ TEST_F(AuctionRunnerTest, BidderCrashBeforeBidding) {
                      .SetNumInterestGroups(2)
                      .SetNumOwnersAndDistinctOwners(2)
                      .SetNumSellers(1)
-                     .SetNumBidderWorklets(2));
+                     .SetNumBidderWorklets(2)
+                     .SetNumInterestGroupsWithNoBids(1)
+                     .SetNumInterestGroupsWithOnlyNonKAnonBid(1));
   }
 }
 
@@ -7485,11 +7575,15 @@ TEST_F(AuctionRunnerTest, SellerCrash) {
     EXPECT_TRUE(result_.private_aggregation_event_map.empty());
     EXPECT_THAT(result_.interest_groups_that_bid,
                 testing::UnorderedElementsAre());
-    CheckMetrics(MetricsExpectations(AuctionResult::kSellerWorkletCrashed)
-                     .SetNumInterestGroups(2)
-                     .SetNumOwnersAndDistinctOwners(2)
-                     .SetNumSellers(1)
-                     .SetNumBidderWorklets(2));
+    MetricsExpectations expectations(AuctionResult::kSellerWorkletCrashed);
+    expectations.SetNumInterestGroups(2)
+        .SetNumOwnersAndDistinctOwners(2)
+        .SetNumSellers(1)
+        .SetNumBidderWorklets(2);
+    if (crash_phase == CrashPhase::kScoreBid) {
+      expectations.SetNumInterestGroupsWithOnlyNonKAnonBid(2);
+    }
+    CheckMetrics(expectations);
   }
 }
 
@@ -7526,7 +7620,8 @@ TEST_F(AuctionRunnerTest, ComponentAuctionAllBiddersCrashBeforeBidding) {
                    .SetNumInterestGroups(2)
                    .SetNumOwnersAndDistinctOwners(2)
                    .SetNumSellers(3)
-                   .SetNumBidderWorklets(2));
+                   .SetNumBidderWorklets(2)
+                   .SetNumInterestGroupsWithNoBids(2));
 }
 
 // Test the case that one component has both bidders, one of which crashes, to
@@ -7638,7 +7733,9 @@ TEST_F(AuctionRunnerTest, ComponentAuctionOneBidderCrashesBeforeBidding) {
                    .SetNumInterestGroups(2)
                    .SetNumOwnersAndDistinctOwners(2)
                    .SetNumSellers(2)
-                   .SetNumBidderWorklets(2));
+                   .SetNumBidderWorklets(2)
+                   .SetNumInterestGroupsWithNoBids(1)
+                   .SetNumInterestGroupsWithOnlyNonKAnonBid(1));
 }
 
 // Test the case that all component sellers crash.
@@ -7783,7 +7880,8 @@ TEST_F(AuctionRunnerTest, ComponentAuctionComponentSellerBadBidParams) {
                      .SetNumInterestGroups(2)
                      .SetNumOwnersAndDistinctOwners(2)
                      .SetNumSellers(2)
-                     .SetNumBidderWorklets(2));
+                     .SetNumBidderWorklets(2)
+                     .SetNumInterestGroupsWithOnlyNonKAnonBid(1));
   }
 }
 
@@ -7849,7 +7947,8 @@ TEST_F(AuctionRunnerTest, TopLevelSellerBadBidParams) {
                    .SetNumInterestGroups(2)
                    .SetNumOwnersAndDistinctOwners(2)
                    .SetNumSellers(1)
-                   .SetNumBidderWorklets(2));
+                   .SetNumBidderWorklets(2)
+                   .SetNumInterestGroupsWithOnlyNonKAnonBid(1));
 }
 
 TEST_F(AuctionRunnerTest, NullAdComponents) {
@@ -7934,7 +8033,8 @@ TEST_F(AuctionRunnerTest, NullAdComponents) {
                        .SetNumInterestGroups(1)
                        .SetNumOwnersAndDistinctOwners(1)
                        .SetNumSellers(1)
-                       .SetNumBidderWorklets(1));
+                       .SetNumBidderWorklets(1)
+                       .SetNumInterestGroupsWithOnlyNonKAnonBid(1));
     } else {
       // Since there's no acceptable bid, the seller worklet is never asked to
       // score a bid.
@@ -7956,7 +8056,8 @@ TEST_F(AuctionRunnerTest, NullAdComponents) {
                        .SetNumInterestGroups(1)
                        .SetNumOwnersAndDistinctOwners(1)
                        .SetNumSellers(1)
-                       .SetNumBidderWorklets(1));
+                       .SetNumBidderWorklets(1)
+                       .SetNumInterestGroupsWithOnlyNonKAnonBid(1));
     }
   }
 }
@@ -8042,7 +8143,8 @@ TEST_F(AuctionRunnerTest, AdComponentsLimit) {
                        .SetNumInterestGroups(1)
                        .SetNumOwnersAndDistinctOwners(1)
                        .SetNumSellers(1)
-                       .SetNumBidderWorklets(1));
+                       .SetNumBidderWorklets(1)
+                       .SetNumInterestGroupsWithOnlyNonKAnonBid(1));
     } else {
       // Since there's no acceptable bid, the seller worklet is never asked to
       // score a bid.
@@ -8064,7 +8166,8 @@ TEST_F(AuctionRunnerTest, AdComponentsLimit) {
                        .SetNumInterestGroups(1)
                        .SetNumOwnersAndDistinctOwners(1)
                        .SetNumSellers(1)
-                       .SetNumBidderWorklets(1));
+                       .SetNumBidderWorklets(1)
+                       .SetNumInterestGroupsWithOnlyNonKAnonBid(1));
     }
   }
 }
@@ -8293,7 +8396,9 @@ TEST_F(AuctionRunnerTest, BadBid) {
                      .SetNumInterestGroups(2)
                      .SetNumOwnersAndDistinctOwners(2)
                      .SetNumSellers(1)
-                     .SetNumBidderWorklets(2));
+                     .SetNumBidderWorklets(2)
+                     .SetNumInterestGroupsWithNoBids(1)
+                     .SetNumInterestGroupsWithOnlyNonKAnonBid(1));
   }
 }
 
@@ -8365,7 +8470,9 @@ TEST_F(AuctionRunnerTest, DestroyBidderWorkletWithoutBid) {
                    .SetNumInterestGroups(2)
                    .SetNumOwnersAndDistinctOwners(2)
                    .SetNumSellers(1)
-                   .SetNumBidderWorklets(2));
+                   .SetNumBidderWorklets(2)
+                   .SetNumInterestGroupsWithNoBids(1)
+                   .SetNumInterestGroupsWithOnlyNonKAnonBid(1));
 }
 
 // Check that the winner of ties is randomized. Mock out bidders so can make
@@ -8480,7 +8587,8 @@ TEST_F(AuctionRunnerTest, Tie) {
                      .SetNumInterestGroups(2)
                      .SetNumOwnersAndDistinctOwners(2)
                      .SetNumSellers(1)
-                     .SetNumBidderWorklets(2));
+                     .SetNumBidderWorklets(2)
+                     .SetNumInterestGroupsWithOnlyNonKAnonBid(2));
   }
 }
 
@@ -9128,7 +9236,8 @@ TEST_F(AuctionRunnerTest, PriorityVectorZeroPriorityNotFiltered) {
                    .SetNumInterestGroups(1)
                    .SetNumOwnersAndDistinctOwners(1)
                    .SetNumSellers(1)
-                   .SetNumBidderWorklets(1));
+                   .SetNumBidderWorklets(1)
+                   .SetNumInterestGroupsWithOnlyNonKAnonBid(1));
 }
 
 // Check that both empty and null priority signals vectors are ignored.
@@ -9180,7 +9289,8 @@ TEST_F(AuctionRunnerTest, EmptyPriorityVector) {
                      .SetNumInterestGroups(1)
                      .SetNumOwnersAndDistinctOwners(1)
                      .SetNumSellers(1)
-                     .SetNumBidderWorklets(1));
+                     .SetNumBidderWorklets(1)
+                     .SetNumInterestGroupsWithOnlyNonKAnonBid(1));
   }
 }
 
@@ -9238,7 +9348,8 @@ TEST_F(AuctionRunnerTest, PriorityVector) {
                    .SetNumInterestGroups(1)
                    .SetNumOwnersAndDistinctOwners(1)
                    .SetNumSellers(1)
-                   .SetNumBidderWorklets(1));
+                   .SetNumBidderWorklets(1)
+                   .SetNumInterestGroupsWithOnlyNonKAnonBid(1));
 }
 
 // Auction with only one interest group participating. The priority calculated
@@ -9284,7 +9395,8 @@ TEST_F(AuctionRunnerTest,
                    .SetNumInterestGroups(1)
                    .SetNumOwnersAndDistinctOwners(1)
                    .SetNumSellers(1)
-                   .SetNumBidderWorklets(1));
+                   .SetNumBidderWorklets(1)
+                   .SetNumInterestGroupsWithNoBids(1));
 }
 
 // Auction with only one interest group participating. The priority calculated
@@ -9328,7 +9440,8 @@ TEST_F(AuctionRunnerTest,
                    .SetNumInterestGroups(1)
                    .SetNumOwnersAndDistinctOwners(1)
                    .SetNumSellers(1)
-                   .SetNumBidderWorklets(1));
+                   .SetNumBidderWorklets(1)
+                   .SetNumInterestGroupsWithOnlyNonKAnonBid(1));
 }
 
 // Auction with two interest groups participating, both with the same owner. The
@@ -9381,7 +9494,8 @@ TEST_F(AuctionRunnerTest,
                    .SetNumInterestGroups(2)
                    .SetNumOwnersAndDistinctOwners(1)
                    .SetNumSellers(1)
-                   .SetNumBidderWorklets(1));
+                   .SetNumBidderWorklets(1)
+                   .SetNumInterestGroupsWithNoBids(2));
 }
 
 // Auction with two interest groups participating, both with the same owner.
@@ -9447,7 +9561,9 @@ TEST_F(AuctionRunnerTest,
                    .SetNumInterestGroups(2)
                    .SetNumOwnersAndDistinctOwners(1)
                    .SetNumSellers(1)
-                   .SetNumBidderWorklets(2));
+                   .SetNumBidderWorklets(2)
+                   .SetNumInterestGroupsWithNoBids(1)
+                   .SetNumInterestGroupsWithOnlyNonKAnonBid(1));
 }
 
 // Auction with two interest groups participating, both with the same owner.
@@ -9513,7 +9629,9 @@ TEST_F(AuctionRunnerTest,
                    .SetNumInterestGroups(2)
                    .SetNumOwnersAndDistinctOwners(1)
                    .SetNumSellers(1)
-                   .SetNumBidderWorklets(2));
+                   .SetNumBidderWorklets(2)
+                   .SetNumInterestGroupsWithNoBids(1)
+                   .SetNumInterestGroupsWithOnlyNonKAnonBid(1));
 }
 
 // Auction with two interest groups participating, both with the same owner.
@@ -9570,7 +9688,8 @@ TEST_F(AuctionRunnerTest,
                    .SetNumInterestGroups(2)
                    .SetNumOwnersAndDistinctOwners(1)
                    .SetNumSellers(1)
-                   .SetNumBidderWorklets(1));
+                   .SetNumBidderWorklets(1)
+                   .SetNumInterestGroupsWithOnlyNonKAnonBid(1));
 }
 
 // Auction with two interest groups participating, both with the same owner.
@@ -9626,7 +9745,8 @@ TEST_F(AuctionRunnerTest, TrustedBiddingSignalsPriorityVectorNoGroupFiltered) {
                    .SetNumInterestGroups(2)
                    .SetNumOwnersAndDistinctOwners(1)
                    .SetNumSellers(1)
-                   .SetNumBidderWorklets(1));
+                   .SetNumBidderWorklets(1)
+                   .SetNumInterestGroupsWithOnlyNonKAnonBid(1));
 }
 
 // Test that `basePriority` works as expected. Interest groups have one priority
@@ -9675,7 +9795,8 @@ TEST_F(AuctionRunnerTest, TrustedBiddingSignalsPriorityVectorBasePriority) {
                    .SetNumInterestGroups(2)
                    .SetNumOwnersAndDistinctOwners(1)
                    .SetNumSellers(1)
-                   .SetNumBidderWorklets(1));
+                   .SetNumBidderWorklets(1)
+                   .SetNumInterestGroupsWithOnlyNonKAnonBid(1));
 }
 
 // Test that `firstDotProductPriority` works as expected. Interest groups have
@@ -9726,7 +9847,8 @@ TEST_F(AuctionRunnerTest,
                    .SetNumInterestGroups(2)
                    .SetNumOwnersAndDistinctOwners(1)
                    .SetNumSellers(1)
-                   .SetNumBidderWorklets(1));
+                   .SetNumBidderWorklets(1)
+                   .SetNumInterestGroupsWithOnlyNonKAnonBid(1));
 }
 
 // Test that when no priority vector is received, the result of the first
@@ -9772,7 +9894,8 @@ TEST_F(AuctionRunnerTest,
                    .SetNumInterestGroups(2)
                    .SetNumOwnersAndDistinctOwners(1)
                    .SetNumSellers(1)
-                   .SetNumBidderWorklets(1));
+                   .SetNumBidderWorklets(1)
+                   .SetNumInterestGroupsWithOnlyNonKAnonBid(1));
 }
 
 // Auction with two interest groups participating, both with the same owner.
@@ -9834,7 +9957,8 @@ TEST_F(AuctionRunnerTest,
                    .SetNumInterestGroups(2)
                    .SetNumOwnersAndDistinctOwners(1)
                    .SetNumSellers(1)
-                   .SetNumBidderWorklets(1));
+                   .SetNumBidderWorklets(1)
+                   .SetNumInterestGroupsWithNoBids(1));
 }
 
 // Auction with two interest groups participating, both with the same owner.
@@ -9882,7 +10006,8 @@ TEST_F(AuctionRunnerTest,
                    .SetNumInterestGroups(2)
                    .SetNumOwnersAndDistinctOwners(1)
                    .SetNumSellers(1)
-                   .SetNumBidderWorklets(1));
+                   .SetNumBidderWorklets(1)
+                   .SetNumInterestGroupsWithNoBids(2));
 }
 
 TEST_F(AuctionRunnerTest, SetPrioritySignalsOverride) {
@@ -13794,7 +13919,8 @@ class AuctionRunnerKAnonTest : public AuctionRunnerTest,
             /*should_enable_private_aggregation_fledge_extension=*/true,
             kanon_mode()) {}
 
-  auction_worklet::mojom::KAnonymityBidMode kanon_mode() { return GetParam(); }
+  using KAnonMode = auction_worklet::mojom::KAnonymityBidMode;
+  KAnonMode kanon_mode() { return GetParam(); }
 };
 
 TEST_P(AuctionRunnerKAnonTest, SingleNonKAnon) {
@@ -13827,25 +13953,43 @@ TEST_P(AuctionRunnerKAnonTest, SingleNonKAnon) {
   histogram_tester_->ExpectUniqueSample(
       "Ads.InterestGroup.Auction.NonKAnonWinnerIsKAnon", false, 1);
   switch (kanon_mode()) {
-    case auction_worklet::mojom::KAnonymityBidMode::kNone:
+    case KAnonMode::kNone:
       ASSERT_TRUE(result_.ad_descriptor.has_value());
       EXPECT_EQ(GURL("https://ad1.com"), result_.ad_descriptor->url);
       EXPECT_THAT(result_.errors, testing::ElementsAre());
+      CheckMetrics(MetricsExpectations(AuctionResult::kSuccess)
+                       .SetNumInterestGroups(1)
+                       .SetNumOwnersAndDistinctOwners(1)
+                       .SetNumSellers(1)
+                       .SetNumBidderWorklets(1)
+                       .SetNumInterestGroupsWithOnlyNonKAnonBid(1));
       break;
 
-    case auction_worklet::mojom::KAnonymityBidMode::kEnforce:
+    case KAnonMode::kEnforce:
       EXPECT_FALSE(result_.ad_descriptor.has_value());
       EXPECT_THAT(
           result_.errors,
           testing::ElementsAre(
               "https://adplatform.com/offers.js generateBid() bid render URL "
               "'https://ad1.com/' isn't one of the registered creative URLs."));
+      CheckMetrics(MetricsExpectations(AuctionResult::kAllBidsRejected)
+                       .SetNumInterestGroups(1)
+                       .SetNumOwnersAndDistinctOwners(1)
+                       .SetNumSellers(1)
+                       .SetNumBidderWorklets(1)
+                       .SetNumInterestGroupsWithOnlyNonKAnonBid(1));
       break;
 
-    case auction_worklet::mojom::KAnonymityBidMode::kSimulate:
+    case KAnonMode::kSimulate:
       ASSERT_TRUE(result_.ad_descriptor.has_value());
       EXPECT_EQ(GURL("https://ad1.com"), result_.ad_descriptor->url);
       EXPECT_THAT(result_.errors, testing::ElementsAre());
+      CheckMetrics(MetricsExpectations(AuctionResult::kSuccess)
+                       .SetNumInterestGroups(1)
+                       .SetNumOwnersAndDistinctOwners(1)
+                       .SetNumSellers(1)
+                       .SetNumBidderWorklets(1)
+                       .SetNumInterestGroupsWithOnlyNonKAnonBid(1));
       break;
   }
 }
@@ -13888,7 +14032,18 @@ TEST_P(AuctionRunnerKAnonTest, SingleKAnon) {
   EXPECT_THAT(result_.errors, testing::ElementsAre());
   histogram_tester_->ExpectUniqueSample(
       "Ads.InterestGroup.Auction.NonKAnonWinnerIsKAnon",
-      kanon_mode() != auction_worklet::mojom::KAnonymityBidMode::kNone, 1);
+      kanon_mode() != KAnonMode::kNone, 1);
+  MetricsExpectations expectations(AuctionResult::kSuccess);
+  expectations.SetNumInterestGroups(1)
+      .SetNumOwnersAndDistinctOwners(1)
+      .SetNumSellers(1)
+      .SetNumBidderWorklets(1);
+  if (kanon_mode() == KAnonMode::kNone) {
+    expectations.SetNumInterestGroupsWithOnlyNonKAnonBid(1);
+  } else {
+    expectations.SetNumInterestGroupsWithSameBidForKAnonAndNonKAnon(1);
+  }
+  CheckMetrics(expectations);
 }
 
 // Test that k-anonymity for ads with ad components is handled correctly:
@@ -13980,7 +14135,7 @@ TEST_P(AuctionRunnerKAnonTest, ComponentURLs) {
     histogram_tester_->ExpectUniqueSample(
         "Ads.InterestGroup.Auction.NonKAnonWinnerIsKAnon", false, 1);
     switch (kanon_mode()) {
-      case auction_worklet::mojom::KAnonymityBidMode::kNone:
+      case KAnonMode::kNone:
         // k-anon support is turned off entirely, so ad2 wins, and no other URLs
         // are set.
         EXPECT_THAT(result_.errors, testing::ElementsAre());
@@ -13997,9 +14152,15 @@ TEST_P(AuctionRunnerKAnonTest, ComponentURLs) {
         expected_report_urls.push_back(
             ReportWinUrl(/*bid=*/2, /*highest_scoring_other_bid=*/1,
                          /*made_highest_scoring_other_bid=*/false));
+        CheckMetrics(MetricsExpectations(AuctionResult::kSuccess)
+                         .SetNumInterestGroups(2)
+                         .SetNumOwnersAndDistinctOwners(2)
+                         .SetNumSellers(run_as_component ? 2 : 1)
+                         .SetNumBidderWorklets(2)
+                         .SetNumInterestGroupsWithOnlyNonKAnonBid(2));
         break;
 
-      case auction_worklet::mojom::KAnonymityBidMode::kEnforce:
+      case KAnonMode::kEnforce:
         // k-anon requirement means ad1 wins, but we also report ad2 as what
         // would have won had it been authorized.
         EXPECT_THAT(result_.errors,
@@ -14021,9 +14182,17 @@ TEST_P(AuctionRunnerKAnonTest, ComponentURLs) {
         expected_report_urls.push_back(
             ReportWinUrl(/*bid=*/1, /*highest_scoring_other_bid=*/0,
                          /*made_highest_scoring_other_bid=*/false));
+        CheckMetrics(
+            MetricsExpectations(AuctionResult::kSuccess)
+                .SetNumInterestGroups(2)
+                .SetNumOwnersAndDistinctOwners(2)
+                .SetNumSellers(run_as_component ? 2 : 1)
+                .SetNumBidderWorklets(2)
+                .SetNumInterestGroupsWithOnlyNonKAnonBid(1)
+                .SetNumInterestGroupsWithSameBidForKAnonAndNonKAnon(1));
         break;
 
-      case auction_worklet::mojom::KAnonymityBidMode::kSimulate:
+      case KAnonMode::kSimulate:
         // Winner is ad2.com, disregarding k-anonymity, but we also report that
         // if we did care about it, ad1.com would have won.
         EXPECT_THAT(result_.errors, testing::ElementsAre());
@@ -14041,6 +14210,14 @@ TEST_P(AuctionRunnerKAnonTest, ComponentURLs) {
         expected_report_urls.push_back(
             ReportWinUrl(/*bid=*/2, /*highest_scoring_other_bid=*/1,
                          /*made_highest_scoring_other_bid=*/false));
+        CheckMetrics(
+            MetricsExpectations(AuctionResult::kSuccess)
+                .SetNumInterestGroups(2)
+                .SetNumOwnersAndDistinctOwners(2)
+                .SetNumSellers(run_as_component ? 2 : 1)
+                .SetNumBidderWorklets(2)
+                .SetNumInterestGroupsWithOnlyNonKAnonBid(1)
+                .SetNumInterestGroupsWithSameBidForKAnonAndNonKAnon(1));
         break;
     }
 
@@ -14126,7 +14303,7 @@ TEST_P(AuctionRunnerKAnonTest, Basic) {
     GURL expected_seller_report_url;
     std::vector<GURL> expected_report_urls;
     switch (kanon_mode()) {
-      case auction_worklet::mojom::KAnonymityBidMode::kNone:
+      case KAnonMode::kNone:
         // k-anon support is turned off entirely, so ad2 wins, and no other URLs
         // are set.
         EXPECT_EQ(GURL("https://ad2.com"), result_.ad_descriptor->url);
@@ -14136,9 +14313,15 @@ TEST_P(AuctionRunnerKAnonTest, Basic) {
         expected_report_urls.push_back(
             ReportWinUrl(/*bid=*/2, /*highest_scoring_other_bid=*/1,
                          /*made_highest_scoring_other_bid=*/false));
+        CheckMetrics(MetricsExpectations(AuctionResult::kSuccess)
+                         .SetNumInterestGroups(2)
+                         .SetNumOwnersAndDistinctOwners(2)
+                         .SetNumSellers(run_as_component ? 2 : 1)
+                         .SetNumBidderWorklets(2)
+                         .SetNumInterestGroupsWithOnlyNonKAnonBid(2));
         break;
 
-      case auction_worklet::mojom::KAnonymityBidMode::kEnforce:
+      case KAnonMode::kEnforce:
         // k-anon requirement meands ad1 wins, but we also report ad2 as what
         // would have won had it been authorized.
         EXPECT_EQ(GURL("https://ad1.com"), result_.ad_descriptor->url);
@@ -14150,9 +14333,17 @@ TEST_P(AuctionRunnerKAnonTest, Basic) {
         expected_report_urls.push_back(
             ReportWinUrl(/*bid=*/1, /*highest_scoring_other_bid=*/0,
                          /*made_highest_scoring_other_bid=*/false));
+        CheckMetrics(
+            MetricsExpectations(AuctionResult::kSuccess)
+                .SetNumInterestGroups(2)
+                .SetNumOwnersAndDistinctOwners(2)
+                .SetNumSellers(run_as_component ? 2 : 1)
+                .SetNumBidderWorklets(2)
+                .SetNumInterestGroupsWithOnlyNonKAnonBid(1)
+                .SetNumInterestGroupsWithSameBidForKAnonAndNonKAnon(1));
         break;
 
-      case auction_worklet::mojom::KAnonymityBidMode::kSimulate:
+      case KAnonMode::kSimulate:
         // Winner is ad2.com, disregarding k-anonymity, but we also report that
         // if we did care about it, ad1.com would have won.
         EXPECT_EQ(GURL("https://ad2.com"), result_.ad_descriptor->url);
@@ -14164,6 +14355,14 @@ TEST_P(AuctionRunnerKAnonTest, Basic) {
         expected_report_urls.push_back(
             ReportWinUrl(/*bid=*/2, /*highest_scoring_other_bid=*/1,
                          /*made_highest_scoring_other_bid=*/false));
+        CheckMetrics(
+            MetricsExpectations(AuctionResult::kSuccess)
+                .SetNumInterestGroups(2)
+                .SetNumOwnersAndDistinctOwners(2)
+                .SetNumSellers(run_as_component ? 2 : 1)
+                .SetNumBidderWorklets(2)
+                .SetNumInterestGroupsWithOnlyNonKAnonBid(1)
+                .SetNumInterestGroupsWithSameBidForKAnonAndNonKAnon(1));
         break;
     }
     // Have to spin all message loops to flush any k-anon set join events.
@@ -14229,7 +14428,7 @@ TEST_P(AuctionRunnerKAnonTest, KAnonHigher) {
   std::vector<GURL> expected_report_urls;
   expected_report_urls.emplace_back("https://reporting.example.com/2");
   switch (kanon_mode()) {
-    case auction_worklet::mojom::KAnonymityBidMode::kNone:
+    case KAnonMode::kNone:
       // k-anon support is turned off entirely, so no other URLs
       // are set.
       histogram_tester_->ExpectUniqueSample(
@@ -14237,24 +14436,44 @@ TEST_P(AuctionRunnerKAnonTest, KAnonHigher) {
       expected_report_urls.push_back(
           ReportWinUrl(/*bid=*/2, /*highest_scoring_other_bid=*/1,
                        /*made_highest_scoring_other_bid=*/false));
+      CheckMetrics(MetricsExpectations(AuctionResult::kSuccess)
+                       .SetNumInterestGroups(2)
+                       .SetNumOwnersAndDistinctOwners(2)
+                       .SetNumSellers(1)
+                       .SetNumBidderWorklets(2)
+                       .SetNumInterestGroupsWithOnlyNonKAnonBid(2));
       break;
 
-    case auction_worklet::mojom::KAnonymityBidMode::kEnforce:
+    case KAnonMode::kEnforce:
       // The enforced winner is the same, but there is no runner-up.
       histogram_tester_->ExpectUniqueSample(
           "Ads.InterestGroup.Auction.NonKAnonWinnerIsKAnon", true, 1);
       expected_report_urls.push_back(
           ReportWinUrl(/*bid=*/2, /*highest_scoring_other_bid=*/0,
                        /*made_highest_scoring_other_bid=*/false));
+      CheckMetrics(MetricsExpectations(AuctionResult::kSuccess)
+                       .SetNumInterestGroups(2)
+                       .SetNumOwnersAndDistinctOwners(2)
+                       .SetNumSellers(1)
+                       .SetNumBidderWorklets(2)
+                       .SetNumInterestGroupsWithOnlyNonKAnonBid(1)
+                       .SetNumInterestGroupsWithSameBidForKAnonAndNonKAnon(1));
       break;
 
-    case auction_worklet::mojom::KAnonymityBidMode::kSimulate:
+    case KAnonMode::kSimulate:
       // ad1.com also wins in the simulated mode.
       histogram_tester_->ExpectUniqueSample(
           "Ads.InterestGroup.Auction.NonKAnonWinnerIsKAnon", true, 1);
       expected_report_urls.push_back(
           ReportWinUrl(/*bid=*/2, /*highest_scoring_other_bid=*/1,
                        /*made_highest_scoring_other_bid=*/false));
+      CheckMetrics(MetricsExpectations(AuctionResult::kSuccess)
+                       .SetNumInterestGroups(2)
+                       .SetNumOwnersAndDistinctOwners(2)
+                       .SetNumSellers(1)
+                       .SetNumBidderWorklets(2)
+                       .SetNumInterestGroupsWithOnlyNonKAnonBid(1)
+                       .SetNumInterestGroupsWithSameBidForKAnonAndNonKAnon(1));
       break;
   }
   EXPECT_THAT(result_.report_urls,
@@ -14319,16 +14538,22 @@ TEST_P(AuctionRunnerKAnonTest, DifferentBids) {
 
   base::flat_set<std::string> expected_k_anon_keys_to_join;
   switch (kanon_mode()) {
-    case auction_worklet::mojom::KAnonymityBidMode::kNone:
+    case KAnonMode::kNone:
       // Don't care about k-anonymity: ad2 wins, nothing else is reporter.
       EXPECT_EQ(GURL("https://ad2.com"), result_.ad_descriptor->url);
       expected_k_anon_keys_to_join.insert(ad2_k_anon_keys.begin(),
                                           ad2_k_anon_keys.end());
       EXPECT_THAT(result_.report_urls,
                   testing::ElementsAre("https://reporting.example.com/2"));
+      CheckMetrics(MetricsExpectations(AuctionResult::kSuccess)
+                       .SetNumInterestGroups(1)
+                       .SetNumOwnersAndDistinctOwners(1)
+                       .SetNumSellers(1)
+                       .SetNumBidderWorklets(1)
+                       .SetNumInterestGroupsWithOnlyNonKAnonBid(1));
       break;
 
-    case auction_worklet::mojom::KAnonymityBidMode::kEnforce:
+    case KAnonMode::kEnforce:
       // Ad 2 is what got blocked by enforcement --- if it were authorized, it
       // would win.
       EXPECT_EQ(GURL("https://ad1.com"), result_.ad_descriptor->url);
@@ -14338,9 +14563,16 @@ TEST_P(AuctionRunnerKAnonTest, DifferentBids) {
                                           ad2_k_anon_keys.end());
       EXPECT_THAT(result_.report_urls,
                   testing::ElementsAre("https://reporting.example.com/1"));
+      CheckMetrics(
+          MetricsExpectations(AuctionResult::kSuccess)
+              .SetNumInterestGroups(1)
+              .SetNumOwnersAndDistinctOwners(1)
+              .SetNumSellers(1)
+              .SetNumBidderWorklets(1)
+              .SetNumInterestGroupsWithSeparateBidsForKAnonAndNonKAnon(1));
       break;
 
-    case auction_worklet::mojom::KAnonymityBidMode::kSimulate:
+    case KAnonMode::kSimulate:
       // Winner is ad2.com, disregarding k-anonymity, but we also report that
       // if we did care about it, ad1.com would have won.
       EXPECT_EQ(GURL("https://ad2.com"), result_.ad_descriptor->url);
@@ -14350,6 +14582,13 @@ TEST_P(AuctionRunnerKAnonTest, DifferentBids) {
                                           ad2_k_anon_keys.end());
       EXPECT_THAT(result_.report_urls,
                   testing::ElementsAre("https://reporting.example.com/2"));
+      CheckMetrics(
+          MetricsExpectations(AuctionResult::kSuccess)
+              .SetNumInterestGroups(1)
+              .SetNumOwnersAndDistinctOwners(1)
+              .SetNumSellers(1)
+              .SetNumBidderWorklets(1)
+              .SetNumInterestGroupsWithSeparateBidsForKAnonAndNonKAnon(1));
       break;
   }
   // Have to spin all message loops to flush any k-anon set join events.
@@ -14412,11 +14651,22 @@ TEST_P(AuctionRunnerKAnonTest, FailureHandling) {
               testing::ElementsAre());
   histogram_tester_->ExpectUniqueSample(
       "Ads.InterestGroup.Auction.NonKAnonWinnerIsKAnon", false, 0);
+  MetricsExpectations expectations(AuctionResult::kAborted);
+  expectations.SetNumInterestGroups(2)
+      .SetNumOwnersAndDistinctOwners(2)
+      .SetNumSellers(1)
+      .SetNumBidderWorklets(2);
+  if (kanon_mode() == KAnonMode::kNone) {
+    expectations.SetNumInterestGroupsWithOnlyNonKAnonBid(1);
+  } else {
+    expectations.SetNumInterestGroupsWithSeparateBidsForKAnonAndNonKAnon(1);
+  }
+  CheckMetrics(expectations);
 }
 
 TEST_P(AuctionRunnerKAnonTest, MojoValidation) {
   const struct TestCase {
-    std::set<auction_worklet::mojom::KAnonymityBidMode> run_in_modes;
+    std::set<KAnonMode> run_in_modes;
     const char* expected_error_message;
     blink::AdDescriptor ad_descriptor;
     auction_worklet::mojom::BidderWorkletKAnonEnforcedBidPtr mojo_bid;
@@ -14424,8 +14674,7 @@ TEST_P(AuctionRunnerKAnonTest, MojoValidation) {
   } kTestCases[] = {
       // Sending a k-anon enforced bid when it should just match the
       // non-enforced bid.
-      {{auction_worklet::mojom::KAnonymityBidMode::kEnforce,
-        auction_worklet::mojom::KAnonymityBidMode::kSimulate},
+      {{KAnonMode::kEnforce, KAnonMode::kSimulate},
        "Received different k-anon bid when unenforced bid already k-anon",
        blink::AdDescriptor(GURL("https://ad1.com")),
        auction_worklet::mojom::BidderWorkletKAnonEnforcedBid::NewBid(
@@ -14436,7 +14685,7 @@ TEST_P(AuctionRunnerKAnonTest, MojoValidation) {
        /*expect_winner=*/true},
       // A non-k-anon bid as k-anon one. Enforced, so auction fails.
       {
-          {auction_worklet::mojom::KAnonymityBidMode::kEnforce},
+          {KAnonMode::kEnforce},
           "Bid render ad must have a valid URL and size (if specified)",
           blink::AdDescriptor(GURL("https://ad2.com")),
           auction_worklet::mojom::BidderWorkletKAnonEnforcedBid::NewBid(
@@ -14448,7 +14697,7 @@ TEST_P(AuctionRunnerKAnonTest, MojoValidation) {
       },
       // A non-k-anon bid as k-anon one. Simulate, so auction succeeds.
       {
-          {auction_worklet::mojom::KAnonymityBidMode::kSimulate},
+          {KAnonMode::kSimulate},
           "Bid render ad must have a valid URL and size (if specified)",
           blink::AdDescriptor(GURL("https://ad2.com")),
           auction_worklet::mojom::BidderWorkletKAnonEnforcedBid::NewBid(
@@ -14460,7 +14709,7 @@ TEST_P(AuctionRunnerKAnonTest, MojoValidation) {
       },
       // Sending k-anon data when it's not even on.
       {
-          {auction_worklet::mojom::KAnonymityBidMode::kNone},
+          {KAnonMode::kNone},
           "Received k-anon bid data when not considering k-anon",
           blink::AdDescriptor(GURL("https://ad1.com")),
           auction_worklet::mojom::BidderWorkletKAnonEnforcedBid::
