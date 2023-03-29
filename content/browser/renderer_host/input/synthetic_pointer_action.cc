@@ -50,7 +50,7 @@ SyntheticGesture::Result SyntheticPointerAction::ForwardInputEvents(
   state_ = state;
 
   if (state_ == GestureState::INVALID)
-    return POINTER_ACTION_INPUT_INVALID;
+    return SyntheticGesture::POINTER_ACTION_INPUT_INVALID;
 
   return (state_ == GestureState::DONE) ? SyntheticGesture::GESTURE_FINISHED
                                         : SyntheticGesture::GESTURE_RUNNING;
@@ -122,6 +122,13 @@ SyntheticPointerAction::ForwardTouchOrMouseInputEvents(
     base::TimeTicks dispatch_timestamp =
         param.timestamp().is_null() ? timestamp : param.timestamp();
     PointerDriver()->DispatchEvent(target, dispatch_timestamp);
+
+    // CAUTION: Forwarding a pointer input can cause `this` to be deleted.
+    if (!dispatching_controller_) {
+      // Return value is unused because the caller returns immediately in this
+      // condition as well.
+      return GestureState::DONE;
+    }
   }
 
   num_actions_dispatched_++;
