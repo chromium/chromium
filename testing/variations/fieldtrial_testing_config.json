@@ -2597,6 +2597,22 @@
             ]
         }
     ],
+    "ChromeOSEnableArcvmAAudioMMAP": [
+        {
+            "platforms": [
+                "chromeos"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "CrOSLateBootArcVmAAudioMMAP"
+                    ],
+                    "min_os_version": "15376.0.0"
+                }
+            ]
+        }
+    ],
     "ChromeOSHoldingSpaceExperiments": [
         {
             "platforms": [
