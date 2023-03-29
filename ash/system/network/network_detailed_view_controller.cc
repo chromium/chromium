@@ -11,7 +11,6 @@
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
-#include "ash/system/machine_learning/user_settings_event_logger.h"
 #include "ash/system/model/system_tray_model.h"
 #include "ash/system/network/network_detailed_network_view.h"
 #include "ash/system/network/network_list_view_controller.h"
@@ -42,13 +41,6 @@ using ::chromeos::network_config::mojom::NetworkStateProperties;
 using ::chromeos::network_config::mojom::NetworkStatePropertiesPtr;
 using ::chromeos::network_config::mojom::NetworkType;
 using ::chromeos::network_config::mojom::PortalState;
-
-void LogUserNetworkEvent(const NetworkStateProperties& network) {
-  auto* const logger = ml::UserSettingsEventLogger::Get();
-  if (logger) {
-    logger->LogNetworkUkmEvent(network);
-  }
-}
 
 bool IsSecondaryUser() {
   SessionControllerImpl* session_controller =
@@ -153,8 +145,10 @@ std::u16string NetworkDetailedViewController::GetAccessibleName() const {
 
 void NetworkDetailedViewController::OnNetworkListItemSelected(
     const NetworkStatePropertiesPtr& network) {
-  if (Shell::Get()->session_controller()->login_status() == LoginStatus::LOCKED)
+  if (Shell::Get()->session_controller()->login_status() ==
+      LoginStatus::LOCKED) {
     return;
+  }
 
   if (network) {
     // If the network is locked and is cellular show SIM unlock dialog in OS
@@ -187,7 +181,6 @@ void NetworkDetailedViewController::OnNetworkListItemSelected(
     if (IsNetworkConnectable(network)) {
       base::RecordAction(
           UserMetricsAction("StatusArea_Network_ConnectConfigured"));
-      LogUserNetworkEvent(*network.get());
       RecordNetworkRowClickedAction(NetworkRowClickedAction::kConnectToNetwork);
       NetworkConnect::Get()->ConnectToNetworkId(network->guid);
       return;

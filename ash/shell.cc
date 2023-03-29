@@ -142,7 +142,6 @@
 #include "ash/system/keyboard_brightness/keyboard_brightness_controller.h"
 #include "ash/system/keyboard_brightness_control_delegate.h"
 #include "ash/system/locale/locale_update_controller_impl.h"
-#include "ash/system/machine_learning/user_settings_event_logger.h"
 #include "ash/system/media/media_notification_provider.h"
 #include "ash/system/message_center/message_center_ash_impl.h"
 #include "ash/system/message_center/message_center_controller.h"
@@ -812,10 +811,6 @@ Shell::~Shell() {
   // Shutdown the clipboard history controller to clean up the child windows and
   // widgets that may be animating out.
   clipboard_history_controller_->Shutdown();
-
-  // Destroy UserSettingsEventLogger before |system_tray_model_| and
-  // |video_detector_| which it observes.
-  ml::UserSettingsEventLogger::DeleteInstance();
 
   toast_manager_.reset();
 
@@ -1592,10 +1587,6 @@ void Shell::Init(
   sms_observer_ = std::make_unique<SmsObserver>();
   snap_controller_ = std::make_unique<SnapControllerImpl>();
   key_accessibility_enabler_ = std::make_unique<KeyAccessibilityEnabler>();
-
-  // Create UserSettingsEventLogger after |system_tray_model_| and
-  // |video_detector_| which it observes.
-  ml::UserSettingsEventLogger::CreateInstance();
 
   // The compositor thread and main message loop have to be running in
   // order to create mirror window. Run it after the main message loop

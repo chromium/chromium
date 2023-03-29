@@ -19,7 +19,6 @@
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/style/ash_color_provider.h"
-#include "ash/system/machine_learning/user_settings_event_logger.h"
 #include "ash/system/message_center/message_center_controller.h"
 #include "ash/system/message_center/message_center_style.h"
 #include "ash/system/tray/tray_popup_utils.h"
@@ -102,13 +101,6 @@ constexpr auto kToggleButtonRowViewPadding = gfx::Insets::TLBR(0, 18, 0, 0);
 constexpr auto kToggleButtonRowLabelPadding = gfx::Insets::TLBR(16, 0, 15, 0);
 constexpr SkColor kTopBorderColor = SkColorSetA(SK_ColorBLACK, 0x1F);
 const int kLabelFontSizeDelta = 1;
-
-void LogUserQuietModeEvent(const bool enabled) {
-  auto* logger = ml::UserSettingsEventLogger::Get();
-  if (logger) {
-    logger->LogQuietModeUkmEvent(enabled);
-  }
-}
 
 // NotifierButtonWrapperView ---------------------------------------------------
 
@@ -229,8 +221,9 @@ class ScrollContentsView : public views::View {
   void PaintChildren(const views::PaintInfo& paint_info) override {
     views::View::PaintChildren(paint_info);
 
-    if (y() == 0)
+    if (y() == 0) {
       return;
+    }
 
     // Draw a shadow at the top of the viewport when scrolled.
     const ui::PaintContext& context = paint_info.context();
@@ -690,8 +683,9 @@ void NotifierSettingsView::OnNotifiersUpdated(
   DCHECK(!features::IsSettingsAppNotificationSettingsEnabled());
   // TODO(tetsui): currently notifier settings list doesn't update after once
   // it's loaded, in order to retain scroll position.
-  if (scroller_->contents() && buttons_.size() > 0)
+  if (scroller_->contents() && buttons_.size() > 0) {
     return;
+  }
 
   buttons_.clear();
 
@@ -727,8 +721,9 @@ void NotifierSettingsView::OnNotifierIconUpdated(const NotifierId& notifier_id,
                                                  const gfx::ImageSkia& icon) {
   // Notifier icons are not shown when notification permissions splitting is
   // enabled.
-  if (features::IsSettingsAppNotificationSettingsEnabled())
+  if (features::IsSettingsAppNotificationSettingsEnabled()) {
     return;
+  }
   for (auto* button : buttons_) {
     if (button->notifier_id() == notifier_id) {
       button->UpdateIconImage(icon);
@@ -742,8 +737,9 @@ void NotifierSettingsView::Layout() {
   header_view_->SetBounds(0, 0, width(), header_height);
   // |scroller_| and |no_notifiers_view_| do not exist when notifications
   // settings are split out of the notifier_settings_view.
-  if (features::IsSettingsAppNotificationSettingsEnabled())
+  if (features::IsSettingsAppNotificationSettingsEnabled()) {
     return;
+  }
 
   views::View* contents_view = scroller_->contents();
   int original_scroll_position = scroller_->GetVisibleRect().y();
@@ -774,8 +770,9 @@ gfx::Size NotifierSettingsView::GetMinimumSize() const {
   }
   int total_height = header_view_->GetPreferredSize().height() +
                      scroller_->contents()->GetPreferredSize().height();
-  if (total_height > kMinimumHeight)
+  if (total_height > kMinimumHeight) {
     size.Enlarge(scroller_->GetScrollBarLayoutWidth(), 0);
+  }
   return size;
 }
 
@@ -790,8 +787,9 @@ gfx::Size NotifierSettingsView::CalculatePreferredSize() const {
 
   gfx::Size content_size = scroller_->contents()->GetPreferredSize();
   int no_notifiers_height = 0;
-  if (no_notifiers_view_->GetVisible())
+  if (no_notifiers_view_->GetVisible()) {
     no_notifiers_height = no_notifiers_view_->GetPreferredSize().height();
+  }
   return gfx::Size(
       std::max(header_size.width(), content_size.width()),
       std::max(kMinimumHeight, header_size.height() + content_size.height() +
@@ -806,16 +804,18 @@ bool NotifierSettingsView::OnKeyPressed(const ui::KeyEvent& event) {
 
   // |scroller_| does not exist when notifications settings are split out of the
   // notifier_settings_view so it cannot consume key events.
-  if (features::IsSettingsAppNotificationSettingsEnabled())
+  if (features::IsSettingsAppNotificationSettingsEnabled()) {
     return false;
+  }
   return scroller_->OnKeyPressed(event);
 }
 
 bool NotifierSettingsView::OnMouseWheel(const ui::MouseWheelEvent& event) {
   // |scroller_| does not exist when notifications settings are split out of the
   // notifier_settings_view so mouse wheel events are not consumed.
-  if (features::IsSettingsAppNotificationSettingsEnabled())
+  if (features::IsSettingsAppNotificationSettingsEnabled()) {
     return false;
+  }
   return scroller_->OnMouseWheel(event);
 }
 
@@ -862,7 +862,6 @@ void NotifierSettingsView::AppBadgingTogglePressed() {
 }
 
 void NotifierSettingsView::QuietModeTogglePressed() {
-  LogUserQuietModeEvent(quiet_mode_toggle_->GetIsOn());
   MessageCenter::Get()->SetQuietMode(quiet_mode_toggle_->GetIsOn());
 }
 

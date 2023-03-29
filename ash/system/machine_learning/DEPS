@@ -1,4 +1,0 @@
-include_rules = [
-  "+components/ukm/test_ukm_recorder.h",
-  "+services/metrics/public/cpp",
-]

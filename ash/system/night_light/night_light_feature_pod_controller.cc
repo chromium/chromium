@@ -12,7 +12,6 @@
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
-#include "ash/system/machine_learning/user_settings_event_logger.h"
 #include "ash/system/model/clock_model.h"
 #include "ash/system/model/system_tray_model.h"
 #include "ash/system/night_light/night_light_controller_impl.h"
@@ -27,16 +26,6 @@
 #include "ui/base/l10n/l10n_util.h"
 
 namespace ash {
-namespace {
-
-void LogUserNightLightEvent(const bool enabled) {
-  auto* logger = ml::UserSettingsEventLogger::Get();
-  if (logger) {
-    logger->LogNightLightUkmEvent(enabled);
-  }
-}
-
-}  // namespace
 
 NightLightFeaturePodController::NightLightFeaturePodController(
     UnifiedSystemTrayController* tray_controller)
@@ -55,8 +44,9 @@ FeaturePodButton* NightLightFeaturePodController::CreateButton() {
   const bool visible =
       Shell::Get()->session_controller()->ShouldEnableSettings();
   button_->SetVisible(visible);
-  if (visible)
+  if (visible) {
     TrackVisibilityUMA();
+  }
 
   button_->SetLabel(
       l10n_util::GetStringUTF16(IDS_ASH_STATUS_TRAY_NIGHT_LIGHT_BUTTON_LABEL));
@@ -98,7 +88,6 @@ void NightLightFeaturePodController::OnIconPressed() {
                      ->GetEnabled());
 
   Shell::Get()->night_light_controller()->Toggle();
-  LogUserNightLightEvent(Shell::Get()->night_light_controller()->GetEnabled());
   Update();
 
   if (Shell::Get()->night_light_controller()->GetEnabled()) {

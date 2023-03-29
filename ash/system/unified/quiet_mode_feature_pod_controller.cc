@@ -13,7 +13,6 @@
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
-#include "ash/system/machine_learning/user_settings_event_logger.h"
 #include "ash/system/unified/feature_pod_button.h"
 #include "ash/system/unified/feature_tile.h"
 #include "ash/system/unified/quick_settings_metrics_util.h"
@@ -26,16 +25,6 @@
 using message_center::MessageCenter;
 
 namespace ash {
-namespace {
-
-void LogUserQuietModeEvent(const bool enabled) {
-  auto* logger = ml::UserSettingsEventLogger::Get();
-  if (logger) {
-    logger->LogQuietModeUkmEvent(enabled);
-  }
-}
-
-}  // namespace
 
 QuietModeFeaturePodController::QuietModeFeaturePodController(
     UnifiedSystemTrayController* tray_controller)
@@ -129,7 +118,6 @@ void QuietModeFeaturePodController::OnIconPressed() {
   MessageCenter* message_center = MessageCenter::Get();
   bool is_quiet_mode = message_center->IsQuietMode();
   TrackToggleUMA(/*target_toggle_state=*/!is_quiet_mode);
-  LogUserQuietModeEvent(!is_quiet_mode);
   message_center->SetQuietMode(!is_quiet_mode);
 
   if (message_center->IsQuietMode()) {
@@ -193,13 +181,15 @@ void QuietModeFeaturePodController::OnQuietModeChanged(bool in_quiet_mode) {
 
 void QuietModeFeaturePodController::OnNotifiersUpdated(
     const std::vector<NotifierMetadata>& notifiers) {
-  if (MessageCenter::Get()->IsQuietMode())
+  if (MessageCenter::Get()->IsQuietMode()) {
     return;
+  }
 
   int disabled_count = 0;
   for (const NotifierMetadata& notifier : notifiers) {
-    if (!notifier.enabled)
+    if (!notifier.enabled) {
       ++disabled_count;
+    }
   }
   RecordDisabledNotifierCount(disabled_count);
 
@@ -234,8 +224,9 @@ void QuietModeFeaturePodController::RecordDisabledNotifierCount(
     return;
   }
 
-  if (*last_disabled_count_ == disabled_count)
+  if (*last_disabled_count_ == disabled_count) {
     return;
+  }
 
   last_disabled_count_ = disabled_count;
   UMA_HISTOGRAM_COUNTS_100("ChromeOS.SystemTray.BlockedNotifiersAfterUpdate",
