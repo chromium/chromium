@@ -23,18 +23,16 @@ import "ui/gfx/mojom/transform.mojom";
 // Note on terminology: unless otherwise noted, all poses passed across mojo are
 // expressed in device space, aka mojo space, aka world space.
 
-// TODO(https://crbug.com/966099): Use EnableIf to only define values on
-// platforms that have implementations.
 // XRDeviceId is used in metrics, so don't reorder or reuse.
 enum XRDeviceId {
   WEB_TEST_DEVICE_ID = 0, // Fake device used by web_tests.
   FAKE_DEVICE_ID = 1, // Fake device used in unit tests.
   ORIENTATION_DEVICE_ID = 2,
-  GVR_DEVICE_ID = 3,
+  [EnableIf=enable_gvr_services] GVR_DEVICE_ID = 3,
   // OPENVR_DEVICE_ID = 4,
   // OCULUS_DEVICE_ID = 5,
   // WINDOWS_MIXED_REALITY_ID = 6,
-  ARCORE_DEVICE_ID = 7,
+  [EnableIf=enable_arcore] ARCORE_DEVICE_ID = 7,
   [EnableIf=enable_openxr] OPENXR_DEVICE_ID = 8,
   [EnableIf=enable_cardboard] CARDBOARD_DEVICE_ID = 9,
 };

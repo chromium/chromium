@@ -34,6 +34,14 @@ mojom_component("vr_service") {
     enabled_features += [ "enable_cardboard" ]
   }
 
+  if (enable_gvr_services) {
+    enabled_features += [ "enable_gvr_services" ]
+  }
+
+  if (enable_arcore) {
+    enabled_features += [ "enable_arcore" ]
+  }
+
   shared_cpp_typemap = {
     types = [
       {

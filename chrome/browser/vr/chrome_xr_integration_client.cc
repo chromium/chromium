@@ -98,14 +98,14 @@ std::unique_ptr<content::XrInstallHelper>
 ChromeXrIntegrationClient::GetInstallHelper(
     device::mojom::XRDeviceId device_id) {
   switch (device_id) {
-#if BUILDFLAG(IS_ANDROID)
+#if BUILDFLAG(ENABLE_GVR_SERVICES)
     case device::mojom::XRDeviceId::GVR_DEVICE_ID:
       return std::make_unique<GvrInstallHelper>();
+#endif  // BUILDFLAG(ENABLE_GVR_SERVICES)
 #if BUILDFLAG(ENABLE_ARCORE)
     case device::mojom::XRDeviceId::ARCORE_DEVICE_ID:
       return std::make_unique<webxr::ArCoreInstallHelper>();
 #endif  // BUILDFLAG(ENABLE_ARCORE)
-#endif  // BUILDFLAG(IS_ANDROID)
     default:
       return nullptr;
   }

@@ -250,7 +250,7 @@ BrowserXRRuntimeImpl* XRRuntimeManagerImpl::GetImmersiveVrRuntime() {
 }
 
 BrowserXRRuntimeImpl* XRRuntimeManagerImpl::GetImmersiveArRuntime() {
-#if BUILDFLAG(IS_ANDROID)
+#if BUILDFLAG(ENABLE_ARCORE)
   auto* arcore_runtime =
       GetRuntime(device::mojom::XRDeviceId::ARCORE_DEVICE_ID);
   if (arcore_runtime && arcore_runtime->SupportsArBlendMode())
