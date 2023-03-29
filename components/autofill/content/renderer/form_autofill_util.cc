@@ -2292,8 +2292,11 @@ void WebFormControlElementToFormField(
     field->is_autofilled = element.IsAutofilled();
     field->is_focusable = IsWebElementFocusable(element);
     field->is_visible = IsWebElementVisible(element);
-    field->should_autocomplete = element.AutoComplete();
-
+    field->should_autocomplete =
+        element.AutoComplete() &&
+        !(field->parsed_autocomplete.has_value() &&
+          field->parsed_autocomplete.value().field_type ==
+              HtmlFieldType::kOneTimeCode);
     field->text_direction = GetTextDirectionForElement(element);
     field->is_enabled = element.IsEnabled();
     field->is_readonly = element.IsReadOnly();

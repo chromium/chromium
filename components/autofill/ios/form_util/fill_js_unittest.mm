@@ -90,6 +90,18 @@ TEST_F(FillJsTest, GetAriaLabel) {
   EXPECT_NSEQ(result, expected_result);
 }
 
+// Tests if shouldAutocomplete returns valid result for
+// autocomplete='one-time-code'.
+TEST_F(FillJsTest, ShouldAutocompleteOneTimeCode) {
+  LoadHtml(@"<input id='input' type='text' autocomplete='one-time-code'/>");
+
+  id result = web::test::ExecuteJavaScriptForFeature(
+      web_state(),
+      @"__gCrWeb.fill.shouldAutocomplete(document.getElementById('input'));",
+      autofill::FormUtilJavaScriptFeature::GetInstance());
+  EXPECT_NSEQ(result, @NO);
+}
+
 // Tests that aria-labelledby works. Simple case: only one id referenced.
 TEST_F(FillJsTest, GetAriaLabelledBySingle) {
   LoadHtml(@"<html><body>"

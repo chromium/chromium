@@ -192,6 +192,26 @@ __gCrWeb.fill.autoComplete = function(element) {
 };
 
 /**
+ * Returns true if an element should suggest autocomplete dropdown.
+ *
+ * @param {Element} element An element to check if it can be autocompleted.
+ * @return {boolean} true if autocomplete dropdown should be suggested.
+ */
+__gCrWeb.fill.shouldAutocomplete = function(element) {
+  if (!__gCrWeb.fill.autoComplete(element)) {
+    return false;
+  }
+  if (getLowerCaseAttribute_(element, 'autocomplete') === 'one-time-code') {
+    return false;
+  }
+  if (getLowerCaseAttribute_(element.form, 'autocomplete') ===
+      'one-time-code') {
+    return false;
+  }
+  return true;
+};
+
+/**
  * Sets the value of a data-bound input using AngularJS.
  *
  * The method first set the value using the val() method. Then, if input is
@@ -2029,7 +2049,7 @@ __gCrWeb.fill.webFormControlElementToFormField = function(
       __gCrWeb.fill.isTextAreaElement(element) ||
       __gCrWeb.fill.isSelectElement(element)) {
     field['is_autofilled'] = element['isAutofilled'];
-    field['should_autocomplete'] = __gCrWeb.fill.autoComplete(element);
+    field['should_autocomplete'] = __gCrWeb.fill.shouldAutocomplete(element);
     field['is_focusable'] = !element.disabled && !element.readOnly &&
         element.tabIndex >= 0 && isVisibleNode_(element);
   }

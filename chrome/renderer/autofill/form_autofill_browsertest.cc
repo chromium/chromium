@@ -3131,6 +3131,29 @@ TEST_F(FormAutofillTest, WebFormElementToFormData_AutocompleteOff_OnField) {
   EXPECT_TRUE(form.fields[2].should_autocomplete);
 }
 
+// |should_autocomplete| must be set to false for the field with
+// autocomplete='one-time-code' attribute set in HTML.
+TEST_F(FormAutofillTest, WebFormElementToFormData_AutocompleteOff_OneTimeCode) {
+  LoadHTML(
+      "<FORM name='TestForm' id='form' action='http://cnn.com' method='post'>"
+      "  <INPUT type='text' value='123' autocomplete='one-time-code'/>"
+      "</FORM>");
+  WebLocalFrame* frame = GetMainFrame();
+  ASSERT_NE(nullptr, frame);
+
+  WebFormElement web_form =
+      frame->GetDocument().GetElementById("form").To<WebFormElement>();
+  ASSERT_FALSE(web_form.IsNull());
+
+  FormData form;
+  EXPECT_TRUE(WebFormElementToFormData(web_form, WebFormControlElement(),
+                                       /*field_data_manager=*/nullptr,
+                                       EXTRACT_NONE, &form, /*field=*/nullptr));
+
+  ASSERT_EQ(1U, form.fields.size());
+  EXPECT_FALSE(form.fields[0].should_autocomplete);
+}
+
 // Tests CSS classes are set.
 TEST_F(FormAutofillTest, WebFormElementToFormData_CssClasses) {
   LoadHTML(
