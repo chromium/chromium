@@ -14,6 +14,8 @@ static_library("test_support") {
     "embedded_policy_test_server.h",
     "policy_storage.cc",
     "policy_storage.h",
+    "remote_commands_result_waiter.cc",
+    "remote_commands_result_waiter.h",
     "remote_commands_state.cc",
     "remote_commands_state.h",
     "request_handler_for_api_authorization.cc",
