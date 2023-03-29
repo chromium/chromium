@@ -30,6 +30,12 @@ class DeclarativeNetRequestPrefsHelperTest : public ExtensionsTest {
     extension_id_ = crx_file::id_util::GenerateId("dummy_extension");
   }
 
+  void TearDown() override {
+    // Drop unowned ref before destroying owning object in superclass.
+    prefs_ = nullptr;
+    ExtensionsTest::TearDown();
+  }
+
  protected:
   using RuleIdsToUpdate = DeclarativeNetRequestPrefsHelper::RuleIdsToUpdate;
   using UpdateDisabledStaticRulesResult =
