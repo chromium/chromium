@@ -117,6 +117,10 @@ BASE_FEATURE(kCommerceAllowOnDemandBookmarkUpdates,
              "CommerceAllowOnDemandBookmarkUpdates",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+BASE_FEATURE(kCommerceAllowOnDemandBookmarkBatchUpdates,
+             "CommerceAllowOnDemandBookmarkBatchUpdates",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 BASE_FEATURE(kCommerceAllowServerImages,
              "CommerceAllowServerImages",
              base::FEATURE_ENABLED_BY_DEFAULT);

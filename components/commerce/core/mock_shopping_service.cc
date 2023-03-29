@@ -28,6 +28,8 @@ MockShoppingService::MockShoppingService()
   SetResponseForGetProductInfoForUrl(absl::nullopt);
   SetResponsesForGetUpdatedProductInfoForBookmarks(
       std::map<int64_t, ProductInfo>());
+  ON_CALL(*this, GetMaxProductBookmarkUpdatesPerBatch)
+      .WillByDefault(testing::Return(30));
   SetResponseForGetMerchantInfoForUrl(absl::nullopt);
   SetSubscribeCallbackValue(true);
   SetUnsubscribeCallbackValue(true);

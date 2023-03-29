@@ -200,6 +200,11 @@ class ShoppingService : public KeyedService, public base::SupportsUserData {
       const std::vector<int64_t>& bookmark_ids,
       BookmarkProductInfoUpdatedCallback info_updated_callback);
 
+  // Gets the maximum number of bookmarks that the backend will retrieve per
+  // call to |GetUpdatedProductInfoForBookmarks|. This limit is imposed by our
+  // backend rather than the shopping service itself.
+  virtual size_t GetMaxProductBookmarkUpdatesPerBatch();
+
   // This API fetches information about a merchant for the provided |url| and
   // passes the payload back to the caller via |callback|. Call will run after
   // the fetch is completed. The merchant info object will be null if there is

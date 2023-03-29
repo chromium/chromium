@@ -35,6 +35,7 @@
 #include "components/commerce/core/web_wrapper.h"
 #include "components/grit/components_resources.h"
 #include "components/optimization_guide/core/new_optimization_guide_decider.h"
+#include "components/optimization_guide/core/optimization_guide_features.h"
 #include "components/optimization_guide/core/optimization_guide_util.h"
 #include "components/optimization_guide/proto/hints.pb.h"
 #include "components/power_bookmarks/core/power_bookmark_service.h"
@@ -371,6 +372,11 @@ void ShoppingService::GetUpdatedProductInfoForBookmarks(
                           weak_ptr_factory_.GetWeakPtr(),
                           std::move(info_updated_callback),
                           std::move(url_to_id_map)));
+}
+
+size_t ShoppingService::GetMaxProductBookmarkUpdatesPerBatch() {
+  return optimization_guide::features::
+      MaxUrlsForOptimizationGuideServiceHintsFetch();
 }
 
 void ShoppingService::GetMerchantInfoForUrl(const GURL& url,

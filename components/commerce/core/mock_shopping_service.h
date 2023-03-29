@@ -33,6 +33,7 @@ class MockShoppingService : public commerce::ShoppingService {
               (const std::vector<int64_t>& bookmark_ids,
                BookmarkProductInfoUpdatedCallback info_updated_callback),
               (override));
+  MOCK_METHOD(size_t, GetMaxProductBookmarkUpdatesPerBatch, (), (override));
   MOCK_METHOD(void,
               GetMerchantInfoForUrl,
               (const GURL& url, MerchantInfoCallback callback),
