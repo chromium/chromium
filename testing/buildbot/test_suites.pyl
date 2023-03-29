@@ -3763,81 +3763,21 @@
     },
 
     'ios_blink_tests': {
-      'base_unittests': {
-        'args': [
-          '--single-process-tests',
-        ],
-      },
-      'blink_platform_unittests': {
-        'args': [
-          '--single-process-tests',
-        ],
-      },
-      'blink_unittests': {
-        'args': [
-          '--single-process-tests',
-        ],
-      },
-      'cc_unittests': {
-        'args': [
-          '--single-process-tests',
-        ],
-      },
-      'content_unittests': {
-        'args': [
-          '--single-process-tests',
-        ],
-      },
-      'device_unittests': {
-        'args': [
-          '--single-process-tests',
-        ],
-      },
-      'gl_unittests': {
-        'args': [
-          '--single-process-tests',
-        ],
-      },
-      'gpu_unittests': {
-        'args': [
-          '--single-process-tests',
-        ],
-      },
-      'media_unittests': {
-        'args': [
-          '--single-process-tests',
-        ],
-      },
-      'midi_unittests': {
-        'args': [
-          '--single-process-tests',
-        ],
-      },
-      'mojo_unittests': {
-        'args': [
-          '--single-process-tests',
-        ],
-      },
-      'skia_unittests': {
-        'args': [
-          '--single-process-tests',
-        ],
-      },
-      'storage_unittests': {
-        'args': [
-          '--single-process-tests',
-        ],
-      },
-      'viz_unittests': {
-        'args': [
-          '--single-process-tests',
-        ],
-      },
-      'wtf_unittests': {
-        'args': [
-          '--single-process-tests',
-        ],
-      },
+      'base_unittests': {},
+      'blink_platform_unittests': {},
+      'blink_unittests': {},
+      'cc_unittests': {},
+      'content_unittests': {},
+      'device_unittests': {},
+      'gl_unittests': {},
+      'gpu_unittests': {},
+      'media_unittests': {},
+      'midi_unittests': {},
+      'mojo_unittests': {},
+      'skia_unittests': {},
+      'storage_unittests': {},
+      'viz_unittests': {},
+      'wtf_unittests': {},
     },
 
     'ios_clang_tests': {
