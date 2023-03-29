@@ -848,6 +848,8 @@ TEST_F(TransportSecurityStateTest, PreloadedPKPReportUri) {
       cert1.get(), cert2.get(), pkp_state.spki_hashes));
   EXPECT_EQ(network_anonymization_key,
             mock_report_sender.latest_network_anonymization_key());
+
+  state.SetReportSender(nullptr);
 }
 
 // Tests that report URIs are thrown out if they point to the same host,
@@ -905,6 +907,8 @@ TEST_F(TransportSecurityStateTest, HPKPReportUriToSameHost) {
   EXPECT_EQ(http_report_uri, mock_report_sender.latest_report_uri());
   EXPECT_EQ(network_anonymization_key,
             mock_report_sender.latest_network_anonymization_key());
+
+  state.SetReportSender(nullptr);
 }
 
 // Simple test for the HSTS preload process. The trie (generated from
@@ -2073,6 +2077,8 @@ TEST_F(TransportSecurityStateStaticTest, HPKPReportRateLimiting) {
   EXPECT_EQ(std::string(), mock_report_sender.latest_report());
   EXPECT_EQ(NetworkAnonymizationKey(),
             mock_report_sender.latest_network_anonymization_key());
+
+  state.SetReportSender(nullptr);
 }
 
 TEST_F(TransportSecurityStateStaticTest, HPKPReporting) {
@@ -2187,6 +2193,8 @@ TEST_F(TransportSecurityStateStaticTest, HPKPReporting) {
                                           good_hashes));
   EXPECT_EQ(network_anonymization_key,
             mock_report_sender.latest_network_anonymization_key());
+
+  state.SetReportSender(nullptr);
 }
 
 TEST_F(TransportSecurityStateTest, WriteSizeDecodeSize) {
