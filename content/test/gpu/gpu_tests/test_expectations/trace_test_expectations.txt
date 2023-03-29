@@ -207,8 +207,6 @@ crbug.com/1402261 [ win amd ] OverlayModeTraceTest_DirectComposition_Video_* [ F
 
 crbug.com/1417340 [ android android-sm-a235m ] TraceTest_WebGLGreenTriangle_AA_Alpha [ RetryOnFailure ]
 
-# Flakily times out on kevin.
-crbug.com/1426207 [ chromeos chromeos-board-kevin no-passthrough ] TraceTest_Video_* [ Failure ]
 
 #######################################################################
 # Automated Entries After This Point - Do Not Manually Add Below Here #
