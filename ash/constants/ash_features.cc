@@ -2228,7 +2228,7 @@ BASE_FEATURE(kDeviceActiveClient,
 // on ChromeOS.
 BASE_FEATURE(kDeviceActiveClient28DayActiveCheckIn,
              "DeviceActiveClient28DayActiveCheckIn",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Enables or disables PSM CheckMembership for 28 day device active pings
 // on ChromeOS.

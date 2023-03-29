@@ -3448,21 +3448,6 @@
             ]
         }
     ],
-    "CrosDeviceActiveCounting28DayActiveCheckIn": [
-        {
-            "platforms": [
-                "chromeos"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "DeviceActiveClient28DayActiveCheckIn"
-                    ]
-                }
-            ]
-        }
-    ],
     "CrosHiddenNetworkMigration": [
         {
             "platforms": [
