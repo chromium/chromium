@@ -53,6 +53,9 @@ const FirstRunTestParam kTestParams[] = {
     {.pixel_test_param = {.test_suffix = "RightToLeftLanguage",
                           .use_right_to_left_language = true,
                           .use_fre_style = true}},
+    {.pixel_test_param = {.test_suffix = "CR2023",
+                          .use_fre_style = true,
+                          .use_chrome_refresh_2023_style = true}},
 };
 
 const char kMakeCardDescriptionLongerJsString[] =

@@ -59,6 +59,8 @@ const EnterpriseWelcomeTestParam kWindowTestParams[] = {
                           .use_right_to_left_language = true}},
     {.pixel_test_param = {.test_suffix = "EnterpriseWelcomeSmallWindow",
                           .use_small_window = true}},
+    {.pixel_test_param = {.test_suffix = "EnterpriseWelcomeCR2023",
+                          .use_chrome_refresh_2023_style = true}},
     {.pixel_test_param = {.test_suffix = "EnterpriseWelcomeFre",
                           .use_fre_style = true},
      .use_tangible_sync_style = true},
@@ -70,6 +72,9 @@ const EnterpriseWelcomeTestParam kWindowTestParams[] = {
      .use_tangible_sync_style = true},
     {.pixel_test_param = {.test_suffix = "EnterpriseWelcomeFreSmallWindow",
                           .use_small_window = true},
+     .use_tangible_sync_style = true},
+    {.pixel_test_param = {.test_suffix = "EnterpriseWelcomeFreCR2023",
+                          .use_chrome_refresh_2023_style = true},
      .use_tangible_sync_style = true},
 };
 
@@ -87,6 +92,8 @@ const EnterpriseWelcomeTestParam kDialogTestParams[] = {
     {.pixel_test_param = {.test_suffix = "EnterpriseWelcomeRtl",
                           .use_right_to_left_language = true},
      .show_link_data_checkbox = true},
+    {.pixel_test_param = {.test_suffix = "EnterpriseWelcomeCR2023",
+                          .use_chrome_refresh_2023_style = true}},
     {.pixel_test_param = {.test_suffix = "EnterpriseWelcomeFre"},
      .use_tangible_sync_style = true},
     {.pixel_test_param = {.test_suffix =
@@ -104,6 +111,9 @@ const EnterpriseWelcomeTestParam kDialogTestParams[] = {
     {.pixel_test_param = {.test_suffix = "EnterpriseWelcomeFreRtl",
                           .use_right_to_left_language = true},
      .show_link_data_checkbox = true,
+     .use_tangible_sync_style = true},
+    {.pixel_test_param = {.test_suffix = "EnterpriseWelcomeFreCR2023",
+                          .use_chrome_refresh_2023_style = true},
      .use_tangible_sync_style = true},
 };
 

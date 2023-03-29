@@ -13,6 +13,7 @@
 #include "components/signin/public/base/signin_buildflags.h"
 #include "components/signin/public/identity_manager/account_info.h"
 #include "components/signin/public/identity_manager/identity_test_utils.h"
+#include "ui/base/ui_base_features.h"
 #include "ui/base/ui_base_switches.h"
 
 namespace {
@@ -81,6 +82,9 @@ void InitPixelTestFeatures(
     std::vector<base::test::FeatureRef>& disabled_features) {
   if (params.use_dark_theme) {
     enabled_features.push_back(features::kWebUIDarkMode);
+  }
+  if (params.use_chrome_refresh_2023_style) {
+    enabled_features.push_back(features::kChromeRefresh2023);
   }
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
   if (params.use_fre_style) {

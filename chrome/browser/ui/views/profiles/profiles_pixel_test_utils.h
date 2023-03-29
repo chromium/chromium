@@ -31,6 +31,7 @@ struct PixelTestParam {
   bool use_right_to_left_language = false;
   bool use_small_window = false;
   bool use_fre_style = false;
+  bool use_chrome_refresh_2023_style = false;
 };
 
 enum class AccountManagementStatus {

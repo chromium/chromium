@@ -49,6 +49,8 @@ const ProfileTypeChoiceTestParam kTestParams[] = {
                           .use_right_to_left_language = true,
                           .use_small_window = true},
      .use_tangible_sync_flow = true},
+    {.pixel_test_param = {.test_suffix = "CR2023",
+                          .use_chrome_refresh_2023_style = true}},
 };
 
 const char kRemoveAvatarIconJS[] =

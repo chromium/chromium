@@ -50,6 +50,8 @@ const ProfilePickerTestParam kTestParams[] = {
                           .use_right_to_left_language = true,
                           .use_small_window = true},
      .use_multiple_profiles = true},
+    {.pixel_test_param = {.test_suffix = "CR2023",
+                          .use_chrome_refresh_2023_style = true}},
     {.pixel_test_param = {.test_suffix = "TS"}, .use_tangible_sync_flow = true},
     {.pixel_test_param = {.test_suffix = "TSMultipleProfiles"},
      .use_tangible_sync_flow = true,
@@ -60,6 +62,9 @@ const ProfilePickerTestParam kTestParams[] = {
                           .use_small_window = true},
      .use_tangible_sync_flow = true,
      .use_multiple_profiles = true},
+    {.pixel_test_param = {.test_suffix = "TSCR2023",
+                          .use_chrome_refresh_2023_style = true},
+     .use_tangible_sync_flow = true},
 };
 
 void AddMultipleProfiles(Profile* profile, size_t number_of_profiles) {
