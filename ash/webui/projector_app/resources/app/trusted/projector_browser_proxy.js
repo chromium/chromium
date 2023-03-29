@@ -3,7 +3,6 @@
 // found in the LICENSE file.
 
 import {sendWithPromise} from 'chrome://resources/ash/common/cr.m.js';
-import {addSingletonGetter} from 'chrome://resources/ash/common/cr_deprecated.js';
 
 /**
  * To use the browser proxy, please import this module and call
@@ -125,9 +124,24 @@ export class ProjectorBrowserProxy {
 }
 
 /**
+ * @type {ProjectorBrowserProxyImpl}
+ */
+let browserProxy;
+
+/**
  * @implements {ProjectorBrowserProxy}
  */
 export class ProjectorBrowserProxyImpl {
+  /**
+   * @returns {ProjectorBrowserProxyImpl}
+   */
+  static getInstance() {
+    if (!browserProxy) {
+      browserProxy = new ProjectorBrowserProxyImpl();
+    }
+    return browserProxy;
+  }
+
   /** @override */
   getAccounts() {
     return sendWithPromise('getAccounts');
@@ -202,5 +216,3 @@ export class ProjectorBrowserProxyImpl {
     return sendWithPromise('getVideo', [videoFileId, resourceKey]);
   }
 }
-
-addSingletonGetter(ProjectorBrowserProxyImpl);

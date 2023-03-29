@@ -10,8 +10,6 @@ assert(is_chromeos_ash, "Projector App is ash-chrome only")
 
 static_library("projector_app") {
   sources = [
-    "annotator_page_handler_impl.cc",
-    "annotator_page_handler_impl.h",
     "projector_app_client.cc",
     "projector_app_client.h",
     "projector_message_handler.cc",
@@ -22,10 +20,10 @@ static_library("projector_app") {
     "projector_screencast.h",
     "projector_xhr_sender.cc",
     "projector_xhr_sender.h",
-    "trusted_projector_annotator_ui.cc",
-    "trusted_projector_annotator_ui.h",
     "trusted_projector_ui.cc",
     "trusted_projector_ui.h",
+    "untrusted_annotator_page_handler_impl.cc",
+    "untrusted_annotator_page_handler_impl.h",
     "untrusted_projector_annotator_ui.cc",
     "untrusted_projector_annotator_ui.h",
     "untrusted_projector_ui.cc",
@@ -39,7 +37,6 @@ static_library("projector_app") {
     "//ash/webui/projector_app/mojom:annotator_mojo_bindings",
     "//ash/webui/projector_app/public/mojom:annotator_mojo_bindings",
     "//ash/webui/resources:media_app_bundle_resources",
-    "//ash/webui/resources:projector_annotator_trusted_resources",
     "//ash/webui/resources:projector_annotator_untrusted_resources",
     "//ash/webui/resources:projector_app_bundle_resources",
     "//ash/webui/resources:projector_app_trusted_resources",
@@ -82,10 +79,10 @@ source_set("test_support") {
 source_set("unit_tests") {
   testonly = true
   sources = [
-    "test/annotator_page_handler_impl_unittest.cc",
     "test/projector_message_handler_unittest.cc",
     "test/projector_oauth_token_fetcher_unittest.cc",
     "test/projector_xhr_sender_unittest.cc",
+    "test/untrusted_annotator_page_handler_impl_unittest.cc",
   ]
 
   deps = [

@@ -10,7 +10,7 @@ assert(is_chromeos_ash, "Projector Annotator is ChromeOS only")
 cur_dir = rebase_path(".", "//")
 
 mojom("annotator_mojo_bindings") {
-  sources = [ "annotator.mojom" ]
+  sources = [ "untrusted_annotator.mojom" ]
   deps = [ "//ash/webui/projector_app/public/mojom:annotator_mojo_bindings" ]
   webui_module_path = "/$cur_dir"
 }

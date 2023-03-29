@@ -330,14 +330,6 @@ ash_generated_grit("projector_annotator_untrusted_resources") {
   deps = [ "//ash/webui/projector_app/resources/annotator/untrusted:build_untrusted_grd" ]
 }
 
-# Resources used by chrome://projector-annotator SWA.
-ash_generated_grit("projector_annotator_trusted_resources") {
-  source = "$root_gen_dir/ash/webui/projector_app/resources/annotator/trusted/ash_projector_annotator_trusted_resources.grd"
-  deps = [
-    "//ash/webui/projector_app/resources/annotator/trusted:build_trusted_grd",
-  ]
-}
-
 # Resources used by chrome://projector and chrome://projector-annotator SWA.
 ash_generated_grit("projector_common_resources") {
   source = "$root_gen_dir/ash/webui/projector_app/resources/common/ash_projector_common_resources.grd"

@@ -15,19 +15,29 @@
 #include "chrome/browser/ui/ash/projector/projector_app_client_impl.h"
 #include "chrome/browser/ui/ash/system_web_apps/system_web_app_ui_utils.h"
 #include "content/public/test/browser_test.h"
+#include "content/public/test/browser_test_utils.h"
 
 namespace {
 
 #if BUILDFLAG(ENABLE_CROS_MEDIA_APP) && BUILDFLAG(ENABLE_CROS_PROJECTOR_APP)
+
+static content::EvalJsResult EvalJsInMainFrame(content::WebContents* web_ui,
+                                               const std::string& script) {
+  // Clients of this helper all run in the same isolated world.
+  constexpr int kWorldId = 1;
+  return EvalJs(web_ui->GetPrimaryMainFrame(), script,
+                content::EXECUTE_SCRIPT_DEFAULT_OPTIONS, kWorldId);
+}
+
 // File containing the test utility library
 constexpr base::FilePath::CharType kTestLibraryPath[] =
     FILE_PATH_LITERAL("ash/webui/system_apps/public/js/dom_testing_helpers.js");
 
-void PrepareAppForTest(content::WebContents* web_contents) {
+void PrepareAnnotatorForTest(content::WebContents* web_contents) {
   EXPECT_TRUE(WaitForLoadStop(web_contents));
   EXPECT_EQ(nullptr,
-            SandboxedWebUiAppTestBase::EvalJsInAppFrame(
-                web_contents, SandboxedWebUiAppTestBase::LoadJsTestLibrary(
+            EvalJsInMainFrame(web_contents,
+                              SandboxedWebUiAppTestBase::LoadJsTestLibrary(
                                   base::FilePath(kTestLibraryPath))));
 }
 #endif  // BUILDFLAG(ENABLE_CROS_MEDIA_APP) &&
@@ -75,7 +85,7 @@ IN_PROC_BROWSER_TEST_P(ProjectorAppIntegrationTest,
       projector_app_client->get_annotator_handler_for_test()
           ->get_web_ui_for_test()
           ->GetWebContents();
-  PrepareAppForTest(annotator_embedder);
+  PrepareAnnotatorForTest(annotator_embedder);
 
   // Checks ink is loaded by ensuring the ink engine canvas has a non zero width
   // and height attributes (checking <canvas.width/height is insufficient since
@@ -92,9 +102,9 @@ IN_PROC_BROWSER_TEST_P(ProjectorAppIntegrationTest,
           inkCanvas.getAttribute('width') !== '0';
       })();
     )";
-  EXPECT_EQ(true, SandboxedWebUiAppTestBase::EvalJsInAppFrame(
-                      annotator_embedder, kCheckInkLoaded)
-                      .ExtractBool());
+  EXPECT_EQ(
+      true,
+      EvalJsInMainFrame(annotator_embedder, kCheckInkLoaded).ExtractBool());
 }
 #endif  // BUILDFLAG(ENABLE_CROS_MEDIA_APP) &&
         // BUILDFLAG(ENABLE_CROS_PROJECTOR_APP)

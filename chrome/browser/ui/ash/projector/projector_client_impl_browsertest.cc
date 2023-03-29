@@ -181,7 +181,6 @@ class ProjectorClientTest : public InProcessBrowserTest {
 IN_PROC_BROWSER_TEST_F(ProjectorClientTest, AppUrlsValid) {
   VerifyUrlValid(kChromeUITrustedProjectorUrl);
   VerifyUrlValid(kChromeUIUntrustedProjectorUrl);
-  VerifyUrlValid(kChromeUITrustedAnnotatorUrl);
   VerifyUrlValid(kChromeUIUntrustedAnnotatorUrl);
 }
 

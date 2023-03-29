@@ -2,11 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ash/webui/projector_app/annotator_page_handler_impl.h"
+#include "ash/webui/projector_app/untrusted_annotator_page_handler_impl.h"
 
 #include "ash/public/cpp/projector/annotator_tool.h"
 #include "ash/public/cpp/test/mock_projector_controller.h"
-#include "ash/webui/projector_app/mojom/annotator.mojom.h"
+#include "ash/webui/projector_app/mojom/untrusted_annotator.mojom.h"
 #include "ash/webui/projector_app/public/mojom/annotator_structs.mojom.h"
 #include "ash/webui/projector_app/test/mock_app_client.h"
 #include "base/test/task_environment.h"
@@ -23,12 +23,14 @@ namespace ash {
 namespace {
 
 // MOCK the annotator instance in the WebUI renderer.
-class MockAnnotatorPage : public annotator::mojom::AnnotatorPage {
+class MockUntrustedAnnotatorPage
+    : public annotator::mojom::UntrustedAnnotatorPage {
  public:
-  MockAnnotatorPage() = default;
-  MockAnnotatorPage(const MockAnnotatorPage&) = delete;
-  MockAnnotatorPage& operator=(const MockAnnotatorPage&) = delete;
-  ~MockAnnotatorPage() override = default;
+  MockUntrustedAnnotatorPage() = default;
+  MockUntrustedAnnotatorPage(const MockUntrustedAnnotatorPage&) = delete;
+  MockUntrustedAnnotatorPage& operator=(const MockUntrustedAnnotatorPage&) =
+      delete;
+  ~MockUntrustedAnnotatorPage() override = default;
 
   MOCK_METHOD0(Clear, void());
   MOCK_METHOD0(Undo, void());
@@ -47,32 +49,33 @@ class MockAnnotatorPage : public annotator::mojom::AnnotatorPage {
     remote_->OnCanvasInitialized(success);
   }
 
-  mojo::Receiver<annotator::mojom::AnnotatorPage>& receiver() {
+  mojo::Receiver<annotator::mojom::UntrustedAnnotatorPage>& receiver() {
     return receiver_;
   }
-  mojo::Remote<annotator::mojom::AnnotatorPageHandler>& remote() {
+  mojo::Remote<annotator::mojom::UntrustedAnnotatorPageHandler>& remote() {
     return remote_;
   }
 
  private:
-  mojo::Receiver<annotator::mojom::AnnotatorPage> receiver_{this};
-  mojo::Remote<annotator::mojom::AnnotatorPageHandler> remote_;
+  mojo::Receiver<annotator::mojom::UntrustedAnnotatorPage> receiver_{this};
+  mojo::Remote<annotator::mojom::UntrustedAnnotatorPageHandler> remote_;
 };
 
 }  // namespace
 
-class AnnotatorPageHandlerImplTest : public testing::Test {
+class UntrustedAnnotatorPageHandlerImplTest : public testing::Test {
  public:
-  AnnotatorPageHandlerImplTest() = default;
-  AnnotatorPageHandlerImplTest(const AnnotatorPageHandlerImplTest&) = delete;
-  AnnotatorPageHandlerImplTest& operator=(const AnnotatorPageHandlerImplTest&) =
-      delete;
-  ~AnnotatorPageHandlerImplTest() override = default;
+  UntrustedAnnotatorPageHandlerImplTest() = default;
+  UntrustedAnnotatorPageHandlerImplTest(
+      const UntrustedAnnotatorPageHandlerImplTest&) = delete;
+  UntrustedAnnotatorPageHandlerImplTest& operator=(
+      const UntrustedAnnotatorPageHandlerImplTest&) = delete;
+  ~UntrustedAnnotatorPageHandlerImplTest() override = default;
 
   // testing::Test:
   void SetUp() override {
-    annotator_ = std::make_unique<MockAnnotatorPage>();
-    handler_ = std::make_unique<AnnotatorPageHandlerImpl>(
+    annotator_ = std::make_unique<MockUntrustedAnnotatorPage>();
+    handler_ = std::make_unique<UntrustedAnnotatorPageHandlerImpl>(
         annotator().remote().BindNewPipeAndPassReceiver(),
         annotator().receiver().BindNewPipeAndPassRemote(),
         /*web_ui=*/nullptr);
@@ -83,9 +86,9 @@ class AnnotatorPageHandlerImplTest : public testing::Test {
     handler_.reset();
   }
 
-  AnnotatorPageHandlerImpl& handler() { return *handler_; }
+  UntrustedAnnotatorPageHandlerImpl& handler() { return *handler_; }
   MockProjectorController& controller() { return controller_; }
-  MockAnnotatorPage& annotator() { return *annotator_; }
+  MockUntrustedAnnotatorPage& annotator() { return *annotator_; }
   base::test::SingleThreadTaskEnvironment& task_environment() {
     return task_environment_;
   }
@@ -93,13 +96,13 @@ class AnnotatorPageHandlerImplTest : public testing::Test {
  private:
   base::test::SingleThreadTaskEnvironment task_environment_;
 
-  std::unique_ptr<MockAnnotatorPage> annotator_;
-  std::unique_ptr<AnnotatorPageHandlerImpl> handler_;
+  std::unique_ptr<MockUntrustedAnnotatorPage> annotator_;
+  std::unique_ptr<UntrustedAnnotatorPageHandlerImpl> handler_;
   MockProjectorController controller_;
   MockAppClient client_;
 };
 
-TEST_F(AnnotatorPageHandlerImplTest, SetTool) {
+TEST_F(UntrustedAnnotatorPageHandlerImplTest, SetTool) {
   AnnotatorTool expected_tool;
   expected_tool.color = SkColorSetARGB(0xA1, 0xB2, 0xC3, 0xD4);
   expected_tool.size = 5;
@@ -115,25 +118,25 @@ TEST_F(AnnotatorPageHandlerImplTest, SetTool) {
   annotator().FlushReceiverForTesting();
 }
 
-TEST_F(AnnotatorPageHandlerImplTest, Undo) {
+TEST_F(UntrustedAnnotatorPageHandlerImplTest, Undo) {
   EXPECT_CALL(annotator(), Undo());
   handler().Undo();
   annotator().FlushReceiverForTesting();
 }
 
-TEST_F(AnnotatorPageHandlerImplTest, Redo) {
+TEST_F(UntrustedAnnotatorPageHandlerImplTest, Redo) {
   EXPECT_CALL(annotator(), Redo());
   handler().Redo();
   annotator().FlushReceiverForTesting();
 }
 
-TEST_F(AnnotatorPageHandlerImplTest, Clear) {
+TEST_F(UntrustedAnnotatorPageHandlerImplTest, Clear) {
   EXPECT_CALL(annotator(), Clear());
   handler().Clear();
   annotator().FlushReceiverForTesting();
 }
 
-TEST_F(AnnotatorPageHandlerImplTest, UndoRedoAvailabilityChanged) {
+TEST_F(UntrustedAnnotatorPageHandlerImplTest, UndoRedoAvailabilityChanged) {
   EXPECT_CALL(controller(), OnUndoRedoAvailabilityChanged(false, false));
   annotator().SendUndoRedoAvailableChanged(false, false);
 
@@ -145,7 +148,7 @@ TEST_F(AnnotatorPageHandlerImplTest, UndoRedoAvailabilityChanged) {
   annotator().FlushRemoteForTesting();
 }
 
-TEST_F(AnnotatorPageHandlerImplTest, CanvasInitialized) {
+TEST_F(UntrustedAnnotatorPageHandlerImplTest, CanvasInitialized) {
   EXPECT_CALL(controller(), OnCanvasInitialized(true));
   annotator().SendCanvasInitialized(true);
 

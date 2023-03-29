@@ -740,10 +740,6 @@
     "META": {"sizes": {"includes": [50],}},
     "includes": [3405],
   },
-  "<(SHARED_INTERMEDIATE_DIR)/ash/webui/projector_app/resources/annotator/trusted/ash_projector_annotator_trusted_resources.grd": {
-    "META": {"sizes": {"includes": [50],}},
-    "includes": [3410],
-  },
   "<(SHARED_INTERMEDIATE_DIR)/ash/webui/projector_app/resources/common/ash_projector_common_resources.grd": {
     "META": {"sizes": {"includes": [50],}},
     "includes": [3415],

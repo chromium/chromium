@@ -9,8 +9,8 @@
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
 #include "ash/public/cpp/projector/annotator_tool.h"
-#include "ash/webui/projector_app/annotator_page_handler_impl.h"
 #include "ash/webui/projector_app/public/cpp/projector_app_constants.h"
+#include "ash/webui/projector_app/untrusted_annotator_page_handler_impl.h"
 #include "base/functional/bind.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/browser_process.h"
@@ -156,12 +156,12 @@ void ProjectorAppClientImpl::GetVideo(
 }
 
 void ProjectorAppClientImpl::SetAnnotatorPageHandler(
-    ash::AnnotatorPageHandlerImpl* handler) {
+    ash::UntrustedAnnotatorPageHandlerImpl* handler) {
   annotator_handler_ = handler;
 }
 
 void ProjectorAppClientImpl::ResetAnnotatorPageHandler(
-    ash::AnnotatorPageHandlerImpl* handler) {
+    ash::UntrustedAnnotatorPageHandlerImpl* handler) {
   if (annotator_handler_ == handler) {
     annotator_handler_ = nullptr;
   }
