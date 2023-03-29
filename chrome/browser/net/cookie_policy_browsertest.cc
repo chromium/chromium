@@ -41,8 +41,6 @@ const char* kHostB = "b.test";
 const char* kHostC = "c.test";
 const char* kHostD = "d.test";
 
-enum class TestType { kFrame, kWorker };
-
 class CookiePolicyBrowserTest : public InProcessBrowserTest {
  public:
   CookiePolicyBrowserTest(const CookiePolicyBrowserTest&) = delete;
@@ -138,162 +136,7 @@ class CookiePolicyBrowserTest : public InProcessBrowserTest {
     return ChildFrameAt(GetFrame(), 0);
   }
 
-  void TestThirdPartyIFrameStorage(TestType test_type) {
-    NavigateToPageWithFrame(kHostA);
-    NavigateFrameTo(kHostB, "/browsing_data/site_data.html");
-
-    ExpectStorage(test_type, GetFrame(), false);
-    SetStorage(test_type, GetFrame());
-    ExpectStorage(test_type, GetFrame(), true);
-
-    SetBlockThirdPartyCookies(true);
-
-    NavigateToPageWithFrame(kHostA);
-    NavigateFrameTo(kHostB, "/browsing_data/site_data.html");
-    ExpectStorage(test_type, GetFrame(), false);
-
-    // Allow all requests to b.test to access storage.
-    GURL a_url = https_server_.GetURL(kHostA, "/");
-    GURL b_url = https_server_.GetURL(kHostB, "/");
-    cookie_settings()->SetCookieSetting(b_url,
-                                        ContentSetting::CONTENT_SETTING_ALLOW);
-
-    NavigateToPageWithFrame(kHostA);
-    NavigateFrameTo(kHostB, "/browsing_data/site_data.html");
-    ExpectStorage(test_type, GetFrame(), true);
-
-    // Remove ALLOW setting.
-    cookie_settings()->ResetCookieSetting(b_url);
-
-    NavigateToPageWithFrame(kHostA);
-    NavigateFrameTo(kHostB, "/browsing_data/site_data.html");
-    ExpectStorage(test_type, GetFrame(), false);
-
-    // Allow all third-parties on a.test to access storage.
-    cookie_settings()->SetThirdPartyCookieSetting(
-        a_url, ContentSetting::CONTENT_SETTING_ALLOW);
-
-    NavigateToPageWithFrame(kHostA);
-    NavigateFrameTo(kHostB, "/browsing_data/site_data.html");
-    ExpectStorage(test_type, GetFrame(), true);
-  }
-
-  void TestNestedThirdPartyIFrameStorage(TestType test_type) {
-    NavigateToPageWithFrame(kHostA);
-    NavigateFrameTo(kHostB, "/iframe.html");
-    NavigateNestedFrameTo(kHostC, "/browsing_data/site_data.html");
-
-    ExpectStorage(test_type, GetNestedFrame(), false);
-    SetStorage(test_type, GetNestedFrame());
-    ExpectStorage(test_type, GetNestedFrame(), true);
-
-    SetBlockThirdPartyCookies(true);
-
-    NavigateToPageWithFrame(kHostA);
-    NavigateFrameTo(kHostB, "/iframe.html");
-    NavigateNestedFrameTo(kHostC, "/browsing_data/site_data.html");
-    ExpectStorage(test_type, GetNestedFrame(), false);
-
-    // Allow all requests to b.test to access storage.
-    GURL a_url = https_server_.GetURL(kHostA, "/");
-    GURL c_url = https_server_.GetURL(kHostC, "/");
-    cookie_settings()->SetCookieSetting(c_url,
-                                        ContentSetting::CONTENT_SETTING_ALLOW);
-
-    NavigateToPageWithFrame(kHostA);
-    NavigateFrameTo(kHostB, "/iframe.html");
-    NavigateNestedFrameTo(kHostC, "/browsing_data/site_data.html");
-    ExpectStorage(test_type, GetNestedFrame(), true);
-
-    // Remove ALLOW setting.
-    cookie_settings()->ResetCookieSetting(c_url);
-
-    NavigateToPageWithFrame(kHostA);
-    NavigateFrameTo(kHostB, "/iframe.html");
-    NavigateNestedFrameTo(kHostC, "/browsing_data/site_data.html");
-    ExpectStorage(test_type, GetNestedFrame(), false);
-
-    // Allow all third-parties on a.test to access storage.
-    cookie_settings()->SetThirdPartyCookieSetting(
-        a_url, ContentSetting::CONTENT_SETTING_ALLOW);
-
-    NavigateToPageWithFrame(kHostA);
-    NavigateFrameTo(kHostB, "/iframe.html");
-    NavigateNestedFrameTo(kHostC, "/browsing_data/site_data.html");
-    ExpectStorage(test_type, GetNestedFrame(), true);
-  }
-
-  void TestNestedFirstPartyIFrameStorage(TestType test_type) {
-    NavigateToPageWithFrame(kHostA);
-    NavigateFrameTo(kHostB, "/iframe.html");
-    NavigateNestedFrameTo(kHostA, "/browsing_data/site_data.html");
-
-    ExpectStorage(test_type, GetNestedFrame(), false);
-    SetStorage(test_type, GetNestedFrame());
-    ExpectStorage(test_type, GetNestedFrame(), true);
-
-    SetBlockThirdPartyCookies(true);
-
-    NavigateToPageWithFrame(kHostA);
-    NavigateFrameTo(kHostB, "/iframe.html");
-    NavigateNestedFrameTo(kHostA, "/browsing_data/site_data.html");
-    ExpectStorage(test_type, GetNestedFrame(), false);
-
-    // Allow all requests to b.test to access storage.
-    GURL a_url = https_server_.GetURL(kHostA, "/");
-    cookie_settings()->SetCookieSetting(a_url,
-                                        ContentSetting::CONTENT_SETTING_ALLOW);
-
-    NavigateToPageWithFrame(kHostA);
-    NavigateFrameTo(kHostB, "/iframe.html");
-    NavigateNestedFrameTo(kHostA, "/browsing_data/site_data.html");
-    ExpectStorage(test_type, GetNestedFrame(), true);
-
-    // Remove ALLOW setting.
-    cookie_settings()->ResetCookieSetting(a_url);
-
-    NavigateToPageWithFrame(kHostA);
-    NavigateFrameTo(kHostB, "/iframe.html");
-    NavigateNestedFrameTo(kHostA, "/browsing_data/site_data.html");
-    ExpectStorage(test_type, GetNestedFrame(), false);
-
-    // Allow all third-parties on a.test to access storage.
-    cookie_settings()->SetThirdPartyCookieSetting(
-        a_url, ContentSetting::CONTENT_SETTING_ALLOW);
-
-    NavigateToPageWithFrame(kHostA);
-    NavigateFrameTo(kHostB, "/iframe.html");
-    NavigateNestedFrameTo(kHostA, "/browsing_data/site_data.html");
-    ExpectStorage(test_type, GetNestedFrame(), true);
-  }
-
   net::test_server::EmbeddedTestServer https_server_;
-
- private:
-  void ExpectStorage(TestType test_type,
-                     content::RenderFrameHost* frame,
-                     bool expected) {
-    switch (test_type) {
-      case TestType::kFrame:
-        storage::test::ExpectStorageForFrame(frame, /*include_cookies=*/true,
-                                             expected);
-        return;
-      case TestType::kWorker:
-        storage::test::ExpectStorageForWorker(frame, expected);
-        return;
-    }
-  }
-
-  void SetStorage(TestType test_type, content::RenderFrameHost* frame) {
-    switch (test_type) {
-      case TestType::kFrame:
-        storage::test::SetStorageForFrame(frame, /*include_cookies=*/true);
-        return;
-      case TestType::kWorker:
-        storage::test::SetStorageForWorker(frame);
-        return;
-    }
-  }
 };
 
 // Visits a page that sets a first-party cookie.
@@ -584,44 +427,6 @@ IN_PROC_BROWSER_TEST_F(CookiePolicyBrowserTest,
   EXPECT_EQ(GetNestedFrameContent(), "None");
 }
 
-IN_PROC_BROWSER_TEST_F(CookiePolicyBrowserTest,
-                       ThirdPartyIFrameStorageForFrame) {
-  TestThirdPartyIFrameStorage(TestType::kFrame);
-}
-
-IN_PROC_BROWSER_TEST_F(CookiePolicyBrowserTest,
-                       ThirdPartyIFrameStorageForWorker) {
-  TestThirdPartyIFrameStorage(TestType::kWorker);
-}
-
-IN_PROC_BROWSER_TEST_F(CookiePolicyBrowserTest,
-                       NestedThirdPartyIFrameStorageForFrame) {
-  TestNestedThirdPartyIFrameStorage(TestType::kFrame);
-}
-
-IN_PROC_BROWSER_TEST_F(CookiePolicyBrowserTest,
-                       NestedThirdPartyIFrameStorageForWorker) {
-  TestNestedThirdPartyIFrameStorage(TestType::kWorker);
-}
-
-// TODO(crbug.com/1317431): WebSQL does not work on Fuchsia.
-#if BUILDFLAG(IS_FUCHSIA)
-#define MAYBE_NestedFirstPartyIFrameStorageForFrame \
-  DISABLED_NestedFirstPartyIFrameStorageForFrame
-#else
-#define MAYBE_NestedFirstPartyIFrameStorageForFrame \
-  NestedFirstPartyIFrameStorageForFrame
-#endif
-IN_PROC_BROWSER_TEST_F(CookiePolicyBrowserTest,
-                       MAYBE_NestedFirstPartyIFrameStorageForFrame) {
-  TestNestedFirstPartyIFrameStorage(TestType::kFrame);
-}
-
-IN_PROC_BROWSER_TEST_F(CookiePolicyBrowserTest,
-                       NestedFirstPartyIFrameStorageForWorker) {
-  TestNestedFirstPartyIFrameStorage(TestType::kWorker);
-}
-
 // Test third-party cookie blocking of features that allow to communicate
 // between tabs such as SharedWorkers.
 IN_PROC_BROWSER_TEST_F(CookiePolicyBrowserTest, MultiTabTest) {
@@ -721,5 +526,181 @@ IN_PROC_BROWSER_TEST_F(CookiePolicyBrowserTest, MultiTabNestedTest) {
   NavigateNestedFrameTo(kHostA, "/browsing_data/site_data.html");
   storage::test::ExpectCrossTabInfoForFrame(GetNestedFrame(), true);
 }
+
+enum class ContextType { kFrame, kWorker };
+
+class CookiePolicyStorageBrowserTest
+    : public CookiePolicyBrowserTest,
+      public testing::WithParamInterface<ContextType> {
+ protected:
+  void ExpectStorage(content::RenderFrameHost* frame, bool expected) {
+    switch (ContextType()) {
+      case ContextType::kFrame:
+        storage::test::ExpectStorageForFrame(frame, /*include_cookies=*/true,
+                                             expected);
+        return;
+      case ContextType::kWorker:
+        storage::test::ExpectStorageForWorker(frame, expected);
+        return;
+    }
+  }
+
+  void SetStorage(content::RenderFrameHost* frame) {
+    switch (ContextType()) {
+      case ContextType::kFrame:
+        storage::test::SetStorageForFrame(frame, /*include_cookies=*/true);
+        return;
+      case ContextType::kWorker:
+        storage::test::SetStorageForWorker(frame);
+        return;
+    }
+  }
+
+  ContextType ContextType() const { return GetParam(); }
+};
+
+IN_PROC_BROWSER_TEST_P(CookiePolicyStorageBrowserTest,
+                       ThirdPartyIFrameStorage) {
+  NavigateToPageWithFrame(kHostA);
+  NavigateFrameTo(kHostB, "/browsing_data/site_data.html");
+
+  ExpectStorage(GetFrame(), false);
+  SetStorage(GetFrame());
+  ExpectStorage(GetFrame(), true);
+
+  SetBlockThirdPartyCookies(true);
+
+  NavigateToPageWithFrame(kHostA);
+  NavigateFrameTo(kHostB, "/browsing_data/site_data.html");
+  ExpectStorage(GetFrame(), false);
+
+  // Allow all requests to b.test to access storage.
+  GURL a_url = https_server_.GetURL(kHostA, "/");
+  GURL b_url = https_server_.GetURL(kHostB, "/");
+  cookie_settings()->SetCookieSetting(b_url,
+                                      ContentSetting::CONTENT_SETTING_ALLOW);
+
+  NavigateToPageWithFrame(kHostA);
+  NavigateFrameTo(kHostB, "/browsing_data/site_data.html");
+  ExpectStorage(GetFrame(), true);
+
+  // Remove ALLOW setting.
+  cookie_settings()->ResetCookieSetting(b_url);
+
+  NavigateToPageWithFrame(kHostA);
+  NavigateFrameTo(kHostB, "/browsing_data/site_data.html");
+  ExpectStorage(GetFrame(), false);
+
+  // Allow all third-parties on a.test to access storage.
+  cookie_settings()->SetThirdPartyCookieSetting(
+      a_url, ContentSetting::CONTENT_SETTING_ALLOW);
+
+  NavigateToPageWithFrame(kHostA);
+  NavigateFrameTo(kHostB, "/browsing_data/site_data.html");
+  ExpectStorage(GetFrame(), true);
+}
+
+IN_PROC_BROWSER_TEST_P(CookiePolicyStorageBrowserTest,
+                       NestedThirdPartyIFrameStorage) {
+  NavigateToPageWithFrame(kHostA);
+  NavigateFrameTo(kHostB, "/iframe.html");
+  NavigateNestedFrameTo(kHostC, "/browsing_data/site_data.html");
+
+  ExpectStorage(GetNestedFrame(), false);
+  SetStorage(GetNestedFrame());
+  ExpectStorage(GetNestedFrame(), true);
+
+  SetBlockThirdPartyCookies(true);
+
+  NavigateToPageWithFrame(kHostA);
+  NavigateFrameTo(kHostB, "/iframe.html");
+  NavigateNestedFrameTo(kHostC, "/browsing_data/site_data.html");
+  ExpectStorage(GetNestedFrame(), false);
+
+  // Allow all requests to b.test to access storage.
+  GURL a_url = https_server_.GetURL(kHostA, "/");
+  GURL c_url = https_server_.GetURL(kHostC, "/");
+  cookie_settings()->SetCookieSetting(c_url,
+                                      ContentSetting::CONTENT_SETTING_ALLOW);
+
+  NavigateToPageWithFrame(kHostA);
+  NavigateFrameTo(kHostB, "/iframe.html");
+  NavigateNestedFrameTo(kHostC, "/browsing_data/site_data.html");
+  ExpectStorage(GetNestedFrame(), true);
+
+  // Remove ALLOW setting.
+  cookie_settings()->ResetCookieSetting(c_url);
+
+  NavigateToPageWithFrame(kHostA);
+  NavigateFrameTo(kHostB, "/iframe.html");
+  NavigateNestedFrameTo(kHostC, "/browsing_data/site_data.html");
+  ExpectStorage(GetNestedFrame(), false);
+
+  // Allow all third-parties on a.test to access storage.
+  cookie_settings()->SetThirdPartyCookieSetting(
+      a_url, ContentSetting::CONTENT_SETTING_ALLOW);
+
+  NavigateToPageWithFrame(kHostA);
+  NavigateFrameTo(kHostB, "/iframe.html");
+  NavigateNestedFrameTo(kHostC, "/browsing_data/site_data.html");
+  ExpectStorage(GetNestedFrame(), true);
+}
+
+IN_PROC_BROWSER_TEST_P(CookiePolicyStorageBrowserTest,
+                       NestedFirstPartyIFrameStorage) {
+// TODO(http://crbug.com/1317431): WebSQL does not work on Fuchsia.
+#if BUILDFLAG(IS_FUCHSIA)
+  if (ContextType() == ContextType::kFrame) {
+    return;
+  }
+#endif
+
+  NavigateToPageWithFrame(kHostA);
+  NavigateFrameTo(kHostB, "/iframe.html");
+  NavigateNestedFrameTo(kHostA, "/browsing_data/site_data.html");
+
+  ExpectStorage(GetNestedFrame(), false);
+  SetStorage(GetNestedFrame());
+  ExpectStorage(GetNestedFrame(), true);
+
+  SetBlockThirdPartyCookies(true);
+
+  NavigateToPageWithFrame(kHostA);
+  NavigateFrameTo(kHostB, "/iframe.html");
+  NavigateNestedFrameTo(kHostA, "/browsing_data/site_data.html");
+  ExpectStorage(GetNestedFrame(), false);
+
+  // Allow all requests to b.test to access storage.
+  GURL a_url = https_server_.GetURL(kHostA, "/");
+  cookie_settings()->SetCookieSetting(a_url,
+                                      ContentSetting::CONTENT_SETTING_ALLOW);
+
+  NavigateToPageWithFrame(kHostA);
+  NavigateFrameTo(kHostB, "/iframe.html");
+  NavigateNestedFrameTo(kHostA, "/browsing_data/site_data.html");
+  ExpectStorage(GetNestedFrame(), true);
+
+  // Remove ALLOW setting.
+  cookie_settings()->ResetCookieSetting(a_url);
+
+  NavigateToPageWithFrame(kHostA);
+  NavigateFrameTo(kHostB, "/iframe.html");
+  NavigateNestedFrameTo(kHostA, "/browsing_data/site_data.html");
+  ExpectStorage(GetNestedFrame(), false);
+
+  // Allow all third-parties on a.test to access storage.
+  cookie_settings()->SetThirdPartyCookieSetting(
+      a_url, ContentSetting::CONTENT_SETTING_ALLOW);
+
+  NavigateToPageWithFrame(kHostA);
+  NavigateFrameTo(kHostB, "/iframe.html");
+  NavigateNestedFrameTo(kHostA, "/browsing_data/site_data.html");
+  ExpectStorage(GetNestedFrame(), true);
+}
+
+INSTANTIATE_TEST_SUITE_P(,
+                         CookiePolicyStorageBrowserTest,
+                         testing::Values(ContextType::kFrame,
+                                         ContextType::kWorker));
 
 }  // namespace
