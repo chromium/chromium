@@ -231,7 +231,6 @@ bool IsBufferSlotInUse(
 namespace media {
 namespace v4l2_test {
 
-// TODO(b/256252128): Find optimal number of CAPTURE buffers
 constexpr uint32_t kNumberOfBuffersInCaptureQueue = 6;
 constexpr uint32_t kNumberOfBuffersInOutputQueue = 1;
 
