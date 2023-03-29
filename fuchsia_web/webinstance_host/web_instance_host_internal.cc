@@ -416,6 +416,10 @@ void AppendDynamicServices(fuchsia::web::ContextFeatureFlags features,
                            std::vector<std::string>& services) {
   using ::fuchsia::web::ContextFeatureFlags;
 
+  // Result of bitwise AND when no specified flag(s) are present.
+  const ContextFeatureFlags kNoFeaturesRequested =
+      static_cast<ContextFeatureFlags>(0);
+
   // Features are listed here in order of their enum value.
   static constexpr struct {
     ContextFeatureFlags flag;
@@ -446,13 +450,13 @@ void AppendDynamicServices(fuchsia::web::ContextFeatureFlags features,
     {ContextFeatureFlags::WIDEVINE_CDM, ContextFeatureFlags::WIDEVINE_CDM,
      "fuchsia.media.drm.Widevine"},
 #endif
-    {ContextFeatureFlags::HEADLESS, static_cast<ContextFeatureFlags>(0),
+    {ContextFeatureFlags::HEADLESS, kNoFeaturesRequested,
      "fuchsia.accessibility.semantics.SemanticsManager"},
-    {ContextFeatureFlags::HEADLESS, static_cast<ContextFeatureFlags>(0),
+    {ContextFeatureFlags::HEADLESS, kNoFeaturesRequested,
      "fuchsia.ui.composition.Allocator"},
-    {ContextFeatureFlags::HEADLESS, static_cast<ContextFeatureFlags>(0),
+    {ContextFeatureFlags::HEADLESS, kNoFeaturesRequested,
      "fuchsia.ui.composition.Flatland"},
-    {ContextFeatureFlags::HEADLESS, static_cast<ContextFeatureFlags>(0),
+    {ContextFeatureFlags::HEADLESS, kNoFeaturesRequested,
      "fuchsia.ui.scenic.Scenic"},
 #if BUILDFLAG(ENABLE_CAST_RECEIVER)
     {ContextFeatureFlags::LEGACYMETRICS, ContextFeatureFlags::LEGACYMETRICS,
@@ -463,6 +467,8 @@ void AppendDynamicServices(fuchsia::web::ContextFeatureFlags features,
     {ContextFeatureFlags::VIRTUAL_KEYBOARD,
      ContextFeatureFlags::VIRTUAL_KEYBOARD,
      "fuchsia.input.virtualkeyboard.ControllerCreator"},
+    {ContextFeatureFlags::DISABLE_DYNAMIC_CODE_GENERATION, kNoFeaturesRequested,
+     "fuchsia.kernel.VmexResource"},
   };
   for (const auto& [flag, value, service] : kServices) {
     if ((features & flag) == value) {

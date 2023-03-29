@@ -61,7 +61,6 @@
         "fuchsia.fonts.Provider",
         "fuchsia.hwinfo.Product",
         "fuchsia.intl.PropertyProvider",
-        "fuchsia.kernel.VmexResource",
         "fuchsia.logger.LogSink",
         "fuchsia.memorypressure.Provider",
         "fuchsia.process.Launcher",

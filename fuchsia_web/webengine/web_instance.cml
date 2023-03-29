@@ -20,7 +20,6 @@
         "fuchsia.fonts.Provider",
         "fuchsia.hwinfo.Product",
         "fuchsia.intl.PropertyProvider",
-        "fuchsia.kernel.VmexResource",
         "fuchsia.memorypressure.Provider",
         "fuchsia.process.Launcher",
         "fuchsia.sysmem.Allocator",
@@ -80,6 +79,10 @@
 
         // Required by ContextFeatureFlags.VIRTUAL_KEYBOARD
         "fuchsia.input.virtualkeyboard.ControllerCreator",
+
+        // Required for JavaScript & WebAssembly unless
+        // ContextFeatureFlags.DISABLE_DYNAMIC_CODE_GENERATION is set.
+        "fuchsia.kernel.VmexResource",
 
         // Required by ???
         "fuchsia.camera3.DeviceWatcher",
