@@ -42,8 +42,6 @@ _PACKAGES_ALL = object()
 # These files are used as backing files for corresponding qcow2 images.
 _BACKING_FILES = ('system.img', 'vendor.img')
 
-_DEFAULT_JAVA_HOME = os.path.join(constants.DIR_SOURCE_ROOT, 'third_party',
-                                  'jdk', 'current')
 _DEFAULT_AVDMANAGER_PATH = os.path.join(constants.ANDROID_SDK_ROOT,
                                         'cmdline-tools', 'latest', 'bin',
                                         'avdmanager')
@@ -172,7 +170,7 @@ class _AvdManagerAgent:
         'AVDMANAGER_OPTS':
         '-Dcom.android.sdkmanager.toolsdir=%s' % fake_tools_dir,
         'JAVA_HOME':
-        _DEFAULT_JAVA_HOME,
+        constants.JAVA_HOME,
     })
 
   def Create(self, avd_name, system_image, force=False):

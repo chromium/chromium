@@ -287,6 +287,18 @@ def GroupTestsForShard(num_of_shards, test_classes):
   return test_dict
 
 
+def _DumpJavaStacks(pid):
+  jcmd = os.path.join(constants.JAVA_HOME, 'bin', 'jcmd')
+  cmd = [jcmd, str(pid), 'Thread.print']
+  result = subprocess.run(cmd,
+                          check=False,
+                          stdout=subprocess.PIPE,
+                          encoding='utf8')
+  if result.returncode:
+    return 'Failed to dump stacks\n' + result.stdout
+  return result.stdout
+
+
 def _RunCommandsAndSerializeOutput(cmd_list):
   """Runs multiple commands in parallel and yields serialized output lines.
 
@@ -321,8 +333,7 @@ def _RunCommandsAndSerializeOutput(cmd_list):
           stderr=temp_file,
       ))
 
-  timeout_time = time.time() + _SHARD_TIMEOUT
-  timed_out = False
+  deadline = time.time() + _SHARD_TIMEOUT
 
   yield '\n'
   yield 'Shard 0 output:\n'
@@ -330,39 +341,41 @@ def _RunCommandsAndSerializeOutput(cmd_list):
   # The following will be run from a thread to pump Shard 0 results, allowing
   # live output while allowing timeout.
   def pump_stream_to_queue(f, q):
-    try:
-      for line in iter(f.readline, ''):
-        q.put(line)
-    except ValueError:  # Triggered if |f.close()| gets called.
-      pass
+    for line in f:
+      q.put(line)
+    q.put(None)
 
   shard_0_q = queue.Queue()
   shard_0_pump = threading.Thread(target=pump_stream_to_queue,
                                   args=(procs[0].stdout, shard_0_q))
   shard_0_pump.start()
 
-  # Wait for processes to finish, while forwarding Shard 0 results.
-  shard_to_check = 0
-  while shard_to_check < num_shards:
-    if shard_0_pump.is_alive():
-      while not shard_0_q.empty():
-        yield shard_0_q.get_nowait()
-    if procs[shard_to_check].poll() is not None:
-      shard_to_check += 1
-    else:
-      time.sleep(.1)
-    if time.time() > timeout_time:
-      timed_out = True
-      break
+  timeout_dumps = {}
 
-  # Handle Shard 0 timeout.
-  if shard_0_pump.is_alive():
-    procs[0].stdout.close()
+  # Print the first process until timeout or completion.
+  while shard_0_pump.is_alive():
+    try:
+      line = shard_0_q.get(timeout=deadline - time.time())
+      if line is None:
+        break
+      yield line
+    except queue.Empty:
+      if time.time() > deadline:
+        break
+
+  # Wait for remaining processes to finish.
+  for i, proc in enumerate(procs):
+    try:
+      proc.wait(timeout=deadline - time.time())
+    except subprocess.TimeoutExpired:
+      timeout_dumps[i] = _DumpJavaStacks(proc.pid)
+      proc.kill()
+
+  # Output any remaining output from a timed-out first shard.
   shard_0_pump.join()
-
-  # Emit all output (possibly incomplete due to |time_out|) in shard order.
   while not shard_0_q.empty():
-    yield shard_0_q.get_nowait()
+    yield shard_0_q.get()
+
   for i in range(1, num_shards):
     f = temp_files[i]
     yield '\n'
@@ -372,15 +385,18 @@ def _RunCommandsAndSerializeOutput(cmd_list):
       yield line
     f.close()
 
-  # Handle Shard 1+ timeout.
-  if timed_out:
-    for i, p in enumerate(procs):
-      if p.poll() is None:
-        p.kill()
-        yield 'Index of timed out shard: %d\n' % i
-
-    yield 'Output in shards may be cutoff due to timeout.\n'
+  # Output stacks
+  if timeout_dumps:
     yield '\n'
+    yield ('=' * 80) + '\n'
+    yield '\nOne or mord shards timed out.\n'
+    yield ('=' * 80) + '\n'
+    for i, dump in timeout_dumps.items():
+      yield 'Index of timed out shard: %d\n' % i
+      yield 'Thread dump:\n'
+      yield dump
+      yield '\n'
+
     raise cmd_helper.TimeoutError('Junit shards timed out.')
 
 
