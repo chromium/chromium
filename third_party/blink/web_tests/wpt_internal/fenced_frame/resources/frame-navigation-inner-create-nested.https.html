@@ -33,11 +33,13 @@
       await nextValueFromServer(navigation_ack_key);
 
       // Navigate (cross-origin) and wait.
-      inner_frame.src = origin2_simple_url;
+      inner_frame.config = new FencedFrameConfig(
+          generateURL(origin2_simple_url, []));
       await nextValueFromServer(navigation_ack_key);
 
       // Navigate (same-origin) and wait.
-      inner_frame.src = origin2_simple_url;
+      inner_frame.config = new FencedFrameConfig(
+          generateURL(origin2_simple_url, []));
       await nextValueFromServer(navigation_ack_key);
     }
 

@@ -25,11 +25,11 @@ async function init() {
   await sharedStorage.worklet.addModule("../../shared_storage/resources/simple-module.js");
 
   for (let i = 0; i < Math.floor(bitLimit / 3); ++i) {
-    let uuid = await sharedStorage.selectURL(
+    let config = await sharedStorage.selectURL(
         "test-url-selection-operation", urls,
-        {data: {'mockResult': 1}, keepAlive: true});
-    assert_true(uuid.startsWith('urn:uuid:'));
-    attachFencedFrame(uuid, 'opaque-ads');
+        {data: {'mockResult': 1}, keepAlive: true, resolveToConfig: true});
+    assert_true(config instanceof FencedFrameConfig);
+    attachFencedFrame(config, 'opaque-ads');
     const result = await nextValueFromServer(innerKey);
     assert_equals(result, "frame1_loaded");
   }
@@ -37,11 +37,11 @@ async function init() {
   // Either the per-origin per-pageload bit limit or the overall per-pageload
   // bit limit for `selectURL()` has been reached. The next call should return
   // the default URL.
-  let uuid = await sharedStorage.selectURL(
+  let config = await sharedStorage.selectURL(
       "test-url-selection-operation", urls,
-      {data: {'mockResult': 1}});
-  assert_true(uuid.startsWith('urn:uuid:'));
-  attachFencedFrame(uuid, 'opaque-ads');
+      {data: {'mockResult': 1}, resolveToConfig: true});
+  assert_true(config instanceof FencedFrameConfig);
+  attachFencedFrame(config, 'opaque-ads');
   const result = await nextValueFromServer(innerKey);
   assert_equals(result, "frame0_loaded");
 

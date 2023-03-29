@@ -47,7 +47,7 @@ promise_test(async () => {
                 "The 1st root fenced frame navigation succeeded");
 
   // Navigate the root fenced frame to a second site (which will nest).
-  root_frame.src = origin2_nested_url;
+  root_frame.config = new FencedFrameConfig(origin2_nested_url);
   const root_load2_actual = await nextValueFromServer(navigation_key);
   const root_load2_expected = "create-nested";
   assert_equals(root_load2_actual, root_load2_expected,
@@ -74,7 +74,7 @@ promise_test(async () => {
   writeValueToServer(navigation_ack_key, "ACK");
 
   // Navigate the root fenced frame.
-  root_frame.src = root_frame.src = origin2_simple_url;
+  root_frame.config = root_frame.config = new FencedFrameConfig(origin2_simple_url);
   const root_load3_actual = await nextValueFromServer(navigation_key);
   const root_load3_expected = "pass";
   assert_equals(root_load3_actual, root_load3_expected,

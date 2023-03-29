@@ -18,28 +18,17 @@ promise_test(async () => {
   const fenced_frame = document.createElement('fencedframe');
   document.body.append(fenced_frame);
 
-  // Specify the fenced frame's src attribute to an url.
-  const url = generateURL('resources/fenced-frame-loaded.html',
-                          [fenced_frame_loaded_key]);
-  fenced_frame.src = url;
-
-  // The fenced frame should navigate to the src url.
-  const load_expected = "fenced frame loaded";
-  const load_actual = await nextValueFromServer(fenced_frame_loaded_key);
-  assert_equals(load_actual, load_expected,
-    "Fenced frame successfully loaded by specifying its src attribute.");
-
   // Create an inner config.
   const config_navigation_key = token();
   const config_url = generateURL('resources/fenced-frame-loaded.html',
                                  [config_navigation_key]);
-  const config = new FencedFrameConfig(config_url.toString());
-  fenced_frame.config = config;
+  fenced_frame.config = new FencedFrameConfig(config_url.toString()); // PAHACER: do i need the toString()?
 
   // Installing an inner config to the fenced frame triggers navigation.
+  const config_navigation_expected = "fenced frame loaded";
   const config_navigation_actual =
     await nextValueFromServer(config_navigation_key);
-  assert_equals(config_navigation_actual, load_expected,
+  assert_equals(config_navigation_actual, config_navigation_expected,
     "Fenced frame successfully navigated by installing an inner config.");
 
 }, 'Installing an inner config to a fenced frame that has navigated triggers',

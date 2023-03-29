@@ -1,8 +1,14 @@
 <!DOCTYPE html>
 <title>Iframe content to load a fenced frame and report a value to the server</title>
+<script src="utils.js"></script>
 
 <body>
-<fencedframe
-  src='sandbox-mandatory-flags-inner.sub.html?key={{GET[key]}}&value={{GET[value]}}'>
-</fencedframe>
+<script>
+  const fencedframe = document.createElement("fencedframe");
+  fencedframe.config = new FencedFrameConfig(
+      generateURL("sandbox-mandatory-flags-inner.sub.html?key={{GET[key]}}" + 
+          "&value={{GET[value]}}", []));
+  document.body.appendChild(fencedframe);
+  // PAHACER: double check this
+</script>
 </body>

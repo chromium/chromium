@@ -242,10 +242,13 @@ function attachFrameContext(element_name, generator_api, resolve_to_config, html
     attributes.forEach(attribute => {
       frame.setAttribute(attribute[0], attribute[1]);
     });
-    if (resolve_to_config) {
+    if (element_name == "iframe") {
+      frame.src = id;
+    } else if (id instanceof FencedFrameConfig) {
       frame.config = id;
     } else {
-      frame.src = id;
+      const config = new FencedFrameConfig(id);
+      frame.config = config;
     }
     document.body.append(frame);
     return frame;
@@ -255,10 +258,13 @@ function attachFrameContext(element_name, generator_api, resolve_to_config, html
 
 function replaceFrameContext(frame_proxy, {generator_api="", resolve_to_config=false, html="", headers=[], origin=""}={}) {
   frame_constructor = (id) => {
-    if (resolve_to_config) {
+    if (frame_proxy.element.nodeName == "IFRAME") {
+      frame_proxy.element.src = id;
+    } else if (id instanceof FencedFrameConfig) {
       frame_proxy.element.config = id;
     } else {
-      frame_proxy.element.src = id;
+      const config = new FencedFrameConfig(id);
+      frame_proxy.element.config = config;
     }
     return frame_proxy.element;
   };
@@ -331,7 +337,8 @@ function attachFencedFrame(target) {
   if (target instanceof FencedFrameConfig) {
     fenced_frame.config = target;
   } else {
-    fenced_frame.src = target;
+    const config = new FencedFrameConfig(target);
+    fenced_frame.config = config;
   }
 
   document.body.append(fenced_frame);

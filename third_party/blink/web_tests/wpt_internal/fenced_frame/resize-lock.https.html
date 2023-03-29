@@ -25,8 +25,8 @@ async function runTest(api1,
   const reresized_height = 251;
 
   var frame = await attachFencedFrameContext({
-      generator_api: api1, attributes: [
-      ['width', initial_width], ['height', initial_height]]});
+      generator_api: api1, resolve_to_config: true,
+      attributes: [['width', initial_width], ['height', initial_height]]});
 
   const assert_dimensions =
       (expected_width, expected_height) => {
@@ -46,7 +46,8 @@ async function runTest(api1,
   // Perform an embedder-initiated navigation, and check that the size is now
   // what we expect (it should be based on the new context, rather than the old
   // context).
-  frame = await replaceFrameContext(frame, {generator_api: api2});
+  frame = await replaceFrameContext(frame, {generator_api: api2,
+      resolve_to_config: true});
   await frame.execute(assert_dimensions, expected_size_after_renavigation);
 
   // Resize the newly navigated frame, and check the size.
@@ -60,8 +61,8 @@ promise_test(async () => {
                    'fledge', [728, 90], [728, 90]); },
                    "FLEDGE->FLEDGE");
 promise_test(async () => {
-    return runTest('sharedstorage', [320, 50], [320, 50],
-                   'sharedstorage', [728, 90], [728, 90]); },
+    return runTest('sharedstorage', [321, 51], [729, 91],
+                   'sharedstorage', [729, 91], [971, 251]); },
                    "sharedStorage->sharedStorage");
 promise_test(async () => {
     return runTest('default', [321, 51], [729, 91],
@@ -73,23 +74,23 @@ promise_test(async () => {
                    "default->FLEDGE");
 promise_test(async () => {
     return runTest('default', [321, 51], [729, 91],
-                   'sharedStorage', [728, 90], [728, 90]); },
+                   'sharedStorage', [729, 91], [971, 251]); },
                    "default->sharedStorage");
 promise_test(async () => {
     return runTest('fledge', [320, 50], [320, 50],
                    'default', [729, 91], [971, 251]); },
                    "FLEDGE->default");
 promise_test(async () => {
-    return runTest('sharedstorage', [320, 50], [320, 50],
+    return runTest('sharedstorage', [321, 51], [729, 91],
                    'default', [729, 91], [971, 251]); },
                    "sharedStorage->default");
 promise_test(async () => {
-    return runTest('sharedstorage', [320, 50], [320, 50],
+    return runTest('sharedstorage', [321, 51], [729, 91],
                    'fledge', [728, 90], [728, 90]); },
                    "sharedStorage->FLEDGE");
 promise_test(async () => {
     return runTest('fledge', [320, 50], [320, 50],
-                   'sharedstorage', [728, 90], [728, 90]); },
+                   'sharedstorage', [729, 91], [971, 251]); },
                    "FLEDGE->sharedStorage");
 </script>
 </body>

@@ -21,13 +21,14 @@
   async function runAdAuctionAndNavigateFencedFrame() {
     const auctionJs = `
       (async function() {
-        url = await navigator.runAdAuction({
+        config = await navigator.runAdAuction({
             decisionLogicUrl: "${base}fledge_decision_logic.js.php",
             seller: "${baseOrigin}",
-            interestGroupBuyers: ["${baseOrigin}"]});
+            interestGroupBuyers: ["${baseOrigin}"],
+            resolveToConfig: true});
 
         const fencedFrame = document.createElement("fencedframe");
-        fencedFrame.src = url;
+        fencedFrame.config = config;
         document.body.appendChild(fencedFrame);
       })();`;
     return session.evaluateAsync(auctionJs);

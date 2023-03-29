@@ -20,7 +20,7 @@ promise_test(async () => {
   // Specify the fenced frame's src attribute to an url.
   const url = generateURL('resources/fenced-frame-loaded.html',
                           [fenced_frame_loaded_key]);
-  fenced_frame.src = url;
+  fenced_frame.config = new FencedFrameConfig(url);
 
   // The fenced frame should navigate to the src url.
   const load_expected = "fenced frame loaded";

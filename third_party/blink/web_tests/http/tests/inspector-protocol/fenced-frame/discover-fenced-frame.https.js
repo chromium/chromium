@@ -5,7 +5,9 @@
   await dp.Target.setDiscoverTargets({discover: true});
   await session.evaluate(`
     let fencedframe = document.createElement('fencedframe');
-    fencedframe.src = '../fenced-frame/resources/page-with-title.php';
+    const url = new URL('../fenced-frame/resources/page-with-title.php',
+        location.href);
+    fencedframe.config = new FencedFrameConfig(url);
     document.body.appendChild(fencedframe);
   `);
 

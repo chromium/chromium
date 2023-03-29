@@ -4,5 +4,9 @@ header('Supports-Loading-Mode: fenced-frame');
 ?>
 <!DOCTYPE html>
 <body>
-  <fencedframe src="page-with-title.php"></fencedframe>
+  <fencedframe></fencedframe>
+  <script>
+  const url = new URL("page-with-title.php", location.href);
+  document.querySelector("fencedframe").config = new FencedFrameConfig(url);
+</script>
 </body>

@@ -12,7 +12,9 @@
   // Create and navigate inside a fenced frame.
   session.evaluate(function() {
     let ff = document.createElement('fencedframe');
-    ff.src = '../fenced-frame/resources/page-with-title.php';
+    const url = new URL('../fenced-frame/resources/page-with-title.php',
+        location.href);
+    ff.config = new FencedFrameConfig(url);
     document.body.appendChild(ff);
   });
 

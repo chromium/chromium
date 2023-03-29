@@ -8,8 +8,10 @@ const run_in_fenced_frame = (func_name, description, is_nested) => {
     params.set('key', key);
     params.set('test_func', func_name);
     const frame = document.createElement('fencedframe');
-    frame.src = 'resources/sandboxed-features-inner.sub.html?' +
-      params.toString();
+    const frame_url = 'resources/sandboxed-features-inner.sub.html?' +
+    params.toString();
+    const config = new FencedFrameConfig(generateURL(frame_url, []));
+    frame.config = config;
     test.add_cleanup(() => {
       frame.remove();
     });

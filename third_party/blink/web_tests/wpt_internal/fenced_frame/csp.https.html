@@ -18,8 +18,10 @@
                       false);
 
         const new_frame = document.createElement('fencedframe');
-        new_frame.src = generateURL("resources/csp-inner.html",
-            [csp_key]);
+        const new_config = new FencedFrameConfig(generateURL(
+            "resources/csp-inner.html",
+            [csp_key]));
+        new_frame.config = new_config;
 
         // This attribute will be ignored since the IDL for
         // fenced frames do not support the 'csp' attribute.

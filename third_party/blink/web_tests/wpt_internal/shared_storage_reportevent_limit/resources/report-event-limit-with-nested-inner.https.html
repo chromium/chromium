@@ -22,14 +22,14 @@
 
     await sharedStorage.worklet.addModule("../../shared_storage/resources/simple-module.js");
 
-    let urn = await sharedStorage.selectURL(
+    let config = await sharedStorage.selectURL(
           "test-url-selection-operation", [{url: url0, reportingMetadata},
                                            {url: url1}, {url: url2},
                                            {url: url3}],
-          {data: {'mockResult': 0}});
+          {data: {'mockResult': 0}, resolveToConfig: true});
 
     // Create a nested fenced frame. A report will be sent, if allowed.
-    attachFencedFrame(urn, 'opaque-ads');
+    attachFencedFrame(config);
   }
 
   createNestedFrame(frameToken, reportID);

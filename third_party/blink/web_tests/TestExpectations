@@ -2934,8 +2934,10 @@ crbug.com/626703 [ Mac11 ] external/wpt/font-access/font_access_sorted.tentative
 crbug.com/626703 external/wpt/png/cicp-chunk.html [ Timeout ]
 crbug.com/626703 [ Linux ] virtual/fenced-frame-mparch/wpt_internal/fenced_frame/background-sync.https.html [ Timeout ]
 crbug.com/626703 [ Win11 ] virtual/fenced-frame-mparch/wpt_internal/fenced_frame/background-sync.https.html [ Timeout ]
-crbug.com/626703 [ Linux ] virtual/fenced-frame-mparch/wpt_internal/fenced_frame/opaque-ad-sizes.https.html [ Skip Timeout ]
-crbug.com/626703 [ Mac11 ] virtual/fenced-frame-mparch/wpt_internal/fenced_frame/opaque-ad-sizes.https.html [ Skip Timeout ]
+crbug.com/626703 [ Linux ] virtual/fenced-frame-mparch/wpt_internal/fenced_frame/opaque-ad-sizes-exact-size.https.html [ Skip Timeout ]
+crbug.com/626703 [ Mac11 ] virtual/fenced-frame-mparch/wpt_internal/fenced_frame/opaque-ad-sizes-exact-size.https.html [ Skip Timeout ]
+crbug.com/626703 [ Linux ] virtual/fenced-frame-mparch/wpt_internal/fenced_frame/opaque-ad-sizes-special-cases.https.html [ Skip Timeout ]
+crbug.com/626703 [ Mac11 ] virtual/fenced-frame-mparch/wpt_internal/fenced_frame/opaque-ad-sizes-special-cases.https.html [ Skip Timeout ]
 crbug.com/626703 [ Linux ] virtual/lna-workers-enabled/external/wpt/fetch/local-network-access/iframe.tentative.https.window.html [ Timeout ]
 crbug.com/626703 [ Mac10.15 ] virtual/lna-workers-enabled/external/wpt/fetch/local-network-access/iframe.tentative.https.window.html [ Timeout ]
 crbug.com/626703 [ Linux ] virtual/pending-beacon/external/wpt/pending-beacon/pending_beacon-sendonhidden.tentative.https.window.html [ Timeout ]
@@ -6700,6 +6702,9 @@ crbug.com/1427239 [ Mac ] virtual/view-transition/external/wpt/css/css-view-tran
 # Possibly related - originally added from automated test imports:
 crbug.com/626703 [ Linux ] virtual/view-transition/external/wpt/css/css-view-transitions/massive-element-on-top-of-viewport-offscreen-new.html [ Failure ]
 crbug.com/626703 [ Mac12 ] virtual/view-transition/external/wpt/css/css-view-transitions/massive-element-on-top-of-viewport-offscreen-new.html [ Failure ]
+
+# Re-enable test after adding support for component ads in frame contexts
+crbug.com/1427455 virtual/fenced-frame-mparch/wpt_internal/fenced_frame/nested-opaque-ad-sizes.https.html [ Failure Pass Timeout ]
 
 # Temporarily disable while updating icon names in DevTools
 # https://chromium-review.googlesource.com/c/devtools/devtools-frontend/+/4370249

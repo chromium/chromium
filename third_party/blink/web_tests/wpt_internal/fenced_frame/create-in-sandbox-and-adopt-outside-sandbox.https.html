@@ -23,8 +23,9 @@ promise_test(async() => {
   // Per https://dom.spec.whatwg.org/#concept-node-append, this will adopt the
   // inner fenced frame into the outer (main frame) document.
   document.body.append(fenced_frame);
-  fenced_frame.src =
-      generateURL('resources/fenced-frame-loaded.html', [fenced_frame_loaded_key]);
+  fenced_frame.config =
+      new FencedFrameConfig(generateURL(
+          'resources/fenced-frame-loaded.html', [fenced_frame_loaded_key]));
   const response = await nextValueFromServer(fenced_frame_loaded_key);
   assert_equals(response, "fenced frame loaded",
                 "The inner frame should be loaded.");

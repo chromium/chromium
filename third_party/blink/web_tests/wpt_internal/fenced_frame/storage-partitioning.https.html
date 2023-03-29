@@ -40,8 +40,8 @@ async function runTest(getter, setter) {
       "The inner value isn't visible outside the fenced frame.");
 
   // Perform an embedder-initiated navigation that will fail.
-  const original_url = frame.src;
-  frame.src = "resources/response-204.py";
+  const original_config = frame.config;
+  frame.config = new FencedFrameConfig("resources/response-204.py");
   await step_timeout(() => {}, 1000);
 
   // Check that the failed navigation didn't change the storage partition.
@@ -62,7 +62,7 @@ async function runTest(getter, setter) {
 
   // Refresh the fenced frame from the embedder.
   await frame.execute(() => window.executor.suspend(() => {}));
-  frame.element.src = original_url;
+  frame.element.config = original_config;
 
   // Check that there is a blank slate.
   const inner_after_embedder_refresh = await frame.execute(getter, [key]);

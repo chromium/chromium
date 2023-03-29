@@ -217,6 +217,7 @@ async function runBasicFledgeAuction(test, uuid, auctionConfigOverrides = {}) {
         uuid,
         { reportResult: `sendReportTo('${createSellerReportUrl(uuid)}');` }),
     interestGroupBuyers: [window.location.origin],
+    resolveToConfig: true,
     ...auctionConfigOverrides
   };
   return await navigator.runAdAuction(auctionConfig);
@@ -228,13 +229,13 @@ async function runBasicFledgeAuction(test, uuid, auctionConfigOverrides = {}) {
 // fenced frame to finish loading, since there's no API that can do that.
 async function runBasicFledgeAuctionAndNavigate(test, uuid,
                                                 auctionConfigOverrides = {}) {
-  let url = await runBasicFledgeAuction(test, uuid, auctionConfigOverrides);
-  assert_equals(typeof url, 'string',
-                `Wrong value type returned from auction: ${typeof url}`);
+  let config = await runBasicFledgeAuction(test, uuid, auctionConfigOverrides);
+  assert_true(config instanceof FencedFrameConfig,
+      `Wrong value type returned from auction: ${config.constructor.type}`);
 
   let fencedFrame = document.createElement('fencedframe');
   fencedFrame.mode = 'opaque-ads';
-  fencedFrame.src = url;
+  fencedFrame.config = config;
   document.body.appendChild(fencedFrame);
   test.add_cleanup(() => { document.body.removeChild(fencedFrame); });
 }
@@ -245,10 +246,10 @@ async function runBasicFledgeAuctionAndNavigate(test, uuid,
 async function runBasicFledgeTestExpectingWinner(test, testConfig = {}) {
   const uuid = generateUuid(test);
   await joinInterestGroup(test, uuid, testConfig.interestGroupOverrides);
-  let url = await runBasicFledgeAuction(
+  let config = await runBasicFledgeAuction(
       test, uuid, testConfig.auctionConfigOverrides);
-  assert_equals(typeof url, 'string',
-      `Wrong value type returned from auction: ${typeof url}`);
+  assert_true(config instanceof FencedFrameConfig,
+      `Wrong value type returned from auction: ${config.constructor.type}`);
 }
 
 // Joins an interest group and runs an auction, expecting no winner to be

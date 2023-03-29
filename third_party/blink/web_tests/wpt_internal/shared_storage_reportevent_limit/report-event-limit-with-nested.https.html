@@ -40,13 +40,13 @@ promise_test(async () => {
     await sharedStorage.worklet.addModule("../shared_storage/resources/simple-module.js");
 
     for (let i = 0; i < 3; ++i) {
-      let urn = await sharedStorage.selectURL(
+      let config = await sharedStorage.selectURL(
         "test-url-selection-operation", [{url: url0}, {url: url1}, {url: url2},
                                          {url: url3}],
-        {data: {'mockResult': 0}, keepAlive: true});
+        {data: {'mockResult': 0}, keepAlive: true, resolveToConfig: true});
 
       // Create nested fenced frames. A report will be sent, if allowed.
-      attachFencedFrame(urn, 'opaque-ads');
+      attachFencedFrame(config);
 
       // Wait for the nested fenced frame to complete its tasks.
       await nextValueFromServer(frameToken);
