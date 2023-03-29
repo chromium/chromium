@@ -25,6 +25,7 @@
 #include "third_party/blink/renderer/core/html_names.h"
 #include "third_party/blink/renderer/core/speculation_rules/stub_speculation_host.h"
 #include "third_party/blink/renderer/core/testing/dummy_page_holder.h"
+#include "third_party/blink/renderer/platform/testing/runtime_enabled_features_test_helpers.h"
 #include "third_party/blink/renderer/platform/testing/unit_test_helpers.h"
 #include "third_party/blink/renderer/platform/testing/url_test_helpers.h"
 #include "third_party/blink/renderer/platform/wtf/functional.h"
@@ -325,6 +326,17 @@ TEST(SpeculationRulesPrefetchFutureOriginTrialTest,
   ScopedTestOriginTrialPolicy using_test_keys;
   DummyPageHolder page_holder;
   LocalFrame& frame = page_holder.GetFrame();
+
+  // If SpeculationRulesFetchFromHeader is enabled by default (i.e., it doesn't
+  // require an origin trial token), then the speculation rules JSON is always
+  // fetched, so the mock URLs need to be registered. Otherwise it shouldn't be
+  // fetched (and the lack of a registration will cause  an error if it is
+  // fetched).
+  absl::optional<ScopedRegisterMockedURLLoads> mock_url_loads;
+  if (RuntimeEnabledFeatures::SpeculationRulesFetchFromHeaderEnabled(
+          frame.DomWindow())) {
+    mock_url_loads.emplace();
+  }
 
   CommitTestNavigation(
       frame, KURL("https://speculationrules.test/"),

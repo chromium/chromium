@@ -12,6 +12,7 @@
 #include "third_party/blink/public/common/origin_trials/scoped_test_origin_trial_policy.h"
 #include "third_party/blink/public/platform/web_url_response.h"
 #include "third_party/blink/public/web/web_navigation_params.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_core.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/frame/settings.h"
@@ -116,7 +117,14 @@ void NoVarySearchPrefetchEnabledTest(StubSpeculationHost& speculation_host) {
             "urls": ["https://example.com/foo"],
             "requires": ["anonymous-client-ip-when-cross-origin"]}
          ]})";
-  InsertSpeculationRules(page_holder.GetDocument(), speculation_script);
+  {
+    auto* script_state = ToScriptStateForMainWorld(&frame);
+    v8::MicrotasksScope microtasks_scope(script_state->GetIsolate(),
+                                         ToMicrotaskQueue(script_state),
+                                         v8::MicrotasksScope::kRunMicrotasks);
+    InsertSpeculationRules(page_holder.GetDocument(), speculation_script);
+    page_holder.GetFrameView().UpdateAllLifecyclePhasesForTest();
+  }
   run_loop.Run();
 
   broker.SetBinderForTesting(mojom::blink::SpeculationHost::Name_, {});
@@ -132,6 +140,7 @@ TEST(PrefetchNoVarySearchOriginTrialTest,
 
 TEST(PrefetchNoVarySearchOriginTrialTest,
      DoNotEnableNoVarySearchPrefetchInBrowser) {
+  ScopedNoVarySearchPrefetchForTest enable_no_vary_search_prefetch_{false};
   StubSpeculationHost speculation_host;
   NoVarySearchPrefetchEnabledTest(speculation_host);
   EXPECT_FALSE(speculation_host.sent_no_vary_search_support_to_browser());
