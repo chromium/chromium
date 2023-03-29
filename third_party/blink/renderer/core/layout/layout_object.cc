@@ -582,8 +582,9 @@ void LayoutObject::AssertClearedPaintInvalidationFlags() const {
 
   // Make an exception for <frameset> children, which don't produce fragments
   // if the number of children is larger than <rows count> * <cols count>.
-  if (Parent() && Parent()->IsFrameSetIncludingNG())
+  if (Parent() && Parent()->IsFrameSet()) {
     return;
+  }
 
   // Sometimes we just have a Layout(NG)View with no children, and the view is
   // not marked for layout, even if it has never been laid out. It seems that we

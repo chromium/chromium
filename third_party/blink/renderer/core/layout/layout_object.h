@@ -890,15 +890,7 @@ class CORE_EXPORT LayoutObject : public GarbageCollected<LayoutObject>,
   }
   bool IsFrameSet() const {
     NOT_DESTROYED();
-    return IsOfType(kLayoutObjectFrameSet);
-  }
-  bool IsLayoutNGFrameSet() const {
-    NOT_DESTROYED();
     return IsOfType(kLayoutObjectNGFrameSet);
-  }
-  bool IsFrameSetIncludingNG() const {
-    NOT_DESTROYED();
-    return IsFrameSet() || IsLayoutNGFrameSet();
   }
   bool IsInsideListMarkerForCustomContent() const {
     NOT_DESTROYED();
@@ -3691,7 +3683,6 @@ class CORE_EXPORT LayoutObject : public GarbageCollected<LayoutObject>,
     kLayoutObjectCustomScrollbarPart,
     kLayoutObjectEmbeddedObject,
     kLayoutObjectFrame,
-    kLayoutObjectFrameSet,
     kLayoutObjectIFrame,
     kLayoutObjectImage,
     kLayoutObjectInsideListMarker,

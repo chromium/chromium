@@ -712,8 +712,7 @@ void LayoutView::CalculateScrollbarModes(
   Document& document = GetDocument();
   if (Node* body = document.body()) {
     // Framesets can't scroll.
-    if (body->GetLayoutObject() &&
-        body->GetLayoutObject()->IsFrameSetIncludingNG()) {
+    if (body->GetLayoutObject() && body->GetLayoutObject()->IsFrameSet()) {
       TRACE_EVENT_INSTANT1(
           TRACE_DISABLED_BY_DEFAULT("blink.debug.layout.scrollbars"),
           "CalculateScrollbarModes", TRACE_EVENT_SCOPE_THREAD, "disable_reason",

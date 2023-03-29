@@ -8,10 +8,8 @@
 #include "third_party/blink/renderer/core/dom/element.h"
 #include "third_party/blink/renderer/core/dom/node_computed_style.h"
 #include "third_party/blink/renderer/core/frame/web_feature.h"
-#include "third_party/blink/renderer/core/html/html_frame_set_element.h"
 #include "third_party/blink/renderer/core/layout/layout_block_flow.h"
 #include "third_party/blink/renderer/core/layout/layout_counter.h"
-#include "third_party/blink/renderer/core/layout/layout_frame_set.h"
 #include "third_party/blink/renderer/core/layout/layout_inside_list_marker.h"
 #include "third_party/blink/renderer/core/layout/layout_list_item.h"
 #include "third_party/blink/renderer/core/layout/layout_list_marker.h"
@@ -29,7 +27,6 @@
 #include "third_party/blink/renderer/core/layout/ng/inline/layout_ng_text_fragment.h"
 #include "third_party/blink/renderer/core/layout/ng/inline/layout_ng_word_break.h"
 #include "third_party/blink/renderer/core/layout/ng/layout_ng_block_flow.h"
-#include "third_party/blink/renderer/core/layout/ng/layout_ng_frame_set.h"
 #include "third_party/blink/renderer/core/layout/ng/layout_ng_progress.h"
 #include "third_party/blink/renderer/core/layout/ng/layout_ng_ruby_as_block.h"
 #include "third_party/blink/renderer/core/layout/ng/layout_ng_ruby_text.h"
@@ -142,13 +139,6 @@ LayoutObject* LayoutObjectFactory::CreateCounter(
   if (force_legacy)
     new_object->SetForceLegacyLayout();
   return new_object;
-}
-
-LayoutBox* LayoutObjectFactory::CreateFrameSet(HTMLFrameSetElement& element,
-                                               const ComputedStyle& style,
-                                               LegacyLayout legacy) {
-  return CreateObject<LayoutBox, LayoutNGFrameSet, LayoutFrameSet>(element,
-                                                                   legacy);
 }
 
 LayoutText* LayoutObjectFactory::CreateText(Node* node,

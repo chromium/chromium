@@ -24,7 +24,6 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_LAYOUT_FRAME_H_
 
 #include "third_party/blink/renderer/core/layout/layout_embedded_content.h"
-#include "third_party/blink/renderer/core/layout/layout_frame_set.h"
 
 namespace blink {
 

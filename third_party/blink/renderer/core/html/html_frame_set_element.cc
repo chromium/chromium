@@ -37,8 +37,6 @@
 #include "third_party/blink/renderer/core/html/html_frame_element.h"
 #include "third_party/blink/renderer/core/html_names.h"
 #include "third_party/blink/renderer/core/input/event_handler.h"
-#include "third_party/blink/renderer/core/layout/layout_frame_set.h"
-#include "third_party/blink/renderer/core/layout/layout_object_factory.h"
 #include "third_party/blink/renderer/core/layout/ng/frame_set_layout_data.h"
 #include "third_party/blink/renderer/core/layout/ng/layout_ng_frame_set.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_physical_box_fragment.h"
@@ -51,8 +49,6 @@ namespace {
 constexpr int kDefaultBorderThicknessPx = 6;
 
 const Vector<LayoutUnit>& ColumnSizes(const LayoutBox& box) {
-  if (const auto* legacy = DynamicTo<LayoutFrameSet>(box))
-    return legacy->Columns().sizes_;
   DCHECK(IsA<LayoutNGFrameSet>(box));
   // |object| should have only 1 physical fragment because <frameset> is
   // monolithic.
@@ -62,8 +58,6 @@ const Vector<LayoutUnit>& ColumnSizes(const LayoutBox& box) {
 }
 
 const Vector<LayoutUnit>& RowSizes(const LayoutBox& box) {
-  if (const auto* legacy = DynamicTo<LayoutFrameSet>(box))
-    return legacy->Rows().sizes_;
   DCHECK(IsA<LayoutNGFrameSet>(box));
   // |object| should have only 1 physical fragment because <frameset> is
   // monolithic.
@@ -417,7 +411,7 @@ LayoutObject* HTMLFrameSetElement::CreateLayoutObject(
     const ComputedStyle& style,
     LegacyLayout legacy) {
   if (style.ContentBehavesAsNormal())
-    return LayoutObjectFactory::CreateFrameSet(*this, style, legacy);
+    return MakeGarbageCollected<LayoutNGFrameSet>(this);
   return LayoutObject::CreateObject(this, style, legacy);
 }
 
@@ -430,7 +424,7 @@ void HTMLFrameSetElement::AttachLayoutTree(AttachContext& context) {
 void HTMLFrameSetElement::DefaultEventHandler(Event& evt) {
   auto* mouse_event = DynamicTo<MouseEvent>(evt);
   if (mouse_event && !NoResize() && GetLayoutObject() &&
-      GetLayoutObject()->IsFrameSetIncludingNG()) {
+      GetLayoutObject()->IsFrameSet()) {
     if (UserResize(*mouse_event)) {
       evt.SetDefaultHandled();
       return;

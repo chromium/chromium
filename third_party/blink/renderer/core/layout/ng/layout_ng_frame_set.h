@@ -27,7 +27,7 @@ class LayoutNGFrameSet final : public LayoutNGBlock {
 template <>
 struct DowncastTraits<LayoutNGFrameSet> {
   static bool AllowFrom(const LayoutObject& object) {
-    return object.IsLayoutNGFrameSet();
+    return object.IsFrameSet();
   }
 };
 

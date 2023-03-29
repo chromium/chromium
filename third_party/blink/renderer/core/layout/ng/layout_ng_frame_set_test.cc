@@ -6,9 +6,9 @@
 
 namespace blink {
 
-class LayoutFrameSetTest : public RenderingTest {};
+class LayoutNGFrameSetTest : public RenderingTest {};
 
-TEST_F(LayoutFrameSetTest, GetCursor) {
+TEST_F(LayoutNGFrameSetTest, GetCursor) {
   SetHtmlInnerHTML(R"HTML(
     <frameset id='f' rows='50%,50%' cols='50%,50%' border='20'>
     <frame src=""></frame>

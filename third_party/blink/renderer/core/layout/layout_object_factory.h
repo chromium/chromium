@@ -15,11 +15,9 @@ class ComputedStyle;
 class CounterContentData;
 class Document;
 class HTMLElement;
-class HTMLFrameSetElement;
 class LayoutBlock;
 class LayoutBlockFlow;
 class LayoutObject;
-class LayoutBox;
 enum class LegacyLayout;
 class LayoutProgress;
 class LayoutRubyAsBlock;
@@ -49,9 +47,6 @@ class LayoutObjectFactory {
   static LayoutObject* CreateCounter(PseudoElement& pseduo,
                                      const CounterContentData& counter,
                                      LegacyLayout legacy);
-  static LayoutBox* CreateFrameSet(HTMLFrameSetElement& element,
-                                   const ComputedStyle& style,
-                                   LegacyLayout legacy);
 
   static LayoutText* CreateText(Node*, String, LegacyLayout);
   static LayoutText* CreateTextCombine(Node*, String, LegacyLayout);

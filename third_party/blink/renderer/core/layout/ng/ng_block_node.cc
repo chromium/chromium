@@ -181,7 +181,7 @@ NOINLINE void DetermineAlgorithmAndRun(const NGLayoutAlgorithmParams& params,
     CreateAlgorithmAndRun<NGReplacedLayoutAlgorithm>(params, callback);
   } else if (box.IsFieldset()) {
     CreateAlgorithmAndRun<NGFieldsetLayoutAlgorithm>(params, callback);
-  } else if (box.IsLayoutNGFrameSet()) {
+  } else if (box.IsFrameSet()) {
     CreateAlgorithmAndRun<NGFrameSetLayoutAlgorithm>(params, callback);
   }
   // If there's a legacy layout box, we can only do block fragmentation if

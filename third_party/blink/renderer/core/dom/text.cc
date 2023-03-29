@@ -262,7 +262,7 @@ static inline bool CanHaveWhitespaceChildren(
   }
 
   if (parent.IsTable() || parent.IsTableRow() || parent.IsTableSection() ||
-      parent.IsLayoutTableCol() || parent.IsFrameSetIncludingNG() ||
+      parent.IsLayoutTableCol() || parent.IsFrameSet() ||
       parent.IsFlexibleBoxIncludingNG() || parent.IsLayoutNGGrid() ||
       parent.IsSVGRoot() || parent.IsSVGContainer() || parent.IsSVGImage() ||
       parent.IsSVGShape()) {

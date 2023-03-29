@@ -1554,7 +1554,7 @@ void PaintLayerScrollableArea::ComputeScrollbarExistence(
   if (VisualViewportSuppliesScrollbars() ||
       !CanHaveOverflowScrollbars(*GetLayoutBox()) ||
       GetLayoutBox()->GetFrame()->GetSettings()->GetHideScrollbars() ||
-      GetLayoutBox()->IsFieldset() || GetLayoutBox()->IsLayoutNGFrameSet() ||
+      GetLayoutBox()->IsFieldset() || GetLayoutBox()->IsFrameSet() ||
       GetLayoutBox()->StyleRef().ScrollbarWidth() == EScrollbarWidth::kNone) {
     needs_horizontal_scrollbar = false;
     needs_vertical_scrollbar = false;
