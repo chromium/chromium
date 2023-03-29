@@ -47,22 +47,7 @@ namespace sync_bookmarks {
 
 namespace {
 
-#if BUILDFLAG(IS_IOS) or BUILDFLAG(IS_ANDROID)
-// Set a lower limit for mobile platforms.
-// 1. There are not many users of bookmarks on mobiles.
-// 2. Prevents creation of an overly huge sync metadata file to be stored on
-// the disk.
-// 3. Reduced memory consumption and processing, noticeable especially during
-// an initial merge.
-// 4. A lower limit for mobile platforms reflects the lower
-// capacity/processing power of mobile devices.
-//
-// Since the bookmark model thread is the UI thread, a smoother user
-// experience outweighs the resulting downsides.
-constexpr size_t kDefaultMaxBookmarksTillSyncEnabled = 20000;
-#else
 constexpr size_t kDefaultMaxBookmarksTillSyncEnabled = 100000;
-#endif
 
 class ScopedRemoteUpdateBookmarks {
  public:
