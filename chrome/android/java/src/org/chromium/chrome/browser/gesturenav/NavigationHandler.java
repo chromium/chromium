@@ -265,6 +265,10 @@ class NavigationHandler implements TouchEventObserver {
      */
     void navigate(boolean forward) {
         if (!isValidState()) return;
+        if (mTabOnBackGestureHandler != null) {
+            // Delegate navigation to native side: supposed to be triggered after animation.
+            return;
+        }
         if (forward) {
             mTab.goForward();
         } else {

@@ -173,7 +173,7 @@ public class NavigationHandlerTest {
     @Test
     @SmallTest
     public void testSwipeNavigateOnRenderedPage() {
-        FeatureList.setTestFeatures(Map.of(ChromeFeatureList.BACK_FORWARD_TRANSITIONS, true));
+        FeatureList.setTestFeatures(Map.of(ChromeFeatureList.BACK_FORWARD_TRANSITIONS, false));
         testSwipeNavigateOnRenderedPageInternal();
     }
 
