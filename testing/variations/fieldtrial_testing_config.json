@@ -5418,8 +5418,10 @@
             ],
             "experiments": [
                 {
-                    "name": "UseWebpFormatV2",
+                    "name": "UseWebpFormat45QualityV3",
                     "params": {
+                        "encoding-quality-image-search": "45",
+                        "encoding-quality-region-search": "45",
                         "use-jpeg-region-search": "false",
                         "use-webp-image-search": "true",
                         "use-webp-region-search": "true"
@@ -5429,8 +5431,10 @@
                     ]
                 },
                 {
-                    "name": "UseJpegFormatV2",
+                    "name": "UseJpegFormat40QualityV3",
                     "params": {
+                        "encoding-quality-image-search": "40",
+                        "encoding-quality-region-search": "40",
                         "use-jpeg-region-search": "true",
                         "use-webp-image-search": "false",
                         "use-webp-region-search": "false"

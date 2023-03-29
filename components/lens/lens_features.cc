@@ -44,7 +44,7 @@ BASE_FEATURE(kLensRegionSearchStaticPage,
 
 BASE_FEATURE(kLensImageFormatOptimizations,
              "LensImageFormatOptimizations",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kEnableContextMenuInLensSidePanel,
              "EnableContextMenuInLensSidePanel",
@@ -72,16 +72,16 @@ const base::FeatureParam<bool> kLensContextMenuUseAlternateText{
     &kLensSearchOptimizations, "use-lens-context-menu-alternate-text", false};
 
 const base::FeatureParam<bool> kUseWebpInImageSearch{
-    &kLensImageFormatOptimizations, "use-webp-image-search", true};
+    &kLensImageFormatOptimizations, "use-webp-image-search", false};
 
 const base::FeatureParam<int> kEncodingQualityImageSearch{
     &kLensImageFormatOptimizations, "encoding-quality-image-search", 90};
 
 const base::FeatureParam<bool> kUseWebpInRegionSearch{
-    &kLensImageFormatOptimizations, "use-webp-region-search", true};
+    &kLensImageFormatOptimizations, "use-webp-region-search", false};
 
 const base::FeatureParam<bool> kUseJpegInRegionSearch{
-    &kLensImageFormatOptimizations, "use-jpeg-region-search", false};
+    &kLensImageFormatOptimizations, "use-jpeg-region-search", true};
 
 const base::FeatureParam<int> kEncodingQualityRegionSearch{
     &kLensImageFormatOptimizations, "encoding-quality-region-search", 90};
