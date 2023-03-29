@@ -800,7 +800,10 @@ TEST_F(PipelineIntegrationTest, PlaybackWithAudioTrackDisabledThenEnabled) {
   ASSERT_TRUE(WaitUntilOnEnded());
 
   // Verify that audio has been playing after being enabled.
-  EXPECT_HASH_EQ("-0.04,0.42,-0.22,0.40,0.15,0.18,", GetAudioHash());
+  // TODO(liberato): This is the correct (original) hash, which the upcoming
+  // ffmpeg roll now produces. The ToT version produces a different hash. After
+  // the DEPS roll, uncomment this to re-enable the test.
+  // EXPECT_HASH_EQ("-1.53,0.21,1.23,1.56,-0.34,-0.94,", GetAudioHash());
 }
 
 TEST_F(PipelineIntegrationTest, PlaybackWithVideoTrackDisabledThenEnabled) {
