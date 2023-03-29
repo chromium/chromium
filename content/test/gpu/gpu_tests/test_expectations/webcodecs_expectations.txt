@@ -99,8 +99,10 @@ crbug.com/1409453 [ win amd ] WebCodecs_TexImage2d_hw_decoder [ Failure ]
 
 # Not all platform encoders are very good at adhering to specified bitrate
 crbug.com/1368785 [ mac-x86_64 ] WebCodecs_EncodingRateControl_avc1.420034_prefer-hardware_constant_* [ Failure ]
-# Android seems to be especially bad at rate control, let's wait and see what actually works
-crbug.com/1368785 [ android ] WebCodecs_EncodingRateControl_* [ Failure ]
+
+# AVC VBR seems to be unreliable on some Android devices
+crbug.com/1368785 [ android ] WebCodecs_EncodingRateControl_avc1.420034_prefer-software_variable_* [ Failure ]
+crbug.com/1368785 [ android ] WebCodecs_EncodingRateControl_avc1.420034_prefer-hardware_variable_* [ Failure ]
 
 # The following expectations are added to enable WebCodecs tests on Sherlock.
 # unexpected_pass_finder is disabled so that the tool does not automatically remove these expectations.
