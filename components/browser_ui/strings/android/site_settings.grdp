@@ -586,8 +586,8 @@
   <message name="IDS_WEBSITE_SETTINGS_CATEGORY_DESKTOP_SITE_ALLOWED" desc="Summary text explaining that desktop view of sites will be requested by default.">
     Request desktop view
   </message>
-  <message name="IDS_WEBSITE_SETTINGS_CATEGORY_DESKTOP_SITE_BLOCKED" desc="Summary text explaining that mobile view of sites will be requested by default and that it is the recommended setting.">
-    Request mobile view (recommended)
+  <message name="IDS_WEBSITE_SETTINGS_CATEGORY_DESKTOP_SITE_BLOCKED" desc="Summary text explaining that mobile view of sites will be requested by default.">
+    Request mobile view
   </message>
   <message name="IDS_WEBSITE_SETTINGS_CATEGORY_DESKTOP_SITE_ALLOWED_LIST" desc="Summary text explaining that desktop view of sites will be requested by default. To be shown in the list of permission categories.">
     On
