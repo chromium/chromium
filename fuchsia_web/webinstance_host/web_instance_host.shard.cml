@@ -71,16 +71,20 @@
     },
     {
       protocol: [
-        // Required by video capture.
+        // Required for video capture.
+        // TODO(crbug.com/1209031): Move to AppendDynamicServices() to provide
+        // it conditionally when a ContextFeatureFlags is defined.
         "fuchsia.camera3.DeviceWatcher",
 
         // Required to schedule display-critical and realtime audio threads.
+        // TODO(crbug.com/1224707): Migrate to `fuchsia.scheduler`.
         "fuchsia.media.ProfileProvider",
 
         // Required by Frame.SetPreferredTheme(DEFAULT).
         "fuchsia.settings.Display",
 
         // Optionally used by the tracing service.
+        // crbug.com/1364196 tracks providing it conditionally when enabled.
         "fuchsia.tracing.perfetto.ProducerConnector",
       ],
       from: "parent",
