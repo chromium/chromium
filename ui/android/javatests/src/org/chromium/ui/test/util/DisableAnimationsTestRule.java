@@ -7,8 +7,7 @@ package org.chromium.ui.test.util;
 import android.os.Build;
 import android.os.IBinder;
 import android.provider.Settings;
-
-import androidx.test.InstrumentationRegistry;
+import android.support.test.InstrumentationRegistry;
 
 import org.junit.rules.TestRule;
 import org.junit.runner.Description;

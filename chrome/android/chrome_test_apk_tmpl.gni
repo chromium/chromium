@@ -32,7 +32,7 @@ template("chrome_test_apk_tmpl") {
              "//third_party/android_sdk:android_test_base_java",
              "//third_party/android_sdk:android_test_mock_java",
              "//third_party/android_sdk:android_test_runner_java",
-             "//third_party/androidx:androidx_test_runner_java",
+             "//third_party/android_support_test_runner:runner_java",
            ]
     if (add_unwind_tables_in_chrome_32bit_apk && current_cpu == "arm") {
       deps += [ "//chrome/android:libchromefortest_unwind_table_assets" ]
@@ -99,7 +99,7 @@ template("monochrome_test_apk_tmpl") {
              "//third_party/android_sdk:android_test_base_java",
              "//third_party/android_sdk:android_test_mock_java",
              "//third_party/android_sdk:android_test_runner_java",
-             "//third_party/androidx:androidx_test_runner_java",
+             "//third_party/android_support_test_runner:runner_java",
            ]
 
     if (webview_includes_weblayer) {
