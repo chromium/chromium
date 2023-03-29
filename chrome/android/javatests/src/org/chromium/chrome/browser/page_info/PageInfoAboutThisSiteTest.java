@@ -14,7 +14,6 @@ import static androidx.test.espresso.matcher.ViewMatchers.withText;
 import static org.hamcrest.CoreMatchers.allOf;
 import static org.hamcrest.CoreMatchers.containsString;
 import static org.hamcrest.CoreMatchers.not;
-import static org.junit.Assert.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.verify;
@@ -36,11 +35,11 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
 import org.chromium.base.StrictModeContext;
-import org.chromium.base.test.metrics.HistogramTestRule;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Feature;
+import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.base.test.util.JniMocker;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
@@ -99,9 +98,6 @@ public class PageInfoAboutThisSiteTest {
 
     @Rule
     public EmbeddedTestServerRule mTestServerRule = new EmbeddedTestServerRule();
-
-    @Rule
-    public HistogramTestRule mHistogramTester = new HistogramTestRule();
 
     @Rule
     public JniMocker mMocker = new JniMocker();
@@ -247,30 +243,26 @@ public class PageInfoAboutThisSiteTest {
     @Features.DisableFeatures(ChromeFeatureList.PAGE_INFO_ABOUT_THIS_SITE_MORE_INFO)
     public void testAboutThisSiteSubPageSourceClicked()
             throws ExecutionException, TimeoutException {
-        assertEquals(0, mHistogramTester.getHistogramTotalCount("WebsiteSettings.Action"));
+        var histogram = HistogramWatcher.newSingleRecordWatcher(
+                "WebsiteSettings.Action", PageInfoAction.PAGE_INFO_OPENED);
         mockResponse(createDescription());
         openPageInfo();
-        assertEquals(1, mHistogramTester.getHistogramTotalCount("WebsiteSettings.Action"));
-        assertEquals(1,
-                mHistogramTester.getHistogramValueCount(
-                        "WebsiteSettings.Action", PageInfoAction.PAGE_INFO_OPENED));
+        histogram.assertExpected();
 
+        histogram = HistogramWatcher.newSingleRecordWatcher(
+                "WebsiteSettings.Action", PageInfoAction.PAGE_INFO_ABOUT_THIS_SITE_PAGE_OPENED);
         onView(withId(PageInfoAboutThisSiteController.ROW_ID)).perform(click());
-        assertEquals(2, mHistogramTester.getHistogramTotalCount("WebsiteSettings.Action"));
-        assertEquals(1,
-                mHistogramTester.getHistogramValueCount("WebsiteSettings.Action",
-                        PageInfoAction.PAGE_INFO_ABOUT_THIS_SITE_PAGE_OPENED));
+        histogram.assertExpected();
 
+        histogram = HistogramWatcher.newSingleRecordWatcher("WebsiteSettings.Action",
+                PageInfoAction.PAGE_INFO_ABOUT_THIS_SITE_SOURCE_LINK_CLICKED);
         onView(withText(containsString("Example Source"))).perform(click());
         String sourceUrl = mTestServerRule.getServer().getURL(sSimpleHtml);
         verify(mMockEphemeralTabCoordinator)
                 .requestOpenSheetWithFullPageUrl(/*url=*/new GURL(sourceUrl),
                         /*fullPageUrl=*/new GURL(sourceUrl), /*title=*/"From the web",
                         /*isIncognito=*/false);
-        assertEquals(3, mHistogramTester.getHistogramTotalCount("WebsiteSettings.Action"));
-        assertEquals(1,
-                mHistogramTester.getHistogramValueCount("WebsiteSettings.Action",
-                        PageInfoAction.PAGE_INFO_ABOUT_THIS_SITE_SOURCE_LINK_CLICKED));
+        histogram.assertExpected();
     }
 
     @Test
