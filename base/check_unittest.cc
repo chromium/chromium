@@ -464,8 +464,11 @@ TEST(CheckDeathTest, NotReached) {
   EXPECT_DCHECK("Check failed: false. foo", NOTREACHED() << "foo");
 #elif CHECK_WILL_STREAM() || BUILDFLAG(ENABLE_LOG_ERROR_NOT_REACHED)
   // Expect LOG(ERROR) that looks like CHECK(false) with streamed params intact.
-  EXPECT_LOG_ERROR(__LINE__, NOTREACHED() << "foo",
-                   "Check failed: false. foo\n");
+  // Note that this implementation uses base::Location::Current() which doesn't
+  // match __FILE__ (strips ../../ prefix) and __LINE__ (uses __builtin_LINE()).
+  EXPECT_LOG_ERROR_WITH_FILENAME(
+      "base/check_unittest.cc", base::Location::Current().line_number(),
+      NOTREACHED() << "foo", "Check failed: false. foo\n");
 #else
   // Expect LOG(ERROR) that looks like CHECK(false) without file, line or
   // streamed params.
