@@ -441,8 +441,15 @@ void ImageLoader::DoUpdateFromElement(
   load_delay_counter.swap(delay_until_do_update_from_element_);
 
   Document& document = element_->GetDocument();
-  if (!document.IsActive())
+  if (!document.IsActive()) {
+    // Clear if the loader was moved into a not fully active document - or the
+    // document was detached - after the microtask was queued. If moved into a
+    // not fully active document, ElementDidMoveToNewDocument() will have
+    // called ClearImage() already, but in the case of a detached document it
+    // won't have.
+    ClearImage();
     return;
+  }
 
   AtomicString image_source_url = element_->ImageSourceURL();
   const KURL url = ImageSourceToKURL(image_source_url);
