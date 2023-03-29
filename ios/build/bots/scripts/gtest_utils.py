@@ -153,6 +153,7 @@ class GTestLogParser(object):
     self._current_test = ''
     self._failure_description = []
     self._parsing_failures = False
+    self._spawning_launcher = False
 
     # Line number currently being processed.
     self._line_number = 0
@@ -191,6 +192,12 @@ class GTestLogParser(object):
     self._test_ok = re.compile(r'\[\s+OK\s+\] ' + test_name_regexp)
     self._test_fail = re.compile(r'\[\s+FAILED\s+\] ' + test_name_regexp)
     self._test_passed = re.compile(r'\[\s+PASSED\s+\] \d+ tests?.')
+    self._spawning_test_launcher = re.compile(r'Using \d+ parallel jobs?.')
+    self._test_run_spawning = re.compile(r'\[\d+\/\d+\] ' + test_name_regexp +
+                                         ' \([0-9]+ ms\)')
+    self._test_passed_spawning = re.compile(r'Tests took \d+ seconds?.')
+    self._test_retry_spawning = re.compile(
+        r'Retrying \d+ test[s]? \(retry #\d+\)')
     self._test_skipped = re.compile(r'\[\s+SKIPPED\s+\] ' + test_name_regexp)
     self._run_test_cases_line = re.compile(
         r'\[\s*\d+\/\d+\]\s+[0-9\.]+s ' + test_name_regexp + ' .+')
@@ -387,6 +394,10 @@ class GTestLogParser(object):
         self._test_fail,
         self._test_passed,
         self._test_skipped,
+        self._spawning_test_launcher,
+        self._test_run_spawning,
+        self._test_passed_spawning,
+        self._test_retry_spawning,
     ]
 
     for regexp in gtest_regexps:
@@ -430,6 +441,49 @@ class GTestLogParser(object):
       self._current_test = ''
       self._failure_description = []
       return
+
+    # Is it a line declaring spawning test runner? If so then
+    # we really don't need to parse any of the test cases since 1) they are
+    # in a different format 2) retries happen inside the test launcher itself.
+    results = self._spawning_test_launcher.match(line)
+    if results:
+      self._spawning_launcher = True
+      self._result_collection.spawning_test_launcher = True
+      return
+
+    # With the spawning test launcher the log format is slightly different.
+    # On failures the original gtest log format will be spit out to stdout
+    # from the subprocess and the regular log parsing will be used. If all
+    # tests succeeded in the subprocess only completion lines will be written
+    # out.
+    if self._spawning_launcher:
+      results = self._test_passed_spawning.match(line)
+      if results:
+        self.completed = True
+        self._current_test = ''
+        return
+      results = self._test_run_spawning.match(line)
+      if results:
+        test_name = results.group(1)
+        duration = self._ParseDuration(line)
+        status = self._StatusOfTest(test_name)
+        # If we encountered this line and it is not known then we know it
+        # passed.
+        if status in ('started', 'not known'):
+          self._test_status[test_name] = ('OK', [])
+          self._result_collection.add_test_result(
+              TestResult(test_name, TestStatus.PASS, duration=duration))
+          self._failure_description = []
+          self._current_test = ''
+        return
+      results = self._test_retry_spawning.match(line)
+      # We are retrying failed tests so mark them all as started again
+      # so that we will be in the correct state when we either see
+      # a failure or a completion result.
+      if results:
+        for test in self.FailedTests():
+          self._test_status[test] = ('started', [DID_NOT_COMPLETE])
+        self.retrying_failed = True
 
     # Is it a line declaring all tests passed?
     results = self._test_passed.match(line)

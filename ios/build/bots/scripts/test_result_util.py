@@ -142,6 +142,7 @@ class ResultCollection(object):
     self._test_results = []
     self._crashed = kwargs.get('crashed', False)
     self._crash_message = ''
+    self._spawning_test_launcher = False
     self.add_results(kwargs.get('test_results', []))
 
   @property
@@ -172,6 +173,16 @@ class ResultCollection(object):
   @property
   def test_results(self):
     return self._test_results
+
+  @property
+  def spawning_test_launcher(self):
+    return self._spawning_test_launcher
+
+  @spawning_test_launcher.setter
+  def spawning_test_launcher(self, value):
+    """Sets spawning_test_launcher value."""
+    assert (type(value) == bool)
+    self._spawning_test_launcher = value
 
   def add_test_result(self, test_result):
     """Adds a single test result to collection.

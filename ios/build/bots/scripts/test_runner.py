@@ -623,7 +623,8 @@ class TestRunner(object):
     cmd = self.get_launch_command(test_app, out_dir, destination, self.shards)
     try:
       result = self._run(cmd=cmd, shards=self.shards or 1)
-      if result.crashed and not result.crashed_tests():
+      if (result.crashed and not result.spawning_test_launcher and
+          not result.crashed_tests()):
         # If the app crashed but not during any particular test case, assume
         # it crashed on startup. Try one more time.
         self.shutdown_and_restart()
@@ -635,13 +636,15 @@ class TestRunner(object):
 
       result.report_to_result_sink()
 
-      if result.crashed and not result.crashed_tests():
+      if (result.crashed and not result.spawning_test_launcher and
+          not result.crashed_tests()):
         raise AppLaunchError
 
       overall_result.add_result_collection(result)
 
       try:
-        while result.crashed and result.crashed_tests():
+        while (result.crashed and not result.spawning_test_launcher and
+               result.crashed_tests()):
           # If the app crashes during a specific test case, then resume at the
           # next test case. This is achieved by filtering out every test case
           # which has already run.
@@ -671,7 +674,8 @@ class TestRunner(object):
       # Retry failed test cases.
       test_app.excluded_tests = []
       never_expected_tests = overall_result.never_expected_tests()
-      if self.retries and never_expected_tests:
+      if (self.retries and not result.spawning_test_launcher and
+          never_expected_tests):
         LOGGER.warning('%s tests failed and will be retried.\n',
                        len(never_expected_tests))
         for i in range(self.retries):
