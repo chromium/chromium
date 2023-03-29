@@ -129,7 +129,6 @@ These store data for our system. Some of it is per-web-app, and some of it is gl
 - **Prefs**: The `PrefService` is used to store information that is either global, or needs to persist after a web app is uninstalled. Most of these prefs live on the `Profile` (`profile->GetPrefs()`), but some prefs are in the global browser prefs (`g_browser_process->local_state()`). Some users of prefs:
   - AppShimRegistry
   - UserUninstalledPreinstalledWebAppPrefs
-  - [`url_handler_prefs`][53]
 - **OS Integration**: Various OS integration requires storing state on the operating system. Sometimes we are able to read this state back, sometimes not.
 
 None of this information should be accessed without an applicable 'lock' on the system.
@@ -309,7 +308,6 @@ This information is used when launching a web app (to determine what profile or 
 [50]: os-integration.md
 [51]: manifest_update_process.md
 [52]: isolated_web_apps.md
-[53]: /chrome/browser/web_applications/url_handler_prefs.h
 [54]: webui_web_apps.md
 [57]: https://source.chromium.org/search?q=WebAppInternalsHandler::BuildDebugInfo
 [58]: testing.md
