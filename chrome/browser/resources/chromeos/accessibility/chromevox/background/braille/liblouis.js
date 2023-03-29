@@ -70,21 +70,24 @@ export class LibLouis {
    * This object must be attached to a document when requesting a translator.
    * @param {string} tableNames Comma separated list of braille table names for
    *     liblouis.
-   * @param {function(LibLouis.Translator)} callback
-   *     Callback which will receive the translator, or {@code null} on failure.
+   * @return {!Promise<LibLouis.Translator>} the translator, or {@code null}
+   *     on failure.
    */
-  getTranslator(tableNames, callback) {
-    if (!this.isLoaded_) {
-      // TODO: save last callback.
-      return;
-    }
-    this.rpc_('CheckTable', {'table_names': tableNames}, reply => {
-      if (reply['success']) {
-        const translator = new LibLouis.Translator(this, tableNames);
-        callback(translator);
-      } else {
-        callback(null /* translator */);
+  async getTranslator(tableNames) {
+    return new Promise(resolve => {
+      if (!this.isLoaded_) {
+        // TODO: save last callback.
+        resolve(null /* translator */);
+        return;
       }
+      this.rpc_('CheckTable', {'table_names': tableNames}, reply => {
+        if (reply['success']) {
+          const translator = new LibLouis.Translator(this, tableNames);
+          resolve(translator);
+        } else {
+          resolve(null /* translator */);
+        }
+      });
     });
   }
 

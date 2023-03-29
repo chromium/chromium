@@ -138,14 +138,12 @@ export class BrailleTranslatorManager {
       finishCallback();
     };
 
-    const translator = await new Promise(
-        resolve => this.liblouis_.getTranslator(table.fileNames, resolve));
+    const translator = await this.liblouis_.getTranslator(table.fileNames);
     if (!newUncontractedTableId) {
       finishRefresh(translator, null);
     } else {
-      const uncontractedTranslator = await new Promise(
-          resolve => this.liblouis_.getTranslator(
-              uncontractedTable.fileNames, resolve));
+      const uncontractedTranslator =
+          await this.liblouis_.getTranslator(uncontractedTable.fileNames);
       finishRefresh(translator, uncontractedTranslator);
     }
   }

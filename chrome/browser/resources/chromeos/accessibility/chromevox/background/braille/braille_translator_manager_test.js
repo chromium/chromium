@@ -45,7 +45,7 @@ FakeLibLouis.prototype = {
   attachToElement() {},
 
   /** @override */
-  getTranslator(fileNames, callback) {
+  async getTranslator(fileNames) {
     const tables = this.translatorManager.getTablesForTest();
     let result = null;
     if (tables != null) {
@@ -54,7 +54,7 @@ FakeLibLouis.prototype = {
         result = new FakeTranslator(found);
       }
     }
-    callback(result);
+    return Promise.resolve(result);
   },
 };
 
