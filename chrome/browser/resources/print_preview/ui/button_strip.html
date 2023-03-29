@@ -9,6 +9,11 @@
     padding-top: 16px;
   }
 
+  :host-context([chrome-refresh-2023]):host .controls {
+    padding-bottom: var(--print-preview-sidebar-margin);
+    padding-inline-end: var(--print-preview-sidebar-margin);
+  }
+
   @media (prefers-color-scheme: light) {
     :host {
       background-color: white;
