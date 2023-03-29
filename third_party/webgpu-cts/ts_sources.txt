@@ -112,6 +112,7 @@ src/unittests/async_expectations.spec.ts
 src/unittests/basic.spec.ts
 src/unittests/check_contents.spec.ts
 src/unittests/conversion.spec.ts
+src/webgpu/util/floating_point.ts
 src/webgpu/util/f32_interval.ts
 src/unittests/f32_interval.spec.ts
 src/unittests/getStackTrace.spec.ts
