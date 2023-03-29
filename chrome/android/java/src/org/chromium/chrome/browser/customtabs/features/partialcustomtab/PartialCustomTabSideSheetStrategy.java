@@ -141,25 +141,26 @@ public class PartialCustomTabSideSheetStrategy extends PartialCustomTabBaseStrat
         }
 
         AnimatorUpdateListener updateListener;
-        Window window = mActivity.getWindow();
+        WindowManager.LayoutParams windowLayout = mActivity.getWindow().getAttributes();
         int displayWidth = mVersionCompat.getDisplayWidth();
-        int xOffset = mVersionCompat.getXOffset();
-        int start = window.getAttributes().width;
-        int end = calculateWidth(mIsMaximized ? displayWidth : mUnclampedInitialWidth);
+        int start;
+        int end;
         if (mSheetOnRight) {
-            updateListener = (anim) -> {
-                WindowManager.LayoutParams attrs = window.getAttributes();
-                attrs.width = (int) anim.getAnimatedValue();
-                attrs.x = (displayWidth - attrs.width) + xOffset;
-                window.setAttributes(attrs);
-            };
+            configureLayoutBeyondScreen(true);
+            setWindowWidth(displayWidth);
+            int xOffset = mVersionCompat.getXOffset();
+            start = windowLayout.x;
+            end = (mIsMaximized ? 0 : displayWidth - mUnclampedInitialWidth) + xOffset;
+            updateListener = (anim) -> setWindowX((int) anim.getAnimatedValue());
         } else {
+            start = windowLayout.width;
+            end = calculateWidth(mIsMaximized ? displayWidth : mUnclampedInitialWidth);
             updateListener = (anim) -> setWindowWidth((int) anim.getAnimatedValue());
         }
         // Keep the WebContents invisible during the animation to hide the jerky visual artifacts
         // of the contents due to resizing.
         setContentVisible(false);
-        startAnimation(start, end, updateListener, () -> onMaximizeEnd(animate), animate);
+        startAnimation(start, end, updateListener, this::onMaximizeEnd, animate);
         return mIsMaximized;
     }
 
@@ -174,13 +175,15 @@ public class PartialCustomTabSideSheetStrategy extends PartialCustomTabBaseStrat
         }
     }
 
-    private void onMaximizeEnd(boolean animate) {
+    private void onMaximizeEnd() {
         if (isMaximized()) {
+            if (mSheetOnRight) configureLayoutBeyondScreen(false);
             maybeInvokeResizeCallback();
             setContentVisible(true);
         } else {
             // System UI dimensions are not settled yet. Post the task.
             new Handler().post(() -> {
+                if (mSheetOnRight) configureLayoutBeyondScreen(false);
                 initializeSize();
                 maybeInvokeResizeCallback();
             });
