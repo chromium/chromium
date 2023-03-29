@@ -26,16 +26,6 @@ component("update_engine") {
   ]
 }
 
-source_set("unit_tests") {
-  testonly = true
-  deps = [
-    ":update_engine",
-    "//chromeos/ash/components/dbus",
-    "//testing/gtest",
-  ]
-  sources = [ "update_engine_client_unittest.cc" ]
-}
-
 proto_library("proto") {
   sources =
       [ "//third_party/cros_system_api/dbus/update_engine/update_engine.proto" ]
