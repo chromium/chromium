@@ -35,3 +35,10 @@
 -org.chromium.chrome.browser.tabmodel.TabModelMergingTest.*
 -org.chromium.chrome.browser.tabmodel.UndoTabModelTest.testOpenRecentlyClosedTabMultiWindow
 -org.chromium.chrome.browser.tabmodel.UndoTabModelTest.testOpenRecentlyClosedTabMultiWindowFallback
+
+# crbug.com/1428416
+-org.chromium.chrome.browser.contextmenu.ContextMenuTest.testContextMenuRetrievesLinkOptions
+-org.chromium.chrome.browser.contextmenu.ContextMenuTest.testContextMenuRetrievesImageLinkOptions
+
+# crbug.com/1416437
+-org.chromium.chrome.browser.bookmarks.BookmarkPersonalizedSigninPromoTest.*
