@@ -19,7 +19,6 @@
 #include "chrome/grit/theme_resources.h"
 #include "components/constrained_window/constrained_window_views.h"
 #include "components/safe_browsing/core/browser/tailored_security_service/tailored_security_outcome.h"
-#include "components/safe_browsing/core/browser/tailored_security_service/tailored_security_service_util.h"
 #include "content/public/browser/web_contents.h"
 #include "ui/base/interaction/element_identifier.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -88,11 +87,10 @@ class DisabledDialogModelDelegate : public TailoredSecurityDialogModelDelegate {
   DisabledDialogModelDelegate()
       : TailoredSecurityDialogModelDelegate(
             kDisabledDialogOutcome,
-            base::UserMetricsAction(
-                safe_browsing::kTailoredSecurityDisabledDialogOkButtonClicked),
-            base::UserMetricsAction(
-                safe_browsing::
-                    kTailoredSecurityDisabledDialogSettingsButtonClicked)) {}
+            base::UserMetricsAction("SafeBrowsing.AccountIntegration."
+                                    "DisabledDialog.OkButtonClicked"),
+            base::UserMetricsAction("SafeBrowsing.AccountIntegration."
+                                    "DisabledDialog.SettingsButtonClicked")) {}
 };
 
 class EnabledDialogModelDelegate : public TailoredSecurityDialogModelDelegate {
@@ -100,11 +98,10 @@ class EnabledDialogModelDelegate : public TailoredSecurityDialogModelDelegate {
   EnabledDialogModelDelegate()
       : TailoredSecurityDialogModelDelegate(
             kEnabledDialogOutcome,
-            base::UserMetricsAction(
-                safe_browsing::kTailoredSecurityEnabledDialogOkButtonClicked),
-            base::UserMetricsAction(
-                safe_browsing::
-                    kTailoredSecurityEnabledDialogSettingsButtonClicked)) {}
+            base::UserMetricsAction("SafeBrowsing.AccountIntegration."
+                                    "EnabledDialog.OkButtonClicked"),
+            base::UserMetricsAction("SafeBrowsing.AccountIntegration."
+                                    "EnabledDialog.SettingsButtonClicked")) {}
 };
 
 TailoredSecurityDesktopDialogManager::TailoredSecurityDesktopDialogManager() =
@@ -155,7 +152,7 @@ void TailoredSecurityDesktopDialogManager::ShowEnabledDialogForBrowser(
   }
   close_dialog_callback_ = model_delegate_ptr->GetCloseDialogCallback();
   base::RecordAction(base::UserMetricsAction(
-      safe_browsing::kTailoredSecurityEnabledDialogShown));
+      "SafeBrowsing.AccountIntegration.EnabledDialog.Shown"));
   constrained_window::ShowBrowserModal(std::move(dialog_model),
                                        browser->window()->GetNativeWindow());
 }
@@ -199,7 +196,7 @@ void TailoredSecurityDesktopDialogManager::ShowDisabledDialogForBrowser(
   }
   close_dialog_callback_ = model_delegate_ptr->GetCloseDialogCallback();
   base::RecordAction(base::UserMetricsAction(
-      safe_browsing::kTailoredSecurityDisabledDialogShown));
+      "SafeBrowsing.AccountIntegration.DisabledDialog.Shown"));
   constrained_window::ShowBrowserModal(std::move(dialog_model),
                                        browser->window()->GetNativeWindow());
 }
