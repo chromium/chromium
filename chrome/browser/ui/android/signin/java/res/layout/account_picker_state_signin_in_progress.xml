@@ -19,6 +19,7 @@ found in the LICENSE file.
         android:importantForAccessibility="no"
         app:srcCompat="@drawable/chrome_sync_logo" />
 
+    <!--- TODO(b/275071728): revert style to android:TextAppearance -->
     <TextView
         android:id="@+id/account_picker_signin_in_progress_title"
         android:layout_width="match_parent"
@@ -26,7 +27,7 @@ found in the LICENSE file.
         android:layout_marginTop="12dp"
         android:layout_marginBottom="8dp"
         android:gravity="center_horizontal"
-        android:textAppearance="@style/TextAppearance.TextLarge.Primary"
+        style="@style/TextAppearance.TextLarge.Primary"
         android:text="@string/signin_account_picker_bottom_sheet_signin_title" />
 
     <ProgressBar
