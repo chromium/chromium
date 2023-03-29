@@ -15,7 +15,6 @@
 #include "base/memory/raw_ptr.h"
 #include "base/test/bind.h"
 #include "base/test/mock_callback.h"
-#include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
 #include "components/viz/common/features.h"
 #include "components/viz/common/resources/resource_sizes.h"
@@ -494,16 +493,6 @@ class SkiaOutputDeviceBufferQueueTest : public TestOnGpu {
   std::unique_ptr<SkiaOutputDeviceBufferQueue> output_device_;
 };
 
-class SkiaOutputDeviceBufferQueuePurgeableTest
-    : public SkiaOutputDeviceBufferQueueTest {
- public:
-  SkiaOutputDeviceBufferQueuePurgeableTest() {
-    feature_list_.InitAndEnableFeature(features::kBufferQueueImageSetPurgeable);
-  }
-
-  base::test::ScopedFeatureList feature_list_;
-};
-
 namespace {
 
 TEST_F_GPU(SkiaOutputDeviceBufferQueueTest, MultipleGetCurrentBufferCalls) {
@@ -933,7 +922,7 @@ TEST_F_GPU(SkiaOutputDeviceBufferQueueTest, ScheduleOverlaysNoPrimaryPlane) {
   }
 }
 
-TEST_F_GPU(SkiaOutputDeviceBufferQueuePurgeableTest, ToggleNoPrimaryPlane) {
+TEST_F_GPU(SkiaOutputDeviceBufferQueueTest, ToggleNoPrimaryPlane) {
   test_backing_factory_.enable_purge_mocks_ = true;
   if (output_device_->capabilities().renderer_allocates_images) {
     GTEST_SKIP_(

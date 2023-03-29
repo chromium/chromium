@@ -204,7 +204,7 @@ BASE_FEATURE(kOverrideThrottledFrameRateParams,
 // SkiaOutputDeviceBufferQueue.
 BASE_FEATURE(kBufferQueueImageSetPurgeable,
              "BufferQueueImageSetPurgeable",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // On platforms using SkiaOutputDeviceBufferQueue, when this is true
 // SkiaRenderer will allocate and maintain a buffer queue of images for the root
