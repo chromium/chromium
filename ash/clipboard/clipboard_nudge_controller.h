@@ -11,7 +11,6 @@
 #include "ash/clipboard/clipboard_nudge.h"
 #include "ash/clipboard/clipboard_nudge_constants.h"
 #include "ash/public/cpp/clipboard_history_controller.h"
-#include "ash/public/cpp/session/session_observer.h"
 #include "ash/system/tray/system_nudge_controller.h"
 #include "base/time/clock.h"
 #include "base/time/time.h"
@@ -39,7 +38,6 @@ class ASH_EXPORT ClipboardNudgeController
     : public SystemNudgeController,
       public ClipboardHistory::Observer,
       public ui::ClipboardObserver,
-      public SessionObserver,
       public ClipboardHistoryController::Observer {
  public:
   class TimeMetricHelper {
@@ -77,9 +75,6 @@ class ASH_EXPORT ClipboardNudgeController
 
   // ui::ClipboardObserver:
   void OnClipboardDataRead() override;
-
-  // SessionObserver:
-  void OnActiveUserPrefServiceChanged(PrefService* prefs) override;
 
   // Resets nudge state and show nudge timer.
   void HandleNudgeShown();

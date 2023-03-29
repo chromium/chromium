@@ -342,12 +342,6 @@ BASE_FEATURE(kClipboardHistoryLongpress,
              "ClipboardHistoryLongpress",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// If enabled, the clipboard nudge shown prefs will be reset at the start of
-// each new user session.
-BASE_FEATURE(kClipboardHistoryNudgeSessionReset,
-             "ClipboardHistoryNudgeSessionReset",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 // Enables updated UI for the clipboard history menu and new system behavior
 // related to clipboard history.
 BASE_FEATURE(kClipboardHistoryRefresh,
@@ -2464,10 +2458,6 @@ bool IsChromadAvailableEnabled() {
 
 bool IsClipboardHistoryLongpressEnabled() {
   return base::FeatureList::IsEnabled(kClipboardHistoryLongpress);
-}
-
-bool IsClipboardHistoryNudgeSessionResetEnabled() {
-  return base::FeatureList::IsEnabled(kClipboardHistoryNudgeSessionReset);
 }
 
 bool IsClipboardHistoryRefreshEnabled() {

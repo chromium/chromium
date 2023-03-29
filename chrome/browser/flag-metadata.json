@@ -3574,11 +3574,6 @@
     "expiry_milestone": 118
   },
   {
-    "name": "enhanced_clipboard_nudge_session_reset",
-    "owners":["mmourgos@chromium.org", "newcomer@chromium.org"],
-    "expiry_milestone": 90
-  },
-  {
     "name": "enterprise-reporting-ui",
     "owners": ["tylergarrett@google.com", "cros-reporting-team@google.com"],
     "expiry_milestone": 130

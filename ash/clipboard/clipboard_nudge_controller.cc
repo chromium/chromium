@@ -89,16 +89,12 @@ ClipboardNudgeController::ClipboardNudgeController(
   clipboard_history_->AddObserver(this);
   clipboard_history_controller_->AddObserver(this);
   ui::ClipboardMonitor::GetInstance()->AddObserver(this);
-  if (features::IsClipboardHistoryNudgeSessionResetEnabled())
-    Shell::Get()->session_controller()->AddObserver(this);
 }
 
 ClipboardNudgeController::~ClipboardNudgeController() {
   clipboard_history_->RemoveObserver(this);
   clipboard_history_controller_->RemoveObserver(this);
   ui::ClipboardMonitor::GetInstance()->RemoveObserver(this);
-  if (features::IsClipboardHistoryNudgeSessionResetEnabled())
-    Shell::Get()->session_controller()->RemoveObserver(this);
 }
 
 // static
@@ -173,14 +169,6 @@ void ClipboardNudgeController::OnClipboardDataRead() {
     case ClipboardState::kShouldShowNudge:
       return;
   }
-}
-
-void ClipboardNudgeController::OnActiveUserPrefServiceChanged(
-    PrefService* prefs) {
-  // Reset the nudge prefs so that the nudge can be shown again.
-  ScopedDictPrefUpdate update(prefs, prefs::kMultipasteNudges);
-  update->Set(kShownCount, 0);
-  update->Set(kLastTimeShown, base::TimeToValue(base::Time()));
 }
 
 void ClipboardNudgeController::ShowNudge(ClipboardNudgeType nudge_type) {

@@ -5324,12 +5324,6 @@ const char kEnableBackgroundBlurName[] = "Enable background blur.";
 const char kEnableBackgroundBlurDescription[] =
     "Enables background blur for the Launcher, Shelf, Unified System Tray etc.";
 
-const char kEnhancedClipboardNudgeSessionResetName[] =
-    "Enable resetting enhanced clipboard nudge data";
-const char kEnhancedClipboardNudgeSessionResetDescription[] =
-    "When enabled, this will reset the clipboard nudge shown data on every new "
-    "user session, allowing the nudge to be shown again.";
-
 const char kDisableDnsProxyName[] = "Disable DNS proxy service for ChromeOS";
 const char kDisableDnsProxyDescription[] =
     "Turns off DNS proxying and SecureDNS for ChromeOS (only). Does not impact "

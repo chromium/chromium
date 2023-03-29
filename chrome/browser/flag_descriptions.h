@@ -3056,9 +3056,6 @@ extern const char kEnableAssistantRoutinesDescription[];
 extern const char kEnableBackgroundBlurName[];
 extern const char kEnableBackgroundBlurDescription[];
 
-extern const char kEnhancedClipboardNudgeSessionResetName[];
-extern const char kEnhancedClipboardNudgeSessionResetDescription[];
-
 extern const char kDisableDnsProxyName[];
 extern const char kDisableDnsProxyDescription[];
 

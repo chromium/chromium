@@ -7506,10 +7506,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kClipboardHistoryReorderName,
      flag_descriptions::kClipboardHistoryReorderDescription, kOsCrOS,
      FEATURE_VALUE_TYPE(ash::features::kClipboardHistoryReorder)},
-    {"enhanced_clipboard_nudge_session_reset",
-     flag_descriptions::kEnhancedClipboardNudgeSessionResetName,
-     flag_descriptions::kEnhancedClipboardNudgeSessionResetDescription, kOsCrOS,
-     FEATURE_VALUE_TYPE(ash::features::kClipboardHistoryNudgeSessionReset)},
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 #if BUILDFLAG(IS_WIN)
