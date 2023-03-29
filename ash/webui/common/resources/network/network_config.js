@@ -2030,7 +2030,8 @@ Polymer({
       return false;
     }
     // endpoint should be the form of IP:port or hostname:port
-    if (!peer.endpoint || !peer.endpoint.match(/^[a-zA-Z0-9\-\.]+:[0-9]+$/i)) {
+    if (!peer.endpoint ||
+        !peer.endpoint.match(/^\[?[a-zA-Z0-9\-\.:]+\]?:[0-9]+$/i)) {
       return false;
     }
     // allowedIps should be comma-separated list of IP/cidr.

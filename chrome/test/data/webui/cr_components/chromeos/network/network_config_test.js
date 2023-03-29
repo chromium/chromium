@@ -992,6 +992,12 @@ suite('network-config', function() {
       await flushAsync();
       assertTrue(networkConfig.enableConnect);
 
+      peer.endpoint = '[fd01::1]:12345';
+      networkConfig.notifyPath(
+          `configProperties_.typeConfig.vpn.wireguard.peers.0.endpoint`);
+      await flushAsync();
+      assertTrue(networkConfig.enableConnect);
+
       peer.presharedKey = 'invalid_key';
       networkConfig.notifyPath(
           `configProperties_.typeConfig.vpn.wireguard.peers.0.presharedKey`);
