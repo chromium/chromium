@@ -160,9 +160,14 @@ class _Generator(object):
         self._type_helper.GetEnumValue(type_, value, full_name=False))
       c.Append(current_enum_string + ',')
 
-    c.Append('{last_key} = {last_key_value},'.format(
-        last_key=self._type_helper.GetEnumLastValue(type_),
-        last_key_value=current_enum_string))
+    # Adding kMaxValue, which is friendly to enumaration histogram macros.
+    if self._modernised_enums:
+      c.Append('kMaxValue = {last_key_value},'.format(
+                last_key_value=current_enum_string))
+    else:
+      c.Append('{last_key} = {last_key_value},'.format(
+          last_key=self._type_helper.GetEnumLastValue(type_),
+          last_key_value=current_enum_string))
 
     c.Eblock('};')
     return c

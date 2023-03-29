@@ -91,8 +91,8 @@ class CppTypeGenerator(object):
     """Gets the enum value in the given model.Property indicating the last value
     for the type.
     """
-    if self.IsEnumModernised(type_):
-      return 'kLast'
+    # TODO(crbug.com/1421546): This function should be deleted once all enums
+    # are migrated to scoped ones.
     return '%s_LAST' % self.FollowRef(type_).unix_name.upper()
 
   def GetEnumValue(self, type_, enum_value, full_name=True):
