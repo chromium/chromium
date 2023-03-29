@@ -146,7 +146,8 @@ class AppUsageTelemetrySamplerTest : public ::testing::Test {
 
 TEST_F(AppUsageTelemetrySamplerTest, CollectAppUsageDataForInstance) {
   // Simulate app usage so we have data in the pref store to work with.
-  static constexpr base::TimeDelta kAppUsageDuration = base::Minutes(2);
+  static constexpr base::TimeDelta kAppUsageDuration =
+      base::Minutes(2) + base::Microseconds(200);
   const base::UnguessableToken& kInstanceId = base::UnguessableToken::Create();
   CreateOrUpdateAppUsageForInstance(kInstanceId, kAppUsageDuration);
   ASSERT_THAT(profile_->GetPrefs()->GetDict(::apps::kAppUsageTime).size(),

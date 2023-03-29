@@ -130,6 +130,20 @@ TEST_F(AppUsageCollectorTest, PersistAppUsageDataInPrefStore) {
   VerifyAppUsageDataInPrefStoreForInstance(kInstanceId, kAppUsageDuration);
 }
 
+TEST_F(AppUsageCollectorTest, ShouldNotPersistMicrosecondUsageData) {
+  reporting_settings_.SetBoolean(::ash::kReportDeviceAppInfo, true);
+
+  // Create a new window for the app and simulate insignificant app usage.
+  static constexpr base::TimeDelta kAppUsageDuration = base::Microseconds(200);
+  const auto window = std::make_unique<::aura::Window>(nullptr);
+  window->Init(::ui::LAYER_NOT_DRAWN);
+  const base::UnguessableToken& kInstanceId = base::UnguessableToken::Create();
+  SimulateAppUsageForInstance(window.get(), kInstanceId, kAppUsageDuration);
+
+  // Verify data is not persisted in the pref store.
+  ASSERT_TRUE(GetPrefService()->GetDict(::apps::kAppUsageTime).empty());
+}
+
 TEST_F(AppUsageCollectorTest, ShouldNotPersistAppUsageDataIfSettingDisabled) {
   reporting_settings_.SetBoolean(::ash::kReportDeviceAppInfo, false);
 

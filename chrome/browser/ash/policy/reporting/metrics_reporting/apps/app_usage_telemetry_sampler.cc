@@ -10,6 +10,7 @@
 #include "chrome/browser/apps/app_service/metrics/app_platform_metrics.h"
 #include "chrome/browser/apps/app_service/metrics/app_platform_metrics_utils.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
+#include "chrome/browser/chromeos/reporting/metric_default_utils.h"
 #include "chrome/browser/profiles/profile.h"
 #include "components/prefs/pref_service.h"
 #include "components/prefs/scoped_user_pref_update.h"
@@ -67,10 +68,11 @@ void AppUsageTelemetrySampler::MaybeCollect(OptionalMetricCallback callback) {
   // Parse app instance usage from the pref store and populate `app_usage_data`.
   for (auto usage_it : user_prefs->GetDict(::apps::kAppUsageTime)) {
     ::apps::AppPlatformMetrics::UsageTime usage_time(usage_it.second);
-    if (usage_time.reporting_usage_time.is_zero()) {
+    if (usage_time.reporting_usage_time < metrics::kMinimumAppUsageTime) {
       // No reporting usage tracked by the `AppUsageCollector` since it was last
       // enabled, so we skip. The `AppPlatformMetrics` component will
       // subsequently delete this entry once it reports its UKM snapshot.
+      DCHECK(usage_time.reporting_usage_time.is_zero());
       continue;
     }
 
@@ -112,6 +114,12 @@ void AppUsageTelemetrySampler::ResetAppUsageDataInPrefStore(
     ::apps::AppPlatformMetrics::UsageTime usage_time(
         *usage_dict_pref->FindByDottedPath(instance_id));
     usage_time.reporting_usage_time -= running_time;
+    if (usage_time.reporting_usage_time < metrics::kMinimumAppUsageTime) {
+      // Microsecond usage surplus which could interfere with record deletion.
+      // We reset this so it can be marked for deletion should there be no usage
+      // following this.
+      usage_time.reporting_usage_time = base::TimeDelta();
+    }
     usage_dict_pref->SetByDottedPath(instance_id, usage_time.ConvertToDict());
   }
 }

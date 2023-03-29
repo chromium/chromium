@@ -7,6 +7,7 @@
 #include <memory>
 
 #include "base/memory/ptr_util.h"
+#include "base/time/time.h"
 #include "chrome/browser/apps/app_service/metrics/app_platform_metrics.h"
 #include "chrome/browser/ash/policy/reporting/metrics_reporting/apps/app_platform_metrics_retriever.h"
 #include "chrome/browser/chromeos/reporting/metric_default_utils.h"
@@ -74,6 +75,13 @@ void AppUsageCollector::OnAppUsage(const std::string& app_id,
   auto is_enabled = metrics::kReportDeviceAppInfoDefaultValue;
   reporting_settings_->GetBoolean(::ash::kReportDeviceAppInfo, &is_enabled);
   if (!is_enabled) {
+    return;
+  }
+
+  if (running_time < metrics::kMinimumAppUsageTime) {
+    // Skip if there is no usage in millisecond granularity. Needed because we
+    // track app usage in milliseconds while `base::TimeDelta` internals use
+    // microsecond granularity.
     return;
   }
 
