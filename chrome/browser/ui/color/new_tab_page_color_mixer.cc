@@ -306,8 +306,7 @@ void AddNewTabPageColorMixer(ui::ColorProvider* provider,
       ui::SetAlpha(gfx::kGoogleGrey900,
                    (dark_mode ? /* % opacity */ 0.32 : 0.28) * SK_AlphaOPAQUE);
 
-  if (base::FeatureList::IsEnabled(ntp_features::kRealboxMatchOmniboxTheme) ||
-      base::FeatureList::IsEnabled(
+  if (base::FeatureList::IsEnabled(
           ntp_features::kNtpComprehensiveThemeRealbox)) {
     if (dark_mode) {
       mixer[kColorRealboxBackground] = {kColorToolbarBackgroundSubtleEmphasis};
@@ -335,35 +334,6 @@ void AddNewTabPageColorMixer(ui::ColorProvider* provider,
     mixer[kColorRealboxResultsUrl] = {kColorOmniboxResultsUrl};
     mixer[kColorRealboxResultsUrlSelected] = {kColorOmniboxResultsUrlSelected};
     mixer[kColorRealboxSearchIconBackground] = {kColorOmniboxResultsIcon};
-  }
-
-  if (base::FeatureList::IsEnabled(ntp_features::kRealboxMatchOmniboxTheme)) {
-    // For details see `kRealboxMatchOmniboxThemeVariations` in
-    // chrome/browser/about_flags.cc.
-    switch (base::GetFieldTrialParamByFeatureAsInt(
-        ntp_features::kRealboxMatchOmniboxTheme,
-        ntp_features::kRealboxMatchOmniboxThemeVariantParam, 0)) {
-      case 0:
-        mixer[kColorRealboxBackground] = {
-            kColorToolbarBackgroundSubtleEmphasis};
-        mixer[kColorRealboxBackgroundHovered] = {
-            kColorToolbarBackgroundSubtleEmphasisHovered};
-        break;
-      // NTP background on steady state and Omnibox steady state background on
-      // hover.
-      case 1:
-        mixer[kColorRealboxBackground] = {kColorNewTabPageBackground};
-        mixer[kColorRealboxBackgroundHovered] = {
-            kColorToolbarBackgroundSubtleEmphasisHovered};
-        break;
-      // NTP background on steady state and Omnibox active state background on
-      // hover.
-      case 2:
-        mixer[kColorRealboxBackground] = {kColorNewTabPageBackground};
-        mixer[kColorRealboxBackgroundHovered] = {
-            kColorOmniboxResultsBackground};
-        break;
-    }
   }
 
   AddWebThemeNewTabPageColors(mixer, dark_mode);

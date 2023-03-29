@@ -50,12 +50,6 @@ BASE_FEATURE(kDismissPromos,
              "DismissNtpPromos",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// If enabled, the NTP "realbox" will be themed like the omnibox
-// (same background/text/selected/hover colors).
-BASE_FEATURE(kRealboxMatchOmniboxTheme,
-             "NtpRealboxMatchOmniboxTheme",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 // If enabled, the NTP "realbox" will have same border/drop shadow in hover
 // state as searchbox.
 BASE_FEATURE(kRealboxMatchSearchboxTheme,
@@ -328,8 +322,6 @@ const char kNtpSafeBrowsingModuleCooldownPeriodDaysParam[] =
     "NtpSafeBrowsingModuleCooldownPeriodDaysParam";
 const char kNtpSafeBrowsingModuleCountMaxParam[] =
     "NtpSafeBrowsingModuleCountMaxParam";
-const char kRealboxMatchOmniboxThemeVariantParam[] =
-    "RealboxMatchOmniboxThemeVariantParam";
 const char kNtpRecipeTasksModuleDataParam[] = "NtpRecipeTasksModuleDataParam";
 const char kNtpRecipeTasksModuleCacheMaxAgeSParam[] =
     "NtpRecipeTasksModuleCacheMaxAgeSParam";

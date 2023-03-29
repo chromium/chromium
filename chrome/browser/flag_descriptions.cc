@@ -4453,11 +4453,6 @@ const char kNtpPhotosModuleSoftOptOutName[] = "NTP Photos Module Soft Opt-Out";
 const char kNtpPhotosModuleSoftOptOutDescription[] =
     "Enables soft opt-out option in Photos opt-in card";
 
-const char kNtpRealboxMatchOmniboxThemeName[] =
-    "NTP Realbox Matches Omnibox Theme";
-const char kNtpRealboxMatchOmniboxThemeDescription[] =
-    "NTP Realbox matches the Omnibox theme when enabled.";
-
 const char kNtpRealboxMatchSearchboxThemeName[] =
     "NTP Realbox Matches Searchbox Theme";
 const char kNtpRealboxMatchSearchboxThemeDescription[] =
