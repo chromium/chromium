@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_OS_CRYPT_ASYNC_COMMON_ENCRYPTOR_H_
 #define COMPONENTS_OS_CRYPT_ASYNC_COMMON_ENCRYPTOR_H_
 
+#include <map>
 #include <string>
 #include <vector>
 
@@ -22,6 +23,38 @@ class OSCryptAsync;
 // obtained by calling `os_crypt_async::OSCryptAsync::GetInstance`.
 class Encryptor {
  public:
+  // A class used by the Encryptor to hold an encryption key and carry out
+  // encryption and decryption operations using the specified Algorithm and
+  // encryption key.
+  class Key {
+   public:
+    Key(const Key&);
+    Key& operator=(const Key&);
+
+    ~Key();
+
+    static const size_t kAES256GCMKeySize = 256u / 8u;
+
+    enum class Algorithm {
+      kAES256GCM = 0,  // Algorithm used on Windows: 256 bit key with 96 bit
+                       // random nonce at the start of the data.
+    };
+
+    Key(base::span<const uint8_t> key, const Algorithm& algo);
+
+   private:
+    friend class Encryptor;
+
+    std::vector<uint8_t> Encrypt(base::span<const uint8_t> plaintext) const;
+    absl::optional<std::vector<uint8_t>> Decrypt(
+        base::span<const uint8_t> ciphertext) const;
+
+    Algorithm algo_;
+    std::vector<uint8_t> key_;
+  };
+
+  using KeyRing = std::map</*tag=*/std::string, Key>;
+
   ~Encryptor();
 
   // Moveable, not copyable.
@@ -52,11 +85,26 @@ class Encryptor {
   friend class EncryptorTestBase;
   friend class OSCryptAsync;
 
-  // Used for cloning and creation of the template instance.
+  // Create an encryptor with no keys or encryption provider. In this case, all
+  // encryption operations will be delegated to OSCrypt.
   Encryptor();
+
+  // Create an encryptor with a set of `keys`. The `provider_for_encryption`
+  // specifies which provider is used for encryption, and must have a
+  // corresponding key in `keys`.
+  Encryptor(const KeyRing& keys, const std::string& provider_for_encryption);
 
   // Clone is used by the factory to vend instances.
   Encryptor Clone() const;
+
+  // A KeyRing consists of a set of provider names and Key values. Encrypted
+  // data is always tagged with the provider name and this is used to look up
+  // the correct key to use for decryption.
+  KeyRing keys_;
+
+  // The provider with this tag is used when encrypting any new data, the Key to
+  // use for the encryption is looked up from the entry in the KeyRing.
+  std::string provider_for_encryption_;
 };
 
 }  // namespace os_crypt_async
