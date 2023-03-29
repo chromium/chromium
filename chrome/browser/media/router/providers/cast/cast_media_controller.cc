@@ -58,13 +58,11 @@ void SetIfNonNegative(base::TimeDelta* out, const base::Value* value) {
 
 // If |value| has "width" and "height" fields with positive values, it gets
 // converted into gfx::Size. Otherwise absl::nullopt is returned.
-absl::optional<gfx::Size> GetValidSize(const base::Value* value) {
-  if (!value || !value->is_dict())
-    return absl::nullopt;
+absl::optional<gfx::Size> GetValidSize(const base::Value::Dict& dict) {
   int width = 0;
   int height = 0;
-  SetIfNonNegative(&width, value->FindPath("width"));
-  SetIfNonNegative(&height, value->FindPath("height"));
+  SetIfNonNegative(&width, dict.Find("width"));
+  SetIfNonNegative(&height, dict.Find("height"));
   if (width <= 0 || height <= 0)
     return absl::nullopt;
   return absl::make_optional<gfx::Size>(width, height);
@@ -226,11 +224,12 @@ void CastMediaController::UpdateMediaStatus(
     for (const base::Value& image_value : *images) {
       if (!image_value.is_dict())
         continue;
-      const std::string* url_string = image_value.GetDict().FindString("url");
+      const base::Value::Dict& image_dict = image_value.GetDict();
+      const std::string* url_string = image_dict.FindString("url");
       if (!url_string)
         continue;
       media_status_.images.emplace_back(absl::in_place, GURL(*url_string),
-                                        GetValidSize(&image_value));
+                                        GetValidSize(image_dict));
     }
   }
 
