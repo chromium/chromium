@@ -147,6 +147,9 @@ class VIEWS_EXPORT ScrollView : public View, public ScrollBarController {
   // Scrolls the `contents_` by an offset.
   void ScrollByOffset(const gfx::PointF& offset);
 
+  // Scrolls the `contents_` to an offset.
+  void ScrollToOffset(const gfx::PointF& offset);
+
   bool GetUseColorId() const { return !!background_color_id_; }
 
   ScrollBarMode GetHorizontalScrollBarMode() const {
@@ -295,10 +298,9 @@ class VIEWS_EXPORT ScrollView : public View, public ScrollBarController {
   // Update the scrollbars positions given viewport and content sizes.
   void UpdateScrollBarPositions();
 
-  // Helpers to get and set the current scroll offset (either from the ui::Layer
-  // or from the |contents_| origin offset).
+  // Get the current scroll offset either from the ui::Layer or from the
+  // |contents_| origin offset.
   gfx::PointF CurrentOffset() const;
-  void ScrollToOffset(const gfx::PointF& offset);
 
   // Whether the ScrollView scrolls using ui::Layer APIs.
   bool ScrollsWithLayers() const;

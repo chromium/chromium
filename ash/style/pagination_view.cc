@@ -288,10 +288,12 @@ PaginationView::PaginationView(PaginationModel* model)
       indicator_container_(indicator_scroll_view_->SetContents(
           std::make_unique<IndicatorContainer>())) {
   DCHECK(model_);
-
   model_observation_.Observe(model_.get());
 
-  // The scroll view does not accept scroll event.
+  // Remove the default background color.
+  indicator_scroll_view_->SetBackgroundColor(absl::nullopt);
+
+  // The scroll view does not accept any scroll event.
   indicator_scroll_view_->SetHorizontalScrollBarMode(
       views::ScrollView::ScrollBarMode::kDisabled);
   indicator_scroll_view_->SetVerticalScrollBarMode(
@@ -445,10 +447,14 @@ void PaginationView::UpdateSelectorDot() {
     return;
   }
 
+  // The selected page may become invalid when total pages is changing.
+  const int selected_page = model_->selected_page();
+  if (!model_->is_valid_page(selected_page)) {
+    return;
+  }
+
   // Move the selector dot to the position of selected page indicator if the
   // selector dot is not deforming.
-  const int selected_page = model_->selected_page();
-  DCHECK(model_->is_valid_page(selected_page));
   if (!selector_dot_->DeformingInProgress()) {
     selector_dot_->SetBoundsRect(
         indicator_container_->GetIndicatorByPage(selected_page)
