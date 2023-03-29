@@ -139,7 +139,6 @@ static WTF::String SpecialDrawingTypeAsDebugString(DisplayItem::Type type) {
     DEBUG_STRING_CASE(ScrollCorner);
     DEBUG_STRING_CASE(SelectionTint);
     DEBUG_STRING_CASE(TableCollapsedBorders);
-    DEBUG_STRING_CASE(WebFont);
     DEBUG_STRING_CASE(WebPlugin);
 
     DEFAULT_CASE;
