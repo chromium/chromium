@@ -143,7 +143,8 @@
 <div class="column" id="powerBookmarksContainer">
   <cr-toolbar-search-field id="searchField" label="$i18n{searchBookmarks}"
       clear-label="$i18n{clearSearch}" on-search-changed="onSearchChanged_"
-      disabled="[[editing_]]" hidden="[[guestMode_]]">
+      disabled="[[editing_]]" hidden="[[guestMode_]]"
+      on-blur="onSearchBlurred_">
   </cr-toolbar-search-field>
   <div class="label-row" hidden="[[guestMode_]]"
       header-hidden$="[[shouldHideHeader_(

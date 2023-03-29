@@ -14,19 +14,29 @@ enum ActionSource {
 };
 
 // Used to indicate the order bookmarks are sorted in the side panel.
-// Do not reorder, used by profile prefs.
+// Do not reorder or re-use values, used by profile prefs and metrics.
+// This must be kept in sync with BookmarksSidePanelSortType in
+// tools/metrics/histograms/enums.xml.
 enum SortOrder {
   kNewest = 0,
   kOldest = 1,
   kAlphabetical = 2,
   kReverseAlphabetical = 3,
+
+  // Must be last. May add new values before this one.
+  kCount = 4,
 };
 
 // Used to indicate the order bookmarks are sorted in the side panel.
-// Do not reorder, used by profile prefs.
+// Do not reorder or re-use values, used by profile prefs and metrics.
+// This must be kept in sync with BookmarksSidePanelViewType in
+// tools/metrics/histograms/enums.xml.
 enum ViewType {
   kCompact = 0,
   kExpanded = 1,
+
+  // Must be last. May add new values before this one.
+  kCount = 2,
 };
 
 // Used by the Read Later WebUI page (for the side panel) to bootstrap

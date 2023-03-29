@@ -53,6 +53,17 @@ function getBookmarkName(bookmark: chrome.bookmarks.BookmarkTreeNode): string {
   return bookmark.title || bookmark.url || '';
 }
 
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused. This must be kept in sync with
+// BookmarksSidePanelSearchCTREvent in tools/metrics/histograms/enums.xml.
+export enum SearchAction {
+  SHOWN = 0,
+  SEARCHED = 1,
+
+  // Must be last.
+  COUNT = 2,
+}
+
 export interface SortOption {
   sortOrder: SortOrder;
   label: string;
@@ -232,6 +243,8 @@ export class PowerBookmarksListElement extends PolymerElement {
       this.shownBookmarksResizeObserver_.observe(
           this.shadowRoot!.querySelector('#bookmarks')!);
     }
+
+    this.recordMetricsOnConnected_();
   }
 
   override disconnectedCallback() {
@@ -507,6 +520,19 @@ export class PowerBookmarksListElement extends PolymerElement {
     this.bookmarksService_.refreshDataForBookmarks(this.shownBookmarks_);
   }
 
+  private recordMetricsOnConnected_() {
+    chrome.metricsPrivate.recordEnumerationValue(
+        'PowerBookmarks.SidePanel.SortTypeShown',
+        this.sortTypes_[this.activeSortIndex_].sortOrder, SortOrder.kCount);
+    chrome.metricsPrivate.recordEnumerationValue(
+        'PowerBookmarks.SidePanel.ViewTypeShown',
+        this.compact_ ? ViewType.kCompact : ViewType.kExpanded,
+        ViewType.kCount);
+    chrome.metricsPrivate.recordEnumerationValue(
+        'PowerBookmarks.SidePanel.Search.CTR', SearchAction.SHOWN,
+        SearchAction.COUNT);
+  }
+
   private canAddCurrentUrl_(): boolean {
     return this.bookmarksService_.canAddUrl(
         this.currentUrl_, this.getActiveFolder_());
@@ -673,6 +699,12 @@ export class PowerBookmarksListElement extends PolymerElement {
     this.searchQuery_ = e.detail.toLocaleLowerCase();
   }
 
+  private onSearchBlurred_() {
+    chrome.metricsPrivate.recordEnumerationValue(
+        'PowerBookmarks.SidePanel.Search.CTR', SearchAction.SEARCHED,
+        SearchAction.COUNT);
+  }
+
   private onShowContextMenuClicked_(
       event: CustomEvent<
           {bookmark: chrome.bookmarks.BookmarkTreeNode, event: MouseEvent}>) {
@@ -816,6 +848,9 @@ export class PowerBookmarksListElement extends PolymerElement {
     this.$.sortMenu.close();
     this.activeSortIndex_ = event.model.index;
     this.bookmarksApi_.setSortOrder(event.model.item.sortOrder);
+    chrome.metricsPrivate.recordEnumerationValue(
+        'PowerBookmarks.SidePanel.SortTypeShown', event.model.item.sortOrder,
+        SortOrder.kCount);
   }
 
   private onVisualViewClicked_(event: MouseEvent) {
@@ -825,6 +860,9 @@ export class PowerBookmarksListElement extends PolymerElement {
     this.compact_ = false;
     this.$.shownBookmarksIronList.notifyResize();
     this.bookmarksApi_.setViewType(ViewType.kExpanded);
+    chrome.metricsPrivate.recordEnumerationValue(
+        'PowerBookmarks.SidePanel.ViewTypeShown', ViewType.kExpanded,
+        ViewType.kCount);
   }
 
   private onCompactViewClicked_(event: MouseEvent) {
@@ -834,6 +872,9 @@ export class PowerBookmarksListElement extends PolymerElement {
     this.compact_ = true;
     this.$.shownBookmarksIronList.notifyResize();
     this.bookmarksApi_.setViewType(ViewType.kCompact);
+    chrome.metricsPrivate.recordEnumerationValue(
+        'PowerBookmarks.SidePanel.ViewTypeShown', ViewType.kCompact,
+        ViewType.kCount);
   }
 
   private onAddTabClicked_() {

@@ -11898,6 +11898,23 @@ Called by update_bad_message_reasons.py.-->
   <int value="2" label="Open in incognito tab"/>
 </enum>
 
+<enum name="BookmarksSidePanelSearchCTREvent">
+  <int value="0" label="Shown"/>
+  <int value="1" label="Searched"/>
+</enum>
+
+<enum name="BookmarksSidePanelSortType">
+  <int value="0" label="Newest"/>
+  <int value="1" label="Oldest"/>
+  <int value="2" label="Alphabetical"/>
+  <int value="3" label="Reverse Alphabetical"/>
+</enum>
+
+<enum name="BookmarksSidePanelViewType">
+  <int value="0" label="Compact view"/>
+  <int value="1" label="Visual view"/>
+</enum>
+
 <enum name="BookmarkType">
   <int value="0" label="Normal"/>
   <int value="1" label="Partner"/>

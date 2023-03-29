@@ -1059,6 +1059,40 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="PowerBookmarks.SidePanel.Search.CTR"
+    enum="BookmarksSidePanelSearchCTREvent" expires_after="2023-11-27">
+  <owner>emshack@chromium.org</owner>
+  <owner>chrome-desktop-sea@google.com</owner>
+  <component>UI&gt;Browser&gt;PowerBookmarks</component>
+  <summary>
+    Logs when the power bookmarks side panel is shown, as well as when the
+    search bar is defocused as a proxy for performing a search. The CTR can be
+    calculated by computing &quot;Searched&quot; / &quot;Shown&quot;.
+  </summary>
+</histogram>
+
+<histogram name="PowerBookmarks.SidePanel.SortTypeShown"
+    enum="BookmarksSidePanelSortType" expires_after="2023-11-27">
+  <owner>emshack@chromium.org</owner>
+  <owner>chrome-desktop-sea@google.com</owner>
+  <component>UI&gt;Browser&gt;PowerBookmarks</component>
+  <summary>
+    Records the sort type when the side panel is shown or when the sort type
+    changes.
+  </summary>
+</histogram>
+
+<histogram name="PowerBookmarks.SidePanel.ViewTypeShown"
+    enum="BookmarksSidePanelViewType" expires_after="2023-11-27">
+  <owner>emshack@chromium.org</owner>
+  <owner>chrome-desktop-sea@google.com</owner>
+  <component>UI&gt;Browser&gt;PowerBookmarks</component>
+  <summary>
+    Records the view type when the side panel is shown or when the view type
+    changes.
+  </summary>
+</histogram>
+
 <histogram name="PowerBookmarks.Storage.DatabaseDirSizeAtStartup" units="KB"
     expires_after="2023-10-24">
   <owner>wylieb@chromium.org</owner>
