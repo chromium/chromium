@@ -70,6 +70,7 @@ void RemoteMaintenanceCurtainView::AddCurtainWebView() {
   DCHECK(!curtain_view_);
   curtain_view_ =
       AddChildView(AshWebViewFactory::Get()->Create(AshWebView::InitParams()));
+  curtain_view_->SetID(kRemoteMaintenanceCurtainAshWebViewId);
   layout_->SetVerticalAlignmentForView(curtain_view_,
                                        StackLayout::VerticalAlignment::kCenter);
 

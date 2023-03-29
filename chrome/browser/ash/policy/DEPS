@@ -17,6 +17,12 @@ include_rules = [
 ]
 
 specific_include_rules = {
+  "curtain_mode_chromeos_browsertest.cc": [
+    # Allow us to test this file.
+    # We can't put the tests inside remoting/host, since browsertests
+    # depend on chrome/, and chrome/ already depends on remoting/host/.
+    "+remoting/host/curtain_mode_chromeos.h",
+  ],
   "child_status_collector_browsertest.cc": [
     "+mojo/core/embedder/embedder.h",
   ],

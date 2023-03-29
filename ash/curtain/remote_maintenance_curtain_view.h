@@ -21,6 +21,11 @@ class Size;
 
 namespace ash::curtain {
 
+// ID given to the `AshWebView` that renders the WebUI part of the curtain.
+// Used by pixel tests to wait for the WebUI to render.
+// (the value is randomly chosen).
+constexpr int kRemoteMaintenanceCurtainAshWebViewId = 14569;
+
 // The root view shown as the security curtain overlay when the security curtain
 // is created by an enterprise admin through the 'start crd session' remote
 // command.

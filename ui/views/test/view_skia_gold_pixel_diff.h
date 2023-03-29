@@ -53,7 +53,7 @@ class ViewSkiaGoldPixelDiff : public ui::test::SkiaGoldPixelDiff {
   // default. Read the comment of `SkiaGoldMatchingAlgorithm` to learn more.
   bool CompareViewScreenshot(
       const std::string& screenshot_name,
-      views::View* view,
+      const views::View* view,
       const ui::test::SkiaGoldMatchingAlgorithm* algorithm = nullptr) const;
 
   // Similar to `CompareViewScreenshot()`. But the screenshot is taken within

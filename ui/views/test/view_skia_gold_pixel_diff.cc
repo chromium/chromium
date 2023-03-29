@@ -40,13 +40,13 @@ ViewSkiaGoldPixelDiff::~ViewSkiaGoldPixelDiff() = default;
 
 bool ViewSkiaGoldPixelDiff::CompareViewScreenshot(
     const std::string& screenshot_name,
-    views::View* view,
+    const views::View* view,
     const ui::test::SkiaGoldMatchingAlgorithm* algorithm) const {
   DCHECK(Initialized()) << "Initialize the class before using this method.";
 
   // Calculate the snapshot bounds in the widget's coordinates.
   gfx::Rect rc = view->GetBoundsInScreen();
-  views::Widget* widget = view->GetWidget();
+  const views::Widget* widget = view->GetWidget();
   gfx::Rect bounds_in_screen = widget->GetRootView()->GetBoundsInScreen();
   gfx::Rect bounds = widget->GetRootView()->bounds();
   rc.Offset(bounds.x() - bounds_in_screen.x(),
@@ -65,8 +65,9 @@ bool ViewSkiaGoldPixelDiff::CompareNativeWindowScreenshot(
 
   gfx::Image image;
   bool ret = GrabWindowSnapshotInternal(window, snapshot_bounds, &image);
-  if (!ret)
+  if (!ret) {
     return false;
+  }
 
   return SkiaGoldPixelDiff::CompareScreenshot(screenshot_name,
                                               *image.ToSkBitmap(), algorithm);
@@ -83,8 +84,9 @@ bool ViewSkiaGoldPixelDiff::CompareNativeWindowScreenshotInRects(
 
   gfx::Image image;
   bool ret = GrabWindowSnapshotInternal(window, snapshot_bounds, &image);
-  if (!ret)
+  if (!ret) {
     return false;
+  }
 
   // Only keep the pixels within `regions_of_interest` so that the differences
   // outside of `regions_of_interest` are ignored.
@@ -109,8 +111,9 @@ bool ViewSkiaGoldPixelDiff::GrabWindowSnapshotInternal(
   run_loop.Run();
 
   const bool success = !image->IsEmpty();
-  if (!success)
+  if (!success) {
     LOG(ERROR) << "Grab screenshot failed.";
+  }
   return success;
 }
 
