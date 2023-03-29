@@ -13,7 +13,7 @@ import java.lang.annotation.RetentionPolicy;
 @IntDef({StreamType.UNSPECIFIED, StreamType.FOR_YOU, StreamType.WEB_FEED,
         StreamType.SINGLE_WEB_FEED})
 @Retention(RetentionPolicy.SOURCE)
-@interface StreamType {
+public @interface StreamType {
     int UNSPECIFIED = 0;
     int FOR_YOU = 1;
     int WEB_FEED = 2;

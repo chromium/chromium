@@ -42,7 +42,7 @@ public interface FeedUserInteractionReliabilityLogger {
     /**
      * Called when the stream has been closed.
      */
-    default void onStreamClosed(ClosedReason reason) {}
+    default void onStreamClosed(@ClosedReason int reason) {}
 
     /**
      * Called when the view has entered the visible part of the screen for the first time. If the
