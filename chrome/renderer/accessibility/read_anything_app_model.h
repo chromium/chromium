@@ -5,6 +5,7 @@
 #ifndef CHROME_RENDERER_ACCESSIBILITY_READ_ANYTHING_APP_MODEL_H_
 #define CHROME_RENDERER_ACCESSIBILITY_READ_ANYTHING_APP_MODEL_H_
 
+#include "base/containers/contains.h"
 #include "chrome/common/accessibility/read_anything.mojom.h"
 #include "chrome/common/accessibility/read_anything_constants.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
@@ -42,6 +43,7 @@ class ReadAnythingAppModel {
   int32_t end_offset() const { return end_offset_; }
 
   bool distillation_in_progress() const { return distillation_in_progress_; }
+  bool loading() const { return loading_; }
   const ukm::SourceId& active_ukm_source_id() const {
     return active_ukm_source_id_;
   }
@@ -50,19 +52,20 @@ class ReadAnythingAppModel {
   void SetDistillationInProgress(bool distillation) {
     distillation_in_progress_ = distillation;
   }
+  void SetLoading(bool loading) { loading_ = loading; }
   void SetActiveUkmSourceId(ukm::SourceId source_id) {
     active_ukm_source_id_ = source_id;
   }
   void SetActiveTreeId(ui::AXTreeID tree_id) { active_tree_id_ = tree_id; }
-
-  void SetStart(ui::AXNodeID start_node_id, int32_t start_offset);
-  void SetEnd(ui::AXNodeID end_node_id, int32_t end_offset);
 
   const std::vector<ui::AXNodeID>& content_node_ids() const {
     return content_node_ids_;
   }
   const std::set<ui::AXNodeID>& display_node_ids() const {
     return display_node_ids_;
+  }
+  const std::set<ui::AXNodeID>& selection_node_ids() const {
+    return selection_node_ids_;
   }
 
   ui::AXNode* GetAXNode(ui::AXNodeID ax_node_id) const;
@@ -71,7 +74,10 @@ class ReadAnythingAppModel {
   void OnThemeChanged(read_anything::mojom::ReadAnythingThemePtr new_theme);
 
   void InsertDisplayNode(ui::AXNodeID node);
+  void InsertSelectionNode(ui::AXNodeID node);
   void Reset(const std::vector<ui::AXNodeID>& content_node_ids);
+  void UpdateSelection();
+  bool SelectionInsideDisplayNodes();
 
   const std::unique_ptr<ui::AXSerializableTree>& GetTreeFromId(
       ui::AXTreeID tree_id) const;
@@ -96,6 +102,9 @@ class ReadAnythingAppModel {
       read_anything::mojom::LetterSpacing letter_spacing) const;
   double GetLineSpacingValue(
       read_anything::mojom::LineSpacing line_spacing) const;
+
+  void ResetSelection();
+
   void AddPendingUpdates(const ui::AXTreeID tree_id,
                          const std::vector<ui::AXTreeUpdate>& updates);
 
@@ -121,6 +130,10 @@ class ReadAnythingAppModel {
   // new distillation requests during that time.
   bool distillation_in_progress_ = false;
 
+  // Loading should be set to true if we are in the process of distilling the
+  // active tree for the first time.
+  bool loading_ = false;
+
   // A mapping of a tree ID to a queue of pending updates on the active AXTree,
   // which will be unserialized once distillation completes.
   std::map<ui::AXTreeID, std::vector<ui::AXTreeUpdate>> pending_updates_map_;
@@ -130,11 +143,14 @@ class ReadAnythingAppModel {
   // distiller, these are heading or paragraph subtrees.
   std::vector<ui::AXNodeID> content_node_ids_;
 
-  // The node IDs that are displayed in the Read Anything app. This contains
-  // all ancestors and descendants of each content node. Or, if no content
-  // nodes were identified, this contains all nodes between the start and end
-  // nodes of the selection.
+  // This contains all ancestors and descendants of each content node. These
+  // nodes will be displayed in the Read Anything app if there is no user
+  // selection or if the users selection is contained within these nodes.
   std::set<ui::AXNodeID> display_node_ids_;
+
+  // If the user's selection contains nodes outside of display_node_ids, this
+  // contains all nodes between the start and end nodes of the selection.
+  std::set<ui::AXNodeID> selection_node_ids_;
 
   // Theme information.
   std::string font_name_ = string_constants::kReadAnythingDefaultFontName;

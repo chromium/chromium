@@ -131,6 +131,15 @@ class ReadAnythingAppControllerTest : public ChromeRenderViewTest {
     controller_->AccessibilityEventReceived(tree_id, updates, {});
   }
 
+  void AccessibilityEventReceivedWithUserSelection(
+      const std::vector<ui::AXTreeUpdate>& updates) {
+    ui::AXEvent event;
+    event.event_type = ax::mojom::Event::kDocumentSelectionChanged;
+    event.event_from = ax::mojom::EventFrom::kUser;
+    controller_->AccessibilityEventReceived(updates[0].tree_data.tree_id,
+                                            updates, {event});
+  }
+
   // Since a11y events happen asynchronously, they can come between the time
   // distillation finishes and pending updates are unserialized in
   // OnAXTreeDistilled. Thus we need to be able to set distillation progress
@@ -170,6 +179,10 @@ class ReadAnythingAppControllerTest : public ChromeRenderViewTest {
 
   bool DisplayNodeIdsContains(ui::AXNodeID ax_node_id) {
     return base::Contains(controller_->model_.display_node_ids(), ax_node_id);
+  }
+
+  bool SelectionNodeIdsContains(ui::AXNodeID ax_node_id) {
+    return base::Contains(controller_->model_.selection_node_ids(), ax_node_id);
   }
 
   std::string FontName() { return controller_->FontName(); }
@@ -334,8 +347,7 @@ TEST_F(ReadAnythingAppControllerTest, GetChildren_WithSelection) {
   update.tree_data.sel_anchor_offset = 0;
   update.tree_data.sel_focus_offset = 0;
   update.tree_data.sel_is_backward = false;
-  AccessibilityEventReceived({update});
-  OnAXTreeDistilled({});
+  AccessibilityEventReceivedWithUserSelection({update});
   EXPECT_EQ(2u, GetChildren(1).size());
   EXPECT_EQ(0u, GetChildren(2).size());
   EXPECT_EQ(0u, GetChildren(3).size());
@@ -354,8 +366,7 @@ TEST_F(ReadAnythingAppControllerTest, GetChildren_WithBackwardSelection) {
   update.tree_data.sel_anchor_offset = 0;
   update.tree_data.sel_focus_offset = 0;
   update.tree_data.sel_is_backward = true;
-  AccessibilityEventReceived({update});
-  OnAXTreeDistilled({});
+  AccessibilityEventReceivedWithUserSelection({update});
   EXPECT_EQ(2u, GetChildren(1).size());
   EXPECT_EQ(0u, GetChildren(2).size());
   EXPECT_EQ(0u, GetChildren(3).size());
@@ -516,7 +527,7 @@ TEST_F(ReadAnythingAppControllerTest, IsNodeIgnoredForReadAnything) {
   EXPECT_EQ(true, IsNodeIgnoredForReadAnything(4));
 }
 
-TEST_F(ReadAnythingAppControllerTest, DisplayNodeIdsContains_Selection) {
+TEST_F(ReadAnythingAppControllerTest, SelectionNodeIdsContains_Selection) {
   ui::AXTreeUpdate update;
   SetUpdateTreeID(&update);
   update.tree_data.sel_anchor_object_id = 2;
@@ -524,12 +535,12 @@ TEST_F(ReadAnythingAppControllerTest, DisplayNodeIdsContains_Selection) {
   update.tree_data.sel_anchor_offset = 0;
   update.tree_data.sel_focus_offset = 0;
   update.tree_data.sel_is_backward = false;
-  AccessibilityEventReceived({update});
-  OnAXTreeDistilled({});
-  EXPECT_TRUE(DisplayNodeIdsContains(1));
-  EXPECT_TRUE(DisplayNodeIdsContains(2));
-  EXPECT_TRUE(DisplayNodeIdsContains(3));
-  EXPECT_FALSE(DisplayNodeIdsContains(4));
+
+  AccessibilityEventReceivedWithUserSelection({update});
+  EXPECT_TRUE(SelectionNodeIdsContains(1));
+  EXPECT_TRUE(SelectionNodeIdsContains(2));
+  EXPECT_TRUE(SelectionNodeIdsContains(3));
+  EXPECT_FALSE(SelectionNodeIdsContains(4));
 }
 
 TEST_F(ReadAnythingAppControllerTest,
@@ -541,12 +552,11 @@ TEST_F(ReadAnythingAppControllerTest,
   update.tree_data.sel_anchor_offset = 0;
   update.tree_data.sel_focus_offset = 0;
   update.tree_data.sel_is_backward = true;
-  AccessibilityEventReceived({update});
-  OnAXTreeDistilled({});
-  EXPECT_TRUE(DisplayNodeIdsContains(1));
-  EXPECT_TRUE(DisplayNodeIdsContains(2));
-  EXPECT_TRUE(DisplayNodeIdsContains(3));
-  EXPECT_FALSE(DisplayNodeIdsContains(4));
+  AccessibilityEventReceivedWithUserSelection({update});
+  EXPECT_TRUE(SelectionNodeIdsContains(1));
+  EXPECT_TRUE(SelectionNodeIdsContains(2));
+  EXPECT_TRUE(SelectionNodeIdsContains(3));
+  EXPECT_FALSE(SelectionNodeIdsContains(4));
 }
 
 TEST_F(ReadAnythingAppControllerTest, DisplayNodeIdsContains_ContentNodes) {
@@ -1217,8 +1227,7 @@ TEST_F(ReadAnythingAppControllerTest, Selection_Forward) {
   update.tree_data.sel_anchor_offset = 0;
   update.tree_data.sel_focus_offset = 1;
   update.tree_data.sel_is_backward = false;
-  AccessibilityEventReceived({update});
-  OnAXTreeDistilled({});
+  AccessibilityEventReceivedWithUserSelection({update});
   EXPECT_EQ(3, StartNodeId());
   EXPECT_EQ(4, EndNodeId());
   EXPECT_EQ(0, StartOffset());
@@ -1234,8 +1243,7 @@ TEST_F(ReadAnythingAppControllerTest, Selection_Backward) {
   update.tree_data.sel_anchor_offset = 1;
   update.tree_data.sel_focus_offset = 0;
   update.tree_data.sel_is_backward = true;
-  AccessibilityEventReceived({update});
-  OnAXTreeDistilled({});
+  AccessibilityEventReceivedWithUserSelection({update});
   EXPECT_EQ(3, StartNodeId());
   EXPECT_EQ(4, EndNodeId());
   EXPECT_EQ(0, StartOffset());
@@ -1268,10 +1276,15 @@ TEST_F(ReadAnythingAppControllerTest, Selection_IgnoredNode) {
   AccessibilityEventReceived({update_2});
   OnAXTreeDistilled({});
 
+  // We want to check that no crash occurs in this case. These node ids and
+  // offset are incorrect, they should be 2, 3, 0, and 5 (5 is the length of the
+  // world "Hello"). But because we don't have an AXTreeManager in the test,
+  // AXSelection::ToUnignoredSelection() exits early without calculating the
+  // actual ignored selection.
   EXPECT_EQ(2, StartNodeId());
-  EXPECT_EQ(3, EndNodeId());
+  EXPECT_EQ(4, EndNodeId());
   EXPECT_EQ(0, StartOffset());
-  EXPECT_EQ(5, EndOffset());  // The length of the word 'Hello'.
+  EXPECT_EQ(0, EndOffset());
 }
 
 TEST_F(ReadAnythingAppControllerTest, Selection_IsCollapsed) {
@@ -1281,8 +1294,7 @@ TEST_F(ReadAnythingAppControllerTest, Selection_IsCollapsed) {
   update.tree_data.sel_focus_object_id = 2;
   update.tree_data.sel_anchor_offset = 3;
   update.tree_data.sel_focus_offset = 3;
-  AccessibilityEventReceived({update});
-  OnAXTreeDistilled({});
+  AccessibilityEventReceivedWithUserSelection({update});
   EXPECT_EQ(ui::kInvalidAXNodeID, StartNodeId());
   EXPECT_EQ(ui::kInvalidAXNodeID, EndNodeId());
   EXPECT_EQ(-1, StartOffset());

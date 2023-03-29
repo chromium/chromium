@@ -21,8 +21,11 @@ interface LinkColor {
   default: string;
   visited: string;
 }
-const darkThemeBackgroundSkColor = rgbToSkColor(
-    getComputedStyle(document.body).getPropertyValue('--google-grey-900-rgb'));
+const style = getComputedStyle(document.body);
+const darkThemeBackgroundSkColor =
+    rgbToSkColor(style.getPropertyValue('--google-grey-900-rgb'));
+const lightThemeBackgroundSkColor =
+    rgbToSkColor(style.getPropertyValue('--google-grey-50-rgb'));
 const darkThemeEmptyStateBodyColor = 'var(--google-grey-500)';
 const defaultThemeEmptyStateBodyColor = 'var(--google-grey-700)';
 const defaultLinkColors: LinkColor = {
@@ -33,6 +36,9 @@ const darkThemeLinkColors: LinkColor = {
   default: 'var(--google-blue-300)',
   visited: 'var(--google-purple-100)',
 };
+const lightThemeSelectionColor = 'var(--google-yellow-100)';
+const darkThemeSelectionColor = 'var(--google-blue-300)';
+const defaultThemeSelctionColor = 'var(--google-blue-100)';
 
 // A two-way map where each key is unique and each value is unique. The keys are
 // DOM nodes and the values are numbers, representing AXNodeIDs.
@@ -69,6 +75,12 @@ if (chrome.readAnything) {
     const readAnythingApp = document.querySelector('read-anything-app');
     assert(readAnythingApp);
     readAnythingApp.updateContent();
+  };
+
+  chrome.readAnything.updateSelection = () => {
+    const readAnythingApp = document.querySelector('read-anything-app');
+    assert(readAnythingApp);
+    readAnythingApp.updateSelection();
   };
 
   chrome.readAnything.updateTheme = () => {
@@ -254,10 +266,9 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
 
     this.hasContent_ = true;
     container.appendChild(node);
-    this.updateSelection_();
   }
 
-  private updateSelection_() {
+  updateSelection() {
     const shadowRoot = this.shadowRoot;
     assert(shadowRoot);
     const selection = shadowRoot.getSelection();
@@ -307,6 +318,17 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
                     defaultThemeEmptyStateBodyColor;
   }
 
+  private getSelectionColor_(backgroundSkColor: SkColor): string {
+    switch (backgroundSkColor.value) {
+      case lightThemeBackgroundSkColor.value:
+        return lightThemeSelectionColor;
+      case darkThemeBackgroundSkColor.value:
+        return darkThemeSelectionColor;
+      default:
+        return defaultThemeSelctionColor;
+    }
+  }
+
   updateTheme() {
     const foregroundColor:
         SkColor = {value: chrome.readAnything.foregroundColor};
@@ -321,6 +343,7 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
       '--letter-spacing': chrome.readAnything.letterSpacing + 'em',
       '--line-height': chrome.readAnything.lineSpacing,
       '--link-color': linkColor.default,
+      '--selection-color': this.getSelectionColor_(backgroundColor),
       '--sp-empty-state-heading-color': skColorToRgba(foregroundColor),
       '--sp-empty-state-body-color':
           this.getEmptyStateBodyColor_(backgroundColor),

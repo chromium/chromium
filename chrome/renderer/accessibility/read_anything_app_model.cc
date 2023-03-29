@@ -27,32 +27,42 @@ void ReadAnythingAppModel::InsertDisplayNode(ui::AXNodeID node) {
   display_node_ids_.insert(node);
 }
 
+void ReadAnythingAppModel::InsertSelectionNode(ui::AXNodeID node) {
+  selection_node_ids_.insert(node);
+}
+
 void ReadAnythingAppModel::Reset(
     const std::vector<ui::AXNodeID>& content_node_ids) {
   content_node_ids_ = content_node_ids;
   display_node_ids_.clear();
   distillation_in_progress_ = false;
+  ResetSelection();
+}
 
-  if (active_tree_id_ == ui::AXTreeIDUnknown() ||
-      !ContainsTree(active_tree_id_)) {
-    return;
-  }
+void ReadAnythingAppModel::ResetSelection() {
+  selection_node_ids_.clear();
+  start_node_id_ = ui::kInvalidAXNodeID;
+  end_node_id_ = ui::kInvalidAXNodeID;
+  start_offset_ = -1;
+  end_offset_ = -1;
+  has_selection_ = false;
+}
 
+void ReadAnythingAppModel::UpdateSelection() {
+  ResetSelection();
   ui::AXSelection selection =
       GetTreeFromId(active_tree_id_)->GetUnignoredSelection();
   has_selection_ = selection.anchor_object_id != ui::kInvalidAXNodeID &&
                    selection.focus_object_id != ui::kInvalidAXNodeID &&
                    !selection.IsCollapsed();
   if (!has_selection_) {
-    start_node_id_ = ui::kInvalidAXNodeID;
-    end_node_id_ = ui::kInvalidAXNodeID;
-    start_offset_ = -1;
-    end_offset_ = -1;
     return;
   }
 
   // Identify the start and end node ids and offsets. The start node comes
-  // earlier than end node in the tree order.
+  // earlier than end node in the tree order. We need to send the selection to
+  // JS in forward order. If they are sent as backward selections, JS will
+  // collapse the selection so no selection will be rendered in Read Anything.
   start_node_id_ = selection.is_backward ? selection.focus_object_id
                                          : selection.anchor_object_id;
   end_node_id_ = selection.is_backward ? selection.anchor_object_id
@@ -63,15 +73,9 @@ void ReadAnythingAppModel::Reset(
       selection.is_backward ? selection.anchor_offset : selection.focus_offset;
 }
 
-void ReadAnythingAppModel::SetStart(ui::AXNodeID start_node_id,
-                                    int32_t start_offset) {
-  start_node_id_ = start_node_id;
-  start_offset_ = start_offset;
-}
-void ReadAnythingAppModel::SetEnd(ui::AXNodeID end_node_id,
-                                  int32_t end_offset) {
-  end_node_id_ = end_node_id;
-  end_offset_ = end_offset;
+bool ReadAnythingAppModel::SelectionInsideDisplayNodes() {
+  return base::Contains(display_node_ids_, start_node_id_) &&
+         base::Contains(display_node_ids_, end_node_id_);
 }
 
 const std::unique_ptr<ui::AXSerializableTree>&
