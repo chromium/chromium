@@ -40,6 +40,7 @@ After running the BiDi server, examples can be simply executed, for example:
 ```sh
 <!-- keep-sorted start -->
 python3 console_log_example.py
+python3 print_example.py
 python3 screenshot_example.py
 python3 script_example.py
 <!-- keep-sorted end -->

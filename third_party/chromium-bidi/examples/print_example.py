@@ -66,27 +66,27 @@ async def main():
             }
         }, websocket)
 
-    # Take screenshot
+    # Print to PDF
     command_result = await run_and_wait_command(
         {
             "id": next(ID),
-            "method": "browsingContext.captureScreenshot",
+            "method": "browsingContext.print",
             "params": {
                 "context": context_id
             }
         }, websocket)
 
-    # `screenshot` has the base64 encoded PNG data.
-    screenshot = command_result["result"]["data"]
+    # `pdf` has the base64 encoded PDF data.
+    pdf = command_result["result"]["data"]
 
-    assert isinstance(screenshot, str)
+    assert isinstance(pdf, str)
 
-    # Save PNG file to disk.
-    # with open(f'{Path(__file__).stem}.png', 'wb') as file:
-    #     file.write(base64.urlsafe_b64decode(screenshot))
+    # Save PDF file to disk.
+    # with open(f'{Path(__file__).stem}.pdf', 'wb') as file:
+    #     file.write(base64.urlsafe_b64decode(pdf))
 
-    # Open PNG file in web browser.
-    webbrowser.open(f'data:image/png;base64,{screenshot}')
+    # Open PDF file in web browser.
+    webbrowser.open(f'data:application/pdf;base64,{pdf}')
 
 
 loop = asyncio.new_event_loop()
