@@ -113,7 +113,7 @@ class MEDIA_EXPORT VideoEncoder {
   // Callback to report success and errors in encoder calls.
   using EncoderStatusCB = base::OnceCallback<void(EncoderStatus error)>;
 
-  struct PendingEncode {
+  struct MEDIA_EXPORT PendingEncode {
     PendingEncode();
     PendingEncode(PendingEncode&&);
     ~PendingEncode();
