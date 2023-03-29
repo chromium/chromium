@@ -216,14 +216,34 @@ class CORE_EXPORT SelectorChecker {
   };
 
   // Used for situations where we have "inner" selector matching, such as
-  // :is(...). Ensures that MatchFlags found for the inner selector are
-  //  propagated to the outer MatchResult.
+  // :is(...). Ensures that we propagate the necessary sub-result data
+  // to the outer MatchResult.
   class SubResult : public MatchResult {
     STACK_ALLOCATED();
 
    public:
     explicit SubResult(MatchResult& parent) : parent_(parent) {}
-    ~SubResult() { parent_.flags |= flags; }
+    ~SubResult() {
+      parent_.flags |= flags;
+      // Propagate proximity from nested selectors which refer to a parent
+      // rule with a kScopeActivation, e.g.:
+      //
+      //   @scope (div) {
+      //     :scope {
+      //       & { ... }
+      //     }
+      //   }
+      //
+      // The inner rule (&) has no kScopeActivation relation anywhere in the
+      // selector, because it's nested using CSSNestingType::kNesting,
+      // yet it refers to a selector which does contain a kScopeActivation.
+      // The resulting proximity value must be propagated.
+      //
+      // Note that regular :is() and similar pseudo-classes with inner selectors
+      // lists do not produce any (non-max) proximity values; it can only happen
+      // with the nesting selector (&).
+      parent_.proximity = std::min(parent_.proximity, proximity);
+    }
 
    private:
     MatchResult& parent_;
