@@ -959,47 +959,6 @@ IN_PROC_BROWSER_TEST_F(CommerceHintCacaoTest, Rejected) {
   WaitForUmaCount("Commerce.Carts.VisitCart", 0);
 }
 
-class CommerceHintOptimizeRendererDisabledTest : public CommerceHintAgentTest {
- public:
-  void SetUpInProcessBrowserTestFixture() override {
-    scoped_feature_list_.InitWithFeaturesAndParameters(
-        {{
-#if !BUILDFLAG(IS_ANDROID)
-             ntp_features::kNtpChromeCartModule,
-#else
-             commerce::kCommerceHintAndroid,
-#endif
-             {{"optimize-renderer-signal", "false"}}},
-         {optimization_guide::features::kOptimizationHints, {{}}}},
-        {});
-  }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
-};
-
-// If command line argument "optimization_guide_hints_override" is not given,
-// nothing is specified in AddHintForTesting(), and the real hints are not
-// downloaded, all the URLs are considered non-shopping.
-IN_PROC_BROWSER_TEST_F(CommerceHintOptimizeRendererDisabledTest, Rejected) {
-  NavigateToURL("https://www.guitarcenter.com/");
-  SendXHR("/add-to-cart", "product: 123");
-  base::PlatformThread::Sleep(TestTimeouts::tiny_timeout() * 30);
-#if !BUILDFLAG(IS_ANDROID)
-  WaitForCartCount(kEmptyExpected);
-#endif
-  // The cart won't be added on browser side because of Cacao rejection either
-  // way, but when optimize-renderer-signal is disabled, renderer will still
-  // observer and process commerce signals on this site.
-  WaitForUmaCount("Commerce.Carts.AddToCartByURL", 1);
-
-  NavigateToURL("https://www.guitarcenter.com/cart.html");
-#if !BUILDFLAG(IS_ANDROID)
-  WaitForCartCount(kEmptyExpected);
-#endif
-  WaitForUmaCount("Commerce.Carts.VisitCart", 1);
-}
-
 #if !BUILDFLAG(IS_ANDROID)
 class CommerceHintProductInfoTest : public CommerceHintAgentTest {
  public:

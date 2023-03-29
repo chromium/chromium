@@ -841,20 +841,10 @@ void CommerceHintAgent::ExtractProducts() {
   // script from browser side.
   mojo::Remote<mojom::CommerceHintObserver> observer =
       GetObserver(render_frame());
-  // Use current script if it has already been initialized or the feature is
-  // disabled; otherwise fetch script from browser side.
-  if (extraction_script_initialized_ ||
-      !commerce::kOptimizeRendererSignal.Get()) {
-    ExtractCartWithUpdatedScript(std::move(observer),
-                                 /*product_id_json*/ std::string(),
-                                 /*cart_extraction_script*/ std::string());
-    return;
-  }
   auto* observer_ptr = observer.get();
   observer_ptr->OnCartExtraction(
       base::BindOnce(&CommerceHintAgent::ExtractCartWithUpdatedScript,
                      weak_factory_.GetWeakPtr(), std::move(observer)));
-  extraction_script_initialized_ = true;
 }
 
 void CommerceHintAgent::ExtractCartWithUpdatedScript(
@@ -1051,11 +1041,6 @@ void CommerceHintAgent::DidStartNavigation(
   starting_url_ = url;
   mojo::Remote<mojom::CommerceHintObserver> observer =
       GetObserver(render_frame());
-  if (!commerce::kOptimizeRendererSignal.Get()) {
-    DidStartNavigationCallback(url, std::move(observer), false,
-                               mojom::Heuristics::New());
-    return;
-  }
   auto* observer_ptr = observer.get();
   observer_ptr->OnNavigation(
       url, CommerceHeuristicsData::GetInstance().GetVersion(),
@@ -1092,11 +1077,6 @@ void CommerceHintAgent::DidCommitProvisionalLoad(
   should_use_dom_heuristics_.reset();
   mojo::Remote<mojom::CommerceHintObserver> observer =
       GetObserver(render_frame());
-  if (!commerce::kOptimizeRendererSignal.Get()) {
-    DidCommitProvisionalLoadCallback(starting_url_, std::move(observer), false,
-                                     mojom::Heuristics::New());
-    return;
-  }
   auto* observer_ptr = observer.get();
   observer_ptr->OnNavigation(
       starting_url_, CommerceHeuristicsData::GetInstance().GetVersion(),
@@ -1157,11 +1137,6 @@ void CommerceHintAgent::DidFinishLoad() {
   extraction_count_ = 0;
   mojo::Remote<mojom::CommerceHintObserver> observer =
       GetObserver(render_frame());
-  if (!commerce::kOptimizeRendererSignal.Get()) {
-    DidFinishLoadCallback(url, std::move(observer), false,
-                          mojom::Heuristics::New());
-    return;
-  }
   auto* observer_ptr = observer.get();
   observer_ptr->OnNavigation(
       url, CommerceHeuristicsData::GetInstance().GetVersion(),
