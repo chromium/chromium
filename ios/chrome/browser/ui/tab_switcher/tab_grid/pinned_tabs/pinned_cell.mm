@@ -92,12 +92,18 @@ UIColor* GetInterfaceStyleDarkColor(UIColor* dynamicColor) {
 @end
 
 @implementation PinnedCell {
+  // Container for the title label.
+  UIView* _titleLabelContainer;
   // Container for the `_faviconView`.
   UIView* _faviconContainerView;
   // View for displaying the favicon.
   UIImageView* _faviconView;
   // Activity Indicator view that animates while WebState is loading.
   MDCActivityIndicator* _activityIndicator;
+  // Title label's leading constraint.
+  NSLayoutConstraint* _titleLabelLeadingConstraint;
+  // Title label's trailing constraint.
+  NSLayoutConstraint* _titleLabelTrailingConstraint;
   // Title label's fader leading constraint.
   NSLayoutConstraint* _titleLabelFaderLeadingConstraint;
   // Title label's fader trailing constraint.
@@ -181,9 +187,14 @@ UIColor* GetInterfaceStyleDarkColor(UIColor* dynamicColor) {
 }
 
 - (void)setTitle:(NSString*)title {
+  NSTextAlignment titleTextAligment =
+      [self determineBestAlignmentForText:title];
+
   _titleLabel.text = [title copy];
+  _titleLabel.textAlignment = titleTextAligment;
   self.accessibilityLabel = [title copy];
 
+  [self updateTitleLabelAppearance];
   [self updateTitleLabelFaderAppearance];
 }
 
@@ -380,28 +391,44 @@ UIColor* GetInterfaceStyleDarkColor(UIColor* dynamicColor) {
 - (void)setupTitleLabel {
   UILabel* titleLabel = [[UILabel alloc] init];
   titleLabel.translatesAutoresizingMaskIntoConstraints = NO;
-  titleLabel.lineBreakMode = NSLineBreakByClipping;
   titleLabel.adjustsFontForContentSizeCategory = YES;
   titleLabel.font = [UIFont preferredFontForTextStyle:UIFontTextStyleFootnote];
   titleLabel.textColor =
       GetInterfaceStyleDarkColor([UIColor colorNamed:kTextPrimaryColor]);
 
-  [_headerView addSubview:titleLabel];
+  UIView* titleLabelContainer = [[UIView alloc] init];
+  titleLabelContainer.translatesAutoresizingMaskIntoConstraints = NO;
+  titleLabelContainer.clipsToBounds = YES;
+  [titleLabelContainer addSubview:titleLabel];
+
+  [_headerView addSubview:titleLabelContainer];
 
   [NSLayoutConstraint activateConstraints:@[
-    [titleLabel.leadingAnchor
+    [titleLabelContainer.heightAnchor
+        constraintLessThanOrEqualToAnchor:_headerView.heightAnchor],
+    [titleLabelContainer.centerYAnchor
+        constraintEqualToAnchor:_faviconContainerView.centerYAnchor],
+    [titleLabelContainer.leadingAnchor
         constraintEqualToAnchor:_faviconContainerView.trailingAnchor
                        constant:kPinnedCellTitleLeadingPadding],
-    [titleLabel.trailingAnchor
+    [titleLabelContainer.trailingAnchor
         constraintEqualToAnchor:_headerView.trailingAnchor
                        constant:-kPinnedCellHorizontalPadding],
-    [titleLabel.heightAnchor
-        constraintLessThanOrEqualToAnchor:_headerView.heightAnchor],
-    [titleLabel.centerYAnchor
-        constraintEqualToAnchor:_faviconContainerView.centerYAnchor],
+    [titleLabelContainer.heightAnchor
+        constraintEqualToAnchor:titleLabel.heightAnchor],
+    [titleLabelContainer.centerYAnchor
+        constraintEqualToAnchor:titleLabel.centerYAnchor]
   ]];
 
+  _titleLabelLeadingConstraint = [titleLabelContainer.leadingAnchor
+      constraintEqualToAnchor:titleLabel.leadingAnchor];
+  _titleLabelTrailingConstraint = [titleLabelContainer.trailingAnchor
+      constraintEqualToAnchor:titleLabel.trailingAnchor];
+
+  _titleLabelContainer = titleLabelContainer;
   _titleLabel = titleLabel;
+
+  [self updateTitleLabelAppearance];
 }
 
 // Sets up the gradient view that fades out the title label.
@@ -424,25 +451,47 @@ UIColor* GetInterfaceStyleDarkColor(UIColor* dynamicColor) {
     [gradientView.widthAnchor
         constraintEqualToConstant:kPinnedCellFaderGradientWidth],
     [gradientView.heightAnchor
-        constraintEqualToAnchor:_titleLabel.heightAnchor],
+        constraintEqualToAnchor:_titleLabelContainer.heightAnchor],
     [gradientView.centerYAnchor
-        constraintEqualToAnchor:_titleLabel.centerYAnchor],
+        constraintEqualToAnchor:_titleLabelContainer.centerYAnchor],
   ]];
 
   _titleLabelFaderLeadingConstraint = [gradientView.leadingAnchor
-      constraintEqualToAnchor:_titleLabel.leadingAnchor];
+      constraintEqualToAnchor:_titleLabelContainer.leadingAnchor];
   _titleLabelFaderTrailingConstraint = [gradientView.trailingAnchor
-      constraintEqualToAnchor:_titleLabel.trailingAnchor];
+      constraintEqualToAnchor:_titleLabelContainer.trailingAnchor];
 
   _titleLabelFader = gradientView;
 
   [self updateTitleLabelFaderAppearance];
 }
 
+- (void)updateTitleLabelAppearance {
+  NSTextAlignment titleTextAligment = _titleLabel.textAlignment;
+
+  if (UseRTLLayout()) {
+    if (titleTextAligment == NSTextAlignmentLeft) {
+      _titleLabelLeadingConstraint.active = NO;
+      _titleLabelTrailingConstraint.active = YES;
+    } else {
+      _titleLabelTrailingConstraint.active = NO;
+      _titleLabelLeadingConstraint.active = YES;
+    }
+  } else {
+    if (titleTextAligment == NSTextAlignmentLeft) {
+      _titleLabelTrailingConstraint.active = NO;
+      _titleLabelLeadingConstraint.active = YES;
+    } else {
+      _titleLabelLeadingConstraint.active = NO;
+      _titleLabelTrailingConstraint.active = YES;
+    }
+  }
+}
+
 // Updates the position and direction of the gradient view that fades out the
 // title label.
 - (void)updateTitleLabelFaderAppearance {
-  NSTextAlignment titleTextAligment = [self determineTitleTextAlignment];
+  NSTextAlignment titleTextAligment = _titleLabel.textAlignment;
 
   if (UseRTLLayout()) {
     if (titleTextAligment == NSTextAlignmentLeft) {
@@ -467,13 +516,8 @@ UIColor* GetInterfaceStyleDarkColor(UIColor* dynamicColor) {
   }
 }
 
-// Determines the aligment of the title text.
-- (NSTextAlignment)determineTitleTextAlignment {
-  return [self bestAlignmentForText:_titleLabel.text];
-}
-
-// Returns the aligment of the provided `text`.
-- (NSTextAlignment)bestAlignmentForText:(NSString*)text {
+// Determines the best aligment for the provided `text`.
+- (NSTextAlignment)determineBestAlignmentForText:(NSString*)text {
   if (text.length) {
     NSString* lang = CFBridgingRelease(CFStringTokenizerCopyBestStringLanguage(
         (CFStringRef)text, CFRangeMake(0, text.length)));
