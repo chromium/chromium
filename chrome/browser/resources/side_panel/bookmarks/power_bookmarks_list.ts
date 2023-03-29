@@ -285,6 +285,8 @@ export class PowerBookmarksListElement extends PolymerElement {
       this.bookmarksService_.sortBookmarks(
           this.shownBookmarks_, this.activeSortIndex_);
       this.shownBookmarks_ = this.shownBookmarks_.slice();
+      const bookmarkIndex = this.shownBookmarks_.indexOf(bookmark);
+      this.$.shownBookmarksIronList.scrollToIndex(bookmarkIndex);
       getAnnouncerInstance().announce(loadTimeData.getStringF(
           'bookmarkCreated', getBookmarkName(bookmark)));
     }
