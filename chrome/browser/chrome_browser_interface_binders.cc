@@ -181,7 +181,7 @@
 #include "chrome/browser/ui/webui/whats_new/whats_new_ui.h"
 #include "chrome/common/webui_url_constants.h"
 #include "components/commerce/core/mojom/shopping_list.mojom.h"  // nogncheck crbug.com/1125897
-#include "components/image_service/mojom/image_service.mojom.h"
+#include "components/page_image_service/mojom/page_image_service.mojom.h"
 #include "components/search/ntp_features.h"
 #include "ui/webui/resources/cr_components/color_change_listener/color_change_listener.mojom.h"
 #include "ui/webui/resources/cr_components/customize_themes/customize_themes.mojom.h"
@@ -987,7 +987,7 @@ void PopulateChromeWebUIFrameBinders(
           ntp_features::kNtpHistoryClustersModuleLoad) ||
       base::FeatureList::IsEnabled(features::kPowerBookmarksSidePanel)) {
     RegisterWebUIControllerInterfaceBinder<
-        image_service::mojom::ImageServiceHandler, HistoryUI,
+        page_image_service::mojom::PageImageServiceHandler, HistoryUI,
         HistoryClustersSidePanelUI, NewTabPageUI, BookmarksSidePanelUI>(map);
   }
 

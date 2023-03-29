@@ -37,9 +37,9 @@
 #include "components/commerce/core/shopping_service.h"
 #include "components/commerce/core/webui/shopping_list_handler.h"
 #include "components/favicon_base/favicon_url_parser.h"
-#include "components/image_service/features.h"
-#include "components/image_service/image_service.h"
-#include "components/image_service/image_service_handler.h"
+#include "components/page_image_service/features.h"
+#include "components/page_image_service/image_service.h"
+#include "components/page_image_service/image_service_handler.h"
 #include "components/prefs/pref_service.h"
 #include "components/strings/grit/components_strings.h"
 #include "content/public/browser/web_contents.h"
@@ -152,8 +152,9 @@ BookmarksSidePanelUI::BookmarksSidePanelUI(content::WebUI* web_ui)
       !prefs->GetList(bookmarks::prefs::kManagedBookmarks).empty());
   source->AddBoolean("shoppingListEnabled",
                      commerce::IsShoppingListAllowedForEnterprise(prefs));
-  source->AddBoolean("urlImagesEnabled", base::FeatureList::IsEnabled(
-                                             image_service::kImageService));
+  source->AddBoolean(
+      "urlImagesEnabled",
+      base::FeatureList::IsEnabled(page_image_service::kImageService));
 
   source->AddBoolean("guestMode", profile->IsGuestSession());
   source->AddBoolean("incognitoMode", profile->IsIncognitoProfile());
@@ -241,16 +242,17 @@ void BookmarksSidePanelUI::BindInterface(
 }
 
 void BookmarksSidePanelUI::BindInterface(
-    mojo::PendingReceiver<image_service::mojom::ImageServiceHandler>
+    mojo::PendingReceiver<page_image_service::mojom::PageImageServiceHandler>
         pending_image_handler) {
-  base::WeakPtr<image_service::ImageService> image_service_weak;
+  base::WeakPtr<page_image_service::ImageService> image_service_weak;
   if (auto* image_service =
-          image_service::ImageServiceFactory::GetForBrowserContext(
+          page_image_service::ImageServiceFactory::GetForBrowserContext(
               Profile::FromWebUI(web_ui()))) {
     image_service_weak = image_service->GetWeakPtr();
   }
-  image_service_handler_ = std::make_unique<image_service::ImageServiceHandler>(
-      std::move(pending_image_handler), std::move(image_service_weak));
+  image_service_handler_ =
+      std::make_unique<page_image_service::ImageServiceHandler>(
+          std::move(pending_image_handler), std::move(image_service_weak));
 }
 
 commerce::ShoppingListContextMenuController*

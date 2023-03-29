@@ -8,7 +8,7 @@
 #include <memory>
 
 #include "base/gtest_prod_util.h"
-#include "components/image_service/mojom/image_service.mojom-forward.h"
+#include "components/page_image_service/mojom/page_image_service.mojom.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "ui/base/layout.h"
@@ -23,7 +23,7 @@ namespace history_clusters {
 class HistoryClustersHandler;
 }
 
-namespace image_service {
+namespace page_image_service {
 class ImageServiceHandler;
 }
 
@@ -41,7 +41,7 @@ class HistoryUI : public ui::MojoWebUIController {
   void BindInterface(mojo::PendingReceiver<history_clusters::mojom::PageHandler>
                          pending_page_handler);
   void BindInterface(
-      mojo::PendingReceiver<image_service::mojom::ImageServiceHandler>
+      mojo::PendingReceiver<page_image_service::mojom::PageImageServiceHandler>
           pending_page_handler);
 
   // For testing only.
@@ -53,7 +53,8 @@ class HistoryUI : public ui::MojoWebUIController {
  private:
   std::unique_ptr<history_clusters::HistoryClustersHandler>
       history_clusters_handler_;
-  std::unique_ptr<image_service::ImageServiceHandler> image_service_handler_;
+  std::unique_ptr<page_image_service::ImageServiceHandler>
+      image_service_handler_;
   PrefChangeRegistrar pref_change_registrar_;
 
   void UpdateDataSource();

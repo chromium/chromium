@@ -12,7 +12,7 @@
 #include "components/history_clusters/core/config.h"
 #include "components/history_clusters/core/history_clusters_prefs.h"
 #include "components/history_clusters/core/history_clusters_service.h"
-#include "components/image_service/features.h"
+#include "components/page_image_service/features.h"
 #include "components/prefs/pref_service.h"
 #include "components/strings/grit/components_strings.h"
 #include "content/public/browser/web_ui_data_source.h"
@@ -45,7 +45,7 @@ void HistoryClustersUtil::PopulateSource(content::WebUIDataSource* source,
   source->AddBoolean(
       "isHistoryClustersImagesEnabled",
       history_clusters::GetConfig().images &&
-          base::FeatureList::IsEnabled(image_service::kImageService));
+          base::FeatureList::IsEnabled(page_image_service::kImageService));
   source->AddString(
       "chromeRefresh2023Attribute",
       features::IsChromeRefresh2023() ? "chrome-refresh-2023" : "");

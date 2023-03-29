@@ -5723,12 +5723,12 @@
   },
   {
     "name": "page-image-service-optimization-guide-salient-images",
-    "owners": [ "tommycli", "//components/image_service/OWNERS" ],
+    "owners": [ "tommycli", "//components/page_image_service/OWNERS" ],
     "expiry_milestone": 130
   },
   {
     "name": "page-image-service-suggest-powered-images",
-    "owners": [ "tommycli", "//components/image_service/OWNERS" ],
+    "owners": [ "tommycli", "//components/page_image_service/OWNERS" ],
     "expiry_milestone": 130
   },
   {

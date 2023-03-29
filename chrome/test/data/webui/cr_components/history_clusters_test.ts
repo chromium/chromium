@@ -9,8 +9,8 @@ import {BrowserProxyImpl} from 'chrome://resources/cr_components/history_cluster
 import {HistoryClustersElement} from 'chrome://resources/cr_components/history_clusters/clusters.js';
 import {Cluster, RawVisitData, URLVisit} from 'chrome://resources/cr_components/history_clusters/history_cluster_types.mojom-webui.js';
 import {PageCallbackRouter, PageHandlerRemote, PageRemote, QueryResult} from 'chrome://resources/cr_components/history_clusters/history_clusters.mojom-webui.js';
-import {ImageServiceBrowserProxy} from 'chrome://resources/cr_components/image_service/browser_proxy.js';
-import {ClientId as ImageServiceClientId, ImageServiceHandlerRemote} from 'chrome://resources/cr_components/image_service/image_service.mojom-webui.js';
+import {PageImageServiceBrowserProxy} from 'chrome://resources/cr_components/page_image_service/browser_proxy.js';
+import {ClientId as PageImageServiceClientId, PageImageServiceHandlerRemote} from 'chrome://resources/cr_components/page_image_service/page_image_service.mojom-webui.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {assertEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
@@ -18,8 +18,8 @@ import {TestMock} from 'chrome://webui-test/test_mock.js';
 
 let handler: TestMock<PageHandlerRemote>&PageHandlerRemote;
 let callbackRouterRemote: PageRemote;
-let imageServiceHandler: TestMock<ImageServiceHandlerRemote>&
-    ImageServiceHandlerRemote;
+let imageServiceHandler: TestMock<PageImageServiceHandlerRemote>&
+    PageImageServiceHandlerRemote;
 
 function createBrowserProxy() {
   handler = TestMock.fromClass(PageHandlerRemote);
@@ -27,9 +27,9 @@ function createBrowserProxy() {
   BrowserProxyImpl.setInstance(new BrowserProxyImpl(handler, callbackRouter));
   callbackRouterRemote = callbackRouter.$.bindNewPipeAndPassRemote();
 
-  imageServiceHandler = TestMock.fromClass(ImageServiceHandlerRemote);
-  ImageServiceBrowserProxy.setInstance(
-      new ImageServiceBrowserProxy(imageServiceHandler));
+  imageServiceHandler = TestMock.fromClass(PageImageServiceHandlerRemote);
+  PageImageServiceBrowserProxy.setInstance(
+      new PageImageServiceBrowserProxy(imageServiceHandler));
 }
 
 suite('history-clusters', () => {
@@ -235,7 +235,7 @@ suite('history-clusters', () => {
 
     const [clientId, pageUrl] =
         await imageServiceHandler.whenCalled('getPageImageUrl');
-    assertEquals(ImageServiceClientId.Journeys, clientId);
+    assertEquals(PageImageServiceClientId.Journeys, clientId);
     assertEquals(urlVisit.visit.normalizedUrl, pageUrl);
 
     // Verify the icon element received the handler's response.

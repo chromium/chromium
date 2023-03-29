@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_IMAGE_SERVICE_IMAGE_SERVICE_H_
-#define COMPONENTS_IMAGE_SERVICE_IMAGE_SERVICE_H_
+#ifndef COMPONENTS_PAGE_IMAGE_SERVICE_IMAGE_SERVICE_H_
+#define COMPONENTS_PAGE_IMAGE_SERVICE_IMAGE_SERVICE_H_
 
 #include <memory>
 #include <string>
@@ -13,10 +13,10 @@
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
-#include "components/image_service/mojom/image_service.mojom.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/omnibox/browser/autocomplete_provider_client.h"
 #include "components/optimization_guide/core/optimization_guide_decision.h"
+#include "components/page_image_service/mojom/page_image_service.mojom.h"
 #include "components/sync/driver/sync_service.h"
 #include "components/unified_consent/consent_throttle.h"
 
@@ -24,7 +24,7 @@ namespace optimization_guide {
 class NewOptimizationGuideDecider;
 }  // namespace optimization_guide
 
-namespace image_service {
+namespace page_image_service {
 
 // Through my manual testing, 16ms (which is about a frame at 60hz) allowed
 // for decent aggregation without introducing any perceptible lag.
@@ -147,6 +147,6 @@ class ImageService : public KeyedService {
   base::WeakPtrFactory<ImageService> weak_factory_{this};
 };
 
-}  // namespace image_service
+}  // namespace page_image_service
 
-#endif  // COMPONENTS_IMAGE_SERVICE_IMAGE_SERVICE_H_
+#endif  // COMPONENTS_PAGE_IMAGE_SERVICE_IMAGE_SERVICE_H_

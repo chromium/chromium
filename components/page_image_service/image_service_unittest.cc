@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/image_service/image_service.h"
+#include "components/page_image_service/image_service.h"
 
 #include <memory>
 
@@ -13,16 +13,16 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "build/build_config.h"
-#include "components/image_service/features.h"
-#include "components/image_service/metrics_util.h"
-#include "components/image_service/mojom/image_service.mojom-shared.h"
-#include "components/image_service/mojom/image_service.mojom.h"
 #include "components/optimization_guide/core/optimization_guide_decision.h"
 #include "components/optimization_guide/core/optimization_guide_features.h"
 #include "components/optimization_guide/core/test_new_optimization_guide_decider.h"
 #include "components/optimization_guide/proto/common_types.pb.h"
 #include "components/optimization_guide/proto/hints.pb.h"
 #include "components/optimization_guide/proto/salient_image_metadata.pb.h"
+#include "components/page_image_service/features.h"
+#include "components/page_image_service/metrics_util.h"
+#include "components/page_image_service/mojom/page_image_service.mojom-shared.h"
+#include "components/page_image_service/mojom/page_image_service.mojom.h"
 #include "components/sync/test/test_sync_service.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -60,7 +60,7 @@ class ImageServiceTestOptGuide : public TestNewOptimizationGuideDecider {
 }  // namespace
 }  // namespace optimization_guide
 
-namespace image_service {
+namespace page_image_service {
 
 class ImageServiceTest : public testing::Test {
  public:
@@ -348,4 +348,4 @@ TEST_F(DisabledOptGuideImageServiceTest, DoesNotFetch) {
   EXPECT_EQ(image_url_response, GURL());
 }
 
-}  // namespace image_service
+}  // namespace page_image_service

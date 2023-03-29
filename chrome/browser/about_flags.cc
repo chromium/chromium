@@ -105,7 +105,6 @@
 #include "components/history_clusters/core/config.h"
 #include "components/history_clusters/core/features.h"
 #include "components/history_clusters/core/on_device_clustering_features.h"
-#include "components/image_service/features.h"
 #include "components/invalidation/impl/invalidation_switches.h"
 #include "components/language/core/common/language_experiments.h"
 #include "components/lens/buildflags.h"
@@ -123,6 +122,7 @@
 #include "components/omnibox/common/omnibox_features.h"
 #include "components/optimization_guide/core/optimization_guide_features.h"
 #include "components/optimization_guide/core/optimization_guide_switches.h"
+#include "components/page_image_service/features.h"
 #include "components/page_info/core/features.h"
 #include "components/paint_preview/buildflags/buildflags.h"
 #include "components/paint_preview/features/features.h"
@@ -5838,7 +5838,7 @@ const FeatureEntry kFeatureEntries[] = {
          kPageImageServiceOptimizationGuideSalientImagesDescription,
      kOsDesktop,
      FEATURE_WITH_PARAMS_VALUE_TYPE(
-         image_service::kImageServiceOptimizationGuideSalientImages,
+         page_image_service::kImageServiceOptimizationGuideSalientImages,
          kImageServiceOptimizationGuideSalientImagesVariations,
          "PageImageService")},
 
@@ -5846,7 +5846,7 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kPageImageServiceSuggestPoweredImagesName,
      flag_descriptions::kPageImageServiceSuggestPoweredImagesDescription,
      kOsDesktop,
-     FEATURE_VALUE_TYPE(image_service::kImageServiceSuggestPoweredImages)},
+     FEATURE_VALUE_TYPE(page_image_service::kImageServiceSuggestPoweredImages)},
 
     {"page-content-annotations", flag_descriptions::kPageContentAnnotationsName,
      flag_descriptions::kPageContentAnnotationsDescription,

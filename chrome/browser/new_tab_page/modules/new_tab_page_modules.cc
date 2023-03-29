@@ -15,7 +15,7 @@
 #include "chrome/browser/new_tab_page/new_tab_page_util.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/grit/generated_resources.h"
-#include "components/image_service/features.h"
+#include "components/page_image_service/features.h"
 #include "components/search/ntp_features.h"
 #include "components/signin/public/identity_manager/accounts_in_cookie_jar_info.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
@@ -28,7 +28,7 @@ const std::vector<std::pair<const std::string, int>> MakeModuleIdNames(
   std::vector<std::pair<const std::string, int>> details;
 
   if (base::FeatureList::IsEnabled(ntp_features::kNtpHistoryClustersModule) &&
-      base::FeatureList::IsEnabled(image_service::kImageService)) {
+      base::FeatureList::IsEnabled(page_image_service::kImageService)) {
     details.emplace_back("history_clusters",
                          IDS_HISTORY_CLUSTERS_JOURNEYS_TAB_LABEL);
   }

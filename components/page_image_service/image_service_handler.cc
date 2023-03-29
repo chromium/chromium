@@ -2,15 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/image_service/image_service_handler.h"
+#include "components/page_image_service/image_service_handler.h"
 
-#include "components/image_service/image_service.h"
+#include "components/page_image_service/image_service.h"
 
-namespace image_service {
+namespace page_image_service {
 
 ImageServiceHandler::ImageServiceHandler(
-    mojo::PendingReceiver<mojom::ImageServiceHandler> pending_page_handler,
-    base::WeakPtr<image_service::ImageService> image_service)
+    mojo::PendingReceiver<mojom::PageImageServiceHandler> pending_page_handler,
+    base::WeakPtr<page_image_service::ImageService> image_service)
     : page_handler_(this, std::move(pending_page_handler)),
       image_service_(image_service) {}
 
@@ -42,4 +42,4 @@ void ImageServiceHandler::OnGotImageServiceResult(
   std::move(callback).Run(std::move(result_mojom));
 }
 
-}  // namespace image_service
+}  // namespace page_image_service

@@ -18,8 +18,8 @@
 #include "chrome/grit/side_panel_history_clusters_resources.h"
 #include "chrome/grit/side_panel_history_clusters_resources_map.h"
 #include "components/favicon_base/favicon_url_parser.h"
-#include "components/image_service/image_service.h"
-#include "components/image_service/image_service_handler.h"
+#include "components/page_image_service/image_service.h"
+#include "components/page_image_service/image_service_handler.h"
 #include "components/strings/grit/components_strings.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/web_ui.h"
@@ -60,16 +60,17 @@ void HistoryClustersSidePanelUI::BindInterface(
 }
 
 void HistoryClustersSidePanelUI::BindInterface(
-    mojo::PendingReceiver<image_service::mojom::ImageServiceHandler>
+    mojo::PendingReceiver<page_image_service::mojom::PageImageServiceHandler>
         pending_page_handler) {
-  base::WeakPtr<image_service::ImageService> image_service_weak;
+  base::WeakPtr<page_image_service::ImageService> image_service_weak;
   if (auto* image_service =
-          image_service::ImageServiceFactory::GetForBrowserContext(
+          page_image_service::ImageServiceFactory::GetForBrowserContext(
               Profile::FromWebUI(web_ui()))) {
     image_service_weak = image_service->GetWeakPtr();
   }
-  image_service_handler_ = std::make_unique<image_service::ImageServiceHandler>(
-      std::move(pending_page_handler), std::move(image_service_weak));
+  image_service_handler_ =
+      std::make_unique<page_image_service::ImageServiceHandler>(
+          std::move(pending_page_handler), std::move(image_service_weak));
 }
 
 base::WeakPtr<HistoryClustersSidePanelUI>

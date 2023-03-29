@@ -2,9 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/image_service/metrics_util.h"
+#include "components/page_image_service/metrics_util.h"
 
-namespace image_service {
+namespace page_image_service {
 
 std::string ClientIdToString(mojom::ClientId client_id) {
   switch (client_id) {
@@ -25,4 +25,4 @@ std::string ClientIdToString(mojom::ClientId client_id) {
   }
 }
 
-}  // namespace image_service
+}  // namespace page_image_service

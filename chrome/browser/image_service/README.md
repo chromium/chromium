@@ -1,3 +1,3 @@
 # //chrome/browser/image_service
 
-Please see //components/image_service/README.md.
+Please see //components/page_image_service/README.md.

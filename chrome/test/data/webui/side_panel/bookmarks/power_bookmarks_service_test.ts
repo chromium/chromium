@@ -8,8 +8,8 @@ import 'chrome://bookmarks-side-panel.top-chrome/power_bookmarks_list.js';
 import {BookmarksApiProxyImpl} from 'chrome://bookmarks-side-panel.top-chrome/bookmarks_api_proxy.js';
 import {ShoppingListApiProxyImpl} from 'chrome://bookmarks-side-panel.top-chrome/commerce/shopping_list_api_proxy.js';
 import {PowerBookmarksService} from 'chrome://bookmarks-side-panel.top-chrome/power_bookmarks_service.js';
-import {ImageServiceBrowserProxy} from 'chrome://resources/cr_components/image_service/browser_proxy.js';
-import {ImageServiceHandlerRemote} from 'chrome://resources/cr_components/image_service/image_service.mojom-webui.js';
+import {PageImageServiceBrowserProxy} from 'chrome://resources/cr_components/page_image_service/browser_proxy.js';
+import {PageImageServiceHandlerRemote} from 'chrome://resources/cr_components/page_image_service/page_image_service.mojom-webui.js';
 import {PluralStringProxyImpl} from 'chrome://resources/js/plural_string_proxy.js';
 import {assertEquals} from 'chrome://webui-test/chai_assert.js';
 import {TestMock} from 'chrome://webui-test/test_mock.js';
@@ -31,8 +31,8 @@ suite('SidePanelPowerBookmarksServiceTest', () => {
   let service: PowerBookmarksService;
   let bookmarksApi: TestBookmarksApiProxy;
   let shoppingListApi: TestShoppingListApiProxy;
-  let imageServiceHandler: TestMock<ImageServiceHandlerRemote>&
-      ImageServiceHandlerRemote;
+  let imageServiceHandler: TestMock<PageImageServiceHandlerRemote>&
+      PageImageServiceHandlerRemote;
 
   const folders: chrome.bookmarks.BookmarkTreeNode[] = [
     {
@@ -86,9 +86,9 @@ suite('SidePanelPowerBookmarksServiceTest', () => {
     const pluralString = new TestPluralStringProxy();
     PluralStringProxyImpl.setInstance(pluralString);
 
-    imageServiceHandler = TestMock.fromClass(ImageServiceHandlerRemote);
-    ImageServiceBrowserProxy.setInstance(
-        new ImageServiceBrowserProxy(imageServiceHandler));
+    imageServiceHandler = TestMock.fromClass(PageImageServiceHandlerRemote);
+    PageImageServiceBrowserProxy.setInstance(
+        new PageImageServiceBrowserProxy(imageServiceHandler));
     imageServiceHandler.setResultFor('getPageImageUrl', Promise.resolve({
       result: {imageUrl: {url: 'https://example.com/image.png'}},
     }));

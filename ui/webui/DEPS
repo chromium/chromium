@@ -6,5 +6,5 @@ include_rules = [
   "+ui/base",
   "+ui/gfx",
   "+components/content_settings/core",
-  "+components/image_service"
+  "+components/page_image_service"
 ]

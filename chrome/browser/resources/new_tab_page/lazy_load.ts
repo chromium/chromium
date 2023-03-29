@@ -16,7 +16,7 @@ import './voice_search_overlay.js';
 import './modules/module_descriptors.js';
 import 'chrome://resources/cr_components/most_visited/most_visited.js';
 
-export {ImageServiceBrowserProxy} from 'chrome://resources/cr_components/image_service/browser_proxy.js';
+export {PageImageServiceBrowserProxy} from 'chrome://resources/cr_components/page_image_service/browser_proxy.js';
 export {CustomizeBackgroundsElement} from './customize_backgrounds.js';
 export {CustomizeDialogElement} from './customize_dialog.js';
 export {CustomizeModulesElement} from './customize_modules.js';

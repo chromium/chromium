@@ -5,9 +5,9 @@
 import 'chrome://webui-test/mojo_webui_test_support.js';
 
 import {Annotation, URLVisit} from 'chrome://new-tab-page/history_cluster_types.mojom-webui.js';
-import {ImageServiceBrowserProxy, TileModuleElement} from 'chrome://new-tab-page/lazy_load.js';
+import {PageImageServiceBrowserProxy, TileModuleElement} from 'chrome://new-tab-page/lazy_load.js';
 import {$$} from 'chrome://new-tab-page/new_tab_page.js';
-import {ImageServiceHandlerRemote} from 'chrome://resources/cr_components/image_service/image_service.mojom-webui.js';
+import {PageImageServiceHandlerRemote} from 'chrome://resources/cr_components/page_image_service/page_image_service.mojom-webui.js';
 import {assertEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {fakeMetricsPrivate, MetricsTracker} from 'chrome://webui-test/metrics_test_support.js';
 import {flushTasks, waitAfterNextRender} from 'chrome://webui-test/polymer_test_util.js';
@@ -18,15 +18,15 @@ import {installMock} from '../../test_support.js';
 import {createVisit} from './test_support.js';
 
 suite('NewTabPageModulesHistoryClustersModuleTileTest', () => {
-  let imageServiceHandler: TestMock<ImageServiceHandlerRemote>;
+  let imageServiceHandler: TestMock<PageImageServiceHandlerRemote>;
   let metrics: MetricsTracker;
 
   setup(() => {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
     imageServiceHandler = installMock(
-        ImageServiceHandlerRemote,
-        mock => ImageServiceBrowserProxy.setInstance(
-            new ImageServiceBrowserProxy(mock)));
+        PageImageServiceHandlerRemote,
+        mock => PageImageServiceBrowserProxy.setInstance(
+            new PageImageServiceBrowserProxy(mock)));
     metrics = fakeMetricsPrivate();
   });
 

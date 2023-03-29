@@ -10,7 +10,7 @@
 #include "chrome/browser/ui/webui/side_panel/bookmarks/bookmarks.mojom.h"
 #include "chrome/browser/ui/webui/webui_load_timer.h"
 #include "components/commerce/core/mojom/shopping_list.mojom.h"
-#include "components/image_service/mojom/image_service.mojom-forward.h"
+#include "components/page_image_service/mojom/page_image_service.mojom.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
@@ -28,7 +28,7 @@ namespace ui {
 class ColorChangeHandler;
 }
 
-namespace image_service {
+namespace page_image_service {
 class ImageServiceHandler;
 }
 
@@ -57,7 +57,7 @@ class BookmarksSidePanelUI
           pending_receiver);
 
   void BindInterface(
-      mojo::PendingReceiver<image_service::mojom::ImageServiceHandler>
+      mojo::PendingReceiver<page_image_service::mojom::PageImageServiceHandler>
           pending_image_handler);
 
   commerce::ShoppingListContextMenuController*
@@ -82,7 +82,8 @@ class BookmarksSidePanelUI
   mojo::Receiver<shopping_list::mojom::ShoppingListHandlerFactory>
       shopping_list_factory_receiver_{this};
   std::unique_ptr<ui::ColorChangeHandler> color_provider_handler_;
-  std::unique_ptr<image_service::ImageServiceHandler> image_service_handler_;
+  std::unique_ptr<page_image_service::ImageServiceHandler>
+      image_service_handler_;
   std::unique_ptr<commerce::ShoppingListContextMenuController>
       shopping_list_context_menu_controller_;
 

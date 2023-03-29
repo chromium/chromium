@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-module image_service.mojom;
+module page_image_service.mojom;
 
 import "url/mojom/url.mojom";
 
@@ -33,7 +33,7 @@ struct ImageResult {
 };
 
 // Browser-side handler for requests from the WebUI page.
-interface ImageServiceHandler {
+interface PageImageServiceHandler {
   // Gets the representative image URL for `page_url`.
   GetPageImageUrl(ClientId client_id,
                   url.mojom.Url page_url,

@@ -20,12 +20,12 @@ def _add_ui_webui_resources_mappings(path_mappings, root_gen_dir):
       "cr_components/customize_themes",
       "cr_components/help_bubble",
       "cr_components/history_clusters",
-      "cr_components/image_service",
       "cr_components/localized_link",
       "cr_components/managed_dialog",
       "cr_components/managed_footnote",
       "cr_components/most_visited",
       "cr_components/omnibox",
+      "cr_components/page_image_service",
   ]
 
   for c in shared_ts_folders:

@@ -14,7 +14,7 @@ static_library("ui") {
     "//base",
     "//components/history/core/browser",
     "//components/history_clusters/core",
-    "//components/image_service",
+    "//components/page_image_service",
     "//url",
   ]
 }

@@ -4,8 +4,8 @@
 
 // This file contains business logic for power bookmarks side panel content.
 
-import {ImageServiceBrowserProxy} from '//resources/cr_components/image_service/browser_proxy.js';
-import {ClientId as ImageServiceClientId} from '//resources/cr_components/image_service/image_service.mojom-webui.js';
+import {PageImageServiceBrowserProxy} from '//resources/cr_components/page_image_service/browser_proxy.js';
+import {ClientId as PageImageServiceClientId} from '//resources/cr_components/page_image_service/page_image_service.mojom-webui.js';
 import {loadTimeData} from '//resources/js/load_time_data.js';
 import {PluralStringProxyImpl} from '//resources/js/plural_string_proxy.js';
 import {Url} from '//resources/mojo/url/mojom/url.mojom-webui.js';
@@ -414,9 +414,10 @@ export class PowerBookmarksService {
 
     // Fetch the representative image for this page, if possible.
     const {result} =
-        await ImageServiceBrowserProxy.getInstance().handler.getPageImageUrl(
-            ImageServiceClientId.Bookmarks, url,
-            {suggestImages: true, optimizationGuideImages: true});
+        await PageImageServiceBrowserProxy.getInstance()
+            .handler.getPageImageUrl(
+                PageImageServiceClientId.Bookmarks, url,
+                {suggestImages: true, optimizationGuideImages: true});
     if (result) {
       return result.imageUrl.url;
     }

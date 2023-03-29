@@ -5,7 +5,7 @@
 import("//mojo/public/tools/bindings/mojom.gni")
 
 mojom("mojo_bindings") {
-  sources = [ "image_service.mojom" ]
+  sources = [ "page_image_service.mojom" ]
   public_deps = [
     "//mojo/public/mojom/base",
     "//url/mojom:url_mojom_gurl",

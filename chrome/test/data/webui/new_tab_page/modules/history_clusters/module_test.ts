@@ -6,9 +6,9 @@ import 'chrome://webui-test/mojo_webui_test_support.js';
 
 import {Cluster, URLVisit} from 'chrome://new-tab-page/history_cluster_types.mojom-webui.js';
 import {PageHandlerRemote} from 'chrome://new-tab-page/history_clusters.mojom-webui.js';
-import {DismissModuleEvent, HistoryClusterElementType, HistoryClusterImageDisplayState, HistoryClusterLayoutType, historyClustersDescriptor, HistoryClustersModuleElement, HistoryClustersProxyImpl, ImageServiceBrowserProxy, LAYOUT_1_MIN_IMAGE_VISITS, LAYOUT_1_MIN_VISITS, LAYOUT_2_MIN_IMAGE_VISITS, LAYOUT_2_MIN_VISITS, LAYOUT_3_MIN_IMAGE_VISITS, LAYOUT_3_MIN_VISITS, MIN_RELATED_SEARCHES} from 'chrome://new-tab-page/lazy_load.js';
+import {DismissModuleEvent, HistoryClusterElementType, HistoryClusterImageDisplayState, HistoryClusterLayoutType, historyClustersDescriptor, HistoryClustersModuleElement, HistoryClustersProxyImpl, LAYOUT_1_MIN_IMAGE_VISITS, LAYOUT_1_MIN_VISITS, LAYOUT_2_MIN_IMAGE_VISITS, LAYOUT_2_MIN_VISITS, LAYOUT_3_MIN_IMAGE_VISITS, LAYOUT_3_MIN_VISITS, MIN_RELATED_SEARCHES, PageImageServiceBrowserProxy} from 'chrome://new-tab-page/lazy_load.js';
 import {$$} from 'chrome://new-tab-page/new_tab_page.js';
-import {ImageServiceHandlerRemote} from 'chrome://resources/cr_components/image_service/image_service.mojom-webui.js';
+import {PageImageServiceHandlerRemote} from 'chrome://resources/cr_components/page_image_service/page_image_service.mojom-webui.js';
 import {assertEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {fakeMetricsPrivate, MetricsTracker} from 'chrome://webui-test/metrics_test_support.js';
 import {waitAfterNextRender} from 'chrome://webui-test/polymer_test_util.js';
@@ -72,7 +72,7 @@ function createSampleCluster(
 
 suite('NewTabPageModulesHistoryClustersModuleTest', () => {
   let handler: TestMock<PageHandlerRemote>;
-  let imageServiceHandler: TestMock<ImageServiceHandlerRemote>;
+  let imageServiceHandler: TestMock<PageImageServiceHandlerRemote>;
   let metrics: MetricsTracker;
 
   setup(() => {
@@ -82,9 +82,9 @@ suite('NewTabPageModulesHistoryClustersModuleTest', () => {
         mock => HistoryClustersProxyImpl.setInstance(
             new HistoryClustersProxyImpl(mock)));
     imageServiceHandler = installMock(
-        ImageServiceHandlerRemote,
-        mock => ImageServiceBrowserProxy.setInstance(
-            new ImageServiceBrowserProxy(mock)));
+        PageImageServiceHandlerRemote,
+        mock => PageImageServiceBrowserProxy.setInstance(
+            new PageImageServiceBrowserProxy(mock)));
     metrics = fakeMetricsPrivate();
   });
 

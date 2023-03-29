@@ -2,15 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_IMAGE_SERVICE_METRICS_UTIL_H_
-#define COMPONENTS_IMAGE_SERVICE_METRICS_UTIL_H_
+#ifndef COMPONENTS_PAGE_IMAGE_SERVICE_METRICS_UTIL_H_
+#define COMPONENTS_PAGE_IMAGE_SERVICE_METRICS_UTIL_H_
 
 #include <string>
 
 #include "base/metrics/histogram_functions.h"
-#include "components/image_service/mojom/image_service.mojom.h"
+#include "components/page_image_service/mojom/page_image_service.mojom.h"
 
-namespace image_service {
+namespace page_image_service {
 
 constexpr char kBackendHistogramName[] = "PageImageService.Backend";
 constexpr char kBackendOptimizationGuideResultHistogramName[] =
@@ -50,6 +50,6 @@ void UmaHistogramEnumerationForClient(const std::string& name,
   base::UmaHistogramEnumeration(name + "." + client_suffix, sample);
 }
 
-}  // namespace image_service
+}  // namespace page_image_service
 
-#endif  // COMPONENTS_IMAGE_SERVICE_METRICS_UTIL_H_
+#endif  // COMPONENTS_PAGE_IMAGE_SERVICE_METRICS_UTIL_H_

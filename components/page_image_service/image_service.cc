@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/image_service/image_service.h"
+#include "components/page_image_service/image_service.h"
 
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
@@ -10,8 +10,6 @@
 #include "base/i18n/case_conversion.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
-#include "components/image_service/features.h"
-#include "components/image_service/metrics_util.h"
 #include "components/omnibox/browser/remote_suggestions_service.h"
 #include "components/omnibox/browser/search_suggestion_parser.h"
 #include "components/optimization_guide/core/new_optimization_guide_decider.h"
@@ -19,6 +17,8 @@
 #include "components/optimization_guide/proto/common_types.pb.h"
 #include "components/optimization_guide/proto/hints.pb.h"
 #include "components/optimization_guide/proto/salient_image_metadata.pb.h"
+#include "components/page_image_service/features.h"
+#include "components/page_image_service/metrics_util.h"
 #include "components/search_engines/search_engine_type.h"
 #include "components/search_engines/template_url.h"
 #include "components/search_engines/template_url_service.h"
@@ -26,7 +26,7 @@
 #include "services/network/public/cpp/simple_url_loader.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
 
-namespace image_service {
+namespace page_image_service {
 
 namespace {
 
@@ -138,8 +138,9 @@ class ImageService::SuggestEntityImageURLFetcher {
     }
 
     // If we didn't find any matching images, still notify the caller.
-    if (!callback_.is_null())
+    if (!callback_.is_null()) {
       std::move(callback_).Run(GURL());
+    }
   }
 
   const raw_ptr<AutocompleteProviderClient> autocomplete_provider_client_;
@@ -445,4 +446,4 @@ void ImageService::OnOptimizationGuideImageFetched(
   return FulfillAllCallbacks(std::move(matching_callbacks), GURL());
 }
 
-}  // namespace image_service
+}  // namespace page_image_service

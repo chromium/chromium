@@ -41,8 +41,8 @@
 #include "components/history_clusters/core/config.h"
 #include "components/history_clusters/core/features.h"
 #include "components/history_clusters/core/history_clusters_prefs.h"
-#include "components/image_service/image_service.h"
-#include "components/image_service/image_service_handler.h"
+#include "components/page_image_service/image_service.h"
+#include "components/page_image_service/image_service_handler.h"
 #include "components/prefs/pref_service.h"
 #include "components/signin/public/base/signin_pref_names.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
@@ -197,16 +197,17 @@ void HistoryUI::BindInterface(
 }
 
 void HistoryUI::BindInterface(
-    mojo::PendingReceiver<image_service::mojom::ImageServiceHandler>
+    mojo::PendingReceiver<page_image_service::mojom::PageImageServiceHandler>
         pending_page_handler) {
-  base::WeakPtr<image_service::ImageService> image_service_weak;
+  base::WeakPtr<page_image_service::ImageService> image_service_weak;
   if (auto* image_service =
-          image_service::ImageServiceFactory::GetForBrowserContext(
+          page_image_service::ImageServiceFactory::GetForBrowserContext(
               Profile::FromWebUI(web_ui()))) {
     image_service_weak = image_service->GetWeakPtr();
   }
-  image_service_handler_ = std::make_unique<image_service::ImageServiceHandler>(
-      std::move(pending_page_handler), std::move(image_service_weak));
+  image_service_handler_ =
+      std::make_unique<page_image_service::ImageServiceHandler>(
+          std::move(pending_page_handler), std::move(image_service_weak));
 }
 
 void HistoryUI::UpdateDataSource() {

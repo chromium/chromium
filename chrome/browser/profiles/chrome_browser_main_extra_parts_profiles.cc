@@ -663,7 +663,7 @@ void ChromeBrowserMainExtraPartsProfiles::
   HttpsEngagementServiceFactory::GetInstance();
   HttpsFirstModeServiceFactory::GetInstance();
   IdentityManagerFactory::EnsureFactoryAndDependeeFactoriesBuilt();
-  image_service::ImageServiceFactory::EnsureFactoryBuilt();
+  page_image_service::ImageServiceFactory::EnsureFactoryBuilt();
   InMemoryURLIndexFactory::GetInstance();
 #if !BUILDFLAG(IS_ANDROID)
   InstantServiceFactory::GetInstance();

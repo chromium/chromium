@@ -19,9 +19,9 @@ namespace commerce {
 class ShoppingService;
 }  // namespace commerce
 
-namespace image_service {
+namespace page_image_service {
 class ImageService;
-}  // namespace image_service
+}  // namespace page_image_service
 
 namespace optimization_guide {
 
@@ -61,7 +61,7 @@ class NewOptimizationGuideDecider {
  private:
   // These friend are consumers of the CanApplyOptimizationOnDemand API.
   friend class commerce::ShoppingService;
-  friend class image_service::ImageService;
+  friend class page_image_service::ImageService;
 
   // Invokes |callback| with the decision for all types contained in
   // |optimization_types| for each URL contained in |urls|, when sufficient
