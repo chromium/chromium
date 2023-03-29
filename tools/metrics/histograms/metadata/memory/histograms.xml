@@ -524,6 +524,31 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Memory.Experimental.AvailableMemoryMB" units="MB"
+    expires_after="2023-09-22">
+  <owner>anthonyvd@chromium.org</owner>
+  <owner>catan-team@chromium.org</owner>
+  <summary>
+    The amount of available physical memory on the system as reported by
+    base::SysInfo::AmountOfAvailablePhysicalMemory().
+
+    Recorded every 2 minutes.
+  </summary>
+</histogram>
+
+<histogram name="Memory.Experimental.AvailableMemoryPercent" units="%"
+    expires_after="2023-09-22">
+  <owner>anthonyvd@chromium.org</owner>
+  <owner>catan-team@chromium.org</owner>
+  <summary>
+    The percentage of physical memory on the system considered
+    &quot;available&quot; by base::SysInfo::AmountOfAvailablePhysicalMemory()
+    and base::SysInfo::AmountOfPhysicalMemory().
+
+    Recorded every 2 minutes.
+  </summary>
+</histogram>
+
 <histogram base="true" name="Memory.Experimental.Browser2" units="MB"
     expires_after="2024-01-10">
 <!-- Name completed by histogram_suffixes name="ProcessMemoryAllocator2" -->

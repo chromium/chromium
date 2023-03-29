@@ -5,6 +5,8 @@
 #include "chrome/browser/performance_manager/metrics/metrics_provider.h"
 
 #include "base/metrics/histogram_functions.h"
+#include "base/system/sys_info.h"
+#include "base/timer/timer.h"
 #include "chrome/browser/performance_manager/public/user_tuning/user_performance_tuning_manager.h"
 #include "components/performance_manager/public/user_tuning/prefs.h"
 #include "components/prefs/pref_service.h"
@@ -15,6 +17,7 @@ namespace {
 
 MetricsProvider* g_metrics_provider = nullptr;
 
+uint64_t kBytesPerMb = 1024 * 1024;
 }
 
 // static
@@ -65,6 +68,11 @@ MetricsProvider::MetricsProvider(PrefService* local_state)
     : local_state_(local_state) {
   DCHECK(!g_metrics_provider);
   g_metrics_provider = this;
+
+  available_memory_metrics_timer_.Start(
+      FROM_HERE, base::Minutes(2),
+      base::BindRepeating(&MetricsProvider::RecordAvailableMemoryMetrics,
+                          base::Unretained(this)));
 }
 
 void MetricsProvider::OnBatterySaverModeChanged(bool is_active) {
@@ -112,6 +120,16 @@ MetricsProvider::EfficiencyMode MetricsProvider::ComputeCurrentMode() const {
   }
 
   return EfficiencyMode::kNormal;
+}
+
+void MetricsProvider::RecordAvailableMemoryMetrics() {
+  auto available_bytes = base::SysInfo::AmountOfAvailablePhysicalMemory();
+  auto total_bytes = base::SysInfo::AmountOfPhysicalMemory();
+
+  base::UmaHistogramMemoryLargeMB("Memory.Experimental.AvailableMemoryMB",
+                                  available_bytes / kBytesPerMb);
+  base::UmaHistogramPercentage("Memory.Experimental.AvailableMemoryPercent",
+                               available_bytes * 100 / total_bytes);
 }
 
 }  // namespace performance_manager
