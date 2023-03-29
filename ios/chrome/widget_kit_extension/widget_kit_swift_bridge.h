@@ -5,7 +5,7 @@
 #ifndef IOS_CHROME_WIDGET_KIT_EXTENSION_WIDGET_KIT_SWIFT_BRIDGE_H_
 #define IOS_CHROME_WIDGET_KIT_EXTENSION_WIDGET_KIT_SWIFT_BRIDGE_H_
 
-// Bridging header between Swift and Obj-C. These types/includes need to be pure
+// Bridging header between Swift and Obj-C. These types/imports need to be pure
 // Obj-C and have no C++ in them.
 
 #import "ios/chrome/common/app_group/app_group_helper.h"
