@@ -304,17 +304,17 @@ subtract(5, 2);
     def _write_transformations(
         self, source_dir, out_dir,
         original_file_name, input_file_name, output_file_name):
-      original_file = os.path.join(source_dir, original_file_name)
-      input_file = os.path.join(source_dir, input_file_name)
-      output_file = os.path.join(out_dir, output_file_name)
-      node.RunNode([
-        str(_SOURCE_MAP_PROCESSOR),
-        "--originals={}".format(" ".join([original_file])),
-        "--inputs={}".format(" ".join([input_file])),
-        "--outputs={}".format(" ".join([output_file])),
-        "--inline-sourcemaps",
-        "--sourceRoot={}".format(self.sourceRoot),
-      ])
+        original_file = os.path.join(source_dir, original_file_name)
+        input_file = os.path.join(source_dir, input_file_name)
+        output_file = os.path.join(out_dir, output_file_name)
+        node.RunNode([
+            str(_SOURCE_MAP_PROCESSOR),
+            "--originals={}".format(" ".join([original_file])),
+            "--inputs={}".format(" ".join([input_file])),
+            "--outputs={}".format(" ".join([output_file])),
+            "--inline-sourcemaps",
+            "--sourceRoot={}".format(self.sourceRoot),
+        ])
 
     def write_sources(self, *file_path_contents):
         url_to_path_map = {}
@@ -430,6 +430,29 @@ subtract(5, 2);
         istanbul_files = self.list_files(
             os.path.join(self.task_output_dir, 'istanbul'))
         self.assertEqual(len(istanbul_files), 0)
+
+
+    def test_multiple_coverages_in_multiple_shards(self):
+        coverage_dir_1 = os.path.join(self.coverage_dir, 'coverage1')
+        coverage_dir_2 = os.path.join(self.coverage_dir, 'coverage2')
+        os.makedirs(coverage_dir_1)
+        os.makedirs(coverage_dir_2)
+
+        self.write_sources((('//test.js', 'test.js'), self._TEST_SOURCE_B),
+                           (('//test1.js', 'test1.js'), self._TEST_SOURCE_C))
+        self._write_files(coverage_dir_1,
+                          ('test_coverage_1.cov.json', self._TEST_COVERAGE_B))
+        self._write_files(
+            coverage_dir_2,
+            ('test_coverage_2.cov.json', self._TEST_COVERAGE_DUPLICATE_DOUBLE))
+
+        merger.convert_raw_coverage_to_istanbul(
+            [coverage_dir_1, coverage_dir_2], self.out_dir,
+            self.task_output_dir)
+
+        istanbul_files = self.list_files(
+            os.path.join(self.task_output_dir, 'istanbul'))
+        self.assertEqual(len(istanbul_files), 2)
 
 
 if __name__ == '__main__':

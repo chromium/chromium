@@ -83,7 +83,7 @@ def main():
         javascript_merger.generate_coverage_reports(
             output_dir, params.javascript_coverage_dir)
     except RuntimeError as e:
-        logging.warn('Failed executing istanbul tasks: %s', e)
+        logging.warning('Failed executing istanbul tasks: %s', e)
 
 
 if __name__ == '__main__':

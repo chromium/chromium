@@ -282,7 +282,7 @@ def convert_raw_coverage_to_istanbul(raw_coverage_dirs, source_dir,
         '--output-dir',
         task_output_dir,
         '--raw-coverage-dirs',
-        ' '.join(raw_coverage_dirs),
+        *raw_coverage_dirs,
     ])
 
 
