@@ -278,9 +278,8 @@ void DownloadToolbarButtonView::Disable() {
 void DownloadToolbarButtonView::UpdateDownloadIcon(bool show_animation) {
   if (show_animation && gfx::Animation::ShouldRenderRichAnimation()) {
     has_pending_download_started_animation_ = true;
-    if (!needs_layout()) {
-      ShowPendingDownloadStartedAnimation();
-    }
+    // Invalidate the layout to show the animation in Layout().
+    PreferredSizeChanged();
   }
   UpdateIcon();
 }
