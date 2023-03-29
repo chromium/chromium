@@ -639,7 +639,6 @@ bool BlockFiles::FixBlockFileHeader(MappedFile* file) {
   if (file_size != expected) {
     int max_expected = header->entry_size * kMaxBlocks + file_header.Size();
     if (file_size < expected || header->empty[3] || file_size > max_expected) {
-      NOTREACHED();
       LOG(ERROR) << "Unexpected file size";
       return false;
     }
