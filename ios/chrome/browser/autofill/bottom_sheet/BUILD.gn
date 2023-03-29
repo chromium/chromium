@@ -17,6 +17,7 @@ source_set("bottom_sheet") {
     "//base",
     "//components/autofill/core/common",
     "//components/autofill/ios/form_util",
+    "//components/password_manager/core/common:features",
     "//ios/chrome/browser/shared/public/commands",
     "//ios/web/public",
     "//ios/web/public:web_state_observer",
