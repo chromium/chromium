@@ -269,6 +269,11 @@ class VIEWS_EXPORT BubbleDialogDelegate : public DialogDelegate {
     title_margins_ = title_margins;
   }
 
+  gfx::Insets footnote_margins() const { return footnote_margins_; }
+  void set_footnote_margins(const gfx::Insets& footnote_margins) {
+    footnote_margins_ = footnote_margins;
+  }
+
   // Sets whether or not CreateClientView() returns a Layer backed ClientView.
   // TODO(pbos): Remove all calls to this, then remove `paint_client_to_layer_`.
   // See comment around `paint_client_to_layer_`.
@@ -390,6 +395,7 @@ class VIEWS_EXPORT BubbleDialogDelegate : public DialogDelegate {
   void SetAnchoredDialogKey();
 
   gfx::Insets title_margins_;
+  gfx::Insets footnote_margins_;
   BubbleBorder::Arrow arrow_ = BubbleBorder::NONE;
   BubbleBorder::Shadow shadow_;
   SkColor color_ = gfx::kPlaceholderColor;

@@ -432,6 +432,8 @@ BubbleDialogDelegate::BubbleDialogDelegate(View* anchor_view,
   set_margins(layout_provider->GetDialogInsetsForContentType(
       DialogContentType::kText, DialogContentType::kText));
   set_title_margins(layout_provider->GetInsetsMetric(INSETS_DIALOG_TITLE));
+  set_footnote_margins(
+      layout_provider->GetInsetsMetric(INSETS_DIALOG_SUBSECTION));
 
   RegisterWidgetInitializedCallback(base::BindOnce(
       [](BubbleDialogDelegate* bubble_delegate) {
@@ -517,10 +519,8 @@ BubbleDialogDelegate* BubbleDialogDelegate::AsBubbleDialogDelegate() {
 std::unique_ptr<NonClientFrameView>
 BubbleDialogDelegate::CreateNonClientFrameView(Widget* widget) {
   auto frame = std::make_unique<BubbleDialogFrameView>(title_margins_);
-  LayoutProvider* provider = LayoutProvider::Get();
 
-  frame->SetFootnoteMargins(
-      provider->GetInsetsMetric(INSETS_DIALOG_SUBSECTION));
+  frame->SetFootnoteMargins(footnote_margins_);
   frame->SetFootnoteView(DisownFootnoteView());
 
   std::unique_ptr<BubbleBorder> border =
