@@ -391,6 +391,11 @@ public final class ProductionSupportedFlagList {
             Flag.baseFeature(NetFeatures.SUPPORT_PARTITIONED_BLOB_URL,
                     "Enables the new Blob URL implementation needed for third-party storage"
                             + " partitioning"),
+            Flag.baseFeature(NetFeatures.THIRD_PARTY_STORAGE_PARTITIONING,
+                    "Enables partitioning of third-party storage by top-level site. "
+                            + "Note: this is under active development and may result in unexpected "
+                            + "behavior. Please file bugs at https://bugs.chromium.org/p/chromium/issues/"
+                            + "entry?labels=StoragePartitioning-trial-bugs&components=Blink%3EStorage."),
             // Add new commandline switches and features above. The final entry should have a
             // trailing comma for cleaner diffs.
     };
