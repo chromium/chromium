@@ -31,11 +31,11 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_LAYOUT_RUBY_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_LAYOUT_RUBY_H_
 
-#include "base/notreached.h"
-#include "third_party/blink/renderer/core/layout/layout_block_flow.h"
 #include "third_party/blink/renderer/core/layout/layout_inline.h"
 
 namespace blink {
+
+class LayoutRubyRun;
 
 // Following the HTML 5 spec, the box object model for a <ruby> element allows
 // several runs of ruby
@@ -70,6 +70,9 @@ class LayoutRubyAsInline final : public LayoutInline {
     return "LayoutRuby (inline)";
   }
 
+  static LayoutRubyRun* LastRubyRun(const LayoutObject& ruby);
+  static LayoutRubyRun* FindRubyRunParent(LayoutObject* child);
+
  protected:
   void StyleDidChange(StyleDifference, const ComputedStyle* old_style) override;
 
@@ -81,39 +84,6 @@ class LayoutRubyAsInline final : public LayoutInline {
   bool CreatesAnonymousWrapper() const override {
     NOT_DESTROYED();
     return true;
-  }
-};
-
-// <ruby> when used as 'display:block' or 'display:inline-block'
-class LayoutRubyAsBlock : public LayoutBlockFlow {
- public:
-  LayoutRubyAsBlock(ContainerNode*);
-  ~LayoutRubyAsBlock() override;
-
-  void AddChild(LayoutObject* child,
-                LayoutObject* before_child = nullptr) override;
-  void RemoveChild(LayoutObject* child) override;
-
-  const char* GetName() const override {
-    NOT_DESTROYED();
-    return "LayoutRuby (block)";
-  }
-
- protected:
-  void StyleDidChange(StyleDifference, const ComputedStyle* old_style) override;
-  bool IsOfType(LayoutObjectType type) const override {
-    NOT_DESTROYED();
-    return type == kLayoutObjectRuby || LayoutBlockFlow::IsOfType(type);
-  }
-
- private:
-  bool CreatesAnonymousWrapper() const override {
-    NOT_DESTROYED();
-    return true;
-  }
-  void RemoveLeftoverAnonymousBlock(LayoutBlock*) override {
-    NOT_DESTROYED();
-    NOTREACHED();
   }
 };
 

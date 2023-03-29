@@ -6,20 +6,13 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_NG_LAYOUT_NG_RUBY_AS_BLOCK_H_
 
 #include "third_party/blink/renderer/core/core_export.h"
-#include "third_party/blink/renderer/core/layout/layout_ruby.h"
-#include "third_party/blink/renderer/core/layout/ng/layout_ng_block_flow_mixin.h"
+#include "third_party/blink/renderer/core/layout/ng/layout_ng_block_flow.h"
 
 namespace blink {
 
-extern template class CORE_EXTERN_TEMPLATE_EXPORT
-    LayoutNGBlockFlowMixin<LayoutRubyAsBlock>;
-extern template class CORE_EXTERN_TEMPLATE_EXPORT
-    LayoutNGMixin<LayoutRubyAsBlock>;
-
-// A NG version of LayoutRubyAsBlock.
-// This adds anonymous block building to LayoutNGBlockFlow.
-class CORE_EXPORT LayoutNGRubyAsBlock
-    : public LayoutNGBlockFlowMixin<LayoutRubyAsBlock> {
+// Represents <ruby> with "display: block" or "display: inline-block".
+// If we supports "display: block ruby", we can remove this class.
+class CORE_EXPORT LayoutNGRubyAsBlock : public LayoutNGBlockFlow {
  public:
   explicit LayoutNGRubyAsBlock(Element*);
   ~LayoutNGRubyAsBlock() override;
@@ -28,7 +21,13 @@ class CORE_EXPORT LayoutNGRubyAsBlock
     NOT_DESTROYED();
     return "LayoutNGRubyAsBlock";
   }
-  void UpdateBlockLayout(bool relayout_children) override;
+  bool IsOfType(LayoutObjectType type) const override;
+  void AddChild(LayoutObject* child,
+                LayoutObject* before_child = nullptr) override;
+  void RemoveChild(LayoutObject* child) override;
+  void StyleDidChange(StyleDifference, const ComputedStyle* old_style) override;
+  bool CreatesAnonymousWrapper() const override;
+  void RemoveLeftoverAnonymousBlock(LayoutBlock*) override;
 };
 
 }  // namespace blink

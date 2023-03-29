@@ -192,13 +192,6 @@ LayoutProgress* LayoutObjectFactory::CreateProgress(Node* node,
   return CreateObject<LayoutProgress, LayoutNGProgress>(*node, legacy);
 }
 
-LayoutRubyAsBlock* LayoutObjectFactory::CreateRubyAsBlock(
-    Node* node,
-    const ComputedStyle& style,
-    LegacyLayout legacy) {
-  return CreateObject<LayoutRubyAsBlock, LayoutNGRubyAsBlock>(*node, legacy);
-}
-
 LayoutObject* LayoutObjectFactory::CreateBR(Node* node, LegacyLayout legacy) {
   return CreateObject<LayoutObject, LayoutNGBR, LayoutBR>(*node, legacy);
 }
