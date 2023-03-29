@@ -1252,6 +1252,7 @@
 <translation id="685782768769951078">{NUM_DIGITS,plural, =1{还差 1 位数字}other{还差 # 位数字}}</translation>
 <translation id="6867938213751067702"><ph name="FILENAME" /> 已暂停下载</translation>
 <translation id="6878400149835617132">快捷方式已关闭</translation>
+<translation id="6878701771800702153">{NUM_APPS,plural, =1{1 个应用}other{# 个应用}}</translation>
 <translation id="6884665277231944629">返回到今天</translation>
 <translation id="6886172995547742638">这可能会导致您的 <ph name="DEVICE_TYPE" /> 性能低下。请使用已获认证的不低于 <ph name="PREFERRED_MINIMUM_POWER" />W 的 USB-C 型电源适配器。</translation>
 <translation id="688631446150864480">按向下键即可切换窗口</translation>
@@ -1416,6 +1417,7 @@
 <translation id="7689817529363080918">如果您取消麦克风静音，即意味着允许“<ph name="APP1_NAME" />”“<ph name="APP2_NAME" />”以及所有具有麦克风使用权限的应用和网站使用麦克风</translation>
 <translation id="7704000866383261579">重新执行上一个操作</translation>
 <translation id="7705524343798198388">VPN</translation>
+<translation id="770741401784017797">正在创建 GIF</translation>
 <translation id="7714767791242455379">添加新的移动网络</translation>
 <translation id="7720400844887872976">保持开启状态，直到<ph name="TIME" /></translation>
 <translation id="7720410380936703141">重试</translation>
@@ -1428,6 +1430,7 @@
 <translation id="7749443890790263709">已达到桌面数量上限。</translation>
 <translation id="776344839111254542">点击即可查看相关更新的详情</translation>
 <translation id="7768784765476638775">随选朗读</translation>
+<translation id="7769299611924763557">您的 GIF 很快便能就绪</translation>
 <translation id="7780094051999721182">快捷方式</translation>
 <translation id="7780159184141939021">旋转屏幕</translation>
 <translation id="7796735576426975947">已隐藏新通知</translation>

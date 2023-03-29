@@ -40,6 +40,7 @@
 <translation id="1181037720776840403">አስወግድ</translation>
 <translation id="1182225749592316782">ይህ የካሜራ እና የማይክሮፎን ፈቃዶች ላሏቸው ለሁሉም መተግበሪያዎች እና ድር ጣቢያዎች መዳረሻ ይፈቅዳል</translation>
 <translation id="1183863904939664422">በዚህ የአስተያየት ጥቆማ ላይ ፍላጎት የለኝም</translation>
+<translation id="1184126796192815024">ይህ አውታረ መረብ ከስልክዎ የዥረት መተግበሪያዎችን አይደግፍም። የስልክዎን መገናኛ ነጥብ ለመጠቀም ይሞክሩ። <ph name="LEARN_MORE" /></translation>
 <translation id="118437560755358292">ለበለጠ ደህንነት የይለፍ ቃል ወይም ፒን ያስገቡ</translation>
 <translation id="118532027333893379">ሙሉ ማያ ገጽን ለመቅረጽ በማንኛውም ቦታ ላይ መታ ያድርጉ</translation>
 <translation id="1190609913194133056">የማሳወቂያ ማዕከል</translation>
@@ -1251,6 +1252,7 @@
 <translation id="685782768769951078">{NUM_DIGITS,plural, =1{አንድ አሃዝ ይቀራል}one{# አሃዞች ይቀራሉ}other{# አሃዞች ይቀራሉ}}</translation>
 <translation id="6867938213751067702">ማውረድ ባለበት ቆሟል <ph name="FILENAME" /></translation>
 <translation id="6878400149835617132">አቋራጭ ጠፍቷል</translation>
+<translation id="6878701771800702153">{NUM_APPS,plural, =1{1 መተግበሪያ}one{# መተግበሪያ}other{# መተግበሪያዎች}}</translation>
 <translation id="6884665277231944629">ወደ ዛሬ ተመለስ</translation>
 <translation id="6886172995547742638">የእርስዎ <ph name="DEVICE_TYPE" /> ያነሰ አፈጻጸም ሊያጋጥመው ይችላል። የእውቅና ማረጋገጫ ያለው <ph name="PREFERRED_MINIMUM_POWER" /> ዋ ወይም ከዚያ በላይ የሆነ የUSB-C ኃይል አስማሚን ይጠቀሙ።</translation>
 <translation id="688631446150864480">መስኮቶችን ለመቀያየር የታች ቀስትን ይጫኑ</translation>
@@ -1418,6 +1420,7 @@
 <translation id="7689817529363080918">ይህ ለ<ph name="APP1_NAME" />፣ <ph name="APP2_NAME" /> እና የማይክሮፎን ፈቃዱ ላላቸው መተግበሪያዎች እና ድር ጣቢያዎች በሙሉ የማይክሮፎን መዳረሻን ይፈቅዳል</translation>
 <translation id="7704000866383261579">የመጨረሻውን ድርጊት ይድገሙ</translation>
 <translation id="7705524343798198388">ቪ ፒ ኤን</translation>
+<translation id="770741401784017797">GIFን በመፍጠር ላይ</translation>
 <translation id="7714767791242455379">አዲስ የተንቀሳቃሽ ስልክ አውታረ መረብን አክል</translation>
 <translation id="7720400844887872976">እስከ <ph name="TIME" /> ድረስ ይበራል</translation>
 <translation id="7720410380936703141">እንደገና ይሞክሩ</translation>
@@ -1430,6 +1433,7 @@
 <translation id="7749443890790263709">የተደረሰባቸው የዴስኮች ከፍተኛ ብዛት።</translation>
 <translation id="776344839111254542">የዝማኔ ዝርዝሮችን ለማየት ጠቅ ያድርጉ</translation>
 <translation id="7768784765476638775">ለመናገር-ይምረጡ</translation>
+<translation id="7769299611924763557">የእርስዎ GIF በቅርቡ ዝግጁ ይሆናል</translation>
 <translation id="7780094051999721182">አቋራጮች</translation>
 <translation id="7780159184141939021">ማያ ገጹን አሽከርክር</translation>
 <translation id="7796735576426975947">አዲስ ማሳወቂያ ተደብቋል</translation>

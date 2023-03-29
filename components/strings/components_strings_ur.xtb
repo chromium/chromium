@@ -47,7 +47,6 @@
 <translation id="1075079914415273530">زراعت اور علم جنگلات</translation>
 <translation id="1080116354587839789">چوڑائی میں فٹ کریں</translation>
 <translation id="1081061862829655580">ٹرے 19</translation>
-<translation id="1088860948719068836">کارڈ پر نام شامل کریں</translation>
 <translation id="1089439967362294234">پاس ورڈ تبدیل کریں</translation>
 <translation id="1096545575934602868">اس فیلڈ میں <ph name="MAX_ITEMS_LIMIT" /> سے زیادہ اندراجات نہیں ہونے چاہئیں۔ سبھی مزید اندراجات مسترد کر دیے جائیں گے۔</translation>
 <translation id="1100782917270858593">‏اپنا صارف کا تجربہ بٹن دوبارہ شروع کریں، اپنا صارف کا تجربہ دوبارہ شروع کرنے اور اپنے Chrome کی سرگزشت میں متعلقہ سرگرمی دیکھنے کیلئے اینٹر دبائیں</translation>
@@ -340,7 +339,6 @@
 <translation id="1721424275792716183">* فیلڈ لازمی ہے</translation>
 <translation id="1725591448053514783">‏You 6 لفافہ</translation>
 <translation id="1727613060316725209">سرٹیفیکیٹ درست ہے</translation>
-<translation id="1727741090716970331">درست کارڈ نمبر شامل کریں</translation>
 <translation id="1728677426644403582">آپ ویب صفحہ کا ماخذ دیکھ رہے ہیں</translation>
 <translation id="173080396488393970">اس قسم کا کارڈ تعاون یافتہ نہیں ہے</translation>
 <translation id="1732445923934584865">اس کے بجائے بالمشافہ پوچھیں</translation>
@@ -943,7 +941,6 @@
 <translation id="3272091146646336650">Super B</translation>
 <translation id="3281350579597955952">{0,plural, =1{منتظم کی پالیسی اس فائل کو <ph name="DESTINATION_NAME" /> میں کھولنے کی تجویز نہیں کرتی ہے}other{منتظم کی پالیسی ان فائلز کو <ph name="DESTINATION_NAME" /> میں کھولنے کی تجویز نہیں کرتی ہے}}</translation>
 <translation id="3282085321714087552">آپ کی تنظیم، <ph name="ENROLLMENT_DOMAIN" />، نے کچھ معلومات، جیسے ترتیبات یا پالیسیاں درج ذیل ویب سائٹس پر بھیجی ہیں۔</translation>
-<translation id="3282497668470633863">کارڈ پر نام شامل کریں</translation>
 <translation id="3286372614333682499">پورٹریٹ</translation>
 <translation id="3287510313208355388">آن لائن ہونے پر ڈاؤن لوڈ کریں</translation>
 <translation id="3288238092761586174">آپ کی ادائیگی کی تصدیق کے لیے <ph name="URL" /> کو اضافی اقدامات کرنے کی ضرورت پڑ سکتی ہے</translation>
@@ -956,7 +953,6 @@
 <translation id="3304777285002411338">A2x3</translation>
 <translation id="33073482541490531">آپ نے ابھی جو پاس ورڈ استعمال کیا وہ ڈیٹا کی خلاف ورزی میں پایا گیا۔ پاس ورڈ مینیجر اس پاس ورڈ کو ابھی تبدیل کرنے کی تجویز کرتا ہے۔</translation>
 <translation id="3308006649705061278">‏تنظیمی اکائی (OU)</translation>
-<translation id="3320021301628644560">بلنگ پتہ شامل کریں</translation>
 <translation id="3324687287337751929">‏‎4 x 6 انچ</translation>
 <translation id="3324983252691184275">قرمزی</translation>
 <translation id="3329013043687509092">سیرابی</translation>
@@ -1019,7 +1015,6 @@
 <translation id="3461824795358126837">ہائی لائٹر</translation>
 <translation id="3462200631372590220">جدید ترین کو چھپائیں</translation>
 <translation id="346601286295919445">کیمیا</translation>
-<translation id="3467763166455606212">کارڈ کے حامل کا نام درکار ہے</translation>
 <translation id="3468054117417088249">‏<ph name="TAB_SWITCH_SUFFIX" />، فی الحال کھلا ہوا ہے، کھلے ہوئے ٹیب پر سوئچ کرنے کے لیے Tab پھر Enter دبائیں</translation>
 <translation id="3470563864795286535">‏<ph name="CLOSE_INCOGNITO_WINDOWS_FOCUSED_FRIENDLY_MATCH_TEXT" />، فی الحال کھلی ہوئی تمام پوشیدگی ونڈوز کو بند کرنے کیلئے ٹیب پھر Enter دبائیں</translation>
 <translation id="3477679029130949506">موویز کی فہرستیں اور تھیئٹر شوز کے اوقات</translation>
@@ -1985,6 +1980,7 @@
 <translation id="5817918615728894473">جوڑا بنائيں</translation>
 <translation id="5824687817967109979">{NUM_CARDS,plural, =1{‏ادائیگی کرتے وقت اس کارڈ کو چارج کیا جائے گا، تاہم اس کے اصل نمبر کا اشتراک اس سائٹ کے ساتھ نہیں کیا جائے گا۔ اضافی سیکیورٹی کے لیے ایک عارضی CVC تخلیق کی جائے گی۔}other{‏ادائیگی کرتے وقت آپ کے منتخب کردہ کارڈ کو چارج کیا جائے گا، تاہم اس کے اصل نمبر کا اشتراک اس سائٹ کے ساتھ نہیں کیا جائے گا۔ اضافی سیکیورٹی کے لیے ایک عارضی CVC تخلیق کی جائے گی۔}}</translation>
 <translation id="5826507051599432481">‏عام نام (CN)</translation>
+<translation id="5829215001860862731">اکاؤنٹ میں محفوظ کریں</translation>
 <translation id="5830698870816298009">کیمرے کا استعمال اور نقل و حرکت</translation>
 <translation id="583281660410589416">نامعلوم</translation>
 <translation id="5838278095973806738">اس سائٹ پر آپ کو کوئی حساس معلومات (مثلاً، پاس ورڈز یا کریڈٹ کارڈز) درج نہیں کرنا چاہیے، کیوںکہ اسے حملہ آور چوری کر سکتے ہیں۔</translation>
@@ -2290,7 +2286,6 @@
 <translation id="6612010098632894193">آن لائن ویڈیو</translation>
 <translation id="6615297766614333076">اسٹیکر 2</translation>
 <translation id="6624427990725312378">رابطے کی معلومات</translation>
-<translation id="6626291197371920147">درست کارڈ نمبر شامل کریں</translation>
 <translation id="6627727261837091711">اشتہار کی ذاتی نوعیت سازی کی تفصیلات دکھائیں</translation>
 <translation id="6628463337424475685"><ph name="ENGINE" /> تلاش</translation>
 <translation id="6630043285902923878">‏USB آلات تلاش کئے جا رہے ہیں...</translation>
@@ -2776,7 +2771,6 @@
 <translation id="7716375162095500223">ابھی اپلوڈ نہیں ہوا، یا نظرانداز کیا گیا</translation>
 <translation id="7716424297397655342">اس سائٹ کو کیش سے لوڈ نہیں کیا جا سکتا ہے</translation>
 <translation id="772128550427553158">‏CVC آپ کے کارڈ کے سامنے کی طرف موجود ہے۔</translation>
-<translation id="7723047071702270851">کارڈ میں ترمیم کریں</translation>
 <translation id="7724603315864178912">کٹ کریں</translation>
 <translation id="7734285854693414638">‏Google Forms میں تیزی سے ایک نیا فارم تخلیق کریں</translation>
 <translation id="773466115871691567">ہمیشہ <ph name="SOURCE_LANGUAGE" /> کے صفحات کا ترجمہ کریں</translation>

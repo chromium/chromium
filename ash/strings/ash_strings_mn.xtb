@@ -40,6 +40,7 @@
 <translation id="1181037720776840403">Хасах</translation>
 <translation id="1182225749592316782">Энэ нь камер ба микрофоны зөвшөөрөлтэй бүх апп болон вебсайтад хандалтыг зөвшөөрнө</translation>
 <translation id="1183863904939664422">Энэ зөвлөмжийг сонирхохгүй байна</translation>
+<translation id="1184126796192815024">Энэ сүлжээ таны утаснаас аппууд дамжуулахыг дэмждэггүй. Утасныхаа сүлжээний цэгийг ашиглахаар оролдоно уу. <ph name="LEARN_MORE" /></translation>
 <translation id="118437560755358292">Нэмэлт аюулгүй байдлын үүднээс нууц үг эсвэл ПИН оруулна уу</translation>
 <translation id="118532027333893379">Бүтэн дэлгэцийн зургийг авахын тулд дурын газар товшино уу</translation>
 <translation id="1190609913194133056">Мэдэгдлийн төв</translation>
@@ -1252,6 +1253,7 @@
 <translation id="685782768769951078">{NUM_DIGITS,plural, =1{Нэг цифр үлдсэн}other{# цифр үлдсэн}}</translation>
 <translation id="6867938213751067702"><ph name="FILENAME" />-г татахыг түр зогсоолоо</translation>
 <translation id="6878400149835617132">Товчлол унтраалттай байна</translation>
+<translation id="6878701771800702153">{NUM_APPS,plural, =1{1 апп}other{# апп}}</translation>
 <translation id="6884665277231944629">Өнөөдөр лүү буцах</translation>
 <translation id="6886172995547742638">Таны <ph name="DEVICE_TYPE" />-н гүйцэтгэл буурч болзошгүй. Баталгаажсан <ph name="PREFERRED_MINIMUM_POWER" />Вт эсвэл түүнээс дээш чадалтай USB-C тэжээлийн адаптерыг ашиглана уу.</translation>
 <translation id="688631446150864480">Цонхыг сэлгэхийн тулд Доош сум товчийг дарна уу</translation>
@@ -1419,6 +1421,7 @@
 <translation id="7689817529363080918">Энэ нь <ph name="APP1_NAME" />, <ph name="APP2_NAME" />, болон микрофоны зөвшөөрөлтэй бүх апп болон вебсайтад микрофоны хандалтыг зөвшөөрнө</translation>
 <translation id="7704000866383261579">Сүүлийн үйлдлийг дахин хийх</translation>
 <translation id="7705524343798198388">VPN</translation>
+<translation id="770741401784017797">GIF үүсгэж байна</translation>
 <translation id="7714767791242455379">Үүрэн холбооны шинэ сүлжээ нэмэх</translation>
 <translation id="7720400844887872976"><ph name="TIME" /> хүртэл асаалттай</translation>
 <translation id="7720410380936703141">ДАХИН ОРОЛДОХ</translation>
@@ -1431,6 +1434,7 @@
 <translation id="7749443890790263709">Дэлгэцийн тоо хамгийн дээд хэмжээнд хүрлээ.</translation>
 <translation id="776344839111254542">Шинэчлэлтийн дэлгэрэнгүйг харахын тулд товшино уу</translation>
 <translation id="7768784765476638775">Ярихаар-сонгох</translation>
+<translation id="7769299611924763557">Таны GIF удахгүй бэлэн болно</translation>
 <translation id="7780094051999721182">товчлолууд</translation>
 <translation id="7780159184141939021">Дэлгэцийг эргүүлсэн</translation>
 <translation id="7796735576426975947">Шинэ мэдэгдлийг нуусан</translation>

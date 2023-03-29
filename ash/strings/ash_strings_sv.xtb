@@ -40,6 +40,7 @@ Det här är några saker du kan testa för att komma igång.</translation>
 <translation id="1181037720776840403">Ta bort</translation>
 <translation id="1182225749592316782">Detta ger åtkomst för alla appar och webbplatser med kamera- och mikrofonbehörighet</translation>
 <translation id="1183863904939664422">Jag är inte intresserad av det här förslaget</translation>
+<translation id="1184126796192815024">Nätverket har inte stöd för streamingappar från din telefon. Testa att använda telefonens surfzon. <ph name="LEARN_MORE" /></translation>
 <translation id="118437560755358292">Ange lösenordet eller pinkoden för ökad säkerhet</translation>
 <translation id="118532027333893379">Tryck var som helst för att ta en bild av hela skärmen</translation>
 <translation id="1190609913194133056">Meddelandecenter</translation>
@@ -1251,6 +1252,7 @@ Nyligen installerad</translation>
 <translation id="685782768769951078">{NUM_DIGITS,plural, =1{En siffra kvar}other{# siffror kvar}}</translation>
 <translation id="6867938213751067702">Nedladdningen pausades <ph name="FILENAME" /></translation>
 <translation id="6878400149835617132">Kortkommandot har inaktiverats.</translation>
+<translation id="6878701771800702153">{NUM_APPS,plural, =1{1 app}other{# appar}}</translation>
 <translation id="6884665277231944629">Återgå till i dag</translation>
 <translation id="6886172995547742638">Prestandan på <ph name="DEVICE_TYPE" /> kan försämras. Använd en certifierad USB-C-nätadapter för <ph name="PREFERRED_MINIMUM_POWER" /> W eller mer.</translation>
 <translation id="688631446150864480">Tryck på nedåtpilen på tangentbordet för att byta fönster</translation>
@@ -1418,6 +1420,7 @@ Stäng av enheten genom att hålla av/på-knappen nedtryckt igen.</translation>
 <translation id="7689817529363080918">Detta tillåter mikrofonåtkomst för <ph name="APP1_NAME" />, <ph name="APP2_NAME" /> och alla appar och webbplatser med mikrofonbehörighet</translation>
 <translation id="7704000866383261579">Gör om den senaste åtgärden</translation>
 <translation id="7705524343798198388">VPN</translation>
+<translation id="770741401784017797">Skapar GIF</translation>
 <translation id="7714767791242455379">Lägg till nytt mobilnätverk</translation>
 <translation id="7720400844887872976">På till <ph name="TIME" /></translation>
 <translation id="7720410380936703141">FÖRSÖK IGEN</translation>
@@ -1430,6 +1433,7 @@ Stäng av enheten genom att hålla av/på-knappen nedtryckt igen.</translation>
 <translation id="7749443890790263709">Det högsta tillåtna antalet skrivbord har uppnåtts.</translation>
 <translation id="776344839111254542">Klicka här om du vill se mer information om uppdateringen</translation>
 <translation id="7768784765476638775">Textuppläsning</translation>
+<translation id="7769299611924763557">Giffen är snart redo</translation>
 <translation id="7780094051999721182">genvägar</translation>
 <translation id="7780159184141939021">Rotera skärmen</translation>
 <translation id="7796735576426975947">En ny avisering har dolts</translation>

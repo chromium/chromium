@@ -698,6 +698,7 @@
 <translation id="7103252855940681301">Zařízení <ph name="INDEX" /> z <ph name="COUNT" /> s názvem <ph name="NAME" />.</translation>
 <translation id="7108668606237948702">enter</translation>
 <translation id="7130438335435247835">Název přístupového bodu</translation>
+<translation id="7131634559772719176">Potvrďte předvolbu</translation>
 <translation id="7134436342991564651">{0,plural, =1{Názvový server}few{Názvové servery}many{Názvové servery}other{Názvové servery}}</translation>
 <translation id="7143207342074048698">Připojování</translation>
 <translation id="7144878232160441200">Opakovat</translation>
@@ -801,6 +802,7 @@
 <translation id="80398733265834479">Zapnout režim automatických barev</translation>
 <translation id="8041089156583427627">Odeslat svůj názor</translation>
 <translation id="8045012663542226664">Ztlumení mikrofonu</translation>
+<translation id="8050091914317269817">Výběrem této tapety zapnete automatický tmavý režim a přizpůsobení barev podle tapety.</translation>
 <translation id="8075838845814659848">Zbývající kapacita</translation>
 <translation id="8076492880354921740">Karty</translation>
 <translation id="8082366717211101304">Z aplikací pro Android nelze přeložit záznamy DNS</translation>

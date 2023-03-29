@@ -46,7 +46,6 @@
 <translation id="1075079914415273530">Agriculture and forestry</translation>
 <translation id="1080116354587839789">Fit to width</translation>
 <translation id="1081061862829655580">Tray 19</translation>
-<translation id="1088860948719068836">Add Name on Card</translation>
 <translation id="1089439967362294234">Change Password</translation>
 <translation id="1096545575934602868">This field should not have more than <ph name="MAX_ITEMS_LIMIT" /> entries. All further entries will be discarded.</translation>
 <translation id="1100782917270858593">Resume your journey button, press Enter to resume your journey and see relevant activity in your Chrome history</translation>
@@ -339,7 +338,6 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="1721424275792716183">* Field is required</translation>
 <translation id="1725591448053514783">Envelope You 6</translation>
 <translation id="1727613060316725209">Certificate is valid</translation>
-<translation id="1727741090716970331">Add Valid Card Number</translation>
 <translation id="1728677426644403582">You're viewing the source of a web page</translation>
 <translation id="173080396488393970">This type of card isn’t supported</translation>
 <translation id="1732445923934584865">Ask in-person instead</translation>
@@ -498,6 +496,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="2119867082804433120">Punch bottom right</translation>
 <translation id="2122719317867821810">This policy is working as intended but a conflicting value is set elsewhere and is overridden by this policy.</translation>
 <translation id="2126374524350484896">PDF producer:</translation>
+<translation id="2128262927290305126">In your Google Account, <ph name="ACCOUNT" /></translation>
 <translation id="2130448033692577677">The templates that you've specified may not be applied due to the DnsOverHttpsMode policy not being set.</translation>
 <translation id="2130699163006053678">A3 x 7</translation>
 <translation id="2135799067377889518">Men's clothing</translation>
@@ -543,6 +542,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="2219735899272417925">Device reset required</translation>
 <translation id="2224337661447660594">No Internet</translation>
 <translation id="2225927550500503913">Virtual card turned on</translation>
+<translation id="2226636330183131181"><ph name="BEGIN_LINK" />Signing in<ph name="END_LINK" /> to the Wi-Fi network</translation>
 <translation id="2239100178324503013">Send now</translation>
 <translation id="2241693394036365668">File is downloaded</translation>
 <translation id="2246264294482514010">10 in x 12 in</translation>
@@ -939,7 +939,6 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="3272091146646336650">Super B</translation>
 <translation id="3281350579597955952">{0,plural, =1{Administrator policy doesn’t recommend opening this file in <ph name="DESTINATION_NAME" />}other{Administrator policy doesn’t recommend opening these files in <ph name="DESTINATION_NAME" />}}</translation>
 <translation id="3282085321714087552">Your organisation, <ph name="ENROLLMENT_DOMAIN" />, has sent some info to the following websites, like settings or policies.</translation>
-<translation id="3282497668470633863">Add name on card</translation>
 <translation id="3286372614333682499">portrait</translation>
 <translation id="3287510313208355388">Download when online</translation>
 <translation id="3288238092761586174"><ph name="URL" /> may need to take additional steps to verify your payment</translation>
@@ -952,7 +951,6 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="3304777285002411338">A2 x 3</translation>
 <translation id="33073482541490531">The password that you just used was found in a data breach. Password Manager recommends changing this password now.</translation>
 <translation id="3308006649705061278">Organisational Unit (OU)</translation>
-<translation id="3320021301628644560">Add billing address</translation>
 <translation id="3324687287337751929">4 in x 6 in</translation>
 <translation id="3324983252691184275">Crimson</translation>
 <translation id="3329013043687509092">Saturation</translation>
@@ -1015,7 +1013,6 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="3461824795358126837">Highlighter</translation>
 <translation id="3462200631372590220">Hide advanced</translation>
 <translation id="346601286295919445">Chemistry</translation>
-<translation id="3467763166455606212">Cardholder name required</translation>
 <translation id="3468054117417088249"><ph name="TAB_SWITCH_SUFFIX" />, currently open, press Tab then Enter to switch to the open tab</translation>
 <translation id="3470563864795286535"><ph name="CLOSE_INCOGNITO_WINDOWS_FOCUSED_FRIENDLY_MATCH_TEXT" />; press tab and then Enter to close all incognito windows that are currently open</translation>
 <translation id="3477679029130949506">Movie listings and theatre showtimes</translation>
@@ -1083,6 +1080,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="3631244953324577188">Biometrics</translation>
 <translation id="3632503704576938756">Screen share resumed</translation>
 <translation id="3632892046558972264">Screen share paused</translation>
+<translation id="3633035844150606508">Save address in your Google Account, <ph name="ACCOUNT" /></translation>
 <translation id="3633738897356909127">Update Chrome button; press enter to update Chrome from your Chrome settings</translation>
 <translation id="3634530185120165534">Tray 5</translation>
 <translation id="3634567936866541746">You just entered your password on a deceptive site. To secure your accounts, Chrome recommends checking your saved passwords.</translation>
@@ -1655,6 +1653,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="5018422839182700155">Can't open this page</translation>
 <translation id="5018802455907704660">16 in x 20 in</translation>
 <translation id="5019198164206649151">Backing store in bad state</translation>
+<translation id="5019293549442035120">You can use saved addresses across Google products. This address will be saved in your Google Account, <ph name="USER_EMAIL" />.</translation>
 <translation id="5020776957610079374">World music</translation>
 <translation id="5021557570875267742">Track prices with Chrome</translation>
 <translation id="5023310440958281426">Check your administrator's policies</translation>
@@ -1981,9 +1980,11 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="5817918615728894473">Pair</translation>
 <translation id="5824687817967109979">{NUM_CARDS,plural, =1{This card will be charged when you pay, but its real number won't be shared with this site. For extra security, a temporary CVC will be generated.}other{The card that you select will be charged when you pay, but its real number won't be shared with this site. For extra security, a temporary CVC will be generated.}}</translation>
 <translation id="5826507051599432481">Common Name (CN)</translation>
+<translation id="5829215001860862731">Save in Account</translation>
 <translation id="5830698870816298009">camera use and movement</translation>
 <translation id="583281660410589416">Unknown</translation>
 <translation id="5838278095973806738">You should not enter any sensitive information on this site (for example, passwords or credit cards) because it could be stolen by attackers.</translation>
+<translation id="5841338463993781099">Save in account?</translation>
 <translation id="5851548754964597211">Tab list</translation>
 <translation id="5852909432155870672">RA4</translation>
 <translation id="5860033963881614850">Off</translation>
@@ -2284,7 +2285,6 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="6612010098632894193">Online video</translation>
 <translation id="6615297766614333076">Stacker 2</translation>
 <translation id="6624427990725312378">Contact Info</translation>
-<translation id="6626291197371920147">Add valid card number</translation>
 <translation id="6627727261837091711">Show ad personalisation details</translation>
 <translation id="6628463337424475685"><ph name="ENGINE" /> Search</translation>
 <translation id="6630043285902923878">Finding USB devices…</translation>
@@ -2770,7 +2770,6 @@ Additional details:
 <translation id="7716375162095500223">Not yet uploaded, or ignored</translation>
 <translation id="7716424297397655342">This site can’t be loaded from the cache</translation>
 <translation id="772128550427553158">The CVC is located on the front of your card.</translation>
-<translation id="7723047071702270851">Edit Card</translation>
 <translation id="7724603315864178912">Cut</translation>
 <translation id="7734285854693414638">Create a new form in Google Forms quickly</translation>
 <translation id="773466115871691567">Always translate pages in <ph name="SOURCE_LANGUAGE" /></translation>

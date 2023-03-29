@@ -7118,11 +7118,6 @@ Als je dit beleid instelt, moet je het beleid <ph name="PRIVACY_SANDBOX_PROMPT_E
 <translation id="7657261947024629645">Optimaliseren voor betere prestaties.</translation>
 <translation id="76580522298425324">Schermopname zonder eerder gebruikersgebaar toestaan</translation>
 <translation id="7666228839913571182">Cookies van derden toestaan</translation>
-<translation id="7668830462800981702">Als je het beleid toepast, wordt er een standaard zoekopdracht uitgevoerd als de gebruiker in de adresbalk tekst invoert die geen URL is. Als je de standaard zoekprovider wilt opgeven, stel je alle andere standaard zoekbeleidsregels in. Als je die zoekbeleidsregels leeg laat, kan de gebruiker zelf de standaardprovider kiezen. Als je het beleid niet toepast, wordt er geen zoekopdracht uitgevoerd als de gebruiker in de adresbalk tekst invoert die geen URL is.
-
-      Als je het beleid instelt, kunnen gebruikers het niet wijzigen in <ph name="PRODUCT_NAME" />. Als je dit beleid niet instelt, wordt de standaard zoekprovider gebruikt en kunnen gebruikers de lijst met zoekproviders instellen.
-
-      In <ph name="MS_WIN_NAME" /> is deze functionaliteit alleen beschikbaar voor instanties die zijn gekoppeld aan een <ph name="MS_AD_NAME" />-domein, worden uitgevoerd in Windows 10 Pro of zijn ingeschreven voor Cloudbeheer voor de Chrome-browser. In <ph name="MAC_OS_NAME" /> is deze functionaliteit alleen beschikbaar voor instanties die via MDM worden beheerd of via MCX aan een domein zijn gekoppeld.</translation>
 <translation id="7669630878711068277">Als je dit beleid toepast of niet instelt, kunnen gebruikers afdrukken in <ph name="PRODUCT_NAME" /> en kunnen ze deze instelling niet wijzigen.
 
       Als je het beleid niet hebt toegepast, kunnen gebruikers ook niet afdrukken vanaf <ph name="PRODUCT_NAME" />. Afdrukken is niet mogelijk vanuit het menu met 3 stippen, extensies en JavaScript-apps.</translation>

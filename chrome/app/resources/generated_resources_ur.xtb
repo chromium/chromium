@@ -5343,7 +5343,6 @@
 <translation id="5723967018671998714">فریق ثالث کی کوکیز پوشیدگی وضع میں مسدود کی جاتی ہیں</translation>
 <translation id="5724642200346111167">آپ کے تمام ونڈوز کو بند کرنے پر آپ کے آلے سے سائٹ کا ڈیٹا صاف ہو جاتا ہے</translation>
 <translation id="5727728807527375859">ایکسٹینشز، ایپس اور تھیمز آپ کے کمپیوٹر کو نقصان پہنچا سکتی ہیں۔ کیا آپ واقعی جاری رکھنا چاہتے ہیں؟</translation>
-<translation id="5728235544432023605">کاسٹ جواب نہیں دے رہا ہے۔ <ph name="DEVICE_NAME" /> سے اسٹاپ کریں۔</translation>
 <translation id="5728450728039149624">اسمارٹ لاک اسکرین لاک کے اختیارات</translation>
 <translation id="5729712731028706266">&amp;منظر</translation>
 <translation id="5731247495086897348">پی&amp;سٹ کریں اور جائیں</translation>
@@ -6364,6 +6363,7 @@
 <translation id="6647690760956378579">قدرتی آواز کا پیش منظر</translation>
 <translation id="6648911618876616409">انسٹال کرنے کیلئے ایک اہم اپ ڈیٹ تیار ہے۔ شروع کرنے کیلئے سائن ان کریں۔</translation>
 <translation id="6649018507441623493">بس ایک سیکنڈ…</translation>
+<translation id="6650206238642452078">‏ChromeOS کے سسٹم ایونٹس کو سبسکرائب کریں</translation>
 <translation id="665061930738760572">نئی ونڈو میں کھولیں</translation>
 <translation id="6651237644330755633">ویب سائٹس کی شناخت کرنے کیلئے اس سرٹیفیکیٹ پر بھروسہ کریں</translation>
 <translation id="6651495917527016072">‏اپنے فون کے ساتھ Wi-Fi نیٹ ورکس کو سنک کریں۔ <ph name="LINK_BEGIN" />مزید جانیں<ph name="LINK_END" /></translation>
@@ -9072,6 +9072,7 @@
 <translation id="904224458472510106">اس عمل کو کالعدم نہیں کیا جا سکتا</translation>
 <translation id="9042827002460091668">اپنا انٹرنیٹ کنکشن چیک کریں اور دوبارہ کوشش کریں</translation>
 <translation id="9042893549633094279">رازداری اور سیکیورٹی</translation>
+<translation id="9043264199499366189">‏ChromeOS Flex کے سسٹم ایونٹس کو سبسکرائب کریں</translation>
 <translation id="9044646465488564462">نیٹ ورک سے منسلک ہونے میں ناکام ہوگیا: <ph name="DETAILS" /></translation>
 <translation id="9045160989383249058">آپ کی پڑھنے کی فہرست نئے سائیڈ پینل میں منتقل ہو گئی ہے۔ اسے یہاں آزمائیں۔</translation>
 <translation id="9045430190527754450">‏Google کو اس صفحے کا ویب پتہ بھیجتا ہے جس تک آپ رسائی حاصل کرنے کی کوشش کر رہے ہیں</translation>

@@ -46,7 +46,6 @@
 <translation id="1075079914415273530">កសិកម្ម និង​ព្រៃឈើ</translation>
 <translation id="1080116354587839789">តម្រឹមទទឹង</translation>
 <translation id="1081061862829655580">ទម្រទី 19</translation>
-<translation id="1088860948719068836">បញ្ចូល​ឈ្មោះ​លើបណ្ណ</translation>
 <translation id="1089439967362294234">ប្ដូរ​ពាក្យ​សម្ងាត់</translation>
 <translation id="1096545575934602868">កន្លែងបញ្ចូលនេះ​មិន​គួរមានច្រើនជាង <ph name="MAX_ITEMS_LIMIT" /> ធាតុ​ទេ។ ធាតុទាំងអស់ដែល​លើសពីនេះនឹងត្រូវលុបចោល។</translation>
 <translation id="1100782917270858593">ប៊ូតុង "បន្តការស្វែងរកអ្នក" ចុច Enter ដើម្បីបន្តការស្វែងរក​របស់អ្នក និងមើល​សកម្មភាព​ដែលពាក់ព័ន្ធ​នៅក្នុងប្រវត្តិ Chrome របស់អ្នក</translation>
@@ -340,7 +339,6 @@
 <translation id="1721424275792716183">* តម្រូវឲ្យបំពេញ</translation>
 <translation id="1725591448053514783">ស្រោមសំបុត្រ You 6</translation>
 <translation id="1727613060316725209">វិញ្ញាបនបត្រ​មានសុពលភាព</translation>
-<translation id="1727741090716970331">បញ្ចូល​លេខបណ្ណដែល​​ត្រឹមត្រូវ</translation>
 <translation id="1728677426644403582">អ្នក​កំពុងមើល​ប្រភព​របស់គេហទំព័រ</translation>
 <translation id="173080396488393970">មិនស្គាល់បណ្ណប្រភេទនេះទេ</translation>
 <translation id="1732445923934584865">សាកសួរដោយផ្ទាល់ជំនួសវិញ</translation>
@@ -944,7 +942,6 @@
 <translation id="3272091146646336650">Super B</translation>
 <translation id="3281350579597955952">{0,plural, =1{គោលការណ៍​អ្នកគ្រប់គ្រង​មិន​ណែនាំ​ឱ្យ​បើក​ឯកសារ​នេះ​នៅក្នុង <ph name="DESTINATION_NAME" /> ទេ}other{គោលការណ៍​អ្នកគ្រប់គ្រង​មិន​ណែនាំ​ឱ្យ​បើក​ឯកសារ​ទាំងនេះ​នៅក្នុង <ph name="DESTINATION_NAME" /> ទេ}}</translation>
 <translation id="3282085321714087552">ស្ថាប័នរបស់អ្នក <ph name="ENROLLMENT_DOMAIN" /> បានបញ្ជូនព័ត៌មានមួយចំនួនទៅគេហទំព័រខាងក្រោមដូចជា ការកំណត់ ឬគោលការណ៍ជាដើម។</translation>
-<translation id="3282497668470633863">បញ្ចូលឈ្មោះលើកាត</translation>
 <translation id="3286372614333682499">បញ្ឈរ​</translation>
 <translation id="3287510313208355388">ទាញយក​នៅ​ពេលមាន​អ៊ីនធឺណិត</translation>
 <translation id="3288238092761586174"><ph name="URL" /> អាចត្រូវអនុវត្ត​ជំហានបន្ថែម ដើម្បីផ្ទៀងផ្ទាត់​ការបង់ប្រាក់​របស់អ្នក</translation>
@@ -957,7 +954,6 @@
 <translation id="3304777285002411338">A2x3</translation>
 <translation id="33073482541490531">ពាក្យសម្ងាត់ដែលអ្នកទើបតែប្រើត្រូវបានរកឃើញនៅក្នុងការបែកធ្លាយទិន្នន័យ។ កម្មវិធីគ្រប់គ្រងពាក្យសម្ងាត់ណែនាំឱ្យផ្លាស់ប្ដូរពាក្យសម្ងាត់នេះឥឡូវនេះ។</translation>
 <translation id="3308006649705061278">ក្រុមអង្គភាព (OU)</translation>
-<translation id="3320021301628644560">បញ្ចូលអាសយដ្ឋានចេញវិក្កយបត្រ</translation>
 <translation id="3324687287337751929">4 x 6 in</translation>
 <translation id="3324983252691184275">ឈាមជ្រូក</translation>
 <translation id="3329013043687509092">កម្រិតពណ៌</translation>
@@ -1020,7 +1016,6 @@
 <translation id="3461824795358126837">ឧបករណ៍​រំលេច</translation>
 <translation id="3462200631372590220">លាក់កម្រិតខ្ពស់</translation>
 <translation id="346601286295919445">គីមីវិទ្យា</translation>
-<translation id="3467763166455606212">តម្រូវឲ្យមានឈ្មោះម្ចាស់បណ្ណ</translation>
 <translation id="3468054117417088249">បច្ចុប្បន្ននេះ <ph name="TAB_SWITCH_SUFFIX" /> បើក សូមចុច "Tab" រួចចុច "Enter" ដើម្បី​ប្ដូរទៅ​ផ្ទាំងបើក</translation>
 <translation id="3470563864795286535"><ph name="CLOSE_INCOGNITO_WINDOWS_FOCUSED_FRIENDLY_MATCH_TEXT" />, ចុច tab រួចចុច Enter ដើម្បីបិទ​ផ្ទាំងឯកជន​ទាំងអស់​ដែល​កំពុងបើក</translation>
 <translation id="3477679029130949506">បញ្ជីភាពយន្ត និង​ម៉ោងបញ្ចាំង​នៅរោងភាពយន្ត</translation>
@@ -2294,7 +2289,6 @@
 <translation id="6612010098632894193">វីដេអូ​លើអ៊ីនធឺណិត</translation>
 <translation id="6615297766614333076">ទម្រគំនរ​ទី 2</translation>
 <translation id="6624427990725312378">ព័ត៌មាន​ទំនាក់ទំនង</translation>
-<translation id="6626291197371920147">បញ្ចូលលេខកាតឲ្យបានត្រឹមត្រូវ</translation>
 <translation id="6627727261837091711">បង្ហាញព័ត៌មានលម្អិតអំពីការកំណត់ការផ្សាយពាណិជ្ជកម្មឱ្យស្របតាមបុគ្គល</translation>
 <translation id="6628463337424475685"><ph name="ENGINE" /> ស្វែងរក</translation>
 <translation id="6630043285902923878">កំពុងស្វែងរកឧបករណ៍ USB...</translation>
@@ -2781,7 +2775,6 @@
 <translation id="7716375162095500223">មិនទាន់បង្ហោះ ឬមិនអើពើ</translation>
 <translation id="7716424297397655342">គេហទំព័រនេះមិនអាចដំណើរការពីឃ្លាំងសម្ងាត់បានទេ</translation>
 <translation id="772128550427553158">CVC ស្ថិត​នៅ​ផ្នែក​ខាងមុខនៃ​កាត​របស់​អ្នក។</translation>
-<translation id="7723047071702270851">កែសម្រួល​បណ្ណ</translation>
 <translation id="7724603315864178912">កាត់</translation>
 <translation id="7734285854693414638">បង្កើត​ទម្រង់បែបបទថ្មី​នៅក្នុង Google ទម្រង់បែបបទ​បានរហ័ស</translation>
 <translation id="773466115871691567">បកប្រែ​ទំព័រ​ជាភាសា <ph name="SOURCE_LANGUAGE" /> ជានិច្ច</translation>

@@ -46,7 +46,6 @@
 <translation id="1075079914415273530">農林業</translation>
 <translation id="1080116354587839789">縮放至符合畫面寬度</translation>
 <translation id="1081061862829655580">紙匣 19</translation>
-<translation id="1088860948719068836">新增持卡人姓名</translation>
 <translation id="1089439967362294234">變更密碼</translation>
 <translation id="1096545575934602868">此欄位只能包含 <ph name="MAX_ITEMS_LIMIT" /> 個項目，其餘所有項目將會捨棄。</translation>
 <translation id="1100782917270858593">恢復瀏覽過程按鈕，㩒一下 Enter 鍵就可以恢復瀏覽過程，同埋睇到 Chrome 記錄入面嘅相關活動</translation>
@@ -339,7 +338,6 @@
 <translation id="1721424275792716183">* 為必填欄位</translation>
 <translation id="1725591448053514783">You 6 信封</translation>
 <translation id="1727613060316725209">憑證有效</translation>
-<translation id="1727741090716970331">新增有效的信用卡號碼</translation>
 <translation id="1728677426644403582">您正在查看網頁的原始碼</translation>
 <translation id="173080396488393970">不支援此信用卡類型</translation>
 <translation id="1732445923934584865">改為當面要求</translation>
@@ -941,7 +939,6 @@
 <translation id="3272091146646336650">Super B</translation>
 <translation id="3281350579597955952">{0,plural, =1{管理員政策不建議在<ph name="DESTINATION_NAME" />中開啟這個檔案}other{管理員政策不建議在<ph name="DESTINATION_NAME" />中開啟這些檔案}}</translation>
 <translation id="3282085321714087552">機構 (<ph name="ENROLLMENT_DOMAIN" />) 已將一些資訊 (例如設定或政策) 傳送到以下網站。</translation>
-<translation id="3282497668470633863">新增持卡人姓名</translation>
 <translation id="3286372614333682499">直向</translation>
 <translation id="3287510313208355388">上網時下載</translation>
 <translation id="3288238092761586174"><ph name="URL" /> 可能需要採取其他步驟，才能驗證付款方式</translation>
@@ -954,7 +951,6 @@
 <translation id="3304777285002411338">A2x3</translation>
 <translation id="33073482541490531">系統發現您剛才使用的密碼因資料外洩而被洩露。「密碼管理工具」建議您立即變更密碼。</translation>
 <translation id="3308006649705061278">機構單位 (OU)</translation>
-<translation id="3320021301628644560">新增帳單地址</translation>
 <translation id="3324687287337751929">4 x 6 吋</translation>
 <translation id="3324983252691184275">棕紅色</translation>
 <translation id="3329013043687509092">飽和度</translation>
@@ -1017,7 +1013,6 @@
 <translation id="3461824795358126837">螢光筆</translation>
 <translation id="3462200631372590220">隱藏詳情</translation>
 <translation id="346601286295919445">化學</translation>
-<translation id="3467763166455606212">必須輸入持卡人姓名</translation>
 <translation id="3468054117417088249">目前已開啟 <ph name="TAB_SWITCH_SUFFIX" />，按下 Tab 鍵和 Enter 鍵即可切換至開啟的分頁</translation>
 <translation id="3470563864795286535"><ph name="CLOSE_INCOGNITO_WINDOWS_FOCUSED_FRIENDLY_MATCH_TEXT" />，㩒一下 Tab 鍵，然後㩒一下 Enter 鍵就可以閂晒所有宜家開咗嘅無痕式視窗</translation>
 <translation id="3477679029130949506">電影場次及放映時間</translation>
@@ -1657,6 +1652,7 @@
 <translation id="5018422839182700155">無法開啟此網頁</translation>
 <translation id="5018802455907704660">16 x 20 吋</translation>
 <translation id="5019198164206649151">備份儲存狀態不佳</translation>
+<translation id="5019293549442035120">您可在不同的 Google 產品中使用已儲存的地址。此地址將會儲存在您的 Google 帳戶 (<ph name="USER_EMAIL" />) 中。</translation>
 <translation id="5020776957610079374">世界音樂</translation>
 <translation id="5021557570875267742">使用 Chrome 追蹤價格</translation>
 <translation id="5023310440958281426">請查看您的管理員政策</translation>
@@ -1794,6 +1790,7 @@
 <translation id="5324080437450482387">選擇聯絡人資料</translation>
 <translation id="5329858041417644019">您的瀏覽器未受管理</translation>
 <translation id="5332219387342487447">運送方式</translation>
+<translation id="5332769172018416402">透過訊息詢問</translation>
 <translation id="5333022057423422993">Chrome 發現您剛才使用的密碼因資料外洩而被洩露。如要確保帳戶安全，建議您檢查已儲存的密碼。</translation>
 <translation id="5334013548165032829">詳細系統記錄</translation>
 <translation id="5334145288572353250">要儲存地址嗎？</translation>
@@ -1982,6 +1979,7 @@
 <translation id="5817918615728894473">配對</translation>
 <translation id="5824687817967109979">{NUM_CARDS,plural, =1{付帳時，系統會從此付款卡扣款，但其號碼並不會與此網站分享。為提高安全性，系統會產生一組臨時 CVC。}other{付帳時，系統會從所選的付款卡扣款，但其號碼並不會與此網站分享。為提高安全性，系統會產生一組臨時 CVC。}}</translation>
 <translation id="5826507051599432481">真實姓名 (CN)</translation>
+<translation id="5829215001860862731">儲存在帳戶中</translation>
 <translation id="5830698870816298009">使用及調整攝錄機</translation>
 <translation id="583281660410589416">不明</translation>
 <translation id="5838278095973806738">您不應在此網站上輸入任何敏感資料 (例如密碼或信用卡資料)，因為攻擊者可能會竊取這些資料。</translation>
@@ -2286,7 +2284,6 @@
 <translation id="6612010098632894193">網上影片</translation>
 <translation id="6615297766614333076">堆疊器 2</translation>
 <translation id="6624427990725312378">聯絡人資料</translation>
-<translation id="6626291197371920147">新增有效的信用卡號碼</translation>
 <translation id="6627727261837091711">顯示廣告個人化詳情</translation>
 <translation id="6628463337424475685"><ph name="ENGINE" /> 搜尋</translation>
 <translation id="6630043285902923878">正在尋找 USB 裝置…</translation>
@@ -2772,7 +2769,6 @@
 <translation id="7716375162095500223">尚未上載或已忽略</translation>
 <translation id="7716424297397655342">無法從快取中載入此網站</translation>
 <translation id="772128550427553158">CVC 喺信用卡嘅正面。</translation>
-<translation id="7723047071702270851">編輯付款卡</translation>
 <translation id="7724603315864178912">剪下</translation>
 <translation id="7734285854693414638">在 Google 表格中快速建立新表格</translation>
 <translation id="773466115871691567">一律翻譯來源語言為<ph name="SOURCE_LANGUAGE" />的網頁</translation>

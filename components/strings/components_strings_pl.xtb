@@ -46,7 +46,6 @@
 <translation id="1075079914415273530">Rolnictwo i leśnictwo</translation>
 <translation id="1080116354587839789">Dopasuj do szerokości</translation>
 <translation id="1081061862829655580">Taca 19</translation>
-<translation id="1088860948719068836">Dodaj imię i nazwisko z karty</translation>
 <translation id="1089439967362294234">Zmień hasło</translation>
 <translation id="1096545575934602868">Maksymalna liczba wpisów w tym polu to <ph name="MAX_ITEMS_LIMIT" />. Kolejne wpisy zostaną odrzucone.</translation>
 <translation id="1100782917270858593">Przycisk wznawiania serii czynności; aby wznowić serię czynności i zobaczyć odpowiednią aktywność w historii Chrome, naciśnij Enter</translation>
@@ -339,7 +338,6 @@ Jeśli się nie zgodzisz, zostaną one zablokowane ze względu na Twoje ustawien
 <translation id="1721424275792716183">* Pole jest wymagane</translation>
 <translation id="1725591448053514783">Koperta You 6</translation>
 <translation id="1727613060316725209">Certyfikat jest ważny</translation>
-<translation id="1727741090716970331">Dodaj prawidłowy numer karty</translation>
 <translation id="1728677426644403582">Przeglądasz źródło strony internetowej</translation>
 <translation id="173080396488393970">Ten typ karty nie jest obsługiwany</translation>
 <translation id="1732445923934584865">Poproś osobiście</translation>
@@ -941,7 +939,6 @@ Uruchamianie aplikacji może potrwać dłużej niż zwykle.</translation>
 <translation id="3272091146646336650">Super B</translation>
 <translation id="3281350579597955952">{0,plural, =1{Zgodnie z zasadą administratora nie zaleca się otwierania tego pliku, jeśli miejscem docelowym jest <ph name="DESTINATION_NAME" />}few{Zgodnie z zasadą administratora nie zaleca się otwierania tych plików, jeśli miejscem docelowym jest <ph name="DESTINATION_NAME" />}many{Zgodnie z zasadą administratora nie zaleca się otwierania tych plików, jeśli miejscem docelowym jest <ph name="DESTINATION_NAME" />}other{Zgodnie z zasadą administratora nie zaleca się otwierania tych plików, jeśli miejscem docelowym jest <ph name="DESTINATION_NAME" />}}</translation>
 <translation id="3282085321714087552">Twoja organizacja, <ph name="ENROLLMENT_DOMAIN" />, wysłała do tych witryn pewne informacje, takie jak ustawienia lub zasady.</translation>
-<translation id="3282497668470633863">Dodaj imię i nazwisko na karcie</translation>
 <translation id="3286372614333682499">orientacja pionowa</translation>
 <translation id="3287510313208355388">Pobierz, gdy będę online</translation>
 <translation id="3288238092761586174">Weryfikacja Twojej płatności może wymagać od <ph name="URL" /> podjęcia dodatkowych działań</translation>
@@ -954,7 +951,6 @@ Uruchamianie aplikacji może potrwać dłużej niż zwykle.</translation>
 <translation id="3304777285002411338">A2x3</translation>
 <translation id="33073482541490531">Użyte właśnie hasło znaleźliśmy jako ujawnione w wyniku naruszenia bezpieczeństwa danych. Menedżer haseł zaleca, aby jak najszybciej je zmienić.</translation>
 <translation id="3308006649705061278">Jednostka organizacyjna (OU)</translation>
-<translation id="3320021301628644560">Dodaj adres rozliczeniowy</translation>
 <translation id="3324687287337751929">4 x 6 cali</translation>
 <translation id="3324983252691184275">Karmazynowy</translation>
 <translation id="3329013043687509092">Nasycenie</translation>
@@ -1017,7 +1013,6 @@ Uruchamianie aplikacji może potrwać dłużej niż zwykle.</translation>
 <translation id="3461824795358126837">Zakreślacz</translation>
 <translation id="3462200631372590220">Ukryj zaawansowane</translation>
 <translation id="346601286295919445">Chemia</translation>
-<translation id="3467763166455606212">Wymagane jest imię i nazwisko posiadacza karty</translation>
 <translation id="3468054117417088249"><ph name="TAB_SWITCH_SUFFIX" />, obecnie otwarta. Naciśnij klawisz Tab, a potem Enter, by przełączyć się na otwartą kartę</translation>
 <translation id="3470563864795286535"><ph name="CLOSE_INCOGNITO_WINDOWS_FOCUSED_FRIENDLY_MATCH_TEXT" />; aby zamknąć wszystkie otwarte okna incognito, naciśnij Tab, a potem Enter.</translation>
 <translation id="3477679029130949506">Wykazy filmów i repertuary kin</translation>
@@ -1658,6 +1653,7 @@ Uruchamianie aplikacji może potrwać dłużej niż zwykle.</translation>
 <translation id="5018422839182700155">Nie można otworzyć tej strony</translation>
 <translation id="5018802455907704660">16 x 20 cali</translation>
 <translation id="5019198164206649151">Nieprawidłowy stan magazynu wspomagającego</translation>
+<translation id="5019293549442035120">Zapisanych adresów możesz używać w różnych usługach Google. Ten adres zostanie zapisany na Twoim koncie Google <ph name="USER_EMAIL" />.</translation>
 <translation id="5020776957610079374">Muzyka świata</translation>
 <translation id="5021557570875267742">Monitorowanie cen w Chrome</translation>
 <translation id="5023310440958281426">Sprawdź zasady administratora</translation>
@@ -1984,6 +1980,7 @@ Uruchamianie aplikacji może potrwać dłużej niż zwykle.</translation>
 <translation id="5817918615728894473">Sparuj</translation>
 <translation id="5824687817967109979">{NUM_CARDS,plural, =1{Gdy zapłacisz, karta zostanie obciążona, ale dana strona nie pozna jej rzeczywistego numeru. Jako dodatkowe zabezpieczenie zostanie wygenerowany tymczasowy kod CVC.}few{Gdy zapłacisz, wybrana karta zostanie obciążona, ale dana strona nie pozna jej rzeczywistego numeru. Jako dodatkowe zabezpieczenie zostanie wygenerowany tymczasowy kod CVC.}many{Gdy zapłacisz, wybrana karta zostanie obciążona, ale dana strona nie pozna jej rzeczywistego numeru. Jako dodatkowe zabezpieczenie zostanie wygenerowany tymczasowy kod CVC.}other{Gdy zapłacisz, wybrana karta zostanie obciążona, ale dana strona nie pozna jej rzeczywistego numeru. Jako dodatkowe zabezpieczenie zostanie wygenerowany tymczasowy kod CVC.}}</translation>
 <translation id="5826507051599432481">Nazwa pospolita (CN)</translation>
+<translation id="5829215001860862731">Zapisz na koncie</translation>
 <translation id="5830698870816298009">używanie kamery i poruszanie nią</translation>
 <translation id="583281660410589416">Nieznany</translation>
 <translation id="5838278095973806738">Nie podawaj żadnych informacji poufnych (takich jak hasła czy dane kart kredytowych) w tej witrynie, bo osoby atakujące będą mogły je wykraść.</translation>
@@ -2288,7 +2285,6 @@ Uruchamianie aplikacji może potrwać dłużej niż zwykle.</translation>
 <translation id="6612010098632894193">Filmy online</translation>
 <translation id="6615297766614333076">Układarka 2</translation>
 <translation id="6624427990725312378">Dane kontaktowe</translation>
-<translation id="6626291197371920147">Dodaj prawidłowy numer karty</translation>
 <translation id="6627727261837091711">Pokaż szczegóły dotyczące personalizacji reklam</translation>
 <translation id="6628463337424475685">Wyszukiwarka <ph name="ENGINE" /></translation>
 <translation id="6630043285902923878">Szukam urządzeń USB...</translation>
@@ -2774,7 +2770,6 @@ Dodatkowe informacje:
 <translation id="7716375162095500223">Jeszcze nie przesłany lub zignorowany</translation>
 <translation id="7716424297397655342">Nie można załadować tej strony z pamięci podręcznej</translation>
 <translation id="772128550427553158">Kod CVC znajduje się z przodu karty.</translation>
-<translation id="7723047071702270851">Edytuj kartę</translation>
 <translation id="7724603315864178912">Wytnij</translation>
 <translation id="7734285854693414638">Szybko utwórz nowy formularz w Formularzach Google</translation>
 <translation id="773466115871691567">Zawsze tłumacz strony, których językiem jest <ph name="SOURCE_LANGUAGE" /></translation>

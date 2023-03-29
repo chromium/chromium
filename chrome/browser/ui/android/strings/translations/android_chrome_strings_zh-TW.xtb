@@ -793,6 +793,7 @@
 <translation id="5342314432463739672">權限要求</translation>
 <translation id="53537532693258630">你移除的網站會顯示在這裡</translation>
 <translation id="5355191726083956201">已啟用強化防護功能</translation>
+<translation id="5361107212971249203">文字內容</translation>
 <translation id="5368227114232678694">如果想在這部裝置上進行私密瀏覽，請使用無痕模式</translation>
 <translation id="5375577065097716013">使用 Google 智慧鏡頭搜尋圖片 <ph name="BEGIN_NEW" />新功能<ph name="END_NEW" /></translation>
 <translation id="5401851137404501592">如要繼續，<ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> 會將你的姓名、電子郵件地址和個人資料相片提供給這個網站。</translation>
@@ -1319,6 +1320,7 @@
 <translation id="8058746566562539958">在新的 Chrome 分頁中開啟</translation>
 <translation id="8062594758852531064">延伸預先載入模式：</translation>
 <translation id="8063895661287329888">無法加入書籤。</translation>
+<translation id="8066816452984416180">快速將這個頁面加入書籤，按住即可編輯這個捷徑。</translation>
 <translation id="806745655614357130">分開保留我的資料</translation>
 <translation id="8073388330009372546">在新分頁中開啟圖片</translation>
 <translation id="8076492880354921740">分頁</translation>
@@ -1350,6 +1352,7 @@
 <translation id="8216351761227087153">觀看</translation>
 <translation id="8218622182176210845">管理你的帳戶</translation>
 <translation id="8223642481677794647">動態消息資訊卡選單</translation>
+<translation id="8236097722223016103">加入書籤</translation>
 <translation id="8250920743982581267">文件</translation>
 <translation id="8255617931166444521">網站只能使用 Cookie 查看你在該網站上的瀏覽活動</translation>
 <translation id="8259179246279078674">由於預先載入的網頁已經過加密，Google 不會得知預先載入網頁內容的相關資訊。Google 伺服器會知道哪些網站已透過私密方式預先載入。這項資訊僅用於預先載入網頁，不會與你 Google 帳戶的其他資訊連結。</translation>

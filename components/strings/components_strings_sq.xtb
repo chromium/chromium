@@ -46,7 +46,6 @@
 <translation id="1075079914415273530">Agrikultura dhe pylltaria</translation>
 <translation id="1080116354587839789">Përshtate sipas gjerësisë</translation>
 <translation id="1081061862829655580">Tabakaja 19</translation>
-<translation id="1088860948719068836">Shto emrin në kartë</translation>
 <translation id="1089439967362294234">Ndrysho fjalëkalimin</translation>
 <translation id="1096545575934602868">Kjo fushë nuk duhet të ketë më shumë se <ph name="MAX_ITEMS_LIMIT" /> regjistrime. Të gjitha regjistrimet e mëtejshme do të refuzohen.</translation>
 <translation id="1100782917270858593">Butoni "Vazhdo udhëtimin". Shtyp "Enter" për të vazhduar udhëtimin tënd dhe për të parë aktivitetin përkatës në historikun tënd të Chrome</translation>
@@ -339,7 +338,6 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="1721424275792716183">* Fusha është e detyrueshme</translation>
 <translation id="1725591448053514783">Zarf You 6</translation>
 <translation id="1727613060316725209">Certifikata është e vlefshme</translation>
-<translation id="1727741090716970331">Shto numër të vlefshëm karte</translation>
 <translation id="1728677426644403582">Po shikon burimin e një faqe uebi</translation>
 <translation id="173080396488393970">Kjo lloj karte nuk mbështetet</translation>
 <translation id="1732445923934584865">Pyete personalisht më mirë</translation>
@@ -498,6 +496,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="2119867082804433120">Shpim poshtë djathtas</translation>
 <translation id="2122719317867821810">Kjo politikë funksionon sipas parashikimit, por diku është caktuar një vlerë në konflikt dhe ajo është anuluar nga kjo politikë.</translation>
 <translation id="2126374524350484896">Prodhuesi i PDF-së:</translation>
+<translation id="2128262927290305126">Në "Llogarinë tënde të Google", <ph name="ACCOUNT" /></translation>
 <translation id="2130448033692577677">Shabllonet që ke specifikuar mund të mos zbatohen për shkak se politika DnsOverHttpsMode nuk është caktuar.</translation>
 <translation id="2130699163006053678">A3x7</translation>
 <translation id="2135799067377889518">Veshjet për burra</translation>
@@ -543,6 +542,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="2219735899272417925">Kërkohet rivendosja e pajisjes</translation>
 <translation id="2224337661447660594">Nuk ka internet</translation>
 <translation id="2225927550500503913">Karta virtuale është aktivizuar</translation>
+<translation id="2226636330183131181"><ph name="BEGIN_LINK" />Identifikohu<ph name="END_LINK" /> në rrjetin WiFi</translation>
 <translation id="2239100178324503013">Dërgo tani</translation>
 <translation id="2241693394036365668">Skedari është shkarkuar</translation>
 <translation id="2246264294482514010">10 x 12 inç</translation>
@@ -939,7 +939,6 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="3272091146646336650">Super B</translation>
 <translation id="3281350579597955952">{0,plural, =1{Politika e administratorit nuk rekomandon hapjen e këtij skedari te: <ph name="DESTINATION_NAME" />}other{Politika e administratorit nuk rekomandon hapjen e këtyre skedarëve te: <ph name="DESTINATION_NAME" />}}</translation>
 <translation id="3282085321714087552">Organizata jote, <ph name="ENROLLMENT_DOMAIN" />, ka dërguar disa informacione te sajtet e mëposhtme të uebit, si p.sh. cilësime ose politika.</translation>
-<translation id="3282497668470633863">Shto emrin në kartë</translation>
 <translation id="3286372614333682499">portret</translation>
 <translation id="3287510313208355388">Shkarko kur të jetë në linjë</translation>
 <translation id="3288238092761586174"><ph name="URL" /> mund të duhet të marrë hapa të mëtejshëm për të verifikuar pagesën tënde</translation>
@@ -952,7 +951,6 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="3304777285002411338">A2x3</translation>
 <translation id="33073482541490531">Fjalëkalimi që sapo përdore u gjet në një nxjerrje të paautorizuar të të dhënave. "Menaxheri i fjalëkalimeve" rekomandon që ta ndryshosh këtë fjalëkalim tani.</translation>
 <translation id="3308006649705061278">Njësia organizative (OU)</translation>
-<translation id="3320021301628644560">Shto adresën e faturimit</translation>
 <translation id="3324687287337751929">4 x 6 inç</translation>
 <translation id="3324983252691184275">E kuqe e fortë</translation>
 <translation id="3329013043687509092">Ngopje</translation>
@@ -1015,7 +1013,6 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="3461824795358126837">Theksuesi</translation>
 <translation id="3462200631372590220">Fshih të përparuarat</translation>
 <translation id="346601286295919445">Kimia</translation>
-<translation id="3467763166455606212">Kërkohet emri i mbajtësit të kartës</translation>
 <translation id="3468054117417088249"><ph name="TAB_SWITCH_SUFFIX" /> - aktualisht e hapur. Shtyp "Tab" dhe më pas "Enter" për të kaluar te skeda e hapur</translation>
 <translation id="3470563864795286535"><ph name="CLOSE_INCOGNITO_WINDOWS_FOCUSED_FRIENDLY_MATCH_TEXT" />. Shtyp "Tab" dhe më pas "Enter" për të mbyllur të gjitha dritaret "e fshehta" që janë aktualisht të hapura</translation>
 <translation id="3477679029130949506">Listimet e filmave dhe oraret e shfaqjeve në kinema</translation>
@@ -1083,6 +1080,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="3631244953324577188">Sistemet biometrike</translation>
 <translation id="3632503704576938756">"Ndarja e ekranit" rifilloi</translation>
 <translation id="3632892046558972264">"Ndarja e ekranit" është vendosur në pauzë</translation>
+<translation id="3633035844150606508">Ruaje adresën në "Llogarinë tënde të Google", <ph name="ACCOUNT" /></translation>
 <translation id="3633738897356909127">Butoni "Përditëso Chrome", shtyp "Enter" për të përditësuar Chrome nga cilësimet e Chrome</translation>
 <translation id="3634530185120165534">Tabakaja 5</translation>
 <translation id="3634567936866541746">Sapo e fute fjalëkalimin tënd në një sajt mashtrues. Për të siguruar llogaritë e tua, Chrome rekomandon të kontrollosh fjalëkalimet e ruajtura.</translation>
@@ -1983,6 +1981,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="5830698870816298009">Përdorimi dhe lëvizja e kamerës</translation>
 <translation id="583281660410589416">E panjohur</translation>
 <translation id="5838278095973806738">Nuk duhet të futësh asnjë informacion delikat në këtë sajt (p.sh. fjalëkalimet ose karta krediti) pasi mund të vidhet nga sulmuesit.</translation>
+<translation id="5841338463993781099">Të ruhet te llogaria?</translation>
 <translation id="5851548754964597211">Lista e skedave</translation>
 <translation id="5852909432155870672">RA4</translation>
 <translation id="5860033963881614850">Çaktivizuar</translation>
@@ -2282,7 +2281,6 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="6612010098632894193">Videot në linjë</translation>
 <translation id="6615297766614333076">Stivuesi 2</translation>
 <translation id="6624427990725312378">Informacionet e kontaktit</translation>
-<translation id="6626291197371920147">Shto numër të vlefshëm karte</translation>
 <translation id="6627727261837091711">Shfaq detajet e personalizimit të reklamave</translation>
 <translation id="6628463337424475685">Kërkimi me <ph name="ENGINE" /></translation>
 <translation id="6630043285902923878">Po gjen pajisjet USB...</translation>
@@ -2768,7 +2766,6 @@ Detaje shtesë:
 <translation id="7716375162095500223">Pa ngarkuar ende ose shpërfillur</translation>
 <translation id="7716424297397655342">Ky sajt nuk mund të ngarkohet nga memoria specifike</translation>
 <translation id="772128550427553158">Numri CVC ndodhet në pjesën e përparme të kartës sate.</translation>
-<translation id="7723047071702270851">Redakto kartën</translation>
 <translation id="7724603315864178912">Prite</translation>
 <translation id="7734285854693414638">Krijo shpejt një formular të ri te "Formulari i Google"</translation>
 <translation id="773466115871691567">Përkthe gjithmonë faqet që janë në <ph name="SOURCE_LANGUAGE" /></translation>

@@ -1252,6 +1252,7 @@
 <translation id="685782768769951078">{NUM_DIGITS,plural, =1{1자리 남음}other{#자리 남음}}</translation>
 <translation id="6867938213751067702"><ph name="FILENAME" /> 다운로드가 일시중지되었습니다</translation>
 <translation id="6878400149835617132">바로가기 사용 중지됨</translation>
+<translation id="6878701771800702153">{NUM_APPS,plural, =1{앱 1개}other{앱 #개}}</translation>
 <translation id="6884665277231944629">오늘로 돌아가기</translation>
 <translation id="6886172995547742638"><ph name="DEVICE_TYPE" /> 기기의 성능이 저하될 수 있습니다. 인증된 <ph name="PREFERRED_MINIMUM_POWER" />W 이상의 USB-C 전원 어댑터를 사용하세요.</translation>
 <translation id="688631446150864480">창을 전환하려면 아래쪽 화살표 키를 누르세요.</translation>
@@ -1419,6 +1420,7 @@
 <translation id="7689817529363080918">마이크 권한이 있는 모든 앱 및 웹사이트와 <ph name="APP1_NAME" />, <ph name="APP2_NAME" />의 마이크 액세스를 허용합니다.</translation>
 <translation id="7704000866383261579">마지막 작업 다시 실행</translation>
 <translation id="7705524343798198388">VPN</translation>
+<translation id="770741401784017797">GIF 생성</translation>
 <translation id="7714767791242455379">새 셀룰러 네트워크 추가</translation>
 <translation id="7720400844887872976"><ph name="TIME" />까지 켜기</translation>
 <translation id="7720410380936703141">다시 시도</translation>
@@ -1431,6 +1433,7 @@
 <translation id="7749443890790263709">최대 데스크 개수에 도달했습니다.</translation>
 <translation id="776344839111254542">업데이트 세부정보를 보려면 클릭하세요.</translation>
 <translation id="7768784765476638775">텍스트 읽어주기</translation>
+<translation id="7769299611924763557">곧 GIF가 준비됩니다</translation>
 <translation id="7780094051999721182">바로가기</translation>
 <translation id="7780159184141939021">화면 회전</translation>
 <translation id="7796735576426975947">새로운 알림 숨겨짐</translation>

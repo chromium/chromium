@@ -40,6 +40,7 @@
 <translation id="3167189358072330585">A túa conta non funciona en Google Chrome. Ponte en contacto co teu administrador de dominio ou utiliza unha conta normal de Google para iniciar sesión.</translation>
 <translation id="3173834708294760622">Páxina de Google Chrome</translation>
 <translation id="3196546062792660320">Chrome fai que aforres tempo ao pasar as túas contas á web. Podes engadir ou eliminar contas en Configuración.</translation>
+<translation id="322254490661677575">Para usar e gardar os datos de Chrome na túa Conta de Google, introduce a túa frase de acceso.</translation>
 <translation id="3282568296779691940">Iniciar sesión en Chrome</translation>
 <translation id="3345341804167540816">Usar Chrome en todas partes</translation>
 <translation id="3503014945441706099">Activa tamén neste perfil de Chrome a función Navegación segura mellorada</translation>
@@ -52,6 +53,7 @@
 <translation id="3980220367029651214">Estás cambiando a conta de sincronización <ph name="USER_EMAIL1" /> por <ph name="USER_EMAIL2" />. <ph name="DOMAIN" /> xestiona os datos de Chrome actuais. Ao realizar esta acción, eliminaranse os teus datos deste dispositivo, pero conservaranse en <ph name="USER_EMAIL1" />.</translation>
 <translation id="3984746313391923992">A túa organización require que manteñas a sesión pechada en Chrome.</translation>
 <translation id="3988789688219830639">Google Chrome non ten acceso ás túas fotos nin aos teus vídeos. Activa o acceso en Configuración de iOS &gt; Privacidade &gt; Fotos.</translation>
+<translation id="4064699917955374540">Para usar e gardar os datos de Chrome na túa Conta de Google, verifica a túa identidade.</translation>
 <translation id="417201473131094001">Non compatible en Chrome Canary</translation>
 <translation id="4233521129555661685"><ph name="USER_EMAIL1" /> estivo usando Chrome e deixou os marcadores, os contrasinais e outras opcións de configuración neste dispositivo.</translation>
 <translation id="424864128008805179">Queres pechar sesión en Chrome?</translation>

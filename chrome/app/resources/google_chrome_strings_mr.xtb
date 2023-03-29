@@ -23,6 +23,7 @@
 <translation id="1399397803214730675">या कॉंप्युटरत आधीपासून Google Chrome ची अगदी अलिकडील आवृत्ती आहे. सॉफ्टवेअर काम करत नसल्यास, कृपया Google Chrome अनइंस्टॉल करा आणि पुन्हा प्रयत्न करा.</translation>
 <translation id="139993653570221430">तुम्हाला हवे, तेव्हा तुम्ही Chrome सेटिंग्जमध्ये हे बदलू शकता. चाचण्या सध्याच्या जाहिराती ज्या पद्धतीने दाखवल्या जातात त्यासोबत रन केल्या जातात, त्यामुळे तुम्हाला लगेच बदल दिसणार नाहीत.</translation>
 <translation id="1434626383986940139">Chrome Canary Apps</translation>
+<translation id="1496905273983707119">{NUM_DEVICES,plural, =0{Google Chrome was connected to a HID device}=1{Google Chrome हे HID डिव्हाइसशी कनेक्ट केले आहे}other{Google Chrome हे HID डिव्हाइसशी कनेक्ट केले आहे}}</translation>
 <translation id="1507198376417198979">तुमची नवीन Chrome प्रोफाइल कस्टमाइझ करा</translation>
 <translation id="1516530951338665275">पेअर करणे पुढे सुरू ठेवण्यासाठी, Google Chrome ला ब्लूटूथ ॲक्सेस करण्याची 
  आवश्यकता आहे. <ph name="IDS_BLUETOOTH_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>

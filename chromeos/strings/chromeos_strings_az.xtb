@@ -698,6 +698,7 @@
 <translation id="7103252855940681301"><ph name="NAME" /> adlı cihaz <ph name="INDEX" />/<ph name="COUNT" />.</translation>
 <translation id="7108668606237948702">enter</translation>
 <translation id="7130438335435247835">Giriş nöqtəsi adı (APN)</translation>
+<translation id="7131634559772719176">Hazır ayarı təsdiqləyin</translation>
 <translation id="7134436342991564651">{0,plural, =1{Ad serveri}other{Ad serverləri}}</translation>
 <translation id="7143207342074048698">Qoşulur</translation>
 <translation id="7144878232160441200">Yenidən cəhd edin</translation>
@@ -769,6 +770,7 @@
 <translation id="7762130827864645708">Parolunuz uğurla dəyişdirildi. Bundan sonra yeni paroldan istifadə edin.</translation>
 <translation id="7763470514545477072">Domen sonluğunun uyğunluğu</translation>
 <translation id="7769672763586021400">Model ID</translation>
+<translation id="7770834998503326261">Seçimlə bağlı əlavə məlumat</translation>
 <translation id="7778717409420828014">Rəyiniz Chromebook təcrübəsini təkmilləşdirməmizə kömək edir və komandamız tərəfindən nəzərdən keçiriləcək. Çox sayda hesabat olduğu üçün cavab göndərə bilməyəcəyik.</translation>
 <translation id="7784116172884276937">DNS serveri ayarlanmayıb</translation>
 <translation id="7791543448312431591">Əlavə etmək</translation>
@@ -801,6 +803,7 @@
 <translation id="80398733265834479">Avtomatik rəng rejimini aktiv edin</translation>
 <translation id="8041089156583427627">Geri Əlaqə Göndərin</translation>
 <translation id="8045012663542226664">Mikrofonun səssiz düyməsi</translation>
+<translation id="8050091914317269817">Bu divar kağızı qaranlıq rejimi və divar kağızının rəng uyğunluğunu avtomatik aktiv edəcək.</translation>
 <translation id="8075838845814659848">Qalan şarj</translation>
 <translation id="8076492880354921740">Tablar</translation>
 <translation id="8082366717211101304">Android tətbiqlərindən DNS'i həll etmək olmur</translation>

@@ -24,6 +24,7 @@ Some features may be unavailable and changes to preferences won't be saved.</tra
 <translation id="1399397803214730675">This computer already has a more recent version of Google Chrome. If the software is not working, please uninstall Google Chrome and try again.</translation>
 <translation id="139993653570221430">You can change your mind at any time in Chrome settings. The trials run alongside the current way that ads get served, so you won’t see changes right away.</translation>
 <translation id="1434626383986940139">Chrome Canary Apps</translation>
+<translation id="1496905273983707119">{NUM_DEVICES,plural, =0{Google Chrome was connected to an HID device}=1{Google Chrome is connected to an HID device}other{Google Chrome is connected to HID devices}}</translation>
 <translation id="1507198376417198979">Customise your new Chrome profile</translation>
 <translation id="1516530951338665275">Google Chrome needs Bluetooth access to continue pairing. <ph name="IDS_BLUETOOTH_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
 <translation id="1547295885616600893">Chrome OS is made possible by additional <ph name="BEGIN_LINK_CROS_OSS" />open-source software<ph name="END_LINK_CROS_OSS" />.</translation>

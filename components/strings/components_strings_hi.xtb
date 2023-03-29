@@ -46,7 +46,6 @@
 <translation id="1075079914415273530">कृषि और वन विज्ञान</translation>
 <translation id="1080116354587839789">चौड़ाई में फ़िट करें</translation>
 <translation id="1081061862829655580">ट्रे 19</translation>
-<translation id="1088860948719068836">कार्ड पर नाम जोड़ें</translation>
 <translation id="1089439967362294234">पासवर्ड बदलें</translation>
 <translation id="1096545575934602868">इस फ़ाइल में <ph name="MAX_ITEMS_LIMIT" /> से ज़्यादा एंट्री नहीं हो सकती. इसके बाद की सभी एंट्री खारिज हो जाएंगी.</translation>
 <translation id="1100782917270858593">'Chrome इतिहास' में आपकी गतिविधि फिर से शुरू करने का बटन, अपनी गतिविधि फिर से शुरू करने के लिए, Enter दबाएं. इससे आपको 'Chrome इतिहास' में आपके काम की गतिविधि दिखेगी</translation>
@@ -340,7 +339,6 @@
 <translation id="1721424275792716183">* फ़ील्ड ज़रूरी है</translation>
 <translation id="1725591448053514783">यू 6 साइज़ का लिफ़ाफ़ा</translation>
 <translation id="1727613060316725209">प्रमाणपत्र मान्य है</translation>
-<translation id="1727741090716970331">मान्य कार्ड नंबर जोड़ें</translation>
 <translation id="1728677426644403582">आप एक वेब पेज का स्रोत देख रहे हैं</translation>
 <translation id="173080396488393970">इस तरह का कार्ड काम नहीं करता</translation>
 <translation id="1732445923934584865">इसके बजाय, व्यक्तिगत तौर पर ऐक्सेस मांगें</translation>
@@ -939,7 +937,6 @@
 <translation id="3272091146646336650">सुपर बी</translation>
 <translation id="3281350579597955952">{0,plural, =1{एडमिन नीति, इस फ़ाइल को <ph name="DESTINATION_NAME" /> में खोलने का सुझाव नहीं देती}one{एडमिन नीति, इस फ़ाइल को <ph name="DESTINATION_NAME" /> में खोलने का सुझाव नहीं देती}other{एडमिन नीति, इन फ़ाइलों को <ph name="DESTINATION_NAME" /> में खोलने का सुझाव नहीं देती}}</translation>
 <translation id="3282085321714087552">आपके संगठन <ph name="ENROLLMENT_DOMAIN" /> ने नीचे दी गई वेबसाइटों को सेटिंग या नीतियों वगैरह के बारे में कुछ जानकारी भेजी है.</translation>
-<translation id="3282497668470633863">कार्ड पर नाम जोड़ें</translation>
 <translation id="3286372614333682499">पोर्ट्रेट</translation>
 <translation id="3287510313208355388">ऑनलाइन होने पर डाउनलोड करें</translation>
 <translation id="3288238092761586174">आपके पेमेंट की पुष्टि करने के लिए, <ph name="URL" /> को अतिरिक्त कदम उठाने पड़ सकते हैं</translation>
@@ -952,7 +949,6 @@
 <translation id="3304777285002411338">A2x3</translation>
 <translation id="33073482541490531">आपने अभी जो पासवर्ड इस्तेमाल किया है वह डेटा के गलत इस्तेमाल की वजह से लीक हो चुका है. Google के पासवर्ड मैनेजर का सुझाव है कि आप तुरंत इस पासवर्ड को बदलें.</translation>
 <translation id="3308006649705061278">संगठनात्मक इकाई (OU)</translation>
-<translation id="3320021301628644560">बिलिंग पता जोड़ें</translation>
 <translation id="3324687287337751929">4 x 6 इंच</translation>
 <translation id="3324983252691184275">गहरा लाल</translation>
 <translation id="3329013043687509092">संतृप्तता</translation>
@@ -1015,7 +1011,6 @@
 <translation id="3461824795358126837">हाइलाइटर</translation>
 <translation id="3462200631372590220">बेहतर को छिपाएं</translation>
 <translation id="346601286295919445">रसायन विज्ञान</translation>
-<translation id="3467763166455606212">कार्ड मालिक का नाम ज़रूरी है</translation>
 <translation id="3468054117417088249"><ph name="TAB_SWITCH_SUFFIX" />, फ़िलहाल खुला है, 'टैब' दबाएं फिर खुले टैब पर जाने के लिए Enter दबाएं</translation>
 <translation id="3470563864795286535"><ph name="CLOSE_INCOGNITO_WINDOWS_FOCUSED_FRIENDLY_MATCH_TEXT" />, सभी खुली हुई गुप्त विंडो को बंद करने के लिए, पहले Tab और फिर Enter दबाएं</translation>
 <translation id="3477679029130949506">फ़िल्मों की सूचियां और थिएटर में शो का समय</translation>
@@ -1655,6 +1650,7 @@
 <translation id="5018422839182700155">यह पेज खुल नहीं पा रहा है</translation>
 <translation id="5018802455907704660">16 x 20 इंच</translation>
 <translation id="5019198164206649151">बैकिंग संग्रह खराब स्थिति में है</translation>
+<translation id="5019293549442035120">सेव किए गए पतों का इस्तेमाल, Google के सभी प्रॉडक्ट के लिए किया जा सकता है. यह पता, आपके Google खाते <ph name="USER_EMAIL" /> में सेव किया जाएगा.</translation>
 <translation id="5020776957610079374">वर्ल्ड म्यूज़िक</translation>
 <translation id="5021557570875267742">Chrome की मदद से कीमतों को ट्रैक करें</translation>
 <translation id="5023310440958281426">अपने एडमिन की नीतियां देखें</translation>
@@ -1792,6 +1788,7 @@
 <translation id="5324080437450482387">संपर्क जानकारी चुनें</translation>
 <translation id="5329858041417644019">आपका ब्राउज़र प्रबंधित नहीं है</translation>
 <translation id="5332219387342487447">शिपिंग का तरीका</translation>
+<translation id="5332769172018416402">मैसेज में पूछें</translation>
 <translation id="5333022057423422993">Chrome के मुताबिक, आपने अभी जो पासवर्ड इस्तेमाल किया है वह लीक हो चुका है. आपके खातों को सुरक्षित रखने के लिए, हमारा सुझाव है कि आप अपने सेव किए गए पासवर्ड की जांच करें.</translation>
 <translation id="5334013548165032829">सिस्टम लॉग की ज़्यादा जानकारी</translation>
 <translation id="5334145288572353250">क्या आप पता सेव करना चाहते हैं?</translation>
@@ -2283,7 +2280,6 @@
 <translation id="6612010098632894193">ऑनलाइन वीडियो</translation>
 <translation id="6615297766614333076">स्टैकर 2</translation>
 <translation id="6624427990725312378">संपर्क जानकारी</translation>
-<translation id="6626291197371920147">मान्य कार्ड नंबर जोड़ें</translation>
 <translation id="6627727261837091711">दिलचस्पी के मुताबिक विज्ञापन दिखाए जाने के बारे में पूरी जानकारी दिखाएं</translation>
 <translation id="6628463337424475685"><ph name="ENGINE" /> सर्च</translation>
 <translation id="6630043285902923878">यूएसबी डिवाइस ढूंढें जा रहे हैं...</translation>
@@ -2769,7 +2765,6 @@
 <translation id="7716375162095500223">अभी तक अपलोड नहीं किया गया या ध्यान नहीं दिया गया</translation>
 <translation id="7716424297397655342">इस साइट को कैश मेमोरी से लोड नहीं किया जा सकता</translation>
 <translation id="772128550427553158">सीवीसी आपके कार्ड के आगे के हिस्से में मौजूद होता है.</translation>
-<translation id="7723047071702270851">कार्ड में बदलाव करें</translation>
 <translation id="7724603315864178912">काटें</translation>
 <translation id="7734285854693414638">Google Forms में जल्दी से नया फ़ॉर्म बनाएं</translation>
 <translation id="773466115871691567"><ph name="SOURCE_LANGUAGE" /> भाषा के पेज का हमेशा अनुवाद करें</translation>

@@ -46,7 +46,6 @@
 <translation id="1075079914415273530">Nông nghiệp và lâm nghiệp</translation>
 <translation id="1080116354587839789">Chỉnh cho vừa với chiều rộng</translation>
 <translation id="1081061862829655580">Khay 19</translation>
-<translation id="1088860948719068836">Thêm tên trên thẻ</translation>
 <translation id="1089439967362294234">Thay đổi mật khẩu</translation>
 <translation id="1096545575934602868">Trường này không được chứa nhiều hơn <ph name="MAX_ITEMS_LIMIT" /> mục. Mọi mục thừa sẽ bị hủy.</translation>
 <translation id="1100782917270858593">Nút tiếp tục hành trình của bạn, nhấn phím Enter để tiếp tục hành trình và xem hoạt động liên quan trong nhật ký duyệt web trên Chrome</translation>
@@ -339,7 +338,6 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
 <translation id="1721424275792716183">Trường * là bắt buộc</translation>
 <translation id="1725591448053514783">Phong bì You 6</translation>
 <translation id="1727613060316725209">Chứng chỉ hợp lệ</translation>
-<translation id="1727741090716970331">Thêm số thẻ hợp lệ</translation>
 <translation id="1728677426644403582">Bạn đang xem nguồn của trang web</translation>
 <translation id="173080396488393970">Loại thẻ này không được hỗ trợ</translation>
 <translation id="1732445923934584865">Hỏi trực tiếp</translation>
@@ -941,7 +939,6 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
 <translation id="3272091146646336650">Super B</translation>
 <translation id="3281350579597955952">{0,plural, =1{Theo chính sách của quản trị viên, bạn không nên mở tệp này trong <ph name="DESTINATION_NAME" />}other{Theo chính sách của quản trị viên, bạn không nên mở các tệp này trong <ph name="DESTINATION_NAME" />}}</translation>
 <translation id="3282085321714087552">Tổ chức <ph name="ENROLLMENT_DOMAIN" /> của bạn đã gửi một số thông tin (chẳng hạn như chế độ cài đặt hoặc chính sách) đến các trang web sau đây.</translation>
-<translation id="3282497668470633863">Thêm tên trên thẻ</translation>
 <translation id="3286372614333682499">dọc</translation>
 <translation id="3287510313208355388">Tải xuống khi trực tuyến</translation>
 <translation id="3288238092761586174"><ph name="URL" /> có thể cần thực hiện các bước bổ sung để xác minh khoản thanh toán của bạn</translation>
@@ -954,7 +951,6 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
 <translation id="3304777285002411338">A2x3</translation>
 <translation id="33073482541490531">Mật khẩu bạn vừa sử dụng đã bị lộ trong một sự cố rò rỉ dữ liệu. Trình quản lý mật khẩu khuyên bạn nên đổi mật khẩu này ngay.</translation>
 <translation id="3308006649705061278">Đơn vị Tổ chức (OU)</translation>
-<translation id="3320021301628644560">Thêm địa chỉ thanh toán</translation>
 <translation id="3324687287337751929">4 x 6 inch</translation>
 <translation id="3324983252691184275">Đỏ thẫm</translation>
 <translation id="3329013043687509092">Độ bão hòa</translation>
@@ -1017,7 +1013,6 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
 <translation id="3461824795358126837">Bút đánh dấu</translation>
 <translation id="3462200631372590220">Ẩn chi tiết</translation>
 <translation id="346601286295919445">Hoá học</translation>
-<translation id="3467763166455606212">Yêu cầu tên chủ thẻ</translation>
 <translation id="3468054117417088249"><ph name="TAB_SWITCH_SUFFIX" /> hiện đang mở, nhấn phím Tab rồi nhấn phím Enter để chuyển sang thẻ đang mở</translation>
 <translation id="3470563864795286535"><ph name="CLOSE_INCOGNITO_WINDOWS_FOCUSED_FRIENDLY_MATCH_TEXT" />, Nhấn phím Tab rồi nhấn phím Enter để đóng tất cả cửa sổ ẩn danh đang mở</translation>
 <translation id="3477679029130949506">Danh sách phim và lịch chiếu</translation>
@@ -2289,7 +2284,6 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
 <translation id="6612010098632894193">Video trực tuyến</translation>
 <translation id="6615297766614333076">Khay xếp chồng 2</translation>
 <translation id="6624427990725312378">Thông tin liên hệ</translation>
-<translation id="6626291197371920147">Thêm số thẻ hợp lệ</translation>
 <translation id="6627727261837091711">Hiện thông tin về hoạt động cá nhân hoá quảng cáo</translation>
 <translation id="6628463337424475685">Tìm kiếm trên <ph name="ENGINE" /></translation>
 <translation id="6630043285902923878">Đang tìm thiết bị USB...</translation>
@@ -2775,7 +2769,6 @@ Thông tin chi tiết bổ sung:
 <translation id="7716375162095500223">Chưa tải lên hoặc đã bỏ qua</translation>
 <translation id="7716424297397655342">Không thể tải trang web này từ bộ nhớ đệm</translation>
 <translation id="772128550427553158">CVC nằm ở mặt trước của thẻ.</translation>
-<translation id="7723047071702270851">Chỉnh sửa thẻ</translation>
 <translation id="7724603315864178912">Cắt</translation>
 <translation id="7734285854693414638">Tạo nhanh một biểu mẫu mới trong Google Biểu mẫu</translation>
 <translation id="773466115871691567">Luôn dịch các trang viết bằng <ph name="SOURCE_LANGUAGE" /></translation>

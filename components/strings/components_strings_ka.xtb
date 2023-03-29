@@ -46,7 +46,6 @@
 <translation id="1075079914415273530">სოფლის მეურნეობა და მეტყევეობა</translation>
 <translation id="1080116354587839789">სიგანეზე მორგება</translation>
 <translation id="1081061862829655580">ლანგარი 19</translation>
-<translation id="1088860948719068836">დაამატეთ ბარათზე მითითებული სახელი</translation>
 <translation id="1089439967362294234">პაროლის შეცვლა</translation>
 <translation id="1096545575934602868">ამ ველში <ph name="MAX_ITEMS_LIMIT" />-ზე მეტი ჩანაწერი არ უნდა იყოს. ყველა დანარჩენი ჩანაწერი გაუქმდება.</translation>
 <translation id="1100782917270858593">თქვენი პროცესის გაგრძელების ღილაკი, თქვენი პროცესის გასაგრძელებლად და თქვენს Chrome-ის ისტორიაში შესაბამისი აქტივობის სანახავად დააჭირეთ კლავიშს Tab, შემდეგ კი — Enter-ს</translation>
@@ -339,7 +338,6 @@
 <translation id="1721424275792716183">* ველი აუცილებელია</translation>
 <translation id="1725591448053514783">კონვერტი You 6</translation>
 <translation id="1727613060316725209">სერთიფიკატი ძალაშია</translation>
-<translation id="1727741090716970331">მიუთითეთ ბარათის სწორი ნომერი</translation>
 <translation id="1728677426644403582">თქვენ ათვალიერებთ ვებგვერდის წყაროს</translation>
 <translation id="173080396488393970">ამ ტიპის ბარათი მხარდაუჭერელია</translation>
 <translation id="1732445923934584865">პირადად თხოვნა</translation>
@@ -941,7 +939,6 @@
 <translation id="3272091146646336650">Super B</translation>
 <translation id="3281350579597955952">{0,plural, =1{ადმინისტრატორის წესების მიხედვით, ამ ფაილის <ph name="DESTINATION_NAME" />-ში გახსნა რეკომენდებული არ არის}other{ადმინისტრატორის წესების მიხედვით, ამ ფაილების <ph name="DESTINATION_NAME" />-ში გახსნა რეკომენდებული არ არის}}</translation>
 <translation id="3282085321714087552">თქვენმა ორგანიზაციამ (<ph name="ENROLLMENT_DOMAIN" />) მითითებულ ვებსაიტებს გაუგზავნა გარკვეული ინფორმაცია, როგორიცაა პარამეტრები თუ წესები.</translation>
-<translation id="3282497668470633863">ბარათზე სახელის დამატება</translation>
 <translation id="3286372614333682499">პორტრეტი</translation>
 <translation id="3287510313208355388">ჩამოტვირთვა ინტერნეტ-კავშირის აღდგენის შემდეგ</translation>
 <translation id="3288238092761586174"><ph name="URL" />, შესაძლოა, საჭიროებდეს დამატებითი ნაბიჯების გავლას გადახდის დასადასტურებლად</translation>
@@ -954,7 +951,6 @@
 <translation id="3304777285002411338">A2x3</translation>
 <translation id="33073482541490531">თქვენ მიერ ახლახან გამოყენებული პაროლი ნაპოვნია გაჟონილ მონაცემებში. პაროლების მმართველი გირჩევთ, ახლავე შეცვალოთ ეს პაროლი.</translation>
 <translation id="3308006649705061278">ორგანიზაციული ერთეული (OU)</translation>
-<translation id="3320021301628644560">ბილინგის მისამართის დამატება</translation>
 <translation id="3324687287337751929">4 x 6 დუიმი</translation>
 <translation id="3324983252691184275">ალისფერი</translation>
 <translation id="3329013043687509092">გაჯერება</translation>
@@ -1017,7 +1013,6 @@
 <translation id="3461824795358126837">გამომყოფი</translation>
 <translation id="3462200631372590220">გაფართოებულების დამალვა</translation>
 <translation id="346601286295919445">ქიმია</translation>
-<translation id="3467763166455606212">ბარათის მფლობელის სახელის მითითება აუცილებელია</translation>
 <translation id="3468054117417088249"><ph name="TAB_SWITCH_SUFFIX" />, ამჟამად გახსნილია, გახსნილ ჩანართზე გადასართველად ჯერ დააჭირეთ კლავიშს „Tab“, ხოლო შემდეგ — კლავიშს „Enter“</translation>
 <translation id="3470563864795286535"><ph name="CLOSE_INCOGNITO_WINDOWS_FOCUSED_FRIENDLY_MATCH_TEXT" />, ამჟამად გახსნილი ყველა ინკოგნიტო ფანჯრის დასახურად დააჭირეთ კლავიშს Tab, შემდეგ კი Enter-ს</translation>
 <translation id="3477679029130949506">კინოთეატრებისა და თეატრების აფიშები</translation>
@@ -2288,7 +2283,6 @@
 <translation id="6612010098632894193">ონლაინვიდეო</translation>
 <translation id="6615297766614333076">სტეკერი 2</translation>
 <translation id="6624427990725312378">საკონტაქტო ინფორმაცია</translation>
-<translation id="6626291197371920147">მიუთითეთ ბარათის სწორი ნომერი</translation>
 <translation id="6627727261837091711">რეკლამის პერსონალიზების დეტალების ჩვენება</translation>
 <translation id="6628463337424475685"><ph name="ENGINE" /> ძიება</translation>
 <translation id="6630043285902923878">მიმდინარეობს USB მოწყობილობების პოვნა…</translation>
@@ -2774,7 +2768,6 @@
 <translation id="7716375162095500223">ჯერ აუტვირთავი ან იგნორირებულია</translation>
 <translation id="7716424297397655342">ამ საიტის ქეშიდან ჩატვირთვა ვერ ხერხდება</translation>
 <translation id="772128550427553158">CVC დატანილია თქვენი ბარათის წინა ნაწილზე.</translation>
-<translation id="7723047071702270851">ბარათის რედაქტირება</translation>
 <translation id="7724603315864178912">ამოჭრა</translation>
 <translation id="7734285854693414638">Google Forms-ში ახალი ფორმის სწრაფად შექმნა</translation>
 <translation id="773466115871691567">ყოველთვის ითარგმნოს <ph name="SOURCE_LANGUAGE" /> გვერდები</translation>

@@ -698,6 +698,7 @@
 <translation id="7103252855940681301">Името на уредот <ph name="INDEX" /> од <ph name="COUNT" /> е: <ph name="NAME" />.</translation>
 <translation id="7108668606237948702">enter</translation>
 <translation id="7130438335435247835">Име на пристапна точка (APN)</translation>
+<translation id="7131634559772719176">Потврдување зададена вредност</translation>
 <translation id="7134436342991564651">{0,plural, =1{Именски сервер}one{Именски сервер}other{Именски сервери}}</translation>
 <translation id="7143207342074048698">Се поврзува</translation>
 <translation id="7144878232160441200">Обиди се повторно</translation>
@@ -769,6 +770,7 @@
 <translation id="7762130827864645708">Успешно ја променивте лозинката. Отсега користете ја новата лозинка.</translation>
 <translation id="7763470514545477072">Совпаѓање на суфиксот на доменот</translation>
 <translation id="7769672763586021400">ID на модел</translation>
+<translation id="7770834998503326261">Дополнителни податоци поврзани со вашиот избор</translation>
 <translation id="7778717409420828014">Вашите повратни информации ни помагаат да го подобриме доживувањето на Chromebook и ќе бидат разгледани од нашиот тим. Поради големиот број на извештаи, нема да можеме да испратиме одговор.</translation>
 <translation id="7784116172884276937">Нема поставени DNS-сервери</translation>
 <translation id="7791543448312431591">Додај</translation>
@@ -801,6 +803,7 @@
 <translation id="80398733265834479">Овозможете режим во автоматска боја</translation>
 <translation id="8041089156583427627">Испратете повратни информации</translation>
 <translation id="8045012663542226664">Исклучи звук на микрофон</translation>
+<translation id="8050091914317269817">Ако го изберете тапетов, ќе се вклучат автоматскиот „Темен режим“ и совпаѓањето бои на тапетот.</translation>
 <translation id="8075838845814659848">Преостанато полнење</translation>
 <translation id="8076492880354921740">Картички</translation>
 <translation id="8082366717211101304">Не може да се одреди со DNS од апликации на Android</translation>

@@ -24,6 +24,7 @@
 
 Дазволы, якія вы ўжо далі вэб-сайтам і праграмам, могуць дзейнічаць для гэтага ўліковага запісу. Кіраваць Уліковымі запісамі Google можна ў <ph name="SETTINGS_LINK_BEGIN" />Наладах<ph name="SETTINGS_LINK_END" />.</translation>
 <translation id="1640672724030957280">Ідзе спампоўванне…</translation>
+<translation id="1691024636239527281">{NUM_DEVICES,plural, =0{Браўзер Chromium быў падключаны да прылады HID}=1{Браўзер Chromium падключаны да прылады HID}one{Браўзер Chromium падключаны да прылад HID}few{Браўзер Chromium падключаны да прылад HID}many{Браўзер Chromium падключаны да прылад HID}other{Браўзер Chromium падключаны да прылад HID}}</translation>
 <translation id="1708666629004767631">Ёсць новая, больш бяспечная версія Chromium.</translation>
 <translation id="17264556997921157">Вы можаце праглядаць і выдаляць цікавыя вам тэмы, якія сайты выкарыстоўваюць для паказу вам рэкламы. Chromium вызначае вашы інтарэсы на аснове нядаўняй гісторыі прагляду вамі сайтаў.</translation>
 <translation id="1733725117201708356">Даныя пра работу ў Chromium хутка будуць выдалены</translation>

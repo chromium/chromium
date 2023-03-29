@@ -1263,6 +1263,7 @@ Poți gestiona setările contului dacă instalezi aplicația Family Link pe disp
 <translation id="2077129598763517140">Utilizează accelerarea hardware când este disponibilă</translation>
 <translation id="2078019350989722914">Avertisment înainte de ieșire (<ph name="KEY_EQUIVALENT" />)</translation>
 <translation id="2079053412993822885">Dacă ștergi unul dintre propriile certificate, nu îl mai poți utiliza pentru a te identifica.</translation>
+<translation id="2079495302726689071">Deschide linkul într-o filă <ph name="APP" /> nouă</translation>
 <translation id="2079545284768500474">Anulează</translation>
 <translation id="2080070583977670716">Mai multe setări</translation>
 <translation id="2081816110395725788">Inactivitate în timpul funcționării pe baterie</translation>
@@ -1397,6 +1398,7 @@ Poți gestiona setările contului dacă instalezi aplicația Family Link pe disp
 <translation id="2175384018164129879">&amp;Gestionează motoarele de căutare și Căutarea pe site</translation>
 <translation id="217576141146192373">Nu se poate adăuga imprimanta. Verifică ce configurație are imprimanta și încearcă din nou.</translation>
 <translation id="2175927920773552910">Cod QR</translation>
+<translation id="2177306523871626993">Se descarcă fișierele de recunoaștere a textului… <ph name="PERCENT" /> %</translation>
 <translation id="2177950615300672361">Fila Incognito: <ph name="TAB_NAME" /></translation>
 <translation id="2178585470774851578">Activezi funcțiile de remediere a erorilor în sistemul de operare Chrome Flex, care vor configura SSH daemon și vor activa pornirea de pe unități USB.</translation>
 <translation id="2178614541317717477">Compromitere CA</translation>
@@ -1913,6 +1915,7 @@ Poți gestiona setările contului dacă instalezi aplicația Family Link pe disp
 <translation id="2612676031748830579">Număr card</translation>
 <translation id="2613210758071148851">Nu permite extensii pe <ph name="RESTRICTED_SITE" /></translation>
 <translation id="2613535083491958306"><ph name="ORIGIN" /> va putea să editeze <ph name="FILENAME" /></translation>
+<translation id="2616008379779647117">Limba subtitrării</translation>
 <translation id="2616366145935564096">Citește și modifică datele de pe <ph name="WEBSITE_1" /></translation>
 <translation id="2618797463720777311">Configurează Trimiterea în apropiere</translation>
 <translation id="2620215283731032047"><ph name="FILE_NAME" /> nu se poate descărca în siguranță.</translation>
@@ -3108,6 +3111,7 @@ Mesaj de la server: <ph name="SERVER_MSG" /></translation>
 <translation id="3694590407685276748">Evidențiază cursorul de text</translation>
 <translation id="369489984217678710">Parole și alte date de conectare</translation>
 <translation id="369522892592566391">{NUM_FILES,plural, =0{S-au finalizat verificările de securitate. Datele vor fi încărcate.}=1{S-au finalizat verificările de securitate. Fișierul va fi încărcat.}few{S-au finalizat verificările de securitate. Fișierele vor fi încărcate.}other{S-au finalizat verificările de securitate. Fișierele vor fi încărcate.}}</translation>
+<translation id="3696817060563289264">S-au descărcat fișierele de recunoaștere a textului</translation>
 <translation id="3698471669415859717">Examinare finalizată</translation>
 <translation id="3698825735945432002">Tipul filtrului</translation>
 <translation id="3699624789011381381">Adresă de e-mail</translation>
@@ -3126,6 +3130,7 @@ Mesaj de la server: <ph name="SERVER_MSG" /></translation>
 <translation id="370649949373421643">Activați Wi-Fi</translation>
 <translation id="370665806235115550">Se încarcă…</translation>
 <translation id="3707163604290651814">Te-ai conectat ca <ph name="NAME" /></translation>
+<translation id="3707348585109246684">Deschide linkul într-o filă <ph name="APP" /> nouă</translation>
 <translation id="3708295717182051206">Subtitrări</translation>
 <translation id="3708684582558000260">Nu permite site-urilor închise să finalizeze trimiterea sau primirea datelor</translation>
 <translation id="3709244229496787112">Browserul a fost oprit înainte de finalizarea descărcării.</translation>
@@ -3516,6 +3521,7 @@ Mesaj de la server: <ph name="SERVER_MSG" /></translation>
 <translation id="4027958407426528157">Deschide site-urile în aplicațiile instalate pe <ph name="DEVICE_TYPE" /></translation>
 <translation id="4028467762035011525">Adaugă metode de introducere a textului</translation>
 <translation id="4029556917477724407">Înapoi de la pagina <ph name="PAGE_TITLE" /></translation>
+<translation id="403088439874411464">Se descarcă fișierele de recunoaștere a textului</translation>
 <translation id="4031179711345676612">Microfonul este permis</translation>
 <translation id="4031527940632463547">Senzorii sunt blocați</translation>
 <translation id="4033471457476425443">Adaugă un dosar nou</translation>
@@ -5355,7 +5361,6 @@ Permisiunile pe care le-ai acordat deja site-urilor și aplicațiilor se pot apl
 <translation id="5723967018671998714">Cookie-urile terță parte sunt blocate în modul Incognito</translation>
 <translation id="5724642200346111167">Datele privind site-urile sunt șterse de pe dispozitiv când închizi toate ferestrele</translation>
 <translation id="5727728807527375859">Extensiile, aplicațiile și temele pot dăuna computerului. Sigur vrei să continui?</translation>
-<translation id="5728235544432023605">Cast nu răspunde. Oprește aplicația de pe <ph name="DEVICE_NAME" />.</translation>
 <translation id="5728450728039149624">Opțiuni pentru blocarea ecranului Smart Lock</translation>
 <translation id="5729712731028706266">&amp;Afișează</translation>
 <translation id="5731247495086897348">In&amp;serează și accesează</translation>
@@ -7509,6 +7514,7 @@ Mai ai # de parole compromise. Managerul de parole Google recomandă să verific
 <translation id="7660146600670077843">Dă clic dreapta pe o filă și selectează Adaugă fila într-un grup nou</translation>
 <translation id="7661259717474717992">Permite site-urilor să salveze și să citească datele asociate cookie-urilor</translation>
 <translation id="7661451191293163002">Nu s-a putut obține un certificat de înregistrare.</translation>
+<translation id="7662164944369232556">Nu se pot descărca fișierele de recunoaștere a textului. Încearcă din nou mai târziu.</translation>
 <translation id="7662283695561029522">Atinge pentru a configura</translation>
 <translation id="7663719505383602579">Receptor: <ph name="ARC_PROCESS_NAME" /></translation>
 <translation id="7663774460282684730">Este disponibilă o comandă rapidă de la tastatură</translation>
@@ -8139,6 +8145,7 @@ Păstrează fișierul cu cheia într-un loc sigur. Acesta va fi necesar la crear
 <translation id="8195027750202970175">Dimensiune pe disc</translation>
 <translation id="8195191503358432289">Adaugă parola</translation>
 <translation id="8195265224453131880">Intensitate</translation>
+<translation id="8195737548602430447">Tradu automat subtitrările în limba vizată.</translation>
 <translation id="8197673340773315084">Adaugă un nume sau o etichetă, cum ar fi Serviciu sau Personal</translation>
 <translation id="8198456017687137612">Se proiectează fila</translation>
 <translation id="8199300056570174101">Proprietăți pentru dispozitiv și rețea (serviciu)</translation>
@@ -8256,6 +8263,7 @@ Păstrează fișierul cu cheia într-un loc sigur. Acesta va fi necesar la crear
 <translation id="8291415872436043161">Descarcă Chrome</translation>
 <translation id="8293206222192510085">Adăugați marcaj</translation>
 <translation id="8294431847097064396">Sursă</translation>
+<translation id="8295449579927246485">Traducere live</translation>
 <translation id="8298429963694909221">Acum poți primi notificări de pe telefon pe dispozitivul <ph name="DEVICE_TYPE" />. Dacă închizi notificările pe <ph name="DEVICE_TYPE" />, le vei închide și pe telefon. Asigură-te că telefonul este în apropiere, cu Bluetooth și Wi-Fi activate.</translation>
 <translation id="8299319456683969623">În prezent, sunteți în modul offline.</translation>
 <translation id="8300011035382349091">Editează marcajul pentru această filă</translation>
@@ -8323,6 +8331,7 @@ Păstrează fișierul cu cheia într-un loc sigur. Acesta va fi necesar la crear
 <translation id="835951711479681002">Salvează în Contul Google</translation>
 <translation id="8360140320636871023">Personalizează tema ecranului</translation>
 <translation id="8360267485906769442">Butonul Trimite feedback</translation>
+<translation id="8362914115861174987">Tradu în</translation>
 <translation id="8363095875018065315">stabil</translation>
 <translation id="8363142353806532503">Microfonul este blocat</translation>
 <translation id="8366396658833131068">Conexiunea la rețea a fost restabilită. Selectați altă rețea sau apăsați mai jos pe butonul „Continuați” pentru a lansa aplicația chioșc.</translation>

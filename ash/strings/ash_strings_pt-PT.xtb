@@ -1252,6 +1252,7 @@ Nova instalação</translation>
 <translation id="685782768769951078">{NUM_DIGITS,plural, =1{Um dígito restante}other{# dígitos restantes}}</translation>
 <translation id="6867938213751067702">Transferência de <ph name="FILENAME" /> colocada em pausa</translation>
 <translation id="6878400149835617132">Atalho desativado</translation>
+<translation id="6878701771800702153">{NUM_APPS,plural, =1{1 app}other{# apps}}</translation>
 <translation id="6884665277231944629">Voltar a hoje</translation>
 <translation id="6886172995547742638">O dispositivo <ph name="DEVICE_TYPE" /> pode ter um desempenho inferior. Utilize um transformador USB-C certificado de <ph name="PREFERRED_MINIMUM_POWER" /> W ou superior.</translation>
 <translation id="688631446150864480">Prima a seta para baixo para alternar entre janelas.</translation>
@@ -1419,6 +1420,7 @@ Para encerrar o dispositivo, prima sem soltar o botão ligar/desligar novamente 
 <translation id="7689817529363080918">Isto permite o acesso ao microfone para a app <ph name="APP1_NAME" />, <ph name="APP2_NAME" /> e todas as apps e Websites com a autorização do microfone</translation>
 <translation id="7704000866383261579">Refazer a última ação</translation>
 <translation id="7705524343798198388">VPN</translation>
+<translation id="770741401784017797">A criar GIF</translation>
 <translation id="7714767791242455379">Adicionar nova rede móvel</translation>
 <translation id="7720400844887872976">Ativada até à(s) <ph name="TIME" /></translation>
 <translation id="7720410380936703141">TENTAR NOVAMENTE</translation>
@@ -1431,6 +1433,7 @@ Para encerrar o dispositivo, prima sem soltar o botão ligar/desligar novamente 
 <translation id="7749443890790263709">Atingiu o número máximo de espaços de trabalho.</translation>
 <translation id="776344839111254542">Clique para ver os detalhes da atualização</translation>
 <translation id="7768784765476638775">Selecionar para ativar voz</translation>
+<translation id="7769299611924763557">O seu GIF vai estar pronto em breve</translation>
 <translation id="7780094051999721182">atalhos</translation>
 <translation id="7780159184141939021">Rodar ecrã</translation>
 <translation id="7796735576426975947">Nova notificação oculta</translation>

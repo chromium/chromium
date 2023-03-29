@@ -55,6 +55,7 @@ Solo alguien con tu frase de contraseña puede leer los datos encriptados. Googl
 <translation id="1283524564873030414">Últimas 24 horas</translation>
 <translation id="1285320974508926690">Nunca traducir este sitio</translation>
 <translation id="1291506870746876680">Los permisos de <ph name="BEGIN_BOLD" />"<ph name="SITE_NAME" />"<ph name="END_BOLD" /> se desactivarán cuando abandones este sitio.</translation>
+<translation id="1305822519689023679">Para asegurarte de que siempre puedas usar las contraseñas en tu Cuenta de Google, verifica tu identidad.</translation>
 <translation id="1312721752506309252">Se activó la protección mejorada</translation>
 <translation id="1321993286294231467">Se produjo un error al guardar la imagen.</translation>
 <translation id="1322735045095424339">Tu organización requiere que utilices el modo Incógnito</translation>
@@ -104,6 +105,7 @@ Solo alguien con tu frase de contraseña puede leer los datos encriptados. Googl
 <translation id="1626771852476987600"><ph name="COUNT" /> contraseñas reutilizadas</translation>
 <translation id="1641113438599504367">Navegación segura</translation>
 <translation id="1644574205037202324">Historial</translation>
+<translation id="165008673352427892">Nueva función</translation>
 <translation id="1650222530560417226">Presiona el botón "Iniciar registro" para recopilar de todas las pestañas futuros errores y registros de la Consola de JavaScript. Se recopilarán los registros (y almacenarán solo en memoria) hasta que se cierre esta página o se presione el botón "Detener registro".</translation>
 <translation id="1653432787084483144">{count,plural, =1{Hay {count} contraseña guardada disponible sobre el teclado.}other{Hay {count} contraseñas guardadas disponibles sobre el teclado.}}</translation>
 <translation id="1657011748321897393">Error al compartir por falta de conexión a la red</translation>
@@ -117,6 +119,7 @@ Solo alguien con tu frase de contraseña puede leer los datos encriptados. Googl
 <translation id="1700629756560807968"><ph name="NUMBER_OF_SELECTED_BOOKMARKS" /> seleccionados</translation>
 <translation id="1715515772563243997">Si confías en <ph name="SITE" />, puedes usar una contraseña guardada para acceder.</translation>
 <translation id="1740468249224277719">Presiona dos veces para instalar.</translation>
+<translation id="1750238553597293878">Sigue usando las contraseñas en tu Cuenta de Google</translation>
 <translation id="1752547299766512813">Guardar contraseñas</translation>
 <translation id="1753905327828125965">Más visitados</translation>
 <translation id="1767766085187034454">Google Traductor</translation>
@@ -322,6 +325,7 @@ Consulta las instrucciones de tu motor de búsqueda para borrar el historial de 
 <translation id="3214379938835224220">Saliste de tu cuenta como parte del restablecimiento de tu iPad. Presiona Continuar para acceder.</translation>
 <translation id="3224641773458703735">Para exportar las contraseñas, primero debes establecer una en tu dispositivo.</translation>
 <translation id="3227137524299004712">Micrófono</translation>
+<translation id="3235063766008841141">Se ingresó en un sitio engañoso y se produjo una violación de la seguridad de los datos.</translation>
 <translation id="3240426699337459095">Vínculo copiado</translation>
 <translation id="3244271242291266297">MM</translation>
 <translation id="3245744387817103524">No se pudo guardar el cambio.</translation>
@@ -398,6 +402,7 @@ Consulta las instrucciones de tu motor de búsqueda para borrar el historial de 
 <translation id="3810973564298564668">Administrar</translation>
 <translation id="3818293389945649617">Buscar siguiente</translation>
 <translation id="3819183753496523827">No tienes conexión. Revisa tu conexión a Internet y vuelve a intentarlo.</translation>
+<translation id="3832419617903252251">La contraseña se guardó solo en este dispositivo</translation>
 <translation id="3835964409414434850">Ir a la pestaña siguiente</translation>
 <translation id="3838691874161539578">Para protegerte mejor en línea y mejorar tu seguridad, revisa las contraseñas que guardaste.</translation>
 <translation id="385051799172605136">Atrás</translation>
@@ -626,6 +631,7 @@ Para cambiar esta configuración, <ph name="BEGIN_LINK" />restablece la sincroni
 <translation id="54401264925851789">Información de seguridad de la página</translation>
 <translation id="5443952882982198570">Tarjetas de crédito</translation>
 <translation id="5444892875087332195">Favoritos</translation>
+<translation id="5453250766792920795">{count,plural, =1{Se guardó el favorito en tu cuenta, {email}}other{Se guardaron los favoritos en tu cuenta, {email}}}</translation>
 <translation id="5457226814769348910">Versión sin conexión</translation>
 <translation id="5489208564673669003">Para administrar las cookies de todos los sitios, visita la <ph name="BEGIN_LINK" />Configuración de cookies<ph name="END_LINK" />.</translation>
 <translation id="5490005495580364134">Bloquear todas las cookies (no se recomienda)</translation>
@@ -652,6 +658,7 @@ Handoff también debe estar habilitado en la sección General de la configuraci�
 <translation id="5669528293118408608">www</translation>
 <translation id="5669617676038747374">Crear un código QR</translation>
 <translation id="567881659373499783">Versión <ph name="PRODUCT_VERSION" /></translation>
+<translation id="5683499062697987550">Para usar y guardar contraseñas en tu Cuenta de Google, verifica tu identidad.</translation>
 <translation id="5690398455483874150">{count,plural, =1{Se muestra 1 ventana de Chrome}other{Se muestran {count} ventanas de Chrome}}</translation>
 <translation id="5701270923492462699">Acceso a la cámara permitido</translation>
 <translation id="5704908597376970822">No se puede acceder.</translation>
@@ -745,6 +752,7 @@ Handoff también debe estar habilitado en la sección General de la configuraci�
 <translation id="6219550825416862075">Te damos la bienvenida</translation>
 <translation id="6219688215832490856">Nunca traducir</translation>
 <translation id="6223816392543092032">Accede a tus favoritos, historial, contraseñas y otras opciones de configuración en todos los dispositivos.</translation>
+<translation id="6224759905509595045">Verificar tu identidad…</translation>
 <translation id="6229318421047648685">Solicitar sitio para computadoras</translation>
 <translation id="6231782223312638214">Sugerido</translation>
 <translation id="6232329973559504466">Búsqueda en el modo Incógnito</translation>
@@ -784,6 +792,7 @@ Handoff también debe estar habilitado en la sección General de la configuraci�
 
 Tus datos se encriptaron con tu frase de contraseña para sincronización el <ph name="TIME" />. Debes ingresarla para iniciar la sincronización.</translation>
 <translation id="6418346271604475326">Preparando PDF</translation>
+<translation id="6421095165635308">{count,plural, =1{Se guardó el favorito en {title} en tu cuenta, {email}}other{Se guardaron los favoritos en {title} en tu cuenta, {email}}}</translation>
 <translation id="6429213933892582367">Abre Opciones de contraseña</translation>
 <translation id="6434591244308415567">Se produjo un error. Vuelve a intentarlo más tarde.</translation>
 <translation id="6435236283694032571">Agregar a la Lista de lectura</translation>
@@ -872,6 +881,7 @@ Cuando está activado el modo Incógnito, los sitios no pueden usar cookies para
 <translation id="6888009575607455378">¿Confirmas que quieres descartar los cambios?</translation>
 <translation id="6896758677409633944">Copiar</translation>
 <translation id="6897187120838603299">La contraseña se guardará en tu dispositivo.</translation>
+<translation id="6906448540340261898">Asegúrate de que siempre puedas usar las contraseñas en tu Cuenta de Google</translation>
 <translation id="6913136913033237761"><ph name="FOLDER_NAME" />. Solo en este dispositivo.</translation>
 <translation id="6914583639806229067">Buscar la imagen que copiaste</translation>
 <translation id="6914783257214138813">Las personas que tengan acceso al archivo exportado podrán ver tus contraseñas.</translation>
@@ -903,6 +913,7 @@ Cuando está activado el modo Incógnito, los sitios no pueden usar cookies para
 <translation id="7108762695052995889">Visitar sitio</translation>
 <translation id="7133798577887235672">Nombre completo</translation>
 <translation id="7136892417564438900">La cámara no está disponible</translation>
+<translation id="7161230316646448869">Sincroniza tus favoritos, historial y más en todos los dispositivos</translation>
 <translation id="7162168282402939716">Desbloquear pestañas de incógnito mediante <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /></translation>
 <translation id="7172852049901402487">Mantén protegidas tus contraseñas ante problemas de seguridad</translation>
 <translation id="7173114856073700355">Abrir la configuración</translation>

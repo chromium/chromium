@@ -698,6 +698,7 @@
 <translation id="7103252855940681301">Laite <ph name="INDEX" />/<ph name="COUNT" /> nimeltä <ph name="NAME" />.</translation>
 <translation id="7108668606237948702">kirjoita</translation>
 <translation id="7130438335435247835">Tukiaseman nimi (APN)</translation>
+<translation id="7131634559772719176">Vahvista esiasetus</translation>
 <translation id="7134436342991564651">{0,plural, =1{Nimipalvelin}other{Nimipalvelimet}}</translation>
 <translation id="7143207342074048698">Yhdistetään</translation>
 <translation id="7144878232160441200">Yritä uudelleen</translation>
@@ -769,6 +770,7 @@
 <translation id="7762130827864645708">Salasanasi vaihtaminen onnistui. Käytä jatkossa uutta salasanaa.</translation>
 <translation id="7763470514545477072">Verkkotunnuksen päätteen vastaavuus</translation>
 <translation id="7769672763586021400">Mallitunnus</translation>
+<translation id="7770834998503326261">Valintaasi liittyviä lisätietoja</translation>
 <translation id="7778717409420828014">Tiimimme tarkastaa palautteesi, ja se auttaa meitä parantamaan Chromebook-kokemusta. Ilmoitusten suuren määrän vuoksi emme voi lähettää vastausta.</translation>
 <translation id="7784116172884276937">DNS-palvelimia ei ole määritetty</translation>
 <translation id="7791543448312431591">Lisää</translation>
@@ -801,6 +803,7 @@
 <translation id="80398733265834479">Ota automaattinen väritila käyttöön</translation>
 <translation id="8041089156583427627">Lähetä palautetta</translation>
 <translation id="8045012663542226664">Mikrofonin mykistys</translation>
+<translation id="8050091914317269817">Jos valitset tämän taustakuvan, automaattinen tumma tila ja taustakuvan värien vastaavuus menee päälle.</translation>
 <translation id="8075838845814659848">Virtaa jäljellä</translation>
 <translation id="8076492880354921740">Välilehdet</translation>
 <translation id="8082366717211101304">DNS:n selvitys ei onnistu Android-sovelluksilla</translation>

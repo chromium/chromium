@@ -698,6 +698,7 @@
 <translation id="7103252855940681301"><ph name="COUNT" />లో <ph name="INDEX" /> పరికరాలు <ph name="NAME" /> అనే పేరుతో ఉన్నాయి.</translation>
 <translation id="7108668606237948702">ఎంటర్</translation>
 <translation id="7130438335435247835">యాక్సెస్ స్థానం పేరు (APN)</translation>
+<translation id="7131634559772719176">ప్రీసెట్‌ను నిర్ధారించండి</translation>
 <translation id="7134436342991564651">{0,plural, =1{సర్వర్ పేరు}other{సర్వర్‌ల పేరు}}</translation>
 <translation id="7143207342074048698">కనెక్ట్ అవుతో.</translation>
 <translation id="7144878232160441200">మళ్ళీ ప్రయత్నించు</translation>
@@ -769,6 +770,7 @@
 <translation id="7762130827864645708">మీ పాస్‌వర్డ్ మార్పు విజయవంతమైంది. ఇప్పటి నుండి కొత్త పాస్‌వర్డ్‌ను ఉపయోగించండి.</translation>
 <translation id="7763470514545477072">డొమైన్ సఫిక్స్ మ్యాచ్</translation>
 <translation id="7769672763586021400">మోడల్ ID</translation>
+<translation id="7770834998503326261">మీ ఎంపికకు సంబంధించిన అదనపు సమాచారం</translation>
 <translation id="7778717409420828014">మీ ఫీడ్‌బ్యాక్ Chromebook అనుభవాన్ని మెరుగుపరచడంలో మాకు సహాయపడుతుంది, ఇంకా మా టీమ్ ద్వారా రివ్యూ చేయబడుతుంది. పెద్ద సంఖ్యలో రిపోర్ట్‌లు ఉన్నందున మేము రిప్లయిని పంపడం సాధ్యం కాదు.</translation>
 <translation id="7784116172884276937">DNS సర్వర్‌లు ఏవీ సెటప్ చేయబడలేదు</translation>
 <translation id="7791543448312431591">జోడించండి</translation>
@@ -801,6 +803,7 @@
 <translation id="80398733265834479">ఆటోమేటిక్ రంగు మోడ్‌ను ఎనేబుల్ చేయండి</translation>
 <translation id="8041089156583427627">ప్రతిస్పందనను పంపండి</translation>
 <translation id="8045012663542226664">మైక్రోఫోన్ మ్యూట్</translation>
+<translation id="8050091914317269817">ఈ వాల్‌పేపర్‌ను ఎంచుకోవడం వలన ఆటో డార్క్ మోడ్, అలాగే వాల్‌పేపర్ కలర్ మ్యాచింగ్ ఫీచర్ ఆన్ చేయబడతాయి.</translation>
 <translation id="8075838845814659848">మిగిలిన ఛార్జ్</translation>
 <translation id="8076492880354921740">ట్యాబ్‌లు</translation>
 <translation id="8082366717211101304">Android యాప్‌ల నుండి DNSను పరిష్కరించడం సాధ్యపడదు</translation>

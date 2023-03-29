@@ -46,7 +46,6 @@
 <translation id="1075079914415273530">Ауыл және орман шаруашылығы</translation>
 <translation id="1080116354587839789">Еніне сәйкестендіру</translation>
 <translation id="1081061862829655580">19-науа</translation>
-<translation id="1088860948719068836">Картаға ат енгізу</translation>
 <translation id="1089439967362294234">Құпия сөзді өзгерту</translation>
 <translation id="1096545575934602868">Бұл өрісте <ph name="MAX_ITEMS_LIMIT" /> жазбадан аспауы керек. Кейінгі жазбалардың бәрі өшіріледі.</translation>
 <translation id="1100782917270858593">"Шарлауды жалғастыру" түймесі. Шарлауды жалғастырып, Chrome тарихынан сәйкес сұрауларды көру үшін Enter пернесін басыңыз.</translation>
@@ -339,7 +338,6 @@
 <translation id="1721424275792716183">* Өріс толтырылуы қажет</translation>
 <translation id="1725591448053514783">You 6 хатқалтасы</translation>
 <translation id="1727613060316725209">Сертификат жарамды</translation>
-<translation id="1727741090716970331">Дұрыс карта нөмірін енгізу</translation>
 <translation id="1728677426644403582">Веббет дереккөзін көрудесіз</translation>
 <translation id="173080396488393970">Картаның бұл түріне қолдау көрсетілмейді</translation>
 <translation id="1732445923934584865">Рұқсатты жеке сұрау</translation>
@@ -940,7 +938,6 @@
 <translation id="3272091146646336650">Super B</translation>
 <translation id="3281350579597955952">{0,plural, =1{Әкімші саясаты бойынша бұл файлды <ph name="DESTINATION_NAME" /> ішінде ашпаған дұрыс.}other{Әкімші саясаты бойынша бұл файлдарды <ph name="DESTINATION_NAME" /> ішінде ашпаған дұрыс.}}</translation>
 <translation id="3282085321714087552">Ұйымыңыз (<ph name="ENROLLMENT_DOMAIN" />) келесі веб-сайттарға бірқатар ақпарат (мысалы, параметрлер немесе саясаттар) жіберді.</translation>
-<translation id="3282497668470633863">Картада көрсетілген атты енгізу</translation>
 <translation id="3286372614333682499">портреттік</translation>
 <translation id="3287510313208355388">Онлайн болған кезде жүктеп алу</translation>
 <translation id="3288238092761586174">Төлеміңізді растау үшін <ph name="URL" /> қосымша қадамдар орындауы қажет.</translation>
@@ -953,7 +950,6 @@
 <translation id="3304777285002411338">A2x3</translation>
 <translation id="33073482541490531">Сіз жаңа ғана қолданған құпия сөз деректердің қолды болуы салдарынан жария етілді. Құпия сөз менеджері оны дереу өзгертуді ұсынады.</translation>
 <translation id="3308006649705061278">Ұйымдық бірлік (OU)</translation>
-<translation id="3320021301628644560">Төлем мекенжайын қосу</translation>
 <translation id="3324687287337751929">4 x 6 дюйм</translation>
 <translation id="3324983252691184275">Қызыл күрең</translation>
 <translation id="3329013043687509092">Қанықтық</translation>
@@ -1016,7 +1012,6 @@
 <translation id="3461824795358126837">Ерекшелеу құралы</translation>
 <translation id="3462200631372590220">Кеңейтілген мәліметті жасыру</translation>
 <translation id="346601286295919445">Химия</translation>
-<translation id="3467763166455606212">Карта иесінің аты қажет</translation>
 <translation id="3468054117417088249"><ph name="TAB_SWITCH_SUFFIX" /> қазір ашық, ашық қойындыға ауысу үшін Tab, одан кейін Enter пернесін басыңыз.</translation>
 <translation id="3470563864795286535"><ph name="CLOSE_INCOGNITO_WINDOWS_FOCUSED_FRIENDLY_MATCH_TEXT" />. Қазір ашық тұрған инкогнито терезелерінің барлығын жабу үшін Tab, сосын Enter пернесін басыңыз.</translation>
 <translation id="3477679029130949506">Фильм тізімдері және кинотеатрдан көрсету кестесі</translation>
@@ -2286,7 +2281,6 @@
 <translation id="6612010098632894193">Онлайн бейне</translation>
 <translation id="6615297766614333076">2-жинастырушы</translation>
 <translation id="6624427990725312378">Байланыс ақпараты</translation>
-<translation id="6626291197371920147">Дұрыс карта нөмірін енгізу</translation>
 <translation id="6627727261837091711">Жарнаманы жекелендіру туралы мәліметтерді көрсету</translation>
 <translation id="6628463337424475685"><ph name="ENGINE" /> Search</translation>
 <translation id="6630043285902923878">USB құрылғылары ізделуде...</translation>
@@ -2772,7 +2766,6 @@
 <translation id="7716375162095500223">Әлі жүктеп салынбады немесе еленбеді</translation>
 <translation id="7716424297397655342">Бұл сайтты кэштен жүктеп алу мүмкін емес</translation>
 <translation id="772128550427553158">CVC картаңыздың алдыңғы жағында орналасқан.</translation>
-<translation id="7723047071702270851">Карта мәліметін өңдеу</translation>
 <translation id="7724603315864178912">Қиып алу</translation>
 <translation id="7734285854693414638">Google Forms-да жылдам жаңа үлгі жасау</translation>
 <translation id="773466115871691567"><ph name="SOURCE_LANGUAGE" /> тіліндегі беттер әрқашан аударылсын</translation>

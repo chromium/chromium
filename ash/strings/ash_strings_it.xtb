@@ -1249,6 +1249,7 @@ Nuova installazione</translation>
 <translation id="685782768769951078">{NUM_DIGITS,plural, =1{Manca una cifra}other{Mancano # cifre}}</translation>
 <translation id="6867938213751067702">Download di <ph name="FILENAME" /> sospeso</translation>
 <translation id="6878400149835617132">Scorciatoia disattivata</translation>
+<translation id="6878701771800702153">{NUM_APPS,plural, =1{1 app}other{# app}}</translation>
 <translation id="6884665277231944629">Torna a oggi</translation>
 <translation id="6886172995547742638">Il tuo <ph name="DEVICE_TYPE" /> potrebbe offrire prestazioni inferiori. Usa un alimentatore USB-C certificato da almeno <ph name="PREFERRED_MINIMUM_POWER" /> W.</translation>
 <translation id="688631446150864480">Premi il tasto Freccia giù per cambiare finestra</translation>
@@ -1416,6 +1417,7 @@ Per arrestare il dispositivo, tieni di nuovo premuto il relativo tasto di accens
 <translation id="7689817529363080918">Consente l'accesso al microfono per <ph name="APP1_NAME" />, <ph name="APP2_NAME" /> e tutti i siti web e le app che hanno l'autorizzazione di accesso al microfono</translation>
 <translation id="7704000866383261579">Ripeti l'ultima azione</translation>
 <translation id="7705524343798198388">VPN</translation>
+<translation id="770741401784017797">Creazione GIF in corso…</translation>
 <translation id="7714767791242455379">Aggiungi una nuova rete mobile</translation>
 <translation id="7720400844887872976">Funzionalità attiva fino alle ore <ph name="TIME" /></translation>
 <translation id="7720410380936703141">RIPROVA</translation>
@@ -1428,6 +1430,7 @@ Per arrestare il dispositivo, tieni di nuovo premuto il relativo tasto di accens
 <translation id="7749443890790263709">Numero massimo di scrivanie raggiunto.</translation>
 <translation id="776344839111254542">Fai clic per visualizzare i dettagli dell'aggiornamento</translation>
 <translation id="7768784765476638775">Seleziona per ascoltare</translation>
+<translation id="7769299611924763557">La tua GIF sarà pronta a breve</translation>
 <translation id="7780094051999721182">scorciatoie</translation>
 <translation id="7780159184141939021">Ruota lo schermo</translation>
 <translation id="7796735576426975947">Nuova notifica nascosta</translation>

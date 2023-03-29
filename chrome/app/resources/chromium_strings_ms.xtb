@@ -22,6 +22,7 @@
 
 Kebenaran yang telah anda berikan kepada laman web dan apl mungkin dikenakan pada akaun ini. Anda boleh mengurus Google Account anda dalam <ph name="SETTINGS_LINK_BEGIN" />Tetapan<ph name="SETTINGS_LINK_END" />.</translation>
 <translation id="1640672724030957280">Memuat turun...</translation>
+<translation id="1691024636239527281">{NUM_DEVICES,plural, =0{Chromium telah disambungkan kepada peranti HID}=1{Chromium disambungkan kepada peranti HID}other{Chromium disambungkan kepada peranti HID}}</translation>
 <translation id="1708666629004767631">Terdapat versi Chromium baharu yang lebih selamat tersedia.</translation>
 <translation id="17264556997921157">Anda boleh melihat dan mengalih keluar topik minat yang digunakan oleh laman untuk memaparkan iklan kepada anda. Chromium menganggarkan minat anda berdasarkan sejarah penyemakan imbas anda baru-baru ini.</translation>
 <translation id="1733725117201708356">Chromium akan memadamkan data semakan imbas sebentar lagi</translation>

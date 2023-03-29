@@ -5311,7 +5311,6 @@ Sayt va ilovalarga berilgan ruxsatlar bu hisobga tatbiq etilishi mumkin. Google 
 <translation id="567740581294087470">Qaysi turdagi fikr-mulohaza yubormoqchisiz?</translation>
 <translation id="5677503058916217575">Sahifa tili:</translation>
 <translation id="5677928146339483299">Bloklangan</translation>
-<translation id="5678425535977098239">&amp;Parollar menejeri</translation>
 <translation id="5678550637669481956"><ph name="VOLUME_NAME" />’ga o‘qish va yozish uchun ruxsat berildi.</translation>
 <translation id="5678821117681811450">Bunga yuborilmoqda: <ph name="WEB_DRIVE" /></translation>
 <translation id="5678955352098267522">Ma’lumotlarni <ph name="WEBSITE_1" /> saytida ko‘rish</translation>
@@ -5364,7 +5363,6 @@ Sayt va ilovalarga berilgan ruxsatlar bu hisobga tatbiq etilishi mumkin. Google 
 <translation id="5723967018671998714">Inkognito rejimida tashqi cookie fayllariga ruxsat berilmaydi</translation>
 <translation id="5724642200346111167">Barcha oynalar yopilganda sayt maʼlumotlari qurilmadan tozalanadi</translation>
 <translation id="5727728807527375859">Kengaytma, ilova va mavzular kompyuterngizga zararli bo‘lishi mumkin. Davom ettirilsinmi?</translation>
-<translation id="5728235544432023605">Translatsiya javob bermayapti. <ph name="DEVICE_NAME" /> qurilmasida toʻxtating.</translation>
 <translation id="5728450728039149624">Smart Lock yordamida ekran qulfini sozlash</translation>
 <translation id="5729712731028706266">&amp;Ko‘rish</translation>
 <translation id="5731247495086897348">&amp;Joylash va o‘tish</translation>
@@ -6389,6 +6387,7 @@ Yana # ta oshkor qilingan parollaringiz bor. Google Parollar menejeri ularni hoz
 <translation id="6647690760956378579">Tabiiy ovozni oldindan tinglash</translation>
 <translation id="6648911618876616409">Jiddiy yangilanish o‘rnatish uchun tayyor. Boshlash uchun hisobingizga kiring.</translation>
 <translation id="6649018507441623493">Iltimos, kuting...</translation>
+<translation id="6650206238642452078">ChromeOS tizim hodisalariga obuna boʻlish</translation>
 <translation id="665061930738760572">&amp;Yangi oynada ochish</translation>
 <translation id="6651237644330755633">Saytlarni identifikatsiya qilishda ushbu sertifikat ishonchli deb hisoblansin</translation>
 <translation id="6651495917527016072">Wi-Fi tarmoqlarni telefon orqali sinxronlang. <ph name="LINK_BEGIN" />Batafsil<ph name="LINK_END" /></translation>
@@ -9102,6 +9101,7 @@ Sayt va ilovalarga berilgan ruxsatlar bu hisobga tatbiq etilishi mumkin. Google 
 <translation id="904224458472510106">Bu amalni bekor qilish imkonsiz</translation>
 <translation id="9042827002460091668">Internet aloqasini tekshiring va qayta urining</translation>
 <translation id="9042893549633094279">Maxfiylik va xavfsizlik</translation>
+<translation id="9043264199499366189">ChromeOS Flex tizim hodisalariga obuna boʻlish</translation>
 <translation id="9044646465488564462">Tarmoqqa ulanmadi: <ph name="DETAILS" /></translation>
 <translation id="9045160989383249058">Mutolaa roʻyxatingiz yangi yon panelga koʻchdi. Bu yerda sinang.</translation>
 <translation id="9045430190527754450">Kiritilgan sayt manzili Google serverlariga yuboriladi</translation>

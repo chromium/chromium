@@ -108,6 +108,7 @@
 <translation id="4565377596337484307">ಪಾಸ್‌ವರ್ಡ್ ಮರೆಮಾಡಿ</translation>
 <translation id="4588090240171750605">ಬಲಕ್ಕೆ ಸ್ಕ್ರೋಲ್ ಮಾಡಿ</translation>
 <translation id="4724120544754982507">ಅಧಿಸೂಚನೆ ಕೇಂದ್ರ, <ph name="UNREAD_NOTIFICATION_COUNT" /> ಓದದಿರುವ ಅಧಿಸೂಚನೆಗಳು</translation>
+<translation id="4729257764711776855">ಸಂಖ್ಯೆ</translation>
 <translation id="4746179598275229723">ವಿಸ್ತರಣೆಯನ್ನು ಅನ್‌ಪಿನ್ ಮಾಡಲಾಗಿದೆ</translation>
 <translation id="4788285488841504513">{MONTHS,plural, =1{1 ತಿಂಗಳು ಉಳಿದಿದೆ}one{# ತಿಂಗಳುಗಳು ಉಳಿದಿವೆ}other{# ತಿಂಗಳುಗಳು ಉಳಿದಿವೆ}}</translation>
 <translation id="4888938634149558681">ಕರೆ ಮಾಡಿ</translation>
@@ -119,6 +120,7 @@
 <translation id="5278860589123563674">ಕಳುಹಿಸಲು ವಿಫಲವಾಗಿದೆ</translation>
 <translation id="528468243742722775">ಅಂತ್ಯ</translation>
 <translation id="5329858601952122676">&amp;ಅಳಿಸು</translation>
+<translation id="5361107212971249203">ಪಠ್ಯ</translation>
 <translation id="5463830097259460683">ಎಮೋಜಿ ಮತ್ತು ಸಂಕೇತಗಳು</translation>
 <translation id="5528053674512161860">ಡೆವಲಪರ್ UI ಮಾಡ್ಯುಲ್‌ (dev_ui) ಅನ್ನು ಇನ್‌ಸ್ಟಾಲ್ ಮಾಡಲಾಗಿಲ್ಲದಿರುವುದರಿಂದ ಪುಟ ಲೋಡ್ ಮಾಡಲು ವಿಫಲವಾಗಿದೆ</translation>
 <translation id="5574202486608032840"><ph name="IDS_SHORT_PRODUCT_OS_NAME" /> ಸಿಸ್ಟಂ</translation>

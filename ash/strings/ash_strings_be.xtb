@@ -1252,6 +1252,7 @@
 <translation id="685782768769951078">{NUM_DIGITS,plural, =1{Засталася адна лічба}one{Засталася # лічба}few{Засталося # лічбы}many{Засталося # лічбаў}other{Засталося # лічбы}}</translation>
 <translation id="6867938213751067702">Спампоўванне файла "<ph name="FILENAME" />" прыпынена</translation>
 <translation id="6878400149835617132">Спалучэнне клавіш выключана</translation>
+<translation id="6878701771800702153">{NUM_APPS,plural, =1{1 праграма}one{# праграма}few{# праграмы}many{# праграм}other{# праграмы}}</translation>
 <translation id="6884665277231944629">Вярнуцца да сённяшняй даты</translation>
 <translation id="6886172995547742638">Прадукцыйнасць прылады <ph name="DEVICE_TYPE" /> можа знізіцца. Выкарыстоўвайце адаптар сілкавання USB-C з магутнасцю, не меншай за <ph name="PREFERRED_MINIMUM_POWER" /> Вт</translation>
 <translation id="688631446150864480">Для пераключэння паміж вокнамі націскайце на стрэлку ўніз</translation>
@@ -1419,6 +1420,7 @@
 <translation id="7689817529363080918">Доступ да мікрафона атрымаюць праграмы "<ph name="APP1_NAME" />" і "<ph name="APP2_NAME" />", а таксама ўсе праграмы і вэб-сайты, якія маюць дазвол выкарыстоўваць мікрафон</translation>
 <translation id="7704000866383261579">Паўтарыць апошняе дзеянне</translation>
 <translation id="7705524343798198388">VPN</translation>
+<translation id="770741401784017797">Ідзе стварэнне файла GIF</translation>
 <translation id="7714767791242455379">Дадаць новую сотавую сетку</translation>
 <translation id="7720400844887872976">Уключана да <ph name="TIME" /></translation>
 <translation id="7720410380936703141">ПАЎТАРЫЦЬ СПРОБУ</translation>
@@ -1431,6 +1433,7 @@
 <translation id="7749443890790263709">Дасягнута максімальная колькасць сталоў.</translation>
 <translation id="776344839111254542">Каб паглядзець звесткі пра абнаўленне, націсніце тут</translation>
 <translation id="7768784765476638775">Чытаць уголас</translation>
+<translation id="7769299611924763557">Файл GIF будзе неўзабаве гатовы</translation>
 <translation id="7780094051999721182">ярлыкі</translation>
 <translation id="7780159184141939021">Паварот экрана</translation>
 <translation id="7796735576426975947">Новае апавяшчэнне схавана</translation>

@@ -46,7 +46,6 @@
 <translation id="1075079914415273530">Земјоделство и шумарство</translation>
 <translation id="1080116354587839789">Приспособете на ширината</translation>
 <translation id="1081061862829655580">Фиока 19</translation>
-<translation id="1088860948719068836">Додајте име на картичката</translation>
 <translation id="1089439967362294234">Смени лозинка</translation>
 <translation id="1096545575934602868">Полево не треба да има повеќе од <ph name="MAX_ITEMS_LIMIT" /> записи. Сите идни записи ќе се отфрлат.</translation>
 <translation id="1100782917270858593">Копче „Продолжете со патувањето“, притиснете Enter за да продолжите со патувањето и да ја прегледате релевантната активност во вашата „Историја на Chrome“</translation>
@@ -339,7 +338,6 @@
 <translation id="1721424275792716183">* Полето е задолжително</translation>
 <translation id="1725591448053514783">Плик You 6</translation>
 <translation id="1727613060316725209">Сертификатот е важечки</translation>
-<translation id="1727741090716970331">Додајте важечки број на картичка</translation>
 <translation id="1728677426644403582">Го гледате кодот на веб-страницата</translation>
 <translation id="173080396488393970">Овој тип картичка не е поддржан</translation>
 <translation id="1732445923934584865">Прашај лично</translation>
@@ -498,6 +496,7 @@
 <translation id="2119867082804433120">Дупка долу десно</translation>
 <translation id="2122719317867821810">Правилово работи како што е предвидено, но конфликтна вредност е поставена некаде на друго место и е отфрлена од правилово.</translation>
 <translation id="2126374524350484896">Приказ во PDF:</translation>
+<translation id="2128262927290305126">Во вашата сметка на Google <ph name="ACCOUNT" /></translation>
 <translation id="2130448033692577677">Шаблоните што ги назначивте не може да се применат бидејќи правилото DnsOverHttpsMode не е поставено.</translation>
 <translation id="2130699163006053678">A3x7</translation>
 <translation id="2135799067377889518">Облека за мажи</translation>
@@ -543,6 +542,7 @@
 <translation id="2219735899272417925">Треба да се ресетира уредот</translation>
 <translation id="2224337661447660594">Нема интернет</translation>
 <translation id="2225927550500503913">Вклучена е виртуелна картичка</translation>
+<translation id="2226636330183131181"><ph name="BEGIN_LINK" />Најавување<ph name="END_LINK" /> на Wi-Fi мрежата.</translation>
 <translation id="2239100178324503013">Испрати сега</translation>
 <translation id="2241693394036365668">Преземена е датотека</translation>
 <translation id="2246264294482514010">10 x 12 инчи</translation>
@@ -939,7 +939,6 @@
 <translation id="3272091146646336650">Супер Б</translation>
 <translation id="3281350579597955952">{0,plural, =1{Администраторското правило не препорачува да се отвори датотекава во <ph name="DESTINATION_NAME" />}one{Администраторското правило не препорачува да се отворат датотекиве во <ph name="DESTINATION_NAME" />}other{Администраторското правило не препорачува да се отворат датотекиве во <ph name="DESTINATION_NAME" />}}</translation>
 <translation id="3282085321714087552">Вашата организација, <ph name="ENROLLMENT_DOMAIN" />, испратила одредени информации на следниве веб-сајтови, како поставки или правила.</translation>
-<translation id="3282497668470633863">Додајте име на картичка</translation>
 <translation id="3286372614333682499">портрет</translation>
 <translation id="3287510313208355388">Преземи кога ќе има мрежа</translation>
 <translation id="3288238092761586174"><ph name="URL" /> можеби ќе треба да преземе дополнителни чекори за да го потврди вашето плаќање</translation>
@@ -952,7 +951,6 @@
 <translation id="3304777285002411338">A2x3</translation>
 <translation id="33073482541490531">Откриено е дека лозинката која штотуку ја употребивте е меѓу лозинките откриени при упад во податоците. Password Manager препорачува веднаш да ја промените лозинкава.</translation>
 <translation id="3308006649705061278">Организациска единица (ОУ)</translation>
-<translation id="3320021301628644560">Додајте адреса за наплата</translation>
 <translation id="3324687287337751929">4 x 6 инчи</translation>
 <translation id="3324983252691184275">Темноцрвена</translation>
 <translation id="3329013043687509092">Заситеност</translation>
@@ -1015,7 +1013,6 @@
 <translation id="3461824795358126837">Нагласувач</translation>
 <translation id="3462200631372590220">Сокриј напредни</translation>
 <translation id="346601286295919445">Хемија</translation>
-<translation id="3467763166455606212">Името на сопственикот на картичката е задолжително</translation>
 <translation id="3468054117417088249"><ph name="TAB_SWITCH_SUFFIX" />, отворена во моментов, притиснете Tab, потоа Enter за да се префрлите на отворената картичка</translation>
 <translation id="3470563864795286535"><ph name="CLOSE_INCOGNITO_WINDOWS_FOCUSED_FRIENDLY_MATCH_TEXT" />, притиснете Tab, а потоа Enter за да ги затворите сите прозорци „Инкогнито“ што се отворени во моментов</translation>
 <translation id="3477679029130949506">Прикажувани филмови и времиња на претстави</translation>
@@ -1083,6 +1080,7 @@
 <translation id="3631244953324577188">Биометрика</translation>
 <translation id="3632503704576938756">Споделувањето екран продолжи</translation>
 <translation id="3632892046558972264">Споделувањето екран е паузирано</translation>
+<translation id="3633035844150606508">Адресата ќе се зачува во вашата сметка на Google, <ph name="ACCOUNT" /></translation>
 <translation id="3633738897356909127">Копче „Ажурирај го Chrome“, притиснете Enter за да го ажурирате Chrome од поставките за Chrome</translation>
 <translation id="3634530185120165534">Фиока 5</translation>
 <translation id="3634567936866541746">Тукушто ја внесовте својата лозинка на измамнички сајт. За да ги заштитите сметките, Chrome ви препорачува да ги проверите зачуваните лозинки.</translation>
@@ -1655,6 +1653,7 @@
 <translation id="5018422839182700155">Не може да се отвори страницава</translation>
 <translation id="5018802455907704660">16 x 20 инчи</translation>
 <translation id="5019198164206649151">Продавницата за резервни копии е во лоша состојба</translation>
+<translation id="5019293549442035120">Може да ги користите зачуваните адреси на производите на Google. Адресава ќе се зачува на вашата сметка на Google, <ph name="USER_EMAIL" />.</translation>
 <translation id="5020776957610079374">Светска музика</translation>
 <translation id="5021557570875267742">Следете ги цените со Chrome</translation>
 <translation id="5023310440958281426">Проверете ги правилата на вашиот администратор</translation>
@@ -1792,6 +1791,7 @@
 <translation id="5324080437450482387">Изберете информации за контакт</translation>
 <translation id="5329858041417644019">Прелистувачот не е управуван</translation>
 <translation id="5332219387342487447">Метод на испорака</translation>
+<translation id="5332769172018416402">Побарајте со порака</translation>
 <translation id="5333022057423422993">Chrome ја најде лозинката која штотуку ја употребивте меѓу лозинките откриени при упад во податоците. За да ги заштитите сметките, препорачуваме да ги проверите зачуваните лозинки.</translation>
 <translation id="5334013548165032829">Детални системски дневници</translation>
 <translation id="5334145288572353250">Да се зачува адресата?</translation>
@@ -1983,6 +1983,7 @@
 <translation id="5830698870816298009">користење и движење на камерата</translation>
 <translation id="583281660410589416">Непознат</translation>
 <translation id="5838278095973806738">Не треба да внесувате чувствителни информации на овој сајт (на пример, лозинки или кредитни картички), затоа што може да ги украдат напаѓачи.</translation>
+<translation id="5841338463993781099">Дали да се зачува во сметката?</translation>
 <translation id="5851548754964597211">Список со картички</translation>
 <translation id="5852909432155870672">RA4</translation>
 <translation id="5860033963881614850">Исклучено</translation>
@@ -2283,7 +2284,6 @@
 <translation id="6612010098632894193">Онлајн видео</translation>
 <translation id="6615297766614333076">Фиока за складирање 2</translation>
 <translation id="6624427990725312378">Податоци за контакт</translation>
-<translation id="6626291197371920147">Додајте валиден број на картичка</translation>
 <translation id="6627727261837091711">Прикажи ги деталите за персонализирање на рекламите</translation>
 <translation id="6628463337424475685">Пребарување на <ph name="ENGINE" /></translation>
 <translation id="6630043285902923878">Се бараат USB-уреди…</translation>
@@ -2769,7 +2769,6 @@
 <translation id="7716375162095500223">Сѐ уште не е прикачен или е игнориран</translation>
 <translation id="7716424297397655342">Сајтот не може да се вчита од кешот</translation>
 <translation id="772128550427553158">CVC се наоѓа на предната страна на картичката.</translation>
-<translation id="7723047071702270851">Изменете ја картичката</translation>
 <translation id="7724603315864178912">Исечи</translation>
 <translation id="7734285854693414638">Набрзина создајте нов формулар во Google Forms</translation>
 <translation id="773466115871691567">Секогаш преведувај ги страниците на <ph name="SOURCE_LANGUAGE" /></translation>

@@ -46,7 +46,6 @@
 <translation id="1075079914415273530">Գյուղատնտեսություն և անտառային տնտեսություն</translation>
 <translation id="1080116354587839789">Հարմարեցնել լայնությանը</translation>
 <translation id="1081061862829655580">Դարակ 19</translation>
-<translation id="1088860948719068836">Ավելացրեք քարտապանի անունը</translation>
 <translation id="1089439967362294234">Փոխել գաղտնաբառը</translation>
 <translation id="1096545575934602868">Այս դաշտը չպետք է ունենա ավելի քան <ph name="MAX_ITEMS_LIMIT" /> գրառում: Ավել գրառումները կհեռացվեն:</translation>
 <translation id="1100782917270858593">«Շարունակել որոնումը» կոճակ։ Chrome-ի պատմության մեջ նման հարցումները դիտելու համար սեղմեք Enter։</translation>
@@ -339,7 +338,6 @@
 <translation id="1721424275792716183">* Դաշտը պարտադիր է</translation>
 <translation id="1725591448053514783">Envelope You 6</translation>
 <translation id="1727613060316725209">Հավաստագիրը վավեր է</translation>
-<translation id="1727741090716970331">Ավելացրեք քարտի վավեր համար</translation>
 <translation id="1728677426644403582">Դուք դիտում եք վեբ էջի կոդը</translation>
 <translation id="173080396488393970">Քարտի այս տեսակը չի աջակցվում</translation>
 <translation id="1732445923934584865">Հարցնել անձամբ</translation>
@@ -941,7 +939,6 @@
 <translation id="3272091146646336650">Super B</translation>
 <translation id="3281350579597955952">{0,plural, =1{Ադմինիստրատորը խորհուրդ չի տալիս այս ֆայլը բացել այստեղ՝ <ph name="DESTINATION_NAME" />}one{Ադմինիստրատորը խորհուրդ չի տալիս այս ֆայլը բացել այստեղ՝ <ph name="DESTINATION_NAME" />}other{Ադմինիստրատորը խորհուրդ չի տալիս այս ֆայլերը բացել այստեղ՝ <ph name="DESTINATION_NAME" />}}</translation>
 <translation id="3282085321714087552">Ձեր կազմակերպությունը (<ph name="ENROLLMENT_DOMAIN" />) հետևյալ կայքերին ուղարկել է որոշ տեղեկություններ, օրինակ՝ կարգավորումներ և կանոններ։</translation>
-<translation id="3282497668470633863">Ավելացրեք քարտապանի անունը</translation>
 <translation id="3286372614333682499">ուղղաձիգ</translation>
 <translation id="3287510313208355388">Ներբեռնել, երբ կապը վերականգնվի</translation>
 <translation id="3288238092761586174"><ph name="URL" /> կայքը կարող է լրացուցիչ քայլեր կատարել՝ ձեր վճարումը հաստատելու համար</translation>
@@ -954,7 +951,6 @@
 <translation id="3304777285002411338">A2x3</translation>
 <translation id="33073482541490531">Գաղտնաբառը, որ հենց նոր օգտագործեցիք, կոտրվել է տվյալների արտահոսքի պատճառով։ Գաղտնաբառերի կառավարիչը խորհուրդ է տալիս անհապաղ փոխել այն։</translation>
 <translation id="3308006649705061278">Ստորաբաժանում (OU)</translation>
-<translation id="3320021301628644560">Ավելացրեք վճարային հասցեն</translation>
 <translation id="3324687287337751929">4 x 6 դյույմ</translation>
 <translation id="3324983252691184275">Բոսորագույն</translation>
 <translation id="3329013043687509092">Հագեցում</translation>
@@ -1017,7 +1013,6 @@
 <translation id="3461824795358126837">Գունանշիչ</translation>
 <translation id="3462200631372590220">Թաքցնել մանրամասները</translation>
 <translation id="346601286295919445">Քիմիա</translation>
-<translation id="3467763166455606212">Քարտատիրոջ անունը պարտադիր է</translation>
 <translation id="3468054117417088249">Բացված է <ph name="TAB_SWITCH_SUFFIX" /> ներդիրը։ Այս ներդիրին անցնելու համար սեղմեք «Tab», ապա՝ «Enter»։</translation>
 <translation id="3470563864795286535"><ph name="CLOSE_INCOGNITO_WINDOWS_FOCUSED_FRIENDLY_MATCH_TEXT" />։ Ընթացիկ բացված բոլոր ինկոգնիտո պատուհանները փակելու համար սեղմեք Tab, ապա՝ Enter։</translation>
 <translation id="3477679029130949506">Կինոթատրոնների և թատրոնների խաղացանկեր</translation>
@@ -2289,7 +2284,6 @@
 <translation id="6612010098632894193">Առցանց տեսանյութեր</translation>
 <translation id="6615297766614333076">Շեղջիչ 2</translation>
 <translation id="6624427990725312378">Կոնտակտային տվյալներ</translation>
-<translation id="6626291197371920147">Ավելացրեք քարտի վավեր համար</translation>
 <translation id="6627727261837091711">Ցույց տալ գովազդի անհատականացման մանրամասները</translation>
 <translation id="6628463337424475685"><ph name="ENGINE" /> Որոնում</translation>
 <translation id="6630043285902923878">USB սարքերի որոնում…</translation>
@@ -2775,7 +2769,6 @@
 <translation id="7716375162095500223">Անտեսվել է կամ դեռ չի վերբեռնվել</translation>
 <translation id="7716424297397655342">Այս կայքը չի կարող բեռնվել հիշապահեստից</translation>
 <translation id="772128550427553158">CVC կոդը նշված է քարտի դիմերեսին։</translation>
-<translation id="7723047071702270851">Փոփոխեք քարտի տվյալները</translation>
 <translation id="7724603315864178912">Կտրել</translation>
 <translation id="7734285854693414638">Արագ ստեղծել ձև Google Ձևաթղթերում</translation>
 <translation id="773466115871691567">Միշտ թարգմանել <ph name="SOURCE_LANGUAGE" /> էջերը</translation>

@@ -46,7 +46,6 @@
 <translation id="1075079914415273530">কৃষি আৰু বনপালন-বিদ্যা</translation>
 <translation id="1080116354587839789">প্ৰস্থৰ সৈতে খাপ খুৱাওক</translation>
 <translation id="1081061862829655580">ট্ৰে’ ১৯</translation>
-<translation id="1088860948719068836">কাৰ্ডত থকা নামটো যোগ কৰক</translation>
 <translation id="1089439967362294234">পাছৱৰ্ড সলনি কৰক</translation>
 <translation id="1096545575934602868">এই ক্ষেত্ৰটোত <ph name="MAX_ITEMS_LIMIT" />টাতকৈ অধিক প্ৰবিষ্টি থাকিব নালাগে। ইয়াৰ পাছৰ সকলো প্ৰবিষ্টি বাতিল কৰা হ’ব।</translation>
 <translation id="1100782917270858593">যাত্ৰা পুনৰ আৰম্ভ কৰক বুটাম, আপোনাৰ যাত্ৰা পুনৰ আৰম্ভ কৰিবলৈ আৰু আপোনাৰ Chromeৰ ইতিহাসত প্ৰাসংগিক কাৰ্যকলাপ চাবলৈ এণ্টাৰ টিপক</translation>
@@ -339,7 +338,6 @@
 <translation id="1721424275792716183">* ক্ষেত্ৰটো আৱশ্যকীয়</translation>
 <translation id="1725591448053514783">এনভেল’প আপুনি ৬</translation>
 <translation id="1727613060316725209">প্ৰমাণপত্ৰখন মান্য</translation>
-<translation id="1727741090716970331">মান্য কাৰ্ডৰ নম্বৰ যোগ কৰক</translation>
 <translation id="1728677426644403582">আপুনি কোনো ৱেব পৃষ্ঠাৰ উৎস চাই আছে</translation>
 <translation id="173080396488393970">এই ধৰণৰ কার্ড সমর্থন নকৰে</translation>
 <translation id="1732445923934584865">ইয়াৰ সলনি ব্যক্তিগতভাৱে সোধক</translation>
@@ -939,7 +937,6 @@
 <translation id="3272091146646336650">ছুপাৰ B</translation>
 <translation id="3281350579597955952">{0,plural, =1{প্ৰশাসকৰ নীতিয়ে এই ফাইলটো <ph name="DESTINATION_NAME" />ত খুলিবলৈ চুপাৰিছ নকৰে}one{প্ৰশাসকৰ নীতিয়ে এই ফাইলসমূহ <ph name="DESTINATION_NAME" />ত খুলিবলৈ চুপাৰিছ নকৰে}other{প্ৰশাসকৰ নীতিয়ে এই ফাইলসমূহ <ph name="DESTINATION_NAME" />ত খুলিবলৈ চুপাৰিছ নকৰে}}</translation>
 <translation id="3282085321714087552">আপোনাৰ প্ৰতিষ্ঠান <ph name="ENROLLMENT_DOMAIN" />এ এই ৱেবছাইটসমূহলৈ ছেটিং অথবা নীতিৰ দৰে কিছুমান তথ্য পঠিয়াইছে।</translation>
-<translation id="3282497668470633863">কাৰ্ডত নাম যোগ কৰক</translation>
 <translation id="3286372614333682499">প’ৰ্ট্ৰেইট</translation>
 <translation id="3287510313208355388">অনলাইন হ’লে ডাউনল’ড কৰক</translation>
 <translation id="3288238092761586174"><ph name="URL" />এ আপোনাৰ পৰিশোধ সত্যাপন কৰিবলৈ অতিৰিক্ত পদক্ষেপ ল’বলগীয়া হ’ব পাৰে</translation>
@@ -952,7 +949,6 @@
 <translation id="3304777285002411338">A2x3</translation>
 <translation id="33073482541490531">আপুনি এইমাত্ৰ ব্যৱহাৰ কৰা পাছৱৰ্ডটো এক ডেটা উলংঘনত বিচাৰি পোৱা গৈছে। Password Managerএ এই পাছৱৰ্ডটো এতিয়াই সলনি কৰাটো চুপাৰিছ কৰে।</translation>
 <translation id="3308006649705061278">প্ৰতিষ্ঠানৰ ইউনিট (অ’ইউ)</translation>
-<translation id="3320021301628644560">বিলিঙৰ ঠিকনা যোগ কৰক</translation>
 <translation id="3324687287337751929">৪ x ৬ ইঞ্চি</translation>
 <translation id="3324983252691184275">ক্ৰিমছন</translation>
 <translation id="3329013043687509092">সংপৃক্তি</translation>
@@ -1015,7 +1011,6 @@
 <translation id="3461824795358126837">হাইলাইটাৰ</translation>
 <translation id="3462200631372590220">এডভাঞ্চখিনি লুকুৱাওক</translation>
 <translation id="346601286295919445">ৰসায়ন বিজ্ঞান</translation>
-<translation id="3467763166455606212">কার্ডৰ গৰাকীৰ নাম দিয়াটো প্ৰয়োজন</translation>
 <translation id="3468054117417088249"><ph name="TAB_SWITCH_SUFFIX" />, বৰ্তমান খোলা আছে, খোলা থকা টেবটোলৈ যাবলৈ টেব আৰু তাৰ পাছত এণ্টাৰ দবাওক</translation>
 <translation id="3470563864795286535"><ph name="CLOSE_INCOGNITO_WINDOWS_FOCUSED_FRIENDLY_MATCH_TEXT" />, বৰ্তমান খোল খাই থকা আটাইবোৰ ইনক’গনিট’ ৱিণ্ড’ বন্ধ কৰিবলৈ টেব টিপক আৰু তাৰ পাছত এণ্টাৰ টিপক</translation>
 <translation id="3477679029130949506">চলচ্চিত্ৰৰ সূচী আৰু থিয়েটাৰৰ শ্ব’ৰ সময়সূচী</translation>
@@ -1654,6 +1649,7 @@
 <translation id="5018422839182700155">এই পৃষ্ঠাটো খুলিব নোৱাৰি</translation>
 <translation id="5018802455907704660">১৬ x ২০ ইঞ্চি</translation>
 <translation id="5019198164206649151">বেকিং ষ্ট'ৰ বেয়া অৱস্থাত আছে</translation>
+<translation id="5019293549442035120">ছেভ হৈ থকা ঠিকনাসমূহ আপুনি সমগ্ৰ Google প্ৰ’ডাক্টত ব্যৱহাৰ কৰিব পাৰে। এই ঠিকনাটো আপোনাৰ Google একাউণ্ট <ph name="USER_EMAIL" />ত ছেভ কৰা হ’ব।</translation>
 <translation id="5020776957610079374">বিশ্ব সংগীত</translation>
 <translation id="5021557570875267742">Chromeৰ জৰিয়তে মূল্য ট্ৰেক কৰক</translation>
 <translation id="5023310440958281426">আপোনাৰ প্ৰশাসকৰ নীতি পৰীক্ষা কৰক</translation>
@@ -1791,6 +1787,7 @@
 <translation id="5324080437450482387">সম্পর্কৰ তথ্য বাছনি কৰক</translation>
 <translation id="5329858041417644019">আপোনাৰ ব্ৰাউজাৰটো পৰিচালিত নহয়</translation>
 <translation id="5332219387342487447">শ্বিপিঙৰ পদ্ধতি</translation>
+<translation id="5332769172018416402">এটা বাৰ্তা পঠিয়াই সোধক</translation>
 <translation id="5333022057423422993">Chromeএ আপুনি এইমাত্ৰ ডেটা উলংঘনত ব্যৱহাৰ কৰা পাছৱৰ্ডটো বিচাৰি পাইছে। আপোনাৰ একাউণ্ট সুৰক্ষিত কৰিবলৈ, আপুনি নিজৰ ছেভ কৰি ৰখা পাছৱৰ্ড পৰীক্ষা কৰাটো আমি চুপাৰিছ কৰোঁ।</translation>
 <translation id="5334013548165032829">ছিষ্টেমৰ সূক্ষ্মাতিসূক্ষ্ম লগ</translation>
 <translation id="5334145288572353250">ঠিকনা ছেভ কৰিবনে?</translation>
@@ -2282,7 +2279,6 @@
 <translation id="6612010098632894193">অনলাইন ভিডিঅ’</translation>
 <translation id="6615297766614333076">ষ্টেকাৰ ২</translation>
 <translation id="6624427990725312378">যোগাযোগৰ তথ্য</translation>
-<translation id="6626291197371920147">মান্য কার্ড নম্বৰ যোগ কৰক</translation>
 <translation id="6627727261837091711">বিজ্ঞাপনৰ ব্যক্তিগতকৰণৰ সবিশেষ দেখুৱাওক</translation>
 <translation id="6628463337424475685"><ph name="ENGINE" /> Search</translation>
 <translation id="6630043285902923878">ইউএছবি ডিভাইচ বিচাৰি থকা হৈছে...</translation>
@@ -2768,7 +2764,6 @@
 <translation id="7716375162095500223">এতিয়ালৈকে আপল'ড কৰা অথবা উপেক্ষা কৰা নাই</translation>
 <translation id="7716424297397655342">এই ছাইটটো কেশ্বৰ পৰা ল'ড কৰিব নোৱাৰি</translation>
 <translation id="772128550427553158">CVC আপোনাৰ কাৰ্ডৰ সন্মুখ ভাগত থাকে।</translation>
-<translation id="7723047071702270851">কাৰ্ড সম্পাদনা কৰক</translation>
 <translation id="7724603315864178912">কাট কৰক</translation>
 <translation id="7734285854693414638">Google Formsত ক্ষিপ্ৰভাৱে এখন নতুন ফ’ৰ্ম সৃষ্টি কৰক</translation>
 <translation id="773466115871691567">সদায় পৃষ্ঠাসমূহ <ph name="SOURCE_LANGUAGE" />লৈ অনুবাদ কৰক</translation>

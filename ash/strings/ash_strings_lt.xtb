@@ -40,6 +40,7 @@ Jei norite pradėti, pabandykite atlikti nurodytus veiksmus.</translation>
 <translation id="1181037720776840403">Pašalinti</translation>
 <translation id="1182225749592316782">Suteikiama prieiga visoms programoms ir svetainėms, turinčioms fotoaparato ir mikrofono leidimus</translation>
 <translation id="1183863904939664422">Šis pasiūlymas nedomina</translation>
+<translation id="1184126796192815024">Šis tinklas nepalaiko srautinio perdavimo programų iš telefono. Pabandykite naudoti telefono viešosios interneto prieigos tašką. <ph name="LEARN_MORE" /></translation>
 <translation id="118437560755358292">Norėdami užtikrinti patikimesnę apsaugą, įveskite slaptažodį arba PIN kodą</translation>
 <translation id="118532027333893379">Palieskite bet kur, kad būtų užfiksuotas visas ekranas</translation>
 <translation id="1190609913194133056">Pranešimų centras</translation>
@@ -1419,6 +1420,7 @@ Jei norite išjungti įrenginį, dar kartą paspauskite ir palaikykite įrengini
 <translation id="7689817529363080918">Tai leis pasiekti mikrofoną programoms „<ph name="APP1_NAME" />“, „<ph name="APP2_NAME" />“ ir visoms programoms bei svetainėms, turinčioms mikrofono leidimą</translation>
 <translation id="7704000866383261579">Grąžinti paskutinį veiksmą</translation>
 <translation id="7705524343798198388">VPN</translation>
+<translation id="770741401784017797">Kuriamas GIF</translation>
 <translation id="7714767791242455379">Pridėti naują mobiliojo ryšio tinklą</translation>
 <translation id="7720400844887872976">Įjungta iki <ph name="TIME" /></translation>
 <translation id="7720410380936703141">BANDYKITE DAR KARTĄ</translation>
@@ -1431,6 +1433,7 @@ Jei norite išjungti įrenginį, dar kartą paspauskite ir palaikykite įrengini
 <translation id="7749443890790263709">Pasiektas didžiausias pultų skaičius.</translation>
 <translation id="776344839111254542">Spustelėkite ir peržiūrėkite išsamią atnaujinimo informaciją</translation>
 <translation id="7768784765476638775">Teksto ištarimas</translation>
+<translation id="7769299611924763557">GIF elementas bus netrukus paruoštas</translation>
 <translation id="7780094051999721182">sparčiųjų klavišų</translation>
 <translation id="7780159184141939021">Ekrano pasukimas</translation>
 <translation id="7796735576426975947">Nauji pranešimai paslėpti</translation>

@@ -698,6 +698,7 @@
 <translation id="7103252855940681301"><ph name="INDEX" /> įrenginys iš <ph name="COUNT" /> pav. „<ph name="NAME" />“.</translation>
 <translation id="7108668606237948702">įvesti</translation>
 <translation id="7130438335435247835">Prieigos taško pavadinimas (APN)</translation>
+<translation id="7131634559772719176">Išankstinio nustatymo patvirtinimas</translation>
 <translation id="7134436342991564651">{0,plural, =1{Pavadinimų serveris}one{Pavadinimų serveriai}few{Pavadinimų serveriai}many{Pavadinimų serveriai}other{Pavadinimų serveriai}}</translation>
 <translation id="7143207342074048698">Jungiama</translation>
 <translation id="7144878232160441200">Kartoti</translation>
@@ -802,6 +803,7 @@
 <translation id="80398733265834479">Įgalinti automatinių spalvų režimą</translation>
 <translation id="8041089156583427627">Siųsti atsiliepimą</translation>
 <translation id="8045012663542226664">Mikrofono nutildymas</translation>
+<translation id="8050091914317269817">Pasirinkus šį ekrano foną bus įjungtas automatinis tamsus režimas ir ekrano fono spalvos pritaikymas.</translation>
 <translation id="8075838845814659848">Likusio įkrovimo rodiklis</translation>
 <translation id="8076492880354921740">Skirtukai</translation>
 <translation id="8082366717211101304">Nepavyko pateikti DNS iš „Android“ programų</translation>

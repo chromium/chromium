@@ -22,6 +22,7 @@
 
 Sivustoille ja sovelluksille myöntämäsi luvat saattavat koskea tätä tiliä. Voit ylläpitää Google-tilejä <ph name="SETTINGS_LINK_BEGIN" />asetuksissa<ph name="SETTINGS_LINK_END" />.</translation>
 <translation id="1640672724030957280">Ladataan...</translation>
+<translation id="1691024636239527281">{NUM_DEVICES,plural, =0{Chromium oli yhdistettynä HID-laitteeseen}=1{Chromium on yhdistetty HID-laitteeseen}other{Chromium on yhdistetty HID-laitteisiin}}</translation>
 <translation id="1708666629004767631">Chromiumista on saatavilla uusi, turvallisempi versio.</translation>
 <translation id="17264556997921157">Voit tarkistaa ja poistaa kiinnostuksen kohteita, joita sivustot käyttävät mainosten näyttämiseen. Chromium arvioi viimeaikaisen selaushistoriasi perusteella, mikä saattaisi kiinnostaa sinua.</translation>
 <translation id="1733725117201708356">Selausdata poistetaan pian Chromiumista</translation>

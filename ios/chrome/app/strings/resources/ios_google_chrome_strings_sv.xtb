@@ -40,6 +40,7 @@
 <translation id="3167189358072330585">Kontot fungerar inte på Google Chrome. Kontakta domänadministratören eller logga in med ett vanligt Google-konto.</translation>
 <translation id="3173834708294760622">Google Chrome-sida</translation>
 <translation id="3196546062792660320">Med Chrome sparar du tid genom att dina konton blir tillgängliga på nätet. Du kan lägga till och ta bort konton i inställningarna.</translation>
+<translation id="322254490661677575">Ange lösenfrasen om du vill använda och spara Chrome-data i ditt Google-konto.</translation>
 <translation id="3282568296779691940">Logga in i Chrome</translation>
 <translation id="3345341804167540816">Använd Chrome överallt</translation>
 <translation id="3503014945441706099">Få Förbättrad säker webbsökning även för den här Chromium-profilen</translation>
@@ -52,6 +53,7 @@
 <translation id="3980220367029651214">Du håller på att byta synkroniseringskonto från <ph name="USER_EMAIL1" /> till <ph name="USER_EMAIL2" />. Befintlig data i Chrome hanteras av <ph name="DOMAIN" />. Åtgärden raderar din data från den här enheten men den finns kvar på <ph name="USER_EMAIL1" />.</translation>
 <translation id="3984746313391923992">Organisationen kräver att du inte loggar in i Chrome.</translation>
 <translation id="3988789688219830639">Google Chrome har inte åtkomst till dina foton eller videor. Aktivera åtkomst i iOS-inställningar &gt; Integritet &gt; Foton.</translation>
+<translation id="4064699917955374540">Verifiera din identitet om du vill använda och spara Chrome-data i ditt Google-konto.</translation>
 <translation id="417201473131094001">Stöds inte på Chrome Canary</translation>
 <translation id="4233521129555661685"><ph name="USER_EMAIL1" /> använde Chrome och har lämnat kvar bokmärken, lösenord och andra inställningar på enheten.</translation>
 <translation id="424864128008805179">Vill du logga ut från Chrome?</translation>

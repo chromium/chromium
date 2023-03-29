@@ -1252,6 +1252,7 @@ Installeret for nylig</translation>
 <translation id="685782768769951078">{NUM_DIGITS,plural, =1{Der skal angives ét ciffer mere}one{Der skal angives # ciffer mere}other{Der skal angives # cifre mere}}</translation>
 <translation id="6867938213751067702">Download af <ph name="FILENAME" /> er sat på pause</translation>
 <translation id="6878400149835617132">Genvejen er deaktiveret</translation>
+<translation id="6878701771800702153">{NUM_APPS,plural, =1{1 app}one{# app}other{# apps}}</translation>
 <translation id="6884665277231944629">Gå tilbage til i dag</translation>
 <translation id="6886172995547742638">Din <ph name="DEVICE_TYPE" />-enhed præsterer muligvis dårligere. Brug en certificeret USB-C-strømadapter på minimum <ph name="PREFERRED_MINIMUM_POWER" /> W.</translation>
 <translation id="688631446150864480">Tryk på pil ned for at skifte vindue</translation>
@@ -1419,6 +1420,7 @@ Du kan slukke enheden ved at holde afbryderknappen på enheden nede igen.</trans
 <translation id="7689817529363080918">Dette giver <ph name="APP1_NAME" />, <ph name="APP2_NAME" /> og alle andre apps samt websites med mikrofontilladelse adgang til mikrofonen</translation>
 <translation id="7704000866383261579">Annuller fortryd for den seneste handling</translation>
 <translation id="7705524343798198388">VPN</translation>
+<translation id="770741401784017797">Opretter gif</translation>
 <translation id="7714767791242455379">Tilføj et mobilnetværk</translation>
 <translation id="7720400844887872976">Aktiveret indtil <ph name="TIME" /></translation>
 <translation id="7720410380936703141">PRØV IGEN</translation>
@@ -1431,6 +1433,7 @@ Du kan slukke enheden ved at holde afbryderknappen på enheden nede igen.</trans
 <translation id="7749443890790263709">Det maksimale antal skriveborde er nået.</translation>
 <translation id="776344839111254542">Klik for at se opdateringsoplysninger</translation>
 <translation id="7768784765476638775">Tekstoplæsning</translation>
+<translation id="7769299611924763557">Din gif er klar om et øjeblik</translation>
 <translation id="7780094051999721182">genveje</translation>
 <translation id="7780159184141939021">Roter skærm</translation>
 <translation id="7796735576426975947">Nye notifikationer er skjult</translation>

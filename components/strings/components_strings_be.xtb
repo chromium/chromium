@@ -46,7 +46,6 @@
 <translation id="1075079914415273530">Сельская і лясная гаспадарка</translation>
 <translation id="1080116354587839789">Дапасаваць да шырыні старонкі</translation>
 <translation id="1081061862829655580">Латок 19</translation>
-<translation id="1088860948719068836">Дадайце імя, указанае на карце</translation>
 <translation id="1089439967362294234">Змяніць пароль</translation>
 <translation id="1096545575934602868">У гэтым полі павінна быць максімум <ph name="MAX_ITEMS_LIMIT" /> запісаў. Усе лішнія запісы будуць адхілены.</translation>
 <translation id="1100782917270858593">Кнопка "Працягнуць пошук". Каб пашукаць звязаныя дзеянні ў гісторыі праглядаў Chrome, націсніце Enter</translation>
@@ -339,7 +338,6 @@
 <translation id="1721424275792716183">* Абавязковае поле</translation>
 <translation id="1725591448053514783">Канверт You 6</translation>
 <translation id="1727613060316725209">Сертыфікат з’яўляецца сапраўдным</translation>
-<translation id="1727741090716970331">Дадайце нумар дзеючай карткі</translation>
 <translation id="1728677426644403582">Вы праглядаеце крыніцу вэб-старонкі</translation>
 <translation id="173080396488393970">Карткі гэтага тыпу не падтрымліваюцца</translation>
 <translation id="1732445923934584865">Папрасіць асабіста</translation>
@@ -630,6 +628,7 @@
 <translation id="2469153820345007638">Парадак "ад 1 да N"</translation>
 <translation id="2470767536994572628">Калі вы будзеце змяняць анатацыі, гэты дакумент вернецца ў аднастаронкавы выгляд і прыме першапачатковую пазіцыю</translation>
 <translation id="2479410451996844060">Няправільны URL-адрас пошуку.</translation>
+<translation id="2480300195898055381">Ва Уліковым запісе Google (<ph name="USER_EMAIL" />)</translation>
 <translation id="2482878487686419369">Апавяшчэнні</translation>
 <translation id="248348093745724435">Палітыкі прылады</translation>
 <translation id="2491120439723279231">Ёсць памылкі ў сертыфікаце сервера.</translation>
@@ -843,6 +842,7 @@
 <translation id="3029752078111257850">Навіны свету</translation>
 <translation id="3037177537145227281">Цана адсочваецца</translation>
 <translation id="3037605927509011580">Якая неспадзяванка!</translation>
+<translation id="3041450980936463495">Вы можаце выкарыстоўваць захаваныя адрасы ў розных прадуктах Google. Гэты адрас будзе захаваны ў вашым Уліковым запісе Google (<ph name="ACCOUNT" />).</translation>
 <translation id="3041612393474885105">Інфармацыя аб сертыфікаце</translation>
 <translation id="305162504811187366">Гісторыю Аддаленага працоўнага стала Chrome, у тым ліку меткі часу, хосты і ідэнтыфікатары сеансаў кліентаў</translation>
 <translation id="3052964831964880138">Зніжэнне цаны на <ph name="PRODUCT_NAME" /> на <ph name="PRICE_DROP" /></translation>
@@ -939,7 +939,6 @@
 <translation id="3272091146646336650">Super B</translation>
 <translation id="3281350579597955952">{0,plural, =1{Згодна з палітыкай адміністратара не рэкамендуецца адкрываць гэты файл тут: <ph name="DESTINATION_NAME" />}one{Згодна з палітыкай адміністратара не рэкамендуецца адкрываць гэтыя файлы тут: <ph name="DESTINATION_NAME" />}few{Згодна з палітыкай адміністратара не рэкамендуецца адкрываць гэтыя файлы тут: <ph name="DESTINATION_NAME" />}many{Згодна з палітыкай адміністратара не рэкамендуецца адкрываць гэтыя файлы тут: <ph name="DESTINATION_NAME" />}other{Згодна з палітыкай адміністратара не рэкамендуецца адкрываць гэтыя файлы тут: <ph name="DESTINATION_NAME" />}}</translation>
 <translation id="3282085321714087552">Ваша арганізацыя (<ph name="ENROLLMENT_DOMAIN" />) адправіла на наступныя вэб-сайты пэўныя звесткі (напрыклад, налады або палітыкі).</translation>
-<translation id="3282497668470633863">Дадайце імя, указанае на картцы</translation>
 <translation id="3286372614333682499">кніжная</translation>
 <translation id="3287510313208355388">Спампаваць пры падключэнні да інтэрнэту</translation>
 <translation id="3288238092761586174">Каб спраўдзіць ваш плацеж, сайту <ph name="URL" /> можа спатрэбіцца выканаць дадатковыя дзеянні</translation>
@@ -952,7 +951,6 @@
 <translation id="3304777285002411338">A2x3</translation>
 <translation id="33073482541490531">Выкарыстаны вамі пароль трапіў у спіс узламаных даных. Рэкамендуем змяніць яго зараз жа ў Менеджары пароляў.</translation>
 <translation id="3308006649705061278">Арганізацыйная адзінка (АА)</translation>
-<translation id="3320021301628644560">Дадаць адрас для выстаўлення рахункаў</translation>
 <translation id="3324687287337751929">4 x 6 цаляў</translation>
 <translation id="3324983252691184275">Цёмна-чырвоны</translation>
 <translation id="3329013043687509092">Насычанасць</translation>
@@ -1015,7 +1013,6 @@
 <translation id="3461824795358126837">Маркер</translation>
 <translation id="3462200631372590220">Схаваць дадатковую інфармацыю</translation>
 <translation id="346601286295919445">Хімія</translation>
-<translation id="3467763166455606212">Патрабуецца імя ўладальніка карткі</translation>
 <translation id="3468054117417088249"><ph name="TAB_SWITCH_SUFFIX" />, укладка адкрытая, каб перайсці на адкрытую ўкладку, націсніце Tab, затым Enter</translation>
 <translation id="3470563864795286535"><ph name="CLOSE_INCOGNITO_WINDOWS_FOCUSED_FRIENDLY_MATCH_TEXT" />. Каб закрыць усе адкрытыя вокны ў рэжыме інкогніта, націсніце Tab, затым Enter</translation>
 <translation id="3477679029130949506">Расклад паказаў у тэатрах і кінатэатрах</translation>
@@ -1655,6 +1652,7 @@
 <translation id="5018422839182700155">Не ўдалося адкрыць старонку</translation>
 <translation id="5018802455907704660">16 x 20 цаляў</translation>
 <translation id="5019198164206649151">Рэзервовае сховішча ў кепскім стане</translation>
+<translation id="5019293549442035120">Вы можаце выкарыстоўваць захаваныя адрасы ў розных прадуктах Google. Гэты адрас будзе захаваны ў вашым Уліковым запісе Google (<ph name="USER_EMAIL" />).</translation>
 <translation id="5020776957610079374">Музыка з усяго свету</translation>
 <translation id="5021557570875267742">Адсочвайце цэны з Chrome</translation>
 <translation id="5023310440958281426">Праверце палітыкі адміністратара</translation>
@@ -1792,6 +1790,7 @@
 <translation id="5324080437450482387">Выбраць кантактныя звесткі</translation>
 <translation id="5329858041417644019">Ваш браўзер не знаходзіцца пад кіраваннем</translation>
 <translation id="5332219387342487447">Спосаб дастаўкі</translation>
+<translation id="5332769172018416402">Папрасіць у паведамленні</translation>
 <translation id="5333022057423422993">Браўзер Chrome выявіў, што пароль, які вы толькі што выкарысталі, быў раскрыты пры ўцечцы даных. Мы рэкамендуем вам абараніць свае ўліковыя запісы, праверыўшы захаваныя паролі.</translation>
 <translation id="5334013548165032829">Падрабязныя сістэмныя журналы</translation>
 <translation id="5334145288572353250">Захаваць адрас?</translation>
@@ -1930,6 +1929,7 @@
 <translation id="5695542892312572833">Пацвердзіць і завяршыць куплю з дапамогай Windows Hello?</translation>
 <translation id="5701381305118179107">У цэнтры</translation>
 <translation id="570530837424789914">Кіраваць...</translation>
+<translation id="5706906618852913030">Захаваць ва ўліковым запісе?</translation>
 <translation id="5707154300732650394">Працягнуць пошук</translation>
 <translation id="57094364128775171">Прапанаваць надзейны пароль…</translation>
 <translation id="571403275720188526">(arm64)</translation>
@@ -2283,7 +2283,6 @@
 <translation id="6612010098632894193">Відэа ў інтэрнэце</translation>
 <translation id="6615297766614333076">Укладчык 2</translation>
 <translation id="6624427990725312378">Кантактная інфармацыя</translation>
-<translation id="6626291197371920147">Дадайце сапраўдны нумар карткі</translation>
 <translation id="6627727261837091711">Паказаць падрабязныя звесткі пра персаналізацыю рэкламы</translation>
 <translation id="6628463337424475685">Пошук <ph name="ENGINE" /></translation>
 <translation id="6630043285902923878">Ідзе пошук прылад USB...</translation>
@@ -2770,7 +2769,6 @@
 <translation id="7716375162095500223">Яшчэ не запампавана або праігнаравана</translation>
 <translation id="7716424297397655342">Не ўдалося загрузіць сайт з кэша</translation>
 <translation id="772128550427553158">Код CVC размешчаны на пярэднім баку карты.</translation>
-<translation id="7723047071702270851">Рэдагаваць картку</translation>
 <translation id="7724603315864178912">Выразаць</translation>
 <translation id="7734285854693414638">Хутка стварыць новую форму ў Формах Google</translation>
 <translation id="773466115871691567">Заўсёды перакладаць старонкі на наступнай мове: <ph name="SOURCE_LANGUAGE" /></translation>

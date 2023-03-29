@@ -145,6 +145,7 @@ Ang sinumang may passphrase mo lang ang makakapagbasa sa iyong naka-encrypt na d
 <translation id="1965935827552890526">Tapusin ang ginagawa mo sa iyong iba pang nakabukas na window ng Chrome.</translation>
 <translation id="1973912524893600642">Panatilihin ang Data</translation>
 <translation id="1974060860693918893">Advanced</translation>
+<translation id="1980417445547898121">{count,plural, =1{Kunin ang iyong {count} kamakailang aktibong tab mula sa iba mo pang device sa iPhone na ito}one{Kunin ang iyong {count} kamakailang aktibong tab mula sa iba mo pang device sa iPhone na ito}other{Kunin ang iyong {count} na kamakailang aktibong tab mula sa iba mo pang device sa iPhone na ito}}</translation>
 <translation id="1981118202195772574">Mobile</translation>
 <translation id="1989112275319619282">Mag-browse</translation>
 <translation id="1990820278544963435">Maghanap</translation>
@@ -331,6 +332,7 @@ Tingnan ang mga tagubilin ng iyong search engine para sa pag-delete sa history n
 <translation id="3214379938835224220">Na-sign out ka bilang bahagi ng pag-reset ng iyong iPad. I-tap ang magpatuloy sa ibaba para mag-sign in.</translation>
 <translation id="3224641773458703735">Upang makapag-export ng mga password, kinakailangan mo munang magtakda ng passcode sa iyong device.</translation>
 <translation id="3227137524299004712">Mikropono</translation>
+<translation id="3235063766008841141">Nailagay sa isang mapanlinlang na site at nakita sa paglabag sa data</translation>
 <translation id="3240426699337459095">Nakopya ang link</translation>
 <translation id="3244271242291266297">MM</translation>
 <translation id="3245744387817103524">Hindi ma-save ang iyong pagbabago.</translation>
@@ -370,6 +372,7 @@ Tingnan ang mga tagubilin ng iyong search engine para sa pag-delete sa history n
 <translation id="3494788280727468875">Kumpirmahin ang Pag-clear ng Data sa Pag-browse</translation>
 <translation id="35083190962747987">Buksan ang ${url}</translation>
 <translation id="3519193562722059437">Magbukas ng tab upang i-browse ang web.</translation>
+<translation id="3519905498307021260">{count,plural, =1{Buksan ang tab}one{Buksan ang {count} tab}other{Buksan ang {count} na tab}}</translation>
 <translation id="3527085408025491307">Folder</translation>
 <translation id="3529024052484145543">Hindi secure</translation>
 <translation id="3530206579861815432">Mabilis na maghanap ng mga bukas at kamakailang isinarang tab sa lahat ng iyong naka-sync na device.</translation>
@@ -417,6 +420,7 @@ Tingnan ang mga tagubilin ng iyong search engine para sa pag-delete sa history n
 <translation id="3863769054730344136">Ipadala sa Iyong Mga Device</translation>
 <translation id="387280738075653372">I-download ang Chrome dito.</translation>
 <translation id="3888863481921783344">Gagamitin ito para ipakita sa iyo ang mga posibleng inimbitahan sa event mo.</translation>
+<translation id="3891414008432200754">Presyo</translation>
 <translation id="3892144330757387737">Makikita mo rito ang iyong history</translation>
 <translation id="3897092660631435901">Menu</translation>
 <translation id="3904829425754749514">Na-off ng iyong organisasyon ang pag-sync. Makikita mo pa rin ang iyong mga bookmark, history, password, at iba pang setting sa device na ito. Kung gagawa ka ng mga pagbabago, hindi masi-sync ang mga ito sa iyong account.</translation>
@@ -464,6 +468,7 @@ Tingnan ang mga tagubilin ng iyong search engine para sa pag-delete sa history n
 <translation id="4237377247299956313">I-tap ang <ph name="BEGIN_BOLD" />Default na Browser App<ph name="END_BOLD" /></translation>
 <translation id="424315890655130736">Ilagay ang Passphrase</translation>
 <translation id="4249955472157341256">Pagbukud-bukurin ayon sa Pinakabago</translation>
+<translation id="4250432749243022864">{count,plural, =0{Buksan ang {count} tab}=1{Buksan ang {count} tab}one{Buksan ang {count} tab}other{Buksan ang {count} na tab}}</translation>
 <translation id="4253168017788158739">Tala</translation>
 <translation id="4263576668337963058">Ipakita ang mga available na pagkilos sa page</translation>
 <translation id="4267586310863245665">{COUNT,plural, =1{Na-dismiss mo ang {COUNT} babala}one{Na-dismiss mo ang {COUNT} babala}other{Na-dismiss mo ang {COUNT} na babala}}</translation>
@@ -506,6 +511,7 @@ Tingnan ang mga tagubilin ng iyong search engine para sa pag-delete sa history n
 <translation id="452750746583162491">Suriin ang iyong naka-sync na data</translation>
 <translation id="4536418791685807335">Subukang mag-sign in muli.</translation>
 <translation id="4540780316273593836">Nagkaproblema</translation>
+<translation id="457292989631956153">{COUNT,plural, =1{Isara ang {COUNT} Hindi Aktibong Tab?}one{Isara ang {COUNT} Hindi Aktibong Tab?}other{Isara ang {COUNT} na Hindi Aktibong Tab?}}</translation>
 <translation id="457386861538956877">Higit pa...</translation>
 <translation id="4587235830039045480">I-save ang password sa iyong Google Account</translation>
 <translation id="4587589328781138893">Mga Site</translation>
@@ -535,6 +541,7 @@ Na-encrypt ang iyong data gamit ang iyong passphrase sa pag-sync. Ilagay ito upa
 <translation id="470966556546083668">Huwag I-on ang Pag-sync</translation>
 <translation id="4737560986434232178">Maghanap sa Mga Kamakailang Tab</translation>
 <translation id="473775607612524610">I-update</translation>
+<translation id="4746926359847517643">Puwede mong ibalik ang mga iyon kahit kailan sa history.</translation>
 <translation id="4747097190499141774">Hindi kasama sa pag-encrypt ng passphrase ang mga paraan ng pagbabayad at address mula sa Google Pay. Ang tao lang na may alam ng iyong passphrase ang makakabasa sa naka-encrypt mong data. Hindi ipinapadala sa Google ang passphrase at hindi nito ito sino-store. Kung makalimutan mo ang iyong passphrase o gusto mong baguhin ang setting na ito, kakailanganin mong i-reset ang pag-sync. <ph name="BEGIN_LINK" />Matuto pa<ph name="END_LINK" /></translation>
 <translation id="4751162929052964260"><ph name="TITLE" />, <ph name="STATE" />, Sa device lang na ito, <ph name="URL" /></translation>
 <translation id="4751645464639803239">Bagong Tab na Incognito</translation>
@@ -604,6 +611,7 @@ Para baguhin ang setting na ito, <ph name="BEGIN_LINK" />i-reset ang pag-sync<ph
 <translation id="5168414296986405587">Binuo para sa iPadOS</translation>
 <translation id="5173088371991956744">Kailangang Ma-verify ng Pag-sync na Ikaw Ito</translation>
 <translation id="5176312250994681348">Panatilihin ang kamakailang password</translation>
+<translation id="51802232683641391">{count,plural, =1{Kunin ang tab na iniwan mo sa Android?}one{Kunin ang mga tab na iniwan mo sa Android?}other{Kunin ang mga tab na iniwan mo sa Android?}}</translation>
 <translation id="5181140330217080051">Nagda-download</translation>
 <translation id="5184329579814168207">Buksan sa Chrome</translation>
 <translation id="5186185447130319458">Pribado</translation>
@@ -716,6 +724,7 @@ Dapat ding naka-enable ang handoff sa Pangkalahatang seksyon ng Mga Setting, at 
 <translation id="5963939892571022323">Hindi makagawa ng link sa highlight.</translation>
 <translation id="5965679971710331625">Naka-sign in ka</translation>
 <translation id="5979837087407522202">Maghanap ng Mga Password</translation>
+<translation id="5981230843984570095">Isara ang Lahat ng Hindi Aktibo</translation>
 <translation id="5982717868370722439">Idagdag ang kasalukuyang data sa <ph name="USER_EMAIL" />.</translation>
 <translation id="5984222099446776634">Kamakailang Binisita</translation>
 <translation id="5988097621740394599">Tingnan ang mga pagbaba ng presyo sa iyong mga tab.</translation>
@@ -765,6 +774,7 @@ Dapat ding naka-enable ang handoff sa Pangkalahatang seksyon ng Mga Setting, at 
 <translation id="6232329973559504466">Paghahanap na Incognito</translation>
 <translation id="6247557882553405851">Google Password Manager</translation>
 <translation id="6254066287920239840">Buksan ang mga link sa app sa halip na sa browser.</translation>
+<translation id="625491139841322297">{count,plural, =1{Suriin ang tab}one{Suriin ang lahat ng tab}other{Suriin ang lahat ng tab}}</translation>
 <translation id="6255097610484507482">I-edit ang Credit Card</translation>
 <translation id="6277426346321820595">Walang Proteksyon</translation>
 <translation id="6284652193729350524">Mag-alok na isalin ang <ph name="LANGUAGE" /></translation>
@@ -976,6 +986,7 @@ Habang nasa Incognito, hindi magagamit ng mga site ang cookies para makita ang i
 <translation id="7607521702806708809">I-delete ang Password</translation>
 <translation id="7611459119367035420">Makikita mo ang iyong mga naka-pin na tab dito.</translation>
 <translation id="7638584964844754484">Maling passphrase</translation>
+<translation id="7640669552036055091">Mga Tab mula sa Android</translation>
 <translation id="7646263789464975852">Menu → Mga Setting → Pag-check sa Kaligtasan</translation>
 <translation id="7646772052135772216">Hindi gumagana ang pag-sync ng password</translation>
 <translation id="764827086632467055">I-tap ang Default na Browser App</translation>
@@ -1141,6 +1152,7 @@ Puwedeng gumamit ng cookies ang mga site para makita ang iyong aktibidad sa pag-
 <translation id="8764015330924122850">Huwag nang subaybayan ang <ph name="DOMAIN_NAME" /></translation>
 <translation id="8766790350274092814">Made-delete ang mga password para sa <ph name="WEBSITE" /> at <ph name="SECOND_WEBSITE" />. Hindi made-delete ang iyong mga account.</translation>
 <translation id="8775144690796719618">Di-wastong URL</translation>
+<translation id="8780076847684176174">{count,plural, =1{Suriin ang tab...}one{Suriin ang lahat ng tab...}other{Suriin ang lahat ng tab...}}</translation>
 <translation id="8787968206789828143">Maghanap sa Web</translation>
 <translation id="8792626944327216835">mikropono</translation>
 <translation id="8803639129939845298">Secure</translation>
@@ -1205,6 +1217,7 @@ Puwedeng gumamit ng cookies ang mga site para makita ang iyong aktibidad sa pag-
 <translation id="9162432979321511934">I-on ang I-autofill ang Mga Password</translation>
 <translation id="9165320910061267720">Para makatanggap ng mga notification tungkol sa mga alerto sa pagbaba ng presyo, kakailanganin mong i-on ang mga notification sa mga setting ng iyong iOS.</translation>
 <translation id="9177438225260810839">Maghanap sa Mga Bukas na Tab</translation>
+<translation id="9187853111759024059">Isara ang 99+ Hindi Aktibong Tab?</translation>
 <translation id="9188680907066685419">Mag-sign out sa pinamamahalaang account</translation>
 <translation id="9200875785104711666"><ph name="TIME" /> (na) araw na ang nakalipas</translation>
 <translation id="9203116392574189331">Handoff</translation>

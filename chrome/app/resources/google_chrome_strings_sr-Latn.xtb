@@ -24,6 +24,7 @@ Neke funkcije su možda nedostupne i promene podešavanja neće biti sačuvane.
 <translation id="1399397803214730675">Ovaj računar već ima noviju verziju Google Chrome pregledača. Ako softver ne funkcioniše, deinstalirajte Google Chrome i pokušajte ponovo.</translation>
 <translation id="139993653570221430">Možete da se predomislite u bilo kom trenutku u Chrome podešavanjima. Probe se obavljaju paralelno uz trenutni način prikazivanja oglasa, pa nećete odmah videti promene.</translation>
 <translation id="1434626383986940139">Chrome Canary aplikacije</translation>
+<translation id="1496905273983707119">{NUM_DEVICES,plural, =0{Google Chrome je bio povezan sa HID uređajem}=1{Google Chrome je povezan sa HID uređajem}one{Google Chrome je povezan sa HID uređajima}few{Google Chrome je povezan sa HID uređajima}other{Google Chrome je povezan sa HID uređajima}}</translation>
 <translation id="1507198376417198979">Prilagodite novi Chrome profil</translation>
 <translation id="1516530951338665275">Google Chrome zahteva pristup Bluetooth-u radi nastavljanja sa 
  uparivanjem. <ph name="IDS_BLUETOOTH_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>

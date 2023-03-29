@@ -40,6 +40,7 @@
 <translation id="1181037720776840403">Отстрани</translation>
 <translation id="1182225749592316782">Ова дозволува пристап за сите апликации и веб-сајтови со дозволи за камерата и микрофонот</translation>
 <translation id="1183863904939664422">Не ме интересира предлогов</translation>
+<translation id="1184126796192815024">Мрежава не поддржува стримување апликации од вашиот телефон. Обидете се со користење на точката на пристап на телефонот. <ph name="LEARN_MORE" /></translation>
 <translation id="118437560755358292">Внесете лозинка или PIN за поголема безбедност</translation>
 <translation id="118532027333893379">Допрете каде било за да го снимите целиот екран</translation>
 <translation id="1190609913194133056">Центар за известување</translation>
@@ -1252,6 +1253,7 @@
 <translation id="685782768769951078">{NUM_DIGITS,plural, =1{Преостанува уште една цифра}one{Преостанува уште # цифра}other{Преостануваат уште # цифри}}</translation>
 <translation id="6867938213751067702">Преземањето на <ph name="FILENAME" /> е паузирано</translation>
 <translation id="6878400149835617132">Кратенката е исклучена</translation>
+<translation id="6878701771800702153">{NUM_APPS,plural, =1{1 апликација}one{# апликација}other{# апликации}}</translation>
 <translation id="6884665277231944629">Вратете се на денешниот датум</translation>
 <translation id="6886172995547742638">Перформансите на вашиот <ph name="DEVICE_TYPE" /> може да бидат послаби. Користете сертифициран адаптер за напојување USB-C од <ph name="PREFERRED_MINIMUM_POWER" /> W или повеќе.</translation>
 <translation id="688631446150864480">Притискајте го копчето со стрелка надолу за да се префрлате меѓу прозорците</translation>
@@ -1419,6 +1421,7 @@
 <translation id="7689817529363080918">Ова дозволува пристап до микрофонот за <ph name="APP1_NAME" />, <ph name="APP2_NAME" /> и сите апликации и веб-сајтови со дозвола за микрофонот</translation>
 <translation id="7704000866383261579">Го повторува последното дејство</translation>
 <translation id="7705524343798198388">VPN</translation>
+<translation id="770741401784017797">Се создава GIF</translation>
 <translation id="7714767791242455379">Додајте нова мобилна мрежа</translation>
 <translation id="7720400844887872976">Вклучено до <ph name="TIME" /></translation>
 <translation id="7720410380936703141">ОБИДЕТЕ СЕ ПОВТОРНО</translation>
@@ -1431,6 +1434,7 @@
 <translation id="7749443890790263709">Достигнат е максималниот број работни простори.</translation>
 <translation id="776344839111254542">Кликнете за да ги погледнете деталите за ажурирањето</translation>
 <translation id="7768784765476638775">Изберете за говор</translation>
+<translation id="7769299611924763557">Вашата GIF-датотека ќе биде подготвена наскоро</translation>
 <translation id="7780094051999721182">кратенки</translation>
 <translation id="7780159184141939021">Ротација на екранот</translation>
 <translation id="7796735576426975947">Сокриено е ново известување</translation>

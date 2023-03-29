@@ -47,6 +47,7 @@
 <translation id="3567399274263440288">Lai pilnvērtīgi izmantotu pārlūku Chromium, pierakstieties tajā, izmantojot savu Google kontu.</translation>
 <translation id="3639997914391704523">Pārlūkprogrammā Chromium var pārbaudīt jūsu paroles, ja esat pierakstījies savā Google kontā.</translation>
 <translation id="3650632991272923014"><ph name="USER_EMAIL1" /> izmantoja pārlūku Chromium un neizdzēsa grāmatzīmes, paroles un citus iestatījumus šajā ierīcē.</translation>
+<translation id="372658070733623520">Lai izmantotu un saglabātu Chromium datus savā Google kontā, apstipriniet savu identitāti.</translation>
 <translation id="3805899903892079518">Chromium nevar piekļūt jūsu fotoattēliem un videoklipiem. Iespējojiet piekļuvi: iOS Settings &gt; Privacy &gt; Photos.</translation>
 <translation id="4043291146360695975">Paroles tiek saglabātas tikai šīs ierīces paroļu pārvaldniekā</translation>
 <translation id="4099085513035183040">Netiek atbalstīta pārlūkā Chromium Beta.</translation>
@@ -76,6 +77,7 @@
 <translation id="5945387852661427312">Jūs pierakstāties kontā, kas tiek pārvaldīts domēnā <ph name="DOMAIN" />, un sniedzat tā administratoram kontroli pār saviem Chromium datiem. Jūsu dati tiks neatgriezeniski saistīti ar šo kontu. Izrakstoties no pārlūka Chromium, jūsu dati tiks dzēsti no šīs ierīces, taču tie tiks saglabāti jūsu Google kontā.</translation>
 <translation id="5983312940147103417">Uzlabojiet pārlūku Chromium</translation>
 <translation id="6062449165341879460">Jūsu organizācija (<ph name="DOMAIN" />) varēs piekļūt jūsu Chromium datiem, grāmatzīmēm, vēsturei, parolēm un citiem iestatījumiem, ko glabājat šajā kontā. Izrakstoties jūsu dati tiks dzēsti no šīs ierīces.  Tomēr jūsu dati joprojām tiks glabāti jūsu pārvaldītajā Google kontā un būs pieejami jūsu organizācijai. Jūsu organizācija var kontā iestatīt lietotāju politikas, kas var mainīt Chromium darbību.</translation>
+<translation id="61109258320235597">Lai izmantotu un saglabātu Chromium datus savā Google kontā, ievadiet ieejas frāzi.</translation>
 <translation id="6119647025869519954">Lai iestatītu Chromium kā noklusējuma pārlūku, veiciet tālāk norādītās darbības.
 1. Atveriet iestatījumus.
 2. Pieskarieties vienumam “Noklusējuma pārlūka lietotne”.

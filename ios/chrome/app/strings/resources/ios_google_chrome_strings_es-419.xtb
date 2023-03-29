@@ -40,6 +40,7 @@
 <translation id="3167189358072330585">Tu cuenta no funciona en Google Chrome. Comunícate con tu administrador de dominio o utiliza una cuenta común de Google para acceder.</translation>
 <translation id="3173834708294760622">Página de Google Chrome</translation>
 <translation id="3196546062792660320">Chrome lleva tus cuentas a la Web para ahorrarte tiempo. Puedes agregar o quitar cuentas en la configuración.</translation>
+<translation id="322254490661677575">Para usar y guardar datos de Chrome en tu Cuenta de Google, ingresa tu frase de contraseña.</translation>
 <translation id="3282568296779691940">Acceder a Chrome</translation>
 <translation id="3345341804167540816">Usar Chrome en todas partes</translation>
 <translation id="3503014945441706099">También obtén la Navegación segura mejorada para este perfil de Chrome</translation>
@@ -52,6 +53,7 @@
 <translation id="3980220367029651214">Estás cambiando la cuenta de sincronización de <ph name="USER_EMAIL1" /> a <ph name="USER_EMAIL2" />. <ph name="DOMAIN" /> administra tus datos de Chrome existentes. Esta acción borrará tus datos del dispositivo, pero permanecerán en <ph name="USER_EMAIL1" />.</translation>
 <translation id="3984746313391923992">Tu organización requiere que no accedas a tu cuenta en Chrome.</translation>
 <translation id="3988789688219830639">Google Chrome no puede acceder a tus fotos ni videos. Habilita el acceso en Configuración de iOS &gt; Privacidad &gt; Fotos.</translation>
+<translation id="4064699917955374540">Para usar y guardar datos de Chrome en tu Cuenta de Google, verifica tu identidad.</translation>
 <translation id="417201473131094001">No es compatible con Chrome Canary</translation>
 <translation id="4233521129555661685"><ph name="USER_EMAIL1" /> usó Chrome y dejó favoritos, contraseñas y otros parámetros de configuración en este dispositivo.</translation>
 <translation id="424864128008805179">¿Quieres salir de Chrome?</translation>
@@ -68,6 +70,7 @@
 <translation id="5119391094379141756">Selecciona Chrome.</translation>
 <translation id="5162467219239570114">Chrome no está actualizado. Si no hay actualizaciones disponibles en <ph name="BEGIN_LINK" />App Store<ph name="END_LINK" />, es posible que tu dispositivo no sea compatible con nuevas versiones de Chrome.</translation>
 <translation id="5389212809648216794">Google Chrome no puede utilizar tu cámara porque la está usando otra aplicación</translation>
+<translation id="5395376160638294582">Asegúrate de que siempre puedas usar los datos de Chrome en tu Cuenta de Google</translation>
 <translation id="5460571915754665838">4. Selecciona Chrome.</translation>
 <translation id="5492504007368565877">El Administrador de contraseñas de Google no puede revisar las contraseñas.</translation>
 <translation id="5552137475244467770">Chrome revisa tus contraseñas de forma periódica para comprobar si aparecen en listas que se hayan publicado en línea. Durante esta acción, se encriptan tus contraseñas y nombres de usuario para que nadie, ni siquiera Google, pueda leer esta información.</translation>
@@ -122,6 +125,7 @@
 <translation id="8370517070665726704">Copyright <ph name="YEAR" /> Google LLC. Todos los derechos reservados.</translation>
 <translation id="840168496893712993">Algunos complementos causan bloqueos en Chrome. Prueba a desinstalarlos.</translation>
 <translation id="8414886616817913619">Tu organización requiere que accedas para usar Chrome. <ph name="BEGIN_LINK" />Más información<ph name="END_LINK" /></translation>
+<translation id="84594714173170813">Sigue usando los datos de Chrome en tu Cuenta de Google</translation>
 <translation id="8459495907675268833">Los datos seleccionados se quitaron de Chrome y los dispositivos sincronizados. Es posible que tu cuenta de Google tenga otros formularios del historial de navegación, como las búsquedas y la actividad de otros servicios de Google en history.google.com.</translation>
 <translation id="850555388806794946">Para establecer Chrome como navegador predeterminado, haz lo siguiente:
   1. Abre Ajustes.

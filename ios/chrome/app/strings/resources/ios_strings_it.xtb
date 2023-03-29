@@ -253,7 +253,7 @@ I siti non possono utilizzare i cookie per conoscere la tua attività di navigaz
 <translation id="277771892408211951">Seleziona lingua</translation>
 <translation id="2780046210906776326">Nessun account email</translation>
 <translation id="2781325423985810933">ANNULLA</translation>
-<translation id="2781331604911854368">On</translation>
+<translation id="2781331604911854368">Attiva</translation>
 <translation id="2781692009645368755">Google Pay</translation>
 <translation id="2783054063075604403">Impossibile creare il link</translation>
 <translation id="2786701870377699570">Cerca tra le schede sui dispositivi sincronizzati</translation>
@@ -325,6 +325,7 @@ Consulta le istruzioni del tuo motore di ricerca per eliminare la tua cronologia
 <translation id="3214379938835224220">Il tuo account è stato disconnesso durante il ripristino dell'iPad. Tocca Continua sotto per accedere.</translation>
 <translation id="3224641773458703735">Per esportare le password devi innanzitutto impostare un passcode sul dispositivo.</translation>
 <translation id="3227137524299004712">Microfono</translation>
+<translation id="3235063766008841141">Inserita in un sito ingannevole e presente in una violazione dei dati</translation>
 <translation id="3240426699337459095">Link copiato</translation>
 <translation id="3244271242291266297">MM</translation>
 <translation id="3245744387817103524">Impossibile salvare la modifica.</translation>
@@ -475,6 +476,7 @@ Consulta le istruzioni del tuo motore di ricerca per eliminare la tua cronologia
 <translation id="4342946437867096381">Hai già salvato una password per questo sito nel tuo Account Google. Google può scegliere automaticamente la password più recente.</translation>
 <translation id="4343046787186034850">Accesso a fotocamera e microfono consentito</translation>
 <translation id="4359125752503270327">Questa pagina verrà aperta con un'altra applicazione.</translation>
+<translation id="4371526908359194219">Notifiche email</translation>
 <translation id="4375040482473363939">Ricerca di codici QR</translation>
 <translation id="4378154925671717803">Telefono</translation>
 <translation id="4389019817280890563">Tocca per modificare la lingua.</translation>
@@ -576,6 +578,7 @@ Per cambiare questa impostazione, <ph name="BEGIN_LINK" />reimposta la sincroniz
 <translation id="4986678885919050584">Rimuovi da questo dispositivo</translation>
 <translation id="498985224078955265">Per inviare questa scheda a un altro dispositivo, accedi a Chrome su entrambi i dispositivi.</translation>
 <translation id="5005498671520578047">Copia password</translation>
+<translation id="5016420433031926653">Invia a <ph name="USER_EMAIL" /></translation>
 <translation id="5017828934289857214">Ricordamelo dopo</translation>
 <translation id="5037676449506322593">Seleziona tutto</translation>
 <translation id="5039804452771397117">Consenti</translation>
@@ -586,7 +589,7 @@ Per cambiare questa impostazione, <ph name="BEGIN_LINK" />reimposta la sincroniz
 <translation id="5090832849094901128">L'eliminazione di questa password non comporta l'eliminazione del tuo account su <ph name="WEBSITE" />.</translation>
 <translation id="5094827893301452931">Tweet completato.</translation>
 <translation id="5118713593561876160">Interessi</translation>
-<translation id="5118764316110575523">Off</translation>
+<translation id="5118764316110575523">Non attiva</translation>
 <translation id="5119391094379141756">Seleziona Chrome</translation>
 <translation id="5121618895923301719">Stai già monitorando questo prodotto. Questa pagina viene salvata nella sezione <ph name="BEGIN_LINK" />Preferiti su disp. mobili<ph name="END_LINK" />.</translation>
 <translation id="5132942445612118989">Sincronizza le tue password, la tua cronologia e altro su tutti i tuoi dispositivi</translation>

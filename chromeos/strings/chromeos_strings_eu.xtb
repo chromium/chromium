@@ -698,6 +698,7 @@
 <translation id="7103252855940681301"><ph name="INDEX" />/<ph name="COUNT" /> gailua (<ph name="NAME" />).</translation>
 <translation id="7108668606237948702">"sartu" tekla</translation>
 <translation id="7130438335435247835">Sarbide-puntuaren izena (APNa)</translation>
+<translation id="7131634559772719176">Berretsi aurrezarpena</translation>
 <translation id="7134436342991564651">{0,plural, =1{Izenen zerbitzaria}other{Izenen zerbitzariak}}</translation>
 <translation id="7143207342074048698">Konektatzen</translation>
 <translation id="7144878232160441200">Saiatu berriro</translation>
@@ -801,6 +802,7 @@
 <translation id="80398733265834479">Gaitu kolore automatikoaren modua</translation>
 <translation id="8041089156583427627">Bidali oharrak</translation>
 <translation id="8045012663542226664">Mikrofonoa desaktibatzeko botoia</translation>
+<translation id="8050091914317269817">Horma-paper hau hautatuz gero, modu ilun automatikoa eta kolorea horma-paperarekin bat etorrarazteko aukera aktibatuko dira.</translation>
 <translation id="8075838845814659848">Geratzen den bateria</translation>
 <translation id="8076492880354921740">Fitxak</translation>
 <translation id="8082366717211101304">Ezin da ebatzi DNS Android-erako aplikazioetatik</translation>

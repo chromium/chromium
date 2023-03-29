@@ -46,7 +46,6 @@
 <translation id="1075079914415273530">Landbou en bosbou</translation>
 <translation id="1080116354587839789">Pas volgens wydte</translation>
 <translation id="1081061862829655580">Laai 19</translation>
-<translation id="1088860948719068836">Voeg naam op kaart by</translation>
 <translation id="1089439967362294234">Verander wagwoord</translation>
 <translation id="1096545575934602868">Hierdie veld moenie meer as <ph name="MAX_ITEMS_LIMIT" /> inskrywings hê nie. Alle verdere inskrywings sal weggegooi word.</translation>
 <translation id="1100782917270858593">Knoppie om jou reis te hervat. Druk Enter om jou reis te hervat en relevante aktiwiteit in jou Chrome-geskiedenis te sien</translation>
@@ -339,7 +338,6 @@ Dit sal andersins deur jou privaatheidinstellings geblokkeer word. Dit sal die i
 <translation id="1721424275792716183">* Veld word vereis</translation>
 <translation id="1725591448053514783">Koevert You 6</translation>
 <translation id="1727613060316725209">Sertifikaat is geldig</translation>
-<translation id="1727741090716970331">Voeg geldige kaartnommer by</translation>
 <translation id="1728677426644403582">Jy bekyk tans die bron van 'n webbladsy</translation>
 <translation id="173080396488393970">Hierdie tipe kaart word nie gesteun nie</translation>
 <translation id="1732445923934584865">Vra eerder persoonlik</translation>
@@ -941,7 +939,6 @@ Dit sal andersins deur jou privaatheidinstellings geblokkeer word. Dit sal die i
 <translation id="3272091146646336650">Super B</translation>
 <translation id="3281350579597955952">{0,plural, =1{Adminbeleid beveel aan dat jy nie hierdie lêer in <ph name="DESTINATION_NAME" /> oopmaak nie}other{Adminbeleid beveel aan dat jy nie hierdie lêers in<ph name="DESTINATION_NAME" /> oopmaak nie}}</translation>
 <translation id="3282085321714087552">Jou organisasie, <ph name="ENROLLMENT_DOMAIN" />, het sommige inligting, soos instellings of beleide, na die volgende webwerwe gestuur.</translation>
-<translation id="3282497668470633863">Voeg naam op kaart by</translation>
 <translation id="3286372614333682499">portret</translation>
 <translation id="3287510313208355388">Laai af wanneer jy aanlyn is</translation>
 <translation id="3288238092761586174"><ph name="URL" /> sal dalk bykomende stappe moet doen om jou betaling te verifieer</translation>
@@ -954,7 +951,6 @@ Dit sal andersins deur jou privaatheidinstellings geblokkeer word. Dit sal die i
 <translation id="3304777285002411338">A2x3</translation>
 <translation id="33073482541490531">Die wagwoord wat jy sopas gebruik het, is in ’n dataskending gekry. Wagwoordbestuurder beveel aan dat jy hierdie wagwoord nou verander.</translation>
 <translation id="3308006649705061278">Organisatoriese eenheid (OU)</translation>
-<translation id="3320021301628644560">Voeg faktureringadres by</translation>
 <translation id="3324687287337751929">4x6 dm.</translation>
 <translation id="3324983252691184275">Karmosyn</translation>
 <translation id="3329013043687509092">Versadiging</translation>
@@ -1017,7 +1013,6 @@ Dit sal andersins deur jou privaatheidinstellings geblokkeer word. Dit sal die i
 <translation id="3461824795358126837">Kleurmerker</translation>
 <translation id="3462200631372590220">Versteek gevorderd</translation>
 <translation id="346601286295919445">Chemie</translation>
-<translation id="3467763166455606212">Kaarthouer se naam word vereis</translation>
 <translation id="3468054117417088249"><ph name="TAB_SWITCH_SUFFIX" />, tans oop, druk oortjie en dan Enter om na die oop oortjie toe te wissel</translation>
 <translation id="3470563864795286535"><ph name="CLOSE_INCOGNITO_WINDOWS_FOCUSED_FRIENDLY_MATCH_TEXT" />; druk Tab en dan Enter om alle Incognito-vensters wat tans oop is, toe te maak</translation>
 <translation id="3477679029130949506">Flieklysinskrywings en teatervertoontye</translation>
@@ -1658,6 +1653,7 @@ Dit sal andersins deur jou privaatheidinstellings geblokkeer word. Dit sal die i
 <translation id="5018422839182700155">Kan nie hierdie bladsy oopmaak nie</translation>
 <translation id="5018802455907704660">16x20 dm.</translation>
 <translation id="5019198164206649151">Agtergrondstoor in swak toestand</translation>
+<translation id="5019293549442035120">Jy kan gestoorde adresse oral in Google-produkte gebruik. Hierdie adres sal in jou Google-rekening, <ph name="USER_EMAIL" />, gestoor word.</translation>
 <translation id="5020776957610079374">Wêreldmusiek</translation>
 <translation id="5021557570875267742">Spoor pryse na met Chrome</translation>
 <translation id="5023310440958281426">Gaan jou administrateur se beleide na</translation>
@@ -1795,6 +1791,7 @@ Dit sal andersins deur jou privaatheidinstellings geblokkeer word. Dit sal die i
 <translation id="5324080437450482387">Kies kontakinligting</translation>
 <translation id="5329858041417644019">Jou blaaier word nie bestuur nie</translation>
 <translation id="5332219387342487447">Versendingmetode</translation>
+<translation id="5332769172018416402">Vra in ’n boodskap</translation>
 <translation id="5333022057423422993">Chrome het die wagwoord wat jy sopas gebruik het, in 'n dataskending gekry. Gaan jou gestoorde wagwoorde na om jou rekeninge te beveilig.</translation>
 <translation id="5334013548165032829">Gedetailleerde stelselloglêers</translation>
 <translation id="5334145288572353250">Stoor adres?</translation>
@@ -2287,7 +2284,6 @@ Dit sal andersins deur jou privaatheidinstellings geblokkeer word. Dit sal die i
 <translation id="6612010098632894193">Aanlyn video</translation>
 <translation id="6615297766614333076">Stapelaar 2</translation>
 <translation id="6624427990725312378">Kontakinligting</translation>
-<translation id="6626291197371920147">Voeg geldige kaartnommer by</translation>
 <translation id="6627727261837091711">Wys advertensiepersonaliseringbesonderhede</translation>
 <translation id="6628463337424475685"><ph name="ENGINE" />-soektog</translation>
 <translation id="6630043285902923878">Soek tans USB-toestelle …</translation>
@@ -2773,7 +2769,6 @@ om uit te vind hoe om die sagteware permanent van jou rekenaar te verwyder&lt;/o
 <translation id="7716375162095500223">Nog nie opgelaai nie, of geïgnoreer</translation>
 <translation id="7716424297397655342">Hierdie werf kan nie uit die kas gelaai word nie</translation>
 <translation id="772128550427553158">Die CVC is op die voorkant van jou kaart.</translation>
-<translation id="7723047071702270851">Wysig kaart</translation>
 <translation id="7724603315864178912">Knip</translation>
 <translation id="7734285854693414638">Skep vinnig 'n nuwe vorm in Google Vorms</translation>
 <translation id="773466115871691567">Vertaal altyd bladsye in <ph name="SOURCE_LANGUAGE" /></translation>

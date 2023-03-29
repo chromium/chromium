@@ -46,7 +46,6 @@
 <translation id="1075079914415273530">Пољопривреда и шумарство</translation>
 <translation id="1080116354587839789">Уклопите по ширини</translation>
 <translation id="1081061862829655580">19. фиока</translation>
-<translation id="1088860948719068836">Додајте име са картице</translation>
 <translation id="1089439967362294234">Промена лозинке</translation>
 <translation id="1096545575934602868">Ово поље не сме да има више од <ph name="MAX_ITEMS_LIMIT" /> уноса. Сви додатни уноси ће бити одбачени.</translation>
 <translation id="1100782917270858593">Дугме Наставите пут, притисните Enter да бисте наставили пут и видели релевантне активности у историји Chrome-а</translation>
@@ -339,7 +338,6 @@
 <translation id="1721424275792716183">* Поље је обавезно</translation>
 <translation id="1725591448053514783">Коверта You 6</translation>
 <translation id="1727613060316725209">Сертификат је важећи</translation>
-<translation id="1727741090716970331">Додајте важећи број картице</translation>
 <translation id="1728677426644403582">Прегледате извор веб-странице.</translation>
 <translation id="173080396488393970">Овај тип картице није подржан</translation>
 <translation id="1732445923934584865">Питајте лично</translation>
@@ -941,7 +939,6 @@
 <translation id="3272091146646336650">Super B</translation>
 <translation id="3281350579597955952">{0,plural, =1{Смернице администратора не препоручују отварање овог фајла у: <ph name="DESTINATION_NAME" />}one{Смернице администратора не препоручују отварање ових фајлова у: <ph name="DESTINATION_NAME" />}few{Смернице администратора не препоручују отварање ових фајлова у: <ph name="DESTINATION_NAME" />}other{Смернице администратора не препоручују отварање ових фајлова у: <ph name="DESTINATION_NAME" />}}</translation>
 <translation id="3282085321714087552">Ваша организација, <ph name="ENROLLMENT_DOMAIN" />, послала је одређене податке следећим веб-сајтовима, попут подешавања или смерница.</translation>
-<translation id="3282497668470633863">Додајте име на картици</translation>
 <translation id="3286372614333682499">усправно</translation>
 <translation id="3287510313208355388">Преузми када сам онлајн</translation>
 <translation id="3288238092761586174"><ph name="URL" /> треба да обави додатне кораке ради потврде плаћања</translation>
@@ -954,7 +951,6 @@
 <translation id="3304777285002411338">A2x3</translation>
 <translation id="33073482541490531">Лозинка коју сте управо користили је пронађена при повреди података. Менаџер лозинки препоручује да одмах промените ову лозинку.</translation>
 <translation id="3308006649705061278">Организациона јединица (OU)</translation>
-<translation id="3320021301628644560">Додајте адресу за обрачун</translation>
 <translation id="3324687287337751929">4×6 in</translation>
 <translation id="3324983252691184275">Јаркоцрвена</translation>
 <translation id="3329013043687509092">Засићеност боја</translation>
@@ -1017,7 +1013,6 @@
 <translation id="3461824795358126837">Алатка за истицање</translation>
 <translation id="3462200631372590220">Сакриј напредно</translation>
 <translation id="346601286295919445">Хемија</translation>
-<translation id="3467763166455606212">Име власника картице је обавезно</translation>
 <translation id="3468054117417088249"><ph name="TAB_SWITCH_SUFFIX" />, тренутно је отворена, притисните картицу, па Enter да бисте прешли на отворену картицу</translation>
 <translation id="3470563864795286535"><ph name="CLOSE_INCOGNITO_WINDOWS_FOCUSED_FRIENDLY_MATCH_TEXT" />, притисните Tab, па Enter да бисте затворили све прозоре без архивирања који су тренутно отворени</translation>
 <translation id="3477679029130949506">Листе филмова и репертоари биоскопа</translation>
@@ -1658,6 +1653,7 @@
 <translation id="5018422839182700155">Не можемо да отворимо ову страницу</translation>
 <translation id="5018802455907704660">16×20 in</translation>
 <translation id="5019198164206649151">Складиште тока података је у лошем стању</translation>
+<translation id="5019293549442035120">Можете да користите сачуване адресе у свим Google производима. Ова адреса ће бити сачувана на Google налогу <ph name="USER_EMAIL" />.</translation>
 <translation id="5020776957610079374">Етно музика</translation>
 <translation id="5021557570875267742">Пратите цене помоћу Chrome-а</translation>
 <translation id="5023310440958281426">Проверите смернице администратора</translation>
@@ -2287,7 +2283,6 @@
 <translation id="6612010098632894193">Онлајн видео садржај</translation>
 <translation id="6615297766614333076">2. преграда за слагање</translation>
 <translation id="6624427990725312378">Контакт информације</translation>
-<translation id="6626291197371920147">Додајте важећи број картице</translation>
 <translation id="6627727261837091711">Приказивање података за персонализацију огласа</translation>
 <translation id="6628463337424475685"><ph name="ENGINE" /> претрага</translation>
 <translation id="6630043285902923878">Траже се USB уређаји…</translation>
@@ -2773,7 +2768,6 @@
 <translation id="7716375162095500223">Још није отпремљено или је игнорисано</translation>
 <translation id="7716424297397655342">Није могуће учитати овај сајт из кеша</translation>
 <translation id="772128550427553158">CVC се налази на предњој страни картице.</translation>
-<translation id="7723047071702270851">Измените картицу</translation>
 <translation id="7724603315864178912">Исеци</translation>
 <translation id="7734285854693414638">Брзо направите нов упитник у Google упитницима</translation>
 <translation id="773466115871691567">Увек предводи странице на језику <ph name="SOURCE_LANGUAGE" /></translation>

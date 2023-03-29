@@ -2,7 +2,7 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="id">
 <translation id="1006017844123154345">Buka versi Online</translation>
-<translation id="1036348656032585052">Matikan</translation>
+<translation id="1036348656032585052">Nonaktifkan</translation>
 <translation id="1044891598689252897">Situs akan berfungsi secara normal</translation>
 <translation id="1124090076051167250">Ini akan menghapus <ph name="DATASIZE" /> data dan cookie yang disimpan oleh situs atau aplikasi di Layar utama Anda.</translation>
 <translation id="1178581264944972037">Jeda</translation>
@@ -222,7 +222,6 @@
 <translation id="509133520954049755">Minta tampilan desktop</translation>
 <translation id="5100237604440890931">Diciutkan - klik untuk memperluas.</translation>
 <translation id="5123685120097942451">Tab samaran</translation>
-<translation id="5134599672855298214">Minta tampilan seluler (disarankan)</translation>
 <translation id="5186036860380548585">Opsi tersedia di dekat bagian atas layar</translation>
 <translation id="5197729504361054390">Kontak yang Anda pilih akan dibagikan dengan <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" />.</translation>
 <translation id="5216942107514965959">Terakhir dibuka hari ini</translation>

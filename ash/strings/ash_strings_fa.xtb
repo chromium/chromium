@@ -1251,6 +1251,7 @@
 <translation id="685782768769951078">{NUM_DIGITS,plural, =1{یک رقم باقی‌مانده است}one{# رقم باقی‌مانده است}other{# رقم باقی‌مانده است}}</translation>
 <translation id="6867938213751067702">بارگیری <ph name="FILENAME" /> موقتاً متوقف شد</translation>
 <translation id="6878400149835617132">میان‌بر خاموش شد</translation>
+<translation id="6878701771800702153">{NUM_APPS,plural, =1{یک برنامه}one{# برنامه}other{# برنامه}}</translation>
 <translation id="6884665277231944629">برگشتن به امروز</translation>
 <translation id="6886172995547742638">‏ممکن است <ph name="DEVICE_TYPE" /> شما عملکرد ضعیف‌تری را تجربه کند. از آداپتور برق USB-C بالاتر یا <ph name="PREFERRED_MINIMUM_POWER" /> وات تأییدشده‌ای استفاده کنید.</translation>
 <translation id="688631446150864480">برای جابه‌جایی بین پنجره‌ها، کلید جهت‌نمای پایین را فشار دهید</translation>
@@ -1418,6 +1419,7 @@
 <translation id="7689817529363080918">با این کار، دسترسی به میکروفون برای <ph name="APP1_NAME" />، <ph name="APP2_NAME" />، و همه برنامه‌ها و وب‌سایت‌های دارای اجازه میکروفون مجاز می‌شود</translation>
 <translation id="7704000866383261579">انجام مجدد آخرین کنش</translation>
 <translation id="7705524343798198388">VPN</translation>
+<translation id="770741401784017797">‏درحال ساختن GIF</translation>
 <translation id="7714767791242455379">افزودن شبکه تلفن همراه جدید</translation>
 <translation id="7720400844887872976">روشن تا <ph name="TIME" /></translation>
 <translation id="7720410380936703141">امتحان مجدد</translation>
@@ -1430,6 +1432,7 @@
 <translation id="7749443890790263709">به حداکثر تعداد میز رسیده‌اید.</translation>
 <translation id="776344839111254542">برای مشاهده جزئیات به‌روزرسانی کلیک کنید</translation>
 <translation id="7768784765476638775">انتخاب برای شنیدن</translation>
+<translation id="7769299611924763557">‏فایل GIF شما به‌زودی آماده خواهد شد</translation>
 <translation id="7780094051999721182">میان‌برها</translation>
 <translation id="7780159184141939021">چرخش صفحه</translation>
 <translation id="7796735576426975947">اعلان جدید پنهان شده است</translation>

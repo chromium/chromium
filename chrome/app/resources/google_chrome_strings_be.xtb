@@ -24,6 +24,7 @@
 <translation id="1399397803214730675">На гэтым камп'ютары ўжо ўсталявана навейшая версія Google Chrome. Калі праграма не працуе, выдаліце Google Chrome і паўтарыце спробу.</translation>
 <translation id="139993653570221430">Вы можаце змяніць рашэнне ў любы час у наладах Chrome. Пробныя функцыі дзейнічаюць адначасова з выкарыстаннем бягучых спосабаў падбору рэкламы, таму вы не адразу заўважыце змены.</translation>
 <translation id="1434626383986940139">Праграмы Chrome Canary</translation>
+<translation id="1496905273983707119">{NUM_DEVICES,plural, =0{Браўзер Google Chrome быў падключаны да прылады HID}=1{Браўзер Google Chrome падключаны да прылады HID}one{Браўзер Google Chrome падключаны да прылад HID}few{Браўзер Google Chrome падключаны да прылад HID}many{Браўзер Google Chrome падключаны да прылад HID}other{Браўзер Google Chrome падключаны да прылад HID}}</translation>
 <translation id="1507198376417198979">Наладзьце новы профіль Chrome</translation>
 <translation id="1516530951338665275">Каб працягнуць спалучэнне, Google Chrome патрабуе доступу да Bluetooth. <ph name="IDS_BLUETOOTH_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
 <translation id="1547295885616600893">Chrome OS працуе дзякуючы дадатковаму <ph name="BEGIN_LINK_CROS_OSS" />праграмнаму забеспячэнню з адкрытым зыходным кодам<ph name="END_LINK_CROS_OSS" />.</translation>

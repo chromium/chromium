@@ -46,7 +46,6 @@
 <translation id="1075079914415273530">வேளாண்மை &amp; வனவியல்</translation>
 <translation id="1080116354587839789">அகலத்திற்குப் பொருத்து</translation>
 <translation id="1081061862829655580">டிரே 19</translation>
-<translation id="1088860948719068836">கார்டிலுள்ள பெயரைச் சேர்க்கவும்</translation>
 <translation id="1089439967362294234">கடவுச்சொல்லை மாற்று</translation>
 <translation id="1096545575934602868">இதில் <ph name="MAX_ITEMS_LIMIT" /> உள்ளீடுகளுக்கு மேல் இருக்கக்கூடாது. மீதமிருக்கும் அனைத்தும் நிராகரிக்கப்படும்.</translation>
 <translation id="1100782917270858593">உலாவலைத் தொடர்வதற்கான பட்டன். Chrome செயல்பாடுகளில் இருக்கும் தொடர்புடைய செயல்பாடுகளைப் பார்த்து உலாவலைத் தொடர, Enter பட்டனை அழுத்துங்கள்</translation>
@@ -339,7 +338,6 @@
 <translation id="1721424275792716183">* அவசியமான புலம்</translation>
 <translation id="1725591448053514783">என்வெலப் யூ 6</translation>
 <translation id="1727613060316725209">சான்றிதழ் சரியானது</translation>
-<translation id="1727741090716970331">சரியான கார்டு எண்ணைச் சேர்க்கவும்</translation>
 <translation id="1728677426644403582">இணையப் பக்கத்தின் மூலத்தைப் பார்க்கிறீர்கள்</translation>
 <translation id="173080396488393970">இந்தக் கார்டு வகை ஆதரிக்கப்படவில்லை</translation>
 <translation id="1732445923934584865">நேரில் அனுமதி கேளுங்கள்</translation>
@@ -936,7 +934,6 @@
 <translation id="3272091146646336650">சூப்பர் B</translation>
 <translation id="3281350579597955952">{0,plural, =1{<ph name="DESTINATION_NAME" /> இல் இந்த ஃபைலைத் திறப்பதை நிர்வாகக் கொள்கை பரிந்துரைக்கவில்லை}other{<ph name="DESTINATION_NAME" /> இல் இந்த ஃபைல்களைத் திறப்பதை நிர்வாகக் கொள்கை பரிந்துரைக்கவில்லை}}</translation>
 <translation id="3282085321714087552">அமைப்புகள், கொள்கைகள் போன்ற சில தகவல்களை உங்கள் நிறுவனம் <ph name="ENROLLMENT_DOMAIN" /> பின்வரும் இணையதளங்களுக்கு அனுப்பியுள்ளது.</translation>
-<translation id="3282497668470633863">கார்டிலுள்ள பெயரைச் சேர்க்கவும்</translation>
 <translation id="3286372614333682499">போர்ட்ரெயிட்</translation>
 <translation id="3287510313208355388">ஆன்லைனில் இருக்கும் போது பதிவிறக்கு</translation>
 <translation id="3288238092761586174">உங்கள் பேமெண்ட்டை உறுதிப்படுத்த <ph name="URL" /> தளத்தில் கூடுதல் படிகளைச் செய்ய வேண்டியிருக்கலாம்</translation>
@@ -949,7 +946,6 @@
 <translation id="3304777285002411338">A2x3</translation>
 <translation id="33073482541490531">நீங்கள் தற்போது பயன்படுத்திய கடவுச்சொல், தரவு மீறலுக்கு உள்ளாகியிருப்பதாகக் கண்டறியப்பட்டுள்ளது. இதை இப்போதே மாற்றும்படி கடவுச்சொல் நிர்வாகி பரிந்துரைக்கிறது.</translation>
 <translation id="3308006649705061278">நிறுவன யூனிட் (OU)</translation>
-<translation id="3320021301628644560">பில்லிங் முகவரியைச் சேர்க்கவும்</translation>
 <translation id="3324687287337751929">4 x 6 இன்ச்</translation>
 <translation id="3324983252691184275">அடர்சிவப்பு</translation>
 <translation id="3329013043687509092">நிறை செறிவு நிலை</translation>
@@ -1012,7 +1008,6 @@
 <translation id="3461824795358126837">ஹைலைட்டர்</translation>
 <translation id="3462200631372590220">மேம்பட்டவையை மறை</translation>
 <translation id="346601286295919445">வேதியியல்</translation>
-<translation id="3467763166455606212">கார்டு உரிமையாளரின் பெயர் தேவை</translation>
 <translation id="3468054117417088249">தற்போது திறந்துள்ள <ph name="TAB_SWITCH_SUFFIX" /> தாவலுக்கு மாற, ‘தாவல்’ மாற்ற பட்டனைத் தட்டி, ‘எண்டர்’ பட்டனை அழுத்தவும்</translation>
 <translation id="3470563864795286535"><ph name="CLOSE_INCOGNITO_WINDOWS_FOCUSED_FRIENDLY_MATCH_TEXT" />. தற்போது திறந்துள்ள மறைநிலைச் சாளரங்கள் அனைத்தையும் மூட, Tab பட்டனை அழுத்திவிட்டு Enter பட்டனை அழுத்துங்கள்</translation>
 <translation id="3477679029130949506">திரைப்படப் பட்டியல்கள் &amp; தியேட்டர் காட்சிநேரங்கள்</translation>
@@ -2278,7 +2273,6 @@
 <translation id="6612010098632894193">ஆன்லைன் வீடியோ</translation>
 <translation id="6615297766614333076">ஸ்டேக்கர் 2</translation>
 <translation id="6624427990725312378">தொடர்புத் தகவல்</translation>
-<translation id="6626291197371920147">சரியான கார்டு எண்ணைச் சேர்க்கவும்</translation>
 <translation id="6627727261837091711">விளம்பரத்தைப் பிரத்தியேகமாக்குவதற்கான விவரங்களைக் காட்டும்</translation>
 <translation id="6628463337424475685"><ph name="ENGINE" /> தேடல்</translation>
 <translation id="6630043285902923878">USB சாதனங்களைத் தேடுகிறது...</translation>
@@ -2764,7 +2758,6 @@
 <translation id="7716375162095500223">இன்னும் பதிவேற்றப்படவில்லை அல்லது புறக்கணிக்கப்பட்டது</translation>
 <translation id="7716424297397655342">தற்காலிகச் சேமிப்பிலிருந்து இந்தத் தளத்தை ஏற்ற முடியவில்லை</translation>
 <translation id="772128550427553158">கார்டின் முன்பக்கத்தில் CVC எண் இருக்கும்.</translation>
-<translation id="7723047071702270851">கார்டைத் திருத்தவும்</translation>
 <translation id="7724603315864178912">வெட்டு</translation>
 <translation id="7734285854693414638">Google Formsஸில் புதிய படிவத்தை விரைவாக உருவாக்கும்</translation>
 <translation id="773466115871691567"><ph name="SOURCE_LANGUAGE" /> மொழியில் உள்ள பக்கங்களை எப்போதும் மொழிபெயர்</translation>

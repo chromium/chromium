@@ -1248,6 +1248,7 @@
 <translation id="685782768769951078">{NUM_DIGITS,plural, =1{剩餘一個位數}other{剩餘 # 個位數}}</translation>
 <translation id="6867938213751067702">已暫停下載 <ph name="FILENAME" /></translation>
 <translation id="6878400149835617132">已關閉快速鍵功能</translation>
+<translation id="6878701771800702153">{NUM_APPS,plural, =1{1 個應用程式}other{# 個應用程式}}</translation>
 <translation id="6884665277231944629">返回今天</translation>
 <translation id="6886172995547742638">你的「<ph name="DEVICE_TYPE" />」可能會有效能低落的問題。請使用 <ph name="PREFERRED_MINIMUM_POWER" /> 瓦以上且符合標準的 USB-C 電源變壓器。</translation>
 <translation id="688631446150864480">按下向下鍵即可切換視窗</translation>
@@ -1415,6 +1416,7 @@
 <translation id="7689817529363080918">這將允許「<ph name="APP1_NAME" />」、「<ph name="APP2_NAME" />」和具有麥克風權限的所有應用程式和網站存取麥克風</translation>
 <translation id="7704000866383261579">重做上一個動作</translation>
 <translation id="7705524343798198388">VPN</translation>
+<translation id="770741401784017797">正在建立 GIF</translation>
 <translation id="7714767791242455379">新增行動網路</translation>
 <translation id="7720400844887872976">開啟，直到<ph name="TIME" /></translation>
 <translation id="7720410380936703141">再試一次</translation>
@@ -1427,6 +1429,7 @@
 <translation id="7749443890790263709">桌面數量已達上限。</translation>
 <translation id="776344839111254542">按一下即可查看更新詳細資料</translation>
 <translation id="7768784765476638775">隨選朗讀</translation>
+<translation id="7769299611924763557">GIF 很快就能使用</translation>
 <translation id="7780094051999721182">捷徑</translation>
 <translation id="7780159184141939021">旋轉螢幕</translation>
 <translation id="7796735576426975947">已隱藏新通知</translation>

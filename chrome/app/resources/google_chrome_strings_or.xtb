@@ -24,6 +24,7 @@
 <translation id="1399397803214730675">ଏହି କମ୍ପ୍ୟୁଟର୍‌ରେ ପୂର୍ବରୁ Google Chromeର ସବୁଠାରୁ ନିକଟତମ ସଂସ୍କରଣ ଅଛି। ଯଦି ସଫ୍ଟୱେୟାର୍ କାର୍ଯ୍ୟ କରୁ ନାହିଁ, ଦୟାକରି Google Chrome ଅନ୍‌ଇନ୍‌ଷ୍ଟଲ୍ କରନ୍ତୁ ଏବଂ ପୁଣି ଚେଷ୍ଟା କରନ୍ତୁ।</translation>
 <translation id="139993653570221430">Chrome ସେଟିଂସରେ ଆପଣ ଯେ କୌଣସି ସମୟରେ ଆପଣଙ୍କ ମନ ପରିବର୍ତ୍ତନ କରିପାରିବେ। ବିଜ୍ଞାପନଗୁଡ଼ିକୁ ବର୍ତ୍ତମାନ ଯେପରି ପରିବେଷଣ କରାଯାଉଛି ସେହିପରି ଟ୍ରାଏଲ ଚାଲିଥାଏ, ତେଣୁ ଆପଣ ପରିବର୍ତ୍ତନଗୁଡ଼ିକୁ ତୁରନ୍ତ ଦେଖିବେ ନାହିଁ।</translation>
 <translation id="1434626383986940139">Chrome କେନେରୀ ଆପ୍ସ</translation>
+<translation id="1496905273983707119">{NUM_DEVICES,plural, =0{Google Chromeକୁ ଏକ HID ଡିଭାଇସ ସହ କନେକ୍ଟ କରାଯାଇଥିଲା}=1{Google Chromeକୁ ଏକ HID ଡିଭାଇସ ସହ କନେକ୍ଟ କରାଯାଇଛି}other{Google Chromeକୁ HID ଡିଭାଇସଗୁଡ଼ିକ ସହ କନେକ୍ଟ କରାଯାଇଛି}}</translation>
 <translation id="1507198376417198979">ଆପଣଙ୍କ ନୂଆ Chrome ପ୍ରୋଫାଇଲକୁ କଷ୍ଟମାଇଜ୍ କରନ୍ତୁ</translation>
 <translation id="1516530951338665275">ପେୟାରିଂ ଜାରି ରଖିବା ପାଇଁ Google Chrome ବ୍ଲୁଟୁଥ୍ ଆକ୍ସେସ୍ 
 ଆବଶ୍ୟକ କରେ। <ph name="IDS_BLUETOOTH_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>

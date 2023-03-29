@@ -24,6 +24,7 @@
 <translation id="1399397803214730675">ഈ കമ്പ്യൂട്ടറിൽ ഇപ്പോൾ തന്നെ Google Chrome-ന്റെ ഏറ്റവും പുതിയ പതിപ്പുണ്ട്. സോഫ്റ്റ്‍‍വെയർ പ്രവര്‍ത്തിക്കുന്നില്ലെങ്കില്‍, ദയവായി Google Chrome അണ്‍‌ഇന്‍സ്റ്റാള്‍ ചെയ്ത് വീണ്ടും ശ്രമിക്കുക.</translation>
 <translation id="139993653570221430">Chrome ക്രമീകരണത്തിൽ നിങ്ങൾക്ക് എപ്പോൾ വേണമെങ്കിലും നിങ്ങളുടെ തീരുമാനം മാറ്റാനാകും. ട്രയലുകൾ റൺ ചെയ്യുന്നത് നിലവിൽ പരസ്യങ്ങൾ നൽകുന്ന രീതിക്കൊപ്പം ആയതിനാൽ, നിങ്ങൾ ഉടൻ മാറ്റങ്ങളൊന്നും കാണില്ല.</translation>
 <translation id="1434626383986940139">Chrome കാനറി അപ്ലിക്കേഷനുകൾ</translation>
+<translation id="1496905273983707119">{NUM_DEVICES,plural, =0{ഒരു HID ഉപകരണത്തിലേക്ക് Google Chrome കണക്റ്റ് ചെയ്‌തു}=1{ഒരു HID ഉപകരണത്തിലേക്ക് Google Chrome കണക്റ്റ് ചെയ്തിരിക്കുന്നു}other{HID ഉപകരണങ്ങളിലേക്ക് Google Chrome കണക്റ്റ് ചെയ്തിരിക്കുന്നു}}</translation>
 <translation id="1507198376417198979">നിങ്ങളുടെ പുതിയ Chrome പ്രൊഫൈൽ ഇഷ്ടാനുസൃതമാക്കുക</translation>
 <translation id="1516530951338665275">ജോടിയാക്കൽ തുടരാൻ Google Chrome-ന് Bluetooth ആക്സസ് 
  ആവശ്യമാണ്. <ph name="IDS_BLUETOOTH_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>

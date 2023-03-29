@@ -1252,6 +1252,7 @@ Instal·lació nova</translation>
 <translation id="685782768769951078">{NUM_DIGITS,plural, =1{Falta un dígit}other{Falten # dígits}}</translation>
 <translation id="6867938213751067702">La baixada del fitxer <ph name="FILENAME" /> s'ha posat en pausa</translation>
 <translation id="6878400149835617132">S'ha desactivat la drecera</translation>
+<translation id="6878701771800702153">{NUM_APPS,plural, =1{1 aplicació}other{# aplicacions}}</translation>
 <translation id="6884665277231944629">Torna a avui</translation>
 <translation id="6886172995547742638">És possible que el rendiment del teu dispositiu <ph name="DEVICE_TYPE" /> es vegi disminuït. Utilitza un adaptador de corrent USB-C certificat de <ph name="PREFERRED_MINIMUM_POWER" /> W o superior.</translation>
 <translation id="688631446150864480">Prem la tecla de fletxa avall per canviar de finestra</translation>
@@ -1416,6 +1417,7 @@ Per apagar el dispositiu, torna a mantenir premut el botó d'engegada.</translat
 <translation id="7689817529363080918">Permet l'accés al micròfon a <ph name="APP1_NAME" />, a <ph name="APP2_NAME" /> i a totes les aplicacions i llocs web amb permís per accedir al micròfon</translation>
 <translation id="7704000866383261579">Refés l'última acció</translation>
 <translation id="7705524343798198388">VPN</translation>
+<translation id="770741401784017797">S'està creant el GIF</translation>
 <translation id="7714767791242455379">Afegeix una xarxa mòbil nova</translation>
 <translation id="7720400844887872976">Activada fins a les <ph name="TIME" /></translation>
 <translation id="7720410380936703141">TORNA-HO A PROVAR</translation>
@@ -1428,6 +1430,7 @@ Per apagar el dispositiu, torna a mantenir premut el botó d'engegada.</translat
 <translation id="7749443890790263709">S'ha assolit el nombre màxim d'escriptoris.</translation>
 <translation id="776344839111254542">Fes clic per veure els detalls de l'actualització</translation>
 <translation id="7768784765476638775">Escolta la selecció</translation>
+<translation id="7769299611924763557">El teu GIF estarà a punt aviat</translation>
 <translation id="7780094051999721182">dreceres</translation>
 <translation id="7780159184141939021">Gira la pantalla</translation>
 <translation id="7796735576426975947">S'ha amagat una altra notificació</translation>

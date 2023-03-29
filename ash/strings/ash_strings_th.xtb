@@ -220,6 +220,7 @@
 <translation id="1969011864782743497"><ph name="DEVICE_NAME" /> (USB)</translation>
 <translation id="1972950159383891558">สวัสดี คุณ <ph name="USERNAME" /></translation>
 <translation id="1978498689038657292">การป้อนข้อความ</translation>
+<translation id="1980808257969311265">เข้าร่วม <ph name="EVENT_SUMMARY" /></translation>
 <translation id="1982717156487272186">แสดงสัปดาห์ก่อนหน้า</translation>
 <translation id="1989113344093894667">จับภาพเนื้อหาไม่ได้</translation>
 <translation id="1990046457226896323">ดาวน์โหลดไฟล์คำพูดแล้ว</translation>
@@ -1248,6 +1249,7 @@
 <translation id="685782768769951078">{NUM_DIGITS,plural, =1{เหลือตัวเลขอีก 1 หลัก}other{เหลือตัวเลขอีก # หลัก}}</translation>
 <translation id="6867938213751067702">หยุดดาวน์โหลด <ph name="FILENAME" /> ไว้ชั่วคราว</translation>
 <translation id="6878400149835617132">ทางลัดปิดอยู่</translation>
+<translation id="6878701771800702153">{NUM_APPS,plural, =1{1 แอป}other{# แอป}}</translation>
 <translation id="6884665277231944629">กลับไปที่วันนี้</translation>
 <translation id="6886172995547742638"><ph name="DEVICE_TYPE" /> อาจมีประสิทธิภาพลดลง ใช้อะแดปเตอร์ USB-C <ph name="PREFERRED_MINIMUM_POWER" /> วัตต์ขึ้นไปที่ได้รับการรับรอง</translation>
 <translation id="688631446150864480">กดปุ่มลูกศรลงเพื่อเปลี่ยนหน้าต่าง</translation>
@@ -1415,6 +1417,7 @@
 <translation id="7689817529363080918">การตั้งค่านี้ช่วยให้ <ph name="APP1_NAME" />, <ph name="APP2_NAME" /> รวมถึงแอปและเว็บไซต์ทั้งหมดที่มีสิทธิ์เข้าถึงไมโครโฟนได้</translation>
 <translation id="7704000866383261579">ทำงานล่าสุดซ้ำ</translation>
 <translation id="7705524343798198388">VPN</translation>
+<translation id="770741401784017797">กำลังสร้าง GIF</translation>
 <translation id="7714767791242455379">เพิ่มเครือข่ายมือถือใหม่</translation>
 <translation id="7720400844887872976">เปิดจนถึง <ph name="TIME" /></translation>
 <translation id="7720410380936703141">ลองอีกครั้ง</translation>
@@ -1427,6 +1430,7 @@
 <translation id="7749443890790263709">มีพื้นที่ทำงานครบตามจำนวนสูงสุดแล้ว</translation>
 <translation id="776344839111254542">คลิกเพื่อดูรายละเอียดการอัปเดต</translation>
 <translation id="7768784765476638775">เลือกเพื่อให้อ่าน</translation>
+<translation id="7769299611924763557">GIF จะพร้อมใช้งานในไม่ช้า</translation>
 <translation id="7780094051999721182">ทางลัด</translation>
 <translation id="7780159184141939021">หมุนหน้าจอ</translation>
 <translation id="7796735576426975947">การแจ้งเตือนใหม่ซ่อนอยู่</translation>

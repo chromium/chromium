@@ -325,6 +325,7 @@ Se din søgemaskines vejledning i, hvordan du sletter din søgehistorik, hvis de
 <translation id="3214379938835224220">Du blev logget ud som en del af nulstillingen af din iPad. Tryk på Fortsæt nedenfor for at logge ind.</translation>
 <translation id="3224641773458703735">Angiv en adgangskode på din enhed, før du kan eksportere adgangskoder.</translation>
 <translation id="3227137524299004712">Mikrofon</translation>
+<translation id="3235063766008841141">Angivet på et vildledende website og fundet i forbindelse med et brud på datasikkerheden</translation>
 <translation id="3240426699337459095">Linket er kopieret</translation>
 <translation id="3244271242291266297">MM</translation>
 <translation id="3245744387817103524">Din ændring kunne ikke gemmes.</translation>
@@ -475,6 +476,7 @@ Se din søgemaskines vejledning i, hvordan du sletter din søgehistorik, hvis de
 <translation id="4342946437867096381">Du har allerede gemt en adgangskode til dette website på din Google-konto. Google kan vælge den seneste adgangskode for dig.</translation>
 <translation id="4343046787186034850">Der er givet adgang til kameraet og mikrofonen</translation>
 <translation id="4359125752503270327">Denne side åbner i en anden app.</translation>
+<translation id="4371526908359194219">Mailnotifikationer</translation>
 <translation id="4375040482473363939">Søgning efter QR-kode</translation>
 <translation id="4378154925671717803">Telefon</translation>
 <translation id="4389019817280890563">Tryk for at skifte sprog.</translation>
@@ -576,6 +578,7 @@ Hvis du vil ændre denne indstilling, skal du <ph name="BEGIN_LINK" />nulstille 
 <translation id="4986678885919050584">Fjern fra denne enhed</translation>
 <translation id="498985224078955265">Hvis du vil sende denne fane til en anden enhed, skal du logge ind på Chrome på begge enheder.</translation>
 <translation id="5005498671520578047">Kopiér adgangskode</translation>
+<translation id="5016420433031926653">Send til <ph name="USER_EMAIL" /></translation>
 <translation id="5017828934289857214">Påmind mig senere</translation>
 <translation id="5037676449506322593">Vælg alle</translation>
 <translation id="5039804452771397117">Tillad</translation>

@@ -108,6 +108,7 @@
 <translation id="4565377596337484307">পাসওয়ার্ড লুকান</translation>
 <translation id="4588090240171750605">ডান দিকে স্ক্রল করুন</translation>
 <translation id="4724120544754982507">বিজ্ঞপ্তি কেন্দ্র, <ph name="UNREAD_NOTIFICATION_COUNT" />টি না পড়া বিজ্ঞপ্তি</translation>
+<translation id="4729257764711776855">নম্বর</translation>
 <translation id="4746179598275229723">এক্সটেনশন আনপিন করা হয়েছে</translation>
 <translation id="4788285488841504513">{MONTHS,plural, =1{১ মাস বাকি}one{# মাস বাকি}other{# মাস বাকি}}</translation>
 <translation id="4888938634149558681">কল করুন</translation>
@@ -119,6 +120,7 @@
 <translation id="5278860589123563674">পাঠানো যায়নি</translation>
 <translation id="528468243742722775">শেষ</translation>
 <translation id="5329858601952122676">&amp;মুছুন</translation>
+<translation id="5361107212971249203">টেক্সট</translation>
 <translation id="5463830097259460683">ইমোজি ও প্রতীকগুলি</translation>
 <translation id="5528053674512161860">পৃষ্ঠা লোড করা যায়নি কারণ UI মডিউল (dev_ui) ইনস্টল করা নেই</translation>
 <translation id="5574202486608032840"><ph name="IDS_SHORT_PRODUCT_OS_NAME" /> সিস্টেম</translation>

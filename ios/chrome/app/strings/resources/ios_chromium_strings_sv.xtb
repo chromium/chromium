@@ -47,6 +47,7 @@
 <translation id="3567399274263440288">Logga in i Chromium med Google-kontot så att du får ut mesta möjliga av programmet.</translation>
 <translation id="3639997914391704523">Chromium kan kontrollera dina lösenord när du loggar in med Google-kontot.</translation>
 <translation id="3650632991272923014"><ph name="USER_EMAIL1" /> använde Chromium och har lämnat kvar bokmärken, lösenord och andra inställningar på enheten.</translation>
+<translation id="372658070733623520">Verifiera din identitet för att använda och spara Chromium-data i ditt Google-konto.</translation>
 <translation id="3805899903892079518">Chromium har inte åtkomst till dina foton eller videor. Aktivera åtkomst i iOS-inställningar &gt; Integritet &gt; Foton.</translation>
 <translation id="4043291146360695975">Lösenorden sparas med Lösenordshantering endast på den här enheten.</translation>
 <translation id="4099085513035183040">Stöds inte på Chromium Beta</translation>
@@ -76,6 +77,7 @@
 <translation id="5945387852661427312">Du håller på att logga in med ett konto som hanteras av <ph name="DOMAIN" /> vilket ger administratören kontroll över data i Chromium. Din data kopplas permanent till det här kontot. Om du loggar ut från Chromium raderas all din data från enheten, men den lagras fortfarande på Google-kontot.</translation>
 <translation id="5983312940147103417">Gör Chromium bättre</translation>
 <translation id="6062449165341879460">Organisationen <ph name="DOMAIN" /> har åtkomst till data, bokmärken, historik, lösenord och andra inställningar i Chromium som du lagrar i det här kontot. När du loggar ut raderas din data från enheten.  Datan lagras dock fortfarande i det hanterade Google-kontot och kan kommas åt av organisationen. Organisationen kan även ställa in användarpolicyer som gäller det kontot specifikt och som kan påverka hur Chromium fungerar.</translation>
+<translation id="61109258320235597">Ange lösenfrasen om du vill använda och spara Chromium-data i ditt Google-konto.</translation>
 <translation id="6119647025869519954">Så här använder du Chromium som standard:
 1. Öppna inställningarna
 2. Tryck på Standardwebbläsarapp

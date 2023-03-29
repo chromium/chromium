@@ -46,7 +46,6 @@
 <translation id="1075079914415273530">Nekazaritza eta basogintza</translation>
 <translation id="1080116354587839789">Doitu zabalerara</translation>
 <translation id="1081061862829655580">19. erretilua</translation>
-<translation id="1088860948719068836">Gehitu titularra</translation>
 <translation id="1089439967362294234">Aldatu pasahitza</translation>
 <translation id="1096545575934602868">Eremu honek ez lituzke <ph name="MAX_ITEMS_LIMIT" /> sarrera baino gehiago izan behar. Baztertu egingo dira gainerako sarrerak.</translation>
 <translation id="1100782917270858593">Bilaketa-ibilbideari berrekiteko botoia: sakatu "Sartu" tekla bilaketa-ibilbideari berrekiteko eta Chrome-ko historian dauden erlazionatutako jarduerak ikusteko</translation>
@@ -339,7 +338,6 @@ Bestela, pribatutasun-ezarpenek blokeatu egingo dute baimen hori. Baimen honekin
 <translation id="1721424275792716183">* Nahitaez bete behar da eremua</translation>
 <translation id="1725591448053514783">You gutun-azala 6</translation>
 <translation id="1727613060316725209">Ziurtagiriak balio du</translation>
-<translation id="1727741090716970331">Zehaztu balio duen txartel-zenbaki bat</translation>
 <translation id="1728677426644403582">Web-orri baten iturburua ari zara ikusten</translation>
 <translation id="173080396488393970">Ez dira onartzen mota horretako txartelak</translation>
 <translation id="1732445923934584865">Galdetu aurrez aurre</translation>
@@ -498,6 +496,7 @@ Bestela, pribatutasun-ezarpenek blokeatu egingo dute baimen hori. Baimen honekin
 <translation id="2119867082804433120">Zulo bat behean, eskuinetara</translation>
 <translation id="2122719317867821810">Gidalerroak espero bezala funtzionatzen du, baina gatazka sortzen duen balio bat beste nonbait dago ezarrita, eta gidalerro honek hura ordezten du.</translation>
 <translation id="2126374524350484896">PDFaren egilea:</translation>
+<translation id="2128262927290305126">Zure Google-ko kontuan (<ph name="ACCOUNT" />)</translation>
 <translation id="2130448033692577677">Baliteke zehaztu dituzun txantiloiak ez aplikatzea, DnsOverHttpsMode gidalerroa ez delako ezarri.</translation>
 <translation id="2130699163006053678">A3x7</translation>
 <translation id="2135799067377889518">Gizonentzako arropa</translation>
@@ -543,6 +542,7 @@ Bestela, pribatutasun-ezarpenek blokeatu egingo dute baimen hori. Baimen honekin
 <translation id="2219735899272417925">Gailua berrabiarazi behar da</translation>
 <translation id="2224337661447660594">Ez dago Interneteko konexiorik</translation>
 <translation id="2225927550500503913">Txartel birtuala aktibatuta dago</translation>
+<translation id="2226636330183131181">Wifi-sarean <ph name="BEGIN_LINK" />saioa hastea<ph name="END_LINK" /></translation>
 <translation id="2239100178324503013">Bidali</translation>
 <translation id="2241693394036365668">Fitxategi bat deskargatu da</translation>
 <translation id="2246264294482514010">25,4 × 30,48 cm (10 × 12 in)</translation>
@@ -936,7 +936,6 @@ Bestela, pribatutasun-ezarpenek blokeatu egingo dute baimen hori. Baimen honekin
 <translation id="3272091146646336650">Super B</translation>
 <translation id="3281350579597955952">{0,plural, =1{Administratzailearen gidalerroek ez dute gomendatzen fitxategia hemen irekitzea: <ph name="DESTINATION_NAME" />}other{Administratzailearen gidalerroek ez dute gomendatzen fitxategiak hemen irekitzea: <ph name="DESTINATION_NAME" />}}</translation>
 <translation id="3282085321714087552">Zure erakundeak (<ph name="ENROLLMENT_DOMAIN" />) ezarpenei eta gidalerroei buruzko informazioa bidali du, besteak beste, jarraian ageri diren webguneetara.</translation>
-<translation id="3282497668470633863">Gehitu titularra</translation>
 <translation id="3286372614333682499">bertikala</translation>
 <translation id="3287510313208355388">Deskargatu konektatuta dagoenean</translation>
 <translation id="3288238092761586174">Baliteke <ph name="URL" /> ostalariak beste urrats batzuk egin behar izatea ordainketa egiaztatzeko</translation>
@@ -949,7 +948,6 @@ Bestela, pribatutasun-ezarpenek blokeatu egingo dute baimen hori. Baimen honekin
 <translation id="3304777285002411338">A2x3</translation>
 <translation id="33073482541490531">Erabili berri duzun pasahitza datuen isilpekotasunaren urratze batean aurkitu da. Google-ren Pasahitz-kudeatzailea aplikazioak pasahitza orain aldatzea gomendatzen du.</translation>
 <translation id="3308006649705061278">Erakundeko unitatea</translation>
-<translation id="3320021301628644560">Gehitu fakturazio-helbidea</translation>
 <translation id="3324687287337751929">10,16 × 15,24 cm (4 × 6 in)</translation>
 <translation id="3324983252691184275">Gorrimina</translation>
 <translation id="3329013043687509092">Asetasuna</translation>
@@ -1012,7 +1010,6 @@ Bestela, pribatutasun-ezarpenek blokeatu egingo dute baimen hori. Baimen honekin
 <translation id="3461824795358126837">Nabarmentze-tresna</translation>
 <translation id="3462200631372590220">Ezkutatu xehetasun aurreratuak</translation>
 <translation id="346601286295919445">Kimika</translation>
-<translation id="3467763166455606212">Nahitaez adierazi behar da txartelaren titularraren izena</translation>
 <translation id="3468054117417088249">Une honetan irekita dago <ph name="TAB_SWITCH_SUFFIX" />. Irekita dagoen fitxara joateko, sakatu tabulazio-tekla eta, ondoren, sakatu Sartu.</translation>
 <translation id="3470563864795286535"><ph name="CLOSE_INCOGNITO_WINDOWS_FOCUSED_FRIENDLY_MATCH_TEXT" />: sakatu tabuladorea eta, ondoren, sakatu "Sartu" tekla irekita dauden ezkutuko moduko leiho guztiak ixteko</translation>
 <translation id="3477679029130949506">Filmen zerrendak eta antzokiko ikuskizunen ordutegia</translation>
@@ -1079,6 +1076,7 @@ Bestela, pribatutasun-ezarpenek blokeatu egingo dute baimen hori. Baimen honekin
 <translation id="3631244953324577188">Sistema biometrikoak</translation>
 <translation id="3632503704576938756">Pantaila-partekatzeari berrekin zaio</translation>
 <translation id="3632892046558972264">Pantaila-partekatzea pausatu da</translation>
+<translation id="3633035844150606508">Gorde helbidea zure Google-ko kontuan (<ph name="ACCOUNT" />)</translation>
 <translation id="3633738897356909127">"Eguneratu Chrome" botoia: sakatu "Sartu" Chrome eguneratzeko Chrome-ren ezarpenetan</translation>
 <translation id="3634530185120165534">5. erretilua</translation>
 <translation id="3634567936866541746">Webgune engainagarri batean idatzi duzu pasahitza. Kontuak babesteko, gordetako pasahitzei begiratu bat ematea gomendatzen du Chrome-k.</translation>
@@ -1979,6 +1977,7 @@ Bestela, pribatutasun-ezarpenek blokeatu egingo dute baimen hori. Baimen honekin
 <translation id="5830698870816298009">kameraren erabilera eta mugimendua</translation>
 <translation id="583281660410589416">Ezezaguna</translation>
 <translation id="5838278095973806738">Ez zenuke kontuzko informaziorik (adibidez, pasahitzak edo kreditu-txartelak) eman behar webgune honetan, erasotzaileek lapur lezaketelako.</translation>
+<translation id="5841338463993781099">Kontuan gorde nahi duzu?</translation>
 <translation id="5851548754964597211">Fitxen zerrenda</translation>
 <translation id="5852909432155870672">RA4</translation>
 <translation id="5860033963881614850">Desaktibatuta</translation>
@@ -2278,7 +2277,6 @@ Bestela, pribatutasun-ezarpenek blokeatu egingo dute baimen hori. Baimen honekin
 <translation id="6612010098632894193">Sareko bideoak</translation>
 <translation id="6615297766614333076">2. pilatzailea</translation>
 <translation id="6624427990725312378">Harremanetarako informazioa</translation>
-<translation id="6626291197371920147">Zehaztu balio duen txartel-zenbaki bat</translation>
 <translation id="6627727261837091711">Erakutsi iragarkiak pertsonalizatzeari buruzko xehetasunak</translation>
 <translation id="6628463337424475685"><ph name="ENGINE" /> Bilaketa</translation>
 <translation id="6630043285902923878">USB bidezko gailuak bilatzen…</translation>
@@ -2764,7 +2762,6 @@ Xehetasun gehiago:
 <translation id="7716375162095500223">Oraindik ez da kargatu, edo ez ikusi egin zaio</translation>
 <translation id="7716424297397655342">Webgunea ezin da kargatu cachetik</translation>
 <translation id="772128550427553158">Txartelaren aurrealdean dago CVCa.</translation>
-<translation id="7723047071702270851">Editatu txartela</translation>
 <translation id="7724603315864178912">Ebaki</translation>
 <translation id="7734285854693414638">Sortu bizkor inprimaki bat Google Inprimakiak zerbitzuan</translation>
 <translation id="773466115871691567">Itzuli beti <ph name="SOURCE_LANGUAGE" /> darabilten orriak</translation>

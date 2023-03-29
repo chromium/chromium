@@ -327,7 +327,7 @@ I token di stato privati migliorano la privacy sul web e non possono essere usat
 <translation id="2870560284913253234">Sito</translation>
 <translation id="2871733351037274014">Precarica le pagine</translation>
 <translation id="2876136027428473467"><ph name="CHILD_NAME" /> ha chiesto la tua approvazione per il seguente sito web:</translation>
-<translation id="2886836735871983413">Qui verrà visualizzato un elenco di siti quando navighi sul Web</translation>
+<translation id="2886836735871983413">Qui verrà visualizzato un elenco di siti quando navighi sul web</translation>
 <translation id="2888126860611144412">Informazioni su Chrome</translation>
 <translation id="2891154217021530873">Interrompe il caricamento della pagina</translation>
 <translation id="2893180576842394309">Google può utilizzare la tua cronologia per personalizzare la Ricerca e altri servizi Google</translation>
@@ -1239,7 +1239,7 @@ Ad esempio, alcuni siti web potrebbero rispondere alla richiesta mostrando annun
 <translation id="766587987807204883">Qui vengono visualizzati gli articoli che potrai leggere anche offline</translation>
 <translation id="768232549260819724">GIF copiata</translation>
 <translation id="7682724950699840886">Prova i seguenti suggerimenti: assicurati di avere spazio sufficiente sul dispositivo e prova a esportare di nuovo.</translation>
-<translation id="7686086654630106285">Scopri di più sugli annunci suggeriti dal sito</translation>
+<translation id="7686086654630106285">Scopri di più sugli annunci suggeriti dai siti</translation>
 <translation id="768618399695552958">Alcune delle pagine che visiti sono precaricate. Le pagine potrebbero essere precaricate tramite i server di Google quando il sito che vi rimanda è un sito Google.</translation>
 <translation id="7691043218961417207">Esplora i contenuti da seguire</translation>
 <translation id="7698359219371678927">Crea email in <ph name="APP_NAME" /></translation>
@@ -1270,7 +1270,7 @@ Ad esempio, alcuni siti web potrebbero rispondere alla richiesta mostrando annun
 <translation id="7851858861565204677">Altri dispositivi</translation>
 <translation id="7853202427316060426">Attività</translation>
 <translation id="7859988229622350291">Non tradurre mai</translation>
-<translation id="7864208933699511058">Mentre navighi, l'eventuale visualizzazione di un annuncio personalizzato dipende da questa impostazione, dagli <ph name="BEGIN_LINK_1" />annunci suggeriti dal sito<ph name="END_LINK_1" />, dalle <ph name="BEGIN_LINK_2" />impostazioni dei cookie<ph name="END_LINK_2" /> e dal fatto che il sito che stai visualizzando possa personalizzare gli annunci.</translation>
+<translation id="7864208933699511058">Mentre navighi, l'eventuale visualizzazione di un annuncio personalizzato dipende da questa impostazione, dagli <ph name="BEGIN_LINK_1" />annunci suggeriti dai siti<ph name="END_LINK_1" />, dalle <ph name="BEGIN_LINK_2" />impostazioni dei cookie<ph name="END_LINK_2" /> e dal fatto che il sito che stai visualizzando possa personalizzare gli annunci.</translation>
 <translation id="7866213166286285359">Traduci le pagine qui</translation>
 <translation id="78707286264420418"><ph name="PRODUCT_NAME" /> richiede l'autorizzazione Dispositivi nelle vicinanze per potersi connettere al tuo dispositivo</translation>
 <translation id="7875915731392087153">Crea email</translation>
@@ -1320,6 +1320,7 @@ Ad esempio, alcuni siti web potrebbero rispondere alla richiesta mostrando annun
 <translation id="8058746566562539958">Apri in nuova scheda di Chrome</translation>
 <translation id="8062594758852531064">Precaricamento esteso:</translation>
 <translation id="8063895661287329888">Impossibile aggiungere preferito.</translation>
+<translation id="8066816452984416180">Aggiungi rapidamente questa pagina ai preferiti. Tocca e tieni premuto per modificare questa scorciatoia.</translation>
 <translation id="806745655614357130">Mantieni separati i miei dati</translation>
 <translation id="8073388330009372546">Immagine in nuova scheda</translation>
 <translation id="8076492880354921740">Schede</translation>
@@ -1351,6 +1352,7 @@ Ad esempio, alcuni siti web potrebbero rispondere alla richiesta mostrando annun
 <translation id="8216351761227087153">Guarda</translation>
 <translation id="8218622182176210845">Gestisci il tuo account</translation>
 <translation id="8223642481677794647">Menu scheda feed</translation>
+<translation id="8236097722223016103">Aggiungi ai preferiti</translation>
 <translation id="8250920743982581267">Documenti</translation>
 <translation id="8255617931166444521">I siti possono utilizzare i cookie per vedere la tua attività di navigazione solo sul proprio sito</translation>
 <translation id="8259179246279078674">Poiché le pagine precaricate sono criptate, Google non accederà ai contenuti di tali pagine. I server di Google memorizzeranno quali siti vengono precaricati privatamente. Queste informazioni vengono utilizzate solo per precaricare le pagine e non sono collegate ad altri dati provenienti dal tuo Account Google.</translation>
@@ -1394,7 +1396,7 @@ Ad esempio, alcuni siti web potrebbero rispondere alla richiesta mostrando annun
 <translation id="8466613982764129868">Assicurati che il dispositivo <ph name="TARGET_DEVICE_NAME" /> sia connesso a Internet</translation>
 <translation id="8473863474539038330">Indirizzi e altro</translation>
 <translation id="847433688444405067">Naviga su più dispositivi</translation>
-<translation id="8481980314595922412">Funzionalità di prova attive</translation>
+<translation id="8481980314595922412">Le funzionalità di prova sono attive</translation>
 <translation id="8485434340281759656"><ph name="FILE_SIZE" /> <ph name="SEPARATOR" /> <ph name="DESCRIPTION" /></translation>
 <translation id="8489271220582375723">Apri la pagina Cronologia</translation>
 <translation id="8493948351860045254">Libera spazio</translation>

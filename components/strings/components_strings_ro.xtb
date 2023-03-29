@@ -46,7 +46,6 @@
 <translation id="1075079914415273530">Agricultură și silvicultură</translation>
 <translation id="1080116354587839789">Încadrează pe lățime</translation>
 <translation id="1081061862829655580">Tava 19</translation>
-<translation id="1088860948719068836">Adaugă numele de pe card</translation>
 <translation id="1089439967362294234">Schimbă parola</translation>
 <translation id="1096545575934602868">Acest câmp nu poate să conțină mai mult de <ph name="MAX_ITEMS_LIMIT" /> intrări. Toate intrările suplimentare vor fi șterse.</translation>
 <translation id="1100782917270858593">Butonul Continuă-ți parcursul, apasă pe Enter pentru a-ți continua parcursul și a vedea activitatea relevantă din istoricul Chrome</translation>
@@ -339,7 +338,6 @@
 <translation id="1721424275792716183">* Câmp obligatoriu</translation>
 <translation id="1725591448053514783">Plic personal 6</translation>
 <translation id="1727613060316725209">Certificatul este valid</translation>
-<translation id="1727741090716970331">Adaugă un număr de card valid</translation>
 <translation id="1728677426644403582">Se afișează sursa unei pagini web</translation>
 <translation id="173080396488393970">Acest tip de card nu este acceptat</translation>
 <translation id="1732445923934584865">Întreabă în persoană</translation>
@@ -941,7 +939,6 @@
 <translation id="3272091146646336650">Super B</translation>
 <translation id="3281350579597955952">{0,plural, =1{Politica implementată de administrator nu recomandă să deschizi acest fișier în <ph name="DESTINATION_NAME" />}few{Politica implementată de administrator nu recomandă să deschizi aceste fișiere în <ph name="DESTINATION_NAME" />}other{Politica implementată de administrator nu recomandă să deschizi aceste fișiere în <ph name="DESTINATION_NAME" />}}</translation>
 <translation id="3282085321714087552">Organizația ta, <ph name="ENROLLMENT_DOMAIN" />, a trimis câteva informații următoarelor site-uri, cum ar fi setări sau politici.</translation>
-<translation id="3282497668470633863">Adaugă numele de pe card</translation>
 <translation id="3286372614333682499">portret</translation>
 <translation id="3287510313208355388">Descarcă când ești online</translation>
 <translation id="3288238092761586174">Poate fi necesar ca <ph name="URL" /> să parcurgă câțiva pași suplimentari pentru a confirma plata</translation>
@@ -954,7 +951,6 @@
 <translation id="3304777285002411338">A2x3</translation>
 <translation id="33073482541490531">Parola pe care tocmai ai folosit-o a fost găsită într-o încălcare a securității datelor. Managerul de parole recomandă să schimbi parola acum.</translation>
 <translation id="3308006649705061278">Unitate organizațională (OU)</translation>
-<translation id="3320021301628644560">Adaugă o adresă de facturare</translation>
 <translation id="3324687287337751929">4 x 6 in</translation>
 <translation id="3324983252691184275">Roșu aprins</translation>
 <translation id="3329013043687509092">Saturație</translation>
@@ -1017,7 +1013,6 @@
 <translation id="3461824795358126837">Evidențiator</translation>
 <translation id="3462200631372590220">Ascundeți detaliile avansate</translation>
 <translation id="346601286295919445">Chimie</translation>
-<translation id="3467763166455606212">Este necesar numele titularului cardului</translation>
 <translation id="3468054117417088249"><ph name="TAB_SWITCH_SUFFIX" />, deschisă acum, apasă pe filă, apoi pe Enter pentru a comuta la fila deschisă</translation>
 <translation id="3470563864795286535"><ph name="CLOSE_INCOGNITO_WINDOWS_FOCUSED_FRIENDLY_MATCH_TEXT" />, apasă pe Tab, apoi pe Enter pentru a închide toate ferestrele incognito deschise</translation>
 <translation id="3477679029130949506">Liste de filme și ore de difuzare la teatru</translation>
@@ -1658,6 +1653,7 @@
 <translation id="5018422839182700155">Pagina nu poate fi deschisă</translation>
 <translation id="5018802455907704660">16 x 20 in</translation>
 <translation id="5019198164206649151">Depozit de fundal în stare nevalidă</translation>
+<translation id="5019293549442035120">Poți folosi adresele salvate în toate produsele Google. Această adresă se va salva în Contul tău Google, <ph name="USER_EMAIL" />.</translation>
 <translation id="5020776957610079374">Muzică World Music</translation>
 <translation id="5021557570875267742">Urmărește prețurile cu Chrome</translation>
 <translation id="5023310440958281426">Consultați politicile administratorului</translation>
@@ -2288,7 +2284,6 @@
 <translation id="6612010098632894193">Videoclipuri online</translation>
 <translation id="6615297766614333076">Receptorul de hârtie 2</translation>
 <translation id="6624427990725312378">Informații de contact</translation>
-<translation id="6626291197371920147">Adaugă un număr de card valid</translation>
 <translation id="6627727261837091711">Afișează detalii despre personalizarea anunțurilor</translation>
 <translation id="6628463337424475685">Căutare <ph name="ENGINE" /></translation>
 <translation id="6630043285902923878">Se caută dispozitive USB...</translation>
@@ -2774,7 +2769,6 @@ Detalii suplimentare:
 <translation id="7716375162095500223">Nu s-a încărcat sau a fost ignorat</translation>
 <translation id="7716424297397655342">Acest site nu poate fi încărcat din memoria cache</translation>
 <translation id="772128550427553158">Codul CVC se află pe partea din față a cardului.</translation>
-<translation id="7723047071702270851">Editează cardul</translation>
 <translation id="7724603315864178912">Decupează</translation>
 <translation id="7734285854693414638">Creează rapid un formular în Formulare Google</translation>
 <translation id="773466115871691567">Tradu întotdeauna paginile în <ph name="SOURCE_LANGUAGE" /></translation>

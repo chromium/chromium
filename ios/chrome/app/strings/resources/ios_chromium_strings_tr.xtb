@@ -47,6 +47,7 @@
 <translation id="3567399274263440288">Chromium'dan en iyi şekilde yararlanmak için Google Hesabı'nızla Chromium'da oturum açın.</translation>
 <translation id="3639997914391704523">Chromium, Google Hesabınızla oturum açtığınızda şifrelerinizi kontrol edebilir.</translation>
 <translation id="3650632991272923014"><ph name="USER_EMAIL1" />, Chromium'u kullanıyordu, ardından yer işaretlerini, şifrelerini ve diğer ayarlarını bu cihazda bıraktı.</translation>
+<translation id="372658070733623520">Chromium verilerini kullanmak ve Google Hesabınıza kaydetmek için kimliğinizi doğrulayın.</translation>
 <translation id="3805899903892079518">Chromium, fotoğraflarınıza veya videolarınıza erişemiyor. iOS Ayarlar &gt; Gizlilik &gt; Fotoğraflar'dan erişimi etkinleştirin.</translation>
 <translation id="4043291146360695975">Şifreler yalnızca bu cihazda Şifre Yöneticisi'ne kaydedilir.</translation>
 <translation id="4099085513035183040">Chromium Beta'da desteklenmiyor</translation>
@@ -76,6 +77,7 @@
 <translation id="5945387852661427312"><ph name="DOMAIN" /> tarafından yönetilen bir hesapla oturum açıyor ve yöneticiye tüm Chromium verileriniz üzerinde denetim olanağı veriyorsunuz. Verileriniz kalıcı olarak bu hesaba bağlanacaktır. Chromium'da oturumu kapattığınızda verileriniz bu cihazdan silinir ancak Google Hesabınızda kalmaya devam eder.</translation>
 <translation id="5983312940147103417">Chromium'u Daha İyi Hale Getirin</translation>
 <translation id="6062449165341879460">Chromium verilerinize, yer işaretlerinize, geçmişinize, şifrelerinize ve bu hesapta sakladığınız diğer ayarlara kuruluşunuz <ph name="DOMAIN" /> erişebilir. Oturumunuzu kapattığınızda verileriniz bu cihazdan silinir.  Ancak verileriniz, yönetilen Google Hesabınızda saklanır ve kuruluşunuzun kullanımına açıktır. Kuruluşunuz ayrıca, söz konusu hesaba özel olup Chromium'un davranışını değiştirebilecek kullanıcı politikaları belirleyebilir.</translation>
+<translation id="61109258320235597">Chromium verilerini kullanmak ve Google Hesabınıza kaydetmek için parolanızı girin.</translation>
 <translation id="6119647025869519954">Chromium'u varsayılan tarayıcınız yapmak için:
 1. Ayarlar'ı açın
 2. Varsayılan Tarayıcı Uygulaması'na dokunun

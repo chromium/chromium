@@ -1261,6 +1261,7 @@
 <translation id="2077129598763517140">Користи хардверско убрзање када је доступно</translation>
 <translation id="2078019350989722914">Упозори пре напуштања (<ph name="KEY_EQUIVALENT" />)</translation>
 <translation id="2079053412993822885">Ако избришете неки свој сертификат, више нећете моћи да га користите да се идентификујете.</translation>
+<translation id="2079495302726689071">Отвори линк на новој картици у апликацији <ph name="APP" /></translation>
 <translation id="2079545284768500474">Опозови</translation>
 <translation id="2080070583977670716">Више подешавања</translation>
 <translation id="2081816110395725788">Напајање током неактивности кад се користи батерија</translation>
@@ -1395,6 +1396,7 @@
 <translation id="2175384018164129879">&amp;Управљајте претраживачима и претрагом сајта</translation>
 <translation id="217576141146192373">Додавање штампача није успело. Проверите конфигурацију штампача и пробајте поново.</translation>
 <translation id="2175927920773552910">QR кôд</translation>
+<translation id="2177306523871626993">Преузимају се фајлови за препознавање текста… <ph name="PERCENT" />%</translation>
 <translation id="2177950615300672361">Картица Без архивирања: <ph name="TAB_NAME" /></translation>
 <translation id="2178585470774851578">Омогућавате Chrome OS Flex функције за отклањање грешака које ће подесити sshd системску услугу и омогућити укључивање са USB дискова.</translation>
 <translation id="2178614541317717477">CA је компромитован</translation>
@@ -1911,6 +1913,7 @@
 <translation id="2612676031748830579">Број картице</translation>
 <translation id="2613210758071148851">Не дозвољавај никакве додатке на сајту <ph name="RESTRICTED_SITE" /></translation>
 <translation id="2613535083491958306"><ph name="ORIGIN" /> ће моћи да мења <ph name="FILENAME" /></translation>
+<translation id="2616008379779647117">Језик титлова</translation>
 <translation id="2616366145935564096">Читање и мењање података на <ph name="WEBSITE_1" /></translation>
 <translation id="2618797463720777311">Подесите Дељење у близини</translation>
 <translation id="2620215283731032047">Безбедно преузимање датотеке <ph name="FILE_NAME" /> није успело.</translation>
@@ -3106,6 +3109,7 @@
 <translation id="3694590407685276748">Истакните курсор за текст</translation>
 <translation id="369489984217678710">Лозинке и други подаци за пријављивање</translation>
 <translation id="369522892592566391">{NUM_FILES,plural, =0{Безбедносне провере су готове. Подаци ће се отпремити.}=1{Безбедносне провере су готове. Датотека ће се отпремити.}one{Безбедносне провере су готове. Датотеке ће се отпремити.}few{Безбедносне провере су готове. Датотеке ће се отпремити.}other{Безбедносне провере су готове. Датотеке ће се отпремити.}}</translation>
+<translation id="3696817060563289264">Преузети су фајлови за препознавање текста</translation>
 <translation id="3698471669415859717">Преглед је завршен</translation>
 <translation id="3698825735945432002">Тип филтера</translation>
 <translation id="3699624789011381381">Имејл адреса</translation>
@@ -3124,6 +3128,7 @@
 <translation id="370649949373421643">Омогући WiFi</translation>
 <translation id="370665806235115550">Учитава се...</translation>
 <translation id="3707163604290651814">Тренутно сте пријављени као <ph name="NAME" /></translation>
+<translation id="3707348585109246684">Отвори линк на новој картици у апликацији <ph name="APP" /></translation>
 <translation id="3708295717182051206">Титл</translation>
 <translation id="3708684582558000260">Не дозвољавај затвореним сајтовима да доврше слање или пријем података</translation>
 <translation id="3709244229496787112">Прегледач је затворен пре него што је преузимање завршено.</translation>
@@ -3514,6 +3519,7 @@
 <translation id="4027958407426528157">Отварајте веб-сајтове и апликације инсталиране на уређају <ph name="DEVICE_TYPE" /></translation>
 <translation id="4028467762035011525">Додај методе уноса</translation>
 <translation id="4029556917477724407">Назад са странице <ph name="PAGE_TITLE" /></translation>
+<translation id="403088439874411464">Преузимају се фајлови за препознавање текста</translation>
 <translation id="4031179711345676612">Микрофон је дозвољен</translation>
 <translation id="4031527940632463547">Приступ сензорима је блокиран</translation>
 <translation id="4033471457476425443">Додај нови фолдер</translation>
@@ -5353,7 +5359,6 @@
 <translation id="5723967018671998714">Колачићи треће стране су блокирани у режиму без архивирања</translation>
 <translation id="5724642200346111167">Подаци о сајтовима се бришу са уређаја када затворите све прозоре</translation>
 <translation id="5727728807527375859">Додаци, апликације и теме могу да оштете рачунар. Желите ли стварно да наставите?</translation>
-<translation id="5728235544432023605">Пребацивање не реагује. Зауставите га на уређају <ph name="DEVICE_NAME" />.</translation>
 <translation id="5728450728039149624">Опције закључавања екрана за Smart Lock</translation>
 <translation id="5729712731028706266">&amp;Прикажи</translation>
 <translation id="5731247495086897348">На&amp;лепи и иди</translation>
@@ -7509,6 +7514,7 @@
 <translation id="7660146600670077843">Кликните десним тастером на картицу и изаберите Додај картицу у нову групу</translation>
 <translation id="7661259717474717992">Омогућавање да сајтови чувају и читају податке колачића</translation>
 <translation id="7661451191293163002">Нисмо успели да преузмемо сертификат за регистрацију.</translation>
+<translation id="7662164944369232556">Преузимање фајлова за препознавање текста није успело. Пробајте поново касније.</translation>
 <translation id="7662283695561029522">Додирните да бисте конфигурисали</translation>
 <translation id="7663719505383602579">Пријемник: <ph name="ARC_PROCESS_NAME" /></translation>
 <translation id="7663774460282684730">Доступна је тастерска пречица</translation>
@@ -8139,6 +8145,7 @@
 <translation id="8195027750202970175">Величина на диску</translation>
 <translation id="8195191503358432289">Додајте лозинку</translation>
 <translation id="8195265224453131880">Интензитет</translation>
+<translation id="8195737548602430447">Аутоматски преводите титлове на циљни језик.</translation>
 <translation id="8197673340773315084">Додајте назив или ознаку као што су Пословни или Лични</translation>
 <translation id="8198456017687137612">Пребацује се картица</translation>
 <translation id="8199300056570174101">Својства мреже (услуга) и уређаја</translation>
@@ -8256,6 +8263,7 @@
 <translation id="8291415872436043161">Преузми Chrome</translation>
 <translation id="8293206222192510085">Додавање обележивача</translation>
 <translation id="8294431847097064396">Извор</translation>
+<translation id="8295449579927246485">Превод уживо</translation>
 <translation id="8298429963694909221">Сада можете да добијате обавештења са телефона на уређају <ph name="DEVICE_TYPE" />. Ако одбаците обавештења на уређају <ph name="DEVICE_TYPE" />, одбацићете их и на телефону. Уверите се да је телефон у близини и да су Bluetooth и WiFi укључени.</translation>
 <translation id="8299319456683969623">Тренутно сте офлајн.</translation>
 <translation id="8300011035382349091">Измените обележивач за ову картицу</translation>
@@ -8323,6 +8331,7 @@
 <translation id="835951711479681002">Сачувај на Google налогу</translation>
 <translation id="8360140320636871023">Персонализујте тему за приказ</translation>
 <translation id="8360267485906769442">Дугме за слање повратних информација</translation>
+<translation id="8362914115861174987">Преводи на језик</translation>
 <translation id="8363095875018065315">стабилан</translation>
 <translation id="8363142353806532503">Микрофон је блокиран</translation>
 <translation id="8366396658833131068">Веза са мрежом је поново успостављена. Изаберите другу мрежу или притисните дугме „Настави“ у наставку да бисте покренули киоск апликацију.</translation>

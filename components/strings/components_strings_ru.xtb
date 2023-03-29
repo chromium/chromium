@@ -46,7 +46,6 @@
 <translation id="1075079914415273530">Сельское и лесное хозяйство</translation>
 <translation id="1080116354587839789">Выровнять по ширине окна</translation>
 <translation id="1081061862829655580">Лоток 19</translation>
-<translation id="1088860948719068836">Укажите имя владельца карты</translation>
 <translation id="1089439967362294234">Сменить пароль</translation>
 <translation id="1096545575934602868">Максимальное число записей в этом поле: <ph name="MAX_ITEMS_LIMIT" />. Остальные записи не будут сохранены.</translation>
 <translation id="1100782917270858593">Кнопка "Продолжить поиск в истории". Нажмите Ввод, чтобы посмотреть похожие действия в истории Chrome.</translation>
@@ -339,7 +338,6 @@
 <translation id="1721424275792716183">*Обязательное поле</translation>
 <translation id="1725591448053514783">Конверт You 6</translation>
 <translation id="1727613060316725209">Действительный сертификат</translation>
-<translation id="1727741090716970331">Введите правильный номер карты</translation>
 <translation id="1728677426644403582">Вы просматриваете код страницы</translation>
 <translation id="173080396488393970">Этот тип карты не поддерживается.</translation>
 <translation id="1732445923934584865">Спросить разрешения лично</translation>
@@ -940,7 +938,6 @@
 <translation id="3272091146646336650">Super B</translation>
 <translation id="3281350579597955952">{0,plural, =1{Администратор не рекомендует открывать этот файл в месте назначения "<ph name="DESTINATION_NAME" />".}one{Администратор не рекомендует открывать эти файлы в месте назначения "<ph name="DESTINATION_NAME" />".}few{Администратор не рекомендует открывать эти файлы в месте назначения "<ph name="DESTINATION_NAME" />".}many{Администратор не рекомендует открывать эти файлы в месте назначения "<ph name="DESTINATION_NAME" />".}other{Администратор не рекомендует открывать эти файлы в месте назначения "<ph name="DESTINATION_NAME" />".}}</translation>
 <translation id="3282085321714087552">Ваша организация (<ph name="ENROLLMENT_DOMAIN" />) отправила на следующие веб-сайты некоторые данные, такие как настройки и правила.</translation>
-<translation id="3282497668470633863">Укажите имя владельца карты</translation>
 <translation id="3286372614333682499">вертикальная ориентация</translation>
 <translation id="3287510313208355388">Скачать при подключении к Интернету</translation>
 <translation id="3288238092761586174">Сайт <ph name="URL" /> может выполнить дополнительные действия, чтобы подтвердить ваш платеж.</translation>
@@ -953,7 +950,6 @@
 <translation id="3304777285002411338">A2x3</translation>
 <translation id="33073482541490531">Пароль, который вы только что использовали, был раскрыт в результате утечки данных. Измените его прямо сейчас в Менеджере паролей.</translation>
 <translation id="3308006649705061278">Подразделение (OU)</translation>
-<translation id="3320021301628644560">Добавьте платежный адрес</translation>
 <translation id="3324687287337751929">4 x 6 дюймов</translation>
 <translation id="3324983252691184275">Малиновый</translation>
 <translation id="3329013043687509092">Насыщенность</translation>
@@ -1016,7 +1012,6 @@
 <translation id="3461824795358126837">Маркер</translation>
 <translation id="3462200631372590220">Скрыть подробности</translation>
 <translation id="346601286295919445">Химия</translation>
-<translation id="3467763166455606212">Укажите имя владельца карты.</translation>
 <translation id="3468054117417088249">Открыта вкладка <ph name="TAB_SWITCH_SUFFIX" />. Чтобы переключиться на нее, нажмите Tab, а затем Ввод.</translation>
 <translation id="3470563864795286535"><ph name="CLOSE_INCOGNITO_WINDOWS_FOCUSED_FRIENDLY_MATCH_TEXT" />. Нажмите Tab, а затем Ввод, чтобы закрыть все окна, открытые в режиме инкогнито.</translation>
 <translation id="3477679029130949506">Кино- и театральные афиши</translation>
@@ -1657,6 +1652,7 @@
 <translation id="5018422839182700155">Не удалось открыть страницу</translation>
 <translation id="5018802455907704660">16 x 20 дюймов</translation>
 <translation id="5019198164206649151">Данные в хранилище повреждены</translation>
+<translation id="5019293549442035120">Адрес будет сохранен в аккаунте <ph name="USER_EMAIL" />. Его и другие сохраненные данные можно использовать в продуктах Google.</translation>
 <translation id="5020776957610079374">Этническая музыка</translation>
 <translation id="5021557570875267742">Следите за ценами с помощью Chrome</translation>
 <translation id="5023310440958281426">Проверьте правила, установленные администратором</translation>
@@ -1794,6 +1790,7 @@
 <translation id="5324080437450482387">Выбрать контактные данные</translation>
 <translation id="5329858041417644019">Этот браузер не управляется администратором</translation>
 <translation id="5332219387342487447">Способ доставки</translation>
+<translation id="5332769172018416402">Отправить сообщение</translation>
 <translation id="5333022057423422993">Пароль, который вы только что использовали, был раскрыт в результате утечки данных. Чтобы защитить свои аккаунты, проверьте надежность сохраненных паролей.</translation>
 <translation id="5334013548165032829">Подробные системные журналы.</translation>
 <translation id="5334145288572353250">Сохранить адрес?</translation>
@@ -2178,7 +2175,7 @@
 <translation id="6328784461820205019">"Подключение не защищено", "&lt;span class="error-code"&gt;NET::ERR_CERT_AUTHORITY_INVALID&lt;/span&gt;", "&lt;span class="error-code"&gt;ERR_CERT_COMMON_NAME_INVALID&lt;/span&gt;", "&lt;span class="error-code"&gt;NET::ERR_CERT_WEAK_SIGNATURE_ALGORITHM&lt;/span&gt;", "&lt;span class="error-code"&gt;ERR_CERT_SYMANTEC_LEGACY&lt;/span&gt;" или "Ошибка сертификата SSL"</translation>
 <translation id="6328786501058569169">Это поддельный сайт</translation>
 <translation id="6337133576188860026">Освободится менее <ph name="SIZE" /> пространства. После этого некоторые веб-страницы могут загружаться дольше обычного.</translation>
-<translation id="6337534724793800597">Фильтровать правила по названию</translation>
+<translation id="6337534724793800597">Фильтровать по названию</translation>
 <translation id="633770708279464947">Значение строки <ph name="SECURE_DNS_SALT" /> недопустимо и не будет использовано.</translation>
 <translation id="6340739886198108203">Администратор не рекомендует делать снимки и видеозаписи экрана, когда на нем показаны конфиденциальные данные:</translation>
 <translation id="6341434961864773665">{0,plural, =1{Администратор не рекомендует загружать этот файл на <ph name="DESTINATION_NAME" />.}one{Администратор не рекомендует загружать эти файлы на <ph name="DESTINATION_NAME" />.}few{Администратор не рекомендует загружать эти файлы на <ph name="DESTINATION_NAME" />.}many{Администратор не рекомендует загружать эти файлы на <ph name="DESTINATION_NAME" />.}other{Администратор не рекомендует загружать эти файлы на <ph name="DESTINATION_NAME" />.}}</translation>
@@ -2286,7 +2283,6 @@
 <translation id="6612010098632894193">Видео в интернете</translation>
 <translation id="6615297766614333076">Укладчик 2</translation>
 <translation id="6624427990725312378">Контактная информация</translation>
-<translation id="6626291197371920147">Введите номер действующей карты</translation>
 <translation id="6627727261837091711">Показать сведения о персонализации рекламы</translation>
 <translation id="6628463337424475685">Поиск <ph name="ENGINE" /></translation>
 <translation id="6630043285902923878">Поиск USB-устройств…</translation>
@@ -2772,7 +2768,6 @@
 <translation id="7716375162095500223">Проигнорирован или ещё не загружен</translation>
 <translation id="7716424297397655342">Не удалось загрузить сайт из кеша</translation>
 <translation id="772128550427553158">CVC-код находится на лицевой стороне карты.</translation>
-<translation id="7723047071702270851">Измените данные карты</translation>
 <translation id="7724603315864178912">Вырезать</translation>
 <translation id="7734285854693414638">Быстро создать форму в Google Формах</translation>
 <translation id="773466115871691567">Всегда переводить <ph name="SOURCE_LANGUAGE" /></translation>

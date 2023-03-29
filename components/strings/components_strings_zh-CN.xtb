@@ -46,7 +46,6 @@
 <translation id="1075079914415273530">农业与林业</translation>
 <translation id="1080116354587839789">适合窗口宽度</translation>
 <translation id="1081061862829655580">纸匣 19</translation>
-<translation id="1088860948719068836">添加持卡人姓名</translation>
 <translation id="1089439967362294234">更改密码</translation>
 <translation id="1096545575934602868">此字段最多仅能包含 <ph name="MAX_ITEMS_LIMIT" /> 个条目，超出的条目会被舍弃。</translation>
 <translation id="1100782917270858593">“继续您的历程”按钮，按 Enter 键即可继续您的历程，以查看您的 Chrome 历史记录中的相关活动记录</translation>
@@ -339,7 +338,6 @@
 <translation id="1721424275792716183">标有“*”的字段均是必填字段</translation>
 <translation id="1725591448053514783">You 6 信封</translation>
 <translation id="1727613060316725209">证书有效</translation>
-<translation id="1727741090716970331">添加有效卡号</translation>
 <translation id="1728677426644403582">您正在查看网页的源代码</translation>
 <translation id="173080396488393970">此信用卡类型不受支持</translation>
 <translation id="1732445923934584865">改为当面询问</translation>
@@ -939,7 +937,6 @@
 <translation id="3272091146646336650">Super B</translation>
 <translation id="3281350579597955952">{0,plural, =1{管理员政策不建议在<ph name="DESTINATION_NAME" />中打开这个文件}other{管理员政策不建议在<ph name="DESTINATION_NAME" />中打开这些文件}}</translation>
 <translation id="3282085321714087552">贵组织 <ph name="ENROLLMENT_DOMAIN" /> 已将某些信息（例如设置或政策）发送给下列网站。</translation>
-<translation id="3282497668470633863">添加持卡人姓名</translation>
 <translation id="3286372614333682499">纵向</translation>
 <translation id="3287510313208355388">联网时下载</translation>
 <translation id="3288238092761586174"><ph name="URL" /> 可能需要采取额外措施来验证您的付款</translation>
@@ -952,7 +949,6 @@
 <translation id="3304777285002411338">A2x3</translation>
 <translation id="33073482541490531">系统检测到，您刚才使用的密码遭遇了数据泄露。密码管理工具建议您立即更改此密码。</translation>
 <translation id="3308006649705061278">组织单位 (OU)</translation>
-<translation id="3320021301628644560">添加账单邮寄地址</translation>
 <translation id="3324687287337751929">4 x 6 英寸</translation>
 <translation id="3324983252691184275">深红色</translation>
 <translation id="3329013043687509092">饱和度</translation>
@@ -1015,7 +1011,6 @@
 <translation id="3461824795358126837">荧光笔</translation>
 <translation id="3462200631372590220">隐藏详情</translation>
 <translation id="346601286295919445">化学</translation>
-<translation id="3467763166455606212">必须输入持卡人姓名</translation>
 <translation id="3468054117417088249"><ph name="TAB_SWITCH_SUFFIX" />，目前处于打开状态，按 Tab 键再按 Enter 键可切换到打开的标签页</translation>
 <translation id="3470563864795286535"><ph name="CLOSE_INCOGNITO_WINDOWS_FOCUSED_FRIENDLY_MATCH_TEXT" />，依次按 Tab 键和 Enter 键即可关闭当前打开的所有无痕式窗口</translation>
 <translation id="3477679029130949506">上映的影片与放映时间</translation>
@@ -1654,6 +1649,7 @@
 <translation id="5018422839182700155">无法打开此网页</translation>
 <translation id="5018802455907704660">16 x 20 英寸</translation>
 <translation id="5019198164206649151">后备存储状态不佳</translation>
+<translation id="5019293549442035120">您可以在各种 Google 产品中使用已保存的地址。该地址将保存到您的 Google 帐号 <ph name="USER_EMAIL" /> 中。</translation>
 <translation id="5020776957610079374">世界音乐</translation>
 <translation id="5021557570875267742">使用 Chrome 跟踪价格</translation>
 <translation id="5023310440958281426">请查看管理员制定的政策</translation>
@@ -1791,6 +1787,7 @@
 <translation id="5324080437450482387">选择联系信息</translation>
 <translation id="5329858041417644019">您的浏览器不受管理</translation>
 <translation id="5332219387342487447">送货方式</translation>
+<translation id="5332769172018416402">发消息询问</translation>
 <translation id="5333022057423422993">Chrome 发现您刚才使用的密码已遭遇数据泄露。为确保您的帐号安全，建议您检查您保存的密码。</translation>
 <translation id="5334013548165032829">详细的系统日志</translation>
 <translation id="5334145288572353250">保存地址？</translation>
@@ -2283,7 +2280,6 @@
 <translation id="6612010098632894193">在线视频</translation>
 <translation id="6615297766614333076">堆叠出纸器 2</translation>
 <translation id="6624427990725312378">联系信息</translation>
-<translation id="6626291197371920147">添加有效的卡号</translation>
 <translation id="6627727261837091711">显示广告个性化详情</translation>
 <translation id="6628463337424475685"><ph name="ENGINE" /> 搜索</translation>
 <translation id="6630043285902923878">正在查找 USB 设备…</translation>
@@ -2769,7 +2765,6 @@
 <translation id="7716375162095500223">尚未上传，或者已忽略</translation>
 <translation id="7716424297397655342">无法从缓存中加载此网站</translation>
 <translation id="772128550427553158">银行卡验证码 (CVC) 位于银行卡的正面。</translation>
-<translation id="7723047071702270851">修改支付卡</translation>
 <translation id="7724603315864178912">剪切</translation>
 <translation id="7734285854693414638">在 Google 表单中快速创建新表单</translation>
 <translation id="773466115871691567">一律翻译<ph name="SOURCE_LANGUAGE" />网页</translation>

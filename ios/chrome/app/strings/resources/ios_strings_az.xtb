@@ -145,6 +145,7 @@ Yalnız parolunuzu bilən kimsə şifrələnmiş datanızı oxuya bilər. Bu par
 <translation id="1965935827552890526">Digər açıq Chrome pəncərəsində gördüyünüz işi bitirin.</translation>
 <translation id="1973912524893600642">Datanı saxlayın</translation>
 <translation id="1974060860693918893">Qabaqcıl</translation>
+<translation id="1980417445547898121">{count,plural, =1{Digər cihazdakı son {count} aktiv tabı bu iPhone-da əldə edin}other{Digər cihazdakı son {count} aktiv tabı bu iPhone-da əldə edin}}</translation>
 <translation id="1981118202195772574">Mobil</translation>
 <translation id="1989112275319619282">Baxın</translation>
 <translation id="1990820278544963435">Tapın</translation>
@@ -325,6 +326,7 @@ Axtarış tarixçənizi silmək üçün axtarış mexanizminizin təlimatlarına
 <translation id="3214379938835224220">iPad sıfırlamasının bir hissəsi olaraq hesabınızdan çıxmısınız. Daxil olmaq üçün aşağıda "davam edin" seçiminə toxunun.</translation>
 <translation id="3224641773458703735">Parolları eksport etmək üçün əvvəlcə cihazınızda parol kod ayarlamalısınız.</translation>
 <translation id="3227137524299004712">Mikrofon</translation>
+<translation id="3235063766008841141">Aldadıcı saytda daxil edilib və data pozulmasında tapılıb</translation>
 <translation id="3240426699337459095">Link kopyalandı</translation>
 <translation id="3244271242291266297">MM</translation>
 <translation id="3245744387817103524">Dəyişiklik yaddaşda saxlanmadı.</translation>
@@ -364,6 +366,7 @@ Axtarış tarixçənizi silmək üçün axtarış mexanizminizin təlimatlarına
 <translation id="3494788280727468875">Brauzer Data Silinməsini Təsdiq Edin</translation>
 <translation id="35083190962747987">${url} keçidini açın</translation>
 <translation id="3519193562722059437">Vebdə baxmaq üçün panel açın.</translation>
+<translation id="3519905498307021260">{count,plural, =1{Tabı açın}other{{count} tabı açın}}</translation>
 <translation id="3527085408025491307">Qovluq</translation>
 <translation id="3529024052484145543">Təhlükəsiz deyil</translation>
 <translation id="3530206579861815432">Sinxronlaşdırılmış cihazlarda açıq və son bağlanmış tabları tez tapın.</translation>
@@ -411,6 +414,7 @@ Axtarış tarixçənizi silmək üçün axtarış mexanizminizin təlimatlarına
 <translation id="3863769054730344136">Cihazlara göndərin</translation>
 <translation id="387280738075653372">Chrome'u buradan endirin.</translation>
 <translation id="3888863481921783344">Bu, tədbirinizə mümkün dəvətliləri göstərmək üçün istifadə olunacaq.</translation>
+<translation id="3891414008432200754">Qiymət</translation>
 <translation id="3892144330757387737">Tarixçəni burada tapa bilərsiniz</translation>
 <translation id="3897092660631435901">Menyu</translation>
 <translation id="3904829425754749514">Təşkilatınız sinxronizasiyanı deaktiv etdi. Hələ də bu cihazda bütün əlfəcinlər, tarixçə, parol və digər ayarları görə bilərsiniz. Dəyişiklik etsəniz, onlar hesabınızla sinxronizasiya edilməyəcək.</translation>
@@ -458,6 +462,7 @@ Axtarış tarixçənizi silmək üçün axtarış mexanizminizin təlimatlarına
 <translation id="4237377247299956313"><ph name="BEGIN_BOLD" />Defolt Brauzer Tətbiqi<ph name="END_BOLD" /> seçiminə toxunun</translation>
 <translation id="424315890655130736">Parol sözü daxil edin</translation>
 <translation id="4249955472157341256">Ən sonuncular üzrə sıalayın</translation>
+<translation id="4250432749243022864">{count,plural, =0{{count} tabı açın}=1{{count} tabı açın}other{{count} tabı açın}}</translation>
 <translation id="4253168017788158739">Qeyd</translation>
 <translation id="4263576668337963058">Əlçatan səhifə fəaliyyətlərini göstərin</translation>
 <translation id="4267586310863245665">{COUNT,plural, =1{{COUNT} xəbərdarlığı qapatdınız}other{{COUNT} xəbərdarlığı qapatdınız}}</translation>
@@ -475,6 +480,7 @@ Axtarış tarixçənizi silmək üçün axtarış mexanizminizin təlimatlarına
 <translation id="4342946437867096381">Artıq Google Hesabında bu sayt üçün parol saxlamısınız. Google sizin üçün ən son parolu seçə bilər.</translation>
 <translation id="4343046787186034850">Kamera və Mikrofona giriş icazəsi verilib</translation>
 <translation id="4359125752503270327">Bu səhifə başqa tətbiqdə açılacaq.</translation>
+<translation id="4371526908359194219">E-poçt bildirişləri</translation>
 <translation id="4375040482473363939">QR kod Axtarışı</translation>
 <translation id="4378154925671717803">Telefon</translation>
 <translation id="4389019817280890563">Dili dəyişmək üçün toxunun.</translation>
@@ -499,6 +505,7 @@ Axtarış tarixçənizi silmək üçün axtarış mexanizminizin təlimatlarına
 <translation id="452750746583162491">Sinxronlaşdırılmış datanızı nəzərdən keçirin</translation>
 <translation id="4536418791685807335">Yenidən daxil olmağa cəhd edin.</translation>
 <translation id="4540780316273593836">Xəta baş verdi</translation>
+<translation id="457292989631956153">{COUNT,plural, =1{{COUNT} fəaliyyətsiz tab bağlansın?}other{{COUNT} fəaliyyətsiz tab bağlansın?}}</translation>
 <translation id="457386861538956877">Digər...</translation>
 <translation id="4587235830039045480">Parolu Google Hesabında yadda saxlayın</translation>
 <translation id="4587589328781138893">Saytlar</translation>
@@ -528,6 +535,7 @@ Datanız sinxronizasiya parol sözü ilə şifrələnib. Sinxronizasiyanı başl
 <translation id="470966556546083668">Sinxronizasiyanı aktiv etməyin</translation>
 <translation id="4737560986434232178">Son Tabları axtarın</translation>
 <translation id="473775607612524610">Güncəlləşdirin</translation>
+<translation id="4746926359847517643">Tarixçədə onları yenidən əldə edə bilərsiniz.</translation>
 <translation id="4747097190499141774">Google Pay'dəki ödəniş metodları və ünvanlar parol şifrələməsinə daxil deyil. Yanlız parolunuzu bilən şəxs şifrələnmiş datanı oxuya bilər. Google parolu əldə etmir və ya saxlamır. Parolu unutsanız və ya bu ayarı dəyişmək istəsəniz, sinxronizasiyanı sıfırlamalısınız. <ph name="BEGIN_LINK" />Ətraflı məlumat<ph name="END_LINK" /></translation>
 <translation id="4751162929052964260"><ph name="TITLE" />, <ph name="STATE" />, Yalnız bu cihazda, <ph name="URL" /></translation>
 <translation id="4751645464639803239">Yeni Anonim Tab</translation>
@@ -576,6 +584,7 @@ Ayarı dəyişmək üçün <ph name="BEGIN_LINK" />sinxronizasiyanı sıfırlay�
 <translation id="4986678885919050584">Bu Cihazdan silin</translation>
 <translation id="498985224078955265">Bu tabı başqa cihaza göndərmək üçün hər iki cihazda Chrome'a daxil olun.</translation>
 <translation id="5005498671520578047">Parolu kopyalayın</translation>
+<translation id="5016420433031926653"><ph name="USER_EMAIL" /> ünvanına göndərin</translation>
 <translation id="5017828934289857214">Sonra xatırladın</translation>
 <translation id="5037676449506322593">Hamısını seçin</translation>
 <translation id="5039804452771397117">İcazə verin</translation>
@@ -596,6 +605,7 @@ Ayarı dəyişmək üçün <ph name="BEGIN_LINK" />sinxronizasiyanı sıfırlay�
 <translation id="5168414296986405587">iPadOS üçün hazırlanıb</translation>
 <translation id="5173088371991956744">Sinxronizasiya kimliyinizi təsdiqləməlidir</translation>
 <translation id="5176312250994681348">Son parolu saxlayın</translation>
+<translation id="51802232683641391">{count,plural, =1{Android-də qaldığınız tabdan davam edilsin?}other{Android-də qaldığınız tablardan davam edilsin?}}</translation>
 <translation id="5181140330217080051">Endirilir</translation>
 <translation id="5184329579814168207">Chrome'da açın</translation>
 <translation id="5186185447130319458">Şəxsi</translation>
@@ -708,6 +718,7 @@ Handoff Ayarların Ümumi bölməsindən də aktiv edilə bilər və cihazların
 <translation id="5963939892571022323">Vurğulamaya keçid yaratmaq olmur.</translation>
 <translation id="5965679971710331625">Hesaba daxil olmusunuz</translation>
 <translation id="5979837087407522202">Parolları Axtarın</translation>
+<translation id="5981230843984570095">Fəaliyyətsiz tabları bağlayın</translation>
 <translation id="5982717868370722439">Mövcud datanı <ph name="USER_EMAIL" /> hesabına əlavə edin.</translation>
 <translation id="5984222099446776634">Son Ziyarət</translation>
 <translation id="5988097621740394599">Tablarda qiymət endirimləri göstərilsin.</translation>
@@ -751,11 +762,13 @@ Handoff Ayarların Ümumi bölməsindən də aktiv edilə bilər və cihazların
 <translation id="6219550825416862075">Təkrar xoş gəldiniz</translation>
 <translation id="6219688215832490856">Heç Vaxt Tərcümə Etməyin</translation>
 <translation id="6223816392543092032">Bütün cihazlarınızda əlfəcin, tarixçə, parol və digər ayarları əldə edin.</translation>
+<translation id="6224759905509595045">Kimliyinizi təsdiq edin…</translation>
 <translation id="6229318421047648685">Masaüstü Saytı tələb edin</translation>
 <translation id="6231782223312638214">Təklif edilən</translation>
 <translation id="6232329973559504466">Anonim Axtarış</translation>
 <translation id="6247557882553405851">Google Parol Meneceri</translation>
 <translation id="6254066287920239840">Linkləri brauzer əvəzinə tətbiqdə açın</translation>
+<translation id="625491139841322297">{count,plural, =1{Tabı nəzərdən keçirin}other{Tabları nəzərdən keçirin}}</translation>
 <translation id="6255097610484507482">Kredit Kartına Düzəliş edin</translation>
 <translation id="6277426346321820595">Qoruma yoxdur</translation>
 <translation id="6284652193729350524"><ph name="LANGUAGE" /> dilindən tərcümə etməyi təklif edin</translation>
@@ -911,6 +924,7 @@ Anonim rejimdə olduqda saytlar müxtəlif saytlarda baxış tarixçənizi görm
 <translation id="7108762695052995889">Sayta daxil olun</translation>
 <translation id="7133798577887235672">Tam Ad</translation>
 <translation id="7136892417564438900">Kamera əlçatan deyil</translation>
+<translation id="7161230316646448869">Əlfəcin, tarixçə və s. məlumatları bütün cihazlarda sinxronlaşdırın</translation>
 <translation id="7162168282402939716">Anonim tabları <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /> ilə kiliddən çıxarın</translation>
 <translation id="7172852049901402487">Güvənlik məsələlərinə qarşı parollarınızı qoruyun</translation>
 <translation id="7173114856073700355">Ayarları Açın</translation>
@@ -966,6 +980,7 @@ Anonim rejimdə olduqda saytlar müxtəlif saytlarda baxış tarixçənizi görm
 <translation id="7607521702806708809">Parolu Silin</translation>
 <translation id="7611459119367035420">Sancılmış tablar buradadır.</translation>
 <translation id="7638584964844754484">Yanlış parol</translation>
+<translation id="7640669552036055091">Android-dəki tablar</translation>
 <translation id="7646263789464975852">Menyu → Ayarlar → Təhlükəsizlik Yoxlanışı</translation>
 <translation id="7646772052135772216">Parol sinxronizasiyası işləmir</translation>
 <translation id="764827086632467055">Defolt Brauzer Tətbiqi seçiminə toxunun</translation>
@@ -1131,6 +1146,7 @@ Saytlar müxtəlif saytlarda baxış fəaliyyətinizi görmək üçün kukilərd
 <translation id="8764015330924122850"><ph name="DOMAIN_NAME" /> kanalını izləməyin</translation>
 <translation id="8766790350274092814"><ph name="WEBSITE" /> və <ph name="SECOND_WEBSITE" /> üçün parollar silinəcək. Hesablarınız silinməyəcək.</translation>
 <translation id="8775144690796719618">Yanlış URL</translation>
+<translation id="8780076847684176174">{count,plural, =1{Tabı nəzərdən keçirin...}other{Tabları nəzərdən keçirin...}}</translation>
 <translation id="8787968206789828143">Vebdə axtarış</translation>
 <translation id="8792626944327216835">mikrofon</translation>
 <translation id="8803639129939845298">Güvənli</translation>
@@ -1195,6 +1211,7 @@ Saytlar müxtəlif saytlarda baxış fəaliyyətinizi görmək üçün kukilərd
 <translation id="9162432979321511934">Parol Avto Doldurmasını aktiv edin</translation>
 <translation id="9165320910061267720">Qiymətin düşməsi xəbərdarlıqları ilə bağlı bildiriş almaq üçün iOS ayarlarında bildirişləri aktiv etməlisiniz.</translation>
 <translation id="9177438225260810839">Açıq Tabları axtarın</translation>
+<translation id="9187853111759024059">99+ fəaliyyətsiz tab bağlansın?</translation>
 <translation id="9188680907066685419">İdarə olunan hesabdan çıxın</translation>
 <translation id="9200875785104711666"><ph name="TIME" /> gün əvvəl</translation>
 <translation id="9203116392574189331">Əldən-ələ</translation>

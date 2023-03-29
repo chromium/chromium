@@ -40,6 +40,7 @@ Başlamak için şunları deneyebilirsin.</translation>
 <translation id="1181037720776840403">Kaldır</translation>
 <translation id="1182225749592316782">Bu işlem, kamera ve mikrofon izni olan tüm uygulamaların ve web sitelerinin erişmesine izin verir</translation>
 <translation id="1183863904939664422">Bu öneriyle ilgilenmiyorum</translation>
+<translation id="1184126796192815024">Bu ağ, telefonunuzdan uygulama akışı yapılmasını desteklemiyor. Telefonunuzun hotspot'unu kullanmayı deneyin. <ph name="LEARN_MORE" /></translation>
 <translation id="118437560755358292">Daha fazla güvenlik için şifre veya PIN girin</translation>
 <translation id="118532027333893379">Tam ekran görüntüsü almak için herhangi bir yere dokunun</translation>
 <translation id="1190609913194133056">Bildirim Merkezi</translation>
@@ -1418,6 +1419,7 @@ Cihazı kapatmak için cihazın güç düğmesini tekrar basılı tutun.</transl
 <translation id="7689817529363080918">Mikrofonun sesinin açılması; <ph name="APP1_NAME" />, <ph name="APP2_NAME" /> ile birlikte mikrofon izni olan tüm uygulamaların ve web sitelerinin mikrofona erişmesine izin verir</translation>
 <translation id="7704000866383261579">Son işlemi yinele</translation>
 <translation id="7705524343798198388">VPN</translation>
+<translation id="770741401784017797">GIF oluşturuluyor</translation>
 <translation id="7714767791242455379">Yeni hücresel ağ ekle</translation>
 <translation id="7720400844887872976">Saat <ph name="TIME" /> olana kadar açık</translation>
 <translation id="7720410380936703141">TEKRAR DENE</translation>

@@ -46,7 +46,6 @@
 <translation id="1075079914415273530">Айыл жана токой чарбасы</translation>
 <translation id="1080116354587839789">Терезенин туурасына чактоо</translation>
 <translation id="1081061862829655580">19-түпкүч</translation>
-<translation id="1088860948719068836">Картанын ээсинин ысымын кошуу</translation>
 <translation id="1089439967362294234">Сызсөздү өзгөртүү</translation>
 <translation id="1096545575934602868">Бул талаага киргизилген маанилердин саны <ph name="MAX_ITEMS_LIMIT" /> ашпашы керек. Ашыкча маанилер жоюлат.</translation>
 <translation id="1100782917270858593">Саякатты улантуу баскычы, саякатыңызды улантып, Chrome´до көрүлгөн вебсайттарыңыздын арасынан ылайыктууларын көрүү үчүн Enter баскычын басыңыз</translation>
@@ -339,7 +338,6 @@
 <translation id="1721424275792716183">* Бул талаа милдеттүү түрдө толтурулушу керек</translation>
 <translation id="1725591448053514783">Конверт Сиз 6</translation>
 <translation id="1727613060316725209">Тастыктама жарамдуу</translation>
-<translation id="1727741090716970331">Жарактуу карточканын номерин кошуу</translation>
 <translation id="1728677426644403582">Сиз Интернет барагынын кодун көрүп жатасыз</translation>
 <translation id="173080396488393970">Мындай карточка колдоого алынбайт</translation>
 <translation id="1732445923934584865">Анын ордуна өзүнөн суроо</translation>
@@ -498,6 +496,7 @@
 <translation id="2119867082804433120">Төмөнкү оң жагын тешүү</translation>
 <translation id="2122719317867821810">Бул саясат талаптагыдай иштеп жатат, бирок ал башка жерде коюлган карама-каршы мааниге өзгөртүп койду.</translation>
 <translation id="2126374524350484896">PDF форматына өзгөртүүчү кызмат:</translation>
+<translation id="2128262927290305126">Google аккаунтуңузда (<ph name="ACCOUNT" />)</translation>
 <translation id="2130448033692577677">Сиз көрсөткөн үлгүлөрдү колдонууга болбойт, анткени DnsOverHttpsMode саясаты коюлган эмес.</translation>
 <translation id="2130699163006053678">A3x7</translation>
 <translation id="2135799067377889518">Эркектердин кийими</translation>
@@ -543,6 +542,7 @@
 <translation id="2219735899272417925">Түзмөктү баштапкы абалга келтирүү керек</translation>
 <translation id="2224337661447660594">Интернет жок</translation>
 <translation id="2225927550500503913">Виртуалдык карта күйгүзүлдү</translation>
+<translation id="2226636330183131181">WiFi тармагына <ph name="BEGIN_LINK" />кирүү<ph name="END_LINK" /></translation>
 <translation id="2239100178324503013">Азыр жөнөтүү</translation>
 <translation id="2241693394036365668">Файл жүктөлүп алынды</translation>
 <translation id="2246264294482514010">10 x 12 дюйм</translation>
@@ -939,7 +939,6 @@
 <translation id="3272091146646336650">Super B</translation>
 <translation id="3281350579597955952">{0,plural, =1{Администратордун саясатында бул файлды төмөнкү жерде ачуу сунушталбайт: <ph name="DESTINATION_NAME" />}other{Администратордун саясатында бул файлдарды төмөнкү жерде ачуу сунушталбайт: <ph name="DESTINATION_NAME" />}}</translation>
 <translation id="3282085321714087552"><ph name="ENROLLMENT_DOMAIN" /> уюмуңуз жөндөөлөр же саясаттар сыяктуу айрым маалыматты төмөндөгү вебсайттарга жөнөттү.</translation>
-<translation id="3282497668470633863">Картадагы ысымды кошуу</translation>
 <translation id="3286372614333682499">тигинен</translation>
 <translation id="3287510313208355388">Интернетке туташканда жүктөлүп алынсын</translation>
 <translation id="3288238092761586174">Төлөмүңүздү ырастоо үчүн <ph name="URL" /> кошумча кадамдарды аткарышы керек</translation>
@@ -952,7 +951,6 @@
 <translation id="3304777285002411338">A2x3</translation>
 <translation id="33073482541490531">Жаңы эле колдонгон сырсөзүңүздү кимдир бирөө билип алганы аныкталды. Сырсөздөрдү башкаргыч бул сырсөздү азыр өзгөртүүнү сунуштайт.</translation>
 <translation id="3308006649705061278">Уюмдук бирдик (OU)</translation>
-<translation id="3320021301628644560">Төлөмдүн дарегин кошуу</translation>
 <translation id="3324687287337751929">4 x 6 дюйм</translation>
 <translation id="3324983252691184275">Кочкул кызыл</translation>
 <translation id="3329013043687509092">Каныктыруу</translation>
@@ -1015,7 +1013,6 @@
 <translation id="3461824795358126837">Бөлүп көрсөткүч</translation>
 <translation id="3462200631372590220">Өркүндөтүлгөндөрдү жашыруу</translation>
 <translation id="346601286295919445">Химия</translation>
-<translation id="3467763166455606212">Карта ээсинин аты-жөнүн киргизиңиз</translation>
 <translation id="3468054117417088249"><ph name="TAB_SWITCH_SUFFIX" />, учурда ачылып турат. Ачык өтмөккө өтүү үчүн өтмөктү, андан соң "Enter" баскычын басыңыз</translation>
 <translation id="3470563864795286535"><ph name="CLOSE_INCOGNITO_WINDOWS_FOCUSED_FRIENDLY_MATCH_TEXT" />, Учурда ачылып турган бардык Жашыруун терезелерди жабуу үчүн Tab, андан кийин Enter баскычын басыңыз</translation>
 <translation id="3477679029130949506">Кинолордун тизмеси жана театрдын көрсөтүү убактысы</translation>
@@ -1082,6 +1079,7 @@
 <translation id="3631244953324577188">Биометрика</translation>
 <translation id="3632503704576938756">Экран бөлүшүү улантылды</translation>
 <translation id="3632892046558972264">Экран бөлүшүү тындырылды</translation>
+<translation id="3633035844150606508">Даректи Google аккаунтуңузга (<ph name="ACCOUNT" />) сактоо</translation>
 <translation id="3633738897356909127">Chrome'ду жаңыртуу баскычы. Chrome параметрлериңизден Chrome'ду жаңыртуу үчүн, Enter баскычын басыңыз</translation>
 <translation id="3634530185120165534">5-түпкүч</translation>
 <translation id="3634567936866541746">Сырсөзүңүздү жаңы эле кооптуу сайтта киргиздиңиз. Аккаунттарыңызды коргоо үчүн Chrome сакталган сырсөздөрүңүздү текшерүүнү сунуштайт.</translation>
@@ -1982,6 +1980,7 @@
 <translation id="5830698870816298009">камераны колдонуу жана жылдыруу</translation>
 <translation id="583281660410589416">Белгисиз</translation>
 <translation id="5838278095973806738">Бул сайтка эч кандай жеке маалымат киргизилбеши керек (мисалы, сырсөздөр же насыя карточкаларынын номерлери), себеби аны чабуулчулар уурдап алышы мүмкүн.</translation>
+<translation id="5841338463993781099">Аккаунтта сактайсызбы?</translation>
 <translation id="5851548754964597211">Өтмөк тизмеси</translation>
 <translation id="5852909432155870672">RA4</translation>
 <translation id="5860033963881614850">Өчүк</translation>
@@ -2282,7 +2281,6 @@
 <translation id="6612010098632894193">Онлайн видео</translation>
 <translation id="6615297766614333076">2-төшөгүч</translation>
 <translation id="6624427990725312378">Байланыш маалыматы</translation>
-<translation id="6626291197371920147">Жарактуу карточканын номерин кошуңуз</translation>
 <translation id="6627727261837091711">Жарнамаларды жекелештирүү тууралуу толук маалыматты көрсөтүү</translation>
 <translation id="6628463337424475685"><ph name="ENGINE" /> Издөө</translation>
 <translation id="6630043285902923878">USB түзмөктөрү изделүүдө…</translation>
@@ -2768,7 +2766,6 @@
 <translation id="7716375162095500223">Жүктөлүп бериле элек же этибарга алынган жок</translation>
 <translation id="7716424297397655342">Бул сайтты кештен жүктөө мүмкүн эмес</translation>
 <translation id="772128550427553158">CVC картаңыздын маңдайында жайгашкан.</translation>
-<translation id="7723047071702270851">Карточканы түзөтүү</translation>
 <translation id="7724603315864178912">Кесүү</translation>
 <translation id="7734285854693414638">Google Формаларда жаңы форманы тез түзүү</translation>
 <translation id="773466115871691567"><ph name="SOURCE_LANGUAGE" /> тилиндеги барактар дайыма которулсун</translation>

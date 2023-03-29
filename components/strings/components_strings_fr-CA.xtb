@@ -46,7 +46,6 @@
 <translation id="1075079914415273530">Agriculture et sylviculture</translation>
 <translation id="1080116354587839789">Adapter à la largeur</translation>
 <translation id="1081061862829655580">Bac 19</translation>
-<translation id="1088860948719068836">Ajouter le nom sur la carte</translation>
 <translation id="1089439967362294234">Modifier le mot de passe</translation>
 <translation id="1096545575934602868">Ce champ ne peut pas contenir plus de <ph name="MAX_ITEMS_LIMIT" /> entrées. Toutes les entrées supplémentaires seront supprimées.</translation>
 <translation id="1100782917270858593">Bouton de reprise de votre exploration, appuyez sur Entrée pour reprendre votre exploration et consulter l'activité pertinente dans votre historique de Chrome</translation>
@@ -339,7 +338,6 @@
 <translation id="1721424275792716183">* Ce champ est obligatoire</translation>
 <translation id="1725591448053514783">Enveloppe You nᵒ 6</translation>
 <translation id="1727613060316725209">Le certificat est valide</translation>
-<translation id="1727741090716970331">Ajouter un numéro de carte valide</translation>
 <translation id="1728677426644403582">Vous consultez la source d'une page Web</translation>
 <translation id="173080396488393970">Ce type de carte n'est pas pris en charge</translation>
 <translation id="1732445923934584865">Demander plutôt en personne</translation>
@@ -941,7 +939,6 @@
 <translation id="3272091146646336650">Super B</translation>
 <translation id="3281350579597955952">{0,plural, =1{La politique de l'administrateur ne recommande pas d'ouvrir ce fichier dans <ph name="DESTINATION_NAME" />}one{La politique de l'administrateur ne recommande pas d'ouvrir ce fichier dans <ph name="DESTINATION_NAME" />}other{La politique de l'administrateur ne recommande pas d'ouvrir ces fichiers dans <ph name="DESTINATION_NAME" />}}</translation>
 <translation id="3282085321714087552">Votre organisation, <ph name="ENROLLMENT_DOMAIN" />, a envoyé de l'information, comme des paramètres ou des politiques, aux sites Web suivants.</translation>
-<translation id="3282497668470633863">Ajouter le nom sur la carte</translation>
 <translation id="3286372614333682499">portrait</translation>
 <translation id="3287510313208355388">Télécharger en ligne</translation>
 <translation id="3288238092761586174"><ph name="URL" /> pourrait devoir prendre des mesures supplémentaires pour vérifier votre paiement</translation>
@@ -954,7 +951,6 @@
 <translation id="3304777285002411338">A2 x 3</translation>
 <translation id="33073482541490531">Le mot de passe que vous venez d'utiliser a été trouvé dans un cas de violation de données. Le Gestionnaire de mots de passe vous recommande de modifier ce mot de passe maintenant.</translation>
 <translation id="3308006649705061278">Unité organisationnelle (« OU »)</translation>
-<translation id="3320021301628644560">Ajouter l'adresse de facturation</translation>
 <translation id="3324687287337751929">4 po x 6 po</translation>
 <translation id="3324983252691184275">Cramoisi</translation>
 <translation id="3329013043687509092">Saturation</translation>
@@ -1017,7 +1013,6 @@
 <translation id="3461824795358126837">Surligneur</translation>
 <translation id="3462200631372590220">Masquer les paramètres avancés</translation>
 <translation id="346601286295919445">Chimie</translation>
-<translation id="3467763166455606212">Nom du titulaire de la carte obligatoire</translation>
 <translation id="3468054117417088249"><ph name="TAB_SWITCH_SUFFIX" />, actuellement ouvert, appuyez sur la touche Tab, puis sur Entrée, pour basculer vers l'onglet ouvert</translation>
 <translation id="3470563864795286535"><ph name="CLOSE_INCOGNITO_WINDOWS_FOCUSED_FRIENDLY_MATCH_TEXT" />, appuyez sur la touche Tabulation, puis sur la touche Entrée pour fermer toutes les fenêtres de navigation privée qui sont actuellement ouvertes</translation>
 <translation id="3477679029130949506">Films à l'affiche et horaires de représentations</translation>
@@ -2287,7 +2282,6 @@
 <translation id="6612010098632894193">Vidéo en ligne</translation>
 <translation id="6615297766614333076">Empileur 2</translation>
 <translation id="6624427990725312378">Coordonnées</translation>
-<translation id="6626291197371920147">Ajouter un numéro de carte valide</translation>
 <translation id="6627727261837091711">Afficher les détails de personnalisation des annonces</translation>
 <translation id="6628463337424475685">Recherche <ph name="ENGINE" /></translation>
 <translation id="6630043285902923878">Recherche d'appareils USB en cours…</translation>
@@ -2773,7 +2767,6 @@ Détails supplémentaires :
 <translation id="7716375162095500223">Pas encore téléversé, ou ignoré</translation>
 <translation id="7716424297397655342">Ce site ne peut pas être chargé à partir du cache</translation>
 <translation id="772128550427553158">Le code CVC se trouve au recto de votre carte.</translation>
-<translation id="7723047071702270851">Modifier la carte</translation>
 <translation id="7724603315864178912">Couper</translation>
 <translation id="7734285854693414638">Créer rapidement un formulaire dans Google Formulaires</translation>
 <translation id="773466115871691567">Toujours traduire les pages en <ph name="SOURCE_LANGUAGE" /></translation>

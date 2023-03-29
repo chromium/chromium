@@ -46,7 +46,6 @@
 <translation id="1075079914415273530">অ্যাগ্রিকালচার ও ফরেস্ট্রি</translation>
 <translation id="1080116354587839789">প্রস্থের মধ্যে আঁটান</translation>
 <translation id="1081061862829655580">ট্রে ১৯</translation>
-<translation id="1088860948719068836">কার্ডে নাম যোগ করুন</translation>
 <translation id="1089439967362294234">পাসওয়ার্ড পরিবর্তন করুন</translation>
 <translation id="1096545575934602868">এই ফিল্ডে <ph name="MAX_ITEMS_LIMIT" />টির বেশি এন্ট্রি লেখা যাবে না। অন্য সব এন্ট্রি বাতিল করা হবে।</translation>
 <translation id="1100782917270858593">'আপনার ব্রাউজার অ্যাক্টিভিটির আবার চালু করুন' বোতাম, ব্রাউজার অ্যাক্টিভিটি আবার চালু করতে এবং Chrome ইতিহাসে প্রাসঙ্গিক অ্যাক্টিভিটি দেখতে Enter প্রেস করুন</translation>
@@ -339,7 +338,6 @@
 <translation id="1721424275792716183">* এই ফিল্ডে কিছু লেখা প্রয়োজন</translation>
 <translation id="1725591448053514783">এনভেলপ ইউ ৬</translation>
 <translation id="1727613060316725209">সার্টিফিকেটটি সঠিক</translation>
-<translation id="1727741090716970331">সঠিক কার্ড নম্বর যোগ করুন</translation>
 <translation id="1728677426644403582">আপনি একটি ওয়েব পৃষ্ঠার উৎস কোড দেখছেন</translation>
 <translation id="173080396488393970">এখানে এই ধরনের কার্ড কাজ করে না</translation>
 <translation id="1732445923934584865">পরিবর্তে উপস্থিত থেকে জিজ্ঞাসা করুন</translation>
@@ -499,6 +497,7 @@
 <translation id="2119867082804433120">নিচে ডানদিকে পাঞ্চ করুন</translation>
 <translation id="2122719317867821810">এই নীতি আশানুরূপ কাজ করছে। আসলে অন্য একটি জায়গাতে এমন মান সেট করা হয়েছে যা একে অপরের সাথে ম্যাচ করে না এবং সেই মানকে এই নীতির মাধ্যমে ওভাররাইড করে দেওয়া হয়।</translation>
 <translation id="2126374524350484896">PDF প্রোডিউসার:</translation>
+<translation id="2128262927290305126">আপনার Google অ্যাকাউন্টে <ph name="ACCOUNT" /></translation>
 <translation id="2130448033692577677">DnsOverHttpsMode নীতি সেট না থাকার কারণে আপনার নির্দিষ্ট করা টেমপ্লেট হয়তো ব্যবহার করা যাবে না।</translation>
 <translation id="2130699163006053678">A3x7</translation>
 <translation id="2135799067377889518">পুরুষদের পোশাক</translation>
@@ -544,6 +543,7 @@
 <translation id="2219735899272417925">ডিভাইস রিসেট করতে হবে</translation>
 <translation id="2224337661447660594">ইন্টারনেট কানেকশন নেই</translation>
 <translation id="2225927550500503913">ভার্চুয়াল কার্ড চালু করা হয়েছে</translation>
+<translation id="2226636330183131181">ওয়াই ফাই নেটওয়ার্কে <ph name="BEGIN_LINK" />সাইন-ইন করুন<ph name="END_LINK" /></translation>
 <translation id="2239100178324503013">এখনই পাঠান</translation>
 <translation id="2241693394036365668">ফাইল ডাউনলোড করা হয়েছে</translation>
 <translation id="2246264294482514010">১০ x ১২ ইঞ্চি</translation>
@@ -940,7 +940,6 @@
 <translation id="3272091146646336650">Super B</translation>
 <translation id="3281350579597955952">{0,plural, =1{অ্যাডমিনিস্ট্রেটরের নীতি অনুযায়ী <ph name="DESTINATION_NAME" />-এ এই ফাইল খোলা যাবে না}one{অ্যাডমিনিস্ট্রেটরের নীতি অনুযায়ী <ph name="DESTINATION_NAME" />-এ এই ফাইল খোলা যাবে না}other{অ্যাডমিনিস্ট্রেটরের নীতি অনুযায়ী <ph name="DESTINATION_NAME" />-এ এই ফাইল খোলা যাবে না}}</translation>
 <translation id="3282085321714087552">আপনার সংস্থা, <ph name="ENROLLMENT_DOMAIN" />, নিম্নলিখিত ওয়েবসাইটগুলিকে সেটিংস বা নীতির মতো কিছু তথ্য পাঠিয়েছে।</translation>
-<translation id="3282497668470633863">কার্ডে থাকা নাম যোগ করুন</translation>
 <translation id="3286372614333682499">পোর্ট্রেট</translation>
 <translation id="3287510313208355388">অনলাইন হয়ে ডাউনলোড করবেন</translation>
 <translation id="3288238092761586174">আপনার পেমেন্ট যাচাই করতে, <ph name="URL" />হয়ত আরও কিছু করতে পারে</translation>
@@ -953,7 +952,6 @@
 <translation id="3304777285002411338">A2x3</translation>
 <translation id="33073482541490531">আপনি এইমাত্র যে পাসওয়ার্ড ব্যবহার করলেন, সেটি হ্যাক হওয়া কোনও ডেটাবেসে পাওয়া গেছে। Password Manager এখনই আপনার পাসওয়ার্ড পরিবর্তন করতে সাজেস্ট করছে।</translation>
 <translation id="3308006649705061278">অর্গানাইজেশনাল ইউনিট (OU) </translation>
-<translation id="3320021301628644560">বিলিংয়ের ঠিকানা যোগ করুন</translation>
 <translation id="3324687287337751929">৪ x ৬ ইঞ্চি</translation>
 <translation id="3324983252691184275">টকটকে লাল</translation>
 <translation id="3329013043687509092">পরিপৃক্তি</translation>
@@ -1016,7 +1014,6 @@
 <translation id="3461824795358126837">হাইলাইটার</translation>
 <translation id="3462200631372590220">উন্নত করার বিশদ বিবরণ, লুকান</translation>
 <translation id="346601286295919445">কেমিস্ট্রি</translation>
-<translation id="3467763166455606212">কার্ডহোল্ডারের নাম প্রয়োজন</translation>
 <translation id="3468054117417088249"><ph name="TAB_SWITCH_SUFFIX" />, এখন খোলা আছে, খোলা ট্যাবে যেতে ট্যাব প্রেস করে এন্টার প্রেস করুন</translation>
 <translation id="3470563864795286535"><ph name="CLOSE_INCOGNITO_WINDOWS_FOCUSED_FRIENDLY_MATCH_TEXT" />, বর্তমানে খোলা আছে এমন সব 'ছদ্মবেশী' উইন্ডো বন্ধ করতে Tab প্রেস করার পর Enter প্রেস করুন</translation>
 <translation id="3477679029130949506">সিনেমার তালিকা ও সিনেমাহলের সময়সূচি</translation>
@@ -1084,6 +1081,7 @@
 <translation id="3631244953324577188">বায়োমেট্রিক্স</translation>
 <translation id="3632503704576938756">স্ক্রিন শেয়ার করার ফিচার আবার চালু করা হয়েছে</translation>
 <translation id="3632892046558972264">স্ক্রিন শেয়ার করার ফিচার পজ করা হয়েছে</translation>
+<translation id="3633035844150606508">আপনার Google অ্যাকাউন্টে ঠিকানা সেভ করুন, <ph name="ACCOUNT" /></translation>
 <translation id="3633738897356909127">Chrome আপডেট করার বোতাম, আপনার Chrome সেটিংসে Chrome আপডেট করতে Enter প্রেস করুন</translation>
 <translation id="3634530185120165534">ট্রে ৫</translation>
 <translation id="3634567936866541746">আপনি এইমাত্র একটি প্রতারণামূলক সাইটে আপনার পাসওয়ার্ড লিখেছেন। আপনার অ্যাকাউন্ট সুরক্ষিত করার জন্য, Chrome আপনার সেভ করা পাসওয়ার্ড চেক করে নিতে সাজেস্ট করছে।</translation>
@@ -1656,6 +1654,7 @@
 <translation id="5018422839182700155">এই পৃষ্ঠাটি খোলা যাচ্ছে না</translation>
 <translation id="5018802455907704660">১৬ x ২০ ইঞ্চি</translation>
 <translation id="5019198164206649151">ব্যাকিং স্টোরটি ত্রুটিপূর্ণ অবস্থায় আছে</translation>
+<translation id="5019293549442035120">Google প্রোডাক্ট জুড়ে সেভ করা ঠিকানা আপনি ব্যবহার করতে পারবেন। আপনার Google অ্যাকাউন্ট <ph name="USER_EMAIL" />-এ এই ঠিকানা সেভ করা হবে।</translation>
 <translation id="5020776957610079374">ওয়ার্ল্ড মিউজিক</translation>
 <translation id="5021557570875267742">Chrome ব্যবহার করে দাম ট্র্যাক করুন</translation>
 <translation id="5023310440958281426">আপনার প্রশাসকের নীতিগুলি দেখুন</translation>
@@ -1793,6 +1792,7 @@
 <translation id="5324080437450482387">পরিচিতির তথ্য বেছে নিন</translation>
 <translation id="5329858041417644019">আপনার ব্রাউজারটি ম্যানেজ করা হয়নি</translation>
 <translation id="5332219387342487447">শিপিংয়ের মাধ্যম</translation>
+<translation id="5332769172018416402">মেসেজ করে অ্যাক্সেসের জন্য অনুরোধ করুন</translation>
 <translation id="5333022057423422993">Chrome-এর হিসেবে আপনার এখনই ব্যবহার করা পাসওয়ার্ডের তথ্য চুরি হয়ে গেছে। আপনার অ্যাকাউন্ট সুরক্ষিত রাখতে, আপনার সেভ করা পাসওয়ার্ড চেক করার জন্য সাজেস্ট করছি।</translation>
 <translation id="5334013548165032829">বিস্তারিত সিস্টেম লগ</translation>
 <translation id="5334145288572353250">ঠিকানা সেভ করবেন?</translation>
@@ -1981,9 +1981,11 @@
 <translation id="5817918615728894473">যুক্ত করুন</translation>
 <translation id="5824687817967109979">{NUM_CARDS,plural, =1{আপনি পেমেন্ট করলে এই কার্ডে চার্জ করা হবে, তবে এটির আসল নম্বর এই সাইটের সাথে শেয়ার করা হবে না। অতিরিক্ত নিরাপত্তার জন্য, একটি অস্থায়ী সিভিসি জেনারেট করা হবে।}one{আপনি পেমেন্ট করলে বেছে নেওয়া কার্ডটিতে চার্জ করা হবে, তবে এটির আসল নম্বর এই সাইটের সাথে শেয়ার করা হবে না। অতিরিক্ত নিরাপত্তার জন্য, একটি অস্থায়ী সিভিসি জেনারেট করা হবে।}other{আপনি পেমেন্ট করলে বেছে নেওয়া কার্ডটিতে চার্জ করা হবে, তবে এটির আসল নম্বর এই সাইটের সাথে শেয়ার করা হবে না। অতিরিক্ত নিরাপত্তার জন্য, একটি অস্থায়ী সিভিসি জেনারেট করা হবে।}}</translation>
 <translation id="5826507051599432481">কমন নেম (CN)</translation>
+<translation id="5829215001860862731">অ্যাকাউন্টে সেভ করুন</translation>
 <translation id="5830698870816298009">ক্যামেরার ব্যবহার এবং গতিবিধি</translation>
 <translation id="583281660410589416">অজানা</translation>
 <translation id="5838278095973806738">এই সাইটে আপনার কোনো সংবেদনশীল তথ্য দেওয়া উচিত হবে না (উদাহরণস্বরূপ, পাসওয়ার্ড বা ক্রেডিট কার্ড) কারণ আক্রমণকারীরা এগুলি চুরি করতে পারে।</translation>
+<translation id="5841338463993781099">অ্যাকাউন্টে সেভ করবেন?</translation>
 <translation id="5851548754964597211">ট্যাব তালিকা</translation>
 <translation id="5852909432155870672">RA4</translation>
 <translation id="5860033963881614850">বন্ধ করুন</translation>
@@ -2283,7 +2285,6 @@
 <translation id="6612010098632894193">অনলাইন ভিডিও</translation>
 <translation id="6615297766614333076">স্ট্যাকার ২</translation>
 <translation id="6624427990725312378">পরিচিতির তথ্য</translation>
-<translation id="6626291197371920147">বৈধ কার্ড নম্বর যোগ করুন</translation>
 <translation id="6627727261837091711">পছন্দ অনুযায়ী বিজ্ঞাপন বেছে নেওয়ার বিবরণ দেখান</translation>
 <translation id="6628463337424475685"><ph name="ENGINE" /> সার্চ</translation>
 <translation id="6630043285902923878">USB ডিভাইস খোঁজা হচ্ছে...</translation>
@@ -2769,7 +2770,6 @@
 <translation id="7716375162095500223">এখনও আপলোড করা হয়নি অথবা এর দিকে এখনও নজর দেওয়া হয়নি</translation>
 <translation id="7716424297397655342">এই সাইটটি ক্যাশে থেকে লোড করা যাবে না</translation>
 <translation id="772128550427553158">সিভিসি আপনার কার্ডের সামনে থাকে।</translation>
-<translation id="7723047071702270851">কার্ড সম্পাদনা করুন</translation>
 <translation id="7724603315864178912">কাটুন</translation>
 <translation id="7734285854693414638">Google Forms-এ চটপট নতুন ফর্ম তৈরি করুন</translation>
 <translation id="773466115871691567">সব সময় <ph name="SOURCE_LANGUAGE" /> ভাষার পৃষ্ঠার অনুবাদ দেখতে চাই</translation>

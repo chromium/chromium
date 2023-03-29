@@ -7223,11 +7223,6 @@ Nếu đặt chính sách này, thì bạn cần đặt chính sách <ph name="P
 <translation id="7657261947024629645">Tối ưu hóa cho hiệu suất.</translation>
 <translation id="76580522298425324">Cho phép chụp ảnh màn hình mà không cần cử chỉ trước đó của người dùng</translation>
 <translation id="7666228839913571182">Cho phép cookie của bên thứ ba</translation>
-<translation id="7668830462800981702">Nếu bạn đặt chính sách này thành Bật, hệ thống sẽ thực hiện thao tác tìm kiếm mặc định khi người dùng nhập văn bản không phải là URL vào thanh địa chỉ. Để chỉ định nhà cung cấp dịch vụ tìm kiếm mặc định, hãy đặt các chính sách tìm kiếm mặc định còn lại. Nếu bạn để trống những chính sách đó thì người dùng có thể chọn nhà cung cấp mặc định. Nếu bạn đặt chính sách này thành Tắt, hệ thống sẽ không tìm kiếm khi người dùng nhập văn bản không phải là URL vào thanh địa chỉ.
-
-      Nếu bạn đặt chính sách này thì người dùng sẽ không thay đổi được trong <ph name="PRODUCT_NAME" />. Nếu bạn không đặt chính sách này, nhà cung cấp dịch vụ tìm kiếm mặc định sẽ được bật và người dùng có thể đặt danh sách nhà cung cấp dịch vụ tìm kiếm.
-
-      Trên <ph name="MS_WIN_NAME" />, chức năng này chỉ có ở những phiên bản liên kết với một miền <ph name="MS_AD_NAME" />, chạy trên Windows 10 Pro, hoặc đã đăng ký tùy chọn Quản lý trình duyệt Chrome qua đám mây. Trên <ph name="MAC_OS_NAME" />, chức năng này chỉ có ở những phiên bản được quản lý qua MDM, hoặc liên kết với một miền qua MCX.</translation>
 <translation id="7669630878711068277">Nếu bạn đặt thành Bật hoặc không đặt chính sách này, thì người dùng có thể in trong <ph name="PRODUCT_NAME" /> và không thể thay đổi tùy chọn cài đặt này.
 
       Nếu bạn đặt chính sách này thành Tắt, người dùng sẽ không thể in từ <ph name="PRODUCT_NAME" />. Tính năng in bị tắt trong trình đơn ba chấm, các tiện ích và ứng dụng JavaScript.</translation>

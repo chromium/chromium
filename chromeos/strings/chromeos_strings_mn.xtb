@@ -698,6 +698,7 @@
 <translation id="7103252855940681301"><ph name="NAME" /> гэсэн нэртэй <ph name="COUNT" />-н <ph name="INDEX" />-р төхөөрөмж.</translation>
 <translation id="7108668606237948702">оруулах</translation>
 <translation id="7130438335435247835">Хандах цэгийн нэрс (APN)</translation>
+<translation id="7131634559772719176">Урьдчилсан тохируулгыг баталгаажуулна уу</translation>
 <translation id="7134436342991564651">{0,plural, =1{Нэрийн сервер}other{Нэрийн серверүүд}}</translation>
 <translation id="7143207342074048698">Холбож байна</translation>
 <translation id="7144878232160441200">Дахин оролдох</translation>
@@ -769,6 +770,7 @@
 <translation id="7762130827864645708">Таны нууц үгийг амжилттай өөрчиллөө. Одооноос шинэ нууц үгийг ашиглана уу.</translation>
 <translation id="7763470514545477072">Домэйн дагаврын тохирол</translation>
 <translation id="7769672763586021400">Загварын ID</translation>
+<translation id="7770834998503326261">Таны сонголттой холбоотой нэмэлт мэдээлэл</translation>
 <translation id="7778717409420828014">Таны санал хүсэлт бидэнд Chromebook-н хэрэглээг сайжруулахад тусалдаг бөгөөд үүнийг манай баг шалгана. Олон тооны мэдээлэл ирдэг тул бид хариу илгээх боломжгүй.</translation>
 <translation id="7784116172884276937">Тохируулсан DNS сервер байхгүй</translation>
 <translation id="7791543448312431591">Нэмэх</translation>
@@ -801,6 +803,7 @@
 <translation id="80398733265834479">Автомат өнгөний горимыг идэвхжүүлэх</translation>
 <translation id="8041089156583427627">Санал хүсэлт илгээх</translation>
 <translation id="8045012663542226664">Микрофоны дууг хаах</translation>
+<translation id="8050091914317269817">Энэ дэлгэцийн зургийг сонгох нь автомат бараан горим болон дэлгэцийн зургийн өнгө тааруулахыг асаана.</translation>
 <translation id="8075838845814659848">Үлдсэн цэнэг</translation>
 <translation id="8076492880354921740">Таб</translation>
 <translation id="8082366717211101304">Android аппуудаас DNS-г шийдвэрлэх боломжгүй</translation>

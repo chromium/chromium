@@ -108,6 +108,7 @@
 <translation id="4565377596337484307">পাছৱৰ্ড লুকুৱাওক</translation>
 <translation id="4588090240171750605">সোঁফাললৈ স্ক্ৰ’ল কৰক</translation>
 <translation id="4724120544754982507">জাননী কেন্দ্ৰ, <ph name="UNREAD_NOTIFICATION_COUNT" /> নপঢ়া জাননীসমূহ</translation>
+<translation id="4729257764711776855">সংখ্যা</translation>
 <translation id="4746179598275229723">এক্সটেনশ্বন আনপিন কৰা আছে</translation>
 <translation id="4788285488841504513">{MONTHS,plural, =1{১ মাহ বাকী আছে}one{# মাহ বাকী আছে}other{# মাহ বাকী আছে}}</translation>
 <translation id="4888938634149558681">কল কৰক</translation>
@@ -119,6 +120,7 @@
 <translation id="5278860589123563674">পঠিয়াব পৰা নগ’ল</translation>
 <translation id="528468243742722775">সমাপ্ত</translation>
 <translation id="5329858601952122676">&amp;মচক</translation>
+<translation id="5361107212971249203">পাঠ</translation>
 <translation id="5463830097259460683">ইম’জি &amp;&amp; চিহ্ন</translation>
 <translation id="5528053674512161860">বিকাশকর্তাৰ UI মডিউলটো (dev_ui) ইনষ্টল কৰা নাই বাবে পৃষ্ঠাখন ল'ড হোৱাত বিফল হ'ল</translation>
 <translation id="5574202486608032840"><ph name="IDS_SHORT_PRODUCT_OS_NAME" /> ছিষ্টেম</translation>

@@ -40,6 +40,7 @@
 <translation id="1181037720776840403">ਹਟਾਓ</translation>
 <translation id="1182225749592316782">ਇਸ ਨਾਲ ਉਨ੍ਹਾਂ ਸਾਰੀਆਂ ਐਪਾਂ ਅਤੇ ਵੈੱਬਸਾਈਟਾਂ ਨੂੰ ਪਹੁੰਚ ਦਿੱਤੀ ਜਾਂਦੀ ਹੈ, ਜਿਨ੍ਹਾਂ ਕੋਲ ਕੈਮਰਾ ਅਤੇ ਮਾਈਕ੍ਰੋਫ਼ੋਨ ਇਜਾਜ਼ਤਾਂ ਹਨ</translation>
 <translation id="1183863904939664422">ਇਸ ਸੁਝਾਅ ਵਿੱਚ ਕੋਈ ਦਿਲਚਸਪੀ ਨਹੀਂ ਹੈ</translation>
+<translation id="1184126796192815024">ਇਹ ਨੈੱਟਵਰਕ ਤੁਹਾਡੇ ਫ਼ੋਨ ਤੋਂ ਸਟ੍ਰੀਮਿੰਗ ਐਪਾਂ ਦਾ ਸਮਰਥਨ ਨਹੀਂ ਕਰਦਾ ਹੈ। ਆਪਣੇ ਫ਼ੋਨ ਦਾ ਹੌਟਸਪੌਟ ਵਰਤ ਕੇ ਦੇਖੋ। <ph name="LEARN_MORE" /></translation>
 <translation id="118437560755358292">ਵਧੇਰੇ ਸੁਰੱਖਿਆ ਲਈ ਪਾਸਵਰਡ ਜਾਂ ਪਿੰਨ ਦਾਖਲ ਕਰੋ</translation>
 <translation id="118532027333893379">ਪੂਰੀ ਸਕ੍ਰੀਨ ਨੂੰ ਕੈਪਚਰ ਕਰਨ ਲਈ ਕਿਤੇ ਵੀ ਟੈਪ ਕਰੋ</translation>
 <translation id="1190609913194133056">ਸੂਚਨਾ ਕੇਂਦਰ</translation>
@@ -219,6 +220,7 @@
 <translation id="1969011864782743497"><ph name="DEVICE_NAME" /> (USB)</translation>
 <translation id="1972950159383891558">ਸਤਿ ਸ੍ਰੀ ਅਕਾਲ, <ph name="USERNAME" /></translation>
 <translation id="1978498689038657292">ਲਿਖਤ ਇਨਪੁੱਟ</translation>
+<translation id="1980808257969311265"><ph name="EVENT_SUMMARY" /> ਵਿੱਚ ਸ਼ਾਮਲ ਹੋਵੋ</translation>
 <translation id="1982717156487272186">ਪਿਛਲਾ ਹਫ਼ਤਾ ਦਿਖਾਓ</translation>
 <translation id="1989113344093894667">ਸਮੱਗਰੀ ਨੂੰ ਕੈਪਚਰ ਨਹੀਂ ਕੀਤਾ ਜਾ ਸਕਦਾ</translation>
 <translation id="1990046457226896323">ਬੋਲੀ ਵਾਲੀਆਂ ਫ਼ਾਈਲਾਂ ਨੂੰ ਡਾਊਨਲੋਡ ਕੀਤਾ ਗਿਆ</translation>
@@ -1419,6 +1421,7 @@
 <translation id="7689817529363080918">ਇਹ ਮਾਈਕ੍ਰੋਫ਼ੋਨ ਇਜਾਜ਼ਤ ਦੇ ਨਾਲ <ph name="APP1_NAME" />, <ph name="APP2_NAME" /> ਅਤੇ ਸਾਰੀਆਂ ਐਪਾਂ ਅਤੇ ਵੈੱਬਸਾਈਟਾਂ ਨੂੰ ਮਾਈਕ੍ਰੋਫ਼ੋਨ ਤੱਕ ਪਹੁੰਚ ਪ੍ਰਾਪਤ ਕਰਨ ਦਿੰਦੀ ਹੈ</translation>
 <translation id="7704000866383261579">ਪਿਛਲੀ ਕਾਰਵਾਈ ਨੂੰ ਮੁੜ-ਓਹੀ ਕਰੋ</translation>
 <translation id="7705524343798198388">VPN</translation>
+<translation id="770741401784017797">GIF ਬਣਾਇਆ ਜਾ ਰਿਹਾ ਹੈ</translation>
 <translation id="7714767791242455379">ਨਵਾਂ ਸੈਲਿਊਲਰ ਨੈੱਟਵਰਕ ਸ਼ਾਮਲ ਕਰੋ</translation>
 <translation id="7720400844887872976"><ph name="TIME" /> ਤੱਕ ਚਾਲੂ ਰਹੇਗੀ</translation>
 <translation id="7720410380936703141">ਦੁਬਾਰਾ ਕੋਸ਼ਿਸ਼ ਕਰੋ</translation>

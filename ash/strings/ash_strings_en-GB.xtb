@@ -40,6 +40,7 @@ Here are some things that you can try to get started.</translation>
 <translation id="1181037720776840403">Remove</translation>
 <translation id="1182225749592316782">This allows access for all apps and websites with the camera and microphone permissions</translation>
 <translation id="1183863904939664422">Not interested in this suggestion</translation>
+<translation id="1184126796192815024">This network doesn't support streaming apps from your phone. Try using your phone's hotspot. <ph name="LEARN_MORE" /></translation>
 <translation id="118437560755358292">Enter password or PIN for more security</translation>
 <translation id="118532027333893379">Tap anywhere to capture full screen</translation>
 <translation id="1190609913194133056">Notification Centre</translation>
@@ -1419,6 +1420,7 @@ To shut down the device, press and hold the power button on the device again.</t
 <translation id="7689817529363080918">This allows microphone access for <ph name="APP1_NAME" />, <ph name="APP2_NAME" /> and all apps and websites with the microphone permission</translation>
 <translation id="7704000866383261579">Redo last action</translation>
 <translation id="7705524343798198388">VPN</translation>
+<translation id="770741401784017797">Creating GIF</translation>
 <translation id="7714767791242455379">Add new mobile network</translation>
 <translation id="7720400844887872976">On until <ph name="TIME" /></translation>
 <translation id="7720410380936703141">TRY AGAIN</translation>
@@ -1431,6 +1433,7 @@ To shut down the device, press and hold the power button on the device again.</t
 <translation id="7749443890790263709">Maximum number of desks reached.</translation>
 <translation id="776344839111254542">Click to view update details</translation>
 <translation id="7768784765476638775">Select to Speak</translation>
+<translation id="7769299611924763557">Your GIF will be ready shortly</translation>
 <translation id="7780094051999721182">shortcuts</translation>
 <translation id="7780159184141939021">Rotate screen</translation>
 <translation id="7796735576426975947">New notification hidden</translation>

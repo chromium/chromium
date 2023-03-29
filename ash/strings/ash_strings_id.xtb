@@ -7,7 +7,7 @@
 <translation id="1024364763893396229">Simpan <ph name="NAME" /> Anda</translation>
 <translation id="1032891413405719768">Baterai stilus lemah</translation>
 <translation id="1036073649888683237">Untuk mengelola notifikasi, buka Setelan</translation>
-<translation id="1036348656032585052">Matikan</translation>
+<translation id="1036348656032585052">Nonaktifkan</translation>
 <translation id="1036672894875463507">Saya Asisten Google Anda, saya hadir untuk membantu Anda sepanjang hari.
 Berikut ini beberapa hal yang dapat Anda coba untuk memulai.</translation>
 <translation id="1037492556044956303"><ph name="DEVICE_NAME" /> ditambahkan</translation>
@@ -40,6 +40,7 @@ Berikut ini beberapa hal yang dapat Anda coba untuk memulai.</translation>
 <translation id="1181037720776840403">Hapus</translation>
 <translation id="1182225749592316782">Tindakan ini akan mengizinkan akses untuk semua aplikasi dan situs yang memiliki izin kamera dan mikrofon</translation>
 <translation id="1183863904939664422">Tidak tertarik dengan saran ini</translation>
+<translation id="1184126796192815024">Jaringan ini tidak mendukung streaming aplikasi dari ponsel Anda. Coba gunakan hotspot ponsel Anda. <ph name="LEARN_MORE" /></translation>
 <translation id="118437560755358292">Masukkan sandi atau PIN untuk keamanan tambahan</translation>
 <translation id="118532027333893379">Ketuk di mana saja untuk mengambil gambar dalam layar penuh</translation>
 <translation id="1190609913194133056">Pusat Notifikasi</translation>
@@ -1418,6 +1419,7 @@ Untuk mematikan perangkat, tekan dan tahan tombol daya di perangkat lagi.</trans
 <translation id="7689817529363080918">Tindakan ini akan mengizinkan akses mikrofon untuk <ph name="APP1_NAME" />, <ph name="APP2_NAME" />, dan semua aplikasi serta situs yang memiliki izin mikrofon</translation>
 <translation id="7704000866383261579">Ulangi tindakan terakhir</translation>
 <translation id="7705524343798198388">VPN</translation>
+<translation id="770741401784017797">Membuat GIF</translation>
 <translation id="7714767791242455379">Tambahkan jaringan seluler baru</translation>
 <translation id="7720400844887872976">Aktif sampai <ph name="TIME" /></translation>
 <translation id="7720410380936703141">COBA LAGI</translation>

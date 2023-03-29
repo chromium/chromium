@@ -46,7 +46,6 @@
 <translation id="1075079914415273530">Agricultura e silvicultura</translation>
 <translation id="1080116354587839789">Ajustar à largura</translation>
 <translation id="1081061862829655580">Tabuleiro 19</translation>
-<translation id="1088860948719068836">Adicionar nome no cartão</translation>
 <translation id="1089439967362294234">Alterar palavra-passe</translation>
 <translation id="1096545575934602868">Este campo não deve ter mais de <ph name="MAX_ITEMS_LIMIT" /> entradas. Todas as restantes entradas serão rejeitadas.</translation>
 <translation id="1100782917270858593">Botão Retomar percurso, prima Enter para retomar o percurso e ver atividade relevante no seu Histórico do Chrome</translation>
@@ -339,7 +338,6 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="1721424275792716183">* Campo de preenchimento obrigatório</translation>
 <translation id="1725591448053514783">Envelope You 6</translation>
 <translation id="1727613060316725209">O certificado é válido</translation>
-<translation id="1727741090716970331">Adicionar número de cartão válido</translation>
 <translation id="1728677426644403582">Está a ver a fonte de uma página Web</translation>
 <translation id="173080396488393970">Este tipo de cartão não é suportado</translation>
 <translation id="1732445923934584865">Pedir antes pessoalmente</translation>
@@ -941,7 +939,6 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="3272091146646336650">Super B</translation>
 <translation id="3281350579597955952">{0,plural, =1{A política do administrador não recomenda abrir este ficheiro em <ph name="DESTINATION_NAME" />}other{A política do administrador não recomenda abrir estes ficheiros em <ph name="DESTINATION_NAME" />}}</translation>
 <translation id="3282085321714087552">A sua entidade, <ph name="ENROLLMENT_DOMAIN" />, enviou algumas informações para os seguintes Websites, como definições ou políticas.</translation>
-<translation id="3282497668470633863">Adicionar nome no cartão</translation>
 <translation id="3286372614333682499">retrato</translation>
 <translation id="3287510313208355388">Transferir quando estiver online</translation>
 <translation id="3288238092761586174"><ph name="URL" /> pode ter de efetuar passos adicionais para validar o seu pagamento</translation>
@@ -954,7 +951,6 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="3304777285002411338">A2x3</translation>
 <translation id="33073482541490531">A palavra-passe que acabou de usar foi encontrada numa violação de dados. O Gestor de Palavras-passe recomenda que altere esta palavra-passe agora.</translation>
 <translation id="3308006649705061278">Unidade organizacional (OU)</translation>
-<translation id="3320021301628644560">Adicionar endereço de faturação</translation>
 <translation id="3324687287337751929">4 x 6 pol.</translation>
 <translation id="3324983252691184275">Carmesim</translation>
 <translation id="3329013043687509092">Saturação</translation>
@@ -1017,7 +1013,6 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="3461824795358126837">Marcador</translation>
 <translation id="3462200631372590220">Ocultar avançadas</translation>
 <translation id="346601286295919445">Química</translation>
-<translation id="3467763166455606212">Nome do titular do cartão obrigatório</translation>
 <translation id="3468054117417088249"><ph name="TAB_SWITCH_SUFFIX" />, atualmente aberto, prima Tab e, em seguida, Enter para mudar para o separador aberto.</translation>
 <translation id="3470563864795286535"><ph name="CLOSE_INCOGNITO_WINDOWS_FOCUSED_FRIENDLY_MATCH_TEXT" />, prima Tab e, em seguida, Enter para fechar todas as janelas de navegação anónima atualmente abertas</translation>
 <translation id="3477679029130949506">Fichas de filmes e horários de salas de cinema</translation>
@@ -1658,6 +1653,7 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="5018422839182700155">Não é possível abrir esta página</translation>
 <translation id="5018802455907704660">16 x 20 pol.</translation>
 <translation id="5019198164206649151">Armazenamento de segurança em mau estado</translation>
+<translation id="5019293549442035120">Pode usar moradas guardadas entre produtos Google. Esta morada vai ser guardada na sua Conta Google, <ph name="USER_EMAIL" />.</translation>
 <translation id="5020776957610079374">Música do mundo</translation>
 <translation id="5021557570875267742">Acompanhe os preços com o Chrome</translation>
 <translation id="5023310440958281426">Rever as políticas do gestor</translation>
@@ -1795,6 +1791,7 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="5324080437450482387">Escolher informações de contacto</translation>
 <translation id="5329858041417644019">O seu navegador não é gerido</translation>
 <translation id="5332219387342487447">Método de envio</translation>
+<translation id="5332769172018416402">Pedir numa mensagem</translation>
 <translation id="5333022057423422993">O Chrome encontrou a palavra-passe que acabou de utilizar numa violação de dados. Para proteger as suas contas, recomendamos que verifique as suas palavras-passe guardadas.</translation>
 <translation id="5334013548165032829">Registos de sistema detalhados</translation>
 <translation id="5334145288572353250">Pretende guardar o endereço?</translation>
@@ -2288,7 +2285,6 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="6612010098632894193">Vídeo online</translation>
 <translation id="6615297766614333076">Empilhador 2</translation>
 <translation id="6624427990725312378">Informações de contacto</translation>
-<translation id="6626291197371920147">Adicionar número de cartão válido</translation>
 <translation id="6627727261837091711">Mostre detalhes da personalização de anúncios</translation>
 <translation id="6628463337424475685"><ph name="ENGINE" /> Pesquisar</translation>
 <translation id="6630043285902923878">A procurar dispositivos USB…</translation>
@@ -2773,7 +2769,6 @@ Detalhes adicionais:
 <translation id="7716375162095500223">Ainda não carregado ou ignorado</translation>
 <translation id="7716424297397655342">Não é possível carregar este site a partir da cache</translation>
 <translation id="772128550427553158">O Código de Segurança/CVC está localizado na parte da frente do cartão.</translation>
-<translation id="7723047071702270851">Editar cartão</translation>
 <translation id="7724603315864178912">Cortar</translation>
 <translation id="7734285854693414638">Crie rapidamente um novo formulário no Google Forms</translation>
 <translation id="773466115871691567">Traduza sempre páginas em <ph name="SOURCE_LANGUAGE" /></translation>

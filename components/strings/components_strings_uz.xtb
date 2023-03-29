@@ -46,7 +46,6 @@
 <translation id="1075079914415273530">Qishloq va oʻrmon xoʻjaligi</translation>
 <translation id="1080116354587839789">Oynani eniga tekislash</translation>
 <translation id="1081061862829655580">Tarnov 19</translation>
-<translation id="1088860948719068836">Karta egasining ismini kiriting</translation>
 <translation id="1089439967362294234">Parolni o‘zgartirish</translation>
 <translation id="1096545575934602868">Bu maydonchadagi elementlar soni <ph name="MAX_ITEMS_LIMIT" /> yozuvdan oshmasligi kerak. Barcha ortiqchasi rad etiladi.</translation>
 <translation id="1100782917270858593">Tarixni qaytarish tugmasi, Chrome tarixidagi tegishli faollikni koʻrish uchun tarixni qaytarish uchun Enter tugmasini bosing</translation>
@@ -338,7 +337,6 @@ Aks holda bu maxfiylik sozlamalaringiz tomonidan bloklanadi. Bunda siz ochgan sa
 <translation id="1721424275792716183">* Bu maydoncha kiritilishi shart</translation>
 <translation id="1725591448053514783">Envelope You 6</translation>
 <translation id="1727613060316725209">Sertifikat yaroqli</translation>
-<translation id="1727741090716970331">Karta raqamini xatosiz kiriting</translation>
 <translation id="1728677426644403582">Siz veb-sahifa kodini ko‘rmoqdasiz.</translation>
 <translation id="173080396488393970">Bunday karta hozirda ishlamaydi</translation>
 <translation id="1732445923934584865">Buning oʻrniga shaxsan soʻrang</translation>
@@ -938,7 +936,6 @@ Aks holda bu maxfiylik sozlamalaringiz tomonidan bloklanadi. Bunda siz ochgan sa
 <translation id="3272091146646336650">Super B</translation>
 <translation id="3281350579597955952">{0,plural, =1{Administrator bu faylni <ph name="DESTINATION_NAME" />da ochishni tavsiya qilmaydi}other{Administrator bu fayllarni <ph name="DESTINATION_NAME" />da ochishni tavsiya qilmaydi}}</translation>
 <translation id="3282085321714087552"><ph name="ENROLLMENT_DOMAIN" /> tashkilotingiz quyidagi saytlarga sozlamalar va qoidalar kabi ayrim axborotlarni yubordi.</translation>
-<translation id="3282497668470633863">Karta egasining ismini kiriting</translation>
 <translation id="3286372614333682499">tik</translation>
 <translation id="3287510313208355388">Internet ulanganda yuklab olish</translation>
 <translation id="3288238092761586174">Toʻlovingizni tasdiqlash uchun <ph name="URL" /> qoʻshimcha bosqichlarni bajarishi kerak</translation>
@@ -951,7 +948,6 @@ Aks holda bu maxfiylik sozlamalaringiz tomonidan bloklanadi. Bunda siz ochgan sa
 <translation id="3304777285002411338">A2x3</translation>
 <translation id="33073482541490531">Hozirgina siz foydalangan parol oshkor qilingan. Parollar menejeri bu parolni hoziroq almashtirishni tavsiya etadi.</translation>
 <translation id="3308006649705061278">Bo‘lim (OU)</translation>
-<translation id="3320021301628644560">To‘lov manzilini kiriting</translation>
 <translation id="3324687287337751929">4 x 6 in</translation>
 <translation id="3324983252691184275">Malina rang</translation>
 <translation id="3329013043687509092">To‘liqlik</translation>
@@ -1014,7 +1010,6 @@ Aks holda bu maxfiylik sozlamalaringiz tomonidan bloklanadi. Bunda siz ochgan sa
 <translation id="3461824795358126837">Marker</translation>
 <translation id="3462200631372590220">Tafsilotlarni yashirish</translation>
 <translation id="346601286295919445">Kimyo</translation>
-<translation id="3467763166455606212">Karta egasining ismini kiriting</translation>
 <translation id="3468054117417088249"><ph name="TAB_SWITCH_SUFFIX" />, hozir ochiq, ochiq varaqqa almashtirish uchun avval Tab keyin Enter tugmalarini bosing</translation>
 <translation id="3470563864795286535"><ph name="CLOSE_INCOGNITO_WINDOWS_FOCUSED_FRIENDLY_MATCH_TEXT" />, Hozir ochilgan barcha Inkognito varaqlarni yopish uchun avval Tab, keyin Enter tugmasini bosing</translation>
 <translation id="3477679029130949506">Kinoteatrdagi filmlar va namoyish vaqtlari</translation>
@@ -1980,6 +1975,7 @@ Aks holda bu maxfiylik sozlamalaringiz tomonidan bloklanadi. Bunda siz ochgan sa
 <translation id="5817918615728894473">Ulanish</translation>
 <translation id="5824687817967109979">{NUM_CARDS,plural, =1{Toʻlov vaqtida bu kartadan haq olinadi, lekin uning haqiqiy raqamlari bu saytga ulashilmaydi. Qoʻshimcha himoya maqsadida vaqtinchalik CVC kod yaratiladi.}other{Toʻlov vaqtida tanlangan kartadan haq olinadi, lekin uning haqiqiy raqamlari bu saytga ulashilmaydi. Qoʻshimcha himoya maqsadida vaqtinchalik CVC kod yaratiladi.}}</translation>
 <translation id="5826507051599432481">Umumiy Ism (CN)</translation>
+<translation id="5829215001860862731">Hisobda saqlash</translation>
 <translation id="5830698870816298009">kameradan foydalanish va siljitish</translation>
 <translation id="583281660410589416">Noma’lum</translation>
 <translation id="5838278095973806738">Bu saytda muhim ma’lumotlaringizni (parollar va bank kartalar kabi) kiritmasligingiz kerak, chunki firibgarlar tomonidan o‘g‘irlanishi mumkin.</translation>
@@ -2283,7 +2279,6 @@ Aks holda bu maxfiylik sozlamalaringiz tomonidan bloklanadi. Bunda siz ochgan sa
 <translation id="6612010098632894193">Onlayn video</translation>
 <translation id="6615297766614333076">Taxlovchi 2</translation>
 <translation id="6624427990725312378">Aloqa ma’lumoti</translation>
-<translation id="6626291197371920147">Karta raqamini xatosiz kiriting</translation>
 <translation id="6627727261837091711">Reklamani moslashtirish tafsilotlarini chiqarish</translation>
 <translation id="6628463337424475685"><ph name="ENGINE" /> qidiruvi</translation>
 <translation id="6630043285902923878">USB qurilmalar qidirilmoqda...</translation>
@@ -2769,7 +2764,6 @@ Batafsil axborot:
 <translation id="7716375162095500223">Hali yuklanmagan yoki rad qilingan</translation>
 <translation id="7716424297397655342">Bu saytni keshdan yuklab bo‘lmadi</translation>
 <translation id="772128550427553158">CVC kod bank kartasining old tomonida joylashgan.</translation>
-<translation id="7723047071702270851">Kartani tahrirlang</translation>
 <translation id="7724603315864178912">Qirqish</translation>
 <translation id="7734285854693414638">Google Formsda yangi shaklni tez yaratish</translation>
 <translation id="773466115871691567"><ph name="SOURCE_LANGUAGE" /> tilidagi sahifalar doim tarjima qilinsin</translation>

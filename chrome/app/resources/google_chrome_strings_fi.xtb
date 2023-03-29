@@ -22,6 +22,7 @@
 <translation id="1399397803214730675">Tietokoneessa on jo Google Chromen uudempi versio. Jos sovellus ei toimi, poista Google Chrome ja yritä uudelleen.</translation>
 <translation id="139993653570221430">Voit muuttaa tämän milloin tahansa Chromen asetuksista. Kokeilut ovat voimassa mainosten nykyisen näyttötavan ohessa, joten et heti näe muutoksia.</translation>
 <translation id="1434626383986940139">Chrome Canary -sovellukset</translation>
+<translation id="1496905273983707119">{NUM_DEVICES,plural, =0{Google Chrome oli yhdistettynä HID-laitteeseen}=1{Google Chrome on yhdistetty HID-laitteeseen}other{Google Chrome on yhdistetty HID-laitteisiin}}</translation>
 <translation id="1507198376417198979">Muokkaa uusi Chrome-profiili näköiseksesi</translation>
 <translation id="1516530951338665275">Google Chrome tarvitsee Bluetoothia jatkaakseen
  laiteparin muodostusta. <ph name="IDS_BLUETOOTH_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>

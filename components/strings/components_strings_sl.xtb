@@ -46,7 +46,6 @@
 <translation id="1075079914415273530">Kmetijstvo in gozdarstvo</translation>
 <translation id="1080116354587839789">Prilagoditev prikaza širini</translation>
 <translation id="1081061862829655580">Pladenj 19</translation>
-<translation id="1088860948719068836">Dodajanje imena na kartico</translation>
 <translation id="1089439967362294234">Spremeni geslo</translation>
 <translation id="1096545575934602868">V tem polju je lahko največ toliko vnosov: <ph name="MAX_ITEMS_LIMIT" />. Vsi nadaljnji vnosi bodo zavrženi.</translation>
 <translation id="1100782917270858593">Gumb za nadaljevanje poti, pritisnite Enter, če želite nadaljevati pot in si ogledati pomembno dejavnost v zgodovini uporabe Chroma.</translation>
@@ -339,7 +338,6 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="1721424275792716183">*Polje je obvezno</translation>
 <translation id="1725591448053514783">Kuverta 6</translation>
 <translation id="1727613060316725209">Potrdilo je veljavno</translation>
-<translation id="1727741090716970331">Dodajanje veljavne številke kartice</translation>
 <translation id="1728677426644403582">Ogledujete si izvorno kodo spletne strani</translation>
 <translation id="173080396488393970">Ta vrsta kartice ni podprta</translation>
 <translation id="1732445923934584865">Vprašaj raje osebno</translation>
@@ -941,7 +939,6 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="3272091146646336650">Super B</translation>
 <translation id="3281350579597955952">{0,plural, =1{Pravilnik skrbnika ne priporoča odpiranja te datoteke tukaj: <ph name="DESTINATION_NAME" />.}one{Pravilnik skrbnika ne priporoča odpiranja teh datotek tukaj: <ph name="DESTINATION_NAME" />.}two{Pravilnik skrbnika ne priporoča odpiranja teh datotek tukaj: <ph name="DESTINATION_NAME" />.}few{Pravilnik skrbnika ne priporoča odpiranja teh datotek tukaj: <ph name="DESTINATION_NAME" />.}other{Pravilnik skrbnika ne priporoča odpiranja teh datotek tukaj: <ph name="DESTINATION_NAME" />.}}</translation>
 <translation id="3282085321714087552">Vaša organizacija, <ph name="ENROLLMENT_DOMAIN" />, je poslala nekatere podatke, kot so nastavitve ali pravilniki, na ta spletna mesta.</translation>
-<translation id="3282497668470633863">Dodajanje imena na kartico</translation>
 <translation id="3286372614333682499">pokončno</translation>
 <translation id="3287510313208355388">Prenesi, ko je povezava</translation>
 <translation id="3288238092761586174">Gostitelj <ph name="URL" /> bo morda moral opraviti dodatne korake za preverjanje vašega plačila.</translation>
@@ -954,7 +951,6 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="3304777285002411338">A2x3</translation>
 <translation id="33073482541490531">Geslo, ki ste ga pravkar uporabili, je bilo najdeno v podatkovni kršitvi. Upravitelj gesel priporoča, da to geslo spremenite takoj.</translation>
 <translation id="3308006649705061278">Organizacijska enota (OU)</translation>
-<translation id="3320021301628644560">Dodajanje naslova za izstavitev računa</translation>
 <translation id="3324687287337751929">4 x 6 palcev</translation>
 <translation id="3324983252691184275">Škrlatna</translation>
 <translation id="3329013043687509092">Nasičenost</translation>
@@ -1017,7 +1013,6 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="3461824795358126837">Označevalnik</translation>
 <translation id="3462200631372590220">Skrij podrobnosti</translation>
 <translation id="346601286295919445">Kemija</translation>
-<translation id="3467763166455606212">Ime imetnika kartice je obvezno</translation>
 <translation id="3468054117417088249"><ph name="TAB_SWITCH_SUFFIX" />, trenutno odprto, pritisnite tabulatorko, nato Enter, če želite preklopiti na odprti zavihek</translation>
 <translation id="3470563864795286535"><ph name="CLOSE_INCOGNITO_WINDOWS_FOCUSED_FRIENDLY_MATCH_TEXT" />, pritisnite tabulatorko, nato Enter, če želite zapreti vsa trenutno odprta anonimna okna.</translation>
 <translation id="3477679029130949506">Filmski sporedi in sporedi gledaliških predstav</translation>
@@ -1658,6 +1653,7 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="5018422839182700155">Te strani ni mogoče odpreti</translation>
 <translation id="5018802455907704660">16 x 20 palcev</translation>
 <translation id="5019198164206649151">Neprimerno stanje rezervne shrambe</translation>
+<translation id="5019293549442035120">Shranjene naslove lahko uporabite v Googlovih izdelkih. Ta naslov bo shranjen v računu Google, <ph name="USER_EMAIL" />.</translation>
 <translation id="5020776957610079374">Svetovna glasba</translation>
 <translation id="5021557570875267742">Spremljanje cen v Chromu</translation>
 <translation id="5023310440958281426">Preverite skrbnikove pravilnike</translation>
@@ -1795,6 +1791,7 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="5324080437450482387">Izbira podatkov za stik</translation>
 <translation id="5329858041417644019">Vaš brskalnik ni upravljan</translation>
 <translation id="5332219387342487447">Način pošiljanja</translation>
+<translation id="5332769172018416402">Vprašaj v sporočilu</translation>
 <translation id="5333022057423422993">Chrome je geslo, ki ste ga pravkar uporabili, našel v podatkovni kršitvi. Zaradi zavarovanja računov priporočamo, da preverite shranjena gesla.</translation>
 <translation id="5334013548165032829">Podrobni sistemski dnevniki</translation>
 <translation id="5334145288572353250">Želite shraniti naslov?</translation>
@@ -2288,7 +2285,6 @@ Poleg tega lahko v nastavitvah Chroma kadar koli blokirate, da bi spletno mesto 
 <translation id="6612010098632894193">Spletni videoposnetki</translation>
 <translation id="6615297766614333076">Zlagalnik 2</translation>
 <translation id="6624427990725312378">Podatki o stiku</translation>
-<translation id="6626291197371920147">Dodajanje veljavne številke kartice</translation>
 <translation id="6627727261837091711">Prikaz podrobnosti osebnega prilagajanja oglasov</translation>
 <translation id="6628463337424475685"><ph name="ENGINE" /> Iskanje</translation>
 <translation id="6630043285902923878">Iskanje naprav USB …</translation>
@@ -2774,7 +2770,6 @@ Dodatne podrobnosti:
 <translation id="7716375162095500223">Ni še naloženo ali je prezrto</translation>
 <translation id="7716424297397655342">Tega spletnega mesta ni mogoče naložiti iz predpomnilnika</translation>
 <translation id="772128550427553158">Koda CVC je na sprednji strani kartice.</translation>
-<translation id="7723047071702270851">Urejanje kartice</translation>
 <translation id="7724603315864178912">Izreži</translation>
 <translation id="7734285854693414638">Hitro ustvarjanje novega obrazca v Google Obrazcih</translation>
 <translation id="773466115871691567">Vedno prevedi strani v jeziku <ph name="SOURCE_LANGUAGE" /></translation>

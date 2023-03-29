@@ -46,7 +46,6 @@
 <translation id="1075079914415273530">농업 및 임업</translation>
 <translation id="1080116354587839789">너비에 맞춤</translation>
 <translation id="1081061862829655580">트레이 19</translation>
-<translation id="1088860948719068836">카드 명의 추가</translation>
 <translation id="1089439967362294234">비밀번호 변경</translation>
 <translation id="1096545575934602868">입력란에 항목이 <ph name="MAX_ITEMS_LIMIT" />개 넘게 있으면 안 됩니다. 추가되는 모든 항목은 삭제됩니다.</translation>
 <translation id="1100782917270858593">탐색 여정 재개 버튼, 탐색 여정을 재개하고 Chrome 방문 기록에서 관련 활동을 보려면 Enter를 누르세요</translation>
@@ -339,7 +338,6 @@
 <translation id="1721424275792716183">* 필수 입력란</translation>
 <translation id="1725591448053514783">봉투 You 6</translation>
 <translation id="1727613060316725209">인증서가 유효함</translation>
-<translation id="1727741090716970331">유효한 카드 번호 추가</translation>
 <translation id="1728677426644403582">웹페이지 소스를 보는 중</translation>
 <translation id="173080396488393970">이 유형의 카드는 지원되지 않습니다.</translation>
 <translation id="1732445923934584865">직접 요청하기</translation>
@@ -941,7 +939,6 @@
 <translation id="3272091146646336650">Super B</translation>
 <translation id="3281350579597955952">{0,plural, =1{관리자 정책에 따라 이 파일을 <ph name="DESTINATION_NAME" />에서 열지 않는 것이 좋습니다.}other{관리자 정책에 따라 이 파일을 <ph name="DESTINATION_NAME" />에서 열지 않는 것이 좋습니다.}}</translation>
 <translation id="3282085321714087552"><ph name="ENROLLMENT_DOMAIN" /> 조직에서 다음 웹사이트로 설정 또는 정책과 같은 정보를 전송했습니다.</translation>
-<translation id="3282497668470633863">카드 명의 추가</translation>
 <translation id="3286372614333682499">세로 모드</translation>
 <translation id="3287510313208355388">온라인 상태일 때 다운로드</translation>
 <translation id="3288238092761586174">결제 인증을 위해 <ph name="URL" />에서 추가 단계를 진행해야 할 수 있습니다.</translation>
@@ -954,7 +951,6 @@
 <translation id="3304777285002411338">A2x3</translation>
 <translation id="33073482541490531">방금 사용한 비밀번호가 정보 유출로 인해 노출된 것으로 확인됩니다. 비밀번호 관리자에서 지금 바로 비밀번호를 변경하시기를 바랍니다.</translation>
 <translation id="3308006649705061278">조직 구성 단위(OU)</translation>
-<translation id="3320021301628644560">청구지 주소 추가</translation>
 <translation id="3324687287337751929">4x6인치</translation>
 <translation id="3324983252691184275">진홍색</translation>
 <translation id="3329013043687509092">채도</translation>
@@ -1017,7 +1013,6 @@
 <translation id="3461824795358126837">형광펜</translation>
 <translation id="3462200631372590220">세부정보 숨기기</translation>
 <translation id="346601286295919445">화학</translation>
-<translation id="3467763166455606212">카드 소유자 이름을 입력해야 합니다.</translation>
 <translation id="3468054117417088249"><ph name="TAB_SWITCH_SUFFIX" />, 현재 열려 있음, Tab을 누른 다음 Enter를 눌러 열린 탭으로 전환</translation>
 <translation id="3470563864795286535"><ph name="CLOSE_INCOGNITO_WINDOWS_FOCUSED_FRIENDLY_MATCH_TEXT" />, 현재 열려 있는 시크릿 창을 모두 닫으려면 Tab과 Enter를 차례로 누르세요</translation>
 <translation id="3477679029130949506">영화 상영 시간표</translation>
@@ -1658,6 +1653,7 @@
 <translation id="5018422839182700155">이 페이지를 열 수 없음</translation>
 <translation id="5018802455907704660">16x20인치</translation>
 <translation id="5019198164206649151">보조 기억 장치 상태가 잘못됨</translation>
+<translation id="5019293549442035120">Google 제품 전반에서 저장된 주소를 사용할 수 있습니다. 이 주소는 Google 계정(<ph name="USER_EMAIL" />)에 저장됩니다.</translation>
 <translation id="5020776957610079374">제3세계 음악</translation>
 <translation id="5021557570875267742">Chrome으로 가격 추적</translation>
 <translation id="5023310440958281426">관리자 정책을 확인하세요.</translation>
@@ -1795,6 +1791,7 @@
 <translation id="5324080437450482387">연락처 정보 선택</translation>
 <translation id="5329858041417644019">관리 대상 브라우저가 아닙니다</translation>
 <translation id="5332219387342487447">배송 방법</translation>
+<translation id="5332769172018416402">메시지로 요청하기</translation>
 <translation id="5333022057423422993">방금 사용한 비밀번호가 정보 유출로 인해 노출된 것으로 확인됩니다. 계정을 보호하려면 저장된 비밀번호를 확인해 보시기 바랍니다.</translation>
 <translation id="5334013548165032829">세부 시스템 로그</translation>
 <translation id="5334145288572353250">주소를 저장하시겠습니까?</translation>
@@ -2287,7 +2284,6 @@
 <translation id="6612010098632894193">온라인 동영상</translation>
 <translation id="6615297766614333076">스태커 2</translation>
 <translation id="6624427990725312378">연락처 정보</translation>
-<translation id="6626291197371920147">유효한 카드 번호 추가</translation>
 <translation id="6627727261837091711">광고 개인 최적화 세부정보 표시</translation>
 <translation id="6628463337424475685"><ph name="ENGINE" /> 검색</translation>
 <translation id="6630043285902923878">USB 기기를 찾는 중...</translation>
@@ -2772,7 +2768,6 @@
 <translation id="7716375162095500223">아직 업로드 또는 무시되지 않음</translation>
 <translation id="7716424297397655342">이 사이트를 캐시에서 로드할 수 없음</translation>
 <translation id="772128550427553158">CVC는 카드 앞면에 있습니다.</translation>
-<translation id="7723047071702270851">카드 수정</translation>
 <translation id="7724603315864178912">잘라내기</translation>
 <translation id="7734285854693414638">Google Forms에서 빠르게 새 양식 만들기</translation>
 <translation id="773466115871691567"><ph name="SOURCE_LANGUAGE" />로 된 페이지를 항상 번역</translation>

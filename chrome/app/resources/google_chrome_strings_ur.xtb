@@ -24,6 +24,7 @@
 <translation id="1399397803214730675">‏اس کمپیوٹر پر Google Chrome کا ایک مزید تازہ ترین ورژن پہلے سے ہی ہے۔ اگر سافٹ ویئر کام نہیں کر رہا ہے تو براہ کرم Google Chrome کو ان انسٹال کریں اور دوبارہ کوشش کریں۔</translation>
 <translation id="139993653570221430">‏آپ Chrome کی ترتیبات میں کسی بھی وقت اپنا ارادہ بدل سکتے ہیں۔ ٹرائلز اشتہارات پیش کیے جانے کے موجودہ طریقے کے ساتھ چلتے ہیں لہذا آپ کو تبدیلیاں فورا نظر نہیں آئیں گی۔</translation>
 <translation id="1434626383986940139">‏Chrome کینیری ایپس</translation>
+<translation id="1496905273983707119">{NUM_DEVICES,plural, =0{‏Google Chrome ایک HID آلے سے منسلک تھا}=1{‏Google Chrome ایک HID آلے سے منسلک ہے}other{‏Google Chrome‏ HID آلات سے منسلک ہے}}</translation>
 <translation id="1507198376417198979">‏اپنی نئی Chrome پروفائل کو حسب ضرورت بنائیں</translation>
 <translation id="1516530951338665275">‏جوڑا بنانا جاری رکھنے کیلئے Google Chrome کو بلوٹوتھ رسائی کی ضرورت ہے۔ <ph name="IDS_BLUETOOTH_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
 <translation id="1547295885616600893">‏ChromeOS کو اضافی <ph name="BEGIN_LINK_CROS_OSS" />اوپن سورس سافٹ ویئر<ph name="END_LINK_CROS_OSS" /> کے ذریعے ممکن بنایا گیا ہے۔</translation>

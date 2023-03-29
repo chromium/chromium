@@ -154,6 +154,7 @@
 <translation id="2021670401941426298">लागू असल्यास, तुमचा शोध इतिहास हटवण्यासाठी, तुमच्या शोध इंजीनच्या सूचना पहा.</translation>
 <translation id="202292859882676807">मायक्रोफोन अ‍ॅक्सेस करण्याची अनुमती दिली आहे</translation>
 <translation id="20485545164632846">नवीन आयटम</translation>
+<translation id="2049727122989709386"><ph name="COUNT" /> खाती हाच पासवर्ड वापरत आहेत</translation>
 <translation id="2050196510205866090">{count,plural, =1{तुमच्या कीबोर्डच्या वरती सेव्ह केलेली {count} पेमेंट पद्धत उपलब्ध आहे.}other{तुमच्या कीबोर्डच्या वरती सेव्ह केलेल्या {count} पेमेंट पद्धती उपलब्ध आहेत.}}</translation>
 <translation id="2073572773299281212"><ph name="DAYS" /> दिवसांपूर्वी ॲक्टिव्ह होते</translation>
 <translation id="2074131957428911366">तुम्ही काय सिंक करायचे हे <ph name="BEGIN_LINK" />सेटिंग्ज<ph name="END_LINK" /> मध्ये कधीही निवडू शकता.</translation>
@@ -237,6 +238,10 @@
 <translation id="26915454213703967">Google वापरून अंतर्गत इमेज शोधा</translation>
 <translation id="2691653761409724435">ऑफलाइन उपलब्ध नाही</translation>
 <translation id="2695507686909505111">पेज भाषांतरित केले</translation>
+<translation id="2696180352517415858">तुम्हाला तुमच्या Google खाते मधून साइन आउट केले जाणार नाही. तुम्ही साइन इन केलेले असते, तेव्हा तुमच्या Google खाते मध्ये <ph name="BEGIN_LINK" />इतर प्रकारची ॲक्टिव्हिटी<ph name="END_LINK" /> सेव्ह केली जाऊ शकते. तुम्ही ती कधीही हटवू शकता.
+
+
+तुमचे शोध इंजीन <ph name="DSE_NAME" /> हे आहे. लागू असल्यास, तुमचा शोध इतिहास हटवण्यासाठी, त्याच्या सूचना पहा.</translation>
 <translation id="2697526135132990015">साइन आउट करा आणि डेटा साफ करा</translation>
 <translation id="2700241355396984822">परवानग्या सेट करण्यासाठी पर्याय</translation>
 <translation id="2702801445560668637">वाचन सूची</translation>
@@ -249,6 +254,7 @@
 <translation id="2747003861858887689">मागील फील्ड</translation>
 <translation id="2749231692441336879"><ph name="CHANNEL_NAME" /> ला फॉलो करत आहे</translation>
 <translation id="2764831210418622012">आत्ताच</translation>
+<translation id="2772667768515195373">तुम्ही संपूर्ण Google उत्पादनांवर सेव्ह केलेले पत्ते वापरू शकता. हा अ‍ॅड्रेस तुमच्या Google खाते (<ph name="USER_EMAIL" />) मध्ये सेव्ह केला आहे.</translation>
 <translation id="2773292004659987824">गुप्त शोध</translation>
 <translation id="277771892408211951">भाषा निवडा</translation>
 <translation id="2780046210906776326">ईमेल खाती नाहीत</translation>
@@ -325,6 +331,7 @@
 <translation id="3214379938835224220">तुमच्या iPad रीसेटचा भाग म्हणून तुम्हाला साइन आउट केले गेले होते. साइन इन करण्यासाठी, सुरू ठेवा वर खाली टॅप करा.</translation>
 <translation id="3224641773458703735">पासवर्ड एक्सपोर्ट करण्यासाठी, तुम्ही प्रथम तुमच्या डिव्हाइसवर पासकोड सेट करणे आवश्यक आहे.</translation>
 <translation id="3227137524299004712">मायक्रोफोन</translation>
+<translation id="3235063766008841141">फसव्या साइटवर एंटर केले गेले आणि डेटा उल्लंघन करत असल्याचे आढळले</translation>
 <translation id="3240426699337459095">लिंक कॉपी केला</translation>
 <translation id="3244271242291266297">MM</translation>
 <translation id="3245744387817103524">तुमचा बदल सेव्ह करता आला नाही.</translation>

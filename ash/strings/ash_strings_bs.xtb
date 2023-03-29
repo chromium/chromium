@@ -40,7 +40,7 @@ Možete isprobati ovih nekoliko stvari da započnete.</translation>
 <translation id="1181037720776840403">Ukloni</translation>
 <translation id="1182225749592316782">Ovo dozvoljava pristup kameri i mikrofonu za sve aplikacije i web lokacije s odobrenjima za njih</translation>
 <translation id="1183863904939664422">Ne zanima me ovaj prijedlog</translation>
-<translation id="1184126796192815024">Ova mreža ne podržava aplikacije za streaming na vašem telefonu. Pokušajte upotrijebiti žarišnu točku telefona. <ph name="LEARN_MORE" /></translation>
+<translation id="1184126796192815024">Ova mreža ne podržava prijenos aplikacija s telefona. Pokušajte s korištenjem pristupne tačke telefona. <ph name="LEARN_MORE" /></translation>
 <translation id="118437560755358292">Unesite lozinku ili PIN radi veće sigurnosti</translation>
 <translation id="118532027333893379">Dodirnite bilo gdje da snimite cijeli ekran</translation>
 <translation id="1190609913194133056">Centar za obavještenja</translation>
@@ -1420,6 +1420,7 @@ Da isključite uređaj, ponovo pritisnite i zadržite dugme za uključivanje na 
 <translation id="7689817529363080918">Ovo omogućava pristup mikrofonu za aplikacije <ph name="APP1_NAME" /> i <ph name="APP2_NAME" /> te sve druge aplikacije i web lokacije koje imaju odobrenje za njega</translation>
 <translation id="7704000866383261579">Ponavljanje posljednje radnje</translation>
 <translation id="7705524343798198388">VPN</translation>
+<translation id="770741401784017797">Kreiranje GIF-a</translation>
 <translation id="7714767791242455379">Dodajte novu mobilnu mrežu</translation>
 <translation id="7720400844887872976">Uključeno do <ph name="TIME" /></translation>
 <translation id="7720410380936703141">POKUŠAJTE PONOVO</translation>
@@ -1432,6 +1433,7 @@ Da isključite uređaj, ponovo pritisnite i zadržite dugme za uključivanje na 
 <translation id="7749443890790263709">Dostigli ste maksimalni broj radnih površina.</translation>
 <translation id="776344839111254542">Kliknite da vidite detalje o ažuriranju</translation>
 <translation id="7768784765476638775">Odaberite za govor</translation>
+<translation id="7769299611924763557">GIF će uskoro biti spreman</translation>
 <translation id="7780094051999721182">prečice</translation>
 <translation id="7780159184141939021">Rotiranje ekrana</translation>
 <translation id="7796735576426975947">Novo obavještenje je skriveno</translation>

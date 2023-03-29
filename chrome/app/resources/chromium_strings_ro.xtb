@@ -22,6 +22,7 @@
 
 Permisiunile pe care le-ai acordat deja site-urilor și aplicațiilor se pot aplica acestui cont. Îți poți gestiona Conturile Google din <ph name="SETTINGS_LINK_BEGIN" />Setări<ph name="SETTINGS_LINK_END" />.</translation>
 <translation id="1640672724030957280">Se descarcă…</translation>
+<translation id="1691024636239527281">{NUM_DEVICES,plural, =0{Chromium a fost conectat la un dispozitiv HID}=1{Chromium este conectat la un dispozitiv HID}few{Chromium este conectat la dispozitive HID}other{Chromium este conectat la dispozitive HID}}</translation>
 <translation id="1708666629004767631">Chromium este disponibil într-o versiune nouă și mai sigură.</translation>
 <translation id="17264556997921157">Poți să vezi și să elimini subiecte de interes folosite de site-uri pentru a-ți afișa anunțuri. Chromium îți estimează interesele pe baza istoricului tău de navigare recent.</translation>
 <translation id="1733725117201708356">În curând, Chromium va șterge datele de navigare</translation>

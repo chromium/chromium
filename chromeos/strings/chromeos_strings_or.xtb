@@ -698,6 +698,7 @@
 <translation id="7103252855940681301"><ph name="COUNT" />ଟିରୁ <ph name="NAME" /> ନାମ ଥିବା <ph name="INDEX" /> ନମ୍ବର ଡିଭାଇସ।</translation>
 <translation id="7108668606237948702">ଏଣ୍ଟର୍</translation>
 <translation id="7130438335435247835">ଆକ୍ସେସ ପଏଣ୍ଟ ନାମ (APN)</translation>
+<translation id="7131634559772719176">ପ୍ରିସେଟକୁ ସୁନିଶ୍ଚିତ କରନ୍ତୁ</translation>
 <translation id="7134436342991564651">{0,plural, =1{ନାମ ସର୍ଭର୍}other{ନାମ ସର୍ଭର୍}}</translation>
 <translation id="7143207342074048698">ସଂଯୋଗ କରୁଛି</translation>
 <translation id="7144878232160441200">ପୁଣି ଚେଷ୍ଟା କରନ୍ତୁ</translation>
@@ -801,6 +802,7 @@
 <translation id="80398733265834479">ଅଟୋ କଲର ମୋଡକୁ ସକ୍ଷମ କରନ୍ତୁ</translation>
 <translation id="8041089156583427627">ମତାମତ ପଠାନ୍ତୁ</translation>
 <translation id="8045012663542226664">ମାଇକ୍ରୋଫୋନ ମ୍ୟୁଟ</translation>
+<translation id="8050091914317269817">ଏହି ୱାଲପେପରକୁ ଚୟନ କରିବା ଫଳରେ ଏହା ଅଟୋ ଡାର୍କ ମୋଡ ଏବଂ ୱାଲପେପର ରଙ୍ଗ ମେଚିଂକୁ ଚାଲୁ କରିବ।</translation>
 <translation id="8075838845814659848">ବାକି ଥିବା ଚାର୍ଜ</translation>
 <translation id="8076492880354921740">ଟାବ୍</translation>
 <translation id="8082366717211101304">Android ଆପଗୁଡ଼ିକରୁ DNSର ସମାଧାନ କରାଯାଇପାରିବ ନାହିଁ</translation>

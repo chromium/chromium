@@ -274,6 +274,7 @@
 <translation id="3456078764689556234">Se imprimió la página <ph name="PRINTED_PAGES" /> de un total de <ph name="TOTAL_PAGES" />.</translation>
 <translation id="345898999683440380">Se está escaneando la página <ph name="PAGE_NUM" />. Se completó el <ph name="PERCENTAGE_VALUE" />%.</translation>
 <translation id="3459509316159669723">Impresión</translation>
+<translation id="346423161771747987">Actual</translation>
 <translation id="346539236881580388">Repetir</translation>
 <translation id="3484914941826596830">No desconectes este dispositivo externo ni apagues la computadora mientras se actualiza el firmware. Puedes minimizar esta ventana. Es posible que esta actualización demore unos minutos y que el dispositivo externo no funcione hasta que termine.</translation>
 <translation id="3486220673238053218">definición</translation>
@@ -697,6 +698,7 @@
 <translation id="7103252855940681301">El nombre del dispositivo <ph name="INDEX" /> de <ph name="COUNT" /> es <ph name="NAME" />.</translation>
 <translation id="7108668606237948702">ingresar</translation>
 <translation id="7130438335435247835">Nombre de punto de acceso (APN)</translation>
+<translation id="7131634559772719176">Confirmar el ajuste predeterminado</translation>
 <translation id="7134436342991564651">{0,plural, =1{Servidor de nombres}other{Servidores de nombres}}</translation>
 <translation id="7143207342074048698">Conectando</translation>
 <translation id="7144878232160441200">Volver a intentar</translation>
@@ -800,6 +802,7 @@
 <translation id="80398733265834479">Habilitar el modo de color automático</translation>
 <translation id="8041089156583427627">Enviar comentario</translation>
 <translation id="8045012663542226664">Micrófono silenciado</translation>
+<translation id="8050091914317269817">Si seleccionas este fondo de pantalla, se activarán la combinación de colores del fondo de pantalla y el modo oscuro automáticos.</translation>
 <translation id="8075838845814659848">Carga restante</translation>
 <translation id="8076492880354921740">Pestañas</translation>
 <translation id="8082366717211101304">No se puede resolver el DNS desde apps para Android</translation>

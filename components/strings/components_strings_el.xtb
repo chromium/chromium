@@ -46,7 +46,6 @@
 <translation id="1075079914415273530">Γεωργία και δασοπονία</translation>
 <translation id="1080116354587839789">Προσαρμογή στο πλάτος</translation>
 <translation id="1081061862829655580">Τροφοδότης χαρτιού 19</translation>
-<translation id="1088860948719068836">Προσθήκη ονόματος στην κάρτα</translation>
 <translation id="1089439967362294234">Αλλαγή κωδικού πρόσβασης</translation>
 <translation id="1096545575934602868">Αυτό το πεδίο δεν θα πρέπει να έχει περισσότερες από <ph name="MAX_ITEMS_LIMIT" /> καταχωρίσεις. Τυχόν επιπλέον καταχωρίσεις θα απορριφθούν.</translation>
 <translation id="1100782917270858593">Κουμπί Συνέχιση της διαδρομής σας, πατήστε Enter για να συνεχίσετε τη διαδρομή σας και να δείτε σχετική δραστηριότητα στο Ιστορικό Chrome.</translation>
@@ -339,7 +338,6 @@
 <translation id="1721424275792716183">* Το πεδίο είναι υποχρεωτικό</translation>
 <translation id="1725591448053514783">Φάκελος You 6</translation>
 <translation id="1727613060316725209">Το πιστοποιητικό είναι έγκυρο</translation>
-<translation id="1727741090716970331">Προσθήκη έγκυρου αριθμού κάρτας</translation>
 <translation id="1728677426644403582">Βλέπετε την πηγή μιας ιστοσελίδας</translation>
 <translation id="173080396488393970">Αυτός ο τύπος κάρτας δεν υποστηρίζεται</translation>
 <translation id="1732445923934584865">Εναλλακτικά, κάνε την ερώτηση αυτοπροσώπως</translation>
@@ -941,7 +939,6 @@
 <translation id="3272091146646336650">Super B</translation>
 <translation id="3281350579597955952">{0,plural, =1{Η πολιτική διαχειριστή δεν συνιστά το άνοιγμα αυτού του αρχείου στο <ph name="DESTINATION_NAME" />}other{Η πολιτική διαχειριστή δεν συνιστά το άνοιγμα αυτών των αρχείων στο <ph name="DESTINATION_NAME" />}}</translation>
 <translation id="3282085321714087552">Ο οργανισμός σας, <ph name="ENROLLMENT_DOMAIN" />, έστειλε ορισμένες πληροφορίες στους παρακάτω ιστοτόπους, όπως ρυθμίσεις ή πολιτικές.</translation>
-<translation id="3282497668470633863">Προσθήκη ονόματος στην κάρτα</translation>
 <translation id="3286372614333682499">κατακόρυφος προσανατολισμός</translation>
 <translation id="3287510313208355388">Να γίνει λήψη όταν πραγματοποιηθεί σύνδεση</translation>
 <translation id="3288238092761586174">Ενδέχεται να χρειαστούν επιπλέον βήματα από το <ph name="URL" /> για την επαλήθευση της πληρωμής σας.</translation>
@@ -954,7 +951,6 @@
 <translation id="3304777285002411338">A2x3</translation>
 <translation id="33073482541490531">Ο κωδικός πρόσβασης που μόλις χρησιμοποιήσατε εντοπίστηκε σε μια παραβίαση δεδομένων. Ο Διαχειριστής κωδικών πρόσβασης συνιστά την άμεση αλλαγή αυτού του κωδικού πρόσβασης.</translation>
 <translation id="3308006649705061278">Οργανωτική ομάδα (OU)</translation>
-<translation id="3320021301628644560">Προσθήκη διεύθυνσης χρέωσης</translation>
 <translation id="3324687287337751929">4 x 6 ίντσες</translation>
 <translation id="3324983252691184275">Βαθύ κόκκινο</translation>
 <translation id="3329013043687509092">Κορεσμός</translation>
@@ -1017,7 +1013,6 @@
 <translation id="3461824795358126837">Μαρκαδόρος υπογράμμισης</translation>
 <translation id="3462200631372590220">Απόκρυψη σύνθετων</translation>
 <translation id="346601286295919445">Χημεία</translation>
-<translation id="3467763166455606212">Απαιτείται το όνομα κατόχου κάρτας</translation>
 <translation id="3468054117417088249">Αυτήν τη στιγμή είναι ανοιχτή η καρτέλα <ph name="TAB_SWITCH_SUFFIX" />, πατήστε Tab και έπειτα Enter για μετάβαση στην ανοιχτή καρτέλα</translation>
 <translation id="3470563864795286535"><ph name="CLOSE_INCOGNITO_WINDOWS_FOCUSED_FRIENDLY_MATCH_TEXT" />, πατήστε το πλήκτρο Tab και έπειτα το πλήκτρο Enter για να κλείσετε όλα τα παράθυρα για ανώνυμη περιήγηση που είναι αυτήν τη στιγμή ανοικτά</translation>
 <translation id="3477679029130949506">Καταχωρίσεις ταινιών και ώρες προβολής αιθουσών</translation>
@@ -2291,7 +2286,6 @@
 <translation id="6612010098632894193">Βίντεο στο διαδίκτυο</translation>
 <translation id="6615297766614333076">Μονάδα στοίβαξης 2</translation>
 <translation id="6624427990725312378">Στοιχεία επικοινωνίας</translation>
-<translation id="6626291197371920147">Προσθήκη έγκυρου αριθμού κάρτας</translation>
 <translation id="6627727261837091711">Εμφάνιση λεπτομερειών εξατομίκευσης διαφημίσεων</translation>
 <translation id="6628463337424475685">Αναζήτηση <ph name="ENGINE" /></translation>
 <translation id="6630043285902923878">Εύρεση συσκευών USB…</translation>
@@ -2777,7 +2771,6 @@
 <translation id="7716375162095500223">Δεν έγινε ακόμη μεταφόρτωση ή παράβλεψη</translation>
 <translation id="7716424297397655342">Δεν είναι δυνατή η φόρτωση αυτού του ιστότοπου από την κρυφή μνήμη</translation>
 <translation id="772128550427553158">Ο κωδικός CVC βρίσκεται στο μπροστινό μέρος της κάρτας σας.</translation>
-<translation id="7723047071702270851">Επεξεργασία κάρτας</translation>
 <translation id="7724603315864178912">Αποκοπή</translation>
 <translation id="7734285854693414638">Γρήγορη δημιουργία νέας φόρμας στις Φόρμες Google</translation>
 <translation id="773466115871691567">Να μεταφράζονται πάντα οι σελίδες προς τα <ph name="SOURCE_LANGUAGE" /></translation>

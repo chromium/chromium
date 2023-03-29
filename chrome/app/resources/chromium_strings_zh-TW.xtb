@@ -22,6 +22,7 @@
 
 你授予網站和應用程式的權限可能會存入這個帳戶的設定。你可以前往「<ph name="SETTINGS_LINK_BEGIN" />設定<ph name="SETTINGS_LINK_END" />」管理 Google 帳戶。</translation>
 <translation id="1640672724030957280">下載中…</translation>
+<translation id="1691024636239527281">{NUM_DEVICES,plural, =0{Chromium 曾連線至 HID 裝置}=1{Chromium 已連線至 HID 裝置}other{Chromium 已連線至 HID 裝置}}</translation>
 <translation id="1708666629004767631">新版 Chromium 現已推出，安全更上一層樓。</translation>
 <translation id="17264556997921157">你可以查看網站用於顯示廣告的興趣主題，並且視需要移除。Chromium 會根據近期瀏覽記錄推測你可能感興趣的主題。</translation>
 <translation id="1733725117201708356">Chromium 即將刪除瀏覽資料</translation>
@@ -142,7 +143,7 @@
 <translation id="4230135487732243613">要將你的 Chromium 資料連結至這個帳戶嗎？</translation>
 <translation id="4271805377592243930">前往 Chromium 說明頁面</translation>
 <translation id="4285930937574705105">不明錯誤導致安裝失敗。如果目前 Chromium 正在執行，請關閉 Chromium，然後再試一次。</translation>
-<translation id="4304713468139749426">密碼管理員</translation>
+<translation id="4304713468139749426">密碼管理工具</translation>
 <translation id="4334294535648607276">下載完成。</translation>
 <translation id="439358628917130594">根據 <ph name="MANAGER" /> 的規定，您必須先詳閱並接受下列《服務條款》，才能使用這部裝置。這些條款不會擴充、修改或限制《Chromium OS 條款》。</translation>
 <translation id="4407044323746248786">確定要結束 Chromium 嗎？</translation>

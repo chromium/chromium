@@ -145,6 +145,7 @@
 <translation id="1965935827552890526">Завршите оно што сте радили у другом отвореном Chrome прозору.</translation>
 <translation id="1973912524893600642">Задржи податке</translation>
 <translation id="1974060860693918893">Напредне опције</translation>
+<translation id="1980417445547898121">{count,plural, =1{Преузмите {count} недавно активну картицу са другог уређаја на овом iPhone-у}one{Преузмите {count} недавно активну картицу са другог уређаја на овом iPhone-у}few{Преузмите {count} недавно активне картице са другог уређаја на овом iPhone-у}other{Преузмите {count} недавно активних картица са другог уређаја на овом iPhone-у}}</translation>
 <translation id="1981118202195772574">Мобилни уређај</translation>
 <translation id="1989112275319619282">Прегледај</translation>
 <translation id="1990820278544963435">Пронађите</translation>
@@ -325,6 +326,7 @@
 <translation id="3214379938835224220">Одјављени сте у склопу ресетовања iPad-а. Додирните Настави у наставку да бисте се пријавили.</translation>
 <translation id="3224641773458703735">Да бисте извозили лозинке, прво морате да подесите шифру на уређају.</translation>
 <translation id="3227137524299004712">Микрофон</translation>
+<translation id="3235063766008841141">Унесен је на обмањујућем сајту и пронађен при упаду у податке</translation>
 <translation id="3240426699337459095">Линк је копиран</translation>
 <translation id="3244271242291266297">ММ</translation>
 <translation id="3245744387817103524">Чување промене није успело.</translation>
@@ -364,6 +366,7 @@
 <translation id="3494788280727468875">Потврди брисање података прегледања</translation>
 <translation id="35083190962747987">Отвори ${url}</translation>
 <translation id="3519193562722059437">Отворите картицу да бисте прегледали веб.</translation>
+<translation id="3519905498307021260">{count,plural, =1{Отвори картицу}one{Отвори {count} картицу}few{Отвори {count} картице}other{Отвори {count} картица}}</translation>
 <translation id="3527085408025491307">Фолдер</translation>
 <translation id="3529024052484145543">Није безбедно</translation>
 <translation id="3530206579861815432">Брзо пронађите отворене и недавно затворене картице на синхронизованим уређајима.</translation>
@@ -411,6 +414,7 @@
 <translation id="3863769054730344136">Пошаљи на уређаје</translation>
 <translation id="387280738075653372">Преузмите Chrome овде.</translation>
 <translation id="3888863481921783344">То ће се користити да би вам се приказивале особе које можете да позовете на догађај.</translation>
+<translation id="3891414008432200754">Цена</translation>
 <translation id="3892144330757387737">Овде ћете пронаћи историју</translation>
 <translation id="3897092660631435901">Мени</translation>
 <translation id="3904829425754749514">Ваша организације је искључила синхронизацију. И даље можете да видите обележиваче, историју, лозинке и друга подешавања на овом уређају. Ако унесете промене, оне се неће синхронизовати са налогом.</translation>
@@ -458,6 +462,7 @@
 <translation id="4237377247299956313">Додирните <ph name="BEGIN_BOLD" />Подразумевана апликација за прегледање<ph name="END_BOLD" /></translation>
 <translation id="424315890655130736">Унесите приступну фразу</translation>
 <translation id="4249955472157341256">Сортирај према најновијем</translation>
+<translation id="4250432749243022864">{count,plural, =0{Отвори {count} картица}=1{Отвори {count} картицу}one{Отвори {count} картицу}few{Отвори {count} картице}other{Отвори {count} картица}}</translation>
 <translation id="4253168017788158739">Напомена</translation>
 <translation id="4263576668337963058">Прикажи доступне радње за страницу</translation>
 <translation id="4267586310863245665">{COUNT,plural, =1{Одбацили сте {COUNT} упозорење}one{Одбацили сте {COUNT} упозорење}few{Одбацили сте {COUNT} упозорења}other{Одбацили сте {COUNT} упозорења}}</translation>
@@ -500,6 +505,7 @@
 <translation id="452750746583162491">Прегледајте синхронизоване податке</translation>
 <translation id="4536418791685807335">Пробајте поново да се пријавите.</translation>
 <translation id="4540780316273593836">Нешто није у реду</translation>
+<translation id="457292989631956153">{COUNT,plural, =1{Желите да затворите {COUNT} неактивну картицу?}one{Желите да затворите {COUNT} неактивну картицу?}few{Желите да затворите {COUNT} неактивне картице?}other{Желите да затворите {COUNT} неактивних картица?}}</translation>
 <translation id="457386861538956877">Још...</translation>
 <translation id="4587235830039045480">Сачувајте лозинку на Google налогу</translation>
 <translation id="4587589328781138893">Сајтови</translation>
@@ -529,6 +535,7 @@
 <translation id="470966556546083668">Не укључуј синхронизацију</translation>
 <translation id="4737560986434232178">Претражите недавне картице</translation>
 <translation id="473775607612524610">Ажурирај</translation>
+<translation id="4746926359847517643">Увек можете да их вратите из историје.</translation>
 <translation id="4747097190499141774">Шифровање помоћу приступне фразе не обухвата начине плаћања и адресе из Google Pay-а. Само неко ко има приступну фразу може да чита шифроване податке. Приступна фраза се не шаље Google-у нити је он чува. Ако заборавите приступну фразу или пожелите да промените ово подешавање, треба да ресетујете синхронизацију. <ph name="BEGIN_LINK" />Сазнајте више<ph name="END_LINK" /></translation>
 <translation id="4751162929052964260"><ph name="TITLE" />, <ph name="STATE" />, само на овом уређају, <ph name="URL" /></translation>
 <translation id="4751645464639803239">Нова картица без архивирањa</translation>
@@ -598,6 +605,7 @@
 <translation id="5168414296986405587">Направљено за iPadOS</translation>
 <translation id="5173088371991956744">Синхронизација мора да потврди да сте то ви</translation>
 <translation id="5176312250994681348">Задржи недавну лозинку</translation>
+<translation id="51802232683641391">{count,plural, =1{Желите ли да наставите на картици на којој сте стали на Android-у?}one{Желите ли да наставите на картицама на којима сте стали на Android-у?}few{Желите ли да наставите на картицама на којима сте стали на Android-у?}other{Желите ли да наставите на картицама на којима сте стали на Android-у?}}</translation>
 <translation id="5181140330217080051">Преузимање</translation>
 <translation id="5184329579814168207">Отвори у Chrome-у</translation>
 <translation id="5186185447130319458">Приватно</translation>
@@ -710,6 +718,7 @@ Handoff треба да се омогући у одељку General (Опште)
 <translation id="5963939892571022323">A link to the highlight can not be created (Прављење линка до истакнутог текста није успело).</translation>
 <translation id="5965679971710331625">Пријављени сте</translation>
 <translation id="5979837087407522202">Претражите лозинке</translation>
+<translation id="5981230843984570095">Затвори све неактивне</translation>
 <translation id="5982717868370722439">Додајте постојеће податке на <ph name="USER_EMAIL" />.</translation>
 <translation id="5984222099446776634">Недавно посећено</translation>
 <translation id="5988097621740394599">Прегледајте снижења на картицама.</translation>
@@ -759,6 +768,7 @@ Handoff треба да се омогући у одељку General (Опште)
 <translation id="6232329973559504466">Претрага без архивирања</translation>
 <translation id="6247557882553405851">Google менаџеру лозинки</translation>
 <translation id="6254066287920239840">Отварајте ликнове у апликацији уместо у прегледачу.</translation>
+<translation id="625491139841322297">{count,plural, =1{Прегледај картицу}one{Прегледај све картице}few{Прегледај све картице}other{Прегледај све картице}}</translation>
 <translation id="6255097610484507482">Измена кредитне картице</translation>
 <translation id="6277426346321820595">Без заштите</translation>
 <translation id="6284652193729350524">Понуди превод за <ph name="LANGUAGE" /></translation>
@@ -970,6 +980,7 @@ Handoff треба да се омогући у одељку General (Опште)
 <translation id="7607521702806708809">Избриши лозинку</translation>
 <translation id="7611459119367035420">Закачене картице можете да пронађете овде.</translation>
 <translation id="7638584964844754484">Неисправна приступна фраза</translation>
+<translation id="7640669552036055091">Картице са Android-а</translation>
 <translation id="7646263789464975852">Мени → Подешавања → Провера безбедности</translation>
 <translation id="7646772052135772216">Синхронизација лозинки не ради</translation>
 <translation id="764827086632467055">Додирните Подразумевана апликација за прегледање</translation>
@@ -1135,6 +1146,7 @@ Handoff треба да се омогући у одељку General (Опште)
 <translation id="8764015330924122850">Опозовите праћење: <ph name="DOMAIN_NAME" /></translation>
 <translation id="8766790350274092814">Лозинке за <ph name="WEBSITE" /> и <ph name="SECOND_WEBSITE" /> ће бити избрисане. Ваши налози неће бити избрисани.</translation>
 <translation id="8775144690796719618">Неважећи URL</translation>
+<translation id="8780076847684176174">{count,plural, =1{Прегледај картицу…}one{Прегледај све картице…}few{Прегледај све картице…}other{Прегледај све картице…}}</translation>
 <translation id="8787968206789828143">Претражите на вебу</translation>
 <translation id="8792626944327216835">микрофон</translation>
 <translation id="8803639129939845298">Безбедан</translation>
@@ -1199,6 +1211,7 @@ Handoff треба да се омогући у одељку General (Опште)
 <translation id="9162432979321511934">Укључите Аутоматско попуњавање лозинки</translation>
 <translation id="9165320910061267720">Да бисте добијали обавештења о снижењима, треба да укључите обавештења у iOS подешавањима.</translation>
 <translation id="9177438225260810839">Претражите отворене картице</translation>
+<translation id="9187853111759024059">Желите да затворите више од 99 неактивних картица?</translation>
 <translation id="9188680907066685419">Одјавите се са налога којим се управља</translation>
 <translation id="9200875785104711666">пре <ph name="TIME" /> д</translation>
 <translation id="9203116392574189331">Handoff</translation>

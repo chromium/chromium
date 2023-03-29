@@ -1251,6 +1251,7 @@
 <translation id="685782768769951078">{NUM_DIGITS,plural, =1{残り 1 桁}other{残り # 桁}}</translation>
 <translation id="6867938213751067702"><ph name="FILENAME" /> のダウンロードが一時停止しました</translation>
 <translation id="6878400149835617132">ショートカットがオフになっています</translation>
+<translation id="6878701771800702153">{NUM_APPS,plural, =1{1 個のアプリ}other{# 個のアプリ}}</translation>
 <translation id="6884665277231944629">今日に戻る</translation>
 <translation id="6886172995547742638"><ph name="DEVICE_TYPE" /> のパフォーマンスが低下する可能性があります。正規の <ph name="PREFERRED_MINIMUM_POWER" /> W 以上の USB-C 電源アダプターを使用してください。</translation>
 <translation id="688631446150864480">ウィンドウを切り替えるには、下矢印キーを押します</translation>
@@ -1419,6 +1420,7 @@
 <translation id="7689817529363080918">マイクへのアクセス権を持つ <ph name="APP1_NAME" />、<ph name="APP2_NAME" />、およびすべてのアプリとウェブサイトに対して、マイクへのアクセスを許可します</translation>
 <translation id="7704000866383261579">直前の操作をやり直す</translation>
 <translation id="7705524343798198388">VPN</translation>
+<translation id="770741401784017797">GIF を作成中</translation>
 <translation id="7714767791242455379">新しいモバイル ネットワークを追加</translation>
 <translation id="7720400844887872976"><ph name="TIME" /> までオン</translation>
 <translation id="7720410380936703141">再試行</translation>
@@ -1431,6 +1433,7 @@
 <translation id="7749443890790263709">デスクの数が上限に達しました。</translation>
 <translation id="776344839111254542">クリックしてアップデートの詳細を表示する</translation>
 <translation id="7768784765476638775">選択して読み上げ</translation>
+<translation id="7769299611924763557">GIF の作成はまもなく完了します</translation>
 <translation id="7780094051999721182">ショートカット</translation>
 <translation id="7780159184141939021">画面の回転</translation>
 <translation id="7796735576426975947">新しい通知は表示されません</translation>
