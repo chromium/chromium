@@ -66,6 +66,14 @@ export class TtsInterface {
   increaseOrDecreaseProperty(propertyName, increase) {}
 
   /**
+   * Sets the property to a particular value. Callers should prefer this
+   * to setting the underlying settings pref directly.
+   * @param {string} propertyName The name of the property to change.
+   * @param {number} value The value to change it to.
+   */
+  setProperty(propertyName, value) {}
+
+  /**
    * Converts an engine property value to a percentage from 0.00 to 1.00.
    * @param {string} property The property to convert.
    * @return {?number} The percentage of the property.

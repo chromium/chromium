@@ -519,7 +519,13 @@ export class PrimaryTts extends AbstractTts {
   /** @override */
   increaseOrDecreaseProperty(propertyName, increase) {
     super.increaseOrDecreaseProperty(propertyName, increase);
+    const value = this.ttsProperties[propertyName];
+    this.setProperty(propertyName, value);
+  }
 
+  /** @override */
+  setProperty(propertyName, value) {
+    super.setProperty(propertyName, value);
     let pref;
     switch (propertyName) {
       case ttsTypes.TtsSettings.RATE:
@@ -534,8 +540,7 @@ export class PrimaryTts extends AbstractTts {
       default:
         return;
     }
-    const value = this.ttsProperties[propertyName];
-    chrome.settingsPrivate.setPref(pref, value);
+    chrome.settingsPrivate.setPref(pref, this.ttsProperties[propertyName]);
   }
 
   /** @override */

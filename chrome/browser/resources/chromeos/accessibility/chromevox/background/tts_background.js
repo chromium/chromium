@@ -81,9 +81,9 @@ export class TtsBackground {
     const rate = ChromeVox.tts.getDefaultProperty('rate');
     const pitch = ChromeVox.tts.getDefaultProperty('pitch');
     const volume = ChromeVox.tts.getDefaultProperty('volume');
-    chrome.settingsPrivate.setPref('settings.tts.speech_rate', rate);
-    chrome.settingsPrivate.setPref('settings.tts.speech_pitch', pitch);
-    chrome.settingsPrivate.setPref('settings.tts.speech_volume', volume);
+    ChromeVox.tts.setProperty('rate', rate ? rate : 1);
+    ChromeVox.tts.setProperty('pitch', pitch ? pitch : 1);
+    ChromeVox.tts.setProperty('volume', volume ? volume : 1);
     SettingsManager.set('voiceName', constants.SYSTEM_VOICE);
     TtsBackground.primary.updateVoice('', () => {
       // Ensure this announcement doesn't get cut off by speech triggered by

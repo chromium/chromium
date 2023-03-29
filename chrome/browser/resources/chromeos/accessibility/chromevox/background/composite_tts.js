@@ -80,6 +80,11 @@ export class CompositeTts {
   }
 
   /** @override */
+  setProperty(propertyName, value) {
+    this.ttsEngines_.forEach(engine => engine.setProperty(propertyName, value));
+  }
+
+  /** @override */
   propertyToPercentage(property) {
     const percentages =
         this.ttsEngines_.map(engine => engine.propertyToPercentage(property));

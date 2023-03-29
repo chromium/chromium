@@ -134,12 +134,17 @@ export class AbstractTts {
 
   /** @override */
   increaseOrDecreaseProperty(propertyName, increase) {
-    const min = this.propertyMin[propertyName];
-    const max = this.propertyMax[propertyName];
     const step = this.propertyStep[propertyName];
     let current = this.ttsProperties[propertyName];
     current = increase ? current + step : current - step;
-    this.ttsProperties[propertyName] = Math.max(Math.min(current, max), min);
+    this.setProperty(propertyName, current);
+  }
+
+  /** @override */
+  setProperty(propertyName, value) {
+    const min = this.propertyMin[propertyName];
+    const max = this.propertyMax[propertyName];
+    this.ttsProperties[propertyName] = Math.max(Math.min(value, max), min);
   }
 
   /**

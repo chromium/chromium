@@ -1668,8 +1668,7 @@ IN_PROC_BROWSER_TEST_P(SpokenFeedbackTest,
   sm_.Replay();
 }
 
-// TODO(https://crbug.com/1064947): Flaky on ASAN and linux-chromeos-dbg.
-IN_PROC_BROWSER_TEST_P(SpokenFeedbackTest, DISABLED_ResetTtsSettings) {
+IN_PROC_BROWSER_TEST_P(SpokenFeedbackTest, ResetTtsSettings) {
   EnableChromeVox();
   sm_.Call([this]() {
     ASSERT_TRUE(ui_test_utils::NavigateToURL(

@@ -61,6 +61,9 @@ export class ConsoleTts {
   /** @override */
   increaseOrDecreaseProperty() {}
 
+  /** @override */
+  setProperty(propertyName, value) {}
+
   /**
    * @param {string} property
    * @return {number}
