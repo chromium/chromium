@@ -1,0 +1,4 @@
+Tests browser window size larger than desktop.
+set size: 4096x2160
+get size: 4096x2160
+window size: 4096x2160
