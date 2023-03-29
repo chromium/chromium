@@ -1760,6 +1760,9 @@
         'additional_compile_targets': [
           'all',
         ],
+        'mixins': [
+          'linux-bionic',
+        ],
         'test_suites': {
           'isolated_scripts': 'chrome_sizes',
         },
@@ -1781,6 +1784,9 @@
       'ToTLinuxASanLibfuzzer': {
         'additional_compile_targets': [
           'all',
+        ],
+        'mixins': [
+          'linux-bionic',
         ],
         'test_suites': {
           'isolated_scripts': 'chrome_sizes',
